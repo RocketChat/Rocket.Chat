@@ -1,2 +1,4 @@
 .meteor/local
 .meteor/meteorite
+.DS_Store
+ecosystem.json
