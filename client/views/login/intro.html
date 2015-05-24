@@ -1,0 +1,19 @@
+<template name="loginIntro">
+	<a href="/login" class="screen">
+		<span>
+			<i></i>
+			<i></i>
+			<i></i>
+		</span>
+		<figure>
+			<img src="" />
+		</figure>
+		<button class="button secondary"><span>{{_ "loginIntro.Access_online_demo"}}</span></button>
+	</a>
+	<div class='text'>
+		<h1>RocketChat</h1>
+		<h2>{{_ "loginIntro.Your_Open_Source_solution"}}</h2>
+		<p>{{_ "loginIntro.Have_your_own_chat"}}</p>
+		<a class="button" href="{{pathFor 'login'}}"><span>{{_ "loginIntro.Access_Online_Demo"}}</span></a>
+	</div>
+</template>

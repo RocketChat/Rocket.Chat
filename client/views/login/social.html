@@ -1,0 +1,16 @@
+<template name="social">
+	<div class="social">
+		<h4>{{_ "footer.Join_the_Community"}}</h4>
+		{{lola}}
+		{{#if withParagraph}}
+			<p>Follow our social profiles, fork us on github and share your thoughts about the rocket.chat app on our trello board.</p>
+		{{/if}}
+		<nav>
+			<a class="button share twitter" href="http://twitter.com/rocket.chat"><i class="fa fa-twitter"></i><span>Twitter</span></a>
+			<a class="button share facebook" href="https://www.facebook.com/RocketChatApp"><i class="fa fa-facebook"></i><span>Facebook</span></a>
+			<a class="button share google" href="https://plus.google.com/+RocketChatApp"><i class="fa fa-google-plus"></i><span>Google Plus</span></a>
+			<a class="button share github" href="https://github.com/RocketChat/Rocket.Chat"><i class='fa fa-github'></i><span>Github</span></a>
+			<a class="button share trello" href="https://trello.com/rocketchat"><i class='fa fa-trello'></i><span>Trello</span></a>
+		</nav>
+	</div>
+</template>

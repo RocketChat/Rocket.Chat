@@ -1,0 +1,31 @@
+<template name="home">
+	<section class="page-container page-home page-static">
+		<head class="fixed-title">
+			<h2>
+				<span class="room-title"><img class="logo" src="/images/logo/icon.svg" />{{_ "home.welcome"}}</span>
+			</h2>
+		</head>
+		<div class="content">
+			<div class="info">
+				<p>Have your own web chat. Developed with Meteor.com, the Rocket.Chat is a great solution for developers looking forward to build and evolve their own chat platform.</p>
+				<p>&larr; {{_ "home.use_menu"}}.</p>
+			</div>
+			{{ > social withParagraph }}
+		</div>
+	</section>
+	<section class="flex-tab">
+		<div class="control">
+			<button class="more"><span class="arrow {{arrowPosition}}"></span></button>
+		</div>
+		<div class="content">
+			<div class="list-view">
+				<div class="status">
+					<h2>Chat Rooms</h2>
+					<p>
+						{{{_ "chatWindowDashboard.Showing_online_users" 1 1}}}
+					</p>
+				</div>
+			</div>
+		</div>
+	</section>
+</template>
