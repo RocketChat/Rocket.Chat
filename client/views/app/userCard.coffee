@@ -5,7 +5,7 @@ Template.userCard.helpers
 		userData = {
 			name: Session.get('user_' + uid + '_name')
 			emails: Session.get('user_' + uid + '_emails')
-			picture: Session.get('user_' + uid + '_picture')
+			uid: uid
 		}
 		phone = Session.get('user_' + uid + '_phone')
 		if phone? and phone[0]?.phoneNumber

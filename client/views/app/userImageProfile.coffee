@@ -1,7 +1,4 @@
 Template.userImageProfile.helpers
-	userPicture: ->
-		return Session.get('user_' + this._id + '_picture')
-
 	userName: ->
 		return Session.get('user_' + this._id + '_name')
 
