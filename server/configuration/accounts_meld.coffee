@@ -3,6 +3,9 @@ Accounts.updateOrCreateUserFromExternalService = (serviceName, serviceData, opti
 	if serviceName not in ['facebook', 'github', 'google', 'meteor-developer']
 		return
 
+	if serviceName is 'github' and (not serviceData.email? or serviceData.email.trim() is '')
+		throw new Meteor.Error 'github-no-public-email'
+
 	if serviceName is 'meteor-developer'
 		if _.isArray serviceData?.emails
 			serviceData.emails.sort (a, b) ->
@@ -14,7 +17,7 @@ Accounts.updateOrCreateUserFromExternalService = (serviceName, serviceData, opti
 					break
 
 	if not serviceData.email? or serviceData.email.trim() is ''
-		throw new Meteor.Error 'No verified email'
+		throw new Meteor.Error 'no-verified-email'
 		return
 
 	# Remove not verified users that have same email
