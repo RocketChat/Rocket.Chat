@@ -10,10 +10,4 @@ Meteor.methods
 			$set:
 				name: formData.name
 
-		ChatMessage.insert
-			rid: '57om6EQCcFami9wuT'
-			ts: new Date()
-			t: 'wm'
-			msg: formData.name
-
 		Accounts.sendVerificationEmail(userId, userData.email);
