@@ -1,5 +1,5 @@
 Avatar.options =
-	defaultImageUrl: "/images/no_picture.png"
+	fallbackType: 'initials'
 
 Avatar.getInitials = (user) ->
 	initials = ''
