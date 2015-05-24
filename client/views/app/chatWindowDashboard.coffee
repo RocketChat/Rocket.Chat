@@ -122,7 +122,7 @@ Template.chatWindowDashboard.helpers
 				name: Session.get('user_' + uid + '_name')
 				emails: Session.get('user_' + uid + '_emails') || []
 				phone: Session.get('user_' + uid + '_phone')
-				picture: Session.get('user_' + uid + '_picture')
+				uid: String(uid)
 			}
 			return userData
 
@@ -233,7 +233,7 @@ Template.chatWindowDashboard.helpers
 		userData = {
 			name: Session.get('user_' + uid + '_name')
 			emails: Session.get('user_' + uid + '_emails')
-			picture: Session.get('user_' + uid + '_picture')
+			uid: String(uid)
 		}
 		phone = Session.get('user_' + uid + '_phone')
 		if phone? and phone[0]?.phoneNumber

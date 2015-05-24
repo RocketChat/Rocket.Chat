@@ -39,7 +39,6 @@ Template.userStatus.helpers
 				visualStatus = t("userStatus.invisible")
 		return {
 			name: Session.get('user_' + Meteor.userId() + '_name')
-			picture: Session.get('user_' + Meteor.userId() + '_picture')
 			status: Session.get('user_' + Meteor.userId() + '_status')
 			visualStatus: visualStatus
 			_id: Meteor.userId()

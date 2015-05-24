@@ -6,12 +6,6 @@ Template.chatMessageDashboard.helpers
 		if this.uid?
 			return Session.get('user_' + this.uid + '_name')
 
-	picture: ->
-		if this.uid?
-			return Session.get('user_' + this.uid + '_picture')
-		else
-			return '/images/no_picture.png'
-
 	isSystemMessage: ->
 		return this.t in ['s', 'p', 'f', 'r', 'au', 'ru', 'ul', 'nu', 'wm']
 

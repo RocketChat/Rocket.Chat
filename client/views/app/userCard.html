@@ -3,7 +3,7 @@
 		<span class="-close"><i title="fechar" class="fa fa-remove"></i></span>
 		{{#with userData}}
 			<div class="thumb">
-				<img src="{{picture}}" />
+				{{> avatar userId=uid}}
 			</div>
 			<div class="info">
 				<h3>{{name}}</h3>

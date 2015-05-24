@@ -121,7 +121,7 @@
 					{{#with flexUserInfo}}
 						<div class="about cf_">
 							<div class="thumb">
-								<img src="{{picture}}" />
+								{{> avatar userId=uid}}
 							</div>
 							<div class="info">
 								<h3>{{name}}</h3>
@@ -147,7 +147,7 @@
 					{{#with userData}}
 						<div class="about cf_">
 							<div class="thumb">
-								<img src="{{picture}}" />
+								{{> avatar userId=uid}}
 							</div>
 							<div class="info">
 								<h3>{{name}}</h3>

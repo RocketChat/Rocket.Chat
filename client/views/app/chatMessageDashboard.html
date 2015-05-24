@@ -4,7 +4,9 @@
 			{{#if isSystemMessage}}
 				<p class="system">{{{message}}}</p>
 			{{else}}
-				<a class="thumb user-card-message" style="background-image:url('{{picture}}')" href="#" data-userid="{{uid}}" tabindex="1"></a>
+				<a class="thumb user-card-message" href="#" data-userid="{{uid}}" tabindex="1">
+					{{> avatar userId=uid}}
+				</a>
 				<a class="user user-card-message" href="#" data-userid="{{uid}}" tabindex="1">{{username}}</a>
 				<span class="time">
 					{{time}}
