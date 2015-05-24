@@ -40,6 +40,10 @@ Template.loginServices.events
 			serviceConfig.requestPermissions = ['user']
 
 		Meteor[loginWithService] serviceConfig, (error) ->
+			if error?.error is 'github-no-public-email'
+				alert "You don't have any email as public email in your GitHub account"
+				return
+
 			console.log error
 			if error
 				toastr.error error.message
