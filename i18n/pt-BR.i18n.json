@@ -11,7 +11,9 @@
 		"Remove": "Remover",
 		"Submit": "Enviar",
 		"Send_confirmation_email": "Enviar email de confirmação",
-		"Search": "Pesquisar"
+		"Search": "Pesquisar",
+		"Login": "Entrar",
+		"Reset_password": "Resetar senha"
 	},
 	"home": {
 		"use_menu": "Utilize o menu à esquerda para acessar suas salas",
