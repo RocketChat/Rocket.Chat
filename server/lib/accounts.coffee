@@ -32,36 +32,38 @@ Accounts.onCreateUser (options, user) ->
 			verified: true
 		]
 
-	# put user in #general channel
-	ChatRoom.update('57om6EQCcFami9wuT', { $addToSet: { uids: user._id }})
-	ChatSubscription.insert
-		rid: '57om6EQCcFami9wuT'
-		uid: user._id
-		ls: (new Date())
-		rn: '#general'
-		t: 'g'
-		f: true
-		ts: new Date()
-		unread: 0
-
-	if user.name?
-		ChatMessage.insert
-			rid: '57om6EQCcFami9wuT'
-			ts: new Date()
-			t: 'wm'
-			msg: user.name
-
 	return user
 
 
 Accounts.validateLoginAttempt (login) ->
-	console.log 'validateLoginAttempt ->',JSON.stringify login, null, ' '
 	if login.allowed is true and login.type is 'password'
 		validEmail = login.user.emails.filter (email) ->
 			return email.verified is true
-		console.log 'validEmail', validEmail
+
 		if validEmail.length is 0
 			throw new Meteor.Error 'no-valid-email'
 			return false
+
+	if not login.user.lastLogin?
+		# put user in #general channel
+		ChatRoom.update('57om6EQCcFami9wuT', { $addToSet: { uids: login.user._id }})
+		ChatSubscription.insert
+			rid: '57om6EQCcFami9wuT'
+			uid: login.user._id
+			ls: (new Date())
+			rn: '#general'
+			t: 'g'
+			f: true
+			ts: new Date()
+			unread: 0
+
+		if login.user.name?
+			ChatMessage.insert
+				rid: '57om6EQCcFami9wuT'
+				ts: new Date()
+				t: 'wm'
+				msg: login.user.name
+
+	Meteor.users.update {_id: login.user._id}, {$set: {lastLogin: new Date}}
 
 	return true
