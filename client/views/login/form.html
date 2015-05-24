@@ -7,7 +7,7 @@
 					Você precisa confirmar seu email para logar!
 				</div>
 			{{/if}}
-			<div class='input-text active {{registering}}'>
+			<div class='input-text active {{showName}}'>
 				<div class='field'>
 					<span>
 						<input type="text" name='name' placeholder='{{_ "general.Name"}}' />
@@ -23,17 +23,15 @@
 					<i></i>
 				</div>
 			</div>
-			{{#unless needsValidateEmail}}
-				<div class='input-text active'>
-					<div class='field'>
-						<span>
-						<input type="password" name='pass' placeholder='{{_ "login.Password"}}' />
-					</span>
-						<i></i>
-					</div>
+			<div class='input-text active {{showPassword}}'>
+				<div class='field'>
+					<span>
+					<input type="password" name='pass' placeholder='{{_ "login.Password"}}' />
+				</span>
+					<i></i>
 				</div>
-			{{/unless}}
-			<div class='input-text active {{registering}}'>
+			</div>
+			<div class='input-text active {{showConfirmPassword}}'>
 				<div class='field'>
 					<span>
 						<input type="password" name='confirm-pass' placeholder='{{_ "login.Confirm_password"}}' />
@@ -42,29 +40,17 @@
 				</div>
 			</div>
 		</div>
-		<div class='recovery' style='display:none;'>
-			<div class='input-text'>
-				<input type="text" name='recovery' placeholder='{{_ "Email"}}' />
-			</div>
-		</div>
-		<div class="options cf_">
-			<div class="remember">
-				<input type="checkbox" id="rmbr" name="remember" />
-				<label for="rmbr">{{_ "login.Remember_me"}}</label>
-			</div>
-			<div class="forgot">
-				<a href="/">{{_ "login.Forgot_password"}}?</a>
-			</div>
-		</div>
 		<div class="submit">
-			{{#if needsValidateEmail}}
-				<button data-loading-text="{{_ "general.Please_wait"}}..." class='button primary confirm-email'><span>{{_ "general.Send_confirmation_email"}}</span></button>
-			{{else}}
-				<button data-loading-text="{{_ "general.Please_wait"}}..." class='button primary login'><span>{{btnLoginSave}}</span></button>
-			{{/if}}
+			<button data-loading-text="{{_ "general.Please_wait"}}..." class='button primary login'><span>{{btnLoginSave}}</span></button>
 		</div>
-		<div class="register">
-			<a href="">{{btnCancelRegister}}</a>
+		<div class="register {{showRegisterLink}}">
+			<a href="">{{_ 'login.Register'}}</a>
+		</div>
+		<div class="forgot-password {{showForgotPasswordLink}}">
+			<a href="">{{_ 'login.Forgot_password'}}</a>
+		</div>
+		<div class="back-to-login {{showBackToLoginLink}}">
+			<a href="">{{_ 'login.Cancel'}}</a>
 		</div>
 	</form>
 </template>

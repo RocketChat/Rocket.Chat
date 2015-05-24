@@ -11,7 +11,9 @@
 		"Remove": "Remove",
 		"Submit": "Submit",
 		"Send_confirmation_email": "Send confirmation email",
-		"Search": "Search"
+		"Search": "Search",
+		"Login": "Login",
+		"Reset_password": "Reset password"
 	},
 	"home": {
 		"use_menu": "Use the side menu to access your rooms and chats",
