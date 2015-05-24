@@ -57,11 +57,8 @@ Accounts.onCreateUser (options, user) ->
 Accounts.validateLoginAttempt (login) ->
 	console.log 'validateLoginAttempt ->',JSON.stringify login, null, ' '
 	if login.allowed is true and login.type is 'password'
-		if not login.methodArguments?[0]?.user?.email?
-			return false
-
 		validEmail = login.user.emails.filter (email) ->
-			return email.verified is true and email.address is login.methodArguments[0].user.email
+			return email.verified is true
 		console.log 'validEmail', validEmail
 		if validEmail.length is 0
 			throw new Meteor.Error 'no-valid-email'
