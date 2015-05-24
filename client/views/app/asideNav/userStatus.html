@@ -1,0 +1,29 @@
+<template name="userStatus">
+	<div class="account-box">
+		{{#with myUserInfo}}
+			<div class="info status-{{status}}">
+				{{#if name}}
+					<div class="thumb" data-status='{{visualStatus}}'>
+						{{> avatar userId=_id}}
+					</div>
+					<div class="data">
+						<div class="wrp">
+							<h4>{{name}}</h4>
+							<span class="arrow"></span>
+						</div>
+					</div>
+				{{/if}}
+			</div>
+			<nav class="options _hidden">
+				<a href="" data-status="online" class="status online"><span>{{_ "userStatus.Online"}}</span></a>
+				<a href="" data-status="away" class="status away"><span>{{_ "userStatus.Away"}}</span></a>
+				<a href="" data-status="busy" class="status busy"><span>{{_ "userStatus.Busy"}}</span></a>
+				<a href="" data-status="offline" class="status offline"><span>{{_ "userStatus.Invisible"}}</span></a>
+				<a href="" class="silence-new-rooms"><i class="fa fa-bell-slash-o"></i><span>{{_ "userStatus.Silence"}}</span></a>
+				<a href=""><i class="fa fa-sliders"></i><span>{{_ "userStatus.Settings"}}</span><span class="soon">{{_ "userStatus.coming_soon"}}</span></a>
+				<a href=""><i class="fa fa-lock"></i><span>{{_ "userStatus.Privacy"}}</span><span class="soon">{{_ "userStatus.coming_soon"}}</span></a>
+				<a href="" id="logout"><i class="fa fa-sign-out"></i><span>{{_ "userStatus.Logout"}}</span></a>
+			</nav>
+		{{/with}}
+	</div>
+</template>

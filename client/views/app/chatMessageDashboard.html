@@ -1,0 +1,26 @@
+<template name="chatMessageDashboard">
+	<li class="message with-thumb {{own}} {{data.type}}" data-scroll-to-bottom="{{scroll}}">
+		{{#with data}}
+			{{#if isSystemMessage}}
+				<p class="system">{{{message}}}</p>
+			{{else}}
+				<a class="thumb user-card-message" style="background-image:url('{{picture}}')" href="#" data-userid="{{uid}}" tabindex="1"></a>
+				<a class="user user-card-message" href="#" data-userid="{{uid}}" tabindex="1">{{username}}</a>
+				<span class="time">
+					{{time}}
+					{{#if ets}}
+						({{_ "edited"}})
+					{{/if}}
+					<i class="fa fa-pencil edit-message"></i>
+				</span>
+				{{#if isEditing}}
+					<textarea class="input-message-editing" contenteditable="true">{{{message}}}</textarea>
+				{{else}}
+					<p>
+						{{{message}}}
+					</p>
+				{{/if}}
+			{{/if}}
+		{{/with}}
+	</li>
+</template>

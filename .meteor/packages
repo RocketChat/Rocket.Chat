@@ -1,0 +1,43 @@
+# Meteor packages used by this project, one per line.
+#
+# 'meteor add' and 'meteor remove' will edit this file for you,
+# but you can also edit it by hand.
+
+accounts-password
+accounts-ui
+chrismbeckett:fontawesome4
+chrismbeckett:toastr
+coffeescript
+francocatena:status
+iron:router
+konecty:autolinker
+konecty:delayed-task
+konecty:mesosphere
+konecty:mongo-counter
+konecty:multiple-instances-status
+konecty:user-presence
+less
+meteor-platform
+meteorhacks:kadira
+mizzao:autocomplete
+monbro:mongodb-mapreduce-aggregation
+mrt:mask
+mrt:moment
+mrt:publish-with-relations
+mrt:reactive-store
+nooitaf:colors
+percolatestudio:synced-cron
+raix:handlebar-helpers
+reactive-var
+tmeasday:crypto-md5
+tmeasday:errors
+twbs:bootstrap
+tap:i18n
+utilities:avatar
+accounts-facebook
+service-configuration
+accounts-google
+accounts-meteor-developer
+accounts-github
+email
+mizzao:timesync

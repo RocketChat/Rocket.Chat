@@ -1,0 +1,27 @@
+<template name="userCard">
+	<div class="user-profile">
+		<span class="-close"><i title="fechar" class="fa fa-remove"></i></span>
+		{{#with userData}}
+			<div class="thumb">
+				<img src="{{picture}}" />
+			</div>
+			<div class="info">
+				<h3>{{name}}</h3>
+				{{#each emails}}
+					<p><i class="icon-mail"></i> <a href="mailto:{{address}}">{{address}}</a></p>
+				{{/each}}
+				{{#if phone}}
+					<p><i class="icon-phone"></i> <a href="tel:{{phone}}">{{phone}}</a></p>
+				{{/if}}
+			</div>
+		{{/with}}
+	</div>
+	<div class="profile-buttons">
+		{{#unless $.Session.equals 'userProfileActive' $.Meteor.userId}}
+			<button class="-btn primary small private-chat"><span><i class='fa fa-comments'></i> {{_ "general.Conversation"}}</span></button>
+		{{/unless}}
+		{{#if canManageRoom}}
+			<button class="-btn btn-danger small remove-user"><span><i class='fa fa-remove'></i> {{_ "general.Remove"}}</span></button>
+		{{/if}}
+	</div>
+</template>
