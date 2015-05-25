@@ -17,6 +17,7 @@ markdown
 reactive-var
 service-configuration
 chrismbeckett:toastr
+fortawesome:fontawesome
 francocatena:status
 iron:router
 konecty:autolinker
