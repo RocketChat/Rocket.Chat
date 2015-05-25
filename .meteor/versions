@@ -70,6 +70,7 @@ momentjs:moment@2.10.3
 monbro:mongodb-mapreduce-aggregation@1.0.1
 mongo@1.1.0
 mongo-livedata@1.0.8
+mquandalle:jquery-textcomplete@0.3.9_1
 mrt:mask@0.0.1
 mrt:publish-with-relations@0.1.5
 mrt:reactive-store@0.0.1
@@ -103,7 +104,6 @@ tmeasday:crypto-md5@3.1.2
 tmeasday:errors@2.0.0
 todda00:friendly-slugs@0.3.0
 tracker@1.0.7
-twbs:bootstrap@3.3.4
 ui@1.0.6
 underscore@1.0.3
 url@1.0.4
