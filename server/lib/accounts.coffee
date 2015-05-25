@@ -36,7 +36,10 @@ Accounts.onCreateUser (options, user) ->
 
 
 Accounts.validateLoginAttempt (login) ->
-	if login.allowed is true and login.type is 'password'
+	if login.allowed isnt true
+		return login.allowed
+
+	if login.type is 'password'
 		validEmail = login.user.emails.filter (email) ->
 			return email.verified is true
 
