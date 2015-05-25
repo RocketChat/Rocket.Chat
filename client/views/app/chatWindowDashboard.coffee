@@ -453,10 +453,12 @@ ChatMessages = (->
 				length = emojione.emojioneList[shortname].length
 				'<img class="emojione" src="//cdn.jsdelivr.net/emojione/assets/png/' + emojione.emojioneList[shortname][length - 1].toUpperCase() + '.png"> ' + shortname
 			replace: (shortname) ->
+				event.stopPropagation()
+				event.preventDefault()
 				shortname
 			index: 1
 			maxCount: 10
-		} ], footer: ''
+		} ], footer: '', placement: 'top'
 
 		return
 
