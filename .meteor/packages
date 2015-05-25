@@ -9,6 +9,7 @@ accounts-github
 accounts-google
 accounts-meteor-developer
 accounts-password
+jquery
 coffeescript
 email
 less
@@ -28,16 +29,16 @@ mizzao:autocomplete
 mizzao:timesync
 momentjs:moment
 monbro:mongodb-mapreduce-aggregation
+mquandalle:jquery-textcomplete
 mrt:mask
 mrt:publish-with-relations
 mrt:reactive-store
 nooitaf:colors
 percolatestudio:synced-cron
+qnub:emojione
 raix:handlebar-helpers
 tap:i18n
 tmeasday:crypto-md5
 tmeasday:errors
 todda00:friendly-slugs
-twbs:bootstrap
 utilities:avatar
-qnub:emojione
