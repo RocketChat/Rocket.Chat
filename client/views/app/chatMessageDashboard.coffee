@@ -35,6 +35,15 @@ Template.chatMessageDashboard.helpers
 		# if $('#chat-window-' + this.rid + '.opened').length == 0
 		# 	return 'new'
 
+	preMD: Template 'preMD', ->
+		self = this
+		text = ""
+		if self.templateContentBlock
+			text = Blaze._toText(self.templateContentBlock, HTML.TEXTMODE.STRING)
+
+		text = text.replace(/#/g, '\\#')
+		return text
+
 Template.chatMessageDashboard.events
 	'mousedown .edit-message': ->
 		self = this
