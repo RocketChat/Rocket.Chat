@@ -5,23 +5,18 @@
 @import "utils/_preloader.import.less";
 @import url(http://fonts.googleapis.com/css?family=Roboto:300,400,500,700,900);
 @import url(http://fonts.googleapis.com/css?family=Muli:400,300,500);
-
 @footer-min-height: 70px;
 @header-min-height: 60px;
-
 @rooms-box-width: 220px;
-
 @primary-background-color: #0b1628;
 @secondary-background-color: #F4F4F4;
 @tertiary-background-color: #E9E9E9;
 @primary-font-color: #444444;
 @secondary-font-color: #777777;
-
 @status-online: #35AC19;
 @status-offline: #666666;
 @status-busy: #D30230;
 @status-away: #fcb316;
-
 .cf_ {
 	display: inline-block;
 	&:after {
@@ -44,9 +39,9 @@
 	outline-style: none;
 }
 
-
-a{
-	&:hover, &:active{
+a {
+	text-decoration: none;
+	&:hover, &:active {
 		color: @primary-font-color;
 		text-decoration: none;
 	}
@@ -112,7 +107,7 @@ a{
 	color: #EFEFEF;
 }
 
-.unselectable{
+.unselectable {
 	-webkit-user-select: none;
 	-moz-user-select: none;
 	-ms-user-select: none;
@@ -143,7 +138,7 @@ body {
 	color: #222;
 	height: 100%;
 	width: 100%;
-	min-width: 768px;
+	// min-width: 768px;
 	-webkit-font-smoothing: antialiased;
 	line-height: 1rem;
 	padding: 0;
@@ -152,9 +147,7 @@ body {
 	background-color: lighten(@primary-background-color, 10%);
 }
 
-
 // input & form styles
-
 input,
 button,
 select,
@@ -277,7 +270,6 @@ label.required:after {
 }
 
 // soon to be deprecated buttons
-
 .-btn {
 	display: inline-table;
 	padding: 0 12px;
@@ -509,11 +501,11 @@ label.required:after {
 	border: none;
 	line-height: 16px;
 	position: relative;
-	span{
+	span {
 		position: relative;
 		z-index: 2;
 	}
-	&:before{
+	&:before {
 		content: " ";
 		position: absolute;
 		top: 0;
@@ -536,7 +528,7 @@ label.required:after {
 	&:hover {
 		text-decoration: none;
 		color: #FFF;
-		&:before{
+		&:before {
 			opacity: 1;
 		}
 	}
@@ -548,9 +540,7 @@ label.required:after {
 		min-width: 120px;
 		background-color: #bc2031;
 	}
-	&.delete {
-
-	}
+	&.delete {}
 	&.facebook {
 		background-color: #325c99;
 	}
@@ -753,7 +743,6 @@ a.github-fork {
 // .popover {
 // 	z-index: 120;
 // }
-
 .account-box {
 	position: relative;
 	height: 100%;
@@ -930,7 +919,7 @@ a.github-fork {
 			}
 		}
 	}
-	.arrow{
+	.arrow {
 		position: absolute;
 		right: 5px;
 	}
@@ -1208,7 +1197,6 @@ a.github-fork {
 	// }
 }
 
-
 // MAIN CONTENT + MAIN PAGES //
 .main-content {
 	display: table;
@@ -1233,35 +1221,36 @@ a.github-fork {
 	}
 }
 
-.page-static{
-	p{
+.page-static {
+	p {
 		margin-bottom: 12px;
 	}
-	h1, h2, h3, h4{
+	h1,
+	h2,
+	h3,
+	h4 {
 		font-weight: 300;
 		text-transform: uppercase;
 	}
 }
 
-.page-home{
-	.logo{
+.page-home {
+	.logo {
 		display: inline-block;
 		width: 38px;
 		margin-right: 6px;
 	}
-	.info{
+	.info {
 		margin-bottom: 20px;
 		max-width: 680px;
 		line-height: 20px;
-		p{
-
-		}
+		p {}
 	}
-	.social{
-		h4{
+	.social {
+		h4 {
 			margin-bottom: 8px;
 		}
-		nav{
+		nav {
 			margin-left: -4px;
 		}
 	}
@@ -1861,13 +1850,13 @@ a.github-fork {
 	.recent {}
 }
 
-.user-image-status(@color){
+.user-image-status(@color) {
 	&:after, &:before {
-		background-color: darken(@color , 5%);
+		background-color: darken(@color, 5%);
 	}
 	a {
 		&:after, &:before {
-			background-color: darken(@color , 5%);
+			background-color: darken(@color, 5%);
 		}
 	}
 	.status {
@@ -2461,7 +2450,7 @@ a.github-fork {
 		border-radius: 50%;
 		min-height: 40px;
 		line-height: 20px;
-		&:before{
+		&:before {
 			border-radius: 50%;
 		}
 		span {
