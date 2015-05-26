@@ -48,14 +48,14 @@ Accounts.validateLoginAttempt (login) ->
 			return false
 
 	if not login.user.lastLogin?
-		# put user in #general channel
+		# put user in general channel
 		ChatRoom.update('57om6EQCcFami9wuT', { $addToSet: { uids: login.user._id }})
 		if not ChatSubscription.findOne(rid: '57om6EQCcFami9wuT', uid: login.user._id)?
 			ChatSubscription.insert
 				rid: '57om6EQCcFami9wuT'
 				uid: login.user._id
 				ls: (new Date())
-				rn: '#general'
+				rn: 'general'
 				t: 'g'
 				f: true
 				ts: new Date()
