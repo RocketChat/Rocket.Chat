@@ -7,9 +7,9 @@ Template.chatWindowDashboard.helpers
 	favorite: ->
 		console.log 'chatWindowDashboard.favorite' if window.rocketDebug
 		sub = ChatSubscription.findOne { rid: this._id, uid: Meteor.userId() }
-		return 'fa-star favorite-room' if sub?.f? and sub.f
+		return 'icon-star favorite-room' if sub?.f? and sub.f
 
-		return 'fa-star-o'
+		return 'icon-star-empty'
 
 	messages: ->
 		console.log 'chatWindowDashboard.messages' if window.rocketDebug
@@ -286,7 +286,7 @@ Template.chatWindowDashboard.events
 		console.log 'chatWindowDashboard.blur.input-message-editing',this._id if window.rocketDebug
 		ChatMessages.stopEditingLastMessage()
 
-	'click .message-form .fa-send': (event) ->
+	'click .message-form .icon-paper-plane': (event) ->
 		input = $(event.currentTarget).siblings("input")
 		ChatMessages.send(this._id, input.get(0))
 
@@ -415,12 +415,12 @@ toggleAddUser = ->
 
 	$('.add-user-search').toggleClass('show-search')
 
-	if $('i', btn).hasClass('fa-plus')
+	if $('i', btn).hasClass('icon-plus')
 		$('#user-add-search').focus()
-		$('i', btn).removeClass('fa-plus').addClass('fa-close')
+		$('i', btn).removeClass('icon-plus').addClass('icon-cancel')
 	else
 		$('#user-add-search').val('')
-		$('i', btn).removeClass('fa-close').addClass('fa-plus')
+		$('i', btn).removeClass('icon-cancel').addClass('icon-plus')
 
 ChatMessages = (->
 	self = {}
