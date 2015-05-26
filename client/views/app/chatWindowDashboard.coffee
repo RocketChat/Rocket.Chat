@@ -99,14 +99,17 @@ Template.chatWindowDashboard.helpers
 
 	roomName: ->
 		console.log 'chatWindowDashboard.roomName' if window.rocketDebug
-
 		roomData = Session.get('roomData' + this._id)
-
 		return '' unless roomData
-
-		return '@' + roomData.name if roomData.t isnt 'g'
-
 		return roomData.name
+
+	roomTypeIcon: ->
+		console.log 'chatWindowDashboard.roomType' if window.rocketDebug
+		roomData = Session.get('roomData' + this._id)
+		return '' unless roomData
+		return 'icon-hash' if roomData.t is 'g'
+		return 'icon-at'   if roomData.t is 'd'
+		return 'icon-at' + roomData.name if roomData.t is 'p'
 
 	userData: ->
 		console.log 'chatWindowDashboard.userData' if window.rocketDebug
