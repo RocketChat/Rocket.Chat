@@ -8,8 +8,8 @@ Template.privateHistory.helpers
 
 	type: ->
 		switch this.t
-			when 'd' then 'icon-user'
-			when 'g' then 'icon-users'
+			when 'd' then 'icon-at'
+			when 'g' then 'icon-hash'
 			when 'v' then 'icon-comment'
 
 	creation: ->

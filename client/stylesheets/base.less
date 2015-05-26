@@ -462,22 +462,22 @@ label.required:after {
 }
 
 .status-offline,
-.icon-user.status-offline {
+.icon-at.status-offline {
 	color: @status-offline;
 }
 
 .status-online,
-.icon-user.status-online {
+.icon-at.status-online {
 	color: @status-online !important;
 }
 
 .status-busy,
-.icon-user.status-busy {
+.icon-at.status-busy {
 	color: @status-busy;
 }
 
 .status-away,
-.icon-user.status-away {
+.icon-at.status-away {
 	color: @status-away !important;
 }
 
@@ -550,14 +550,6 @@ label.required:after {
 		opacity: 0;
 		z-index: 1;
 		.transition(opacity .1s ease-out);
-	}
-	.fa {
-		text-align: center;
-		width: 20px;
-		font-size: 18px;
-		vertical-align: middle;
-		position: relative;
-		z-index: 2;
 	}
 	&:hover {
 		text-decoration: none;
@@ -1055,13 +1047,6 @@ a.github-fork {
 			position: relative;
 		}
 		margin-right: 20px;
-		.fa {
-			display: block;
-			position: absolute;
-			top: 10px;
-			left: 8px;
-			color: @secondary-font-color;
-		}
 	}
 	h3 {
 		&:extend(.small-title);
@@ -1804,9 +1789,6 @@ a.github-fork {
 			border-right: 2px;
 			border-radius: 2px;
 		}
-		.fa {
-			margin-right: 3px;
-		}
 	}
 	.box {
 		position: relative;
@@ -1832,9 +1814,6 @@ a.github-fork {
 			padding: 4px;
 			background-color: #CDCDCD;
 			border-right: 2px;
-		}
-		.fa {
-			margin-right: 3px;
 		}
 	}
 	.links {
@@ -2428,12 +2407,6 @@ a.github-fork {
 			font-weight: 400;
 			padding: 16px 20px;
 			margin-top: 20px;
-			.fa {
-				width: 20px;
-				margin-right: 4px;
-				vertical-align: text-top;
-				margin-top: -3px;
-			}
 		}
 		h1 {
 			font-weight: 700;
