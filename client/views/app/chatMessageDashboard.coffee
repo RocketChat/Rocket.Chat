@@ -18,7 +18,7 @@ Template.chatMessageDashboard.helpers
 		else if this.uid
 			UserManager.addUser(this.uid)
 		switch this.t
-			when 'p' then "<i class='fa fa-external-link'></i><a href=\"#{this.url}\" target=\"_blank\">#{this.msg}</a>"
+			when 'p' then "<i class='icon-link-ext'></i><a href=\"#{this.url}\" target=\"_blank\">#{this.msg}</a>"
 			when 'r' then t('chatMessageDashboard.Room_name_changed', this.msg, Session.get('user_' + this.by + '_name')) + '.'
 			when 'au' then t('chatMessageDashboard.User_added_by', this.msg, Session.get('user_' + this.by + '_name'))
 			when 'ru' then t('chatMessageDashboard.User_removed_by', this.msg, Session.get('user_' + this.by + '_name'))

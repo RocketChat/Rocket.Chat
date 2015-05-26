@@ -7,11 +7,11 @@
 				<i></i>
 			</div>
 			<h2>
-				<a href="#favorite" class="toggle-favorite"><i class="fa {{favorite}}"></i></a>
+				<a href="#favorite" class="toggle-favorite"><i class="{{favorite}}"></i></a>
 				<span class="room-title {{editingTitle}}">{{roomName}}</span>
 				{{#if canEditName}}
 				<input type="text" id="room-title-field" class="{{showEditingTitle}}" value="{{roomNameEdit}}">
-				<a href="#edit" class="edit-room-title"><i class="fa fa-pencil"></i></a>
+				<a href="#edit" class="edit-room-title"><i class="icon-pencil"></i></a>
 				{{/if}}
 			</h2>
 		</head>
@@ -48,7 +48,7 @@
 				</ul>
 			</div>
 			<div class="new-message not">
-				<i class="fa fa-arrow-down"></i>
+				<i class="icon-down-big"></i>
 				<span>{{_ "chatWindowDashboard.New_messages"}}</span>
 			</div>
 		</div>
@@ -57,7 +57,7 @@
 				<div>
 					<!--input type="text" class="input-message" value="" /-->
 					<textarea name="msg" class="input-message"></textarea>
-					<i class="fa fa-send" title="{{_ "chatWindowDashboard.Send_Message"}}"></i>
+					<i class="icon-paper-plane" title="{{_ "chatWindowDashboard.Send_Message"}}"></i>
 				</div>
 				<div class="users-typing">
 					{{#with usersTyping}}
@@ -87,7 +87,7 @@
 				<form class="search-form" role="form">
 					<div class="input-line search">
 						{{> inputAutocomplete settings=autocompleteSettingsAddUser id="user-add-search" class="search" placeholder=tAddUsers}}
-						<i class="fa fa-plus"></i>
+						<i class="icon-plus"></i>
 					</div>
 				</form>
 			{{else}}
@@ -137,8 +137,8 @@
 							</div>
 						</div>
 						<nav>
-							<button class='-btn pull-right back'><span>{{_ "chatWindowDashboard.View_All"}} <i class='fa fa-chevron-right'></i></span></button>
-							<button class='-btn primary pvt-msg'><span><i class='fa fa-comments'></i> {{_ "general.Conversation"}}</span></button>
+							<button class='-btn pull-right back'><span>{{_ "chatWindowDashboard.View_All"}} <i class='icon-angle-right'></i></span></button>
+							<button class='-btn primary pvt-msg'><span><i class='icon-chat'></i> {{_ "general.Conversation"}}</span></button>
 						</nav>
 					{{/with}}
 				</div>
