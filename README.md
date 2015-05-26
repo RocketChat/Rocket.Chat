@@ -59,7 +59,7 @@ Thanks to [Diego Sampaio](https://github.com/sampaiodiego), [Gabriel Engel](http
 
 ##### We Need Your Help!
 
-A lot of work has already gone into Rocket.Chst, but we have much bigger plans for it!
+A lot of work has already gone into Rocket.Chat, but we have much bigger plans for it!
 
 So if you'd like to be part of the project, please check out the [roadmap](https://trello.com/b/dKS6CCbS/rocket-chat-roadmap) and [issues](https://github.com/RocketChat/Rocket.Chat/issues) to see if there's anything you can help with.
 
