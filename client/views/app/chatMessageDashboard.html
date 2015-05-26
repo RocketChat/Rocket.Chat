@@ -19,7 +19,7 @@
 					<textarea class="input-message-editing" contenteditable="true">{{{message}}}</textarea>
 				{{else}}
 					<p>
-						{{#emojione}}{{#markdown}}{{message}}{{/markdown}}{{/emojione}}
+						{{#markdown}}{{#emojione}}{{message}}{{/emojione}}{{/markdown}}
 					</p>
 				{{/if}}
 			{{/if}}
