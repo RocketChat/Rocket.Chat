@@ -1,16 +1,16 @@
 Accounts.onEmailVerificationLink (token, done) ->
 	Accounts.verifyEmail token, (error) ->
 		if not error?
-			alert('Email verified')
+			alert(t('accounts.Email_verified'))
 
 		done()
 
 Accounts.onResetPasswordLink (token, done) ->
-	newPassword = prompt('New password')
+	newPassword = prompt(t('accounts.New_password'))
 	Accounts.resetPassword token, newPassword, (error) ->
 		if error?
 			console.log error
-			alert('Error while changing password')
+			alert(t('accounts.Error_changing_password'))
 		else
-			alert('Password changed')
+			alert('accounts.Password_changed')
 		done()

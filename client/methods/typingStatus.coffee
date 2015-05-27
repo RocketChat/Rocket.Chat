@@ -1,7 +1,7 @@
 Meteor.methods
 	typingStatus: (typingData, start) ->
 		if not Meteor.userId()
-			throw new Meteor.Error 203, 'Usuário não logado'
+			throw new Meteor.Error 203, t('general.User_logged_out')
 
 		filter =
 			t: 't'

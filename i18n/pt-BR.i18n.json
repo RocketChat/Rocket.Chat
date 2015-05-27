@@ -1,27 +1,9 @@
 {
-	"general": {
-		"and": "e",
-		"Cancel": "Cancelar",
-		"Contact": "Contato",
-		"Conversation": "Conversa",
-		"History": "Histórico",
-		"Load_more": "Carregar mais",
-		"Name": "Nome",
-		"Please_wait": "Aguarde",
-		"Remove": "Remover",
-		"Submit": "Enviar",
-		"Send_confirmation_email": "Enviar email de confirmação",
-		"Search": "Pesquisar",
-		"Login": "Entrar",
-		"Reset_password": "Resetar senha"
-	},
-	"home": {
-		"use_menu": "Utilize o menu à esquerda para acessar suas salas",
-		"welcome": "Bem-vindo ao Rocket.Chat"
-	},
-	"chatRooms": {
-		"Favorites": "Favoritos",
-		"Recents": "Recentes"
+	"accounts": {
+		"Email_verified": "Email verificado",
+		"Error_changing_password": "Erro ao alterar a senha",
+		"Error_changing_password": "Senha alterada",
+		"New_password": "Nova senha"
 	},
 	"chatMessageDashboard": {
 		"edited": "editado",
@@ -32,17 +14,14 @@
 		"User_removed_by": "Usuário <em>%s</em> removido da conversa por <em>%s</em>.",
 		"Welcome": "Seja bem-vindo <em>%s</em>."
 	},
-	"login": {
-		"Confirm_password": "Confirmar a senha",
-		"Enter_info": "Entre com seus dados de login",
-		"Forgot_password": "Esqueceu sua senha",
-		"Password": "Senha",
-		"Register": "Registrar-se",
-		"Cancel": "Voltar para o login",
-		"Remember_me": "Lembrar-me"
+	"chatRoomItem": {
+		"Hide_room": "Esconder sala",
+		"Leave_room": "Sair da sala"
 	},
-	"loginServices": {
-		"login_with": "Ou faça seu login com"
+	"chatRooms": {
+		"Favorites": "Favoritos",
+		"Powered_by": "Powered by",
+		"Recents": "Recentes"
 	},
 	"chatWindowDashboard": {
 		"Add_users": "Adicionar usuários",
@@ -50,16 +29,80 @@
 		"are_typing": "estão digitando",
 		"is_also_typing": "também está digitando",
 		"is_typing": "está digitando",
+		"Members_List": "Lista de Membros",
 		"New_messages": "Novas mensagens",
+		"Quick_Search": "Pesquisa Rápida",
 		"Room_name_changed_successfully": "Nome da sala alterado com sucesso",
+		"See_all": "Ver todos",
+		"See_only_online": "Apenas online",
 		"Send_Message": "Enviar Mensagem",
 		"Showing_online_users": "Mostrando <b>%s</b> de %s usuários",
 		"Start_of_conversation": "Início da conversa",
-		"View_All": "Ver Todos",
-		"Quick_Search": "Pesquisa Rápida",
-		"Members_List": "Lista de Membros",
-		"See_all": "Ver todos",
-		"See_only_online": "Apenas online"
+		"View_All": "Ver Todos"
+	},
+	"footer": {
+		"Follow_social_profiles": "Siga-nos nas redes sociais, faça fork no github e compartilhe suas ideias sobre o app rocket.chat em nosso trello.",
+		"Fork_it_on_github": "Fork it on github",
+		"Join_the_Community": "Junte-se à Comunidade",
+		"Proudly_developed": "Orgulhosamente desenvolvido com Meteor"
+	},
+	"general": {
+		"and": "e",
+		"Cancel": "Cancelar",
+		"close": "fechar",
+		"Contact": "Contato",
+		"Conversation": "Conversa",
+		"History": "Histórico",
+		"Load_more": "Carregar mais",
+		"Login": "Entrar",
+		"Name": "Nome",
+		"Please_wait": "Aguarde",
+		"Remove": "Remover",
+		"Reset_password": "Resetar senha",
+		"Search": "Pesquisar",
+		"Send_confirmation_email": "Enviar email de confirmação",
+		"Submit": "Enviar",
+		"User_logged_out": "Usuário não logado"
+	},
+	"home": {
+		"Chat_Rooms": "Salas de Chat",
+		"Have_your_own_chat": "Tenha seu próprio web chat. Desenvolvido com Meteor.com, o Rocket.Chat é uma excelente solução para desenvolvedores que querem construir e desenvolver sua própria plataforma de chat.",
+		"use_menu": "Utilize o menu à esquerda para acessar suas salas",
+		"welcome": "Bem-vindo ao Rocket.Chat"
+	},
+	"login": {
+		"Cancel": "Voltar para o login",
+		"Confirm_password": "Confirmar a senha",
+		"Enter_info": "Entre com seus dados de login",
+		"Forgot_password": "Esqueceu sua senha",
+		"Password": "Senha",
+		"Register": "Registrar-se",
+		"Remember_me": "Lembrar-me",
+		"You_neeed_confirm_email": "Você precisa confirmar seu email para logar!"
+	},
+	"loginIntro": {
+		"Access_online_demo": "Acesse o demo online",
+		"Access_Online_Demo": "Acesse o Demo Online",
+		"Your_Open_Source_solution": "Sua própria solução Open Source"
+	},
+	"loginServices": {
+		"github_no_public_email": "Você não possui um e-mail público em sua conta do GitHub",
+		"login_with": "Ou faça seu login com"
+	},
+	"privateHistory": {
+		"Created_at": "Data criação",
+		"Last_message": "Última mensagem",
+		"Msgs": "Msgs",
+		"n_messages": "%s mensagens",
+		"Room": "Sala",
+		"Showing_results": "<p>Exibindo <b>%s</b> resultados</p>",
+		"since_creation": "desde %s"
+	},
+	"RoomManager": {
+		"No_permission_to_view_room": "Sem permissões para ver a sala"
+	},
+	"roomSearch": {
+		"Nothing_found": "Nada encontrado"
 	},
 	"userStatus": {
 		"away": "ausente",
@@ -74,29 +117,5 @@
 		"Privacy": "Privacidade",
 		"Settings": "Configurações",
 		"Silence": "Silenciar"
-	},
-	"chatRoomItem": {
-		"Hide_room": "Esconder sala",
-		"Leave_room": "Sair da sala"
-	},
-	"roomSearch": {
-		"Nothing_found": "Nada encontrado"
-	},
-	"privateHistory": {
-		"Created_at": "Data criação",
-		"Last_message": "Última mensagem",
-		"Msgs": "Msgs",
-		"Room": "Sala",
-		"Showing_results": "<p>Exibindo <b>%s</b> resultados</p>"
-	},
-	"loginIntro": {
-		"Access_online_demo": "Acesse o demo online",
-		"Access_Online_Demo": "Acesse o Demo Online",
-		"Your_Open_Source_solution": "Sua própria solução Open Source",
-		"Have_your_own_chat": "Tenha seu próprio web chat. Desenvolvido com Meteor.com, o Rocket.Chat é uma excelente solução para desenvolvedores que querem construir e desenvolver sua própria plataforma de chat."
-	},
-	"footer": {
-		"Join_the_Community": "Junte-se à Comunidade",
-		"Proudly_developed": "Orgulhosamente desenvolvido com Meteor"
 	}
 }
