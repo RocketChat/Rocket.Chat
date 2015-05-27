@@ -1,4 +1,3 @@
-@import "utils/_emojione.import.less";
 @import "utils/_lesshat.import.less";
 @import "utils/_reset.import.less";
 @import "utils/_keyframes.import.less";
@@ -17,6 +16,7 @@
 @status-offline: #666666;
 @status-busy: #D30230;
 @status-away: #fcb316;
+@import "utils/_emojione.import.less";
 .cf_ {
 	display: inline-block;
 	&:after {
@@ -207,7 +207,7 @@ input[type='password'] {
 	background-color: #fff;
 	border-radius: 2px;
 	padding: 2px 8px;
-	box-shadow: 1px 1px 0 rgba(0, 0, 0, 0.25);
+	box-shadow: 1px 1px 0 rgba(0, 0, 0, 0.3);
 	position: relative;
 	width: 100%;
 	outline: none;
@@ -763,6 +763,7 @@ a.github-fork {
 	> .alert {
 		margin-bottom: 0;
 		padding: 5px;
+		position: absolute;
 	}
 }
 
@@ -1446,6 +1447,14 @@ a.github-fork {
 	-moz-user-select: text;
 	-ms-user-select: text;
 	user-select: text;
+	.input-message-editing{
+		display: block;
+		resize: none;
+		padding-top: 9px;
+		padding-bottom: 9px;
+		overflow-y: hidden;
+		.calc(width, ~"100% - 16px");
+	}
 	.edit-room-title {
 		color: @secondary-font-color;
 		margin-left: 4px;
@@ -1482,10 +1491,6 @@ a.github-fork {
 		}
 		textarea {
 			display: block;
-			width: 100%;
-			border: 1px solid #dfdfdf;
-			border-radius: 4px;
-			box-shadow: 1px 1px 0 rgba(0, 0, 0, 0.3);
 			padding-top: 9px;
 			padding-bottom: 9px;
 			padding-right: 38px;
@@ -1494,10 +1499,11 @@ a.github-fork {
 		}
 		.icon-paper-plane {
 			position: absolute;
-			top: 4px;
+			top: 2px;
 			right: 10px;
 			cursor: pointer;
 			padding: 8px;
+			font-size: 16px;
 			color: @secondary-font-color;
 			&:hover {
 				color: @primary-font-color;
@@ -2512,6 +2518,12 @@ a.github-fork {
 			text-transform: uppercase;
 			margin-bottom: 8px;
 			font-size: 12px;
+		}
+		div.switch-language {
+			margin-top: 20px;
+			a {
+				color: @secondary-font-color;
+			}
 		}
 	}
 	a.meteor {

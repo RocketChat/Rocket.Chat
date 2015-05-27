@@ -81,6 +81,7 @@ oauth@1.1.4
 oauth2@1.1.3
 observe-sequence@1.0.6
 ordered-dict@1.0.3
+percolate:migrations@0.7.5
 percolatestudio:synced-cron@1.1.0
 qnub:emojione@0.0.3
 raix:handlebar-helpers@0.2.4
@@ -107,6 +108,7 @@ todda00:friendly-slugs@0.3.0
 tracker@1.0.7
 ui@1.0.6
 underscore@1.0.3
+underscorestring:underscore.string@3.0.3_1
 url@1.0.4
 utilities:avatar@0.7.10
 webapp@1.2.0
