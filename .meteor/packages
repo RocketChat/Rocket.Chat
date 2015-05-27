@@ -44,3 +44,4 @@ todda00:friendly-slugs
 utilities:avatar
 simple:highlight.js
 percolate:migrations
+underscorestring:underscore.string
