@@ -63,7 +63,7 @@
 						computation.invalidate()
 					else
 						if error.error is 'without-permission'
-							toastr.error 'Sem permissões para ver a sala'
+							toastr.error t('RoomManager.No_permission_to_view_room')
 
 						Router.go 'index'
 
