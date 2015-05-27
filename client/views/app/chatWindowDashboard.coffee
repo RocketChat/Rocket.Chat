@@ -256,6 +256,9 @@ Template.chatWindowDashboard.helpers
 	popupOpen: ->
 		return Template.instance().popupOpen.get()
 
+	popupData: ->
+		return Meteor.users.find({name: new RegExp(Template.instance().popupFilter.get(), 'i')})
+
 Template.chatWindowDashboard.events
 	"click .flex-tab .more": (event) ->
 		Session.set('flexOpened', !Session.get('flexOpened'))
@@ -286,6 +289,9 @@ Template.chatWindowDashboard.events
 	'keydown .input-message': (event) ->
 		console.log 'chatWindowDashboard.keydown.input-message',this._id if window.rocketDebug
 		ChatMessages.keydown(this._id, event, Template.instance())
+
+	'keyup .input-message': (event) ->
+		ChatMessages.keyup(this._id, event, Template.instance())
 
 	'keydown .input-message-editing': (event) ->
 		console.log 'chatWindowDashboard.keydown.input-message-editing',this._id if window.rocketDebug
@@ -412,6 +418,8 @@ Template.chatWindowDashboard.onCreated ->
 	this.popupOpen = new ReactiveVar false
 
 	this.popupValue = new ReactiveVar
+
+	this.popupFilter = new ReactiveVar ''
 
 	Tracker.autorun =>
 		console.log this.popupValue.get()
@@ -541,6 +549,13 @@ ChatMessages = (->
 		Meteor.defer ->
 			$('.input-message').select()
 
+	keyup = (rid, event, template) ->
+		input = event.currentTarget
+		value = input.value
+
+		if /@[A-Za-z0-9-_]*$/.test value
+			template.popupFilter.set(value.match(/@([A-Za-z0-9-_]*)$/)[1])
+
 	keydown = (rid, event, template) ->
 		input = event.currentTarget
 		k = event.which
@@ -594,6 +609,8 @@ ChatMessages = (->
 	isScrollable: isScrollable
 	toBottom: toBottom
 	keydown: keydown
+	keyup: keyup
+	keydownEditing: keydownEditing
 	keydownEditing: keydownEditing
 	stopEditingLastMessage: stopEditingLastMessage
 	send: send

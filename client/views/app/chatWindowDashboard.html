@@ -54,7 +54,7 @@
 			</div>
 		</div>
 		{{#if popupOpen}}
-			{{> messagePopup value=popupValue}}
+			{{> messagePopup value=popupValue template='messagePopupUser' data=popupData}}
 		{{/if}}
 		<footer class="footer">
 			<form class="message-form" method="post" action="/">

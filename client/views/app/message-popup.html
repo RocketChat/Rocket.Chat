@@ -4,9 +4,9 @@
 			People
 		</div>
 		<div>
-			{{#each users}}
+			{{#each data}}
 				<div class="popup-item" data-id="{{_id}}">
-					{{name}}
+					{{> Template.dynamic template=../template}}
 				</div>
 			{{/each}}
 		</div>
