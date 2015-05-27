@@ -10,24 +10,25 @@ flat = (obj, newObj = {}, path = '') ->
 
 Meteor.startup ->
 	l = {}
+	keys = {}
 	errors = []
 
+	langs = Object.keys TAPi18next.options.resStore
 	for lang, value of TAPi18next.options.resStore
 		l[lang] = flat value
+		for key, value of l[lang]
+			keys[key] ?= []
+			keys[key].push lang
 
-	for lang, value of l
-		for subLang, subValue of l when subLang isnt lang
-			for key, translation of subValue
-				if not value[key]?
-					errors.push "#{lang}: no value found for key #{key} from #{subLang}"
+	len = 0
+	for key, present of keys when present.length isnt langs.length
+		error = "#{_.difference(langs, present).join(',')}: missing translation for ".red + key.white + ". Present in [#{present.join(',')}]".red
+		errors.push error
+		if error.length > len
+			len = error.length
 
 	if errors.length > 0
-		len = 0
+		console.log "+".red + s.rpad('', len - 28, '-').red + "+".red
 		for error in errors
-			if error.length > len
-				len = error.length
-
-		console.log s.rpad('', len + 4, '=').red
-		for error in errors
-			console.log "| #{error} |".red
-		console.log s.rpad('', len + 4, '=').red
+			console.log "|".red, s.rpad("#{error}", len).red,  "|".red
+		console.log "+".red + s.rpad('', len - 28, '-').red + "+".red
