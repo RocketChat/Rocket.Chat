@@ -1,7 +1,5 @@
 Template.messagePopup.onCreated ->
-	console.log arguments
-	console.log this
-	$('body').on 'keyup', (event) =>
+	this.onKeyUp = (event) =>
 		if event.which is 38
 			this.up()
 		else if event.which is 40
@@ -9,6 +7,8 @@ Template.messagePopup.onCreated ->
 		else
 			Meteor.defer =>
 				this.verifySelection()
+
+	$('body').on 'keyup', this.onKeyUp
 
 	this.index = 0
 
@@ -37,13 +37,8 @@ Template.messagePopup.onCreated ->
 				this.data.value.set first.getAttribute('data-id')
 
 
-Template.messagePopup.onRendered ->
-	window.a = this.find('.popup-item').className += ' selected'
-
-
-# Template.messagePopup.helpers
-# 	users: ->
-# 		return Meteor.users.find()
+Template.messagePopup.onDestroyed ->
+	$('body').off 'keyup', this.onKeyUp
 
 
 Template.messagePopup.events
@@ -58,3 +53,10 @@ Template.messagePopup.events
 			current.className = current.className.replace /\sselected/, ''
 		e.currentTarget.className += ' selected'
 		template.data.value.set this._id
+
+	'click .popup-item': (e) ->
+		template = Template.instance()
+
+		template.data.value.set this._id
+
+		template.data.open.set false

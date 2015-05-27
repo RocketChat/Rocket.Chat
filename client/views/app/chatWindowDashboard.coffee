@@ -250,14 +250,18 @@ Template.chatWindowDashboard.helpers
 		else
 			return t('chatWindowDashboard.See_all')
 
-	popupValue: ->
-		return Template.instance().popupValue
+	popupConfig: ->
+		template = Template.instance()
+		return {
+			value: template.popupValue
+			open: template.popupOpen
+			data: Meteor.users.find({name: new RegExp(template.popupFilter.get(), 'i')})
+			template: 'messagePopupUser'
+		}
 
 	popupOpen: ->
 		return Template.instance().popupOpen.get()
 
-	popupData: ->
-		return Meteor.users.find({name: new RegExp(Template.instance().popupFilter.get(), 'i')})
 
 Template.chatWindowDashboard.events
 	"click .flex-tab .more": (event) ->
@@ -561,9 +565,16 @@ ChatMessages = (->
 		k = event.which
 		resize(input)
 		if k is 13 and not event.shiftKey
-			event.preventDefault()
-			event.stopPropagation()
-			send(rid, input)
+			if template.popupOpen.curValue is true
+				input.value = input.value.replace /@[A-Za-z0-9-_]*$/, '@' + template.popupValue.curValue + ' '
+				template.popupOpen.set false
+				event.preventDefault()
+				event.stopPropagation()
+				return
+			else
+				event.preventDefault()
+				event.stopPropagation()
+				send(rid, input)
 		else
 			keyCodes = [
 				20,  # Caps lock
@@ -588,6 +599,9 @@ ChatMessages = (->
 				startTyping(rid, input)
 			else if k is 38 and template.popupOpen.curValue isnt true # Arrow Up
 				startEditingLastMessage(rid, input)
+			else if k in [38, 40]
+				event.preventDefault()
+				event.stopPropagation()
 
 			if k is 50 and event.shiftKey is true
 				template.popupOpen.set true
