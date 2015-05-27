@@ -4,19 +4,21 @@ Meteor.startup ->
 
 	window.lastMessageWindow = {}
 
-	defaultUserLanguage = window.navigator.userLanguage || window.navigator.language || 'en'
+	@defaultUserLanguage = -> 
+		lng = window.navigator.userLanguage || window.navigator.language || 'en'
 
-	# Let's fix browsers having all-lowercase language settings eg. pt-br, en-us
-	re = /([a-z]{2}-)([a-z]{2})/
-	if re.test defaultUserLanguage
-		defaultUserLanguage = defaultUserLanguage.replace re, (match, parts...) -> return parts[0] + parts[1].toUpperCase()
+		# Fix browsers having all-lowercase language settings eg. pt-br, en-us
+		re = /([a-z]{2}-)([a-z]{2})/
+		if re.test lng
+			lng = lng.replace re, (match, parts...) -> return parts[0] + parts[1].toUpperCase()
+		return lng
 
 	if localStorage.getItem("userLanguage")
 		userLanguage = localStorage.getItem("userLanguage")
 	else
-		userLanguage = defaultUserLanguage
+		userLanguage = defaultUserLanguage()
+	
 	localStorage.setItem("userLanguage", userLanguage)
-
 	TAPi18n.setLanguage(userLanguage)
 	moment.locale(userLanguage)
 
