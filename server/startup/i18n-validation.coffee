@@ -29,5 +29,5 @@ Meteor.startup ->
 
 		console.log s.rpad('', len + 4, '=').red
 		for error in errors
-			console.log "| #{error} |".red
+			console.log "|".red, s.rpad("#{error}", len).red,  "|".red
 		console.log s.rpad('', len + 4, '=').red
