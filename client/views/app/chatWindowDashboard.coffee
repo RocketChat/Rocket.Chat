@@ -253,14 +253,13 @@ Template.chatWindowDashboard.helpers
 	popupConfig: ->
 		template = Template.instance()
 		return {
-			value: template.popupValue
-			open: template.popupOpen
-			data: Meteor.users.find({name: new RegExp(template.popupFilter.get(), 'i')})
+			collection: Meteor.users
 			template: 'messagePopupUser'
+			getInput: ->
+				return template.find('.input-message')
+			getFilter: (collection, filter) ->
+				return collection.find name: new RegExp(filter, 'i')
 		}
-
-	popupOpen: ->
-		return Template.instance().popupOpen.get()
 
 
 Template.chatWindowDashboard.events
@@ -293,9 +292,6 @@ Template.chatWindowDashboard.events
 	'keydown .input-message': (event) ->
 		console.log 'chatWindowDashboard.keydown.input-message',this._id if window.rocketDebug
 		ChatMessages.keydown(this._id, event, Template.instance())
-
-	'keyup .input-message': (event) ->
-		ChatMessages.keyup(this._id, event, Template.instance())
 
 	'keydown .input-message-editing': (event) ->
 		console.log 'chatWindowDashboard.keydown.input-message-editing',this._id if window.rocketDebug
@@ -418,15 +414,6 @@ Template.chatWindowDashboard.onCreated ->
 	this.scrollOnBottom = true
 
 	this.showUsersOffline = new ReactiveVar false
-
-	this.popupOpen = new ReactiveVar false
-
-	this.popupValue = new ReactiveVar
-
-	this.popupFilter = new ReactiveVar ''
-
-	Tracker.autorun =>
-		console.log this.popupValue.get()
 
 Template.chatWindowDashboard.onRendered ->
 	FlexTab.check()
@@ -553,28 +540,14 @@ ChatMessages = (->
 		Meteor.defer ->
 			$('.input-message').select()
 
-	keyup = (rid, event, template) ->
-		input = event.currentTarget
-		value = input.value
-
-		if /@[A-Za-z0-9-_]*$/.test value
-			template.popupFilter.set(value.match(/@([A-Za-z0-9-_]*)$/)[1])
-
 	keydown = (rid, event, template) ->
 		input = event.currentTarget
 		k = event.which
 		resize(input)
 		if k is 13 and not event.shiftKey
-			if template.popupOpen.curValue is true
-				input.value = input.value.replace /@[A-Za-z0-9-_]*$/, '@' + template.popupValue.curValue + ' '
-				template.popupOpen.set false
-				event.preventDefault()
-				event.stopPropagation()
-				return
-			else
-				event.preventDefault()
-				event.stopPropagation()
-				send(rid, input)
+			event.preventDefault()
+			event.stopPropagation()
+			send(rid, input)
 		else
 			keyCodes = [
 				20,  # Caps lock
@@ -597,14 +570,12 @@ ChatMessages = (->
 
 			unless k in keyCodes
 				startTyping(rid, input)
-			else if k is 38 and template.popupOpen.curValue isnt true # Arrow Up
-				startEditingLastMessage(rid, input)
+			else if k is 38 # Arrow Up
+				if input.value.trim() is ''
+					startEditingLastMessage(rid, input)
 			else if k in [38, 40]
 				event.preventDefault()
 				event.stopPropagation()
-
-			if k is 50 and event.shiftKey is true
-				template.popupOpen.set true
 
 	keydownEditing = (id, event) ->
 		input = event.currentTarget
@@ -623,7 +594,6 @@ ChatMessages = (->
 	isScrollable: isScrollable
 	toBottom: toBottom
 	keydown: keydown
-	keyup: keyup
 	keydownEditing: keydownEditing
 	keydownEditing: keydownEditing
 	stopEditingLastMessage: stopEditingLastMessage
