@@ -1,0 +1,14 @@
+<template name="messagePopup">
+	<div class="message-popup">
+		<div class="message-popup-title">
+			People
+		</div>
+		<div>
+			{{#each users}}
+				<div class="popup-item" data-id="{{_id}}">
+					{{name}}
+				</div>
+			{{/each}}
+		</div>
+	</div>
+</template>

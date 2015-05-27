@@ -53,6 +53,9 @@
 				<span>{{_ "chatWindowDashboard.New_messages"}}</span>
 			</div>
 		</div>
+		{{#if popupOpen}}
+			{{> messagePopup value=popupValue}}
+		{{/if}}
 		<footer class="footer">
 			<form class="message-form" method="post" action="/">
 				<div>

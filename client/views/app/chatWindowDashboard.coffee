@@ -250,6 +250,12 @@ Template.chatWindowDashboard.helpers
 		else
 			return t('chatWindowDashboard.See_all')
 
+	popupValue: ->
+		return Template.instance().popupValue
+
+	popupOpen: ->
+		return Template.instance().popupOpen.get()
+
 Template.chatWindowDashboard.events
 	"click .flex-tab .more": (event) ->
 		Session.set('flexOpened', !Session.get('flexOpened'))
@@ -279,7 +285,7 @@ Template.chatWindowDashboard.events
 
 	'keydown .input-message': (event) ->
 		console.log 'chatWindowDashboard.keydown.input-message',this._id if window.rocketDebug
-		ChatMessages.keydown(this._id, event)
+		ChatMessages.keydown(this._id, event, Template.instance())
 
 	'keydown .input-message-editing': (event) ->
 		console.log 'chatWindowDashboard.keydown.input-message-editing',this._id if window.rocketDebug
@@ -402,6 +408,13 @@ Template.chatWindowDashboard.onCreated ->
 	this.scrollOnBottom = true
 
 	this.showUsersOffline = new ReactiveVar false
+
+	this.popupOpen = new ReactiveVar false
+
+	this.popupValue = new ReactiveVar
+
+	Tracker.autorun =>
+		console.log this.popupValue.get()
 
 Template.chatWindowDashboard.onRendered ->
 	FlexTab.check()
@@ -528,7 +541,7 @@ ChatMessages = (->
 		Meteor.defer ->
 			$('.input-message').select()
 
-	keydown = (rid, event) ->
+	keydown = (rid, event, template) ->
 		input = event.currentTarget
 		k = event.which
 		resize(input)
@@ -558,8 +571,11 @@ ChatMessages = (->
 
 			unless k in keyCodes
 				startTyping(rid, input)
-			else if k is 38 # Arrow Up
+			else if k is 38 and template.popupOpen.curValue isnt true # Arrow Up
 				startEditingLastMessage(rid, input)
+
+			if k is 50 and event.shiftKey is true
+				template.popupOpen.set true
 
 	keydownEditing = (id, event) ->
 		input = event.currentTarget
