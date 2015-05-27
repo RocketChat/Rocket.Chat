@@ -6,6 +6,9 @@ Template.messagePopup.onCreated ->
 			this.up()
 		else if event.which is 40
 			this.down()
+		else
+			Meteor.defer =>
+				this.verifySelection()
 
 	this.index = 0
 
@@ -15,7 +18,7 @@ Template.messagePopup.onCreated ->
 		if previous?
 			current.className = current.className.replace /\sselected/, ''
 			previous.className += ' selected'
-			this.data.value.set Meteor.users.findOne previous.getAttribute('data-id')
+			this.data.value.set previous.getAttribute('data-id')
 
 	this.down = =>
 		current = this.find('.popup-item.selected')
@@ -23,16 +26,24 @@ Template.messagePopup.onCreated ->
 		if next?
 			current.className = current.className.replace /\sselected/, ''
 			next.className += ' selected'
-			this.data.value.set Meteor.users.findOne next.getAttribute('data-id')
+			this.data.value.set next.getAttribute('data-id')
+
+	this.verifySelection = =>
+		current = this.find('.popup-item.selected')
+		if not current?
+			first = this.find('.popup-item')
+			if first?
+				first.className += ' selected'
+				this.data.value.set first.getAttribute('data-id')
 
 
 Template.messagePopup.onRendered ->
 	window.a = this.find('.popup-item').className += ' selected'
 
 
-Template.messagePopup.helpers
-	users: ->
-		return Meteor.users.find()
+# Template.messagePopup.helpers
+# 	users: ->
+# 		return Meteor.users.find()
 
 
 Template.messagePopup.events
@@ -46,4 +57,4 @@ Template.messagePopup.events
 		if current?
 			current.className = current.className.replace /\sselected/, ''
 		e.currentTarget.className += ' selected'
-		template.data.value.set this
+		template.data.value.set this._id
