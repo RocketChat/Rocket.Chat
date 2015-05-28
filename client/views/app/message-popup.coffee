@@ -43,6 +43,8 @@ Template.messagePopup.onCreated ->
 
 	template.replaceRegex = val(template.data.replaceRegex, new RegExp "#{template.trigger}[A-Za-z0-9-_]*$")
 
+	template.getValue = val template.data.getValue, (_id) -> return _id
+
 	template.up = =>
 		current = template.find('.popup-item.selected')
 		previous = current.previousElementSibling or template.find('.popup-item:last-child')
@@ -83,7 +85,7 @@ Template.messagePopup.onCreated ->
 			firstPartValue = value.substr 0, caret
 			lastPartValue = value.substr caret
 
-			firstPartValue = firstPartValue.replace(template.selectorRegex, template.prefix + template.value.curValue + template.suffix)
+			firstPartValue = firstPartValue.replace(template.selectorRegex, template.prefix + this.getValue(template.value.curValue, template.data.collection) + template.suffix)
 
 			template.input.value = firstPartValue + lastPartValue
 
