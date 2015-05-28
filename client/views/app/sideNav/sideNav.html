@@ -7,13 +7,15 @@
 			<div class="rooms-list">
 				<div class="wrapper">
 					{{> starredRooms }}
-
 					{{> channels }}
-
 					{{> directMessages }}
-
 					{{> privateGroups }}
 				</div>
+			</div>
+			<div class="flex-nav hidden">
+				<section>
+					{{> UI.dynamic template=flexTemplate data=flexData}}
+				</section>
 			</div>
 		{{/if}}
 		<footer class="footer">

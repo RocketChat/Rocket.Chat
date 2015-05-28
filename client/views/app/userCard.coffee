@@ -32,9 +32,6 @@ Template.userCard.events
 			if result.rid?
 				Router.go('room', { _id: result.rid })
 
-	"click .-close" : (event) ->
-		UserPop.close()
-
 	'click .remove-user': (event) ->
 		Meteor.call 'removeUserFromRoom', { rid: Router.current().params._id, uid: Session.get('userProfileActive') }, (error, result) ->
 			if error

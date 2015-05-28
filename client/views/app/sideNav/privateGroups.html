@@ -1,0 +1,17 @@
+<template name="privateGroups">
+	<h3 class="add-room">
+		{{_ "chatRooms.Private_Groups"}}
+		<i class="icon-plus-circled"></i>
+	</h3>
+	{{#if total}}
+		<ul>
+			{{#each rooms}}
+				{{> chatRoomItem }}
+			{{/each}}
+		</ul>
+	{{else}}
+		<p class="empty">You have no private groups yet.</p>
+	{{/if}}
+
+
+</template>
