@@ -107,9 +107,9 @@ Template.chatWindowDashboard.helpers
 		console.log 'chatWindowDashboard.roomType' if window.rocketDebug
 		roomData = Session.get('roomData' + this._id)
 		return '' unless roomData
-		return 'icon-hash' if roomData.t is 'g'
+		return 'icon-hash' if roomData.t is 'c'
 		return 'icon-at'   if roomData.t is 'd'
-		return 'icon-at' + roomData.name if roomData.t is 'p'
+		return 'icon-at' + roomData.name if roomData.t is 'p' # @TODO review
 
 	userData: ->
 		console.log 'chatWindowDashboard.userData' if window.rocketDebug
@@ -165,19 +165,26 @@ Template.chatWindowDashboard.helpers
 			]
 		}
 
+	isChannel: ->
+		roomData = Session.get('roomData' + this._id)
+
+		return '' unless roomData
+
+		return roomData.t is 'c'
+
 	canAddUser: ->
 		roomData = Session.get('roomData' + this._id)
 
 		return '' unless roomData
 
-		return roomData.t is 'd' or (roomData.t is 'g' and roomData.uid is Meteor.userId())
+		return roomData.t in ['p', 'c'] and roomData.uid is Meteor.userId()
 
 	canEditName: ->
 		roomData = Session.get('roomData' + this._id)
 
 		return '' unless roomData
 
-		return roomData.uid is Meteor.userId() and roomData.t is 'g'
+		return roomData.uid is Meteor.userId() and roomData.t is 'c'
 
 	roomNameEdit: ->
 		return Session.get('roomData' + this._id)?.name
@@ -204,7 +211,7 @@ Template.chatWindowDashboard.helpers
 
 	isGroupChat: ->
 		room = ChatRoom.findOne(this._id, { reactive: false })
-		return room?.t is 'g'
+		return room?.t in ['c', 'p']
 
 	roomUsers: ->
 		room = ChatRoom.findOne(this._id, { reactive: false })
@@ -284,7 +291,7 @@ Template.chatWindowDashboard.helpers
 
 	popupEmojiConfig: ->
 		template = Template.instance()
-		config = 
+		config =
 			title: 'Emoji'
 			collection: emojione.emojioneList
 			template: 'messagePopupEmoji'
@@ -393,7 +400,7 @@ Template.chatWindowDashboard.events
 
 	'click .user-card-message': (e) ->
 		roomData = Session.get('roomData' + this.rid)
-		if roomData.t == "g"
+		if roomData.t in ['c', 'p']
 			Session.set('flexOpened', true)
 			Session.set('showUserInfo', $(e.currentTarget).data('userid'))
 		else
@@ -424,7 +431,7 @@ Template.chatWindowDashboard.events
 				if result?.rid?
 					Router.go('room', { _id: result.rid })
 					$('#user-add-search').val('')
-		else if roomData.t is 'g'
+		else if roomData.t in ['c', 'p']
 			Meteor.call 'addUserToRoom', { rid: roomData._id, uid: doc.uid }, (error, result) ->
 				if error
 					return Errors.throw error.reason

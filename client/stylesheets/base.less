@@ -6,7 +6,7 @@
 @import url(http://fonts.googleapis.com/css?family=Muli:400,300,500);
 @footer-min-height: 70px;
 @header-min-height: 60px;
-@rooms-box-width: 220px;
+@rooms-box-width: 260px;
 @primary-background-color: #0b1628;
 @secondary-background-color: #F4F4F4;
 @tertiary-background-color: #E9E9E9;
@@ -992,6 +992,78 @@ a.github-fork {
 		> .wrapper {
 			direction: ltr;
 			padding-left: 8px;
+		}
+		.nav-flex {
+			background-color: lighten(@primary-background-color, 15%);
+			position: fixed;
+			top: 0;
+			left: 0;
+			z-index: 1000;
+			// padding-top: 15px;
+			width: @rooms-box-width;
+			// .calc(width, @rooms-box-width ~'  - 10px');
+			.calc(height, ~'100% - ' @footer-min-height);
+			.transition(transform .3s cubic-bezier(.5, 0, .1, 1));
+			&._hidden {
+				.transform(translateX(-100%));
+			}
+			&.private-group-flex {
+				// background-color: #FFFFFF;
+			}
+			.close-nav-flex {
+				background-color: transparent;
+				border: none;
+				float: right;
+				color: #FFFFFF;
+				cursor: pointer;
+				line-height: @header-min-height;
+			}
+			h4 {
+				color: #FFFFFF;
+				text-align: center;
+				line-height: @header-min-height;
+				background-color: lighten(@primary-background-color, 10%);
+			}
+			.wrapper {
+				padding: 1em;
+
+				label {
+					color: #FFFFFF;
+					margin-top: 1em;
+					display: inline-block;
+				}
+
+				.selected-users {
+					min-height: 1em;
+					li {
+						background-color: #FFF;
+						display: inline-block;
+						border-radius: 3px;
+						padding: 4px;
+						margin: 1px 0;
+						i {
+							color: #000000;
+							cursor: pointer;
+						}
+					}
+				}
+
+				.buttons {
+					text-align: center;
+					margin-top: 1em;
+				}
+			}
+		}
+		h3 {
+			&.add-room {
+				&:hover {
+					color: #AAA;
+				}
+				i {
+					float: right;
+					margin-right: 0.5em;
+				}
+			}
 		}
 	}
 	.header {
@@ -2333,6 +2405,14 @@ a.github-fork {
 			border-bottom: 1px solid #DFDFDF;
 			font-family: "Roboto";
 			font-weight: 300;
+
+			&.error {
+				border-bottom: 1px solid #b40202;
+				&::-webkit-input-placeholder { color: #b40202; }
+				&:-moz-placeholder { color: #b40202; } /* Firefox 18- */ 
+				&::-moz-placeholder {  color: #b40202; } /* Firefox 19+ */
+				&:-ms-input-placeholder { color: #b40202; }
+			}
 		}
 		input:-webkit-autofill {
 			color: #fff !important;
