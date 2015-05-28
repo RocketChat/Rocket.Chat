@@ -47,7 +47,6 @@ jquery@1.11.3_2
 json@1.0.3
 konecty:autolinker@1.0.2
 konecty:delayed-task@1.0.0
-konecty:mesosphere@0.0.2
 konecty:mongo-counter@0.0.3
 konecty:multiple-instances-status@1.0.3
 konecty:user-presence@1.2.2
@@ -70,11 +69,9 @@ momentjs:moment@2.10.3
 monbro:mongodb-mapreduce-aggregation@1.0.1
 mongo@1.1.0
 mongo-livedata@1.0.8
-mquandalle:jquery-textcomplete@0.3.9_1
 mrt:mask@0.0.1
 mrt:publish-with-relations@0.1.5
 mrt:reactive-store@0.0.1
-mrt:underscore-string-latest@2.3.3
 nooitaf:colors@0.0.2
 npm-bcrypt@0.7.8_2
 oauth@1.1.4
