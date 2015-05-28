@@ -13,9 +13,11 @@
 			flexNav.removeClass "hidden"
 
 	openFlex = ->
+		AccountBox.toggleArrow 1
 		toggleFlex 1
 
 	closeFlex = ->
+		AccountBox.toggleArrow -1
 		toggleFlex -1
 
 	setFlex = (template, data={}) ->
