@@ -1,0 +1,10 @@
+<template name="directMessages">
+	<h3>
+		{{_ "chatRooms.Direct_Messages"}}
+	</h3>
+	<ul>
+		{{#each rooms}}
+			{{> chatRoomItem }}
+		{{/each}}
+	</ul>
+</template>
