@@ -1,62 +1,90 @@
+val = (v, d) ->
+	return if v? then v else d
+
 Template.messagePopup.onCreated ->
+	template = this
 
-	this.textFilter = new ReactiveVar ''
+	template.textFilter = new ReactiveVar ''
 
-	this.open = new ReactiveVar false
+	template.open = new ReactiveVar false
 
-	this.value = new ReactiveVar
+	template.value = new ReactiveVar
 
-	this.up = =>
-		current = this.find('.popup-item.selected')
-		previous = current.previousElementSibling or this.find('.popup-item:last-child')
+	template.trigger = val(template.data.trigger, '@')
+
+	template.prefix = val(template.data.prefix, template.trigger)
+
+	template.suffix = val(template.data.suffix, ' ')
+
+	template.matchSelectorRegex = val(template.data.matchSelectorRegex, new RegExp "#{template.trigger}[A-Za-z0-9-_]*$")
+
+	template.selectorRegex = val(template.data.selectorRegex, new RegExp "#{template.trigger}([A-Za-z0-9-_]*)$")
+
+	template.replaceRegex = val(template.data.replaceRegex, new RegExp "#{template.trigger}[A-Za-z0-9-_]*$")
+
+	template.up = =>
+		current = template.find('.popup-item.selected')
+		previous = current.previousElementSibling or template.find('.popup-item:last-child')
 		if previous?
 			current.className = current.className.replace /\sselected/, ''
 			previous.className += ' selected'
-			this.value.set previous.getAttribute('data-id')
+			template.value.set previous.getAttribute('data-id')
 
-	this.down = =>
-		current = this.find('.popup-item.selected')
-		next = current.nextElementSibling or this.find('.popup-item')
+	template.down = =>
+		current = template.find('.popup-item.selected')
+		next = current.nextElementSibling or template.find('.popup-item')
 		if next?
 			current.className = current.className.replace /\sselected/, ''
 			next.className += ' selected'
-			this.value.set next.getAttribute('data-id')
+			template.value.set next.getAttribute('data-id')
 
-	this.verifySelection = =>
-		current = this.find('.popup-item.selected')
+	template.verifySelection = =>
+		current = template.find('.popup-item.selected')
 		if not current?
-			first = this.find('.popup-item')
+			first = template.find('.popup-item')
 			if first?
 				first.className += ' selected'
-				this.value.set first.getAttribute('data-id')
+				template.value.set first.getAttribute('data-id')
 
-	this.onInputKeydown = (event) =>
-		if event.which is 13 and this.open.curValue is true
-			this.open.set false
-			this.input.value = this.input.value.replace /@[A-Za-z0-9-_]*$/, '@' + this.value.curValue + ' '
+	template.onInputKeydown = (event) =>
+		if template.open.curValue isnt true
+			return
+
+		if event.which is 13
+			template.open.set false
+			template.input.value = template.input.value.replace template.selectorRegex, template.prefix + template.value.curValue + template.suffix
 			event.preventDefault()
 			event.stopPropagation()
 
-	this.onInputKeyup = (event) =>
+	template.onInputKeyup = (event) =>
+		if template.open.curValue is true and event.which is 27
+			template.open.set false
+			event.preventDefault()
+			event.stopPropagation()
+			return
+
+		if template.matchSelectorRegex.test template.input.value
+			template.textFilter.set(template.input.value.match(template.selectorRegex)[1])
+			template.open.set true
+		else
+			template.open.set false
+
+		if template.open.curValue isnt true
+			return
+
 		if event.which is 38
-			this.up()
+			template.up()
 		else if event.which is 40
-			this.down()
+			template.down()
 		else
 			Meteor.defer =>
-				this.verifySelection()
-
-		if /@[A-Za-z0-9-_]*$/.test this.input.value
-			this.textFilter.set(this.input.value.match(/@([A-Za-z0-9-_]*)$/)[1])
-			this.open.set true
-		else
-			this.open.set false
+				template.verifySelection()
 
 
 Template.messagePopup.onRendered ->
 	this.input = this.data.getInput?()
-	$(this.input).on 'keyup', this.onInputKeyup
-	$(this.input).on 'keydown', this.onInputKeydown
+	$(this.input).on 'keyup', this.onInputKeyup.bind this
+	$(this.input).on 'keydown', this.onInputKeydown.bind this
 
 
 Template.messagePopup.onDestroyed ->
@@ -92,4 +120,8 @@ Template.messagePopup.helpers
 	data: ->
 		template = Template.instance()
 		filter = template.textFilter.get()
-		return template.data.getFilter template.data.collection, filter
+		result = template.data.getFilter template.data.collection, filter
+		if (template.data.collection instanceof Meteor.Collection and result.count() is 0) or result?.length is 0
+			template.open.set false
+
+		return result
