@@ -63,7 +63,7 @@ Template.privateGroupsFlex.events
 			if err
 				return toastr.error err.reason
 
-			$('.private-group-flex').addClass('_hidden')
+			SideNav.closeFlex()
 
 			instance.clearForm()
 
