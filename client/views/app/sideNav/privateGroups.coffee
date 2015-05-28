@@ -10,5 +10,4 @@ Template.privateGroups.events
 	'click .add-room': (e, instance) ->
 		SideNav.setFlex "privateGroupsFlex"
 		SideNav.openFlex()
-		#instance.clearForm()
-		#$('#pvt-group-name').focus()
+		console.log Template.privateGroupsFlex.onCreated.instance

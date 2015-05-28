@@ -5,6 +5,9 @@ Template.privateGroupsFlex.helpers
 	name: ->
 		return Template.instance().selectedUserNames[this.valueOf()]
 
+	error: ->
+		return Template.instance().error.get()
+
 	autocompleteSettings: ->
 		return {
 			limit: 10
@@ -30,12 +33,6 @@ Template.privateGroupsFlex.helpers
 		}
 
 Template.privateGroupsFlex.events
-	'click .add-room': (e, instance) ->
-		$('.private-group-flex').removeClass('_hidden')
-
-		instance.clearForm()
-		$('#pvt-group-name').focus()
-
 	'autocompleteselect #pvt-group-members': (event, instance, doc) ->
 		instance.selectedUsers.set instance.selectedUsers.get().concat doc._id
 
@@ -46,7 +43,6 @@ Template.privateGroupsFlex.events
 
 	'click .remove-room-member': (e, instance) ->
 		self = @
-
 		users = Template.instance().selectedUsers.get()
 		users = _.reject Template.instance().selectedUsers.get(), (_id) ->
 			return _id is self.valueOf()
@@ -58,23 +54,29 @@ Template.privateGroupsFlex.events
 	'click .cancel-pvt-group': (e, instance) ->
 		SideNav.closeFlex()
 
+	'keydown input[type="text"]': (e, instance) ->
+		Template.instance().error.set([])
+
 	'click .save-pvt-group': (e, instance) ->
-		Meteor.call 'createPrivateGroup', instance.find('#pvt-group-name').value, instance.selectedUsers.get(), (err, result) ->
-			if err
-				return toastr.error err.reason
-
-			SideNav.closeFlex()
-
-			instance.clearForm()
-
-			Router.go 'room', { _id: result.rid }
+		err = SideNav.validate()
+		if not err
+			Meteor.call 'createPrivateGroup', instance.find('#pvt-group-name').value, instance.selectedUsers.get(), (err, result) ->
+				if err
+					return toastr.error err.reason
+				SideNav.closeFlex()
+				instance.clearForm()
+				Router.go 'room', { _id: result.rid }
+		else
+			Template.instance().error.set(err)
 
 Template.privateGroupsFlex.onCreated ->
 	instance = this
 	instance.selectedUsers = new ReactiveVar []
 	instance.selectedUserNames = {}
+	instance.error = new ReactiveVar []
 
 	instance.clearForm = ->
+		instance.error.set([])
 		instance.selectedUsers.set([])
 		instance.find('#pvt-group-name').value = ''
 		instance.find('#pvt-group-members').value = ''

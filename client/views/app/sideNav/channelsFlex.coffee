@@ -5,6 +5,9 @@ Template.channelsFlex.helpers
 	name: ->
 		return Template.instance().selectedUserNames[this.valueOf()]
 
+	error: ->
+		return Template.instance().error.get()
+
 	autocompleteSettings: ->
 		return {
 			limit: 10
@@ -52,23 +55,32 @@ Template.channelsFlex.events
 	'click .cancel-channel': (e, instance) ->
 		SideNav.closeFlex()
 
+	'keydown input[type="text"]': (e, instance) ->
+		Template.instance().error.set([])
+
 	'click .save-channel': (e, instance) ->
-		Meteor.call 'createChannel', instance.find('#channel-name').value, instance.selectedUsers.get(), (err, result) ->
-			if err
-				return toastr.error err.reason
+		err = SideNav.validate()
+		if not err
+			Meteor.call 'createChannel', instance.find('#channel-name').value, instance.selectedUsers.get(), (err, result) ->
+				if err
+					return toastr.error err.reason
 
-			SideNav.closeFlex()
+				SideNav.closeFlex()
 
-			instance.clearForm()
+				instance.clearForm()
 
-			Router.go 'room', { _id: result.rid }
+				Router.go 'room', { _id: result.rid }
+		else
+			Template.instance().error.set(err)
 
 Template.channelsFlex.onCreated ->
 	instance = this
 	instance.selectedUsers = new ReactiveVar []
 	instance.selectedUserNames = {}
+	instance.error = new ReactiveVar []
 
 	instance.clearForm = ->
+		instance.error.set([])
 		instance.selectedUsers.set([])
 		instance.find('#channel-name').value = ''
 		instance.find('#channel-members').value = ''

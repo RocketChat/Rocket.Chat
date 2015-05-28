@@ -862,6 +862,9 @@ a.github-fork {
 	}
 	.input-line{
 		margin-bottom: 25px;
+		&:nth-last-child(1){
+			margin-bottom: 0;
+		}
 		label{
 			text-transform: uppercase;
 			font-weight: 400;
@@ -935,6 +938,19 @@ a.github-fork {
 		> .wrapper {
 			direction: ltr;
 			padding-left: 8px;
+		}
+	}
+	.input-error{
+		text-align: center;
+		color: #f09286;
+		font-size: 12px;
+		padding: 0;
+		text-align: left;
+		margin-bottom: -20px;
+		margin-top: -12px;
+		strong{
+			display: block;
+			margin-bottom: 2px;
 		}
 	}
 	.empty{
