@@ -57,11 +57,5 @@ Template.userStatus.events
 		event.preventDefault()
 		Meteor.logout()
 
-	'click .silence-new-rooms': ->
-		for room in Session.get('newRoomSound')
-			KonchatNotification.removeRoomNotification room
-
-		Session.set('newRoomSound', [])
-
 Template.userStatus.rendered = ->
 	AccountBox.init()
