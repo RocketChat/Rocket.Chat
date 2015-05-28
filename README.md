@@ -4,6 +4,8 @@ The Complete Open Source Chat Solution
 
 ## Demo
 
+[![Join the chat at https://gitter.im/RocketChat/Rocket.Chat](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/RocketChat/Rocket.Chat?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+
 Checkout the latest version at http://rocket.chat
 
 ## About
