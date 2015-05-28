@@ -57,8 +57,12 @@ Template.loginForm.events
 			if instance.state.get() is 'register'
 				Meteor.call 'registerUser', formData, (err, result) ->
 					Rocket.Button.reset(button)
-					toastr.success t('login.We_have_sent_registration_email')
-					instance.state.set 'login'
+					Meteor.loginWithPassword formData.email, formData.pass, (error) ->
+						if error?.error is 'no-valid-email'
+							toastr.success t('login.We_have_sent_registration_email')
+							instance.state.set 'login'
+						else
+							Router.go 'index'
 			else
 				Meteor.loginWithPassword formData.email, formData.pass, (error) ->
 					Rocket.Button.reset(button)
@@ -87,10 +91,9 @@ Template.loginForm.onCreated ->
 		formObj = {}
 		validationObj = {}
 
-		console.log formData
 		for field in formData
 			formObj[field.name] = field.value
-		
+
 		unless formObj['email'] and /\b[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]+\b/i.test(formObj['email'])
 			validationObj['email'] = t('login.Invalid_email')
 		
@@ -104,7 +107,6 @@ Template.loginForm.onCreated ->
 			if formObj['confirm-pass'] isnt formObj['pass']
 				validationObj['confirm-pass'] = t('login.Invalid_confirm_pass')
 
-		console.log validationObj
 		$("#login-card input").removeClass "error"
 		unless _.isEmpty validationObj
 			button = $('#login-card').find('button.login')
