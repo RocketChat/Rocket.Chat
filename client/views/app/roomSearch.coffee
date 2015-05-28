@@ -5,10 +5,9 @@ Template.roomSearch.helpers
 		if this.type is 'r'
 			switch this.t
 				when 'd' then return 'icon-at'
-				when 'g' then return 'icon-hash'
+				when 'c' then return 'icon-hash'
+				when 'p' then return 'icon-lock'
 
 	userStatus: ->
 		if this.type is 'u'
 			return 'status-' + this.status
-		else if this.t is 'v'
-			return 'status-offline'

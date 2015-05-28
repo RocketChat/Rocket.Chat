@@ -1,4 +1,4 @@
-<template name="chatRooms">
+<template name="sideNav">
 	<aside class="side-nav" role="navigation">
 		<header class="header">
 			{{> userStatus}}
@@ -6,19 +6,13 @@
 		{{#if currentUser}}
 			<div class="rooms-list">
 				<div class="wrapper">
-					<h3>{{_ "chatRooms.Favorites"}}</h3>
-					<ul>
-						{{#each favoriteRooms}}
-							{{> chatRoomItem }}
-						{{/each}}
-					</ul>
-					<h3>{{_ "chatRooms.Recents"}}</h3>
-					<ul>
-						{{#each recentRooms}}
-							{{> chatRoomItem }}
-						{{/each}}
-						<li><a href="{{ pathFor 'privateHistory' }}"><i class="icon-history"></i> {{_ "general.History"}}</a></li>
-					</ul>
+					{{> starredRooms }}
+
+					{{> channels }}
+
+					{{> directMessages }}
+
+					{{> privateGroups }}
 				</div>
 			</div>
 		{{/if}}

@@ -56,7 +56,7 @@ Accounts.validateLoginAttempt (login) ->
 				uid: login.user._id
 				ls: (new Date())
 				rn: 'general'
-				t: 'g'
+				t: 'c'
 				f: true
 				ts: new Date()
 				unread: 0

@@ -21,7 +21,16 @@
 	"chatRooms": {
 		"Favorites": "Favorites",
 		"Powered_by": "Powered by",
-		"Recents": "Recents"
+		"Recents": "Recents",
+		"Channels": "Channels",
+		"Direct_Messages": "Direct Messages",
+		"Private_Groups": "Private Groups",
+		"Members_placeholder": "Members",
+		"Name": "Name",
+		"Members": "Members",
+		"Selected_users": "Selected members",
+		"Save": "Save",
+		"Cancel": "Cancel"
 	},
 	"chatWindowDashboard": {
 		"Add_users": "Add users",
