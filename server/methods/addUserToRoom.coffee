@@ -46,7 +46,7 @@ Meteor.methods
 			rid: data.rid
 			ts: (new Date())
 			rn: room.name
-			t: 'c'
+			t: room.t
 			unread: 0
 
 		ChatMessage.insert

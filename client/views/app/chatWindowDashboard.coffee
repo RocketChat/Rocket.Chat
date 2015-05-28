@@ -369,7 +369,7 @@ Template.chatWindowDashboard.events
 				if result?.rid?
 					Router.go('room', { _id: result.rid })
 					$('#user-add-search').val('')
-		else if roomData.t is 'c'
+		else if roomData.t in ['c', 'p']
 			Meteor.call 'addUserToRoom', { rid: roomData._id, uid: doc.uid }, (error, result) ->
 				if error
 					return Errors.throw error.reason
