@@ -250,6 +250,49 @@ Template.chatWindowDashboard.helpers
 		else
 			return t('chatWindowDashboard.See_all')
 
+	popupConfig: ->
+		template = Template.instance()
+		config =
+			title: 'People'
+			collection: Meteor.users
+			template: 'messagePopupUser'
+			getInput: ->
+				return template.find('.input-message')
+			getFilter: (collection, filter) ->
+				return collection.find({name: new RegExp(filter, 'i')}, {limit: 10})
+
+		return config
+
+	popupEmojiConfig: ->
+		template = Template.instance()
+		config = 
+			title: 'Emoji'
+			collection: emojione.emojioneList
+			template: 'messagePopupEmoji'
+			trigger: ':'
+			prefix: ''
+			getInput: ->
+				return template.find('.input-message')
+			getFilter: (collection, filter) ->
+				results = []
+				for shortname, data of collection
+					if shortname.indexOf(filter) > -1
+						results.push
+							_id: shortname
+							data: data
+
+					if results.length > 10
+						break
+
+				if filter.length >= 3
+					results.sort (a, b) ->
+						a.length > b.length
+
+				return results
+
+		return config
+
+
 Template.chatWindowDashboard.events
 	"click .flex-tab .more": (event) ->
 		Session.set('flexOpened', !Session.get('flexOpened'))
@@ -279,7 +322,7 @@ Template.chatWindowDashboard.events
 
 	'keydown .input-message': (event) ->
 		console.log 'chatWindowDashboard.keydown.input-message',this._id if window.rocketDebug
-		ChatMessages.keydown(this._id, event)
+		ChatMessages.keydown(this._id, event, Template.instance())
 
 	'keydown .input-message-editing': (event) ->
 		console.log 'chatWindowDashboard.keydown.input-message-editing',this._id if window.rocketDebug
