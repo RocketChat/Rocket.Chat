@@ -1,0 +1,37 @@
+<template name="channels">
+	<h3 class="add-room">
+		{{_ "chatRooms.Channels"}}
+		<i class="icon-plus-circled"></i>
+	</h3>
+
+	<ul>
+		{{#each rooms}}
+			{{> chatRoomItem }}
+		{{/each}}
+	</ul>
+
+	<div class="nav-flex channel-flex _hidden">
+		<button class="close-nav-flex"><i class="icon-left-open"></i></button>
+		<h4>{{_ "chatRooms.Channels"}}</h4>
+
+		<div class="wrapper">
+			<label for="channel-name">{{_ "chatRooms.Name"}}</label>
+			<input type="text" id="channel-name" placeholder="room-name">
+
+			<label for="channel-members">{{_ "chatRooms.Members" }}</label>
+			{{> inputAutocomplete settings=autocompleteSettings id="channel-members" class="search" placeholder=tRoomMembers autocomplete="off"}}
+
+			<label>{{_ "chatRooms.Selected_users" }}</label>
+			<ul class="selected-users">
+				{{#each selectedUsers}}
+					<li>{{name}} <i class="icon-cancel remove-room-member"></i></li>
+				{{/each}}
+			</ul>
+
+			<div class="buttons">
+				<button class="-btn primary save-channel">{{_ "chatRooms.Save" }}</button>
+				<button class="-btn cancel-channel">{{_ "chatRooms.Cancel" }}</button>
+			</div>
+		</div>
+	</div>
+</template>

@@ -5,7 +5,7 @@ Meteor.methods
 
 		room = ChatRoom.findOne data.rid
 
-		if room.uid isnt Meteor.userId() and room.t is 'g'
+		if room.uid isnt Meteor.userId() and room.t is 'c'
 			throw new Meteor.Error 403, 'Not allowed'
 
 		update =
@@ -15,24 +15,24 @@ Meteor.methods
 		removedUser = Meteor.users.findOne data.uid
 
 		# if room name wasn't changed, update with new member
-		unless room.nc
-			users = _.without room.uids, data.uid
+		# unless room.nc
+		# 	users = _.without room.uids, data.uid
 
-			usersName = []
+		# 	usersName = []
 
-			Meteor.users.find({ _id: { $in: users } }, { fields: { name: 1 }, sort: { name: 1 } }).forEach (user) ->
-				usersName.push user.name
+		# 	Meteor.users.find({ _id: { $in: users } }, { fields: { name: 1 }, sort: { name: 1 } }).forEach (user) ->
+		# 		usersName.push user.name
 
-			room.name = usersName.join ', '
+		# 	room.name = usersName.join ', '
 
-			update.$set =
-				name: room.name
+		# 	update.$set =
+		# 		name: room.name
 
-			ChatSubscription.update { rid: data.rid },
-				$set:
-					rn: room.name
-			,
-				multi: true
+		# 	ChatSubscription.update { rid: data.rid },
+		# 		$set:
+		# 			rn: room.name
+		# 	,
+		# 		multi: true
 
 		ChatRoom.update data.rid, update
 

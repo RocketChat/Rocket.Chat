@@ -5,6 +5,6 @@ Meteor.startup ->
 				_id: '57om6EQCcFami9wuT'
 				uids: []
 				ts: new Date()
-				t: 'g'
+				t: 'c'
 				name: 'general'
 				msgs: 0
