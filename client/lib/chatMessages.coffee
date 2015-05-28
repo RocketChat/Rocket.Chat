@@ -81,13 +81,11 @@
 		input = event.currentTarget
 		k = event.which
 		resize(input)
-		console.log "1 - here"
 		if k is 13 and not event.shiftKey
 			event.preventDefault()
 			event.stopPropagation()
 			send(rid, input)
 		else
-			console.log "2 - here"
 			keyCodes = [
 				20,  # Caps lock
 				16,  # Shift

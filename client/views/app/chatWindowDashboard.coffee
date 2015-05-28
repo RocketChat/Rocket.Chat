@@ -250,7 +250,7 @@ Template.chatWindowDashboard.helpers
 		else
 			return t('chatWindowDashboard.See_all')
 
-	popupConfig: ->
+	popupUserConfig: ->
 		template = Template.instance()
 		config =
 			title: 'People'
@@ -260,6 +260,25 @@ Template.chatWindowDashboard.helpers
 				return template.find('.input-message')
 			getFilter: (collection, filter) ->
 				return collection.find({name: new RegExp(filter, 'i')}, {limit: 10})
+			getValue: (_id, collection) ->
+				return collection.findOne(_id)?.name?.replace(/\s/g, '_').toLowerCase()
+
+		return config
+
+	popupChannelConfig: ->
+		template = Template.instance()
+		config =
+			title: 'Channels'
+			collection: ChatRoom
+			trigger: '#'
+			prefix: ''
+			template: 'messagePopupChannel'
+			getInput: ->
+				return template.find('.input-message')
+			getFilter: (collection, filter) ->
+				return collection.find({name: new RegExp(filter, 'i')}, {limit: 10})
+			getValue: (_id, collection) ->
+				return collection.findOne(_id)?.name
 
 		return config
 
