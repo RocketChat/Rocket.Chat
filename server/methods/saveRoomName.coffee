@@ -5,20 +5,22 @@ Meteor.methods
 
 		room = ChatRoom.findOne data.rid
 
-		if room.uid isnt Meteor.userId() and room.t is 'c'
+		if room.uid isnt Meteor.userId() or room.t not in ['c', 'p']
 			throw new Meteor.Error 403, 'Not allowed'
 
-		if data.name is room.name
+		newName = _.slugify data.name
+
+		if newName is room.name
 			return
 
 		ChatRoom.update data.rid,
 			$set:
-				name: data.name
+				name: newName
 				nc: true
 
 		ChatSubscription.update { rid: data.rid },
 			$set:
-				rn: data.name
+				rn: newName
 		,
 			multi: true
 
@@ -26,7 +28,7 @@ Meteor.methods
 			rid: data.rid
 			ts: (new Date)
 			t: 'r'
-			msg: data.name
+			msg: newName
 			by: Meteor.userId()
 
 		return true
