@@ -1,3 +1,24 @@
+getCursorPosition = (input) ->
+	if not input? then return
+	if input.selectionStart?
+		return input.selectionStart
+	else if document.selection?
+		input.focus()
+		sel = document.selection.createRange()
+		selLen = document.selection.createRange().text.length
+		sel.moveStart('character', - input.value.length)
+		return sel.text.length - selLen
+
+setCursorPosition = (input, caretPos) ->
+	if not input? then return
+	if input.selectionStart?
+		input.focus()
+		return input.setSelectionRange(caretPos, caretPos)
+	else if document.selection?
+		range = input.createTextRange()
+		range.move('character', caretPos)
+		range.select()
+
 val = (v, d) ->
 	return if v? then v else d
 
@@ -52,7 +73,18 @@ Template.messagePopup.onCreated ->
 
 		if event.which is 13
 			template.open.set false
-			template.input.value = template.input.value.replace template.selectorRegex, template.prefix + template.value.curValue + template.suffix
+
+			value = template.input.value
+			caret = getCursorPosition(template.input)
+			firstPartValue = value.substr 0, caret
+			lastPartValue = value.substr caret
+
+			firstPartValue = firstPartValue.replace(template.selectorRegex, template.prefix + template.value.curValue + template.suffix)
+
+			template.input.value = firstPartValue + lastPartValue
+
+			setCursorPosition template.input, firstPartValue.length
+
 			event.preventDefault()
 			event.stopPropagation()
 
@@ -63,8 +95,11 @@ Template.messagePopup.onCreated ->
 			event.stopPropagation()
 			return
 
-		if template.matchSelectorRegex.test template.input.value
-			template.textFilter.set(template.input.value.match(template.selectorRegex)[1])
+		value = template.input.value
+		value = value.substr 0, getCursorPosition(template.input)
+
+		if template.matchSelectorRegex.test value
+			template.textFilter.set(value.match(template.selectorRegex)[1])
 			template.open.set true
 		else
 			template.open.set false
