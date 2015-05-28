@@ -21,7 +21,8 @@ Template.chatRoomItem.helpers
 	roomIcon: ->
 		switch this.t
 			when 'd' then return 'icon-at'
-			when 'g' then return 'icon-hash'
+			when 'c' then return 'icon-hash'
+			when 'p' then return 'icon-lock'
 
 	active: ->
 		return 'active' if Router.current().params._id? and Router.current().params._id is this.rid

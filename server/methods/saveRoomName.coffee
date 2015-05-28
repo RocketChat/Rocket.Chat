@@ -5,7 +5,7 @@ Meteor.methods
 
 		room = ChatRoom.findOne data.rid
 
-		if room.uid isnt Meteor.userId() and room.t is 'g'
+		if room.uid isnt Meteor.userId() and room.t is 'c'
 			throw new Meteor.Error 403, 'Not allowed'
 
 		if data.name is room.name

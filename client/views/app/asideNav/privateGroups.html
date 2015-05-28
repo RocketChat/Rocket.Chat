@@ -1,0 +1,37 @@
+<template name="privateGroups">
+	<h3 class="add-room">
+		{{_ "chatRooms.Private_Groups"}}
+		<i class="icon-plus-circled"></i>
+	</h3>
+
+	<ul>
+		{{#each rooms}}
+			{{> chatRoomItem }}
+		{{/each}}
+	</ul>
+
+	<div class="nav-flex private-group-flex _hidden">
+		<button class="close-nav-flex"><i class="icon-left-open"></i></button>
+		<h4>{{_ "chatRooms.Private_Groups"}}</h4>
+
+		<div class="wrapper">
+			<label for="pvt-group-name">{{_ "chatRooms.Name"}}</label>
+			<input type="text" id="pvt-group-name" placeholder="room-name">
+
+			<label for="pvt-group-members">{{_ "chatRooms.Members" }}</label>
+			{{> inputAutocomplete settings=autocompleteSettings id="pvt-group-members" class="search" placeholder=tRoomMembers autocomplete="off"}}
+
+			<label>Selected users</label>
+			<ul class="selected-users">
+				{{#each selectedUsers}}
+					<li>{{name}} <i class="icon-cancel remove-room-member"></i></li>
+				{{/each}}
+			</ul>
+
+			<div class="buttons">
+				<button class="-btn primary save-pvt-group">{{_ "chatRooms.Save" }}</button>
+				<button class="-btn cancel-pvt-group">{{_ "chatRooms.Cancel" }}</button>
+			</div>
+		</div>
+	</div>
+</template>

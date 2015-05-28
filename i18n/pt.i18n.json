@@ -21,7 +21,16 @@
 	"chatRooms": {
 		"Favorites": "Favoritos",
 		"Powered_by": "Powered by",
-		"Recents": "Recentes"
+		"Recents": "Recentes",
+		"Channels": "Canais",
+		"Direct_Messages": "Mensagens Diretas",
+		"Private_Groups": "Grupos Privados",
+		"Members_placeholder": "Membros",
+		"Name": "Nome",
+		"Members": "Membros",
+		"Selected_users": "Membros selecionados",
+		"Save": "Salvar",
+		"Cancel": "Cancelar"
 	},
 	"chatWindowDashboard": {
 		"Add_users": "Adicionar usuários",
@@ -79,7 +88,13 @@
 		"Password": "Senha",
 		"Register": "Registrar-se",
 		"Remember_me": "Lembrar-me",
-		"You_neeed_confirm_email": "Você precisa confirmar seu email para logar!"
+		"You_neeed_confirm_email": "Você precisa confirmar seu email para logar!",
+		"Invalid_email": "O e-mail informado é inválido",
+		"Invalid_pass": "A senha não pode ser vazia",
+		"Invalid_name": "O nome não pode ser vazio",
+		"Invalid_confirm_pass": "A confirmação de senha não é igual à senha",
+		"We_have_sent_registration_email": "Nós lhe enviamos um e-mail para confirmar o seu registro. Se você não receber um e-mail em breve, por favor retorne e tente novamente.",
+		"We_have_sent_password_email": "Nós lhe enviamos um e-mail com instruções para redefinir sua senha. Se você não receber um e-mail em breve, por favor retorne e tente novamente."
 	},
 	"loginIntro": {
 		"Access_online_demo": "Acesse o demo online",
