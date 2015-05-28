@@ -338,7 +338,7 @@ Template.chatWindowDashboard.events
 
 	'click .user-card-message': (e) ->
 		roomData = Session.get('roomData' + this.rid)
-		if roomData.t == "g"
+		if roomData.t in ['c', 'p']
 			Session.set('flexOpened', true)
 			Session.set('showUserInfo', $(e.currentTarget).data('userid'))
 		else
