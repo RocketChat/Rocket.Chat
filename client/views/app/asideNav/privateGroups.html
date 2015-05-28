@@ -1,15 +1,13 @@
 <template name="privateGroups">
-	<h3>
+	<h3 class="add-room">
 		{{_ "chatRooms.Private_Groups"}}
-		<button class="add-room"><i class="icon-plus-circled"></i></button>
+		<i class="icon-plus-circled"></i>
 	</h3>
 
 	<ul>
-		{{#each privateRooms}}
+		{{#each rooms}}
 			{{> chatRoomItem }}
 		{{/each}}
-
-		{{!-- <li><a href="{{ pathFor 'privateHistory' }}"><i class="icon-history"></i> {{_ "general.History"}}</a></li> --}}
 	</ul>
 
 	<div class="nav-flex private-group-flex _hidden">
@@ -17,11 +15,11 @@
 		<h4>{{_ "chatRooms.Private_Groups"}}</h4>
 
 		<div class="wrapper">
-			<label for="pvt-room-name">Name</label>
-			<input type="text" id="pvt-room-name" placeholder="room-name">
+			<label for="pvt-group-name">{{_ "chatRooms.Name"}}</label>
+			<input type="text" id="pvt-group-name" placeholder="room-name">
 
-			<label for="pvt-room-members">Members</label>
-			{{> inputAutocomplete settings=autocompleteSettingsRoomSearch id="pvt-room-members" class="search" placeholder=tRoomMembers autocomplete="off"}}
+			<label for="pvt-group-members">{{_ "chatRooms.Members" }}</label>
+			{{> inputAutocomplete settings=autocompleteSettings id="pvt-group-members" class="search" placeholder=tRoomMembers autocomplete="off"}}
 
 			<label>Selected users</label>
 			<ul class="selected-users">
@@ -31,8 +29,8 @@
 			</ul>
 
 			<div class="buttons">
-				<button class="-btn primary">Save</button>
-				<button class="-btn">Cancel</button>
+				<button class="-btn primary save-pvt-group">{{_ "chatRooms.Save" }}</button>
+				<button class="-btn cancel-pvt-group">{{_ "chatRooms.Cancel" }}</button>
 			</div>
 		</div>
 	</div>
