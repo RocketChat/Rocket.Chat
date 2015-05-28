@@ -12,12 +12,12 @@
 //@primary-background-color: #38393d;
 @primary-background-color: #044771;
 @secondary-background-color: #F4F4F4;
-@tertiary-background-color: #E9E9E9;
+@tertiary-background-color: #EAEAEA;
 
 @primary-font-color: #444444;
 @secondary-font-color: #7f7f7f;
-@tertiary-font-color: rgba(255,255,255,0.5);
-@quaternary-font-color: rgba(255,255,255,0.75);
+@tertiary-font-color: rgba(255,255,255,0.6);
+@quaternary-font-color: rgba(255,255,255,0.85);
 
 @status-online: #35AC19;
 @status-offline: #CCCCCC;
@@ -439,7 +439,7 @@ label.required:after {
 	&.clean{
 		background-color: rgba(0, 0, 0, 0.025);
 		font-size: 14px;
-		box-shadow: 0 0 2px rgba(0,0,0,0.01);
+		box-shadow: 0 0 3px rgba(0, 0, 0, 0.08);
 		&.primary{
 			font-weight: 600;
 		}
@@ -927,7 +927,7 @@ a.github-fork {
 		display: block;
 		-webkit-overflow-scrolling: touch;
 		box-shadow: 0 0 5px rgba(0, 0, 0, 0.4) inset;
-		background-color: lighten(@primary-background-color, 3%);
+		background-color: lighten(@primary-background-color, 2.5%);
 		.custom-scroll(transparent, rgba(255, 255, 255, 0.05));
 		> .wrapper {
 			direction: ltr;
@@ -951,7 +951,7 @@ a.github-fork {
 		bottom: 0;
 		left: 0;
 		width: 100%;
-		padding: 15px 15px 0px 15px;
+		padding: 10px 15px 0px 15px;
 		z-index: 100;
 		text-align: right;
 		background: #fff;
@@ -1374,31 +1374,30 @@ a.github-fork {
 		bottom: 0;
 		left: 0;
 		width: 100%;
+		height: @footer-min-height;
 	}
 	.message-popup {
 		position: absolute;
-		background: #FFF;
-		border: 1px solid #DDD;
+		background: #FAFAFA;
 		z-index: 101;
-		bottom: 61px;
-		left: 20px;
-		right: 20px;
-		box-shadow: 0px 0px 10px #DDD;
-		border-radius: 5px 5px 0 0;
+		bottom: @footer-min-height;
+		left: 0px;
+		right: 0px;
 		overflow: hidden;
-		.message-popup-title {
-			background-color: #FAFAFA;
-			border-bottom: 1px solid #EEE;
-			padding: 6px;
-		}
-		.popup-item {
-			padding: 6px;
-			border-bottom: 1px solid #fff;
-			&.selected {
-				background-color: #439ee1;
-				border-color: #2b80ba;
-				color: white;
-			}
+	}
+	.message-popup-title {
+		background-color: @secondary-background-color;
+		border-bottom: 1px solid #EEE;
+		padding: 10px 20px;
+		font-size: 18px;
+		font-weight: 300;
+	}
+	.popup-item {
+		padding: 8px 20px;
+		color: @secondary-font-color;
+		&.selected {
+			background-color: @tertiary-background-color;
+			color: @primary-font-color;
 		}
 	}
 	.message-form {
@@ -1496,6 +1495,15 @@ a.github-fork {
 		}
 		.avatar-initials {
 			line-height: 40px;
+		}
+		> div{
+			a{
+				color: @primary-background-color;
+				font-weight: 500;
+				&:hover{
+					color: darken(@primary-background-color, 10%);
+				}
+			}
 		}
 	}
 	.pageView {

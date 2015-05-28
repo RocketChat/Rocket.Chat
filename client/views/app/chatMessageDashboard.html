@@ -18,9 +18,9 @@
 				{{#if isEditing}}
 					<textarea class="input-message-editing" contenteditable="true">{{{message}}}</textarea>
 				{{else}}
-					<p>
+					<div>
 						{{#markdown}}{{#emojione}}{{message}}{{/emojione}}{{/markdown}}
-					</p>
+					</div>
 				{{/if}}
 			{{/if}}
 		{{/with}}
