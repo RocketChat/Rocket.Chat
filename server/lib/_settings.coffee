@@ -12,14 +12,20 @@ configLoginServices = (settings) ->
 
 		ServiceConfiguration.configurations.insert config
 
+configCDN = (settings) ->
+	if settings.CDN_PREFIX?
+		WebAppInternals.setBundledJsCssPrefix settings.CDN_PREFIX
+
+
 Settings.find().observe
 	added: (settings) ->
 		Meteor.settings = settings
 		configLoginServices settings
 		loadEnvConfigs settings
+		configCDN settings
 
 	changed: (settings) ->
 		Meteor.settings = settings
 		configLoginServices settings
 		loadEnvConfigs settings
-
+		configCDN settings
