@@ -3,7 +3,7 @@ Template.channels.helpers
 		return t('chatRooms.Members_placeholder')
 
 	rooms: ->
-		return ChatSubscription.find { uid: Meteor.userId(), t: { $in: ['c']}, f: { $ne: true } }, { sort: 'rn': 1 }
+		return ChatSubscription.find { uid: Meteor.userId(), t: { $in: ['c']}, f: { $ne: true } }, { sort: 't': 1, 'rn': 1 }
 
 	selectedUsers: ->
 		return Template.instance().selectedUsers.get()
