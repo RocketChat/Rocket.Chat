@@ -5,8 +5,6 @@ loadEnvConfigs = (settings) ->
 		for key, value of settings.ENV
 			process.env[key] = value
 
-	console.log process.env
-
 configLoginServices = (settings) ->
 	settings?['login-services']?.forEach (config) ->
 		ServiceConfiguration.configurations.remove
