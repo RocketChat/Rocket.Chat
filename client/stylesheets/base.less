@@ -7,6 +7,7 @@
 @footer-min-height: 70px;
 @header-min-height: 60px;
 @rooms-box-width: 260px;
+@flex-tab-width: 400px;
 @primary-background-color: #0b1628;
 @secondary-background-color: #F4F4F4;
 @tertiary-background-color: #E9E9E9;
@@ -1297,7 +1298,7 @@ a.github-fork {
 	.calc(width, ~'100% - ' @rooms-box-width);
 	.transition(width .25s cubic-bezier(.5, 0, .1, 1));
 	&.flex-opened {
-		.calc(width, ~'100% - 660px');
+		.calc(width, ~'100% - ' @rooms-box-width + @flex-tab-width);
 		margin-right: 420px;
 		.flex-tab {
 			.transform(translateX(0));
@@ -1724,7 +1725,7 @@ a.github-fork {
 	overflow-x: visible;
 	position: fixed;
 	z-index: 100;
-	max-width: 400px;
+	max-width: @flex-tab-width;
 	width: 90%;
 	bottom: 0;
 	right: 0;
@@ -2401,7 +2402,7 @@ a.github-fork {
 			&.error {
 				border-bottom: 1px solid #b40202;
 				&::-webkit-input-placeholder { color: #b40202; }
-				&:-moz-placeholder { color: #b40202; } /* Firefox 18- */ 
+				&:-moz-placeholder { color: #b40202; } /* Firefox 18- */
 				&::-moz-placeholder {  color: #b40202; } /* Firefox 19+ */
 				&:-ms-input-placeholder { color: #b40202; }
 			}
