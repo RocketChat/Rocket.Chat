@@ -282,7 +282,7 @@ Template.chatWindowDashboard.helpers
 			getInput: ->
 				return template.find('.input-message')
 			getFilter: (collection, filter) ->
-				return collection.find({name: new RegExp(filter, 'i')}, {limit: 10})
+				return collection.find({t: 'c', name: new RegExp(filter, 'i')}, {limit: 10})
 			getValue: (_id, collection) ->
 				return collection.findOne(_id)?.name
 
