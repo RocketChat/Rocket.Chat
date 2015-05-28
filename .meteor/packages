@@ -29,7 +29,6 @@ mizzao:autocomplete
 mizzao:timesync
 momentjs:moment
 monbro:mongodb-mapreduce-aggregation
-mquandalle:jquery-textcomplete
 mrt:mask
 mrt:publish-with-relations
 mrt:reactive-store
