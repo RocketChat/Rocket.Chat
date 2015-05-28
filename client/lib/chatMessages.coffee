@@ -109,8 +109,7 @@
 			unless k in keyCodes
 				startTyping(rid, input)
 			else if k is 38 # Arrow Up
-				emojs = document.querySelector "ul.dropdown-menu"
-				if not emojs or emojs.style.display is "none"
+				if input.value.trim() is ''
 					startEditingLastMessage(rid, input)
 
 	keydownEditing = (id, event) ->
