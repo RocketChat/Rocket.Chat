@@ -1,15 +1,12 @@
-Template.channels.helpers
-	tRoomMembers: ->
-		return t('chatRooms.Members_placeholder')
-
-	rooms: ->
-		return ChatSubscription.find { uid: Meteor.userId(), t: { $in: ['c']}, f: { $ne: true } }, { sort: 't': 1, 'rn': 1 }
-
+Template.channelsFlex.helpers
 	selectedUsers: ->
 		return Template.instance().selectedUsers.get()
 
 	name: ->
 		return Template.instance().selectedUserNames[this.valueOf()]
+
+	error: ->
+		return Template.instance().error.get()
 
 	autocompleteSettings: ->
 		return {
@@ -35,16 +32,7 @@ Template.channels.helpers
 			]
 		}
 
-Template.channels.events
-	'click .add-room': (e, instance) ->
-		$('.channel-flex').removeClass('_hidden')
-
-		instance.clearForm()
-		$('#channel-name').focus()
-
-	'click .close-nav-flex': ->
-		$('.channel-flex').addClass('_hidden')
-
+Template.channelsFlex.events
 	'autocompleteselect #channel-members': (event, instance, doc) ->
 		instance.selectedUsers.set instance.selectedUsers.get().concat doc._id
 
@@ -65,25 +53,34 @@ Template.channels.events
 		$('#channel-members').focus()
 
 	'click .cancel-channel': (e, instance) ->
-		$('.channel-flex').addClass('_hidden')
+		SideNav.closeFlex()
+
+	'keydown input[type="text"]': (e, instance) ->
+		Template.instance().error.set([])
 
 	'click .save-channel': (e, instance) ->
-		Meteor.call 'createChannel', instance.find('#channel-name').value, instance.selectedUsers.get(), (err, result) ->
-			if err
-				return toastr.error err.reason
+		err = SideNav.validate()
+		if not err
+			Meteor.call 'createChannel', instance.find('#channel-name').value, instance.selectedUsers.get(), (err, result) ->
+				if err
+					return toastr.error err.reason
 
-			$('.channel-flex').addClass('_hidden')
+				SideNav.closeFlex()
 
-			instance.clearForm()
+				instance.clearForm()
 
-			Router.go 'room', { _id: result.rid }
+				Router.go 'room', { _id: result.rid }
+		else
+			Template.instance().error.set(err)
 
-Template.channels.onCreated ->
+Template.channelsFlex.onCreated ->
 	instance = this
 	instance.selectedUsers = new ReactiveVar []
 	instance.selectedUserNames = {}
+	instance.error = new ReactiveVar []
 
 	instance.clearForm = ->
+		instance.error.set([])
 		instance.selectedUsers.set([])
 		instance.find('#channel-name').value = ''
 		instance.find('#channel-members').value = ''

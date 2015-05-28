@@ -395,7 +395,6 @@ Template.chatWindowDashboard.events
 	"click .flex-tab .user-image > a" : (e) ->
 		Session.set('flexOpened', true)
 		Session.set('showUserInfo', $(e.currentTarget).data('userid'))
-		# UserPop.open event.currentTarget
 
 	'click .user-card-message': (e) ->
 		roomData = Session.get('roomData' + this.rid)
@@ -472,7 +471,6 @@ Template.chatWindowDashboard.onCreated ->
 
 Template.chatWindowDashboard.onRendered ->
 	FlexTab.check()
-	UserPop.init()
 	ChatMessages.init()
 
 	console.log 'chatWindowDashboard.rendered' if window.rocketDebug

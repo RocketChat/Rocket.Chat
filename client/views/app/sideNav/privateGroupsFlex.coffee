@@ -1,15 +1,12 @@
-Template.privateGroups.helpers
-	tRoomMembers: ->
-		return t('chatRooms.Members_placeholder')
-
-	rooms: ->
-		return ChatSubscription.find { uid: Meteor.userId(), t: { $in: ['p']}, f: { $ne: true } }, { sort: 't': 1, 'rn': 1 }
-
+Template.privateGroupsFlex.helpers
 	selectedUsers: ->
 		return Template.instance().selectedUsers.get()
 
 	name: ->
 		return Template.instance().selectedUserNames[this.valueOf()]
+
+	error: ->
+		return Template.instance().error.get()
 
 	autocompleteSettings: ->
 		return {
@@ -35,16 +32,7 @@ Template.privateGroups.helpers
 			]
 		}
 
-Template.privateGroups.events
-	'click .add-room': (e, instance) ->
-		$('.private-group-flex').removeClass('_hidden')
-
-		instance.clearForm()
-		$('#pvt-group-name').focus()
-
-	'click .close-nav-flex': ->
-		$('.private-group-flex').addClass('_hidden')
-
+Template.privateGroupsFlex.events
 	'autocompleteselect #pvt-group-members': (event, instance, doc) ->
 		instance.selectedUsers.set instance.selectedUsers.get().concat doc._id
 
@@ -55,7 +43,6 @@ Template.privateGroups.events
 
 	'click .remove-room-member': (e, instance) ->
 		self = @
-
 		users = Template.instance().selectedUsers.get()
 		users = _.reject Template.instance().selectedUsers.get(), (_id) ->
 			return _id is self.valueOf()
@@ -65,25 +52,31 @@ Template.privateGroups.events
 		$('#pvt-group-members').focus()
 
 	'click .cancel-pvt-group': (e, instance) ->
-		$('.private-group-flex').addClass('_hidden')
+		SideNav.closeFlex()
+
+	'keydown input[type="text"]': (e, instance) ->
+		Template.instance().error.set([])
 
 	'click .save-pvt-group': (e, instance) ->
-		Meteor.call 'createPrivateGroup', instance.find('#pvt-group-name').value, instance.selectedUsers.get(), (err, result) ->
-			if err
-				return toastr.error err.reason
+		err = SideNav.validate()
+		if not err
+			Meteor.call 'createPrivateGroup', instance.find('#pvt-group-name').value, instance.selectedUsers.get(), (err, result) ->
+				if err
+					return toastr.error err.reason
+				SideNav.closeFlex()
+				instance.clearForm()
+				Router.go 'room', { _id: result.rid }
+		else
+			Template.instance().error.set(err)
 
-			$('.private-group-flex').addClass('_hidden')
-
-			instance.clearForm()
-
-			Router.go 'room', { _id: result.rid }
-
-Template.privateGroups.onCreated ->
+Template.privateGroupsFlex.onCreated ->
 	instance = this
 	instance.selectedUsers = new ReactiveVar []
 	instance.selectedUserNames = {}
+	instance.error = new ReactiveVar []
 
 	instance.clearForm = ->
+		instance.error.set([])
 		instance.selectedUsers.set([])
 		instance.find('#pvt-group-name').value = ''
 		instance.find('#pvt-group-members').value = ''
