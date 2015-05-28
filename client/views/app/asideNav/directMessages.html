@@ -1,6 +1,12 @@
 <template name="directMessages">
-	<h3>
+	<h3 class="add-room">
 		{{_ "chatRooms.Direct_Messages"}}
-		<button class="add-room"><i class="icon-plus-circled"></i></button>
+		<i class="icon-plus-circled"></i>
 	</h3>
+
+	<ul>
+		{{#each rooms}}
+			{{> chatRoomItem }}
+		{{/each}}
+	</ul>
 </template>

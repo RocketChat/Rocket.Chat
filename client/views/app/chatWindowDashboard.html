@@ -92,12 +92,14 @@
 					</div>
 				</form>
 			{{else}}
-				<form class="search-form" role="form">
-					<div class="input-line search">
-						{{> inputAutocomplete settings=autocompleteSettingsRoomSearch id="room-search" class="search" placeholder=tQuickSearch autocomplete="off"}}
-						<i class="icon-search"></i>
-					</div>
-				</form>
+				{{#if isChannel}}
+					<form class="search-form" role="form">
+						<div class="input-line search">
+							{{> inputAutocomplete settings=autocompleteSettingsRoomSearch id="room-search" class="search" placeholder=tQuickSearch autocomplete="off"}}
+							<i class="icon-search"></i>
+						</div>
+					</form>
+				{{/if}}
 			{{/if}}
 		</div>
 		<div class="content">

@@ -1038,10 +1038,9 @@ a.github-fork {
 					li {
 						background-color: #FFF;
 						display: inline-block;
-						border-radius: 5px;
+						border-radius: 3px;
 						padding: 4px;
-						float: left;
-						margin-right: 4px;
+						margin: 1px 0;
 						i {
 							color: #000000;
 							cursor: pointer;
@@ -1051,19 +1050,18 @@ a.github-fork {
 
 				.buttons {
 					text-align: center;
-					margin-top: 2em;
+					margin-top: 1em;
 				}
 			}
 		}
 		h3 {
-			button.add-room {
-				background-color: transparent;
-				border: none;
-				float: right;
-				color: #666;
-
-				i:hover {
-					color: #CCC;
+			&.add-room {
+				&:hover {
+					color: #AAA;
+				}
+				i {
+					float: right;
+					margin-right: 0.5em;
 				}
 			}
 		}
