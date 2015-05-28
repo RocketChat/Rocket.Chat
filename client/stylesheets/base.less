@@ -13,7 +13,7 @@
 @primary-font-color: #444444;
 @secondary-font-color: #777777;
 @status-online: #35AC19;
-@status-offline: #666666;
+@status-offline: #CCCCCC;
 @status-busy: #D30230;
 @status-away: #fcb316;
 @import "utils/_emojione.import.less";
@@ -787,14 +787,11 @@ a.github-fork {
 			&:after {
 				content: " ";
 				display: block;
-				width: 11px;
-				height: 11px;
-				border: 2px solid #6f6f6f;
-				border-radius: 50%;
+				width: 44px;
+				height: 4px;
 				z-index: 10;
 				position: absolute;
-				right: 5px;
-				bottom: 10px;
+				bottom: 3px;
 			}
 			.avatar-initials {
 				line-height: 44px;
@@ -1989,7 +1986,6 @@ a.github-fork {
 	width: 45px;
 	cursor: pointer;
 	background-color: @tertiary-background-color;
-	border-radius: 2px;
 	font-size: 12px;
 	position: relative;
 	&:after, &:before {
@@ -2041,7 +2037,6 @@ a.github-fork {
 		}
 	}
 	.avatar {
-		border-radius: 2px;
 		.avatar-initials {
 			line-height: 45px;
 		}
@@ -2070,13 +2065,10 @@ a.github-fork {
 	}
 	.status {
 		position: absolute;
-		bottom: 1px;
+		bottom: -5px;
 		display: block;
-		width: 14px;
-		height: 14px;
-		border: 3px solid #F8F8F8;
-		border-radius: 50%;
-		left: -5px;
+		width: 100%;
+		height: 4px;
 		z-index: 10;
 	}
 	&.status-offline {
