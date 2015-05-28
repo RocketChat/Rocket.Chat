@@ -57,7 +57,7 @@ Template.channelsFlex.events
 			if err
 				return toastr.error err.reason
 
-			$('.channel-flex').addClass('_hidden')
+			SideNav.closeFlex()
 
 			instance.clearForm()
 
