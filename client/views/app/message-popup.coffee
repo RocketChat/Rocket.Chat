@@ -71,6 +71,10 @@ Template.messagePopup.onCreated ->
 		if template.open.curValue isnt true
 			return
 
+		if event.which in [38, 40]
+			event.preventDefault()
+			event.stopPropagation()
+
 		if event.which is 13
 			template.open.set false
 
