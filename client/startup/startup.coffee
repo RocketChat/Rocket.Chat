@@ -19,6 +19,7 @@ Meteor.startup ->
 		userLanguage = defaultUserLanguage()
 	
 	localStorage.setItem("userLanguage", userLanguage)
+	userLanguage = userLanguage.split('-').shift()
 	TAPi18n.setLanguage(userLanguage)
 	moment.locale(userLanguage)
 
