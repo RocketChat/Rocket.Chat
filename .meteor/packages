@@ -21,7 +21,6 @@ francocatena:status
 iron:router
 konecty:autolinker
 konecty:delayed-task
-konecty:mesosphere
 konecty:mongo-counter
 konecty:multiple-instances-status
 konecty:user-presence

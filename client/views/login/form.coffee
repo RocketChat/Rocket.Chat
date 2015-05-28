@@ -32,57 +32,43 @@ Template.loginForm.helpers
 				return t('general.Reset_password')
 
 Template.loginForm.events
-	'submit #login-card': (event) ->
+	'submit #login-card': (event, instance) ->
 		event.preventDefault()
 
-		console.warn 'submit', event
-
 		button = $(event.target).find('button.login')
-
 		Rocket.Button.loading(button)
 
-		template = Template.instance()
+		formData = instance.validate()
+		if formData
+			if instance.state.get() is 'email-verification'
+				Meteor.call 'sendConfirmationEmail', formData.email, (err, result) ->
+					Rocket.Button.reset(button)
+					toastr.success t('login.We_have_sent_registration_email')
+					instance.state.set 'login'
+				return
 
-		if template.state.get() is 'email-verification'
-			rawData = Mesosphere.Utils.getFormData $(event.target)
-			Meteor.call 'sendConfirmationEmail', rawData.email, (err, result) ->
-				template.state.set 'login'
-			return
+			if instance.state.get() is 'forgot-password'
+				Meteor.call 'sendForgotPasswordEmail', formData.email, (err, result) ->
+					Rocket.Button.reset(button)
+					toastr.success t('login.We_have_sent_password_email')
+					instance.state.set 'login'
+				return
 
-		if template.state.get() is 'forgot-password'
-			rawData = Mesosphere.Utils.getFormData $(event.target)
-			Meteor.call 'sendForgotPasswordEmail', rawData.email, (err, result) ->
-				template.state.set 'login'
-			return
-
-		mesosphereForm = if template.state.get() is 'register' then 'login-card-register' else 'login-card'
-
-		rawData = Mesosphere.Utils.getFormData $(event.target)
-		Mesosphere[mesosphereForm].validate rawData, (err, formData) ->
-			if err
-				Rocket.Button.reset(button)
-				$("#login-card h2").addClass "error"
+			if instance.state.get() is 'register'
+				Meteor.call 'registerUser', formData, (err, result) ->
+					Rocket.Button.reset(button)
+					toastr.success t('login.We_have_sent_registration_email')
+					instance.state.set 'login'
 			else
-				$("#login-card h2").removeClass "error"
-				if template.state.get() is 'register'
-					Meteor.call 'registerUser', formData, (err, result) ->
-						Meteor.loginWithPassword formData.email, formData.pass, (error) ->
-							template.state.set 'login'
-							if error.error is 'no-valid-email'
-								template.state.set 'email-verification'
-								return
-							Router.go 'index'
-				else
-					Meteor.loginWithPassword formData.email, formData.pass, (error) ->
-						$("#login-card h2").addClass "error"
-						Rocket.Button.reset(button)
-						if error?
-							if error.error is 'no-valid-email'
-								template.state.set 'email-verification'
-							else
-								toastr.error error.reason
-							return
-						Router.go 'index'
+				Meteor.loginWithPassword formData.email, formData.pass, (error) ->
+					Rocket.Button.reset(button)
+					if error?
+						if error.error is 'no-valid-email'
+							instance.state.set 'email-verification'
+						else
+							toastr.error error.reason
+						return
+					Router.go 'index'
 
 	'click .register': ->
 		Template.instance().state.set 'register'
@@ -94,7 +80,43 @@ Template.loginForm.events
 		Template.instance().state.set 'forgot-password'
 
 Template.loginForm.onCreated ->
-	this.state = new ReactiveVar('login')
+	instance = @
+	@state = new ReactiveVar('login')
+	@validate = ->
+		formData = $("#login-card").serializeArray()
+		formObj = {}
+		validationObj = {}
+
+		console.log formData
+		for field in formData
+			formObj[field.name] = field.value
+		
+		unless formObj['email'] and /\b[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]+\b/i.test(formObj['email'])
+			validationObj['email'] = t('login.Invalid_email')
+		
+		if instance.state.get() isnt 'forgot-password'
+			unless formObj['pass']
+				validationObj['pass'] = t('login.Invalid_pass')
+
+		if instance.state.get() is 'register'
+			unless formObj['name']
+				validationObj['name'] = t('login.Invalid_name')
+			if formObj['confirm-pass'] isnt formObj['pass']
+				validationObj['confirm-pass'] = t('login.Invalid_confirm_pass')
+
+		console.log validationObj
+		$("#login-card input").removeClass "error"
+		unless _.isEmpty validationObj
+			button = $('#login-card').find('button.login')
+			Rocket.Button.reset(button)
+			$("#login-card h2").addClass "error"
+			for key of validationObj
+				$("#login-card input[name=#{key}]").addClass "error"
+			return false
+
+		$("#login-card h2").removeClass "error"
+		$("#login-card input.error").removeClass "error"
+		return formObj
 
 Template.loginForm.onRendered ->
 	Tracker.autorun =>

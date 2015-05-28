@@ -2307,6 +2307,14 @@ a.github-fork {
 			border-bottom: 1px solid #DFDFDF;
 			font-family: "Roboto";
 			font-weight: 300;
+
+			&.error {
+				border-bottom: 1px solid #b40202;
+				&::-webkit-input-placeholder { color: #b40202; }
+				&:-moz-placeholder { color: #b40202; } /* Firefox 18- */ 
+				&::-moz-placeholder {  color: #b40202; } /* Firefox 19+ */
+				&:-ms-input-placeholder { color: #b40202; }
+			}
 		}
 		input:-webkit-autofill {
 			color: #fff !important;
