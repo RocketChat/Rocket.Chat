@@ -211,7 +211,7 @@ Template.chatWindowDashboard.helpers
 
 	isGroupChat: ->
 		room = ChatRoom.findOne(this._id, { reactive: false })
-		return room?.t is 'c'
+		return room?.t in ['c', 'p']
 
 	roomUsers: ->
 		room = ChatRoom.findOne(this._id, { reactive: false })
@@ -272,7 +272,7 @@ Template.chatWindowDashboard.helpers
 
 	popupEmojiConfig: ->
 		template = Template.instance()
-		config = 
+		config =
 			title: 'Emoji'
 			collection: emojione.emojioneList
 			template: 'messagePopupEmoji'
