@@ -1,6 +1,6 @@
 Template.privateHistory.helpers
 	history: ->
-		items = ChatRoom.find { name: { $regex: Session.get('historyFilter'), $options: 'i' }, t: { $in: ['d', 'g'] } }, {'sort': { 'ts': -1 } }
+		items = ChatRoom.find { name: { $regex: Session.get('historyFilter'), $options: 'i' }, t: { $in: ['d', 'c', 'p'] } }, {'sort': { 'ts': -1 } }
 		return {
 			items: items
 			length: items.count()
@@ -10,6 +10,7 @@ Template.privateHistory.helpers
 		switch this.t
 			when 'd' then 'icon-at'
 			when 'c' then 'icon-hash'
+			when 'p' then 'icon-lock'
 
 	creation: ->
 		return moment(this.ts).format('LLL')
