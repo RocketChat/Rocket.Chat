@@ -278,7 +278,6 @@ Template.chatWindowDashboard.helpers
 			title: 'Channels'
 			collection: ChatRoom
 			trigger: '#'
-			prefix: ''
 			template: 'messagePopupChannel'
 			getInput: ->
 				return template.find('.input-message')
