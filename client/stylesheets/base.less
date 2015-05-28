@@ -13,17 +13,14 @@
 @primary-background-color: #04436a;
 @secondary-background-color: #F4F4F4;
 @tertiary-background-color: #EAEAEA;
-
 @primary-font-color: #444444;
 @secondary-font-color: #7f7f7f;
-@tertiary-font-color: rgba(255,255,255,0.6);
-@quaternary-font-color: rgba(255,255,255,0.85);
-
+@tertiary-font-color: rgba(255, 255, 255, 0.6);
+@quaternary-font-color: rgba(255, 255, 255, 0.85);
 @status-online: #35AC19;
 @status-offline: #CCCCCC;
 @status-busy: #D30230;
 @status-away: #fcb316;
-
 @import "utils/_emojione.import.less";
 .cf_ {
 	display: inline-block;
@@ -84,10 +81,10 @@ code {
 	border-color: #FAEBCC;
 }
 
-// .hidden {
-// 	visibility: hidden !important;
-// 	display: none !important;
-// }
+.landing-page .hidden {
+	visibility: hidden !important;
+	display: none !important;
+}
 
 .small-title {
 	font-size: 13px;
@@ -127,7 +124,7 @@ code {
 
 .input-line {
 	margin-bottom: 12px;
-	&:nth-last-child(1){
+	&:nth-last-child(1) {
 		margin-bottom: 0;
 	}
 	&.search {
@@ -142,15 +139,14 @@ code {
 			padding-left: 25px;
 		}
 	}
-	label{
+	label {
 		display: block;
 		margin-bottom: 4px;
 		color: @primary-font-color;
 	}
-	input[type='text']{
+	input[type='text'] {
 		display: block;
 	}
-
 }
 
 .rocket-h2 {
@@ -311,7 +307,7 @@ form.search-form {
 	font-size: 12px;
 	cursor: pointer;
 	color: @secondary-font-color;
-	i{
+	i {
 		color: @secondary-font-color;
 	}
 	&.selected {
@@ -428,19 +424,20 @@ label.required:after {
 	&.secondary {
 		background-color: @tertiary-background-color;
 		color: @primary-font-color;
-		&:before{
+		&:before {
 			background-color: rgba(0, 0, 0, 0.045);
 		}
 	}
-	&.delete, &.remove {
+	&.delete,
+	&.remove {
 		min-width: 120px;
 		background-color: #bc2031;
 	}
-	&.clean{
+	&.clean {
 		background-color: rgba(0, 0, 0, 0.025);
 		font-size: 14px;
 		box-shadow: 0 0 3px rgba(0, 0, 0, 0.08);
-		&.primary{
+		&.primary {
 			font-weight: 600;
 		}
 	}
@@ -827,7 +824,7 @@ a.github-fork {
 }
 
 // rooms-box
-.flex-nav{
+.flex-nav {
 	background-color: @primary-background-color;
 	position: fixed;
 	top: @header-min-height;
@@ -840,10 +837,10 @@ a.github-fork {
 	&.hidden {
 		.transform(translateX(-100%));
 	}
-	header{
+	header {
 		padding: 0 20px;
 		margin-bottom: 30px;
-		h4{
+		h4 {
 			line-height: 18px;
 			font-size: 21px;
 			margin-top: 3px;
@@ -852,26 +849,26 @@ a.github-fork {
 			text-overflow: ellipsis;
 			position: relative;
 		}
-		p{
+		p {
 			line-height: 18px;
 			margin-top: 6px;
 		}
 	}
-	.content{
+	.content {
 		padding: 0 20px;
 	}
-	.input-line{
+	.input-line {
 		margin-bottom: 25px;
-		&:nth-last-child(1){
+		&:nth-last-child(1) {
 			margin-bottom: 0;
 		}
-		label{
+		label {
 			text-transform: uppercase;
 			font-weight: 400;
 			margin-bottom: 0;
 			color: inherit;
 		}
-		input[type='text']{
+		input[type='text'] {
 			border-width: 0 0 1px 0;
 			border-color: @tertiary-font-color;
 			background-color: transparent;
@@ -881,19 +878,19 @@ a.github-fork {
 			border-radius: 0;
 		}
 	}
-	.input-submit{
+	.input-submit {
 		margin: 35px 0 0 -4px;
 	}
-	.selected-users{
+	.selected-users {
 		padding: 20px 0 0;
-		li{
+		li {
 			display: inline-block;
 			padding: 5px;
-			background-color: rgba(0,0,0,0.1);
+			background-color: rgba(0, 0, 0, 0.1);
 			margin-right: 2px;
 			margin-bottom: 2px;
 		}
-		i{
+		i {
 			cursor: pointer;
 		}
 	}
@@ -940,7 +937,7 @@ a.github-fork {
 			padding-left: 8px;
 		}
 	}
-	.input-error{
+	.input-error {
 		text-align: center;
 		color: #f09286;
 		font-size: 12px;
@@ -948,12 +945,12 @@ a.github-fork {
 		text-align: left;
 		margin-bottom: -20px;
 		margin-top: -12px;
-		strong{
+		strong {
 			display: block;
 			margin-bottom: 2px;
 		}
 	}
-	.empty{
+	.empty {
 		padding-left: 10px;
 		font-size: 11px;
 		padding: 2px 0 2px 10px;
@@ -1188,15 +1185,16 @@ a.github-fork {
 		font-size: 22px;
 		font-weight: 500;
 		line-height: 29px;
-		.icon-star{
+		.icon-star {
 			margin-right: -4px;
 		}
-		.icon-at,.icon-hash{
+		.icon-at,
+		.icon-hash {
 			margin-right: -7px;
 			color: @secondary-font-color;
 		}
 	}
-	.hidden{
+	.hidden {
 		visibility: hidden;
 		display: none;
 	}
@@ -1521,11 +1519,11 @@ a.github-fork {
 		.avatar-initials {
 			line-height: 40px;
 		}
-		> div{
-			a{
+		> div {
+			a {
 				color: @primary-background-color;
 				font-weight: 500;
-				&:hover{
+				&:hover {
 					color: darken(@primary-background-color, 10%);
 				}
 			}
@@ -1732,7 +1730,7 @@ a.github-fork {
 		-webkit-overflow-scrolling: touch;
 		.calc(height, ~"100% - 60px");
 		> div {
-			.transition(transform .45s cubic-bezier(.5,0,0,1), opacity .125s ease-out .1s);
+			.transition(transform .45s cubic-bezier(.5, 0, 0, 1), opacity .125s ease-out .1s);
 		}
 		> .-hidden {
 			.transform(translateX(100%));
@@ -1798,7 +1796,7 @@ a.github-fork {
 	}
 	nav {
 		margin-left: -4px;
-		.back{
+		.back {
 			float: right;
 		}
 	}
