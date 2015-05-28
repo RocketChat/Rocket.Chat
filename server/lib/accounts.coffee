@@ -39,7 +39,7 @@ Accounts.validateLoginAttempt (login) ->
 	if login.allowed isnt true
 		return login.allowed
 
-	if login.type is 'password'
+	if login.type is 'password' and Meteor.settings.allowUnverifiedEmails isnt true
 		validEmail = login.user.emails.filter (email) ->
 			return email.verified is true
 
