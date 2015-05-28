@@ -1,10 +1,4 @@
-Template.privateGroups.helpers
-	tRoomMembers: ->
-		return t('chatRooms.Members_placeholder')
-
-	rooms: ->
-		return ChatSubscription.find { uid: Meteor.userId(), t: { $in: ['p']}, f: { $ne: true } }, { sort: 't': 1, 'rn': 1 }
-
+Template.channelsFlex.helpers
 	selectedUsers: ->
 		return Template.instance().selectedUsers.get()
 
@@ -35,17 +29,8 @@ Template.privateGroups.helpers
 			]
 		}
 
-Template.privateGroups.events
-	'click .add-room': (e, instance) ->
-		$('.private-group-flex').removeClass('_hidden')
-
-		instance.clearForm()
-		$('#pvt-group-name').focus()
-
-	'click .close-nav-flex': ->
-		$('.private-group-flex').addClass('_hidden')
-
-	'autocompleteselect #pvt-group-members': (event, instance, doc) ->
+Template.channelsFlex.events
+	'autocompleteselect #channel-members': (event, instance, doc) ->
 		instance.selectedUsers.set instance.selectedUsers.get().concat doc._id
 
 		instance.selectedUserNames[doc._id] = doc.name
@@ -62,28 +47,28 @@ Template.privateGroups.events
 
 		Template.instance().selectedUsers.set(users)
 
-		$('#pvt-group-members').focus()
+		$('#channel-members').focus()
 
-	'click .cancel-pvt-group': (e, instance) ->
-		$('.private-group-flex').addClass('_hidden')
+	'click .cancel-channel': (e, instance) ->
+		SideNav.closeFlex()
 
-	'click .save-pvt-group': (e, instance) ->
-		Meteor.call 'createPrivateGroup', instance.find('#pvt-group-name').value, instance.selectedUsers.get(), (err, result) ->
+	'click .save-channel': (e, instance) ->
+		Meteor.call 'createChannel', instance.find('#channel-name').value, instance.selectedUsers.get(), (err, result) ->
 			if err
 				return toastr.error err.reason
 
-			$('.private-group-flex').addClass('_hidden')
+			$('.channel-flex').addClass('_hidden')
 
 			instance.clearForm()
 
 			Router.go 'room', { _id: result.rid }
 
-Template.privateGroups.onCreated ->
+Template.channelsFlex.onCreated ->
 	instance = this
 	instance.selectedUsers = new ReactiveVar []
 	instance.selectedUserNames = {}
 
 	instance.clearForm = ->
 		instance.selectedUsers.set([])
-		instance.find('#pvt-group-name').value = ''
-		instance.find('#pvt-group-members').value = ''
+		instance.find('#channel-name').value = ''
+		instance.find('#channel-members').value = ''

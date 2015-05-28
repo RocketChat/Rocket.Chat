@@ -1,10 +1,4 @@
-Template.channels.helpers
-	tRoomMembers: ->
-		return t('chatRooms.Members_placeholder')
-
-	rooms: ->
-		return ChatSubscription.find { uid: Meteor.userId(), t: { $in: ['c']}, f: { $ne: true } }, { sort: 't': 1, 'rn': 1 }
-
+Template.privateGroupsFlex.helpers
 	selectedUsers: ->
 		return Template.instance().selectedUsers.get()
 
@@ -35,17 +29,14 @@ Template.channels.helpers
 			]
 		}
 
-Template.channels.events
+Template.privateGroupsFlex.events
 	'click .add-room': (e, instance) ->
-		$('.channel-flex').removeClass('_hidden')
+		$('.private-group-flex').removeClass('_hidden')
 
 		instance.clearForm()
-		$('#channel-name').focus()
+		$('#pvt-group-name').focus()
 
-	'click .close-nav-flex': ->
-		$('.channel-flex').addClass('_hidden')
-
-	'autocompleteselect #channel-members': (event, instance, doc) ->
+	'autocompleteselect #pvt-group-members': (event, instance, doc) ->
 		instance.selectedUsers.set instance.selectedUsers.get().concat doc._id
 
 		instance.selectedUserNames[doc._id] = doc.name
@@ -62,28 +53,28 @@ Template.channels.events
 
 		Template.instance().selectedUsers.set(users)
 
-		$('#channel-members').focus()
+		$('#pvt-group-members').focus()
 
-	'click .cancel-channel': (e, instance) ->
-		$('.channel-flex').addClass('_hidden')
+	'click .cancel-pvt-group': (e, instance) ->
+		SideNav.closeFlex()
 
-	'click .save-channel': (e, instance) ->
-		Meteor.call 'createChannel', instance.find('#channel-name').value, instance.selectedUsers.get(), (err, result) ->
+	'click .save-pvt-group': (e, instance) ->
+		Meteor.call 'createPrivateGroup', instance.find('#pvt-group-name').value, instance.selectedUsers.get(), (err, result) ->
 			if err
 				return toastr.error err.reason
 
-			$('.channel-flex').addClass('_hidden')
+			$('.private-group-flex').addClass('_hidden')
 
 			instance.clearForm()
 
 			Router.go 'room', { _id: result.rid }
 
-Template.channels.onCreated ->
+Template.privateGroupsFlex.onCreated ->
 	instance = this
 	instance.selectedUsers = new ReactiveVar []
 	instance.selectedUserNames = {}
 
 	instance.clearForm = ->
 		instance.selectedUsers.set([])
-		instance.find('#channel-name').value = ''
-		instance.find('#channel-members').value = ''
+		instance.find('#pvt-group-name').value = ''
+		instance.find('#pvt-group-members').value = ''
