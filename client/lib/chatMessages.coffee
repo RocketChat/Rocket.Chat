@@ -12,30 +12,6 @@
 				resize()
 				toBottom() if self.scrollable
 
-		$(".input-message").textcomplete [ {
-			match: /\B:([\-+\w]*)$/
-			search: (term, callback) ->
-				results = []
-				$.each emojione.emojioneList, (shortname, data) ->
-					if shortname.indexOf(term) > -1
-						results.push shortname
-					return
-				if term.length >= 3
-					results.sort (a, b) ->
-						a.length > b.length
-				callback results
-				return
-			template: (shortname) ->
-				length = emojione.emojioneList[shortname].length
-				'<img class="emojione" src="//cdn.jsdelivr.net/emojione/assets/png/' + emojione.emojioneList[shortname][length - 1].toUpperCase() + '.png"> ' + shortname
-			replace: (shortname) ->
-				event.stopPropagation()
-				event.preventDefault()
-				shortname
-			index: 1
-			maxCount: 10
-		} ], footer: '', placement: 'top'
-
 		return
 
 	isScrollable = ->
@@ -133,8 +109,7 @@
 			unless k in keyCodes
 				startTyping(rid, input)
 			else if k is 38 # Arrow Up
-				emojs = document.querySelector "ul.dropdown-menu"
-				if not emojs or emojs.style.display is "none"
+				if input.value.trim() is ''
 					startEditingLastMessage(rid, input)
 
 	keydownEditing = (id, event) ->
