@@ -252,14 +252,45 @@ Template.chatWindowDashboard.helpers
 
 	popupConfig: ->
 		template = Template.instance()
-		return {
+		config =
+			title: 'People'
 			collection: Meteor.users
 			template: 'messagePopupUser'
 			getInput: ->
 				return template.find('.input-message')
 			getFilter: (collection, filter) ->
 				return collection.find name: new RegExp(filter, 'i')
-		}
+
+		return config
+
+	popupEmojiConfig: ->
+		template = Template.instance()
+		config = 
+			title: 'Emoji'
+			collection: emojione.emojioneList
+			template: 'messagePopupEmoji'
+			trigger: ':'
+			prefix: ''
+			getInput: ->
+				return template.find('.input-message')
+			getFilter: (collection, filter) ->
+				results = []
+				for shortname, data of collection
+					if shortname.indexOf(filter) > -1
+						results.push
+							_id: shortname
+							data: data
+
+					if results.length > 10
+						break
+
+				if filter.length >= 3
+					results.sort (a, b) ->
+						a.length > b.length
+
+				return results
+
+		return config
 
 
 Template.chatWindowDashboard.events
@@ -451,29 +482,29 @@ ChatMessages = (->
 				resize()
 				toBottom() if self.scrollable
 
-		$(".input-message").textcomplete [ {
-			match: /\B:([\-+\w]*)$/
-			search: (term, callback) ->
-				results = []
-				$.each emojione.emojioneList, (shortname, data) ->
-					if shortname.indexOf(term) > -1
-						results.push shortname
-					return
-				if term.length >= 3
-					results.sort (a, b) ->
-						a.length > b.length
-				callback results
-				return
-			template: (shortname) ->
-				length = emojione.emojioneList[shortname].length
-				'<img class="emojione" src="//cdn.jsdelivr.net/emojione/assets/png/' + emojione.emojioneList[shortname][length - 1].toUpperCase() + '.png"> ' + shortname
-			replace: (shortname) ->
-				event.stopPropagation()
-				event.preventDefault()
-				shortname
-			index: 1
-			maxCount: 10
-		} ], footer: '', placement: 'top'
+		# $(".input-message").textcomplete [ {
+		# 	match: /\B:([\-+\w]*)$/
+		# 	search: (term, callback) ->
+		# 		results = []
+		# 		$.each emojione.emojioneList, (shortname, data) ->
+		# 			if shortname.indexOf(term) > -1
+		# 				results.push shortname
+		# 			return
+		# 		if term.length >= 3
+		# 			results.sort (a, b) ->
+		# 				a.length > b.length
+		# 		callback results
+		# 		return
+		# 	template: (shortname) ->
+		# 		length = emojione.emojioneList[shortname].length
+		# 		'<img class="emojione" src="//cdn.jsdelivr.net/emojione/assets/png/' + emojione.emojioneList[shortname][length - 1].toUpperCase() + '.png"> ' + shortname
+		# 	replace: (shortname) ->
+		# 		event.stopPropagation()
+		# 		event.preventDefault()
+		# 		shortname
+		# 	index: 1
+		# 	maxCount: 10
+		# } ], footer: '', placement: 'top'
 
 		return
 
