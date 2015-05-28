@@ -2,9 +2,13 @@
 	<h3>
 		{{_ "chatRooms.Direct_Messages"}}
 	</h3>
-	<ul>
-		{{#each rooms}}
-			{{> chatRoomItem }}
-		{{/each}}
-	</ul>
+	{{#if total}}
+		<ul>
+			{{#each rooms}}
+				{{> chatRoomItem }}
+			{{/each}}
+		</ul>
+	{{else}}
+		<p class="empty">You haven't started any conversations yet.</p>
+	{{/if}}
 </template>

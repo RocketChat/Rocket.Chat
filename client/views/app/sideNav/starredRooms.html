@@ -1,9 +1,12 @@
 <template name="starredRooms">
 	<h3>{{_ "chatRooms.Favorites"}}</h3>
-
-	<ul>
-		{{#each rooms}}
-			{{> chatRoomItem }}
-		{{/each}}
-	</ul>
+	{{#if total}}
+		<ul>
+			{{#each rooms}}
+				{{> chatRoomItem }}
+			{{/each}}
+		</ul>
+	{{else}}
+		<p class="empty">You haven't added any favorites yet.</p>
+	{{/if}}
 </template>

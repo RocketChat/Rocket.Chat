@@ -3,9 +3,13 @@
 		{{_ "chatRooms.Channels"}}
 		<i class="icon-plus-circled"></i>
 	</h3>
-	<ul>
-		{{#each rooms}}
-			{{> chatRoomItem }}
-		{{/each}}
-	</ul>
+	{{#if total}}
+		<ul>
+			{{#each rooms}}
+				{{> chatRoomItem }}
+			{{/each}}
+		</ul>
+	{{else}}
+		<p class="empty">You aren't part of any channel yet.</p>
+	{{/if}}
 </template>

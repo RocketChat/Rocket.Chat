@@ -3,6 +3,12 @@
 	sideNav = {}
 	flexNav = {}
 
+	focusInput = ->
+		setTimeout ->
+			sideNav.find("input[type='text']:first")?.focus()
+		, 200
+		return
+
 	toggleFlex = (status) ->
 		if flexNav.opened or status? is -1
 			flexNav.opened = false
@@ -15,6 +21,7 @@
 	openFlex = ->
 		AccountBox.toggleArrow 1
 		toggleFlex 1
+		focusInput()
 
 	closeFlex = ->
 		AccountBox.toggleArrow -1
