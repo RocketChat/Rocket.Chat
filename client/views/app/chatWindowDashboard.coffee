@@ -177,7 +177,7 @@ Template.chatWindowDashboard.helpers
 
 		return '' unless roomData
 
-		return roomData.t is 'p' or (roomData.t is 'c' and roomData.uid is Meteor.userId())
+		return roomData.t in ['p', 'c'] and roomData.uid is Meteor.userId()
 
 	canEditName: ->
 		roomData = Session.get('roomData' + this._id)
