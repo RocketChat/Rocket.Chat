@@ -9,6 +9,15 @@
 		, 200
 		return
 
+	validate = ->
+		invalid = []
+		sideNav.find("input.required").each ->
+			if not this.value.length
+				invalid.push $(this).prev("label").html()
+		if invalid.length
+			return invalid
+		return false;
+
 	toggleFlex = (status) ->
 		if flexNav.opened or status? is -1
 			flexNav.opened = false
@@ -47,5 +56,6 @@
 	getFlex: getFlex
 	openFlex: openFlex
 	closeFlex: closeFlex
+	validate: validate
 
 )()
