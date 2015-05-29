@@ -16,6 +16,9 @@ configCDN = (settings) ->
 	if settings.CDN_PREFIX?
 		WebAppInternals.setBundledJsCssPrefix settings.CDN_PREFIX
 
+configKadira = (settings) ->
+	if settings.kadira?
+		Kadira.connect(settings.kadira.appId, settings.kadira.appSecret)
 
 Settings.find().observe
 	added: (settings) ->
@@ -23,9 +26,11 @@ Settings.find().observe
 		configLoginServices settings
 		loadEnvConfigs settings
 		configCDN settings
+		configKadira settings
 
 	changed: (settings) ->
 		Meteor.settings = settings
 		configLoginServices settings
 		loadEnvConfigs settings
 		configCDN settings
+		configKadira settings
