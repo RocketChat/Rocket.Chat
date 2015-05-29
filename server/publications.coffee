@@ -48,19 +48,19 @@ Meteor.publish 'dashboardRoom', (rid, start) ->
 	if typeof rid isnt 'string'
 		return this.ready()
 
-	cursor = ChatMessage.find {rid: rid}, {sort: {ts: -1}, limit: 50}
+	return ChatMessage.find {rid: rid}, {sort: {ts: -1}, limit: 50}
 
-	observer = cursor.observeChanges
-		added: (id, record) ->
-			self.added 'data.ChatMessage', id, record
-		changed: (id, record) ->
-			self.changed 'data.ChatMessage', id, record
+	# cursor = ChatMessage.find {rid: rid}, {sort: {ts: -1}, limit: 50}
+	# observer = cursor.observeChanges
+	# 	added: (id, record) ->
+	# 		self.added 'data.ChatMessage', id, record
+	# 	changed: (id, record) ->
+	# 		self.changed 'data.ChatMessage', id, record
 	# 	removed: (id) ->
 	# 		self.removed 'ChatMessage', id
-
-	@ready()
-	@onStop ->
-		observer.stop()
+	# @ready()
+	# @onStop ->
+	# 	observer.stop()
 
 Meteor.publish 'allUsers', ->
 	unless this.userId
