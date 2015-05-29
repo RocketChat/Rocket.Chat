@@ -38,6 +38,8 @@ Meteor.publish 'myRoomActivity', ->
 		# return ChatSubscription.find { uid: this.userId, ts: { $gte: moment().subtract(2, 'days').startOf('day').toDate() } }
 
 Meteor.publish 'dashboardRoom', (rid, start) ->
+	self = this
+
 	unless this.userId
 		return this.ready()
 
@@ -46,9 +48,19 @@ Meteor.publish 'dashboardRoom', (rid, start) ->
 	if typeof rid isnt 'string'
 		return this.ready()
 
-	return ChatMessage.find
-		rid: rid
-		ts: $gte: start
+	cursor = ChatMessage.find {rid: rid}, {sort: {ts: -1}, limit: 50}
+
+	observer = cursor.observeChanges
+		added: (id, record) ->
+			self.added 'data.ChatMessage', id, record
+		changed: (id, record) ->
+			self.changed 'data.ChatMessage', id, record
+	# 	removed: (id) ->
+	# 		self.removed 'ChatMessage', id
+
+	@ready()
+	@onStop ->
+		observer.stop()
 
 Meteor.publish 'allUsers', ->
 	unless this.userId
