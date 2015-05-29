@@ -1,7 +1,7 @@
 Meteor.methods
 	createPrivateGroup: (name, members) ->
 		fromId = Meteor.userId()
-		console.log '[methods] createPrivateGroup -> '.green, 'fromId:', fromId, 'members:', members
+		# console.log '[methods] createPrivateGroup -> '.green, 'fromId:', fromId, 'members:', members
 
 		now = new Date()
 

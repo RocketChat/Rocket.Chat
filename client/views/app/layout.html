@@ -1,7 +1,9 @@
 <template name="appLayout">
 	<div id="user-card-popover"></div>
 	<div id="rocket-chat" class="menu-nav menu-closed">
-		{{> status}}
+		<div class="connection-status">
+			{{> status}}
+		</div>
 		<main class="main-content cf_ {{flexOpened}}">
 			{{> yield}}
 		</main>

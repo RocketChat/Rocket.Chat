@@ -4,7 +4,7 @@ Meteor.methods
 			throw new Meteor.Error 203, '[methods] typingStatus -> Usuário não logado'
 
 		fromId = Meteor.userId()
-		console.log '[methods] typingStatus -> '.green, 'fromId:', fromId, 'typingData:', typingData, 'start:', start
+		# console.log '[methods] typingStatus -> '.green, 'fromId:', fromId, 'typingData:', typingData, 'start:', start
 
 		filter =
 			t: 't'

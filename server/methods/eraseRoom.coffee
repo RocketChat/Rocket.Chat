@@ -1,7 +1,7 @@
 Meteor.methods
 	eraseRoom: (rid) ->
 		fromId = Meteor.userId()
-		console.log '[methods] eraseRoom -> '.green, 'fromId:', fromId, 'rid:', rid
+		# console.log '[methods] eraseRoom -> '.green, 'fromId:', fromId, 'rid:', rid
 
 		# ChatRoom.update({ _id: rid}, {'$pull': { userWatching: Meteor.userId(), userIn: Meteor.userId() }})
 

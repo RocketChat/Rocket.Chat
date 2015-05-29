@@ -1,6 +1,6 @@
 Meteor.startup ->
 	InstanceStatus.registerInstance('rocket.chat')
-	InstanceStatus.activeLogs()
+	# InstanceStatus.activeLogs()
 	UserPresence.start()
-	UserPresence.activeLogs()
+	# UserPresence.activeLogs()
 	UserPresenceMonitor.start()
