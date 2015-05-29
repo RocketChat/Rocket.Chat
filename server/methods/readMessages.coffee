@@ -1,7 +1,7 @@
 Meteor.methods
 	readMessages: (room) ->
 		fromId = Meteor.userId()
-		console.log '[methods] readMessages -> '.green, 'fromId:', fromId, 'room:', room
+		# console.log '[methods] readMessages -> '.green, 'fromId:', fromId, 'room:', room
 
 		if Meteor.userId()
 			filter = { rid: room, uid: Meteor.userId() }

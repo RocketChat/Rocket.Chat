@@ -1,7 +1,7 @@
 Meteor.methods
 	canAccessRoom: (roomId) ->
 		fromId = Meteor.userId()
-		console.log '[methods] canAccessRoom -> '.green, 'fromId:', fromId, 'roomId:', roomId
+		# console.log '[methods] canAccessRoom -> '.green, 'fromId:', fromId, 'roomId:', roomId
 
 		user = Meteor.user()
 		unless user?

@@ -1,7 +1,7 @@
 Meteor.methods
 	saveRoomName: (data) ->
 		fromId = Meteor.userId()
-		console.log '[methods] saveRoomName -> '.green, 'fromId:', fromId, 'data:', data
+		# console.log '[methods] saveRoomName -> '.green, 'fromId:', fromId, 'data:', data
 
 		room = ChatRoom.findOne data.rid
 

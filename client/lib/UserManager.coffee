@@ -4,7 +4,7 @@
 	dep = new Tracker.Dependency
 
 	addUser = (userIds) ->
-		console.log 'addUser', userIds if window.rocketUserDebug
+		# console.log 'addUser', userIds if window.rocketUserDebug
 		userIds = [].concat userIds
 		for userId in userIds
 			unless users[userId]

@@ -12,7 +12,7 @@ Template.chatMessageDashboard.helpers
 	isEditing: ->
 		return this._id is Session.get('editingMessageId')
 
-	message: ->
+	message: (preventAutoLinker) ->
 		if this.by
 			UserManager.addUser(this.by)
 		else if this.uid
@@ -25,7 +25,11 @@ Template.chatMessageDashboard.helpers
 			when 'ul' then t('chatMessageDashboard.User_left', this.msg)
 			when 'nu' then t('chatMessageDashboard.User_added', this.msg)
 			when 'wm' then t('chatMessageDashboard.Welcome', this.msg)
-			else Autolinker.link(_.stripTags(this.msg), { stripPrefix: false })
+			else
+				if preventAutoLinker? 
+					return this.msg
+				else
+					return Autolinker.link(_.stripTags(this.msg), { stripPrefix: false })
 
 	time: ->
 		return moment(this.ts).format('HH:mm')

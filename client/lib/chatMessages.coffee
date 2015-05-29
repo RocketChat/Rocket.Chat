@@ -65,7 +65,7 @@
 		if not lastMessage?
 			return
 
-		console.log 'chatWindowDashboard.startEditingLastMessage', lastMessage if window.rocketDebug
+		# console.log 'chatWindowDashboard.startEditingLastMessage', lastMessage if window.rocketDebug
 
 		Session.set 'editingMessageId', lastMessage._id
 

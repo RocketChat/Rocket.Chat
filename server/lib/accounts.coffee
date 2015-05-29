@@ -2,8 +2,8 @@ Accounts.emailTemplates.siteName = "ROCKET.CHAT";
 Accounts.emailTemplates.from = "ROCKET.CHAT <no-reply@rocket.chat>";
 
 Accounts.onCreateUser (options, user) ->
-	console.log 'options ->',JSON.stringify options, null, '  '
-	console.log 'user ->',JSON.stringify user, null, '  '
+	# console.log 'options ->',JSON.stringify options, null, '  '
+	# console.log 'user ->',JSON.stringify user, null, '  '
 
 	user.status = 'offline'
 
