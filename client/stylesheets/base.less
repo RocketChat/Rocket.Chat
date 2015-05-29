@@ -195,7 +195,7 @@ body {
 	padding: 0;
 	overflow: visible;
 	position: relative;
-	background-color: darken(@primary-background-color, 10%);
+	background-color: @primary-background-color;
 }
 
 // input & form styles
@@ -429,7 +429,8 @@ label.required:after {
 		}
 	}
 	&.delete,
-	&.remove {
+	&.remove,
+	&.red {
 		min-width: 120px;
 		background-color: #bc2031;
 	}
@@ -1469,7 +1470,7 @@ a.github-fork {
 	overflow: hidden;
 	.calc(width, ~'100% - 20px');
 	.calc(height, ~'100% - 120px');
-	ul {
+	> ul {
 		padding: 21px 0 10px;
 	}
 	.new-message {
@@ -1526,6 +1527,10 @@ a.github-fork {
 				&:hover {
 					color: darken(@primary-background-color, 10%);
 				}
+			}
+			ul{
+				margin: 0;
+				padding: 0;
 			}
 		}
 	}
@@ -2207,6 +2212,17 @@ a.github-fork {
 	img {
 		width: 200px;
 	}
+	a{
+		color: @primary-background-color;
+		margin: 4px 0;
+		display: inline-block;
+		&:active{
+			color: @primary-background-color;
+		}
+		&:hover{
+			color: darken(@primary-background-color, 10%);
+		}
+	}
 	.options {
 		display: none;
 		width: 100%;
@@ -2343,9 +2359,22 @@ a.github-fork {
 
 .landing-page {
 	text-align: center;
-	z-index: 9999;
+	display: table;
+	width: 100%;
+	min-height: 100%;
+	z-index: 101;
 	background-color: darken(@primary-background-color, 10%);
 	.background-image(linear-gradient(darken(@primary-background-color, 10%), @primary-background-color));
+	.wrapper {
+		display: table-cell;
+		vertical-align: middle;
+		text-align: center;
+		padding: 45px 0 35px;
+		z-index: 10;
+		position: relative;
+		max-width: 520px;
+		width: 90%;
+	}
 	.logo {
 		display: block;
 		margin-bottom: 30px;
@@ -2388,7 +2417,7 @@ a.github-fork {
 			position: absolute;
 			.calc(top, ~"50% - 17px");
 			.calc(left, ~"50% - 94px");
-			.transform(scale(0.5));
+			.transform(scale(0.75));
 			opacity: 0;
 			.transition(transform .2s cubic-bezier(0, .4, .4, 1.5), opacity .1s ease-out);
 		}
@@ -2403,14 +2432,6 @@ a.github-fork {
 		display: table-cell;
 		vertical-align: middle;
 		text-align: center;
-	}
-	.wrapper {
-		display: inline-block;
-		padding: 45px 0 35px;
-		z-index: 10;
-		position: relative;
-		max-width: 520px;
-		width: 90%;
 	}
 	header {
 		display: block;
