@@ -1,5 +1,6 @@
 <template name="chatWindowDashboard">
 	<section class="messages-container" id="{{windowId}}">
+
 		<head class="fixed-title">
 			<div class="burger">
 				<i></i>
@@ -53,9 +54,7 @@
 				<span>{{_ "chatWindowDashboard.New_messages"}}</span>
 			</div>
 		</div>
-		{{> messagePopup popupEmojiConfig}}
-		{{> messagePopup popupChannelConfig}}
-		{{> messagePopup popupUserConfig}}
+		{{> messagePopup popupEmojiConfig}} {{> messagePopup popupChannelConfig}} {{> messagePopup popupUserConfig}}
 		<footer class="footer">
 			<form class="message-form" method="post" action="/">
 				<div>
@@ -134,13 +133,15 @@
 								{{#if contactCode}}
 									<div class="contact-code">{{_ "general.Contact"}} {{contactCode}}</div>
 								{{/if}}
+								{{!--
 								{{#each emails}}
 									<p><i class="icon-mail"></i> {{address}}</p>
 								{{/each}}
 								{{#if phone}}
 									<p><i class="icon-phone"></i> {{phone}}</p>
 								{{/if}}
-							</div>
+								--}}
+								</div>
 						</div>
 						<nav>
 							<button class='button secondary back'><span>{{_ "chatWindowDashboard.View_All"}} <i class='icon-angle-right'></i></span></button>
