@@ -65,7 +65,7 @@ So if you'd like to be part of the project, please check out the [roadmap](https
 
 ### Community
 
-Join the the converation at [Twitter](http://twitter.com/rocket.chat), [Facebook](https://www.facebook.com/RocketChatApp) or [Google Plus](https://plus.google.com/+RocketChatApp)
+Join the the converation at [Twitter](http://twitter.com/RocketChatApp), [Facebook](https://www.facebook.com/RocketChatApp) or [Google Plus](https://plus.google.com/+RocketChatApp)
 
 ### License
 
