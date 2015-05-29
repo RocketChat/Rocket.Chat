@@ -222,7 +222,7 @@ Template.chatWindowDashboard.helpers
 			users: []
 
 		if room?.uids
-			UserManager.addUser room.uids
+			# UserManager.addUser room.uids
 
 			filter =
 				_id:
