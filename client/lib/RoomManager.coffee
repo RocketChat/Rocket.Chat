@@ -16,20 +16,18 @@
 					sub.stop()
 			openedRooms[roomId].ready = false
 			openedRooms[roomId].active = false
-			openedRooms[roomId].ts = null
-			openedRooms[roomId].waitTs = null
 			delete openedRooms[roomId].timeout
 
 	computation = Tracker.autorun ->
 		for roomId, record of openedRooms when record.active is true
 			record.sub = [
-				Meteor.subscribe 'dashboardRoom', roomId, (record.ts or moment().subtract(2, 'hour').startOf('day').toDate())
+				Meteor.subscribe 'dashboardRoom', roomId, moment().subtract(2, 'hour').startOf('day').toDate()
 			]
 			# @TODO talvez avaliar se todas as subscriptions do array estão 'ready', mas por enquanto, as mensagens são o mais importante
 			record.ready = record.sub[0].ready()
 			if record.ready is true and record.historyCalled isnt true
 				record.historyCalled = true
-				RoomHistoryManager.initRoom roomId, (record.ts or moment().subtract(2, 'hour').startOf('day').toDate())
+				RoomHistoryManager.initRoom roomId, moment().subtract(2, 'hour').startOf('day').toDate()
 				Tracker.nonreactive ->
 					if Session.get('roomData' + roomId)?.msgs > 9 and ChatMessage.find({ rid: roomId }).count() < 10 and ChatMessageHistory.find({ rid: roomId }).count() is 0
 						RoomHistoryManager.getMore roomId
@@ -51,24 +49,16 @@
 			openedRooms[roomId] =
 				active: false
 				ready: false
-				ts: null
-				waitTs: false
 
 		if myRoomActivity.ready()
 			if ChatSubscription.findOne { rid: roomId, uid: Meteor.userId() }, { reactive: false }
-				if not openedRooms[roomId].waitTs
-					openedRooms[roomId].waitTs = true
-
-					Meteor.call 'getFirstMessageRoom', roomId, (err, result) ->
-						openedRooms[roomId].active = true
-						openedRooms[roomId].ts = result.ts
-						setRoomExpireExcept roomId
-						computation.invalidate()
+				openedRooms[roomId].active = true
+				setRoomExpireExcept roomId
+				computation.invalidate()
 			else
 				Meteor.call 'canAccessRoom', roomId, (error, result) ->
 					if result
 						openedRooms[roomId].active = true
-						openedRooms[roomId].ts = result.ts
 						setRoomExpireExcept roomId
 						computation.invalidate()
 					else
