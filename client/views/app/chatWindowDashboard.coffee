@@ -358,7 +358,7 @@ Template.chatWindowDashboard.events
 		ChatMessages.stopEditingLastMessage()
 
 	'click .message-form .icon-paper-plane': (event) ->
-		input = $(event.currentTarget).siblings("input")
+		input = $(event.currentTarget).siblings("textarea")
 		ChatMessages.send(this._id, input.get(0))
 
 	'click .add-user': (event) ->
