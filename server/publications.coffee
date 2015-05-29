@@ -3,7 +3,7 @@ Meteor.publish 'userData', ->
 	unless this.userId
 		return this.ready()
 
-	console.log '[publish] userData'.green
+	# console.log '[publish] userData'.green
 
 	Meteor.users.find this.userId,
 		fields:
@@ -21,7 +21,7 @@ Meteor.publish 'myRoomActivity', ->
 	unless this.userId
 		return this.ready()
 
-	console.log '[publish] myRoomActivity'.green
+	# console.log '[publish] myRoomActivity'.green
 
 	# @TODO está deixando lento fazer o relation com usuários
 
@@ -43,7 +43,7 @@ Meteor.publish 'dashboardRoom', (rid, start) ->
 	unless this.userId
 		return this.ready()
 
-	console.log '[publish] dashboardRoom ->'.green, 'rid:', rid, 'start:', start
+	# console.log '[publish] dashboardRoom ->'.green, 'rid:', rid, 'start:', start
 
 	if typeof rid isnt 'string'
 		return this.ready()
@@ -66,7 +66,7 @@ Meteor.publish 'allUsers', ->
 	unless this.userId
 		return this.ready()
 
-	console.log '[publish] allUsers'.green
+	# console.log '[publish] allUsers'.green
 
 	return Meteor.users.find {}, { 'fields': {
 		name: 1
@@ -82,7 +82,7 @@ Meteor.publish 'selectiveUsers', (userIds) ->
 	unless @userId
 		return @ready()
 
-	console.log '[publish] selectiveUsers -> '.green, 'userIds:', userIds
+	# console.log '[publish] selectiveUsers -> '.green, 'userIds:', userIds
 
 	self = @
 
@@ -119,7 +119,7 @@ Meteor.publish 'privateHistoryRooms', ->
 	unless this.userId
 		return this.ready()
 
-	console.log '[publish] privateHistoryRooms'.green
+	# console.log '[publish] privateHistoryRooms'.green
 
 	return ChatRoom.find { uids: this.userId, t: { $in: ['d', 'c'] } }, { fields: { t: 1, name: 1, msgs: 1, ts: 1, lm: 1, cl: 1 } }
 
@@ -127,7 +127,7 @@ Meteor.publish 'roomSearch', (selector, options, collName) ->
 	unless this.userId
 		return this.ready()
 
-	console.log '[publish] roomSearch -> '.green, 'selector:', selector, 'options:', options, 'collName:', collName
+	# console.log '[publish] roomSearch -> '.green, 'selector:', selector, 'options:', options, 'collName:', collName
 
 	self = @
 	subHandleUsers = null

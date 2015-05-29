@@ -1,7 +1,7 @@
 Meteor.methods
 	removeUserFromRoom: (data) ->
 		fromId = Meteor.userId()
-		console.log '[methods] removeUserFromRoom -> '.green, 'fromId:', fromId, 'data:', data
+		# console.log '[methods] removeUserFromRoom -> '.green, 'fromId:', fromId, 'data:', data
 
 		room = ChatRoom.findOne data.rid
 

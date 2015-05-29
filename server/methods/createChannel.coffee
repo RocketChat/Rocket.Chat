@@ -1,7 +1,7 @@
 Meteor.methods
 	createChannel: (name, members) ->
 		fromId = Meteor.userId()
-		console.log '[methods] createChannel -> '.green, 'fromId:', fromId, 'members:', members
+		# console.log '[methods] createChannel -> '.green, 'fromId:', fromId, 'members:', members
 
 		now = new Date()
 
