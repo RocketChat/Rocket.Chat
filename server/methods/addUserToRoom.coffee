@@ -1,7 +1,7 @@
 Meteor.methods
 	addUserToRoom: (data) ->
 		fromId = Meteor.userId()
-		console.log '[methods] addUserToRoom -> '.green, 'fromId:', fromId, 'data:', data
+		# console.log '[methods] addUserToRoom -> '.green, 'fromId:', fromId, 'data:', data
 
 		room = ChatRoom.findOne data.rid
 

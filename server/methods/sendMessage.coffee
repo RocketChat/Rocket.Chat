@@ -1,7 +1,7 @@
 Meteor.methods
 	sendMessage: (msg) ->
 		fromId = Meteor.userId()
-		console.log '[methods] sendMessage -> '.green, 'fromId:', fromId, 'msg:', msg
+		# console.log '[methods] sendMessage -> '.green, 'fromId:', fromId, 'msg:', msg
 
 		if not Meteor.userId()
 			throw new Meteor.Error('invalid-user', "[methods] sendMessage -> Invalid user")
@@ -43,7 +43,7 @@ Meteor.methods
 
 	updateMessage: (msg) ->
 		fromId = Meteor.userId()
-		console.log '[methods] updateMessage -> '.green, 'fromId:', fromId, 'msg:', msg
+		# console.log '[methods] updateMessage -> '.green, 'fromId:', fromId, 'msg:', msg
 
 		if not Meteor.userId()
 			throw new Meteor.Error('invalid-user', "[methods] updateMessage -> Invalid user")

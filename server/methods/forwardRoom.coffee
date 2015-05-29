@@ -1,7 +1,7 @@
 Meteor.methods
 	forwardRoom: (forward) ->
 		fromId = Meteor.userId()
-		console.log '[methods] forwardRoom -> '.green, 'fromId:', fromId, 'forward:', forward
+		# console.log '[methods] forwardRoom -> '.green, 'fromId:', fromId, 'forward:', forward
 
 		# @TODO implementar validação para não poder convidar quem já está na sala
 

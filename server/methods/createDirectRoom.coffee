@@ -1,7 +1,7 @@
 Meteor.methods
 	createDirectRoom: (toUserId) ->
 		fromId = Meteor.userId()
-		console.log '[methods] createDirectRoom -> '.green, 'fromId:', fromId, 'toUserId:', toUserId
+		# console.log '[methods] createDirectRoom -> '.green, 'fromId:', fromId, 'toUserId:', toUserId
 
 		if Meteor.userId() is toUserId
 			return
