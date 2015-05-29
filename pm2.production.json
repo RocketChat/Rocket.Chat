@@ -1,7 +1,8 @@
 {
 	"apps": [{
 		"name": "rocket.chat",
-		"exec_mode": "fork_mode",
+		"exec_mode": "cluster",
+		"instances" : 0,
 		"max_memory_restart": "400M",
 		"log_date_format": "YYYY-MM-DD HH:mm:ss SSS",
 		"script": "/var/www/rocket.chat/bundle/main.js",
