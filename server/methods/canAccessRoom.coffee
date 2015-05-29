@@ -22,6 +22,8 @@ Meteor.methods
 		if canAccess isnt true
 			throw new Meteor.Error 'without-permission', "[methods] canAccessRoom -> User doesn't have enough permissions"
 
+		firstMessage = Meteor.call 'getFirstMessageRoom', roomId
+
 		# create room subscription
 		ChatSubscription.upsert { rid: roomId, uid: Meteor.userId() },
 			$setOnInsert:
@@ -32,4 +34,4 @@ Meteor.methods
 				ls: (new Date())
 				ts: (new Date())
 
-		return true
+		return firstMessage
