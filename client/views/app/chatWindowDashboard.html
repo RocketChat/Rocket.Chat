@@ -1,6 +1,5 @@
 <template name="chatWindowDashboard">
 	<section class="messages-container" id="{{windowId}}">
-
 		<head class="fixed-title">
 			<div class="burger">
 				<i></i>
@@ -116,7 +115,7 @@
 								<button class="see-all">{{seeAll}}</button>
 							</p>--}}
 						</div>
-						<ul class='list cf_'>
+						<ul class='list cf_ lines'>
 							{{#each users}}
 								{{> userImageProfile}}
 							{{/each}}
@@ -177,5 +176,8 @@
 				</div>
 			{{/if}}
 		</div>
+		<footer>
+			{{> social}}
+		</footer>
 	</section>
 </template>

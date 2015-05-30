@@ -78,7 +78,7 @@
 		"Chat_Rooms": "Chat Rooms",
 		"Have_your_own_chat": "Have your own web chat. Developed with Meteor.com, the Rocket.Chat is a great solution for developers looking forward to build and evolve their own chat platform.",
 		"use_menu": "Use the side menu to access your rooms and chats",
-		"welcome": "Welcome to the Rocket.Chat"
+		"welcome": "Welcome to the"
 	},
 	"login": {
 		"Cancel": "Back to login",

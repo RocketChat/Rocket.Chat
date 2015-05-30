@@ -78,7 +78,7 @@
 		"Chat_Rooms": "Salons de discussion",
 		"Have_your_own_chat": "Avec Rocket.Chat, disposez de votre propre salon de discussion en ligne. Développé avec Meteor.com, Rocket.Chat est une solution pour les développeurs désirant construire et faire évoluer leur propre plate-forme de discussion.",
 		"use_menu": "Utilisez le menu latéral pour accéder à vos salons et vos discussions.",
-		"welcome": "Bienvenue sur le Rocket.Chat"
+		"welcome": "Bienvenue sur le"
 	},
 	"login": {
 		"Cancel": "Retourner à l'écran de connexion",

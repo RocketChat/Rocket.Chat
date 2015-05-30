@@ -232,7 +232,7 @@ input[type='password'] {
 	background-color: #fff;
 	border-radius: 2px;
 	padding: 2px 8px;
-	box-shadow: 1px 1px 0 rgba(0, 0, 0, 0.3);
+	box-shadow: 1px 1px 0 rgba(0, 0, 0, 0.2);
 	position: relative;
 	width: 100%;
 	outline: none;
@@ -336,7 +336,7 @@ label.required:after {
 
 .status-online,
 .icon-at.status-online {
-	color: @status-online !important;
+	color: @status-online;
 }
 
 .status-busy,
@@ -346,7 +346,7 @@ label.required:after {
 
 .status-away,
 .icon-at.status-away {
-	color: @status-away !important;
+	color: @status-away;
 }
 
 // TODO -- Refactor favorite styles and logic;
@@ -545,6 +545,40 @@ label.required:after {
 	}
 }
 
+.a-plus{
+	display: block;
+	width: 25px;
+	height: 25px;
+	z-index: 100;
+	position: relative;
+	&:before, &:after{
+		content: " ";
+		display: block;
+		background-color: #aaa;
+		width: 2px;
+		height: 10px;
+		position: absolute;
+		.calc(top, ~"50% - 5px");
+		.calc(left, ~"50% - 1px");
+		.transform-origin(50%, 50%);
+	}
+	&:after {
+		.transform(rotate(90deg));
+		.transition(transform .315s ease-out .2s, background .15s ease-out);
+	}
+	&:before {
+		.transition(transform .315s ease-out .3s, background .15s ease-out);
+	}
+	&:hover{
+		&:before{
+			.transform(rotate(180deg));
+		}
+		&:after{
+			.transform(rotate(-90deg));
+		}
+	}
+}
+
 a.github-fork {
 	position: fixed;
 	display: block;
@@ -623,8 +657,10 @@ a.github-fork {
 	height: 100%;
 	width: 100%;
 	overflow: hidden;
-	img {
-		height: auto !important;
+	.avatar-image {
+		display: block;
+		background-color: transparent;
+		background-size: 100% auto;
 	}
 }
 
@@ -671,10 +707,10 @@ a.github-fork {
 				content: " ";
 				display: block;
 				width: 44px;
-				height: 4px;
+				height: 2px;
 				z-index: 10;
 				position: absolute;
-				bottom: 3px;
+				bottom: 5px;
 			}
 			.avatar-initials {
 				line-height: 44px;
@@ -839,10 +875,14 @@ a.github-fork {
 	top: @header-min-height;
 	left: 0;
 	padding-top: 15px;
+	z-index: 1000;
+	overflow-y: auto;
+	overflow-x: hidden;
 	width: @rooms-box-width;
 	color: @tertiary-font-color;
 	.calc(height, ~'100% - ' @header-min-height + @footer-min-height);
 	.transition(transform .3s cubic-bezier(.5, 0, .1, 1));
+	.custom-scroll(transparent, rgba(255, 255, 255, 0.05));
 	&.hidden {
 		.transform(translateX(-100%));
 	}
@@ -1033,10 +1073,19 @@ a.github-fork {
 		&.add-room {
 			&:hover {
 				background-color: rgba(0, 0, 0, 0.1);
+				i{
+					&:before{
+						.transform(rotate(180deg));
+					}
+					&:after{
+						.transform(rotate(-90deg));
+					}
+				}
 			}
 			i {
-				float: right;
-				margin-right: 0.5em;
+				position: absolute;
+				right: 5px;
+				top: 1px;
 			}
 		}
 	}
@@ -1252,10 +1301,18 @@ a.github-fork {
 }
 
 .page-home {
+	.fixed-title{
+		h2{
+			overflow: visible;
+		}
+	}
 	.logo {
 		display: inline-block;
-		width: 38px;
+		width: 240px;
 		margin-right: 6px;
+		vertical-align: text-top;
+		margin-top: -5px;
+		margin-left: 10px;
 	}
 	.info {
 		margin-bottom: 20px;
@@ -1478,7 +1535,7 @@ a.github-fork {
 	overflow: hidden;
 	.calc(width, ~'100% - 20px');
 	.calc(height, ~'100% - 120px');
-	> ul {
+	ul {
 		padding: 21px 0 10px;
 	}
 	.new-message {
@@ -1675,7 +1732,7 @@ a.github-fork {
 		position: relative;
 		text-align: left;
 		z-index: 100;
-		padding: 12px 15px 12px;
+		padding: 12px 30px 12px;
 		background-color: @secondary-background-color;
 		> a, > form {
 			float: left;
@@ -1695,7 +1752,7 @@ a.github-fork {
 		}
 		.more {
 			position: absolute;
-			left: -28px;
+			left: 0;
 			top: 0px;
 			background-color: @secondary-background-color;
 			border: none;
@@ -1704,6 +1761,8 @@ a.github-fork {
 			border-bottom: 1px solid @tertiary-background-color;
 			color: @secondary-font-color;
 			cursor: pointer;
+			.transform(translateX(-27px));
+			.transition(transform .3s ease-out .4s);
 			&:hover {
 				color: @primary-font-color;
 			}
@@ -1714,10 +1773,9 @@ a.github-fork {
 				vertical-align: top;
 				margin-top: 1px;
 			}
-			&.opened {
-				i {
-					.transform(rotate(180deg));
-				}
+			.flex-opened &{
+				.transition-delay(0s);
+				.transform(translateX(0));
 			}
 		}
 		.search-form {
@@ -1730,6 +1788,7 @@ a.github-fork {
 				position: absolute;
 				top: 11px;
 				left: 8px;
+				font-size: 13px;
 				color: @secondary-font-color;
 			}
 		}
@@ -1741,7 +1800,7 @@ a.github-fork {
 		overflow-y: scroll;
 		overflow-x: hidden;
 		-webkit-overflow-scrolling: touch;
-		.calc(height, ~"100% - 60px");
+		.calc(height, ~"100% - " @footer-min-height + @header-min-height);
 		> div {
 			.transition(transform .45s cubic-bezier(.5, 0, 0, 1), opacity .125s ease-out .1s);
 		}
@@ -1757,13 +1816,47 @@ a.github-fork {
 			height: 100%;
 		}
 	}
+	footer{
+		position: absolute;
+		bottom: 0;
+		left: 0;
+		width: 100%;
+		padding: 9px 15px 0px 15px;
+		z-index: 100;
+		text-align: right;
+		height: @footer-min-height;
+	}
+	.social{
+		text-align: center;
+		h4{
+			font-weight: 300;
+			position: absolute;
+			width: 100%;
+			top: -12px;
+			left: 0;
+			font-size: 13px;
+		}
+		.share {
+			border-radius: 50%;
+			min-height: 40px;
+			line-height: 20px;
+			&:before {
+				border-radius: 50%;
+			}
+			span {
+				display: none;
+			}
+		}
+	}
 }
 
 .list-view {
-	padding: 5px 20px 20px;
+	padding: 5px 30px 20px;
 	.list {
-		display: block;
+		display: table;
 		position: relative;
+		width: 100%;
+		height: 100%;
 	}
 	> .status {
 		margin: 5px 0 15px;
@@ -1820,6 +1913,7 @@ a.github-fork {
 		h3 {
 			font-size: 24px;
 			margin-bottom: 8px;
+			line-height: 22px;
 		}
 		p {
 			line-height: 18px;
@@ -1910,21 +2004,14 @@ a.github-fork {
 }
 
 .user-image-status(@color) {
-	&:after, &:before {
-		background-color: darken(@color, 5%);
-	}
-	a {
+	.avatar{
 		&:after, &:before {
 			background-color: darken(@color, 5%);
 		}
 	}
-	.status {
-		background-color: @color;
-	}
 }
 
 .user-image {
-	float: left;
 	margin: 4px;
 	height: 45px;
 	width: 45px;
@@ -1932,61 +2019,100 @@ a.github-fork {
 	background-color: @tertiary-background-color;
 	font-size: 12px;
 	position: relative;
-	&:after {
-		content: " ";
-		width: 100%;
-		height: 2px;
-		position: absolute;
-		z-index: 1;
-		left: 0px;
-		bottom: -4px;
-		.transform(scaleX(0));
-		.transform-origin(50%, 50%);
-		.transition(transform .15s ease-out .02s);
-	}
+	display: inline-table;
 	&:hover,
 	&.selected {
-		&:before, &:after {
-			.transform(scaleX(1))
-		}
-		&.status-offline {
-			.status {
-				background-color: @status-offline;
+		.avatar{
+			&:after {
+				.transform(scaleX(1))
 			}
-		}
-		&.status-online {
-			.status {
-				background-color: @status-online;
+			.status-offline & {
+				&:after, &:before {
+					background-color: @status-offline;
+				}
 			}
-		}
-		&.status-away {
-			.status {
-				background-color: @status-away;
+			.status-online & {
+				&:after, &:before {
+					background-color: @status-online;
+				}
 			}
-		}
-		&.status-busy {
-			.status {
-				background-color: @status-busy;
+			.status-away & {
+				&:after, &:before {
+					background-color: @status-away;
+				}
+			}
+			.status-busy & {
+				&:after, &:before {
+					background-color: @status-busy;
+				}
+			}
+			p{
+				color: @primary-font-color;
 			}
 		}
 	}
 	.avatar {
+		overflow: visible;
+		&:after, &:before {
+			content: " ";
+			width: 100%;
+			height: 2px;
+			position: absolute;
+			z-index: 1;
+			left: 0px;
+		}
+		&:after{
+			bottom: -4px;
+			.transform(scaleX(0));
+			.transform-origin(50%, 50%);
+			.transition(transform .15s ease-out .02s);
+		}
+		&:before{
+			bottom: -3px;
+		}
 		.avatar-initials {
 			line-height: 45px;
+		}
+	}
+	p{
+		display: none;
+	}
+	.lines &{
+		width: 100%;
+		margin: 0 0 4px 0;
+		background-color: transparent;
+		&:after{
+			display: none;
+		}
+		a{
+			.cf_;
+			padding: 6px 0;
+			height: auto;
+			background-color: transparent;
+			> div{
+				float: left;
+				width: 45px;
+				height: 45px;
+			}
+		}
+		p{
+			float: left;
+			display: block;
+			line-height: 45px;
+			font-size: 16px;
+			font-weight: 400;
+			overflow: hidden;
+			text-overflow: ellipsis;
+			position: relative;
+			padding-left: 10px;
+			color: @secondary-font-color;
+			.calc(width, ~"100% - 45px");
 		}
 	}
 	a {
 		display: block;
 		width: 100%;
 		height: 100%;
-	}
-	.status {
-		position: absolute;
-		bottom: -3px;
-		display: block;
-		width: 100%;
-		height: 2px;
-		z-index: 10;
 	}
 	&.status-offline {
 		.user-image-status(@status-offline);
@@ -2203,6 +2329,8 @@ a.github-fork {
 	background-color: #FAFAFA;
 	box-shadow: 0 0 6px 10px rgba(0, 0, 0, 0.1);
 	border-radius: 2px;
+	position: relative;
+	z-index: 1;
 	h2 {
 		&:extend(.rocket-h2);
 		color: @primary-font-color;
@@ -2358,6 +2486,8 @@ a.github-fork {
 .social-login {
 	margin: 35px 0 30px;
 	text-align: center;
+	position: relative;
+	z-index: 1;
 	h3 {
 		&:extend(.rocket-h3);
 		margin-top: 0;
@@ -2380,8 +2510,6 @@ a.github-fork {
 		padding: 45px 0 35px;
 		z-index: 10;
 		position: relative;
-		max-width: 520px;
-		width: 90%;
 	}
 	.logo {
 		display: block;
@@ -2402,7 +2530,7 @@ a.github-fork {
 	}
 	.screen {
 		display: block;
-		margin: 0 auto 25px;
+		margin: 0 auto 30px;
 		max-width: 520px;
 		position: relative;
 		box-shadow: 0 0 8px 6px rgba(0, 0, 0, 0.1);
@@ -2443,6 +2571,8 @@ a.github-fork {
 	}
 	header {
 		display: block;
+		position: relative;
+		z-index: 1;
 	}
 	.text {
 		color: #FFF;
@@ -2450,6 +2580,8 @@ a.github-fork {
 		margin-bottom: 25px;
 		margin: 0 auto 25px;
 		max-width: 580px;
+		position: relative;
+		z-index: 1;
 		.button {
 			background-color: #bc2031;
 			color: #FFF;
@@ -2482,10 +2614,13 @@ a.github-fork {
 	footer {
 		color: #fff;
 		padding: 20px 0 0;
+		position: relative;
+		z-index: 1;
 		h4 {
 			text-transform: uppercase;
 			margin-bottom: 8px;
 			font-size: 12px;
+			font-weight: 300;
 		}
 		div.switch-language {
 			margin-top: 20px;
