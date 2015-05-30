@@ -3458,117 +3458,6 @@ a.github-fork:after {
 	display: none
 }
 
-@media all and (max-width: 1100px) {
-	#rocket-chat .flex-opened {
-		-lh-property: 0;
-		width: -webkit-calc(100% - 260px);
-		width: -moz-calc(100% - 260px);
-		width: calc(100% - 260px)
-	}
-}
-
-@media all and (max-width: 780px) {
-	#rocket-chat .burger {
-		visibility: visible;
-		display: inline-block
-	}
-	#rocket-chat .side-nav {
-		top: 0;
-		-webkit-transform: translateX(-100%);
-		-moz-transform: translateX(-100%);
-		-o-transform: translateX(-100%);
-		-ms-transform: translateX(-100%);
-		transform: translateX(-100%);
-		-webkit-transition: -webkit-transform 0.3s ease-out;
-		-moz-transition: -moz-transform 0.3s ease-out;
-		-o-transition: -o-transform 0.3s ease-out;
-		transition: -webkit-transform 0.3s ease-out, -moz-transform 0.3s ease-out, -o-transform 0.3s ease-out, transform 0.3s ease-out
-	}
-	#rocket-chat .main-content {
-		margin-left: 0;
-		width: 100%;
-		-webkit-transition: -webkit-transform 0.3s ease-out;
-		-moz-transition: -moz-transform 0.3s ease-out;
-		-o-transition: -o-transform 0.3s ease-out;
-		transition: -webkit-transform 0.3s ease-out, -moz-transform 0.3s ease-out, -o-transform 0.3s ease-out, transform 0.3s ease-out
-	}
-	#rocket-chat .fixed-title h2 {
-		margin-left: 45px
-	}
-	#rocket-chat .flex-tab {
-		top: 0
-	}
-	#rocket-chat .messages-box {
-		padding: 0 10px
-	}
-	#rocket-chat.menu-opened .side-nav {
-		-webkit-transform: translateX(0px);
-		-moz-transform: translateX(0px);
-		-o-transform: translateX(0px);
-		-ms-transform: translateX(0px);
-		transform: translateX(0px)
-	}
-	#rocket-chat.menu-opened .burger {
-		-webkit-transform: rotate(180deg);
-		-moz-transform: rotate(180deg);
-		-o-transform: rotate(180deg);
-		-ms-transform: rotate(180deg);
-		transform: rotate(180deg)
-	}
-	#rocket-chat.menu-opened .burger i:nth-child(1) {
-		opacity: 1;
-		width: 10px;
-		-webkit-transform-origin: 50% 50% 0;
-		-moz-transform-origin: 50% 50% 0;
-		-o-transform-origin: 50% 50% 0;
-		-ms-transform-origin: 50% 50% 0;
-		transform-origin: 50% 50% 0;
-		-webkit-transform: translateY(3px) translateX(10px) rotate(45deg);
-		-moz-transform: translateY(3px) translateX(10px) rotate(45deg);
-		-o-transform: translateY(3px) translateX(10px) rotate(45deg);
-		-ms-transform: translateY(3px) translateX(10px) rotate(45deg);
-		transform: translateY(3px) translateX(10px) rotate(45deg)
-	}
-	#rocket-chat.menu-opened .burger i:nth-child(3) {
-		opacity: 1;
-		width: 10px;
-		-webkit-transform-origin: 50% 50% 0;
-		-moz-transform-origin: 50% 50% 0;
-		-o-transform-origin: 50% 50% 0;
-		-ms-transform-origin: 50% 50% 0;
-		transform-origin: 50% 50% 0;
-		-webkit-transform: translateX(10px) translateY(-3px) rotate(-45deg);
-		-moz-transform: translateX(10px) translateY(-3px) rotate(-45deg);
-		-o-transform: translateX(10px) translateY(-3px) rotate(-45deg);
-		-ms-transform: translateX(10px) translateY(-3px) rotate(-45deg);
-		transform: translateX(10px) translateY(-3px) rotate(-45deg)
-	}
-	#rocket-chat.menu-opened .main-content {
-		-webkit-transform: translateX(260px);
-		-moz-transform: translateX(260px);
-		-o-transform: translateX(260px);
-		-ms-transform: translateX(260px);
-		transform: translateX(260px)
-	}
-}
-
-@media all and (max-width: 500px) {
-	.user-view .thumb {
-		width: 60px;
-		height: 60px
-	}
-	.user-view .info {
-		margin-left: 75px;
-		-lh-property: 0;
-		width: -webkit-calc(100% - 120px);
-		width: -moz-calc(100% - 120px);
-		width: calc(100% - 120px)
-	}
-	.user-view .info h3 {
-		font-size: 20px
-	}
-}
-
 @font-face {
 	font-family: 'fontello';
 	src: url('/fonts/fontello.eot?19437876');
@@ -3596,3 +3485,34 @@ a.github-fork:after {
 	-moz-osx-font-smoothing: grayscale;
 }
 
+.icon-tumblr:before {
+	content: '\e881'
+}
+
+.icon-trello:before {
+	content: '\e882'
+}
+
+.icon-facebook:before {
+	content: '\e89a'
+}
+
+.icon-dropbox:before {
+	content: '\e89b'
+}
+
+.icon-dribbble:before {
+	content: '\e89c'
+}
+
+.icon-twitter:before {
+	content: '\e87e'
+}
+
+.icon-gplus:before {
+	content: '\e887'
+}
+
+.icon-github-circled:before {
+	content: '\5c'
+}
