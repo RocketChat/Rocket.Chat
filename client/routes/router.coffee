@@ -19,6 +19,10 @@ Router.onBeforeAction ->
 		this.layout('loginLayout')
 		return this.render('loginIntro')
 
+	if not Meteor.user().username?
+		this.layout('usernameLayout')
+		return this.render('usernamePrompt')
+
 	this.next()
 , {
 	except: ['login']
