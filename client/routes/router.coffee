@@ -24,6 +24,15 @@ Router.onBeforeAction ->
 	else
 		this.next()
 
+Router.onBeforeAction ->
+	if Meteor.userId()? and not Meteor.user().username?
+		this.layout('usernameLayout')
+		return this.render('usernamePrompt')
+
+	this.next()
+, {
+	except: ['login']
+}
 
 Router.route '/',
 	name: 'index'
