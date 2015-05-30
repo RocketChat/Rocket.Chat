@@ -228,8 +228,8 @@ Template.chatWindowDashboard.helpers
 				_id:
 					$in: room?.uids
 
-			unless Template.instance().showUsersOffline.get()
-				filter.status = { $ne: 'offline' }
+			# unless Template.instance().showUsersOffline.get()
+			filter.$and = [{ status: {$exists: true} }, { status: {$ne: 'offline'} }]
 
 			users = Meteor.users.find(filter, { sort: { name: 1 } } ).fetch()
 			ret.totalOnline = users.length
@@ -468,6 +468,8 @@ Template.chatWindowDashboard.events
 Template.chatWindowDashboard.onCreated ->
 	this.scrollOnBottom = true
 	this.showUsersOffline = new ReactiveVar false
+
+	this.subscribe("allUsers")
 
 Template.chatWindowDashboard.onRendered ->
 	FlexTab.check()
