@@ -874,10 +874,13 @@ a.github-fork {
 	left: 0;
 	padding-top: 15px;
 	z-index: 1000;
+	overflow-y: auto;
+	overflow-x: hidden;
 	width: @rooms-box-width;
 	color: @tertiary-font-color;
 	.calc(height, ~'100% - ' @header-min-height + @footer-min-height);
 	.transition(transform .3s cubic-bezier(.5, 0, .1, 1));
+	.custom-scroll(transparent, rgba(255, 255, 255, 0.05));
 	&.hidden {
 		.transform(translateX(-100%));
 	}
@@ -1296,10 +1299,18 @@ a.github-fork {
 }
 
 .page-home {
+	.fixed-title{
+		h2{
+			overflow: visible;
+		}
+	}
 	.logo {
 		display: inline-block;
-		width: 38px;
+		width: 240px;
 		margin-right: 6px;
+		vertical-align: text-top;
+		margin-top: -5px;
+		margin-left: 10px;
 	}
 	.info {
 		margin-bottom: 20px;
