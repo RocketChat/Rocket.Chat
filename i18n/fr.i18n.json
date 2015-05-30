@@ -133,5 +133,8 @@
 		"Privacy": "Vie privée",
 		"Settings": "Réglages",
 		"Silence": "Silence"
+	},
+	"error": {
+		"Not_found_or_not_allowed": "Introuvable ou non autorisés"
 	}
 }

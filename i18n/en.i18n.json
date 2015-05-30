@@ -133,5 +133,8 @@
 		"Privacy": "Privacy",
 		"Settings": "Settings",
 		"Silence": "Silence"
+	},
+	"error": {
+		"Not_found_or_not_allowed": "Not Found or Not Allowed"
 	}
 }
