@@ -564,10 +564,10 @@ label.required:after {
 	}
 	&:after {
 		.transform(rotate(90deg));
-		.transition(transform .315s ease-out .3s, background .15s ease-out);
+		.transition(transform .315s ease-out .2s, background .15s ease-out);
 	}
 	&:before {
-		.transition(transform .315s ease-out .45s, background .15s ease-out);
+		.transition(transform .315s ease-out .3s, background .15s ease-out);
 	}
 	&:hover{
 		&:before{
@@ -657,8 +657,10 @@ a.github-fork {
 	height: 100%;
 	width: 100%;
 	overflow: hidden;
-	img {
-		height: auto !important;
+	.avatar-image {
+		display: block;
+		background-color: transparent;
+		background-size: 100% auto;
 	}
 }
 
