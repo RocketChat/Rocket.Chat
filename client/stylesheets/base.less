@@ -232,7 +232,7 @@ input[type='password'] {
 	background-color: #fff;
 	border-radius: 2px;
 	padding: 2px 8px;
-	box-shadow: 1px 1px 0 rgba(0, 0, 0, 0.3);
+	box-shadow: 1px 1px 0 rgba(0, 0, 0, 0.2);
 	position: relative;
 	width: 100%;
 	outline: none;
@@ -545,6 +545,40 @@ label.required:after {
 	}
 }
 
+.a-plus{
+	display: block;
+	width: 25px;
+	height: 25px;
+	z-index: 100;
+	position: relative;
+	&:before, &:after{
+		content: " ";
+		display: block;
+		background-color: #aaa;
+		width: 2px;
+		height: 10px;
+		position: absolute;
+		.calc(top, ~"50% - 5px");
+		.calc(left, ~"50% - 1px");
+		.transform-origin(50%, 50%);
+	}
+	&:after {
+		.transform(rotate(90deg));
+		.transition(transform .33s ease-out .1s, background .15s ease-out);
+	}
+	&:before {
+		.transition(transform .33s ease-out .225s, background .15s ease-out);
+	}
+	&:hover{
+		&:before{
+			.transform(rotate(180deg));
+		}
+		&:after{
+			.transform(rotate(-90deg));
+		}
+	}
+}
+
 a.github-fork {
 	position: fixed;
 	display: block;
@@ -671,10 +705,10 @@ a.github-fork {
 				content: " ";
 				display: block;
 				width: 44px;
-				height: 4px;
+				height: 2px;
 				z-index: 10;
 				position: absolute;
-				bottom: 3px;
+				bottom: 5px;
 			}
 			.avatar-initials {
 				line-height: 44px;
@@ -839,6 +873,7 @@ a.github-fork {
 	top: @header-min-height;
 	left: 0;
 	padding-top: 15px;
+	z-index: 1000;
 	width: @rooms-box-width;
 	color: @tertiary-font-color;
 	.calc(height, ~'100% - ' @header-min-height + @footer-min-height);
@@ -1033,10 +1068,19 @@ a.github-fork {
 		&.add-room {
 			&:hover {
 				background-color: rgba(0, 0, 0, 0.1);
+				i{
+					&:before{
+						.transform(rotate(180deg));
+					}
+					&:after{
+						.transform(rotate(-90deg));
+					}
+				}
 			}
 			i {
-				float: right;
-				margin-right: 0.5em;
+				position: absolute;
+				right: 5px;
+				top: 1px;
 			}
 		}
 	}
@@ -1478,7 +1522,7 @@ a.github-fork {
 	overflow: hidden;
 	.calc(width, ~'100% - 20px');
 	.calc(height, ~'100% - 120px');
-	> ul {
+	ul {
 		padding: 21px 0 10px;
 	}
 	.new-message {
@@ -1675,7 +1719,7 @@ a.github-fork {
 		position: relative;
 		text-align: left;
 		z-index: 100;
-		padding: 12px 15px 12px;
+		padding: 12px 30px 12px;
 		background-color: @secondary-background-color;
 		> a, > form {
 			float: left;
@@ -1695,7 +1739,7 @@ a.github-fork {
 		}
 		.more {
 			position: absolute;
-			left: -28px;
+			left: 0;
 			top: 0px;
 			background-color: @secondary-background-color;
 			border: none;
@@ -1704,6 +1748,8 @@ a.github-fork {
 			border-bottom: 1px solid @tertiary-background-color;
 			color: @secondary-font-color;
 			cursor: pointer;
+			.transform(translateX(-27px));
+			.transition(transform .3s ease-out .4s);
 			&:hover {
 				color: @primary-font-color;
 			}
@@ -1714,10 +1760,9 @@ a.github-fork {
 				vertical-align: top;
 				margin-top: 1px;
 			}
-			&.opened {
-				i {
-					.transform(rotate(180deg));
-				}
+			.flex-opened &{
+				.transition-delay(0s);
+				.transform(translateX(0));
 			}
 		}
 		.search-form {
@@ -1730,6 +1775,7 @@ a.github-fork {
 				position: absolute;
 				top: 11px;
 				left: 8px;
+				font-size: 13px;
 				color: @secondary-font-color;
 			}
 		}
@@ -1760,7 +1806,7 @@ a.github-fork {
 }
 
 .list-view {
-	padding: 5px 20px 20px;
+	padding: 5px 30px 20px;
 	.list {
 		display: block;
 		position: relative;
@@ -1820,6 +1866,7 @@ a.github-fork {
 		h3 {
 			font-size: 24px;
 			margin-bottom: 8px;
+			line-height: 22px;
 		}
 		p {
 			line-height: 18px;
@@ -2203,6 +2250,8 @@ a.github-fork {
 	background-color: #FAFAFA;
 	box-shadow: 0 0 6px 10px rgba(0, 0, 0, 0.1);
 	border-radius: 2px;
+	position: relative;
+	z-index: 1;
 	h2 {
 		&:extend(.rocket-h2);
 		color: @primary-font-color;
@@ -2358,6 +2407,8 @@ a.github-fork {
 .social-login {
 	margin: 35px 0 30px;
 	text-align: center;
+	position: relative;
+	z-index: 1;
 	h3 {
 		&:extend(.rocket-h3);
 		margin-top: 0;
@@ -2400,7 +2451,7 @@ a.github-fork {
 	}
 	.screen {
 		display: block;
-		margin: 0 auto 25px;
+		margin: 0 auto 30px;
 		max-width: 520px;
 		position: relative;
 		box-shadow: 0 0 8px 6px rgba(0, 0, 0, 0.1);
@@ -2441,6 +2492,8 @@ a.github-fork {
 	}
 	header {
 		display: block;
+		position: relative;
+		z-index: 1;
 	}
 	.text {
 		color: #FFF;
@@ -2448,6 +2501,8 @@ a.github-fork {
 		margin-bottom: 25px;
 		margin: 0 auto 25px;
 		max-width: 580px;
+		position: relative;
+		z-index: 1;
 		.button {
 			background-color: #bc2031;
 			color: #FFF;
@@ -2480,10 +2535,13 @@ a.github-fork {
 	footer {
 		color: #fff;
 		padding: 20px 0 0;
+		position: relative;
+		z-index: 1;
 		h4 {
 			text-transform: uppercase;
 			margin-bottom: 8px;
 			font-size: 12px;
+			font-weight: 300;
 		}
 		div.switch-language {
 			margin-top: 20px;
