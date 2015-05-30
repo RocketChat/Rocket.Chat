@@ -65,7 +65,7 @@
 						if error.error is 'without-permission'
 							toastr.error t('RoomManager.No_permission_to_view_room')
 
-						Router.go 'index'
+						Router.go 'home'
 
 		return {
 			ready: ->
