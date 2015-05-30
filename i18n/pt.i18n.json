@@ -78,7 +78,7 @@
 		"Chat_Rooms": "Salas de Chat",
 		"Have_your_own_chat": "Tenha seu próprio web chat. Desenvolvido com Meteor.com, o Rocket.Chat é uma excelente solução para desenvolvedores que querem construir e desenvolver sua própria plataforma de chat.",
 		"use_menu": "Utilize o menu à esquerda para acessar suas salas",
-		"welcome": "Bem-vindo ao Rocket.Chat"
+		"welcome": "Bem-vindo ao"
 	},
 	"login": {
 		"Cancel": "Voltar para o login",
