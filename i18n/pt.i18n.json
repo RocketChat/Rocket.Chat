@@ -142,5 +142,8 @@
 		"Privacy": "Privacidade",
 		"Settings": "Configurações",
 		"Silence": "Silenciar"
+	},
+	"error": {
+		"Not_found_or_not_allowed": "Não encontrado ou não permitido"
 	}
 }
