@@ -120,6 +120,15 @@
 	"roomSearch": {
 		"Nothing_found": "Nothing found"
 	},
+	"usernameRegistration": {
+		"Username": "Username",
+		"Loading_suggestion": "Loading suggestions...",
+		"Username_title": "Register username",
+		"Username_description": "The username is used to allow others to mention you in messages.",
+		"Use_this_username": "Use this username",
+		"Username_unavaliable": "<strong>%s</strong> is already in use :(",
+		"Username_cant_be_empty": "The username cannot be empty"
+	},
 	"userStatus": {
 		"away": "away",
 		"Away": "Away",
