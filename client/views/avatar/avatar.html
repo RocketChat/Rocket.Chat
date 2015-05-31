@@ -3,7 +3,7 @@
 		<div class="avatar-suggestion-item">
 			<div style="background-image: url({{blob}});">
 			</div>
-			<button type="button" class="button primary select-service">Use {{service}} avatar</button>
+			<button type="button" class="button primary select-service">{{_ "avatar.Use_service_avatar" service}}</button>
 		</div>
 	{{/if}}
 </template>
@@ -13,7 +13,7 @@
 		<div class="avatar-suggestion-item">
 			<div class="question-mark">
 			</div>
-			<button type="button" class="button primary">Login with {{.}}</button>
+			<button type="button" class="button primary">{{_ "avatar.Login_with" .}}</button>
 		</div>
 	{{/if}}
 </template>
@@ -21,7 +21,7 @@
 <template name="avatarPrompt">
 	<form id="login-card" method='/'>
 		<div class="fields">
-			<h2>Selecione um avatar</h2>
+			<h2>{{_ "avatar.Select_an_avatar"}}</h2>
 		</div>
 		<div class="fields">
 			<div class='input-text active'>
@@ -50,10 +50,10 @@
 								<div style="background-image: url({{upload.blob}});" class="{{#unless upload}}question-mark{{/unless}}">
 								</div>
 								{{#with upload}}
-									<button type="button" class="button primary select-service">Use uploaded avatar</button>
+									<button type="button" class="button primary select-service">{{_ "avatar.Use_uploaded_avatar"}}</button>
 								{{/with}}
 								{{#unless upload}}
-									<button type="button" class="button primary">Select file
+									<button type="button" class="button primary">{{_ "avatar.Select_file"}}
 										<input type="file" class="myFileInput">
 									</button>
 								{{/unless}}
