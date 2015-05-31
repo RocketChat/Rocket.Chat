@@ -478,8 +478,6 @@ renameRoom = (roomId, name) ->
 		Session.set('editRoomTitle', false)
 		return false
 
-	console.log name, Session.get('roomData' + roomId).name
-
 	Meteor.call 'saveRoomName', { rid: roomId, name: name }, (error, result) ->
 		if result
 			Session.set('editRoomTitle', false)
