@@ -149,5 +149,12 @@
 	},
 	"error": {
 		"Not_found_or_not_allowed": "Não encontrado ou não permitido"
+	},
+	"avatar": {
+		"Use_service_avatar": "Use o avatar de %s",
+		"Login_with": "Login com %s",
+		"Select_an_avatar": "Selecione um avatar",
+		"Use_uploaded_avatar": "Use o avatar de upload",
+		"Select_file": "Selecione um arquivo"
 	}
 }
