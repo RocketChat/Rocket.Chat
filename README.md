@@ -71,6 +71,9 @@ Checkout [Github Wiki](https://github.com/RocketChat/Rocket.Chat/wiki) (coming s
 
 Thanks to [Diego Sampaio](https://github.com/sampaiodiego), [Gabriel Engel](https://github.com/engelgabriel), [Marcelo Schmidt](https://github.com/marceloschmidt), [Rafael Caferati](https://github.com/rcaferati) e [Rodrigo Nascimento](https://github.com/rodrigok)
 
+Emoji provided free by [Emoji One](http://emojione.com)
+
+Performance monitoring provided by [Kadira](https://kadira.io/)
 
 ### Contributions
 
