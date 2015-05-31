@@ -992,6 +992,7 @@ a.github-fork {
 		> .wrapper {
 			direction: ltr;
 			padding-left: 8px;
+			padding-bottom: 1em;
 		}
 	}
 	.input-error {
@@ -1078,9 +1079,17 @@ a.github-fork {
 		color: @tertiary-font-color;
 		line-height: 28px;
 		padding-left: 10px;
+
+		a {
+			color: inherit;
+			display: block;
+		}
+		&:hover {
+			background-color: rgba(0, 0, 0, 0.1);
+		}
+
 		&.add-room {
 			&:hover {
-				background-color: rgba(0, 0, 0, 0.1);
 				i{
 					&:before{
 						.transform(rotate(180deg));

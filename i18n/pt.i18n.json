@@ -30,7 +30,11 @@
 		"Members": "Membros",
 		"Selected_users": "Membros selecionados",
 		"Save": "Salvar",
-		"Cancel": "Cancelar"
+		"Cancel": "Cancelar",
+		"No_channels_yet": "Você não faz parte de nenhum canal ainda.",
+		"No_direct_messages_yet": "Você não iniciou nenhuma conversa ainda.",
+		"No_groups_yet": "Nenhum grupo privado ainda.",
+		"No_favorites_yet": "Nenhum favorito ainda."
 	},
 	"chatWindowDashboard": {
 		"Add_users": "Adicionar usuários",
