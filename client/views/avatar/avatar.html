@@ -45,10 +45,11 @@
 							{{#unless suggestions.avatars.github}}
 								{{> avatarSuggestionLogin 'github'}}
 							{{/unless}}
+
+							<input type="file" class="myFileInput">
 						{{else}}
 							{{_ "usernameRegistration.Loading_suggestion"}}
 						{{/if}}
-						<input type="file" class="myFileInput">
 					</div>
 				</div>
 			</div>
