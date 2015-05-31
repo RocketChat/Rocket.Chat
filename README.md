@@ -12,6 +12,23 @@ Rocket.Chat is a Web Chat Server, developed in JavaScript, using the [Meteor](ht
 
 It is a great solution for communities and companies wanting to privately host their own chat service or for developers looking forward to build and evolve their own chat platforms.
 
+## On the News
+
+* [Hacker News](https://news.ycombinator.com/item?id=9624737)
+Yes, we made it to the #1
+
+* [Product Hunt](http://www.producthunt.com/posts/rocket-chat)
+Your own open source Slack-like chat
+
+* [JavaScript Weekly](http://javascriptweekly.com/issues/234)
+An open source Web based, channel based chat system (a la Slack) built using Meteor, the full stack JavaScript development platform.
+
+* [wwwhatsnew.com](http://wwwhatsnew.com/2015/05/30/rocket-chat-para-los-programadores-que-quieran-ofrecer-un-chat-en-su-web/)
+Para los programadores que quieran ofrecer un chat en su web
+
+* [clasesdeperiodismo.com](http://www.clasesdeperiodismo.com/2015/05/30/un-chat-de-codigo-abierto-que-puedes-anadir-a-la-web/)
+Un chat de código abierto que puedes añadir a la web
+
 ## Installation
 
 Prerequisites:
