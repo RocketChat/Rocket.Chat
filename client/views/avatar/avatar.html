@@ -1,3 +1,23 @@
+<template name="avatarSuggestion">
+	{{#if .}}
+		<div class="avatar-suggestion-item">
+			<div style="background-image: url({{blob}});">
+			</div>
+			<button class="button primary">Use {{service}} avatar</button>
+		</div>
+	{{/if}}
+</template>
+
+<template name="avatarSuggestionLogin">
+	{{#if .}}
+		<div class="avatar-suggestion-item">
+			<div style="background-image: url();">
+			</div>
+			<button class="button primary">Login with {{.}}</button>
+		</div>
+	{{/if}}
+</template>
+
 <template name="avatarPrompt">
 	<form id="login-card" method='/'>
 		<div class="fields">
@@ -6,17 +26,29 @@
 		<div class="fields">
 			<div class='input-text active'>
 				<div class='field'>
-					{{#if suggestions.ready}}
-						{{#each suggestions.avatars}}
-							<div>
-								{{service}}
-								<div style="background-image: url({{blob}}); height: 50px; width: 50px; background-size: cover;">
-								</div>
-							</div>
-						{{/each}}
-					{{else}}
-						{{_ "usernameRegistration.Loading_suggestion"}}
-					{{/if}}
+					<div class="avatar-suggestions">
+						{{#if suggestions.ready}}
+							{{> avatarSuggestion suggestions.avatars.gravatar}}
+							{{> avatarSuggestion suggestions.avatars.facebook}}
+							{{> avatarSuggestion suggestions.avatars.google}}
+							{{> avatarSuggestion suggestions.avatars.github}}
+
+							{{#unless suggestions.avatars.gravatar}}
+								{{> avatarSuggestionLogin 'gravatar'}}
+							{{/unless}}
+							{{#unless suggestions.avatars.facebook}}
+								{{> avatarSuggestionLogin 'facebook'}}
+							{{/unless}}
+							{{#unless suggestions.avatars.google}}
+								{{> avatarSuggestionLogin 'google'}}
+							{{/unless}}
+							{{#unless suggestions.avatars.github}}
+								{{> avatarSuggestionLogin 'github'}}
+							{{/unless}}
+						{{else}}
+							{{_ "usernameRegistration.Loading_suggestion"}}
+						{{/if}}
+					</div>
 				</div>
 			</div>
 		</div>
