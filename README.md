@@ -14,20 +14,20 @@ It is a great solution for communities and companies wanting to privately host t
 
 ### On the News
 
-* [Hacker News](https://news.ycombinator.com/item?id=9624737)
-Yes, we made it to the #1
+##### [Hacker News](https://news.ycombinator.com/item?id=9624737)
+> Yes, we made it to the #1
 
-* [Product Hunt](http://www.producthunt.com/posts/rocket-chat)
-Your own open source Slack-like chat
+##### [Product Hunt](http://www.producthunt.com/posts/rocket-chat)
+> Your own open source Slack-like chat
 
-* [JavaScript Weekly](http://javascriptweekly.com/issues/234)
-An open source Web based, channel based chat system (a la Slack) built using Meteor, the full stack JavaScript development platform.
+##### [JavaScript Weekly](http://javascriptweekly.com/issues/234)
+> An open source Web based, channel based chat system (a la Slack) built using Meteor, the full stack JavaScript development platform.
 
-* [wwwhatsnew.com](http://wwwhatsnew.com/2015/05/30/rocket-chat-para-los-programadores-que-quieran-ofrecer-un-chat-en-su-web/)
-Para los programadores que quieran ofrecer un chat en su web
+##### [wwwhatsnew.com](http://wwwhatsnew.com/2015/05/30/rocket-chat-para-los-programadores-que-quieran-ofrecer-un-chat-en-su-web/)
+> Para los programadores que quieran ofrecer un chat en su web
 
-* [clasesdeperiodismo.com](http://www.clasesdeperiodismo.com/2015/05/30/un-chat-de-codigo-abierto-que-puedes-anadir-a-la-web/)
-Un chat de código abierto que puedes añadir a la web
+##### [clasesdeperiodismo.com](http://www.clasesdeperiodismo.com/2015/05/30/un-chat-de-codigo-abierto-que-puedes-anadir-a-la-web/)
+> Un chat de código abierto que puedes añadir a la web
 
 ## Installation
 
