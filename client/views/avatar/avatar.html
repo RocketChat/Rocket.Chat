@@ -3,7 +3,7 @@
 		<div class="avatar-suggestion-item">
 			<div style="background-image: url({{blob}});">
 			</div>
-			<button class="button primary">Use {{service}} avatar</button>
+			<button type="button" class="button primary select-service">Use {{service}} avatar</button>
 		</div>
 	{{/if}}
 </template>
@@ -13,7 +13,7 @@
 		<div class="avatar-suggestion-item">
 			<div style="background-image: url();">
 			</div>
-			<button class="button primary">Login with {{.}}</button>
+			<button type="button" class="button primary">Login with {{.}}</button>
 		</div>
 	{{/if}}
 </template>
@@ -48,6 +48,7 @@
 						{{else}}
 							{{_ "usernameRegistration.Loading_suggestion"}}
 						{{/if}}
+						<input type="file" class="myFileInput">
 					</div>
 				</div>
 			</div>
