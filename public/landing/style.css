@@ -2673,8 +2673,7 @@ a.github-fork:after {
 
 .flex-tab .social .share {
 	border-radius: 50%;
-	min-height: 40px;
-	line-height: 20px
+	padding: 15px 13px;
 }
 
 .flex-tab .social .share:before {

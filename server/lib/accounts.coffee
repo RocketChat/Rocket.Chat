@@ -1,6 +1,16 @@
 Accounts.emailTemplates.siteName = "ROCKET.CHAT";
 Accounts.emailTemplates.from = "ROCKET.CHAT <no-reply@rocket.chat>";
 
+verifyEmailText = Accounts.emailTemplates.verifyEmail.text
+Accounts.emailTemplates.verifyEmail.text = (user, url) ->
+	url = url.replace Meteor.absoluteUrl(), Meteor.absoluteUrl() + 'login/'
+	verifyEmailText user, url
+
+resetPasswordText = Accounts.emailTemplates.resetPassword.text
+Accounts.emailTemplates.resetPassword.text = (user, url) ->
+	url = url.replace Meteor.absoluteUrl(), Meteor.absoluteUrl() + 'login/'
+	verifyEmailText user, url
+
 Accounts.onCreateUser (options, user) ->
 	# console.log 'options ->',JSON.stringify options, null, '  '
 	# console.log 'user ->',JSON.stringify user, null, '  '
