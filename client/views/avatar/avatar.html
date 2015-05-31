@@ -11,7 +11,7 @@
 <template name="avatarSuggestionLogin">
 	{{#if .}}
 		<div class="avatar-suggestion-item">
-			<div style="background-image: url();">
+			<div class="question-mark">
 			</div>
 			<button type="button" class="button primary">Login with {{.}}</button>
 		</div>
@@ -47,7 +47,7 @@
 							{{/unless}}
 
 							<div class="avatar-suggestion-item">
-								<div style="background-image: url({{upload.blob}});">
+								<div style="background-image: url({{upload.blob}});" class="{{#unless upload}}question-mark{{/unless}}">
 								</div>
 								{{#with upload}}
 									<button type="button" class="button primary select-service">Use uploaded avatar</button>
