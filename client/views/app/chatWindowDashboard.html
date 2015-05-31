@@ -106,7 +106,6 @@
 		<div class="content">
 			{{#if isGroupChat}}
 				<div class="list-view{{#if $.Session.get 'showUserInfo'}} -hidden{{/if}}">
-					{{#if Template.subscriptionsReady}}
 					{{#with roomUsers}}
 						<div class="status">
 							<h2>{{_ "chatWindowDashboard.Members_List"}}</h2>
@@ -121,7 +120,6 @@
 							{{/each}}
 						</ul>
 					{{/with}}
-					{{/if}}
 				</div>
 				<div class="user-view animated{{#unless $.Session.get 'showUserInfo'}} -hidden{{/unless}}">
 					{{#with flexUserInfo}}
