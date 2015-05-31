@@ -1,17 +1,17 @@
 uploadPath = "~/uploads"
 
-store = new FS.Store.FileSystem "images",
+store = new FS.Store.FileSystem "avatars",
 	path: uploadPath
 	fileKeyMaker: (fileObj) ->
 		filename = fileObj.name()
-		filenameInStore = fileObj.name({store: 'images'})
+		filenameInStore = fileObj.name({store: 'avatars'})
 
 		return filenameInStore || filename
 
-@Images = new FS.Collection "images",
+@Avatars = new FS.Collection "avatars",
 	stores: [store]
 
-@Images.allow
+@Avatars.allow
 	insert: ->
 		return true
 	update: ->
@@ -27,14 +27,14 @@ Meteor.startup ->
 
 			collectionName = opts.collectionName
 
-			collection = FS._collections['images']
+			collection = FS._collections['avatars']
 
-			file = if collection? then collection.findOne({ "copies.images.key": opts.filename }) else null
+			file = if collection? then collection.findOne({ "copies.avatars.key": opts.filename }) else null
 
 			return {
 				collection: collection
 				file: file
-				storeName: 'images'
+				storeName: 'avatars'
 				download: opts.download
 				filename: opts.filename
 			}

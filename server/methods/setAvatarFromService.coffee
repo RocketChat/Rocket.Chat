@@ -9,6 +9,6 @@ Meteor.methods
 		file.attachData image, ->
 			file.name user.username
 
-			Images.insert file, (err, fileObj) ->
+			Avatars.insert file, (err, fileObj) ->
 				Meteor.users.update {_id: user._id}, {$set: {avatarOrigin: service}}
 
