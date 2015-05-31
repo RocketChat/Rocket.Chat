@@ -12,7 +12,7 @@ Rocket.Chat is a Web Chat Server, developed in JavaScript, using the [Meteor](ht
 
 It is a great solution for communities and companies wanting to privately host their own chat service or for developers looking forward to build and evolve their own chat platforms.
 
-## On the News
+### On the News
 
 * [Hacker News](https://news.ycombinator.com/item?id=9624737)
 Yes, we made it to the #1
@@ -78,7 +78,7 @@ Thanks to [Diego Sampaio](https://github.com/sampaiodiego), [Gabriel Engel](http
 
 A lot of work has already gone into Rocket.Chat, but we have much bigger plans for it!
 
-So if you'd like to be part of the project, please check out the [roadmap](https://trello.com/b/dKS6CCbS/rocket-chat-roadmap) and [issues](https://github.com/RocketChat/Rocket.Chat/issues) to see if there's anything you can help with.
+So if you'd like to be part of the project, please check out the [roadmap](https://github.com/RocketChat/Rocket.Chat/milestones) and [issues](https://github.com/RocketChat/Rocket.Chat/issues) to see if there's anything you can help with.
 
 ### Community
 
