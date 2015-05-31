@@ -28,16 +28,15 @@ Meteor.methods
 					service: 'gravatar'
 					url: Gravatar.imageUrl email.address
 
-		validAvatars = []
+		validAvatars = {}
 		for avatar in avatars
 			try
 				result = HTTP.get avatar.url, npmRequestOptions: {encoding: null}
 				if result.statusCode is 200
-					blob = "data:#{result.headers['content-type']};base64,"
-					binary = new Buffer(result.content, 'binary')
-					blob += binary.toString('base64')
+					blob = "data:#{result.headers['content-type']};base64," 
+					blob += Buffer(result.content, 'binary').toString('base64')
 					avatar.blob = blob
-					validAvatars.push avatar
+					validAvatars[avatar.service] = avatar
 			catch e
 				# ...
 
