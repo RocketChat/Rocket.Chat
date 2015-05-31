@@ -12,6 +12,7 @@ Meteor.publish 'userData', ->
 			status: 1
 			statusDefault: 1
 			statusConnection: 1
+			avatarOrigin: 1
 			emails: 1
 			'services.facebook.id': 1
 			'services.google.picture': 1
