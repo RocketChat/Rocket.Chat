@@ -46,7 +46,18 @@
 								{{> avatarSuggestionLogin 'github'}}
 							{{/unless}}
 
-							<input type="file" class="myFileInput">
+							<div class="avatar-suggestion-item">
+								<div style="background-image: url({{upload.blob}});">
+								</div>
+								{{#with upload}}
+									<button type="button" class="button primary select-service">Use uploaded avatar</button>
+								{{/with}}
+								{{#unless upload}}
+									<button type="button" class="button primary">Select file
+										<input type="file" class="myFileInput">
+									</button>
+								{{/unless}}
+							</div>
 						{{else}}
 							{{_ "usernameRegistration.Loading_suggestion"}}
 						{{/if}}

@@ -2691,6 +2691,18 @@ a.github-fork {
 		display: inline-block;
 		top: -33px;
 	}
+	input[type=file] {
+		position: absolute !important;
+		width: 100%;
+		top: 0;
+		left: 0;
+		height: 100%;
+		opacity: 0;
+		z-index: 10000;
+		* {
+			cursor: pointer;
+		}
+	}
 }
 
 @media all and(max-width: 1100px) {

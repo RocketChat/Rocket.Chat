@@ -1,6 +1,7 @@
 Template.avatarPrompt.onCreated ->
 	self = this
 	self.suggestions = new ReactiveVar
+	self.upload = new ReactiveVar
 
 	Meteor.call 'getAvatarSuggestion', (error, avatars) ->
 		self.suggestions.set
@@ -11,6 +12,9 @@ Template.avatarPrompt.onCreated ->
 Template.avatarPrompt.helpers
 	suggestions: ->
 		return Template.instance().suggestions.get()
+
+	upload: ->
+		return Template.instance().upload.get()
 
 
 Template.avatarPrompt.events
@@ -23,5 +27,6 @@ Template.avatarPrompt.events
 			reader = new FileReader()
 			reader.readAsDataURL(blob)
 			reader.onloadend = ->
-				Meteor.call 'setAvatarFromService', reader.result, 'upload', ->
-					console.log arguments
+				template.upload.set
+					service: 'upload'
+					blob: reader.result
