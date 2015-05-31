@@ -12,6 +12,23 @@ Rocket.Chat is a Web Chat Server, developed in JavaScript, using the [Meteor](ht
 
 It is a great solution for communities and companies wanting to privately host their own chat service or for developers looking forward to build and evolve their own chat platforms.
 
+### On the News
+
+##### [Hacker News](https://news.ycombinator.com/item?id=9624737)
+> Yes, we made it to the #1
+
+##### [Product Hunt](http://www.producthunt.com/posts/rocket-chat)
+> Your own open source Slack-like chat
+
+##### [JavaScript Weekly](http://javascriptweekly.com/issues/234)
+> An open source Web based, channel based chat system (a la Slack) built using Meteor, the full stack JavaScript development platform.
+
+##### [wwwhatsnew.com](http://wwwhatsnew.com/2015/05/30/rocket-chat-para-los-programadores-que-quieran-ofrecer-un-chat-en-su-web/)
+> Para los programadores que quieran ofrecer un chat en su web
+
+##### [clasesdeperiodismo.com](http://www.clasesdeperiodismo.com/2015/05/30/un-chat-de-codigo-abierto-que-puedes-anadir-a-la-web/)
+> Un chat de código abierto que puedes añadir a la web
+
 ## Installation
 
 Prerequisites:
@@ -54,6 +71,9 @@ Checkout [Github Wiki](https://github.com/RocketChat/Rocket.Chat/wiki) (coming s
 
 Thanks to [Diego Sampaio](https://github.com/sampaiodiego), [Gabriel Engel](https://github.com/engelgabriel), [Marcelo Schmidt](https://github.com/marceloschmidt), [Rafael Caferati](https://github.com/rcaferati) e [Rodrigo Nascimento](https://github.com/rodrigok)
 
+Emoji provided free by [Emoji One](http://emojione.com)
+
+Performance monitoring provided by [Kadira](https://kadira.io/)
 
 ### Contributions
 
@@ -61,7 +81,7 @@ Thanks to [Diego Sampaio](https://github.com/sampaiodiego), [Gabriel Engel](http
 
 A lot of work has already gone into Rocket.Chat, but we have much bigger plans for it!
 
-So if you'd like to be part of the project, please check out the [roadmap](https://trello.com/b/dKS6CCbS/rocket-chat-roadmap) and [issues](https://github.com/RocketChat/Rocket.Chat/issues) to see if there's anything you can help with.
+So if you'd like to be part of the project, please check out the [roadmap](https://github.com/RocketChat/Rocket.Chat/milestones) and [issues](https://github.com/RocketChat/Rocket.Chat/issues) to see if there's anything you can help with.
 
 ### Community
 
