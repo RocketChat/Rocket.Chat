@@ -2686,10 +2686,21 @@ a.github-fork {
 		background-size: cover;
 		display: inline-block;
 		border: 1px solid #DDD;
+		font-size: 80px;
+		text-align: center;
+		line-height: 80px;
+		background-color: #EEE;
+		color: #CCC;
+		&.question-mark:before {
+			content: "?";
+			position: absolute;
+			left: 0;
+			width: 80px;
+		}
 	}
 	button {
 		display: inline-block;
-		top: -33px;
+		top: -35px;
 	}
 	input[type=file] {
 		position: absolute !important;
