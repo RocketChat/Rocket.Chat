@@ -29,6 +29,10 @@ Router.onBeforeAction ->
 		this.layout('usernameLayout')
 		return this.render('usernamePrompt')
 
+	if Meteor.userId()? and not Meteor.user().avatarOrigin?
+		this.layout('usernameLayout')
+		return this.render('avatarPrompt')
+
 	this.next()
 , {
 	except: ['login']
