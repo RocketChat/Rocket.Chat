@@ -1,6 +1,6 @@
 Meteor.methods
 	sendForgotPasswordEmail: (email) ->
-		user = Meteor.users.findOne {'email.address': email}
+		user = Meteor.users.findOne {'emails.address': email}
 
 		if user?
 			Accounts.sendResetPasswordEmail(user._id, email)
