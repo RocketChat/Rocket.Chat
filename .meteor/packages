@@ -45,3 +45,7 @@ percolate:migrations
 underscorestring:underscore.string
 meteorhacks:kadira
 yasaricli:slugify
+jparker:gravatar
+http
+cfs:filesystem
+cfs:standard-packages
