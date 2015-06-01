@@ -1,4 +1,4 @@
-uploadPath = "~/uploads"
+uploadPath = "/var/www/rocket.chat/uploads"
 
 store = new FS.Store.FileSystem "avatars",
 	path: uploadPath
