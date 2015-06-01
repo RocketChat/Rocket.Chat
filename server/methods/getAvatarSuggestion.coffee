@@ -22,6 +22,11 @@
 				service: 'gravatar'
 				url: Gravatar.imageUrl(email.address, {default: '404', size: 200, secure: true})
 
+		for email in user.emails when email.verified isnt true
+			avatars.push
+				service: 'gravatar'
+				url: Gravatar.imageUrl(email.address, {default: '404', size: 200, secure: true})
+
 	validAvatars = {}
 	for avatar in avatars
 		try
