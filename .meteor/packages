@@ -49,3 +49,4 @@ jparker:gravatar
 http
 cfs:filesystem
 cfs:standard-packages
+cfs:gridfs
