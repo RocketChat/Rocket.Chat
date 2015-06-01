@@ -1,2 +1,3 @@
 Meteor.startup ->
-	Migrations.migrateTo 'latest'
+	Meteor.defer ->
+		Migrations.migrateTo 'latest'
