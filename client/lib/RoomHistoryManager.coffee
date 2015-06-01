@@ -1,5 +1,5 @@
 @RoomHistoryManager = new class
-	defaultLimit = 30
+	defaultLimit = 20
 
 	histories = {}
 
@@ -27,7 +27,15 @@
 
 		$('.messages-box .wrapper').data('previous-height', $('.messages-box .wrapper').get(0)?.scrollHeight - $('.messages-box .wrapper').get(0)?.scrollTop)
 
-		Meteor.call 'loadHistory', roomId, room.from, limit, room.loaded, (err, result) ->
+		lastMessage = ChatMessageHistory.findOne({rid: roomId}, {sort: {ts: 1}})
+		lastMessage ?= ChatMessage.findOne({rid: roomId}, {sort: {ts: 1}})
+
+		if lastMessage?
+			ts = lastMessage.ts
+		else
+			ts = new Date
+
+		Meteor.call 'loadHistory', roomId, ts, limit, 0, (err, result) ->
 			ChatMessageHistory.insert item for item in result
 
 			room.isLoading.set false

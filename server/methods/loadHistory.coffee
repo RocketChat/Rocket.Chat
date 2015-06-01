@@ -6,7 +6,7 @@ Meteor.methods
 		query =
 			rid: rid
 			ts:
-				$lte: end
+				$lt: end
 
 		options =
 			sort:
