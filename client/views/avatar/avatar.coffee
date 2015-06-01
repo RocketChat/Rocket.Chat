@@ -9,5 +9,5 @@ Template.avatar.helpers
 		username = this.username
 		if not username? and this.userId?
 			username = Meteor.users.findOne(this.userId)?.username
-		url = "#{Meteor.absoluteUrl()}/avatar/#{username}"
+		url = "#{Meteor.absoluteUrl()}avatar/#{username}"
 		return url
