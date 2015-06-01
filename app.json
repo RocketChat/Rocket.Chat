@@ -7,7 +7,7 @@
   "env": {
     "BUILDPACK_URL": "https://github.com/AdmitHub/meteor-buildpack-horse.git",
     "ROOT_URL": {
-      "description": "The full URL of your Rocket.Chat app (by default, http://appname.herokuapp.com)."
+      "description": "The full URL of your Rocket.Chat app (https://<App Name>.herokuapp.com)."
     },
     "AWS_ACCESS_KEY_ID": {
       "description": "Your AWS Access Key Id"
