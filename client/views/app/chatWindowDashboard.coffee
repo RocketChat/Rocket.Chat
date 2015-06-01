@@ -384,16 +384,10 @@ Template.chatWindowDashboard.events
 		if event.keyCode is 27 # esc
 			Session.set('editRoomTitle', false)
 		else if event.keyCode is 13 # enter
-			Meteor.call 'saveRoomName', { rid: this._id, name: $(event.currentTarget).val() }, (error, result) ->
-				if result
-					Session.set('editRoomTitle', false)
-
-					toastr.success t('chatWindowDashboard.Room_name_changed_successfully')
-				if error
-					toastr.error error.reason
+			renameRoom this._id, $(event.currentTarget).val()
 
 	'blur #room-title-field': (event) ->
-		Session.set('editRoomTitle', false)
+		renameRoom this._id, $(event.currentTarget).val()
 
 	"click .flex-tab .user-image > a" : (e) ->
 		Session.set('flexOpened', true)
@@ -481,6 +475,19 @@ Template.chatWindowDashboard.onRendered ->
 	console.log 'chatWindowDashboard.rendered' if window.rocketDebug
 	# salva a data da renderização para exibir alertas de novas mensagens
 	$.data(this.firstNode, 'renderedAt', new Date)
+
+renameRoom = (roomId, name) ->
+	if Session.get('roomData' + roomId).name == name
+		Session.set('editRoomTitle', false)
+		return false
+
+	Meteor.call 'saveRoomName', { rid: roomId, name: name }, (error, result) ->
+		if result
+			Session.set('editRoomTitle', false)
+
+			toastr.success t('chatWindowDashboard.Room_name_changed_successfully')
+		if error
+			toastr.error error.reason
 
 toggleAddUser = ->
 	btn = $('.add-user')
