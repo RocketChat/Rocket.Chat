@@ -53,11 +53,11 @@
 				<span>{{_ "chatWindowDashboard.New_messages"}}</span>
 			</div>
 		</div>
-		{{> messagePopup popupEmojiConfig}} {{> messagePopup popupChannelConfig}} {{> messagePopup popupUserConfig}}
 		<footer class="footer">
 			<form class="message-form" method="post" action="/">
 				<div>
 					<!--input type="text" class="input-message" value="" /-->
+					{{> messagePopupConfig getPupupConfig}}
 					<textarea name="msg" class="input-message"></textarea>
 					<i class="icon-paper-plane" title="{{_ "chatWindowDashboard.Send_Message"}}"></i>
 				</div>

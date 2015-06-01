@@ -16,7 +16,10 @@
 					<i class="icon-pencil edit-message"></i>
 				</span>
 				{{#if isEditing}}
-					<textarea class="input-message-editing" contenteditable="true">{{message 'true'}}</textarea>
+					<div class="input-message-editing-container">
+						{{> messagePopupConfig getPupupConfig}}
+						<textarea class="input-message-editing" contenteditable="true">{{message 'true'}}</textarea>
+					</div>
 				{{else}}
 					<div>
 						{{#markdown}}{{#emojione}}{{message}}{{/emojione}}{{/markdown}}
