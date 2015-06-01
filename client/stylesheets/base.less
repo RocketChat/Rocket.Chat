@@ -1448,13 +1448,15 @@ a.github-fork {
 	-moz-user-select: text;
 	-ms-user-select: text;
 	user-select: text;
+	.input-message-editing-container {
+		.calc(width, ~"100% - 16px");
+	}
 	.input-message-editing {
-		display: block;
 		resize: none;
+		display: block;
 		padding-top: 9px;
 		padding-bottom: 9px;
 		overflow-y: hidden;
-		.calc(width, ~"100% - 16px");
 	}
 	.edit-room-title {
 		color: @secondary-font-color;
@@ -1487,11 +1489,14 @@ a.github-fork {
 		width: 100%;
 		min-height: @footer-min-height;
 	}
+	.message-popup-position {
+		position: relative;
+	}
 	.message-popup {
 		position: absolute;
 		background: #FAFAFA;
 		z-index: 101;
-		bottom: @footer-min-height;
+		bottom: 0px;
 		left: 0px;
 		right: 0px;
 		overflow: hidden;
