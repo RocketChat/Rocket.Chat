@@ -11,7 +11,6 @@ if storeType is 'FileSystem'
 	path = "~/uploads"
 	if Meteor.settings?.public?.avatarStore?.path?
 		path = Meteor.settings.public.avatarStore.path
-	console.log path
 
 	store = new FS.Store.FileSystem "avatars",
 		path: path
@@ -27,6 +26,9 @@ else
 
 @Avatars = new FS.Collection "avatars",
 	stores: [store]
+	filter:
+	allow:
+		contentTypes: ['image/*']
 
 @Avatars.allow
 	insert: ->
