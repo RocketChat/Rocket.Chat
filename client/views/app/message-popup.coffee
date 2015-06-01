@@ -80,16 +80,7 @@ Template.messagePopup.onCreated ->
 		if event.which is 13
 			template.open.set false
 
-			value = template.input.value
-			caret = getCursorPosition(template.input)
-			firstPartValue = value.substr 0, caret
-			lastPartValue = value.substr caret
-
-			firstPartValue = firstPartValue.replace(template.selectorRegex, template.prefix + this.getValue(template.value.curValue, template.data.collection) + template.suffix)
-
-			template.input.value = firstPartValue + lastPartValue
-
-			setCursorPosition template.input, firstPartValue.length
+			template.enterValue()
 
 			event.preventDefault()
 			event.stopPropagation()
@@ -121,6 +112,18 @@ Template.messagePopup.onCreated ->
 			Meteor.defer =>
 				template.verifySelection()
 
+	template.enterValue = ->
+		value = template.input.value
+		caret = getCursorPosition(template.input)
+		firstPartValue = value.substr 0, caret
+		lastPartValue = value.substr caret
+
+		firstPartValue = firstPartValue.replace(template.selectorRegex, template.prefix + this.getValue(template.value.curValue, template.data.collection) + template.suffix)
+
+		template.input.value = firstPartValue + lastPartValue
+
+		setCursorPosition template.input, firstPartValue.length
+
 
 Template.messagePopup.onRendered ->
 	this.input = this.data.getInput?()
@@ -150,6 +153,8 @@ Template.messagePopup.events
 		template = Template.instance()
 
 		template.value.set this._id
+
+		template.enterValue()
 
 		template.open.set false
 
