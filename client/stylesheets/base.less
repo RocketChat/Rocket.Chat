@@ -885,15 +885,15 @@ a.github-fork {
 .flex-nav {
 	background-color: @primary-background-color;
 	position: fixed;
-	top: @header-min-height;
+	top: 0;
 	left: 0;
+	height: 100%;
 	padding-top: 15px;
 	z-index: 1000;
 	overflow-y: auto;
 	overflow-x: hidden;
 	width: @rooms-box-width;
 	color: @tertiary-font-color;
-	.calc(height, ~'100% - ' @header-min-height + @footer-min-height);
 	.transition(transform .3s cubic-bezier(.5, 0, .1, 1));
 	.custom-scroll(transparent, rgba(255, 255, 255, 0.05));
 	&.hidden {
@@ -917,7 +917,7 @@ a.github-fork {
 		}
 	}
 	.content {
-		padding: 0 20px;
+		padding: 0 20px 20px;
 	}
 	.input-line {
 		margin-bottom: 25px;
@@ -1271,7 +1271,7 @@ a.github-fork {
 		.icon-at,
 		.icon-hash {
 			margin-right: -7px;
-			color: @secondary-font-color;
+			color: #CCCCCC;
 		}
 	}
 	.hidden {
