@@ -8,15 +8,6 @@
     "BUILDPACK_URL": "https://github.com/RocketChat/heroku-buildpack-meteor.git",
     "ROOT_URL": {
       "description": "The full URL of your Rocket.Chat app (https://<App Name>.herokuapp.com)."
-    },
-    "AWS_ACCESS_KEY_ID": {
-      "description": "Your AWS Access Key Id"
-    },
-    "AWS_SECRET_ACCESS_KEY": {
-      "description": "Your AWS Secret Access Key"
-    },
-    "AWS_BUCKET": {
-      "description": "The AWS Bucket"
     }
   },
   "addons": [
