@@ -39,7 +39,6 @@ tap:i18n
 tmeasday:crypto-md5
 tmeasday:errors
 todda00:friendly-slugs
-utilities:avatar
 simple:highlight.js
 percolate:migrations
 underscorestring:underscore.string
