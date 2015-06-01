@@ -49,3 +49,4 @@ http
 cfs:filesystem
 cfs:standard-packages
 cfs:gridfs
+cfs:graphicsmagick
