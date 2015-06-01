@@ -48,6 +48,13 @@ Template.chatMessageDashboard.helpers
 		text = text.replace(/#/g, '\\#')
 		return text
 
+	getPupupConfig: ->
+		template = Template.instance()
+		return {
+			getInput: ->
+				return template.find('.input-message-editing')
+		}
+
 Template.chatMessageDashboard.events
 	'mousedown .edit-message': ->
 		self = this
