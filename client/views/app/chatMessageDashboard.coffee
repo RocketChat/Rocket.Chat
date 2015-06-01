@@ -68,7 +68,7 @@ Template.chatMessageDashboard.onRendered ->
 	chatMessages = $('.messages-box .wrapper')
 	message = $(this.firstNode)
 
-	if message.data('scroll-to-bottom')?
+	if this.data.scroll? and message.data('scroll-to-bottom')?
 		if message.data('scroll-to-bottom') and (this.parentTemplate().scrollOnBottom or this.data.data.uid is Meteor.userId())
 			chatMessages.stop().animate({scrollTop: 99999}, 1000 )
 		else

@@ -3,6 +3,7 @@ Meteor.startup ->
 	UserPresence.start()
 
 	window.lastMessageWindow = {}
+	window.lastMessageWindowHistory = {}
 
 	@defaultUserLanguage = -> 
 		lng = window.navigator.userLanguage || window.navigator.language || 'en'
