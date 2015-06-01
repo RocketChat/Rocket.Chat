@@ -1,53 +1,13 @@
-Template.avatarPrompt.onCreated ->
-	self = this
-	self.suggestions = new ReactiveVar
-	self.upload = new ReactiveVar
+Template.avatar.helpers
+	dimensions: ->
+		return {
+			width: 40
+			height: 40
+		}
 
-	self.getSuggestions = ->
-		self.suggestions.set undefined
-		Meteor.call 'getAvatarSuggestion', (error, avatars) ->
-			self.suggestions.set
-				ready: true
-				avatars: avatars
-
-	self.getSuggestions()
-
-
-Template.avatarPrompt.helpers
-	suggestions: ->
-		return Template.instance().suggestions.get()
-
-	upload: ->
-		return Template.instance().upload.get()
-
-
-Template.avatarPrompt.events
-	'click .select-service': (e) ->
-		Meteor.call 'setAvatarFromService', this.blob, this.service, ->
-			console.log arguments
-
-	'click .login-with-service': (event, template) ->
-		loginWithService = "loginWith#{_.capitalize(this)}"
-
-		serviceConfig = {}
-
-		Meteor[loginWithService] serviceConfig, (error) ->
-			if error?.error is 'github-no-public-email'
-				alert t("loginServices.github_no_public_email")
-				return
-
-			console.log error
-			if error?
-				toastr.error error.message
-				return
-
-			template.getSuggestions()
-
-	'change .myFileInput': (event, template) ->
-		FS.Utility.eachFile event, (blob) ->
-			reader = new FileReader()
-			reader.readAsDataURL(blob)
-			reader.onloadend = ->
-				template.upload.set
-					service: 'upload'
-					blob: reader.result
+	imageUrl: ->
+		username = this.username
+		if not username? and this.userId?
+			username = Meteor.users.findOne(this.userId)?.username
+		url = "#{Meteor.absoluteUrl()}/avatar/#{username}"
+		return url

@@ -115,7 +115,6 @@ simple:highlight.js@1.0.9
 spacebars@1.0.6
 spacebars-compiler@1.0.6
 srp@1.0.3
-stylus@1.0.7
 tap:i18n@1.4.1
 templating@1.1.1
 tmeasday:crypto-base@3.1.2
@@ -127,7 +126,6 @@ ui@1.0.6
 underscore@1.0.3
 underscorestring:underscore.string@3.0.3_1
 url@1.0.4
-utilities:avatar@0.7.10
 webapp@1.2.0
 webapp-hashing@1.0.3
 yasaricli:slugify@0.0.5
