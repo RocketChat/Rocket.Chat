@@ -7,15 +7,23 @@ store = undefined
 beforeWrite = (fileObj) ->
 	fileObj._setInfo 'avatars', 'storeType', storeType, true
 
+transformWrite = (fileObj, readStream, writeStream) ->
+	if Meteor.settings?.public?.avatarStore?.size?.height?
+		height = Meteor.settings.public.avatarStore.size.height
+		width = Meteor.settings.public.avatarStore.size.width
+		gm(readStream, fileObj.name()).resize(height, width).stream().pipe(writeStream)
+	else
+		readStream.pipe(writeStream)
+
 if storeType is 'FileSystem'
 	path = "~/uploads"
 	if Meteor.settings?.public?.avatarStore?.path?
 		path = Meteor.settings.public.avatarStore.path
-	console.log path
 
 	store = new FS.Store.FileSystem "avatars",
 		path: path
 		beforeWrite: beforeWrite
+		transformWrite: transformWrite
 		fileKeyMaker: (fileObj) ->
 			filename = fileObj.name()
 			filenameInStore = fileObj.name({store: 'avatars'})
@@ -24,9 +32,13 @@ if storeType is 'FileSystem'
 else
 	store = new FS.Store.GridFS "avatars",
 		beforeWrite: beforeWrite
+		transformWrite: transformWrite
 
 @Avatars = new FS.Collection "avatars",
 	stores: [store]
+	filter:
+		allow:
+			contentTypes: ['image/*']
 
 @Avatars.allow
 	insert: ->
