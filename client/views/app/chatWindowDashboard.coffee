@@ -387,7 +387,9 @@ Template.chatWindowDashboard.events
 			renameRoom this._id, $(event.currentTarget).val()
 
 	'blur #room-title-field': (event) ->
-		renameRoom this._id, $(event.currentTarget).val()
+		# TUDO: create a configuration to select the desired behaviour
+		# renameRoom this._id, $(event.currentTarget).val()
+		Session.set('editRoomTitle', false)
 
 	"click .flex-tab .user-image > a" : (e) ->
 		Session.set('flexOpened', true)
