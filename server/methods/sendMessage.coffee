@@ -48,8 +48,6 @@ Meteor.methods
 		if not Meteor.userId()
 			throw new Meteor.Error('invalid-user', "[methods] updateMessage -> Invalid user")
 
-		userMessage = Autolinker.link(_.stripTags(msg.message), { stripPrefix: false })
-
 		now = new Date()
 
 		messageFilter = { _id: msg.id, uid: Meteor.userId() }
@@ -57,6 +55,6 @@ Meteor.methods
 		ChatMessage.update messageFilter,
 			$set:
 				ets: now
-				msg: userMessage
+				msg: msg.message
 
 		return
