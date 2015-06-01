@@ -268,9 +268,10 @@ Template.chatWindowDashboard.helpers
 			getInput: ->
 				return template.find('.input-message')
 			getFilter: (collection, filter) ->
-				return collection.find({name: new RegExp(filter, 'i')}, {limit: 10})
+				exp = new RegExp(filter, 'i')
+				return collection.find({username: {$exists: true}, $or: [{name: exp}, {username: exp}]}, {limit: 10})
 			getValue: (_id, collection) ->
-				return collection.findOne(_id)?.name?.replace(/\s/g, '_').toLowerCase()
+				return collection.findOne(_id)?.username
 
 		return config
 
