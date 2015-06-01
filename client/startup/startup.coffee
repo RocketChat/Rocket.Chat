@@ -85,3 +85,6 @@ Meteor.startup ->
 				# KonchatNotification.showDesktop(roomData, self.data.uid + ': ' + self.data.msg)
 
 				KonchatNotification.newMessage()
+
+	# Add ascii support to emojione
+	emojione?.ascii = true
