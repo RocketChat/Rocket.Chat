@@ -18,11 +18,11 @@
 				{{#if isEditing}}
 					<div class="input-message-editing-container">
 						{{> messagePopupConfig getPupupConfig}}
-						<textarea class="input-message-editing" contenteditable="true">{{message 'true'}}</textarea>
+						<textarea class="input-message-editing">{{message}}</textarea>
 					</div>
 				{{else}}
 					<div>
-						{{#markdown}}{{#emojione}}{{message}}{{/emojione}}{{/markdown}}
+						{{#markdown}}{{#emojione}}{{autolinker message}}{{/emojione}}{{/markdown}}
 					</div>
 				{{/if}}
 			{{/if}}
