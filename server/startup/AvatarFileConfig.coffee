@@ -16,7 +16,7 @@ Meteor.startup ->
 		height = Meteor.settings.public.avatarStore.size.height
 		width = Meteor.settings.public.avatarStore.size.width
 		transformWrite = (file, readStream, writeStream) ->
-			RocketFile.gm(readStream, file.fileName).background('#ffffff').resize(width, height).gravity('Center').extent(width, height).stream('jpeg').pipe(writeStream)
+			RocketFile.gm(readStream, file.fileName).background('#ffffff').resize(width, height+'^>').gravity('Center').extent(width, height).stream('jpeg').pipe(writeStream)
 
 	path = "~/uploads"
 
