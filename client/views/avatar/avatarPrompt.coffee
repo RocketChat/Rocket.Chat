@@ -23,7 +23,7 @@ Template.avatarPrompt.helpers
 
 Template.avatarPrompt.events
 	'click .select-service': (e) ->
-		Meteor.call 'setAvatarFromService', this.blob, this.service, ->
+		Meteor.call 'setAvatarFromService', this.blob, this.contentType, this.service, ->
 			Session.set('AvatarRandom', Date.now())
 			console.log arguments
 
@@ -54,4 +54,5 @@ Template.avatarPrompt.events
 			reader.onloadend = ->
 				template.upload.set
 					service: 'upload'
+					contentType: blob.type
 					blob: reader.result
