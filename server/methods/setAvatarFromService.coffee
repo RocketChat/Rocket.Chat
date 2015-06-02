@@ -21,6 +21,6 @@ Meteor.methods
 
 		user = Meteor.user()
 
-		Avatars.remove {'copies.avatars.name': user.username}
+		RocketFileAvatarInstance.deleteFile user.username
 
 		Meteor.users.update user._id, {$unset: {avatarOrigin: 1}}
