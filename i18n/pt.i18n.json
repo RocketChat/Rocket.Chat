@@ -7,11 +7,11 @@
 	},
 	"chatMessageDashboard": {
 		"edited": "editado",
-		"Room_name_changed": "Nome da sala alterado para: <em>%s</em> por <em>%s</em>",
+		"Room_name_changed": "Nome da sala alterado para: <em>__room_name__</em> por <em>__user_by__</em>",
 		"User_added": "Usuário <em>%s</em> adicionado à conversa.",
-		"User_added_by": "Usuário <em>%s</em> adicionado à conversa por <em>%s</em>.",
+		"User_added_by": "Usuário <em>__user_added__</em> adicionado à conversa por <em>__user_by__</em>.",
 		"User_left": "Usuário <em>%s</em> deixou a conversa.",
-		"User_removed_by": "Usuário <em>%s</em> removido da conversa por <em>%s</em>.",
+		"User_removed_by": "Usuário <em>__user_removed__</em> removido da conversa por <em>__user_by__</em>.",
 		"Welcome": "Seja bem-vindo <em>%s</em>."
 	},
 	"chatRoomItem": {
@@ -49,7 +49,7 @@
 		"See_all": "Ver todos",
 		"See_only_online": "Apenas online",
 		"Send_Message": "Enviar Mensagem",
-		"Showing_online_users": "Mostrando <b>%s</b> de %s usuários",
+		"Showing_online_users": "Mostrando <b>__total_online__</b> de __total__ usuários",
 		"Start_of_conversation": "Início da conversa",
 		"View_All": "Ver Todos"
 	},
