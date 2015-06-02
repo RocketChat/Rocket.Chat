@@ -1,0 +1,29 @@
+{
+  "dependencies": {
+    "gm": {
+      "version": "1.18.1",
+      "dependencies": {
+        "debug": {
+          "version": "2.2.0",
+          "dependencies": {
+            "ms": {
+              "version": "0.7.1"
+            }
+          }
+        },
+        "array-series": {
+          "version": "0.1.5"
+        },
+        "array-parallel": {
+          "version": "0.1.3"
+        }
+      }
+    },
+    "gridfs-stream": {
+      "version": "0.5.3"
+    },
+    "mkdirp": {
+      "version": "0.3.5"
+    }
+  }
+}

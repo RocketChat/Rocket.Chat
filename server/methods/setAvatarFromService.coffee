@@ -1,16 +1,18 @@
 Meteor.methods
-	setAvatarFromService: (image, service) ->
+	setAvatarFromService: (dataURI, service) ->
 		if not Meteor.userId()
 			throw new Meteor.Error 203, '[methods] typingStatus -> Usuário não logado'
 
 		user = Meteor.user()
 
-		file = new FS.File image
-		file.attachData image, ->
-			file.name user.username
+		{image, contentType} = RocketFile.dataURIParse dataURI
 
-			Avatars.insert file, (err, fileObj) ->
-				Meteor.users.update {_id: user._id}, {$set: {avatarOrigin: service}}
+		rs = RocketFile.bufferToStream new Buffer(image, 'base64')
+		ws = RocketFileAvatarInstance.createWriteStream user.username, contentType
+		ws.on 'end', Meteor.bindEnvironment ->
+			Meteor.users.update {_id: user._id}, {$set: {avatarOrigin: service}}
+
+		rs.pipe(ws)
 
 
 	resetAvatar: (image, service) ->
@@ -19,6 +21,6 @@ Meteor.methods
 
 		user = Meteor.user()
 
-		Avatars.remove {'copies.avatars.name': user.username}
+		RocketFileAvatarInstance.deleteFile user.username
 
 		Meteor.users.update user._id, {$unset: {avatarOrigin: 1}}
