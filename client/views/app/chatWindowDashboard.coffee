@@ -467,6 +467,10 @@ Template.chatWindowDashboard.events
 	'click .see-all': (e, instance) ->
 		instance.showUsersOffline.set(!instance.showUsersOffline.get())
 
+	'keydown textarea[name=msg]': (e) ->
+		if e.keyCode is 75 and ((navigator?.platform?.indexOf('Mac') isnt -1 and e.metaKey) or (navigator?.platform?.indexOf('Mac') is -1 and e.ctrlKey))
+			$('li.message, li.date', '.messages-box').remove()
+
 Template.chatWindowDashboard.onCreated ->
 	this.scrollOnBottom = true
 	this.showUsersOffline = new ReactiveVar false
