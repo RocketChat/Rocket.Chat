@@ -1,3 +1,23 @@
+if Meteor.isServer
+	@RocketFileInstance = new RocketFile.GridFS 'avatars'
+	# @RocketFileInstance = new RocketFile.FileSystem
+
+	HTTP.methods
+		'/avatar/:username':
+			'stream': true
+			'get': (data) ->
+				this.params.username
+				file = RocketFileInstance.getFileWithReadStream this.params.username
+
+				this.setContentType file.contentType
+				this.addHeader 'Content-Disposition', 'inline'
+				this.addHeader 'Content-Length', file.length
+
+				file.readStream.pipe this.createWriteStream()
+				return
+  
+
+FS.debug = false
 storeType = 'GridFS'
 if Meteor.settings?.public?.avatarStore?.type?
 	storeType = Meteor.settings.public.avatarStore.type
@@ -48,22 +68,22 @@ else
 	download: ->
 		return true
 
-Meteor.startup ->
-	if Meteor.isServer
-		FS.HTTP.mount ['/avatar/:filename'], ->
-			self = this
-			opts = FS.Utility.extend({}, self.query || {}, self.params || {})
+# Meteor.startup ->
+# 	if Meteor.isServer
+# 		FS.HTTP.mount ['/avatar/:filename'], ->
+# 			self = this
+# 			opts = FS.Utility.extend({}, self.query || {}, self.params || {})
 
-			collectionName = opts.collectionName
+# 			collectionName = opts.collectionName
 
-			collection = FS._collections['avatars']
+# 			collection = FS._collections['avatars']
 
-			file = if collection? then collection.findOne({ "copies.avatars.name": opts.filename, "copies.avatars.storeType": storeType }) else null
+# 			file = if collection? then collection.findOne({ "copies.avatars.name": opts.filename, "copies.avatars.storeType": storeType }) else null
 
-			return {
-				collection: collection
-				file: file
-				storeName: 'avatars'
-				download: opts.download
-				filename: opts.filename
-			}
+# 			return {
+# 				collection: collection
+# 				file: file
+# 				storeName: 'avatars'
+# 				download: opts.download
+# 				filename: opts.filename
+# 			}
