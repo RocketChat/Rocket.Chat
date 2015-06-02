@@ -7,7 +7,8 @@ Package.describe({
 
 Npm.depends({
 	'mkdirp': '0.3.5',
-	'gridfs-stream': '0.5.3'
+	'gridfs-stream': '0.5.3',
+	'gm' :'1.18.1'
 });
 
 Package.onUse(function(api) {

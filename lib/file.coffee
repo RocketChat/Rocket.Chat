@@ -1,6 +1,13 @@
 if Meteor.isServer
-	# @RocketFileInstance = new RocketFile.GridFS 'avatars'
-	@RocketFileInstance = new RocketFile.FileSystem
+	transformWrite = (file, readStream, writeStream) ->
+		RocketFile.gm(readStream, file.fileName).resize(10, 10).stream().pipe(writeStream)
+
+	@RocketFileInstance = new RocketFile.GridFS
+		name: 'avatars'
+		transformWrite: transformWrite
+
+	# @RocketFileInstance = new RocketFile.FileSystem
+		# transformWrite: transformWrite
 
 	HTTP.methods
 		'/avatar/:username':
