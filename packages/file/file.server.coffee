@@ -40,9 +40,15 @@ RocketFile.GridFS = class
 
 		this.store = new Grid(db, mongo)
 		this.findOneSync = Meteor.wrapAsync this.store.collection(this.name).findOne.bind this.store.collection(this.name)
+		this.removeSync = Meteor.wrapAsync this.store.remove.bind this.store
 
 	findOne: (fileName) ->
 		return this.findOneSync {_id: fileName}
+
+	remove: (fileName) ->
+		return this.removeSync
+			_id: fileName
+			root: this.name
 
 	createWriteStream: (fileName, contentType) ->
 		self = this
@@ -84,6 +90,13 @@ RocketFile.GridFS = class
 			length: file.length
 		}
 
+	deleteFile: (fileName) ->
+		file = this.findOne fileName
+		if not file?
+			return undefined
+
+		return this.remove fileName
+
 
 RocketFile.FileSystem = class
 	constructor: (config={}) ->
@@ -103,6 +116,7 @@ RocketFile.FileSystem = class
 		this.absolutePath = path.resolve absolutePath
 		mkdirp.sync this.absolutePath
 		this.statSync = Meteor.wrapAsync fs.stat.bind fs
+		this.unlinkSync = Meteor.wrapAsync fs.unlink.bind fs
 
 	createWriteStream: (fileName, contentType) ->
 		self = this
@@ -124,15 +138,25 @@ RocketFile.FileSystem = class
 	stat: (fileName) ->
 		return this.statSync path.join this.absolutePath, fileName
 
+	remove: (fileName) ->
+		return this.unlinkSync path.join this.absolutePath, fileName
+
 	getFileWithReadStream: (fileName) ->
-		stat = this.stat fileName
-		if not stat?
+		try
+			stat = this.stat fileName
+			rs = this.createReadStream fileName
+
+			return {
+				readStream: rs
+				# contentType: file.contentType
+				length: stat.size
+			}
+		catch e
 			return undefined
 
-		rs = this.createReadStream fileName
-
-		return {
-			readStream: rs
-			# contentType: file.contentType
-			length: stat.size
-		}
+	deleteFile: (fileName) ->
+		try
+			stat = this.stat fileName
+			return this.remove fileName
+		catch e
+			return undefined
