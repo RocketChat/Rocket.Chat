@@ -4,11 +4,6 @@ fs = Npm.require('fs')
 path = Npm.require('path')
 mkdirp = Npm.require('mkdirp')
 
-mongo = Npm.require('mongodb')
-mongoUrl = process.env.MONGO_URL
-# mongo = Package.mongo.MongoInternals.NpmModule
-# connection = Package.mongo.MongoInternals.defaultRemoteCollectionDriver().mongo
-
 RocketFile = {}
 
 RocketFile.bufferToStream = (buffer) ->
@@ -26,11 +21,11 @@ RocketFile.dataURIParse = (dataURI) ->
 
 RocketFile.GridFS = class
 	constructor: (@name='file') ->
-		self = this
-		mongoOptions = { db: { native_parser: true }, server: { auto_reconnect: true }}
-		mongo.MongoClient.connect mongoUrl, mongoOptions, (err, db) ->
-			self.store = new Grid(db, mongo)
-			self.findOneSync = Meteor.wrapAsync RocketFileInstance.store.collection(self.name).findOne.bind RocketFileInstance.store.collection(self.name)
+		mongo = Package.mongo.MongoInternals.NpmModule
+		db = Package.mongo.MongoInternals.defaultRemoteCollectionDriver().mongo.db
+
+		this.store = new Grid(db, mongo)
+		this.findOneSync = Meteor.wrapAsync this.store.collection(this.name).findOne.bind this.store.collection(this.name)
 
 	findOne: (fileName) ->
 		return this.findOneSync {filename: fileName}
