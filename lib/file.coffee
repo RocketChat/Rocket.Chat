@@ -9,6 +9,8 @@ if Meteor.isServer
 	if not RocketStore?
 		throw new Error "Invalid RocketStore type [#{storeType}]"
 
+	console.log "Using #{storeType} for Avatar storage".green
+
 	transformWrite = undefined
 	if Meteor.settings?.public?.avatarStore?.size?.height?
 		height = Meteor.settings.public.avatarStore.size.height
@@ -21,7 +23,7 @@ if Meteor.isServer
 	if Meteor.settings?.public?.avatarStore?.path?
 		path = Meteor.settings.public.avatarStore.path
 
-	@RocketFileAvatarInstance = new RocketFile.GridFS
+	@RocketFileAvatarInstance = new RocketStore
 		name: 'avatars'
 		absolutePath: path
 		transformWrite: transformWrite
