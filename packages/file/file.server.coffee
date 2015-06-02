@@ -69,16 +69,26 @@ RocketFile.FileSystem = class
 
 		this.absolutePath = path.resolve absolutePath
 		mkdirp.sync this.absolutePath
+		this.statSync = Meteor.wrapAsync fs.stat.bind fs
 
 	createWriteStream: (fileName, contentType) ->
-		console.log path.join this.absolutePath, fileName
 		return fs.createWriteStream path.join this.absolutePath, fileName
 
-	write: (fileName, data) ->
-		fs.writeFileSync(fileName, data)
-
 	createReadStream: (fileName) ->
-		return this.store.createReadStream
-			filename: fileName
+		return fs.createReadStream path.join this.absolutePath, fileName
 
-			# fs.createReadStream('/some/path').pipe(writestream)
+	stat: (fileName) ->
+		return this.statSync path.join this.absolutePath, fileName
+
+	getFileWithReadStream: (fileName) ->
+		stat = this.stat fileName
+		if not stat?
+			return undefined
+
+		rs = this.createReadStream fileName
+
+		return {
+			readStream: rs
+			# contentType: file.contentType
+			length: stat.size
+		}
