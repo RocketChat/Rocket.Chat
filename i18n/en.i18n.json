@@ -34,7 +34,8 @@
 		"No_channels_yet": "You aren't part of any channel yet.",
 		"No_direct_messages_yet": "You haven't started any conversations yet.",
 		"No_groups_yet": "You have no private groups yet.",
-		"No_favorites_yet": "You haven't added any favorites yet."
+		"No_favorites_yet": "You haven't added any favorites yet.",
+		"Create_new_channel": "Create a new channel"
 	},
 	"chatWindowDashboard": {
 		"Add_users": "Add users",

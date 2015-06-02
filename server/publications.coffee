@@ -29,7 +29,7 @@ Meteor.publish 'myRoomActivity', ->
 	return Meteor.publishWithRelations
 		handle: this
 		collection: ChatSubscription
-		filter: { uid: this.userId, $or: [ { ts: { $gte: moment().subtract(1, 'days').startOf('day').toDate() } }, { f: true } ] }
+		filter: { uid: this.userId, hide: { $ne: true } }
 		mappings: [
 			key: 'rid'
 			reverse: false

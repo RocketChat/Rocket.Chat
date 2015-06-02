@@ -9,10 +9,9 @@ Template.channels.helpers
 
 Template.channels.events
 	'click .add-room': (e, instance) ->
-		SideNav.setFlex "channelsFlex"
+		SideNav.setFlex "createChannelFlex"
 		SideNav.openFlex()
-		# $('.channel-flex').removeClass('_hidden')
-		# instance.clearForm()
-		# $('#channel-name').focus()
 
-Template.channels.onCreated ->
+	'click .more-channels': ->
+		SideNav.setFlex "listChannelsFlex"
+		SideNav.openFlex()
