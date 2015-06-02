@@ -6,7 +6,6 @@ Package.describe({
 });
 
 Npm.depends({
-	mongodb: '1.4.35',
 	mkdirp: "0.3.5",
 	'gridfs-stream': '0.5.3'
 });
