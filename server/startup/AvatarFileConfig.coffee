@@ -1,4 +1,4 @@
-if Meteor.isServer
+Meteor.startup ->
 	storeType = 'GridFS'
 
 	if Meteor.settings?.public?.avatarStore?.type?
@@ -41,4 +41,3 @@ if Meteor.isServer
 
 				file.readStream.pipe this.createWriteStream()
 				return
-  
