@@ -28,10 +28,11 @@ RocketFile.GridFS = class
 		this.findOneSync = Meteor.wrapAsync this.store.collection(this.name).findOne.bind this.store.collection(this.name)
 
 	findOne: (fileName) ->
-		return this.findOneSync {filename: fileName}
+		return this.findOneSync {_id: fileName}
 
 	createWriteStream: (fileName, contentType) ->
 		return this.store.createWriteStream
+			_id: fileName
 			filename: fileName
 			mode: 'w'
 			root: this.name
@@ -39,7 +40,7 @@ RocketFile.GridFS = class
 
 	createReadStream: (fileName) ->
 		return this.store.createReadStream
-			filename: fileName
+			_id: fileName
 			root: this.name
 		return undefined
 
