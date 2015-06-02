@@ -35,6 +35,7 @@
 				blob = "data:#{result.headers['content-type']};base64," 
 				blob += Buffer(result.content, 'binary').toString('base64')
 				avatar.blob = blob
+				avatar.contentType = result.headers['content-type']
 				validAvatars[avatar.service] = avatar
 		catch e
 			# ...
