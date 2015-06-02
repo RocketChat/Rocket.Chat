@@ -37,7 +37,7 @@ Meteor.methods
 				expireAt: 1
 
 		# increment unread counter on which user in room
-		ChatSubscription.update activityFilter, { $inc: { unread: 1 }, $set: { ts: now } }, { multi: true }
+		Meteor.defer -> ChatSubscription.update activityFilter, { $inc: { unread: 1 }, $set: { ts: now } }, { multi: true }
 
 		return retObj
 
