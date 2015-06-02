@@ -1,5 +1,4 @@
 @t = (key, replaces...) ->
-	console.log key, replaces
 	if _.isObject replaces[0]
 		return TAPi18n.__ key, replaces
 	else
