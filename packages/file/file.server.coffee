@@ -3,8 +3,10 @@ stream = Npm.require('stream')
 fs = Npm.require('fs')
 path = Npm.require('path')
 mkdirp = Npm.require('mkdirp')
+gm = Npm.require('gm')
 
-RocketFile = {}
+RocketFile =
+	gm: gm
 
 RocketFile.bufferToStream = (buffer) ->
 	bufferStream = new stream.PassThrough()
@@ -18,9 +20,21 @@ RocketFile.dataURIParse = (dataURI) ->
 		contentType: imageData[0].replace('data:', '')
 	}
 
+RocketFile.addPassThrough = (st, fn) ->
+	pass = new stream.PassThrough()
+	fn pass, st
+	return pass
+
 
 RocketFile.GridFS = class
-	constructor: (@name='file') ->
+	constructor: (config={}) ->
+		{name, transformWrite} = config
+
+		name ?= 'file'
+
+		this.name = name
+		this.transformWrite = transformWrite
+
 		mongo = Package.mongo.MongoInternals.NpmModule
 		db = Package.mongo.MongoInternals.defaultRemoteCollectionDriver().mongo.db
 
@@ -31,12 +45,25 @@ RocketFile.GridFS = class
 		return this.findOneSync {_id: fileName}
 
 	createWriteStream: (fileName, contentType) ->
-		return this.store.createWriteStream
+		self = this
+
+		ws = this.store.createWriteStream
 			_id: fileName
 			filename: fileName
 			mode: 'w'
 			root: this.name
 			content_type: contentType
+
+		if self.transformWrite?
+			ws = RocketFile.addPassThrough ws, (rs, ws) ->
+				file =
+					name: self.name
+					fileName: fileName
+					contentType: contentType
+
+				self.transformWrite file, rs, ws
+
+		return ws
 
 	createReadStream: (fileName) ->
 		return this.store.createReadStream
@@ -59,7 +86,13 @@ RocketFile.GridFS = class
 
 
 RocketFile.FileSystem = class
-	constructor: (absolutePath='~/uploads') ->
+	constructor: (config={}) ->
+		{absolutePath, transformWrite} = config
+
+		absolutePath ?= '~/uploads'
+
+		this.transformWrite = transformWrite
+
 		if absolutePath.split(path.sep)[0] is '~'
 			homepath = process.env.HOME or process.env.HOMEPATH or process.env.USERPROFILE
 			if homepath?
@@ -72,7 +105,18 @@ RocketFile.FileSystem = class
 		this.statSync = Meteor.wrapAsync fs.stat.bind fs
 
 	createWriteStream: (fileName, contentType) ->
-		return fs.createWriteStream path.join this.absolutePath, fileName
+		self = this
+
+		ws = fs.createWriteStream path.join this.absolutePath, fileName
+
+		if self.transformWrite?
+			ws = RocketFile.addPassThrough ws, (rs, ws) ->
+				file =
+					fileName: fileName
+					contentType: contentType
+
+				self.transformWrite file, rs, ws
+		return ws
 
 	createReadStream: (fileName) ->
 		return fs.createReadStream path.join this.absolutePath, fileName
