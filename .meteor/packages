@@ -46,8 +46,4 @@ meteorhacks:kadira
 yasaricli:slugify
 jparker:gravatar
 http
-cfs:filesystem
-cfs:standard-packages
-cfs:gridfs
-cfs:graphicsmagick
 rocket:file
