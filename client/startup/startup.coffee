@@ -2,6 +2,8 @@ Meteor.startup ->
 	UserPresence.awayTime = 300000
 	UserPresence.start()
 
+	Session.setDefault('AvatarRandom', Date.now())
+
 	window.lastMessageWindow = {}
 	window.lastMessageWindowHistory = {}
 

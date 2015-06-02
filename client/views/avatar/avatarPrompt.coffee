@@ -24,6 +24,7 @@ Template.avatarPrompt.helpers
 Template.avatarPrompt.events
 	'click .select-service': (e) ->
 		Meteor.call 'setAvatarFromService', this.blob, this.service, ->
+			Session.set('AvatarRandom', Date.now())
 			console.log arguments
 
 	'click .login-with-service': (event, template) ->
@@ -43,8 +44,11 @@ Template.avatarPrompt.events
 
 			template.getSuggestions()
 
-	'change .myFileInput': (event, template) ->
+	'change .avatar-file-input': (event, template) ->
 		FS.Utility.eachFile event, (blob) ->
+			file = new FS.File(blob)
+			if not file? or file.isImage() is false
+				return 
 			reader = new FileReader()
 			reader.readAsDataURL(blob)
 			reader.onloadend = ->
