@@ -7,11 +7,11 @@
 	},
 	"chatMessageDashboard": {
 		"edited": "수정됨",
-		"Room_name_changed": "방 이름 변경: <em>%s2</em>에서 <em>%s1</em>로.",
+		"Room_name_changed": "방 이름 변경: <em>__user_by__</em>에서 <em>__room_name__</em>로.",
 		"User_added": "사용자 <em>%s</em> 추가함.",
-		"User_added_by": "사용자 <em>%s1</em>을/를 <em>%s2</em>에 추가함.",
+		"User_added_by": "사용자 <em>__user_added__</em>을/를 <em>__user_by__</em>에 추가함.",
 		"User_left": "사용자 <em>%s</em> 떠남.",
-		"User_removed_by": "사용자 <em>%s1</em>을/를 <em>%s2</em>에서 삭제됨.",
+		"User_removed_by": "사용자 <em>__user_removed__</em>을/를 <em>__user_by__</em>에서 삭제됨.",
 		"Welcome": "환영합니다, <em>%s</em>."
 	},
 	"chatRoomItem": {
@@ -49,7 +49,7 @@
 		"See_all": "모두 보기",
 		"See_only_online": "온라인에서만",
 		"Send_Message": "메시지 보내기",
-		"Showing_online_users": "%s2 사용자의 <b>%s1</b> 표시",
+		"Showing_online_users": "__total__ 사용자의 <b>__total_online__</b> 표시",
 		"Start_of_conversation": "대화 시작",
 		"View_All": "모두 보기"
 	},
