@@ -13,6 +13,7 @@ Meteor.methods
 			Meteor.users.update {_id: user._id}, {$set: {avatarOrigin: service}}
 
 		rs.pipe(ws)
+		return
 
 
 	resetAvatar: (image, service) ->
@@ -24,3 +25,4 @@ Meteor.methods
 		RocketFileAvatarInstance.deleteFile user.username
 
 		Meteor.users.update user._id, {$unset: {avatarOrigin: 1}}
+		return
