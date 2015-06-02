@@ -1,6 +1,6 @@
 if Meteor.isServer
-	@RocketFileInstance = new RocketFile.GridFS 'avatars'
-	# @RocketFileInstance = new RocketFile.FileSystem
+	# @RocketFileInstance = new RocketFile.GridFS 'avatars'
+	@RocketFileInstance = new RocketFile.FileSystem
 
 	HTTP.methods
 		'/avatar/:username':
@@ -9,7 +9,7 @@ if Meteor.isServer
 				this.params.username
 				file = RocketFileInstance.getFileWithReadStream this.params.username
 
-				this.setContentType file.contentType
+				this.setContentType file.contentType or 'image/jpeg'
 				this.addHeader 'Content-Disposition', 'inline'
 				this.addHeader 'Content-Length', file.length
 
