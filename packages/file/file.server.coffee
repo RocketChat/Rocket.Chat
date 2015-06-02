@@ -69,6 +69,9 @@ RocketFile.GridFS = class
 
 				self.transformWrite file, rs, ws
 
+		ws.on 'close', ->
+			ws.emit 'end'
+
 		return ws
 
 	createReadStream: (fileName) ->
@@ -130,6 +133,10 @@ RocketFile.FileSystem = class
 					contentType: contentType
 
 				self.transformWrite file, rs, ws
+
+		ws.on 'close', ->
+			ws.emit 'end'
+
 		return ws
 
 	createReadStream: (fileName) ->
