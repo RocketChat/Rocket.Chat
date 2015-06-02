@@ -45,10 +45,15 @@ Template.avatarPrompt.events
 			template.getSuggestions()
 
 	'change .avatar-file-input': (event, template) ->
-		FS.Utility.eachFile event, (blob) ->
-			file = new FS.File(blob)
-			if not file? or file.isImage() is false
-				return 
+		e = event.originalEvent or event
+		files = e.target.files
+		if not files or files.length is 0
+			files = e.dataTransfer?.files or []
+
+		for blob in files
+			if not /image\/.+/.test blob.type
+				return
+
 			reader = new FileReader()
 			reader.readAsDataURL(blob)
 			reader.onloadend = ->
