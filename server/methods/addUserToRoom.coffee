@@ -18,27 +18,6 @@ Meteor.methods
 
 		newUser = Meteor.users.findOne data.uid
 
-		# if room name wasn't changed, update with new member
-		# unless room.nc
-		# 	users = room.uids
-		# 	users.push data.uid
-
-		# 	usersName = []
-
-		# 	Meteor.users.find({ _id: { $in: users } }, { fields: { name: 1 }, sort: { name: 1 } }).forEach (user) ->
-		# 		usersName.push user.name
-
-		# 	room.name = usersName.join ', '
-
-		# 	update.$set =
-		# 		name: room.name
-
-		# 	ChatSubscription.update { rid: data.rid },
-		# 		$set:
-		# 			rn: room.name
-		# 	,
-		# 		multi: true
-
 		ChatRoom.update data.rid, update
 
 		ChatSubscription.insert
