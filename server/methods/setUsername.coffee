@@ -28,7 +28,7 @@ Meteor.methods
 			# put user in general channel
 			ChatRoom.update '57om6EQCcFami9wuT',
 				$addToSet:
-					username: username
+					usernames: username
 
 			if not ChatSubscription.findOne(rid: '57om6EQCcFami9wuT', 'u._id': user._id)?
 				ChatSubscription.insert
