@@ -1,11 +1,11 @@
 Meteor.methods
-	migrate: (version) ->
+	migrateTo: (version) ->
 		user = Meteor.user()
 
 		if not user? or user.admin isnt true
 			return
 
-		this.ublock()
+		this.unblock()
 		Migrations.migrateTo version
 		return version
 
