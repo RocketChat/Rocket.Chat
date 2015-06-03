@@ -245,12 +245,12 @@ Template.chatWindowDashboard.helpers
 			totalOnline: 0
 			users: []
 
-		if room?.uids
+		if room?.usernames
 			# UserManager.addUser room.uids
 
 			filter =
-				_id:
-					$in: room?.uids
+				username:
+					$in: room.usernames
 
 			# unless Template.instance().showUsersOffline.get()
 			# 	filter.status = { $ne: 'offline' }
