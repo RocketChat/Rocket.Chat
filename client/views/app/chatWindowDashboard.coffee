@@ -6,7 +6,7 @@ Template.chatWindowDashboard.helpers
 		return t('chatWindowDashboard.Quick_Search')
 	favorite: ->
 		console.log 'chatWindowDashboard.favorite' if window.rocketDebug
-		sub = ChatSubscription.findOne { rid: this._id, uid: Meteor.userId() }
+		sub = ChatSubscription.findOne { rid: this._id, 'u._id': Meteor.userId() }
 		return 'icon-star favorite-room' if sub?.f? and sub.f
 
 		return 'icon-star-empty'

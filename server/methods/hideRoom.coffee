@@ -6,4 +6,4 @@ Meteor.methods
 		unless Meteor.userId()?
 			throw new Meteor.Error 300, 'Usuário não logado'
 
-		ChatSubscription.update({ rid: roomId, uid: Meteor.userId() }, { $unset: { ts: 1, f: 1 } })
+		ChatSubscription.update({ rid: roomId, 'u._id': Meteor.userId() }, { $unset: { ts: 1, f: 1 } })

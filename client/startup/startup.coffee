@@ -61,7 +61,7 @@ Meteor.startup ->
 
 	Tracker.autorun ->
 		rooms = []
-		ChatSubscription.find({ uid: Meteor.userId() }, { fields: { rid: 1 } }).forEach (sub) ->
+		ChatSubscription.find({ 'u._id': Meteor.userId() }, { fields: { rid: 1 } }).forEach (sub) ->
 			rooms.push sub.rid
 
 		ChatRoom.find({ _id: $in: rooms }).observe

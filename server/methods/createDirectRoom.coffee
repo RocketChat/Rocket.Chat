@@ -24,7 +24,7 @@ Meteor.methods
 				msgs: 0
 				ts: now
 
-		ChatSubscription.upsert { uid: Meteor.userId(), rid: roomId },
+		ChatSubscription.upsert { 'u._id': Meteor.userId(), rid: roomId },
 			$set:
 				ts: now
 				ls: now
@@ -33,7 +33,7 @@ Meteor.methods
 				t: 'd'
 				unread: 0
 
-		ChatSubscription.upsert { uid: userTo._id, rid: roomId },
+		ChatSubscription.upsert { 'u._id': userTo._id, rid: roomId },
 			$set:
 				rn: me.name
 			$setOnInsert:

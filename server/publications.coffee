@@ -13,10 +13,6 @@ Meteor.publish 'userData', ->
 			statusDefault: 1
 			statusConnection: 1
 			avatarOrigin: 1
-			emails: 1
-			'services.facebook.id': 1
-			'services.google.picture': 1
-			'services.github.username': 1
 
 Meteor.publish 'myRoomActivity', ->
 	unless this.userId
@@ -29,7 +25,7 @@ Meteor.publish 'myRoomActivity', ->
 	return Meteor.publishWithRelations
 		handle: this
 		collection: ChatSubscription
-		filter: { uid: this.userId, $or: [ { ts: { $gte: moment().subtract(1, 'days').startOf('day').toDate() } }, { f: true } ] }
+		filter: { 'u._id': this.userId, $or: [ { ts: { $gte: moment().subtract(1, 'days').startOf('day').toDate() } }, { f: true } ] }
 		mappings: [
 			key: 'rid'
 			reverse: false
@@ -73,10 +69,6 @@ Meteor.publish 'allUsers', ->
 		name: 1
 		username: 1
 		status: 1
-		emails: 1
-		'services.facebook.id': 1
-		'services.google.picture': 1
-		'services.github.username': 1
 	}}
 
 Meteor.publish 'selectiveUsers', (userIds) ->
@@ -94,10 +86,6 @@ Meteor.publish 'selectiveUsers', (userIds) ->
 			name: 1
 			username: 1
 			status: 1
-			emails: 1
-			'services.facebook.id': 1
-			'services.google.picture': 1
-			'services.github.username': 1
 
 	cursor = Meteor.users.find query, options
 

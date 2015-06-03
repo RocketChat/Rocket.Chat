@@ -23,7 +23,7 @@ Meteor.methods
 			throw new Meteor.Error 'without-permission', "[methods] canAccessRoom -> User doesn't have enough permissions"
 
 		# create room subscription
-		ChatSubscription.upsert { rid: roomId, uid: Meteor.userId() },
+		ChatSubscription.upsert { rid: roomId, 'u._id': Meteor.userId() },
 			$setOnInsert:
 				rn: room.name
 				t: room.t
