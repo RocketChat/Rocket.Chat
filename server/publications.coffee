@@ -110,7 +110,7 @@ Meteor.publish 'privateHistoryRooms', ->
 
 	# console.log '[publish] privateHistoryRooms'.green
 
-	return ChatRoom.find { uids: this.userId, t: { $in: ['d', 'c'] } }, { fields: { t: 1, name: 1, msgs: 1, ts: 1, lm: 1, cl: 1 } }
+	return ChatRoom.find { usernames: this.user().username, t: { $in: ['d', 'c'] } }, { fields: { t: 1, name: 1, msgs: 1, ts: 1, lm: 1, cl: 1 } }
 
 Meteor.publish 'roomSearch', (selector, options, collName) ->
 	unless this.userId
@@ -139,7 +139,7 @@ Meteor.publish 'roomSearch', (selector, options, collName) ->
 	subHandleRooms = null
 
 	# @TODO buscar apenas salas de grupo permitidas
-	roomSelector = _.extend { t: { $in: ['c'] }, uids: this.userId }, selector
+	roomSelector = _.extend { t: { $in: ['c'] }, usernames: this.user().username }, selector
 
 	if not searchType? or searchType is 'r'
 		subHandleRooms = ChatRoom.find(roomSelector, { limit: 10, fields: { t: 1, name: 1 } }).observeChanges
