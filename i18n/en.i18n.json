@@ -131,6 +131,7 @@
 		"Username_description": "The username is used to allow others to mention you in messages.",
 		"Use_this_username": "Use this username",
 		"Username_unavaliable": "<strong>%s</strong> is already in use :(",
+		"Username_invalid": "<strong>%s</strong> is not a valid username,<br/> use only letters, numbers, dots and dashes",
 		"Username_cant_be_empty": "The username cannot be empty"
 	},
 	"userStatus": {
