@@ -82,6 +82,8 @@ meteor
 - LDAP / Kerberos Authentication
 - XMPP Multi-user chat (MUC)
 - WebRTC signalling
+- Native Mobile App
+- Native Desktop App
 
 #### Changelog
 
