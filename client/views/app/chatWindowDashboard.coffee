@@ -243,23 +243,23 @@ Template.chatWindowDashboard.helpers
 			_id: this._id
 			total: room?.usernames.length
 			totalOnline: 0
-			users: []
+			users: room.usernames
 
-		if room?.usernames
-			# UserManager.addUser room.uids
+		# if room?.usernames
+		# 	# UserManager.addUser room.uids
 
-			filter =
-				username:
-					$in: room.usernames
+		# 	filter =
+		# 		username:
+		# 			$in: room.usernames
 
-			# unless Template.instance().showUsersOffline.get()
-			# 	filter.status = { $ne: 'offline' }
+		# 	# unless Template.instance().showUsersOffline.get()
+		# 	# 	filter.status = { $ne: 'offline' }
 
-			filter.$and = [{ status: {$exists: true} }, { status: {$ne: 'offline'} }]
+		# 	filter.$and = [{ status: {$exists: true} }, { status: {$ne: 'offline'} }]
 
-			users = Meteor.users.find(filter, { sort: { name: 1 } } ).fetch()
-			ret.totalOnline = users.length
-			ret.users = users
+		# 	users = Meteor.users.find(filter, { sort: { name: 1 } } ).fetch()
+		# 	ret.totalOnline = users.length
+		# 	ret.users = users
 
 		return ret
 

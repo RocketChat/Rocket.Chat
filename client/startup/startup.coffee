@@ -26,17 +26,17 @@ Meteor.startup ->
 	TAPi18n.setLanguage(userLanguage)
 	moment.locale(userLanguage)
 
-	Meteor.users.find({}, { fields: { name: 1, pictures: 1, status: 1, emails: 1, phone: 1, services: 1 } }).observe
+	Meteor.users.find({}, { fields: { name: 1, username: 1, pictures: 1, status: 1, emails: 1, phone: 1, services: 1 } }).observe
 		added: (user) ->
-			Session.set('user_' + user._id + '_status', user.status)
+			Session.set('user_' + user.username + '_status', user.status)
 
 			UserAndRoom.insert({ type: 'u', uid: user._id, name: user.name})
 		changed: (user) ->
-			Session.set('user_' + user._id + '_status', user.status)
+			Session.set('user_' + user.username + '_status', user.status)
 
 			UserAndRoom.update({ uid: user._id }, { $set: { name: user.name } })
 		removed: (user) ->
-			Session.set('user_' + user._id + '_status', null)
+			Session.set('user_' + user.username + '_status', null)
 
 			UserAndRoom.remove({ uid: user._id })
 
