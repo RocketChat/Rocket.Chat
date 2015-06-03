@@ -885,9 +885,9 @@ a.github-fork {
 .flex-nav {
 	background-color: @primary-background-color;
 	position: fixed;
-	top: @header-min-height;
+	top: 0;
 	left: 0;
-	.calc(height, ~"100% - " @header-min-height + @footer-min-height);
+	height: 100%;
 	padding-top: 15px;
 	z-index: 1000;
 	overflow-y: auto;
@@ -898,6 +898,21 @@ a.github-fork {
 	.custom-scroll(transparent, rgba(255, 255, 255, 0.05));
 	&.hidden {
 		.transform(translateX(-100%));
+	}
+	.close-flex {
+		float: right;
+		margin-top: 4px;
+		margin-right: 6px;
+		cursor: pointer;
+		position: relative;
+
+		&:hover {
+			.arrow {
+				&:before, &:after {
+					background-color: rgba(255, 255, 255, 0.85);
+				}
+			}
+		}
 	}
 	header {
 		padding: 0 20px;
@@ -1003,7 +1018,7 @@ a.github-fork {
 				color: @tertiary-font-color;
 				font-size: 90%;
 				display: block;
-				padding-left: 27px;
+				padding-left: 10px;
 				margin-top: 5px;
 				cursor: pointer;
 				text-decoration: underline;
@@ -1188,7 +1203,7 @@ a.github-fork {
 		a {
 			display: block;
 			border-radius: 2px 0 0 2px;
-			padding: 6px 25px 7px 8px;
+			padding: 6px 25px 7px 6px;
 			font-size: 15px;
 			position: relative;
 			line-height: 16px;
