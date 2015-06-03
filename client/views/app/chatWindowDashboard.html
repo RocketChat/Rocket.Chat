@@ -86,12 +86,12 @@
 		<div class="control">
 			<button class="more"><span class="arrow {{arrowPosition}}"></span></button>
 			{{#if canAddUser}}
-				<form class="search-form" role="form">
+				<div class="search-form">
 					<div class="input-line search">
 						{{> inputAutocomplete settings=autocompleteSettingsAddUser id="user-add-search" class="search" placeholder=tAddUsers}}
 						<i class="icon-plus"></i>
 					</div>
-				</form>
+				</div>
 			{{else}}
 				{{#if isChannel}}
 					<form class="search-form" role="form">
