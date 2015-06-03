@@ -25,7 +25,7 @@ Template.createChannelFlex.helpers
 						type: 'u'
 						$and: [
 							{ _id: { $ne: Meteor.userId() } }
-							{ _id: { $nin: Template.instance().selectedUsers.get() } }
+							{ username: { $nin: Template.instance().selectedUsers.get() } }
 						]
 					sort: 'name'
 				}
@@ -34,9 +34,9 @@ Template.createChannelFlex.helpers
 
 Template.createChannelFlex.events
 	'autocompleteselect #channel-members': (event, instance, doc) ->
-		instance.selectedUsers.set instance.selectedUsers.get().concat doc._id
+		instance.selectedUsers.set instance.selectedUsers.get().concat doc.username
 
-		instance.selectedUserNames[doc._id] = doc.name
+		instance.selectedUserNames[doc.username] = doc.name
 
 		event.currentTarget.value = ''
 		event.currentTarget.focus()
