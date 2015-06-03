@@ -4,7 +4,7 @@ Meteor.methods
 		# console.log '[methods] readMessages -> '.green, 'fromId:', fromId, 'room:', room
 
 		if Meteor.userId()
-			filter = { rid: room, uid: Meteor.userId() }
+			filter = { rid: room, 'u._id': Meteor.userId() }
 		else
 			throw new Meteor.Error 203, '[methods] readMessages -> Invalid user'
 
