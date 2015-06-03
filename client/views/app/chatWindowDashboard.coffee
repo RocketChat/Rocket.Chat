@@ -381,7 +381,7 @@ Template.chatWindowDashboard.events
 			if error
 				return Errors.throw error.reason
 
-			if result.rid?
+			if result?.rid?
 				Router.go('room', { _id: result.rid })
 
 	'click button.load-more': (e) ->
