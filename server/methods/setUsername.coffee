@@ -44,6 +44,9 @@ Meteor.methods
 					unread: 0
 
 				ChatMessage.insert
+					u:
+						_id: user._id
+						username: username
 					rid: '57om6EQCcFami9wuT'
 					ts: new Date()
 					t: 'wm'

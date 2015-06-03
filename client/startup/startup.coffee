@@ -28,24 +28,15 @@ Meteor.startup ->
 
 	Meteor.users.find({}, { fields: { name: 1, pictures: 1, status: 1, emails: 1, phone: 1, services: 1 } }).observe
 		added: (user) ->
-			Session.set('user_' + user._id + '_name', user.name)
 			Session.set('user_' + user._id + '_status', user.status)
-			Session.set('user_' + user._id + '_emails', user.emails)
-			Session.set('user_' + user._id + '_phone', user.phone)
 
 			UserAndRoom.insert({ type: 'u', uid: user._id, name: user.name})
 		changed: (user) ->
-			Session.set('user_' + user._id + '_name', user.name)
 			Session.set('user_' + user._id + '_status', user.status)
-			Session.set('user_' + user._id + '_emails', user.emails)
-			Session.set('user_' + user._id + '_phone', user.phone)
 
 			UserAndRoom.update({ uid: user._id }, { $set: { name: user.name } })
 		removed: (user) ->
-			Session.set('user_' + user._id + '_name', null)
 			Session.set('user_' + user._id + '_status', null)
-			Session.set('user_' + user._id + '_emails', null)
-			Session.set('user_' + user._id + '_phone', null)
 
 			UserAndRoom.remove({ uid: user._id })
 
