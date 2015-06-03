@@ -1,0 +1,11 @@
+{
+  "name": "hubot-rocketchat",
+  "version": "0.0.1",
+  "private": true,
+  "author": "Sing Li <sli@makawave.com>",
+  "description": "Hubot-Rocketchat Adapter",
+  "main": "./src/meteorchat",
+  "dependencies": {
+    "asteroid": "^0.6.1"
+  }
+}
