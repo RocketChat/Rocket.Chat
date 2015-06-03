@@ -264,16 +264,16 @@ Template.chatWindowDashboard.helpers
 		return ret
 
 	flexUserInfo: ->
-		uid = Session.get('showUserInfo')
+		username = Session.get('showUserInfo')
 
 		userData = {
-			name: Session.get('user_' + uid + '_name')
-			emails: Session.get('user_' + uid + '_emails')
-			uid: String(uid)
+			# name: Session.get('user_' + uid + '_name')
+			# emails: Session.get('user_' + uid + '_emails')
+			username: String(username)
 		}
-		phone = Session.get('user_' + uid + '_phone')
-		if phone? and phone[0]?.phoneNumber
-			userData.phone = phone[0]?.phoneNumber
+		# phone = Session.get('user_' + uid + '_phone')
+		# if phone? and phone[0]?.phoneNumber
+		# 	userData.phone = phone[0]?.phoneNumber
 
 		return userData
 
@@ -363,13 +363,13 @@ Template.chatWindowDashboard.events
 
 	"click .flex-tab .user-image > a" : (e) ->
 		Session.set('flexOpened', true)
-		Session.set('showUserInfo', $(e.currentTarget).data('userid'))
+		Session.set('showUserInfo', $(e.currentTarget).data('username'))
 
 	'click .user-card-message': (e) ->
 		roomData = Session.get('roomData' + this.rid)
 		if roomData.t in ['c', 'p']
 			Session.set('flexOpened', true)
-			Session.set('showUserInfo', $(e.currentTarget).data('userid'))
+			Session.set('showUserInfo', $(e.currentTarget).data('username'))
 		else
 			Session.set('flexOpened', true)
 

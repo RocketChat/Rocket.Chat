@@ -75,10 +75,9 @@ Template.chatMessageDashboard.events
 			Meteor.defer ->
 				$('.input-message-editing').select()
 
-	# TODO open flextab with user info
-	# 'click .mention-link': ->
-	# 	Session.set('flexOpened', true)
-	# 	Session.set('showUserInfo', $(e.currentTarget).data('username'))
+	'click .mention-link': (e) ->
+		Session.set('flexOpened', true)
+		Session.set('showUserInfo', $(e.currentTarget).data('username'))
 
 Template.chatMessageDashboard.onRendered ->
 	chatMessages = $('.messages-box .wrapper')
