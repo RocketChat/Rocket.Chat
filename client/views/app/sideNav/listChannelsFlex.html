@@ -1,12 +1,18 @@
 <template name="listChannelsFlex">
 	<header>
 		<h4>{{_ "chatRooms.Channels"}}</h4>
+		<p>{{_ "chatRooms.Channels_list"}}</p>
 	</header>
 	<div class="content">
 
 		<ul>
 		{{#each channel}}
-			<li><a href="{{pathFor "room"}}">{{name}}</a></li>
+			<li>
+				<a href="{{pathFor "room"}}" class="channel-link">
+					<i class="icon-hash"></i>
+					{{name}}
+				</a>
+			</li>
 		{{/each}}
 		</ul>
 	</div>
