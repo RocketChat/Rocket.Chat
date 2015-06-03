@@ -28,10 +28,28 @@ Meteor.methods
 			messageFilter = { rid: rid, uid: Meteor.userId(), t: 't' }
 			activityFilter = { rid: rid, uid: { $ne: Meteor.userId() } }
 
+		mentions = []
+		msg.message.replace /(?:^|\s|\n)(?:@)([A-Za-z0-9-_.]+)/g, (match, mention) ->
+			mentions.push mention
+
+		mentions = _.unique mentions
+
+		mentions = mentions.filter (mention) ->
+			return Meteor.users.findOne({username: mention}, {fields: {_id: 1}})?
+
+		mentions = mentions.map (mention) ->
+			return {
+				username: mention
+			}
+
+		if mentions.length is 0
+			mentions = undefined
+
 		ChatMessage.upsert messageFilter,
 			$set:
 				ts: now
 				msg: msg.message
+				mentions: mentions
 			$unset:
 				t: 1
 				expireAt: 1

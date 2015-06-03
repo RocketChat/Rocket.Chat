@@ -12,8 +12,20 @@ Template.chatMessageDashboard.helpers
 	isEditing: ->
 		return this._id is Session.get('editingMessageId')
 
-	autolinker: (msg) ->
-		return Autolinker.link(_.stripTags(msg), { stripPrefix: false })
+	autolinkerAndMentions: ->
+		msg = Autolinker.link(_.stripTags(this.msg), { stripPrefix: false, twitter: false })
+
+		if not this.mentions? or this.mentions.length is 0
+			return msg
+
+		mentions = _.map this.mentions, (mention) ->
+			return mention.username or mention
+
+		mentions = mentions.join('|')
+		msg = msg.replace new RegExp("(?:^|\\s)(@(#{mentions}))(?:\\s|$)", 'g'), (match, mention, username) ->
+			return match.replace mention, "<a href=\"\" class=\"mention-link\" data-username=\"#{username}\">#{mention}</a>"
+
+		return msg
 
 	message: ->
 		if this.by
@@ -63,6 +75,11 @@ Template.chatMessageDashboard.events
 
 			Meteor.defer ->
 				$('.input-message-editing').select()
+
+	# TODO open flextab with user info
+	# 'click .mention-link': ->
+	# 	Session.set('flexOpened', true)
+	# 	Session.set('showUserInfo', $(e.currentTarget).data('username'))
 
 Template.chatMessageDashboard.onRendered ->
 	chatMessages = $('.messages-box .wrapper')
