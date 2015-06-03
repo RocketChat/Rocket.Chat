@@ -391,21 +391,20 @@ Template.chatWindowDashboard.events
 		roomData = Session.get('roomData' + Session.get('openedRoom'))
 
 		if roomData.t is 'd'
-			Meteor.call 'createGroupRoom', roomData.uids, doc.uid, (error, result) ->
+			Meteor.call 'createGroupRoom', roomData.usernames, doc.username, (error, result) ->
 				if error
 					return Errors.throw error.reason
 
 				if result?.rid?
-					Router.go('room', { _id: result.rid })
+					# Router.go('room', { _id: result.rid })
 					$('#user-add-search').val('')
 		else if roomData.t in ['c', 'p']
-			Meteor.call 'addUserToRoom', { rid: roomData._id, uid: doc.uid }, (error, result) ->
+			Meteor.call 'addUserToRoom', { rid: roomData._id, username: doc.username }, (error, result) ->
 				if error
 					return Errors.throw error.reason
 
-				if result
-					$('#user-add-search').val('')
-					toggleAddUser()
+				$('#user-add-search').val('')
+				toggleAddUser()
 
 	'autocompleteselect #room-search': (event, template, doc) ->
 		if doc.type is 'u'
