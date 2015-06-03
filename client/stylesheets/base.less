@@ -885,9 +885,9 @@ a.github-fork {
 .flex-nav {
 	background-color: @primary-background-color;
 	position: fixed;
-	top: 0;
+	top: @header-min-height;
 	left: 0;
-	height: 100%;
+	.calc(height, ~"100% - " @header-min-height + @footer-min-height);
 	padding-top: 15px;
 	z-index: 1000;
 	overflow-y: auto;
@@ -998,6 +998,20 @@ a.github-fork {
 			direction: ltr;
 			padding-left: 8px;
 			padding-bottom: 1em;
+
+			.more-channels {
+				color: @tertiary-font-color;
+				font-size: 90%;
+				display: block;
+				padding-left: 27px;
+				margin-top: 5px;
+				cursor: pointer;
+				text-decoration: underline;
+
+				&:hover {
+					text-decoration: none;
+				}
+			}
 		}
 	}
 	.input-error {
