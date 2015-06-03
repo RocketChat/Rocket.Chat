@@ -14,7 +14,9 @@ Meteor.methods
 			usernames: members
 			ts: now
 			t: 'p'
-			uid: Meteor.userId()
+			u:
+				_id: Meteor.userId()
+				username: Meteor.user().username
 			name: name
 			msgs: 0
 

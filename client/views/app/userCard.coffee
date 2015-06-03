@@ -1,15 +1,15 @@
 Template.userCard.helpers
 	userData: ->
-		uid = Session.get('userProfileActive')
+		username = Session.get('userProfileActive')
 
 		userData = {
-			name: Session.get('user_' + uid + '_name')
-			emails: Session.get('user_' + uid + '_emails')
-			uid: uid
+			# name: Session.get('user_' + username + '_name')
+			# emails: Session.get('user_' + username + '_emails')
+			username: username
 		}
-		phone = Session.get('user_' + uid + '_phone')
-		if phone? and phone[0]?.phoneNumber
-			userData.phone = phone[0]?.phoneNumber
+		# phone = Session.get('user_' + username + '_phone')
+		# if phone? and phone[0]?.phoneNumber
+		# 	userData.phone = phone[0]?.phoneNumber
 
 		return userData
 
