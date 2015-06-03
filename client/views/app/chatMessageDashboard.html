@@ -4,10 +4,10 @@
 			{{#if isSystemMessage}}
 				<p class="system">{{{message}}}</p>
 			{{else}}
-				<a class="thumb user-card-message" href="#" data-userid="{{uid}}" tabindex="1">
-					{{> avatar userId=uid}}
+				<a class="thumb user-card-message" href="#" data-username="{{username}}" tabindex="1">
+					{{> avatar username=username}}
 				</a>
-				<a class="user user-card-message" href="#" data-userid="{{uid}}" tabindex="1">{{username}}</a>
+				<a class="user user-card-message" href="#" data-username="{{username}}" tabindex="1">{{username}}</a>
 				<span class="time">
 					{{time}}
 					{{#if ets}}
