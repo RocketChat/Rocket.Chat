@@ -1,7 +1,7 @@
 Template.userStatus.helpers
 	myUserInfo: ->
 		visualStatus = "online"
-		username = Meteor.user().username
+		username = Meteor.user()?.username
 		switch Session.get('user_' + username + '_status')
 			when "away"
 				visualStatus = t("userStatus.away")
