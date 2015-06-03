@@ -1,12 +1,9 @@
 Template.loginServices.helpers
-	hasLoginServices: ->
-		return Accounts.oauth.serviceNames()?.length > 0
-
 	loginService: ->
 		services = []
 
-		authServices = Accounts.oauth.serviceNames()
-
+		authServices = _.pluck ServiceConfiguration.configurations.find({}, { service: 1 }).fetch(), 'service'
+		
 		authServices.sort()
 
 		authServices.forEach (service) ->
