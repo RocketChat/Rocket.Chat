@@ -34,7 +34,7 @@ Meteor.methods
 		,
 			multi: true
 
-		if room.uids.indexOf(Meteor.userId()) isnt -1
+		if room.t isnt 'c' and room.uids.indexOf(Meteor.userId()) isnt -1
 			removedUser = Meteor.users.findOne Meteor.userId()
 
 			ChatMessage.insert
