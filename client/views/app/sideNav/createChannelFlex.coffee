@@ -1,4 +1,4 @@
-Template.channelsFlex.helpers
+Template.createChannelFlex.helpers
 	selectedUsers: ->
 		return Template.instance().selectedUsers.get()
 
@@ -32,7 +32,7 @@ Template.channelsFlex.helpers
 			]
 		}
 
-Template.channelsFlex.events
+Template.createChannelFlex.events
 	'autocompleteselect #channel-members': (event, instance, doc) ->
 		instance.selectedUsers.set instance.selectedUsers.get().concat doc._id
 
@@ -73,7 +73,7 @@ Template.channelsFlex.events
 		else
 			Template.instance().error.set(err)
 
-Template.channelsFlex.onCreated ->
+Template.createChannelFlex.onCreated ->
 	instance = this
 	instance.selectedUsers = new ReactiveVar []
 	instance.selectedUserNames = {}

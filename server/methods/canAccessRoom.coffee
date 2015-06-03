@@ -14,7 +14,7 @@ Meteor.methods
 
 		canAccess = false
 
-		if user.admin
+		if room.t is 'c'
 			canAccess = true
 		else if room.uids.indexOf(Meteor.userId()) isnt -1
 			canAccess = true
@@ -26,7 +26,7 @@ Meteor.methods
 		ChatSubscription.upsert { rid: roomId, uid: Meteor.userId() },
 			$setOnInsert:
 				rn: room.name
-				t: 'v'
+				t: room.t
 				unread: 0
 			$set:
 				ls: (new Date())

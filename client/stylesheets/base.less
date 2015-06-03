@@ -900,6 +900,21 @@ a.github-fork {
 	&.hidden {
 		.transform(translateX(-100%));
 	}
+	.close-flex {
+		float: right;
+		margin-top: 4px;
+		margin-right: 6px;
+		cursor: pointer;
+		position: relative;
+
+		&:hover {
+			.arrow {
+				&:before, &:after {
+					background-color: rgba(255, 255, 255, 0.85);
+				}
+			}
+		}
+	}
 	header {
 		padding: 0 20px;
 		margin-bottom: 30px;
@@ -999,6 +1014,20 @@ a.github-fork {
 			direction: ltr;
 			padding-left: 8px;
 			padding-bottom: 1em;
+
+			.more-channels {
+				color: @tertiary-font-color;
+				font-size: 90%;
+				display: block;
+				padding-left: 10px;
+				margin-top: 5px;
+				cursor: pointer;
+				text-decoration: underline;
+
+				&:hover {
+					text-decoration: none;
+				}
+			}
 		}
 	}
 	.input-error {
@@ -1175,7 +1204,7 @@ a.github-fork {
 		a {
 			display: block;
 			border-radius: 2px 0 0 2px;
-			padding: 6px 25px 7px 8px;
+			padding: 6px 25px 7px 6px;
 			font-size: 15px;
 			position: relative;
 			line-height: 16px;

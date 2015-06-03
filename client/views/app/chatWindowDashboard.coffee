@@ -14,6 +14,7 @@ Template.chatWindowDashboard.helpers
 	messages: ->
 		console.log 'chatWindowDashboard.messages' if window.rocketDebug
 		window.lastMessageWindow[this._id] = undefined
+		window.lastMessageWindowHistory[this._id] = undefined
 		return ChatMessage.find { rid: this._id }, { sort: { ts: 1 } }
 
 	messagesHistory: ->
@@ -85,6 +86,29 @@ Template.chatWindowDashboard.helpers
 
 		if lastMessageDate.mid is this._id
 			last = ChatMessage.find({ts: {$lt: this.ts}, t: {$exists: false}}, { sort: { ts: -1 }, limit: 1 }).fetch()[0]
+			if not last?
+				return false
+			lastMessageDate =
+				mid: last._id
+				date: moment(last.ts).format('YYYYMMDD')
+
+		return lastMessageDate.date isnt d
+
+	newDateHistory: ->
+		console.log 'chatWindowDashboard.newDate' if window.rocketDebug
+
+		lastMessageDate = window.lastMessageWindowHistory[this.rid]
+		d = moment(this.ts).format('YYYYMMDD')
+
+		window.lastMessageWindowHistory[this.rid] =
+			mid: this._id
+			date: d
+
+		if not lastMessageDate?
+			return false
+
+		if lastMessageDate.mid is this._id
+			last = ChatMessageHistory.find({ts: {$lt: this.ts}, t: {$exists: false}}, { sort: { ts: -1 }, limit: 1 }).fetch()[0]
 			if not last?
 				return false
 			lastMessageDate =

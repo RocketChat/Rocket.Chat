@@ -4,4 +4,4 @@
 Meteor.startup ->
 	ChatMessage.find().observe
 		removed: (record) ->
-			ChatMessageHistory.insert record
+			ChatMessageHistory.upsert { _id: record._id }, record
