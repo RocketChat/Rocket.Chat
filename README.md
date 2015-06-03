@@ -33,6 +33,8 @@ It is a great solution for communities and companies wanting to privately host t
 
 ## Installation
 
+### Development
+
 Prerequisites:
 
 * [Git](http://git-scm.com/book/en/v2/Getting-Started-Installing-Git)
@@ -46,22 +48,39 @@ cd Rocket.Chat
 meteor
 ```
 
-## One-Click Deploy
+### Production
 
-Deploy on Heroku:
+#### One-Click Deploy
+
+##### Heroku
 
 [![Deploy](https://www.herokucdn.com/deploy/button.png)](https://heroku.com/deploy)
 
-## Features
+## Current Features
 
+- BYOS (bring your own server)
+- Multiple Rooms
 - Direct Messages
 - Private Groups
-- New message alerts
-- I18n
+- Public Channels
+- Desktop Notifications
+- Mentions
+- Avatars
+- Markdown
+- Emojis
+- Transcripts / History
+- I18n - Internationalization
 
-### Roadmap
+### Roadmap for v1.0
 
-The development team uses [Trello](https://trello.com/b/dKS6CCbS/rocket-chat-roadmap) to track progress and discuss new features.
+- Image embeds
+- File uploads
+- Full text search
+- REST-like APIs
+- Hubot Friendly
+- Off-the-Record (OTR) Messaging
+- LDAP / Kerberos Authentication
+- XMPP Multi-user chat (MUC)
 
 #### Changelog
 
