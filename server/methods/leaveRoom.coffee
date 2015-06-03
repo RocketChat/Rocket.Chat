@@ -10,7 +10,7 @@ Meteor.methods
 
 		update =
 			$pull:
-				uids: Meteor.userId()
+				usernames: Meteor.user().username
 
 		ChatSubscription.update { rid: roomId },
 			$set:
@@ -18,8 +18,8 @@ Meteor.methods
 		,
 			multi: true
 
-		if room.t isnt 'c' and room.uids.indexOf(Meteor.userId()) isnt -1
-			removedUser = Meteor.users.findOne Meteor.userId()
+		if room.t isnt 'c' and room.usernames.indexOf(Meteor.user().username) isnt -1
+			removedUser = Meteor.user()
 
 			ChatMessage.insert
 				rid: roomId
@@ -34,6 +34,6 @@ Meteor.methods
 
 			update.$set.uid = _.without(room.uids, Meteor.userId())[0]
 
-		ChatSubscription.remove { rid: roomId, uid: Meteor.userId() }
+		ChatSubscription.remove { rid: roomId, 'u._id': Meteor.userId() }
 
 		ChatRoom.update roomId, update
