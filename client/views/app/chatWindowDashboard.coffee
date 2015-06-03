@@ -201,14 +201,14 @@ Template.chatWindowDashboard.helpers
 
 		return '' unless roomData
 
-		return roomData.t in ['p', 'c'] and roomData.uid is Meteor.userId()
+		return roomData.t in ['p', 'c'] and roomData.u?._id is Meteor.userId()
 
 	canEditName: ->
 		roomData = Session.get('roomData' + this._id)
 
 		return '' unless roomData
 
-		return roomData.uid is Meteor.userId() and roomData.t in ['c', 'p']
+		return roomData.u?._id is Meteor.userId() and roomData.t in ['c', 'p']
 
 	roomNameEdit: ->
 		return Session.get('roomData' + this._id)?.name

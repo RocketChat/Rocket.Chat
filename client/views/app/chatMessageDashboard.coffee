@@ -1,6 +1,6 @@
 Template.chatMessageDashboard.helpers
 	own: ->
-		return 'own' if this.data.uid is Meteor.userId()
+		return 'own' if this.data.u?._id is Meteor.userId()
 
 	username: ->
 		return this.u.username
