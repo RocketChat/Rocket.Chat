@@ -30,11 +30,11 @@ Meteor.startup ->
 		added: (user) ->
 			Session.set('user_' + user.username + '_status', user.status)
 
-			UserAndRoom.insert({ type: 'u', uid: user._id, name: user.name})
+			UserAndRoom.insert({ type: 'u', uid: user._id, username: user.username, name: user.name})
 		changed: (user) ->
 			Session.set('user_' + user.username + '_status', user.status)
 
-			UserAndRoom.update({ uid: user._id }, { $set: { name: user.name } })
+			UserAndRoom.update({ uid: user._id }, { $set: { username: user.username, name: user.name } })
 		removed: (user) ->
 			Session.set('user_' + user.username + '_status', null)
 
