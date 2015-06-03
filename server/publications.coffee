@@ -71,7 +71,7 @@ Meteor.publish 'allUsers', ->
 		status: 1
 	}}
 
-Meteor.publish 'selectiveUsers', (userIds) ->
+Meteor.publish 'selectiveUsers', (usernames) ->
 	unless @userId
 		return @ready()
 
@@ -79,7 +79,8 @@ Meteor.publish 'selectiveUsers', (userIds) ->
 
 	self = @
 
-	query = {}
+	query =
+		username: $exists: true
 
 	options =
 		fields:
@@ -91,13 +92,13 @@ Meteor.publish 'selectiveUsers', (userIds) ->
 
 	observer = cursor.observeChanges
 		added: (id, record) ->
-			if userIds[id]?
+			if usernames[record.username]?
 				self.added 'users', id, record
 		changed: (id, record) ->
-			if userIds[id]?
+			if usernames[record.username]?
 				self.changed 'users', id, record
 		removed: (id) ->
-			if userIds[id]?
+			if usernames[record.username]?
 				self.removed 'users', id
 
 	@ready()

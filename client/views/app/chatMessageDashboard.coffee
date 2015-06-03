@@ -29,8 +29,8 @@ Template.chatMessageDashboard.helpers
 	message: ->
 		if this.by
 			UserManager.addUser(this.by)
-		else if this.uid
-			UserManager.addUser(this.uid)
+		else if this.u?.username
+			UserManager.addUser this.u.username
 		switch this.t
 			when 'p' then "<i class='icon-link-ext'></i><a href=\"#{this.url}\" target=\"_blank\">#{this.msg}</a>"
 			when 'r' then t('chatMessageDashboard.Room_name_changed', { room_name: this.msg, user_by: Session.get('user_' + this.by + '_name') }) + '.'

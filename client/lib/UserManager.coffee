@@ -3,12 +3,12 @@
 
 	dep = new Tracker.Dependency
 
-	addUser = (userIds) ->
-		# console.log 'addUser', userIds if window.rocketUserDebug
-		userIds = [].concat userIds
-		for userId in userIds
-			unless users[userId]
-				users[userId] = 1
+	addUser = (usernames) ->
+		# console.log 'addUser', usernames if window.rocketUserDebug
+		usernames = [].concat usernames
+		for username in usernames
+			unless users[username]
+				users[username] = 1
 				dep.changed()
 
 	subscribeFn = ->
