@@ -3,8 +3,7 @@ Template.chatMessageDashboard.helpers
 		return 'own' if this.data.uid is Meteor.userId()
 
 	username: ->
-		if this.uid?
-			return Session.get('user_' + this.uid + '_name')
+		return this.u.username
 
 	isSystemMessage: ->
 		return this.t in ['s', 'p', 'f', 'r', 'au', 'ru', 'ul', 'nu', 'wm']

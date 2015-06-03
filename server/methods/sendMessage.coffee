@@ -19,13 +19,13 @@ Meteor.methods
 
 		roomUpdate = { $set: { lm: now }, $inc: { msgs: 1 } }
 
-		if Meteor.userId() and roomData.uids.indexOf(Meteor.userId()) is -1
-			roomUpdate.$push = { uids: Meteor.userId() }
+		if Meteor.userId() and not Meteor.user().username in roomData.usernames
+			roomUpdate.$push = { usernames: Meteor.user().username }
 
 		ChatRoom.update rid, roomUpdate
 
 		if Meteor.userId()?
-			messageFilter = { rid: rid, uid: Meteor.userId(), t: 't' }
+			messageFilter = { rid: rid, $and: [{ 'u._id': Meteor.userId() }], t: 't' }
 			activityFilter = { rid: rid, 'u._id': { $ne: Meteor.userId() } }
 
 		mentions = []
@@ -47,6 +47,8 @@ Meteor.methods
 
 		ChatMessage.upsert messageFilter,
 			$set:
+				'u._id': Meteor.userId()
+				'u.username': Meteor.user().username
 				ts: now
 				msg: msg.message
 				mentions: mentions
@@ -68,7 +70,7 @@ Meteor.methods
 
 		now = new Date()
 
-		messageFilter = { _id: msg.id, uid: Meteor.userId() }
+		messageFilter = { _id: msg.id, 'u._id': Meteor.userId() }
 
 		ChatMessage.update messageFilter,
 			$set:

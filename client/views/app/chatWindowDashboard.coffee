@@ -37,7 +37,7 @@ Template.chatWindowDashboard.helpers
 
 	typing: ->
 		console.log 'chatWindowDashboard.typing' if window.rocketDebug
-		return this.uid isnt Meteor.userId()
+		return this.u._id isnt Meteor.userId()
 
 	usersTyping: ->
 		messages = ChatMessage.find { rid: this._id }, { sort: { ts: 1 } }
@@ -45,10 +45,10 @@ Template.chatWindowDashboard.helpers
 		selfTyping = false
 		messages.forEach (message) ->
 			if message.t is 't'
-				if message.uid is Meteor.userId()
+				if message.u._id is Meteor.userId()
 					selfTyping = true
 				else
-					username = Session.get('user_' + message.uid + '_name')
+					username = message.u.username
 					if username?
 						usernames.push username
 
@@ -142,14 +142,14 @@ Template.chatWindowDashboard.helpers
 		return {} unless roomData
 
 		if roomData.t is 'd'
-			uid = _.without roomData.uids, Meteor.userId()
-			UserManager.addUser uid
+			username = _.without roomData.usernames, Meteor.user().username
+			UserManager.addUser username
 
 			userData = {
-				name: Session.get('user_' + uid + '_name')
-				emails: Session.get('user_' + uid + '_emails') || []
-				phone: Session.get('user_' + uid + '_phone')
-				uid: String(uid)
+				name: Session.get('user_' + username + '_name')
+				emails: Session.get('user_' + username + '_emails') || []
+				phone: Session.get('user_' + username + '_phone')
+				username: String(username)
 			}
 			return userData
 
@@ -241,7 +241,7 @@ Template.chatWindowDashboard.helpers
 		room = ChatRoom.findOne(this._id, { reactive: false })
 		ret =
 			_id: this._id
-			total: room?.uids.length
+			total: room?.usernames.length
 			totalOnline: 0
 			users: []
 

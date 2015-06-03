@@ -13,6 +13,7 @@ Template.userStatus.helpers
 			status: Session.get('user_' + Meteor.userId() + '_status')
 			visualStatus: visualStatus
 			_id: Meteor.userId()
+			username: Meteor.user().username
 		}
 
 Template.userStatus.events
