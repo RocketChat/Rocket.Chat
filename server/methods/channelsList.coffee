@@ -1,3 +1,3 @@
 Meteor.methods
 	channelsList: ->
-		return ChatSubscription.find({ uid: Meteor.userId(), t: 'c' }).fetch()
+		return { channels: ChatRoom.find({ t: 'c' }, { sort: { msgs:-1 } }).fetch() }

@@ -2,7 +2,11 @@ Template.listChannelsFlex.helpers
 	channel: ->
 		return Template.instance().channelsList?.get()
 
-Template.listChannelsFlex.onRendered ->
+Template.listChannelsFlex.events
+	'click .channel-link': ->
+		SideNav.closeFlex()
+
+Template.listChannelsFlex.onCreated ->
 	instance = this
 	instance.channelsList = new ReactiveVar []
 
