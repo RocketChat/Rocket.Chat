@@ -26,7 +26,7 @@ Meteor.methods
 
 		if Meteor.userId()?
 			messageFilter = { rid: rid, uid: Meteor.userId(), t: 't' }
-			activityFilter = { rid: rid, uid: { $ne: Meteor.userId() } }
+			activityFilter = { rid: rid, 'u._id': { $ne: Meteor.userId() } }
 
 		mentions = []
 		msg.message.replace /(?:^|\s|\n)(?:@)([A-Za-z0-9-_.]+)/g, (match, mention) ->
