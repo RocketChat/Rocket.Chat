@@ -83,6 +83,7 @@ observe-sequence@1.0.6
 ordered-dict@1.0.3
 percolate:migrations@0.7.5
 percolatestudio:synced-cron@1.1.0
+pierreeric:rxfavico@0.3.5_1
 qnub:emojione@0.0.3
 raix:handlebar-helpers@0.2.4
 random@1.0.3
