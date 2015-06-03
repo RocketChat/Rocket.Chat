@@ -1,7 +1,7 @@
 
 ### Setting up Rocket.Chat for hubot-rocketchat adapter development
 
-Note the current implementation by no means complete, just the bare skeleton so all contributors can hacking. 
+Note the current implementation is far from complete.  This working adapter allows contributors to start hacking asap.
 
 #### Manual configuration  (or lack of it for now)
 
