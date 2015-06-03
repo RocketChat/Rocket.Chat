@@ -81,6 +81,7 @@ meteor
 - Off-the-Record (OTR) Messaging
 - LDAP / Kerberos Authentication
 - XMPP Multi-user chat (MUC)
+- WebRTC signalling
 
 #### Changelog
 
