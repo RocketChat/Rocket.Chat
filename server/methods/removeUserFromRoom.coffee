@@ -5,18 +5,18 @@ Meteor.methods
 
 		room = ChatRoom.findOne data.rid
 
-		if room.uid isnt Meteor.userId() and room.t is 'c'
+		if room.u?._id isnt Meteor.userId() and room.t is 'c'
 			throw new Meteor.Error 403, 'Not allowed'
 
 		update =
 			$pull:
-				uids: data.uid
+				usernames: data.username
 
-		removedUser = Meteor.users.findOne data.uid
+		removedUser = Meteor.users.findOne username: data.username
 
 		ChatRoom.update data.rid, update
 
-		ChatSubscription.remove { uid: data.uid, rid: data.rid }
+		ChatSubscription.remove { 'u._id': data.username, rid: data.rid }
 
 		ChatMessage.insert
 			rid: data.rid

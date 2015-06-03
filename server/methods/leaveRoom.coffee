@@ -28,11 +28,17 @@ Meteor.methods
 				msg: removedUser.name
 				by: Meteor.userId()
 
-		if room.uid is Meteor.userId()
-			if not update.$set?
-				update.$set = {}
+		if room.u._id is Meteor.userId()
+			newOwner = _.without(room.usernames, Meteor.user().username)[0]
+			if newOwner?
+				newOwner = Meteor.users.findOne username: newOwner
 
-			update.$set.uid = _.without(room.uids, Meteor.userId())[0]
+				if newOwner?
+					if not update.$set?
+						update.$set = {}
+
+					update.$set['u._id'] = newOwner._id
+					update.$set['u.username'] = newOwner.username
 
 		ChatSubscription.remove { rid: roomId, 'u._id': Meteor.userId() }
 
