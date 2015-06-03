@@ -14,26 +14,6 @@ Meteor.methods
 
 		removedUser = Meteor.users.findOne data.uid
 
-		# if room name wasn't changed, update with new member
-		# unless room.nc
-		# 	users = _.without room.uids, data.uid
-
-		# 	usersName = []
-
-		# 	Meteor.users.find({ _id: { $in: users } }, { fields: { name: 1 }, sort: { name: 1 } }).forEach (user) ->
-		# 		usersName.push user.name
-
-		# 	room.name = usersName.join ', '
-
-		# 	update.$set =
-		# 		name: room.name
-
-		# 	ChatSubscription.update { rid: data.rid },
-		# 		$set:
-		# 			rn: room.name
-		# 	,
-		# 		multi: true
-
 		ChatRoom.update data.rid, update
 
 		ChatSubscription.remove { uid: data.uid, rid: data.rid }

@@ -20,6 +20,7 @@ Template.usernamePrompt.events
 		username = instance.username.get()
 		username.empty = false
 		username.error = false
+		username.invalid = false
 		instance.username.set(username)
 
 		button = $(event.target).find('button.login')
@@ -34,7 +35,10 @@ Template.usernamePrompt.events
 
 		Meteor.call 'setUsername', value, (err, result) ->
 			if err?
-				username.error = true
+				if err.error is 'username-invalid'
+					username.invalid = true
+				else
+					username.error = true
 				username.username = value
 			Rocket.Button.reset(button)
 			instance.username.set(username)

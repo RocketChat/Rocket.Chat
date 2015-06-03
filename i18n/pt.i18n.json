@@ -107,6 +107,7 @@
 		"Username_description": "O nome de usuário serve para que outras pessoas possam mencionar você em mensagens",
 		"Use_this_username": "Usar este nome de usuário",
 		"Username_unavaliable": "<strong>%s</strong> já está sendo usado :(",
+		"Username_invalid": "<strong>%s</strong> não é um nome de usuário válido,<br/> use apenas letras, números, pontos e traços",
 		"Username_cant_be_empty": "O nome de usuário não pode ser vazio"
 	},
 	"loginIntro": {
