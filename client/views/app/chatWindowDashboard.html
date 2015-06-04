@@ -29,12 +29,14 @@
 						</li>
 					{{/if}}
 					{{#each messagesHistory}}
-						{{#if newDateHistory}}
-							<li class="date">
-								<span>{{messageDate}}</span>
-							</li>
-						{{/if}}
-						{{> chatMessageDashboard data=this}}
+						{{#unless showTyping}}
+							{{#if newDateHistory}}
+								<li class="date">
+									<span>{{messageDate}}</span>
+								</li>
+							{{/if}}
+							{{> chatMessageDashboard data=this}}
+						{{/unless}}
 					{{/each}}
 					{{#each messages}}
 						{{#unless showTyping}}
