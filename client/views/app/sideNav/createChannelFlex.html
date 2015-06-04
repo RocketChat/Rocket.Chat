@@ -17,12 +17,18 @@
 				{{/each}}
 			</ul>
 		</div>
-		{{#if error}}
+		{{#if error.fields}}
 			<div class="input-error">
 				<strong>Ops!</strong>
-				{{#each error}}
-					<p>The field {{error}} is required.</p>
+				{{#each error.fields}}
+					<p>The field {{.}} is required.</p>
 				{{/each}}
+			</div>
+		{{/if}}
+		{{#if error.invalid}}
+			<div class="input-error">
+				<strong>Ops!</strong>
+				{{{_ "chatRooms.Invalid_room_name" roomName}}}
 			</div>
 		{{/if}}
 		<div class="input-submit">

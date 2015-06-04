@@ -71,7 +71,18 @@ Meteor.startup ->
 		removed: (data) ->
 			KonchatNotification.removeRoomNotification(data.rid)
 
+	updateUnread = (unreadCount) ->
+		rxFavico.set 'type', 'warn'
+		rxFavico.set 'count', unreadCount
+		if unreadCount > 0
+			document.title = '(' + unreadCount + ') Rocket.Chat'
+		else
+			document.title = 'Rocket.Chat'
+
 	ChatSubscription.find({}, { fields: { unread: 1 } }).observeChanges
+		added: (id, fields) ->
+			updateUnread(fields.unread)
+
 		changed: (id, fields) ->
 			if fields.unread and fields.unread > 0
 
@@ -79,6 +90,8 @@ Meteor.startup ->
 				# KonchatNotification.showDesktop(roomData, self.data.uid + ': ' + self.data.msg)
 
 				KonchatNotification.newMessage()
+
+			updateUnread(fields.unread)
 
 	# Add ascii support to emojione
 	emojione?.ascii = true
