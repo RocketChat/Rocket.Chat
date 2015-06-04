@@ -1,6 +1,6 @@
 Meteor.startup ->
 	Migrations.add
-		version: new Date("2015-06-03T00:49:41.269Z").getTime()
+		version: 2
 		up: ->
 			Meteor.users.find({avatarOrigin: {$exists: false}, username: {$exists: true}}).forEach (user) ->
 				avatars = getAvatarSuggestionForUser user
