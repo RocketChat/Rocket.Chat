@@ -39,8 +39,11 @@
 			KonchatNotification.removeRoomNotification(rid)
 
 			message = input.value
-			if message.indexOf('/me') != -1
+
+			messageArray = message.split(' ')
+			if message.indexOf('/me') != -1 && messageArray[0] == '/me'
 				message = '######' + Meteor.user().name + message.replace('/me', '')
+
 			input.value = ''
 			stopTyping()
 			Meteor.call 'sendMessage', {rid: rid, message: message, day: window.day }
