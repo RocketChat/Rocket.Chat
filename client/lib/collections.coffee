@@ -3,5 +3,10 @@
 
 Meteor.startup ->
 	ChatMessage.find().observe
+		added: (record) ->
+			if ChatMessageHistory._collection._docs._map[record._id]?
+				ChatMessageHistory.remove record._id
+
 		removed: (record) ->
-			ChatMessageHistory.upsert { _id: record._id }, record
+			if not ChatMessageHistory._collection._docs._map[record._id]?
+				ChatMessageHistory.insert record
