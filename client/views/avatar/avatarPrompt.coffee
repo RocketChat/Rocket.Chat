@@ -20,6 +20,9 @@ Template.avatarPrompt.helpers
 	upload: ->
 		return Template.instance().upload.get()
 
+	username: ->
+		return Meteor.user()?.username
+
 
 Template.avatarPrompt.events
 	'click .select-service': (e) ->
