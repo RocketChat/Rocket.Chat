@@ -34,7 +34,10 @@
 		"No_channels_yet": "You aren't part of any channel yet.",
 		"No_direct_messages_yet": "You haven't started any conversations yet.",
 		"No_groups_yet": "You have no private groups yet.",
-		"No_favorites_yet": "You haven't added any favorites yet."
+		"No_favorites_yet": "You haven't added any favorites yet.",
+		"Create_new_channel": "Create a new channel",
+		"Channels_list": "List of public channels",
+		"More_channels": "More channels"
 	},
 	"chatWindowDashboard": {
 		"Add_users": "Add users",
@@ -131,6 +134,7 @@
 		"Username_description": "The username is used to allow others to mention you in messages.",
 		"Use_this_username": "Use this username",
 		"Username_unavaliable": "<strong>%s</strong> is already in use :(",
+		"Username_invalid": "<strong>%s</strong> is not a valid username,<br/> use only letters, numbers, dots and dashes",
 		"Username_cant_be_empty": "The username cannot be empty"
 	},
 	"userStatus": {
