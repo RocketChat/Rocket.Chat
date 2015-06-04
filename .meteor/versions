@@ -80,6 +80,8 @@ oauth@1.1.4
 oauth2@1.1.3
 observe-sequence@1.0.6
 ordered-dict@1.0.3
+pauli:accounts-linkedin@1.1.2
+pauli:linkedin@1.1.2
 percolate:migrations@0.7.5
 percolatestudio:synced-cron@1.1.0
 qnub:emojione@0.0.3

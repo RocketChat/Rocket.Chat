@@ -16,6 +16,11 @@
 			service: 'github'
 			url: "https://avatars.githubusercontent.com/#{user.services.github.username}?s=200"
 
+	if user.services.linkedin?.pictureUrl?
+		avatars.push
+			service: 'linkedin'
+			url: user.services.linkedin.pictureUrl
+
 	if user.emails?.length > 0
 		for email in user.emails when email.verified is true
 			avatars.push
