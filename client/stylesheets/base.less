@@ -671,10 +671,28 @@ a.github-fork {
 		min-height: 20px;
 		min-width: 20px;
 		display: block;
+		position: relative;
 		background-color: transparent;
 		background-size: cover;
 		background-repeat: no-repeat;
 		background-position: center;
+	}
+
+	&[initials]:before {
+		content: attr(initials);
+		position: absolute;
+		position: absolute;
+		font-size: 22px;
+		text-align: center;
+		width: 100%;
+		height: 100%;
+		color: #FFF;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		font-family: Helvetica;
+		text-transform: uppercase;
+		font-weight: bold;
 	}
 }
 
@@ -1728,11 +1746,6 @@ a.github-fork {
 		display: block;
 		width: 40px;
 		height: 40px;
-		background-color: #FFF;
-		border-radius: 2px;
-		background-image: url(/images/no_picture.png);
-		background-size: 100% auto;
-		background-position: 50% 50%;
 	}
 }
 
@@ -2063,13 +2076,13 @@ a.github-fork {
 
 .user-image-status(@color) {
 	.avatar{
-		&:after, &:before {
+		&:after {
 			background-color: darken(@color, 5%);
 		}
 	}
 }
 
-@user-image-square: 30px;
+@user-image-square: 20px;
 .user-image {
 	margin: 4px;
 	height: @user-image-square;
@@ -2079,29 +2092,34 @@ a.github-fork {
 	font-size: 12px;
 	position: relative;
 	display: inline-table;
+	.avatar {
+		&:before {
+			font-size: 10px;
+		}
+	}
 	&:hover,
 	&.selected {
 		.avatar{
 			&:after {
 				.transform(scaleX(1))
 			}
-			.status-offline & {
-				&:after, &:before {
+			.status-offline {
+				&:after {
 					background-color: @status-offline;
 				}
 			}
-			.status-online & {
-				&:after, &:before {
+			.status-online {
+				&:after {
 					background-color: @status-online;
 				}
 			}
-			.status-away & {
-				&:after, &:before {
+			.status-away {
+				&:after {
 					background-color: @status-away;
 				}
 			}
-			.status-busy & {
-				&:after, &:before {
+			.status-busy {
+				&:after {
 					background-color: @status-busy;
 				}
 			}
@@ -2112,22 +2130,14 @@ a.github-fork {
 	}
 	.avatar {
 		overflow: visible;
-		&:after, &:before {
+		&:after {
 			content: " ";
-			width: 100%;
-			height: 2px;
+			height: 100%;
+			width: 3px;
 			position: absolute;
 			z-index: 1;
-			left: 0px;
-		}
-		&:after{
-			bottom: -4px;
-			.transform(scaleX(0));
-			.transform-origin(50%, 50%);
-			.transition(transform .15s ease-out .02s);
-		}
-		&:before{
-			bottom: -3px;
+			left: -7px;
+			bottom: 0px;
 		}
 		.avatar-initials {
 			line-height: @user-image-square;
@@ -2754,6 +2764,9 @@ a.github-fork {
 		* {
 			cursor: pointer;
 		}
+	}
+	.avatar:before {
+		font-size: 44px;
 	}
 }
 

@@ -159,6 +159,7 @@
 	},
 	"avatar": {
 		"Use_service_avatar": "Use %s avatar",
+		"Use_initials_avatar": "Use your username initials",
 		"Login_with": "Login with %s",
 		"Select_an_avatar": "Select an avatar",
 		"Use_uploaded_avatar": "Use uploaded avatar",
