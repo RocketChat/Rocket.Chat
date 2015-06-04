@@ -155,7 +155,8 @@
 		"Not_found_or_not_allowed": "Não encontrado ou não permitido"
 	},
 	"avatar": {
-		"Use_service_avatar": "Use o avatar de %s",
+		"Use_service_avatar": "Use o avatar do %s",
+		"Use_initials_avatar": "Use as iniciais do seu nome de usuário",
 		"Login_with": "Login com %s",
 		"Select_an_avatar": "Selecione um avatar",
 		"Use_uploaded_avatar": "Use o avatar de upload",
