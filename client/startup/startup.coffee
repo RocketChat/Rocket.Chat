@@ -2,7 +2,7 @@ Meteor.startup ->
 	UserPresence.awayTime = 300000
 	UserPresence.start()
 
-	Session.setDefault('AvatarRandom', Date.now())
+	Session.setDefault('AvatarRandom', 0)
 
 	window.lastMessageWindow = {}
 	window.lastMessageWindowHistory = {}
@@ -30,25 +30,25 @@ Meteor.startup ->
 		added: (user) ->
 			Session.set('user_' + user.username + '_status', user.status)
 
-			UserAndRoom.insert({ type: 'u', uid: user._id, username: user.username, name: user.name})
+			# UserAndRoom.insert({ type: 'u', uid: user._id, username: user.username, name: user.name})
 		changed: (user) ->
 			Session.set('user_' + user.username + '_status', user.status)
 
-			UserAndRoom.update({ uid: user._id }, { $set: { username: user.username, name: user.name } })
+			# UserAndRoom.update({ uid: user._id }, { $set: { username: user.username, name: user.name } })
 		removed: (user) ->
 			Session.set('user_' + user.username + '_status', null)
 
-			UserAndRoom.remove({ uid: user._id })
+			# UserAndRoom.remove({ uid: user._id })
 
-	ChatRoom.find({ t: { $ne: 'd' } }, { fields: { t: 1, name: 1 } }).observe
-		added: (room) ->
-			roomData = { type: 'r', t: room.t, rid: room._id, name: room.name }
+	# ChatRoom.find({ t: { $ne: 'd' } }, { fields: { t: 1, name: 1 } }).observe
+	# 	added: (room) ->
+	# 		roomData = { type: 'r', t: room.t, rid: room._id, name: room.name }
 
-			UserAndRoom.insert(roomData)
-		changed: (room) ->
-			UserAndRoom.update({ rid: room._id }, { $set: { t: room.t, name: room.name } })
-		removed: (room) ->
-			UserAndRoom.remove({ rid: room._id })
+	# 		UserAndRoom.insert(roomData)
+	# 	changed: (room) ->
+	# 		UserAndRoom.update({ rid: room._id }, { $set: { t: room.t, name: room.name } })
+	# 	removed: (room) ->
+	# 		UserAndRoom.remove({ rid: room._id })
 
 	Tracker.autorun ->
 		rooms = []

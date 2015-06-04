@@ -21,7 +21,7 @@
 			dep.depend()
 			subscribe.run()
 
-	init()
+	# init()
 
 	addUser: addUser
 	users: users

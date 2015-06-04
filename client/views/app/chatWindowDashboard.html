@@ -116,7 +116,14 @@
 						</div>
 						<ul class='list cf_ lines'>
 							{{#each users}}
-								{{> userImageProfile}}
+								{{#with userActiveByUsername .}}
+								<li class='user-image user-card-room status-{{status}}'>
+									<a data-username="{{username}}" tabindex="0" title="{{username}}">
+										{{> avatar username=username}}
+										<p>{{username}}</p>
+									</a>
+								</li>
+								{{/with}}
 							{{/each}}
 						</ul>
 					{{/with}}
