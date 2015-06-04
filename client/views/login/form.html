@@ -15,7 +15,15 @@
 					<i></i>
 				</div>
 			</div>
-			<div class='input-text active'>
+			<div class='input-text active {{showEmailOrUsername}}'>
+				<div class='field'>
+					<span>
+						<input type="text" name='emailOrUsername' placeholder='{{_ "login.Email_or_username"}}' />
+					</span>
+					<i></i>
+				</div>
+			</div>
+			<div class='input-text active {{showEmail}}'>
 				<div class='field'>
 					<span>
 						<input type="email" name='email' placeholder='{{_ "Email"}}' />
