@@ -49,9 +49,11 @@ Meteor.startup ->
 						delete room[k]
 
 					oldId = room._id
-					room._id = usernames.sort().join('')
+					room._id = usernames.sort().join(',')
 					ChatRoom.insert(room)
 					ChatRoom.remove({_id: oldId})
+					ChatSubscription.update({rid: oldId}, {$set: {rid: room._id}}, {multi: true})
+					ChatMessage.update({rid: oldId}, {$set: {rid: room._id}}, {multi: true})
 				else
 					ChatRoom.update(room._id, update)
 
