@@ -34,7 +34,8 @@
 		"No_channels_yet": "Você não faz parte de nenhum canal ainda.",
 		"No_direct_messages_yet": "Você não iniciou nenhuma conversa ainda.",
 		"No_groups_yet": "Nenhum grupo privado ainda.",
-		"No_favorites_yet": "Nenhum favorito ainda."
+		"No_favorites_yet": "Nenhum favorito ainda.",
+		"Invalid_room_name": "<strong>%s</strong> não é um nome válido,<br/> use apenas letras, números e traços"
 	},
 	"chatWindowDashboard": {
 		"Add_users": "Adicionar usuários",

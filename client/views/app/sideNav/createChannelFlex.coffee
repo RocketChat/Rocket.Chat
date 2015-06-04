@@ -8,6 +8,9 @@ Template.createChannelFlex.helpers
 	error: ->
 		return Template.instance().error.get()
 
+	roomName: ->
+		return Template.instance().roomName.get()
+
 	autocompleteSettings: ->
 		return {
 			limit: 10
@@ -60,10 +63,17 @@ Template.createChannelFlex.events
 
 	'click .save-channel': (e, instance) ->
 		err = SideNav.validate()
+		instance.roomName.set instance.find('#channel-name').value
+		console.log err
 		if not err
 			Meteor.call 'createChannel', instance.find('#channel-name').value, instance.selectedUsers.get(), (err, result) ->
-				if err
-					return toastr.error err.reason
+				if err 
+					console.log err
+					if err.error is 'name-invalid'
+						instance.error.set({ invalid: true })
+						return
+					else	
+						return toastr.error err.reason
 
 				SideNav.closeFlex()
 
@@ -71,16 +81,18 @@ Template.createChannelFlex.events
 
 				Router.go 'room', { _id: result.rid }
 		else
-			Template.instance().error.set(err)
+			instance.error.set({ fields: err })
 
 Template.createChannelFlex.onCreated ->
 	instance = this
 	instance.selectedUsers = new ReactiveVar []
 	instance.selectedUserNames = {}
 	instance.error = new ReactiveVar []
+	instance.roomName = new ReactiveVar ''
 
 	instance.clearForm = ->
 		instance.error.set([])
+		instance.roomName.set('')
 		instance.selectedUsers.set([])
 		instance.find('#channel-name').value = ''
 		instance.find('#channel-members').value = ''
