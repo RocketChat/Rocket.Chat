@@ -77,7 +77,7 @@ Template.messagePopup.onCreated ->
 			event.preventDefault()
 			event.stopPropagation()
 
-		if event.which is 13
+		if event.which in [13, 9]
 			template.open.set false
 
 			template.enterValue()
