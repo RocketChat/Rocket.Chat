@@ -1,5 +1,8 @@
 Meteor.methods
 	createChannel: (name, members) ->
+		if not /^[0-9a-z-_]+$/i.test name
+			throw new Meteor.Error 'name-invalid'
+
 		fromId = Meteor.userId()
 		# console.log '[methods] createChannel -> '.green, 'fromId:', fromId, 'members:', members
 
@@ -7,7 +10,7 @@ Meteor.methods
 
 		members.push Meteor.user().username
 
-		name = s.slugify name
+		# name = s.slugify name
 
 		# create new room
 		roomId = ChatRoom.insert
