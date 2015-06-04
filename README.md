@@ -113,6 +113,10 @@ A lot of work has already gone into Rocket.Chat, but we have much bigger plans f
 
 So if you'd like to be part of the project, please check out the [roadmap](https://github.com/RocketChat/Rocket.Chat/milestones) and [issues](https://github.com/RocketChat/Rocket.Chat/issues) to see if there's anything you can help with.
 
+### Translations
+
+We are experimenting [transifex](https://www.transifex.com/organization/rocketchat/dashboard/rocketchat). If you want to help, try it out, let us know and please give us some feedback about the experience. 
+
 ### Community
 
 Join the the converation at [Twitter](http://twitter.com/RocketChatApp), [Facebook](https://www.facebook.com/RocketChatApp) or [Google Plus](https://plus.google.com/+RocketChatApp)
