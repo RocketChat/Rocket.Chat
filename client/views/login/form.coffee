@@ -11,6 +11,12 @@ Template.loginForm.helpers
 	showConfirmPassword: ->
 		return 'hidden' unless Template.instance().state.get() is 'register'
 
+	showEmailOrUsername: ->
+		return 'hidden' unless Template.instance().state.get() is 'login'
+
+	showEmail: ->
+		return 'hidden' unless Template.instance().state.get() in ['register', 'forgot-password', 'email-verification']
+
 	showRegisterLink: ->
 		return 'hidden' unless Template.instance().state.get() is 'login'
 
@@ -64,7 +70,7 @@ Template.loginForm.events
 						else
 							Router.go 'index'
 			else
-				Meteor.loginWithPassword formData.email, formData.pass, (error) ->
+				Meteor.loginWithPassword formData.emailOrUsername, formData.pass, (error) ->
 					Rocket.Button.reset(button)
 					if error?
 						if error.error is 'no-valid-email'
@@ -94,9 +100,10 @@ Template.loginForm.onCreated ->
 		for field in formData
 			formObj[field.name] = field.value
 
-		unless formObj['email'] and /\b[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]+\b/i.test(formObj['email'])
-			validationObj['email'] = t('login.Invalid_email')
-		
+		if instance.state.get() isnt 'login'
+			unless formObj['email'] and /\b[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]+\b/i.test(formObj['email'])
+				validationObj['email'] = t('login.Invalid_email')
+
 		if instance.state.get() isnt 'forgot-password'
 			unless formObj['pass']
 				validationObj['pass'] = t('login.Invalid_pass')
