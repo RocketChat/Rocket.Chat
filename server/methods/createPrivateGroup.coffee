@@ -5,29 +5,37 @@ Meteor.methods
 
 		now = new Date()
 
-		members.push Meteor.userId()
+		members.push Meteor.user().username
 
 		name = s.slugify name
 
 		# create new room
 		roomId = ChatRoom.insert
-			uids: members
+			usernames: members
 			ts: now
 			t: 'p'
-			uid: Meteor.userId()
+			u:
+				_id: Meteor.userId()
+				username: Meteor.user().username
 			name: name
 			msgs: 0
 
-		for user in members
+		for username in members
+			member = Meteor.users.findOne({username: username})
+			if not member?
+				continue
+
 			sub =
-				uid: user
+				u: 
+					_id: member._id
+					username: username
 				rid: roomId
 				ts: now
 				rn: name
 				t: 'p'
 				unread: 0
 
-			if user is Meteor.userId()
+			if username is Meteor.user().username
 				sub.ls = now
 
 			ChatSubscription.insert sub

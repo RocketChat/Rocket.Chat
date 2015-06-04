@@ -1,14 +1,14 @@
 Meteor.methods
-	createDirectRoom: (toUserId) ->
+	createDirectRoom: (toUsername) ->
 		fromId = Meteor.userId()
 		# console.log '[methods] createDirectRoom -> '.green, 'fromId:', fromId, 'toUserId:', toUserId
 
-		if Meteor.userId() is toUserId
+		if Meteor.user().username is toUsername
 			return
 
-		roomId = [Meteor.userId(), toUserId].sort().join('')
+		roomId = [Meteor.user().username, toUsername].sort().join('')
 
-		userTo = Meteor.users.findOne { _id: toUserId }
+		userTo = Meteor.users.findOne { username: toUsername }
 
 		me = Meteor.user()
 
@@ -17,14 +17,14 @@ Meteor.methods
 		# create new room
 		ChatRoom.upsert { _id: roomId },
 			$set:
-				uids: [Meteor.userId(),toUserId]
+				usernames: [Meteor.user().username, toUsername]
 			$setOnInsert:
 				t: 'd'
 				name: "#{me.name}|#{userTo.name}"
 				msgs: 0
 				ts: now
 
-		ChatSubscription.upsert { uid: Meteor.userId(), rid: roomId },
+		ChatSubscription.upsert { $and: [{'u._id': Meteor.userId()}], rid: roomId },
 			$set:
 				ts: now
 				ls: now
@@ -32,13 +32,15 @@ Meteor.methods
 			$setOnInsert:
 				t: 'd'
 				unread: 0
+				'u._id': userTo._id
 
-		ChatSubscription.upsert { uid: userTo._id, rid: roomId },
+		ChatSubscription.upsert { $and: [{'u._id': userTo._id}], rid: roomId },
 			$set:
 				rn: me.name
 			$setOnInsert:
 				t: 'd'
 				unread: 0
+				'u._id': userTo._id
 
 		return {
 			rid: roomId

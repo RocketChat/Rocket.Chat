@@ -3,7 +3,7 @@ Meteor.startup ->
 		if ChatRoom.find('57om6EQCcFami9wuT').count() is 0
 			ChatRoom.insert
 				_id: '57om6EQCcFami9wuT'
-				uids: []
+				usernames: []
 				ts: new Date()
 				t: 'c'
 				name: 'general'

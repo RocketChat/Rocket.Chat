@@ -13,10 +13,6 @@ Meteor.publish 'userData', ->
 			statusDefault: 1
 			statusConnection: 1
 			avatarOrigin: 1
-			emails: 1
-			'services.facebook.id': 1
-			'services.google.picture': 1
-			'services.github.username': 1
 
 Meteor.publish 'myRoomActivity', ->
 	unless this.userId
@@ -29,7 +25,7 @@ Meteor.publish 'myRoomActivity', ->
 	return Meteor.publishWithRelations
 		handle: this
 		collection: ChatSubscription
-		filter: { uid: this.userId, $or: [ { ts: { $gte: moment().subtract(1, 'days').startOf('day').toDate() } }, { f: true } ] }
+		filter: { 'u._id': this.userId, $or: [ { ts: { $gte: moment().subtract(1, 'days').startOf('day').toDate() } }, { f: true } ] }
 		mappings: [
 			key: 'rid'
 			reverse: false
@@ -69,17 +65,12 @@ Meteor.publish 'allUsers', ->
 
 	# console.log '[publish] allUsers'.green
 
-	return Meteor.users.find {}, { 'fields': {
-		name: 1
+	return Meteor.users.find {username: {$exists: true}}, { 'fields': {
 		username: 1
 		status: 1
-		emails: 1
-		'services.facebook.id': 1
-		'services.google.picture': 1
-		'services.github.username': 1
 	}}
 
-Meteor.publish 'selectiveUsers', (userIds) ->
+Meteor.publish 'selectiveUsers', (usernames) ->
 	unless @userId
 		return @ready()
 
@@ -87,29 +78,26 @@ Meteor.publish 'selectiveUsers', (userIds) ->
 
 	self = @
 
-	query = {}
+	query =
+		username: $exists: true
 
 	options =
 		fields:
 			name: 1
 			username: 1
 			status: 1
-			emails: 1
-			'services.facebook.id': 1
-			'services.google.picture': 1
-			'services.github.username': 1
 
 	cursor = Meteor.users.find query, options
 
 	observer = cursor.observeChanges
 		added: (id, record) ->
-			if userIds[id]?
+			if usernames[record.username]?
 				self.added 'users', id, record
 		changed: (id, record) ->
-			if userIds[id]?
+			if usernames[record.username]?
 				self.changed 'users', id, record
 		removed: (id) ->
-			if userIds[id]?
+			if usernames[record.username]?
 				self.removed 'users', id
 
 	@ready()
@@ -122,7 +110,7 @@ Meteor.publish 'privateHistoryRooms', ->
 
 	# console.log '[publish] privateHistoryRooms'.green
 
-	return ChatRoom.find { uids: this.userId, t: { $in: ['d', 'c'] } }, { fields: { t: 1, name: 1, msgs: 1, ts: 1, lm: 1, cl: 1 } }
+	return ChatRoom.find { usernames: Meteor.users.findOne(this.userId).username, t: { $in: ['d', 'c'] } }, { fields: { t: 1, name: 1, msgs: 1, ts: 1, lm: 1, cl: 1 } }
 
 Meteor.publish 'roomSearch', (selector, options, collName) ->
 	unless this.userId
@@ -139,9 +127,9 @@ Meteor.publish 'roomSearch', (selector, options, collName) ->
 		delete selector.type
 
 	if not searchType? or searchType is 'u'
-		subHandleUsers = Meteor.users.find(selector, { limit: 10, fields: { name: 1, status: 1 } }).observeChanges
+		subHandleUsers = Meteor.users.find(selector, { limit: 10, fields: { name: 1, username: 1, status: 1 } }).observeChanges
 			added: (id, fields) ->
-				data = { type: 'u', uid: id, name: fields.name, status: fields.status }
+				data = { type: 'u', uid: id, name: fields.name, username: fields.username, status: fields.status }
 				self.added("autocompleteRecords", id, data)
 			changed: (id, fields) ->
 				self.changed("autocompleteRecords", id, fields)
@@ -151,7 +139,7 @@ Meteor.publish 'roomSearch', (selector, options, collName) ->
 	subHandleRooms = null
 
 	# @TODO buscar apenas salas de grupo permitidas
-	roomSelector = _.extend { t: { $in: ['c'] }, uids: this.userId }, selector
+	roomSelector = _.extend { t: { $in: ['c'] }, usernames: Meteor.users.findOne(this.userId).username }, selector
 
 	if not searchType? or searchType is 'r'
 		subHandleRooms = ChatRoom.find(roomSelector, { limit: 10, fields: { t: 1, name: 1 } }).observeChanges

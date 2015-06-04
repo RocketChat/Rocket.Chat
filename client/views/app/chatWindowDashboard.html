@@ -86,12 +86,12 @@
 		<div class="control">
 			<button class="more"><span class="arrow {{arrowPosition}}"></span></button>
 			{{#if canAddUser}}
-				<form class="search-form" role="form">
+				<div class="search-form">
 					<div class="input-line search">
 						{{> inputAutocomplete settings=autocompleteSettingsAddUser id="user-add-search" class="search" placeholder=tAddUsers}}
 						<i class="icon-plus"></i>
 					</div>
-				</form>
+				</div>
 			{{else}}
 				{{#if isChannel}}
 					<form class="search-form" role="form">
@@ -116,7 +116,14 @@
 						</div>
 						<ul class='list cf_ lines'>
 							{{#each users}}
-								{{> userImageProfile}}
+								{{#with userActiveByUsername .}}
+								<li class='user-image user-card-room status-{{status}}'>
+									<a data-username="{{username}}" tabindex="0" title="{{username}}">
+										{{> avatar username=username}}
+										<p>{{username}}</p>
+									</a>
+								</li>
+								{{/with}}
 							{{/each}}
 						</ul>
 					{{/with}}
@@ -125,10 +132,10 @@
 					{{#with flexUserInfo}}
 						<div class="about cf_">
 							<div class="thumb">
-								{{> avatar userId=uid}}
+								{{> avatar username=username}}
 							</div>
 							<div class="info">
-								<h3>{{name}}</h3>
+								<h3>{{username}}</h3>
 								{{#if contactCode}}
 									<div class="contact-code">{{_ "general.Contact"}} {{contactCode}}</div>
 								{{/if}}
@@ -153,10 +160,10 @@
 					{{#with userData}}
 						<div class="about cf_">
 							<div class="thumb">
-								{{> avatar userId=uid}}
+								{{> avatar username=username}}
 							</div>
 							<div class="info">
-								<h3>{{name}}</h3>
+								<h3>{{username}}</h3>
 								{{#if contactCode}}
 									<div class="contact-code">{{_ "general.contact"}} {{contactCode}}</div>
 								{{/if}}

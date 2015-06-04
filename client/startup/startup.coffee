@@ -2,7 +2,7 @@ Meteor.startup ->
 	UserPresence.awayTime = 300000
 	UserPresence.start()
 
-	Session.setDefault('AvatarRandom', Date.now())
+	Session.setDefault('AvatarRandom', 0)
 
 	window.lastMessageWindow = {}
 	window.lastMessageWindowHistory = {}
@@ -26,42 +26,33 @@ Meteor.startup ->
 	TAPi18n.setLanguage(userLanguage)
 	moment.locale(userLanguage)
 
-	Meteor.users.find({}, { fields: { name: 1, pictures: 1, status: 1, emails: 1, phone: 1, services: 1 } }).observe
+	Meteor.users.find({}, { fields: { name: 1, username: 1, pictures: 1, status: 1, emails: 1, phone: 1, services: 1 } }).observe
 		added: (user) ->
-			Session.set('user_' + user._id + '_name', user.name)
-			Session.set('user_' + user._id + '_status', user.status)
-			Session.set('user_' + user._id + '_emails', user.emails)
-			Session.set('user_' + user._id + '_phone', user.phone)
+			Session.set('user_' + user.username + '_status', user.status)
 
-			UserAndRoom.insert({ type: 'u', uid: user._id, name: user.name})
+			# UserAndRoom.insert({ type: 'u', uid: user._id, username: user.username, name: user.name})
 		changed: (user) ->
-			Session.set('user_' + user._id + '_name', user.name)
-			Session.set('user_' + user._id + '_status', user.status)
-			Session.set('user_' + user._id + '_emails', user.emails)
-			Session.set('user_' + user._id + '_phone', user.phone)
+			Session.set('user_' + user.username + '_status', user.status)
 
-			UserAndRoom.update({ uid: user._id }, { $set: { name: user.name } })
+			# UserAndRoom.update({ uid: user._id }, { $set: { username: user.username, name: user.name } })
 		removed: (user) ->
-			Session.set('user_' + user._id + '_name', null)
-			Session.set('user_' + user._id + '_status', null)
-			Session.set('user_' + user._id + '_emails', null)
-			Session.set('user_' + user._id + '_phone', null)
+			Session.set('user_' + user.username + '_status', null)
 
-			UserAndRoom.remove({ uid: user._id })
+			# UserAndRoom.remove({ uid: user._id })
 
-	ChatRoom.find({ t: { $ne: 'd' } }, { fields: { t: 1, name: 1 } }).observe
-		added: (room) ->
-			roomData = { type: 'r', t: room.t, rid: room._id, name: room.name }
+	# ChatRoom.find({ t: { $ne: 'd' } }, { fields: { t: 1, name: 1 } }).observe
+	# 	added: (room) ->
+	# 		roomData = { type: 'r', t: room.t, rid: room._id, name: room.name }
 
-			UserAndRoom.insert(roomData)
-		changed: (room) ->
-			UserAndRoom.update({ rid: room._id }, { $set: { t: room.t, name: room.name } })
-		removed: (room) ->
-			UserAndRoom.remove({ rid: room._id })
+	# 		UserAndRoom.insert(roomData)
+	# 	changed: (room) ->
+	# 		UserAndRoom.update({ rid: room._id }, { $set: { t: room.t, name: room.name } })
+	# 	removed: (room) ->
+	# 		UserAndRoom.remove({ rid: room._id })
 
 	Tracker.autorun ->
 		rooms = []
-		ChatSubscription.find({ uid: Meteor.userId() }, { fields: { rid: 1 } }).forEach (sub) ->
+		ChatSubscription.find({ 'u._id': Meteor.userId() }, { fields: { rid: 1 } }).forEach (sub) ->
 			rooms.push sub.rid
 
 		ChatRoom.find({ _id: $in: rooms }).observe

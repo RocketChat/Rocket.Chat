@@ -1,10 +1,9 @@
 Template.chatMessageDashboard.helpers
 	own: ->
-		return 'own' if this.data.uid is Meteor.userId()
+		return 'own' if this.data.u?._id is Meteor.userId()
 
 	username: ->
-		if this.uid?
-			return Session.get('user_' + this.uid + '_name')
+		return this.u.username
 
 	isSystemMessage: ->
 		return this.t in ['s', 'p', 'f', 'r', 'au', 'ru', 'ul', 'nu', 'wm']
@@ -30,8 +29,8 @@ Template.chatMessageDashboard.helpers
 	message: ->
 		if this.by
 			UserManager.addUser(this.by)
-		else if this.uid
-			UserManager.addUser(this.uid)
+		else if this.u?.username
+			UserManager.addUser this.u.username
 		switch this.t
 			when 'p' then "<i class='icon-link-ext'></i><a href=\"#{this.url}\" target=\"_blank\">#{this.msg}</a>"
 			when 'r' then t('chatMessageDashboard.Room_name_changed', { room_name: this.msg, user_by: Session.get('user_' + this.by + '_name') }) + '.'
@@ -76,10 +75,9 @@ Template.chatMessageDashboard.events
 			Meteor.defer ->
 				$('.input-message-editing').select()
 
-	# TODO open flextab with user info
-	# 'click .mention-link': ->
-	# 	Session.set('flexOpened', true)
-	# 	Session.set('showUserInfo', $(e.currentTarget).data('username'))
+	'click .mention-link': (e) ->
+		Session.set('flexOpened', true)
+		Session.set('showUserInfo', $(e.currentTarget).data('username'))
 
 Template.chatMessageDashboard.onRendered ->
 	chatMessages = $('.messages-box .wrapper')

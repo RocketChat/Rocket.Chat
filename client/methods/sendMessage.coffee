@@ -3,10 +3,11 @@ Meteor.methods
 		Tracker.nonreactive ->
 			now = new Date(Date.now() + TimeSync.serverOffset())
 
-			ChatMessage.upsert { rid: msg.rid, uid: Meteor.userId(), t: 't' },
+			ChatMessage.upsert { rid: msg.rid, t: 't' },
 				$set:
 					ts: now
 					msg: msg.message
+					'u.username': Meteor.user().username
 				$unset:
 					t: 1
 					expireAt: 1
@@ -15,7 +16,7 @@ Meteor.methods
 		Tracker.nonreactive ->
 			now = new Date(Date.now() + TimeSync.serverOffset())
 
-			ChatMessage.update { _id: msg.id, uid: Meteor.userId() },
+			ChatMessage.update { _id: msg.id, 'u._id': Meteor.userId() },
 				$set:
 					ets: now
 					msg: msg.message

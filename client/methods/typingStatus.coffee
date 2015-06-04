@@ -6,7 +6,7 @@ Meteor.methods
 		filter =
 			t: 't'
 			rid: typingData.rid
-			uid: Meteor.userId()
+			$and: [{'u._id': Meteor.userId()}]
 
 		if start
 			msgData =
@@ -14,6 +14,8 @@ Meteor.methods
 					expireAt: moment().add(30, 'seconds').toDate()
 				'$setOnInsert':
 					msg: '...'
+					'u._id': Meteor.userId()
+					'u.username': Meteor.user().username
 					ts: moment().add(1, 'years').toDate()
 
 			ChatMessage.upsert(filter, msgData)

@@ -16,15 +16,16 @@ Meteor.methods
 
 		if room.t is 'c'
 			canAccess = true
-		else if room.uids.indexOf(Meteor.userId()) isnt -1
+		else if room.usernames.indexOf(Meteor.user().username) isnt -1
 			canAccess = true
 
 		if canAccess isnt true
 			throw new Meteor.Error 'without-permission', "[methods] canAccessRoom -> User doesn't have enough permissions"
 
 		# create room subscription
-		ChatSubscription.upsert { rid: roomId, uid: Meteor.userId() },
+		ChatSubscription.upsert { rid: roomId, $and: [{'u._id': Meteor.userId()}] },
 			$setOnInsert:
+				'u._id': Meteor.userId()
 				rn: room.name
 				t: room.t
 				unread: 0

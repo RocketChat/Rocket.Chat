@@ -19,8 +19,9 @@ Meteor.methods
 			# $pull:
 			# 	uids: Meteor.userId()
 
-		ChatSubscription.upsert { rid: forward.rid, uid: forward.to },
+		ChatSubscription.upsert { rid: forward.rid, $and: [{'u._id': forward.to}] },
 			$setOnInsert:
+				'u._id': forward.to
 				rn: room.name
 				t: 'v'
 				unread: 0

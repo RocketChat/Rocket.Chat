@@ -6,7 +6,7 @@ Template.chatWindowDashboard.helpers
 		return t('chatWindowDashboard.Quick_Search')
 	favorite: ->
 		console.log 'chatWindowDashboard.favorite' if window.rocketDebug
-		sub = ChatSubscription.findOne { rid: this._id, uid: Meteor.userId() }
+		sub = ChatSubscription.findOne { rid: this._id, 'u._id': Meteor.userId() }
 		return 'icon-star favorite-room' if sub?.f? and sub.f
 
 		return 'icon-star-empty'
@@ -37,7 +37,7 @@ Template.chatWindowDashboard.helpers
 
 	typing: ->
 		console.log 'chatWindowDashboard.typing' if window.rocketDebug
-		return this.uid isnt Meteor.userId()
+		return this.u._id isnt Meteor.userId()
 
 	usersTyping: ->
 		messages = ChatMessage.find { rid: this._id }, { sort: { ts: 1 } }
@@ -45,10 +45,10 @@ Template.chatWindowDashboard.helpers
 		selfTyping = false
 		messages.forEach (message) ->
 			if message.t is 't'
-				if message.uid is Meteor.userId()
+				if message.u._id is Meteor.userId()
 					selfTyping = true
 				else
-					username = Session.get('user_' + message.uid + '_name')
+					username = message.u.username
 					if username?
 						usernames.push username
 
@@ -142,14 +142,14 @@ Template.chatWindowDashboard.helpers
 		return {} unless roomData
 
 		if roomData.t is 'd'
-			uid = _.without roomData.uids, Meteor.userId()
-			UserManager.addUser uid
+			username = _.without roomData.usernames, Meteor.user().username
+			UserManager.addUser username
 
 			userData = {
-				name: Session.get('user_' + uid + '_name')
-				emails: Session.get('user_' + uid + '_emails') || []
-				phone: Session.get('user_' + uid + '_phone')
-				uid: String(uid)
+				name: Session.get('user_' + username + '_name')
+				emails: Session.get('user_' + username + '_emails') || []
+				phone: Session.get('user_' + username + '_phone')
+				username: String(username)
 			}
 			return userData
 
@@ -201,14 +201,14 @@ Template.chatWindowDashboard.helpers
 
 		return '' unless roomData
 
-		return roomData.t in ['p', 'c'] and roomData.uid is Meteor.userId()
+		return roomData.t in ['p', 'c'] and roomData.u?._id is Meteor.userId()
 
 	canEditName: ->
 		roomData = Session.get('roomData' + this._id)
 
 		return '' unless roomData
 
-		return roomData.uid is Meteor.userId() and roomData.t in ['c', 'p']
+		return roomData.u?._id is Meteor.userId() and roomData.t in ['c', 'p']
 
 	roomNameEdit: ->
 		return Session.get('roomData' + this._id)?.name
@@ -237,43 +237,33 @@ Template.chatWindowDashboard.helpers
 		room = ChatRoom.findOne(this._id, { reactive: false })
 		return room?.t in ['c', 'p']
 
+	userActiveByUsername: (username) ->
+		status = Session.get 'user_' + username + '_status'
+		if status in ['online', 'away', 'busy']
+			return {username: username, status: status}
+		return 
+
 	roomUsers: ->
 		room = ChatRoom.findOne(this._id, { reactive: false })
 		ret =
 			_id: this._id
-			total: room?.uids.length
+			total: room?.usernames.length
 			totalOnline: 0
-			users: []
-
-		if room?.uids
-			# UserManager.addUser room.uids
-
-			filter =
-				_id:
-					$in: room?.uids
-
-			# unless Template.instance().showUsersOffline.get()
-			# 	filter.status = { $ne: 'offline' }
-
-			filter.$and = [{ status: {$exists: true} }, { status: {$ne: 'offline'} }]
-
-			users = Meteor.users.find(filter, { sort: { name: 1 } } ).fetch()
-			ret.totalOnline = users.length
-			ret.users = users
+			users: room.usernames
 
 		return ret
 
 	flexUserInfo: ->
-		uid = Session.get('showUserInfo')
+		username = Session.get('showUserInfo')
 
 		userData = {
-			name: Session.get('user_' + uid + '_name')
-			emails: Session.get('user_' + uid + '_emails')
-			uid: String(uid)
+			# name: Session.get('user_' + uid + '_name')
+			# emails: Session.get('user_' + uid + '_emails')
+			username: String(username)
 		}
-		phone = Session.get('user_' + uid + '_phone')
-		if phone? and phone[0]?.phoneNumber
-			userData.phone = phone[0]?.phoneNumber
+		# phone = Session.get('user_' + uid + '_phone')
+		# if phone? and phone[0]?.phoneNumber
+		# 	userData.phone = phone[0]?.phoneNumber
 
 		return userData
 
@@ -363,13 +353,13 @@ Template.chatWindowDashboard.events
 
 	"click .flex-tab .user-image > a" : (e) ->
 		Session.set('flexOpened', true)
-		Session.set('showUserInfo', $(e.currentTarget).data('userid'))
+		Session.set('showUserInfo', $(e.currentTarget).data('username'))
 
 	'click .user-card-message': (e) ->
 		roomData = Session.get('roomData' + this.rid)
 		if roomData.t in ['c', 'p']
 			Session.set('flexOpened', true)
-			Session.set('showUserInfo', $(e.currentTarget).data('userid'))
+			Session.set('showUserInfo', $(e.currentTarget).data('username'))
 		else
 			Session.set('flexOpened', true)
 
@@ -381,7 +371,7 @@ Template.chatWindowDashboard.events
 			if error
 				return Errors.throw error.reason
 
-			if result.rid?
+			if result?.rid?
 				Router.go('room', { _id: result.rid })
 
 	'click button.load-more': (e) ->
@@ -391,21 +381,20 @@ Template.chatWindowDashboard.events
 		roomData = Session.get('roomData' + Session.get('openedRoom'))
 
 		if roomData.t is 'd'
-			Meteor.call 'createGroupRoom', roomData.uids, doc.uid, (error, result) ->
+			Meteor.call 'createGroupRoom', roomData.usernames, doc.username, (error, result) ->
 				if error
 					return Errors.throw error.reason
 
 				if result?.rid?
-					Router.go('room', { _id: result.rid })
+					# Router.go('room', { _id: result.rid })
 					$('#user-add-search').val('')
 		else if roomData.t in ['c', 'p']
-			Meteor.call 'addUserToRoom', { rid: roomData._id, uid: doc.uid }, (error, result) ->
+			Meteor.call 'addUserToRoom', { rid: roomData._id, username: doc.username }, (error, result) ->
 				if error
 					return Errors.throw error.reason
 
-				if result
-					$('#user-add-search').val('')
-					toggleAddUser()
+				$('#user-add-search').val('')
+				toggleAddUser()
 
 	'autocompleteselect #room-search': (event, template, doc) ->
 		if doc.type is 'u'
@@ -438,7 +427,7 @@ Template.chatWindowDashboard.onCreated ->
 	this.scrollOnBottom = true
 	this.showUsersOffline = new ReactiveVar false
 
-	# this.subscribe("allUsers")
+	this.subscribe("allUsers")
 
 Template.chatWindowDashboard.onRendered ->
 	FlexTab.check()
