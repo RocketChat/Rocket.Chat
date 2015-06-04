@@ -4,8 +4,8 @@ Meteor.methods
 
 		update =
 			$pull:
-				uids: Meteor.userId()
+				usernames: Meteor.user().username
 
-		ChatSubscription.remove { rid: roomId, uid: Meteor.userId() }
+		ChatSubscription.remove { rid: roomId, 'u._id': Meteor.userId() }
 
 		ChatRoom.update roomId, update

@@ -5,7 +5,7 @@ Meteor.methods
 
 		room = ChatRoom.findOne data.rid
 
-		if room.uid isnt Meteor.userId() or room.t not in ['c', 'p']
+		if room.u._id isnt Meteor.userId() or room.t not in ['c', 'p']
 			throw new Meteor.Error 403, 'Not allowed'
 
 		newName = _.slugify data.name
@@ -29,6 +29,6 @@ Meteor.methods
 			ts: (new Date)
 			t: 'r'
 			msg: newName
-			by: Meteor.userId()
+			by: Meteor.user().username
 
 		return true

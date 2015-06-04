@@ -61,7 +61,7 @@
 		self.typingTimeout = null
 
 	startEditingLastMessage = (rid, imput) ->
-		lastMessage = ChatMessage.findOne { rid: rid, t: {$exists: false}, uid: Meteor.userId() }, { sort: { ts: -1 } }
+		lastMessage = ChatMessage.findOne { rid: rid, t: {$exists: false}, 'u._id': Meteor.userId() }, { sort: { ts: -1 } }
 		if not lastMessage?
 			return
 

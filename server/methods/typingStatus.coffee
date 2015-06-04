@@ -9,7 +9,7 @@ Meteor.methods
 		filter =
 			t: 't'
 			rid: typingData.rid
-			uid: Meteor.userId()
+			$and: [{'u._id': Meteor.userId()}]
 
 		if start
 			msgData =
@@ -18,6 +18,8 @@ Meteor.methods
 				'$setOnInsert':
 					msg: '...'
 					ts: moment().add(1, 'years').toDate()
+					'u._id': Meteor.userId()
+					'u.username': Meteor.user().username
 
 			ChatMessage.upsert(filter, msgData)
 		else
