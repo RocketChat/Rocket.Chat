@@ -12,7 +12,11 @@ Template.chatMessageDashboard.helpers
 		return this._id is Session.get('editingMessageId')
 
 	autolinkerAndMentions: ->
-		msg = Autolinker.link(_.stripTags(this.msg), { stripPrefix: false, twitter: false })
+		msg = this.msg
+
+		msg = Autolinker.link(_.stripTags(msg), { stripPrefix: false, twitter: false })
+
+		msg = msg.replace /\n/g, '<br/>'
 
 		if not this.mentions? or this.mentions.length is 0
 			return msg
