@@ -117,6 +117,8 @@ So if you'd like to be part of the project, please check out the [roadmap](https
 
 We are experimenting [transifex](https://www.transifex.com/organization/rocketchat/dashboard/rocketchat). If you want to help, try it out, let us know and please give us some feedback about the experience. 
 
+<img border="0" src="https://www.transifex.com/projects/p/rocketchat/resource/eni18njson/chart/image_png"/>
+
 ### Community
 
 Join the the converation at [Twitter](http://twitter.com/RocketChatApp), [Facebook](https://www.facebook.com/RocketChatApp) or [Google Plus](https://plus.google.com/+RocketChatApp)
