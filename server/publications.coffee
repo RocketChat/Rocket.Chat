@@ -65,7 +65,7 @@ Meteor.publish 'allUsers', ->
 
 	# console.log '[publish] allUsers'.green
 
-	return Meteor.users.find {username: {$exists: true}}, { 'fields': {
+	return Meteor.users.find {username: {$exists: true}, status: {$in: ['online', 'away', 'busy']}}, { 'fields': {
 		username: 1
 		status: 1
 	}}
