@@ -6,7 +6,7 @@ Meteor.methods
 		if Meteor.user().username is toUsername
 			return
 
-		roomId = [Meteor.user().username, toUsername].sort().join('')
+		roomId = [Meteor.user().username, toUsername].sort().join(',')
 
 		userTo = Meteor.users.findOne { username: toUsername }
 
