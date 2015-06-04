@@ -11,4 +11,5 @@ Template.avatar.helpers
 		if not username? and this.userId?
 			username = Meteor.users.findOne(this.userId)?.username
 		url = "#{Meteor.absoluteUrl()}avatar/#{username}.jpg?_dc=#{random}"
+		url = "http://rocket.chat/avatar/#{username}.jpg?_dc=#{random}"
 		return url

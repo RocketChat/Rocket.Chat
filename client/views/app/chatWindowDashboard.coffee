@@ -237,6 +237,12 @@ Template.chatWindowDashboard.helpers
 		room = ChatRoom.findOne(this._id, { reactive: false })
 		return room?.t in ['c', 'p']
 
+	userActiveByUsername: (username) ->
+		status = Session.get 'user_' + username + '_status'
+		if status in ['online', 'away', 'busy']
+			return {username: username, status: status}
+		return 
+
 	roomUsers: ->
 		room = ChatRoom.findOne(this._id, { reactive: false })
 		ret =
@@ -244,22 +250,6 @@ Template.chatWindowDashboard.helpers
 			total: room?.usernames.length
 			totalOnline: 0
 			users: room.usernames
-
-		# if room?.usernames
-		# 	# UserManager.addUser room.uids
-
-		# 	filter =
-		# 		username:
-		# 			$in: room.usernames
-
-		# 	# unless Template.instance().showUsersOffline.get()
-		# 	# 	filter.status = { $ne: 'offline' }
-
-		# 	filter.$and = [{ status: {$exists: true} }, { status: {$ne: 'offline'} }]
-
-		# 	users = Meteor.users.find(filter, { sort: { name: 1 } } ).fetch()
-		# 	ret.totalOnline = users.length
-		# 	ret.users = users
 
 		return ret
 
@@ -437,7 +427,7 @@ Template.chatWindowDashboard.onCreated ->
 	this.scrollOnBottom = true
 	this.showUsersOffline = new ReactiveVar false
 
-	# this.subscribe("allUsers")
+	this.subscribe("allUsers")
 
 Template.chatWindowDashboard.onRendered ->
 	FlexTab.check()
