@@ -27,5 +27,8 @@ Template.userStatus.events
 		event.preventDefault()
 		Meteor.logout()
 
+	'click #avatar': (event) ->
+		Meteor.call('resetAvatar')
+
 Template.userStatus.rendered = ->
 	AccountBox.init()
