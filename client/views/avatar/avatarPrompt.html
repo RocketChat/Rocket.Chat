@@ -28,7 +28,7 @@
 					<div class="avatar-suggestions">
 						{{#if suggestions.ready}}
 							<div class="avatar-suggestion-item">
-								{{> avatar username=username}}
+								{{> avatar username=username preventImage='true'}}
 								{{#with service='initials'}}
 									<button type="button" class="button primary select-service">{{_ "avatar.Use_initials_avatar" }}</button>
 								{{/with}}
