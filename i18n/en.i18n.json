@@ -37,7 +37,8 @@
 		"No_favorites_yet": "You haven't added any favorites yet.",
 		"Create_new_channel": "Create a new channel",
 		"Channels_list": "List of public channels",
-		"More_channels": "More channels"
+		"More_channels": "More channels",
+		"Invalid_room_name": "<strong>%s</strong> is not a valid room name,<br/> use only letters, numbers and dashes"
 	},
 	"chatWindowDashboard": {
 		"Add_users": "Add users",
