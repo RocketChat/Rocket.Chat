@@ -21,6 +21,9 @@ Meteor.methods
 		if not usernameIsAvaliable username
 			throw new Meteor.Error 'username-unavaliable'
 
+		if not /^[0-9a-z-_.]+$/.test username
+			throw new Meteor.Error 'username-invalid'
+
 		Meteor.users.update({_id: user._id},  {$set: {username: username}})
 
 		return username

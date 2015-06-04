@@ -12,6 +12,12 @@
 					{{{_ "usernameRegistration.Username_unavaliable" username.username}}}
 				</div>
 			{{/if}}
+			{{#if username.invalid}}
+				<br/>
+				<div class="alert alert-danger">
+					{{{_ "usernameRegistration.Username_invalid" username.username}}}
+				</div>
+			{{/if}}
 			{{#if username.empty}}
 				<br/>
 				<div class="alert alert-danger">

@@ -4,5 +4,9 @@ Template.sideNav.helpers
 	flexData: ->
 		return SideNav.getFlex().data
 
-Template.sideNav.rendered = ->
+Template.sideNav.events
+	'click .close-flex': ->
+		SideNav.closeFlex()
+
+Template.sideNav.onRendered ->
 	SideNav.init()
