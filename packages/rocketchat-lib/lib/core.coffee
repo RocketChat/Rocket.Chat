@@ -1,6 +1,6 @@
 ###
-# Kick off the global namespace for Rocket.
-# @namespace Rocket
+# Kick off the global namespace for RocketChat.
+# @namespace RocketChat
 ###
 
-Rocket = {}
+RocketChat = {}

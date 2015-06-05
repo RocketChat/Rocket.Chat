@@ -15,10 +15,10 @@ Meteor.startup ->
 
 				dataURI = avatars[service].blob
 
-				{image, contentType} = RocketFile.dataURIParse dataURI
+				{image, contentType} = RocketChatFile.dataURIParse dataURI
 
-				rs = RocketFile.bufferToStream new Buffer(image, 'base64')
-				ws = RocketFileAvatarInstance.createWriteStream "#{user.username}.jpg", contentType
+				rs = RocketChatFile.bufferToStream new Buffer(image, 'base64')
+				ws = RocketChatFileAvatarInstance.createWriteStream "#{user.username}.jpg", contentType
 				ws.on 'end', Meteor.bindEnvironment ->
 					Meteor.users.update {_id: user._id}, {$set: {avatarOrigin: service}}
 
