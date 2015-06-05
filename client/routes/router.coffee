@@ -73,10 +73,7 @@ Router.route '/room/:_id',
 	name: 'room'
 
 	waitOn: ->
-		[
-			subs.subscribe 'messages', @params._id, moment().subtract(2, 'hour').startOf('day').toDate()
-			subs.subscribe 'room', @params._id
-		]
+		RoomManager.open @params._id
 
 	onBeforeAction: ->
 		unless ChatRoom.find(@params._id).count()
