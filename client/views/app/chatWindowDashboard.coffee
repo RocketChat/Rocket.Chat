@@ -71,55 +71,23 @@ Template.chatWindowDashboard.helpers
 			users: usernames.join " #{t 'general.and'} "
 		}
 
-	newDate: ->
-		console.log 'chatWindowDashboard.newDate' if window.rocketDebug
+	messageInfo: (from) ->
+		collection = ChatMessage
 
-		lastMessageDate = window.lastMessageWindow[this.rid]
-		d = moment(this.ts).format('YYYYMMDD')
+		if from is 'history'
+			collection = ChatMessageHistory
 
-		window.lastMessageWindow[this.rid] =
-			mid: this._id
-			date: d
+		last = collection.find({ts: {$lt: this.ts}, t: {$exists: false}}, { sort: { ts: -1 }, limit: 1 }).fetch()[0]
+		if not last?
+			return {
+				single: false
+				newDay: false
+			}
 
-		if not lastMessageDate?
-			return false
-
-		if lastMessageDate.mid is this._id
-			last = ChatMessage.find({ts: {$lt: this.ts}, t: {$exists: false}}, { sort: { ts: -1 }, limit: 1 }).fetch()[0]
-			if not last?
-				return false
-			lastMessageDate =
-				mid: last._id
-				date: moment(last.ts).format('YYYYMMDD')
-
-		return lastMessageDate.date isnt d
-
-	newDateHistory: ->
-		console.log 'chatWindowDashboard.newDate' if window.rocketDebug
-
-		lastMessageDate = window.lastMessageWindowHistory[this.rid]
-		d = moment(this.ts).format('YYYYMMDD')
-
-		window.lastMessageWindowHistory[this.rid] =
-			mid: this._id
-			date: d
-
-		if not lastMessageDate?
-			return false
-
-		if lastMessageDate.mid is this._id
-			last = ChatMessageHistory.find({ts: {$lt: this.ts}, t: {$exists: false}}, { sort: { ts: -1 }, limit: 1 }).fetch()[0]
-			if not last?
-				return false
-			lastMessageDate =
-				mid: last._id
-				date: moment(last.ts).format('YYYYMMDD')
-
-		return lastMessageDate.date isnt d
-
-	messageDate: ->
-		console.log 'chatWindowDashboard.messageDate' if window.rocketDebug
-		return moment(this.ts).format('LL')
+		return {
+			single: last.u.username is this.u.username and this.ts - last.ts < 30000
+			newDay: moment(last.ts).format('YYYYMMDD') isnt moment(this.ts).format('YYYYMMDD')
+		}
 
 	roomName: ->
 		console.log 'chatWindowDashboard.roomName' if window.rocketDebug
