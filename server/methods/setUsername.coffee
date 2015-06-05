@@ -39,7 +39,7 @@ Meteor.methods
 						_id: user._id
 						username: username
 					ls: new Date()
-					rn: 'general'
+					name: 'general'
 					t: 'c'
 					f: true
 					ts: new Date()
