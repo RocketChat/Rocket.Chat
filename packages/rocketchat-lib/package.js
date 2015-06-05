@@ -14,11 +14,11 @@ Package.onUse(function(api) {
 		'underscorestring:underscore.string'
 	]);
 
-	api.addFiles('lib/underscore.string.coffee', 'server');
-	api.addFiles('lib/core.coffee', 'server');
-	api.addFiles('lib/callbacks.coffee', 'server');
+	api.addFiles('lib/underscore.string.coffee', ['server', 'client']);
+	api.addFiles('lib/core.coffee', ['server', 'client']);
+	api.addFiles('lib/callbacks.coffee', ['server', 'client']);
 
-	api.export(['RocketChat'], ['server']);
+	api.export(['RocketChat'], ['server', 'client']);
 });
 
 Package.onTest(function(api) {
