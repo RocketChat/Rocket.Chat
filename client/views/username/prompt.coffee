@@ -24,13 +24,13 @@ Template.usernamePrompt.events
 		instance.username.set(username)
 
 		button = $(event.target).find('button.login')
-		Rocket.Button.loading(button)
+		RocketChat.Button.loading(button)
 
 		value = $("input").val().trim()
 		if value is ''
 			username.empty = true
 			instance.username.set(username)
-			Rocket.Button.reset(button)
+			RocketChat.Button.reset(button)
 			return
 
 		Meteor.call 'setUsername', value, (err, result) ->
@@ -40,5 +40,5 @@ Template.usernamePrompt.events
 				else
 					username.error = true
 				username.username = value
-			Rocket.Button.reset(button)
+			RocketChat.Button.reset(button)
 			instance.username.set(username)
