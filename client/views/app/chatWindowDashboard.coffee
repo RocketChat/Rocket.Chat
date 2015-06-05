@@ -241,7 +241,7 @@ Template.chatWindowDashboard.helpers
 		status = Session.get 'user_' + username + '_status'
 		if status in ['online', 'away', 'busy']
 			return {username: username, status: status}
-		return 
+		return
 
 	roomUsers: ->
 		room = ChatRoom.findOne(this._id, { reactive: false })
@@ -427,7 +427,7 @@ Template.chatWindowDashboard.onCreated ->
 	this.scrollOnBottom = true
 	this.showUsersOffline = new ReactiveVar false
 
-	this.subscribe("allUsers")
+	this.subscribe("activeUsers")
 
 Template.chatWindowDashboard.onRendered ->
 	FlexTab.check()

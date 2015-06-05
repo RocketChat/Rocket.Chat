@@ -110,4 +110,4 @@ Router.route '/history/private',
 		this.render 'privateHistory'
 
 	waitOn: ->
-		return [ Meteor.subscribe('privateHistoryRooms') ]
+		return [ Meteor.subscribe('privateHistory') ]
