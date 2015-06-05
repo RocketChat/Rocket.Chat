@@ -23,20 +23,22 @@ Meteor.methods
 		ChatRoom.update data.rid, update
 
 		ChatSubscription.insert
-			u:
-				_id: newUser._id
-				username: data.username
 			rid: data.rid
 			ts: (new Date())
 			name: room.name
 			t: room.t
 			unread: 0
+			u:
+				_id: newUser._id
+				username: data.username
 
 		ChatMessage.insert
 			rid: data.rid
 			ts: (new Date)
 			t: 'au'
 			msg: newUser.name
-			by: Meteor.userId()
+			u:
+				_id: newUser._id
+				username: data.username
 
 		return true

@@ -17,11 +17,11 @@ Meteor.methods
 			usernames: members
 			ts: now
 			t: 'c'
+			name: name
+			msgs: 0
 			u:
 				_id: Meteor.userId()
 				username: Meteor.user().username
-			name: name
-			msgs: 0
 
 		for username in members
 			member = Meteor.users.findOne({username: username})
@@ -29,14 +29,14 @@ Meteor.methods
 				continue
 
 			sub =
-				u:
-					_id: member._id
-					username: username
 				rid: roomId
 				ts: now
 				name: name
 				t: 'c'
 				unread: 0
+				u:
+					_id: member._id
+					username: username
 
 			if username is Meteor.user().username
 				sub.ls = now
