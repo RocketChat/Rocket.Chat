@@ -1,5 +1,86 @@
 @import url(http://fonts.googleapis.com/css?family=Roboto:300,400,500,700,900);
 @import url(http://fonts.googleapis.com/css?family=Muli:400,300,500);
+
+@font-face {
+	font-family: 'fontello';
+	src: url('/fonts/fontello.eot?19437876');
+	src: url('/fonts/fontello.eot?19437876#iefix') format('embedded-opentype'), url('/fonts/fontello.woff?19437876') format('woff'), url('/fonts/fontello.ttf?19437876') format('truetype'), url('/fonts/fontello.svg?19437876#fontello') format('svg');
+	font-weight: normal;
+	font-style: normal
+}
+
+ [class^="icon-"]:before, [class*=" icon-"]:before {
+  font-family: "fontello";
+  font-style: normal;
+  font-weight: normal;
+  speak: none;
+
+  display: inline-block;
+  text-decoration: inherit;
+  width: 1em;
+  margin-right: .2em;
+  text-align: center;
+  /* opacity: .8; */
+
+  /* For safety - reset parent styles, that can break glyph codes*/
+  font-variant: normal;
+  text-transform: none;
+
+  /* fix buttons height, for twitter bootstrap */
+  line-height: inherit;
+
+  /* Animation center compensation - margins should be symmetric */
+  /* remove if not needed */
+  margin-left: .2em;
+
+  /* you can be more comfortable with increased icons size */
+  /* font-size: 120%; */
+
+  /* Font smoothing. That was taken from TWBS */
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+
+  /* Uncomment for 3D effect */
+  /* text-shadow: 1px 1px 1px rgba(127, 127, 127, 0.3); */
+}
+
+.icon-tumblr:before {
+	content: '\e881'
+}
+
+.icon-trello:before {
+	content: '\e882'
+}
+
+.icon-facebook:before {
+	content: '\e89a'
+}
+
+.icon-dropbox:before {
+	content: '\e89b'
+}
+
+.icon-dribbble:before {
+	content: '\e89c'
+}
+
+.icon-twitter:before {
+	content: '\e87e'
+}
+
+.icon-gplus:before {
+	content: '\e887'
+}
+
+.icon-github-circled:before {
+	content: '\5c'
+}
+
+.icon-linkedin:before {
+	content: '\e88d';
+}
+
+
 #login-buttons-image-facebook {
 	background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAq0lEQVQ4jWP8//8/AyWAhYGBgcEmauYZBgYGYxL1nj2yLN2ECcohVTNcDwsxKlXlhRm6yzwZRAS5GRgYGBhsombC5ZhwaUIGyJrRAVEuwGYzSS7AB/C64MiydKx8ZJfgNeDN+68MDAwIL8D4RLsgIHsJis0wPjKgOAyoE4hcnGwMGkpiBBUbacvA2TfuvaKiC759/3X23NUnOPMDtgTEwMBwloGBgYGR0uwMAGOPLJS9mkQHAAAAAElFTkSuQmCC)
 }
@@ -977,7 +1058,7 @@ label.required:after {
 	line-height: 16px;
 	position: relative;
 	background-color: #13679a;
-	cursor: pointer
+	cursor: pointer;
 }
 
 .button span {
@@ -3252,7 +3333,7 @@ a.github-fork:after {
 	display: table-cell;
 	vertical-align: middle;
 	text-align: center;
-	padding: 45px 0 35px;
+	padding: 45px 0;
 	z-index: 10;
 	position: relative
 }
@@ -3293,7 +3374,7 @@ a.github-fork:after {
 	height: 0;
 	background-color: #fff;
 	padding-bottom: 53%;
-	background: url(/images/screen.jpg) no-repeat 50% 50%;
+	background: url(/images/new-screen.jpg) no-repeat 50% 50%;
 	background-size: 100% auto
 }
 
@@ -3399,11 +3480,10 @@ a.github-fork:after {
 }
 
 .landing-page .text p {
-	font-family: "Muli";
 	margin: 18px 0;
 	font-size: 16px;
 	line-height: 24px;
-	font-weight: 400
+	font-weight: 300;
 }
 
 .landing-page footer {
@@ -3455,63 +3535,4 @@ a.github-fork:after {
 
 .landing-page .share span {
 	display: none
-}
-
-@font-face {
-	font-family: 'fontello';
-	src: url('/fonts/fontello.eot?19437876');
-	src: url('/fonts/fontello.eot?19437876#iefix') format('embedded-opentype'), url('/fonts/fontello.woff?19437876') format('woff'), url('/fonts/fontello.ttf?19437876') format('truetype'), url('/fonts/fontello.svg?19437876#fontello') format('svg');
-	font-weight: normal;
-	font-style: normal
-}
-
-[class^="icon-"]:before,
-[class*=" icon-"]:before {
-	font-family: "fontello";
-	font-style: normal;
-	font-weight: normal;
-	speak: none;
-	display: inline-block;
-	text-decoration: inherit;
-	width: 1em;
-	margin-right: .2em;
-	text-align: center;
-	font-variant: normal;
-	text-transform: none;
-	line-height: 1em;
-	margin-left: .2em;
-	-webkit-font-smoothing: antialiased;
-	-moz-osx-font-smoothing: grayscale;
-}
-
-.icon-tumblr:before {
-	content: '\e881'
-}
-
-.icon-trello:before {
-	content: '\e882'
-}
-
-.icon-facebook:before {
-	content: '\e89a'
-}
-
-.icon-dropbox:before {
-	content: '\e89b'
-}
-
-.icon-dribbble:before {
-	content: '\e89c'
-}
-
-.icon-twitter:before {
-	content: '\e87e'
-}
-
-.icon-gplus:before {
-	content: '\e887'
-}
-
-.icon-github-circled:before {
-	content: '\5c'
 }
