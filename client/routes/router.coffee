@@ -66,7 +66,7 @@ Router.route '/home',
 		KonchatNotification.getDesktopPermission()
 
 
-Router.route '/room/:_id',
+Router.route '/room/:_id/:name?',
 	name: 'room'
 
 	waitOn: ->
