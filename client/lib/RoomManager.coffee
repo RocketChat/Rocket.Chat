@@ -1,13 +1,13 @@
 @RoomManager = new class
 	defaultTime = 600000 # 10 minutes
 	openedRooms = {}
-	myRoomActivity = null
+	subscription = null
 
 	Dep = new Tracker.Dependency
 
 	init = ->
-		myRoomActivity = Meteor.subscribe('myRoomActivity')
-		return myRoomActivity
+		subscription = Meteor.subscribe('subscription')
+		return subscription
 
 	expireRoom = (roomId) ->
 		if openedRooms[roomId]
@@ -21,7 +21,7 @@
 	computation = Tracker.autorun ->
 		for roomId, record of openedRooms when record.active is true
 			record.sub = [
-				Meteor.subscribe 'dashboardRoom', roomId, moment().subtract(2, 'hour').startOf('day').toDate()
+				Meteor.subscribe 'messages', roomId, moment().subtract(2, 'hour').startOf('day').toDate()
 			]
 			# @TODO talvez avaliar se todas as subscriptions do array estão 'ready', mas por enquanto, as mensagens são o mais importante
 			record.ready = record.sub[0].ready()
@@ -50,7 +50,7 @@
 				active: false
 				ready: false
 
-		if myRoomActivity.ready()
+		if subscription.ready()
 			if ChatSubscription.findOne { rid: roomId, 'u._id': Meteor.userId() }, { reactive: false }
 				openedRooms[roomId].active = true
 				setRoomExpireExcept roomId

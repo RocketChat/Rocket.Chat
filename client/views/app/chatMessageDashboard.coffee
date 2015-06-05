@@ -14,9 +14,10 @@ Template.chatMessageDashboard.helpers
 	autolinkerAndMentions: ->
 		msg = this.msg
 
-		msg = Autolinker.link(_.stripTags(msg), { stripPrefix: false, twitter: false })
+		msg = Autolinker.link(_.escapeHTML(msg), { stripPrefix: false, twitter: false })
 
-		msg = msg.replace /\n/g, '<br/>'
+		# TODO Create as very last helper, is braking MD
+		# msg = msg.replace /\n/g, '<br/>'
 
 		if not this.mentions? or this.mentions.length is 0
 			return msg

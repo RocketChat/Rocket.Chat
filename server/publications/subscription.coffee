@@ -1,8 +1,8 @@
-Meteor.publish 'myRoomActivity', ->
+Meteor.publish 'subscription', ->
 	unless this.userId
 		return this.ready()
 
-	console.log '[publish] myRoomActivity'.green
+	console.log '[publish] subscription'.green
 
 	return Meteor.publishWithRelations
 		handle: this

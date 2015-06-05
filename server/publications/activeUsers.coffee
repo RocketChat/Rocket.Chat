@@ -1,8 +1,8 @@
-Meteor.publish 'allUsers', ->
+Meteor.publish 'activeUsers', ->
 	unless this.userId
 		return this.ready()
 
-	console.log '[publish] allUsers'.green
+	console.log '[publish] activeUsers'.green
 
 	Meteor.users.find
 		username:
