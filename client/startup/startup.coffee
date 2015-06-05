@@ -81,15 +81,15 @@ Meteor.startup ->
 				KonchatNotification.newMessage()
 
 	Tracker.autorun ->
-		unreadCount = 0
-		subscriptions = ChatSubscription.find({}, { fields: { unread: 1 } })
-		(unreadCount += r.unread) for r in subscriptions.fetch()
+		mentionsCount = 0
+		subscriptions = ChatSubscription.find({}, { fields: { mentions: 1 } })
+		(mentionsCount += r.mentions) for r in subscriptions.fetch()
 
 		rxFavico.set 'type', 'warn'
-		rxFavico.set 'count', unreadCount
+		rxFavico.set 'count', mentionsCount
 
-		if unreadCount > 0
-			document.title = '(' + unreadCount + ') Rocket.Chat'
+		if mentionsCount > 0
+			document.title = '(' + mentionsCount + ') Rocket.Chat'
 		else
 			document.title = 'Rocket.Chat'
 

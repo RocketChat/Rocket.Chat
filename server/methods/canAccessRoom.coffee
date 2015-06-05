@@ -29,6 +29,7 @@ Meteor.methods
 				rn: room.name
 				t: room.t
 				unread: 0
+				mentions: 0
 			$set:
 				ls: (new Date())
 				ts: (new Date())

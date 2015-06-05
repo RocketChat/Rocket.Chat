@@ -44,6 +44,7 @@ Meteor.methods
 					f: true
 					ts: new Date()
 					unread: 0
+					mentions: 0
 
 				ChatMessage.insert
 					u:

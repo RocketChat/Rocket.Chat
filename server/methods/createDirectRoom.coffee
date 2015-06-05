@@ -32,6 +32,7 @@ Meteor.methods
 			$setOnInsert:
 				t: 'd'
 				unread: 0
+				mentions: 0
 				'u._id': userTo._id
 
 		ChatSubscription.upsert { $and: [{'u._id': userTo._id}], rid: roomId },
@@ -40,6 +41,7 @@ Meteor.methods
 			$setOnInsert:
 				t: 'd'
 				unread: 0
+				mentions: 0
 				'u._id': userTo._id
 
 		return {

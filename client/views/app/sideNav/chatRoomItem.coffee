@@ -5,6 +5,12 @@ Template.chatRoomItem.helpers
 		else if Router.current().params._id is this.rid and this.unread > 0
 			Meteor.call 'readMessages', this.rid
 
+	mentions: ->
+		if (not Router.current().params._id) or Router.current().params._id isnt this.rid
+			return this.mentions
+		else if Router.current().params._id is this.rid and this.mentions > 0
+			Meteor.call 'readMessages', this.rid
+
 	isDirectRoom: ->
 		return this.t is 'd'
 

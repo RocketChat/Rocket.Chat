@@ -31,6 +31,7 @@ Meteor.methods
 			rn: room.name
 			t: room.t
 			unread: 0
+			mentions: 0
 
 		ChatMessage.insert
 			rid: data.rid

@@ -8,4 +8,4 @@ Meteor.methods
 		else
 			throw new Meteor.Error 203, '[methods] readMessages -> Invalid user'
 
-		ChatSubscription.update filter, { $set: { unread: 0, ls: (new Date()) } }
+		ChatSubscription.update filter, { $set: { unread: 0, mentions: 0, ls: (new Date()) } }

@@ -1159,7 +1159,7 @@ a.github-fork {
 			}
 		}
 	}
-	.unread {
+	.mentions {
 		background-color: #1dce73;
 		min-width: 15px;
 		padding: 0 2px;
@@ -1208,7 +1208,11 @@ a.github-fork {
 					background-color: transparent;
 				}
 			}
-			&.has-unread {
+			&.has-unread a, &.has-mentions a {
+				font-weight: bold;
+				color: #fff;
+			}
+			&.has-mentions {
 				.opt {
 					opacity: 0;
 				}

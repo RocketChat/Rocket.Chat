@@ -34,6 +34,7 @@ Meteor.methods
 				rn: name
 				t: 'p'
 				unread: 0
+				mentions: 0
 
 			if username is Meteor.user().username
 				sub.ls = now
