@@ -14,23 +14,21 @@
 			if openedRooms[roomId].sub?
 				for sub in openedRooms[roomId].sub
 					sub.stop()
+
 			openedRooms[roomId].ready = false
 			openedRooms[roomId].active = false
 			delete openedRooms[roomId].timeout
 
+			ChatMessageHistory.remove rid: roomId
+
 	computation = Tracker.autorun ->
 		for roomId, record of openedRooms when record.active is true
 			record.sub = [
-				Meteor.subscribe 'messages', roomId, moment().subtract(2, 'hour').startOf('day').toDate()
+				Meteor.subscribe 'room', roomId
+				Meteor.subscribe 'messages', roomId
 			]
-			# @TODO talvez avaliar se todas as subscriptions do array estão 'ready', mas por enquanto, as mensagens são o mais importante
-			record.ready = record.sub[0].ready()
-			if record.ready is true and record.historyCalled isnt true
-				record.historyCalled = true
-				RoomHistoryManager.initRoom roomId, moment().subtract(2, 'hour').startOf('day').toDate()
-				Tracker.nonreactive ->
-					if Session.get('roomData' + roomId)?.msgs > 9 and ChatMessage.find({ rid: roomId }).count() < 10 and ChatMessageHistory.find({ rid: roomId }).count() is 0
-						RoomHistoryManager.getMore roomId
+
+			record.ready = record.sub[0].ready() and record.sub[1].ready()
 
 			Dep.changed()
 
@@ -55,17 +53,6 @@
 				openedRooms[roomId].active = true
 				setRoomExpireExcept roomId
 				computation.invalidate()
-			else
-				Meteor.call 'canAccessRoom', roomId, (error, result) ->
-					if result
-						openedRooms[roomId].active = true
-						setRoomExpireExcept roomId
-						computation.invalidate()
-					else
-						if error.error is 'without-permission'
-							toastr.error t('RoomManager.No_permission_to_view_room')
-
-						Router.go 'home'
 
 		return {
 			ready: ->
