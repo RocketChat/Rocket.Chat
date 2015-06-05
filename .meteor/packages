@@ -46,9 +46,9 @@ meteorhacks:kadira
 yasaricli:slugify
 jparker:gravatar
 http
-rocket:file
+rocketchat:file
 pauli:accounts-linkedin
 iframely:oembed
 pierreeric:rxfavico
-rocket:lib
-rocket:me
+rocketchat:lib
+rocketchat:me
