@@ -887,19 +887,15 @@ a.github-fork {
 		}
 	}
 	&.active .info,
-	.info:hover {
+	.info:hover  {
 		h4 {
 			color: rgba(255, 255, 255, 0.85);
 		}
-		.arrow {
-			&:before, &:after {
-				background-color: rgba(255, 255, 255, 0.85);
-			}
-		}
 	}
-	.arrow {
-		position: absolute;
-		right: 5px;
+	.hover &{
+		.info h4{
+			color: rgba(255, 255, 255, 0.85);
+		}
 	}
 }
 
@@ -910,7 +906,6 @@ a.github-fork {
 	top: 0;
 	left: 0;
 	height: 100%;
-	padding-top: 15px;
 	z-index: 1000;
 	overflow-y: auto;
 	overflow-x: hidden;
@@ -921,28 +916,26 @@ a.github-fork {
 	&.hidden {
 		.transform(translateX(-100%));
 	}
-	.close-flex {
-		float: right;
-		margin-top: 4px;
-		margin-right: 6px;
-		cursor: pointer;
-		position: relative;
-
-		&:hover {
-			.arrow {
-				&:before, &:after {
-					background-color: rgba(255, 255, 255, 0.85);
-				}
-			}
-		}
-	}
 	header {
-		padding: 0 20px;
-		margin-bottom: 30px;
+		display: table;
+		position: absolute;
+		top: 0;
+		left: 0;
+		width: 100%;
+		z-index: 110;
+		cursor: pointer;
+		min-height: @header-min-height;
+		height: @header-min-height;
+		padding-left: 15px;
+		> div{
+			display: table-cell;
+			vertical-align: middle;
+			text-align: left;
+		}
 		h4 {
 			line-height: 18px;
-			font-size: 21px;
-			margin-top: 3px;
+			font-size: 20px;
+			margin-top: 2px;
 			font-weight: 300;
 			overflow: hidden;
 			text-overflow: ellipsis;
@@ -950,11 +943,51 @@ a.github-fork {
 		}
 		p {
 			line-height: 18px;
-			margin-top: 6px;
+			margin-top: 4px;
+			font-weight: 400;
+			font-size: 13px;
+		}
+	}
+	footer{
+		display: table;
+		position: absolute;
+		bottom: 0;
+		left: 0;
+		width: 100%;
+		padding: 0 10px;
+		z-index: 120;
+		text-align: left;
+		background: #fff;
+		min-height: @footer-min-height;
+		background-color: @primary-background-color;
+		> div{
+			display: table-cell;
+			vertical-align: middle;
+			text-align: left;
 		}
 	}
 	.content {
-		padding: 0 20px 20px;
+		direction: rtl;
+		position: absolute;
+		top: @header-min-height;
+		.calc(height, ~"100% - " @header-min-height + @footer-min-height);
+		width: 100%;
+		overflow-x: hidden;
+		overflow-y: scroll;
+		display: block;
+		-webkit-overflow-scrolling: touch;
+		box-shadow: 0 0 5px rgba(0, 0, 0, 0.4) inset;
+		padding: 35px 10px;
+		.custom-scroll(transparent, rgba(255, 255, 255, 0.05));
+		> .wrapper{
+			direction: ltr;
+		}
+		h4{
+			margin-bottom: 30px;
+			font-weight: 400;
+			text-transform: uppercase;
+			font-size: 13px;
+		}
 	}
 	.input-line {
 		margin-bottom: 25px;
@@ -1035,20 +1068,16 @@ a.github-fork {
 			direction: ltr;
 			padding-left: 8px;
 			padding-bottom: 1em;
-
-			.more-channels {
-				color: @tertiary-font-color;
-				font-size: 90%;
-				display: block;
-				padding-left: 10px;
-				margin-top: 5px;
-				cursor: pointer;
-				text-decoration: underline;
-
-				&:hover {
-					text-decoration: none;
-				}
-			}
+		}
+	}
+	.more{
+		display: block;
+		color: @tertiary-font-color;
+		font-size: 11px;
+		padding: 4px 0 4px 10px;
+		margin-top: 2px;
+		&:hover {
+			background-color: rgba(0, 0, 0, 0.1);
 		}
 	}
 	.input-error {
@@ -1082,13 +1111,25 @@ a.github-fork {
 		height: @header-min-height;
 		background-color: @primary-background-color;
 	}
+	> .arrow{
+		position: absolute;
+		top: 18px;
+		right: 8px;
+		z-index: 1000;
+		cursor: pointer;
+		&.hover, &:hover{
+			&:before, &:after {
+				background-color: rgba(255, 255, 255, 0.85);
+			}
+		}
+	}
 	.footer {
 		position: absolute;
 		bottom: 0;
 		left: 0;
 		width: 100%;
 		padding: 10px 15px 0px 15px;
-		z-index: 100;
+		z-index: 120;
 		text-align: right;
 		background: #fff;
 		min-height: @footer-min-height;
@@ -1135,7 +1176,6 @@ a.github-fork {
 		color: @tertiary-font-color;
 		line-height: 28px;
 		padding-left: 10px;
-
 		a {
 			color: inherit;
 			display: block;
@@ -1143,7 +1183,6 @@ a.github-fork {
 		&:hover {
 			background-color: rgba(0, 0, 0, 0.1);
 		}
-
 		&.add-room {
 			&:hover {
 				i{
@@ -1157,7 +1196,7 @@ a.github-fork {
 			}
 			i {
 				position: absolute;
-				right: 5px;
+				right: 6px;
 				top: 1px;
 			}
 		}
@@ -1246,7 +1285,7 @@ a.github-fork {
 			position: absolute;
 			right: 0;
 			width: 50px;
-			padding-right: 6px;
+			padding-right: 10px;
 			text-align: right;
 			opacity: 0;
 			background-color: transparent;
@@ -1300,14 +1339,25 @@ a.github-fork {
 
 .fixed-title {
 	position: absolute;
-	display: block;
-	padding: 15px 10px 15px 20px;
+	display: table;
+	padding: 0 10px 0 20px;
 	background: #fff;
 	border-bottom: 1px solid @tertiary-background-color;
 	z-index: 100;
 	top: 0;
 	left: 0;
 	width: 100%;
+	height: @header-min-height;
+	&.visible{
+		h2{
+			overflow: visible;
+		}
+	}
+	> div{
+		display: table-cell;
+		vertical-align: middle;
+		padding-top: 4px;
+	}
 	h2 {
 		max-width: 90%;
 		overflow: hidden;
@@ -1329,11 +1379,19 @@ a.github-fork {
 		visibility: hidden;
 		display: none;
 	}
-	// input[type='text']{
-	// 	.calc(width, ~'100% - 100px');
-	// 	vertical-align: top;
-	// 	margin-top: 0;
-	// }
+	input[type='text']{
+		.calc(width, ~'100% - 100px');
+		vertical-align: top;
+		margin-top: -4px;
+		margin-left: -3px;
+		font-size: 20px;
+	}
+	.icon-pencil{
+		vertical-align: text-top;
+		margin-top: -7px;
+		display: inline-block;
+		font-size: 16px;
+	}
 }
 
 // MAIN CONTENT + MAIN PAGES //

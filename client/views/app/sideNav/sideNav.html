@@ -17,11 +17,11 @@
 				</div>
 			</div>
 			<div class="flex-nav hidden">
-				<a class="close-flex"><span class="arrow left"></span></a>
 				<section>
 					{{> UI.dynamic template=flexTemplate data=flexData}}
 				</section>
 			</div>
+			<span class="arrow"></span>
 		{{/if}}
 		<footer class="footer">
 			<a href="{{ pathFor 'index' }}" class="logo">
@@ -29,5 +29,6 @@
 				<img src="/images/logo/logo.svg" />
 			</a>
 		</footer>
+
 	</aside>
 </template>

@@ -55,8 +55,20 @@ Template.createChannelFlex.events
 
 		$('#channel-members').focus()
 
+	'click header': (e, instance) ->
+		SideNav.closeFlex()
+
 	'click .cancel-channel': (e, instance) ->
 		SideNav.closeFlex()
+
+	'mouseenter header': ->
+		SideNav.overArrow()
+
+	'mouseleave header': ->
+		SideNav.leaveArrow()
+
+	'click footer .all': ->
+		SideNav.setFlex "listChannelsFlex"
 
 	'keydown input[type="text"]': (e, instance) ->
 		Template.instance().error.set([])
@@ -67,12 +79,12 @@ Template.createChannelFlex.events
 		console.log err
 		if not err
 			Meteor.call 'createChannel', instance.find('#channel-name').value, instance.selectedUsers.get(), (err, result) ->
-				if err 
+				if err
 					console.log err
 					if err.error is 'name-invalid'
 						instance.error.set({ invalid: true })
 						return
-					else	
+					else
 						return toastr.error err.reason
 
 				SideNav.closeFlex()

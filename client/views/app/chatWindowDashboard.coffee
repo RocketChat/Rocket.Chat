@@ -332,6 +332,8 @@ Template.chatWindowDashboard.events
 
 		Session.set('editRoomTitle', true)
 
+		$(".fixed-title").addClass "visible"
+
 		Meteor.setTimeout ->
 			$('#room-title-field').focus().select()
 		, 10
@@ -350,6 +352,7 @@ Template.chatWindowDashboard.events
 		# TUDO: create a configuration to select the desired behaviour
 		# renameRoom this._id, $(event.currentTarget).val()
 		Session.set('editRoomTitle', false)
+		$(".fixed-title").removeClass "visible"
 
 	"click .flex-tab .user-image > a" : (e) ->
 		Session.set('flexOpened', true)
