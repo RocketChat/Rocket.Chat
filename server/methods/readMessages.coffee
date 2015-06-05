@@ -1,6 +1,5 @@
 Meteor.methods
 	readMessages: (room) ->
-		this.unblock()
 
 		fromId = Meteor.userId()
 		# console.log '[methods] readMessages -> '.green, 'fromId:', fromId, 'room:', room
