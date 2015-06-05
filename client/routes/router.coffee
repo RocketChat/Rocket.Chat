@@ -80,6 +80,10 @@ Router.route '/room/:_id',
 		# 	return RoomManager.open @params._id
 
 	onBeforeAction: ->
+		unless ChatRoom.find(@params._id).count()
+			Router.go 'home'
+
+
 		Session.set('flexOpened', true)
 		Session.set('openedRoom', this.params._id)
 
@@ -92,6 +96,7 @@ Router.route '/room/:_id',
 		this.next()
 
 	action: ->
+
 		self = this
 		Session.set('editRoomTitle', false)
 		Meteor.call 'readMessages', self.params._id

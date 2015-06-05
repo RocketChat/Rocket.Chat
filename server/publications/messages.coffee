@@ -7,6 +7,9 @@ Meteor.publish 'messages', (rid, start) ->
 	if typeof rid isnt 'string'
 		return this.ready()
 
+	if not Meteor.call 'canAccessRoom', rid, this.userId
+		return this.ready()
+
 	ChatMessage.find
 		rid: rid
 	,
