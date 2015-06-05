@@ -2,7 +2,7 @@ Meteor.publish 'dashboardRoom', (rid, start) ->
 	unless this.userId
 		return this.ready()
 
-	# console.log '[publish] dashboardRoom ->'.green, 'rid:', rid, 'start:', start
+	console.log '[publish] dashboardRoom ->'.green, 'rid:', rid, 'start:', start
 
 	if typeof rid isnt 'string'
 		return this.ready()

@@ -2,7 +2,7 @@ Meteor.publish 'myRoomActivity', ->
 	unless this.userId
 		return this.ready()
 
-	# console.log '[publish] myRoomActivity'.green
+	console.log '[publish] myRoomActivity'.green
 
 	return Meteor.publishWithRelations
 		handle: this

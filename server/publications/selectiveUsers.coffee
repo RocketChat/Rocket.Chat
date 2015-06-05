@@ -2,7 +2,7 @@ Meteor.publish 'selectiveUsers', (usernames) ->
 	unless this.userId
 		return this.ready()
 
-	# console.log '[publish] selectiveUsers -> '.green, 'userIds:', userIds
+	console.log '[publish] selectiveUsers -> '.green, 'userIds:', userIds
 
 	self = this
 

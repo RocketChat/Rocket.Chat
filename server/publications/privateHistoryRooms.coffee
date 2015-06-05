@@ -2,7 +2,7 @@ Meteor.publish 'privateHistoryRooms', ->
 	unless this.userId
 		return this.ready()
 
-	# console.log '[publish] privateHistoryRooms'.green
+	console.log '[publish] privateHistoryRooms'.green
 
 	ChatRoom.find
 		usernames: Meteor.users.findOne(this.userId).username

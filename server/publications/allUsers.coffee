@@ -2,7 +2,7 @@ Meteor.publish 'allUsers', ->
 	unless this.userId
 		return this.ready()
 
-	# console.log '[publish] allUsers'.green
+	console.log '[publish] allUsers'.green
 
 	Meteor.users.find
 		username:
