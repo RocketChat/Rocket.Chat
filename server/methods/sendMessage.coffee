@@ -48,6 +48,8 @@ Meteor.methods
 		if mentions.length is 0
 			mentions = undefined
 
+		msg = RocketChat.callbacks.run 'sendMessage', msg
+
 		ChatMessage.upsert messageFilter,
 			$set:
 				'u._id': Meteor.userId()

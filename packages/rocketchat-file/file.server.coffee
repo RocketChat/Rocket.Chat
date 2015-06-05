@@ -5,28 +5,28 @@ path = Npm.require('path')
 mkdirp = Npm.require('mkdirp')
 gm = Npm.require('gm')
 
-RocketFile =
+RocketChatFile =
 	gm: gm
 
-RocketFile.bufferToStream = (buffer) ->
+RocketChatFile.bufferToStream = (buffer) ->
 	bufferStream = new stream.PassThrough()
-	bufferStream.end buffer 
+	bufferStream.end buffer
 	return bufferStream
 
-RocketFile.dataURIParse = (dataURI) ->
+RocketChatFile.dataURIParse = (dataURI) ->
 	imageData = dataURI.split ';base64,'
 	return {
 		image: imageData[1]
 		contentType: imageData[0].replace('data:', '')
 	}
 
-RocketFile.addPassThrough = (st, fn) ->
+RocketChatFile.addPassThrough = (st, fn) ->
 	pass = new stream.PassThrough()
 	fn pass, st
 	return pass
 
 
-RocketFile.GridFS = class
+RocketChatFile.GridFS = class
 	constructor: (config={}) ->
 		{name, transformWrite} = config
 
@@ -61,7 +61,7 @@ RocketFile.GridFS = class
 			content_type: contentType
 
 		if self.transformWrite?
-			ws = RocketFile.addPassThrough ws, (rs, ws) ->
+			ws = RocketChatFile.addPassThrough ws, (rs, ws) ->
 				file =
 					name: self.name
 					fileName: fileName
@@ -101,7 +101,7 @@ RocketFile.GridFS = class
 		return this.remove fileName
 
 
-RocketFile.FileSystem = class
+RocketChatFile.FileSystem = class
 	constructor: (config={}) ->
 		{absolutePath, transformWrite} = config
 
@@ -127,7 +127,7 @@ RocketFile.FileSystem = class
 		ws = fs.createWriteStream path.join this.absolutePath, fileName
 
 		if self.transformWrite?
-			ws = RocketFile.addPassThrough ws, (rs, ws) ->
+			ws = RocketChatFile.addPassThrough ws, (rs, ws) ->
 				file =
 					fileName: fileName
 					contentType: contentType
