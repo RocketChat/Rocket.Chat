@@ -20,7 +20,7 @@ Meteor.methods
 
 		ChatSubscription.update { rid: data.rid },
 			$set:
-				rn: newName
+				name: newName
 		,
 			multi: true
 

@@ -17,7 +17,7 @@ Template.chatRoomItem.helpers
 			else return ''
 
 	name: ->
-		return this.rn
+		return this.name
 
 	roomIcon: ->
 		switch this.t
