@@ -62,6 +62,8 @@ Meteor.startup ->
 				# @TODO alterar a sessão adiciona uma reatividade talvez desnecessária, avaliar melhor
 				Session.set('roomData' + data._id, data)
 			removed: (data) ->
+				ChatMessageHistory.remove rid: data._id
+
 				Session.set('roomData' + data._id, undefined)
 
 	ChatSubscription.find({}, { fields: { ls: 1, ts: 1, rid: 1 } }).observe
