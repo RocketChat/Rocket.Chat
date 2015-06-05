@@ -1,42 +1,34 @@
 <template name="usernamePrompt">
 	<form id="login-card" method='/'>
-		<div class="fields">
+		<header>
 			<h2>{{_ "usernameRegistration.Username_title"}}</h2>
-
-			<div>
-				{{_ "usernameRegistration.Username_description"}}
+			<p>{{_ "usernameRegistration.Username_description"}}</p>
+		</header>
+		{{#if username.error}}
+			<div class="alert alert-danger">
+				{{{_ "usernameRegistration.Username_unavaliable" username.username}}}
 			</div>
-			{{#if username.error}}
-				<br/>
-				<div class="alert alert-danger">
-					{{{_ "usernameRegistration.Username_unavaliable" username.username}}}
-				</div>
-			{{/if}}
-			{{#if username.invalid}}
-				<br/>
-				<div class="alert alert-danger">
-					{{{_ "usernameRegistration.Username_invalid" username.username}}}
-				</div>
-			{{/if}}
-			{{#if username.empty}}
-				<br/>
-				<div class="alert alert-danger">
-					{{{_ "usernameRegistration.Username_cant_be_empty"}}}
-				</div>
-			{{/if}}
-		</div>
+		{{/if}}
+		{{#if username.invalid}}
+			<div class="alert alert-danger">
+				{{{_ "usernameRegistration.Username_invalid" username.username}}}
+			</div>
+		{{/if}}
+		{{#if username.empty}}
+			<div class="alert alert-danger">
+				{{{_ "usernameRegistration.Username_cant_be_empty"}}}
+			</div>
+		{{/if}}
 		<div class="fields">
 			<div class='input-text active'>
-				<div class='field'>
-					{{#if username.ready}}
-						<span>
-							<input type="text" name='username' value="{{username.username}}" placeholder='{{_ "usernameRegistration.Username"}}' />
-						</span>
-						<i></i>
-					{{else}}
-						{{_ "usernameRegistration.Loading_suggestion"}}
-					{{/if}}
-				</div>
+				{{#if username.ready}}
+					<span>
+						<input type="text" name='username' value="{{username.username}}" placeholder='{{_ "usernameRegistration.Username"}}' />
+					</span>
+					<i></i>
+				{{else}}
+					{{_ "usernameRegistration.Loading_suggestion"}}
+				{{/if}}
 			</div>
 		</div>
 
