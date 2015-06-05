@@ -64,6 +64,18 @@ Meteor.methods
 		# increment unread counter on which user in room
 		Meteor.defer -> ChatSubscription.update activityFilter, { $inc: { unread: 1 }, $set: { ts: now } }, { multi: true }
 
+		updateMentions = (username, rid) ->
+			user = Meteor.users.findOne({username: username}, {fields: {_id: 1}})
+			if !user
+				return
+			filter = { rid: rid, 'u._id': user._id }
+			Meteor.defer -> ChatSubscription.update filter, { $inc: { mentions: 1 }, $set: { ts: now } }, { multi: true }
+
+		if mentions
+			updateMentions m.username, rid for m in mentions
+
+		Meteor.defer -> ChatSubscription.update activityFilter, { $inc: { unread: 1 }, $set: { ts: now } }, { multi: true }
+
 		return retObj
 
 	updateMessage: (msg) ->
