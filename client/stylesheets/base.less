@@ -1154,7 +1154,7 @@ a.github-fork {
 		}
 		img {
 			display: inline-block;
-			width: 90%;
+			width: 85%;
 		}
 	}
 	.search-form {
@@ -1439,10 +1439,10 @@ a.github-fork {
 	}
 	.logo {
 		display: inline-block;
-		width: 240px;
+		width: 190px;
 		margin-right: 6px;
 		vertical-align: text-top;
-		margin-top: -5px;
+		margin-top: -3px;
 		margin-left: 10px;
 	}
 	.info {
@@ -1667,7 +1667,7 @@ a.github-fork {
 
 .messages-box {
 	position: relative;
-	margin: 60px 20px 0px;
+	margin: 60px 20px 0px 0px;
 	overflow: hidden;
 	.calc(width, ~'100% - 20px');
 	.calc(height, ~'100% - 120px');
@@ -1699,6 +1699,7 @@ a.github-fork {
 		padding-left: 50px;
 		position: relative;
 		line-height: 20px;
+		margin-left: 20px;
 		&.with-thumb {
 			margin-top: 12px;
 			min-height: 40px;
@@ -1792,7 +1793,7 @@ a.github-fork {
 			}
 		}
 	}
-	.time {
+	.time, .time-single {
 		font-size: 12px;
 		position: absolute;
 		display: inline-block;
@@ -1800,6 +1801,32 @@ a.github-fork {
 		left: 6px;
 		opacity: 0;
 	}
+	.time-single {
+		opacity: 1;
+		left: -15px;
+		width: 64px;
+		.time-single-time {
+			display: none;
+		}
+		.time-single-edited {
+			text-align: center;
+		}
+	}
+	.message.own:hover {
+		.time-single {
+			.time-single-time {
+				display: block;
+			}
+			.time-single-edited {
+				display: none;
+				text-align: center;
+			}
+		}
+		.edit-message {
+			display: inline-block;
+		}
+	}
+
 	.thumb {
 		position: absolute;
 		left: 0;

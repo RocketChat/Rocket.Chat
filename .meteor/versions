@@ -114,7 +114,7 @@ todda00:friendly-slugs@0.3.0
 tracker@1.0.7
 ui@1.0.6
 underscore@1.0.3
-underscorestring:underscore.string@3.0.3_1
+underscorestring:underscore.string@3.1.1
 url@1.0.4
 webapp@1.2.0
 webapp-hashing@1.0.3

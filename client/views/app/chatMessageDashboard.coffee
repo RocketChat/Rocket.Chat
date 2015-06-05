@@ -5,6 +5,9 @@ Template.chatMessageDashboard.helpers
 	username: ->
 		return this.u.username
 
+	messageDate: (date) ->
+		return moment(date).format('LL')
+
 	isSystemMessage: ->
 		return this.t in ['s', 'p', 'f', 'r', 'au', 'ru', 'ul', 'nu', 'wm']
 
