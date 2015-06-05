@@ -2,6 +2,31 @@
 
 	sideNav = {}
 	flexNav = {}
+	arrow = {}
+
+	toggleArrow = (status) ->
+		if arrow.hasClass "left" or status? is -1
+			arrow.removeClass "left"
+			return
+		if not arrow.hasClass "left" or status? is 1
+			arrow.addClass "left"
+
+	toggleCurrent = ->
+		if flexNav.opened then closeFlex() else AccountBox.toggle()
+
+	overArrow = ->
+		console.log "HOVER"
+		arrow.addClass "hover"
+
+	leaveArrow = ->
+		console.log "OUT"
+		arrow.removeClass "hover"
+
+	arrowBindHover = ->
+		arrow.on "mouseenter", ->
+			sideNav.find("header").addClass "hover"
+		arrow.on "mouseout", ->
+			sideNav.find("header").removeClass "hover"
 
 	focusInput = ->
 		setTimeout ->
@@ -28,13 +53,16 @@
 			flexNav.removeClass "hidden"
 
 	openFlex = ->
-		AccountBox.toggleArrow 1
+		toggleArrow 1
 		toggleFlex 1
 		focusInput()
 
 	closeFlex = ->
-		AccountBox.toggleArrow -1
+		toggleArrow -1
 		toggleFlex -1
+
+	flexStatus = ->
+		return flexNav.opened
 
 	setFlex = (template, data={}) ->
 		Session.set "flex-nav-template", template
@@ -49,7 +77,9 @@
 	init = ->
 		sideNav = $(".side-nav")
 		flexNav = sideNav.find ".flex-nav"
+		arrow = sideNav.children ".arrow"
 		setFlex ""
+		arrowBindHover()
 
 	init: init
 	setFlex: setFlex
@@ -57,5 +87,9 @@
 	openFlex: openFlex
 	closeFlex: closeFlex
 	validate: validate
-
+	flexStatus: flexStatus
+	toggleArrow: toggleArrow
+	toggleCurrent: toggleCurrent
+	overArrow: overArrow
+	leaveArrow: leaveArrow
 )()

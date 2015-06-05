@@ -1,33 +1,37 @@
 <template name="privateGroupsFlex">
 	<header>
-		<h4>{{_ "chatRooms.Private_Groups"}}</h4>
-		<p>Create a new private group</p>
+		<div>
+			<h4>{{_ "chatRooms.Private_Groups"}}</h4>
+		</div>
 	</header>
 	<div class="content">
-		<div class="input-line">
-			<label for="pvt-group-name">{{_ "chatRooms.Name"}}</label>
-			<input type="text" id="pvt-group-name" class="required">
-		</div>
-		<div class="input-line">
-			<label for="pvt-group-members">{{_ "chatRooms.Members" }}</label>
-			{{> inputAutocomplete settings=autocompleteSettings id="pvt-group-members" class="search" placeholder=tRoomMembers autocomplete="off"}}
-			<ul class="selected-users">
-				{{#each selectedUsers}}
-					<li>{{name}} <i class="icon-cancel remove-room-member"></i></li>
-				{{/each}}
-			</ul>
-		</div>
-		{{#if error}}
-			<div class="input-error">
-				<strong>Ops!</strong>
-				{{#each error}}
-					<p>The field {{error}} is required.</p>
-				{{/each}}
+		<div class="wrapper">
+			<h4>Create a new private group</h4>
+			<div class="input-line">
+				<label for="pvt-group-name">{{_ "chatRooms.Name"}}</label>
+				<input type="text" id="pvt-group-name" class="required">
 			</div>
-		{{/if}}
-		<div class="input-submit">
-			<button class="button clean primary save-pvt-group">{{_ "chatRooms.Save" }}</button>
-			<button class="button clean cancel-pvt-group">{{_ "chatRooms.Cancel" }}</button>
+			<div class="input-line">
+				<label for="pvt-group-members">{{_ "chatRooms.Members" }}</label>
+				{{> inputAutocomplete settings=autocompleteSettings id="pvt-group-members" class="search" placeholder=tRoomMembers autocomplete="off"}}
+				<ul class="selected-users">
+					{{#each selectedUsers}}
+						<li>{{name}} <i class="icon-cancel remove-room-member"></i></li>
+					{{/each}}
+				</ul>
+			</div>
+			{{#if error}}
+				<div class="input-error">
+					<strong>Ops!</strong>
+					{{#each error}}
+						<p>The field {{error}} is required.</p>
+					{{/each}}
+				</div>
+			{{/if}}
+			<div class="input-submit">
+				<button class="button clean primary save-pvt-group">{{_ "chatRooms.Save" }}</button>
+				<button class="button clean cancel-pvt-group">{{_ "chatRooms.Cancel" }}</button>
+			</div>
 		</div>
 	</div>
 </template>

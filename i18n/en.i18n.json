@@ -35,7 +35,7 @@
 		"No_direct_messages_yet": "You haven't started any conversations yet.",
 		"No_groups_yet": "You have no private groups yet.",
 		"No_favorites_yet": "You haven't added any favorites yet.",
-		"Create_new_channel": "Create a new channel",
+		"Create_new_channel": "Create a new public channel",
 		"Channels_list": "List of public channels",
 		"More_channels": "More channels",
 		"Invalid_room_name": "<strong>%s</strong> is not a valid room name,<br/> use only letters, numbers and dashes"

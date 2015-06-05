@@ -54,6 +54,15 @@ Template.privateGroupsFlex.events
 	'click .cancel-pvt-group': (e, instance) ->
 		SideNav.closeFlex()
 
+	'click header': (e, instance) ->
+		SideNav.closeFlex()
+
+	'mouseenter header': ->
+		SideNav.overArrow()
+
+	'mouseleave header': ->
+		SideNav.leaveArrow()
+
 	'keydown input[type="text"]': (e, instance) ->
 		Template.instance().error.set([])
 
