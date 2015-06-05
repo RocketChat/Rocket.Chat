@@ -29,6 +29,8 @@ Meteor.methods
 			ts: (new Date)
 			t: 'r'
 			msg: newName
-			by: Meteor.user().username
+			u:
+				_id: Meteor.userId()
+				username: Meteor.user().username
 
 		return true

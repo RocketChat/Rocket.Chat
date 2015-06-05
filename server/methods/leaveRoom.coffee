@@ -26,7 +26,9 @@ Meteor.methods
 				ts: (new Date)
 				t: 'ul'
 				msg: removedUser.name
-				by: Meteor.userId()
+				u:
+					_id: removedUser._id
+					username: removedUser.username
 
 		if room.u._id is Meteor.userId()
 			newOwner = _.without(room.usernames, Meteor.user().username)[0]

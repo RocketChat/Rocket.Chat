@@ -23,6 +23,8 @@ Meteor.methods
 			ts: (new Date)
 			t: 'ru'
 			msg: removedUser.name
-			by: Meteor.userId()
+			u:
+				_id: Meteor.userId()
+				username: Meteor.user().username
 
 		return true

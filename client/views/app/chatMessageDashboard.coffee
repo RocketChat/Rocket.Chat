@@ -32,15 +32,15 @@ Template.chatMessageDashboard.helpers
 		return msg
 
 	message: ->
-		if this.by
-			UserManager.addUser(this.by)
+		if this.u._id
+			UserManager.addUser(this.u._id)
 		else if this.u?.username
 			UserManager.addUser this.u.username
 		switch this.t
 			when 'p' then "<i class='icon-link-ext'></i><a href=\"#{this.url}\" target=\"_blank\">#{this.msg}</a>"
-			when 'r' then t('chatMessageDashboard.Room_name_changed', { room_name: this.msg, user_by: Session.get('user_' + this.by + '_name') }) + '.'
-			when 'au' then t('chatMessageDashboard.User_added_by', { user_added: this.msg, user_by: Session.get('user_' + this.by + '_name') })
-			when 'ru' then t('chatMessageDashboard.User_removed_by', { user_removed: this.msg, user_by: Session.get('user_' + this.by + '_name') })
+			when 'r' then t('chatMessageDashboard.Room_name_changed', { room_name: this.msg, user_by: Session.get('user_' + this.u._id + '_name') }) + '.'
+			when 'au' then t('chatMessageDashboard.User_added_by', { user_added: this.msg, user_by: Session.get('user_' + this.u._id + '_name') })
+			when 'ru' then t('chatMessageDashboard.User_removed_by', { user_removed: this.msg, user_by: Session.get('user_' + this.u._id + '_name') })
 			when 'ul' then t('chatMessageDashboard.User_left', this.msg)
 			when 'nu' then t('chatMessageDashboard.User_added', this.msg)
 			when 'wm' then t('chatMessageDashboard.Welcome', this.msg)

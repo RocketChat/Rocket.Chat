@@ -12,7 +12,8 @@
 				dep.changed()
 
 	subscribeFn = ->
-		Meteor.subscribe 'selectiveUsers', users
+		return true
+		# Meteor.subscribe 'selectiveUsers', users
 
 	subscribe = new DelayedTask subscribeFn, 100, 1000
 
