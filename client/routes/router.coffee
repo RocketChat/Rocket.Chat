@@ -74,15 +74,12 @@ Router.route '/room/:_id',
 	waitOn: ->
 		[
 			subs.subscribe 'messages', @params._id, moment().subtract(2, 'hour').startOf('day').toDate()
-			subs.subscribe 'rooms', @params._id
+			subs.subscribe 'room', @params._id
 		]
-		# if Meteor.userId()
-		# 	return RoomManager.open @params._id
 
 	onBeforeAction: ->
 		unless ChatRoom.find(@params._id).count()
 			Router.go 'home'
-
 
 		Session.set('flexOpened', true)
 		Session.set('openedRoom', this.params._id)
