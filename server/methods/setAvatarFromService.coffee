@@ -9,10 +9,10 @@ Meteor.methods
 			Meteor.users.update {_id: user._id}, {$set: {avatarOrigin: service}}
 			return
 
-		{image, contentType} = RocketFile.dataURIParse dataURI
+		{image, contentType} = RocketChatFile.dataURIParse dataURI
 
-		rs = RocketFile.bufferToStream new Buffer(image, 'base64')
-		ws = RocketFileAvatarInstance.createWriteStream "#{user.username}.jpg", contentType
+		rs = RocketChatFile.bufferToStream new Buffer(image, 'base64')
+		ws = RocketChatFileAvatarInstance.createWriteStream "#{user.username}.jpg", contentType
 		ws.on 'end', Meteor.bindEnvironment ->
 			Meteor.users.update {_id: user._id}, {$set: {avatarOrigin: service}}
 
@@ -26,7 +26,7 @@ Meteor.methods
 
 		user = Meteor.user()
 
-		RocketFileAvatarInstance.deleteFile "#{user.username}.jpg"
+		RocketChatFileAvatarInstance.deleteFile "#{user.username}.jpg"
 
 		Meteor.users.update user._id, {$unset: {avatarOrigin: 1}}
 		return

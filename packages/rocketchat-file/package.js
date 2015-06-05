@@ -1,5 +1,5 @@
 Package.describe({
-	name: 'rocket:file',
+	name: 'rocketchat:file',
 	version: '0.0.1',
 	summary: '',
 	git: ''
@@ -18,7 +18,7 @@ Package.onUse(function(api) {
 
 	api.addFiles('file.server.coffee', 'server');
 
-	api.export(['RocketFile'], ['server']);
+	api.export(['RocketChatFile'], ['server']);
 });
 
 Package.onTest(function(api) {
