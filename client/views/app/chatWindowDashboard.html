@@ -32,24 +32,20 @@
 					{{/if}}
 					{{#each messagesHistory}}
 						{{#unless showTyping}}
-							{{#if newDateHistory}}
-								<li class="date">
-									<span>{{messageDate}}</span>
-								</li>
-							{{/if}}
-							{{> chatMessageDashboard data=this}}
+							{{#with messageInfo 'history'}}
+								{{> chatMessageDashboard data=.. single=single dateSeparator=newDay}}
+							{{/with}}
 						{{/unless}}
 					{{/each}}
-					{{#each messages}}
-						{{#unless showTyping}}
-							{{#if newDate}}
-								<li class="date">
-									<span>{{messageDate}}</span>
-								</li>
-							{{/if}}
-							{{> chatMessageDashboard data=this scroll="true"}}
-						{{/unless}}
-					{{/each}}
+					{{#with messages}}
+						{{#each .}}
+							{{#unless showTyping}}
+								{{#with messageInfo}}
+									{{> chatMessageDashboard data=.. scroll="true" single=single dateSeparator=newDay}}
+								{{/with}}
+							{{/unless}}
+						{{/each}}
+					{{/with}}
 				</ul>
 			</div>
 			<div class="new-message not">
