@@ -372,7 +372,7 @@ Template.chatWindowDashboard.events
 				return Errors.throw error.reason
 
 			if result?.rid?
-				Router.go('room', { _id: result.rid })
+				Router.go('room', { _id: result.rid, name: result.name})
 
 	'click button.load-more': (e) ->
 		RoomHistoryManager.getMore this._id
@@ -403,10 +403,10 @@ Template.chatWindowDashboard.events
 					return Errors.throw error.reason
 
 				if result?.rid?
-					Router.go('room', { _id: result.rid })
+					Router.go('room', { _id: result.rid, name: result.name})
 					$('#room-search').val('')
 		else
-			Router.go('room', { _id: doc.rid })
+			Router.go('room', { _id: doc.rid, name: doc.name })
 			$('#room-search').val('')
 
 	'scroll .wrapper': (e, instance) ->
