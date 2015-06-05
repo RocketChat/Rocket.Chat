@@ -38,9 +38,6 @@ Router.onBeforeAction ->
 	except: ['login']
 }
 
-subs = new SubsManager
-	expireIn: 0.5
-
 Router.route '/',
 	name: 'index'
 
