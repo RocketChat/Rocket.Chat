@@ -35,8 +35,17 @@ Meteor.startup ->
 				this.params.username
 				file = RocketChatFileAvatarInstance.getFileWithReadStream this.params.username
 
-				this.setContentType 'image/jpeg'
 				this.addHeader 'Content-Disposition', 'inline'
+
+				if not file?
+					this.setContentType 'image/gif'
+					ws = this.createWriteStream()
+					Meteor.defer ->
+						ws.write 'R0lGODlhAQABAIAAAP///////yH5BAEHAAEALAAAAAABAAEAAAICTAEAOw==', 'base64'
+						ws.end()
+					return 
+
+				this.setContentType 'image/jpeg'
 				this.addHeader 'Content-Length', file.length
 
 				file.readStream.pipe this.createWriteStream()

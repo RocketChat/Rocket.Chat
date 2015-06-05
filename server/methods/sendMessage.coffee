@@ -20,7 +20,10 @@ Meteor.methods
 		roomUpdate = { $set: { lm: now }, $inc: { msgs: 1 } }
 
 		if Meteor.userId() and not Meteor.user().username in roomData.usernames
-			roomUpdate.$push = { usernames: Meteor.user().username }
+			roomUpdate.$push =
+				usernames:
+					$each: [ Meteor.user().username ]
+					$sort: 1
 
 		ChatRoom.update rid, roomUpdate
 
