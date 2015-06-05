@@ -3,6 +3,8 @@ Meteor.methods
 		Tracker.nonreactive ->
 			now = new Date(Date.now() + TimeSync.serverOffset())
 
+			msg = RocketChat.callbacks.run 'sendMessage', msg
+
 			ChatMessage.upsert { rid: msg.rid, t: 't' },
 				$set:
 					ts: now
