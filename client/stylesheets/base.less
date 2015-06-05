@@ -2392,7 +2392,7 @@ a.github-fork {
 }
 
 #login-card {
-	width: 100%;
+	width: 90%;
 	max-width: 520px;
 	padding: 22px 30px 30px;
 	margin: 25px auto;
@@ -2401,10 +2401,21 @@ a.github-fork {
 	border-radius: 2px;
 	position: relative;
 	z-index: 1;
+	header{
+		padding: 18px 0;
+		p{
+			//font-family: "Muli";
+			margin: 8px 0 0;
+			font-size: 14px;
+			line-height: 22px;
+			font-weight: 300;
+		}
+	}
 	h2 {
 		&:extend(.rocket-h2);
 		color: @primary-font-color;
-		margin-bottom: 30px;
+		line-height: 24px;
+		margin: 0;
 		&.error {
 			color: #b40202;
 		}
@@ -2435,8 +2446,7 @@ a.github-fork {
 		font-size: 10px;
 	}
 	.submit {
-		margin-bottom: 12px;
-		padding-top: 4px;
+		margin: 12px 0;
 	}
 	.remember {
 		float: left;
@@ -2447,19 +2457,6 @@ a.github-fork {
 	.forgot {
 		float: right;
 		line-height: 20px;
-	}
-	.submit button {}
-	.fields {
-		.transform-style(preserve-3d);
-		.perspective(600px);
-		margin-bottom: 26px;
-		label {
-			font-family: "Roboto";
-			font-size: 13px;
-			margin-top: 10px;
-			color: #AAA;
-			margin-left: 12px;
-		}
 	}
 	.input-text {
 		margin: 0 0 14px 0;
@@ -2477,42 +2474,9 @@ a.github-fork {
 			&:before {
 				visibility: hidden;
 			}
-			.field {
-				.transform(rotateX(0));
-			}
-		}
-		&:hover {
-			i {
-				background-color: #BFBFBF;
-			}
-			label {
-				color: #999;
-			}
 		}
 	}
-	.field {
-		display: block;
-		.transform-origin(50% 100% 0);
-		.transform(rotateX(100deg));
-		.transform-style(preserve-3d);
-		.backface-visibility(hidden);
-		.transition(transform .38s cubic-bezier(.5, 0, .1, 1));
-		i {
-			display: block;
-			width: 100%;
-			height: 3px;
-			background-color: #EAEAEA;
-			position: absolute;
-			bottom: 0;
-			left: 0;
-			.transform-origin(50% 100% 0);
-			.transform(rotateX(-90deg) translateY(4px));
-			.transition(background .2s ease-out);
-		}
-		span {
-			display: block;
-			.transform-style(flat);
-		}
+	.input-text{
 		input {
 			box-shadow: 0 0 0;
 			background-color: transparent;
@@ -2727,31 +2691,46 @@ a.github-fork {
 }
 
 .avatar-suggestion-item {
-	height: 80px;
 	margin: 10px 0px;
 	text-align: left;
-
-	> div {
-		height: 80px;
-		width: 80px;
+	display: table;
+	width: 100%;
+	padding: 12px;
+	background-color: @secondary-background-color;
+	border: 1px solid darken(@secondary-background-color, 10%);
+	.transition(background-color .15s ease-out, border-color .15s ease-out);
+	.avatar {
+		height: 55px;
+		width: 55px;
 		background-size: cover;
-		display: inline-block;
-		border: 1px solid #DDD;
-		font-size: 80px;
+		display: inline-table;
+		border: 1px solid darken(@tertiary-background-color, 10%);
+		font-size: 40px;
 		text-align: center;
-		line-height: 80px;
-		background-color: #EEE;
-		color: #CCC;
-		&.question-mark:before {
-			content: "?";
+		background-color: @tertiary-background-color;
+		position: relative;
+		vertical-align: middle;
+	}
+	.question-mark{
+		&::before {
 			position: absolute;
 			left: 0;
-			width: 80px;
+			top: 0;
+			width: 100%;
+			height: 100%;
+			margin: 0;
+			line-height: 55px;
+			color: darken(@tertiary-background-color, 10%);
 		}
 	}
+	.action{
+		text-align: right;
+		display: inline-table;
+		vertical-align: middle;
+		padding-left: 20px;
+	}
 	button {
-		display: inline-block;
-		top: -35px;
+		min-width: 120px;
 	}
 	input[type=file] {
 		position: absolute !important;
@@ -2764,9 +2743,6 @@ a.github-fork {
 		* {
 			cursor: pointer;
 		}
-	}
-	.avatar:before {
-		font-size: 44px;
 	}
 }
 

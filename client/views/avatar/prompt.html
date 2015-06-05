@@ -1,9 +1,11 @@
 <template name="avatarSuggestion">
 	{{#if .}}
 		<div class="avatar-suggestion-item">
-			<div style="background-image: url({{blob}});">
+			<div class="avatar" style="background-image: url({{blob}});">
 			</div>
-			<button type="button" class="button primary select-service">{{_ "avatar.Use_service_avatar" service}}</button>
+			<div class="action">
+				<button type="button" class="button primary {{service}} select-service">{{_ "avatar.Use_service_avatar" service}}</button>
+			</div>
 		</div>
 	{{/if}}
 </template>
@@ -11,51 +13,56 @@
 <template name="avatarSuggestionLogin">
 	{{#if .}}
 		<div class="avatar-suggestion-item">
-			<div class="question-mark"></div>
-			<button type="button" class="button primary login-with-service">{{_ "avatar.Login_with" .}}</button>
+			<div class="avatar question-mark icon-user"></div>
+			<div class="action">
+				<button type="button" class="button primary {{.}} login-with-service">{{_ "avatar.Login_with" .}}</button>
+			</div>
 		</div>
 	{{/if}}
 </template>
 
 <template name="avatarPrompt">
 	<form id="login-card" method='/'>
-		<div class="fields">
+		<header>
 			<h2>{{_ "avatar.Select_an_avatar"}}</h2>
-		</div>
+			<p>Select a service to login to load your picture or upload one directly from your computer</p>
+		</header>
 		<div class="fields">
 			<div class='input-text active'>
-				<div class='field'>
-					<div class="avatar-suggestions">
-						{{#if suggestions.ready}}
-							<div class="avatar-suggestion-item">
-								{{> avatar username=username preventImage='true'}}
-								{{#with service='initials'}}
+				<div class="avatar-suggestions">
+					{{#if suggestions.ready}}
+						<div class="avatar-suggestion-item">
+							{{> avatar username=username preventImage='true'}}
+							{{#with service='initials'}}
+								<div class="action">
 									<button type="button" class="button primary select-service">{{_ "avatar.Use_initials_avatar" }}</button>
-								{{/with}}
-							</div>
-
-							{{> avatarSuggestion suggestions.avatars.gravatar}}
-							{{> avatarSuggestion suggestions.avatars.facebook}}
-							{{> avatarSuggestion suggestions.avatars.google}}
-							{{> avatarSuggestion suggestions.avatars.github}}
-							{{> avatarSuggestion suggestions.avatars.linkedin}}
-
-							{{#unless suggestions.avatars.facebook}}
-								{{> avatarSuggestionLogin 'facebook'}}
-							{{/unless}}
-							{{#unless suggestions.avatars.google}}
-								{{> avatarSuggestionLogin 'google'}}
-							{{/unless}}
-							{{#unless suggestions.avatars.github}}
-								{{> avatarSuggestionLogin 'github'}}
-							{{/unless}}
-							{{#unless suggestions.avatars.linkedin}}
-								{{> avatarSuggestionLogin 'linkedin'}}
-							{{/unless}}
-
-							<div class="avatar-suggestion-item">
-								<div style="background-image: url({{upload.blob}});" class="{{#unless upload}}question-mark{{/unless}}">
 								</div>
+							{{/with}}
+						</div>
+
+						{{> avatarSuggestion suggestions.avatars.gravatar}}
+						{{> avatarSuggestion suggestions.avatars.facebook}}
+						{{> avatarSuggestion suggestions.avatars.google}}
+						{{> avatarSuggestion suggestions.avatars.github}}
+						{{> avatarSuggestion suggestions.avatars.linkedin}}
+
+						{{#unless suggestions.avatars.facebook}}
+							{{> avatarSuggestionLogin 'facebook'}}
+						{{/unless}}
+						{{#unless suggestions.avatars.google}}
+							{{> avatarSuggestionLogin 'google'}}
+						{{/unless}}
+						{{#unless suggestions.avatars.github}}
+							{{> avatarSuggestionLogin 'github'}}
+						{{/unless}}
+						{{#unless suggestions.avatars.linkedin}}
+							{{> avatarSuggestionLogin 'linkedin'}}
+						{{/unless}}
+
+						<div class="avatar-suggestion-item">
+							<div style="background-image: url({{upload.blob}});" class="avatar {{#unless upload}}question-mark icon-upload{{/unless}}">
+							</div>
+							<div class="action">
 								{{#with upload}}
 									<button type="button" class="button primary select-service">{{_ "avatar.Use_uploaded_avatar"}}</button>
 								{{/with}}
@@ -65,10 +72,10 @@
 									</button>
 								{{/unless}}
 							</div>
-						{{else}}
-							{{_ "usernameRegistration.Loading_suggestion"}}
-						{{/if}}
-					</div>
+						</div>
+					{{else}}
+						{{_ "usernameRegistration.Loading_suggestion"}}
+					{{/if}}
 				</div>
 			</div>
 		</div>
