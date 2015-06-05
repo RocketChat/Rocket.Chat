@@ -28,7 +28,6 @@ Template.avatarPrompt.events
 	'click .select-service': (e) ->
 		Meteor.call 'setAvatarFromService', this.blob, this.contentType, this.service, ->
 			Session.set('AvatarRandom', Date.now())
-			console.log arguments
 
 	'click .login-with-service': (event, template) ->
 		loginWithService = "loginWith#{_.capitalize(this)}"

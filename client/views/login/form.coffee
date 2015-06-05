@@ -42,27 +42,27 @@ Template.loginForm.events
 		event.preventDefault()
 
 		button = $(event.target).find('button.login')
-		Rocket.Button.loading(button)
+		RocketChat.Button.loading(button)
 
 		formData = instance.validate()
 		if formData
 			if instance.state.get() is 'email-verification'
 				Meteor.call 'sendConfirmationEmail', formData.email, (err, result) ->
-					Rocket.Button.reset(button)
+					RocketChat.Button.reset(button)
 					toastr.success t('login.We_have_sent_registration_email')
 					instance.state.set 'login'
 				return
 
 			if instance.state.get() is 'forgot-password'
 				Meteor.call 'sendForgotPasswordEmail', formData.email, (err, result) ->
-					Rocket.Button.reset(button)
+					RocketChat.Button.reset(button)
 					toastr.success t('login.We_have_sent_password_email')
 					instance.state.set 'login'
 				return
 
 			if instance.state.get() is 'register'
 				Meteor.call 'registerUser', formData, (err, result) ->
-					Rocket.Button.reset(button)
+					RocketChat.Button.reset(button)
 					Meteor.loginWithPassword formData.email, formData.pass, (error) ->
 						if error?.error is 'no-valid-email'
 							toastr.success t('login.We_have_sent_registration_email')
@@ -71,7 +71,7 @@ Template.loginForm.events
 							Router.go 'index'
 			else
 				Meteor.loginWithPassword formData.emailOrUsername, formData.pass, (error) ->
-					Rocket.Button.reset(button)
+					RocketChat.Button.reset(button)
 					if error?
 						if error.error is 'no-valid-email'
 							instance.state.set 'email-verification'
@@ -117,7 +117,7 @@ Template.loginForm.onCreated ->
 		$("#login-card input").removeClass "error"
 		unless _.isEmpty validationObj
 			button = $('#login-card').find('button.login')
-			Rocket.Button.reset(button)
+			RocketChat.Button.reset(button)
 			$("#login-card h2").addClass "error"
 			for key of validationObj
 				$("#login-card input[name=#{key}]").addClass "error"
