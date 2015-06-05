@@ -21,8 +21,13 @@
 			ChatRoom.update item._id, {$set: {name: name}}
 			ChatSubscription.update {rid: item._id}, {$set: {name: name}}, {multi: true}
 
-	ChatSubscription.find().forEach (item) ->
-		ChatSubscription.find({'u._id': item.u._id, name: item.name, t: item.t, _id: {$ne: item._id}}).forEach (subItem) ->
-			ChatSubscription.delete subItem._id
+	ChatRoom.find({msgs: {'$lt': 10}}).forEach (room) ->
+		ChatRoom.remove room._id
+		ChatMessage.remove {rid: room._id}
+		ChatSubscription.remove {rid: room._id}
+
+	# ChatSubscription.find().forEach (item) ->
+	# 	ChatSubscription.find({'u._id': item.u._id, name: item.name, t: item.t, _id: {$ne: item._id}}).forEach (subItem) ->
+	# 		ChatSubscription.remove subItem._id
 
 	console.log 'End'
