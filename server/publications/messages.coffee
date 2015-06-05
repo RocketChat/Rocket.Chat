@@ -9,7 +9,7 @@ Meteor.publish 'messages', (rid, start) ->
 
 	ChatMessage.find
 		rid: rid
-		,
-			sort:
-				ts: -1
-			limit: 50
+	,
+		sort:
+			ts: -1
+		limit: 50

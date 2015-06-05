@@ -51,7 +51,7 @@
 				ready: false
 
 		if subscription.ready()
-			if ChatSubscription.findOne { rid: roomId, 'u._id': Meteor.userId() }, { reactive: false }
+			if ChatSubscription.findOne { rid: roomId }, { reactive: false }
 				openedRooms[roomId].active = true
 				setRoomExpireExcept roomId
 				computation.invalidate()

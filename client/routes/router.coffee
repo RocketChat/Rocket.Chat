@@ -38,6 +38,8 @@ Router.onBeforeAction ->
 	except: ['login']
 }
 
+subs = new SubsManager()
+
 Router.route '/',
 	name: 'index'
 
@@ -70,8 +72,12 @@ Router.route '/room/:_id',
 	name: 'room'
 
 	waitOn: ->
-		if Meteor.userId()
-			return RoomManager.open @params._id
+		[
+			subs.subscribe 'messages', @params._id, moment().subtract(2, 'hour').startOf('day').toDate()
+			subs.subscribe 'rooms', @params._id
+		]
+		# if Meteor.userId()
+		# 	return RoomManager.open @params._id
 
 	onBeforeAction: ->
 		Session.set('flexOpened', true)
