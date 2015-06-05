@@ -13,8 +13,10 @@ Meteor.methods
 			return
 
 		update =
-			$addToSet:
-				usernames: data.username
+			$push:
+				usernames:
+					$each: [data.username]
+					$sort: 1
 
 		newUser = Meteor.users.findOne username: data.username
 
