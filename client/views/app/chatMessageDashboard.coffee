@@ -11,23 +11,49 @@ Template.chatMessageDashboard.helpers
 	isEditing: ->
 		return this._id is Session.get('editingMessageId')
 
-	autolinkerAndMentions: ->
+	preProcessingMessage: ->
 		msg = this.msg
 
-		msg = Autolinker.link(_.escapeHTML(msg), { stripPrefix: false, twitter: false })
+		# Separate text in code blocks and non code blocks
+		msgParts = msg.split(/(```.*\n[\s\S]*?\n```)/)
 
-		# TODO Create as very last helper, is braking MD
-		# msg = msg.replace /\n/g, '<br/>'
+		for part, index in msgParts
+			# Verify if this part is code
+			codeMatch = part.match(/```(.*)\n([\s\S]*?)\n```/)
+			if codeMatch?
+				# Process highlight if this part is code
+				lang = codeMatch[1]
+				code = codeMatch[2]
+				if lang not in hljs.listLanguages()
+					result = hljs.highlightAuto code
+				else
+					result = hljs.highlight lang, code
+				msgParts[index] = "<pre><code class='hljs " + result.language + "'>" + result.value + "</code></pre>"
+			else
+				# Escape html and fix line breaks for non code blocks
+				part = _.escapeHTML part
+				part = part.replace /\n/g, '<br/>'
+				msgParts[index] = part
 
+		# Re-mount message
+		msg = msgParts.join('')
+
+		# Process links in message
+		msg = Autolinker.link(msg, { stripPrefix: false, twitter: false })
+
+		# Process MD like for strong, italic and strike
+		msg = msg.replace(/\*([^*]+)\*/g, '<strong>$1</strong>')
+		msg = msg.replace(/\_([^_]+)\_/g, '<i>$1</i>')
+		msg = msg.replace(/\~([^_]+)\~/g, '<strike>$1</strike>')
+
+		# Highlight mentions
 		if not this.mentions? or this.mentions.length is 0
-			return msg
+			mentions = _.map this.mentions, (mention) ->
+				return mention.username or mention
 
-		mentions = _.map this.mentions, (mention) ->
-			return mention.username or mention
-
-		mentions = mentions.join('|')
-		msg = msg.replace new RegExp("(?:^|\\s)(@(#{mentions}))(?:\\s|$)", 'g'), (match, mention, username) ->
-			return match.replace mention, "<a href=\"\" class=\"mention-link\" data-username=\"#{username}\">#{mention}</a>"
+			mentions = mentions.join('|')
+			msg = msg.replace new RegExp("(?:^|\\s)(@(#{mentions}))(?:\\s|$)", 'g'), (match, mention, username) ->
+				return match.replace mention, "<a href=\"\" class=\"mention-link\" data-username=\"#{username}\">#{mention}</a>"
 
 		return msg
 
