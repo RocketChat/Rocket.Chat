@@ -7,7 +7,7 @@ Meteor.startup ->
 	window.lastMessageWindow = {}
 	window.lastMessageWindowHistory = {}
 
-	@defaultUserLanguage = -> 
+	@defaultUserLanguage = ->
 		lng = window.navigator.userLanguage || window.navigator.language || 'en'
 
 		# Fix browsers having all-lowercase language settings eg. pt-br, en-us
@@ -20,7 +20,7 @@ Meteor.startup ->
 		userLanguage = localStorage.getItem("userLanguage")
 	else
 		userLanguage = defaultUserLanguage()
-	
+
 	localStorage.setItem("userLanguage", userLanguage)
 	userLanguage = userLanguage.split('-').shift()
 	TAPi18n.setLanguage(userLanguage)
@@ -52,7 +52,7 @@ Meteor.startup ->
 
 	Tracker.autorun ->
 		rooms = []
-		ChatSubscription.find({ 'u._id': Meteor.userId() }, { fields: { rid: 1 } }).forEach (sub) ->
+		ChatSubscription.find({}, { fields: { rid: 1 } }).forEach (sub) ->
 			rooms.push sub.rid
 
 		ChatRoom.find({ _id: $in: rooms }).observe

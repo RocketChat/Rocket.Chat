@@ -6,12 +6,12 @@ Meteor.publish 'privateHistory', ->
 
 	ChatRoom.find
 		usernames: Meteor.users.findOne(this.userId).username
-		,
-			fields:
-				t: 1
-				name: 1
-				msgs: 1
-				ts: 1
-				lm: 1
-				cl: 1
+	,
+		fields:
+			t: 1
+			name: 1
+			msgs: 1
+			ts: 1
+			lm: 1
+			cl: 1
 
