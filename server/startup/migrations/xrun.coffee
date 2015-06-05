@@ -1,3 +1,3 @@
-# Meteor.startup ->
-# 	Meteor.defer ->
-# 		Migrations.migrateTo 'latest'
+Meteor.startup ->
+	Meteor.defer ->
+		Migrations.migrateTo 'latest'
