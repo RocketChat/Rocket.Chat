@@ -1,5 +1,5 @@
 Package.describe({
-	name: 'rocket:me',
+	name: 'rocketchat:me',
 	version: '0.0.1',
 	summary: 'Message pre-processor that will translate /me commands',
 	git: ''
@@ -10,7 +10,7 @@ Package.onUse(function(api) {
 
 	api.use([
 		'coffeescript',
-		'rocket:lib@0.0.1'
+		'rocketchat:lib@0.0.1'
 	]);
 
 	api.addFiles('me.coffee', 'server');

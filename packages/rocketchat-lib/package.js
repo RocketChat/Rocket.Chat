@@ -1,7 +1,7 @@
 Package.describe({
-	name: 'rocket:lib',
+	name: 'rocketchat:lib',
 	version: '0.0.1',
-	summary: 'Rocket libraries',
+	summary: 'RocketChat libraries',
 	git: ''
 });
 
@@ -18,7 +18,7 @@ Package.onUse(function(api) {
 	api.addFiles('lib/core.coffee', 'server');
 	api.addFiles('lib/callbacks.coffee', 'server');
 
-	api.export(['Rocket'], ['server']);
+	api.export(['RocketChat'], ['server']);
 });
 
 Package.onTest(function(api) {
