@@ -29,12 +29,12 @@ Meteor.methods
 				continue
 
 			sub =
-				u: 
+				u:
 					_id: member._id
 					username: username
 				rid: roomId
 				ts: now
-				rn: name
+				name: name
 				t: 'c'
 				unread: 0
 

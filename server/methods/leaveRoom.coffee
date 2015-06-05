@@ -14,7 +14,7 @@ Meteor.methods
 
 		ChatSubscription.update { rid: roomId },
 			$set:
-				rn: room.name
+				name: room.name
 		,
 			multi: true
 

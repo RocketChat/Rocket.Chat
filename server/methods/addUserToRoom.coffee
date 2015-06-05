@@ -28,7 +28,7 @@ Meteor.methods
 				username: data.username
 			rid: data.rid
 			ts: (new Date())
-			rn: room.name
+			name: room.name
 			t: room.t
 			unread: 0
 
