@@ -54,15 +54,15 @@ a {
 }
 
 code {
-	color: #f8f8f2;
-	display: block;
-	padding: .5em;
-	background: #23241f;
+	background: #f8f8f8;
 	border-radius: 6px;
 	border: none;
-	overflow-x: auto;
-	word-wrap: break-word;
+	color: #333;
+	display: block;
 	font-weight: bold;
+	overflow-x: auto;
+	padding: 0.5em;
+	word-wrap: break-word;
 }
 
 .text-center {
@@ -552,13 +552,13 @@ label.required:after {
 	}
 }
 
-.a-plus{
+.a-plus {
 	display: block;
 	width: 25px;
 	height: 25px;
 	z-index: 100;
 	position: relative;
-	&:before, &:after{
+	&:before, &:after {
 		content: " ";
 		display: block;
 		background-color: #aaa;
@@ -576,11 +576,11 @@ label.required:after {
 	&:before {
 		.transition(transform .315s ease-out .3s, background .15s ease-out);
 	}
-	&:hover{
-		&:before{
+	&:hover {
+		&:before {
 			.transform(rotate(180deg));
 		}
-		&:after{
+		&:after {
 			.transform(rotate(-90deg));
 		}
 	}
@@ -631,7 +631,7 @@ a.github-fork {
 		width: 100%;
 		height: 1px;
 	}
-	@media all and (max-width: 600px){
+	@media all and (max-width: 600px) {
 		display: none;
 	}
 }
@@ -680,7 +680,6 @@ a.github-fork {
 		background-repeat: no-repeat;
 		background-position: center;
 	}
-
 	&[initials]:before {
 		content: attr(initials);
 		position: absolute;
@@ -887,13 +886,13 @@ a.github-fork {
 		}
 	}
 	&.active .info,
-	.info:hover  {
+	.info:hover {
 		h4 {
 			color: rgba(255, 255, 255, 0.85);
 		}
 	}
-	.hover &{
-		.info h4{
+	.hover & {
+		.info h4 {
 			color: rgba(255, 255, 255, 0.85);
 		}
 	}
@@ -927,7 +926,7 @@ a.github-fork {
 		min-height: @header-min-height;
 		height: @header-min-height;
 		padding-left: 15px;
-		> div{
+		> div {
 			display: table-cell;
 			vertical-align: middle;
 			text-align: left;
@@ -948,7 +947,7 @@ a.github-fork {
 			font-size: 13px;
 		}
 	}
-	footer{
+	footer {
 		display: table;
 		position: absolute;
 		bottom: 0;
@@ -960,7 +959,7 @@ a.github-fork {
 		background: #fff;
 		min-height: @footer-min-height;
 		background-color: @primary-background-color;
-		> div{
+		> div {
 			display: table-cell;
 			vertical-align: middle;
 			text-align: left;
@@ -979,10 +978,10 @@ a.github-fork {
 		box-shadow: 0 0 5px rgba(0, 0, 0, 0.4) inset;
 		padding: 35px 10px;
 		.custom-scroll(transparent, rgba(255, 255, 255, 0.05));
-		> .wrapper{
+		> .wrapper {
 			direction: ltr;
 		}
-		h4{
+		h4 {
 			margin-bottom: 30px;
 			font-weight: 400;
 			text-transform: uppercase;
@@ -1070,7 +1069,7 @@ a.github-fork {
 			padding-bottom: 1em;
 		}
 	}
-	.more{
+	.more {
 		display: block;
 		color: @tertiary-font-color;
 		font-size: 11px;
@@ -1111,13 +1110,13 @@ a.github-fork {
 		height: @header-min-height;
 		background-color: @primary-background-color;
 	}
-	> .arrow{
+	> .arrow {
 		position: absolute;
 		top: 18px;
 		right: 8px;
 		z-index: 1000;
 		cursor: pointer;
-		&.hover, &:hover{
+		&.hover, &:hover {
 			&:before, &:after {
 				background-color: rgba(255, 255, 255, 0.85);
 			}
@@ -1185,11 +1184,11 @@ a.github-fork {
 		}
 		&.add-room {
 			&:hover {
-				i{
-					&:before{
+				i {
+					&:before {
 						.transform(rotate(180deg));
 					}
-					&:after{
+					&:after {
 						.transform(rotate(-90deg));
 					}
 				}
@@ -1348,12 +1347,12 @@ a.github-fork {
 	left: 0;
 	width: 100%;
 	height: @header-min-height;
-	&.visible{
-		h2{
+	&.visible {
+		h2 {
 			overflow: visible;
 		}
 	}
-	> div{
+	> div {
 		display: table-cell;
 		vertical-align: middle;
 		padding-top: 4px;
@@ -1379,14 +1378,14 @@ a.github-fork {
 		visibility: hidden;
 		display: none;
 	}
-	input[type='text']{
+	input[type='text'] {
 		.calc(width, ~'100% - 100px');
 		vertical-align: top;
 		margin-top: -4px;
 		margin-left: -3px;
 		font-size: 20px;
 	}
-	.icon-pencil{
+	.icon-pencil {
 		vertical-align: text-top;
 		margin-top: -7px;
 		display: inline-block;
@@ -1432,8 +1431,8 @@ a.github-fork {
 }
 
 .page-home {
-	.fixed-title{
-		h2{
+	.fixed-title {
+		h2 {
 			overflow: visible;
 		}
 	}
@@ -1699,8 +1698,7 @@ a.github-fork {
 		padding-left: 50px;
 		position: relative;
 		line-height: 20px;
-		margin-left: 20px;
-		margin-right: 20px;
+		margin: 1px 20px;
 		&.with-thumb {
 			margin-top: 12px;
 			min-height: 40px;
@@ -1732,7 +1730,7 @@ a.github-fork {
 					text-decoration: underline;
 				}
 			}
-			ul{
+			ul {
 				margin: 0;
 				padding: 0;
 			}
@@ -1794,7 +1792,8 @@ a.github-fork {
 			}
 		}
 	}
-	.time, .time-single {
+	.time,
+	.time-single {
 		font-size: 12px;
 		position: absolute;
 		display: inline-block;
@@ -1827,7 +1826,6 @@ a.github-fork {
 			display: inline-block;
 		}
 	}
-
 	.thumb {
 		position: absolute;
 		left: 0;
@@ -1933,7 +1931,7 @@ a.github-fork {
 				vertical-align: top;
 				margin-top: 1px;
 			}
-			.flex-opened &{
+			.flex-opened & {
 				.transition-delay(0s);
 				.transform(translateX(0));
 			}
@@ -1976,7 +1974,7 @@ a.github-fork {
 			height: 100%;
 		}
 	}
-	footer{
+	footer {
 		position: absolute;
 		bottom: 0;
 		left: 0;
@@ -1986,9 +1984,9 @@ a.github-fork {
 		text-align: right;
 		height: @footer-min-height;
 	}
-	.social{
+	.social {
 		text-align: center;
-		h4{
+		h4 {
 			font-weight: 300;
 			position: absolute;
 			width: 100%;
@@ -2164,7 +2162,7 @@ a.github-fork {
 }
 
 .user-image-status(@color) {
-	.avatar{
+	.avatar {
 		&:after {
 			background-color: darken(@color, 5%);
 		}
@@ -2188,7 +2186,7 @@ a.github-fork {
 	}
 	&:hover,
 	&.selected {
-		.avatar{
+		.avatar {
 			&:after {
 				.transform(scaleX(1))
 			}
@@ -2212,7 +2210,7 @@ a.github-fork {
 					background-color: @status-busy;
 				}
 			}
-			p{
+			p {
 				color: @primary-font-color;
 			}
 		}
@@ -2232,29 +2230,29 @@ a.github-fork {
 			line-height: @user-image-square;
 		}
 	}
-	p{
+	p {
 		display: none;
 	}
-	.lines &{
+	.lines & {
 		width: 100%;
 		margin: 0;
 		background-color: transparent;
-		&:after{
+		&:after {
 			display: none;
 		}
-		a{
+		a {
 			.cf_;
 			padding: 5px 0;
 			height: 30px;
 			background-color: transparent;
 			display: block;
-			> div{
+			> div {
 				float: left;
 				width: @user-image-square;
 				height: @user-image-square;
 			}
 		}
-		p{
+		p {
 			float: left;
 			display: block;
 			line-height: @user-image-square;
@@ -2490,9 +2488,9 @@ a.github-fork {
 	border-radius: 2px;
 	position: relative;
 	z-index: 1;
-	header{
+	header {
 		padding: 18px 0;
-		p{
+		p {
 			//font-family: "Muli";
 			margin: 8px 0 0;
 			font-size: 14px;
@@ -2518,14 +2516,14 @@ a.github-fork {
 	img {
 		width: 200px;
 	}
-	a{
+	a {
 		color: @primary-background-color;
 		margin: 4px 0;
 		display: inline-block;
-		&:active{
+		&:active {
 			color: @primary-background-color;
 		}
-		&:hover{
+		&:hover {
 			color: darken(@primary-background-color, 10%);
 		}
 	}
@@ -2565,7 +2563,7 @@ a.github-fork {
 			}
 		}
 	}
-	.input-text{
+	.input-text {
 		input {
 			box-shadow: 0 0 0;
 			background-color: transparent;
@@ -2800,7 +2798,7 @@ a.github-fork {
 		position: relative;
 		vertical-align: middle;
 	}
-	.question-mark{
+	.question-mark {
 		&::before {
 			position: absolute;
 			left: 0;
@@ -2812,7 +2810,7 @@ a.github-fork {
 			color: darken(@tertiary-background-color, 10%);
 		}
 	}
-	.action{
+	.action {
 		text-align: right;
 		display: inline-table;
 		vertical-align: middle;
