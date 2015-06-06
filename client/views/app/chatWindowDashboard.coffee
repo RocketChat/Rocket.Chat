@@ -251,21 +251,23 @@ Template.chatWindowDashboard.helpers
 
 Template.chatWindowDashboard.events
 	"click .flex-tab .more": (event) ->
+		console.log 'chatWindowDashboard click .flex-tab .more' if window.rocketDebug
 		Session.set('flexOpened', !Session.get('flexOpened'))
 
 	'click .chat-new-messages': (event) ->
-		console.log 'chatWindowDashboard.click.chat-new-messages' if window.rocketDebug
-		chatMessages = $('#chat-window-' + this._id + ' .messages-box')
+		console.log 'chatWindowDashboard click .chat-new-messages' if window.rocketDebug
+		chatMessages = $('#chat-window-' + this._id + ' .messages-box .wrapper')
 		chatMessages.animate({scrollTop: chatMessages[0].scrollHeight}, 'normal')
 		$('#chat-window-' + this._id + ' .input-message').focus()
 
 	'click .toggle-favorite': (event) ->
-		console.log 'chatWindowDashboard.click.toggle-favorite' if window.rocketDebug
+		console.log 'chatWindowDashboard click .toggle-favorite' if window.rocketDebug
 		event.stopPropagation()
 		event.preventDefault()
 		Meteor.call 'toogleFavorite', this._id, !$('i', event.currentTarget).hasClass('favorite-room')
 
 	"click .burger": ->
+		console.log 'chatWindowDashboard click .burger' if window.rocketDebug
 		chatContainer = $("#rocket-chat")
 		if chatContainer.hasClass("menu-closed")
 			chatContainer.removeClass("menu-closed").addClass("menu-opened")
@@ -273,60 +275,65 @@ Template.chatWindowDashboard.events
 			chatContainer.addClass("menu-closed").removeClass("menu-opened")
 
 	'focus .input-message': (event) ->
-		console.log 'chatWindowDashboard.focus.input-message' if window.rocketDebug
+		console.log 'chatWindowDashboard focus .input-message' if window.rocketDebug
 		KonchatNotification.removeRoomNotification(this._id)
 
 	'keydown .input-message': (event) ->
-		console.log 'chatWindowDashboard.keydown.input-message',this._id if window.rocketDebug
+		console.log 'chatWindowDashboard keydown .input-message',this._id if window.rocketDebug
 		ChatMessages.keydown(this._id, event, Template.instance())
 
 	'keydown .input-message-editing': (event) ->
-		console.log 'chatWindowDashboard.keydown.input-message-editing',this._id if window.rocketDebug
+		console.log 'chatWindowDashboard keydown .input-message-editing',this._id if window.rocketDebug
 		ChatMessages.keydownEditing(this._id, event)
 
 	'blur .input-message-editing': (event) ->
-		console.log 'chatWindowDashboard.blur.input-message-editing',this._id if window.rocketDebug
+		console.log 'chatWindowDashboard blur keydown blur .input-message-editing',this._id if window.rocketDebug
 		ChatMessages.stopEditingLastMessage()
 
 	'click .message-form .icon-paper-plane': (event) ->
+		console.log 'chatWindowDashboard click .message-form .icon-paper-plane' if window.rocketDebug
 		input = $(event.currentTarget).siblings("textarea")
 		ChatMessages.send(this._id, input.get(0))
 
 	'click .add-user': (event) ->
+		console.log 'chatWindowDashboard click click .add-user' if window.rocketDebug
 		toggleAddUser()
 
 	'click .edit-room-title': (event) ->
+		console.log 'chatWindowDashboard click .edit-room-title' if window.rocketDebug
 		event.preventDefault()
-
 		Session.set('editRoomTitle', true)
-
 		$(".fixed-title").addClass "visible"
-
 		Meteor.setTimeout ->
 			$('#room-title-field').focus().select()
 		, 10
 
 	'keydown #user-add-search': (event) ->
+		console.log 'chatWindowDashboard keydown #user-add-search' if window.rocketDebug
 		if event.keyCode is 27 # esc
 			toggleAddUser()
 
 	'keydown #room-title-field': (event) ->
+		console.log 'chatWindowDashboard keydown #room-title-field' if window.rocketDebug
 		if event.keyCode is 27 # esc
 			Session.set('editRoomTitle', false)
 		else if event.keyCode is 13 # enter
 			renameRoom this._id, $(event.currentTarget).val()
 
 	'blur #room-title-field': (event) ->
+		console.log 'chatWindowDashboard blur #room-title-field' if window.rocketDebug
 		# TUDO: create a configuration to select the desired behaviour
 		# renameRoom this._id, $(event.currentTarget).val()
 		Session.set('editRoomTitle', false)
 		$(".fixed-title").removeClass "visible"
 
 	"click .flex-tab .user-image > a" : (e) ->
+		console.log 'chatWindowDashboard click .flex-tab .user-image > a' if window.rocketDebug
 		Session.set('flexOpened', true)
 		Session.set('showUserInfo', $(e.currentTarget).data('username'))
 
 	'click .user-card-message': (e) ->
+		console.log 'chatWindowDashboard click .user-card-message' if window.rocketDebug
 		roomData = Session.get('roomData' + this.rid)
 		if roomData.t in ['c', 'p']
 			Session.set('flexOpened', true)
@@ -335,9 +342,11 @@ Template.chatWindowDashboard.events
 			Session.set('flexOpened', true)
 
 	'click .user-view nav .back': (e) ->
+		console.log 'chatWindowDashboard click .user-view nav .back' if window.rocketDebug
 		Session.set('showUserInfo', null)
 
 	'click .user-view nav .pvt-msg': (e) ->
+		console.log 'chatWindowDashboard click .user-view nav .pvt-msg' if window.rocketDebug
 		Meteor.call 'createDirectRoom', Session.get('showUserInfo'), (error, result) ->
 			if error
 				return Errors.throw error.reason
@@ -346,9 +355,11 @@ Template.chatWindowDashboard.events
 				Router.go('room', { _id: result.rid })
 
 	'click button.load-more': (e) ->
+		console.log 'chatWindowDashboard click button.load-more' if window.rocketDebug
 		RoomHistoryManager.getMore this._id
 
 	'autocompleteselect #user-add-search': (event, template, doc) ->
+		console.log 'chatWindowDashboard autocompleteselect #user-add-search' if window.rocketDebug
 		roomData = Session.get('roomData' + Session.get('openedRoom'))
 
 		if roomData.t is 'd'
@@ -368,6 +379,7 @@ Template.chatWindowDashboard.events
 				toggleAddUser()
 
 	'autocompleteselect #room-search': (event, template, doc) ->
+		console.log 'chatWindowDashboard autocompleteselect #room-search' if window.rocketDebug
 		if doc.type is 'u'
 			Meteor.call 'createDirectRoom', doc.uid, (error, result) ->
 				if error
@@ -381,6 +393,7 @@ Template.chatWindowDashboard.events
 			$('#room-search').val('')
 
 	'scroll .wrapper': (e, instance) ->
+		console.log 'chatWindowDashboard scroll .wrapper' if window.rocketDebug
 		if e.currentTarget.offsetHeight + e.currentTarget.scrollTop < e.currentTarget.scrollHeight
 			instance.scrollOnBottom = false
 		else
@@ -388,10 +401,12 @@ Template.chatWindowDashboard.events
 			$('.new-message').addClass('not')
 
 	'click .new-message': (e) ->
-		$('.messages-box .wrapper').stop().animate({scrollTop: 99999}, 1000 )
+		console.log 'chatWindowDashboard click .new-message' if window.rocketDebug
+		$('.messages-box .wrapper').stop().animate({scrollTop: 999999}, 1000 )
 		$(e.currentTarget).addClass('not')
 
 	'click .see-all': (e, instance) ->
+		console.log 'chatWindowDashboard click .see-all' if window.rocketDebug
 		instance.showUsersOffline.set(!instance.showUsersOffline.get())
 
 Template.chatWindowDashboard.onCreated ->
