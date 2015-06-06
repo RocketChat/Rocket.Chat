@@ -56,7 +56,7 @@ a {
 code {
 	background: #f8f8f8;
 	border-radius: 6px;
-	border: none;
+	border: 1px solid #ccc;
 	color: #333;
 	display: block;
 	font-weight: bold;
@@ -668,6 +668,7 @@ a.github-fork {
 	width: 100%;
 	overflow: hidden;
 	position: relative;
+	border-radius: 4px;
 	.avatar-image {
 		height: 100%;
 		width: 100%;
@@ -679,6 +680,7 @@ a.github-fork {
 		background-size: cover;
 		background-repeat: no-repeat;
 		background-position: center;
+		border-radius: 4px;
 	}
 	&[initials]:before {
 		content: attr(initials);
@@ -1698,7 +1700,7 @@ a.github-fork {
 		padding-left: 50px;
 		position: relative;
 		line-height: 20px;
-		margin: 1px 20px;
+		margin: 5px 20px;
 		&.with-thumb {
 			margin-top: 12px;
 			min-height: 40px;
@@ -2219,12 +2221,13 @@ a.github-fork {
 		overflow: visible;
 		&:after {
 			content: " ";
-			height: 100%;
-			width: 3px;
+			height: 6px;
+			width: 6px;
 			position: absolute;
 			z-index: 1;
-			left: -7px;
-			bottom: 0px;
+			left: -12px;
+			top: 8px;
+			border-radius: 3px;
 		}
 		.avatar-initials {
 			line-height: @user-image-square;
