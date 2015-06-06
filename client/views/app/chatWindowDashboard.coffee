@@ -1,9 +1,12 @@
 # @TODO bug com o botão para "rolar até o fim" (novas mensagens) quando há uma mensagem com texto que gere rolagem horizontal
 Template.chatWindowDashboard.helpers
+
 	tAddUsers: ->
 		return t('chatWindowDashboard.Add_users')
+
 	tQuickSearch: ->
 		return t('chatWindowDashboard.Quick_Search')
+
 	favorite: ->
 		console.log 'chatWindowDashboard.favorite' if window.rocketDebug
 		sub = ChatSubscription.findOne { rid: this._id, 'u._id': Meteor.userId() }
@@ -32,7 +35,6 @@ Template.chatWindowDashboard.helpers
 
 	showTyping: ->
 		console.log 'chatWindowDashboard.showTyping' if window.rocketDebug
-
 		return this.t is 't'
 
 	typing: ->
@@ -159,23 +161,17 @@ Template.chatWindowDashboard.helpers
 
 	isChannel: ->
 		roomData = Session.get('roomData' + this._id)
-
 		return '' unless roomData
-
 		return roomData.t is 'c'
 
 	canAddUser: ->
 		roomData = Session.get('roomData' + this._id)
-
 		return '' unless roomData
-
 		return roomData.t in ['p', 'c'] and roomData.u?._id is Meteor.userId()
 
 	canEditName: ->
 		roomData = Session.get('roomData' + this._id)
-
 		return '' unless roomData
-
 		return roomData.u?._id is Meteor.userId() and roomData.t in ['c', 'p']
 
 	roomNameEdit: ->
@@ -195,7 +191,6 @@ Template.chatWindowDashboard.helpers
 
 	phoneNumber: ->
 		return '' unless this.phoneNumber
-
 		if this.phoneNumber.length > 10
 			return "(#{this.phoneNumber.substr(0,2)}) #{this.phoneNumber.substr(2,5)}-#{this.phoneNumber.substr(7)}"
 		else
@@ -250,6 +245,7 @@ Template.chatWindowDashboard.helpers
 
 
 Template.chatWindowDashboard.events
+
 	"click .flex-tab .more": (event) ->
 		console.log 'chatWindowDashboard click .flex-tab .more' if window.rocketDebug
 		Session.set('flexOpened', !Session.get('flexOpened'))
