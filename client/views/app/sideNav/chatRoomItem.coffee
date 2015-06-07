@@ -1,9 +1,10 @@
 Template.chatRoomItem.helpers
+
+	alert: ->
+		return this.alert if (not Router.current().params._id) or Router.current().params._id isnt this.rid
+
 	unread: ->
-		if (not Router.current().params._id) or Router.current().params._id isnt this.rid
-			return this.unread
-		else if Router.current().params._id is this.rid and this.unread > 0
-			Meteor.call 'readMessages', this.rid
+		return this.unread if (not Router.current().params._id) or Router.current().params._id isnt this.rid
 
 	isDirectRoom: ->
 		return this.t is 'd'
@@ -26,7 +27,10 @@ Template.chatRoomItem.helpers
 			when 'p' then return 'icon-lock'
 
 	active: ->
-		return 'active' if Router.current().params._id? and Router.current().params._id is this.rid
+		if Router.current().params._id? and Router.current().params._id is this.rid
+			if this.alert or this.unread > 0
+				Meteor.call 'readMessages', this.rid
+			return 'active'
 
 	canLeave: ->
 		roomData = Session.get('roomData' + this.rid)

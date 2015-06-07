@@ -15,58 +15,56 @@ Template.chatMessageDashboard.helpers
 		return this._id is Session.get('editingMessageId')
 
 	preProcessingMessage: ->
-		msg = this.msg
 
-		# Separate text in code blocks and non code blocks
-		msgParts = msg.split(/(```.*\n[\s\S]*?\n```)/)
+		if _.trim(this.msg) isnt ''
 
-		for part, index in msgParts
-			# Verify if this part is code
-			codeMatch = part.match(/```(.*)\n([\s\S]*?)\n```/)
-			if codeMatch?
-				# Process highlight if this part is code
-				lang = codeMatch[1]
-				code = codeMatch[2]
-				if lang not in hljs.listLanguages()
-					result = hljs.highlightAuto code
+			msg = this.msg
+
+			# Separate text in code blocks and non code blocks
+			msgParts = msg.split(/(```.*\n[\s\S]*?\n```)/)
+
+			for part, index in msgParts
+				# Verify if this part is code
+				codeMatch = part.match(/```(.*)\n([\s\S]*?)\n```/)
+				if codeMatch?
+					# Process highlight if this part is code
+					lang = codeMatch[1]
+					code = codeMatch[2]
+					if lang not in hljs.listLanguages()
+						result = hljs.highlightAuto code
+					else
+						result = hljs.highlight lang, code
+					msgParts[index] = "<pre><code class='hljs " + result.language + "'>" + result.value + "</code></pre>"
 				else
-					result = hljs.highlight lang, code
-				msgParts[index] = "<pre><code class='hljs " + result.language + "'>" + result.value + "</code></pre>"
-			else
-				# Escape html and fix line breaks for non code blocks
-				part = _.escapeHTML part
-				part = part.replace /\n/g, '<br/>'
-				msgParts[index] = part
+					# Escape html and fix line breaks for non code blocks
+					part = _.escapeHTML part
+					part = part.replace /\n/g, '<br/>'
+					msgParts[index] = part
 
-		# Re-mount message
-		msg = msgParts.join('')
+			# Re-mount message
+			msg = msgParts.join('')
 
-		# Process links in message
-		msg = Autolinker.link(msg, { stripPrefix: false, twitter: false })
+			# Process links in message
+			msg = Autolinker.link(msg, { stripPrefix: false, twitter: false })
 
-		# Process MD like for strong, italic and strike
-		msg = msg.replace(/\*([^*]+)\*/g, '<strong>$1</strong>')
-		msg = msg.replace(/\_([^_]+)\_/g, '<i>$1</i>')
-		msg = msg.replace(/\~([^_]+)\~/g, '<strike>$1</strike>')
+			# Process MD like for strong, italic and strike
+			msg = msg.replace(/\*([^*]+)\*/g, '<strong>$1</strong>')
+			msg = msg.replace(/\_([^_]+)\_/g, '<i>$1</i>')
+			msg = msg.replace(/\~([^_]+)\~/g, '<strike>$1</strike>')
 
-		# Highlight mentions
-		if not this.mentions? or this.mentions.length is 0
-			mentions = _.map this.mentions, (mention) ->
-				return mention.username or mention
+			# Highlight mentions
+			if not this.mentions? or this.mentions.length is 0
+				mentions = _.map this.mentions, (mention) ->
+					return mention.username or mention
 
-			mentions = mentions.join('|')
-			msg = msg.replace new RegExp("(?:^|\\s)(@(#{mentions}))(?:\\s|$)", 'g'), (match, mention, username) ->
-				return match.replace mention, "<a href=\"\" class=\"mention-link\" data-username=\"#{username}\">#{mention}</a>"
+				mentions = mentions.join('|')
+				msg = msg.replace new RegExp("(?:^|\\s)(@(#{mentions}))(?:\\s|$)", 'g'), (match, mention, username) ->
+					return match.replace mention, "<a href=\"\" class=\"mention-link\" data-username=\"#{username}\">#{mention}</a>"
 
 		return msg
 
 	message: ->
-		if this.u._id
-			UserManager.addUser(this.u._id)
-		else if this.u?.username
-			UserManager.addUser this.u.username
 		switch this.t
-			when 'p' then "<i class='icon-link-ext'></i><a href=\"#{this.url}\" target=\"_blank\">#{this.msg}</a>"
 			when 'r' then t('chatMessageDashboard.Room_name_changed', { room_name: this.msg, user_by: Session.get('user_' + this.u._id + '_name') }) + '.'
 			when 'au' then t('chatMessageDashboard.User_added_by', { user_added: this.msg, user_by: Session.get('user_' + this.u._id + '_name') })
 			when 'ru' then t('chatMessageDashboard.User_removed_by', { user_removed: this.msg, user_by: Session.get('user_' + this.u._id + '_name') })
