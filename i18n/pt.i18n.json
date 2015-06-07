@@ -1,7 +1,6 @@
 {
 	"accounts": {
 		"Email_verified": "Email verificado",
-		"Error_changing_password": "Erro ao alterar a senha",
 		"Error_changing_password": "Senha alterada",
 		"New_password": "Nova senha"
 	},
@@ -35,6 +34,8 @@
 		"No_direct_messages_yet": "Você não iniciou nenhuma conversa ainda.",
 		"No_groups_yet": "Nenhum grupo privado ainda.",
 		"No_favorites_yet": "Nenhum favorito ainda.",
+		"Channels_list": "Lista de canais públicos",
+		"More_channels": "Mais canais",
 		"Invalid_room_name": "<strong>%s</strong> não é um nome válido,<br/> use apenas letras, números e traços"
 	},
 	"chatWindowDashboard": {
@@ -102,16 +103,6 @@
 		"We_have_sent_registration_email": "Nós lhe enviamos um e-mail para confirmar o seu registro. Se você não receber um e-mail em breve, por favor retorne e tente novamente.",
 		"We_have_sent_password_email": "Nós lhe enviamos um e-mail com instruções para redefinir sua senha. Se você não receber um e-mail em breve, por favor retorne e tente novamente."
 	},
-	"usernameRegistration": {
-		"Username": "Nome de usuário",
-		"Loading_suggestion": "Buscando sugestões...",
-		"Username_title": "Cadastre um nome de usuário",
-		"Username_description": "O nome de usuário serve para que outras pessoas possam mencionar você em mensagens",
-		"Use_this_username": "Usar este nome de usuário",
-		"Username_unavaliable": "<strong>%s</strong> já está sendo usado :(",
-		"Username_invalid": "<strong>%s</strong> não é um nome de usuário válido,<br/> use apenas letras, números, pontos e traços",
-		"Username_cant_be_empty": "O nome de usuário não pode ser vazio"
-	},
 	"loginIntro": {
 		"Access_online_demo": "Acesse o demo online",
 		"Access_Online_Demo": "Acesse o Demo Online",
@@ -135,6 +126,16 @@
 	},
 	"roomSearch": {
 		"Nothing_found": "Nada encontrado"
+	},
+	"usernameRegistration": {
+		"Username": "Nome de usuário",
+		"Loading_suggestion": "Buscando sugestões...",
+		"Username_title": "Cadastre um nome de usuário",
+		"Username_description": "O nome de usuário serve para que outras pessoas possam mencionar você em mensagens",
+		"Use_this_username": "Usar este nome de usuário",
+		"Username_unavaliable": "<strong>%s</strong> já está sendo usado :(",
+		"Username_invalid": "<strong>%s</strong> não é um nome de usuário válido,<br/> use apenas letras, números, pontos e traços",
+		"Username_cant_be_empty": "O nome de usuário não pode ser vazio"
 	},
 	"userStatus": {
 		"away": "ausente",
