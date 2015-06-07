@@ -1,7 +1,6 @@
 {
 	"accounts": {
 		"Email_verified": "Email 확인",
-		"Error_changing_password": "암호 변경중 에러발생",
 		"Error_changing_password": "암호 변경",
 		"New_password": "새로운 암호"
 	},
@@ -16,12 +15,12 @@
 	},
 	"chatRoomItem": {
 		"Hide_room": "방 숨김",
-		"Leave_room": "방 떠남"
+		"Leave_room": "방 나가기"
 	},
 	"chatRooms": {
 		"Favorites": "좋아하는",
 		"Powered_by": "Powered by",
-		"Recents": "최근에",
+		"Recents": "최근",
 		"Channels": "채널",
 		"Direct_Messages": "Direct Messages",
 		"Private_Groups": "좋아하는 그룹",
@@ -34,7 +33,11 @@
 		"No_channels_yet": "어떠한 체널에도 속하지 않았습니다.",
 		"No_direct_messages_yet": "어떤 대화도 하지 않았습니다.",
 		"No_groups_yet": "개인 그룹을 만들지 않았습니다.",
-		"No_favorites_yet": "어떤 좋아하는 것들을 추가하지 않았습니다."
+		"No_favorites_yet": "어떤 좋아하는 것들을 추가하지 않았습니다.",
+		"Create_new_channel": "Create a new public channel",
+		"Channels_list": "공개 채널 리스트",
+		"More_channels": "추가 채널",
+		"Invalid_room_name": "<strong>%s</strong> is not a valid room name,<br/> use only letters, numbers and dashes"
 	},
 	"chatWindowDashboard": {
 		"Add_users": "사용자 추가",
@@ -88,6 +91,7 @@
 		"Cancel": "로그인으로 돌아가기",
 		"Confirm_password": "암호를 확인하세요",
 		"Enter_info": "로그인 정보를 입력하세요",
+		"Email_or_username": "Email or username",
 		"Forgot_password": "암호를 잊었습니다",
 		"Password": "암호",
 		"Register": "새로운 계정 등록",
@@ -103,7 +107,7 @@
 	"loginIntro": {
 		"Access_online_demo": "온라인 데모 접속",
 		"Access_Online_Demo": "온라인 데모 접속",
-		"Your_Open_Source_solution": "자신만의 오픈소스 채팅 솔류션"
+		"Your_Open_Source_solution": "자신만의 오픈소스 채팅 솔루션"
 	},
 	"loginServices": {
 		"github_no_public_email": "Github 계정에 공개된 이메일이 없습니다.",
@@ -131,6 +135,7 @@
 		"Username_description": "사용자 이름은 다른 사람이 메시지에서 언급할 수 있도록 하는데 사용됩니다.",
 		"Use_this_username": "이 사용자 이름 사용",
 		"Username_unavaliable": "<strong>%s</strong> 는 사용중입니다. :(",
+		"Username_invalid": "<strong>&s</strong>는 알맞은 사용자명이 아닙니다,<br/> 문자, 숫자, 마침표와 밑줄을 사용하십시오.",
 		"Username_cant_be_empty": "사용자 이름을 비워둘 수 없습니다"
 	},
 	"userStatus": {
@@ -138,6 +143,7 @@
 		"Away": "자리비움",
 		"busy": "바쁨",
 		"Busy": "바쁨",
+		"Change_avatar": "Change avatar",
 		"coming_soon": "곧 옴",
 		"invisible": "보지 않음",
 		"Invisible": "보지 않음",
@@ -152,6 +158,7 @@
 	},
 	"avatar": {
 		"Use_service_avatar": "아바타 %s 사용",
+		"Use_initials_avatar": "Use your username initials",
 		"Login_with": "%s으로 로그인",
 		"Select_an_avatar": "아바타 선택",
 		"Use_uploaded_avatar": "업로드된 아바타 사용",
