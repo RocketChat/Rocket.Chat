@@ -1,6 +1,6 @@
-// 
+//
 // ----------------
-
+//
 @import "global/_variables.less";
 @import "utils/_lesshat.import.less";
 @import "utils/_reset.import.less";
@@ -9,7 +9,6 @@
 @import url(//fonts.googleapis.com/css?family=Roboto:300,400,500,700,900);
 @import url(//fonts.googleapis.com/css?family=Muli:400,300,500);
 @import "utils/_emojione.import.less";
-
 .cf_ {
 	display: inline-block;
 	&:after {
@@ -1243,6 +1242,12 @@ a.github-fork {
 					opacity: 0;
 				}
 			}
+			&.has-alert {
+				.name {
+					color: #ffffff;
+					font-weight: bold;
+				}
+			}
 			&.away {
 				a {
 					color: #666;
@@ -1945,7 +1950,7 @@ a.github-fork {
 		.custom-scroll(transparent, #DADADA);
 		margin-top: 60px;
 		overflow-x: hidden;
-        overflow-y: auto;		
+		overflow-y: auto;
 		-webkit-overflow-scrolling: touch;
 		.calc(height, ~"100% - " @footer-min-height + @header-min-height);
 		> div {

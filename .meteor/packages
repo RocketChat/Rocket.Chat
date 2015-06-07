@@ -44,6 +44,7 @@ raix:handlebar-helpers
 rocketchat:file
 rocketchat:lib
 rocketchat:me
+rocketchat:mentions
 simple:highlight.js
 tap:i18n
 tmeasday:crypto-md5

@@ -1,7 +1,7 @@
 Package.describe({
-	name: 'rocketchat:me',
+	name: 'rocketchat:mentions',
 	version: '0.0.1',
-	summary: 'Message pre-processor that will translate /me commands',
+	summary: 'Message pre-processor that will process mentions',
 	git: ''
 });
 
@@ -13,7 +13,7 @@ Package.onUse(function(api) {
 		'rocketchat:lib@0.0.1'
 	]);
 
-	api.addFiles('me.coffee', ['server','client']);
+	api.addFiles('server.coffee', 'server');
 });
 
 Package.onTest(function(api) {

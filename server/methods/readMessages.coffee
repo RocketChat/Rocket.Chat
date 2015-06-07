@@ -1,12 +1,16 @@
 Meteor.methods
 	readMessages: (room) ->
 
-		fromId = Meteor.userId()
 		# console.log '[methods] readMessages -> '.green, 'fromId:', fromId, 'room:', room
 
-		if Meteor.userId()
-			filter = { rid: room, 'u._id': Meteor.userId() }
-		else
-			throw new Meteor.Error 203, '[methods] readMessages -> Invalid user'
+		if not Meteor.userId()
+			throw new Meteor.Error 'invalid-user', '[methods] readMessages -> Invalid user'
 
-		ChatSubscription.update filter, { $set: { unread: 0, ls: (new Date()) } }
+		ChatSubscription.update
+			rid: room
+			'u._id': Meteor.userId()
+		,
+			$set:
+				alert: false
+				unread: 0
+				ls: (new Date())
