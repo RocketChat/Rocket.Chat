@@ -1,7 +1,6 @@
 {
 	"accounts": {
 		"Email_verified": "Электронный адрес проверен",
-		"Error_changing_password": "Ошибка при изменении пароля",
 		"Error_changing_password": "Пароль изменен",
 		"New_password": "Новый пароль"
 	},
@@ -23,9 +22,9 @@
 		"Powered_by": "Реализовано на",
 		"Recents": "Прошлые",
 		"Channels": "Каналы",
-		"Direct_Messages": "Прямые сообщения",
+		"Direct_Messages": "Личные сообщения",
 		"Private_Groups": "Частные сообщения",
-		"Members_placeholder": "Members",
+		"Members_placeholder": "Участники",
 		"Name": "Имя",
 		"Members": "Участники",
 		"Selected_users": "Выбранные участники",
@@ -33,8 +32,12 @@
 		"Cancel": "Отмена",
 		"No_channels_yet": "You aren't part of any channel yet.",
 		"No_direct_messages_yet": "You haven't started any conversations yet.",
-		"No_groups_yet": "You have no private groups yet.",
-		"No_favorites_yet": "You haven't added any favorites yet."
+		"No_groups_yet": "У вас нет приватных групп.",
+		"No_favorites_yet": "You haven't added any favorites yet.",
+		"Create_new_channel": "Create a new public channel",
+		"Channels_list": "Список общих каналов",
+		"More_channels": "Еще каналы",
+		"Invalid_room_name": "<strong>%s</strong> недопустимое имя комнаты, <br/> допустимые символы: цифры, подчеркивание и буквы."
 	},
 	"chatWindowDashboard": {
 		"Add_users": "Добавить пользователей",
@@ -44,7 +47,7 @@
 		"is_typing": "печатает",
 		"Members_List": "Список участников",
 		"New_messages": "Новые сообщения",
-		"Quick_Search": "Быстрый Поиск",
+		"Quick_Search": "Быстрый поиск",
 		"Room_name_changed_successfully": "Название комнаты изменено",
 		"See_all": "Увидеть всех",
 		"See_only_online": "Только в сети",
@@ -54,7 +57,7 @@
 		"View_All": "Посмотреть всех"
 	},
 	"footer": {
-		"Follow_social_profiles": "Follow our social profiles, fork us on github and share your thoughts about the rocket.chat app on our trello board.",
+		"Follow_social_profiles": "Добавляйте нас в друзья в социальных сетях, форкайте на github и пишите свои отзывы о нашем приложении у нас в trello.",
 		"Fork_it_on_github": "Fork it on github",
 		"Join_the_Community": "Присоединиться к сообществу",
 		"Language_Version": "Русская версия",
@@ -65,7 +68,7 @@
 		"Cancel": "Отмена",
 		"close": "закрыть",
 		"Contact": "Контакт",
-		"Conversation": "Conversation",
+		"Conversation": "Диалог",
 		"History": "История",
 		"Load_more": "Загрузить еще",
 		"Login": "Логин",
@@ -81,56 +84,58 @@
 	"home": {
 		"Chat_Rooms": "Комнаты Чатов",
 		"Have_your_own_chat": "Have your own web chat. Developed with Meteor.com, the Rocket.Chat is a great solution for developers looking forward to build and evolve their own chat platform.",
-		"use_menu": "Use the side menu to access your rooms and chats",
+		"use_menu": "Используйте боковое меню для доступа к вашим комнатам и чатам",
 		"welcome": "Добро пожаловать в"
 	},
 	"login": {
 		"Cancel": "Вернуться к логину",
 		"Confirm_password": "Подтвердить пароль",
 		"Enter_info": "Заполните информацию об учетной записи",
+		"Email_or_username": "Email or username",
 		"Forgot_password": "Забыли пароль",
 		"Password": "Пароль",
 		"Register": "Зарегистрировать нового пользователя",
 		"Remember_me": "Запомнить меня",
-		"You_neeed_confirm_email": "You need to confirm your email to login!",
-		"Invalid_email": "The e-mail entered is invalid",
-		"Invalid_pass": "Пароль должен быть заполнен",
+		"You_neeed_confirm_email": "Необходимо подтвердить e-mail для входа!",
+		"Invalid_email": "Неверный e-mail",
+		"Invalid_pass": "Пароль не может быть пустым",
 		"Invalid_name": "Имя должно быть заполнено",
-		"Invalid_confirm_pass": "The password confirmation does not match password",
-		"We_have_sent_registration_email": "We have sent you an e-mail to confirm your registration. If you do not receive an e-mail shortly, please come back and try again.",
+		"Invalid_confirm_pass": "Подтверждение пароля и пароль различаются",
+		"We_have_sent_registration_email": "Был выслан e-mail для подтверждения регистрации. Если вы не получили его, то попробуйте еще раз.",
 		"We_have_sent_password_email": "We have sent you an e-mail with password reset instructions. If you do not receive an e-mail shortly, please come back and try again."
 	},
 	"loginIntro": {
-		"Access_online_demo": "Access the online demo",
+		"Access_online_demo": "Попробовать демо-версию",
 		"Access_Online_Demo": "Access the Online Demo",
-		"Your_Open_Source_solution": "Your own Open Source chat solution"
+		"Your_Open_Source_solution": "Ваш собственный чат на базе Open Source-технологий"
 	},
 	"loginServices": {
-		"github_no_public_email": "You don't have any email as public email in your GitHub account",
+		"github_no_public_email": "В настройках GitHub отсутствует публично доступный e-mail",
 		"login_with": "Or login directly with"
 	},
 	"privateHistory": {
 		"Created_at": "Создано в",
 		"Last_message": "Последнее сообщение",
-		"Msgs": "Msgs",
+		"Msgs": "Сообщения",
 		"n_messages": "%s сообщений",
 		"Room": "Комната",
 		"Showing_results": "<p>Отображено <b>%s</b> результатов</p>",
 		"since_creation": "с %s"
 	},
 	"RoomManager": {
-		"No_permission_to_view_room": "You don't have permission to view this room"
+		"No_permission_to_view_room": "У вас нет прав для просмотра этой комнаты."
 	},
 	"roomSearch": {
-		"Nothing_found": "Пусто"
+		"Nothing_found": "Ничего не найдено"
 	},
 	"usernameRegistration": {
 		"Username": "Имя пользователя",
 		"Loading_suggestion": "Loading suggestions...",
 		"Username_title": "Register username",
-		"Username_description": "The username is used to allow others to mention you in messages.",
+		"Username_description": "Имя пользователя используется для обращения других участников к вам.",
 		"Use_this_username": "Использовать это имя пользователя",
 		"Username_unavaliable": "<strong>%s</strong> уже используется :(",
+		"Username_invalid": "<strong>%s</strong> неправильное имя пользователя, <br/> можно использовать только цифры, точки, подчеркивания и латинские буквы",
 		"Username_cant_be_empty": "Имя пользователя должно быть заполнено"
 	},
 	"userStatus": {
@@ -138,23 +143,25 @@
 		"Away": "Отошёл",
 		"busy": "занят",
 		"Busy": "Занят",
-		"coming_soon": "coming soon",
-		"invisible": "прозрачный",
-		"Invisible": "Прозрачный",
-		"Logout": "Logout",
-		"Online": "Online",
-		"Privacy": "Privacy",
+		"Change_avatar": "Сменить юзерпик",
+		"coming_soon": "Грядет",
+		"invisible": "невидимый",
+		"Invisible": "Невидимый",
+		"Logout": "Выйти",
+		"Online": "В сети",
+		"Privacy": "Приватность",
 		"Settings": "Настройки",
-		"Silence": "Silence"
+		"Silence": "Тишина"
 	},
 	"error": {
-		"Not_found_or_not_allowed": "Отсутствует или Доступ Запрещён"
+		"Not_found_or_not_allowed": "Отсутствует или доступ запрещён"
 	},
 	"avatar": {
 		"Use_service_avatar": "Use %s avatar",
+		"Use_initials_avatar": "Use your username initials",
 		"Login_with": "Login with %s",
-		"Select_an_avatar": "Select an avatar",
-		"Use_uploaded_avatar": "Use uploaded avatar",
+		"Select_an_avatar": "Выбор юзерпика",
+		"Use_uploaded_avatar": "Использовать загруженный юзерпик",
 		"Select_file": "Выберите файл"
 	}
 }

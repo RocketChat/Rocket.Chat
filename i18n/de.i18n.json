@@ -1,7 +1,6 @@
 {
 	"accounts": {
 		"Email_verified": "Email bestätigt",
-		"Error_changing_password": "Fehler beim Ändern des Passwortes",
 		"Error_changing_password": "Passwort geändert",
 		"New_password": "Neues Passwort"
 	},
@@ -34,12 +33,16 @@
 		"No_channels_yet": "Sie sind kein Mitglied eines Channels.",
 		"No_direct_messages_yet": "Sie haben keine Konversation gestartet.",
 		"No_groups_yet": "Sie sind kein Mitglied einer privaten Gruppe.",
-		"No_favorites_yet": "Sie haben keine Favoriten hinzugefügt."
+		"No_favorites_yet": "Sie haben keine Favoriten hinzugefügt.",
+		"Create_new_channel": "Erstelle einen neuen öffentlichen Channel",
+		"Channels_list": "Liste der öffentlichen Channels",
+		"More_channels": "Mehr Channels",
+		"Invalid_room_name": "<strong>%s</strong> ist kein zulässiger Raumname.<br/> Benutze nur Buchstaben, Nummern und Bindestriche."
 	},
 	"chatWindowDashboard": {
 		"Add_users": "Benutzer hinzufügen",
 		"are_also_typing": "schreiben auch",
-		"are_typing": "aschreiben",
+		"are_typing": "schreiben",
 		"is_also_typing": "schreibt auch",
 		"is_typing": "schreibt",
 		"Members_List": "Mitglieder Liste",
@@ -80,7 +83,7 @@
 	},
 	"home": {
 		"Chat_Rooms": "Chat Rooms",
-		"Have_your_own_chat": "Erstelle deinen eigenen web chat. Entwickelt mit Meteor.com, der Rocket.Chat ist eine tolle Lösung für Entwickler.",
+		"Have_your_own_chat": "Erstelle deinen eigenen web chat. Entwickelt mit Meteor.com, der Rocket.Chat ist eine tolle Lösung für Entwickler, die schnell und einfach einen eigene Chat Plattform aufbauen wollen.",
 		"use_menu": "Benutze das Seitenmenü um deine Chats zu öffnen",
 		"welcome": "Willkommen bei"
 	},
@@ -88,6 +91,7 @@
 		"Cancel": "Zurück zum Login",
 		"Confirm_password": "Passwort bestätigen",
 		"Enter_info": "Geben Sie Ihre Anmeldedaten an",
+		"Email_or_username": "Email oder Username",
 		"Forgot_password": "Passwort vergessen?",
 		"Password": "Passwort",
 		"Register": "Account erstellen",
@@ -98,7 +102,7 @@
 		"Invalid_name": "Der Name darf nicht leer sein",
 		"Invalid_confirm_pass": "Die Passwörter stimmen nicht überein",
 		"We_have_sent_registration_email": "Wir haben Ihnen eine Bestätigungs Email gesendet.",
-		"We_have_sent_password_email": "Wir haben Ihnen eine Anleitung zum Zurücksetzen des Passowrtes an Ihre Email-Adresse gesendet."
+		"We_have_sent_password_email": "Wir haben Ihnen eine Anleitung zum Zurücksetzen des Passworts an Ihre Email-Adresse gesendet."
 	},
 	"loginIntro": {
 		"Access_online_demo": "Öffne die online demo",
@@ -110,13 +114,13 @@
 		"login_with": "Oder melden Sie sich direkt mit folgenden Accounts an"
 	},
 	"privateHistory": {
-		"Created_at": "Erstell am",
+		"Created_at": "Erstellt am",
 		"Last_message": "Letzte Nachricht",
 		"Msgs": "Msgs",
 		"n_messages": "%s Nachrichten",
 		"Room": "Raum",
 		"Showing_results": "<p>Zeige <b>%s</b> Ergebnisse</p>",
-		"since_creation": "seid %s"
+		"since_creation": "seit %s"
 	},
 	"RoomManager": {
 		"No_permission_to_view_room": "Sie haben keine Berechtigung diesen Raum zu betreten"
@@ -131,6 +135,7 @@
 		"Username_description": "Der Benutzername wird dazu benutzt Sie in Nachtichten zu markieren.",
 		"Use_this_username": "Benutzen Sie folgenden Benutzernamen",
 		"Username_unavaliable": "<strong>%s</strong> wird schon verwendet :(",
+		"Username_invalid": "<strong>%s</strong> ist kein zulässiger Username.<br/> Benutze nur Buchstaben, Nummern, Punkte oder Bindestriche.",
 		"Username_cant_be_empty": "Der Benutzername darf nicht leer sein"
 	},
 	"userStatus": {
@@ -138,6 +143,7 @@
 		"Away": "Abwesend",
 		"busy": "beschäftigt",
 		"Busy": "Beschäftigt",
+		"Change_avatar": "Ändere dein Avatar",
 		"coming_soon": "coming soon",
 		"invisible": "unsichtbar",
 		"Invisible": "Unsichtbar",
@@ -152,6 +158,7 @@
 	},
 	"avatar": {
 		"Use_service_avatar": "Benutze %s avatar",
+		"Use_initials_avatar": "Benutze deine Initialien",
 		"Login_with": "Login mit %s",
 		"Select_an_avatar": "Wählen Sie ein Avatar",
 		"Use_uploaded_avatar": "Benutze diesen Avatar",
