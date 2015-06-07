@@ -34,9 +34,10 @@
 		"No_direct_messages_yet": "Você não iniciou nenhuma conversa ainda.",
 		"No_groups_yet": "Nenhum grupo privado ainda.",
 		"No_favorites_yet": "Nenhum favorito ainda.",
+		"Create_new_channel": "Criar um canal público",
 		"Channels_list": "Lista de canais públicos",
 		"More_channels": "Mais canais",
-		"Invalid_room_name": "<strong>%s</strong> não é um nome válido,<br/> use apenas letras, números e traços"
+		"Invalid_room_name": "<strong>%s</strong> não é um nome válido,<br/> utilizar apenas letras, números e hífens"
 	},
 	"chatWindowDashboard": {
 		"Add_users": "Adicionar usuários",
@@ -134,7 +135,7 @@
 		"Username_description": "O nome de usuário serve para que outras pessoas possam mencionar você em mensagens",
 		"Use_this_username": "Usar este nome de usuário",
 		"Username_unavaliable": "<strong>%s</strong> já está sendo usado :(",
-		"Username_invalid": "<strong>%s</strong> não é um nome de usuário válido,<br/> use apenas letras, números, pontos e traços",
+		"Username_invalid": "<strong>%s</strong> não é um nome de usuário válido, <br/> usar somente letras, números, pontos e traços",
 		"Username_cant_be_empty": "O nome de usuário não pode ser vazio"
 	},
 	"userStatus": {
@@ -142,7 +143,7 @@
 		"Away": "Ausente",
 		"busy": "ocupado",
 		"Busy": "Ocupado",
-		"Change_avatar": "Mudar avatar",
+		"Change_avatar": "Alterar avatar",
 		"coming_soon": "em breve",
 		"invisible": "invisível",
 		"Invisible": "Invisível",
@@ -156,8 +157,8 @@
 		"Not_found_or_not_allowed": "Não encontrado ou não permitido"
 	},
 	"avatar": {
-		"Use_service_avatar": "Use o avatar do %s",
-		"Use_initials_avatar": "Use as iniciais do seu nome de usuário",
+		"Use_service_avatar": "Use o avatar de %s",
+		"Use_initials_avatar": "Usar as iniciais do seu nome de usuário",
 		"Login_with": "Login com %s",
 		"Select_an_avatar": "Selecione um avatar",
 		"Use_uploaded_avatar": "Use o avatar de upload",

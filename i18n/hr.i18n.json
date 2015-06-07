@@ -1,7 +1,6 @@
 {
 	"accounts": {
 		"Email_verified": "Email provjeren",
-		"Error_changing_password": "Greška prilikom mijenjanja lozinke",
 		"Error_changing_password": "Lozinka je izmijenjena",
 		"New_password": "Nova lozinka"
 	},
@@ -34,7 +33,11 @@
 		"No_channels_yet": "Još nisi dio nijednog kanala.",
 		"No_direct_messages_yet": "Nisi još započeo nijedan razgovor.",
 		"No_groups_yet": "Još nemaš privatnih grupa.",
-		"No_favorites_yet": "Još nisi dodao omiljene."
+		"No_favorites_yet": "Još nisi dodao omiljene.",
+		"Create_new_channel": "Create a new public channel",
+		"Channels_list": "List of public channels",
+		"More_channels": "More channels",
+		"Invalid_room_name": "<strong>%s</strong> is not a valid room name,<br/> use only letters, numbers and dashes"
 	},
 	"chatWindowDashboard": {
 		"Add_users": "Dodaj korisnike",
@@ -88,6 +91,7 @@
 		"Cancel": "Natrag na prijavu",
 		"Confirm_password": "Potvrdi svoju lozinku",
 		"Enter_info": "Unesi svoje informacije za prijavu",
+		"Email_or_username": "Email or username",
 		"Forgot_password": "Zaboravih lozinku",
 		"Password": "Lozinka",
 		"Register": "Registriraj novi račun",
@@ -131,6 +135,7 @@
 		"Username_description": "Korisničko ime se koristi kako bi te drugi mogli spomenuti u porukama.",
 		"Use_this_username": "Koristi ovo korisničko ime",
 		"Username_unavaliable": "<strong>%s</strong> je već zauzeto :(",
+		"Username_invalid": "<strong>%s</strong> is not a valid username,<br/> use only letters, numbers, dots and dashes",
 		"Username_cant_be_empty": "Korisničko ime ne može ostati prazno."
 	},
 	"userStatus": {
@@ -138,6 +143,7 @@
 		"Away": "Odsutan",
 		"busy": "zaposlen",
 		"Busy": "Zaposlen",
+		"Change_avatar": "Change avatar",
 		"coming_soon": "dolazi uskoro",
 		"invisible": "nevidljiv",
 		"Invisible": "Nevidljiv",
@@ -152,6 +158,7 @@
 	},
 	"avatar": {
 		"Use_service_avatar": "Koristi %s avatar",
+		"Use_initials_avatar": "Use your username initials",
 		"Login_with": "Prijavi se sa %s",
 		"Select_an_avatar": "Odaberi avatar",
 		"Use_uploaded_avatar": "Koristi uploadani avatar",
