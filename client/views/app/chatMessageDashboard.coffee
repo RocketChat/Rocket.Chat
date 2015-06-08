@@ -18,7 +18,7 @@ Template.chatMessageDashboard.helpers
 
 		if _.trim(this.msg) isnt ''
 
-			msg = this.msg
+			msg = this.html
 
 			# Separate text in code blocks and non code blocks
 			msgParts = msg.split(/(```.*\n[\s\S]*?\n```)/)
