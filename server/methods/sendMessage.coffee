@@ -3,7 +3,9 @@ Meteor.methods
 		if not Meteor.userId()
 			throw new Meteor.Error('invalid-user', "[methods] sendMessage -> Invalid user")
 
-		if not Meteor.call 'canAccessRoom', message.rid, Meteor.userId()
+		room = Meteor.call 'canAccessRoom', message.rid, Meteor.userId()
+
+		if not room
 			return false
 
 		console.log '[methods] sendMessage -> '.green, 'userId:', Meteor.userId(), 'arguments:', arguments
@@ -12,7 +14,7 @@ Meteor.methods
 		message.ts = new Date()
 		message = RocketChat.callbacks.run 'beforeSaveMessage', message
 
-		console.log "message", message
+		# console.log "message", message
 
 		###
 		Defer other updated as their return is not interesting to the user
@@ -33,28 +35,49 @@ Meteor.methods
 				$inc:
 					msgs: 1
 
-			message.mentions?.forEach (mention) ->
+
+			# increment unread couter if direct messages
+			if room.t is 'd'
 				###
-				Update all other subscriptions of mentioned users to alert their owners and incrementing
-				the unread counter for mentions and direct messages
+				Update the other subscriptions
 				###
 				ChatSubscription.update
 					# only subscriptions to the same room
 					rid: message.rid
 					# not the msg owner
-					'u._id': mention._id
+					'u._id':
+						$ne: message.u._id
 				,
 					$set:
 						# alert de user
 						alert: true
 						# open the room for the user
 						open: true
-					# increment undear couter
+					# increment unread couter
 					$inc:
 						unread: 1
-				,
-					# make sure we alert all matching subscription
-					multi: true
+
+			else
+				message.mentions?.forEach (mention) ->
+					console.log mention
+					###
+					Update all other subscriptions of mentioned users to alert their owners and incrementing
+					the unread counter for mentions and direct messages
+					###
+					ChatSubscription.update
+						# only subscriptions to the same room
+						rid: message.rid
+						# the mentioned user
+						'u._id': mention._id
+					,
+						$set:
+							# alert de user
+							alert: true
+							# open the room for the user
+							open: true
+						# increment unread couter
+						$inc:
+							unread: 1
 
 			###
 			Update all other subscriptions to alert their owners but witout incrementing
