@@ -8,7 +8,7 @@ Router.configure
 			return [Meteor.subscribe('userData'), RoomManager.init()]
 
 	onBeforeAction: ->
-		Session.set('flexOpened', false)
+		Session.setDefault('flexOpened', false)
 		Session.set('openedRoom', null)
 		this.next()
 
@@ -76,10 +76,7 @@ Router.route '/room/:_id',
 		unless ChatRoom.find(@params._id).count()
 			Router.go 'home'
 
-		Session.set('flexOpened', false)
 		Session.set('openedRoom', this.params._id)
-
-		# zera a showUserInfo pra garantir que vai estar com a listagem do grupo aberta
 		Session.set('showUserInfo', null)
 
 		this.next()
