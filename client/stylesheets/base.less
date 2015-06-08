@@ -1,4 +1,4 @@
-// 
+//
 // ----------------
 
 @import "global/_variables.less";
@@ -720,20 +720,25 @@ a.github-fork {
 	.info {
 		position: relative;
 		height: 100%;
+		padding: 10px 0px 10px 18px;
 		.thumb {
 			float: left;
 			height: 100%;
 			position: relative;
-			width: 60px;
-			padding: 8px;
+			width: 42px;
+			padding: 0;
+			height: 42px;
 			&:after {
 				content: " ";
 				display: block;
-				width: 44px;
-				height: 2px;
+				width: 4px;
+				height: 4px;
 				z-index: 10;
 				position: absolute;
-				bottom: 5px;
+				border-radius: 50%;
+				top: calc(50% - 4px);
+				border: 2px solid #DFDFDF;
+				left: -14px;
 			}
 			.avatar-initials {
 				line-height: 44px;
@@ -742,7 +747,7 @@ a.github-fork {
 		.data {
 			float: left;
 			position: relative;
-			padding: 0 25px 0 5px;
+			padding: 0 25px 0 10px;
 			height: 100%;
 			display: table;
 			.calc(width, ~"100% - 60px");
@@ -1901,17 +1906,28 @@ a.github-fork {
 			position: absolute;
 			left: 0;
 			top: 0px;
-			background-color: @secondary-background-color;
+			background-color: @tertiary-background-color;
 			border: none;
 			height: 60px;
-			width: 28px;
+			width: 30px;
 			border-bottom: 1px solid @tertiary-background-color;
 			color: @secondary-font-color;
 			cursor: pointer;
 			.transform(translateX(-27px));
-			.transition(transform .3s ease-out .4s);
+			.transition(transform .3s ease-out .475s, background .075s ease-out .5s);
 			&:hover {
-				color: @primary-font-color;
+				.arrow{
+					.arrow{
+						&:before, &:after{
+							background-color: #4a4a4a;
+						}
+					}
+				}
+			}
+			.arrow{
+				&:before, &:after{
+					background-color: #7a7a7a;
+				}
 			}
 			i {
 				.transform-origin(50%, 50%, 0);
@@ -1921,8 +1937,16 @@ a.github-fork {
 				margin-top: 1px;
 			}
 			.flex-opened & {
+				background-color: @secondary-background-color;
 				.transition-delay(0s);
 				.transform(translateX(0));
+				&:hover{
+					.arrow{
+						&:before, &:after{
+							background-color: #7a7a7a;
+						}
+					}
+				}
 			}
 		}
 		.search-form {
@@ -1945,7 +1969,7 @@ a.github-fork {
 		.custom-scroll(transparent, #DADADA);
 		margin-top: 60px;
 		overflow-x: hidden;
-        overflow-y: auto;		
+        overflow-y: auto;
 		-webkit-overflow-scrolling: touch;
 		.calc(height, ~"100% - " @footer-min-height + @header-min-height);
 		> div {
