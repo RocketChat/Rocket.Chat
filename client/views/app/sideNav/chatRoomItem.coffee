@@ -59,8 +59,6 @@ Template.chatRoomItem.events
 		if (Router.current().route.getName() is 'room' and Router.current().params._id is this.rid)
 			Router.go 'index'
 
-		RoomManager.close this.rid
-
 		Meteor.call 'hideRoom', this.rid
 
 	'click .leave-room': (e) ->

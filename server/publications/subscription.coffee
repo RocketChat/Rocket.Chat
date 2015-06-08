@@ -6,8 +6,9 @@ Meteor.publish 'subscription', ->
 
 	ChatSubscription.find
 		'u._id': this.userId
-		ts:
-			$gte: moment().subtract(2, 'days').startOf('day').toDate()
+		open: true
+		# ts:
+		# 	$gte: moment().subtract(2, 'days').startOf('day').toDate()
 	,
 		fields:
 			t: 1
