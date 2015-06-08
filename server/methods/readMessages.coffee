@@ -10,6 +10,7 @@ Meteor.methods
 			'u._id': Meteor.userId()
 		,
 			$set:
+				open: true
 				alert: false
 				unread: 0
 				ls: (new Date())
