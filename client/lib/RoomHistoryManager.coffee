@@ -12,15 +12,10 @@
 
 		return histories[rid]
 
-	initRoom = (rid, from=new Date) ->
-		room = getRoom rid
-
-		room.from = from
-
 	getMore = (rid, limit=defaultLimit) ->
 		room = getRoom rid
 
-		if room.hasMore.curValue isnt true or not room.from?
+		if room.hasMore.curValue isnt true
 			return
 
 		room.isLoading.set true
@@ -56,7 +51,6 @@
 		return room.isLoading.get()
 
 
-	initRoom: initRoom
 	getMore: getMore
 	hasMore: hasMore
 	isLoading: isLoading

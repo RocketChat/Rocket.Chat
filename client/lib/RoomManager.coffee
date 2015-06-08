@@ -9,7 +9,7 @@
 		subscription = Meteor.subscribe('subscription')
 		return subscription
 
-	expireRoom = (rid) ->
+	close = (rid) ->
 		if openedRooms[rid]
 			if openedRooms[rid].sub?
 				for sub in openedRooms[rid].sub
@@ -40,7 +40,7 @@
 
 		for rid of openedRooms
 			if rid isnt except and not openedRooms[rid].timeout?
-				openedRooms[rid].timeout = setTimeout expireRoom, defaultTime, rid
+				openedRooms[rid].timeout = setTimeout close, defaultTime, rid
 
 	open = (rid) ->
 		if not openedRooms[rid]?
@@ -62,5 +62,5 @@
 		}
 
 	open: open
-	close: expireRoom
+	close: close
 	init: init
