@@ -557,7 +557,7 @@ label.required:after {
 	}
 	&:after {
 		.transform(rotate(90deg));
-		.transition(transform .315s ease-out .2s, background .15s ease-out);
+		.transition(transform .315s ease-out .1s, background .15s ease-out);
 	}
 	&:before {
 		.transition(transform .315s ease-out .3s, background .15s ease-out);
@@ -719,20 +719,25 @@ a.github-fork {
 	.info {
 		position: relative;
 		height: 100%;
+		padding: 10px 0px 10px 18px;
 		.thumb {
 			float: left;
 			height: 100%;
 			position: relative;
-			width: 60px;
-			padding: 8px;
+			width: 42px;
+			padding: 0;
+			height: 42px;
 			&:after {
 				content: " ";
 				display: block;
-				width: 44px;
-				height: 2px;
+				width: 4px;
+				height: 4px;
 				z-index: 10;
 				position: absolute;
-				bottom: 5px;
+				border-radius: 50%;
+				top: calc(50% - 4px);
+				border: 2px solid #DFDFDF;
+				left: -14px;
 			}
 			.avatar-initials {
 				line-height: 44px;
@@ -741,7 +746,7 @@ a.github-fork {
 		.data {
 			float: left;
 			position: relative;
-			padding: 0 25px 0 5px;
+			padding: 0 25px 0 10px;
 			height: 100%;
 			display: table;
 			.calc(width, ~"100% - 60px");
@@ -802,7 +807,7 @@ a.github-fork {
 			.transform(translateX(-100%));
 		}
 		.status {
-			padding-left: 30px;
+			padding-left: 38px;
 			position: relative;
 			&:after {
 				content: " ";
@@ -813,8 +818,8 @@ a.github-fork {
 				border-radius: 50%;
 				z-index: 5;
 				position: absolute;
-				left: 12px;
-				.calc(top, ~"50% - 6px");
+				left: 18px;
+				.calc(top, ~"50% - 8px");
 			}
 			&.offline {
 				&:after {
@@ -851,7 +856,10 @@ a.github-fork {
 			top: 17px;
 		}
 		i {
-			width: 18px;
+			width: 26px;
+			display: inline-block;
+			text-align: center;
+			margin-left: 0 -1px 0 1px;
 		}
 		a {
 			position: relative;
@@ -872,6 +880,16 @@ a.github-fork {
 				text-decoration: none;
 			}
 		}
+		.icon-logout {
+			&:before {
+				margin-right: 0px;
+			}
+		}
+		.icon-camera {
+			&:before {
+				margin-left: 1px;
+			}
+		}
 	}
 	&.active .info,
 	.info:hover {
@@ -888,7 +906,8 @@ a.github-fork {
 
 // rooms-box
 .flex-nav {
-	background-color: @primary-background-color;
+	//background-color: @primary-background-color;
+	background-color: transparent;
 	position: fixed;
 	top: 0;
 	left: 0;
@@ -902,6 +921,17 @@ a.github-fork {
 	.custom-scroll(transparent, rgba(255, 255, 255, 0.05));
 	&.hidden {
 		.transform(translateX(-100%));
+		header, footer, .content {
+			.transform(translateX(-100%));
+		}
+	}
+	header,
+	footer,
+	.content {
+		.transition(transform .425s cubic-bezier(0, .8, .05, 1));
+	}
+	> section {
+		&:extend(.fill-all);
 	}
 	header {
 		display: table;
@@ -914,6 +944,8 @@ a.github-fork {
 		min-height: @header-min-height;
 		height: @header-min-height;
 		padding-left: 15px;
+		.transition-delay(.05s);
+		background-color: @primary-background-color;
 		> div {
 			display: table-cell;
 			vertical-align: middle;
@@ -947,6 +979,7 @@ a.github-fork {
 		background: #fff;
 		min-height: @footer-min-height;
 		background-color: @primary-background-color;
+		.transition-delay(.22s);
 		> div {
 			display: table-cell;
 			vertical-align: middle;
@@ -966,6 +999,8 @@ a.github-fork {
 		box-shadow: 0 0 5px rgba(0, 0, 0, 0.4) inset;
 		padding: 35px 10px;
 		.custom-scroll(transparent, rgba(255, 255, 255, 0.05));
+		.transition-delay(.135s);
+		background-color: @primary-background-color;
 		> .wrapper {
 			direction: ltr;
 		}
@@ -1292,6 +1327,12 @@ a.github-fork {
 				&:hover {
 					color: rgba(255, 255, 255, 0.75);
 				}
+			}
+			.icon-cancel-circled:before {
+				margin-left: 2px;
+			}
+			.icon-logout {
+				margin-left: 1px;
 			}
 		}
 		i {
@@ -1906,17 +1947,28 @@ a.github-fork {
 			position: absolute;
 			left: 0;
 			top: 0px;
-			background-color: @secondary-background-color;
+			background-color: @tertiary-background-color;
 			border: none;
 			height: 60px;
-			width: 28px;
+			width: 30px;
 			border-bottom: 1px solid @tertiary-background-color;
 			color: @secondary-font-color;
 			cursor: pointer;
 			.transform(translateX(-27px));
-			.transition(transform .3s ease-out .4s);
+			.transition(transform .25s ease-out .475s, background .075s ease-out .5s);
 			&:hover {
-				color: @primary-font-color;
+				.arrow {
+					.arrow {
+						&:before, &:after {
+							background-color: #4a4a4a;
+						}
+					}
+				}
+			}
+			.arrow {
+				&:before, &:after {
+					background-color: #7a7a7a;
+				}
 			}
 			i {
 				.transform-origin(50%, 50%, 0);
@@ -1926,8 +1978,16 @@ a.github-fork {
 				margin-top: 1px;
 			}
 			.flex-opened & {
+				background-color: @secondary-background-color;
 				.transition-delay(0s);
 				.transform(translateX(0));
+				&:hover {
+					.arrow {
+						&:before, &:after {
+							background-color: #7a7a7a;
+						}
+					}
+				}
 			}
 		}
 		.search-form {
