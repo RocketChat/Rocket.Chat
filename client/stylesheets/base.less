@@ -907,7 +907,8 @@ a.github-fork {
 
 // rooms-box
 .flex-nav {
-	background-color: @primary-background-color;
+	//background-color: @primary-background-color;
+	background-color: transparent;
 	position: fixed;
 	top: 0;
 	left: 0;
@@ -921,6 +922,15 @@ a.github-fork {
 	.custom-scroll(transparent, rgba(255, 255, 255, 0.05));
 	&.hidden {
 		.transform(translateX(-100%));
+		header, footer, .content{
+			.transform(translateX(-100%));
+		}
+	}
+	header, footer, .content{
+		.transition(transform .5s cubic-bezier(0,.8,.05,1));
+	}
+	> section{
+		&:extend(.fill-all);
 	}
 	header {
 		display: table;
@@ -933,6 +943,8 @@ a.github-fork {
 		min-height: @header-min-height;
 		height: @header-min-height;
 		padding-left: 15px;
+		.transition-delay(.05s);
+		background-color: @primary-background-color;
 		> div {
 			display: table-cell;
 			vertical-align: middle;
@@ -966,6 +978,7 @@ a.github-fork {
 		background: #fff;
 		min-height: @footer-min-height;
 		background-color: @primary-background-color;
+		.transition-delay(.22s);
 		> div {
 			display: table-cell;
 			vertical-align: middle;
@@ -985,6 +998,8 @@ a.github-fork {
 		box-shadow: 0 0 5px rgba(0, 0, 0, 0.4) inset;
 		padding: 35px 10px;
 		.custom-scroll(transparent, rgba(255, 255, 255, 0.05));
+		.transition-delay(.135s);
+		background-color: @primary-background-color;
 		> .wrapper {
 			direction: ltr;
 		}
@@ -1307,6 +1322,9 @@ a.github-fork {
 				}
 			}
 			.icon-cancel-circled:before{
+				margin-left: 2px;
+			}
+			.icon-logout{
 				margin-left: 1px;
 			}
 		}
@@ -1930,7 +1948,7 @@ a.github-fork {
 			color: @secondary-font-color;
 			cursor: pointer;
 			.transform(translateX(-27px));
-			.transition(transform .3s ease-out .475s, background .075s ease-out .5s);
+			.transition(transform .25s ease-out .475s, background .075s ease-out .5s);
 			&:hover {
 				.arrow{
 					.arrow{
