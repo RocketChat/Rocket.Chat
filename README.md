@@ -69,7 +69,8 @@ meteor
 - Markdown
 - Emojis
 - Transcripts / History
-- I18n - Internationalization
+- I18n - [Internationalization with Lingohub](https://translate.lingohub.com/engelgabriel/rocket-dot-chat/dashboard)
+- Hubot Friendly - [Hubot Integration Project](https://github.com/RocketChat/hubot-rocketchat)
 
 ### Roadmap for v1.0
 
@@ -77,7 +78,6 @@ meteor
 - File uploads
 - Full text search
 - REST-like APIs
-- Hubot Friendly
 - Off-the-Record (OTR) Messaging
 - LDAP / Kerberos Authentication
 - XMPP Multi-user chat (MUC)
@@ -92,6 +92,14 @@ Changelog can be found in the HISTORY.md file.
 ### Issues
 
 [Github Issues](https://github.com/RocketChat/Rocket.Chat/issues) are used to track todos, bugs, feature requests, and more.
+
+### Integration
+
+#### Hubot
+
+The docker image is ready.
+Everyone can start hacking the adapter code, or launch his/her own bot within a few minutes now.
+Please head over to the [Hubot Integration Project](https://github.com/RocketChat/hubot-rocketchat) for more information.
 
 ### Documentation
 
@@ -115,9 +123,8 @@ So if you'd like to be part of the project, please check out the [roadmap](https
 
 ### Translations
 
-We are experimenting [transifex](https://www.transifex.com/organization/rocketchat). If you want to help, try it out, let us know and please give us some feedback about the experience. 
-
-<img border="0" src="https://www.transifex.com/projects/p/rocketchat/resource/eni18njson/chart/image_png?v=1"/>
+We are experimenting [Lingohub](https://translate.lingohub.com/engelgabriel/rocket-dot-chat/dashboard).
+If you want to help, send an email to support at rocket.chat to be invited to the translation project.
 
 ### Community
 
