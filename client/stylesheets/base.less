@@ -808,7 +808,7 @@ a.github-fork {
 			.transform(translateX(-100%));
 		}
 		.status {
-			padding-left: 30px;
+			padding-left: 38px;
 			position: relative;
 			&:after {
 				content: " ";
@@ -819,8 +819,8 @@ a.github-fork {
 				border-radius: 50%;
 				z-index: 5;
 				position: absolute;
-				left: 12px;
-				.calc(top, ~"50% - 6px");
+				left: 18px;
+				.calc(top, ~"50% - 8px");
 			}
 			&.offline {
 				&:after {
@@ -857,7 +857,10 @@ a.github-fork {
 			top: 17px;
 		}
 		i {
-			width: 18px;
+			width: 26px;
+			display: inline-block;
+			text-align: center;
+			margin-right: 0px;
 		}
 		a {
 			position: relative;
@@ -876,6 +879,16 @@ a.github-fork {
 				background-color: darken(@primary-background-color, 2%);
 				color: rgba(255, 255, 255, 0.75);
 				text-decoration: none;
+			}
+		}
+		.icon-logout{
+			&:before{
+				margin-right: 0px;
+			}
+		}
+		.icon-camera{
+			&:before{
+				margin-left: 1px;
 			}
 		}
 	}
