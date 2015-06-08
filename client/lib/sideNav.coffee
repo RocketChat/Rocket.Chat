@@ -3,6 +3,7 @@
 	sideNav = {}
 	flexNav = {}
 	arrow = {}
+	animating = false
 
 	toggleArrow = (status) ->
 		if arrow.hasClass "left" or status? is -1
@@ -42,20 +43,34 @@
 		return false;
 
 	toggleFlex = (status) ->
+		return if animating == true
+		animating = true
 		if flexNav.opened or status? is -1
 			flexNav.opened = false
 			flexNav.addClass "hidden"
+			setTimeout ->
+				animating = false
+			, 350
 			return
 		if not flexNav.opened or status? is 1
 			flexNav.opened = true
-			flexNav.removeClass "hidden"
+			# added a delay to make sure the template is already rendered before animating it
+			setTimeout ->
+				flexNav.removeClass "hidden"
+			, 50
+			setTimeout ->
+				animating = false
+			, 500
+
 
 	openFlex = ->
+		return if animating == true
 		toggleArrow 1
 		toggleFlex 1
 		focusInput()
 
 	closeFlex = ->
+		return if animating == true
 		toggleArrow -1
 		toggleFlex -1
 
