@@ -91,13 +91,17 @@ meteor
 
 [Github Issues](https://github.com/RocketChat/Rocket.Chat/issues) are used to track todos, bugs, feature requests, and more.
 
-### Integrationz
+### Integrations
 
 #### Hubot
 
 The docker image is ready.
 Everyone can start hacking the adapter code, or launch his/her own bot within a few minutes now.
 Please head over to the [Hubot Integration Project](https://github.com/RocketChat/hubot-rocketchat) for more information.
+
+#### Many, many, many more to come!
+
+We are developing the APIs based on the competition, so stay tunned and you will see a lot happening here.
 
 ### Documentation
 
