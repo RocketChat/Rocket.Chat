@@ -19,6 +19,25 @@ if (!window.requestAnimationFrame) {
 	 * Makes a nice constellation on canvas
 	 * @constructor Constellation
 	 */
+
+	function checkRatio(ctx, canvas) {
+			// finally query the various pixel ratios
+			var devicePixelRatio = window.devicePixelRatio || 1,
+				backingStoreRatio = ctx.webkitBackingStorePixelRatio ||
+				ctx.mozBackingStorePixelRatio ||
+				ctx.msBackingStorePixelRatio ||
+				ctx.oBackingStorePixelRatio ||
+				ctx.backingStorePixelRatio || 1,
+				ratio = devicePixelRatio / backingStoreRatio;
+			var oldWidth = canvas.width;
+			var oldHeight = canvas.height;
+			canvas.width = oldWidth * ratio;
+			canvas.height = oldHeight * ratio;
+			canvas.style.width = oldWidth + 'px';
+			canvas.style.height = oldHeight + 'px';
+			ctx.scale(ratio, ratio);
+	}
+
 	function Constellation (canvas, options) {
 		var $canvas = $(canvas),
 			context = canvas.getContext('2d'),
@@ -38,7 +57,7 @@ if (!window.requestAnimationFrame) {
 				width: window.innerWidth,
 				height: window.innerHeight,
 				velocity: 0.1,
-				length: 100,
+				length: 175,
 				distance: 120,
 				radius: 150,
 				stars: []
@@ -50,8 +69,8 @@ if (!window.requestAnimationFrame) {
 		var startTime;
 
 		function Star () {
-			this.x = Math.random() * canvas.width;
-			this.y = Math.random() * canvas.height;
+			this.x = Math.random() * (window.innerWidth || canvas.width);
+			this.y = Math.random() * (window.innerHeight || canvas.height);
 
 			this.vx = (config.velocity - (Math.random() * 0.5));
 			this.vy = (config.velocity - (Math.random() * 0.5));
@@ -72,10 +91,10 @@ if (!window.requestAnimationFrame) {
 
 					var star = config.stars[i];
 
-					if (star.y < 0 || star.y > canvas.height) {
+					if (star.y < 0 || star.y > (window.innerHeight || canvas.height) ) {
 						star.vx = star.vx;
 						star.vy = - star.vy;
-					} else if (star.x < 0 || star.x > canvas.width) {
+					} else if (star.x < 0 || star.x > (window.innerWidth || canvas.width) ) {
 						star.vx = - star.vx;
 						star.vy = star.vy;
 					}
@@ -131,7 +150,6 @@ if (!window.requestAnimationFrame) {
 			for (i = 0; i < length; i++) {
 				config.stars.push(new Star());
 				star = config.stars[i];
-
 				star.create();
 			}
 
@@ -173,8 +191,9 @@ if (!window.requestAnimationFrame) {
 
 		this.bind = function () {
 			$canvas.on('mousemove', function(e){
-				config.position.x = e.pageX - $canvas.offset().left;
-				config.position.y = e.pageY - $canvas.offset().top;
+				console.log($canvas.offset().left);
+				config.position.x = e.pageX;
+				config.position.y = e.pageY;
 			});
 		};
 
@@ -183,6 +202,7 @@ if (!window.requestAnimationFrame) {
 			then = Date.now();
 			startTime = then;
 			this.setCanvas();
+			checkRatio(context, canvas);
 			this.setContext();
 			this.setInitialPosition();
 			this.loop(this.createStars);
