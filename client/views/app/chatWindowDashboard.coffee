@@ -9,7 +9,7 @@ Template.chatWindowDashboard.helpers
 
 	favorite: ->
 		console.log 'chatWindowDashboard.favorite' if window.rocketDebug
-		sub = ChatSubscription.findOne { rid: this._id, 'u._id': Meteor.userId() }
+		sub = ChatSubscription.findOne { rid: this._id }
 		return 'icon-star favorite-room' if sub?.f? and sub.f
 
 		return 'icon-star-empty'
@@ -95,7 +95,11 @@ Template.chatWindowDashboard.helpers
 		console.log 'chatWindowDashboard.roomName' if window.rocketDebug
 		roomData = Session.get('roomData' + this._id)
 		return '' unless roomData
-		return roomData.name
+
+		if roomData.t is 'd'
+			return ChatSubscription.findOne({ rid: this._id }, { fields: { name: 1 } }).name
+		else
+			return roomData.name
 
 	roomTypeIcon: ->
 		console.log 'chatWindowDashboard.roomType' if window.rocketDebug
@@ -343,7 +347,7 @@ Template.chatWindowDashboard.events
 
 	'click .user-view nav .pvt-msg': (e) ->
 		console.log 'chatWindowDashboard click .user-view nav .pvt-msg' if window.rocketDebug
-		Meteor.call 'createDirectRoom', Session.get('showUserInfo'), (error, result) ->
+		Meteor.call 'createDirectMessage', Session.get('showUserInfo'), (error, result) ->
 			if error
 				return Errors.throw error.reason
 
@@ -377,7 +381,7 @@ Template.chatWindowDashboard.events
 	'autocompleteselect #room-search': (event, template, doc) ->
 		console.log 'chatWindowDashboard autocompleteselect #room-search' if window.rocketDebug
 		if doc.type is 'u'
-			Meteor.call 'createDirectRoom', doc.uid, (error, result) ->
+			Meteor.call 'createDirectMessage', doc.uid, (error, result) ->
 				if error
 					return Errors.throw error.reason
 
@@ -419,12 +423,12 @@ Template.chatWindowDashboard.onRendered ->
 	# salva a data da renderização para exibir alertas de novas mensagens
 	$.data(this.firstNode, 'renderedAt', new Date)
 
-renameRoom = (roomId, name) ->
-	if Session.get('roomData' + roomId).name == name
+renameRoom = (rid, name) ->
+	if Session.get('roomData' + rid).name == name
 		Session.set('editRoomTitle', false)
 		return false
 
-	Meteor.call 'saveRoomName', { rid: roomId, name: name }, (error, result) ->
+	Meteor.call 'saveRoomName', rid, name, (error, result) ->
 		if result
 			Session.set('editRoomTitle', false)
 

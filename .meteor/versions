@@ -72,8 +72,6 @@ momentjs:moment@2.10.3
 monbro:mongodb-mapreduce-aggregation@1.0.1
 mongo@1.1.0
 mongo-livedata@1.0.8
-mrt:mask@0.0.1
-mrt:publish-with-relations@0.1.5
 mrt:reactive-store@0.0.1
 nooitaf:colors@0.0.2
 npm-bcrypt@0.7.8_2
@@ -96,6 +94,7 @@ retry@1.0.3
 rocketchat:file@0.0.1
 rocketchat:lib@0.0.1
 rocketchat:me@0.0.1
+rocketchat:mentions@0.0.1
 routepolicy@1.0.5
 service-configuration@1.0.4
 session@1.1.0

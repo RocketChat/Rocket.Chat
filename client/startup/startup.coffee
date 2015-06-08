@@ -7,7 +7,7 @@ Meteor.startup ->
 	window.lastMessageWindow = {}
 	window.lastMessageWindowHistory = {}
 
-	@defaultUserLanguage = -> 
+	@defaultUserLanguage = ->
 		lng = window.navigator.userLanguage || window.navigator.language || 'en'
 
 		# Fix browsers having all-lowercase language settings eg. pt-br, en-us
@@ -20,7 +20,7 @@ Meteor.startup ->
 		userLanguage = localStorage.getItem("userLanguage")
 	else
 		userLanguage = defaultUserLanguage()
-	
+
 	localStorage.setItem("userLanguage", userLanguage)
 	userLanguage = userLanguage.split('-').shift()
 	TAPi18n.setLanguage(userLanguage)
@@ -51,11 +51,7 @@ Meteor.startup ->
 	# 		UserAndRoom.remove({ rid: room._id })
 
 	Tracker.autorun ->
-		rooms = []
-		ChatSubscription.find({ 'u._id': Meteor.userId() }, { fields: { rid: 1 } }).forEach (sub) ->
-			rooms.push sub.rid
-
-		ChatRoom.find({ _id: $in: rooms }).observe
+		ChatRoom.find().observe
 			added: (data) ->
 				Session.set('roomData' + data._id, data)
 			changed: (data) ->
@@ -63,13 +59,6 @@ Meteor.startup ->
 				Session.set('roomData' + data._id, data)
 			removed: (data) ->
 				Session.set('roomData' + data._id, undefined)
-
-	ChatSubscription.find({}, { fields: { ls: 1, ts: 1, rid: 1 } }).observe
-		changed: (data) ->
-			if (data.ls? and moment(data.ls).add(1, 'days').startOf('day') >= moment(data.ts).startOf('day'))
-				KonchatNotification.removeRoomNotification(data.rid)
-		removed: (data) ->
-			KonchatNotification.removeRoomNotification(data.rid)
 
 	ChatSubscription.find({}, { fields: { unread: 1 } }).observeChanges
 		changed: (id, fields) ->

@@ -1,6 +1,6 @@
 //
 // ----------------
-
+//
 @import "global/_variables.less";
 @import "utils/_lesshat.import.less";
 @import "utils/_reset.import.less";
@@ -9,7 +9,6 @@
 @import url(//fonts.googleapis.com/css?family=Roboto:300,400,500,700,900);
 @import url(//fonts.googleapis.com/css?family=Muli:400,300,500);
 @import "utils/_emojione.import.less";
-
 .cf_ {
 	display: inline-block;
 	&:after {
@@ -881,13 +880,13 @@ a.github-fork {
 				text-decoration: none;
 			}
 		}
-		.icon-logout{
-			&:before{
+		.icon-logout {
+			&:before {
 				margin-right: 0px;
 			}
 		}
-		.icon-camera{
-			&:before{
+		.icon-camera {
+			&:before {
 				margin-left: 1px;
 			}
 		}
@@ -922,14 +921,16 @@ a.github-fork {
 	.custom-scroll(transparent, rgba(255, 255, 255, 0.05));
 	&.hidden {
 		.transform(translateX(-100%));
-		header, footer, .content{
+		header, footer, .content {
 			.transform(translateX(-100%));
 		}
 	}
-	header, footer, .content{
-		.transition(transform .425s cubic-bezier(0,.8,.05,1));
+	header,
+	footer,
+	.content {
+		.transition(transform .425s cubic-bezier(0, .8, .05, 1));
 	}
-	> section{
+	> section {
 		&:extend(.fill-all);
 	}
 	header {
@@ -1276,6 +1277,12 @@ a.github-fork {
 					opacity: 0;
 				}
 			}
+			&.has-alert {
+				.name {
+					color: #ffffff;
+					font-weight: bold;
+				}
+			}
 			&.away {
 				a {
 					color: #666;
@@ -1321,10 +1328,10 @@ a.github-fork {
 					color: rgba(255, 255, 255, 0.75);
 				}
 			}
-			.icon-cancel-circled:before{
+			.icon-cancel-circled:before {
 				margin-left: 2px;
 			}
-			.icon-logout{
+			.icon-logout {
 				margin-left: 1px;
 			}
 		}
@@ -1393,13 +1400,13 @@ a.github-fork {
 		font-size: 22px;
 		font-weight: 500;
 		line-height: 29px;
-		.icon-star {
-			margin-right: -4px;
-		}
-		.icon-at,
-		.icon-hash {
+		.icon-at, .icon-hash {
 			margin-right: -7px;
 			color: #CCCCCC;
+		}
+		.icon-star,
+		.icon-star-empty {
+			margin-right: -4px;
 		}
 	}
 	.hidden {
@@ -1950,16 +1957,16 @@ a.github-fork {
 			.transform(translateX(-27px));
 			.transition(transform .25s ease-out .475s, background .075s ease-out .5s);
 			&:hover {
-				.arrow{
-					.arrow{
-						&:before, &:after{
+				.arrow {
+					.arrow {
+						&:before, &:after {
 							background-color: #4a4a4a;
 						}
 					}
 				}
 			}
-			.arrow{
-				&:before, &:after{
+			.arrow {
+				&:before, &:after {
 					background-color: #7a7a7a;
 				}
 			}
@@ -1974,9 +1981,9 @@ a.github-fork {
 				background-color: @secondary-background-color;
 				.transition-delay(0s);
 				.transform(translateX(0));
-				&:hover{
-					.arrow{
-						&:before, &:after{
+				&:hover {
+					.arrow {
+						&:before, &:after {
 							background-color: #7a7a7a;
 						}
 					}
@@ -2003,7 +2010,7 @@ a.github-fork {
 		.custom-scroll(transparent, #DADADA);
 		margin-top: 60px;
 		overflow-x: hidden;
-        overflow-y: auto;
+		overflow-y: auto;
 		-webkit-overflow-scrolling: touch;
 		.calc(height, ~"100% - " @footer-min-height + @header-min-height);
 		> div {

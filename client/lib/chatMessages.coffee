@@ -37,25 +37,25 @@
 	send = (rid, input) ->
 		if _.trim(input.value) isnt ''
 			KonchatNotification.removeRoomNotification(rid)
-			message = input.value
+			msg = input.value
 			input.value = ''
 			stopTyping()
-			Meteor.call 'sendMessage', {rid: rid, message: message, day: window.day }
+			Meteor.call 'sendMessage', { rid: rid, msg: msg, day: window.day }
 
 	update = (id, input) ->
 		if _.trim(input.value) isnt ''
-			message = input.value
+			msg = input.value
 			input.value = ''
-			Meteor.call 'updateMessage', {id: id, message: message }
+			Meteor.call 'updateMessage', { id: id, msg: msg }
 
 	startTyping = (rid, input) ->
-		unless self.typingTimeout
-			if Meteor.userId()?
-				Meteor.call 'typingStatus', { rid: rid }, true
-
-			self.typingTimeout = Meteor.setTimeout ->
-				stopTyping()
-			, 30000
+		if _.trim(input.value) isnt ''
+			unless self.typingTimeout
+				if Meteor.userId()?
+					Meteor.call 'typingStatus', rid, true
+				self.typingTimeout = Meteor.setTimeout ->
+					stopTyping()
+				, 30000
 
 	stopTyping = ->
 		self.typingTimeout = null

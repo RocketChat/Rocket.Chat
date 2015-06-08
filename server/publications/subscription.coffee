@@ -4,15 +4,19 @@ Meteor.publish 'subscription', ->
 
 	console.log '[publish] subscription'.green
 
-	return Meteor.publishWithRelations
-		handle: this
-		collection: ChatSubscription
-		filter: { 'u._id': this.userId, $or: [ { ts: { $gte: moment().subtract(1, 'days').startOf('day').toDate() } }, { f: true } ] }
-		mappings: [
-			key: 'rid'
-			reverse: false
-			collection: ChatRoom
-		]
-
-	# return ChatSubscription.find { uid: this.userId, ts: { $gte: moment().subtract(2, 'days').startOf('day').toDate() } }
-
+	ChatSubscription.find
+		'u._id': this.userId
+		open: true
+		# ts:
+		# 	$gte: moment().subtract(2, 'days').startOf('day').toDate()
+	,
+		fields:
+			t: 1
+			ts: 1
+			ls: 1
+			name: 1
+			rid: 1
+			f: 1
+			open: 1
+			alert: 1
+			unread: 1

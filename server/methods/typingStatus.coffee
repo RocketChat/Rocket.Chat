@@ -1,14 +1,13 @@
 Meteor.methods
-	typingStatus: (typingData, start) ->
+	typingStatus: (rid, start) ->
 		if not Meteor.userId()
-			throw new Meteor.Error 203, '[methods] typingStatus -> Usuário não logado'
+			throw new Meteor.Error('invalid-user', "[methods] typingStatus -> Invalid user")
 
-		fromId = Meteor.userId()
-		# console.log '[methods] typingStatus -> '.green, 'fromId:', fromId, 'typingData:', typingData, 'start:', start
+		console.log '[methods] typingStatus -> '.green, 'userId:', Meteor.userId(), 'arguments:', arguments
 
 		filter =
 			t: 't'
-			rid: typingData.rid
+			rid: rid
 			$and: [{'u._id': Meteor.userId()}]
 
 		if start

@@ -1,85 +1,115 @@
 Meteor.methods
-	sendMessage: (msg) ->
-		fromId = Meteor.userId()
-		# console.log '[methods] sendMessage -> '.green, 'fromId:', fromId, 'msg:', msg
-
+	sendMessage: (message) ->
 		if not Meteor.userId()
 			throw new Meteor.Error('invalid-user', "[methods] sendMessage -> Invalid user")
 
-		now = new Date()
+		room = Meteor.call 'canAccessRoom', message.rid, Meteor.userId()
 
-		retObj = null
+		if not room
+			return false
 
-		roomData = ChatRoom.findOne msg.rid
+		console.log '[methods] sendMessage -> '.green, 'userId:', Meteor.userId(), 'arguments:', arguments
 
-		rid = msg.rid
+		message.u = Meteor.users.findOne Meteor.userId(), fields: username: 1
+		message.ts = new Date()
+		message = RocketChat.callbacks.run 'beforeSaveMessage', message
 
-		if not roomData
-			throw new Meteor.Error 'room-not-found', 'Sala não encontrada'
+		# console.log "message", message
 
-		roomUpdate = { $set: { lm: now }, $inc: { msgs: 1 } }
+		###
+		Defer other updated as their return is not interesting to the user
+		###
+		Meteor.defer ->
 
-		if Meteor.userId() and not Meteor.user().username in roomData.usernames
-			roomUpdate.$push =
-				usernames:
-					$each: [ Meteor.user().username ]
-					$sort: 1
+			###
+			Update all the room activity tracker fields
+			###
+			ChatRoom.update
+				# only subscriptions to the same room
+				rid: message.rid
+			,
+				# update the last message timestamp
+				$set:
+					lm: message.ts
+				# increate the messages counter
+				$inc:
+					msgs: 1
 
-		ChatRoom.update rid, roomUpdate
 
-		if Meteor.userId()?
-			messageFilter = { rid: rid, $and: [{ 'u._id': Meteor.userId() }], t: 't' }
-			activityFilter = { rid: rid, 'u._id': { $ne: Meteor.userId() } }
+			# increment unread couter if direct messages
+			if room.t is 'd'
+				###
+				Update the other subscriptions
+				###
+				ChatSubscription.update
+					# only subscriptions to the same room
+					rid: message.rid
+					# not the msg owner
+					'u._id':
+						$ne: message.u._id
+				,
+					$set:
+						# alert de user
+						alert: true
+						# open the room for the user
+						open: true
+					# increment unread couter
+					$inc:
+						unread: 1
 
-		mentions = []
-		msg.message.replace /(?:^|\s|\n)(?:@)([A-Za-z0-9-_.]+)/g, (match, mention) ->
-			mentions.push mention
+			else
+				message.mentions?.forEach (mention) ->
+					console.log mention
+					###
+					Update all other subscriptions of mentioned users to alert their owners and incrementing
+					the unread counter for mentions and direct messages
+					###
+					ChatSubscription.update
+						# only subscriptions to the same room
+						rid: message.rid
+						# the mentioned user
+						'u._id': mention._id
+					,
+						$set:
+							# alert de user
+							alert: true
+							# open the room for the user
+							open: true
+						# increment unread couter
+						$inc:
+							unread: 1
 
-		mentions = _.unique mentions
+			###
+			Update all other subscriptions to alert their owners but witout incrementing
+			the unread counter, as it is only for mentions and direct messages
+			###
+			ChatSubscription.update
+				# only subscriptions to the same room
+				rid: message.rid
+				# only the ones that have not been alerted yet
+				alert: false
+				# not the msg owner
+				'u._id':
+					$ne: message.u._id
+			,
+				$set:
+					# alert de user
+					alert: true
+					# open the room for the user
+					open: true
+			,
+				# make sure we alert all matching subscription
+				multi: true
 
-		mentions = mentions.filter (mention) ->
-			return Meteor.users.findOne({username: mention}, {fields: {_id: 1}})?
-
-		mentions = mentions.map (mention) ->
-			return {
-				username: mention
-			}
-
-		if mentions.length is 0
-			mentions = undefined
-
-		msg = RocketChat.callbacks.run 'sendMessage', msg
-
-		ChatMessage.upsert messageFilter,
-			$set:
-				'u._id': Meteor.userId()
-				'u.username': Meteor.user().username
-				ts: now
-				msg: msg.message
-				mentions: mentions
+		###
+		Save the message. If there was already a typing record, update it.
+		###
+		ChatMessage.upsert
+			rid: message.rid
+			t: 't'
+			$and: [{ 'u._id': message.u._id }]
+		,
+			$set: message
 			$unset:
 				t: 1
 				expireAt: 1
-
-		# increment unread counter on which user in room
-		Meteor.defer -> ChatSubscription.update activityFilter, { $inc: { unread: 1 }, $set: { ts: now } }, { multi: true }
-
-		return retObj
-
-	updateMessage: (msg) ->
-		fromId = Meteor.userId()
-		# console.log '[methods] updateMessage -> '.green, 'fromId:', fromId, 'msg:', msg
-
-		if not Meteor.userId()
-			throw new Meteor.Error('invalid-user', "[methods] updateMessage -> Invalid user")
-
-		now = new Date()
-
-		messageFilter = { _id: msg.id, 'u._id': Meteor.userId() }
-
-		ChatMessage.update messageFilter,
-			$set:
-				ets: now
-				msg: msg.message
-
-		return

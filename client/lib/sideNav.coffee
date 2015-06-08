@@ -16,11 +16,9 @@
 		if flexNav.opened then closeFlex() else AccountBox.toggle()
 
 	overArrow = ->
-		console.log "HOVER"
 		arrow.addClass "hover"
 
 	leaveArrow = ->
-		console.log "OUT"
 		arrow.removeClass "hover"
 
 	arrowBindHover = ->

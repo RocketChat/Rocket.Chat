@@ -12,6 +12,8 @@ Meteor.methods
 		if room.usernames.indexOf(data.username) isnt -1
 			return
 
+		now = new Date()
+
 		update =
 			$push:
 				usernames:
@@ -24,17 +26,19 @@ Meteor.methods
 
 		ChatSubscription.insert
 			rid: data.rid
-			ts: (new Date())
+			ts: now
 			name: room.name
 			t: room.t
-			unread: 0
+			open: true
+			alert: true
+			unread: 1
 			u:
 				_id: newUser._id
 				username: data.username
 
 		ChatMessage.insert
 			rid: data.rid
-			ts: (new Date)
+			ts: now
 			t: 'au'
 			msg: newUser.name
 			u:

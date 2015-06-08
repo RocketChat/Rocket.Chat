@@ -1,13 +1,13 @@
 ###
 # Me is a named function that will replace /me commands
-# @param {Object} doc - The message object
+# @param {Object} message - The message object
 ###
 
 class Me
-	constructor: (doc) ->
+	constructor: (message) ->
 		# If message starts with /me, replace it for text formatting
-		if doc.message.indexOf('/me ') is 0
-			doc.message = '_' + doc.message.substr(4) + '_'
-		return doc
+		if message.msg.indexOf('/me ') is 0
+			message.msg = '_' + message.msg.substr(4) + '_'
+		return message
 
-RocketChat.callbacks.add 'sendMessage', Me
+RocketChat.callbacks.add 'beforeSaveMessage', Me
