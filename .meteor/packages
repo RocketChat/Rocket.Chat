@@ -33,8 +33,6 @@ mizzao:autocomplete
 mizzao:timesync
 momentjs:moment
 monbro:mongodb-mapreduce-aggregation
-mrt:mask
-mrt:publish-with-relations
 mrt:reactive-store
 nooitaf:colors
 pauli:accounts-linkedin
@@ -46,6 +44,7 @@ raix:handlebar-helpers
 rocketchat:file
 rocketchat:lib
 rocketchat:me
+rocketchat:mentions
 simple:highlight.js
 tap:i18n
 tmeasday:crypto-md5

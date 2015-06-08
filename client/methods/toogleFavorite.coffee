@@ -1,13 +1,11 @@
 Meteor.methods
-	leaveRoom: (rid) ->
+	toogleFavorite: (rid, f) ->
 		if not Meteor.userId()
 			throw new Meteor.Error 203, t('general.User_logged_out')
 
-		ChatSubscription.remove
+		ChatSubscription.update
 			rid: rid
 			'u._id': Meteor.userId()
-
-		ChatRoom.update rid,
-			$pull:
-				usernames: Meteor.user().username
-
+		,
+			$set:
+				f: f

@@ -8,7 +8,7 @@ Router.configure
 			return [Meteor.subscribe('userData'), RoomManager.init()]
 
 	onBeforeAction: ->
-		Session.set('flexOpened', false)
+		Session.setDefault('flexOpened', false)
 		Session.set('openedRoom', null)
 		this.next()
 
@@ -70,19 +70,19 @@ Router.route '/room/:_id',
 	name: 'room'
 
 	waitOn: ->
-		if Meteor.userId()
-			return RoomManager.open @params._id
+		RoomManager.open @params._id
 
 	onBeforeAction: ->
-		Session.set('flexOpened', false)
-		Session.set('openedRoom', this.params._id)
+		unless ChatRoom.find(@params._id).count()
+			Router.go 'home'
 
-		# zera a showUserInfo pra garantir que vai estar com a listagem do grupo aberta
+		Session.set('openedRoom', this.params._id)
 		Session.set('showUserInfo', null)
 
 		this.next()
 
 	action: ->
+
 		self = this
 		Session.set('editRoomTitle', false)
 		Meteor.call 'readMessages', self.params._id

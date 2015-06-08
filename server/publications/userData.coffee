@@ -5,10 +5,10 @@ Meteor.publish 'userData', ->
 	console.log '[publish] userData'.green
 
 	Meteor.users.find this.userId,
-			fields:
-				name: 1
-				username: 1
-				status: 1
-				statusDefault: 1
-				statusConnection: 1
-				avatarOrigin: 1
+		fields:
+			name: 1
+			username: 1
+			status: 1
+			statusDefault: 1
+			statusConnection: 1
+			avatarOrigin: 1
