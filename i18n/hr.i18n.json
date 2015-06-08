@@ -31,13 +31,13 @@
     "Save" : "Sačuvaj",
     "Cancel" : "Otkaži",
     "No_channels_yet" : "Još nisi dio nijednog kanala.",
-    "No_direct_messages_yet" : "Nisi još započeo nijedan razgovor.",
+    "No_direct_messages_yet" : "Još nisi započeo ni1 razgovor.",
     "No_groups_yet" : "Još nemaš privatnih grupa.",
     "No_favorites_yet" : "Još nisi dodao omiljene.",
-    "Create_new_channel" : "Create a new public channel",
-    "Channels_list" : "List of public channels",
-    "More_channels" : "More channels",
-    "Invalid_room_name" : "<strong>%s</strong> is not a valid room name,<br/> use only letters, numbers and dashes"
+    "Create_new_channel" : "Stvori novi javni kanal",
+    "Channels_list" : "Lista javnih kanala",
+    "More_channels" : "Više kanala",
+    "Invalid_room_name" : "<strong>%s</strong> nije valjano ime sobe,<br/> koristi samo slova, brojeve i crtice"
   },
   "chatWindowDashboard" : {
     "Add_users" : "Dodaj korisnike",
@@ -106,11 +106,11 @@
   },
   "loginIntro" : {
     "Access_online_demo" : "Pristupi online demonstraciji",
-    "Access_Online_Demo" : "Pristupi Online Demonstraciji",
+    "Access_Online_Demo" : "Pristupi Online demonstraciji",
     "Your_Open_Source_solution" : "Tvoje vlastito Open Source chat rješenje"
   },
   "loginServices" : {
-    "github_no_public_email" : "Nemaš nijedan javni email u svom GitHub računu",
+    "github_no_public_email" : "Nemaš ni1 javni email u svom GitHub računu",
     "login_with" : "Ili se prijavi izravno sa"
   },
   "privateHistory" : {
@@ -135,7 +135,7 @@
     "Username_description" : "Korisničko ime se koristi kako bi te drugi mogli spomenuti u porukama.",
     "Use_this_username" : "Koristi ovo korisničko ime",
     "Username_unavaliable" : "<strong>%s</strong> je već zauzeto :(",
-    "Username_invalid" : "<strong>%s</strong> is not a valid username,<br/> use only letters, numbers, dots and dashes",
+    "Username_invalid" : "<strong>%s</strong> nije valjano korisničko ime,<br/> koristi samo slova, brojeve, točke i crtice",
     "Username_cant_be_empty" : "Korisničko ime ne može ostati prazno."
   },
   "userStatus" : {
@@ -143,7 +143,7 @@
     "Away" : "Odsutan",
     "busy" : "zaposlen",
     "Busy" : "Zaposlen",
-    "Change_avatar" : "Change avatar",
+    "Change_avatar" : "Promijeni avatar",
     "coming_soon" : "dolazi uskoro",
     "invisible" : "nevidljiv",
     "Invisible" : "Nevidljiv",
@@ -158,7 +158,7 @@
   },
   "avatar" : {
     "Use_service_avatar" : "Koristi %s avatar",
-    "Use_initials_avatar" : "Use your username initials",
+    "Use_initials_avatar" : "Koristi inicijale svog korisničkog imena",
     "Login_with" : "Prijavi se sa %s",
     "Select_an_avatar" : "Odaberi avatar",
     "Use_uploaded_avatar" : "Koristi uploadani avatar",
