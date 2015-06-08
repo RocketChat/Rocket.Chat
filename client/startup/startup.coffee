@@ -60,13 +60,6 @@ Meteor.startup ->
 			removed: (data) ->
 				Session.set('roomData' + data._id, undefined)
 
-	ChatSubscription.find({}, { fields: { ls: 1, ts: 1, rid: 1 } }).observe
-		changed: (data) ->
-			if (data.ls? and moment(data.ls).add(1, 'days').startOf('day') >= moment(data.ts).startOf('day'))
-				KonchatNotification.removeRoomNotification(data.rid)
-		removed: (data) ->
-			KonchatNotification.removeRoomNotification(data.rid)
-
 	ChatSubscription.find({}, { fields: { unread: 1 } }).observeChanges
 		changed: (id, fields) ->
 			if fields.unread and fields.unread > 0

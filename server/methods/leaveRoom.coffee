@@ -1,18 +1,18 @@
 Meteor.methods
-	leaveRoom: (roomId) ->
+	leaveRoom: (rid) ->
 		fromId = Meteor.userId()
-		# console.log '[methods] leaveRoom -> '.green, 'fromId:', fromId, 'roomId:', roomId
+		# console.log '[methods] leaveRoom -> '.green, 'fromId:', fromId, 'rid:', rid
 
 		unless Meteor.userId()?
 			throw new Meteor.Error 300, 'Usuário não logado'
 
-		room = ChatRoom.findOne roomId
+		room = ChatRoom.findOne rid
 
 		update =
 			$pull:
 				usernames: Meteor.user().username
 
-		ChatSubscription.update { rid: roomId },
+		ChatSubscription.update { rid: rid },
 			$set:
 				name: room.name
 		,
@@ -22,7 +22,7 @@ Meteor.methods
 			removedUser = Meteor.user()
 
 			ChatMessage.insert
-				rid: roomId
+				rid: rid
 				ts: (new Date)
 				t: 'ul'
 				msg: removedUser.name
@@ -42,6 +42,6 @@ Meteor.methods
 					update.$set['u._id'] = newOwner._id
 					update.$set['u.username'] = newOwner.username
 
-		ChatSubscription.remove { rid: roomId, 'u._id': Meteor.userId() }
+		ChatSubscription.remove { rid: rid, 'u._id': Meteor.userId() }
 
-		ChatRoom.update roomId, update
+		ChatRoom.update rid, update

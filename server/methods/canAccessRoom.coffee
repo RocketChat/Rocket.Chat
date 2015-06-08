@@ -4,7 +4,6 @@ Meteor.methods
 
 		user = Meteor.users.findOne userId, fields: username: 1
 
-		# user = Meteor.user()
 		unless user?.username
 			throw new Meteor.Error 'not-logged-user', "[methods] canAccessRoom -> User doesn't have enough permissions"
 
@@ -22,14 +21,3 @@ Meteor.methods
 			return false
 		else
 			return room
-
-		# # create room subscription
-		# ChatSubscription.upsert { rid: rid, $and: [{'u._id': Meteor.userId()}] },
-		# 	$setOnInsert:
-		# 		'u._id': Meteor.userId()
-		# 		name: room.name
-		# 		t: room.t
-		# 		unread: 0
-		# 	$set:
-		# 		ls: (new Date())
-		# 		ts: (new Date())

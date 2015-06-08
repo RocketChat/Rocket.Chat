@@ -43,13 +43,8 @@ Template.chatRoomItem.helpers
 			return true
 
 Template.chatRoomItem.rendered = ->
-	if @data.t is 'd'
-		username = @data.rid.replace Meteor.user().username, ''
-		UserManager.addUser username
-
-	if not (Router.current().params._id? and Router.current().params._id is this.data.rid) and (not this.data.ls? or moment(this.data.ls).add(1, 'days').startOf('day') < moment(this.data.ts).startOf('day'))
+	if not (Router.current().params._id? and Router.current().params._id is this.data.rid) and not this.data.ls
 		KonchatNotification.newRoom(this.data.rid)
-		# console.log 'toca ', this.data.rid
 
 Template.chatRoomItem.events
 	'click .hide-room': (e) ->
