@@ -1,7 +1,9 @@
 Meteor.methods
 	createPrivateGroup: (name, members) ->
-		fromId = Meteor.userId()
-		# console.log '[methods] createPrivateGroup -> '.green, 'fromId:', fromId, 'members:', members
+		if not Meteor.userId()
+			throw new Meteor.Error 'invalid-user', "[methods] createPrivateGroup -> Invalid user"
+
+		console.log '[methods] createPrivateGroup -> '.green, 'userId:', Meteor.userId(), 'arguments:', arguments
 
 		now = new Date()
 
@@ -10,7 +12,7 @@ Meteor.methods
 		name = s.slugify name
 
 		# create new room
-		roomId = ChatRoom.insert
+		rid = ChatRoom.insert
 			usernames: members
 			ts: now
 			t: 'p'
@@ -29,7 +31,7 @@ Meteor.methods
 				u:
 					_id: member._id
 					username: username
-				rid: roomId
+				rid: rid
 				ts: now
 				name: name
 				t: 'p'
@@ -41,5 +43,5 @@ Meteor.methods
 			ChatSubscription.insert sub
 
 		return {
-			rid: roomId
+			rid: rid
 		}

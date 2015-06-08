@@ -1,47 +1,69 @@
 Meteor.methods
-	createDirectMessage: (toUsername) ->
-		fromId = Meteor.userId()
-		console.log '[methods] createDirectMessage -> '.green, 'fromId:', fromId, 'toUsername:', toUsername
+	createDirectMessage: (username) ->
+		if not Meteor.userId()
+			throw new Meteor.Error 'invalid-user', "[methods] createDirectMessage -> Invalid user"
 
-		if Meteor.user().username is toUsername
-			return
-
-		roomId = [Meteor.user().username, toUsername].sort().join(',')
-
-		userTo = Meteor.users.findOne { username: toUsername }
+		console.log '[methods] createDirectMessage -> '.green, 'userId:', Meteor.userId(), 'arguments:', arguments
 
 		me = Meteor.user()
 
+		if me.username is username
+			return
+
+		to = Meteor.users.findOne
+			username: username
+
+		if not to
+			throw new Meteor.Error('invalid-user', "[methods] createDirectMessage -> Invalid target user")
+
+		rid = [me._id, to._id].sort().join('')
+
 		now = new Date()
 
-		# create new room
-		ChatRoom.upsert { _id: roomId },
+		# Make sure we have a room
+		ChatRoom.upsert
+			_id: rid
+		,
 			$set:
-				usernames: [Meteor.user().username, toUsername]
+				usernames: [me.username, to.username]
 			$setOnInsert:
 				t: 'd'
-				name: "#{me.name}|#{userTo.name}"
 				msgs: 0
 				ts: now
 
-		ChatSubscription.upsert { $and: [{'u._id': Meteor.userId()}], rid: roomId },
+		# Make user I have a subcription to this room
+		ChatSubscription.upsert
+			rid: rid
+			$and: [{'u._id': me._id}]
+		,
 			$set:
 				ts: now
 				ls: now
-				name: userTo.name
 			$setOnInsert:
+				name: to.username
 				t: 'd'
+				open: true
+				alert: false
 				unread: 0
-				'u._id': userTo._id
+				u:
+					_id: me._id
+					username: me.username
 
-		ChatSubscription.upsert { $and: [{'u._id': userTo._id}], rid: roomId },
-			$set:
-				name: me.name
+		# Make user the target user has a subcription to this room
+		ChatSubscription.upsert
+			rid: rid
+			$and: [{'u._id': to._id}]
+		,
 			$setOnInsert:
+				name: me.username
 				t: 'd'
+				open: false
+				alert: false
 				unread: 0
-				'u._id': userTo._id
+				u:
+					_id: to._id
+					username: to.username
 
 		return {
-			rid: roomId
+			rid: rid
 		}

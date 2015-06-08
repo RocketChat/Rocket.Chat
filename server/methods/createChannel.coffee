@@ -1,10 +1,12 @@
 Meteor.methods
 	createChannel: (name, members) ->
+		if not Meteor.userId()
+			throw new Meteor.Error 'invalid-user', "[methods] createChannel -> Invalid user"
+
 		if not /^[0-9a-z-_]+$/i.test name
 			throw new Meteor.Error 'name-invalid'
 
-		fromId = Meteor.userId()
-		# console.log '[methods] createChannel -> '.green, 'fromId:', fromId, 'members:', members
+		console.log '[methods] createChannel -> '.green, 'userId:', Meteor.userId(), 'arguments:', arguments
 
 		now = new Date()
 
@@ -13,7 +15,7 @@ Meteor.methods
 		# name = s.slugify name
 
 		# create new room
-		roomId = ChatRoom.insert
+		rid = ChatRoom.insert
 			usernames: members
 			ts: now
 			t: 'c'
@@ -29,7 +31,7 @@ Meteor.methods
 				continue
 
 			sub =
-				rid: roomId
+				rid: rid
 				ts: now
 				name: name
 				t: 'c'
@@ -44,5 +46,5 @@ Meteor.methods
 			ChatSubscription.insert sub
 
 		return {
-			rid: roomId
+			rid: rid
 		}
