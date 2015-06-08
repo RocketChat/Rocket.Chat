@@ -1,12 +1,12 @@
 Meteor.methods
 	sendMessage: (message) ->
-		console.log '[methods] sendMessage -> '.green, 'userId:', Meteor.userId(), 'arguments:', arguments
-
 		if not Meteor.userId()
 			throw new Meteor.Error('invalid-user', "[methods] sendMessage -> Invalid user")
 
 		if not Meteor.call 'canAccessRoom', message.rid, Meteor.userId()
 			return false
+
+		console.log '[methods] sendMessage -> '.green, 'userId:', Meteor.userId(), 'arguments:', arguments
 
 		message.u = Meteor.users.findOne Meteor.userId(), fields: username: 1
 		message.ts = new Date()

@@ -1,5 +1,8 @@
 Meteor.methods
 	updateMessage: (message) ->
+		if not Meteor.userId()
+			throw new Meteor.Error 203, t('general.User_logged_out')
+
 		Tracker.nonreactive ->
 
 			message.ets = new Date(Date.now() + TimeSync.serverOffset())
