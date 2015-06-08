@@ -105,9 +105,9 @@ Meteor.methods
 		Save the message. If there was already a typing record, update it.
 		###
 		ChatMessage.upsert
-				rid: message.rid
-				t: 't'
-				$and: [{ 'u._id': message.u._id }]
+			rid: message.rid
+			t: 't'
+			$and: [{ 'u._id': message.u._id }]
 		,
 			$set: message
 			$unset:

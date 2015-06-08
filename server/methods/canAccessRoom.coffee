@@ -19,7 +19,6 @@ Meteor.methods
 			canAccess = true
 
 		if canAccess isnt true
-			throw new Meteor.Error 'without-permission', "[methods] canAccessRoom -> User doesn't have enough permissions"
 			return false
 		else
 			return room
