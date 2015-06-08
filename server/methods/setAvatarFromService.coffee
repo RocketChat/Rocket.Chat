@@ -1,7 +1,9 @@
 Meteor.methods
 	setAvatarFromService: (dataURI, contentType, service) ->
 		if not Meteor.userId()
-			throw new Meteor.Error 203, '[methods] typingStatus -> Usuário não logado'
+			throw new Meteor.Error('invalid-user', "[methods] setAvatarFromService -> Invalid user")
+
+		console.log '[methods] setAvatarFromService -> '.green, 'userId:', Meteor.userId(), 'arguments:', arguments
 
 		user = Meteor.user()
 
@@ -17,16 +19,4 @@ Meteor.methods
 			Meteor.users.update {_id: user._id}, {$set: {avatarOrigin: service}}
 
 		rs.pipe(ws)
-		return
-
-
-	resetAvatar: (image, service) ->
-		if not Meteor.userId()
-			throw new Meteor.Error 203, '[methods] typingStatus -> Usuário não logado'
-
-		user = Meteor.user()
-
-		RocketChatFileAvatarInstance.deleteFile "#{user.username}.jpg"
-
-		Meteor.users.update user._id, {$unset: {avatarOrigin: 1}}
 		return

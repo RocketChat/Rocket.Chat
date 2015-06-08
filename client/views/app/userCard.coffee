@@ -24,7 +24,7 @@ Template.userCard.helpers
 
 Template.userCard.events
 	'click .private-chat': (event) ->
-		Meteor.call 'createDirectRoom', Session.get('userProfileActive'), (error, result) ->
+		Meteor.call 'createDirectMessage', Session.get('userProfileActive'), (error, result) ->
 			if error
 				return Errors.throw error.reason
 

@@ -1,7 +1,7 @@
 Meteor.methods
 	saveRoomName: (rid, name) ->
 		if not Meteor.userId()
-			throw new Meteor.Error('invalid-user', "[methods] sendMessage -> Invalid user")
+			throw new Meteor.Error 203, t('general.User_logged_out')
 
 		room = ChatRoom.findOne rid
 
@@ -22,17 +22,5 @@ Meteor.methods
 		,
 			$set:
 				name: name
-				alert: true
-		,
-			multi: true
-
-		ChatMessage.insert
-			rid: rid
-			ts: (new Date)
-			t: 'r'
-			msg: name
-			u:
-				_id: Meteor.userId()
-				username: Meteor.user().username
 
 		return true

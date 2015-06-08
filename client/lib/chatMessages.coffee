@@ -52,7 +52,7 @@
 		if _.trim(input.value) isnt ''
 			unless self.typingTimeout
 				if Meteor.userId()?
-					Meteor.call 'typingStatus', { rid: rid }, true
+					Meteor.call 'typingStatus', rid, true
 				self.typingTimeout = Meteor.setTimeout ->
 					stopTyping()
 				, 30000
