@@ -27,24 +27,25 @@ Meteor.methods
 			if not ChatSubscription.findOne(rid: '57om6EQCcFami9wuT', 'u._id': user._id)?
 				ChatSubscription.insert
 					rid: '57om6EQCcFami9wuT'
-					u:
-						_id: user._id
-						username: username
-					ls: new Date()
 					name: 'general'
+					ts: new Date()
 					t: 'c'
 					f: true
-					ts: new Date()
-					unread: 0
-
-				ChatMessage.insert
+					open: true
+					alert: true
+					unread: 1
 					u:
 						_id: user._id
 						username: username
+
+				ChatMessage.insert
 					rid: '57om6EQCcFami9wuT'
 					ts: new Date()
 					t: 'wm'
-					msg: "#{user.name} - #{username}"
+					msg: username
+					u:
+						_id: user._id
+						username: username
 
 		Meteor.users.update({_id: user._id}, {$set: {username: username}})
 
