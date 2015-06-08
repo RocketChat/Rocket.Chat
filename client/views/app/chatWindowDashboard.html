@@ -1,5 +1,6 @@
 <template name="chatWindowDashboard">
 	<section class="messages-container" id="{{windowId}}">
+
 		<head class="fixed-title">
 			<div>
 				<div class="burger">
@@ -103,84 +104,86 @@
 				{{/if}}
 			{{/if}}
 		</div>
-		<div class="content">
-			{{#if isGroupChat}}
-				<div class="list-view{{#if $.Session.get 'showUserInfo'}} -hidden{{/if}}">
-					{{#with roomUsers}}
-						<div class="status">
-							<h2>{{_ "chatWindowDashboard.Members_List"}}</h2>
-							{{!--<p>
-								{{{_ "chatWindowDashboard.Showing_online_users" total_online=totalOnline total=total}}}
-								<button class="see-all">{{seeAll}}</button>
-							</p>--}}
-						</div>
-						<ul class='list cf_ lines'>
-							{{#each users}}
-								{{#with userActiveByUsername .}}
-								<li class='user-image user-card-room status-{{status}}'>
-									<a data-username="{{username}}" tabindex="0" title="{{username}}">
+		{{#if flexOpened}}
+			<div class="content">
+				{{#if isGroupChat}}
+					<div class="list-view{{#if $.Session.get 'showUserInfo'}} -hidden{{/if}}">
+						{{#with roomUsers}}
+							<div class="status">
+								<h2>{{_ "chatWindowDashboard.Members_List"}}</h2> {{!--
+								<p>
+									{{{_ "chatWindowDashboard.Showing_online_users" total_online=totalOnline total=total}}}
+									<button class="see-all">{{seeAll}}</button>
+								</p>--}}
+							</div>
+							<ul class='list cf_ lines'>
+								{{#each users}}
+									{{#with userActiveByUsername .}}
+										<li class='user-image user-card-room status-{{status}}'>
+											<a data-username="{{username}}" tabindex="0" title="{{username}}">
 										{{> avatar username=username}}
 										<p>{{username}}</p>
 									</a>
-								</li>
-								{{/with}}
-							{{/each}}
-						</ul>
-					{{/with}}
-				</div>
-				<div class="user-view animated{{#unless $.Session.get 'showUserInfo'}} -hidden{{/unless}}">
-					{{#with flexUserInfo}}
-						<div class="about cf_">
-							<div class="thumb">
-								{{> avatar username=username}}
-							</div>
-							<div class="info">
-								<h3>{{username}}</h3>
-								{{#if contactCode}}
-									<div class="contact-code">{{_ "general.Contact"}} {{contactCode}}</div>
-								{{/if}}
-								{{!--
-								{{#each emails}}
-									<p><i class="icon-mail"></i> {{address}}</p>
+										</li>
+									{{/with}}
 								{{/each}}
-								{{#if phone}}
-									<p><i class="icon-phone"></i> {{phone}}</p>
-								{{/if}}
-								--}}
+							</ul>
+						{{/with}}
+					</div>
+					<div class="user-view animated{{#unless $.Session.get 'showUserInfo'}} -hidden{{/unless}}">
+						{{#with flexUserInfo}}
+							<div class="about cf_">
+								<div class="thumb">
+									{{> avatar username=username}}
 								</div>
-						</div>
-						<nav>
-							<button class='button secondary back'><span>{{_ "chatWindowDashboard.View_All"}} <i class='icon-angle-right'></i></span></button>
-							<button class='button pvt-msg'><span><i class='icon-chat'></i> {{_ "general.Conversation"}}</span></button>
-						</nav>
-					{{/with}}
-				</div>
-			{{else}}
-				<div class="user-view">
-					{{#with userData}}
-						<div class="about cf_">
-							<div class="thumb">
-								{{> avatar username=username}}
+								<div class="info">
+									<h3>{{username}}</h3>
+									{{#if contactCode}}
+										<div class="contact-code">{{_ "general.Contact"}} {{contactCode}}</div>
+									{{/if}}
+									{{!--
+									{{#each emails}}
+										<p><i class="icon-mail"></i> {{address}}</p>
+									{{/each}}
+									{{#if phone}}
+										<p><i class="icon-phone"></i> {{phone}}</p>
+									{{/if}}
+									--}}
+								</div>
 							</div>
-							<div class="info">
-								<h3>{{username}}</h3>
-								{{#if contactCode}}
-									<div class="contact-code">{{_ "general.contact"}} {{contactCode}}</div>
-								{{/if}}
-								{{!--
-								{{#each emails}}
-									<p><i class="icon-mail"></i> {{address}}</p>
-								{{/each}}
-								{{#each phone}}
-									<p><i class="icon-phone"></i> {{phoneNumber}}</p>
-								{{/each}}
-								--}}
+							<nav>
+								<button class='button secondary back'><span>{{_ "chatWindowDashboard.View_All"}} <i class='icon-angle-right'></i></span></button>
+								<button class='button pvt-msg'><span><i class='icon-chat'></i> {{_ "general.Conversation"}}</span></button>
+							</nav>
+						{{/with}}
+					</div>
+				{{else}}
+					<div class="user-view">
+						{{#with userData}}
+							<div class="about cf_">
+								<div class="thumb">
+									{{> avatar username=username}}
+								</div>
+								<div class="info">
+									<h3>{{username}}</h3>
+									{{#if contactCode}}
+										<div class="contact-code">{{_ "general.contact"}} {{contactCode}}</div>
+									{{/if}}
+									{{!--
+									{{#each emails}}
+										<p><i class="icon-mail"></i> {{address}}</p>
+									{{/each}}
+									{{#each phone}}
+										<p><i class="icon-phone"></i> {{phoneNumber}}</p>
+									{{/each}}
+									--}}
+								</div>
 							</div>
-						</div>
-					{{/with}}
-				</div>
-			{{/if}}
-		</div>
+						{{/with}}
+					</div>
+				{{/if}}
+			</div>
+		{{/if}}
 		<footer>
 			{{> social}}
 		</footer>
