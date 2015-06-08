@@ -56,7 +56,9 @@ meteor
 
 [![Deploy](https://www.herokucdn.com/deploy/button.png)](https://heroku.com/deploy)
 
-## Current Features
+## Features
+
+### Current
 
 - BYOS (bring your own server)
 - Multiple Rooms
@@ -85,15 +87,11 @@ meteor
 - Native Mobile App
 - Native Desktop App
 
-#### Changelog
-
-Changelog can be found in the HISTORY.md file.
-
 ### Issues
 
 [Github Issues](https://github.com/RocketChat/Rocket.Chat/issues) are used to track todos, bugs, feature requests, and more.
 
-### Integration
+### Integrationz
 
 #### Hubot
 
@@ -115,7 +113,7 @@ Performance monitoring provided by [Kadira](https://kadira.io/)
 
 ### Contributions
 
-##### We Need Your Help!
+#### We Need Your Help!
 
 A lot of work has already gone into Rocket.Chat, but we have much bigger plans for it!
 
