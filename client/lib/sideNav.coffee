@@ -45,15 +45,14 @@
 		return false;
 
 	toggleFlex = (status) ->
-		if animating == true
-			return
+		return if animating == true
 		animating = true
 		if flexNav.opened or status? is -1
 			flexNav.opened = false
 			flexNav.addClass "hidden"
 			setTimeout ->
 				animating = false
-			, 300
+			, 350
 			return
 		if not flexNav.opened or status? is 1
 			flexNav.opened = true
@@ -67,11 +66,13 @@
 
 
 	openFlex = ->
+		return if animating == true
 		toggleArrow 1
 		toggleFlex 1
 		focusInput()
 
 	closeFlex = ->
+		return if animating == true
 		toggleArrow -1
 		toggleFlex -1
 
