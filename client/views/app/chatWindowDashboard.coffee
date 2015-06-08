@@ -95,7 +95,11 @@ Template.chatWindowDashboard.helpers
 		console.log 'chatWindowDashboard.roomName' if window.rocketDebug
 		roomData = Session.get('roomData' + this._id)
 		return '' unless roomData
-		return roomData.name
+
+		if roomData.t is 'd'
+			return ChatSubscription.findOne({ rid: this._id }, { fields: { name: 1 } }).name
+		else
+			return roomData.name
 
 	roomTypeIcon: ->
 		console.log 'chatWindowDashboard.roomType' if window.rocketDebug

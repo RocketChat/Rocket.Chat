@@ -2,7 +2,7 @@ Meteor.publish 'room', (rid) ->
 	unless this.userId
 		return this.ready()
 
-	console.log '[publish] room ->'.green, 'rid:'
+	console.log '[publish] room ->'.green, 'arguments:', arguments
 
 	if typeof rid isnt 'string'
 		return this.ready()

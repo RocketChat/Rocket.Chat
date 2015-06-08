@@ -9,23 +9,23 @@
 		subscription = Meteor.subscribe('subscription')
 		return subscription
 
-	expireRoom = (roomId) ->
-		if openedRooms[roomId]
-			if openedRooms[roomId].sub?
-				for sub in openedRooms[roomId].sub
+	expireRoom = (rid) ->
+		if openedRooms[rid]
+			if openedRooms[rid].sub?
+				for sub in openedRooms[rid].sub
 					sub.stop()
 
-			openedRooms[roomId].ready = false
-			openedRooms[roomId].active = false
-			delete openedRooms[roomId].timeout
+			openedRooms[rid].ready = false
+			openedRooms[rid].active = false
+			delete openedRooms[rid].timeout
 
-			ChatMessageHistory.remove rid: roomId
+			ChatMessageHistory.remove rid: rid
 
 	computation = Tracker.autorun ->
-		for roomId, record of openedRooms when record.active is true
+		for rid, record of openedRooms when record.active is true
 			record.sub = [
-				Meteor.subscribe 'room', roomId
-				Meteor.subscribe 'messages', roomId
+				Meteor.subscribe 'room', rid
+				Meteor.subscribe 'messages', rid
 			]
 
 			record.ready = record.sub[0].ready() and record.sub[1].ready()
@@ -38,26 +38,27 @@
 			clearTimeout openedRooms[except].timeout
 			delete openedRooms[except].timeout
 
-		for roomId of openedRooms
-			if roomId isnt except and not openedRooms[roomId].timeout?
-				openedRooms[roomId].timeout = setTimeout expireRoom, defaultTime, roomId
+		for rid of openedRooms
+			if rid isnt except and not openedRooms[rid].timeout?
+				openedRooms[rid].timeout = setTimeout expireRoom, defaultTime, rid
 
-	open = (roomId) ->
-		if not openedRooms[roomId]?
-			openedRooms[roomId] =
+	open = (rid) ->
+		if not openedRooms[rid]?
+			openedRooms[rid] =
 				active: false
 				ready: false
 
 		if subscription.ready()
-			if ChatSubscription.findOne { rid: roomId }, { reactive: false }
-				openedRooms[roomId].active = true
-				setRoomExpireExcept roomId
+			# if ChatSubscription.findOne { rid: rid }, { reactive: false }
+			if openedRooms[rid].active isnt true
+				openedRooms[rid].active = true
+				setRoomExpireExcept rid
 				computation.invalidate()
 
 		return {
 			ready: ->
 				Dep.depend()
-				return openedRooms[roomId].ready
+				return openedRooms[rid].ready
 		}
 
 	open: open

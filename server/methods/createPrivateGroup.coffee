@@ -7,7 +7,9 @@ Meteor.methods
 
 		now = new Date()
 
-		members.push Meteor.user().username
+		me = Meteor.user()
+
+		members.push me.username
 
 		name = s.slugify name
 
@@ -17,30 +19,32 @@ Meteor.methods
 			ts: now
 			t: 'p'
 			u:
-				_id: Meteor.userId()
-				username: Meteor.user().username
+				_id: me._id
+				username: me.username
 			name: name
 			msgs: 0
 
 		for username in members
-			member = Meteor.users.findOne({username: username})
+			member = Meteor.users.findOne({ username: username },{ fields: { username: 1 }})
 			if not member?
 				continue
 
-			sub =
-				u:
-					_id: member._id
-					username: username
+			subscription =
 				rid: rid
 				ts: now
 				name: name
 				t: 'p'
-				unread: 0
+				open: true
+				u:
+					_id: member._id
+					username: member.username
 
-			if username is Meteor.user().username
-				sub.ls = now
+			if username is me.username
+				subscription.ls = now
+			else
+				subscription.alert = true
 
-			ChatSubscription.insert sub
+			ChatSubscription.insert subscription
 
 		return {
 			rid: rid
