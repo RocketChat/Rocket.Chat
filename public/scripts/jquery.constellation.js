@@ -57,7 +57,7 @@ if (!window.requestAnimationFrame) {
 				width: window.innerWidth,
 				height: window.innerHeight,
 				velocity: 0.1,
-				length: 175,
+				length: 150,
 				distance: 120,
 				radius: 150,
 				stars: []
