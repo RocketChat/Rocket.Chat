@@ -10,4 +10,4 @@ class Emojione
 			
 		return message
 
-RocketChat.callbacks.add 'renderMessage', Emojione
+RocketChat.callbacks.add 'renderMessage', Emojione, RocketChat.callbacks.priority.LOW

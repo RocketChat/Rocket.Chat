@@ -16,4 +16,4 @@ class Markdown
 		message.html = msg
 		return message
 
-RocketChat.callbacks.add 'renderMessage', Markdown
+RocketChat.callbacks.add 'renderMessage', Markdown, RocketChat.callbacks.priority.LOW
