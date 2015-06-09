@@ -8,7 +8,8 @@ Checkout the latest version at http://rocket.chat
 
 ## About
 
-[![Code Climate](https://codeclimate.com/github/RocketChat/Rocket.Chat/badges/gpa.svg)](https://codeclimate.com/github/RocketChat/Rocket.Chat)
+[![Code Climate][codeclimate-image]][codeclimate-url]
+[![MIT License][license-image]][license-url]
 
 Rocket.Chat is a Web Chat Server, developed in JavaScript, using the [Meteor](https://www.meteor.com/install) fullstack framework.
 
@@ -135,3 +136,10 @@ Join the the conversation at [Twitter](http://twitter.com/RocketChatApp), [Faceb
 ### License
 
 Note that Rocket.Chat is distributed under the [MIT License](http://opensource.org/licenses/MIT).
+
+
+[license-image]: http://img.shields.io/badge/license-MIT-blue.svg?style=flat
+[license-url]: LICENSE
+
+[codeclimate-image]: https://codeclimate.com/github/RocketChat/Rocket.Chat/badges/gpa.svg
+[codeclimate-url]: https://codeclimate.com/github/RocketChat/Rocket.Chat
