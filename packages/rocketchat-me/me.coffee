@@ -7,7 +7,7 @@ class Me
 	constructor: (message) ->
 		# If message starts with /me, replace it for text formatting
 		if message.msg.indexOf('/me ') is 0
-			message.msg = '_' + message.msg.substr(4) + '_'
+			message.html = '_' + message.html.replace('/me ','') + '_'
 		return message
 
-RocketChat.callbacks.add 'beforeSaveMessage', Me
+RocketChat.callbacks.add 'renderMessage', Me
