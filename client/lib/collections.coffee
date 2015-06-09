@@ -1,24 +1,14 @@
-@UserFullName = {}
 @UserAndRoom = new Meteor.Collection null
 @ChatMessageHistory = new Meteor.Collection null
 
 @ChatRoom = new Meteor.Collection 'data.ChatRoom'
 @ChatSubscription = new Meteor.Collection 'data.ChatSubscription'
-@ChatMessage = new Meteor.Collection 'data.ChatMessage'
-
-# ,
-# 	transform: (room) ->
-# 		if room.t is 'd' and Meteor.userId()?
-# 			if not UserFullName[Meteor.userId()]?
-# 				user = Meteor.users.findOne Meteor.userId()
-# 				UserFullName[Meteor.userId()] = user.name
-
-# 			regex = new RegExp('\\|?' + UserFullName[Meteor.userId()] + '\\|?')
-# 			room.name = room.name.replace(regex, '')
-
-# 		return room
-
-
+@ChatMessage = new Meteor.Collection 'data.ChatMessage',
+	transform: (message) ->
+		message.html = message.msg
+		message = RocketChat.callbacks.run 'renderMessage', message
+		# console.log 'transform'
+		return message
 
 Meteor.startup ->
 	ChatMessage.find().observe
