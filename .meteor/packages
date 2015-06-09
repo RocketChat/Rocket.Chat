@@ -45,6 +45,7 @@ rocketchat:file
 rocketchat:lib
 rocketchat:me
 rocketchat:mentions
+rocketchat:markdown
 simple:highlight.js
 tap:i18n
 tmeasday:crypto-md5
