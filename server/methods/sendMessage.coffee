@@ -12,8 +12,36 @@ Meteor.methods
 
 		message.u = Meteor.users.findOne Meteor.userId(), fields: username: 1
 		message.ts = new Date()
-		message = RocketChat.callbacks.run 'beforeSaveMessage', message
 
+		message.html = message.msg
+
+		# if _.trim(message.html) isnt ''
+		# 	message.html = _.escapeHTML message.html
+		# 	message.html = message.html.replace /\n/g, '<br/>'
+			
+			# Process links in message
+			# msg = Autolinker.link(msg, { stripPrefix: false, twitter: false })
+
+			# Process MD like for strong, italic and strike
+			# msg = msg.replace(/\*([^*]+)\*/g, '<strong>$1</strong>')
+			# msg = msg.replace(/\_([^_]+)\_/g, '<i>$1</i>')
+			# msg = msg.replace(/\~([^_]+)\~/g, '<strike>$1</strike>')
+
+			# Highlight mentions
+			# if not message.mentions? or message.mentions.length is 0
+			# 	mentions = _.map message.mentions, (mention) ->
+			# 		return mention.username or mention
+
+			# 	mentions = mentions.join('|')
+			# 	msg = msg.replace new RegExp("(?:^|\\s)(@(#{mentions}))(?:\\s|$)", 'g'), (match, mention, username) ->
+			# 		return match.replace mention, "<a href=\"\" class=\"mention-link\" data-username=\"#{username}\">#{mention}</a>"
+
+		# message = RocketChat.callbacks.run 'beforeSaveMessage', message
+		if _.trim(message.html) isnt ''
+			message.html = _.escapeHTML message.html
+
+		message = RocketChat.callbacks.run 'beforeSaveMessage', message
+		message.html = message.html.replace /\n/g, '<br/>'	
 		# console.log "message", message
 
 		###
