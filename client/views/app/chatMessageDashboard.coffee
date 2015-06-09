@@ -17,8 +17,8 @@ Template.chatMessageDashboard.helpers
 	preProcessingMessage: ->
 
 		this.html = this.msg
-		msg = RocketChat.callbacks.run 'renderMessage', this
-		return msg.html
+		message = RocketChat.callbacks.run 'renderMessage', this
+		return message.html
 
 	message: ->
 		switch this.t
