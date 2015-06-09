@@ -22,11 +22,14 @@ Meteor.startup ->
 	else
 		userLanguage = defaultUserLanguage()
 	localStorage.setItem("userLanguage", userLanguage)
+
 	userLanguage = userLanguage.split('-').shift()
 	TAPi18n.setLanguage(userLanguage)
-	moment.locale(userLanguage)
 
-
+	filename = "/moment-locales/#{userLanguage.toLowerCase()}.js"
+	if filename isnt '/moment-locales/en.js'
+		$.getScript filename, (data) ->
+			moment.locale(userLanguage)
 
 	# Add ascii support to emojione
 	emojione?.ascii = true
