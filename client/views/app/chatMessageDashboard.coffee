@@ -50,7 +50,7 @@ Template.chatMessageDashboard.helpers
 			# Process MD like for strong, italic and strike
 			msg = msg.replace(/\*([^*]+)\*/g, '<strong>$1</strong>')
 			msg = msg.replace(/\_([^_]+)\_/g, '<i>$1</i>')
-			msg = msg.replace(/\~([^_]+)\~/g, '<strike>$1</strike>')
+			msg = msg.replace(/\~{1,2}([^~]+)\~{1,2}/g, '<strike>$1</strike>')
 
 			# Highlight mentions
 			if not this.mentions? or this.mentions.length is 0
