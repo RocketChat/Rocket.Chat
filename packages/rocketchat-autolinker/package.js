@@ -1,7 +1,7 @@
 Package.describe({
-	name: 'rocketchat:mentions',
+	name: 'rocketchat:autolinker',
 	version: '0.0.1',
-	summary: 'Message pre-processor that will process mentions',
+	summary: 'Message pre-processor that will translate links on messages',
 	git: ''
 });
 
@@ -10,11 +10,11 @@ Package.onUse(function(api) {
 
 	api.use([
 		'coffeescript',
+		'konecty:autolinker',
 		'rocketchat:lib@0.0.1'
 	]);
 
-	api.addFiles('server.coffee', 'server');
-	api.addFiles('client.coffee', 'client');
+	api.addFiles('autolinker.coffee', ['server','client']);
 });
 
 Package.onTest(function(api) {
