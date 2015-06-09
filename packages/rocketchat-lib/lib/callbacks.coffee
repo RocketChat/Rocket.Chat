@@ -10,9 +10,9 @@ RocketChat.callbacks = {}
 # Callback priorities
 ###
 RocketChat.callbacks.priority =
-	HIGH: -1
+	HIGH: -1000
 	MEDIUM: 0
-	LOW: 1
+	LOW: 1000
 
 ###
 # Add a callback function to a hook
