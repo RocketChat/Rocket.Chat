@@ -4,7 +4,7 @@
 ###
 
 class Highlight
-	
+
 	# If message starts with ```, replace it for text formatting
 	constructor: (message) ->
 
@@ -18,7 +18,7 @@ class Highlight
 				if codeMatch?
 					# Process highlight if this part is code
 					lang = codeMatch[1]
-					code = codeMatch[2]
+					code = _.unescapeHTML codeMatch[2]
 					if lang not in hljs.listLanguages()
 						result = hljs.highlightAuto code
 					else
@@ -26,8 +26,6 @@ class Highlight
 					msgParts[index] = "<pre><code class='hljs " + result.language + "'>" + result.value + "</code></pre>"
 				else
 					# Escape html and fix line breaks for non code blocks
-					part = _.escapeHTML part
-					part = part.replace /\n/g, '<br/>'
 					msgParts[index] = part
 
 			# Re-mount message

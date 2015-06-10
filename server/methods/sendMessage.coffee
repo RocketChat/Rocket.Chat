@@ -10,11 +10,14 @@ Meteor.methods
 
 		console.log '[methods] sendMessage -> '.green, 'userId:', Meteor.userId(), 'arguments:', arguments
 
-		message.u = Meteor.users.findOne Meteor.userId(), fields: username: 1
 		message.ts = new Date()
-		message = RocketChat.callbacks.run 'beforeSaveMessage', message
+		message.u = Meteor.users.findOne Meteor.userId(), fields: username: 1
 
-		# console.log "message", message
+		message.html = message.msg
+		if _.trim(message.html) isnt ''
+			message.html = _.escapeHTML message.html
+		message = RocketChat.callbacks.run 'beforeSaveMessage', message
+		message.html = message.html.replace /\n/gm, '<br/>'
 
 		###
 		Defer other updated as their return is not interesting to the user
