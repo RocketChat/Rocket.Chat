@@ -22,6 +22,7 @@ ddp@1.1.0
 deps@1.0.7
 ejson@1.0.6
 email@1.0.6
+emojione:emojione@1.4.1
 facebook@1.2.0
 fastclick@1.0.3
 francocatena:status@1.2.3
@@ -84,7 +85,6 @@ pauli:linkedin@1.1.2
 percolate:migrations@0.7.5
 percolatestudio:synced-cron@1.1.0
 pierreeric:rxfavico@0.3.5_1
-qnub:emojione@0.0.3
 raix:handlebar-helpers@0.2.4
 random@1.0.3
 reactive-dict@1.1.0

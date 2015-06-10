@@ -17,7 +17,6 @@ markdown
 meteor-platform
 reactive-var
 service-configuration
-
 chrismbeckett:toastr
 francocatena:status
 iframely:oembed
@@ -39,7 +38,7 @@ pauli:accounts-linkedin
 percolate:migrations
 percolatestudio:synced-cron
 pierreeric:rxfavico
-qnub:emojione
+
 raix:handlebar-helpers
 rocketchat:file
 rocketchat:lib
@@ -49,6 +48,7 @@ rocketchat:highlight
 rocketchat:autolinker
 rocketchat:markdown
 rocketchat:emojione
+
 simple:highlight.js
 tap:i18n
 tmeasday:crypto-md5
@@ -56,3 +56,4 @@ tmeasday:errors
 todda00:friendly-slugs
 underscorestring:underscore.string
 yasaricli:slugify
+emojione:emojione
