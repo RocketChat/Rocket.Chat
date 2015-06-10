@@ -15,6 +15,22 @@ Template.chatMessageDashboard.helpers
 		return this._id is Session.get('editingMessageId')
 
 	preProcessingMessage: ->
+		# temporary pre-1.0 image embed to support bot development - to be refactored
+		if _.trim(this.msg) isnt ''
+			msg = this.msg
+
+			picmatch = msg.match(/^https?:\/\/(?:[a-z0-9\-]+\.)+[a-z0-9]{2,6}(?:\/[^\/#?]+)+\.(?:jpe?g|gif|png)$/i)
+
+		if picmatch?
+			# inline style to limit code pollution
+			msg = "<img style='width:400px;height:auto;' src='" + msg + "'></img>"
+			return msg
+
+			mapmatch = msg.match(/^https?\:\/\/maps\.(google|googleapis)\.[a-z]+\/maps\/api.*format=png$/i)
+		if mapmatch?
+			msg = "<img style='width:400px;height:auto;' src='" + msg + "'></img>"
+			return msg
+		# end of temporary pre-1.0 image embed to support bot development
 
 		this.html = this.msg
 		message = RocketChat.callbacks.run 'renderMessage', this
@@ -36,7 +52,7 @@ Template.chatMessageDashboard.helpers
 	newMessage: ->
 		# @TODO pode melhorar, acho que colocando as salas abertas na sessão
 		# if $('#chat-window-' + this.rid + '.opened').length == 0
-		# 	return 'new'
+		#	return 'new'
 
 	preMD: Template 'preMD', ->
 		self = this
