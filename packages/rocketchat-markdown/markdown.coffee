@@ -9,9 +9,10 @@ class Markdown
 		msg = message.html or ''
 
 		# Process MD like for strong, italic and strike
-		msg = msg.replace(/\*([^*]+)\*/g, '<strong>$1</strong>')
-		msg = msg.replace(/\_([^_]+)\_/g, '<i>$1</i>')
-		msg = msg.replace(/\~{1,2}([^~]+)\~{1,2}/g, '<strike>$1</strike>')
+		msg = msg.replace(/(\ |^)\*([^*]+)\*(\ |$)/gm, '$1<strong>$2</strong>$3')
+		msg = msg.replace(/(\ |^)\_([^_]+)\_(\ |$)/gm, '$1<em>$2</em>$3')
+		msg = msg.replace(/(\ |^)\`([^`]+)\`(\ |$)/gm, '$1<code>$2</code>$3')
+		msg = msg.replace(/(\ |^)\~{1,2}([^~]+)\~{1,2}(\ |$)/gm, '$1<strike>$2</strike>$3')
 
 		message.html = msg
 		return message
