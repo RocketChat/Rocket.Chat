@@ -35,4 +35,4 @@ class Highlight
 
 		return message
 
-RocketChat.callbacks.add 'renderMessage', Highlight, RocketChat.callbacks.priority.HIGH
+RocketChat.callbacks.add 'beforeSaveMessage', Highlight, RocketChat.callbacks.priority.HIGH

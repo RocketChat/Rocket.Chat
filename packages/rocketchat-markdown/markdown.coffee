@@ -15,4 +15,4 @@ class Markdown
 		message.html = msg
 		return message
 
-RocketChat.callbacks.add 'renderMessage', Markdown, RocketChat.callbacks.priority.LOW
+RocketChat.callbacks.add 'beforeSaveMessage', Markdown, RocketChat.callbacks.priority.LOW

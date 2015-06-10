@@ -14,12 +14,6 @@ Template.chatMessageDashboard.helpers
 	isEditing: ->
 		return this._id is Session.get('editingMessageId')
 
-	preProcessingMessage: ->
-
-		this.html = this.msg
-		message = RocketChat.callbacks.run 'renderMessage', this
-		return message.html
-
 	message: ->
 		switch this.t
 			when 'r' then t('chatMessageDashboard.Room_name_changed', { room_name: this.msg, user_by: Session.get('user_' + this.u._id + '_name') }) + '.'
