@@ -43,6 +43,7 @@
 				openedRooms[rid].timeout = setTimeout close, defaultTime, rid
 
 	open = (rid) ->
+
 		if not openedRooms[rid]?
 			openedRooms[rid] =
 				active: false

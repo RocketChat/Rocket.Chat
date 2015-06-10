@@ -1,6 +1,6 @@
 //! moment.js locale configuration
 //! locale : hrvatski (hr)
-//! authors : Bojan Marković : https://github.com/bmarkovic (original) | Kruno H : https://github.com/diomed (additions)
+//! author : Bojan Marković : https://github.com/bmarkovic
 
 (function (global, factory) {
    typeof exports === 'object' && typeof module !== 'undefined' ? factory(require('../moment')) :
@@ -115,22 +115,22 @@
             future : 'za %s',
             past   : 'prije %s',
             s      : 'par sekundi',
-            m      : 'minutu',
-            mm     : 'minuta',
-            h      : 'sat',
-            hh     : 'sati',
+            m      : translate,
+            mm     : translate,
+            h      : translate,
+            hh     : translate,
             d      : 'dan',
-            dd     : 'dana',
+            dd     : translate,
             M      : 'mjesec',
-            MM     : 'mjeseci',
+            MM     : translate,
             y      : 'godinu',
-            yy     : 'godina'
+            yy     : translate
         },
         ordinalParse: /\d{1,2}\./,
         ordinal : '%d.',
         week : {
-            dow : 1, // Ponedjeljak je prvi dan u tjednu.
-            doy : 7  // Tjedan koji sadrži 1. sij. je prvi tjedan u godini.
+            dow : 1, // Monday is the first day of the week.
+            doy : 7  // The week that contains Jan 1st is the first week of the year.
         }
     });
 

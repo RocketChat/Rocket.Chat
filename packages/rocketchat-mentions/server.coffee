@@ -3,7 +3,7 @@
 # @param {Object} message - The message object
 ###
 
-class Mentions
+class MentionsServer
 	constructor: (message) ->
 		# If message starts with /me, replace it for text formatting
 		mentions = []
@@ -19,4 +19,4 @@ class Mentions
 				message.mentions = verifiedMentions
 		return message
 
-RocketChat.callbacks.add 'beforeSaveMessage', Mentions
+RocketChat.callbacks.add 'beforeSaveMessage', MentionsServer
