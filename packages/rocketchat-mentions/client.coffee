@@ -20,4 +20,4 @@ class MentionsClient
 			message.html = msg
 		return message
 
-RocketChat.callbacks.add 'renderMessage', MentionsClient
+RocketChat.callbacks.add 'beforeSaveMessage', MentionsClient

@@ -11,4 +11,4 @@ class Me
 				message.html = '_' + message.html.replace('/me ','') + '_'
 		return message
 
-RocketChat.callbacks.add 'renderMessage', Me
+RocketChat.callbacks.add 'beforeSaveMessage', Me
