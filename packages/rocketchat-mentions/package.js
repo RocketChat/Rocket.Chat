@@ -15,7 +15,6 @@ Package.onUse(function(api) {
 
 	api.addFiles('client.coffee', 'client');
 	api.addFiles('server.coffee', 'server');
-	api.addFiles('client.coffee', 'client');
 });
 
 Package.onTest(function(api) {
