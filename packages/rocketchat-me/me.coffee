@@ -5,9 +5,10 @@
 
 class Me
 	constructor: (message) ->
-		# If message starts with /me, replace it for text formatting
-		if message.msg.indexOf('/me ') is 0
-			message.html = '_' + message.html.replace('/me ','') + '_'
+		if _.trim message.html
+			# If message starts with /me, replace it for text formatting
+			if message.html.indexOf('/me ') is 0
+				message.html = '_' + message.html.replace('/me ','') + '_'
 		return message
 
 RocketChat.callbacks.add 'renderMessage', Me
