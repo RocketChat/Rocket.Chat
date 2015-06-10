@@ -8,7 +8,7 @@ Meteor.methods
 		if not room
 			return false
 
-		console.log '[methods] sendMessage -> '.green, 'userId:', Meteor.userId(), 'arguments:', arguments
+		# console.log '[methods] sendMessage -> '.green, 'userId:', Meteor.userId(), 'arguments:', arguments
 
 		message.u = Meteor.users.findOne Meteor.userId(), fields: username: 1
 		message.ts = new Date()
