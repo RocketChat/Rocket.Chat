@@ -57,7 +57,6 @@
 		<footer class="footer">
 			<form class="message-form" method="post" action="/">
 				<div>
-					<!--input type="text" class="input-message" value="" /-->
 					{{> messagePopupConfig getPupupConfig}}
 					<textarea name="msg" class="input-message"></textarea>
 					<i class="icon-paper-plane" title="{{_ "chatWindowDashboard.Send_Message"}}"></i>
@@ -83,6 +82,7 @@
 				<div class="formatting-tips" aria-hidden="true">
 					<b>*bold*</b>
 					<i>_italics_</i>
+					<strike>~strike~</strike>
 					<code class="inline">`inline code`</code>
 					<code class="inline">```multi-line```</code>
 					<q>&gt;quote</q>
