@@ -10,7 +10,6 @@ Package.onUse(function(api) {
 
 	api.use([
 		'coffeescript',
-		'simple:highlight.js',
 		'rocketchat:lib@0.0.1'
 	]);
 

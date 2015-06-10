@@ -45,7 +45,10 @@ rocketchat:file
 rocketchat:lib
 rocketchat:me
 rocketchat:mentions
+rocketchat:highlight
+rocketchat:autolinker
 rocketchat:markdown
+rocketchat:emojione
 simple:highlight.js
 tap:i18n
 tmeasday:crypto-md5
