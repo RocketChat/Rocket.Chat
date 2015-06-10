@@ -11,7 +11,7 @@ class Markdown
 		# Process MD like for strong, italic and strike
 		msg = msg.replace(/(\ |^)\*([^*]+)\*(\ |$)/gm, '$1<strong>$2</strong>$3')
 		msg = msg.replace(/(\ |^)\_([^_]+)\_(\ |$)/gm, '$1<em>$2</em>$3')
-		msg = msg.replace(/(\ |^)\`([^`]+)\`(\ |$)/gm, '$1<code>$2</code>$3')
+		msg = msg.replace(/(\ |^)\`([^`]+)\`(\ |$)/gm, '$1<code class="inline">$2</code>$3')
 		msg = msg.replace(/(\ |^)\~{1,2}([^~]+)\~{1,2}(\ |$)/gm, '$1<strike>$2</strike>$3')
 
 		message.html = msg
