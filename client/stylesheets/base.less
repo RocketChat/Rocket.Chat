@@ -41,7 +41,7 @@ a {
 
 code {
 	background: #f8f8f8;
-	border-radius: 6px;
+	border-radius: 4px;
 	border: 1px solid #ccc;
 	color: #333;
 	display: block;
@@ -49,6 +49,12 @@ code {
 	overflow-x: auto;
 	padding: 0.5em;
 	word-wrap: break-word;
+	&.inline {
+		display: inline-block;
+		padding: 0 10px;
+		margin: 0;
+		vertical-align: bottom;
+	}
 }
 
 .text-center {
