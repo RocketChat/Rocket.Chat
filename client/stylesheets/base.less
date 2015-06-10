@@ -57,6 +57,18 @@ code {
 	}
 }
 
+q {
+	padding-left: 10px;
+	&:before {
+		content: ' ';
+		background-color: #ccc;
+		height: 22px;
+		width: 3px;
+		position: absolute;
+		left: 50px;
+	}
+}
+
 .text-center {
 	text-align: center;
 }
@@ -1698,11 +1710,21 @@ a.github-fork {
 		> .formatting-tips {
 			float: right;
 			height: 20px;
-			font-size: 12px;
+			font-size: 11px;
 			color: #888;
-			padding: 3px 0px 0px 5px;
+			padding: 4px 0px 0px 5px;
 			display: inline-block;
 			white-space: nowrap;
+			q {
+				padding: 0 0 0 3px;
+				border-left: 3px solid #ccc;
+				&:before {
+					content: none !important;
+				}
+			}
+			code {
+				color: #888;
+			}
 		}
 	}
 	.add-user-search {

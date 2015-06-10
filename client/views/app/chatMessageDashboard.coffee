@@ -15,10 +15,12 @@ Template.chatMessageDashboard.helpers
 		return this._id is Session.get('editingMessageId')
 
 	preProcessingMessage: ->
-
 		this.html = this.msg
+		if _.trim(this.html) isnt ''
+			this.html = _.escapeHTML this.html
 		message = RocketChat.callbacks.run 'renderMessage', this
-		return message.html
+		this.html = message.html.replace /\n/gm, '<br/>'
+		return this.html
 
 	message: ->
 		switch this.t

@@ -9,7 +9,12 @@ Meteor.methods
 			message.u =
 				_id: Meteor.userId()
 				username: Meteor.user().username
+
+			message.html = message.msg
+			if _.trim(message.html) isnt ''
+				message.html = _.escapeHTML message.html
 			message = RocketChat.callbacks.run 'beforeSaveMessage', message
+			message.html = message.html.replace /\n/gm, '<br/>'
 
 			ChatMessage.upsert
 				rid: message.rid
