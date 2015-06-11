@@ -1,43 +1,28 @@
 <template name="loginForm">
 	<form id="login-card" method='/'>
-		<div class="fields">
+		<header>
 			<h2>{{_ "login.Enter_info"}}</h2>
-			{{#if needsValidateEmail}}
-				<div>
-					{{_ "login.You_neeed_confirm_email"}}
-				</div>
-			{{/if}}
-			<div class='input-text active {{showName}}'>
-				<div class='field'>
-					<span>
-						<input type="text" name='name' placeholder='{{_ "general.Name"}}' />
-					</span>
-					<i></i>
-				</div>
+		</header>
+		{{#if needsValidateEmail}}
+			<div class="alert alert-danger">
+				{{_ "login.You_neeed_confirm_email"}}
 			</div>
-			<div class='input-text active'>
-				<div class='field'>
-					<span>
-						<input type="email" name='email' placeholder='{{_ "Email"}}' />
-					</span>
-					<i></i>
-				</div>
+		{{/if}}
+		<div class="fields">
+			<div class='input-text active {{showName}}'>
+				<input type="text" name='name' placeholder='{{_ "general.Name"}}' />
+			</div>
+			<div class='input-text active {{showEmailOrUsername}}'>
+				<input type="text" name='emailOrUsername' placeholder='{{_ "login.Email_or_username"}}' />
+			</div>
+			<div class='input-text active {{showEmail}}'>
+				<input type="email" name='email' placeholder='{{_ "Email"}}' />
 			</div>
 			<div class='input-text active {{showPassword}}'>
-				<div class='field'>
-					<span>
-					<input type="password" name='pass' placeholder='{{_ "login.Password"}}' />
-				</span>
-					<i></i>
-				</div>
+				<input type="password" name='pass' placeholder='{{_ "login.Password"}}' />
 			</div>
 			<div class='input-text active {{showConfirmPassword}}'>
-				<div class='field'>
-					<span>
-						<input type="password" name='confirm-pass' placeholder='{{_ "login.Confirm_password"}}' />
-					</span>
-					<i></i>
-				</div>
+				<input type="password" name='confirm-pass' placeholder='{{_ "login.Confirm_password"}}' />
 			</div>
 		</div>
 		<div class="submit">

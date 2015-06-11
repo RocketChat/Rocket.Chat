@@ -20,9 +20,10 @@ configKadira = (settings) ->
 	if settings.kadira?
 		Kadira.connect(settings.kadira.appId, settings.kadira.appSecret)
 
-Settings.find().observe
+Settings.find({_id: 'settings'}).observe
 	added: (settings) ->
 		Meteor.settings = settings
+		__meteor_runtime_config__?.PUBLIC_SETTINGS = Meteor.settings?.public
 		configLoginServices settings
 		loadEnvConfigs settings
 		configCDN settings
@@ -30,6 +31,7 @@ Settings.find().observe
 
 	changed: (settings) ->
 		Meteor.settings = settings
+		__meteor_runtime_config__?.PUBLIC_SETTINGS = Meteor.settings?.public
 		configLoginServices settings
 		loadEnvConfigs settings
 		configCDN settings

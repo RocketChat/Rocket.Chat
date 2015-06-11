@@ -1,9 +1,14 @@
 Meteor.methods
-	hideRoom: (roomId) ->
-		fromId = Meteor.userId()
-		# console.log '[methods] hideRoom -> '.green, 'fromId:', fromId, 'roomId:', roomId
+	hideRoom: (rid) ->
+		if not Meteor.userId()
+			throw new Meteor.Error 'invalid-user', '[methods] hideRoom -> Invalid user'
 
-		unless Meteor.userId()?
-			throw new Meteor.Error 300, 'Usuário não logado'
+		console.log '[methods] hideRoom -> '.green, 'userId:', Meteor.userId(), 'arguments:', arguments
 
-		ChatSubscription.update({ rid: roomId, uid: Meteor.userId() }, { $unset: { ts: 1, f: 1 } })
+		ChatSubscription.update
+			rid: rid
+			'u._id': Meteor.userId()
+		,
+			$set:
+				alert: false
+				open: false

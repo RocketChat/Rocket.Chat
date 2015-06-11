@@ -1,13 +1,19 @@
 <template name="chatMessageDashboard">
-	<li class="message with-thumb {{own}} {{data.type}}" data-scroll-to-bottom="{{scroll}}">
+	{{#if dateSeparator}}
+		<li class="date">
+			<span>{{messageDate data.ts}}</span>
+		</li>
+	{{/if}}
+	<li id="{{data._id}}" class="message {{#unless single}}with-thumb{{/unless}} {{own}} {{data.type}}" data-scroll-to-bottom="{{scroll}}">
 		{{#with data}}
 			{{#if isSystemMessage}}
 				<p class="system">{{{message}}}</p>
 			{{else}}
-				<a class="thumb user-card-message" href="#" data-userid="{{uid}}" tabindex="1">
-					{{> avatar userId=uid}}
+				{{#unless ../single}}
+				<a class="thumb user-card-message" href="#" data-username="{{username}}" tabindex="1">
+					{{> avatar username=username}}
 				</a>
-				<a class="user user-card-message" href="#" data-userid="{{uid}}" tabindex="1">{{username}}</a>
+				<a class="user user-card-message" href="#" data-username="{{username}}" tabindex="1">{{username}}</a>
 				<span class="time">
 					{{time}}
 					{{#if ets}}
@@ -15,11 +21,28 @@
 					{{/if}}
 					<i class="icon-pencil edit-message"></i>
 				</span>
+				{{/unless}}
 				{{#if isEditing}}
-					<textarea class="input-message-editing" contenteditable="true">{{message 'true'}}</textarea>
+					<div class="input-message-editing-container">
+						{{> messagePopupConfig getPupupConfig}}
+						<textarea class="input-message-editing">{{msg}}</textarea>
+					</div>
 				{{else}}
+					{{#if ../single}}
+					<span class="time-single">
+						<div class="time-single-time">
+							<i class="icon-pencil edit-message"></i>
+							{{time}}
+						</div>
+						{{#if ets}}
+							<div class="time-single-edited">
+								({{_ "edited"}})
+							</div>
+						{{/if}}
+					</span>
+					{{/if}}
 					<div>
-						{{#markdown}}{{#emojione}}{{message}}{{/emojione}}{{/markdown}}
+						{{{renderMessage}}}
 					</div>
 				{{/if}}
 			{{/if}}

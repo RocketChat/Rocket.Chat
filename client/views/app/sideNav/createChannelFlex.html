@@ -1,0 +1,48 @@
+<template name="createChannelFlex">
+	<header>
+		<div>
+			<h4>{{_ "chatRooms.Channels"}}</h4>
+		</div>
+	</header>
+	<div class="content">
+		<div class="wrapper">
+			<h4>{{_ "chatRooms.Create_new_channel" }}</h4>
+			<div class="input-line">
+				<label for="channel-name">{{_ "chatRooms.Name"}}</label>
+				<input type="text" id="channel-name" class="required">
+			</div>
+			<div class="input-line">
+				<label for="channel-members">Add Members</label>
+				{{> inputAutocomplete settings=autocompleteSettings id="channel-members" class="search" placeholder=tRoomMembers autocomplete="off"}}
+				<ul class="selected-users">
+					{{#each selectedUsers}}
+						<li>{{name}} <i class="icon-cancel remove-room-member"></i></li>
+					{{/each}}
+				</ul>
+			</div>
+			{{#if error.fields}}
+				<div class="input-error">
+					<strong>Ops!</strong>
+					{{#each error.fields}}
+						<p>The field {{.}} is required.</p>
+					{{/each}}
+				</div>
+			{{/if}}
+			{{#if error.invalid}}
+				<div class="input-error">
+					<strong>Ops!</strong>
+					{{{_ "chatRooms.Invalid_room_name" roomName}}}
+				</div>
+			{{/if}}
+			<div class="input-submit">
+				<button class="button clean primary save-channel">{{_ "chatRooms.Save" }}</button>
+				<button class="button clean cancel-channel">{{_ "chatRooms.Cancel" }}</button>
+			</div>
+		</div>
+	</div>
+	<footer>
+		<div>
+			<button class="button clean all">All channels</button>
+		</div>
+	</footer>
+</template>

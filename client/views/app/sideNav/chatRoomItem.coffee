@@ -1,9 +1,10 @@
 Template.chatRoomItem.helpers
+
+	alert: ->
+		return this.alert if (not Router.current().params._id) or Router.current().params._id isnt this.rid
+
 	unread: ->
-		if (not Router.current().params._id) or Router.current().params._id isnt this.rid
-			return this.unread
-		else if Router.current().params._id is this.rid and this.unread > 0
-			Meteor.call 'readMessages', this.rid
+		return this.unread if (not Router.current().params._id) or Router.current().params._id isnt this.rid
 
 	isDirectRoom: ->
 		return this.t is 'd'
@@ -11,12 +12,13 @@ Template.chatRoomItem.helpers
 	userStatus: ->
 		switch this.t
 			when 'd'
-				uid = this.rid.replace Meteor.userId(), ''
-				return 'status-' + Session.get('user_' + uid + '_status')
+				username = this.rid.replace Meteor.user().username, ''
+				UserManager.addUser username
+				return 'status-' + Session.get('user_' + username + '_status')
 			else return ''
 
 	name: ->
-		return this.rn
+		return this.name
 
 	roomIcon: ->
 		switch this.t
@@ -25,26 +27,24 @@ Template.chatRoomItem.helpers
 			when 'p' then return 'icon-lock'
 
 	active: ->
-		return 'active' if Router.current().params._id? and Router.current().params._id is this.rid
+		if Router.current().params._id? and Router.current().params._id is this.rid
+			if this.alert or this.unread > 0
+				Meteor.call 'readMessages', this.rid
+			return 'active'
 
 	canLeave: ->
 		roomData = Session.get('roomData' + this.rid)
 
 		return false unless roomData
 
-		if (roomData.cl? and not roomData.cl) or roomData.t is 'd' or (roomData.uids.indexOf(Meteor.userId()) isnt -1 and roomData.uids.length is 1)
+		if (roomData.cl? and not roomData.cl) or roomData.t is 'd' or (roomData.usernames.indexOf(Meteor.user().username) isnt -1 and roomData.usernames.length is 1)
 			return false
 		else
 			return true
 
 Template.chatRoomItem.rendered = ->
-	if @data.t is 'd'
-		uid = @data.rid.replace Meteor.userId(), ''
-		UserManager.addUser uid
-
-	if not (Router.current().params._id? and Router.current().params._id is this.data.rid) and (not this.data.ls? or moment(this.data.ls).add(1, 'days').startOf('day') < moment(this.data.ts).startOf('day'))
+	if not (Router.current().params._id? and Router.current().params._id is this.data.rid) and not this.data.ls
 		KonchatNotification.newRoom(this.data.rid)
-		# console.log 'toca ', this.data.rid
 
 Template.chatRoomItem.events
 	'click .hide-room': (e) ->
@@ -53,8 +53,6 @@ Template.chatRoomItem.events
 
 		if (Router.current().route.getName() is 'room' and Router.current().params._id is this.rid)
 			Router.go 'index'
-
-		RoomManager.close this.rid
 
 		Meteor.call 'hideRoom', this.rid
 

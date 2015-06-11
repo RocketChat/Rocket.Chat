@@ -1,8 +1,14 @@
 Meteor.startup ->
 	Meteor.defer ->
-		ChatMessage._ensureIndex({ 'expireAt': 1 }, { expireAfterSeconds: 0 })
-		ChatMessage._ensureIndex({ 'rid': 1 })
-		ChatMessage._ensureIndex({ 'rid': 1, 'ts': 1 })
-		ChatSubscription._ensureIndex({ 'uid': 1 })
-		ChatSubscription._ensureIndex({ 'ts': 1 })
-		ChatSubscription._ensureIndex({ 'rid': 1, 'uid': 1 }, {unique: true})
+		try ChatRoom._ensureIndex { 'name': 1 }, { unique: 1, sparse: 1 } catch e then console.log e
+		try ChatRoom._ensureIndex { 'u._id': 1 } catch e then console.log e
+
+		try ChatSubscription._ensureIndex { 'rid': 1, 'u._id': 1 }, { unique: 1 } catch e then console.log e
+		try ChatSubscription._ensureIndex { 'u._id': 1, 'name': 1, 't': 1 }, { unique: 1 } catch e then console.log e
+		try ChatSubscription._ensureIndex { 'open': 1 } catch e then console.log e
+		try ChatSubscription._ensureIndex { 'alert': 1 } catch e then console.log e
+		try ChatSubscription._ensureIndex { 'unread': 1 } catch e then console.log e
+		try ChatSubscription._ensureIndex { 'ts': 1 } catch e then console.log e
+
+		try ChatMessage._ensureIndex { 'rid': 1, 'ts': 1 } catch e then console.log e
+		try ChatMessage._ensureIndex { 'expireAt': 1 }, { expireAfterSeconds: 0 } catch e then console.log e

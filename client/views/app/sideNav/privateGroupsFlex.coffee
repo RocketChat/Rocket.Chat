@@ -25,7 +25,7 @@ Template.privateGroupsFlex.helpers
 						type: 'u'
 						$and: [
 							{ _id: { $ne: Meteor.userId() } }
-							{ _id: { $nin: Template.instance().selectedUsers.get() } }
+							{ username: { $nin: Template.instance().selectedUsers.get() } }
 						]
 					sort: 'name'
 				}
@@ -34,9 +34,9 @@ Template.privateGroupsFlex.helpers
 
 Template.privateGroupsFlex.events
 	'autocompleteselect #pvt-group-members': (event, instance, doc) ->
-		instance.selectedUsers.set instance.selectedUsers.get().concat doc._id
+		instance.selectedUsers.set instance.selectedUsers.get().concat doc.username
 
-		instance.selectedUserNames[doc._id] = doc.name
+		instance.selectedUserNames[doc.username] = doc.name
 
 		event.currentTarget.value = ''
 		event.currentTarget.focus()
@@ -53,6 +53,15 @@ Template.privateGroupsFlex.events
 
 	'click .cancel-pvt-group': (e, instance) ->
 		SideNav.closeFlex()
+
+	'click header': (e, instance) ->
+		SideNav.closeFlex()
+
+	'mouseenter header': ->
+		SideNav.overArrow()
+
+	'mouseleave header': ->
+		SideNav.leaveArrow()
 
 	'keydown input[type="text"]': (e, instance) ->
 		Template.instance().error.set([])

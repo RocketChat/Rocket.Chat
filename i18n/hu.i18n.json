@@ -1,0 +1,167 @@
+{
+  "accounts" : {
+    "Email_verified" : "Email hitelesítve",
+    "Error_changing_password" : "Jelszó megváltoztatva",
+    "New_password" : "Új jelszó"
+  },
+  "chatMessageDashboard" : {
+    "edited" : "szerkesztve",
+    "Room_name_changed" : "A szoba neve megváltozott: <em>__room_name__</em>, megváltoztatta <em>__user_by__</em>",
+    "User_added" : "<em>%s</em> hozzáadva.",
+    "User_added_by" : "<em>__user_added__</em> felhasználót hozzáadta <em>__user_by__</em>.",
+    "User_left" : "<em>%s</em> kilépett.",
+    "User_removed_by" : "<em>__user_by__</em> felhasználót eltávolította <em>__user_removed__</em>",
+    "Welcome" : "Üdvözöllek <em>%s</em>"
+  },
+  "chatRoomItem" : {
+    "Hide_room" : "Szoba elrejtése",
+    "Leave_room" : "Szoba elhagyása"
+  },
+  "chatRooms" : {
+    "Favorites" : "Kedvencek",
+    "Powered_by" : "a szolgáltatás motorja",
+    "Recents" : "Legújabb",
+    "Channels" : "Csatornák",
+    "Direct_Messages" : "Közvetlen üzenet",
+    "Private_Groups" : "Privát csoportok",
+    "Members_placeholder" : "Tagok",
+    "Name" : "Név",
+    "Members" : "Tagok",
+    "Selected_users" : "Kiválasztott tagok",
+    "Save" : "Mentés",
+    "Cancel" : "Mégse",
+    "No_channels_yet" : "Még nem vagy tagja egy csatornának sem.",
+    "No_direct_messages_yet" : "Még nem kezdeményeztél beszélgetést",
+    "No_groups_yet" : "Még nincsenek privát csoportjaid",
+    "No_favorites_yet" : "Még nincsenek kedvenceid.",
+    "Create_new_channel" : "Create a new public channel",
+    "Channels_list" : "Nyilvános csatornák listája",
+    "More_channels" : "Még több csatorna",
+    "Invalid_room_name" : "<strong>%s</strong> szobanév nem érvényes,<br/> kérlek csak betűket, számokat és kötőjeleket használj"
+  },
+  "chatWindowDashboard" : {
+    "Add_users" : "Felhasználók hozzáadása",
+    "are_also_typing" : "is ír",
+    "are_typing" : "éppen ír",
+    "is_also_typing" : "is ír",
+    "is_typing" : "éppen ír",
+    "Members_List" : "Tag lista",
+    "New_messages" : "Új üzenet",
+    "Quick_Search" : "Gyors keresés",
+    "Room_name_changed_successfully" : "A szoba neve sikeresen megváltozott",
+    "See_all" : "Összes megtekintése",
+    "See_only_online" : "Csak online",
+    "Send_Message" : "Üzenet küldése",
+    "Showing_online_users" : "<b>__total_online__</b> online a __total___ felhasználóból",
+    "Start_of_conversation" : "Beszélgetés kezdete",
+    "View_All" : "Összes megtekintése"
+  },
+  "footer" : {
+    "Follow_social_profiles" : "Kövess minket a közösségi oldalainkon, forkold a github projektünk és oszd meg az ötleted a rocket.chat alkalmazás trello oldalán.",
+    "Fork_it_on_github" : "Forkold github-on",
+    "Join_the_Community" : "Csatlakozz a közösséghez",
+    "Language_Version" : "Angol nyelvű verzió",
+    "Proudly_developed" : "Meteor-al büszkén fejlesztve"
+  },
+  "general" : {
+    "and" : "és",
+    "Cancel" : "Mégse",
+    "close" : "bezár",
+    "Contact" : "Kapcsolat",
+    "Conversation" : "Beszélgetés",
+    "History" : "Előzmények",
+    "Load_more" : "Korábbiak betöltése",
+    "Login" : "Bejelentkezés",
+    "Name" : "Név",
+    "Please_wait" : "Várj egy kicsit",
+    "Remove" : "Eltávolít",
+    "Reset_password" : "Jelszó visszaállítása",
+    "Search" : "Keresés",
+    "Send_confirmation_email" : "Megerősítő email elküldése",
+    "Submit" : "Elküldés",
+    "User_logged_out" : "Nem elérhető"
+  },
+  "home" : {
+    "Chat_Rooms" : "Társalgók",
+    "Have_your_own_chat" : "Legyen saját webes chat-ed. A Meteor.com alapokra épített Rocket.Chat remek megoldás azoknak a fejlesztőknek akik szívesen építenének vagy fejlesztenének saját alkalmazást.",
+    "use_menu" : "Használd az oldalsó menüt hogy elérd a beszélgetéseidet és a szobákat",
+    "welcome" : "Üdvözöllek a"
+  },
+  "login" : {
+    "Cancel" : "Vissza a bejelentkezéshez",
+    "Confirm_password" : "Ellenőrizd a jelszavad",
+    "Enter_info" : "Írd be a bejelentkezéshez szükséges adatokat",
+    "Email_or_username" : "Email or username",
+    "Forgot_password" : "Elfelejtetted a jelszavad?",
+    "Password" : "Jelszó",
+    "Register" : "Új fiók regisztálása",
+    "Remember_me" : "Emlékezz rám",
+    "You_neeed_confirm_email" : "Kérlek hitelesítsd az email címed a bejelntkezéshez",
+    "Invalid_email" : "Érvénytelen email cím",
+    "Invalid_pass" : "A jelszó nem lehet üres",
+    "Invalid_name" : "A név nem lehet üres",
+    "Invalid_confirm_pass" : "A két jelszó nem eggyezik",
+    "We_have_sent_registration_email" : "Küldtünk egy email-t hogy megerősíthessük a regisztrációt. Ha nem kapnál hamarosan levelet akkor gyere vissza később és próbáld újra.",
+    "We_have_sent_password_email" : "Elküldtünk egy email-t a jelszó visszaállítás lépéseiről. Ha hamarosan nem érkezne meg, akkor gyere vissza és próbáld újra."
+  },
+  "loginIntro" : {
+    "Access_online_demo" : "Hozzáférés az online demóhoz",
+    "Access_Online_Demo" : "Hozzáférés az Online Demóhoz",
+    "Your_Open_Source_solution" : "A saját Nyílt Forrású chat-ed"
+  },
+  "loginServices" : {
+    "github_no_public_email" : "Nincs egy email címed se publikusként megadva a GitHub fiókodban",
+    "login_with" : "Vagy jelentkezz be a következőkkel"
+  },
+  "privateHistory" : {
+    "Created_at" : "Készült",
+    "Last_message" : "Utolsó üzenet",
+    "Msgs" : "Üzik",
+    "n_messages" : "s% üzenetek",
+    "Room" : "Szoba",
+    "Showing_results" : "<p><b>%s</b> eredmény megjelenítve</p>",
+    "since_creation" : "%s óta"
+  },
+  "RoomManager" : {
+    "No_permission_to_view_room" : "Ezt a szobát nem tekintheted meg"
+  },
+  "roomSearch" : {
+    "Nothing_found" : "Nem találtam semmit"
+  },
+  "usernameRegistration" : {
+    "Username" : "Felhasználónév",
+    "Loading_suggestion" : "Javaslatok betöltése...",
+    "Username_title" : "Felhasználónév regisztrálása",
+    "Username_description" : "A felhasználónév arra kel hogy meg tudjanak említeni beszélgetésekben.",
+    "Use_this_username" : "Használd ezt a felhasználónevet",
+    "Username_unavaliable" : "<strong>%s</strong>  név már használatban van :(",
+    "Username_invalid" : "<strong>%s</strong> felhasználónév nem érvényes,<br/> kérlek csak betűket, számokat, pontokat vagy kötőjeleket használj",
+    "Username_cant_be_empty" : "A felhasználónév nem lehet üres"
+  },
+  "userStatus" : {
+    "away" : "távol",
+    "Away" : "Távol",
+    "busy" : "elfoglalt",
+    "Busy" : "Elfoglalt",
+    "Change_avatar" : "Kép megváltoztatása",
+    "coming_soon" : "hamarosan",
+    "invisible" : "láthatatlan",
+    "Invisible" : "Láthatatlan",
+    "Logout" : "Kijelentkezés",
+    "Online" : "Elérhető",
+    "Privacy" : "Adatvédelem",
+    "Settings" : "Beállítások",
+    "Silence" : "Némítás"
+  },
+  "error" : {
+    "Not_found_or_not_allowed" : "Nem található vagy Nem engedett"
+  },
+  "avatar" : {
+    "Use_service_avatar" : "%s használata",
+    "Use_initials_avatar" : "Use your username initials",
+    "Login_with" : "Bejelentkezés %s segítségével",
+    "Select_an_avatar" : "Válassz képet",
+    "Use_uploaded_avatar" : "Feltöltött kép használata",
+    "Select_file" : "File kiválasztása"
+  }
+}

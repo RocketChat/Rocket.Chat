@@ -1,26 +1,13 @@
+//
+// ----------------
+//
+@import "global/_variables.less";
 @import "utils/_lesshat.import.less";
 @import "utils/_reset.import.less";
 @import "utils/_keyframes.import.less";
 @import "utils/_preloader.import.less";
-@import url(http://fonts.googleapis.com/css?family=Roboto:300,400,500,700,900);
-@import url(http://fonts.googleapis.com/css?family=Muli:400,300,500);
-@footer-min-height: 70px;
-@header-min-height: 60px;
-@rooms-box-width: 260px;
-@flex-tab-width: 400px;
-//@primary-background-color: #045080;
-//@primary-background-color: #38393d;
-@primary-background-color: #04436a;
-@secondary-background-color: #F4F4F4;
-@tertiary-background-color: #EAEAEA;
-@primary-font-color: #444444;
-@secondary-font-color: #7f7f7f;
-@tertiary-font-color: rgba(255, 255, 255, 0.6);
-@quaternary-font-color: rgba(255, 255, 255, 0.85);
-@status-online: #35AC19;
-@status-offline: #CCCCCC;
-@status-busy: #D30230;
-@status-away: #fcb316;
+@import url(//fonts.googleapis.com/css?family=Roboto:300,400,500,700,900);
+@import url(//fonts.googleapis.com/css?family=Muli:400,300,500);
 @import "utils/_emojione.import.less";
 .cf_ {
 	display: inline-block;
@@ -53,15 +40,33 @@ a {
 }
 
 code {
-	color: #f8f8f2;
+	background: #f8f8f8;
+	border-radius: 4px;
+	border: 1px solid #ccc;
+	color: #333;
 	display: block;
-	padding: .5em;
-	background: #23241f;
-	border-radius: 6px;
-	border: none;
-	overflow-x: auto;
-	word-wrap: break-word;
 	font-weight: bold;
+	overflow-x: auto;
+	padding: 0.5em;
+	word-wrap: break-word;
+	&.inline {
+		display: inline-block;
+		padding: 0 10px;
+		margin: 0;
+		vertical-align: bottom;
+	}
+}
+
+q {
+	padding-left: 10px;
+	&:before {
+		content: ' ';
+		background-color: #ccc;
+		height: 22px;
+		width: 3px;
+		position: absolute;
+		left: 50px;
+	}
 }
 
 .text-center {
@@ -268,7 +273,7 @@ input.search {
 	}
 }
 
-form.search-form {
+.search-form {
 	position: relative;
 }
 
@@ -551,13 +556,13 @@ label.required:after {
 	}
 }
 
-.a-plus{
+.a-plus {
 	display: block;
 	width: 25px;
 	height: 25px;
 	z-index: 100;
 	position: relative;
-	&:before, &:after{
+	&:before, &:after {
 		content: " ";
 		display: block;
 		background-color: #aaa;
@@ -570,16 +575,16 @@ label.required:after {
 	}
 	&:after {
 		.transform(rotate(90deg));
-		.transition(transform .315s ease-out .2s, background .15s ease-out);
+		.transition(transform .315s ease-out .1s, background .15s ease-out);
 	}
 	&:before {
 		.transition(transform .315s ease-out .3s, background .15s ease-out);
 	}
-	&:hover{
-		&:before{
+	&:hover {
+		&:before {
 			.transform(rotate(180deg));
 		}
-		&:after{
+		&:after {
 			.transform(rotate(-90deg));
 		}
 	}
@@ -630,6 +635,9 @@ a.github-fork {
 		width: 100%;
 		height: 1px;
 	}
+	@media all and (max-width: 600px) {
+		display: none;
+	}
 }
 
 .mac-bar {
@@ -664,16 +672,35 @@ a.github-fork {
 	width: 100%;
 	overflow: hidden;
 	position: relative;
+	border-radius: 4px;
 	.avatar-image {
 		height: 100%;
 		width: 100%;
-		min-height: 40px;
-		min-width: 40px;
+		min-height: 20px;
+		min-width: 20px;
 		display: block;
+		position: relative;
 		background-color: transparent;
 		background-size: cover;
 		background-repeat: no-repeat;
 		background-position: center;
+		border-radius: 4px;
+	}
+	&[initials]:before {
+		content: attr(initials);
+		position: absolute;
+		position: absolute;
+		font-size: 22px;
+		text-align: center;
+		width: 100%;
+		height: 100%;
+		color: #FFF;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		font-family: Helvetica;
+		text-transform: uppercase;
+		font-weight: bold;
 	}
 }
 
@@ -710,20 +737,24 @@ a.github-fork {
 	.info {
 		position: relative;
 		height: 100%;
+		padding: 10px 0px 10px 18px;
 		.thumb {
 			float: left;
 			height: 100%;
 			position: relative;
-			width: 60px;
-			padding: 8px;
+			width: 42px;
+			padding: 0;
+			height: 42px;
 			&:after {
 				content: " ";
 				display: block;
-				width: 44px;
-				height: 2px;
+				width: 8px;
+				height: 8px;
 				z-index: 10;
 				position: absolute;
-				bottom: 5px;
+				border-radius: 4px;
+				top: 18px;
+				left: -14px;
 			}
 			.avatar-initials {
 				line-height: 44px;
@@ -732,7 +763,7 @@ a.github-fork {
 		.data {
 			float: left;
 			position: relative;
-			padding: 0 25px 0 5px;
+			padding: 0 25px 0 10px;
 			height: 100%;
 			display: table;
 			.calc(width, ~"100% - 60px");
@@ -793,7 +824,7 @@ a.github-fork {
 			.transform(translateX(-100%));
 		}
 		.status {
-			padding-left: 30px;
+			padding-left: 38px;
 			position: relative;
 			&:after {
 				content: " ";
@@ -804,8 +835,8 @@ a.github-fork {
 				border-radius: 50%;
 				z-index: 5;
 				position: absolute;
-				left: 12px;
-				.calc(top, ~"50% - 6px");
+				left: 18px;
+				.calc(top, ~"50% - 8px");
 			}
 			&.offline {
 				&:after {
@@ -842,7 +873,10 @@ a.github-fork {
 			top: 17px;
 		}
 		i {
-			width: 18px;
+			width: 26px;
+			display: inline-block;
+			text-align: center;
+			margin-left: 0 -1px 0 1px;
 		}
 		a {
 			position: relative;
@@ -863,32 +897,38 @@ a.github-fork {
 				text-decoration: none;
 			}
 		}
+		.icon-logout {
+			&:before {
+				margin-right: 0px;
+			}
+		}
+		.icon-camera {
+			&:before {
+				margin-left: 1px;
+			}
+		}
 	}
 	&.active .info,
 	.info:hover {
 		h4 {
 			color: rgba(255, 255, 255, 0.85);
 		}
-		.arrow {
-			&:before, &:after {
-				background-color: rgba(255, 255, 255, 0.85);
-			}
-		}
 	}
-	.arrow {
-		position: absolute;
-		right: 5px;
+	.hover & {
+		.info h4 {
+			color: rgba(255, 255, 255, 0.85);
+		}
 	}
 }
 
 // rooms-box
 .flex-nav {
-	background-color: @primary-background-color;
+	//background-color: @primary-background-color;
+	background-color: transparent;
 	position: fixed;
 	top: 0;
 	left: 0;
 	height: 100%;
-	padding-top: 15px;
 	z-index: 1000;
 	overflow-y: auto;
 	overflow-x: hidden;
@@ -898,14 +938,40 @@ a.github-fork {
 	.custom-scroll(transparent, rgba(255, 255, 255, 0.05));
 	&.hidden {
 		.transform(translateX(-100%));
+		header, footer, .content {
+			.transform(translateX(-100%));
+		}
+	}
+	header,
+	footer,
+	.content {
+		.transition(transform .425s cubic-bezier(0, .8, .05, 1));
+	}
+	> section {
+		&:extend(.fill-all);
 	}
 	header {
-		padding: 0 20px;
-		margin-bottom: 30px;
+		display: table;
+		position: absolute;
+		top: 0;
+		left: 0;
+		width: 100%;
+		z-index: 110;
+		cursor: pointer;
+		min-height: @header-min-height;
+		height: @header-min-height;
+		padding-left: 15px;
+		.transition-delay(.05s);
+		background-color: @primary-background-color;
+		> div {
+			display: table-cell;
+			vertical-align: middle;
+			text-align: left;
+		}
 		h4 {
 			line-height: 18px;
-			font-size: 21px;
-			margin-top: 3px;
+			font-size: 20px;
+			margin-top: 2px;
 			font-weight: 300;
 			overflow: hidden;
 			text-overflow: ellipsis;
@@ -913,11 +979,54 @@ a.github-fork {
 		}
 		p {
 			line-height: 18px;
-			margin-top: 6px;
+			margin-top: 4px;
+			font-weight: 400;
+			font-size: 13px;
+		}
+	}
+	footer {
+		display: table;
+		position: absolute;
+		bottom: 0;
+		left: 0;
+		width: 100%;
+		padding: 0 10px;
+		z-index: 120;
+		text-align: left;
+		background: #fff;
+		min-height: @footer-min-height;
+		background-color: @primary-background-color;
+		.transition-delay(.22s);
+		> div {
+			display: table-cell;
+			vertical-align: middle;
+			text-align: left;
 		}
 	}
 	.content {
-		padding: 0 20px 20px;
+		direction: rtl;
+		position: absolute;
+		top: @header-min-height;
+		.calc(height, ~"100% - " @header-min-height + @footer-min-height);
+		width: 100%;
+		overflow-x: hidden;
+		overflow-y: scroll;
+		display: block;
+		-webkit-overflow-scrolling: touch;
+		box-shadow: 0 0 5px rgba(0, 0, 0, 0.4) inset;
+		padding: 35px 10px;
+		.custom-scroll(transparent, rgba(255, 255, 255, 0.05));
+		.transition-delay(.135s);
+		background-color: @primary-background-color;
+		> .wrapper {
+			direction: ltr;
+		}
+		h4 {
+			margin-bottom: 30px;
+			font-weight: 400;
+			text-transform: uppercase;
+			font-size: 13px;
+		}
 	}
 	.input-line {
 		margin-bottom: 25px;
@@ -988,7 +1097,7 @@ a.github-fork {
 		.calc(height, ~"100% - " @header-min-height + @footer-min-height);
 		width: 100%;
 		overflow-x: hidden;
-		overflow-y: scroll;
+		overflow-y: auto;
 		display: block;
 		-webkit-overflow-scrolling: touch;
 		box-shadow: 0 0 5px rgba(0, 0, 0, 0.4) inset;
@@ -998,6 +1107,16 @@ a.github-fork {
 			direction: ltr;
 			padding-left: 8px;
 			padding-bottom: 1em;
+		}
+	}
+	.more {
+		display: block;
+		color: @tertiary-font-color;
+		font-size: 11px;
+		padding: 4px 0 4px 10px;
+		margin-top: 2px;
+		&:hover {
+			background-color: rgba(0, 0, 0, 0.1);
 		}
 	}
 	.input-error {
@@ -1031,13 +1150,25 @@ a.github-fork {
 		height: @header-min-height;
 		background-color: @primary-background-color;
 	}
+	> .arrow {
+		position: absolute;
+		top: 18px;
+		right: 8px;
+		z-index: 1000;
+		cursor: pointer;
+		&.hover, &:hover {
+			&:before, &:after {
+				background-color: rgba(255, 255, 255, 0.85);
+			}
+		}
+	}
 	.footer {
 		position: absolute;
 		bottom: 0;
 		left: 0;
 		width: 100%;
 		padding: 10px 15px 0px 15px;
-		z-index: 100;
+		z-index: 120;
 		text-align: right;
 		background: #fff;
 		min-height: @footer-min-height;
@@ -1062,7 +1193,7 @@ a.github-fork {
 		}
 		img {
 			display: inline-block;
-			width: 90%;
+			width: 85%;
 		}
 	}
 	.search-form {
@@ -1084,7 +1215,6 @@ a.github-fork {
 		color: @tertiary-font-color;
 		line-height: 28px;
 		padding-left: 10px;
-
 		a {
 			color: inherit;
 			display: block;
@@ -1092,21 +1222,20 @@ a.github-fork {
 		&:hover {
 			background-color: rgba(0, 0, 0, 0.1);
 		}
-
 		&.add-room {
 			&:hover {
-				i{
-					&:before{
+				i {
+					&:before {
 						.transform(rotate(180deg));
 					}
-					&:after{
+					&:after {
 						.transform(rotate(-90deg));
 					}
 				}
 			}
 			i {
 				position: absolute;
-				right: 5px;
+				right: 6px;
 				top: 1px;
 			}
 		}
@@ -1165,6 +1294,12 @@ a.github-fork {
 					opacity: 0;
 				}
 			}
+			&.has-alert {
+				.name {
+					color: #ffffff;
+					font-weight: bold;
+				}
+			}
 			&.away {
 				a {
 					color: #666;
@@ -1174,7 +1309,7 @@ a.github-fork {
 		a {
 			display: block;
 			border-radius: 2px 0 0 2px;
-			padding: 6px 25px 7px 8px;
+			padding: 6px 25px 7px 6px;
 			font-size: 15px;
 			position: relative;
 			line-height: 16px;
@@ -1195,7 +1330,7 @@ a.github-fork {
 			position: absolute;
 			right: 0;
 			width: 50px;
-			padding-right: 6px;
+			padding-right: 10px;
 			text-align: right;
 			opacity: 0;
 			background-color: transparent;
@@ -1209,6 +1344,12 @@ a.github-fork {
 				&:hover {
 					color: rgba(255, 255, 255, 0.75);
 				}
+			}
+			.icon-cancel-circled:before {
+				margin-left: 2px;
+			}
+			.icon-logout {
+				margin-left: 1px;
 			}
 		}
 		i {
@@ -1249,14 +1390,25 @@ a.github-fork {
 
 .fixed-title {
 	position: absolute;
-	display: block;
-	padding: 15px 10px 15px 20px;
+	display: table;
+	padding: 0 10px 0 20px;
 	background: #fff;
 	border-bottom: 1px solid @tertiary-background-color;
 	z-index: 100;
 	top: 0;
 	left: 0;
 	width: 100%;
+	height: @header-min-height;
+	&.visible {
+		h2 {
+			overflow: visible;
+		}
+	}
+	> div {
+		display: table-cell;
+		vertical-align: middle;
+		padding-top: 4px;
+	}
 	h2 {
 		max-width: 90%;
 		overflow: hidden;
@@ -1265,24 +1417,32 @@ a.github-fork {
 		font-size: 22px;
 		font-weight: 500;
 		line-height: 29px;
-		.icon-star {
-			margin-right: -4px;
-		}
-		.icon-at,
-		.icon-hash {
+		.icon-at, .icon-hash {
 			margin-right: -7px;
 			color: #CCCCCC;
+		}
+		.icon-star,
+		.icon-star-empty {
+			margin-right: -4px;
 		}
 	}
 	.hidden {
 		visibility: hidden;
 		display: none;
 	}
-	// input[type='text']{
-	// 	.calc(width, ~'100% - 100px');
-	// 	vertical-align: top;
-	// 	margin-top: 0;
-	// }
+	input[type='text'] {
+		.calc(width, ~'100% - 100px');
+		vertical-align: top;
+		margin-top: -4px;
+		margin-left: -3px;
+		font-size: 20px;
+	}
+	.icon-pencil {
+		vertical-align: text-top;
+		margin-top: -7px;
+		display: inline-block;
+		font-size: 16px;
+	}
 }
 
 // MAIN CONTENT + MAIN PAGES //
@@ -1323,17 +1483,17 @@ a.github-fork {
 }
 
 .page-home {
-	.fixed-title{
-		h2{
+	.fixed-title {
+		h2 {
 			overflow: visible;
 		}
 	}
 	.logo {
 		display: inline-block;
-		width: 240px;
+		width: 190px;
 		margin-right: 6px;
 		vertical-align: text-top;
-		margin-top: -5px;
+		margin-top: -3px;
 		margin-left: 10px;
 	}
 	.info {
@@ -1448,13 +1608,15 @@ a.github-fork {
 	-moz-user-select: text;
 	-ms-user-select: text;
 	user-select: text;
+	.input-message-editing-container {
+		.calc(width, ~"100% - 16px");
+	}
 	.input-message-editing {
-		display: block;
 		resize: none;
+		display: block;
 		padding-top: 9px;
 		padding-bottom: 9px;
 		overflow-y: hidden;
-		.calc(width, ~"100% - 16px");
 	}
 	.edit-room-title {
 		color: @secondary-font-color;
@@ -1470,7 +1632,7 @@ a.github-fork {
 		height: 100%;
 		top: 0;
 		left: 0;
-		overflow-y: scroll;
+		overflow-y: auto;
 		overflow-x: hidden;
 		word-wrap: break-word;
 		-webkit-overflow-scrolling: touch;
@@ -1478,20 +1640,23 @@ a.github-fork {
 	}
 	.footer {
 		position: absolute;
-		padding: 14px 20px 0px 20px;
+		padding: 8px 20px 0px 20px;
 		background: #fff;
 		border-top: 1px solid @tertiary-background-color;
 		z-index: 100;
 		bottom: 0;
 		left: 0;
 		width: 100%;
-		height: @footer-min-height;
+		min-height: @footer-min-height;
+	}
+	.message-popup-position {
+		position: relative;
 	}
 	.message-popup {
 		position: absolute;
 		background: #FAFAFA;
 		z-index: 101;
-		bottom: @footer-min-height;
+		bottom: 0px;
 		left: 0px;
 		right: 0px;
 		overflow: hidden;
@@ -1536,10 +1701,30 @@ a.github-fork {
 			}
 		}
 		> .users-typing {
+			float: left;
 			height: 20px;
 			font-size: 12px;
 			color: #888;
 			padding: 3px 0px 0px 5px;
+		}
+		> .formatting-tips {
+			float: right;
+			height: 20px;
+			font-size: 11px;
+			color: #888;
+			padding: 4px 0px 0px 5px;
+			display: inline-block;
+			white-space: nowrap;
+			q {
+				padding: 0 0 0 3px;
+				border-left: 3px solid #ccc;
+				&:before {
+					content: none !important;
+				}
+			}
+			code {
+				color: #888;
+			}
 		}
 	}
 	.add-user-search {
@@ -1553,9 +1738,9 @@ a.github-fork {
 
 .messages-box {
 	position: relative;
-	margin: 60px 20px 0px;
+	margin: 60px 20px 0px 0px;
 	overflow: hidden;
-	.calc(width, ~'100% - 20px');
+	width: 100%;
 	.calc(height, ~'100% - 120px');
 	ul {
 		padding: 21px 0 10px;
@@ -1585,6 +1770,7 @@ a.github-fork {
 		padding-left: 50px;
 		position: relative;
 		line-height: 20px;
+		margin: 5px 20px;
 		&.with-thumb {
 			margin-top: 12px;
 			min-height: 40px;
@@ -1609,13 +1795,14 @@ a.github-fork {
 		}
 		> div {
 			a {
-				color: @primary-background-color;
-				font-weight: 500;
+				color: @link-font-color;
+				font-weight: 400;
 				&:hover {
-					color: darken(@primary-background-color, 10%);
+					color: darken(@link-font-color, 10%);
+					text-decoration: underline;
 				}
 			}
-			ul{
+			ul {
 				margin: 0;
 				padding: 0;
 			}
@@ -1640,13 +1827,14 @@ a.github-fork {
 	.date {
 		text-align: center;
 		position: relative;
-		margin-top: 12px;
+		margin: 15px 20px;
 		&:before {
 			content: " ";
 			height: 1px;
-			width: 80%;
+			width: 100%;
+			left: 0;
+			right: 0;
 			position: absolute;
-			left: 10%;
 			top: 11px;
 			background-color: #DFDFDF;
 		}
@@ -1677,13 +1865,39 @@ a.github-fork {
 			}
 		}
 	}
-	.time {
+	.time,
+	.time-single {
 		font-size: 12px;
 		position: absolute;
 		display: inline-block;
 		color: #888;
 		left: 6px;
 		opacity: 0;
+	}
+	.time-single {
+		opacity: 1;
+		left: -15px;
+		width: 64px;
+		.time-single-time {
+			display: none;
+		}
+		.time-single-edited {
+			text-align: center;
+		}
+	}
+	.message.own:hover {
+		.time-single {
+			.time-single-time {
+				display: block;
+			}
+			.time-single-edited {
+				display: none;
+				text-align: center;
+			}
+		}
+		.edit-message {
+			display: inline-block;
+		}
 	}
 	.thumb {
 		position: absolute;
@@ -1692,11 +1906,6 @@ a.github-fork {
 		display: block;
 		width: 40px;
 		height: 40px;
-		background-color: #FFF;
-		border-radius: 2px;
-		background-image: url(/images/no_picture.png);
-		background-size: 100% auto;
-		background-position: 50% 50%;
 	}
 }
 
@@ -1776,17 +1985,28 @@ a.github-fork {
 			position: absolute;
 			left: 0;
 			top: 0px;
-			background-color: @secondary-background-color;
+			background-color: @tertiary-background-color;
 			border: none;
 			height: 60px;
-			width: 28px;
+			width: 30px;
 			border-bottom: 1px solid @tertiary-background-color;
 			color: @secondary-font-color;
 			cursor: pointer;
 			.transform(translateX(-27px));
-			.transition(transform .3s ease-out .4s);
+			.transition(transform .25s ease-out .475s, background .075s ease-out .5s);
 			&:hover {
-				color: @primary-font-color;
+				.arrow {
+					.arrow {
+						&:before, &:after {
+							background-color: #4a4a4a;
+						}
+					}
+				}
+			}
+			.arrow {
+				&:before, &:after {
+					background-color: #7a7a7a;
+				}
 			}
 			i {
 				.transform-origin(50%, 50%, 0);
@@ -1795,9 +2015,17 @@ a.github-fork {
 				vertical-align: top;
 				margin-top: 1px;
 			}
-			.flex-opened &{
+			.flex-opened & {
+				background-color: @secondary-background-color;
 				.transition-delay(0s);
 				.transform(translateX(0));
+				&:hover {
+					.arrow {
+						&:before, &:after {
+							background-color: #7a7a7a;
+						}
+					}
+				}
 			}
 		}
 		.search-form {
@@ -1819,8 +2047,8 @@ a.github-fork {
 		&:extend(.fill-all);
 		.custom-scroll(transparent, #DADADA);
 		margin-top: 60px;
-		overflow-y: scroll;
 		overflow-x: hidden;
+		overflow-y: auto;
 		-webkit-overflow-scrolling: touch;
 		.calc(height, ~"100% - " @footer-min-height + @header-min-height);
 		> div {
@@ -1838,7 +2066,7 @@ a.github-fork {
 			height: 100%;
 		}
 	}
-	footer{
+	footer {
 		position: absolute;
 		bottom: 0;
 		left: 0;
@@ -1848,9 +2076,9 @@ a.github-fork {
 		text-align: right;
 		height: @footer-min-height;
 	}
-	.social{
+	.social {
 		text-align: center;
-		h4{
+		h4 {
 			font-weight: 300;
 			position: absolute;
 			width: 100%;
@@ -2026,14 +2254,14 @@ a.github-fork {
 }
 
 .user-image-status(@color) {
-	.avatar{
-		&:after, &:before {
+	.avatar {
+		&:after {
 			background-color: darken(@color, 5%);
 		}
 	}
 }
 
-@user-image-square: 40px;
+@user-image-square: 20px;
 .user-image {
 	margin: 4px;
 	height: @user-image-square;
@@ -2043,83 +2271,81 @@ a.github-fork {
 	font-size: 12px;
 	position: relative;
 	display: inline-table;
+	.avatar {
+		&:before {
+			font-size: 10px;
+		}
+	}
 	&:hover,
 	&.selected {
-		.avatar{
+		.avatar {
 			&:after {
 				.transform(scaleX(1))
 			}
-			.status-offline & {
-				&:after, &:before {
+			.status-offline {
+				&:after {
 					background-color: @status-offline;
 				}
 			}
-			.status-online & {
-				&:after, &:before {
+			.status-online {
+				&:after {
 					background-color: @status-online;
 				}
 			}
-			.status-away & {
-				&:after, &:before {
+			.status-away {
+				&:after {
 					background-color: @status-away;
 				}
 			}
-			.status-busy & {
-				&:after, &:before {
+			.status-busy {
+				&:after {
 					background-color: @status-busy;
 				}
 			}
-			p{
+			p {
 				color: @primary-font-color;
 			}
 		}
 	}
 	.avatar {
 		overflow: visible;
-		&:after, &:before {
+		&:after {
 			content: " ";
-			width: 100%;
-			height: 2px;
+			height: 6px;
+			width: 6px;
 			position: absolute;
 			z-index: 1;
-			left: 0px;
-		}
-		&:after{
-			bottom: -4px;
-			.transform(scaleX(0));
-			.transform-origin(50%, 50%);
-			.transition(transform .15s ease-out .02s);
-		}
-		&:before{
-			bottom: -3px;
+			left: -12px;
+			top: 8px;
+			border-radius: 3px;
 		}
 		.avatar-initials {
 			line-height: @user-image-square;
 		}
 	}
-	p{
+	p {
 		display: none;
 	}
-	.lines &{
+	.lines & {
 		width: 100%;
 		margin: 0;
 		background-color: transparent;
-		&:after{
+		&:after {
 			display: none;
 		}
-		a{
+		a {
 			.cf_;
 			padding: 5px 0;
-			height: auto;
+			height: 30px;
 			background-color: transparent;
 			display: block;
-			> div{
+			> div {
 				float: left;
 				width: @user-image-square;
 				height: @user-image-square;
 			}
 		}
-		p{
+		p {
 			float: left;
 			display: block;
 			line-height: @user-image-square;
@@ -2346,7 +2572,7 @@ a.github-fork {
 }
 
 #login-card {
-	width: 100%;
+	width: 90%;
 	max-width: 520px;
 	padding: 22px 30px 30px;
 	margin: 25px auto;
@@ -2355,10 +2581,21 @@ a.github-fork {
 	border-radius: 2px;
 	position: relative;
 	z-index: 1;
+	header {
+		padding: 18px 0;
+		p {
+			//font-family: "Muli";
+			margin: 8px 0 0;
+			font-size: 14px;
+			line-height: 22px;
+			font-weight: 300;
+		}
+	}
 	h2 {
 		&:extend(.rocket-h2);
 		color: @primary-font-color;
-		margin-bottom: 30px;
+		line-height: 24px;
+		margin: 0;
 		&.error {
 			color: #b40202;
 		}
@@ -2372,14 +2609,14 @@ a.github-fork {
 	img {
 		width: 200px;
 	}
-	a{
+	a {
 		color: @primary-background-color;
 		margin: 4px 0;
 		display: inline-block;
-		&:active{
+		&:active {
 			color: @primary-background-color;
 		}
-		&:hover{
+		&:hover {
 			color: darken(@primary-background-color, 10%);
 		}
 	}
@@ -2389,8 +2626,7 @@ a.github-fork {
 		font-size: 10px;
 	}
 	.submit {
-		margin-bottom: 12px;
-		padding-top: 4px;
+		margin: 12px 0;
 	}
 	.remember {
 		float: left;
@@ -2401,19 +2637,6 @@ a.github-fork {
 	.forgot {
 		float: right;
 		line-height: 20px;
-	}
-	.submit button {}
-	.fields {
-		.transform-style(preserve-3d);
-		.perspective(600px);
-		margin-bottom: 26px;
-		label {
-			font-family: "Roboto";
-			font-size: 13px;
-			margin-top: 10px;
-			color: #AAA;
-			margin-left: 12px;
-		}
 	}
 	.input-text {
 		margin: 0 0 14px 0;
@@ -2431,42 +2654,9 @@ a.github-fork {
 			&:before {
 				visibility: hidden;
 			}
-			.field {
-				.transform(rotateX(0));
-			}
-		}
-		&:hover {
-			i {
-				background-color: #BFBFBF;
-			}
-			label {
-				color: #999;
-			}
 		}
 	}
-	.field {
-		display: block;
-		.transform-origin(50% 100% 0);
-		.transform(rotateX(100deg));
-		.transform-style(preserve-3d);
-		.backface-visibility(hidden);
-		.transition(transform .38s cubic-bezier(.5, 0, .1, 1));
-		i {
-			display: block;
-			width: 100%;
-			height: 3px;
-			background-color: #EAEAEA;
-			position: absolute;
-			bottom: 0;
-			left: 0;
-			.transform-origin(50% 100% 0);
-			.transform(rotateX(-90deg) translateY(4px));
-			.transition(background .2s ease-out);
-		}
-		span {
-			display: block;
-			.transform-style(flat);
-		}
+	.input-text {
 		input {
 			box-shadow: 0 0 0;
 			background-color: transparent;
@@ -2681,31 +2871,46 @@ a.github-fork {
 }
 
 .avatar-suggestion-item {
-	height: 80px;
 	margin: 10px 0px;
 	text-align: left;
-
-	> div {
-		height: 80px;
-		width: 80px;
+	display: table;
+	width: 100%;
+	padding: 12px;
+	background-color: @secondary-background-color;
+	border: 1px solid darken(@secondary-background-color, 10%);
+	.transition(background-color .15s ease-out, border-color .15s ease-out);
+	.avatar {
+		height: 55px;
+		width: 55px;
 		background-size: cover;
-		display: inline-block;
-		border: 1px solid #DDD;
-		font-size: 80px;
+		display: inline-table;
+		border: 1px solid darken(@tertiary-background-color, 10%);
+		font-size: 40px;
 		text-align: center;
-		line-height: 80px;
-		background-color: #EEE;
-		color: #CCC;
-		&.question-mark:before {
-			content: "?";
+		background-color: @tertiary-background-color;
+		position: relative;
+		vertical-align: middle;
+	}
+	.question-mark {
+		&::before {
 			position: absolute;
 			left: 0;
-			width: 80px;
+			top: 0;
+			width: 100%;
+			height: 100%;
+			margin: 0;
+			line-height: 55px;
+			color: darken(@tertiary-background-color, 10%);
 		}
 	}
+	.action {
+		text-align: right;
+		display: inline-table;
+		vertical-align: middle;
+		padding-left: 20px;
+	}
 	button {
-		display: inline-block;
-		top: -35px;
+		min-width: 120px;
 	}
 	input[type=file] {
 		position: absolute !important;

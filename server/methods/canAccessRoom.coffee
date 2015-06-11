@@ -1,35 +1,23 @@
 Meteor.methods
-	canAccessRoom: (roomId) ->
-		fromId = Meteor.userId()
-		# console.log '[methods] canAccessRoom -> '.green, 'fromId:', fromId, 'roomId:', roomId
+	canAccessRoom: (rid, userId) ->
+		console.log '[methods] canAccessRoom -> '.green, 'userId:', userId, 'rid:', rid
 
-		user = Meteor.user()
-		unless user?
+		user = Meteor.users.findOne userId, fields: username: 1
+
+		unless user?.username
 			throw new Meteor.Error 'not-logged-user', "[methods] canAccessRoom -> User doesn't have enough permissions"
 
-		unless roomId
+		unless rid
 			throw new Meteor.Error 'invalid-room', '[methods] canAccessRoom -> Cannot access empty room'
 
-		room = ChatRoom.findOne roomId
+		room = ChatRoom.findOne rid, { fields: { usernames: 1, t: 1 } }
 
-		canAccess = false
-
-		if user.admin
+		if room.t is 'c'
 			canAccess = true
-		else if room.uids.indexOf(Meteor.userId()) isnt -1
+		else if room.usernames.indexOf(user.username) isnt -1
 			canAccess = true
 
 		if canAccess isnt true
-			throw new Meteor.Error 'without-permission', "[methods] canAccessRoom -> User doesn't have enough permissions"
-
-		# create room subscription
-		ChatSubscription.upsert { rid: roomId, uid: Meteor.userId() },
-			$setOnInsert:
-				rn: room.name
-				t: 'v'
-				unread: 0
-			$set:
-				ls: (new Date())
-				ts: (new Date())
-
-		return true
+			return false
+		else
+			return room

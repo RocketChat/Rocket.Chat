@@ -1,55 +1,47 @@
 Meteor.methods
-	leaveRoom: (roomId) ->
+	leaveRoom: (rid) ->
 		fromId = Meteor.userId()
-		# console.log '[methods] leaveRoom -> '.green, 'fromId:', fromId, 'roomId:', roomId
+		# console.log '[methods] leaveRoom -> '.green, 'fromId:', fromId, 'rid:', rid
 
 		unless Meteor.userId()?
 			throw new Meteor.Error 300, 'Usuário não logado'
 
-		room = ChatRoom.findOne roomId
+		room = ChatRoom.findOne rid
 
 		update =
 			$pull:
-				uids: Meteor.userId()
+				usernames: Meteor.user().username
 
-		# if room name wasn't changed, update with new member
-		unless room.nc
-			users = _.without room.uids, Meteor.userId()
-
-			usersName = []
-
-			Meteor.users.find({ _id: { $in: users } }, { fields: { name: 1 }, sort: { name: 1 } }).forEach (user) ->
-				usersName.push user.name
-
-			room.name = usersName.join ', '
-
-			if not update.$set?
-				update.$set = {}
-
-			update.$set.name = room.name
-
-		ChatSubscription.update { rid: roomId },
+		ChatSubscription.update { rid: rid },
 			$set:
-				rn: room.name
+				name: room.name
 		,
 			multi: true
 
-		if room.uids.indexOf(Meteor.userId()) isnt -1
-			removedUser = Meteor.users.findOne Meteor.userId()
+		if room.t isnt 'c' and room.usernames.indexOf(Meteor.user().username) isnt -1
+			removedUser = Meteor.user()
 
 			ChatMessage.insert
-				rid: roomId
+				rid: rid
 				ts: (new Date)
 				t: 'ul'
 				msg: removedUser.name
-				by: Meteor.userId()
+				u:
+					_id: removedUser._id
+					username: removedUser.username
 
-		if room.uid is Meteor.userId()
-			if not update.$set?
-				update.$set = {}
+		if room.u._id is Meteor.userId()
+			newOwner = _.without(room.usernames, Meteor.user().username)[0]
+			if newOwner?
+				newOwner = Meteor.users.findOne username: newOwner
 
-			update.$set.uid = _.without(room.uids, Meteor.userId())[0]
+				if newOwner?
+					if not update.$set?
+						update.$set = {}
 
-		ChatSubscription.remove { rid: roomId, uid: Meteor.userId() }
+					update.$set['u._id'] = newOwner._id
+					update.$set['u.username'] = newOwner.username
 
-		ChatRoom.update roomId, update
+		ChatSubscription.remove { rid: rid, 'u._id': Meteor.userId() }
+
+		ChatRoom.update rid, update
