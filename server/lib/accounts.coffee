@@ -49,34 +49,13 @@ Accounts.validateLoginAttempt (login) ->
 	if login.allowed isnt true
 		return login.allowed
 
-	if login.type is 'password' and Meteor.settings.allowUnverifiedEmails isnt true
+	if login.type is 'password' and Meteor.settings.denyUnverifiedEmails is true
 		validEmail = login.user.emails.filter (email) ->
 			return email.verified is true
 
 		if validEmail.length is 0
 			throw new Meteor.Error 'no-valid-email'
 			return false
-
-	if not login.user.lastLogin?
-		# put user in general channel
-		ChatRoom.update('57om6EQCcFami9wuT', { $addToSet: { uids: login.user._id }})
-		if not ChatSubscription.findOne(rid: '57om6EQCcFami9wuT', uid: login.user._id)?
-			ChatSubscription.insert
-				rid: '57om6EQCcFami9wuT'
-				uid: login.user._id
-				ls: (new Date())
-				rn: 'general'
-				t: 'c'
-				f: true
-				ts: new Date()
-				unread: 0
-
-			if login.user.name?
-				ChatMessage.insert
-					rid: '57om6EQCcFami9wuT'
-					ts: new Date()
-					t: 'wm'
-					msg: login.user.name
 
 	Meteor.users.update {_id: login.user._id}, {$set: {lastLogin: new Date}}
 

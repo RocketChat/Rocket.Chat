@@ -1,37 +1,51 @@
 Meteor.methods
 	createPrivateGroup: (name, members) ->
-		fromId = Meteor.userId()
-		# console.log '[methods] createPrivateGroup -> '.green, 'fromId:', fromId, 'members:', members
+		if not Meteor.userId()
+			throw new Meteor.Error 'invalid-user', "[methods] createPrivateGroup -> Invalid user"
+
+		console.log '[methods] createPrivateGroup -> '.green, 'userId:', Meteor.userId(), 'arguments:', arguments
 
 		now = new Date()
 
-		members.push Meteor.userId()
+		me = Meteor.user()
+
+		members.push me.username
 
 		name = s.slugify name
 
 		# create new room
-		roomId = ChatRoom.insert
-			uids: members
+		rid = ChatRoom.insert
+			usernames: members
 			ts: now
 			t: 'p'
-			uid: Meteor.userId()
+			u:
+				_id: me._id
+				username: me.username
 			name: name
 			msgs: 0
 
-		for user in members
-			sub =
-				uid: user
-				rid: roomId
+		for username in members
+			member = Meteor.users.findOne({ username: username },{ fields: { username: 1 }})
+			if not member?
+				continue
+
+			subscription =
+				rid: rid
 				ts: now
-				rn: name
+				name: name
 				t: 'p'
-				unread: 0
+				open: true
+				u:
+					_id: member._id
+					username: member.username
 
-			if user is Meteor.userId()
-				sub.ls = now
+			if username is me.username
+				subscription.ls = now
+			else
+				subscription.alert = true
 
-			ChatSubscription.insert sub
+			ChatSubscription.insert subscription
 
 		return {
-			rid: roomId
+			rid: rid
 		}

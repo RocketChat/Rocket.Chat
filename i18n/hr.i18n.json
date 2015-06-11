@@ -1,0 +1,167 @@
+{
+  "accounts" : {
+    "Email_verified" : "Email provjeren",
+    "Error_changing_password" : "Lozinka je izmijenjena",
+    "New_password" : "Nova lozinka"
+  },
+  "chatMessageDashboard" : {
+    "edited" : "uređeno",
+    "Room_name_changed" : "Ime sobe promijenjeno u: <em>__room_name__</em> od <em>__user_by__</em>",
+    "User_added" : "Korisnik <em>%s</em> dodan.",
+    "User_added_by" : "Korisnik <em>__user_added__</em> dodan od <em>__user_by__</em>.",
+    "User_left" : "Korisnik <em>%s</em> je otišao.",
+    "User_removed_by" : "Korisnik <em>__user_removed__</em> maknut od <em>__user_by__</em>.",
+    "Welcome" : "Dobro došli <em>%s</em>."
+  },
+  "chatRoomItem" : {
+    "Hide_room" : "Sakrij sobu",
+    "Leave_room" : "Izađi iz sobe"
+  },
+  "chatRooms" : {
+    "Favorites" : "Omiljene",
+    "Powered_by" : "Powered by",
+    "Recents" : "Nedavni",
+    "Channels" : "Kanali",
+    "Direct_Messages" : "Izravne Poruke",
+    "Private_Groups" : "Privatne Grupe",
+    "Members_placeholder" : "Članovi",
+    "Name" : "Ime",
+    "Members" : "Članovi",
+    "Selected_users" : "Odabrani članovi",
+    "Save" : "Sačuvaj",
+    "Cancel" : "Otkaži",
+    "No_channels_yet" : "Još nisi dio nijednog kanala.",
+    "No_direct_messages_yet" : "Još nisi započeo ni1 razgovor.",
+    "No_groups_yet" : "Još nemaš privatnih grupa.",
+    "No_favorites_yet" : "Još nisi dodao omiljene.",
+    "Create_new_channel" : "Stvori novi javni kanal",
+    "Channels_list" : "Lista javnih kanala",
+    "More_channels" : "Više kanala",
+    "Invalid_room_name" : "<strong>%s</strong> nije valjano ime sobe,<br/> koristi samo slova, brojeve i crtice"
+  },
+  "chatWindowDashboard" : {
+    "Add_users" : "Dodaj korisnike",
+    "are_also_typing" : "isto tipkaju",
+    "are_typing" : "tipkaju",
+    "is_also_typing" : "isto tipka",
+    "is_typing" : "tipka",
+    "Members_List" : "Lista Članova",
+    "New_messages" : "Nove Poruke",
+    "Quick_Search" : "Brza Pretraga",
+    "Room_name_changed_successfully" : "Ime sobe je uspješno izmijenjeno",
+    "See_all" : "Vidi sve",
+    "See_only_online" : "Samo online",
+    "Send_Message" : "Pošalji Poruku",
+    "Showing_online_users" : "Prikazujem <b>__total_online__</b> od __total__ users",
+    "Start_of_conversation" : "Početak razgovora",
+    "View_All" : "Prikaži Sve"
+  },
+  "footer" : {
+    "Follow_social_profiles" : "Slijedi naše socijalne profile, forkaj nas na githubu i podijeli svoje misli o rocket.chat aplikaciji na našoj trello ploči.",
+    "Fork_it_on_github" : "Forkaj na githubu",
+    "Join_the_Community" : "Pridruži se zajednici",
+    "Language_Version" : "Engleska Verzija",
+    "Proudly_developed" : "Proudly developed by Meteor"
+  },
+  "general" : {
+    "and" : "i",
+    "Cancel" : "Otkaži",
+    "close" : "zatvori",
+    "Contact" : "Kontakt",
+    "Conversation" : "Razgovor",
+    "History" : "Povijest",
+    "Load_more" : "Učitaj više",
+    "Login" : "Prijava",
+    "Name" : "Ime",
+    "Please_wait" : "Pričekaj",
+    "Remove" : "Makni",
+    "Reset_password" : "Resetiraj lozinku",
+    "Search" : "Traži",
+    "Send_confirmation_email" : "Pošalji potvrdni email",
+    "Submit" : "Pošalji",
+    "User_logged_out" : "Korisnik je odjavljen"
+  },
+  "home" : {
+    "Chat_Rooms" : "Chat Sobe",
+    "Have_your_own_chat" : "Imaj svoj vlastiti web chat. Razvijen sa Meteor.com, the Rocket.Chat je sjajno rješenje za developere koji žele sagraditi i dalje razvijati svoju vlastitu chat platformu.",
+    "use_menu" : "Koristite izbornik kako bi pristupili svojim sobama i chatovima",
+    "welcome" : "Dobro došli »"
+  },
+  "login" : {
+    "Cancel" : "Natrag na prijavu",
+    "Confirm_password" : "Potvrdi svoju lozinku",
+    "Enter_info" : "Unesi svoje informacije za prijavu",
+    "Email_or_username" : "Email or username",
+    "Forgot_password" : "Zaboravih lozinku",
+    "Password" : "Lozinka",
+    "Register" : "Registriraj novi račun",
+    "Remember_me" : "Zapamti me",
+    "You_neeed_confirm_email" : "Trebaš potvrditi svoj email kako bi se prijavio!",
+    "Invalid_email" : "Uneseni e-mail nije valjan",
+    "Invalid_pass" : "Lozinka ne smije biti prazna",
+    "Invalid_name" : "Ime ne smije biti prazno",
+    "Invalid_confirm_pass" : "Potvrda lozinke se ne slaže sa lozinkom",
+    "We_have_sent_registration_email" : "Poslan ti je e-mail kako bi potvrdio svoju registraciju. Provjeri i spam folder! Ako ga ne primiš uskoro, molimo te vrati se i pokušaj opet.",
+    "We_have_sent_password_email" : "Poslan ti je e-mail sa uputama za resetiranje lozinke. Provjeri i spam folder! Ako ga ne primiš uskoro, molimo te vrati se i pokušaj opet."
+  },
+  "loginIntro" : {
+    "Access_online_demo" : "Pristupi online demonstraciji",
+    "Access_Online_Demo" : "Pristupi Online demonstraciji",
+    "Your_Open_Source_solution" : "Tvoje vlastito Open Source chat rješenje"
+  },
+  "loginServices" : {
+    "github_no_public_email" : "Nemaš ni1 javni email u svom GitHub računu",
+    "login_with" : "Ili se prijavi izravno sa"
+  },
+  "privateHistory" : {
+    "Created_at" : "Stvoreno u",
+    "Last_message" : "Posljednja poruka",
+    "Msgs" : "Msgs",
+    "n_messages" : "%s poruka",
+    "Room" : "Soba",
+    "Showing_results" : "<p>Prikazujem <b>%s</b> rezultate</p>",
+    "since_creation" : "od %s"
+  },
+  "RoomManager" : {
+    "No_permission_to_view_room" : "Nemaš dopuštenje da vidiš ovu sobu"
+  },
+  "roomSearch" : {
+    "Nothing_found" : "Ništa nije nađeno"
+  },
+  "usernameRegistration" : {
+    "Username" : "Korisničko ime",
+    "Loading_suggestion" : "Učitavam sugestije...",
+    "Username_title" : "Registriraj korisničko ime",
+    "Username_description" : "Korisničko ime se koristi kako bi te drugi mogli spomenuti u porukama.",
+    "Use_this_username" : "Koristi ovo korisničko ime",
+    "Username_unavaliable" : "<strong>%s</strong> je već zauzeto :(",
+    "Username_invalid" : "<strong>%s</strong> nije valjano korisničko ime,<br/> koristi samo slova, brojeve, točke i crtice",
+    "Username_cant_be_empty" : "Korisničko ime ne može ostati prazno."
+  },
+  "userStatus" : {
+    "away" : "odsutan",
+    "Away" : "Odsutan",
+    "busy" : "zaposlen",
+    "Busy" : "Zaposlen",
+    "Change_avatar" : "Promijeni avatar",
+    "coming_soon" : "dolazi uskoro",
+    "invisible" : "nevidljiv",
+    "Invisible" : "Nevidljiv",
+    "Logout" : "Odjava",
+    "Online" : "Online",
+    "Privacy" : "Privatnost",
+    "Settings" : "Postavke",
+    "Silence" : "Tišina"
+  },
+  "error" : {
+    "Not_found_or_not_allowed" : "Nije Nađeno ili Nije Dozvoljeno"
+  },
+  "avatar" : {
+    "Use_service_avatar" : "Koristi %s avatar",
+    "Use_initials_avatar" : "Koristi inicijale svog korisničkog imena",
+    "Login_with" : "Prijavi se sa %s",
+    "Select_an_avatar" : "Odaberi avatar",
+    "Use_uploaded_avatar" : "Koristi uploadani avatar",
+    "Select_file" : "Odaberi fajl"
+  }
+}

@@ -1,14 +1,16 @@
 <template name="home">
 	<section class="page-container page-home page-static">
 		<head class="fixed-title">
-			<div class="burger">
-				<i></i>
-				<i></i>
-				<i></i>
+			<div>
+				<div class="burger">
+					<i></i>
+					<i></i>
+					<i></i>
+				</div>
+				<h2>
+					<span class="room-title">{{_ "home.welcome"}}<img class="logo" src="/images/logo/logo-dark.svg" /></span>
+				</h2>
 			</div>
-			<h2>
-				<span class="room-title">{{_ "home.welcome"}}<img class="logo" src="/images/logo/logo-dark.svg" /></span>
-			</h2>
 		</head>
 		<div class="content">
 			<div class="info">
@@ -18,7 +20,7 @@
 			{{ > social withParagraph }}
 		</div>
 	</section>
-	<section class="flex-tab">
+	<!-- <section class="flex-tab">
 		<div class="control">
 			<button class="more"><span class="arrow {{arrowPosition}}"></span></button>
 		</div>
@@ -27,10 +29,10 @@
 				<div class="status">
 					<h2>{{_ "home.Chat_Rooms"}}</h2>
 					<p>
-						{{{_ "chatWindowDashboard.Showing_online_users" 1 1}}}
+						{{{_ "chatWindowDashboard.Showing_online_users" total_online=1 total=1}}}
 					</p>
 				</div>
 			</div>
 		</div>
-	</section>
+	</section> -->
 </template>

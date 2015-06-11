@@ -1,11 +1,13 @@
 Meteor.methods
-	leaveRoom: (roomId) ->
-		room = ChatRoom.findOne roomId
+	leaveRoom: (rid) ->
+		if not Meteor.userId()
+			throw new Meteor.Error 203, t('general.User_logged_out')
 
-		update =
+		ChatSubscription.remove
+			rid: rid
+			'u._id': Meteor.userId()
+
+		ChatRoom.update rid,
 			$pull:
-				uids: Meteor.userId()
+				usernames: Meteor.user().username
 
-		ChatSubscription.remove { rid: roomId, uid: Meteor.userId() }
-
-		ChatRoom.update roomId, update

@@ -1,0 +1,167 @@
+{
+  "accounts" : {
+    "Email_verified" : "Email verificata",
+    "Error_changing_password" : "Password cambiata",
+    "New_password" : "Nuova password"
+  },
+  "chatMessageDashboard" : {
+    "edited" : "modificato",
+    "Room_name_changed" : "Il nome della stanza è cambiato per: <em>__room_name__</em> da <em>__user_by__</em>",
+    "User_added" : "Utente <em>%s</em> aggiunto.",
+    "User_added_by" : "Utente <em>__user_added__</em> aggiunto da <em>__user_by__</em>.",
+    "User_left" : "Utente <em>%s</em> ha lasciato.",
+    "User_removed_by" : "Utente <em>__user_removed__</em> rimosso da <em>__user_by__</em>. ",
+    "Welcome" : "Benvenuto <em>%s</em>."
+  },
+  "chatRoomItem" : {
+    "Hide_room" : "Nascondi la stanza",
+    "Leave_room" : "Lasciare la stanza"
+  },
+  "chatRooms" : {
+    "Favorites" : "Favorite",
+    "Powered_by" : "Powered by",
+    "Recents" : "Recenti",
+    "Channels" : "Canali",
+    "Direct_Messages" : "Messaggi diretti",
+    "Private_Groups" : "Gruppi Privati",
+    "Members_placeholder" : "Membri",
+    "Name" : "Nome",
+    "Members" : "Membri",
+    "Selected_users" : "Membri selezionati",
+    "Save" : "Salva",
+    "Cancel" : "Cancellare",
+    "No_channels_yet" : "Non fai parte di nessun canale ancora.",
+    "No_direct_messages_yet" : "Non ha iniziato nessuna conversazione ancora.",
+    "No_groups_yet" : "Non hai gruppi privati ancora.",
+    "No_favorites_yet" : "Non hai aggiunto qualche favoriti ancora.",
+    "Create_new_channel" : "Crea un nuovo canale pubblico",
+    "Channels_list" : "Elenco dei canali pubblici",
+    "More_channels" : "Piu canali",
+    "Invalid_room_name" : "<strong>%s</strong il nome della stanza nnon è corretto,<br/> usare solo lettere, numeri o linee"
+  },
+  "chatWindowDashboard" : {
+    "Add_users" : "Aggiungere utenti",
+    "are_also_typing" : "sta digitando anche",
+    "are_typing" : "sta digitando",
+    "is_also_typing" : "sta digitando anche",
+    "is_typing" : "sta digitando",
+    "Members_List" : "Lista dei membri",
+    "New_messages" : "Nuovi messaggi",
+    "Quick_Search" : "Ricerca rapida",
+    "Room_name_changed_successfully" : "Nome della stanza cambiato con successo",
+    "See_all" : "Guarda tuttto",
+    "See_only_online" : "Solo online",
+    "Send_Message" : "Invia il messaggio",
+    "Showing_online_users" : "Mostra <b>__total_online__</b> di __total__users",
+    "Start_of_conversation" : "Inizia una conversazione",
+    "View_All" : "Vedi tutto"
+  },
+  "footer" : {
+    "Follow_social_profiles" : "Segui i nostri profili sociali, fai un fork su github e condivide i tuoi pensieri circa l'app rocket.chat nella nostra bacheca Trello.",
+    "Fork_it_on_github" : "Fai un fork su Github",
+    "Join_the_Community" : "Entra nella Comunità",
+    "Language_Version" : "English Version",
+    "Proudly_developed" : "Orgogliosamente sviluppato con Meteor"
+  },
+  "general" : {
+    "and" : "e",
+    "Cancel" : "Cancellare",
+    "close" : "chiudere",
+    "Contact" : "Contatto",
+    "Conversation" : "Conversazione",
+    "History" : "Storico",
+    "Load_more" : "Carica di più",
+    "Login" : "Login",
+    "Name" : "Nome",
+    "Please_wait" : "Attendere prego",
+    "Remove" : "Rimuovi",
+    "Reset_password" : "Resettare la tua password",
+    "Search" : "Ricerca",
+    "Send_confirmation_email" : "Invia email di conferma",
+    "Submit" : "Invia",
+    "User_logged_out" : "L'utente è disconnesso "
+  },
+  "home" : {
+    "Chat_Rooms" : "Stanza di chat",
+    "Have_your_own_chat" : "Avere il proprio web chat. Sviluppato con Meteor.com, il Rocket.Chat è una grande soluzione per gli sviluppatori in attesa di costruire ed evolvere la propria piattaforma di chat.",
+    "use_menu" : "Usi il menu accanto per accedere alle stanze e i chat",
+    "welcome" : "Benvenuto a"
+  },
+  "login" : {
+    "Cancel" : "Torna al login",
+    "Confirm_password" : "Conferma la password",
+    "Enter_info" : "Digita le tue informazione di login",
+    "Email_or_username" : "Email o nome di utente",
+    "Forgot_password" : "Ho dimenticato mia password",
+    "Password" : "Password",
+    "Register" : "Registra una nuovo account",
+    "Remember_me" : "Ricordare di me",
+    "You_neeed_confirm_email" : "Hai bisogno di confermare il tuo email per accedere!",
+    "Invalid_email" : "L'email inserito è invalida",
+    "Invalid_pass" : "La password non deve essere vuoto",
+    "Invalid_name" : "Il nome non può essere vuoto",
+    "Invalid_confirm_pass" : "La password di conferma non corrisponde con la password",
+    "We_have_sent_registration_email" : "Abbiamo inviato una email per confermare la registrazione. Se non ricevi una email a breve tempo, torna e prova di nuovo.",
+    "We_have_sent_password_email" : "Abbiamo inviato una email con le istruzioni di reimpostazione della password. Se non si riceve una email a breve tempo, torna e prova di nuovo."
+  },
+  "loginIntro" : {
+    "Access_online_demo" : "Accedi la demo online",
+    "Access_Online_Demo" : "Accedi la Demo Online",
+    "Your_Open_Source_solution" : "La tua soluzione per chat Open Source"
+  },
+  "loginServices" : {
+    "github_no_public_email" : "Non havi un email publico sul tuo GitHub account",
+    "login_with" : "O fai il login diretto con"
+  },
+  "privateHistory" : {
+    "Created_at" : "Creato a",
+    "Last_message" : "Ultimo messaggio",
+    "Msgs" : "Msgs",
+    "n_messages" : "% messaggi",
+    "Room" : "Stanza",
+    "Showing_results" : "<p>Mostra <b>%s</b> resultati</p>",
+    "since_creation" : "da %s"
+  },
+  "RoomManager" : {
+    "No_permission_to_view_room" : "Non hai permissione per guardare questa stanza"
+  },
+  "roomSearch" : {
+    "Nothing_found" : "Non abbiamo trovato nulla"
+  },
+  "usernameRegistration" : {
+    "Username" : "Nome di utente",
+    "Loading_suggestion" : "Caricando suggestioni...",
+    "Username_title" : "Registra nome di utente",
+    "Username_description" : "Il nome di utente viene utilizzato per permetter agli altri di inviarti dei messaggi.",
+    "Use_this_username" : "Usa questo nome di utente",
+    "Username_unavaliable" : "<strong>%s</strong> è già in uso :(",
+    "Username_invalid" : "<strong>%s</strong> nome di utente non corretto,<br/> utilizzare solo lettere, numeri, punti e linee",
+    "Username_cant_be_empty" : "Il nome di utente non deve essere vuoto"
+  },
+  "userStatus" : {
+    "away" : "via",
+    "Away" : "Via",
+    "busy" : "occupato",
+    "Busy" : "Occupato",
+    "Change_avatar" : "Cambia l'avatar",
+    "coming_soon" : "in arrivo",
+    "invisible" : "invisibile",
+    "Invisible" : "Invisibile",
+    "Logout" : "Uscire",
+    "Online" : "Online",
+    "Privacy" : "Privacy",
+    "Settings" : "Impostazioni",
+    "Silence" : "Silenzio"
+  },
+  "error" : {
+    "Not_found_or_not_allowed" : "Non trovato o Non Amesso"
+  },
+  "avatar" : {
+    "Use_service_avatar" : "Usa l'avatar %s",
+    "Use_initials_avatar" : "Usa le iniziali del tuo nome id utente",
+    "Login_with" : "Fai login con %s",
+    "Select_an_avatar" : "Seleziona l'avatar",
+    "Use_uploaded_avatar" : "Usare l'avatar caricato",
+    "Select_file" : "Seleziona l'archivio"
+  }
+}

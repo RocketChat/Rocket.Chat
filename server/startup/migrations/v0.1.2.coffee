@@ -1,6 +1,6 @@
 Meteor.startup ->
 	Migrations.add
-		version: new Date("2015-06-01T00:26:05.197Z").getTime()
+		version: 2
 		up: ->
 			Meteor.users.find({avatarOrigin: {$exists: false}, username: {$exists: true}}).forEach (user) ->
 				avatars = getAvatarSuggestionForUser user
@@ -13,11 +13,13 @@ Meteor.startup ->
 				service = services[0]
 				console.log user.username, '->', service
 
-				blob = avatars[service].blob
+				dataURI = avatars[service].blob
 
-				file = new FS.File blob
-				file.attachData blob, ->
-					file.name user.username
+				{image, contentType} = RocketChatFile.dataURIParse dataURI
 
-					Avatars.insert file, (err, fileObj) ->
-						Meteor.users.update {_id: user._id}, {$set: {avatarOrigin: service}}
+				rs = RocketChatFile.bufferToStream new Buffer(image, 'base64')
+				ws = RocketChatFileAvatarInstance.createWriteStream "#{user.username}.jpg", contentType
+				ws.on 'end', Meteor.bindEnvironment ->
+					Meteor.users.update {_id: user._id}, {$set: {avatarOrigin: service}}
+
+				rs.pipe(ws)

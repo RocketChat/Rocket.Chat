@@ -11,6 +11,12 @@ Template.loginForm.helpers
 	showConfirmPassword: ->
 		return 'hidden' unless Template.instance().state.get() is 'register'
 
+	showEmailOrUsername: ->
+		return 'hidden' unless Template.instance().state.get() is 'login'
+
+	showEmail: ->
+		return 'hidden' unless Template.instance().state.get() in ['register', 'forgot-password', 'email-verification']
+
 	showRegisterLink: ->
 		return 'hidden' unless Template.instance().state.get() is 'login'
 
@@ -36,27 +42,27 @@ Template.loginForm.events
 		event.preventDefault()
 
 		button = $(event.target).find('button.login')
-		Rocket.Button.loading(button)
+		RocketChat.Button.loading(button)
 
 		formData = instance.validate()
 		if formData
 			if instance.state.get() is 'email-verification'
 				Meteor.call 'sendConfirmationEmail', formData.email, (err, result) ->
-					Rocket.Button.reset(button)
+					RocketChat.Button.reset(button)
 					toastr.success t('login.We_have_sent_registration_email')
 					instance.state.set 'login'
 				return
 
 			if instance.state.get() is 'forgot-password'
 				Meteor.call 'sendForgotPasswordEmail', formData.email, (err, result) ->
-					Rocket.Button.reset(button)
+					RocketChat.Button.reset(button)
 					toastr.success t('login.We_have_sent_password_email')
 					instance.state.set 'login'
 				return
 
 			if instance.state.get() is 'register'
 				Meteor.call 'registerUser', formData, (err, result) ->
-					Rocket.Button.reset(button)
+					RocketChat.Button.reset(button)
 					Meteor.loginWithPassword formData.email, formData.pass, (error) ->
 						if error?.error is 'no-valid-email'
 							toastr.success t('login.We_have_sent_registration_email')
@@ -64,8 +70,8 @@ Template.loginForm.events
 						else
 							Router.go 'index'
 			else
-				Meteor.loginWithPassword formData.email, formData.pass, (error) ->
-					Rocket.Button.reset(button)
+				Meteor.loginWithPassword formData.emailOrUsername, formData.pass, (error) ->
+					RocketChat.Button.reset(button)
 					if error?
 						if error.error is 'no-valid-email'
 							instance.state.set 'email-verification'
@@ -94,9 +100,10 @@ Template.loginForm.onCreated ->
 		for field in formData
 			formObj[field.name] = field.value
 
-		unless formObj['email'] and /\b[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]+\b/i.test(formObj['email'])
-			validationObj['email'] = t('login.Invalid_email')
-		
+		if instance.state.get() isnt 'login'
+			unless formObj['email'] and /\b[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]+\b/i.test(formObj['email'])
+				validationObj['email'] = t('login.Invalid_email')
+
 		if instance.state.get() isnt 'forgot-password'
 			unless formObj['pass']
 				validationObj['pass'] = t('login.Invalid_pass')
@@ -110,7 +117,7 @@ Template.loginForm.onCreated ->
 		$("#login-card input").removeClass "error"
 		unless _.isEmpty validationObj
 			button = $('#login-card').find('button.login')
-			Rocket.Button.reset(button)
+			RocketChat.Button.reset(button)
 			$("#login-card h2").addClass "error"
 			for key of validationObj
 				$("#login-card input[name=#{key}]").addClass "error"
