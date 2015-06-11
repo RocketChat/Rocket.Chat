@@ -58,7 +58,7 @@
 			<form class="message-form" method="post" action="/">
 				<div>
 					{{> messagePopupConfig getPupupConfig}}
-					<textarea name="msg" class="input-message"></textarea>
+					<textarea dir="auto" name="msg" class="input-message"></textarea>
 					<i class="icon-paper-plane" title="{{_ "chatWindowDashboard.Send_Message"}}"></i>
 				</div>
 				<div class="users-typing">
@@ -79,7 +79,7 @@
 						{{/if}}
 					{{/with}}
 				</div>
-				<div class="formatting-tips" aria-hidden="true">
+				<div class="formatting-tips" aria-hidden="true" dir="auto">
 					<b>*bold*</b>
 					<i>_italics_</i>
 					~<strike>strike</strike>~
