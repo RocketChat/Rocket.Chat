@@ -14,7 +14,7 @@ Template.chatMessageDashboard.helpers
 	isEditing: ->
 		return this._id is Session.get('editingMessageId')
 
-	preProcessingMessage: ->
+	renderMessage: ->
 		this.html = this.msg
 		if _.trim(this.html) isnt ''
 			this.html = _.escapeHTML this.html
@@ -34,20 +34,6 @@ Template.chatMessageDashboard.helpers
 
 	time: ->
 		return moment(this.ts).format('HH:mm')
-
-	newMessage: ->
-		# @TODO pode melhorar, acho que colocando as salas abertas na sessão
-		# if $('#chat-window-' + this.rid + '.opened').length == 0
-		# 	return 'new'
-
-	preMD: Template 'preMD', ->
-		self = this
-		text = ""
-		if self.templateContentBlock
-			text = Blaze._toText(self.templateContentBlock, HTML.TEXTMODE.STRING)
-
-		text = text.replace(/#/g, '\\#')
-		return text
 
 	getPupupConfig: ->
 		template = Template.instance()
