@@ -54,3 +54,4 @@ tmeasday:errors
 todda00:friendly-slugs
 underscorestring:underscore.string
 yasaricli:slugify
+dispatch:kernel
