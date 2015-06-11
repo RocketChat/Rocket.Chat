@@ -5,27 +5,25 @@
 ###
 
 class ObjEmbedder
-  constructor: (message) ->
-    console.log "in obj embedded"
-    if _.trim message.html
-      console.log("trim okay")
-      # temporary pre-1.0 image embed to support bot development - to be refactored
-      msg = message.html
-      picmatch = msg.match(/^https?:\/\/(?:[a-z0-9\-]+\.)+[a-z0-9]{2,6}(?:\/[^\/#?]+)+\.(?:jpe?g|gif|png)$/i)
+	constructor: (message) ->
+		console.log "ObjEmbedder constructor" if window.rocketDebug
 
-      if picmatch?
-        # inline style to limit code pollution
-        console.log("match pic")
-        msg = "<img style='width:400px;height:auto;' src='" + msg + "'></img>"
-        return msg
+		if _.trim message.msg
+			console.log "ObjEmbedder trim" if window.rocketDebug
 
-      mapmatch = msg.match(/^https?\:\/\/maps\.(google|googleapis)\.[a-z]+\/maps\/api.*format=png$/i)
-      if mapmatch?
-        console.log("match map")
-        msg = "<img style='width:400px;height:auto;' src='" + msg + "'></img>"
-        return msg
+			picmatch = message.msg.match(/^https?:\/\/(?:[a-z0-9\-]+\.)+[a-z0-9]{2,6}(?:\/[^\/#?]+)+\.(?:jpe?g|gif|png)$/i)
+			if picmatch?
+				# inline style to limit code pollution
+				console.log "ObjEmbedder picmatch" if window.rocketDebug
+				message.html = "<img style='width:400px;height:auto;' src='" + message.msg + "'></img>"
 
-      # end of temporary pre-1.0 image embed
-    return message
+			else
+				mapmatch = message.msg.match(/^https?\:\/\/maps\.(google|googleapis)\.[a-z]+\/maps\/api.*format=png$/i)
+				if mapmatch?
+					console.log "ObjEmbedder mapmatch" if window.rocketDebug
+					message.html = "<img style='width:400px;height:auto;' src='" + message.msg + "'></img>"
+
+			# end of temporary pre-1.0 image embed
+		return message
 
 RocketChat.callbacks.add 'renderMessage', ObjEmbedder, RocketChat.callbacks.priority.HIGH
