@@ -4,7 +4,7 @@
 			<span>{{messageDate data.ts}}</span>
 		</li>
 	{{/if}}
-	<li class="message {{#unless single}}with-thumb{{/unless}} {{own}} {{data.type}}" data-scroll-to-bottom="{{scroll}}">
+	<li id="{{data._id}}" class="message {{#unless single}}with-thumb{{/unless}} {{own}} {{data.type}}" data-scroll-to-bottom="{{scroll}}">
 		{{#with data}}
 			{{#if isSystemMessage}}
 				<p class="system">{{{message}}}</p>
@@ -42,7 +42,7 @@
 					</span>
 					{{/if}}
 					<div>
-						{{{preProcessingMessage}}}
+						{{{renderMessage}}}
 					</div>
 				{{/if}}
 			{{/if}}
