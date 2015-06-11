@@ -69,7 +69,6 @@ mizzao:autocomplete@0.5.1
 mizzao:timesync@0.3.1
 mobile-status-bar@1.0.3
 momentjs:moment@2.10.3
-monbro:mongodb-mapreduce-aggregation@1.0.1
 mongo@1.1.0
 mongo-livedata@1.0.8
 mrt:reactive-store@0.0.1
@@ -99,6 +98,7 @@ rocketchat:lib@0.0.1
 rocketchat:markdown@0.0.1
 rocketchat:me@0.0.1
 rocketchat:mentions@0.0.1
+rocketchat:tmpembed@0.0.1
 routepolicy@1.0.5
 service-configuration@1.0.4
 session@1.1.0
