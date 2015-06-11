@@ -1,0 +1,90 @@
+// Mix-ins
+.right(@right) {
+  right: @right;
+  left: auto;
+}
+
+.left (@left) {
+  left: @left;
+  right: auto;
+}
+
+.margin-right(@margin-right) {
+  margin-right: @margin-right;
+  margin-left: auto;
+}
+
+.margin-left(@margin-left) {
+  margin-left: @margin-left;
+  margin-right: auto;
+}
+
+.padding-right(@padding-right) {
+  padding-right: @padding-right;
+  padding-left: 0px;
+}
+
+.padding-left(@padding-left) {
+  padding-left: @padding-left;
+  padding-right: 0px;
+}
+
+
+.rtl
+{
+
+  direction: rtl;
+
+  .side-nav {
+    .right(0px);
+  }
+
+  .main-content {
+    .margin-right(260px);
+  }
+
+  .account-box .options span.soon {
+    .left(-30px);
+  }
+
+  .messages-box {
+    .message {
+       .padding-right(50px);
+     }
+
+     .thumb {
+       .right(0px);
+     }
+
+     .message.with-thumb .time {
+       .right(4px);
+     }
+
+      .time-single {
+        .right(-15px);
+     }
+  }
+
+  .messages-container {
+    .message-form {
+      textarea {
+          padding-left: 38px;
+          padding-right: 8px;
+      }
+
+     .icon-paper-plane {
+      .left(10px);
+      transform: rotateY(180deg);
+      }
+    }
+  }
+
+  q {
+    padding-right: 10px;
+    padding-left: 0px;
+  }
+  q:before {
+    right: 50px;
+    left: auto;
+  }
+}
