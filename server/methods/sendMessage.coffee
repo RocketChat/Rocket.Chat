@@ -116,3 +116,10 @@ Meteor.methods
 			$unset:
 				t: 1
 				expireAt: 1
+
+		Meteor.defer ->
+
+			message._id = Random.id()
+			RocketChat.callbacks.run 'afterSaveMessage', message
+
+
