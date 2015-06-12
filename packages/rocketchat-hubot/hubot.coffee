@@ -41,18 +41,6 @@ class Robot extends Hubot.Robot
 	error: (callback) -> super Meteor.bindEnvironment(callback)
 	catchAll: (callback) -> super Meteor.bindEnvironment(callback)
 
-sendHelper = Meteor.bindEnvironment (robot, envelope, strings, map) ->
-	while strings.length > 0
-		string = strings.shift()
-		if typeof(string) == 'function'
-			string()
-		else
-			try
-				map(string)
-			catch err
-				console.error "Hubot error: #{err}" if DEBUG
-				robot.logger.error "RocketChat send error: #{err}"
-
 class RocketChatAdapter extends Hubot.Adapter
 	# Public: Raw method for sending data back to the chat source. Extend this.
 	#
@@ -142,12 +130,27 @@ class RocketBotReceiver
 		RocketBotUser = new Hubot.User(message.u.username, rid: message.rid)
 		RocketBotTextMessage = new Hubot.TextMessage(RocketBotUser, message.msg, message._id)
 		RocketBot.adapter.receive RocketBotTextMessage
-		console.log RocketBot;
+		console.log 'message: ', message if DEBUG
+		console.log 'RocketBot: ', RocketBot if DEBUG
 		return message
+
+sendHelper = Meteor.bindEnvironment (robot, envelope, strings, map) ->
+	while strings.length > 0
+		string = strings.shift()
+		if typeof(string) == 'function'
+			string()
+		else
+			try
+				map(string)
+			catch err
+				console.error "Hubot error: #{err}" if DEBUG
+				robot.logger.error "RocketChat send error: #{err}"
 
 RocketBot = new Robot null, null, false, Meteor.settings?.botname ? 'rocketbot'
 RocketBot.alias = 'bot'
 RocketBot.adapter = new RocketChatAdapter RocketBot
+HubotScripts(RocketBot)
+
 RocketChat.callbacks.add 'afterSaveMessage', RocketBotReceiver, RocketChat.callbacks.priority.LOW
 
 # Meteor.startup ->
