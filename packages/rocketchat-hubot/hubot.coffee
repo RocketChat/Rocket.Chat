@@ -146,7 +146,7 @@ sendHelper = Meteor.bindEnvironment (robot, envelope, strings, map) ->
 				console.error "Hubot error: #{err}" if DEBUG
 				robot.logger.error "RocketChat send error: #{err}"
 
-RocketBot = new Robot null, null, false, Meteor.settings?.botname ? 'rocketbot'
+RocketBot = new Robot null, null, false, 'rocketbot'
 RocketBot.alias = 'bot'
 RocketBot.adapter = new RocketChatAdapter RocketBot
 HubotScripts(RocketBot)
