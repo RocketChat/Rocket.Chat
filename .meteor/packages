@@ -19,6 +19,7 @@ reactive-var
 service-configuration
 
 chrismbeckett:toastr
+dispatch:kernel
 francocatena:status
 iframely:oembed
 iron:router
@@ -43,6 +44,7 @@ rocketchat:autolinker
 rocketchat:emojione
 rocketchat:file
 rocketchat:highlight
+#rocketchat:hubot
 rocketchat:lib
 rocketchat:markdown
 rocketchat:me
@@ -54,4 +56,3 @@ tmeasday:errors
 todda00:friendly-slugs
 underscorestring:underscore.string
 yasaricli:slugify
-dispatch:kernel
