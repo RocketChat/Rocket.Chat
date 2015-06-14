@@ -10,4 +10,4 @@ class AutoLinker
 		
 		return message
 
-RocketChat.callbacks.add 'beforeSaveMessage', AutoLinker
+RocketChat.callbacks.add 'renderMessage', AutoLinker

@@ -8,13 +8,16 @@ Meteor.methods
 		if not room
 			return false
 
-		# console.log '[methods] sendMessage -> '.green, 'userId:', Meteor.userId(), 'arguments:', arguments
+		console.log '[methods] sendMessage -> '.green, 'userId:', Meteor.userId(), 'arguments:', arguments
 
-		message.u = Meteor.users.findOne Meteor.userId(), fields: username: 1
 		message.ts = new Date()
+		message.u = Meteor.users.findOne Meteor.userId(), fields: username: 1
 
 		message.html = message.msg
+		if _.trim(message.html) isnt ''
+			message.html = _.escapeHTML message.html
 		message = RocketChat.callbacks.run 'beforeSaveMessage', message
+		message.html = message.html.replace /\n/gm, '<br/>'
 
 		###
 		Defer other updated as their return is not interesting to the user
@@ -113,3 +116,10 @@ Meteor.methods
 			$unset:
 				t: 1
 				expireAt: 1
+
+		Meteor.defer ->
+
+			message._id = Random.id()
+			RocketChat.callbacks.run 'afterSaveMessage', message
+
+

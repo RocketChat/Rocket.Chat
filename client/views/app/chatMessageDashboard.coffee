@@ -14,6 +14,14 @@ Template.chatMessageDashboard.helpers
 	isEditing: ->
 		return this._id is Session.get('editingMessageId')
 
+	renderMessage: ->
+		this.html = this.msg
+		if _.trim(this.html) isnt ''
+			this.html = _.escapeHTML this.html
+		message = RocketChat.callbacks.run 'renderMessage', this
+		this.html = message.html.replace /\n/gm, '<br/>'
+		return this.html
+
 	message: ->
 		switch this.t
 			when 'r' then t('chatMessageDashboard.Room_name_changed', { room_name: this.msg, user_by: Session.get('user_' + this.u._id + '_name') }) + '.'
@@ -26,20 +34,6 @@ Template.chatMessageDashboard.helpers
 
 	time: ->
 		return moment(this.ts).format('HH:mm')
-
-	newMessage: ->
-		# @TODO pode melhorar, acho que colocando as salas abertas na sessão
-		# if $('#chat-window-' + this.rid + '.opened').length == 0
-		# 	return 'new'
-
-	preMD: Template 'preMD', ->
-		self = this
-		text = ""
-		if self.templateContentBlock
-			text = Blaze._toText(self.templateContentBlock, HTML.TEXTMODE.STRING)
-
-		text = text.replace(/#/g, '\\#')
-		return text
 
 	getPupupConfig: ->
 		template = Template.instance()

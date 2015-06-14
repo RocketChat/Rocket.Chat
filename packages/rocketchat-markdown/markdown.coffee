@@ -5,14 +5,22 @@
 
 class Markdown
 	constructor: (message) ->
-		msg = message.html or ''
 
-		# Process MD like for strong, italic and strike
-		msg = msg.replace(/\*([^*]+)\*/g, '<strong>$1</strong>')
-		msg = msg.replace(/\_([^_]+)\_/g, '<i>$1</i>')
-		msg = msg.replace(/\~{1,2}([^~]+)\~{1,2}/g, '<strike>$1</strike>')
+		if _.trim message.html
 
-		message.html = msg
+			msg = message.html
+
+			# Process MD like for strong, italic and strike
+			msg = msg.replace(/(\ |^)\*([^*]+)\*(\ |$)/gm, '$1<strong>$2</strong>$3')
+			msg = msg.replace(/(\ |^)\_([^_]+)\_(\ |$)/gm, '$1<em>$2</em>$3')
+			msg = msg.replace(/(\ |^)\`([^`]+)\`(\ |$)/gm, '$1<code class="inline">$2</code>$3')
+			msg = msg.replace(/(\ |^)\~{1,2}([^~]+)\~{1,2}(\ |$)/gm, '$1<strike>$2</strike>$3')
+			msg = msg.replace(/^&gt;(.*)$/gm, '<q>$1</q>')
+
+			message.html = msg
+
+			console.log 'Markdown', message if window.rocketDebug
+
 		return message
 
-RocketChat.callbacks.add 'beforeSaveMessage', Markdown, RocketChat.callbacks.priority.LOW
+RocketChat.callbacks.add 'renderMessage', Markdown, RocketChat.callbacks.priority.LOW

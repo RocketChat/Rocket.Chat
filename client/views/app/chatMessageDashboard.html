@@ -4,7 +4,7 @@
 			<span>{{messageDate data.ts}}</span>
 		</li>
 	{{/if}}
-	<li class="message {{#unless single}}with-thumb{{/unless}} {{own}} {{data.type}}" data-scroll-to-bottom="{{scroll}}">
+	<li id="{{data._id}}" class="message {{#unless single}}with-thumb{{/unless}} {{own}} {{data.type}}" data-scroll-to-bottom="{{scroll}}">
 		{{#with data}}
 			{{#if isSystemMessage}}
 				<p class="system">{{{message}}}</p>
@@ -25,7 +25,7 @@
 				{{#if isEditing}}
 					<div class="input-message-editing-container">
 						{{> messagePopupConfig getPupupConfig}}
-						<textarea class="input-message-editing">{{msg}}</textarea>
+						<textarea class="input-message-editing" dir="auto">{{msg}}</textarea>
 					</div>
 				{{else}}
 					{{#if ../single}}
@@ -41,8 +41,8 @@
 						{{/if}}
 					</span>
 					{{/if}}
-					<div>
-						{{{html}}}
+					<div dir="auto">
+						{{{renderMessage}}}
 					</div>
 				{{/if}}
 			{{/if}}
