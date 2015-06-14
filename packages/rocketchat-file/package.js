@@ -5,20 +5,20 @@ Package.describe({
 	git: ''
 });
 
-Npm.depends({
-	'mkdirp': '0.3.5',
-	'gridfs-stream': '0.5.3',
-	'gm' :'1.18.1'
-});
-
 Package.onUse(function(api) {
 	api.versionsFrom('1.0');
 
-	api.use('coffeescript');
+	api.use(['coffeescript']);
 
-	api.addFiles('file.server.coffee', 'server');
+	api.addFiles('file.server.coffee', ['server']);
 
 	api.export(['RocketChatFile'], ['server']);
+});
+
+Npm.depends({
+	'mkdirp': '0.3.5',
+	'gridfs-stream': '0.5.3',
+	'gm': '1.18.1'
 });
 
 Package.onTest(function(api) {
