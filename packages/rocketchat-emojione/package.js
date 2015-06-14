@@ -10,7 +10,7 @@ Package.onUse(function(api) {
 
 	api.use([
 		'coffeescript',
-		'emojione:emojione',
+		'qnub:emojione',
 		'rocketchat:lib@0.0.1'
 	]);
 
