@@ -44,7 +44,7 @@ rocketchat:autolinker
 rocketchat:emojione
 rocketchat:file
 rocketchat:highlight
-rocketchat:hubot
+#rocketchat:hubot
 rocketchat:lib
 rocketchat:markdown
 rocketchat:me
