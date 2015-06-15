@@ -21,6 +21,7 @@ Router.onBeforeAction ->
 		this.layout('loginLayout')
 		this.render('loginForm')
 	else
+		Session.set 'openedRoom', null
 		this.next()
 
 Router.onBeforeAction ->
@@ -74,8 +75,9 @@ Router.route '/room/:_id',
 		if not ChatRoom.find(@params._id).count()
 			Router.go 'home'
 
-		Session.set('openedRoom', this.params._id)
-		Session.set('showUserInfo', null)
+		Session.set 'openedRoom', @params._id
+		Meteor.call 'readMessages', @params._id
+		KonchatNotification.removeRoomNotification @params._id
 
 		this.next()
 
