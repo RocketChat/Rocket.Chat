@@ -13,6 +13,8 @@ Meteor.methods
 		message.ts = new Date()
 		message.u = Meteor.users.findOne Meteor.userId(), fields: username: 1
 
+		# message.urls = message.msg.match /([A-Za-z]{3,9}):\/\/([-;:&=\+\$,\w]+@{1})?([-A-Za-z0-9\.]+)+:?(\d+)?((\/[-\+~%/\.\w]+)?\??([-\+=&;%@\.\w]+)?#?([\w]+)?)?/g
+
 		message.html = message.msg
 		if _.trim(message.html) isnt ''
 			message.html = _.escapeHTML message.html

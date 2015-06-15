@@ -21,7 +21,6 @@ service-configuration
 chrismbeckett:toastr
 dispatch:kernel
 francocatena:status
-iframely:oembed
 iron:router
 jparker:gravatar
 konecty:autolinker
@@ -49,7 +48,7 @@ rocketchat:lib
 rocketchat:markdown
 rocketchat:me
 rocketchat:mentions
-rocketchat:tmpembed
+rocketchat:oembed
 tap:i18n
 tmeasday:crypto-md5
 tmeasday:errors
