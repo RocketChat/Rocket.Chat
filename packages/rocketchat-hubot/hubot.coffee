@@ -1,8 +1,10 @@
 CoffeeScript = Npm.require('coffee-script')
 CoffeeScript.register()
 
-HubotScripts = Npm.require('codex-blackboard-hubot-scripts');
 Hubot = Npm.require('hubot')
+
+fs = require('fs')
+path = require('path')
 
 # Start a hubot, connected to our chat room.
 'use strict'
@@ -134,6 +136,41 @@ class RocketBotReceiver
 		console.log 'RocketBot: ', RocketBot if DEBUG
 		return message
 
+class HubotScripts
+	constructor: (robot) ->
+
+		# load all scripts in scripts/
+		scriptPath = path.resolve __dirname, 'scripts'
+		for file in fs.readdirSync(scriptPath)
+			continue unless /\.(coffee|js)$/.test(file)
+			robot.loadFile scriptPath, file
+
+		# load all scripts from hubot-scripts
+		scriptPath = path.resolve __dirname, 'node_modules', 'hubot-scripts', 'src', 'scripts'
+		scripts = require './hubot-scripts.json'
+		robot.loadHubotScripts scriptPath, scripts
+		robot.parseHelp path.join scriptPath, 'meme_captain.coffee'
+
+		# load all hubot-* modules from package.json
+		packageJson = require './package.json'
+		pkgs = (pkg for own pkg, version of packageJson.dependencies when !/^(coffee-script|hubot-scripts|hubot-help)$/.test(pkg))
+		pkgs.forEach (p) -> (require p)(robot)
+
+		# A special hack for hubot-help: ensure it replies via pm
+		privRobot = Object.create robot
+		privRobot.respond = (regex, cb) ->
+			robot.respond regex, (resp) ->
+				resp.message.private = true
+				cb(resp)
+		(require 'hubot-help')(privRobot)
+
+		# A special hack for meme_captain: change its "respond" invocations to "hear" so that it memes everywhere.
+		memecaptain = require './node_modules/hubot-scripts/src/scripts/meme_captain'
+		memecaptain
+			respond: (regex, cb) ->
+				robot.hear regex, (msg) ->
+					cb(msg) if msg.envelope.room is 'general/0' or /^\s*[@]?(rocket)?bot\b/i.test(msg.message.text)
+
 sendHelper = Meteor.bindEnvironment (robot, envelope, strings, map) ->
 	while strings.length > 0
 		string = strings.shift()
@@ -165,7 +202,7 @@ RocketChat.callbacks.add 'afterSaveMessage', RocketBotReceiver, RocketChat.callb
 	# 	share.hubot[scriptName](robot)
 	# # register our nick
 	# n = Meteor.call 'newNick', {name: 'rocketbot'}
-	# Meteor.call 'setTag', {type:'nicks', object:n._id, name:'Gravatar', value:'codex@printf.net', who:n.canon}
+	# Meteor.call 'setTag', {type:'nicks', object:n._id, name:'Gravatar', value:'rocket@printf.net', who:n.canon}
 	# # register our presence in general chat
 	# keepalive = -> Meteor.call 'setPresence',
 	# 	u:
