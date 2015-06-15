@@ -54,7 +54,9 @@
     "Send_Message" : "Send Message",
     "Showing_online_users" : "Showing <b>__total_online__</b> of __total__ users",
     "Start_of_conversation" : "Start of conversation",
-    "View_All" : "View All"
+    "View_All" : "View All",
+    "you_are_in_preview_mode_of": "You are in preview mode of",
+    "join": "Join"
   },
   "footer" : {
     "Follow_social_profiles" : "Follow our social profiles, fork us on github and share your thoughts about the rocket.chat app on our trello board.",

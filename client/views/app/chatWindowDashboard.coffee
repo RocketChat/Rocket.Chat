@@ -17,8 +17,11 @@ Template.chatWindowDashboard.helpers
 		console.log 'chatWindowDashboard.helpers favorite' if window.rocketDebug
 		sub = ChatSubscription.findOne { rid: this._id }
 		return 'icon-star favorite-room' if sub?.f? and sub.f
-
 		return 'icon-star-empty'
+
+	subscribed: ->
+		console.log 'chatWindowDashboard.helpers subscribed' if window.rocketDebug
+		return ChatSubscription.findOne { rid: this._id }
 
 	messages: ->
 		console.log 'chatWindowDashboard.helpers messages' if window.rocketDebug
@@ -297,6 +300,12 @@ Template.chatWindowDashboard.events
 		event.stopPropagation()
 		event.preventDefault()
 		Meteor.call 'toogleFavorite', this._id, !$('i', event.currentTarget).hasClass('favorite-room')
+
+	'click .join': (event) ->
+		console.log 'chatWindowDashboard click .join' if window.rocketDebug
+		event.stopPropagation()
+		event.preventDefault()
+		Meteor.call 'joinRoom', this._id
 
 	"click .burger": ->
 		console.log 'chatWindowDashboard click .burger' if window.rocketDebug
