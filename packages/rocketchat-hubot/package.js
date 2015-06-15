@@ -24,9 +24,15 @@ Package.onUse(function(api) {
 });
 
 Npm.depends({
-	"coffee-script": "1.9.3",
-	"codex-blackboard-hubot-scripts": "https://github.com/cscott/codex-blackboard-hubot-scripts/tarball/f57c178a2faee9b36d07a7905c29093b9824e0b0",
-	"hubot": "2.13.1"
+	"coffee-script": "^1.9.3",
+	"hubot": "^2.13.1"
+	"hubot-calculator": "^0.4.0",
+	"hubot-google-hangouts": "^0.7.1",
+	"hubot-google-images": "^0.1.1",
+	"hubot-google-translate": "^0.1.0",
+	"hubot-help": "^0.1.1",
+	"hubot-scripts": "^2.5.16",
+	"hubot-youtube": "^0.1.2",
 });
 
 Package.onTest(function(api) {});
