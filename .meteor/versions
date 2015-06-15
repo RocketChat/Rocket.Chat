@@ -102,7 +102,7 @@ rocketchat:lib@0.0.1
 rocketchat:markdown@0.0.1
 rocketchat:me@0.0.1
 rocketchat:mentions@0.0.1
-rocketchat:tmpembed@0.0.1
+rocketchat:oembed@0.0.1
 routepolicy@1.0.5
 service-configuration@1.0.4
 session@1.1.0
