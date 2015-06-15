@@ -24,15 +24,15 @@ Package.onUse(function(api) {
 });
 
 Npm.depends({
-	"coffee-script": "^1.9.3",
-	"hubot": "^2.13.1"
-	"hubot-calculator": "^0.4.0",
-	"hubot-google-hangouts": "^0.7.1",
-	"hubot-google-images": "^0.1.1",
-	"hubot-google-translate": "^0.1.0",
-	"hubot-help": "^0.1.1",
-	"hubot-scripts": "^2.5.16",
-	"hubot-youtube": "^0.1.2",
+	"coffee-script": "1.9.3",
+	"hubot": "2.13.1",
+	"hubot-calculator": "0.4.0",
+	"hubot-google-hangouts": "0.7.1",
+	"hubot-google-images": "0.1.5",
+	"hubot-google-translate": "0.2.0",
+	"hubot-help": "0.1.1",
+	"hubot-scripts": "2.16.1",
+	"hubot-youtube": "1.0.0",
 });
 
 Package.onTest(function(api) {});
