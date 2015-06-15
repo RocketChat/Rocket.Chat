@@ -30,6 +30,7 @@ Npm.depends({
 	"hubot-google-hangouts": "0.7.1",
 	"hubot-google-images": "0.1.5",
 	"hubot-google-translate": "0.2.0",
+	"hubot-maps": "0.0.2",
 	"hubot-help": "0.1.1",
 	"hubot-scripts": "2.16.1",
 	"hubot-youtube": "1.0.0",
