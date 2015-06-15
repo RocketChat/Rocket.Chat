@@ -43,6 +43,11 @@
 					{{/if}}
 					<div dir="auto">
 						{{{renderMessage}}}
+						{{#if urls}}
+							{{#each urls}}
+								{{> oembed url=this}}
+							{{/each}}
+						{{/if}}
 					</div>
 				{{/if}}
 			{{/if}}
