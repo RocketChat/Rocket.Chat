@@ -8,7 +8,6 @@ Router.configure
 			return [Meteor.subscribe('userData'), Meteor.subscribe('activeUsers'), RoomManager.init()]
 
 	onBeforeAction: ->
-		Session.setDefault('flexOpened', false)
 		Session.set('openedRoom', null)
 		this.next()
 
@@ -28,15 +27,14 @@ Router.onBeforeAction ->
 	if Meteor.userId()? and not Meteor.user().username?
 		this.layout('usernameLayout')
 		return this.render('usernamePrompt')
-
 	if Meteor.userId()? and not Meteor.user().avatarOrigin?
 		this.layout('usernameLayout')
 		return this.render('avatarPrompt')
-
 	this.next()
 , {
 	except: ['login']
 }
+
 
 Router.route '/',
 	name: 'index'
@@ -73,7 +71,7 @@ Router.route '/room/:_id',
 		RoomManager.open @params._id
 
 	onBeforeAction: ->
-		unless ChatRoom.find(@params._id).count()
+		if not ChatRoom.find(@params._id).count()
 			Router.go 'home'
 
 		Session.set('openedRoom', this.params._id)
