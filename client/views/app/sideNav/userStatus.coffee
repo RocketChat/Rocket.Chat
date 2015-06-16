@@ -32,5 +32,9 @@ Template.userStatus.events
 	'click #avatar': (event) ->
 		Meteor.call('resetAvatar')
 
+	'click #settings': (event) ->
+		SideNav.setFlex "userSettingsFlex"
+		SideNav.openFlex()
+
 Template.userStatus.rendered = ->
 	AccountBox.init()
