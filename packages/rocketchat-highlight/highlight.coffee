@@ -23,7 +23,7 @@ class Highlight
 						result = hljs.highlightAuto code
 					else
 						result = hljs.highlight lang, code
-					msgParts[index] = "<pre><code class='hljs " + result.language + "'>" + result.value + "</code></pre>"
+					msgParts[index] = "<pre><code class='hljs " + result.language + "'><span class='copyonly'>```<br></span>" + result.value + "<span class='copyonly'><br>```</span></code></pre>"
 				else
 					# Escape html and fix line breaks for non code blocks
 					msgParts[index] = part
