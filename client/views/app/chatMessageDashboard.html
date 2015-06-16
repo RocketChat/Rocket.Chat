@@ -20,18 +20,20 @@
 						({{_ "edited"}})
 					{{/if}}
 					<i class="icon-pencil edit-message"></i>
+					<i class="icon-trash-1 delete-message"></i>
 				</span>
 				{{/unless}}
 				{{#if isEditing}}
 					<div class="input-message-editing-container">
 						{{> messagePopupConfig getPupupConfig}}
-						<textarea class="input-message-editing" dir="auto">{{msg}}</textarea>
+						<textarea class="input-message-editing">{{msg}}</textarea>
 					</div>
 				{{else}}
 					{{#if ../single}}
 					<span class="time-single">
 						<div class="time-single-time">
 							<i class="icon-pencil edit-message"></i>
+							<i class="icon-trash-1 delete-message"></i>
 							{{time}}
 						</div>
 						{{#if ets}}
@@ -41,13 +43,8 @@
 						{{/if}}
 					</span>
 					{{/if}}
-					<div dir="auto">
+					<div>
 						{{{renderMessage}}}
-						{{#if urls}}
-							{{#each urls}}
-								{{> oembed url=this}}
-							{{/each}}
-						{{/if}}
 					</div>
 				{{/if}}
 			{{/if}}

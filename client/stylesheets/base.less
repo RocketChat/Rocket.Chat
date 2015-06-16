@@ -81,15 +81,6 @@ q {
 	border-radius: 0px;
 }
 
-.iframely-oembed {
-	margin: 0;
-	clear: both;
-	max-width: 400px;
-	font {
-		display: none;
-	}
-}
-
 .alert {
 	padding: 15px;
 	margin-bottom: 20px;
@@ -1416,6 +1407,7 @@ a.github-fork {
 	> div {
 		display: table-cell;
 		vertical-align: middle;
+		padding-top: 4px;
 	}
 	h2 {
 		max-width: 90%;
@@ -1798,6 +1790,13 @@ a.github-fork {
 		&.own:hover .edit-message {
 			display: inherit;
 		}
+		.delete-message {
+			display: none;
+			cursor: pointer;
+		}
+		&.own:hover .delete-message {
+			display: inherit;
+		}
 		.avatar-initials {
 			line-height: 40px;
 		}
@@ -1904,6 +1903,9 @@ a.github-fork {
 			}
 		}
 		.edit-message {
+			display: inline-block;
+		}
+		.delete-message {
 			display: inline-block;
 		}
 	}
