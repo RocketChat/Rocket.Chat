@@ -9,7 +9,7 @@ Template.chatMessageDashboard.helpers
 		return moment(date).format('LL')
 
 	isSystemMessage: ->
-		return this.t in ['s', 'p', 'f', 'r', 'au', 'ru', 'ul', 'nu', 'wm', 'uj']
+		return this.t in ['s', 'p', 'f', 'r', 'au', 'ru', 'ul', 'nu', 'wm']
 
 	isEditing: ->
 		return this._id is Session.get('editingMessageId')
@@ -30,7 +30,6 @@ Template.chatMessageDashboard.helpers
 			when 'ul' then t('chatMessageDashboard.User_left', this.msg)
 			when 'nu' then t('chatMessageDashboard.User_added', this.msg)
 			when 'wm' then t('chatMessageDashboard.Welcome', this.msg)
-			when 'uj' then t('chatMessageDashboard.User_joined_channel', { user: this.msg })
 			else this.msg
 
 	time: ->
@@ -52,6 +51,23 @@ Template.chatMessageDashboard.events
 
 			Meteor.defer ->
 				$('.input-message-editing').select()
+
+	'click .delete-message': ->
+		self = this
+		sweetAlert {
+		  title: 'Are you sure?'
+		  text: 'You will not be able to recover!'
+		  type: 'warning'
+		  showCancelButton: true
+		  confirmButtonColor: '#DD6B55'
+		  confirmButtonText: 'Yes, delete it!'
+		  closeOnConfirm: false
+		  html: false
+		}, ->
+		  swal 'Deleted!', 'Your entry has been deleted.', 'success'
+		  Meteor.call 'deleteMessage',
+		    id: self._id
+
 
 	'click .mention-link': (e) ->
 		Session.set('flexOpened', true)

@@ -48,6 +48,9 @@
 			input.value = ''
 			Meteor.call 'updateMessage', { id: id, msg: msg }
 
+	deleteMessage = (id, input) ->
+			Meteor.call 'deleteMessage', { id: id, msg: msg}
+
 	startTyping = (rid, input) ->
 		if _.trim(input.value) isnt ''
 			unless self.typingTimeout
