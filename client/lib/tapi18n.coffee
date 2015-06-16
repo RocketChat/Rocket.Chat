@@ -3,3 +3,7 @@
 		return TAPi18n.__ key, replaces
 	else
 		return TAPi18n.__ key, { postProcess: 'sprintf', sprintf: replaces }
+
+@isRtl = (language) ->
+	# https://en.wikipedia.org/wiki/Right-to-left#cite_note-2
+	return language.split('-').shift().toLowerCase() in ['ar', 'dv', 'fa', 'he', 'ku', 'ps', 'sd', 'ug', 'ur', 'yi']
