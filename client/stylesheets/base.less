@@ -60,6 +60,11 @@ code {
 	}
 }
 
+pre {
+	display: inline-block;
+	width: 100%;
+}
+
 q {
 	padding-left: 10px;
 	&:before {
@@ -70,6 +75,20 @@ q {
 		position: absolute;
 		left: 50px;
 	}
+}
+
+.copyonly {
+	float: left;
+	display: inline-block;
+	vertical-align: baseline;
+	width: 0;
+	height: 0;
+	font-size: 0;
+	-moz-box-orient: vertical;
+	-webkit-user-select: none;
+	-moz-user-select: none;
+	-ms-user-select: none;
+	user-select: none;
 }
 
 .text-center {
