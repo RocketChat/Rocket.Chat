@@ -11,7 +11,8 @@
     "User_added_by" : "User <em>__user_added__</em> added by <em>__user_by__</em>.",
     "User_left" : "User <em>%s</em> left.",
     "User_removed_by" : "User <em>__user_removed__</em> removed by <em>__user_by__</em>.",
-    "Welcome" : "Welcome <em>%s</em>."
+    "Welcome" : "Welcome <em>%s</em>.",
+    "User_joined_channel" : "User <em>__user__</em> has joined the channel."
   },
   "chatRoomItem" : {
     "Hide_room" : "Hide room",
@@ -53,7 +54,7 @@
     "Showing_online_users" : "Showing <b>__total_online__</b> of __total__ users",
     "Start_of_conversation" : "Start of conversation",
     "View_All" : "View All",
-    "you_are_in_preview_mode_of": "You are in preview mode of",
+    "you_are_in_preview_mode_of": "You are in preview mode of channel #<strong>__room_name__</strong>",
     "join": "Join"
   },
   "footer" : {

@@ -7,22 +7,22 @@ Meteor.methods
 			throw new Meteor.Error 403, '[methods] joinRoom -> Not allowed'
 
 		# verify if user is already in room
-		# if room.usernames.indexOf(data.username) is -1
+		# if room.usernames.indexOf(user.username) is -1
 
 		now = new Date()
+
+		user = Meteor.users.findOne Meteor.userId()
 
 		update =
 			$push:
 				usernames:
-					$each: [data.username]
+					$each: [user.username]
 					$sort: 1
 
-		newUser = Meteor.users.findOne username: data.username
-
-		ChatRoom.update data.rid, update
+		ChatRoom.update rid, update
 
 		ChatSubscription.insert
-			rid: data.rid
+			rid: rid
 			ts: now
 			name: room.name
 			t: room.t
@@ -30,16 +30,16 @@ Meteor.methods
 			alert: true
 			unread: 1
 			u:
-				_id: newUser._id
-				username: data.username
+				_id: user._id
+				username: user.username
 
 		ChatMessage.insert
-			rid: data.rid
+			rid: rid
 			ts: now
-			t: 'au'
-			msg: newUser.name
+			t: 'uj'
+			msg: user.name
 			u:
-				_id: newUser._id
-				username: data.username
+				_id: user._id
+				username: user.username
 
 		return true

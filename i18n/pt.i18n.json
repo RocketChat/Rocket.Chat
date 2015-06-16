@@ -11,7 +11,8 @@
     "User_added_by" : "Usuário <em>__user_added__</em> adicionado à conversa por <em>__user_by__</em>.",
     "User_left" : "Usuário <em>%s</em> deixou a conversa.",
     "User_removed_by" : "Usuário <em>__user_removed__</em> removido da conversa por <em>__user_by__</em>.",
-    "Welcome" : "Seja bem-vindo <em>%s</em>."
+    "Welcome" : "Seja bem-vindo <em>%s</em>.",
+    "User_joined_channel" : "Usuário <em>__user__</em> entrou no canal."
   },
   "chatRoomItem" : {
     "Hide_room" : "Esconder sala",
@@ -54,7 +55,9 @@
     "Send_Message" : "Enviar Mensagem",
     "Showing_online_users" : "Mostrando <b>__total_online__</b> de __total__ usuários",
     "Start_of_conversation" : "Início da conversa",
-    "View_All" : "Ver Todos"
+    "View_All" : "Ver Todos",
+    "you_are_in_preview_mode_of": "Esta é uma prévia do canal #<strong>__room_name__</strong>",
+    "join": "Entrar"
   },
   "footer" : {
     "Follow_social_profiles" : "Siga-nos nas redes sociais, faça fork no github e compartilhe suas ideias sobre o app rocket.chat em nosso trello.",
