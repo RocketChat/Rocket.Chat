@@ -1712,17 +1712,21 @@ a.github-fork {
 			float: left;
 			height: 20px;
 			font-size: 12px;
-			color: #888;
+			color: #888888;
 			padding: 3px 0px 0px 5px;
 		}
 		> .formatting-tips {
 			float: right;
 			height: 20px;
 			font-size: 11px;
-			color: #888;
+			color: #888888;
 			padding: 4px 0px 0px 5px;
 			display: inline-block;
 			white-space: nowrap;
+			overflow: hidden;
+			&:hover {
+				color: #444444;
+			}
 			q {
 				padding: 0 0 0 3px;
 				border-left: 3px solid #ccc;
@@ -1731,7 +1735,17 @@ a.github-fork {
 				}
 			}
 			code {
-				color: #888;
+				color: inherit;
+				line-height: 13px;
+				overflow: hidden;
+				vertical-align: top;
+				font-size: 10px;
+			}
+			.hidden-br {
+				display: inline-block;
+			}
+			.icon-level-down:before {
+				transform: rotate(90deg);
 			}
 		}
 	}
@@ -1860,7 +1874,7 @@ a.github-fork {
 	.user {
 		display: inline-block;
 		font-weight: 600;
-		color: #444;
+		color: #444444;
 		&:hover {
 			color: #333;
 		}
@@ -1878,7 +1892,7 @@ a.github-fork {
 		font-size: 12px;
 		position: absolute;
 		display: inline-block;
-		color: #888;
+		color: #888888;
 		left: 6px;
 		opacity: 0;
 	}

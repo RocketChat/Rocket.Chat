@@ -1,6 +1,7 @@
 <template name="chatWindowDashboard">
 	<section class="room-container" id="{{roomContainerId}}">
 		<section class="messages-container" id="{{windowId}}">
+
 			<head class="fixed-title">
 				<div>
 					<div class="burger">
@@ -84,10 +85,10 @@
 						</div>
 						<div class="formatting-tips" aria-hidden="true" dir="auto">
 							<b>*bold*</b>
-							<i>_italics_</i> ~
-							<strike>strike</strike>~
+							<i>_italics_</i>
+							<span>~<strike>strike</strike>~</span>
 							<code class="inline">`inline code`</code>
-							<code class="inline">```⏎multi⏎line⏎```</code>
+							<code class="inline"><div class="hidden-br"><br></div>```<div class="hidden-br"><br></div><i class="icon-level-down"></i>multi<div class="hidden-br"><br></div><i class="icon-level-down"></i>line<div class="hidden-br"><br></div><i class="icon-level-down"></i>```<div class="hidden-br"><br></div></code>
 							<q>&gt;quote</q>
 						</div>
 					</form>
