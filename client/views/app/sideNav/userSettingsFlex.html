@@ -8,9 +8,9 @@
 		<div class="wrapper">
 			<div class="input-line">
 				<label for="language">{{_ "general.Language"}}</label>
-				<select id="language" class="required" dir="auto">
+				<select id="language" class="required">
 					{{#each languages}}
-					<option value="{{key}}" selected="{{userLanguage key}}">{{name}}</option>
+					<option value="{{key}}" selected="{{userLanguage key}}" dir="auto">{{name}}</option>
 					{{/each}}
 				</select>
 			</div>
