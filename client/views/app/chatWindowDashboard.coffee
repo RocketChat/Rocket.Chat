@@ -15,13 +15,13 @@ Template.chatWindowDashboard.helpers
 
 	favorite: ->
 		console.log 'chatWindowDashboard.helpers favorite' if window.rocketDebug
-		sub = ChatSubscription.findOne { rid: this._id }
+		sub = ChatSubscription.findOne { rid: this._id }, { fields: { f: 1 } }
 		return 'icon-star favorite-room' if sub?.f? and sub.f
 		return 'icon-star-empty'
 
 	subscribed: ->
 		console.log 'chatWindowDashboard.helpers subscribed' if window.rocketDebug
-		return ChatSubscription.findOne { rid: this._id }
+		return ChatSubscription.find({ rid: this._id }).count() > 0
 
 	messages: ->
 		console.log 'chatWindowDashboard.helpers messages' if window.rocketDebug

@@ -9,7 +9,7 @@ Template.chatMessageDashboard.helpers
 		return moment(date).format('LL')
 
 	isSystemMessage: ->
-		return this.t in ['s', 'p', 'f', 'r', 'au', 'ru', 'ul', 'nu', 'wm']
+		return this.t in ['s', 'p', 'f', 'r', 'au', 'ru', 'ul', 'nu', 'wm', 'uj']
 
 	isEditing: ->
 		return this._id is Session.get('editingMessageId')
@@ -30,6 +30,7 @@ Template.chatMessageDashboard.helpers
 			when 'ul' then t('chatMessageDashboard.User_left', this.msg)
 			when 'nu' then t('chatMessageDashboard.User_added', this.msg)
 			when 'wm' then t('chatMessageDashboard.Welcome', this.msg)
+			when 'uj' then t('chatMessageDashboard.User_joined_channel', { user: this.msg })
 			else this.msg
 
 	time: ->

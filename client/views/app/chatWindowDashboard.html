@@ -9,7 +9,9 @@
 						<i></i>
 					</div>
 					<h2>
-					<a href="#favorite" class="toggle-favorite"><i class="{{favorite}}"></i></a>
+					{{#if subscribed}}
+						<a href="#favorite" class="toggle-favorite"><i class="{{favorite}}"></i></a>
+					{{/if}}
 					<i class="{{roomTypeIcon}}"></i>
 					<span class="room-title {{editingTitle}}">{{roomName}}</span>
 					{{#if canEditName}}
@@ -91,7 +93,7 @@
 					</form>
 				{{else}}
 					<div>
-						{{_ "chatWindowDashboard.you_are_in_preview_mode_of"}} <strong>#{{roomName}}</strong>
+						{{{_ "chatWindowDashboard.you_are_in_preview_mode_of" room_name=roomName}}}
 						<button class="button join"><span><i class="icon-login"></i> {{_ "chatWindowDashboard.join"}}</span></button>
 					</div>
 				{{/if}}
