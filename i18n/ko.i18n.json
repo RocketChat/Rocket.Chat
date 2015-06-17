@@ -122,8 +122,8 @@
   "View_All" : "모두 보기",
   "We_have_sent_password_email" : "암호 제설정 지침 이메일을 보냈습니다. 이메일을 받지 못한 경우, 다시 시도하세요.",
   "We_have_sent_registration_email" : "등록확인 이메일을 보냈습니다. 이메일을 받지 못한 경우, 다시 시도하세요.",
-  "Welcome_to_the" : "오신것을 환영합니다",
   "Welcome" : "환영합니다, <em>%s</em>.",
+  "Welcome_to_the" : "오신것을 환영합니다",
   "You_neeed_confirm_email" : "로그인하려면 이메일 확인이 필요합니다!",
   "Your_Open_Source_solution" : "자신만의 오픈소스 채팅 솔루션"
 }
