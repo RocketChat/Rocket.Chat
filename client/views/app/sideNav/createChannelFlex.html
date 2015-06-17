@@ -1,14 +1,14 @@
 <template name="createChannelFlex">
 	<header>
 		<div>
-			<h4>{{_ "chatRooms.Channels"}}</h4>
+			<h4>{{_ "Channels"}}</h4>
 		</div>
 	</header>
 	<div class="content">
 		<div class="wrapper">
-			<h4>{{_ "chatRooms.Create_new_channel" }}</h4>
+			<h4>{{_ "Create_new_channel" }}</h4>
 			<div class="input-line">
-				<label for="channel-name">{{_ "chatRooms.Name"}}</label>
+				<label for="channel-name">{{_ "Name"}}</label>
 				<input type="text" id="channel-name" class="required" dir="auto">
 			</div>
 			<div class="input-line">
@@ -31,12 +31,12 @@
 			{{#if error.invalid}}
 				<div class="input-error">
 					<strong>Ops!</strong>
-					{{{_ "chatRooms.Invalid_room_name" roomName}}}
+					{{{_ "Invalid_room_name" roomName}}}
 				</div>
 			{{/if}}
 			<div class="input-submit">
-				<button class="button clean primary save-channel">{{_ "general.Save" }}</button>
-				<button class="button clean cancel-channel">{{_ "general.Cancel" }}</button>
+				<button class="button clean primary save-channel">{{_ "Save" }}</button>
+				<button class="button clean cancel-channel">{{_ "Cancel" }}</button>
 			</div>
 		</div>
 	</div>
