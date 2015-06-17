@@ -9,7 +9,7 @@
   "Away" : "Odsutan",
   "busy" : "zaposlen",
   "Busy" : "Zaposlen",
-  "Cancel" : "Natrag na prijavu",
+  "Back_to_login" : "Natrag na prijavu",
   "Cancel" : "Otkaži",
   "Change_avatar" : "Promijeni avatar",
   "Channels" : "Kanali",
@@ -61,7 +61,6 @@
   "More_channels" : "Više kanala",
   "Msgs" : "Msgs",
   "n_messages" : "%s poruka",
-  "Name" : "Ime",
   "Name" : "Ime",
   "New_messages" : "Nove Poruke",
   "New_password" : "Nova lozinka",
@@ -124,7 +123,7 @@
   "We_have_sent_password_email" : "Poslan ti je e-mail sa uputama za resetiranje lozinke. Provjeri i spam folder! Ako ga ne primiš uskoro, molimo te vrati se i pokušaj opet.",
   "We_have_sent_registration_email" : "Poslan ti je e-mail kako bi potvrdio svoju registraciju. Provjeri i spam folder! Ako ga ne primiš uskoro, molimo te vrati se i pokušaj opet.",
   "Welcome" : "Dobro došli <em>%s</em>.",
-  "welcome" : "Dobro došli »",
+  "Welcome_to_the" : "Dobro došli »",
   "You_neeed_confirm_email" : "Trebaš potvrditi svoj email kako bi se prijavio!",
   "Your_Open_Source_solution" : "Tvoje vlastito Open Source chat rješenje"
 }

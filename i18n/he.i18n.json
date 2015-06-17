@@ -10,7 +10,7 @@
   "busy" : "עסוק",
   "Busy" : "עסוק",
   "Cancel" : "ביטול",
-  "Cancel" : "חזור להתחברות",
+  "Back_to_login" : "חזור להתחברות",
   "Change_avatar" : "שנה את האוואטר",
   "Channels" : "ערוצים",
   "Channels_list" : "רשימת ערוצים ציבוריים",
@@ -61,7 +61,6 @@
   "More_channels" : "עוד ערוצים",
   "Msgs" : "הודעות",
   "n_messages" : "%s הודעות",
-  "Name" : "שם",
   "Name" : "שם",
   "New_messages" : "הודעות חדשות",
   "New_password" : "סיסמא חדשה",
@@ -124,7 +123,7 @@
   "We_have_sent_password_email" : "הינך צריך לקבל בדקות הקרובות מייל עם הוראות לאיפוס הסיסמא. אם אינך רואה אותו, אנא נסה שנית.",
   "We_have_sent_registration_email" : "שלחנו לך מייל לאישור ההרשמה. אם אינך מקבל את המייל בדקות הקרובות, אנא נסה שנית.",
   "Welcome" : "ברוך הבא <em>%s</em>.",
-  "welcome" : "ברוך הבא ל-",
+  "Welcome_to_the" : "ברוך הבא ל-",
   "You_neeed_confirm_email" : "הינך צריך לאמת את כתובת האימייל על מנת להתחבר!",
   "Your_Open_Source_solution" : "פתרון הקוד הפתוח שלך לצ'אט"
 }

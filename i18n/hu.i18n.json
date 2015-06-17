@@ -10,7 +10,7 @@
   "busy" : "elfoglalt",
   "Busy" : "Elfoglalt",
   "Cancel" : "Mégse",
-  "Cancel" : "Vissza a bejelentkezéshez",
+  "Back_to_login" : "Vissza a bejelentkezéshez",
   "Change_avatar" : "Kép megváltoztatása",
   "Channels" : "Csatornák",
   "Channels_list" : "Nyilvános csatornák listája",
@@ -61,7 +61,6 @@
   "More_channels" : "Még több csatorna",
   "Msgs" : "Üzik",
   "n_messages" : "s% üzenetek",
-  "Name" : "Név",
   "Name" : "Név",
   "New_messages" : "Új üzenet",
   "New_password" : "Új jelszó",
@@ -124,7 +123,7 @@
   "We_have_sent_password_email" : "Elküldtünk egy email-t a jelszó visszaállítás lépéseiről. Ha hamarosan nem érkezne meg, akkor gyere vissza és próbáld újra.",
   "We_have_sent_registration_email" : "Küldtünk egy email-t hogy megerősíthessük a regisztrációt. Ha nem kapnál hamarosan levelet akkor gyere vissza később és próbáld újra.",
   "Welcome" : "Üdvözöllek <em>%s</em>",
-  "welcome" : "Üdvözöllek a",
+  "Welcome_to_the" : "Üdvözöllek a",
   "You_neeed_confirm_email" : "Kérlek hitelesítsd az email címed a bejelntkezéshez",
   "Your_Open_Source_solution" : "A saját Nyílt Forrású chat-ed"
 }

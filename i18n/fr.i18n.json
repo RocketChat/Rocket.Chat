@@ -10,7 +10,7 @@
   "busy" : "occupé",
   "Busy" : "Occupé",
   "Cancel" : "Annuler",
-  "Cancel" : "Retourner à l'écran de connexion",
+  "Back_to_login" : "Retourner à l'écran de connexion",
   "Change_avatar" : "Changer l'avatar",
   "Channels" : "Canaux",
   "Channels_list" : "Liste des salons ouverts à tous",
@@ -61,7 +61,6 @@
   "More_channels" : "Davantage de canaux",
   "Msgs" : "Msgs",
   "n_messages" : "%s messages",
-  "Name" : "Nom",
   "Name" : "Nom",
   "New_messages" : "Nouveaux messages",
   "New_password" : "Nouveau mot de passe",
@@ -124,7 +123,7 @@
   "We_have_sent_password_email" : "Nous vous avons envoyé un courriel avec des instructions de réinitialisation du mot de passe. Si vous ne recevez pas de courriel dans quelques minutes, veuillez réessayer.",
   "We_have_sent_registration_email" : "Nous vous avons envoyé un courriel afin de confirmer votre enregistrement. Si vous ne recevez pas de courriel dans quelques minutes, veuillez réessayer.",
   "Welcome" : "Bienvenue <em>%s</em>.",
-  "welcome" : "Bienvenue sur le",
+  "Welcome_to_the" : "Bienvenue sur le",
   "You_neeed_confirm_email" : "Vous devez confirmer votre courriel pour vous connecter !",
   "Your_Open_Source_solution" : "Votre propre solution de tchat Open Source"
 }

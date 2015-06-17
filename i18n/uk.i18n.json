@@ -10,7 +10,7 @@
   "busy" : "зайнятий",
   "Busy" : "Зайнятий",
   "Cancel" : "Відміна",
-  "Cancel" : "Повернутися до логіну",
+  "Back_to_login" : "Повернутися до логіну",
   "Change_avatar" : "Змінити аватар",
   "Channels" : "Канали",
   "Channels_list" : "Список публічних каналів",
@@ -61,7 +61,6 @@
   "More_channels" : "Більше каналів",
   "Msgs" : "Повідомлення",
   "n_messages" : "%s повідомлень",
-  "Name" : "Ім’я",
   "Name" : "Ім’я",
   "New_messages" : "Нове повідомлення",
   "New_password" : "Новий пароль",
@@ -124,7 +123,7 @@
   "We_have_sent_password_email" : "We have sent you an e-mail with password reset instructions. If you do not receive an e-mail shortly, please come back and try again.",
   "We_have_sent_registration_email" : "We have sent you an e-mail to confirm your registration. If you do not receive an e-mail shortly, please come back and try again.",
   "Welcome" : "Вітаємо, <em>%s</em>.",
-  "welcome" : "Ласкаво просимо в",
+  "Welcome_to_the" : "Ласкаво просимо в",
   "You_neeed_confirm_email" : "Для входу необхідно підтвердити e-mail!",
   "Your_Open_Source_solution" : "Ваш власний Open Source чат"
 }

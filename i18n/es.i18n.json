@@ -10,7 +10,7 @@
   "busy" : "ocupado",
   "Busy" : "Ocupado",
   "Cancel" : "Cancelar",
-  "Cancel" : "Volver a identificarse",
+  "Back_to_login" : "Volver a identificarse",
   "Change_avatar" : "Cambiar avatar",
   "Channels" : "Canales",
   "Channels_list" : "Lista de canales públicos",
@@ -61,7 +61,6 @@
   "More_channels" : "Más canales",
   "Msgs" : "Mensajes",
   "n_messages" : "%s mensajes",
-  "Name" : "Nombre",
   "Name" : "Nombre",
   "New_messages" : "Nuevos mensajes",
   "New_password" : "Nueva contraseña",
@@ -124,7 +123,7 @@
   "We_have_sent_password_email" : "Te hemos enviado un e-mail con las instrucciones para resetear la contraseña. Si no recibes un correo en breve, por favor regresa y vuelve a intentarlo.",
   "We_have_sent_registration_email" : "Te hemos enviado un e-mail para confirmar tu registro. Si no recibes un correo en breve, por favor regresa y vuelve a intentarlo.",
   "Welcome" : "Bienvenido <em>%s</em>.",
-  "welcome" : "Bienvenido a la",
+  "Welcome_to_the" : "Bienvenido a la",
   "You_neeed_confirm_email" : "¡Es necesario confirmar tu correo electrónico para poder identificarte!",
   "Your_Open_Source_solution" : "Tu propia solución de chat de código abierto"
 }

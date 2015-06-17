@@ -9,7 +9,7 @@
   "Away" : "Away",
   "busy" : "busy",
   "Busy" : "Busy",
-  "Cancel" : "Back to login",
+  "Back_to_login" : "Back to login",
   "Cancel" : "Vazgeç",
   "Change_avatar" : "Change avatar",
   "Channels" : "Kanallar",
@@ -61,7 +61,6 @@
   "More_channels" : "Daha fazla",
   "Msgs" : "Msj",
   "n_messages" : "%s mesaj",
-  "Name" : "İsim",
   "Name" : "İsim",
   "New_messages" : "Yeni mesajlar",
   "New_password" : "Yeni şifre",
@@ -124,7 +123,7 @@
   "We_have_sent_password_email" : "We have sent you an e-mail with password reset instructions. If you do not receive an e-mail shortly, please come back and try again.",
   "We_have_sent_registration_email" : "We have sent you an e-mail to confirm your registration. If you do not receive an e-mail shortly, please come back and try again.",
   "Welcome" : "Hoşgeldin <em>%s</em>.",
-  "welcome" : "Hoşgeldiniz",
+  "Welcome_to_the" : "Hoşgeldiniz",
   "You_neeed_confirm_email" : "Giriş yapabilmek için öncelikle e-posta adresinizi onaylamanız gerekmektedir!",
   "Your_Open_Source_solution" : "Your own Open Source chat solution"
 }
