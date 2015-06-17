@@ -16,7 +16,6 @@ class Highlight
 
 				# Check if we need to add a final ```
 				if (count % 2 > 0)
-					console.log "Even"
 					message.html = message.html + "\n```"
 					message.msg = message.msg + "\n```"
 
