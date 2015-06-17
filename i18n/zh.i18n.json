@@ -10,7 +10,7 @@
   "busy" : "忙",
   "Busy" : "忙",
   "Cancel" : "取消",
-  "Cancel" : "返回登陆界面",
+  "Back_to_login" : "返回登陆界面",
   "Change_avatar" : "更改头像",
   "Channels" : "频道",
   "Channels_list" : "公共频道列表",
@@ -61,7 +61,6 @@
   "More_channels" : "更多频道",
   "Msgs" : "消息",
   "n_messages" : "%s 条消息",
-  "Name" : "名字",
   "Name" : "名字",
   "New_messages" : "新消息",
   "New_password" : "新密码",
@@ -124,7 +123,7 @@
   "We_have_sent_password_email" : "我们已经向您发送密码重置的电子邮件。如果您没有收到邮件，请重试。",
   "We_have_sent_registration_email" : "我们已经向您发出一封电子邮件，以确认您的注册。如果您没有收到邮件，请重试。",
   "Welcome" : "欢迎 <em>%s</em>",
-  "welcome" : "欢迎来到",
+  "Welcome_to_the" : "欢迎来到",
   "You_neeed_confirm_email" : "登录前请验证您的电子邮件！",
   "Your_Open_Source_solution" : "您自己的开源聊天解决方案"
 }
