@@ -1,6 +1,6 @@
 {
-  "Access_online_demo" : "Попробовать демо-версию",
   "Access_Online_Demo" : "Access the Online Demo",
+  "Access_online_demo" : "Попробовать демо-версию",
   "Add_users" : "Добавить пользователей",
   "and" : "и",
   "are_also_typing" : "все ещё печатают",
@@ -122,8 +122,8 @@
   "View_All" : "Посмотреть всех",
   "We_have_sent_password_email" : "We have sent you an e-mail with password reset instructions. If you do not receive an e-mail shortly, please come back and try again.",
   "We_have_sent_registration_email" : "Был выслан e-mail для подтверждения регистрации. Если вы не получили его, то попробуйте еще раз.",
-  "Welcome" : "Добро пожаловать, <em>%s</em>.",
   "Welcome_to_the" : "Добро пожаловать в",
+  "Welcome" : "Добро пожаловать, <em>%s</em>.",
   "You_neeed_confirm_email" : "Необходимо подтвердить e-mail для входа!",
   "Your_Open_Source_solution" : "Ваш собственный чат на базе Open Source-технологий"
 }
