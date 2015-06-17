@@ -88,8 +88,6 @@
 				if container.wrapper.scrollTop != (container.wrapper.scrollHeight - container.wrapper.clientHeight)
 					clearShoot()
 					container.wrapper.scrollTop = container.wrapper.scrollHeight - container.wrapper.clientHeight
-				else
-					console.log "EQUALS."
 		else
 			if getStatus() is false
 				toggleNewWarning(true)
