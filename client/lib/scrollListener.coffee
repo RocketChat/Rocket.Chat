@@ -83,9 +83,13 @@
 					setLoader false
 				, 350
 			else
-				clearShoot()
 				toggleNewWarning(false)
-				container.wrapper.scrollTop = 50000
+
+				if container.wrapper.scrollTop != (container.wrapper.scrollHeight - container.wrapper.clientHeight)
+					clearShoot()
+					container.wrapper.scrollTop = container.wrapper.scrollHeight - container.wrapper.clientHeight
+				else
+					console.log "EQUALS."
 		else
 			if getStatus() is false
 				toggleNewWarning(true)
