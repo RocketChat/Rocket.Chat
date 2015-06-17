@@ -1,7 +1,7 @@
 Meteor.methods
 	leaveRoom: (rid) ->
 		if not Meteor.userId()
-			throw new Meteor.Error 203, t('general.User_logged_out')
+			throw new Meteor.Error 203, t('User_logged_out')
 
 		ChatSubscription.remove
 			rid: rid

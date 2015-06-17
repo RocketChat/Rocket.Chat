@@ -7,11 +7,11 @@ Template.chatWindowDashboard.helpers
 
 	tAddUsers: ->
 		console.log 'chatWindowDashboard.helpers tAddUsers' if window.rocketDebug
-		return t('chatWindowDashboard.Add_users')
+		return t('Add_users')
 
 	tQuickSearch: ->
 		console.log 'chatWindowDashboard.helpers tQuickSearch' if window.rocketDebug
-		return t('chatWindowDashboard.Quick_Search')
+		return t('Quick_Search')
 
 	favorite: ->
 		console.log 'chatWindowDashboard.helpers favorite' if window.rocketDebug
@@ -270,9 +270,9 @@ Template.chatWindowDashboard.helpers
 	seeAll: ->
 		console.log 'chatWindowDashboard.helpers seeAll' if window.rocketDebug
 		if Template.instance().showUsersOffline.get()
-			return t('chatWindowDashboard.See_only_online')
+			return t('See_only_online')
 		else
-			return t('chatWindowDashboard.See_all')
+			return t('See_all')
 
 	getPupupConfig: ->
 		console.log 'chatWindowDashboard.helpers getPupupConfig' if window.rocketDebug
@@ -474,7 +474,7 @@ renameRoom = (rid, name) ->
 		if result
 			Session.set('editRoomTitle', false)
 
-			toastr.success t('chatWindowDashboard.Room_name_changed_successfully')
+			toastr.success t('Room_name_changed_successfully')
 		if error
 			toastr.error error.reason
 
