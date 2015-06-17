@@ -84,12 +84,12 @@
 							{{/with}}
 						</div>
 						<div class="formatting-tips" aria-hidden="true" dir="auto">
-							<b>*bold*</b>
-							<i>_italics_</i>
-							<span>~<strike>strike</strike>~</span>
-							<code class="inline">`inline code`</code>
-							<code class="inline"><div class="hidden-br"><br></div>```<div class="hidden-br"><br></div><i class="icon-level-down"></i>multi<div class="hidden-br"><br></div><i class="icon-level-down"></i>line<div class="hidden-br"><br></div><i class="icon-level-down"></i>```</code>
-							<q><div class="hidden-br"><br></div>&gt;quote</q>
+							<b>*{{_ "bold"}}*</b>
+							<i>_{{_ "italics"}}_</i>
+							<span>~<strike>{{_ "strike"}}</strike>~</span>
+							<code class="inline">`{{_ "inline_code"}}`</code>
+							<code class="inline"><div class="hidden-br"><br></div>```<div class="hidden-br"><br></div><i class="icon-level-down"></i>{{_ "multi"}}<div class="hidden-br"><br></div><i class="icon-level-down"></i>{{_ "line"}}<div class="hidden-br"><br></div><i class="icon-level-down"></i>```</code>
+							<q><div class="hidden-br"><br></div>&gt;{{_ "quote"}}</q>
 						</div>
 					</form>
 				{{else}}
