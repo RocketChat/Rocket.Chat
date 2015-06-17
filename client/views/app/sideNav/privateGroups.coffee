@@ -1,6 +1,6 @@
 Template.privateGroups.helpers
 	tRoomMembers: ->
-		return t('chatRooms.Members_placeholder')
+		return t('Members_placeholder')
 	rooms: ->
 		return ChatSubscription.find { t: { $in: ['p']}, f: { $ne: true } }, { sort: 't': 1, 'name': 1 }
 	total: ->
