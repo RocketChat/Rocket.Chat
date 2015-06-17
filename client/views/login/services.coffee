@@ -35,7 +35,7 @@ Template.loginServices.events
 
 		Meteor[loginWithService] serviceConfig, (error) ->
 			if error?.error is 'github-no-public-email'
-				alert t("loginServices.github_no_public_email")
+				alert t("github_no_public_email")
 				return
 
 			console.log error

@@ -27,11 +27,11 @@
 					<ul>
 						{{#if hasMore}}
 							<li class="load-more">
-								<button class="button secondary load-more {{isLoading}}">{{_ "general.Load_more"}}</button>
+								<button class="button secondary load-more {{isLoading}}">{{_ "Load_more"}}</button>
 							</li>
 						{{else}}
 							<li class="chat-begin">
-								<span>{{_ "chatWindowDashboard.Start_of_conversation"}}</span>
+								<span>{{_ "Start_of_conversation"}}</span>
 							</li>
 						{{/if}}
 						{{#each messagesHistory}}
@@ -54,7 +54,7 @@
 				</div>
 				<div class="new-message not">
 					<i class="icon-down-big"></i>
-					<span>{{_ "chatWindowDashboard.New_messages"}}</span>
+					<span>{{_ "New_messages"}}</span>
 				</div>
 			</div>
 			<footer class="footer">
@@ -63,22 +63,22 @@
 						<div>
 							{{> messagePopupConfig getPupupConfig}}
 							<textarea dir="auto" name="msg" class="input-message"></textarea>
-							<i class="icon-paper-plane" title="{{_ "chatWindowDashboard.Send_Message"}}"></i>
+							<i class="icon-paper-plane" title="{{_ "Send_Message"}}"></i>
 						</div>
 						<div class="users-typing">
 							{{#with usersTyping}}
 								<strong>{{users}}</strong>
 								{{#if multi}}
 									{{#if selfTyping}}
-										{{_ "chatWindowDashboard.are_also_typing"}}
+										{{_ "are_also_typing"}}
 									{{else}}
-										{{_ "chatWindowDashboard.are_typing"}}
+										{{_ "are_typing"}}
 									{{/if}}
 								{{else}}
 									{{#if selfTyping}}
-										{{_ "chatWindowDashboard.is_also_typing"}}
+										{{_ "is_also_typing"}}
 									{{else}}
-										{{_ "chatWindowDashboard.is_typing"}}
+										{{_ "is_typing"}}
 									{{/if}}
 								{{/if}}
 							{{/with}}
@@ -94,8 +94,8 @@
 					</form>
 				{{else}}
 					<div>
-						{{{_ "chatWindowDashboard.you_are_in_preview_mode_of" room_name=roomName}}}
-						<button class="button join"><span><i class="icon-login"></i> {{_ "chatWindowDashboard.join"}}</span></button>
+						{{{_ "you_are_in_preview_mode_of" room_name=roomName}}}
+						<button class="button join"><span><i class="icon-login"></i> {{_ "join"}}</span></button>
 					</div>
 				{{/if}}
 			</footer>
@@ -127,9 +127,9 @@
 						<div class="list-view{{#if $.Session.get 'showUserInfo'}} -hidden{{/if}}">
 							{{#with roomUsers}}
 								<div class="status">
-									<h2>{{_ "chatWindowDashboard.Members_List"}}</h2> {{!--
+									<h2>{{_ "Members_List"}}</h2> {{!--
 									<p>
-										{{{_ "chatWindowDashboard.Showing_online_users" total_online=totalOnline total=total}}}
+										{{{_ "Showing_online_users" total_online=totalOnline total=total}}}
 										<button class="see-all">{{seeAll}}</button>
 									</p>--}}
 								</div>
@@ -156,7 +156,7 @@
 									<div class="info">
 										<h3>{{username}}</h3>
 										{{#if contactCode}}
-											<div class="contact-code">{{_ "general.Contact"}} {{contactCode}}</div>
+											<div class="contact-code">{{_ "Contact"}} {{contactCode}}</div>
 										{{/if}}
 										{{!--
 										{{#each emails}}
@@ -169,8 +169,8 @@
 									</div>
 								</div>
 								<nav>
-									<button class='button secondary back'><span>{{_ "chatWindowDashboard.View_All"}} <i class='icon-angle-right'></i></span></button>
-									<button class='button pvt-msg'><span><i class='icon-chat'></i> {{_ "general.Conversation"}}</span></button>
+									<button class='button secondary back'><span>{{_ "View_All"}} <i class='icon-angle-right'></i></span></button>
+									<button class='button pvt-msg'><span><i class='icon-chat'></i> {{_ "Conversation"}}</span></button>
 								</nav>
 							{{/with}}
 						</div>
@@ -184,7 +184,7 @@
 									<div class="info">
 										<h3>{{username}}</h3>
 										{{#if contactCode}}
-											<div class="contact-code">{{_ "general.contact"}} {{contactCode}}</div>
+											<div class="contact-code">{{_ "contact"}} {{contactCode}}</div>
 										{{/if}}
 										{{!--
 										{{#each emails}}

@@ -1,6 +1,6 @@
 Template.channels.helpers
 	tRoomMembers: ->
-		return t('chatRooms.Members_placeholder')
+		return t('Members_placeholder')
 
 	rooms: ->
 		return ChatSubscription.find { t: { $in: ['c']}, f: { $ne: true } }, { sort: 't': 1, 'name': 1 }
