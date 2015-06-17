@@ -58,17 +58,12 @@ Template.chatMessageDashboard.events
 		Session.set('showUserInfo', $(e.currentTarget).data('username'))
 
 Template.chatMessageDashboard.onRendered ->
-	chatMessages = $('.messages-box .wrapper')
-	message = $(this.firstNode)
+	if(this.lastNode.className.match("own"))
+		ScrollListener.toBottom(true)
+		return
 
-	if this.data.scroll? and message.data('scroll-to-bottom')?
-		if message.data('scroll-to-bottom') and (this.parentTemplate().scrollOnBottom or this.data.data.uid is Meteor.userId())
-			chatMessages.stop().animate({scrollTop: 99999}, 1000 )
-		else
-			# senao, exibe o alerta de mensagem  nova
-			$('.new-message').removeClass('not')
-	else
-		if not chatMessages.data('previous-height')
-			chatMessages.stop().scrollTop(99999)
-		else
-			chatMessages.stop().scrollTop(chatMessages.get(0).scrollHeight - chatMessages.data('previous-height'))
+	message = $(this.lastNode)
+	parent = message.parent().children().last()
+
+	if message.get(0) is parent.get(0)
+		ScrollListener.toBottom(false)

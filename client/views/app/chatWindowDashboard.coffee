@@ -1,6 +1,5 @@
 # @TODO bug com o botão para "rolar até o fim" (novas mensagens) quando há uma mensagem com texto que gere rolagem horizontal
 Template.chatWindowDashboard.helpers
-
 	visible: ->
 		console.log 'chatWindowDashboard.helpers visible' if window.rocketDebug
 		return 'visible' if this._id is Session.get('openedRoom')
@@ -291,8 +290,8 @@ Template.chatWindowDashboard.events
 
 	'click .chat-new-messages': (event) ->
 		console.log 'chatWindowDashboard click .chat-new-messages' if window.rocketDebug
-		chatMessages = $('#chat-window-' + this._id + ' .messages-box .wrapper')
-		chatMessages.animate({scrollTop: chatMessages[0].scrollHeight}, 'normal')
+		# chatMessages = $('#chat-window-' + this._id + ' .messages-box .wrapper')
+		# chatMessages.animate({scrollTop: chatMessages[0].scrollHeight}, 'normal')
 		$('#chat-window-' + this._id + ' .input-message').focus()
 
 	'click .toggle-favorite': (event) ->
@@ -434,16 +433,15 @@ Template.chatWindowDashboard.events
 			$('#room-search').val('')
 
 	'scroll .wrapper': (e, instance) ->
-		console.log 'chatWindowDashboard scroll .wrapper' if window.rocketDebug
-		if e.currentTarget.offsetHeight + e.currentTarget.scrollTop < e.currentTarget.scrollHeight
-			instance.scrollOnBottom = false
-		else
-			instance.scrollOnBottom = true
-			$('.new-message').addClass('not')
+		# console.log 'chatWindowDashboard scroll .wrapper' if window.rocketDebug
+		# if e.currentTarget.offsetHeight + e.currentTarget.scrollTop < e.currentTarget.scrollHeight
+		# 	instance.scrollOnBottom = false
+		# else
+		# 	instance.scrollOnBottom = true
+		# 	$('.new-message').addClass('not')
 
 	'click .new-message': (e) ->
 		console.log 'chatWindowDashboard click .new-message' if window.rocketDebug
-		$('.messages-box .wrapper').stop().animate({scrollTop: 999999}, 1000 )
 		$(e.currentTarget).addClass('not')
 
 	'click .see-all': (e, instance) ->
@@ -452,13 +450,14 @@ Template.chatWindowDashboard.events
 
 Template.chatWindowDashboard.onCreated ->
 	console.log 'chatWindowDashboard.onCreated' if window.rocketDebug
-	this.scrollOnBottom = true
+	# this.scrollOnBottom = true
 	this.showUsersOffline = new ReactiveVar false
 
 Template.chatWindowDashboard.onRendered ->
 	console.log 'chatWindowDashboard.onRendered' if window.rocketDebug
 	FlexTab.check()
 	ChatMessages.init()
+	ScrollListener.init()
 
 	console.log 'chatWindowDashboard.rendered' if window.rocketDebug
 	# salva a data da renderização para exibir alertas de novas mensagens
