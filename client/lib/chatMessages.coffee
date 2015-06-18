@@ -31,8 +31,6 @@
 
 	toBottom = ->
 		ScrollListener.toBottom()
-		# wrapper = $(".messages-container").find(".wrapper")
-		# wrapper.scrollTop 50000
 
 	send = (rid, input) ->
 		if _.trim(input.value) isnt ''

@@ -1,6 +1,6 @@
 Template.chatMessageDashboard.helpers
 	own: ->
-		return 'own' if this.data.u?._id is Meteor.userId()
+		return 'own' if this.u?._id is Meteor.userId()
 
 	username: ->
 		return this.u.username
@@ -14,24 +14,22 @@ Template.chatMessageDashboard.helpers
 	isEditing: ->
 		return this._id is Session.get('editingMessageId')
 
-	renderMessage: ->
-		this.html = this.msg
-		if _.trim(this.html) isnt ''
-			this.html = _.escapeHTML this.html
-		message = RocketChat.callbacks.run 'renderMessage', this
-		this.html = message.html.replace /\n/gm, '<br/>'
-		return this.html
-
 	message: ->
 		switch this.t
-			when 'r' then t('Room_name_changed', { room_name: this.msg, user_by: this.u.username })
+			when 'r'  then t('Room_name_changed', { room_name: this.msg, user_by: this.u.username })
 			when 'au' then t('User_added_by', { user_added: this.msg, user_by: this.u.username })
 			when 'ru' then t('User_removed_by', { user_removed: this.msg, user_by: this.u.username })
-			when 'ul' then t('User_left', this.msg)
-			when 'nu' then t('User_added', this.msg)
-			when 'wm' then t('Welcome', this.msg)
-			when 'uj' then t('User_joined_channel', { user: this.msg })
-			else this.msg
+			when 'ul' then t('User_left', { user_left: this.u.username })
+			when 'nu' then t('User_added', { user_added: this.u.username })
+			when 'uj' then t('User_joined_channel', { user: this.u.username })
+			when 'wm' then t('Welcome', { user: this.u.username })
+			else
+				this.html = this.msg
+				if _.trim(this.html) isnt ''
+					this.html = _.escapeHTML this.html
+				message = RocketChat.callbacks.run 'renderMessage', this
+				this.html = message.html.replace /\n/gm, '<br/>'
+				return this.html
 
 	time: ->
 		return moment(this.ts).format('HH:mm')

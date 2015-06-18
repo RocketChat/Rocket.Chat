@@ -1,19 +1,18 @@
 <template name="chatMessageDashboard">
-	{{#if dateSeparator}}
+	{{#if ../dateSeparator}}
 		<li class="date">
-			<span>{{messageDate data.ts}}</span>
+			<span>{{messageDate ts}}</span>
 		</li>
 	{{/if}}
-	<li id="{{data._id}}" class="message {{#unless single}}with-thumb{{/unless}} {{own}} {{data.type}}">
-		{{#with data}}
-			{{#if isSystemMessage}}
-				<p class="system">{{{message}}}</p>
-			{{else}}
-				{{#unless ../single}}
-				<a class="thumb user-card-message" href="#" data-username="{{username}}" tabindex="1">
-					{{> avatar username=username}}
+	<li id="{{_id}}" class="message {{#unless ../single}}with-thumb{{/unless}} {{own}} {{type}}">
+		{{#if isSystemMessage}}
+			<p class="system">{{{message}}}</p>
+		{{else}}
+			{{#unless ../single}}
+				<a class="thumb user-card-message" href="#" data-username="{{u.username}}" tabindex="1">
+					{{> avatar username=u.username}}
 				</a>
-				<a class="user user-card-message" href="#" data-username="{{username}}" tabindex="1">{{username}}</a>
+				<a class="user user-card-message" href="#" data-username="{{u.username}}" tabindex="1">{{u.username}}</a>
 				<span class="time">
 					{{time}}
 					{{#if ets}}
@@ -21,14 +20,14 @@
 					{{/if}}
 					<i class="icon-pencil edit-message"></i>
 				</span>
-				{{/unless}}
-				{{#if isEditing}}
-					<div class="input-message-editing-container">
-						{{> messagePopupConfig getPupupConfig}}
-						<textarea class="input-message-editing" dir="auto">{{msg}}</textarea>
-					</div>
-				{{else}}
-					{{#if ../single}}
+			{{/unless}}
+			{{#if isEditing}}
+				<div class="input-message-editing-container">
+					{{> messagePopupConfig getPupupConfig}}
+					<textarea class="input-message-editing" dir="auto">{{msg}}</textarea>
+				</div>
+			{{else}}
+				{{#if ../single}}
 					<span class="time-single">
 						<div class="time-single-time">
 							<i class="icon-pencil edit-message"></i>
@@ -40,17 +39,16 @@
 							</div>
 						{{/if}}
 					</span>
-					{{/if}}
-					<div dir="auto">
-						{{{renderMessage}}}
-						{{#if urls}}
-							{{#each urls}}
-								{{> oembed url=this}}
-							{{/each}}
-						{{/if}}
-					</div>
 				{{/if}}
+				<div dir="auto">
+					{{{message}}}
+					{{#if urls}}
+						{{#each urls}}
+							{{> oembed url=this}}
+						{{/each}}
+					{{/if}}
+				</div>
 			{{/if}}
-		{{/with}}
+		{{/if}}
 	</li>
 </template>
