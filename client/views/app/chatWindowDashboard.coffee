@@ -26,11 +26,11 @@ Template.chatWindowDashboard.helpers
 		console.log 'chatWindowDashboard.helpers messages' if window.rocketDebug
 		window.lastMessageWindow[this._id] = undefined
 		window.lastMessageWindowHistory[this._id] = undefined
-		return ChatMessage.find { rid: this._id }, { sort: { ts: 1 } }
+		return ChatMessage.find { rid: this._id, t: { '$ne': 't' } }, { sort: { ts: 1 } }
 
 	messagesHistory: ->
 		console.log 'chatWindowDashboard.helpers messagesHistory' if window.rocketDebug
-		return ChatMessageHistory.find { rid: this._id }, { sort: { ts: 1 } }
+		return ChatMessageHistory.find { rid: this._id, t: { '$ne': 't' }  }, { sort: { ts: 1 } }
 
 	hasMore: ->
 		console.log 'chatWindowDashboard.helpers hasMore' if window.rocketDebug
@@ -58,17 +58,16 @@ Template.chatWindowDashboard.helpers
 
 	usersTyping: ->
 		console.log 'chatWindowDashboard.helpers usersTyping' if window.rocketDebug
-		messages = ChatMessage.find { rid: this._id }, { sort: { ts: 1 } }
+		messages = ChatMessage.find { rid: this._id, t: 't' }, { sort: { ts: 1 } }
 		usernames = []
 		selfTyping = false
 		messages.forEach (message) ->
-			if message.t is 't'
-				if message.u._id is Meteor.userId()
-					selfTyping = true
-				else
-					username = message.u.username
-					if username?
-						usernames.push username
+			if message.u._id is Meteor.userId()
+				selfTyping = true
+			else
+				username = message.u.username
+				if username?
+					usernames.push username
 
 		if usernames.length is 0
 			return
