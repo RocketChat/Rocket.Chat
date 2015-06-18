@@ -1,7 +1,7 @@
 Meteor.methods
 	updateMessage: (message) ->
 		if not Meteor.userId()
-			throw new Meteor.Error 203, t('general.User_logged_out')
+			throw new Meteor.Error 203, t('User_logged_out')
 
 		Tracker.nonreactive ->
 

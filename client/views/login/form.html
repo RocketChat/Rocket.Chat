@@ -1,41 +1,41 @@
 <template name="loginForm">
 	<form id="login-card" method='/'>
 		<header>
-			<h2>{{_ "login.Enter_info"}}</h2>
+			<h2>{{_ "Enter_info"}}</h2>
 		</header>
 		{{#if needsValidateEmail}}
 			<div class="alert alert-danger">
-				{{_ "login.You_neeed_confirm_email"}}
+				{{_ "You_neeed_confirm_email"}}
 			</div>
 		{{/if}}
 		<div class="fields">
 			<div class='input-text active {{showName}}'>
-				<input type="text" name='name' placeholder='{{_ "general.Name"}}' />
+				<input type="text" name='name' placeholder='{{_ "Name"}}' dir="auto"/>
 			</div>
 			<div class='input-text active {{showEmailOrUsername}}'>
-				<input type="text" name='emailOrUsername' placeholder='{{_ "login.Email_or_username"}}' />
+				<input type="text" name='emailOrUsername' placeholder='{{_ "Email_or_username"}}' />
 			</div>
 			<div class='input-text active {{showEmail}}'>
 				<input type="email" name='email' placeholder='{{_ "Email"}}' />
 			</div>
 			<div class='input-text active {{showPassword}}'>
-				<input type="password" name='pass' placeholder='{{_ "login.Password"}}' />
+				<input type="password" name='pass' placeholder='{{_ "Password"}}' />
 			</div>
 			<div class='input-text active {{showConfirmPassword}}'>
-				<input type="password" name='confirm-pass' placeholder='{{_ "login.Confirm_password"}}' />
+				<input type="password" name='confirm-pass' placeholder='{{_ "Confirm_password"}}' />
 			</div>
 		</div>
 		<div class="submit">
-			<button data-loading-text="{{_ "general.Please_wait"}}..." class='button primary login'><span>{{btnLoginSave}}</span></button>
+			<button data-loading-text="{{_ "Please_wait"}}..." class='button primary login'><span>{{btnLoginSave}}</span></button>
 		</div>
 		<div class="register {{showRegisterLink}}">
-			<a href="">{{_ 'login.Register'}}</a>
+			<a href="">{{_ 'Register'}}</a>
 		</div>
 		<div class="forgot-password {{showForgotPasswordLink}}">
-			<a href="">{{_ 'login.Forgot_password'}}</a>
+			<a href="">{{_ 'Forgot_password'}}</a>
 		</div>
 		<div class="back-to-login {{showBackToLoginLink}}">
-			<a href="">{{_ 'login.Cancel'}}</a>
+			<a href="">{{_ 'Back_to_login'}}</a>
 		</div>
 	</form>
 </template>

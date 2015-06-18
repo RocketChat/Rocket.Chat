@@ -31,10 +31,6 @@ Meteor.startup ->
 		$.getScript filename, (data) ->
 			moment.locale(userLanguage)
 
-	# Add ascii support to emojione
-	emojione?.ascii = true
-
-
 	Tracker.autorun ->
 		unreadCount = 0
 		subscriptions = ChatSubscription.find({}, { fields: { unread: 1 } })

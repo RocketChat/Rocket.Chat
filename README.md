@@ -74,17 +74,17 @@ meteor
 - Transcripts / History
 - I18n - [Internationalization with Lingohub](https://translate.lingohub.com/engelgabriel/rocket-dot-chat/dashboard)
 - Hubot Friendly - [Hubot Integration Project](https://github.com/RocketChat/hubot-rocketchat)
+- Media Embeds - [Iframely Responsive Web Embeds](https://github.com/itteco/iframely)
 
 ### Roadmap for v1.0
 
-- Image embeds
+- WebRTC signalling
 - File uploads
 - Full text search
 - REST-like APIs
 - Off-the-Record (OTR) Messaging
 - LDAP / Kerberos Authentication
 - XMPP Multi-user chat (MUC)
-- WebRTC signalling
 - Native Mobile App
 - Native Desktop App
 

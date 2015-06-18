@@ -1,7 +1,7 @@
 Package.describe({
 	name: 'rocketchat:markdown',
 	version: '0.0.1',
-	summary: 'Message pre-processor that will parse markdown syntax',
+	summary: 'Message pre-processor that will process selected markdown notations',
 	git: ''
 });
 

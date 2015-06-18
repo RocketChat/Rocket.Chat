@@ -1,7 +1,7 @@
 Package.describe({
-	name: 'rocketchat:tmpembed',
+	name: 'rocketchat:oembed',
 	version: '0.0.1',
-	summary: 'Message pre-processor that handles embedding of images and maps',
+	summary: 'Message pre-processor that insert oEmbed widget in template',
 	git: ''
 });
 
@@ -10,10 +10,11 @@ Package.onUse(function(api) {
 
 	api.use([
 		'coffeescript',
+		'iframely:oembed',
 		'rocketchat:lib@0.0.1'
 	]);
 
-	api.addFiles('tmpembed.coffee', ['server','client']);
+	api.addFiles('oembed.coffee', ['server','client']);
 });
 
 Package.onTest(function(api) {

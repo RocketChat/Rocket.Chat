@@ -29,13 +29,13 @@ Template.loginForm.helpers
 	btnLoginSave: ->
 		switch Template.instance().state.get()
 			when 'register'
-				return t('general.Submit')
+				return t('Submit')
 			when 'login'
-				return t('general.Login')
+				return t('Login')
 			when 'email-verification'
-				return t('general.Send_confirmation_email')
+				return t('Send_confirmation_email')
 			when 'forgot-password'
-				return t('general.Reset_password')
+				return t('Reset_password')
 
 Template.loginForm.events
 	'submit #login-card': (event, instance) ->
@@ -49,14 +49,14 @@ Template.loginForm.events
 			if instance.state.get() is 'email-verification'
 				Meteor.call 'sendConfirmationEmail', formData.email, (err, result) ->
 					RocketChat.Button.reset(button)
-					toastr.success t('login.We_have_sent_registration_email')
+					toastr.success t('We_have_sent_registration_email')
 					instance.state.set 'login'
 				return
 
 			if instance.state.get() is 'forgot-password'
 				Meteor.call 'sendForgotPasswordEmail', formData.email, (err, result) ->
 					RocketChat.Button.reset(button)
-					toastr.success t('login.We_have_sent_password_email')
+					toastr.success t('We_have_sent_password_email')
 					instance.state.set 'login'
 				return
 
@@ -65,7 +65,7 @@ Template.loginForm.events
 					RocketChat.Button.reset(button)
 					Meteor.loginWithPassword formData.email, formData.pass, (error) ->
 						if error?.error is 'no-valid-email'
-							toastr.success t('login.We_have_sent_registration_email')
+							toastr.success t('We_have_sent_registration_email')
 							instance.state.set 'login'
 						else
 							Router.go 'index'
@@ -102,17 +102,17 @@ Template.loginForm.onCreated ->
 
 		if instance.state.get() isnt 'login'
 			unless formObj['email'] and /\b[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]+\b/i.test(formObj['email'])
-				validationObj['email'] = t('login.Invalid_email')
+				validationObj['email'] = t('Invalid_email')
 
 		if instance.state.get() isnt 'forgot-password'
 			unless formObj['pass']
-				validationObj['pass'] = t('login.Invalid_pass')
+				validationObj['pass'] = t('Invalid_pass')
 
 		if instance.state.get() is 'register'
 			unless formObj['name']
-				validationObj['name'] = t('login.Invalid_name')
+				validationObj['name'] = t('Invalid_name')
 			if formObj['confirm-pass'] isnt formObj['pass']
-				validationObj['confirm-pass'] = t('login.Invalid_confirm_pass')
+				validationObj['confirm-pass'] = t('Invalid_confirm_pass')
 
 		$("#login-card input").removeClass "error"
 		unless _.isEmpty validationObj
