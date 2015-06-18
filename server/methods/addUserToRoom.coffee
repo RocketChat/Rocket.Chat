@@ -45,5 +45,7 @@ Meteor.methods
 			u:
 				_id: newUser._id
 				username: data.username
+				_id: fromId
+				username: Meteor.user().username
 
 		return true
