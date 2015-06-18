@@ -35,19 +35,15 @@
 							</li>
 						{{/if}}
 						{{#each messagesHistory}}
-							{{#unless showTyping}}
-								{{#with messageInfo 'history'}}
-									{{> chatMessageDashboard data=.. single=single dateSeparator=newDay}}
-								{{/with}}
-							{{/unless}}
+							{{#with messageInfo 'history'}}
+								{{> chatMessageDashboard data=.. single=single dateSeparator=newDay}}
+							{{/with}}
 						{{/each}}
 						{{#with messages}}
 							{{#each .}}
-								{{#unless showTyping}}
-									{{#with messageInfo}}
-										{{> chatMessageDashboard data=.. scroll="true" single=single dateSeparator=newDay}}
-									{{/with}}
-								{{/unless}}
+								{{#with messageInfo}}
+									{{> chatMessageDashboard data=.. single=single dateSeparator=newDay}}
+								{{/with}}
 							{{/each}}
 						{{/with}}
 					</ul>
@@ -88,8 +84,8 @@
 							<i>_{{_ "italics"}}_</i>
 							<span>~<strike>{{_ "strike"}}</strike>~</span>
 							<code class="inline">`{{_ "inline_code"}}`</code>
-							<code class="inline"><div class="hidden-br"><br></div>```<div class="hidden-br"><br></div><i class="icon-level-down"></i>{{_ "multi"}}<div class="hidden-br"><br></div><i class="icon-level-down"></i>{{_ "line"}}<div class="hidden-br"><br></div><i class="icon-level-down"></i>```</code>
-							<q><div class="hidden-br"><br></div>&gt;{{_ "quote"}}</q>
+							<code class="inline"><span class="hidden-br"><br></span>```<span class="hidden-br"><br></span><i class="icon-level-down"></i>{{_ "multi"}}<span class="hidden-br"><br></span><i class="icon-level-down"></i>{{_ "line"}}<span class="hidden-br"><br></span><i class="icon-level-down"></i>```</code>
+							<q><span class="hidden-br"><br></span>&gt;{{_ "quote"}}</q>
 						</div>
 					</form>
 				{{else}}
