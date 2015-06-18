@@ -1,17 +1,16 @@
 @ChatMessages = (->
 	self = {}
+	wrapper = {}
+	input = {}
 
 	init = ->
 		wrapper = $(".messages-container").find(".wrapper")
+		console.log wrapper
 		input = $(".input-message").get(0)
 		self.scrollable = false
 		wrapper.bind "scroll", ->
 			scrollable()
-		$(".input-message").autogrow
-			postGrowCallback: ->
-				resize()
-				toBottom() if self.scrollable
-
+		bindEvents()
 		return
 
 	isScrollable = ->
@@ -77,6 +76,13 @@
 		Session.set 'editingMessageId', undefined
 		Meteor.defer ->
 			$('.input-message').select()
+
+	bindEvents = ->
+		if wrapper?.length
+			$(".input-message").autogrow
+				postGrowCallback: ->
+					resize()
+					toBottom() if self.scrollable
 
 	keydown = (rid, event) ->
 		input = event.currentTarget

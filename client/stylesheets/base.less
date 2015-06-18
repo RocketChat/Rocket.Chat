@@ -107,6 +107,8 @@ q {
 	margin: 0;
 	clear: both;
 	max-width: 400px;
+	min-height: 200px;
+	background-color: #DFDFDF;
 	font {
 		display: none;
 	}
@@ -2897,10 +2899,6 @@ a.github-fork {
 		background-size: 100% auto;
 		text-indent: -9999em;
 	}
-	.connect {
-		&:extend(.fill-all);
-		position: fixed;
-	}
 	.share {
 		border-radius: 50%;
 		min-height: 40px;
@@ -2912,6 +2910,11 @@ a.github-fork {
 			display: none;
 		}
 	}
+}
+
+#particles-js {
+	&:extend(.fill-all);
+	position: fixed;
 }
 
 .avatar-suggestion-item {

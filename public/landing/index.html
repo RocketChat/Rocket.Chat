@@ -49,6 +49,9 @@
 	<link rel="apple-touch-startup-image" href="/images/logo/apple-touch-startup-image-2048x1496.png" media="screen and (min-device-width: 481px) and (max-device-width: 1024px) and (orientation:landscape) and (-webkit-min-device-pixel-ratio: 2)" />
 	<link rel="stylesheet" type="text/css" href="/landing/style.css">
 
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/webcomponentsjs/0.7.3/webcomponents.min.js"></script>
+	<link rel="import" href="/elements/github-fork.html">
+
 </head>
 
 <body>
@@ -105,20 +108,16 @@
 					</nav>
 				</div>
 				<a href="http://meteor.com" target="_blank" title="Proudly developed with Meteor" class="meteor">Proudly developed with Meteor</a>
-				<a class="github-fork" target='_blank' href="https://github.com/RocketChat/Rocket.Chat">Fork it on github</a>
+				<github-fork href="https://github.com/RocketChat/Rocket.Chat" hidden></github-fork>
 			</footer>
-			<canvas class="connect"></canvas>
+			<div id="particles-js"></div>
 		</div>
 	</section>
-	<script src="http://code.jquery.com/jquery-2.1.4.min.js"></script>
-	<script src="/scripts/jquery.constellation.js"></script>
+	<script src="/scripts/particles.js"></script>
 	<script>
-	$(function(){
-		$('.connect').constellation({
-			line: {
-				color: 'rgba(255, 255, 255, .4)'
-			}
-		});
-	})
+	(function(){
+		setTimeout(function(){document.querySelector("github-fork").enter();}, 1000);
+		particlesJS.load('particles-js', '/scripts/particles.json', function(){});
+	})();
 	</script>
 </body>

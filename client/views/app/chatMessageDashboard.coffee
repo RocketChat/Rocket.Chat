@@ -43,27 +43,11 @@ Template.chatMessageDashboard.helpers
 				return template.find('.input-message-editing')
 		}
 
-Template.chatMessageDashboard.events
-	'mousedown .edit-message': ->
-		self = this
-		Session.set 'editingMessageId', undefined
-		Meteor.defer ->
-			Session.set 'editingMessageId', self._id
-
-			Meteor.defer ->
-				$('.input-message-editing').select()
-
-	'click .mention-link': (e) ->
-		Session.set('flexOpened', true)
-		Session.set('showUserInfo', $(e.currentTarget).data('username'))
-
 Template.chatMessageDashboard.onRendered ->
 	if(this.lastNode.className.match("own"))
 		ScrollListener.toBottom(true)
 		return
-
 	message = $(this.lastNode)
 	parent = message.parent().children().last()
-
 	if message.get(0) is parent.get(0)
 		ScrollListener.toBottom(false)
