@@ -5,7 +5,7 @@
 
 	init = ->
 		wrapper = $(".messages-container").find(".wrapper")
-		console.log wrapper
+		console.log 'ChatMessages init wrapper: ', wrapper if window.rocketDebug
 		input = $(".input-message").get(0)
 		self.scrollable = false
 		wrapper.bind "scroll", ->
