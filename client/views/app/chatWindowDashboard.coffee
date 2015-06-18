@@ -448,6 +448,18 @@ Template.chatWindowDashboard.events
 		console.log 'chatWindowDashboard click .see-all' if window.rocketDebug
 		instance.showUsersOffline.set(!instance.showUsersOffline.get())
 
+	"mousedown .edit-message": (e) ->
+		self = this
+		Session.set 'editingMessageId', undefined
+		Meteor.defer ->
+			Session.set 'editingMessageId', self._id
+			Meteor.defer ->
+				$('.input-message-editing').select()
+
+	"click .mention-link": (e) ->
+		Session.set('flexOpened', true)
+		Session.set('showUserInfo', $(e.currentTarget).data('username'))
+
 Template.chatWindowDashboard.onCreated ->
 	console.log 'chatWindowDashboard.onCreated' if window.rocketDebug
 	# this.scrollOnBottom = true
