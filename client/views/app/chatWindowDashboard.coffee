@@ -70,7 +70,7 @@ Template.chatWindowDashboard.helpers
 		return {
 			multi: true
 			selfTyping: selfTyping
-			users: usernames.join " #{t 'general.and'} "
+			users: usernames.join " #{t 'and'} "
 		}
 
 	messageInfo: (from) ->
