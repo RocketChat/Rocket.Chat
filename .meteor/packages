@@ -19,8 +19,8 @@ reactive-var
 service-configuration
 
 chrismbeckett:toastr
+dispatch:kernel
 francocatena:status
-iframely:oembed
 iron:router
 jparker:gravatar
 konecty:autolinker
@@ -43,11 +43,12 @@ rocketchat:autolinker
 rocketchat:emojione
 rocketchat:file
 rocketchat:highlight
+#rocketchat:hubot
 rocketchat:lib
 rocketchat:markdown
 rocketchat:me
 rocketchat:mentions
-rocketchat:tmpembed
+rocketchat:oembed
 tap:i18n
 tmeasday:crypto-md5
 tmeasday:errors

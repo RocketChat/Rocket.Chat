@@ -787,7 +787,8 @@ a:active {
 	font-size: 20px;
 	letter-spacing: -0.5px;
 	margin: 18px 0;
-	color: #EFEFEF
+	color: #EFEFEF;
+	line-height: 26px;
 }
 
 .unselectable,
@@ -1150,63 +1151,6 @@ label.required:after {
 
 .sec-header label {
 	margin-left: 20px
-}
-
-a.github-fork {
-	position: fixed;
-	display: block;
-	width: 260px;
-	z-index: 901;
-	right: -62px;
-	top: 50px;
-	background-size: 100% auto;
-	cursor: pointer;
-	background-color: #5c5c5c;
-	color: #f0f0f0;
-	padding: 1em 0 0.95em;
-	line-height: 1.04em;
-	text-decoration: none;
-	font-size: 1.04em;
-	box-shadow: -2px 3px 1px rgba(0, 0, 0, 0.23);
-	opacity: 1;
-	text-transform: uppercase;
-	font-weight: 400 !important;
-	-webkit-transform: rotate(45deg) translateY(0px);
-	-moz-transform: rotate(45deg) translateY(0px);
-	-o-transform: rotate(45deg) translateY(0px);
-	-ms-transform: rotate(45deg) translateY(0px);
-	transform: rotate(45deg) translateY(0px);
-	-webkit-transition: background-color 0.2s ease-out, -webkit-transform 0.45s cubic-bezier(0.15, 0, 0, 1) 2.15s, opacity 0.2s ease-out 2.15;
-	-moz-transition: background-color 0.2s ease-out, -moz-transform 0.45s cubic-bezier(0.15, 0, 0, 1) 2.15s, opacity 0.2s ease-out 2.15;
-	-o-transition: background-color 0.2s ease-out, -o-transform 0.45s cubic-bezier(0.15, 0, 0, 1) 2.15s, opacity 0.2s ease-out 2.15;
-	transition: background-color 0.2s ease-out, -webkit-transform 0.45s cubic-bezier(0.15, 0, 0, 1) 2.15s, -moz-transform 0.45s cubic-bezier(0.15, 0, 0, 1) 2.15s, -o-transform 0.45s cubic-bezier(0.15, 0, 0, 1) 2.15s, transform 0.45s cubic-bezier(0.15, 0, 0, 1) 2.15s, opacity 0.2s ease-out 2.15
-}
-
-a.github-fork:hover {
-	background-color: #4b4b4b;
-	color: #FFF
-}
-
-a.github-fork:before {
-	content: " ";
-	border-top: 1px dashed #f0f0f0;
-	position: absolute;
-	top: 3px;
-	width: 100%;
-	left: 0;
-	height: 1px;
-	z-index: 1
-}
-
-a.github-fork:after {
-	content: " ";
-	border-top: 1px dashed #f0f0f0;
-	position: absolute;
-	bottom: 2px;
-	z-index: 1;
-	left: 0;
-	width: 100%;
-	height: 1px
 }
 
 .mac-bar {
@@ -2082,7 +2026,7 @@ a.github-fork:after {
 	right: 0;
 	z-index: 20;
 	width: 500px;
-	max-width: 100%
+	max-width: 90%
 }
 
 .landing-page a {
@@ -2094,6 +2038,7 @@ a.github-fork:after {
 	display: block;
 	margin: 0 auto 30px;
 	max-width: 520px;
+	width: 90%;
 	position: relative;
 	box-shadow: 0 0 8px 6px rgba(0, 0, 0, 0.1);
 	z-index: 5;
@@ -2104,9 +2049,8 @@ a.github-fork:after {
 	display: block;
 	width: 100%;
 	height: 0;
-	background-color: #fff;
 	padding-bottom: 53%;
-	background: url(/images/new-screen.jpg) no-repeat 50% 50%;
+	background: url(/images/new-screen.jpg) no-repeat 50% 50% #DFDFDF;
 	background-size: 100% auto
 }
 
@@ -2190,6 +2134,7 @@ a.github-fork:after {
 	margin-bottom: 25px;
 	margin: 0 auto 25px;
 	max-width: 580px;
+	width: 90%;
 	position: relative;
 	z-index: 1
 }
@@ -2267,4 +2212,26 @@ a.github-fork:after {
 
 .landing-page .share span {
 	display: none
+}
+
+github-fork{
+	display: block;
+	position: absolute;
+	z-index: 10;
+	top: 0;
+	right: 0;
+}
+
+@media all and (max-width: 750px){
+	github-fork{
+		display: none !important;
+	}
+}
+
+#particles-js{
+	position: fixed;
+	width: 100%;
+	height: 100%;
+	top: 0;
+	left: 0;
 }

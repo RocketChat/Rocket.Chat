@@ -3,12 +3,7 @@
 
 @ChatRoom = new Meteor.Collection 'data.ChatRoom'
 @ChatSubscription = new Meteor.Collection 'data.ChatSubscription'
-@ChatMessage = new Meteor.Collection 'data.ChatMessage',
-	transform: (message) ->
-		message.html = message.msg
-		message = RocketChat.callbacks.run 'renderMessage', message
-		# console.log 'transform'
-		return message
+@ChatMessage = new Meteor.Collection 'data.ChatMessage'
 
 Meteor.startup ->
 	ChatMessage.find().observe

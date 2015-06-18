@@ -45,16 +45,24 @@ code {
 	border: 1px solid #ccc;
 	color: #333;
 	display: block;
+	font-size: 13px;
 	font-weight: bold;
+	margin: 5px 0;
 	overflow-x: auto;
 	padding: 0.5em;
+	vertical-align: middle;
 	word-wrap: break-word;
 	&.inline {
 		display: inline-block;
-		padding: 0 10px;
+		padding: 0 5px;
 		margin: 0;
-		vertical-align: bottom;
+		line-height: 16px;
 	}
+}
+
+pre {
+	display: inline-block;
+	width: 100%;
 }
 
 q {
@@ -69,6 +77,20 @@ q {
 	}
 }
 
+.copyonly {
+	float: left;
+	display: inline-block;
+	vertical-align: baseline;
+	width: 0;
+	height: 0;
+	font-size: 0;
+	-moz-box-orient: vertical;
+	-webkit-user-select: none;
+	-moz-user-select: none;
+	-ms-user-select: none;
+	user-select: none;
+}
+
 .text-center {
 	text-align: center;
 }
@@ -79,6 +101,17 @@ q {
 	width: 100%;
 	z-index: 1000;
 	border-radius: 0px;
+}
+
+.iframely-oembed {
+	margin: 0;
+	clear: both;
+	max-width: 400px;
+	min-height: 200px;
+	background-color: #DFDFDF;
+	font {
+		display: none;
+	}
 }
 
 .alert {
@@ -1407,7 +1440,6 @@ a.github-fork {
 	> div {
 		display: table-cell;
 		vertical-align: middle;
-		padding-top: 4px;
 	}
 	h2 {
 		max-width: 90%;
@@ -1640,7 +1672,7 @@ a.github-fork {
 	}
 	.footer {
 		position: absolute;
-		padding: 8px 20px 0px 20px;
+		padding: 10px 20px 0px 20px;
 		background: #fff;
 		border-top: 1px solid @tertiary-background-color;
 		z-index: 100;
@@ -1704,17 +1736,21 @@ a.github-fork {
 			float: left;
 			height: 20px;
 			font-size: 12px;
-			color: #888;
+			color: #888888;
 			padding: 3px 0px 0px 5px;
 		}
 		> .formatting-tips {
 			float: right;
 			height: 20px;
 			font-size: 11px;
-			color: #888;
-			padding: 4px 0px 0px 5px;
+			color: #888888;
+			padding: 5px 0px 0px 5px;
 			display: inline-block;
 			white-space: nowrap;
+			overflow: hidden;
+			&:hover {
+				color: #444444;
+			}
 			q {
 				padding: 0 0 0 3px;
 				border-left: 3px solid #ccc;
@@ -1723,7 +1759,17 @@ a.github-fork {
 				}
 			}
 			code {
-				color: #888;
+				color: inherit;
+				line-height: 13px;
+				overflow: hidden;
+				vertical-align: top;
+				font-size: 10px;
+			}
+			.hidden-br {
+				display: inline-block;
+			}
+			.icon-level-down:before {
+				transform: rotate(90deg);
 			}
 		}
 	}
@@ -1852,7 +1898,7 @@ a.github-fork {
 	.user {
 		display: inline-block;
 		font-weight: 600;
-		color: #444;
+		color: #444444;
 		&:hover {
 			color: #333;
 		}
@@ -1870,7 +1916,7 @@ a.github-fork {
 		font-size: 12px;
 		position: absolute;
 		display: inline-block;
-		color: #888;
+		color: #888888;
 		left: 6px;
 		opacity: 0;
 	}
@@ -2853,10 +2899,6 @@ a.github-fork {
 		background-size: 100% auto;
 		text-indent: -9999em;
 	}
-	.connect {
-		&:extend(.fill-all);
-		position: fixed;
-	}
 	.share {
 		border-radius: 50%;
 		min-height: 40px;
@@ -2868,6 +2910,11 @@ a.github-fork {
 			display: none;
 		}
 	}
+}
+
+#particles-js {
+	&:extend(.fill-all);
+	position: fixed;
 }
 
 .avatar-suggestion-item {

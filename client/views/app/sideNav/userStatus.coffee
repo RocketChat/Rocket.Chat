@@ -4,11 +4,11 @@ Template.userStatus.helpers
 		username = Meteor.user()?.username
 		switch Session.get('user_' + username + '_status')
 			when "away"
-				visualStatus = t("userStatus.away")
+				visualStatus = t("away")
 			when "busy"
-				visualStatus = t("userStatus.busy")
+				visualStatus = t("busy")
 			when "offline"
-				visualStatus = t("userStatus.invisible")
+				visualStatus = t("invisible")
 		return {
 			name: Session.get('user_' + username + '_name')
 			status: Session.get('user_' + username + '_status')
@@ -31,6 +31,10 @@ Template.userStatus.events
 
 	'click #avatar': (event) ->
 		Meteor.call('resetAvatar')
+
+	'click #settings': (event) ->
+		SideNav.setFlex "userSettingsFlex"
+		SideNav.openFlex()
 
 Template.userStatus.rendered = ->
 	AccountBox.init()
