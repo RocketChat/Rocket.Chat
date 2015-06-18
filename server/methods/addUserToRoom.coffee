@@ -6,6 +6,7 @@ Meteor.methods
 		room = ChatRoom.findOne data.rid
 
 		if room.username isnt Meteor.user().username and room.t is 'c'
+		if room.u.username isnt Meteor.user().username and room.t is 'c'
 			throw new Meteor.Error 403, '[methods] addUserToRoom -> Not allowed'
 
 		# verify if user is already in room
