@@ -36,16 +36,14 @@
 						{{/if}}
 						{{#each messagesHistory}}
 							{{#with messageInfo 'history'}}
-								{{> chatMessageDashboard data=.. single=single dateSeparator=newDay}}
+								{{> chatMessageDashboard .. single=single dateSeparator=newDay}}
 							{{/with}}
 						{{/each}}
-						{{#with messages}}
-							{{#each .}}
-								{{#with messageInfo}}
-									{{> chatMessageDashboard data=.. single=single dateSeparator=newDay}}
-								{{/with}}
-							{{/each}}
-						{{/with}}
+						{{#each messages}}
+							{{#with messageInfo}}
+								{{> chatMessageDashboard .. single=single dateSeparator=newDay}}
+							{{/with}}
+						{{/each}}
 					</ul>
 				</div>
 				<div class="new-message not">

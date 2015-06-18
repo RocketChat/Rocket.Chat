@@ -1829,12 +1829,33 @@ a.github-fork {
 		&:nth-child(1) {
 			margin-top: 0;
 		}
+		&.own:hover .edit-message {
+			display: inherit;
+		}
+		.s,
+		.p,
+		.f,
+		.r,
+		.au,
+		.ru,
+		.ul,
+		.nu,
+		.wm,
+		.uj,
+		.system {
+			display: inline-block;
+			background-color: #EFEFEF;
+			border-radius: 4px;
+			padding: 8px 12px;
+			font-size: 12px;
+			color: @secondary-font-color;
+			i {
+				margin-right: 5px;
+			}
+		}
 		.edit-message {
 			display: none;
 			cursor: pointer;
-		}
-		&.own:hover .edit-message {
-			display: inherit;
 		}
 		.avatar-initials {
 			line-height: 40px;
@@ -1858,17 +1879,6 @@ a.github-fork {
 		display: table;
 		width: 100%;
 		text-align: left;
-	}
-	.system {
-		display: inline-block;
-		background-color: #EFEFEF;
-		border-radius: 4px;
-		padding: 8px 12px;
-		font-size: 12px;
-		color: @secondary-font-color;
-		i {
-			margin-right: 5px;
-		}
 	}
 	.date {
 		text-align: center;
