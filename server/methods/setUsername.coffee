@@ -41,8 +41,8 @@ Meteor.methods
 				ChatMessage.insert
 					rid: '57om6EQCcFami9wuT'
 					ts: new Date()
-					t: 'wm'
-					msg: username
+					t: 'uj'
+					msg: ''
 					u:
 						_id: user._id
 						username: username
