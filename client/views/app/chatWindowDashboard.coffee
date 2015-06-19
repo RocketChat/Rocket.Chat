@@ -1,63 +1,63 @@
 # @TODO bug com o botão para "rolar até o fim" (novas mensagens) quando há uma mensagem com texto que gere rolagem horizontal
-Template.chatWindowDashboard.helpers
+Template.room.helpers
 	visible: ->
-		console.log 'chatWindowDashboard.helpers visible' if window.rocketDebug
+		console.log 'room.helpers visible' if window.rocketDebug
 		return 'visible' if this._id is Session.get('openedRoom')
 
 	tAddUsers: ->
-		console.log 'chatWindowDashboard.helpers tAddUsers' if window.rocketDebug
+		console.log 'room.helpers tAddUsers' if window.rocketDebug
 		return t('Add_users')
 
 	tQuickSearch: ->
-		console.log 'chatWindowDashboard.helpers tQuickSearch' if window.rocketDebug
+		console.log 'room.helpers tQuickSearch' if window.rocketDebug
 		return t('Quick_Search')
 
 	favorite: ->
-		console.log 'chatWindowDashboard.helpers favorite' if window.rocketDebug
+		console.log 'room.helpers favorite' if window.rocketDebug
 		sub = ChatSubscription.findOne { rid: this._id }, { fields: { f: 1 } }
 		return 'icon-star favorite-room' if sub?.f? and sub.f
 		return 'icon-star-empty'
 
 	subscribed: ->
-		console.log 'chatWindowDashboard.helpers subscribed' if window.rocketDebug
+		console.log 'room.helpers subscribed' if window.rocketDebug
 		return ChatSubscription.find({ rid: this._id }).count() > 0
 
 	messages: ->
-		console.log 'chatWindowDashboard.helpers messages' if window.rocketDebug
+		console.log 'room.helpers messages' if window.rocketDebug
 		window.lastMessageWindow[this._id] = undefined
 		window.lastMessageWindowHistory[this._id] = undefined
 		return ChatMessage.find { rid: this._id, t: { '$ne': 't' } }, { sort: { ts: 1 } }
 
 	messagesHistory: ->
-		console.log 'chatWindowDashboard.helpers messagesHistory' if window.rocketDebug
+		console.log 'room.helpers messagesHistory' if window.rocketDebug
 		return ChatMessageHistory.find { rid: this._id, t: { '$ne': 't' }  }, { sort: { ts: 1 } }
 
 	hasMore: ->
-		console.log 'chatWindowDashboard.helpers hasMore' if window.rocketDebug
+		console.log 'room.helpers hasMore' if window.rocketDebug
 		return RoomHistoryManager.hasMore this._id
 
 	isLoading: ->
-		console.log 'chatWindowDashboard.helpers isLoading' if window.rocketDebug
+		console.log 'room.helpers isLoading' if window.rocketDebug
 		return 'btn-loading' if RoomHistoryManager.isLoading this._id
 
 	windowId: ->
-		console.log 'chatWindowDashboard.helpers windowId' if window.rocketDebug
+		console.log 'room.helpers windowId' if window.rocketDebug
 		return "chat-window-#{this._id}"
 
 	roomContainerId: ->
-		console.log 'chatWindowDashboard.helpers roomContainerId' if window.rocketDebug
+		console.log 'room.helpers roomContainerId' if window.rocketDebug
 		return "room-container-#{this._id}"
 
 	showTyping: ->
-		console.log 'chatWindowDashboard.helpers showTyping' if window.rocketDebug
+		console.log 'room.helpers showTyping' if window.rocketDebug
 		return this.t is 't'
 
 	typing: ->
-		console.log 'chatWindowDashboard.helpers typing' if window.rocketDebug
+		console.log 'room.helpers typing' if window.rocketDebug
 		return this.u._id isnt Meteor.userId()
 
 	usersTyping: ->
-		console.log 'chatWindowDashboard.helpers usersTyping' if window.rocketDebug
+		console.log 'room.helpers usersTyping' if window.rocketDebug
 		messages = ChatMessage.find { rid: this._id, t: 't' }, { sort: { ts: 1 } }
 		usernames = []
 		selfTyping = false
@@ -89,7 +89,7 @@ Template.chatWindowDashboard.helpers
 		}
 
 	roomName: ->
-		console.log 'chatWindowDashboard.helpers roomName' if window.rocketDebug
+		console.log 'room.helpers roomName' if window.rocketDebug
 		roomData = Session.get('roomData' + this._id)
 		return '' unless roomData
 
@@ -99,7 +99,7 @@ Template.chatWindowDashboard.helpers
 			return roomData.name
 
 	roomTypeIcon: ->
-		console.log 'chatWindowDashboard.helpers roomTypeIcon' if window.rocketDebug
+		console.log 'room.helpers roomTypeIcon' if window.rocketDebug
 		roomData = Session.get('roomData' + this._id)
 		return '' unless roomData
 		return 'icon-hash' if roomData.t is 'c'
@@ -107,7 +107,7 @@ Template.chatWindowDashboard.helpers
 		return 'icon-at' + roomData.name if roomData.t is 'p' # @TODO review
 
 	userData: ->
-		console.log 'chatWindowDashboard.helpers userData' if window.rocketDebug
+		console.log 'room.helpers userData' if window.rocketDebug
 		roomData = Session.get('roomData' + this._id)
 
 		return {} unless roomData
@@ -125,7 +125,7 @@ Template.chatWindowDashboard.helpers
 			return userData
 
 	autocompleteSettingsAddUser: ->
-		console.log 'chatWindowDashboard.helpers autocompleteSettingsAddUser' if window.rocketDebug
+		console.log 'room.helpers autocompleteSettingsAddUser' if window.rocketDebug
 		return {
 			limit: 10
 			# inputDelay: 300
@@ -144,7 +144,7 @@ Template.chatWindowDashboard.helpers
 		}
 
 	autocompleteSettingsRoomSearch: ->
-		console.log 'chatWindowDashboard.helpers autocompleteSettingsRoomSearch' if window.rocketDebug
+		console.log 'room.helpers autocompleteSettingsRoomSearch' if window.rocketDebug
 		return {
 			limit: 10
 			# inputDelay: 300
@@ -163,45 +163,45 @@ Template.chatWindowDashboard.helpers
 		}
 
 	isChannel: ->
-		console.log 'chatWindowDashboard.helpers isChannel' if window.rocketDebug
+		console.log 'room.helpers isChannel' if window.rocketDebug
 		roomData = Session.get('roomData' + this._id)
 		return '' unless roomData
 		return roomData.t is 'c'
 
 	canAddUser: ->
-		console.log 'chatWindowDashboard.helpers canAddUser' if window.rocketDebug
+		console.log 'room.helpers canAddUser' if window.rocketDebug
 		roomData = Session.get('roomData' + this._id)
 		return '' unless roomData
 		return roomData.t in ['p', 'c'] and roomData.u?._id is Meteor.userId()
 
 	canEditName: ->
-		console.log 'chatWindowDashboard.helpers canEditName' if window.rocketDebug
+		console.log 'room.helpers canEditName' if window.rocketDebug
 		roomData = Session.get('roomData' + this._id)
 		return '' unless roomData
 		return roomData.u?._id is Meteor.userId() and roomData.t in ['c', 'p']
 
 	roomNameEdit: ->
-		console.log 'chatWindowDashboard.helpers roomNameEdit' if window.rocketDebug
+		console.log 'room.helpers roomNameEdit' if window.rocketDebug
 		return Session.get('roomData' + this._id)?.name
 
 	editingTitle: ->
-		console.log 'chatWindowDashboard.helpers editingTitle' if window.rocketDebug
+		console.log 'room.helpers editingTitle' if window.rocketDebug
 		return 'hidden' if Session.get('editRoomTitle')
 
 	showEditingTitle: ->
-		console.log 'chatWindowDashboard.helpers showEditingTitle' if window.rocketDebug
+		console.log 'room.helpers showEditingTitle' if window.rocketDebug
 		return 'hidden' if not Session.get('editRoomTitle')
 
 	flexOpened: ->
-		console.log 'chatWindowDashboard.helpers flexOpened' if window.rocketDebug
+		console.log 'room.helpers flexOpened' if window.rocketDebug
 		return 'opened' if Session.equals('flexOpened', true)
 
 	arrowPosition: ->
-		console.log 'chatWindowDashboard.helpers arrowPosition' if window.rocketDebug
+		console.log 'room.helpers arrowPosition' if window.rocketDebug
 		return 'left' unless Session.equals('flexOpened', true)
 
 	phoneNumber: ->
-		console.log 'chatWindowDashboard.helpers phoneNumber' if window.rocketDebug
+		console.log 'room.helpers phoneNumber' if window.rocketDebug
 		return '' unless this.phoneNumber
 		if this.phoneNumber.length > 10
 			return "(#{this.phoneNumber.substr(0,2)}) #{this.phoneNumber.substr(2,5)}-#{this.phoneNumber.substr(7)}"
@@ -209,19 +209,19 @@ Template.chatWindowDashboard.helpers
 			return "(#{this.phoneNumber.substr(0,2)}) #{this.phoneNumber.substr(2,4)}-#{this.phoneNumber.substr(6)}"
 
 	isGroupChat: ->
-		console.log 'chatWindowDashboard.helpers isGroupChat' if window.rocketDebug
+		console.log 'room.helpers isGroupChat' if window.rocketDebug
 		room = ChatRoom.findOne(this._id, { reactive: false })
 		return room?.t in ['c', 'p']
 
 	userActiveByUsername: (username) ->
-		console.log 'chatWindowDashboard.helpers userActiveByUsername' if window.rocketDebug
+		console.log 'room.helpers userActiveByUsername' if window.rocketDebug
 		status = Session.get 'user_' + username + '_status'
 		if status in ['online', 'away', 'busy']
 			return {username: username, status: status}
 		return
 
 	roomUsers: ->
-		console.log 'chatWindowDashboard.helpers roomUsers' if window.rocketDebug
+		console.log 'room.helpers roomUsers' if window.rocketDebug
 		room = ChatRoom.findOne(this._id, { reactive: false })
 		ret =
 			_id: this._id
@@ -232,7 +232,7 @@ Template.chatWindowDashboard.helpers
 		return ret
 
 	flexUserInfo: ->
-		console.log 'chatWindowDashboard.helpers flexUserInfo' if window.rocketDebug
+		console.log 'room.helpers flexUserInfo' if window.rocketDebug
 		username = Session.get('showUserInfo')
 
 		userData = {
@@ -247,14 +247,14 @@ Template.chatWindowDashboard.helpers
 		return userData
 
 	seeAll: ->
-		console.log 'chatWindowDashboard.helpers seeAll' if window.rocketDebug
+		console.log 'room.helpers seeAll' if window.rocketDebug
 		if Template.instance().showUsersOffline.get()
 			return t('See_only_online')
 		else
 			return t('See_all')
 
 	getPupupConfig: ->
-		console.log 'chatWindowDashboard.helpers getPupupConfig' if window.rocketDebug
+		console.log 'room.helpers getPupupConfig' if window.rocketDebug
 		template = Template.instance()
 		return {
 			getInput: ->
@@ -262,32 +262,32 @@ Template.chatWindowDashboard.helpers
 		}
 
 
-Template.chatWindowDashboard.events
+Template.room.events
 
 	"click .flex-tab .more": (event) ->
-		console.log 'chatWindowDashboard click .flex-tab .more' if window.rocketDebug
+		console.log 'room click .flex-tab .more' if window.rocketDebug
 		Session.set('flexOpened', !Session.get('flexOpened'))
 
 	'click .chat-new-messages': (event) ->
-		console.log 'chatWindowDashboard click .chat-new-messages' if window.rocketDebug
+		console.log 'room click .chat-new-messages' if window.rocketDebug
 		# chatMessages = $('#chat-window-' + this._id + ' .messages-box .wrapper')
 		# chatMessages.animate({scrollTop: chatMessages[0].scrollHeight}, 'normal')
 		$('#chat-window-' + this._id + ' .input-message').focus()
 
 	'click .toggle-favorite': (event) ->
-		console.log 'chatWindowDashboard click .toggle-favorite' if window.rocketDebug
+		console.log 'room click .toggle-favorite' if window.rocketDebug
 		event.stopPropagation()
 		event.preventDefault()
 		Meteor.call 'toogleFavorite', this._id, !$('i', event.currentTarget).hasClass('favorite-room')
 
 	'click .join': (event) ->
-		console.log 'chatWindowDashboard click .join' if window.rocketDebug
+		console.log 'room click .join' if window.rocketDebug
 		event.stopPropagation()
 		event.preventDefault()
 		Meteor.call 'joinRoom', this._id
 
 	"click .burger": ->
-		console.log 'chatWindowDashboard click .burger' if window.rocketDebug
+		console.log 'room click .burger' if window.rocketDebug
 		chatContainer = $("#rocket-chat")
 		if chatContainer.hasClass("menu-closed")
 			chatContainer.removeClass("menu-closed").addClass("menu-opened")
@@ -295,32 +295,32 @@ Template.chatWindowDashboard.events
 			chatContainer.addClass("menu-closed").removeClass("menu-opened")
 
 	'focus .input-message': (event) ->
-		console.log 'chatWindowDashboard focus .input-message' if window.rocketDebug
+		console.log 'room focus .input-message' if window.rocketDebug
 		KonchatNotification.removeRoomNotification(this._id)
 
 	'keydown .input-message': (event) ->
-		console.log 'chatWindowDashboard keydown .input-message',this._id if window.rocketDebug
+		console.log 'room keydown .input-message',this._id if window.rocketDebug
 		ChatMessages.keydown(this._id, event, Template.instance())
 
 	'keydown .input-message-editing': (event) ->
-		console.log 'chatWindowDashboard keydown .input-message-editing',this._id if window.rocketDebug
+		console.log 'room keydown .input-message-editing',this._id if window.rocketDebug
 		ChatMessages.keydownEditing(this._id, event)
 
 	'blur .input-message-editing': (event) ->
-		console.log 'chatWindowDashboard blur keydown blur .input-message-editing',this._id if window.rocketDebug
+		console.log 'room blur keydown blur .input-message-editing',this._id if window.rocketDebug
 		ChatMessages.stopEditingLastMessage()
 
 	'click .message-form .icon-paper-plane': (event) ->
-		console.log 'chatWindowDashboard click .message-form .icon-paper-plane' if window.rocketDebug
+		console.log 'room click .message-form .icon-paper-plane' if window.rocketDebug
 		input = $(event.currentTarget).siblings("textarea")
 		ChatMessages.send(this._id, input.get(0))
 
 	'click .add-user': (event) ->
-		console.log 'chatWindowDashboard click click .add-user' if window.rocketDebug
+		console.log 'room click click .add-user' if window.rocketDebug
 		toggleAddUser()
 
 	'click .edit-room-title': (event) ->
-		console.log 'chatWindowDashboard click .edit-room-title' if window.rocketDebug
+		console.log 'room click .edit-room-title' if window.rocketDebug
 		event.preventDefault()
 		Session.set('editRoomTitle', true)
 		$(".fixed-title").addClass "visible"
@@ -329,31 +329,31 @@ Template.chatWindowDashboard.events
 		, 10
 
 	'keydown #user-add-search': (event) ->
-		console.log 'chatWindowDashboard keydown #user-add-search' if window.rocketDebug
+		console.log 'room keydown #user-add-search' if window.rocketDebug
 		if event.keyCode is 27 # esc
 			toggleAddUser()
 
 	'keydown #room-title-field': (event) ->
-		console.log 'chatWindowDashboard keydown #room-title-field' if window.rocketDebug
+		console.log 'room keydown #room-title-field' if window.rocketDebug
 		if event.keyCode is 27 # esc
 			Session.set('editRoomTitle', false)
 		else if event.keyCode is 13 # enter
 			renameRoom this._id, $(event.currentTarget).val()
 
 	'blur #room-title-field': (event) ->
-		console.log 'chatWindowDashboard blur #room-title-field' if window.rocketDebug
+		console.log 'room blur #room-title-field' if window.rocketDebug
 		# TUDO: create a configuration to select the desired behaviour
 		# renameRoom this._id, $(event.currentTarget).val()
 		Session.set('editRoomTitle', false)
 		$(".fixed-title").removeClass "visible"
 
 	"click .flex-tab .user-image > a" : (e) ->
-		console.log 'chatWindowDashboard click .flex-tab .user-image > a' if window.rocketDebug
+		console.log 'room click .flex-tab .user-image > a' if window.rocketDebug
 		Session.set('flexOpened', true)
 		Session.set('showUserInfo', $(e.currentTarget).data('username'))
 
 	'click .user-card-message': (e) ->
-		console.log 'chatWindowDashboard click .user-card-message' if window.rocketDebug
+		console.log 'room click .user-card-message' if window.rocketDebug
 		roomData = Session.get('roomData' + this.rid)
 		if roomData.t in ['c', 'p']
 			Session.set('flexOpened', true)
@@ -362,11 +362,11 @@ Template.chatWindowDashboard.events
 			Session.set('flexOpened', true)
 
 	'click .user-view nav .back': (e) ->
-		console.log 'chatWindowDashboard click .user-view nav .back' if window.rocketDebug
+		console.log 'room click .user-view nav .back' if window.rocketDebug
 		Session.set('showUserInfo', null)
 
 	'click .user-view nav .pvt-msg': (e) ->
-		console.log 'chatWindowDashboard click .user-view nav .pvt-msg' if window.rocketDebug
+		console.log 'room click .user-view nav .pvt-msg' if window.rocketDebug
 		Meteor.call 'createDirectMessage', Session.get('showUserInfo'), (error, result) ->
 			if error
 				return Errors.throw error.reason
@@ -375,11 +375,11 @@ Template.chatWindowDashboard.events
 				Router.go('room', { _id: result.rid })
 
 	'click button.load-more': (e) ->
-		console.log 'chatWindowDashboard click button.load-more' if window.rocketDebug
+		console.log 'room click button.load-more' if window.rocketDebug
 		RoomHistoryManager.getMore this._id
 
 	'autocompleteselect #user-add-search': (event, template, doc) ->
-		console.log 'chatWindowDashboard autocompleteselect #user-add-search' if window.rocketDebug
+		console.log 'room autocompleteselect #user-add-search' if window.rocketDebug
 		roomData = Session.get('roomData' + Session.get('openedRoom'))
 
 		if roomData.t is 'd'
@@ -399,7 +399,7 @@ Template.chatWindowDashboard.events
 				toggleAddUser()
 
 	'autocompleteselect #room-search': (event, template, doc) ->
-		console.log 'chatWindowDashboard autocompleteselect #room-search' if window.rocketDebug
+		console.log 'room autocompleteselect #room-search' if window.rocketDebug
 		if doc.type is 'u'
 			Meteor.call 'createDirectMessage', doc.uid, (error, result) ->
 				if error
@@ -413,7 +413,7 @@ Template.chatWindowDashboard.events
 			$('#room-search').val('')
 
 	'scroll .wrapper': (e, instance) ->
-		# console.log 'chatWindowDashboard scroll .wrapper' if window.rocketDebug
+		# console.log 'room scroll .wrapper' if window.rocketDebug
 		# if e.currentTarget.offsetHeight + e.currentTarget.scrollTop < e.currentTarget.scrollHeight
 		# 	instance.scrollOnBottom = false
 		# else
@@ -421,11 +421,11 @@ Template.chatWindowDashboard.events
 		# 	$('.new-message').addClass('not')
 
 	'click .new-message': (e) ->
-		console.log 'chatWindowDashboard click .new-message' if window.rocketDebug
+		console.log 'room click .new-message' if window.rocketDebug
 		$(e.currentTarget).addClass('not')
 
 	'click .see-all': (e, instance) ->
-		console.log 'chatWindowDashboard click .see-all' if window.rocketDebug
+		console.log 'room click .see-all' if window.rocketDebug
 		instance.showUsersOffline.set(!instance.showUsersOffline.get())
 
 	"mousedown .edit-message": (e) ->
@@ -440,23 +440,23 @@ Template.chatWindowDashboard.events
 		Session.set('flexOpened', true)
 		Session.set('showUserInfo', $(e.currentTarget).data('username'))
 
-Template.chatWindowDashboard.onCreated ->
-	console.log 'chatWindowDashboard.onCreated' if window.rocketDebug
+Template.room.onCreated ->
+	console.log 'room.onCreated' if window.rocketDebug
 	# this.scrollOnBottom = true
 	this.showUsersOffline = new ReactiveVar false
 
-Template.chatWindowDashboard.onRendered ->
-	console.log 'chatWindowDashboard.onRendered' if window.rocketDebug
+Template.room.onRendered ->
+	console.log 'room.onRendered' if window.rocketDebug
 	FlexTab.check()
 	ChatMessages.init()
 	ScrollListener.init()
 
-	console.log 'chatWindowDashboard.rendered' if window.rocketDebug
+	console.log 'room.rendered' if window.rocketDebug
 	# salva a data da renderização para exibir alertas de novas mensagens
 	$.data(this.firstNode, 'renderedAt', new Date)
 
 renameRoom = (rid, name) ->
-	console.log 'chatWindowDashboard renameRoom' if window.rocketDebug
+	console.log 'room renameRoom' if window.rocketDebug
 	if Session.get('roomData' + rid).name == name
 		Session.set('editRoomTitle', false)
 		return false
@@ -470,7 +470,7 @@ renameRoom = (rid, name) ->
 			toastr.error error.reason
 
 toggleAddUser = ->
-	console.log 'chatWindowDashboard toggleAddUser' if window.rocketDebug
+	console.log 'room toggleAddUser' if window.rocketDebug
 	btn = $('.add-user')
 	$('.add-user-search').toggleClass('show-search')
 	if $('i', btn).hasClass('icon-plus')

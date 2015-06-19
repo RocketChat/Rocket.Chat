@@ -88,7 +88,7 @@ Router.route '/room/:_id',
 		Meteor.call 'readMessages', self.params._id
 		Tracker.nonreactive ->
 			KonchatNotification.removeRoomNotification(self.params._id)
-			self.render 'chatWindowDashboard',
+			self.render 'room',
 				data:
 					_id: self.params._id
 
