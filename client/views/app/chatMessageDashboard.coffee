@@ -1,4 +1,4 @@
-Template.chatMessageDashboard.helpers
+Template.message.helpers
 	own: ->
 		return 'own' if this.u?._id is Meteor.userId()
 
@@ -38,7 +38,7 @@ Template.chatMessageDashboard.helpers
 				return template.find('.input-message-editing')
 		}
 
-Template.chatMessageDashboard.onRendered ->
+Template.message.onRendered ->
 
 	if this.lastNode.previousElementSibling?.dataset?.date isnt this.lastNode.dataset.date
 		$(this.lastNode).addClass('new-day')
