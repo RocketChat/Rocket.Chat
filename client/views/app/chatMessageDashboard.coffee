@@ -2,14 +2,11 @@ Template.chatMessageDashboard.helpers
 	own: ->
 		return 'own' if this.u?._id is Meteor.userId()
 
-	messageDate: (date) ->
-		return moment(date).format('LL')
+	time: ->
+		return moment(this.ts).format('HH:mm')
 
-	isSystemMessage: ->
-		return this.t in ['s', 'p', 'f', 'r', 'au', 'ru', 'ul', 'nu', 'wm', 'uj']
-
-	isEditing: ->
-		return this._id is Session.get('editingMessageId')
+	date: ->
+		return moment(this.ts).format('LL')
 
 	message: ->
 		switch this.t
@@ -28,8 +25,11 @@ Template.chatMessageDashboard.helpers
 				this.html = message.html.replace /\n/gm, '<br/>'
 				return this.html
 
-	time: ->
-		return moment(this.ts).format('HH:mm')
+	isSystemMessage: ->
+		return this.t in ['s', 'p', 'f', 'r', 'au', 'ru', 'ul', 'nu', 'wm', 'uj']
+
+	isEditing: ->
+		return this._id is Session.get('editingMessageId')
 
 	getPupupConfig: ->
 		template = Template.instance()
