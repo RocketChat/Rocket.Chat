@@ -21,7 +21,7 @@
 	}
 }
 
-* {
+*, *:before, *:after {
 	.box-sizing(border-box);
 }
 
@@ -1926,12 +1926,12 @@ a.github-fork {
 				font-size: 12px;
 				font-weight: 600;
 				text-align: center;
-				left: 50%; // isso que não tá legal
-				// border-top: 1px solid #ddd;
+				.calc(left, ~"50% - 70px");
 				color: @secondary-font-color;
 				z-index: 10;
-				padding: 0 1em;
+				padding: 0 10px;
 				background-color: #FFF;
+				min-width: 140px;
 			}
 			&:after {
 				content: " ";
