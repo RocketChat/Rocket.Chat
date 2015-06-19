@@ -1,37 +1,28 @@
 <template name="chatMessageDashboard">
-	{{#if ../dateSeparator}}
-		<li class="date">
-			<span>{{date}}</span>
-		</li>
-	{{/if}}
-	<li id="{{_id}}" class="message {{#if ../single}}sequential{{/if}} {{own}} {{type}}" data-username="{{u.username}}" data-date="{{date}}">
-		{{#if isSystemMessage}}
-			<p class="system">{{{message}}}</p>
+	<li id="{{_id}}" class="message {{own}} {{type}}" data-username="{{u.username}}" data-date="{{date}}">
+		<a class="thumb user-card-message" href="#" data-username="{{u.username}}" tabindex="1">{{> avatar username=u.username}}</a>
+		<a class="user user-card-message" href="#" data-username="{{u.username}}" tabindex="1">{{u.username}}</a>
+		<span class="info">
+			<span class="time">{{time}}</span>
+		{{#if ets}}
+			<span class="edited">({{_ "edited"}})</span>
+		{{/if}}
+		<i class="icon-pencil edit-message"></i>
+		</span>
+		{{#if isEditing}}
+			<div class="input-message-editing-container">
+				{{> messagePopupConfig getPupupConfig}}
+				<textarea class="input-message-editing" dir="auto">{{msg}}</textarea>
+			</div>
 		{{else}}
-			<a class="thumb user-card-message" href="#" data-username="{{u.username}}" tabindex="1">{{> avatar username=u.username}}</a>
-			<a class="user user-card-message" href="#" data-username="{{u.username}}" tabindex="1">{{u.username}}</a>
-			<span class="info">
-				<span class="time">{{time}}</span>
-			{{#if ets}}
-				<span class="edited">({{_ "edited"}})</span>
-			{{/if}}
-			<i class="icon-pencil edit-message"></i>
-			</span>
-			{{#if isEditing}}
-				<div class="input-message-editing-container">
-					{{> messagePopupConfig getPupupConfig}}
-					<textarea class="input-message-editing" dir="auto">{{msg}}</textarea>
-				</div>
-			{{else}}
-				<div dir="auto">
-					{{{message}}}
-					{{#if urls}}
-						{{#each urls}}
-							{{> oembed url=this}}
-						{{/each}}
-					{{/if}}
-				</div>
-			{{/if}}
+			<div dir="auto">
+				{{{message}}}
+				{{#if urls}}
+					{{#each urls}}
+						{{> oembed url=this}}
+					{{/each}}
+				{{/if}}
+			</div>
 		{{/if}}
 	</li>
 </template>

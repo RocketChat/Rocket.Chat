@@ -35,14 +35,10 @@
 							</li>
 						{{/if}}
 						{{#each messagesHistory}}
-							{{#with messageInfo 'history'}}
-								{{> chatMessageDashboard .. single=single dateSeparator=newDay}}
-							{{/with}}
+							{{> chatMessageDashboard}}
 						{{/each}}
 						{{#each messages}}
-							{{#with messageInfo}}
-								{{> chatMessageDashboard .. single=single dateSeparator=newDay}}
-							{{/with}}
+							{{> chatMessageDashboard}}
 						{{/each}}
 					</ul>
 				</div>

@@ -88,25 +88,6 @@ Template.chatWindowDashboard.helpers
 			users: usernames.join " #{t 'and'} "
 		}
 
-	messageInfo: (from) ->
-		console.log 'chatWindowDashboard.helpers messageInfo' if window.rocketDebug
-		collection = ChatMessage
-
-		if from is 'history'
-			collection = ChatMessageHistory
-
-		last = collection.find({ts: {$lt: this.ts}, t: {$exists: false}}, { sort: { ts: -1 }, limit: 1 }).fetch()[0]
-		if not last?
-			return {
-				single: false
-				newDay: false
-			}
-
-		return {
-			single: last.u.username is this.u.username and this.ts - last.ts < 30000
-			newDay: moment(last.ts).format('YYYYMMDD') isnt moment(this.ts).format('YYYYMMDD')
-		}
-
 	roomName: ->
 		console.log 'chatWindowDashboard.helpers roomName' if window.rocketDebug
 		roomData = Session.get('roomData' + this._id)

@@ -1822,6 +1822,22 @@ a.github-fork {
 		&:nth-child(1) {
 			margin-top: 0;
 		}
+		&.new-day {
+			margin-top: 60px;
+		}
+		&.new-day:before {
+			content: attr(data-date);
+			display: block;
+			position: absolute;
+			top: -30px;
+			left: 0;
+			width: 100%;
+			font-size: 12px;
+			font-weight: 600;
+			text-align: center;
+			border-top: 1px solid #ddd;
+			color: @secondary-font-color;
+		}
 		.edit-message {
 			display: none;
 			cursor: pointer;
@@ -1911,36 +1927,6 @@ a.github-fork {
 				margin: 0;
 				padding: 0;
 			}
-		}
-	}
-	.pageView {
-		display: table;
-		width: 100%;
-		text-align: left;
-	}
-	.date {
-		text-align: center;
-		position: relative;
-		margin: 15px 20px;
-		&:before {
-			content: " ";
-			height: 1px;
-			width: 100%;
-			left: 0;
-			right: 0;
-			position: absolute;
-			top: 11px;
-			background-color: #DFDFDF;
-		}
-		span {
-			display: inline-block;
-			padding: 5px 10px;
-			background-color: #FFF;
-			position: relative;
-			z-index: 1;
-			font-size: 12px;
-			font-weight: 600;
-			color: @secondary-font-color;
 		}
 	}
 }
