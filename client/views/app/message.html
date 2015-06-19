@@ -17,11 +17,9 @@
 		{{else}}
 			<div dir="auto">
 				{{{message}}}
-				{{#if urls}}
-					{{#each urls}}
-						{{> oembed url=this}}
-					{{/each}}
-				{{/if}}
+				{{#each urls}}
+					{{> oembed url=this}}
+				{{/each}}
 			</div>
 		{{/if}}
 	</li>
