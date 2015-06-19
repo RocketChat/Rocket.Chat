@@ -64,6 +64,15 @@ Router.route '/home',
 	onAfterAction: ->
 		KonchatNotification.getDesktopPermission()
 
+Router.route '/settings',
+	name: 'settings'
+
+	action: ->
+		this.render('settings')
+
+	onAfterAction: ->
+		KonchatNotification.getDesktopPermission()
+
 
 Router.route '/room/:_id',
 	name: 'room'

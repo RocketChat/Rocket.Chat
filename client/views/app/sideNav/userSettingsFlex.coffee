@@ -19,7 +19,10 @@ Template.userSettingsFlex.events
 	'click header': ->
 		SideNav.closeFlex()
 
-	'click footer .save': ->
+	'click .cancel-settings': ->
+		SideNav.closeFlex()
+
+	'click .input-submit .save': ->
 		selectedLanguage = $('#language').val()
 		if localStorage.getItem('userLanguage') isnt selectedLanguage
 			localStorage.setItem 'userLanguage', selectedLanguage

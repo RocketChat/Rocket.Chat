@@ -174,7 +174,42 @@ q {
 	-webkit-overflow-scrolling: touch;
 }
 
+.rocket-form{
+	max-width: 620px;
+	width: 90%;
+	padding: 25px 0;
+	legend{
+		margin-bottom: 23px;
+		position: relative;
+		width: 100%;
+		display: block;
+		h3{
+			margin-bottom: 5px !important;
+		}
+		&:after{
+			content: " ";
+			height: 1px;
+			background-color: #DFDFDF;
+			display: block;
+			position: absolute;
+			width: 100%;
+			bottom: -10px;
+			left: 0;
+		}
+	}
+	fieldset{
+		display: block;
+		margin-bottom: 40px;
+	}
+	.submit{
+		margin-top: 20px;
+		text-align: right;
+	}
+}
+
 .input-line {
+	.cf_;
+	display: block;
 	margin-bottom: 12px;
 	&:nth-last-child(1) {
 		margin-bottom: 0;
@@ -191,13 +226,39 @@ q {
 			padding-left: 25px;
 		}
 	}
-	label {
+	> label {
 		display: block;
 		margin-bottom: 4px;
 		color: @primary-font-color;
 	}
 	input[type='text'] {
 		display: block;
+	}
+	&.double-col{
+		> label{
+			width: 30%;
+			float: left;
+			margin-bottom: 0;
+			padding-right: 20px;
+			text-align: right;
+			line-height: 15px;
+			padding: 10px 20px 10px 0;
+		}
+		> div{
+			float: left;
+			width: 70%;
+			label{
+				display: inline-block;
+				margin-right: 4px;
+				line-height: 35px;
+				&:nth-last-child(1){
+					margin-right: 0;
+				}
+				input{
+					margin-right: 4px;
+				}
+			}
+		}
 	}
 }
 
@@ -1002,7 +1063,7 @@ a.github-fork {
 			text-align: left;
 		}
 		h4 {
-			line-height: 18px;
+			line-height: 24px;
 			font-size: 20px;
 			margin-top: 2px;
 			font-weight: 300;
@@ -1051,6 +1112,9 @@ a.github-fork {
 		.custom-scroll(transparent, rgba(255, 255, 255, 0.05));
 		.transition-delay(.135s);
 		background-color: @primary-background-color;
+		&.no-shadow{
+			box-shadow: 0 0 0;
+		}
 		> .wrapper {
 			direction: ltr;
 		}
@@ -1072,7 +1136,7 @@ a.github-fork {
 			margin-bottom: 0;
 			color: inherit;
 		}
-		input[type='text'] {
+		input[type='text'], select {
 			border-width: 0 0 1px 0;
 			border-color: @tertiary-font-color;
 			background-color: transparent;
@@ -1080,6 +1144,8 @@ a.github-fork {
 			padding: 0 8px;
 			box-shadow: 0 0 0;
 			border-radius: 0;
+			-webkit-appearance: none;
+			-webkit-border-radius: 0px;
 		}
 	}
 	.input-submit {
@@ -1502,15 +1568,27 @@ a.github-fork {
 }
 
 .page-static {
-	p {
-		margin-bottom: 12px;
-	}
-	h1,
-	h2,
-	h3,
-	h4 {
-		font-weight: 300;
-		text-transform: uppercase;
+	.content{
+		> div{
+			margin-bottom: 25px;
+			&:nth-last-child(1){
+				margin-bottom: 0;
+			}
+		}
+		p {
+			margin-bottom: 12px;
+			&:nth-last-child(1){
+				margin-bottom: 0;
+			}
+		}
+		h1,
+		h2,
+		h3,
+		h4 {
+			font-weight: 300;
+			text-transform: uppercase;
+			margin-bottom: 12px;
+		}
 	}
 }
 
@@ -1529,7 +1607,6 @@ a.github-fork {
 		margin-left: 10px;
 	}
 	.info {
-		margin-bottom: 20px;
 		max-width: 680px;
 		line-height: 20px;
 		p {}
@@ -2919,6 +2996,22 @@ a.github-fork {
 		* {
 			cursor: pointer;
 		}
+	}
+}
+
+.rocket-team{
+	display: block;
+	li{
+		display: inline-block;
+	}
+	a{
+		display: inline-block;
+		width: 50px;
+		height: 50px;
+		border-radius: 50%;
+		background-size: 100%;
+		background-position: 50% 50%;
+		margin-right: 5px;
 	}
 }
 
