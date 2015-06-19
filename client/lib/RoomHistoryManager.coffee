@@ -1,5 +1,5 @@
 @RoomHistoryManager = new class
-	defaultLimit = 20
+	defaultLimit = 50
 
 	histories = {}
 
