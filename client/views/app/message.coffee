@@ -26,7 +26,7 @@ Template.message.helpers
 				return this.html
 
 	system: ->
-		return 'system' this.t in ['s', 'p', 'f', 'r', 'au', 'ru', 'ul', 'nu', 'wm', 'uj']
+		return 'system' if this.t in ['s', 'p', 'f', 'r', 'au', 'ru', 'ul', 'nu', 'wm', 'uj']
 
 	isEditing: ->
 		return this._id is Session.get('editingMessageId')
