@@ -1,10 +1,10 @@
 <template name="chatMessageDashboard">
 	{{#if ../dateSeparator}}
 		<li class="date">
-			<span>{{messageDate ts}}</span>
+			<span>{{date}}</span>
 		</li>
 	{{/if}}
-	<li id="{{_id}}" class="message {{#if ../single}}sequential{{/if}} {{own}} {{type}}" data-username="{{u.username}}">
+	<li id="{{_id}}" class="message {{#if ../single}}sequential{{/if}} {{own}} {{type}}" data-username="{{u.username}}" data-date="{{date}}">
 		{{#if isSystemMessage}}
 			<p class="system">{{{message}}}</p>
 		{{else}}
