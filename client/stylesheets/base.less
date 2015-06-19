@@ -1816,32 +1816,74 @@ a.github-fork {
 		padding-left: 50px;
 		position: relative;
 		line-height: 20px;
-		margin: 5px 20px;
-		&.with-thumb {
-			margin-top: 12px;
-			min-height: 40px;
-			.time {
-				position: relative;
-				left: 4px;
-				opacity: 1;
-			}
-		}
+		margin: 12px 20px 5px;
+		margin-top: 12px;
+		min-height: 40px;
 		&:nth-child(1) {
 			margin-top: 0;
 		}
-		&.own:hover .edit-message {
-			display: inherit;
+		.edit-message {
+			display: none;
+			cursor: pointer;
 		}
-		.s,
-		.p,
-		.f,
-		.r,
-		.au,
-		.ru,
-		.ul,
-		.nu,
-		.wm,
-		.uj,
+		&.own:hover .edit-message {
+			display: inline-block;
+		}
+		.user {
+			display: inline-block;
+			font-weight: 600;
+			color: #444444;
+			margin-right: 5px;
+			&:hover {
+				color: #333;
+			}
+		}
+		.thumb {
+			position: absolute;
+			left: 0;
+			top: 0;
+			display: block;
+			width: 40px;
+			height: 40px;
+		}
+		.info {
+			font-size: 12px;
+			color: #888888;
+		}
+		&.sequential {
+			margin-top: 5px;
+			min-height: 20px;
+			.user {
+				display: none;
+			}
+			.thumb {
+				display: none;
+			}
+			.info {
+				position: absolute;
+				text-align: right;
+				left: -15px;
+				width: 55px;
+				.time {
+					display: none;
+				}
+				.edited {
+					display: inline-block;
+				}
+				.edit-message {
+					float: left;
+					margin-left: 5px;
+				}
+			}
+			&:hover {
+				.time {
+					display: inline-block;
+				}
+				.edited {
+					display: none;
+				}
+			}
+		}
 		.system {
 			display: inline-block;
 			background-color: #EFEFEF;
@@ -1852,10 +1894,6 @@ a.github-fork {
 			i {
 				margin-right: 5px;
 			}
-		}
-		.edit-message {
-			display: none;
-			cursor: pointer;
 		}
 		.avatar-initials {
 			line-height: 40px;
@@ -1904,64 +1942,6 @@ a.github-fork {
 			font-weight: 600;
 			color: @secondary-font-color;
 		}
-	}
-	.user {
-		display: inline-block;
-		font-weight: 600;
-		color: #444444;
-		&:hover {
-			color: #333;
-		}
-	}
-	.own {
-		.user {
-			color: #4c617b;
-			&:hover {
-				color: #3c4958;
-			}
-		}
-	}
-	.time,
-	.time-single {
-		font-size: 12px;
-		position: absolute;
-		display: inline-block;
-		color: #888888;
-		left: 6px;
-		opacity: 0;
-	}
-	.time-single {
-		opacity: 1;
-		left: -15px;
-		width: 64px;
-		.time-single-time {
-			display: none;
-		}
-		.time-single-edited {
-			text-align: center;
-		}
-	}
-	.message.own:hover {
-		.time-single {
-			.time-single-time {
-				display: block;
-			}
-			.time-single-edited {
-				display: none;
-				text-align: center;
-			}
-		}
-		.edit-message {
-			display: inline-block;
-		}
-	}
-	.thumb {
-		position: absolute;
-		left: 0;
-		top: 0;
-		display: block;
-		width: 40px;
-		height: 40px;
 	}
 }
 
