@@ -25,8 +25,8 @@ Template.message.helpers
 				this.html = message.html.replace /\n/gm, '<br/>'
 				return this.html
 
-	isSystemMessage: ->
-		return this.t in ['s', 'p', 'f', 'r', 'au', 'ru', 'ul', 'nu', 'wm', 'uj']
+	system: ->
+		return 'system' this.t in ['s', 'p', 'f', 'r', 'au', 'ru', 'ul', 'nu', 'wm', 'uj']
 
 	isEditing: ->
 		return this._id is Session.get('editingMessageId')
