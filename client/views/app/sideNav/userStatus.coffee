@@ -34,7 +34,9 @@ Template.userStatus.events
 
 	'click #settings': (event) ->
 		SideNav.setFlex "userSettingsFlex"
-		SideNav.openFlex()
+		setTimeout ->
+			SideNav.openFlex()
+		, 125
 
 Template.userStatus.rendered = ->
 	AccountBox.init()

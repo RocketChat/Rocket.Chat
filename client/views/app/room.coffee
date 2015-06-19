@@ -423,6 +423,7 @@ Template.room.events
 	'click .new-message': (e) ->
 		console.log 'room click .new-message' if window.rocketDebug
 		$(e.currentTarget).addClass('not')
+		ScrollListener.toBottom(true)
 
 	'click .see-all': (e, instance) ->
 		console.log 'room click .see-all' if window.rocketDebug
