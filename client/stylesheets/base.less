@@ -1791,6 +1791,20 @@ a.github-fork {
 	ul {
 		padding: 21px 0 10px;
 	}
+	.load-more {
+		text-align: center;
+		span {
+			border: 1px solid #CCC;
+			border-radius: 20px;
+			padding: 5px 14px;
+			background-color: #EEE;
+		}
+	}
+	.start {
+		text-align: center;
+		margin-top: 12px;
+		color: @secondary-font-color;
+	}
 	.new-message {
 		margin: 0 -65px;
 		position: absolute;
@@ -1914,55 +1928,14 @@ a.github-fork {
 		.avatar-initials {
 			line-height: 40px;
 		}
-		> div {
-			a {
-				color: @link-font-color;
-				font-weight: 400;
-				&:hover {
-					color: darken(@link-font-color, 10%);
-					text-decoration: underline;
-				}
-			}
-			ul {
-				margin: 0;
-				padding: 0;
+		a {
+			color: @link-font-color;
+			font-weight: 400;
+			&:hover {
+				color: darken(@link-font-color, 10%);
+				text-decoration: underline;
 			}
 		}
-	}
-}
-
-.load-more {
-	text-align: center;
-	span {
-		border: 1px solid #CCC;
-		border-radius: 20px;
-		padding: 5px 14px;
-		background-color: #EEE;
-	}
-}
-
-.chat-begin {
-	text-align: center;
-	position: relative;
-	margin-top: 12px;
-	&:before {
-		content: " ";
-		height: 1px;
-		width: 80%;
-		position: absolute;
-		left: 10%;
-		top: 11px;
-		background-color: #DFDFDF;
-	}
-	span {
-		display: inline-block;
-		padding: 5px 10px;
-		background-color: #FFF;
-		position: relative;
-		z-index: 1;
-		font-size: 12px;
-		font-weight: 600;
-		color: @secondary-font-color;
 	}
 }
 
