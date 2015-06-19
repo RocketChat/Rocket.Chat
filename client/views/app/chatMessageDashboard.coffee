@@ -39,9 +39,21 @@ Template.chatMessageDashboard.helpers
 		}
 
 Template.chatMessageDashboard.onRendered ->
+
+	if this.lastNode.previousElementSibling?.dataset?.date isnt this.lastNode.dataset.date
+		$(this.lastNode).addClass('new-day')
+	else if this.lastNode.previousElementSibling?.dataset?.username is this.lastNode.dataset.username
+		$(this.lastNode).addClass('sequential')
+
+	if this.lastNode.nextElementSibling?.dataset?.date is this.lastNode.dataset.date
+		$(this.lastNode.nextElementSibling).removeClass('new-day')
+	else if this.lastNode.nextElementSibling?.dataset?.username isnt this.lastNode.dataset.username
+		$(this.lastNode.nextElementSibling).removeClass('sequential')
+
 	if(this.lastNode.className.match("own"))
 		ScrollListener.toBottom(true)
 		return
+
 	message = $(this.lastNode)
 	parent = message.parent().children().last()
 	if message.get(0) is parent.get(0)
