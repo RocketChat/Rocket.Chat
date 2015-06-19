@@ -1972,7 +1972,7 @@ a.github-fork {
 		}
 		.info {
 			font-size: 12px;
-			color: #888888;
+			color: @info-font-color;
 		}
 		&.sequential {
 			margin-top: 5px;
@@ -2010,8 +2010,12 @@ a.github-fork {
 		}
 		&.system {
 			.body {
-				color: @secondary-font-color;
+				color: @info-font-color;
 				font-style: italic;
+				text-transform: lowercase;
+				em {
+					font-weight: 600;
+				}
 			}
 		}
 		.avatar-initials {

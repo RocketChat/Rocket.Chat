@@ -129,7 +129,7 @@
   "Use_uploaded_avatar" : "Use uploaded avatar",
   "User_added" : "User <em>__user_added__</em> added.",
   "User_added_by" : "User <em>__user_added__</em> added by <em>__user_by__</em>.",
-  "User_joined_channel" : "User <em>__user__</em> has joined the channel.",
+  "User_joined_channel" : "Has joined the channel.",
   "User_left" : "User <em>__user_left__</em> left.",
   "User_logged_out" : "User is logged out",
   "User_removed_by" : "User <em>__user_removed__</em> removed by <em>__user_by__</em>.",
