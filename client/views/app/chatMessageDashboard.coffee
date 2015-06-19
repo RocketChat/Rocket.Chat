@@ -1,7 +1,6 @@
 Template.chatMessageDashboard.helpers
 	own: ->
-		Tracker.nonreactive ->
-			return 'own' if this.u?._id is Meteor.userId()
+		return 'own' if this.u?._id is Meteor.userId()
 
 	messageDate: (date) ->
 		return moment(date).format('LL')
