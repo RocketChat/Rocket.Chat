@@ -93,7 +93,6 @@
 	update = (id, input) ->
 		if _.trim(input.value) isnt ''
 			msg = input.value
-			input.value = ''
 			Meteor.call 'updateMessage', { id: id, msg: msg }
 			clearEditing()
 
