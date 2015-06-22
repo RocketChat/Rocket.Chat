@@ -10,12 +10,8 @@ Template.chatRoomItem.helpers
 		return this.t is 'd'
 
 	userStatus: ->
-		switch this.t
-			when 'd'
-				username = this.rid.replace Meteor.user().username, ''
-				UserManager.addUser username
-				return 'status-' + Session.get('user_' + username + '_status')
-			else return ''
+		return 'status-' + Session.get('user_' + this.name + '_status') if this.t is 'd'
+		return ''
 
 	name: ->
 		return this.name
