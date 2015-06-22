@@ -1722,16 +1722,6 @@ a.github-fork {
 	-moz-user-select: text;
 	-ms-user-select: text;
 	user-select: text;
-	.input-message-editing-container {
-		.calc(width, ~"100% - 16px");
-	}
-	.input-message-editing {
-		resize: none;
-		display: block;
-		padding-top: 9px;
-		padding-bottom: 9px;
-		overflow-y: hidden;
-	}
 	.edit-room-title {
 		color: @secondary-font-color;
 		margin-left: 4px;
@@ -1801,6 +1791,9 @@ a.github-fork {
 			padding-right: 38px;
 			overflow-y: hidden;
 			resize: none;
+			&.editing{
+				background-color: #fff7d8;
+			}
 		}
 		.icon-paper-plane {
 			position: absolute;
@@ -1909,7 +1902,7 @@ a.github-fork {
 	}
 	.editing{
 		.body{
-			background-color: #FFF5CF;
+			background-color: #fff7d8;
 			border-radius: 4px;
 		}
 	}
