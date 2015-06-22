@@ -1,4 +1,5 @@
 Template.message.helpers
+
 	own: ->
 		return 'own' if this.u?._id is Meteor.userId()
 
@@ -8,7 +9,7 @@ Template.message.helpers
 	date: ->
 		return moment(this.ts).format('LL')
 
-	message: ->
+	body: ->
 		switch this.t
 			when 'r'  then t('Room_name_changed', { room_name: this.msg, user_by: this.u.username })
 			when 'au' then t('User_added_by', { user_added: this.msg, user_by: this.u.username })
@@ -28,15 +29,6 @@ Template.message.helpers
 	system: ->
 		return 'system' if this.t in ['s', 'p', 'f', 'r', 'au', 'ru', 'ul', 'nu', 'wm', 'uj']
 
-	isEditing: ->
-		return this._id is Session.get('editingMessageId')
-
-	getPupupConfig: ->
-		template = Template.instance()
-		return {
-			getInput: ->
-				return template.find('.input-message-editing')
-		}
 
 Template.message.onRendered ->
 

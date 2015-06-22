@@ -7,20 +7,13 @@
 		{{#if ets}}
 			<span class="edited">({{_ "edited"}})</span>
 		{{/if}}
-		<i class="icon-pencil edit-message"></i>
+			<i class="icon-pencil edit-message"></i>
 		</span>
-		{{#if isEditing}}
-			<div class="input-message-editing-container">
-				{{> messagePopupConfig getPupupConfig}}
-				<textarea class="input-message-editing" dir="auto">{{msg}}</textarea>
-			</div>
-		{{else}}
-			<div class="body" dir="auto">
-				{{{message}}}
-				{{#each urls}}
-					{{> oembed url=this}}
-				{{/each}}
-			</div>
-		{{/if}}
+		<div class="body" dir="auto">
+			{{{body}}}
+			{{#each urls}}
+				{{> oembed url=this}}
+			{{/each}}
+		</div>
 	</li>
 </template>
