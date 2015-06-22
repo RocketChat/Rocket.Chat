@@ -46,6 +46,7 @@ Accounts.onCreateUser (options, user) ->
 
 
 Accounts.validateLoginAttempt (login) ->
+	login = RocketChat.callbacks.run 'beforeValidateLogin', login
 	if login.allowed isnt true
 		return login.allowed
 
@@ -58,5 +59,7 @@ Accounts.validateLoginAttempt (login) ->
 			return false
 
 	Meteor.users.update {_id: login.user._id}, {$set: {lastLogin: new Date}}
+	Meteor.defer ->
+		RocketChat.callbacks.run 'afterValidateLogin', login
 
 	return true
