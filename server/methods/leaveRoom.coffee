@@ -8,6 +8,8 @@ Meteor.methods
 
 		room = ChatRoom.findOne rid
 
+		RocketChat.callbacks.run 'beforeLeaveRoom', Meteor.user(), room
+
 		update =
 			$pull:
 				usernames: Meteor.user().username
@@ -45,3 +47,5 @@ Meteor.methods
 		ChatSubscription.remove { rid: rid, 'u._id': Meteor.userId() }
 
 		ChatRoom.update rid, update
+
+		RocketChat.callbacks.run 'afterLeaveRoom', Meteor.user(), room
