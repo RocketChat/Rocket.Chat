@@ -302,13 +302,13 @@ Template.room.events
 		console.log 'room keydown .input-message',this._id if window.rocketDebug
 		ChatMessages.keydown(this._id, event, Template.instance())
 
-	'keydown .input-message-editing': (event) ->
-		console.log 'room keydown .input-message-editing',this._id if window.rocketDebug
-		ChatMessages.keydownEditing(this._id, event)
+	# 'keydown .input-message-editing': (event) ->
+	# 	console.log 'room keydown .input-message-editing',this._id if window.rocketDebug
+	# 	ChatMessages.keydownEditing(this._id, event)
 
-	'blur .input-message-editing': (event) ->
-		console.log 'room blur keydown blur .input-message-editing',this._id if window.rocketDebug
-		ChatMessages.stopEditingLastMessage()
+	# 'blur .input-message-editing': (event) ->
+	# 	console.log 'room blur keydown blur .input-message-editing',this._id if window.rocketDebug
+	# 	ChatMessages.stopEditingLastMessage()
 
 	'click .message-form .icon-paper-plane': (event) ->
 		console.log 'room click .message-form .icon-paper-plane' if window.rocketDebug
@@ -412,7 +412,7 @@ Template.room.events
 			Router.go('room', { _id: doc.rid })
 			$('#room-search').val('')
 
-	'scroll .wrapper': (e, instance) ->
+	# 'scroll .wrapper': (e, instance) ->
 		# console.log 'room scroll .wrapper' if window.rocketDebug
 		# if e.currentTarget.offsetHeight + e.currentTarget.scrollTop < e.currentTarget.scrollHeight
 		# 	instance.scrollOnBottom = false
@@ -430,12 +430,12 @@ Template.room.events
 		instance.showUsersOffline.set(!instance.showUsersOffline.get())
 
 	"mousedown .edit-message": (e) ->
-		self = this
-		Session.set 'editingMessageId', undefined
-		Meteor.defer ->
-			Session.set 'editingMessageId', self._id
-			Meteor.defer ->
-				$('.input-message-editing').select()
+		ChatMessages.edit(e.currentTarget.parentNode.parentNode)
+		# Session.set 'editingMessageId', undefined
+		# Meteor.defer ->
+		# 	Session.set 'editingMessageId', self._id
+		# 	Meteor.defer ->
+		# 		$('.input-message-editing').select()
 
 	"click .mention-link": (e) ->
 		Session.set('flexOpened', true)

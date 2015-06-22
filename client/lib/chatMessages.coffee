@@ -2,10 +2,10 @@
 	self = {}
 	wrapper = {}
 	input = {}
+	editing = {}
 
 	init = ->
 		wrapper = $(".messages-container").find(".wrapper")
-		console.log 'ChatMessages init wrapper: ', wrapper if window.rocketDebug
 		input = $(".input-message").get(0)
 		self.scrollable = false
 		wrapper.bind "scroll", ->
@@ -29,6 +29,56 @@
 		else
 			self.scrollable = false
 
+	toPrevMessage = ->
+		msgs = wrapper.get(0).querySelectorAll(".own:not(.system)")
+		if msgs.length
+			if editing.element
+				if msgs[editing.index - 1]
+					edit msgs[editing.index - 1], editing.index - 1
+			else
+				edit msgs[msgs.length - 1], msgs.length - 1
+
+	toNextMessage = ->
+		if editing.element
+			msgs = wrapper.get(0).querySelectorAll(".own:not(.system)")
+			if msgs[editing.index + 1]
+				edit msgs[editing.index + 1], editing.index + 1
+			else
+				clearEditing()
+
+	getEditingIndex = (element) ->
+		msgs = wrapper.get(0).querySelectorAll(".own:not(.system)")
+		index = 0
+		for msg in msgs
+			if msg is element
+				return index
+			index++
+		return -1
+
+	edit = (element, index) ->
+		return if element.classList.contains("system")
+		clearEditing()
+		id = element.getAttribute("id")
+		message = ChatMessage.findOne { _id: id, 'u._id': Meteor.userId() }
+		input.value = message.msg
+		editing.element = element
+		editing.index = index or getEditingIndex(element)
+		editing.id = id
+		element.classList.add("editing")
+		setTimeout ->
+			input.select()
+		, 10
+
+	clearEditing = ->
+		if editing.element
+			editing.element.classList.remove("editing")
+			editing.id = null
+			editing.element = null
+			editing.index = null
+			input.value = editing.saved or ""
+		else
+			editing.saved = input.value
+
 	toBottom = ->
 		ScrollListener.toBottom()
 
@@ -45,6 +95,7 @@
 			msg = input.value
 			input.value = ''
 			Meteor.call 'updateMessage', { id: id, msg: msg }
+			clearEditing()
 
 	startTyping = (rid, input) ->
 		if _.trim(input.value) isnt ''
@@ -57,23 +108,6 @@
 
 	stopTyping = ->
 		self.typingTimeout = null
-
-	startEditingLastMessage = (rid, imput) ->
-		lastMessage = ChatMessage.findOne { rid: rid, t: {$exists: false}, 'u._id': Meteor.userId() }, { sort: { ts: -1 } }
-		if not lastMessage?
-			return
-
-		# console.log 'chatMessages.startEditingLastMessage', lastMessage if window.rocketDebug
-
-		Session.set 'editingMessageId', lastMessage._id
-
-		Meteor.defer ->
-			$('.input-message-editing').select().autogrow()
-
-	stopEditingLastMessage = ->
-		Session.set 'editingMessageId', undefined
-		Meteor.defer ->
-			$('.input-message').select()
 
 	bindEvents = ->
 		if wrapper?.length
@@ -89,51 +123,51 @@
 		if k is 13 and not event.shiftKey
 			event.preventDefault()
 			event.stopPropagation()
-			send(rid, input)
+			if editing.id
+				update(editing.id, input)
+			else
+				send(rid, input)
+			return
+		if k is 27
+			if editing.id
+				event.preventDefault()
+				event.stopPropagation()
+				clearEditing()
+				return
 		else
 			keyCodes = [
-				20,  # Caps lock
-				16,  # Shift
-				9,   # Tab
-				27,  # Escape Key
-				17,  # Control Key
-				91,  # Windows Command Key
-				19,  # Pause Break
-				18,  # Alt Key
-				93,  # Right Click Point Key
-				45,  # Insert Key
-				34,  # Page Down
-				35,  # Page Up
+				20, # Caps lock
+				16, # Shift
+				9,  # Tab
+				27, # Escape Key
+				17, # Control Key
+				91, # Windows Command Key
+				19, # Pause Break
+				18, # Alt Key
+				93, # Right Click Point Key
+				45, # Insert Key
+				34, # Page Down
+				35, # Page Up
 				144, # Num Lock
-				145  # Scroll Lock
+				145 # Scroll Lock
 			]
 			keyCodes.push i for i in [35..40] # Home, End, Arrow Keys
 			keyCodes.push i for i in [112..123] # F1 - F12
+
 			unless k in keyCodes
 				startTyping(rid, input)
-			else if k is 38 # Arrow Up
-				if input.value.trim() is ''
-					startEditingLastMessage(rid, input)
-
-	keydownEditing = (id, event) ->
-		input = event.currentTarget
-		k = event.which
-		resize(input)
-		if k is 13 and not event.shiftKey
-			event.preventDefault()
-			event.stopPropagation()
-			update(id, input)
-			stopEditingLastMessage()
-		else if k is 27 # ESC
-			event.preventDefault()
-			event.stopPropagation()
-			stopEditingLastMessage()
+			else if k is 38 or k is 40 # Arrow Up or down
+				event.preventDefault()
+				event.stopPropagation()
+				if k is 38
+					toPrevMessage()
+				else
+					toNextMessage()
 
 	isScrollable: isScrollable
 	toBottom: toBottom
 	keydown: keydown
-	keydownEditing: keydownEditing
-	stopEditingLastMessage: stopEditingLastMessage
 	send: send
 	init: init
+	edit: edit
 )()
