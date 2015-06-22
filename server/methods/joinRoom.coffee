@@ -8,10 +8,13 @@ Meteor.methods
 
 		# verify if user is already in room
 		# if room.usernames.indexOf(user.username) is -1
+		console.log '[methods] joinRoom -> '.green, 'userId:', Meteor.userId(), 'arguments:', arguments
 
 		now = new Date()
 
 		user = Meteor.users.findOne Meteor.userId()
+
+		RocketChat.callbacks.run 'beforeJoinRoom', user, room
 
 		update =
 			$push:
@@ -41,5 +44,7 @@ Meteor.methods
 			u:
 				_id: user._id
 				username: user.username
+
+		RocketChat.callbacks.run 'afterJoinRoom', user, room
 
 		return true
