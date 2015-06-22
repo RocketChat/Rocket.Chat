@@ -65,6 +65,7 @@
 		editing.index = index or getEditingIndex(element)
 		editing.id = id
 		element.classList.add("editing")
+		input.classList.add("editing")
 		setTimeout ->
 			input.focus()
 		, 5
@@ -72,6 +73,7 @@
 	clearEditing = ->
 		if editing.element
 			editing.element.classList.remove("editing")
+			input.classList.remove("editing")
 			editing.id = null
 			editing.element = null
 			editing.index = null
