@@ -3,15 +3,12 @@
 		{{_ "Channels"}}
 		<i class="a-plus"></i>
 	</h3>
-	{{#if total}}
-		<ul>
-			{{#each rooms}}
-				{{> chatRoomItem }}
-			{{/each}}
-		</ul>
-	{{else}}
-		<p class="empty">{{_ "No_channels_yet" }}</p>
-	{{/if}}
-
+	<ul>
+		{{#each rooms}}
+			{{> chatRoomItem }}
+		{{else}}
+			<p class="empty">{{_ "No_channels_yet" }}</p>
+		{{/each}}
+	</ul>
 	<a href="" class="more more-channels">{{_ "More_channels"}} ..</a>
 </template>
