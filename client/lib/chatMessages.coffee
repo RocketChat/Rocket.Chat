@@ -66,8 +66,8 @@
 		editing.id = id
 		element.classList.add("editing")
 		setTimeout ->
-			input.select()
-		, 10
+			input.focus()
+		, 5
 
 	clearEditing = ->
 		if editing.element
@@ -156,12 +156,15 @@
 			unless k in keyCodes
 				startTyping(rid, input)
 			else if k is 38 or k is 40 # Arrow Up or down
-				event.preventDefault()
-				event.stopPropagation()
 				if k is 38
+					return if input.value.slice(0, input.selectionStart).match(/[\n]/) isnt null
 					toPrevMessage()
 				else
+					return if input.value.slice(input.selectionEnd, input.value.length).match(/[\n]/) isnt null
 					toNextMessage()
+
+				event.preventDefault()
+				event.stopPropagation()
 
 	isScrollable: isScrollable
 	toBottom: toBottom
