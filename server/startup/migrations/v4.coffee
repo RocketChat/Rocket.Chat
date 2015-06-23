@@ -26,11 +26,4 @@ Meteor.startup ->
 					ChatSubscription.update {rid: item._id}, {$set: {name: name}}, {multi: true}
 
 
-			console.log 'Dropping test rooms with less than 10 messages'
-			ChatRoom.find({msgs: {'$lt': 10}}).forEach (room) ->
-				ChatRoom.remove room._id
-				ChatMessage.remove {rid: room._id}
-				ChatSubscription.remove {rid: room._id}
-
-
 			console.log 'End'
