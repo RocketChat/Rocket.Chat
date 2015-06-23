@@ -51,11 +51,20 @@ meteor
 
 ### Production
 
+#### Docker
+
+[Official Docker Registry](https://registry.hub.docker.com/u/rocketchat/rocket.chat/)
+
+```
+docker pull rocketchat/rocket.chat
+```
+
 #### One-Click Deploy
 
 ##### Heroku
 
 [![Deploy](https://www.herokucdn.com/deploy/button.png)](https://heroku.com/deploy)
+
 
 ## Features
 
