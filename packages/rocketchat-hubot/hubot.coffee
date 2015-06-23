@@ -207,7 +207,7 @@ RocketChat.callbacks.add 'afterSaveMessage', RocketBotReceiver, RocketChat.callb
 	# keepalive = -> Meteor.call 'setPresence',
 	# 	u:
 	# 		username: 'rocketbot'
-	# 	rid: '57om6EQCcFami9wuT'
+	# 	rid: 'GENERAL'
 	# 	present: true
 	# 	foreground: true
 	# keepalive()
@@ -230,7 +230,7 @@ RocketChat.callbacks.add 'afterSaveMessage', RocketBotReceiver, RocketChat.callb
 	# 		adapter.receive tm
 	# startup = false
 	# Meteor.call "sendMessage",
-	# 	rid: '57om6EQCcFami9wuT'
+	# 	rid: 'GENERAL'
 	# 	msg: 'wakes up'
 	# 	u:
 	# 		username: "rocketbot"

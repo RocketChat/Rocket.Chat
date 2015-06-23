@@ -18,15 +18,15 @@ Meteor.methods
 
 		if not user.username?
 			# put user in general channel
-			ChatRoom.update '57om6EQCcFami9wuT',
+			ChatRoom.update 'GENERAL',
 				$push:
 					usernames:
 						$each: [username]
 						$sort: 1
 
-			if not ChatSubscription.findOne(rid: '57om6EQCcFami9wuT', 'u._id': user._id)?
+			if not ChatSubscription.findOne(rid: 'GENERAL', 'u._id': user._id)?
 				ChatSubscription.insert
-					rid: '57om6EQCcFami9wuT'
+					rid: 'GENERAL'
 					name: 'general'
 					ts: new Date()
 					t: 'c'
@@ -39,7 +39,7 @@ Meteor.methods
 						username: username
 
 				ChatMessage.insert
-					rid: '57om6EQCcFami9wuT'
+					rid: 'GENERAL'
 					ts: new Date()
 					t: 'uj'
 					msg: ''
