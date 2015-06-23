@@ -2010,9 +2010,19 @@ a.github-fork {
 			}
 		}
 		&.system {
-			.body {
-				color: @info-font-color;
+			padding-top: 9px;
+			.user{
+				color: darken(@info-font-color, 7.5%);
+				margin-right: 1px;
 				font-style: italic;
+			}
+			.info{
+				display: none;
+			}
+			.body {
+				font-style: italic;
+				color: @info-font-color;
+				display: inline-block;
 				text-transform: lowercase;
 				em {
 					font-weight: 600;
