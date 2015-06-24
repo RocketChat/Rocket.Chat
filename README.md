@@ -153,3 +153,5 @@ Note that Rocket.Chat is distributed under the [MIT License](http://opensource.o
 
 [codeclimate-image]: https://codeclimate.com/github/RocketChat/Rocket.Chat/badges/gpa.svg
 [codeclimate-url]: https://codeclimate.com/github/RocketChat/Rocket.Chat
+
+:smiling_imp:
