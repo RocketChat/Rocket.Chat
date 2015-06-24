@@ -35,10 +35,10 @@
 							</li>
 						{{/if}}
 						{{#each messagesHistory}}
-							{{> message}}
+							{{#nrr nrrargs 'message' .}}{{/nrr}}
 						{{/each}}
 						{{#each messages}}
-							{{> message}}
+							{{#nrr nrrargs 'message' .}}{{/nrr}}
 						{{/each}}
 					</ul>
 				</div>
