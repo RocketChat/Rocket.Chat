@@ -4,10 +4,12 @@
   "repository": "https://github.com/RocketChat/Rocket.Chat",
   "logo": "http://rocket.chat/images/logo/logo-dark.svg",
   "keywords": ["meteor", "social", "community", "chat"],
+  "website": "http://rocket.chat",
   "env": {
     "BUILDPACK_URL": "https://github.com/RocketChat/heroku-buildpack-meteor.git",
     "ROOT_URL": {
-      "description": "The full URL of your Rocket.Chat app (https://<App Name>.herokuapp.com)."
+      "description": "The full URL of your Rocket.Chat app.",
+      "value": "https://<App Name>.herokuapp.com"
     }
   },
   "addons": [
