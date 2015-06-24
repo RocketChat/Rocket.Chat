@@ -45,6 +45,7 @@ rocketchat:file
 rocketchat:highlight
 #rocketchat:hubot
 #rocketchat:irc
+rocketchat:ldap
 rocketchat:lib
 rocketchat:markdown
 rocketchat:me
