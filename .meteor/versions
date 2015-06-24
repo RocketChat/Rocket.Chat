@@ -118,6 +118,8 @@ tmeasday:crypto-md5@3.1.2
 tmeasday:errors@2.0.0
 todda00:friendly-slugs@0.3.1
 tracker@1.0.7
+typ:accounts-ldap@0.0.1
+typ:ldapjs@0.7.3
 ui@1.0.6
 underscore@1.0.3
 underscorestring:underscore.string@3.1.1
