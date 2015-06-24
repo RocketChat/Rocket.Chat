@@ -30,23 +30,25 @@ Template.message.helpers
 		return 'system' if this.t in ['s', 'p', 'f', 'r', 'au', 'ru', 'ul', 'nu', 'wm', 'uj']
 
 
-Template.message.onRendered ->
+Template.message.onViewReady = ->
+	lastNode = this.lastNode()
+	if lastNode.previousElementSibling?.dataset?.date isnt lastNode.dataset.date
+		$(lastNode).addClass('new-day')
+		$(lastNode).removeClass('sequential')
+	else if lastNode.previousElementSibling?.dataset?.username isnt lastNode.dataset.username
+		$(lastNode).removeClass('sequential')
 
-	if this.lastNode.previousElementSibling?.dataset?.date isnt this.lastNode.dataset.date
-		$(this.lastNode).addClass('new-day')
-	else if this.lastNode.previousElementSibling?.dataset?.username is this.lastNode.dataset.username
-		$(this.lastNode).addClass('sequential')
+	if lastNode.nextElementSibling?.dataset?.date is lastNode.dataset.date
+		$(lastNode.nextElementSibling).removeClass('new-day')
+		$(lastNode.nextElementSibling).addClass('sequential')
+	else if lastNode.nextElementSibling?.dataset?.username is lastNode.dataset.username
+		$(lastNode.nextElementSibling).addClass('sequential')
 
-	if this.lastNode.nextElementSibling?.dataset?.date is this.lastNode.dataset.date
-		$(this.lastNode.nextElementSibling).removeClass('new-day')
-	else if this.lastNode.nextElementSibling?.dataset?.username isnt this.lastNode.dataset.username
-		$(this.lastNode.nextElementSibling).removeClass('sequential')
-
-	if(this.lastNode.className.match("own"))
+	if(lastNode.className.match("own"))
 		ScrollListener.toBottom(true)
 		return
 
-	message = $(this.lastNode)
+	message = $(lastNode)
 	parent = message.parent().children().last()
 	if message.get(0) is parent.get(0)
 		ScrollListener.toBottom(false)
