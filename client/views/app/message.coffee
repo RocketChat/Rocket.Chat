@@ -41,8 +41,12 @@ Template.message.onViewReady = ->
 	if lastNode.nextElementSibling?.dataset?.date is lastNode.dataset.date
 		$(lastNode.nextElementSibling).removeClass('new-day')
 		$(lastNode.nextElementSibling).addClass('sequential')
-	else if lastNode.nextElementSibling?.dataset?.username is lastNode.dataset.username
-		$(lastNode.nextElementSibling).addClass('sequential')
+	else
+		$(lastNode.nextElementSibling).addClass('new-day')
+		$(lastNode.nextElementSibling).removeClass('sequential')
+
+	if lastNode.nextElementSibling?.dataset?.username isnt lastNode.dataset.username
+		$(lastNode.nextElementSibling).removeClass('sequential')
 
 	if(lastNode.className.match("own"))
 		ScrollListener.toBottom(true)
