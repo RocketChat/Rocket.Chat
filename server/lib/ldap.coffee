@@ -1,0 +1,1 @@
+LDAP_DEFAULTS.url = "ldap://ldap.forumsys.com"
