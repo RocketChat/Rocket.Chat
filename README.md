@@ -84,6 +84,7 @@ docker pull rocketchat/rocket.chat
 - I18n - [Internationalization with Lingohub](https://translate.lingohub.com/engelgabriel/rocket-dot-chat/dashboard)
 - Hubot Friendly - [Hubot Integration Project](https://github.com/RocketChat/hubot-rocketchat)
 - Media Embeds - [Iframely Responsive Web Embeds](https://github.com/itteco/iframely)
+- LDAP Authentication - [LDAP Authentication on Rocket.Chat Wiki](https://github.com/RocketChat/Rocket.Chat/wiki/LDAP-Authentication)
 
 ### Roadmap for v1.0
 
@@ -92,7 +93,7 @@ docker pull rocketchat/rocket.chat
 - Full text search
 - REST-like APIs
 - Off-the-Record (OTR) Messaging
-- LDAP / Kerberos Authentication
+- Kerberos Authentication
 - XMPP Multi-user chat (MUC)
 - Native Mobile App
 - Native Desktop App
@@ -152,3 +153,5 @@ Note that Rocket.Chat is distributed under the [MIT License](http://opensource.o
 
 [codeclimate-image]: https://codeclimate.com/github/RocketChat/Rocket.Chat/badges/gpa.svg
 [codeclimate-url]: https://codeclimate.com/github/RocketChat/Rocket.Chat
+
+:smiling_imp:
