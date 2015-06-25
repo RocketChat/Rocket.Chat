@@ -107,19 +107,15 @@ Meteor.methods
 		###
 		Save the message. If there was already a typing record, update it.
 		###
-		ChatMessage.upsert
-			rid: message.rid
-			t: 't'
-			$and: [{ 'u._id': message.u._id }]
-		,
-			$set: message
-			$unset:
-				t: 1
-				expireAt: 1
+		message._id = ChatMessage.insert message
 
 		Meteor.defer ->
+			ChatMessage.remove
+				rid: message.rid
+				t: 't'
+				'u._id': message.u._id
 
-			message._id = Random.id()
+		Meteor.defer ->
 			RocketChat.callbacks.run 'afterSaveMessage', message
 
 
