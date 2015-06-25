@@ -7,9 +7,9 @@
 	init = ->
 		wrapper = $(".messages-container").find(".wrapper")
 		input = $(".input-message").get(0)
-		self.scrollable = false
-		wrapper.bind "scroll", ->
-			scrollable()
+		# self.scrollable = false
+		# wrapper.bind "scroll", ->
+			# scrollable()
 		bindEvents()
 		return
 
