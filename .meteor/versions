@@ -20,8 +20,6 @@ coffeescript@1.0.6
 dandv:caret-position@2.1.1
 ddp@1.1.0
 deps@1.0.7
-dispatch:kernel@0.0.6
-dispatch:request-animation-frame@0.0.1
 ejson@1.0.6
 email@1.0.6
 facebook@1.2.0

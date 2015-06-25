@@ -19,7 +19,6 @@ reactive-var
 service-configuration
 
 chrismbeckett:toastr
-dispatch:kernel
 francocatena:status
 iron:router
 jparker:gravatar
