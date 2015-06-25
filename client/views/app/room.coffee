@@ -470,6 +470,10 @@ Template.room.onRendered ->
 		template.atBottom = false
 		onscroll()
 
+	wrapper.addEventListener 'wheel', ->
+		template.atBottom = false
+		onscroll()
+
 	console.log 'room.rendered' if window.rocketDebug
 	# salva a data da renderização para exibir alertas de novas mensagens
 	$.data(this.firstNode, 'renderedAt', new Date)
