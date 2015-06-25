@@ -30,7 +30,7 @@ Template.message.helpers
 		return 'system' if this.t in ['s', 'p', 'f', 'r', 'au', 'ru', 'ul', 'nu', 'wm', 'uj']
 
 
-Template.message.onViewReady = ->
+Template.message.onViewReady = (context) ->
 	lastNode = this.lastNode()
 	if lastNode.previousElementSibling?.dataset?.date isnt lastNode.dataset.date
 		$(lastNode).addClass('new-day')
@@ -47,6 +47,13 @@ Template.message.onViewReady = ->
 
 	if lastNode.nextElementSibling?.dataset?.username isnt lastNode.dataset.username
 		$(lastNode.nextElementSibling).removeClass('sequential')
+
+	if context.urls?.length > 0
+		for url in context.urls
+			do (url) ->
+				Meteor.call 'iframely.oembed', url, (error, data) ->
+					urlNode = lastNode.querySelector('.body a[href="'+url+'"]')
+					urlNode?.innerHTML = Blaze.toHTMLWithData Template.iframelyBaseWidget, data
 
 	if(lastNode.className.match("own"))
 		ScrollListener.toBottom(true)
