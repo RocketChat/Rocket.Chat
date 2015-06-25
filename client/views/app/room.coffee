@@ -354,7 +354,7 @@ Template.room.events
 
 	'click .user-card-message': (e) ->
 		console.log 'room click .user-card-message' if window.rocketDebug
-		roomData = Session.get('roomData' + this.rid)
+		roomData = Session.get('roomData' + this._arguments[1].rid)
 		if roomData.t in ['c', 'p']
 			Session.set('flexOpened', true)
 			Session.set('showUserInfo', $(e.currentTarget).data('username'))
