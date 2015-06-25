@@ -48,18 +48,19 @@ Template.message.onViewReady = (context) ->
 	if lastNode.nextElementSibling?.dataset?.username isnt lastNode.dataset.username
 		$(lastNode.nextElementSibling).removeClass('sequential')
 
+	ul = lastNode.parentElement
+	wrapper = ul.parentElement
+
 	if context.urls?.length > 0
 		for url in context.urls
 			do (url) ->
 				Meteor.call 'iframely.oembed', url, (error, data) ->
+					height = lastNode.clientHeight
+
 					urlNode = lastNode.querySelector('.body a[href="'+url+'"]')
 					urlNode?.innerHTML = Blaze.toHTMLWithData Template.iframelyBaseWidget, data
 
-	if(lastNode.className.match("own"))
-		ScrollListener.toBottom(true)
-		return
-
-	message = $(lastNode)
-	parent = message.parent().children().last()
-	if message.get(0) is parent.get(0)
-		ScrollListener.toBottom(false)
+	if not lastNode.nextElementSibling?
+		if this.parentView.parentView.parentView.parentView.parentView.templateInstance().atBottom isnt true
+			newMessage = document.querySelector(".new-message")
+			newMessage.className = "new-message"
