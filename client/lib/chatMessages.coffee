@@ -13,21 +13,21 @@
 		bindEvents()
 		return
 
-	isScrollable = ->
-		self.scrollable
+	# isScrollable = ->
+	# 	self.scrollable
 
 	resize = ->
 		dif = 60 + $(".messages-container").find("footer").outerHeight()
 		$(".messages-box").css
 			height: "calc(100% - #{dif}px)"
 
-	scrollable = ->
-		wrapper = $(".messages-container").find(".wrapper")
-		top = wrapper.scrollTop() + wrapper.outerHeight()
-		if top == wrapper.get(0).scrollHeight
-			self.scrollable = true
-		else
-			self.scrollable = false
+	# scrollable = ->
+		# wrapper = $(".messages-container").find(".wrapper")
+		# top = wrapper.scrollTop() + wrapper.outerHeight()
+		# if top == wrapper.get(0).scrollHeight
+		# 	self.scrollable = true
+		# else
+		# 	self.scrollable = false
 
 	toPrevMessage = ->
 		msgs = wrapper.get(0).querySelectorAll(".own:not(.system)")
@@ -81,8 +81,8 @@
 		else
 			editing.saved = input.value
 
-	toBottom = ->
-		ScrollListener.toBottom()
+	# toBottom = ->
+	# 	ScrollListener.toBottom()
 
 	send = (rid, input) ->
 		if _.trim(input.value) isnt ''
@@ -115,7 +115,7 @@
 			$(".input-message").autogrow
 				postGrowCallback: ->
 					resize()
-					toBottom() if self.scrollable
+					# toBottom() if self.scrollable
 
 	keydown = (rid, event) ->
 		input = event.currentTarget
@@ -168,8 +168,8 @@
 				event.preventDefault()
 				event.stopPropagation()
 
-	isScrollable: isScrollable
-	toBottom: toBottom
+	# isScrollable: isScrollable
+	# toBottom: toBottom
 	keydown: keydown
 	send: send
 	init: init

@@ -422,8 +422,8 @@ Template.room.events
 
 	'click .new-message': (e) ->
 		console.log 'room click .new-message' if window.rocketDebug
-		$(e.currentTarget).addClass('not')
-		ScrollListener.toBottom(true)
+		Template.instance().atBottom = true
+		Template.instance().find('.input-message').focus()
 
 	'click .see-all': (e, instance) ->
 		console.log 'room click .see-all' if window.rocketDebug
@@ -445,12 +445,30 @@ Template.room.onCreated ->
 	console.log 'room.onCreated' if window.rocketDebug
 	# this.scrollOnBottom = true
 	this.showUsersOffline = new ReactiveVar false
+	this.atBottom = true
 
 Template.room.onRendered ->
 	console.log 'room.onRendered' if window.rocketDebug
 	FlexTab.check()
 	ChatMessages.init()
-	ScrollListener.init()
+	# ScrollListener.init()
+
+	wrapper = this.find('.wrapper')
+	newMessage = this.find(".new-message")
+
+	template = this
+	onscroll = ->
+		template.atBottom = wrapper.scrollTop is wrapper.scrollHeight - wrapper.clientHeight
+
+	Meteor.setInterval ->
+		if template.atBottom
+			wrapper.scrollTop = wrapper.scrollHeight - wrapper.clientHeight
+			newMessage.className = "new-message not"
+	, 100
+
+	wrapper.addEventListener 'mousewheel', ->
+		template.atBottom = false
+		onscroll()
 
 	console.log 'room.rendered' if window.rocketDebug
 	# salva a data da renderização para exibir alertas de novas mensagens
