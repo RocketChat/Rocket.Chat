@@ -1,0 +1,16 @@
+#
+# ---Choose Your Languages---
+# To disable analysis for a certain language, set the language to `false`.
+# For help setting your languages:
+# http://docs.codeclimate.com/article/169-configuring-analysis-languages
+#
+languages:
+   JavaScript: true
+#
+# ---Exclude Files or Directories---
+# List the files or directories you would like excluded from our analysis.
+# For help setting your exclude paths:
+# http://docs.codeclimate.com/article/166-excluding-files-folders
+#
+exclude_paths:
+ - "public/moment-locales/*"
