@@ -12,5 +12,4 @@ Meteor.startup ->
 				ChatMessageHistory.insert record
 
 		changed: (record) ->
-			ChatMessageHistory.update record._id, record
-
+			ChatMessageHistory.update {_id: record._id, msg: {$ne: record.msg}}, record
