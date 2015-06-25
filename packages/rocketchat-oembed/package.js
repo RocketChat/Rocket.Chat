@@ -15,6 +15,7 @@ Package.onUse(function(api) {
 	]);
 
 	api.addFiles('oembed.coffee', ['server','client']);
+	api.addFiles('server.coffee', ['server']);
 });
 
 Package.onTest(function(api) {
