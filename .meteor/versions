@@ -32,7 +32,6 @@ html-tools@1.0.4
 htmljs@1.0.4
 http@1.1.0
 id-map@1.0.3
-iframely:oembed@0.0.2
 iron:controller@1.0.8
 iron:core@1.0.8
 iron:dynamic-template@1.0.8
