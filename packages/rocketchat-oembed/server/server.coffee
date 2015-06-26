@@ -100,7 +100,7 @@ getRelevantMetaTags = (metaObj) ->
 		return tags
 	return
 
-RocketUrlParser = (message) ->
+OEmbed.RocketUrlParser = (message) ->
 	if Array.isArray message.urls
 		for item in message.urls
 			data = OEmbed.getUrlMeta item.url
@@ -115,13 +115,4 @@ RocketUrlParser = (message) ->
 
 		ChatMessage.update {_id: message._id}, { $set: { urls: message.urls } }
 
-RocketChat.callbacks.add 'afterSaveMessage', RocketUrlParser, RocketChat.callbacks.priority.LOW
-
-# Meteor.methods
-# 	getUrlMeta: (url) ->
-# 		data = OEmbed.getUrlMeta url
-
-# 		console.log data.meta
-# 		console.log data.headers
-
-# 		return data
+RocketChat.callbacks.add 'afterSaveMessage', OEmbed.RocketUrlParser, RocketChat.callbacks.priority.LOW
