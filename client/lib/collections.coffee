@@ -13,3 +13,6 @@ Meteor.startup ->
 
 		changed: (record) ->
 			ChatMessageHistory.update {_id: record._id, msg: {$ne: record.msg}}, record
+
+		removed: (record) ->
+			ChatMessageHistory.remove {_id: record._id} 
