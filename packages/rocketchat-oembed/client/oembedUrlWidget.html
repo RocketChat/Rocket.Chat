@@ -3,24 +3,27 @@
 	{{#if parsedUrl}}
 		<blockquote>
 			<a href="{{url}}" target="_blank">{{parsedUrl.host}}</a>
-			{{#if description}}
-				<div style="{{#if image}}min-height: 50px;{{/if}}">
-					{{#if image}}
-						{{#if meta.ogImageUserGenerated}}
-							<div>
-								<a href="{{url}}" target="_blank">
-									<img src="{{image}}" height="200" />
-								</a>
-							</div>
-						{{else}}
+			<div style="{{#if image}}min-height: 60px;{{/if}}">
+				{{#if image}}
+					{{#if meta.ogImageUserGenerated}}
+						<div>
 							<a href="{{url}}" target="_blank">
-								<img src="{{image}}" height="50" align="left" style="margin-right: 5px;"/>
+								<img src="{{image}}" height="200" />
 							</a>
-						{{/if}}
+						</div>
+					{{else}}
+						<a href="{{url}}" target="_blank">
+							<img src="{{image}}" height="60" align="left" style="margin-right: 5px;"/>
+						</a>
 					{{/if}}
-					{{description}}
-				</div>
-			{{/if}}
+				{{/if}}
+				{{#if title}}
+					<div>
+						<strong>{{title}}</strong>
+					</div>
+				{{/if}}
+				{{description}}
+			</div>
 		</blockquote>
 	{{/if}}
 </template>

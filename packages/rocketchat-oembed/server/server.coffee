@@ -142,7 +142,7 @@ getRelevantHeaders = (headersObj) ->
 getRelevantMetaTags = (metaObj) ->
 	tags = {}
 	for key, value of metaObj
-		if /^(og|fb|twitter).+|description$/.test(key.toLowerCase()) and value?.trim() isnt ''
+		if /^(og|fb|twitter).+|description|title|pageTitle$/.test(key.toLowerCase()) and value?.trim() isnt ''
 			tags[key] = value
 
 	if Object.keys(tags).length > 0
