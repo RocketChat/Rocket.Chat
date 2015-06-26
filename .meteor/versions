@@ -32,7 +32,6 @@ html-tools@1.0.4
 htmljs@1.0.4
 http@1.1.0
 id-map@1.0.3
-iframely:oembed@0.0.2
 iron:controller@1.0.8
 iron:core@1.0.8
 iron:dynamic-template@1.0.8
@@ -47,6 +46,7 @@ jparker:gravatar@0.3.1
 jquery@1.11.3_2
 json@1.0.3
 konecty:autolinker@1.0.2
+konecty:change-case@2.3.0
 konecty:delayed-task@1.0.0
 konecty:mongo-counter@0.0.3
 konecty:multiple-instances-status@1.0.3

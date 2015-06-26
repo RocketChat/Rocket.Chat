@@ -15,7 +15,7 @@ Meteor.methods
 		message.u = Meteor.users.findOne Meteor.userId(), fields: username: 1
 
 		if urls = message.msg.match /([A-Za-z]{3,9}):\/\/([-;:&=\+\$,\w]+@{1})?([-A-Za-z0-9\.]+)+:?(\d+)?((\/[-\+=!:~%\/\.@\,\w]+)?\??([-\+=&!:;%@\/\.\,\w]+)?#?([\w]+)?)?/g
-			message.urls = urls
+			message.urls = urls.map (url) -> url: url
 
 		message = RocketChat.callbacks.run 'beforeSaveMessage', message
 
@@ -107,19 +107,15 @@ Meteor.methods
 		###
 		Save the message. If there was already a typing record, update it.
 		###
-		ChatMessage.upsert
-			rid: message.rid
-			t: 't'
-			$and: [{ 'u._id': message.u._id }]
-		,
-			$set: message
-			$unset:
-				t: 1
-				expireAt: 1
+		message._id = ChatMessage.insert message
 
 		Meteor.defer ->
+			ChatMessage.remove
+				rid: message.rid
+				t: 't'
+				'u._id': message.u._id
 
-			message._id = Random.id()
+		Meteor.defer ->
 			RocketChat.callbacks.run 'afterSaveMessage', message
 
 
