@@ -8,6 +8,7 @@
   "and" : "and",
   "are_also_typing" : "are also typing",
   "are_typing" : "are typing",
+  "Are_you_sure" : "Are you sure?",
   "away" : "away",
   "Away" : "Away",
   "busy" : "busy",
@@ -29,6 +30,7 @@
   "Create_new_private_group" : "Create a new private group",
   "Created_at" : "Created at",
   "Direct_Messages" : "Direct Messages",
+  "Deleted" : "Deleted!",
   "edited" : "edited",
   "Email_or_username" : "Email or username",
   "Email_verified" : "Email verified",
@@ -146,5 +148,8 @@
   "Welcome_to_the" : "Welcome to the",
   "you_are_in_preview_mode_of" : "You are in preview mode of channel #<strong>__room_name__</strong>",
   "You_neeed_confirm_email" : "You need to confirm your email to login!",
-  "Your_Open_Source_solution" : "Your own Open Source chat solution"
+  "Your_Open_Source_solution" : "Your own Open Source chat solution",
+  "You_will_not_be_able_to_recover" : "You will not be able to recover!",
+  "Yes_delete_it" : "Yes, delete it!",
+  "Your_entry_has_been_deleted" : "Your entry has been deleted."
 }

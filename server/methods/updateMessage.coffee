@@ -21,3 +21,13 @@ Meteor.methods
 		Meteor.defer ->
 
 			RocketChat.callbacks.run 'afterSaveMessage', message
+
+	deleteMessage: (message) ->
+		if not Meteor.userId()
+			throw new Meteor.Error('invalid-user', "[methods] deleteMessage -> Invalid user")
+
+		console.log '[methods] deleteMessage -> '.green, 'userId:', Meteor.userId(), 'arguments:', arguments
+
+		ChatMessage.remove
+			_id: message.id
+			'u._id': Meteor.userId
