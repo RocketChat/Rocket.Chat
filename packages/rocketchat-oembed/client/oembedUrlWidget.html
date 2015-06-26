@@ -1,0 +1,11 @@
+<template name="oembedUrlWidget">
+	{{#if parsedUrl}}
+		<blockquote>
+			<a href="{{url}}">{{parsedUrl.host}}</a>
+			{{#if description}}
+				<br/>
+				{{description}}
+			{{/if}}
+		</blockquote>
+	{{/if}}
+</template>
