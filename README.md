@@ -51,7 +51,8 @@ It is a great solution for communities and companies wanting to privately host t
 - Transcripts / History
 - I18n - [Internationalization with Lingohub](https://translate.lingohub.com/engelgabriel/rocket-dot-chat/dashboard)
 - Hubot Friendly - [Hubot Integration Project](https://github.com/RocketChat/hubot-rocketchat)
-- Media Embeds - [Iframely Responsive Web Embeds](https://github.com/itteco/iframely)
+- Media Embeds
+- Link Previews
 - LDAP Authentication - [LDAP Authentication on Rocket.Chat Wiki](https://github.com/RocketChat/Rocket.Chat/wiki/LDAP-Authentication)
 
 ### Roadmap for v1.0
