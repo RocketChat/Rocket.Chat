@@ -6,10 +6,14 @@ The Complete Open Source Chat Solution
 
 Checkout the latest version at http://rocket.chat
 
+[![Donate](https://www.paypalobjects.com/en_US/i/btn/btn_donateCC_LG.gif)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=49QX7TYCVZK8L)
+
+
 ## About
 
 [![Code Climate][codeclimate-image]][codeclimate-url]
 [![MIT License](http://img.shields.io/badge/license-MIT-blue.svg?style=flat)](https://github.com/RocketChat/Rocket.Chat/raw/master/LICENSE)
+
 
 Rocket.Chat is a Web Chat Server, developed in JavaScript, using the [Meteor](https://www.meteor.com/install) fullstack framework.
 
@@ -149,5 +153,11 @@ Note that Rocket.Chat is distributed under the [MIT License](http://opensource.o
 
 [codeclimate-image]: https://codeclimate.com/github/RocketChat/Rocket.Chat/badges/gpa.svg
 [codeclimate-url]: https://codeclimate.com/github/RocketChat/Rocket.Chat
+
+### Donate
+
+Rocket.Chat will be free forever, but you can help us speed-up the development!
+
+[![Donate](https://www.paypalobjects.com/en_US/i/btn/btn_donateCC_LG.gif)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=49QX7TYCVZK8L)
 
 :smiling_imp:
