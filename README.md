@@ -8,12 +8,10 @@ Checkout the latest version at http://rocket.chat
 
 [![Donate](https://www.paypalobjects.com/en_US/i/btn/btn_donateCC_LG.gif)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=49QX7TYCVZK8L)
 
-
 ## About
 
-[![Code Climate][codeclimate-image]][codeclimate-url]
+[![Code Climate](https://codeclimate.com/github/RocketChat/Rocket.Chat/badges/gpa.svg)](https://codeclimate.com/github/RocketChat/Rocket.Chat)
 [![MIT License](http://img.shields.io/badge/license-MIT-blue.svg?style=flat)](https://github.com/RocketChat/Rocket.Chat/raw/master/LICENSE)
-
 
 Rocket.Chat is a Web Chat Server, developed in JavaScript, using the [Meteor](https://www.meteor.com/install) fullstack framework.
 
@@ -35,40 +33,6 @@ It is a great solution for communities and companies wanting to privately host t
 
 ##### [clasesdeperiodismo.com](http://www.clasesdeperiodismo.com/2015/05/30/un-chat-de-codigo-abierto-que-puedes-anadir-a-la-web/)
 > Un chat de código abierto que puedes añadir a la web
-
-## Installation
-
-### Development
-
-Prerequisites:
-
-* [Git](http://git-scm.com/book/en/v2/Getting-Started-Installing-Git)
-* [Meteor](https://www.meteor.com/install)
-
-Now just clone and start the app:
-
-```sh
-git clone https://github.com/RocketChat/Rocket.Chat.git
-cd Rocket.Chat
-meteor
-```
-
-### Production
-
-#### Docker
-
-[Official Docker Registry](https://registry.hub.docker.com/u/rocketchat/rocket.chat/)
-
-```
-docker pull rocketchat/rocket.chat
-```
-
-#### One-Click Deploy
-
-##### Heroku
-
-[![Deploy](https://www.herokucdn.com/deploy/button.png)](https://heroku.com/deploy)
-
 
 ## Features
 
@@ -122,6 +86,39 @@ We are developing the APIs based on the competition, so stay tunned and you will
 
 Checkout [Github Wiki](https://github.com/RocketChat/Rocket.Chat/wiki) (coming soon)
 
+## Production Deployment
+
+### Docker
+
+Use the automated build at our [Official Docker Registry](https://registry.hub.docker.com/u/rocketchat/rocket.chat/)
+
+[![Rocket.Chat logo](https://d207aa93qlcgug.cloudfront.net/1.95.5.qa/img/nav/docker-logo-loggedout.png)](https://registry.hub.docker.com/u/rocketchat/rocket.chat/)
+
+```
+docker pull rocketchat/rocket.chat
+```
+
+### Heroku
+
+Host your own Rocket.Chat server for **FREE** with [One-Click Deploy](https://heroku.com/deploy?template=https://github.com/RocketChat/Rocket.Chat/tree/master)
+
+[![Deploy](https://www.herokucdn.com/deploy/button.png)](https://heroku.com/deploy?template=https://github.com/RocketChat/Rocket.Chat/tree/master)
+
+## Development Installation
+
+Prerequisites:
+
+* [Git](http://git-scm.com/book/en/v2/Getting-Started-Installing-Git)
+* [Meteor](https://www.meteor.com/install)
+
+Now just clone and start the app:
+
+```sh
+git clone https://github.com/RocketChat/Rocket.Chat.git
+cd Rocket.Chat
+meteor
+```
+
 ## Credits
 
 Thanks to [Diego Sampaio](https://github.com/sampaiodiego), [Gabriel Engel](https://github.com/engelgabriel), [Marcelo Schmidt](https://github.com/marceloschmidt), [Rafael Caferati](https://github.com/rcaferati) e [Rodrigo Nascimento](https://github.com/rodrigok)
@@ -150,9 +147,6 @@ Join the the conversation at [Twitter](http://twitter.com/RocketChatApp), [Faceb
 ### License
 
 Note that Rocket.Chat is distributed under the [MIT License](http://opensource.org/licenses/MIT).
-
-[codeclimate-image]: https://codeclimate.com/github/RocketChat/Rocket.Chat/badges/gpa.svg
-[codeclimate-url]: https://codeclimate.com/github/RocketChat/Rocket.Chat
 
 ### Donate
 
