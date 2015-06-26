@@ -4,7 +4,7 @@ Template.oembedBaseWidget.helpers
 		if this.headers?.contentType?.match(/image\/.*/)?
 			return 'oembedImageWidget'
 
-		if this.parsedUrl?.host is 'www.youtube.com'
+		if this.parsedUrl?.host is 'www.youtube.com' and this.meta?.twitterPlayer?
 			return 'oembedYoutubeWidget'
 
 		return 'oembedUrlWidget'
