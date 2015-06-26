@@ -443,16 +443,17 @@ Template.room.events
 
 	'click .delete-message': (event) ->
 		swal {
-		  title: 'Are you sure?'
-		  text: 'You will not be able to recover!'
+		  title: t('Are_you_sure')
+		  text: t('You_will_not_be_able_to_recover')
 		  type: 'warning'
-		  showCancelButton: true
-		  confirmButtonColor: '#DD6B55'
-		  confirmButtonText: 'Yes, delete it!'
-		  closeOnConfirm: false
-		  html: false
+			showCancelButton: true
+			confirmButtonColor: '#DD6B55'
+			confirmButtonText: t('Yes_delete_it')
+			cancelButtonText: t('Cancel')
+			closeOnConfirm: false
+			html: false
 		}, ->
-		  swal 'Deleted!', 'Your entry has been deleted.', 'success'
+		  swal t('Deleted'), t('Your_entry_has_been_deleted'), 'success'
 				ChatMessages.deleteMsg(event.currentTarget.parentNode.parentNode)
 
 Template.room.onCreated ->
