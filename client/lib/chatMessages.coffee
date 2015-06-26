@@ -92,6 +92,12 @@
 			stopTyping()
 			Meteor.call 'sendMessage', { rid: rid, msg: msg, day: window.day }
 
+	deleteMsg = (element) ->
+			id = element.getAttribute("id")
+			Meteor.call 'deleteMessage', { id: id }, (error, result) ->
+				if error
+					return Errors.throw error.reason
+
 	update = (id, input) ->
 		if _.trim(input.value) isnt ''
 			msg = input.value
@@ -171,6 +177,7 @@
 	# isScrollable: isScrollable
 	# toBottom: toBottom
 	keydown: keydown
+	deleteMsg: deleteMsg
 	send: send
 	init: init
 	edit: edit

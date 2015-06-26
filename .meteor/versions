@@ -46,6 +46,7 @@ jparker:crypto-md5@0.1.1
 jparker:gravatar@0.3.1
 jquery@1.11.3_2
 json@1.0.3
+kevohagan:sweetalert@1.0.0
 konecty:autolinker@1.0.2
 konecty:delayed-task@1.0.0
 konecty:mongo-counter@0.0.3
