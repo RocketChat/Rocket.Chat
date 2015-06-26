@@ -442,6 +442,8 @@ Template.room.events
 		Session.set('showUserInfo', $(e.currentTarget).data('username'))
 
 	'click .delete-message': (event) ->
+		msg = event.currentTarget.parentNode.parentNode
+		return if msg.classList.contains("system")
 		swal {
 		  title: t('Are_you_sure')
 		  text: t('You_will_not_be_able_to_recover')
@@ -454,7 +456,7 @@ Template.room.events
 			html: false
 		}, ->
 		  swal t('Deleted'), t('Your_entry_has_been_deleted'), 'success'
-				ChatMessages.deleteMsg(event.currentTarget.parentNode.parentNode)
+				ChatMessages.deleteMsg(msg)
 
 Template.room.onCreated ->
 	console.log 'room.onCreated' if window.rocketDebug

@@ -21,7 +21,7 @@ Meteor.methods
 			throw new Meteor.Error 203, t('general.User_logged_out')
 
 		Tracker.nonreactive ->
-
-			ChatMessageHistory.remove
+			
+			ChatMessage.remove
 				_id: message.id
 				'u._id': Meteor.userId()
