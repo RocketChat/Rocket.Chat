@@ -83,11 +83,21 @@ OEmbed.getUrlMeta = (url, withFragment) ->
 
 	if content?.body?
 		metas = {}
-		content.body.replace /<meta.*(?:name|property)=['"]([^'"]*)['"].*content=['"]([^'"]*)['"].*>/gmi, (meta, name, value) ->
+		content.body.replace /<title>(.+)<\/title>/gmi, (meta, title) ->
+			metas.pageTitle = title
+
+		content.body.replace /<meta[^>]*(?:name|property)=[']([^']*)['][^>]*content=[']([^']*)['][^>]*>/gmi, (meta, name, value) ->
 			metas[changeCase.camelCase(name)] = value
 
-		content.body.replace /<meta.*content=['"]([^'"]*)['"].*(?:name|property)=['"]([^'"]*)['"].*>/gmi, (meta, name, value) ->
+		content.body.replace /<meta[^>]*(?:name|property)=["]([^"]*)["][^>]*content=["]([^"]*)["][^>]*>/gmi, (meta, name, value) ->
 			metas[changeCase.camelCase(name)] = value
+
+		content.body.replace /<meta[^>]*content=[']([^']*)['][^>]*(?:name|property)=[']([^']*)['][^>]*>/gmi, (meta, value, name) ->
+			metas[changeCase.camelCase(name)] = value
+
+		content.body.replace /<meta[^>]*content=["]([^"]*)["][^>]*(?:name|property)=["]([^"]*)["][^>]*>/gmi, (meta, value, name) ->
+			metas[changeCase.camelCase(name)] = value
+
 
 		if metas.fragment is '!' and not withFragment?
 			return OEmbed.getUrlMeta url, true
