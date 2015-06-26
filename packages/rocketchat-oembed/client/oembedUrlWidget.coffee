@@ -3,5 +3,4 @@ Template.oembedUrlWidget.helpers
 		if not this.meta?
 			return
 
-
-		return this.meta['og:description'] or this.meta['description']
+		return this.meta['ogDescription'] or this.meta['description']
