@@ -16,3 +16,6 @@ Meteor.startup ->
 			delete record._id
 
 			ChatMessageHistory.update { _id: _id }, { $set: record }
+
+		removed: (record) ->
+			ChatMessageHistory.remove {_id: record._id}
