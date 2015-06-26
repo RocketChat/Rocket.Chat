@@ -3,8 +3,8 @@ CoffeeScript.register()
 
 Hubot = Npm.require('hubot')
 
-fs = require('fs')
-path = require('path')
+fs = Npm.require('fs')
+path = Npm.require('path')
 
 # Start a hubot, connected to our chat room.
 'use strict'
