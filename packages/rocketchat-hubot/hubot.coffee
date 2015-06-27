@@ -3,14 +3,16 @@ CoffeeScript.register()
 
 Hubot = Npm.require('hubot')
 
-fs = require('fs')
-path = require('path')
+fs = Npm.require('fs')
+path = Npm.require('path')
 
 # Start a hubot, connected to our chat room.
 'use strict'
 
 # Log messages?
 DEBUG = true
+
+rocketUser = Meteor.users.findOne({username: 'rocketbot'})
 
 # Monkey-patch Hubot to support private messages
 Hubot.Response::priv = (strings...) ->
@@ -51,14 +53,15 @@ class RocketChatAdapter extends Hubot.Adapter
 	#
 	# Returns nothing.
 	send: (envelope, strings...) ->
+		console.log envelope, strings
 		sendHelper @robot, envelope, strings, (string) =>
-			console.log "send #{envelope.rid}: #{string} (#{envelope.u.username})" if DEBUG
+			console.log "send #{envelope.user.rid}: #{string} (#{envelope.user.id})" if DEBUG
 			return @priv envelope, string if envelope.message.private
-			Meteor.call "sendMessage",
+			RocketChat.sendMessage rocketUser._id,
 				u:
 					username: "rocketbot"
 				msg: string
-				rid: envelope.rid
+				rid: envelope.user.rid
 
 	# Public: Raw method for sending emote data back to the chat source.
 	#
@@ -80,13 +83,13 @@ class RocketChatAdapter extends Hubot.Adapter
 	# Priv: our extension -- send a PM to user
 	priv: (envelope, strings...) ->
 		sendHelper @robot, envelope, strings, (string) ->
-			console.log "priv #{envelope.rid}: #{string} (#{envelope.u.username})" if DEBUG
+			console.log "priv #{envelope.user.rid}: #{string} (#{envelope.user.id})" if DEBUG
 			Meteor.call "sendMessage",
 				u:
 					username: "rocketbot"
-				to: "#{envelope.u.username}"
+				to: "#{envelope.user.id}"
 				msg: string
-				rid: envelope.rid
+				rid: envelope.user.rid
 
 	# Public: Raw method for building a reply and sending it back to the chat
 	# source. Extend this.
@@ -121,6 +124,7 @@ class RocketChatAdapter extends Hubot.Adapter
 	#
 	# Returns nothing.
 	run: ->
+		console.log 'run'
 
 	# Public: Raw method for shutting the bot down. Extend this.
 	#
@@ -129,11 +133,18 @@ class RocketChatAdapter extends Hubot.Adapter
 
 class RocketBotReceiver
 	constructor: (message) ->
+		if message.u.username is 'rocketbot'
+			return message
+
 		RocketBotUser = new Hubot.User(message.u.username, rid: message.rid)
 		RocketBotTextMessage = new Hubot.TextMessage(RocketBotUser, message.msg, message._id)
+
+		console.log {rid: message.rid, username:message.u.username}
+		# RocketChat.addUserToRoom rocketUser._id, {rid: message.rid, username:message.u.username}
+
 		RocketBot.adapter.receive RocketBotTextMessage
-		console.log 'message: ', message if DEBUG
-		console.log 'RocketBot: ', RocketBot if DEBUG
+		# console.log 'message: ', message if DEBUG
+		# console.log 'RocketBot: ', RocketBot if DEBUG
 		return message
 
 class HubotScripts
@@ -186,7 +197,10 @@ sendHelper = Meteor.bindEnvironment (robot, envelope, strings, map) ->
 RocketBot = new Robot null, null, false, 'rocketbot'
 RocketBot.alias = 'bot'
 RocketBot.adapter = new RocketChatAdapter RocketBot
-HubotScripts(RocketBot)
+# HubotScripts(RocketBot)
+
+RocketBot.hear /test/i, (res) ->
+	res.send "Test? TESTING? WE DON'T NEED NO TEST, EVERYTHING WORKS!"
 
 RocketChat.callbacks.add 'afterSaveMessage', RocketBotReceiver, RocketChat.callbacks.priority.LOW
 
