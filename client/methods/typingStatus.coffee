@@ -11,8 +11,6 @@ Meteor.methods
 		if start
 
 			msgData =
-				'$set':
-					expireAt: moment().add(30, 'seconds').toDate()
 				'$setOnInsert':
 					msg: '...'
 					'u._id': Meteor.userId()
