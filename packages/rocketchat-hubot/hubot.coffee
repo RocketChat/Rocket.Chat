@@ -151,8 +151,6 @@ class HubotScripts
 	constructor: (robot) ->
 		hello = Npm.require 'hubot-scripts/src/scripts/hello.coffee'
 		hello robot
-
-		console.log Npm.require 'hubot-scripts/src/scripts'
 		# # load all scripts in scripts/
 		# console.log path.resolve '.'
 		# scriptPath = path.resolve __dirname, 'scripts'
