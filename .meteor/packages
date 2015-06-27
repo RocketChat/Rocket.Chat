@@ -13,7 +13,6 @@ email
 http
 jquery
 less
-markdown
 meteor-platform
 reactive-var
 service-configuration
@@ -42,7 +41,7 @@ rocketchat:autolinker
 rocketchat:emojione
 rocketchat:file
 rocketchat:highlight
-#rocketchat:hubot
+rocketchat:hubot
 #rocketchat:irc
 rocketchat:ldap
 rocketchat:lib
@@ -58,3 +57,5 @@ todda00:friendly-slugs
 underscorestring:underscore.string
 yasaricli:slugify
 konecty:nrr
+konecty:change-case
+kevohagan:sweetalert

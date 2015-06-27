@@ -17,6 +17,7 @@ Package.onUse(function(api) {
 	api.addFiles('lib/underscore.string.coffee', ['server', 'client']);
 	api.addFiles('lib/core.coffee', ['server', 'client']);
 	api.addFiles('lib/callbacks.coffee', ['server', 'client']);
+	api.addFiles('server/sendMessage.coffee', ['server']);
 
 	api.export(['RocketChat'], ['server', 'client']);
 });

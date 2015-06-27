@@ -54,13 +54,11 @@ Template.message.onViewRendered = (context) ->
 		wrapper = ul.parentElement
 
 		if context.urls?.length > 0
-			for url in context.urls
-				do (url) ->
-					Meteor.call 'iframely.oembed', url, (error, data) ->
-						height = lastNode.clientHeight
-
-						urlNode = lastNode.querySelector('.body a[href="'+url+'"]')
-						urlNode?.innerHTML = Blaze.toHTMLWithData Template.iframelyBaseWidget, data
+			for item in context.urls
+				do (item) ->
+					urlNode = lastNode.querySelector('.body a[href="'+item.url+'"]')
+					if urlNode?
+						$(urlNode).replaceWith Blaze.toHTMLWithData Template.oembedBaseWidget, item
 
 		if not lastNode.nextElementSibling?
 			if lastNode.classList.contains('own') is true
