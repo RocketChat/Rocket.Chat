@@ -441,6 +441,23 @@ Template.room.events
 		Session.set('flexOpened', true)
 		Session.set('showUserInfo', $(e.currentTarget).data('username'))
 
+	'click .delete-message': (event) ->
+		msg = event.currentTarget.parentNode.parentNode
+		return if msg.classList.contains("system")
+		swal {
+			title: t('Are_you_sure')
+			text: t('You_will_not_be_able_to_recover')
+			type: 'warning'
+			showCancelButton: true
+			confirmButtonColor: '#DD6B55'
+			confirmButtonText: t('Yes_delete_it')
+			cancelButtonText: t('Cancel')
+			closeOnConfirm: false
+			html: false
+		}, ->
+			swal t('Deleted'), t('Your_entry_has_been_deleted'), 'success'
+			ChatMessages.deleteMsg(msg)
+
 Template.room.onCreated ->
 	console.log 'room.onCreated' if window.rocketDebug
 	# this.scrollOnBottom = true
