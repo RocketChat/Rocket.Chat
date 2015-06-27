@@ -12,8 +12,6 @@ path = Npm.require('path')
 # Log messages?
 DEBUG = true
 
-rocketUser = Meteor.users.findOne({username: 'rocketbot'})
-
 # Monkey-patch Hubot to support private messages
 Hubot.Response::priv = (strings...) ->
 	@robot.adapter.priv @envelope, strings...
@@ -36,6 +34,7 @@ class Robot extends Hubot.Robot
 		@topic = bind @topic
 		@error = bind @error
 		@catchAll = bind @catchAll
+		@user = Meteor.users.findOne {username: @name}, fields: username: 1
 	loadAdapter: -> false
 	hear:    (regex, callback) -> super regex, Meteor.bindEnvironment callback
 	respond: (regex, callback) -> super regex, Meteor.bindEnvironment callback
@@ -55,13 +54,8 @@ class RocketChatAdapter extends Hubot.Adapter
 	send: (envelope, strings...) ->
 		console.log envelope, strings
 		sendHelper @robot, envelope, strings, (string) =>
-			console.log "send #{envelope.user.rid}: #{string} (#{envelope.user.id})" if DEBUG
-			return @priv envelope, string if envelope.message.private
-			RocketChat.sendMessage rocketUser._id,
-				u:
-					username: "rocketbot"
-				msg: string
-				rid: envelope.user.rid
+			console.log "send #{envelope.room}: #{string} (#{envelope.user.id})" if DEBUG
+			RocketChat.sendMessage RocketBot.user, { msg: string }, { _id: envelope.room }
 
 	# Public: Raw method for sending emote data back to the chat source.
 	#
@@ -74,8 +68,6 @@ class RocketChatAdapter extends Hubot.Adapter
 			console.log "emote #{envelope.rid}: #{string} (#{envelope.u.username})" if DEBUG
 			return @priv envelope, "*** #{string} ***" if envelope.message.private
 			Meteor.call "sendMessage",
-				u:
-					username: "rocketbot"
 				msg: string
 				rid: envelope.rid
 				action: true
@@ -83,13 +75,13 @@ class RocketChatAdapter extends Hubot.Adapter
 	# Priv: our extension -- send a PM to user
 	priv: (envelope, strings...) ->
 		sendHelper @robot, envelope, strings, (string) ->
-			console.log "priv #{envelope.user.rid}: #{string} (#{envelope.user.id})" if DEBUG
+			console.log "priv #{envelope.room}: #{string} (#{envelope.user.id})" if DEBUG
 			Meteor.call "sendMessage",
 				u:
 					username: "rocketbot"
 				to: "#{envelope.user.id}"
 				msg: string
-				rid: envelope.user.rid
+				rid: envelope.room
 
 	# Public: Raw method for building a reply and sending it back to the chat
 	# source. Extend this.
@@ -133,24 +125,16 @@ class RocketChatAdapter extends Hubot.Adapter
 
 class RocketBotReceiver
 	constructor: (message) ->
-		if message.u.username is 'rocketbot'
-			return message
-
-		RocketBotUser = new Hubot.User(message.u.username, rid: message.rid)
-		RocketBotTextMessage = new Hubot.TextMessage(RocketBotUser, message.msg, message._id)
-
-		console.log {rid: message.rid, username:message.u.username}
-		# RocketChat.addUserToRoom rocketUser._id, {rid: message.rid, username:message.u.username}
-
-		RocketBot.adapter.receive RocketBotTextMessage
-		# console.log 'message: ', message if DEBUG
-		# console.log 'RocketBot: ', RocketBot if DEBUG
+		if message.u.username isnt RocketBot.name
+			RocketBotUser = new Hubot.User(message.u.username, room: message.rid)
+			RocketBotTextMessage = new Hubot.TextMessage(RocketBotUser, message.msg, message._id)
+			RocketBot.adapter.receive RocketBotTextMessage
 		return message
 
 class HubotScripts
 	constructor: (robot) ->
-		hello = Npm.require 'hubot-scripts/src/scripts/hello.coffee'
-		hello robot
+		Npm.require('hubot-scripts/src/scripts/hello.coffee')(robot)
+
 		# # load all scripts in scripts/
 		# console.log path.resolve '.'
 		# scriptPath = path.resolve __dirname, 'scripts'

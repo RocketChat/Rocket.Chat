@@ -1,28 +1,49 @@
-RocketChat.sendMessage = (userId, message) ->
-	room = Meteor.call 'canAccessRoom', message.rid, userId
+RocketChat.sendMessage = (user, message, room) ->
 
-	if not room
+	if not user or not message or not room._id
 		return false
 
-	console.log '[methods] sendMessage -> '.green, 'userId:', userId, 'arguments:', arguments
+	console.log '[functions] RocketChat.sendMessage -> '.green, 'arguments:', arguments
 
 	message.ts = new Date()
 
-	message.u = Meteor.users.findOne userId, fields: username: 1
+	message.u = _.pick user, ['_id','username']
+
+	message.rid = room._id
 
 	if urls = message.msg.match /([A-Za-z]{3,9}):\/\/([-;:&=\+\$,\w]+@{1})?([-A-Za-z0-9\.]+)+:?(\d+)?((\/[-\+=!:~%\/\.@\,\w]+)?\??([-\+=&!:;%@\/\.\,\w]+)?#?([\w]+)?)?/g
 		message.urls = urls.map (url) -> url: url
 
 	message = RocketChat.callbacks.run 'beforeSaveMessage', message
 
+	message._id = ChatMessage.insert message
+
 	###
-	Defer other updated as their return is not interesting to the user
+	Defer other updates as their return is not interesting to the user
+	###
+
+	###
+	Execute all callbacks
 	###
 	Meteor.defer ->
 
-		###
-		Update all the room activity tracker fields
-		###
+		RocketChat.callbacks.run 'afterSaveMessage', message
+
+	###
+	Remove the typing record
+	###
+	Meteor.defer ->
+
+		ChatMessage.remove
+			rid: message.rid
+			t: 't'
+			'u._id': message.u._id
+
+	###
+	Update all the room activity tracker fields
+	###
+	Meteor.defer ->
+
 		ChatRoom.update
 			# only subscriptions to the same room
 			rid: message.rid
@@ -34,15 +55,20 @@ RocketChat.sendMessage = (userId, message) ->
 			$inc:
 				msgs: 1
 
+	###
+	Increment unread couter if direct messages
+	###
+	Meteor.defer ->
 
-		# increment unread couter if direct messages
-		if room.t is 'd'
+		if not room.t? or room.t is 'd'
 			###
 			Update the other subscriptions
 			###
 			ChatSubscription.update
 				# only subscriptions to the same room
 				rid: message.rid
+				# only direct messages subscriptions
+				t: 'd'
 				# not the msg owner
 				'u._id':
 					$ne: message.u._id
@@ -100,25 +126,4 @@ RocketChat.sendMessage = (userId, message) ->
 			# make sure we alert all matching subscription
 			multi: true
 
-	###
-	Save the message. If there was already a typing record, update it.
-	###
-	message._id = ChatMessage.insert message
-
-	Meteor.defer ->
-		ChatMessage.remove
-			rid: message.rid
-			t: 't'
-			'u._id': message.u._id
-
-	Meteor.defer ->
-		RocketChat.callbacks.run 'afterSaveMessage', message
-
-
-
-Meteor.methods
-	sendMessage: (message) ->
-		if not Meteor.userId()
-			throw new Meteor.Error('invalid-user', "[methods] sendMessage -> Invalid user")
-
-		RocketChat.sendMessage Meteor.userId(), message
+	return message
