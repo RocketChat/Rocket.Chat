@@ -64,9 +64,12 @@ Router.route '/home',
 	onAfterAction: ->
 		KonchatNotification.getDesktopPermission()
 
-Router.route '/settings',
+Router.route '/settings/:page?',
 	name: 'settings'
-
+	data: ->
+		return {
+			page: @params.page
+		}
 	action: ->
 		this.render('settings')
 
