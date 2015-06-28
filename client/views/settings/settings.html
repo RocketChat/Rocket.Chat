@@ -1,0 +1,45 @@
+<template name="settings">
+	<section class="page-container page-home page-static">
+		<head class="fixed-title">
+			<div>
+				<div class="burger">
+					<i></i>
+					<i></i>
+					<i></i>
+				</div>
+				<h2>
+					<span class="room-title">{{_ "App_Settings"}}</span>
+				</h2>
+			</div>
+		</head>
+		<div class="content">
+			{{> UI.dynamic template=settingsTemplate}}
+		</div>
+	</section>
+	<section class="flex-tab">
+		<div class="control">
+			{{!-- <button class="more"><span class="arrow {{arrowPosition}}"></span></button> --}}
+			<div class="search-form">
+				<div class="input-line search">
+					<input type="text" class="search" placeholder=tSearchSettings />
+					<i class="icon-plus"></i>
+				</div>
+			</div>
+		</div>
+		{{!-- {{#if flexOpened}} --}}
+		<div class="content">
+			<ul class='list cf_ lines'>
+				<li>
+					<a href="{{pathFor 'settings' page='authentication'}}">{{_ "Authentication_Methods"}}</a>
+				</li>
+				<li>
+					<a href="{{pathFor 'settings' page='messages'}}">{{_ "Message_Editing_Deleting"}}</a>
+				</li>
+				<li>
+					<a href="{{pathFor 'settings' page='registration'}}">{{_ "Registration"}}</a>
+				</li>
+			</ul>
+		</div>
+		{{!-- {{/if}} --}}
+	</section>
+</template>
