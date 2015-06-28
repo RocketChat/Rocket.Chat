@@ -84,7 +84,6 @@ RocketChat.sendMessage = (user, message, room) ->
 
 		else
 			message.mentions?.forEach (mention) ->
-				console.log mention
 				###
 				Update all other subscriptions of mentioned users to alert their owners and incrementing
 				the unread counter for mentions and direct messages
