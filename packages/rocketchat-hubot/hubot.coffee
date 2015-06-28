@@ -7,7 +7,7 @@ fs = Npm.require('fs')
 path = Npm.require('path')
 
 # Start a hubot, connected to our chat room.
-'use strict'
+# 'use strict'
 
 # Log messages?
 DEBUG = true
@@ -52,7 +52,8 @@ class RocketChatAdapter extends Hubot.Adapter
 	#
 	# Returns nothing.
 	send: (envelope, strings...) ->
-		console.log envelope, strings
+		console.log 'ROCKETCHATADAPTER -> send'.blue
+		# console.log envelope, strings
 		sendHelper @robot, envelope, strings, (string) =>
 			console.log "send #{envelope.room}: #{string} (#{envelope.user.id})" if DEBUG
 			RocketChat.sendMessage RocketBot.user, { msg: string }, { _id: envelope.room }
@@ -64,6 +65,7 @@ class RocketChatAdapter extends Hubot.Adapter
 	#
 	# Returns nothing.
 	emote: (envelope, strings...) ->
+		console.log 'ROCKETCHATADAPTER -> emote'.blue
 		sendHelper @robot, envelope, strings, (string) =>
 			console.log "emote #{envelope.rid}: #{string} (#{envelope.u.username})" if DEBUG
 			return @priv envelope, "*** #{string} ***" if envelope.message.private
@@ -74,6 +76,7 @@ class RocketChatAdapter extends Hubot.Adapter
 
 	# Priv: our extension -- send a PM to user
 	priv: (envelope, strings...) ->
+		console.log 'ROCKETCHATADAPTER -> priv'.blue
 		sendHelper @robot, envelope, strings, (string) ->
 			console.log "priv #{envelope.room}: #{string} (#{envelope.user.id})" if DEBUG
 			Meteor.call "sendMessage",
@@ -91,10 +94,11 @@ class RocketChatAdapter extends Hubot.Adapter
 	#
 	# Returns nothing.
 	reply: (envelope, strings...) ->
+		console.log 'ROCKETCHATADAPTER -> reply'.blue
 		if envelope.message.private
 			@priv envelope, strings...
 		else
-			@send envelope, strings.map((str) -> "#{envelope.u.username}: #{str}")...
+			@send envelope, strings.map((str) -> "#{envelope.user.name}: #{str}")...
 
 	# Public: Raw method for setting a topic on the chat source. Extend this.
 	#
@@ -103,6 +107,7 @@ class RocketChatAdapter extends Hubot.Adapter
 	#
 	# Returns nothing.
 	topic: (envelope, strings...) ->
+		console.log 'ROCKETCHATADAPTER -> topic'.blue
 
 	# Public: Raw method for playing a sound in the chat source. Extend this.
 	#
@@ -111,20 +116,26 @@ class RocketChatAdapter extends Hubot.Adapter
 	#
 	# Returns nothing
 	play: (envelope, strings...) ->
+		console.log 'ROCKETCHATADAPTER -> play'.blue
 
 	# Public: Raw method for invoking the bot to run. Extend this.
 	#
 	# Returns nothing.
 	run: ->
-		console.log 'run'
+		console.log 'ROCKETCHATADAPTER -> run'.blue
+		@robot.emit 'connected'
+		@robot.brain.mergeData {}
+		# @robot.brain.emit 'loaded'
 
 	# Public: Raw method for shutting the bot down. Extend this.
 	#
 	# Returns nothing.
 	close: ->
+		console.log 'ROCKETCHATADAPTER -> close'.blue
 
 class RocketBotReceiver
 	constructor: (message) ->
+		console.log message
 		if message.u.username isnt RocketBot.name
 			RocketBotUser = new Hubot.User(message.u.username, room: message.rid)
 			RocketBotTextMessage = new Hubot.TextMessage(RocketBotUser, message.msg, message._id)
@@ -133,7 +144,93 @@ class RocketBotReceiver
 
 class HubotScripts
 	constructor: (robot) ->
-		Npm.require('hubot-scripts/src/scripts/hello.coffee')(robot)
+		modulesToLoad = [
+			'hubot-youtube/src/youtube.coffee'
+			'hubot-maps/src/maps.coffee'
+			'hubot-google-translate/src/google-translate.coffee'
+			'hubot-google-images/src/google-images.coffee'
+			'hubot-calculator/src/calculator.coffee'
+			'hubot-help/src/help.coffee'
+		]
+
+		for modulePath in modulesToLoad
+			try
+				Npm.require(modulePath)(robot)
+				robot.parseHelp __meteor_bootstrap__.serverDir+'/npm/rocketchat_hubot/node_modules/'+modulePath
+				console.log "Loaded #{modulePath}".green
+			catch e
+				console.log "can't load #{modulePath}".red
+				console.log e
+
+		# scriptFiles = fs.readdirSync(__meteor_bootstrap__.serverDir+'/npm/rocketchat_hubot/node_modules/hubot-scripts/src/scripts')
+
+		scriptsToLoad = [
+			'alot.coffee'
+			'applause.coffee'
+			'bang-bang.coffee'
+			'base58.coffee'
+			'base64.coffee'
+			'beerme.coffee'
+			'botsnack.coffee'
+			'brewerydb.coffee'
+			'calm-down.coffee'
+			'carlton.coffee'
+			'chuck-norris.coffee'
+			'commandlinefu.coffee'
+			'commitmessage.coffee'
+			'dealwithit.coffee'
+			'decide.coffee'
+			'dice.coffee'
+			'do-it.coffee'
+			'dribbble.coffee'
+			'encourage.coffee'
+			'excuse.coffee'
+			'factoid.coffee'
+			'futurama.coffee'
+			'go-for-it.coffee'
+			'gob.coffee'
+			'google.coffee'
+			'gorbypuff.coffee'
+			'hangout.coffee'
+			'hashing.coffee'
+			'hello.coffee'
+			'homer.coffee'
+			'httpcat.coffee'
+			'karma.coffee'
+			'megusta.coffee'
+			'nice.coffee'
+			'play.coffee'
+			'plus_one.coffee'
+			'polite.coffee'
+			'reddit-jokes.coffee'
+			'reload.coffee'
+			'sealab.coffee'
+			'sheits.coffee'
+			'shipit.coffee'
+			'talklikewarrenellis.coffee'
+			'url.coffee'
+			'wits.coffee'
+			'wordnik.coffee'
+			'yoda-pictures.coffee'
+			'yoda-quotes.coffee'
+			'zen.coffee'
+			'zombies.coffee'
+		]
+
+		for scriptFile in scriptsToLoad
+			try
+				Npm.require('hubot-scripts/src/scripts/'+scriptFile)(robot)
+				# robot.loadFile __meteor_bootstrap__.serverDir+'/npm/rocketchat_hubot/node_modules/hubot-scripts/src/scripts', scriptFile
+				robot.parseHelp __meteor_bootstrap__.serverDir+'/npm/rocketchat_hubot/node_modules/hubot-scripts/src/scripts/'+scriptFile
+				console.log "Loaded #{scriptFile}".green
+			catch e
+				console.log "can't load #{scriptFile}".red
+				console.log e
+
+		# console.log __meteor_bootstrap__.serverDir
+
+		# npm/rocketchat_hubot/node_modules
+		# packages/rocketchat_hubot.js
 
 		# # load all scripts in scripts/
 		# console.log path.resolve '.'
@@ -186,6 +283,7 @@ RocketBot = new Robot null, null, false, 'rocketbot'
 RocketBot.alias = 'bot'
 RocketBot.adapter = new RocketChatAdapter RocketBot
 HubotScripts(RocketBot)
+RocketBot.run()
 
 RocketBot.hear /test/i, (res) ->
 	res.send "Test? TESTING? WE DON'T NEED NO TEST, EVERYTHING WORKS!"
