@@ -4,7 +4,7 @@
   "repository": "https://github.com/RocketChat/Rocket.Chat",
   "logo": "https://raw.githubusercontent.com/RocketChat/Rocket.Chat/master/public/images/logo/512x512.png",
   "keywords": ["meteor", "social", "community", "chat"],
-  "website": "http://rocket.chat",
+  "website": "https://rocket.chat",
   "env": {
     "BUILDPACK_URL": "https://github.com/RocketChat/heroku-buildpack-meteor.git",
     "ROOT_URL": {

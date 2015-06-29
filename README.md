@@ -1,10 +1,10 @@
-![Rocket.Chat logo](http://rocket.chat/images/logo/logo-dark.svg?v2)
+![Rocket.Chat logo](https://rocket.chat/images/logo/logo-dark.svg?v2)
 
 The Complete Open Source Chat Solution
 
 ## Demo
 
-Checkout the latest version at [http://rocket.chat](http://rocket.chat)
+Checkout the latest version at [https://rocket.chat](https://rocket.chat)
 
 [![Donate](https://www.paypalobjects.com/en_US/i/btn/btn_donateCC_LG.gif)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=49QX7TYCVZK8L)
 
