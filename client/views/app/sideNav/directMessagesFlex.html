@@ -9,7 +9,7 @@
 			<h4>{{_ "Create_new_direct_message_room"}}</h4>
 			<div class="input-line">
 				<label for="who">{{_ "With_whom" }}</label>
-				{{> inputAutocomplete settings=autocompleteSettings id="who" class="search" autocomplete="off"}}
+				{{> inputAutocomplete settings=autocompleteSettings id="who" class="required search" autocomplete="off"}}
 			</div>
 			{{#if error}}
 				<div class="input-error">
