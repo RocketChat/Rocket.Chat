@@ -30,9 +30,11 @@ Template.directMessagesFlex.events
 
 	'click .cancel-direct-message': (e, instance) ->
 		SideNav.closeFlex()
+		instance.clearForm()
 
 	'click header': (e, instance) ->
 		SideNav.closeFlex()
+		instance.clearForm()
 
 	'mouseenter header': ->
 		SideNav.overArrow()
