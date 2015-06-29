@@ -94,7 +94,7 @@ Template.room.helpers
 		return '' unless roomData
 
 		if roomData.t is 'd'
-			return ChatSubscription.findOne({ rid: this._id }, { fields: { name: 1 } }).name
+			return ChatSubscription.findOne({ rid: this._id }, { fields: { name: 1 } })?.name
 		else
 			return roomData.name
 
