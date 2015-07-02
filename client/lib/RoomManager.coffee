@@ -26,6 +26,7 @@
 			record.sub = [
 				Meteor.subscribe 'room', rid
 				Meteor.subscribe 'messages', rid
+				Meteor.subscribe 'typing', rid
 			]
 
 			record.ready = record.sub[0].ready() and record.sub[1].ready()

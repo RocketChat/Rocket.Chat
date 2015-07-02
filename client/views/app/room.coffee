@@ -58,35 +58,64 @@ Template.room.helpers
 
 	usersTyping: ->
 		console.log 'room.helpers usersTyping' if window.rocketDebug
-		messages = ChatMessage.find { rid: this._id, t: 't' }, { sort: { ts: 1 } }
-		usernames = []
-		selfTyping = false
-		messages.forEach (message) ->
-			if message.u._id is Meteor.userId()
-				selfTyping = true
-			else
-				username = message.u.username
-				if username?
-					usernames.push username
-
-		if usernames.length is 0
+		messages = ChatTyping.find({ rid: this._id, 'u._id': { $ne: Meteor.userId() } }).fetch()
+		if messages.length is 0
 			return
-
-		if usernames.length is 1
+		if messages.length is 1
 			return {
 				multi: false
-				selfTyping: selfTyping
-				users: usernames[0]
+				selfTyping: ChatMessages.selfTyping.get()
+				users: messages[0].u.username
 			}
 
+		usernames = _.map messages, (message) -> return message.u.username
+		
 		last = usernames.pop()
+		if messages.length > 4
+			last = t('others')
+		else
 		usernames = usernames.join(', ')
 		usernames = [usernames, last]
 		return {
 			multi: true
-			selfTyping: selfTyping
+			selfTyping: ChatMessages.selfTyping.get()
 			users: usernames.join " #{t 'and'} "
 		}
+
+
+		# usernames = []
+		# selfTyping = false
+		# total = 0
+		# messages.forEach (message) ->
+		# 	total++
+		# 	if message.u._id is Meteor.userId()
+		# 		selfTyping = true
+		# 	else
+		# 		username = message.u.username
+		# 		if username?
+		# 			usernames.push username
+
+		# if usernames.length is 0
+		# 	return
+
+		# if usernames.length is 1
+		# 	return {
+		# 		multi: false
+		# 		selfTyping: selfTyping
+		# 		users: usernames[0]
+		# 	}
+
+		# last = usernames.pop()
+		# if total > 4
+		# 	last = t('others')
+			
+		# usernames = usernames.join(', ')
+		# usernames = [usernames, last]
+		# return {
+		# 	multi: true
+		# 	selfTyping: selfTyping
+		# 	users: usernames.join " #{t 'and'} "
+		# }
 
 	roomName: ->
 		console.log 'room.helpers roomName' if window.rocketDebug
