@@ -3,6 +3,7 @@
 	wrapper = {}
 	input = {}
 	editing = {}
+	selfTyping = new ReactiveVar false
 
 	init = ->
 		wrapper = $(".messages-container").find(".wrapper")
@@ -108,12 +109,14 @@
 		if _.trim(input.value) isnt ''
 			unless self.typingTimeout
 				if Meteor.userId()?
+					selfTyping.set true
 					Meteor.call 'typingStatus', rid, true
 				self.typingTimeout = Meteor.setTimeout ->
 					stopTyping()
 				, 30000
 
 	stopTyping = ->
+		selfTyping.set false
 		self.typingTimeout = null
 
 	bindEvents = ->
@@ -181,4 +184,5 @@
 	send: send
 	init: init
 	edit: edit
+	selfTyping: selfTyping
 )()

@@ -34,9 +34,8 @@ RocketChat.sendMessage = (user, message, room) ->
 	###
 	Meteor.defer ->
 
-		ChatMessage.remove
+		ChatTyping.remove
 			rid: message.rid
-			t: 't'
 			'u._id': message.u._id
 
 	###

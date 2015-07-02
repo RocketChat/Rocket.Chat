@@ -13,3 +13,7 @@ Meteor.startup ->
 		try ChatMessage._ensureIndex { 'rid': 1, 'ts': 1 } catch e then console.log e
 		try ChatMessage._ensureIndex { 'rid': 1, 't': 1, 'u._id': 1 } catch e then console.log e
 		try ChatMessage._ensureIndex { 'expireAt': 1 }, { expireAfterSeconds: 0 } catch e then console.log e
+
+		try ChatTyping._ensureIndex { 'rid': 1 } catch e then console.log e
+		try ChatTyping._ensureIndex { 'rid': 1, 'u._id': 1 } catch e then console.log e
+		try ChatTyping._ensureIndex { 'expireAt': 1 }, { expireAfterSeconds: 0 } catch e then console.log e
