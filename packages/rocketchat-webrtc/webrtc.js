@@ -14,6 +14,9 @@ webrtc = {
 		data.to = webrtc.to;
 		stream.emit('send', data);
 	},
+	stop: function() {
+		webrtc.pc.close();
+	},
 	onRemoteUrl: function() {},
 	onSelfUrl: function() {}
 }
