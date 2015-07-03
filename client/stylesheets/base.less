@@ -865,13 +865,10 @@ a.github-fork {
 			position: relative;
 			padding: 0 25px 0 10px;
 			height: 100%;
-			display: table;
+			display: flex;
+			flex-flow: row nowrap;
+			align-items: center;
 			.calc(width, ~"100% - 60px");
-		}
-		.wrp {
-			display: table-cell;
-			vertical-align: middle;
-			text-align: left;
 		}
 		h4 {
 			display: block;
@@ -884,6 +881,7 @@ a.github-fork {
 			text-overflow: ellipsis;
 			position: relative;
 			width: 130px;
+			text-align: left;
 			.transition(color .15s ease-out);
 		}
 		&.status-offline {
@@ -1498,7 +1496,9 @@ a.github-fork {
 
 .fixed-title {
 	position: absolute;
-	display: table;
+	display: flex;
+	flex-flow: row nowrap;
+	align-items: center;
 	padding: 0 10px 0 20px;
 	background: #fff;
 	border-bottom: 1px solid @tertiary-background-color;
@@ -1511,10 +1511,6 @@ a.github-fork {
 		h2 {
 			overflow: visible;
 		}
-	}
-	> div {
-		display: table-cell;
-		vertical-align: middle;
 	}
 	h2 {
 		max-width: 90%;
@@ -1554,7 +1550,6 @@ a.github-fork {
 
 // MAIN CONTENT + MAIN PAGES //
 .main-content {
-	display: table;
 	position: relative;
 	margin-left: @rooms-box-width;
 	margin-top: 0;
@@ -2207,7 +2202,8 @@ a.github-fork {
 .list-view {
 	padding: 5px 30px 20px;
 	.list {
-		display: table;
+		display: flex;
+		flex-flow: column nowrap;
 		position: relative;
 		width: 100%;
 		height: 100%;
@@ -2815,15 +2811,15 @@ a.github-fork {
 
 .landing-page {
 	text-align: center;
-	display: table;
+	display: flex;
+	margin: auto;
+	flex-flow: column nowrap;
 	width: 100%;
 	min-height: 100%;
 	z-index: 101;
 	background-color: darken(@primary-background-color, 10%);
 	.background-image(linear-gradient(darken(@primary-background-color, 10%), @primary-background-color));
 	.wrapper {
-		display: table-cell;
-		vertical-align: middle;
 		text-align: center;
 		padding: 45px 0 35px;
 		z-index: 10;
@@ -2975,26 +2971,38 @@ a.github-fork {
 	position: fixed;
 }
 
+.avatar-suggestions {
+	display: flex;
+	flex-flow: column nowrap;
+}
+
 .avatar-suggestion-item {
-	margin: 10px 0px;
+	margin: 5px 0px;
 	text-align: left;
-	display: table;
+	display: flex;
+	flex-flow: row nowrap;
+	align-items: center;
 	width: 100%;
 	padding: 12px;
 	background-color: @secondary-background-color;
 	border: 1px solid darken(@secondary-background-color, 10%);
 	.transition(background-color .15s ease-out, border-color .15s ease-out);
+	&:first-child {
+		margin-top: 10px;
+	}
 	.avatar {
 		height: 55px;
+		max-height: 55px;
+		min-height: 55px;
 		width: 55px;
+		max-width: 55px;
+		min-width: 55px;
 		background-size: cover;
-		display: inline-table;
 		border: 1px solid darken(@tertiary-background-color, 10%);
 		font-size: 40px;
 		text-align: center;
 		background-color: @tertiary-background-color;
 		position: relative;
-		vertical-align: middle;
 	}
 	.question-mark {
 		&::before {
@@ -3010,8 +3018,6 @@ a.github-fork {
 	}
 	.action {
 		text-align: right;
-		display: inline-table;
-		vertical-align: middle;
 		padding-left: 20px;
 	}
 	button {
