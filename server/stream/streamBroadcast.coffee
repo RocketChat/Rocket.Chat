@@ -30,7 +30,7 @@
 			emitters[streamName] = stream.emit
 			stream.emit = (eventName, args...) ->
 				broadcast streamName, eventName, args
-				emitters[streamName].call {}, arguments
+				emitters[streamName].apply {}, arguments
 
 	Meteor.methods
 		stream: (streamName, eventName, args) ->
