@@ -458,6 +458,9 @@ Template.room.events
 			swal t('Deleted'), t('Your_entry_has_been_deleted'), 'success'
 			ChatMessages.deleteMsg(msg)
 
+	'click .start-video': (event) ->
+		webrtc.start(true)
+
 Template.room.onCreated ->
 	console.log 'room.onCreated' if window.rocketDebug
 	# this.scrollOnBottom = true
@@ -494,6 +497,11 @@ Template.room.onRendered ->
 	console.log 'room.rendered' if window.rocketDebug
 	# salva a data da renderização para exibir alertas de novas mensagens
 	$.data(this.firstNode, 'renderedAt', new Date)
+
+	webrtc.to = this.data._id.replace(Meteor.userId(), '')
+	webrtc.onRemoteUrl = (url) ->
+		$('video')[0].src = url
+		$('video').css('display', 'block')
 
 renameRoom = (rid, name) ->
 	console.log 'room renameRoom' if window.rocketDebug
