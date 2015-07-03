@@ -500,12 +500,22 @@ Template.room.onRendered ->
 
 	webrtc.to = this.data._id.replace(Meteor.userId(), '')
 	webrtc.onRemoteUrl = (url) ->
-		$('video.video-remote')[0].src = url
-		$('video.video-remote').css('display', 'block')
+		Session.set('flexOpened', true)
+		Meteor.defer ->
+			$('video.video-remote')[0].src = url
+			if url
+				$('video.video-remote').css('display', 'block')
+			else
+				$('video.video-remote').css('display', 'none')
 
 	webrtc.onSelfUrl = (url) ->
-		$('video.video-self')[0].src = url
-		$('video.video-self').css('display', 'block')
+		Session.set('flexOpened', true)
+		Meteor.defer ->
+			$('video.video-self')[0].src = url
+			if url
+				$('video.video-self').css('display', 'block')
+			else
+				$('video.video-self').css('display', 'none')
 
 renameRoom = (rid, name) ->
 	console.log 'room renameRoom' if window.rocketDebug
