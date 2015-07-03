@@ -165,6 +165,7 @@
 						<div class="user-view">
 							{{#with userData}}
 								<div class="about cf_">
+									<video style="width: 100%; display: none;" autoplay mute></video>
 									<div class="thumb">
 										{{> avatar username=username}}
 									</div>
@@ -183,6 +184,9 @@
 										--}}
 									</div>
 								</div>
+								<nav>
+									<button class='button start-video'><span><i class='icon-videocam'></i> {{_ "Video"}}</span></button>
+								</nav>
 							{{/with}}
 						</div>
 					{{/if}}
