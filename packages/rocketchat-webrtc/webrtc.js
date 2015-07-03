@@ -34,6 +34,20 @@ webrtc.start = function (isCaller) {
 		webrtc.onRemoteUrl(URL.createObjectURL(evt.stream));
 	};
 
+	webrtc.pc.oniceconnectionstatechange = function(evt) {
+		console.log('oniceconnectionstatechange', arguments)
+		if (evt.srcElement.iceConnectionState == 'disconnected') {
+			webrtc.pc.getLocalStreams().forEach(function(stream) {
+				stream.stop();
+				webrtc.onSelfUrl();
+			});
+			webrtc.pc.getRemoteStreams().forEach(function(stream) {
+				stream.stop();
+				webrtc.onRemoteUrl();
+			});
+		}
+	}
+
 	// get the local stream, show it in the local video element and send it
 	navigator.getUserMedia({ "audio": true, "video": true }, function (stream) {
 		webrtc.onSelfUrl(URL.createObjectURL(stream));
