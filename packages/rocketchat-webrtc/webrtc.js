@@ -38,8 +38,7 @@ webrtc.start = function (isCaller) {
 	};
 
 	webrtc.pc.oniceconnectionstatechange = function(evt) {
-		console.log('oniceconnectionstatechange', arguments)
-		if (evt.srcElement.iceConnectionState == 'disconnected') {
+		if (evt.srcElement.iceConnectionState == 'disconnected' || evt.srcElement.iceConnectionState == 'closed') {
 			webrtc.pc.getLocalStreams().forEach(function(stream) {
 				stream.stop();
 				webrtc.onSelfUrl();
@@ -48,6 +47,7 @@ webrtc.start = function (isCaller) {
 				stream.stop();
 				webrtc.onRemoteUrl();
 			});
+			webrtc.pc = undefined;
 		}
 	}
 
