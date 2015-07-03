@@ -14,8 +14,13 @@ webrtc = {
 		data.to = webrtc.to;
 		stream.emit('send', data);
 	},
-	stop: function() {
-		webrtc.pc.close();
+	stop: function(sendEvent) {
+		if (webrtc.pc) {
+			webrtc.pc.close();
+			if (sendEvent != false) {
+				stream.emit('send', {to: webrtc.to, close: true});
+			}
+		}
 	},
 	onRemoteUrl: function() {},
 	onSelfUrl: function() {}
@@ -71,6 +76,11 @@ webrtc.start = function (isCaller) {
 }
 
 stream.on(Meteor.userId(), function(data) {
+	if (data.close == true) {
+		webrtc.stop(false);
+		return
+	}
+
 	if (!webrtc.pc)
 		webrtc.start(false);
 
