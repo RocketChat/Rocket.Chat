@@ -19,7 +19,7 @@ Package.onUse(function(api) {
 	api.addFiles('webrtc.js', ['client']);
 	api.addFiles('server.js', ['server']);
 
-	api.export('webrtc', ['client'])
+	api.export('webrtc')
 });
 
 
