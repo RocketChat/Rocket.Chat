@@ -11,9 +11,17 @@ webrtc = {
 	onSelfUrl: function() {}
 }
 
+var config = {
+	"iceServers": [
+		{
+			"url": "stun:stun.l.google.com:19302"
+		}
+	]
+}
+
 // run start(true) to initiate a call
 webrtc.start = function (isCaller) {
-	webrtc.pc = new RTCPeerConnection();
+	webrtc.pc = new RTCPeerConnection(config);
 
 	// send any ice candidates to the other peer
 	webrtc.pc.onicecandidate = function (evt) {
