@@ -8,7 +8,7 @@
   "env": {
     "BUILDPACK_URL": "https://github.com/RocketChat/heroku-buildpack-meteor.git",
     "ROOT_URL": {
-      "description": "The full URL of your Rocket.Chat app.",
+      "description": "IMPORTANT! Please replace <App Name> with the value provided on the top. This will be the full URL of your Rocket.Chat app.",
       "value": "https://<App Name>.herokuapp.com"
     }
   },
