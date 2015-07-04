@@ -6,14 +6,14 @@
 
 	InstanceStatus.getCollection().find().observe
 		added: (record) ->
-			if record.extraInformation.port is process.env.PORT
+			if record.extraInformation.port is process.env.PORT or connections[record.extraInformation.port]?
 				return
 
 			console.log 'connecting in', "localhost:#{record.extraInformation.port}"
 			connections[record.extraInformation.port] = DDP.connect("localhost:#{record.extraInformation.port}", {_dontPrintErrors: true})
 
 		removed: (record) ->
-			if connections[record.extraInformation.port]?
+			if connections[record.extraInformation.port]? and not InstanceStatus.getCollection().findOne({'extraInformation.port': {$ne: record.extraInformation.port}})?
 				console.log 'disconnecting from', "localhost:#{record.extraInformation.port}"
 				connections[record.extraInformation.port].disconnect()
 				delete connections[record.extraInformation.port]
