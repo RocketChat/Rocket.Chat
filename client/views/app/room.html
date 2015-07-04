@@ -167,8 +167,8 @@
 								<div class="about cf_">
 									<div>
 										{{#if selfVideoUrl}}
-											<video class="video-remote" src="{{remoteVideoUrl}}" style="width: 100%; margin-bottom: 10px; background-color: #000;" autoplay></video>
-											<video class="video-self" src="{{selfVideoUrl}}" style="width: 100px; position: absolute; top: 21px; right: 21px; border: 1px solid #FFF; background-color: #000;" autoplay muted></video>
+											<video class="video-remote" src="{{remoteVideoUrl}}" style="width: 100%; margin-bottom: 10px; background-color: #000;" autoplay="true"></video>
+											<video class="video-self" src="{{selfVideoUrl}}" style="width: 100px; position: absolute; top: 21px; right: 21px; border: 1px solid #FFF; background-color: #000;" autoplay="true" muted="true" volume="0"></video>
 										{{/if}}
 									</div>
 									<div class="thumb">
