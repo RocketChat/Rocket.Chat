@@ -100,6 +100,9 @@ stream.on(Meteor.userId(), function(data) {
 	if (data.sdp) {
 		webrtc.pc.setRemoteDescription(new RTCSessionDescription(data.sdp));
 	} else {
-		webrtc.pc.addIceCandidate(new RTCIceCandidate(data.candidate));
+		if( ["closed", "failed", "disconnected", "completed"].indexOf(webrtc.pc.iceConnectionState) === -1)
+		  {
+			webrtc.pc.addIceCandidate(new RTCIceCandidate(data.candidate));
+		  }
 	}
 });
