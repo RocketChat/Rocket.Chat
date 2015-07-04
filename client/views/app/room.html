@@ -2,7 +2,7 @@
 	<section class="room-container" id="{{roomContainerId}}">
 		<section class="messages-container" id="{{windowId}}">
 
-			<head class="fixed-title">
+			<header class="fixed-title">
 				<div>
 					<div class="burger">
 						<i></i>
@@ -21,7 +21,7 @@
 					{{/if}}
 				</h2>
 				</div>
-			</head>
+			</header>
 			<div class="messages-box">
 				<div class="wrapper">
 					<ul>
@@ -165,6 +165,12 @@
 						<div class="user-view">
 							{{#with userData}}
 								<div class="about cf_">
+									<div>
+										{{#if selfVideoUrl}}
+											<video class="video-remote" src="{{remoteVideoUrl}}" style="width: 100%; margin-bottom: 10px; background-color: #000;" autoplay></video>
+											<video class="video-self" src="{{selfVideoUrl}}" style="width: 100px; position: absolute; top: 21px; right: 21px; border: 1px solid #FFF; background-color: #000;" autoplay muted></video>
+										{{/if}}
+									</div>
 									<div class="thumb">
 										{{> avatar username=username}}
 									</div>
@@ -183,6 +189,13 @@
 										--}}
 									</div>
 								</div>
+								<nav>
+									{{#unless selfVideoUrl}}
+										<button class='button start-video'><span><i class='icon-videocam'></i> {{_ "Video"}}</span></button>
+									{{else}}
+										<button class='button red stop-video'><span><i class='icon-videocam'></i> {{_ "StopVideo"}}</span></button>
+									{{/unless}}
+								</nav>
 							{{/with}}
 						</div>
 					{{/if}}
