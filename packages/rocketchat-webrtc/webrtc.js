@@ -88,6 +88,7 @@ webrtc.start = function (isCaller) {
 }
 
 stream.on(Meteor.userId(), function(data) {
+	console.log('stream.on', Meteor.userId(), data)
 	if (data.close == true) {
 		webrtc.stop(false);
 		return

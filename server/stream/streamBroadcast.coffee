@@ -21,6 +21,7 @@
 	broadcast = (streamName, eventName, args, userId) ->
 		for port, connection of connections
 			if connection.status().connected is true
+				console.log 'broadcast to', port, streamName, eventName, args
 				connection.call 'stream', streamName, eventName, args
 
 	emitters = {}
@@ -29,11 +30,13 @@
 		do (streamName, stream) ->
 			emitters[streamName] = stream.emit
 			stream.emit = (eventName, args...) ->
+				console.log 'stream.emit', eventName, args
 				broadcast streamName, eventName, args
 				emitters[streamName].apply {}, arguments
 
 	Meteor.methods
 		stream: (streamName, eventName, args) ->
+			console.log 'method stream', streamName, eventName, args
 			args.unshift eventName
 			emitters[streamName]?.apply {}, args
 
