@@ -30,8 +30,18 @@ webrtc = {
 webrtc.start = function (isCaller) {
 	webrtc.pc = new RTCPeerConnection(webrtc.config);
 
+	webrtc.pc.ondatachannel = function() {console.log('ondatachannel', arguments)}
+	webrtc.pc.onidentityresult = function() {console.log('onidentityresult', arguments)}
+	webrtc.pc.onidpassertionerror = function() {console.log('onidpassertionerror', arguments)}
+	webrtc.pc.onidpvalidationerror = function() {console.log('onidpvalidationerror', arguments)}
+	webrtc.pc.onnegotiationneeded = function() {console.log('onnegotiationneeded', arguments)}
+	webrtc.pc.onpeeridentity = function() {console.log('onpeeridentity', arguments)}
+	webrtc.pc.onremovestream = function() {console.log('onremovestream', arguments)}
+	webrtc.pc.onsignalingstatechange = function() {console.log('onsignalingstatechange', arguments)}
+
 	// send any ice candidates to the other peer
 	webrtc.pc.onicecandidate = function (evt) {
+		console.log('onicecandidate', arguments)
 		if (evt.candidate) {
 			webrtc.send({ "candidate": evt.candidate.toJSON(), cid: webrtc.cid });
 		}
@@ -39,10 +49,12 @@ webrtc.start = function (isCaller) {
 
 	// once remote stream arrives, show it in the remote video element
 	webrtc.pc.onaddstream = function (evt) {
+		console.log('onaddstream', arguments)
 		webrtc.onRemoteUrl(URL.createObjectURL(evt.stream));
 	};
 
 	webrtc.pc.oniceconnectionstatechange = function(evt) {
+		console.log('oniceconnectionstatechange', arguments)
 		if (evt.srcElement.iceConnectionState == 'disconnected' || evt.srcElement.iceConnectionState == 'closed') {
 			webrtc.pc.getLocalStreams().forEach(function(stream) {
 				stream.stop();
