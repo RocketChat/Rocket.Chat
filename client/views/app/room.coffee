@@ -265,6 +265,8 @@ Template.room.helpers
 		return Session.get('remoteVideoUrl')
 
 	selfVideoUrl: ->
+		Meteor.defer ->
+			$('video.video-self')[0]?.muted = true;
 		return Session.get('selfVideoUrl')
 
 
