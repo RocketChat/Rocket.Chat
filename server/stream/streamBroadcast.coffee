@@ -41,3 +41,4 @@
 Meteor.startup ->
 	startStreamBroadcast
 		'webrtc.stream': webrtc.stream
+		'typing': typingStream
