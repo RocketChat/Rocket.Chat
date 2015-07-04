@@ -3,6 +3,7 @@ webrtc = {
 }
 
 stream.permissions.write(function(eventName) {
+	console.log(this.userId)
 	return eventName == 'send' && this.userId;
 });
 
