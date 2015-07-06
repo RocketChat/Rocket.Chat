@@ -1,15 +1,13 @@
 <template name="room">
 	<section class="room-container" id="{{roomContainerId}}">
 		<section class="messages-container" id="{{windowId}}">
-
-			<head class="fixed-title">
-				<div>
-					<div class="burger">
-						<i></i>
-						<i></i>
-						<i></i>
-					</div>
-					<h2>
+			<header class="fixed-title">
+				<div class="burger">
+					<i></i>
+					<i></i>
+					<i></i>
+				</div>
+				<h2>
 					{{#if subscribed}}
 						<a href="#favorite" class="toggle-favorite"><i class="{{favorite}}"></i></a>
 					{{/if}}
@@ -20,8 +18,7 @@
 					<a href="#edit" class="edit-room-title"><i class="icon-pencil"></i></a>
 					{{/if}}
 				</h2>
-				</div>
-			</head>
+			</header>
 			<div class="messages-box">
 				<div class="wrapper">
 					<ul>
@@ -165,6 +162,28 @@
 						<div class="user-view">
 							{{#with userData}}
 								<div class="about cf_">
+									
+										{{#if selfVideoUrl}}
+											{{#if rtcLayout2}}
+											<div style="display: flex; flex-direction: row; align-items: center; width: 800px; height: 350px">
+												<video class="video-remote" src="{{remoteVideoUrl}}" style="flex: 1 0; min-width: 380px; height: 285px; margin: 10px; background-color: #000;"  autoplay></video>
+												<video class="video-self" src="{{selfVideoUrl}}" style="flex: 1 0;  min-width: 380px; height: 285px; margin: 10px; background-color: #000;" autoplay muted></video>
+											</div>
+											{{else}}
+											  {{#if rtcLayout1}}
+											  <div style="display: flex; flex-direction: column; align-items: center; width: 360px; height: 500px">	
+												<video class="video-remote" src="{{remoteVideoUrl}}" style="flex: 1 1;  width: 320px; margin: 10px; background-color: #000;" autoplay></video>
+												<video class="video-self" src="{{selfVideoUrl}}" style="flex: 1 1; width: 320px; margin: 10px; background-color: #000;" autoplay muted></video>
+											  </div>
+											  {{else}}
+											  <div>
+												<video class="video-remote" src="{{remoteVideoUrl}}" style="width: 100%; align-items: center; margin-bottom: 10px; background-color: #000; transition: width 2s, height 2s, top 2s, left 2s, transform 2s;" autoplay></video>
+												<video class="video-self" src="{{selfVideoUrl}}" style="width: 100px; position: absolute; top: 21px; right: 21px; border: 1px solid #FFF; background-color: #000; transition: width 2s, height 2s, top 2s, left 2s, transform 2s;" autoplay muted></video>
+											  </div>
+											  {{/if}}
+											{{/if}}
+										{{/if}}
+									
 									<div class="thumb">
 										{{> avatar username=username}}
 									</div>
@@ -183,6 +202,13 @@
 										--}}
 									</div>
 								</div>
+								<nav>
+									{{#unless selfVideoUrl}}
+										<button class='button start-video'><span><i class='icon-videocam'></i> {{_ "Video"}}</span></button>
+									{{else}}
+										<button class='button red stop-video'><span><i class='icon-videocam'></i> {{_ "StopVideo"}}</span></button>
+									{{/unless}}
+								</nav>
 							{{/with}}
 						</div>
 					{{/if}}
