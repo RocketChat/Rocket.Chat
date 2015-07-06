@@ -4,10 +4,18 @@
 	input = {}
 	editing = {}
 	selfTyping = new ReactiveVar false
+	typing = null
+	# typingLimit = 15000
+	# typingStream = new Meteor.Stream 'typing'
 
-	init = ->
+	init = (templateTyping) ->
 		wrapper = $(".messages-container").find(".wrapper")
 		input = $(".input-message").get(0)
+
+		console.log 'ChatMessages.init()'
+
+		typing = templateTyping
+
 		# self.scrollable = false
 		# wrapper.bind "scroll", ->
 			# scrollable()
@@ -107,17 +115,19 @@
 
 	startTyping = (rid, input) ->
 		if _.trim(input.value) isnt ''
-			unless self.typingTimeout
-				if Meteor.userId()?
-					selfTyping.set true
-					Meteor.call 'typingStatus', rid, true
-				self.typingTimeout = Meteor.setTimeout ->
-					stopTyping()
-				, 30000
+			typing.type()
+			# unless self.typingTimeout
+			# 	if Meteor.userId()?
+			# 		selfTyping.set true
+			# 		Meteor.call 'typingStatus', rid, true
+			# 	self.typingTimeout = Meteor.setTimeout ->
+			# 		stopTyping()
+			# 	, typingLimit
 
 	stopTyping = ->
 		selfTyping.set false
-		self.typingTimeout = null
+		# self.typingTimeout = null
+		typing.stop()
 
 	bindEvents = ->
 		if wrapper?.length

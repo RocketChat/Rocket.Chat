@@ -48,74 +48,38 @@ Template.room.helpers
 		console.log 'room.helpers roomContainerId' if window.rocketDebug
 		return "room-container-#{this._id}"
 
-	showTyping: ->
-		console.log 'room.helpers showTyping' if window.rocketDebug
-		return this.t is 't'
-
-	typing: ->
-		console.log 'room.helpers typing' if window.rocketDebug
-		return this.u._id isnt Meteor.userId()
-
 	usersTyping: ->
 		console.log 'room.helpers usersTyping' if window.rocketDebug
-		messages = ChatTyping.find({ rid: this._id, 'u._id': { $ne: Meteor.userId() } }).fetch()
-		if messages.length is 0
+		# messages = ChatTyping.find({ rid: this._id, 'u._id': { $ne: Meteor.userId() } }).fetch()
+
+		console.log 'typing!!!!'
+
+		return unless Template.instance().typing?
+
+		users = Template.instance().typing.get()
+
+		if users.length is 0
 			return
-		if messages.length is 1
+		if users.length is 1
 			return {
 				multi: false
 				selfTyping: ChatMessages.selfTyping.get()
-				users: messages[0].u.username
+				users: users[0]
 			}
 
-		usernames = _.map messages, (message) -> return message.u.username
-		
-		last = usernames.pop()
-		if messages.length > 4
+		# usernames = _.map messages, (message) -> return message.u.username
+
+		last = users.pop()
+		if users.length > 4
 			last = t('others')
-		else
-		usernames = usernames.join(', ')
+		# else
+		usernames = users.join(', ')
 		usernames = [usernames, last]
 		return {
 			multi: true
 			selfTyping: ChatMessages.selfTyping.get()
 			users: usernames.join " #{t 'and'} "
 		}
-
-
-		# usernames = []
-		# selfTyping = false
-		# total = 0
-		# messages.forEach (message) ->
-		# 	total++
-		# 	if message.u._id is Meteor.userId()
-		# 		selfTyping = true
-		# 	else
-		# 		username = message.u.username
-		# 		if username?
-		# 			usernames.push username
-
-		# if usernames.length is 0
-		# 	return
-
-		# if usernames.length is 1
-		# 	return {
-		# 		multi: false
-		# 		selfTyping: selfTyping
-		# 		users: usernames[0]
-		# 	}
-
-		# last = usernames.pop()
-		# if total > 4
-		# 	last = t('others')
-			
-		# usernames = usernames.join(', ')
-		# usernames = [usernames, last]
-		# return {
-		# 	multi: true
-		# 	selfTyping: selfTyping
-		# 	users: usernames.join " #{t 'and'} "
-		# }
 
 	roomName: ->
 		console.log 'room.helpers roomName' if window.rocketDebug
@@ -502,13 +466,14 @@ Template.room.events
 Template.room.onCreated ->
 	console.log 'room.onCreated' if window.rocketDebug
 	# this.scrollOnBottom = true
+	this.typing = new msgTyping this.data._id
 	this.showUsersOffline = new ReactiveVar false
 	this.atBottom = true
 
 Template.room.onRendered ->
 	console.log 'room.onRendered' if window.rocketDebug
 	FlexTab.check()
-	ChatMessages.init()
+	ChatMessages.init(this.typing)
 	# ScrollListener.init()
 
 	wrapper = this.find('.wrapper')

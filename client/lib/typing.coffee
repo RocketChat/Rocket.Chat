@@ -1,6 +1,5 @@
 class @msgTyping
 	stream = new Meteor.Stream 'typing'
-	# store = new Meteor.Collection null
 	usersRoomTyping = {}
 	stopLimit = 15000
 	stopTimeout = null
@@ -22,13 +21,6 @@ class @msgTyping
 
 			if typing.start?
 				console.log 'typing - iniciou ->',typing.username
-				# store.upsert
-				# 	room: self.room
-				# 	username: typing.username
-				# ,
-				# 	$set:
-				# 		ts: new Date()
-
 				if not usersRoomTyping[self.room].users[typing.username]?
 					newUser = true
 
@@ -37,33 +29,17 @@ class @msgTyping
 
 					delete usersRoomTyping[self.room].users[typing.username]
 					usersRoomTyping[self.room].dep.changed()
-
-					# store.remove
-					# 	room: self.room
-					# 	username: typing.username
 				, stopLimit
 
 				usersRoomTyping[self.room].dep.changed() if newUser
 
 			else if typing.stop?
+				self.renew = true
 				console.log 'typing - removido (forçado) ->',typing.username
 				delete usersRoomTyping[self.room].users[typing.username]
 				usersRoomTyping[self.room].dep.changed()
-				# store.remove
-				# 	room: self.room
-				# 	username: typing.username
 
 	type: ->
-
-		# clearTimeout stopTimeout if stopTimeout?
-
-		# stopTimeout = Meteor.setTimeout ->
-		# 	console.log 'typing - parando ->',Meteor.user().username
-		# 	stream.emit 'typing', { room: @room, username: Meteor.user().username, stop: true }
-		# , renewTime
-
-		console.log 'renew ->',@renew
-
 		return unless @renew
 
 		self = @
@@ -81,8 +57,12 @@ class @msgTyping
 
 		stream.emit 'typing', { room: @room, username: Meteor.user().username, start: true }
 
+	stop: ->
+		# clearTimeout usersRoomTyping[@room].users[Meteor.user().username]
+		# delete usersRoomTyping[@room].users[Meteor.user().username]
+		# usersRoomTyping[@room].dep.changed()
+		stream.emit 'typing', { room: @room, username: Meteor.user().username, stop: true }
+
 	get: ->
 		usersRoomTyping[@room].dep.depend()
 		return Object.keys usersRoomTyping[@room].users
-		# console.log 'find by ->',room: @room, store.find().fetch()
-		# return store.find room: @room
