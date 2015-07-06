@@ -55,7 +55,8 @@ webrtc.start = function (isCaller) {
 
 	webrtc.pc.oniceconnectionstatechange = function(evt) {
 		console.log('oniceconnectionstatechange', arguments)
-		if (evt.srcElement.iceConnectionState == 'disconnected' || evt.srcElement.iceConnectionState == 'closed') {
+		var srcElement = evt.srcElement || evt.target;
+		if (srcElement.iceConnectionState == 'disconnected' || srcElement.iceConnectionState == 'closed') {
 			webrtc.pc.getLocalStreams().forEach(function(stream) {
 				stream.stop();
 				webrtc.onSelfUrl();
