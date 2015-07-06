@@ -56,18 +56,22 @@ It is a great solution for communities and companies wanting to privately host t
 - Media Embeds
 - Link Previews
 - LDAP Authentication - [LDAP Authentication on Rocket.Chat Wiki](https://github.com/RocketChat/Rocket.Chat/wiki/LDAP-Authentication)
+- WebRTC signalling (Alpha) [Issue #115 - HELP WANTED](https://github.com/RocketChat/Rocket.Chat/issues/115)
 
 ### Roadmap for v1.0
 
-- WebRTC signalling
-- File uploads
+- File Sharing [Issue #24 - HELP WANTED](https://github.com/RocketChat/Rocket.Chat/issues/24)
+
+### Roadmap for v1.1
+
+- Off-the-Record (OTR) Messaging [Issue #36 - HELP WANTED](https://github.com/RocketChat/Rocket.Chat/issues/36)
+- Native Cross-Platform Desktop Application [Issue #37 - HELP WANTED](https://github.com/RocketChat/Rocket.Chat/issues/37)
+- Native Android Application [Issue #271 - HELP WANTED](https://github.com/RocketChat/Rocket.Chat/issues/271)
+- Native iOS Application [Issue #270 - HELP WANTED](https://github.com/RocketChat/Rocket.Chat/issues/270)
 - Full text search
-- REST-like APIs
-- Off-the-Record (OTR) Messaging
+- REST-full APIs
 - Kerberos Authentication
 - XMPP Multi-user chat (MUC)
-- Native Mobile App
-- Native Desktop App
 
 ### Issues
 
@@ -156,5 +160,6 @@ Note that Rocket.Chat is distributed under the [MIT License](http://opensource.o
 Rocket.Chat will be free forever, but you can help us speed-up the development!
 
 [![Donate](https://www.paypalobjects.com/en_US/i/btn/btn_donateCC_LG.gif)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=49QX7TYCVZK8L)
+
 
 :smiling_imp:
