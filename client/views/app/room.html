@@ -166,8 +166,8 @@
 										{{#if selfVideoUrl}}
 											{{#if rtcLayout2}}
 											<div style="display: flex; flex-direction: row; align-items: center; width: 800px; height: 350px">
-												<video class="video-remote" src="{{remoteVideoUrl}}" style="flex: 1 0; width: 480px; margin: 10px; background-color: #000;"  autoplay></video>
-												<video class="video-self" src="{{selfVideoUrl}}" style="flex: 1 0;  width: 480px; margin: 10px; background-color: #000;" autoplay muted></video>
+												<video class="video-remote" src="{{remoteVideoUrl}}" style="flex: 1 0; min-width: 380px; height: 285px; margin: 10px; background-color: #000;"  autoplay></video>
+												<video class="video-self" src="{{selfVideoUrl}}" style="flex: 1 0;  min-width: 380px; height: 285px; margin: 10px; background-color: #000;" autoplay muted></video>
 											</div>
 											{{else}}
 											  {{#if rtcLayout1}}
