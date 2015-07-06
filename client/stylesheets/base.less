@@ -1563,6 +1563,25 @@ a.github-fork {
 			.transform(translateX(0));
 		}
 	}
+	&.layout1 {
+		.calc(width, ~'100% - ' @rooms-box-width + @flex-tab-webrtc-width);
+		margin-right: 420px;
+		.flex-tab {
+			max-width: @flex-tab-webrtc-width;
+			.transform(translateX(0));
+
+		}
+
+	}
+	&.layout2 {
+		.calc(width, ~'100% - ' @rooms-box-width + @flex-tab-webrtc-2-width);
+		margin-right: 420px;
+		.flex-tab {
+			max-width: @flex-tab-webrtc-2-width;
+			.transform(translateX(0));
+		}
+
+	}
 	.container-fluid {
 		padding-top: 0;
 	}
@@ -2125,7 +2144,7 @@ a.github-fork {
 						}
 					}
 				}
-			}
+			}	
 		}
 		.search-form {
 			padding: 0 4px 0 0;
