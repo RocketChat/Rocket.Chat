@@ -60,7 +60,10 @@ It is a great solution for communities and companies wanting to privately host t
 
 ### Roadmap for v1.0
 
-- File uploads
+- [File Sharing](https://github.com/RocketChat/Rocket.Chat/issues/24)
+
+### Roadmap for v1.1
+
 - Full text search
 - REST-like APIs
 - Off-the-Record (OTR) Messaging
