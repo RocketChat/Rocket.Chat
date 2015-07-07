@@ -73,7 +73,6 @@ Template.room.helpers
 		last = usernames.pop()
 		if messages.length > 4
 			last = t('others')
-		else
 		usernames = usernames.join(', ')
 		usernames = [usernames, last]
 		return {
@@ -81,41 +80,6 @@ Template.room.helpers
 			selfTyping: ChatMessages.selfTyping.get()
 			users: usernames.join " #{t 'and'} "
 		}
-
-
-		# usernames = []
-		# selfTyping = false
-		# total = 0
-		# messages.forEach (message) ->
-		# 	total++
-		# 	if message.u._id is Meteor.userId()
-		# 		selfTyping = true
-		# 	else
-		# 		username = message.u.username
-		# 		if username?
-		# 			usernames.push username
-
-		# if usernames.length is 0
-		# 	return
-
-		# if usernames.length is 1
-		# 	return {
-		# 		multi: false
-		# 		selfTyping: selfTyping
-		# 		users: usernames[0]
-		# 	}
-
-		# last = usernames.pop()
-		# if total > 4
-		# 	last = t('others')
-			
-		# usernames = usernames.join(', ')
-		# usernames = [usernames, last]
-		# return {
-		# 	multi: true
-		# 	selfTyping: selfTyping
-		# 	users: usernames.join " #{t 'and'} "
-		# }
 
 	roomName: ->
 		console.log 'room.helpers roomName' if window.rocketDebug
