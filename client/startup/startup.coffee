@@ -3,6 +3,9 @@ Meteor.startup ->
 	UserPresence.start()
 	Meteor.subscribe("activeUsers")
 
+	Tracker.autorun ->
+		Meteor.subscribe 'typing', Session.get 'openedRoom'
+
 	Session.setDefault('flexOpened', false)
 	Session.setDefault('AvatarRandom', 0)
 
