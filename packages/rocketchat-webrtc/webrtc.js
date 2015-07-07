@@ -4,9 +4,8 @@ webrtc = {
 	to: undefined,
 	config: {
 		iceServers: [
-			{
-				"url": "stun:stun.l.google.com:19302"
-			}
+			{url: "stun:23.21.150.121"},
+			{url: "stun:stun.l.google.com:19302"}
 		]
 	},
 	stream: stream,
@@ -24,6 +23,10 @@ webrtc = {
 	},
 	onRemoteUrl: function() {},
 	onSelfUrl: function() {}
+}
+
+function onError() {
+	console.log(arguments);
 }
 
 // run start(true) to initiate a call
@@ -76,13 +79,13 @@ webrtc.start = function (isCaller) {
 		webrtc.pc.addStream(stream);
 
 		if (isCaller) {
-			webrtc.pc.createOffer(gotDescription);
+			webrtc.pc.createOffer(gotDescription, onError);
 		} else {
-			webrtc.pc.createAnswer(gotDescription);
+			webrtc.pc.createAnswer(gotDescription, onError);
 		}
 
 		function gotDescription(desc) {
-			webrtc.pc.setLocalDescription(desc);
+			webrtc.pc.setLocalDescription(desc, function() {}, onError);
 			webrtc.send({ "sdp": desc.toJSON(), cid: webrtc.cid });
 		}
 	}, function() {});
@@ -101,9 +104,8 @@ stream.on(Meteor.userId(), function(data) {
 	if (data.sdp) {
 		webrtc.pc.setRemoteDescription(new RTCSessionDescription(data.sdp));
 	} else {
-		if( ["closed", "failed", "disconnected", "completed"].indexOf(webrtc.pc.iceConnectionState) === -1)
-		  {
+		if( ["closed", "failed", "disconnected", "completed"].indexOf(webrtc.pc.iceConnectionState) === -1) {
 			webrtc.pc.addIceCandidate(new RTCIceCandidate(data.candidate));
-		  }
+		}
 	}
 });
