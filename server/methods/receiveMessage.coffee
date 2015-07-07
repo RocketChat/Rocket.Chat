@@ -108,14 +108,12 @@ Meteor.methods
 		###
 		Save the message. If there was already a typing record, update it.
 		###
-		ChatMessage.upsert
+		ChatTyping.upsert
 			rid: message.rid
-			t: 't'
 			$and: [{ 'u._id': message.u._id }]
 		,
 			$set: message
 			$unset:
-				t: 1
 				expireAt: 1
 
 		Meteor.defer ->
