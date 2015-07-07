@@ -112,7 +112,7 @@
 			unless typingTimeout?[rid]
 				if Meteor.userId()?
 					selfTyping.set true
-					Meteor.call 'typingStatus', rid
+					Meteor.call 'typingStatus', rid, true
 				typingTimeout[rid] = Meteor.setTimeout ->
 					stopTyping(rid)
 				, 10000
