@@ -24,7 +24,7 @@ webrtc = {
 	},
 	log: function() {
 		if (webrtc.debug === true) {
-			console.log.apply(console.log, arguments);
+			console.log.apply(console, arguments);
 		}
 	},
 	onRemoteUrl: function() {},
