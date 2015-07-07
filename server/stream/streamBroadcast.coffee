@@ -24,6 +24,14 @@
 				console.log 'broadcast to', port, streamName, eventName, args
 				connection.call 'stream', streamName, eventName, args
 
+
+	Meteor.methods
+		showConnections: ->
+			data = {}
+			for port, connection of connections
+				data[port] = connection.status()
+			return data
+
 	emitters = {}
 
 	for streamName, stream of streams
