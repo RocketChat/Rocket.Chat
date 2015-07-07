@@ -318,6 +318,10 @@ Template.room.events
 		console.log 'room focus .input-message' if window.rocketDebug
 		KonchatNotification.removeRoomNotification(this._id)
 
+	'keyup .input-message': (event) ->
+		console.log 'room keyup .input-message',this._id if window.rocketDebug
+		ChatMessages.keyup(this._id, event, Template.instance())
+
 	'keydown .input-message': (event) ->
 		console.log 'room keydown .input-message',this._id if window.rocketDebug
 		ChatMessages.keydown(this._id, event, Template.instance())
