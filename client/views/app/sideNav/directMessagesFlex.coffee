@@ -12,8 +12,8 @@ Template.directMessagesFlex.helpers
 					collection: 'UserAndRoom'
 					subscription: 'roomSearch'
 					field: 'username'
-					template: Template.roomSearch
-					noMatchTemplate: Template.roomSearchEmpty
+					template: Template.userSearch
+					noMatchTemplate: Template.userSearchEmpty
 					matchAll: true
 					filter:
 						type: 'u'
