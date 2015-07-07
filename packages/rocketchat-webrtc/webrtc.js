@@ -55,7 +55,8 @@ webrtc.start = function (isCaller) {
 
 	webrtc.pc.oniceconnectionstatechange = function(evt) {
 		console.log('oniceconnectionstatechange', arguments)
-		if (evt.srcElement.iceConnectionState == 'disconnected' || evt.srcElement.iceConnectionState == 'closed') {
+		var srcElement = evt.srcElement || evt.target;
+		if (srcElement.iceConnectionState == 'disconnected' || srcElement.iceConnectionState == 'closed') {
 			webrtc.pc.getLocalStreams().forEach(function(stream) {
 				stream.stop();
 				webrtc.onSelfUrl();
@@ -100,6 +101,9 @@ stream.on(Meteor.userId(), function(data) {
 	if (data.sdp) {
 		webrtc.pc.setRemoteDescription(new RTCSessionDescription(data.sdp));
 	} else {
-		webrtc.pc.addIceCandidate(new RTCIceCandidate(data.candidate));
+		if( ["closed", "failed", "disconnected", "completed"].indexOf(webrtc.pc.iceConnectionState) === -1)
+		  {
+			webrtc.pc.addIceCandidate(new RTCIceCandidate(data.candidate));
+		  }
 	}
 });

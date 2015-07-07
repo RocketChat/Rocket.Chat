@@ -196,6 +196,15 @@ Template.room.helpers
 		console.log 'room.helpers flexOpened' if window.rocketDebug
 		return 'opened' if Session.equals('flexOpened', true)
 
+	flexOpenedRTC1: ->
+		console.log 'room.helpers flexOpenedRTC1' if window.rocketDebug
+		return 'layout1' if Session.equals('flexOpenedRTC1', true)
+
+	flexOpenedRTC2: ->
+		console.log 'room.helpers flexOpenedRTC2' if window.rocketDebug
+		return 'layout2' if Session.equals('flexOpenedRTC2', true)
+
+
 	arrowPosition: ->
 		console.log 'room.helpers arrowPosition' if window.rocketDebug
 		return 'left' unless Session.equals('flexOpened', true)
@@ -269,12 +278,24 @@ Template.room.helpers
 			$('video.video-self')[0]?.muted = true;
 		return Session.get('selfVideoUrl')
 
+	rtcLayout1: ->
+		return Session.get('flexOpenedRTC1');
+
+	rtcLayout2: ->
+		return Session.get('flexOpenedRTC2');
+
 
 Template.room.events
 
 	"click .flex-tab .more": (event) ->
 		console.log 'room click .flex-tab .more' if window.rocketDebug
-		Session.set('flexOpened', !Session.get('flexOpened'))
+		if (Session.get('flexOpened')) 
+			Session.set('flexOpenedRTC2', false);
+			Session.set('flexOpenedRTC1', false);
+			Session.set('flexOpened',false);
+		else 
+			Session.set('flexOpened', !Session.get('flexOpened'))
+		
 
 	'click .chat-new-messages': (event) ->
 		console.log 'room click .chat-new-messages' if window.rocketDebug
@@ -359,6 +380,22 @@ Template.room.events
 		console.log 'room click .flex-tab .user-image > a' if window.rocketDebug
 		Session.set('flexOpened', true)
 		Session.set('showUserInfo', $(e.currentTarget).data('username'))
+
+	"click .flex-tab  .video-remote" : (e) ->
+		console.log 'room click .flex-tab .avatar-image' if window.rocketDebug
+		if (Session.get('flexOpenedRTC2'))
+			console.log 'resetting both flexOpenedRTC1 and flexOpenedRTC2 to false' if window.rocketDebug
+			Session.set('flexOpenedRTC1', false)
+			Session.set('flexOpenedRTC2', false)
+		else			
+			if (Session.get('flexOpenedRTC1'))
+				console.log 'flexOpenedRTC2 set to true' if window.rocketDebug
+				Session.set('flexOpenedRTC2', true)
+			else
+				if (Session.get('flexOpened'))
+					console.log 'flexOpenedRTC1 set to true' if window.rocketDebug
+					Session.set('flexOpenedRTC1', true)
+
 
 	'click .user-card-message': (e) ->
 		console.log 'room click .user-card-message' if window.rocketDebug
