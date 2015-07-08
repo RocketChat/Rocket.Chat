@@ -60,9 +60,9 @@
 									{{/if}}
 								{{else}}
 									{{#if selfTyping}}
-										{{_ "is_also_typing"}}
+										{{_ "is_also_typing" context="male"}}
 									{{else}}
-										{{_ "is_typing"}}
+										{{_ "is_typing" context="male"}}
 									{{/if}}
 								{{/if}}
 							{{/with}}
@@ -162,28 +162,34 @@
 						<div class="user-view">
 							{{#with userData}}
 								<div class="about cf_">
-									
+
 										{{#if selfVideoUrl}}
+											{{#if rtcLayout3}}
+												<div id='fullscreendiv' style="width: 800px; height: 350px">
+												<video id='videoremote' class="video-remote" src="{{remoteVideoUrl}}" style="width: 100%; align-items: center; margin-bottom: 10px; background-color: #000; transition: width 2s, height 2s, top 2s, left 2s, transform 2s;" autoplay></video>
+												<video id='videoself' class="video-self" src="{{selfVideoUrl}}" style="width: 250px; position: absolute; top: 21px; right: 31px; border: 1px solid #FFF; background-color: #000; transition: width 2s, height 2s, top 2s, left 2s, transform 2s;" autoplay muted></video>
+												</div>
+											{{/if}}
 											{{#if rtcLayout2}}
-											<div style="display: flex; flex-direction: row; align-items: center; width: 800px; height: 350px">
-												<video class="video-remote" src="{{remoteVideoUrl}}" style="flex: 1 0; min-width: 380px; height: 285px; margin: 10px; background-color: #000;"  autoplay></video>
-												<video class="video-self" src="{{selfVideoUrl}}" style="flex: 1 0;  min-width: 380px; height: 285px; margin: 10px; background-color: #000;" autoplay muted></video>
+												<div style="display: flex; flex-direction: row; align-items: center; width: 800px; height: 350px">
+												<video id="videoremote" class="video-remote" src="{{remoteVideoUrl}}" style="flex: 1 0; min-width: 380px; height: 285px; margin: 10px; background-color: #000;"  autoplay></video>
+												<video id="videoself" class="video-self" src="{{selfVideoUrl}}" style="flex: 1 0;  min-width: 380px; height: 285px; margin: 10px; background-color: #000;" autoplay muted></video>
 											</div>
-											{{else}}
-											  {{#if rtcLayout1}}
-											  <div style="display: flex; flex-direction: column; align-items: center; width: 360px; height: 500px">	
+											{{/if}}
+											{{#if rtcLayout1}}
+												<div style="display: flex; flex-direction: column; align-items: center; width: 360px; height: 500px">
 												<video class="video-remote" src="{{remoteVideoUrl}}" style="flex: 1 1;  width: 320px; margin: 10px; background-color: #000;" autoplay></video>
 												<video class="video-self" src="{{selfVideoUrl}}" style="flex: 1 1; width: 320px; margin: 10px; background-color: #000;" autoplay muted></video>
-											  </div>
-											  {{else}}
-											  <div>
-												<video class="video-remote" src="{{remoteVideoUrl}}" style="width: 100%; align-items: center; margin-bottom: 10px; background-color: #000; transition: width 2s, height 2s, top 2s, left 2s, transform 2s;" autoplay></video>
+												</div>
+											{{/if}}
+											{{#if noRtcLayout}}
+												<div>
+												<video class="video-remote" src="{{remoteVideoUrl}}" style="width: 100%; margin-bottom: 10px; background-color: #000; transition: width 2s, height 2s, top 2s, left 2s, transform 2s;" autoplay></video>
 												<video class="video-self" src="{{selfVideoUrl}}" style="width: 100px; position: absolute; top: 21px; right: 21px; border: 1px solid #FFF; background-color: #000; transition: width 2s, height 2s, top 2s, left 2s, transform 2s;" autoplay muted></video>
-											  </div>
-											  {{/if}}
+												</div>
 											{{/if}}
 										{{/if}}
-									
+
 									<div class="thumb">
 										{{> avatar username=username}}
 									</div>

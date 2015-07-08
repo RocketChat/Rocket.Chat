@@ -5,16 +5,16 @@ Template.appLayout.helpers
 
 	flexOpenedRTC1: ->
 		console.log 'layout.helpers flexOpenedRTC1' if window.rocketDebug
-		return 'layout1' if Session.equals('flexOpenedRTC1', true)
+		return 'layout1' if Session.equals('rtcLayoutmode', 1)
 
 	flexOpenedRTC2: ->
 		console.log 'layout.helpers flexOpenedRTC2' if window.rocketDebug
-		return 'layout2' if Session.equals('flexOpenedRTC2', true)
+		return 'layout2' if (Session.get('rtcLayoutmode') > 1)
 
 
 Template.appLayout.rendered = ->
 	$('html').addClass("noscroll").removeClass "scroll"
-	
+
 	# RTL Support - Need config option on the UI
 	if isRtl localStorage.getItem "userLanguage"
 		$('html').addClass "rtl"
