@@ -8,6 +8,7 @@ accounts-github
 accounts-google
 accounts-meteor-developer
 accounts-password
+appcache
 coffeescript
 email
 http
