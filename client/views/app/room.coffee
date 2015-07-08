@@ -272,10 +272,16 @@ Template.room.helpers
 		return Session.get('selfVideoUrl')
 
 	rtcLayout1: ->
-		return Session.get('flexOpenedRTC1');
+		return (Session.get('rtcLayoutmode') == 1 ? true: false);
 
 	rtcLayout2: ->
-		return Session.get('flexOpenedRTC2');
+		return (Session.get('rtcLayoutmode') == 2 ? true: false);
+
+	rtcLayout3: ->
+		return (Session.get('rtcLayoutmode') == 3 ? true: false);
+
+	noRtcLayout: ->
+		return (!Session.get('rtcLayoutmode') || (Session.get('rtcLayoutmode') == 0) ? true: false);
 
 
 Template.room.events
@@ -379,19 +385,33 @@ Template.room.events
 		Session.set('showUserInfo', $(e.currentTarget).data('username'))
 
 	"click .flex-tab  .video-remote" : (e) ->
-		console.log 'room click .flex-tab .avatar-image' if window.rocketDebug
-		if (Session.get('flexOpenedRTC2'))
-			console.log 'resetting both flexOpenedRTC1 and flexOpenedRTC2 to false' if window.rocketDebug
-			Session.set('flexOpenedRTC1', false)
-			Session.set('flexOpenedRTC2', false)
-		else
-			if (Session.get('flexOpenedRTC1'))
-				console.log 'flexOpenedRTC2 set to true' if window.rocketDebug
-				Session.set('flexOpenedRTC2', true)
+		console.log 'room click .flex-tab .video-remote' if window.rocketDebug
+		if (Session.get('flexOpened'))
+			if (!Session.get('rtcLayoutmode'))
+				Session.set('rtcLayoutmode', 1)
 			else
-				if (Session.get('flexOpened'))
-					console.log 'flexOpenedRTC1 set to true' if window.rocketDebug
-					Session.set('flexOpenedRTC1', true)
+				t = Session.get('rtcLayoutmode')
+				t = (t + 1) % 4
+				console.log  'setting rtcLayoutmode to ' + t  if window.rocketDebug
+				Session.set('rtcLayoutmode', t)
+
+	"click .flex-tab  .video-self" : (e) ->
+		console.log 'room click .flex-tab .video-self' if window.rocketDebug
+		if (Session.get('rtcLayoutmode') == 3)
+			console.log 'video-self clicked in layout3' if window.rocketDebug
+			i = document.getElementById("fullscreendiv")
+			if i.requestFullscreen
+				i.requestFullscreen()
+			else
+				if i.webkitRequestFullscreen
+					i.webkitRequestFullscreen()
+				else
+					if i.mozRequestFullScreen
+						i.mozRequestFullScreen()
+					else
+						if i.msRequestFullscreen
+							i.msRequestFullscreen()
+
 
 
 	'click .user-card-message': (e) ->
