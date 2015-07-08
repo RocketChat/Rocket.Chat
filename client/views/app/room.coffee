@@ -501,6 +501,7 @@ Template.room.events
 			ChatMessages.deleteMsg(msg)
 
 	'click .start-video': (event) ->
+		webrtc.to = Router.current().params._id.replace(Meteor.userId(), '')
 		webrtc.start(true)
 
 	'click .stop-video': (event) ->
@@ -543,7 +544,6 @@ Template.room.onRendered ->
 	# salva a data da renderização para exibir alertas de novas mensagens
 	$.data(this.firstNode, 'renderedAt', new Date)
 
-	webrtc.to = this.data._id.replace(Meteor.userId(), '')
 	webrtc.onRemoteUrl = (url) ->
 		Session.set('flexOpened', true)
 		Session.set('remoteVideoUrl', url)
