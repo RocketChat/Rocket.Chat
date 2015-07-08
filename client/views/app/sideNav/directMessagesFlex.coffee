@@ -11,14 +11,14 @@ Template.directMessagesFlex.helpers
 					# @TODO maybe change this 'collection' and/or template
 					collection: 'UserAndRoom'
 					subscription: 'roomSearch'
-					field: 'name'
-					template: Template.roomSearch
-					noMatchTemplate: Template.roomSearchEmpty
+					field: 'username'
+					template: Template.userSearch
+					noMatchTemplate: Template.userSearchEmpty
 					matchAll: true
 					filter:
 						type: 'u'
 						_id: { $ne: Meteor.userId() }
-					sort: 'name'
+					sort: 'username'
 				}
 			]
 		}

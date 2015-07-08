@@ -3,10 +3,10 @@
 //
 @import "global/_variables.less";
 @import "utils/_lesshat.import.less";
+@import "utils/_fonts.import.less";
 @import "utils/_reset.import.less";
 @import "utils/_keyframes.import.less";
 @import "utils/_preloader.import.less";
-@import url(//fonts.googleapis.com/css?family=Roboto:500,300,700,400&subset=latin,cyrillic-ext,greek-ext,greek,vietnamese,latin-ext,cyrillic);
 @import "utils/_emojione.import.less";
 .cf_ {
 	display: inline-block;
@@ -408,10 +408,10 @@ input.search {
 	}
 	> i {
 		visibility: hidden;
-		:after {
+		&:after {
 			content: " ";
 			visibility: visible;
-			background-image: url('/images/loading.gif');
+			background-image: url('/images/logo/loading.gif');
 			background-position: center;
 			background-repeat: no-repeat;
 			display: block;
@@ -503,10 +503,10 @@ label.required:after {
 .button {
 	&:extend(.unselectable);
 	display: inline-block;
-	padding: 10px 12px 8px;
+	padding: 9px 12px;
 	background-color: #FFF;
 	color: rgba(255, 255, 255, 0.85);
-	font-weight: 400;
+	font-weight: 500;
 	font-size: 13px;
 	margin: 4px;
 	text-transform: uppercase;
@@ -2144,7 +2144,7 @@ a.github-fork {
 						}
 					}
 				}
-			}	
+			}
 		}
 		.search-form {
 			padding: 0 4px 0 0;
@@ -2785,7 +2785,7 @@ a.github-fork {
 			font-size: 22px;
 			border-bottom: 1px solid #DFDFDF;
 			font-family: "Roboto", "HelveticaNeue-Light", "sans-serif";
-			font-weight: 300;
+			font-weight: 400;
 			&.error {
 				border-bottom: 1px solid #b40202;
 				&::-webkit-input-placeholder {

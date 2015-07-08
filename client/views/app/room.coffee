@@ -69,7 +69,7 @@ Template.room.helpers
 			}
 
 		usernames = _.map messages, (message) -> return message.u.username
-		
+
 		last = usernames.pop()
 		if messages.length > 4
 			last = t('others')
@@ -282,13 +282,13 @@ Template.room.events
 
 	"click .flex-tab .more": (event) ->
 		console.log 'room click .flex-tab .more' if window.rocketDebug
-		if (Session.get('flexOpened')) 
+		if (Session.get('flexOpened'))
 			Session.set('flexOpenedRTC2', false);
 			Session.set('flexOpenedRTC1', false);
 			Session.set('flexOpened',false);
-		else 
+		else
 			Session.set('flexOpened', !Session.get('flexOpened'))
-		
+
 
 	'click .chat-new-messages': (event) ->
 		console.log 'room click .chat-new-messages' if window.rocketDebug
@@ -384,7 +384,7 @@ Template.room.events
 			console.log 'resetting both flexOpenedRTC1 and flexOpenedRTC2 to false' if window.rocketDebug
 			Session.set('flexOpenedRTC1', false)
 			Session.set('flexOpenedRTC2', false)
-		else			
+		else
 			if (Session.get('flexOpenedRTC1'))
 				console.log 'flexOpenedRTC2 set to true' if window.rocketDebug
 				Session.set('flexOpenedRTC2', true)
