@@ -5,7 +5,7 @@ Meteor.startup ->
 		unreadCount = 0
 		unreadAlert = false
 
-		subscriptions = ChatSubscription.find({}, { fields: { unread: 1 } })
+		subscriptions = ChatSubscription.find({}, { fields: { unread: 1, alert: 1 } })
 
 		for subscription in subscriptions.fetch()
 			unreadCount += subscription.unread
