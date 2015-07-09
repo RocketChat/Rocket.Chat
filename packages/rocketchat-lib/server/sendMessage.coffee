@@ -45,12 +45,12 @@ RocketChat.sendMessage = (user, message, room) ->
 
 		ChatRoom.update
 			# only subscriptions to the same room
-			rid: message.rid
+			_id: message.rid
 		,
 			# update the last message timestamp
 			$set:
 				lm: message.ts
-			# increate the messages counter
+			# increment the messages counter
 			$inc:
 				msgs: 1
 
