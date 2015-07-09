@@ -58,7 +58,7 @@ It is a great solution for communities and companies wanting to privately host t
 - Media Embeds
 - Link Previews
 - LDAP Authentication - [LDAP Authentication on Rocket.Chat Wiki](https://github.com/RocketChat/Rocket.Chat/wiki/LDAP-Authentication)
-- WebRTC signalling (Alpha) [Issue #115 - HELP WANTED](https://github.com/RocketChat/Rocket.Chat/issues/115)
+- Face to Face Video Conferencing aka WebRTC signalling (Alpha)
 
 ### Roadmap for v1.0
 
