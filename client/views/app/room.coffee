@@ -289,11 +289,10 @@ Template.room.events
 	"click .flex-tab .more": (event) ->
 		console.log 'room click .flex-tab .more' if window.rocketDebug
 		if (Session.get('flexOpened'))
-			Session.set('flexOpenedRTC2', false);
-			Session.set('flexOpenedRTC1', false);
-			Session.set('flexOpened',false);
+			Session.set('rtcLayoutmode', 0)
+			Session.set('flexOpened',false)
 		else
-			Session.set('flexOpened', !Session.get('flexOpened'))
+			Session.set('flexOpened', true)
 
 
 	'click .chat-new-messages': (event) ->
