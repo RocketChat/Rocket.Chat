@@ -6,6 +6,8 @@ The Complete Open Source Chat Solution
 
 Checkout the latest version at [https://rocket.chat](https://rocket.chat)
 
+Download the Native Cross-Platform Desktop Application at [Rocket.Chat.Electron](https://github.com/RocketChat/Rocket.Chat.Electron/releases)
+
 [![Donate](https://www.paypalobjects.com/en_US/i/btn/btn_donateCC_LG.gif)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=49QX7TYCVZK8L)
 
 ## About
@@ -56,16 +58,16 @@ It is a great solution for communities and companies wanting to privately host t
 - Media Embeds
 - Link Previews
 - LDAP Authentication - [LDAP Authentication on Rocket.Chat Wiki](https://github.com/RocketChat/Rocket.Chat/wiki/LDAP-Authentication)
-- WebRTC signalling (Alpha) [Issue #115 - HELP WANTED](https://github.com/RocketChat/Rocket.Chat/issues/115)
+- Face to Face Video Conferencing aka WebRTC signalling (Alpha)
 
 ### Roadmap for v1.0
 
 - File Sharing [Issue #24 - HELP WANTED](https://github.com/RocketChat/Rocket.Chat/issues/24)
+- Native Cross-Platform Desktop Application [Rocket.Chat.Electron - HELP WANTED](https://github.com/RocketChat/Rocket.Chat.Electron/releases)
 
 ### Roadmap for v1.1
 
 - Off-the-Record (OTR) Messaging [Issue #36 - HELP WANTED](https://github.com/RocketChat/Rocket.Chat/issues/36)
-- Native Cross-Platform Desktop Application [Issue #37 - HELP WANTED](https://github.com/RocketChat/Rocket.Chat/issues/37)
 - Native Android Application [Issue #271 - HELP WANTED](https://github.com/RocketChat/Rocket.Chat/issues/271)
 - Native iOS Application [Issue #270 - HELP WANTED](https://github.com/RocketChat/Rocket.Chat/issues/270)
 - Full text search
