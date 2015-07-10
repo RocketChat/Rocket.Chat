@@ -2216,7 +2216,7 @@ label.required:after {
 
 github-fork{
 	display: block;
-	position: absolute;
+	position: fixed;
 	z-index: 10;
 	top: 0;
 	right: 0;

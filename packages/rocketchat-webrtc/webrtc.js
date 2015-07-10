@@ -17,7 +17,9 @@ webrtc = {
 	},
 	stop: function(sendEvent) {
 		if (webrtc.pc) {
-			webrtc.pc.close();
+			if (webrtc.pc.signalingState != 'closed') {
+				webrtc.pc.close();
+			}
 			if (sendEvent != false) {
 				stream.emit('send', {to: webrtc.to, close: true});
 			}
