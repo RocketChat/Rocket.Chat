@@ -1,5 +1,5 @@
 Meteor.startup ->
-	InstanceStatus.registerInstance('rocket.chat')
+	InstanceStatus.registerInstance('rocket.chat', {port: process.env.PORT})
 	# InstanceStatus.activeLogs()
 	UserPresence.start()
 	# UserPresence.activeLogs()

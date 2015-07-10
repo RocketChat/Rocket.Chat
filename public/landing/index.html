@@ -6,16 +6,16 @@
 	<meta http-equiv="expires" content="-1" />
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
 
-	<meta name="description" content="This is an example of a meta description. This will often show up in search results.">
+	<meta name="description" content="Open Source Slack-like online chat, built with Meteor.">
 	<meta content="summary" name="twitter:card" />
 	<meta content="@rocketchatapp" name="twitter:site" />
 	<meta content="@rocketchatapp" name="twitter:creator" />
 	<meta property="og:site_name" content="Rocket.Chat"/>
 	<meta property="og:type" content="website" />
-	<meta property="og:url" content="http://rocket.chat" />
+	<meta property="og:url" content="https://rocket.chat" />
 	<meta property="og:title" content="Rocket.Chat - Your own open source web application" />
 	<meta property="og:description" content="Have your own web chat. Developed with Meteor.com, the Rocket.Chat is a great solution for developers looking forward to build and evolve their own chat platform." />
-	<meta property="og:image" content="http://rocket.chat/images/rocket-card.png" />
+	<meta property="og:image" content="https://rocket.chat/images/rocket-card-new.png" />
 	<meta property="fb:app_id" content="835103589938459" />
 
 	<meta name="fragment" content="!" />
@@ -28,6 +28,7 @@
 	<meta name="msvalidate.01" content="CC595410A57B0314F81C928AE4E982C9" />
 	<meta name="msapplication-config" content="none" />
 	<link rel="canonical" href="//rocket.chat/" />
+	<link rel="prerender" href="/images/new-screen.jpg" />
 	<link rel="shortcut icon" href="/favicon.ico" sizes="16x16" type="image/x-icon" />
 	<link rel="icon" href="/images/logo/16x16.png" sizes="16x16" type="image/png">
 	<link rel="icon" href="/images/logo/57x57.png" sizes="57x57" type="image/png">
@@ -47,6 +48,9 @@
 	<link rel="apple-touch-startup-image" href="/images/logo/apple-touch-startup-image-1536x2008.png" media="screen and (min-device-width: 481px) and (max-device-width: 1024px) and (orientation:portrait) and (-webkit-min-device-pixel-ratio: 2)" />
 	<link rel="apple-touch-startup-image" href="/images/logo/apple-touch-startup-image-2048x1496.png" media="screen and (min-device-width: 481px) and (max-device-width: 1024px) and (orientation:landscape) and (-webkit-min-device-pixel-ratio: 2)" />
 	<link rel="stylesheet" type="text/css" href="/landing/style.css">
+
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/webcomponentsjs/0.7.3/webcomponents.min.js"></script>
+	<link rel="import" href="/elements/github-fork.html">
 
 </head>
 
@@ -87,7 +91,7 @@
 				<button class="button red"><span>Access the Online Demo</span></button>
 			</a>
 			<div class='text'>
-				<h1>RocketChat</h1>
+				<h1>Rocket.Chat</h1>
 				<h2>Your own Open Source chat solution</h2>
 				<p>Have your own web chat. Developed with Meteor.com, the Rocket.Chat is a great solution for developers looking forward to build and evolve their own chat platform.</p>
 				<a class="button" href="/login"><span>Access the Online Demo</span></a>
@@ -100,13 +104,20 @@
 						<a target="_blank" class="button share facebook" href="https://www.facebook.com/RocketChatApp"><i class="icon-facebook"></i><span>Facebook</span></a>
 						<a target="_blank" class="button share google" href="https://plus.google.com/+RocketChatApp"><i class="icon-gplus"></i><span>Google Plus</span></a>
 						<a target="_blank" class="button share github" href="https://github.com/RocketChat/Rocket.Chat"><i class='icon-github-circled'></i><span>Github</span></a>
-						<a target="_blank" class="button share trello" href="https://trello.com/rocketchat"><i class='icon-trello'></i><span>Trello</span></a>
+						<a target="_blank" class="button share linkedin" href="https://www.linkedin.com/company/rocket-chat"><i class='icon-linkedin'></i><span>Linkedin</span></a>
 					</nav>
 				</div>
 				<a href="http://meteor.com" target="_blank" title="Proudly developed with Meteor" class="meteor">Proudly developed with Meteor</a>
-				<a class="github-fork" href="https://github.com/RocketChat/Rocket.Chat">Fork it on github</a>
+				<github-fork href="https://github.com/RocketChat/Rocket.Chat" hidden></github-fork>
 			</footer>
-			<canvas class="connect"></canvas>
+			<div id="particles-js"></div>
 		</div>
 	</section>
+	<script src="/scripts/particles.js"></script>
+	<script>
+	(function(){
+		setTimeout(function(){document.querySelector("github-fork").enter();}, 1000);
+		particlesJS.load('particles-js', '/scripts/particles.json', function(){});
+	})();
+	</script>
 </body>

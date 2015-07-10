@@ -1,0 +1,89 @@
+<template name="avatarSuggestion">
+	{{#if .}}
+		<div class="avatar-suggestion-item">
+			<div class="avatar" style="background-image: url({{blob}});">
+			</div>
+			<div class="action">
+				<button type="button" class="button primary {{service}} select-service">{{_ "Use_service_avatar" service}}</button>
+			</div>
+		</div>
+	{{/if}}
+</template>
+
+<template name="avatarSuggestionLogin">
+	{{#if .}}
+		<div class="avatar-suggestion-item">
+			<div class="avatar question-mark icon-user"></div>
+			<div class="action">
+				<button type="button" class="button primary {{.}} login-with-service">{{_ "Login_with" .}}</button>
+			</div>
+		</div>
+	{{/if}}
+</template>
+
+<template name="avatarPrompt">
+	<form id="login-card" method='/'>
+		<header>
+			<h2>{{_ "Select_an_avatar"}}</h2>
+			<p>{{_ "Select_service_to_login"}}</p>
+		</header>
+		<div class="fields">
+			<div class='input-text active'>
+				<div class="avatar-suggestions">
+					{{#if suggestions.ready}}
+						<div class="avatar-suggestion-item">
+							{{> avatar username=username preventImage='true'}}
+							{{#with service='initials'}}
+								<div class="action">
+									<button type="button" class="button primary select-service">{{_ "Use_initials_avatar" }}</button>
+								</div>
+							{{/with}}
+						</div>
+
+						{{> avatarSuggestion suggestions.avatars.gravatar}}
+						{{> avatarSuggestion suggestions.avatars.facebook}}
+						{{> avatarSuggestion suggestions.avatars.google}}
+						{{> avatarSuggestion suggestions.avatars.github}}
+						{{> avatarSuggestion suggestions.avatars.linkedin}}
+
+						{{#unless suggestions.avatars.facebook}}
+							{{> avatarSuggestionLogin 'facebook'}}
+						{{/unless}}
+						{{#unless suggestions.avatars.google}}
+							{{> avatarSuggestionLogin 'google'}}
+						{{/unless}}
+						{{#unless suggestions.avatars.github}}
+							{{> avatarSuggestionLogin 'github'}}
+						{{/unless}}
+						{{#unless suggestions.avatars.linkedin}}
+							{{> avatarSuggestionLogin 'linkedin'}}
+						{{/unless}}
+
+						<div class="avatar-suggestion-item">
+							<div style="background-image: url({{upload.blob}});" class="avatar {{#unless upload}}question-mark icon-upload{{/unless}}">
+							</div>
+							<div class="action">
+								{{#with upload}}
+									<button type="button" class="button primary select-service">{{_ "Use_uploaded_avatar"}}</button>
+								{{/with}}
+								{{#unless upload}}
+									<button type="button" class="button primary">{{_ "Select_file"}}
+										<input type="file" class="avatar-file-input" accept="image/*">
+									</button>
+								{{/unless}}
+							</div>
+						</div>
+					{{else}}
+						{{_ "Loading_suggestion"}}
+					{{/if}}
+				</div>
+			</div>
+		</div>
+
+		{{#if username.ready}}
+			<div class="submit">
+				<button data-loading-text="{{_ "Please_wait"}}..." class='button primary login'><span>{{_ "Use_this_username"}}</span></button>
+			</div>
+		{{/if}}
+	</form>
+</template>

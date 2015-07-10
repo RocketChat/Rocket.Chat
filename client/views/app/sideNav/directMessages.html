@@ -1,14 +1,13 @@
 <template name="directMessages">
-	<h3>
-		{{_ "chatRooms.Direct_Messages"}}
+	<h3 class="add-room">
+		{{_ "Direct_Messages"}}
+		<i class="a-plus"></i>
 	</h3>
-	{{#if total}}
-		<ul>
-			{{#each rooms}}
-				{{> chatRoomItem }}
-			{{/each}}
-		</ul>
-	{{else}}
-		<p class="empty">{{_ "chatRooms.No_direct_messages_yet" }}</p>
-	{{/if}}
+	<ul>
+		{{#each rooms}}
+			{{> chatRoomItem }}
+		{{else}}
+			<p class="empty">{{_ "No_direct_messages_yet" }}</p>
+		{{/each}}
+	</ul>
 </template>
