@@ -1,0 +1,228 @@
+<template name="room">
+	<section class="room-container" id="{{roomContainerId}}">
+		<section class="messages-container" id="{{windowId}}">
+			<header class="fixed-title">
+				<div class="burger">
+					<i></i>
+					<i></i>
+					<i></i>
+				</div>
+				<h2>
+					{{#if subscribed}}
+						<a href="#favorite" class="toggle-favorite"><i class="{{favorite}}"></i></a>
+					{{/if}}
+					<i class="{{roomTypeIcon}}"></i>
+					<span class="room-title {{editingTitle}}">{{roomName}}</span>
+					{{#if canEditName}}
+					<input type="text" id="room-title-field" class="{{showEditingTitle}}" value="{{roomNameEdit}}" dir="auto">
+					<a href="#edit" class="edit-room-title"><i class="icon-pencil"></i></a>
+					{{/if}}
+				</h2>
+			</header>
+			<div class="messages-box">
+				<div class="wrapper">
+					<ul>
+						{{#if hasMore}}
+							<li class="load-more">
+								<button class="button secondary load-more {{isLoading}}">{{_ "Load_more"}}</button>
+							</li>
+						{{else}}
+							<li class="start">
+								{{_ "Start_of_conversation"}}
+							</li>
+						{{/if}}
+						{{#each messagesHistory}}
+							{{#nrr nrrargs 'message' .}}{{/nrr}}
+						{{/each}}
+					</ul>
+				</div>
+				<div class="new-message not">
+					<i class="icon-down-big"></i>
+					<span>{{_ "New_messages"}}</span>
+				</div>
+			</div>
+			<footer class="footer">
+				{{#if subscribed}}
+					<form class="message-form" method="post" action="/">
+						<div>
+							{{> messagePopupConfig getPupupConfig}}
+							<textarea dir="auto" name="msg" class="input-message"></textarea>
+							<i class="icon-paper-plane" title="{{_ "Send_Message"}}"></i>
+						</div>
+						<div class="users-typing">
+							{{#with usersTyping}}
+								<strong>{{users}}</strong>
+								{{#if multi}}
+									{{#if selfTyping}}
+										{{_ "are_also_typing"}}
+									{{else}}
+										{{_ "are_typing"}}
+									{{/if}}
+								{{else}}
+									{{#if selfTyping}}
+										{{_ "is_also_typing" context="male"}}
+									{{else}}
+										{{_ "is_typing" context="male"}}
+									{{/if}}
+								{{/if}}
+							{{/with}}
+						</div>
+						<div class="formatting-tips" aria-hidden="true" dir="auto">
+							<b>*{{_ "bold"}}*</b>
+							<i>_{{_ "italics"}}_</i>
+							<span>~<strike>{{_ "strike"}}</strike>~</span>
+							<code class="inline">`{{_ "inline_code"}}`</code>
+							<code class="inline"><span class="hidden-br"><br></span>```<span class="hidden-br"><br></span><i class="icon-level-down"></i>{{_ "multi"}}<span class="hidden-br"><br></span><i class="icon-level-down"></i>{{_ "line"}}<span class="hidden-br"><br></span><i class="icon-level-down"></i>```</code>
+							<q><span class="hidden-br"><br></span>&gt;{{_ "quote"}}</q>
+						</div>
+					</form>
+				{{else}}
+					<div>
+						{{{_ "you_are_in_preview_mode_of" room_name=roomName}}}
+						<button class="button join"><span><i class="icon-login"></i> {{_ "join"}}</span></button>
+					</div>
+				{{/if}}
+			</footer>
+		</section>
+		<section class="flex-tab">
+			<div class="control">
+				<button class="more"><span class="arrow {{arrowPosition}}"></span></button>
+				{{#if canAddUser}}
+					<div class="search-form">
+						<div class="input-line search">
+							{{> inputAutocomplete settings=autocompleteSettingsAddUser id="user-add-search" class="search" placeholder=tAddUsers}}
+							<i class="icon-plus"></i>
+						</div>
+					</div>
+				{{else}}
+					{{#if isChannel}}
+						<form class="search-form" role="form">
+							<div class="input-line search">
+								{{> inputAutocomplete settings=autocompleteSettingsRoomSearch id="room-search" class="search" placeholder=tQuickSearch autocomplete="off"}}
+								<i class="icon-search"></i>
+							</div>
+						</form>
+					{{/if}}
+				{{/if}}
+			</div>
+			{{#if flexOpened}}
+				<div class="content">
+					{{#if isGroupChat}}
+						<div class="list-view{{#if $.Session.get 'showUserInfo'}} -hidden{{/if}}">
+							{{#with roomUsers}}
+								<div class="status">
+									<h2>{{_ "Members_List"}}</h2> {{!--
+									<p>
+										{{{_ "Showing_online_users" total_online=totalOnline total=total}}}
+										<button class="see-all">{{seeAll}}</button>
+									</p>--}}
+								</div>
+								<ul class='list cf_ lines'>
+									{{#each users}}
+										{{#with userActiveByUsername .}}
+											<li class='user-image user-card-room status-{{status}}'>
+												<a data-username="{{username}}" tabindex="0" title="{{username}}">
+													{{> avatar username=username}}
+													<p>{{username}}</p>
+												</a>
+											</li>
+										{{/with}}
+									{{/each}}
+								</ul>
+							{{/with}}
+						</div>
+						<div class="user-view animated{{#unless $.Session.get 'showUserInfo'}} -hidden{{/unless}}">
+							{{#with flexUserInfo}}
+								<div class="about cf_">
+									<div class="thumb">
+										{{> avatar username=username}}
+									</div>
+									<div class="info">
+										<h3>{{username}}</h3>
+										{{#if contactCode}}
+											<div class="contact-code">{{_ "Contact"}} {{contactCode}}</div>
+										{{/if}}
+										{{!--
+										{{#each emails}}
+											<p><i class="icon-mail"></i> {{address}}</p>
+										{{/each}}
+										{{#if phone}}
+											<p><i class="icon-phone"></i> {{phone}}</p>
+										{{/if}}
+										--}}
+									</div>
+								</div>
+								<nav>
+									<button class='button secondary back'><span>{{_ "View_All"}} <i class='icon-angle-right'></i></span></button>
+									<button class='button pvt-msg'><span><i class='icon-chat'></i> {{_ "Conversation"}}</span></button>
+								</nav>
+							{{/with}}
+						</div>
+					{{else}}
+						<div class="user-view">
+							{{#with userData}}
+								<div class="about cf_">
+
+										{{#if selfVideoUrl}}
+											{{#if rtcLayout3}}
+												<div id='fullscreendiv' style="width: 800px; height: 350px">
+												<video id='videoremote' class="video-remote" src="{{remoteVideoUrl}}" style="width: 100%; align-items: center; margin-bottom: 10px; background-color: #000; transition: width 2s, height 2s, top 2s, left 2s, transform 2s;" autoplay></video>
+												<video id='videoself' class="video-self" src="{{selfVideoUrl}}" style="width: 250px; position: absolute; top: 21px; right: 31px; border: 1px solid #FFF; background-color: #000; transition: width 2s, height 2s, top 2s, left 2s, transform 2s;" autoplay muted></video>
+												</div>
+											{{/if}}
+											{{#if rtcLayout2}}
+												<div style="display: flex; flex-direction: row; align-items: center; width: 800px; height: 350px">
+												<video id="videoremote" class="video-remote" src="{{remoteVideoUrl}}" style="flex: 1 0; min-width: 380px; height: 285px; margin: 10px; background-color: #000;"  autoplay></video>
+												<video id="videoself" class="video-self" src="{{selfVideoUrl}}" style="flex: 1 0;  min-width: 380px; height: 285px; margin: 10px; background-color: #000;" autoplay muted></video>
+											</div>
+											{{/if}}
+											{{#if rtcLayout1}}
+												<div style="display: flex; flex-direction: column; align-items: center; width: 360px; height: 500px">
+												<video class="video-remote" src="{{remoteVideoUrl}}" style="flex: 1 1;  width: 320px; margin: 10px; background-color: #000;" autoplay></video>
+												<video class="video-self" src="{{selfVideoUrl}}" style="flex: 1 1; width: 320px; margin: 10px; background-color: #000;" autoplay muted></video>
+												</div>
+											{{/if}}
+											{{#if noRtcLayout}}
+												<div>
+												<video class="video-remote" src="{{remoteVideoUrl}}" style="width: 100%; margin-bottom: 10px; background-color: #000; transition: width 2s, height 2s, top 2s, left 2s, transform 2s;" autoplay></video>
+												<video class="video-self" src="{{selfVideoUrl}}" style="width: 100px; position: absolute; top: 21px; right: 21px; border: 1px solid #FFF; background-color: #000; transition: width 2s, height 2s, top 2s, left 2s, transform 2s;" autoplay muted></video>
+												</div>
+											{{/if}}
+										{{/if}}
+
+									<div class="thumb">
+										{{> avatar username=username}}
+									</div>
+									<div class="info">
+										<h3>{{username}}</h3>
+										{{#if contactCode}}
+											<div class="contact-code">{{_ "contact"}} {{contactCode}}</div>
+										{{/if}}
+										{{!--
+										{{#each emails}}
+											<p><i class="icon-mail"></i> {{address}}</p>
+										{{/each}}
+										{{#each phone}}
+											<p><i class="icon-phone"></i> {{phoneNumber}}</p>
+										{{/each}}
+										--}}
+									</div>
+								</div>
+								<nav>
+									{{#unless selfVideoUrl}}
+										<button class='button start-video'><span><i class='icon-videocam'></i> {{_ "Video"}}</span></button>
+									{{else}}
+										<button class='button red stop-video'><span><i class='icon-videocam'></i> {{_ "StopVideo"}}</span></button>
+									{{/unless}}
+								</nav>
+							{{/with}}
+						</div>
+					{{/if}}
+				</div>
+			{{/if}}
+			<footer>
+				{{> social}}
+			</footer>
+		</section>
+	</section>
+</template>

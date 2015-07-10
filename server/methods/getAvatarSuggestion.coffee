@@ -16,6 +16,11 @@
 			service: 'github'
 			url: "https://avatars.githubusercontent.com/#{user.services.github.username}?s=200"
 
+	if user.services.linkedin?.pictureUrl?
+		avatars.push
+			service: 'linkedin'
+			url: user.services.linkedin.pictureUrl
+
 	if user.emails?.length > 0
 		for email in user.emails when email.verified is true
 			avatars.push
@@ -35,6 +40,7 @@
 				blob = "data:#{result.headers['content-type']};base64," 
 				blob += Buffer(result.content, 'binary').toString('base64')
 				avatar.blob = blob
+				avatar.contentType = result.headers['content-type']
 				validAvatars[avatar.service] = avatar
 		catch e
 			# ...

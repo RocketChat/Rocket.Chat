@@ -1,10 +1,9 @@
 Template.privateGroups.helpers
 	tRoomMembers: ->
-		return t('chatRooms.Members_placeholder')
+		return t('Members_placeholder')
+
 	rooms: ->
-		return ChatSubscription.find { uid: Meteor.userId(), t: { $in: ['p']}, f: { $ne: true } }, { sort: 't': 1, 'rn': 1 }
-	total: ->
-		return ChatSubscription.find({ uid: Meteor.userId(), t: { $in: ['p']}, f: { $ne: true } }, { sort: 't': 1, 'rn': 1 }).fetch().length
+		return ChatSubscription.find { t: { $in: ['p']}, f: { $ne: true } }, { sort: 't': 1, 'name': 1 }
 
 Template.privateGroups.events
 	'click .add-room': (e, instance) ->

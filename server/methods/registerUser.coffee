@@ -10,4 +10,5 @@ Meteor.methods
 			$set:
 				name: formData.name
 
-		Accounts.sendVerificationEmail(userId, userData.email);
+		if userData.email
+			Accounts.sendVerificationEmail(userId, userData.email);

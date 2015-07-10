@@ -1,34 +1,38 @@
 Meteor.methods
-	saveRoomName: (data) ->
-		fromId = Meteor.userId()
-		# console.log '[methods] saveRoomName -> '.green, 'fromId:', fromId, 'data:', data
+	saveRoomName: (rid, name) ->
+		if not Meteor.userId()
+			throw new Meteor.Error('invalid-user', "[methods] sendMessage -> Invalid user")
 
-		room = ChatRoom.findOne data.rid
+		room = ChatRoom.findOne rid
 
-		if room.uid isnt Meteor.userId() or room.t not in ['c', 'p']
+		if room.u._id isnt Meteor.userId() or room.t not in ['c', 'p']
 			throw new Meteor.Error 403, 'Not allowed'
 
-		newName = _.slugify data.name
+		name = _.slugify name
 
-		if newName is room.name
+		if name is room.name
 			return
 
-		ChatRoom.update data.rid,
+		ChatRoom.update rid,
 			$set:
-				name: newName
-				nc: true
+				name: name
 
-		ChatSubscription.update { rid: data.rid },
+		ChatSubscription.update
+			rid: rid
+		,
 			$set:
-				rn: newName
+				name: name
+				alert: true
 		,
 			multi: true
 
 		ChatMessage.insert
-			rid: data.rid
+			rid: rid
 			ts: (new Date)
 			t: 'r'
-			msg: newName
-			by: Meteor.userId()
+			msg: name
+			u:
+				_id: Meteor.userId()
+				username: Meteor.user().username
 
 		return true

@@ -1,0 +1,249 @@
+.rtl
+{
+  direction: rtl;
+
+  // Mix-ins
+  .right(@right) {
+    right: @right;
+    left: auto;
+  }
+
+  .left (@left) {
+    left: @left;
+    right: auto;
+  }
+
+  .margin-right(@margin-right) {
+    margin-right: @margin-right;
+    margin-left: auto;
+  }
+
+  .margin-left(@margin-left) {
+    margin-left: @margin-left;
+    margin-right: auto;
+  }
+
+  .padding-right(@padding-right) {
+    padding-right: @padding-right;
+    padding-left: 0px;
+  }
+
+  .padding-left(@padding-left) {
+    padding-left: @padding-left;
+    padding-right: 0px;
+  }
+
+  .side-nav {
+    .right(0px);
+
+    .header {
+      .right(0px);
+
+      .account-box {
+        .info {
+          padding: 10px 18px 10px 0px;
+
+          .thumb {
+            float: right;
+          }
+          .thumb:after {
+            .right(-14px);
+          }
+
+          .data {
+            float: right;
+            padding: 0 10px 0 25px;
+
+            .wrp {
+              text-align: right;
+            }
+          }
+        }
+
+        .options {
+          .right(0px);
+
+          .status {
+            .padding-right(38px);
+          }
+
+          span.soon {
+           .left(-30px);
+         }
+
+          .status:after {
+            .right(18px);
+          }
+        }
+        .options._hidden {
+          transform: translateX(100%);
+        }
+
+      }
+    }
+
+    > .arrow {
+      .left(8px);
+    }
+
+    .arrow {
+      transform: rotateY(180deg);
+    }
+
+    .flex-nav {
+      .right(0px);
+    }
+
+    .flex-nav.hidden {
+      transform: translateX(100%);
+    }
+
+    .footer {
+      .right(0px);
+    }
+
+    .rooms-list {
+      > .wrapper {
+        direction: rtl;
+        .padding-right(8px);
+
+        h3.add-room
+        {
+          i {
+            .left(6px);
+          }
+        }
+
+        h3 {
+          .padding-right(10px);
+        }
+
+        ul a {
+          padding: 6px 6px 7px 25px;
+        }
+      }
+    }
+
+    .more {
+      padding: 4px 10px 4px 0px;
+    }
+    .empty {
+      .padding-right(10px);
+    }
+
+    ul .opt {
+      .left(0px);
+      .padding-left(10px);
+    }
+
+    .flex-nav {
+      > section {
+        .right(0px);
+      }
+
+      header {
+        .right(0px);
+        .padding-right(15px);
+
+        > div {
+          text-align: right;
+        }
+      }
+
+      .content {
+        > .wrapper {
+          direction: rtl;
+        }
+      }
+      .input-submit {
+        margin: 35px -4px 0 0px;
+      }
+
+      .button:before {
+        .right(0px);
+      }
+
+      footer {
+        .right(0px);
+        text-align: right;
+
+        > div {
+          text-align: right;
+        }
+      }
+    }
+  }
+
+  .side-nav:before {
+    .right(8px);
+  }
+
+  .main-content {
+    .margin-right(260px);
+  }
+
+  .messages-box {
+    margin: 60px 0px 20px 0px;
+
+    .message {
+      padding-right: 50px;
+      padding-left: 50px;
+        margin: 12px 20px 5px 20px;
+        .thumb {
+          .right(0px);
+        }
+      }
+
+      .message.new-day {
+        margin-top: 60px;
+      }
+      .message.sequential {
+        .info {
+          .right(-15px);
+          .edited, .time {
+            float: left;
+          }
+          .edit-message {
+            float: right;
+            .margin-right(5px);
+          }
+        }
+
+       .message.with-thumb .time {
+         .right(4px);
+       }
+
+        .time-single {
+          .right(-15px);
+       }
+    }
+
+  }
+
+  .messages-container {
+    .message-form {
+      textarea {
+          padding-left: 38px;
+          padding-right: 8px;
+        }
+       >.users-typing {
+         float: right;
+       }
+     }
+
+     > .formatting-tips {
+       float: left;
+     }
+     .icon-paper-plane {
+      .left(10px);
+      transform: rotateY(180deg);
+    }
+  }
+
+  q {
+    .padding-right(10px);
+  }
+  q:before {
+    .right(50px);
+  }
+}

@@ -1,21 +1,41 @@
 <template name="home">
 	<section class="page-container page-home page-static">
-		<head class="fixed-title">
+		<header class="fixed-title">
 			<div class="burger">
 				<i></i>
 				<i></i>
 				<i></i>
 			</div>
 			<h2>
-				<span class="room-title">{{_ "home.welcome"}}<img class="logo" src="/images/logo/logo-dark.svg" /></span>
+				<span class="room-title">{{_ "Welcome_to_the"}}<img class="logo" src="/images/logo/logo-dark.svg" /></span>
 			</h2>
-		</head>
+		</header>
 		<div class="content">
 			<div class="info">
-				<p>{{_ "home.Have_your_own_chat"}}</p>
-				<p>&larr; {{_ "home.use_menu"}}.</p>
+				<p>{{_ "Have_your_own_chat"}}</p>
+				<p>&larr; {{_ "use_menu"}}.</p>
 			</div>
 			{{ > social withParagraph }}
+			<div class="rocket-team">
+				<h4>{{_ "Get_to_know_the_team" }}</h4>
+				<ul>
+					<li>
+						<a target="_blank" href="https://github.com/engelgabriel" style="background-image: url(https://avatars1.githubusercontent.com/u/1000217?v=3&s=460)" title="Gabriel Engel (Founder & CEO)"></a>
+					</li>
+					<li>
+						<a target="_blank" href="https://github.com/sampaiodiego" style="background-image: url(https://avatars3.githubusercontent.com/u/8591547?v=3&s=460)" title="Diego Sampaio (Developer)"></a>
+					</li>
+					<li>
+						<a target="_blank" href="https://github.com/marceloschmidt" style="background-image: url(https://avatars1.githubusercontent.com/u/1986378?v=3&s=460)" title="Marcelo Schmidt (Developer)"></a>
+					</li>
+					<li>
+						<a target="_blank" href="https://github.com/rodrigok" style="background-image:url(https://avatars2.githubusercontent.com/u/234261?v=3&s=460)" title="Rodrigo Nascimento (Developer)"></a>
+					</li>
+					<li>
+						<a target="_blank" href="https://github.com/rodrigok" style="background-image: url(https://avatars2.githubusercontent.com/u/8358797?v=3&s=460)" title="Rafael Caferati (UX Architect)"></a>
+					</li>
+				</ul>
+			</div>
 		</div>
 	</section>
 	<!-- <section class="flex-tab">
@@ -25,9 +45,9 @@
 		<div class="content">
 			<div class="list-view">
 				<div class="status">
-					<h2>{{_ "home.Chat_Rooms"}}</h2>
+					<h2>{{_ "Chat_Rooms"}}</h2>
 					<p>
-						{{{_ "chatWindowDashboard.Showing_online_users" 1 1}}}
+						{{{_ "Showing_online_users" total_online=1 total=1}}}
 					</p>
 				</div>
 			</div>

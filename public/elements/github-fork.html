@@ -1,0 +1,166 @@
+<template>
+	<style>
+		.github-fork {
+			position: fixed;
+			display: block;
+			width: 330px;
+			z-index: 901;
+			right: -70px;
+			top: 72px;
+			background-size: 100% auto;
+			cursor: pointer;
+			background-color: #5c5c5c;
+			color: #f0f0f0;
+			padding: 1em 0 0.95em;
+			line-height: 1.04em;
+			text-decoration: none;
+			font-family: Montserrat;
+			font-size: 1.04em;
+			box-shadow: -2px 3px 1px rgba(0, 0, 0, 0.23);
+			opacity: 1;
+			text-transform: uppercase;
+			-webkit-transform: rotate(45deg) translateY(0);
+			transform: rotate(45deg) translateY(0);
+			-webkit-transition: background-color 0.2s ease-out, -webkit-transform 0.45s cubic-bezier(0.15, 0, 0, 1), opacity 0.2s ease-out;
+			transition: background-color 0.2s ease-out, transform 0.45s cubic-bezier(0.15, 0, 0, 1), opacity 0.2s ease-out;
+		}
+
+		.github-fork.exit {
+			opacity: 0;
+			-webkit-transform: rotate(45deg) translateY(-170px);
+			transform: rotate(45deg) translateY(-170px);
+		}
+
+		.github-fork:hover {
+			background-color: #4b4b4b;
+			color: #FFF
+		}
+
+		.github-fork:before,
+		.github-fork:after {
+			content: " ";
+			background-image: url(data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0idXRmLTgiPz48IURPQ1RZUEUgc3ZnIFBVQkxJQyAiLS8vVzNDLy9EVEQgU1ZHIDEuMS8vRU4iICJodHRwOi8vd3d3LnczLm9yZy9HcmFwaGljcy9TVkcvMS4xL0RURC9zdmcxMS5kdGQiPjxzdmcgdmVyc2lvbj0iMS4xIiBpZD0iTGF5ZXJfMSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB4bWxuczp4bGluaz0iaHR0cDovL3d3dy53My5vcmcvMTk5OS94bGluayIgeD0iMHB4IiB5PSIwcHgiIHdpZHRoPSIzMnB4IiBoZWlnaHQ9IjJweCIgdmlld0JveD0iMCAwIDMyIDIiIGVuYWJsZS1iYWNrZ3JvdW5kPSJuZXcgMCAwIDMyIDIiIHhtbDpzcGFjZT0icHJlc2VydmUiPjxyZWN0IGZpbGw9IiNGNEY0RjQiIHdpZHRoPSI0IiBoZWlnaHQ9IjIiLz48cmVjdCB4PSI4IiBmaWxsPSIjRjRGNEY0IiB3aWR0aD0iNCIgaGVpZ2h0PSIyIi8+PHJlY3QgeD0iMTYiIGZpbGw9IiNGNEY0RjQiIHdpZHRoPSI0IiBoZWlnaHQ9IjIiLz48cmVjdCB4PSIyNCIgZmlsbD0iI0Y0RjRGNCIgd2lkdGg9IjQiIGhlaWdodD0iMiIvPjwvc3ZnPg==);
+			background-repeat: repeat-x;
+			background-position: top left;
+			position: absolute;
+			z-index: 1;
+			left: 0;
+			width: 100%;
+			height: 1px;
+		}
+
+		.github-fork:before {
+			top: 3px;
+		}
+
+		.github-fork:after {
+			bottom: 2px;
+		}
+	</style>
+	<a href="/" target='_blank' class='github-fork'>Fork me on github!</a>
+</template>
+<script>
+	(function (window, document, undefined) {
+		var Icons = (function () {
+			var icons = {
+				"github": "M24.999,2.48c-12.75,0-23.087,10.338-23.087,23.09c0,10.199,6.613,18.854,15.791,21.907 c1.154,0.211,1.518-0.474,1.518-1.084c0-0.547,0.011-2.082,0-4.01c-6.422,1.398-7.753-3.038-7.753-3.038 c-1.048-2.671-2.562-3.377-2.562-3.377c-2.095-1.433,0.158-1.407,0.158-1.407c2.317,0.163,3.538,2.383,3.538,2.383 c2.059,3.522,5.403,2.505,6.717,1.916c0.21-1.491,0.808-2.51,1.468-3.087C15.66,35.188,10.27,33.211,10.27,24.361 c0-2.521,0.9-4.581,2.376-6.194c-0.239-0.584-1.031-2.932,0.226-6.112c0,0,1.939-0.62,6.349,2.369 c1.841-0.513,3.817-0.768,5.78-0.777c1.962,0.009,3.938,0.264,5.781,0.777c4.409-2.988,6.346-2.369,6.346-2.369 c1.258,3.18,0.466,5.528,0.229,6.112c1.478,1.613,2.373,3.673,2.373,6.194c0,8.872-5.397,10.823-10.543,11.392 c0.828,0.717,1.582,2.101,1.582,4.255c0,2.887,0,5.632,0,6.392c0,0.617,0.372,1.302,1.544,1.076 c9.167-3.059,15.776-11.708,15.776-21.905C48.089,12.818,37.75,2.48,24.999,2.48z"
+			}
+
+			function get(icon) {
+				if (icons[icon]) {
+					return '<svg class="i-svg" height="50" version="1.1" width="50" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid meet" viewBox="0 0 50 50" space="preserve" data-icon="facebook," class="i-svg"><desc>Created with Snap</desc><defs></defs><path d="' + icons[icon] + '" fill="#ffffff"></path></svg>';
+				}
+				return false;
+			}
+			return {
+				get: get
+			}
+		})();
+
+		function checkColor(el) {
+			var color = el.getAttribute("color");
+			if (typeof color === "string") {
+				el.link.style.backgroundColor = color;
+			}
+		}
+
+		function checkVisibility(el) {
+			var hidden = el.getAttribute("hidden");
+			if (hidden !== null && hidden !== undefined) {
+				updateClass(el, "exit");
+			}
+		}
+
+		function checkLink(el){
+			var link = el.getAttribute("href") || el.getAttribute("url") || el.getAttribute("github") || "";
+			if(typeof link === "string" && link.length){
+				link = link.replace(/(http)(s)?(\:\/\/)(www\.)?(github.com)(\/)(.*)/i,"$7");
+				el.link.href = "https://github.com/" + link;
+			}
+		}
+
+		function events(el) {
+			el.link.addEventListener("mouseleave", function (event) {});
+			el.link.addEventListener("mousemove", function (event) {});
+			el.link.addEventListener("mousedown", function (event) {});
+			el.link.addEventListener("click", function (event) {});
+		}
+
+		function init(el) {
+			var clone = mainDoc.importNode(template, true);
+			el.shadow = el.createShadowRoot();
+			el.shadow.appendChild(clone);
+			el.time = null;
+			el.link = el.shadow.querySelector('a');
+			el.class = "github-fork";
+		}
+
+		function updateClass(el, name, action) {
+			var reg = new RegExp(name, "i");
+			if (!action) {
+				if (!el.class.match(reg)) {
+					el.class = el.class + " " + name;
+				}
+			} else {
+				el.class = el.class.replace(reg, "");
+				el.class = el.class.replace("[\s]*", " ").trim();
+			}
+			el.link.className = el.class;
+		}
+		var mainDoc = document,
+			thisDoc = (mainDoc._currentScript || mainDoc.currentScript).ownerDocument,
+			template = thisDoc.querySelector('template').content,
+			element = Object.create(HTMLElement.prototype),
+			event = new Event('action');
+		element.createdCallback = function () {
+			init(this);
+			events(this);
+			checkVisibility(this);
+			checkLink(this);
+		};
+		element.attributeChangedCallback = function (attr, oldVal, newVal) {
+			if(attr == "color"){
+				checkColor(this);
+			}
+		};
+		element.exit = function () {
+			if (!this.class.match(/exit/)) {
+				updateClass(this, "exit");
+			}
+		}
+		element.enter = function () {
+			if (this.class.match(/exit/)) {
+				updateClass(this, "exit", 1);
+			}
+		}
+		element.background = function (color){
+			if(typeof color === "string"){
+				color = "#" + color.replace("#","");
+				this.setAttribute("color", color);
+			}
+		}
+		mainDoc.registerElement('github-fork', {
+			prototype: element
+		});
+	})(window, document);
+</script>

@@ -1,0 +1,29 @@
+<template name="oembedUrlWidget">
+	<a href="{{url}}" target="_blank">{{url}}</a>
+	{{#if parsedUrl}}
+		<blockquote>
+			<a href="{{url}}" target="_blank">{{parsedUrl.host}}</a>
+			<div style="{{#if image}}min-height: 60px;{{/if}}">
+				{{#if image}}
+					{{#if meta.ogImageUserGenerated}}
+						<div>
+							<a href="{{url}}" target="_blank">
+								<img src="{{image}}" height="200" />
+							</a>
+						</div>
+					{{else}}
+						<a href="{{url}}" target="_blank">
+							<img src="{{image}}" height="60" align="left" style="margin-right: 5px;"/>
+						</a>
+					{{/if}}
+				{{/if}}
+				{{#if title}}
+					<div>
+						<strong>{{title}}</strong>
+					</div>
+				{{/if}}
+				{{description}}
+			</div>
+		</blockquote>
+	{{/if}}
+</template>
