@@ -140,6 +140,11 @@ Accounts.registerLoginHandler("ldap", function(loginRequest) {
 
 	// Instantiate LDAP with options
 	var userOptions = loginRequest.ldapOptions || {};
+
+	// Don't allow overwriting url and port
+	delete userOptions.url;
+	delete userOptions.port;
+
 	var ldapObj = new LDAP(userOptions);
 
 	// Call ldapCheck and get response
@@ -164,6 +169,14 @@ Accounts.registerLoginHandler("ldap", function(loginRequest) {
 
 		// Login user if they exist
 		if (user) {
+
+			if (user.ldap !== true) {
+				return {
+					userId: null,
+					error: "LDAP Authentication succeded, but there's already an existing user with provided username in Mongo."
+				};
+			}
+
 			userId = user._id;
 
 			// Create hashed token so user stays logged in
@@ -179,7 +192,8 @@ Accounts.registerLoginHandler("ldap", function(loginRequest) {
 		// Otherwise create user if option is set
 		else if (ldapObj.options.createNewUser) {
 			var userObject = {
-				username: ldapResponse.username
+				username: ldapResponse.username,
+				ldap: true
 			};
 			// Set email
 			if (ldapResponse.email) userObject.email = ldapResponse.email;
