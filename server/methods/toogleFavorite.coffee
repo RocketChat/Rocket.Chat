@@ -1,9 +1,13 @@
 Meteor.methods
-	toogleFavorite: (roomId, fav) ->
-		unless Meteor.userId()
-			throw new Meteor.Error(403, "[methods] toogleFavorite -> Invalid user")
+	toogleFavorite: (rid, f) ->
+		if not Meteor.userId()
+			throw new Meteor.Error('invalid-user', "[methods] toogleFavorite -> Invalid user")
 
-		fromId = Meteor.userId()
-		# console.log '[methods] toogleFavorite -> '.green, 'fromId:', fromId, 'roomId:', roomId, 'fav:', fav
+		console.log '[methods] toogleFavorite -> '.green, 'userId:', Meteor.userId(), 'arguments:', arguments
 
-		ChatSubscription.update { rid: roomId, uid: Meteor.userId() }, { $set: { f: fav } }
+		ChatSubscription.update
+			rid: rid
+			'u._id': Meteor.userId()
+		,
+			$set:
+				f: f

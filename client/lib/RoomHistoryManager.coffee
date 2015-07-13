@@ -1,54 +1,52 @@
 @RoomHistoryManager = new class
-	defaultLimit = 30
+	defaultLimit = 50
 
 	histories = {}
 
-	getRoom = (roomId) ->
-		if not histories[roomId]?
-			histories[roomId] =
+	getRoom = (rid) ->
+		if not histories[rid]?
+			histories[rid] =
 				hasMore: ReactiveVar true
 				isLoading: ReactiveVar false
 				loaded: 0
 
-		return histories[roomId]
+		return histories[rid]
 
-	initRoom = (roomId, from=new Date) ->
-		room = getRoom roomId
-
-		room.from = from
-
-	getMore = (roomId, limit=defaultLimit) ->
-		room = getRoom roomId
-
-		if room.hasMore.curValue isnt true or not room.from?
+	getMore = (rid, limit=defaultLimit) ->
+		room = getRoom rid
+		if room.hasMore.curValue isnt true
 			return
 
 		room.isLoading.set true
 
-		$('.messages-box .wrapper').data('previous-height', $('.messages-box .wrapper').get(0)?.scrollHeight - $('.messages-box .wrapper').get(0)?.scrollTop)
+		#$('.messages-box .wrapper').data('previous-height', $('.messages-box .wrapper').get(0)?.scrollHeight - $('.messages-box .wrapper').get(0)?.scrollTop)
+		# ScrollListener.setLoader true
+		lastMessage = ChatMessageHistory.findOne({rid: rid}, {sort: {ts: 1}})
+		lastMessage ?= ChatMessage.findOne({rid: rid}, {sort: {ts: 1}})
 
-		Meteor.call 'loadHistory', roomId, room.from, limit, room.loaded, (err, result) ->
+		if lastMessage?
+			ts = lastMessage.ts
+		else
+			ts = new Date
+
+		Meteor.call 'loadHistory', rid, ts, limit, 0, (err, result) ->
 			ChatMessageHistory.insert item for item in result
-
 			room.isLoading.set false
-
 			room.loaded += result.length
-
 			if result.length < limit
 				room.hasMore.set false
 
-	hasMore = (roomId) ->
-		room = getRoom roomId
+	hasMore = (rid) ->
+		room = getRoom rid
 
 		return room.hasMore.get()
 
-	isLoading = (roomId) ->
-		room = getRoom roomId
+	isLoading = (rid) ->
+		room = getRoom rid
 
 		return room.isLoading.get()
 
 
-	initRoom: initRoom
 	getMore: getMore
 	hasMore: hasMore
 	isLoading: isLoading

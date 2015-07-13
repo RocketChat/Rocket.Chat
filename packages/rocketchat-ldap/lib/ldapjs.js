@@ -1,0 +1,1 @@
+MeteorWrapperLdapjs = Npm.require('ldapjs');

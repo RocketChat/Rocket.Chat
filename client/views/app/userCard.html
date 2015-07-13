@@ -1,9 +1,9 @@
 <template name="userCard">
 	<div class="user-profile">
-		<span class="-close"><i title="{{_ "general.close"}}" class="icon-cancel"></i></span>
+		<span class="-close"><i title="{{_ "close"}}" class="icon-cancel"></i></span>
 		{{#with userData}}
 			<div class="thumb">
-				{{> avatar userId=uid}}
+				{{> avatar username=username}}
 			</div>
 			<div class="info">
 				<h3>{{name}}</h3>
@@ -20,10 +20,10 @@
 	</div>
 	<div class="profile-buttons">
 		{{#unless $.Session.equals 'userProfileActive' $.Meteor.userId}}
-			<button class="button primary small private-chat"><span><i class='icon-chat'></i> {{_ "general.Conversation"}}</span></button>
+			<button class="button primary small private-chat"><span><i class='icon-chat'></i> {{_ "Conversation"}}</span></button>
 		{{/unless}}
 		{{#if canManageRoom}}
-			<button class="button delete small remove-user"><span><i class='icon-cancel'></i> {{_ "general.Remove"}}</span></button>
+			<button class="button delete small remove-user"><span><i class='icon-cancel'></i> {{_ "Remove"}}</span></button>
 		{{/if}}
 	</div>
 </template>

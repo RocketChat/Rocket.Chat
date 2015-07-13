@@ -1,0 +1,27 @@
+<template name="listChannelsFlex">
+	<header>
+		<div>
+			<h4>{{_ "Channels"}}</h4>
+		</div>
+	</header>
+	<div class="content">
+		<div class="wrapper">
+			<h4>{{_ "Channels_list"}}</h4>
+			<ul>
+			{{#each channel}}
+				<li>
+					<a href="{{pathFor "room"}}" class="channel-link">
+						<i class="icon-hash"></i>
+						{{name}}
+					</a>
+				</li>
+			{{/each}}
+			</ul>
+		</div>
+	</div>
+	<footer>
+		<div>
+			<button class="button clean create">{{_ "Create_new"}}</button>
+		</div>
+	</footer>
+</template>

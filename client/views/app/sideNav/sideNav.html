@@ -10,9 +10,8 @@
 					{{> channels }}
 					{{> directMessages }}
 					{{> privateGroups }}
-
 					<h3>
-						<a href="{{pathFor 'privateHistory'}}">{{_ "general.History"}}</a>
+						<a href="{{pathFor 'privateHistory'}}">{{_ "History"}}</a>
 					</h3>
 				</div>
 			</div>
@@ -21,11 +20,12 @@
 					{{> UI.dynamic template=flexTemplate data=flexData}}
 				</section>
 			</div>
+			<span class="arrow"></span>
 		{{/if}}
 		<footer class="footer">
-			<a href="{{ pathFor 'index' }}" class="logo">
-				<small>{{_ "chatRooms.Powered_by"}}</small>
+			<a href="https://github.com/RocketChat/Rocket.Chat" class="logo" target="_blank">
 				<img src="/images/logo/logo.svg" />
+				<small><i class="icon-github-circled"></i> {{_ "Fork_it_on_github"}}</small>
 			</a>
 		</footer>
 	</aside>

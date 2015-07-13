@@ -1,36 +1,34 @@
 @RoomManager = new class
 	defaultTime = 600000 # 10 minutes
 	openedRooms = {}
-	myRoomActivity = null
+	subscription = null
 
 	Dep = new Tracker.Dependency
 
 	init = ->
-		myRoomActivity = Meteor.subscribe('myRoomActivity')
-		return myRoomActivity
+		subscription = Meteor.subscribe('subscription')
+		return subscription
 
-	expireRoom = (roomId) ->
-		if openedRooms[roomId]
-			if openedRooms[roomId].sub?
-				for sub in openedRooms[roomId].sub
+	close = (rid) ->
+		if openedRooms[rid]
+			if openedRooms[rid].sub?
+				for sub in openedRooms[rid].sub
 					sub.stop()
-			openedRooms[roomId].ready = false
-			openedRooms[roomId].active = false
-			delete openedRooms[roomId].timeout
+
+			openedRooms[rid].ready = false
+			openedRooms[rid].active = false
+			delete openedRooms[rid].timeout
+
+			ChatMessageHistory.remove rid: rid
 
 	computation = Tracker.autorun ->
-		for roomId, record of openedRooms when record.active is true
+		for rid, record of openedRooms when record.active is true
 			record.sub = [
-				Meteor.subscribe 'dashboardRoom', roomId, moment().subtract(2, 'hour').startOf('day').toDate()
+				Meteor.subscribe 'room', rid
+				Meteor.subscribe 'messages', rid
 			]
-			# @TODO talvez avaliar se todas as subscriptions do array estão 'ready', mas por enquanto, as mensagens são o mais importante
-			record.ready = record.sub[0].ready()
-			if record.ready is true and record.historyCalled isnt true
-				record.historyCalled = true
-				RoomHistoryManager.initRoom roomId, moment().subtract(2, 'hour').startOf('day').toDate()
-				Tracker.nonreactive ->
-					if Session.get('roomData' + roomId)?.msgs > 9 and ChatMessage.find({ rid: roomId }).count() < 10 and ChatMessageHistory.find({ rid: roomId }).count() is 0
-						RoomHistoryManager.getMore roomId
+
+			record.ready = record.sub[0].ready() and record.sub[1].ready()
 
 			Dep.changed()
 
@@ -40,39 +38,30 @@
 			clearTimeout openedRooms[except].timeout
 			delete openedRooms[except].timeout
 
-		for roomId of openedRooms
-			if roomId isnt except and not openedRooms[roomId].timeout?
-				openedRooms[roomId].timeout = setTimeout expireRoom, defaultTime, roomId
+		for rid of openedRooms
+			if rid isnt except and not openedRooms[rid].timeout?
+				openedRooms[rid].timeout = setTimeout close, defaultTime, rid
 
-	open = (roomId) ->
-		if not openedRooms[roomId]?
-			openedRooms[roomId] =
+	open = (rid) ->
+
+		if not openedRooms[rid]?
+			openedRooms[rid] =
 				active: false
 				ready: false
 
-		if myRoomActivity.ready()
-			if ChatSubscription.findOne { rid: roomId, uid: Meteor.userId() }, { reactive: false }
-				openedRooms[roomId].active = true
-				setRoomExpireExcept roomId
+		if subscription.ready()
+			# if ChatSubscription.findOne { rid: rid }, { reactive: false }
+			if openedRooms[rid].active isnt true
+				openedRooms[rid].active = true
+				setRoomExpireExcept rid
 				computation.invalidate()
-			else
-				Meteor.call 'canAccessRoom', roomId, (error, result) ->
-					if result
-						openedRooms[roomId].active = true
-						setRoomExpireExcept roomId
-						computation.invalidate()
-					else
-						if error.error is 'without-permission'
-							toastr.error t('RoomManager.No_permission_to_view_room')
-
-						Router.go 'home'
 
 		return {
 			ready: ->
 				Dep.depend()
-				return openedRooms[roomId].ready
+				return openedRooms[rid].ready
 		}
 
 	open: open
-	close: expireRoom
+	close: close
 	init: init

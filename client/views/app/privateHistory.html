@@ -1,19 +1,19 @@
 <template name="privateHistory">
 	<section class="page-container page-list">
-		<head class="fixed-title">
+		<header class="fixed-title">
 			<h2>
-				<span class="room-title">{{_ "general.History"}}</span>
+				<span class="room-title">{{_ "History"}}</span>
 			</h2>
-		</head>
+		</header>
 		<div class="content">
 			<form class="search-form" role="form">
 				<div class="input-line search">
-					<input type="text" id="history-filter" placeholder="{{_ "general.Search"}}">
+					<input type="text" id="history-filter" placeholder="{{_ "Search"}}" dir="auto">
 					<i class="icon-search"></i>
 				</div>
 			</form>
 			<div class="results">
-				{{{_ "privateHistory.Showing_results" history.length}}}
+				{{{_ "Showing_results" history.length}}}
 			</div>
 			<div class="list">
 				{{#each history.items}}
@@ -21,8 +21,8 @@
 						<div class="info">
 							<h3><i class="{{type}}"></i><span class="enter-room">{{name}}</span></h3>
 							<ul>
-								<li>{{_ "privateHistory.n_messages" msgs}}</li>
-								<li>{{_ "privateHistory.since_creation" creation}}</li>
+								<li>{{_ "n_messages" msgs}}</li>
+								<li>{{_ "since_creation" creation}}</li>
 							</ul>
 						</div>
 						<div class="status">
