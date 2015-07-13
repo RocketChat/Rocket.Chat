@@ -27,7 +27,9 @@ Template.userStatus.events
 
 	'click #logout': (event) ->
 		event.preventDefault()
-		Meteor.logout()
+		user = Meteor.user()
+		Meteor.logout ->
+			Meteor.call('logoutCleanUp', user)
 
 	'click #avatar': (event) ->
 		Meteor.call('resetAvatar')
