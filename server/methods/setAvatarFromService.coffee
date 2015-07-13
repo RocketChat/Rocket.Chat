@@ -1,14 +1,22 @@
 Meteor.methods
-	setAvatarFromService: (image, service) ->
+	setAvatarFromService: (dataURI, contentType, service) ->
 		if not Meteor.userId()
-			throw new Meteor.Error 203, '[methods] typingStatus -> Usuário não logado'
+			throw new Meteor.Error('invalid-user', "[methods] setAvatarFromService -> Invalid user")
+
+		console.log '[methods] setAvatarFromService -> '.green, 'userId:', Meteor.userId(), 'arguments:', arguments
 
 		user = Meteor.user()
 
-		file = new FS.File image
-		file.attachData image, ->
-			file.name user.username
+		if service is 'initials'
+			Meteor.users.update {_id: user._id}, {$set: {avatarOrigin: service}}
+			return
 
-			Avatars.insert file, (err, fileObj) ->
-				Meteor.users.update {_id: user._id}, {$set: {avatarOrigin: service}}
+		{image, contentType} = RocketChatFile.dataURIParse dataURI
 
+		rs = RocketChatFile.bufferToStream new Buffer(image, 'base64')
+		ws = RocketChatFileAvatarInstance.createWriteStream "#{user.username}.jpg", contentType
+		ws.on 'end', Meteor.bindEnvironment ->
+			Meteor.users.update {_id: user._id}, {$set: {avatarOrigin: service}}
+
+		rs.pipe(ws)
+		return

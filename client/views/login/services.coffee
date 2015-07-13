@@ -1,12 +1,9 @@
 Template.loginServices.helpers
-	hasLoginServices: ->
-		return Accounts.oauth.serviceNames()?.length > 0
-
 	loginService: ->
 		services = []
 
-		authServices = Accounts.oauth.serviceNames()
-
+		authServices = _.pluck ServiceConfiguration.configurations.find({}, { service: 1 }).fetch(), 'service'
+		
 		authServices.sort()
 
 		authServices.forEach (service) ->
@@ -38,7 +35,7 @@ Template.loginServices.events
 
 		Meteor[loginWithService] serviceConfig, (error) ->
 			if error?.error is 'github-no-public-email'
-				alert t("loginServices.github_no_public_email")
+				alert t("github_no_public_email")
 				return
 
 			console.log error

@@ -1,6 +1,6 @@
 orig_updateOrCreateUserFromExternalService = Accounts.updateOrCreateUserFromExternalService
 Accounts.updateOrCreateUserFromExternalService = (serviceName, serviceData, options) ->
-	if serviceName not in ['facebook', 'github', 'google', 'meteor-developer']
+	if serviceName not in ['facebook', 'github', 'google', 'meteor-developer', 'linkedin']
 		return
 
 	if serviceName is 'github' and (not serviceData.email? or serviceData.email.trim() is '')
@@ -15,6 +15,9 @@ Accounts.updateOrCreateUserFromExternalService = (serviceName, serviceData, opti
 				if email.verified is true
 					serviceData.email = email.address
 					break
+
+	if serviceName is 'linkedin'
+		serviceData.email = serviceData.emailAddress
 
 	if not serviceData.email? or serviceData.email.trim() is ''
 		throw new Meteor.Error 'no-verified-email'

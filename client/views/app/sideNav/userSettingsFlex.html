@@ -1,0 +1,21 @@
+<template name="userSettingsFlex">
+	<div class="content no-shadow">
+		<div class="wrapper">
+			<h4>{{_ "Settings"}}</h4>
+			<div class="input-line">
+				<label for="language">{{_ "Language"}}</label>
+				<div>
+					<select id="language" class="required">
+						{{#each languages}}
+						<option value="{{key}}" selected="{{userLanguage key}}" dir="auto">{{name}}</option>
+						{{/each}}
+					</select>
+				</div>
+			</div>
+			<div class="input-submit">
+				<button class="button primary clean save">{{_ "Save"}}</button>
+				<button class="button clean cancel-settings">{{_ "Cancel" }}</button>
+			</div>
+		</div>
+	</div>
+</template>

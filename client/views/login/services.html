@@ -1,7 +1,7 @@
 <template name='loginServices'>
-	{{#if hasLoginServices}}
+	{{#if loginService.length}}
 		<div class="social-login">
-			<h3>{{_ "loginServices.login_with"}}</h3>
+			<h3>{{_ "login_with"}}</h3>
 			{{#each loginService}}
 				<button type="button" class="button external-login {{service}}"><span>{{displayName}}</span></button>
 			{{/each}}

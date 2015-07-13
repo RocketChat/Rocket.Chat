@@ -1,21 +1,16 @@
 Meteor.methods
-	sendMessage: (msg) ->
-		Tracker.nonreactive ->
-			now = new Date(Date.now() + TimeSync.serverOffset())
+	sendMessage: (message) ->
+		if not Meteor.userId()
+			throw new Meteor.Error 203, t('User_logged_out')
 
-			ChatMessage.upsert { rid: msg.rid, uid: Meteor.userId(), t: 't' },
-				$set:
-					ts: now
-					msg: msg.message
-				$unset:
-					t: 1
-					expireAt: 1
+		if _.trim(message.msg) isnt ''
 
-	updateMessage: (msg) ->
-		Tracker.nonreactive ->
-			now = new Date(Date.now() + TimeSync.serverOffset())
+			message.ts = new Date(Date.now() + TimeSync.serverOffset())
 
-			ChatMessage.update { _id: msg.id, uid: Meteor.userId() },
-				$set:
-					ets: now
-					msg: msg.message
+			message.u =
+				_id: Meteor.userId()
+				username: Meteor.user().username
+
+			message = RocketChat.callbacks.run 'beforeSaveMessage', message
+
+			ChatMessage.insert message
