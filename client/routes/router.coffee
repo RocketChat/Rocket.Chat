@@ -64,11 +64,15 @@ Router.route '/home',
 	onAfterAction: ->
 		KonchatNotification.getDesktopPermission()
 
-Router.route '/settings/:page?',
+Router.route '/settings/:group?',
 	name: 'settings'
+	onBeforeAction: ->
+		if Meteor.user()?.admin isnt true
+			Router.go('home')
+		@next()
 	data: ->
 		return {
-			page: @params.page
+			group: @params.group
 		}
 	action: ->
 		this.render('settings')
