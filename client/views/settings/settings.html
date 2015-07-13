@@ -13,7 +13,23 @@
 			</div>
 		</head>
 		<div class="content">
-			{{> UI.dynamic template=settingsTemplate}}
+			<h3>{{_ group.i18nLabel}}</h3>
+			<div class="rocket-form">
+				<fieldset>
+					<legend>
+						<!-- <h3>This is another section</h3>
+						<p>This is a configuration text. With configuration info</p> -->
+					</legend>
+					{{#each settings}}
+					<div class="input-line double-col">
+						<label>{{_ i18nLabel}}</label>
+						<div>
+							<input type="text" name="input-name" value="{{value}}" />
+						</div>
+					</div>
+					{{/each}}
+				</fieldset>
+			</div>
 		</div>
 	</section>
 	<section class="flex-tab">
@@ -29,16 +45,19 @@
 			<ul class='list cf_ lines'>
 				{{#each groups}}
 				<li>
-					<a href="{{pathFor 'settings' group='authentication'}}">{{_ "Authentication_Methods"}}</a>
-				</li>
-				<li>
-					<a href="{{pathFor 'settings' group='messages'}}">{{_ "Message_Editing_Deleting"}}</a>
-				</li>
-				<li>
-					<a href="{{pathFor 'settings' group='registration'}}">{{_ "Registration"}}</a>
+					<a href="{{pathFor 'settings' group=_id}}">{{_ i18nLabel}}</a>
 				</li>
 				{{/each}}
-			</ul>
-		</div>
-	</section>
+				{{!-- <li>
+				<a href="{{pathFor 'settings' group='authentication'}}">{{_ "Authentication_Methods"}}</a>
+			</li>
+			<li>
+				<a href="{{pathFor 'settings' group='messages'}}">{{_ "Message_Editing_Deleting"}}</a>
+			</li>
+			<li>
+				<a href="{{pathFor 'settings' group='registration'}}">{{_ "Registration"}}</a>
+			</li> --}}
+		</ul>
+	</div>
+</section>
 </template>

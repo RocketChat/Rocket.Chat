@@ -6,4 +6,4 @@ Meteor.publish 'settings', ->
 		if user.admin
 			return Settings.find()
 
-	return Settings.find { where: 'client' }, { fields: _id: 1, value: 1}
+	return Settings.find { where: 'client', type: 'variable' }, { fields: _id: 1, value: 1}

@@ -1,10 +1,12 @@
 Template.settings.helpers
 	tSearchSettings: ->
 		return t('Search_settings')
-	settingsTemplate: ->
-		if @page and Template["settings-#{@page}"]?
-			return "settings-#{@page}"
-		return "settings-authentication"
+	groups: ->
+		return Settings.find({type: 'group'}).fetch()
+	group: ->
+		return Settings.findOne { _id: @group, type: 'group' }
+	settings: ->
+		return Settings.find({ group: @group, type: 'variable' }).fetch()
 
 Template.settings.events
 	"click .burger": ->
