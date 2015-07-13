@@ -1,7 +1,7 @@
 Meteor.methods
 	loadHistory: (rid, end, limit=20, skip=0) ->
 		fromId = Meteor.userId()
-		console.log '[methods] loadHistory -> '.green, 'fromId:', fromId, 'rid:', rid, 'end:', end, 'limit:', limit, 'skip:', skip
+		# console.log '[methods] loadHistory -> '.green, 'fromId:', fromId, 'rid:', rid, 'end:', end, 'limit:', limit, 'skip:', skip
 
 		query =
 			rid: rid
