@@ -1,12 +1,6 @@
 Template.settings.helpers
 	tSearchSettings: ->
 		return t('Search_settings')
-	arrowPosition: ->
-		console.log 'settings.helpers arrowPosition' if window.rocketDebug
-		return 'left' unless Session.equals('flexOpened', true)
-	flexOpened: ->
-		console.log 'settings.helpers flexOpened' if window.rocketDebug
-		return 'opened' if Session.equals('flexOpened', true)
 	settingsTemplate: ->
 		if @page and Template["settings-#{@page}"]?
 			return "settings-#{@page}"
