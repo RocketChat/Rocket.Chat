@@ -1,3 +1,5 @@
+@Settings = new Meteor.Collection 'settings'
+
 @UserAndRoom = new Meteor.Collection null
 @ChatMessageHistory = new Meteor.Collection null
 
