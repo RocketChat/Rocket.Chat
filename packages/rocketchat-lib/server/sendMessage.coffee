@@ -5,7 +5,8 @@ RocketChat.sendMessage = (user, message, room) ->
 
 	console.log '[functions] RocketChat.sendMessage -> '.green, 'arguments:', arguments
 
-	message.ts = new Date()
+	unless message.ts?
+		message.ts = new Date()
 
 	message.u = _.pick user, ['_id','username']
 

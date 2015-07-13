@@ -14,8 +14,7 @@ Meteor.methods
 
 		# name = s.slugify name
 
-		# create new room
-		rid = ChatRoom.insert
+		room =
 			usernames: members
 			ts: now
 			t: 'c'
@@ -24,6 +23,11 @@ Meteor.methods
 			u:
 				_id: Meteor.userId()
 				username: Meteor.user().username
+
+		RocketChat.callbacks.run 'beforeCreateChannel', Meteor.user(), room
+
+		# create new room
+		rid = ChatRoom.insert room
 
 		for username in members
 			member = Meteor.users.findOne({username: username})
@@ -44,6 +48,10 @@ Meteor.methods
 				sub.ls = now
 
 			ChatSubscription.insert sub
+
+		Meteor.defer ->
+
+			RocketChat.callbacks.run 'afterCreateChannel', Meteor.user(), room
 
 		return {
 			rid: rid
