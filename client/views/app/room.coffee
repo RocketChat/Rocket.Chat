@@ -58,33 +58,26 @@ Template.room.helpers
 
 	usersTyping: ->
 		console.log 'room.helpers usersTyping' if window.rocketDebug
-		messages = ChatMessage.find { rid: this._id, t: 't' }, { sort: { ts: 1 } }
-		usernames = []
-		selfTyping = false
-		messages.forEach (message) ->
-			if message.u._id is Meteor.userId()
-				selfTyping = true
-			else
-				username = message.u.username
-				if username?
-					usernames.push username
-
-		if usernames.length is 0
+		messages = ChatTyping.find({ rid: this._id, 'u._id': { $ne: Meteor.userId() } }).fetch()
+		if messages.length is 0
 			return
-
-		if usernames.length is 1
+		if messages.length is 1
 			return {
 				multi: false
-				selfTyping: selfTyping
-				users: usernames[0]
+				selfTyping: ChatMessages.selfTyping.get()
+				users: messages[0].u.username
 			}
 
+		usernames = _.map messages, (message) -> return message.u.username
+
 		last = usernames.pop()
+		if messages.length > 4
+			last = t('others')
 		usernames = usernames.join(', ')
 		usernames = [usernames, last]
 		return {
 			multi: true
-			selfTyping: selfTyping
+			selfTyping: ChatMessages.selfTyping.get()
 			users: usernames.join " #{t 'and'} "
 		}
 
@@ -94,7 +87,7 @@ Template.room.helpers
 		return '' unless roomData
 
 		if roomData.t is 'd'
-			return ChatSubscription.findOne({ rid: this._id }, { fields: { name: 1 } }).name
+			return ChatSubscription.findOne({ rid: this._id }, { fields: { name: 1 } })?.name
 		else
 			return roomData.name
 
@@ -196,6 +189,15 @@ Template.room.helpers
 		console.log 'room.helpers flexOpened' if window.rocketDebug
 		return 'opened' if Session.equals('flexOpened', true)
 
+	flexOpenedRTC1: ->
+		console.log 'room.helpers flexOpenedRTC1' if window.rocketDebug
+		return 'layout1' if Session.equals('flexOpenedRTC1', true)
+
+	flexOpenedRTC2: ->
+		console.log 'room.helpers flexOpenedRTC2' if window.rocketDebug
+		return 'layout2' if Session.equals('flexOpenedRTC2', true)
+
+
 	arrowPosition: ->
 		console.log 'room.helpers arrowPosition' if window.rocketDebug
 		return 'left' unless Session.equals('flexOpened', true)
@@ -261,12 +263,37 @@ Template.room.helpers
 				return template.find('.input-message')
 		}
 
+	remoteVideoUrl: ->
+		return Session.get('remoteVideoUrl')
+
+	selfVideoUrl: ->
+		Meteor.defer ->
+			$('video.video-self')[0]?.muted = true;
+		return Session.get('selfVideoUrl')
+
+	rtcLayout1: ->
+		return (Session.get('rtcLayoutmode') == 1 ? true: false);
+
+	rtcLayout2: ->
+		return (Session.get('rtcLayoutmode') == 2 ? true: false);
+
+	rtcLayout3: ->
+		return (Session.get('rtcLayoutmode') == 3 ? true: false);
+
+	noRtcLayout: ->
+		return (!Session.get('rtcLayoutmode') || (Session.get('rtcLayoutmode') == 0) ? true: false);
+
 
 Template.room.events
 
 	"click .flex-tab .more": (event) ->
 		console.log 'room click .flex-tab .more' if window.rocketDebug
-		Session.set('flexOpened', !Session.get('flexOpened'))
+		if (Session.get('flexOpened'))
+			Session.set('rtcLayoutmode', 0)
+			Session.set('flexOpened',false)
+		else
+			Session.set('flexOpened', true)
+
 
 	'click .chat-new-messages': (event) ->
 		console.log 'room click .chat-new-messages' if window.rocketDebug
@@ -297,6 +324,10 @@ Template.room.events
 	'focus .input-message': (event) ->
 		console.log 'room focus .input-message' if window.rocketDebug
 		KonchatNotification.removeRoomNotification(this._id)
+
+	'keyup .input-message': (event) ->
+		console.log 'room keyup .input-message',this._id if window.rocketDebug
+		ChatMessages.keyup(this._id, event, Template.instance())
 
 	'keydown .input-message': (event) ->
 		console.log 'room keydown .input-message',this._id if window.rocketDebug
@@ -351,6 +382,36 @@ Template.room.events
 		console.log 'room click .flex-tab .user-image > a' if window.rocketDebug
 		Session.set('flexOpened', true)
 		Session.set('showUserInfo', $(e.currentTarget).data('username'))
+
+	"click .flex-tab  .video-remote" : (e) ->
+		console.log 'room click .flex-tab .video-remote' if window.rocketDebug
+		if (Session.get('flexOpened'))
+			if (!Session.get('rtcLayoutmode'))
+				Session.set('rtcLayoutmode', 1)
+			else
+				t = Session.get('rtcLayoutmode')
+				t = (t + 1) % 4
+				console.log  'setting rtcLayoutmode to ' + t  if window.rocketDebug
+				Session.set('rtcLayoutmode', t)
+
+	"click .flex-tab  .video-self" : (e) ->
+		console.log 'room click .flex-tab .video-self' if window.rocketDebug
+		if (Session.get('rtcLayoutmode') == 3)
+			console.log 'video-self clicked in layout3' if window.rocketDebug
+			i = document.getElementById("fullscreendiv")
+			if i.requestFullscreen
+				i.requestFullscreen()
+			else
+				if i.webkitRequestFullscreen
+					i.webkitRequestFullscreen()
+				else
+					if i.mozRequestFullScreen
+						i.mozRequestFullScreen()
+					else
+						if i.msRequestFullscreen
+							i.msRequestFullscreen()
+
+
 
 	'click .user-card-message': (e) ->
 		console.log 'room click .user-card-message' if window.rocketDebug
@@ -458,6 +519,13 @@ Template.room.events
 			swal t('Deleted'), t('Your_entry_has_been_deleted'), 'success'
 			ChatMessages.deleteMsg(msg)
 
+	'click .start-video': (event) ->
+		webrtc.to = Router.current().params._id.replace(Meteor.userId(), '')
+		webrtc.start(true)
+
+	'click .stop-video': (event) ->
+		webrtc.stop()
+
 Template.room.onCreated ->
 	console.log 'room.onCreated' if window.rocketDebug
 	# this.scrollOnBottom = true
@@ -494,6 +562,14 @@ Template.room.onRendered ->
 	console.log 'room.rendered' if window.rocketDebug
 	# salva a data da renderização para exibir alertas de novas mensagens
 	$.data(this.firstNode, 'renderedAt', new Date)
+
+	webrtc.onRemoteUrl = (url) ->
+		Session.set('flexOpened', true)
+		Session.set('remoteVideoUrl', url)
+
+	webrtc.onSelfUrl = (url) ->
+		Session.set('flexOpened', true)
+		Session.set('selfVideoUrl', url)
 
 renameRoom = (rid, name) ->
 	console.log 'room renameRoom' if window.rocketDebug

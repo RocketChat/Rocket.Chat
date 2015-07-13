@@ -1,5 +1,5 @@
-@import url(http://fonts.googleapis.com/css?family=Roboto:300,400,500,700,900);
-@import url(http://fonts.googleapis.com/css?family=Muli:400,300,500);
+@import url(//fonts.googleapis.com/css?family=Roboto:300,400,500,700,900);
+@import url(//fonts.googleapis.com/css?family=Muli:400,300,500);
 @font-face {
 	font-family: 'fontello';
 	src: url('/fonts/fontello.eot?19437876');
@@ -2216,7 +2216,7 @@ label.required:after {
 
 github-fork{
 	display: block;
-	position: absolute;
+	position: fixed;
 	z-index: 10;
 	top: 0;
 	right: 0;

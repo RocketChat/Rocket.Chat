@@ -81,7 +81,8 @@ Router.route '/room/:_id',
 	name: 'room'
 
 	waitOn: ->
-		RoomManager.open @params._id
+		if Meteor.userId()
+			RoomManager.open @params._id
 
 	onBeforeAction: ->
 		if not ChatRoom.find(@params._id).count()
