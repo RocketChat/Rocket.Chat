@@ -22,7 +22,7 @@
 		#$('.messages-box .wrapper').data('previous-height', $('.messages-box .wrapper').get(0)?.scrollHeight - $('.messages-box .wrapper').get(0)?.scrollTop)
 		# ScrollListener.setLoader true
 		lastMessage = ChatMessageHistory.findOne({rid: rid}, {sort: {ts: 1}})
-		lastMessage ?= ChatMessage.findOne({rid: rid}, {sort: {ts: 1}})
+		# lastMessage ?= ChatMessage.findOne({rid: rid}, {sort: {ts: 1}})
 
 		if lastMessage?
 			ts = lastMessage.ts
@@ -46,7 +46,14 @@
 
 		return room.isLoading.get()
 
+	clear = (rid) ->
+		ChatMessageHistory.remove({ rid: rid })
+		if histories[rid]?
+			histories[rid].hasMore.set true
+			histories[rid].isLoading.set false
+			histories[rid].loaded = 0
 
 	getMore: getMore
 	hasMore: hasMore
 	isLoading: isLoading
+	clear: clear
