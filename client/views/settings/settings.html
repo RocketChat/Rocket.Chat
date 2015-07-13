@@ -18,28 +18,27 @@
 	</section>
 	<section class="flex-tab">
 		<div class="control">
-			{{!-- <button class="more"><span class="arrow {{arrowPosition}}"></span></button> --}}
 			<div class="search-form">
 				<div class="input-line search">
-					<input type="text" class="search" placeholder=tSearchSettings />
+					<input type="text" class="search" placeholder={{tSearchSettings}} />
 					<i class="icon-plus"></i>
 				</div>
 			</div>
 		</div>
-		{{!-- {{#if flexOpened}} --}}
 		<div class="content">
 			<ul class='list cf_ lines'>
+				{{#each groups}}
 				<li>
-					<a href="{{pathFor 'settings' page='authentication'}}">{{_ "Authentication_Methods"}}</a>
+					<a href="{{pathFor 'settings' group='authentication'}}">{{_ "Authentication_Methods"}}</a>
 				</li>
 				<li>
-					<a href="{{pathFor 'settings' page='messages'}}">{{_ "Message_Editing_Deleting"}}</a>
+					<a href="{{pathFor 'settings' group='messages'}}">{{_ "Message_Editing_Deleting"}}</a>
 				</li>
 				<li>
-					<a href="{{pathFor 'settings' page='registration'}}">{{_ "Registration"}}</a>
+					<a href="{{pathFor 'settings' group='registration'}}">{{_ "Registration"}}</a>
 				</li>
+				{{/each}}
 			</ul>
 		</div>
-		{{!-- {{/if}} --}}
 	</section>
 </template>
