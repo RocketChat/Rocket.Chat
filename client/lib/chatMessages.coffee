@@ -189,6 +189,11 @@
 			event.preventDefault()
 			event.stopPropagation()
 
+		# ctrl (command) + shift + k -> clear room messages
+		else if k is 75 and ((navigator?.platform?.indexOf('Mac') isnt -1 and event.metaKey and event.shiftKey) or (navigator?.platform?.indexOf('Mac') is -1 and event.ctrlKey and event.shiftKey))
+			RoomHistoryManager.clear rid
+
+
 	# isScrollable: isScrollable
 	# toBottom: toBottom
 	keydown: keydown
