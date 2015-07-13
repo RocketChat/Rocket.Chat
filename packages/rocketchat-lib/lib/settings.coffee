@@ -5,28 +5,19 @@
 RocketChat.settings = {}
 
 ###
-# Setting priorities
-###
-RocketChat.settings.priority =
-	HIGH: -1000
-	MEDIUM: 0
-	LOW: 1000
-
-###
 # Add a setting function to a hook
 # @param {String} hook - The name of the hook
 # @param {Function} setting - The setting function
 ###
 
-RocketChat.settings.add = (hook, setting, priority) ->
-	# if setting array doesn't exist yet, initialize it
-	priority ?= RocketChat.settings.priority.MEDIUM
-	unless _.isNumber priority
-		priority = RocketChat.settings.priority.MEDIUM
-	setting.priority = priority
-	RocketChat.settings[hook] ?= []
-	RocketChat.settings[hook].push setting
+RocketChat.settings.add = (setting) ->
 	return
 
-RocketChat.settings.startup = (hook, setting, priority) ->
+RocketChat.settings.addGroup = (settingsGroup) ->
+	return
+
+RocketChat.settings.addPage = (settingsPage) ->
+	return
+
+RocketChat.settings.startup = () ->
 	return

@@ -34,9 +34,8 @@ RocketChat.sendMessage = (user, message, room) ->
 	###
 	Meteor.defer ->
 
-		ChatMessage.remove
+		ChatTyping.remove
 			rid: message.rid
-			t: 't'
 			'u._id': message.u._id
 
 	###
@@ -46,12 +45,12 @@ RocketChat.sendMessage = (user, message, room) ->
 
 		ChatRoom.update
 			# only subscriptions to the same room
-			rid: message.rid
+			_id: message.rid
 		,
 			# update the last message timestamp
 			$set:
 				lm: message.ts
-			# increate the messages counter
+			# increment the messages counter
 			$inc:
 				msgs: 1
 
@@ -84,7 +83,6 @@ RocketChat.sendMessage = (user, message, room) ->
 
 		else
 			message.mentions?.forEach (mention) ->
-				console.log mention
 				###
 				Update all other subscriptions of mentioned users to alert their owners and incrementing
 				the unread counter for mentions and direct messages
