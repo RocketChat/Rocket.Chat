@@ -32,7 +32,7 @@ Meteor.methods
 					_id: removedUser._id
 					username: removedUser.username
 
-		if room.u._id is Meteor.userId()
+		if room.u? and room.u._id is Meteor.userId()
 			newOwner = _.without(room.usernames, Meteor.user().username)[0]
 			if newOwner?
 				newOwner = Meteor.users.findOne username: newOwner
