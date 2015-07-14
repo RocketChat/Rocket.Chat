@@ -1,4 +1,4 @@
-![Rocket.Chat logo](https://raw.githubusercontent.com/RocketChat/Rocket.Chat/master/public/images/logo/logo-dark.svg?v=3)
+![Rocket.Chat logo](https://rocket.chat/images/logo/logo-dark.svg?v3)
 
 The Complete Open Source Chat Solution
 
