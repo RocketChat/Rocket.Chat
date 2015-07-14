@@ -1,12 +1,15 @@
 Template.settings.helpers
-	tSearchSettings: ->
-		return t('Search_settings')
 	groups: ->
 		return Settings.find({type: 'group'}).fetch()
 	group: ->
 		return Settings.findOne { _id: @group, type: 'group' }
 	settings: ->
-		return Settings.find({ group: @group, type: 'variable' }).fetch()
+		return Settings.find({ group: @group }).fetch()
+	flexOpened: ->
+		return 'opened' if Session.equals('flexOpened', true)
+	arrowPosition: ->
+		console.log 'room.helpers arrowPosition' if window.rocketDebug
+		return 'left' unless Session.equals('flexOpened', true)
 
 Template.settings.events
 	"click .burger": ->
