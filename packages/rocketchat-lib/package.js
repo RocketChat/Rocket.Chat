@@ -19,7 +19,10 @@ Package.onUse(function(api) {
 	api.addFiles('lib/callbacks.coffee', ['server', 'client']);
 	api.addFiles('server/sendMessage.coffee', ['server']);
 
-	api.addFiles('settings/lib/settings.coffee', ['server', 'client']);
+	api.addFiles([
+		'settings/lib/settings.coffee',
+		'settings/lib/rocketchat.coffee'
+	], ['server', 'client']);
 	api.addFiles('settings/client/startup.coffee', ['client']);
 	api.addFiles([
 		'settings/server/methods.coffee',
