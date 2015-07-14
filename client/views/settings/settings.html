@@ -34,9 +34,10 @@
 	</section>
 	<section class="flex-tab">
 		<div class="control">
+			<button class="more"><span class="arrow {{arrowPosition}}"></span></button>
 			<div class="search-form">
 				<div class="input-line search">
-					<input type="text" class="search" placeholder={{tSearchSettings}} />
+					<input type="text" class="search" placeholder={{_ "Search_settings"}} />
 					<i class="icon-plus"></i>
 				</div>
 			</div>
@@ -48,16 +49,7 @@
 					<a href="{{pathFor 'settings' group=_id}}">{{_ i18nLabel}}</a>
 				</li>
 				{{/each}}
-				{{!-- <li>
-				<a href="{{pathFor 'settings' group='authentication'}}">{{_ "Authentication_Methods"}}</a>
-			</li>
-			<li>
-				<a href="{{pathFor 'settings' group='messages'}}">{{_ "Message_Editing_Deleting"}}</a>
-			</li>
-			<li>
-				<a href="{{pathFor 'settings' group='registration'}}">{{_ "Registration"}}</a>
-			</li> --}}
-		</ul>
-	</div>
-</section>
+			</ul>
+		</div>
+	</section>
 </template>

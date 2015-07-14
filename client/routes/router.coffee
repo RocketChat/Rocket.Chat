@@ -70,16 +70,16 @@ Router.route '/settings/:group?',
 		if Meteor.user()?.admin isnt true
 			Router.go('home')
 		@next()
+	waitOn: ->
+		return Meteor.subscribe 'admin-settings'
 	data: ->
 		return {
-			group: @params.group
+			group: if @params.group then @params.group else Settings.findOne({ type: 'group' })?._id
 		}
 	action: ->
 		this.render('settings')
-
 	onAfterAction: ->
 		KonchatNotification.getDesktopPermission()
-
 
 Router.route '/room/:_id',
 	name: 'room'

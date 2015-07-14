@@ -1,9 +1,13 @@
 Meteor.publish 'settings', ->
 	console.log '[publish] settings'.green
-	
-	if this.userId
-		user = Meteor.users.findOne this.userId
-		if user.admin
-			return Settings.find()
+	return Settings.find { public: true }, { fields: _id: 1, value: 1 }
 
-	return Settings.find { public: true }, { fields: _id: 1, value: 1}
+Meteor.publish 'admin-settings', ->
+	console.log '[publish] admin-settings'.green
+
+	unless @userId
+		return @ready()
+	
+	user = Meteor.users.findOne @userId
+	if user.admin
+		return Settings.find()
