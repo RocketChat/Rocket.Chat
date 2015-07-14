@@ -13,9 +13,7 @@ RocketChat.settings.add = (_id, value, options = {}) ->
 
 	if Meteor.settings?[_id]?
 		value = Meteor.settings[_id]
-	if Meteor.settings?.public?[_id]?
-		value = Meteor.settings.public[_id]
-
+	
 	updateSettings =
 		i18nLabel: options.i18nLabel or _id
 		
