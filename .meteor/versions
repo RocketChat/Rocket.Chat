@@ -69,7 +69,7 @@ meteorspark:util@0.2.0
 minifiers@1.1.5
 minimongo@1.0.8
 mizzao:autocomplete@0.5.1
-mizzao:timesync@0.3.1
+mizzao:timesync@0.3.2
 mobile-status-bar@1.0.3
 momentjs:moment@2.10.3
 mongo@1.1.0
@@ -114,12 +114,12 @@ simple:highlight.js@1.0.9
 spacebars@1.0.6
 spacebars-compiler@1.0.6
 srp@1.0.3
-tap:i18n@1.5.0
+tap:i18n@1.5.1
 templating@1.1.1
 tmeasday:crypto-base@3.1.2
 tmeasday:crypto-md5@3.1.2
 tmeasday:errors@2.0.0
-todda00:friendly-slugs@0.3.1
+todda00:friendly-slugs@0.3.3
 tracker@1.0.7
 ui@1.0.6
 underscore@1.0.3
@@ -127,4 +127,4 @@ underscorestring:underscore.string@3.1.1
 url@1.0.4
 webapp@1.2.0
 webapp-hashing@1.0.3
-yasaricli:slugify@0.0.5
+yasaricli:slugify@0.0.7
