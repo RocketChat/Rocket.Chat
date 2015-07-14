@@ -9,8 +9,9 @@ Meteor.methods
 		console.log '[methods] createChannel -> '.green, 'userId:', Meteor.userId(), 'arguments:', arguments
 
 		now = new Date()
+		user = Meteor.user()
 
-		members.push Meteor.user().username
+		members.push user.username
 
 		# name = s.slugify name
 
@@ -22,9 +23,9 @@ Meteor.methods
 			msgs: 0
 			u:
 				_id: Meteor.userId()
-				username: Meteor.user().username
+				username: user.username
 
-		RocketChat.callbacks.run 'beforeCreateChannel', Meteor.user(), room
+		RocketChat.callbacks.run 'beforeCreateChannel', user, room
 
 		# create new room
 		rid = ChatRoom.insert room
@@ -44,14 +45,14 @@ Meteor.methods
 					_id: member._id
 					username: username
 
-			if username is Meteor.user().username
+			if username is user.username
 				sub.ls = now
 
 			ChatSubscription.insert sub
 
 		Meteor.defer ->
 
-			RocketChat.callbacks.run 'afterCreateChannel', Meteor.user(), room
+			RocketChat.callbacks.run 'afterCreateChannel', user, room
 
 		return {
 			rid: rid
