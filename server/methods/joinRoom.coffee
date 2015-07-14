@@ -45,6 +45,8 @@ Meteor.methods
 				_id: user._id
 				username: user.username
 
-		RocketChat.callbacks.run 'afterJoinRoom', user, room
+		Meteor.defer ->
+
+			RocketChat.callbacks.run 'afterJoinRoom', user, room
 
 		return true
