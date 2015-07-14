@@ -5,7 +5,7 @@ Router.configure
 
 	waitOn: ->
 		if Meteor.userId()
-			return [Meteor.subscribe('userData'), Meteor.subscribe('activeUsers'), Meteor.subscribe('settings'), RoomManager.init()]
+			return [Meteor.subscribe('userData'), Meteor.subscribe('activeUsers'), RoomManager.init()]
 
 	onBeforeAction: ->
 		Session.set('openedRoom', null)
