@@ -30,6 +30,8 @@ Package.onUse(function(api) {
 		'settings/server/startup.coffee'
 	], ['server']);
 
+	api.addFiles('server/cdn.coffee', ['server']);
+
 	api.export(['RocketChat'], ['server', 'client']);
 });
 
