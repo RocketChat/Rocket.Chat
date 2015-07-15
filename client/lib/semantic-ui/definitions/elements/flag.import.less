@@ -1,0 +1,57 @@
+/*
+  DO NOT MODIFY - This file has been generated and will be regenerated
+  Semantic UI v2.0.2
+*/
+/*!
+ * # Semantic UI - Flag
+ * http://github.com/semantic-org/semantic-ui/
+ *
+ *
+ * Copyright 2015 Contributors
+ * Released under the MIT license
+ * http://opensource.org/licenses/MIT
+ *
+ */
+
+
+/*******************************
+            Theme
+*******************************/
+
+@type    : 'element';
+@element : 'flag';
+
+@import (multiple) '../../theme.config.import.less';
+
+
+/*******************************
+             Flag
+*******************************/
+
+i.flag:not(.icon) {
+  display: inline-block;
+
+  width: @width;
+  height: @height;
+
+  line-height: @height;
+  vertical-align: @verticalAlign;
+  margin: 0em @margin 0em 0em;
+
+  text-decoration: inherit;
+
+  speak: none;
+  font-smoothing: antialiased;
+  backface-visibility: hidden;
+}
+
+/* Sprite */
+i.flag:not(.icon):before {
+  display: inline-block;
+  content: '';
+  background: url(@spritePath) no-repeat 0px 0px;
+  width: @width;
+  height: @height;
+}
+
+.loadUIOverrides();

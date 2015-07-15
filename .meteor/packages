@@ -12,7 +12,6 @@ coffeescript
 email
 http
 jquery
-less
 meteor-platform
 reactive-var
 service-configuration
@@ -59,3 +58,5 @@ todda00:friendly-slugs
 underscorestring:underscore.string
 yasaricli:slugify
 meteorhacks:kadira
+semantic:ui
+flemay:less-autoprefixer

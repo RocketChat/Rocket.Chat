@@ -1,0 +1,17 @@
+/*
+  DO NOT MODIFY - This file has been generated and will be regenerated
+  Semantic UI v2.0.2
+*/
+/*******************************
+            Flag
+*******************************/
+
+/*-------------------
+       Element
+--------------------*/
+
+@spritePath: "@{imagePath}/flags.png";
+@width: 16px;
+@height: 11px;
+@verticalAlign: baseline;
+@margin: 0.5em;
