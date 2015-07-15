@@ -50,7 +50,7 @@ Accounts.validateLoginAttempt (login) ->
 	if login.allowed isnt true
 		return login.allowed
 
-	if login.type is 'password' and Meteor.settings.denyUnverifiedEmails is true
+	if login.type is 'password' and RocketChat.settings.get 'Accounts_denyUnverifiedEmails' is true
 		validEmail = login.user.emails.filter (email) ->
 			return email.verified is true
 
