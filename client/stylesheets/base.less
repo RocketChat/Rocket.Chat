@@ -1299,7 +1299,8 @@ a.github-fork {
 		}
 		img {
 			display: inline-block;
-			height: 32px;
+			max-width: 100%;
+			margin-bottom: -12px;
 		}
 	}
 	.search-form {
@@ -1569,9 +1570,7 @@ a.github-fork {
 		.flex-tab {
 			max-width: @flex-tab-webrtc-width;
 			.transform(translateX(0));
-
 		}
-
 	}
 	&.layout2 {
 		.calc(width, ~'100% - ' @rooms-box-width + @flex-tab-webrtc-2-width);
@@ -1580,7 +1579,6 @@ a.github-fork {
 			max-width: @flex-tab-webrtc-2-width;
 			.transform(translateX(0));
 		}
-
 	}
 	.container-fluid {
 		padding-top: 0;
@@ -1806,7 +1804,7 @@ a.github-fork {
 			padding-right: 38px;
 			overflow-y: hidden;
 			resize: none;
-			&.editing{
+			&.editing {
 				background-color: #fff7d8;
 			}
 		}
@@ -1920,8 +1918,8 @@ a.github-fork {
 			.transform(translateY(150%));
 		}
 	}
-	.editing{
-		.body{
+	.editing {
+		.body {
 			background-color: #fff7d8;
 			border-radius: 4px;
 		}
@@ -2029,7 +2027,6 @@ a.github-fork {
 				.delete-message {
 					float: left;
 				}
-
 			}
 			&:hover {
 				.time {
