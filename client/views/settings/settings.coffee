@@ -10,6 +10,8 @@ Template.settings.helpers
 	arrowPosition: ->
 		console.log 'room.helpers arrowPosition' if window.rocketDebug
 		return 'left' unless Session.equals('flexOpened', true)
+	label: ->
+		return TAPi18next.t @i18nLabel
 
 Template.settings.events
 	"click .burger": ->

@@ -2,9 +2,6 @@ Meteor.startup ->
 	RocketChat.settings.addGroup 'Accounts'
 	RocketChat.settings.add 'Accounts_RegistrationRequired', true, { type: 'boolean', group: 'Accounts', public: true }
 	RocketChat.settings.add 'Accounts_EmailVerification', false, { type: 'boolean', group: 'Accounts', public: true }
-	RocketChat.settings.add 'LDAP_Url', '', { type: 'string', group: 'Accounts' }
-	RocketChat.settings.add 'LDAP_Port', '', { type: 'string', group: 'Accounts' }
-	RocketChat.settings.add 'LDAP_DN', '', { type: 'string', group: 'Accounts', public: true }
 
 	RocketChat.settings.addGroup 'API'
 	RocketChat.settings.add 'API_Analytics', '', { type: 'string', group: 'API', public: true }
