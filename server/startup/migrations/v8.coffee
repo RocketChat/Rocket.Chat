@@ -12,6 +12,4 @@ Meteor.startup ->
 				Settings.insert { _id: 'KADIRA_APP_SECRET', value: settings.kadira.appSecret, type: 'string', group: 'API' } if settings.kadira?.appSecret?
 				Settings.insert { _id: 'avatarStore_type', value: settings.public.avatarStore.type, type: 'string', group: 'API' } if settings.public?.avatarStore?.type?
 				Settings.insert { _id: 'avatarStore_path', value: settings.public.avatarStore.path, type: 'string', group: 'API' } if settings.public?.avatarStore?.path?
-				Settings.insert { _id: 'avatarStore_size2_height', value: settings.public.avatarStore.size2.height, type: 'string', group: 'API' } if settings.public?.avatarStore?.size2?.height?
-				Settings.insert { _id: 'avatarStore_size2_width', value: settings.public.avatarStore.size2.width, type: 'string', group: 'API' } if settings.public?.avatarStore?.size2?.width?
 				Settings.remove { _id: 'settings' }
