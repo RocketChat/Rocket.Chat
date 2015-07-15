@@ -19,6 +19,7 @@ async = (f, args...) ->
 class IrcClient
 	constructor: (@loginReq) ->
 		@user = @loginReq.user
+		@user.username = @user.name
 		ircClientMap[@user._id] = this
 		@ircPort = IRC_PORT
 		@ircHost = IRC_HOST
@@ -157,8 +158,7 @@ class IrcClient
 			ircSendMessageCache.set cacheKey, timestamp
 
 		console.log '[irc] onReceiveMessage -> '.yellow, 'source:', source, 'target:', target, 'content:', content
-		@createUserWhenNotExist source
-		source = Meteor.users.findOne {name: source}
+		source = @createUserWhenNotExist source
 		if target[0] == '#'
 			room = ChatRoom.findOne {name: target.substring 1}
 		else
@@ -188,9 +188,6 @@ class IrcClient
 
 		for member in appendMembers
 			@createUserWhenNotExist member
-			Meteor.users.update {name: member},
-				$set:
-					status: 'online'
 
 		update =
 			$pull:
@@ -248,7 +245,7 @@ class IrcClient
 			@joinRoom(room)
 
 	joinRoom: (room) ->
-		if room.t isnt 'c'
+		if room.t isnt 'c' or room.name == 'general'
 			return
 
 		if @isJoiningRoom
@@ -304,15 +301,23 @@ class IrcClient
 				status: 'offline'
 
 	createUserWhenNotExist: (name) ->
-		user = Meteor.users.findOne {name: name}, fields: name: 1
+		user = Meteor.users.findOne {name: name}
 		unless user
 			console.log '[irc] createNotExistUser ->'.yellow, 'userName:', name
 			Meteor.call 'registerUser',
-				email: "#{name}@rocketchat.org",
-				pass: 'rocketchat',
+				email: "#{name}@rocketchat.org"
+				pass: 'rocketchat'
 				name: name
+			Meteor.users.update {name: name},
+				$set:
+					status: 'online'
+					username: name
+			user = Meteor.users.findOne {name: name}
+		return user
+
 
 	createDirectRoomWhenNotExist: (source, target) ->
+		console.log '[irc] createDirectRoomWhenNotExist -> '.yellow, 'source:', source, 'target:', target
 		rid = [source._id, target._id].sort().join('')
 		now = new Date()
 		ChatRoom.upsert
@@ -346,9 +351,12 @@ IrcClient.getByUid = (uid) ->
 	return ircClientMap[uid]
 
 IrcClient.create = (login) ->
+	unless login.user?
+		return login
 	unless login.user._id of ircClientMap
 		ircClient = new IrcClient login
 		return async ircClient.connect
+
 	return login
 
 
