@@ -4,7 +4,7 @@ Template.body.onRendered ->
 		d = document
 		s = 'script'
 		l = 'dataLayer'
-		i = RocketChat.settings.get('API_Analytics')?.value
+		i = RocketChat.settings.get 'API_Analytics'
 		if i
 			do (w,d,s,l,i) ->
 				w[l] = w[l] || []
