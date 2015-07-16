@@ -22,12 +22,6 @@ Template.room.helpers
 		console.log 'room.helpers subscribed' if window.rocketDebug
 		return ChatSubscription.find({ rid: FlowRouter.getParam('_id') }).count() > 0
 
-	messages: ->
-		console.log 'room.helpers messages' if window.rocketDebug
-		window.lastMessageWindow[FlowRouter.getParam('_id')] = undefined
-		window.lastMessageWindowHistory[FlowRouter.getParam('_id')] = undefined
-		return ChatMessage.find { rid: FlowRouter.getParam('_id'), t: { '$ne': 't' } }, { sort: { ts: 1 } }
-
 	messagesHistory: ->
 		console.log 'room.helpers messagesHistory' if window.rocketDebug
 		return ChatMessageHistory.find { rid: FlowRouter.getParam('_id'), t: { '$ne': 't' }  }, { sort: { ts: 1 } }

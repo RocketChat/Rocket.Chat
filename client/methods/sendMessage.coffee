@@ -13,4 +13,4 @@ Meteor.methods
 
 			message = RocketChat.callbacks.run 'beforeSaveMessage', message
 
-			ChatMessage.insert message
+			ChatMessageHistory.insert message
