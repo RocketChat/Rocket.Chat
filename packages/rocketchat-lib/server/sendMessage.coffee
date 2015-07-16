@@ -5,7 +5,8 @@ RocketChat.sendMessage = (user, message, room) ->
 
 	console.log '[functions] RocketChat.sendMessage -> '.green, 'arguments:', arguments
 
-	message.ts = new Date()
+	unless message.ts?
+		message.ts = new Date()
 
 	message.u = _.pick user, ['_id','username']
 
@@ -45,12 +46,12 @@ RocketChat.sendMessage = (user, message, room) ->
 
 		ChatRoom.update
 			# only subscriptions to the same room
-			rid: message.rid
+			_id: message.rid
 		,
 			# update the last message timestamp
 			$set:
 				lm: message.ts
-			# increate the messages counter
+			# increment the messages counter
 			$inc:
 				msgs: 1
 

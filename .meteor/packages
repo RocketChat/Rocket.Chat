@@ -29,7 +29,6 @@ konecty:mongo-counter
 konecty:multiple-instances-status
 konecty:nrr
 konecty:user-presence
-meteorhacks:kadira
 mizzao:autocomplete
 mizzao:timesync
 momentjs:moment
@@ -59,3 +58,4 @@ tmeasday:errors
 todda00:friendly-slugs
 underscorestring:underscore.string
 yasaricli:slugify
+meteorhacks:kadira
