@@ -50,20 +50,13 @@ Template.room.helpers
 
 	usersTyping: ->
 		console.log 'room.helpers usersTyping' if window.rocketDebug
-		# messages = ChatTyping.find({ rid: this._id, 'u._id': { $ne: Meteor.userId() } }).fetch()
-
-		console.log 'typing!!!!'
-
-		return unless Template.instance().typing?
-
-		users = Template.instance().typing.get()
-
+		users = MsgTyping.get @_id
 		if users.length is 0
 			return
 		if users.length is 1
 			return {
 				multi: false
-				selfTyping: ChatMessages.selfTyping.get()
+				selfTyping: MsgTyping.selfTyping.get()
 				users: users[0]
 			}
 
@@ -77,7 +70,7 @@ Template.room.helpers
 		usernames = [usernames, last]
 		return {
 			multi: true
-			selfTyping: ChatMessages.selfTyping.get()
+			selfTyping: MsgTyping.selfTyping.get()
 			users: usernames.join " #{t 'and'} "
 		}
 
@@ -285,7 +278,7 @@ Template.room.events
 		event.preventDefault()
 		Meteor.call 'joinRoom', this._id
 
-	"click .burger": ->
+	"click .burger": -> 
 		console.log 'room click .burger' if window.rocketDebug
 		chatContainer = $("#rocket-chat")
 		if chatContainer.hasClass("menu-closed")
@@ -296,6 +289,10 @@ Template.room.events
 	'focus .input-message': (event) ->
 		console.log 'room focus .input-message' if window.rocketDebug
 		KonchatNotification.removeRoomNotification(this._id)
+
+	'keyup .input-message': (event) ->
+		console.log 'room keyup .input-message',this._id if window.rocketDebug
+		ChatMessages.keyup(this._id, event, Template.instance())
 
 	'keydown .input-message': (event) ->
 		console.log 'room keydown .input-message',this._id if window.rocketDebug
@@ -466,14 +463,14 @@ Template.room.events
 Template.room.onCreated ->
 	console.log 'room.onCreated' if window.rocketDebug
 	# this.scrollOnBottom = true
-	this.typing = new msgTyping this.data._id
+	# this.typing = new msgTyping this.data._id
 	this.showUsersOffline = new ReactiveVar false
 	this.atBottom = true
 
 Template.room.onRendered ->
 	console.log 'room.onRendered' if window.rocketDebug
 	FlexTab.check()
-	ChatMessages.init(this.typing)
+	ChatMessages.init()
 	# ScrollListener.init()
 
 	wrapper = this.find('.wrapper')

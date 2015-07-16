@@ -31,15 +31,6 @@ RocketChat.sendMessage = (user, message, room) ->
 		RocketChat.callbacks.run 'afterSaveMessage', message
 
 	###
-	Remove the typing record
-	###
-	Meteor.defer ->
-
-		ChatTyping.remove
-			rid: message.rid
-			'u._id': message.u._id
-
-	###
 	Update all the room activity tracker fields
 	###
 	Meteor.defer ->

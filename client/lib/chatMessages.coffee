@@ -3,40 +3,17 @@
 	wrapper = {}
 	input = {}
 	editing = {}
-	selfTyping = new ReactiveVar false
-	typing = null
-	# typingLimit = 15000
-	# typingStream = new Meteor.Stream 'typing'
-
-	init = (templateTyping) ->
+	
+	init = ->
 		wrapper = $(".messages-container").find(".wrapper")
 		input = $(".input-message").get(0)
-
-		console.log 'ChatMessages.init()'
-
-		typing = templateTyping
-
-		# self.scrollable = false
-		# wrapper.bind "scroll", ->
-			# scrollable()
 		bindEvents()
 		return
-
-	# isScrollable = ->
-	# 	self.scrollable
 
 	resize = ->
 		dif = 60 + $(".messages-container").find("footer").outerHeight()
 		$(".messages-box").css
 			height: "calc(100% - #{dif}px)"
-
-	# scrollable = ->
-		# wrapper = $(".messages-container").find(".wrapper")
-		# top = wrapper.scrollTop() + wrapper.outerHeight()
-		# if top == wrapper.get(0).scrollHeight
-		# 	self.scrollable = true
-		# else
-		# 	self.scrollable = false
 
 	toPrevMessage = ->
 		msgs = wrapper.get(0).querySelectorAll(".own:not(.system)")
@@ -90,9 +67,6 @@
 		else
 			editing.saved = input.value
 
-	# toBottom = ->
-	# 	ScrollListener.toBottom()
-
 	send = (rid, input) ->
 		if _.trim(input.value) isnt ''
 			KonchatNotification.removeRoomNotification(rid)
@@ -116,26 +90,18 @@
 
 	startTyping = (rid, input) ->
 		if _.trim(input.value) isnt ''
-			typing.type()
-			# unless self.typingTimeout
-			# 	if Meteor.userId()?
-			# 		selfTyping.set true
-			# 		Meteor.call 'typingStatus', rid, true
-			# 	self.typingTimeout = Meteor.setTimeout ->
-			# 		stopTyping()
-			# 	, typingLimit
+			MsgTyping.start(rid)
+		else
+			MsgTyping.stop(rid)
 
 	stopTyping = (rid) ->
-		selfTyping.set false
-		# self.typingTimeout = null
-		typing.stop()
+		MsgTyping.stop(rid)
 
 	bindEvents = ->
 		if wrapper?.length
 			$(".input-message").autogrow
 				postGrowCallback: ->
 					resize()
-					# toBottom() if self.scrollable
 
 	keyup = (rid, event) ->
 		input = event.currentTarget
@@ -197,13 +163,10 @@
 			RoomHistoryManager.clear rid
 
 
-	# isScrollable: isScrollable
-	# toBottom: toBottom
 	keydown: keydown
 	keyup: keyup
 	deleteMsg: deleteMsg
 	send: send
 	init: init
 	edit: edit
-	selfTyping: selfTyping
 )()

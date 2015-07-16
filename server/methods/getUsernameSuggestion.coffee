@@ -59,7 +59,7 @@ usernameIsAvaliable = (username) ->
 Meteor.methods
 	getUsernameSuggestion: ->
 		if not Meteor.userId()
-			throw new Meteor.Error 203, '[methods] typingStatus -> Usuário não logado'
+			throw new Meteor.Error 203, '[methods] getUsernameSuggestion -> Usuário não logado'
 
 		user = Meteor.user()
 		return generateSuggestion(user)
