@@ -22,12 +22,6 @@ Template.room.helpers
 		console.log 'room.helpers subscribed' if window.rocketDebug
 		return ChatSubscription.find({ rid: this._id }).count() > 0
 
-	messages: ->
-		console.log 'room.helpers messages' if window.rocketDebug
-		window.lastMessageWindow[this._id] = undefined
-		window.lastMessageWindowHistory[this._id] = undefined
-		return ChatMessage.find { rid: this._id, t: { '$ne': 't' } }, { sort: { ts: 1 } }
-
 	messagesHistory: ->
 		console.log 'room.helpers messagesHistory' if window.rocketDebug
 		return ChatMessageHistory.find { rid: this._id, t: { '$ne': 't' }  }, { sort: { ts: 1 } }

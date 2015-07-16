@@ -61,7 +61,7 @@
 		return if element.classList.contains("system")
 		clearEditing()
 		id = element.getAttribute("id")
-		message = ChatMessage.findOne { _id: id, 'u._id': Meteor.userId() }
+		message = ChatMessageHistory.findOne { _id: id, 'u._id': Meteor.userId() }
 		input.value = message.msg
 		editing.element = element
 		editing.index = index or getEditingIndex(element)
@@ -92,7 +92,7 @@
 			msg = input.value
 			input.value = ''
 			stopTyping(rid)
-			Meteor.call 'sendMessage', { rid: rid, msg: msg, day: window.day }
+			Meteor.call 'sendMessage', { _id: Random.id(), rid: rid, msg: msg, day: window.day }
 
 	deleteMsg = (element) ->
 			id = element.getAttribute("id")
@@ -122,7 +122,7 @@
 	stopTyping = (rid) ->
 		selfTyping.set false
 		if typingTimeout?[rid]?
-			clearTimeout(typingTimeout[rid]) 
+			clearTimeout(typingTimeout[rid])
 			typingTimeout[rid] = null
 
 		Meteor.call 'typingStatus', rid, false
