@@ -2,6 +2,7 @@
 	defaultTime = 600000 # 10 minutes
 	openedRooms = {}
 	subscription = null
+	msgStream = new Meteor.Stream 'messages'
 
 	Dep = new Tracker.Dependency
 
@@ -15,6 +16,8 @@
 				for sub in openedRooms[rid].sub
 					sub.stop()
 
+			msgStream.removeListener rid
+
 			openedRooms[rid].ready = false
 			openedRooms[rid].active = false
 			delete openedRooms[rid].timeout
@@ -25,10 +28,11 @@
 		for rid, record of openedRooms when record.active is true
 			record.sub = [
 				Meteor.subscribe 'room', rid
-				Meteor.subscribe 'messages', rid
+				# Meteor.subscribe 'messages', rid
 			]
 
-			record.ready = record.sub[0].ready() and record.sub[1].ready()
+			record.ready = record.sub[0].ready()
+			# record.ready = record.sub[0].ready() and record.sub[1].ready()
 
 			Dep.changed()
 
@@ -54,6 +58,15 @@
 			if openedRooms[rid].active isnt true
 				openedRooms[rid].active = true
 				setRoomExpireExcept rid
+
+				msgStream.on rid, (msg) ->
+					if msg._deleted?
+						return ChatMessageHistory.remove _id: msg._id
+
+					return if msg.u?._id is Meteor.userId()
+
+					ChatMessageHistory.upsert { _id: msg._id }, msg
+
 				computation.invalidate()
 
 		return {
@@ -65,3 +78,4 @@
 	open: open
 	close: close
 	init: init
+	msgStream: msgStream
