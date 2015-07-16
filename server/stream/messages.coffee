@@ -9,11 +9,14 @@ msgStream.permissions.read (eventName) ->
 	console.log('stream.permissions.read', this.userId, eventName);
 	# return this.userId == eventName;
 
-	canAccess = Meteor.call 'canAccessRoom', eventName, this.userId
+	try
+		canAccess = Meteor.call 'canAccessRoom', eventName, this.userId
 
-	return false if not canAccess
+		return false if not canAccess
 
-	return true
+		return true
+	catch e
+		return false
 
 Meteor.startup ->
 	filter =
