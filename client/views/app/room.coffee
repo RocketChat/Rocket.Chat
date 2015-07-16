@@ -294,8 +294,7 @@ Template.room.helpers
 		# this is to make "bannerData" itself reactive by having it depend directly on the room data.
 		# Then, since that data gets synchronized with the server, the template will be reprocessed
 		# when the data changes.
-		accessPermissions = ChatRoom.findOne(this._id)?.accessPermissions || ['300', 'U'];
-		console.log(accessPermissions);
+		accessPermissions = ChatRoom.findOne(this._id)?.accessPermissions || []
 		Template.instance().updateBannerData(accessPermissions)
 		return Template.instance().bannerData
 
