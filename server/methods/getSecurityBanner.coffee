@@ -8,13 +8,14 @@ Meteor.methods
 		perms = new Jedis.AccessPermission permissionIds 
 			.toArray();
 
-		#systemCountryCode = Jedis.accessManager.getPermissions(Meteor.settings.public.system.countryCode);
-		#if( systemCountryCode.length === 0 ) {
-		#	console.log('System country not found.  Defaulting to USA');
+		systemCountryCode = Jedis.accessManager.getPermissions(Jedis.settings.get('public').system.countryCode)
+
+		if systemCountryCode.length is 0
+			console.log 'System country not found.  Defaulting to USA'
 			systemCountryCode = _id: '300', trigraph: 'USA', label: 'United States', type: 'Release Caveat'
-		#} else {
-		#	systemCountryCode = systemCountryCode[0];
-		#}
+		else
+			systemCountryCode = systemCountryCode[0];
+		
 
 
 		# Obtain classification, add to banner. If none, default: 'UNCLASSIFIED'
@@ -54,8 +55,9 @@ Meteor.methods
 		# if still contains entries, hard-code system country code at front else 'NOFORN'
 		reltoLabels.splice(0, 0, ( if reltoLabels.length > 0 then 'REL TO ' + systemCountryCode.trigraph else 'NOFORN'))
 		reltoLabels = reltoLabels.join ', '
-		
 
+
+		# stitch everything together
 		banner.classificationId = classification._id
 		banner.text = _.compact [classification.label.toUpperCase(), sciSapLabels, reltoLabels]
 			.join ' // '
