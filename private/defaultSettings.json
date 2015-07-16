@@ -1,0 +1,36 @@
+{
+	"public" : {
+		"system" : {
+			"name": "JEDIS Default Name",
+			"countryCode" : "300" 
+		},
+		"permission" : {
+			"classification" : {
+				"default" : "TS"
+			}
+		}
+	},
+
+	"ldap" : {
+		"url" : "ldap://127.0.0.1:10389",
+		"userSearchBaseDNTemplate" : "cn={0},ou=Users,dc=jedis,dc=spawar,dc=navy,dc=mil",
+		"admin" : {
+			"baseDN" : "cn=manager,dc=jedis,dc=spawar,dc=navy,dc=mil",
+			"credentials" : ""
+		},
+		"accessDefs" : {
+			"baseDN" : "ou=Access,dc=jedis,dc=spawar,dc=navy,dc=mil",
+			"opts" : {
+				"filter": "(objectClass=jedis-access-definition)",
+				"scope" : "sub"
+			}
+		},
+		"users" : {
+			"baseDN" : "ou=Users,dc=jedis,dc=spawar,dc=navy,dc=mil",
+			"opts" : {
+				"filter": "(objectClass=jedis-user)",
+				"scope" : "sub"
+			}
+		}
+    }
+}
