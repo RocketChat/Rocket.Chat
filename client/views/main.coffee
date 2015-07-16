@@ -16,3 +16,37 @@ Template.body.onRendered ->
 				j.src = '//www.googletagmanager.com/gtm.js?id=' + i + dl
 				f.parentNode.insertBefore j, f
 				dataLayerComputation.stop()
+
+
+Template.main.helpers
+	logged: ->
+		return Meteor.userId()?
+
+	subsReady: ->
+		return not Meteor.userId()? or (FlowRouter.subsReady('userData', 'activeUsers'))
+
+	hasUsername: ->
+		return Meteor.userId()? and Meteor.user().username?
+
+	hasAvatar: ->
+		return Meteor.userId()? and Meteor.user().avatarOrigin?
+
+	flexOpened: ->
+		console.log 'layout.helpers flexOpened' if window.rocketDebug
+		return 'flex-opened' if Session.equals('flexOpened', true)
+
+	flexOpenedRTC1: ->
+		console.log 'layout.helpers flexOpenedRTC1' if window.rocketDebug
+		return 'layout1' if Session.equals('rtcLayoutmode', 1)
+
+	flexOpenedRTC2: ->
+		console.log 'layout.helpers flexOpenedRTC2' if window.rocketDebug
+		return 'layout2' if (Session.get('rtcLayoutmode') > 1)
+
+
+Template.main.onRendered ->
+	$('html').addClass("noscroll").removeClass "scroll"
+
+	# RTL Support - Need config option on the UI
+	if isRtl localStorage.getItem "userLanguage"
+		$('html').addClass "rtl"

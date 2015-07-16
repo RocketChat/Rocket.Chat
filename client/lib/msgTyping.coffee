@@ -51,8 +51,10 @@
 		stream.emit 'typing', { room: room, username: Meteor.user().username, stop: true }
 		
 	get = (room) ->
-		users = usersTyping[room].users.get()
-		return _.keys(users) or []
+		if usersTyping[room]?
+			users = usersTyping[room].users.get()
+			return _.keys(users) or []
+		return []
 
 	return { 
 		start: start

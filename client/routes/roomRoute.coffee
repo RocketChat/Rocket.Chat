@@ -1,39 +1,46 @@
-Router.route '/room/:_id',
+FlowRouter.route '/room/:_id',
 	name: 'room'
-	action: ->
-		Session.set('editRoomTitle', false)
-		@render 'room',
-			data:
-				_id: @params._id
 
-	waitOn: ->
-		if Meteor.userId()
-			RoomManager.open @params._id
+	action: (params, queryParams) ->
+		Session.set 'openedRoom', null
 
-	onBeforeAction: ->
-		if not ChatRoom.find(@params._id).count()
-			Router.go 'home'
+		FlowLayout.render 'main', {center: 'loading'}
 
-		Session.set 'openedRoom', @params._id
+		Meteor.defer ->
+			track = Tracker.autorun ->
+				if RoomManager.open(params._id).ready() isnt true
+					return
 
-		this.next()
-	# 	Meteor.call 'readMessages', @params._id
-	# 	KonchatNotification.removeRoomNotification @params._id
+				track?.stop()
 
-	onAfterAction: ->
-		setTimeout ->
-			$('.message-form .input-message').focus()
-			$('.messages-box .wrapper').scrollTop(99999)
-		, 100
+				if not ChatRoom.find(params._id).count()
+					FlowRouter.go 'home'
 
-	# action: ->
+				mainNode = document.querySelector('.main-content')
+				if mainNode?
+					child?.remove() for child in mainNode.children
+					room = RoomManager.getDomOfRoom(params._id)
+					mainNode.appendChild room
+					if room.classList.contains('room-container')
+						room.querySelector('.messages-box > .wrapper').scrollTop = room.oldScrollTop
 
-	# 	self = this
-	# 	Session.set('editRoomTitle', false)
-	# 	Meteor.call 'readMessages', self.params._id
-	# 	Tracker.nonreactive ->
-	# 		KonchatNotification.removeRoomNotification(self.params._id)
-	# 		self.render 'room',
-	# 			data:
-	# 				_id: self.params._id
+				Session.set 'openedRoom', params._id
 
+				Session.set 'editRoomTitle', false
+				# Meteor.call 'readMessages', params._id
+				# KonchatNotification.removeRoomNotification(params._id)
+
+				setTimeout ->
+					$('.message-form .input-message').focus()
+				, 100
+
+	triggersExit: [
+		->
+			mainNode = document.querySelector('.main-content')
+			if mainNode?
+				for child in mainNode.children
+					if child?
+						if child.classList.contains('room-container')
+							child.oldScrollTop = child.querySelector('.messages-box > .wrapper').scrollTop
+						child.remove() 
+	]

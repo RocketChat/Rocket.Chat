@@ -91,7 +91,7 @@ Template.createChannelFlex.events
 
 				instance.clearForm()
 
-				Router.go 'room', { _id: result.rid }
+				FlowRouter.go 'room', { _id: result.rid }
 		else
 			instance.error.set({ fields: err })
 
