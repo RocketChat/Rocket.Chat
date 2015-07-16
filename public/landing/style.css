@@ -1993,7 +1993,7 @@ label.required:after {
 
 .landing-page {
 	text-align: center;
-	display: table;
+	display: block;
 	width: 100%;
 	min-height: 100%;
 	z-index: 101;
@@ -2006,8 +2006,6 @@ label.required:after {
 }
 
 .landing-page .wrapper {
-	display: table-cell;
-	vertical-align: middle;
 	text-align: center;
 	padding: 60px 0;
 	z-index: 10;
@@ -2132,7 +2130,7 @@ label.required:after {
 	color: #FFF;
 	font-weight: 300;
 	margin-bottom: 25px;
-	margin: 0 auto 25px;
+	margin: 0 auto 12px;
 	max-width: 580px;
 	width: 90%;
 	position: relative;
@@ -2168,13 +2166,6 @@ label.required:after {
 	padding: 20px 0 0;
 	position: relative;
 	z-index: 1
-}
-
-.landing-page footer h4 {
-	text-transform: uppercase;
-	margin-bottom: 8px;
-	font-size: 12px;
-	font-weight: 300
 }
 
 .landing-page footer div.switch-language {
@@ -2214,9 +2205,46 @@ label.required:after {
 	display: none
 }
 
+.rocket-team{
+	max-width: 520px;
+	width: 90%;
+	margin: 0 auto 50px;
+}
+
+.landing-page footer h4 {
+	font-weight: 300;
+	text-transform: uppercase;
+	font-size: 16px;
+	letter-spacing: -0.5px;
+	margin: 12px 0;
+	color: #EFEFEF;
+	line-height: 16px;
+}
+
+.landing-page footer p{
+	margin: 12px 0;
+	font-size: 14px;
+	line-height: 20px;
+	font-weight: 300;
+}
+
+.rocket-team li{
+	display: inline-block;
+}
+
+.rocket-team a{
+	display: inline-block;
+	width: 50px;
+	height: 50px;
+	border-radius: 50%;
+	background-size: 100%;
+	background-position: 50% 50%;
+	margin-right: 5px;
+}
+
 github-fork{
 	display: block;
-	position: absolute;
+	position: fixed;
 	z-index: 10;
 	top: 0;
 	right: 0;
