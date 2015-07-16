@@ -21,6 +21,7 @@
 			openedRooms[rid].ready = false
 			openedRooms[rid].active = false
 			delete openedRooms[rid].timeout
+			delete openedRooms[rid].dom
 
 			ChatMessageHistory.remove rid: rid
 
@@ -53,11 +54,12 @@
 				active: false
 				ready: false
 
+		setRoomExpireExcept rid
+
 		if subscription.ready()
 			# if ChatSubscription.findOne { rid: rid }, { reactive: false }
 			if openedRooms[rid].active isnt true
 				openedRooms[rid].active = true
-				setRoomExpireExcept rid
 
 				msgStream.on rid, (msg) ->
 					if msg._deleted?
@@ -75,7 +77,26 @@
 				return openedRooms[rid].ready
 		}
 
+	getDomOfRoom = (rid) ->
+		room = openedRooms[rid]
+		if not room?
+			return
+
+		if not room.dom?
+			room.dom = document.createElement 'div'
+			room.dom.classList.add 'room-container'
+			Blaze.renderWithData Template.room, { _id: rid }, room.dom
+
+		return room.dom
+
+	existsDomOfRoom = (rid) ->
+		room = openedRooms[rid]
+		return room?.dom?
+
 	open: open
 	close: close
 	init: init
+	getDomOfRoom: getDomOfRoom
+	existsDomOfRoom: existsDomOfRoom
 	msgStream: msgStream
+	openedRooms: openedRooms

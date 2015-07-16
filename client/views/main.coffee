@@ -23,7 +23,7 @@ Template.main.helpers
 		return Meteor.userId()?
 
 	subsReady: ->
-		return not Meteor.userId()? or FlowRouter.subsReady()
+		return not Meteor.userId()? or (FlowRouter.subsReady('userData', 'activeUsers'))
 
 	hasUsername: ->
 		return Meteor.userId()? and Meteor.user().username?

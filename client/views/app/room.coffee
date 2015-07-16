@@ -2,7 +2,7 @@
 Template.room.helpers
 	visible: ->
 		console.log 'room.helpers visible' if window.rocketDebug
-		return 'visible' if FlowRouter.getParam('_id') is Session.get('openedRoom')
+		return 'visible' if this._id is Session.get('openedRoom')
 
 	tAddUsers: ->
 		console.log 'room.helpers tAddUsers' if window.rocketDebug
@@ -14,33 +14,29 @@ Template.room.helpers
 
 	favorite: ->
 		console.log 'room.helpers favorite' if window.rocketDebug
-		sub = ChatSubscription.findOne { rid: FlowRouter.getParam('_id') }, { fields: { f: 1 } }
+		sub = ChatSubscription.findOne { rid: this._id }, { fields: { f: 1 } }
 		return 'icon-star favorite-room' if sub?.f? and sub.f
 		return 'icon-star-empty'
 
 	subscribed: ->
 		console.log 'room.helpers subscribed' if window.rocketDebug
-		return ChatSubscription.find({ rid: FlowRouter.getParam('_id') }).count() > 0
+		return ChatSubscription.find({ rid: this._id }).count() > 0
 
 	messagesHistory: ->
 		console.log 'room.helpers messagesHistory' if window.rocketDebug
-		return ChatMessageHistory.find { rid: FlowRouter.getParam('_id'), t: { '$ne': 't' }  }, { sort: { ts: 1 } }
+		return ChatMessageHistory.find { rid: this._id, t: { '$ne': 't' }  }, { sort: { ts: 1 } }
 
 	hasMore: ->
 		console.log 'room.helpers hasMore' if window.rocketDebug
-		return RoomHistoryManager.hasMore FlowRouter.getParam('_id')
+		return RoomHistoryManager.hasMore this._id
 
 	isLoading: ->
 		console.log 'room.helpers isLoading' if window.rocketDebug
-		return 'btn-loading' if RoomHistoryManager.isLoading FlowRouter.getParam('_id')
+		return 'btn-loading' if RoomHistoryManager.isLoading this._id
 
 	windowId: ->
 		console.log 'room.helpers windowId' if window.rocketDebug
-		return "chat-window-#{FlowRouter.getParam('_id')}"
-
-	roomContainerId: ->
-		console.log 'room.helpers roomContainerId' if window.rocketDebug
-		return "room-container-#{FlowRouter.getParam('_id')}"
+		return "chat-window-#{this._id}"
 
 	usersTyping: ->
 		console.log 'room.helpers usersTyping' if window.rocketDebug
@@ -70,17 +66,17 @@ Template.room.helpers
 
 	roomName: ->
 		console.log 'room.helpers roomName' if window.rocketDebug
-		roomData = Session.get('roomData' + FlowRouter.getParam('_id'))
+		roomData = Session.get('roomData' + this._id)
 		return '' unless roomData
 
 		if roomData.t is 'd'
-			return ChatSubscription.findOne({ rid: FlowRouter.getParam('_id') }, { fields: { name: 1 } })?.name
+			return ChatSubscription.findOne({ rid: this._id }, { fields: { name: 1 } })?.name
 		else
 			return roomData.name
 
 	roomTypeIcon: ->
 		console.log 'room.helpers roomTypeIcon' if window.rocketDebug
-		roomData = Session.get('roomData' + FlowRouter.getParam('_id'))
+		roomData = Session.get('roomData' + this._id)
 		return '' unless roomData
 		return 'icon-hash' if roomData.t is 'c'
 		return 'icon-at'   if roomData.t is 'd'
@@ -88,7 +84,7 @@ Template.room.helpers
 
 	userData: ->
 		console.log 'room.helpers userData' if window.rocketDebug
-		roomData = Session.get('roomData' + FlowRouter.getParam('_id'))
+		roomData = Session.get('roomData' + this._id)
 
 		return {} unless roomData
 
@@ -144,25 +140,25 @@ Template.room.helpers
 
 	isChannel: ->
 		console.log 'room.helpers isChannel' if window.rocketDebug
-		roomData = Session.get('roomData' + FlowRouter.getParam('_id'))
+		roomData = Session.get('roomData' + this._id)
 		return '' unless roomData
 		return roomData.t is 'c'
 
 	canAddUser: ->
 		console.log 'room.helpers canAddUser' if window.rocketDebug
-		roomData = Session.get('roomData' + FlowRouter.getParam('_id'))
+		roomData = Session.get('roomData' + this._id)
 		return '' unless roomData
 		return roomData.t in ['p', 'c'] and roomData.u?._id is Meteor.userId()
 
 	canEditName: ->
 		console.log 'room.helpers canEditName' if window.rocketDebug
-		roomData = Session.get('roomData' + FlowRouter.getParam('_id'))
+		roomData = Session.get('roomData' + this._id)
 		return '' unless roomData
 		return roomData.u?._id is Meteor.userId() and roomData.t in ['c', 'p']
 
 	roomNameEdit: ->
 		console.log 'room.helpers roomNameEdit' if window.rocketDebug
-		return Session.get('roomData' + FlowRouter.getParam('_id'))?.name
+		return Session.get('roomData' + this._id)?.name
 
 	editingTitle: ->
 		console.log 'room.helpers editingTitle' if window.rocketDebug
@@ -190,7 +186,7 @@ Template.room.helpers
 
 	isGroupChat: ->
 		console.log 'room.helpers isGroupChat' if window.rocketDebug
-		room = ChatRoom.findOne(FlowRouter.getParam('_id'), { reactive: false })
+		room = ChatRoom.findOne(this._id, { reactive: false })
 		return room?.t in ['c', 'p']
 
 	userActiveByUsername: (username) ->
@@ -202,9 +198,9 @@ Template.room.helpers
 
 	roomUsers: ->
 		console.log 'room.helpers roomUsers' if window.rocketDebug
-		room = ChatRoom.findOne(FlowRouter.getParam('_id'), { reactive: false })
+		room = ChatRoom.findOne(this._id, { reactive: false })
 		ret =
-			_id: FlowRouter.getParam('_id')
+			_id: this._id
 			total: room?.usernames.length
 			totalOnline: 0
 			users: room.usernames
