@@ -70,7 +70,7 @@ Template.loginForm.events
 						else
 							Router.go 'index'
 			else
-				Meteor.loginWithPassword formData.emailOrUsername, formData.pass, (error) ->
+				Meteor.loginWithJEDIS formData.emailOrUsername, formData.pass, (error) ->
 					RocketChat.Button.reset(button)
 					if error?
 						if error.error is 'no-valid-email'
