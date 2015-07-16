@@ -1,127 +1,86 @@
-Router.configure
-	progress : true
-	loadingTemplate: 'loading'
-	notFoundTemplate: 'error'
+Blaze.registerHelper 'pathFor', (path, kw) ->
+	return FlowRouter.path path, kw.hash
 
-	waitOn: ->
-		if Meteor.userId()
-			return [Meteor.subscribe('userData'), Meteor.subscribe('activeUsers'), RoomManager.init()]
-
-	onBeforeAction: ->
-		Session.set('openedRoom', null)
-		this.next()
-
-	onAfterAction: ->
-		unless Router._layout._template is 'appLayout'
-			Router.configure
-				layoutTemplate: 'appLayout'
-
-Router.onBeforeAction ->
-	if not Meteor.userId()
-		this.layout('loginLayout')
-		this.render('loginForm')
-	else
-		Session.set 'openedRoom', null
-		this.next()
-
-Router.onBeforeAction ->
-	if Meteor.userId()? and not Meteor.user().username?
-		this.layout('usernameLayout')
-		return this.render('usernamePrompt')
-	if Meteor.userId()? and not Meteor.user().avatarOrigin?
-		this.layout('usernameLayout')
-		return this.render('avatarPrompt')
-	this.next()
-, {
-	except: ['login']
-}
+FlowLayout.setRoot 'body'
 
 
-Router.route '/',
+FlowRouter.subscriptions = ->
+	Tracker.autorun =>
+		RoomManager.init()
+		if Meteor.userId()?
+			@register 'userData', Meteor.subscribe('userData')
+			@register 'activeUsers', Meteor.subscribe('activeUsers')
+
+
+FlowRouter.route '/',
 	name: 'index'
 
-	onBeforeAction: ->
-		if Meteor.userId()
-			Router.go 'home'
-		else
-			Router.go 'login'
+	action: ->
+		FlowRouter.go 'home'
 
 
-Router.route '/login',
-	name: 'login'
-
-	onBeforeAction: ->
-		if Meteor.userId()
-			Router.go 'home'
-
-
-Router.route '/home',
+FlowRouter.route '/home',
 	name: 'home'
 
 	action: ->
-		this.render('home')
-
-	onAfterAction: ->
+		FlowLayout.render 'main', {center: 'home'}
 		KonchatNotification.getDesktopPermission()
 
-Router.route '/settings/:group?',
+
+FlowRouter.route '/settings/:group?',
 	name: 'settings'
-	onBeforeAction: ->
-		if Meteor.user()?.admin isnt true
-			Router.go('home')
-		@next()
-	waitOn: ->
-		return Meteor.subscribe 'admin-settings'
-	data: ->
-		return {
-			group: if @params.group then @params.group else Settings.findOne({ type: 'group' })?._id
-		}
-	action: ->
-		this.render('settings')
-	onAfterAction: ->
-		KonchatNotification.getDesktopPermission()
 
-Router.route '/room/:_id',
+	subscriptions: (params, queryParams) ->
+		@register 'admin-settings', Meteor.subscribe('admin-settings')
+
+	action: ->
+		FlowLayout.render 'main', {}
+
+		track = Tracker.autorun ->
+			if not FlowRouter.subsReady()
+				return
+
+			track?.stop()
+
+			if not Meteor.user()? or Meteor.user().admin isnt true
+				FlowRouter.go('home')
+				return
+
+			FlowLayout.render 'main', {center: 'settings'}
+			KonchatNotification.getDesktopPermission()
+
+
+FlowRouter.route '/room/:_id',
 	name: 'room'
 
-	waitOn: ->
-		if Meteor.userId()
-			RoomManager.open @params._id
+	action: (params, queryParams) ->
+		Session.set 'openedRoom', null
+		FlowLayout.render 'main', {center: 'room'}
 
-	onBeforeAction: ->
-		if not ChatRoom.find(@params._id).count()
-			Router.go 'home'
+		track = Tracker.autorun ->
+			if not FlowRouter.subsReady() or not Meteor.userId()? or RoomManager.open(params._id).ready() isnt true
+				return
 
-		Session.set 'openedRoom', @params._id
-		Meteor.call 'readMessages', @params._id
-		KonchatNotification.removeRoomNotification @params._id
+			if not ChatRoom.find(params._id).count()
+				FlowRouter.go 'home'
 
-		this.next()
+			Session.set 'openedRoom', params._id
 
-	action: ->
+			Session.set 'editRoomTitle', false
+			Meteor.call 'readMessages', params._id
+			KonchatNotification.removeRoomNotification(params._id)
 
-		self = this
-		Session.set('editRoomTitle', false)
-		Meteor.call 'readMessages', self.params._id
-		Tracker.nonreactive ->
-			KonchatNotification.removeRoomNotification(self.params._id)
-			self.render 'room',
-				data:
-					_id: self.params._id
-
-	onAfterAction: ->
-		setTimeout ->
-			$('.message-form .input-message').focus()
-			$('.messages-box .wrapper').scrollTop(99999)
-		, 100
+			setTimeout ->
+				$('.message-form .input-message').focus()
+			, 100
 
 
-Router.route '/history/private',
+FlowRouter.route '/history/private',
 	name: 'privateHistory'
+
+	subscriptions: (params, queryParams) ->
+		@register 'privateHistory', Meteor.subscribe('privateHistory')
 
 	action: ->
 		Session.setDefault('historyFilter', '')
-		this.render 'privateHistory'
-
-	waitOn: ->
-		return [ Meteor.subscribe('privateHistory') ]
+		FlowLayout.render 'main', {center: 'privateHistory'}
