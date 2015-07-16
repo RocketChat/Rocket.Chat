@@ -19,6 +19,13 @@ FlowRouter.route '/',
 		FlowRouter.go 'home'
 
 
+FlowRouter.route '/login',
+	name: 'login'
+
+	action: ->
+		FlowRouter.go 'home'
+
+
 FlowRouter.route '/home',
 	name: 'home'
 
