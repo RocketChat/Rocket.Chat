@@ -80,6 +80,13 @@ blockquote {
 	}
 }
 
+.flex-center{
+	display: -webkit-flex;
+	display: flex;
+	-webkit-align-items: center;
+	align-items: center;
+}
+
 .copyonly {
 	float: left;
 	display: inline-block;
@@ -795,8 +802,7 @@ a.github-fork {
 		width: 100%;
 		height: 100%;
 		color: #FFF;
-		display: flex;
-		align-items: center;
+		.flex-center;
 		justify-content: center;
 		font-family: Helvetica;
 		text-transform: uppercase;
@@ -865,9 +871,8 @@ a.github-fork {
 			position: relative;
 			padding: 0 25px 0 10px;
 			height: 100%;
-			display: flex;
+			.flex-center;
 			flex-flow: row nowrap;
-			align-items: center;
 			.calc(width, ~"100% - 60px");
 		}
 		h4 {
@@ -1282,7 +1287,7 @@ a.github-fork {
 			display: block;
 			width: 100%;
 			height: 100%;
-			padding-top: 2px;
+			margin-top: -1px;
 			&:hover {
 				text-decoration: none;
 			}
@@ -1300,8 +1305,8 @@ a.github-fork {
 		}
 		img {
 			display: inline-block;
-			max-width: 100%;
-			margin-bottom: -12px;
+			max-width: 222px;
+			margin-bottom: -10px;
 		}
 	}
 	.search-form {
@@ -1498,9 +1503,8 @@ a.github-fork {
 
 .fixed-title {
 	position: absolute;
-	display: flex;
+	.flex-center;
 	flex-flow: row nowrap;
-	align-items: center;
 	padding: 0 10px 0 20px;
 	background: #fff;
 	border-bottom: 1px solid @tertiary-background-color;
@@ -1623,7 +1627,7 @@ a.github-fork {
 	.logo {
 		display: block;
 		margin: 10px 0;
-		max-width: 100%;
+		max-width: 325px;
 	}
 	.info {
 		max-width: 680px;
@@ -2829,11 +2833,10 @@ a.github-fork {
 }
 
 .landing-page {
-	text-align: center;
-	display: flex;
-	margin: auto;
+	.flex-center;
 	flex-flow: row nowrap;
-	align-items: center;
+	text-align: center;
+	margin: auto;
 	width: 100%;
 	min-height: 100%;
 	z-index: 101;
@@ -3000,9 +3003,8 @@ a.github-fork {
 .avatar-suggestion-item {
 	margin: 5px 0px;
 	text-align: left;
-	display: flex;
+	.flex-center;
 	flex-flow: row nowrap;
-	align-items: center;
 	width: 100%;
 	padding: 12px;
 	background-color: @secondary-background-color;
