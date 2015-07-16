@@ -13,14 +13,13 @@
 			stream.on room, (typing) ->
 				unless typing.username is Meteor.user()?.username
 					if typing.start
-						console.log 'start', typing
 						users = usersTyping[room].users.get()
 						users[typing.username] = Meteor.setTimeout ->
 							delete users[typing.username]
+							usersTyping[room].users.set users
 						, timeout
 						usersTyping[room].users.set users
 					else if typing.stop
-						console.log 'stop', typing
 						users = usersTyping[room].users.get()
 						delete users[typing.username]
 						usersTyping[room].users.set users
