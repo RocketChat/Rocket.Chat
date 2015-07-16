@@ -42,4 +42,4 @@ Template.loginServices.events
 			if error
 				toastr.error error.message
 				return
-			Router.go 'index'
+			FlowRouter.go 'index'

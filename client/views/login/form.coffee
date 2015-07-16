@@ -67,8 +67,8 @@ Template.loginForm.events
 						if error?.error is 'no-valid-email'
 							toastr.success t('We_have_sent_registration_email')
 							instance.state.set 'login'
-						else
-							Router.go 'index'
+						# else
+							# FlowRouter.go 'index'
 			else
 				Meteor.loginWithPassword formData.emailOrUsername, formData.pass, (error) ->
 					RocketChat.Button.reset(button)
@@ -78,7 +78,7 @@ Template.loginForm.events
 						else
 							toastr.error error.reason
 						return
-					Router.go 'index'
+					# FlowRouter.go 'index'
 
 	'click .register': ->
 		Template.instance().state.set 'register'
