@@ -501,6 +501,8 @@ Template.room.onRendered ->
 		Session.set('flexOpened', true)
 		Session.set('selfVideoUrl', url)
 
+	RoomHistoryManager.getMoreIfIsEmpty this.data._id
+
 renameRoom = (rid, name) ->
 	console.log 'room renameRoom' if window.rocketDebug
 	if Session.get('roomData' + rid).name == name

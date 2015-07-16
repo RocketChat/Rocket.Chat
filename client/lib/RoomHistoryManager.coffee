@@ -41,6 +41,12 @@
 
 		return room.hasMore.get()
 
+	getMoreIfIsEmpty = (rid) ->
+		room = getRoom rid
+
+		if room.loaded is 0
+			getMore rid
+
 	isLoading = (rid) ->
 		room = getRoom rid
 
@@ -54,6 +60,7 @@
 			histories[rid].loaded = 0
 
 	getMore: getMore
+	getMoreIfIsEmpty: getMoreIfIsEmpty
 	hasMore: hasMore
 	isLoading: isLoading
 	clear: clear
