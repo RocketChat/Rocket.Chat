@@ -20,6 +20,11 @@
 				</h2>
 			</header>
 			<div class="messages-box">
+				{{#with bannerData}}
+				<div class="security-banner {{classificationId}}">
+					{{securityBannerText}}
+				</div>
+				{{/with}}
 				<div class="wrapper">
 					<ul>
 						{{#if hasMore}}

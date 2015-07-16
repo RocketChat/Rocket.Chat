@@ -1748,11 +1748,24 @@ a.github-fork {
 			color: @primary-font-color;
 		}
 	}
+	.security-banner.U { color: white; background-color: green }
+	.security-banner.C { color: white; background-color: blue }
+	.security-banner.S { color: white; background-color: red }
+	.security-banner.TS { color: white; background-color: orange }
+	.security-banner {
+		padding: 5px 0px 5px 0px; 
+		text-align: center;
+		/* default  */
+		color:white;
+		background-color: green;
+	}
 	.wrapper {
 		position: absolute;
 		width: 100%;
-		height: 100%;
-		top: 0;
+		/* height: 100%; */
+		/* top: 0; */
+		/* make height 100%, minus the height of security banner */
+		height: calc(~'100% - 26px');
 		left: 0;
 		overflow-y: auto;
 		overflow-x: hidden;
