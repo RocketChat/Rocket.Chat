@@ -4,7 +4,6 @@
 @ChatRoom = new Meteor.Collection 'data.ChatRoom'
 @ChatSubscription = new Meteor.Collection 'data.ChatSubscription'
 # @ChatMessage = new Meteor.Collection 'data.ChatMessage'
-@ChatTyping = new Meteor.Collection 'data.ChatTyping'
 
 # Meteor.startup ->
 # 	ChatMessage.find().observe
