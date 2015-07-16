@@ -18,8 +18,8 @@ Meteor.methods
 		,
 			$set: message
 
-		Meteor.defer ->
-			RocketChat.callbacks.run 'afterSaveMessage', ChatMessage.findOne(message.id)
+		# Meteor.defer ->
+		# 	RocketChat.callbacks.run 'afterSaveMessage', ChatMessage.findOne(message.id)
 
 	deleteMessage: (message) ->
 		if not Meteor.userId()
