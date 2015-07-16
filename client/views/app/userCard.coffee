@@ -14,9 +14,9 @@ Template.userCard.helpers
 		return userData
 
 	canManageRoom: ->
-		return false unless Router.current().params._id?
+		return false unless FlowRouter.getParam('_id')?
 
-		roomData = Session.get('roomData' + Router.current().params._id)
+		roomData = Session.get('roomData' + FlowRouter.getParam('_id'))
 
 		return false unless roomData?
 
@@ -29,9 +29,9 @@ Template.userCard.events
 				return Errors.throw error.reason
 
 			if result.rid?
-				Router.go('room', { _id: result.rid })
+				FlowRouter.go('room', { _id: result.rid })
 
 	'click .remove-user': (event) ->
-		Meteor.call 'removeUserFromRoom', { rid: Router.current().params._id, username: Session.get('userProfileActive') }, (error, result) ->
+		Meteor.call 'removeUserFromRoom', { rid: FlowRouter.getParam('_id'), username: Session.get('userProfileActive') }, (error, result) ->
 			if error
 				return Errors.throw error.reason

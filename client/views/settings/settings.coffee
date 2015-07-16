@@ -2,9 +2,13 @@ Template.settings.helpers
 	groups: ->
 		return Settings.find({type: 'group'}).fetch()
 	group: ->
-		return Settings.findOne { _id: @group, type: 'group' }
+		group = FlowRouter.getParam('group')
+		group ?= Settings.findOne({ type: 'group' })?._id
+		return Settings.findOne { _id: group, type: 'group' }
 	settings: ->
-		return Settings.find({ group: @group }).fetch()
+		group = FlowRouter.getParam('group')
+		group ?= Settings.findOne({ type: 'group' })?._id
+		return Settings.find({ group: group }).fetch()
 	flexOpened: ->
 		return 'opened' if Session.equals('flexOpened', true)
 	arrowPosition: ->

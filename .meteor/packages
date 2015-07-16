@@ -19,7 +19,6 @@ service-configuration
 
 chrismbeckett:toastr
 francocatena:status
-iron:router
 jparker:gravatar
 kevohagan:sweetalert
 konecty:autolinker
@@ -59,3 +58,5 @@ todda00:friendly-slugs
 underscorestring:underscore.string
 yasaricli:slugify
 meteorhacks:kadira
+meteorhacks:flow-router
+meteorhacks:flow-layout
