@@ -48,36 +48,29 @@ Template.room.helpers
 		console.log 'room.helpers roomContainerId' if window.rocketDebug
 		return "room-container-#{this._id}"
 
-	showTyping: ->
-		console.log 'room.helpers showTyping' if window.rocketDebug
-		return this.t is 't'
-
-	typing: ->
-		console.log 'room.helpers typing' if window.rocketDebug
-		return this.u._id isnt Meteor.userId()
-
 	usersTyping: ->
 		console.log 'room.helpers usersTyping' if window.rocketDebug
-		messages = ChatTyping.find({ rid: this._id, 'u._id': { $ne: Meteor.userId() } }).fetch()
-		if messages.length is 0
+		users = MsgTyping.get @_id
+		if users.length is 0
 			return
-		if messages.length is 1
+		if users.length is 1
 			return {
 				multi: false
-				selfTyping: ChatMessages.selfTyping.get()
-				users: messages[0].u.username
+				selfTyping: MsgTyping.selfTyping.get()
+				users: users[0]
 			}
 
-		usernames = _.map messages, (message) -> return message.u.username
+		# usernames = _.map messages, (message) -> return message.u.username
 
-		last = usernames.pop()
-		if messages.length > 4
+		last = users.pop()
+		if users.length > 4
 			last = t('others')
-		usernames = usernames.join(', ')
+		# else
+		usernames = users.join(', ')
 		usernames = [usernames, last]
 		return {
 			multi: true
-			selfTyping: ChatMessages.selfTyping.get()
+			selfTyping: MsgTyping.selfTyping.get()
 			users: usernames.join " #{t 'and'} "
 		}
 
@@ -189,15 +182,6 @@ Template.room.helpers
 		console.log 'room.helpers flexOpened' if window.rocketDebug
 		return 'opened' if Session.equals('flexOpened', true)
 
-	flexOpenedRTC1: ->
-		console.log 'room.helpers flexOpenedRTC1' if window.rocketDebug
-		return 'layout1' if Session.equals('flexOpenedRTC1', true)
-
-	flexOpenedRTC2: ->
-		console.log 'room.helpers flexOpenedRTC2' if window.rocketDebug
-		return 'layout2' if Session.equals('flexOpenedRTC2', true)
-
-
 	arrowPosition: ->
 		console.log 'room.helpers arrowPosition' if window.rocketDebug
 		return 'left' unless Session.equals('flexOpened', true)
@@ -267,33 +251,14 @@ Template.room.helpers
 		return Session.get('remoteVideoUrl')
 
 	selfVideoUrl: ->
-		Meteor.defer ->
-			$('video.video-self')[0]?.muted = true;
 		return Session.get('selfVideoUrl')
-
-	rtcLayout1: ->
-		return (Session.get('rtcLayoutmode') == 1 ? true: false);
-
-	rtcLayout2: ->
-		return (Session.get('rtcLayoutmode') == 2 ? true: false);
-
-	rtcLayout3: ->
-		return (Session.get('rtcLayoutmode') == 3 ? true: false);
-
-	noRtcLayout: ->
-		return (!Session.get('rtcLayoutmode') || (Session.get('rtcLayoutmode') == 0) ? true: false);
 
 
 Template.room.events
 
 	"click .flex-tab .more": (event) ->
 		console.log 'room click .flex-tab .more' if window.rocketDebug
-		if (Session.get('flexOpened'))
-			Session.set('rtcLayoutmode', 0)
-			Session.set('flexOpened',false)
-		else
-			Session.set('flexOpened', true)
-
+		Session.set('flexOpened', !Session.get('flexOpened'))
 
 	'click .chat-new-messages': (event) ->
 		console.log 'room click .chat-new-messages' if window.rocketDebug
@@ -313,7 +278,7 @@ Template.room.events
 		event.preventDefault()
 		Meteor.call 'joinRoom', this._id
 
-	"click .burger": ->
+	"click .burger": -> 
 		console.log 'room click .burger' if window.rocketDebug
 		chatContainer = $("#rocket-chat")
 		if chatContainer.hasClass("menu-closed")
@@ -382,36 +347,6 @@ Template.room.events
 		console.log 'room click .flex-tab .user-image > a' if window.rocketDebug
 		Session.set('flexOpened', true)
 		Session.set('showUserInfo', $(e.currentTarget).data('username'))
-
-	"click .flex-tab  .video-remote" : (e) ->
-		console.log 'room click .flex-tab .video-remote' if window.rocketDebug
-		if (Session.get('flexOpened'))
-			if (!Session.get('rtcLayoutmode'))
-				Session.set('rtcLayoutmode', 1)
-			else
-				t = Session.get('rtcLayoutmode')
-				t = (t + 1) % 4
-				console.log  'setting rtcLayoutmode to ' + t  if window.rocketDebug
-				Session.set('rtcLayoutmode', t)
-
-	"click .flex-tab  .video-self" : (e) ->
-		console.log 'room click .flex-tab .video-self' if window.rocketDebug
-		if (Session.get('rtcLayoutmode') == 3)
-			console.log 'video-self clicked in layout3' if window.rocketDebug
-			i = document.getElementById("fullscreendiv")
-			if i.requestFullscreen
-				i.requestFullscreen()
-			else
-				if i.webkitRequestFullscreen
-					i.webkitRequestFullscreen()
-				else
-					if i.mozRequestFullScreen
-						i.mozRequestFullScreen()
-					else
-						if i.msRequestFullscreen
-							i.msRequestFullscreen()
-
-
 
 	'click .user-card-message': (e) ->
 		console.log 'room click .user-card-message' if window.rocketDebug
@@ -520,7 +455,6 @@ Template.room.events
 			ChatMessages.deleteMsg(msg)
 
 	'click .start-video': (event) ->
-		webrtc.to = Router.current().params._id.replace(Meteor.userId(), '')
 		webrtc.start(true)
 
 	'click .stop-video': (event) ->
@@ -529,6 +463,7 @@ Template.room.events
 Template.room.onCreated ->
 	console.log 'room.onCreated' if window.rocketDebug
 	# this.scrollOnBottom = true
+	# this.typing = new msgTyping this.data._id
 	this.showUsersOffline = new ReactiveVar false
 	this.atBottom = true
 
@@ -551,10 +486,6 @@ Template.room.onRendered ->
 			newMessage.className = "new-message not"
 	, 100
 
-	wrapper.addEventListener 'touchmove', ->
-		template.atBottom = false
-		onscroll()
-
 	wrapper.addEventListener 'mousewheel', ->
 		template.atBottom = false
 		onscroll()
@@ -567,6 +498,7 @@ Template.room.onRendered ->
 	# salva a data da renderização para exibir alertas de novas mensagens
 	$.data(this.firstNode, 'renderedAt', new Date)
 
+	webrtc.to = this.data._id.replace(Meteor.userId(), '')
 	webrtc.onRemoteUrl = (url) ->
 		Session.set('flexOpened', true)
 		Session.set('remoteVideoUrl', url)
