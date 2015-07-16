@@ -3,21 +3,44 @@ FlowRouter.route '/room/:_id',
 
 	action: (params, queryParams) ->
 		Session.set 'openedRoom', null
-		FlowLayout.render 'main', {center: 'room'}
 
-		track = Tracker.autorun ->
-			if not FlowRouter.subsReady() or not Meteor.userId()? or RoomManager.open(params._id).ready() isnt true
-				return
+		FlowLayout.render 'main', {center: 'loading'}
 
-			if not ChatRoom.find(params._id).count()
-				FlowRouter.go 'home'
+		Meteor.defer ->
+			track = Tracker.autorun ->
+				if RoomManager.open(params._id).ready() isnt true
+					return
 
-			Session.set 'openedRoom', params._id
+				track?.stop()
 
-			Session.set 'editRoomTitle', false
-			# Meteor.call 'readMessages', params._id
-			# KonchatNotification.removeRoomNotification(params._id)
+				if not ChatRoom.find(params._id).count()
+					FlowRouter.go 'home'
 
-			setTimeout ->
-				$('.message-form .input-message').focus()
-			, 100
+				mainNode = document.querySelector('.main-content')
+				if mainNode?
+					child?.remove() for child in mainNode.children
+					room = RoomManager.getDomOfRoom(params._id)
+					mainNode.appendChild room
+					if room.classList.contains('room-container')
+						room.querySelector('.messages-box > .wrapper').scrollTop = room.oldScrollTop
+
+				Session.set 'openedRoom', params._id
+
+				Session.set 'editRoomTitle', false
+				# Meteor.call 'readMessages', params._id
+				# KonchatNotification.removeRoomNotification(params._id)
+
+				setTimeout ->
+					$('.message-form .input-message').focus()
+				, 100
+
+	triggersExit: [
+		->
+			mainNode = document.querySelector('.main-content')
+			if mainNode?
+				for child in mainNode.children
+					if child?
+						if child.classList.contains('room-container')
+							child.oldScrollTop = child.querySelector('.messages-box > .wrapper').scrollTop
+						child.remove() 
+	]
