@@ -80,15 +80,12 @@ AccountManager = function(accountProvider) {
 			}
 		);
 
-		// add default user status
-		Meteor.users.update(user._id, {$set : {'status' : 'offline'}});
-
 		return future.wait();
 	}
 
 	var upsertUser = function(user) {
 		var future = new Future();
-		Meteor.users.upsert({_id:user._id}, user, function( err, result) {
+		Meteor.users.upsert({_id:user._id}, {$set: user}, function( err, result) {
 			if( err ) {
 				future.return({error:err});
 
@@ -123,7 +120,8 @@ AccountManager = function(accountProvider) {
 		classificationIds = _.pluck(Jedis.accessManager.getClassifications(), '_id');
 		// remove users from Mongo that do not exist in account provider.  e.g. users that have been deleted 
 		// from LDAP and should not be able to login.  
-		// TODO :  should we set a flag instead of deleting the user account?
+		// TODO : should we set a flag instead of deleting the user account? this will 
+		// remove users created by RocketChat
 		Meteor.users.find().forEach( function(user) {
 			usersToRemove.push(user._id);
 		}); 
