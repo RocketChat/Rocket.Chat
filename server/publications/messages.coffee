@@ -23,10 +23,10 @@ Meteor.publish 'messages', (rid, start) ->
 
 	cursorHandle = cursor.observeChanges
 		added: (_id, record) ->
-			publication.added('data.ChatMessage', _id, record)
+			publication.added('rocketchat_message', _id, record)
 
 		changed: (_id, record) ->
-			publication.changed('data.ChatMessage', _id, record)
+			publication.changed('rocketchat_message', _id, record)
 
 	cursorDelete = ChatMessage.find
 		rid: rid
@@ -37,9 +37,9 @@ Meteor.publish 'messages', (rid, start) ->
 
 	cursorDeleteHandle = cursorDelete.observeChanges
 		added: (_id, record) ->
-			publication.added('data.ChatMessage', _id, {_deleted: true})
+			publication.added('rocketchat_message', _id, {_deleted: true})
 		changed: (_id, record) ->
-			publication.added('data.ChatMessage', _id, {_deleted: true})
+			publication.added('rocketchat_message', _id, {_deleted: true})
 
 	@ready()
 	@onStop ->
