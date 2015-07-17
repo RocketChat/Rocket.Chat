@@ -10,9 +10,10 @@ Download the Native Cross-Platform Desktop Application at [Rocket.Chat.Electron]
 
 ## About
 
-[![Build Status](https://img.shields.io/travis/sscpac/chat-locker/master.svg)](https://travis-ci.org/sscpac/chat-locker)
+[![Build Status](https://travis-ci.org/sscpac/chat-locker.svg?branch=master)](https://travis-ci.org/sscpac/chat-locker)
 [![Coverage Status](https://coveralls.io/repos/sscpac/chat-locker/badge.svg?branch=master&service=github)](https://coveralls.io/github/sscpac/chat-locker?branch=master)
 [![Code Climate](https://codeclimate.com/github/sscpac/chat-locker/badges/gpa.svg)](https://codeclimate.com/github/sscpac/chat-locker)
+[![Test Coverage](https://codeclimate.com/github/sscpac/chat-locker/badges/coverage.svg)](https://codeclimate.com/github/sscpac/chat-locker/coverage)
 [![MIT License](http://img.shields.io/badge/license-MIT-blue.svg?style=flat)](https://github.com/sscpac/chat-locker/raw/master/LICENSE)
 
 Rocket.Chat is a Web Chat Server, developed in JavaScript, using the [Meteor](https://www.meteor.com/install) fullstack framework.
