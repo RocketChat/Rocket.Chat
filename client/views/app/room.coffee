@@ -243,12 +243,67 @@ Template.room.helpers
 	selfVideoUrl: ->
 		return Session.get('selfVideoUrl')
 
+	flexOpenedRTC1: ->
+		console.log 'room.helpers flexOpenedRTC1' if window.rocketDebug
+		return 'layout1' if Session.equals('flexOpenedRTC1', true)
+
+	flexOpenedRTC2: ->
+		console.log 'room.helpers flexOpenedRTC2' if window.rocketDebug
+		return 'layout2' if Session.equals('flexOpenedRTC2', true)
+	rtcLayout1: ->
+		return (Session.get('rtcLayoutmode') == 1 ? true: false);
+
+	rtcLayout2: ->
+		return (Session.get('rtcLayoutmode') == 2 ? true: false);
+
+	rtcLayout3: ->
+		return (Session.get('rtcLayoutmode') == 3 ? true: false);
+
+	noRtcLayout: ->
+		return (!Session.get('rtcLayoutmode') || (Session.get('rtcLayoutmode') == 0) ? true: false);
+
+
 
 Template.room.events
 
 	"click .flex-tab .more": (event) ->
 		console.log 'room click .flex-tab .more' if window.rocketDebug
-		Session.set('flexOpened', !Session.get('flexOpened'))
+		if (Session.get('flexOpened'))
+			Session.set('rtcLayoutmode', 0)
+			Session.set('flexOpened',false)
+		else
+			Session.set('flexOpened', true)
+
+
+	"click .flex-tab  .video-remote" : (e) ->
+		console.log 'room click .flex-tab .video-remote' if window.rocketDebug
+		if (Session.get('flexOpened'))
+			if (!Session.get('rtcLayoutmode'))
+				Session.set('rtcLayoutmode', 1)
+			else
+				t = Session.get('rtcLayoutmode')
+				t = (t + 1) % 4
+				console.log  'setting rtcLayoutmode to ' + t  if window.rocketDebug
+				Session.set('rtcLayoutmode', t)
+
+	"click .flex-tab  .video-self" : (e) ->
+		console.log 'room click .flex-tab .video-self' if window.rocketDebug
+		if (Session.get('rtcLayoutmode') == 3)
+			console.log 'video-self clicked in layout3' if window.rocketDebug
+			i = document.getElementById("fullscreendiv")
+			if i.requestFullscreen
+				i.requestFullscreen()
+			else
+				if i.webkitRequestFullscreen
+					i.webkitRequestFullscreen()
+				else
+					if i.mozRequestFullScreen
+						i.mozRequestFullScreen()
+					else
+						if i.msRequestFullscreen
+							i.msRequestFullscreen()
+
+
 
 	'click .chat-new-messages': (event) ->
 		console.log 'room click .chat-new-messages' if window.rocketDebug
@@ -268,7 +323,7 @@ Template.room.events
 		event.preventDefault()
 		Meteor.call 'joinRoom', FlowRouter.getParam('_id')
 
-	"click .burger": -> 
+	"click .burger": ->
 		console.log 'room click .burger' if window.rocketDebug
 		chatContainer = $("#rocket-chat")
 		if chatContainer.hasClass("menu-closed")
