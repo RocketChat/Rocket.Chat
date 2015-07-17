@@ -7,8 +7,14 @@ branches:
   except:
     - gh-pages
 
-before_script: 'npm install -g istanbul && coveralls --save'
 before_install:
   - "curl https://install.meteor.com | /bin/sh"
+
+install:
+  npm install -g istanbul
+  npm install -g coveralls --save
+
+#before_script: 'npm install -g istanbul && npm install -g coveralls --save'
+
 script:
   - meteor build --server chat-locker ./
