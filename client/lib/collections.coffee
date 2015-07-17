@@ -1,9 +1,9 @@
 @UserAndRoom = new Meteor.Collection null
 @ChatMessageHistory = new Meteor.Collection null
 
-@ChatRoom = new Meteor.Collection 'data.ChatRoom'
-@ChatSubscription = new Meteor.Collection 'data.ChatSubscription'
-# @ChatMessage = new Meteor.Collection 'data.ChatMessage'
+@ChatRoom = new Meteor.Collection 'rocketchat_room'
+@ChatSubscription = new Meteor.Collection 'rocketchat_subscription'
+#@ChatMessage = new Meteor.Collection 'rocketchat_message'
 
 # Meteor.startup ->
 # 	ChatMessage.find().observe
