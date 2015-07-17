@@ -1,7 +1,7 @@
 The Complete Open Source Chat Solution that implements the [http://www.dtic.mil/whs/directives/corres/pdf/520001_vol2.pdf](DOD Manual)
 
 ## Demo
-
+ 
 Checkout the latest version at [https://rocket.chat](https://rocket.chat)
 
 Download the Native Cross-Platform Desktop Application at [Rocket.Chat.Electron](https://github.com/RocketChat/Rocket.Chat.Electron/releases)
