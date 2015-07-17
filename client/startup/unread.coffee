@@ -12,19 +12,22 @@ Meteor.startup ->
 			if subscription.alert is true
 				unreadAlert = '•'
 
-		rxFavico.set 'type', 'warn'
-
 		if unreadCount > 0
-			document.title = '(' + unreadCount + ') Rocket.Chat'
-			rxFavico.set 'count', unreadCount
-			fireGlobalEvent 'unread-changed', unreadCount
-
+			Session.set 'unread', unreadCount
 		else if unreadAlert isnt false
-			document.title = '(' + unreadAlert + ') Rocket.Chat'
-			rxFavico.set 'count', unreadAlert
-			fireGlobalEvent 'unread-changed', unreadAlert
-
+			Session.set 'unread', unreadAlert
 		else
-			document.title = 'Rocket.Chat'
-			rxFavico.set 'count', ''
-			fireGlobalEvent 'unread-changed', ''
+			Session.set 'unread', ''
+
+Meteor.startup ->
+
+	window.favico = new Favico
+		position: 'up'
+		animation: 'none'
+
+	Tracker.autorun ->
+
+		unread = Session.get 'unread'
+		fireGlobalEvent 'unread-changed', unread
+		favico?.badge unread, bgColor: if typeof unread isnt 'number' then '#3d8a3a' else '#ac1b1b'
+		document.title = if unread == '' then 'Rocket.Chat' else '(' + unread + ') Rocket.Chat'
