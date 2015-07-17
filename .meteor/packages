@@ -36,10 +36,10 @@ nooitaf:colors
 pauli:accounts-linkedin
 percolate:migrations
 percolatestudio:synced-cron
-pierreeric:rxfavico
 raix:handlebar-helpers
 rocketchat:autolinker
 rocketchat:emojione
+rocketchat:favico
 rocketchat:file
 rocketchat:highlight
 rocketchat:hubot
