@@ -283,6 +283,28 @@ Template.room.helpers
 	noRtcLayout: ->
 		return (!Session.get('rtcLayoutmode') || (Session.get('rtcLayoutmode') == 0) ? true: false);
 
+	bannerData: ->
+		# The data context only contains the room id. one way to get the banner data is to just pass
+		# this id to a server-side method and let it look up the room details (such as permissions)
+		# and then return the banner info.
+		#
+		# HOWEVER, doing it this way does not allow the banner to be reactive in case the underlying
+		# room data changes (eg, if someone edits Mongo manually). This is because the template has
+		# no way of knowing if anything changed, so the method never gets called again. One way around
+		# this is to make "bannerData" itself reactive by having it depend directly on the room data.
+		# Then, since that data gets synchronized with the server, the template will be reprocessed
+		# when the data changes.
+		accessPermissions = ChatRoom.findOne(this._id)?.accessPermissions || []
+		Template.instance().updateBannerData(accessPermissions)
+		return Template.instance().bannerData
+
+	# For helpers "classificationId" and "securityBannerText", "this" refers to what is returned
+	# from "bannerData"
+	classificationId: ->
+		return this.get 'classificationId'
+
+	securityBannerText: ->
+		return this.get 'text'
 
 Template.room.events
 
@@ -528,9 +550,23 @@ Template.room.events
 
 Template.room.onCreated ->
 	console.log 'room.onCreated' if window.rocketDebug
+	self = this
 	# this.scrollOnBottom = true
 	this.showUsersOffline = new ReactiveVar false
 	this.atBottom = true
+
+	this.bannerData = new ReactiveDict
+	this.bannerData.set 'text', 'Unknown'
+	this.bannerData.set 'classificationId', 'U'
+
+	this.updateBannerData = (accessPermissions) ->
+		Meteor.call 'getSecurityBanner', accessPermissions, (error, result) ->
+			if error
+				toastr.error error.reason
+			else
+				self.bannerData.set 'text', result.text
+				self.bannerData.set 'classificationId', result.classificationId
+
 
 Template.room.onRendered ->
 	console.log 'room.onRendered' if window.rocketDebug
