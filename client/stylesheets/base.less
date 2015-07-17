@@ -1748,10 +1748,10 @@ a.github-fork {
 			color: @primary-font-color;
 		}
 	}
-	.security-banner.U { color: white; background-color: green }
-	.security-banner.C { color: white; background-color: blue }
-	.security-banner.S { color: white; background-color: red }
-	.security-banner.TS { color: white; background-color: orange }
+	.security-banner.U  { background-color: @unclassified-background-color; }
+	.security-banner.C  { background-color: @confidential-background-color; }
+	.security-banner.S  { background-color: @secret-background-color; }
+	.security-banner.TS { background-color: @top-secret-background-color; }
 	.security-banner {
 		position: relative;
 		margin: 60px 20px 0px 0px;
@@ -1760,7 +1760,7 @@ a.github-fork {
 		text-align: center;
 		/* default  */
 		color:white;
-		background-color: green;
+		background-color: @unclassified-background-color;
 	}
 	.wrapper {
 		position: absolute;
