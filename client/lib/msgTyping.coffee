@@ -6,26 +6,31 @@
 	renewTimeout = 10000
 	selfTyping = new ReactiveVar false
 	usersTyping = {}
+	dep = new Tracker.Dependency
 
 	addStream = (room) ->
-		unless usersTyping[room]?
-			usersTyping[room] = { users: new ReactiveVar {} }
+		if _.isEmpty usersTyping[room]?.users
+			usersTyping[room] = { users: {} }
 			stream.on room, (typing) ->
 				unless typing.username is Meteor.user()?.username
 					if typing.start
-						users = usersTyping[room].users.get()
+						users = usersTyping[room].users
 						users[typing.username] = Meteor.setTimeout ->
 							delete users[typing.username]
-							usersTyping[room].users.set users
+							usersTyping[room].users = users
+							dep.changed()
 						, timeout
-						usersTyping[room].users.set users
+						usersTyping[room].users = users
+						dep.changed()
 					else if typing.stop
-						users = usersTyping[room].users.get()
+						users = usersTyping[room].users
 						delete users[typing.username]
-						usersTyping[room].users.set users
+						usersTyping[room].users = users
+						dep.changed()
 
 	Tracker.autorun ->
-		addStream Session.get 'openedRoom'
+		if Session.get 'openedRoom'
+			addStream Session.get 'openedRoom'
 
 	start = (room) ->
 		return unless renew
@@ -51,10 +56,11 @@
 		stream.emit 'typing', { room: room, username: Meteor.user().username, stop: true }
 		
 	get = (room) ->
-		if usersTyping[room]?
-			users = usersTyping[room].users.get()
-			return _.keys(users) or []
-		return []
+		dep.depend()
+		unless usersTyping[room]
+			usersTyping[room] = { users: {} }
+		users = usersTyping[room].users
+		return _.keys(users) or []
 
 	return { 
 		start: start
