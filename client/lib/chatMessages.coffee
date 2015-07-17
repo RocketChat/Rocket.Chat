@@ -19,7 +19,7 @@
 	# 	self.scrollable
 
 	resize = ->
-		dif = 60 + $(".messages-container").find("footer").outerHeight()
+		dif = 60 + $(".messages-container").find("footer").outerHeight() + 26
 		$(".messages-box").css
 			height: "calc(100% - #{dif}px)"
 
