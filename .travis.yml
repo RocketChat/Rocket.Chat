@@ -9,7 +9,6 @@ branches:
 
 before_install:
   - "curl https://install.meteor.com | /bin/sh"
-
-before_script: 'npm install -g istanbul'
+before_script: 'npm install -g istanbul && coveralls --save'
 script:
   - meteor build --server chat-locker ./
