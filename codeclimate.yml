@@ -9,6 +9,9 @@
 # For more details, see here:
 # http://docs.codeclimate.com/article/289-configuring-your-repository-via-codeclimate-yml#platform
 
+languages:
+    JavaScript: true
+
 # For a list of all available engines, see here:
 # http://docs.codeclimate.com/article/296-engines-available-engines
 
@@ -33,12 +36,10 @@ engines:
 # For more details see here:
 # http://docs.codeclimate.com/article/289-configuring-your-repository-via-codeclimate-yml#platform
 
-# ratings:
-#   paths:
-#   - app/**
-#   - lib/**
-#   - "**.rb"
-#   - "**.go"
+ratings:
+ paths:
+ - **.coffee
+ - **.js
 
 # You can globally exclude files from being analyzed by any engine using the
 # exclude_paths key.
