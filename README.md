@@ -1,6 +1,4 @@
-![Rocket.Chat logo](https://rocket.chat/images/logo/logo-dark.svg?v3)
-
-The Complete Open Source Chat Solution
+The Complete Open Source Chat Solution that implements the [http://www.dtic.mil/whs/directives/corres/pdf/520001_vol2.pdf](DOD Manual)
 
 ## Demo
 
