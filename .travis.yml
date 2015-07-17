@@ -1,20 +1,10 @@
-sudo: false
+sudo: required
 language: node_js
 node_js:
   - "0.10"
 
-branches:
-  except:
-    - gh-pages
-
 before_install:
   - "curl https://install.meteor.com | /bin/sh"
-
-install:
-  npm install -g istanbul
-  npm install -g coveralls --save
-
-#before_script: 'npm install -g istanbul && npm install -g coveralls --save'
 
 script:
   - meteor build --server chat-locker ./
