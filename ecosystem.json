@@ -2,10 +2,10 @@
 	"deploy": {
 		"production": {
 			"user": "root",
-			"host": ["rocket.chat"],
+			"host": ["chat-locker"],
 			"ref": "origin/master",
-			"repo": "https://github.com/RocketChat/Rocket.Chat.git",
-			"path": "/var/www/rocket.chat",
+			"repo": "https://github.com/sscpac/chat-locker.git",
+			"path": "/var/www/chat-locker",
 			"post-deploy": "source build.sh production"
 		}
 	}

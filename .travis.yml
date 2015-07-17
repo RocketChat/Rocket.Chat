@@ -7,4 +7,4 @@ before_install:
   - "curl https://install.meteor.com | /bin/sh"
 
 script:
-  - meteor build --server rocket.chat ./
+  - meteor build --server chat-locker ./
