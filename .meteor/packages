@@ -50,7 +50,6 @@ rocketchat:markdown
 rocketchat:me
 rocketchat:mentions
 rocketchat:oembed
-rocketchat:webrtc
 tap:i18n
 tmeasday:crypto-md5
 tmeasday:errors
@@ -60,3 +59,4 @@ yasaricli:slugify
 meteorhacks:kadira
 meteorhacks:flow-router
 meteorhacks:flow-layout
+rocketchat:webrtc
