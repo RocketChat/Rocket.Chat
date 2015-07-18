@@ -1,4 +1,4 @@
-@Settings = new Meteor.Collection 'settings'
+@Settings = new Meteor.Collection 'rocketchat_settings'
 
 Settings.find().observe
 	added: (record) ->
