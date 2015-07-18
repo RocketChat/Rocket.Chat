@@ -501,6 +501,7 @@ Template.room.events
 
 	'click .start-video': (event) ->
 		webrtc.to = FlowRouter.getParam('_id').replace(Meteor.userId(), '')
+		webrtc.room = FlowRouter.getParam('_id')
 		webrtc.start(true)
 
 	'click .stop-video': (event) ->
