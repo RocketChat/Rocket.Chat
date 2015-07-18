@@ -4,7 +4,7 @@ https = Npm.require('https')
 querystring = Npm.require('querystring')
 
 OEmbed =
-	cache: new Meteor.Collection 'oembed_cache'
+	cache: new Meteor.Collection 'rocketchat_oembed_cache'
 
 getUrlContent = (urlObj, redirectCount = 5, callback) ->
 	if _.isString(urlObj)
