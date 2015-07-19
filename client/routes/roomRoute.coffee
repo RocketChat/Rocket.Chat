@@ -27,7 +27,7 @@ FlowRouter.route '/room/:_id',
 				Session.set 'openedRoom', params._id
 
 				Session.set 'editRoomTitle', false
-				# Meteor.call 'readMessages', params._id
+				Meteor.call 'readMessages', params._id
 				# KonchatNotification.removeRoomNotification(params._id)
 
 				setTimeout ->
