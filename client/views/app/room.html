@@ -164,7 +164,7 @@
 
 									{{#if selfVideoUrl}}
 										{{#if rtcLayout3}}
-											<div id='fullscreendiv' style="width: 800px; height: 350px">
+											<div id='fullscreendiv' style="width: 100%">
 											<video id='videoremote' class="video-remote" src="{{remoteVideoUrl}}" style="width: 100%; align-items: center; margin-bottom: 10px; background-color: #000; transition: width 2s, height 2s, top 2s, left 2s, transform 2s;" autoplay></video>
 											<video id='videoself' class="video-self" src="{{selfVideoUrl}}" style="width: 250px; position: absolute; top: 21px; right: 31px; border: 1px solid #FFF; background-color: #000; transition: width 2s, height 2s, top 2s, left 2s, transform 2s;" autoplay muted></video>
 											</div>
