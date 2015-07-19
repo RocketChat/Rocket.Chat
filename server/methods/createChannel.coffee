@@ -47,6 +47,7 @@ Meteor.methods
 
 			if username is user.username
 				sub.ls = now
+				sub.open = true
 
 			ChatSubscription.insert sub
 
