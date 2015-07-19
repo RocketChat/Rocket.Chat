@@ -85,7 +85,7 @@ webrtc.start = function (isCaller, fromUsername) {
 
 	var getUserMedia = function() {
 		// get the local stream, show it in the local video element and send it
-		navigator.getUserMedia({ "audio": true, "video": true }, function (stream) {
+		navigator.getUserMedia({ "audio": true, "video": {mandatory: {minWidth:1280, minHeight:720}} }, function (stream) {
 			webrtc.onSelfUrl(URL.createObjectURL(stream));
 
 			webrtc.pc.addStream(stream);
