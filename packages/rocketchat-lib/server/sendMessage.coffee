@@ -102,7 +102,7 @@ RocketChat.sendMessage = (user, message, room) ->
 			# only subscriptions to the same room
 			rid: message.rid
 			# only the ones that have not been alerted yet
-			alert: false
+			alert: { $ne: true }
 			# not the msg owner
 			'u._id':
 				$ne: message.u._id
