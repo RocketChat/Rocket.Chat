@@ -467,7 +467,7 @@ Template.room.events
 	'dropped #dropzone': (e) ->
 		FS.Utility.eachFile e, (file) ->
 			newFile = new (FS.File)(file)
-			newFile.room = "GENERAL"
+			newFile.room = Session.get('openedRoom')
 			Files.insert newFile, (error, fileObj) ->
 				if error
 					toastr.error 'Upload failed... please try again. Error: ' + error
