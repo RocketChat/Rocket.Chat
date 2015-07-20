@@ -110,10 +110,10 @@ Template.room.helpers
 
 		if roomData.t is 'd'
 			username = _.without roomData.usernames, Meteor.user().username
-			return 'status-' + Session.get('user_' + username + '_status')
+			return 'status-' + Session.get('user_' + username + '_status') or 'status-offline'
 
 		else
-			return ''
+			return 'status-offline'
 
 	autocompleteSettingsAddUser: ->
 		console.log 'room.helpers autocompleteSettingsAddUser' if window.rocketDebug
