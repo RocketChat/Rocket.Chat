@@ -10,7 +10,7 @@
 				{{#if subscribed}}
 					<a href="#favorite" class="toggle-favorite"><i class="{{favorite}}"></i></a>
 				{{/if}}
-				<i class="{{roomTypeIcon}}"></i>
+				<i class="{{roomIcon}} {{userStatus}}"></i>
 				<span class="room-title {{editingTitle}}">{{roomName}}</span>
 				{{#if canEditName}}
 				<input type="text" id="room-title-field" class="{{showEditingTitle}}" value="{{roomNameEdit}}" dir="auto">

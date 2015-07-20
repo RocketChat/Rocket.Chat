@@ -74,13 +74,15 @@ Template.room.helpers
 		else
 			return roomData.name
 
-	roomTypeIcon: ->
-		console.log 'room.helpers roomTypeIcon' if window.rocketDebug
+	roomIcon: ->
+		console.log 'room.helpers roomIcon' if window.rocketDebug
 		roomData = Session.get('roomData' + this._id)
-		return '' unless roomData
-		return 'icon-hash' if roomData.t is 'c'
-		return 'icon-at'   if roomData.t is 'd'
-		return 'icon-at' + roomData.name if roomData.t is 'p' # @TODO review
+		return '' unless roomData?.t
+
+		switch roomData.t
+			when 'd' then return 'icon-at'
+			when 'c' then return 'icon-hash'
+			when 'p' then return 'icon-lock'
 
 	userData: ->
 		console.log 'room.helpers userData' if window.rocketDebug
@@ -99,6 +101,19 @@ Template.room.helpers
 				username: String(username)
 			}
 			return userData
+
+	userStatus: ->
+		console.log 'room.helpers userStatus' if window.rocketDebug
+		roomData = Session.get('roomData' + this._id)
+
+		return {} unless roomData
+
+		if roomData.t is 'd'
+			username = _.without roomData.usernames, Meteor.user().username
+			return 'status-' + Session.get('user_' + this.name + '_status')
+
+		else
+			return ''
 
 	autocompleteSettingsAddUser: ->
 		console.log 'room.helpers autocompleteSettingsAddUser' if window.rocketDebug
