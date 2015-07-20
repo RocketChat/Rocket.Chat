@@ -459,12 +459,6 @@ Template.room.events
 			ChatMessages.deleteMsg(msg)
 
 	'dragenter #dropzone': (e) ->
-		$('#dropzone').css
-			opacity: 0.7
-			'width': $(document).width()
-			'height': $(document).height()
-		$('body').css 'overflow': 'hidden'
-		$('#dropzone').css 'display': 'block'
 		console.log 'DRAG ENTER'
 
 	'dragleave #dropzone': (e) ->
