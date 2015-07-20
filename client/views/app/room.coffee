@@ -458,6 +458,31 @@ Template.room.events
 			swal t('Deleted'), t('Your_entry_has_been_deleted'), 'success'
 			ChatMessages.deleteMsg(msg)
 
+	'dragenter #dropzone': (e) ->
+		$('#dropzone').css
+			opacity: 0.7
+			'width': $(document).width()
+			'height': $(document).height()
+		$('body').css 'overflow': 'hidden'
+		$('#dropzone').css 'display': 'block'
+		console.log 'DRAG ENTER'
+
+	'dragleave #dropzone': (e) ->
+		console.log 'DRAG OUT'
+
+	'dropped #dropzone': (e) ->
+		FS.Utility.eachFile e, (file) ->
+			newFile = new (FS.File)(file)
+			newFile.room = "GENERAL"
+			Files.insert newFile, (error, fileObj) ->
+				if error
+					toastr.error 'Upload failed... please try again. Error: ' + error
+				else
+					toastr.success 'Upload succeeded!'
+					`input = { value: 'File Uploaded: http://localhost:3000/cfs/files/Files/'+fileObj._id}`
+					ChatMessages.send(newFile.room, input)
+
+
 Template.room.onCreated ->
 	console.log 'room.onCreated' if window.rocketDebug
 	# this.scrollOnBottom = true

@@ -60,3 +60,6 @@ yasaricli:slugify
 konecty:nrr
 konecty:change-case
 kevohagan:sweetalert
+raix:ui-dropped-event
+cfs:standard-packages
+cfs:gridfs
