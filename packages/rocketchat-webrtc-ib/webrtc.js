@@ -12,7 +12,6 @@ webrtc = {
 			{url: "stun:stun.l.google.com:19302"}
 		]
 	},
-	stream: stream,
 	send: function(data) {
 		console.log
 		data.to = webrtc.to;
@@ -24,7 +23,6 @@ webrtc = {
 			msg: JSON.stringify(data),
 			rid: webrtc.room
 		});
-		// stream.emit('send', data);
 
 	},
 	stop: function(sendEvent) {

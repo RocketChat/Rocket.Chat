@@ -10,15 +10,12 @@ Package.onUse(function(api) {
 
 	api.use([
 		'coffeescript',
-		'rocketchat:lib@0.0.1',
-		'arunoda:streams@0.1.17'
+		'rocketchat:lib@0.0.1'
 	]);
 
-	api.addFiles('common.js');
 	api.addFiles('adapter.js', ['client']);
 	api.addFiles('webrtc.js', ['client']);
 	api.addFiles('webrtcmsg.coffee', ['client']);
-	api.addFiles('server.js', ['server']);
 
 	api.export('webrtc')
 });
