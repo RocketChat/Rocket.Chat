@@ -17,7 +17,7 @@
 			}, options);
 
 			var shadow = $("div.autogrow-shadow");
-			if(!shadow.length){
+			if (!shadow.length) {
 				shadow = $('<div></div>').addClass("autogrow-shadow").appendTo(document.body);
 			}
 
@@ -43,7 +43,7 @@
 					.replace(/\n$/, '<br/>&nbsp;')
 					.replace(/\n/g, '<br/>')
 					.replace(/ {2,}/g, function(space) {
-						return times('&nbsp;', space.length - 1) + ' '
+						return times('&nbsp;', space.length - 1) + ' ';
 					});
 
 				// Did enter get pressed?  Resize in this keydown event so that the flicker doesn't occur.
@@ -55,13 +55,13 @@
 				shadow.html(val + (noFlickerPad === 0 ? '...' : '')); // Append '...' to resize pre-emptively.
 
 				var newHeight = Math.max(shadow.height() + noFlickerPad, minHeight);
-				if (settings.preGrowCallback != null) {
+				if (settings.preGrowCallback !== null) {
 					newHeight = settings.preGrowCallback($self, shadow, newHeight, minHeight);
 				}
 
 				$self.height(newHeight);
 
-				if (settings.postGrowCallback != null) {
+				if (settings.postGrowCallback !== null) {
 					settings.postGrowCallback($self);
 				}
 			}

@@ -13,21 +13,21 @@ email
 http
 jquery
 less
-markdown
 meteor-platform
 reactive-var
 service-configuration
 
 chrismbeckett:toastr
 francocatena:status
-iron:router
 jparker:gravatar
+kevohagan:sweetalert
 konecty:autolinker
+konecty:change-case
 konecty:delayed-task
 konecty:mongo-counter
 konecty:multiple-instances-status
+konecty:nrr
 konecty:user-presence
-meteorhacks:kadira
 mizzao:autocomplete
 mizzao:timesync
 momentjs:moment
@@ -36,13 +36,13 @@ nooitaf:colors
 pauli:accounts-linkedin
 percolate:migrations
 percolatestudio:synced-cron
-pierreeric:rxfavico
 raix:handlebar-helpers
 rocketchat:autolinker
 rocketchat:emojione
+rocketchat:favico
 rocketchat:file
 rocketchat:highlight
-#rocketchat:hubot
+rocketchat:hubot
 #rocketchat:irc
 rocketchat:ldap
 rocketchat:lib
@@ -50,16 +50,23 @@ rocketchat:markdown
 rocketchat:me
 rocketchat:mentions
 rocketchat:oembed
-#ronhoffmann:webcomponentjs
 tap:i18n
 tmeasday:crypto-md5
 tmeasday:errors
 todda00:friendly-slugs
 underscorestring:underscore.string
 yasaricli:slugify
+<<<<<<< HEAD
 konecty:nrr
 konecty:change-case
 kevohagan:sweetalert
 raix:ui-dropped-event
 cfs:standard-packages
 cfs:gridfs
+=======
+meteorhacks:kadira
+meteorhacks:flow-router
+meteorhacks:flow-layout
+arunoda:streams@0.1.17
+rocketchat:webrtc
+>>>>>>> master

@@ -3,11 +3,11 @@ CoffeeScript.register()
 
 Hubot = Npm.require('hubot')
 
-fs = require('fs')
-path = require('path')
+fs = Npm.require('fs')
+path = Npm.require('path')
 
 # Start a hubot, connected to our chat room.
-'use strict'
+# 'use strict'
 
 # Log messages?
 DEBUG = true
@@ -34,6 +34,7 @@ class Robot extends Hubot.Robot
 		@topic = bind @topic
 		@error = bind @error
 		@catchAll = bind @catchAll
+		@user = Meteor.users.findOne {username: @name}, fields: username: 1
 	loadAdapter: -> false
 	hear:    (regex, callback) -> super regex, Meteor.bindEnvironment callback
 	respond: (regex, callback) -> super regex, Meteor.bindEnvironment callback
@@ -51,14 +52,11 @@ class RocketChatAdapter extends Hubot.Adapter
 	#
 	# Returns nothing.
 	send: (envelope, strings...) ->
+		console.log 'ROCKETCHATADAPTER -> send'.blue
+		# console.log envelope, strings
 		sendHelper @robot, envelope, strings, (string) =>
-			console.log "send #{envelope.rid}: #{string} (#{envelope.u.username})" if DEBUG
-			return @priv envelope, string if envelope.message.private
-			Meteor.call "sendMessage",
-				u:
-					username: "rocketbot"
-				msg: string
-				rid: envelope.rid
+			console.log "send #{envelope.room}: #{string} (#{envelope.user.id})" if DEBUG
+			RocketChat.sendMessage RocketBot.user, { msg: string }, { _id: envelope.room }
 
 	# Public: Raw method for sending emote data back to the chat source.
 	#
@@ -67,26 +65,26 @@ class RocketChatAdapter extends Hubot.Adapter
 	#
 	# Returns nothing.
 	emote: (envelope, strings...) ->
+		console.log 'ROCKETCHATADAPTER -> emote'.blue
 		sendHelper @robot, envelope, strings, (string) =>
 			console.log "emote #{envelope.rid}: #{string} (#{envelope.u.username})" if DEBUG
 			return @priv envelope, "*** #{string} ***" if envelope.message.private
 			Meteor.call "sendMessage",
-				u:
-					username: "rocketbot"
 				msg: string
 				rid: envelope.rid
 				action: true
 
 	# Priv: our extension -- send a PM to user
 	priv: (envelope, strings...) ->
+		console.log 'ROCKETCHATADAPTER -> priv'.blue
 		sendHelper @robot, envelope, strings, (string) ->
-			console.log "priv #{envelope.rid}: #{string} (#{envelope.u.username})" if DEBUG
+			console.log "priv #{envelope.room}: #{string} (#{envelope.user.id})" if DEBUG
 			Meteor.call "sendMessage",
 				u:
 					username: "rocketbot"
-				to: "#{envelope.u.username}"
+				to: "#{envelope.user.id}"
 				msg: string
-				rid: envelope.rid
+				rid: envelope.room
 
 	# Public: Raw method for building a reply and sending it back to the chat
 	# source. Extend this.
@@ -96,10 +94,11 @@ class RocketChatAdapter extends Hubot.Adapter
 	#
 	# Returns nothing.
 	reply: (envelope, strings...) ->
+		console.log 'ROCKETCHATADAPTER -> reply'.blue
 		if envelope.message.private
 			@priv envelope, strings...
 		else
-			@send envelope, strings.map((str) -> "#{envelope.u.username}: #{str}")...
+			@send envelope, strings.map((str) -> "#{envelope.user.name}: #{str}")...
 
 	# Public: Raw method for setting a topic on the chat source. Extend this.
 	#
@@ -108,6 +107,7 @@ class RocketChatAdapter extends Hubot.Adapter
 	#
 	# Returns nothing.
 	topic: (envelope, strings...) ->
+		console.log 'ROCKETCHATADAPTER -> topic'.blue
 
 	# Public: Raw method for playing a sound in the chat source. Extend this.
 	#
@@ -116,60 +116,156 @@ class RocketChatAdapter extends Hubot.Adapter
 	#
 	# Returns nothing
 	play: (envelope, strings...) ->
+		console.log 'ROCKETCHATADAPTER -> play'.blue
 
 	# Public: Raw method for invoking the bot to run. Extend this.
 	#
 	# Returns nothing.
 	run: ->
+		console.log 'ROCKETCHATADAPTER -> run'.blue
+		@robot.emit 'connected'
+		@robot.brain.mergeData {}
+		# @robot.brain.emit 'loaded'
 
 	# Public: Raw method for shutting the bot down. Extend this.
 	#
 	# Returns nothing.
 	close: ->
+		console.log 'ROCKETCHATADAPTER -> close'.blue
 
 class RocketBotReceiver
 	constructor: (message) ->
-		RocketBotUser = new Hubot.User(message.u.username, rid: message.rid)
-		RocketBotTextMessage = new Hubot.TextMessage(RocketBotUser, message.msg, message._id)
-		RocketBot.adapter.receive RocketBotTextMessage
-		console.log 'message: ', message if DEBUG
-		console.log 'RocketBot: ', RocketBot if DEBUG
+		console.log message
+		if message.u.username isnt RocketBot.name
+			RocketBotUser = new Hubot.User(message.u.username, room: message.rid)
+			RocketBotTextMessage = new Hubot.TextMessage(RocketBotUser, message.msg, message._id)
+			RocketBot.adapter.receive RocketBotTextMessage
 		return message
 
 class HubotScripts
 	constructor: (robot) ->
+		modulesToLoad = [
+			'hubot-youtube/src/youtube.coffee'
+			'hubot-maps/src/maps.coffee'
+			'hubot-google-translate/src/google-translate.coffee'
+			'hubot-google-images/src/google-images.coffee'
+			'hubot-calculator/src/calculator.coffee'
+			'hubot-help/src/help.coffee'
+		]
 
-		# load all scripts in scripts/
-		scriptPath = path.resolve __dirname, 'scripts'
-		for file in fs.readdirSync(scriptPath)
-			continue unless /\.(coffee|js)$/.test(file)
-			robot.loadFile scriptPath, file
+		for modulePath in modulesToLoad
+			try
+				Npm.require(modulePath)(robot)
+				robot.parseHelp __meteor_bootstrap__.serverDir+'/npm/rocketchat_hubot/node_modules/'+modulePath
+				console.log "Loaded #{modulePath}".green
+			catch e
+				console.log "can't load #{modulePath}".red
+				console.log e
 
-		# load all scripts from hubot-scripts
-		scriptPath = path.resolve __dirname, 'node_modules', 'hubot-scripts', 'src', 'scripts'
-		scripts = require './hubot-scripts.json'
-		robot.loadHubotScripts scriptPath, scripts
-		robot.parseHelp path.join scriptPath, 'meme_captain.coffee'
+		# scriptFiles = fs.readdirSync(__meteor_bootstrap__.serverDir+'/npm/rocketchat_hubot/node_modules/hubot-scripts/src/scripts')
 
-		# load all hubot-* modules from package.json
-		packageJson = require './package.json'
-		pkgs = (pkg for own pkg, version of packageJson.dependencies when !/^(coffee-script|hubot-scripts|hubot-help)$/.test(pkg))
-		pkgs.forEach (p) -> (require p)(robot)
+		scriptsToLoad = [
+			'alot.coffee'
+			'applause.coffee'
+			'bang-bang.coffee'
+			'base58.coffee'
+			'base64.coffee'
+			'beerme.coffee'
+			'botsnack.coffee'
+			'brewerydb.coffee'
+			'calm-down.coffee'
+			'carlton.coffee'
+			'chuck-norris.coffee'
+			'commandlinefu.coffee'
+			'commitmessage.coffee'
+			'dealwithit.coffee'
+			'decide.coffee'
+			'dice.coffee'
+			'do-it.coffee'
+			'dribbble.coffee'
+			'encourage.coffee'
+			'excuse.coffee'
+			'factoid.coffee'
+			'futurama.coffee'
+			'go-for-it.coffee'
+			'gob.coffee'
+			'google.coffee'
+			'gorbypuff.coffee'
+			'hangout.coffee'
+			'hashing.coffee'
+			'hello.coffee'
+			'homer.coffee'
+			'httpcat.coffee'
+			'karma.coffee'
+			'megusta.coffee'
+			'nice.coffee'
+			'play.coffee'
+			'plus_one.coffee'
+			'polite.coffee'
+			'reddit-jokes.coffee'
+			'reload.coffee'
+			'sealab.coffee'
+			'sheits.coffee'
+			'shipit.coffee'
+			'talklikewarrenellis.coffee'
+			'url.coffee'
+			'wits.coffee'
+			'wordnik.coffee'
+			'yoda-pictures.coffee'
+			'yoda-quotes.coffee'
+			'zen.coffee'
+			'zombies.coffee'
+		]
 
-		# A special hack for hubot-help: ensure it replies via pm
-		privRobot = Object.create robot
-		privRobot.respond = (regex, cb) ->
-			robot.respond regex, (resp) ->
-				resp.message.private = true
-				cb(resp)
-		(require 'hubot-help')(privRobot)
+		for scriptFile in scriptsToLoad
+			try
+				Npm.require('hubot-scripts/src/scripts/'+scriptFile)(robot)
+				# robot.loadFile __meteor_bootstrap__.serverDir+'/npm/rocketchat_hubot/node_modules/hubot-scripts/src/scripts', scriptFile
+				robot.parseHelp __meteor_bootstrap__.serverDir+'/npm/rocketchat_hubot/node_modules/hubot-scripts/src/scripts/'+scriptFile
+				console.log "Loaded #{scriptFile}".green
+			catch e
+				console.log "can't load #{scriptFile}".red
+				console.log e
 
-		# A special hack for meme_captain: change its "respond" invocations to "hear" so that it memes everywhere.
-		memecaptain = require './node_modules/hubot-scripts/src/scripts/meme_captain'
-		memecaptain
-			respond: (regex, cb) ->
-				robot.hear regex, (msg) ->
-					cb(msg) if msg.envelope.room is 'general/0' or /^\s*[@]?(rocket)?bot\b/i.test(msg.message.text)
+		# console.log __meteor_bootstrap__.serverDir
+
+		# npm/rocketchat_hubot/node_modules
+		# packages/rocketchat_hubot.js
+
+		# # load all scripts in scripts/
+		# console.log path.resolve '.'
+		# scriptPath = path.resolve __dirname, 'scripts'
+		# console.log scriptPath
+		# for file in fs.readdirSync(scriptPath)
+		# 	continue unless /\.(coffee|js)$/.test(file)
+		# 	robot.loadFile scriptPath, file
+
+		# return
+		# # load all scripts from hubot-scripts
+		# scriptPath = path.resolve __dirname, 'node_modules', 'hubot-scripts', 'src', 'scripts'
+		# scripts = require './hubot-scripts.json'
+		# robot.loadHubotScripts scriptPath, scripts
+		# robot.parseHelp path.join scriptPath, 'meme_captain.coffee'
+
+		# # load all hubot-* modules from package.json
+		# packageJson = require './package.json'
+		# pkgs = (pkg for own pkg, version of packageJson.dependencies when !/^(coffee-script|hubot-scripts|hubot-help)$/.test(pkg))
+		# pkgs.forEach (p) -> (require p)(robot)
+
+		# # A special hack for hubot-help: ensure it replies via pm
+		# privRobot = Object.create robot
+		# privRobot.respond = (regex, cb) ->
+		# 	robot.respond regex, (resp) ->
+		# 		resp.message.private = true
+		# 		cb(resp)
+		# (require 'hubot-help')(privRobot)
+
+		# # A special hack for meme_captain: change its "respond" invocations to "hear" so that it memes everywhere.
+		# memecaptain = require './node_modules/hubot-scripts/src/scripts/meme_captain'
+		# memecaptain
+		# 	respond: (regex, cb) ->
+		# 		robot.hear regex, (msg) ->
+		# 			cb(msg) if msg.envelope.room is 'general/0' or /^\s*[@]?(rocket)?bot\b/i.test(msg.message.text)
 
 sendHelper = Meteor.bindEnvironment (robot, envelope, strings, map) ->
 	while strings.length > 0
@@ -187,6 +283,10 @@ RocketBot = new Robot null, null, false, 'rocketbot'
 RocketBot.alias = 'bot'
 RocketBot.adapter = new RocketChatAdapter RocketBot
 HubotScripts(RocketBot)
+RocketBot.run()
+
+RocketBot.hear /^test/i, (res) ->
+	res.send "Test? TESTING? WE DON'T NEED NO TEST, EVERYTHING WORKS!"
 
 RocketChat.callbacks.add 'afterSaveMessage', RocketBotReceiver, RocketChat.callbacks.priority.LOW
 

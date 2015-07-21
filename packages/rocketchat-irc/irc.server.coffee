@@ -1,6 +1,13 @@
 net = Npm.require('net')
+Lru = Npm.require('lru-cache')
+
+MESSAGE_CACHE_SIZE = 200
+IRC_PORT = 6667
+IRC_HOST = 'irc.freenode.net'
 
 ircClientMap = {}
+ircReceiveMessageCache = Lru MESSAGE_CACHE_SIZE
+ircSendMessageCache = Lru MESSAGE_CACHE_SIZE
 
 bind = (f) ->
 	g = Meteor.bindEnvironment (self, args...) -> f.apply(self, args)
@@ -12,42 +19,77 @@ async = (f, args...) ->
 class IrcClient
 	constructor: (@loginReq) ->
 		@user = @loginReq.user
+		@user.username = @user.name
 		ircClientMap[@user._id] = this
-		@ircPort = 6667
-		@ircHost = 'irc.freenode.net'
+		@ircPort = IRC_PORT
+		@ircHost = IRC_HOST
 		@msgBuf = []
+
 		@isConnected = false
+		@isDistroyed = false
 		@socket = new net.Socket
 		@socket.setNoDelay
 		@socket.setEncoding 'utf-8'
+		@socket.setKeepAlive true
 		@onConnect = bind @onConnect
+		@onClose = bind @onClose
+		@onTimeout = bind @onTimeout
+		@onError = bind @onError
 		@onReceiveRawMessage = bind @onReceiveRawMessage
 		@socket.on 'data', @onReceiveRawMessage
 		@socket.on 'close', @onClose
+		@socket.on 'timeout', @onTimeout
+		@socket.on 'error', @onError
+
+		@isJoiningRoom = false
+		@receiveMemberListBuf = {}
+		@pendingJoinRoomBuf = []
+
+		@successLoginMessageRegex = /Welcome to the freenode Internet Relay Chat Network/
+		@failedLoginMessageRegex = /You have not registered/
 		@receiveMessageRegex = /^:(\S+)!~\S+ PRIVMSG (\S+) :(.+)$/
-		@memberListRegex = /^:\S+ \d+ \S+ = #(\S+) :(.*)$/
-		@initRoomList()
+		@receiveMemberListRegex = /^:\S+ \d+ \S+ = #(\S+) :(.*)$/
+		@endMemberListRegex = /^.+#(\S+) :End of \/NAMES list.$/
+		@addMemberToRoomRegex = /^:(\S+)!~\S+ JOIN #(\S+)$/
+		@removeMemberFromRoomRegex = /^:(\S+)!~\S+ PART #(\S+)$/
+		@quiteMemberRegex = /^:(\S+)!~\S+ QUIT .*$/
 
 	connect: (@loginCb) =>
 		@socket.connect @ircPort, @ircHost, @onConnect
+		@initRoomList()
+
+	disconnect: () ->
+		@isDistroyed = true
+		@socket.destroy()
 
 	onConnect: () =>
-		console.log @user.username, 'connect success.'
+		console.log '[irc] onConnect -> '.yellow, @user.username, 'connect success.'
 		@socket.write "NICK #{@user.username}\r\n"
 		@socket.write "USER #{@user.username} 0 * :Real Name\r\n"
 		# message order could not make sure here
 		@isConnected = true
 		@socket.write msg for msg in @msgBuf
-		@loginCb null, @loginReq
 
 	onClose: (data) =>
-		console.log @user.username, 'connection close.'
+		console.log '[irc] onClose -> '.yellow, @user.username, 'connection close.'
+		@isConnected = false
+		if @isDistroyed
+			delete ircClientMap[@user._id]
+		else
+			@connect()
+
+	onTimeout: () =>
+		console.log '[irc] onTimeout -> '.yellow, @user.username, 'connection timeout.', arguments
+
+	onError: () =>
+		console.log '[irc] onError -> '.yellow, @user.username, 'connection error.', arguments
 
 	onReceiveRawMessage: (data) =>
 		data = data.toString().split('\n')
 		for line in data
 			line = line.trim()
 			console.log "[#{@ircHost}:#{@ircPort}]:", line
+			# Send heartbeat package to irc server
 			if line.indexOf('PING') == 0
 				@socket.write line.replace('PING :', 'PONG ')
 				continue
@@ -57,42 +99,123 @@ class IrcClient
 				@onReceiveMessage matchResult[1], matchResult[2], matchResult[3]
 				continue
 
-			matchResult = @memberListRegex.exec line
+			matchResult = @receiveMemberListRegex.exec line
 			if matchResult
 				@onReceiveMemberList matchResult[1], matchResult[2].split ' '
 				continue
 
-	onReceiveMessage: (name, target, content) ->
-		console.log '[irc] onReceiveMessage -> '.yellow, 'sourceUserName:', name, 'target:', target, 'content:', content
+			matchResult = @endMemberListRegex.exec line
+			if matchResult
+				@onEndMemberList matchResult[1]
+				continue
+
+			matchResult = @addMemberToRoomRegex.exec line
+			if matchResult
+				@onAddMemberToRoom matchResult[1], matchResult[2]
+				continue
+
+			matchResult = @removeMemberFromRoomRegex.exec line
+			if matchResult
+				@onRemoveMemberFromRoom matchResult[1], matchResult[2]
+				continue
+
+			matchResult = @quiteMemberRegex.exec line
+			if matchResult
+				@onQuiteMember matchResult[1]
+				continue
+
+			matchResult = @successLoginMessageRegex.exec line
+			if matchResult
+				@onSuccessLoginMessage()
+				continue
+
+			matchResult = @failedLoginMessageRegex.exec line
+			if matchResult
+				@onFailedLoginMessage()
+				continue
+
+	onSuccessLoginMessage: () ->
+		console.log '[irc] onSuccessLoginMessage -> '.yellow
+		if @loginCb
+			@loginCb null, @loginReq
+
+	onFailedLoginMessage: () ->
+		console.log '[irc] onFailedLoginMessage -> '.yellow
+		@loginReq.allowed = false
+		@disconnect()
+		if @loginCb
+			@loginCb null, @loginReq
+
+	onReceiveMessage: (source, target, content) ->
+		now = new Date
+		timestamp = now.getTime()
+
+		cacheKey = [source, target, content].join ','
+		console.log '[irc] ircSendMessageCache.get -> '.yellow, 'key:', cacheKey, 'value:', ircSendMessageCache.get(cacheKey), 'ts:', (timestamp - 1000)
+		if ircSendMessageCache.get(cacheKey) > (timestamp - 1000)
+			return
+		else
+			ircSendMessageCache.set cacheKey, timestamp
+
+		console.log '[irc] onReceiveMessage -> '.yellow, 'source:', source, 'target:', target, 'content:', content
+		source = @createUserWhenNotExist source
 		if target[0] == '#'
 			room = ChatRoom.findOne {name: target.substring 1}
 		else
-			room = ChatRoom.findOne {usernames: { $all: [target, name]}, t: 'd'}, { fields: { usernames: 1, t: 1 } }
+			room = @createDirectRoomWhenNotExist(source, @user)
 
-		sourceUser = Meteor.users.findOne {username: message.u.username}, fields: username: 1
-		unless sourceUser
-			Meteor.call 'registerUser',
-				email: '',
-				password: name,
-				name: name
-		Meteor.call 'receiveMessage',
-			u:
-				username: name
-			rid: room._id
+		message =
 			msg: content
+			ts: now
+		cacheKey = "#{source.username}#{timestamp}"
+		ircReceiveMessageCache.set cacheKey, true
+		console.log '[irc] ircReceiveMessageCache.set -> '.yellow, 'key:', cacheKey
+		RocketChat.sendMessage source, message, room
 
-	onReceiveMemberList: (room, members) ->
-		console.log '[irc] onReceiveMemberList -> '.yellow, 'room:', room, 'members:', members
+	onReceiveMemberList: (roomName, members) ->
+		@receiveMemberListBuf[roomName] = @receiveMemberListBuf[roomName].concat members
+
+	onEndMemberList: (roomName) ->
+		newMembers = @receiveMemberListBuf[roomName]
+		console.log '[irc] onEndMemberList -> '.yellow, 'room:', roomName, 'members:', newMembers.join ','
+		room = ChatRoom.findOne {name: roomName, t: 'c'}
+		unless room
+			return
+
+		oldMembers = room.usernames
+		appendMembers = _.difference newMembers, oldMembers
+		removeMembers = _.difference oldMembers, newMembers
+
+		for member in appendMembers
+			@createUserWhenNotExist member
+
+		update =
+			$pull:
+				usernames:
+					$in: removeMembers
+		ChatRoom.update room._id, update
+		update =
+			$push:
+				usernames:
+					$each: appendMembers
+					$sort: 1
+		ChatRoom.update room._id, update
+		@isJoiningRoom = false
+		roomName = @pendingJoinRoomBuf.shift()
+		if roomName
+			@joinRoom
+				t: 'c'
+				name: roomName
 
 	sendRawMessage: (msg) ->
-		console.log '[irc] sendRawMessage -> '.yellow, msg
+		console.log '[irc] sendRawMessage -> '.yellow, msg.slice(0, -2)
 		if @isConnected
 			@socket.write msg
 		else
 			@msgBuf.push msg
 
 	sendMessage: (room, message) ->
-		console.log '[irc] sendMessage -> '.yellow, 'userName:', message.u.username, 'arguments:', arguments
+		console.log '[irc] sendMessage -> '.yellow, 'userName:', message.u.username
 		target = ''
 		if room.t == 'c'
 			target = "##{room.name}"
@@ -101,33 +224,139 @@ class IrcClient
 				if message.u.username != name
 					target = name
 					break
+
+		cacheKey = [@user.username, target, message.msg].join ','
+		console.log '[irc] ircSendMessageCache.set -> '.yellow, 'key:', cacheKey, 'ts:', message.ts.getTime()
+		ircSendMessageCache.set cacheKey, message.ts.getTime()
 		msg = "PRIVMSG #{target} :#{message.msg}\r\n"
 		@sendRawMessage msg
 
 	initRoomList: () ->
-		roomsCursor = ChatRoom.find {usernames: { $in: [@user.username]}, t: 'c'}, { fields: { name: 1 }}
+		roomsCursor = ChatRoom.find
+			usernames:
+				$in: [@user.username]
+			t: 'c'
+		,
+			fields:
+				name: 1
+				t: 1
 		rooms = roomsCursor.fetch()
 		for room in rooms
 			@joinRoom(room)
 
 	joinRoom: (room) ->
-		msg = "JOIN ##{room.name}\r\n"
-		@sendRawMessage msg
-		msg = "NAMES ##{room.name}\r\n"
-		@sendRawMessage msg
+		if room.t isnt 'c' or room.name == 'general'
+			return
+
+		if @isJoiningRoom
+			@pendingJoinRoomBuf.push room.name
+		else
+			console.log '[irc] joinRoom -> '.yellow, 'roomName:', room.name, 'pendingJoinRoomBuf:', @pendingJoinRoomBuf.join ','
+			msg = "JOIN ##{room.name}\r\n"
+			@receiveMemberListBuf[room.name] = []
+			@sendRawMessage msg
+			@isJoiningRoom = true
 
 	leaveRoom: (room) ->
+		if room.t isnt 'c'
+			return
 		msg = "PART ##{room.name}\r\n"
 		@sendRawMessage msg
 
+	getMemberList: (room) ->
+		if room.t isnt 'c'
+			return
+		msg = "NAMES ##{room.name}\r\n"
+		@receiveMemberListBuf[room.name] = []
+		@sendRawMessage msg
+
+	onAddMemberToRoom: (member, roomName) ->
+		if @user.username == member
+			return
+
+		console.log '[irc] onAddMemberToRoom -> '.yellow, 'roomName:', roomName, 'member:', member
+		@createUserWhenNotExist member
+		update =
+			$push:
+				usernames:
+					$each: [member]
+					$sort: 1
+		ChatRoom.update {name: roomName}, update
+
+	onRemoveMemberFromRoom: (member, roomName)->
+		console.log '[irc] onRemoveMemberFromRoom -> '.yellow, 'roomName:', roomName, 'member:', member
+		update =
+			$pull:
+				usernames: member
+		ChatRoom.update {name: roomName}, update
+
+	onQuiteMember: (member) ->
+		console.log '[irc] onQuiteMember ->'.yellow, 'username:', member
+		update =
+			$pull:
+				usernames: member
+		ChatRoom.update {}, update, {multi: true}
+		Meteor.users.update {name: member},
+			$set:
+				status: 'offline'
+
+	createUserWhenNotExist: (name) ->
+		user = Meteor.users.findOne {name: name}
+		unless user
+			console.log '[irc] createNotExistUser ->'.yellow, 'userName:', name
+			Meteor.call 'registerUser',
+				email: "#{name}@rocketchat.org"
+				pass: 'rocketchat'
+				name: name
+			Meteor.users.update {name: name},
+				$set:
+					status: 'online'
+					username: name
+			user = Meteor.users.findOne {name: name}
+		return user
+
+
+	createDirectRoomWhenNotExist: (source, target) ->
+		console.log '[irc] createDirectRoomWhenNotExist -> '.yellow, 'source:', source, 'target:', target
+		rid = [source._id, target._id].sort().join('')
+		now = new Date()
+		ChatRoom.upsert
+			_id: rid
+		,
+			$set:
+				usernames: [source.username, target.username]
+			$setOnInsert:
+				t: 'd'
+				msgs: 0
+				ts: now
+		ChatSubscription.upsert
+			rid: rid
+			$and: [{'u._id': target._id}]
+		,
+			$setOnInsert:
+				name: source.username
+				t: 'd'
+				open: false
+				alert: false
+				unread: 0
+				u:
+					_id: target._id
+					username: target.username
+		return {
+			t: 'd'
+			_id: rid
+		}
 
 IrcClient.getByUid = (uid) ->
 	return ircClientMap[uid]
 
 IrcClient.create = (login) ->
+	unless login.user?
+		return login
 	unless login.user._id of ircClientMap
 		ircClient = new IrcClient login
 		return async ircClient.connect
+
 	return login
 
 
@@ -139,6 +368,12 @@ class IrcLoginer
 
 class IrcSender
 	constructor: (message) ->
+		name = message.u.username
+		timestamp = message.ts.getTime()
+		cacheKey = "#{name}#{timestamp}"
+		if ircReceiveMessageCache.get cacheKey
+			return message
+
 		room = ChatRoom.findOne message.rid, { fields: { name: 1, usernames: 1, t: 1 } }
 		ircClient = IrcClient.getByUid message.u._id
 		ircClient.sendMessage room, message
@@ -159,7 +394,15 @@ class IrcRoomLeaver
 		return room
 
 
+class IrcLogoutCleanUper
+	constructor: (user) ->
+		ircClient = IrcClient.getByUid user._id
+		ircClient.disconnect()
+		return user
+
 RocketChat.callbacks.add 'beforeValidateLogin', IrcLoginer, RocketChat.callbacks.priority.LOW
 RocketChat.callbacks.add 'beforeSaveMessage', IrcSender, RocketChat.callbacks.priority.LOW
 RocketChat.callbacks.add 'beforeJoinRoom', IrcRoomJoiner, RocketChat.callbacks.priority.LOW
+RocketChat.callbacks.add 'beforeCreateChannel', IrcRoomJoiner, RocketChat.callbacks.priority.LOW
 RocketChat.callbacks.add 'beforeLeaveRoom', IrcRoomLeaver, RocketChat.callbacks.priority.LOW
+RocketChat.callbacks.add 'afterLogoutCleanUp', IrcLogoutCleanUper, RocketChat.callbacks.priority.LOW

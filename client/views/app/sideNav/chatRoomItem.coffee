@@ -1,10 +1,10 @@
 Template.chatRoomItem.helpers
 
 	alert: ->
-		return this.alert if (not Router.current().params._id) or Router.current().params._id isnt this.rid
+		return this.alert if (not FlowRouter.getParam('_id')) or FlowRouter.getParam('_id') isnt this.rid
 
 	unread: ->
-		return this.unread if (not Router.current().params._id) or Router.current().params._id isnt this.rid
+		return this.unread if (not FlowRouter.getParam('_id')) or FlowRouter.getParam('_id') isnt this.rid
 
 	isDirectRoom: ->
 		return this.t is 'd'
@@ -23,7 +23,7 @@ Template.chatRoomItem.helpers
 			when 'p' then return 'icon-lock'
 
 	active: ->
-		if Router.current().params._id? and Router.current().params._id is this.rid
+		if FlowRouter.getParam('_id')? and FlowRouter.getParam('_id') is this.rid
 			if this.alert or this.unread > 0
 				Meteor.call 'readMessages', this.rid
 			return 'active'
@@ -33,13 +33,13 @@ Template.chatRoomItem.helpers
 
 		return false unless roomData
 
-		if (roomData.cl? and not roomData.cl) or roomData.t is 'd' or (roomData.usernames.indexOf(Meteor.user().username) isnt -1 and roomData.usernames.length is 1)
+		if (roomData.cl? and not roomData.cl) or roomData.t is 'd' or (roomData.usernames?.indexOf(Meteor.user().username) isnt -1 and roomData.usernames?.length is 1)
 			return false
 		else
 			return true
 
 Template.chatRoomItem.rendered = ->
-	if not (Router.current().params._id? and Router.current().params._id is this.data.rid) and not this.data.ls
+	if not (FlowRouter.getParam('_id')? and FlowRouter.getParam('_id') is this.data.rid) and not this.data.ls
 		KonchatNotification.newRoom(this.data.rid)
 
 Template.chatRoomItem.events
@@ -47,8 +47,8 @@ Template.chatRoomItem.events
 		e.stopPropagation()
 		e.preventDefault()
 
-		if (Router.current().route.getName() is 'room' and Router.current().params._id is this.rid)
-			Router.go 'index'
+		if (FlowRouter.getRouteName() is 'room' and FlowRouter.getParam('_id') is this.rid)
+			FlowRouter.go 'index'
 
 		Meteor.call 'hideRoom', this.rid
 
@@ -56,8 +56,8 @@ Template.chatRoomItem.events
 		e.stopPropagation()
 		e.preventDefault()
 
-		if (Router.current().route.getName() is 'room' and Router.current().params._id is this.rid)
-			Router.go 'index'
+		if (FlowRouter.getRouteName() is 'room' and FlowRouter.getParam('_id') is this.rid)
+			FlowRouter.go 'index'
 
 		RoomManager.close this.rid
 

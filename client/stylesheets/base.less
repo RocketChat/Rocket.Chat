@@ -3,10 +3,10 @@
 //
 @import "global/_variables.less";
 @import "utils/_lesshat.import.less";
+@import "utils/_fonts.import.less";
 @import "utils/_reset.import.less";
 @import "utils/_keyframes.import.less";
 @import "utils/_preloader.import.less";
-@import url(//fonts.googleapis.com/css?family=Roboto:500,300,700,400&subset=latin,cyrillic-ext,greek-ext,greek,vietnamese,latin-ext,cyrillic);
 @import "utils/_emojione.import.less";
 .cf_ {
 	display: inline-block;
@@ -78,6 +78,13 @@ blockquote {
 		position: absolute;
 		left: 0px;
 	}
+}
+
+.flex-center{
+	display: -webkit-flex;
+	display: flex;
+	-webkit-align-items: center;
+	align-items: center;
 }
 
 .copyonly {
@@ -408,10 +415,10 @@ input.search {
 	}
 	> i {
 		visibility: hidden;
-		:after {
+		&:after {
 			content: " ";
 			visibility: visible;
-			background-image: url('/images/loading.gif');
+			background-image: url('/images/logo/loading.gif');
 			background-position: center;
 			background-repeat: no-repeat;
 			display: block;
@@ -503,10 +510,10 @@ label.required:after {
 .button {
 	&:extend(.unselectable);
 	display: inline-block;
-	padding: 10px 12px 8px;
+	padding: 9px 12px;
 	background-color: #FFF;
 	color: rgba(255, 255, 255, 0.85);
-	font-weight: 400;
+	font-weight: 500;
 	font-size: 13px;
 	margin: 4px;
 	text-transform: uppercase;
@@ -795,8 +802,7 @@ a.github-fork {
 		width: 100%;
 		height: 100%;
 		color: #FFF;
-		display: flex;
-		align-items: center;
+		.flex-center;
 		justify-content: center;
 		font-family: Helvetica;
 		text-transform: uppercase;
@@ -865,13 +871,9 @@ a.github-fork {
 			position: relative;
 			padding: 0 25px 0 10px;
 			height: 100%;
-			display: table;
+			.flex-center;
+			flex-flow: row nowrap;
 			.calc(width, ~"100% - 60px");
-		}
-		.wrp {
-			display: table-cell;
-			vertical-align: middle;
-			text-align: left;
 		}
 		h4 {
 			display: block;
@@ -884,6 +886,7 @@ a.github-fork {
 			text-overflow: ellipsis;
 			position: relative;
 			width: 130px;
+			text-align: left;
 			.transition(color .15s ease-out);
 		}
 		&.status-offline {
@@ -1143,6 +1146,7 @@ a.github-fork {
 			color: inherit;
 		}
 		input[type='text'],
+		input[type='password'],
 		select {
 			border-width: 0 0 1px 0;
 			border-color: @tertiary-font-color;
@@ -1283,7 +1287,7 @@ a.github-fork {
 			display: block;
 			width: 100%;
 			height: 100%;
-			padding-top: 2px;
+			margin-top: -1px;
 			&:hover {
 				text-decoration: none;
 			}
@@ -1301,7 +1305,8 @@ a.github-fork {
 		}
 		img {
 			display: inline-block;
-			height: 32px;
+			max-width: 222px;
+			margin-bottom: -10px;
 		}
 	}
 	.search-form {
@@ -1498,7 +1503,8 @@ a.github-fork {
 
 .fixed-title {
 	position: absolute;
-	display: table;
+	.flex-center;
+	flex-flow: row nowrap;
 	padding: 0 10px 0 20px;
 	background: #fff;
 	border-bottom: 1px solid @tertiary-background-color;
@@ -1512,10 +1518,6 @@ a.github-fork {
 			overflow: visible;
 		}
 	}
-	> div {
-		display: table-cell;
-		vertical-align: middle;
-	}
 	h2 {
 		max-width: 90%;
 		overflow: hidden;
@@ -1524,9 +1526,8 @@ a.github-fork {
 		font-size: 22px;
 		font-weight: 500;
 		line-height: 29px;
-		.icon-at, .icon-hash {
+		.icon-at, .icon-hash, .icon-lock {
 			margin-right: -7px;
-			color: #CCCCCC;
 		}
 		.icon-star,
 		.icon-star-empty {
@@ -1554,7 +1555,6 @@ a.github-fork {
 
 // MAIN CONTENT + MAIN PAGES //
 .main-content {
-	display: table;
 	position: relative;
 	margin-left: @rooms-box-width;
 	margin-top: 0;
@@ -1565,6 +1565,22 @@ a.github-fork {
 		.calc(width, ~'100% - ' @rooms-box-width + @flex-tab-width);
 		margin-right: 420px;
 		.flex-tab {
+			.transform(translateX(0));
+		}
+	}
+	&.layout1 {
+		.calc(width, ~'100% - ' @rooms-box-width + @flex-tab-webrtc-width);
+		margin-right: 420px;
+		.flex-tab {
+			max-width: @flex-tab-webrtc-width;
+			.transform(translateX(0));
+		}
+	}
+	&.layout2 {
+		.calc(width, ~'100% - ' @rooms-box-width + @flex-tab-webrtc-2-width);
+		margin-right: 420px;
+		.flex-tab {
+			max-width: @flex-tab-webrtc-2-width;
 			.transform(translateX(0));
 		}
 	}
@@ -1608,12 +1624,9 @@ a.github-fork {
 		}
 	}
 	.logo {
-		display: inline-block;
-		width: 190px;
-		margin-right: 6px;
-		vertical-align: text-top;
-		margin-top: -3px;
-		margin-left: 10px;
+		display: block;
+		margin: 10px 0;
+		max-width: 325px;
 	}
 	.info {
 		max-width: 680px;
@@ -1795,7 +1808,7 @@ a.github-fork {
 			padding-right: 38px;
 			overflow-y: hidden;
 			resize: none;
-			&.editing{
+			&.editing {
 				background-color: #fff7d8;
 			}
 		}
@@ -1813,10 +1826,15 @@ a.github-fork {
 		}
 		> .users-typing {
 			float: left;
-			height: 20px;
+			height: 17px;
 			font-size: 12px;
 			color: #888888;
-			padding: 3px 0px 0px 5px;
+			position: fixed;
+			padding-left: 5px;
+			background-color: #FFF;
+			z-index: 10;
+			bottom: 0;
+			padding-right: 5px;
 		}
 		> .formatting-tips {
 			float: right;
@@ -1859,6 +1877,12 @@ a.github-fork {
 		vertical-align: top;
 		width: 100%;
 	}
+}
+
+.room-container {
+	position: absolute;
+	width: 100%;
+	height: 100%;
 }
 
 .messages-box {
@@ -1904,8 +1928,8 @@ a.github-fork {
 			.transform(translateY(150%));
 		}
 	}
-	.editing{
-		.body{
+	.editing {
+		.body {
 			background-color: #fff7d8;
 			border-radius: 4px;
 		}
@@ -2013,7 +2037,6 @@ a.github-fork {
 				.delete-message {
 					float: left;
 				}
-
 			}
 			&:hover {
 				.time {
@@ -2207,7 +2230,8 @@ a.github-fork {
 .list-view {
 	padding: 5px 30px 20px;
 	.list {
-		display: table;
+		display: flex;
+		flex-flow: column nowrap;
 		position: relative;
 		width: 100%;
 		height: 100%;
@@ -2629,7 +2653,7 @@ a.github-fork {
 				margin: 0;
 				text-align: left;
 				font-size: 18px;
-				font-weight: 700;
+				font-weight: 600;
 				line-height: 55px;
 				text-overflow: ellipsis;
 				overflow: hidden;
@@ -2686,7 +2710,7 @@ a.github-fork {
 	position: relative;
 	z-index: 1;
 	header {
-		padding: 18px 0;
+		padding: 18px 0 23px;
 		p {
 			//font-family: "Muli";
 			margin: 8px 0 0;
@@ -2770,7 +2794,7 @@ a.github-fork {
 			font-size: 22px;
 			border-bottom: 1px solid #DFDFDF;
 			font-family: "Roboto", "HelveticaNeue-Light", "sans-serif";
-			font-weight: 300;
+			font-weight: 400;
 			&.error {
 				border-bottom: 1px solid #b40202;
 				&::-webkit-input-placeholder {
@@ -2814,20 +2838,21 @@ a.github-fork {
 }
 
 .landing-page {
+	.flex-center;
+	flex-flow: row nowrap;
 	text-align: center;
-	display: table;
+	margin: auto;
 	width: 100%;
 	min-height: 100%;
 	z-index: 101;
 	background-color: darken(@primary-background-color, 10%);
 	.background-image(linear-gradient(darken(@primary-background-color, 10%), @primary-background-color));
 	.wrapper {
-		display: table-cell;
-		vertical-align: middle;
 		text-align: center;
 		padding: 45px 0 35px;
 		z-index: 10;
 		position: relative;
+		width: 100%;
 	}
 	.logo {
 		display: block;
@@ -2908,7 +2933,7 @@ a.github-fork {
 			margin-top: 20px;
 		}
 		h1 {
-			font-weight: 700;
+			font-weight: 600;
 			text-transform: uppercase;
 			font-size: 24px;
 			letter-spacing: -0.5px;
@@ -2975,26 +3000,37 @@ a.github-fork {
 	position: fixed;
 }
 
+.avatar-suggestions {
+	display: flex;
+	flex-flow: column nowrap;
+}
+
 .avatar-suggestion-item {
-	margin: 10px 0px;
+	margin: 5px 0px;
 	text-align: left;
-	display: table;
+	.flex-center;
+	flex-flow: row nowrap;
 	width: 100%;
 	padding: 12px;
 	background-color: @secondary-background-color;
 	border: 1px solid darken(@secondary-background-color, 10%);
 	.transition(background-color .15s ease-out, border-color .15s ease-out);
+	&:first-child {
+		margin-top: 10px;
+	}
 	.avatar {
 		height: 55px;
+		max-height: 55px;
+		min-height: 55px;
 		width: 55px;
+		max-width: 55px;
+		min-width: 55px;
 		background-size: cover;
-		display: inline-table;
 		border: 1px solid darken(@tertiary-background-color, 10%);
 		font-size: 40px;
 		text-align: center;
 		background-color: @tertiary-background-color;
 		position: relative;
-		vertical-align: middle;
 	}
 	.question-mark {
 		&::before {
@@ -3010,8 +3046,6 @@ a.github-fork {
 	}
 	.action {
 		text-align: right;
-		display: inline-table;
-		vertical-align: middle;
 		padding-left: 20px;
 	}
 	button {
@@ -3045,6 +3079,14 @@ a.github-fork {
 		background-position: 50% 50%;
 		margin-right: 5px;
 	}
+}
+
+#fullscreendiv:-webkit-full-screen {
+	position: fixed;
+	width: 100%;
+	height: 100%;
+	top: 0;
+	background: none;
 }
 
 @media all and(max-width: 1100px) {

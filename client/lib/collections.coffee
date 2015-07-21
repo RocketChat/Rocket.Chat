@@ -1,21 +1,29 @@
 @UserAndRoom = new Meteor.Collection null
 @ChatMessageHistory = new Meteor.Collection null
 
-@ChatRoom = new Meteor.Collection 'data.ChatRoom'
-@ChatSubscription = new Meteor.Collection 'data.ChatSubscription'
-@ChatMessage = new Meteor.Collection 'data.ChatMessage'
+@ChatRoom = new Meteor.Collection 'rocketchat_room'
+@ChatSubscription = new Meteor.Collection 'rocketchat_subscription'
+#@ChatMessage = new Meteor.Collection 'rocketchat_message'
 
-Meteor.startup ->
-	ChatMessage.find().observe
-		added: (record) ->
-			if ChatRoom._collection._docs._map[record.rid]? and not ChatMessageHistory._collection._docs._map[record._id]?
-				ChatMessageHistory.insert record
+# Meteor.startup ->
+# 	ChatMessage.find().observe
+# 		added: (record) ->
+# 			if record._deleted is true
+# 				ChatMessageHistory.remove {_id: record._id}
+# 				return
 
-		changed: (record) ->
-			_id = record._id
-			delete record._id
+# 			if ChatRoom._collection._docs._map[record.rid]? and not ChatMessageHistory._collection._docs._map[record._id]?
+# 				ChatMessageHistory.insert record
 
-			ChatMessageHistory.update { _id: _id }, { $set: record }
+# 		changed: (record) ->
+# 			if record._deleted is true
+# 				ChatMessageHistory.remove {_id: record._id}
+# 				return
 
-		removed: (record) ->
-			ChatMessageHistory.remove {_id: record._id}
+# 			_id = record._id
+# 			delete record._id
+
+# 			ChatMessageHistory.update { _id: _id }, { $set: record }
+
+		# removed: (record) ->
+		# 	ChatMessageHistory.remove {_id: record._id}
