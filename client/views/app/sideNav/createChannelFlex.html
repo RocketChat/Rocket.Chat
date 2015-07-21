@@ -34,6 +34,11 @@
 					{{{_ "Invalid_room_name" roomName}}}
 				</div>
 			{{/if}}
+                    	<div class="wrapper-label">
+				{{#if securityLabelsInitialized}}
+					{{>securityLabels securityLabelsContext}}
+				{{/if}}
+                    	</div>
 			<div class="input-submit">
 				<button class="button clean primary save-channel">{{_ "Save" }}</button>
 				<button class="button clean cancel-channel">{{_ "Cancel" }}</button>

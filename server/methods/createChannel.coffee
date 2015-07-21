@@ -1,5 +1,5 @@
 Meteor.methods
-	createChannel: (name, members) ->
+	createChannel: (name, members, accessPermissions) ->
 		if not Meteor.userId()
 			throw new Meteor.Error 'invalid-user', "[methods] createChannel -> Invalid user"
 

@@ -34,6 +34,17 @@ Template.createChannelFlex.helpers
 				}
 			]
 		}
+		securityLabelsContext: ->
+		{
+			onSelectionChanged: Template.instance().onSelectionChanged
+			isOptionSelected: Template.instance().isOptionSelected
+			isOptionDisabled: Template.instance().isOptionDisabled
+			securityLabels: Template.instance().allowedLabels
+		}
+		securityLabelsInitialized: ->
+			Template.instance().securityLabelsInitialized.get()
+
+
 
 Template.createChannelFlex.events
 	'autocompleteselect #channel-members': (event, instance, doc) ->
@@ -78,7 +89,8 @@ Template.createChannelFlex.events
 		instance.roomName.set instance.find('#channel-name').value
 		console.log err
 		if not err
-			Meteor.call 'createChannel', instance.find('#channel-name').value, instance.selectedUsers.get(), (err, result) ->
+			accessPermissions = []
+			Meteor.call 'createChannel', instance.find('#channel-name').value, instance.selectedUsers.get(), accessPermissions, (err, result) ->
 				if err
 					console.log err
 					if err.error is 'name-invalid'
@@ -108,3 +120,40 @@ Template.createChannelFlex.onCreated ->
 		instance.selectedUsers.set([])
 		instance.find('#channel-name').value = ''
 		instance.find('#channel-members').value = ''
+
+	# other conversation members
+	instance.otherMembers = _.without(instance.data.members, Meteor.userId())
+	# labels that all members have in common
+	instance.allowedLabels = []
+	# reactive trigger set to true when labels returned asynchronously from server
+	instance.securityLabelsInitialized = new ReactiveVar(false)
+	# selected security label access permission ids
+	instance.selectedLabelIds = []
+	instance.disabledLabelIds = []
+	# adds/remove access permission ids from list of selected labels
+	instance.onSelectionChanged = (params) ->
+		if params.selected
+			instance.selectedLabelIds.push params.selected
+		else if params.deselected
+			# remove deselected if it exist
+			instance.selectedLabelIds = _.without(instance.selectedLabelIds, params.deselected)
+	instance.isOptionSelected = (id) ->
+		_.contains instance.selectedLabelIds, id
+
+	# determine if label is disabled
+	instance.isOptionDisabled = (id) ->
+		_.contains instance.disabledLabelIds, id
+	Meteor.call 'getAllowedConversationPermissions', { userIds: instance.otherMembers }, (error, result) ->
+		if error
+			alert error
+		else
+			# create shallow copies.  Adding id to both selected and disabled makes them "required"
+			# in the UI because it selects the permission and doesn't allow the user to remove it.
+			instance.selectedLabelIds = (result.selectedIds or []).slice(0)
+			instance.disabledLabelIds = (result.disabledIds or []).slice(0)
+			# initially select the default classification
+			# TODO: fix the following line
+			#instance.selectedLabelIds.push Meteor.settings.public.permission.classification.default
+			instance.allowedLabels = result.allowed or []
+			# Meteor will automatically re-run helper methods that populate select boxes.
+			instance.securityLabelsInitialized.set true
