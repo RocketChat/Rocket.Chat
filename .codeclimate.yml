@@ -6,6 +6,32 @@
 #
 languages:
    JavaScript: true
+
+engines:
+# to turn on an engine, add it here and set enabled to `true`
+# to turn off an engine, set enabled to `false` or remove it
+ eslint:
+   enabled: true
+ coffeelint:
+   enabled: true
+ csslint:
+   enabled: true
+ fixme:
+   enabled: true
+
+
+
+# Engines can analyze files and report issues on them, but you can separately
+# decide which files will receive ratings based on those issues. This is
+# specified by path patterns under the ratings key.
+
+# For more details see here:
+# http://docs.codeclimate.com/article/289-configuring-your-repository-via-codeclimate-yml#platform
+
+ratings:
+paths:
+- **.coffee
+- **.js
 #
 # ---Exclude Files or Directories---
 # List the files or directories you would like excluded from our analysis.

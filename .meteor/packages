@@ -15,6 +15,7 @@ jquery
 less
 meteor-platform
 reactive-var
+reactive-dict
 service-configuration
 
 chrismbeckett:toastr

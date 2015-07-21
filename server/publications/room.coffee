@@ -19,3 +19,4 @@ Meteor.publish 'room', (rid) ->
 			cl: 1
 			u: 1
 			usernames: 1
+			accessPermissions: 1
