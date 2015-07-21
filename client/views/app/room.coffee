@@ -522,6 +522,25 @@ Template.room.events
 	'click .stop-video': (event) ->
 		webrtc.stop()
 
+	'dragenter #dropzone': (e) ->
+		console.log 'DRAG ENTER'
+
+	'dragleave #dropzone': (e) ->
+		console.log 'DRAG OUT'
+
+	'dropped #dropzone': (e) ->
+		FS.Utility.eachFile e, (file) ->
+			newFile = new (FS.File)(file)
+			newFile.room = Session.get('openedRoom')
+			Files.insert newFile, (error, fileObj) ->
+				if error
+					toastr.error 'Upload failed... please try again. Error: ' + error
+				else
+					toastr.success 'Upload succeeded!'
+					`input = { value: 'File Uploaded: http://localhost:3000/cfs/files/Files/'+fileObj._id}`
+					ChatMessages.send(newFile.room, input)
+
+
 Template.room.onCreated ->
 	console.log 'room.onCreated' if window.rocketDebug
 	# this.scrollOnBottom = true
