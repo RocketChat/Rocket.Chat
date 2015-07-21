@@ -41,21 +41,7 @@ FlowRouter.route '/settings/:group?',
 		@register 'admin-settings', Meteor.subscribe('admin-settings')
 
 	action: ->
-		FlowLayout.render 'main', {}
-
-		track = Tracker.autorun ->
-			if not FlowRouter.subsReady()
-				return
-
-			track?.stop()
-
-			if not Meteor.user()? or Meteor.user().admin isnt true
-				FlowRouter.go('home')
-				return
-
-			FlowLayout.render 'main', {center: 'settings'}
-			KonchatNotification.getDesktopPermission()
-
+		FlowLayout.render 'main', {center: 'settings'}
 
 FlowRouter.route '/history/private',
 	name: 'privateHistory'

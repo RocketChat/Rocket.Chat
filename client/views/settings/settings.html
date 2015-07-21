@@ -13,43 +13,49 @@
 			</div>
 		</head>
 		<div class="content">
-			<h3>{{label}}</h3>
-			<div class="rocket-form">
-				<fieldset>
-					<legend>
-						<!-- <h3>This is another section</h3>
-						<p>This is a configuration text. With configuration info</p> -->
-					</legend>
-					{{#each settings}}
-					<div class="input-line double-col">
-						<label>{{label}}</label>
-						<div>
-							<input type="text" name="input-name" value="{{value}}" />
+			{{#unless isAdmin}}
+				<p>You are not authorized to view this page.</p>
+			{{else}}
+				<h3>{{label}}</h3>
+				<div class="rocket-form">
+					<fieldset>
+						<legend>
+							<!-- <h3>This is another section</h3>
+							<p>This is a configuration text. With configuration info</p> -->
+						</legend>
+						{{#each settings}}
+						<div class="input-line double-col">
+							<label>{{label}}</label>
+							<div>
+								<input type="text" name="input-name" value="{{value}}" />
+							</div>
 						</div>
-					</div>
-					{{/each}}
-				</fieldset>
-			</div>
+						{{/each}}
+					</fieldset>
+				</div>
+			{{/unless}}
 		</div>
 	</section>
-	<section class="flex-tab">
-		<div class="control">
-			<button class="more"><span class="arrow {{arrowPosition}}"></span></button>
-			<div class="search-form">
-				<div class="input-line search">
-					<input type="text" class="search" placeholder={{_ "Search_settings"}} />
-					<i class="icon-plus"></i>
+	{{#if isAdmin}}
+		<section class="flex-tab">
+			<div class="control">
+				<button class="more"><span class="arrow {{arrowPosition}}"></span></button>
+				<div class="search-form">
+					<div class="input-line search">
+						<input type="text" class="search" placeholder={{_ "Search_settings"}} />
+						<i class="icon-plus"></i>
+					</div>
 				</div>
 			</div>
-		</div>
-		<div class="content">
-			<ul class='list cf_ lines'>
-				{{#each groups}}
-				<li>
-					<a href="{{pathFor 'settings' group=_id}}">{{_ i18nLabel}}</a>
-				</li>
-				{{/each}}
-			</ul>
-		</div>
-	</section>
+			<div class="content">
+				<ul class='list cf_ lines'>
+					{{#each groups}}
+					<li>
+						<a href="{{pathFor 'settings' group=_id}}">{{_ i18nLabel}}</a>
+					</li>
+					{{/each}}
+				</ul>
+			</div>
+		</section>
+	{{/if}}
 </template>
