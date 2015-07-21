@@ -7,27 +7,13 @@
 	init = ->
 		wrapper = $(".messages-container").find(".wrapper")
 		input = $(".input-message").get(0)
-		# self.scrollable = false
-		# wrapper.bind "scroll", ->
-			# scrollable()
 		bindEvents()
 		return
-
-	# isScrollable = ->
-	# 	self.scrollable
 
 	resize = ->
 		dif = 60 + $(".messages-container").find("footer").outerHeight()
 		$(".messages-box").css
 			height: "calc(100% - #{dif}px)"
-
-	# scrollable = ->
-		# wrapper = $(".messages-container").find(".wrapper")
-		# top = wrapper.scrollTop() + wrapper.outerHeight()
-		# if top == wrapper.get(0).scrollHeight
-		# 	self.scrollable = true
-		# else
-		# 	self.scrollable = false
 
 	toPrevMessage = ->
 		msgs = wrapper.get(0).querySelectorAll(".own:not(.system)")
@@ -59,7 +45,7 @@
 		return if element.classList.contains("system")
 		clearEditing()
 		id = element.getAttribute("id")
-		message = ChatMessage.findOne { _id: id, 'u._id': Meteor.userId() }
+		message = ChatMessageHistory.findOne { _id: id, 'u._id': Meteor.userId() }
 		input.value = message.msg
 		editing.element = element
 		editing.index = index or getEditingIndex(element)
@@ -81,16 +67,13 @@
 		else
 			editing.saved = input.value
 
-	# toBottom = ->
-	# 	ScrollListener.toBottom()
-
 	send = (rid, input) ->
 		if _.trim(input.value) isnt ''
 			KonchatNotification.removeRoomNotification(rid)
 			msg = input.value
 			input.value = ''
-			stopTyping()
-			Meteor.call 'sendMessage', { rid: rid, msg: msg, day: window.day }
+			stopTyping(rid)
+			Meteor.call 'sendMessage', { _id: Random.id(), rid: rid, msg: msg, day: window.day }
 
 	deleteMsg = (element) ->
 			id = element.getAttribute("id")
@@ -98,30 +81,53 @@
 				if error
 					return Errors.throw error.reason
 
-	update = (id, input) ->
+	update = (id, rid, input) ->
 		if _.trim(input.value) isnt ''
 			msg = input.value
 			Meteor.call 'updateMessage', { id: id, msg: msg }
 			clearEditing()
+			stopTyping(rid)
 
 	startTyping = (rid, input) ->
 		if _.trim(input.value) isnt ''
-			unless self.typingTimeout
-				if Meteor.userId()?
-					Meteor.call 'typingStatus', rid, true
-				self.typingTimeout = Meteor.setTimeout ->
-					stopTyping()
-				, 30000
+			MsgTyping.start(rid)
+		else
+			MsgTyping.stop(rid)
 
-	stopTyping = ->
-		self.typingTimeout = null
+	stopTyping = (rid) ->
+		MsgTyping.stop(rid)
 
 	bindEvents = ->
 		if wrapper?.length
 			$(".input-message").autogrow
 				postGrowCallback: ->
 					resize()
-					# toBottom() if self.scrollable
+
+	keyup = (rid, event) ->
+		input = event.currentTarget
+		k = event.which
+		keyCodes = [
+			13, # Enter
+			20, # Caps lock
+			16, # Shift
+			9,  # Tab
+			27, # Escape Key
+			17, # Control Key
+			91, # Windows Command Key
+			19, # Pause Break
+			18, # Alt Key
+			93, # Right Click Point Key
+			45, # Insert Key
+			34, # Page Down
+			35, # Page Up
+			144, # Num Lock
+			145 # Scroll Lock
+		]
+		keyCodes.push i for i in [35..40] # Home, End, Arrow Keys
+		keyCodes.push i for i in [112..123] # F1 - F12
+
+		unless k in keyCodes
+			startTyping(rid, input)
 
 	keydown = (rid, event) ->
 		input = event.currentTarget
@@ -131,7 +137,7 @@
 			event.preventDefault()
 			event.stopPropagation()
 			if editing.id
-				update(editing.id, input)
+				update(editing.id, rid, input)
 			else
 				send(rid, input)
 			return
@@ -141,42 +147,24 @@
 				event.stopPropagation()
 				clearEditing()
 				return
-		else
-			keyCodes = [
-				20, # Caps lock
-				16, # Shift
-				9,  # Tab
-				27, # Escape Key
-				17, # Control Key
-				91, # Windows Command Key
-				19, # Pause Break
-				18, # Alt Key
-				93, # Right Click Point Key
-				45, # Insert Key
-				34, # Page Down
-				35, # Page Up
-				144, # Num Lock
-				145 # Scroll Lock
-			]
-			keyCodes.push i for i in [35..40] # Home, End, Arrow Keys
-			keyCodes.push i for i in [112..123] # F1 - F12
+		else if k is 38 or k is 40 # Arrow Up or down
+			if k is 38
+				return if input.value.slice(0, input.selectionStart).match(/[\n]/) isnt null
+				toPrevMessage()
+			else
+				return if input.value.slice(input.selectionEnd, input.value.length).match(/[\n]/) isnt null
+				toNextMessage()
 
-			unless k in keyCodes
-				startTyping(rid, input)
-			else if k is 38 or k is 40 # Arrow Up or down
-				if k is 38
-					return if input.value.slice(0, input.selectionStart).match(/[\n]/) isnt null
-					toPrevMessage()
-				else
-					return if input.value.slice(input.selectionEnd, input.value.length).match(/[\n]/) isnt null
-					toNextMessage()
+			event.preventDefault()
+			event.stopPropagation()
 
-				event.preventDefault()
-				event.stopPropagation()
+		# ctrl (command) + shift + k -> clear room messages
+		else if k is 75 and ((navigator?.platform?.indexOf('Mac') isnt -1 and event.metaKey and event.shiftKey) or (navigator?.platform?.indexOf('Mac') is -1 and event.ctrlKey and event.shiftKey))
+			RoomHistoryManager.clear rid
 
-	# isScrollable: isScrollable
-	# toBottom: toBottom
+
 	keydown: keydown
+	keyup: keyup
 	deleteMsg: deleteMsg
 	send: send
 	init: init

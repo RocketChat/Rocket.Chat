@@ -7,12 +7,13 @@ Meteor.methods
 			throw new Meteor.Error 300, 'Usuário não logado'
 
 		room = ChatRoom.findOne rid
+		user = Meteor.user()
 
-		RocketChat.callbacks.run 'beforeLeaveRoom', Meteor.user(), room
+		RocketChat.callbacks.run 'beforeLeaveRoom', user, room
 
 		update =
 			$pull:
-				usernames: Meteor.user().username
+				usernames: user.username
 
 		ChatSubscription.update { rid: rid },
 			$set:
@@ -20,8 +21,8 @@ Meteor.methods
 		,
 			multi: true
 
-		if room.t isnt 'c' and room.usernames.indexOf(Meteor.user().username) isnt -1
-			removedUser = Meteor.user()
+		if room.t isnt 'c' and room.usernames.indexOf(user.username) isnt -1
+			removedUser = user
 
 			ChatMessage.insert
 				rid: rid
@@ -32,8 +33,8 @@ Meteor.methods
 					_id: removedUser._id
 					username: removedUser.username
 
-		if room.u._id is Meteor.userId()
-			newOwner = _.without(room.usernames, Meteor.user().username)[0]
+		if room.u? and room.u._id is Meteor.userId()
+			newOwner = _.without(room.usernames, user.username)[0]
 			if newOwner?
 				newOwner = Meteor.users.findOne username: newOwner
 
@@ -48,4 +49,6 @@ Meteor.methods
 
 		ChatRoom.update rid, update
 
-		RocketChat.callbacks.run 'afterLeaveRoom', Meteor.user(), room
+		Meteor.defer ->
+
+			RocketChat.callbacks.run 'afterLeaveRoom', user, room

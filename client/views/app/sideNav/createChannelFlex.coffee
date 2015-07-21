@@ -20,9 +20,9 @@ Template.createChannelFlex.helpers
 					# @TODO maybe change this 'collection' and/or template
 					collection: 'UserAndRoom'
 					subscription: 'roomSearch'
-					field: 'name'
-					template: Template.roomSearch
-					noMatchTemplate: Template.roomSearchEmpty
+					field: 'username'
+					template: Template.userSearch
+					noMatchTemplate: Template.userSearchEmpty
 					matchAll: true
 					filter:
 						type: 'u'
@@ -30,7 +30,7 @@ Template.createChannelFlex.helpers
 							{ _id: { $ne: Meteor.userId() } }
 							{ username: { $nin: Template.instance().selectedUsers.get() } }
 						]
-					sort: 'name'
+					sort: 'username'
 				}
 			]
 		}
@@ -91,7 +91,7 @@ Template.createChannelFlex.events
 
 				instance.clearForm()
 
-				Router.go 'room', { _id: result.rid }
+				FlowRouter.go 'room', { _id: result.rid }
 		else
 			instance.error.set({ fields: err })
 

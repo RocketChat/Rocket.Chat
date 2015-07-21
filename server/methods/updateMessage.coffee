@@ -14,13 +14,12 @@ Meteor.methods
 
 		ChatMessage.update
 			_id: message.id
-			'u._id': Meteor.userId
+			'u._id': Meteor.userId()
 		,
 			$set: message
 
-		Meteor.defer ->
-
-			RocketChat.callbacks.run 'afterSaveMessage', message
+		# Meteor.defer ->
+		# 	RocketChat.callbacks.run 'afterSaveMessage', ChatMessage.findOne(message.id)
 
 	deleteMessage: (message) ->
 		if not Meteor.userId()
@@ -28,6 +27,16 @@ Meteor.methods
 
 		console.log '[methods] deleteMessage -> '.green, 'userId:', Meteor.userId(), 'arguments:', arguments
 
-		ChatMessage.remove
+		ChatMessage.update
 			_id: message.id
-			'u._id': Meteor.userId
+			'u._id': Meteor.userId()
+		,
+			$set:
+				_deleted: true
+
+		userId = Meteor.userId()
+		Meteor.setTimeout ->
+			ChatMessage.remove
+				_id: message.id
+				'u._id': userId
+		, 10000
