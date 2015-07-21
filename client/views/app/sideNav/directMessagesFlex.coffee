@@ -27,6 +27,13 @@ Template.directMessagesFlex.events
 	'autocompleteselect #who': (event, instance, doc) ->
 		instance.selectedUser.set doc.username
 		event.currentTarget.focus()
+		parameters = {}
+		parameters.usernames = [doc.username]
+		Meteor.call 'getAllowedConversationPermissions', parameters, (err, result) ->
+			if err
+				return toastr.error err.reason
+			console.log JSON.stringify result
+			instance.accessOptions.set result
 
 	'click .cancel-direct-message': (e, instance) ->
 		SideNav.closeFlex()
@@ -61,6 +68,7 @@ Template.directMessagesFlex.onCreated ->
 	instance = this
 	instance.selectedUser = new ReactiveVar
 	instance.error = new ReactiveVar []
+	instance.accessOptions = new ReactiveVar
 
 	instance.clearForm = ->
 		instance.error.set([])
