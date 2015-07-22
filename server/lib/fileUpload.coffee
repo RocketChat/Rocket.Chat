@@ -1,22 +1,23 @@
 if Meteor.isServer
   fileStore = new (FS.Store.GridFS)('files', {})
-  `Files = new FS.Collection('Files', {
-  stores: [fileStore],
-  filter: { allow: { contentTypes: ['image/*'] } }
-})`
+  Files = new (FS.Collection) 'Files',
+    stores: [fileStore],
+    filter:
+      allow:
+        contentTypes: ['image/*']
 
 if Meteor.isClient
   fileStore = new (FS.Store.GridFS)('files')
-  `Files = new FS.Collection('Files', {
-  stores: [fileStore],
-  filter: {
-    maxSize: 1048576,
-    allow: { contentTypes: ['image/*'] },
-    onInvalid: function (message) {
-      toastr.error(message);
-    }
-  }
-})`
+  Files = new (FS.Collection) 'Files',
+    stores: [fileStore],
+    filter:
+      maxSize: 1048576,
+      allow:
+        contentTypes: ['image/*']
+      onInvalid: (message) ->
+        toastr.error message
+        return
+
 # Allow rules
 Files.allow
   insert: ->
