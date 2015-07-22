@@ -34,15 +34,15 @@ Template.createChannelFlex.helpers
 				}
 			]
 		}
-		securityLabelsContext: ->
-		{
+	securityLabelsContext: ->
+		return {
 			onSelectionChanged: Template.instance().onSelectionChanged
 			isOptionSelected: Template.instance().isOptionSelected
 			isOptionDisabled: Template.instance().isOptionDisabled
 			securityLabels: Template.instance().allowedLabels
 		}
-		securityLabelsInitialized: ->
-			Template.instance().securityLabelsInitialized.get()
+	securityLabelsInitialized: ->
+		return Template.instance().securityLabelsInitialized.get()
 
 
 
