@@ -41,8 +41,6 @@ konecty:nrr
 konecty:user-presence
 
 arunoda:streams
-cfs:gridfs
-cfs:standard-packages
 chrismbeckett:toastr
 francocatena:status
 jparker:gravatar
