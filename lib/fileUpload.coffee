@@ -1,14 +1,17 @@
 if FS?
 
-	@fileStore = new (FS.Store.GridFS)('files')
-	@Files = new (FS.Collection) 'Files',
+	@fileStore = new FS.Store.GridFS 'files'
+	@Files = new FS.Collection 'Files',
 		stores: [fileStore],
 		filter:
 			maxSize: 1048576,
 			allow:
 				contentTypes: ['image/*']
 			onInvalid: (message) ->
-				toastr.error message
+				if Meteor.isClient
+					toastr.error message
+				else
+					console.log message
 				return
 
 	# Allow rules
