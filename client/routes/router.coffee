@@ -10,6 +10,8 @@ FlowRouter.subscriptions = ->
 		if Meteor.userId()?
 			@register 'userData', Meteor.subscribe('userData')
 			@register 'activeUsers', Meteor.subscribe('activeUsers')
+			if Meteor.user()?.admin
+				@register 'admin-settings', Meteor.subscribe('admin-settings')
 
 
 FlowRouter.route '/',
@@ -36,9 +38,6 @@ FlowRouter.route '/home',
 
 FlowRouter.route '/settings/:group?',
 	name: 'settings'
-
-	subscriptions: (params, queryParams) ->
-		@register 'admin-settings', Meteor.subscribe('admin-settings')
 
 	action: ->
 		FlowLayout.render 'main', {center: 'settings'}

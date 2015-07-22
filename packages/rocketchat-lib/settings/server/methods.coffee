@@ -16,6 +16,7 @@ RocketChat.settings.add = (_id, value, options = {}) ->
 	
 	updateSettings =
 		i18nLabel: options.i18nLabel or _id
+		i18nDescription: options.i18nDescription if options.i18nDescription?
 		
 	updateSettings.type = options.type if options.type
 	updateSettings.group = options.group if options.group
@@ -36,6 +37,19 @@ RocketChat.settings.addGroup = (_id, options = {}) ->
 
 	updateSettings = 
 		i18nLabel: options.i18nLabel or _id
+		i18nDescription: options.i18nDescription if options.i18nDescription?
 		type: 'group'
 	
 	return Settings.upsert { _id: _id }, { $set: updateSettings }
+
+Meteor.methods
+	saveSetting: (_id, value) ->
+		if Meteor.userId()?
+			user = Meteor.users.findOne Meteor.userId()
+		
+		unless user?.admin is true
+			throw new Meteor.Error 503, 'Not authorized'
+
+		console.log "saveSetting -> ".green, _id, value
+		Settings.update { _id: _id }, { $set: { value: value } }
+		return true

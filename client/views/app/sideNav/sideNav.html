@@ -13,6 +13,11 @@
 					<h3>
 						<a href="{{pathFor 'privateHistory'}}">{{_ "History"}}</a>
 					</h3>
+					{{#if isAdmin}}
+					<h3 class="open-settings">
+						{{_ "App_Settings"}}
+					</h3>
+					{{/if}}
 				</div>
 			</div>
 			<div class="flex-nav hidden">

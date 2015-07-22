@@ -1,61 +1,210 @@
 <template name="settings">
 	<section class="page-container page-home page-static">
 		<head class="fixed-title">
-			<div>
-				<div class="burger">
-					<i></i>
-					<i></i>
-					<i></i>
-				</div>
-				<h2>
-					<span class="room-title">{{_ "App_Settings"}}</span>
-				</h2>
+			<div class="burger">
+				<i></i>
+				<i></i>
+				<i></i>
 			</div>
+			<h2>
+				<span class="room-title">{{_ "App_Settings"}}</span>
+			</h2>
 		</head>
 		<div class="content">
 			{{#unless isAdmin}}
 				<p>You are not authorized to view this page.</p>
 			{{else}}
-				<h3>{{label}}</h3>
+				<div class="info">
+					{{#with group}}
+						<h3>{{label}}</h3>
+						<h3>{{description}}</h3>
+					{{/with}}
+				</div>
 				<div class="rocket-form">
 					<fieldset>
-						<legend>
-							<!-- <h3>This is another section</h3>
-							<p>This is a configuration text. With configuration info</p> -->
-						</legend>
 						{{#each settings}}
-						<div class="input-line double-col">
-							<label>{{label}}</label>
-							<div>
-								<input type="text" name="input-name" value="{{value}}" />
-							</div>
-						</div>
+							{{#if $eq type 'string'}}
+								<div class="input-line double-col">
+									<label>{{label}}</label>
+									<div>
+										<input type="text" name="{{_id}}" value="{{value}}" />
+									</div>
+								</div>
+							{{/if}}
+							{{#if $eq type 'boolean'}}
+								<div class="input-line double-col">
+									<label>{{label}}</label>
+									<div>
+										<label><input type="radio" name="{{_id}}" value="1" checked="{{$eq value true}}" /> {{_ "True"}}</label>
+										<label><input type="radio" name="{{_id}}" value="0" checked="{{$eq value false}}" /> {{_ "False"}}</label>
+									</div>
+								</div>
+							{{/if}}
 						{{/each}}
 					</fieldset>
+					{{!-- <fieldset>
+						<legend>
+							<h3>This is another section</h3>
+							<p>This is a configuration text. With configuration info</p>
+						</legend>
+						<div class="input-line double-col">
+							<label>Input Field</label>
+							<div>
+								<input type="text" name="input-name" />
+							</div>
+						</div>
+						<div class="input-line double-col">
+							<label>Select Field</label>
+							<div>
+								<select name="select">
+									<option value="1">Option A</option>
+									<option value="1">Option B</option>
+									<option value="1">Option C</option>
+									<option value="1">Option D</option>
+									<option value="1">Option E</option>
+								</select>
+							</div>
+						</div>
+					</fieldset>
+					<fieldset>
+						<legend>
+							<h3>This is another section</h3>
+							<p>This is a configuration text. With configuration info</p>
+						</legend>
+						<div class="input-line double-col">
+							<label>Radio field</label>
+							<div>
+								<label><input type="radio" name="pandora" value="1" /> Calazar</label>
+								<label><input type="radio" name="pandora" value="2" /> Genoveve</label>
+							</div>
+						</div>
+						<div class="input-line double-col">
+							<label>Checkbox field</label>
+							<div>
+								<label><input type="checkbox" name="pandora" value="1" /> Calazar</label>
+								<label><input type="checkbox" name="pandora" value="2" /> Genoveve</label>
+							</div>
+						</div>
+					</fieldset>
+					<fieldset>
+						<legend>
+							<h3>This is another section</h3>
+							<p>This is a configuration text. With configuration info</p>
+						</legend>
+						<div class="input-line double-col">
+							<label>Input Field</label>
+							<div>
+								<input type="text" name="input-name" />
+							</div>
+						</div>
+						<div class="input-line double-col">
+							<label>Select Field</label>
+							<div>
+								<select name="select">
+									<option value="1">Option A</option>
+									<option value="1">Option B</option>
+									<option value="1">Option C</option>
+									<option value="1">Option D</option>
+									<option value="1">Option E</option>
+								</select>
+							</div>
+						</div>
+					</fieldset> --}}
+					<div class="submit">
+						<button class="button"><i class="icon-send"></i><span>{{_ "Save_changes"}}</span></button>
+					</div>
 				</div>
 			{{/unless}}
 		</div>
 	</section>
-	{{#if isAdmin}}
-		<section class="flex-tab">
-			<div class="control">
-				<button class="more"><span class="arrow {{arrowPosition}}"></span></button>
-				<div class="search-form">
-					<div class="input-line search">
-						<input type="text" class="search" placeholder={{_ "Search_settings"}} />
-						<i class="icon-plus"></i>
+	{{!-- <section class="page-container page-home page-static">
+		<header class="fixed-title">
+			<div class="burger">
+				<i></i>
+				<i></i>
+				<i></i>
+			</div>
+			<h2>
+				<span class="room-title">{{_ "App_Settings"}}</span>
+			</h2>
+		</header>
+		<div class="content">
+			<div class="info">
+				<p>Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.</p>
+			</div>
+			<div class="rocket-form">
+				<fieldset>
+					<legend>
+						<h3>This is another section</h3>
+						<p>This is a configuration text. With configuration info</p>
+					</legend>
+					<div class="input-line double-col">
+						<label>Input Field</label>
+						<div>
+							<input type="text" name="input-name" />
+						</div>
 					</div>
+					<div class="input-line double-col">
+						<label>Select Field</label>
+						<div>
+							<select name="select">
+								<option value="1">Option A</option>
+								<option value="1">Option B</option>
+								<option value="1">Option C</option>
+								<option value="1">Option D</option>
+								<option value="1">Option E</option>
+							</select>
+						</div>
+					</div>
+				</fieldset>
+				<fieldset>
+					<legend>
+						<h3>This is another section</h3>
+						<p>This is a configuration text. With configuration info</p>
+					</legend>
+					<div class="input-line double-col">
+						<label>Radio field</label>
+						<div>
+							<label><input type="radio" name="pandora" value="1" /> Calazar</label>
+							<label><input type="radio" name="pandora" value="2" /> Genoveve</label>
+						</div>
+					</div>
+					<div class="input-line double-col">
+						<label>Checkbox field</label>
+						<div>
+							<label><input type="checkbox" name="pandora" value="1" /> Calazar</label>
+							<label><input type="checkbox" name="pandora" value="2" /> Genoveve</label>
+						</div>
+					</div>
+				</fieldset>
+				<fieldset>
+					<legend>
+						<h3>This is another section</h3>
+						<p>This is a configuration text. With configuration info</p>
+					</legend>
+					<div class="input-line double-col">
+						<label>Input Field</label>
+						<div>
+							<input type="text" name="input-name" />
+						</div>
+					</div>
+					<div class="input-line double-col">
+						<label>Select Field</label>
+						<div>
+							<select name="select">
+								<option value="1">Option A</option>
+								<option value="1">Option B</option>
+								<option value="1">Option C</option>
+								<option value="1">Option D</option>
+								<option value="1">Option E</option>
+							</select>
+						</div>
+					</div>
+				</fieldset>
+				<div class="submit">
+					<button class="button"><i class="icon-send"></i><span>Save changes</span></button>
 				</div>
 			</div>
-			<div class="content">
-				<ul class='list cf_ lines'>
-					{{#each groups}}
-					<li>
-						<a href="{{pathFor 'settings' group=_id}}">{{_ i18nLabel}}</a>
-					</li>
-					{{/each}}
-				</ul>
-			</div>
-		</section>
-	{{/if}}
+		</div>
+	</section> --}}
 </template>

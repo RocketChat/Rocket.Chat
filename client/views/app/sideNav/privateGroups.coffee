@@ -9,4 +9,3 @@ Template.privateGroups.events
 	'click .add-room': (e, instance) ->
 		SideNav.setFlex "privateGroupsFlex"
 		SideNav.openFlex()
-		console.log Template.privateGroupsFlex.onCreated.instance
