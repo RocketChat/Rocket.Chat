@@ -10,6 +10,7 @@ Package.onUse(function(api) {
 
 	api.use([
 		'coffeescript',
+		'arunoda:streams@0.1.17',
 		'rocketchat:lib@0.0.1'
 	]);
 
