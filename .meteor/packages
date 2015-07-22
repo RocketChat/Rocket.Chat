@@ -17,6 +17,8 @@ meteor-platform
 reactive-var
 service-configuration
 
+rocketchat:lib
+
 rocketchat:autolinker
 rocketchat:emojione
 rocketchat:favico
@@ -25,7 +27,6 @@ rocketchat:highlight
 rocketchat:hubot
 #rocketchat:irc
 rocketchat:ldap
-rocketchat:lib
 rocketchat:markdown
 rocketchat:me
 rocketchat:mentions
