@@ -34,9 +34,9 @@ Meteor.methods
 			$set:
 				_deleted: true
 
-		userId = Meteor.userId()
-		Meteor.setTimeout ->
-			ChatMessage.remove
-				_id: message.id
-				'u._id': userId
-		, 10000
+		# userId = Meteor.userId()
+		# Meteor.setTimeout ->
+		# 	ChatMessage.remove
+		# 		_id: message.id
+		# 		'u._id': userId
+		# , 10000
