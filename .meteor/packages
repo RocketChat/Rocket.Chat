@@ -17,6 +17,7 @@ meteor-platform
 reactive-var
 service-configuration
 
+arunoda:streams
 rocketchat:lib
 
 rocketchat:autolinker
@@ -40,7 +41,12 @@ konecty:multiple-instances-status
 konecty:nrr
 konecty:user-presence
 
-arunoda:streams
+#cfs:standard-packages
+#cfs:gridfs
+#cfs:filesystem
+#cfs:s3
+#cfs:dropbox
+
 chrismbeckett:toastr
 francocatena:status
 jparker:gravatar
