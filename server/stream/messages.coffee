@@ -48,3 +48,6 @@ Meteor.startup ->
 			msgStream.emit record.rid, { _id: _id, _deleted: true }
 		changed: (_id, record) ->
 			msgStream.emit record.rid, { _id: _id, _deleted: true }
+			ChatMessage.remove
+				_id: message.id
+				'u._id': Meteor.userId()
