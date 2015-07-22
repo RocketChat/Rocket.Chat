@@ -534,9 +534,7 @@ Template.room.events
 			newFile = new (FS.File)(file)
 			newFile.rid = Session.get('openedRoom')
 			Files.insert newFile, (error, fileObj) ->
-				if error
-					toastr.error 'Upload failed... please try again. Error: ' + error
-				else
+				unless error
 					toastr.success 'Upload succeeded!'
 					console.log('room fileObj', fileObj) if window.rocketDebug
 					Meteor.call 'sendMessage',
