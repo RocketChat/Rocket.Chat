@@ -65,7 +65,8 @@ Template.directMessagesFlex.events
 	'click .save-direct-message': (e, instance) ->
 		err = SideNav.validate()
 		if not err
-			Meteor.call 'createDirectMessage', instance.selectedUser.get(), (err, result) ->
+			accessPermissions = instance.selectedLabelIds
+			Meteor.call 'createDirectMessage', instance.selectedUser.get(), accessPermissions, (err, result) ->
 				if err
 					return toastr.error err.reason
 				SideNav.closeFlex()

@@ -79,7 +79,8 @@ Template.privateGroupsFlex.events
 	'click .save-pvt-group': (e, instance) ->
 		err = SideNav.validate()
 		if not err
-			Meteor.call 'createPrivateGroup', instance.find('#pvt-group-name').value, instance.selectedUsers.get(), (err, result) ->
+			accessPermissions = instance.selectedLabelIds
+			Meteor.call 'createPrivateGroup', instance.find('#pvt-group-name').value, instance.selectedUsers.get(), accessPermissions, (err, result) ->
 				if err
 					return toastr.error err.reason
 				SideNav.closeFlex()
