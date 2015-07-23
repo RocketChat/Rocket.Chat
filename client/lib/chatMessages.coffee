@@ -73,7 +73,18 @@
 			msg = input.value
 			input.value = ''
 			stopTyping(rid)
-			Meteor.call 'sendMessage', { _id: Random.id(), rid: rid, msg: msg, day: window.day }
+			#Check if message starts with /command
+			if msg[0] is '/'
+				match = msg.match(/^\/([^\s]+)(?:\s+(.*))?$/m)
+				if(match?)
+					command = match[1]
+					param = match[2]
+					internalMsg = { _id: Random.id(), rid: rid, msg: msg, day: window.day }
+					Meteor.call 'slashCommand', {cmd: command, params: param, msg: internalMsg }
+			else
+				#Run to allow local encryption
+				#Meteor.call 'onClientBeforeSendMessage', {}
+				Meteor.call 'sendMessage', { _id: Random.id(), rid: rid, msg: msg, day: window.day }
 
 	deleteMsg = (element) ->
 			id = element.getAttribute("id")
