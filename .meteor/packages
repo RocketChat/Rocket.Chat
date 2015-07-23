@@ -41,8 +41,8 @@ konecty:multiple-instances-status
 konecty:nrr
 konecty:user-presence
 
-cfs:standard-packages
-cfs:gridfs
+#cfs:standard-packages
+#cfs:gridfs
 #cfs:filesystem
 #cfs:s3
 #cfs:dropbox
