@@ -72,6 +72,7 @@
 			KonchatNotification.removeRoomNotification(rid)
 			msg = input.value
 			input.value = ''
+			msgObject = { _id: Random.id(), rid: rid, msg: msg}
 			stopTyping(rid)
 			#Check if message starts with /command
 			if msg[0] is '/'
@@ -79,12 +80,11 @@
 				if(match?)
 					command = match[1]
 					param = match[2]
-					internalMsg = { _id: Random.id(), rid: rid, msg: msg, day: window.day }
-					Meteor.call 'slashCommand', {cmd: command, params: param, msg: internalMsg }
+					Meteor.call 'slashCommand', {cmd: command, params: param, msg: msgObject }
 			else
 				#Run to allow local encryption
 				#Meteor.call 'onClientBeforeSendMessage', {}
-				Meteor.call 'sendMessage', { _id: Random.id(), rid: rid, msg: msg, day: window.day }
+				Meteor.call 'sendMessage', msgObject
 
 	deleteMsg = (element) ->
 			id = element.getAttribute("id")
