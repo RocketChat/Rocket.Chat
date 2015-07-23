@@ -5,7 +5,7 @@ Template.body.onRendered ->
 		s = 'script'
 		l = 'dataLayer'
 		i = RocketChat.settings.get 'API_Analytics'
-		if i
+		if Match.test(i, String) and i.trim() isnt ''
 			do (w,d,s,l,i) ->
 				w[l] = w[l] || []
 				w[l].push {'gtm.start': new Date().getTime(), event:'gtm.js'}
