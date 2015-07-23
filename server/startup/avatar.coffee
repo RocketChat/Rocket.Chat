@@ -35,7 +35,7 @@ Meteor.startup ->
 		file = RocketChatFileAvatarInstance.getFileWithReadStream this.params.username
 
 		res.setHeader 'Content-Disposition', 'inline'
-		res.setHeader 'Cache-Control', 'no-cache, no-store, must-revalidate'
+		res.setHeader 'Cache-Control', 'no-cache'
 		res.setHeader 'Pragma', 'no-cache'
 		res.setHeader 'Expires', '0'
 
