@@ -19,6 +19,8 @@ Package.onUse(function(api) {
 	api.addFiles('lib/core.coffee', ['server', 'client']);
 	api.addFiles('lib/callbacks.coffee', ['server', 'client']);
 	api.addFiles('server/sendMessage.coffee', ['server']);
+	api.addFiles('server/slashCommand.coffee', ['server']);
+	api.addFiles('client/slashCommand.coffee', ['client']);
 
 	api.addFiles([
 		'settings/lib/settings.coffee',
