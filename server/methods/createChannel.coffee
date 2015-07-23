@@ -13,6 +13,10 @@ Meteor.methods
 
 		members.push user.username
 
+		# avoid duplicate names
+		if ChatRoom.findOne({name:name})
+			throw new Meteor.Error 'duplicate-name', "A Channel with the same name exists"
+
 		# name = s.slugify name
 
 		room =

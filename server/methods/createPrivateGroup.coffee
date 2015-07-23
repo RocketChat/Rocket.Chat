@@ -13,6 +13,10 @@ Meteor.methods
 
 		name = s.slugify name
 
+		# avoid duplicate names
+		if ChatRoom.findOne({name:name})
+			throw new Meteor.Error 'duplicate-name', "A private group with the same name exists"
+
 		# create new room
 		rid = ChatRoom.insert
 			usernames: members
