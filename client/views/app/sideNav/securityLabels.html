@@ -1,62 +1,64 @@
 <template name="securityLabels">
-	{{!-- 
+	{{!--
 	  | Template onRendered method runs JQuery 'chosen' plugin that hides Clasification, SAP and SCI select
 	  | fields and injects new UI.  Single select looks like a normal select box, but multiple select mimics
 	  |  an input field with drop down.  Drop down options are the same as the select field's options.
 	  +--}}
-	  
-	{{!-- 
+
+	{{!--
 	  | Classification form field that allows single selection.  See above regarding use of JQuery plugin
 	  +--}}
-	<div class="form-group">
-		<label for="classification-select">Classification:</label> 
-		<select id="classification-select" class="form-control chosen-select" data-toggle="tooltip" title="Classification(s) in common with conversation members">
-			{{#each classificationLabels}}
-				<option value="{{_id}}" {{optionSelected}} {{optionDisabled}}>{{label}}</option>
-			{{/each}}
-		</select>
-	</div>
-	{{!-- 
-	  | SAP form field that allows multiple selections.  See above regarding use of JQuery plugin
-	  +--}}
-	<div class="form-group">
-		<label for="sap-select">SAP:</label> 
-		{{#unless hasOptions 'SAP'}}
-			<span class="warning clearfix">No labels in common with other conversation member(s)</span>
-		{{/unless}}
-		<select {{selectDisabled 'SAP'}} id="sap-select" multiple class="chosen-select form-control hidden" data-toggle="tooltip" title="SAP label(s) in common with conversation members">
-			{{#each sapLabels}}
-				<option value="{{_id}}" {{optionSelected}} {{optionDisabled}}>{{label}}</option>
-			{{/each}}
-		</select>
-	</div>
-	{{!-- 
-	  | SCI form field that allows multiple selections.  See above regarding use of JQuery plugin
-	  +--}}
-	<div class="form-group">
-		<label for="sci-select">SCI:</label>
-		{{#unless hasOptions 'SCI'}}
-			<span class="warning clearfix">No labels in common with other conversation member(s)</span>
-		{{/unless}}
-		<select {{selectDisabled 'SCI'}} id="sci-select" multiple class="chosen-select form-control hidden" data-toggle="tooltip" title="SCI label(s) in common with conversation members">
-			{{#each sciLabels}}
-				<option value="{{_id}}" {{optionSelected}} {{optionDisabled}}>{{label}}</option>
-			{{/each}}
-		</select>
-	</div>
-	{{!-- 
-	  | Release Caveat form field that allows multiple selections.  See above regarding use of JQuery plugin
-	  +--}}
-	<div class="form-group">
-		<label for="release-caveat-select">Release Caveat:</label>
-		{{!-- 
-		  | all Release Caveats are options, but System, current user, and common to all members are selected by 
-		  | default and cannot be removed
-		  +--}}
-		<select {{selectDisabled 'Release Caveat'}} id="release-caveat-select" multiple class="chosen-select form-control hidden" data-toggle="tooltip" title="Release Caveat label(s) in common with conversation members">
-			{{#each releaseCaveatLabels}}
-				<option value="{{_id}}" {{optionSelected}} {{optionDisabled}}>{{trigraph}}</option>
-			{{/each}}
-		</select>
-	</div>
+	<form id="chosenform" class="form-horizontal">
+		<div class="form-group">
+			<label for="classification-select" >Classification:</label>
+                    	<div class="selectContainer">
+				<select id="classification-select" class="form-control chosen-select" data-toggle="tooltip" title="Classification(s) in common with conversation members">
+					{{#each classificationLabels}}
+						<option value="{{_id}}" {{optionSelected}} {{optionDisabled}}>{{label}}</option>
+					{{/each}}
+				</select>
+			</div>
+		</div>
+            	<div class="form-group">
+			<label for="sap-select" >SAP:</label>
+			{{#unless hasOptions 'SAP'}}
+				<span class="warning clearfix">No labels in common with other conversation member(s)</span>
+			{{/unless}}
+                    	<div class="selectContainer">
+				<select {{selectDisabled 'SAP'}} id="sap-select" multiple class="form-control chosen-select hidden" data-toggle="tooltip" title="SAP label(s) in common with conversation members">
+					{{#each sapLabels}}
+						<option value="{{_id}}" {{optionSelected}} {{optionDisabled}}>{{label}}</option>
+					{{/each}}
+				</select>
+			</div>
+		</div>
+            	<div class="form-group">
+
+	    		<label for="sci-select" >SCI:</label>
+			{{#unless hasOptions 'SCI'}}
+				<span class="warning clearfix">No labels in common with other conversation member(s)</span>
+			{{/unless}}
+                    	<div class="selectContainer">
+				<select {{selectDisabled 'SCI'}} id="sci-select" multiple class="form-control chosen-select hidden" data-toggle="tooltip" title="SCI label(s) in common with conversation members">
+					{{#each sciLabels}}
+						<option value="{{_id}}" {{optionSelected}} {{optionDisabled}}>{{label}}</option>
+					{{/each}}
+				</select>
+		    	</div>
+		</div>
+            	<div class="form-group">
+	    		<label for="release-caveat-select" >Release Caveat:</label>
+			{{!--
+			  | all Release Caveats are options, but System, current user, and common to all members are selected by
+			  | default and cannot be removed
+			  +--}}
+                    	<div class="selectContainer">
+				<select {{selectDisabled 'Release Caveat'}} id="release-caveat-select" multiple class="form-control chosen-select hidden" data-toggle="tooltip" title="Release Caveat label(s) in common with conversation members">
+					{{#each releaseCaveatLabels}}
+						<option value="{{_id}}" {{optionSelected}} {{optionDisabled}}>{{trigraph}}</option>
+					{{/each}}
+				</select>
+			</div>
+		</div>
+	</form>
 </template>

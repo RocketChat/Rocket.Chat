@@ -11,6 +11,9 @@
 				<label for="who">{{_ "With_whom" }}</label>
 				{{> inputAutocomplete settings=autocompleteSettings id="who" class="required search" autocomplete="off"}}
 			</div>
+			{{#if securityLabelsInitialized}}
+				{{> securityLabels securityLabelsContext}}
+			{{/if}}
 			{{#if error}}
 				<div class="input-error">
 					<strong>Oops!</strong>

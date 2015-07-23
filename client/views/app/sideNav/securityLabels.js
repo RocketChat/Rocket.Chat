@@ -144,5 +144,12 @@ Template.securityLabels.onRendered( function() {
 		// placeholder this may be clipped, but if we extend then the
 		// input box creates new line before necessary and looks odd
 		placeholder_text_multiple : 'optional'
-	}).change( Template.instance().labelSelectionChanged );
+	}).change( Template.instance().labelSelectionChanged )
+	.on("chosen:showing_dropdown", function () {
+		$(this).parent().find(".chosen-drop").css("display", "block");
+	})
+	.on("chosen:hiding_dropdown", function () {
+		$(this).parent().find(".chosen-drop").css("display", "none");
+	});
+
 });

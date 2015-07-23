@@ -20,6 +20,9 @@
 					{{/each}}
 				</ul>
 			</div>
+			{{#if securityLabelsInitialized}}
+				{{> securityLabels securityLabelsContext}}
+			{{/if}}
 			{{#if error}}
 				<div class="input-error">
 					<strong>Ops!</strong>
