@@ -9,6 +9,7 @@ Package.onUse(function(api) {
 	api.versionsFrom('1.0');
 
 	api.use([
+		'reactive-dict',
 		'coffeescript',
 		'underscore',
 		'underscorestring:underscore.string'
@@ -23,7 +24,10 @@ Package.onUse(function(api) {
 		'settings/lib/settings.coffee',
 		'settings/lib/rocketchat.coffee'
 	], ['server', 'client']);
+
 	api.addFiles('settings/client/startup.coffee', ['client']);
+	api.addFiles('settings/client/rocketchat.coffee', ['client']);
+
 	api.addFiles([
 		'settings/server/methods.coffee',
 		'settings/server/publication.coffee',
