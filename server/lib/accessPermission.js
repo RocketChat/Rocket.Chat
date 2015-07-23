@@ -37,6 +37,9 @@ Jedis.AccessPermission = function(ids) {
 		? ids
 		: AccessPermissions.find({_id: {$in : ids}}).fetch();
 
+	if( perms.length !== ids.length ) {
+		throw new Error('Invalid access permission id');
+	}
 	// Group by types.
 	perms.reduce(function(o, perm) {
 		var type = perm.type;
