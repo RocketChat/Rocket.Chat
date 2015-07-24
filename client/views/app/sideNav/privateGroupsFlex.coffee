@@ -56,9 +56,11 @@ Template.privateGroupsFlex.events
 
 	'click .cancel-pvt-group': (e, instance) ->
 		SideNav.closeFlex()
+		instance.clearForm()
 
 	'click header': (e, instance) ->
 		SideNav.closeFlex()
+		instance.clearForm()
 
 	'mouseenter header': ->
 		SideNav.overArrow()
