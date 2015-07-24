@@ -5,6 +5,9 @@ Template.privateGroupsFlex.helpers
 	name: ->
 		return Template.instance().selectedUserNames[this.valueOf()]
 
+	groupName: ->
+		return Template.instance().groupName.get()
+
 	error: ->
 		return Template.instance().error.get()
 
@@ -53,9 +56,11 @@ Template.privateGroupsFlex.events
 
 	'click .cancel-pvt-group': (e, instance) ->
 		SideNav.closeFlex()
+		instance.clearForm()
 
 	'click header': (e, instance) ->
 		SideNav.closeFlex()
+		instance.clearForm()
 
 	'mouseenter header': ->
 		SideNav.overArrow()
@@ -68,24 +73,33 @@ Template.privateGroupsFlex.events
 
 	'click .save-pvt-group': (e, instance) ->
 		err = SideNav.validate()
+		instance.groupName.set instance.find('#pvt-group-name').value
 		if not err
 			Meteor.call 'createPrivateGroup', instance.find('#pvt-group-name').value, instance.selectedUsers.get(), (err, result) ->
 				if err
+					if err.error is 'name-invalid'
+						instance.error.set({ invalid: true })
+						return
+					if err.error is 'duplicate-name'
+						instance.error.set({ duplicate: true })
+						return
 					return toastr.error err.reason
 				SideNav.closeFlex()
 				instance.clearForm()
 				FlowRouter.go 'room', { _id: result.rid }
 		else
-			Template.instance().error.set(err)
+			Template.instance().error.set({fields: err})
 
 Template.privateGroupsFlex.onCreated ->
 	instance = this
 	instance.selectedUsers = new ReactiveVar []
 	instance.selectedUserNames = {}
 	instance.error = new ReactiveVar []
+	instance.groupName = new ReactiveVar ''
 
 	instance.clearForm = ->
 		instance.error.set([])
+		instance.groupName.set('')
 		instance.selectedUsers.set([])
 		instance.find('#pvt-group-name').value = ''
 		instance.find('#pvt-group-members').value = ''
