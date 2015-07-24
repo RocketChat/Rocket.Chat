@@ -5,6 +5,9 @@ Meteor.methods
 
 		console.log '[methods] createPrivateGroup -> '.green, 'userId:', Meteor.userId(), 'arguments:', arguments
 
+		if not /^[0-9a-z-_]+$/i.test name
+			throw new Meteor.Error 'name-invalid'
+
 		now = new Date()
 
 		me = Meteor.user()
@@ -12,6 +15,10 @@ Meteor.methods
 		members.push me.username
 
 		name = s.slugify name
+
+		# avoid duplicate names
+		if ChatRoom.findOne({name:name})
+			throw new Meteor.Error 'duplicate-name'
 
 		# create new room
 		rid = ChatRoom.insert
