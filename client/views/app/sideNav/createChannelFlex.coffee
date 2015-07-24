@@ -84,6 +84,9 @@ Template.createChannelFlex.events
 					if err.error is 'name-invalid'
 						instance.error.set({ invalid: true })
 						return
+					if err.error is 'duplicate-name'
+						instance.error.set({ duplicate: true })
+						return
 					else
 						return toastr.error err.reason
 

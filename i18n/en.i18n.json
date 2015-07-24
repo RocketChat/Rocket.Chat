@@ -40,6 +40,8 @@
   "Created_at" : "Created at",
   "Direct_Messages" : "Direct Messages",
   "Deleted" : "Deleted!",
+  "Duplicate_private_group_name" : "A Private Group with the name, '%s', exists",
+  "Duplicate_channel_name" : "A Channel with the name, '%s', exists",
   "edited" : "edited",
   "Email_or_username" : "Email or username",
   "Email_verified" : "Email verified",
