@@ -56,10 +56,12 @@ Template.createChannelFlex.events
 		$('#channel-members').focus()
 
 	'click header': (e, instance) ->
-		SideNav.closeFlex()
+		SideNav.closeFlex ->
+			instance.clearForm()
 
 	'click .cancel-channel': (e, instance) ->
-		SideNav.closeFlex()
+		SideNav.closeFlex ->
+			instance.clearForm()
 
 	'mouseenter header': ->
 		SideNav.overArrow()
@@ -90,9 +92,8 @@ Template.createChannelFlex.events
 					else
 						return toastr.error err.reason
 
-				SideNav.closeFlex()
-
-				instance.clearForm()
+				SideNav.closeFlex ->
+					instance.clearForm()
 
 				FlowRouter.go 'room', { _id: result.rid }
 		else

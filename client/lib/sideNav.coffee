@@ -42,7 +42,7 @@
 			return invalid
 		return false;
 
-	toggleFlex = (status) ->
+	toggleFlex = (status, callback = null) ->
 		return if animating == true
 		animating = true
 		if flexNav.opened or status? is -1
@@ -50,6 +50,7 @@
 			flexNav.addClass "hidden"
 			setTimeout ->
 				animating = false
+				callback?()
 			, 350
 			return
 		if not flexNav.opened or status? is 1
@@ -60,19 +61,19 @@
 			, 50
 			setTimeout ->
 				animating = false
+				callback?()
 			, 500
 
-
-	openFlex = ->
+	openFlex = (callback = null) ->
 		return if animating == true
 		toggleArrow 1
-		toggleFlex 1
+		toggleFlex 1, callback
 		focusInput()
 
-	closeFlex = ->
+	closeFlex = (callback = null) ->
 		return if animating == true
 		toggleArrow -1
-		toggleFlex -1
+		toggleFlex -1, callback
 
 	flexStatus = ->
 		return flexNav.opened
