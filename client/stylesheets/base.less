@@ -1,9 +1,6 @@
-//
-// ----------------
-//
+@import url(//fonts.googleapis.com/css?family=Roboto:500,300,700,400&subset=latin,cyrillic-ext,greek-ext,greek,vietnamese,latin-ext,cyrillic);
 @import "global/_variables.less";
 @import "utils/_lesshat.import.less";
-@import "utils/_fonts.import.less";
 @import "utils/_reset.import.less";
 @import "utils/_keyframes.import.less";
 @import "utils/_preloader.import.less";
@@ -34,7 +31,8 @@
 
 a {
 	text-decoration: none;
-	&:hover, &:active {
+	&:hover,
+	&:active {
 		color: @primary-font-color;
 		text-decoration: none;
 	}
@@ -80,7 +78,7 @@ blockquote {
 	}
 }
 
-.flex-center{
+.flex-center {
 	display: -webkit-flex;
 	display: flex;
 	-webkit-align-items: center;
@@ -619,7 +617,8 @@ label.required:after {
 		margin: 5px 0;
 		background-color: #333;
 		opacity: .8;
-		.transition(transform .2s ease-out, width .2s ease-out);
+		.transition(transform .2s ease-out,
+		width .2s ease-out);
 		&:nth-child(1) {
 			//	.transition-delay(.06s);
 		}
@@ -634,24 +633,30 @@ label.required:after {
 	width: 25px;
 	height: 25px;
 	z-index: 100;
-	.calc(top, ~"50% - 13px");
-	&:before, &:after {
+	.calc(top,
+	~"50% - 13px");
+	&:before,
+	&:after {
 		content: " ";
 		display: block;
 		background-color: #aaa;
 		width: 2px;
 		height: 10px;
 		position: absolute;
-		.calc(top, ~"50% - 5px");
-		.calc(left, ~"50% - 5px");
+		.calc(top,
+		~"50% - 5px");
+		.calc(left,
+		~"50% - 5px");
 	}
 	&:before {
 		.transform(rotate(135deg) translateX(-4px));
-		.transition(transform .185s ease-out .085s, background .15s ease-out);
+		.transition(transform .185s ease-out .085s,
+		background .15s ease-out);
 	}
 	&:after {
 		.transform(rotate(-135deg) translateX(-4px));
-		.transition(transform .185s ease-out, background .15s ease-out);
+		.transition(transform .185s ease-out,
+		background .15s ease-out);
 	}
 	&.left {
 		&:before {
@@ -669,23 +674,29 @@ label.required:after {
 	height: 25px;
 	z-index: 100;
 	position: relative;
-	&:before, &:after {
+	&:before,
+	&:after {
 		content: " ";
 		display: block;
 		background-color: #aaa;
 		width: 2px;
 		height: 10px;
 		position: absolute;
-		.calc(top, ~"50% - 5px");
-		.calc(left, ~"50% - 1px");
-		.transform-origin(50%, 50%);
+		.calc(top,
+		~"50% - 5px");
+		.calc(left,
+		~"50% - 1px");
+		.transform-origin(50%,
+		50%);
 	}
 	&:after {
 		.transform(rotate(90deg));
-		.transition(transform .315s ease-out .1s, background .15s ease-out);
+		.transition(transform .315s ease-out .1s,
+		background .15s ease-out);
 	}
 	&:before {
-		.transition(transform .315s ease-out .3s, background .15s ease-out);
+		.transition(transform .315s ease-out .3s,
+		background .15s ease-out);
 	}
 	&:hover {
 		&:before {
@@ -717,7 +728,12 @@ a.github-fork {
 	text-transform: uppercase;
 	font-weight: 400 !important;
 	.transform(rotate(45deg) translateY(0));
-	.transition(background-color .2s ease-out, transform .45s cubic-bezier(.15, 0, 0, 1) 2.15s, opacity .2s ease-out 2.15);
+	.transition(background-color .2s ease-out,
+	transform .45s cubic-bezier(.15,
+	0,
+	0,
+	1) 2.15s,
+	opacity .2s ease-out 2.15);
 	&:hover {
 		background-color: #4b4b4b;
 		color: #FFF;
@@ -873,7 +889,8 @@ a.github-fork {
 			height: 100%;
 			.flex-center;
 			flex-flow: row nowrap;
-			.calc(width, ~"100% - 60px");
+			.calc(width,
+			~"100% - 60px");
 		}
 		h4 {
 			display: block;
@@ -921,8 +938,12 @@ a.github-fork {
 		left: 0;
 		padding-top: 15px;
 		width: @rooms-box-width;
-		.calc(height, ~'100% - ' @header-min-height + @footer-min-height);
-		.transition(transform .3s cubic-bezier(.5, 0, .1, 1));
+		.calc(height,
+		~'100% - ' @header-min-height + @footer-min-height);
+		.transition(transform .3s cubic-bezier(.5,
+		0,
+		.1,
+		1));
 		&._hidden {
 			.transform(translateX(-100%));
 		}
@@ -939,7 +960,8 @@ a.github-fork {
 				z-index: 5;
 				position: absolute;
 				left: 18px;
-				.calc(top, ~"50% - 8px");
+				.calc(top,
+				~"50% - 8px");
 			}
 			&.offline {
 				&:after {
@@ -1037,18 +1059,30 @@ a.github-fork {
 	overflow-x: hidden;
 	width: @rooms-box-width;
 	color: @tertiary-font-color;
-	.transition(transform .3s cubic-bezier(.5, 0, .1, 1));
-	.custom-scroll(transparent, rgba(255, 255, 255, 0.05));
+	.transition(transform .3s cubic-bezier(.5,
+	0,
+	.1,
+	1));
+	.custom-scroll(transparent,
+	rgba(255,
+	255,
+	255,
+	0.05));
 	&.hidden {
 		.transform(translateX(-100%));
-		header, footer, .content {
+		header,
+		footer,
+		.content {
 			.transform(translateX(-100%));
 		}
 	}
 	header,
 	footer,
 	.content {
-		.transition(transform .425s cubic-bezier(0, .8, .05, 1));
+		.transition(transform .425s cubic-bezier(0,
+		.8,
+		.05,
+		1));
 	}
 	> section {
 		&:extend(.fill-all);
@@ -1110,7 +1144,8 @@ a.github-fork {
 		direction: rtl;
 		position: absolute;
 		top: @header-min-height;
-		.calc(height, ~"100% - " @header-min-height + @footer-min-height);
+		.calc(height,
+		~"100% - " @header-min-height + @footer-min-height);
 		width: 100%;
 		overflow-x: hidden;
 		overflow-y: scroll;
@@ -1118,7 +1153,11 @@ a.github-fork {
 		-webkit-overflow-scrolling: touch;
 		box-shadow: 0 0 5px rgba(0, 0, 0, 0.4) inset;
 		padding: 35px 10px;
-		.custom-scroll(transparent, rgba(255, 255, 255, 0.05));
+		.custom-scroll(transparent,
+		rgba(255,
+		255,
+		255,
+		0.05));
 		.transition-delay(.135s);
 		background-color: @primary-background-color;
 		&.no-shadow {
@@ -1204,7 +1243,8 @@ a.github-fork {
 		direction: rtl;
 		position: absolute;
 		top: @header-min-height;
-		.calc(height, ~"100% - " @header-min-height + @footer-min-height);
+		.calc(height,
+		~"100% - " @header-min-height + @footer-min-height);
 		width: 100%;
 		overflow-x: hidden;
 		overflow-y: auto;
@@ -1212,7 +1252,11 @@ a.github-fork {
 		-webkit-overflow-scrolling: touch;
 		box-shadow: 0 0 5px rgba(0, 0, 0, 0.4) inset;
 		background-color: lighten(@primary-background-color, 2%);
-		.custom-scroll(transparent, rgba(255, 255, 255, 0.05));
+		.custom-scroll(transparent,
+		rgba(255,
+		255,
+		255,
+		0.05));
 		> .wrapper {
 			direction: ltr;
 			padding-left: 8px;
@@ -1266,8 +1310,10 @@ a.github-fork {
 		right: 8px;
 		z-index: 1000;
 		cursor: pointer;
-		&.hover, &:hover {
-			&:before, &:after {
+		&.hover,
+		&:hover {
+			&:before,
+			&:after {
 				background-color: rgba(255, 255, 255, 0.85);
 			}
 		}
@@ -1376,7 +1422,8 @@ a.github-fork {
 			overflow: hidden;
 			text-overflow: ellipsis;
 			vertical-align: middle;
-			.remove, .erase {
+			.remove,
+			.erase {
 				position: absolute;
 				display: block;
 				right: -18px;
@@ -1384,7 +1431,8 @@ a.github-fork {
 				color: #666;
 				opacity: 0;
 				.transform(translateX(-10px));
-				.transition(opacity .15s ease .35s, transform .12s ease-out .35s);
+				.transition(opacity .15s ease .35s,
+				transform .12s ease-out .35s);
 			}
 			&:hover {
 				.opt {
@@ -1450,7 +1498,8 @@ a.github-fork {
 			display: block;
 			top: 7px;
 			.transform(translateX(-10px));
-			.transition(opacity .12s ease .25s, transform .15s ease-out .25s);
+			.transition(opacity .12s ease .25s,
+			transform .15s ease-out .25s);
 			i {
 				margin: 0 1px;
 				color: rgba(255, 255, 255, 0.5);
@@ -1496,8 +1545,10 @@ a.github-fork {
 		margin-top: 60px;
 		padding-top: 15px;
 		-webkit-overflow-scrolling: touch;
-		.calc(height, ~'100% - 60px');
-		.custom-scroll(transparent, #EAEAEA);
+		.calc(height,
+		~'100% - 60px');
+		.custom-scroll(transparent,
+		#EAEAEA);
 	}
 }
 
@@ -1526,7 +1577,9 @@ a.github-fork {
 		font-size: 22px;
 		font-weight: 500;
 		line-height: 29px;
-		.icon-at, .icon-hash, .icon-lock {
+		.icon-at,
+		.icon-hash,
+		.icon-lock {
 			margin-right: -7px;
 		}
 		.icon-star,
@@ -1539,7 +1592,8 @@ a.github-fork {
 		display: none;
 	}
 	input[type='text'] {
-		.calc(width, ~'100% - 100px');
+		.calc(width,
+		~'100% - 100px');
 		vertical-align: top;
 		margin-top: -4px;
 		margin-left: -3px;
@@ -1559,17 +1613,23 @@ a.github-fork {
 	margin-left: @rooms-box-width;
 	margin-top: 0;
 	height: 100%;
-	.calc(width, ~'100% - ' @rooms-box-width);
-	.transition(width .25s cubic-bezier(.5, 0, .1, 1));
+	.calc(width,
+	~'100% - ' @rooms-box-width);
+	.transition(width .25s cubic-bezier(.5,
+	0,
+	.1,
+	1));
 	&.flex-opened {
-		.calc(width, ~'100% - ' @rooms-box-width + @flex-tab-width);
+		.calc(width,
+		~'100% - ' @rooms-box-width + @flex-tab-width);
 		margin-right: 420px;
 		.flex-tab {
 			.transform(translateX(0));
 		}
 	}
 	&.layout1 {
-		.calc(width, ~'100% - ' @rooms-box-width + @flex-tab-webrtc-width);
+		.calc(width,
+		~'100% - ' @rooms-box-width + @flex-tab-webrtc-width);
 		margin-right: 420px;
 		.flex-tab {
 			max-width: @flex-tab-webrtc-width;
@@ -1577,7 +1637,8 @@ a.github-fork {
 		}
 	}
 	&.layout2 {
-		.calc(width, ~'100% - ' @rooms-box-width + @flex-tab-webrtc-2-width);
+		.calc(width,
+		~'100% - ' @rooms-box-width + @flex-tab-webrtc-2-width);
 		margin-right: 420px;
 		.flex-tab {
 			max-width: @flex-tab-webrtc-2-width;
@@ -1687,7 +1748,8 @@ a.github-fork {
 				background-color: @secondary-font-color;
 				position: absolute;
 				right: -12px;
-				.calc(top, ~"50% - 2px");
+				.calc(top,
+				~"50% - 2px");
 			}
 			&:nth-last-child(1) {
 				&:after {
@@ -1698,7 +1760,8 @@ a.github-fork {
 		.info {
 			display: block;
 			float: left;
-			.calc(width, ~"100% - 150px");
+			.calc(width,
+			~"100% - 150px");
 			i {
 				margin-right: 5px;
 				width: 20px;
@@ -1757,7 +1820,8 @@ a.github-fork {
 		overflow-x: hidden;
 		word-wrap: break-word;
 		-webkit-overflow-scrolling: touch;
-		.custom-scroll(transparent, #EAEAEA);
+		.custom-scroll(transparent,
+		#EAEAEA);
 	}
 	.footer {
 		position: absolute;
@@ -1890,7 +1954,8 @@ a.github-fork {
 	margin: 60px 20px 0px 0px;
 	overflow: hidden;
 	width: 100%;
-	.calc(height, ~'100% - 120px');
+	.calc(height,
+	~'100% - 120px');
 	ul {
 		padding: 21px 0 10px;
 	}
@@ -1958,7 +2023,8 @@ a.github-fork {
 				font-size: 12px;
 				font-weight: 600;
 				text-align: center;
-				.calc(left, ~"50% - 70px");
+				.calc(left,
+				~"50% - 70px");
 				color: @secondary-font-color;
 				z-index: 10;
 				padding: 0 10px;
@@ -2084,7 +2150,10 @@ a.github-fork {
 	right: 0;
 	top: 0;
 	.transform(translateX(100%));
-	.transition(transform .25s cubic-bezier(.5, 0, .1, 1));
+	.transition(transform .25s cubic-bezier(.5,
+	0,
+	.1,
+	1));
 	.control {
 		height: 60px;
 		position: relative;
@@ -2092,7 +2161,8 @@ a.github-fork {
 		z-index: 100;
 		padding: 12px 30px 12px;
 		background-color: @secondary-background-color;
-		> a, > form {
+		> a,
+		> form {
 			float: left;
 		}
 		&:before {
@@ -2102,7 +2172,8 @@ a.github-fork {
 			position: absolute;
 			background-color: @tertiary-background-color;
 			bottom: 0px;
-			.calc(width, ~'100% - 30px');
+			.calc(width,
+			~'100% - 30px');
 		}
 		.button {
 			min-height: 36px;
@@ -2120,23 +2191,28 @@ a.github-fork {
 			color: @secondary-font-color;
 			cursor: pointer;
 			.transform(translateX(-27px));
-			.transition(transform .25s ease-out .475s, background .075s ease-out .5s);
+			.transition(transform .25s ease-out .475s,
+			background .075s ease-out .5s);
 			&:hover {
 				.arrow {
 					.arrow {
-						&:before, &:after {
+						&:before,
+						&:after {
 							background-color: #4a4a4a;
 						}
 					}
 				}
 			}
 			.arrow {
-				&:before, &:after {
+				&:before,
+				&:after {
 					background-color: #7a7a7a;
 				}
 			}
 			i {
-				.transform-origin(50%, 50%, 0);
+				.transform-origin(50%,
+				50%,
+				0);
 				.transition(transform .3s ease-out);
 				height: 12.5px;
 				vertical-align: top;
@@ -2148,7 +2224,8 @@ a.github-fork {
 				.transform(translateX(0));
 				&:hover {
 					.arrow {
-						&:before, &:after {
+						&:before,
+						&:after {
 							background-color: #7a7a7a;
 						}
 					}
@@ -2172,14 +2249,20 @@ a.github-fork {
 	}
 	.content {
 		&:extend(.fill-all);
-		.custom-scroll(transparent, #DADADA);
+		.custom-scroll(transparent,
+		#DADADA);
 		margin-top: 60px;
 		overflow-x: hidden;
 		overflow-y: auto;
 		-webkit-overflow-scrolling: touch;
-		.calc(height, ~"100% - " @footer-min-height + @header-min-height);
+		.calc(height,
+		~"100% - " @footer-min-height + @header-min-height);
 		> div {
-			.transition(transform .45s cubic-bezier(.5, 0, 0, 1), opacity .125s ease-out .1s);
+			.transition(transform .45s cubic-bezier(.5,
+			0,
+			0,
+			1),
+			opacity .125s ease-out .1s);
 		}
 		> .-hidden {
 			.transform(translateX(100%));
@@ -2287,7 +2370,8 @@ a.github-fork {
 	.info {
 		margin-left: 120px;
 		white-space: normal;
-		.calc(width, ~'100% - 120px');
+		.calc(width,
+		~'100% - 120px');
 		h3 {
 			font-size: 24px;
 			margin-bottom: 8px;
@@ -2352,7 +2436,8 @@ a.github-fork {
 			color: #6f6f6f;
 			line-height: 22px;
 			position: relative;
-			.transition(background .18s ease, colo .18s ease);
+			.transition(background .18s ease,
+			colo .18s ease);
 			&:before {
 				content: attr(data-stats);
 				position: absolute;
@@ -2484,7 +2569,8 @@ a.github-fork {
 			position: relative;
 			padding-left: 10px;
 			color: @secondary-font-color;
-			.calc(width, ~"100% - 45px");
+			.calc(width,
+			~"100% - 45px");
 		}
 	}
 	a {
@@ -2558,21 +2644,29 @@ a.github-fork {
 			main {
 				position: absolute;
 				overflow-y: scroll;
-				.custom-scroll(transparent, #CFCFCF);
-				.calc(height, ~'100% - 112px');
+				.custom-scroll(transparent,
+				#CFCFCF);
+				.calc(height,
+				~'100% - 112px');
 			}
 		}
 	}
 	&.opened {
 		.animation(fadeIn .1s ease-out forwards);
 		.modal {
-			.animation(modalEnter .35s cubic-bezier(.5, 0, .1, 1) forwards .1s);
+			.animation(modalEnter .35s cubic-bezier(.5,
+			0,
+			.1,
+			1) forwards .1s);
 		}
 	}
 	&.closed {
 		.animation(fadeOut .2s ease-out forwards);
 		.modal {
-			.animation(modalExit .25s cubic-bezier(.5, 0, .1, 1) forwards);
+			.animation(modalExit .25s cubic-bezier(.5,
+			0,
+			.1,
+			1) forwards);
 		}
 	}
 	&.overflow {
@@ -2804,12 +2898,10 @@ a.github-fork {
 					color: #b40202;
 				}
 				/* Firefox 18- */
-
 				&::-moz-placeholder {
 					color: #b40202;
 				}
 				/* Firefox 19+ */
-
 				&:-ms-input-placeholder {
 					color: #b40202;
 				}
@@ -2846,7 +2938,9 @@ a.github-fork {
 	min-height: 100%;
 	z-index: 101;
 	background-color: darken(@primary-background-color, 10%);
-	.background-image(linear-gradient(darken(@primary-background-color, 10%), @primary-background-color));
+	.background-image(linear-gradient(darken(@primary-background-color,
+	10%),
+	@primary-background-color));
 	.wrapper {
 		text-align: center;
 		padding: 45px 0 35px;
@@ -2894,11 +2988,17 @@ a.github-fork {
 		.button {
 			display: block;
 			position: absolute;
-			.calc(top, ~"50% - 17px");
-			.calc(left, ~"50% - 94px");
+			.calc(top,
+			~"50% - 17px");
+			.calc(left,
+			~"50% - 94px");
 			.transform(scale(0.75));
 			opacity: 0;
-			.transition(transform .2s cubic-bezier(0, .4, .4, 1.5), opacity .1s ease-out);
+			.transition(transform .2s cubic-bezier(0,
+			.4,
+			.4,
+			1.5),
+			opacity .1s ease-out);
 		}
 		&:hover {
 			.button {
@@ -3014,7 +3114,8 @@ a.github-fork {
 	padding: 12px;
 	background-color: @secondary-background-color;
 	border: 1px solid darken(@secondary-background-color, 10%);
-	.transition(background-color .15s ease-out, border-color .15s ease-out);
+	.transition(background-color .15s ease-out,
+	border-color .15s ease-out);
 	&:first-child {
 		margin-top: 10px;
 	}
@@ -3092,7 +3193,8 @@ a.github-fork {
 @media all and(max-width: 1100px) {
 	#rocket-chat {
 		.flex-opened {
-			.calc(width, ~'100% - ' @rooms-box-width);
+			.calc(width,
+			~'100% - ' @rooms-box-width);
 		}
 	}
 }
@@ -3132,7 +3234,9 @@ a.github-fork {
 					&:nth-child(1) {
 						opacity: 1;
 						width: 10px;
-						.transform-origin(50%, 50%, 0);
+						.transform-origin(50%,
+						50%,
+						0);
 						.transform(translateY(3px) translateX(10px) rotate(45deg));
 					}
 					&:nth-child(2) {
@@ -3141,7 +3245,9 @@ a.github-fork {
 					&:nth-child(3) {
 						opacity: 1;
 						width: 10px;
-						.transform-origin(50%, 50%, 0);
+						.transform-origin(50%,
+						50%,
+						0);
 						.transform(translateX(10px) translateY(-3px) rotate(-45deg));
 					}
 				}
@@ -3161,7 +3267,8 @@ a.github-fork {
 		}
 		.info {
 			margin-left: 75px;
-			.calc(width, ~'100% - 120px');
+			.calc(width,
+			~'100% - 120px');
 			h3 {
 				font-size: 20px;
 			}
