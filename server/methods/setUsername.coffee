@@ -13,7 +13,7 @@ Meteor.methods
 		if not usernameIsAvaliable username
 			throw new Meteor.Error 'username-unavaliable'
 
-		if not /^[0-9a-z-_.]+$/.test username
+		if not /^[0-9a-zA-Z-_.]+$/.test username
 			throw new Meteor.Error 'username-invalid'
 
 		if not user.username?
@@ -58,5 +58,4 @@ slug = (text) ->
 usernameIsAvaliable = (username) ->
 	if username.length < 1
 		return false
-
-	return not Meteor.users.findOne({username: username})?
+	return not Meteor.users.findOne({username: {$regex : new RegExp(username, "i") }})
