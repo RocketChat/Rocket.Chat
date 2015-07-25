@@ -61,7 +61,7 @@ Future = Npm.require('fibers/future');
                 "sn" : "last_name", 
                 "access" : [["access"]]
                 },
-            "uid" : ["_id", "username"],
+            "uid" : ["_id", "username", "name" ],
             "emails" : [{
                 "mail" : "address"
             }]
