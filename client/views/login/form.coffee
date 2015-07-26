@@ -78,7 +78,7 @@ Template.loginForm.events
 						else
 							toastr.error error.reason
 						return
-					# FlowRouter.go 'index'
+					FlowRouter.go 'index'
 
 	'click .register': ->
 		Template.instance().state.set 'register'
