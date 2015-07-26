@@ -25,7 +25,7 @@ rocketchat:emojione
 rocketchat:favico
 rocketchat:file
 rocketchat:highlight
-rocketchat:hubot
+#rocketchat:hubot
 #rocketchat:irc
 rocketchat:ldap
 rocketchat:markdown
