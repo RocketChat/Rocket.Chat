@@ -39,7 +39,7 @@ Api.addRoute 'rooms/:id/leave', authRequired: true,
 
 # get messages in a room
 Api.addRoute 'rooms/:id/messages', authRequired: true,
-	post: ->
+	get: ->
 		msgs = ChatMessage.find({rid: @urlParams.id, _deleted: {$ne: true}}, {sort: {ts: -1}}, {limit: 50}).fetch()
 
 		if msgs
