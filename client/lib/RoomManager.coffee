@@ -65,8 +65,6 @@
 					if msg._deleted?
 						return ChatMessageHistory.remove _id: msg._id
 
-					return if msg.u?._id is Meteor.userId()
-
 					ChatMessageHistory.upsert { _id: msg._id }, msg
 
 				computation.invalidate()
