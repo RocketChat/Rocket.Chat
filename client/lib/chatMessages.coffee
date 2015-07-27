@@ -45,7 +45,7 @@
 		return if element.classList.contains("system")
 		clearEditing()
 		id = element.getAttribute("id")
-		message = ChatMessageHistory.findOne { _id: id, 'u._id': Meteor.userId() }
+		message = ChatMessage.findOne { _id: id, 'u._id': Meteor.userId() }
 		input.value = message.msg
 		editing.element = element
 		editing.index = index or getEditingIndex(element)

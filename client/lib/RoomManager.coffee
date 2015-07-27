@@ -23,7 +23,7 @@
 			delete openedRooms[rid].timeout
 			delete openedRooms[rid].dom
 
-			ChatMessageHistory.remove rid: rid
+			ChatMessage.remove rid: rid
 
 	computation = Tracker.autorun ->
 		for rid, record of openedRooms when record.active is true
@@ -63,9 +63,9 @@
 
 				msgStream.on rid, (msg) ->
 					if msg._deleted?
-						return ChatMessageHistory.remove _id: msg._id
+						return ChatMessage.remove _id: msg._id
 
-					ChatMessageHistory.upsert { _id: msg._id }, msg
+					ChatMessage.upsert { _id: msg._id }, msg
 
 				computation.invalidate()
 
