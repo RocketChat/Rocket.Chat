@@ -938,6 +938,15 @@ a.github-fork {
 		left: 0;
 		padding-top: 15px;
 		width: @rooms-box-width;
+		overflow-x: hidden;
+		overflow-y: auto;
+		-webkit-overflow-scrolling: touch;
+		.custom-scroll(transparent,
+		rgba(255,
+		255,
+		255,
+		0.05));
+		direction: rtl;
 		.calc(height,
 		~'100% - ' @header-min-height + @footer-min-height);
 		.transition(transform .3s cubic-bezier(.5,
@@ -946,6 +955,9 @@ a.github-fork {
 		1));
 		&._hidden {
 			.transform(translateX(-100%));
+		}
+		> .wrapper {
+			direction: ltr;
 		}
 		.status {
 			padding-left: 38px;
