@@ -32,15 +32,11 @@ Meteor.startup ->
 
 	options = {}
 
-	console.log 'Message.find(',JSON.stringify(filter, null, '  '),JSON.stringify(options, null, '  '),')'
-
 	ChatMessage.find(filter, options).observe
 		added: (record) ->
-			console.log 'added ->'.red,record
 			msgStream.emit record.rid, record
 
 		changed: (record) ->
-			console.log 'changed ->'.red,record
 			msgStream.emit record.rid, record
 
 	ChatMessage.find({ _deleted: true }, { fields: { rid: 1, _id: 1 } }).observeChanges
