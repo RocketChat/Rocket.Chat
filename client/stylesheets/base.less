@@ -938,6 +938,8 @@ a.github-fork {
 		left: 0;
 		padding-top: 15px;
 		width: @rooms-box-width;
+		overflow-x: hidden;
+		overflow-y: scroll;
 		.calc(height,
 		~'100% - ' @header-min-height + @footer-min-height);
 		.transition(transform .3s cubic-bezier(.5,
