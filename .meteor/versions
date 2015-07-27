@@ -38,6 +38,7 @@ cosmos:browserify@0.5.0
 dandv:caret-position@2.1.1
 ddp@1.1.0
 deps@1.0.7
+dispatch:run-as-user@0.0.2
 ejson@1.0.6
 email@1.0.6
 facebook@1.2.0
@@ -86,6 +87,7 @@ momentjs:moment@2.10.5
 mongo@1.1.0
 mongo-livedata@1.0.8
 mrt:reactive-store@0.0.1
+nimble:restivus@0.8.1
 nooitaf:colors@0.0.2
 npm-bcrypt@0.7.8_2
 oauth@1.1.4
@@ -122,6 +124,7 @@ service-configuration@1.0.4
 session@1.1.0
 sha@1.0.3
 simple:highlight.js@1.0.9
+simple:json-routes@1.0.3
 spacebars@1.0.6
 spacebars-compiler@1.0.6
 srp@1.0.3
