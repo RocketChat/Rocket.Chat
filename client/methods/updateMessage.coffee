@@ -8,7 +8,7 @@ Meteor.methods
 			message.ets = new Date(Date.now() + TimeSync.serverOffset())
 			message = RocketChat.callbacks.run 'beforeSaveMessage', message
 
-			ChatMessageHistory.update
+			ChatMessage.update
 				_id: message.id
 				'u._id': Meteor.userId()
 			,
@@ -22,6 +22,6 @@ Meteor.methods
 
 		Tracker.nonreactive ->
 
-			ChatMessageHistory.remove
+			ChatMessage.remove
 				_id: message.id
 				'u._id': Meteor.userId()

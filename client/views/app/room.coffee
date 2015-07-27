@@ -24,7 +24,7 @@ Template.room.helpers
 
 	messagesHistory: ->
 		console.log 'room.helpers messagesHistory' if window.rocketDebug
-		return ChatMessageHistory.find { rid: this._id, t: { '$ne': 't' }  }, { sort: { ts: 1 } }
+		return ChatMessage.find { rid: this._id, t: { '$ne': 't' }  }, { sort: { ts: 1 } }
 
 	hasMore: ->
 		console.log 'room.helpers hasMore' if window.rocketDebug
