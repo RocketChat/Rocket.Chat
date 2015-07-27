@@ -168,4 +168,6 @@ OEmbed.RocketUrlParser = (message) ->
 		if changed is true
 			ChatMessage.update {_id: message._id}, { $set: { urls: message.urls } }
 
+	return message
+
 RocketChat.callbacks.add 'afterSaveMessage', OEmbed.RocketUrlParser, RocketChat.callbacks.priority.LOW
