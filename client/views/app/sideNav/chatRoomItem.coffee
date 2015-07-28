@@ -43,6 +43,14 @@ Template.chatRoomItem.rendered = ->
 		KonchatNotification.newRoom(this.data.rid)
 
 Template.chatRoomItem.events
+	'click .label-room': (e) ->
+		e.stopPropagation()
+		e.preventDefault()
+		SideNav.setFlex "privateGroupsFlex"
+		Session.set("Relabel_room",this.rid)
+		SideNav.openFlex()
+		console.log "Relabel a Room"
+
 	'click .hide-room': (e) ->
 		e.stopPropagation()
 		e.preventDefault()
