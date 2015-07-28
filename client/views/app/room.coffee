@@ -183,11 +183,20 @@ Template.room.helpers
 
 	roomUsers: ->
 		room = ChatRoom.findOne(this._id, { reactive: false })
+		users = []
+		onlineUsers = RoomManager.onlineUsers.get()
+
+		for username in room.usernames
+			if onlineUsers[username]?
+				users.push
+					username: username
+					status: onlineUsers[username]
+
 		ret =
 			_id: this._id
-			total: room?.usernames.length
-			totalOnline: 0
-			users: room.usernames
+			total: room.usernames.length
+			totalOnline: users.length
+			users: users
 
 		return ret
 
