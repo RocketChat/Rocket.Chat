@@ -54,7 +54,7 @@ Template.message.onViewRendered = (context) ->
 		ul = lastNode.parentElement
 		wrapper = ul.parentElement
 
-		if context.urls?.length > 0
+		if context.urls?.length > 0 and Template.oembedBaseWidget?
 			for item in context.urls
 				do (item) ->
 					urlNode = lastNode.querySelector('.body a[href="'+item.url+'"]')
