@@ -3,9 +3,6 @@ Api = new Restivus
 	prettyJson: true
 
 
-Api.addCollection ChatMessage
-Api.addCollection ChatRoom
-
 
 Api.addRoute 'version', authRequired: false,
 	get: ->
