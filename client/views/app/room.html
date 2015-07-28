@@ -119,14 +119,12 @@
 							</div>
 							<ul class='list cf_ lines'>
 								{{#each users}}
-									{{#with userActiveByUsername .}}
-										<li class='user-image user-card-room status-{{status}}'>
-											<a data-username="{{username}}" tabindex="0" title="{{username}}">
-												{{> avatar username=username}}
-												<p>{{username}}</p>
-											</a>
-										</li>
-									{{/with}}
+									<li class='user-image user-card-room status-{{status}}'>
+										<a data-username="{{username}}" tabindex="0" title="{{username}}">
+											{{> avatar username=username}}
+											<p>{{username}}</p>
+										</a>
+									</li>
 								{{/each}}
 							</ul>
 						{{/with}}
