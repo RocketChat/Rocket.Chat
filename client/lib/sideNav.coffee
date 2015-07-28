@@ -73,6 +73,7 @@
 		return if animating == true
 		toggleArrow -1
 		toggleFlex -1
+		setFlex ""
 
 	flexStatus = ->
 		return flexNav.opened

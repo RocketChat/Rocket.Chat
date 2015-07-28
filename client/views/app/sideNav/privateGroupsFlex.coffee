@@ -96,12 +96,14 @@ Template.privateGroupsFlex.events
 			Template.instance().error.set(err)
 
 Template.privateGroupsFlex.onRendered ->
-	roomData = ChatRoom.findOne Session.get('Relabel_room'), { fields: { usernames: 1, t: 1, name: 1 } }
-	console.log 'privateGroupsFlex.onRendered'
-	console.log roomData
-	if roomData
-		this.find('#pvt-group-name').value = roomData.name
-		this.find('#pvt-group-members').value = roomData.usernames
+	roomToRelabel = Session.get 'Relabel_room'
+	if roomToRelabel?
+		Meteor.subscribe 'room', roomToRelabel
+		roomData = ChatRoom.findOne roomToRelabel
+		console.log roomData
+		if roomData
+			this.find('#pvt-group-name').value = roomData.name
+			this.find('#pvt-group-members').value = roomData.usernames
 
 
 Template.privateGroupsFlex.onCreated ->
@@ -131,7 +133,7 @@ Template.privateGroupsFlex.onCreated ->
 		if params.selected
 			instance.selectedLabelIds.push params.selected
 		else if params.deselected
-# remove deselected if it exist
+			# remove deselected if it exist
 			instance.selectedLabelIds = _.without(instance.selectedLabelIds, params.deselected)
 	instance.isOptionSelected = (id) ->
 		_.contains instance.selectedLabelIds, id
