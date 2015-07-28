@@ -49,10 +49,11 @@
 
 
 Meteor.startup ->
+	config =
+		'typing': typingStream
+		'deleteMsgStream': deleteMsgStream
+
 	if webrtc
-		startStreamBroadcast
-			'webrtc.stream': webrtc.stream
-			'typing': typingStream
-	else
-		startStreamBroadcast
-			'typing': typingStream
+		config['webrtc.stream'] = webrtc.stream
+
+	startStreamBroadcast config

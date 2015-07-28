@@ -15,13 +15,3 @@ Meteor.methods
 				$set:
 					ets: message.ets
 					msg: message.msg
-
-	deleteMessage: (message) ->
-		if not Meteor.userId()
-			throw new Meteor.Error 203, t('general.User_logged_out')
-
-		Tracker.nonreactive ->
-
-			ChatMessage.remove
-				_id: message.id
-				'u._id': Meteor.userId()
