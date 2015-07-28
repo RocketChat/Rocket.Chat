@@ -32,7 +32,10 @@ Meteor.startup ->
 		this.params =
 			username: req.url.replace(/^\//, '').replace(/\?.*$/, '')
 
-		file = RocketChatFileAvatarInstance.getFileWithReadStream this.params.username
+		if this.params.username[0] isnt '@'
+			file = RocketChatFileAvatarInstance.getFileWithReadStream this.params.username
+		else
+			this.params.username = this.params.username.replace '@', ''
 
 		res.setHeader 'Content-Disposition', 'inline'
 		res.setHeader 'Cache-Control', 'no-cache'

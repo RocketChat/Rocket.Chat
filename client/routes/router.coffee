@@ -35,6 +35,11 @@ FlowRouter.route '/home',
 		FlowLayout.render 'main', {center: 'home'}
 		KonchatNotification.getDesktopPermission()
 
+FlowRouter.route '/changeavatar',
+	name: 'changeAvatar'
+
+	action: ->
+		FlowLayout.render 'main', {center: 'avatarPrompt'}
 
 FlowRouter.route '/settings/:group?',
 	name: 'settings'

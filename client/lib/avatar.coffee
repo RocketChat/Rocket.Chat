@@ -12,7 +12,7 @@
 
 	for key, room of RoomManager.openedRooms
 		url = getAvatarUrlFromUsername username
-		console.log url
+
 		$(room.dom).find(".message[data-username='#{username}'] .avatar-image").css('background-image', "url(#{url})");
 
 	return true

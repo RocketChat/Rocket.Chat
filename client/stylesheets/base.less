@@ -2798,6 +2798,35 @@ a.github-fork {
 	}
 }
 
+.avatarPrompt {
+	padding: 22px 30px 30px;
+	overflow: scroll;
+	height: 100%;
+	header {
+		max-width: 520px;
+		padding: 18px 0 23px;
+		p {
+			//font-family: "Muli";
+			margin: 8px 0 0;
+			font-size: 14px;
+			line-height: 22px;
+			font-weight: 300;
+		}
+	}
+	h2 {
+		&:extend(.rocket-h2);
+		color: @primary-font-color;
+		line-height: 24px;
+		margin: 0;
+		&.error {
+			color: #b40202;
+		}
+	}
+	img {
+		width: 200px;
+	}
+}
+
 #login-card {
 	width: 90%;
 	max-width: 520px;
@@ -3132,7 +3161,6 @@ a.github-fork {
 		max-width: 55px;
 		min-width: 55px;
 		background-size: cover;
-		border: 1px solid darken(@tertiary-background-color, 10%);
 		font-size: 40px;
 		text-align: center;
 		background-color: @tertiary-background-color;
