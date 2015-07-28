@@ -548,6 +548,15 @@ Template.room.events
 	'click .stop-video': (event) ->
 		webrtc.stop()
 
+	'click .security-banner': (event) ->
+		e.stopPropagation()
+		e.preventDefault()
+		SideNav.setFlex "privateGroupsFlex"
+		Session.set("Relabel_id",this.rid)
+		SideNav.openFlex()
+		console.log "Relabel a Room"
+
+
 Template.room.onCreated ->
 	console.log 'room.onCreated' if window.rocketDebug
 	self = this

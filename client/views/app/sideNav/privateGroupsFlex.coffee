@@ -40,6 +40,10 @@ Template.privateGroupsFlex.helpers
 		}
 	securityLabelsInitialized: ->
 		return Template.instance().securityLabelsInitialized.get()
+	relabelRoom: ->
+		return Session.get('Relabel_room')?
+	nameReadonly: ->
+		if Session.get('Relabel_room') then 'readonly' else ''
 
 
 Template.privateGroupsFlex.events
@@ -62,6 +66,7 @@ Template.privateGroupsFlex.events
 		$('#pvt-group-members').focus()
 
 	'click .cancel-pvt-group': (e, instance) ->
+		Session.set("Relabel_id",undefined)
 		SideNav.closeFlex()
 
 	'click header': (e, instance) ->
@@ -83,11 +88,21 @@ Template.privateGroupsFlex.events
 			Meteor.call 'createPrivateGroup', instance.find('#pvt-group-name').value, instance.selectedUsers.get(), accessPermissions, (err, result) ->
 				if err
 					return toastr.error err.reason
+				Session.set("Relabel_id",undefined)
 				SideNav.closeFlex()
 				instance.clearForm()
 				Router.go 'room', { _id: result.rid }
 		else
 			Template.instance().error.set(err)
+
+Template.privateGroupsFlex.onRendered ->
+	roomData = ChatRoom.findOne Session.get('Relabel_room'), { fields: { usernames: 1, t: 1, name: 1 } }
+	console.log 'privateGroupsFlex.onRendered'
+	console.log roomData
+	if roomData
+		this.find('#pvt-group-name').value = roomData.name
+		this.find('#pvt-group-members').value = roomData.usernames
+
 
 Template.privateGroupsFlex.onCreated ->
 	instance = this
@@ -100,6 +115,7 @@ Template.privateGroupsFlex.onCreated ->
 		instance.selectedUsers.set([])
 		instance.find('#pvt-group-name').value = ''
 		instance.find('#pvt-group-members').value = ''
+
 
 	# other conversation members
 	instance.otherMembers = _.without(instance.data.members, Meteor.userId())
@@ -127,8 +143,8 @@ Template.privateGroupsFlex.onCreated ->
 		if error
 			alert error
 		else
-# create shallow copies.  Adding id to both selected and disabled makes them "required"
-# in the UI because it selects the permission and doesn't allow the user to remove it.
+			# create shallow copies.  Adding id to both selected and disabled makes them "required"
+			# in the UI because it selects the permission and doesn't allow the user to remove it.
 			instance.selectedLabelIds = (result.selectedIds or []).slice(0)
 			instance.disabledLabelIds = (result.disabledIds or []).slice(0)
 			# initially select the default classification
