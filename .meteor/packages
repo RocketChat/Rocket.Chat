@@ -72,4 +72,6 @@ underscorestring:underscore.string
 yasaricli:slugify
 reactive-dict
 yasinuslu:blaze-meta
+nimble:restivus
+dispatch:run-as-user
 rocketchat:logger
