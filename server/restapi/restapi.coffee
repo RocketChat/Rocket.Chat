@@ -15,11 +15,7 @@ Api.addRoute 'version', authRequired: false,
 Api.addRoute 'publicRooms', authRequired: true,
 	get: ->
 		rooms = ChatRoom.find({ t: 'c' }, { sort: { msgs:-1 } }).fetch()
-		if rooms
-			status: 'success', rooms: rooms
-		else
-			statusCode: 404
-			body: status: 'fail', message: 'Rooms not found'
+		status: 'success', rooms: rooms
 
 # join a room
 Api.addRoute 'rooms/:id/join', authRequired: true,
