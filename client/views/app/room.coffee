@@ -501,6 +501,10 @@ Template.room.onRendered ->
 			newMessage.className = "new-message not"
 	, 100
 
+	wrapper.addEventListener 'touchmove', ->
+		template.atBottom = false
+		onscroll()
+
 	wrapper.addEventListener 'mousewheel', ->
 		template.atBottom = false
 		onscroll()
