@@ -3,6 +3,7 @@
 	openedRooms = {}
 	subscription = null
 	msgStream = new Meteor.Stream 'messages'
+	onlineUsers = new ReactiveVar {}
 
 	Dep = new Tracker.Dependency
 
@@ -91,6 +92,16 @@
 		room = openedRooms[rid]
 		return room?.dom?
 
+	updateUserStatus = (user, status) ->
+		onlineUsersValue = onlineUsers.curValue
+
+		if status is 'offline'
+			delete onlineUsersValue[user.username]
+		else
+			onlineUsersValue[user.username] = status
+
+		onlineUsers.set onlineUsersValue
+
 	open: open
 	close: close
 	init: init
@@ -98,3 +109,5 @@
 	existsDomOfRoom: existsDomOfRoom
 	msgStream: msgStream
 	openedRooms: openedRooms
+	updateUserStatus: updateUserStatus
+	onlineUsers: onlineUsers
