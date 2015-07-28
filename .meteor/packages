@@ -72,3 +72,4 @@ underscorestring:underscore.string
 yasaricli:slugify
 reactive-dict
 yasinuslu:blaze-meta
+rocketchat:logger
