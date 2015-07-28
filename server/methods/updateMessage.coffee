@@ -20,23 +20,3 @@ Meteor.methods
 
 		# Meteor.defer ->
 		# 	RocketChat.callbacks.run 'afterSaveMessage', ChatMessage.findOne(message.id)
-
-	deleteMessage: (message) ->
-		if not Meteor.userId()
-			throw new Meteor.Error('invalid-user', "[methods] deleteMessage -> Invalid user")
-
-		console.log '[methods] deleteMessage -> '.green, 'userId:', Meteor.userId(), 'arguments:', arguments
-
-		ChatMessage.update
-			_id: message.id
-			'u._id': Meteor.userId()
-		,
-			$set:
-				_deleted: true
-
-		# userId = Meteor.userId()
-		# Meteor.setTimeout ->
-		# 	ChatMessage.remove
-		# 		_id: message.id
-		# 		'u._id': userId
-		# , 10000
