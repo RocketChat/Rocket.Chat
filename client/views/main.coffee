@@ -71,9 +71,6 @@ Template.main.helpers
 	hasUsername: ->
 		return Meteor.userId()? and Meteor.user().username?
 
-	hasAvatar: ->
-		return Meteor.userId()? and Meteor.user().avatarOrigin?
-
 	flexOpened: ->
 		console.log 'layout.helpers flexOpened' if window.rocketDebug
 		return 'flex-opened' if Session.equals('flexOpened', true)

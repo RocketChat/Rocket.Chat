@@ -33,7 +33,7 @@ Template.userStatus.events
 			Meteor.call('logoutCleanUp', user)
 
 	'click #avatar': (event) ->
-		Meteor.call('resetAvatar')
+		FlowRouter.go 'changeAvatar'
 
 	'click #settings': (event) ->
 		SideNav.setFlex "userSettingsFlex"
