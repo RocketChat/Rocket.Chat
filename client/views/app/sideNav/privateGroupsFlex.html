@@ -7,12 +7,13 @@
 	<div class="content">
 		<div class="wrapper">
 			{{#if relabelRoom}}
-			    <h4>We are relabeling a private Group</h4>
+			    <h4>UPDATE A PRIVATE GROUP</h4>
+			{{else}}
+                            <h4>{{_ "Create_new_private_group"}}</h4>
 			{{/if}}
-			<h4>{{_ "Create_new_private_group"}}</h4>
 			<div class="input-line">
 				<label for="pvt-group-name">{{_ "Name"}}</label>
-				<input type="text" id="pvt-group-name" class="required" dir="auto" {{nameReadonly}}>
+				<input type="text" id="pvt-group-name" class="required" dir="auto">
 			</div>
 			<div class="input-line">
 				<label for="pvt-group-members">{{_ "Members" }}</label>

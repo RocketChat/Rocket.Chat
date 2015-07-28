@@ -90,7 +90,6 @@ Template.privateGroupsFlex.events
 				Meteor.call 'updatePrivateGroup', rid, instance.find('#pvt-group-name').value, instance.selectedUsers.get(), accessPermissions, (err, result) ->
 					if err
 						return toastr.error err.reason
-					Session.set("Relabel_id",undefined)
 					SideNav.closeFlex()
 					instance.clearForm()
 					Router.go 'room', { _id: result.rid }
@@ -98,7 +97,6 @@ Template.privateGroupsFlex.events
 				Meteor.call 'createPrivateGroup', instance.find('#pvt-group-name').value, instance.selectedUsers.get(), accessPermissions, (err, result) ->
 					if err
 						return toastr.error err.reason
-					Session.set("Relabel_id",undefined)
 					SideNav.closeFlex()
 					instance.clearForm()
 					Router.go 'room', { _id: result.rid }
@@ -126,6 +124,7 @@ Template.privateGroupsFlex.onCreated ->
 		instance.selectedUsers.set([])
 		instance.find('#pvt-group-name').value = ''
 		instance.find('#pvt-group-members').value = ''
+		Session.set("Relabel_room",undefined)
 
 	instance.roomData = ChatRoom.findOne Session.get('Relabel_room'), { fields: { usernames: 1, t: 1, name: 1 } }
 	if instance.roomData?.usernames
