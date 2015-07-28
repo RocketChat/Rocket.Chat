@@ -52,21 +52,17 @@
 			{{#unless hasUsername}}
 				{{> usernameLayout render='usernamePrompt'}}
 			{{else}}
-				{{#unless hasAvatar}}
-					{{> usernameLayout render='avatarPrompt'}}
-				{{else}}
-					<div id="user-card-popover"></div>
-					<div id="rocket-chat" class="menu-nav menu-closed">
-						<div class="connection-status">
-							{{> status}}
-						</div>
-						<main class="main-content {{flexOpened}} {{flexOpenedRTC1}} {{flexOpenedRTC2}}">
-							{{> Template.dynamic template=center}}
-						</main>
-						{{> sideNav }}
+				<div id="user-card-popover"></div>
+				<div id="rocket-chat" class="menu-nav menu-closed">
+					<div class="connection-status">
+						{{> status}}
 					</div>
-					{{> audioNotification }}
-				{{/unless}}
+					<main class="main-content {{flexOpened}} {{flexOpenedRTC1}} {{flexOpenedRTC2}}">
+						{{> Template.dynamic template=center}}
+					</main>
+					{{> sideNav }}
+				</div>
+				{{> audioNotification }}
 			{{/unless}}
 		{{/unless}}
 	{{/unless}}
