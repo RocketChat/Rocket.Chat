@@ -40,13 +40,17 @@ Api.addRoute 'rooms/:id/leave', authRequired: true,
 # get messages in a room
 Api.addRoute 'rooms/:id/messages', authRequired: true,
 	get: ->
-		msgs = ChatMessage.find({rid: @urlParams.id, _deleted: {$ne: true}}, {sort: {ts: -1}}, {limit: 50}).fetch()
+		try
+			if Meteor.call('canAccessRoom', @urlParams.id, this.userId)
+				msgs = ChatMessage.find({rid: @urlParams.id, _deleted: {$ne: true}}, {sort: {ts: -1}}, {limit: 50}).fetch()
+				status: 'success', messages: msgs
+			else
+				statusCode: 403   # forbidden
+				body: status: 'fail', message: 'Cannot access room.'
+		catch e
+			statusCode: 400    # bad request or other errors
+			body: status: 'fail', message: e.name + ' :: ' + e.message
 
-		if msgs
-			status: 'success', messages: msgs
-		else
-			statusCode: 404
-			body: status: 'fail', message: 'Messages not found'
 
 
 # send a message in a room -  POST body should be { "msg" : "this is my message"}
