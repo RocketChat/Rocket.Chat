@@ -314,25 +314,17 @@ Template.room.events
 						if i.msRequestFullscreen
 							i.msRequestFullscreen()
 
-
-
-	'click .chat-new-messages': (event) ->
-		console.log 'room click .chat-new-messages' if window.rocketDebug
-		# chatMessages = $('#chat-window-' + this._id + ' .messages-box .wrapper')
-		# chatMessages.animate({scrollTop: chatMessages[0].scrollHeight}, 'normal')
-		$('#chat-window-' + FlowRouter.getParam('_id') + ' .input-message').focus()
-
 	'click .toggle-favorite': (event) ->
 		console.log 'room click .toggle-favorite' if window.rocketDebug
 		event.stopPropagation()
 		event.preventDefault()
-		Meteor.call 'toogleFavorite', FlowRouter.getParam('_id'), !$('i', event.currentTarget).hasClass('favorite-room')
+		Meteor.call 'toogleFavorite', @_id, !$('i', event.currentTarget).hasClass('favorite-room')
 
 	'click .join': (event) ->
 		console.log 'room click .join' if window.rocketDebug
 		event.stopPropagation()
 		event.preventDefault()
-		Meteor.call 'joinRoom', FlowRouter.getParam('_id')
+		Meteor.call 'joinRoom', @_id
 
 	"click .burger": ->
 		console.log 'room click .burger' if window.rocketDebug
@@ -344,28 +336,20 @@ Template.room.events
 
 	'focus .input-message': (event) ->
 		console.log 'room focus .input-message' if window.rocketDebug
-		KonchatNotification.removeRoomNotification(FlowRouter.getParam('_id'))
+		KonchatNotification.removeRoomNotification @_id
 
 	'keyup .input-message': (event) ->
-		console.log 'room keyup .input-message',FlowRouter.getParam('_id') if window.rocketDebug
-		ChatMessages.keyup(FlowRouter.getParam('_id'), event, Template.instance())
+		console.log 'room keyup .input-message', @_id if window.rocketDebug
+		ChatMessages.keyup(@_id, event, Template.instance())
 
 	'keydown .input-message': (event) ->
-		console.log 'room keydown .input-message',FlowRouter.getParam('_id') if window.rocketDebug
-		ChatMessages.keydown(FlowRouter.getParam('_id'), event, Template.instance())
-
-	# 'keydown .input-message-editing': (event) ->
-	# 	console.log 'room keydown .input-message-editing',this._id if window.rocketDebug
-	# 	ChatMessages.keydownEditing(this._id, event)
-
-	# 'blur .input-message-editing': (event) ->
-	# 	console.log 'room blur keydown blur .input-message-editing',this._id if window.rocketDebug
-	# 	ChatMessages.stopEditingLastMessage()
+		console.log 'room keydown .input-message', @_id if window.rocketDebug
+		ChatMessages.keydown(@_id, event, Template.instance())
 
 	'click .message-form .icon-paper-plane': (event) ->
 		console.log 'room click .message-form .icon-paper-plane' if window.rocketDebug
 		input = $(event.currentTarget).siblings("textarea")
-		ChatMessages.send(FlowRouter.getParam('_id'), input.get(0))
+		ChatMessages.send(this._id, input.get(0))
 
 	'click .add-user': (event) ->
 		console.log 'room click click .add-user' if window.rocketDebug
@@ -390,7 +374,7 @@ Template.room.events
 		if event.keyCode is 27 # esc
 			Session.set('editRoomTitle', false)
 		else if event.keyCode is 13 # enter
-			renameRoom FlowRouter.getParam('_id'), $(event.currentTarget).val()
+			renameRoom @_id, $(event.currentTarget).val()
 
 	'blur #room-title-field': (event) ->
 		console.log 'room blur #room-title-field' if window.rocketDebug
@@ -428,7 +412,7 @@ Template.room.events
 
 	'click button.load-more': (e) ->
 		console.log 'room click button.load-more' if window.rocketDebug
-		RoomHistoryManager.getMore FlowRouter.getParam('_id')
+		RoomHistoryManager.getMore @_id
 
 	'autocompleteselect #user-add-search': (event, template, doc) ->
 		console.log 'room autocompleteselect #user-add-search' if window.rocketDebug
@@ -511,8 +495,9 @@ Template.room.events
 			ChatMessages.deleteMsg(msg)
 
 	'click .start-video': (event) ->
-		webrtc.to = FlowRouter.getParam('_id').replace(Meteor.userId(), '')
-		webrtc.room = FlowRouter.getParam('_id')
+		_id = Template.instance().data._id
+		webrtc.to = _id.replace(Meteor.userId(), '')
+		webrtc.room = _id
 		webrtc.start(true)
 
 	'click .stop-video': (event) ->
