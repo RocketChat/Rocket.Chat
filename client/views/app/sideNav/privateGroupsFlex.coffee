@@ -85,13 +85,23 @@ Template.privateGroupsFlex.events
 		err = SideNav.validate()
 		if not err
 			accessPermissions = instance.selectedLabelIds
-			Meteor.call 'createPrivateGroup', instance.find('#pvt-group-name').value, instance.selectedUsers.get(), accessPermissions, (err, result) ->
-				if err
-					return toastr.error err.reason
-				Session.set("Relabel_id",undefined)
-				SideNav.closeFlex()
-				instance.clearForm()
-				Router.go 'room', { _id: result.rid }
+			rid = Session.get('Relabel_room')
+			if rid
+				Meteor.call 'updatePrivateGroup', rid, instance.find('#pvt-group-name').value, instance.selectedUsers.get(), accessPermissions, (err, result) ->
+					if err
+						return toastr.error err.reason
+					Session.set("Relabel_id",undefined)
+					SideNav.closeFlex()
+					instance.clearForm()
+					Router.go 'room', { _id: result.rid }
+			else
+				Meteor.call 'createPrivateGroup', instance.find('#pvt-group-name').value, instance.selectedUsers.get(), accessPermissions, (err, result) ->
+					if err
+						return toastr.error err.reason
+					Session.set("Relabel_id",undefined)
+					SideNav.closeFlex()
+					instance.clearForm()
+					Router.go 'room', { _id: result.rid }
 		else
 			Template.instance().error.set(err)
 
@@ -103,7 +113,6 @@ Template.privateGroupsFlex.onRendered ->
 		console.log roomData
 		if roomData
 			this.find('#pvt-group-name').value = roomData.name
-			this.find('#pvt-group-members').value = roomData.usernames
 
 
 Template.privateGroupsFlex.onCreated ->
@@ -118,6 +127,12 @@ Template.privateGroupsFlex.onCreated ->
 		instance.find('#pvt-group-name').value = ''
 		instance.find('#pvt-group-members').value = ''
 
+	instance.roomData = ChatRoom.findOne Session.get('Relabel_room'), { fields: { usernames: 1, t: 1, name: 1 } }
+	if instance.roomData?.usernames
+		users = instance.roomData.usernames
+		for user in users
+			instance.selectedUserNames[user] = user
+			instance.selectedUsers.set instance.selectedUsers.get().concat user
 
 	# other conversation members
 	instance.otherMembers = _.without(instance.data.members, Meteor.userId())
