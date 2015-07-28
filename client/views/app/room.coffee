@@ -1,9 +1,5 @@
 # @TODO bug com o botão para "rolar até o fim" (novas mensagens) quando há uma mensagem com texto que gere rolagem horizontal
 Template.room.helpers
-	visible: ->
-		console.log 'room.helpers visible' if window.rocketDebug
-		return 'visible' if this._id is Session.get('openedRoom')
-
 	tAddUsers: ->
 		console.log 'room.helpers tAddUsers' if window.rocketDebug
 		return t('Add_users')
