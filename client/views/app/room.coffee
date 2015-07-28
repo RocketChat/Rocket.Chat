@@ -431,6 +431,7 @@ Template.room.events
 		Session.set('showUserInfo', $(e.currentTarget).data('username'))
 
 	'click .delete-message': (event) ->
+		message = @_arguments[1]
 		msg = event.currentTarget.parentNode.parentNode
 		return if msg.classList.contains("system")
 		swal {
@@ -445,7 +446,7 @@ Template.room.events
 			html: false
 		}, ->
 			swal t('Deleted'), t('Your_entry_has_been_deleted'), 'success'
-			ChatMessages.deleteMsg(msg)
+			ChatMessages.deleteMsg(message)
 
 	'click .start-video': (event) ->
 		_id = Template.instance().data._id

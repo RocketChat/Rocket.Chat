@@ -1,8 +1,17 @@
+Meteor.startup ->
+	ChatMessage.find().observe
+		removed: (record) ->
+			recordBefore = ChatMessage.findOne {ts: {$lt: record.ts}}, {sort: {ts: -1}}
+			if recordBefore?
+				ChatMessage.update {_id: recordBefore._id}, {$set: {tick: new Date}}
+
+
 @RoomManager = new class
 	defaultTime = 600000 # 10 minutes
 	openedRooms = {}
 	subscription = null
 	msgStream = new Meteor.Stream 'messages'
+	deleteMsgStream = new Meteor.Stream 'delete-message'
 	onlineUsers = new ReactiveVar {}
 
 	Dep = new Tracker.Dependency
@@ -18,6 +27,7 @@
 					sub.stop()
 
 			msgStream.removeListener rid
+			deleteMsgStream.removeListener rid
 
 			openedRooms[rid].ready = false
 			openedRooms[rid].active = false
@@ -63,10 +73,10 @@
 				openedRooms[rid].active = true
 
 				msgStream.on rid, (msg) ->
-					if msg._deleted?
-						return ChatMessage.remove _id: msg._id
-
 					ChatMessage.upsert { _id: msg._id }, msg
+
+				deleteMsgStream.on rid, (msg) ->
+					ChatMessage.remove _id: msg._id
 
 				computation.invalidate()
 
