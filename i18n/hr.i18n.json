@@ -35,6 +35,7 @@
   "github_no_public_email" : "Nemaš ni1 javni email u svom GitHub računu",
   "Have_your_own_chat" : "Imaj svoj vlastiti web chat. Razvijen sa Meteor.com, the Rocket.Chat je sjajno rješenje za developere koji žele sagraditi i dalje razvijati svoju vlastitu chat platformu.",
   "Hide_room" : "Sakrij sobu",
+  "Update_room" : "Update/Relabel room",
   "History" : "Povijest",
   "Invalid_confirm_pass" : "Potvrda lozinke se ne slaže sa lozinkom",
   "Invalid_email" : "Uneseni e-mail nije valjan",

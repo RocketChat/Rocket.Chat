@@ -54,6 +54,7 @@
   "Get_to_know_the_team": "Get to know the Rocket.Team",
   "Have_your_own_chat" : "Have your own web chat. Developed with Meteor.com, the Rocket.Chat is a great solution for developers looking forward to build and evolve their own chat platform.",
   "Hide_room" : "Скрыть чат",
+  "Update_room" : "Update/Relabel room",
   "History" : "История",
   "inline_code": "inline_code",
   "Invalid_confirm_pass" : "Пароли не совпадают",

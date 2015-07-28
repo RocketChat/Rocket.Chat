@@ -35,6 +35,7 @@
   "github_no_public_email" : "אין לך אף כתובת אימייל פומבית בחשבון ה-GitHub שלך",
   "Have_your_own_chat" : "תהיה בעל שרת צ'אט. פותחה עם meteor.com, האפליקציה Rocket.Chat היא פתרון מעולה עבור מפתחים המחפשים לבנות ולשפר את פלפורמת הצ'אט שלהם.",
   "Hide_room" : "הסתר את החדר",
+  "Update_room" : "Update/Relabel room",
   "History" : "היסטוריה",
   "Invalid_confirm_pass" : "אימות הסיסמא אינו זהה לסיסמא",
   "Invalid_email" : "כתובת האימייל שהוזנה אינה תקינה",

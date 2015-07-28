@@ -35,6 +35,7 @@
   "github_no_public_email" : "Nincs egy email címed se publikusként megadva a GitHub fiókodban",
   "Have_your_own_chat" : "Legyen saját webes chat-ed. A Meteor.com alapokra épített Rocket.Chat remek megoldás azoknak a fejlesztőknek akik szívesen építenének vagy fejlesztenének saját alkalmazást.",
   "Hide_room" : "Szoba elrejtése",
+  "Update_room" : "Update/Relabel room",
   "History" : "Előzmények",
   "Invalid_confirm_pass" : "A két jelszó nem eggyezik",
   "Invalid_email" : "Érvénytelen email cím",

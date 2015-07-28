@@ -35,6 +35,7 @@
   "github_no_public_email" : "Non havi un email publico sul tuo GitHub account",
   "Have_your_own_chat" : "Avere il proprio web chat. Sviluppato con Meteor.com, il Rocket.Chat è una grande soluzione per gli sviluppatori in attesa di costruire ed evolvere la propria piattaforma di chat.",
   "Hide_room" : "Nascondi la stanza",
+  "Update_room" : "Update/Relabel room",
   "History" : "Storico",
   "Invalid_confirm_pass" : "La password di conferma non corrisponde con la password",
   "Invalid_email" : "L'email inserito è invalida",
