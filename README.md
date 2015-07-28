@@ -58,7 +58,8 @@ It is a great solution for communities and companies wanting to privately host t
 - Media Embeds
 - Link Previews
 - LDAP Authentication - [LDAP Authentication on Rocket.Chat Wiki](https://github.com/RocketChat/Rocket.Chat/wiki/LDAP-Authentication)
-- Face to Face Video Conferencing aka WebRTC (Alpha) - [How to go video](https://github.com/RocketChat/Rocket.Chat/wiki/Using-Face-to-face-video-conference-%28aka-webrtc%29)
+- Face to Face Video Conferencing aka WebRTC (Alpha) - [How to video chat](https://github.com/RocketChat/Rocket.Chat/wiki/Using-Face-to-face-video-conference-%28aka-webrtc%29)
+- REST-full APIs - [Ready for testing ...](https://github.com/RocketChat/Rocket.Chat/wiki/REST-full-APIs)
 
 ### Roadmap for v1.0
 
@@ -71,7 +72,6 @@ It is a great solution for communities and companies wanting to privately host t
 - Native Android Application [Issue #271 - HELP WANTED](https://github.com/RocketChat/Rocket.Chat/issues/271)
 - Native iOS Application [Issue #270 - HELP WANTED](https://github.com/RocketChat/Rocket.Chat/issues/270)
 - Full text search
-- REST-full APIs
 - Kerberos Authentication
 - XMPP Multi-user chat (MUC)
 
