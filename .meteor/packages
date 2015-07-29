@@ -25,14 +25,16 @@ rocketchat:emojione
 rocketchat:favico
 rocketchat:file
 rocketchat:highlight
-#rocketchat:hubot
-#rocketchat:irc
 rocketchat:ldap
+rocketchat:logger
 rocketchat:markdown
 rocketchat:me
 rocketchat:mentions
 rocketchat:oembed
 rocketchat:webrtc
+#rocketchat:external
+#rocketchat:hubot
+#rocketchat:irc
 
 konecty:change-case
 konecty:delayed-task
@@ -74,5 +76,3 @@ reactive-dict
 yasinuslu:blaze-meta
 nimble:restivus
 dispatch:run-as-user
-rocketchat:logger
-rocketchat:external
