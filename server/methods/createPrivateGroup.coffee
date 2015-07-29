@@ -1,5 +1,5 @@
 Meteor.methods
-	createPrivateGroup: (name, members) ->
+	createPrivateGroup: (name, members, accessPermissions) ->
 		if not Meteor.userId()
 			throw new Meteor.Error 'invalid-user', "[methods] createPrivateGroup -> Invalid user"
 
@@ -13,6 +13,15 @@ Meteor.methods
 
 		name = s.slugify name
 
+
+		# RocketChat uses username as the identifier.  We use the imported LDAP username as both the _id and username value
+		canAccessResource = Meteor.call 'canAccessResource', members, accessPermissions
+		if not canAccessResource.canAccess
+			throw new Meteor.Error('invalid-access-permissions', "User(s) cannot create a private group with the specified access permissions")
+
+		if not Jedis.securityLabelIsValid(accessPermissions)
+			throw new Meteor.Error('invalid-access-permissions', "Missing required access permissions")
+
 		# create new room
 		rid = ChatRoom.insert
 			usernames: members
@@ -23,6 +32,8 @@ Meteor.methods
 				username: me.username
 			name: name
 			msgs: 0
+			accessPermissions: accessPermissions
+			securityLabels: Jedis.legacyLabel accessPermissions
 
 		for username in members
 			member = Meteor.users.findOne({ username: username },{ fields: { username: 1 }})
