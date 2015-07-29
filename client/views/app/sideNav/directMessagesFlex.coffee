@@ -72,7 +72,7 @@ Template.directMessagesFlex.events
 			accessPermissions = instance.selectedLabelIds
 			rid = instance.data.relabelRoom
 			if rid
-				Meteor.call 'updateDirectMessage', rid, instance.selectedUser.get(), accessPermissions, (err, result) ->
+				Meteor.call 'updateRoom', rid, instance.selectedUser.get(), null, accessPermissions, (err, result) ->
 					if err
 						return toastr.error err.reason
 					SideNav.closeFlex()
@@ -109,7 +109,7 @@ Template.directMessagesFlex.onCreated ->
 	instance.roomData = ChatRoom.findOne instance.data.relabelRoom, { fields: { usernames: 1, t: 1, name: 1 } }
 	if instance.roomData?.usernames
 		username = _.without instance.roomData.usernames, Meteor.user().username
-		instance.selectedUser.set username
+		instance.selectedUser.set username[0]
 
 	# other conversation members
 	instance.otherMembers = _.without(instance.data.members, Meteor.userId())
