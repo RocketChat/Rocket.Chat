@@ -6,10 +6,7 @@ Meteor.methods
 
 		room = ChatRoom.findOne rid
 
-		if room.u._id isnt Meteor.userId() or room.t not in ['c', 'p']
-			throw new Meteor.Error 403, 'Not allowed'
-
-		if name? and name isnt room.name
+		if room.t not in ['d'] and name? and name isnt room.name
 			Meteor.call 'saveRoomName', rid, name
 		Meteor.call 'relabelRoom', rid, accessPermissions
 		if users?
