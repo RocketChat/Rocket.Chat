@@ -192,6 +192,8 @@ Template.room.helpers
 					username: username
 					status: onlineUsers[username]
 
+		users = _.sortBy users, 'username'
+
 		ret =
 			_id: this._id
 			total: room.usernames.length
