@@ -53,8 +53,6 @@ chrismbeckett:toastr
 francocatena:status
 jparker:gravatar
 kevohagan:sweetalert
-meteorhacks:flow-layout
-meteorhacks:flow-router
 meteorhacks:kadira
 mizzao:autocomplete
 mizzao:timesync
@@ -76,3 +74,5 @@ reactive-dict
 yasinuslu:blaze-meta
 nimble:restivus
 dispatch:run-as-user
+kadira:flow-router
+kadira:blaze-layout

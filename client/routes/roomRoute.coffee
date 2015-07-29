@@ -4,7 +4,7 @@ FlowRouter.route '/room/:_id',
 	action: (params, queryParams) ->
 		Session.set 'openedRoom', null
 
-		FlowLayout.render 'main', {center: 'loading'}
+		BlazeLayout.render 'main', {center: 'loading'}
 
 		Meteor.defer ->
 			track = Tracker.autorun ->
@@ -42,5 +42,5 @@ FlowRouter.route '/room/:_id',
 					if child?
 						if child.classList.contains('room-container')
 							child.oldScrollTop = child.querySelector('.messages-box > .wrapper').scrollTop
-						child.remove() 
+						child.remove()
 	]
