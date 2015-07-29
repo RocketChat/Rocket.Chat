@@ -1,10 +1,23 @@
 if FS?
 
 	@fileStore = new FS.Store.GridFS 'files'
+
+	fileStore.on 'stored', Meteor.bindEnvironment (storeName, fileObj) ->
+		Meteor.runAsUser fileObj.userId, ->
+			Meteor.call 'sendMessage',
+				_id: Random.id()
+				rid: fileObj.rid
+				msg: """
+					File Uploaded: *#{fileObj.original.name}*
+					#{Meteor.absoluteUrl()}/cfs/files/Files/#{fileObj._id}
+				"""
+				file:
+					_id: fileObj._id
+
 	@Files = new FS.Collection 'Files',
 		stores: [fileStore],
 		filter:
-			maxSize: 1048576,
+			maxSize: 2097152,
 			allow:
 				contentTypes: ['image/*']
 			onInvalid: (message) ->
