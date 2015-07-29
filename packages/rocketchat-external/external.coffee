@@ -31,5 +31,3 @@ WebApp.connectHandlers.use '/external/', (req, res, next) ->
 
 	res.write html
 	res.end()
-
-	return
