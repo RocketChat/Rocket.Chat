@@ -4,6 +4,17 @@ Package.describe({
 	summary: 'External for Rocket.Chat'
 });
 
+Package.registerBuildPlugin({
+	name: "builExternal",
+	use: [],
+	sources: [
+		'plugin/build-external.js'
+	],
+	npmDependencies: {
+		"shelljs": "0.5.1"
+	}
+});
+
 Package.onUse(function(api) {
 	api.versionsFrom('1.0');
 
