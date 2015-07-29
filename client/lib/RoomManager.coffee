@@ -78,7 +78,7 @@ Meteor.startup ->
 				deleteMsgStream.on rid, (msg) ->
 					ChatMessage.remove _id: msg._id
 
-				computation.invalidate()
+				computation?.invalidate()
 
 		return {
 			ready: ->
