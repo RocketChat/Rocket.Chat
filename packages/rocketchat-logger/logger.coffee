@@ -20,16 +20,17 @@ wrapHelpersAndEvents = (original, prefix, color) ->
 
 		for name, fn of dict
 			do (name, fn) ->
-				dict[name] = ->
-					result = fn.apply @, arguments
+				if fn instanceof Function
+					dict[name] = ->
+						result = fn.apply @, arguments
 
-					if Template.log is true
-						completeName = "#{prefix}:#{template.viewName.replace('Template.', '')}.#{name}"
+						if Template.log is true
+							completeName = "#{prefix}:#{template.viewName.replace('Template.', '')}.#{name}"
 
-						if Template.logMatch.test completeName
-							console.log "%c#{completeName}", "color: #{color}", {args: arguments, scope: @, result: result}
+							if Template.logMatch.test completeName
+								console.log "%c#{completeName}", "color: #{color}", {args: arguments, scope: @, result: result}
 
-					return result
+						return result
 
 		original.call template, dict
 
@@ -42,18 +43,21 @@ wrapLifeCycle = (original, prefix, color) ->
 	return (fn) ->
 		template = @
 
-		wrap = ->
-			result = fn.apply @, arguments
+		if fn instanceof Function
+			wrap = ->
+				result = fn.apply @, arguments
 
-			if Template.log is true
-				completeName = "#{prefix}:#{template.viewName.replace('Template.', '')}"
+				if Template.log is true
+					completeName = "#{prefix}:#{template.viewName.replace('Template.', '')}"
 
-				if Template.logMatch.test completeName
-					console.log "%c#{completeName}", "color: #{color}; font-weight: bold", {args: arguments, scope: @, result: result}
+					if Template.logMatch.test completeName
+						console.log "%c#{completeName}", "color: #{color}; font-weight: bold", {args: arguments, scope: @, result: result}
 
-			return result
+				return result
 
-		original.call template, wrap
+			original.call template, wrap
+		else
+			original.call template, fn
 
 
 Template.prototype.onCreated = wrapLifeCycle Template.prototype.onCreated, 'onCreated', 'blue'
