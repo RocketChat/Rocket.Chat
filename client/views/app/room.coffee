@@ -186,7 +186,7 @@ Template.room.helpers
 		users = []
 		onlineUsers = RoomManager.onlineUsers.get()
 
-		for username in room.usernames
+		for username in room?.usernames or []
 			if onlineUsers[username]?
 				users.push
 					username: username
