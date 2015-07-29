@@ -73,6 +73,12 @@ AccessManager = function(accessProvider) {
 				];
 	};
 
+	var getClassificationOrder = function() {
+		// TODO this should be read from configurable property file
+		// lowest to highest priority
+		return ['U','C','S','TS']
+	}
+
 	// Given a list of access id's, return corresponding objects.
 	var getPermissions = function(ids) {
 		if( !_.isArray(ids) ) {
@@ -129,6 +135,11 @@ AccessManager = function(accessProvider) {
 		 * @type array of AccessPermission objects representing classifications
 		 */
 		getClassifications : getClassifications,
+		/**
+		 * Retrieve all classifications ordered from lowest to highest precedence
+		 * @type array of Clasification AccessPermission ids 
+		 */
+		getClassificationOrder : getClassificationOrder,
 		/**
 		 * Retrieve AccessPermission object(s) specified by their unique identifier
 		 * @type String or Array of Strings representing an AccessPermission to retrieve. 

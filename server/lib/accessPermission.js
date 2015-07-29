@@ -37,9 +37,6 @@ Jedis.AccessPermission = function(ids) {
 		? ids
 		: AccessPermissions.find({_id: {$in : ids}}).fetch();
 
-	if( perms.length !== ids.length ) {
-		throw new Error('Invalid access permission id');
-	}
 	// Group by types.
 	perms.reduce(function(o, perm) {
 		var type = perm.type;
@@ -48,31 +45,7 @@ Jedis.AccessPermission = function(ids) {
 		return o;
 	}, this);
 };
-//
-Jedis.AccessPermission.prototype.resourceClassifications = function() {
-	var classInfo = { selected:null, higher:[], lower:[] };
-	var classifications = Jedis.accessManager.getClassifications();
-	var classificationIds = _.pluck(classifications, '_id');
-	// Get the classification from the access permissions
-	var resourceClassificationIds = _.filter(_.pluck(this.classification,'_id'), function(id) {
-		return _.contains(classificationIds ,id);
-	});
-	if (resourceClassificationIds.length > 1)  {
-		console.warn('Resource permissions has more then one classifications' + resourceClassificationIds.length )
-	}
-	var resourceClassificationId = resourceClassificationIds[0];
-	_.each(classifications, function(element, index, list) {
-		var cid = element._id;
-		if (cid === resourceClassificationId) {
-			classInfo.selected = cid;
-		} else if ( ! classInfo.selected) {
-			classInfo.higher.push(cid);
-		} else {
-			classInfo.lower.push(cid);
-		}
-	});
-	return classInfo;
-};
+
 // Return a flat list of ids whose types are in the provided list (default all)
 // Design Intent: The object instance maintains the full access permission object, but in some scenarios (e.g., calls to
 // external validation service), we may need only the ids, possibly only the ids for specific types.
@@ -157,5 +130,10 @@ Jedis.AccessPermission.prototype.removeAccessIds = function(ids) {
 Jedis.AccessPermission.prototype.toString = function() {
 	return JSON.stringify(this, undefined, 4);
 };
+
+Jedis.AccessPermission.prototype.containsAll = function(permissionIds) {
+	var inCommon = _.intersection( permissionIds, this.getPermissionIds());
+	return inCommon.length === permissionIds.length
+}
 
 // vim:ts=4:sw=4:tw=120
