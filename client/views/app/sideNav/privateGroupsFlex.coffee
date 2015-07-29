@@ -102,14 +102,6 @@ Template.privateGroupsFlex.events
 		else
 			Template.instance().error.set(err)
 
-Template.privateGroupsFlex.onRendered ->
-	relabelRoom = this.data.relabelRoom
-	if relabelRoom?
-		Meteor.subscribe 'room', relabelRoom
-		roomData = ChatRoom.findOne relabelRoom
-		console.log roomData
-		if roomData
-			this.find('#pvt-group-name').value = roomData.name
 
 
 Template.privateGroupsFlex.onCreated ->
@@ -125,12 +117,25 @@ Template.privateGroupsFlex.onCreated ->
 		instance.find('#pvt-group-members').value = ''
 		instance.roomData = undefined
 
-	instance.roomData = ChatRoom.findOne instance.data.relabelRoom, { fields: { usernames: 1, t: 1, name: 1 } }
-	if instance.roomData?.usernames
-		users = instance.roomData.usernames
-		for user in users
-			instance.selectedUserNames[user] = user
-			instance.selectedUsers.set instance.selectedUsers.get().concat user
+
+
+	# Tracker.autorun function that gets re-executed on changes to the (reactive)
+	# subscription to the 'room' publication. Once it is flagged as 'ready', stop
+	# re-executing the function and populate the room name, members, labels data.
+	# Function automatically stops if template is closed.
+	instance.autorun (c) ->
+		sub = Meteor.subscribe('room', instance.data.relabelRoom)
+		if sub.ready()
+			c.stop()
+			roomData = ChatRoom.findOne instance.data.relabelRoom
+			if roomData
+				instance.find('#pvt-group-name').value = roomData.name
+				users = roomData.usernames
+				for user in users
+					instance.selectedUserNames[user] = user
+					instance.selectedUsers.set instance.selectedUsers.get().concat user
+
+
 
 	# other conversation members
 	instance.otherMembers = _.without(instance.data.members, Meteor.userId())
