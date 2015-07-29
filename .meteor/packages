@@ -75,3 +75,4 @@ yasinuslu:blaze-meta
 nimble:restivus
 dispatch:run-as-user
 rocketchat:logger
+rocketchat:external
