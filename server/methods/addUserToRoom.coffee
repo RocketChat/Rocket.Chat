@@ -16,10 +16,8 @@ Meteor.methods
 		now = new Date()
 
 		update =
-			$push:
-				usernames:
-					$each: [data.username]
-					$sort: 1
+			$addToSet:
+				usernames: data.username
 
 		newUser = Meteor.users.findOne username: data.username
 
