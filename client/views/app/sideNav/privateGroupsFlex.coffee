@@ -126,6 +126,7 @@ Template.privateGroupsFlex.onCreated ->
 	instance.autorun (c) ->
 		sub = Meteor.subscribe('room', instance.data.relabelRoom)
 		if sub.ready()
+			# once it's ready, stop re-running this autorun function
 			c.stop()
 			roomData = ChatRoom.findOne instance.data.relabelRoom
 			if roomData

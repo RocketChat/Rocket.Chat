@@ -88,11 +88,7 @@ Template.directMessagesFlex.events
 		else
 			Template.instance().error.set(err)
 
-Template.directMessagesFlex.onRendered ->
-	relabelRoom = this.data.relabelRoom
-	if relabelRoom?
-		this.find('#who').value = this.selectedUser.get()
-		Meteor.subscribe 'room', relabelRoom
+
 
 Template.directMessagesFlex.onCreated ->
 	instance = this
@@ -106,10 +102,22 @@ Template.directMessagesFlex.onCreated ->
 		instance.find('#who').value = ''
 		instance.roomData = undefined
 
-	instance.roomData = ChatRoom.findOne instance.data.relabelRoom, { fields: { usernames: 1, t: 1, name: 1 } }
-	if instance.roomData?.usernames
-		username = _.without instance.roomData.usernames, Meteor.user().username
-		instance.selectedUser.set username[0]
+
+	# Tracker.autorun function that gets re-executed on changes to the (reactive)
+	# subscription to the 'room' publication. Once it is flagged as 'ready', stop
+	# re-executing the function and populate the room name, members, labels data.
+	# Function automatically stops if template is closed.
+	instance.autorun (c) ->
+		sub = Meteor.subscribe('room', instance.data.relabelRoom)
+		if sub.ready()
+			# once it's ready, stop re-running this autorun function
+			c.stop()
+			roomData = ChatRoom.findOne instance.data.relabelRoom
+			if roomData
+				username = _.without roomData.usernames, Meteor.user().username
+				instance.selectedUser.set username[0]
+				instance.find('#who').value = instance.selectedUser.get()
+
 
 	# other conversation members
 	instance.otherMembers = _.without(instance.data.members, Meteor.userId())
