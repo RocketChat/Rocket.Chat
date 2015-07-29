@@ -1,6 +1,5 @@
-The Complete Open Source Chat Solution that implements the [DoD Manual 5200.01V2] (http://www.dtic.mil/whs/directives/corres/pdf/520001_vol2.pdf)
-
 ## About
+The Complete Open Source Chat Solution that implements the [DoD Manual 5200.01V2] (http://www.dtic.mil/whs/directives/corres/pdf/520001_vol2.pdf)
 
 [![Build Status](https://travis-ci.org/sscpac/chat-locker.svg?branch=master)](https://travis-ci.org/sscpac/chat-locker)
 <!--- [![Coverage Status](https://coveralls.io/repos/sscpac/chat-locker/badge.svg?branch=master&service=github)](https://coveralls.io/github/sscpac/chat-locker?branch=master) -->
