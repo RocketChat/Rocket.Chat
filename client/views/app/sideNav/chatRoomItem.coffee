@@ -46,11 +46,12 @@ Template.chatRoomItem.events
 	'click .label-room': (e) ->
 		e.stopPropagation()
 		e.preventDefault()
-		Session.set("Relabel_room",this.rid)
+		data = {}
+		data.relabelRoom = this.rid
 		if this.t is 'd'
-			SideNav.setFlex "directMessagesFlex"
-		else
-			SideNav.setFlex "privateGroupsFlex"
+			SideNav.setFlex "directMessagesFlex", data
+		else if this.t is 'p'
+			SideNav.setFlex "privateGroupsFlex", data
 		SideNav.openFlex()
 		console.log "Relabel a Room"
 

@@ -41,9 +41,9 @@ Template.privateGroupsFlex.helpers
 	securityLabelsInitialized: ->
 		return Template.instance().securityLabelsInitialized.get()
 	relabelRoom: ->
-		return Session.get('Relabel_room')?
+		return Template.instance().data.relabelRoom?
 	nameReadonly: ->
-		if Session.get('Relabel_room') then 'readonly' else ''
+		if Template.instance().data.relabelRoom then 'readonly' else ''
 
 
 Template.privateGroupsFlex.events
@@ -66,7 +66,6 @@ Template.privateGroupsFlex.events
 		$('#pvt-group-members').focus()
 
 	'click .cancel-pvt-group': (e, instance) ->
-		Session.set("Relabel_id",undefined)
 		SideNav.closeFlex()
 
 	'click header': (e, instance) ->
@@ -85,7 +84,7 @@ Template.privateGroupsFlex.events
 		err = SideNav.validate()
 		if not err
 			accessPermissions = instance.selectedLabelIds
-			rid = Session.get('Relabel_room')
+			rid = instance.data.relabelRoom
 			if rid
 				Meteor.call 'updatePrivateGroup', rid, instance.find('#pvt-group-name').value, instance.selectedUsers.get(), accessPermissions, (err, result) ->
 					if err
@@ -104,10 +103,10 @@ Template.privateGroupsFlex.events
 			Template.instance().error.set(err)
 
 Template.privateGroupsFlex.onRendered ->
-	roomToRelabel = Session.get 'Relabel_room'
-	if roomToRelabel?
-		Meteor.subscribe 'room', roomToRelabel
-		roomData = ChatRoom.findOne roomToRelabel
+	relabelRoom = this.data.relabelRoom
+	if relabelRoom?
+		Meteor.subscribe 'room', relabelRoom
+		roomData = ChatRoom.findOne relabelRoom
 		console.log roomData
 		if roomData
 			this.find('#pvt-group-name').value = roomData.name
@@ -125,9 +124,8 @@ Template.privateGroupsFlex.onCreated ->
 		instance.find('#pvt-group-name').value = ''
 		instance.find('#pvt-group-members').value = ''
 		instance.roomData = undefined
-		Session.set("Relabel_room",undefined)
 
-	instance.roomData = ChatRoom.findOne Session.get('Relabel_room'), { fields: { usernames: 1, t: 1, name: 1 } }
+	instance.roomData = ChatRoom.findOne instance.data.relabelRoom, { fields: { usernames: 1, t: 1, name: 1 } }
 	if instance.roomData?.usernames
 		users = instance.roomData.usernames
 		for user in users

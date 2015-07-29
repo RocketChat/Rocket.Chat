@@ -551,8 +551,12 @@ Template.room.events
 	'click .security-banner': (event) ->
 		e.stopPropagation()
 		e.preventDefault()
-		SideNav.setFlex "privateGroupsFlex"
-		Session.set("Relabel_id",this.rid)
+		data = {}
+		data.relabelRoom = this.rid
+		if this.t is 'd'
+			SideNav.setFlex "directMessagesFlex", data
+		else if this.t is 'p'
+			SideNav.setFlex "privateGroupsFlex", data
 		SideNav.openFlex()
 		console.log "Relabel a Room"
 
