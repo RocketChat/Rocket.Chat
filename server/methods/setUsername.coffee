@@ -19,10 +19,8 @@ Meteor.methods
 		if not user.username?
 			# put user in general channel
 			ChatRoom.update 'GENERAL',
-				$push:
-					usernames:
-						$each: [username]
-						$sort: 1
+				$addToSet:
+					usernames: username
 
 			if not ChatSubscription.findOne(rid: 'GENERAL', 'u._id': user._id)?
 				ChatSubscription.insert
