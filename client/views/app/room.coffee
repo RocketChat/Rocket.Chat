@@ -467,16 +467,10 @@ Template.room.events
 		FS?.Utility?.eachFile e, (file) ->
 			newFile = new (FS.File)(file)
 			newFile.rid = Session.get('openedRoom')
+			newFile.userId = Meteor.userId()
 			Files.insert newFile, (error, fileObj) ->
 				unless error
 					toastr.success 'Upload succeeded!'
-					console.log('room fileObj', fileObj) if window.rocketDebug
-					Meteor.call 'sendMessage',
-						_id: Random.id()
-						rid: fileObj.rid
-						msg: 'File Uploaded: *' + fileObj.original.name + '* \n' + document.location.origin + '/cfs/files/Files/' + fileObj._id
-						file:
-							_id: fileObj._id
 
 Template.room.onCreated ->
 	# this.scrollOnBottom = true
