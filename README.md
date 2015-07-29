@@ -130,7 +130,13 @@ meteor
 
 ## Credits
 
-Thanks to [Diego Sampaio](https://github.com/sampaiodiego), [Gabriel Engel](https://github.com/engelgabriel), [Marcelo Schmidt](https://github.com/marceloschmidt), [Rafael Caferati](https://github.com/rcaferati) e [Rodrigo Nascimento](https://github.com/rodrigok)
+Thanks to
+[Diego Sampaio](https://github.com/sampaiodiego),
+[Gabriel Engel](https://github.com/engelgabriel),
+[Marcelo Schmidt](https://github.com/marceloschmidt),
+[Rafael Caferati](https://github.com/rcaferati),
+[Rodrigo Nascimento](https://github.com/rodrigok),
+[Sing Li](https://github.com/Sing-Li)
 
 Emoji provided free by [Emoji One](http://emojione.com)
 
