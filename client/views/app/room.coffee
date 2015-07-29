@@ -457,13 +457,15 @@ Template.room.events
 	'click .stop-video': (event) ->
 		webrtc.stop()
 
-	'dragenter #dropzone': (e) ->
-		console.log 'DRAG ENTER'
+	'dragenter .dropzone': (e) ->
+		e.currentTarget.classList.add 'over'
 
-	'dragleave #dropzone': (e) ->
-		console.log 'DRAG OUT'
+	'dragleave .dropzone-overlay': (e) ->
+		e.currentTarget.parentNode.classList.remove 'over'
 
-	'dropped #dropzone': (e) ->
+	'dropped .dropzone-overlay': (e) ->
+		e.currentTarget.parentNode.classList.remove 'over'
+
 		FS?.Utility?.eachFile e, (file) ->
 			newFile = new (FS.File)(file)
 			newFile.rid = Session.get('openedRoom')
