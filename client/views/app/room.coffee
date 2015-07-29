@@ -469,6 +469,7 @@ Template.room.events
 		FS?.Utility?.eachFile e, (file) ->
 			newFile = new (FS.File)(file)
 			newFile.rid = Session.get('openedRoom')
+			newFile.recId = Random.id()
 			newFile.userId = Meteor.userId()
 			Files.insert newFile, (error, fileObj) ->
 				unless error
