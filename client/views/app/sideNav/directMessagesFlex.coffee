@@ -31,6 +31,10 @@ Template.directMessagesFlex.helpers
 		}
 	securityLabelsInitialized: ->
 		return Template.instance().securityLabelsInitialized.get()
+	relabelRoom: ->
+		return Session.get('Relabel_room')?
+	nameReadonly: ->
+		if Session.get('Relabel_room') then 'readonly' else ''
 
 
 Template.directMessagesFlex.events
@@ -66,14 +70,29 @@ Template.directMessagesFlex.events
 		err = SideNav.validate()
 		if not err
 			accessPermissions = instance.selectedLabelIds
-			Meteor.call 'createDirectMessage', instance.selectedUser.get(), accessPermissions, (err, result) ->
-				if err
-					return toastr.error err.reason
-				SideNav.closeFlex()
-				instance.clearForm()
-				Router.go 'room', { _id: result.rid }
+			rid = Session.get('Relabel_room')
+			if rid
+				Meteor.call 'updateDirectMessage', rid, instance.selectedUser.get(), accessPermissions, (err, result) ->
+					if err
+						return toastr.error err.reason
+					SideNav.closeFlex()
+					instance.clearForm()
+					Router.go 'room', { _id: result.rid }
+			else
+				Meteor.call 'createDirectMessage', instance.selectedUser.get(), accessPermissions, (err, result) ->
+					if err
+						return toastr.error err.reason
+					SideNav.closeFlex()
+					instance.clearForm()
+					Router.go 'room', { _id: result.rid }
 		else
 			Template.instance().error.set(err)
+
+Template.directMessagesFlex.onRendered ->
+	roomToRelabel = Session.get 'Relabel_room'
+	if roomToRelabel?
+		this.find('#who').value = this.selectedUser.get()
+		Meteor.subscribe 'room', roomToRelabel
 
 Template.directMessagesFlex.onCreated ->
 	instance = this
@@ -85,6 +104,13 @@ Template.directMessagesFlex.onCreated ->
 		instance.error.set([])
 		instance.selectedUser.set null
 		instance.find('#who').value = ''
+		instance.roomData = undefined
+		Session.set("Relabel_room",undefined)
+
+	instance.roomData = ChatRoom.findOne Session.get('Relabel_room'), { fields: { usernames: 1, t: 1, name: 1 } }
+	if instance.roomData?.usernames
+		username = _.without instance.roomData.usernames, Meteor.user().username
+		instance.selectedUser.set username
 
 	# other conversation members
 	instance.otherMembers = _.without(instance.data.members, Meteor.userId())

@@ -124,6 +124,7 @@ Template.privateGroupsFlex.onCreated ->
 		instance.selectedUsers.set([])
 		instance.find('#pvt-group-name').value = ''
 		instance.find('#pvt-group-members').value = ''
+		instance.roomData = undefined
 		Session.set("Relabel_room",undefined)
 
 	instance.roomData = ChatRoom.findOne Session.get('Relabel_room'), { fields: { usernames: 1, t: 1, name: 1 } }
