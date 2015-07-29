@@ -1,7 +1,7 @@
 Blaze.registerHelper 'pathFor', (path, kw) ->
 	return FlowRouter.path path, kw.hash
 
-FlowLayout.setRoot 'body'
+BlazeLayout.setRoot 'body'
 
 
 FlowRouter.subscriptions = ->
@@ -32,20 +32,20 @@ FlowRouter.route '/home',
 	name: 'home'
 
 	action: ->
-		FlowLayout.render 'main', {center: 'home'}
+		BlazeLayout.render 'main', {center: 'home'}
 		KonchatNotification.getDesktopPermission()
 
 FlowRouter.route '/changeavatar',
 	name: 'changeAvatar'
 
 	action: ->
-		FlowLayout.render 'main', {center: 'avatarPrompt'}
+		BlazeLayout.render 'main', {center: 'avatarPrompt'}
 
 FlowRouter.route '/settings/:group?',
 	name: 'settings'
 
 	action: ->
-		FlowLayout.render 'main', {center: 'settings'}
+		BlazeLayout.render 'main', {center: 'settings'}
 
 FlowRouter.route '/history/private',
 	name: 'privateHistory'
@@ -55,4 +55,4 @@ FlowRouter.route '/history/private',
 
 	action: ->
 		Session.setDefault('historyFilter', '')
-		FlowLayout.render 'main', {center: 'privateHistory'}
+		BlazeLayout.render 'main', {center: 'privateHistory'}
