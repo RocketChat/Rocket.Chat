@@ -52,25 +52,67 @@ Future = Npm.require('fibers/future');
     //        },
     // };
     this.options = {
-        userLDAPMap : {
-            "profile" : {
-                "phone" : "phone", 
-                "rank" : "rank", 
-                "location" : "location", 
-                "givenName" : "first_name", 
-                "sn" : "last_name", 
-                "access" : [["access"]]
-                },
-            "uid" : ["_id", "username"],
-            "emails" : [{
-                "mail" : "address"
-            }]
+        // Convert LDAP entry to User object
+        // { dn: 'cn=wcleaver,ou=Users,dc=jedis,dc=spawar,dc=navy,dc=mil',
+        //   controls: [],
+        //   mail: 'wcleaver@jedis.mil',
+        //   givenName: 'Wallace',
+        //   rank: '13',
+        //   phone: '202-555-1212',
+        //   location: 'Mayfield',
+        //   sn: 'Cleaver',
+        //   cn: [ 'Wally Cleaver', 'wcleaver' ],
+        //   access: '300',
+        //   objectClass:
+        //    [ 'top',
+        //      'inetOrgPerson',
+        //      'person',
+        //      'organizationalPerson',
+        //      'jedis-user' ],
+        //   userPassword: '{SSHA}0aGyWnPVXr7SgZvgJDoeyZQzwflHdUto',
+        //   uid: 'wcleaver'  
+        //  }
+        //  to 
+        //  {  profile:
+        //     { phone: '202-555-1212',
+        //       rank: '8',
+        //       location: 'Mayfield',
+        //       first_name: 'Theodore',
+        //       last_name: 'Cleaver',
+        //       access: '300' 
+        //     },
+        //     _id: 'bcleaver',
+        //     username: 'bcleaver',
+        //     emails: [{address:'bcleaver@jedis.mil'}]
+        //  }
+        //   
+        userLDAPMap : function( source ) {
+            return {
+                _id : source.uid,
+                username : source.uid,
+                name : source.givenName + ' ' + source.sn,
+                emails : [
+                    {
+                        address : source.mail
+                    }
+                ],
+                profile : {
+                    phone : source.phone,
+                    rank : source.rank,
+                    location : source.location,
+                    first_name : source.givenName,
+                    last_name : source.sn,
+                    access : _.isArray(source.access) ? source.access : [source.access],
+                }
+            }
         },
-        accessPermissionLDAPMap : { 
-            "id":"_id", 
-            "trigraph":"trigraph",
-            "description":"label",
-            "type":"type"
+        accessPermissionLDAPMap : function(source) {
+            return {
+                _id : source.id,
+                trigraph : source.trigraph,
+                label: source.description,
+                type : source.type
+            };
         } 
     };
 
@@ -123,7 +165,7 @@ DirectoryService.prototype.AuthenticateUser = function(authArgs) {
                 var retObject = { user: null 	};
                 self.userClient.search(bindDn, {}, function(err, res) {
                     res.on('searchEntry', function(entry) {
-                        retObject.user = self._convert(entry.object, self.options.userLDAPMap);
+                        retObject.user = self.options.userLDAPMap(entry.object);
                     });
                     res.on('end', function() {
                         ldapAsyncFut.return(retObject);           				 
@@ -153,43 +195,10 @@ DirectoryService.prototype.getUsers = function( ) {
             console.error(err);
             throw new Meteor.Error(err);
         } else {
-            // Convert array of LDAP entry to User objects
-            // { dn: 'cn=wcleaver,ou=Users,dc=jedis,dc=spawar,dc=navy,dc=mil',
-            //   controls: [],
-            //   mail: 'wcleaver@jedis.mil',
-            //   givenName: 'Wallace',
-            //   rank: '13',
-            //   phone: '202-555-1212',
-            //   location: 'Mayfield',
-            //   sn: 'Cleaver',
-            //   cn: [ 'Wally Cleaver', 'wcleaver' ],
-            //   access: '300',
-            //   objectClass:
-            //    [ 'top',
-            //      'inetOrgPerson',
-            //      'person',
-            //      'organizationalPerson',
-            //      'jedis-user' ],
-            //   userPassword: '{SSHA}0aGyWnPVXr7SgZvgJDoeyZQzwflHdUto',
-            //   uid: 'wcleaver'  
-            //  }
-            //  to 
-            //  {  profile:
-            //     { phone: '202-555-1212',
-            //       rank: '8',
-            //       location: 'Mayfield',
-            //       first_name: 'Theodore',
-            //       last_name: 'Cleaver',
-            //       access: '300' 
-            //     },
-            //     _id: 'bcleaver',
-            //     username: 'bcleaver',
-            //     emails: [{address:'bcleaver@jedis.mil'}]
-            //  }
-            //  
+
             users = result.map( function(entry) {
-                // convert ldap entry to AccessPermission
-                user =  self._convert( entry, self.options.userLDAPMap);
+                // convert ldap entry to User
+                user =  self.options.userLDAPMap(entry);
                 return user;
 
             });
@@ -228,7 +237,7 @@ DirectoryService.prototype.getAccessPermissions = function( ) {
             //  { _id:'206', trigraph:'PK', label:'Private key', type:'SCI'}
             permissions = result.map( function(entry) {
                 // convert ldap entry to AccessPermission
-                return self._convert( entry, self.options.accessPermissionLDAPMap);
+                return self.options.accessPermissionLDAPMap(entry);
             });
             ldapAsyncFut.return( permissions );
         }
@@ -236,59 +245,7 @@ DirectoryService.prototype.getAccessPermissions = function( ) {
 
     return ldapAsyncFut.wait();
 }
-/**
- * Copy properties defined in keyMap from obj to new object.
- * @param  {[object]} obj    the object whose properties will be copied
- * @param  {[object]} keyMap defines mapping between obj key and returned object's key
- * @return {[object]}        resulting object that contains properties specified in the keyMap 
- *                           and defined in obj
- */
-DirectoryService.prototype._convert = function(obj, keyMap) {
-    var result = {},
-        resultKey,
-        objKey,
-        //value,
-        self=this;
 
-    for( objKey in keyMap ) {
-        resultKey = keyMap[objKey];
-        // test for array first because an array is an object
-        if( _.isArray(resultKey) ) {
-            // resulting object either:
-            // 1. multiple properties mapped to the same LDAP value 
-            // 2. property mapped to an array
-            // 3. property containing an object with its own properties
-            resultKey.forEach(function( key ) {
-                var value,
-                    array; 
-                if( _.isArray(key) ) {
-                    value = obj[objKey];
-                    result[key] = _.isArray(value) ? value : [value];
-
-                } else if(_.isObject(key)) {
-                    array = [];
-                    result[objKey] = array;
-                    for( objKey in key ) {
-                        value = self._convert( obj, key);
-                        array.push( value );
-                    }
-                } else {
-                    value = obj[objKey];
-                    result[key] = value;
-                }
-            });
-
-        } else if( _.isObject(resultKey )) {
-            // resulting object property is another object
-            result[objKey] = self._convert( obj, resultKey);
-
-        } else {
-            // map resulting object proeprty to LDAP value
-            result[resultKey] = obj[objKey];
-        }
-    }
-    return result;
-}
 /**
  * Ensure that `this._adminClient` is bound.
  */
