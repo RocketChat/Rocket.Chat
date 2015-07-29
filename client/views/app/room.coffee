@@ -313,6 +313,26 @@ Template.room.events
 	'keyup .input-message': (event) ->
 		ChatMessages.keyup(@_id, event, Template.instance())
 
+	'paste .input-message': (e) ->
+		if not e.originalEvent.clipboardData?
+			return
+
+		items = e.originalEvent.clipboardData.items
+		for item in items
+			if item.kind is 'file' and item.type.indexOf('image/') isnt -1
+				e.preventDefault()
+
+				blob = item.getAsFile()
+
+				newFile = new (FS.File)(blob)
+				newFile.name('Clipboard')
+				newFile.rid = Session.get('openedRoom')
+				newFile.recId = Random.id()
+				newFile.userId = Meteor.userId()
+				Files.insert newFile, (error, fileObj) ->
+					unless error
+						toastr.success 'Upload from clipboard succeeded!'
+
 	'keydown .input-message': (event) ->
 		ChatMessages.keydown(@_id, event, Template.instance())
 
