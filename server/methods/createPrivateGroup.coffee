@@ -1,5 +1,5 @@
 Meteor.methods
-	createPrivateGroup: (name, members, accessPermissions) ->
+	createPrivateGroup: (name, members, accessPermissions = ['U','300']) ->
 		if not Meteor.userId()
 			throw new Meteor.Error 'invalid-user', "[methods] createPrivateGroup -> Invalid user"
 
