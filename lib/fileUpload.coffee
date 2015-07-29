@@ -4,15 +4,16 @@ if FS?
 
 	fileStore.on 'stored', Meteor.bindEnvironment (storeName, fileObj) ->
 		Meteor.runAsUser fileObj.userId, ->
-			Meteor.call 'sendMessage',
-				_id: Random.id()
-				rid: fileObj.rid
-				msg: """
-					File Uploaded: *#{fileObj.original.name}*
-					#{Meteor.absoluteUrl()}/cfs/files/Files/#{fileObj._id}
-				"""
-				file:
-					_id: fileObj._id
+			if not ChatMessage.findOne(fileObj.recId)?
+				Meteor.call 'sendMessage',
+					_id: fileObj.recId
+					rid: fileObj.rid
+					msg: """
+						File Uploaded: *#{fileObj.original.name}*
+						#{Meteor.absoluteUrl()}cfs/files/Files/#{fileObj._id}
+					"""
+					file:
+						_id: fileObj._id
 
 	@Files = new FS.Collection 'Files',
 		stores: [fileStore],
