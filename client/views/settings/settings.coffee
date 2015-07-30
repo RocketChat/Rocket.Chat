@@ -22,12 +22,6 @@ Template.settings.helpers
 		return TAPi18next.t @i18nDescription
 
 Template.settings.events
-	"click .burger": ->
-		chatContainer = $("#rocket-chat")
-		if chatContainer.hasClass("menu-closed")
-			chatContainer.removeClass("menu-closed").addClass("menu-opened")
-		else
-			chatContainer.addClass("menu-closed").removeClass("menu-opened")
 
 	"click .submit": ->
 		group = FlowRouter.getParam('group')
@@ -42,7 +36,7 @@ Template.settings.events
 
 			if value?
 				updateSettings.push { _id: setting._id, value: value }
-		
+
 		if not _.isEmpty updateSettings
 			RocketChat.settings.batchSet updateSettings, (err, success) ->
 				return toastr.error TAPi18next.t 'Error_updating_settings' if err

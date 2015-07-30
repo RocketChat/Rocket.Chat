@@ -300,14 +300,6 @@ Template.room.events
 		event.preventDefault()
 		Meteor.call 'joinRoom', @_id
 
-	"click .burger": ->
-		console.log 'room click .burger' if window.rocketDebug
-		chatContainer = $("#rocket-chat")
-		if chatContainer.hasClass("menu-closed")
-			chatContainer.removeClass("menu-closed").addClass("menu-opened")
-		else
-			chatContainer.addClass("menu-closed").removeClass("menu-opened")
-
 	'focus .input-message': (event) ->
 		KonchatNotification.removeRoomNotification @_id
 
