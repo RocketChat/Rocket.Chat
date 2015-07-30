@@ -301,6 +301,7 @@ Template.room.events
 		Meteor.call 'joinRoom', @_id
 
 	"click .burger": ->
+		console.log 'room click .burger' if window.rocketDebug
 		chatContainer = $("#rocket-chat")
 		if chatContainer.hasClass("menu-closed")
 			chatContainer.removeClass("menu-closed").addClass("menu-opened")
