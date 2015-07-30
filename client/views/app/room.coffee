@@ -186,7 +186,7 @@ Template.room.helpers
 		users = []
 		onlineUsers = RoomManager.onlineUsers.get()
 
-		for username in room.usernames
+		for username in room?.usernames or []
 			if onlineUsers[username]?
 				users.push
 					username: username
@@ -299,13 +299,6 @@ Template.room.events
 		event.stopPropagation()
 		event.preventDefault()
 		Meteor.call 'joinRoom', @_id
-
-	"click .burger": ->
-		chatContainer = $("#rocket-chat")
-		if chatContainer.hasClass("menu-closed")
-			chatContainer.removeClass("menu-closed").addClass("menu-opened")
-		else
-			chatContainer.addClass("menu-closed").removeClass("menu-opened")
 
 	'focus .input-message': (event) ->
 		KonchatNotification.removeRoomNotification @_id

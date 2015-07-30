@@ -43,6 +43,10 @@ Template.chatRoomItem.rendered = ->
 		KonchatNotification.newRoom(this.data.rid)
 
 Template.chatRoomItem.events
+
+	'click .open-room': (e) ->
+		$("#rocket-chat").addClass("menu-closed").removeClass("menu-opened")
+
 	'click .hide-room': (e) ->
 		e.stopPropagation()
 		e.preventDefault()
