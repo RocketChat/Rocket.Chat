@@ -21,7 +21,7 @@ Meteor.methods
 			Meteor.call 'saveRoomName', rid, name
 
 		# relabel room if permissions changed
-		if _.difference( room.accessPermissions, accessPermissions ).length > 0
+		if _.difference( accessPermissions, room.accessPermissions ).length > 0
 			Meteor.call 'relabelRoom', rid, accessPermissions
 
 		# add users to the room that weren't previously in the room
