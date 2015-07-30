@@ -1,4 +1,5 @@
 Template.body.onRendered ->
+
 	dataLayerComputation = Tracker.autorun ->
 		w = window
 		d = document
@@ -20,11 +21,11 @@ Template.body.onRendered ->
 	metaLanguageComputation = Tracker.autorun ->
 		if RocketChat.settings.get 'Meta:language'
 			metaLanguageComputation?.stop()
-			Meta.set 
+			Meta.set
 				name: 'http-equiv'
 				property: 'content-language'
 				content: RocketChat.settings.get 'Meta:language'
-			Meta.set 
+			Meta.set
 				name: 'name'
 				property: 'language'
 				content: RocketChat.settings.get 'Meta:language'
@@ -32,7 +33,7 @@ Template.body.onRendered ->
 	metaFBComputation = Tracker.autorun ->
 		if RocketChat.settings.get 'Meta:fb:app_id'
 			metaFBComputation?.stop()
-			Meta.set 
+			Meta.set
 				name: 'property'
 				property: 'fb:app_id'
 				content: RocketChat.settings.get 'Meta:fb:app_id'
@@ -40,7 +41,7 @@ Template.body.onRendered ->
 	metaRobotsComputation = Tracker.autorun ->
 		if RocketChat.settings.get 'Meta:robots'
 			metaRobotsComputation?.stop()
-			Meta.set 
+			Meta.set
 				name: 'name'
 				property: 'robots'
 				content: RocketChat.settings.get 'Meta:robots'
@@ -48,7 +49,7 @@ Template.body.onRendered ->
 	metaGoogleComputation = Tracker.autorun ->
 		if RocketChat.settings.get 'Meta:google-site-verification'
 			metaGoogleComputation?.stop()
-			Meta.set 
+			Meta.set
 				name: 'name'
 				property: 'google-site-verification'
 				content: RocketChat.settings.get 'Meta:google-site-verification'
@@ -56,12 +57,14 @@ Template.body.onRendered ->
 	metaMSValidateComputation = Tracker.autorun ->
 		if RocketChat.settings.get 'Meta:msvalidate.01'
 			metaMSValidateComputation?.stop()
-			Meta.set 
+			Meta.set
 				name: 'name'
 				property: 'msvalidate.01'
 				content: RocketChat.settings.get 'Meta:msvalidate.01'
 
+
 Template.main.helpers
+
 	logged: ->
 		return Meteor.userId()?
 
@@ -84,7 +87,19 @@ Template.main.helpers
 		return 'layout2' if (Session.get('rtcLayoutmode') > 1)
 
 
+Template.main.events
+
+	"click .burger": ->
+		console.log 'room click .burger' if window.rocketDebug
+		chatContainer = $("#rocket-chat")
+		if chatContainer.hasClass("menu-closed")
+			chatContainer.removeClass("menu-closed").addClass("menu-opened")
+		else
+			chatContainer.addClass("menu-closed").removeClass("menu-opened")
+
+
 Template.main.onRendered ->
+
 	$('html').addClass("noscroll").removeClass "scroll"
 
 	# RTL Support - Need config option on the UI

@@ -1340,6 +1340,7 @@ a.github-fork {
 		text-align: right;
 		background: #fff;
 		min-height: @footer-min-height;
+		height: @footer-min-height;
 		background-color: @primary-background-color;
 		.logo {
 			display: block;
@@ -1364,6 +1365,7 @@ a.github-fork {
 		img {
 			display: inline-block;
 			max-width: 222px;
+			max-height: 43px;
 			margin-bottom: -10px;
 		}
 	}
@@ -3313,7 +3315,6 @@ a.github-fork {
 	.dropzone-overlay {
 		display: none;
 	}
-
 	&.over .dropzone-overlay {
 		background-color: rgba(0, 0, 0, 0.5);
 		position: fixed;
@@ -3328,9 +3329,8 @@ a.github-fork {
 		display: flex;
 		align-items: center;
 		justify-content: center;
-
 		> div {
-			background-color: rgba(0,0,0,0.6);
+			background-color: rgba(0, 0, 0, 0.6);
 			padding: 40px;
 			border-radius: 10px;
 			pointer-events: none;
