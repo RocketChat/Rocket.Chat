@@ -18,7 +18,7 @@ FlowRouter.route '/room/:_id',
 
 				mainNode = document.querySelector('.main-content')
 				if mainNode?
-					child?.remove() for child in mainNode.children
+					mainNode.removeChild child for child in mainNode.children
 					room = RoomManager.getDomOfRoom(params._id)
 					mainNode.appendChild room
 					if room.classList.contains('room-container')
@@ -42,5 +42,5 @@ FlowRouter.route '/room/:_id',
 					if child?
 						if child.classList.contains('room-container')
 							child.oldScrollTop = child.querySelector('.messages-box > .wrapper').scrollTop
-						child.remove()
+						$(child).remove()
 	]
