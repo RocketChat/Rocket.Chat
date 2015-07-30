@@ -113,8 +113,6 @@ Template.privateGroupsFlex.onCreated ->
 	instance.otherMembers = []
 	instance.error = new ReactiveVar []
 	instance.groupName = new ReactiveVar ''
-	# if relabelRoom (the roomId) is specified in context, then we're editing a room
-	instance.room = Session.get('roomData' + instance.data.relabelRoom );
 
 	# labels assignable by the current user
 	userPerms = AccessPermissions.find({_id:{$in: Meteor.user().profile.access}}).fetch()
@@ -135,26 +133,54 @@ Template.privateGroupsFlex.onCreated ->
 		instance.find('#pvt-group-name').value = ''
 		instance.find('#pvt-group-members').value = ''
 
-	# room is set if we're editing an existing room
-	if instance.room
-		# select existing permissions and disallow removing them
-		instance.selectedLabelIds = instance.room.accessPermissions
-		instance.disabledLabelIds = instance.room.accessPermissions
-		instance.groupName.set(instance.room.name)
-		instance.room.usernames?.forEach (username) ->
-			# TODO use name field instead of username.  Room only has username
-			# so we need to make server call to get full name for a username
-			instance.selectedUserNames[username] = username
-			instance.selectedUsers.set instance.selectedUsers.get().concat username	
-			# other conversation members
-			instance.otherMembers = _.without(instance.room.usernames, Meteor.user().username)
-	else
-		userCountryCode = _.find(userPerms, (perm) -> return perm.type is 'Release Caveat' )
-		# TODO update to get default classification setting and system country code
-		instance.selectedLabelIds = _.uniq(['U', '300', userCountryCode?._id])
-		instance.disabledLabelIds = _.uniq(['300', userCountryCode?._id])
 
-	instance.securityLabelsInitialized.set true
+
+	# Tracker.autorun function that gets executed on template creation, and then re-executed
+	# on changes to the reactive inputs (in this case, Session data and subscription to the
+	# 'room' publication). If the 'relabelRoom' variable is set in the data context (meaning
+	# we are relabeling rather than creating a room), get a subscription and then "wait" for
+	# the room data to be populated in Session variable (see roomObserve.coffee). Once that
+	# data is set, stop further execution of this function and then populate the label info
+	# input fields for the room.
+	#
+	# Since function is tied to Template instance, will automatically stop if template on
+	# destroy (http://docs.meteor.com/#/full/template_autorun).
+	instance.autorun (c) ->
+		# check if we are relabeling the room
+		if instance.data.relabelRoom?
+			# get a subscription to the room (in case we don't have one already)
+			Meteor.subscribe('room', instance.data.relabelRoom)
+			# function will automatically re-run on changes to this session variable, thus
+			# it will essentially "wait" for the data to get set
+			if Session.get('roomData' + instance.data.relabelRoom)
+				# once we have the data, no need to keep re-running
+				c.stop()
+				# get room data
+				instance.room = Session.get('roomData' + instance.data.relabelRoom)
+				# select existing permissions and disallow removing them
+				instance.selectedLabelIds = instance.room.accessPermissions
+				instance.disabledLabelIds = instance.room.accessPermissions
+				instance.groupName.set(instance.room.name)
+				instance.room.usernames?.forEach (username) ->
+					# TODO use name field instead of username.  Room only has username
+					# so we need to make server call to get full name for a username
+					instance.selectedUserNames[username] = username
+					instance.selectedUsers.set instance.selectedUsers.get().concat username	
+					# other conversation members
+					instance.otherMembers = _.without(instance.room.usernames, Meteor.user().username)
+					instance.securityLabelsInitialized.set true
+
+		# if creating a new room (rather than relabel), populate default values (UNCLASS//RELTO USA)
+		else
+			# no need to keep running this autorun function, since nothing to wait for
+			c.stop()
+			userCountryCode = _.find(userPerms, (perm) -> return perm.type is 'Release Caveat' )
+			# TODO update to get default classification setting and system country code
+			instance.selectedLabelIds = _.uniq(['U', '300', userCountryCode?._id])
+			instance.disabledLabelIds = _.uniq(['300', userCountryCode?._id])
+			instance.securityLabelsInitialized.set true
+
+
 
 	# adds/remove access permission ids from list of selected labels
 	instance.onSelectionChanged = (params) ->
