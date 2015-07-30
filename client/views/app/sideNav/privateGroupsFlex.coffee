@@ -5,6 +5,9 @@ Template.privateGroupsFlex.helpers
 	name: ->
 		return Template.instance().selectedUserNames[this.valueOf()]
 
+	groupName: ->
+		return Template.instance().groupName.get()
+
 	error: ->
 		return Template.instance().error.get()
 
@@ -102,41 +105,29 @@ Template.privateGroupsFlex.events
 		else
 			Template.instance().error.set(err)
 
-
-
 Template.privateGroupsFlex.onCreated ->
 	instance = this
 	instance.selectedUsers = new ReactiveVar []
 	instance.selectedUserNames = {}
 	instance.error = new ReactiveVar []
+	instance.groupName = new ReactiveVar ''
+	# if relabelRoom (the roomId) is specified in context, then we're editing a room
+	instance.room = Session.get('roomData' + instance.data.relabelRoom );
 
 	instance.clearForm = ->
 		instance.error.set([])
+		instance.groupName.set('')
 		instance.selectedUsers.set([])
 		instance.find('#pvt-group-name').value = ''
 		instance.find('#pvt-group-members').value = ''
-		instance.roomData = undefined
 
-
-
-	# Tracker.autorun function that gets re-executed on changes to the (reactive)
-	# subscription to the 'room' publication. Once it is flagged as 'ready', stop
-	# re-executing the function and populate the room name, members, labels data.
-	# Function automatically stops if template is closed.
-	instance.autorun (c) ->
-		sub = Meteor.subscribe('room', instance.data.relabelRoom)
-		if sub.ready()
-			# once it's ready, stop re-running this autorun function
-			c.stop()
-			roomData = ChatRoom.findOne instance.data.relabelRoom
-			if roomData
-				instance.find('#pvt-group-name').value = roomData.name
-				users = roomData.usernames
-				for user in users
-					instance.selectedUserNames[user] = user
-					instance.selectedUsers.set instance.selectedUsers.get().concat user
-
-
+	# room is set if we're editing an existing room
+	if instance.room
+		instance.groupName.set(instance.room.name)
+		instance.room.usernames?.forEach (user) ->
+			console.log user
+			instance.selectedUserNames[user] = user
+			instance.selectedUsers.set instance.selectedUsers.get().concat user	
 
 	# other conversation members
 	instance.otherMembers = _.without(instance.data.members, Meteor.userId())
