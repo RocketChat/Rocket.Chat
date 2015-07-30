@@ -36,10 +36,10 @@ Template.privateGroupsFlex.helpers
 		}
 	securityLabelsContext: ->
 		return {
-		onSelectionChanged: Template.instance().onSelectionChanged
-		isOptionSelected: Template.instance().isOptionSelected
-		isOptionDisabled: Template.instance().isOptionDisabled
-		securityLabels: Template.instance().allowedLabels
+			onSelectionChanged: Template.instance().onSelectionChanged
+			isOptionSelected: Template.instance().isOptionSelected
+			isOptionDisabled: Template.instance().isOptionDisabled
+			securityLabels: Template.instance().allowedLabels
 		}
 	securityLabelsInitialized: ->
 		return Template.instance().securityLabelsInitialized.get()
@@ -52,9 +52,10 @@ Template.privateGroupsFlex.helpers
 Template.privateGroupsFlex.events
 	'autocompleteselect #pvt-group-members': (event, instance, doc) ->
 		instance.selectedUsers.set instance.selectedUsers.get().concat doc.username
-
-		instance.selectedUserNames[doc.username] = doc.name
-
+		# TODO display full name.  Originally this displayed full name, but we changed this 
+		# when we reused this template to edit a room.  The room only has usernames, not the 
+		# full name and we have to add a Method call to retrieve the full name from a username
+		instance.selectedUserNames[doc.username] = doc.username
 		event.currentTarget.value = ''
 		event.currentTarget.focus()
 
@@ -109,6 +110,7 @@ Template.privateGroupsFlex.onCreated ->
 	instance = this
 	instance.selectedUsers = new ReactiveVar []
 	instance.selectedUserNames = {}
+	instance.otherMembers = []
 	instance.error = new ReactiveVar []
 	instance.groupName = new ReactiveVar ''
 	# if relabelRoom (the roomId) is specified in context, then we're editing a room
@@ -124,13 +126,14 @@ Template.privateGroupsFlex.onCreated ->
 	# room is set if we're editing an existing room
 	if instance.room
 		instance.groupName.set(instance.room.name)
-		instance.room.usernames?.forEach (user) ->
-			console.log user
-			instance.selectedUserNames[user] = user
-			instance.selectedUsers.set instance.selectedUsers.get().concat user	
+		instance.room.usernames?.forEach (username) ->
+			# TODO use name field instead of username.  Room only has username
+			# so we need to make server call to get full name for a username
+			instance.selectedUserNames[username] = username
+			instance.selectedUsers.set instance.selectedUsers.get().concat username	
+			# other conversation members
+			instance.otherMembers = _.without(instance.room.usernames, Meteor.user().username)
 
-	# other conversation members
-	instance.otherMembers = _.without(instance.data.members, Meteor.userId())
 	# labels that all members have in common
 	instance.allowedLabels = []
 	# reactive trigger set to true when labels returned asynchronously from server
