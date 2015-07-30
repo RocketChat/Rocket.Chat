@@ -7,14 +7,15 @@ Meteor.methods
 			throw new Meteor.Error('invalid-user', "[methods] updateRoom -> Requires authenticated user")
 
 		# validate params exist
-		unless rid and name and usernames and accessPermissions
+		unless name and accessPermissions
 			throw new Meteor.Error 'invalid-argument', 'Missing required values'
 
 		room = ChatRoom.findOne rid
 
 		# don't allow the room creator to be removed
-		unless room.u.username in usernames
-			throw new Meteor.Error 'invalid-argument', 'You cannot remove the room creator'
+		if room.u?
+			unless room.u.username in usernames
+				throw new Meteor.Error 'invalid-argument', 'You cannot remove the room creator'
 
 		if room.t not in ['d'] and name? and name isnt room.name
 			Meteor.call 'saveRoomName', rid, name
