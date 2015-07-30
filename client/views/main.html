@@ -49,6 +49,7 @@
 		{{#unless logged}}
 			{{> loginLayout}}
 		{{else}}
+			{{removeParticles}}
 			{{#unless hasUsername}}
 				{{> usernameLayout render='usernamePrompt'}}
 			{{else}}
