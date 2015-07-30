@@ -16,12 +16,12 @@ Meteor.methods
 		if not to
 			throw new Meteor.Error('invalid-user', "[methods] createDirectMessage -> Invalid target user")
 
-		canAccessResource = Meteor.call 'canAccessResource', [me._id,to._id], accessPermissions
-		if not canAccessResource.canAccess
-			throw new Meteor.Error('invalid-access-permissions', "User(s) cannot create a direct message with the specified access permissions")
-
 		if not Jedis.securityLabelIsValid(accessPermissions)
 			throw new Meteor.Error('invalid-access-permissions', "Missing required access permissions")
+
+		result = Meteor.call 'canAccessResource', [me._id,to._id], accessPermissions
+		if not result.canAccess
+			throw new Meteor.Error('invalid-access-permissions', result.deniedUsers.join(', ') + " cannot participate in a direct message with the specified access permissions")
 
 		rid = [me._id, to._id].sort().join('')
 
