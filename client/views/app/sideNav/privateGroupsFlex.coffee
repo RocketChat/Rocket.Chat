@@ -116,6 +116,18 @@ Template.privateGroupsFlex.onCreated ->
 	# if relabelRoom (the roomId) is specified in context, then we're editing a room
 	instance.room = Session.get('roomData' + instance.data.relabelRoom );
 
+	# labels assignable by the current user
+	userPerms = AccessPermissions.find({_id:{$in: Meteor.user().profile.access}}).fetch()
+	reltoPerms = AccessPermissions.find({type:'Release Caveat'}).fetch()
+	instance.allowedLabels = _.chain(userPerms).push(reltoPerms).flatten().uniq(false, (item)->return item._id).value()
+
+	# TODO remove init call since we're not calling the server anymore
+	instance.securityLabelsInitialized = new ReactiveVar(false)
+
+	# selected security label access permission ids
+	instance.selectedLabelIds = []
+	instance.disabledLabelIds = []
+
 	instance.clearForm = ->
 		instance.error.set([])
 		instance.groupName.set('')
@@ -125,6 +137,9 @@ Template.privateGroupsFlex.onCreated ->
 
 	# room is set if we're editing an existing room
 	if instance.room
+		# select existing permissions and disallow removing them
+		instance.selectedLabelIds = instance.room.accessPermissions
+		instance.disabledLabelIds = instance.room.accessPermissions
 		instance.groupName.set(instance.room.name)
 		instance.room.usernames?.forEach (username) ->
 			# TODO use name field instead of username.  Room only has username
@@ -133,14 +148,14 @@ Template.privateGroupsFlex.onCreated ->
 			instance.selectedUsers.set instance.selectedUsers.get().concat username	
 			# other conversation members
 			instance.otherMembers = _.without(instance.room.usernames, Meteor.user().username)
+	else
+		userCountryCode = _.find(userPerms, (perm) -> return perm.type is 'Release Caveat' )
+		# TODO update to get default classification setting and system country code
+		instance.selectedLabelIds = _.uniq(['U', '300', userCountryCode?._id])
+		instance.disabledLabelIds = _.uniq(['300', userCountryCode?._id])
 
-	# labels that all members have in common
-	instance.allowedLabels = []
-	# reactive trigger set to true when labels returned asynchronously from server
-	instance.securityLabelsInitialized = new ReactiveVar(false)
-	# selected security label access permission ids
-	instance.selectedLabelIds = []
-	instance.disabledLabelIds = []
+	instance.securityLabelsInitialized.set true
+
 	# adds/remove access permission ids from list of selected labels
 	instance.onSelectionChanged = (params) ->
 		if params.selected
@@ -154,17 +169,4 @@ Template.privateGroupsFlex.onCreated ->
 	# determine if label is disabled
 	instance.isOptionDisabled = (id) ->
 		_.contains instance.disabledLabelIds, id
-	Meteor.call 'getAllowedConversationPermissions', { userIds: instance.otherMembers }, (error, result) ->
-		if error
-			alert error
-		else
-			# create shallow copies.  Adding id to both selected and disabled makes them "required"
-			# in the UI because it selects the permission and doesn't allow the user to remove it.
-			instance.selectedLabelIds = (result.selectedIds or []).slice(0)
-			instance.disabledLabelIds = (result.disabledIds or []).slice(0)
-			# initially select the default classification
-			# TODO: fix the following line
-			#instance.selectedLabelIds.push Meteor.settings.public.permission.classification.default
-			instance.allowedLabels = result.allowed or []
-			# Meteor will automatically re-run helper methods that populate select boxes.
-			instance.securityLabelsInitialized.set true
+
