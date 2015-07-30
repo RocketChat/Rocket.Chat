@@ -35,6 +35,8 @@ Template.directMessagesFlex.helpers
 		return Template.instance().data.relabelRoom?
 	nameReadonly: ->
 		if Template.instance().data.relabelRoom then 'readonly' else ''
+	selectedUser: ->
+		return Template.instance().selectedUser.get()
 
 
 Template.directMessagesFlex.events
@@ -103,20 +105,7 @@ Template.directMessagesFlex.onCreated ->
 		instance.roomData = undefined
 
 
-	# Tracker.autorun function that gets re-executed on changes to the (reactive)
-	# subscription to the 'room' publication. Once it is flagged as 'ready', stop
-	# re-executing the function and populate the room name, members, labels data.
-	# Function automatically stops if template is closed.
-	instance.autorun (c) ->
-		sub = Meteor.subscribe('room', instance.data.relabelRoom)
-		if sub.ready()
-			# once it's ready, stop re-running this autorun function
-			c.stop()
-			roomData = ChatRoom.findOne instance.data.relabelRoom
-			if roomData
-				username = _.without roomData.usernames, Meteor.user().username
-				instance.selectedUser.set username[0]
-				instance.find('#who').value = instance.selectedUser.get()
+
 
 
 	# other conversation members
@@ -128,12 +117,19 @@ Template.directMessagesFlex.onCreated ->
 	# selected security label access permission ids
 	instance.selectedLabelIds = []
 	instance.disabledLabelIds = []
+
+	# labels assignable by the current user
+	userPerms = AccessPermissions.find({_id:{$in: Meteor.user().profile.access}}).fetch()
+	reltoPerms = AccessPermissions.find({type:'Release Caveat'}).fetch()
+	instance.allowedLabels = _.chain(userPerms).push(reltoPerms).flatten().uniq(false, (item)->return item._id).value()
+
+
 	# adds/remove access permission ids from list of selected labels
 	instance.onSelectionChanged = (params) ->
 		if params.selected
 			instance.selectedLabelIds.push params.selected
 		else if params.deselected
-# remove deselected if it exist
+			# remove deselected if it exist
 			instance.selectedLabelIds = _.without(instance.selectedLabelIds, params.deselected)
 	instance.isOptionSelected = (id) ->
 		_.contains instance.selectedLabelIds, id
@@ -141,17 +137,45 @@ Template.directMessagesFlex.onCreated ->
 	# determine if label is disabled
 	instance.isOptionDisabled = (id) ->
 		_.contains instance.disabledLabelIds, id
-	Meteor.call 'getAllowedConversationPermissions', { userIds: instance.otherMembers }, (error, result) ->
-		if error
-			alert error
+
+
+
+	# Tracker.autorun function that gets executed on template creation, and then re-executed
+	# on changes to the reactive inputs (in this case, Session data and subscription to the
+	# 'room' publication). If the 'relabelRoom' variable is set in the data context (meaning
+	# we are relabeling rather than creating a room), get a subscription and then "wait" for
+	# the room data to be populated in Session variable (see roomObserve.coffee). Once that
+	# data is set, stop further execution of this function and then populate the label info
+	# input fields for the room.
+	#
+	# Since function is tied to Template instance, will automatically stop if template on
+	# destroy (http://docs.meteor.com/#/full/template_autorun).
+	instance.autorun (c) ->
+		# check if we are relabeling the room
+		if instance.data.relabelRoom?
+			# get a subscription to the room (in case we don't have one already)
+			Meteor.subscribe('room', instance.data.relabelRoom)
+			# function will automatically re-run on changes to this session variable, thus
+			# it will essentially "wait" for the data to get set
+			if Session.get('roomData' + instance.data.relabelRoom)
+				# once we have the data, no need to keep re-running
+				c.stop()
+				# get room data
+				instance.room = Session.get('roomData' + instance.data.relabelRoom)
+				# select existing permissions and disallow removing them
+				instance.selectedLabelIds = instance.room.accessPermissions
+				instance.disabledLabelIds = instance.room.accessPermissions
+				username = _.without(instance.room.usernames, Meteor.user().username)[0]
+				instance.selectedUser.set username
+				instance.securityLabelsInitialized.set true
+
+		# if creating a new room (rather than relabel), populate default values (UNCLASS//RELTO USA)
 		else
-# create shallow copies.  Adding id to both selected and disabled makes them "required"
-# in the UI because it selects the permission and doesn't allow the user to remove it.
-			instance.selectedLabelIds = (result.selectedIds or []).slice(0)
-			instance.disabledLabelIds = (result.disabledIds or []).slice(0)
-			# initially select the default classification
-			# TODO: fix the following line
-			#instance.selectedLabelIds.push Meteor.settings.public.permission.classification.default
-			instance.allowedLabels = result.allowed or []
-			# Meteor will automatically re-run helper methods that populate select boxes.
+			# no need to keep running this autorun function, since nothing to wait for
+			c.stop()
+			userCountryCode = _.find(userPerms, (perm) -> return perm.type is 'Release Caveat' )
+			# TODO update to get default classification setting and system country code
+			instance.selectedLabelIds = _.uniq(['U', '300', userCountryCode?._id])
+			instance.disabledLabelIds = _.uniq(['300', userCountryCode?._id])
 			instance.securityLabelsInitialized.set true
+

@@ -24,14 +24,16 @@ Meteor.methods
 		if _.difference( accessPermissions, room.accessPermissions ).length > 0
 			Meteor.call 'relabelRoom', rid, accessPermissions
 
-		# add users to the room that weren't previously in the room
-		usersToAdd = _.difference( usernames, room.usernames)
-		for username in usersToAdd
-			Meteor.call 'addUserToRoom', {rid: rid, username: username}
+		# only modify room membership for private groups - not direct messages
+		if room.t is 'p'
+			# add users to the room that weren't previously in the room
+			usersToAdd = _.difference( usernames, room.usernames)
+			for username in usersToAdd
+				Meteor.call 'addUserToRoom', {rid: rid, username: username}
 
-		# remove users from the room that were previously in the room
-		usersToRemove = _.difference( room.usernames, usernames)
-		for username in usersToRemove
-			Meteor.call 'removeUserFromRoom', {rid: rid, username: username}
+			# remove users from the room that were previously in the room
+			usersToRemove = _.difference( room.usernames, usernames)
+			for username in usersToRemove
+				Meteor.call 'removeUserFromRoom', {rid: rid, username: username}
 
 		return {rid:rid}

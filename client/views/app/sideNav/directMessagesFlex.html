@@ -14,7 +14,7 @@
 			<div class="input-line">
 				<label for="who">{{_ "With_whom" }}</label>
 				{{#if relabelRoom}}
-					<input id="who" type="text" readonly>
+					<input id="who" type="text" readonly value="{{selectedUser}}">
 				{{else}}
 					{{> inputAutocomplete settings=autocompleteSettings id="who" class="required search" autocomplete="off"}}
 				{{/if}}

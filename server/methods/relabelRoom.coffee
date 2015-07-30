@@ -53,11 +53,12 @@ Meteor.methods
 			throw new Meteor.Error('invalid-access-permissions', "Current user does not have access to specified permission(s)")
 
 		# validate room owner still has access
-		creator = Meteor.users.findOne({_id:room.u._id})
-		creatorPermissions = new Jedis.AccessPermission( creator?.profile.access )
-		unless creatorPermissions.canAccessResource( newPermissions )
-			console.log '[methods] relabelRoom -> '.red, 'Creator not able to access room with new permissions'
-			throw new Meteor.Error('invalid-access-permissions', "Creator will not have access to room")
+		if room.t is 'p'
+			creator = Meteor.users.findOne({_id:room.u._id})
+			creatorPermissions = new Jedis.AccessPermission( creator?.profile.access )
+			unless creatorPermissions.canAccessResource( newPermissions )
+				console.log '[methods] relabelRoom -> '.red, 'Creator not able to access room with new permissions'
+				throw new Meteor.Error('invalid-access-permissions', "Creator will not have access to room")
 
 
 		roomPermissions = new Jedis.AccessPermission(room.accessPermissions)

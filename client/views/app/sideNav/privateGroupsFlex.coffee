@@ -134,6 +134,21 @@ Template.privateGroupsFlex.onCreated ->
 		instance.find('#pvt-group-members').value = ''
 
 
+	# adds/remove access permission ids from list of selected labels
+	instance.onSelectionChanged = (params) ->
+		if params.selected
+			instance.selectedLabelIds.push params.selected
+		else if params.deselected
+			# remove deselected if it exist
+			instance.selectedLabelIds = _.without(instance.selectedLabelIds, params.deselected)
+	instance.isOptionSelected = (id) ->
+		_.contains instance.selectedLabelIds, id
+
+	# determine if label is disabled
+	instance.isOptionDisabled = (id) ->
+		_.contains instance.disabledLabelIds, id
+
+
 
 	# Tracker.autorun function that gets executed on template creation, and then re-executed
 	# on changes to the reactive inputs (in this case, Session data and subscription to the
@@ -179,20 +194,3 @@ Template.privateGroupsFlex.onCreated ->
 			instance.selectedLabelIds = _.uniq(['U', '300', userCountryCode?._id])
 			instance.disabledLabelIds = _.uniq(['300', userCountryCode?._id])
 			instance.securityLabelsInitialized.set true
-
-
-
-	# adds/remove access permission ids from list of selected labels
-	instance.onSelectionChanged = (params) ->
-		if params.selected
-			instance.selectedLabelIds.push params.selected
-		else if params.deselected
-			# remove deselected if it exist
-			instance.selectedLabelIds = _.without(instance.selectedLabelIds, params.deselected)
-	instance.isOptionSelected = (id) ->
-		_.contains instance.selectedLabelIds, id
-
-	# determine if label is disabled
-	instance.isOptionDisabled = (id) ->
-		_.contains instance.disabledLabelIds, id
-
