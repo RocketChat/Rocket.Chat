@@ -122,7 +122,7 @@
 										<button class="see-all">{{seeAll}}</button>
 									</p>--}}
 								</div>
-								<ul class='list cf_ lines'>
+								<ul class='list clearfix lines'>
 									{{#each users}}
 										<li class='user-image user-card-room status-{{status}}'>
 											<a data-username="{{username}}" tabindex="0" title="{{username}}">
@@ -136,7 +136,7 @@
 						</div>
 						<div class="user-view animated{{#unless $.Session.get 'showUserInfo'}} -hidden{{/unless}}">
 							{{#with flexUserInfo}}
-								<div class="about cf_">
+								<div class="about clearfix">
 									<div class="thumb">
 										{{> avatar username=username}}
 									</div>
@@ -164,7 +164,7 @@
 					{{else}}
 						<div class="user-view">
 							{{#with userData}}
-								<div class="about cf_">
+								<div class="about clearfix">
 
 										{{#if selfVideoUrl}}
 											{{#if rtcLayout3}}

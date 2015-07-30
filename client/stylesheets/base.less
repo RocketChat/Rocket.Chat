@@ -5,15 +5,12 @@
 @import "utils/_keyframes.import.less";
 @import "utils/_preloader.import.less";
 @import "utils/_emojione.import.less";
-.cf_ {
-	display: inline-block;
-	&:after {
-		content: ".";
-		display: block;
+.clearfix {
+	clear: both;
+	&::after {
+		content: "";
+		display: table;
 		clear: both;
-		visibility: hidden;
-		line-height: 0;
-		height: 0;
 	}
 }
 
@@ -219,7 +216,7 @@ blockquote {
 }
 
 .input-line {
-	.cf_;
+	.clearfix;
 	display: block;
 	margin-bottom: 12px;
 	&:nth-last-child(1) {
@@ -1735,7 +1732,7 @@ a.github-fork {
 	}
 	.list {
 		a {
-			.cf_;
+			.clearfix;
 			padding: 10px 16px;
 			width: 100%;
 			color: @primary-font-color;
@@ -2554,7 +2551,7 @@ a.github-fork {
 			display: none;
 		}
 		a {
-			.cf_;
+			.clearfix;
 			padding: 5px 0;
 			height: 30px;
 			background-color: transparent;
