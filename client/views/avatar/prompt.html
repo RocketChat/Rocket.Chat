@@ -29,16 +29,30 @@
 		</header>
 		<div>
 			<div class="avatar-suggestions">
-				{{#if suggestions.ready}}
-					<div class="avatar-suggestion-item">
-						{{> avatar username=initialsUsername }}
-						{{#with service='initials'}}
-							<div class="action">
-								<button type="button" class="button primary select-service">{{_ "Use_initials_avatar" }}</button>
-							</div>
-						{{/with}}
+				<div class="avatar-suggestion-item">
+					{{> avatar username=initialsUsername }}
+					{{#with service='initials'}}
+						<div class="action">
+							<button type="button" class="button primary select-service">{{_ "Use_initials_avatar" }}</button>
+						</div>
+					{{/with}}
+				</div>
+				<div class="avatar-suggestion-item">
+					<div style="background-image: url({{upload.blob}});" class="avatar {{#unless upload}}question-mark icon-upload{{/unless}}">
 					</div>
+					<div class="action">
+						{{#with upload}}
+							<button type="button" class="button primary select-service">{{_ "Use_uploaded_avatar"}}</button>
+						{{/with}}
+						{{#unless upload}}
+							<div class="button primary">{{_ "Select_file"}}
+								<input type="file" class="avatar-file-input" accept="image/*">
+							</div>
+						{{/unless}}
+					</div>
+				</div>
 
+				{{#if suggestions.ready}}
 					{{> avatarSuggestion suggestions.avatars.gravatar}}
 					{{> avatarSuggestion suggestions.avatars.facebook}}
 					{{> avatarSuggestion suggestions.avatars.google}}
@@ -58,20 +72,7 @@
 						{{> avatarSuggestionLogin 'linkedin'}}
 					{{/unless}}
 
-					<div class="avatar-suggestion-item">
-						<div style="background-image: url({{upload.blob}});" class="avatar {{#unless upload}}question-mark icon-upload{{/unless}}">
-						</div>
-						<div class="action">
-							{{#with upload}}
-								<button type="button" class="button primary select-service">{{_ "Use_uploaded_avatar"}}</button>
-							{{/with}}
-							{{#unless upload}}
-								<button type="button" class="button primary">{{_ "Select_file"}}
-									<input type="file" class="avatar-file-input" accept="image/*">
-								</button>
-							{{/unless}}
-						</div>
-					</div>
+					
 				{{else}}
 					{{_ "Loading_suggestion"}}
 				{{/if}}
