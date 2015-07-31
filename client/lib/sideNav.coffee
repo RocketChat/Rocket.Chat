@@ -67,7 +67,8 @@
 		return if animating == true
 		toggleArrow 1
 		toggleFlex 1
-		focusInput()
+		# remove focus because when opening direct message with pre-selected user, it shows the dropdown
+		#focusInput()
 
 	closeFlex = ->
 		return if animating == true

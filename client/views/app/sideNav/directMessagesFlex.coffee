@@ -33,16 +33,23 @@ Template.directMessagesFlex.helpers
 		return Template.instance().securityLabelsInitialized.get()
 	relabelRoom: ->
 		return Template.instance().data.relabelRoom?
-	nameReadonly: ->
-		if Template.instance().data.relabelRoom then 'readonly' else ''
+	#nameReadonly: ->
+	#	if Template.instance().data.relabelRoom then 'readonly' else ''
 	selectedUser: ->
 		return Template.instance().selectedUser.get()
 
+Template.directMessagesFlex.onRendered ->
+	instance = this;
+	# fill input field with pre-selected user
+	if instance.selectedUser.get()
+		field = instance.find('#who')
+		field.value = instance.selectedUser.get()
 
 Template.directMessagesFlex.events
 	'autocompleteselect #who': (event, instance, doc) ->
 		instance.selectedUser.set doc.username
 		event.currentTarget.focus()
+		###
 		parameters = {}
 		parameters.usernames = [doc.username]
 		Meteor.call 'getAllowedConversationPermissions', parameters, (err, result) ->
@@ -50,6 +57,7 @@ Template.directMessagesFlex.events
 				return toastr.error err.reason
 			console.log JSON.stringify result
 			instance.accessOptions.set result
+		###
 
 	'click .cancel-direct-message': (e, instance) ->
 		SideNav.closeFlex()
@@ -96,7 +104,7 @@ Template.directMessagesFlex.onCreated ->
 	instance = this
 	instance.selectedUser = new ReactiveVar
 	instance.error = new ReactiveVar []
-	instance.accessOptions = new ReactiveVar
+	#instance.accessOptions = new ReactiveVar
 
 	instance.clearForm = ->
 		instance.error.set([])
@@ -104,12 +112,6 @@ Template.directMessagesFlex.onCreated ->
 		instance.find('#who').value = ''
 		instance.roomData = undefined
 
-
-
-
-
-	# other conversation members
-	instance.otherMembers = _.without(instance.data.members, Meteor.userId())
 	# labels that all members have in common
 	instance.allowedLabels = []
 	# reactive trigger set to true when labels returned asynchronously from server
@@ -177,5 +179,7 @@ Template.directMessagesFlex.onCreated ->
 			# TODO update to get default classification setting and system country code
 			instance.selectedLabelIds = _.uniq(['U', '300', userCountryCode?._id])
 			instance.disabledLabelIds = _.uniq(['300', userCountryCode?._id])
+			if instance.data.user
+				instance.selectedUser.set instance.data.user 
 			instance.securityLabelsInitialized.set true
 

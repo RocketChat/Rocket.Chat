@@ -173,6 +173,10 @@ Template.room.helpers
 		return '' unless roomData
 		return roomData.u?._id is Meteor.userId() and roomData.t in ['c', 'p']
 
+	canPrivateMsg: ->
+		console.og 'room.helpers canPrivateMsg' if window.rocketDebug
+		return Meteor.userId() isnt this.username
+
 	roomNameEdit: ->
 		console.log 'room.helpers roomNameEdit' if window.rocketDebug
 		return Session.get('roomData' + this._id)?.name
@@ -450,12 +454,18 @@ Template.room.events
 
 	'click .user-view nav .pvt-msg': (e) ->
 		console.log 'room click .user-view nav .pvt-msg' if window.rocketDebug
-		Meteor.call 'createDirectMessage', Session.get('showUserInfo'), (error, result) ->
-			if error
-				return Errors.throw error.reason
+		# close side nav if it's open
+		wait = 0
+		if SideNav.flexStatus
+			wait = 400
+			SideNav.closeFlex()
 
-			if result?.rid?
-				Router.go('room', { _id: result.rid })
+		# sidenav is animated so need to wait for it to close if open
+		setTimeout ->
+			SideNav.setFlex "directMessagesFlex", {user: Session.get('showUserInfo')}
+			SideNav.openFlex()
+		, wait
+		# removed direct call to createDirectMessage because we need to set security labels first
 
 	'click button.load-more': (e) ->
 		console.log 'room click button.load-more' if window.rocketDebug
