@@ -4,7 +4,7 @@
 	if not username?
 		return
 
-	return "#{Meteor.absoluteUrl()}/avatar/#{username}.jpg?_dc=#{random}"
+	return "#{Meteor.absoluteUrl()}avatar/#{username}.jpg?_dc=#{random}"
 
 @updateAvatarOfUsername = (username) ->
 	key = "avatar_random_#{username}"
