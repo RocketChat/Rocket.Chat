@@ -6,11 +6,13 @@
 	animating = false
 
 	toggleArrow = (status) ->
-		if arrow.hasClass "left" or status? is -1
-			arrow.removeClass "left"
+		if arrow.hasClass "top" or status? is -1
+			arrow.removeClass "top"
+			arrow.addClass "bottom"
 			return
-		if not arrow.hasClass "left" or status? is 1
-			arrow.addClass "left"
+		if not arrow.hasClass "top" or status? is 1
+			arrow.addClass "top"
+			arrow.removeClass "bottom"
 
 	toggleCurrent = ->
 		if flexNav.opened then closeFlex() else AccountBox.toggle()
