@@ -11,6 +11,8 @@ Meteor.methods
 				_id: Meteor.userId()
 				username: Meteor.user().username
 
+			message.temp = true
+
 			message = RocketChat.callbacks.run 'beforeSaveMessage', message
 
 			ChatMessage.insert message

@@ -9,6 +9,11 @@ Template.message.helpers
 	date: ->
 		return moment(this.ts).format('LL')
 
+	isTemp: ->
+		if @temp is true
+			return 'temp'
+		return
+
 	body: ->
 		switch this.t
 			when 'r'  then t('Room_name_changed', { room_name: this.msg, user_by: this.u.username })
