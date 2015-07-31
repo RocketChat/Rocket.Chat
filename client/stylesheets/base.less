@@ -649,6 +649,30 @@ label.required:after {
 			.transform(rotate(-45deg) translateY(4px));
 		}
 	}
+	&.top {
+		&:before {
+			.transform(rotate(45deg) translateX(-2px) translateY(2px));
+		}
+		&:after {
+			.transform(rotate(-45deg) translateX(2px) translateY(2px));
+		}
+	}
+	&.bottom {
+		&:before {
+			.transform(rotate(-45deg) translateX(-2px) translateY(-2px));
+		}
+		&:after {
+			.transform(rotate(45deg) translateX(2px) translateY(-2px));
+		}
+	}
+	&.close {
+		&:before {
+			.transform(rotate(-45deg));
+		}
+		&:after {
+			.transform(rotate(45deg));
+		}
+	}
 }
 
 .a-plus {
@@ -924,20 +948,12 @@ a.github-fork {
 		overflow-x: hidden;
 		overflow-y: auto;
 		-webkit-overflow-scrolling: touch;
-		.custom-scroll(transparent,
-		rgba(255,
-		255,
-		255,
-		0.05));
+		.custom-scroll(transparent, rgba(255, 255, 255, 0.05));
 		direction: rtl;
-		.calc(height,
-		~'100% - ' @header-min-height + @footer-min-height);
-		.transition(transform .3s cubic-bezier(.5,
-		0,
-		.1,
-		1));
+		.calc(height, ~'100% - ' @header-min-height + @footer-min-height);
+		.transition(transform .3s cubic-bezier(.5, 0, .1, 1));
 		&._hidden {
-			.transform(translateX(-100%));
+			.transform(translateY(-100%) translateY(-50px));
 		}
 		> .wrapper {
 			direction: ltr;
