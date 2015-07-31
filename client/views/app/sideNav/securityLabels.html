@@ -12,7 +12,7 @@
 		<div class="form-group">
 			<label for="classification-select" >Classification:</label>
                     	<div class="selectContainer">
-				<select id="classification-select" class="form-control chosen-select" data-toggle="tooltip" title="Classification(s) in common with conversation members">
+				<select id="classification-select" class="form-control chosen-select" data-toggle="tooltip" title="Classification">
 					{{#each classificationLabels}}
 						<option value="{{_id}}" {{optionSelected}} {{optionDisabled}}>{{label}}</option>
 					{{/each}}
@@ -22,7 +22,7 @@
             	<div class="form-group">
 			<label for="sap-select" >SAP:</label>
 			{{#unless hasOptions 'SAP'}}
-				<span class="warning clearfix">No labels in common with other conversation member(s)</span>
+				<span class="input-error">You do not have SAP permissions</span>
 			{{/unless}}
                     	<div class="selectContainer">
 				<select {{selectDisabled 'SAP'}} id="sap-select" multiple class="form-control chosen-select hidden" data-toggle="tooltip" title="SAP label(s) in common with conversation members">
@@ -36,7 +36,7 @@
 
 	    		<label for="sci-select" >SCI:</label>
 			{{#unless hasOptions 'SCI'}}
-				<span class="warning clearfix">No labels in common with other conversation member(s)</span>
+				<span class="input-error">You do not have SCI permissions</span>
 			{{/unless}}
                     	<div class="selectContainer">
 				<select {{selectDisabled 'SCI'}} id="sci-select" multiple class="form-control chosen-select hidden" data-toggle="tooltip" title="SCI label(s) in common with conversation members">
