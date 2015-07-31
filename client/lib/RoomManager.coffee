@@ -34,6 +34,8 @@ Meteor.startup ->
 			delete openedRooms[rid].timeout
 			delete openedRooms[rid].dom
 
+			RoomHistoryManager.clear rid
+
 			ChatMessage.remove rid: rid
 
 	computation = Tracker.autorun ->
