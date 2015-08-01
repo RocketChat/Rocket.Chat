@@ -114,11 +114,6 @@ Template.privateGroupsFlex.onCreated ->
 	instance.error = new ReactiveVar []
 	instance.groupName = new ReactiveVar ''
 
-	# labels assignable by the current user
-	userPerms = AccessPermissions.find({_id:{$in: Meteor.user().profile.access}}).fetch()
-	reltoPerms = AccessPermissions.find({type:'Release Caveat'}).fetch()
-	instance.allowedLabels = _.chain(userPerms).push(reltoPerms).flatten().uniq(false, (item)->return item._id).value()
-
 	# TODO remove init call since we're not calling the server anymore
 	instance.securityLabelsInitialized = new ReactiveVar(false)
 
@@ -173,8 +168,10 @@ Template.privateGroupsFlex.onCreated ->
 				# get room data
 				instance.room = Session.get('roomData' + instance.data.relabelRoom)
 				# select existing permissions and disallow removing them
-				instance.selectedLabelIds = instance.room.accessPermissions
-				instance.disabledLabelIds = instance.room.accessPermissions
+				options = roomLabelOptions(instance.room.accessPermissions, Meteor.user().profile.access)
+				instance.selectedLabelIds = _.pluck( options.selected, '_id')
+				instance.disabledLabelIds = _.pluck( options.disabled, '_id')
+				instance.allowedLabels = options.allowed
 				instance.groupName.set(instance.room.name)
 				instance.room.usernames?.forEach (username) ->
 					# TODO use name field instead of username.  Room only has username
@@ -189,8 +186,59 @@ Template.privateGroupsFlex.onCreated ->
 		else
 			# no need to keep running this autorun function, since nothing to wait for
 			c.stop()
-			userCountryCode = _.find(userPerms, (perm) -> return perm.type is 'Release Caveat' )
-			# TODO update to get default classification setting and system country code
-			instance.selectedLabelIds = _.uniq(['U', '300', userCountryCode?._id])
-			instance.disabledLabelIds = _.uniq(['300', userCountryCode?._id])
+			options = roomLabelOptions([], Meteor.user().profile.access)
+			instance.selectedLabelIds = _.pluck( options.selected, '_id')
+			instance.disabledLabelIds = _.pluck( options.disabled, '_id')
+			instance.allowedLabels = options.allowed
 			instance.securityLabelsInitialized.set true
+
+roomLabelOptions = (roomPermissionIds, userPermissionIds) ->
+	if roomPermissionIds.length is 0
+		# TODO read from system settings
+		# default to USA and Unclass
+		roomPermissionIds.push('300','U')
+
+	classificationOrder = ['U','C','S','TS']
+
+	# user's access permissions
+	userPerms = AccessPermissions.find({_id:{$in: userPermissionIds}}).fetch()
+	userCountry = _.find(userPerms, (perm) -> perm.type is 'Release Caveat')
+
+	# all relto (non-user specific)	
+	allReleaseCaveats = AccessPermissions.find({type:'Release Caveat'}).fetch()
+
+	# room permissions
+	roomPerms = AccessPermissions.find({_id:{$in: roomPermissionIds}}).fetch()
+	roomClassification = _.find(roomPerms, (perm) -> perm.type is 'classification')
+	roomClassificationIndex = _.indexOf(classificationOrder,roomClassification._id ) 
+	allowedClassifications = _.rest(classificationOrder, roomClassificationIndex)
+
+	# user can choose from same/higher them room classification,sci,sap assigned to them and ALL release caveats
+	allowed = _.chain(userPerms)
+		.filter( (perm) -> perm.type isnt 'classification' or perm._id in allowedClassifications )
+		.concat(allReleaseCaveats)
+		.uniq(false, (perm) -> perm._id)
+		.value()
+
+	# existing room selection should be selected and disabled so that the user can't 
+	# downgrade the security level.  User country must be selected so that they can't 
+	# exclude themselves, System country must be selected 
+	required = _.chain(roomPerms)
+		.concat(userCountry)
+		.uniq(false, (perm) -> perm._id)
+		.value()
+
+	# preselect the room's selected permissions.  Make sure user country is selected
+	selected = required
+
+ 	# allow the classification to be selected otherwise the user can't reselect it 
+ 	# in the drop down
+	disabled = _.chain(required)
+		.reject( (perm) -> perm._id is roomClassification._id )
+		.value()
+
+	return (
+		allowed : allowed
+		selected : selected
+		disabled : disabled
+		)
