@@ -38,6 +38,9 @@ Template.chatRoomItem.helpers
 		else
 			return true
 
+	canRelabel: ->
+		return this.t is 'd' or this.t is 'p' 
+
 Template.chatRoomItem.rendered = ->
 	if not (Router.current().params._id? and Router.current().params._id is this.data.rid) and not this.data.ls
 		KonchatNotification.newRoom(this.data.rid)
