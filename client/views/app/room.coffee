@@ -486,7 +486,7 @@ Template.room.events
 		else if roomData.t in ['c', 'p']
 			Meteor.call 'addUserToRoom', { rid: roomData._id, username: doc.username }, (error, result) ->
 				if error
-					return Errors.throw error.reason
+					return toastr.error error.reason
 
 				$('#user-add-search').val('')
 				toggleAddUser()
