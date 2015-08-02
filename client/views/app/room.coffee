@@ -235,11 +235,18 @@ Template.room.helpers
 	selfVideoUrl: ->
 		return Session.get('selfVideoUrl')
 
+	videoActive: ->
+		return (Session.get('remoteVideoUrl') || Session.get('selfVideoUrl'))
+
+	remoteMonitoring: ->
+		return (webrtc?.stackid? && (webrtc.stackid == 'webrtc-ib'))
+
 	flexOpenedRTC1: ->
 		return 'layout1' if Session.equals('flexOpenedRTC1', true)
 
 	flexOpenedRTC2: ->
 		return 'layout2' if Session.equals('flexOpenedRTC2', true)
+
 	rtcLayout1: ->
 		return (Session.get('rtcLayoutmode') == 1 ? true: false);
 
@@ -468,10 +475,24 @@ Template.room.events
 		_id = Template.instance().data._id
 		webrtc.to = _id.replace(Meteor.userId(), '')
 		webrtc.room = _id
+		webrtc.mode = 1
 		webrtc.start(true)
 
 	'click .stop-video': (event) ->
 		webrtc.stop()
+
+	'click .monitor-video': (event) ->
+		_id = Template.instance().data._id
+		webrtc.to = _id.replace(Meteor.userId(), '')
+		webrtc.room = _id
+		webrtc.mode = 2
+		webrtc.start(true)
+
+
+	'click .setup-video': (event) ->
+		webrtc.mode = 2
+		webrtc.activateLocalStream()
+
 
 	'dragenter .dropzone': (e) ->
 		e.currentTarget.classList.add 'over'
