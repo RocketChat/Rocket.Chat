@@ -60,6 +60,7 @@ It is a great solution for communities and companies wanting to privately host t
 - LDAP Authentication - [LDAP Authentication on Rocket.Chat Wiki](https://github.com/RocketChat/Rocket.Chat/wiki/LDAP-Authentication)
 - Face to Face Video Conferencing aka WebRTC (Alpha) - [How to video chat](https://github.com/RocketChat/Rocket.Chat/wiki/Using-Face-to-face-video-conference-%28aka-webrtc%29)
 - REST-full APIs - [Ready for testing ...](https://github.com/RocketChat/Rocket.Chat/wiki/REST-full-APIs)
+- Remote Locations Video Monitoring - [Early access ...](https://github.com/RocketChat/Rocket.Chat/wiki/Remote-Video-Monitoring)
 
 ### Roadmap for v1.0
 
