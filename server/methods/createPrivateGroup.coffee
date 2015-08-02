@@ -13,14 +13,13 @@ Meteor.methods
 
 		name = s.slugify name
 
-
-		# RocketChat uses username as the identifier.  We use the imported LDAP username as both the _id and username value
-		canAccessResource = Meteor.call 'canAccessResource', members, accessPermissions
-		if not canAccessResource.canAccess
-			throw new Meteor.Error('invalid-access-permissions', "User(s) cannot create a private group with the specified access permissions")
-
 		if not Jedis.securityLabelIsValid(accessPermissions)
 			throw new Meteor.Error('invalid-access-permissions', "Missing required access permissions")
+
+		# RocketChat uses username as the identifier.  We use the imported LDAP username as both the _id and username value
+		result = Meteor.call 'canAccessResource', members, accessPermissions
+		if not result.canAccess
+			throw new Meteor.Error('invalid-access-permissions', result.deniedUsers.join(', ') + " cannot participate in the private group with the specified access permissions")
 
 		# create new room
 		rid = ChatRoom.insert

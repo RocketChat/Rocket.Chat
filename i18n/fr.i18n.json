@@ -35,6 +35,7 @@
   "github_no_public_email" : "Vous n'avez pas de courriel public sur votre compte GitHub",
   "Have_your_own_chat" : "Avec Rocket.Chat, disposez de votre propre salon de discussion en ligne. Développé à l'aide de Meteor.com, Rocket.Chat est une solution pour les développeurs désirant construire et faire évoluer leur propre plate-forme de discussion.",
   "Hide_room" : "Cacher le salon",
+  "Update_room" : "Update/Relabel room",
   "History" : "Historique",
   "Invalid_confirm_pass" : "La confirmation du mot de passe ne correspond pas avec le mot de passe",
   "Invalid_email" : "Le courriel entré est invalide",

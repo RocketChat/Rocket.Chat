@@ -6,10 +6,14 @@
 	</header>
 	<div class="content">
 		<div class="wrapper">
-			<h4>{{_ "Create_new_private_group"}}</h4>
+			{{#if relabelRoom}}
+			    <h4>{{_ "Update_private_group"}}</h4>
+			{{else}}
+                            <h4>{{_ "Create_new_private_group"}}</h4>
+			{{/if}}
 			<div class="input-line">
 				<label for="pvt-group-name">{{_ "Name"}}</label>
-				<input type="text" id="pvt-group-name" class="required" dir="auto">
+				<input type="text" id="pvt-group-name" class="required" dir="auto" value="{{groupName}}">
 			</div>
 			<div class="input-line">
 				<label for="pvt-group-members">{{_ "Members" }}</label>
@@ -20,6 +24,11 @@
 					{{/each}}
 				</ul>
 			</div>
+			{{#if securityLabelsInitialized}}
+				<div class="input-line">
+				{{> securityLabels securityLabelsContext}}
+				</div>
+			{{/if}}
 			{{#if error}}
 				<div class="input-error">
 					<strong>Ops!</strong>

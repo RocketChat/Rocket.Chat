@@ -38,11 +38,26 @@ Template.chatRoomItem.helpers
 		else
 			return true
 
+	canRelabel: ->
+		return this.t is 'd' or this.t is 'p' 
+
 Template.chatRoomItem.rendered = ->
 	if not (Router.current().params._id? and Router.current().params._id is this.data.rid) and not this.data.ls
 		KonchatNotification.newRoom(this.data.rid)
 
 Template.chatRoomItem.events
+	'click .label-room': (e) ->
+		e.stopPropagation()
+		e.preventDefault()
+		data = {}
+		data.relabelRoom = this.rid
+		if this.t is 'd'
+			SideNav.setFlex "directMessagesFlex", data
+		else if this.t is 'p'
+			SideNav.setFlex "privateGroupsFlex", data
+		SideNav.openFlex()
+		console.log "Relabel a Room"
+
 	'click .hide-room': (e) ->
 		e.stopPropagation()
 		e.preventDefault()

@@ -35,6 +35,7 @@
   "github_no_public_email" : "あなたのGitHubアカウントはパブリックメールなどの任意のメールアドレスを持っていません",
   "Have_your_own_chat" : "あなたは独自のWebチャットを得ました。Rocket.Chatは、Meteor.comで開発され、開発者たちが楽しく構築し、独自のチャットのプラットフォームを進化させることのできるすばらしいソリューションです。",
   "Hide_room" : "ルームを隠す",
+  "Update_room" : "Update/Relabel room",
   "History" : "履歴",
   "Invalid_confirm_pass" : "入力されたパスワードとパスワードの確認が一致していません",
   "Invalid_email" : "入力されたメールアドレスが無効です",

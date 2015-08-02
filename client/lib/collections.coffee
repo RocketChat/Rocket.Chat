@@ -5,6 +5,7 @@
 @ChatSubscription = new Meteor.Collection 'data.ChatSubscription'
 @ChatMessage = new Meteor.Collection 'data.ChatMessage'
 @ChatTyping = new Meteor.Collection 'data.ChatTyping'
+@AccessPermissions = new Meteor.Collection 'accessPermissions'
 
 Meteor.startup ->
 	ChatMessage.find().observe

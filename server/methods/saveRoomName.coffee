@@ -13,6 +13,9 @@ Meteor.methods
 		if name is room.name
 			return
 
+		if ChatRoom.findOne {name : name}
+			throw new Meteor.Error 'duplicate-name', 'There is an existing room with the same name'
+
 		ChatRoom.update rid,
 			$set:
 				name: name

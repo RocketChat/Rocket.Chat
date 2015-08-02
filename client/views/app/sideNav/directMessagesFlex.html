@@ -6,14 +6,27 @@
 	</header>
 	<div class="content">
 		<div class="wrapper">
-			<h4>{{_ "Create_new_direct_message_room"}}</h4>
+			{{#if relabelRoom}}
+                            <h4>{{_ "Update_direct_message_room"}}</h4>
+			{{else}}
+                            <h4>{{_ "Create_new_direct_message_room"}}</h4>
+			{{/if}}
 			<div class="input-line">
 				<label for="who">{{_ "With_whom" }}</label>
-				{{> inputAutocomplete settings=autocompleteSettings id="who" class="required search" autocomplete="off"}}
+				{{#if relabelRoom}}
+					<input id="who" type="text" readonly value="{{selectedUser}}">
+				{{else}}
+					{{> inputAutocomplete settings=autocompleteSettings id="who" class="required search" autocomplete="off"}}
+				{{/if}}
 			</div>
+			{{#if securityLabelsInitialized}}
+				<div class="input-line">
+				{{> securityLabels securityLabelsContext}}
+				</div>
+			{{/if}}
 			{{#if error}}
 				<div class="input-error">
-					<strong>Ops!</strong>
+					<strong>Oops!</strong>
 					{{#each error}}
 						<p>{{_ "The_field_is_required" error}}</p>
 					{{/each}}

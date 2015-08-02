@@ -35,6 +35,7 @@
   "github_no_public_email" : "在您的GitHub上帐户中，您没有设置任何电子邮件作为公共电子邮件地址。",
   "Have_your_own_chat" : "拥有自己的网络聊天。对于希望建立和发展自己的聊天平台的开发者而言，使用Meteor开发的Rocket.Chat是优秀的解决方案。",
   "Hide_room" : "隐藏聊天室",
+  "Update_room" : "Update/Relabel room",
   "History" : "历史",
   "Invalid_confirm_pass" : "第二次密码输入与第一次不匹配",
   "Invalid_email" : "无效的电子邮件",
