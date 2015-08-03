@@ -87,6 +87,7 @@ momentjs:moment@2.10.6
 mongo@1.1.0
 mongo-livedata@1.0.8
 mrt:reactive-store@0.0.1
+mystor:device-detection@0.2.0
 nimble:restivus@0.8.1
 nooitaf:colors@0.0.2
 npm-bcrypt@0.7.8_2
