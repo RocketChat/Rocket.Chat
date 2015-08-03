@@ -616,6 +616,23 @@ label.required:after {
 			.transition-delay(.1s);
 		}
 	}
+
+	.unread-burger-alert {
+		background-color: #F95555;
+		border-radius: 20px;
+		position: absolute;
+		min-width: 18px;
+		height: 18px;
+		line-height: 18px;
+		text-align: center;
+		color: white;
+		font-weight: bold;
+		font-size: 12px;
+		top: 8px;
+		right: 4px;
+		z-index: 3;
+		padding: 0px 4px;
+	}
 }
 
 .arrow {
@@ -3260,15 +3277,12 @@ a.github-fork {
 				.transform(translateX(0));
 			}
 			.burger {
-				.transform(rotate(180deg));
 				i {
 					&:nth-child(1) {
 						opacity: 1;
 						width: 10px;
-						.transform-origin(50%,
-						50%,
-						0);
-						.transform(translateY(3px) translateX(10px) rotate(45deg));
+						.transform-origin(50%, 50%, 0);
+						.transform(translateY(3px) rotate(-45deg));
 					}
 					&:nth-child(2) {
 						//.transform(rotate(180deg));
@@ -3276,10 +3290,8 @@ a.github-fork {
 					&:nth-child(3) {
 						opacity: 1;
 						width: 10px;
-						.transform-origin(50%,
-						50%,
-						0);
-						.transform(translateX(10px) translateY(-3px) rotate(-45deg));
+						.transform-origin(50%, 50%, 0);
+						.transform(translateY(-3px) rotate(45deg));
 					}
 				}
 			}
