@@ -21,7 +21,7 @@ Prerequisites:
 
 * [Git](http://git-scm.com/book/en/v2/Getting-Started-Installing-Git)
 * [Meteor](https://www.meteor.com/install)
-* [OpenLDAP] - Configuration coming soon!
+* [LDAP] - Configuration coming soon!
 
 Now just clone and start the app:
 
