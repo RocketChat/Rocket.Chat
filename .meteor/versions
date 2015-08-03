@@ -65,7 +65,7 @@ konecty:delayed-task@1.0.0
 konecty:mongo-counter@0.0.3
 konecty:multiple-instances-status@1.0.3
 konecty:nrr@2.0.2
-konecty:user-presence@1.2.2
+konecty:user-presence@1.2.4
 launch-screen@1.0.2
 less@1.0.14
 livedata@1.0.13
