@@ -528,8 +528,8 @@ Template.room.onRendered ->
 	newMessage = this.find(".new-message")
 
 	template = this
+
 	onscroll = _.throttle ->
-		console.log wrapper.scrollTop
 		template.atBottom = wrapper.scrollTop >= wrapper.scrollHeight - wrapper.clientHeight
 	, 200
 
@@ -540,11 +540,13 @@ Template.room.onRendered ->
 	, 100
 
 	wrapper.addEventListener 'touchstart', ->
-		console.log 'touchstart'
 		template.atBottom = false
 
 	wrapper.addEventListener 'touchend', ->
-		console.log 'touchend'
+		onscroll()
+
+	wrapper.addEventListener 'scroll', ->
+		template.atBottom = false
 		onscroll()
 
 	wrapper.addEventListener 'mousewheel', ->
