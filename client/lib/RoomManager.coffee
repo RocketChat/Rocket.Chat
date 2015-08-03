@@ -104,13 +104,15 @@ Meteor.startup ->
 		room = openedRooms[rid]
 		return room?.dom?
 
-	updateUserStatus = (user, status) ->
+	updateUserStatus = (user, status, utcOffset) ->
 		onlineUsersValue = onlineUsers.curValue
 
 		if status is 'offline'
 			delete onlineUsersValue[user.username]
 		else
-			onlineUsersValue[user.username] = status
+			onlineUsersValue[user.username] =
+				status: status
+				utcOffset: utcOffset
 
 		onlineUsers.set onlineUsersValue
 
