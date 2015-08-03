@@ -20,7 +20,10 @@ Meteor.startup ->
 				unreadAlert = '•'
 
 		if unreadCount > 0
-			Session.set 'unread', unreadCount
+			if unreadCount > 999
+				Session.set 'unread', '999+'
+			else
+				Session.set 'unread', unreadCount
 		else if unreadAlert isnt false
 			Session.set 'unread', unreadAlert
 		else
