@@ -14,6 +14,7 @@ Meteor.publish 'selectiveUsers', (usernames) ->
 			name: 1
 			username: 1
 			status: 1
+			utcOffset: 1
 
 	cursor = Meteor.users.find query, options
 

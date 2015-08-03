@@ -188,9 +188,18 @@ Template.room.helpers
 
 		for username in room?.usernames or []
 			if onlineUsers[username]?
+				utcOffset = onlineUsers[username]?.utcOffset
+				console.log utcOffset
+				if utcOffset?
+					if utcOffset > 0
+						utcOffset = "+#{utcOffset}"
+
+					utcOffset = "(UTC #{utcOffset})"
+
 				users.push
 					username: username
-					status: onlineUsers[username]
+					status: onlineUsers[username]?.status
+					utcOffset: utcOffset
 
 		users = _.sortBy users, 'username'
 
