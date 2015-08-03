@@ -31,9 +31,10 @@ FlowRouter.route '/room/:_id',
 				Meteor.call 'readMessages', params._id if Meteor.userId()?
 				# KonchatNotification.removeRoomNotification(params._id)
 
-				setTimeout ->
-					$('.message-form .input-message').focus()
-				, 100
+				if Meteor.Device.isDesktop()
+					setTimeout ->
+						$('.message-form .input-message').focus()
+					, 100
 
 	triggersExit: [
 		->
