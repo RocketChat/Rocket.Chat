@@ -166,7 +166,7 @@
 							{{#with userData}}
 								<div class="about clearfix">
 
-										{{#if selfVideoUrl}}
+										{{#if videoActive}}
 											{{#if rtcLayout3}}
 												<div id='fullscreendiv' style="width: 100%">
 												<video id='videoremote' class="video-remote" src="{{remoteVideoUrl}}" style="width: 100%; align-items: center; margin-bottom: 10px; background-color: #000; transition: width 2s, height 2s, top 2s, left 2s, transform 2s;" autoplay></video>
@@ -212,8 +212,12 @@
 									</div>
 								</div>
 								<nav>
-									{{#unless selfVideoUrl}}
-										<button class='button start-video'><span><i class='icon-videocam'></i> {{_ "Video"}}</span></button>
+									{{#unless videoActive}}
+										<button class='button start-video'><span><i class='icon-videocam'></i> {{_ "Video Chat"}}</span></button>
+										{{#if remoteMonitoring}}
+										<button class='button short monitor-video'><span><i class='icon-videocam'></i> {{_ "Remote"}}</span></button>
+										<button class='button lightblue setup-video'><span><i class='icon-videocam'></i> {{_ "Setup"}}</span></button>
+										{{/if}}
 									{{else}}
 										<button class='button red stop-video'><span><i class='icon-videocam'></i> {{_ "StopVideo"}}</span></button>
 									{{/unless}}
