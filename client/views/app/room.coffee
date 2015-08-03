@@ -76,7 +76,6 @@ Template.room.helpers
 
 		if roomData.t is 'd'
 			username = _.without roomData.usernames, Meteor.user().username
-			UserManager.addUser username
 
 			userData = {
 				name: Session.get('user_' + username + '_name')
@@ -189,7 +188,6 @@ Template.room.helpers
 		for username in room?.usernames or []
 			if onlineUsers[username]?
 				utcOffset = onlineUsers[username]?.utcOffset
-				console.log utcOffset
 				if utcOffset?
 					if utcOffset > 0
 						utcOffset = "+#{utcOffset}"
