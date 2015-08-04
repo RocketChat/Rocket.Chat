@@ -9,8 +9,22 @@ Template.messagePopupConfig.helpers
 			getInput: self.getInput
 			getFilter: (collection, filter) ->
 				exp = new RegExp(filter, 'i')
-				return collection.find({username: {$exists: true}, $or: [{name: exp}, {username: exp}]}, {limit: 10})
+				items = collection.find({username: {$exists: true}, $or: [{name: exp}, {username: exp}]}, {limit: 10}).fetch()
+
+				all =
+					_id: '@all'
+					username: '@all'
+					name: t 'Notify_all_in_this_room'
+					compatibility: 'channel group'
+
+				if exp.test(all.username) or exp.test(all.name) or exp.test(all.compatibility)
+					items.unshift all
+
+				return items
 			getValue: (_id, collection) ->
+				if _id is '@all'
+					return 'all'
+
 				return collection.findOne(_id)?.username
 
 		return config

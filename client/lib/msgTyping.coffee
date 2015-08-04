@@ -12,7 +12,7 @@
 		if _.isEmpty usersTyping[room]?.users
 			usersTyping[room] = { users: {} }
 			stream.on room, (typing) ->
-				unless typing.username is Meteor.user()?.username
+				unless typing?.username is Meteor.user()?.username
 					if typing.start
 						users = usersTyping[room].users
 						users[typing.username] = Meteor.setTimeout ->
@@ -41,7 +41,7 @@
 
 		renew = false
 		selfTyping.set true
-		stream.emit 'typing', { room: room, username: Meteor.user().username, start: true }
+		stream.emit 'typing', { room: room, username: Meteor.user()?.username, start: true }
 		clearTimeout timeouts[room]
 		timeouts[room] = Meteor.setTimeout ->
 			stop(room)
@@ -53,7 +53,7 @@
 		if timeouts?[room]?
 			clearTimeout(timeouts[room]) 
 			timeouts[room] = null
-		stream.emit 'typing', { room: room, username: Meteor.user().username, stop: true }
+		stream.emit 'typing', { room: room, username: Meteor.user()?.username, stop: true }
 		
 	get = (room) ->
 		dep.depend()
