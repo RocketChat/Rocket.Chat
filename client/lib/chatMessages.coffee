@@ -119,7 +119,7 @@ class @ChatMessages
 
 			user = Meteor.users.findOne username: re
 			if user?
-				input.value = input.value.replace value, '@' + user.username
+				input.value = input.value.replace value, "@#{user.username} "
 
 	keyup: (rid, event) ->
 		input = event.currentTarget
