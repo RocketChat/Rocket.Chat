@@ -110,6 +110,17 @@ class @ChatMessages
 				postGrowCallback: =>
 					this.resize()
 
+	tryCompletion: (input) ->
+		value = input.value.match(/[^\s]+$/)
+		if value?.length > 0
+			value = value[0]
+
+			re = new RegExp value, 'i'
+
+			user = Meteor.users.findOne username: re
+			if user?
+				input.value = input.value.replace value, '@' + user.username
+
 	keyup: (rid, event) ->
 		input = event.currentTarget
 		k = event.which
@@ -148,6 +159,12 @@ class @ChatMessages
 			else
 				this.send(rid, input)
 			return
+
+		if k is 9
+			event.preventDefault()
+			event.stopPropagation()
+			@tryCompletion input
+
 		if k is 27
 			if this.editing.id
 				event.preventDefault()
