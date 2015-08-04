@@ -1981,9 +1981,13 @@ a.github-fork {
 }
 
 .room-container {
-	position: absolute;
-	width: 100%;
-	height: 100%;
+	position: fixed;
+	top: 0;
+	bottom: 0;
+	left: @rooms-box-width;
+	right: 0;
+	width: auto;
+	height: auto;
 }
 
 .messages-box {
@@ -3257,6 +3261,9 @@ a.github-fork {
 			top: 0;
 			.transform(translateX(-100%));
 			.transition(transform .3s ease-out);
+		}
+		.room-container {
+			left: 0;
 		}
 		.main-content {
 			margin-left: 0;
