@@ -559,16 +559,18 @@ Template.room.events
 		webrtc.stop()
 
 	'click .security-banner': (event) ->
-		e.stopPropagation()
-		e.preventDefault()
+		event.stopPropagation()
+		event.preventDefault()
 		data = {}
-		data.relabelRoom = this.rid
-		if this.t is 'd'
+		roomId = Template.instance().data._id
+		data.relabelRoom = roomId
+		roomData = Session.get('roomData' + roomId)
+		if roomData.t is 'd'
 			SideNav.setFlex "directMessagesFlex", data
-		else if this.t is 'p'
+		else if roomData.t is 'p'
 			SideNav.setFlex "privateGroupsFlex", data
 		SideNav.openFlex()
-		console.log "Relabel a Room"
+		console.log "Relabel a Room: " + roomId
 
 
 Template.room.onCreated ->
