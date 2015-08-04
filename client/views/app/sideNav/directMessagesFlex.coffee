@@ -87,14 +87,14 @@ Template.directMessagesFlex.events
 						return toastr.error err.reason
 					SideNav.closeFlex()
 					instance.clearForm()
-					Router.go 'room', { _id: result.rid }
+					FlowRouter.go 'room', { _id: result.rid }
 			else
 				Meteor.call 'createDirectMessage', instance.selectedUser.get(), accessPermissions, (err, result) ->
 					if err
 						return toastr.error err.reason
 					SideNav.closeFlex()
 					instance.clearForm()
-					Router.go 'room', { _id: result.rid }
+					FlowRouter.go 'room', { _id: result.rid }
 		else
 			Template.instance().error.set(err)
 
@@ -188,6 +188,7 @@ roomLabelOptions = (roomPermissionIds, userPermissionIds) ->
 	classificationOrder = ['U','C','S','TS']
 
 	# user's access permissions
+	console.log 'ap subsready: ', FlowRouter.subsReady('accessPermissions')
 	userPerms = AccessPermissions.find({_id:{$in: userPermissionIds}}).fetch()
 	userCountry = _.find(userPerms, (perm) -> perm.type is 'Release Caveat')
 

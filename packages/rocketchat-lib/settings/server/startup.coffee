@@ -22,3 +22,10 @@ Meteor.startup ->
 	RocketChat.settings.add 'Message_ShowEditedStatus', '', { type: 'string', group: 'Message' }
 	RocketChat.settings.add 'Message_ShowDeletedStatus', '', { type: 'string', group: 'Message' }
 	RocketChat.settings.add 'Message_KeepStatusHistory', '', { type: 'string', group: 'Message' }
+
+	RocketChat.settings.addGroup 'Meta'
+	RocketChat.settings.add 'Meta:language', '', { type: 'string', group: 'Meta' }
+	RocketChat.settings.add 'Meta:fb:app_id', '', { type: 'string', group: 'Meta' }
+	RocketChat.settings.add 'Meta:robots', '', { type: 'string', group: 'Meta' }
+	RocketChat.settings.add 'Meta:google-site-verification', '', { type: 'string', group: 'Meta' }
+	RocketChat.settings.add 'Meta:msvalidate.01', '', { type: 'string', group: 'Meta' }

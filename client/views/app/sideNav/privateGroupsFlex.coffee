@@ -70,10 +70,12 @@ Template.privateGroupsFlex.events
 		$('#pvt-group-members').focus()
 
 	'click .cancel-pvt-group': (e, instance) ->
-		SideNav.closeFlex()
+		SideNav.closeFlex ->
+			instance.clearForm()
 
 	'click header': (e, instance) ->
-		SideNav.closeFlex()
+		SideNav.closeFlex ->
+			instance.clearForm()
 
 	'mouseenter header': ->
 		SideNav.overArrow()
@@ -86,6 +88,7 @@ Template.privateGroupsFlex.events
 
 	'click .save-pvt-group': (e, instance) ->
 		err = SideNav.validate()
+		instance.groupName.set instance.find('#pvt-group-name').value
 		if not err
 			accessPermissions = instance.selectedLabelIds
 			rid = instance.data.relabelRoom
@@ -95,16 +98,22 @@ Template.privateGroupsFlex.events
 						return toastr.error err.reason
 					SideNav.closeFlex()
 					instance.clearForm()
-					Router.go 'room', { _id: result.rid }
+					FlowRouter.go 'room', { _id: result.rid }
 			else
 				Meteor.call 'createPrivateGroup', instance.find('#pvt-group-name').value, instance.selectedUsers.get(), accessPermissions, (err, result) ->
 					if err
+						if err.error is 'name-invalid'
+							instance.error.set({ invalid: true })
+							return
+						if err.error is 'duplicate-name'
+							instance.error.set({ duplicate: true })
+							return
 						return toastr.error err.reason
 					SideNav.closeFlex()
 					instance.clearForm()
-					Router.go 'room', { _id: result.rid }
+					FlowRouter.go 'room', { _id: result.rid }
 		else
-			Template.instance().error.set(err)
+			Template.instance().error.set({fields: err})
 
 Template.privateGroupsFlex.onCreated ->
 	instance = this
@@ -112,14 +121,12 @@ Template.privateGroupsFlex.onCreated ->
 	instance.selectedUserNames = {}
 	instance.otherMembers = []
 	instance.error = new ReactiveVar []
-	instance.groupName = new ReactiveVar ''
-
-	# TODO remove init call since we're not calling the server anymore
 	instance.securityLabelsInitialized = new ReactiveVar(false)
 
 	# selected security label access permission ids
 	instance.selectedLabelIds = []
 	instance.disabledLabelIds = []
+	instance.groupName = new ReactiveVar ''
 
 	instance.clearForm = ->
 		instance.error.set([])

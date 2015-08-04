@@ -12,12 +12,15 @@ Meteor.methods
 
 		room = ChatRoom.findOne rid, { fields: { usernames: 1, t: 1, name: 1 } }
 
-		if room.t is 'c'
-			canAccess = true
-		else if room.usernames.indexOf(user.username) isnt -1
-			canAccess = true
+		if room
+			if room.t is 'c'
+				canAccess = true
+			else if room.usernames.indexOf(user.username) isnt -1
+				canAccess = true
 
-		if canAccess isnt true
-			return false
+			if canAccess isnt true
+				return false
+			else
+				return _.pick room, ['_id', 't', 'name']
 		else
-			return _.pick room, ['_id', 't', 'name']
+			throw new Meteor.Error 'invalid-room', '[methods] canAccessRoom -> Room ID is invalid'

@@ -285,7 +285,7 @@ RocketBot.adapter = new RocketChatAdapter RocketBot
 HubotScripts(RocketBot)
 RocketBot.run()
 
-RocketBot.hear /test/i, (res) ->
+RocketBot.hear /^test/i, (res) ->
 	res.send "Test? TESTING? WE DON'T NEED NO TEST, EVERYTHING WORKS!"
 
 RocketChat.callbacks.add 'afterSaveMessage', RocketBotReceiver, RocketChat.callbacks.priority.LOW

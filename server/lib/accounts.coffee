@@ -1,3 +1,6 @@
+# Deny Account.createUser in client
+Accounts.config { forbidClientAccountCreation: true }
+
 Accounts.emailTemplates.siteName = "ROCKET.CHAT";
 Accounts.emailTemplates.from = "ROCKET.CHAT <no-reply@rocket.chat>";
 

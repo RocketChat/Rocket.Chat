@@ -6,11 +6,13 @@
 	animating = false
 
 	toggleArrow = (status) ->
-		if arrow.hasClass "left" or status? is -1
-			arrow.removeClass "left"
+		if arrow.hasClass "top" or status? is -1
+			arrow.removeClass "top"
+			arrow.addClass "bottom"
 			return
-		if not arrow.hasClass "left" or status? is 1
-			arrow.addClass "left"
+		if not arrow.hasClass "top" or status? is 1
+			arrow.addClass "top"
+			arrow.removeClass "bottom"
 
 	toggleCurrent = ->
 		if flexNav.opened then closeFlex() else AccountBox.toggle()
@@ -42,7 +44,7 @@
 			return invalid
 		return false;
 
-	toggleFlex = (status) ->
+	toggleFlex = (status, callback = null) ->
 		return if animating == true
 		animating = true
 		if flexNav.opened or status? is -1
@@ -50,6 +52,7 @@
 			flexNav.addClass "hidden"
 			setTimeout ->
 				animating = false
+				callback?()
 			, 350
 			return
 		if not flexNav.opened or status? is 1
@@ -60,21 +63,20 @@
 			, 50
 			setTimeout ->
 				animating = false
+				callback?()
 			, 500
 
-
-	openFlex = ->
+	openFlex = (callback = null) ->
 		return if animating == true
 		toggleArrow 1
-		toggleFlex 1
+		toggleFlex 1, callback
 		# remove focus because when opening direct message with pre-selected user, it shows the dropdown
 		#focusInput()
 
-	closeFlex = ->
+	closeFlex = (callback = null) ->
 		return if animating == true
 		toggleArrow -1
-		toggleFlex -1
-		setFlex ""
+		toggleFlex -1, callback
 
 	flexStatus = ->
 		return flexNav.opened

@@ -3,7 +3,11 @@ Template.oembedUrlWidget.helpers
 		if not this.meta?
 			return
 
-		return this.meta.ogDescription or this.meta.twitterDescription or this.meta.description
+		description = this.meta.ogDescription or this.meta.twitterDescription or this.meta.description
+		if not description?
+			return
+
+		return description.replace /(^“)|(”$)/g, ''
 
 	title: ->
 		if not this.meta?

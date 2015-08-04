@@ -2,6 +2,7 @@ webrtc = {
 	// cid: Random.id(),
 	pc: undefined,
 	to: undefined,
+	room: undefined,
 	debug: false,
 	config: {
 		iceServers: [
@@ -12,6 +13,7 @@ webrtc = {
 	stream: stream,
 	send: function(data) {
 		data.to = webrtc.to;
+		data.room = webrtc.room;
 		data.from = Meteor.user().username;
 		stream.emit('send', data);
 	},
@@ -21,7 +23,7 @@ webrtc = {
 				webrtc.pc.close();
 			}
 			if (sendEvent != false) {
-				stream.emit('send', {to: webrtc.to, close: true});
+				stream.emit('send', {to: webrtc.to, room: webrtc.room, from: Meteor.userId(), close: true});
 			}
 		}
 	},
@@ -85,7 +87,7 @@ webrtc.start = function (isCaller, fromUsername) {
 
 	var getUserMedia = function() {
 		// get the local stream, show it in the local video element and send it
-		navigator.getUserMedia({ "audio": true, "video": true }, function (stream) {
+		navigator.getUserMedia({ "audio": true, "video": {mandatory: {minWidth:1280, minHeight:720}} }, function (stream) {
 			webrtc.onSelfUrl(URL.createObjectURL(stream));
 
 			webrtc.pc.addStream(stream);
@@ -126,6 +128,14 @@ webrtc.start = function (isCaller, fromUsername) {
 
 stream.on(Meteor.userId(), function(data) {
 	webrtc.log('stream.on', Meteor.userId(), data)
+	if (!webrtc.to) {
+		webrtc.to = data.room.replace(Meteor.userId(), '');
+	}
+
+	if (!webrtc.room) {
+		webrtc.room = data.room;
+	}
+
 	if (data.close == true) {
 		webrtc.stop(false);
 		return
