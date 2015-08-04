@@ -1,5 +1,5 @@
 Template.starredRooms.helpers
 	rooms: ->
-		return ChatSubscription.find { f: true }, { sort: 't': 1, 'name': 1 }
+		return ChatSubscription.find { f: true }, { sort: 't': 1, 'name': 1, open: true }
 	total: ->
 		return ChatSubscription.find({ f: true }).count()

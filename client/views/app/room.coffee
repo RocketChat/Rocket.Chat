@@ -76,7 +76,6 @@ Template.room.helpers
 
 		if roomData.t is 'd'
 			username = _.without roomData.usernames, Meteor.user().username
-			UserManager.addUser username
 
 			userData = {
 				name: Session.get('user_' + username + '_name')
@@ -192,9 +191,17 @@ Template.room.helpers
 
 		for username in room?.usernames or []
 			if onlineUsers[username]?
+				utcOffset = onlineUsers[username]?.utcOffset
+				if utcOffset?
+					if utcOffset > 0
+						utcOffset = "+#{utcOffset}"
+
+					utcOffset = "(UTC #{utcOffset})"
+
 				users.push
 					username: username
-					status: onlineUsers[username]
+					status: onlineUsers[username]?.status
+					utcOffset: utcOffset
 
 		users = _.sortBy users, 'username'
 
@@ -482,6 +489,13 @@ Template.room.events
 		# 		$('.input-message-editing').select()
 
 	"click .mention-link": (e) ->
+		channel = $(e.currentTarget).data('channel')
+		if channel?
+			channelObj = ChatSubscription.findOne name: channel
+			if channelObj?
+				FlowRouter.go 'room', {_id: channelObj.rid}
+			return
+
 		Session.set('flexOpened', true)
 		Session.set('showUserInfo', $(e.currentTarget).data('username'))
 
