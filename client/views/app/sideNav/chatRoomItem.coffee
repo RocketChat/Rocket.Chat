@@ -52,7 +52,7 @@ Template.chatRoomItem.events
 		e.preventDefault()
 
 		if (FlowRouter.getRouteName() is 'room' and FlowRouter.getParam('_id') is this.rid)
-			FlowRouter.go 'index'
+			FlowRouter.go 'home'
 
 		Meteor.call 'hideRoom', this.rid
 
@@ -61,7 +61,7 @@ Template.chatRoomItem.events
 		e.preventDefault()
 
 		if (FlowRouter.getRouteName() is 'room' and FlowRouter.getParam('_id') is this.rid)
-			FlowRouter.go 'index'
+			FlowRouter.go 'home'
 
 		RoomManager.close this.rid
 
