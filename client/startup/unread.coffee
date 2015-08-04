@@ -12,7 +12,7 @@ Meteor.startup ->
 		unreadCount = 0
 		unreadAlert = false
 
-		subscriptions = ChatSubscription.find({}, { fields: { unread: 1, alert: 1, rid: 1 } })
+		subscriptions = ChatSubscription.find({open: true}, { fields: { unread: 1, alert: 1, rid: 1 } })
 
 		rid = undefined
 		if FlowRouter.getRouteName() is 'room'
