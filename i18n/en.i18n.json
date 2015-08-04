@@ -45,6 +45,7 @@
   "edited" : "edited",
   "Email_or_username" : "Email or username",
   "Email_verified" : "Email verified",
+  "Email_already_exists": "Email already exists",
   "Enter_info" : "Enter your login information",
   "Error_changing_password" : "Password changed",
   "Favorites" : "Favorites",
