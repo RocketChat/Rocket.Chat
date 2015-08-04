@@ -15,6 +15,13 @@ class MentionsClient
 				mentions = _.unique mentions
 				mentions = mentions.join('|')
 				msg = msg.replace new RegExp("(?:^|\\s)(@(#{mentions}))(?:\\s|$)", 'g'), (match, mention, username) ->
+					if username is 'all'
+						return match.replace mention, "<a href=\"\" class=\"mention-link\">#{mention}</a>"
+
+					if not message.temp?
+						if not _.findWhere(message.mentions, {username: username})?
+							return match
+
 					return match.replace mention, "<a href=\"\" class=\"mention-link\" data-username=\"#{username}\">#{mention}</a>"
 
 			message.html = msg
