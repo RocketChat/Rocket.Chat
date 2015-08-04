@@ -34,7 +34,7 @@ Template.messagePopupConfig.helpers
 		template = Template.instance()
 		config =
 			title: 'Channels'
-			collection: ChatRoom
+			collection: ChatSubscription
 			trigger: '#'
 			template: 'messagePopupChannel'
 			getInput: self.getInput
