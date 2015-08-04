@@ -167,7 +167,7 @@ Template.messagePopup.helpers
 		template = Template.instance()
 		filter = template.textFilter.get()
 		result = template.data.getFilter template.data.collection, filter
-		if (template.data.collection instanceof Meteor.Collection and result.count() is 0) or result?.length is 0
+		if (template.data.collection instanceof Meteor.Collection and result.count? and result.count() is 0) or result?.length is 0
 			template.open.set false
 
 		return result
