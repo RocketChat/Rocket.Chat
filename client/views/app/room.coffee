@@ -456,6 +456,13 @@ Template.room.events
 		# 		$('.input-message-editing').select()
 
 	"click .mention-link": (e) ->
+		channel = $(e.currentTarget).data('channel')
+		if channel?
+			channelObj = ChatSubscription.findOne name: channel
+			if channelObj?
+				FlowRouter.go 'room', {_id: channelObj.rid}
+			return
+
 		Session.set('flexOpened', true)
 		Session.set('showUserInfo', $(e.currentTarget).data('username'))
 

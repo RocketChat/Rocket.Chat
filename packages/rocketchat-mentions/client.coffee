@@ -11,6 +11,7 @@ class MentionsClient
 			mentions = []
 			message.msg.replace /(?:^|\s|\n)(?:@)([A-Za-z0-9-_.]+)/g, (match, mention) ->
 				mentions.push mention
+
 			if mentions.length isnt 0
 				mentions = _.unique mentions
 				mentions = mentions.join('|')
@@ -23,6 +24,17 @@ class MentionsClient
 							return match
 
 					return match.replace mention, "<a href=\"\" class=\"mention-link\" data-username=\"#{username}\">#{mention}</a>"
+
+			channels = []
+			message.msg.replace /(?:^|\s|\n)(?:#)([A-Za-z0-9-_.]+)/g, (match, mention) ->
+				channels.push mention
+
+			if channels.length isnt 0
+				channels = _.unique channels
+				channels = channels.join('|')
+				msg = msg.replace new RegExp("(?:^|\\s)(#(#{channels}))(?:\\s|$)", 'g'), (match, mention, channel) ->
+					return match.replace mention, "<a href=\"\" class=\"mention-link\" data-channel=\"#{channel}\">#{mention}</a>"
+
 
 			message.html = msg
 		return message
