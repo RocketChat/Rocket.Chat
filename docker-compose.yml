@@ -1,0 +1,17 @@
+mongo:
+  image: mongo
+  ports:
+    - "27017"
+  volumes:
+    - ./data:/data
+web:
+  build: .
+  ports:
+    - "3000:80"
+  volumes:
+    - .:/app
+  environment:
+    - MONGO_URL=mongodb://mongo:27017
+    - ROOT_URL=http://localhost:3000
+  links:
+    - mongo
