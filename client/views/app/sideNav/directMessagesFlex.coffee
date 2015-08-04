@@ -188,7 +188,6 @@ roomLabelOptions = (roomPermissionIds, userPermissionIds) ->
 	classificationOrder = ['U','C','S','TS']
 
 	# user's access permissions
-	console.log 'ap subsready: ', FlowRouter.subsReady('accessPermissions')
 	userPerms = AccessPermissions.find({_id:{$in: userPermissionIds}}).fetch()
 	userCountry = _.find(userPerms, (perm) -> perm.type is 'Release Caveat')
 
