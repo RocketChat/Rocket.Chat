@@ -43,6 +43,7 @@
   "edited" : "editado",
   "Email_or_username" : "Email ou nome de usuário",
   "Email_verified" : "Email verificado",
+  "Email_already_exists": "Email já cadastrado",
   "Enter_info" : "Entre com seus dados de login",
   "Error_changing_password" : "Senha alterada",
   "Favorites" : "Favoritos",
