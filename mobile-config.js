@@ -9,12 +9,18 @@ App.info({
   website: 'https://rocket.chat'
 });
 
-// // Set up resources such as icons and launch screens.
-// App.icons({
-//   'iphone': 'icons/icon-60.png',
-//   'iphone_2x': 'icons/icon-60@2x.png',
-//   // ... more screen sizes and platforms ...
-// });
+// Set up resources such as icons and launch screens.
+App.icons({
+	iphone   : 'public/images/logo/apple-touch-icon-60x60.png',
+	iphone_2x: 'public/images/logo/apple-touch-icon-120x120.png',
+	iphone_3x: 'public/images/logo/apple-touch-icon-180x180.png',
+	ipad     : 'public/images/logo/apple-touch-icon-76x76.png',
+	ipad_2x  : 'public/images/logo/apple-touch-icon-152x152.png'
+	// android_ldpi
+	// android_mdpi
+	// android_hdpi
+	// android_xhdpi
+});
 
 App.launchScreens({
 	iphone            : 'splash/iphone.png',
