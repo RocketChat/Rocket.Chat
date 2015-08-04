@@ -1,10 +1,12 @@
 Template.chatRoomItem.helpers
 
 	alert: ->
-		return this.alert if (not FlowRouter.getParam('_id')) or FlowRouter.getParam('_id') isnt this.rid
+		if FlowRouter.getParam('_id') isnt this.rid or not document.hasFocus()
+			return this.alert
 
 	unread: ->
-		return this.unread if (not FlowRouter.getParam('_id')) or FlowRouter.getParam('_id') isnt this.rid
+		if (FlowRouter.getParam('_id') isnt this.rid or not document.hasFocus()) and this.unread > 0
+			return this.unread
 
 	isDirectRoom: ->
 		return this.t is 'd'
@@ -24,8 +26,6 @@ Template.chatRoomItem.helpers
 
 	active: ->
 		if FlowRouter.getParam('_id')? and FlowRouter.getParam('_id') is this.rid
-			if this.alert or this.unread > 0
-				Meteor.call 'readMessages', this.rid
 			return 'active'
 
 	canLeave: ->

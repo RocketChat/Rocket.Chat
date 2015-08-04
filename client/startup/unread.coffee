@@ -12,12 +12,19 @@ Meteor.startup ->
 		unreadCount = 0
 		unreadAlert = false
 
-		subscriptions = ChatSubscription.find({}, { fields: { unread: 1, alert: 1 } })
+		subscriptions = ChatSubscription.find({}, { fields: { unread: 1, alert: 1, rid: 1 } })
+
+		rid = undefined
+		if FlowRouter.getRouteName() is 'room'
+			rid = FlowRouter.getParam '_id'
 
 		for subscription in subscriptions.fetch()
-			unreadCount += subscription.unread
-			if subscription.alert is true
-				unreadAlert = '•'
+			if subscription.rid is rid and (subscription.alert or subscription.unread > 0) and document.hasFocus()
+				Meteor.call 'readMessages', subscription.rid
+			else
+				unreadCount += subscription.unread
+				if subscription.alert is true
+					unreadAlert = '•'
 
 		if unreadCount > 0
 			if unreadCount > 999
