@@ -12,6 +12,10 @@ Template.avatarPrompt.onCreated ->
 
 	self.getSuggestions()
 
+Template.avatarPrompt.onRendered ->
+	Tracker.afterFlush ->
+		SideNav.setFlex "userSettingsFlex"
+		SideNav.openFlex()
 
 Template.avatarPrompt.helpers
 	suggestions: ->
