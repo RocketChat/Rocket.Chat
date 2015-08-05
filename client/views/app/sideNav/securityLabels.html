@@ -11,7 +11,7 @@
 	<form id="chosenform" class="form-horizontal">
 		<div class="form-group">
 			<label for="classification-select" >Classification:</label>
-                    	<div class="selectContainer">
+            <div class="selectContainer">
 				<select id="classification-select" class="form-control chosen-select" data-toggle="tooltip" title="Classification">
 					{{#each classificationLabels}}
 						<option value="{{_id}}" {{optionSelected}} {{optionDisabled}}>{{label}}</option>
@@ -19,12 +19,13 @@
 				</select>
 			</div>
 		</div>
-            	<div class="form-group">
+        
+        <div class="form-group">
 			<label for="sap-select" >SAP:</label>
 			{{#unless hasOptions 'SAP'}}
 				<span class="input-error">You do not have SAP permissions</span>
 			{{/unless}}
-                    	<div class="selectContainer">
+            <div class="selectContainer">
 				<select {{selectDisabled 'SAP'}} id="sap-select" multiple class="form-control chosen-select hidden" data-toggle="tooltip" title="SAP label(s) in common with conversation members">
 					{{#each sapLabels}}
 						<option value="{{_id}}" {{optionSelected}} {{optionDisabled}}>{{label}}</option>
@@ -32,27 +33,28 @@
 				</select>
 			</div>
 		</div>
-            	<div class="form-group">
-
-	    		<label for="sci-select" >SCI:</label>
+        
+        <div class="form-group">
+	    	<label for="sci-select" >SCI:</label>
 			{{#unless hasOptions 'SCI'}}
 				<span class="input-error">You do not have SCI permissions</span>
 			{{/unless}}
-                    	<div class="selectContainer">
+            <div class="selectContainer">
 				<select {{selectDisabled 'SCI'}} id="sci-select" multiple class="form-control chosen-select hidden" data-toggle="tooltip" title="SCI label(s) in common with conversation members">
 					{{#each sciLabels}}
 						<option value="{{_id}}" {{optionSelected}} {{optionDisabled}}>{{label}}</option>
 					{{/each}}
 				</select>
-		    	</div>
+		    </div>
 		</div>
-            	<div class="form-group">
-	    		<label for="release-caveat-select" >Release Caveat:</label>
+        
+        <div class="form-group">
+	    	<label for="release-caveat-select" >Release Caveat:</label>
 			{{!--
 			  | all Release Caveats are options, but System, current user, and common to all members are selected by
 			  | default and cannot be removed
 			  +--}}
-                    	<div class="selectContainer">
+            <div class="selectContainer">
 				<select {{selectDisabled 'Release Caveat'}} id="release-caveat-select" multiple class="form-control chosen-select hidden" data-toggle="tooltip" title="Release Caveat label(s) in common with conversation members">
 					{{#each releaseCaveatLabels}}
 						<option value="{{_id}}" {{optionSelected}} {{optionDisabled}}>{{trigraph}}</option>
