@@ -144,6 +144,35 @@ Template.privateGroupsFlex.onCreated ->
 		_.contains instance.disabledLabelIds, id
 
 
+	instance.updateLabelOptions = ->
+		parameters = {}
+		# TODO: replace this with existing room perms (instance.room.accessPermissions),
+		#       update method logic accordingly
+		parameters.conversationId = instance.data.relabelRoom
+		parameters.usernames = instance.selectedUsers.get()
+		Meteor.call 'getAllowedConversationPermissions', parameters, (error, result) ->
+			if error
+				alert error
+			else
+				instance.selectedLabelIds.push((result.selectedIds or []).slice(0))
+				instance.selectedLabelIds = _.uniq(instance.selectedLabelIds)
+				instance.selectedLabelIds = _.flatten(instance.selectedLabelIds)
+				instance.disabledLabelIds = (result.disabledIds or []).slice(0)
+				instance.allowedLabels = result.allowed or []
+
+				myPerms = Meteor.user().profile.access
+				console.log myPerms
+
+				console.log 'calling canAccessResource'
+				Meteor.call 'canAccessResource', [Meteor.userId(), 'testadmin', 'testuser2'], ['202', '300'], (error, result) ->
+					if error
+						console.log "error - can't access"
+					else
+						console.log 'result: ', result
+
+				instance.securityLabelsInitialized.set true
+
+
 
 	# Tracker.autorun function that gets executed on template creation, and then re-executed
 	# on changes to the reactive inputs (in this case, Session data and subscription to the
@@ -168,10 +197,10 @@ Template.privateGroupsFlex.onCreated ->
 				# get room data
 				instance.room = Session.get('roomData' + instance.data.relabelRoom)
 				# select existing permissions and disallow removing them
-				options = roomLabelOptions(instance.room.accessPermissions, Meteor.user().profile.access)
-				instance.selectedLabelIds = _.pluck( options.selected, '_id')
-				instance.disabledLabelIds = _.pluck( options.disabled, '_id')
-				instance.allowedLabels = options.allowed
+#				options = roomLabelOptions(instance.room.accessPermissions, Meteor.user().profile.access)
+#				instance.selectedLabelIds = _.pluck( options.selected, '_id')
+#				instance.disabledLabelIds = _.pluck( options.disabled, '_id')
+#				instance.allowedLabels = options.allowed
 				instance.groupName.set(instance.room.name)
 				instance.room.usernames?.forEach (username) ->
 					# TODO use name field instead of username.  Room only has username
@@ -179,18 +208,22 @@ Template.privateGroupsFlex.onCreated ->
 					instance.selectedUserNames[username] = username
 					instance.selectedUsers.set instance.selectedUsers.get().concat username	
 					# other conversation members
-					instance.otherMembers = _.without(instance.room.usernames, Meteor.user().username)
-					instance.securityLabelsInitialized.set true
+#					instance.otherMembers = _.without(instance.room.usernames, Meteor.user().username)
+				instance.updateLabelOptions()
+#				instance.securityLabelsInitialized.set true
 
 		# if creating a new room (rather than relabel), populate default values (UNCLASS//RELTO USA)
 		else
 			# no need to keep running this autorun function, since nothing to wait for
 			c.stop()
-			options = roomLabelOptions([], Meteor.user().profile.access)
-			instance.selectedLabelIds = _.pluck( options.selected, '_id')
-			instance.disabledLabelIds = _.pluck( options.disabled, '_id')
-			instance.allowedLabels = options.allowed
-			instance.securityLabelsInitialized.set true
+#			options = roomLabelOptions([], Meteor.user().profile.access)
+#			instance.selectedLabelIds = _.pluck( options.selected, '_id')
+#			instance.disabledLabelIds = _.pluck( options.disabled, '_id')
+#			instance.allowedLabels = options.allowed
+			instance.updateLabelOptions()
+#			instance.securityLabelsInitialized.set true
+
+
 
 roomLabelOptions = (roomPermissionIds, userPermissionIds) ->
 	if roomPermissionIds.length is 0
