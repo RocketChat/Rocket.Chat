@@ -266,6 +266,8 @@ Template.room.helpers
 	noRtcLayout: ->
 		return (!Session.get('rtcLayoutmode') || (Session.get('rtcLayoutmode') == 0) ? true: false);
 
+	maxMessageLength: ->
+		return RocketChat.settings.get('Message_MaxAllowedSize')
 
 
 Template.room.events
