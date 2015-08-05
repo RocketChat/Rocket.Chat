@@ -96,11 +96,7 @@ Template.main.events
 	"click .burger": ->
 		console.log 'room click .burger' if window.rocketDebug
 		chatContainer = $("#rocket-chat")
-		if chatContainer.hasClass("menu-closed")
-			chatContainer.removeClass("menu-closed").addClass("menu-opened")
-		else
-			chatContainer.addClass("menu-closed").removeClass("menu-opened")
-
+		menu.toggle()
 
 Template.main.onRendered ->
 
