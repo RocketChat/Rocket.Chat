@@ -47,7 +47,7 @@
 					<form class="message-form" method="post" action="/">
 						<div>
 							{{> messagePopupConfig getPupupConfig}}
-							<textarea dir="auto" name="msg" class="input-message"></textarea>
+							<textarea dir="auto" name="msg" maxlength="{{maxMessageLength}}" class="input-message"></textarea>
 							<i class="icon-paper-plane" title="{{_ "Send_Message"}}"></i>
 						</div>
 						<div class="users-typing">
