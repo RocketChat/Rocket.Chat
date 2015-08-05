@@ -25,3 +25,4 @@ Template.sideNav.events
 
 Template.sideNav.onRendered ->
 	SideNav.init()
+	menu.init()
