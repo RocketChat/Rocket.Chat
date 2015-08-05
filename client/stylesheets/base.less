@@ -296,7 +296,6 @@ body {
 	color: @primary-font-color;
 	height: 100%;
 	width: 100%;
-	// min-width: 768px;
 	-webkit-font-smoothing: antialiased;
 	line-height: 1rem;
 	padding: 0;
@@ -1646,37 +1645,29 @@ a.github-fork {
 
 // MAIN CONTENT + MAIN PAGES //
 .main-content {
-	position: relative;
-	margin-left: @rooms-box-width;
-	margin-top: 0;
-	height: 100%;
-	.calc(width,
-	~'100% - ' @rooms-box-width);
-	.transition(width .25s cubic-bezier(.5,
-	0,
-	.1,
-	1));
+	position: fixed;
+	top: 0;
+	bottom: 0;
+	left: @rooms-box-width;
+	right: 0;
+	width: auto;
+	height: auto;
+	.transition(width .25s cubic-bezier(.5, 0, .1, 1));
 	&.flex-opened {
-		.calc(width,
-		~'100% - ' @rooms-box-width + @flex-tab-width);
-		margin-right: 420px;
+		right: @flex-tab-width;
 		.flex-tab {
 			.transform(translateX(0));
 		}
 	}
 	&.layout1 {
-		.calc(width,
-		~'100% - ' @rooms-box-width + @flex-tab-webrtc-width);
-		margin-right: 420px;
+		right: @flex-tab-webrtc-width;
 		.flex-tab {
 			max-width: @flex-tab-webrtc-width;
 			.transform(translateX(0));
 		}
 	}
 	&.layout2 {
-		.calc(width,
-		~'100% - ' @rooms-box-width + @flex-tab-webrtc-2-width);
-		margin-right: 420px;
+		right: @flex-tab-webrtc-2-width;
 		.flex-tab {
 			max-width: @flex-tab-webrtc-2-width;
 			.transform(translateX(0));
@@ -1978,12 +1969,6 @@ a.github-fork {
 		vertical-align: top;
 		width: 100%;
 	}
-}
-
-.room-container {
-	position: absolute;
-	width: 100%;
-	height: 100%;
 }
 
 .messages-box {
@@ -3241,8 +3226,7 @@ a.github-fork {
 @media all and(max-width: 1100px) {
 	#rocket-chat {
 		.flex-opened {
-			.calc(width,
-			~'100% - ' @rooms-box-width);
+			right: 0;
 		}
 	}
 }
@@ -3259,8 +3243,7 @@ a.github-fork {
 			.transition(transform .3s ease-out);
 		}
 		.main-content {
-			margin-left: 0;
-			width: 100%;
+			left: 0;
 			.transition(transform .3s ease-out);
 		}
 		.fixed-title h2 {
