@@ -979,6 +979,10 @@ label.required:after {
 	color: red
 }
 
+.status-custom,
+.icon-at.status-custom {
+	color: #13DCEB
+}
 .status-offline,
 .icon-at.status-offline {
 	color: #cccccc
@@ -1640,6 +1644,12 @@ label.required:after {
 	transform: scaleX(1)
 }
 
+.status-custom .user-image:hover .avatar:after,
+.status-custom .user-image.selected .avatar:after,
+.status-custom .user-image:hover .avatar:before,
+.status-custom .user-image.selected .avatar:before {
+	background-color: #13DCEB
+}
 .status-offline .user-image:hover .avatar:after,
 .status-offline .user-image.selected .avatar:after,
 .status-offline .user-image:hover .avatar:before,

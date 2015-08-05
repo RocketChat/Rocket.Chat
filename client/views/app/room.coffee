@@ -222,7 +222,7 @@ Template.room.helpers
 	userActiveByUsername: (username) ->
 		console.log 'room.helpers userActiveByUsername' if window.rocketDebug
 		status = Session.get 'user_' + username + '_status'
-		if status in ['online', 'away', 'busy']
+		if status in ['custom', 'online', 'away', 'busy']
 			return {username: username, status: status}
 		return
 

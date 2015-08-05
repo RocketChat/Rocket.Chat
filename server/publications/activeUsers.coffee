@@ -8,7 +8,7 @@ Meteor.publish 'activeUsers', ->
 		username:
 			$exists: 1
 		status:
-			$in: ['online', 'away', 'busy']
+			$in: ['custom', 'online', 'away', 'busy']
 	,
 		fields:
 			username: 1

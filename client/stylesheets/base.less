@@ -440,6 +440,11 @@ label.required:after {
 	color: red;
 }
 
+.status-custom,
+.icon-at.status-custom {
+	color: @status-custom;
+}
+
 .status-offline,
 .icon-at.status-offline {
 	color: @status-offline;
@@ -908,6 +913,17 @@ a.github-fork {
 				background-color: @status-busy;
 			}
 		}
+		&.status-custom {
+			.thumb:after {
+				border-color: darken(@status-custom, 5%);
+				background-color: @status-custom;
+			}
+		}
+		.custom-message {
+			background-color: red;
+			display:none;
+		}
+
 	}
 	.options {
 		background-color: @primary-background-color;
@@ -2440,6 +2456,11 @@ a.github-fork {
 					background-color: @status-busy;
 				}
 			}
+			.status-custom {
+				&:after {
+					background-color: @status-custom;
+				}
+			}
 			p {
 				color: @primary-font-color;
 			}
@@ -2513,6 +2534,9 @@ a.github-fork {
 	}
 	&.status-busy {
 		.user-image-status(@status-busy);
+	}
+	&.status-custom {
+		.user-image-status(@status-custom);
 	}
 }
 
