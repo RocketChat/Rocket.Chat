@@ -1,4 +1,4 @@
-Template.userSettingsFlex.helpers
+Template.userSettingsFlex2.helpers
 	languages: ->
 		languages = TAPi18n.getLanguages()
 		result = []
@@ -9,7 +9,7 @@ Template.userSettingsFlex.helpers
 	userLanguage: (key) ->
 		return localStorage.getItem('userLanguage')?.split('-').shift().toLowerCase() is key
 
-Template.userSettingsFlex.events
+Template.userSettingsFlex2.events
 	'mouseenter header': ->
 		SideNav.overArrow()
 
@@ -39,7 +39,7 @@ Template.userSettingsFlex.events
 		SideNav.closeFlex()
 		instance.clearForm()
 
-Template.userSettingsFlex.onCreated ->
+Template.userSettingsFlex2.onCreated ->
 	instance = this
 	
 	@clearForm = ->

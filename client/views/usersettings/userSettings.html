@@ -1,0 +1,22 @@
+<template name="userSettings">
+	<section class="page-container page-home page-static">
+		<head class="fixed-title">
+			{{> burger}}
+			<h2>
+				<span class="room-title">{{_ "User_Settings"}}</span>
+			</h2>
+		</head>
+		<div class="content">
+			<div class="info">
+				<h3>{{label}}</h3>
+				<h3>{{description}}</h3>
+			</div>
+			<div class="rocket-form">
+				
+				<div class="submit">
+					<button class="button"><i class="icon-send"></i><span>{{_ "Save_changes"}}</span></button>
+				</div>
+			</div>
+		</div>
+	</section>
+</template>

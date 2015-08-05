@@ -1,0 +1,17 @@
+<template name="userSettingsFlex">
+	<header>
+		<div>
+			<h4>{{_ "User_Settings"}}</h4>
+		</div>
+	</header>
+	<div class="content">
+		<div class="wrapper">
+			<ul>
+				<li>
+					<a href="{{pathFor 'userSettings' group='general'}}">{{_ "General"}}</a>
+					<a href="{{pathFor 'changeAvatar'}}">{{_ "Change_avatar"}}</a>
+				</li>
+			</ul>
+		</div>
+	</div>
+</template>
