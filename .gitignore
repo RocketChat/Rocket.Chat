@@ -63,3 +63,4 @@ temp_*
 Thumbs.db
 thumbs.db
 tramp
+data/*
