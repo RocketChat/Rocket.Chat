@@ -1,5 +1,5 @@
 if Meteor.isCordova
-	window.addEventListener 'deviceready', ->
+	document.addEventListener 'deviceready', ->
 		cordova.plugins.Keyboard.hideKeyboardAccessoryBar(true);
 		cordova.plugins.Keyboard.disableScroll(true);
 
