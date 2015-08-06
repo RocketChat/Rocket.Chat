@@ -45,7 +45,7 @@ Template.chatRoomItem.rendered = ->
 Template.chatRoomItem.events
 
 	'click .open-room': (e) ->
-		$("#rocket-chat").addClass("menu-closed").removeClass("menu-opened")
+		menu.close()
 
 	'click .hide-room': (e) ->
 		e.stopPropagation()
