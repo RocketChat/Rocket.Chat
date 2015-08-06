@@ -16,16 +16,11 @@
 				<a href="" data-status="away" class="status away"><span>{{_ "Away" context="male"}}</span></a>
 				<a href="" data-status="busy" class="status busy"><span>{{_ "Busy" context="male"}}</span></a>
 				<a href="" data-status="offline" class="status offline"><span>{{_ "Invisible"}}</span></a>
-                            	<a href="" data-status="custom" class="status custom"><span>{{_ "Custom"}}: {{customMessage}}</span></a>
 				<span class="custom-message">
-					<div class="input-line">
-                                            <label for="custom-message-text">"Message"</label>
-                                            <input type="text" id="custom-message-text" class="required" dir="auto">
-                                        </div>
-					<div class="input-submit">
+                                            <label for="custom-message-text">Custom Message</label>
+                                            <input type="text" id="custom-message-text"  dir="auto" value="{{customMessage}}">
                                             <button class="button clean primary save-message">{{_ "Save" }}</button>
                                             <button class="button clean cancel-message">{{_ "Cancel" }}</button>
-                                        </div>
 				</span>
 				<a href="" id="avatar"><i class="icon-camera"></i><span>{{_ "Change_avatar"}}</span></a>
 				<a href="" id="settings"><i class="icon-sliders"></i><span>{{_ "Settings"}}</span></a>

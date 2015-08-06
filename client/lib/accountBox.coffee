@@ -3,13 +3,10 @@
 	self = {}
 
 	setStatus = (status, message) ->
-		Meteor.call('UserPresence:setDefaultStatus', status)
 		userId = Meteor.userId()
 		if message?
-			field = 'status' + status
-			query = {_id: userId}
-			query[field] = message
-			Meteor.users.update(query, {$set: {statusMessage: message}});
+			Meteor.call('setStatusMessage', status, message);
+		Meteor.call('UserPresence:setDefaultStatus', status)
 
 	toggle = ->
 		if status then close() else open()

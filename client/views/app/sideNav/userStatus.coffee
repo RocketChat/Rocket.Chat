@@ -1,10 +1,8 @@
 Template.userStatus.helpers
 	myUserInfo: ->
-		visualStatus = "custom"
+		visualStatus = "online"
 		username = Meteor.user()?.username
 		switch Session.get('user_' + username + '_status')
-			when "online"
-				visualStatus = t("online")
 			when "away"
 				visualStatus = t("away")
 			when "busy"
@@ -14,21 +12,20 @@ Template.userStatus.helpers
 		return {
 			name: Session.get('user_' + username + '_name')
 			status: Session.get('user_' + username + '_status')
+			statusMessage : Session.get('user_' + username + '_statusMessage')
 			visualStatus: visualStatus
 			_id: Meteor.userId()
 			username: username
 		}
 	customMessage: ->
-		return 'custom message'
+		username = Meteor.user()?.username
+		return Session.get('user_' + username + '_statusMessage')
 
 Template.userStatus.events
 	'click .options .status': (event) ->
 		event.preventDefault()
-		if event.currentTarget.dataset.status is 'custom'
-			event.stopPropagation()
-			$('.custom-message').css('display','block')
-		else
-			AccountBox.setStatus(event.currentTarget.dataset.status)
+		event.stopPropagation()
+		setStatusMessage(event.currentTarget.dataset.status)
 
 	'click .account-box': (event) ->
 		console.log '.account-box EVENT....'
@@ -51,13 +48,9 @@ Template.userStatus.events
 		, 125
 
 	'click .save-message': (event, instance) ->
-		t = $('#custom-message-text').val()
-		console.log 'Save Custom Message ' + t
-		AccountBox.setStatus('custom')
-		# TODO: where to save: $('#custom-message-text').val()
-		Meteor.users.update({_id: userId, statusDefault: {$ne: status}}, {$set: {status: status, statusDefault: status}});
-
-		$('.custom-message').css('display','none')
+		cmt = $('.custom-message')
+		AccountBox.setStatus(cmt.data('userStatus'), $('#custom-message-text').val())
+		cmt.css('display','none')
 
 	'click .cancel-message': (event, instance) ->
 		event.preventDefault()
@@ -66,5 +59,15 @@ Template.userStatus.events
 
 Template.userStatus.rendered = ->
 	AccountBox.init()
-	$('.custom-message').css('display','none')
+	username = Meteor.user()?.username
+	setStatusMessage(Session.get('user_' + username + '_status'))
+	$('.custom-message').css('display','none') #.val(Session.get('user_' + username + '_statusMessage'))
 
+
+setStatusMessage = (newStatus) ->
+	status = $('a.status.' + newStatus)
+	cm = $('.custom-message').detach()
+	status.parent().append(cm)
+	colorClass = 'status-' + newStatus
+	cm.data('userStatus',newStatus)
+	cm.css('display','block').removeClass('status-online status-busy status-offline status-away').addClass(colorClass)
