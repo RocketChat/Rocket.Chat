@@ -292,6 +292,9 @@ Template.room.helpers
 
 	securityBannerText: ->
 		return this.get 'text'
+		
+	maxMessageLength: ->
+		return RocketChat.settings.get('Message_MaxAllowedSize')
 
 
 Template.room.events
