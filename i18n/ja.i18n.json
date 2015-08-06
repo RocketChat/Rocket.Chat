@@ -37,7 +37,7 @@
   "Have_your_own_chat" : "あなたは独自のWebチャットを得ました。Rocket.Chatは、Meteor.comで開発され、開発者たちが楽しく構築し、独自のチャットのプラットフォームを進化させることのできるすばらしいソリューションです。",
   "Hide_room" : "ルームを隠す",
   "History" : "履歴",
-  "inline_code": "インライン",
+  "inline_code" : "インライン",
   "Invalid_confirm_pass" : "入力されたパスワードとパスワードの確認が一致していません",
   "Invalid_email" : "入力されたメールアドレスが無効です",
   "Invalid_name" : "名前は空にすることはできません",
