@@ -54,7 +54,6 @@
   "Have_your_own_chat" : "웹 채팅을 할 수 있습니다. Meteor.com으로 개발된, Rocket.Chat은 발전된 챗팅 플랫폼을 기대하는 개발자들에게 가장 좋은 솔루션입니다.",
   "Hide_room" : "방 숨김",
   "History" : "이력",
-  "inline_code" : "inline_code",
   "Invalid_confirm_pass" : "두 암호가 일치하지 않습니다",
   "Invalid_email" : "입력한 이메일이 잘못되었습니다",
   "Invalid_name" : "이름을 비워 둘 수 없습니다",
