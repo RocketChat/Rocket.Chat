@@ -71,6 +71,7 @@ Template.privateGroupsFlex.events
 
 	'click .cancel-pvt-group': (e, instance) ->
 		SideNav.closeFlex ->
+			SideNav.setFlex null
 			instance.clearForm()
 
 	'click header': (e, instance) ->
@@ -97,6 +98,7 @@ Template.privateGroupsFlex.events
 					if err
 						return toastr.error err.reason
 					SideNav.closeFlex()
+					SideNav.setFlex null
 					instance.clearForm()
 					FlowRouter.go 'room', { _id: result.rid }
 			else
@@ -110,6 +112,7 @@ Template.privateGroupsFlex.events
 							return
 						return toastr.error err.reason
 					SideNav.closeFlex()
+					SideNav.setFlex null
 					instance.clearForm()
 					FlowRouter.go 'room', { _id: result.rid }
 		else
@@ -163,17 +166,21 @@ Template.privateGroupsFlex.onCreated ->
 	# Since function is tied to Template instance, will automatically stop if template on
 	# destroy (http://docs.meteor.com/#/full/template_autorun).
 	instance.autorun (c) ->
+		# can't use this.data because it's not set with updated flex data
+		data = SideNav.getFlex().data
+		unless data
+			return
+
+		roomId = data?.relabelRoom
 		# check if we are relabeling the room
-		if instance.data.relabelRoom?
+		if roomId
 			# get a subscription to the room (in case we don't have one already)
-			Meteor.subscribe('room', instance.data.relabelRoom)
+			Meteor.subscribe('room', roomId)
 			# function will automatically re-run on changes to this session variable, thus
 			# it will essentially "wait" for the data to get set
-			if Session.get('roomData' + instance.data.relabelRoom)
-				# once we have the data, no need to keep re-running
-				c.stop()
+			if Session.get('roomData' + roomId)
 				# get room data
-				instance.room = Session.get('roomData' + instance.data.relabelRoom)
+				instance.room = Session.get('roomData' + roomId)
 				# select existing permissions and disallow removing them
 				options = roomLabelOptions(instance.room.accessPermissions, Meteor.user().profile.access)
 				instance.selectedLabelIds = _.pluck( options.selected, '_id')
@@ -184,15 +191,13 @@ Template.privateGroupsFlex.onCreated ->
 					# TODO use name field instead of username.  Room only has username
 					# so we need to make server call to get full name for a username
 					instance.selectedUserNames[username] = username
-					instance.selectedUsers.set instance.selectedUsers.get().concat username	
-					# other conversation members
-					instance.otherMembers = _.without(instance.room.usernames, Meteor.user().username)
-					instance.securityLabelsInitialized.set true
+				# other conversation members
+				instance.selectedUsers.set instance.room.usernames
+				instance.otherMembers = _.without(instance.room.usernames, Meteor.user().username)
+				instance.securityLabelsInitialized.set true
 
 		# if creating a new room (rather than relabel), populate default values (UNCLASS//RELTO USA)
 		else
-			# no need to keep running this autorun function, since nothing to wait for
-			c.stop()
 			options = roomLabelOptions([], Meteor.user().profile.access)
 			instance.selectedLabelIds = _.pluck( options.selected, '_id')
 			instance.disabledLabelIds = _.pluck( options.disabled, '_id')

@@ -49,14 +49,12 @@ Template.chatRoomItem.events
 	'click .label-room': (e) ->
 		e.stopPropagation()
 		e.preventDefault()
-		data = {}
-		data.relabelRoom = this.rid
+		data = {relabelRoom: this.rid}
 		if this.t is 'd'
 			SideNav.setFlex "directMessagesFlex", data
 		else if this.t is 'p'
 			SideNav.setFlex "privateGroupsFlex", data
 		SideNav.openFlex()
-		console.log "Relabel a Room"
 
 	'click .open-room': (e) ->
 		$("#rocket-chat").addClass("menu-closed").removeClass("menu-opened")
