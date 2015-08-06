@@ -50,8 +50,6 @@
   "Forgot_password" : "Забыли пароль?",
   "Fork_it_on_github" : "Форкайте на github",
   "github_no_public_email" : "В настройках GitHub отсутствует публично доступный e-mail",
-  "Get_to_know_the_team" : "Get to know the Rocket.Team",
-  "Have_your_own_chat" : "Have your own web chat. Developed with Meteor.com, the Rocket.Chat is a great solution for developers looking forward to build and evolve their own chat platform.",
   "Hide_room" : "Скрыть чат",
   "History" : "История",
   "inline_code" : "inline_code",
@@ -167,8 +165,5 @@
   "With_whom" : "With whom",
   "you_are_in_preview_mode_of" : "You are in preview mode of channel #<strong>__room_name__</strong>",
   "You_neeed_confirm_email" : "Необходимо подтвердить email для входа!",
-  "Your_Open_Source_solution" : "Ваш собственный чат на базе Open Source-технологий",
-  "You_will_not_be_able_to_recover" : "You will not be able to recover!",
-  "Yes_delete_it" : "Yes, delete it!",
-  "Your_entry_has_been_deleted" : "Your entry has been deleted."
+  "Your_Open_Source_solution" : "Ваш собственный чат на базе Open Source-технологий"
 }

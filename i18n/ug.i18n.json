@@ -106,7 +106,6 @@
   "See_only_online" : "توردىكىلەرنىلا كۆرۈش",
   "Select_an_avatar" : "باش رەسىم تاللاش",
   "Select_file" : "ھۆججەت تاللاش",
-  "Select_service_to_login" : "Select a service to login to load your picture or upload one directly from your computer",
   "Selected_users" : "تاللانغان قوللانچىلار",
   "Send_confirmation_email" : "جەزملەشتۈرۈش ئىلخىتى ئەۋەتىش",
   "Send_Message" : "خەت ئەۋەتىش",
@@ -139,7 +138,6 @@
   "View_All" : "ھەممىنى كۆرۈش",
   "Welcome" : "ئەسسالامۇ-ئەلەيكۇم <em>%s</em>.",
   "Welcome_to_the" : "كەلگىنىزگە مەرھابا",
-  "you_are_in_preview_mode_of" : "You are in preview mode of channel #<strong>__room_name__</strong>",
   "You_neeed_confirm_email" : "ئىلخەتنى جەزملەشتۈرۈپ بولغاندىن كېيىن كىرەلەيسىز!",
   "Your_Open_Source_solution" : "ئۆزىڭىزنىڭ ئوچۇق كودلۇق پاراڭلىشىش ھەل قىلىش ئۇسۇلى"
 }
