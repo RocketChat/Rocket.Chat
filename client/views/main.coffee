@@ -62,6 +62,9 @@ Template.body.onRendered ->
 				property: 'msvalidate.01'
 				content: RocketChat.settings.get 'Meta:msvalidate.01'
 
+	if Meteor.isCordova
+		$(document.body).addClass 'is-cordova'
+
 
 Template.main.helpers
 
