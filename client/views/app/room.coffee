@@ -420,17 +420,24 @@ Template.room.events
 
 	'click .user-view nav .pvt-msg': (e) ->
 		console.log 'room click .user-view nav .pvt-msg' if window.rocketDebug
-		# close side nav if it's open
-		wait = 0
-		if SideNav.flexStatus
-			wait = 400
-			SideNav.closeFlex()
-
-		# sidenav is animated so need to wait for it to close if open
-		setTimeout ->
-			SideNav.setFlex "directMessagesFlex", {user: Session.get('showUserInfo')}
-			SideNav.openFlex()
-		, wait
+		# determine if we're creating new room or opening existing room.  DM uses 
+		# usernames for room id
+		me = Meteor.user().username
+		to = Session.get('showUserInfo')
+		rid = [me, to].sort().join('')
+		console.log 'rid: ', rid
+		if ChatSubscription.findOne({rid:rid})
+			# conversation already exists
+			FlowRouter.go('room', {_id: rid})
+		else 
+			# close side nav if it's open
+			if SideNav.flexStatus
+				SideNav.setFlex null
+				SideNav.closeFlex( ->
+					# sidenav is animated so need to wait for it to close if open
+					SideNav.setFlex "directMessagesFlex", {user: to }
+					SideNav.openFlex()
+				)
 		# removed direct call to createDirectMessage because we need to set security labels first
 
 	'click button.load-more': (e) ->
