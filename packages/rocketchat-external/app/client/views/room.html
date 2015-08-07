@@ -1,0 +1,17 @@
+<template name="room">
+	<div class="external-room">
+		<div class="title">
+			<h1>sala</h1>
+		</div>
+		<div class="wrapper">
+			<ul>
+				{{#each messages}}
+					{{#nrr nrrargs 'message' .}}{{/nrr}}
+				{{/each}}
+			</ul>
+		</div>
+		<div class="footer">
+			<textarea class="input-message"></textarea>
+		</div>
+	</div>
+</template>
