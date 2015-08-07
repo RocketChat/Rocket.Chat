@@ -1,6 +1,7 @@
 {
   "and" : "و",
   "Email_verified" : "البريد الإلكتروني التحقق",
+  "User_added" : "وأضاف العضو <em>__user_added__</em>.",
   "User_joined_channel" : "وقد انضمت قناة.",
   "User_left" : "العضو <em>__user_left__</em>يقم."
 }
