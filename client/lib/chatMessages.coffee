@@ -66,8 +66,9 @@ class @ChatMessages
 			this.editing.saved = this.input.value
 
 	send: (rid, input) ->
-		if _.trim(input.value) isnt '' and not this.isMessageTooLong(input)
-			console.error 'sending', input.value
+		if _.trim(input.value) isnt ''
+			if this.isMessageTooLong(input)
+				return Errors.throw t('Error_message_too_long')
 			KonchatNotification.removeRoomNotification(rid)
 			msg = input.value
 			input.value = ''
@@ -187,6 +188,6 @@ class @ChatMessages
 		# ctrl (command) + shift + k -> clear room messages
 		else if k is 75 and ((navigator?.platform?.indexOf('Mac') isnt -1 and event.metaKey and event.shiftKey) or (navigator?.platform?.indexOf('Mac') is -1 and event.ctrlKey and event.shiftKey))
 			RoomHistoryManager.clear rid
-	
+
 	isMessageTooLong: (input) ->
 		input?.value.length > this.messageMaxSize
