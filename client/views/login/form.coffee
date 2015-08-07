@@ -61,8 +61,16 @@ Template.loginForm.events
 				return
 
 			if instance.state.get() is 'register'
-				Meteor.call 'registerUser', formData, (err, result) ->
+				Meteor.call 'registerUser', formData, (error, result) ->
 					RocketChat.Button.reset(button)
+
+					if error?
+						if error.error is 'Email already exists.'
+							toastr.error t 'Email_already_exists'
+						else
+							toastr.error error.reason
+						return
+
 					Meteor.loginWithPassword formData.email, formData.pass, (error) ->
 						if error?.error is 'no-valid-email'
 							toastr.success t('We_have_sent_registration_email')

@@ -62,6 +62,9 @@ Template.body.onRendered ->
 				property: 'msvalidate.01'
 				content: RocketChat.settings.get 'Meta:msvalidate.01'
 
+	if Meteor.isCordova
+		$(document.body).addClass 'is-cordova'
+
 
 Template.main.helpers
 
@@ -86,17 +89,17 @@ Template.main.helpers
 		console.log 'layout.helpers flexOpenedRTC2' if window.rocketDebug
 		return 'layout2' if (Session.get('rtcLayoutmode') > 1)
 
+	removeParticles: ->
+		if Match.test pJSDom, Array
+			for item in pJSDom
+				item?.pJS?.fn.vendors.destroypJS()
 
 Template.main.events
 
 	"click .burger": ->
 		console.log 'room click .burger' if window.rocketDebug
 		chatContainer = $("#rocket-chat")
-		if chatContainer.hasClass("menu-closed")
-			chatContainer.removeClass("menu-closed").addClass("menu-opened")
-		else
-			chatContainer.addClass("menu-closed").removeClass("menu-opened")
-
+		menu.toggle()
 
 Template.main.onRendered ->
 

@@ -5,15 +5,12 @@
 @import "utils/_keyframes.import.less";
 @import "utils/_preloader.import.less";
 @import "utils/_emojione.import.less";
-.cf_ {
-	display: inline-block;
-	&:after {
-		content: ".";
-		display: block;
+.clearfix {
+	clear: both;
+	&::after {
+		content: "";
+		display: table;
 		clear: both;
-		visibility: hidden;
-		line-height: 0;
-		height: 0;
 	}
 }
 
@@ -111,20 +108,6 @@ blockquote {
 	border-radius: 0px;
 }
 
-.iframely-oembed {
-	margin: 4px 0 0 0;
-	clear: both;
-	max-width: 400px;
-	min-height: 200px;
-	// background-color: #DFDFDF;
-	font {
-		display: none;
-	}
-	> img {
-		height: 200px;
-	}
-}
-
 .alert {
 	padding: 15px;
 	margin-bottom: 20px;
@@ -219,7 +202,7 @@ blockquote {
 }
 
 .input-line {
-	.cf_;
+	.clearfix;
 	display: block;
 	margin-bottom: 12px;
 	&:nth-last-child(1) {
@@ -313,7 +296,6 @@ body {
 	color: @primary-font-color;
 	height: 100%;
 	width: 100%;
-	// min-width: 768px;
 	-webkit-font-smoothing: antialiased;
 	line-height: 1rem;
 	padding: 0;
@@ -558,6 +540,13 @@ label.required:after {
 		min-width: 120px;
 		background-color: #bc2031;
 	}
+	&.short {
+		min-width: 100px;
+	}
+	&.lightblue {
+		min-width: 100px;
+		background-color: #02acec;
+	}
 	&.clean {
 		background-color: rgba(0, 0, 0, 0.025);
 		font-size: 14px;
@@ -626,6 +615,23 @@ label.required:after {
 			.transition-delay(.1s);
 		}
 	}
+
+	.unread-burger-alert {
+		background-color: #F95555;
+		border-radius: 20px;
+		position: absolute;
+		min-width: 18px;
+		height: 18px;
+		line-height: 18px;
+		text-align: center;
+		color: white;
+		font-weight: bold;
+		font-size: 12px;
+		top: 8px;
+		right: 4px;
+		z-index: 3;
+		padding: 0px 4px;
+	}
 }
 
 .arrow {
@@ -664,6 +670,30 @@ label.required:after {
 		}
 		&:after {
 			.transform(rotate(-45deg) translateY(4px));
+		}
+	}
+	&.top {
+		&:before {
+			.transform(rotate(45deg) translateX(-2px) translateY(2px));
+		}
+		&:after {
+			.transform(rotate(-45deg) translateX(2px) translateY(2px));
+		}
+	}
+	&.bottom {
+		&:before {
+			.transform(rotate(-45deg) translateX(-2px) translateY(-2px));
+		}
+		&:after {
+			.transform(rotate(45deg) translateX(2px) translateY(-2px));
+		}
+	}
+	&.close {
+		&:before {
+			.transform(rotate(-45deg));
+		}
+		&:after {
+			.transform(rotate(45deg));
 		}
 	}
 }
@@ -828,11 +858,13 @@ a.github-fork {
 
 #rocket-chat {
 	display: block;
-	width: 100%;
-	height: 100%;
-	position: absolute;
-	left: 0;
+	position: fixed;
 	top: 0;
+	bottom: 0;
+	left: 0;
+	right: 0;
+	width: auto;
+	height: auto;
 	opacity: 1;
 	visibility: visible;
 	background-color: #fff;
@@ -848,9 +880,6 @@ a.github-fork {
 	}
 }
 
-// .popover {
-// 	z-index: 120;
-// }
 .account-box {
 	position: relative;
 	height: 100%;
@@ -941,20 +970,12 @@ a.github-fork {
 		overflow-x: hidden;
 		overflow-y: auto;
 		-webkit-overflow-scrolling: touch;
-		.custom-scroll(transparent,
-		rgba(255,
-		255,
-		255,
-		0.05));
+		.custom-scroll(transparent, rgba(255, 255, 255, 0.05));
 		direction: rtl;
-		.calc(height,
-		~'100% - ' @header-min-height + @footer-min-height);
-		.transition(transform .3s cubic-bezier(.5,
-		0,
-		.1,
-		1));
+		.calc(height, ~'100% - ' @header-min-height + @footer-min-height);
+		.transition(transform .3s cubic-bezier(.5, 0, .1, 1));
 		&._hidden {
-			.transform(translateX(-100%));
+			.transform(translateY(-100%) translateY(-50px));
 		}
 		> .wrapper {
 			direction: ltr;
@@ -1623,37 +1644,29 @@ a.github-fork {
 
 // MAIN CONTENT + MAIN PAGES //
 .main-content {
-	position: relative;
-	margin-left: @rooms-box-width;
-	margin-top: 0;
-	height: 100%;
-	.calc(width,
-	~'100% - ' @rooms-box-width);
-	.transition(width .25s cubic-bezier(.5,
-	0,
-	.1,
-	1));
+	position: fixed;
+	top: 0;
+	bottom: 0;
+	left: @rooms-box-width;
+	right: 0;
+	width: auto;
+	height: auto;
+	.transition(width .25s cubic-bezier(.5, 0, .1, 1));
 	&.flex-opened {
-		.calc(width,
-		~'100% - ' @rooms-box-width + @flex-tab-width);
-		margin-right: 420px;
+		right: @flex-tab-width;
 		.flex-tab {
 			.transform(translateX(0));
 		}
 	}
 	&.layout1 {
-		.calc(width,
-		~'100% - ' @rooms-box-width + @flex-tab-webrtc-width);
-		margin-right: 420px;
+		right: @flex-tab-webrtc-width;
 		.flex-tab {
 			max-width: @flex-tab-webrtc-width;
 			.transform(translateX(0));
 		}
 	}
 	&.layout2 {
-		.calc(width,
-		~'100% - ' @rooms-box-width + @flex-tab-webrtc-2-width);
-		margin-right: 420px;
+		right: @flex-tab-webrtc-2-width;
 		.flex-tab {
 			max-width: @flex-tab-webrtc-2-width;
 			.transform(translateX(0));
@@ -1735,7 +1748,7 @@ a.github-fork {
 	}
 	.list {
 		a {
-			.cf_;
+			.clearfix;
 			padding: 10px 16px;
 			width: 100%;
 			color: @primary-font-color;
@@ -1904,15 +1917,15 @@ a.github-fork {
 		}
 		> .users-typing {
 			float: left;
-			height: 17px;
+			height: 19px;
 			font-size: 12px;
 			color: #888888;
-			position: fixed;
+			position: absolute;
 			padding-left: 5px;
 			background-color: #FFF;
 			z-index: 10;
 			bottom: 0;
-			padding-right: 5px;
+			padding-right: 10px;
 		}
 		> .formatting-tips {
 			float: right;
@@ -1955,12 +1968,6 @@ a.github-fork {
 		vertical-align: top;
 		width: 100%;
 	}
-}
-
-.room-container {
-	position: absolute;
-	width: 100%;
-	height: 100%;
 }
 
 .messages-box {
@@ -2147,6 +2154,9 @@ a.github-fork {
 				color: darken(@link-font-color, 10%);
 				text-decoration: underline;
 			}
+		}
+		&.temp .body{
+			color: #ccc;
 		}
 	}
 }
@@ -2554,7 +2564,7 @@ a.github-fork {
 			display: none;
 		}
 		a {
-			.cf_;
+			.clearfix;
 			padding: 5px 0;
 			height: 30px;
 			background-color: transparent;
@@ -2801,27 +2811,11 @@ a.github-fork {
 }
 
 .avatarPrompt {
-	padding: 22px 30px 30px;
-	overflow: scroll;
-	height: 100%;
 	header {
-		max-width: 520px;
-		padding: 18px 0 23px;
 		p {
-			//font-family: "Muli";
-			margin: 8px 0 0;
 			font-size: 14px;
 			line-height: 22px;
 			font-weight: 300;
-		}
-	}
-	h2 {
-		&:extend(.rocket-h2);
-		color: @primary-font-color;
-		line-height: 24px;
-		margin: 0;
-		&.error {
-			color: #b40202;
 		}
 	}
 	img {
@@ -2986,7 +2980,7 @@ a.github-fork {
 	}
 	.logo {
 		display: block;
-		margin-bottom: 30px;
+		margin: 0 20px 30px 20px;
 		> img {
 			display: inline-block;
 			position: relative;
@@ -3184,8 +3178,10 @@ a.github-fork {
 		text-align: right;
 		padding-left: 20px;
 	}
-	button {
+	.button {
 		min-width: 120px;
+		cursor: pointer;
+		text-align: center;
 	}
 	input[type=file] {
 		position: absolute !important;
@@ -3195,6 +3191,7 @@ a.github-fork {
 		height: 100%;
 		opacity: 0;
 		z-index: 10000;
+		cursor: pointer;
 		* {
 			cursor: pointer;
 		}
@@ -3228,8 +3225,7 @@ a.github-fork {
 @media all and(max-width: 1100px) {
 	#rocket-chat {
 		.flex-opened {
-			.calc(width,
-			~'100% - ' @rooms-box-width);
+			right: 0;
 		}
 	}
 }
@@ -3246,8 +3242,7 @@ a.github-fork {
 			.transition(transform .3s ease-out);
 		}
 		.main-content {
-			margin-left: 0;
-			width: 100%;
+			left: 0;
 			.transition(transform .3s ease-out);
 		}
 		.fixed-title h2 {
@@ -3264,15 +3259,12 @@ a.github-fork {
 				.transform(translateX(0));
 			}
 			.burger {
-				.transform(rotate(180deg));
 				i {
 					&:nth-child(1) {
 						opacity: 1;
 						width: 10px;
-						.transform-origin(50%,
-						50%,
-						0);
-						.transform(translateY(3px) translateX(10px) rotate(45deg));
+						.transform-origin(50%, 50%, 0);
+						.transform(translateY(3px) rotate(-45deg));
 					}
 					&:nth-child(2) {
 						//.transform(rotate(180deg));
@@ -3280,10 +3272,8 @@ a.github-fork {
 					&:nth-child(3) {
 						opacity: 1;
 						width: 10px;
-						.transform-origin(50%,
-						50%,
-						0);
-						.transform(translateX(10px) translateY(-3px) rotate(-45deg));
+						.transform-origin(50%, 50%, 0);
+						.transform(translateY(-3px) rotate(45deg));
 					}
 				}
 			}
@@ -3306,6 +3296,13 @@ a.github-fork {
 			~'100% - 120px');
 			h3 {
 				font-size: 20px;
+			}
+		}
+	}
+	.messages-container {
+		.message-form {
+			> .formatting-tips {
+				display: none;
 			}
 		}
 	}
@@ -3334,6 +3331,31 @@ a.github-fork {
 			padding: 40px;
 			border-radius: 10px;
 			pointer-events: none;
+		}
+	}
+}
+
+.is-cordova {
+	.main-content {
+		top: 10px;
+	}
+
+	.side-nav > .header {
+		padding-top: 10px;
+		height: 70px;
+	}
+
+	.flex-tab {
+		padding-top: 10px;
+
+		.control {
+			padding-left: 50px;
+		}
+
+		button.more {
+			background-color: #fff;
+			width: 60px;
+			.transform(translateX(-57px));
 		}
 	}
 }

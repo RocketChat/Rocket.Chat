@@ -7,11 +7,7 @@
 		</div>
 		<section class="messages-container" id="{{windowId}}">
 			<header class="fixed-title">
-				<div class="burger">
-					<i></i>
-					<i></i>
-					<i></i>
-				</div>
+				{{> burger}}
 				<h2>
 					{{#if subscribed}}
 						<a href="#favorite" class="toggle-favorite"><i class="{{favorite}}"></i></a>
@@ -51,7 +47,7 @@
 					<form class="message-form" method="post" action="/">
 						<div>
 							{{> messagePopupConfig getPupupConfig}}
-							<textarea dir="auto" name="msg" class="input-message"></textarea>
+							<textarea dir="auto" name="msg" maxlength="{{maxMessageLength}}" class="input-message"></textarea>
 							<i class="icon-paper-plane" title="{{_ "Send_Message"}}"></i>
 						</div>
 						<div class="users-typing">
@@ -122,12 +118,12 @@
 										<button class="see-all">{{seeAll}}</button>
 									</p>--}}
 								</div>
-								<ul class='list cf_ lines'>
+								<ul class='list clearfix lines'>
 									{{#each users}}
 										<li class='user-image user-card-room status-{{status}}'>
 											<a data-username="{{username}}" tabindex="0" title="{{username}}">
 												{{> avatar username=username}}
-												<p>{{username}}</p>
+												<p>{{username}} {{utcOffset}}</p>
 											</a>
 										</li>
 									{{/each}}
@@ -136,7 +132,7 @@
 						</div>
 						<div class="user-view animated{{#unless $.Session.get 'showUserInfo'}} -hidden{{/unless}}">
 							{{#with flexUserInfo}}
-								<div class="about cf_">
+								<div class="about clearfix">
 									<div class="thumb">
 										{{> avatar username=username}}
 									</div>
@@ -157,16 +153,18 @@
 								</div>
 								<nav>
 									<button class='button secondary back'><span>{{_ "View_All"}} <i class='icon-angle-right'></i></span></button>
+									{{#if canDirectMessage}}
 									<button class='button pvt-msg'><span><i class='icon-chat'></i> {{_ "Conversation"}}</span></button>
+									{{/if}}
 								</nav>
 							{{/with}}
 						</div>
 					{{else}}
 						<div class="user-view">
 							{{#with userData}}
-								<div class="about cf_">
+								<div class="about clearfix">
 
-										{{#if selfVideoUrl}}
+										{{#if videoActive}}
 											{{#if rtcLayout3}}
 												<div id='fullscreendiv' style="width: 100%">
 												<video id='videoremote' class="video-remote" src="{{remoteVideoUrl}}" style="width: 100%; align-items: center; margin-bottom: 10px; background-color: #000; transition: width 2s, height 2s, top 2s, left 2s, transform 2s;" autoplay></video>
@@ -212,10 +210,14 @@
 									</div>
 								</div>
 								<nav>
-									{{#unless selfVideoUrl}}
-										<button class='button start-video'><span><i class='icon-videocam'></i> {{_ "Video"}}</span></button>
+									{{#unless videoActive}}
+										<button class='button start-video'><span><i class='icon-videocam'></i> {{_ "Video_Chat"}}</span></button>
+										{{#if remoteMonitoring}}
+										<button class='button short monitor-video'><span><i class='icon-videocam'></i> {{_ "Remote"}}</span></button>
+										<button class='button lightblue setup-video'><span><i class='icon-videocam'></i> {{_ "Setup"}}</span></button>
+										{{/if}}
 									{{else}}
-										<button class='button red stop-video'><span><i class='icon-videocam'></i> {{_ "StopVideo"}}</span></button>
+										<button class='button red stop-video'><span><i class='icon-videocam'></i> {{_ "Stop_Video"}}</span></button>
 									{{/unless}}
 								</nav>
 							{{/with}}

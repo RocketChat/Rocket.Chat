@@ -1,4 +1,4 @@
-Template.usernamePrompt.onCreated ->
+Template.username.onCreated ->
 	self = this
 	self.username = new ReactiveVar
 
@@ -9,11 +9,11 @@ Template.usernamePrompt.onCreated ->
 		Meteor.defer ->
 			self.find('input').focus()
 
-Template.usernamePrompt.helpers
+Template.username.helpers
 	username: ->
 		return Template.instance().username.get()
 
-Template.usernamePrompt.events
+Template.username.events
 	'submit #login-card': (event, instance) ->
 		event.preventDefault()
 

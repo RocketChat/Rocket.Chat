@@ -1,39 +1,37 @@
-@ChatMessages = (->
-	self = {}
-	wrapper = {}
-	input = {}
-	editing = {}
+class @ChatMessages
+	init: (node) ->
+		this.editing = {}
 
-	init = ->
-		wrapper = $(".messages-container").find(".wrapper")
-		input = $(".input-message").get(0)
-		bindEvents()
+		this.messageMaxSize = RocketChat.settings.get('Message_MaxAllowedSize')
+		this.wrapper = $(node).find(".wrapper")
+		this.input = $(node).find(".input-message").get(0)
+		this.bindEvents()
 		return
 
-	resize = ->
+	resize: ->
 		dif = 60 + $(".messages-container").find("footer").outerHeight()
 		$(".messages-box").css
 			height: "calc(100% - #{dif}px)"
 
-	toPrevMessage = ->
-		msgs = wrapper.get(0).querySelectorAll(".own:not(.system)")
+	toPrevMessage: ->
+		msgs = this.wrapper.get(0).querySelectorAll(".own:not(.system)")
 		if msgs.length
-			if editing.element
-				if msgs[editing.index - 1]
-					edit msgs[editing.index - 1], editing.index - 1
+			if this.editing.element
+				if msgs[this.editing.index - 1]
+					this.edit msgs[this.editing.index - 1], this.editing.index - 1
 			else
-				edit msgs[msgs.length - 1], msgs.length - 1
+				this.edit msgs[msgs.length - 1], msgs.length - 1
 
-	toNextMessage = ->
-		if editing.element
-			msgs = wrapper.get(0).querySelectorAll(".own:not(.system)")
-			if msgs[editing.index + 1]
-				edit msgs[editing.index + 1], editing.index + 1
+	toNextMessage: ->
+		if this.editing.element
+			msgs = this.wrapper.get(0).querySelectorAll(".own:not(.system)")
+			if msgs[this.editing.index + 1]
+				this.edit msgs[this.editing.index + 1], this.editing.index + 1
 			else
-				clearEditing()
+				this.clearEditing()
 
-	getEditingIndex = (element) ->
-		msgs = wrapper.get(0).querySelectorAll(".own:not(.system)")
+	getEditingIndex: (element) ->
+		msgs = this.wrapper.get(0).querySelectorAll(".own:not(.system)")
 		index = 0
 		for msg in msgs
 			if msg is element
@@ -41,39 +39,41 @@
 			index++
 		return -1
 
-	edit = (element, index) ->
+	edit: (element, index) ->
 		return if element.classList.contains("system")
-		clearEditing()
+		this.clearEditing()
 		id = element.getAttribute("id")
 		message = ChatMessage.findOne { _id: id, 'u._id': Meteor.userId() }
-		input.value = message.msg
-		editing.element = element
-		editing.index = index or getEditingIndex(element)
-		editing.id = id
+		this.input.value = message.msg
+		this.editing.element = element
+		this.editing.index = index or this.getEditingIndex(element)
+		this.editing.id = id
 		element.classList.add("editing")
-		input.classList.add("editing")
-		setTimeout ->
-			input.focus()
+		this.input.classList.add("editing")
+		setTimeout =>
+			this.input.focus()
 		, 5
 
-	clearEditing = ->
-		if editing.element
-			editing.element.classList.remove("editing")
-			input.classList.remove("editing")
-			editing.id = null
-			editing.element = null
-			editing.index = null
-			input.value = editing.saved or ""
+	clearEditing: ->
+		if this.editing.element
+			this.editing.element.classList.remove("editing")
+			this.input.classList.remove("editing")
+			this.editing.id = null
+			this.editing.element = null
+			this.editing.index = null
+			this.input.value = this.editing.saved or ""
 		else
-			editing.saved = input.value
+			this.editing.saved = this.input.value
 
-	send = (rid, input) ->
+	send: (rid, input) ->
 		if _.trim(input.value) isnt ''
+			if this.isMessageTooLong(input)
+				return Errors.throw t('Error_message_too_long')
 			KonchatNotification.removeRoomNotification(rid)
 			msg = input.value
 			input.value = ''
 			msgObject = { _id: Random.id(), rid: rid, msg: msg}
-			stopTyping(rid)
+			this.stopTyping(rid)
 			#Check if message starts with /command
 			if msg[0] is '/'
 				match = msg.match(/^\/([^\s]+)(?:\s+(.*))?$/m)
@@ -86,34 +86,45 @@
 				#Meteor.call 'onClientBeforeSendMessage', {}
 				Meteor.call 'sendMessage', msgObject
 
-	deleteMsg = (message) ->
+	deleteMsg: (message) ->
 		Meteor.call 'deleteMessage', message, (error, result) ->
 			if error
 				return Errors.throw error.reason
 
-	update = (id, rid, input) ->
+	update: (id, rid, input) ->
 		if _.trim(input.value) isnt ''
 			msg = input.value
 			Meteor.call 'updateMessage', { id: id, msg: msg }
-			clearEditing()
-			stopTyping(rid)
+			this.clearEditing()
+			this.stopTyping(rid)
 
-	startTyping = (rid, input) ->
+	startTyping: (rid, input) ->
 		if _.trim(input.value) isnt ''
 			MsgTyping.start(rid)
 		else
 			MsgTyping.stop(rid)
 
-	stopTyping = (rid) ->
+	stopTyping: (rid) ->
 		MsgTyping.stop(rid)
 
-	bindEvents = ->
-		if wrapper?.length
+	bindEvents: ->
+		if this.wrapper?.length
 			$(".input-message").autogrow
-				postGrowCallback: ->
-					resize()
+				postGrowCallback: =>
+					this.resize()
 
-	keyup = (rid, event) ->
+	tryCompletion: (input) ->
+		value = input.value.match(/[^\s]+$/)
+		if value?.length > 0
+			value = value[0]
+
+			re = new RegExp value, 'i'
+
+			user = Meteor.users.findOne username: re
+			if user?
+				input.value = input.value.replace value, "@#{user.username} "
+
+	keyup: (rid, event) ->
 		input = event.currentTarget
 		k = event.which
 		keyCodes = [
@@ -137,33 +148,39 @@
 		keyCodes.push i for i in [112..123] # F1 - F12
 
 		unless k in keyCodes
-			startTyping(rid, input)
+			this.startTyping(rid, input)
 
-	keydown = (rid, event) ->
+	keydown: (rid, event) ->
 		input = event.currentTarget
 		k = event.which
-		resize(input)
+		this.resize(input)
 		if k is 13 and not event.shiftKey
 			event.preventDefault()
 			event.stopPropagation()
-			if editing.id
-				update(editing.id, rid, input)
+			if this.editing.id
+				this.update(this.editing.id, rid, input)
 			else
-				send(rid, input)
+				this.send(rid, input)
 			return
+
+		if k is 9
+			event.preventDefault()
+			event.stopPropagation()
+			@tryCompletion input
+
 		if k is 27
-			if editing.id
+			if this.editing.id
 				event.preventDefault()
 				event.stopPropagation()
-				clearEditing()
+				this.clearEditing()
 				return
 		else if k is 38 or k is 40 # Arrow Up or down
 			if k is 38
 				return if input.value.slice(0, input.selectionStart).match(/[\n]/) isnt null
-				toPrevMessage()
+				this.toPrevMessage()
 			else
 				return if input.value.slice(input.selectionEnd, input.value.length).match(/[\n]/) isnt null
-				toNextMessage()
+				this.toNextMessage()
 
 			event.preventDefault()
 			event.stopPropagation()
@@ -172,11 +189,5 @@
 		else if k is 75 and ((navigator?.platform?.indexOf('Mac') isnt -1 and event.metaKey and event.shiftKey) or (navigator?.platform?.indexOf('Mac') is -1 and event.ctrlKey and event.shiftKey))
 			RoomHistoryManager.clear rid
 
-
-	keydown: keydown
-	keyup: keyup
-	deleteMsg: deleteMsg
-	send: send
-	init: init
-	edit: edit
-)()
+	isMessageTooLong: (input) ->
+		input?.value.length > this.messageMaxSize
