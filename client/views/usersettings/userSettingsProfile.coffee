@@ -10,8 +10,10 @@ Template.userSettingsProfile.helpers
 		return localStorage.getItem('userLanguage')?.split('-').shift().toLowerCase() is key
 
 Template.userSettingsProfile.onCreated ->
-	instance = this
-	
+	settingsTemplate = this.parentTemplate(3)
+	settingsTemplate.child ?= []
+	settingsTemplate.child.push this
+
 	@clearForm = ->
 		instance.find('#language').value = localStorage.getItem('userLanguage')
 		instance.find('#password').value = ''
