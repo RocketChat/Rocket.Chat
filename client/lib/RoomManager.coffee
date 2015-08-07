@@ -5,6 +5,10 @@ Meteor.startup ->
 			if recordBefore?
 				ChatMessage.update {_id: recordBefore._id}, {$set: {tick: new Date}}
 
+			recordAfter = ChatMessage.findOne {ts: {$gt: record.ts}}, {sort: {ts: 1}}
+			if recordAfter?
+				ChatMessage.update {_id: recordAfter._id}, {$set: {tick: new Date}}
+
 
 @RoomManager = new class
 	defaultTime = 600000 # 10 minutes
