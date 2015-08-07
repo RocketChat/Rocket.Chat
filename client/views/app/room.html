@@ -47,7 +47,7 @@
 					<form class="message-form" method="post" action="/">
 						<div>
 							{{> messagePopupConfig getPupupConfig}}
-							<textarea dir="auto" name="msg" maxlength="{{maxMessageLength}}" class="input-message"></textarea>
+							<textarea dir="auto" name="msg" maxlength="{{maxMessageLength}}" class="input-message" placeholder="{{_ 'Message'}}"></textarea>
 							<i class="icon-paper-plane" title="{{_ "Send_Message"}}"></i>
 						</div>
 						<div class="users-typing">
@@ -153,7 +153,9 @@
 								</div>
 								<nav>
 									<button class='button secondary back'><span>{{_ "View_All"}} <i class='icon-angle-right'></i></span></button>
+									{{#if canDirectMessage}}
 									<button class='button pvt-msg'><span><i class='icon-chat'></i> {{_ "Conversation"}}</span></button>
+									{{/if}}
 								</nav>
 							{{/with}}
 						</div>
@@ -209,13 +211,13 @@
 								</div>
 								<nav>
 									{{#unless videoActive}}
-										<button class='button start-video'><span><i class='icon-videocam'></i> {{_ "Video Chat"}}</span></button>
+										<button class='button start-video'><span><i class='icon-videocam'></i> {{_ "Video_Chat"}}</span></button>
 										{{#if remoteMonitoring}}
 										<button class='button short monitor-video'><span><i class='icon-videocam'></i> {{_ "Remote"}}</span></button>
 										<button class='button lightblue setup-video'><span><i class='icon-videocam'></i> {{_ "Setup"}}</span></button>
 										{{/if}}
 									{{else}}
-										<button class='button red stop-video'><span><i class='icon-videocam'></i> {{_ "StopVideo"}}</span></button>
+										<button class='button red stop-video'><span><i class='icon-videocam'></i> {{_ "Stop_Video"}}</span></button>
 									{{/unless}}
 								</nav>
 							{{/with}}
