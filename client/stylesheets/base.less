@@ -324,13 +324,13 @@ select,
 input[type='text'],
 input[type='email'],
 input[type='password'] {
+	-webkit-appearance: none;
 	height: 35px;
 	line-height: normal;
-	border: 1px solid #dfdfdf;
+	border: 1px solid #E7E7E7;
 	background-color: #fff;
-	border-radius: 2px;
+	border-radius: 5px;
 	padding: 2px 8px;
-	box-shadow: 1px 1px 0 rgba(0, 0, 0, 0.2);
 	position: relative;
 	width: 100%;
 	outline: none;
@@ -858,11 +858,13 @@ a.github-fork {
 
 #rocket-chat {
 	display: block;
-	width: 100%;
-	height: 100%;
-	position: absolute;
-	left: 0;
+	position: fixed;
 	top: 0;
+	bottom: 0;
+	left: 0;
+	right: 0;
+	width: auto;
+	height: auto;
 	opacity: 1;
 	visibility: visible;
 	background-color: #fff;
@@ -878,9 +880,6 @@ a.github-fork {
 	}
 }
 
-// .popover {
-// 	z-index: 120;
-// }
 .account-box {
 	position: relative;
 	height: 100%;
@@ -1854,7 +1853,7 @@ a.github-fork {
 	.footer {
 		position: absolute;
 		padding: 10px 20px 0px 20px;
-		background: #fff;
+		background: #FCFCFC;
 		border-top: 1px solid @tertiary-background-color;
 		z-index: 100;
 		bottom: 0;
@@ -1923,7 +1922,7 @@ a.github-fork {
 			color: #888888;
 			position: absolute;
 			padding-left: 5px;
-			background-color: #FFF;
+			background-color: #FCFCFC;
 			z-index: 10;
 			bottom: 0;
 			padding-right: 10px;
@@ -3332,6 +3331,31 @@ a.github-fork {
 			padding: 40px;
 			border-radius: 10px;
 			pointer-events: none;
+		}
+	}
+}
+
+.is-cordova {
+	.main-content {
+		top: 10px;
+	}
+
+	.side-nav > .header {
+		padding-top: 10px;
+		height: 70px;
+	}
+
+	.flex-tab {
+		padding-top: 10px;
+
+		.control {
+			padding-left: 50px;
+		}
+
+		button.more {
+			background-color: #fff;
+			width: 60px;
+			.transform(translateX(-57px));
 		}
 	}
 }
