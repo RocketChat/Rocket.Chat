@@ -1,7 +1,6 @@
 @menu = new class
 	init: ->
 		@container = $("#rocket-chat")
-		console.log 'init'
 
 	isOpen: ->
 		return @container?.hasClass("menu-opened") is true
