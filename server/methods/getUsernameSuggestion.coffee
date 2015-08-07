@@ -6,7 +6,10 @@ usernameIsAvaliable = (username) ->
 	if username.length < 1
 		return false
 
-	return not Meteor.users.findOne({username: username})?
+	if username is 'all'
+		return false
+
+	return not Meteor.users.findOne({username: {$regex : new RegExp(username, "i") }})
 
 @generateSuggestion = (user) ->
 	usernames = []
@@ -59,7 +62,7 @@ usernameIsAvaliable = (username) ->
 Meteor.methods
 	getUsernameSuggestion: ->
 		if not Meteor.userId()
-			throw new Meteor.Error 203, '[methods] typingStatus -> Usuário não logado'
+			throw new Meteor.Error 203, '[methods] getUsernameSuggestion -> Usuário não logado'
 
 		user = Meteor.user()
 		return generateSuggestion(user)
