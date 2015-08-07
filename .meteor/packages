@@ -41,7 +41,7 @@ konecty:delayed-task
 konecty:mongo-counter
 konecty:multiple-instances-status
 konecty:nrr
-konecty:user-presence
+konecty:user-presence@1.2.4
 
 cfs:standard-packages
 cfs:gridfs
@@ -76,3 +76,5 @@ nimble:restivus
 dispatch:run-as-user
 kadira:flow-router
 kadira:blaze-layout
+mystor:device-detection
+fastclick

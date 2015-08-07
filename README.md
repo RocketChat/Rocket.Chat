@@ -40,8 +40,6 @@ It is a great solution for communities and companies wanting to privately host t
 
 ## Features
 
-### Current
-
 - BYOS (bring your own server)
 - Multiple Rooms
 - Direct Messages
@@ -53,6 +51,7 @@ It is a great solution for communities and companies wanting to privately host t
 - Markdown
 - Emojis
 - Transcripts / History
+- File Upload / Sharing
 - I18n - [Internationalization with Lingohub](https://translate.lingohub.com/engelgabriel/rocket-dot-chat/dashboard)
 - Hubot Friendly - [Hubot Integration Project](https://github.com/RocketChat/hubot-rocketchat)
 - Media Embeds
@@ -60,17 +59,20 @@ It is a great solution for communities and companies wanting to privately host t
 - LDAP Authentication - [LDAP Authentication on Rocket.Chat Wiki](https://github.com/RocketChat/Rocket.Chat/wiki/LDAP-Authentication)
 - Face to Face Video Conferencing aka WebRTC (Alpha) - [How to video chat](https://github.com/RocketChat/Rocket.Chat/wiki/Using-Face-to-face-video-conference-%28aka-webrtc%29)
 - REST-full APIs - [Ready for testing ...](https://github.com/RocketChat/Rocket.Chat/wiki/REST-full-APIs)
-
-### Roadmap for v1.0
-
-- File Sharing [Issue #24 - HELP WANTED](https://github.com/RocketChat/Rocket.Chat/issues/24)
+- Remote Locations Video Monitoring - [Early access ...](https://github.com/RocketChat/Rocket.Chat/wiki/Remote-Video-Monitoring)
 - Native Cross-Platform Desktop Application [Rocket.Chat.Electron - HELP WANTED](https://github.com/RocketChat/Rocket.Chat.Electron/releases)
 
-### Roadmap for v1.1
+### Roadmap
+
+#### In Progress
+
+- Native iOS Application [Rocket.Chat.iOS - HELP WANTED](https://github.com/RocketChat/Rocket.Chat.iOS)
+- Native Android Application [Issue #271 - HELP WANTED](https://github.com/RocketChat/Rocket.Chat/issues/271)
+- External popout window for chat with website visitor (like Zopim, Olark, LiveChat, SnapEngage)
+
+#### Planned
 
 - Off-the-Record (OTR) Messaging [Issue #36 - HELP WANTED](https://github.com/RocketChat/Rocket.Chat/issues/36)
-- Native Android Application [Issue #271 - HELP WANTED](https://github.com/RocketChat/Rocket.Chat/issues/271)
-- Native iOS Application [Issue #270 - HELP WANTED](https://github.com/RocketChat/Rocket.Chat/issues/270)
 - Full text search
 - Kerberos Authentication
 - XMPP Multi-user chat (MUC)
@@ -168,6 +170,3 @@ Note that Rocket.Chat is distributed under the [MIT License](http://opensource.o
 Rocket.Chat will be free forever, but you can help us speed-up the development!
 
 [![Donate](https://www.paypalobjects.com/en_US/i/btn/btn_donateCC_LG.gif)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=49QX7TYCVZK8L)
-
-
-:smiling_imp:

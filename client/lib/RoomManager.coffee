@@ -5,6 +5,10 @@ Meteor.startup ->
 			if recordBefore?
 				ChatMessage.update {_id: recordBefore._id}, {$set: {tick: new Date}}
 
+			recordAfter = ChatMessage.findOne {ts: {$gt: record.ts}}, {sort: {ts: 1}}
+			if recordAfter?
+				ChatMessage.update {_id: recordAfter._id}, {$set: {tick: new Date}}
+
 
 @RoomManager = new class
 	defaultTime = 600000 # 10 minutes
@@ -33,6 +37,8 @@ Meteor.startup ->
 			openedRooms[rid].active = false
 			delete openedRooms[rid].timeout
 			delete openedRooms[rid].dom
+
+			RoomHistoryManager.clear rid
 
 			ChatMessage.remove rid: rid
 
@@ -102,13 +108,15 @@ Meteor.startup ->
 		room = openedRooms[rid]
 		return room?.dom?
 
-	updateUserStatus = (user, status) ->
+	updateUserStatus = (user, status, utcOffset) ->
 		onlineUsersValue = onlineUsers.curValue
 
 		if status is 'offline'
 			delete onlineUsersValue[user.username]
 		else
-			onlineUsersValue[user.username] = status
+			onlineUsersValue[user.username] =
+				status: status
+				utcOffset: utcOffset
 
 		onlineUsers.set onlineUsersValue
 

@@ -22,6 +22,7 @@ Meteor.startup ->
 	RocketChat.settings.add 'Message_ShowEditedStatus', '', { type: 'string', group: 'Message' }
 	RocketChat.settings.add 'Message_ShowDeletedStatus', '', { type: 'string', group: 'Message' }
 	RocketChat.settings.add 'Message_KeepStatusHistory', '', { type: 'string', group: 'Message' }
+	RocketChat.settings.add 'Message_MaxAllowedSize', 5000, { type: 'int', group: 'Message', public: true }
 
 	RocketChat.settings.addGroup 'Meta'
 	RocketChat.settings.add 'Meta:language', '', { type: 'string', group: 'Meta' }

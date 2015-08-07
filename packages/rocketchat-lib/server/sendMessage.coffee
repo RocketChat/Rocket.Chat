@@ -79,12 +79,18 @@ RocketChat.sendMessage = (user, message, room) ->
 				Update all other subscriptions of mentioned users to alert their owners and incrementing
 				the unread counter for mentions and direct messages
 				###
-				ChatSubscription.update
+				query =
 					# only subscriptions to the same room
 					rid: message.rid
-					# the mentioned user
-					'u._id': mention._id
-				,
+
+				if mention._id is 'all'
+					# all users except sender if mention is for all
+					query['u._id'] = $ne: user._id
+				else
+					# the mentioned user if mention isn't for all
+					query['u._id'] = mention._id
+
+				ChatSubscription.update query,
 					$set:
 						# alert de user
 						alert: true
@@ -93,6 +99,8 @@ RocketChat.sendMessage = (user, message, room) ->
 					# increment unread couter
 					$inc:
 						unread: 1
+				,
+					multi: true
 
 		###
 		Update all other subscriptions to alert their owners but witout incrementing

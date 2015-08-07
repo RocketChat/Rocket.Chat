@@ -76,7 +76,6 @@ Template.room.helpers
 
 		if roomData.t is 'd'
 			username = _.without roomData.usernames, Meteor.user().username
-			UserManager.addUser username
 
 			userData = {
 				name: Session.get('user_' + username + '_name')
@@ -149,6 +148,9 @@ Template.room.helpers
 		return '' unless roomData
 		return roomData.u?._id is Meteor.userId() and roomData.t in ['c', 'p']
 
+	canDirectMessage: ->
+		return Meteor.user().username isnt this.username
+
 	roomNameEdit: ->
 		return Session.get('roomData' + this._id)?.name
 
@@ -188,9 +190,17 @@ Template.room.helpers
 
 		for username in room?.usernames or []
 			if onlineUsers[username]?
+				utcOffset = onlineUsers[username]?.utcOffset
+				if utcOffset?
+					if utcOffset > 0
+						utcOffset = "+#{utcOffset}"
+
+					utcOffset = "(UTC #{utcOffset})"
+
 				users.push
 					username: username
-					status: onlineUsers[username]
+					status: onlineUsers[username]?.status
+					utcOffset: utcOffset
 
 		users = _.sortBy users, 'username'
 
@@ -235,11 +245,18 @@ Template.room.helpers
 	selfVideoUrl: ->
 		return Session.get('selfVideoUrl')
 
+	videoActive: ->
+		return (Session.get('remoteVideoUrl') || Session.get('selfVideoUrl'))
+
+	remoteMonitoring: ->
+		return (webrtc?.stackid? && (webrtc.stackid == 'webrtc-ib'))
+
 	flexOpenedRTC1: ->
 		return 'layout1' if Session.equals('flexOpenedRTC1', true)
 
 	flexOpenedRTC2: ->
 		return 'layout2' if Session.equals('flexOpenedRTC2', true)
+
 	rtcLayout1: ->
 		return (Session.get('rtcLayoutmode') == 1 ? true: false);
 
@@ -252,6 +269,8 @@ Template.room.helpers
 	noRtcLayout: ->
 		return (!Session.get('rtcLayoutmode') || (Session.get('rtcLayoutmode') == 0) ? true: false);
 
+	maxMessageLength: ->
+		return RocketChat.settings.get('Message_MaxAllowedSize')
 
 
 Template.room.events
@@ -304,7 +323,7 @@ Template.room.events
 		KonchatNotification.removeRoomNotification @_id
 
 	'keyup .input-message': (event) ->
-		ChatMessages.keyup(@_id, event, Template.instance())
+		Template.instance().chatMessages.keyup(@_id, event, Template.instance())
 
 	'paste .input-message': (e) ->
 		if not e.originalEvent.clipboardData?
@@ -327,11 +346,11 @@ Template.room.events
 						toastr.success 'Upload from clipboard succeeded!'
 
 	'keydown .input-message': (event) ->
-		ChatMessages.keydown(@_id, event, Template.instance())
+		Template.instance().chatMessages.keydown(@_id, event, Template.instance())
 
 	'click .message-form .icon-paper-plane': (event) ->
 		input = $(event.currentTarget).siblings("textarea")
-		ChatMessages.send(this._id, input.get(0))
+		Template.instance().chatMessages.send(this._id, input.get(0))
 
 	'click .add-user': (event) ->
 		toggleAddUser()
@@ -434,7 +453,7 @@ Template.room.events
 		instance.showUsersOffline.set(!instance.showUsersOffline.get())
 
 	"mousedown .edit-message": (e) ->
-		ChatMessages.edit(e.currentTarget.parentNode.parentNode)
+		Template.instance().chatMessages.edit(e.currentTarget.parentNode.parentNode)
 		# Session.set 'editingMessageId', undefined
 		# Meteor.defer ->
 		# 	Session.set 'editingMessageId', self._id
@@ -442,12 +461,20 @@ Template.room.events
 		# 		$('.input-message-editing').select()
 
 	"click .mention-link": (e) ->
+		channel = $(e.currentTarget).data('channel')
+		if channel?
+			channelObj = ChatSubscription.findOne name: channel
+			if channelObj?
+				FlowRouter.go 'room', {_id: channelObj.rid}
+			return
+
 		Session.set('flexOpened', true)
 		Session.set('showUserInfo', $(e.currentTarget).data('username'))
 
 	'click .delete-message': (event) ->
 		message = @_arguments[1]
 		msg = event.currentTarget.parentNode.parentNode
+		instance = Template.instance()
 		return if msg.classList.contains("system")
 		swal {
 			title: t('Are_you_sure')
@@ -460,17 +487,37 @@ Template.room.events
 			closeOnConfirm: false
 			html: false
 		}, ->
-			swal t('Deleted'), t('Your_entry_has_been_deleted'), 'success'
-			ChatMessages.deleteMsg(message)
+			swal 
+				title: t('Deleted')
+				text: t('Your_entry_has_been_deleted')
+				type: 'success'
+				timer: 1000
+				showConfirmButton: false 
+
+			instance.chatMessages.deleteMsg(message)
 
 	'click .start-video': (event) ->
 		_id = Template.instance().data._id
 		webrtc.to = _id.replace(Meteor.userId(), '')
 		webrtc.room = _id
+		webrtc.mode = 1
 		webrtc.start(true)
 
 	'click .stop-video': (event) ->
 		webrtc.stop()
+
+	'click .monitor-video': (event) ->
+		_id = Template.instance().data._id
+		webrtc.to = _id.replace(Meteor.userId(), '')
+		webrtc.room = _id
+		webrtc.mode = 2
+		webrtc.start(true)
+
+
+	'click .setup-video': (event) ->
+		webrtc.mode = 2
+		webrtc.activateLocalStream()
+
 
 	'dragenter .dropzone': (e) ->
 		e.currentTarget.classList.add 'over'
@@ -498,15 +545,18 @@ Template.room.onCreated ->
 
 Template.room.onRendered ->
 	FlexTab.check()
-	ChatMessages.init()
+	this.chatMessages = new ChatMessages
+	this.chatMessages.init(this.firstNode)
 	# ScrollListener.init()
 
 	wrapper = this.find('.wrapper')
 	newMessage = this.find(".new-message")
 
 	template = this
-	onscroll = ->
-		template.atBottom = wrapper.scrollTop is wrapper.scrollHeight - wrapper.clientHeight
+
+	onscroll = _.throttle ->
+		template.atBottom = wrapper.scrollTop >= wrapper.scrollHeight - wrapper.clientHeight
+	, 200
 
 	Meteor.setInterval ->
 		if template.atBottom
@@ -514,7 +564,13 @@ Template.room.onRendered ->
 			newMessage.className = "new-message not"
 	, 100
 
-	wrapper.addEventListener 'touchmove', ->
+	wrapper.addEventListener 'touchstart', ->
+		template.atBottom = false
+
+	wrapper.addEventListener 'touchend', ->
+		onscroll()
+
+	wrapper.addEventListener 'scroll', ->
 		template.atBottom = false
 		onscroll()
 

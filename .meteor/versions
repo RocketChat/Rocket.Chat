@@ -41,7 +41,7 @@ deps@1.0.7
 dispatch:run-as-user@0.0.2
 ejson@1.0.6
 email@1.0.6
-facebook@1.2.0
+facebook@1.2.1
 fastclick@1.0.3
 francocatena:status@1.3.0
 geojson-utils@1.0.3
@@ -57,7 +57,7 @@ jparker:gravatar@0.3.1
 jquery@1.11.3_2
 json@1.0.3
 kadira:blaze-layout@2.0.0
-kadira:flow-router@2.0.0
+kadira:flow-router@2.0.1
 kevohagan:sweetalert@1.0.0
 konecty:autolinker@1.0.2
 konecty:change-case@2.3.0
@@ -65,7 +65,7 @@ konecty:delayed-task@1.0.0
 konecty:mongo-counter@0.0.3
 konecty:multiple-instances-status@1.0.3
 konecty:nrr@2.0.2
-konecty:user-presence@1.2.2
+konecty:user-presence@1.2.4
 launch-screen@1.0.2
 less@1.0.14
 livedata@1.0.13
@@ -75,7 +75,7 @@ matb33:collection-hooks@0.7.13
 meteor@1.1.6
 meteor-developer@1.1.3
 meteor-platform@1.2.2
-meteorhacks:kadira@2.22.1
+meteorhacks:kadira@2.23.0
 meteorhacks:meteorx@1.3.1
 meteorspark:util@0.2.0
 minifiers@1.1.5
@@ -87,6 +87,7 @@ momentjs:moment@2.10.6
 mongo@1.1.0
 mongo-livedata@1.0.8
 mrt:reactive-store@0.0.1
+mystor:device-detection@0.2.0
 nimble:restivus@0.8.1
 nooitaf:colors@0.0.2
 npm-bcrypt@0.7.8_2
