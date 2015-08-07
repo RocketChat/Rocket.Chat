@@ -153,7 +153,9 @@
 								</div>
 								<nav>
 									<button class='button secondary back'><span>{{_ "View_All"}} <i class='icon-angle-right'></i></span></button>
+									{{#if canDirectMessage}}
 									<button class='button pvt-msg'><span><i class='icon-chat'></i> {{_ "Conversation"}}</span></button>
+									{{/if}}
 								</nav>
 							{{/with}}
 						</div>
