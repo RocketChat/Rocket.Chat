@@ -1,0 +1,20 @@
+<template name="userSettingsProfile">
+	<fieldset>
+		<div class="input-line">
+			<label for="language">{{_ "Language"}}</label>
+			<div>
+				<select id="language" class="required">
+					{{#each languages}}
+					<option value="{{key}}" selected="{{userLanguage key}}" dir="auto">{{name}}</option>
+					{{/each}}
+				</select>
+			</div>
+		</div>
+		<div class="input-line">
+			<label for="password">{{_ "Password"}}</label>
+			<div>
+				<input type="password" name="password" id="password" />
+			</div>
+		</div>
+	</fieldset>
+</template>

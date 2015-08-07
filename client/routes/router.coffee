@@ -51,7 +51,10 @@ FlowRouter.route '/usersettings/:group?',
 	name: 'userSettings'
 
 	action: (params) ->
-		BlazeLayout.render 'main', {center: 'userSettings'}
+		unless params.group
+			params.group = 'Profile'
+		params.group = _.capitalize params.group, true
+		BlazeLayout.render 'main', { center: 'userSettings', settings: "userSettings#{params.group}" }
 
 FlowRouter.route '/history/private',
 	name: 'privateHistory'

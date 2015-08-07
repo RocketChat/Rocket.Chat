@@ -9,3 +9,7 @@ Template.userSettings.onRendered ->
 	Tracker.afterFlush ->
 		SideNav.setFlex "userSettingsFlex"
 		SideNav.openFlex()
+
+Template.userSettings.events
+	'click .submit button': ->
+		console.log 'submit button clicked'
