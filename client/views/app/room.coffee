@@ -487,7 +487,13 @@ Template.room.events
 			closeOnConfirm: false
 			html: false
 		}, ->
-			swal t('Deleted'), t('Your_entry_has_been_deleted'), 'success'
+			swal 
+				title: t('Deleted')
+				text: t('Your_entry_has_been_deleted')
+				type: 'success'
+				timer: 1000
+				showConfirmButton: false 
+
 			instance.chatMessages.deleteMsg(message)
 
 	'click .start-video': (event) ->
