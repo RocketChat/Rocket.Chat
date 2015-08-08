@@ -3,21 +3,22 @@ Meteor.methods
 		console.log.apply console, arguments
 
 Meteor.startup ->
-	Push.debug = true
 
-	Push.Configure
-		apn:
-			passphrase: '***'
-			keyData: Assets.getText 'certs/PushRocketChatKey.pem'
-			certData: Assets.getText 'certs/PushRocketChatCert_development.pem'
-			gateway: 'gateway.sandbox.push.apple.com'
-		'apn-dev':
-			passphrase: '***'
-			keyData: Assets.getText 'certs/PushRocketChatKey.pem'
-			certData: Assets.getText 'certs/PushRocketChatCert_development.pem'
-			gateway: 'gateway.sandbox.push.apple.com'
-		production: false
-		badge: true
-		sound: true
-		alert: true
-		vibrate: true
+	Push.debug = RocketChat.settings.get 'Push_debug'
+
+	if RocketChat.settings.get('Push_enable') is true
+		Push.Configure
+			apn:
+				passphrase: RocketChat.settings.get 'Push_apn_passphrase'
+				keyData: RocketChat.settings.get 'Push_apn_key'
+				certData: RocketChat.settings.get 'Push_apn_cert'
+			'apn-dev':
+				passphrase: RocketChat.settings.get 'Push_apn_dev_passphrase'
+				keyData: RocketChat.settings.get 'Push_apn_dev_key'
+				certData: RocketChat.settings.get 'Push_apn_dev_cert'
+				gateway: 'gateway.sandbox.push.apple.com'
+			production: RocketChat.settings.get 'Push_production'
+			badge: true
+			sound: true
+			alert: true
+			vibrate: true
