@@ -1,7 +1,7 @@
 Meteor.methods
 	getSecurityBanner: (permissionIds) ->
-		if not Meteor.userId()
-			throw new Meteor.Error('invalid-user', "[methods] getSecurityBanner -> Invalid user")
+		if not permissionIds
+			throw new Meteor.Error('invalid-argument', "No permission ids specified")
 
 		banner = {}
 
