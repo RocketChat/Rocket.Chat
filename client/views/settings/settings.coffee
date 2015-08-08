@@ -23,16 +23,16 @@ Template.settings.helpers
 
 Template.settings.events
 
-	"click .submit": ->
+	"click .submit": (e, t) ->
 		group = FlowRouter.getParam('group')
 		settings = Settings.find({ group: group }).fetch()
 		updateSettings = []
 		for setting in settings
 			value = null
 			if setting.type is 'string'
-				value = _.trim($("input[name=#{setting._id}]").val())
-			else if setting.type is 'boolean' and $("input[name=#{setting._id}]:checked").length
-				value = if $("input[name=#{setting._id}]:checked").val() is "1" then true else false
+				value = _.trim(t.$("[name=#{setting._id}]").val())
+			else if setting.type is 'boolean' and t.$("[name=#{setting._id}]:checked").length
+				value = if t.$("[name=#{setting._id}]:checked").val() is "1" then true else false
 
 			if value?
 				updateSettings.push { _id: setting._id, value: value }
