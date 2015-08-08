@@ -8,13 +8,13 @@ Meteor.startup ->
 	Push.Configure
 		apn:
 			passphrase: '***'
-			keyData: Assets.getText 'PushRocketChatKey.pem'
-			certData: Assets.getText 'PushRocketChatCert_development.pem'
+			keyData: Assets.getText 'certs/PushRocketChatKey.pem'
+			certData: Assets.getText 'certs/PushRocketChatCert_development.pem'
 			gateway: 'gateway.sandbox.push.apple.com'
 		'apn-dev':
 			passphrase: '***'
-			keyData: Assets.getText 'PushRocketChatKey.pem'
-			certData: Assets.getText 'PushRocketChatCert_development.pem'
+			keyData: Assets.getText 'certs/PushRocketChatKey.pem'
+			certData: Assets.getText 'certs/PushRocketChatCert_development.pem'
 			gateway: 'gateway.sandbox.push.apple.com'
 		production: false
 		badge: true
