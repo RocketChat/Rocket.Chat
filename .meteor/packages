@@ -70,6 +70,7 @@ pauli:accounts-linkedin
 percolate:migrations
 percolatestudio:synced-cron
 raix:handlebar-helpers
+raix:push
 raix:ui-dropped-event
 tap:i18n
 tmeasday:crypto-md5
@@ -78,4 +79,3 @@ todda00:friendly-slugs
 underscorestring:underscore.string
 yasaricli:slugify
 yasinuslu:blaze-meta
-raix:push@2.6.12-rc1
