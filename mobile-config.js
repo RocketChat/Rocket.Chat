@@ -46,6 +46,7 @@ App.launchScreens({
 // Set PhoneGap/Cordova preferences
 App.setPreference('HideKeyboardFormAccessoryBar', true);
 App.setPreference('StatusBarStyle', 'default');
+App.accessRule('*');
 
 // // Pass preferences for a particular PhoneGap/Cordova plugin
 // App.configurePlugin('com.phonegap.plugins.facebookconnect', {
