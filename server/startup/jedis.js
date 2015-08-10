@@ -26,6 +26,7 @@ Meteor.startup( function() {
 
 	// returns non-jedis users that will be added to GENERAL room if they aren't already added
 	users = Meteor.users.find().fetch();
+	test();
 
 	// based on setUsername.coffee that adds uesrs after registration.  We can't reuse it because
 	// it checks Meteor.userId which doesn't apply to what we're doing
@@ -37,8 +38,37 @@ Meteor.startup( function() {
 	//Accounts.config( {forbidClientAccountCreation:true});
 });
 
+var test = function() {
+	var owner = Meteor.users.findOne({_id:'testadmin'});
+	var rawUsers = Meteor.users.rawCollection();
+	var pipeline = [{'$group': {_id:'$profile.location', usernames: {$push : "$username"}}}]
+	Meteor.wrapAsync( rawUsers.aggregate, rawUsers)(pipeline, function(err, usersByLocation) {
+		if( err ) {
+			console.log( err )
+		} else {
+			console.dir( usersByLocation );
+			usersByLocation.forEach(function(location) {
+				var channel = ChatRoom.findOne({name:location._id, t:'c'});
+				if( channel ) {
+					// location exists so add user if they don't already belong
+					addUsersToRoom(location.usernames, channel._id, false)
+				} else {
+					// location doesn't exist so create new channel with users
+					createChannel(owner, location._id, location.usernames);
+				}
+			})
+		}
+
+	})
+}
+
 var addUsersToRoom = function( users, roomId, createJoinedMessage) {
 	var now = new Date();
+	var room = ChatRoom.findOne({_id: roomId})
+	if( ! room ) {
+		console.log( 'Room with id: ' + roomId + ' not found');
+		return
+	}
 	// add usernames to specified room and create subscription.  
 	users.forEach( function( user ) {
 
@@ -57,10 +87,10 @@ var addUsersToRoom = function( users, roomId, createJoinedMessage) {
 				});
 
 			ChatSubscription.insert( {
-				rid: 'GENERAL',
-				name: 'general',
+				rid: roomId,
+				name: room.name,
 				ts: now,
-				t: 'c',
+				t: room.t,
 				f: true,
 				open: true,
 				alert: true,
@@ -80,3 +110,68 @@ var addUsersToRoom = function( users, roomId, createJoinedMessage) {
 		}
 	});
 }
+
+var createChannel = function(owner, name, members) {
+	// the same as createChannel method, except it doesn't check for logged in user
+	if( !(/^[0-9a-z-_\s.]+$/i).test(name)) {
+		throw new Meteor.Error( 'name-invalid' );
+	}
+
+	var now = new Date()
+
+	// avoid duplicate names
+	if (ChatRoom.findOne({name:name})) {
+		throw new Meteor.Error ('duplicate-name')
+	}
+
+	room = {
+		usernames: members,
+		ts: now,
+		t: 'c',
+		name: name,
+		msgs: 0,
+		u: {
+			_id: owner._id,
+			username: owner.username
+		}
+	}
+
+	RocketChat.callbacks.run('beforeCreateChannel', owner, room);
+
+	// create new room
+	var rid = ChatRoom.insert( room )
+
+	members.forEach(function(username) {
+		member = Meteor.users.findOne({username: username})
+		if (member) {
+
+			sub = {
+				rid: rid,
+				ts: now,
+				name: name,
+				t: 'c',
+				unread: 0,
+				u: {
+					_id: member._id,
+					username: username
+				}
+			}
+
+			if(username === owner.username) {
+				sub.ls = now
+				sub.open = true
+			}
+
+			ChatSubscription.insert (sub);
+		}
+	});
+
+	Meteor.defer(function() { 
+		RocketChat.callbacks.run( 'afterCreateChannel', owner, room);
+	});
+
+	return {
+		rid: rid
+	}	
+}
+
