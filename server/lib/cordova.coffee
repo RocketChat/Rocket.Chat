@@ -7,6 +7,10 @@ Meteor.startup ->
 	Push.debug = RocketChat.settings.get 'Push_debug'
 
 	if RocketChat.settings.get('Push_enable') is true
+		Push.allow
+			send: (userId, notification) ->
+				return Meteor.users.findOne({_id: userId})?.admin is true
+
 		Push.Configure
 			apn:
 				passphrase: RocketChat.settings.get 'Push_apn_passphrase'
