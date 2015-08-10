@@ -1,7 +1,11 @@
 if Meteor.isCordova
 	Tracker.autorun ->
 		if RocketChat.settings.get('Push_enable') is true
-			Push.Configure {}
+			Push.Configure
+				badge: true
+				sound: true
+				alert: true
+				vibrate: true
 
 			Push.addListener 'token', (token) ->
 				Meteor.call 'log', 'token', arguments
