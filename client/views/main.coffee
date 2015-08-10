@@ -70,10 +70,12 @@ Template.main.helpers
 
 	logged: ->
 		if Meteor.userId()?
-			StatusBar.styleDefault()
+			if Meteor.isCordova
+				StatusBar.styleDefault()
 			return true
 		else
-			StatusBar.styleLightContent()
+			if Meteor.isCordova
+				StatusBar.styleLightContent()
 			return false
 
 	subsReady: ->
