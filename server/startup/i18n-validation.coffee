@@ -9,6 +9,7 @@ flat = (obj, newObj = {}, path = '') ->
 
 
 Meteor.startup ->
+	return
 	l = {}
 	keys = {}
 	errors = []
