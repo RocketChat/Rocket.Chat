@@ -2,6 +2,7 @@
 **/build/*
 **/node_modules/*
 **/tmp/*
+/private/certs/*
 *.bak
 *.iml
 *.ipr
