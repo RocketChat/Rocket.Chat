@@ -11,6 +11,8 @@
 				  <p class="empty">{{_ "No_direct_messages_yet" }}</p>
 			{{/each}}
 		</div>
-		<a data-toggle="collapse" data-target="#message-list" href="#message-list" class="collapse"></a>
+		{{#if rooms.count}}
+			<a data-toggle="collapse" data-target="#message-list" href="#message-list" class="collapse"></a>
+		{{/if}}
 	</ul>
 </template>

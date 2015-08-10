@@ -11,7 +11,9 @@
 			<p class="empty">{{_ "No_channels_yet" }}</p>
 		{{/each}}
 		</div>
-		<a data-toggle="collapse" data-target="#channel-list" href="#channel-list" class="collapse"></a>
+		{{#if rooms.count}}
+			<a data-toggle="collapse" data-target="#channel-list" href="#channel-list" class="collapse"></a>
+		{{/if}}
 	</ul>
 	<a href="" class="more more-channels">{{_ "More_channels"}} ...</a>
 </template>
