@@ -7,6 +7,7 @@ Meteor.startup ->
 	Push.debug = RocketChat.settings.get 'Push_debug'
 
 	if RocketChat.settings.get('Push_enable') is true
+		Push.enabled = true
 		Push.allow
 			send: (userId, notification) ->
 				return Meteor.users.findOne({_id: userId})?.admin is true
@@ -26,3 +27,5 @@ Meteor.startup ->
 			sound: true
 			alert: true
 			vibrate: true
+			sendInterval: 1000
+			sendBatchSize: 10
