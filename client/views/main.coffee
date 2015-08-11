@@ -69,7 +69,14 @@ Template.body.onRendered ->
 Template.main.helpers
 
 	logged: ->
-		return Meteor.userId()?
+		if Meteor.userId()?
+			if Meteor.isCordova
+				StatusBar.styleDefault()
+			return true
+		else
+			if Meteor.isCordova
+				StatusBar.styleLightContent()
+			return false
 
 	subsReady: ->
 		return not Meteor.userId()? or (FlowRouter.subsReady('userData', 'activeUsers'))
