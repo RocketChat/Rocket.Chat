@@ -8,8 +8,7 @@ Meteor.methods
 				Accounts.setPassword Meteor.userId(), settings.password, { logout: false }
 
 			profile = {}
-			profile.showUTCTime = !! settings.showUTCTime
-
+			
 			Meteor.users.update Meteor.userId(), { $set: { "settings.profile": profile } }
 
 			return true
