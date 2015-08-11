@@ -46,3 +46,8 @@ Template.settings.events
 			RocketChat.settings.batchSet updateSettings, (err, success) ->
 				return toastr.error TAPi18next.t 'Error_updating_settings' if err
 				toastr.success TAPi18next.t 'Settings_updated'
+
+Template.settings.onRendered ->
+	Tracker.afterFlush ->
+		SideNav.setFlex "settingsFlex"
+		SideNav.openFlex()
