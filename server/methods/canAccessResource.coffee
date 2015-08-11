@@ -47,28 +47,15 @@ Meteor.methods
 			if user?.profile?.access
 				userPermissions = new Jedis.AccessPermission user.profile.access
 				result = userPermissions.canAccessResource resourcePermissions
-				console.log user._id
-				console.log result
 				allowed = result.canAccess
 				failedPermIds = result.failIds
 
 			unless allowed
 				deniedUser = {}
-				deniedUser[user._id] = failedPermIds
+				deniedUser.user = user._id
+				deniedUser.failedPermIds = failedPermIds
 				deniedUsers.push deniedUser
 
-		console.log deniedUsers
-
-		###
-		deniedUsers = _.filter users, (user) ->
-			allowed = true
-			if user?.profile?.access
-				userPermissions = new Jedis.AccessPermission user.profile.access
-				allowed = userPermissions.canAccessResource(resourcePermissions).canAccess   
-			# exclude users that can access the resource
-			return not allowed
-		###
 		canAccess = deniedUsers.length is 0
-
-		#return { canAccess: canAccess, deniedUsers : _.pluck deniedUsers, '_id' };
+		
 		return { canAccess: canAccess, deniedUsers : deniedUsers }
