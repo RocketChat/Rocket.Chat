@@ -1,6 +1,6 @@
 if Meteor.isCordova
 	document.addEventListener 'pause', ->
-		Meteor.disconnect()
+		UserPresence.setAway()
 
 	document.addEventListener 'resume', ->
-		Meteor.reconnect()
+		UserPresence.setOnline()
