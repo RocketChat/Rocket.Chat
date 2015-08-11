@@ -12,6 +12,10 @@ Template.avatarPrompt.onCreated ->
 
 	self.getSuggestions()
 
+Template.avatarPrompt.onRendered ->
+	Tracker.afterFlush ->
+		SideNav.setFlex "userSettingsFlex"
+		SideNav.openFlex()
 
 Template.avatarPrompt.helpers
 	suggestions: ->
@@ -31,11 +35,11 @@ Template.avatarPrompt.events
 		if @service is 'initials'
 			Meteor.call 'resetAvatar'
 			updateAvatarOfUsername Meteor.user().username
-			FlowRouter.go 'home'
+			toastr.success t('Avatar_changed_successfully')
 		else
 			Meteor.call 'setAvatarFromService', @blob, @contentType, @service, ->
 				updateAvatarOfUsername Meteor.user().username
-				FlowRouter.go 'home'
+				toastr.success t('Avatar_changed_successfully')
 
 	'click .login-with-service': (event, template) ->
 		loginWithService = "loginWith#{_.capitalize(this)}"
