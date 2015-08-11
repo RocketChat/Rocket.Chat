@@ -48,6 +48,14 @@ Template.privateGroupsFlex.helpers
 	nameReadonly: ->
 		if Template.instance().data.relabelRoom then 'readonly' else ''
 
+	warnUser: ->
+		list = Session.get 'warnUserIds'
+		user = this.toString()
+		if _.contains list, user
+			return 'warning-user-label'
+		else
+			return ''
+
 
 Template.privateGroupsFlex.events
 	'autocompleteselect #pvt-group-members': (event, instance, doc) ->
@@ -58,6 +66,7 @@ Template.privateGroupsFlex.events
 		instance.selectedUserNames[doc.username] = doc.username
 		event.currentTarget.value = ''
 		event.currentTarget.focus()
+		instance.updateWarnIds()
 
 	'click .remove-room-member': (e, instance) ->
 		self = @
@@ -68,6 +77,7 @@ Template.privateGroupsFlex.events
 		Template.instance().selectedUsers.set(users)
 
 		$('#pvt-group-members').focus()
+		instance.updateWarnIds()
 
 	'click .cancel-pvt-group': (e, instance) ->
 		SideNav.closeFlex()
@@ -114,12 +124,21 @@ Template.privateGroupsFlex.onCreated ->
 	instance.error = new ReactiveVar []
 	instance.groupName = new ReactiveVar ''
 
+	# labels that the current user has access to
+	instance.allowedLabels = []
+
 	# TODO remove init call since we're not calling the server anymore
 	instance.securityLabelsInitialized = new ReactiveVar(false)
 
 	# selected security label access permission ids
 	instance.selectedLabelIds = []
+	Session.set 'selectedLabelIds', []
 	instance.disabledLabelIds = []
+
+	# security label and user ids flagged for warning
+	Session.set 'warnLabelIds', []
+	Session.set 'warnUserIds', []
+
 
 	instance.clearForm = ->
 		instance.error.set([])
@@ -136,6 +155,10 @@ Template.privateGroupsFlex.onCreated ->
 		else if params.deselected
 			# remove deselected if it exist
 			instance.selectedLabelIds = _.without(instance.selectedLabelIds, params.deselected)
+
+		Session.set 'selectedLabelIds', instance.selectedLabelIds
+		instance.updateWarnIds()
+
 	instance.isOptionSelected = (id) ->
 		_.contains instance.selectedLabelIds, id
 
@@ -144,33 +167,66 @@ Template.privateGroupsFlex.onCreated ->
 		_.contains instance.disabledLabelIds, id
 
 
-	instance.updateLabelOptions = ->
-		parameters = {}
-		# TODO: replace this with existing room perms (instance.room.accessPermissions),
-		#       update method logic accordingly
-		parameters.conversationId = instance.data.relabelRoom
-		parameters.usernames = instance.selectedUsers.get()
-		Meteor.call 'getAllowedConversationPermissions', parameters, (error, result) ->
+	# Update the list of access permission ids that the current user has access to but any
+	# current room members cannot and, similarly, the list of current room members that do
+	# not have access to one or more currently-selected labels. These lists will be used by
+	# other templates to determine how to style labeling/membership options. This function
+	# should be called upon every change to security labels and room membership.
+	instance.updateWarnIds = ->
+
+		# call the 'canAccessResource' method using current members and all of the current
+		# user's access permissions as parameters
+		users = [Meteor.userId()].concat(instance.selectedUsers.get())
+		myPermIds = Meteor.user().profile.access
+		Meteor.call 'canAccessResource', users, myPermIds, (error, result) ->
 			if error
-				alert error
+				toastr.error 'Unexpected error during permission check!'
 			else
-				instance.selectedLabelIds.push((result.selectedIds or []).slice(0))
-				instance.selectedLabelIds = _.uniq(instance.selectedLabelIds)
-				instance.selectedLabelIds = _.flatten(instance.selectedLabelIds)
-				instance.disabledLabelIds = (result.disabledIds or []).slice(0)
-				instance.allowedLabels = result.allowed or []
+				warnLabelIds = []
+				warnUserIds = []
+				for denied in result.deniedUsers
 
-				myPerms = Meteor.user().profile.access
-				console.log myPerms
+					# separate out the currently-selected permissions by type - relto/non-relto
+					selectedReltoIds = _.pluck(AccessPermissions.find({_id: {$in: instance.selectedLabelIds}, type: {$nin: ['classification', 'SAP', 'SCI']}}).fetch(), '_id')
+					selectedOtherIds = _.pluck(AccessPermissions.find({_id: {$in: instance.selectedLabelIds}, type: {$nin: ['Release Caveat']}}).fetch(), '_id')
+					
 
-				console.log 'calling canAccessResource'
-				Meteor.call 'canAccessResource', [Meteor.userId(), 'testadmin', 'testuser2'], ['202', '300'], (error, result) ->
-					if error
-						console.log "error - can't access"
-					else
-						console.log 'result: ', result
+					# determine which of the 'failed' ids are currently selected
+					# (or missing, in the case of relto)
+					selectedFailedOtherIds = []
+					nonSelectedFailedReltoIds = []
+					for failedId in denied.failedPermIds
+						perm = AccessPermissions.findOne({_id: failedId})
+						if perm.type is 'Release Caveat'
+							if failedId not in selectedReltoIds
+								nonSelectedFailedReltoIds.push perm.label
+						else
+							if failedId in selectedOtherIds
+								selectedFailedOtherIds.push perm.label
 
-				instance.securityLabelsInitialized.set true
+
+					# if any are selected, add the user to the 'warnUserIds' list
+					if (selectedFailedOtherIds.length > 0) or (nonSelectedFailedReltoIds.length > 0)
+						if denied.user not in warnUserIds
+							warnUserIds.push denied.user
+
+						# build and display warning message
+						if selectedFailedOtherIds.length > 0
+							toastr.warning 'User [' + denied.user + '] does not have access to some of the selected labels: [' + selectedFailedOtherIds.join('], [') + '].'
+						if nonSelectedFailedReltoIds.length > 0
+							toastr.warning 'User [' + denied.user + '] requires release caveats: [' + nonSelectedFailedReltoIds.join('], [') + '].'
+
+
+					# add all failed perms to a list (even if not selected - this is so the
+					# security labels template can determine which non-selected labels WOULD
+					# cause a problem if selected)
+					for perm in denied.failedPermIds
+						if perm not in warnLabelIds
+							warnLabelIds.push perm
+
+				# set the session for communicating with other templates
+				Session.set 'warnLabelIds', warnLabelIds
+				Session.set 'warnUserIds', warnUserIds
 
 
 
@@ -182,7 +238,7 @@ Template.privateGroupsFlex.onCreated ->
 	# data is set, stop further execution of this function and then populate the label info
 	# input fields for the room.
 	#
-	# Since function is tied to Template instance, will automatically stop if template on
+	# Since function is tied to Template instance, will automatically stop on template
 	# destroy (http://docs.meteor.com/#/full/template_autorun).
 	instance.autorun (c) ->
 		# check if we are relabeling the room
@@ -197,10 +253,12 @@ Template.privateGroupsFlex.onCreated ->
 				# get room data
 				instance.room = Session.get('roomData' + instance.data.relabelRoom)
 				# select existing permissions and disallow removing them
-#				options = roomLabelOptions(instance.room.accessPermissions, Meteor.user().profile.access)
-#				instance.selectedLabelIds = _.pluck( options.selected, '_id')
-#				instance.disabledLabelIds = _.pluck( options.disabled, '_id')
-#				instance.allowedLabels = options.allowed
+				instance.selectedLabelIds = instance.room.accessPermissions
+				options = roomLabelOptions(instance.room.accessPermissions, Meteor.user().profile.access)
+				instance.selectedLabelIds = _.pluck( options.selected, '_id')
+				Session.set 'selectedLabelIds', instance.selectedLabelIds
+				instance.disabledLabelIds = _.pluck( options.disabled, '_id')
+				instance.allowedLabels = options.allowed
 				instance.groupName.set(instance.room.name)
 				instance.room.usernames?.forEach (username) ->
 					# TODO use name field instead of username.  Room only has username
@@ -208,20 +266,19 @@ Template.privateGroupsFlex.onCreated ->
 					instance.selectedUserNames[username] = username
 					instance.selectedUsers.set instance.selectedUsers.get().concat username	
 					# other conversation members
-#					instance.otherMembers = _.without(instance.room.usernames, Meteor.user().username)
-				instance.updateLabelOptions()
-#				instance.securityLabelsInitialized.set true
+					instance.otherMembers = _.without(instance.room.usernames, Meteor.user().username)
+				instance.securityLabelsInitialized.set true
 
 		# if creating a new room (rather than relabel), populate default values (UNCLASS//RELTO USA)
 		else
 			# no need to keep running this autorun function, since nothing to wait for
 			c.stop()
-#			options = roomLabelOptions([], Meteor.user().profile.access)
-#			instance.selectedLabelIds = _.pluck( options.selected, '_id')
-#			instance.disabledLabelIds = _.pluck( options.disabled, '_id')
-#			instance.allowedLabels = options.allowed
-			instance.updateLabelOptions()
-#			instance.securityLabelsInitialized.set true
+			options = roomLabelOptions([], Meteor.user().profile.access)
+			instance.selectedLabelIds = _.pluck( options.selected, '_id')
+			Session.set 'selectedLabelIds', instance.selectedLabelIds
+			instance.disabledLabelIds = _.pluck( options.disabled, '_id')
+			instance.allowedLabels = options.allowed
+			instance.securityLabelsInitialized.set true
 
 
 

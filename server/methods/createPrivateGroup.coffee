@@ -19,7 +19,8 @@ Meteor.methods
 		# RocketChat uses username as the identifier.  We use the imported LDAP username as both the _id and username value
 		result = Meteor.call 'canAccessResource', members, accessPermissions
 		if not result.canAccess
-			throw new Meteor.Error('invalid-access-permissions', result.deniedUsers.join(', ') + " cannot participate in the private group with the specified access permissions")
+			deniedUserList = _.pluck(result.deniedUsers, 'user').join(', ')
+			throw new Meteor.Error('invalid-access-permissions', deniedUserList + " cannot participate in the private group with the specified access permissions")
 
 		# create new room
 		rid = ChatRoom.insert

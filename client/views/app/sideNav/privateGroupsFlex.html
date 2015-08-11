@@ -20,7 +20,7 @@
 				{{> inputAutocomplete settings=autocompleteSettings id="pvt-group-members" class="search" placeholder=tRoomMembers autocomplete="off"}}
 				<ul class="selected-users">
 					{{#each selectedUsers}}
-						<li>{{name}} <i class="icon-cancel remove-room-member"></i></li>
+						<li class="{{warnUser}}">{{name}} <i class="icon-cancel remove-room-member"></i></li>
 					{{/each}}
 				</ul>
 			</div>

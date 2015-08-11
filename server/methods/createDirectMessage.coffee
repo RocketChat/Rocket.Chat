@@ -21,7 +21,8 @@ Meteor.methods
 
 		result = Meteor.call 'canAccessResource', [me._id,to._id], accessPermissions
 		if not result.canAccess
-			throw new Meteor.Error('invalid-access-permissions', result.deniedUsers.join(', ') + " cannot participate in a direct message with the specified access permissions")
+			deniedUserList = _.pluck(result.deniedUsers, 'user').join(', ')
+			throw new Meteor.Error('invalid-access-permissions', deniedUserList + " cannot participate in a direct message with the specified access permissions")
 
 		rid = [me._id, to._id].sort().join('')
 
