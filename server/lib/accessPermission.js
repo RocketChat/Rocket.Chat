@@ -71,8 +71,8 @@ Jedis.AccessPermission.prototype.canAccessResource = function(resPerms) {
 	var failIds = [];
 
 	// "AND" logic - user needs access to ALL of them
-	// loop through all test permissions and check if user can access
-	// for any that can't access, add it to 'failIds' list
+	// loop through all test permissions and check if user can access for any that can't access, add it
+	// to 'failIds' list
 	userIds = this.getPermissionIds(andTypes);
 	resPerms.getPermissionIds(andTypes).forEach(function(resId) {
 		if (userIds.indexOf(resId) === -1) {
@@ -80,22 +80,26 @@ Jedis.AccessPermission.prototype.canAccessResource = function(resPerms) {
 		}
 	});
 
-
 	// "OR" logic - user needs access to only ONE OR MORE of them
-	// loop through all test permissions and check if user can access
-	// if user can't access any, add his own relto ids to the 'failIds' list
-	// (this is so we can determine what the problem is. otherwise, the fail
-	//  list could conceivably hold many reltos, when the issue is that the
-	//  user is lacking any one of them)
+	// loop through all test permissions and check if user can access if user can't access any, add his
+	// own relto ids to the 'failIds' list (this is so we can determine what the problem is. otherwise,
+	// the fail list could conceivably hold many reltos, when the issue is that the user is lacking any
+	// one of them)
+	//
+	// TODO: maybe own relto should be included in a separate 'missingIds' list
 	userIds = this.getPermissionIds(orTypes);
-	var anyAccess = resPerms.getPermissionIds(orTypes).some(function(resId) {
-		return userIds.indexOf(resId) > -1;
-	});
+	// default this to true, in case there are no reltos being checked (assume no reltos == all reltos)
+	var anyAccess = true;
+	var resOrPerms = resPerms.getPermissionIds(orTypes);
+	if (resOrPerms.length > 0) {
+		anyAccess = resOrPerms.some(function(resId) {
+			return userIds.indexOf(resId) > -1;
+		});
+	}
 	if (anyAccess === false) {
 		// can a user ever have multiple reltos?
 		failIds = failIds.concat(userIds);
 	}
-
 
 	// if any ids were added to 'failIds', user cannot access
 	if (failIds.length > 0) {
