@@ -33,7 +33,8 @@ Meteor.startup( function() {
 
 	// Register our custom login manager that authenticates via LDAP with Meteor's accounts package
 	Accounts.registerLoginHandler(Jedis.accountManager.authId, Jedis.accountManager.loginHandler);	
-	Accounts.config( {forbidClientAccountCreation:true});
+	// TODO checkt that forbidClientAccountCreation is true
+	//Accounts.config( {forbidClientAccountCreation:true});
 });
 
 var addUsersToRoom = function( users, roomId, createJoinedMessage) {

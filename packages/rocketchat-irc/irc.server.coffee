@@ -195,10 +195,10 @@ class IrcClient
 					$in: removeMembers
 		ChatRoom.update room._id, update
 		update =
-			$push:
+			$addToSet:
 				usernames:
 					$each: appendMembers
-					$sort: 1
+
 		ChatRoom.update room._id, update
 		@isJoiningRoom = false
 		roomName = @pendingJoinRoomBuf.shift()
@@ -277,10 +277,9 @@ class IrcClient
 		console.log '[irc] onAddMemberToRoom -> '.yellow, 'roomName:', roomName, 'member:', member
 		@createUserWhenNotExist member
 		update =
-			$push:
-				usernames:
-					$each: [member]
-					$sort: 1
+			$addToSet:
+				usernames: member
+
 		ChatRoom.update {name: roomName}, update
 
 	onRemoveMemberFromRoom: (member, roomName)->

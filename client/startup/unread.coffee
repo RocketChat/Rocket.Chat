@@ -1,30 +1,50 @@
 Meteor.startup ->
 
+	ChatSubscription.find({}, { fields: { unread: 1 } }).observeChanges
+		changed: (id, fields) ->
+			if fields.unread and fields.unread > 0
+				KonchatNotification.newMessage()
+
+Meteor.startup ->
+
 	Tracker.autorun ->
 
 		unreadCount = 0
 		unreadAlert = false
 
-		subscriptions = ChatSubscription.find({}, { fields: { unread: 1, alert: 1 } })
+		subscriptions = ChatSubscription.find({open: true}, { fields: { unread: 1, alert: 1, rid: 1 } })
+
+		rid = undefined
+		if FlowRouter.getRouteName() is 'room'
+			rid = FlowRouter.getParam '_id'
 
 		for subscription in subscriptions.fetch()
-			unreadCount += subscription.unread
-			if subscription.alert is true
-				unreadAlert = '•'
-
-		rxFavico.set 'type', 'warn'
+			if subscription.rid is rid and (subscription.alert or subscription.unread > 0) and document.hasFocus()
+				Meteor.call 'readMessages', subscription.rid
+			else
+				unreadCount += subscription.unread
+				if subscription.alert is true
+					unreadAlert = '•'
 
 		if unreadCount > 0
-			document.title = '(' + unreadCount + ') Rocket.Chat'
-			rxFavico.set 'count', unreadCount
-			fireGlobalEvent 'unread-changed', unreadCount
-
+			if unreadCount > 999
+				Session.set 'unread', '999+'
+			else
+				Session.set 'unread', unreadCount
 		else if unreadAlert isnt false
-			document.title = '(' + unreadAlert + ') Rocket.Chat'
-			rxFavico.set 'count', unreadAlert
-			fireGlobalEvent 'unread-changed', unreadAlert
-
+			Session.set 'unread', unreadAlert
 		else
-			document.title = 'Rocket.Chat'
-			rxFavico.set 'count', ''
-			fireGlobalEvent 'unread-changed', ''
+			Session.set 'unread', ''
+
+Meteor.startup ->
+
+	window.favico = new Favico
+		position: 'up'
+		animation: 'none'
+
+	Tracker.autorun ->
+
+		unread = Session.get 'unread'
+		fireGlobalEvent 'unread-changed', unread
+		favico?.badge unread, bgColor: if typeof unread isnt 'number' then '#3d8a3a' else '#ac1b1b'
+		document.title = if unread == '' then 'Rocket.Chat' else '(' + unread + ') Rocket.Chat'

@@ -12,10 +12,3 @@ Template.home.events
 	"click .flex-tab .more": (event) ->
 		Session.set('flexOpened', !Session.get('flexOpened'))
 
-	"click .burger": ->
-		chatContainer = $("#rocket-chat")
-		if chatContainer.hasClass("menu-closed")
-			chatContainer.removeClass("menu-closed").addClass("menu-opened")
-		else
-			chatContainer.addClass("menu-closed").removeClass("menu-opened")
-

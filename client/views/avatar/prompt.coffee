@@ -23,11 +23,19 @@ Template.avatarPrompt.helpers
 	username: ->
 		return Meteor.user()?.username
 
+	initialsUsername: ->
+		return '@'+Meteor.user()?.username
 
 Template.avatarPrompt.events
-	'click .select-service': (e) ->
-		Meteor.call 'setAvatarFromService', this.blob, this.contentType, this.service, ->
-			Session.set('AvatarRandom', Date.now())
+	'click .select-service': ->
+		if @service is 'initials'
+			Meteor.call 'resetAvatar'
+			updateAvatarOfUsername Meteor.user().username
+			FlowRouter.go 'home'
+		else
+			Meteor.call 'setAvatarFromService', @blob, @contentType, @service, ->
+				updateAvatarOfUsername Meteor.user().username
+				FlowRouter.go 'home'
 
 	'click .login-with-service': (event, template) ->
 		loginWithService = "loginWith#{_.capitalize(this)}"

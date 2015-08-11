@@ -22,8 +22,26 @@ Template.userSettingsFlex.events
 	'click .cancel-settings': ->
 		SideNav.closeFlex()
 
-	'click .input-submit .save': ->
+	'click .input-submit .save': (e, instance) ->
 		selectedLanguage = $('#language').val()
 		if localStorage.getItem('userLanguage') isnt selectedLanguage
 			localStorage.setItem 'userLanguage', selectedLanguage
 			Meteor._reload.reload()
+
+		if $('#password').val()
+			Meteor.call 'setPassword', $('#password').val(), (err, results) ->
+				if results 
+					toastr.success t('Password_changed_successfully')
+				if err
+					toastr.error error.reason
+
+
+		SideNav.closeFlex()
+		instance.clearForm()
+
+Template.userSettingsFlex.onCreated ->
+	instance = this
+	
+	@clearForm = ->
+		instance.find('#language').value = localStorage.getItem('userLanguage')
+		instance.find('#password').value = ''

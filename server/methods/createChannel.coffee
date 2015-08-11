@@ -13,6 +13,10 @@ Meteor.methods
 
 		members.push user.username
 
+		# avoid duplicate names
+		if ChatRoom.findOne({name:name})
+			throw new Meteor.Error 'duplicate-name'
+
 		# name = s.slugify name
 
 		room =
@@ -47,6 +51,7 @@ Meteor.methods
 
 			if username is user.username
 				sub.ls = now
+				sub.open = true
 
 			ChatSubscription.insert sub
 

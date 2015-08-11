@@ -38,7 +38,6 @@
 		do (streamName, stream) ->
 			emitters[streamName] = stream.emit
 			stream.emit = (eventName, args...) ->
-				console.log 'stream.emit', eventName, args
 				broadcast streamName, eventName, args
 				emitters[streamName].apply {}, arguments
 
@@ -50,5 +49,11 @@
 
 
 Meteor.startup ->
-	startStreamBroadcast
-		'webrtc.stream': webrtc.stream
+	config =
+		'typing': typingStream
+		'deleteMsgStream': deleteMsgStream
+
+	if webrtc
+		config['webrtc.stream'] = webrtc.stream
+
+	startStreamBroadcast config
