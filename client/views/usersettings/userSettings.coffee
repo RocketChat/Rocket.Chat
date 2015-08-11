@@ -12,8 +12,6 @@ Template.userSettings.onRendered ->
 
 Template.userSettings.events
 	'click .submit button': (e, t) ->
-		console.log 'submit button clicked'
-		
 		if t.child?.length > 0
 			for child in t.child
 				child.save?()
