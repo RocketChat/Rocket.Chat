@@ -2,6 +2,7 @@
 // the entire section is optional.
 App.info({
 	id: 'com.konecty.rocket.chat',
+	version: '0.1.0',
 	name: 'Rocket.Chat',
 	description: 'Rocket.Chat',
 	author: 'Rocket.Chat Development Group',
