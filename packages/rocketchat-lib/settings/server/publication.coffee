@@ -7,7 +7,10 @@ Meteor.publish 'admin-settings', ->
 
 	unless @userId
 		return @ready()
-	
+
 	user = Meteor.users.findOne @userId
 	if user.admin
 		return Settings.find()
+	else
+		return @ready()
+
