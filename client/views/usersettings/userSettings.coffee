@@ -9,9 +9,3 @@ Template.userSettings.onRendered ->
 	Tracker.afterFlush ->
 		SideNav.setFlex "userSettingsFlex"
 		SideNav.openFlex()
-
-Template.userSettings.events
-	'click .submit button': (e, t) ->
-		if t.child?.length > 0
-			for child in t.child
-				child.save?()

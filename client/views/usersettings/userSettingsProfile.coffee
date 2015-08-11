@@ -1,4 +1,9 @@
 Template.userSettingsProfile.helpers
+	flexOpened: ->
+		return 'opened' if Session.equals('flexOpened', true)
+	arrowPosition: ->
+		console.log 'room.helpers arrowPosition' if window.rocketDebug
+		return 'left' unless Session.equals('flexOpened', true)
 	languages: ->
 		languages = TAPi18n.getLanguages()
 		result = []
@@ -32,9 +37,6 @@ Template.userSettingsProfile.onCreated ->
 		if _.trim $('#password').val()
 			data.password = _.trim $('#password').val()
 
-		if $('#showUTCTime:checked').length
-			data.showUTCTime = true
-
 		Meteor.call 'saveUserProfile', data, (error, results) ->
 			if results 
 				toastr.success t('Profile_saved_successfully')
@@ -46,3 +48,12 @@ Template.userSettingsProfile.onCreated ->
 
 			if error
 				toastr.error error.reason
+
+Template.userSettingsProfile.onRendered ->
+	Tracker.afterFlush ->
+		SideNav.setFlex "userSettingsFlex"
+		SideNav.openFlex()
+
+Template.userSettingsProfile.events
+	'click .submit button': (e, t) ->
+		t.save()
