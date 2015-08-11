@@ -7,6 +7,9 @@
 numberComparator = (first, second) ->
 	return first - second
 
+# TODO need to set this from settings.
+@Jedis.defaultPermissions  = ['U', '300']
+
 @Jedis.legacyLabel = (permissionIds) ->
 	template = "classification|label_field|1+0|trigraphs|SAP_SCI|release_caveats|RELTO"
 	permissions = new Jedis.AccessPermission permissionIds
@@ -39,7 +42,7 @@ numberComparator = (first, second) ->
 
 	return isValid
 
-addPermissionsAndLabel = (message) ->
+beforeSaveMessage = (message) ->
 	roomId = message.rid
 	room = @ChatRoom.findOne({_id: roomId});
 	# only apply to direct message and private group rooms
@@ -49,6 +52,14 @@ addPermissionsAndLabel = (message) ->
 			
 	return message
 
+beforeCreateChannel = (user, room) ->
+	if room?.t in ['c']
+		# default access permission
+		room.accessPermissions = Jedis.defaultPermissions
+		room.securityLabels = Jedis.legacyLabel[Jedis.defaultPermissions]
+
 # Add access permission and legacy security label field to message based on Room
 # only applies to Direct message and Private group messages
-RocketChat.callbacks.add 'beforeSaveMessage', addPermissionsAndLabel
+RocketChat.callbacks.add 'beforeSaveMessage', beforeSaveMessage
+# Add access permission and legacy security label fields to Channel
+RocketChat.callbacks.add 'beforeCreateChannel', beforeCreateChannel

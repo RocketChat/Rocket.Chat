@@ -1,7 +1,6 @@
 Meteor.startup ->
 	Meteor.defer ->
 
-
 		if not ChatRoom.findOne('name': 'general')?
 			ChatRoom.insert
 				_id: 'GENERAL'
@@ -10,6 +9,8 @@ Meteor.startup ->
 				t: 'c'
 				name: 'general'
 				msgs: 0
+				accessPermissions: Jedis.defaultPermissions
+				securityLabels : Jedis.legacyLabel(Jedis.defaultPermissions)
 
 		if process.env.ADMIN_EMAIL? and process.env.ADMIN_PASS? 
 			re = /^([\w-]+(?:\.[\w-]+)*)@((?:[\w-]+\.)*\w[\w-]{0,66})\.([a-z]{2,6}(?:\.[a-z]{2})?)$/i
