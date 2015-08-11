@@ -20,20 +20,22 @@ numberComparator = (first, second) ->
 @Jedis.securityLabelIsValid = (permissionIds) ->
 	console.log '[methods]Jedis.securityLabelIsValid -> '.green, 'permissionIds: ', permissionIds 
 	isValid = false
-	# check that ids exist
-	permissions = Jedis.accessManager.getPermissions permissionIds
 
-	isValid = permissionIds.length is permissions.length
+	if permissionIds
+		# check that ids exist
+		permissions = Jedis.accessManager.getPermissions permissionIds
 
-	# check that only one classification exists
-	if isValid 
-		classifications = permissions.filter (permission) ->
-			return permission?.type is 'classification'
-		isValid = classifications.length is 1
+		isValid = permissionIds.length is permissions.length
 
-	# check that system country code exists (RELTO type permission)
-	if isValid
-		isValid = _.contains( permissionIds, Meteor.settings.public.system.countryCode )
+		# check that only one classification exists
+		if isValid 
+			classifications = permissions.filter (permission) ->
+				return permission?.type is 'classification'
+			isValid = classifications.length is 1
+
+		# check that system country code exists (RELTO type permission)
+		if isValid
+			isValid = _.contains( permissionIds, Meteor.settings.public.system.countryCode )
 
 	return isValid
 

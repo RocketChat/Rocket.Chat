@@ -56,10 +56,12 @@ Template.createChannelFlex.events
 		$('#channel-members').focus()
 
 	'click header': (e, instance) ->
-		SideNav.closeFlex()
+		SideNav.closeFlex ->
+			instance.clearForm()
 
 	'click .cancel-channel': (e, instance) ->
-		SideNav.closeFlex()
+		SideNav.closeFlex ->
+			instance.clearForm()
 
 	'mouseenter header': ->
 		SideNav.overArrow()
@@ -84,14 +86,16 @@ Template.createChannelFlex.events
 					if err.error is 'name-invalid'
 						instance.error.set({ invalid: true })
 						return
+					if err.error is 'duplicate-name'
+						instance.error.set({ duplicate: true })
+						return
 					else
 						return toastr.error err.reason
 
-				SideNav.closeFlex()
+				SideNav.closeFlex ->
+					instance.clearForm()
 
-				instance.clearForm()
-
-				Router.go 'room', { _id: result.rid }
+				FlowRouter.go 'room', { _id: result.rid }
 		else
 			instance.error.set({ fields: err })
 

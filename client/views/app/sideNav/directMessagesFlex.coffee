@@ -33,8 +33,6 @@ Template.directMessagesFlex.helpers
 		return Template.instance().securityLabelsInitialized.get()
 	relabelRoom: ->
 		return Template.instance().data.relabelRoom?
-	#nameReadonly: ->
-	#	if Template.instance().data.relabelRoom then 'readonly' else ''
 	selectedUser: ->
 		return Template.instance().selectedUser.get()
 
@@ -52,8 +50,9 @@ Template.directMessagesFlex.events
 		instance.updateWarnIds()
 
 	'click .cancel-direct-message': (e, instance) ->
-		SideNav.closeFlex()
-		instance.clearForm()
+		SideNav.closeFlex ->
+			SideNav.setFlex null
+			instance.clearForm()
 
 	'click header': (e, instance) ->
 		SideNav.closeFlex()
@@ -78,15 +77,17 @@ Template.directMessagesFlex.events
 					if err
 						return toastr.error err.reason
 					SideNav.closeFlex()
+					SideNav.setFlex null
 					instance.clearForm()
-					Router.go 'room', { _id: result.rid }
+					FlowRouter.go 'room', { _id: result.rid }
 			else
 				Meteor.call 'createDirectMessage', instance.selectedUser.get(), accessPermissions, (err, result) ->
 					if err
 						return toastr.error err.reason
 					SideNav.closeFlex()
+					SideNav.setFlex null
 					instance.clearForm()
-					Router.go 'room', { _id: result.rid }
+					FlowRouter.go 'room', { _id: result.rid }
 		else
 			Template.instance().error.set(err)
 
@@ -102,7 +103,6 @@ Template.directMessagesFlex.onCreated ->
 		instance.error.set([])
 		instance.selectedUser.set null
 		instance.find('#who').value = ''
-		instance.roomData = undefined
 
 	# labels that the current user has access to
 	instance.allowedLabels = []
@@ -216,20 +216,22 @@ Template.directMessagesFlex.onCreated ->
 	# data is set, stop further execution of this function and then populate the label info
 	# input fields for the room.
 	#
-	# Since function is tied to Template instance, will automatically stop if template on
-	# destroy (http://docs.meteor.com/#/full/template_autorun).
 	instance.autorun (c) ->
+		# can't use this.data because it's not set with updated flex data
+		data = SideNav.getFlex().data
+		unless data
+			return
+
+		roomId = data?.relabelRoom
 		# check if we are relabeling the room
-		if instance.data.relabelRoom?
+		if roomId
 			# get a subscription to the room (in case we don't have one already)
-			Meteor.subscribe('room', instance.data.relabelRoom)
+			Meteor.subscribe('room', roomId)
 			# function will automatically re-run on changes to this session variable, thus
 			# it will essentially "wait" for the data to get set
-			if Session.get('roomData' + instance.data.relabelRoom)
-				# once we have the data, no need to keep re-running
-				c.stop()
+			if Session.get('roomData' + roomId)
 				# get room data
-				instance.room = Session.get('roomData' + instance.data.relabelRoom)
+				instance.room = Session.get('roomData' + roomId)
 				# select existing permissions and disallow removing them
 				options = roomLabelOptions(instance.room.accessPermissions, Meteor.user().profile.access)
 				instance.selectedLabelIds = _.pluck( options.selected, '_id')
@@ -242,15 +244,13 @@ Template.directMessagesFlex.onCreated ->
 
 		# if creating a new room (rather than relabel), populate default values (UNCLASS//RELTO USA)
 		else
-			# no need to keep running this autorun function, since nothing to wait for
-			c.stop()
 			options = roomLabelOptions([], Meteor.user().profile.access)
 			instance.selectedLabelIds = _.pluck( options.selected, '_id')
 			Session.set 'selectedLabelIds', instance.selectedLabelIds
 			instance.disabledLabelIds = _.pluck( options.disabled, '_id')
 			instance.allowedLabels = options.allowed
-			if instance.data.user
-				instance.selectedUser.set instance.data.user 
+			if data?.user
+				instance.selectedUser.set data.user
 			instance.securityLabelsInitialized.set true
 
 

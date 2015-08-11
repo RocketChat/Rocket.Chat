@@ -51,7 +51,7 @@
 Meteor.methods
 	getAvatarSuggestion: ->
 		if not Meteor.userId()
-			throw new Meteor.Error 203, '[methods] typingStatus -> Usuário não logado'
+			throw new Meteor.Error 203, '[methods] getAvatarSuggestion -> Usuário não logado'
 
 		user = Meteor.user()
 

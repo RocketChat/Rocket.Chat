@@ -40,3 +40,4 @@ paths:
 #
 exclude_paths:
  - "public/moment-locales/*"
+ - "packages/rocketchat-favico/favico.js"

@@ -16,6 +16,9 @@ Meteor.methods
 		if not to
 			throw new Meteor.Error('invalid-user', "[methods] createDirectMessage -> Invalid target user")
 
+		if not accessPermissions
+			throw new Meteor.Error('invalid-argument', "Missing security label")
+
 		if not Jedis.securityLabelIsValid(accessPermissions)
 			throw new Meteor.Error('invalid-access-permissions', "Missing required access permissions")
 
