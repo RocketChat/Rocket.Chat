@@ -89,7 +89,11 @@ RocketChat.sendMessage = (user, message, room) ->
 							userId: userOfMention._id
 
 		else
+			mentionIds = []
 			message.mentions?.forEach (mention) ->
+				mentionIds.push mention._id
+
+			if mentionIds.length > 0
 				###
 				Update all other subscriptions of mentioned users to alert their owners and incrementing
 				the unread counter for mentions and direct messages
@@ -98,12 +102,12 @@ RocketChat.sendMessage = (user, message, room) ->
 					# only subscriptions to the same room
 					rid: message.rid
 
-				if mention._id is 'all'
+				if mentionIds.indexOf('all') > -1
 					# all users except sender if mention is for all
 					query['u._id'] = $ne: user._id
 				else
 					# the mentioned user if mention isn't for all
-					query['u._id'] = mention._id
+					query['u._id'] = $in: mentionIds
 
 				ChatSubscription.update query,
 					$set:
@@ -116,6 +120,36 @@ RocketChat.sendMessage = (user, message, room) ->
 						unread: 1
 				,
 					multi: true
+
+				if Push.enabled is true
+					query =
+						statusConnection: {$ne: 'online'}
+
+					if mentionIds.indexOf('all') > -1
+						if room.usernames?.length > 0
+							query.username =
+								$in: room.usernames
+						else
+							query.username =
+								$in: []
+					else
+						query._id =
+							$in: mentionIds
+
+					usersOfMention = Meteor.users.find(query, {fields: {username: 1}}).fetch()
+					if usersOfMention.length > 0
+						for userOfMention in usersOfMention
+							Push.send
+								from: 'push'
+								title: userOfMention.username
+								text: message.msg
+								badge: 1
+								sound: 'chime'
+								payload:
+									rid: message.rid
+									sender: message.u
+								query:
+									userId: userOfMention._id
 
 		###
 		Update all other subscriptions to alert their owners but witout incrementing
