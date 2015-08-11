@@ -40,6 +40,7 @@
   "Created_at" : "Created at",
   "Direct_Messages" : "Direct Messages",
   "Deleted" : "Deleted!",
+  "Drop_to_upload_file" : "Drop to upload file",
   "Duplicate_private_group_name" : "A Private Group with name '%s' exists",
   "Duplicate_channel_name" : "A Channel with name '%s' exists",
   "edited" : "edited",

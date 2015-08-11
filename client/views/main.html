@@ -43,9 +43,7 @@
 </body>
 
 <template name="main">
-	{{#unless subsReady}}
-
-	{{else}}
+	{{#if subsReady}}
 		{{#unless logged}}
 			{{> loginLayout}}
 		{{else}}
@@ -66,5 +64,5 @@
 				{{> audioNotification }}
 			{{/unless}}
 		{{/unless}}
-	{{/unless}}
+	{{/if}}
 </template>
