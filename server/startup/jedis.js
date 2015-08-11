@@ -26,7 +26,7 @@ Meteor.startup( function() {
 
 	// returns non-jedis users that will be added to GENERAL room if they aren't already added
 	users = Meteor.users.find().fetch();
-	test();
+	addUsersToLocation();
 
 	// based on setUsername.coffee that adds uesrs after registration.  We can't reuse it because
 	// it checks Meteor.userId which doesn't apply to what we're doing
@@ -38,7 +38,7 @@ Meteor.startup( function() {
 	//Accounts.config( {forbidClientAccountCreation:true});
 });
 
-var test = function() {
+var addUsersToLocation = function() {
 	var owner = Meteor.users.findOne({_id:'testadmin'});
 	var rawUsers = Meteor.users.rawCollection();
 	var pipeline = [{'$group': {_id:'$profile.location', usernames: {$push : "$username"}}}]
@@ -154,12 +154,9 @@ var createChannel = function(owner, name, members) {
 				u: {
 					_id: member._id,
 					username: username
-				}
-			}
-
-			if(username === owner.username) {
-				sub.ls = now
-				sub.open = true
+				},
+				ls  : now,
+				open : true
 			}
 
 			ChatSubscription.insert (sub);
