@@ -73,6 +73,21 @@ RocketChat.sendMessage = (user, message, room) ->
 				$inc:
 					unread: 1
 
+			if Push.enabled is true
+				userOfMention = Meteor.users.findOne({_id: message.rid.replace(message.u._id, ''), statusConnection: {$ne: 'online'}}, {fields: {username: 1}})
+				if userOfMention?
+					Push.send
+						from: 'push'
+						title: userOfMention.username
+						text: "#{userOfMention.username}: #{message.msg}"
+						badge: 1
+						sound: 'chime'
+						payload:
+							rid: message.rid
+							sender: message.u
+						query:
+							userId: userOfMention._id
+
 		else
 			message.mentions?.forEach (mention) ->
 				###
