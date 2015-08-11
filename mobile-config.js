@@ -1,12 +1,12 @@
 // This section sets up some basic app metadata,
 // the entire section is optional.
 App.info({
-  id: 'com.konecty.rocketchat',
-  name: 'Rocket.Chat',
-  description: 'Rocket.Chat',
-  author: 'Rocket.Chat Development Group',
-  email: 'contact@rocket.chat',
-  website: 'https://rocket.chat'
+	id: 'com.konecty.rocket.chat',
+	name: 'Rocket.Chat',
+	description: 'Rocket.Chat',
+	author: 'Rocket.Chat Development Group',
+	email: 'contact@rocket.chat',
+	website: 'https://rocket.chat'
 });
 
 // Set up resources such as icons and launch screens.
@@ -46,6 +46,7 @@ App.launchScreens({
 // Set PhoneGap/Cordova preferences
 App.setPreference('HideKeyboardFormAccessoryBar', true);
 App.setPreference('StatusBarStyle', 'default');
+App.accessRule('*');
 
 // // Pass preferences for a particular PhoneGap/Cordova plugin
 // App.configurePlugin('com.phonegap.plugins.facebookconnect', {

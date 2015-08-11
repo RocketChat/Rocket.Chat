@@ -10,10 +10,12 @@ accounts-meteor-developer
 accounts-password
 coffeescript
 email
+fastclick
 http
 jquery
 less
 meteor-platform
+reactive-dict
 reactive-var
 service-configuration
 
@@ -41,7 +43,7 @@ konecty:delayed-task
 konecty:mongo-counter
 konecty:multiple-instances-status
 konecty:nrr
-konecty:user-presence@1.2.4
+konecty:user-presence
 
 cfs:standard-packages
 cfs:gridfs
@@ -50,19 +52,25 @@ cfs:gridfs
 #cfs:dropbox
 
 chrismbeckett:toastr
+dispatch:run-as-user
 francocatena:status
 jparker:gravatar
+kadira:blaze-layout
+kadira:flow-router
 kevohagan:sweetalert
 meteorhacks:kadira
 mizzao:autocomplete
 mizzao:timesync
 momentjs:moment
 mrt:reactive-store
+mystor:device-detection
+nimble:restivus
 nooitaf:colors
 pauli:accounts-linkedin
 percolate:migrations
 percolatestudio:synced-cron
 raix:handlebar-helpers
+raix:push
 raix:ui-dropped-event
 tap:i18n
 tmeasday:crypto-md5
@@ -70,11 +78,4 @@ tmeasday:errors
 todda00:friendly-slugs
 underscorestring:underscore.string
 yasaricli:slugify
-reactive-dict
 yasinuslu:blaze-meta
-nimble:restivus
-dispatch:run-as-user
-kadira:flow-router
-kadira:blaze-layout
-mystor:device-detection
-fastclick
