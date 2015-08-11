@@ -55,7 +55,6 @@ Template.securityLabels.onCreated( function() {
 			});
 		}
 		self.data.onSelectionChanged(params);
-		console.log('here');
 
 		// update newly-selected labels
 		if (params.selected) {

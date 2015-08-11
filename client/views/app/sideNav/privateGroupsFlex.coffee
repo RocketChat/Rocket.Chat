@@ -132,7 +132,6 @@ Template.privateGroupsFlex.onCreated ->
 	instance = this
 	instance.selectedUsers = new ReactiveVar []
 	instance.selectedUserNames = {}
-	instance.otherMembers = []
 	instance.error = new ReactiveVar []
 
 	instance.securityLabelsInitialized = new ReactiveVar(false)
@@ -181,11 +180,11 @@ Template.privateGroupsFlex.onCreated ->
 	# other templates to determine how to style labeling/membership options. This function
 	# should be called upon every change to security labels and room membership.
 	instance.updateWarnIds = ->
-
 		# call the 'canAccessResource' method using current members and all of the current
 		# user's access permissions as parameters
 		users = [Meteor.userId()].concat(instance.selectedUsers.get())
 		myPermIds = Meteor.user().profile.access
+
 		Meteor.call 'canAccessResource', users, myPermIds, (error, result) ->
 			if error
 				toastr.error 'Unexpected error during permission check!'
@@ -193,7 +192,6 @@ Template.privateGroupsFlex.onCreated ->
 				warnLabelIds = []
 				warnUserIds = []
 				for denied in result.deniedUsers
-
 					# separate out the currently-selected permissions by type - relto/non-relto
 					selectedReltoIds = _.pluck(AccessPermissions.find({_id: {$in: instance.selectedLabelIds}, type: {$nin: ['classification', 'SAP', 'SCI']}}).fetch(), '_id')
 					selectedOtherIds = _.pluck(AccessPermissions.find({_id: {$in: instance.selectedLabelIds}, type: {$nin: ['Release Caveat']}}).fetch(), '_id')
@@ -265,7 +263,6 @@ Template.privateGroupsFlex.onCreated ->
 				# get room data
 				instance.room = Session.get('roomData' + roomId)
 				# select existing permissions and disallow removing them
-				instance.selectedLabelIds = instance.room.accessPermissions
 				options = roomLabelOptions(instance.room.accessPermissions, Meteor.user().profile.access)
 				instance.selectedLabelIds = _.pluck( options.selected, '_id')
 				Session.set 'selectedLabelIds', instance.selectedLabelIds
@@ -275,10 +272,11 @@ Template.privateGroupsFlex.onCreated ->
 				instance.room.usernames?.forEach (username) ->
 					# TODO use name field instead of username.  Room only has username
 					# so we need to make server call to get full name for a username
-					instance.selectedUserNames[username] = username
+					if username isnt Meteor.user().username
+						instance.selectedUserNames[username] = username
 				# other conversation members
-				instance.selectedUsers.set instance.room.usernames
-				instance.otherMembers = _.without(instance.room.usernames, Meteor.user().username)
+				instance.selectedUsers.set _.without(instance.room.usernames, Meteor.user().username)
+				instance.updateWarnIds()
 				instance.securityLabelsInitialized.set true
 
 		# if creating a new room (rather than relabel), populate default values (UNCLASS//RELTO USA)
