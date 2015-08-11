@@ -50,9 +50,10 @@ It is a great solution for communities and companies wanting to privately host t
 - Avatars
 - Markdown
 - Emojis
+- Sent Message Edit and Deletion
 - Transcripts / History
 - File Upload / Sharing
-- I18n - [Internationalization with Lingohub](https://translate.lingohub.com/engelgabriel/rocket-dot-chat/dashboard)
+- I18n - Supports 22 Languages [Internationalization with Lingohub](https://translate.lingohub.com/engelgabriel/rocket-dot-chat/dashboard)
 - Hubot Friendly - [Hubot Integration Project](https://github.com/RocketChat/hubot-rocketchat)
 - Media Embeds
 - Link Previews
@@ -61,6 +62,7 @@ It is a great solution for communities and companies wanting to privately host t
 - REST-full APIs - [Ready for testing ...](https://github.com/RocketChat/Rocket.Chat/wiki/REST-full-APIs)
 - Remote Locations Video Monitoring - [Early access ...](https://github.com/RocketChat/Rocket.Chat/wiki/Remote-Video-Monitoring)
 - Native Cross-Platform Desktop Application [Rocket.Chat.Electron - HELP WANTED](https://github.com/RocketChat/Rocket.Chat.Electron/releases)
+- Mobile app for iPhone, iPad, and iPod touch [Available now! - help us test](https://github.com/RocketChat/Rocket.Chat/wiki/Mobile-app-for-iPhones,-iPads,-iPod-Touch)
 
 ### Roadmap
 
