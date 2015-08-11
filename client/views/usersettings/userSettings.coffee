@@ -11,10 +11,9 @@ Template.userSettings.onRendered ->
 		SideNav.openFlex()
 
 Template.userSettings.events
-	'click .submit button': ->
+	'click .submit button': (e, t) ->
 		console.log 'submit button clicked'
-		instance = Template.instance()
-
-		if instance.child?.length > 0
-			for child in instance.child
+		
+		if t.child?.length > 0
+			for child in t.child
 				child.save?()
