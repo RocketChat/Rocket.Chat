@@ -39,6 +39,12 @@ FlowRouter.route '/changeavatar',
 	action: ->
 		BlazeLayout.render 'main', {center: 'avatarPrompt'}
 
+FlowRouter.route '/settings/users',
+	name: 'settings-users'
+
+	action: ->
+		BlazeLayout.render 'main', {center: 'settingsUsers'}
+
 FlowRouter.route '/settings/:group?',
 	name: 'settings'
 
