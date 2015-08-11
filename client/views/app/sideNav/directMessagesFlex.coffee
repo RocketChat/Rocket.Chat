@@ -174,9 +174,6 @@ Template.directMessagesFlex.onCreated ->
 							if failedId in selectedOtherIds
 								selectedFailedOtherIds.push perm.label
 
-					console.log 'failedOthers: ', selectedFailedOtherIds
-					console.log 'failedReltos: ', nonSelectedFailedReltoIds
-
 
 					# if any are selected (any added to these lists), add the user to the 'warnUserIds' list
 					if (selectedFailedOtherIds.length > 0) or (nonSelectedFailedReltoIds.length > 0)
@@ -188,7 +185,6 @@ Template.directMessagesFlex.onCreated ->
 						if nonSelectedFailedReltoIds.length > 0
 							toastr.warning 'User [' + denied.user + '] requires release caveats: [' + nonSelectedFailedReltoIds.join('], [') + '].'
 					else
-						console.log('here')
 						$('#who').removeAttr('style')
 
 					# add all failed perms to a list (even if not selected - this is so the
@@ -199,7 +195,6 @@ Template.directMessagesFlex.onCreated ->
 							warnLabelIds.push perm
 
 				if result.deniedUsers.length is 0
-					console.log('blah')
 					$('#who').removeAttr('style')
 
 				# set the session for communicating with other templates
