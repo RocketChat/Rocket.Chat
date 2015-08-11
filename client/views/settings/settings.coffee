@@ -17,12 +17,17 @@ Template.settings.helpers
 		console.log 'room.helpers arrowPosition' if window.rocketDebug
 		return 'left' unless Session.equals('flexOpened', true)
 	label: ->
-		return TAPi18next.t @i18nLabel
+		label = @i18nLabel
+		if label?.indexOf(':') is -1
+			label = 'project:' + label
+		return TAPi18next.t label
 	description: ->
-		return TAPi18next.t @i18nDescription
+		description = @i18nDescription
+		if description?.indexOf(':') is -1
+			description = 'project:' + description
+		return TAPi18next.t description
 
 Template.settings.events
-
 	"click .submit": (e, t) ->
 		group = FlowRouter.getParam('group')
 		settings = Settings.find({ group: group }).fetch()
