@@ -22,6 +22,9 @@ Meteor.startup ->
 				keyData: RocketChat.settings.get 'Push_apn_dev_key'
 				certData: RocketChat.settings.get 'Push_apn_dev_cert'
 				gateway: 'gateway.sandbox.push.apple.com'
+			gcm:
+				apiKey: RocketChat.settings.get 'Push_gcm_api_key'
+				projectNumber: RocketChat.settings.get 'Push_gcm_project_number'
 			production: RocketChat.settings.get 'Push_production'
 			badge: true
 			sound: true

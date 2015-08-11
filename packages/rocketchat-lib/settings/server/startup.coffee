@@ -41,3 +41,5 @@ Meteor.startup ->
 	RocketChat.settings.add 'Push_apn_dev_passphrase', '', { type: 'string', group: 'Push' }
 	RocketChat.settings.add 'Push_apn_dev_key', '', { type: 'string', multiline: true, group: 'Push' }
 	RocketChat.settings.add 'Push_apn_dev_cert', '', { type: 'string', multiline: true, group: 'Push' }
+	RocketChat.settings.add 'Push_gcm_api_key', '', { type: 'string', group: 'Push' }
+	RocketChat.settings.add 'Push_gcm_project_number', '', { type: 'string', group: 'Push', public: true }
