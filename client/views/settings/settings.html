@@ -3,7 +3,7 @@
 		<head class="fixed-title">
 			{{> burger}}
 			<h2>
-				<span class="room-title">{{_ "App_Settings"}}</span>
+				<span class="room-title">{{#with group}}{{label}}{{/with}}</span>
 			</h2>
 		</head>
 		<div class="content">
@@ -11,10 +11,7 @@
 				<p>You are not authorized to view this page.</p>
 			{{else}}
 				<div class="info">
-					{{#with group}}
-						<h3>{{label}}</h3>
-						<h3>{{description}}</h3>
-					{{/with}}
+					<h3>{{#with group}}{{description}}{{/with}}</h3>
 				</div>
 				<div class="rocket-form">
 					<fieldset>

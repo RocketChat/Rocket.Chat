@@ -5,8 +5,6 @@ Meteor.startup ->
 
 	RocketChat.settings.addGroup 'API'
 	RocketChat.settings.add 'API_Analytics', '', { type: 'string', group: 'API', public: true }
-	RocketChat.settings.add 'API_Piwik_URL', '', { type: 'string', group: 'API', public: true }
-	RocketChat.settings.add 'API_Piwik_ID', '', { type: 'string', group: 'API', public: true }
 	RocketChat.settings.add 'API_Embed', '', { type: 'boolean', group: 'API' }
 
 	RocketChat.settings.addGroup 'SMTP'
@@ -25,11 +23,11 @@ Meteor.startup ->
 	RocketChat.settings.add 'Message_MaxAllowedSize', 5000, { type: 'int', group: 'Message', public: true }
 
 	RocketChat.settings.addGroup 'Meta'
-	RocketChat.settings.add 'Meta:language', '', { type: 'string', group: 'Meta' }
-	RocketChat.settings.add 'Meta:fb:app_id', '', { type: 'string', group: 'Meta' }
-	RocketChat.settings.add 'Meta:robots', '', { type: 'string', group: 'Meta' }
-	RocketChat.settings.add 'Meta:google-site-verification', '', { type: 'string', group: 'Meta' }
-	RocketChat.settings.add 'Meta:msvalidate.01', '', { type: 'string', group: 'Meta' }
+	RocketChat.settings.add 'Meta_language', '', { type: 'string', group: 'Meta' }
+	RocketChat.settings.add 'Meta_fb_app_id', '', { type: 'string', group: 'Meta' }
+	RocketChat.settings.add 'Meta_robots', '', { type: 'string', group: 'Meta' }
+	RocketChat.settings.add 'Meta_google-site-verification', '', { type: 'string', group: 'Meta' }
+	RocketChat.settings.add 'Meta_msvalidate01', '', { type: 'string', group: 'Meta' }
 
 	RocketChat.settings.addGroup 'Push'
 	RocketChat.settings.add 'Push_debug', false, { type: 'boolean', group: 'Push' }
