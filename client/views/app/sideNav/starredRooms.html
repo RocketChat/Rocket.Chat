@@ -1,5 +1,5 @@
 <template name="starredRooms">
-	<h3>{{_ "Favorites"}}</h3>
+	<h3 class="{{isActive}}">{{_ "Favorites"}}</h3>
 	{{#if total}}
 		<ul>
 			{{#each rooms}}
