@@ -691,7 +691,7 @@ a:active {
 	border-color: #FAEBCC
 }
 
-.landing-page .hidden {
+.full-page .hidden {
 	visibility: hidden !important;
 	display: none !important
 }
@@ -709,7 +709,7 @@ a:active {
 .page-container,
 .page-container .content,
 .flex-tab .content,
-.landing-page .connect {
+.full-page .connect {
 	position: absolute;
 	width: 100%;
 	height: 100%;
@@ -768,7 +768,7 @@ a:active {
 
 .rocket-h2,
 #login-card h2,
-.landing-page .text h2 {
+.full-page .text h2 {
 	font-weight: 300;
 	text-transform: uppercase;
 	font-size: 20px;
@@ -789,7 +789,7 @@ a:active {
 .rocket-h3,
 #login-card h3,
 .social-login h3,
-.landing-page .text h3 {
+.full-page .text h3 {
 	font-weight: 300;
 	text-transform: uppercase;
 	font-size: 16px;
@@ -1978,7 +1978,7 @@ label.required:after {
 	margin-bottom: 12px
 }
 
-.landing-page {
+.full-page {
 	text-align: center;
 	display: block;
 	width: 100%;
@@ -1992,19 +1992,19 @@ label.required:after {
 	background-image: linear-gradient(#022439, #04436a)
 }
 
-.landing-page .wrapper {
+.full-page .wrapper {
 	text-align: center;
 	padding: 60px 0;
 	z-index: 10;
 	position: relative
 }
 
-.landing-page .logo {
+.full-page .logo {
 	display: block;
 	margin-bottom: 30px
 }
 
-.landing-page .logo>img {
+.full-page .logo>img {
 	display: inline-block;
 	position: relative;
 	top: 0;
@@ -2014,12 +2014,12 @@ label.required:after {
 	max-width: 90%
 }
 
-.landing-page a {
+.full-page a {
 	font-family: "Roboto";
 	font-weight: 300
 }
 
-.landing-page .screen {
+.full-page .screen {
 	display: block;
 	margin: 0 auto 30px;
 	max-width: 520px;
@@ -2030,7 +2030,7 @@ label.required:after {
 	text-decoration: none
 }
 
-.landing-page .screen figure {
+.full-page .screen figure {
 	display: block;
 	width: 100%;
 	height: 0;
@@ -2039,7 +2039,7 @@ label.required:after {
 	background-size: 100% auto
 }
 
-.landing-page .screen>span {
+.full-page .screen>span {
 	display: block;
 	position: relative;
 	height: 24px;
@@ -2048,7 +2048,7 @@ label.required:after {
 	z-index: 10
 }
 
-.landing-page .screen>span i {
+.full-page .screen>span i {
 	height: 12px;
 	width: 12px;
 	display: inline-block;
@@ -2059,17 +2059,17 @@ label.required:after {
 	left: 10px
 }
 
-.landing-page .screen>span i:nth-child(2) {
+.full-page .screen>span i:nth-child(2) {
 	left: 26px;
 	background-color: #ffbd2e
 }
 
-.landing-page .screen>span i:nth-child(3) {
+.full-page .screen>span i:nth-child(3) {
 	left: 42px;
 	background-color: #28ca41
 }
 
-.landing-page .screen .button {
+.full-page .screen .button {
 	display: block;
 	position: absolute;
 	-lh-property: 0;
@@ -2092,7 +2092,7 @@ label.required:after {
 	transition: -webkit-transform 0.2s cubic-bezier(0, 0.4, 0.4, 1.5), -moz-transform 0.2s cubic-bezier(0, 0.4, 0.4, 1.5), -o-transform 0.2s cubic-bezier(0, 0.4, 0.4, 1.5), transform 0.2s cubic-bezier(0, 0.4, 0.4, 1.5), opacity 0.1s ease-out
 }
 
-.landing-page .screen:hover .button {
+.full-page .screen:hover .button {
 	-webkit-transform: scale(1);
 	-moz-transform: scale(1);
 	-o-transform: scale(1);
@@ -2101,19 +2101,19 @@ label.required:after {
 	opacity: 1
 }
 
-.landing-page .cell {
+.full-page .cell {
 	display: table-cell;
 	vertical-align: middle;
 	text-align: center
 }
 
-.landing-page header {
+.full-page header {
 	display: block;
 	position: relative;
 	z-index: 1
 }
 
-.landing-page .text {
+.full-page .text {
 	color: #FFF;
 	font-weight: 300;
 	margin-bottom: 25px;
@@ -2124,7 +2124,7 @@ label.required:after {
 	z-index: 1
 }
 
-.landing-page .text .button {
+.full-page .text .button {
 	background-color: #bc2031;
 	color: #FFF;
 	font-weight: 400;
@@ -2132,7 +2132,7 @@ label.required:after {
 	margin-top: 20px
 }
 
-.landing-page .text h1 {
+.full-page .text h1 {
 	font-weight: 700;
 	text-transform: uppercase;
 	font-size: 24px;
@@ -2141,29 +2141,29 @@ label.required:after {
 	display: none
 }
 
-.landing-page .text p {
+.full-page .text p {
 	margin: 18px 0;
 	font-size: 16px;
 	line-height: 24px;
 	font-weight: 300;
 }
 
-.landing-page footer {
+.full-page footer {
 	color: #fff;
 	padding: 20px 0 0;
 	position: relative;
 	z-index: 1
 }
 
-.landing-page footer div.switch-language {
+.full-page footer div.switch-language {
 	margin-top: 20px
 }
 
-.landing-page footer div.switch-language a {
+.full-page footer div.switch-language a {
 	color: #7f7f7f
 }
 
-.landing-page a.meteor {
+.full-page a.meteor {
 	position: fixed;
 	right: 30px;
 	bottom: 20px;
@@ -2174,21 +2174,21 @@ label.required:after {
 	text-indent: -9999em
 }
 
-.landing-page .connect {
+.full-page .connect {
 	position: fixed
 }
 
-.landing-page .share {
+.full-page .share {
 	border-radius: 50%;
 	min-height: 40px;
 	line-height: 20px
 }
 
-.landing-page .share:before {
+.full-page .share:before {
 	border-radius: 50%
 }
 
-.landing-page .share span {
+.full-page .share span {
 	display: none
 }
 
@@ -2198,7 +2198,7 @@ label.required:after {
 	margin: 0 auto 50px;
 }
 
-.landing-page footer h4 {
+.full-page footer h4 {
 	font-weight: 300;
 	text-transform: uppercase;
 	font-size: 16px;
@@ -2208,7 +2208,7 @@ label.required:after {
 	line-height: 16px;
 }
 
-.landing-page footer p{
+.full-page footer p{
 	margin: 12px 0;
 	font-size: 14px;
 	line-height: 20px;

@@ -3,17 +3,17 @@ Template.loginServices.helpers
 		services = []
 
 		authServices = _.pluck ServiceConfiguration.configurations.find({}, { service: 1 }).fetch(), 'service'
-		
+
 		authServices.sort()
 
 		authServices.forEach (service) ->
 			switch service
 				when 'meteor-developer'
 					serviceName = 'Meteor'
-					icon = 'dot-circle-o'
+					icon = 'meteor'
 				when 'github'
 					serviceName = 'GitHub'
-					icon = service
+					icon = 'github-circled'
 				else
 					serviceName = _.capitalize service
 					icon = service
