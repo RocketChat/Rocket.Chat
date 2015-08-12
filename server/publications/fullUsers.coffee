@@ -1,4 +1,4 @@
-Meteor.publish 'fullUsers', (filter, limit, skip) ->
+Meteor.publish 'fullUsers', (filter, limit) ->
 	unless this.userId
 		return this.ready()
 
@@ -15,7 +15,7 @@ Meteor.publish 'fullUsers', (filter, limit, skip) ->
 
 	limit = Math.min limit, 50
 
-	console.log '[publish] fullUsers'.green, filter, limit, skip
+	console.log '[publish] fullUsers'.green, filter, limit
 
 	Meteor.users.find query,
 		fields:
@@ -31,6 +31,6 @@ Meteor.publish 'fullUsers', (filter, limit, skip) ->
 			utcOffset: 1
 			language: 1
 			lastLogin: 1
-			utcOffset: 1
+			active: 1
 		limit: limit
-		skip: skip
+		sort: { username: 1 }
