@@ -2,6 +2,7 @@
 // the entire section is optional.
 App.info({
 	id: 'com.konecty.rocket.chat',
+	version: '0.0.2',
 	name: 'Rocket.Chat',
 	description: 'Rocket.Chat',
 	author: 'Rocket.Chat Development Group',
@@ -47,7 +48,10 @@ App.launchScreens({
 
 // Set PhoneGap/Cordova preferences
 App.setPreference('HideKeyboardFormAccessoryBar', true);
-App.setPreference('StatusBarStyle', 'default');
+App.setPreference('StatusBarOverlaysWebView', false);
+App.setPreference('StatusBarStyle', 'lightcontent');
+App.setPreference('StatusBarBackgroundColor', '#000000');
+App.setPreference('ShowSplashScreenSpinner', false);
 App.accessRule('*');
 
 // // Pass preferences for a particular PhoneGap/Cordova plugin
