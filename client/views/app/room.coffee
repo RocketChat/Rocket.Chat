@@ -206,7 +206,7 @@ Template.room.helpers
 
 		ret =
 			_id: this._id
-			total: room.usernames.length
+			total: room?.usernames?.length or 0
 			totalOnline: users.length
 			users: users
 
