@@ -54,8 +54,8 @@ App.setPreference('StatusBarBackgroundColor', '#000000');
 App.setPreference('ShowSplashScreenSpinner', false);
 App.accessRule('*');
 
-// // Pass preferences for a particular PhoneGap/Cordova plugin
-// App.configurePlugin('com.phonegap.plugins.facebookconnect', {
-//   APP_ID: '1234567890',
-//   API_KEY: 'supersecretapikey'
-// });
+// Pass preferences for a particular PhoneGap/Cordova plugin
+App.configurePlugin('com.phonegap.plugins.facebookconnect', {
+	APP_NAME: 'Rocket.Chat',
+	APP_ID: '835103589938459'
+});
