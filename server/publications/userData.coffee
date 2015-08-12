@@ -4,11 +4,11 @@ Meteor.publish 'userData', ->
 
 	console.log '[publish] userData'.green
 
-###
-## Please note this returns the information for all users back to the client.
-## Make sure to not add any more fields that are sensitive like access inside
-## the profile or the entire profile object which would contain the access.
-###
+	###
+		Please note this returns the information for all users back to the client.
+		Make sure to not add any more fields that are sensitive like access inside
+		the profile or the entire profile object which would contain the access.
+	###
 	Meteor.users.find {},
 		fields:
 			name: 1
