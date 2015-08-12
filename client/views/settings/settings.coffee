@@ -1,8 +1,6 @@
 Template.settings.helpers
 	isAdmin: ->
 		return Meteor.user().admin is true
-	groups: ->
-		return Settings.find({type: 'group'}).fetch()
 	group: ->
 		group = FlowRouter.getParam('group')
 		group ?= Settings.findOne({ type: 'group' })?._id
