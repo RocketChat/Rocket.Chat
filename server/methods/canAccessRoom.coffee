@@ -21,6 +21,6 @@ Meteor.methods
 			if canAccess isnt true
 				return false
 			else
-				return _.pick room, ['_id', 't', 'name']
+				return _.pick room, ['_id', 't', 'name', 'usernames']
 		else
 			throw new Meteor.Error 'invalid-room', '[methods] canAccessRoom -> Room ID is invalid'
