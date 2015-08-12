@@ -7,10 +7,9 @@ Meteor.methods
 
 		perms = new Jedis.AccessPermission permissionIds 
 			.toArray();
-
 		systemCountryCode = Jedis.accessManager.getPermissions(Jedis.settings.get('public').system.countryCode)
 
-		if systemCountryCode.length is 0
+		if not systemCountryCode or systemCountryCode.length is 0
 			console.log 'System country not found.  Defaulting to USA'
 			systemCountryCode = _id: '300', trigraph: 'USA', label: 'United States', type: 'Release Caveat'
 		else

@@ -282,7 +282,8 @@ Template.room.helpers
 		# Then, since that data gets synchronized with the server, the template will be reprocessed
 		# when the data changes.
 		roomData = Session.get('roomData' + this._id)
-		return roomData?.accessPermissions
+		Template.instance().accessPermissions.set roomData?.accessPermissions
+		return Template.instance().accessPermissions
 
 	maxMessageLength: ->
 		return RocketChat.settings.get('Message_MaxAllowedSize')
@@ -580,6 +581,7 @@ Template.room.onCreated ->
 	# this.typing = new msgTyping this.data._id
 	this.showUsersOffline = new ReactiveVar false
 	this.atBottom = true
+	this.accessPermissions = new ReactiveVar []
 
 Template.room.onRendered ->
 	FlexTab.check()

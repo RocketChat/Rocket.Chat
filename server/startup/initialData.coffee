@@ -9,8 +9,8 @@ Meteor.startup ->
 				t: 'c'
 				name: 'general'
 				msgs: 0
-				accessPermissions: Jedis.defaultPermissions
-				securityLabels : Jedis.legacyLabel(Jedis.defaultPermissions)
+				accessPermissions: Jedis.channelPermissions()
+				securityLabels : Jedis.legacyLabel(Jedis.channelPermissions())
 
 		if process.env.ADMIN_EMAIL? and process.env.ADMIN_PASS? 
 			re = /^([\w-]+(?:\.[\w-]+)*)@((?:[\w-]+\.)*\w[\w-]{0,66})\.([a-z]{2,6}(?:\.[a-z]{2})?)$/i

@@ -8,7 +8,12 @@ numberComparator = (first, second) ->
 	return first - second
 
 # TODO need to set this from settings.
-@Jedis.defaultPermissions  = ['U', '300']
+@Jedis.channelPermissions  = ->
+	# network classification level
+	networkClassification = (Jedis.settings.get 'public' ).permission.classification.default
+	# all reltos
+	allRelTo = Jedis.accessManager.getPermissionIdsByType(['Release Caveat'])
+	return [].concat( networkClassification, allRelTo)
 
 @Jedis.legacyLabel = (permissionIds) ->
 	template = "classification|label_field|1+0|trigraphs|SAP_SCI|release_caveats|RELTO"
@@ -54,9 +59,10 @@ beforeSaveMessage = (message) ->
 
 beforeCreateChannel = (user, room) ->
 	if room?.t in ['c']
+		channelPermissions = Jedis.channelPermissions()
 		# default access permission
-		room.accessPermissions = Jedis.defaultPermissions
-		room.securityLabels = Jedis.legacyLabel[Jedis.defaultPermissions]
+		room.accessPermissions = channelPermissions
+		room.securityLabels = Jedis.legacyLabel[channelPermissions]
 
 # Add access permission and legacy security label field to message based on Room
 # only applies to Direct message and Private group messages

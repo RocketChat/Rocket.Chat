@@ -1,14 +1,13 @@
 Template.securityBanner.helpers
 	bannerData: -> 
-		Template.instance().updateBannerData(this.permissions)
 		return Template.instance().bannerData.get()
 
 
 Template.securityBanner.onCreated ->
 	self = this
-	this.bannerData = new ReactiveVar {text:'Unknown', classificationId : 'U'}
+	self.bannerData = new ReactiveVar {text:'Unknown', classificationId : 'U'}
 
-	this.updateBannerData = (accessPermissions) ->
+	self.updateBannerData = (accessPermissions) ->
 		# ignore undefined/null
 		unless accessPermissions
 			return
@@ -18,3 +17,8 @@ Template.securityBanner.onCreated ->
 				console.error error.reason
 			else
 				self.bannerData.set result
+
+	# update banner when permissions change
+	this.autorun ->
+		self.updateBannerData(self.data.permissions.get())
+
