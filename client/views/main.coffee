@@ -69,7 +69,12 @@ Template.body.onRendered ->
 Template.main.helpers
 
 	logged: ->
-		return Meteor.userId()?
+		if Meteor.userId()?
+			$('html').addClass("noscroll").removeClass("scroll")
+			return true
+		else
+			$('html').addClass("scroll").removeClass("noscroll")
+			return false
 
 	subsReady: ->
 		return not Meteor.userId()? or (FlowRouter.subsReady('userData', 'activeUsers'))
@@ -99,8 +104,6 @@ Template.main.events
 
 
 Template.main.onRendered ->
-
-	$('html').addClass("noscroll").removeClass "scroll"
 
 	# RTL Support - Need config option on the UI
 	if isRtl localStorage.getItem "userLanguage"
