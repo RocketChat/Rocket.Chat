@@ -3,8 +3,6 @@ RocketChat.sendMessage = (user, message, room) ->
 	if not user or not message or not room._id
 		return false
 
-	console.log '[functions] RocketChat.sendMessage -> '.green, 'arguments:', arguments
-
 	unless message.ts?
 		message.ts = new Date()
 
@@ -78,8 +76,10 @@ RocketChat.sendMessage = (user, message, room) ->
 				if userOfMention?
 					Push.send
 						from: 'push'
-						title: userOfMention.username
-						text: "#{userOfMention.username}: #{message.msg}"
+						title: "@#{user.username}"
+						text: message.msg
+						apn:
+							text: "@#{user.username}:\n#{message.msg}"
 						badge: 1
 						sound: 'chime'
 						payload:
@@ -136,20 +136,22 @@ RocketChat.sendMessage = (user, message, room) ->
 						query._id =
 							$in: mentionIds
 
-					usersOfMention = Meteor.users.find(query, {fields: {username: 1}}).fetch()
-					if usersOfMention.length > 0
-						for userOfMention in usersOfMention
-							Push.send
-								from: 'push'
-								title: userOfMention.username
-								text: message.msg
-								badge: 1
-								sound: 'chime'
-								payload:
-									rid: message.rid
-									sender: message.u
-								query:
-									userId: userOfMention._id
+					usersOfMention = Meteor.users.find(query, {fields: {_id: 1}}).fetch()
+					usersOfMentionIds = _.pluck(usersOfMention, '_id');
+					if usersOfMentionIds.length > 0
+						Push.send
+							from: 'push'
+							title: "##{room.name}"
+							text: message.msg
+							apn:
+								text: "##{room.name}:\n#{message.msg}"
+							badge: 1
+							sound: 'chime'
+							payload:
+								rid: message.rid
+								sender: message.u
+							query:
+								userId: $in: usersOfMentionIds
 
 		###
 		Update all other subscriptions to alert their owners but witout incrementing
