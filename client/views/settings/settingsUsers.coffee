@@ -10,8 +10,7 @@ Template.settingsUsers.helpers
 			query = { $or: [ { username: filterReg }, { name: filterReg }, { "emails.address": filterReg } ] }
 		else
 			query = {}
-
-		return Meteor.users.find(query).fetch()
+		return Meteor.users.find(query, { limit: Template.instance().limit?.get(), sort: { username: 1 } }).fetch()
 	name: ->
 		return if @name then @name else TAPi18next.t 'project:Unnamed'
 	email: ->
@@ -40,17 +39,14 @@ Template.settingsUsers.helpers
 
 Template.settingsUsers.onCreated ->
 	instance = @
-	@loaded = new ReactiveVar 0
 	@limit = new ReactiveVar 50
-	@skip = new ReactiveVar 0
 	@filter = new ReactiveVar ''
 	@ready = new ReactiveVar true
 
 	@autorun ->
 		filter = instance.filter.get()
 		limit = instance.limit.get()
-		skip = instance.skip.get()
-		subscription = instance.subscribe 'fullUsers', filter, limit, skip
+		subscription = instance.subscribe 'fullUsers', filter, limit
 		instance.ready.set subscription.ready()
 
 Template.settingsUsers.onRendered ->
@@ -79,3 +75,40 @@ Template.settingsUsers.events
 		e.preventDefault()
 		Session.set 'settingsUsersSelected', $(e.currentTarget).data('id')
 		Session.set 'flexOpened', true
+
+	'click .deactivate': ->
+		Meteor.call 'setUserActiveStatus', Session.get('settingsUsersSelected'), false, (error, result) ->
+			if result
+				toastr.success t('User_has_been_deactivated')
+			if error
+				toastr.error error.reason
+	
+	'click .activate': ->
+		Meteor.call 'setUserActiveStatus', Session.get('settingsUsersSelected'), true, (error, result) ->
+			if result
+				toastr.success t('User_has_been_activated')
+			if error
+				toastr.error error.reason
+
+	'click .delete': ->
+		swal {
+			title: t('Are_you_sure')
+			text: t('Delete_User_Warning')
+			type: 'warning'
+			showCancelButton: true
+			confirmButtonColor: '#DD6B55'
+			confirmButtonText: t('Yes_delete_it')
+			cancelButtonText: t('Cancel')
+			closeOnConfirm: false
+			html: false
+		}, ->
+			swal 
+				title: t('Deleted')
+				text: t('User_has_been_deleted')
+				type: 'success'
+				timer: 2000
+				showConfirmButton: false 
+
+			Meteor.call 'deleteUser', Session.get('settingsUsersSelected'), (error, result) ->
+				if error
+					toastr.error error.reason

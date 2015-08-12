@@ -56,7 +56,8 @@
 								{{> avatar username=username}}
 							</div>
 							<div class="info">
-								<h3>{{username}}</h3>
+								<h3>{{name}}</h3>
+								<p><i class="icon-at"></i> {{username}}</p>
 								{{#if utcOffset}}<p><i class="icon-location"></i> {{utcOffset}}</p>{{/if}}
 								{{#each emails}} <p><i class="icon-mail"></i> {{address}}{{#if verified}}&nbsp;<i class="icon-ok"></i>{{/if}}</p> {{/each}}
 								{{#each phone}} <p><i class="icon-phone"></i> {{phoneNumber}}</p> {{/each}}
@@ -64,7 +65,11 @@
 							</div>
 						</div>
 						<nav>
+							{{#if active}}
 							<button class='button deactivate'><span><i class='icon-block'></i> {{_ "Deactivate"}}</span></button>
+							{{else}}
+							<button class='button activate'><span><i class='icon-ok-circled'></i> {{_ "Activate"}}</span></button>
+							{{/if}}
 							<button class='button delete red'><span><i class='icon-trash'></i> {{_ "Delete"}}</span></button>
 						</nav>
 					{{/with}}
