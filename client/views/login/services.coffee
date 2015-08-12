@@ -10,7 +10,7 @@ Template.loginServices.helpers
 			switch service
 				when 'meteor-developer'
 					serviceName = 'Meteor'
-					icon = 'dot-circle-o'
+					icon = 'meteor'
 				when 'github'
 					serviceName = 'GitHub'
 					icon = 'github-circled'
