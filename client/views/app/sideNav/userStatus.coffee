@@ -12,25 +12,42 @@ Template.userStatus.helpers
 		return {
 			name: Session.get('user_' + username + '_name')
 			status: Session.get('user_' + username + '_status')
-			statusMessage : Session.get('user_' + username + '_statusMessage')
+			statusMessages : Session.get('user_' + username + '_statusMessages')
 			visualStatus: visualStatus
 			_id: Meteor.userId()
 			username: username
 		}
 	customMessage: ->
-		username = Meteor.user()?.username
-		return Session.get('user_' + username + '_statusMessage')
+		message = ''
+		if Meteor.user()?
+			username = Meteor.user().username
+			status = Session.get('user_' + username + '_status')
+			if status in ['online','away']
+				$('.custom-message').css('display','block')
+				statusMessages = Session.get('user_' + username + '_statusMessages')
+				if (statusMessages?)
+					message = statusMessages[status]
+		console.log 'customMessage: ', message
+		return message
 
 Template.userStatus.events
 	'click .options .status': (event) ->
 		event.preventDefault()
-		event.stopPropagation()
-		setStatusMessage(event.currentTarget.dataset.status)
+		newStatus = event.currentTarget.dataset.status
+		setStatusMessage( Session.get('user_' + Meteor.user().username + '_statusMessages'), newStatus)
+		if newStatus in ['online','away']
+			event.stopPropagation()
+		else
+			$('.custom-message').css('display','none')
+			AccountBox.setStatus(newStatus, null)
 
 	'click .account-box': (event) ->
 		console.log '.account-box EVENT....'
-		if $('.custom-message').css('display') isnt 'block'
+		if $('.custom-message').css('display') is 'none'
 			AccountBox.toggle()
+		#username = Meteor.user().username
+		#if Session.get('user_' + username + '_status') not in ['online','away']
+			#AccountBox.toggle()
 
 	'click #logout': (event) ->
 		event.preventDefault()
@@ -60,14 +77,22 @@ Template.userStatus.events
 Template.userStatus.rendered = ->
 	AccountBox.init()
 	username = Meteor.user()?.username
-	setStatusMessage(Session.get('user_' + username + '_status'))
+	setStatusMessage(Session.get('user_' + username + '_statusMessages'), Session.get('user_' + username + '_status'))
 	$('.custom-message').css('display','none') #.val(Session.get('user_' + username + '_statusMessage'))
 
+capitalizeWord = (word) ->
+	word[0].toUpperCase() + word[1..].toLowerCase()
 
-setStatusMessage = (newStatus) ->
-	status = $('a.status.' + newStatus)
-	cm = $('.custom-message').detach()
-	status.parent().append(cm)
-	colorClass = 'status-' + newStatus
-	cm.data('userStatus',newStatus)
-	cm.css('display','block').removeClass('status-online status-busy status-offline status-away').addClass(colorClass)
+setStatusMessage = (statusMessages, newStatus) ->
+	jCM = $('.custom-message')
+	if newStatus in ['online','away']
+		jCM.data('userStatus',newStatus)
+		jCM.css('display','block').removeClass('status-online status-busy status-offline status-away').addClass('status-' + newStatus)
+		$('#label-custom-message').text(capitalizeWord(newStatus) + ' custom message')
+		if statusMessages?
+			message = statusMessages[newStatus]
+		else
+			message = ''
+		$('#custom-message-text').val(message)
+	else
+		jCM.css('display', 'none')
