@@ -117,18 +117,14 @@
 						<div class="list-view{{#if $.Session.get 'showUserInfo'}} -hidden{{/if}}">
 							{{#with roomUsers}}
 								<div class="status">
-									<h2>{{_ "Members_List"}}</h2> {{!--
-									<p>
-										{{{_ "Showing_online_users" total_online=totalOnline total=total}}}
-										<button class="see-all">{{seeAll}}</button>
-									</p>--}}
+									<h2>{{_ "Members_List"}}</h2>
 								</div>
 								<ul class='list clearfix lines'>
 									{{#each users}}
 										<li class='user-image user-card-room status-{{status}}'>
-											<a data-username="{{username}}" tabindex="0" title="{{username}}">
+											<a data-username="{{username}}" tabindex="0" title="{{username}}" class="status-{{status}}">
 												{{> avatar username=username}}
-												<p class="status-{{status}}">{{username}} {{utcOffset}}</p>
+												<p class="status-{{status}}">{{firstName}} {{lastName}}</p>
 											</a>
 										</li>
 									{{/each}}
