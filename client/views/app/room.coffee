@@ -222,8 +222,13 @@ Template.room.helpers
 	userActiveByUsername: (username) ->
 		console.log 'room.helpers userActiveByUsername' if window.rocketDebug
 		status = Session.get 'user_' + username + '_status'
-		if status in ['custom', 'online', 'away', 'busy']
-			return {username: username, status: status}
+		if status in ['online', 'away', 'busy']
+			message = ''
+			if status in ['online', 'away']
+				statusMessages = Session.get('user_' + username + '_statusMessages')
+				if (statusMessages?)
+					message = statusMessages[status]
+			return {username: username, status: status, customMessage: message}
 		return
 
 	roomUsers: ->
@@ -240,11 +245,19 @@ Template.room.helpers
 	flexUserInfo: ->
 		console.log 'room.helpers flexUserInfo' if window.rocketDebug
 		username = Session.get('showUserInfo')
+		message = ''
+		status = Session.get 'user_' + username + '_status'
+		if status in ['online', 'away']
+			statusMessages = Session.get('user_' + username + '_statusMessages')
+			if (statusMessages?)
+				message = statusMessages[status]
 
 		userData = {
 			# name: Session.get('user_' + uid + '_name')
 			# emails: Session.get('user_' + uid + '_emails')
 			username: String(username)
+			customMessage: message
+			status: status
 		}
 		# phone = Session.get('user_' + uid + '_phone')
 		# if phone? and phone[0]?.phoneNumber

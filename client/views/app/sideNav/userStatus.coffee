@@ -22,7 +22,7 @@ Template.userStatus.helpers
 						$('.custom-message').css('display','block')
 						statusMessages = Session.get('user_' + username + '_statusMessages')
 						if (statusMessages?)
-							message += statusMessages[status]
+							message = statusMessages[status]
 				return message
 			visualStatus: visualStatus
 			_id: Meteor.userId()
@@ -41,7 +41,7 @@ Template.userStatus.events
 			AccountBox.setStatus(newStatus, null)
 
 	'click .account-box': (event) ->
-		console.log '.account-box EVENT....'
+		#console.log '.account-box EVENT....'
 		if $('.custom-message').css('display') is 'none'
 			AccountBox.toggle()
 
