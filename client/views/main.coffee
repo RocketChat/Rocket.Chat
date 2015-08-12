@@ -89,10 +89,6 @@ Template.main.helpers
 		console.log 'layout.helpers flexOpenedRTC2' if window.rocketDebug
 		return 'layout2' if (Session.get('rtcLayoutmode') > 1)
 
-	removeParticles: ->
-		if Match.test pJSDom, Array
-			for item in pJSDom
-				item?.pJS?.fn.vendors.destroypJS()
 
 Template.main.events
 
@@ -100,6 +96,7 @@ Template.main.events
 		console.log 'room click .burger' if window.rocketDebug
 		chatContainer = $("#rocket-chat")
 		menu.toggle()
+
 
 Template.main.onRendered ->
 

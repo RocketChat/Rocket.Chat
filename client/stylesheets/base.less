@@ -127,7 +127,7 @@ blockquote {
 	border-color: #EBCCD1;
 }
 
-.landing-page .hidden {
+.full-page .hidden {
 	visibility: hidden !important;
 	display: none !important;
 }
@@ -2824,10 +2824,10 @@ a.github-fork {
 }
 
 #login-card {
-	width: 90%;
+	width: 100%;
 	max-width: 520px;
-	padding: 22px 30px 30px;
-	margin: 25px auto;
+	padding: 20px;
+	margin: 20px auto;
 	background-color: #FAFAFA;
 	box-shadow: 0 0 6px 10px rgba(0, 0, 0, 0.1);
 	border-radius: 2px;
@@ -2907,15 +2907,13 @@ a.github-fork {
 				visibility: hidden;
 			}
 		}
-	}
-	.input-text {
 		input {
 			box-shadow: 0 0 0;
 			background-color: transparent;
 			border-width: 0;
 			position: relative;
 			padding: 4px 8px;
-			font-size: 22px;
+			font-size: 18px;
 			border-bottom: 1px solid #DFDFDF;
 			font-family: "Roboto", "HelveticaNeue-Light", "sans-serif";
 			font-weight: 400;
@@ -2948,18 +2946,31 @@ a.github-fork {
 }
 
 .social-login {
-	margin: 35px 0 30px;
 	text-align: center;
 	position: relative;
 	z-index: 1;
+	display: flex;
+	margin-bottom: 20px;
 	h3 {
 		&:extend(.rocket-h3);
 		margin-top: 0;
 		margin-bottom: 12px;
 	}
+	.button {
+		border-radius: 2px;
+		min-height: 40px;
+		line-height: 20px;
+		font-size: 18px;
+		margin: 2px;
+		padding: 0;
+		flex-grow: 1;
+		span {
+			display: none;
+		}
+	}
 }
 
-.landing-page {
+.full-page {
 	.flex-center;
 	flex-flow: row nowrap;
 	text-align: center;
@@ -2968,19 +2979,16 @@ a.github-fork {
 	min-height: 100%;
 	z-index: 101;
 	background-color: darken(@primary-background-color, 10%);
-	.background-image(linear-gradient(darken(@primary-background-color,
-	10%),
-	@primary-background-color));
+	.background-image(linear-gradient(darken(@primary-background-color,10%),@primary-background-color));
 	.wrapper {
 		text-align: center;
-		padding: 45px 0 35px;
 		z-index: 10;
 		position: relative;
 		width: 100%;
+		padding: 20px;
 	}
 	.logo {
 		display: block;
-		margin: 0 20px 30px 20px;
 		> img {
 			display: inline-block;
 			position: relative;
@@ -2994,48 +3002,6 @@ a.github-fork {
 	a {
 		font-family: "Roboto", "HelveticaNeue-Light", "sans-serif";
 		font-weight: 300;
-	}
-	.screen {
-		display: block;
-		margin: 0 auto 30px;
-		max-width: 520px;
-		position: relative;
-		box-shadow: 0 0 8px 6px rgba(0, 0, 0, 0.1);
-		z-index: 5;
-		text-decoration: none;
-		figure {
-			display: block;
-			width: 100%;
-			height: 0;
-			background-color: #fff;
-			padding-bottom: 53%;
-			background: url(/images/screen.jpg) no-repeat 50% 50%;
-			background-size: 100% auto;
-		}
-		> span {
-			.mac-bar;
-		}
-		.button {
-			display: block;
-			position: absolute;
-			.calc(top,
-			~"50% - 17px");
-			.calc(left,
-			~"50% - 94px");
-			.transform(scale(0.75));
-			opacity: 0;
-			.transition(transform .2s cubic-bezier(0,
-			.4,
-			.4,
-			1.5),
-			opacity .1s ease-out);
-		}
-		&:hover {
-			.button {
-				.transform(scale(1));
-				opacity: 1;
-			}
-		}
 	}
 	.cell {
 		display: table-cell;

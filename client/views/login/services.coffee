@@ -3,7 +3,7 @@ Template.loginServices.helpers
 		services = []
 
 		authServices = _.pluck ServiceConfiguration.configurations.find({}, { service: 1 }).fetch(), 'service'
-		
+
 		authServices.sort()
 
 		authServices.forEach (service) ->
@@ -13,7 +13,7 @@ Template.loginServices.helpers
 					icon = 'dot-circle-o'
 				when 'github'
 					serviceName = 'GitHub'
-					icon = service
+					icon = 'github-circled'
 				else
 					serviceName = _.capitalize service
 					icon = service
