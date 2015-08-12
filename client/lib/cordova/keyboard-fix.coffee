@@ -6,8 +6,16 @@ if Meteor.isCordova
 
 	window.addEventListener 'native.keyboardshow', ->
 		if device?.platform.toLowerCase() isnt 'android'
-			$('.main-content').css 'height', window.innerHeight
+			if Meteor.userId()?
+				$('.main-content').css 'height', window.innerHeight
+			else
+				$(document.body).css 'height', window.innerHeight
+				$(document.body).css 'overflow', 'scroll'
 
 	window.addEventListener 'native.keyboardhide', ->
 		if device?.platform.toLowerCase() isnt 'android'
-			$('.main-content').css 'height', window.innerHeight
+			if Meteor.userId()?
+				$('.main-content').css 'height', window.innerHeight
+			else
+				$(document.body).css 'height', window.innerHeight
+				$(document.body).css 'overflow', 'visible'
