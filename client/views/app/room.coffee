@@ -273,7 +273,7 @@ Template.room.helpers
 	isAdmin: ->
 		return Meteor.user()?.admin is true
 
-	utcOffset: ->
+	utc: ->
 		if @utcOffset?
 			if @utcOffset > 0
 				@utcOffset = "+#{@utcOffset}"
