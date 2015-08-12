@@ -149,7 +149,7 @@ Template.room.helpers
 		return roomData.u?._id is Meteor.userId() and roomData.t in ['c', 'p']
 
 	canPrivateMsg: ->
-		console.og 'room.helpers canPrivateMsg' if window.rocketDebug
+		console.log 'room.helpers canPrivateMsg' if window.rocketDebug
 		return Meteor.userId() isnt this.username
 
 	roomNameEdit: ->

@@ -105,8 +105,6 @@ Meteor.startup ->
 		return room?.dom?
 
 	updateUserStatus = (user, status, utcOffset) ->
-		console.log 'updateUserStatus'
-		console.log user
 		allUsersValue = allUsers.curValue
 		allUsersValue[user.username] =
 			firstName: user.profile.first_name
