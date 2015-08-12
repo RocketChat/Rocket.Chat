@@ -1,6 +1,6 @@
 Template.userStatus.helpers
 	myUserInfo: ->
-		visualStatus = "online"
+		visualStatus = t("online")
 		username = Meteor.user()?.username
 		switch Session.get('user_' + username + '_status')
 			when "away"
@@ -9,26 +9,25 @@ Template.userStatus.helpers
 				visualStatus = t("busy")
 			when "offline"
 				visualStatus = t("invisible")
+		visualStatus = capitalizeWord(visualStatus)
 		return {
 			name: Session.get('user_' + username + '_name')
 			status: Session.get('user_' + username + '_status')
-			statusMessages : Session.get('user_' + username + '_statusMessages')
+			customMessage : ->
+				message = ''
+				status = Session.get('user_' + username + '_status')
+				if Meteor.user()? and status?
+					username = Meteor.user().username
+					if status in ['online','away']
+						$('.custom-message').css('display','block')
+						statusMessages = Session.get('user_' + username + '_statusMessages')
+						if (statusMessages?)
+							message += statusMessages[status]
+				return message
 			visualStatus: visualStatus
 			_id: Meteor.userId()
 			username: username
 		}
-	customMessage: ->
-		message = ''
-		if Meteor.user()?
-			username = Meteor.user().username
-			status = Session.get('user_' + username + '_status')
-			if status in ['online','away']
-				$('.custom-message').css('display','block')
-				statusMessages = Session.get('user_' + username + '_statusMessages')
-				if (statusMessages?)
-					message = statusMessages[status]
-		console.log 'customMessage: ', message
-		return message
 
 Template.userStatus.events
 	'click .options .status': (event) ->
@@ -45,9 +44,6 @@ Template.userStatus.events
 		console.log '.account-box EVENT....'
 		if $('.custom-message').css('display') is 'none'
 			AccountBox.toggle()
-		#username = Meteor.user().username
-		#if Session.get('user_' + username + '_status') not in ['online','away']
-			#AccountBox.toggle()
 
 	'click #logout': (event) ->
 		event.preventDefault()
@@ -78,7 +74,7 @@ Template.userStatus.rendered = ->
 	AccountBox.init()
 	username = Meteor.user()?.username
 	setStatusMessage(Session.get('user_' + username + '_statusMessages'), Session.get('user_' + username + '_status'))
-	$('.custom-message').css('display','none') #.val(Session.get('user_' + username + '_statusMessage'))
+	$('.custom-message').css('display','none')
 
 capitalizeWord = (word) ->
 	word[0].toUpperCase() + word[1..].toLowerCase()
@@ -86,8 +82,7 @@ capitalizeWord = (word) ->
 setStatusMessage = (statusMessages, newStatus) ->
 	jCM = $('.custom-message')
 	if newStatus in ['online','away']
-		jCM.data('userStatus',newStatus)
-		jCM.css('display','block').removeClass('status-online status-busy status-offline status-away').addClass('status-' + newStatus)
+		jCM.data('userStatus',newStatus).css('display','block').removeClass('status-online status-busy status-offline status-away').addClass('status-' + newStatus)
 		$('#label-custom-message').text(capitalizeWord(newStatus) + ' custom message')
 		if statusMessages?
 			message = statusMessages[newStatus]
