@@ -25,25 +25,25 @@ App.icons({
 });
 
 App.launchScreens({
-	iphone            : 'splash/iphone.png',
-	iphone_2x         : 'splash/iphone@2x.png',
-	iphone5           : 'splash/iphone5.png',
-	iphone6           : 'splash/iphone6.png',
-	iphone6p_portrait : 'splash/iphone6p_portrait.png',
-	iphone6p_landscape: 'splash/iphone6p_landscape.png',
-	ipad_portrait     : 'splash/ipad_portrait.png',
-	ipad_portrait_2x  : 'splash/ipad_portrait@2x.png',
-	ipad_landscape    : 'splash/ipad_landscape.png',
-	ipad_landscape_2x : 'splash/ipad_landscape@2x.png',
+	iphone            : 'private/splash/iphone.png',
+	iphone_2x         : 'private/splash/iphone@2x.png',
+	iphone5           : 'private/splash/iphone5.png',
+	iphone6           : 'private/splash/iphone6.png',
+	iphone6p_portrait : 'private/splash/iphone6p_portrait.png',
+	iphone6p_landscape: 'private/splash/iphone6p_landscape.png',
+	ipad_portrait     : 'private/splash/ipad_portrait.png',
+	ipad_portrait_2x  : 'private/splash/ipad_portrait@2x.png',
+	ipad_landscape    : 'private/splash/ipad_landscape.png',
+	ipad_landscape_2x : 'private/splash/ipad_landscape@2x.png',
 
-	android_ldpi_portrait  : 'splash/android-port-ldpi.png',
-	android_ldpi_landscape : 'splash/android-land-ldpi.png',
-	android_mdpi_portrait  : 'splash/android-port-mdpi.png',
-	android_mdpi_landscape : 'splash/android-land-mdpi.png',
-	android_hdpi_portrait  : 'splash/android-port-hdpi.png',
-	android_hdpi_landscape : 'splash/android-land-hdpi.png',
-	android_xhdpi_portrait : 'splash/android-port-xhdpi.png',
-	android_xhdpi_landscape: 'splash/android-land-xhdpi.png'
+	android_ldpi_portrait  : 'private/splash/android-port-ldpi.png',
+	android_ldpi_landscape : 'private/splash/android-land-ldpi.png',
+	android_mdpi_portrait  : 'private/splash/android-port-mdpi.png',
+	android_mdpi_landscape : 'private/splash/android-land-mdpi.png',
+	android_hdpi_portrait  : 'private/splash/android-port-hdpi.png',
+	android_hdpi_landscape : 'private/splash/android-land-hdpi.png',
+	android_xhdpi_portrait : 'private/splash/android-port-xhdpi.png',
+	android_xhdpi_landscape: 'private/splash/android-land-xhdpi.png'
 });
 
 // Set PhoneGap/Cordova preferences
