@@ -26,29 +26,42 @@ Template.loginServices.helpers
 		return services
 
 Template.loginServices.events
-	'click .external-login': ->
+	'click .external-login': (e, t)->
 		return unless this.service?
+
+		loadingIcon = $(e.currentTarget).find('.loading-icon')
+		serviceIcon = $(e.currentTarget).find('.service-icon')
+
+		loadingIcon.removeClass 'hidden'
+		serviceIcon.addClass 'hidden'
 
 		# login with native facebook app
 		if Meteor.isCordova and this.service is 'facebook'
-			facebookConnectPlugin.login ["public_profile"], ->
+			Meteor.loginWithFacebookCordova {}, (error) ->
+				loadingIcon.addClass 'hidden'
+				serviceIcon.removeClass 'hidden'
+
+				if error
+					console.log error
+					toastr.error error.message
+					return
+
 				FlowRouter.go 'index'
-			, (error) ->
-				console.log JSON.stringify error, null, '  '
-				toastr.error error.errorCode + ' - ' + error.errorMessage
-				return
 		else
 			loginWithService = "loginWith" + (if this.service is 'meteor-developer' then 'MeteorDeveloperAccount' else _.capitalize(this.service))
 
 			serviceConfig = {}
 
 			Meteor[loginWithService] serviceConfig, (error) ->
+				loadingIcon.addClass 'hidden'
+				serviceIcon.removeClass 'hidden'
+
 				if error?.error is 'github-no-public-email'
 					alert t("github_no_public_email")
 					return
 
-				console.log error
 				if error
+					console.log error
 					toastr.error error.message
 					return
 				FlowRouter.go 'index'
