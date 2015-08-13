@@ -13,6 +13,11 @@
 					<h3>
 						<a href="{{pathFor 'privateHistory'}}">{{_ "History"}}</a>
 					</h3>
+					{{#if isAdmin}}
+					<h3 class="open-settings">
+						{{_ "App_Settings"}}
+					</h3>
+					{{/if}}
 				</div>
 			</div>
 			<div class="flex-nav hidden">
@@ -20,7 +25,7 @@
 					{{> UI.dynamic template=flexTemplate data=flexData}}
 				</section>
 			</div>
-			<span class="arrow"></span>
+			<span class="arrow bottom"></span>
 		{{/if}}
 		<footer class="footer">
 			<a href="https://github.com/RocketChat/Rocket.Chat" class="logo" target="_blank">
