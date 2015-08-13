@@ -20,11 +20,7 @@
 					{{/if}}
 				</h2>
 			</header>
-				{{#with bannerData}}
-				<div class="security-banner {{classificationId}}">
-					{{securityBannerText}}
-				</div>
-				{{/with}}
+			{{> securityBanner permissions=permissions }}
 			<div class="messages-box">
 				<div class="wrapper">
 					<ul>

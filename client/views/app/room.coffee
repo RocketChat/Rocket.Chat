@@ -270,7 +270,7 @@ Template.room.helpers
 	noRtcLayout: ->
 		return (!Session.get('rtcLayoutmode') || (Session.get('rtcLayoutmode') == 0) ? true: false);
 
-	bannerData: ->
+	permissions: ->
 		# The data context only contains the room id. one way to get the banner data is to just pass
 		# this id to a server-side method and let it look up the room details (such as permissions)
 		# and then return the banner info.
@@ -281,18 +281,10 @@ Template.room.helpers
 		# this is to make "bannerData" itself reactive by having it depend directly on the room data.
 		# Then, since that data gets synchronized with the server, the template will be reprocessed
 		# when the data changes.
-		accessPermissions = ChatRoom.findOne(this._id)?.accessPermissions || []
-		Template.instance().updateBannerData(accessPermissions)
-		return Template.instance().bannerData
+		roomData = Session.get('roomData' + this._id)
+		Template.instance().accessPermissions.set roomData?.accessPermissions
+		return Template.instance().accessPermissions
 
-	# For helpers "classificationId" and "securityBannerText", "this" refers to what is returned
-	# from "bannerData"
-	classificationId: ->
-		return this.get 'classificationId'
-
-	securityBannerText: ->
-		return this.get 'text'
-		
 	maxMessageLength: ->
 		return RocketChat.settings.get('Message_MaxAllowedSize')
 
@@ -589,19 +581,7 @@ Template.room.onCreated ->
 	# this.typing = new msgTyping this.data._id
 	this.showUsersOffline = new ReactiveVar false
 	this.atBottom = true
-
-	this.bannerData = new ReactiveDict
-	this.bannerData.set 'text', 'Unknown'
-	this.bannerData.set 'classificationId', 'U'
-
-	this.updateBannerData = (accessPermissions) ->
-		Meteor.call 'getSecurityBanner', accessPermissions, (error, result) ->
-			if error
-				toastr.error error.reason
-			else
-				self.bannerData.set 'text', result.text
-				self.bannerData.set 'classificationId', result.classificationId
-
+	this.accessPermissions = new ReactiveVar []
 
 Template.room.onRendered ->
 	FlexTab.check()
