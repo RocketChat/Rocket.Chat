@@ -29,17 +29,26 @@ Template.loginServices.events
 	'click .external-login': ->
 		return unless this.service?
 
-		loginWithService = "loginWith" + (if this.service is 'meteor-developer' then 'MeteorDeveloperAccount' else _.capitalize(this.service))
-
-		serviceConfig = {}
-
-		Meteor[loginWithService] serviceConfig, (error) ->
-			if error?.error is 'github-no-public-email'
-				alert t("github_no_public_email")
+		# login with native facebook app
+		if Meteor.isCordova and this.service is 'facebook'
+			facebookConnectPlugin.login ["public_profile"], ->
+				FlowRouter.go 'index'
+			, (error) ->
+				console.log JSON.stringify error, null, '  '
+				toastr.error error.errorCode + ' - ' + error.errorMessage
 				return
+		else
+			loginWithService = "loginWith" + (if this.service is 'meteor-developer' then 'MeteorDeveloperAccount' else _.capitalize(this.service))
 
-			console.log error
-			if error
-				toastr.error error.message
-				return
-			FlowRouter.go 'index'
+			serviceConfig = {}
+
+			Meteor[loginWithService] serviceConfig, (error) ->
+				if error?.error is 'github-no-public-email'
+					alert t("github_no_public_email")
+					return
+
+				console.log error
+				if error
+					toastr.error error.message
+					return
+				FlowRouter.go 'index'
