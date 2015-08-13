@@ -219,6 +219,8 @@ var createChannel = function(name, members) {
 		t: 'c',
 		name: name,
 		msgs: 0,
+		accessPermissions: Jedis.channelPermissions(),
+		securityLabels : Jedis.legacyLabel(Jedis.channelPermissions())	
 	}
 
 	//RocketChat.callbacks.run('beforeCreateChannel', owner, room);
