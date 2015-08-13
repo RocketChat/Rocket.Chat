@@ -12,7 +12,7 @@ Meteor.startup ->
 	subscription = null
 	msgStream = new Meteor.Stream 'messages'
 	deleteMsgStream = new Meteor.Stream 'delete-message'
-	onlineUsers = new ReactiveVar {}
+	allUsers = new ReactiveVar {}
 
 	Dep = new Tracker.Dependency
 
@@ -105,16 +105,14 @@ Meteor.startup ->
 		return room?.dom?
 
 	updateUserStatus = (user, status, utcOffset) ->
-		onlineUsersValue = onlineUsers.curValue
+		allUsersValue = allUsers.curValue
+		allUsersValue[user.username] =
+			firstName: user.profile.first_name
+			lastName: user.profile.last_name
+			name: user.name
+			status: user.status
 
-		if status is 'offline'
-			delete onlineUsersValue[user.username]
-		else
-			onlineUsersValue[user.username] =
-				status: status
-				utcOffset: utcOffset
-
-		onlineUsers.set onlineUsersValue
+		allUsers.set allUsersValue
 
 	open: open
 	close: close
@@ -124,4 +122,4 @@ Meteor.startup ->
 	msgStream: msgStream
 	openedRooms: openedRooms
 	updateUserStatus: updateUserStatus
-	onlineUsers: onlineUsers
+	allUsers: allUsers

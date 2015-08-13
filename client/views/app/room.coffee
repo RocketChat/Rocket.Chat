@@ -149,7 +149,7 @@ Template.room.helpers
 		return roomData.u?._id is Meteor.userId() and roomData.t in ['c', 'p']
 
 	canPrivateMsg: ->
-		console.og 'room.helpers canPrivateMsg' if window.rocketDebug
+		console.log 'room.helpers canPrivateMsg' if window.rocketDebug
 		return Meteor.userId() isnt this.username
 
 	roomNameEdit: ->
@@ -182,33 +182,25 @@ Template.room.helpers
 		status = Session.get 'user_' + username + '_status'
 		if status in ['online', 'away', 'busy']
 			return {username: username, status: status}
-		return
+		return {username: username, status: 'offline'}
 
 	roomUsers: ->
 		room = ChatRoom.findOne(this._id, { reactive: false })
 		users = []
-		onlineUsers = RoomManager.onlineUsers.get()
+		allUsers = RoomManager.allUsers.get()
 
 		for username in room?.usernames or []
-			if onlineUsers[username]?
-				utcOffset = onlineUsers[username]?.utcOffset
-				if utcOffset?
-					if utcOffset > 0
-						utcOffset = "+#{utcOffset}"
+			users.push
+				firstName: allUsers[username]?.firstName
+				lastName: allUsers[username]?.lastName
+				name: allUsers[username]?.name
+				username: username
+				status: allUsers[username]?.status
 
-					utcOffset = "(UTC #{utcOffset})"
-
-				users.push
-					username: username
-					status: onlineUsers[username]?.status
-					utcOffset: utcOffset
-
-		users = _.sortBy users, 'username'
+		users = _.sortBy users, 'lastName'
 
 		ret =
 			_id: this._id
-			total: room.usernames.length
-			totalOnline: users.length
 			users: users
 
 		return ret
@@ -281,6 +273,7 @@ Template.room.helpers
 		# this is to make "bannerData" itself reactive by having it depend directly on the room data.
 		# Then, since that data gets synchronized with the server, the template will be reprocessed
 		# when the data changes.
+
 		roomData = Session.get('roomData' + this._id)
 		Template.instance().accessPermissions.set roomData?.accessPermissions
 		return Template.instance().accessPermissions
@@ -412,7 +405,7 @@ Template.room.events
 
 	'click .user-view nav .pvt-msg': (e) ->
 		console.log 'room click .user-view nav .pvt-msg' if window.rocketDebug
-		# determine if we're creating new room or opening existing room.  DM uses 
+		# determine if we're creating new room or opening existing room.  DM uses
 		# usernames for room id
 		me = Meteor.user().username
 		to = Session.get('showUserInfo')
@@ -420,7 +413,7 @@ Template.room.events
 		if ChatSubscription.findOne({rid:rid})
 			# conversation already exists
 			FlowRouter.go('room', {_id: rid})
-		else 
+		else
 			# close side nav if it's open
 			if SideNav.flexStatus
 				SideNav.setFlex null
@@ -579,7 +572,7 @@ Template.room.onCreated ->
 	self = this
 	# this.scrollOnBottom = true
 	# this.typing = new msgTyping this.data._id
-	this.showUsersOffline = new ReactiveVar false
+	this.showUsersOffline = new ReactiveVar true
 	this.atBottom = true
 	this.accessPermissions = new ReactiveVar []
 
