@@ -5,6 +5,7 @@ Meteor.startup( function() {
 	var overwrite = false;
 	var directoryService;
 	var users = [];
+	var addToGeneralInterval;
 
 	Meteor.users.find().observe({ 
 		added: addUserToLocationChannel,
@@ -31,12 +32,23 @@ Meteor.startup( function() {
 	Jedis.accountManager = new AccountManager(directoryService);
 	Jedis.accountManager.loadUsers();
 
-	// returns non-jedis users that will be added to GENERAL room if they aren't already added
-	users = Meteor.users.find().fetch();
+	// need to add users to the 'GENERAL' channel (created in initialData), but 
+	// it may not have been created yet.  So we need to periodically test if it 
+	// exists then add them when it does.  
+	// !! the delay value has to be long enough to account for adding all the users
+	// otherwise it may try to re-insert the user into general  
+	addToGeneralInterval = Meteor.setInterval( function() {
+		var room = ChatRoom.findOne({_id:'GENERAL'})
+		if( room ) {
+			// returns non-jedis users that will be added to GENERAL room if they aren't already added
+			users = Meteor.users.find().fetch();
 
-	// based on setUsername.coffee that adds uesrs after registration.  We can't reuse it because
-	// it checks Meteor.userId which doesn't apply to what we're doing
-	addUsersToRoom(users, 'GENERAL', false);
+			// based on setUsername.coffee that adds uesrs after registration.  We can't reuse it because
+			// it checks Meteor.userId which doesn't apply to what we're doing
+			addUsersToRoom(users, 'GENERAL', false);
+			Meteor.clearInterval(addToGeneralInterval);
+		}
+	}, 10000)
 
 	// Register our custom login manager that authenticates via LDAP with Meteor's accounts package
 	Accounts.registerLoginHandler(Jedis.accountManager.authId, Jedis.accountManager.loginHandler);	
