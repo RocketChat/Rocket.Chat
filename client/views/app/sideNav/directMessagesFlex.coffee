@@ -28,6 +28,7 @@ Template.directMessagesFlex.helpers
 			isOptionSelected: Template.instance().isOptionSelected
 			isOptionDisabled: Template.instance().isOptionDisabled
 			securityLabels: Template.instance().allowedLabels
+			warnLabelIds: Template.instance().warnLabelIds
 		}
 	securityLabelsInitialized: ->
 		return Template.instance().securityLabelsInitialized.get()
@@ -35,6 +36,12 @@ Template.directMessagesFlex.helpers
 		return Template.instance().data.relabelRoom?
 	selectedUser: ->
 		return Template.instance().selectedUser.get()
+
+	warning: ->
+		if Template.instance().warning.get()
+			return 'Due to security label access conflicts, you will not be able to proceed with the currently-selected labels.'
+
+
 
 Template.directMessagesFlex.onRendered ->
 	instance = this;
@@ -73,7 +80,7 @@ Template.directMessagesFlex.events
 			accessPermissions = instance.selectedLabelIds
 			rid = instance.data.relabelRoom
 			if rid
-				Meteor.call 'updateRoom', rid, instance.selectedUser.get(), null, accessPermissions, (err, result) ->
+				Meteor.call 'updateRoom', rid, null, [instance.selectedUser.get()], accessPermissions, (err, result) ->
 					if err
 						return toastr.error err.reason
 					SideNav.closeFlex()
@@ -114,7 +121,8 @@ Template.directMessagesFlex.onCreated ->
 	instance.disabledLabelIds = []
 
 	# security label and user ids flagged for warning
-	Session.set 'warnLabelIds', []
+	instance.warnLabelIds = new ReactiveVar []
+	instance.warning = new ReactiveVar false
 
 	# adds/remove access permission ids from list of selected labels
 	instance.onSelectionChanged = (params) ->
@@ -153,7 +161,10 @@ Template.directMessagesFlex.onCreated ->
 			if error
 				toastr.error 'Unexpected error during permission check!'
 			else
+				# local version of the instance reactive var
+				# will be used to set the reactive var later
 				warnLabelIds = []
+
 				for denied in result.deniedUsers
 
 					# separate out the currently-selected permissions by type - relto/non-relto
@@ -178,6 +189,7 @@ Template.directMessagesFlex.onCreated ->
 					# if any are selected (any added to these lists), add the user to the 'warnUserIds' list
 					if (selectedFailedOtherIds.length > 0) or (nonSelectedFailedReltoIds.length > 0)
 						$('#who').css('color', 'red')
+						instance.warning.set true
 
 						# build and display warning message
 						if selectedFailedOtherIds.length > 0
@@ -186,6 +198,7 @@ Template.directMessagesFlex.onCreated ->
 							toastr.warning 'User [' + denied.user + '] requires release caveats: [' + nonSelectedFailedReltoIds.join('], [') + '].'
 					else
 						$('#who').removeAttr('style')
+						instance.warning.set false
 
 					# add all failed perms to a list (even if not selected - this is so the
 					# security labels template can determine which non-selected labels WOULD
@@ -196,10 +209,10 @@ Template.directMessagesFlex.onCreated ->
 
 				if result.deniedUsers.length is 0
 					$('#who').removeAttr('style')
+					instance.warning.set false
 
 				# set the session for communicating with other templates
-				Session.set 'warnLabelIds', warnLabelIds
-
+				instance.warnLabelIds.set warnLabelIds
 
 
 
@@ -212,12 +225,8 @@ Template.directMessagesFlex.onCreated ->
 	# input fields for the room.
 	#
 	instance.autorun (c) ->
-		# can't use this.data because it's not set with updated flex data
-		data = SideNav.getFlex().data
-		unless data
-			return
 
-		roomId = data?.relabelRoom
+		roomId = instance.data.relabelRoom
 		# check if we are relabeling the room
 		if roomId
 			# get a subscription to the room (in case we don't have one already)
@@ -225,6 +234,7 @@ Template.directMessagesFlex.onCreated ->
 			# function will automatically re-run on changes to this session variable, thus
 			# it will essentially "wait" for the data to get set
 			if Session.get('roomData' + roomId)
+				c.stop()
 				# get room data
 				instance.room = Session.get('roomData' + roomId)
 				# select existing permissions and disallow removing them
@@ -235,17 +245,17 @@ Template.directMessagesFlex.onCreated ->
 				instance.allowedLabels = options.allowed
 				username = _.without(instance.room.usernames, Meteor.user().username)[0]
 				instance.selectedUser.set username
+				instance.updateWarnIds()
 				instance.securityLabelsInitialized.set true
 
 		# if creating a new room (rather than relabel), populate default values (UNCLASS//RELTO USA)
 		else
+			c.stop()
 			options = roomLabelOptions([], Meteor.user().profile.access)
 			instance.selectedLabelIds = _.pluck( options.selected, '_id')
 			Session.set 'selectedLabelIds', instance.selectedLabelIds
 			instance.disabledLabelIds = _.pluck( options.disabled, '_id')
 			instance.allowedLabels = options.allowed
-			if data?.user
-				instance.selectedUser.set data.user
 			instance.securityLabelsInitialized.set true
 
 

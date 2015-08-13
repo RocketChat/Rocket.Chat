@@ -40,6 +40,7 @@ Template.privateGroupsFlex.helpers
 			isOptionSelected: Template.instance().isOptionSelected
 			isOptionDisabled: Template.instance().isOptionDisabled
 			securityLabels: Template.instance().allowedLabels
+			warnLabelIds: Template.instance().warnLabelIds
 		}
 	securityLabelsInitialized: ->
 		return Template.instance().securityLabelsInitialized.get()
@@ -48,13 +49,9 @@ Template.privateGroupsFlex.helpers
 	nameReadonly: ->
 		if Template.instance().data.relabelRoom then 'readonly' else ''
 
-	warnUser: ->
-		list = Session.get 'warnUserIds'
-		user = this.toString()
-		if _.contains list, user
-			return 'warning-user-label'
-		else
-			return ''
+	warning: ->
+		unless Template.instance().warnUserIds.get().length is 0
+			return 'Due to security label access conflicts, some of the chosen room members will be excluded or kicked if you proceed.'
 
 
 Template.privateGroupsFlex.events
@@ -143,8 +140,8 @@ Template.privateGroupsFlex.onCreated ->
 	instance.groupName = new ReactiveVar ''
 
 	# security label and user ids flagged for warning
-	Session.set 'warnLabelIds', []
-	Session.set 'warnUserIds', []
+	instance.warnLabelIds = new ReactiveVar []
+	instance.warnUserIds = new ReactiveVar []
 
 
 	instance.clearForm = ->
@@ -189,8 +186,11 @@ Template.privateGroupsFlex.onCreated ->
 			if error
 				toastr.error 'Unexpected error during permission check!'
 			else
+				# local versions of the instance reactive vars
+				# will be used to set the reactive vars later
 				warnLabelIds = []
 				warnUserIds = []
+
 				for denied in result.deniedUsers
 					# separate out the currently-selected permissions by type - relto/non-relto
 					selectedReltoIds = _.pluck(AccessPermissions.find({_id: {$in: instance.selectedLabelIds}, type: {$nin: ['classification', 'SAP', 'SCI']}}).fetch(), '_id')
@@ -230,10 +230,19 @@ Template.privateGroupsFlex.onCreated ->
 						if perm not in warnLabelIds
 							warnLabelIds.push perm
 
-				# set the session for communicating with other templates
-				Session.set 'warnLabelIds', warnLabelIds
-				Session.set 'warnUserIds', warnUserIds
+				# set the reactive vars for communicating with security labels template
+				instance.warnLabelIds.set warnLabelIds
+				instance.warnUserIds.set warnUserIds
 
+
+	instance.autorun (c) ->
+		list = Template.instance().warnUserIds.get()
+		$('.selected-user').each ->
+			user = $(this).text().trim()
+			if _.contains list, user
+				$(this).css 'color', 'red'
+			else
+				$(this).removeAttr 'style'
 
 
 	# Tracker.autorun function that gets executed on template creation, and then re-executed
@@ -247,12 +256,8 @@ Template.privateGroupsFlex.onCreated ->
 	# Since function is tied to Template instance, will automatically stop on template
 	# destroy (http://docs.meteor.com/#/full/template_autorun).
 	instance.autorun (c) ->
-		# can't use this.data because it's not set with updated flex data
-		data = SideNav.getFlex().data
-		unless data
-			return
 
-		roomId = data?.relabelRoom
+		roomId = instance.data.relabelRoom
 		# check if we are relabeling the room
 		if roomId
 			# get a subscription to the room (in case we don't have one already)
@@ -260,6 +265,7 @@ Template.privateGroupsFlex.onCreated ->
 			# function will automatically re-run on changes to this session variable, thus
 			# it will essentially "wait" for the data to get set
 			if Session.get('roomData' + roomId)
+				c.stop()
 				# get room data
 				instance.room = Session.get('roomData' + roomId)
 				# select existing permissions and disallow removing them
@@ -281,6 +287,7 @@ Template.privateGroupsFlex.onCreated ->
 
 		# if creating a new room (rather than relabel), populate default values (UNCLASS//RELTO USA)
 		else
+			c.stop()
 			options = roomLabelOptions([], Meteor.user().profile.access)
 			instance.selectedLabelIds = _.pluck( options.selected, '_id')
 			Session.set 'selectedLabelIds', instance.selectedLabelIds

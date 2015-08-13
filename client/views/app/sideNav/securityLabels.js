@@ -28,6 +28,10 @@ var releaseCaveat = { type: 'Release Caveat'};
 Template.securityLabels.onCreated( function() {
 	var self = this;
 
+	// local var to hold data in same-named reactive var from data context
+	// see autorun function below
+	self.warnLabelIds = []
+
 	/**
 	 * Retrieve security labels of the specified type.
 	 * @param  {string} type equality based on type property
@@ -68,9 +72,8 @@ Template.securityLabels.onCreated( function() {
 	 * Starting from the '#chosenform' element, performs a search for all elements of the
 	 * specified class ('.search-choice' for already-selected SCI/SAP options, '.chosen-single'
 	 * for already-selected classifcation options, and '.active-result' for options in the
-	 * drop-down dialog) and then determines if those are labels in the  warn list
-	 * ('warnLabelIds' session var). If so, set a style to indicate to the user that proceeding
-	 * with the option will exclude a user.
+	 * drop-down dialog) and then determines if those are labels in the  warn list. If so,
+	 * set a style to indicate to the user that proceeding with the option will exclude a user.
 	 */
 	this.determineWarningOptions = function(elementClass) {
 
@@ -81,7 +84,7 @@ Template.securityLabels.onCreated( function() {
 			var perm = AccessPermissions.findOne({'label': label});
 			if (perm) {
 				// check if that label is on the warn list
-				if (_.contains(Session.get('warnLabelIds'), perm._id)) {
+				if (_.contains(self.warnLabelIds, perm._id)) {
 					// if so, style the option to indicate to user that a member excluded
 					// TODO: make pre-defined settings somewhere
 					$(this).css('color', 'red');
@@ -97,14 +100,14 @@ Template.securityLabels.onCreated( function() {
 
 	/*
 	 * Tracker.autorun function that gets executed on template creation, and then re-executed
-	 * on changes to the reactive inputs (in this case, a session var). When the 'warnLabelIds'
-	 * session variable changes (by room members being selected/deselected in parent template),
+	 * on changes to the reactive inputs (in this case, a reactive var). When the 'data.warnLabelIds'
+	 * reactive variable changes (by room members being selected/deselected in parent template),
 	 * this function will auto-run, updating the currently-selected label options with the
 	 * appropriate styles.
 	 */
 	self.autorun(function(c) {
-		// depend on the 'warnLabelIds' session variable
-		var warnLabelIds = Session.get('warnLabelIds');
+		// depend on the 'warnLabelIds' reactive variable
+		self.warnLabelIds = self.data.warnLabelIds.get();
 		// update currently-selected labels
 		self.determineWarningOptions('.search-choice');
 		self.determineWarningOptions('.chosen-single');
