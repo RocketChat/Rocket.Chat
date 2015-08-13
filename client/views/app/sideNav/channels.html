@@ -4,11 +4,16 @@
 		<i class="a-plus"></i>
 	</h3>
 	<ul>
+		<div id="channel-list" class="collapse in">
 		{{#each rooms}}
 			{{> chatRoomItem }}
 		{{else}}
 			<p class="empty">{{_ "No_channels_yet" }}</p>
 		{{/each}}
+		</div>
+		{{#if rooms.count}}
+			<a data-toggle="collapse" data-target="#channel-list" href="#channel-list" class="collapse"></a>
+		{{/if}}
 	</ul>
-	<a href="" class="more more-channels">{{_ "More_channels"}} ..</a>
+	<a href="" class="more more-channels">{{_ "More_channels"}} ...</a>
 </template>

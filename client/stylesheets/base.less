@@ -2605,9 +2605,8 @@ a.github-fork {
 			text-overflow: ellipsis;
 			position: relative;
 			padding-left: 10px;
-			color: @secondary-font-color;
-			.calc(width,
-			~"100% - 45px");
+			//color: @secondary-font-color;
+			.calc(width, ~"100% - 45px");
 		}
 	}
 	a {
@@ -3554,4 +3553,17 @@ select.form-control + .chosen-container-multi .chosen-results li.result-selected
 
 .warning-user-label {
 	color: red;
+}
+
+a.collapse:after {
+	margin-left: .5em;
+  font-family:'Glyphicons Halflings';
+  content:"\e113";
+  float: left;
+	font-size: 8pt;
+  color: @tertiary-font-color;
+}
+a.collapsed:after {
+	margin-left: .5em;
+  content:"\e114";
 }

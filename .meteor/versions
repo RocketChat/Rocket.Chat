@@ -58,6 +58,7 @@ jparker:gravatar@0.3.1
 jquery@1.11.3_2
 json@1.0.3
 kadira:blaze-layout@2.0.0
+kadira:debug@2.1.0
 kadira:flow-router@2.0.1
 kevohagan:sweetalert@1.0.0
 konecty:autolinker@1.0.2
@@ -89,6 +90,8 @@ mongo@1.1.0
 mongo-livedata@1.0.8
 mrt:reactive-store@0.0.1
 mystor:device-detection@0.2.0
+nemo64:bootstrap@3.3.5_2
+nemo64:bootstrap-data@3.3.5
 nimble:restivus@0.8.1
 nooitaf:colors@0.0.2
 npm-bcrypt@0.7.8_2
