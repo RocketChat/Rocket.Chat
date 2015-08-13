@@ -40,7 +40,7 @@ Meteor.methods
 		# for direct messages, do not allow relabel if the other party can't access
 		if room.t is 'd'
 			unless result.canAccess
-				throw new Meteor.Error 'invalid-access-permissions', 'User ' + deniedUserList.join(', ') + 'cannot participate in the direct message with the specified access permissions. Room not relabeled.'
+				throw new Meteor.Error 'invalid-access-permissions', 'User ' + deniedUserList.join(', ') + ' cannot participate in the direct message with the specified access permissions. Room not relabeled.'
 		
 
 		# relabel room if permissions changed
