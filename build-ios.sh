@@ -17,7 +17,6 @@ DATE=$(date +%s)
 
 open .meteor/local/cordova-build/platforms/ios/Rocket.Chat.xcodeproj
 echo '- Change provisioning profiles'
-echo '- Verify if target version is 8.0'
 echo '- Convert icons to use Asset Catalog'
 echo '- Add more icons'
-echo '- Change build number'
+echo '- Add more splashs'
