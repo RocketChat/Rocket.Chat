@@ -11,14 +11,14 @@ Template.directMessagesFlex.helpers
 					# @TODO maybe change this 'collection' and/or template
 					collection: 'UserAndRoom'
 					subscription: 'roomSearch'
-					field: 'username'
+					field: 'name'
 					template: Template.userSearch
 					noMatchTemplate: Template.userSearchEmpty
 					matchAll: true
 					filter:
 						type: 'u'
 						_id: { $ne: Meteor.userId() }
-					sort: 'username'
+					sort: 'name'
 				}
 			]
 		}
@@ -35,13 +35,10 @@ Template.directMessagesFlex.helpers
 		return Template.instance().data.relabelRoom?
 	selectedUser: ->
 		return Template.instance().selectedUser.get()
-
-Template.directMessagesFlex.onRendered ->
-	instance = this;
-	# fill input field with pre-selected user
-	if instance.selectedUser.get()
-		field = instance.find('#who')
-		field.value = instance.selectedUser.get()
+	selectedUserName: ->
+		username = Template.instance().selectedUser.get() || ''
+		user = Meteor.users.findOne({_id : username})
+		return user?.name || username
 
 Template.directMessagesFlex.events
 	'autocompleteselect #who': (event, instance, doc) ->

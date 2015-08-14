@@ -77,10 +77,13 @@ Template.room.helpers
 		if roomData.t is 'd'
 			username = _.without roomData.usernames, Meteor.user().username
 
+			allUsers = RoomManager.allUsers?.get()
+
 			userData = {
-				name: Session.get('user_' + username + '_name')
-				emails: Session.get('user_' + username + '_emails') || []
-				phone: Session.get('user_' + username + '_phone')
+				name: allUsers?[username].name || username
+				# not used, but if wanted, need to set in RoomManager 
+				#emails: Session.get('user_' + username + '_emails') || []
+				#phone: Session.get('user_' + username + '_phone')
 				username: String(username)
 			}
 			return userData
@@ -207,15 +210,19 @@ Template.room.helpers
 
 	flexUserInfo: ->
 		username = Session.get('showUserInfo')
+		userData = {}
+		if username 
+			allUsers = RoomManager.allUsers?.get()
 
-		userData = {
-			# name: Session.get('user_' + uid + '_name')
-			# emails: Session.get('user_' + uid + '_emails')
-			username: String(username)
-		}
-		# phone = Session.get('user_' + uid + '_phone')
-		# if phone? and phone[0]?.phoneNumber
-		# 	userData.phone = phone[0]?.phoneNumber
+			userData = {
+				name: allUsers?[username].name || username
+				# name: Session.get('user_' + uid + '_name')
+				# emails: Session.get('user_' + uid + '_emails')
+				username: String(username)
+			}
+			# phone = Session.get('user_' + uid + '_phone')
+			# if phone? and phone[0]?.phoneNumber
+			# 	userData.phone = phone[0]?.phoneNumber
 
 		return userData
 

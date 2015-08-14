@@ -20,7 +20,7 @@ Template.createChannelFlex.helpers
 					# @TODO maybe change this 'collection' and/or template
 					collection: 'UserAndRoom'
 					subscription: 'roomSearch'
-					field: 'username'
+					field: 'name'
 					template: Template.userSearch
 					noMatchTemplate: Template.userSearchEmpty
 					matchAll: true
@@ -30,7 +30,7 @@ Template.createChannelFlex.helpers
 							{ _id: { $ne: Meteor.userId() } }
 							{ username: { $nin: Template.instance().selectedUsers.get() } }
 						]
-					sort: 'username'
+					sort: 'name'
 				}
 			]
 		}

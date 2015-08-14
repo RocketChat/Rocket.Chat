@@ -20,7 +20,7 @@ Template.privateGroupsFlex.helpers
 					# @TODO maybe change this 'collection' and/or template
 					collection: 'UserAndRoom'
 					subscription: 'roomSearch'
-					field: 'username'
+					field: 'name'
 					template: Template.userSearch
 					noMatchTemplate: Template.userSearchEmpty
 					matchAll: true
@@ -30,7 +30,7 @@ Template.privateGroupsFlex.helpers
 							{ _id: { $ne: Meteor.userId() } }
 							{ username: { $nin: Template.instance().selectedUsers.get() } }
 						]
-					sort: 'username'
+					sort: 'name'
 				}
 			]
 		}
@@ -55,7 +55,7 @@ Template.privateGroupsFlex.events
 		# TODO display full name.  Originally this displayed full name, but we changed this 
 		# when we reused this template to edit a room.  The room only has usernames, not the 
 		# full name and we have to add a Method call to retrieve the full name from a username
-		instance.selectedUserNames[doc.username] = doc.username
+		instance.selectedUserNames[doc.username] = doc.name
 		event.currentTarget.value = ''
 		event.currentTarget.focus()
 
@@ -121,6 +121,7 @@ Template.privateGroupsFlex.events
 Template.privateGroupsFlex.onCreated ->
 	instance = this
 	instance.selectedUsers = new ReactiveVar []
+	# name field, NOT username
 	instance.selectedUserNames = {}
 	instance.otherMembers = []
 	instance.error = new ReactiveVar []
@@ -190,7 +191,8 @@ Template.privateGroupsFlex.onCreated ->
 				instance.room.usernames?.forEach (username) ->
 					# TODO use name field instead of username.  Room only has username
 					# so we need to make server call to get full name for a username
-					instance.selectedUserNames[username] = username
+					user = Meteor.users.findOne( {_id: username} )
+					instance.selectedUserNames[username] = user?.name || username
 				# other conversation members
 				instance.selectedUsers.set instance.room.usernames
 				instance.otherMembers = _.without(instance.room.usernames, Meteor.user().username)
