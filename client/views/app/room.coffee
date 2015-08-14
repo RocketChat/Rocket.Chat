@@ -288,6 +288,9 @@ Template.room.helpers
 		if @lastLogin
 			return moment(@lastLogin).format('LLL')
 
+	canJoin: ->
+		return !! ChatRoom.findOne { _id: @_id, t: 'c' }
+
 
 Template.room.events
 
