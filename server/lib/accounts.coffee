@@ -53,6 +53,10 @@ Accounts.validateLoginAttempt (login) ->
 	if login.allowed isnt true
 		return login.allowed
 
+	if login.user?.active isnt true
+		throw new Meteor.Error 'inactive-user', 'Your_user_has_been_deactivated'
+		return false
+
 	if login.type is 'password' and RocketChat.settings.get 'Accounts_denyUnverifiedEmails' is true
 		validEmail = login.user.emails.filter (email) ->
 			return email.verified is true
