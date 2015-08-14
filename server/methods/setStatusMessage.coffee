@@ -7,6 +7,9 @@ Meteor.methods
 		console.log '[methods] setStatusMessage -> '.green, 'userId:', Meteor.userId(), 'arguments:', arguments
 
 		user = Meteor.user()
-		setField = { statusMessages:user.profile.statusMessages}
-		setField.statusMessages[status] = message
-		result = Meteor.users.update userId, {$set: { "profile": setField}}
+		statusMessages = user?.profile?.statusMessages || {}
+		statusMessages[status] = message
+		Meteor.users.update userId, {$set: { "profile.statusMessages": statusMessages}}
+		console.log '[methods] setStatusMessage -> '.green, 'userId:', Meteor.userId(), 'arguments:', statusMessages
+
+
