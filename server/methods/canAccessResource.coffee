@@ -32,21 +32,30 @@ Meteor.methods
 		resourcePermissions = new Jedis.AccessPermission resourcePermissionIds
 		if Meteor.user?().profile?.access
 			userPermissions = new Jedis.AccessPermission Meteor.user().profile.access
-			canAccess = userPermissions.canAccessResource resourcePermissions
+			canAccess = userPermissions.canAccessResource(resourcePermissions).canAccess
 
 		if canAccess is false
 			console.log '[methods] canAccessResource -> '.red, 'Current user has inadequate access permission(s)'
 			throw new Meteor.Error 'invalid-access', "[methods] canAccessResource -> Current user has inadequate access permission(s)"
 
 		# find users that do NOT have access
-		deniedUsers = _.filter users, (user) ->
+		deniedUsers = []
+		users.forEach (user) ->
 			allowed = true
+			failedPermIds = []
+
 			if user?.profile?.access
 				userPermissions = new Jedis.AccessPermission user.profile.access
-				allowed = userPermissions.canAccessResource resourcePermissions   
-			# exclude users that can access the resource
-			return not allowed
+				result = userPermissions.canAccessResource resourcePermissions
+				allowed = result.canAccess
+				failedPermIds = result.failIds
+
+			unless allowed
+				deniedUser = {}
+				deniedUser.user = user._id
+				deniedUser.failedPermIds = failedPermIds
+				deniedUsers.push deniedUser
 
 		canAccess = deniedUsers.length is 0
-
-		return { canAccess: canAccess, deniedUsers : _.pluck deniedUsers, '_id' };
+		
+		return { canAccess: canAccess, deniedUsers : deniedUsers }
