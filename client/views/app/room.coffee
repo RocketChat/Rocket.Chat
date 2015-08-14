@@ -275,10 +275,7 @@ Template.room.helpers
 
 	utc: ->
 		if @utcOffset?
-			if @utcOffset > 0
-				@utcOffset = "+#{@utcOffset}"
-
-			return "UTC #{@utcOffset}"
+			return "@utcOffset"
 	
 	phoneNumber: ->
 		return '' unless @phoneNumber
