@@ -7,4 +7,6 @@ before_install:
   - "curl https://install.meteor.com | /bin/sh"
 
 script:
-  - meteor build --server rocket.chat ./
+  - meteor add rocketchat:external
+  - meteor add rocketchat:hubot
+  - meteor build --server demo.rocket.chat ./
