@@ -102,13 +102,13 @@ Template.securityLabels.onCreated( function() {
 	 * Tracker.autorun function that gets executed on template creation, and then re-executed
 	 * on changes to the reactive inputs (in this case, a reactive var). When the 'data.warnLabelIds'
 	 * reactive variable changes (by room members being selected/deselected in parent template),
-	 * this function will auto-run, updating the currently-selected label options with the
+	 * this function will auto-run, updating the currently selected label options with the
 	 * appropriate styles.
 	 */
 	self.autorun(function(c) {
 		// depend on the 'warnLabelIds' reactive variable
 		self.warnLabelIds = self.data.warnLabelIds.get();
-		// update currently-selected labels
+		// update currently selected labels
 		self.determineWarningOptions('.search-choice');
 		self.determineWarningOptions('.chosen-single');
 	});

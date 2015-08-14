@@ -173,7 +173,7 @@ Template.privateGroupsFlex.onCreated ->
 
 	# Update the list of access permission ids that the current user has access to but any
 	# current room members cannot and, similarly, the list of current room members that do
-	# not have access to one or more currently-selected labels. These lists will be used by
+	# not have access to one or more currently selected labels. These lists will be used by
 	# other templates to determine how to style labeling/membership options. This function
 	# should be called upon every change to security labels and room membership.
 	instance.updateWarnIds = ->
@@ -192,7 +192,7 @@ Template.privateGroupsFlex.onCreated ->
 				warnUserIds = []
 
 				for denied in result.deniedUsers
-					# separate out the currently-selected permissions by type - relto/non-relto
+					# separate out the currently selected permissions by type - relto/non-relto
 					selectedReltoIds = _.pluck(AccessPermissions.find({_id: {$in: instance.selectedLabelIds}, type: {$nin: ['classification', 'SAP', 'SCI']}}).fetch(), '_id')
 					selectedOtherIds = _.pluck(AccessPermissions.find({_id: {$in: instance.selectedLabelIds}, type: {$nin: ['Release Caveat']}}).fetch(), '_id')
 					
