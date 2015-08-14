@@ -178,7 +178,7 @@ var addUsersToRoom = function( users, roomId, createJoinedMessage) {
 				t: room.t,
 				f: true,
 				open: true,
-				alert: true,
+				alert: false,
 				unread : createJoinedMessage ? 1 : 0,
 				u: { _id : user._id, username : user.username }
 			});
@@ -237,13 +237,15 @@ var createChannel = function(name, members) {
 				ts: now,
 				name: name,
 				t: 'c',
+				f: true,
 				unread: 0,
 				u: {
 					_id: member._id,
 					username: username
 				},
 				ls  : now,
-				open : true
+				open : true,
+				alert : false
 			}
 
 			ChatSubscription.insert (sub);
