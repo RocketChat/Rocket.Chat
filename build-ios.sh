@@ -1,10 +1,6 @@
 #!/bin/bash
 
-rm -rf .meteor/local/cordova-build/config.xml
-rm -rf .meteor/local/cordova-build/hooks
-rm -rf .meteor/local/cordova-build/platforms
-rm -rf .meteor/local/cordova-build/resources
-rm -rf .meteor/local/cordova-build/www
+rm -rf .meteor/local/cordova-build
 rm -rf ../Rocket.Chat-build
 meteor build ../Rocket.Chat-build --server https://demo.rocket.chat
 sed -i '' 's/IPHONEOS_DEPLOYMENT_TARGET[[:space:]]=[[:space:]]6\.0/IPHONEOS_DEPLOYMENT_TARGET = 8\.0/g' .meteor/local/cordova-build/platforms/ios/Rocket.Chat.xcodeproj/project.pbxproj
