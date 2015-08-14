@@ -8,8 +8,11 @@ Meteor.publish 'fullUsers', (filter, limit) ->
 
 	filter = _.trim filter
 	if filter
-		filterReg = new RegExp filter, "i"
-		query = { $or: [ { username: filterReg }, { name: filterReg }, { "emails.address": filterReg } ] }
+		if limit is 1
+			query = { username: filter }
+		else
+			filterReg = new RegExp filter, "i"
+			query = { $or: [ { username: filterReg }, { name: filterReg }, { "emails.address": filterReg } ] }
 	else
 		query = {}
 

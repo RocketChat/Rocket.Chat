@@ -4,7 +4,7 @@ The Complete Open Source Chat Solution
 
 ## Demo
 
-Checkout the latest version at [https://rocket.chat](https://rocket.chat)
+Checkout the latest version at [https://demo.rocket.chat](https://demo.rocket.chat)
 
 Download the Native Cross-Platform Desktop Application at [Rocket.Chat.Electron](https://github.com/RocketChat/Rocket.Chat.Electron/releases)
 

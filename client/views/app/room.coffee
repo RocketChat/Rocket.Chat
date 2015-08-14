@@ -206,7 +206,7 @@ Template.room.helpers
 
 		ret =
 			_id: this._id
-			total: room.usernames.length
+			total: room?.usernames?.length or 0
 			totalOnline: users.length
 			users: users
 
@@ -215,15 +215,13 @@ Template.room.helpers
 	flexUserInfo: ->
 		username = Session.get('showUserInfo')
 
-		userData = {
-			# name: Session.get('user_' + uid + '_name')
-			# emails: Session.get('user_' + uid + '_emails')
-			username: String(username)
-		}
-		# phone = Session.get('user_' + uid + '_phone')
-		# if phone? and phone[0]?.phoneNumber
-		# 	userData.phone = phone[0]?.phoneNumber
-
+		if Meteor.user()?.admin is true
+			userData = _.extend { username: String(username) }, Meteor.users.findOne { username: String(username) }
+		else
+			userData = {
+				username: String(username)
+			}
+		
 		return userData
 
 	seeAll: ->
@@ -271,6 +269,27 @@ Template.room.helpers
 
 	maxMessageLength: ->
 		return RocketChat.settings.get('Message_MaxAllowedSize')
+
+	isAdmin: ->
+		return Meteor.user()?.admin is true
+
+	utc: ->
+		if @utcOffset?
+			return "UTC #{@utcOffset}"
+	
+	phoneNumber: ->
+		return '' unless @phoneNumber
+		if @phoneNumber.length > 10
+			return "(#{@phoneNumber.substr(0,2)}) #{@phoneNumber.substr(2,5)}-#{@phoneNumber.substr(7)}"
+		else
+			return "(#{@phoneNumber.substr(0,2)}) #{@phoneNumber.substr(2,4)}-#{@phoneNumber.substr(6)}"
+	
+	lastLogin: ->
+		if @lastLogin
+			return moment(@lastLogin).format('LLL')
+
+	canJoin: ->
+		return !! ChatRoom.findOne { _id: @_id, t: 'c' }
 
 
 Template.room.events
@@ -537,11 +556,35 @@ Template.room.events
 				unless error
 					toastr.success 'Upload succeeded!'
 
+	'click .deactivate': ->
+		username = Session.get('showUserInfo')
+		user = Meteor.users.findOne { username: String(username) }
+		Meteor.call 'setUserActiveStatus', user?._id, false, (error, result) ->
+			if result
+				toastr.success t('User_has_been_deactivated')
+			if error
+				toastr.error error.reason
+	
+	'click .activate': ->
+		username = Session.get('showUserInfo')
+		user = Meteor.users.findOne { username: String(username) }
+		Meteor.call 'setUserActiveStatus', user?._id, true, (error, result) ->
+			if result
+				toastr.success t('User_has_been_activated')
+			if error
+				toastr.error error.reason
+
 Template.room.onCreated ->
 	# this.scrollOnBottom = true
 	# this.typing = new msgTyping this.data._id
 	this.showUsersOffline = new ReactiveVar false
 	this.atBottom = true
+
+	# If current user is admin, subscribe to full user data
+	if Meteor.user()?.admin is true
+		Tracker.autorun ->
+			if Session.get('showUserInfo') and not Meteor.users.findOne Session.get 'showUserInfo'
+				Meteor.subscribe 'fullUsers', Session.get('showUserInfo'), 1
 
 Template.room.onRendered ->
 	FlexTab.check()
