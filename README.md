@@ -112,6 +112,8 @@ Use the automated build at our [Official Docker Registry](https://registry.hub.d
 docker pull rocketchat/rocket.chat
 ```
 
+
+
 ### Heroku
 
 Host your own Rocket.Chat server for **FREE** with [One-Click Deploy](https://heroku.com/deploy?template=https://github.com/RocketChat/Rocket.Chat/tree/master)
@@ -131,6 +133,14 @@ Now just clone and start the app:
 git clone https://github.com/RocketChat/Rocket.Chat.git
 cd Rocket.Chat
 meteor
+```
+
+or use docker:
+
+```
+git clone https://github.com/RocketChat/Rocket.Chat.git
+cd Rocket.Chat
+docker run -it --rm -p 3000:3000 -v "$(pwd)":/app danieldent/meteor
 ```
 
 ## Credits
