@@ -35,6 +35,8 @@ Template.directMessagesFlex.helpers
 		return Template.instance().data.relabelRoom?
 	selectedUser: ->
 		return Template.instance().selectedUser.get()
+	# this returns the selected user's name field, NOT the username.  Use username
+	# to be consistent with privategroupsflex page. 
 	selectedUserName: ->
 		username = Template.instance().selectedUser.get() || ''
 		user = Meteor.users.findOne({_id : username})
