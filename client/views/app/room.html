@@ -78,10 +78,12 @@
 						</div>
 					</form>
 				{{else}}
+					{{#if canJoin}}
 					<div>
 						{{{_ "you_are_in_preview_mode_of" room_name=roomName}}}
 						<button class="button join"><span><i class="icon-login"></i> {{_ "join"}}</span></button>
 					</div>
+					{{/if}}
 				{{/if}}
 			</footer>
 		</section>
@@ -138,17 +140,13 @@
 									</div>
 									<div class="info">
 										<h3>{{username}}</h3>
-										{{#if contactCode}}
-											<div class="contact-code">{{_ "Contact"}} {{contactCode}}</div>
+										{{#if isAdmin}}
+											<p>{{name}}</p>
+											{{#if utc}}<p><i class="icon-location"></i> {{utc}}</p>{{/if}}
+											{{#each emails}} <p><i class="icon-mail"></i> {{address}}{{#if verified}}&nbsp;<i class="icon-ok"></i>{{/if}}</p> {{/each}}
+											{{#each phone}} <p><i class="icon-phone"></i> {{phoneNumber}}</p> {{/each}}
+											{{#if lastLogin}} <p><i class="icon-clock"></i> {{_ "Last_login"}}: {{lastLogin}}</p> {{/if}}
 										{{/if}}
-										{{!--
-										{{#each emails}}
-											<p><i class="icon-mail"></i> {{address}}</p>
-										{{/each}}
-										{{#if phone}}
-											<p><i class="icon-phone"></i> {{phone}}</p>
-										{{/if}}
-										--}}
 									</div>
 								</div>
 								<nav>
