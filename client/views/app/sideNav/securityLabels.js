@@ -28,6 +28,10 @@ var releaseCaveat = { type: 'Release Caveat'};
 Template.securityLabels.onCreated( function() {
 	var self = this;
 
+	// local var to hold data in same-named reactive var from data context
+	// see autorun function below
+	self.warnLabelIds = []
+
 	/**
 	 * Retrieve security labels of the specified type.
 	 * @param  {string} type equality based on type property
@@ -55,7 +59,59 @@ Template.securityLabels.onCreated( function() {
 			});
 		}
 		self.data.onSelectionChanged(params);
-	}
+
+		// update newly-selected labels
+		if (params.selected) {
+			self.determineWarningOptions('.search-choice');
+			self.determineWarningOptions('.chosen-single');
+		}
+	};
+
+
+	/*
+	 * Starting from the '#chosenform' element, performs a search for all elements of the
+	 * specified class ('.search-choice' for already-selected SCI/SAP options, '.chosen-single'
+	 * for already-selected classifcation options, and '.active-result' for options in the
+	 * drop-down dialog) and then determines if those are labels in the  warn list. If so,
+	 * set a style to indicate to the user that proceeding with the option will exclude a user.
+	 */
+	this.determineWarningOptions = function(elementClass) {
+
+		// grab the labels of each item in the dropdown box
+		$('#chosenform').find(elementClass).each(function() {
+			var label = $(this).text();
+			// find the id of this label
+			var perm = AccessPermissions.findOne({'label': label});
+			if (perm) {
+				// check if that label is on the warn list
+				if (_.contains(self.warnLabelIds, perm._id)) {
+					// if so, style the option to indicate to user that a member excluded
+					// TODO: make pre-defined settings somewhere
+					$(this).css('color', 'red');
+				}
+				else {
+					// otherwise, clear any styling already applied
+					$(this).removeAttr('style');
+				}
+			}
+		});
+	};
+
+
+	/*
+	 * Tracker.autorun function that gets executed on template creation, and then re-executed
+	 * on changes to the reactive inputs (in this case, a reactive var). When the 'data.warnLabelIds'
+	 * reactive variable changes (by room members being selected/deselected in parent template),
+	 * this function will auto-run, updating the currently selected label options with the
+	 * appropriate styles.
+	 */
+	self.autorun(function(c) {
+		// depend on the 'warnLabelIds' reactive variable
+		self.warnLabelIds = self.data.warnLabelIds.get();
+		// update currently selected labels
+		self.determineWarningOptions('.search-choice');
+		self.determineWarningOptions('.chosen-single');
+	});
 
 });
 
@@ -136,6 +192,7 @@ Template.securityLabels.helpers( {
 });
 
 Template.securityLabels.onRendered( function() {
+	var self = this;
 	// enable jquery plugin, chosen, that converts select boxes into tags
 	// see harvesthq.github.io/chosen/options.html
 	this.$('.chosen-select').chosen({
@@ -144,12 +201,29 @@ Template.securityLabels.onRendered( function() {
 		// placeholder this may be clipped, but if we extend then the
 		// input box creates new line before necessary and looks odd
 		placeholder_text_multiple : 'optional'
-	}).change( Template.instance().labelSelectionChanged )
+	}).change( self.labelSelectionChanged )
+
 	.on("chosen:showing_dropdown", function () {
+		// display the dropdown to select labels
 		$(this).parent().find(".chosen-drop").css("display", "block");
+
+
+		/*
+		 * check if any dropdown options need to be styled differently because they would cause a
+		 * current user to be kicked
+		 *
+		 * NOTE: don't check for warnings on reltos: they will never get marked since any problems
+		 * there are because the room is MISSING a relto that a user needs, rather than the room
+		 * requiring one that the user is missing, as is the case with classification/sci/sap
+		 */
+		if ($(this).attr('id') !== "release-caveat-select") {
+			self.determineWarningOptions(".active-result");
+		}
+
 	})
+
 	.on("chosen:hiding_dropdown", function () {
+		// hide the drop down after select/click out
 		$(this).parent().find(".chosen-drop").css("display", "none");
 	});
-
 });
