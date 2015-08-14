@@ -1,4 +1,6 @@
 Template.sideNav.helpers
+	isAdmin: ->
+		return Meteor.user()?.admin is true
 	flexTemplate: ->
 		return SideNav.getFlex().template
 	flexData: ->
@@ -17,5 +19,10 @@ Template.sideNav.events
 	'mouseleave .header': ->
 		SideNav.leaveArrow()
 
+	'click .open-settings': ->
+		SideNav.setFlex "settingsFlex"
+		SideNav.openFlex()
+
 Template.sideNav.onRendered ->
 	SideNav.init()
+	menu.init()

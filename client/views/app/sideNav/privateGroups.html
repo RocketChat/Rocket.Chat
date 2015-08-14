@@ -4,10 +4,15 @@
 		<i class="a-plus"></i>
 	</h3>
 	<ul>
+		<div id="room-list" class="collapse in">
 		{{#each rooms}}
 			{{> chatRoomItem }}
 		{{else}}
 			<p class="empty">{{_ "No_groups_yet" }}</p>
 		{{/each}}
+	</div>
+	{{#if rooms.count}}
+		<a data-toggle="collapse" data-target="#room-list" href="#room-list" class="collapse"></a>
+	{{/if}}
 	</ul>
 </template>

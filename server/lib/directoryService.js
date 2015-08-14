@@ -103,7 +103,9 @@ Future = Npm.require('fibers/future');
                     first_name : source.givenName,
                     last_name : source.sn,
                     access : _.isArray(source.access) ? source.access : [source.access],
-                }
+                },
+                status : 'offline',
+                statusConnection : 'offline'
             }
         },
         accessPermissionLDAPMap : function(source) {

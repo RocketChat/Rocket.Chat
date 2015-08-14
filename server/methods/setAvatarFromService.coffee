@@ -3,7 +3,7 @@ Meteor.methods
 		if not Meteor.userId()
 			throw new Meteor.Error('invalid-user', "[methods] setAvatarFromService -> Invalid user")
 
-		console.log '[methods] setAvatarFromService -> '.green, 'userId:', Meteor.userId(), 'arguments:', arguments
+		console.log '[methods] setAvatarFromService -> '.green, 'userId:', Meteor.userId(), 'contentType:', contentType, 'service:', service
 
 		user = Meteor.user()
 

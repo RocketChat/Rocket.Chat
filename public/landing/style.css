@@ -644,19 +644,6 @@ table {
 	}
 }
 
-.cf_ {
-	display: inline-block
-}
-
-.cf_:after {
-	content: ".";
-	display: block;
-	clear: both;
-	visibility: hidden;
-	line-height: 0;
-	height: 0
-}
-
 * {
 	-webkit-box-sizing: border-box;
 	-moz-box-sizing: border-box;
