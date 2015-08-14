@@ -120,15 +120,15 @@ Use the automated build at our [Official Docker Registry](https://registry.hub.d
 docker pull rocketchat/rocket.chat
 ```
 
+### sloppy.io
 
+Host your docker container at [sloppy.io](http://sloppy.io). Get an account and use the [quickstarter](https://github.com/sloppyio/quickstarters/tree/master/rocketchat)
 
 ### Heroku
 
 Host your own Rocket.Chat server for **FREE** with [One-Click Deploy](https://heroku.com/deploy?template=https://github.com/RocketChat/Rocket.Chat/tree/master)
 
 [![Deploy](https://www.herokucdn.com/deploy/button.png)](https://heroku.com/deploy?template=https://github.com/RocketChat/Rocket.Chat/tree/master)
-
-### sloppy.io
 
 
 
