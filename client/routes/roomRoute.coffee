@@ -15,6 +15,7 @@ FlowRouter.route '/room/:_id',
 
 				if not ChatRoom.find(params._id).count()
 					FlowRouter.go 'home'
+					return
 
 				mainNode = document.querySelector('.main-content')
 				if mainNode?

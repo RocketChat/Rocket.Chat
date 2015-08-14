@@ -3,6 +3,9 @@ Meteor.methods
 		fromId = Meteor.userId()
 		# console.log '[methods] loadHistory -> '.green, 'fromId:', fromId, 'rid:', rid, 'end:', end, 'limit:', limit, 'skip:', skip
 
+		unless Meteor.call 'canAccessRoom', rid, fromId
+			return false
+
 		query =
 			rid: rid
 			ts:
