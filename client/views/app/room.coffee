@@ -83,6 +83,10 @@ Template.room.helpers
 				phone: Session.get('user_' + username + '_phone')
 				username: String(username)
 			}
+
+			if Meteor.user()?.admin is true
+				userData = _.extend userData, Meteor.users.findOne { username: String(username) }
+
 			return userData
 
 	userStatus: ->

@@ -34,6 +34,11 @@
 						</ul>
 					</div>
 					{{/each}}
+					{{#if hasMore}}
+						<li class="load-more">
+							<button class="button secondary load-more {{isLoading}}">{{_ "Load_more"}}</button>
+						</li>
+					{{/if}}
 				</div>
 				{{else}}
 				<div class="results">

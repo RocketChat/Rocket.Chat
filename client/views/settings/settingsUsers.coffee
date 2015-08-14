@@ -4,13 +4,7 @@ Template.settingsUsers.helpers
 	isReady: ->
 		return Template.instance().ready?.get()
 	users: ->
-		filter = _.trim Template.instance().filter?.get()
-		if filter
-			filterReg = new RegExp filter, "i"
-			query = { $or: [ { username: filterReg }, { name: filterReg }, { "emails.address": filterReg } ] }
-		else
-			query = {}
-		return Meteor.users.find(query, { limit: Template.instance().limit?.get(), sort: { username: 1 } }).fetch()
+		return Template.instance().users()
 	flexOpened: ->
 		return 'opened' if Session.equals('flexOpened', true)
 	arrowPosition: ->
@@ -19,6 +13,10 @@ Template.settingsUsers.helpers
 		return Meteor.users.findOne Session.get 'settingsUsersSelected'
 	userChannels: ->
 		return ChatSubscription.find({ "u._id": Session.get 'settingsUsersSelected' }, { fields: { rid: 1, name: 1, t: 1 }, sort: { t: 1, name: 1 } }).fetch()
+	isLoading: ->
+		return 'btn-loading' unless Template.instance().ready()?.get()
+	hasMore: ->
+		return Template.instance().limit?.get() is Template.instance().users?().length
 
 Template.settingsUsers.onCreated ->
 	instance = @
@@ -35,6 +33,16 @@ Template.settingsUsers.onCreated ->
 	@autorun ->
 		if Session.get 'settingsUsersSelected'
 			channelSubscription = instance.subscribe 'userChannels', Session.get 'settingsUsersSelected'
+
+	@users = ->
+		filter = _.trim instance.filter?.get()
+		if filter
+			filterReg = new RegExp filter, "i"
+			query = { $or: [ { username: filterReg }, { name: filterReg }, { "emails.address": filterReg } ] }
+		else
+			query = {}
+		
+		return Meteor.users.find(query, { limit: instance.limit?.get(), sort: { username: 1 } }).fetch()
 
 Template.settingsUsers.onRendered ->
 	Tracker.afterFlush ->
@@ -70,3 +78,6 @@ Template.settingsUsers.events
 
 		$('.user-info-content').hide()
 		$($(e.currentTarget).attr('href')).show()
+
+	'click .load-more': (e, t) ->
+		t.limit.set t.limit.get() + 50
