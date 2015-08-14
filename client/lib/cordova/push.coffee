@@ -4,7 +4,7 @@ if Meteor.isCordova
 
 	Push.addListener 'error', (err) ->
 		Meteor.call 'log', 'CLIENT', 'error', arguments
-		if error.type == 'apn.cordova'
+		if err.type == 'apn.cordova'
 			Meteor.call 'log', 'CLIENT', err.error
 
 	Push.addListener 'register', (evt) ->
