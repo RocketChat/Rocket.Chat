@@ -18,7 +18,7 @@ Template.userStatus.helpers
 				status = Session.get('user_' + username + '_status')
 				if Meteor.user()? and status?
 					username = Meteor.user().username
-					if status in ['online','away']
+					if status in ['online','away', 'busy']
 						$('.custom-message').css('display','block')
 						statusMessages = Session.get('user_' + username + '_statusMessages')
 						if (statusMessages?)
@@ -34,7 +34,7 @@ Template.userStatus.events
 		event.preventDefault()
 		newStatus = event.currentTarget.dataset.status
 		setStatusMessage( Session.get('user_' + Meteor.user().username + '_statusMessages'), newStatus)
-		if newStatus in ['online','away']
+		if newStatus in ['online','away', 'busy']
 			event.stopPropagation()
 		else
 			$('.custom-message').css('display','none')
@@ -82,7 +82,7 @@ capitalizeWord = (word) ->
 
 setStatusMessage = (statusMessages, newStatus) ->
 	jCM = $('.custom-message')
-	if newStatus in ['online','away']
+	if newStatus in ['online','away', 'busy']
 		jCM.data('userStatus',newStatus).css('display','block').removeClass('status-online status-busy status-offline status-away').addClass('status-' + newStatus)
 		$('#label-custom-message').text(capitalizeWord(newStatus) + ' custom message')
 		if statusMessages?

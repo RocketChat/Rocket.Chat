@@ -182,10 +182,9 @@ Template.room.helpers
 		status = Session.get 'user_' + username + '_status'
 		if status in ['online', 'away', 'busy']
 			message = ''
-			if status in ['online', 'away']
-				statusMessages = Session.get('user_' + username + '_statusMessages')
-				if (statusMessages?)
-					message = statusMessages[status]
+			statusMessages = Session.get('user_' + username + '_statusMessages')
+			if (statusMessages?)
+				message = statusMessages[status]
 			return {username: username, status: status, customMessage: message}
 		return {username: username, status: 'offline', customMessage: ''}
 
@@ -214,7 +213,7 @@ Template.room.helpers
 		username = Session.get('showUserInfo')
 		message = ''
 		status = Session.get 'user_' + username + '_status'
-		if status in ['online', 'away']
+		if status in ['online', 'away', 'busy']
 			statusMessages = Session.get('user_' + username + '_statusMessages')
 			if (statusMessages?)
 				message = statusMessages[status]
