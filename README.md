@@ -6,6 +6,14 @@ The Complete Open Source Chat Solution
 
 Checkout the latest version at [https://demo.rocket.chat](https://demo.rocket.chat)
 
+Try it with docker:
+
+```
+docker-compose up
+```
+
+and check it out at http://localhost:80
+
 Download the Native Cross-Platform Desktop Application at [Rocket.Chat.Electron](https://github.com/RocketChat/Rocket.Chat.Electron/releases)
 
 [![Donate](https://www.paypalobjects.com/en_US/i/btn/btn_donateCC_LG.gif)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=49QX7TYCVZK8L)
@@ -119,6 +127,10 @@ docker pull rocketchat/rocket.chat
 Host your own Rocket.Chat server for **FREE** with [One-Click Deploy](https://heroku.com/deploy?template=https://github.com/RocketChat/Rocket.Chat/tree/master)
 
 [![Deploy](https://www.herokucdn.com/deploy/button.png)](https://heroku.com/deploy?template=https://github.com/RocketChat/Rocket.Chat/tree/master)
+
+### sloppy.io
+
+
 
 ## Development Installation
 
