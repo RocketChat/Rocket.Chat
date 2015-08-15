@@ -10,7 +10,7 @@ Template.userStatus.helpers
 			when "offline"
 				visualStatus = t("invisible")
 		return {
-			name: Session.get('user_' + username + '_name')
+			name: Meteor.user()?.name || username
 			status: Session.get('user_' + username + '_status')
 			visualStatus: visualStatus
 			_id: Meteor.userId()

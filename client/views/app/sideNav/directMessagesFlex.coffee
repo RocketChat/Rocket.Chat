@@ -252,6 +252,8 @@ Template.directMessagesFlex.onCreated ->
 			Session.set 'selectedLabelIds', instance.selectedLabelIds
 			instance.disabledLabelIds = _.pluck( options.disabled, '_id')
 			instance.allowedLabels = options.allowed
+			if instance.data?.user
+				instance.selectedUser.set instance.data.user
 			instance.securityLabelsInitialized.set true
 
 
