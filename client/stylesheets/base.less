@@ -3251,12 +3251,18 @@ a.github-fork {
 		}
 		.side-nav {
 			top: 0;
-			.transform(translateX(-100%));
+			// .transform(translateX(-100%));
 			.transition(transform .3s ease-out);
 		}
 		.main-content {
 			left: 0;
 			.transition(transform .3s ease-out);
+			z-index: 1000;
+			background-color: white;
+
+			&.notransition {
+				.transition(transform .0s);
+			}
 		}
 		.fixed-title h2 {
 			margin-left: 45px;
