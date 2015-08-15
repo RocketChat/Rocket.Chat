@@ -70,7 +70,6 @@ pauli:accounts-linkedin
 percolate:migrations
 percolatestudio:synced-cron
 raix:handlebar-helpers
-raix:push
 raix:ui-dropped-event
 tap:i18n
 tmeasday:crypto-md5
@@ -80,3 +79,4 @@ underscorestring:underscore.string
 yasaricli:slugify
 yasinuslu:blaze-meta
 rocketchat:colors
+raix:push@2.6.13-rc.1
