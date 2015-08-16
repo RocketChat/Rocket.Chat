@@ -9,7 +9,6 @@ Meteor.methods
 		Meteor.users.update userId,
 			$set:
 				name: formData.name
-				active: true
 
 		if userData.email
 			Accounts.sendVerificationEmail(userId, userData.email);

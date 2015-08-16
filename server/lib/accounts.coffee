@@ -19,6 +19,7 @@ Accounts.onCreateUser (options, user) ->
 	# console.log 'user ->',JSON.stringify user, null, '  '
 
 	user.status = 'offline'
+	user.active = true
 
 	serviceName = null
 
