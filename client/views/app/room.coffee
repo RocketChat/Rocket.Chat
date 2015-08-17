@@ -564,6 +564,20 @@ Template.room.events
 
 		fileUpload filesToUpload
 
+	'click .message-form .mic': (e, t) ->
+		t.recorder = new AudioRecorder ->
+			@startRecording()
+
+			t.$('.cancel-mic').removeClass('hidden')
+			t.$('.mic').addClass('hidden')
+
+	'click .message-form .cancel-mic': (e, t) ->
+		t.recorder.stopRecording (blob) ->
+			fileUpload [{file: blob, name: 'Audio record'}]
+			console.log(arguments)
+
+		t.$('.cancel-mic').addClass('hidden')
+		t.$('.mic').removeClass('hidden')
 
 	'click .deactivate': ->
 		username = Session.get('showUserInfo')
