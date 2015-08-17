@@ -1952,6 +1952,31 @@ a.github-fork {
 	.message-form {
 		> div {
 			position: relative;
+			display: flex;
+			display: -webkit-flex;
+			> .file {
+				display: none;
+				width: 44px;
+				font-size: 22px;
+				padding: 6px 0;
+				text-align: center;
+				border: 1px solid #E7E7E7;
+				border-radius: 5px 0 0 5px;
+				border-right: none;
+				cursor: pointer;
+				color: #888;
+
+				input {
+					position: absolute;
+					top: 0;
+					left: 0;
+					right: 0;
+					bottom: 0;
+					overflow: hidden;
+					width: 44px;
+					opacity: 0;
+				}
+			}
 		}
 		textarea {
 			display: block;
@@ -3385,5 +3410,22 @@ a.github-fork {
 
 	.connection-status > .alert {
 		border-width: 0 0 1px 0;
+	}
+}
+
+.touch {
+	.footer {
+		padding-left: 10px;
+		padding-right: 10px;
+	}
+	.message-form {
+		.file {
+			display: block !important;
+		}
+
+		textarea {
+			border-top-left-radius: 0;
+			border-bottom-left-radius: 0;
+		}
 	}
 }
