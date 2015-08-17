@@ -571,15 +571,18 @@ Template.room.events
 		t.recorder = new AudioRecorder (canUse) ->
 			@startRecording()
 
-			t.$('.cancel-mic').removeClass('hidden')
+			t.$('.stop-mic').removeClass('hidden')
 			t.$('.mic').addClass('hidden')
 
-	'click .message-form .cancel-mic': (e, t) ->
+	'click .message-form .stop-mic': (e, t) ->
 		t.recorder.stopRecording (blob) ->
-			fileUpload [{file: blob, name: 'Audio record'}]
-			console.log(arguments)
+			fileUpload [{
+				file: blob
+				type: 'audio'
+				name: 'Audio record'
+			}]
 
-		t.$('.cancel-mic').addClass('hidden')
+		t.$('.stop-mic').addClass('hidden')
 		t.$('.mic').removeClass('hidden')
 
 	'click .deactivate': ->
