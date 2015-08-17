@@ -291,6 +291,9 @@ Template.room.helpers
 	canJoin: ->
 		return !! ChatRoom.findOne { _id: @_id, t: 'c' }
 
+	canRecordAudio: ->
+		return navigator.getUserMedia? or navigator.webkitGetUserMedia?
+
 
 Template.room.events
 
@@ -564,6 +567,23 @@ Template.room.events
 
 		fileUpload filesToUpload
 
+	'click .message-form .mic': (e, t) ->
+		t.recorder = new AudioRecorder (canUse) ->
+			@startRecording()
+
+			t.$('.stop-mic').removeClass('hidden')
+			t.$('.mic').addClass('hidden')
+
+	'click .message-form .stop-mic': (e, t) ->
+		t.recorder.stopRecording (blob) ->
+			fileUpload [{
+				file: blob
+				type: 'audio'
+				name: 'Audio record'
+			}]
+
+		t.$('.stop-mic').addClass('hidden')
+		t.$('.mic').removeClass('hidden')
 
 	'click .deactivate': ->
 		username = Session.get('showUserInfo')
