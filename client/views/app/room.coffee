@@ -349,20 +349,15 @@ Template.room.events
 			return
 
 		items = e.originalEvent.clipboardData.items
+		files = []
 		for item in items
 			if item.kind is 'file' and item.type.indexOf('image/') isnt -1
 				e.preventDefault()
+				files.push
+					file: item.getAsFile()
+					name: 'Clipboard'
 
-				blob = item.getAsFile()
-
-				newFile = new (FS.File)(blob)
-				newFile.name('Clipboard')
-				newFile.rid = Session.get('openedRoom')
-				newFile.recId = Random.id()
-				newFile.userId = Meteor.userId()
-				Files.insert newFile, (error, fileObj) ->
-					unless error
-						toastr.success 'Upload from clipboard succeeded!'
+		fileUpload files
 
 	'keydown .input-message': (event) ->
 		Template.instance().chatMessages.keydown(@_id, event, Template.instance())
@@ -547,14 +542,13 @@ Template.room.events
 	'dropped .dropzone-overlay': (e) ->
 		e.currentTarget.parentNode.classList.remove 'over'
 
+		files = []
 		FS?.Utility?.eachFile e, (file) ->
-			newFile = new (FS.File)(file)
-			newFile.rid = Session.get('openedRoom')
-			newFile.recId = Random.id()
-			newFile.userId = Meteor.userId()
-			Files.insert newFile, (error, fileObj) ->
-				unless error
-					toastr.success 'Upload succeeded!'
+			files.push
+				file: file
+				name: file.name
+
+		fileUpload files
 
 	'click .deactivate': ->
 		username = Session.get('showUserInfo')
