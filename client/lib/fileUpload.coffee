@@ -11,7 +11,7 @@
 		reader.onload = (event) ->
 			image = event.target.result
 			swal
-				title: t('Upload_file?')
+				title: t('Upload_file_question')
 				text: """
 					<div class='upload-preview'>
 						<div class='upload-preview-file' style='background-image: url(#{image})'></div>
