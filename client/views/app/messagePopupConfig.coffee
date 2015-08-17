@@ -21,11 +21,19 @@ Template.messagePopupConfig.helpers
 					items.unshift all
 
 				return items
-			getValue: (_id, collection) ->
+			getValue: (_id, collection, firstPartValue) ->
 				if _id is '@all'
-					return 'all'
+					if firstPartValue.indexOf(' ') > -1
+						return 'all'
 
-				return collection.findOne(_id)?.username
+					return 'all:'
+
+				username = collection.findOne(_id)?.username
+
+				if firstPartValue.indexOf(' ') > -1
+					return username
+
+				return username + ':'
 
 		return config
 
