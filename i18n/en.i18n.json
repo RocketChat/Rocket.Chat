@@ -184,7 +184,7 @@
   "The_field_is_required" : "The field %s is required.",
   "True" : "True",
   "Unnamed" : "Unnamed",
-  "Upload_file?": "Upload file?",
+  "Upload_file_question": "Upload file?",
   "Use_initials_avatar" : "Use your username initials",
   "use_menu" : "Use the side menu to access your rooms and chats",
   "Use_service_avatar" : "Use %s avatar",

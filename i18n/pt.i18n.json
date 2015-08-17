@@ -146,7 +146,7 @@
   "strike" : "tachado",
   "Submit" : "Enviar",
   "The_field_is_required" : "O campo %s é obrigatório.",
-  "Upload_file?": "Enviar arquivo?",
+  "Upload_file_question": "Enviar arquivo?",
   "Use_initials_avatar" : "Usar as iniciais do seu nome de usuário",
   "use_menu" : "Utilize o menu à esquerda para acessar suas salas",
   "Use_service_avatar" : "Use o avatar de %s",
