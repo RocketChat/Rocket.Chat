@@ -568,14 +568,12 @@ Template.room.events
 		fileUpload filesToUpload
 
 	'click .message-form .mic': (e, t) ->
-		t.recorder = new AudioRecorder (canUse) ->
-			@startRecording()
-
+		AudioRecorder.start ->
 			t.$('.stop-mic').removeClass('hidden')
 			t.$('.mic').addClass('hidden')
 
 	'click .message-form .stop-mic': (e, t) ->
-		t.recorder.stopRecording (blob) ->
+		AudioRecorder.stop (blob) ->
 			fileUpload [{
 				file: blob
 				type: 'audio'
