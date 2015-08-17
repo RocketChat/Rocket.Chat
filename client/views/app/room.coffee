@@ -291,6 +291,9 @@ Template.room.helpers
 	canJoin: ->
 		return !! ChatRoom.findOne { _id: @_id, t: 'c' }
 
+	canRecordAudio: ->
+		return navigator.getUserMedia? or navigator.webkitGetUserMedia?
+
 
 Template.room.events
 
@@ -565,7 +568,7 @@ Template.room.events
 		fileUpload filesToUpload
 
 	'click .message-form .mic': (e, t) ->
-		t.recorder = new AudioRecorder ->
+		t.recorder = new AudioRecorder (canUse) ->
 			@startRecording()
 
 			t.$('.cancel-mic').removeClass('hidden')

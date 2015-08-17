@@ -10,6 +10,9 @@ class @AudioRecorder
 			@startUserMedia(stream)
 			cb?.call(@)
 
+		if not navigator.getUserMedia?
+			return cb false
+
 		navigator.getUserMedia {audio: true}, ok, (e) ->
 			console.log('No live audio input: ' + e)
 
