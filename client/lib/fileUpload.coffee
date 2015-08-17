@@ -9,15 +9,31 @@
 
 		reader = new FileReader()
 		reader.onload = (event) ->
-			image = event.target.result
-			swal
-				title: t('Upload_file_question')
-				text: """
+			fileContent = event.target.result
+
+			text = ''
+
+			if file.type is 'audio'
+				text = """
 					<div class='upload-preview'>
-						<div class='upload-preview-file' style='background-image: url(#{image})'></div>
+						<audio  style="width: 100%;" controls="controls">
+							<source src="#{fileContent}" type="audio/wav">
+							Your browser does not support the audio element.
+						</audio>
 					</div>
 					<div class='upload-preview-title'>#{file.name}</div>
 				"""
+			else
+				text = """
+					<div class='upload-preview'>
+						<div class='upload-preview-file' style='background-image: url(#{fileContent})'></div>
+					</div>
+					<div class='upload-preview-title'>#{file.name}</div>
+				"""
+
+			swal
+				title: t('Upload_file_question')
+				text: text
 				showCancelButton: true
 				closeOnConfirm: false
 				closeOnCancel: false
