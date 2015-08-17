@@ -53,6 +53,12 @@
 							{{> messagePopupConfig getPupupConfig}}
 							<textarea dir="auto" name="msg" maxlength="{{maxMessageLength}}" class="input-message" placeholder="{{_ 'Message'}}"></textarea>
 							<i class="icon-paper-plane" title="{{_ "Send_Message"}}"></i>
+							<div class="mic">
+								<i class="icon-mic"></i>
+							</div>
+							<div class="cancel-mic hidden">
+								<i class="icon-cancel"></i>
+							</div>
 						</div>
 						<div class="users-typing">
 							{{#with usersTyping}}
