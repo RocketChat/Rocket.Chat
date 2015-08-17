@@ -20,7 +20,7 @@
 				{{> inputAutocomplete settings=autocompleteSettings id="pvt-group-members" class="search" placeholder=tRoomMembers autocomplete="off"}}
 				<ul class="selected-users">
 					{{#each selectedUsers}}
-						<li>{{name}} <i class="icon-cancel remove-room-member"></i></li>
+						<li class="selected-user">{{name}} <i class="icon-cancel remove-room-member"></i></li>
 					{{/each}}
 				</ul>
 			</div>
@@ -48,7 +48,10 @@
 					<strong>{{_ "Oops!"}}</strong>
 					{{{_ "Duplicate_private_group_name" groupName}}}
 				</div>
-			{{/if}}	
+			{{/if}}
+			<div id="label-warning" class="warning-user-label">
+				{{warning}}
+			</div>
 			<div class="input-submit">
 				<button class="button clean primary save-pvt-group">{{_ "Save" }}</button>
 				<button class="button clean cancel-pvt-group">{{_ "Cancel" }}</button>

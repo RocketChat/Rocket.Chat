@@ -28,12 +28,20 @@ Meteor.methods
 
 		# RocketChat uses username as the identifier.  We use the imported LDAP username as both the _id and username value
 		result = Meteor.call 'canAccessResource', members, accessPermissions
-		if not result.canAccess
-			throw new Meteor.Error('invalid-access-permissions', result.deniedUsers.join(', ') + " cannot participate in the private group with the specified access permissions")
+		deniedUserList = _.pluck(result.deniedUsers, 'user')
+		
+		# make sure current user can access the new permissions
+		# should never be possible in GUI, but still must protect on back-end
+		if _.contains deniedUserList, Meteor.user().username
+			throw new Meteor.Error 'invalid-access-permissions', 'Current user cannot participate in the conversation with the specified access permissions.'
+
+		# include only those specified users that have the correct permissions
+		usersToAdd = _.difference( members, deniedUserList )
+	
 
 		# create new room
 		rid = ChatRoom.insert
-			usernames: members
+			usernames: usersToAdd
 			ts: now
 			t: 'p'
 			u:
@@ -44,7 +52,7 @@ Meteor.methods
 			accessPermissions: accessPermissions
 			securityLabels: Jedis.legacyLabel accessPermissions
 
-		for username in members
+		for username in usersToAdd
 			member = Meteor.users.findOne({ username: username },{ fields: { username: 1 }})
 			if not member?
 				continue

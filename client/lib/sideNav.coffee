@@ -76,6 +76,10 @@
 		return flexNav.opened
 
 	setFlex = (template, data={}) ->
+		# first, reset it to make sure it gets re-rendered properly
+		Session.set "flex-nav-template", null
+		Session.set "flex-nav-data", null
+
 		Session.set "flex-nav-template", template
 		Session.set "flex-nav-data", data
 
