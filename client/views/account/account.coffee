@@ -1,11 +1,11 @@
-Template.userSettings.helpers
+Template.account.helpers
 	flexOpened: ->
 		return 'opened' if Session.equals('flexOpened', true)
 	arrowPosition: ->
 		console.log 'room.helpers arrowPosition' if window.rocketDebug
 		return 'left' unless Session.equals('flexOpened', true)
 
-Template.userSettings.onRendered ->
+Template.account.onRendered ->
 	Tracker.afterFlush ->
-		SideNav.setFlex "userSettingsFlex"
+		SideNav.setFlex "accountFlex"
 		SideNav.openFlex()

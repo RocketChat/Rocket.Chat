@@ -1,4 +1,4 @@
-Template.userSettingsProfile.helpers
+Template.accountProfile.helpers
 	flexOpened: ->
 		return 'opened' if Session.equals('flexOpened', true)
 	arrowPosition: ->
@@ -12,9 +12,9 @@ Template.userSettingsProfile.helpers
 		return _.sortBy(result, 'key')
 
 	userLanguage: (key) ->
-		return localStorage.getItem('userLanguage')?.split('-').shift().toLowerCase() is key
+		return (localStorage.getItem('userLanguage') or defaultUserLanguage())?.split('-').shift().toLowerCase() is key
 
-Template.userSettingsProfile.onCreated ->
+Template.accountProfile.onCreated ->
 	settingsTemplate = this.parentTemplate(3)
 	settingsTemplate.child ?= []
 	settingsTemplate.child.push this
@@ -49,11 +49,11 @@ Template.userSettingsProfile.onCreated ->
 			if error
 				toastr.error error.reason
 
-Template.userSettingsProfile.onRendered ->
+Template.accountProfile.onRendered ->
 	Tracker.afterFlush ->
-		SideNav.setFlex "userSettingsFlex"
+		SideNav.setFlex "accountFlex"
 		SideNav.openFlex()
 
-Template.userSettingsProfile.events
+Template.accountProfile.events
 	'click .submit button': (e, t) ->
 		t.save()
