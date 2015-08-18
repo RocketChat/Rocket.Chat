@@ -25,7 +25,7 @@ Template.chatRoomItem.helpers
 			when 'p' then return 'icon-lock'
 
 	active: ->
-		if FlowRouter.getParam('_id')? and FlowRouter.getParam('_id') is this.rid
+		if Session.get('openedRoom') is this.rid
 			return 'active'
 
 	canLeave: ->
@@ -37,6 +37,15 @@ Template.chatRoomItem.helpers
 			return false
 		else
 			return true
+
+	route: ->
+		return switch this.t
+			when 'd'
+				FlowRouter.path('direct', {username: this.name})
+			when 'p'
+				FlowRouter.path('group', {name: this.name})
+			when 'c'
+				FlowRouter.path('channel', {name: this.name})
 
 Template.chatRoomItem.rendered = ->
 	if not (FlowRouter.getParam('_id')? and FlowRouter.getParam('_id') is this.data.rid) and not this.data.ls

@@ -24,35 +24,59 @@ Meteor.startup ->
 		subscription = Meteor.subscribe('subscription')
 		return subscription
 
-	close = (rid) ->
-		if openedRooms[rid]
-			if openedRooms[rid].sub?
-				for sub in openedRooms[rid].sub
+	close = (typeName) ->
+		if openedRooms[typeName]
+			if openedRooms[typeName].sub?
+				for sub in openedRooms[typeName].sub
 					sub.stop()
 
-			msgStream.removeListener rid
-			deleteMsgStream.removeListener rid
+			if openedRooms[typeName].rid?
+				msgStream.removeListener openedRooms[typeName].rid
+				deleteMsgStream.removeListener openedRooms[typeName].rid
 
-			openedRooms[rid].ready = false
-			openedRooms[rid].active = false
-			delete openedRooms[rid].timeout
-			delete openedRooms[rid].dom
+			openedRooms[typeName].ready = false
+			openedRooms[typeName].active = false
+			delete openedRooms[typeName].timeout
+			delete openedRooms[typeName].dom
 
-			RoomHistoryManager.clear rid
-
-			ChatMessage.remove rid: rid
+			if openedRooms[typeName].rid?
+				RoomHistoryManager.clear openedRooms[typeName].rid
+				ChatMessage.remove rid: openedRooms[typeName].rid
 
 	computation = Tracker.autorun ->
-		for rid, record of openedRooms when record.active is true
-			record.sub = [
-				Meteor.subscribe 'room', rid
-				# Meteor.subscribe 'messages', rid
-			]
+		for typeName, record of openedRooms when record.active is true
+			do (typeName, record) ->
+				record.sub = [
+					Meteor.subscribe 'room', typeName
+					# Meteor.subscribe 'messages', typeName
+				]
 
-			record.ready = record.sub[0].ready()
-			# record.ready = record.sub[0].ready() and record.sub[1].ready()
+				record.ready = record.sub[0].ready()
+				# record.ready = record.sub[0].ready() and record.sub[1].ready()
 
-			Dep.changed()
+				if record.ready is true
+					type = typeName.substr(0, 1)
+					name = typeName.substr(1)
+
+					query =
+						t: type
+
+					if type in ['c', 'p']
+						query.name = name
+					else if type is 'd'
+						query.usernames = $all: [Meteor.user().username, name]
+
+					room = ChatRoom.findOne query, { reactive: false }
+
+					openedRooms[typeName].rid = room._id
+
+					msgStream.on openedRooms[typeName].rid, (msg) ->
+						ChatMessage.upsert { _id: msg._id }, msg
+
+					deleteMsgStream.on openedRooms[typeName].rid, (msg) ->
+						ChatMessage.remove _id: msg._id
+
+				Dep.changed()
 
 	setRoomExpireExcept = (except) ->
 
@@ -60,40 +84,34 @@ Meteor.startup ->
 			clearTimeout openedRooms[except].timeout
 			delete openedRooms[except].timeout
 
-		for rid of openedRooms
-			if rid isnt except and not openedRooms[rid].timeout?
-				openedRooms[rid].timeout = setTimeout close, defaultTime, rid
+		for typeName of openedRooms
+			if typeName isnt except and not openedRooms[typeName].timeout?
+				openedRooms[typeName].timeout = setTimeout close, defaultTime, typeName
 
-	open = (rid) ->
+	open = (typeName) ->
 
-		if not openedRooms[rid]?
-			openedRooms[rid] =
+		if not openedRooms[typeName]?
+			openedRooms[typeName] =
 				active: false
 				ready: false
 
-		setRoomExpireExcept rid
+		setRoomExpireExcept typeName
 
 		if subscription.ready()
-			# if ChatSubscription.findOne { rid: rid }, { reactive: false }
-			if openedRooms[rid].active isnt true
-				openedRooms[rid].active = true
 
-				msgStream.on rid, (msg) ->
-					ChatMessage.upsert { _id: msg._id }, msg
-
-				deleteMsgStream.on rid, (msg) ->
-					ChatMessage.remove _id: msg._id
+			if openedRooms[typeName].active isnt true
+				openedRooms[typeName].active = true
 
 				computation?.invalidate()
 
 		return {
 			ready: ->
 				Dep.depend()
-				return openedRooms[rid].ready
+				return openedRooms[typeName].ready
 		}
 
-	getDomOfRoom = (rid) ->
-		room = openedRooms[rid]
+	getDomOfRoom = (typeName, rid) ->
+		room = openedRooms[typeName]
 		if not room?
 			return
 
@@ -104,8 +122,8 @@ Meteor.startup ->
 
 		return room.dom
 
-	existsDomOfRoom = (rid) ->
-		room = openedRooms[rid]
+	existsDomOfRoom = (typeName) ->
+		room = openedRooms[typeName]
 		return room?.dom?
 
 	updateUserStatus = (user, status, utcOffset) ->
