@@ -23,10 +23,16 @@ Meteor.publish 'messages', (rid, start) ->
 
 	cursorHandle = cursor.observeChanges
 		added: (_id, record) ->
-			publication.added('rocketchat_message', _id, record)
+			console.log 'added2 ->', record
+			if record._history isnt true
+				publication.added('rocketchat_message', _id, record)
 
 		changed: (_id, record) ->
-			publication.changed('rocketchat_message', _id, record)
+			console.log 'changed2 ->', record
+			if record._history isnt true
+				publication.changed('rocketchat_message', _id, record)
+			else
+				publication.removed('rocketchat_message', _id)
 
 	cursorDelete = ChatMessage.find
 		rid: rid

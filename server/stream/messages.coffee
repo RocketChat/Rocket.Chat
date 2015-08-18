@@ -45,7 +45,13 @@ Meteor.startup ->
 
 	ChatMessage.find(filter, options).observe
 		added: (record) ->
-			msgStream.emit record.rid, record
+			console.log 'added ->', record
+			if record._history isnt true
+				msgStream.emit record.rid, record
 
 		changed: (record) ->
-			msgStream.emit record.rid, record
+			console.log 'changed ->', record
+			if record._history isnt true
+				msgStream.emit record.rid, record
+			else
+				deleteMsgStream.emit record.rid, { _id: record._id }

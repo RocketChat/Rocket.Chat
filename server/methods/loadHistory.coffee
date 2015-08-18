@@ -7,6 +7,7 @@ Meteor.methods
 			return false
 
 		query =
+			_history: { $ne: true }
 			rid: rid
 			ts:
 				$lt: end

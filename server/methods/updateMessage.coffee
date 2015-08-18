@@ -12,11 +12,29 @@ Meteor.methods
 
 		message = RocketChat.callbacks.run 'beforeSaveMessage', message
 
-		ChatMessage.update
-			_id: message.id
-			'u._id': Meteor.userId()
-		,
-			$set: message
+		if RocketChat.settings.get 'Message_KeepHistoryOfEdits'
+			console.log 'Message_KeepHistoryOfEdits', true
+			
+			oldMessage = ChatMessage.findOne message.id
+			message.ts = oldMessage.ts
+			
+			ChatMessage.update
+				_id: message.id
+				'u._id': Meteor.userId()
+			,
+				$set: 
+					_history: true
+
+			delete message._id
+			Meteor.call 'sendMessage', message
+
+		else
+			console.log 'Message_KeepHistoryOfEdits', false
+			ChatMessage.update
+				_id: message.id
+				'u._id': Meteor.userId()
+			,
+				$set: message
 
 		# Meteor.defer ->
 		# 	RocketChat.callbacks.run 'afterSaveMessage', ChatMessage.findOne(message.id)
