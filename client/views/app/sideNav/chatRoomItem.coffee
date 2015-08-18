@@ -25,7 +25,7 @@ Template.chatRoomItem.helpers
 			when 'p' then return 'icon-lock'
 
 	active: ->
-		if FlowRouter.getParam('_id')? and FlowRouter.getParam('_id') is this.rid
+		if Session.get('openedRoom') is this.rid
 			return 'active'
 
 	canLeave: ->
