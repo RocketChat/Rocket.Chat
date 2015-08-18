@@ -45,6 +45,12 @@ FlowRouter.route '/admin/users',
 	action: ->
 		BlazeLayout.render 'main', {center: 'adminUsers'}
 
+FlowRouter.route '/admin/statistics',
+	name: 'admin-statistics'
+
+	action: ->
+		BlazeLayout.render 'main', {center: 'adminStatistics'}
+
 FlowRouter.route '/admin/:group?',
 	name: 'admin'
 
