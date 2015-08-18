@@ -5,6 +5,15 @@ Meteor.methods
 
 		console.log '[methods] updateMessage -> '.green, 'userId:', Meteor.userId(), 'arguments:', arguments
 
+		# If we keep history of edits, insert a new message to store history information
+		if RocketChat.settings.get 'Message_KeepHistory'
+			history = ChatMessage.findOne message._id
+			history._history = true
+			history.parent = history._id
+			history.ets = new Date()
+			delete history._id
+			ChatMessage.insert history
+
 		message.ets = new Date()
 
 		if urls = message.msg.match /([A-Za-z]{3,9}):\/\/([-;:&=\+\$,\w]+@{1})?([-A-Za-z0-9\.]+)+:?(\d+)?((\/[-\+=!:~%\/\.@\,\w]+)?\??([-\+=&!:;%@\/\.\,\w]+)?#?([\w]+)?)?/g
@@ -12,29 +21,11 @@ Meteor.methods
 
 		message = RocketChat.callbacks.run 'beforeSaveMessage', message
 
-		if RocketChat.settings.get 'Message_KeepHistoryOfEdits'
-			console.log 'Message_KeepHistoryOfEdits', true
-			
-			oldMessage = ChatMessage.findOne message.id
-			message.ts = oldMessage.ts
-			
-			ChatMessage.update
-				_id: message.id
-				'u._id': Meteor.userId()
-			,
-				$set: 
-					_history: true
-
-			delete message._id
-			Meteor.call 'sendMessage', message
-
-		else
-			console.log 'Message_KeepHistoryOfEdits', false
-			ChatMessage.update
-				_id: message.id
-				'u._id': Meteor.userId()
-			,
-				$set: message
+		ChatMessage.update
+			_id: message._id
+			'u._id': Meteor.userId()
+		,
+			$set: message
 
 		# Meteor.defer ->
 		# 	RocketChat.callbacks.run 'afterSaveMessage', ChatMessage.findOne(message.id)
