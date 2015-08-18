@@ -83,7 +83,10 @@ Future = Npm.require('fibers/future');
         //     },
         //     _id: 'bcleaver',
         //     username: 'bcleaver',
+        //     name : 'Theodore Cleaver',
         //     emails: [{address:'bcleaver@jedis.mil'}]
+        //     status: 'offline',
+        //     statusConnection: 'offline'
         //  }
         //   
         userLDAPMap : function( source ) {
