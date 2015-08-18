@@ -15,14 +15,15 @@ Template.message.helpers
 		return
 
 	body: ->
+		name = getUser( this.u.username )?.name || this.u.username
 		switch this.t
-			when 'r'  then t('Room_name_changed', { room_name: this.msg, user_by: this.u.username })
-			when 'au' then t('User_added_by', { user_added: this.msg, user_by: this.u.username })
-			when 'ru' then t('User_removed_by', { user_removed: this.msg, user_by: this.u.username })
-			when 'ul' then tr('User_left', { context: this.u.gender }, { user_left: this.u.username })
-			when 'nu' then t('User_added', { user_added: this.u.username })
-			when 'uj' then tr('User_joined_channel', { context: this.u.gender }, { user: this.u.username })
-			when 'wm' then t('Welcome', { user: this.u.username })
+			when 'r'  then t('Room_name_changed', { room_name: this.msg, user_by: name })
+			when 'au' then t('User_added_by', { user_added: this.msg, user_by: name })
+			when 'ru' then t('User_removed_by', { user_removed: this.msg, user_by: name })
+			when 'ul' then t('User_left', { user_left: name })
+			when 'nu' then t('User_added', { user_added: name })
+			when 'uj' then t('User_joined_channel', { user: name })
+			when 'wm' then t('Welcome', { user: name })
 			when 'rtc' then RocketChat.callbacks.run 'renderRtcMessage', this
 			else
 				this.html = this.msg
@@ -34,6 +35,9 @@ Template.message.helpers
 
 	system: ->
 		return 'system' if this.t in ['s', 'p', 'f', 'r', 'au', 'ru', 'ul', 'nu', 'wm', 'uj']
+
+	sender: ->
+		return getUser(this.u.username)?.name || this.u.username
 
 
 Template.message.onViewRendered = (context) ->
@@ -73,3 +77,8 @@ Template.message.onViewRendered = (context) ->
 				if view.parentView.parentView.parentView.parentView.parentView.templateInstance().atBottom isnt true
 					newMessage = document.querySelector(".new-message")
 					newMessage.className = "new-message"
+
+getUser = (username) ->
+	# convert user's username to name
+	allUsers = RoomManager.allUsers?.get()
+	allUsers?[username]

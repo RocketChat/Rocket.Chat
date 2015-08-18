@@ -27,28 +27,33 @@ Template.room.helpers
 		return "chat-window-#{this._id}"
 
 	usersTyping: ->
-		users = MsgTyping.get @_id
-		if users.length is 0
+		usernames = MsgTyping.get @_id
+		if usernames.length is 0
 			return
-		if users.length is 1
+		names = usernames.map (username) ->
+			return getUser(username)?.name || username 
+
+		if names.length is 1
+			name = names[0]
 			return {
 				multi: false
 				selfTyping: MsgTyping.selfTyping.get()
-				users: users[0]
+				#user's name, NOT username
+				users: name
 			}
 
 		# usernames = _.map messages, (message) -> return message.u.username
 
-		last = users.pop()
-		if users.length > 4
+		last = names.pop()
+		if names.length > 4
 			last = t('others')
-		# else
-		usernames = users.join(', ')
-		usernames = [usernames, last]
+		#user's name, NOT username
+		names = names.join(', ')
+		names = [names, last]
 		return {
 			multi: true
 			selfTyping: MsgTyping.selfTyping.get()
-			users: usernames.join " #{t 'and'} "
+			users: names.join " #{t 'and'} "
 		}
 
 	roomName: ->
@@ -78,9 +83,10 @@ Template.room.helpers
 			username = _.without roomData.usernames, Meteor.user().username
 
 			userData = {
-				name: Session.get('user_' + username + '_name')
-				emails: Session.get('user_' + username + '_emails') || []
-				phone: Session.get('user_' + username + '_phone')
+				name: getUser(username)?.name|| username
+				# not used, but if wanted, need to set in RoomManager 
+				#emails: Session.get('user_' + username + '_emails') || []
+				#phone: Session.get('user_' + username + '_phone')
 				username: String(username)
 			}
 			return userData
@@ -191,15 +197,15 @@ Template.room.helpers
 	roomUsers: ->
 		room = ChatRoom.findOne(this._id, { reactive: false })
 		users = []
-		allUsers = RoomManager.allUsers.get()
 
 		for username in room?.usernames or []
+			user = getUser(username)
 			users.push
-				firstName: allUsers[username]?.firstName
-				lastName: allUsers[username]?.lastName
-				name: allUsers[username]?.name
+				firstName: user?.firstName
+				lastName: user?.lastName
+				name: user?.name
 				username: username
-				status: allUsers[username]?.status
+				status: user?.status
 
 		users = _.sortBy users, 'lastName'
 
@@ -211,20 +217,23 @@ Template.room.helpers
 
 	flexUserInfo: ->
 		username = Session.get('showUserInfo')
-		message = ''
-		status = Session.get 'user_' + username + '_status'
-		if status in ['online', 'away', 'busy']
-			statusMessages = Session.get('user_' + username + '_statusMessages')
-			if (statusMessages?)
-				message = statusMessages[status]
+		userData = {}
+		if username 
+			message = ''
+			status = Session.get 'user_' + username + '_status'
+			if status in ['online', 'away', 'busy']
+				statusMessages = Session.get('user_' + username + '_statusMessages')
+				if (statusMessages?)
+					message = statusMessages[status]
 
-		userData = {
-			# name: Session.get('user_' + uid + '_name')
-			# emails: Session.get('user_' + uid + '_emails')
-			username: String(username)
-			customMessage: message
-			status: status
-		}
+			userData = {
+				name: getUser(username)?.name || username
+				# name: Session.get('user_' + uid + '_name')
+				# emails: Session.get('user_' + uid + '_emails')
+				username: String(username)
+				customMessage: message
+				status: status
+			}
 		# phone = Session.get('user_' + uid + '_phone')
 		# if phone? and phone[0]?.phoneNumber
 		# 	userData.phone = phone[0]?.phoneNumber
@@ -671,3 +680,8 @@ toggleAddUser = ->
 	else
 		$('#user-add-search').val('')
 		$('i', btn).removeClass('icon-cancel').addClass('icon-plus')
+
+getUser = (username) ->
+	# convert user's username to name
+	allUsers = RoomManager.allUsers.get()
+	allUsers[username]

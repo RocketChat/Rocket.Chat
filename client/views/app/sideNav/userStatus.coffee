@@ -11,7 +11,7 @@ Template.userStatus.helpers
 				visualStatus = t("invisible")
 		visualStatus = capitalizeWord(visualStatus)
 		return {
-			name: Session.get('user_' + username + '_name')
+			name: Meteor.user()?.name || username
 			status: Session.get('user_' + username + '_status')
 			customMessage : ->
 				message = ''

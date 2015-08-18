@@ -80,8 +80,9 @@
 		Session.set "flex-nav-template", null
 		Session.set "flex-nav-data", null
 
-		Session.set "flex-nav-template", template
+		# set data before template so that the template has access to it during onCreated
 		Session.set "flex-nav-data", data
+		Session.set "flex-nav-template", template
 
 	getFlex = ->
 		return {

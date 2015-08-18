@@ -11,14 +11,14 @@ Template.directMessagesFlex.helpers
 					# @TODO maybe change this 'collection' and/or template
 					collection: 'UserAndRoom'
 					subscription: 'roomSearch'
-					field: 'username'
+					field: 'name'
 					template: Template.userSearch
 					noMatchTemplate: Template.userSearchEmpty
 					matchAll: true
 					filter:
 						type: 'u'
 						_id: { $ne: Meteor.userId() }
-					sort: 'username'
+					sort: 'name'
 				}
 			]
 		}
@@ -36,19 +36,15 @@ Template.directMessagesFlex.helpers
 		return Template.instance().data.relabelRoom?
 	selectedUser: ->
 		return Template.instance().selectedUser.get()
-
+	# this returns the selected user's name field, NOT the username.  Use username
+	# to be consistent with privategroupsflex page. 
+	selectedUserName: ->
+		username = Template.instance().selectedUser.get() || ''
+		user = Meteor.users.findOne({_id : username})
+		return user?.name || username
 	warning: ->
 		if Template.instance().warning.get()
 			return 'Due to security label access conflicts, you will not be able to proceed with the currently selected labels.'
-
-
-
-Template.directMessagesFlex.onRendered ->
-	instance = this;
-	# fill input field with pre-selected user
-	if instance.selectedUser.get()
-		field = instance.find('#who')
-		field.value = instance.selectedUser.get()
 
 Template.directMessagesFlex.events
 	'autocompleteselect #who': (event, instance, doc) ->
@@ -256,6 +252,8 @@ Template.directMessagesFlex.onCreated ->
 			Session.set 'selectedLabelIds', instance.selectedLabelIds
 			instance.disabledLabelIds = _.pluck( options.disabled, '_id')
 			instance.allowedLabels = options.allowed
+			if instance.data?.user
+				instance.selectedUser.set instance.data.user
 			instance.securityLabelsInitialized.set true
 
 

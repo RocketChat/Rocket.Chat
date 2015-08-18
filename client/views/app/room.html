@@ -134,8 +134,8 @@
 										{{> avatar username=username}}
 									</div>
 									<div class="info">
-										<h3>{{username}}</h3>
-                                                                            	<span class="userStatus status-{{status}}">{{status}}:</span> <span class="customMessage">{{customMessage}}</span>
+										<h3>{{name}}</h3>
+                                    	<span class="userStatus status-{{status}}">{{status}}:</span> <span class="customMessage">{{customMessage}}</span>
 										{{#if contactCode}}
 											<div class="contact-code">{{_ "Contact"}} {{contactCode}}</div>
 										{{/if}}
@@ -193,7 +193,7 @@
 										{{> avatar username=username}}
 									</div>
 									<div class="info">
-										<h3>{{username}}</h3>
+										<h3>{{name}}</h3>
 										{{#if contactCode}}
 											<div class="contact-code">{{_ "contact"}} {{contactCode}}</div>
 										{{/if}}
