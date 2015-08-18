@@ -421,7 +421,7 @@ Template.room.events
 				return Errors.throw error.reason
 
 			if result?.rid?
-				FlowRouter.go('room', { _id: result.rid })
+				FlowRouter.go('direct', { username: Session.get('showUserInfo') })
 
 	'click button.load-more': (e) ->
 		RoomHistoryManager.getMore @_id
