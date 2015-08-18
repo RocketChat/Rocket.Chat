@@ -7,11 +7,11 @@ FlowRouter.route '/room/:_id',
 		BlazeLayout.render 'main', {center: 'loading'}
 
 		Meteor.defer ->
-			track = Tracker.autorun ->
+			Tracker.autorun (c) ->
 				if RoomManager.open(params._id).ready() isnt true
 					return
 
-				track?.stop()
+				c.stop()
 
 				if not ChatRoom.find(params._id).count()
 					FlowRouter.go 'home'

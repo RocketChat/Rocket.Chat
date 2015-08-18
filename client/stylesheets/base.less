@@ -1959,6 +1959,7 @@ a.github-fork {
 			display: flex;
 			display: -webkit-flex;
 			.input-message-container {
+				position: relative;
 				width: 100%;
 			}
 			> .file {
@@ -1990,7 +1991,7 @@ a.github-fork {
 					cursor: pointer;
 				}
 				input::-webkit-file-upload-button {
-					cursor: pointer; 
+					cursor: pointer;
 				}
 			}
 			> .mic, .stop-mic {
@@ -2026,7 +2027,7 @@ a.github-fork {
 		.icon-paper-plane {
 			position: absolute;
 			top: 2px;
-			margin-left: -44px;
+			right: 0px;
 			cursor: pointer;
 			padding: 8px;
 			font-size: 16px;
@@ -2035,27 +2036,31 @@ a.github-fork {
 				color: @primary-font-color;
 			}
 		}
-		> .users-typing {
+		.users-typing {
 			float: left;
-			height: 19px;
+			height: 23px;
 			font-size: 12px;
 			color: #888888;
-			position: absolute;
-			padding-left: 5px;
-			background-color: #FCFCFC;
-			z-index: 10;
-			bottom: 0;
-			padding-right: 10px;
-		}
-		> .formatting-tips {
-			float: right;
-			height: 20px;
-			font-size: 11px;
-			color: #888888;
-			padding: 5px 0px 0px 5px;
+			background: #FCFCFC;
+			padding: 3px;
 			display: inline-block;
 			white-space: nowrap;
 			overflow: hidden;
+			text-overflow: ellipsis;
+			max-width: 100%;
+			z-index: 10;
+		}
+		.formatting-tips {
+			float: right;
+			height: 23px;
+			font-size: 11px;
+			color: #888888;
+			padding: 3px;
+			display: inline-block;
+			white-space: nowrap;
+			overflow: hidden;
+			position: absolute;
+			right: 20px;
 			&:hover {
 				color: #444444;
 			}
