@@ -10,16 +10,15 @@ Meteor.startup ->
 	RocketChat.settings.addGroup 'SMTP'
 	RocketChat.settings.add 'SMTP_Host', '', { type: 'string', group: 'SMTP' }
 	RocketChat.settings.add 'SMTP_Port', '', { type: 'string', group: 'SMTP' }
-	RocketChat.settings.add 'SMTP_Security', '', { type: 'string', group: 'SMTP' }
 	RocketChat.settings.add 'SMTP_Username', '', { type: 'string', group: 'SMTP' }
 	RocketChat.settings.add 'SMTP_Password', '', { type: 'string', group: 'SMTP' }
 
 	RocketChat.settings.addGroup 'Message'
-	RocketChat.settings.add 'Message_Edit', '', { type: 'string', group: 'Message' }
-	RocketChat.settings.add 'Message_Delete', '', { type: 'string', group: 'Message' }
-	RocketChat.settings.add 'Message_ShowEditedStatus', '', { type: 'string', group: 'Message' }
-	RocketChat.settings.add 'Message_ShowDeletedStatus', '', { type: 'string', group: 'Message' }
-	RocketChat.settings.add 'Message_KeepStatusHistory', '', { type: 'string', group: 'Message' }
+	RocketChat.settings.add 'Message_AllowEditing', true, { type: 'boolean', group: 'Message', public: true }
+	RocketChat.settings.add 'Message_AllowDeleting', true, { type: 'boolean', group: 'Message', public: true }
+	RocketChat.settings.add 'Message_ShowEditedStatus', true, { type: 'boolean', group: 'Message', public: true }
+	RocketChat.settings.add 'Message_ShowDeletedStatus', false, { type: 'boolean', group: 'Message', public: true }
+	RocketChat.settings.add 'Message_KeepHistory', false, { type: 'boolean', group: 'Message', public: true }
 	RocketChat.settings.add 'Message_MaxAllowedSize', 5000, { type: 'int', group: 'Message', public: true }
 
 	RocketChat.settings.addGroup 'Meta'
@@ -45,3 +44,8 @@ Meteor.startup ->
 	RocketChat.settings.addGroup 'Layout'
 	RocketChat.settings.add 'Layout_Home_Title', 'Home', { type: 'string', group: 'Layout', public: true }
 	RocketChat.settings.add 'Layout_Home_Body', 'Welcome to Rocket.Chat <br> Go to APP SETTINGS -> Layout to customize this intro.', { type: 'string', multiline: true, group: 'Layout', public: true  }
+
+	if process?.env? and not process.env['MAIL_URL']? and RocketChat.settings.get('SMTP_Host') and RocketChat.settings.get('SMTP_Username') and RocketChat.settings.get('SMTP_Password')
+		process.env['MAIL_URL'] = "smtp://" + encodeURIComponent(RocketChat.settings.get('SMTP_Username')) + ':' + encodeURIComponent(RocketChat.settings.get('SMTP_Password')) + '@' + encodeURIComponent(RocketChat.settings.get('SMTP_Host'))
+		if RocketChat.settings.get('SMTP_Port')
+			process.env['MAIL_URL'] += ':' + parseInt(RocketChat.settings.get('SMTP_Port'))

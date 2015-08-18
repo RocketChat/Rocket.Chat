@@ -14,7 +14,7 @@ Template.avatarPrompt.onCreated ->
 
 Template.avatarPrompt.onRendered ->
 	Tracker.afterFlush ->
-		SideNav.setFlex "userSettingsFlex"
+		SideNav.setFlex "accountFlex"
 		SideNav.openFlex()
 
 Template.avatarPrompt.helpers

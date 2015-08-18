@@ -372,6 +372,10 @@ Template.room.events
 	'click .message-form .icon-paper-plane': (event) ->
 		input = $(event.currentTarget).siblings("textarea")
 		Template.instance().chatMessages.send(this._id, input.get(0))
+		event.preventDefault()
+		event.stopPropagation()
+		input.focus()
+		input.get(0).updateAutogrow()
 
 	'click .add-user': (event) ->
 		toggleAddUser()
@@ -484,9 +488,7 @@ Template.room.events
 	"click .mention-link": (e) ->
 		channel = $(e.currentTarget).data('channel')
 		if channel?
-			channelObj = ChatSubscription.findOne name: channel
-			if channelObj?
-				FlowRouter.go 'room', {_id: channelObj.rid}
+			FlowRouter.go 'channel', {name: channel}
 			return
 
 		Session.set('flexOpened', true)

@@ -1,13 +1,13 @@
 Template.body.onRendered ->
 
-	dataLayerComputation = Tracker.autorun ->
+	Tracker.autorun (c) ->
 		w = window
 		d = document
 		s = 'script'
 		l = 'dataLayer'
 		i = RocketChat.settings.get 'API_Analytics'
 		if Match.test(i, String) and i.trim() isnt ''
-			dataLayerComputation?.stop()
+			c.stop()
 			do (w,d,s,l,i) ->
 				w[l] = w[l] || []
 				w[l].push {'gtm.start': new Date().getTime(), event:'gtm.js'}
@@ -18,49 +18,54 @@ Template.body.onRendered ->
 				j.src = '//www.googletagmanager.com/gtm.js?id=' + i + dl
 				f.parentNode.insertBefore j, f
 
-	metaLanguageComputation = Tracker.autorun ->
-		if RocketChat.settings.get 'Meta:language'
-			metaLanguageComputation?.stop()
+	Tracker.autorun (c) ->
+		if RocketChat.settings.get 'Meta_language'
+			c.stop()
+
 			Meta.set
 				name: 'http-equiv'
 				property: 'content-language'
-				content: RocketChat.settings.get 'Meta:language'
+				content: RocketChat.settings.get 'Meta_language'
 			Meta.set
 				name: 'name'
 				property: 'language'
-				content: RocketChat.settings.get 'Meta:language'
+				content: RocketChat.settings.get 'Meta_language'
 
-	metaFBComputation = Tracker.autorun ->
-		if RocketChat.settings.get 'Meta:fb:app_id'
-			metaFBComputation?.stop()
+	Tracker.autorun (c) ->
+		if RocketChat.settings.get 'Meta_fb_app_id'
+			c.stop()
+
 			Meta.set
 				name: 'property'
 				property: 'fb:app_id'
-				content: RocketChat.settings.get 'Meta:fb:app_id'
+				content: RocketChat.settings.get 'Meta_fb_app_id'
 
-	metaRobotsComputation = Tracker.autorun ->
-		if RocketChat.settings.get 'Meta:robots'
-			metaRobotsComputation?.stop()
+	Tracker.autorun (c) ->
+		if RocketChat.settings.get 'Meta_robots'
+			c.stop()
+
 			Meta.set
 				name: 'name'
 				property: 'robots'
-				content: RocketChat.settings.get 'Meta:robots'
+				content: RocketChat.settings.get 'Meta_robots'
 
-	metaGoogleComputation = Tracker.autorun ->
-		if RocketChat.settings.get 'Meta:google-site-verification'
-			metaGoogleComputation?.stop()
+	Tracker.autorun (c) ->
+		if RocketChat.settings.get 'Meta_google-site-verification'
+			c.stop()
+
 			Meta.set
 				name: 'name'
 				property: 'google-site-verification'
-				content: RocketChat.settings.get 'Meta:google-site-verification'
+				content: RocketChat.settings.get 'Meta_google-site-verification'
 
-	metaMSValidateComputation = Tracker.autorun ->
-		if RocketChat.settings.get 'Meta:msvalidate.01'
-			metaMSValidateComputation?.stop()
+	Tracker.autorun (c) ->
+		if RocketChat.settings.get 'Meta_msvalidate01'
+			c.stop()
+
 			Meta.set
 				name: 'name'
 				property: 'msvalidate.01'
-				content: RocketChat.settings.get 'Meta:msvalidate.01'
+				content: RocketChat.settings.get 'Meta_msvalidate01'
 
 	if Meteor.isCordova
 		$(document.body).addClass 'is-cordova'

@@ -1,4 +1,4 @@
-Template.userSettingsFlex.events
+Template.accountFlex.events
 	'mouseenter header': ->
 		SideNav.overArrow()
 
@@ -10,3 +10,6 @@ Template.userSettingsFlex.events
 
 	'click .cancel-settings': ->
 		SideNav.closeFlex()
+
+	'click .account-link': ->
+		menu.close()

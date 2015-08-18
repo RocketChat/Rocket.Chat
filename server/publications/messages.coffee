@@ -14,7 +14,7 @@ Meteor.publish 'messages', (rid, start) ->
 
 	cursor = ChatMessage.find
 		rid: rid
-		_deleted:
+		_hidden:
 			$ne: true
 	,
 		sort:
@@ -30,16 +30,16 @@ Meteor.publish 'messages', (rid, start) ->
 
 	cursorDelete = ChatMessage.find
 		rid: rid
-		_deleted: true
+		_hidden: true
 	,
 		fields:
 			_id: 1
 
 	cursorDeleteHandle = cursorDelete.observeChanges
 		added: (_id, record) ->
-			publication.added('rocketchat_message', _id, {_deleted: true})
+			publication.added('rocketchat_message', _id, {_hidden: true})
 		changed: (_id, record) ->
-			publication.added('rocketchat_message', _id, {_deleted: true})
+			publication.added('rocketchat_message', _id, {_hidden: true})
 
 	@ready()
 	@onStop ->

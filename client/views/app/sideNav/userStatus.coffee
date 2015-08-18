@@ -35,10 +35,13 @@ Template.userStatus.events
 	'click #avatar': (event) ->
 		FlowRouter.go 'changeAvatar'
 
-	'click #settings': (event) ->
-		SideNav.setFlex "userSettingsFlex"
+	'click #account': (event) ->
+		SideNav.setFlex "accountFlex"
 		SideNav.openFlex()
-		FlowRouter.go 'userSettings'
+		FlowRouter.go 'account'
+
+	'click .account-link': ->
+		menu.close()
 
 Template.userStatus.rendered = ->
 	AccountBox.init()
