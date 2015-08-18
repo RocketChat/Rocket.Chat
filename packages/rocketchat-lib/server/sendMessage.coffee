@@ -85,6 +85,8 @@ RocketChat.sendMessage = (user, message, room) ->
 						payload:
 							rid: message.rid
 							sender: message.u
+							type: room.t
+							name: room.name
 						query:
 							userId: userOfMention._id
 
@@ -150,6 +152,8 @@ RocketChat.sendMessage = (user, message, room) ->
 							payload:
 								rid: message.rid
 								sender: message.u
+								type: room.t
+								name: room.name
 							query:
 								userId: $in: usersOfMentionIds
 
