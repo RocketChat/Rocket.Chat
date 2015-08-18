@@ -1,0 +1,17 @@
+<template name="adminStatistics">
+	<section class="page-container page-list">
+		<head class="fixed-title">
+			{{> burger}}
+			<h2>
+				<span class="room-title">{{_ "Statistics"}}</span>
+			</h2>
+		</head>
+		<div class="content">
+			{{#unless isAdmin}}
+				<p>You are not authorized to view this page.</p>
+			{{else}}
+				
+			{{/unless}}
+		</div>
+	</section>
+</template>
