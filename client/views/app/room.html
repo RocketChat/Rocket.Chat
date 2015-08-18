@@ -50,8 +50,10 @@
 								<i class="icon-attach"></i>
 								<input type="file" accept="image/*">
 							</div>
-							{{> messagePopupConfig getPupupConfig}}
-							<textarea dir="auto" name="msg" maxlength="{{maxMessageLength}}" class="input-message" placeholder="{{_ 'Message'}}"></textarea>
+							<div class="input-message-container">
+								{{> messagePopupConfig getPupupConfig}}
+								<textarea dir="auto" name="msg" maxlength="{{maxMessageLength}}" class="input-message" placeholder="{{_ 'Message'}}"></textarea>
+							</div>
 							<i class="icon-paper-plane" title="{{_ "Send_Message"}}"></i>
 							{{#if canRecordAudio}}
 								<div class="mic">

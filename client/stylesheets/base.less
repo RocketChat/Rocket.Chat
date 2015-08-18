@@ -1958,8 +1958,10 @@ a.github-fork {
 			position: relative;
 			display: flex;
 			display: -webkit-flex;
+			.input-message-container {
+				width: 100%;
+			}
 			> .file {
-				display: none;
 				width: 44px;
 				font-size: 22px;
 				padding: 6px 0;
@@ -1969,6 +1971,12 @@ a.github-fork {
 				border-right: none;
 				cursor: pointer;
 				color: #888;
+				background-color: #FCFCFC;
+				.transition(background-color 0.1s linear, color 0.1s linear);
+				&:hover {
+					background-color: #F1F1F1;
+					color: #666;
+				}
 
 				input {
 					position: absolute;
@@ -1979,15 +1987,27 @@ a.github-fork {
 					overflow: hidden;
 					width: 44px;
 					opacity: 0;
+					cursor: pointer;
+				}
+				input::-webkit-file-upload-button {
+					cursor: pointer; 
 				}
 			}
 			> .mic, .stop-mic {
-				width: 44px;
+				width: 40px;
 				font-size: 22px;
-				padding: 6px 0;
+				padding: 7px 0;
+				margin-left: 4px;
 				text-align: center;
 				cursor: pointer;
 				color: #888;
+				border-radius: 30px;
+				background-color: #FCFCFC;
+				.transition(background-color 0.1s linear, color 0.1s linear);
+				&:hover {
+					background-color: #F1F1F1;
+					color: #666;
+				}
 			}
 		}
 		textarea {
@@ -1995,6 +2015,8 @@ a.github-fork {
 			padding-top: 9px;
 			padding-bottom: 9px;
 			padding-right: 38px;
+			border-top-left-radius: 0;
+			border-bottom-left-radius: 0;
 			overflow-y: hidden;
 			resize: none;
 			&.editing {
@@ -3429,15 +3451,5 @@ a.github-fork {
 	.footer {
 		padding-left: 10px;
 		padding-right: 10px;
-	}
-	.message-form {
-		.file {
-			display: block !important;
-		}
-
-		textarea {
-			border-top-left-radius: 0;
-			border-bottom-left-radius: 0;
-		}
 	}
 }
