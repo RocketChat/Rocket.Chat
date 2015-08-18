@@ -102,6 +102,60 @@ Template.main.events
 		chatContainer = $("#rocket-chat")
 		menu.toggle()
 
+	'touchstart': (e, t) ->
+		if document.body.clientWidth > 780
+			return
+
+		t.touchstartX = undefined
+		t.touchstartY = undefined
+		t.movestarted = false
+		if $(e.currentTarget).closest('.main-content').length > 0
+			t.touchstartX = e.originalEvent.touches[0].clientX
+			t.touchstartY = e.originalEvent.touches[0].clientY
+			t.mainContent = $('.main-content')
+
+	'touchmove': (e, t) ->
+		if t.touchstartX?
+			touch = e.originalEvent.touches[0]
+			diffX = t.touchstartX - touch.clientX
+			diffY = t.touchstartY - touch.clientY
+			absX = Math.abs(diffX)
+			absY = Math.abs(diffY)
+
+			if t.movestarted is true or (absX > 20 and absY < 20)
+				t.movestarted = true
+
+				if menu.isOpen()
+					t.left = 260 - diffX
+				else
+					t.left = -diffX
+
+				if t.left > 260
+					t.left = 260
+				if t.left < 0
+					t.left = 0
+
+				t.mainContent.addClass('notransition')
+				t.mainContent.css('transform', 'translate('+t.left+'px)')
+
+	'touchend': (e, t) ->
+		t.touchstartX = undefined
+
+		if t.movestarted is true
+			t.mainContent.removeClass('notransition')
+			t.mainContent.css('transform', '');
+
+			if menu.isOpen()
+				if t.left >= 200
+					menu.open()
+				else
+					menu.close()
+			else
+				if t.left >= 60
+					menu.open()
+				else
+					menu.close()
+
 
 Template.main.onRendered ->
 

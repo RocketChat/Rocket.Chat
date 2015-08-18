@@ -11,8 +11,8 @@ Template.room.events
 		Template.instance().chatMessages.keydown(@_id, event, Template.instance())
 
 Template.room.onCreated ->
-	this.subscribe 'visitorRoom'visitorId.get()
-	console.log 'visitor ->',visitorId.get()
+	this.subscribe 'visitorRoom', visitorId.get()
+	console.log 'visitor ->', visitorId.get()
 
 
 Template.room.onRendered ->

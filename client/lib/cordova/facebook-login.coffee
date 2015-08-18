@@ -16,12 +16,14 @@ Meteor.loginWithFacebookCordova = (options, callback) ->
 		facebookConnectPlugin.getLoginStatus (response) ->
 			if response.status isnt "connected"
 				facebookConnectPlugin.login ["public_profile", "email"], fbLoginSuccess, (error) ->
-					console.log("" + error)
+					console.log('login', JSON.stringify(error), error)
+					callback(error)
 			else
 				fbLoginSuccess(response)
 
 		, (error) ->
-			console.log("" + error)
+			console.log('getLoginStatus', JSON.stringify(error), error)
+			callback(error)
 
 	else
 		Facebook.requestCredential(options, credentialRequestCompleteCallback)

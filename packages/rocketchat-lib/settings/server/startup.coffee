@@ -41,3 +41,7 @@ Meteor.startup ->
 	RocketChat.settings.add 'Push_apn_dev_cert', '', { type: 'string', multiline: true, group: 'Push' }
 	RocketChat.settings.add 'Push_gcm_api_key', '', { type: 'string', group: 'Push' }
 	RocketChat.settings.add 'Push_gcm_project_number', '', { type: 'string', group: 'Push', public: true }
+
+	RocketChat.settings.addGroup 'Layout'
+	RocketChat.settings.add 'Layout_Home_Title', 'Home', { type: 'string', group: 'Layout', public: true }
+	RocketChat.settings.add 'Layout_Home_Body', 'Welcome to Rocket.Chat <br> Go to APP SETTINGS -> Layout to customize this intro.', { type: 'string', multiline: true, group: 'Layout', public: true  }

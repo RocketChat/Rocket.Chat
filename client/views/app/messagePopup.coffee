@@ -118,7 +118,7 @@ Template.messagePopup.onCreated ->
 		firstPartValue = value.substr 0, caret
 		lastPartValue = value.substr caret
 
-		firstPartValue = firstPartValue.replace(template.selectorRegex, template.prefix + this.getValue(template.value.curValue, template.data.collection) + template.suffix)
+		firstPartValue = firstPartValue.replace(template.selectorRegex, template.prefix + this.getValue(template.value.curValue, template.data.collection, firstPartValue) + template.suffix)
 
 		template.input.value = firstPartValue + lastPartValue
 
