@@ -46,19 +46,21 @@
 		<div class="control">
 			<button class="more"><span class="arrow {{arrowPosition}}"></span></button>
 			<div class="user-info-tabs">
-				<a href="#settingsUserInfo" class="active"><i class="icon-at"></i></a>
-				<a href="#settingsUserChannels"><i class="icon-hash"></i></a>
+				<a href="#adminUserInfo" class="active"><i class="icon-at"></i></a>
+				<a href="#adminUserChannels"><i class="icon-hash"></i></a>
 			</div>
 		</div>
 		{{#if flexOpened}}
 			<div class="content">
 				<div class="user-view">
-					<div id="settingsUserInfo" class="user-info-content">
-						{{> settingsUserInfo userData}}
+					<div id="adminUserInfo" class="user-info-content">
+						{{#if userData}}
+							{{> adminUserInfo userData}}
+						{{/if}}
 					</div>
-					<div id="settingsUserChannels" class="user-info-content channels" style="display: none">
+					<div id="adminUserChannels" class="user-info-content channels" style="display: none">
 						{{#each userChannels}}
-							{{> settingsUserChannels}}
+							{{> adminUserChannels}}
 						{{/each}}
 					</div>
 				</div>
