@@ -95,7 +95,7 @@ class @ChatMessages
 	update: (id, rid, input) ->
 		if _.trim(input.value) isnt ''
 			msg = input.value
-			Meteor.call 'updateMessage', { id: id, msg: msg, rid: rid }
+			Meteor.call 'updateMessage', { _id: id, msg: msg, rid: rid }
 			this.clearEditing()
 			# this.stopTyping(rid)
 

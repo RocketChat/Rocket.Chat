@@ -100,7 +100,7 @@
   "Message_AllowDeleting" : "Pozwól usunąć wiadomość",
   "Message_ShowEditedStatus" : "Pokaż zmieniony status",
   "Message_ShowDeletedStatus" : "Pokaż usunięty status",
-  "Message_KeepHistoryOfEdits" : "Zachowaj historię statusu",
+  "Message_KeepHistory" : "Zachowaj historię statusu",
   "More_channels" : "Więcej kanałów",
   "Msgs" : "Wiadomości",
   "multi" : "multi",

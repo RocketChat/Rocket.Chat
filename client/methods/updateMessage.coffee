@@ -15,4 +15,3 @@ Meteor.methods
 				$set:
 					ets: message.ets
 					msg: message.msg
-					_history: true

@@ -14,11 +14,11 @@ Meteor.startup ->
 	RocketChat.settings.add 'SMTP_Password', '', { type: 'string', group: 'SMTP' }
 
 	RocketChat.settings.addGroup 'Message'
-	RocketChat.settings.add 'Message_AllowEditing', true, { type: 'boolean', group: 'Message' }
-	RocketChat.settings.add 'Message_AllowDeleting', true, { type: 'boolean', group: 'Message' }
-	RocketChat.settings.add 'Message_ShowEditedStatus', true, { type: 'boolean', group: 'Message' }
-	RocketChat.settings.add 'Message_ShowDeletedStatus', false, { type: 'boolean', group: 'Message' }
-	RocketChat.settings.add 'Message_KeepHistoryOfEdits', false, { type: 'boolean', group: 'Message' }
+	RocketChat.settings.add 'Message_AllowEditing', true, { type: 'boolean', group: 'Message', public: true }
+	RocketChat.settings.add 'Message_AllowDeleting', true, { type: 'boolean', group: 'Message', public: true }
+	RocketChat.settings.add 'Message_ShowEditedStatus', true, { type: 'boolean', group: 'Message', public: true }
+	RocketChat.settings.add 'Message_ShowDeletedStatus', false, { type: 'boolean', group: 'Message', public: true }
+	RocketChat.settings.add 'Message_KeepHistory', false, { type: 'boolean', group: 'Message', public: true }
 	RocketChat.settings.add 'Message_MaxAllowedSize', 5000, { type: 'int', group: 'Message', public: true }
 
 	RocketChat.settings.addGroup 'Meta'
