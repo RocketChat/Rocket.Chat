@@ -13,7 +13,10 @@
 				<li>
 					<a href="{{pathFor 'admin-users'}}" class="admin-link">{{_ "Users"}}</a>
 				</li>
-				<hr />
+				
+				<h3 class="add-room">
+					{{_ "Settings"}}
+				</h3>
 				{{#each groups}}
 				<li>
 					<a href="{{pathFor 'admin' group=_id}}" class="admin-link">{{_ i18nLabel}}</a>
