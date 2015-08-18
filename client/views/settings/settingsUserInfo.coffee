@@ -35,6 +35,7 @@ Template.settingsUserInfo.events
 				toastr.error error.reason
 
 	'click .delete': ->
+		_id = Template.currentData()._id
 		swal {
 			title: t('Are_you_sure')
 			text: t('Delete_User_Warning')
@@ -53,6 +54,6 @@ Template.settingsUserInfo.events
 				timer: 2000
 				showConfirmButton: false 
 
-			Meteor.call 'deleteUser', Template.currentData()._id, (error, result) ->
+			Meteor.call 'deleteUser', _id, (error, result) ->
 				if error
 					toastr.error error.reason

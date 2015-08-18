@@ -14,7 +14,7 @@ Template.settingsUsers.helpers
 	userChannels: ->
 		return ChatSubscription.find({ "u._id": Session.get 'settingsUsersSelected' }, { fields: { rid: 1, name: 1, t: 1 }, sort: { t: 1, name: 1 } }).fetch()
 	isLoading: ->
-		return 'btn-loading' unless Template.instance().ready()?.get()
+		return 'btn-loading' unless Template.instance().ready?.get()
 	hasMore: ->
 		return Template.instance().limit?.get() is Template.instance().users?().length
 
@@ -80,4 +80,6 @@ Template.settingsUsers.events
 		$($(e.currentTarget).attr('href')).show()
 
 	'click .load-more': (e, t) ->
+		e.preventDefault()
+		e.stopPropagation()
 		t.limit.set t.limit.get() + 50

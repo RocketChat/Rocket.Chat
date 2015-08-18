@@ -17,7 +17,6 @@
 						{{#unless isReady}}<i class="icon-spin4"></i>{{/unless}}
 					</div>
 				</form>
-				{{#if isReady}}
 				<div class="results">
 					{{{_ "Showing_results" users.length}}}
 				</div>
@@ -40,11 +39,6 @@
 						</li>
 					{{/if}}
 				</div>
-				{{else}}
-				<div class="results">
-					{{{_ "Loading..."}}}
-				</div>
-				{{/if}}
 			{{/unless}}
 		</div>
 	</section>
