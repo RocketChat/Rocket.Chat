@@ -295,6 +295,9 @@ Template.room.helpers
 	canJoin: ->
 		return !! ChatRoom.findOne { _id: @_id, t: 'c' }
 
+	canRecordAudio: ->
+		return navigator.getUserMedia? or navigator.webkitGetUserMedia?
+
 
 Template.room.events
 
@@ -353,20 +356,15 @@ Template.room.events
 			return
 
 		items = e.originalEvent.clipboardData.items
+		files = []
 		for item in items
 			if item.kind is 'file' and item.type.indexOf('image/') isnt -1
 				e.preventDefault()
+				files.push
+					file: item.getAsFile()
+					name: 'Clipboard'
 
-				blob = item.getAsFile()
-
-				newFile = new (FS.File)(blob)
-				newFile.name('Clipboard')
-				newFile.rid = Session.get('openedRoom')
-				newFile.recId = Random.id()
-				newFile.userId = Meteor.userId()
-				Files.insert newFile, (error, fileObj) ->
-					unless error
-						toastr.success 'Upload from clipboard succeeded!'
+		fileUpload files
 
 	'keydown .input-message': (event) ->
 		Template.instance().chatMessages.keydown(@_id, event, Template.instance())
@@ -551,14 +549,43 @@ Template.room.events
 	'dropped .dropzone-overlay': (e) ->
 		e.currentTarget.parentNode.classList.remove 'over'
 
+		files = []
 		FS?.Utility?.eachFile e, (file) ->
-			newFile = new (FS.File)(file)
-			newFile.rid = Session.get('openedRoom')
-			newFile.recId = Random.id()
-			newFile.userId = Meteor.userId()
-			Files.insert newFile, (error, fileObj) ->
-				unless error
-					toastr.success 'Upload succeeded!'
+			files.push
+				file: file
+				name: file.name
+
+		fileUpload files
+
+	'change .message-form input[type=file]': (event, template) ->
+		e = event.originalEvent or event
+		files = e.target.files
+		if not files or files.length is 0
+			files = e.dataTransfer?.files or []
+
+		filesToUpload = []
+		for file in files
+			filesToUpload.push
+				file: file
+				name: file.name
+
+		fileUpload filesToUpload
+
+	'click .message-form .mic': (e, t) ->
+		AudioRecorder.start ->
+			t.$('.stop-mic').removeClass('hidden')
+			t.$('.mic').addClass('hidden')
+
+	'click .message-form .stop-mic': (e, t) ->
+		AudioRecorder.stop (blob) ->
+			fileUpload [{
+				file: blob
+				type: 'audio'
+				name: 'Audio record'
+			}]
+
+		t.$('.stop-mic').addClass('hidden')
+		t.$('.mic').removeClass('hidden')
 
 	'click .deactivate': ->
 		username = Session.get('showUserInfo')

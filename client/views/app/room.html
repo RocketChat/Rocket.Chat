@@ -45,10 +45,24 @@
 			<footer class="footer">
 				{{#if subscribed}}
 					<form class="message-form" method="post" action="/">
-						<div>
-							{{> messagePopupConfig getPupupConfig}}
-							<textarea dir="auto" name="msg" maxlength="{{maxMessageLength}}" class="input-message" placeholder="{{_ 'Message'}}"></textarea>
+						<div style="display: flex">
+							<div class="file">
+								<i class="icon-attach"></i>
+								<input type="file" accept="image/*">
+							</div>
+							<div class="input-message-container">
+								{{> messagePopupConfig getPupupConfig}}
+								<textarea dir="auto" name="msg" maxlength="{{maxMessageLength}}" class="input-message" placeholder="{{_ 'Message'}}"></textarea>
+							</div>
 							<i class="icon-paper-plane" title="{{_ "Send_Message"}}"></i>
+							{{#if canRecordAudio}}
+								<div class="mic">
+									<i class="icon-mic"></i>
+								</div>
+								<div class="stop-mic hidden">
+									<i class="icon-stop"></i>
+								</div>
+							{{/if}}
 						</div>
 						<div class="users-typing">
 							{{#with usersTyping}}

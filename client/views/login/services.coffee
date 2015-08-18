@@ -42,7 +42,7 @@ Template.loginServices.events
 				serviceIcon.removeClass 'hidden'
 
 				if error
-					console.log error
+					console.log JSON.stringify(error), error.message
 					toastr.error error.message
 					return
 
@@ -61,7 +61,7 @@ Template.loginServices.events
 					return
 
 				if error
-					console.log error
+					console.log JSON.stringify(error), error.message
 					toastr.error error.message
 					return
 				FlowRouter.go 'index'
