@@ -10,7 +10,7 @@ Template.message.helpers
 		return moment(this.ts).format('LL')
 
 	isTemp: ->
-		if @temp is true
+		if @temp is true or @_history is true
 			return 'temp'
 		return
 
