@@ -1,19 +1,24 @@
 Template.room.helpers
 	messages: ->
-		return ChatMessage.find { rid: this._id, t: { '$ne': 't' }  }, { sort: { ts: 1 } }
+		return ChatMessage.find { rid: visitor.getRoom(), t: { '$ne': 't' }  }, { sort: { ts: 1 } }
 
 Template.room.events
 
 	'keyup .input-message': (event) ->
-		Template.instance().chatMessages.keyup(@_id, event, Template.instance())
+		Template.instance().chatMessages.keyup(visitor.getRoom(), event, Template.instance())
 
 	'keydown .input-message': (event) ->
-		Template.instance().chatMessages.keydown(@_id, event, Template.instance())
+		Template.instance().chatMessages.keydown(visitor.getRoom(), event, Template.instance())
 
 Template.room.onCreated ->
-	this.subscribe 'visitorRoom'visitorId.get()
-	console.log 'visitor ->',visitorId.get()
-
+	self = @
+	self.autorun ->
+		console.log 'visitor ->',visitor.getToken()
+		self.subscribe 'visitorRoom', visitor.getToken(), ->
+			console.log 'visitorRoom.ready()'
+			room = ChatRoom.findOne()
+			if room?
+				visitor.setRoom room._id
 
 Template.room.onRendered ->
 	this.chatMessages = new ChatMessages
