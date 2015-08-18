@@ -368,6 +368,9 @@ Template.room.events
 	'click .message-form .icon-paper-plane': (event) ->
 		input = $(event.currentTarget).siblings("textarea")
 		Template.instance().chatMessages.send(this._id, input.get(0))
+		event.preventDefault()
+		event.stopPropagation()
+		input.focus()
 
 	'click .add-user': (event) ->
 		toggleAddUser()
