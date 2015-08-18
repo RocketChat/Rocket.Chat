@@ -40,6 +40,7 @@ class @ChatMessages
 		return -1
 
 	edit: (element, index) ->
+		return unless RocketChat.settings.get 'Message_AllowEditing'
 		return if element.classList.contains("system")
 		this.clearEditing()
 		id = element.getAttribute("id")
