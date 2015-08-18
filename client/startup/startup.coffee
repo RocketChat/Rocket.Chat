@@ -33,9 +33,9 @@ Meteor.startup ->
 			Meteor.call 'loadLocale', language, (data) ->
 				moment.locale(language)
 
-	languageComputation = Tracker.autorun ->
+	Tracker.autorun (c) ->
 		if Meteor.user()?.language?
-			languageComputation.stop()
+			c.stop()
 
 			localStorage.setItem("userLanguage", Meteor.user().language)
 			setLanguage Meteor.user().language
