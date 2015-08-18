@@ -1,7 +1,7 @@
 Template.message.helpers
 
 	own: ->
-		return 'own' if this.u?._id is Meteor.userId()
+		return 'own' if this.u?._id is Meteor.userId() 
 
 	time: ->
 		return moment(this.ts).format('HH:mm')
@@ -23,6 +23,7 @@ Template.message.helpers
 			when 'nu' then t('User_added', { user_added: this.u.username })
 			when 'uj' then t('User_joined_channel', { user: this.u.username })
 			when 'wm' then t('Welcome', { user: this.u.username })
+			when 'rm' then t('Message_removed', { user: this.u.username })
 			when 'rtc' then RocketChat.callbacks.run 'renderRtcMessage', this
 			else
 				this.html = this.msg
@@ -33,8 +34,15 @@ Template.message.helpers
 				return this.html
 
 	system: ->
-		return 'system' if this.t in ['s', 'p', 'f', 'r', 'au', 'ru', 'ul', 'nu', 'wm', 'uj']
-
+		return 'system' if this.t in ['s', 'p', 'f', 'r', 'au', 'ru', 'ul', 'nu', 'wm', 'uj', 'rm']
+	edited: ->
+		return @ets and @t not in ['s', 'p', 'f', 'r', 'au', 'ru', 'ul', 'nu', 'wm', 'uj', 'rm']
+	canEdit: ->
+		return RocketChat.settings.get 'Message_AllowEditing'
+	canDelete: ->
+		return RocketChat.settings.get 'Message_AllowDeleting'
+	showEditedStatus: ->
+		return RocketChat.settings.get 'Message_ShowEditedStatus'
 
 Template.message.onViewRendered = (context) ->
 	view = this

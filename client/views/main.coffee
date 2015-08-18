@@ -19,48 +19,53 @@ Template.body.onRendered ->
 				f.parentNode.insertBefore j, f
 
 	Tracker.autorun (c) ->
-		if RocketChat.settings.get 'Meta:language'
+		if RocketChat.settings.get 'Meta_language'
 			c.stop()
+
 			Meta.set
 				name: 'http-equiv'
 				property: 'content-language'
-				content: RocketChat.settings.get 'Meta:language'
+				content: RocketChat.settings.get 'Meta_language'
 			Meta.set
 				name: 'name'
 				property: 'language'
-				content: RocketChat.settings.get 'Meta:language'
+				content: RocketChat.settings.get 'Meta_language'
 
 	Tracker.autorun (c) ->
-		if RocketChat.settings.get 'Meta:fb:app_id'
+		if RocketChat.settings.get 'Meta_fb_app_id'
 			c.stop()
+
 			Meta.set
 				name: 'property'
 				property: 'fb:app_id'
-				content: RocketChat.settings.get 'Meta:fb:app_id'
+				content: RocketChat.settings.get 'Meta_fb_app_id'
 
 	Tracker.autorun (c) ->
-		if RocketChat.settings.get 'Meta:robots'
+		if RocketChat.settings.get 'Meta_robots'
 			c.stop()
+
 			Meta.set
 				name: 'name'
 				property: 'robots'
-				content: RocketChat.settings.get 'Meta:robots'
+				content: RocketChat.settings.get 'Meta_robots'
 
 	Tracker.autorun (c) ->
-		if RocketChat.settings.get 'Meta:google-site-verification'
+		if RocketChat.settings.get 'Meta_google-site-verification'
 			c.stop()
+
 			Meta.set
 				name: 'name'
 				property: 'google-site-verification'
-				content: RocketChat.settings.get 'Meta:google-site-verification'
+				content: RocketChat.settings.get 'Meta_google-site-verification'
 
 	Tracker.autorun (c) ->
-		if RocketChat.settings.get 'Meta:msvalidate.01'
+		if RocketChat.settings.get 'Meta_msvalidate01'
 			c.stop()
+
 			Meta.set
 				name: 'name'
 				property: 'msvalidate.01'
-				content: RocketChat.settings.get 'Meta:msvalidate.01'
+				content: RocketChat.settings.get 'Meta_msvalidate01'
 
 	if Meteor.isCordova
 		$(document.body).addClass 'is-cordova'
