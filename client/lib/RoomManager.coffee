@@ -92,8 +92,8 @@ Meteor.startup ->
 				return openedRooms[rid].ready
 		}
 
-	getDomOfRoom = (rid) ->
-		room = openedRooms[rid]
+	getDomOfRoom = (id, rid) ->
+		room = openedRooms[id]
 		if not room?
 			return
 
