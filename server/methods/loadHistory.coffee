@@ -7,7 +7,7 @@ Meteor.methods
 			return false
 
 		query =
-			_history: { $ne: true }
+			_hidden: { $ne: true }
 			rid: rid
 			ts:
 				$lt: end
@@ -17,5 +17,8 @@ Meteor.methods
 				ts: -1
 			limit: limit
 			skip: skip
+
+		if not RocketChat.settings.get 'Message_ShowEditedStatus'
+			options.fields = { ets: 0 }
 
 		return ChatMessage.find(query, options).fetch()

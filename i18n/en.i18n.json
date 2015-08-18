@@ -102,7 +102,7 @@
   "Message" : "Message",
   "Message_AllowDeleting" : "Allow Message Deleting",
   "Message_AllowEditing" : "Allow Message Editing",
-  "Message_KeepHistory" : "Keep Status History",
+  "Message_KeepHistory" : "Keep Message History",
   "Message_removed" : "Message removed",
   "Message_ShowDeletedStatus" : "Show Deleted Status",
   "Message_ShowEditedStatus" : "Show Edited Status",

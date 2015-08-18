@@ -8,7 +8,7 @@ Meteor.methods
 		# If we keep history of edits, insert a new message to store history information
 		if RocketChat.settings.get 'Message_KeepHistory'
 			history = ChatMessage.findOne message._id
-			history._history = true
+			history._hidden = true
 			history.parent = history._id
 			history.ets = new Date()
 			delete history._id
