@@ -42,8 +42,8 @@ Template.settings.events
 
 		if not _.isEmpty updateSettings
 			RocketChat.settings.batchSet updateSettings, (err, success) ->
-				return toastr.error TAPi18next.t 'Error_updating_settings' if err
-				toastr.success TAPi18next.t 'Settings_updated'
+				return toastr.error TAPi18next.t 'project:Error_updating_settings' if err
+				toastr.success TAPi18next.t 'project:Settings_updated'
 
 Template.settings.onRendered ->
 	Tracker.afterFlush ->
