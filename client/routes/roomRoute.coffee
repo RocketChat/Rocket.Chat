@@ -28,10 +28,10 @@ openRoom = (type, name) ->
 			if mainNode?
 				for child in mainNode.children
 					mainNode.removeChild child if child?
-				room = RoomManager.getDomOfRoom(type + name, room._id)
-				mainNode.appendChild room
-				if room.classList.contains('room-container')
-					room.querySelector('.messages-box > .wrapper').scrollTop = room.oldScrollTop
+				roomDom = RoomManager.getDomOfRoom(type + name, room._id)
+				mainNode.appendChild roomDom
+				if roomDom.classList.contains('room-container')
+					roomDom.querySelector('.messages-box > .wrapper').scrollTop = roomDom.oldScrollTop
 
 			Session.set 'openedRoom', room._id
 
