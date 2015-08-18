@@ -23,7 +23,13 @@ if Meteor.isCordova
 		Meteor.call 'log', 'CLIENT', 'startup', arguments
 
 		if notification.open is true and notification.payload?.rid?
-			FlowRouter.go 'room', _id: notification.payload.rid
+			switch notification.payload.type
+				when 'c'
+					FlowRouter.go 'channel', name: notification.payload.name
+				when 'p'
+					FlowRouter.go 'group', name: notification.payload.name
+				when 'd'
+					FlowRouter.go 'direct', username: notification.payload.name
 
 	Push.addListener 'message', (notification) ->
 		Meteor.call 'log', 'CLIENT', 'message', arguments
