@@ -1,13 +1,13 @@
 Template.body.onRendered ->
 
-	dataLayerComputation = Tracker.autorun ->
+	Tracker.autorun (c) ->
 		w = window
 		d = document
 		s = 'script'
 		l = 'dataLayer'
 		i = RocketChat.settings.get 'API_Analytics'
 		if Match.test(i, String) and i.trim() isnt ''
-			dataLayerComputation?.stop()
+			c.stop()
 			do (w,d,s,l,i) ->
 				w[l] = w[l] || []
 				w[l].push {'gtm.start': new Date().getTime(), event:'gtm.js'}
@@ -18,9 +18,9 @@ Template.body.onRendered ->
 				j.src = '//www.googletagmanager.com/gtm.js?id=' + i + dl
 				f.parentNode.insertBefore j, f
 
-	metaLanguageComputation = Tracker.autorun ->
+	Tracker.autorun (c) ->
 		if RocketChat.settings.get 'Meta:language'
-			metaLanguageComputation?.stop()
+			c.stop()
 			Meta.set
 				name: 'http-equiv'
 				property: 'content-language'
@@ -30,33 +30,33 @@ Template.body.onRendered ->
 				property: 'language'
 				content: RocketChat.settings.get 'Meta:language'
 
-	metaFBComputation = Tracker.autorun ->
+	Tracker.autorun (c) ->
 		if RocketChat.settings.get 'Meta:fb:app_id'
-			metaFBComputation?.stop()
+			c.stop()
 			Meta.set
 				name: 'property'
 				property: 'fb:app_id'
 				content: RocketChat.settings.get 'Meta:fb:app_id'
 
-	metaRobotsComputation = Tracker.autorun ->
+	Tracker.autorun (c) ->
 		if RocketChat.settings.get 'Meta:robots'
-			metaRobotsComputation?.stop()
+			c.stop()
 			Meta.set
 				name: 'name'
 				property: 'robots'
 				content: RocketChat.settings.get 'Meta:robots'
 
-	metaGoogleComputation = Tracker.autorun ->
+	Tracker.autorun (c) ->
 		if RocketChat.settings.get 'Meta:google-site-verification'
-			metaGoogleComputation?.stop()
+			c.stop()
 			Meta.set
 				name: 'name'
 				property: 'google-site-verification'
 				content: RocketChat.settings.get 'Meta:google-site-verification'
 
-	metaMSValidateComputation = Tracker.autorun ->
+	Tracker.autorun (c) ->
 		if RocketChat.settings.get 'Meta:msvalidate.01'
-			metaMSValidateComputation?.stop()
+			c.stop()
 			Meta.set
 				name: 'name'
 				property: 'msvalidate.01'
