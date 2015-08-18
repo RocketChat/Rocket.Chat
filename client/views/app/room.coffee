@@ -371,6 +371,7 @@ Template.room.events
 		event.preventDefault()
 		event.stopPropagation()
 		input.focus()
+		input.get(0).updateAutogrow()
 
 	'click .add-user': (event) ->
 		toggleAddUser()

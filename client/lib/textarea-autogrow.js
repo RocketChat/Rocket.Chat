@@ -72,6 +72,7 @@
 			$(window).resize(update);
 
 			update();
+			self.updateAutogrow = update;
 		});
 	};
 })(jQuery);
