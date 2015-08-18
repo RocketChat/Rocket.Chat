@@ -35,7 +35,7 @@ Api.addRoute 'rooms/:id/messages', authRequired: true,
 	get: ->
 		try
 			if Meteor.call('canAccessRoom', @urlParams.id, this.userId)
-				msgs = ChatMessage.find({rid: @urlParams.id, _deleted: {$ne: true}}, {sort: {ts: -1}}, {limit: 50}).fetch()
+				msgs = ChatMessage.find({rid: @urlParams.id, _hidden: {$ne: true}}, {sort: {ts: -1}}, {limit: 50}).fetch()
 				status: 'success', messages: msgs
 			else
 				statusCode: 403   # forbidden
