@@ -1,4 +1,4 @@
-Template.settingsUserInfo.helpers
+Template.adminUserInfo.helpers
 	name: ->
 		return if @name then @name else TAPi18next.t 'project:Unnamed'
 	email: ->
@@ -19,7 +19,7 @@ Template.settingsUserInfo.helpers
 
 			return "UTC #{@utcOffset}"
 
-Template.settingsUserInfo.events
+Template.adminUserInfo.events
 	'click .deactivate': ->
 		Meteor.call 'setUserActiveStatus', Template.currentData()._id, false, (error, result) ->
 			if result
@@ -57,3 +57,4 @@ Template.settingsUserInfo.events
 			Meteor.call 'deleteUser', _id, (error, result) ->
 				if error
 					toastr.error error.reason
+				
