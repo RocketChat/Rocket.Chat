@@ -15,7 +15,7 @@ Template.settings.helpers
 		console.log 'room.helpers arrowPosition' if window.rocketDebug
 		return 'left' unless Session.equals('flexOpened', true)
 	label: ->
-		label = @i18nLabel
+		label = @i18nLabel or @_id
 		if label?.indexOf(':') is -1
 			label = 'project:' + label
 		return TAPi18next.t label
