@@ -39,26 +39,26 @@ FlowRouter.route '/changeavatar',
 	action: ->
 		BlazeLayout.render 'main', {center: 'avatarPrompt'}
 
-FlowRouter.route '/settings/users',
-	name: 'settings-users'
+FlowRouter.route '/admin/users',
+	name: 'admin-users'
 
 	action: ->
-		BlazeLayout.render 'main', {center: 'settingsUsers'}
+		BlazeLayout.render 'main', {center: 'adminUsers'}
 
-FlowRouter.route '/settings/:group?',
-	name: 'settings'
+FlowRouter.route '/admin/:group?',
+	name: 'admin'
 
 	action: ->
-		BlazeLayout.render 'main', {center: 'settings'}
+		BlazeLayout.render 'main', {center: 'admin'}
 
-FlowRouter.route '/usersettings/:group?',
-	name: 'userSettings'
+FlowRouter.route '/account/:group?',
+	name: 'account'
 
 	action: (params) ->
 		unless params.group
 			params.group = 'Profile'
 		params.group = _.capitalize params.group, true
-		BlazeLayout.render 'main', { center: "userSettings#{params.group}" }
+		BlazeLayout.render 'main', { center: "account#{params.group}" }
 
 FlowRouter.route '/history/private',
 	name: 'privateHistory'

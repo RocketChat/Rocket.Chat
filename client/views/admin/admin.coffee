@@ -1,4 +1,4 @@
-Template.settings.helpers
+Template.admin.helpers
 	isAdmin: ->
 		return Meteor.user().admin is true
 	group: ->
@@ -15,7 +15,7 @@ Template.settings.helpers
 		console.log 'room.helpers arrowPosition' if window.rocketDebug
 		return 'left' unless Session.equals('flexOpened', true)
 	label: ->
-		label = @i18nLabel
+		label = @i18nLabel or @_id
 		if label?.indexOf(':') is -1
 			label = 'project:' + label
 		return TAPi18next.t label
@@ -25,7 +25,7 @@ Template.settings.helpers
 			description = 'project:' + description
 		return TAPi18next.t description
 
-Template.settings.events
+Template.admin.events
 	"click .submit": (e, t) ->
 		group = FlowRouter.getParam('group')
 		settings = Settings.find({ group: group }).fetch()
@@ -42,10 +42,10 @@ Template.settings.events
 
 		if not _.isEmpty updateSettings
 			RocketChat.settings.batchSet updateSettings, (err, success) ->
-				return toastr.error TAPi18next.t 'Error_updating_settings' if err
-				toastr.success TAPi18next.t 'Settings_updated'
+				return toastr.error TAPi18next.t 'project:Error_updating_settings' if err
+				toastr.success TAPi18next.t 'project:Settings_updated'
 
-Template.settings.onRendered ->
+Template.admin.onRendered ->
 	Tracker.afterFlush ->
-		SideNav.setFlex "settingsFlex"
+		SideNav.setFlex "adminFlex"
 		SideNav.openFlex()

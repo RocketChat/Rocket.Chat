@@ -1,4 +1,4 @@
-Template.settingsUsers.helpers
+Template.adminUsers.helpers
 	isAdmin: ->
 		return Meteor.user().admin is true
 	isReady: ->
@@ -10,15 +10,30 @@ Template.settingsUsers.helpers
 	arrowPosition: ->
 		return 'left' unless Session.equals('flexOpened', true)
 	userData: ->
-		return Meteor.users.findOne Session.get 'settingsUsersSelected'
+		return Meteor.users.findOne Session.get 'adminUsersSelected'
 	userChannels: ->
 		return ChatSubscription.find({ "u._id": Session.get 'settingsUsersSelected' }, { fields: { rid: 1, name: 1, t: 1 }, sort: { t: 1, name: 1 } }).fetch()
 	isLoading: ->
 		return 'btn-loading' unless Template.instance().ready?.get()
 	hasMore: ->
 		return Template.instance().limit?.get() is Template.instance().users?().length
+	phoneNumber: ->
+		return '' unless @phoneNumber
+		if @phoneNumber.length > 10
+			return "(#{@phoneNumber.substr(0,2)}) #{@phoneNumber.substr(2,5)}-#{@phoneNumber.substr(7)}"
+		else
+			return "(#{@phoneNumber.substr(0,2)}) #{@phoneNumber.substr(2,4)}-#{@phoneNumber.substr(6)}"
+	lastLogin: ->
+		if @lastLogin
+			return moment(@lastLogin).format('LLL')
+	utcOffset: ->
+		if @utcOffset?
+			if @utcOffset > 0
+				@utcOffset = "+#{@utcOffset}"
 
-Template.settingsUsers.onCreated ->
+			return "UTC #{@utcOffset}"
+
+Template.adminUsers.onCreated ->
 	instance = @
 	@limit = new ReactiveVar 50
 	@filter = new ReactiveVar ''
@@ -31,7 +46,7 @@ Template.settingsUsers.onCreated ->
 		instance.ready.set subscription.ready()
 
 	@autorun ->
-		if Session.get 'settingsUsersSelected'
+		if Session.get 'adminUsersSelected'
 			channelSubscription = instance.subscribe 'userChannels', Session.get 'settingsUsersSelected'
 
 	@users = ->
@@ -44,12 +59,12 @@ Template.settingsUsers.onCreated ->
 		
 		return Meteor.users.find(query, { limit: instance.limit?.get(), sort: { username: 1 } }).fetch()
 
-Template.settingsUsers.onRendered ->
+Template.adminUsers.onRendered ->
 	Tracker.afterFlush ->
-		SideNav.setFlex "settingsFlex"
+		SideNav.setFlex "adminFlex"
 		SideNav.openFlex()
 
-Template.settingsUsers.events
+Template.adminUsers.events
 	'keydown #users-filter': (e) ->
 		if e.which is 13
 			e.stopPropagation()
@@ -68,13 +83,27 @@ Template.settingsUsers.events
 
 	'click .user-info': (e) ->
 		e.preventDefault()
-		Session.set 'settingsUsersSelected', $(e.currentTarget).data('id')
+		Session.set 'adminUsersSelected', $(e.currentTarget).data('id')
 		Session.set 'flexOpened', true
 
 	'click .user-info-tabs a': (e) ->
 		e.preventDefault()
 		$('.user-info-tabs a').removeClass 'active'
 		$(e.currentTarget).addClass 'active'
+
+	'click .deactivate': ->
+		Meteor.call 'setUserActiveStatus', Session.get('adminUsersSelected'), false, (error, result) ->
+			if result
+				toastr.success t('User_has_been_deactivated')
+			if error
+				toastr.error error.reason
+	
+	'click .activate': ->
+		Meteor.call 'setUserActiveStatus', Session.get('adminUsersSelected'), true, (error, result) ->
+			if result
+				toastr.success t('User_has_been_activated')
+			if error
+				toastr.error error.reason
 
 		$('.user-info-content').hide()
 		$($(e.currentTarget).attr('href')).show()

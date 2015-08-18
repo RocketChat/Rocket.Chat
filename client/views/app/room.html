@@ -52,9 +52,9 @@
 							</div>
 							<div class="input-message-container">
 								{{> messagePopupConfig getPupupConfig}}
-								<textarea dir="auto" name="msg" maxlength="{{maxMessageLength}}" class="input-message" placeholder="{{_ 'Message'}}"></textarea>
+								<textarea dir="auto" name="msg" maxlength="{{maxMessageLength}}" class="input-message autogrow-short" placeholder="{{_ 'Message'}}"></textarea>
+								<i class="icon-paper-plane" title="{{_ "Send_Message"}}"></i>
 							</div>
-							<i class="icon-paper-plane" title="{{_ "Send_Message"}}"></i>
 							{{#if canRecordAudio}}
 								<div class="mic">
 									<i class="icon-mic"></i>
