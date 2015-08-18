@@ -1,10 +1,10 @@
-Template.settingsFlex.helpers
+Template.adminFlex.helpers
 	groups: ->
 		return Settings.find({type: 'group'}, { sort: { sort: 1, i18nLabel: 1 } }).fetch()
 	label: ->
 		return TAPi18next.t @i18nLabel
 
-Template.settingsFlex.events
+Template.adminFlex.events
 	'mouseenter header': ->
 		SideNav.overArrow()
 
@@ -16,3 +16,6 @@ Template.settingsFlex.events
 
 	'click .cancel-settings': ->
 		SideNav.closeFlex()
+
+	'click .admin-link': ->
+		menu.close()

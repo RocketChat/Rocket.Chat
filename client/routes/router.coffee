@@ -39,17 +39,17 @@ FlowRouter.route '/changeavatar',
 	action: ->
 		BlazeLayout.render 'main', {center: 'avatarPrompt'}
 
-FlowRouter.route '/settings/users',
-	name: 'settings-users'
+FlowRouter.route '/admin/users',
+	name: 'admin-users'
 
 	action: ->
-		BlazeLayout.render 'main', {center: 'settingsUsers'}
+		BlazeLayout.render 'main', {center: 'adminUsers'}
 
-FlowRouter.route '/settings/:group?',
-	name: 'settings'
+FlowRouter.route '/admin/:group?',
+	name: 'admin'
 
 	action: ->
-		BlazeLayout.render 'main', {center: 'settings'}
+		BlazeLayout.render 'main', {center: 'admin'}
 
 FlowRouter.route '/account/:group?',
 	name: 'account'

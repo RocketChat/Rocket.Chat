@@ -1,4 +1,4 @@
-Template.settingsUsers.helpers
+Template.adminUsers.helpers
 	isAdmin: ->
 		return Meteor.user().admin is true
 	isReady: ->
@@ -20,7 +20,7 @@ Template.settingsUsers.helpers
 	arrowPosition: ->
 		return 'left' unless Session.equals('flexOpened', true)
 	userData: ->
-		return Meteor.users.findOne Session.get 'settingsUsersSelected'
+		return Meteor.users.findOne Session.get 'adminUsersSelected'
 	phoneNumber: ->
 		return '' unless @phoneNumber
 		if @phoneNumber.length > 10
@@ -37,7 +37,7 @@ Template.settingsUsers.helpers
 
 			return "UTC #{@utcOffset}"
 
-Template.settingsUsers.onCreated ->
+Template.adminUsers.onCreated ->
 	instance = @
 	@limit = new ReactiveVar 50
 	@filter = new ReactiveVar ''
@@ -49,12 +49,12 @@ Template.settingsUsers.onCreated ->
 		subscription = instance.subscribe 'fullUsers', filter, limit
 		instance.ready.set subscription.ready()
 
-Template.settingsUsers.onRendered ->
+Template.adminUsers.onRendered ->
 	Tracker.afterFlush ->
-		SideNav.setFlex "settingsFlex"
+		SideNav.setFlex "adminFlex"
 		SideNav.openFlex()
 
-Template.settingsUsers.events
+Template.adminUsers.events
 	'keydown #users-filter': (e) ->
 		if e.which is 13
 			e.stopPropagation()
@@ -73,18 +73,18 @@ Template.settingsUsers.events
 
 	'click .user-info': (e) ->
 		e.preventDefault()
-		Session.set 'settingsUsersSelected', $(e.currentTarget).data('id')
+		Session.set 'adminUsersSelected', $(e.currentTarget).data('id')
 		Session.set 'flexOpened', true
 
 	'click .deactivate': ->
-		Meteor.call 'setUserActiveStatus', Session.get('settingsUsersSelected'), false, (error, result) ->
+		Meteor.call 'setUserActiveStatus', Session.get('adminUsersSelected'), false, (error, result) ->
 			if result
 				toastr.success t('User_has_been_deactivated')
 			if error
 				toastr.error error.reason
 	
 	'click .activate': ->
-		Meteor.call 'setUserActiveStatus', Session.get('settingsUsersSelected'), true, (error, result) ->
+		Meteor.call 'setUserActiveStatus', Session.get('adminUsersSelected'), true, (error, result) ->
 			if result
 				toastr.success t('User_has_been_activated')
 			if error
@@ -109,6 +109,6 @@ Template.settingsUsers.events
 				timer: 2000
 				showConfirmButton: false 
 
-			Meteor.call 'deleteUser', Session.get('settingsUsersSelected'), (error, result) ->
+			Meteor.call 'deleteUser', Session.get('adminUsersSelected'), (error, result) ->
 				if error
 					toastr.error error.reason

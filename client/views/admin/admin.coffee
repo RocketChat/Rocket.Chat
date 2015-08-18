@@ -1,4 +1,4 @@
-Template.settings.helpers
+Template.admin.helpers
 	isAdmin: ->
 		return Meteor.user().admin is true
 	group: ->
@@ -25,7 +25,7 @@ Template.settings.helpers
 			description = 'project:' + description
 		return TAPi18next.t description
 
-Template.settings.events
+Template.admin.events
 	"click .submit": (e, t) ->
 		group = FlowRouter.getParam('group')
 		settings = Settings.find({ group: group }).fetch()
@@ -45,7 +45,7 @@ Template.settings.events
 				return toastr.error TAPi18next.t 'project:Error_updating_settings' if err
 				toastr.success TAPi18next.t 'project:Settings_updated'
 
-Template.settings.onRendered ->
+Template.admin.onRendered ->
 	Tracker.afterFlush ->
-		SideNav.setFlex "settingsFlex"
+		SideNav.setFlex "adminFlex"
 		SideNav.openFlex()
