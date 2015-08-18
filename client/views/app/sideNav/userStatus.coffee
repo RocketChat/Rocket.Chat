@@ -35,7 +35,7 @@ Template.userStatus.events
 	'click #avatar': (event) ->
 		FlowRouter.go 'changeAvatar'
 
-	'click #settings': (event) ->
+	'click #account': (event) ->
 		SideNav.setFlex "accountFlex"
 		SideNav.openFlex()
 		FlowRouter.go 'account'
