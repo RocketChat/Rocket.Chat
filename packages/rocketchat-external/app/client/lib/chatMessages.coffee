@@ -72,7 +72,8 @@ class @ChatMessages
 			# KonchatNotification.removeRoomNotification(rid)
 			msg = input.value
 			input.value = ''
-			msgObject = { _id: Random.id(), rid: rid, msg: msg}
+			rid ?= visitor.getRoom(true)
+			msgObject = { _id: Random.id(), rid: rid, token: visitor.getToken(), msg: msg}
 			# this.stopTyping(rid)
 			#Check if message starts with /command
 			if msg[0] is '/'
