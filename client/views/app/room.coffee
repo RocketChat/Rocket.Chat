@@ -289,6 +289,9 @@ Template.room.helpers
 		roomData = Session.get('roomData' + this._id)
 		Template.instance().accessPermissions.set roomData?.accessPermissions
 		return Template.instance().accessPermissions
+	canEditPermissions: ->
+		roomData = Session.get('roomData' + this._id)
+		return roomData.t in ['d','p']
 
 	maxMessageLength: ->
 		return RocketChat.settings.get('Message_MaxAllowedSize')
@@ -576,6 +579,10 @@ Template.room.events
 			SideNav.setFlex "directMessagesFlex", data
 		else if roomData.t is 'p'
 			SideNav.setFlex "privateGroupsFlex", data
+		else 
+			console.log "The room's security label cannot be modified" if window.rocketDebug
+			return
+
 		SideNav.openFlex()
 		console.log "Relabel a Room: " + roomId
 
