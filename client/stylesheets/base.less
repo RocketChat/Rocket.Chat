@@ -1848,9 +1848,12 @@ a.github-fork {
 		width: 100%;
 		text-align: center;
 		/* default  */
-		cursor: pointer;
+		cursor: default;
 		color:white;
 		background-color: @unclassified-background-color;
+	}
+	.security-banner.editable {
+		cursor: pointer;
 	}
 	/* jquery chosen */
 	.chzn-container-multi .chzn-choices .search-field input[type=text] {
@@ -2419,6 +2422,16 @@ a.github-fork {
 			font-size: 12px;
 			font-weight: 300;
 			color: @secondary-font-color;
+		}
+		span .userStatus {
+			line-height: 18px;
+			font-size: 14px;
+			font-weight: 300;
+		}
+		span .customMessage {
+			line-height: 18px;
+			font-size: 12px;
+			font-weight: 300;
 		}
 	}
 	.stats {

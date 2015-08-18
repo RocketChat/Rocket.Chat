@@ -187,8 +187,12 @@ Template.room.helpers
 	userActiveByUsername: (username) ->
 		status = Session.get 'user_' + username + '_status'
 		if status in ['online', 'away', 'busy']
-			return {username: username, status: status}
-		return {username: username, status: 'offline'}
+			message = ''
+			statusMessages = Session.get('user_' + username + '_statusMessages')
+			if (statusMessages?)
+				message = statusMessages[status]
+			return {username: username, status: status, customMessage: message}
+		return {username: username, status: 'offline', customMessage: ''}
 
 	roomUsers: ->
 		room = ChatRoom.findOne(this._id, { reactive: false })
@@ -215,15 +219,24 @@ Template.room.helpers
 		username = Session.get('showUserInfo')
 		userData = {}
 		if username 
+			message = ''
+			status = Session.get 'user_' + username + '_status'
+			if status in ['online', 'away', 'busy']
+				statusMessages = Session.get('user_' + username + '_statusMessages')
+				if (statusMessages?)
+					message = statusMessages[status]
+
 			userData = {
 				name: getUser(username)?.name || username
 				# name: Session.get('user_' + uid + '_name')
 				# emails: Session.get('user_' + uid + '_emails')
 				username: String(username)
+				customMessage: message
+				status: status
 			}
-			# phone = Session.get('user_' + uid + '_phone')
-			# if phone? and phone[0]?.phoneNumber
-			# 	userData.phone = phone[0]?.phoneNumber
+		# phone = Session.get('user_' + uid + '_phone')
+		# if phone? and phone[0]?.phoneNumber
+		# 	userData.phone = phone[0]?.phoneNumber
 
 		return userData
 
@@ -285,6 +298,9 @@ Template.room.helpers
 		roomData = Session.get('roomData' + this._id)
 		Template.instance().accessPermissions.set roomData?.accessPermissions
 		return Template.instance().accessPermissions
+	canEditPermissions: ->
+		roomData = Session.get('roomData' + this._id)
+		return roomData.t in ['d','p']
 
 	maxMessageLength: ->
 		return RocketChat.settings.get('Message_MaxAllowedSize')
@@ -572,6 +588,10 @@ Template.room.events
 			SideNav.setFlex "directMessagesFlex", data
 		else if roomData.t is 'p'
 			SideNav.setFlex "privateGroupsFlex", data
+		else 
+			console.log "The room's security label cannot be modified" if window.rocketDebug
+			return
+
 		SideNav.openFlex()
 		console.log "Relabel a Room: " + roomId
 

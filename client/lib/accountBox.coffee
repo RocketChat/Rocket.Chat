@@ -2,7 +2,9 @@
 	status = 0
 	self = {}
 
-	setStatus = (status) ->
+	setStatus = (status, message) ->
+		if message?
+			Meteor.call('setStatusMessage', status, message)
 		Meteor.call('UserPresence:setDefaultStatus', status)
 
 	toggle = ->

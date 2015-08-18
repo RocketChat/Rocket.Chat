@@ -2,9 +2,13 @@ Template.securityBanner.helpers
 	bannerData: -> 
 		return Template.instance().bannerData.get()
 
+	editable: ->
+		editable = Template.instance().canEdit || false
+		return if editable then 'editable' else ''
 
 Template.securityBanner.onCreated ->
 	self = this
+	this.canEdit = self.data?.canEdit || false
 	self.bannerData = new ReactiveVar {text:'Unknown', classificationId : 'U'}
 
 	self.updateBannerData = (accessPermissions) ->

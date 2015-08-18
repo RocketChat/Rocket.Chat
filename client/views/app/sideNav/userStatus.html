@@ -1,7 +1,7 @@
 <template name="userStatus">
 	<div class="account-box">
 		{{#with myUserInfo}}
-			<div class="info status-{{status}}">
+			<div class="info status-{{status}}" title="{{visualStatus}} : {{customMessage}}">
 				{{#if username}}
 					<div class="thumb" data-status='{{visualStatus}}'>
 						{{> avatar username=username}}
@@ -13,6 +13,12 @@
 			</div>
 			<nav class="options _hidden">
 				<div class="wrapper">
+					    <div class="custom-message">
+						<label id="label-custom-message" for="custom-message-text">{{status}} custom message</label>
+						<input type="text" id="custom-message-text"  dir="auto" value="{{customMessage}}">
+						<button class="button clean primary save-message">{{_ "Save" }}</button>
+						<button class="button clean cancel-message">{{_ "Cancel" }}</button>
+					    </div>
 					<a href="" data-status="online" class="status online"><span>{{_ "Online"}}</span></a>
 					<a href="" data-status="away" class="status away"><span>{{_ "Away" context="male"}}</span></a>
 					<a href="" data-status="busy" class="status busy"><span>{{_ "Busy" context="male"}}</span></a>
