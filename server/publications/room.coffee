@@ -28,12 +28,10 @@ Meteor.publish 'room', (typeName) ->
 			usernames:
 				$all: [user.username, name]
 
-
 	# Change to validate access manualy
 	# if not Meteor.call 'canAccessRoom', rid, this.userId
 	# 	return this.ready()
 
-	console.log query
 	ChatRoom.find query,
 		fields:
 			name: 1
