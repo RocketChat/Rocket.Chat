@@ -1,0 +1,14 @@
+<template name="adminRoomInfo">
+	<div>
+		<h3><a href="{{route}}"><i class="icon-{{type}}"></i> {{name}}</a></h3>
+	</div>
+	<div>
+		<h3>{{_ "Users"}}:</h3>
+		{{#each usernames}}
+			{{.}}<br />
+		{{/each}}
+	</div>
+	<nav>
+		<button class='button delete red'><span><i class='icon-trash'></i> {{_ "Delete"}}</span></button>
+	</nav>
+</template>

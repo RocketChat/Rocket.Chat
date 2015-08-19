@@ -159,6 +159,7 @@
   "Room" : "Room",
   "Room_name_changed" : "Room name changed to: <em>__room_name__</em> by <em>__user_by__</em>",
   "Room_name_changed_successfully" : "Room name changed successfully",
+  "room_user_count": "%s users",
   "Save" : "Save",
   "Save_changes" : "Save changes",
   "Search" : "Search",
