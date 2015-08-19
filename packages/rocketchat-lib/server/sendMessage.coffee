@@ -1,4 +1,4 @@
-RocketChat.sendMessage = (user, message, room) ->
+RocketChat.sendMessage = (user, message, room, options) ->
 
 	if not user or not message or not room._id
 		return false
@@ -15,7 +15,10 @@ RocketChat.sendMessage = (user, message, room) ->
 
 	message = RocketChat.callbacks.run 'beforeSaveMessage', message
 
-	message._id = ChatMessage.insert message
+	if message._id? and options?.upsert is true
+		ChatMessage.upsert {_id: message._id}, message
+	else
+		message._id = ChatMessage.insert message
 
 	###
 	Defer other updates as their return is not interesting to the user

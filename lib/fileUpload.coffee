@@ -14,6 +14,7 @@ if FS?
 					"""
 					file:
 						_id: fileObj._id
+				, {upsert: true}
 
 	@Files = new FS.Collection 'Files',
 		stores: [fileStore],
