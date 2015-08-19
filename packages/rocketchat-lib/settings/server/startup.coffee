@@ -3,6 +3,22 @@ Meteor.startup ->
 	RocketChat.settings.add 'Accounts_RegistrationRequired', true, { type: 'boolean', group: 'Accounts', public: true }
 	RocketChat.settings.add 'Accounts_EmailVerification', false, { type: 'boolean', group: 'Accounts', public: true }
 
+	RocketChat.settings.add 'Accounts_Facebook', false, { type: 'boolean', group: 'Accounts' }
+	RocketChat.settings.add 'Accounts_Facebook_id', '', { type: 'string', group: 'Accounts' }
+	RocketChat.settings.add 'Accounts_Facebook_secret', '', { type: 'string', group: 'Accounts' }
+	RocketChat.settings.add 'Accounts_Google', false, { type: 'boolean', group: 'Accounts' }
+	RocketChat.settings.add 'Accounts_Google_id', '', { type: 'string', group: 'Accounts' }
+	RocketChat.settings.add 'Accounts_Google_secret', '', { type: 'string', group: 'Accounts' }
+	RocketChat.settings.add 'Accounts_Github', false, { type: 'boolean', group: 'Accounts' }
+	RocketChat.settings.add 'Accounts_Github_id', '', { type: 'string', group: 'Accounts' }
+	RocketChat.settings.add 'Accounts_Github_secret', '', { type: 'string', group: 'Accounts' }
+	RocketChat.settings.add 'Accounts_Linkedin', false, { type: 'boolean', group: 'Accounts' }
+	RocketChat.settings.add 'Accounts_Linkedin_id', '', { type: 'string', group: 'Accounts' }
+	RocketChat.settings.add 'Accounts_Linkedin_secret', '', { type: 'string', group: 'Accounts' }
+	RocketChat.settings.add 'Accounts_Meteor', false, { type: 'boolean', group: 'Accounts' }
+	RocketChat.settings.add 'Accounts_Meteor_id', '', { type: 'string', group: 'Accounts' }
+	RocketChat.settings.add 'Accounts_Meteor_secret', '', { type: 'string', group: 'Accounts' }
+
 	RocketChat.settings.addGroup 'API'
 	RocketChat.settings.add 'API_Analytics', '', { type: 'string', group: 'API', public: true }
 	RocketChat.settings.add 'API_Embed', '', { type: 'boolean', group: 'API', public: true }
