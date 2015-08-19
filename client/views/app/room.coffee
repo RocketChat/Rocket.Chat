@@ -425,7 +425,7 @@ Template.room.events
 				return Errors.throw error.reason
 
 			if result?.rid?
-				FlowRouter.go('room', { _id: result.rid })
+				FlowRouter.go('direct', { username: Session.get('showUserInfo') })
 
 	'click button.load-more': (e) ->
 		RoomHistoryManager.getMore @_id
@@ -439,7 +439,6 @@ Template.room.events
 					return Errors.throw error.reason
 
 				if result?.rid?
-					# FlowRouter.go('room', { _id: result.rid })
 					$('#user-add-search').val('')
 		else if roomData.t in ['c', 'p']
 			Meteor.call 'addUserToRoom', { rid: roomData._id, username: doc.username }, (error, result) ->
@@ -451,15 +450,19 @@ Template.room.events
 
 	'autocompleteselect #room-search': (event, template, doc) ->
 		if doc.type is 'u'
-			Meteor.call 'createDirectMessage', doc.uid, (error, result) ->
+			Meteor.call 'createDirectMessage', doc.username, (error, result) ->
 				if error
 					return Errors.throw error.reason
 
 				if result?.rid?
-					FlowRouter.go('room', { _id: result.rid })
+					FlowRouter.go('direct', { username: doc.username })
 					$('#room-search').val('')
-		else
-			FlowRouter.go('room', { _id: doc.rid })
+		else if doc.type is 'r'
+			if doc.t is 'c'
+				FlowRouter.go('channel', { name: doc.name })
+			else if doc.t is 'p'
+				FlowRouter.go('group', { name: doc.name })
+
 			$('#room-search').val('')
 
 	# 'scroll .wrapper': (e, instance) ->

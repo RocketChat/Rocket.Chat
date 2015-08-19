@@ -25,7 +25,10 @@
 					<ul>
 						{{#if hasMore}}
 							<li class="load-more">
-								<button class="button secondary load-more {{isLoading}}">{{_ "Load_more"}}</button>
+								<button class="button secondary load-more {{isLoading}}">
+									<i class="icon-spin4 animate-spin loading-icon hidden"></i>
+									<div>{{_ "Load_more"}}</div>
+								</button>
 							</li>
 						{{else}}
 							<li class="start">
@@ -128,11 +131,11 @@
 						<div class="list-view{{#if $.Session.get 'showUserInfo'}} -hidden{{/if}}">
 							{{#with roomUsers}}
 								<div class="status">
-									<h2>{{_ "Members_List"}}</h2> {{!--
+									<h2>{{_ "Members_List"}}</h2>
 									<p>
 										{{{_ "Showing_online_users" total_online=totalOnline total=total}}}
-										<button class="see-all">{{seeAll}}</button>
-									</p>--}}
+										{{!--<button class="see-all">{{seeAll}}</button>--}}
+									</p>
 								</div>
 								<ul class='list clearfix lines'>
 									{{#each users}}
