@@ -1,4 +1,12 @@
 Template.body.onRendered ->
+	$(document.body).on 'keydown', (e) ->
+		if e.keyCode is 80 and e.metaKey is true
+			e.preventDefault()
+			e.stopPropagation()
+			spotlight.show()
+
+		if e.keyCode is 27
+			spotlight.hide()
 
 	Tracker.autorun (c) ->
 		w = window

@@ -149,7 +149,7 @@ blockquote {
 }
 
 .hidden {
-	display: none;
+	display: none !important;
 }
 
 .small-title {
@@ -1708,6 +1708,47 @@ a.github-fork {
 		margin-top: -7px;
 		display: inline-block;
 		font-size: 16px;
+	}
+}
+
+.spotlight {
+	background-color: rgba(0,0,0,.3);
+	position: fixed;
+	top: 0;
+	bottom: 0;
+	left: 0;
+	right: 0;
+	z-index: 1000;
+	display: flex;
+	display: -webkit-flex;
+	justify-content: center;
+	padding: 0 40px;
+
+	> .spotlight-input {
+		width: 100%;
+		max-width: 600px;
+		font-size: 24px;
+		color: #444;
+		margin-top: 6%;
+
+		> input {
+			box-shadow: 0px 10px 20px rgba(0,0,0,.5);
+			border-width: 0px;
+			line-height: 46px;
+			height: 46px;
+			padding: 18px;
+			padding-left: 46px;
+		}
+
+		> i {
+			position: absolute;
+			z-index: 10;
+			line-height: 46px;
+			width: 46px;
+			text-align: center;
+			color: #aaa;
+			font-weight: 100;
+		}
 	}
 }
 
