@@ -538,16 +538,20 @@ label.required:after {
 }
 
 .btn-loading {
-	background-image: url('/images/loading.gif');
-	background-repeat: no-repeat;
-	background-position: 50%;
-	color: transparent !important;
+	color: #444 !important;
 	pointer-events: none;
 	cursor: not-allowed;
-	background-color: transparent;
+	background-color: transparent !important;
+	box-shadow: none !important;
 	border: none;
 	&:hover {
-		background-color: transparent;
+		background-color: transparent !important;
+	}
+	i {
+		display: block;
+	}
+	div {
+		display: none;
 	}
 }
 
