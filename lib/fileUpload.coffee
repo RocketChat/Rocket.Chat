@@ -1,5 +1,5 @@
 if UploadFS?
-	fileCollection = new Mongo.Collection 'files'
+	fileCollection = new Mongo.Collection 'rocketchat_uploads'
 
 	fileCollection.allow
 		insert: (userId, doc) ->
@@ -13,7 +13,8 @@ if UploadFS?
 
 	Meteor.fileStore = new UploadFS.store.GridFS
 		collection: fileCollection
-		name: 'files'
+		name: 'rocketchat_uploads'
+		collectionName: 'rocketchat_uploads'
 		filter: new UploadFS.Filter
 			maxSize: 2097152
 			contentTypes: ['image/*', 'audio/*']
