@@ -7,6 +7,9 @@ Meteor.methods
 
 		user = Meteor.user()
 
+		if user.username is username
+			return username
+
 		if not /^[0-9a-zA-Z-_.]+$/.test username
 			throw new Meteor.Error 'username-invalid'
 
