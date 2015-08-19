@@ -5,7 +5,7 @@ Meteor.startup ->
 
 	RocketChat.settings.addGroup 'API'
 	RocketChat.settings.add 'API_Analytics', '', { type: 'string', group: 'API', public: true }
-	RocketChat.settings.add 'API_Embed', '', { type: 'boolean', group: 'API' }
+	RocketChat.settings.add 'API_Embed', '', { type: 'boolean', group: 'API', public: true }
 
 	RocketChat.settings.addGroup 'SMTP'
 	RocketChat.settings.add 'SMTP_Host', '', { type: 'string', group: 'SMTP' }
