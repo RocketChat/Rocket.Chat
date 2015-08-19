@@ -435,7 +435,6 @@ Template.room.events
 					return Errors.throw error.reason
 
 				if result?.rid?
-					# FlowRouter.go('room', { _id: result.rid })
 					$('#user-add-search').val('')
 		else if roomData.t in ['c', 'p']
 			Meteor.call 'addUserToRoom', { rid: roomData._id, username: doc.username }, (error, result) ->
