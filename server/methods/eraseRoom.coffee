@@ -10,5 +10,6 @@ Meteor.methods
 		Meteor.users.update({_id: Meteor.userId()}, userUnset)
 
 		ChatMessage.remove({rid: rid})
+		ChatSubscription.remove({rid: rid})
 		ChatRoom.remove(rid)
 		# @TODO remove das mensagens lidas do usuário

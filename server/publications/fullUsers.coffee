@@ -16,8 +16,6 @@ Meteor.publish 'fullUsers', (filter, limit) ->
 	else
 		query = {}
 
-	limit = Math.min limit, 50
-
 	console.log '[publish] fullUsers'.green, filter, limit
 
 	Meteor.users.find query,

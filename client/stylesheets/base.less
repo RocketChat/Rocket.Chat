@@ -2326,8 +2326,7 @@ a.github-fork {
 			position: absolute;
 			background-color: @tertiary-background-color;
 			bottom: 0px;
-			.calc(width,
-			~'100% - 30px');
+			.calc(width, ~'100% - 15px');
 		}
 		.button {
 			min-height: 36px;
@@ -2398,6 +2397,29 @@ a.github-fork {
 				left: 8px;
 				font-size: 13px;
 				color: @secondary-font-color;
+			}
+		}
+		.info-tabs {
+			position: absolute;
+			top: 0;
+			text-align: right;
+			height: 60px;
+			right: 20px;
+			a {
+				float: left;
+				display: inline-block;
+				padding: 0 15px;
+				height: 60px;
+				line-height: 60px;
+				vertical-align: middle;
+				color: inherit;
+				border-left: 1px solid rgb(234, 234, 234);
+				&.active {
+					background-color: #F4F4F4;
+				}
+				&:last-child {
+					border-right: 1px solid rgb(234, 234, 234);
+				}
 			}
 		}
 	}
@@ -2517,8 +2539,7 @@ a.github-fork {
 	.info {
 		margin-left: 120px;
 		white-space: normal;
-		.calc(width,
-		~'100% - 120px');
+		.calc(width, ~'100% - 120px');
 		h3 {
 			font-size: 24px;
 			margin-bottom: 8px;
@@ -2610,6 +2631,44 @@ a.github-fork {
 	.contact-code {
 		margin: -5px 0 10px 0;
 		font-size: 12px;
+	}
+	.channels {
+		h3 {
+			font-size: 24px;
+			margin-bottom: 8px;
+			line-height: 22px;
+		}
+		p {
+			line-height: 18px;
+			font-size: 12px;
+			font-weight: 300;
+			color: @secondary-font-color;
+		}
+		a {
+			white-space: nowrap;
+			max-width: 100%;
+			overflow: hidden;
+			text-overflow: ellipsis;
+			display: block;
+			border-radius: 2px;
+			padding: 0 5px;
+			color: #6f6f6f;
+			line-height: 22px;
+			position: relative;
+			.transition(background .18s ease,
+			colo .18s ease);
+			&:before {
+				content: attr(data-stats);
+				position: absolute;
+				right: 5px;
+				top: 0;
+				font-size: 11px;
+				opacity: 0;
+			}
+			span {
+				font-weight: 300;
+			}
+		}
 	}
 }
 

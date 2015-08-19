@@ -4,23 +4,19 @@ Template.adminUsers.helpers
 	isReady: ->
 		return Template.instance().ready?.get()
 	users: ->
-		filter = _.trim Template.instance().filter?.get()
-		if filter
-			filterReg = new RegExp filter, "i"
-			query = { $or: [ { username: filterReg }, { name: filterReg }, { "emails.address": filterReg } ] }
-		else
-			query = {}
-		return Meteor.users.find(query, { limit: Template.instance().limit?.get(), sort: { username: 1 } }).fetch()
-	name: ->
-		return if @name then @name else TAPi18next.t 'project:Unnamed'
-	email: ->
-		return @emails?[0]?.address
+		return Template.instance().users()
 	flexOpened: ->
 		return 'opened' if Session.equals('flexOpened', true)
 	arrowPosition: ->
 		return 'left' unless Session.equals('flexOpened', true)
 	userData: ->
 		return Meteor.users.findOne Session.get 'adminUsersSelected'
+	userChannels: ->
+		return ChatSubscription.find({ "u._id": Session.get 'settingsUsersSelected' }, { fields: { rid: 1, name: 1, t: 1 }, sort: { t: 1, name: 1 } }).fetch()
+	isLoading: ->
+		return 'btn-loading' unless Template.instance().ready?.get()
+	hasMore: ->
+		return Template.instance().limit?.get() is Template.instance().users?().length
 	phoneNumber: ->
 		return '' unless @phoneNumber
 		if @phoneNumber.length > 10
@@ -49,6 +45,20 @@ Template.adminUsers.onCreated ->
 		subscription = instance.subscribe 'fullUsers', filter, limit
 		instance.ready.set subscription.ready()
 
+	@autorun ->
+		if Session.get 'adminUsersSelected'
+			channelSubscription = instance.subscribe 'userChannels', Session.get 'settingsUsersSelected'
+
+	@users = ->
+		filter = _.trim instance.filter?.get()
+		if filter
+			filterReg = new RegExp filter, "i"
+			query = { $or: [ { username: filterReg }, { name: filterReg }, { "emails.address": filterReg } ] }
+		else
+			query = {}
+		
+		return Meteor.users.find(query, { limit: instance.limit?.get(), sort: { username: 1 } }).fetch()
+
 Template.adminUsers.onRendered ->
 	Tracker.afterFlush ->
 		SideNav.setFlex "adminFlex"
@@ -76,6 +86,11 @@ Template.adminUsers.events
 		Session.set 'adminUsersSelected', $(e.currentTarget).data('id')
 		Session.set 'flexOpened', true
 
+	'click .user-info-tabs a': (e) ->
+		e.preventDefault()
+		$('.user-info-tabs a').removeClass 'active'
+		$(e.currentTarget).addClass 'active'
+
 	'click .deactivate': ->
 		Meteor.call 'setUserActiveStatus', Session.get('adminUsersSelected'), false, (error, result) ->
 			if result
@@ -90,25 +105,10 @@ Template.adminUsers.events
 			if error
 				toastr.error error.reason
 
-	'click .delete': ->
-		swal {
-			title: t('Are_you_sure')
-			text: t('Delete_User_Warning')
-			type: 'warning'
-			showCancelButton: true
-			confirmButtonColor: '#DD6B55'
-			confirmButtonText: t('Yes_delete_it')
-			cancelButtonText: t('Cancel')
-			closeOnConfirm: false
-			html: false
-		}, ->
-			swal 
-				title: t('Deleted')
-				text: t('User_has_been_deleted')
-				type: 'success'
-				timer: 2000
-				showConfirmButton: false 
+		$('.user-info-content').hide()
+		$($(e.currentTarget).attr('href')).show()
 
-			Meteor.call 'deleteUser', Session.get('adminUsersSelected'), (error, result) ->
-				if error
-					toastr.error error.reason
+	'click .load-more': (e, t) ->
+		e.preventDefault()
+		e.stopPropagation()
+		t.limit.set t.limit.get() + 50
