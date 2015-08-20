@@ -37,6 +37,24 @@ Template.adminUserInfo.events
 				toastr.success t('User_has_been_activated')
 			if error
 				toastr.error error.reason
+	
+	'click .make-admin': (e) ->
+		e.stopPropagation()
+		e.preventDefault()
+		Meteor.call 'setAdminStatus', Template.currentData()._id, true, (error, result) ->
+			if result
+				toastr.success t('User_is_now_an_admin')
+			if error
+				toastr.error error.reason
+	
+	'click .remove-admin': (e) ->
+		e.stopPropagation()
+		e.preventDefault()
+		Meteor.call 'setAdminStatus', Template.currentData()._id, false, (error, result) ->
+			if result
+				toastr.success t('User_is_no_longer_an_admin')
+			if error
+				toastr.error error.reason
 
 	'click .delete': (e) ->
 		e.stopPropagation()
