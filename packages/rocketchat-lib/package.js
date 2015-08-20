@@ -26,7 +26,9 @@ Package.onUse(function(api) {
 	
 	api.addFiles([
 		'server/methods/joinDefaultChannels.coffee',
-		'server/methods/setUsername.coffee'
+		'server/methods/setAdminStatus.coffee',
+		'server/methods/setUsername.coffee',
+		'server/methods/updateUser.coffee'
 	], ['server']);
 
 	api.addFiles('server/sendMessage.coffee', ['server']);

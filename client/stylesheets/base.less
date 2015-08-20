@@ -642,6 +642,10 @@ label.required:after {
 	&.meteor-developer {
 		background-color: #de4f4f;
 	}
+	&.button-block {
+		display: block;
+		width: 100%;
+	}
 }
 
 .sec-header {
@@ -2709,6 +2713,23 @@ a.github-fork {
 			span {
 				font-weight: 300;
 			}
+		}
+	}
+	.edit-form {
+		white-space: normal;
+		h3 {
+			font-size: 24px;
+			margin-bottom: 8px;
+			line-height: 22px;
+		}
+		p {
+			line-height: 18px;
+			font-size: 12px;
+			font-weight: 300;
+			color: @secondary-font-color;
+		}
+		> .input-line {
+			margin-top: 20px;
 		}
 	}
 }
