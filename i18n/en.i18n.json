@@ -117,6 +117,8 @@
   "Message" : "Message",
   "Message_AllowDeleting" : "Allow Message Deleting",
   "Message_AllowEditing" : "Allow Message Editing",
+  "Message_deleting_not_allowed": "Message deleting not allowed",
+  "Message_editing_not_allowed": "Message editing not allowed",
   "Message_KeepHistory" : "Keep Message History",
   "Message_removed" : "Message removed",
   "Message_ShowDeletedStatus" : "Show Deleted Status",
