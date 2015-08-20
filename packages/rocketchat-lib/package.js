@@ -25,7 +25,7 @@ Package.onUse(function(api) {
 	], ['server']);
 	
 	api.addFiles([
-		'server/methods/joinDefaultChannels.coffee'
+		'server/methods/joinDefaultChannels.coffee',
 		'server/methods/setUsername.coffee'
 	], ['server']);
 
