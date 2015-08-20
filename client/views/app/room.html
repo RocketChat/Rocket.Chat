@@ -20,6 +20,17 @@
 					{{/if}}
 				</h2>
 			</header>
+			<div class="upload-progress">
+				{{#each uploading}}
+					<div class="upload-progress-item">
+						<div class="upload-progress-progress" style="width: {{percentage}}%;"></div>
+						{{name}}... {{percentage}}%
+						<a>
+							cancel
+						</a>
+					</div>
+				{{/each}}
+			</div>
 			<div class="messages-box">
 				<div class="wrapper">
 					<ul>

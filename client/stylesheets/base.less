@@ -1929,6 +1929,48 @@ a.github-fork {
 	}
 }
 
+.upload-progress {
+	position: absolute;
+	top: 60px;
+	background-color: #b2d5c9;
+	width: 100%;
+	z-index: 11;
+	color: white;
+	font-weight: bold;
+	text-shadow: 1px 1px 0px rgba(0,0,0,.2);
+
+	.upload-progress-item {
+		position: relative;
+		line-height: 24px;
+		padding: 0 10px;
+		border-bottom: 1px solid #6a8179;
+
+		&:first-child {
+			border-top: 1px solid #6a8179;
+		}
+
+		.upload-progress-progress {
+			position: absolute;
+			left: 0px;
+			height: 100%;
+			width: 0%;
+			background-color: #4c9789;
+			z-index: -1;
+			.transition(width, 1s, ease-out);
+		}
+
+		> a {
+			float: right;
+			text-transform: uppercase;
+
+			&:hover {
+				color: #eee;
+				cursor: pointer;
+			}
+		}
+	}
+}
+
 // change to page-messages
 .messages-container {
 	position: absolute;
