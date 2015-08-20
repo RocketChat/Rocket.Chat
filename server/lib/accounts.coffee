@@ -41,10 +41,11 @@ Accounts.onCreateUser (options, user) ->
 			else
 				user.name = user.services[serviceName].username
 
-		user.emails = [
-			address: user.services[serviceName].email
-			verified: true
-		]
+		if user.services[serviceName].email
+			user.emails = [
+				address: user.services[serviceName].email
+				verified: true
+			]
 
 	return user
 
