@@ -10,6 +10,7 @@ updateServices = ->
 			'github': 'Github'
 			'linkedin': 'Linkedin'
 			'meteor-developer': 'Meteor'
+			'twitter': 'Twitter'
 
 		for serviceName, settingName of services
 			enable = Settings.findOne _id: "Accounts_#{settingName}", value: true
