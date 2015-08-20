@@ -156,7 +156,7 @@ Template.room.helpers
 		return roomData.u?._id is Meteor.userId() and roomData.t in ['c', 'p']
 
 	canDirectMessage: ->
-		return Meteor.user().username isnt this.username
+		return Meteor.user()?.username isnt this.username
 
 	roomNameEdit: ->
 		return Session.get('roomData' + this._id)?.name

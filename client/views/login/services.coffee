@@ -56,10 +56,6 @@ Template.loginServices.events
 				loadingIcon.addClass 'hidden'
 				serviceIcon.removeClass 'hidden'
 
-				if error?.error is 'github-no-public-email'
-					alert t("github_no_public_email")
-					return
-
 				if error
 					console.log JSON.stringify(error), error.message
 					toastr.error error.message
