@@ -15,6 +15,7 @@ Accounts.emailTemplates.resetPassword.text = (user, url) ->
 	verifyEmailText user, url
 
 Accounts.onCreateUser (options, user) ->
+	# console.log 'onCreateUser ->',JSON.stringify arguments, null, '  '
 	# console.log 'options ->',JSON.stringify options, null, '  '
 	# console.log 'user ->',JSON.stringify user, null, '  '
 
@@ -31,8 +32,10 @@ Accounts.onCreateUser (options, user) ->
 		serviceName = 'github'
 	else if user.services?['meteor-developer']?
 		serviceName = 'meteor-developer'
+	else if user.services?.twitter?
+		serviceName = 'twitter'
 
-	if serviceName in ['facebook', 'google', 'meteor-developer', 'github']
+	if serviceName in ['facebook', 'google', 'meteor-developer', 'github', 'twitter']
 		if not user?.name? or user.name is ''
 			if options.profile?.name?
 				user.name = options.profile?.name
