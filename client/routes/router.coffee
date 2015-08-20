@@ -88,3 +88,16 @@ FlowRouter.route '/history/private',
 	action: ->
 		Session.setDefault('historyFilter', '')
 		BlazeLayout.render 'main', {center: 'privateHistory'}
+
+
+FlowRouter.route '/terms-of-service',
+	name: 'terms-of-service'
+
+	action: ->
+		BlazeLayout.render 'main', {center: 'termsOfService'}
+
+FlowRouter.route '/privacy-policy',
+	name: 'privacy-policy'
+
+	action: ->
+		BlazeLayout.render 'main', {center: 'privacyPolicy'}
