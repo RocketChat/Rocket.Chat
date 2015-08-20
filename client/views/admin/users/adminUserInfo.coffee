@@ -20,21 +20,27 @@ Template.adminUserInfo.helpers
 			return "UTC #{@utcOffset}"
 
 Template.adminUserInfo.events
-	'click .deactivate': ->
+	'click .deactivate': (e) ->
+		e.stopPropagation()
+		e.preventDefault()
 		Meteor.call 'setUserActiveStatus', Template.currentData()._id, false, (error, result) ->
 			if result
 				toastr.success t('User_has_been_deactivated')
 			if error
 				toastr.error error.reason
 	
-	'click .activate': ->
+	'click .activate': (e) ->
+		e.stopPropagation()
+		e.preventDefault()
 		Meteor.call 'setUserActiveStatus', Template.currentData()._id, true, (error, result) ->
 			if result
 				toastr.success t('User_has_been_activated')
 			if error
 				toastr.error error.reason
 
-	'click .delete': ->
+	'click .delete': (e) ->
+		e.stopPropagation()
+		e.preventDefault()
 		_id = Template.currentData()._id
 		swal {
 			title: t('Are_you_sure')

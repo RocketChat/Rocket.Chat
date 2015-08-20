@@ -12,7 +12,7 @@ Template.adminUsers.helpers
 	userData: ->
 		return Meteor.users.findOne Session.get 'adminUsersSelected'
 	userChannels: ->
-		return ChatSubscription.find({ "u._id": Session.get 'settingsUsersSelected' }, { fields: { rid: 1, name: 1, t: 1 }, sort: { t: 1, name: 1 } }).fetch()
+		return ChatSubscription.find({ "u._id": Session.get 'adminUsersSelected' }, { fields: { rid: 1, name: 1, t: 1 }, sort: { t: 1, name: 1 } }).fetch()
 	isLoading: ->
 		return 'btn-loading' unless Template.instance().ready?.get()
 	hasMore: ->
@@ -47,7 +47,7 @@ Template.adminUsers.onCreated ->
 
 	@autorun ->
 		if Session.get 'adminUsersSelected'
-			channelSubscription = instance.subscribe 'userChannels', Session.get 'settingsUsersSelected'
+			channelSubscription = instance.subscribe 'userChannels', Session.get 'adminUsersSelected'
 
 	@users = ->
 		filter = _.trim instance.filter?.get()
@@ -57,7 +57,7 @@ Template.adminUsers.onCreated ->
 		else
 			query = {}
 		
-		return Meteor.users.find(query, { limit: instance.limit?.get(), sort: { username: 1 } }).fetch()
+		return Meteor.users.find(query, { limit: instance.limit?.get(), sort: { username: 1, name: 1 } }).fetch()
 
 Template.adminUsers.onRendered ->
 	Tracker.afterFlush ->
@@ -86,24 +86,10 @@ Template.adminUsers.events
 		Session.set 'adminUsersSelected', $(e.currentTarget).data('id')
 		Session.set 'flexOpened', true
 
-	'click .user-info-tabs a': (e) ->
+	'click .info-tabs a': (e) ->
 		e.preventDefault()
-		$('.user-info-tabs a').removeClass 'active'
+		$('.info-tabs a').removeClass 'active'
 		$(e.currentTarget).addClass 'active'
-
-	'click .deactivate': ->
-		Meteor.call 'setUserActiveStatus', Session.get('adminUsersSelected'), false, (error, result) ->
-			if result
-				toastr.success t('User_has_been_deactivated')
-			if error
-				toastr.error error.reason
-	
-	'click .activate': ->
-		Meteor.call 'setUserActiveStatus', Session.get('adminUsersSelected'), true, (error, result) ->
-			if result
-				toastr.success t('User_has_been_activated')
-			if error
-				toastr.error error.reason
 
 		$('.user-info-content').hide()
 		$($(e.currentTarget).attr('href')).show()
