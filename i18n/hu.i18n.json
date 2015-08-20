@@ -124,6 +124,6 @@
   "We_have_sent_registration_email" : "Küldtünk egy email-t hogy megerősíthessük a regisztrációt. Ha nem kapnál hamarosan levelet akkor gyere vissza később és próbáld újra.",
   "Welcome" : "Üdvözöllek <em>%s</em>",
   "Welcome_to_the" : "Üdvözöllek a",
-  "You_neeed_confirm_email" : "Kérlek hitelesítsd az email címed a bejelntkezéshez",
+  "You_need_confirm_email" : "Kérlek hitelesítsd az email címed a bejelntkezéshez",
   "Your_Open_Source_solution" : "A saját Nyílt Forrású chat-ed"
 }
