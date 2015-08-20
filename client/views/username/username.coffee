@@ -41,6 +41,8 @@ Template.username.events
 					username.error = true
 				username.username = value
 
-			Meteor.call 'joinDefaultChannels', ->
-				RocketChat.Button.reset(button)
-				instance.username.set(username)
+			RocketChat.Button.reset(button)
+			instance.username.set(username)
+
+			if not err?
+				Meteor.call 'joinDefaultChannels'
