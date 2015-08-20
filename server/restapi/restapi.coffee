@@ -110,6 +110,7 @@ Api.addRoute 'bulk/register', authRequired: true,
 					ids[i] = Meteor.call 'registerUser', incoming
 					Meteor.runAsUser ids[i].uid, () =>
 						Meteor.call 'setUsername', incoming.name
+						Meteor.call 'joinDefaultChannels'
 
 				status: 'success', ids: ids
 			catch e
