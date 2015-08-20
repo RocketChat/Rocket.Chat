@@ -23,6 +23,10 @@ updateServices = ->
 					data.appId = data.clientId
 					delete data.clientId
 
+				if serviceName is 'twitter'
+					data.consumerKey = data.clientId
+					delete data.clientId
+
 				ServiceConfiguration.configurations.upsert {service: serviceName}, $set: data
 			else
 				ServiceConfiguration.configurations.remove {service: serviceName}
