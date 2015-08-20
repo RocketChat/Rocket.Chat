@@ -18,10 +18,13 @@ Meteor.startup ->
 	RocketChat.settings.add 'Accounts_Meteor', false, { type: 'boolean', group: 'Accounts' }
 	RocketChat.settings.add 'Accounts_Meteor_id', '', { type: 'string', group: 'Accounts' }
 	RocketChat.settings.add 'Accounts_Meteor_secret', '', { type: 'string', group: 'Accounts' }
+	RocketChat.settings.add 'Accounts_Twitter', false, { type: 'boolean', group: 'Accounts' }
+	RocketChat.settings.add 'Accounts_Twitter_id', '', { type: 'string', group: 'Accounts' }
+	RocketChat.settings.add 'Accounts_Twitter_secret', '', { type: 'string', group: 'Accounts' }
 
 	RocketChat.settings.addGroup 'API'
 	RocketChat.settings.add 'API_Analytics', '', { type: 'string', group: 'API', public: true }
-	RocketChat.settings.add 'API_Embed', '', { type: 'boolean', group: 'API', public: true }
+	RocketChat.settings.add 'API_Embed', true, { type: 'boolean', group: 'API', public: true }
 
 	RocketChat.settings.addGroup 'SMTP'
 	RocketChat.settings.add 'SMTP_Host', '', { type: 'string', group: 'SMTP' }
