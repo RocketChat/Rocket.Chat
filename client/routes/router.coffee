@@ -94,10 +94,12 @@ FlowRouter.route '/terms-of-service',
 	name: 'terms-of-service'
 
 	action: ->
-		BlazeLayout.render 'main', {center: 'termsOfService'}
+		Session.set 'cmsPage', 'Layout_Terms_of_Service'
+		BlazeLayout.render 'cmsPage'
 
 FlowRouter.route '/privacy-policy',
 	name: 'privacy-policy'
 
 	action: ->
-		BlazeLayout.render 'main', {center: 'privacyPolicy'}
+		Session.set 'cmsPage', 'Layout_Privacy_Policy'
+		BlazeLayout.render 'cmsPage'
