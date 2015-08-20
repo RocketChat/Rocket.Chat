@@ -561,7 +561,13 @@ Template.room.events
 		e.currentTarget.parentNode.classList.remove 'over'
 
 		files = []
-		FS?.Utility?.eachFile e, (file) ->
+
+		evt = e.originalEvent or e
+
+		if not evt.target.files or evt.target.files.length is 0
+			evt.target.files = if evt.dataTransfer then evt.dataTransfer.files else []
+
+		for file in evt.target.files
 			files.push
 				file: file
 				name: file.name
