@@ -13,6 +13,11 @@
 		</div>
 	</div>
 	<nav>
+		{{#if admin}}
+		<button class='button red remove-admin'><span><i class='icon-block'></i> {{_ "Remove_Admin"}}</span></button>
+		{{else}}
+		<button class='button green make-admin'><span><i class='icon-block'></i> {{_ "Make_Admin"}}</span></button>
+		{{/if}}
 		{{#if active}}
 		<button class='button deactivate'><span><i class='icon-block'></i> {{_ "Deactivate"}}</span></button>
 		{{else}}
