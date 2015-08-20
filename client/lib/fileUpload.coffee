@@ -57,29 +57,21 @@ readAsArrayBuffer = (file, callback) ->
 					return
 
 				readAsArrayBuffer file.file, (data) ->
-					# // Prepare the file to insert in database, note that we don't provide an URL,
-					# // it will be set automatically by the uploader when file transfer is complete.
 					record =
 						name: file.name or file.file.name
 						size: file.file.size
 						type: file.file.type
 
-					# // Create a new Uploader for this file
 					upload = new UploadFS.Uploader
-						# // This is where the uploader will save the file
 						store: Meteor.fileStore
-						# // The file data
 						data: data
-						# // The document to save in the collection
 						file: record
-						# // The error callback
 						onError: (err) ->
 							console.error(err)
-						# // The complete callback
+
 						onComplete: (file) ->
-							console.log('transfer complete', arguments)
-							toastr.success 'Upload succeeded!'
-							Meteor.call 'sendMessage',
+							self = this
+							Meteor.call 'sendMessage', {
 								_id: Random.id()
 								rid: Session.get('openedRoom')
 								msg: """
@@ -88,32 +80,65 @@ readAsArrayBuffer = (file, callback) ->
 								"""
 								file:
 									_id: file._id
+							}, ->
+								Meteor.setTimeout ->
+									uploading = Session.get 'uploading'
+									if uploading?
+										item = _.findWhere(uploading, {id: self.id})
+										Session.set 'uploading', _.without(uploading, item)
+								, 2000
+
+					upload.id = Random.id()
 
 					# // Reactive method to get upload progress
-					Tracker.autorun ->
-						console.log((upload.getProgress() * 100) + '% completed')
+					Tracker.autorun (c) ->
+						uploading = undefined
+						cancel = undefined
 
-					# // Reactive method to get upload status
-					Tracker.autorun ->
-						console.log('transfer ' + (upload.isUploading() ? 'started' : 'stopped'))
+						Tracker.nonreactive ->
+							cancel = Session.get "uploading-cancel-#{upload.id}"
+							uploading = Session.get 'uploading'
 
-					# // Starts the upload
+						if cancel
+							return c.stop()
+
+						uploading ?= []
+
+						item = _.findWhere(uploading, {id: upload.id})
+
+						if not item?
+							item =
+								id: upload.id
+								name: upload.getFile().name
+
+							uploading.push item
+
+						item.percentage = Math.round(upload.getProgress() * 100)
+						Session.set 'uploading', uploading
+
 					upload.start();
 
-					# // Stops the upload
 					# upload.stop();
 
-					# // Abort the upload
-					# upload.abort();
+					Tracker.autorun (c) ->
+						cancel = Session.get "uploading-cancel-#{upload.id}"
+						if cancel
+							upload.stop()
+							upload.abort()
+							c.stop()
 
-				# newFile = new (FS.File)(file.file)
-				# if file.name?
-				# 	newFile.name(file.name)
-				# newFile.rid = Session.get('openedRoom')
-				# newFile.recId = Random.id()
-				# newFile.userId = Meteor.userId()
-				# Files.insert newFile, (error, fileObj) ->
-				# 	unless error
-				# 		toastr.success 'Upload succeeded!'
+							uploading = Session.get 'uploading'
+							if uploading?
+								item = _.findWhere(uploading, {id: upload.id})
+								if item?
+									item.percentage = 0
+								Session.set 'uploading', uploading
+
+							Meteor.setTimeout ->
+								uploading = Session.get 'uploading'
+								if uploading?
+									item = _.findWhere(uploading, {id: upload.id})
+									Session.set 'uploading', _.without(uploading, item)
+							, 1000
 
 	consume()
