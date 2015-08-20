@@ -10,6 +10,7 @@ updateServices = ->
 			'github': 'Github'
 			'linkedin': 'Linkedin'
 			'meteor-developer': 'Meteor'
+			'twitter': 'Twitter'
 
 		for serviceName, settingName of services
 			enable = Settings.findOne _id: "Accounts_#{settingName}", value: true
@@ -20,6 +21,10 @@ updateServices = ->
 
 				if serviceName is 'facebook'
 					data.appId = data.clientId
+					delete data.clientId
+
+				if serviceName is 'twitter'
+					data.consumerKey = data.clientId
 					delete data.clientId
 
 				ServiceConfiguration.configurations.upsert {service: serviceName}, $set: data
