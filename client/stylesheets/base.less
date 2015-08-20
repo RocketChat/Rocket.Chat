@@ -75,6 +75,22 @@ blockquote {
 	}
 }
 
+.login-terms {
+	max-width: 400px;
+	color: #C2E7FF;
+	margin: auto;
+
+	a {
+		font-weight: bold !important;
+		text-decoration: underline;
+		color: #C2E7FF;
+
+		&:hover {
+			color: white;
+		}
+	}
+}
+
 .upload-preview {
 	background-color: #f5f5f5;
 	.upload-preview-file {
@@ -3561,5 +3577,23 @@ a.github-fork {
 	.footer {
 		padding-left: 10px;
 		padding-right: 10px;
+	}
+}
+
+@media all and(max-height: 480px) {
+	#login-card {
+		padding: 10px;
+		margin: 10px auto;
+
+		.input-text {
+			margin-bottom: 6px;
+		}
+
+		.submit {
+			margin: 0px;
+		}
+	}
+	.social-login {
+		margin-bottom: 10px;
 	}
 }
