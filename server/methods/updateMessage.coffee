@@ -3,6 +3,9 @@ Meteor.methods
 		if not Meteor.userId()
 			throw new Meteor.Error('invalid-user', "[methods] updateMessage -> Invalid user")
 
+		if not RocketChat.settings.get 'Message_AllowEditing'
+			throw new Meteor.Error 'message-editing-not-allowed', "[methods] updateMessage -> Message editing not allowed"
+
 		console.log '[methods] updateMessage -> '.green, 'userId:', Meteor.userId(), 'arguments:', arguments
 
 		# If we keep history of edits, insert a new message to store history information
