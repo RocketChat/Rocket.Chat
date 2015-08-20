@@ -71,7 +71,7 @@ It is a great solution for communities and companies wanting to privately host t
 - Remote Locations Video Monitoring - [Early access ...](https://github.com/RocketChat/Rocket.Chat/wiki/Remote-Video-Monitoring)
 - Native Cross-Platform Desktop Application [Rocket.Chat.Electron - HELP WANTED](https://github.com/RocketChat/Rocket.Chat.Electron/releases)
 - Mobile app for iPhone, iPad, and iPod touch [Available now! - help us test](https://github.com/RocketChat/Rocket.Chat/wiki/Mobile-app-for-iPhones,-iPads,-iPod-Touch)
-- Mobile app for Android phone, tablet, and TV stick [Install now! - help us test](https://github.com/RocketChat/Rocket.Chat/wiki/Mobile-app-for-Android-phone,-tablet,-set-top-box,-and-TV-stick)
+- Mobile app for Android phone, tablet, and TV stick [Install now!](https://play.google.com/store/apps/details?id=com.konecty.rocket.chat)
 
 ### Roadmap
 
@@ -79,7 +79,7 @@ It is a great solution for communities and companies wanting to privately host t
 
 - Native iOS Application [Rocket.Chat.iOS - HELP WANTED](https://github.com/RocketChat/Rocket.Chat.iOS)
 - Native Android Application [Issue #271 - HELP WANTED](https://github.com/RocketChat/Rocket.Chat/issues/271)
-- External popout window for chat with website visitor (like Zopim, Olark, LiveChat, SnapEngage)
+- External popout window for chat with website visitor, like Zopim, Olark, LiveChat, SnapEngage [Issue #519](https://github.com/RocketChat/Rocket.Chat/issues/519)
 
 #### Planned
 
