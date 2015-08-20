@@ -18,6 +18,17 @@ Package.onUse(function(api) {
 	api.addFiles('lib/underscore.string.coffee', ['server', 'client']);
 	api.addFiles('lib/core.coffee', ['server', 'client']);
 	api.addFiles('lib/callbacks.coffee', ['server', 'client']);
+	
+	api.addFiles([
+		'server/functions/checkUsernameAvailability.coffee',
+		'server/functions/setUsername.coffee'
+	], ['server']);
+	
+	api.addFiles([
+		'server/methods/joinDefaultChannels.coffee',
+		'server/methods/setUsername.coffee'
+	], ['server']);
+
 	api.addFiles('server/sendMessage.coffee', ['server']);
 	api.addFiles('server/slashCommand.coffee', ['server']);
 	api.addFiles('client/slashCommand.coffee', ['client']);
