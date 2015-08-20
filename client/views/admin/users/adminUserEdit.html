@@ -1,0 +1,15 @@
+<template name="adminUserEdit">
+	<div class="about clearfix">
+		<form class="edit-form">
+			<h3>{{name}}</h3>
+			<div class="input-line">
+				<label for="name">{{_ "Name"}}</label>
+				<input type="text" id="name" autocomplete="off" value="{{name}}">
+			</div>
+		</form>
+	</div>
+	<nav>
+		<button class='button button-block cancel secondary'><span>{{_ "Cancel"}}</span></button>
+		<button class='button button-block blue save'><span>{{_ "Save"}}</span></button>
+	</nav>
+</template>

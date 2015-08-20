@@ -82,3 +82,9 @@ Template.adminUserInfo.events
 				if error
 					toastr.error error.reason
 				
+	'click .edit-user': (e) ->
+		e.stopPropagation()
+		e.preventDefault()
+
+		$('.user-info-content').hide()
+		$('#user-edit-form').show()
