@@ -300,6 +300,16 @@ Template.room.helpers
 
 
 Template.room.events
+	"touchstart .message": (e, t) ->
+		message = this._arguments[1]
+		doLongTouch = ->
+			mobileMessageMenu.show(message, t)
+
+		t.touchtime = Meteor.setTimeout doLongTouch, 2000
+
+	"touchsend .message": (e, t) ->
+		Meteor.clearTimeout t.touchtime
+
 
 	"click .flex-tab .more": (event) ->
 		if (Session.get('flexOpened'))
