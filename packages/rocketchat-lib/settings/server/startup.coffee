@@ -21,6 +21,7 @@ Meteor.startup ->
 	RocketChat.settings.add 'Accounts_Twitter', false, { type: 'boolean', group: 'Accounts' }
 	RocketChat.settings.add 'Accounts_Twitter_id', '', { type: 'string', group: 'Accounts' }
 	RocketChat.settings.add 'Accounts_Twitter_secret', '', { type: 'string', group: 'Accounts' }
+	RocketChat.settings.add 'Accounts_ManuallyApproveNewUsers', false, { type: 'boolean', group: 'Accounts' }
 
 	RocketChat.settings.addGroup 'API'
 	RocketChat.settings.add 'API_Analytics', '', { type: 'string', group: 'API', public: true }
@@ -62,7 +63,9 @@ Meteor.startup ->
 
 	RocketChat.settings.addGroup 'Layout'
 	RocketChat.settings.add 'Layout_Home_Title', 'Home', { type: 'string', group: 'Layout', public: true }
-	RocketChat.settings.add 'Layout_Home_Body', 'Welcome to Rocket.Chat <br> Go to APP SETTINGS -> Layout to customize this intro.', { type: 'string', multiline: true, group: 'Layout', public: true  }
+	RocketChat.settings.add 'Layout_Home_Body', 'Welcome to Rocket.Chat <br> Go to APP SETTINGS -> Layout to customize this intro.', { type: 'string', multiline: true, group: 'Layout', public: true }
+	RocketChat.settings.add 'Layout_Terms_of_Service', 'Terms of Service <br> Go to APP SETTINGS -> Layout to customize this page.', { type: 'string', multiline: true, group: 'Layout', public: true }
+	RocketChat.settings.add 'Layout_Privacy_Policy', 'Privacy Policy <br> Go to APP SETTINGS -> Layout to customize this page.', { type: 'string', multiline: true, group: 'Layout', public: true }
 
 	if process?.env? and not process.env['MAIL_URL']? and RocketChat.settings.get('SMTP_Host') and RocketChat.settings.get('SMTP_Username') and RocketChat.settings.get('SMTP_Password')
 		process.env['MAIL_URL'] = "smtp://" + encodeURIComponent(RocketChat.settings.get('SMTP_Username')) + ':' + encodeURIComponent(RocketChat.settings.get('SMTP_Password')) + '@' + encodeURIComponent(RocketChat.settings.get('SMTP_Host'))

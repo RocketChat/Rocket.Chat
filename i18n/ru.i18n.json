@@ -167,7 +167,7 @@
   "Welcome" : "Добро пожаловать, <em>%s</em>.",
   "Welcome_to_the" : "Добро пожаловать в",
   "you_are_in_preview_mode_of" : "Вы находитесь в режиме предварительного просмотра канала # <strong>__room_name__</strong>",
-  "You_neeed_confirm_email" : "Необходимо подтвердить email для входа!",
+  "You_need_confirm_email" : "Необходимо подтвердить email для входа!",
   "Your_Open_Source_solution" : "Ваш собственный чат на базе Open Source-технологий",
   "You_will_not_be_able_to_recover" : "Вы не сможете восстановить!",
   "Yes_delete_it" : "Да, удалить его!"

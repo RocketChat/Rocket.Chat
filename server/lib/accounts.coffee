@@ -20,7 +20,7 @@ Accounts.onCreateUser (options, user) ->
 	# console.log 'user ->',JSON.stringify user, null, '  '
 
 	user.status = 'offline'
-	user.active = true
+	user.active = not RocketChat.settings.get 'Accounts_ManuallyApproveNewUsers'
 
 	serviceName = null
 
@@ -59,7 +59,7 @@ Accounts.validateLoginAttempt (login) ->
 		return login.allowed
 
 	if login.user?.active isnt true
-		throw new Meteor.Error 'inactive-user', 'Your_user_has_been_deactivated'
+		throw new Meteor.Error 'inactive-user', TAPi18next.t 'project:User_is_not_activated'
 		return false
 
 	if login.type is 'password' and RocketChat.settings.get('Accounts_denyUnverifiedEmails') is true
