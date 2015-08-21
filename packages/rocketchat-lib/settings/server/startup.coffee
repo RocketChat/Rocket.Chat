@@ -21,6 +21,7 @@ Meteor.startup ->
 	RocketChat.settings.add 'Accounts_Twitter', false, { type: 'boolean', group: 'Accounts' }
 	RocketChat.settings.add 'Accounts_Twitter_id', '', { type: 'string', group: 'Accounts' }
 	RocketChat.settings.add 'Accounts_Twitter_secret', '', { type: 'string', group: 'Accounts' }
+	RocketChat.settings.add 'Accounts_ManuallyApproveNewUsers', false, { type: 'boolean', group: 'Accounts' }
 
 	RocketChat.settings.addGroup 'API'
 	RocketChat.settings.add 'API_Analytics', '', { type: 'string', group: 'API', public: true }

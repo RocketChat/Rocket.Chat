@@ -168,7 +168,7 @@
   "Welcome_to_the" : "Bienvenue sur",
   "With_whom" : "Avec qui",
   "you_are_in_preview_mode_of" : "Aperçu du salon #<strong>__room_name__</strong> ",
-  "You_neeed_confirm_email" : "Vous devez confirmer votre adresse email pour vous connecter !",
+  "You_need_confirm_email" : "Vous devez confirmer votre adresse email pour vous connecter !",
   "Your_Open_Source_solution" : "Votre propre solution de chat Open Source",
   "You_will_not_be_able_to_recover" : "Cette action n'est pas réversible !",
   "Yes_delete_it" : "Oui, je confirme la suppression !",
