@@ -75,6 +75,22 @@ blockquote {
 	}
 }
 
+.login-terms {
+	max-width: 400px;
+	color: #C2E7FF;
+	margin: auto;
+
+	a {
+		font-weight: bold !important;
+		text-decoration: underline;
+		color: #C2E7FF;
+
+		&:hover {
+			color: white;
+		}
+	}
+}
+
 .upload-preview {
 	background-color: #f5f5f5;
 	.upload-preview-file {
@@ -1715,6 +1731,16 @@ a.github-fork {
 	}
 }
 
+.cms-page {
+	max-width: 800px;
+	margin: 40px auto;
+	color: #444;
+	background-color: white;
+	padding: 20px;
+	border-radius: 5px;
+	box-shadow: 1px 1px 4px rgba(0,0,0,.3);
+}
+
 .spotlight {
 	background-color: rgba(0,0,0,.3);
 	position: fixed;
@@ -1753,6 +1779,35 @@ a.github-fork {
 			color: #aaa;
 			font-weight: 100;
 		}
+	}
+}
+
+.mobile-message-menu {
+	background-color: rgba(0,0,0,.3);
+	position: fixed;
+	top: 0;
+	bottom: 0;
+	left: 0;
+	right: 0;
+	z-index: 1000;
+	justify-content: center;
+	padding: 0 40px;
+
+	> .buttons {
+		font-size: 24px;
+		position: absolute;
+		bottom: 0;
+		left: 10%;
+		right: 10%;
+
+		.button {
+			display: block;
+			text-align: center;
+		}
+	}
+
+	.mobile-menu-separator {
+		height: 10px;
 	}
 }
 
@@ -3591,5 +3646,23 @@ a.github-fork {
 	.footer {
 		padding-left: 10px;
 		padding-right: 10px;
+	}
+}
+
+@media all and(max-height: 480px) {
+	#login-card {
+		padding: 10px;
+		margin: 10px auto;
+
+		.input-text {
+			margin-bottom: 6px;
+		}
+
+		.submit {
+			margin: 0px;
+		}
+	}
+	.social-login {
+		margin-bottom: 10px;
 	}
 }
