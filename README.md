@@ -6,6 +6,10 @@ The Complete Open Source Chat Solution
 
 Checkout the latest version at [https://demo.rocket.chat](https://demo.rocket.chat)
 
+Get the app for your Android phone:
+
+       ![https://developer.android.com/images/brand/en_app_rgb_wo_60.png](https://play.google.com/store/apps/details?id=com.konecty.rocket.chat)
+
 Try it with docker:
 
 ```
