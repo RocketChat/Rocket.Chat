@@ -1,3 +1,18 @@
+readAsDataURL = (file, callback) ->
+	reader = new FileReader()
+	reader.onload = (ev) ->
+		callback ev.target.result, file
+
+	reader.readAsDataURL file
+
+readAsArrayBuffer = (file, callback) ->
+	reader = new FileReader()
+	reader.onload = (ev) ->
+		callback ev.target.result, file
+
+	reader.readAsArrayBuffer file
+
+
 @fileUpload = (files) ->
 	files = [].concat files
 
@@ -7,10 +22,7 @@
 			swal.close()
 			return
 
-		reader = new FileReader()
-		reader.onload = (event) ->
-			fileContent = event.target.result
-
+		readAsDataURL file.file, (fileContent) ->
 			text = ''
 
 			if file.type is 'audio'
@@ -44,16 +56,89 @@
 				if isConfirm isnt true
 					return
 
-				newFile = new (FS.File)(file.file)
-				if file.name?
-					newFile.name(file.name)
-				newFile.rid = Session.get('openedRoom')
-				newFile.recId = Random.id()
-				newFile.userId = Meteor.userId()
-				Files.insert newFile, (error, fileObj) ->
-					unless error
-						toastr.success 'Upload succeeded!'
+				readAsArrayBuffer file.file, (data) ->
+					record =
+						name: file.name or file.file.name
+						size: file.file.size
+						type: file.file.type
 
-		reader.readAsDataURL(file.file)
+					upload = new UploadFS.Uploader
+						store: Meteor.fileStore
+						data: data
+						file: record
+						onError: (err) ->
+							console.error(err)
+
+						onComplete: (file) ->
+							self = this
+							Meteor.call 'sendMessage', {
+								_id: Random.id()
+								rid: Session.get('openedRoom')
+								msg: """
+									File Uploaded: *#{file.name}*
+									#{file.url}
+								"""
+								file:
+									_id: file._id
+							}, ->
+								Meteor.setTimeout ->
+									uploading = Session.get 'uploading'
+									if uploading?
+										item = _.findWhere(uploading, {id: self.id})
+										Session.set 'uploading', _.without(uploading, item)
+								, 2000
+
+					upload.id = Random.id()
+
+					# // Reactive method to get upload progress
+					Tracker.autorun (c) ->
+						uploading = undefined
+						cancel = undefined
+
+						Tracker.nonreactive ->
+							cancel = Session.get "uploading-cancel-#{upload.id}"
+							uploading = Session.get 'uploading'
+
+						if cancel
+							return c.stop()
+
+						uploading ?= []
+
+						item = _.findWhere(uploading, {id: upload.id})
+
+						if not item?
+							item =
+								id: upload.id
+								name: upload.getFile().name
+
+							uploading.push item
+
+						item.percentage = Math.round(upload.getProgress() * 100)
+						Session.set 'uploading', uploading
+
+					upload.start();
+
+					# upload.stop();
+
+					Tracker.autorun (c) ->
+						cancel = Session.get "uploading-cancel-#{upload.id}"
+						if cancel
+							upload.stop()
+							upload.abort()
+							c.stop()
+
+							uploading = Session.get 'uploading'
+							if uploading?
+								item = _.findWhere(uploading, {id: upload.id})
+								if item?
+									item.percentage = 0
+								Session.set 'uploading', uploading
+
+							Meteor.setTimeout ->
+								uploading = Session.get 'uploading'
+								if uploading?
+									item = _.findWhere(uploading, {id: upload.id})
+									Session.set 'uploading', _.without(uploading, item)
+							, 1000
 
 	consume()
