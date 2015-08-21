@@ -124,6 +124,6 @@
   "We_have_sent_registration_email" : "我们已经向您发出一封电子邮件，以确认您的注册。如果您没有收到邮件，请重试。",
   "Welcome" : "欢迎 <em>%s</em>",
   "Welcome_to_the" : "欢迎来到",
-  "You_neeed_confirm_email" : "登录前请验证您的电子邮件！",
+  "You_need_confirm_email" : "登录前请验证您的电子邮件！",
   "Your_Open_Source_solution" : "您自己的开源聊天解决方案"
 }

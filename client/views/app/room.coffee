@@ -303,6 +303,21 @@ Template.room.helpers
 
 
 Template.room.events
+	"touchstart .message": (e, t) ->
+		message = this._arguments[1]
+		doLongTouch = ->
+			mobileMessageMenu.show(message, t)
+
+		t.touchtime = Meteor.setTimeout doLongTouch, 2000
+
+	"touchend .message": (e, t) ->
+		Meteor.clearTimeout t.touchtime
+
+	"touchmove .message": (e, t) ->
+		Meteor.clearTimeout t.touchtime
+
+	"touchcancel .message": (e, t) ->
+		Meteor.clearTimeout t.touchtime
 
 	"click .upload-progress-item > a": ->
 		Session.set "uploading-cancel-#{this.id}", true

@@ -33,11 +33,13 @@ FlowRouter.route '/home',
 		BlazeLayout.render 'main', {center: 'home'}
 		KonchatNotification.getDesktopPermission()
 
+
 FlowRouter.route '/changeavatar',
 	name: 'changeAvatar'
 
 	action: ->
 		BlazeLayout.render 'main', {center: 'avatarPrompt'}
+
 
 FlowRouter.route '/admin/users',
 	name: 'admin-users'
@@ -45,11 +47,13 @@ FlowRouter.route '/admin/users',
 	action: ->
 		BlazeLayout.render 'main', {center: 'adminUsers'}
 
+
 FlowRouter.route '/admin/rooms',
 	name: 'admin-rooms'
 
 	action: ->
 		BlazeLayout.render 'main', {center: 'adminRooms'}
+
 
 FlowRouter.route '/admin/statistics',
 	name: 'admin-statistics'
@@ -57,11 +61,13 @@ FlowRouter.route '/admin/statistics',
 	action: ->
 		BlazeLayout.render 'main', {center: 'adminStatistics'}
 
+
 FlowRouter.route '/admin/:group?',
 	name: 'admin'
 
 	action: ->
 		BlazeLayout.render 'main', {center: 'admin'}
+
 
 FlowRouter.route '/account/:group?',
 	name: 'account'
@@ -72,6 +78,7 @@ FlowRouter.route '/account/:group?',
 		params.group = _.capitalize params.group, true
 		BlazeLayout.render 'main', { center: "account#{params.group}" }
 
+
 FlowRouter.route '/history/private',
 	name: 'privateHistory'
 
@@ -81,3 +88,18 @@ FlowRouter.route '/history/private',
 	action: ->
 		Session.setDefault('historyFilter', '')
 		BlazeLayout.render 'main', {center: 'privateHistory'}
+
+
+FlowRouter.route '/terms-of-service',
+	name: 'terms-of-service'
+
+	action: ->
+		Session.set 'cmsPage', 'Layout_Terms_of_Service'
+		BlazeLayout.render 'cmsPage'
+
+FlowRouter.route '/privacy-policy',
+	name: 'privacy-policy'
+
+	action: ->
+		Session.set 'cmsPage', 'Layout_Privacy_Policy'
+		BlazeLayout.render 'cmsPage'
