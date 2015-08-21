@@ -165,7 +165,7 @@
   "Welcome_to_the" : "오신것을 환영합니다",
   "With_whom" : "누구랑?",
   "you_are_in_preview_mode_of" : "#<strong>__room_name__</strong> 채널 미리보기 모드",
-  "You_neeed_confirm_email" : "로그인하려면 이메일 확인이 필요합니다!",
+  "You_need_confirm_email" : "로그인하려면 이메일 확인이 필요합니다!",
   "Your_Open_Source_solution" : "자신만의 오픈소스 채팅 솔루션",
   "You_will_not_be_able_to_recover" : "복구 안됩니다!",
   "Yes_delete_it" : "넵, 삭제!",

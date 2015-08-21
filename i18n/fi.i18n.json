@@ -207,7 +207,7 @@
   "Welcome_to_the" : "Tervetuloa",
   "With_whom" : "kanssa",
   "you_are_in_preview_mode_of" : "Tämä on kanavan #<strong>__room_name__</strong> esikatselutila",
-  "You_neeed_confirm_email" : "Sinun tulee vahvistaa sähköpostiosoitteesi!",
+  "You_need_confirm_email" : "Sinun tulee vahvistaa sähköpostiosoitteesi!",
   "Your_Open_Source_solution" : "Your own Open Source chat solution",
   "You_will_not_be_able_to_recover" : "Palauttaminen ei ole mahdollista!",
   "Yes_delete_it" : "Kyllä, poista!",

@@ -124,6 +124,6 @@
   "We_have_sent_registration_email" : "Abbiamo inviato una email per confermare la registrazione. Se non ricevi una email a breve tempo, torna e prova di nuovo.",
   "Welcome" : "Benvenuto <em>%s</em>.",
   "Welcome_to_the" : "Benvenuto a",
-  "You_neeed_confirm_email" : "Hai bisogno di confermare il tuo email per accedere!",
+  "You_need_confirm_email" : "Hai bisogno di confermare il tuo email per accedere!",
   "Your_Open_Source_solution" : "La tua soluzione per chat Open Source"
 }
