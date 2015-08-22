@@ -572,22 +572,21 @@ Template.room.events
 	'dragleave .dropzone-overlay': (e) ->
 		e.currentTarget.parentNode.classList.remove 'over'
 
-	'dropped .dropzone-overlay': (e) ->
-		e.currentTarget.parentNode.classList.remove 'over'
+	'dropped .dropzone-overlay': (event) ->
+		event.currentTarget.parentNode.classList.remove 'over'
 
-		files = []
+		e = event.originalEvent or event
+		files = e.target.files
+		if not files or files.length is 0
+			files = e.dataTransfer?.files or []
 
-		evt = e.originalEvent or e
-
-		if not evt.target.files or evt.target.files.length is 0
-			evt.target.files = if evt.dataTransfer then evt.dataTransfer.files else []
-
-		for file in evt.target.files
-			files.push
+		filesToUpload = []
+		for file in files
+			filesToUpload.push
 				file: file
 				name: file.name
 
-		fileUpload files
+		fileUpload filesToUpload
 
 	'change .message-form input[type=file]': (event, template) ->
 		e = event.originalEvent or event
