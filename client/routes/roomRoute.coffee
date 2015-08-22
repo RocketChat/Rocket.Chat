@@ -24,6 +24,8 @@ openRoom = (type, name) ->
 				FlowRouter.go 'home'
 				return
 
+			RoomManager.refreshDomOfRoom(type + name, room._id)
+			###
 			mainNode = document.querySelector('.main-content')
 			if mainNode?
 				for child in mainNode.children
@@ -33,6 +35,7 @@ openRoom = (type, name) ->
 				if roomDom.classList.contains('room-container')
 					roomDom.querySelector('.messages-box > .wrapper').scrollTop = roomDom.oldScrollTop
 
+			###
 			Session.set 'openedRoom', room._id
 
 			Session.set 'editRoomTitle', false
@@ -44,8 +47,9 @@ openRoom = (type, name) ->
 					$('.message-form .input-message').focus()
 				, 100
 
-
 roomExit = ->
+	RoomManager.removeDomOfRoom()
+	###
 	mainNode = document.querySelector('.main-content')
 	if mainNode?
 		for child in mainNode.children
@@ -53,6 +57,7 @@ roomExit = ->
 				if child.classList.contains('room-container')
 					child.oldScrollTop = child.querySelector('.messages-box > .wrapper').scrollTop
 				mainNode.removeChild child
+	###
 
 
 FlowRouter.route '/channel/:name',

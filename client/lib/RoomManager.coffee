@@ -43,6 +43,12 @@ Meteor.startup ->
 				RoomHistoryManager.clear openedRooms[typeName].rid
 				ChatMessage.remove rid: openedRooms[typeName].rid
 
+	remove = (typeName) ->
+		# this is called when the room name is changed and the cached room is no longer valid
+		if openedRooms[typeName]
+			close typeName
+			delete openedRooms[typeName]
+
 	computation = Tracker.autorun ->
 		for typeName, record of openedRooms when record.active is true
 			do (typeName, record) ->
@@ -68,15 +74,15 @@ Meteor.startup ->
 
 					room = ChatRoom.findOne query, { reactive: false }
 
-					openedRooms[typeName].rid = room._id
+					if room
+						openedRooms[typeName].rid = room._id
+						msgStream.on openedRooms[typeName].rid, (msg) ->
+							ChatMessage.upsert { _id: msg._id }, msg
 
-					msgStream.on openedRooms[typeName].rid, (msg) ->
-						ChatMessage.upsert { _id: msg._id }, msg
+						deleteMsgStream.on openedRooms[typeName].rid, (msg) ->
+							ChatMessage.remove _id: msg._id
 
-					deleteMsgStream.on openedRooms[typeName].rid, (msg) ->
-						ChatMessage.remove _id: msg._id
-
-				Dep.changed()
+						Dep.changed()
 
 	setRoomExpireExcept = (except) ->
 
@@ -126,6 +132,27 @@ Meteor.startup ->
 		room = openedRooms[typeName]
 		return room?.dom?
 
+	refreshDomOfRoom = (typeName, rid) ->
+		mainNode = document.querySelector('.main-content')
+		if mainNode?
+			for child in mainNode.children
+				mainNode.removeChild child if child?
+			roomDom = getDomOfRoom(typeName, rid)
+			mainNode.appendChild roomDom
+			if roomDom.classList.contains('room-container')
+				roomDom.querySelector('.messages-box > .wrapper').scrollTop = roomDom.oldScrollTop
+
+
+
+	removeDomOfRoom = () ->
+		mainNode = document.querySelector('.main-content')
+		if mainNode?
+			for child in mainNode.children
+				if child?
+					if child.classList.contains('room-container')
+						child.oldScrollTop = child.querySelector('.messages-box > .wrapper').scrollTop
+					mainNode.removeChild child
+
 	updateUserStatus = (user, status, utcOffset) ->
 		onlineUsersValue = onlineUsers.curValue
 
@@ -143,7 +170,10 @@ Meteor.startup ->
 	init: init
 	getDomOfRoom: getDomOfRoom
 	existsDomOfRoom: existsDomOfRoom
+	refreshDomOfRoom: refreshDomOfRoom
+	removeDomOfRoom: removeDomOfRoom
 	msgStream: msgStream
 	openedRooms: openedRooms
 	updateUserStatus: updateUserStatus
 	onlineUsers: onlineUsers
+	remove:remove
