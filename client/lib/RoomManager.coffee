@@ -1,3 +1,23 @@
+loadMissedMessages = (rid) ->
+	lastMessage = ChatMessage.findOne({rid: 'GENERAL'}, {sort: {ts: -1}, limit: 1})
+	if not lastMessage?
+		return
+
+	Meteor.call 'loadMissedMessages', rid, lastMessage.ts, (err, result) ->
+		ChatMessage.upsert {_id: item._id}, item for item in result
+
+connectionWasOnline = true
+Tracker.autorun ->
+	connected = Meteor.connection.status().connected
+
+	if connected is true and connectionWasOnline is false and RoomManager.openedRooms?
+		for key, value of RoomManager.openedRooms
+			if value.rid?
+				loadMissedMessages(value.rid)
+
+	connectionWasOnline = connected
+
+
 Meteor.startup ->
 	ChatMessage.find().observe
 		removed: (record) ->
