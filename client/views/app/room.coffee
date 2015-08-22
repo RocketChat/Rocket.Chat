@@ -518,6 +518,9 @@ Template.room.events
 		Session.set('flexOpened', true)
 		Session.set('showUserInfo', $(e.currentTarget).data('username'))
 
+	'click .image-to-download': (event) ->
+		ChatMessage.update {_id: this._arguments[1]._id, 'urls.url': $(event.currentTarget).data('url')}, {$set: {'urls.$.downloadImages': true}}
+
 	'click .delete-message': (event) ->
 		message = @_arguments[1]
 		msg = event.currentTarget.parentNode.parentNode
