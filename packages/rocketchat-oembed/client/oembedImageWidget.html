@@ -2,9 +2,7 @@
 	<a href="{{url}}" target="_blank">
 		{{#if parsedUrl}}
 			<blockquote>
-				<div style="height: 200px;">
-					<img src="{{url}}" style="max-width: 100%; max-height: 200px;" />	
-				</div>
+				<div style="background-image: url({{url}}); background-size: contain; background-repeat: no-repeat; background-position: center left; height: 200px;"></div>
 			</blockquote>
 		{{/if}}
 	</a>
