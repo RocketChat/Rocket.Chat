@@ -10,6 +10,10 @@ Get the app for your Android phone:
 
 [![Rocket.Chat on Google Play](https://developer.android.com/images/brand/en_app_rgb_wo_45.png)](https://play.google.com/store/apps/details?id=com.konecty.rocket.chat)
 
+Try it on Ubuntu:
+
+[Deploy on VPS or standalone server](https://github.com/RocketChat/Rocket.Chat/wiki/Deploy-Rocket.Chat-without-docker)
+
 Try it with docker:
 
 ```
@@ -113,6 +117,10 @@ We are developing the APIs based on the competition, so stay tunned and you will
 Checkout [Github Wiki](https://github.com/RocketChat/Rocket.Chat/wiki) (coming soon)
 
 ## Production Deployment
+
+### Unbuntu VPS or server
+
+Follow these [deployment instructions](https://github.com/RocketChat/Rocket.Chat/wiki/Deploy-Rocket.Chat-without-docker).
 
 ### Docker
 
