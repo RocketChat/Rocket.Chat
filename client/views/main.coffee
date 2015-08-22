@@ -1,6 +1,6 @@
 Template.body.onRendered ->
 	$(document.body).on 'keydown', (e) ->
-		if e.keyCode is 80 and e.metaKey is true
+		if e.keyCode is 80 and (e.ctrlKey is true or e.metaKey is true)
 			e.preventDefault()
 			e.stopPropagation()
 			spotlight.show()
