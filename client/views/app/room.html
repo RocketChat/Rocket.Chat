@@ -22,12 +22,19 @@
 			</header>
 			<div class="upload-progress">
 				{{#each uploading}}
-					<div class="upload-progress-item">
-						<div class="upload-progress-progress" style="width: {{percentage}}%;"></div>
-						{{name}}... {{percentage}}%
-						<a>
-							cancel
-						</a>
+					<div class="upload-progress-item {{#if error}}upload-error{{/if}}">
+						{{#if error}}
+							{{error}}
+							<a>
+								close
+							</a>
+						{{else}}
+							<div class="upload-progress-progress" style="width: {{percentage}}%;"></div>
+							{{name}}... {{percentage}}%
+							<a>
+								cancel
+							</a>
+						{{/if}}
 					</div>
 				{{/each}}
 			</div>
