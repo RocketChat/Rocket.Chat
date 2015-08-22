@@ -67,7 +67,13 @@ readAsArrayBuffer = (file, callback) ->
 						data: data
 						file: record
 						onError: (err) ->
-							console.error(err)
+							uploading = Session.get 'uploading'
+							if uploading?
+								item = _.findWhere(uploading, {id: upload.id})
+								if item?
+									item.error = err.reason
+									item.percentage = 0
+								Session.set 'uploading', uploading
 
 						onComplete: (file) ->
 							self = this
