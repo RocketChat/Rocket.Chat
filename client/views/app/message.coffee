@@ -1,7 +1,7 @@
 Template.message.helpers
 
 	own: ->
-		return 'own' if this.u?._id is Meteor.userId()
+		return 'own' if this.u?._id is Meteor.userId() 
 
 	time: ->
 		return moment(this.ts).format('HH:mm')
@@ -24,6 +24,7 @@ Template.message.helpers
 			when 'nu' then t('User_added', { user_added: name })
 			when 'uj' then t('User_joined_channel', { user: name })
 			when 'wm' then t('Welcome', { user: name })
+			when 'rm' then t('Message_removed', { user: name })
 			when 'rtc' then RocketChat.callbacks.run 'renderRtcMessage', this
 			else
 				this.html = this.msg
@@ -34,11 +35,20 @@ Template.message.helpers
 				return this.html
 
 	system: ->
+		return 'system' if this.t in ['s', 'p', 'f', 'r', 'au', 'ru', 'ul', 'nu', 'wm', 'uj', 'rm']
 		return 'system' if this.t in ['s', 'p', 'f', 'r', 'au', 'ru', 'ul', 'nu', 'wm', 'uj']
 
 	sender: ->
 		return getUser(this.u.username)?.name || this.u.username
 
+	edited: ->
+		return @ets and @t not in ['s', 'p', 'f', 'r', 'au', 'ru', 'ul', 'nu', 'wm', 'uj', 'rm']
+	canEdit: ->
+		return RocketChat.settings.get 'Message_AllowEditing'
+	canDelete: ->
+		return RocketChat.settings.get 'Message_AllowDeleting'
+	showEditedStatus: ->
+		return RocketChat.settings.get 'Message_ShowEditedStatus'
 
 Template.message.onViewRendered = (context) ->
 	view = this
@@ -63,7 +73,7 @@ Template.message.onViewRendered = (context) ->
 		ul = lastNode.parentElement
 		wrapper = ul.parentElement
 
-		if context.urls?.length > 0 and Template.oembedBaseWidget?
+		if context.urls?.length > 0 and Template.oembedBaseWidget? and RocketChat.settings.get 'API_Embed'
 			for item in context.urls
 				do (item) ->
 					urlNode = lastNode.querySelector('.body a[href="'+item.url+'"]')

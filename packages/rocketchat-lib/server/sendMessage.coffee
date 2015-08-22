@@ -3,8 +3,6 @@ RocketChat.sendMessage = (user, message, room) ->
 	if not user or not message or not room._id
 		return false
 
-	console.log '[functions] RocketChat.sendMessage -> '.green, 'arguments:', arguments
-
 	unless message.ts?
 		message.ts = new Date()
 
@@ -73,8 +71,31 @@ RocketChat.sendMessage = (user, message, room) ->
 				$inc:
 					unread: 1
 
+			if Push.enabled is true
+				userOfMention = Meteor.users.findOne({_id: message.rid.replace(message.u._id, ''), statusConnection: {$ne: 'online'}}, {fields: {username: 1}})
+				if userOfMention?
+					Push.send
+						from: 'push'
+						title: "@#{user.username}"
+						text: message.msg
+						apn:
+							text: "@#{user.username}:\n#{message.msg}"
+						badge: 1
+						sound: 'chime'
+						payload:
+							rid: message.rid
+							sender: message.u
+							type: room.t
+							name: room.name
+						query:
+							userId: userOfMention._id
+
 		else
+			mentionIds = []
 			message.mentions?.forEach (mention) ->
+				mentionIds.push mention._id
+
+			if mentionIds.length > 0
 				###
 				Update all other subscriptions of mentioned users to alert their owners and incrementing
 				the unread counter for mentions and direct messages
@@ -83,12 +104,12 @@ RocketChat.sendMessage = (user, message, room) ->
 					# only subscriptions to the same room
 					rid: message.rid
 
-				if mention._id is 'all'
+				if mentionIds.indexOf('all') > -1
 					# all users except sender if mention is for all
 					query['u._id'] = $ne: user._id
 				else
 					# the mentioned user if mention isn't for all
-					query['u._id'] = mention._id
+					query['u._id'] = $in: mentionIds
 
 				ChatSubscription.update query,
 					$set:
@@ -101,6 +122,40 @@ RocketChat.sendMessage = (user, message, room) ->
 						unread: 1
 				,
 					multi: true
+
+				if Push.enabled is true
+					query =
+						statusConnection: {$ne: 'online'}
+
+					if mentionIds.indexOf('all') > -1
+						if room.usernames?.length > 0
+							query.username =
+								$in: room.usernames
+						else
+							query.username =
+								$in: []
+					else
+						query._id =
+							$in: mentionIds
+
+					usersOfMention = Meteor.users.find(query, {fields: {_id: 1}}).fetch()
+					usersOfMentionIds = _.pluck(usersOfMention, '_id');
+					if usersOfMentionIds.length > 0
+						Push.send
+							from: 'push'
+							title: "##{room.name}"
+							text: message.msg
+							apn:
+								text: "##{room.name}:\n#{message.msg}"
+							badge: 1
+							sound: 'chime'
+							payload:
+								rid: message.rid
+								sender: message.u
+								type: room.t
+								name: room.name
+							query:
+								userId: $in: usersOfMentionIds
 
 		###
 		Update all other subscriptions to alert their owners but witout incrementing

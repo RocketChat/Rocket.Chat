@@ -1,0 +1,17 @@
+<template name="message">
+	<li id="{{_id}}" class="message sequential {{system}} {{t}} {{own}} {{isTemp}}" data-username="{{u.username}}" data-date="{{date}}">
+		<a class="thumb user-card-message" href="#" data-username="{{u.username}}" tabindex="1">{{> avatar username=u.username}}</a>
+		<a class="user user-card-message" href="#" data-username="{{u.username}}" tabindex="1">{{u.username}}</a>
+		<span class="info">
+			<span class="time">{{time}}</span>
+		{{#if ets}}
+			<span class="edited">({{_ "edited"}})</span>
+		{{/if}}
+			<i class="icon-pencil edit-message"></i>
+			<i class="icon-trash-1 delete-message"></i>
+		</span>
+		<div class="body" dir="auto">
+			{{{body}}}
+		</div>
+	</li>
+</template>

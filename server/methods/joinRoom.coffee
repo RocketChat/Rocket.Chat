@@ -26,6 +26,7 @@ Meteor.methods
 			rid: rid
 			ts: now
 			name: room.name
+			displayName: room.displayName
 			t: room.t
 			open: true
 			alert: true

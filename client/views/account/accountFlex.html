@@ -1,0 +1,19 @@
+<template name="accountFlex">
+	<header>
+		<div>
+			<h4>{{_ "My_Account"}}</h4>
+		</div>
+	</header>
+	<div class="content">
+		<div class="wrapper">
+			<ul>
+				<li>
+					<a href="{{pathFor 'account' group='profile'}}" class="account-link">{{_ "Profile"}}</a>
+					{{!-- <a href="{{pathFor 'account' group='account'}}" class="account-link">{{_ "Account_Settings"}}</a> --}}
+					{{!-- <a href="{{pathFor 'account' group='notification'}}" class="account-link">{{_ "Notification"}}</a> --}}
+					<a href="{{pathFor 'changeAvatar'}}" class="account-link">{{_ "Change_avatar"}}</a> {{!-- move this to profile --}}
+				</li>
+			</ul>
+		</div>
+	</div>
+</template>

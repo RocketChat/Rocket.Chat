@@ -1,12 +1,14 @@
 Meteor.methods
-	createPrivateGroup: (name, members, accessPermissions) ->
+	createPrivateGroup: (displayName, members, accessPermissions) ->
 		if not Meteor.userId()
 			throw new Meteor.Error 'invalid-user', "[methods] createPrivateGroup -> Invalid user"
 
 		console.log '[methods] createPrivateGroup -> '.green, 'userId:', Meteor.userId(), 'arguments:', arguments
 
+		###
 		if not /^[0-9a-z-_]+$/i.test name
 			throw new Meteor.Error 'name-invalid'
+		###
 
 		now = new Date()
 
@@ -14,10 +16,10 @@ Meteor.methods
 
 		members.push me.username
 
-		name = s.slugify name
+		slugName = s.slugify displayName
 
 		# avoid duplicate names
-		if ChatRoom.findOne({name:name})
+		if ChatRoom.findOne({name:slugName})
 			throw new Meteor.Error 'duplicate-name'
 
 		if not accessPermissions
@@ -47,7 +49,8 @@ Meteor.methods
 			u:
 				_id: me._id
 				username: me.username
-			name: name
+			name: slugName
+			displayName: displayName
 			msgs: 0
 			accessPermissions: accessPermissions
 			securityLabels: Jedis.legacyLabel accessPermissions
@@ -60,7 +63,8 @@ Meteor.methods
 			subscription =
 				rid: rid
 				ts: now
-				name: name
+				name: slugName
+				displayName: displayName
 				t: 'p'
 				open: true
 				u:
@@ -76,4 +80,5 @@ Meteor.methods
 
 		return {
 			rid: rid
+			name: slugName
 		}

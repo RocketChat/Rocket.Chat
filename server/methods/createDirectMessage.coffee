@@ -53,7 +53,8 @@ Meteor.methods
 				ts: now
 				ls: now
 			$setOnInsert:
-				name: to.name
+				name: to.username
+				displayName: to.name
 				t: 'd'
 				open: true
 				alert: false
@@ -68,7 +69,8 @@ Meteor.methods
 			$and: [{'u._id': to._id}]
 		,
 			$setOnInsert:
-				name: me.name
+				name: me.username
+				displayName: me.name
 				t: 'd'
 				open: false
 				alert: false

@@ -32,7 +32,7 @@ cfs:tempstore@0.1.5
 cfs:upload-http@0.0.20
 cfs:worker@0.1.4
 check@1.0.5
-chrismbeckett:toastr@2.1.0
+chrismbeckett:toastr@2.1.2_1
 coffeescript@1.0.6
 cosmos:browserify@0.5.0
 dandv:caret-position@2.1.1
@@ -58,8 +58,7 @@ jparker:gravatar@0.3.1
 jquery@1.11.3_2
 json@1.0.3
 kadira:blaze-layout@2.0.0
-kadira:debug@2.1.0
-kadira:flow-router@2.0.1
+kadira:flow-router@2.1.1
 kevohagan:sweetalert@1.0.0
 konecty:autolinker@1.0.2
 konecty:change-case@2.3.0
@@ -67,7 +66,7 @@ konecty:delayed-task@1.0.0
 konecty:mongo-counter@0.0.3
 konecty:multiple-instances-status@1.0.3
 konecty:nrr@2.0.2
-konecty:user-presence@1.2.4
+konecty:user-presence@1.2.5
 launch-screen@1.0.2
 less@1.0.14
 livedata@1.0.13
@@ -92,7 +91,7 @@ mrt:reactive-store@0.0.1
 mystor:device-detection@0.2.0
 nemo64:bootstrap@3.3.5_2
 nemo64:bootstrap-data@3.3.5
-nimble:restivus@0.8.1
+nimble:restivus@0.8.2
 nooitaf:colors@0.0.2
 npm-bcrypt@0.7.8_2
 oauth@1.1.4
@@ -105,7 +104,9 @@ percolate:migrations@0.7.5
 percolatestudio:synced-cron@1.1.0
 qnub:emojione@0.0.3
 raix:eventemitter@0.1.3
+raix:eventstate@0.0.2
 raix:handlebar-helpers@0.2.4
+raix:push@2.6.13-rc.1
 raix:ui-dropped-event@0.0.7
 random@1.0.3
 reactive-dict@1.1.0
@@ -113,6 +114,7 @@ reactive-var@1.0.5
 reload@1.1.3
 retry@1.0.3
 rocketchat:autolinker@0.0.1
+rocketchat:colors@0.0.1
 rocketchat:emojione@0.0.1
 rocketchat:favico@0.0.1
 rocketchat:file@0.0.1
@@ -130,7 +132,7 @@ service-configuration@1.0.4
 session@1.1.0
 sha@1.0.3
 simple:highlight.js@1.0.9
-simple:json-routes@1.0.3
+simple:json-routes@1.0.4
 spacebars@1.0.6
 spacebars-compiler@1.0.6
 srp@1.0.3
@@ -139,7 +141,7 @@ templating@1.1.1
 tmeasday:crypto-base@3.1.2
 tmeasday:crypto-md5@3.1.2
 tmeasday:errors@2.0.0
-todda00:friendly-slugs@0.3.3
+todda00:friendly-slugs@0.3.4
 tracker@1.0.7
 ui@1.0.6
 underscore@1.0.3

@@ -1,10 +1,12 @@
 Meteor.methods
-	createChannel: (name, members) ->
+	createChannel: (displayName, members) ->
 		if not Meteor.userId()
 			throw new Meteor.Error 'invalid-user', "[methods] createChannel -> Invalid user"
 
+		###
 		if not /^[0-9a-z-_]+$/i.test name
 			throw new Meteor.Error 'name-invalid'
+		###
 
 		console.log '[methods] createChannel -> '.green, 'userId:', Meteor.userId(), 'arguments:', arguments
 
@@ -13,17 +15,19 @@ Meteor.methods
 
 		members.push user.username
 
+		slugName = s.slugify displayName
+
 		# avoid duplicate names
-		if ChatRoom.findOne({name:name})
+		if ChatRoom.findOne({name:slugName})
 			throw new Meteor.Error 'duplicate-name'
 
-		# name = s.slugify name
 
 		room =
 			usernames: members
 			ts: now
 			t: 'c'
-			name: name
+			name: slugName
+			displayName: displayName
 			msgs: 0
 			u:
 				_id: Meteor.userId()
@@ -42,7 +46,8 @@ Meteor.methods
 			sub =
 				rid: rid
 				ts: now
-				name: name
+				name: slugName
+				displayName : displayName
 				t: 'c'
 				unread: 0
 				u:

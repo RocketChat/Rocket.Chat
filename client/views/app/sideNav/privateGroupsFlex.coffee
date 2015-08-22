@@ -96,20 +96,22 @@ Template.privateGroupsFlex.events
 
 	'click .save-pvt-group': (e, instance) ->
 		err = SideNav.validate()
-		instance.groupName.set instance.find('#pvt-group-name').value
+		displayName = instance.find('#pvt-group-name').value
+		instance.groupName.set displayName
 		if not err
 			accessPermissions = instance.selectedLabelIds
 			rid = instance.data.relabelRoom
 			if rid
-				Meteor.call 'updateRoom', rid, instance.find('#pvt-group-name').value, instance.selectedUsers.get(), accessPermissions, (err, result) ->
+				Meteor.call 'updateRoom', rid, displayName, instance.selectedUsers.get(), accessPermissions, (err, result) ->
 					if err
 						return toastr.error err.reason
+					name = result.name
 					SideNav.closeFlex()
 					SideNav.setFlex null
 					instance.clearForm()
-					FlowRouter.go 'room', { _id: result.rid }
+					#FlowRouter.go 'group', { name:name}
 			else
-				Meteor.call 'createPrivateGroup', instance.find('#pvt-group-name').value, instance.selectedUsers.get(), accessPermissions, (err, result) ->
+				Meteor.call 'createPrivateGroup', displayName, instance.selectedUsers.get(), accessPermissions, (err, result) ->
 					if err
 						if err.error is 'name-invalid'
 							instance.error.set({ invalid: true })
@@ -118,10 +120,11 @@ Template.privateGroupsFlex.events
 							instance.error.set({ duplicate: true })
 							return
 						return toastr.error err.reason
+					name = result.name
 					SideNav.closeFlex()
 					SideNav.setFlex null
 					instance.clearForm()
-					FlowRouter.go 'room', { _id: result.rid }
+					FlowRouter.go 'group', { name: name }
 		else
 			Template.instance().error.set({fields: err})
 
@@ -237,6 +240,7 @@ Template.privateGroupsFlex.onCreated ->
 
 
 	instance.autorun (c) ->
+		console.log 'pgf selected user autorun'
 		list = Template.instance().warnUserIds.get()
 		$('.selected-user').each ->
 			user = $(this).text().trim()

@@ -40,6 +40,7 @@ class @ChatMessages
 		return -1
 
 	edit: (element, index) ->
+		return unless RocketChat.settings.get 'Message_AllowEditing'
 		return if element.classList.contains("system")
 		this.clearEditing()
 		id = element.getAttribute("id")
@@ -94,7 +95,7 @@ class @ChatMessages
 	update: (id, rid, input) ->
 		if _.trim(input.value) isnt ''
 			msg = input.value
-			Meteor.call 'updateMessage', { id: id, msg: msg }
+			Meteor.call 'updateMessage', { _id: id, msg: msg, rid: rid }
 			this.clearEditing()
 			this.stopTyping(rid)
 

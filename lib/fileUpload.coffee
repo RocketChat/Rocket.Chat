@@ -20,7 +20,7 @@ if FS?
 		filter:
 			maxSize: 2097152,
 			allow:
-				contentTypes: ['image/*']
+				contentTypes: ['image/*', 'audio/*']
 			onInvalid: (message) ->
 				if Meteor.isClient
 					toastr.error message

@@ -55,11 +55,13 @@ Template.userStatus.events
 	'click #avatar': (event) ->
 		FlowRouter.go 'changeAvatar'
 
-	'click #settings': (event) ->
-		SideNav.setFlex "userSettingsFlex"
-		setTimeout ->
-			SideNav.openFlex()
-		, 125
+	'click #account': (event) ->
+		SideNav.setFlex "accountFlex"
+		SideNav.openFlex()
+		FlowRouter.go 'account'
+
+	'click .account-link': ->
+		menu.close()
 
 	'click .save-message': (event, instance) ->
 		cmt = $('.custom-message')

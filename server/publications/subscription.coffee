@@ -12,6 +12,7 @@ Meteor.publish 'subscription', ->
 			ts: 1
 			ls: 1
 			name: 1
+			displayName: 1
 			rid: 1
 			f: 1
 			open: 1

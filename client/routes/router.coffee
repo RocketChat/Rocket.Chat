@@ -7,13 +7,10 @@ BlazeLayout.setRoot 'body'
 FlowRouter.subscriptions = ->
 	Tracker.autorun =>
 		RoomManager.init()
-		if Meteor.userId()?
-			@register 'userData', Meteor.subscribe('userData')
-			@register 'activeUsers', Meteor.subscribe('activeUsers')
-			@register 'accessPermissions', Meteor.subscribe('accessPermissions')
-			if Meteor.user()?.admin
-				@register 'admin-settings', Meteor.subscribe('admin-settings')
-
+		@register 'accessPermissions', Meteor.subscribe('accessPermissions')
+		@register 'userData', Meteor.subscribe('userData')
+		@register 'activeUsers', Meteor.subscribe('activeUsers')
+		@register 'admin-settings', Meteor.subscribe('admin-settings')
 
 FlowRouter.route '/',
 	name: 'index'
@@ -42,11 +39,38 @@ FlowRouter.route '/changeavatar',
 	action: ->
 		BlazeLayout.render 'main', {center: 'avatarPrompt'}
 
-FlowRouter.route '/settings/:group?',
-	name: 'settings'
+FlowRouter.route '/admin/users',
+	name: 'admin-users'
 
 	action: ->
-		BlazeLayout.render 'main', {center: 'settings'}
+		BlazeLayout.render 'main', {center: 'adminUsers'}
+
+FlowRouter.route '/admin/rooms',
+	name: 'admin-rooms'
+
+	action: ->
+		BlazeLayout.render 'main', {center: 'adminRooms'}
+
+FlowRouter.route '/admin/statistics',
+	name: 'admin-statistics'
+
+	action: ->
+		BlazeLayout.render 'main', {center: 'adminStatistics'}
+
+FlowRouter.route '/admin/:group?',
+	name: 'admin'
+
+	action: ->
+		BlazeLayout.render 'main', {center: 'admin'}
+
+FlowRouter.route '/account/:group?',
+	name: 'account'
+
+	action: (params) ->
+		unless params.group
+			params.group = 'Profile'
+		params.group = _.capitalize params.group, true
+		BlazeLayout.render 'main', { center: "account#{params.group}" }
 
 FlowRouter.route '/history/private',
 	name: 'privateHistory'

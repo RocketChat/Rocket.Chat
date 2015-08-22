@@ -38,7 +38,7 @@
   "Hide_room" : "ルームを隠す",
   "Update_room" : "Update/Relabel room",
   "History" : "履歴",
-  "inline_code": "インライン",
+  "inline_code" : "インライン",
   "Invalid_confirm_pass" : "入力されたパスワードとパスワードの確認が一致していません",
   "Invalid_email" : "入力されたメールアドレスが無効です",
   "Invalid_name" : "名前は空にすることはできません",

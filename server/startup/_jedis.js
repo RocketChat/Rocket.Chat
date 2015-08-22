@@ -86,10 +86,11 @@ var addUserToLocationChannel = function(user) {
 		console.log('User missing location in profile')
 		return
 	}
-
-	channel = ChatRoom.findOne({name:user.profile.location, t:'c'})
+	location = user.profile.location
+	slugLocation = _.slugify(location)
+	channel = ChatRoom.findOne({name:slugLocation, t:'c'})
 	if( _.isUndefined(channel) ) {
-		chId = createChannel(user.profile.location, [user.username]);
+		chId = createChannel(slugLocation,location, [user.username]);
 	} else {
 		chId = channel._id;
 	}
@@ -174,6 +175,7 @@ var addUsersToRoom = function( users, roomId, createJoinedMessage) {
 			ChatSubscription.insert( {
 				rid: roomId,
 				name: room.name,
+				displayName: room.displayName,
 				ts: now,
 				t: room.t,
 				f: true,
@@ -198,7 +200,7 @@ var addUsersToRoom = function( users, roomId, createJoinedMessage) {
 	});
 }
 
-var createChannel = function(name, members) {
+var createChannel = function(name, displayName, members) {
 	// the same as createChannel method, except it doesn't check for logged in user
 	if( !(/^[0-9a-z-_\s.]+$/i).test(name)) {
 		throw new Meteor.Error( 'name-invalid', 'Channel name is invalid' );
@@ -218,6 +220,7 @@ var createChannel = function(name, members) {
 		ts: now,
 		t: 'c',
 		name: name,
+		displayName: displayName,
 		msgs: 0,
 		accessPermissions: Jedis.channelPermissions(),
 		securityLabels : Jedis.legacyLabel(Jedis.channelPermissions())	
@@ -236,6 +239,7 @@ var createChannel = function(name, members) {
 				rid: rid,
 				ts: now,
 				name: name,
+				displayName: displayName,
 				t: 'c',
 				f: true,
 				unread: 0,

@@ -4,10 +4,12 @@ Meteor.startup ->
 		if not ChatRoom.findOne('name': 'general')?
 			ChatRoom.insert
 				_id: 'GENERAL'
+				default: true
 				usernames: []
 				ts: new Date()
 				t: 'c'
 				name: 'general'
+				displayName: 'General'
 				msgs: 0
 				accessPermissions: Jedis.channelPermissions()
 				securityLabels : Jedis.legacyLabel(Jedis.channelPermissions())

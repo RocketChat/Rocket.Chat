@@ -1,11 +1,11 @@
 <template name="chatRoomItem">
 	<li class="link-room-{{rid}} {{active}} {{#if unread}}has-unread{{/if}} {{#if alert}}has-alert{{/if}}">
-		<a class="open-room" href="{{ pathFor 'room' _id=rid}}" title="{{name}}">
+		<a class="open-room" href="{{route}}" title="{{name}}">
 			{{#if unread}}
 				<span class="unread">{{unread}}</span>
 			{{/if}}
 			<i class="{{roomIcon}} {{userStatus}}"></i>
-			<span class='name'>{{name}}</span>
+			<span class='name'>{{displayName}}</span>
 			<span class='opt'>
 				{{#if canRelabel}}
 					<i class="icon-plus-circled label-room" title="{{_ "Update_room"}}"></i>

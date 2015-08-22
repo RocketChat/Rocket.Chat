@@ -3,30 +3,14 @@
 		<header class="fixed-title">
 			{{> burger}}
 			<h2>
-				<span class="room-title">Welcome to Chat Locker</span>
+				<span class="room-title">{{title}}</span>
 			</h2>
 		</header>
 		<div class="content">
-
 			<div class="info">
-				<!-- <p>{{_ "Have_your_own_chat"}}</p> -->
 				<p>&larr; {{_ "use_menu"}}.</p>
 			</div>
+			{{{body}}}
 		</div>
 	</section>
-	<!-- <section class="flex-tab">
-		<div class="control">
-			<button class="more"><span class="arrow {{arrowPosition}}"></span></button>
-		</div>
-		<div class="content">
-			<div class="list-view">
-				<div class="status">
-					<h2>{{_ "Chat_Rooms"}}</h2>
-					<p>
-						{{{_ "Showing_online_users" total_online=1 total=1}}}
-					</p>
-				</div>
-			</div>
-		</div>
-	</section> -->
 </template>

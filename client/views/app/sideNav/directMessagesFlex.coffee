@@ -73,10 +73,11 @@ Template.directMessagesFlex.events
 	'click .save-direct-message': (e, instance) ->
 		err = SideNav.validate()
 		if not err
+			username = instance.selectedUser.get()
 			accessPermissions = instance.selectedLabelIds
 			rid = instance.data.relabelRoom
 			if rid
-				Meteor.call 'updateRoom', rid, null, [instance.selectedUser.get()], accessPermissions, (err, result) ->
+				Meteor.call 'updateRoom', rid, null, [username], accessPermissions, (err, result) ->
 					if err
 						return toastr.error err.reason
 					SideNav.closeFlex()
@@ -84,13 +85,13 @@ Template.directMessagesFlex.events
 					instance.clearForm()
 					FlowRouter.go 'room', { _id: result.rid }
 			else
-				Meteor.call 'createDirectMessage', instance.selectedUser.get(), accessPermissions, (err, result) ->
+				Meteor.call 'createDirectMessage', username, accessPermissions, (err, result) ->
 					if err
 						return toastr.error err.reason
 					SideNav.closeFlex()
 					SideNav.setFlex null
 					instance.clearForm()
-					FlowRouter.go 'room', { _id: result.rid }
+					FlowRouter.go 'direct', { username: username }
 		else
 			Template.instance().error.set(err)
 

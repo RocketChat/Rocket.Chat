@@ -1,5 +1,5 @@
 Meteor.methods
-	updateRoom: (rid, name, usernames=[], accessPermissions) ->
+	updateRoom: (rid, displayName, usernames=[], accessPermissions) ->
 
 		console.log '[method] updateRoom -> arguments', arguments
 
@@ -19,7 +19,7 @@ Meteor.methods
 		# private groups only:
 		if room.t is 'p'
 			# ensure name is specified and the owner is a member
-			unless name
+			unless displayName
 				throw new Meteor.Error 'invalid-argument', 'Missing room name'
 			unless room.u.username in usernames
 				throw new Meteor.Error 'invalid-argument', 'You cannot remove the room creator'
@@ -54,8 +54,8 @@ Meteor.methods
 		if room.t is 'p'
 
 			# update the room name, if changed
-			if name isnt room.name
-				Meteor.call 'saveRoomName', rid, name
+			if displayName isnt room.displayName
+				Meteor.call 'saveRoomName', rid, displayName
 
 			# remove users from the room - those removed explicitly, and those kicked due to permission conflict
 			usersRemoved = _.difference( room.usernames, usernames )
@@ -68,11 +68,11 @@ Meteor.methods
 			# add users to the room - of those specified, only add those that have the right permissions
 			usersToAdd = _.difference( usernames, room.usernames )
 			usersToAdd = _.difference( usersToAdd, deniedUserList )
-			for username in usersToAdd
+			for userdisplayName in usersToAdd
 				Meteor.call 'addUserToRoom', {rid: rid, username: username}
 		
 
+		slugName = ChatRoom.findOne({_id:rid})?.name
 
 
-
-		return {rid:rid}
+		return {rid:rid, name:slugName}

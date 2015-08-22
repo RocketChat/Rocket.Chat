@@ -75,6 +75,22 @@ blockquote {
 	}
 }
 
+.upload-preview {
+	background-color: #f5f5f5;
+	.upload-preview-file {
+		height: 200px;
+		background-size: contain;
+		background-repeat: no-repeat;
+		background-position: center center;
+	}
+}
+
+.upload-preview-title {
+	background-color: #eee;
+	padding: 3px;
+	border-radius: 0 0 5px 5px;
+}
+
 .flex-center {
 	display: -webkit-flex;
 	display: flex;
@@ -127,9 +143,13 @@ blockquote {
 	border-color: #EBCCD1;
 }
 
-.landing-page .hidden {
+.full-page .hidden {
 	visibility: hidden !important;
 	display: none !important;
+}
+
+.hidden {
+	display: none;
 }
 
 .small-title {
@@ -216,6 +236,30 @@ blockquote {
 			top: 10px;
 			font-weight: 400;
 		}
+		.icon-spin4 {
+			position: absolute;
+			color: @secondary-font-color;
+			right: 5px;
+			top: 10px;
+			font-weight: 400;
+			-webkit-animation-name: spin;
+			-webkit-animation-duration: 2000ms;
+			-webkit-animation-iteration-count: infinite;
+			-webkit-animation-timing-function: linear;
+			-moz-animation-name: spin;
+			-moz-animation-duration: 2000ms;
+			-moz-animation-iteration-count: infinite;
+			-moz-animation-timing-function: linear;
+			-ms-animation-name: spin;
+			-ms-animation-duration: 2000ms;
+			-ms-animation-iteration-count: infinite;
+			-ms-animation-timing-function: linear;
+
+			animation-name: spin;
+			animation-duration: 2000ms;
+			animation-iteration-count: infinite;
+			animation-timing-function: linear;
+		}
 		input {
 			padding-left: 25px;
 		}
@@ -253,6 +297,27 @@ blockquote {
 				}
 			}
 		}
+	}
+}
+
+@-ms-keyframes spin {
+	from { -ms-transform: rotate(0deg); }
+	to { -ms-transform: rotate(360deg); }
+}
+@-moz-keyframes spin {
+	from { -moz-transform: rotate(0deg); }
+	to { -moz-transform: rotate(360deg); }
+}
+@-webkit-keyframes spin {
+	from { -webkit-transform: rotate(0deg); }
+	to { -webkit-transform: rotate(360deg); }
+}
+@keyframes spin {
+	from {
+		transform:rotate(0deg);
+	}
+	to {
+		transform:rotate(360deg);
 	}
 }
 
@@ -324,13 +389,13 @@ select,
 input[type='text'],
 input[type='email'],
 input[type='password'] {
+	-webkit-appearance: none;
 	height: 35px;
 	line-height: normal;
-	border: 1px solid #dfdfdf;
+	border: 1px solid #E7E7E7;
 	background-color: #fff;
-	border-radius: 2px;
+	border-radius: 5px;
 	padding: 2px 8px;
-	box-shadow: 1px 1px 0 rgba(0, 0, 0, 0.2);
 	position: relative;
 	width: 100%;
 	outline: none;
@@ -473,16 +538,20 @@ label.required:after {
 }
 
 .btn-loading {
-	background-image: url('/images/loading.gif');
-	background-repeat: no-repeat;
-	background-position: 50%;
-	color: transparent !important;
+	color: #444 !important;
 	pointer-events: none;
 	cursor: not-allowed;
-	background-color: transparent;
+	background-color: transparent !important;
+	box-shadow: none !important;
 	border: none;
 	&:hover {
-		background-color: transparent;
+		background-color: transparent !important;
+	}
+	i {
+		display: block;
+	}
+	div {
+		display: none;
 	}
 }
 
@@ -596,8 +665,8 @@ label.required:after {
 	cursor: pointer;
 	margin-left: 7px;
 	position: absolute;
-	top: 4px;
-	left: 5px;
+	top: 5px;
+	left: 0px;
 	.transition(transform .2s ease-out .1s);
 	i {
 		display: block;
@@ -1749,6 +1818,7 @@ a.github-fork {
 	.list {
 		a {
 			.clearfix;
+			display: block;
 			padding: 10px 16px;
 			width: 100%;
 			color: @primary-font-color;
@@ -1876,7 +1946,7 @@ a.github-fork {
 	.footer {
 		position: absolute;
 		padding: 10px 20px 0px 20px;
-		background: #fff;
+		background: #FCFCFC;
 		border-top: 1px solid @tertiary-background-color;
 		z-index: 100;
 		bottom: 0;
@@ -1914,12 +1984,68 @@ a.github-fork {
 	.message-form {
 		> div {
 			position: relative;
+			display: flex;
+			display: -webkit-flex;
+			.input-message-container {
+				position: relative;
+				width: 100%;
+			}
+			> .file {
+				width: 44px;
+				font-size: 22px;
+				padding: 6px 0;
+				text-align: center;
+				border: 1px solid #E7E7E7;
+				border-radius: 5px 0 0 5px;
+				border-right: none;
+				cursor: pointer;
+				color: #888;
+				background-color: #FCFCFC;
+				.transition(background-color 0.1s linear, color 0.1s linear);
+				&:hover {
+					background-color: #F1F1F1;
+					color: #666;
+				}
+
+				input {
+					position: absolute;
+					top: 0;
+					left: 0;
+					right: 0;
+					bottom: 0;
+					overflow: hidden;
+					width: 44px;
+					opacity: 0;
+					cursor: pointer;
+				}
+				input::-webkit-file-upload-button {
+					cursor: pointer;
+				}
+			}
+			> .mic, .stop-mic {
+				width: 40px;
+				font-size: 22px;
+				padding: 7px 0;
+				margin-left: 4px;
+				text-align: center;
+				cursor: pointer;
+				color: #888;
+				border-radius: 30px;
+				background-color: #FCFCFC;
+				.transition(background-color 0.1s linear, color 0.1s linear);
+				&:hover {
+					background-color: #F1F1F1;
+					color: #666;
+				}
+			}
 		}
 		textarea {
 			display: block;
 			padding-top: 9px;
 			padding-bottom: 9px;
 			padding-right: 38px;
+			border-top-left-radius: 0;
+			border-bottom-left-radius: 0;
 			overflow-y: hidden;
 			resize: none;
 			&.editing {
@@ -1929,7 +2055,7 @@ a.github-fork {
 		.icon-paper-plane {
 			position: absolute;
 			top: 2px;
-			right: 10px;
+			right: 0px;
 			cursor: pointer;
 			padding: 8px;
 			font-size: 16px;
@@ -1938,27 +2064,31 @@ a.github-fork {
 				color: @primary-font-color;
 			}
 		}
-		> .users-typing {
+		.users-typing {
 			float: left;
-			height: 19px;
+			height: 23px;
 			font-size: 12px;
 			color: #888888;
-			position: absolute;
-			padding-left: 5px;
-			background-color: #FFF;
-			z-index: 10;
-			bottom: 0;
-			padding-right: 10px;
-		}
-		> .formatting-tips {
-			float: right;
-			height: 20px;
-			font-size: 11px;
-			color: #888888;
-			padding: 5px 0px 0px 5px;
+			background: #FCFCFC;
+			padding: 3px;
 			display: inline-block;
 			white-space: nowrap;
 			overflow: hidden;
+			text-overflow: ellipsis;
+			max-width: 100%;
+			z-index: 10;
+		}
+		.formatting-tips {
+			float: right;
+			height: 23px;
+			font-size: 11px;
+			color: #888888;
+			padding: 3px;
+			display: inline-block;
+			white-space: nowrap;
+			overflow: hidden;
+			position: absolute;
+			right: 20px;
 			&:hover {
 				color: #444444;
 			}
@@ -2089,14 +2219,14 @@ a.github-fork {
 			display: none;
 			cursor: pointer;
 		}
-		&.own:hover .edit-message {
+		&.own:hover:not(.system) .edit-message {
 			display: inline-block;
 		}
 		.delete-message {
 			display: none;
 			cursor: pointer;
 		}
-		&.own:hover .delete-message {
+		&.own:hover:not(.system) .delete-message {
 			display: inline-block;
 		}
 		.user {
@@ -2219,8 +2349,7 @@ a.github-fork {
 			position: absolute;
 			background-color: @tertiary-background-color;
 			bottom: 0px;
-			.calc(width,
-			~'100% - 30px');
+			.calc(width, ~'100% - 15px');
 		}
 		.button {
 			min-height: 36px;
@@ -2291,6 +2420,29 @@ a.github-fork {
 				left: 8px;
 				font-size: 13px;
 				color: @secondary-font-color;
+			}
+		}
+		.info-tabs {
+			position: absolute;
+			top: 0;
+			text-align: right;
+			height: 60px;
+			right: 20px;
+			a {
+				float: left;
+				display: inline-block;
+				padding: 0 15px;
+				height: 60px;
+				line-height: 60px;
+				vertical-align: middle;
+				color: inherit;
+				border-left: 1px solid rgb(234, 234, 234);
+				&.active {
+					background-color: #F4F4F4;
+				}
+				&:last-child {
+					border-right: 1px solid rgb(234, 234, 234);
+				}
 			}
 		}
 	}
@@ -2410,8 +2562,7 @@ a.github-fork {
 	.info {
 		margin-left: 120px;
 		white-space: normal;
-		.calc(width,
-		~'100% - 120px');
+		.calc(width, ~'100% - 120px');
 		h3 {
 			font-size: 24px;
 			margin-bottom: 8px;
@@ -2513,6 +2664,44 @@ a.github-fork {
 	.contact-code {
 		margin: -5px 0 10px 0;
 		font-size: 12px;
+	}
+	.channels {
+		h3 {
+			font-size: 24px;
+			margin-bottom: 8px;
+			line-height: 22px;
+		}
+		p {
+			line-height: 18px;
+			font-size: 12px;
+			font-weight: 300;
+			color: @secondary-font-color;
+		}
+		a {
+			white-space: nowrap;
+			max-width: 100%;
+			overflow: hidden;
+			text-overflow: ellipsis;
+			display: block;
+			border-radius: 2px;
+			padding: 0 5px;
+			color: #6f6f6f;
+			line-height: 22px;
+			position: relative;
+			.transition(background .18s ease,
+			colo .18s ease);
+			&:before {
+				content: attr(data-stats);
+				position: absolute;
+				right: 5px;
+				top: 0;
+				font-size: 11px;
+				opacity: 0;
+			}
+			span {
+				font-weight: 300;
+			}
+		}
 	}
 }
 
@@ -2856,10 +3045,10 @@ a.github-fork {
 }
 
 #login-card {
-	width: 90%;
+	width: 100%;
 	max-width: 520px;
-	padding: 22px 30px 30px;
-	margin: 25px auto;
+	padding: 20px;
+	margin: 20px auto;
 	background-color: #FAFAFA;
 	box-shadow: 0 0 6px 10px rgba(0, 0, 0, 0.1);
 	border-radius: 2px;
@@ -2939,15 +3128,13 @@ a.github-fork {
 				visibility: hidden;
 			}
 		}
-	}
-	.input-text {
 		input {
 			box-shadow: 0 0 0;
 			background-color: transparent;
 			border-width: 0;
 			position: relative;
 			padding: 4px 8px;
-			font-size: 22px;
+			font-size: 18px;
 			border-bottom: 1px solid #DFDFDF;
 			font-family: "Roboto", "HelveticaNeue-Light", "sans-serif";
 			font-weight: 400;
@@ -2980,18 +3167,33 @@ a.github-fork {
 }
 
 .social-login {
-	margin: 35px 0 30px;
 	text-align: center;
 	position: relative;
 	z-index: 1;
+	display: -webkit-flex;
+	display: flex;
+	margin-bottom: 20px;
 	h3 {
 		&:extend(.rocket-h3);
 		margin-top: 0;
 		margin-bottom: 12px;
 	}
+	.button {
+		border-radius: 2px;
+		min-height: 40px;
+		line-height: 20px;
+		font-size: 18px;
+		margin: 2px;
+		padding: 0;
+		-webkit-flex-grow: 1;
+		flex-grow: 1;
+		span {
+			display: none;
+		}
+	}
 }
 
-.landing-page {
+.full-page {
 	.flex-center;
 	flex-flow: row nowrap;
 	text-align: center;
@@ -3000,19 +3202,16 @@ a.github-fork {
 	min-height: 100%;
 	z-index: 101;
 	background-color: darken(@primary-background-color, 10%);
-	.background-image(linear-gradient(darken(@primary-background-color,
-	10%),
-	@primary-background-color));
+	.background-image(linear-gradient(darken(@primary-background-color,10%),@primary-background-color));
 	.wrapper {
 		text-align: center;
-		padding: 45px 0 35px;
 		z-index: 10;
 		position: relative;
 		width: 100%;
+		padding: 20px;
 	}
 	.logo {
 		display: block;
-		margin: 0 20px 30px 20px;
 		> img {
 			display: inline-block;
 			position: relative;
@@ -3026,48 +3225,6 @@ a.github-fork {
 	a {
 		font-family: "Roboto", "HelveticaNeue-Light", "sans-serif";
 		font-weight: 300;
-	}
-	.screen {
-		display: block;
-		margin: 0 auto 30px;
-		max-width: 520px;
-		position: relative;
-		box-shadow: 0 0 8px 6px rgba(0, 0, 0, 0.1);
-		z-index: 5;
-		text-decoration: none;
-		figure {
-			display: block;
-			width: 100%;
-			height: 0;
-			background-color: #fff;
-			padding-bottom: 53%;
-			background: url(/images/screen.jpg) no-repeat 50% 50%;
-			background-size: 100% auto;
-		}
-		> span {
-			.mac-bar;
-		}
-		.button {
-			display: block;
-			position: absolute;
-			.calc(top,
-			~"50% - 17px");
-			.calc(left,
-			~"50% - 94px");
-			.transform(scale(0.75));
-			opacity: 0;
-			.transition(transform .2s cubic-bezier(0,
-			.4,
-			.4,
-			1.5),
-			opacity .1s ease-out);
-		}
-		&:hover {
-			.button {
-				.transform(scale(1));
-				opacity: 1;
-			}
-		}
 	}
 	.cell {
 		display: table-cell;
@@ -3270,12 +3427,18 @@ a.github-fork {
 		}
 		.side-nav {
 			top: 0;
-			.transform(translateX(-100%));
+			// .transform(translateX(-100%));
 			.transition(transform .3s ease-out);
 		}
 		.main-content {
 			left: 0;
 			.transition(transform .3s ease-out);
+			z-index: 1000;
+			background-color: white;
+
+			&.notransition {
+				.transition(transform .0s);
+			}
 		}
 		.fixed-title h2 {
 			margin-left: 45px;
@@ -3540,18 +3703,7 @@ select.form-control + .chosen-container-multi .chosen-results li.result-selected
 
 
 .is-cordova {
-	.main-content {
-		top: 10px;
-	}
-
-	.side-nav > .header {
-		padding-top: 10px;
-		height: 70px;
-	}
-
 	.flex-tab {
-		padding-top: 10px;
-
 		.control {
 			padding-left: 50px;
 		}
@@ -3561,6 +3713,17 @@ select.form-control + .chosen-container-multi .chosen-results li.result-selected
 			width: 60px;
 			.transform(translateX(-57px));
 		}
+	}
+
+	.connection-status > .alert {
+		border-width: 0 0 1px 0;
+	}
+}
+
+.touch {
+	.footer {
+		padding-left: 10px;
+		padding-right: 10px;
 	}
 }
 

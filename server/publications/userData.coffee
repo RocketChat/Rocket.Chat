@@ -24,3 +24,4 @@ Meteor.publish 'userData', ->
 			admin: 1
 			'profile.statusMessages': 1
 			utcOffset: 1
+			language: 1
