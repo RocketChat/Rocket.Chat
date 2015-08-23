@@ -11,7 +11,7 @@ Template.loginServices.helpers
 					serviceName = 'Meteor'
 					icon = 'meteor'
 				when 'github'
-					serviceName = 'Github'
+					serviceName = 'GitHub'
 					icon = 'github-circled'
 				when 'gitlab'
 					serviceName = 'Gitlab'
