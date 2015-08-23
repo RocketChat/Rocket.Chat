@@ -30,12 +30,14 @@ Accounts.onCreateUser (options, user) ->
 		serviceName = 'google'
 	else if user.services?.github?
 		serviceName = 'github'
+	else if user.services?.gitlab?
+		serviceName = 'gitlab'
 	else if user.services?['meteor-developer']?
 		serviceName = 'meteor-developer'
 	else if user.services?.twitter?
 		serviceName = 'twitter'
 
-	if serviceName in ['facebook', 'google', 'meteor-developer', 'github', 'twitter']
+	if serviceName in ['facebook', 'google', 'meteor-developer', 'github', 'gitlab', 'twitter']
 		if not user?.name? or user.name is ''
 			if options.profile?.name?
 				user.name = options.profile?.name
