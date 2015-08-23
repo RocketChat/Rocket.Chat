@@ -5,15 +5,17 @@ Template.loginServices.helpers
 		authServices = _.pluck ServiceConfiguration.configurations.find({}, { service: 1 }).fetch(), 'service'
 
 		authServices.sort()
-
 		authServices.forEach (service) ->
 			switch service
 				when 'meteor-developer'
 					serviceName = 'Meteor'
 					icon = 'meteor'
 				when 'github'
-					serviceName = 'GitHub'
+					serviceName = 'Github'
 					icon = 'github-circled'
+				when 'gitlab'
+					serviceName = 'Gitlab'
+					icon = 'git-squared'    # need to replace this with proper logo
 				else
 					serviceName = _.capitalize service
 					icon = service
@@ -49,13 +51,10 @@ Template.loginServices.events
 				FlowRouter.go 'index'
 		else
 			loginWithService = "loginWith" + (if this.service is 'meteor-developer' then 'MeteorDeveloperAccount' else _.capitalize(this.service))
-
 			serviceConfig = {}
-
 			Meteor[loginWithService] serviceConfig, (error) ->
 				loadingIcon.addClass 'hidden'
 				serviceIcon.removeClass 'hidden'
-
 				if error
 					console.log JSON.stringify(error), error.message
 					toastr.error error.message
