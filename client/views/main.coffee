@@ -122,10 +122,12 @@ Template.main.events
 		t.touchstartX = undefined
 		t.touchstartY = undefined
 		t.movestarted = false
+		t.blockmove = false
 		if $(e.currentTarget).closest('.main-content').length > 0
 			t.touchstartX = e.originalEvent.touches[0].clientX
 			t.touchstartY = e.originalEvent.touches[0].clientY
 			t.mainContent = $('.main-content')
+			t.wrapper = $('.messages-box > .wrapper')
 
 	'touchmove': (e, t) ->
 		if t.touchstartX?
@@ -135,7 +137,10 @@ Template.main.events
 			absX = Math.abs(diffX)
 			absY = Math.abs(diffY)
 
-			if t.movestarted is true or (absX > 20 and absY < 20)
+			if t.movestarted isnt true and t.blockmove isnt true and absY > 5
+				t.blockmove = true
+
+			if t.blockmove isnt true and (t.movestarted is true or absX > 5)
 				t.movestarted = true
 
 				if menu.isOpen()
@@ -150,13 +155,13 @@ Template.main.events
 
 				t.mainContent.addClass('notransition')
 				t.mainContent.css('transform', 'translate('+t.left+'px)')
+				t.wrapper.css('overflow', 'hidden')
 
 	'touchend': (e, t) ->
-		t.touchstartX = undefined
-
 		if t.movestarted is true
 			t.mainContent.removeClass('notransition')
 			t.mainContent.css('transform', '');
+			t.wrapper.css('overflow', '')
 
 			if menu.isOpen()
 				if t.left >= 200
