@@ -21,7 +21,8 @@ openRoom = (type, name) ->
 
 			room = ChatRoom.findOne(query)
 			if not room?
-				FlowRouter.go 'room-not-found', {type: type, name: name}
+				Session.set 'roomNotFound', {type: type, name: name}
+				BlazeLayout.render 'main', {center: 'roomNotFound'}
 				return
 
 			mainNode = document.querySelector('.main-content')
