@@ -13,7 +13,7 @@ Template.adminStatistics.helpers
 		days = Math.floor time / 86400
 		hours = Math.floor (time % 86400) / 3600
 		minutes = Math.floor ((time % 86400) % 3600) / 60
-		seconds = ((time % 86400) % 3600) % 60
+		seconds = Math.floor ((time % 86400) % 3600) % 60
 		out = ""
 		if days > 0
 			out += "#{days} #{TAPi18next.t 'project:days'}, "
