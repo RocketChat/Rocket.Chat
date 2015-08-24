@@ -88,20 +88,21 @@ Meteor.startup ->
 
 					room = ChatRoom.findOne query, { reactive: false }
 
-					openedRooms[typeName].rid = room._id
+					if room?
+						openedRooms[typeName].rid = room._id
 
-					msgStream.on openedRooms[typeName].rid, (msg) ->
-						ChatMessage.upsert { _id: msg._id }, msg
-						# If room was renamed then close current room and send user to the new one
-						Tracker.nonreactive ->
-							if msg.t is 'r'
-								if Session.get('openedRoom') is msg.rid
-									type = if FlowRouter.current().route.name is 'channel' then 'c' else 'p'
-									RoomManager.close type + FlowRouter.getParam('name')
-									FlowRouter.go FlowRouter.current().route.name, name: msg.msg
+						msgStream.on openedRooms[typeName].rid, (msg) ->
+							ChatMessage.upsert { _id: msg._id }, msg
+							# If room was renamed then close current room and send user to the new one
+							Tracker.nonreactive ->
+								if msg.t is 'r'
+									if Session.get('openedRoom') is msg.rid
+										type = if FlowRouter.current().route.name is 'channel' then 'c' else 'p'
+										RoomManager.close type + FlowRouter.getParam('name')
+										FlowRouter.go FlowRouter.current().route.name, name: msg.msg
 
-					deleteMsgStream.on openedRooms[typeName].rid, (msg) ->
-						ChatMessage.remove _id: msg._id
+						deleteMsgStream.on openedRooms[typeName].rid, (msg) ->
+							ChatMessage.remove _id: msg._id
 
 				Dep.changed()
 
