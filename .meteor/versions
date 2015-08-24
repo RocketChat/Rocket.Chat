@@ -106,6 +106,7 @@ rocketchat:colors@0.0.1
 rocketchat:emojione@0.0.1
 rocketchat:favico@0.0.1
 rocketchat:file@0.0.1
+rocketchat:gitlab@0.0.1
 rocketchat:highlight@0.0.1
 rocketchat:ldap@0.0.1
 rocketchat:lib@0.0.1
