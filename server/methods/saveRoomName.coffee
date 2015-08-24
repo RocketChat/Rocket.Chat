@@ -35,4 +35,4 @@ Meteor.methods
 				_id: Meteor.userId()
 				username: Meteor.user().username
 
-		return true
+		return name
