@@ -1,6 +1,6 @@
 orig_updateOrCreateUserFromExternalService = Accounts.updateOrCreateUserFromExternalService
 Accounts.updateOrCreateUserFromExternalService = (serviceName, serviceData, options) ->
-	if serviceName not in ['facebook', 'github', 'google', 'meteor-developer', 'linkedin', 'twitter']
+	if serviceName not in ['facebook', 'github', 'gitlab', 'google', 'meteor-developer', 'linkedin', 'twitter']
 		return
 
 	if serviceName is 'meteor-developer'
@@ -17,7 +17,7 @@ Accounts.updateOrCreateUserFromExternalService = (serviceName, serviceData, opti
 		serviceData.email = serviceData.emailAddress
 
 	if serviceData.email
-		
+
 		# Remove not verified users that have same email
 		notVerifiedUser = Meteor.users.remove({emails: {$elemMatch: {address: serviceData.email, verified: false}}})
 
