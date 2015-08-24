@@ -705,13 +705,21 @@ Template.room.onRendered ->
 
 renameRoom = (rid, name) ->
 	console.log 'room renameRoom' if window.rocketDebug
-	if Session.get('roomData' + rid).name == name
+	room = Session.get('roomData' + rid)
+	if room.name == name
 		Session.set('editRoomTitle', false)
 		return false
 
 	Meteor.call 'saveRoomName', rid, name, (error, result) ->
 		if result
 			Session.set('editRoomTitle', false)
+			# If room was renamed then close current room and send user to the new one
+			RoomManager.close room.t + room.name
+			switch room.t
+				when 'c'
+					FlowRouter.go 'channel', name: name
+				when 'p'
+					FlowRouter.go 'group', name: name
 
 			toastr.success t('Room_name_changed_successfully')
 		if error

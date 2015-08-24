@@ -92,6 +92,13 @@ Meteor.startup ->
 
 					msgStream.on openedRooms[typeName].rid, (msg) ->
 						ChatMessage.upsert { _id: msg._id }, msg
+						# If room was renamed then close current room and send user to the new one
+						Tracker.nonreactive ->
+							if msg.t is 'r'
+								if Session.get('openedRoom') is msg.rid
+									type = if FlowRouter.current().route.name is 'channel' then 'c' else 'p'
+									RoomManager.close type + FlowRouter.getParam('name')
+									FlowRouter.go FlowRouter.current().route.name, name: msg.msg
 
 					deleteMsgStream.on openedRooms[typeName].rid, (msg) ->
 						ChatMessage.remove _id: msg._id
