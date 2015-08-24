@@ -240,7 +240,6 @@ Template.privateGroupsFlex.onCreated ->
 
 
 	instance.autorun (c) ->
-		console.log 'pgf selected user autorun'
 		list = Template.instance().warnUserIds.get()
 		$('.selected-user').each ->
 			user = $(this).text().trim()
