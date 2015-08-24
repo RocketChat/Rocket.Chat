@@ -111,6 +111,8 @@
   "Last_message" : "Last message",
   "Layout_Home_Body": "Home Body",
   "Layout_Home_Title": "Home Title",
+  "Layout_Sidenav_Footer": "Side Navigation Footer",
+  "Layout_Sidenav_Footer_description": "Footer size is 260x70",
   "Leave_room" : "Leave room",
   "line" : "line",
   "Load_more" : "Load more",
