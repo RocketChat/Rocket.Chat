@@ -23,4 +23,4 @@ Meteor.methods
 			$set:
 				name: name
 
-		return true
+		return name
