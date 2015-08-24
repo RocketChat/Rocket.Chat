@@ -21,7 +21,7 @@ openRoom = (type, name) ->
 
 			room = ChatRoom.findOne(query)
 			if not room?
-				FlowRouter.go 'home'
+				FlowRouter.go 'room-not-found', {type: type, name: name}
 				return
 
 			mainNode = document.querySelector('.main-content')
