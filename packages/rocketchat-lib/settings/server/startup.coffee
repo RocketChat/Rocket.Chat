@@ -12,6 +12,10 @@ Meteor.startup ->
 	RocketChat.settings.add 'Accounts_Github', false, { type: 'boolean', group: 'Accounts' }
 	RocketChat.settings.add 'Accounts_Github_id', '', { type: 'string', group: 'Accounts' }
 	RocketChat.settings.add 'Accounts_Github_secret', '', { type: 'string', group: 'Accounts' }
+	RocketChat.settings.add 'Accounts_Gitlab', false, { type: 'boolean', group: 'Accounts' }
+	RocketChat.settings.add 'Accounts_Gitlab_id', '', { type: 'string', group: 'Accounts' }
+	RocketChat.settings.add 'Accounts_Gitlab_secret', '', { type: 'string', group: 'Accounts' }
+
 	RocketChat.settings.add 'Accounts_Linkedin', false, { type: 'boolean', group: 'Accounts' }
 	RocketChat.settings.add 'Accounts_Linkedin_id', '', { type: 'string', group: 'Accounts' }
 	RocketChat.settings.add 'Accounts_Linkedin_secret', '', { type: 'string', group: 'Accounts' }

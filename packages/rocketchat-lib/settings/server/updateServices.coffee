@@ -8,6 +8,7 @@ updateServices = ->
 			'facebook': 'Facebook'
 			'google': 'Google'
 			'github': 'Github'
+			'gitlab': 'Gitlab'
 			'linkedin': 'Linkedin'
 			'meteor-developer': 'Meteor'
 			'twitter': 'Twitter'

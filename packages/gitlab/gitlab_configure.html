@@ -1,0 +1,14 @@
+<template name="configureLoginServiceDialogForGitlab">
+  <p>
+    First, you'll need to get a Gitlab Client ID. Follow these steps:
+  </p>
+  <ol>
+    <li>
+      Visit <a href="http://corei3:3000/oauth/applications/new" target="blank">http://corei3:3000/oauth/applications/new</a>
+    </li>
+
+    <li>
+      Set Authorization callback URL to: <span class="url">{{siteUrl}}_oauth/gitlab</span>
+    </li>
+  </ol>
+</template>
