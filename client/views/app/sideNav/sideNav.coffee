@@ -21,10 +21,6 @@ Template.sideNav.events
 	'mouseleave .header': ->
 		SideNav.leaveArrow()
 
-	'click .open-admin': ->
-		SideNav.setFlex "adminFlex"
-		SideNav.openFlex()
-
 Template.sideNav.onRendered ->
 	SideNav.init()
 	menu.init()

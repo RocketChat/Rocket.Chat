@@ -17,6 +17,9 @@ Template.userStatus.helpers
 			username: username
 		}
 
+	isAdmin: ->
+		return Meteor.user()?.admin is true
+
 Template.userStatus.events
 	'click .options .status': (event) ->
 		event.preventDefault()
@@ -39,6 +42,10 @@ Template.userStatus.events
 		SideNav.setFlex "accountFlex"
 		SideNav.openFlex()
 		FlowRouter.go 'account'
+
+	'click #admin': ->
+		SideNav.setFlex "adminFlex"
+		SideNav.openFlex()
 
 	'click .account-link': ->
 		menu.close()
