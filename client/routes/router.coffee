@@ -103,3 +103,10 @@ FlowRouter.route '/privacy-policy',
 	action: ->
 		Session.set 'cmsPage', 'Layout_Privacy_Policy'
 		BlazeLayout.render 'cmsPage'
+
+FlowRouter.route '/room-not-found/:type/:name',
+	name: 'room-not-found'
+
+	action: (params) ->
+		Session.set 'roomNotFound', {type: params.type, name: params.name}
+		BlazeLayout.render 'main', {center: 'roomNotFound'}
