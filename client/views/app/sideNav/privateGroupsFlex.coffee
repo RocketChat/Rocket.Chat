@@ -5,6 +5,9 @@ Template.privateGroupsFlex.helpers
 	name: ->
 		return Template.instance().selectedUserNames[this.valueOf()]
 
+	username: ->
+		return this.valueOf()
+
 	groupName: ->
 		return Template.instance().groupName.get()
 
@@ -248,7 +251,8 @@ Template.privateGroupsFlex.onCreated ->
 	instance.autorun (c) ->
 		list = Template.instance().warnUserIds.get()
 		$('.selected-user').each ->
-			user = $(this).text().trim()
+			# check against username, since name field not guaranteed to be unique
+			user = $(this).attr('data-username')
 			if _.contains list, user
 				$(this).css 'color', 'red'
 			else

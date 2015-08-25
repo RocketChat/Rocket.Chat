@@ -20,15 +20,15 @@ Template.userSearch.onCreated ->
 	instance.autorun (c) ->
 		# get the current list of selected labels
 		selectedLabelIds = Session.get('selectedLabelIds') or []
-		user = instance.data.username
 		# only call server if there are labels to check against
 		if selectedLabelIds.length > 0
-			Meteor.call 'canAccessResource', [Meteor.user().username, user], selectedLabelIds, (error, result) ->
+			Meteor.call 'canAccessResource', [Meteor.user().username, instance.data.username], selectedLabelIds, (error, result) ->
 				if not error
 					# entries in the list have the 'user-search-entry' class - see 'userSearch.html'
 					$('.user-search-entry').each ->
 						# find the correct entry in the list and set/remove the style accordingly
-						if $(this).text().trim() is user
+						# check against username, since name field is not guaranteed to be unique
+						if $(this).attr('data-username') is instance.data.username
 							if result.canAccess
 								$(this).removeAttr 'style'
 							else
