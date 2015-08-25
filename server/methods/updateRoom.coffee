@@ -75,4 +75,4 @@ Meteor.methods
 		slugName = ChatRoom.findOne({_id:rid})?.name
 
 
-		return {rid:rid, name:slugName}
+		return {rid:rid, name:displayName, slugName:slugName}

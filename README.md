@@ -31,14 +31,6 @@ cd chat-locker
 meteor
 ```
 
-or use docker:
-
-```
-git clone https://github.com/RocketChat/Rocket.Chat.git
-cd Rocket.Chat
-docker run -it -p 3000:3000 -v "$(pwd)":/app danieldent/meteor
-```
-
 ## Credits
 
 Thanks to

@@ -29,6 +29,9 @@ Template.userStatus.helpers
 			username: username
 		}
 
+	isAdmin: ->
+		return Meteor.user()?.admin is true
+
 Template.userStatus.events
 	'click .options .status': (event) ->
 		event.preventDefault()
@@ -55,14 +58,6 @@ Template.userStatus.events
 	'click #avatar': (event) ->
 		FlowRouter.go 'changeAvatar'
 
-	'click #account': (event) ->
-		SideNav.setFlex "accountFlex"
-		SideNav.openFlex()
-		FlowRouter.go 'account'
-
-	'click .account-link': ->
-		menu.close()
-
 	'click .save-message': (event, instance) ->
 		cmt = $('.custom-message')
 		AccountBox.setStatus(cmt.data('userStatus'), $('#custom-message-text').val())
@@ -72,6 +67,18 @@ Template.userStatus.events
 		event.preventDefault()
 		event.stopPropagation()
 		$('.custom-message').css('display','none')
+		
+	'click #account': (event) ->
+		SideNav.setFlex "accountFlex"
+		SideNav.openFlex()
+		FlowRouter.go 'account'
+
+	'click #admin': ->
+		SideNav.setFlex "adminFlex"
+		SideNav.openFlex()
+
+	'click .account-link': ->
+		menu.close()
 
 Template.userStatus.rendered = ->
 	AccountBox.init()

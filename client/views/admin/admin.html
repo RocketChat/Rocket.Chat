@@ -25,6 +25,9 @@
 										{{else}}
 											<input type="text" name="{{_id}}" value="{{value}}" />
 										{{/if}}
+										{{#if description}}
+											<small>{{description}}</small>
+										{{/if}}
 									</div>
 								</div>
 							{{/if}}
@@ -35,6 +38,9 @@
 										<label><input type="radio" name="{{_id}}" value="1" checked="{{$eq value true}}" /> {{_ "True"}}</label>
 										<label><input type="radio" name="{{_id}}" value="0" checked="{{$eq value false}}" /> {{_ "False"}}</label>
 									</div>
+									{{#if description}}
+										<small>{{description}}</small>
+									{{/if}}
 								</div>
 							{{/if}}
 						{{/each}}

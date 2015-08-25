@@ -3,6 +3,10 @@ Meteor.methods
 		if not Meteor.userId()
 			throw new Meteor.Error('invalid-user', "[methods] deleteMessage -> Invalid user")
 
+		if not RocketChat.settings.get 'Message_AllowDeleting'
+			throw new Meteor.Error 'message-deleting-not-allowed', "[methods] updateMessage -> Message deleting not allowed"
+
+
 		console.log '[methods] deleteMessage -> '.green, 'userId:', Meteor.userId(), 'arguments:', arguments
 
 		keepHistory = RocketChat.settings.get 'Message_KeepHistory'

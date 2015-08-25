@@ -26,6 +26,9 @@ Template.room.helpers
 	windowId: ->
 		return "chat-window-#{this._id}"
 
+	uploading: ->
+		return Session.get 'uploading'
+
 	usersTyping: ->
 		usernames = MsgTyping.get @_id
 		if usernames.length is 0
@@ -300,8 +303,11 @@ Template.room.helpers
 		# when the data changes.
 
 		roomData = Session.get('roomData' + this._id)
-		return [] unless roomData
-		Template.instance().accessPermissions.set roomData?.accessPermissions
+		if roomData
+			Template.instance().accessPermissions.set roomData?.accessPermissions
+		else
+			Template.instance().accessPermissions.set []
+
 		return Template.instance().accessPermissions
 	canEditPermissions: ->
 		roomData = Session.get('roomData' + this._id)
@@ -337,6 +343,24 @@ Template.room.helpers
 
 
 Template.room.events
+	"touchstart .message": (e, t) ->
+		message = this._arguments[1]
+		doLongTouch = ->
+			mobileMessageMenu.show(message, t)
+
+		t.touchtime = Meteor.setTimeout doLongTouch, 2000
+
+	"touchend .message": (e, t) ->
+		Meteor.clearTimeout t.touchtime
+
+	"touchmove .message": (e, t) ->
+		Meteor.clearTimeout t.touchtime
+
+	"touchcancel .message": (e, t) ->
+		Meteor.clearTimeout t.touchtime
+
+	"click .upload-progress-item > a": ->
+		Session.set "uploading-cancel-#{this.id}", true
 
 	"click .flex-tab .more": (event) ->
 		if (Session.get('flexOpened'))
@@ -547,6 +571,9 @@ Template.room.events
 		Session.set('flexOpened', true)
 		Session.set('showUserInfo', $(e.currentTarget).data('username'))
 
+	'click .image-to-download': (event) ->
+		ChatMessage.update {_id: this._arguments[1]._id, 'urls.url': $(event.currentTarget).data('url')}, {$set: {'urls.$.downloadImages': true}}
+
 	'click .delete-message': (event) ->
 		message = @_arguments[1]
 		msg = event.currentTarget.parentNode.parentNode
@@ -601,16 +628,21 @@ Template.room.events
 	'dragleave .dropzone-overlay': (e) ->
 		e.currentTarget.parentNode.classList.remove 'over'
 
-	'dropped .dropzone-overlay': (e) ->
-		e.currentTarget.parentNode.classList.remove 'over'
+	'dropped .dropzone-overlay': (event) ->
+		event.currentTarget.parentNode.classList.remove 'over'
 
-		files = []
-		FS?.Utility?.eachFile e, (file) ->
-			files.push
+		e = event.originalEvent or event
+		files = e.target.files
+		if not files or files.length is 0
+			files = e.dataTransfer?.files or []
+
+		filesToUpload = []
+		for file in files
+			filesToUpload.push
 				file: file
 				name: file.name
 
-		fileUpload files
+		fileUpload filesToUpload
 
 	'change .message-form input[type=file]': (event, template) ->
 		e = event.originalEvent or event
@@ -693,6 +725,12 @@ Template.room.onCreated ->
 			if Session.get('showUserInfo') and not Meteor.users.findOne Session.get 'showUserInfo'
 				Meteor.subscribe 'fullUsers', Session.get('showUserInfo'), 1
 
+	# If current user is admin, subscribe to full user data
+	if Meteor.user()?.admin is true
+		Tracker.autorun ->
+			if Session.get('showUserInfo') and not Meteor.users.findOne Session.get 'showUserInfo'
+				Meteor.subscribe 'fullUsers', Session.get('showUserInfo'), 1
+
 Template.room.onRendered ->
 	FlexTab.check()
 	this.chatMessages = new ChatMessages
@@ -746,17 +784,35 @@ Template.room.onRendered ->
 	RoomHistoryManager.getMoreIfIsEmpty this.data._id
 
 renameRoom = (rid, name) ->
+	name = name?.toLowerCase().trim()
 	console.log 'room renameRoom' if window.rocketDebug
-	if Session.get('roomData' + rid).displayName == name
+	room = Session.get('roomData' + rid)
+	if room.displayName is name
 		Session.set('editRoomTitle', false)
 		return false
 
 	Meteor.call 'saveRoomName', rid, name, (error, result) ->
 		if result
 			Session.set('editRoomTitle', false)
+			# If room was renamed then close current room and send user to the new one
+			RoomManager.close room.t + room.name
+			switch room.t
+				when 'c'
+					FlowRouter.go 'channel', name: result.slugName
+				when 'p'
+					FlowRouter.go 'group', name: result.slugName
 
 			toastr.success t('Room_name_changed_successfully')
 		if error
+			if error.error is 'name-invalid'
+				toastr.error t('Invalid_room_name', name)
+				return
+			if error.error is 'duplicate-name'
+				if room.t is 'c'
+					toastr.error t('Duplicate_channel_name', name)
+				else
+					toastr.error t('Duplicate_private_group_name', name)
+				return
 			toastr.error error.reason
 
 toggleAddUser = ->

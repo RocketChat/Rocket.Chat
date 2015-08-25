@@ -54,7 +54,6 @@ Api.addRoute 'rooms/:id/send', authRequired: true,
 			Meteor.call('sendMessage', {msg: this.bodyParams.msg, rid: @urlParams.id} )
 		status: 'success'	#need to handle error
 
-
 # validate an array of users
 Api.testapiValidateUsers =  (users) ->
 	for user, i in users
@@ -110,6 +109,7 @@ Api.addRoute 'bulk/register', authRequired: true,
 					ids[i] = Meteor.call 'registerUser', incoming
 					Meteor.runAsUser ids[i].uid, () =>
 						Meteor.call 'setUsername', incoming.name
+						Meteor.call 'joinDefaultChannels'
 
 				status: 'success', ids: ids
 			catch e
@@ -174,6 +174,3 @@ Api.addRoute 'bulk/createRoom', authRequired: true,
 			catch e
 				statusCode: 400    # bad request or other errors
 				body: status: 'fail', message: e.name + ' :: ' + e.message
-
-
-

@@ -24,5 +24,6 @@ Template.securityBanner.onCreated ->
 
 	# update banner when permissions change
 	this.autorun ->
-		self.updateBannerData(self.data.permissions.get())
+		if self.data.permissions
+			self.updateBannerData(self.data.permissions.get())
 

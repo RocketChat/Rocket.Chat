@@ -36,8 +36,6 @@ Template.message.helpers
 
 	system: ->
 		return 'system' if this.t in ['s', 'p', 'f', 'r', 'au', 'ru', 'ul', 'nu', 'wm', 'uj', 'rm']
-		return 'system' if this.t in ['s', 'p', 'f', 'r', 'au', 'ru', 'ul', 'nu', 'wm', 'uj']
-
 	sender: ->
 		return getUser(this.u.username)?.name || this.u.username
 

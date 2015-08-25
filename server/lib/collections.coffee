@@ -7,3 +7,6 @@
  system environment. 
 ###
 @AccessPermissions = new Mongo.Collection 'accessPermissions'
+@MapReducedStatistics = new Mongo.Collection 'rocketchat_mr_statistics'
+@Statistics = new Mongo.Collection 'rocketchat_statistics'
+@ChatReports = new Meteor.Collection 'rocketchat_reports'

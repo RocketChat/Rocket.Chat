@@ -98,6 +98,8 @@ Template.privateGroupsFlex.events
 		err = SideNav.validate()
 		displayName = instance.find('#pvt-group-name').value
 		instance.groupName.set displayName
+		#name = instance.find('#pvt-group-name').value.toLowerCase().trim()
+		#instance.groupName.set name
 		if not err
 			accessPermissions = instance.selectedLabelIds
 			rid = instance.data.relabelRoom
@@ -105,11 +107,14 @@ Template.privateGroupsFlex.events
 				Meteor.call 'updateRoom', rid, displayName, instance.selectedUsers.get(), accessPermissions, (err, result) ->
 					if err
 						return toastr.error err.reason
-					name = result.name
+					room = instance.room
+					# close the room with old name
+					RoomManager.close room.t + room.name
+					slugName = result.slugName
 					SideNav.closeFlex()
 					SideNav.setFlex null
 					instance.clearForm()
-					#FlowRouter.go 'group', { name:name}
+					FlowRouter.go 'group', { name:slugName}
 			else
 				Meteor.call 'createPrivateGroup', displayName, instance.selectedUsers.get(), accessPermissions, (err, result) ->
 					if err
@@ -120,11 +125,12 @@ Template.privateGroupsFlex.events
 							instance.error.set({ duplicate: true })
 							return
 						return toastr.error err.reason
-					name = result.name
+					slugName = result.slugName
 					SideNav.closeFlex()
 					SideNav.setFlex null
 					instance.clearForm()
-					FlowRouter.go 'group', { name: name }
+					FlowRouter.go 'group', { name: slugName }
+
 		else
 			Template.instance().error.set({fields: err})
 
@@ -278,7 +284,7 @@ Template.privateGroupsFlex.onCreated ->
 				Session.set 'selectedLabelIds', instance.selectedLabelIds
 				instance.disabledLabelIds = _.pluck( options.disabled, '_id')
 				instance.allowedLabels = options.allowed
-				instance.groupName.set(instance.room.name)
+				instance.groupName.set(instance.room.displayName)
 				otherMembers = _.without(instance.room.usernames, Meteor.user().username)
 				otherMembers?.forEach (username) ->
 					user = Meteor.users.findOne( {_id: username} )
