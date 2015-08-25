@@ -15,7 +15,7 @@ Template.loginServices.helpers
 					icon = 'github-circled'
 				when 'gitlab'
 					serviceName = 'Gitlab'
-					icon = 'git-squared'    # need to replace this with proper logo
+					icon = service
 				else
 					serviceName = _.capitalize service
 					icon = service
