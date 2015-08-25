@@ -501,13 +501,19 @@ Template.room.events
 	'click .see-all': (e, instance) ->
 		instance.showUsersOffline.set(!instance.showUsersOffline.get())
 
-	"mousedown .edit-message": (e) ->
+	"click .edit-message": (e) ->
 		Template.instance().chatMessages.edit(e.currentTarget.parentNode.parentNode)
-		# Session.set 'editingMessageId', undefined
-		# Meteor.defer ->
-		# 	Session.set 'editingMessageId', self._id
-		# 	Meteor.defer ->
-		# 		$('.input-message-editing').select()
+		input = Template.instance().find('.input-message')
+		Meteor.setTimeout ->
+			input.focus()
+		, 200
+
+	"click .editing-commands-cancel > a": (e) ->
+		Template.instance().chatMessages.clearEditing()
+
+	"click .editing-commands-save > a": (e) ->
+		chatMessages = Template.instance().chatMessages
+		chatMessages.send(@_id, chatMessages.input)
 
 	"click .mention-link": (e) ->
 		channel = $(e.currentTarget).data('channel')
