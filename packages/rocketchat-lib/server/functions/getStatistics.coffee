@@ -46,9 +46,24 @@ RocketChat.getStatistics = ->
 
 	result = ChatRoom.mapReduce(m, r, { finalize: f, out: "rocketchat_mr_statistics" })
 
-	statistics.maxRoomUsers = MapReducedStatistics.findOne({ _id: 1 }).value.max
-	statistics.avgChannelUsers = MapReducedStatistics.findOne({ _id: 'c' }).value.avg
-	statistics.avgPrivateGroupUsers = MapReducedStatistics.findOne({ _id: 'p' }).value.avg
+	statistics.maxRoomUsers = 0 
+	statistics.avgChannelUsers = 0
+	statistics.avgPrivateGroupUsers = 0
+
+	if MapReducedStatistics.findOne({ _id: 1 })
+		statistics.maxRoomUsers = MapReducedStatistics.findOne({ _id: 1 }).value.max
+	else 
+		console.log 'max room user statistic not found'.red
+
+	if MapReducedStatistics.findOne({ _id: 'c' })
+		statistics.avgChannelUsers = MapReducedStatistics.findOne({ _id: 'c' }).value.avg
+	else
+		console.log 'channel user statistic not found'.red
+
+	if MapReducedStatistics.findOne({ _id: 'p' })
+		statistics.avgPrivateGroupUsers = MapReducedStatistics.findOne({ _id: 'p' }).value.avg 
+	else
+		console.log 'private group user statistic not found'.red
 	
 	os = Npm.require('os')
 	statistics.os = 
