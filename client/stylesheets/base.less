@@ -2290,6 +2290,32 @@ a.github-fork {
 				transform: rotate(90deg);
 			}
 		}
+		.editing-commands {
+			display: none;
+			text-transform: lowercase;
+			.editing-commands-cancel {
+				float: left;
+				height: 23px;
+				font-size: 11px;
+				color: #888888;
+				padding: 3px;
+			}
+			.editing-commands-save {
+				float: right;
+				height: 23px;
+				font-size: 11px;
+				color: #888888;
+				padding: 3px;
+			}
+		}
+		&.editing {
+			.formatting-tips, .users-typing{
+				display: none;
+			}
+			.editing-commands {
+				display: block;
+			}
+		}
 	}
 	.add-user-search {
 		height: 100%;
