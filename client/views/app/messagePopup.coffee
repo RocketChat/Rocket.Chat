@@ -37,11 +37,11 @@ Template.messagePopup.onCreated ->
 
 	template.suffix = val(template.data.suffix, ' ')
 
-	template.matchSelectorRegex = val(template.data.matchSelectorRegex, new RegExp "(?:^| )#{template.trigger}[A-Za-z0-9-_]*$")
+	template.matchSelectorRegex = val(template.data.matchSelectorRegex, new RegExp "(?:^| )#{template.trigger}[A-Za-z0-9-_.]*$")
 
-	template.selectorRegex = val(template.data.selectorRegex, new RegExp "#{template.trigger}([A-Za-z0-9-_]*)$")
+	template.selectorRegex = val(template.data.selectorRegex, new RegExp "#{template.trigger}([A-Za-z0-9-_.]*)$")
 
-	template.replaceRegex = val(template.data.replaceRegex, new RegExp "#{template.trigger}[A-Za-z0-9-_]*$")
+	template.replaceRegex = val(template.data.replaceRegex, new RegExp "#{template.trigger}[A-Za-z0-9-_.]*$")
 
 	template.getValue = val template.data.getValue, (_id) -> return _id
 
