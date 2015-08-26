@@ -98,6 +98,18 @@ class @ChatMessages
 			if error
 				return Errors.throw error.reason
 
+	pinMsg: (message) ->
+		message.pinned = true
+		Meteor.call 'pinMessage', message, (error, result) ->
+			if error
+				return Errors.throw error.reason
+
+	unpinMsg: (message) ->
+		message.pinned = false
+		Meteor.call 'unpinMessage', message, (error, result) ->
+			if error
+				return Errors.throw error.reason
+
 	update: (id, rid, input) ->
 		if _.trim(input.value) isnt ''
 			msg = input.value
