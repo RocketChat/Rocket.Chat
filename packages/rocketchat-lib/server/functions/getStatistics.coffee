@@ -10,7 +10,8 @@ RocketChat.getStatistics = ->
 	statistics.activeUsers = Meteor.users.find({ active: true }).count()
 	statistics.nonActiveUsers = statistics.totalUsers - statistics.activeUsers
 	statistics.onlineUsers = Meteor.users.find({ statusConnection: 'online' }).count()
-	statistics.offlineUsers = statistics.totalUsers - statistics.onlineUsers
+	statistics.awayUsers = Meteor.users.find({ statusConnection: 'away' }).count()
+	statistics.offlineUsers = statistics.totalUsers - statistics.onlineUsers - statistics.awayUsers
 
 	# Room statistics
 	statistics.totalRooms = ChatRoom.find().count()
