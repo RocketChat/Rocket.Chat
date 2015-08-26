@@ -15,7 +15,6 @@ Package.onUse(function(api) {
 		'underscorestring:underscore.string'
 	]);
 
-	api.addFiles('lib/underscore.string.coffee', ['server', 'client']);
 	api.addFiles('lib/core.coffee', ['server', 'client']);
 	api.addFiles('lib/callbacks.coffee', ['server', 'client']);
 	
