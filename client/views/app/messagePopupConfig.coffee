@@ -12,16 +12,17 @@ Template.messagePopupConfig.helpers
 			getFilter: (collection, filter) ->
 				exp = new RegExp(filter, 'i')
 				Meteor.subscribe('onlineUsers', filter)
-				items = onlineUsers.find().fetch()
+				items = onlineUsers.find({$or: [{name: exp}, {username: exp}]}, {limit: 5}).fetch()
 
 				all =
 					_id: '@all'
 					username: '@all'
-					status: 'system'
+					system: true
 					name: t 'Notify_all_in_this_room'
 					compatibility: 'channel group'
 
-				if exp.test(all.username) or exp.test(all.name) or exp.test(all.compatibility)
+				exp = new RegExp("(^|\\s)#{filter}", 'i')
+				if exp.test(all.username) or exp.test(all.compatibility)
 					items.unshift all
 
 				return items

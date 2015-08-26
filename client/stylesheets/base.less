@@ -2156,18 +2156,28 @@ a.github-fork {
 	}
 	.popup-item {
 		padding: 8px 20px;
+		line-height: 24px;
+		cursor: pointer;
+		user-select: none;
 		color: @secondary-font-color;
 		&.selected {
 			background-color: @tertiary-background-color;
 			color: @primary-font-color;
 		}
 	}
+	.popup-user-avatar {
+		width: 24px;
+		display: inline-block;
+		height: 24px;
+		background-size: contain;
+		border-radius: 3px;
+		margin: -7px 4px;
+	}
 	.popup-user-status {
 		border: 1px solid rgba(0,0,0,.2);
 		width: 10px;
 		height: 10px;
 		display: inline-block;
-		margin-right: 5px;
 		border-radius: 10px;
 	}
 	.popup-user-status-system {
