@@ -2514,8 +2514,12 @@ a.github-fork {
 				text-decoration: underline;
 			}
 		}
-		&.temp .body{
-			color: #ccc;
+		.body {
+			opacity: 1;
+			.transition(opacity 1s linear);
+		}
+		&.temp .body {
+			opacity: .5;
 		}
 	}
 }
