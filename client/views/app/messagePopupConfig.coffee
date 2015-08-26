@@ -1,26 +1,32 @@
+@onlineUsers = new Mongo.Collection 'online-users'
+
 Template.messagePopupConfig.helpers
 	popupUserConfig: ->
 		self = this
 		template = Template.instance()
 		config =
 			title: 'People'
-			collection: Meteor.users
+			collection: onlineUsers
 			template: 'messagePopupUser'
 			getInput: self.getInput
 			getFilter: (collection, filter) ->
 				exp = new RegExp(filter, 'i')
-				items = collection.find({username: {$exists: true}, $or: [{name: exp}, {username: exp}]}, {limit: 10}).fetch()
+				Meteor.subscribe('onlineUsers', filter)
+				items = onlineUsers.find({$or: [{name: exp}, {username: exp}]}, {limit: 5}).fetch()
 
 				all =
 					_id: '@all'
 					username: '@all'
+					system: true
 					name: t 'Notify_all_in_this_room'
 					compatibility: 'channel group'
 
-				if exp.test(all.username) or exp.test(all.name) or exp.test(all.compatibility)
+				exp = new RegExp("(^|\\s)#{filter}", 'i')
+				if exp.test(all.username) or exp.test(all.compatibility)
 					items.unshift all
 
 				return items
+
 			getValue: (_id, collection, firstPartValue) ->
 				if _id is '@all'
 					if firstPartValue.indexOf(' ') > -1
