@@ -1,5 +1,5 @@
 Meteor.startup ->
-	Migrations.add
+	Migrations?.add
 		version: 1
 		up: ->
 			Meteor.users.find({username: {$exists: false}, lastLogin: {$exists: true}}).forEach (user) ->

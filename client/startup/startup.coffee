@@ -1,6 +1,6 @@
 Meteor.startup ->
-	UserPresence.awayTime = 300000
-	UserPresence.start()
+	# UserPresence.awayTime = 300000
+	# UserPresence.start()
 	Meteor.subscribe("activeUsers")
 
 	Session.setDefault('flexOpened', false)

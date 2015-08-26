@@ -1,5 +1,5 @@
 Meteor.startup ->
-	Migrations.add
+	Migrations?.add
 		version: 9
 		up: ->
 			# Migrate existing source collection data to target collection

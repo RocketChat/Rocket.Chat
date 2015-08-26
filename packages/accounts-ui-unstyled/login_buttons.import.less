@@ -1,0 +1,414 @@
+//////////////////// MIXINS
+
+// Minimal, well-documented, general-purpose CSS mixins.
+// (Some are same as Bootstrap.)
+
+////////// Box-Sizing: Border-Box
+
+// Setting `box-sizing: border-box` on an element causes the CSS
+// layout algorithm to interpret `width` and `height` declarations
+// as referring to the size of the border box (outside the border),
+// not the content box as usual (inside the padding).
+//
+// This is especially useful for stretching a form element to the
+// width of its container even if the form element has arbitrary
+// padding and borders, which can be done using `width: 100%`.
+//
+// Browser support is IE 8+ and all modern browsers, with the caveat
+// that `-moz-box-sizing` in Firefox is considered to have some
+// buggy or non-compliant behavior.  For example, min/max-width/height
+// may not interact correctly. See
+// https://bugzilla.mozilla.org/show_bug.cgi?id=243412.
+.box-sizing-by-border () {
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
+}
+
+////////// Box-Shadow
+
+.box-shadow (...) {
+  box-shadow: @arguments;
+  -webkit-box-shadow: @arguments; // For Android
+}
+
+////////// Unselectable
+
+.unselectable () {
+  -webkit-user-select: none; // Chrome/Safari
+  -moz-user-select: none; // Firefox
+  -ms-user-select: none; // IE10+
+
+  // These delarations not implemented in browsers yet:
+  -o-user-select: none;
+  user-select: none;
+
+  // In IE <= 9 and Opera, need unselectable="on" in the HTML.
+}
+
+//////////////////// LOGIN BUTTONS
+
+@login-buttons-accounts-dialog-width: 250px;
+@login-buttons-color: #596595;
+@login-buttons-color-border: darken(@login-buttons-color, 10%);
+@login-buttons-color-active: lighten(@login-buttons-color, 10%);
+@login-buttons-color-active-border: darken(@login-buttons-color-active, 10%);
+
+@login-buttons-config-color: darken(#f53, 10%);
+@login-buttons-config-color-border: darken(@login-buttons-config-color, 10%);
+@login-buttons-config-color-active: lighten(@login-buttons-config-color, 10%);
+@login-buttons-config-color-active-border: darken(@login-buttons-config-color-active, 10%);
+
+#login-buttons {
+
+  display: inline-block;
+  margin-right: 0.2px; // Fixes display on IE8: http://www.compsoft.co.uk/Blog/2009/11/inline-block-not-quite-inline-blocking.html
+
+  // This seems to keep the height of the line from
+  // being sensitive to the presence of the unicode down arrow,
+  // which otherwise bumps the baseline down by 1px.
+  line-height: 1;
+
+  .login-button {
+    position: relative; // so that we can position the image absolutely within the button
+  }
+
+  .login-buttons-with-only-one-button {
+    display: inline-block;
+    .login-button { display: inline-block; }
+    .login-text-and-button {
+      display: inline-block;
+    }
+  }
+
+  .login-display-name {
+    display: inline-block;
+    padding-right: 2px;
+    line-height: 1.5;
+    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  }
+  .loading {
+    line-height: 1;
+    background-image: url(data:image/gif;base64,R0lGODlhEAALAPQAAP///wAAANra2tDQ0Orq6gYGBgAAAC4uLoKCgmBgYLq6uiIiIkpKSoqKimRkZL6+viYmJgQEBE5OTubm5tjY2PT09Dg4ONzc3PLy8ra2tqCgoMrKyu7u7gAAAAAAAAAAACH/C05FVFNDQVBFMi4wAwEAAAAh/hpDcmVhdGVkIHdpdGggYWpheGxvYWQuaW5mbwAh+QQJCwAAACwAAAAAEAALAAAFLSAgjmRpnqSgCuLKAq5AEIM4zDVw03ve27ifDgfkEYe04kDIDC5zrtYKRa2WQgAh+QQJCwAAACwAAAAAEAALAAAFJGBhGAVgnqhpHIeRvsDawqns0qeN5+y967tYLyicBYE7EYkYAgAh+QQJCwAAACwAAAAAEAALAAAFNiAgjothLOOIJAkiGgxjpGKiKMkbz7SN6zIawJcDwIK9W/HISxGBzdHTuBNOmcJVCyoUlk7CEAAh+QQJCwAAACwAAAAAEAALAAAFNSAgjqQIRRFUAo3jNGIkSdHqPI8Tz3V55zuaDacDyIQ+YrBH+hWPzJFzOQQaeavWi7oqnVIhACH5BAkLAAAALAAAAAAQAAsAAAUyICCOZGme1rJY5kRRk7hI0mJSVUXJtF3iOl7tltsBZsNfUegjAY3I5sgFY55KqdX1GgIAIfkECQsAAAAsAAAAABAACwAABTcgII5kaZ4kcV2EqLJipmnZhWGXaOOitm2aXQ4g7P2Ct2ER4AMul00kj5g0Al8tADY2y6C+4FIIACH5BAkLAAAALAAAAAAQAAsAAAUvICCOZGme5ERRk6iy7qpyHCVStA3gNa/7txxwlwv2isSacYUc+l4tADQGQ1mvpBAAIfkECQsAAAAsAAAAABAACwAABS8gII5kaZ7kRFGTqLLuqnIcJVK0DeA1r/u3HHCXC/aKxJpxhRz6Xi0ANAZDWa+kEAA7AAAAAAAAAAAA);
+    width: 16px;
+    background-position: center center;
+    background-repeat: no-repeat;
+  }
+}
+
+#login-buttons .login-button, .accounts-dialog .login-button {
+  cursor: pointer;
+  .unselectable();
+  padding: 4px 8px;
+
+  font-size: 80%;
+  font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  line-height: 1.5;
+
+  text-align: center;
+  color: #fff;
+
+  background: @login-buttons-color;
+  border: 1px solid @login-buttons-color-border;
+
+  border-radius: 4px;
+
+  &:hover {
+    background: @login-buttons-color-active;
+  }
+  &:active {
+    background: @login-buttons-color-active;
+    .box-shadow(0 2px 3px 0 rgba(0, 0, 0, 0.2) inset);
+  }
+
+  &.login-button-disabled, &.login-button-disabled:active {
+    color: #ddd;
+    background: #aaa;
+    border: 1px solid lighten(#aaa, 10%);
+    .box-shadow(none);
+  }
+}
+
+// precendence of this selector is significant
+.accounts-dialog * {
+  // A base for our dialog CSS, to reset browser styles and protect against
+  // the app's CSS.  Dialogs include the dropdown, config modals, and the
+  // reset password modal.  We can't completely isolate the dialogs from
+  // the app's CSS, and that isn't the goal because the app can style them.
+  // This rule is a compromise that should take precedence over some very
+  // broad rules but be overridden by more specific ones.
+
+  // Add more declarations here if they help the dialogs look good
+  // out-of-the-box in more apps.
+
+  padding: 0;
+  margin: 0;
+  line-height: inherit;
+  color: inherit;
+  font: inherit;
+
+  font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+}
+
+.accounts-dialog .login-button {
+  width: auto;
+  margin-bottom: 4px;
+}
+
+#login-buttons {
+  .login-buttons-padding {
+    display: inline-block;
+    width: 30px;
+  }
+
+  .login-display-name { margin-right: 4px; }
+
+  .configure-button {
+    background: @login-buttons-config-color;
+    border-color: @login-buttons-config-color-border;
+
+    &:active, &:hover {
+      background: @login-buttons-config-color-active;
+      border-color: @login-buttons-config-color-active-border;
+    }
+  }
+
+  .login-image {
+    display: inline-block;
+    position: absolute;
+    left: 6px;
+    top: 6px;
+    width: 16px;
+    height: 16px;
+  }
+
+  .text-besides-image {
+    margin-left: 18px;
+  }
+
+  .no-services { color: red; }
+
+  .login-link-and-dropdown-list {
+    position: relative;
+  }
+  .login-close-text {
+    float: left;
+    position: relative;
+    padding-bottom: 8px;
+  }
+
+  .login-text-and-button .loading, .login-link-and-dropdown-list .loading {
+    display: inline-block;
+  }
+  &.login-buttons-dropdown-align-left #login-dropdown-list .loading {
+    float: right;
+  }
+  &.login-buttons-dropdown-align-right #login-dropdown-list .loading {
+    float: left;
+  }
+
+
+  .login-close-text-clear { clear: both; }
+
+  .or { text-align: center; }
+  .hline { text-decoration: line-through; color: lightgrey; }
+  .or-text { font-weight: bold; }
+
+  #signup-link { float: right; }
+  #forgot-password-link { float: left; }
+  #back-to-login-link { float: right; }
+}
+
+#login-buttons a, .accounts-dialog a {
+    cursor: pointer;
+    text-decoration: underline;
+}
+
+#login-buttons.login-buttons-dropdown-align-right .login-close-text {
+    float: right;
+}
+
+@meteor-accounts-base-padding: 8px;
+@meteor-accounts-dialog-border-width: 1px;
+
+.accounts-dialog {
+  border: @meteor-accounts-dialog-border-width solid #ccc;
+  z-index: 1000;
+  background: white;
+  border-radius: 4px;
+
+  padding: 8px 12px;
+  margin: -8px -12px 0 -12px;
+
+  width: @login-buttons-accounts-dialog-width;
+
+  .box-shadow(0 0 3px 0 rgba(0, 0, 0, 0.2));
+
+  // Labels and links inherit app's font with this line commented out:
+  //font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  font-size: 16px;
+  color: #333;
+
+  // XXX Make the dropdown and dialogs look good without a top-level
+  // line-height: 1.6.  For now, we apply it to everything except
+  // the "Close" link, which we want to have the same line-height
+  // as the "Sign in" link.
+  & > * { line-height: 1.6; }
+  & > .login-close-text {
+    line-height: inherit;
+    font-size: inherit;
+    font-family: inherit;
+  }
+
+  label, .title {
+    font-size: 80%;
+    margin-top: 7px;
+    margin-bottom: -2px;
+  }
+
+  label {
+    // Bootstrap sets labels as 'display: block;'. Undo that.
+    display: inline;
+  }
+
+  input[type=text], input[type=email], input[type=password] {
+    // Be pixel-accurate in IE 8+ regardless of our borders and
+    // paddings, at the expense of IE 7.
+    // Any heights or widths applied to this element will set the
+    // size of the border box (including padding and borders)
+    // instead of the content box.  This makes it possible to
+    // do width 100%.
+    .box-sizing-by-border();
+    width: 100%;
+    // A fix purely for the "meteor add bootstrap" experience.
+    // Bootstrap sets "height: 20px" on form fields, which is too
+    // small when applied to the border box.  People have complained
+    // that Bootstrap takes this approach for the sake of IE 7:
+    // https://github.com/twitter/bootstrap/issues/2935
+    // Our work-around is to override Bootstrap's rule (with higher
+    // precedence).
+    &[type] { height: auto; }
+  }
+
+  .login-button-form-submit { margin-top: 8px; }
+  .message { font-size: 80%; margin-top: 8px; line-height: 1.3; }
+  .error-message { color: red; }
+  .info-message { color: green; }
+  .additional-link { font-size: 75%; }
+
+  .accounts-close {
+    position: absolute;
+    top: 0;
+    right: 5px;
+
+    font-size: 20px;
+    font-weight: bold;
+    line-height: 20px;
+    text-decoration: none;
+    color: #000;
+    opacity: 0.4;
+
+    &:hover {
+      opacity: 0.8;
+    }
+  }
+
+  #login-buttons-cancel-reset-password { float: right; }
+  #login-buttons-cancel-enroll-account { float: right; }
+}
+
+#login-dropdown-list {
+  position: absolute;
+  // The top-left of the border-box of the dropdown is absolutely
+  // positioned within its container, so we need to compensate
+  // for the border.  The padding is already compensated for by
+  // negative margins on the dropdown.
+  // XXX We could use negative margins to compensate for the
+  // border too.
+  top: -@meteor-accounts-dialog-border-width;
+  left: -@meteor-accounts-dialog-border-width;
+}
+
+#login-buttons.login-buttons-dropdown-align-right #login-dropdown-list {
+  left: auto;
+  right: -@meteor-accounts-dialog-border-width;
+}
+
+#login-buttons-message-dialog .message {
+    /* we intentionally want it bigger on this dialog since it's the only thing displayed */
+    font-size: 100%;
+}
+
+.accounts-centered-dialog {
+  font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+
+  z-index: 1001;
+  position: fixed;
+
+  left: 50%;
+  margin-left: -(@login-buttons-accounts-dialog-width
+               + @meteor-accounts-base-padding) / 2;
+
+  top: 50%;
+  margin-top: -40px; /* = approximately -height/2, though height can change */
+}
+
+@configure-login-service-dialog-width: 530px;
+
+#configure-login-service-dialog {
+  width: @configure-login-service-dialog-width;
+  margin-left: -(@configure-login-service-dialog-width
+               + @meteor-accounts-base-padding) / 2;
+  margin-top: -300px; /* = approximately -height/2, though height can change */
+
+  table { width: 100%; }
+  input[type=text] {
+    width: 100%;
+    font-family: "Courier New", Courier, monospace;
+  }
+  ol {
+    margin-top: 10px;
+    margin-bottom: 10px;
+
+    li { margin-left: 30px; }
+  }
+  .configuration_labels { width: 30%; }
+  .configuration_inputs { width: 70%; }
+  .new-section { margin-top: 10px; }
+  .url { font-family: "Courier New", Courier, monospace; }
+}
+
+#configure-login-service-dialog-save-configuration {
+  float: right;
+}
+
+.configure-login-service-dismiss-button {
+  float: left;
+}
+
+#just-verified-dismiss-button, #messages-dialog-dismiss-button {
+  margin-top: 8px;
+}
+
+.hide-background {
+  position: fixed;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 999;
+
+  /* XXX consider replacing with DXImageTransform */
+  background-color: rgb(0.2, 0.2, 0.2); /* fallback for IE7-8 */
+
+  background-color: rgba(0, 0, 0, 0.7);
+}
+
+#login-buttons, .accounts-dialog {
+  input[type=text], input[type=email], input[type=password] {
+    padding: 4px;
+    border: 1px solid #aaa;
+    border-radius: 3px;
+    line-height: 1;
+  }
+}

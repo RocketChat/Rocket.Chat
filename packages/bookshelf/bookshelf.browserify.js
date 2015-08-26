@@ -1,0 +1,1 @@
+BrowserifyBookshelf = require('bookshelf');

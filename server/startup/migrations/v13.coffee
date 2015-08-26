@@ -1,5 +1,5 @@
 Meteor.startup ->
-	Migrations.add
+	Migrations?.add
 		version: 13
 		up: ->
 			# Set all current users as active

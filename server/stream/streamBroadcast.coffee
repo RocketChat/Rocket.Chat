@@ -56,4 +56,4 @@ Meteor.startup ->
 	if webrtc
 		config['webrtc.stream'] = webrtc.stream
 
-	startStreamBroadcast config
+	# startStreamBroadcast config

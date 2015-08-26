@@ -1,5 +1,5 @@
 Meteor.startup ->
-	Migrations.add
+	Migrations?.add
 		version: 15
 		up: ->
 

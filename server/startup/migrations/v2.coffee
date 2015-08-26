@@ -1,5 +1,5 @@
 Meteor.startup ->
-	Migrations.add
+	Migrations?.add
 		version: 2
 		up: ->
 			Meteor.users.find({avatarOrigin: {$exists: false}, username: {$exists: true}}).forEach (user) ->

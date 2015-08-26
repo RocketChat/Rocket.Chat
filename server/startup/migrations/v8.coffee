@@ -1,5 +1,5 @@
 Meteor.startup ->
-	Migrations.add
+	Migrations?.add
 		version: 8
 		up: ->
 			console.log 'Load old settings record'

@@ -1,5 +1,5 @@
 Meteor.startup ->
-	Migrations.add
+	Migrations?.add
 		version: 12
 		up: ->
 			# Set oldest user as admin, if none exists yet

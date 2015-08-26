@@ -1,4 +1,5 @@
 Meteor.startup ->
+	return
 	storeType = 'GridFS'
 
 	if RocketChat.settings.get 'avatarStore_type'

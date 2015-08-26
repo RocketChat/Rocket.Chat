@@ -4,6 +4,7 @@ Meteor.methods
 
 Meteor.startup ->
 
+	if not Push? then return
 	Push.debug = RocketChat.settings.get 'Push_debug'
 
 	if RocketChat.settings.get('Push_enable') is true

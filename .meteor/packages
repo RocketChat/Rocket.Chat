@@ -3,22 +3,42 @@
 # 'meteor add' and 'meteor remove' will edit this file for you,
 # but you can also edit it by hand.
 
-accounts-facebook
-accounts-github
-accounts-google
-accounts-meteor-developer
-accounts-twitter
+#PG Example
+standard-minifiers
+meteor-base
+mobile-experience
+blaze-html-templates
+session
+tracker
+logging
+reload
+random
+ejson
+spacebars
+check
+simple:pg
+
+
+
+#Current
+#accounts-facebook
+#accounts-github
+#accounts-google
+#accounts-meteor-developer
+#accounts-twitter
 accounts-password
 coffeescript
-email
-fastclick
-http
+# email
+# fastclick
+# http
 jquery
 less
 meteor-platform
+underscore
 reactive-dict
 reactive-var
-service-configuration
+pg-compatibilty
+# service-configuration
 
 arunoda:streams
 rocketchat:lib
@@ -28,23 +48,23 @@ rocketchat:emojione
 rocketchat:favico
 rocketchat:file
 rocketchat:highlight
-rocketchat:ldap
+# rocketchat:ldap
 rocketchat:logger
 rocketchat:markdown
 rocketchat:me
 rocketchat:mentions
-rocketchat:oembed
+# rocketchat:oembed
 rocketchat:webrtc
-#rocketchat:external
-#rocketchat:hubot
-#rocketchat:irc
+# rocketchat:external
+# rocketchat:hubot
+# rocketchat:irc
 
 konecty:change-case
 konecty:delayed-task
-konecty:mongo-counter
-konecty:multiple-instances-status
+# konecty:mongo-counter
+# konecty:multiple-instances-status
 konecty:nrr
-konecty:user-presence
+# konecty:user-presence
 
 chrismbeckett:toastr
 dispatch:run-as-user
@@ -53,31 +73,31 @@ jparker:gravatar
 kadira:blaze-layout
 kadira:flow-router
 kevohagan:sweetalert
-meteorhacks:kadira
+# meteorhacks:kadira
 mizzao:autocomplete
 mizzao:timesync
 momentjs:moment
-mrt:reactive-store
+# mrt:reactive-store
 mystor:device-detection
 nimble:restivus
 nooitaf:colors
-pauli:accounts-linkedin
-percolate:migrations
-percolatestudio:synced-cron
+# pauli:accounts-linkedin
+# percolate:migrations
+# percolatestudio:synced-cron
 raix:handlebar-helpers
-raix:ui-dropped-event
-tap:i18n
-tmeasday:crypto-md5
-tmeasday:errors
-todda00:friendly-slugs
+# raix:ui-dropped-event
+# tap:i18n
+# tmeasday:crypto-md5
+# tmeasday:errors
+# todda00:friendly-slugs
 underscorestring:underscore.string
 yasaricli:slugify
-yasinuslu:blaze-meta
-rocketchat:colors
-raix:push@2.6.13-rc.1
-jalik:ufs
-jalik:ufs-gridfs
-monbro:mongodb-mapreduce-aggregation
-accounts-gitlab
-gitlab
-rocketchat:gitlab
+# yasinuslu:blaze-meta
+# rocketchat:colors
+# raix:push@2.6.13-rc.1
+# jalik:ufs
+# jalik:ufs-gridfs
+# monbro:mongodb-mapreduce-aggregation
+# accounts-gitlab
+# gitlab
+# rocketchat:gitlab

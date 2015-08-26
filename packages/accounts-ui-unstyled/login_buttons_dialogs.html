@@ -1,0 +1,154 @@
+<body>
+  {{> _resetPasswordDialog}}
+  {{> _justResetPasswordDialog}}
+  {{> _enrollAccountDialog}}
+  {{> _justVerifiedEmailDialog}}
+  {{> _configureLoginServiceDialog}}
+  {{> _configureLoginOnDesktopDialog}}
+
+  {{! if we're not showing a dropdown, we need some other place to show messages }}
+  {{> _loginButtonsMessagesDialog}}
+</body>
+
+<template name="_resetPasswordDialog">
+  {{#if inResetPasswordFlow}}
+    <div class="hide-background"></div>
+
+    <div class="accounts-dialog accounts-centered-dialog">
+      <label id="reset-password-new-password-label" for="reset-password-new-password">
+        New password
+      </label>
+
+      <div class="reset-password-new-password-wrapper">
+        <input id="reset-password-new-password" type="password" />
+      </div>
+
+      {{> _loginButtonsMessages}}
+
+      <div class="login-button login-button-form-submit" id="login-buttons-reset-password-button">
+        Set password
+      </div>
+
+      <a class="accounts-close" id="login-buttons-cancel-reset-password">&times;</a>
+    </div>
+  {{/if}}
+</template>
+
+<template name="_justResetPasswordDialog">
+  {{#if visible}}
+    <div class="accounts-dialog accounts-centered-dialog">
+      Password reset.
+      You are now logged in as {{displayName}}.
+      <div class="login-button" id="just-verified-dismiss-button">Dismiss</div>
+    </div>
+  {{/if}}
+</template>
+
+<template name="_enrollAccountDialog">
+  {{#if inEnrollAccountFlow}}
+    <div class="hide-background"></div>
+
+    <div class="accounts-dialog accounts-centered-dialog">
+      <label id="enroll-account-password-label" for="enroll-account-password">
+        Choose a password
+      </label>
+
+      <div class="enroll-account-password-wrapper">
+        <input id="enroll-account-password" type="password" />
+      </div>
+
+      {{> _loginButtonsMessages}}
+
+      <div class="login-button login-button-form-submit" id="login-buttons-enroll-account-button">
+        Create account
+      </div>
+
+      <a class="accounts-close" id="login-buttons-cancel-enroll-account">&times;</a>
+    </div>
+  {{/if}}
+</template>
+
+<template name="_justVerifiedEmailDialog">
+  {{#if visible}}
+    <div class="accounts-dialog accounts-centered-dialog">
+      Email verified.
+      You are now logged in as {{displayName}}.
+      <div class="login-button" id="just-verified-dismiss-button">Dismiss</div>
+    </div>
+  {{/if}}
+</template>
+
+<template name="_configureLoginServiceDialog">
+  {{#if visible}}
+    <div id="configure-login-service-dialog" class="accounts-dialog accounts-centered-dialog">
+      {{> configurationSteps}}
+
+      <p>
+        Now, copy over some details.
+      </p>
+      <p>
+        <table>
+          <colgroup>
+            <col span="1" class="configuration_labels">
+            <col span="1" class="configuration_inputs">
+          </colgroup>
+          {{#each configurationFields}}
+            <tr>
+              <td>
+                <label for="configure-login-service-dialog-{{property}}">{{label}}</label>
+              </td>
+              <td>
+                <input id="configure-login-service-dialog-{{property}}" type="text" />
+              </td>
+            </tr>
+          {{/each}}
+        </table>
+      </p>
+      <p class="new-section">
+        Choose the login style:
+      </p>
+      <p>
+        &emsp;<input id="configure-login-service-dialog-popupBasedLogin" type="radio" checked="checked" name="loginStyle" value="popup">
+        <label for="configure-login-service-dialog-popupBasedLogin">Popup-based login (recommended for most applications)</label>
+
+        <br>&emsp;<input id="configure-login-service-dialog-redirectBasedLogin" type="radio" name="loginStyle" value="redirect">
+        <label for="configure-login-service-dialog-redirectBasedLogin">
+          Redirect-based login (special cases explained
+          <a href="https://github.com/meteor/meteor/wiki/OAuth-for-mobile-Meteor-clients#popup-versus-redirect-flow"
+             target="_blank">here</a>)
+        </label>
+      </p>
+      <div class="new-section">
+        <div class="login-button configure-login-service-dismiss-button">
+          I'll do this later
+        </div>
+        <a class="accounts-close configure-login-service-dismiss-button">&times;</a>
+
+        <div class="login-button login-button-configure {{#if saveDisabled}}login-button-disabled{{/if}}"
+             id="configure-login-service-dialog-save-configuration">
+          Save Configuration
+        </div>
+      </div>
+    </div>
+  {{/if}}
+</template>
+
+<template name="_loginButtonsMessagesDialog">
+  {{#if visible}}
+    <div class="accounts-dialog accounts-centered-dialog" id="login-buttons-message-dialog">
+      {{> _loginButtonsMessages}}
+      <div class="login-button" id="messages-dialog-dismiss-button">Dismiss</div>
+    </div>
+  {{/if}}
+</template>
+
+<template name="_configureLoginOnDesktopDialog">
+  {{#if visible}}
+    <div class="accounts-dialog accounts-centered-dialog" id="configure-on-desktop-dialog">
+      <p>
+        Please configure login on a desktop browser.
+      </p>
+      <div class="login-button" id="configure-on-desktop-dismiss-button">Dismiss</div>
+    </div>
+  {{/if}}
+</template>

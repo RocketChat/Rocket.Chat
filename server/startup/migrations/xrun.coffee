@@ -1,5 +1,6 @@
 Meteor.startup ->
 	Meteor.defer ->
+		if not Migrations? then return
 		if Migrations.getVersion() isnt 0
 			Migrations.migrateTo 'latest'
 		else
