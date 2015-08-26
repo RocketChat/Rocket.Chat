@@ -228,7 +228,7 @@ Template.room.helpers
 			userData = {
 				username: String(username)
 			}
-		
+
 		return userData
 
 	seeAll: ->
@@ -283,14 +283,14 @@ Template.room.helpers
 	utc: ->
 		if @utcOffset?
 			return "UTC #{@utcOffset}"
-	
+
 	phoneNumber: ->
 		return '' unless @phoneNumber
 		if @phoneNumber.length > 10
 			return "(#{@phoneNumber.substr(0,2)}) #{@phoneNumber.substr(2,5)}-#{@phoneNumber.substr(7)}"
 		else
 			return "(#{@phoneNumber.substr(0,2)}) #{@phoneNumber.substr(2,4)}-#{@phoneNumber.substr(6)}"
-	
+
 	lastLogin: ->
 		if @lastLogin
 			return moment(@lastLogin).format('LLL')
@@ -543,14 +543,22 @@ Template.room.events
 			closeOnConfirm: false
 			html: false
 		}, ->
-			swal 
+			swal
 				title: t('Deleted')
 				text: t('Your_entry_has_been_deleted')
 				type: 'success'
 				timer: 1000
-				showConfirmButton: false 
+				showConfirmButton: false
 
 			instance.chatMessages.deleteMsg(message)
+	'click .pin-message': (event) ->
+		message = @_arguments[1]
+		instance = Template.instance()
+
+		if message.pinned
+			instance.chatMessages.unpinMsg(message)
+		else
+			instance.chatMessages.pinMsg(message)
 
 	'click .start-video': (event) ->
 		_id = Template.instance().data._id
@@ -635,7 +643,7 @@ Template.room.events
 				toastr.success t('User_has_been_deactivated')
 			if error
 				toastr.error error.reason
-	
+
 	'click .activate': ->
 		username = Session.get('showUserInfo')
 		user = Meteor.users.findOne { username: String(username) }
