@@ -28,7 +28,7 @@ Meteor.startup ->
 	RocketChat.settings.add 'Accounts_ManuallyApproveNewUsers', false, { type: 'boolean', group: 'Accounts' }
 
 	RocketChat.settings.addGroup 'General'
-	RocketChat.settings.add 'Site_Name', '', { type: 'string', group: 'General', public: true }
+	RocketChat.settings.add 'Site_Name', 'Rocket.Chat', { type: 'string', group: 'General', public: true }
 
 	RocketChat.settings.addGroup 'API'
 	RocketChat.settings.add 'API_Analytics', '', { type: 'string', group: 'API', public: true }
