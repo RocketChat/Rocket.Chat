@@ -6,6 +6,8 @@
 
 	return "#{Meteor.absoluteUrl()}avatar/#{username}.jpg?_dc=#{random}"
 
+Blaze.registerHelper 'avatarUrlFromUsername', getAvatarUrlFromUsername
+
 @updateAvatarOfUsername = (username) ->
 	key = "avatar_random_#{username}"
 	Session.set key, Math.round(Math.random() * 1000)
