@@ -2145,6 +2145,7 @@ a.github-fork {
 		left: 0px;
 		right: 0px;
 		overflow: hidden;
+		box-shadow: 0px 0px 4px rgba(0,0,0,0.5);
 	}
 	.message-popup-title {
 		background-color: @secondary-background-color;
@@ -2155,11 +2156,44 @@ a.github-fork {
 	}
 	.popup-item {
 		padding: 8px 20px;
+		line-height: 24px;
+		cursor: pointer;
+		user-select: none;
 		color: @secondary-font-color;
 		&.selected {
 			background-color: @tertiary-background-color;
 			color: @primary-font-color;
 		}
+	}
+	.popup-user-avatar {
+		width: 24px;
+		display: inline-block;
+		height: 24px;
+		background-size: contain;
+		border-radius: 3px;
+		margin: -7px 4px;
+	}
+	.popup-user-status {
+		border: 1px solid rgba(0,0,0,.2);
+		width: 10px;
+		height: 10px;
+		display: inline-block;
+		border-radius: 10px;
+	}
+	.popup-user-status-system {
+		border-color: transparent;
+	}
+	.popup-user-status-offline {
+		background-color: @status-offline;
+	}
+	.popup-user-status-online {
+		background-color: @status-online;
+	}
+	.popup-user-status-away {
+		background-color: @status-away;
+	}
+	.popup-user-status-busy {
+		background-color: @status-busy;
 	}
 	.message-form {
 		> div {
@@ -2514,8 +2548,12 @@ a.github-fork {
 				text-decoration: underline;
 			}
 		}
-		&.temp .body{
-			color: #ccc;
+		.body {
+			opacity: 1;
+			.transition(opacity 1s linear);
+		}
+		&.temp .body {
+			opacity: .5;
 		}
 	}
 }
