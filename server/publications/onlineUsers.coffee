@@ -2,7 +2,7 @@ Meteor.publish 'onlineUsers', (name) ->
 	unless this.userId
 		return this.ready()
 
-	console.log '[publish] activeUsers'.green
+	console.log '[publish] onlineUsers'.green, name
 
 	exp = new RegExp(name, 'i')
 
