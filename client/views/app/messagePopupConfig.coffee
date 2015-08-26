@@ -11,7 +11,7 @@ Template.messagePopupConfig.helpers
 			getInput: self.getInput
 			getFilter: (collection, filter) ->
 				exp = new RegExp(filter, 'i')
-				Meteor.subscribe('onlineUsers', filter)
+				Meteor.subscribe 'onlineUsers', filter
 				items = onlineUsers.find({$or: [{name: exp}, {username: exp}]}, {limit: 5}).fetch()
 
 				all =
