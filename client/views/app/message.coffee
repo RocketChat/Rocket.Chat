@@ -1,7 +1,7 @@
 Template.message.helpers
 
 	own: ->
-		return 'own' if this.u?._id is Meteor.userId() 
+		return 'own' if this.u?._id is Meteor.userId()
 
 	time: ->
 		return moment(this.ts).format('HH:mm')
@@ -37,10 +37,14 @@ Template.message.helpers
 		return 'system' if this.t in ['s', 'p', 'f', 'r', 'au', 'ru', 'ul', 'nu', 'wm', 'uj', 'rm']
 	edited: ->
 		return @ets and @t not in ['s', 'p', 'f', 'r', 'au', 'ru', 'ul', 'nu', 'wm', 'uj', 'rm']
+	pinned: ->
+		return this.pinned
 	canEdit: ->
 		return RocketChat.settings.get 'Message_AllowEditing'
 	canDelete: ->
 		return RocketChat.settings.get 'Message_AllowDeleting'
+	canPin: ->
+		return RocketChat.settings.get 'Message_AllowPinning'
 	showEditedStatus: ->
 		return RocketChat.settings.get 'Message_ShowEditedStatus'
 
