@@ -81,6 +81,9 @@ Template.body.onRendered ->
 
 Template.main.helpers
 
+	siteName: ->
+		return RocketChat.settings.get 'Site_Name'
+
 	logged: ->
 		if Meteor.userId()?
 			$('html').addClass("noscroll").removeClass("scroll")
