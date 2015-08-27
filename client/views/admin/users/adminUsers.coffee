@@ -10,9 +10,9 @@ Template.adminUsers.helpers
 	arrowPosition: ->
 		return 'left' unless Session.equals('flexOpened', true)
 	userData: ->
-		return Meteor.users.findOne Session.get 'adminUsersSelected'
+		return Meteor.users.findOne Session.get 'adminSelectedUser'
 	userChannels: ->
-		return ChatSubscription.find({ "u._id": Session.get 'adminUsersSelected' }, { fields: { rid: 1, name: 1, t: 1 }, sort: { t: 1, name: 1 } }).fetch()
+		return ChatSubscription.find({ "u._id": Session.get 'adminSelectedUser' }, { fields: { rid: 1, name: 1, t: 1 }, sort: { t: 1, name: 1 } }).fetch()
 	isLoading: ->
 		return 'btn-loading' unless Template.instance().ready?.get()
 	hasMore: ->
@@ -42,12 +42,12 @@ Template.adminUsers.onCreated ->
 	@autorun ->
 		filter = instance.filter.get()
 		limit = instance.limit.get()
-		subscription = instance.subscribe 'fullUsers', filter, limit
+		subscription = instance.subscribe 'fullUserData', filter, limit
 		instance.ready.set subscription.ready()
 
 	@autorun ->
-		if Session.get 'adminUsersSelected'
-			channelSubscription = instance.subscribe 'userChannels', Session.get 'adminUsersSelected'
+		if Session.get 'adminSelectedUser'
+			channelSubscription = instance.subscribe 'userChannels', Session.get 'adminSelectedUser'
 
 	@users = ->
 		filter = _.trim instance.filter?.get()
@@ -83,7 +83,7 @@ Template.adminUsers.events
 
 	'click .user-info': (e) ->
 		e.preventDefault()
-		Session.set 'adminUsersSelected', $(e.currentTarget).data('id')
+		Session.set 'adminSelectedUser', $(e.currentTarget).data('id')
 		Session.set 'flexOpened', true
 
 	'click .info-tabs a': (e) ->
