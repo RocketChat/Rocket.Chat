@@ -37,7 +37,7 @@ openRoom = (type, name) ->
 			Session.set 'openedRoom', room._id
 
 			Session.set 'editRoomTitle', false
-			Meteor.call 'readMessages', room._id if Meteor.userId()?
+			readMessage.disable()
 			# KonchatNotification.removeRoomNotification(params._id)
 
 			if Meteor.Device.isDesktop()
@@ -60,6 +60,7 @@ FlowRouter.route '/channel/:name',
 	name: 'channel'
 
 	action: (params, queryParams) ->
+		Session.set 'showUserInfo'
 		openRoom 'c', params.name
 
 	triggersExit: [roomExit]
@@ -69,6 +70,7 @@ FlowRouter.route '/group/:name',
 	name: 'group'
 
 	action: (params, queryParams) ->
+		Session.set 'showUserInfo'
 		openRoom 'p', params.name
 
 	triggersExit: [roomExit]
@@ -78,6 +80,7 @@ FlowRouter.route '/direct/:username',
 	name: 'direct'
 
 	action: (params, queryParams) ->
+		Session.set 'showUserInfo', params.username
 		openRoom 'd', params.username
 
 	triggersExit: [roomExit]
