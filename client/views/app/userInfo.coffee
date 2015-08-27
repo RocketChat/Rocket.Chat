@@ -49,4 +49,11 @@ Template.userInfo.helpers
 		return Session.get('selfVideoUrl')
 
 	userTime: ->
-		return moment().utcOffset(@utcOffset).format('HH:mm')
+		return Template.instance().now?.get().utcOffset(@utcOffset).format('HH:mm')
+
+Template.userInfo.onCreated ->
+	@now = new ReactiveVar moment()
+	self = @
+	Meteor.setInterval ->
+		self.now.set moment()
+	, 30000
