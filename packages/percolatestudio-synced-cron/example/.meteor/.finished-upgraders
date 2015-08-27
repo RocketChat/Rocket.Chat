@@ -1,0 +1,6 @@
+# This file contains information which helps Meteor properly upgrade your
+# app when you run 'meteor update'. You should check it into version control
+# with your project.
+
+notices-for-0.9.0
+notices-for-0.9.1

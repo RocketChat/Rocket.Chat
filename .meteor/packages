@@ -63,7 +63,7 @@ nimble:restivus
 nooitaf:colors
 pauli:accounts-linkedin
 percolate:migrations
-percolatestudio:synced-cron
+percolate:synced-cron
 raix:handlebar-helpers
 raix:ui-dropped-event
 tap:i18n
