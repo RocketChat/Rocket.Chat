@@ -72,6 +72,7 @@ class @ChatMessages
 		if _.trim(input.value) isnt ''
 			readMessage.enable()
 			readMessage.readNow()
+			$('.message.first-unread').removeClass('first-unread')
 
 			if this.editing.id
 				this.update(this.editing.id, rid, input)
