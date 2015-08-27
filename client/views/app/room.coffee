@@ -74,15 +74,7 @@ Template.room.helpers
 
 	flexUserInfo: ->
 		username = Session.get('showUserInfo')
-
-		if Meteor.user()?.admin is true
-			userData = _.extend { username: String(username) }, Meteor.users.findOne { username: String(username) }
-		else
-			userData = {
-				username: String(username)
-			}
-
-		return userData
+		return Meteor.users.findOne({ username: String(username) }) or { username: String(username) }
 
 	userStatus: ->
 		roomData = Session.get('roomData' + this._id)
@@ -639,11 +631,10 @@ Template.room.onCreated ->
 	this.showUsersOffline = new ReactiveVar false
 	this.atBottom = true
 
-	# If current user is admin, subscribe to full user data
-	if Meteor.user()?.admin is true
-		Tracker.autorun ->
-			if Session.get('showUserInfo') and not Meteor.users.findOne Session.get 'showUserInfo'
-				Meteor.subscribe 'fullUsers', Session.get('showUserInfo'), 1
+	self = @
+
+	@autorun ->
+		self.subscribe 'fullUserData', Session.get('showUserInfo'), 1
 
 Template.room.onRendered ->
 	FlexTab.check()

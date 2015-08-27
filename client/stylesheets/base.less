@@ -2838,7 +2838,45 @@ a.github-fork {
 		h3 {
 			font-size: 24px;
 			margin-bottom: 8px;
-			line-height: 22px;
+			line-height: 27px;
+			text-overflow: ellipsis;
+			width: 100%;
+			overflow: hidden;
+			white-space: nowrap;
+
+			i:after {
+				content: " ";
+				display: inline-block;
+				width: 8px;
+				height: 8px;
+				border-radius: 4px;
+				vertical-align: middle;
+			}
+
+			i.status-offline {
+				&:after {
+					border-color: darken(@status-offline, 5%);
+					background-color: @status-offline;
+				}
+			}
+			i.status-online {
+				&:after {
+					border-color: darken(@status-online, 5%);
+					background-color: @status-online;
+				}
+			}
+			i.status-away {
+				&:after {
+					border-color: darken(@status-away, 5%);
+					background-color: @status-away;
+				}
+			}
+			i.status-busy {
+				&:after {
+					border-color: darken(@status-busy, 5%);
+					background-color: @status-busy;
+				}
+			}
 		}
 		p {
 			line-height: 18px;
