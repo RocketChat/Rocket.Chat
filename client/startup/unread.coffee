@@ -31,7 +31,7 @@ Meteor.startup ->
 				$roomDom = $(room.dom)
 				$roomDom.find('.message.first-unread').removeClass('first-unread')
 				if (subscription.rid isnt rid or readMessage.isEnable() is false) and (subscription.alert or subscription.unread > 0)
-					firstUnreadId = ChatMessage.findOne({rid: subscription.rid, ts: {$gt: subscription.ls}}, {sort: {ts: 1}})?._id
+					firstUnreadId = ChatMessage.findOne({rid: subscription.rid, ts: {$gt: subscription.ls}, 'u._id': {$ne: Meteor.userId()}}, {sort: {ts: 1}})?._id
 					if firstUnreadId?
 						$roomDom.find('.message#'+firstUnreadId).addClass('first-unread')
 
