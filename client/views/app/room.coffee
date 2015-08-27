@@ -691,6 +691,8 @@ Template.room.onRendered ->
 
 	wrapper.addEventListener 'touchend', ->
 		onscroll()
+		readMessage.enable()
+		readMessage.read()
 
 	wrapper.addEventListener 'scroll', ->
 		template.atBottom = false
@@ -699,10 +701,14 @@ Template.room.onRendered ->
 	wrapper.addEventListener 'mousewheel', ->
 		template.atBottom = false
 		onscroll()
+		readMessage.enable()
+		readMessage.read()
 
 	wrapper.addEventListener 'wheel', ->
 		template.atBottom = false
 		onscroll()
+		readMessage.enable()
+		readMessage.read()
 
 	# salva a data da renderização para exibir alertas de novas mensagens
 	$.data(this.firstNode, 'renderedAt', new Date)
