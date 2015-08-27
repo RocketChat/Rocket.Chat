@@ -22,6 +22,10 @@ Accounts.onCreateUser (options, user) ->
 	user.status = 'offline'
 	user.active = not RocketChat.settings.get 'Accounts_ManuallyApproveNewUsers'
 
+	# when inserting first user, set admin: true
+	unless Meteor.users.findOne()
+		user.admin = true
+
 	serviceName = null
 
 	if user.services?.facebook?
@@ -30,12 +34,14 @@ Accounts.onCreateUser (options, user) ->
 		serviceName = 'google'
 	else if user.services?.github?
 		serviceName = 'github'
+	else if user.services?.gitlab?
+		serviceName = 'gitlab'
 	else if user.services?['meteor-developer']?
 		serviceName = 'meteor-developer'
 	else if user.services?.twitter?
 		serviceName = 'twitter'
 
-	if serviceName in ['facebook', 'google', 'meteor-developer', 'github', 'twitter']
+	if serviceName in ['facebook', 'google', 'meteor-developer', 'github', 'gitlab', 'twitter']
 		if not user?.name? or user.name is ''
 			if options.profile?.name?
 				user.name = options.profile?.name
@@ -62,7 +68,7 @@ Accounts.validateLoginAttempt (login) ->
 		throw new Meteor.Error 'inactive-user', TAPi18next.t 'project:User_is_not_activated'
 		return false
 
-	if login.type is 'password' and RocketChat.settings.get('Accounts_denyUnverifiedEmails') is true
+	if login.type is 'password' and RocketChat.settings.get('Accounts_EmailVerification') is true
 		validEmail = login.user.emails.filter (email) ->
 			return email.verified is true
 

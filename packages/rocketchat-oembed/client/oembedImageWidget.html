@@ -1,9 +1,16 @@
 <template name="oembedImageWidget">
-	<a href="{{url}}" target="_blank">
+	{{#if showImage}}
+		<a href="{{url}}" class="swipebox" target="_blank">
+			{{#if parsedUrl}}
+				<div style="background-image: url({{url}}); background-size: contain; background-repeat: no-repeat; background-position: center left; height: 200px;"></div>
+			{{/if}}
+		</a>
+	{{else}}
 		{{#if parsedUrl}}
-			<blockquote>
-				<img src="{{url}}" height="200" style="max-width: 100%" />
-			</blockquote>
+			<div class="image-to-download" data-url="{{url}}">
+				<i class="icon-picture"></i>
+				<div>click to load</div>
+			</div>
 		{{/if}}
-	</a>
+	{{/if}}
 </template>

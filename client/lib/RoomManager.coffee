@@ -1,3 +1,23 @@
+loadMissedMessages = (rid) ->
+	lastMessage = ChatMessage.findOne({rid: 'GENERAL'}, {sort: {ts: -1}, limit: 1})
+	if not lastMessage?
+		return
+
+	Meteor.call 'loadMissedMessages', rid, lastMessage.ts, (err, result) ->
+		ChatMessage.upsert {_id: item._id}, item for item in result
+
+connectionWasOnline = true
+Tracker.autorun ->
+	connected = Meteor.connection.status().connected
+
+	if connected is true and connectionWasOnline is false and RoomManager.openedRooms?
+		for key, value of RoomManager.openedRooms
+			if value.rid?
+				loadMissedMessages(value.rid)
+
+	connectionWasOnline = connected
+
+
 Meteor.startup ->
 	ChatMessage.find().observe
 		removed: (record) ->
@@ -68,13 +88,21 @@ Meteor.startup ->
 
 					room = ChatRoom.findOne query, { reactive: false }
 
-					openedRooms[typeName].rid = room._id
+					if room?
+						openedRooms[typeName].rid = room._id
 
-					msgStream.on openedRooms[typeName].rid, (msg) ->
-						ChatMessage.upsert { _id: msg._id }, msg
+						msgStream.on openedRooms[typeName].rid, (msg) ->
+							ChatMessage.upsert { _id: msg._id }, msg
+							# If room was renamed then close current room and send user to the new one
+							Tracker.nonreactive ->
+								if msg.t is 'r'
+									if Session.get('openedRoom') is msg.rid
+										type = if FlowRouter.current().route.name is 'channel' then 'c' else 'p'
+										RoomManager.close type + FlowRouter.getParam('name')
+										FlowRouter.go FlowRouter.current().route.name, name: msg.msg
 
-					deleteMsgStream.on openedRooms[typeName].rid, (msg) ->
-						ChatMessage.remove _id: msg._id
+						deleteMsgStream.on openedRooms[typeName].rid, (msg) ->
+							ChatMessage.remove _id: msg._id
 
 				Dep.changed()
 
