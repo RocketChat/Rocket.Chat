@@ -49,7 +49,8 @@ Template.userInfo.helpers
 		return Session.get('selfVideoUrl')
 
 	userTime: ->
-		return Template.instance().now?.get().utcOffset(@utcOffset).format('HH:mm')
+		if @utcOffset?
+			return Template.instance().now.get().utcOffset(@utcOffset).format('HH:mm')
 
 Template.userInfo.onCreated ->
 	@now = new ReactiveVar moment()
