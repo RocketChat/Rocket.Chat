@@ -33,5 +33,6 @@ Meteor.publish 'fullUsers', (filter, limit) ->
 			language: 1
 			lastLogin: 1
 			active: 1
+			services: 1
 		limit: limit
 		sort: { username: 1 }
