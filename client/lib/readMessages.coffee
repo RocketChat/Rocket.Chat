@@ -20,7 +20,6 @@
 			if subscription? and (subscription.alert is true or subscription.unread > 0)
 				# Only read messages if user saw the first unread message
 				position = $('.message.first-unread').position()
-				console.log position
 				if force is true or not position? or position.top >= 0
 					Meteor.call 'readMessages', rid
 
