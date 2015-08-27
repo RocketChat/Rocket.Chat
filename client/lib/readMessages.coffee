@@ -1,6 +1,6 @@
 ### DEFINITIONS
-- If window loses focus user needs to scroll or click/touch some place inside messages-box
-- On hit ESC enable read and force read of current room
+- If window loses focus user needs to scroll or click/touch some place
+- On hit ESC enable read, force read of current room and remove unread mark
 - When user change room disable read until user interaction
 - Only read if mark of *first-unread* is visible for user or if flag *force* was passed
 - Always read the opened room
@@ -41,15 +41,14 @@ Meteor.startup ->
 	$(window).on 'blur', ->
 		readMessage.disable()
 
+	$(window).on 'focus', ->
+		readMessage.enable()
+
 	$(window).on 'click', (e) ->
-		if $(e.target).closest('.messages-container').length > 0
-			readMessage.enable()
-			readMessage.read()
+		readMessage.read()
 
 	$(window).on 'touchend', (e) ->
-		if $(e.target).closest('.messages-container').length > 0
-			readMessage.enable()
-			readMessage.read()
+		readMessage.read()
 
 	$(window).on 'keyup', (e) ->
 		key = event.which
@@ -57,3 +56,4 @@ Meteor.startup ->
 		if key is 27
 			readMessage.enable()
 			readMessage.readNow(true)
+			$('.message.first-unread').removeClass('first-unread')
