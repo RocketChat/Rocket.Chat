@@ -47,3 +47,6 @@ Template.userInfo.helpers
 
 	selfVideoUrl: ->
 		return Session.get('selfVideoUrl')
+
+	userTime: ->
+		return moment().utcOffset(@utcOffset).format('HH:mm')
