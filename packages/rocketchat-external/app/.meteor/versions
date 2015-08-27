@@ -1,3 +1,6 @@
+accounts-base@1.2.0
+accounts-password@1.1.1
+artwells:accounts-guest@0.1.12
 arunoda:streams@0.1.17
 base64@1.0.3
 binary-heap@1.0.3
@@ -11,6 +14,7 @@ cosmos:browserify@0.5.0
 ddp@1.1.0
 deps@1.0.7
 ejson@1.0.6
+email@1.0.6
 geojson-utils@1.0.3
 html-tools@1.0.4
 htmljs@1.0.4
@@ -23,6 +27,7 @@ kadira:flow-router@2.1.0
 konecty:nrr@2.0.2
 less@1.0.14
 livedata@1.0.13
+localstorage@1.0.3
 logging@1.0.7
 meteor@1.1.6
 minifiers@1.1.5
@@ -30,6 +35,7 @@ minimongo@1.0.8
 mizzao:timesync@0.3.3
 momentjs:moment@2.10.6
 mongo@1.1.0
+npm-bcrypt@0.7.8_2
 observe-sequence@1.0.6
 ordered-dict@1.0.3
 random@1.0.3
@@ -37,9 +43,12 @@ reactive-dict@1.1.0
 reactive-var@1.0.5
 retry@1.0.3
 routepolicy@1.0.5
+service-configuration@1.0.4
 session@1.1.0
+sha@1.0.3
 spacebars@1.0.6
 spacebars-compiler@1.0.6
+srp@1.0.3
 templating@1.1.1
 tracker@1.0.7
 ui@1.0.6
