@@ -19,7 +19,7 @@ id-map@1.0.3
 jquery@1.11.3_2
 json@1.0.3
 kadira:blaze-layout@2.0.0
-kadira:flow-router@2.1.0
+kadira:flow-router@2.3.0
 konecty:nrr@2.0.2
 less@1.0.14
 livedata@1.0.13
@@ -44,7 +44,7 @@ templating@1.1.1
 tracker@1.0.7
 ui@1.0.6
 underscore@1.0.3
-underscorestring:underscore.string@3.1.1
+underscorestring:underscore.string@3.2.0
 url@1.0.4
 webapp@1.2.0
 webapp-hashing@1.0.3

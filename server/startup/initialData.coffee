@@ -1,7 +1,5 @@
 Meteor.startup ->
 	Meteor.defer ->
-
-
 		if not ChatRoom.findOne('name': 'general')?
 			ChatRoom.insert
 				_id: 'GENERAL'
@@ -37,3 +35,12 @@ Meteor.startup ->
 					console.log 'Admin user exists; ignoring environment variables ADMIN_EMAIL and ADMIN_PASS'.red
 			else
 				console.log 'E-mail provided is invalid; ignoring environment variables ADMIN_EMAIL and ADMIN_PASS'.red
+
+		# Set oldest user as admin, if none exists yet
+		admin = Meteor.users.findOne { admin: true }, { fields: { _id: 1 } }
+		unless admin
+			# get oldest user
+			oldestUser = Meteor.users.findOne({}, { fields: { username: 1 }, sort: {createdAt: 1}})
+			if oldestUser
+				Meteor.users.update {_id: oldestUser._id}, {$set: {admin: true}}
+				console.log "No admins are found. Set #{oldestUser.username} as admin for being the oldest user"

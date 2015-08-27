@@ -18,6 +18,7 @@ Package.onUse(function(api) {
 	api.addFiles('client/baseWidget.coffee', 'client');
 
 	api.addFiles('client/oembedImageWidget.html', 'client');
+	api.addFiles('client/oembedImageWidget.coffee', 'client');
 
 	api.addFiles('client/oembedAudioWidget.html', 'client');
 

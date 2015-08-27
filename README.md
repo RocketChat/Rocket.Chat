@@ -6,6 +6,14 @@ The Complete Open Source Chat Solution
 
 Checkout the latest version at [https://demo.rocket.chat](https://demo.rocket.chat)
 
+Get the app for your Android phone:
+
+[![Rocket.Chat on Google Play](https://developer.android.com/images/brand/en_app_rgb_wo_45.png)](https://play.google.com/store/apps/details?id=com.konecty.rocket.chat)
+
+Try it on Ubuntu:
+
+[Deploy on VPS or standalone server](https://github.com/RocketChat/Rocket.Chat/wiki/Deploy-Rocket.Chat-without-docker)
+
 Try it with docker:
 
 ```
@@ -67,11 +75,11 @@ It is a great solution for communities and companies wanting to privately host t
 - Link Previews
 - LDAP Authentication - [LDAP Authentication on Rocket.Chat Wiki](https://github.com/RocketChat/Rocket.Chat/wiki/LDAP-Authentication)
 - Face to Face Video Conferencing aka WebRTC (Alpha) - [How to video chat](https://github.com/RocketChat/Rocket.Chat/wiki/Using-Face-to-face-video-conference-%28aka-webrtc%29)
-- REST-full APIs - [Ready for testing ...](https://github.com/RocketChat/Rocket.Chat/wiki/REST-full-APIs)
+- REST APIs - [Ready for testing ...](https://github.com/RocketChat/Rocket.Chat/wiki/REST-APIs)
 - Remote Locations Video Monitoring - [Early access ...](https://github.com/RocketChat/Rocket.Chat/wiki/Remote-Video-Monitoring)
 - Native Cross-Platform Desktop Application [Rocket.Chat.Electron - HELP WANTED](https://github.com/RocketChat/Rocket.Chat.Electron/releases)
 - Mobile app for iPhone, iPad, and iPod touch [Available now! - help us test](https://github.com/RocketChat/Rocket.Chat/wiki/Mobile-app-for-iPhones,-iPads,-iPod-Touch)
-- Mobile app for Android phone, tablet, and TV stick [Install now!](https://play.google.com/store/apps/details?id=com.konecty.rocket.chat)
+- Mobile app for Android phone, tablet, and TV stick [Available now on Google Play!](https://play.google.com/store/apps/details?id=com.konecty.rocket.chat)
 
 ### Roadmap
 
@@ -109,6 +117,10 @@ We are developing the APIs based on the competition, so stay tunned and you will
 Checkout [Github Wiki](https://github.com/RocketChat/Rocket.Chat/wiki) (coming soon)
 
 ## Production Deployment
+
+### Unbuntu VPS or server
+
+Follow these [deployment instructions](https://github.com/RocketChat/Rocket.Chat/wiki/Deploy-Rocket.Chat-without-docker).
 
 ### Docker
 

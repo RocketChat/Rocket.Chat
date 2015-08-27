@@ -12,6 +12,10 @@ Meteor.startup ->
 	RocketChat.settings.add 'Accounts_Github', false, { type: 'boolean', group: 'Accounts' }
 	RocketChat.settings.add 'Accounts_Github_id', '', { type: 'string', group: 'Accounts' }
 	RocketChat.settings.add 'Accounts_Github_secret', '', { type: 'string', group: 'Accounts' }
+	RocketChat.settings.add 'Accounts_Gitlab', false, { type: 'boolean', group: 'Accounts' }
+	RocketChat.settings.add 'Accounts_Gitlab_id', '', { type: 'string', group: 'Accounts' }
+	RocketChat.settings.add 'Accounts_Gitlab_secret', '', { type: 'string', group: 'Accounts' }
+
 	RocketChat.settings.add 'Accounts_Linkedin', false, { type: 'boolean', group: 'Accounts' }
 	RocketChat.settings.add 'Accounts_Linkedin_id', '', { type: 'string', group: 'Accounts' }
 	RocketChat.settings.add 'Accounts_Linkedin_secret', '', { type: 'string', group: 'Accounts' }
@@ -36,6 +40,7 @@ Meteor.startup ->
 	RocketChat.settings.addGroup 'Message'
 	RocketChat.settings.add 'Message_AllowEditing', true, { type: 'boolean', group: 'Message', public: true }
 	RocketChat.settings.add 'Message_AllowDeleting', true, { type: 'boolean', group: 'Message', public: true }
+	RocketChat.settings.add 'Message_AllowPinning', true, { type: 'boolean', group: 'Message', public: true }
 	RocketChat.settings.add 'Message_ShowEditedStatus', true, { type: 'boolean', group: 'Message', public: true }
 	RocketChat.settings.add 'Message_ShowDeletedStatus', false, { type: 'boolean', group: 'Message', public: true }
 	RocketChat.settings.add 'Message_KeepHistory', false, { type: 'boolean', group: 'Message', public: true }
@@ -66,6 +71,7 @@ Meteor.startup ->
 	RocketChat.settings.add 'Layout_Home_Body', 'Welcome to Rocket.Chat <br> Go to APP SETTINGS -> Layout to customize this intro.', { type: 'string', multiline: true, group: 'Layout', public: true }
 	RocketChat.settings.add 'Layout_Terms_of_Service', 'Terms of Service <br> Go to APP SETTINGS -> Layout to customize this page.', { type: 'string', multiline: true, group: 'Layout', public: true }
 	RocketChat.settings.add 'Layout_Privacy_Policy', 'Privacy Policy <br> Go to APP SETTINGS -> Layout to customize this page.', { type: 'string', multiline: true, group: 'Layout', public: true }
+	RocketChat.settings.add 'Layout_Sidenav_Footer', '<a href="https://github.com/RocketChat/Rocket.Chat" class="logo" target="_blank"> <img src="/images/logo/logo.svg?v=3" /> <small><i class="icon-github-circled"></i> Fork it on github</small> </a>', { type: 'string', group: 'Layout', public: true, i18nDescription: 'Layout_Sidenav_Footer_description' }
 
 	if process?.env? and not process.env['MAIL_URL']? and RocketChat.settings.get('SMTP_Host') and RocketChat.settings.get('SMTP_Username') and RocketChat.settings.get('SMTP_Password')
 		process.env['MAIL_URL'] = "smtp://" + encodeURIComponent(RocketChat.settings.get('SMTP_Username')) + ':' + encodeURIComponent(RocketChat.settings.get('SMTP_Password')) + '@' + encodeURIComponent(RocketChat.settings.get('SMTP_Host'))

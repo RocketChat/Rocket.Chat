@@ -136,7 +136,7 @@ blockquote {
 	padding: 2px;
 	position: absolute;
 	width: 100%;
-	z-index: 1000;
+	z-index: 1000000;
 	border-radius: 0px;
 }
 
@@ -230,6 +230,10 @@ blockquote {
 	fieldset {
 		display: block;
 		margin-bottom: 40px;
+
+		small {
+			font-size: 11px;
+		}
 	}
 	.submit {
 		margin-top: 20px;
@@ -651,6 +655,9 @@ label.required:after {
 	}
 	&.github {
 		background-color: #4c4c4c;
+	}
+	&.gitlab {
+		background-color: #373d47;
 	}
 	&.trello {
 		background-color: #026aa7;
@@ -1988,6 +1995,55 @@ a.github-fork {
 	}
 }
 
+.image-to-download {
+	background-color: #fafafa;
+	border-radius: 6px;
+	border: 1px dashed #ddd;
+	padding: 20px 15px;
+	margin-bottom: 5px;
+	text-transform: uppercase;
+	color: #aaa;
+	text-align: center;
+	cursor: pointer;
+	height: 200px;
+	display: flex;
+	display: -webkit-flex;
+	flex-direction: column;
+	-webkit-flex-direction: column;
+	align-items: center;
+	-webkit-align-items: center;
+	justify-content: center;
+	-webkit-justify-content: center;
+	width: 200px;
+
+	i {
+		font-size: 24px;
+	}
+}
+
+.room-not-found {
+	display: flex;
+	display: -webkit-flex;
+	flex-direction: column;
+	-webkit-flex-direction: column;
+	align-items: center;
+	-webkit-align-items: center;
+	justify-content: center;
+	-webkit-justify-content: center;
+	font-size: 30px;
+	color: orange;
+
+	div {
+		line-height: 40px;
+		text-align: center;
+	}
+
+	i {
+		font-size: 100px;
+		padding-bottom: 30px;
+	}
+}
+
 .upload-progress {
 	position: absolute;
 	top: 60px;
@@ -2006,6 +2062,11 @@ a.github-fork {
 
 		&:first-child {
 			border-top: 1px solid #6a8179;
+		}
+
+		&.upload-error {
+			background-color: #FF6161;
+			border-color: #863737;
 		}
 
 		.upload-progress-progress {
@@ -2084,6 +2145,7 @@ a.github-fork {
 		left: 0px;
 		right: 0px;
 		overflow: hidden;
+		box-shadow: 0px 0px 4px rgba(0,0,0,0.5);
 	}
 	.message-popup-title {
 		background-color: @secondary-background-color;
@@ -2094,11 +2156,44 @@ a.github-fork {
 	}
 	.popup-item {
 		padding: 8px 20px;
+		line-height: 24px;
+		cursor: pointer;
+		user-select: none;
 		color: @secondary-font-color;
 		&.selected {
 			background-color: @tertiary-background-color;
 			color: @primary-font-color;
 		}
+	}
+	.popup-user-avatar {
+		width: 24px;
+		display: inline-block;
+		height: 24px;
+		background-size: contain;
+		border-radius: 3px;
+		margin: -7px 4px;
+	}
+	.popup-user-status {
+		border: 1px solid rgba(0,0,0,.2);
+		width: 10px;
+		height: 10px;
+		display: inline-block;
+		border-radius: 10px;
+	}
+	.popup-user-status-system {
+		border-color: transparent;
+	}
+	.popup-user-status-offline {
+		background-color: @status-offline;
+	}
+	.popup-user-status-online {
+		background-color: @status-online;
+	}
+	.popup-user-status-away {
+		background-color: @status-away;
+	}
+	.popup-user-status-busy {
+		background-color: @status-busy;
 	}
 	.message-form {
 		> div {
@@ -2230,6 +2325,32 @@ a.github-fork {
 			}
 			.icon-level-down:before {
 				transform: rotate(90deg);
+			}
+		}
+		.editing-commands {
+			display: none;
+			text-transform: lowercase;
+			.editing-commands-cancel {
+				float: left;
+				height: 23px;
+				font-size: 11px;
+				color: #888888;
+				padding: 3px;
+			}
+			.editing-commands-save {
+				float: right;
+				height: 23px;
+				font-size: 11px;
+				color: #888888;
+				padding: 3px;
+			}
+		}
+		&.editing {
+			.formatting-tips, .users-typing{
+				display: none;
+			}
+			.editing-commands {
+				display: block;
 			}
 		}
 	}
@@ -2427,8 +2548,12 @@ a.github-fork {
 				text-decoration: underline;
 			}
 		}
-		&.temp .body{
-			color: #ccc;
+		.body {
+			opacity: 1;
+			.transition(opacity 1s linear);
+		}
+		&.temp .body {
+			opacity: .5;
 		}
 	}
 }
@@ -3568,7 +3693,7 @@ a.github-fork {
 		}
 		.main-content {
 			left: 0;
-			.transition(transform .3s ease-out);
+			.transition(transform .2s linear);
 			z-index: 1000;
 			background-color: white;
 

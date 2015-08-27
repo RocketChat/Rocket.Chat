@@ -77,7 +77,7 @@ Template.createChannelFlex.events
 
 	'click .save-channel': (e, instance) ->
 		err = SideNav.validate()
-		name = instance.find('#channel-name').value
+		name = instance.find('#channel-name').value.toLowerCase().trim()
 		instance.roomName.set name
 		if not err
 			Meteor.call 'createChannel', name, instance.selectedUsers.get(), (err, result) ->

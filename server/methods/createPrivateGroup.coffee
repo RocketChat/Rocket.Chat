@@ -5,7 +5,7 @@ Meteor.methods
 
 		console.log '[methods] createPrivateGroup -> '.green, 'userId:', Meteor.userId(), 'arguments:', arguments
 
-		if not /^[0-9a-z-_]+$/i.test name
+		if not /^[0-9a-z-_]+$/.test name
 			throw new Meteor.Error 'name-invalid'
 
 		now = new Date()
