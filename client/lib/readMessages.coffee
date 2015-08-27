@@ -42,9 +42,10 @@
 			subscription = ChatSubscription.findOne rid: rid
 			room = RoomManager.openedRooms[subscription.t + subscription.name]
 			if room?
+				$roomDom = $(room.dom)
+				$roomDom.find('.message.first-unread').addClass('first-unread-opaque')
 				if (subscription.rid isnt rid or readMessage.isEnable() is false) and (subscription.alert or subscription.unread > 0)
-					$roomDom = $(room.dom)
-					$roomDom.find('.message.first-unread').removeClass('first-unread')
+					$roomDom.find('.message.first-unread').removeClass('first-unread').removeClass('first-unread-opaque')
 					firstUnreadId = ChatMessage.findOne({rid: subscription.rid, ts: {$gt: subscription.ls}, 'u._id': {$ne: Meteor.userId()}}, {sort: {ts: 1}})?._id
 					if firstUnreadId?
 						$roomDom.find('.message#'+firstUnreadId).addClass('first-unread')
