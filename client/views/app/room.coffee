@@ -72,25 +72,17 @@ Template.room.helpers
 			when 'c' then return 'icon-hash'
 			when 'p' then return 'icon-lock'
 
-	userData: ->
-		roomData = Session.get('roomData' + this._id)
+	flexUserInfo: ->
+		username = Session.get('showUserInfo')
 
-		return {} unless roomData
-
-		if roomData.t is 'd'
-			username = _.without roomData.usernames, Meteor.user().username
-
+		if Meteor.user()?.admin is true
+			userData = _.extend { username: String(username) }, Meteor.users.findOne { username: String(username) }
+		else
 			userData = {
-				name: Session.get('user_' + username + '_name')
-				emails: Session.get('user_' + username + '_emails') || []
-				phone: Session.get('user_' + username + '_phone')
 				username: String(username)
 			}
 
-			if Meteor.user()?.admin is true
-				userData = _.extend userData, Meteor.users.findOne { username: String(username) }
-
-			return userData
+		return userData
 
 	userStatus: ->
 		roomData = Session.get('roomData' + this._id)
@@ -218,18 +210,6 @@ Template.room.helpers
 			users: users
 
 		return ret
-
-	flexUserInfo: ->
-		username = Session.get('showUserInfo')
-
-		if Meteor.user()?.admin is true
-			userData = _.extend { username: String(username) }, Meteor.users.findOne { username: String(username) }
-		else
-			userData = {
-				username: String(username)
-			}
-
-		return userData
 
 	seeAll: ->
 		if Template.instance().showUsersOffline.get()
@@ -691,6 +671,8 @@ Template.room.onRendered ->
 
 	wrapper.addEventListener 'touchend', ->
 		onscroll()
+		readMessage.enable()
+		readMessage.read()
 
 	wrapper.addEventListener 'scroll', ->
 		template.atBottom = false
@@ -699,10 +681,14 @@ Template.room.onRendered ->
 	wrapper.addEventListener 'mousewheel', ->
 		template.atBottom = false
 		onscroll()
+		readMessage.enable()
+		readMessage.read()
 
 	wrapper.addEventListener 'wheel', ->
 		template.atBottom = false
 		onscroll()
+		readMessage.enable()
+		readMessage.read()
 
 	# salva a data da renderização para exibir alertas de novas mensagens
 	$.data(this.firstNode, 'renderedAt', new Date)
