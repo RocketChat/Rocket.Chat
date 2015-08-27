@@ -70,6 +70,9 @@ class @ChatMessages
 
 	send: (rid, input) ->
 		if _.trim(input.value) isnt ''
+			readMessage.enable()
+			readMessage.readNow()
+
 			if this.editing.id
 				this.update(this.editing.id, rid, input)
 				return
