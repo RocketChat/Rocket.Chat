@@ -26,14 +26,7 @@ Meteor.startup ->
 				if subscription.alert is true
 					unreadAlert = '•'
 
-			room = RoomManager.openedRooms[subscription.t + subscription.name]
-			if room?
-				if (subscription.rid isnt rid or readMessage.isEnable() is false) and (subscription.alert or subscription.unread > 0)
-					$roomDom = $(room.dom)
-					$roomDom.find('.message.first-unread').removeClass('first-unread')
-					firstUnreadId = ChatMessage.findOne({rid: subscription.rid, ts: {$gt: subscription.ls}, 'u._id': {$ne: Meteor.userId()}}, {sort: {ts: 1}})?._id
-					if firstUnreadId?
-						$roomDom.find('.message#'+firstUnreadId).addClass('first-unread')
+			readMessage.refreshUnreadMark(subscription.rid)
 
 		if unreadCount > 0
 			if unreadCount > 999

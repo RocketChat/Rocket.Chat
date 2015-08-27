@@ -36,6 +36,19 @@
 	isEnable: ->
 		return @canReadMessage is true
 
+	refreshUnreadMark: (rid) ->
+		rid ?= Session.get 'openedRoom'
+		if rid?
+			subscription = ChatSubscription.findOne rid: rid
+			room = RoomManager.openedRooms[subscription.t + subscription.name]
+			if room?
+				if (subscription.rid isnt rid or readMessage.isEnable() is false) and (subscription.alert or subscription.unread > 0)
+					$roomDom = $(room.dom)
+					$roomDom.find('.message.first-unread').removeClass('first-unread')
+					firstUnreadId = ChatMessage.findOne({rid: subscription.rid, ts: {$gt: subscription.ls}, 'u._id': {$ne: Meteor.userId()}}, {sort: {ts: 1}})?._id
+					if firstUnreadId?
+						$roomDom.find('.message#'+firstUnreadId).addClass('first-unread')
+
 
 Meteor.startup ->
 	$(window).on 'blur', ->
@@ -43,11 +56,14 @@ Meteor.startup ->
 
 	$(window).on 'focus', ->
 		readMessage.enable()
+		readMessage.read()
 
 	$(window).on 'click', (e) ->
+		readMessage.enable()
 		readMessage.read()
 
 	$(window).on 'touchend', (e) ->
+		readMessage.enable()
 		readMessage.read()
 
 	$(window).on 'keyup', (e) ->
