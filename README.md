@@ -175,7 +175,8 @@ Thanks to
 [Marcelo Schmidt](https://github.com/marceloschmidt),
 [Rafael Caferati](https://github.com/rcaferati),
 [Rodrigo Nascimento](https://github.com/rodrigok),
-[Sing Li](https://github.com/Sing-Li)
+[Sing Li](https://github.com/Sing-Li),
+[Aaron Ogle](https://github.com/geekgonecrazy)
 
 Emoji provided free by [Emoji One](http://emojione.com)
 
