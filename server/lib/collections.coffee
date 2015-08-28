@@ -2,5 +2,4 @@
 @ChatRoom = new Meteor.Collection 'rocketchat_room'
 @ChatSubscription = new Meteor.Collection 'rocketchat_subscription'
 @MapReducedStatistics = new Mongo.Collection 'rocketchat_mr_statistics'
-@Statistics = new Mongo.Collection 'rocketchat_statistics'
 @ChatReports = new Meteor.Collection 'rocketchat_reports'
