@@ -176,7 +176,9 @@ Thanks to
 [Rafael Caferati](https://github.com/rcaferati),
 [Rodrigo Nascimento](https://github.com/rodrigok),
 [Sing Li](https://github.com/Sing-Li),
-[Aaron Ogle](https://github.com/geekgonecrazy)
+[Aaron Ogle](https://github.com/geekgonecrazy),
+[Graywolf336](https://github.com/Graywolf336)
+
 
 Emoji provided free by [Emoji One](http://emojione.com)
 
