@@ -168,6 +168,8 @@
   "Notify_all_in_this_room" : "Notify all in this room",
   "Online" : "Online",
   "Oops!" : "Oops",
+  "Opt_out_statistics": "Don't send my anonymous statistics to Rocket.Chat",
+  "Opt_out_statistics_warning": "By sending your anonymous statistics, you'll help us identify how many instances of Rocket.Chat are deployed, as well as how good the system is behaving, so we can further improve it. If you want to continue sending us your anonymous statistics, uncheck the above checkbox. Thank you.",
   "others" : "others",
   "Password" : "Password",
   "Password_changed_successfully" : "Password changed successfully",

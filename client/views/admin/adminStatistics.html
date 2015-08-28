@@ -109,6 +109,12 @@
 					{{_ "Please_wait_statistics"}}
 				{{/if}}
 			{{/unless}}
+			<div style="margin: 30px 0">
+				<label for="opt-out-statistics"><input type="checkbox" value="1" name="opt-out-statistics" id="opt-out-statistics" checked="{{optOut}}"> {{_ "Opt_out_statistics"}}</label>
+				<div id="opt-out-warning" class="alert-warning" style="margin-top: 10px; padding: 10px;">
+					{{_ "Opt_out_statistics_warning"}}
+				</div>
+			</div>
 		</div>
 	</section>
 </template>
