@@ -13,11 +13,6 @@
 					<h3>
 						<a href="{{pathFor 'privateHistory'}}">{{_ "History"}}</a>
 					</h3>
-					{{#if isAdmin}}
-					<h3 class="open-settings">
-						{{_ "App_Settings"}}
-					</h3>
-					{{/if}}
 				</div>
 			</div>
 			<div class="flex-nav hidden">
@@ -28,10 +23,7 @@
 			<span class="arrow bottom"></span>
 		{{/if}}
 		<footer class="footer">
-			<a href="https://github.com/RocketChat/Rocket.Chat" class="logo" target="_blank">
-				<img src="/images/logo/logo.svg?v=3" />
-				<small><i class="icon-github-circled"></i> {{_ "Fork_it_on_github"}}</small>
-			</a>
+			{{{footer}}}
 		</footer>
 	</aside>
 </template>

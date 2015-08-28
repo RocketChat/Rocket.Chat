@@ -27,7 +27,11 @@ Template.messagePopup.onCreated ->
 
 	template.textFilter = new ReactiveVar ''
 
+	template.textFilterDelay = val(template.data.textFilterDelay, 0)
+
 	template.open = new ReactiveVar false
+
+	template.hasData = new ReactiveVar false
 
 	template.value = new ReactiveVar
 
@@ -37,11 +41,11 @@ Template.messagePopup.onCreated ->
 
 	template.suffix = val(template.data.suffix, ' ')
 
-	template.matchSelectorRegex = val(template.data.matchSelectorRegex, new RegExp "(?:^| )#{template.trigger}[A-Za-z0-9-_]*$")
+	template.matchSelectorRegex = val(template.data.matchSelectorRegex, new RegExp "(?:^| )#{template.trigger}[A-Za-z0-9-_.]*$")
 
-	template.selectorRegex = val(template.data.selectorRegex, new RegExp "#{template.trigger}([A-Za-z0-9-_]*)$")
+	template.selectorRegex = val(template.data.selectorRegex, new RegExp "#{template.trigger}([A-Za-z0-9-_.]*)$")
 
-	template.replaceRegex = val(template.data.replaceRegex, new RegExp "#{template.trigger}[A-Za-z0-9-_]*$")
+	template.replaceRegex = val(template.data.replaceRegex, new RegExp "#{template.trigger}[A-Za-z0-9-_.]*$")
 
 	template.getValue = val template.data.getValue, (_id) -> return _id
 
@@ -68,9 +72,11 @@ Template.messagePopup.onCreated ->
 			if first?
 				first.className += ' selected'
 				template.value.set first.getAttribute('data-id')
+			else
+				template.value.set undefined
 
 	template.onInputKeydown = (event) =>
-		if template.open.curValue isnt true
+		if template.open.curValue isnt true or template.hasData.curValue isnt true
 			return
 
 		if event.which in [38, 40]
@@ -85,6 +91,10 @@ Template.messagePopup.onCreated ->
 			event.preventDefault()
 			event.stopPropagation()
 
+	template.setTextFilter = _.debounce (value) ->
+		template.textFilter.set(value)
+	, template.textFilterDelay
+
 	template.onInputKeyup = (event) =>
 		if template.open.curValue is true and event.which is 27
 			template.open.set false
@@ -96,7 +106,7 @@ Template.messagePopup.onCreated ->
 		value = value.substr 0, getCursorPosition(template.input)
 
 		if template.matchSelectorRegex.test value
-			template.textFilter.set(value.match(template.selectorRegex)[1])
+			template.setTextFilter value.match(template.selectorRegex)[1]
 			template.open.set true
 		else
 			template.open.set false
@@ -113,16 +123,36 @@ Template.messagePopup.onCreated ->
 				template.verifySelection()
 
 	template.enterValue = ->
+		if not template.value.curValue? then return
+
 		value = template.input.value
 		caret = getCursorPosition(template.input)
 		firstPartValue = value.substr 0, caret
 		lastPartValue = value.substr caret
 
-		firstPartValue = firstPartValue.replace(template.selectorRegex, template.prefix + this.getValue(template.value.curValue, template.data.collection) + template.suffix)
+		firstPartValue = firstPartValue.replace(template.selectorRegex, template.prefix + this.getValue(template.value.curValue, template.data.collection, firstPartValue) + template.suffix)
 
 		template.input.value = firstPartValue + lastPartValue
 
 		setCursorPosition template.input, firstPartValue.length
+
+	template.records = new ReactiveVar []
+	Tracker.autorun ->
+		if template.data.collection.find?
+			template.data.collection.find().count()
+
+		filter = template.textFilter.get()
+		if filter?
+			result = template.data.getFilter template.data.collection, filter
+			if (template.data.collection instanceof Meteor.Collection and result.count? and result.count() is 0) or result?.length is 0
+				template.hasData.set false
+			else
+				template.hasData.set true
+
+			template.records.set result
+
+			Meteor.defer =>
+				template.verifySelection()
 
 
 Template.messagePopup.onRendered ->
@@ -161,13 +191,9 @@ Template.messagePopup.events
 
 Template.messagePopup.helpers
 	isOpen: ->
-		Template.instance().open.get()
+		Template.instance().open.get() and Template.instance().hasData.get()
 
 	data: ->
 		template = Template.instance()
-		filter = template.textFilter.get()
-		result = template.data.getFilter template.data.collection, filter
-		if (template.data.collection instanceof Meteor.Collection and result.count? and result.count() is 0) or result?.length is 0
-			template.open.set false
 
-		return result
+		return template.records.get()

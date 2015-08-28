@@ -48,12 +48,13 @@ Template.directMessagesFlex.events
 	'click .save-direct-message': (e, instance) ->
 		err = SideNav.validate()
 		if not err
-			Meteor.call 'createDirectMessage', instance.selectedUser.get(), (err, result) ->
+			username = instance.selectedUser.get()
+			Meteor.call 'createDirectMessage', username, (err, result) ->
 				if err
 					return toastr.error err.reason
 				SideNav.closeFlex()
 				instance.clearForm()
-				FlowRouter.go 'room', { _id: result.rid }
+				FlowRouter.go 'direct', { username: username }
 		else
 			Template.instance().error.set(err)
 

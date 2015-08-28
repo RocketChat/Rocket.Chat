@@ -24,7 +24,7 @@ Template.loginForm.helpers
 		return 'hidden' unless Template.instance().state.get() is 'login'
 
 	showBackToLoginLink: ->
-		return 'hidden' unless Template.instance().state.get() in ['register', 'forgot-password', 'email-verification']
+		return 'hidden' unless Template.instance().state.get() in ['register', 'forgot-password', 'email-verification', 'wait-activation']
 
 	btnLoginSave: ->
 		switch Template.instance().state.get()
@@ -37,6 +37,9 @@ Template.loginForm.helpers
 			when 'forgot-password'
 				return t('Reset_password')
 
+	waitActivation: ->
+		return Template.instance().state.get() is 'wait-activation'
+		
 Template.loginForm.events
 	'submit #login-card': (event, instance) ->
 		event.preventDefault()
@@ -75,6 +78,8 @@ Template.loginForm.events
 						if error?.error is 'no-valid-email'
 							toastr.success t('We_have_sent_registration_email')
 							instance.state.set 'login'
+						else if error?.error is 'inactive-user'
+							instance.state.set 'wait-activation'
 						# else
 							# FlowRouter.go 'index'
 			else

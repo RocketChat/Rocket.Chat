@@ -131,6 +131,6 @@
   "We_have_sent_registration_email" : "登録を確認するメールを送信しました。すぐにメールが届かない場合は、再度お試しください。",
   "Welcome" : "ようこそ <em>%s</em>.",
   "Welcome_to_the" : "Welcome to the",
-  "You_neeed_confirm_email" : "ログインするためにはメールを確認する必要があります！",
+  "You_need_confirm_email" : "ログインするためにはメールを確認する必要があります！",
   "Your_Open_Source_solution" : "独自のオープンソースチャットソリューション"
 }

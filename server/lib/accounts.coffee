@@ -15,10 +15,16 @@ Accounts.emailTemplates.resetPassword.text = (user, url) ->
 	verifyEmailText user, url
 
 Accounts.onCreateUser (options, user) ->
+	# console.log 'onCreateUser ->',JSON.stringify arguments, null, '  '
 	# console.log 'options ->',JSON.stringify options, null, '  '
 	# console.log 'user ->',JSON.stringify user, null, '  '
 
 	user.status = 'offline'
+	user.active = not RocketChat.settings.get 'Accounts_ManuallyApproveNewUsers'
+
+	# when inserting first user, set admin: true
+	unless Meteor.users.findOne()
+		user.admin = true
 
 	serviceName = null
 
@@ -28,10 +34,14 @@ Accounts.onCreateUser (options, user) ->
 		serviceName = 'google'
 	else if user.services?.github?
 		serviceName = 'github'
+	else if user.services?.gitlab?
+		serviceName = 'gitlab'
 	else if user.services?['meteor-developer']?
 		serviceName = 'meteor-developer'
+	else if user.services?.twitter?
+		serviceName = 'twitter'
 
-	if serviceName in ['facebook', 'google', 'meteor-developer', 'github']
+	if serviceName in ['facebook', 'google', 'meteor-developer', 'github', 'gitlab', 'twitter']
 		if not user?.name? or user.name is ''
 			if options.profile?.name?
 				user.name = options.profile?.name
@@ -40,10 +50,11 @@ Accounts.onCreateUser (options, user) ->
 			else
 				user.name = user.services[serviceName].username
 
-		user.emails = [
-			address: user.services[serviceName].email
-			verified: true
-		]
+		if user.services[serviceName].email
+			user.emails = [
+				address: user.services[serviceName].email
+				verified: true
+			]
 
 	return user
 
@@ -53,7 +64,11 @@ Accounts.validateLoginAttempt (login) ->
 	if login.allowed isnt true
 		return login.allowed
 
-	if login.type is 'password' and RocketChat.settings.get 'Accounts_denyUnverifiedEmails' is true
+	if login.user?.active isnt true
+		throw new Meteor.Error 'inactive-user', TAPi18next.t 'project:User_is_not_activated'
+		return false
+
+	if login.type is 'password' and RocketChat.settings.get('Accounts_EmailVerification') is true
 		validEmail = login.user.emails.filter (email) ->
 			return email.verified is true
 

@@ -4,7 +4,23 @@ The Complete Open Source Chat Solution
 
 ## Demo
 
-Checkout the latest version at [https://rocket.chat](https://rocket.chat)
+Checkout the latest version at [https://demo.rocket.chat](https://demo.rocket.chat)
+
+Get the app for your Android phone:
+
+[![Rocket.Chat on Google Play](https://developer.android.com/images/brand/en_app_rgb_wo_45.png)](https://play.google.com/store/apps/details?id=com.konecty.rocket.chat)
+
+Try it on Ubuntu:
+
+[Deploy on VPS or standalone server](https://github.com/RocketChat/Rocket.Chat/wiki/Deploy-Rocket.Chat-without-docker)
+
+Try it with docker:
+
+```
+docker-compose up
+```
+
+and check it out at http://localhost:80
 
 Download the Native Cross-Platform Desktop Application at [Rocket.Chat.Electron](https://github.com/RocketChat/Rocket.Chat.Electron/releases)
 
@@ -50,17 +66,20 @@ It is a great solution for communities and companies wanting to privately host t
 - Avatars
 - Markdown
 - Emojis
+- Sent Message Edit and Deletion
 - Transcripts / History
 - File Upload / Sharing
-- I18n - [Internationalization with Lingohub](https://translate.lingohub.com/engelgabriel/rocket-dot-chat/dashboard)
+- I18n - Supports 22 Languages [Internationalization with Lingohub](https://translate.lingohub.com/engelgabriel/rocket-dot-chat/dashboard)
 - Hubot Friendly - [Hubot Integration Project](https://github.com/RocketChat/hubot-rocketchat)
 - Media Embeds
 - Link Previews
 - LDAP Authentication - [LDAP Authentication on Rocket.Chat Wiki](https://github.com/RocketChat/Rocket.Chat/wiki/LDAP-Authentication)
 - Face to Face Video Conferencing aka WebRTC (Alpha) - [How to video chat](https://github.com/RocketChat/Rocket.Chat/wiki/Using-Face-to-face-video-conference-%28aka-webrtc%29)
-- REST-full APIs - [Ready for testing ...](https://github.com/RocketChat/Rocket.Chat/wiki/REST-full-APIs)
+- REST APIs - [Ready for testing ...](https://github.com/RocketChat/Rocket.Chat/wiki/REST-APIs)
 - Remote Locations Video Monitoring - [Early access ...](https://github.com/RocketChat/Rocket.Chat/wiki/Remote-Video-Monitoring)
 - Native Cross-Platform Desktop Application [Rocket.Chat.Electron - HELP WANTED](https://github.com/RocketChat/Rocket.Chat.Electron/releases)
+- Mobile app for iPhone, iPad, and iPod touch [Available now! - help us test](https://github.com/RocketChat/Rocket.Chat/wiki/Mobile-app-for-iPhones,-iPads,-iPod-Touch)
+- Mobile app for Android phone, tablet, and TV stick [Available now on Google Play!](https://play.google.com/store/apps/details?id=com.konecty.rocket.chat)
 
 ### Roadmap
 
@@ -68,7 +87,7 @@ It is a great solution for communities and companies wanting to privately host t
 
 - Native iOS Application [Rocket.Chat.iOS - HELP WANTED](https://github.com/RocketChat/Rocket.Chat.iOS)
 - Native Android Application [Issue #271 - HELP WANTED](https://github.com/RocketChat/Rocket.Chat/issues/271)
-- External popout window for chat with website visitor (like Zopim, Olark, LiveChat, SnapEngage)
+- External popout window for chat with website visitor, like Zopim, Olark, LiveChat, SnapEngage [Issue #519](https://github.com/RocketChat/Rocket.Chat/issues/519)
 
 #### Planned
 
@@ -99,6 +118,10 @@ Checkout [Github Wiki](https://github.com/RocketChat/Rocket.Chat/wiki) (coming s
 
 ## Production Deployment
 
+### Unbuntu VPS or server
+
+Follow these [deployment instructions](https://github.com/RocketChat/Rocket.Chat/wiki/Deploy-Rocket.Chat-without-docker).
+
 ### Docker
 
 Use the automated build at our [Official Docker Registry](https://registry.hub.docker.com/u/rocketchat/rocket.chat/)
@@ -109,11 +132,17 @@ Use the automated build at our [Official Docker Registry](https://registry.hub.d
 docker pull rocketchat/rocket.chat
 ```
 
+### sloppy.io
+
+Host your docker container at [sloppy.io](http://sloppy.io). Get an account and use the [quickstarter](https://github.com/sloppyio/quickstarters/tree/master/rocketchat)
+
 ### Heroku
 
 Host your own Rocket.Chat server for **FREE** with [One-Click Deploy](https://heroku.com/deploy?template=https://github.com/RocketChat/Rocket.Chat/tree/master)
 
 [![Deploy](https://www.herokucdn.com/deploy/button.png)](https://heroku.com/deploy?template=https://github.com/RocketChat/Rocket.Chat/tree/master)
+
+
 
 ## Development Installation
 
@@ -128,6 +157,14 @@ Now just clone and start the app:
 git clone https://github.com/RocketChat/Rocket.Chat.git
 cd Rocket.Chat
 meteor
+```
+
+or use docker:
+
+```
+git clone https://github.com/RocketChat/Rocket.Chat.git
+cd Rocket.Chat
+docker run -it -p 3000:3000 -v "$(pwd)":/app danieldent/meteor
 ```
 
 ## Credits

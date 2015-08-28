@@ -135,6 +135,6 @@
   "Welcome" : "Bienvenido <em>%s</em>.",
   "Welcome_to_the" : "Bienvenido a la",
   "With_whom" : "Con quien",
-  "You_neeed_confirm_email" : "¡Es necesario confirmar tu correo electrónico para poder identificarte!",
+  "You_need_confirm_email" : "¡Es necesario confirmar tu correo electrónico para poder identificarte!",
   "Your_Open_Source_solution" : "Tu propia solución de chat de código abierto"
 }

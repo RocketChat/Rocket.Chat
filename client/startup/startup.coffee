@@ -17,16 +17,30 @@ Meteor.startup ->
 			lng = lng.replace re, (match, parts...) -> return parts[0] + parts[1].toUpperCase()
 		return lng
 
-	if localStorage.getItem("userLanguage")
-		userLanguage = localStorage.getItem("userLanguage")
-	else
-		userLanguage = defaultUserLanguage()
-	localStorage.setItem("userLanguage", userLanguage)
+	loadedLaguages = []
 
-	userLanguage = userLanguage.split('-').shift()
-	TAPi18n.setLanguage(userLanguage)
+	setLanguage = (language) ->
+		if loadedLaguages.indexOf(language) > -1
+			return
 
-	filename = "/moment-locales/#{userLanguage.toLowerCase()}.js"
-	if filename isnt '/moment-locales/en.js'
-		$.getScript filename, (data) ->
-			moment.locale(userLanguage)
+		loadedLaguages.push language
+
+		language = language.split('-').shift()
+		TAPi18n.setLanguage(language)
+
+		language = language.toLowerCase()
+		if language isnt 'en'
+			Meteor.call 'loadLocale', language, (data) ->
+				moment.locale(language)
+
+	Tracker.autorun (c) ->
+		if Meteor.user()?.language?
+			c.stop()
+
+			localStorage.setItem("userLanguage", Meteor.user().language)
+			setLanguage Meteor.user().language
+
+	userLanguage = localStorage.getItem("userLanguage")
+	userLanguage ?= defaultUserLanguage()
+
+	setLanguage userLanguage
