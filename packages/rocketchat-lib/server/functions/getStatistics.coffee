@@ -18,6 +18,9 @@ RocketChat.getStatistics = ->
 	statistics.totalPrivateGroups = ChatRoom.find({ t: 'p' }).count()
 	statistics.totalDirect = ChatRoom.find({ t: 'd' }).count()
 
+	# Message statistics
+	statistics.totalMessages = ChatMessage.find().count()
+
 	m = ->
 		emit 1, 
 			sum: this.usernames.length or 0
