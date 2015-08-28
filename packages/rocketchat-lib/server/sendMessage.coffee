@@ -101,7 +101,7 @@ RocketChat.sendMessage = (user, message, room, options) ->
 			if mentionIds.length > 0
 				usersOfMention = Meteor.users.find({_id: {$in: mentionIds}}, {fields: {_id: 1, username: 1}}).fetch()
 
-				if mentionIds.indexOf('all') is -1
+				if room.t is 'c' and mentionIds.indexOf('all') is -1
 					for usersOfMentionItem in usersOfMention
 						if room.usernames.indexOf(usersOfMentionItem.username) is -1
 							Meteor.runAsUser usersOfMentionItem._id, ->
