@@ -80,8 +80,8 @@ Template.message.onViewRendered = (context) ->
 
 		if not lastNode.nextElementSibling?
 			if lastNode.classList.contains('own') is true
-				view.parentView.parentView.parentView.parentView.parentView.templateInstance().atBottom = true
+				view.parentView.parentView.parentView.parentView.parentView.templateInstance?().atBottom = true
 			else
-				if view.parentView.parentView.parentView.parentView.parentView.templateInstance().atBottom isnt true
+				if view.parentView.parentView.parentView.parentView.parentView.templateInstance?().atBottom isnt true
 					newMessage = document.querySelector(".new-message")
 					newMessage.className = "new-message"
