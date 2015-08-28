@@ -275,21 +275,26 @@ Template.room.helpers
 
 
 Template.room.events
-	"touchstart .message": (e, t) ->
+	"touchstart .message, touchstart .message *": (e, t) ->
 		message = this._arguments[1]
+		# e.stopPropagation()
+		e.preventDefault()
 		doLongTouch = ->
 			mobileMessageMenu.show(message, t)
 
-		t.touchtime = Meteor.setTimeout doLongTouch, 2000
+		t.touchtime ?= Meteor.setTimeout doLongTouch, 500
 
-	"touchend .message": (e, t) ->
+	"touchend .message, touchend .message *": (e, t) ->
 		Meteor.clearTimeout t.touchtime
+		t.touchtime = undefined
 
-	"touchmove .message": (e, t) ->
+	"touchmove .message, touchmove .message *": (e, t) ->
 		Meteor.clearTimeout t.touchtime
+		t.touchtime = undefined
 
-	"touchcancel .message": (e, t) ->
+	"touchcancel .message, touchcancel .message *": (e, t) ->
 		Meteor.clearTimeout t.touchtime
+		t.touchtime = undefined
 
 	"click .upload-progress-item > a": ->
 		Session.set "uploading-cancel-#{this.id}", true
