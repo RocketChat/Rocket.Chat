@@ -6,6 +6,9 @@ Template.room.helpers
 	tQuickSearch: ->
 		return t('Quick_Search')
 
+	searchResult: ->
+		return Template.instance().searchResult.get()
+
 	favorite: ->
 		sub = ChatSubscription.findOne { rid: this._id }, { fields: { f: 1 } }
 		return 'icon-star favorite-room' if sub?.f? and sub.f
@@ -299,10 +302,11 @@ Template.room.events
 	"click .upload-progress-item > a": ->
 		Session.set "uploading-cancel-#{this.id}", true
 
-	"click .flex-tab .more": (event) ->
+	"click .flex-tab .more": (event, t) ->
 		if (Session.get('flexOpened'))
 			Session.set('rtcLayoutmode', 0)
 			Session.set('flexOpened',false)
+			t.searchResult.set undefined
 		else
 			Session.set('flexOpened', true)
 
@@ -635,6 +639,7 @@ Template.room.onCreated ->
 	# this.typing = new msgTyping this.data._id
 	this.showUsersOffline = new ReactiveVar false
 	this.atBottom = true
+	this.searchResult = new ReactiveVar
 
 	self = @
 
