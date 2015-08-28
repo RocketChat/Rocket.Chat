@@ -37,7 +37,12 @@ openRoom = (type, name) ->
 			Session.set 'openedRoom', room._id
 
 			Session.set 'editRoomTitle', false
-			Meteor.call 'readMessages', room._id if Meteor.userId()?
+			readMessage.disable()
+			Meteor.setTimeout ->
+				readMessage.refreshUnreadMark()
+				readMessage.enable()
+				readMessage.readNow()
+			, 2000
 			# KonchatNotification.removeRoomNotification(params._id)
 
 			if Meteor.Device.isDesktop()
@@ -52,7 +57,11 @@ roomExit = ->
 		for child in mainNode.children
 			if child?
 				if child.classList.contains('room-container')
-					child.oldScrollTop = child.querySelector('.messages-box > .wrapper').scrollTop
+					wrapper = child.querySelector('.messages-box > .wrapper')
+					if wrapper.scrollTop >= wrapper.scrollHeight - wrapper.clientHeight
+						child.oldScrollTop = 10e10
+					else
+						child.oldScrollTop = wrapper.scrollTop
 				mainNode.removeChild child
 
 
@@ -60,6 +69,7 @@ FlowRouter.route '/channel/:name',
 	name: 'channel'
 
 	action: (params, queryParams) ->
+		Session.set 'showUserInfo'
 		openRoom 'c', params.name
 
 	triggersExit: [roomExit]
@@ -69,6 +79,7 @@ FlowRouter.route '/group/:name',
 	name: 'group'
 
 	action: (params, queryParams) ->
+		Session.set 'showUserInfo'
 		openRoom 'p', params.name
 
 	triggersExit: [roomExit]
@@ -78,6 +89,7 @@ FlowRouter.route '/direct/:username',
 	name: 'direct'
 
 	action: (params, queryParams) ->
+		Session.set 'showUserInfo', params.username
 		openRoom 'd', params.username
 
 	triggersExit: [roomExit]

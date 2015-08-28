@@ -84,7 +84,7 @@ Meteor.startup ->
 					if type in ['c', 'p']
 						query.name = name
 					else if type is 'd'
-						query.usernames = $all: [Meteor.user().username, name]
+						query.usernames = $all: [Meteor.user()?.username, name]
 
 					room = ChatRoom.findOne query, { reactive: false }
 
