@@ -129,16 +129,28 @@ blockquote {
 }
 
 .first-unread {
+	&.first-unread-opaque {
+		.body {
+			&::before {
+				background-color: #E6E6E6;
+			}
+
+			&::after {
+				color: #B3B3B3;
+			}
+		}
+	}
 	.body {
 		&::before {
 			content: "";
-			background-color: rgba(255, 0, 0, 0.54);
+			background-color: #FF8080;
 			display: block;
 			height: 1px;
 			position: absolute;
 			right: 0px;
 			left: 50px;
 			top: -3px;
+			.transition(background-color, .5s, linear);
 		}
 
 		&::after {
@@ -152,7 +164,8 @@ blockquote {
 			line-height: 10px;
 			background-color: white;
 			padding-left: 5px;
-			color: red;
+			color: #FF0000;
+			.transition(color, .5s, linear);
 		}
 	}
 }

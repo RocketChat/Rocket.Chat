@@ -38,6 +38,11 @@ openRoom = (type, name) ->
 
 			Session.set 'editRoomTitle', false
 			readMessage.disable()
+			Meteor.setTimeout ->
+				readMessage.refreshUnreadMark()
+				readMessage.enable()
+				readMessage.readNow()
+			, 2000
 			# KonchatNotification.removeRoomNotification(params._id)
 
 			if Meteor.Device.isDesktop()

@@ -99,6 +99,14 @@ RocketChat.sendMessage = (user, message, room, options) ->
 				mentionIds.push mention._id
 
 			if mentionIds.length > 0
+				usersOfMention = Meteor.users.find({_id: {$in: mentionIds}}, {fields: {_id: 1, username: 1}}).fetch()
+
+				if room.t is 'c' and mentionIds.indexOf('all') is -1
+					for usersOfMentionItem in usersOfMention
+						if room.usernames.indexOf(usersOfMentionItem.username) is -1
+							Meteor.runAsUser usersOfMentionItem._id, ->
+								Meteor.call 'joinRoom', room._id
+
 				###
 				Update all other subscriptions of mentioned users to alert their owners and incrementing
 				the unread counter for mentions and direct messages
@@ -141,7 +149,6 @@ RocketChat.sendMessage = (user, message, room, options) ->
 						query._id =
 							$in: mentionIds
 
-					usersOfMention = Meteor.users.find(query, {fields: {_id: 1}}).fetch()
 					usersOfMentionIds = _.pluck(usersOfMention, '_id');
 					if usersOfMentionIds.length > 0
 						Push.send
