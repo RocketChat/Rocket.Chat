@@ -1,0 +1,55 @@
+<template name="admin">
+	<section class="page-container page-home page-static">
+		<head class="fixed-title">
+			{{> burger}}
+			<h2>
+				<span class="room-title">{{#with group}}{{label}}{{/with}}</span>
+			</h2>
+		</head>
+		<div class="content">
+			{{#unless isAdmin}}
+				<p>You are not authorized to view this page.</p>
+			{{else}}
+				<div class="info">
+					<h3>{{#with group}}{{description}}{{/with}}</h3>
+				</div>
+				<div class="rocket-form">
+					<fieldset>
+						{{#each settings}}
+							{{#if $eq type 'string'}}
+								<div class="input-line double-col">
+									<label>{{label}}</label>
+									<div>
+										{{#if multiline}}
+											<textarea name="{{_id}}" rows="4" style="height: auto">{{value}}</textarea>
+										{{else}}
+											<input type="text" name="{{_id}}" value="{{value}}" />
+										{{/if}}
+										{{#if description}}
+											<small>{{description}}</small>
+										{{/if}}
+									</div>
+								</div>
+							{{/if}}
+							{{#if $eq type 'boolean'}}
+								<div class="input-line double-col">
+									<label>{{label}}</label>
+									<div>
+										<label><input type="radio" name="{{_id}}" value="1" checked="{{$eq value true}}" /> {{_ "True"}}</label>
+										<label><input type="radio" name="{{_id}}" value="0" checked="{{$eq value false}}" /> {{_ "False"}}</label>
+									</div>
+									{{#if description}}
+										<small>{{description}}</small>
+									{{/if}}
+								</div>
+							{{/if}}
+						{{/each}}
+					</fieldset>
+					<div class="submit">
+						<button class="button"><i class="icon-send"></i><span>{{_ "Save_changes"}}</span></button>
+					</div>
+				</div>
+			{{/unless}}
+		</div>
+	</section>
+</template>

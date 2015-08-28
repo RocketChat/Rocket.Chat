@@ -3,16 +3,18 @@ Template.loginServices.helpers
 		services = []
 
 		authServices = _.pluck ServiceConfiguration.configurations.find({}, { service: 1 }).fetch(), 'service'
-		
-		authServices.sort()
 
+		authServices.sort()
 		authServices.forEach (service) ->
 			switch service
 				when 'meteor-developer'
 					serviceName = 'Meteor'
-					icon = 'dot-circle-o'
+					icon = 'meteor'
 				when 'github'
 					serviceName = 'GitHub'
+					icon = 'github-circled'
+				when 'gitlab'
+					serviceName = 'Gitlab'
 					icon = service
 				else
 					serviceName = _.capitalize service
@@ -26,20 +28,35 @@ Template.loginServices.helpers
 		return services
 
 Template.loginServices.events
-	'click .external-login': ->
+	'click .external-login': (e, t)->
 		return unless this.service?
 
-		loginWithService = "loginWith" + (if this.service is 'meteor-developer' then 'MeteorDeveloperAccount' else _.capitalize(this.service))
+		loadingIcon = $(e.currentTarget).find('.loading-icon')
+		serviceIcon = $(e.currentTarget).find('.service-icon')
 
-		serviceConfig = {}
+		loadingIcon.removeClass 'hidden'
+		serviceIcon.addClass 'hidden'
 
-		Meteor[loginWithService] serviceConfig, (error) ->
-			if error?.error is 'github-no-public-email'
-				alert t("github_no_public_email")
-				return
+		# login with native facebook app
+		if Meteor.isCordova and this.service is 'facebook'
+			Meteor.loginWithFacebookCordova {}, (error) ->
+				loadingIcon.addClass 'hidden'
+				serviceIcon.removeClass 'hidden'
 
-			console.log error
-			if error
-				toastr.error error.message
-				return
-			FlowRouter.go 'index'
+				if error
+					console.log JSON.stringify(error), error.message
+					toastr.error error.message
+					return
+
+				FlowRouter.go 'index'
+		else
+			loginWithService = "loginWith" + (if this.service is 'meteor-developer' then 'MeteorDeveloperAccount' else _.capitalize(this.service))
+			serviceConfig = {}
+			Meteor[loginWithService] serviceConfig, (error) ->
+				loadingIcon.addClass 'hidden'
+				serviceIcon.removeClass 'hidden'
+				if error
+					console.log JSON.stringify(error), error.message
+					toastr.error error.message
+					return
+				FlowRouter.go 'index'

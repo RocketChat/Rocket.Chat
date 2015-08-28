@@ -77,10 +77,10 @@ Template.createChannelFlex.events
 
 	'click .save-channel': (e, instance) ->
 		err = SideNav.validate()
-		instance.roomName.set instance.find('#channel-name').value
-		console.log err
+		name = instance.find('#channel-name').value.toLowerCase().trim()
+		instance.roomName.set name
 		if not err
-			Meteor.call 'createChannel', instance.find('#channel-name').value, instance.selectedUsers.get(), (err, result) ->
+			Meteor.call 'createChannel', name, instance.selectedUsers.get(), (err, result) ->
 				if err
 					console.log err
 					if err.error is 'name-invalid'
@@ -95,8 +95,9 @@ Template.createChannelFlex.events
 				SideNav.closeFlex ->
 					instance.clearForm()
 
-				FlowRouter.go 'room', { _id: result.rid }
+				FlowRouter.go 'channel', { name: name }
 		else
+			console.log err
 			instance.error.set({ fields: err })
 
 Template.createChannelFlex.onCreated ->

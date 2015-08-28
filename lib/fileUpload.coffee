@@ -1,50 +1,22 @@
-if FS?
+if UploadFS?
+	@fileCollection = new Mongo.Collection 'rocketchat_uploads'
 
-	@fileStore = new FS.Store.GridFS 'files'
+	fileCollection.allow
+		insert: (userId, doc) ->
+			return userId
 
-	fileStore.on 'stored', Meteor.bindEnvironment (storeName, fileObj) ->
-		Meteor.runAsUser fileObj.userId, ->
-			if not ChatMessage.findOne(fileObj.recId)?
-				Meteor.call 'sendMessage',
-					_id: fileObj.recId
-					rid: fileObj.rid
-					msg: """
-						File Uploaded: *#{fileObj.original.name}*
-						#{Meteor.absoluteUrl()}cfs/files/Files/#{fileObj._id}
-					"""
-					file:
-						_id: fileObj._id
+		update: (userId, doc) ->
+			return userId is doc.userId
 
-	@Files = new FS.Collection 'Files',
-		stores: [fileStore],
-		filter:
-			maxSize: 2097152,
-			allow:
-				contentTypes: ['image/*']
-			onInvalid: (message) ->
-				if Meteor.isClient
-					toastr.error message
-				else
-					console.log message
-				return
+		remove: (userId, doc) ->
+			return userId is doc.userId
 
-	# Allow rules
-	Files.allow
-		insert: ->
-			true
-		update: ->
-			false
-		download: ->
-			true
-		remove: ->
-			false
-
-	Files.deny
-		insert: ->
-			false
-		update: ->
-			true
-		remove: ->
-			true
-		download: ->
-			false
+	Meteor.fileStore = new UploadFS.store.GridFS
+		collection: fileCollection
+		name: 'rocketchat_uploads'
+		collectionName: 'rocketchat_uploads'
+		filter: new UploadFS.Filter
+			maxSize: 2097152
+			contentTypes: ['image/*', 'audio/*']
+		onFinishUpload: ->
+			console.log arguments

@@ -19,10 +19,11 @@ Template.message.helpers
 			when 'r'  then t('Room_name_changed', { room_name: this.msg, user_by: this.u.username })
 			when 'au' then t('User_added_by', { user_added: this.msg, user_by: this.u.username })
 			when 'ru' then t('User_removed_by', { user_removed: this.msg, user_by: this.u.username })
-			when 'ul' then tr('User_left', { context: this.u.gender }, { user_left: this.u.username })
+			when 'ul' then t('User_left', { user_left: this.u.username })
 			when 'nu' then t('User_added', { user_added: this.u.username })
-			when 'uj' then tr('User_joined_channel', { context: this.u.gender }, { user: this.u.username })
+			when 'uj' then t('User_joined_channel', { user: this.u.username })
 			when 'wm' then t('Welcome', { user: this.u.username })
+			when 'rm' then t('Message_removed', { user: this.u.username })
 			when 'rtc' then RocketChat.callbacks.run 'renderRtcMessage', this
 			else
 				this.html = this.msg
@@ -33,8 +34,19 @@ Template.message.helpers
 				return this.html
 
 	system: ->
-		return 'system' if this.t in ['s', 'p', 'f', 'r', 'au', 'ru', 'ul', 'nu', 'wm', 'uj']
-
+		return 'system' if this.t in ['s', 'p', 'f', 'r', 'au', 'ru', 'ul', 'nu', 'wm', 'uj', 'rm']
+	edited: ->
+		return @ets and @t not in ['s', 'p', 'f', 'r', 'au', 'ru', 'ul', 'nu', 'wm', 'uj', 'rm']
+	pinned: ->
+		return this.pinned
+	canEdit: ->
+		return RocketChat.settings.get 'Message_AllowEditing'
+	canDelete: ->
+		return RocketChat.settings.get 'Message_AllowDeleting'
+	canPin: ->
+		return RocketChat.settings.get 'Message_AllowPinning'
+	showEditedStatus: ->
+		return RocketChat.settings.get 'Message_ShowEditedStatus'
 
 Template.message.onViewRendered = (context) ->
 	view = this
@@ -59,7 +71,7 @@ Template.message.onViewRendered = (context) ->
 		ul = lastNode.parentElement
 		wrapper = ul.parentElement
 
-		if context.urls?.length > 0 and Template.oembedBaseWidget?
+		if context.urls?.length > 0 and Template.oembedBaseWidget? and RocketChat.settings.get 'API_Embed'
 			for item in context.urls
 				do (item) ->
 					urlNode = lastNode.querySelector('.body a[href="'+item.url+'"]')

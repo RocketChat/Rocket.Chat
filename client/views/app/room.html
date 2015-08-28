@@ -2,7 +2,7 @@
 	<div class="dropzone">
 		<div class="dropzone-overlay">
 			<div>
-				Drop to upload file
+				{{_ "Drop_to_upload_file"}}
 			</div>
 		</div>
 		<section class="messages-container" id="{{windowId}}">
@@ -20,12 +20,33 @@
 					{{/if}}
 				</h2>
 			</header>
+			<div class="upload-progress">
+				{{#each uploading}}
+					<div class="upload-progress-item {{#if error}}upload-error{{/if}}">
+						{{#if error}}
+							{{error}}
+							<a>
+								close
+							</a>
+						{{else}}
+							<div class="upload-progress-progress" style="width: {{percentage}}%;"></div>
+							{{name}}... {{percentage}}%
+							<a>
+								cancel
+							</a>
+						{{/if}}
+					</div>
+				{{/each}}
+			</div>
 			<div class="messages-box">
 				<div class="wrapper">
 					<ul>
 						{{#if hasMore}}
 							<li class="load-more">
-								<button class="button secondary load-more {{isLoading}}">{{_ "Load_more"}}</button>
+								<button class="button secondary load-more {{isLoading}}">
+									<i class="icon-spin4 animate-spin loading-icon hidden"></i>
+									<div>{{_ "Load_more"}}</div>
+								</button>
 							</li>
 						{{else}}
 							<li class="start">
@@ -45,10 +66,24 @@
 			<footer class="footer">
 				{{#if subscribed}}
 					<form class="message-form" method="post" action="/">
-						<div>
-							{{> messagePopupConfig getPupupConfig}}
-							<textarea dir="auto" name="msg" maxlength="{{maxMessageLength}}" class="input-message"></textarea>
-							<i class="icon-paper-plane" title="{{_ "Send_Message"}}"></i>
+						<div style="display: flex">
+							<div class="file">
+								<i class="icon-attach"></i>
+								<input type="file" accept="image/*">
+							</div>
+							<div class="input-message-container">
+								{{> messagePopupConfig getPupupConfig}}
+								<textarea dir="auto" name="msg" maxlength="{{maxMessageLength}}" class="input-message autogrow-short" placeholder="{{_ 'Message'}}"></textarea>
+								<i class="icon-paper-plane" title="{{_ "Send_Message"}}"></i>
+							</div>
+							{{#if canRecordAudio}}
+								<div class="mic">
+									<i class="icon-mic"></i>
+								</div>
+								<div class="stop-mic hidden">
+									<i class="icon-stop"></i>
+								</div>
+							{{/if}}
 						</div>
 						<div class="users-typing">
 							{{#with usersTyping}}
@@ -76,12 +111,18 @@
 							<code class="inline"><span class="hidden-br"><br></span>```<span class="hidden-br"><br></span><i class="icon-level-down"></i>{{_ "multi"}}<span class="hidden-br"><br></span><i class="icon-level-down"></i>{{_ "line"}}<span class="hidden-br"><br></span><i class="icon-level-down"></i>```</code>
 							<q><span class="hidden-br"><br></span>&gt;{{_ "quote"}}</q>
 						</div>
+						<div class="editing-commands" aria-hidden="true" dir="auto">
+							<div class="editing-commands-cancel">{{_ 'Esc_to'}} <a href="">{{_ 'Cancel'}}</a></div>
+							<div class="editing-commands-save">{{_ 'Enter_to'}} <a href="">{{_ 'Save_changes'}}</a></div>
+						</div>
 					</form>
 				{{else}}
+					{{#if canJoin}}
 					<div>
 						{{{_ "you_are_in_preview_mode_of" room_name=roomName}}}
 						<button class="button join"><span><i class="icon-login"></i> {{_ "join"}}</span></button>
 					</div>
+					{{/if}}
 				{{/if}}
 			</footer>
 		</section>
@@ -112,11 +153,11 @@
 						<div class="list-view{{#if $.Session.get 'showUserInfo'}} -hidden{{/if}}">
 							{{#with roomUsers}}
 								<div class="status">
-									<h2>{{_ "Members_List"}}</h2> {{!--
+									<h2>{{_ "Members_List"}}</h2>
 									<p>
 										{{{_ "Showing_online_users" total_online=totalOnline total=total}}}
-										<button class="see-all">{{seeAll}}</button>
-									</p>--}}
+										{{!--<button class="see-all">{{seeAll}}</button>--}}
+									</p>
 								</div>
 								<ul class='list clearfix lines'>
 									{{#each users}}
@@ -131,94 +172,11 @@
 							{{/with}}
 						</div>
 						<div class="user-view animated{{#unless $.Session.get 'showUserInfo'}} -hidden{{/unless}}">
-							{{#with flexUserInfo}}
-								<div class="about clearfix">
-									<div class="thumb">
-										{{> avatar username=username}}
-									</div>
-									<div class="info">
-										<h3>{{username}}</h3>
-										{{#if contactCode}}
-											<div class="contact-code">{{_ "Contact"}} {{contactCode}}</div>
-										{{/if}}
-										{{!--
-										{{#each emails}}
-											<p><i class="icon-mail"></i> {{address}}</p>
-										{{/each}}
-										{{#if phone}}
-											<p><i class="icon-phone"></i> {{phone}}</p>
-										{{/if}}
-										--}}
-									</div>
-								</div>
-								<nav>
-									<button class='button secondary back'><span>{{_ "View_All"}} <i class='icon-angle-right'></i></span></button>
-									<button class='button pvt-msg'><span><i class='icon-chat'></i> {{_ "Conversation"}}</span></button>
-								</nav>
-							{{/with}}
+							{{> userInfo user=flexUserInfo showAll=true}}
 						</div>
 					{{else}}
 						<div class="user-view">
-							{{#with userData}}
-								<div class="about clearfix">
-
-										{{#if videoActive}}
-											{{#if rtcLayout3}}
-												<div id='fullscreendiv' style="width: 100%">
-												<video id='videoremote' class="video-remote" src="{{remoteVideoUrl}}" style="width: 100%; align-items: center; margin-bottom: 10px; background-color: #000; transition: width 2s, height 2s, top 2s, left 2s, transform 2s;" autoplay></video>
-												<video id='videoself' class="video-self" src="{{selfVideoUrl}}" style="width: 250px; position: absolute; top: 21px; right: 31px; border: 1px solid #FFF; background-color: #000; transition: width 2s, height 2s, top 2s, left 2s, transform 2s;" autoplay muted></video>
-												</div>
-											{{/if}}
-											{{#if rtcLayout2}}
-												<div style="display: flex; flex-direction: row; align-items: center; width: 800px; height: 350px">
-												<video id="videoremote" class="video-remote" src="{{remoteVideoUrl}}" style="flex: 1 0; min-width: 380px; height: 285px; margin: 10px; background-color: #000;"  autoplay></video>
-												<video id="videoself" class="video-self" src="{{selfVideoUrl}}" style="flex: 1 0;  min-width: 380px; height: 285px; margin: 10px; background-color: #000;" autoplay muted></video>
-											</div>
-											{{/if}}
-											{{#if rtcLayout1}}
-												<div style="display: flex; flex-direction: column; align-items: center; width: 360px; height: 500px">
-												<video class="video-remote" src="{{remoteVideoUrl}}" style="flex: 1 1;  width: 320px; margin: 10px; background-color: #000;" autoplay></video>
-												<video class="video-self" src="{{selfVideoUrl}}" style="flex: 1 1; width: 320px; margin: 10px; background-color: #000;" autoplay muted></video>
-												</div>
-											{{/if}}
-											{{#if noRtcLayout}}
-												<div>
-												<video class="video-remote" src="{{remoteVideoUrl}}" style="width: 100%; margin-bottom: 10px; background-color: #000; transition: width 2s, height 2s, top 2s, left 2s, transform 2s;" autoplay></video>
-												<video class="video-self" src="{{selfVideoUrl}}" style="width: 100px; position: absolute; top: 21px; right: 21px; border: 1px solid #FFF; background-color: #000; transition: width 2s, height 2s, top 2s, left 2s, transform 2s;" autoplay muted></video>
-												</div>
-											{{/if}}
-										{{/if}}
-
-									<div class="thumb">
-										{{> avatar username=username}}
-									</div>
-									<div class="info">
-										<h3>{{username}}</h3>
-										{{#if contactCode}}
-											<div class="contact-code">{{_ "contact"}} {{contactCode}}</div>
-										{{/if}}
-										{{!--
-										{{#each emails}}
-											<p><i class="icon-mail"></i> {{address}}</p>
-										{{/each}}
-										{{#each phone}}
-											<p><i class="icon-phone"></i> {{phoneNumber}}</p>
-										{{/each}}
-										--}}
-									</div>
-								</div>
-								<nav>
-									{{#unless videoActive}}
-										<button class='button start-video'><span><i class='icon-videocam'></i> {{_ "Video Chat"}}</span></button>
-										{{#if remoteMonitoring}}
-										<button class='button short monitor-video'><span><i class='icon-videocam'></i> {{_ "Remote"}}</span></button>
-										<button class='button lightblue setup-video'><span><i class='icon-videocam'></i> {{_ "Setup"}}</span></button>
-										{{/if}}
-									{{else}}
-										<button class='button red stop-video'><span><i class='icon-videocam'></i> {{_ "StopVideo"}}</span></button>
-									{{/unless}}
-								</nav>
-							{{/with}}
+							{{> userInfo user=flexUserInfo video=true}}
 						</div>
 					{{/if}}
 				</div>

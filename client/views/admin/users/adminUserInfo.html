@@ -1,0 +1,17 @@
+<template name="adminUserInfo">
+	{{> userInfo user=.}}
+	<nav>
+		<button class='button lightblue edit-user button-block'><span><i class='icon-edit'></i> {{_ "Edit"}}</span></button>
+		{{#if admin}}
+		<button class='button lightblue remove-admin button-block'><span><i class='icon-shield'></i> {{_ "Remove_Admin"}}</span></button>
+		{{else}}
+		<button class='button lightblue make-admin button-block'><span><i class='icon-shield'></i> {{_ "Make_Admin"}}</span></button>
+		{{/if}}
+		{{#if active}}
+		<button class='button deactivate button-block'><span><i class='icon-block'></i> {{_ "Deactivate"}}</span></button>
+		{{else}}
+		<button class='button activate button-block'><span><i class='icon-ok-circled'></i> {{_ "Activate"}}</span></button>
+		{{/if}}
+		<button class='button delete red button-block'><span><i class='icon-trash'></i> {{_ "Delete"}}</span></button>
+	</nav>
+</template>

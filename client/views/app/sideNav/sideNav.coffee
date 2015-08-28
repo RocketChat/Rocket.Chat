@@ -5,6 +5,8 @@ Template.sideNav.helpers
 		return SideNav.getFlex().template
 	flexData: ->
 		return SideNav.getFlex().data
+	footer: ->
+		return RocketChat.settings.get 'Layout_Sidenav_Footer'
 
 Template.sideNav.events
 	'click .close-flex': ->
@@ -18,10 +20,6 @@ Template.sideNav.events
 
 	'mouseleave .header': ->
 		SideNav.leaveArrow()
-
-	'click .open-settings': ->
-		SideNav.setFlex "settingsFlex"
-		SideNav.openFlex()
 
 Template.sideNav.onRendered ->
 	SideNav.init()

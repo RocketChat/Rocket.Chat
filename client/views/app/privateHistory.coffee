@@ -1,10 +1,13 @@
 Template.privateHistory.helpers
 	history: ->
-		items = ChatRoom.find { name: { $regex: Session.get('historyFilter'), $options: 'i' }, t: { $in: ['d', 'c', 'p'] } }, {'sort': { 'ts': -1 } }
+		items = ChatSubscription.find { name: { $regex: Session.get('historyFilter'), $options: 'i' }, t: { $in: ['d', 'c', 'p'] } }, {'sort': { 'ts': -1 } }
 		return {
 			items: items
 			length: items.count()
 		}
+
+	roomOf: (rid) ->
+		return ChatRoom.findOne rid
 
 	type: ->
 		switch this.t
@@ -17,6 +20,15 @@ Template.privateHistory.helpers
 
 	lastMessage: ->
 		return moment(this.lm).format('LLL') if this.lm
+
+	path: ->
+		switch this.t
+			when 'c'
+				return FlowRouter.path 'channel', { name: this.name }
+			when 'p'
+				return FlowRouter.path 'group', { name: this.name }
+			when 'd'
+				return FlowRouter.path 'direct', { username: this.name }
 
 Template.privateHistory.events
 	'keydown #history-filter': (event) ->

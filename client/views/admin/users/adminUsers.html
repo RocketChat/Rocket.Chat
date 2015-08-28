@@ -1,0 +1,73 @@
+<template name="adminUsers">
+	<section class="page-container page-list">
+		<head class="fixed-title">
+			{{> burger}}
+			<h2>
+				<span class="room-title">{{_ "Users"}}</span>
+			</h2>
+		</head>
+		<div class="content">
+			{{#unless isAdmin}}
+				<p>You are not authorized to view this page.</p>
+			{{else}}
+				<form class="search-form" role="form">
+					<div class="input-line search">
+						<input type="text" id="users-filter" placeholder="{{_ "Search"}}" dir="auto">
+						<i class="icon-search"></i>
+						{{#unless isReady}}<i class="icon-spin4"></i>{{/unless}}
+					</div>
+				</form>
+				<div class="results">
+					{{{_ "Showing_results" users.length}}}
+				</div>
+				<div class="list">
+					{{#each users}}
+					<div class="user-info" data-id="{{_id}}">
+						<li class='user-image status-{{status}}'>
+							{{> avatar username=username}}
+							<h3>{{name}}</h3>
+						</li>
+						<ul>
+							<li>@{{username}}</li>
+							{{#if email}}<li>{{email}}</li>{{/if}}
+						</ul>
+					</div>
+					{{/each}}
+					{{#if hasMore}}
+						<li class="load-more">
+							<button class="button secondary load-more {{isLoading}}">{{_ "Load_more"}}</button>
+						</li>
+					{{/if}}
+				</div>
+			{{/unless}}
+		</div>
+	</section>
+	<section class="flex-tab">
+		<div class="control">
+			<button class="more"><span class="arrow {{arrowPosition}}"></span></button>
+			<div class="info-tabs">
+				<a href="#adminUserInfo" class="active"><i class="icon-at"></i></a>
+				<a href="#adminUserChannels"><i class="icon-hash"></i></a>
+			</div>
+		</div>
+		{{#if flexOpened}}
+			<div class="content">
+				<div class="user-view">
+					<div id="adminUserInfo" class="user-info-content">
+						{{#if userData}}
+							{{> adminUserInfo userData}}
+						{{/if}}
+					</div>
+					<div id="adminUserChannels" class="user-info-content channels" style="display: none">
+						{{#each userChannels}}
+							{{> adminUserChannels}}
+						{{/each}}
+					</div>
+					<div id="user-edit-form" class="user-info-content user-edit-form" style="display: none">
+						{{> adminUserEdit userData}}
+					</div>
+				</div>
+			</div>
+		{{/if}}
+	</section>
+</template>
