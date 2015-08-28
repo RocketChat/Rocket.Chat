@@ -9,6 +9,7 @@ Template.messagePopupConfig.helpers
 			collection: onlineUsers
 			template: 'messagePopupUser'
 			getInput: self.getInput
+			textFilterDelay: 200
 			getFilter: (collection, filter) ->
 				exp = new RegExp(filter, 'i')
 				Meteor.subscribe 'onlineUsers', filter

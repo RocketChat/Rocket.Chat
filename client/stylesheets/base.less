@@ -128,6 +128,48 @@ blockquote {
 	user-select: none;
 }
 
+.first-unread {
+	&.first-unread-opaque {
+		.body {
+			&::before {
+				background-color: #E6E6E6;
+			}
+
+			&::after {
+				color: #B3B3B3;
+			}
+		}
+	}
+	.body {
+		&::before {
+			content: "";
+			background-color: #FF8080;
+			display: block;
+			height: 1px;
+			position: absolute;
+			right: 0px;
+			left: 50px;
+			top: -3px;
+			.transition(background-color, .5s, linear);
+		}
+
+		&::after {
+			content: "unread messages";
+			display: block;
+			position: absolute;
+			right: 0px;
+			top: -7px;
+			text-transform: uppercase;
+			font-size: 8px;
+			line-height: 10px;
+			background-color: white;
+			padding-left: 5px;
+			color: #FF0000;
+			.transition(color, .5s, linear);
+		}
+	}
+}
+
 .text-center {
 	text-align: center;
 }
@@ -2810,7 +2852,45 @@ a.github-fork {
 		h3 {
 			font-size: 24px;
 			margin-bottom: 8px;
-			line-height: 22px;
+			line-height: 27px;
+			text-overflow: ellipsis;
+			width: 100%;
+			overflow: hidden;
+			white-space: nowrap;
+
+			i:after {
+				content: " ";
+				display: inline-block;
+				width: 8px;
+				height: 8px;
+				border-radius: 4px;
+				vertical-align: middle;
+			}
+
+			i.status-offline {
+				&:after {
+					border-color: darken(@status-offline, 5%);
+					background-color: @status-offline;
+				}
+			}
+			i.status-online {
+				&:after {
+					border-color: darken(@status-online, 5%);
+					background-color: @status-online;
+				}
+			}
+			i.status-away {
+				&:after {
+					border-color: darken(@status-away, 5%);
+					background-color: @status-away;
+				}
+			}
+			i.status-busy {
+				&:after {
+					border-color: darken(@status-busy, 5%);
+					background-color: @status-busy;
+				}
+			}
 		}
 		p {
 			line-height: 18px;
