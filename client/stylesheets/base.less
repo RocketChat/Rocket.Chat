@@ -3823,6 +3823,21 @@ a.github-fork {
 			}
 		}
 	}
+
+	.sweet-alert {
+		h2 {
+			font-size: 20px;
+			line-height: 30px;
+			margin: 10px 0;
+		}
+		button {
+			margin-top: 6px;
+		}
+		p {
+			max-height: 40px;
+			overflow: hidden;
+		}
+	}
 }
 
 @media all and(max-width: 500px) {
@@ -3901,6 +3916,13 @@ a.github-fork {
 	}
 
 	.message {
+		-webkit-user-select: none;
+		-moz-user-select: none;
+		-ms-user-select: none;
+		user-select: none;
+	}
+
+	.mobile-message-menu {
 		-webkit-user-select: none;
 		-moz-user-select: none;
 		-ms-user-select: none;
