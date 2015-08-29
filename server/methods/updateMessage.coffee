@@ -6,6 +6,11 @@ Meteor.methods
 		if not RocketChat.settings.get 'Message_AllowEditing'
 			throw new Meteor.Error 'message-editing-not-allowed', "[methods] updateMessage -> Message editing not allowed"
 
+		user = Meteor.users.findOne Meteor.userId()	
+
+		unless user?.admin is true or message.u._id is Meteor.userId()
+			throw new Meteor.Error 'not-authorized', '[methods] updateMessage -> Not authorized'
+
 		console.log '[methods] updateMessage -> '.green, 'userId:', Meteor.userId(), 'arguments:', arguments
 
 		# If we keep history of edits, insert a new message to store history information
