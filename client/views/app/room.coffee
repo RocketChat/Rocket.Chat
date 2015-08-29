@@ -295,7 +295,7 @@ Template.room.events
 		doLongTouch = ->
 			mobileMessageMenu.show(message, t)
 
-		t.touchtime = Meteor.setTimeout doLongTouch, 2000
+		t.touchtime = Meteor.setTimeout doLongTouch, 500
 
 	"touchend .message": (e, t) ->
 		Meteor.clearTimeout t.touchtime
