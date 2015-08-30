@@ -78,6 +78,5 @@ raix:push@2.6.13-rc.1
 jalik:ufs
 jalik:ufs-gridfs
 monbro:mongodb-mapreduce-aggregation
-accounts-gitlab
-gitlab
+rocketchat:custom-oauth
 rocketchat:gitlab
