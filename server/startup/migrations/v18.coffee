@@ -31,3 +31,5 @@ Meteor.startup ->
 					delete record._id
 					Settings.upsert {_id: to}, record
 				Settings.remove _id: from
+
+			ServiceConfiguration.configurations.remove({})
