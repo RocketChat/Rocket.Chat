@@ -449,6 +449,7 @@ input:focus {
 textarea,
 select,
 input[type='text'],
+input[type='number'],
 input[type='email'],
 input[type='password'] {
 	-webkit-appearance: none;
@@ -1898,6 +1899,14 @@ a.github-fork {
 	}
 }
 
+.page-settings {
+	.rocket-form {
+		max-width: none;
+		width: 100%; 
+		padding: 0;
+	}
+}
+
 .page-static {
 	.content {
 		> div {
@@ -1910,6 +1919,19 @@ a.github-fork {
 			margin-bottom: 12px;
 			&:nth-last-child(1) {
 				margin-bottom: 0;
+			}
+		}
+		.section {
+			h1 {
+				font-size: 20px;
+				margin-top: 40px;
+				padding: 0 0 0 10px;
+				font-weight: 500;
+			}
+			.section-content {
+				border: 1px solid #ddd;
+				padding: 20px;
+				border-radius: 5px;
 			}
 		}
 		h1,
