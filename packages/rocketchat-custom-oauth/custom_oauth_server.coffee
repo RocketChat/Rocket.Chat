@@ -10,7 +10,7 @@ class CustomOAuth
 			return throw new Meteor.Error 'CustomOAuth: Options.serverURL is required and must be String'
 
 		if not Match.test @options.tokenURL, String
-			return throw new Meteor.Error 'CustomOAuth: Options.tokenURL is required and must be String'
+			@options.tokenURL = '/oauth/token'
 
 		@serverURL = options.serverURL
 		@tokenURL = options.tokenURL

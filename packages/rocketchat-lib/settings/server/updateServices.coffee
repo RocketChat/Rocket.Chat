@@ -3,45 +3,48 @@ updateServices = ->
 	Meteor.clearTimeout timer if timer?
 
 	timer = Meteor.setTimeout ->
-		console.log 'Updating login services'.blue
-		services =
-			'facebook': 'Facebook'
-			'google': 'Google'
-			'github': 'Github'
-			'gitlab': 'Gitlab'
-			'linkedin': 'Linkedin'
-			'meteor-developer': 'Meteor'
-			'twitter': 'Twitter'
+		services = Settings.find({_id: /^Accounts_OAuth_[a-z]+$/i}).fetch()
 
-		for serviceName, settingName of services
-			enable = Settings.findOne _id: "Accounts_#{settingName}", value: true
-			if enable?
+		for service in services
+			console.log "Updating login service #{service._id}".blue
+
+			serviceName = service._id.replace('Accounts_', '')
+
+			if serviceName is 'Meteor'
+				serviceName = 'meteor-developer'
+
+			if service.value is true
+				if /Accounts_Custom/.test service._id
+					serviceName = service._id.replace('Accounts_Custom', '')
+					new CustomOAuth serviceName.toLowerCase(),
+						serverURL: Settings.findOne({_id: "#{service._id}_URL"})?.value
+
 				data =
-					clientId: Settings.findOne({_id: "Accounts_#{settingName}_id"})?.value
-					secret: Settings.findOne({_id: "Accounts_#{settingName}_secret"})?.value
+					clientId: Settings.findOne({_id: "#{service._id}_id"})?.value
+					secret: Settings.findOne({_id: "#{service._id}_secret"})?.value
 
-				if serviceName is 'facebook'
+				if serviceName is 'Facebook'
 					data.appId = data.clientId
 					delete data.clientId
 
-				if serviceName is 'twitter'
+				if serviceName is 'Twitter'
 					data.consumerKey = data.clientId
 					delete data.clientId
 
-				ServiceConfiguration.configurations.upsert {service: serviceName}, $set: data
+				ServiceConfiguration.configurations.upsert {service: serviceName.toLowerCase()}, $set: data
 			else
-				ServiceConfiguration.configurations.remove {service: serviceName}
+				ServiceConfiguration.configurations.remove {service: serviceName.toLowerCase()}
 	, 2000
 
 Settings.find().observe
 	added: (record) ->
-		if /^Accounts_.+/.test record._id
+		if /^Accounts_OAuth_.+/.test record._id
 			updateServices()
 
 	changed: (record) ->
-		if /^Accounts_.+/.test record._id
+		if /^Accounts_OAuth_.+/.test record._id
 			updateServices()
 
 	removed: (record) ->
-		if /^Accounts_.+/.test record._id
+		if /^Accounts_OAuth_.+/.test record._id
 			updateServices()
