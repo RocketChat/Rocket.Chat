@@ -1,3 +1,9 @@
+Meteor.startup ->
+	ServiceConfiguration.configurations.find({custom: true}).observe
+		added: (record) ->
+			new CustomOAuth record.service,
+				serverURL: record.serverURL
+
 Template.loginServices.helpers
 	loginService: ->
 		services = []

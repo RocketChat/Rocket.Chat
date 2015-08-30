@@ -3,25 +3,27 @@ updateServices = ->
 	Meteor.clearTimeout timer if timer?
 
 	timer = Meteor.setTimeout ->
-		services = Settings.find({_id: /^Accounts_OAuth_[a-z]+$/i}).fetch()
+		services = Settings.find({_id: /^(Accounts_OAuth_|Accounts_OAuth_Custom_)[a-z]+$/i}).fetch()
 
 		for service in services
 			console.log "Updating login service #{service._id}".blue
 
-			serviceName = service._id.replace('Accounts_', '')
+			serviceName = service._id.replace('Accounts_OAuth_', '')
 
 			if serviceName is 'Meteor'
 				serviceName = 'meteor-developer'
 
 			if service.value is true
-				if /Accounts_Custom/.test service._id
-					serviceName = service._id.replace('Accounts_Custom', '')
-					new CustomOAuth serviceName.toLowerCase(),
-						serverURL: Settings.findOne({_id: "#{service._id}_URL"})?.value
-
 				data =
 					clientId: Settings.findOne({_id: "#{service._id}_id"})?.value
 					secret: Settings.findOne({_id: "#{service._id}_secret"})?.value
+
+				if /Accounts_OAuth_Custom_/.test service._id
+					serviceName = service._id.replace('Accounts_OAuth_Custom_', '')
+					data.custom = true
+					data.serverURL = Settings.findOne({_id: "#{service._id}_url"})?.value
+					new CustomOAuth serviceName.toLowerCase(),
+						serverURL: data.serverURL
 
 				if serviceName is 'Facebook'
 					data.appId = data.clientId
