@@ -12,25 +12,21 @@ tapi18nFiles = _.map(fs.readdirSync('packages/rocketchat-gitlab/i18n'), function
 Package.onUse(function(api) {
 	api.versionsFrom('1.0');
 
-	// api.use('rocketchat:custom-oauth');
-	// api.use('coffeescript');
+	api.use("tap:i18n@1.5.1");
+	api.use('coffeescript');
+	api.use('rocketchat:lib@0.0.1');
+	api.use('rocketchat:custom-oauth');
 
-	api.use(["tap:i18n@1.5.1"], ["client", "server"]);
-	api.add_files("package-tap.i18n", ["client", "server"]);
-	api.use(['templating'], 'client');
+	api.use('templating', 'client');
 
-	api.use([
-		'coffeescript',
-		'rocketchat:lib@0.0.1',
-		'rocketchat:custom-oauth'
-	]);
+
+	api.addFiles("package-tap.i18n");
+	api.addFiles("common.coffee");
+	api.addFiles(tapi18nFiles);
 
 	api.addFiles('gitlab-login-button.css', 'client');
 
 	api.addFiles('startup.coffee', 'server');
-	api.addFiles('common.coffee', [ 'client', 'server' ]);
-
-	api.add_files(tapi18nFiles, ["client", "server"]);
 });
 
 Package.onTest(function(api) {
