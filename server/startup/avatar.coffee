@@ -1,8 +1,8 @@
 Meteor.startup ->
 	storeType = 'GridFS'
 
-	if RocketChat.settings.get 'avatarStore_type'
-		storeType = RocketChat.settings.get 'avatarStore_type'
+	if RocketChat.settings.get 'Accounts_AvatarStoreType'
+		storeType = RocketChat.settings.get 'Accounts_AvatarStoreType'
 
 	RocketChatStore = RocketChatFile[storeType]
 
@@ -12,16 +12,16 @@ Meteor.startup ->
 	console.log "Using #{storeType} for Avatar storage".green
 
 	transformWrite = undefined
-	if RocketChat.settings.get 'avatarStore_size_height'
-		height = RocketChat.settings.get 'avatarStore_size_height'
-		width = RocketChat.settings.get 'avatarStore_size_width'
+	if RocketChat.settings.get('Accounts_AvatarResize') is true
+		height = RocketChat.settings.get 'Accounts_AvatarSize'
+		width = height
 		transformWrite = (file, readStream, writeStream) ->
 			RocketChatFile.gm(readStream, file.fileName).background('#ffffff').resize(width, height+'^>').gravity('Center').extent(width, height).stream('jpeg').pipe(writeStream)
 
 	path = "~/uploads"
 
-	if RocketChat.settings.get 'avatarStore_path'
-		path = RocketChat.settings.get 'avatarStore_path'
+	if RocketChat.settings.get('Accounts_AvatarStorePath')?.trim() isnt ''
+		path = RocketChat.settings.get 'Accounts_AvatarStorePath'
 
 	@RocketChatFileAvatarInstance = new RocketChatStore
 		name: 'avatars'
