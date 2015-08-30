@@ -31,10 +31,9 @@ engines:
 
 ratings:
   paths:
-  - "private/moment-locales/**/*"
-  - "packages/rocketchat-favico/favico.js"
-  - "**.rb"
-  - "**.go"
+  - "**.coffee"
+  - "**.js"
+  - "**.css"
 
 # You can globally exclude files from being analyzed by any engine using the
 # exclude_paths key.
