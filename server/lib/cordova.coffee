@@ -16,12 +16,12 @@ Meteor.startup ->
 			apn:
 				passphrase: RocketChat.settings.get 'Push_apn_passphrase'
 				keyData: RocketChat.settings.get 'Push_apn_key'
-				certData: RocketChat.settings.get 'Push_apn_cert'
+				certData: RocketChat.settings.get 'Push_apn_cert' if RocketChat.settings.get 'Push_apn_passphrase'
 			'apn-dev':
 				passphrase: RocketChat.settings.get 'Push_apn_dev_passphrase'
 				keyData: RocketChat.settings.get 'Push_apn_dev_key'
 				certData: RocketChat.settings.get 'Push_apn_dev_cert'
-				gateway: 'gateway.sandbox.push.apple.com'
+				gateway: 'gateway.sandbox.push.apple.com' if RocketChat.settings.get 'Push_apn_dev_passphrase'
 			gcm:
 				apiKey: RocketChat.settings.get 'Push_gcm_api_key'
 				projectNumber: RocketChat.settings.get 'Push_gcm_project_number'
