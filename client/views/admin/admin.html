@@ -1,5 +1,5 @@
 <template name="admin">
-	<section class="page-container page-home page-static">
+	<section class="page-container page-home page-static page-settings">
 		<head class="fixed-title">
 			{{> burger}}
 			<h2>
@@ -10,39 +10,61 @@
 			{{#unless isAdmin}}
 				<p>You are not authorized to view this page.</p>
 			{{else}}
-				<div class="info">
-					<h3>{{#with group}}{{description}}{{/with}}</h3>
-				</div>
+				{{#with group}}
+					<div class="info">
+						<h3>{{description}}</h3>
+					</div>
+				{{/with}}
 				<div class="rocket-form">
 					<fieldset>
-						{{#each settings}}
-							{{#if $eq type 'string'}}
-								<div class="input-line double-col">
-									<label>{{label}}</label>
-									<div>
-										{{#if multiline}}
-											<textarea name="{{_id}}" rows="4" style="height: auto">{{value}}</textarea>
-										{{else}}
-											<input type="text" name="{{_id}}" value="{{value}}" />
+						{{#each sections}}
+							<div class="section">
+								{{#if section}}
+									<h1>{{section}}</h1>
+								{{/if}}
+								<div class="section-content">
+									{{#each settings}}
+										{{#if $eq type 'string'}}
+											<div class="input-line double-col">
+												<label>{{label}}</label>
+												<div>
+													{{#if multiline}}
+														<textarea name="{{_id}}" rows="4" style="height: auto">{{value}}</textarea>
+													{{else}}
+														<input type="text" name="{{_id}}" value="{{value}}" />
+													{{/if}}
+													{{#if description}}
+														<small>{{description}}</small>
+													{{/if}}
+												</div>
+											</div>
 										{{/if}}
-										{{#if description}}
-											<small>{{description}}</small>
+										{{#if $eq type 'int'}}
+											<div class="input-line double-col">
+												<label>{{label}}</label>
+												<div>
+													<input type="number" name="{{_id}}" value="{{value}}" />
+													{{#if description}}
+														<small>{{description}}</small>
+													{{/if}}
+												</div>
+											</div>
 										{{/if}}
-									</div>
+										{{#if $eq type 'boolean'}}
+											<div class="input-line double-col">
+												<label>{{label}}</label>
+												<div>
+													<label><input type="radio" name="{{_id}}" value="1" checked="{{$eq value true}}" /> {{_ "True"}}</label>
+													<label><input type="radio" name="{{_id}}" value="0" checked="{{$eq value false}}" /> {{_ "False"}}</label>
+												</div>
+												{{#if description}}
+													<small>{{description}}</small>
+												{{/if}}
+											</div>
+										{{/if}}
+									{{/each}}
 								</div>
-							{{/if}}
-							{{#if $eq type 'boolean'}}
-								<div class="input-line double-col">
-									<label>{{label}}</label>
-									<div>
-										<label><input type="radio" name="{{_id}}" value="1" checked="{{$eq value true}}" /> {{_ "True"}}</label>
-										<label><input type="radio" name="{{_id}}" value="0" checked="{{$eq value false}}" /> {{_ "False"}}</label>
-									</div>
-									{{#if description}}
-										<small>{{description}}</small>
-									{{/if}}
-								</div>
-							{{/if}}
+							</div>
 						{{/each}}
 					</fieldset>
 					<div class="submit">
