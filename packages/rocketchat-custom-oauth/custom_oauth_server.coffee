@@ -27,11 +27,11 @@ class CustomOAuth
 		if not Match.test options.serverURL, String
 			return throw new Meteor.Error 'CustomOAuth: Options.serverURL is required and must be String'
 
-		if not Match.test options.tokenURL, String
-			options.tokenURL = '/oauth/token'
+		if not Match.test options.tokenPath, String
+			options.tokenPath = '/oauth/token'
 
 		@serverURL = options.serverURL
-		@tokenURL = options.tokenURL
+		@tokenPath = options.tokenPath
 
 		if Match.test options.addAutopublishFields, Object
 			Accounts.addAutopublishFields options.addAutopublishFields
@@ -44,8 +44,8 @@ class CustomOAuth
 
 		response = undefined
 		try
-			console.log @serverURL + @tokenURL
-			response = HTTP.post @serverURL + @tokenURL,
+			console.log @serverURL + @tokenPath
+			response = HTTP.post @serverURL + @tokenPath,
 				headers:
 					Accept: 'application/json'
 					'User-Agent': @userAgent
