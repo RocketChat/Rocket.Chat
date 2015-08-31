@@ -1,5 +1,6 @@
 Gitlab = new CustomOAuth 'gitlab',
 	serverURL: 'https://gitlab.com'
+	identityPath: '/api/v3/user'
 	addAutopublishFields:
 		forLoggedInUser: ['services.gitlab']
 		forOtherUsers: ['services.gitlab.username']
