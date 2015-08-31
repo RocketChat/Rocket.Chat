@@ -86,6 +86,7 @@ It is a great solution for communities and companies wanting to privately host t
 #### In Progress
 
 - Full text search
+- Support for Okta SSO through SAML v2 [Issue #322](https://github.com/RocketChat/Rocket.Chat/issues/322)
 - Native iOS Application [Rocket.Chat.iOS - HELP WANTED](https://github.com/RocketChat/Rocket.Chat.iOS)
 - Native Android Application [Issue #271 - HELP WANTED](https://github.com/RocketChat/Rocket.Chat/issues/271)
 - External popout window for chat with website visitor, like Zopim, Olark, LiveChat, SnapEngage [Issue #519](https://github.com/RocketChat/Rocket.Chat/issues/519)
