@@ -73,19 +73,29 @@ class @ChatMessages
 			msg = input.value
 			input.value = ''
 			rid ?= visitor.getRoom(true)
-			msgObject = { _id: Random.id(), rid: rid, token: visitor.getToken(), msg: msg}
-			# this.stopTyping(rid)
-			#Check if message starts with /command
-			if msg[0] is '/'
-				match = msg.match(/^\/([^\s]+)(?:\s+(.*))?$/m)
-				if(match?)
-					command = match[1]
-					param = match[2]
-					Meteor.call 'slashCommand', {cmd: command, params: param, msg: msgObject }
+
+			sendMessage = ->
+				msgObject = { _id: Random.id(), rid: rid, msg: msg, token: visitor.getToken() }
+				MsgTyping.stop(rid)
+				#Check if message starts with /command
+				if msg[0] is '/'
+					match = msg.match(/^\/([^\s]+)(?:\s+(.*))?$/m)
+					if(match?)
+						command = match[1]
+						param = match[2]
+						Meteor.call 'slashCommand', {cmd: command, params: param, msg: msgObject }
+				else
+					#Run to allow local encryption
+					Meteor.call 'onClientBeforeSendMessage', {}
+					Meteor.call 'sendMessageExternal', msgObject
+
+			if not Meteor.userId()
+				Meteor.loginVisitor null, (error) ->
+					if not error
+						console.log 'usuario logado, mandanndo mensagem'
+						sendMessage()
 			else
-				#Run to allow local encryption
-				#Meteor.call 'onClientBeforeSendMessage', {}
-				Meteor.call 'sendMessageExternal', msgObject
+				sendMessage()
 
 	deleteMsg: (message) ->
 		Meteor.call 'deleteMessage', message, (error, result) ->
@@ -97,16 +107,13 @@ class @ChatMessages
 			msg = input.value
 			Meteor.call 'updateMessage', { id: id, msg: msg }
 			this.clearEditing()
-			# this.stopTyping(rid)
+			MsgTyping.stop(rid)
 
 	startTyping: (rid, input) ->
 		if _.trim(input.value) isnt ''
 			MsgTyping.start(rid)
 		else
 			MsgTyping.stop(rid)
-
-	stopTyping: (rid) ->
-		MsgTyping.stop(rid)
 
 	bindEvents: ->
 		if this.wrapper?.length
@@ -148,8 +155,8 @@ class @ChatMessages
 		keyCodes.push i for i in [35..40] # Home, End, Arrow Keys
 		keyCodes.push i for i in [112..123] # F1 - F12
 
-		# unless k in keyCodes
-		# 	this.startTyping(rid, input)
+		unless k in keyCodes
+			this.startTyping(rid, input)
 
 	keydown: (rid, event) ->
 		input = event.currentTarget

@@ -3,15 +3,19 @@
 		<div class="title">
 			<h1>sala</h1>
 		</div>
-		<div class="wrapper">
-			<ul>
-				{{#each messages}}
-					{{#nrr nrrargs 'message' .}}{{/nrr}}
-				{{/each}}
-			</ul>
+		<div class="messages">
+			<div class="wrapper">
+				<ul>
+					{{#each messages}}
+						{{#nrr nrrargs 'message' .}}{{/nrr}}
+					{{/each}}
+				</ul>
+			</div>
 		</div>
 		<div class="footer">
-			<textarea class="input-message"></textarea>
+			<div class="input-wrapper">
+				<textarea class="input-message"></textarea>
+			</div>
 		</div>
 	</div>
 </template>
