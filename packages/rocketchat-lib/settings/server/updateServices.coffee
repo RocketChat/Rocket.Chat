@@ -22,8 +22,10 @@ updateServices = ->
 					serviceName = service._id.replace('Accounts_OAuth_Custom_', '')
 					data.custom = true
 					data.serverURL = Settings.findOne({_id: "#{service._id}_url"})?.value
+					data.tokenPath = Settings.findOne({_id: "#{service._id}_token_path"})?.value
 					new CustomOAuth serviceName.toLowerCase(),
 						serverURL: data.serverURL
+						tokenPath: data.tokenPath
 
 				if serviceName is 'Facebook'
 					data.appId = data.clientId
