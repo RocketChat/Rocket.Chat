@@ -11,7 +11,7 @@ Meteor.startup ->
 			schedule: (parser) -># parser is a later.parse object
 				return parser.text 'every 1 hour'
 			job: ->
-				statistics = RocketChat.saveStatistics()
+				statistics = RocketChat.statistics.save()
 				unless RocketChat.settings.get 'Statistics_opt_out'
 					console.log 'Sending statistics data to Rocket.Chat'
 					HTTP.post 'https://rocket.chat/stats', 
