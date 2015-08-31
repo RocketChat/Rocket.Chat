@@ -8,7 +8,9 @@ class Invite
 		if(command == "invite")
 			if _.trim params
 				user = Meteor.users.findOne({ username: String(params) })
-				Meteor.runAsUser user._id, ->
-					Meteor.call 'joinRoom', item.rid
+
+				if user?
+					Meteor.runAsUser user._id, ->
+						Meteor.call 'joinRoom', item.rid
 
 RocketChat.slashCommands.add 'invite', Invite
