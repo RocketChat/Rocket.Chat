@@ -1,2 +1,2 @@
 RocketChat.checkUsernameAvailability = (username) ->
-	return not Meteor.users.findOne({ username: { $regex : new RegExp("^" + _.trim(username) + "$", "i") } })
+	return not Meteor.users.findOne({ username: { $regex : new RegExp("^" + s.trim(username) + "$", "i") } })

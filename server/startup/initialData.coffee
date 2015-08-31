@@ -1,5 +1,11 @@
 Meteor.startup ->
 	Meteor.defer ->
+		# Insert server unique id if it doesn't exist
+		if not Settings.findOne { _id: 'uniqueID' }
+			Settings.insert
+				_id: 'uniqueID'
+				value: Random.id()
+
 		if not ChatRoom.findOne('name': 'general')?
 			ChatRoom.insert
 				_id: 'GENERAL'
