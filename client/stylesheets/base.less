@@ -449,6 +449,7 @@ input:focus {
 textarea,
 select,
 input[type='text'],
+input[type='number'],
 input[type='email'],
 input[type='password'] {
 	-webkit-appearance: none;
@@ -1898,6 +1899,14 @@ a.github-fork {
 	}
 }
 
+.page-settings {
+	.rocket-form {
+		max-width: none;
+		width: 100%; 
+		padding: 0;
+	}
+}
+
 .page-static {
 	.content {
 		> div {
@@ -1910,6 +1919,19 @@ a.github-fork {
 			margin-bottom: 12px;
 			&:nth-last-child(1) {
 				margin-bottom: 0;
+			}
+		}
+		.section {
+			h1 {
+				font-size: 20px;
+				margin-top: 40px;
+				padding: 0 0 0 10px;
+				font-weight: 500;
+			}
+			.section-content {
+				border: 1px solid #ddd;
+				padding: 20px;
+				border-radius: 5px;
 			}
 		}
 		h1,
@@ -2443,6 +2465,10 @@ a.github-fork {
 		cursor: pointer;
 		bottom: 8px;
 		left: 50%;
+		-webkit-user-select: none;
+		-moz-user-select: none;
+		-ms-user-select: none;
+		user-select: none;
 		.transition(transform 0.3s ease-out);
 		.transform(translateY(0));
 		&.not {
@@ -3819,6 +3845,22 @@ a.github-fork {
 			}
 		}
 	}
+
+	.sweet-alert {
+		h2 {
+			font-size: 20px;
+			line-height: 30px;
+			margin: 10px 0;
+		}
+		button {
+			margin-top: 6px;
+			padding: 10px 22px;
+		}
+		p {
+			max-height: 40px;
+			overflow: hidden;
+		}
+	}
 }
 
 @media all and(max-width: 500px) {
@@ -3897,6 +3939,13 @@ a.github-fork {
 	}
 
 	.message {
+		-webkit-user-select: none;
+		-moz-user-select: none;
+		-ms-user-select: none;
+		user-select: none;
+	}
+
+	.mobile-message-menu {
 		-webkit-user-select: none;
 		-moz-user-select: none;
 		-ms-user-select: none;
