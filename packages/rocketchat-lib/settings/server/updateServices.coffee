@@ -24,6 +24,7 @@ updateServices = ->
 					data.serverURL = Settings.findOne({_id: "#{service._id}_url"})?.value
 					data.tokenPath = Settings.findOne({_id: "#{service._id}_token_path"})?.value
 					data.identityPath = Settings.findOne({_id: "#{service._id}_identity_path"})?.value
+					data.authorizePath = Settings.findOne({_id: "#{service._id}_authorize_path"})?.value
 					data.buttonLabelText = Settings.findOne({_id: "#{service._id}_button_label_text"})?.value
 					data.buttonLabelColor = Settings.findOne({_id: "#{service._id}_button_label_color"})?.value
 					data.buttonColor = Settings.findOne({_id: "#{service._id}_button_color"})?.value
@@ -31,6 +32,7 @@ updateServices = ->
 						serverURL: data.serverURL
 						tokenPath: data.tokenPath
 						identityPath: data.identityPath
+						authorizePath: data.authorizePath
 
 				if serviceName is 'Facebook'
 					data.appId = data.clientId

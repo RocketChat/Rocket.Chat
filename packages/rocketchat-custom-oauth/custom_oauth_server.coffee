@@ -34,6 +34,13 @@ class CustomOAuth
 			options.identityPath = '/me'
 
 		@serverURL = options.serverURL
+
+		if not /^https?:\/\/.+/.test options.tokenPath
+			options.tokenPath = @serverURL + options.tokenPath
+
+		if not /^https?:\/\/.+/.test options.identityPath
+			options.identityPath = @serverURL + options.identityPath
+
 		@tokenPath = options.tokenPath
 		@identityPath = options.identityPath
 
@@ -47,7 +54,7 @@ class CustomOAuth
 
 		response = undefined
 		try
-			response = HTTP.post @serverURL + @tokenPath,
+			response = HTTP.post @tokenPath,
 				headers:
 					Accept: 'application/json'
 					'User-Agent': @userAgent
@@ -60,17 +67,17 @@ class CustomOAuth
 					state: query.state
 
 		catch err
-			error = new Error("Failed to complete OAuth handshake with #{@name} at #{@serverURL + @tokenPath}. " + err.message)
+			error = new Error("Failed to complete OAuth handshake with #{@name} at #{@tokenPath}. " + err.message)
 			throw _.extend error, {response: err.response}
 
 		if response.data.error #if the http response was a json object with an error attribute
-			throw new Error("Failed to complete OAuth handshake with #{@name} at #{@serverURL + @tokenPath}. " + response.data.error)
+			throw new Error("Failed to complete OAuth handshake with #{@name} at #{@tokenPath}. " + response.data.error)
 		else
 			return response.data.access_token
 
 	getIdentity: (accessToken) ->
 		try
-			response = HTTP.get @serverURL + @identityPath,
+			response = HTTP.get @identityPath,
 				headers:
 					'User-Agent': @userAgent # http://doc.gitlab.com/ce/api/users.html#Current-user
 				params:
@@ -79,7 +86,7 @@ class CustomOAuth
 			return response.data
 
 		catch err
-			error = new Error("Failed to fetch identity from #{@name} at #{@serverURL + @identityPath}. " + err.message)
+			error = new Error("Failed to fetch identity from #{@name} at #{@identityPath}. " + err.message)
 			throw _.extend error, {response: err.response}
 
 	registerService: ->
