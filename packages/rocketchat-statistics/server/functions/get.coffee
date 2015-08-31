@@ -1,4 +1,4 @@
-RocketChat.getStatistics = ->
+RocketChat.statistics.get = ->
 	statistics = {}
 	
 	# Version

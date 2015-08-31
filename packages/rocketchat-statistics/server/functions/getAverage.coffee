@@ -1,4 +1,4 @@
-RocketChat.getAvgStatistics = ->
+RocketChat.statistics.getAverage = ->
 	statistics = {}
 	
 	m = ->
