@@ -3,45 +3,57 @@ updateServices = ->
 	Meteor.clearTimeout timer if timer?
 
 	timer = Meteor.setTimeout ->
-		console.log 'Updating login services'.blue
-		services =
-			'facebook': 'Facebook'
-			'google': 'Google'
-			'github': 'Github'
-			'gitlab': 'Gitlab'
-			'linkedin': 'Linkedin'
-			'meteor-developer': 'Meteor'
-			'twitter': 'Twitter'
+		services = Settings.find({_id: /^(Accounts_OAuth_|Accounts_OAuth_Custom_)[a-z]+$/i}).fetch()
 
-		for serviceName, settingName of services
-			enable = Settings.findOne _id: "Accounts_#{settingName}", value: true
-			if enable?
+		for service in services
+			console.log "Updating login service #{service._id}".blue
+
+			serviceName = service._id.replace('Accounts_OAuth_', '')
+
+			if serviceName is 'Meteor'
+				serviceName = 'meteor-developer'
+
+			if service.value is true
 				data =
-					clientId: Settings.findOne({_id: "Accounts_#{settingName}_id"})?.value
-					secret: Settings.findOne({_id: "Accounts_#{settingName}_secret"})?.value
+					clientId: Settings.findOne({_id: "#{service._id}_id"})?.value
+					secret: Settings.findOne({_id: "#{service._id}_secret"})?.value
 
-				if serviceName is 'facebook'
+				if /Accounts_OAuth_Custom_/.test service._id
+					serviceName = service._id.replace('Accounts_OAuth_Custom_', '')
+					data.custom = true
+					data.serverURL = Settings.findOne({_id: "#{service._id}_url"})?.value
+					data.tokenPath = Settings.findOne({_id: "#{service._id}_token_path"})?.value
+					data.identityPath = Settings.findOne({_id: "#{service._id}_identity_path"})?.value
+					data.buttonLabelText = Settings.findOne({_id: "#{service._id}_button_label_text"})?.value
+					data.buttonLabelColor = Settings.findOne({_id: "#{service._id}_button_label_color"})?.value
+					data.buttonColor = Settings.findOne({_id: "#{service._id}_button_color"})?.value
+					new CustomOAuth serviceName.toLowerCase(),
+						serverURL: data.serverURL
+						tokenPath: data.tokenPath
+						identityPath: data.identityPath
+
+				if serviceName is 'Facebook'
 					data.appId = data.clientId
 					delete data.clientId
 
-				if serviceName is 'twitter'
+				if serviceName is 'Twitter'
 					data.consumerKey = data.clientId
 					delete data.clientId
 
-				ServiceConfiguration.configurations.upsert {service: serviceName}, $set: data
+				ServiceConfiguration.configurations.upsert {service: serviceName.toLowerCase()}, $set: data
 			else
-				ServiceConfiguration.configurations.remove {service: serviceName}
+				ServiceConfiguration.configurations.remove {service: serviceName.toLowerCase()}
 	, 2000
 
 Settings.find().observe
 	added: (record) ->
-		if /^Accounts_.+/.test record._id
+		if /^Accounts_OAuth_.+/.test record._id
 			updateServices()
 
 	changed: (record) ->
-		if /^Accounts_.+/.test record._id
+		if /^Accounts_OAuth_.+/.test record._id
 			updateServices()
 
 	removed: (record) ->
-		if /^Accounts_.+/.test record._id
+		if /^Accounts_OAuth_.+/.test record._id
 			updateServices()

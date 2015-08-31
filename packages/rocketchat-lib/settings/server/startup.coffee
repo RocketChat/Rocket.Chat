@@ -9,27 +9,27 @@ Meteor.startup ->
 	RocketChat.settings.add 'Accounts_AvatarResize', false, { type: 'boolean', group: 'Accounts', section: 'Avatar' }
 	RocketChat.settings.add 'Accounts_AvatarSize', 200, { type: 'int', group: 'Accounts', section: 'Avatar' }
 
-	RocketChat.settings.add 'Accounts_Facebook', false, { type: 'boolean', group: 'Accounts', section: 'Facebook' }
-	RocketChat.settings.add 'Accounts_Facebook_id', '', { type: 'string', group: 'Accounts', section: 'Facebook' }
-	RocketChat.settings.add 'Accounts_Facebook_secret', '', { type: 'string', group: 'Accounts', section: 'Facebook' }
-	RocketChat.settings.add 'Accounts_Google', false, { type: 'boolean', group: 'Accounts', section: 'Google' }
-	RocketChat.settings.add 'Accounts_Google_id', '', { type: 'string', group: 'Accounts', section: 'Google' }
-	RocketChat.settings.add 'Accounts_Google_secret', '', { type: 'string', group: 'Accounts', section: 'Google' }
-	RocketChat.settings.add 'Accounts_Github', false, { type: 'boolean', group: 'Accounts', section: 'Github' }
-	RocketChat.settings.add 'Accounts_Github_id', '', { type: 'string', group: 'Accounts', section: 'Github' }
-	RocketChat.settings.add 'Accounts_Github_secret', '', { type: 'string', group: 'Accounts', section: 'Github' }
-	RocketChat.settings.add 'Accounts_Gitlab', false, { type: 'boolean', group: 'Accounts', section: 'Gitlab' }
-	RocketChat.settings.add 'Accounts_Gitlab_id', '', { type: 'string', group: 'Accounts', section: 'Gitlab' }
-	RocketChat.settings.add 'Accounts_Gitlab_secret', '', { type: 'string', group: 'Accounts', section: 'Gitlab' }
-	RocketChat.settings.add 'Accounts_Linkedin', false, { type: 'boolean', group: 'Accounts', section: 'Linkedin' }
-	RocketChat.settings.add 'Accounts_Linkedin_id', '', { type: 'string', group: 'Accounts', section: 'Linkedin' }
-	RocketChat.settings.add 'Accounts_Linkedin_secret', '', { type: 'string', group: 'Accounts', section: 'Linkedin' }
-	RocketChat.settings.add 'Accounts_Meteor', false, { type: 'boolean', group: 'Accounts', section: 'Meteor' }
-	RocketChat.settings.add 'Accounts_Meteor_id', '', { type: 'string', group: 'Accounts', section: 'Meteor' }
-	RocketChat.settings.add 'Accounts_Meteor_secret', '', { type: 'string', group: 'Accounts', section: 'Meteor' }
-	RocketChat.settings.add 'Accounts_Twitter', false, { type: 'boolean', group: 'Accounts', section: 'Twitter' }
-	RocketChat.settings.add 'Accounts_Twitter_id', '', { type: 'string', group: 'Accounts', section: 'Twitter' }
-	RocketChat.settings.add 'Accounts_Twitter_secret', '', { type: 'string', group: 'Accounts', section: 'Twitter' }
+	RocketChat.settings.add 'Accounts_OAuth_Facebook', false, { type: 'boolean', group: 'Accounts', section: 'Facebook' }
+	RocketChat.settings.add 'Accounts_OAuth_Facebook_id', '', { type: 'string', group: 'Accounts', section: 'Facebook' }
+	RocketChat.settings.add 'Accounts_OAuth_Facebook_secret', '', { type: 'string', group: 'Accounts', section: 'Facebook' }
+	RocketChat.settings.add 'Accounts_OAuth_Google', false, { type: 'boolean', group: 'Accounts', section: 'Google' }
+	RocketChat.settings.add 'Accounts_OAuth_Google_id', '', { type: 'string', group: 'Accounts', section: 'Google' }
+	RocketChat.settings.add 'Accounts_OAuth_Google_secret', '', { type: 'string', group: 'Accounts', section: 'Google' }
+	RocketChat.settings.add 'Accounts_OAuth_Github', false, { type: 'boolean', group: 'Accounts', section: 'Github' }
+	RocketChat.settings.add 'Accounts_OAuth_Github_id', '', { type: 'string', group: 'Accounts', section: 'Github' }
+	RocketChat.settings.add 'Accounts_OAuth_Github_secret', '', { type: 'string', group: 'Accounts', section: 'Github' }
+	RocketChat.settings.add 'Accounts_OAuth_Gitlab', false, { type: 'boolean', group: 'Accounts', section: 'Gitlab' }
+	RocketChat.settings.add 'Accounts_OAuth_Gitlab_id', '', { type: 'string', group: 'Accounts', section: 'Gitlab' }
+	RocketChat.settings.add 'Accounts_OAuth_Gitlab_secret', '', { type: 'string', group: 'Accounts', section: 'Gitlab' }
+	RocketChat.settings.add 'Accounts_OAuth_Linkedin', false, { type: 'boolean', group: 'Accounts', section: 'Linkedin' }
+	RocketChat.settings.add 'Accounts_OAuth_Linkedin_id', '', { type: 'string', group: 'Accounts', section: 'Linkedin' }
+	RocketChat.settings.add 'Accounts_OAuth_Linkedin_secret', '', { type: 'string', group: 'Accounts', section: 'Linkedin' }
+	RocketChat.settings.add 'Accounts_OAuth_Meteor', false, { type: 'boolean', group: 'Accounts', section: 'Meteor' }
+	RocketChat.settings.add 'Accounts_OAuth_Meteor_id', '', { type: 'string', group: 'Accounts', section: 'Meteor' }
+	RocketChat.settings.add 'Accounts_OAuth_Meteor_secret', '', { type: 'string', group: 'Accounts', section: 'Meteor' }
+	RocketChat.settings.add 'Accounts_OAuth_Twitter', false, { type: 'boolean', group: 'Accounts', section: 'Twitter' }
+	RocketChat.settings.add 'Accounts_OAuth_Twitter_id', '', { type: 'string', group: 'Accounts', section: 'Twitter' }
+	RocketChat.settings.add 'Accounts_OAuth_Twitter_secret', '', { type: 'string', group: 'Accounts', section: 'Twitter' }
 
 	RocketChat.settings.addGroup 'General'
 	RocketChat.settings.add 'Site_Name', 'Rocket.Chat', { type: 'string', group: 'General', public: true }
