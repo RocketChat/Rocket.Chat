@@ -34,7 +34,7 @@ Template.loginServices.helpers
 
 Template.loginServices.events
 	'click .external-login': (e, t)->
-		return unless this.service?
+		return unless this.service?.service?
 
 		loadingIcon = $(e.currentTarget).find('.loading-icon')
 		serviceIcon = $(e.currentTarget).find('.service-icon')
@@ -43,7 +43,7 @@ Template.loginServices.events
 		serviceIcon.addClass 'hidden'
 
 		# login with native facebook app
-		if Meteor.isCordova and this.service is 'facebook'
+		if Meteor.isCordova and this.service.service is 'facebook'
 			Meteor.loginWithFacebookCordova {}, (error) ->
 				loadingIcon.addClass 'hidden'
 				serviceIcon.removeClass 'hidden'
@@ -55,7 +55,7 @@ Template.loginServices.events
 
 				FlowRouter.go 'index'
 		else
-			loginWithService = "loginWith" + (if this.service is 'meteor-developer' then 'MeteorDeveloperAccount' else _.capitalize(this.service))
+			loginWithService = "loginWith" + (if this.service.service is 'meteor-developer' then 'MeteorDeveloperAccount' else _.capitalize(this.service.service))
 			serviceConfig = {}
 			Meteor[loginWithService] serviceConfig, (error) ->
 				loadingIcon.addClass 'hidden'
