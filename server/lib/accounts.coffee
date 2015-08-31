@@ -26,35 +26,23 @@ Accounts.onCreateUser (options, user) ->
 	unless Meteor.users.findOne()
 		user.admin = true
 
-	serviceName = null
+	if not user?.name? or user.name is ''
+		if options.profile?.name?
+			user.name = options.profile?.name
 
-	if user.services?.facebook?
-		serviceName = 'facebook'
-	else if user.services?.google?
-		serviceName = 'google'
-	else if user.services?.github?
-		serviceName = 'github'
-	else if user.services?.gitlab?
-		serviceName = 'gitlab'
-	else if user.services?['meteor-developer']?
-		serviceName = 'meteor-developer'
-	else if user.services?.twitter?
-		serviceName = 'twitter'
+	if user.services?
+		for serviceName, service of user.services
+			if not user?.name? or user.name is ''
+				if service.name?
+					user.name = service.name
+				else if service.username?
+					user.name = service.username
 
-	if serviceName in ['facebook', 'google', 'meteor-developer', 'github', 'gitlab', 'twitter']
-		if not user?.name? or user.name is ''
-			if options.profile?.name?
-				user.name = options.profile?.name
-			else if user.services[serviceName].name?
-				user.name = user.services[serviceName].name
-			else
-				user.name = user.services[serviceName].username
-
-		if user.services[serviceName].email
-			user.emails = [
-				address: user.services[serviceName].email
-				verified: true
-			]
+			if not user.emails? and service.email?
+				user.emails = [
+					address: service.email
+					verified: true
+				]
 
 	return user
 
