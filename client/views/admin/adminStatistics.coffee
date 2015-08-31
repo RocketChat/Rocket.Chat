@@ -55,7 +55,7 @@ Template.adminStatistics.onCreated ->
 	@statistics = new ReactiveVar {}
 	@ready = new ReactiveVar false
 
-	Meteor.call 'generateStatistics', (error, statistics) ->
+	Meteor.call 'getStatistics', (error, statistics) ->
 		instance.ready.set true
 		if error
 			toastr.error error.reason
