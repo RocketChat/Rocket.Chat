@@ -278,26 +278,33 @@ Template.room.helpers
 
 
 Template.room.events
-	"touchstart .message, touchstart .message *": (e, t) ->
+	"keyup #room-search": _.debounce (e, t) ->
+		t.searchResult.set undefined
+		value = e.target.value.trim()
+		if value is ''
+			return
+
+		Tracker.nonreactive ->
+			Meteor.call 'messageSearch', value, Session.get('openedRoom'), (error, result) ->
+				if result? and (result.messages?.length > 0 or result.users?.length > 0 or result.channels?.length > 0)
+					t.searchResult.set result
+	, 1000
+
+	"touchstart .message": (e, t) ->
 		message = this._arguments[1]
-		# e.stopPropagation()
-		e.preventDefault()
 		doLongTouch = ->
 			mobileMessageMenu.show(message, t)
 
-		t.touchtime ?= Meteor.setTimeout doLongTouch, 500
+		t.touchtime = Meteor.setTimeout doLongTouch, 500
 
-	"touchend .message, touchend .message *": (e, t) ->
+	"touchend .message": (e, t) ->
 		Meteor.clearTimeout t.touchtime
-		t.touchtime = undefined
 
-	"touchmove .message, touchmove .message *": (e, t) ->
+	"touchmove .message": (e, t) ->
 		Meteor.clearTimeout t.touchtime
-		t.touchtime = undefined
 
-	"touchcancel .message, touchcancel .message *": (e, t) ->
+	"touchcancel .message": (e, t) ->
 		Meteor.clearTimeout t.touchtime
-		t.touchtime = undefined
 
 	"click .upload-progress-item > a": ->
 		Session.set "uploading-cancel-#{this.id}", true
