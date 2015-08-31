@@ -3,6 +3,7 @@ Meteor.startup ->
 		added: (record) ->
 			new CustomOAuth record.service,
 				serverURL: record.serverURL
+				authorizePath: record.authorizePath
 
 Template.loginServices.helpers
 	loginService: ->
