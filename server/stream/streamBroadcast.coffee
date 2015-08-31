@@ -50,6 +50,9 @@
 
 Meteor.startup ->
 	config =
+		'notifyAllStream': notifyAllStream
+		'notifyRoomStream': notifyRoomStream
+		'notifyUserStream': notifyUserStream
 		'typing': typingStream
 		'deleteMsgStream': deleteMsgStream
 
