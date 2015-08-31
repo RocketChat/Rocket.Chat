@@ -30,8 +30,12 @@ class CustomOAuth
 		if not Match.test options.tokenPath, String
 			options.tokenPath = '/oauth/token'
 
+		if not Match.test options.identityPath, String
+			options.identityPath = '/me'
+
 		@serverURL = options.serverURL
 		@tokenPath = options.tokenPath
+		@identityPath = options.identityPath
 
 		if Match.test options.addAutopublishFields, Object
 			Accounts.addAutopublishFields options.addAutopublishFields
@@ -40,11 +44,9 @@ class CustomOAuth
 		config = ServiceConfiguration.configurations.findOne service: @name
 		if not config?
 			throw new ServiceConfiguration.ConfigError()
-		console.log config
 
 		response = undefined
 		try
-			console.log @serverURL + @tokenPath
 			response = HTTP.post @serverURL + @tokenPath,
 				headers:
 					Accept: 'application/json'
@@ -56,30 +58,19 @@ class CustomOAuth
 					redirect_uri: OAuth._redirectUri(@name, config)
 					grant_type: 'authorization_code'
 					state: query.state
-			console.log
-				headers:
-					Accept: 'application/json'
-					'User-Agent': @userAgent
-				params:
-					code: query.code
-					client_id: config.clientId
-					client_secret: OAuth.openSecret(config.secret)
-					redirect_uri: OAuth._redirectUri(@name, config)
-					grant_type: 'authorization_code'
-					state: query.state
 
 		catch err
-			error = new Error("Failed to complete OAuth handshake with #{@name}. " + err.message)
+			error = new Error("Failed to complete OAuth handshake with #{@name} at #{@serverURL + @tokenPath}. " + err.message)
 			throw _.extend error, {response: err.response}
 
 		if response.data.error #if the http response was a json object with an error attribute
-			throw new Error("Failed to complete OAuth handshake with #{@name}. " + response.data.error)
+			throw new Error("Failed to complete OAuth handshake with #{@name} at #{@serverURL + @tokenPath}. " + response.data.error)
 		else
 			return response.data.access_token
 
 	getIdentity: (accessToken) ->
 		try
-			response = HTTP.get @serverURL + "/api/v3/user",
+			response = HTTP.get @serverURL + @identityPath,
 				headers:
 					'User-Agent': @userAgent # http://doc.gitlab.com/ce/api/users.html#Current-user
 				params:
@@ -88,7 +79,7 @@ class CustomOAuth
 			return response.data
 
 		catch err
-			error = new Error("Failed to fetch identity from #{@name}. " + err.message)
+			error = new Error("Failed to fetch identity from #{@name} at #{@serverURL + @identityPath}. " + err.message)
 			throw _.extend error, {response: err.response}
 
 	registerService: ->
@@ -98,24 +89,23 @@ class CustomOAuth
 			console.log 'at:', accessToken
 
 			identity = self.getIdentity accessToken
-			console.log 'id:', JSON.stringify identity
+			console.log 'id:', JSON.stringify identity, null, '  '
 
-			primaryEmail = identity.email
-			console.log 'primay:', JSON.stringify primaryEmail
+			serviceData =
+				_oAuthCustom: true
+				accessToken: accessToken
 
-			return {
-				serviceData:
-					id: identity.id
-					accessToken: OAuth.sealSecret(accessToken)
-					email: identity.email or ''
-					username: identity.username
-					emails: [
-						identity.email
-					]
+			_.extend serviceData, identity
+
+			data =
+				serviceData: serviceData
 				options:
 					profile:
-						name: identity.username
-			}
+						name: identity.name or identity.username or identity.nickname
+
+			console.log data
+
+			return data
 
 	retrieveCredential: (credentialToken, credentialSecret) ->
 		return OAuth.retrieveCredential credentialToken, credentialSecret
