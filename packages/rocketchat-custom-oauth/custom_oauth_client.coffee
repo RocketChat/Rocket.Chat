@@ -4,17 +4,25 @@
 #   completion. Takes one argument, credentialToken on success, or Error on
 #   error.
 class CustomOAuth
-	constructor: (@name, @options) ->
+	constructor: (@name, options) ->
 		if not Match.test @name, String
 			return throw new Meteor.Error 'CustomOAuth: Name is required and must be String'
 
-		if not Match.test @options, Object
+		if not Match.test options, Object
 			return throw new Meteor.Error 'CustomOAuth: Options is required and must be Object'
 
-		if not Match.test @options.serverURL, String
+		if not Match.test options.serverURL, String
 			return throw new Meteor.Error 'CustomOAuth: Options.serverURL is required and must be String'
 
+		if not Match.test options.authorizePath, String
+			options.authorizePath = '/oauth/authorize'
+
 		@serverURL = options.serverURL
+
+		if not /^https?:\/\/.+/.test options.authorizePath
+			options.authorizePath = @serverURL + options.authorizePath
+
+		@authorizePath = options.authorizePath
 
 		Accounts.oauth.registerService @name
 
@@ -47,7 +55,7 @@ class CustomOAuth
 		credentialToken = Random.secret()
 		loginStyle = OAuth._loginStyle @name, config, options
 
-		loginUrl = @serverURL + '/oauth/authorize' +
+		loginUrl = @authorizePath +
 			'?client_id=' + config.clientId +
 			'&redirect_uri=' + OAuth._redirectUri(@name, config) +
 			'&response_type=code' +
