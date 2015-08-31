@@ -22,9 +22,13 @@ Package.onUse(function(api) {
 	], ["client", "server"]);
 
 	// Statistics
-	api.addFiles('server/Statistics.coffee', 'server');
+	api.addFiles('lib/rocketchat.coffee', [ 'client', 'server' ]);
+	api.addFiles([
+		'server/collections/Statistics.coffee',
+		'server/functions/get.coffee',
+		'server/functions/save.coffee'
+	], 'server');
 
-	api.export('Statistics', 'server');
 });
 
 Package.onTest(function(api) {
