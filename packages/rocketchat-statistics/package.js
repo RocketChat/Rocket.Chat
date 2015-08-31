@@ -26,7 +26,8 @@ Package.onUse(function(api) {
 	api.addFiles([
 		'server/collections/Statistics.coffee',
 		'server/functions/get.coffee',
-		'server/functions/save.coffee'
+		'server/functions/save.coffee',
+		'server/methods/getStatistics.coffee'
 	], 'server');
 
 });
