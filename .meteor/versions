@@ -44,8 +44,8 @@ jparker:crypto-md5@0.1.1
 jparker:gravatar@0.4.1
 jquery@1.11.3_2
 json@1.0.3
-kadira:blaze-layout@2.0.0
-kadira:flow-router@2.3.0
+kadira:blaze-layout@2.0.1
+kadira:flow-router@2.4.0
 kevohagan:sweetalert@1.0.0
 konecty:autolinker@1.0.2
 konecty:change-case@2.3.0
@@ -63,7 +63,7 @@ matb33:collection-hooks@0.7.14
 meteor@1.1.6
 meteor-developer@1.1.3
 meteor-platform@1.2.2
-meteorhacks:kadira@2.23.0
+meteorhacks:kadira@2.23.1
 meteorhacks:meteorx@1.3.1
 meteorspark:util@0.2.0
 minifiers@1.1.5
@@ -88,7 +88,7 @@ ordered-dict@1.0.3
 pauli:accounts-linkedin@1.1.2
 pauli:linkedin@1.1.2
 percolate:migrations@0.7.6
-percolatestudio:synced-cron@1.1.0
+percolate:synced-cron@1.2.1
 qnub:emojione@0.0.3
 raix:eventemitter@0.1.3
 raix:eventstate@0.0.2
@@ -115,6 +115,7 @@ rocketchat:markdown@0.0.1
 rocketchat:me@0.0.1
 rocketchat:mentions@0.0.1
 rocketchat:oembed@0.0.1
+rocketchat:statistics@0.0.1
 rocketchat:webrtc@0.0.1
 routepolicy@1.0.5
 service-configuration@1.0.4
