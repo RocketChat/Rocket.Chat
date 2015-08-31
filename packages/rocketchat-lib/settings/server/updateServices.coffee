@@ -13,13 +13,15 @@ updateServices = ->
 			if serviceName is 'Meteor'
 				serviceName = 'meteor-developer'
 
+			if /Accounts_OAuth_Custom_/.test service._id
+				serviceName = service._id.replace('Accounts_OAuth_Custom_', '')
+
 			if service.value is true
 				data =
 					clientId: Settings.findOne({_id: "#{service._id}_id"})?.value
 					secret: Settings.findOne({_id: "#{service._id}_secret"})?.value
 
 				if /Accounts_OAuth_Custom_/.test service._id
-					serviceName = service._id.replace('Accounts_OAuth_Custom_', '')
 					data.custom = true
 					data.serverURL = Settings.findOne({_id: "#{service._id}_url"})?.value
 					data.tokenPath = Settings.findOne({_id: "#{service._id}_token_path"})?.value
