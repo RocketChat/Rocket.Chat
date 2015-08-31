@@ -7,7 +7,7 @@ class Highlight
 
 	constructor: (message) ->
 
-		if _.trim message.html
+		if s.trim message.html
 
 			# Count occurencies of ```
 			count = (message.html.match(/```/g) || []).length
