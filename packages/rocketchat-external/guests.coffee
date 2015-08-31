@@ -1,3 +1,2 @@
-console.log 'desativa guest ->',AccountsGuest
+# @TODO check this
 AccountsGuest.forced = false
-console.log 'desativado guest ->',@AccountsGuest

@@ -1,2 +1,2 @@
-console.log 'setting up guests'
+# @TODO check this
 AccountsGuest.forced = false
