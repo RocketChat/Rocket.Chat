@@ -20,14 +20,10 @@ Package.onUse(function(api) {
 	
 	api.addFiles([
 		'server/functions/checkUsernameAvailability.coffee',
-		'server/functions/getAvgStatistics.coffee',
-		'server/functions/getStatistics.coffee',
-		'server/functions/saveStatistics.coffee',
 		'server/functions/setUsername.coffee'
 	], ['server']);
 	
 	api.addFiles([
-		'server/methods/generateStatistics.coffee',
 		'server/methods/joinDefaultChannels.coffee',
 		'server/methods/setAdminStatus.coffee',
 		'server/methods/setUsername.coffee',
