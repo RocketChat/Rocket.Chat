@@ -60,31 +60,35 @@ Template.messagePopupConfig.helpers
 
 		return config
 
+	emojiEnabled: ->
+		return RocketChat.emoji?
+
 	popupEmojiConfig: ->
-		self = this
-		template = Template.instance()
-		config =
-			title: 'Emoji'
-			collection: emojione.emojioneList
-			template: 'messagePopupEmoji'
-			trigger: ':'
-			prefix: ''
-			getInput: self.getInput
-			getFilter: (collection, filter) ->
-				results = []
-				for shortname, data of collection
-					if shortname.indexOf(filter) > -1
-						results.push
-							_id: shortname
-							data: data
+		if RocketChat.emoji?
+			self = this
+			template = Template.instance()
+			config =
+				title: 'Emoji'
+				collection: RocketChat.emoji.list
+				template: 'messagePopupEmoji'
+				trigger: ':'
+				prefix: ''
+				getInput: self.getInput
+				getFilter: (collection, filter) ->
+					results = []
+					for shortname, data of collection
+						if shortname.indexOf(filter) > -1
+							results.push
+								_id: shortname
+								data: data
 
-					if results.length > 10
-						break
+						if results.length > 10
+							break
 
-				if filter.length >= 3
-					results.sort (a, b) ->
-						a.length > b.length
+					if filter.length >= 3
+						results.sort (a, b) ->
+							a.length > b.length
 
-				return results
+					return results
 
 		return config
