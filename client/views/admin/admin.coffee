@@ -5,10 +5,23 @@ Template.admin.helpers
 		group = FlowRouter.getParam('group')
 		group ?= Settings.findOne({ type: 'group' })?._id
 		return Settings.findOne { _id: group, type: 'group' }
-	settings: ->
+	sections: ->
 		group = FlowRouter.getParam('group')
 		group ?= Settings.findOne({ type: 'group' })?._id
-		return Settings.find({ group: group }).fetch()
+		settings = Settings.find({ group: group }, {sort: {section: 1}}).fetch()
+		sections = {}
+		for setting in settings
+			sections[setting.section or ''] ?= []
+			sections[setting.section or ''].push setting
+
+		sectionsArray = []
+		for key, value of sections
+			sectionsArray.push
+				section: key
+				settings: value
+
+		return sectionsArray
+
 	flexOpened: ->
 		return 'opened' if Session.equals('flexOpened', true)
 	arrowPosition: ->

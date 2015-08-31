@@ -1,18 +1,30 @@
 @mobileMessageMenu =
 	hide: ->
+		mobileMessageMenu.menuTemplate.locked = true
 		$('.mobile-message-menu').addClass('hidden')
 
 	show: (message, template) ->
 		mobileMessageMenu.message = message
 		mobileMessageMenu.template = template
+		mobileMessageMenu.menuTemplate.locked = true
 		$('.mobile-message-menu').removeClass('hidden')
 
 
+Template.mobileMessageMenu.onCreated ->
+	mobileMessageMenu.menuTemplate = @
+
 Template.mobileMessageMenu.events
+	'mousedown, touchstart': (event, template) ->
+		template.locked = false
+
 	'click #cancel': (event, template, doc) ->
+		if template.locked is true then return
+
 		mobileMessageMenu.hide()
 
 	'click #delete-message': (event, template, doc) ->
+		if template.locked is true then return
+
 		mobileMessageMenu.hide()
 
 		message = mobileMessageMenu.message
@@ -38,8 +50,10 @@ Template.mobileMessageMenu.events
 			instance.chatMessages.deleteMsg(message)
 
 	'click #report-abuse': (event, template, doc) ->
+		if template.locked is true then return
+
 		swal {
-			title: 'Do you want to report this message?'
+			title: 'Report this message?'
 			text: mobileMessageMenu.message.html
 			inputPlaceholder: 'Why do you want to report?'
 			type: 'input'
