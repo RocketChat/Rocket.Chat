@@ -85,6 +85,7 @@ It is a great solution for communities and companies wanting to privately host t
 
 #### In Progress
 
+- Full text search
 - Native iOS Application [Rocket.Chat.iOS - HELP WANTED](https://github.com/RocketChat/Rocket.Chat.iOS)
 - Native Android Application [Issue #271 - HELP WANTED](https://github.com/RocketChat/Rocket.Chat/issues/271)
 - External popout window for chat with website visitor, like Zopim, Olark, LiveChat, SnapEngage [Issue #519](https://github.com/RocketChat/Rocket.Chat/issues/519)
@@ -92,7 +93,6 @@ It is a great solution for communities and companies wanting to privately host t
 #### Planned
 
 - Off-the-Record (OTR) Messaging [Issue #36 - HELP WANTED](https://github.com/RocketChat/Rocket.Chat/issues/36)
-- Full text search
 - Kerberos Authentication
 - XMPP Multi-user chat (MUC)
 
