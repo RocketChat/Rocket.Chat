@@ -1,4 +1,8 @@
+@import url(//fonts.googleapis.com/css?family=Roboto:300,400,500,600,700&subset=latin,cyrillic-ext,greek-ext,greek,vietnamese,latin-ext,cyrillic);
 @import "_variables.less";
+@import "utils/_lesshat.import.less";
+@import "utils/_reset.import.less";
+@import "utils/_keyframes.import.less";
 
 * {
 	box-sizing: border-box;
@@ -8,8 +12,18 @@
 body {
 	padding: 0;
 	margin: 0;
-	font-family: sans-serif;
 	font-size: 10pt;
+	font-family: "Roboto", "HelveticaNeue-Light", "sans-serif";
+	// font-size: 14px;
+	color: @primary-font-color;
+	height: 100%;
+	width: 100%;
+	-webkit-font-smoothing: antialiased;
+	line-height: 1rem;
+	padding: 0;
+	overflow: visible;
+	position: relative;
+	// background-color: @primary-background-color;
 }
 .external-room {
 	position: fixed;
@@ -22,23 +36,22 @@ body {
 		position: fixed;
 		top: 0;
 		width: 100%;
-		height: 60px;
+		height: @header-min-height;
 		h1 {
-			line-height: 60px;
+			line-height: @header-min-height;
 			margin: 0;
-			padding: 0;
-			li {
-				padding: 0;
-			}
+			padding: 0 5px;
+			font-size: 9pt;
 		}
 	}
 	.messages {
 		background-color: #FFF;
-		top: 60px;
-		bottom: 60px;
+		top: @header-min-height;
+		bottom: @footer-min-height;
 		position: fixed;
 		width: 100%;
 		.wrapper {
+			height: 100%;
 			overflow-y: auto;
 
 			ul {
@@ -187,11 +200,45 @@ body {
 				}
 				.body {
 					opacity: 1;
-					// .transition(opacity 1s linear);
+					.transition(opacity 1s linear);
 				}
 				&.temp .body {
 					opacity: .5;
 				}
+
+				.avatar .avatar-image {
+					height: 100%;
+					width: 100%;
+					min-height: 20px;
+					min-width: 20px;
+					display: block;
+					position: relative;
+					background-color: transparent;
+					background-size: cover;
+					background-repeat: no-repeat;
+					background-position: center;
+					border-radius: 4px;
+				}
+			}
+		}
+		.new-message {
+			margin: 0 -65px;
+			position: absolute;
+			background: #428bca;
+			border-radius: 20px;
+			width: 130px;
+			height: 30px;
+			text-align: center;
+			color: #FFF;
+			line-height: 30px;
+			font-size: 0.8em;
+			cursor: pointer;
+			bottom: 8px;
+			left: 50%;
+			.transition(transform 0.3s ease-out);
+			.transform(translateY(0));
+			&.not {
+				.transform(translateY(150%));
 			}
 		}
 	}
@@ -200,7 +247,7 @@ body {
 		position: fixed;
 		bottom: 0;
 		width: 100%;
-		height: 60px;
+		height: @footer-min-height;
 		border-top: 1px solid #E7E7E7;
 		// padding-right: 2em;
 		// padding: 10px;
