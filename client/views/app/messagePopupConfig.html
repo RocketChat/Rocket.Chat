@@ -1,5 +1,5 @@
 <template name="messagePopupConfig">
-	{{> messagePopup popupEmojiConfig}}
+	{{#if emojiEnabled}}{{> messagePopup popupEmojiConfig}}{{/if}}
 	{{> messagePopup popupChannelConfig}}
 	{{> messagePopup popupUserConfig}}
 </template>
