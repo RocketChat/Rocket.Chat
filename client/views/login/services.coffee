@@ -8,11 +8,10 @@ Template.loginServices.helpers
 	loginService: ->
 		services = []
 
-		authServices = _.pluck ServiceConfiguration.configurations.find({}, { service: 1 }).fetch(), 'service'
+		authServices = ServiceConfiguration.configurations.find({}, { sort: {service: 1} }).fetch()
 
-		authServices.sort()
 		authServices.forEach (service) ->
-			switch service
+			switch service.service
 				when 'meteor-developer'
 					serviceName = 'Meteor'
 					icon = 'meteor'
@@ -21,10 +20,10 @@ Template.loginServices.helpers
 					icon = 'github-circled'
 				when 'gitlab'
 					serviceName = 'Gitlab'
-					icon = service
+					icon = service.service
 				else
-					serviceName = _.capitalize service
-					icon = service
+					serviceName = _.capitalize service.service
+					icon = service.service
 
 			services.push
 				service: service

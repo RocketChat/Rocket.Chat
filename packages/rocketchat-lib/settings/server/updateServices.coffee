@@ -24,6 +24,9 @@ updateServices = ->
 					data.serverURL = Settings.findOne({_id: "#{service._id}_url"})?.value
 					data.tokenPath = Settings.findOne({_id: "#{service._id}_token_path"})?.value
 					data.identityPath = Settings.findOne({_id: "#{service._id}_identity_path"})?.value
+					data.buttonLabelText = Settings.findOne({_id: "#{service._id}_button_label_text"})?.value
+					data.buttonLabelColor = Settings.findOne({_id: "#{service._id}_button_label_color"})?.value
+					data.buttonColor = Settings.findOne({_id: "#{service._id}_button_color"})?.value
 					new CustomOAuth serviceName.toLowerCase(),
 						serverURL: data.serverURL
 						tokenPath: data.tokenPath
