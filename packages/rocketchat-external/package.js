@@ -18,10 +18,9 @@ Package.registerBuildPlugin({
 Package.onUse(function(api) {
 	api.versionsFrom('1.0');
 
-	api.use('coffeescript', 'server');
-	api.use('webapp', 'server');
-	api.use('autoupdate', 'server');
+	api.use(['coffeescript', 'webapp', 'autoupdate', 'artwells:accounts-guest'], 'server');
 
+	api.addFiles('guests.coffee', ['client','server']);
 	api.addFiles('external.coffee', 'server');
 	api.addFiles('methods.coffee', 'server');
 	api.addFiles('publications.coffee', 'server');

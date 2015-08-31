@@ -19,6 +19,7 @@ meteor-platform
 reactive-dict
 reactive-var
 service-configuration
+artwells:accounts-guest
 
 arunoda:streams
 rocketchat:lib
@@ -35,7 +36,7 @@ rocketchat:me
 rocketchat:mentions
 rocketchat:oembed
 rocketchat:webrtc
-#rocketchat:external
+rocketchat:external
 #rocketchat:hubot
 #rocketchat:irc
 
@@ -81,4 +82,3 @@ monbro:mongodb-mapreduce-aggregation
 accounts-gitlab
 gitlab
 rocketchat:gitlab
-rocketchat:external
