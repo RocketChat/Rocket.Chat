@@ -79,6 +79,7 @@ Meteor.startup ->
 	RocketChat.settings.add 'Layout_Terms_of_Service', 'Terms of Service <br> Go to APP SETTINGS -> Layout to customize this page.', { type: 'string', multiline: true, group: 'Layout', public: true }
 	RocketChat.settings.add 'Layout_Privacy_Policy', 'Privacy Policy <br> Go to APP SETTINGS -> Layout to customize this page.', { type: 'string', multiline: true, group: 'Layout', public: true }
 	RocketChat.settings.add 'Layout_Sidenav_Footer', '<a href="https://github.com/RocketChat/Rocket.Chat" class="logo" target="_blank"> <img src="/images/logo/logo.svg?v=3" /> <small><i class="icon-github-circled"></i> Fork it on github</small> </a>', { type: 'string', group: 'Layout', public: true, i18nDescription: 'Layout_Sidenav_Footer_description' }
+	RocketChat.settings.add 'Layout_Login_Header', '<a class="logo" href="/"><img src="/images/logo/logo.svg?v=3" /></a>', { type: 'string', multiline: true, group: 'Layout', public: true }
 
 	RocketChat.settings.add 'Statistics_opt_out', false, { type: 'boolean', group: false }
 
