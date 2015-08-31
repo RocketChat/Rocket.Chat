@@ -27,6 +27,7 @@
   "Accounts_OAuth_Custom_URL": "URL",
   "Accounts_OAuth_Custom_Token_Path": "Token Path",
   "Accounts_OAuth_Custom_Identity_Path": "Identity Path",
+  "Accounts_OAuth_Custom_Authorize_Path": "Authorize Path",
   "Accounts_OAuth_Custom_Secret": "Secret",
   "Accounts_OAuth_Custom_Enable": "Enable",
   "Accounts_OAuth_Custom_Button_Label_Text": "Button Text",
