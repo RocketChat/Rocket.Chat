@@ -66,7 +66,7 @@ class @ChatMessages
 			this.editing.saved = this.input.value
 
 	send: (rid, input) ->
-		if _.trim(input.value) isnt ''
+		if s.trim(input.value) isnt ''
 			if this.isMessageTooLong(input)
 				return Errors.throw t('Error_message_too_long')
 			# KonchatNotification.removeRoomNotification(rid)
@@ -86,7 +86,7 @@ class @ChatMessages
 						Meteor.call 'slashCommand', {cmd: command, params: param, msg: msgObject }
 				else
 					#Run to allow local encryption
-					Meteor.call 'onClientBeforeSendMessage', {}
+					# Meteor.call 'onClientBeforeSendMessage', {}
 					Meteor.call 'sendMessageExternal', msgObject
 
 			if not Meteor.userId()
@@ -103,14 +103,14 @@ class @ChatMessages
 				return Errors.throw error.reason
 
 	update: (id, rid, input) ->
-		if _.trim(input.value) isnt ''
+		if s.trim(input.value) isnt ''
 			msg = input.value
 			Meteor.call 'updateMessage', { id: id, msg: msg }
 			this.clearEditing()
 			MsgTyping.stop(rid)
 
 	startTyping: (rid, input) ->
-		if _.trim(input.value) isnt ''
+		if s.trim(input.value) isnt ''
 			MsgTyping.start(rid)
 		else
 			MsgTyping.stop(rid)

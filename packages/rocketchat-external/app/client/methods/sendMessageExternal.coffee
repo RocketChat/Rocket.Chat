@@ -3,7 +3,7 @@ Meteor.methods
 		# if not Meteor.userId()
 		# 	throw new Meteor.Error 203, t('User_logged_out')
 
-		if _.trim(message.msg) isnt ''
+		if s.trim(message.msg) isnt ''
 
 			message.ts = new Date(Date.now() + TimeSync.serverOffset())
 

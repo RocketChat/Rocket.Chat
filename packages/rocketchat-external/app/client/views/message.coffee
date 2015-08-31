@@ -27,8 +27,8 @@ Template.message.helpers
 			# when 'rtc' then RocketChat.callbacks.run 'renderRtcMessage', this
 			else
 				this.html = this.msg
-				if _.trim(this.html) isnt ''
-					this.html = _.escapeHTML this.html
+				if s.trim(this.html) isnt ''
+					this.html = s.escapeHTML this.html
 				# message = RocketChat.callbacks.run 'renderMessage', this
 				message = this
 				this.html = message.html.replace /\n/gm, '<br/>'
