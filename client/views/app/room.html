@@ -196,5 +196,66 @@
 				</div>
 			{{/if}}
 		</section>
+		<section class="flex-tab-2">
+			<div class="control">
+				<button class="more"><span class="arrow {{arrow2Position}}"></span></button>
+				
+			    <h3>Bot Controlled UI</h3>
+			    <div>
+			    UI is dynamically generated based on DSL message from BOT. DSL also specifies command sent back.
+			    </div>
+			 
+			 </div>
+			
+		
+			{{#if flex2Opened}}
+				<div class="control">
+			<div class="botgen">
+				   <input type="text" id="gistbutton" class="search" placeholder="Gist Id or Url" autocomplete="off" />
+			</div>
+				<div class="botgen">
+					<button class='button'><span> {{_ "Get Gist"}}</span></button>
+			</div>
+				
+					<div class="botgen">
+					<button class='button'><span> {{_ "Show history"}}</span></button>
+					</div>
+					<div class="botgen">
+					<button class='button'><span> {{_ "Blame"}}</span></button>
+					</div>
+				
+					
+				</div>
+			{{/if}}
+		
+		
+		</section>
+		<section class="flex-tab-3">
+			<div class="control">
+				<button class="more"><span class="arrow {{arrow3Position}}"></span></button>
+				<form class="search-form" role="form">
+					<div class="input-line search">
+						<!-- {{> inputAutocomplete settings=autocompleteSettingsRoomSearch id="room-search" class="search" placeholder=tQuickSearch autocomplete="off"}} -->
+						<input type="text" id="room-search" class="search" placeholder="{{tQuickSearch}}" autocomplete="off" />
+						<i class="icon-search"></i>
+					</div>
+				</form>
+			</div>
+			{{#if flex3Opened}}
+				<div class="content">
+					{{> CodeMirror id="flyineditor" name="flyineditor" options=editorOptions code=editorCode }}
+
+			<div style="position:relative; padding: 10px 0 0 30px;">
+			<button class='button'><span> {{_ "Save"}}</span></button>
+			<button class='button'><span> {{_ "Commit"}}</span></button>
+			<button class='button'><span> {{_ "Cancel"}}</span></button>
+			</div>
+
+				</div>
+			
+
+			{{/if}}
+		</section>
+
 	</div>
 </template>

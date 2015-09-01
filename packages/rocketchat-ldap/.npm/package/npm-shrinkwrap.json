@@ -1,58 +1,58 @@
 {
   "dependencies": {
     "ldapjs": {
-      "version": "0.7.1",
+      "version": "http://registry.npmjs.org/ldapjs/-/ldapjs-0.7.1.tgz",
       "dependencies": {
         "asn1": {
-          "version": "0.2.1"
+          "version": "http://registry.npmjs.org/asn1/-/asn1-0.2.1.tgz"
         },
         "assert-plus": {
-          "version": "0.1.5"
+          "version": "http://registry.npmjs.org/assert-plus/-/assert-plus-0.1.5.tgz"
         },
         "bunyan": {
-          "version": "0.22.1",
+          "version": "http://registry.npmjs.org/bunyan/-/bunyan-0.22.1.tgz",
           "dependencies": {
             "mv": {
-              "version": "0.0.5"
+              "version": "http://registry.npmjs.org/mv/-/mv-0.0.5.tgz"
             }
           }
         },
         "nopt": {
-          "version": "2.1.1",
+          "version": "http://registry.npmjs.org/nopt/-/nopt-2.1.1.tgz",
           "dependencies": {
             "abbrev": {
-              "version": "1.0.7"
+              "version": "http://registry.npmjs.org/abbrev/-/abbrev-1.0.7.tgz"
             }
           }
         },
         "pooling": {
-          "version": "0.4.6",
+          "version": "http://registry.npmjs.org/pooling/-/pooling-0.4.6.tgz",
           "dependencies": {
             "once": {
-              "version": "1.3.0"
+              "version": "http://registry.npmjs.org/once/-/once-1.3.0.tgz"
             },
             "vasync": {
-              "version": "1.4.0",
+              "version": "http://registry.npmjs.org/vasync/-/vasync-1.4.0.tgz",
               "dependencies": {
                 "jsprim": {
-                  "version": "0.3.0",
+                  "version": "http://registry.npmjs.org/jsprim/-/jsprim-0.3.0.tgz",
                   "dependencies": {
                     "extsprintf": {
-                      "version": "1.0.0"
+                      "version": "http://registry.npmjs.org/extsprintf/-/extsprintf-1.0.0.tgz"
                     },
                     "json-schema": {
-                      "version": "0.2.2"
+                      "version": "http://registry.npmjs.org/json-schema/-/json-schema-0.2.2.tgz"
                     },
                     "verror": {
-                      "version": "1.3.3"
+                      "version": "http://registry.npmjs.org/verror/-/verror-1.3.3.tgz"
                     }
                   }
                 },
                 "verror": {
-                  "version": "1.1.0",
+                  "version": "http://registry.npmjs.org/verror/-/verror-1.1.0.tgz",
                   "dependencies": {
                     "extsprintf": {
-                      "version": "1.0.0"
+                      "version": "http://registry.npmjs.org/extsprintf/-/extsprintf-1.0.0.tgz"
                     }
                   }
                 }

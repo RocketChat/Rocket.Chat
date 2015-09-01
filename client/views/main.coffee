@@ -110,6 +110,14 @@ Template.main.helpers
 		console.log 'layout.helpers flexOpenedRTC2' if window.rocketDebug
 		return 'layout2' if (Session.get('rtcLayoutmode') > 1)
 
+	flex2Opened: ->
+		console.log 'layout.helpers flex2Opened' if window.rocketDebug
+		return 'flex-2-opened' if Session.equals('flex2Opened', true)
+
+	flex3Opened: ->
+		console.log 'layout.helpers flex3Opened' if window.rocketDebug
+		return 'flex-3-opened' if Session.equals('flex3Opened', true)
+
 
 Template.main.events
 

@@ -157,8 +157,22 @@ Template.room.helpers
 	flexOpened: ->
 		return 'opened' if Session.equals('flexOpened', true)
 
+	flex2Opened: ->
+		return 'opened' if Session.equals('flex2Opened', true)
+
+	flex3Opened: ->
+		return 'opened' if Session.equals('flex3Opened', true)
+
+
 	arrowPosition: ->
 		return 'left' unless Session.equals('flexOpened', true)
+
+	arrow2Position: ->
+		return 'left' unless Session.equals('flex2Opened', true)
+
+	arrow3Position: ->
+		return 'left' unless Session.equals('flex3Opened', true)
+
 
 	phoneNumber: ->
 		return '' unless this.phoneNumber
@@ -276,6 +290,13 @@ Template.room.helpers
 	canRecordAudio: ->
 		return navigator.getUserMedia? or navigator.webkitGetUserMedia?
 
+	editorOptions: ->
+		return {lineNumbers: true, mode:"javascript"}
+
+	editorCode: ->
+		return "# This is a full featured, syntax highlighted editor\n# BOTs can fetch, edit, commit, and save source code\n#\n\nvar express = require('express');\nvar app = express();\n// respond with \"hello world\" when a GET request is made to the homepage
+\napp.get('/', function(req, res) {\nres.send('hello world');\n});";
+
 
 Template.room.events
 	"keyup #room-search": _.debounce (e, t) ->
@@ -308,6 +329,19 @@ Template.room.events
 
 	"click .upload-progress-item > a": ->
 		Session.set "uploading-cancel-#{this.id}", true
+
+	"click .flex-tab-2 .more": (event, t) ->
+		if (Session.get('flex2Opened'))
+			Session.set('flex2Opened',false)
+		else
+			Session.set('flex2Opened', true)
+
+	"click .flex-tab-3 .more": (event, t) ->
+		if (Session.get('flex3Opened'))
+			Session.set('flex3Opened',false)
+		else
+			Session.set('flex3Opened', true)
+
 
 	"click .flex-tab .more": (event, t) ->
 		if (Session.get('flexOpened'))
