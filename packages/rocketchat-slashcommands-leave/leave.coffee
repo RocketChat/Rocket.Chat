@@ -5,7 +5,8 @@
 
 class Leave
 	constructor: (command, params, item) ->
-		if(command == "leave")
+		if(command == "leave" || command == "part")
 			Meteor.call 'leaveRoom', item.rid
 
 RocketChat.slashCommands.add 'leave', Leave
+RocketChat.slashCommands.add 'part', Leave
