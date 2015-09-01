@@ -27,6 +27,12 @@ RocketChat.callbacks.add = (hook, callback, priority) ->
 		priority = RocketChat.callbacks.priority.MEDIUM
 	callback.priority = priority
 	RocketChat.callbacks[hook] ?= []
+	
+	# Avoid adding the same callback twice
+	for cb in RocketChat.callbacks[hook]
+		if cb.name is callback.name
+			return
+			
 	RocketChat.callbacks[hook].push callback
 	return
 

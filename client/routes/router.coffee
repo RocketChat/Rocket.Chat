@@ -74,7 +74,7 @@ FlowRouter.route '/account/:group?',
 
 	action: (params) ->
 		unless params.group
-			params.group = 'Profile'
+			params.group = 'Preferences'
 		params.group = _.capitalize params.group, true
 		BlazeLayout.render 'main', { center: "account#{params.group}" }
 
