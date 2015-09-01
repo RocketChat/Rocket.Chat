@@ -14,6 +14,9 @@ Template.message.helpers
 			return 'temp'
 		return
 
+	error: ->
+		return 'msg-error' if @error
+
 	body: ->
 		switch this.t
 			when 'r'  then t('Room_name_changed', { room_name: this.msg, user_by: this.u.username })

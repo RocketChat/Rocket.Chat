@@ -31,7 +31,10 @@ Meteor.methods
 		if not room?
 
 			# find an online user
-			operator = Meteor.users.findOne { status: 'online' }
+			operator = Meteor.users.findOne { operator: true, status: 'online' }
+
+			unless operator
+				throw new Meteor.Error 'no-operators', 'Sorry, no online operators'
 
 			ChatRoom.insert
 				_id: message.rid

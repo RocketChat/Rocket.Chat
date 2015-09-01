@@ -87,7 +87,10 @@ class @ChatMessages
 				else
 					#Run to allow local encryption
 					# Meteor.call 'onClientBeforeSendMessage', {}
-					Meteor.call 'sendMessageExternal', msgObject
+					Meteor.call 'sendMessageExternal', msgObject, (error, result) ->
+						if error
+							ChatMessage.update msgObject._id, { $set: { error: true } }
+							showError error.reason
 
 			if not Meteor.userId()
 				Meteor.loginVisitor null, (error) ->
