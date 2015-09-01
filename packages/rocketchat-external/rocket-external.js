@@ -1,7 +1,6 @@
 // <script type="text/javascript">
 // 	(function(w, d, s, f, u) {
-// 		w[f] = w[f] || [];
-// 		w[f].push(u);
+// 		w[f] = (w[f] || []).push(u);
 // 		var h = d.getElementsByTagName(s)[0],
 // 			j = d.createElement(s);
 // 		j.async = true;
@@ -41,21 +40,16 @@
 		chatWidget.style.position = 'fixed';
 		chatWidget.style.width = '300px';
 		chatWidget.style.height = '30px';
-		chatWidget.style.backgroundColor = '#04436a';
+		chatWidget.style.backgroundColor = '#C1272D';
 		chatWidget.style.borderTopLeftRadius = '5px';
 		chatWidget.style.borderTopRightRadius = '5px';
 		chatWidget.style.bottom = '0';
 		chatWidget.style.right = '50px';
+		chatWidget.style.zIndex = '12345';
 
-		chatWidget.onclick = function() {
-			// konchat.openWindow();
-			console.log('clicado');
-		};
 		document.getElementsByTagName('body')[0].appendChild(chatWidget);
-		// document.getElementsByTagName('body')[0].appendChild(chatWindow);
 
 		w.addEventListener('message', function(msg) {
-			console.log('new message ->',msg);
 			if (typeof msg.data === 'object' && msg.data.src !== undefined && msg.data.src === 'rocketchat') {
 				if (api[msg.data.fn] !== undefined && typeof api[msg.data.fn] === 'function') {
 					var args = [].concat(msg.data.args || [])
@@ -66,11 +60,10 @@
 
 		var mediaqueryresponse = function (mql) {
 			if (mql.matches) {
-				chatWidget.style.width = '100%';
 				chatWidget.style.left = '0';
 				chatWidget.style.right = '0';
-			}
-			else{
+				chatWidget.style.width = '100%';
+			} else {
 				chatWidget.style.left = 'auto';
 				chatWidget.style.right = '50px';
 				chatWidget.style.width = '300px';
@@ -83,7 +76,6 @@
 	};
 
 	if (typeof w.initRocket !== 'undefined') {
-		console.log('w.initRocket ->',w.initRocket);
 		initRocket.apply(null, w.initRocket);
 	}
 
@@ -94,7 +86,6 @@
 	w.initRocket.push = function(url) {
 		initRocket.apply(null, [url]);
 	};
-
 
 	return exports;
 })(window);
