@@ -14,6 +14,9 @@ Template.room.events
 		Template.instance().atBottom = true
 		Template.instance().find('.input-message').focus()
 
+	'click .title': ->
+		parentCall 'toggleWindow'
+
 Template.room.onCreated ->
 	self = @
 	self.autorun ->
