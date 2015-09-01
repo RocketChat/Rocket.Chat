@@ -33,7 +33,7 @@ updateServices = ->
 						provider: Settings.findOne({_id: "#{service._id}_provider"})?.value
 
 				Accounts.saml.settings.providers.push
-					provider: data.clientId
+					provider: data.clientConfig.provider
 					entryPoint: Settings.findOne({_id: "#{service._id}_entry_point"})?.value
 					issuer: Settings.findOne({_id: "#{service._id}_issuer"})?.value
 					cert: Settings.findOne({_id: "#{service._id}_cert"})?.value
