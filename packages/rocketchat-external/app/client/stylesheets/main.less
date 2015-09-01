@@ -25,6 +25,21 @@ body {
 	position: relative;
 	// background-color: @primary-background-color;
 }
+
+input,
+button,
+select,
+textarea {
+	font-family: inherit;
+	font-size: inherit;
+	line-height: inherit;
+}
+
+input:focus {
+	outline: none;
+	box-shadow: 0 0 0;
+}
+
 .external-room {
 	position: fixed;
 	top: 0;
@@ -37,11 +52,14 @@ body {
 		top: 0;
 		width: 100%;
 		height: @header-min-height;
+		display: table;
+		z-index: 10;
 		h1 {
-			line-height: @header-min-height;
 			margin: 0;
 			padding: 0 5px;
 			font-size: 9pt;
+			display: table-cell;
+			vertical-align: middle;
 		}
 	}
 	.messages {
@@ -63,13 +81,12 @@ body {
 			}
 
 			.message {
-				font-size: 14px;
-				padding-left: 50px;
+				font-size: 12px;
+				padding-left: 40px;
 				position: relative;
-				line-height: 20px;
-				margin: 12px 20px 5px;
-				margin-top: 12px;
-				min-height: 40px;
+				line-height: 18px;
+				margin: 12px 10px 0;
+				min-height: 36px;
 				&:nth-child(1) {
 					margin-top: 0;
 				}
@@ -83,17 +100,15 @@ body {
 						position: absolute;
 						top: -30px;
 						left: 0;
-						font-size: 12px;
+						font-size: 10px;
 						font-weight: 600;
 						text-align: center;
-						left: -webkit-calc(~'50% - 70px');
-						left: -moz-calc(~'50% - 70px');
-						left: calc(~'50% - 70px');
+						.calc(left, ~'50% - 70px');
 						color: @secondary-font-color;
 						z-index: 10;
 						padding: 0 10px;
 						background-color: #FFF;
-						min-width: 140px;
+						min-width: 120px;
 					}
 					&:after {
 						content: " ";
@@ -124,6 +139,7 @@ body {
 					font-weight: 600;
 					color: #444444;
 					margin-right: 5px;
+					outline: none;
 					&:hover {
 						color: #333;
 					}
@@ -133,15 +149,18 @@ body {
 					left: 0;
 					top: 0;
 					display: block;
-					width: 40px;
-					height: 40px;
+					width: 30px;
+					height: 30px;
 				}
 				.info {
-					font-size: 12px;
+					font-size: 10px;
 					color: @info-font-color;
 				}
 				&.sequential {
-					margin-top: 5px;
+					// margin-top: 5px;
+					padding-top: 5px;
+					margin-top: 0;
+					margin-bottom: 0;
 					min-height: 20px;
 					.user {
 						display: none;
@@ -153,7 +172,7 @@ body {
 						position: absolute;
 						text-align: right;
 						left: -20px;
-						width: 65px;
+						width: 55px;
 						.time {
 							display: none;
 						}
@@ -194,7 +213,7 @@ body {
 					color: @link-font-color;
 					font-weight: 400;
 					&:hover {
-						// color: darken(@link-font-color, 10%);
+						color: darken(@link-font-color, 10%);
 						text-decoration: underline;
 					}
 				}
@@ -274,6 +293,14 @@ body {
 				position: relative;
 				outline: none;
 			}
+		}
+	}
+}
+
+@media all and(max-height: 200px) {
+	.external-room {
+		.title {
+			height: 100%;
 		}
 	}
 }
