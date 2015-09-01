@@ -44,9 +44,10 @@ input:focus {
 	position: fixed;
 	top: 0;
 	bottom: 0;
-	background-color: blue;
 	.title {
 		background-color: #04436a;
+		border-top-right-radius: 5px;
+		border-top-left-radius: 5px;
 		color: #FFF;
 		position: fixed;
 		top: 0;
@@ -66,11 +67,14 @@ input:focus {
 		background-color: #FFF;
 		top: @header-min-height;
 		bottom: @footer-min-height;
+		border-left: 1px solid #E7E7E7;
+		border-right: 1px solid #E7E7E7;
 		position: fixed;
 		width: 100%;
 		.wrapper {
 			height: 100%;
 			overflow-y: auto;
+			padding-bottom: 6px;
 
 			ul {
 				list-style-type: none;
@@ -268,16 +272,14 @@ input:focus {
 		width: 100%;
 		height: @footer-min-height;
 		border-top: 1px solid #E7E7E7;
-		// padding-right: 2em;
-		// padding: 10px;
+		border-left: 1px solid #E7E7E7;
+		border-right: 1px solid #E7E7E7;
 
 		.input-wrapper {
-			padding: 10px;
+			padding: 6px;
 			textarea {
 				display: block;
-				padding: 2px 8px;
-				padding-top: 9px;
-				padding-bottom: 9px;
+				padding: 6px 8px;
 				padding-right: 38px;
 				overflow-y: hidden;
 				resize: none;
@@ -285,9 +287,9 @@ input:focus {
 				// margin: 10px;
 				border-radius: 5px;
 				width: 100%;
-
+				font-size: 12px;
 				-webkit-appearance: none;
-				height: 35px;
+				height: 28px;
 				line-height: normal;
 				background-color: #fff;
 				position: relative;

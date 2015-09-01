@@ -1,13 +1,13 @@
 // <script type="text/javascript">
-// 	(function(w, d, s, f) {
+// 	(function(w, d, s, f, u) {
 // 		w[f] = w[f] || [];
-// 		w[f].push(true);
-// 		var f = d.getElementsByTagName(s)[0],
+// 		w[f].push(u);
+// 		var h = d.getElementsByTagName(s)[0],
 // 			j = d.createElement(s);
 // 		j.async = true;
-// 		j.src = '//localhost:3000/rocket-external.js';
-// 		f.parentNode.insertBefore(j, f);
-// 	})(window, document, 'script', 'initRocket');
+// 		j.src = 'rocket-external.js';
+// 		h.parentNode.insertBefore(j, h);
+// 	})(window, document, 'script', 'initRocket', 'http://localhost:5000/external');
 // </script>
 
 ;(function(w) {
@@ -26,8 +26,8 @@
 		}
 	};
 
-	var initRocket = function(start) {
-		if (!start) {
+	var initRocket = function(url) {
+		if (!url) {
 			return;
 		}
 
@@ -35,13 +35,15 @@
 		chatWidget.dataset.state = 'closed';
 		chatWidget.className = 'rocketchat-widget';
 		chatWidget.innerHTML = '<div class="rocketchat-container" style="width:100%;height:100%">' +
-								'<iframe src="http://localhost:5000/external" style="width:100%;height:100%;border: 1px solid #E7E7E7;"></iframe> '+
+								'<iframe src="' + url + '" style="width:100%;height:100%;border:none;"></iframe> '+
 								'</div><div class="rocketchat-overlay"></div>';
 
 		chatWidget.style.position = 'fixed';
 		chatWidget.style.width = '300px';
 		chatWidget.style.height = '30px';
 		chatWidget.style.backgroundColor = '#04436a';
+		chatWidget.style.borderTopLeftRadius = '5px';
+		chatWidget.style.borderTopRightRadius = '5px';
 		chatWidget.style.bottom = '0';
 		chatWidget.style.right = '50px';
 
@@ -61,6 +63,23 @@
 				}
 			}
 		}, false);
+
+		var mediaqueryresponse = function (mql) {
+			if (mql.matches) {
+				chatWidget.style.width = '100%';
+				chatWidget.style.left = '0';
+				chatWidget.style.right = '0';
+			}
+			else{
+				chatWidget.style.left = 'auto';
+				chatWidget.style.right = '50px';
+				chatWidget.style.width = '300px';
+			}
+		};
+
+		var mql = window.matchMedia('screen and (max-device-width: 480px) and (orientation: portrait)');
+		mediaqueryresponse(mql);
+		mql.addListener(mediaqueryresponse);
 	};
 
 	if (typeof w.initRocket !== 'undefined') {
@@ -68,12 +87,12 @@
 		initRocket.apply(null, w.initRocket);
 	}
 
-	w.initRocket = function(start) {
-		initRocket.apply(null, [start]);
+	w.initRocket = function(url) {
+		initRocket.apply(null, [url]);
 	};
 
-	w.initRocket.push = function(start) {
-		initRocket.apply(null, [start]);
+	w.initRocket.push = function(url) {
+		initRocket.apply(null, [url]);
 	};
 
 
