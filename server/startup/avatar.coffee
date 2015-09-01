@@ -1,8 +1,11 @@
 Meteor.startup ->
-	storeType = 'GridFS'
+	storeType = 'FileSystem'
 
-	if RocketChat.settings.get 'Accounts_AvatarStoreType'
-		storeType = RocketChat.settings.get 'Accounts_AvatarStoreType'
+
+	# Sandstorm must store avatar in mongo
+	#if RocketChat.settings.get 'avatarStore_type'
+	#	storeType = RocketChat.settings.get 'avatarStore_type'
+
 
 	RocketChatStore = RocketChatFile[storeType]
 
@@ -18,7 +21,7 @@ Meteor.startup ->
 		transformWrite = (file, readStream, writeStream) ->
 			RocketChatFile.gm(readStream, file.fileName).background('#ffffff').resize(width, height+'^>').gravity('Center').extent(width, height).stream('jpeg').pipe(writeStream)
 
-	path = "~/uploads"
+	path = "/var"
 
 	if RocketChat.settings.get('Accounts_AvatarStorePath')?.trim() isnt ''
 		path = RocketChat.settings.get 'Accounts_AvatarStorePath'
@@ -29,6 +32,7 @@ Meteor.startup ->
 		transformWrite: transformWrite
 
 	WebApp.connectHandlers.use '/avatar/', (req, res, next) ->
+		console.log 'avatar called!'
 		this.params =
 			username: req.url.replace(/^\//, '').replace(/\?.*$/, '')
 

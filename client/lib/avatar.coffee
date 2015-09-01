@@ -4,7 +4,8 @@
 	if not username?
 		return
 
-	return "#{Meteor.absoluteUrl()}avatar/#{username}.jpg?_dc=#{random}"
+	# return "#{Meteor.absoluteUrl()}avatar/#{username}.jpg?_dc=#{random}"
+	return "/avatar/#{username}.jpg?_dc=#{random}"
 
 Blaze.registerHelper 'avatarUrlFromUsername', getAvatarUrlFromUsername
 

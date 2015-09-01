@@ -15,16 +15,18 @@ Accounts.emailTemplates.resetPassword.text = (user, url) ->
 	verifyEmailText user, url
 
 Accounts.onCreateUser (options, user) ->
-	# console.log 'onCreateUser ->',JSON.stringify arguments, null, '  '
-	# console.log 'options ->',JSON.stringify options, null, '  '
-	# console.log 'user ->',JSON.stringify user, null, '  '
+	console.log 'onCreateUser ->',JSON.stringify arguments, null, '  '
+	console.log 'options ->',JSON.stringify options, null, '  '
+	console.log 'user ->',JSON.stringify user, null, '  '
 
 	user.status = 'offline'
 	user.active = not RocketChat.settings.get 'Accounts_ManuallyApproveNewUsers'
 
+	# disable admin for sandstorm
 	# when inserting first user, set admin: true
-	unless Meteor.users.findOne()
-		user.admin = true
+	# unless Meteor.users.findOne()
+	#	user.admin = true
+
 
 	if not user?.name? or user.name is ''
 		if options.profile?.name?
