@@ -3,7 +3,6 @@ Template.room.helpers
 		return ChatMessage.find { rid: visitor.getRoom(), t: { '$ne': 't' }  }, { sort: { ts: 1 } }
 
 Template.room.events
-
 	'keyup .input-message': (event) ->
 		Template.instance().chatMessages.keyup(visitor.getRoom(), event, Template.instance())
 
