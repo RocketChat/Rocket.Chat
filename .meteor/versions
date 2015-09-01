@@ -115,7 +115,6 @@ rocketchat:markdown@0.0.1
 rocketchat:me@0.0.1
 rocketchat:mentions@0.0.1
 rocketchat:oembed@0.0.1
-rocketchat:slashcommands-invite@0.0.1
 rocketchat:statistics@0.0.1
 rocketchat:webrtc@0.0.1
 routepolicy@1.0.5

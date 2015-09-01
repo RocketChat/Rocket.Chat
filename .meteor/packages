@@ -32,7 +32,7 @@ rocketchat:ldap
 rocketchat:logger
 rocketchat:markdown
 rocketchat:me
-rocketchat:slashcommands-invite
+#rocketchat:slashcommands-invite
 rocketchat:mentions
 rocketchat:oembed
 rocketchat:webrtc
