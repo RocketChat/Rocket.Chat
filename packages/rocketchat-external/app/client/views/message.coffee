@@ -1,8 +1,7 @@
 Template.message.helpers
 
 	own: ->
-		return ''
-		# return 'own' if this.u?._id is Meteor.userId()
+		return 'own' if this.u?._id is Meteor.userId()
 
 	time: ->
 		return moment(this.ts).format('HH:mm')
