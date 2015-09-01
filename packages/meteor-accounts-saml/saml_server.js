@@ -1,5 +1,10 @@
 if (!Accounts.saml) {
-	Accounts.saml = {};
+	Accounts.saml = {
+		settings: {
+			debug: true,
+			providers: []
+		}
+	};
 }
 
 var Fiber = Npm.require('fibers');
@@ -15,9 +20,9 @@ Meteor.methods({
 		var samlProvider = function (element) {
 			return (element.provider == provider)
 		}
-		providerConfig = Meteor.settings.saml.filter(samlProvider)[0];
+		providerConfig = Accounts.saml.providers.filter(samlProvider)[0];
 
-		if (Meteor.settings.debug) {
+		if (Accounts.saml.debug) {
 			console.log("Logout request from " + JSON.stringify(providerConfig));
 		}
 		// This query should respect upcoming array of SAML logins
@@ -29,7 +34,7 @@ Meteor.methods({
 		});
 		var nameID = user.services.saml.nameID;
 		var sessionIndex = nameID = user.services.saml.idpSession;
-		if (Meteor.settings.debug) {
+		if (Accounts.saml.debug) {
 			console.log("NameID for user " + Meteor.userId() + " found: " + JSON.stringify(nameID));
 		}
 
@@ -53,7 +58,7 @@ Meteor.methods({
 
 		var _syncRequestToUrl = Meteor.wrapAsync(_saml.requestToUrl, _saml);
 		var result = _syncRequestToUrl(request.request, "logout");
-		if (Meteor.settings.debug) {
+		if (Accounts.saml.debug) {
 			console.log("SAML Logout Request " + result);
 		}
 
@@ -68,7 +73,7 @@ Accounts.registerLoginHandler(function (loginRequest) {
 	}
 
 	var loginResult = Accounts.saml.retrieveCredential(loginRequest.credentialToken);
-	if (Meteor.settings.debug) {
+	if (Accounts.saml.debug) {
 		console.log("RESULT :" + JSON.stringify(loginResult));
 	}
 
@@ -77,8 +82,18 @@ Accounts.registerLoginHandler(function (loginRequest) {
 			'emails.address': loginResult.profile.email
 		});
 
-		if (!user)
-			throw new Error("Could not find an existing user with supplied email " + loginResult.profile.email);
+		if (!user) {
+			Meteor.users.insert({
+				name: loginResult.profile.cn,
+				active: true,
+				emails: [{
+					address: loginResult.profile.email
+				}]
+			});
+			user = Meteor.users.findOne({
+				'emails.address': loginResult.profile.email
+			});
+		}
 
 		//creating the token and adding to the user
 		var stampedToken = Accounts._generateStampedLoginToken();
@@ -153,7 +168,7 @@ middleware = function (req, res, next) {
 		if (!samlObject.actionName)
 			throw new Error("Missing SAML action");
 
-		var service = _.find(Meteor.settings.saml, function (samlSetting) {
+		var service = _.find(Accounts.saml.providers, function (samlSetting) {
 			return samlSetting.provider === samlObject.serviceName;
 		});
 
@@ -175,14 +190,14 @@ middleware = function (req, res, next) {
 			_saml.validateLogoutResponse(req.query.SAMLResponse, function (err, result) {
 				if (!err) {
 					var logOutUser = function (inResponseTo) {
-						if (Meteor.settings.debug) {
+						if (Accounts.saml.debug) {
 						console.log("Logging Out user via inResponseTo " + inResponseTo);
 						}
 						var loggedOutUser = Meteor.users.find({
 							'services.saml.inResponseTo': inResponseTo
 						}).fetch();
 						if (loggedOutUser.length == 1) {
-							if (Meteor.settings.debug) {
+							if (Accounts.saml.debug) {
 							console.log("Found user " + loggedOutUser[0]._id);
 							}
 							Meteor.users.update({
@@ -281,7 +296,7 @@ var samlUrlToObject = function (url) {
 		serviceName: splitPath[3],
 		credentialToken: splitPath[4]
 	};
-	if (Meteor.settings.debug) {
+	if (Accounts.saml.debug) {
 		console.log(result);
 	}
 	return result;
