@@ -82,3 +82,4 @@ monbro:mongodb-mapreduce-aggregation
 rocketchat:custom-oauth
 rocketchat:gitlab
 rocketchat:statistics
+steffo:meteor-accounts-saml
