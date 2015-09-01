@@ -37,11 +37,16 @@ Template.messagePopup.onCreated ->
 
 	template.trigger = val(template.data.trigger, '@')
 
+	template.triggerAnywhere = val(template.data.triggerAnywhere, true)
+
 	template.prefix = val(template.data.prefix, template.trigger)
 
 	template.suffix = val(template.data.suffix, ' ')
 
-	template.matchSelectorRegex = val(template.data.matchSelectorRegex, new RegExp "(?:^| )#{template.trigger}[A-Za-z0-9-_.]*$")
+	if template.triggerAnywhere is true
+		template.matchSelectorRegex = val(template.data.matchSelectorRegex, new RegExp "(?:^| )#{template.trigger}[A-Za-z0-9-_.]*$")
+	else
+		template.matchSelectorRegex = val(template.data.matchSelectorRegex, new RegExp "(?:^)#{template.trigger}[A-Za-z0-9-_.]*$")
 
 	template.selectorRegex = val(template.data.selectorRegex, new RegExp "#{template.trigger}([A-Za-z0-9-_.]*)$")
 
