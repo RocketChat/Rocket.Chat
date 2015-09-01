@@ -10,10 +10,11 @@ Package.onUse(function(api) {
 
 	api.use([
 		'coffeescript',
+		'check',
 		'rocketchat:lib@0.0.1'
 	]);
 
-	api.addFiles('invite.coffee', ['server','client']);
+	api.addFiles('invite.coffee', 'server');
 });
 
 Package.onTest(function(api) {
