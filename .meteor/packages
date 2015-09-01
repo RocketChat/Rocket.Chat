@@ -33,6 +33,8 @@ rocketchat:logger
 rocketchat:markdown
 rocketchat:me
 rocketchat:slashcommands-invite
+rocketchat:slashcommands-kick
+rocketchat:slashcommands-leave
 rocketchat:mentions
 rocketchat:oembed
 rocketchat:webrtc

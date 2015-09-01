@@ -1,7 +1,7 @@
 Package.describe({
-	name: 'rocketchat:slashcommands-invite',
+	name: 'rocketchat:slashcommands-leave',
 	version: '0.0.1',
-	summary: 'Message pre-processor that will translate /invite commands',
+	summary: 'Message pre-processor that will translate /leave commands',
 	git: ''
 });
 
@@ -10,11 +10,10 @@ Package.onUse(function(api) {
 
 	api.use([
 		'coffeescript',
-		'check',
 		'rocketchat:lib@0.0.1'
 	]);
 
-	api.addFiles('invite.coffee');
+	api.addFiles('leave.coffee', ['server','client']);
 });
 
 Package.onTest(function(api) {
