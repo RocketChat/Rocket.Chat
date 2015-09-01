@@ -46,6 +46,7 @@ RocketChat.settings.addGroup = (_id, options = {}) ->
 
 Meteor.methods
 	saveSetting: (_id, value) ->
+		console.log '[method] saveSetting', _id, value
 		if Meteor.userId()?
 			user = Meteor.users.findOne Meteor.userId()
 		
