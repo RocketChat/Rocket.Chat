@@ -1,0 +1,38 @@
+<template name="accountPreferences">
+	<section class="page-container page-home page-static">
+		<head class="fixed-title">
+			{{> burger}}
+			<h2>
+				<span class="room-title">{{_ "Preferences"}}</span>
+			</h2>
+		</head>
+		<div class="content">
+			<div class="rocket-form">
+				<fieldset>
+					<div class="section">
+						<h1>{{_ "Sound"}}</h1>
+						<div class="section-content">
+							<div class="input-line double-col">
+								<label>{{_ "Disable_New_Room_Notification"}}</label>
+								<div>
+									<label><input type="radio" name="disableNewRoomNotification" value="1" checked="{{checked 'disableNewRoomNotification' true}}" /> {{_ "True"}}</label>
+									<label><input type="radio" name="disableNewRoomNotification" value="0" checked="{{checked 'disableNewRoomNotification' false}}" /> {{_ "False"}}</label>
+								</div>
+							</div>
+							<div class="input-line double-col">
+								<label>{{_ "Disable_New_Message_Notification"}}</label>
+								<div>
+									<label><input type="radio" name="disableNewMessageNotification" value="1" checked="{{checked 'disableNewMessageNotification' true}}" /> {{_ "True"}}</label>
+									<label><input type="radio" name="disableNewMessageNotification" value="0" checked="{{checked 'disableNewMessageNotification' false}}" /> {{_ "False"}}</label>
+								</div>
+							</div>
+						</div>
+					</div>
+				</fieldset>
+				<div class="submit">
+					<button class="button"><i class="icon-send"></i><span>{{_ "Save_changes"}}</span></button>
+				</div>
+			</div>
+		</div>
+	</section>
+</template>
