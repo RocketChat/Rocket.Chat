@@ -60,6 +60,36 @@ Template.messagePopupConfig.helpers
 
 		return config
 
+	popupSlashCommandsConfig: ->
+		self = this
+		template = Template.instance()
+
+		config =
+			title: 'Commands'
+			collection: RocketChat.slashCommands.commands
+			trigger: '/'
+			triggerAnywhere: false
+			template: 'messagePopupSlashCommand'
+			getInput: self.getInput
+			getFilter: (collection, filter) ->
+				commands = []
+				for command, item of collection
+					if command.indexOf(filter) > -1
+						commands.push
+							_id: command
+							params: item.params
+							description: item.description
+
+					if commands.length > 10
+						break
+
+				commands = commands.sort (a, b) ->
+					return a._id > b._id
+
+				return commands
+
+		return config
+
 	emojiEnabled: ->
 		return RocketChat.emoji?
 
