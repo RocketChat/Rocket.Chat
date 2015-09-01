@@ -34,7 +34,7 @@
 		chatWidget.dataset.state = 'closed';
 		chatWidget.className = 'rocketchat-widget';
 		chatWidget.innerHTML = '<div class="rocketchat-container" style="width:100%;height:100%">' +
-								'<iframe src="' + url + '" style="width:100%;height:100%;border:none;"></iframe> '+
+								'<iframe src="' + url + '" style="width:100%;height:100%;border:none;background-color:transparent" allowTransparency="true"></iframe> '+
 								'</div><div class="rocketchat-overlay"></div>';
 
 		chatWidget.style.position = 'fixed';

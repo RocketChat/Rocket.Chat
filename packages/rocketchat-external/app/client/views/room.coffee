@@ -16,6 +16,9 @@ Template.room.events
 	'click .title': ->
 		parentCall 'toggleWindow'
 
+	'click .error': (e) ->
+		$(e.currentTarget).removeClass('show')
+
 Template.room.onCreated ->
 	self = @
 	self.autorun ->

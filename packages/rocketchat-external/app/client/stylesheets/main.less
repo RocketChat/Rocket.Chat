@@ -55,6 +55,7 @@ input:focus {
 		height: @header-min-height;
 		display: table;
 		z-index: 10;
+		cursor: pointer;
 		h1 {
 			margin: 0;
 			padding: 0 5px;
@@ -64,6 +65,7 @@ input:focus {
 		}
 	}
 	.messages {
+		display: block;
 		background-color: #FFF;
 		top: @header-min-height;
 		bottom: @footer-min-height;
@@ -228,6 +230,9 @@ input:focus {
 				&.temp .body {
 					opacity: .5;
 				}
+				&.msg-error .body {
+					text-decoration: line-through;
+				}
 
 				.avatar .avatar-image {
 					height: 100%;
@@ -264,8 +269,24 @@ input:focus {
 				.transform(translateY(150%));
 			}
 		}
+
+		.error {
+			bottom: 50px;
+			position: fixed;
+			width: 100%;
+			background-color: #F7D799;
+			padding: 5px;
+
+			.transition(transform 0.3s ease-out);
+			.transform(translateY(200%));
+
+			&.show {
+				.transform(translateY(8px));
+			}
+		}
 	}
 	.footer {
+		display: block;
 		background-color: #FCFCFC;
 		position: fixed;
 		bottom: 0;
@@ -303,6 +324,12 @@ input:focus {
 	.external-room {
 		.title {
 			height: 100%;
+		}
+		.footer {
+			display: none;
+		}
+		.messages {
+			display: none;
 		}
 	}
 }
