@@ -46,6 +46,7 @@ jquery@1.11.3_2
 json@1.0.3
 kadira:blaze-layout@2.0.1
 kadira:flow-router@2.4.0
+kenton:accounts-sandstorm@0.1.4
 kevohagan:sweetalert@1.0.0
 konecty:autolinker@1.0.2
 konecty:change-case@2.3.0
@@ -114,9 +115,8 @@ rocketchat:logger@0.0.1
 rocketchat:markdown@0.0.1
 rocketchat:me@0.0.1
 rocketchat:mentions@0.0.1
-rocketchat:oembed@0.0.1
 rocketchat:statistics@0.0.1
-rocketchat:webrtc@0.0.1
+rocketchat:webrtc-ib@0.0.1
 routepolicy@1.0.5
 service-configuration@1.0.4
 session@1.1.0

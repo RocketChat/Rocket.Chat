@@ -1,3 +1,4 @@
 Template.oembedImageWidget.helpers
 	showImage: ->
-		return @downloadImages is true or not Meteor.Device.isPhone()
+		return true
+		# @downloadImages is true or not Meteor.Device.isPhone()

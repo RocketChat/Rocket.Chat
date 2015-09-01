@@ -34,10 +34,10 @@ rocketchat:markdown
 rocketchat:me
 #rocketchat:slashcommands-invite
 rocketchat:mentions
-rocketchat:oembed
-rocketchat:webrtc
-#rocketchat:external
 #rocketchat:hubot
+#rocketchat:oembed
+rocketchat:webrtc-ib
+#rocketchat:external
 #rocketchat:irc
 
 konecty:change-case
@@ -82,3 +82,5 @@ monbro:mongodb-mapreduce-aggregation
 rocketchat:custom-oauth
 rocketchat:gitlab
 rocketchat:statistics
+kenton:accounts-sandstorm
+

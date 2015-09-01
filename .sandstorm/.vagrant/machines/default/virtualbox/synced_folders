@@ -1,0 +1,1 @@
+{"virtualbox":{"/opt/app":{"guestpath":"/opt/app","hostpath":"/home/sam/projects/Rocket.Chat/Rocket.Chat","disabled":false},"/host-dot-sandstorm":{"guestpath":"/host-dot-sandstorm","hostpath":"/home/sam/.sandstorm","disabled":false},"/vagrant":{"guestpath":"/vagrant","hostpath":"/home/sam/projects/Rocket.Chat/Rocket.Chat","disabled":false}}}
