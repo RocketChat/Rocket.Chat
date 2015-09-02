@@ -14,11 +14,11 @@
   "Conversation" : "உரையாடல்",
   "Create_new" : "புதிய உருவாக்கவும்",
   "Create_new_direct_message_room" : "ஒரு புதிய நேரடி செய்தி அறையை உருவாக்கு",
-  "Create_new_public_channel" : "ஒரு புதிய பொது குழுவை உருவாக்கு",
   "Create_new_private_group" : "ஒரு புதிய தனிப்பட்ட குழுவை உருவாக்கு",
+  "Create_new_public_channel" : "ஒரு புதிய பொது குழுவை உருவாக்கு",
   "Created_at" : "மணிக்கு உருவாக்கப்பட்டது",
-  "Direct_Messages" : "நேரடி செய்திகள்",
   "Deleted" : "நீக்கப்பட்டது!",
+  "Direct_Messages" : "நேரடி செய்திகள்",
   "Duplicate_channel_name" : "ஒரு சேனல் பெயர் '% s' என்ற உள்ளது",
   "edited" : "திருத்தப்பட்டது",
   "Email_or_username" : "மின்னஞ்சல் அல்லது பயனர் பெயர்",
@@ -99,8 +99,8 @@
   "View_All" : "அனைத்தையும் பார்க்க",
   "Welcome" : "<em>% s</em> உங்களை வரவேற்கிறோம்.",
   "With_whom" : "யாருடன்",
+  "Yes_delete_it" : "ஆம், நீக்கு!",
   "You_need_confirm_email" : "நீங்கள் உள்நுழைய உங்கள் மின்னஞ்சல் முகவரியை உறுதிப்படுத்த வேண்டும்!",
   "You_will_not_be_able_to_recover" : "நீங்கள் மீட்க முடியாது!",
-  "Yes_delete_it" : "ஆம், நீக்கு!",
   "Your_entry_has_been_deleted" : "உங்கள் உள்ளீடு நீக்கப்பட்டுவிட்டது."
 }
