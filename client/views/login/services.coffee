@@ -57,7 +57,7 @@ Template.loginServices.events
 				FlowRouter.go 'index'
 		else
 			loginWithService = "loginWith" + (if this.service.service is 'meteor-developer' then 'MeteorDeveloperAccount' else _.capitalize(this.service.service))
-			serviceConfig = {}
+			serviceConfig = this.service.clientConfig or {}
 			Meteor[loginWithService] serviceConfig, (error) ->
 				loadingIcon.addClass 'hidden'
 				serviceIcon.removeClass 'hidden'
