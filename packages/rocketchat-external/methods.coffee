@@ -38,7 +38,7 @@ Meteor.methods
 		check message.rid, String
 		check message.token, String
 
-		user = Meteor.users.findOne Meteor.userId(), fields: username: 1
+		guest = Meteor.users.findOne Meteor.userId(), fields: username: 1
 
 		room = ChatRoom.findOne message.rid
 
@@ -52,30 +52,30 @@ Meteor.methods
 
 			ChatRoom.insert
 				_id: message.rid
-				name: user.username
+				name: guest.username
 				msgs: 1
 				lm: new Date()
-				usernames: [ operator.username, user.username ]
-				t: 'p'
+				usernames: [ operator.username, guest.username ]
+				t: 'd'
 				ts: new Date()
 				v:
 					token: message.token
 
 			ChatSubscription.insert
 				rid: message.rid
-				name: user.username
+				name: guest.username
 				alert: true
 				open: true
 				unread: 1
 				u:
 					_id: operator._id
 					username: operator.username
-				t: 'p'
+				t: 'd'
 
-		room = Meteor.call 'canAccessRoom', message.rid, user._id
+		room = Meteor.call 'canAccessRoom', message.rid, guest._id
 
 		if not room
 			throw new Meteor.Error 'cannot-acess-room'
 
-		RocketChat.sendMessage user, message, room
+		RocketChat.sendMessage guest, message, room
 
