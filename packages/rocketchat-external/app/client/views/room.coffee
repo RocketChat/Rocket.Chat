@@ -22,9 +22,7 @@ Template.room.events
 Template.room.onCreated ->
 	self = @
 	self.autorun ->
-		console.log 'visitor ->',visitor.getToken()
 		self.subscribe 'visitorRoom', visitor.getToken(), ->
-			console.log 'visitorRoom.ready()'
 			room = ChatRoom.findOne()
 			if room?
 				visitor.setRoom room._id

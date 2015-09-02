@@ -62,13 +62,6 @@ Accounts.onCreateUser (options, user) ->
 Accounts.validateLoginAttempt (login) ->
 	login = RocketChat.callbacks.run 'beforeValidateLogin', login
 
-	# console.log JSON.stringify login, null, '  '
-
-	# @TODO: why there is no profile.guest here?
-	# if login.user?.profile?.guest is true
-	# 	throw new Meteor.Error 'guest-login-disabled'
-	# 	return false
-
 	if login.allowed isnt true
 		return login.allowed
 
