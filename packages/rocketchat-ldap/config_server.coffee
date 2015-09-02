@@ -4,7 +4,7 @@ Meteor.startup ->
 	RocketChat.settings.addGroup 'LDAP'
 	RocketChat.settings.add 'LDAP_Enable', false    , { type: 'boolean', group: 'LDAP', i18nLabel: 'rocketchat-ldap:LDAP_Enable', public: true }
 	RocketChat.settings.add 'LDAP_Url'   , 'ldap://', { type: 'string' , group: 'LDAP', i18nLabel: 'rocketchat-ldap:LDAP_Url' }
-	RocketChat.settings.add 'LDAP_Port'  , ''       , { type: 'string' , group: 'LDAP', i18nLabel: 'rocketchat-ldap:LDAP_Port' }
+	RocketChat.settings.add 'LDAP_Port'  , '389'    , { type: 'string' , group: 'LDAP', i18nLabel: 'rocketchat-ldap:LDAP_Port' }
 	RocketChat.settings.add 'LDAP_DN'    , ''       , { type: 'string' , group: 'LDAP', i18nLabel: 'rocketchat-ldap:LDAP_Dn', public: true }
 
 
