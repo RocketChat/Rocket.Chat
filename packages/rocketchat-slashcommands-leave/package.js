@@ -13,7 +13,7 @@ Package.onUse(function(api) {
 		'rocketchat:lib@0.0.1'
 	]);
 
-	api.addFiles('leave.coffee', ['server','client']);
+	api.addFiles('leave.coffee');
 });
 
 Package.onTest(function(api) {
