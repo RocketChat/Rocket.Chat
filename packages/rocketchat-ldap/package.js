@@ -12,25 +12,28 @@ Npm.depends({
 Package.onUse(function(api) {
   api.versionsFrom('1.0.3.1');
 
-  api.use(["tap:i18n@1.5.1"], ["client", "server"]);
-  api.add_files("package-tap.i18n", ["client", "server"]);
+  // Commom
+  api.use('tap:i18n@1.5.1');
+  api.use('coffeescript');
+  // Client
+  api.use('templating', 'client');
+  // Server
+  api.use('accounts-base', 'server');
+  api.use('accounts-password', 'server');
 
-  api.use(['templating'], 'client');
 
-  api.use(['accounts-base', 'accounts-password'], 'server');
+  // Commom
+  api.addFiles('package-tap.i18n');
+  api.addFiles('i18n/en.i18n.json');
+  api.addFiles('i18n/pt.i18n.json');
+  // Client
+  api.addFiles('ldap_client.js', 'client');
+  // Server
+  api.addFiles('ldap_server.js', 'server');
+  api.addFiles('config_server.coffee', 'server');
 
-  api.addFiles(['ldap_client.js'], 'client');
-  api.addFiles(['ldap_server.js', 'lib/ldapjs.js'], 'server');
-
-  api.add_files([
-    "i18n/en.i18n.json",
-    "i18n/pt.i18n.json"
-  ], ["client", "server"]);
-
+  
   api.export('LDAP', 'server');
   api.export('LDAP_DEFAULTS', 'server');
-  api.export([
-    'MeteorWrapperLdapjs'
-  ]);
+  api.export('MeteorWrapperLdapjs');
 });
-
