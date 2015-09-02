@@ -19,7 +19,6 @@ meteor-platform
 reactive-dict
 reactive-var
 service-configuration
-artwells:accounts-guest
 
 arunoda:streams
 rocketchat:lib
