@@ -14,6 +14,7 @@ Package.onUse(function(api) {
 
   // Commom
   api.use('tap:i18n@1.5.1');
+  api.use('yasaricli:slugify');
   api.use('coffeescript');
   // Client
   api.use('templating', 'client');
