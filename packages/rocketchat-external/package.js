@@ -20,7 +20,6 @@ Package.onUse(function(api) {
 
 	api.use(['coffeescript', 'webapp', 'autoupdate', 'artwells:accounts-guest'], 'server');
 
-	api.addFiles('guests.coffee', ['client','server']);
 	api.addFiles('external.coffee', 'server');
 	api.addFiles('methods.coffee', 'server');
 	api.addFiles('publications.coffee', 'server');

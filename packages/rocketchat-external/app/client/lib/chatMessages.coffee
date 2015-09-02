@@ -93,9 +93,16 @@ class @ChatMessages
 							showError error.reason
 
 			if not Meteor.userId()
-				Meteor.loginVisitor null, (error) ->
-					if not error
-						console.log 'usuario logado, mandanndo mensagem'
+				Meteor.call 'registerGuest', visitor.getToken(), (error, result) ->
+					if error?
+						ChatMessage.update msgObject._id, { $set: { error: true } }
+						return showError error.reason
+
+					Meteor.loginWithPassword result.user, result.pass, (error) ->
+						if error
+							ChatMessage.update msgObject._id, { $set: { error: true } }
+							return showError error.reason
+
 						sendMessage()
 			else
 				sendMessage()

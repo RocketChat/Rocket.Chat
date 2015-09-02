@@ -11,11 +11,9 @@ msgStream.permissions.read (eventName) ->
 	# return this.userId == eventName;
 
 	try
-		# @TODO what to do here with visitor rooms?
+		canAccess = Meteor.call 'canAccessRoom', eventName, this.userId
 
-		# canAccess = Meteor.call 'canAccessRoom', eventName, this.userId
-
-		# return false if not canAccess
+		return false if not canAccess
 
 		return true
 	catch e

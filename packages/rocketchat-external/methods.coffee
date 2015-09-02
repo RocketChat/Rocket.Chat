@@ -1,6 +1,38 @@
 # @Visitor = new Meteor.Collection 'rocketchat_visitor'
-console.log 'registering sendMessageExternal'
 Meteor.methods
+	registerGuest: (token) ->
+		check token, String
+
+		user = Meteor.users.findOne { "profile.token": token }, { fields: { _id: 1 } }
+		if user?
+			throw new Meteor.Error 'token-already-exists', 'Token already exists'
+
+		pass = Meteor.uuid()
+
+		loop
+			qt = Meteor.users.find({ 'profile.guest': true }).count() + 1
+			user = 'guest-' + qt
+
+			userExists = Meteor.users.findOne { 'username': user }, { fields: { _id: 1 } }
+			break if not userExists
+
+		userData =
+			username: user
+			password: pass
+
+		userId = Accounts.createUser userData
+
+		Meteor.users.update userId,
+			$set:
+				name: user
+				"profile.guest": true
+				"profile.token": token
+
+		return {
+			user: user
+			pass: pass
+		}
+
 	sendMessageExternal: (message) ->
 		console.log 'sendMessageExternal ->',arguments
 
@@ -38,7 +70,7 @@ Meteor.methods
 
 			ChatRoom.insert
 				_id: message.rid
-				name: 'guest '+message.rid
+				name: user.username
 				msgs: 1
 				lm: new Date()
 				usernames: [ operator.username, user.username ]
@@ -49,7 +81,7 @@ Meteor.methods
 
 			ChatSubscription.insert
 				rid: message.rid
-				name: 'guest '+message.rid
+				name: user.username
 				alert: true
 				open: true
 				unread: 1
