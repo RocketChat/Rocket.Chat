@@ -42,6 +42,7 @@ Template.admin.events
 	"click .submit": (e, t) ->
 		group = FlowRouter.getParam('group')
 		settings = Settings.find({ group: group }).fetch()
+		console.log 'will save settings', JSON.stringify settings
 		updateSettings = []
 		for setting in settings
 			value = null
@@ -52,6 +53,8 @@ Template.admin.events
 
 			if value?
 				updateSettings.push { _id: setting._id, value: value }
+
+		console.log 'changed settings', JSON.stringify updateSettings
 
 		if not _.isEmpty updateSettings
 			RocketChat.settings.batchSet updateSettings, (err, success) ->

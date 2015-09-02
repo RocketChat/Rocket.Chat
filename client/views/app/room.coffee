@@ -278,6 +278,10 @@ Template.room.helpers
 
 
 Template.room.events
+	"keydown #room-search": (e) ->
+		if e.keyCode is 13
+			e.preventDefault()
+
 	"keyup #room-search": _.debounce (e, t) ->
 		t.searchResult.set undefined
 		value = e.target.value.trim()
