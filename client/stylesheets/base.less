@@ -67,11 +67,12 @@ blockquote {
 	position: relative;
 	&:before {
 		content: ' ';
-		background-color: #ccc;
+		background-color: #eaeaea;
 		height: 100%;
-		width: 3px;
+		width: 4px;
 		position: absolute;
 		left: 0px;
+		border-radius: 10px;
 	}
 }
 
@@ -3676,6 +3677,13 @@ a.github-fork {
 #particles-js {
 	&:extend(.fill-all);
 	position: fixed;
+}
+
+.mention-link.mention-link-me {
+	background-color: #E6F4FD;
+	border-radius: 4px;
+	padding: 0px 3px 2px 2px;
+	font-weight: bold;
 }
 
 .avatar-suggestions {

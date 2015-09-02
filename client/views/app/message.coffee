@@ -76,7 +76,7 @@ Template.message.onViewRendered = (context) ->
 				do (item) ->
 					urlNode = lastNode.querySelector('.body a[href="'+item.url+'"]')
 					if urlNode?
-						$(urlNode).replaceWith Blaze.toHTMLWithData Template.oembedBaseWidget, item
+						$(lastNode.querySelector('.body')).append Blaze.toHTMLWithData Template.oembedBaseWidget, item
 
 		if not lastNode.nextElementSibling?
 			if lastNode.classList.contains('own') is true
