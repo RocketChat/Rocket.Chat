@@ -192,16 +192,16 @@ class @ChatMessages
 				event.stopPropagation()
 				this.clearEditing()
 				return
-		else if k is 38 or k is 40 # Arrow Up or down
-			if k is 38
-				return if input.value.slice(0, input.selectionStart).match(/[\n]/) isnt null
-				this.toPrevMessage()
-			else
-				return if input.value.slice(input.selectionEnd, input.value.length).match(/[\n]/) isnt null
-				this.toNextMessage()
+		# else if k is 38 or k is 40 # Arrow Up or down
+		# 	if k is 38
+		# 		return if input.value.slice(0, input.selectionStart).match(/[\n]/) isnt null
+		# 		this.toPrevMessage()
+		# 	else
+		# 		return if input.value.slice(input.selectionEnd, input.value.length).match(/[\n]/) isnt null
+		# 		this.toNextMessage()
 
-			event.preventDefault()
-			event.stopPropagation()
+		# 	event.preventDefault()
+		# 	event.stopPropagation()
 
 		# ctrl (command) + shift + k -> clear room messages
 		else if k is 75 and ((navigator?.platform?.indexOf('Mac') isnt -1 and event.metaKey and event.shiftKey) or (navigator?.platform?.indexOf('Mac') is -1 and event.ctrlKey and event.shiftKey))

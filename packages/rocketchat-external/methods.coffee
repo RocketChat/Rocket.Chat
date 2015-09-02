@@ -1,4 +1,3 @@
-# @Visitor = new Meteor.Collection 'rocketchat_visitor'
 Meteor.methods
 	registerGuest: (token) ->
 		check token, String
