@@ -126,136 +126,137 @@
 				{{/if}}
 			</footer>
 		</section>
-		<section class="flex-tab">
-			<div class="control">
-				<button class="more"><span class="arrow {{arrowPosition}}"></span></button>
-				<form class="search-form" role="form">
-					<div class="input-line search">
-						<!-- {{> inputAutocomplete settings=autocompleteSettingsRoomSearch id="room-search" class="search" placeholder=tQuickSearch autocomplete="off"}} -->
-						<input type="text" id="room-search" class="search" placeholder="{{tQuickSearch}}" autocomplete="off" />
-						<i class="icon-search"></i>
-					</div>
-				</form>
-			</div>
-			{{#if flexOpened}}
-				<div class="content">
-					{{#if searchResult.messages}}
-						<ul>
-							{{#each searchResult.messages}}
-								{{#nrr nrrargs 'message' .}}{{/nrr}}
+		<div class="sidebar right">
+			<section class="flex-tab">
+				<div class="control">
+					<button class="more"><span class="icon-users" title="{{#if flexOpened}}{{_ 'Close'}}{{/if}}"></span></button>
+					<form class="search-form" role="form">
+						<div class="input-line search">
+							<!-- {{> inputAutocomplete settings=autocompleteSettingsRoomSearch id="room-search" class="search" placeholder=tQuickSearch autocomplete="off"}} -->
+							<input type="text" id="room-search" class="search" placeholder="{{tQuickSearch}}" autocomplete="off" />
+							<i class="icon-search"></i>
+						</div>
+					</form>
+				</div>
+				{{#if flexOpened}}
+					<div class="content">
+						{{#if searchResult.messages}}
+							<ul>
+								{{#each searchResult.messages}}
+									{{#nrr nrrargs 'message' .}}{{/nrr}}
+								{{/each}}
+							</ul>
+							<!-- {{#each searchResult.users}}
+								@{{username}}
 							{{/each}}
-						</ul>
-						<!-- {{#each searchResult.users}}
-							@{{username}}
-						{{/each}}
-						{{#each searchResult.rooms}}
-							#{{name}}
-						{{/each}} -->
-					{{else}}
-						{{#if isGroupChat}}
-							<div class="list-view{{#if $.Session.get 'showUserInfo'}} -hidden{{/if}}">
-								{{#with roomUsers}}
-									<div class="status">
-										<h2>{{_ "Members_List"}}</h2>
-										<p>
-											{{{_ "Showing_online_users" total_online=totalOnline total=total}}}
-											{{!--<button class="see-all">{{seeAll}}</button>--}}
-										</p>
-										{{#if canAddUser}}
-											<div class="control">
-												<div class="search-form">
-													<div class="input-line search">
-														{{> inputAutocomplete settings=autocompleteSettingsAddUser id="user-add-search" class="search" placeholder=tAddUsers}}
-														<i class="icon-plus"></i>
+							{{#each searchResult.rooms}}
+								#{{name}}
+							{{/each}} -->
+						{{else}}
+							{{#if isGroupChat}}
+								<div class="list-view{{#if $.Session.get 'showUserInfo'}} -hidden{{/if}}">
+									{{#with roomUsers}}
+										<div class="status">
+											<h2>{{_ "Members_List"}}</h2>
+											<p>
+												{{{_ "Showing_online_users" total_online=totalOnline total=total}}}
+												{{!--<button class="see-all">{{seeAll}}</button>--}}
+											</p>
+											{{#if canAddUser}}
+												<div class="control">
+													<div class="search-form">
+														<div class="input-line search">
+															{{> inputAutocomplete settings=autocompleteSettingsAddUser id="user-add-search" class="search" placeholder=tAddUsers}}
+															<i class="icon-plus"></i>
+														</div>
 													</div>
 												</div>
-											</div>
-										{{/if}}
-									</div>
-									<ul class='list clearfix lines'>
-										{{#each users}}
-											<li class='user-image user-card-room status-{{status}}'>
-												<a data-username="{{username}}" tabindex="0" title="{{username}}">
-													{{> avatar username=username}}
-													<p>{{username}} {{utcOffset}}</p>
-												</a>
-											</li>
-										{{/each}}
-									</ul>
-								{{/with}}
-							</div>
-							<div class="user-view animated{{#unless $.Session.get 'showUserInfo'}} -hidden{{/unless}}">
-								{{> userInfo user=flexUserInfo showAll=true}}
-							</div>
-						{{else}}
-							<div class="user-view">
-								{{> userInfo user=flexUserInfo video=true}}
-							</div>
+											{{/if}}
+										</div>
+										<ul class='list clearfix lines'>
+											{{#each users}}
+												<li class='user-image user-card-room status-{{status}}'>
+													<a data-username="{{username}}" tabindex="0" title="{{username}}">
+														{{> avatar username=username}}
+														<p>{{username}} {{utcOffset}}</p>
+													</a>
+												</li>
+											{{/each}}
+										</ul>
+									{{/with}}
+								</div>
+								<div class="user-view animated{{#unless $.Session.get 'showUserInfo'}} -hidden{{/unless}}">
+									{{> userInfo user=flexUserInfo showAll=true}}
+								</div>
+							{{else}}
+								<div class="user-view">
+									{{> userInfo user=flexUserInfo video=true}}
+								</div>
+							{{/if}}
 						{{/if}}
-					{{/if}}
-				</div>
-			{{/if}}
-		</section>
-		<section class="flex-tab-2">
-			<div class="control">
-				<button class="more"><span class="arrow {{arrow2Position}}"></span></button>
-				
-			    <h3>Bot Controlled UI</h3>
-			    <div>
-			    UI is dynamically generated based on DSL message from BOT. DSL also specifies command sent back.
-			    </div>
-			 
-			 </div>
-			
-		
-			{{#if flex2Opened}}
+					</div>
+				{{/if}}
+			</section>
+			<section class="flex-tab-2">
 				<div class="control">
-			<div class="botgen">
-				   <input type="text" id="gistbutton" class="search" placeholder="Gist Id or Url" autocomplete="off" />
-			</div>
+					<button class="more" title="{{#if flex2Opened}}{{_ 'Close'}}{{/if}}"><span class="icon-cube"></span></button>
+
+					<h3>Bot Controlled UI</h3>
+					<div>
+					UI is dynamically generated based on DSL message from BOT. DSL also specifies command sent back.
+					</div>
+
+				 </div>
+
+
+				{{#if flex2Opened}}
+					<div class="control">
 				<div class="botgen">
-					<button class='button'><span> {{_ "Get Gist"}}</span></button>
-			</div>
-				
-					<div class="botgen">
-					<button class='button'><span> {{_ "Show history"}}</span></button>
-					</div>
-					<div class="botgen">
-					<button class='button'><span> {{_ "Blame"}}</span></button>
-					</div>
-				
-					
+					   <input type="text" id="gistbutton" class="search" placeholder="Gist Id or Url" autocomplete="off" />
 				</div>
-			{{/if}}
-		
-		
-		</section>
-		<section class="flex-tab-3">
-			<div class="control">
-				<button class="more"><span class="arrow {{arrow3Position}}"></span></button>
-				<form class="search-form" role="form">
-					<div class="input-line search">
-						<!-- {{> inputAutocomplete settings=autocompleteSettingsRoomSearch id="room-search" class="search" placeholder=tQuickSearch autocomplete="off"}} -->
-						<input type="text" id="room-search" class="search" placeholder="{{tQuickSearch}}" autocomplete="off" />
-						<i class="icon-search"></i>
-					</div>
-				</form>
-			</div>
-			{{#if flex3Opened}}
-				<div class="content">
-					{{> CodeMirror id="flyineditor" name="flyineditor" options=editorOptions code=editorCode }}
-
-			<div style="position:relative; padding: 10px 0 0 30px;">
-			<button class='button'><span> {{_ "Save"}}</span></button>
-			<button class='button'><span> {{_ "Commit"}}</span></button>
-			<button class='button'><span> {{_ "Cancel"}}</span></button>
-			</div>
-
+					<div class="botgen">
+						<button class='button'><span> {{_ "Get Gist"}}</span></button>
 				</div>
-			
 
-			{{/if}}
-		</section>
+						<div class="botgen">
+						<button class='button'><span> {{_ "Show history"}}</span></button>
+						</div>
+						<div class="botgen">
+						<button class='button'><span> {{_ "Blame"}}</span></button>
+						</div>
 
+
+					</div>
+				{{/if}}
+
+
+			</section>
+			<section class="flex-tab-3">
+				<div class="control">
+					<button class="more"><span class="icon-code" title="{{#if flex3Opened}}{{_ 'Close'}}{{/if}}"></span></button>
+					<form class="search-form" role="form">
+						<div class="input-line search">
+							<!-- {{> inputAutocomplete settings=autocompleteSettingsRoomSearch id="room-search" class="search" placeholder=tQuickSearch autocomplete="off"}} -->
+							<input type="text" id="room-search" class="search" placeholder="{{tQuickSearch}}" autocomplete="off" />
+							<i class="icon-search"></i>
+						</div>
+					</form>
+				</div>
+				{{#if flex3Opened}}
+					<div class="content">
+						{{> CodeMirror id="flyineditor" name="flyineditor" options=editorOptions code=editorCode }}
+
+						<div class="codeEditor">
+							<button class='button'><span> {{_ "Save"}}</span></button>
+							<button class='button'><span> {{_ "Commit"}}</span></button>
+							<button class='button'><span> {{_ "Cancel"}}</span></button>
+						</div>
+
+					</div>
+
+
+				{{/if}}
+			</section>
+		</div>
 	</div>
 </template>
