@@ -41,6 +41,9 @@ Template.loginForm.helpers
 
 	waitActivation: ->
 		return Template.instance().state.get() is 'wait-activation'
+
+	loginTerms: ->
+		return RocketChat.settings.get 'Layout_Login_Terms'
 		
 Template.loginForm.events
 	'submit #login-card': (event, instance) ->
