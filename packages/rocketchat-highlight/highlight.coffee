@@ -40,7 +40,7 @@ class Highlight
 							result = hljs.highlightAuto code
 						else
 							result = hljs.highlight lang, code
-						msgParts[index] = "<pre><code class='hljs2 " + result.language + "'><span class='copyonly'>```<br></span>" + result.value + "<span class='copyonly'><br>```</span></code></pre>"
+						msgParts[index] = "<pre><code class='hljs " + result.language + "'><span class='copyonly'>```<br></span>" + result.value + "<span class='copyonly'><br>```</span></code></pre>"
 					else
 						msgParts[index] = part
 
