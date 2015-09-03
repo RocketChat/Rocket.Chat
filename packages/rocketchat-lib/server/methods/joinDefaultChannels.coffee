@@ -7,15 +7,17 @@ Meteor.methods
 
 		user = Meteor.user()
 
+		RocketChat.callbacks.run 'beforeJoinDefaultChannels', user
+
 		ChatRoom.find({default: true, t: {$in: ['c', 'p']}}).forEach (room) ->
-			
+
 			# put user in default rooms
 			ChatRoom.update room._id,
 				$addToSet:
 					usernames: user.username
 
 			if not ChatSubscription.findOne(rid: room._id, 'u._id': user._id)?
-				
+
 				# Add a subscription to this user
 				ChatSubscription.insert
 					rid: room._id
@@ -29,7 +31,7 @@ Meteor.methods
 					u:
 						_id: user._id
 						username: user.username
-				
+
 				# Insert user joined message
 				ChatMessage.insert
 					rid: room._id

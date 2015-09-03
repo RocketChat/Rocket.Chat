@@ -19,6 +19,8 @@ Accounts.onCreateUser (options, user) ->
 	# console.log 'options ->',JSON.stringify options, null, '  '
 	# console.log 'user ->',JSON.stringify user, null, '  '
 
+	RocketChat.callbacks.run 'beforeCreateUser', options, user
+
 	user.status = 'offline'
 	user.active = not RocketChat.settings.get 'Accounts_ManuallyApproveNewUsers'
 
@@ -43,6 +45,9 @@ Accounts.onCreateUser (options, user) ->
 					address: service.email
 					verified: true
 				]
+
+	Meteor.defer ->
+		RocketChat.callbacks.run 'afterCreateUser', options, user
 
 	return user
 
