@@ -10,7 +10,7 @@
 	# notificacoes HTML5
 	showDesktop: (room, msg) ->
 		unless Session.equals('user_' + Meteor.userId() + '_status', 'busy')
-			roomName = room.name + ' - Rocket.Chat'
+			roomName = room.name + ' - ' + RocketChat.settings.get 'Site_Name'
 			if window.Notification && Notification.permission == "granted"
 				n = new Notification roomName,
 					icon: '/images/rocket-chat-logo-square.png'
