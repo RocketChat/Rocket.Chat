@@ -73,6 +73,8 @@ It is a great solution for communities and companies wanting to privately host t
 - Sent Message Edit and Deletion
 - Transcripts / History
 - File Upload / Sharing
+- Full text search
+- Support for Okta SSO through SAML v2
 - I18n - Supports 22 Languages [Internationalization with Lingohub](https://translate.lingohub.com/engelgabriel/rocket-dot-chat/dashboard)
 - Hubot Friendly - [Hubot Integration Project](https://github.com/RocketChat/hubot-rocketchat)
 - Media Embeds
@@ -85,12 +87,11 @@ It is a great solution for communities and companies wanting to privately host t
 - Mobile app for iPhone, iPad, and iPod touch [Download on AppStore!](https://geo.itunes.apple.com/us/app/rocket.chat/id1028869439?mt=8)
 - Mobile app for Android phone, tablet, and TV stick [Available now on Google Play!](https://play.google.com/store/apps/details?id=com.konecty.rocket.chat)
 
+
 ### Roadmap
 
 #### In Progress
 
-- Full text search
-- Support for Okta SSO through SAML v2 [Issue #322](https://github.com/RocketChat/Rocket.Chat/issues/322)
 - Native iOS Application [Rocket.Chat.iOS - HELP WANTED](https://github.com/RocketChat/Rocket.Chat.iOS)
 - Native Android Application [Issue #271 - HELP WANTED](https://github.com/RocketChat/Rocket.Chat/issues/271)
 - External popout window for chat with website visitor, like Zopim, Olark, LiveChat, SnapEngage [Issue #519](https://github.com/RocketChat/Rocket.Chat/issues/519)
