@@ -1871,10 +1871,12 @@ a.github-fork {
 	right: 0;
 	width: auto;
 	height: auto;
+	margin-right: 40px;
 	.transition(width .25s cubic-bezier(.5, 0, .1, 1));
 	&.flex-opened {
 		right: @flex-tab-width;
 		.flex-tab {
+			right: 40px;
 			.transform(translateX(0));
 		}
 	}
@@ -1903,7 +1905,7 @@ a.github-fork {
 .page-settings {
 	.rocket-form {
 		max-width: none;
-		width: 100%; 
+		width: 100%;
 		padding: 0;
 	}
 }
@@ -2628,6 +2630,26 @@ a.github-fork {
 	}
 	&.temp .body {
 		opacity: .5;
+	}
+}
+
+.flex-tab-bar {
+	position: absolute;
+	width: 40px;
+	height: 100%;
+	top: 0;
+	right: 0;
+	background: #FCFCFC;
+	border-left: 1px solid #eaeaea;
+
+	.tab-button {
+		padding: 10px;
+		background: #FCFCFC;
+		border-bottom: 1px solid #eaeaea;
+
+		&:hover {
+			background: #DED6D6;
+		}
 	}
 }
 
