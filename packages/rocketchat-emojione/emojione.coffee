@@ -12,10 +12,10 @@ class Emojione
 
 RocketChat.callbacks.add 'renderMessage', Emojione, RocketChat.callbacks.priority.LOW
 
-if Meteor.isClient
-	Meteor.startup ->
-		Tracker.autorun ->
-			if Meteor.user()?.settings?.preferences?.useEmojis or not Meteor.user()?.settings?.preferences?.useEmojis?
-				RocketChat.callbacks.add 'renderMessage', Emojione, RocketChat.callbacks.priority.LOW
-			else
-				RocketChat.callbacks.remove 'renderMessage', 'Emojione'
+# if Meteor.isClient
+# 	Meteor.startup ->
+# 		Tracker.autorun ->
+# 			if Meteor.user()?.settings?.preferences?.useEmojis or not Meteor.user()?.settings?.preferences?.useEmojis?
+# 				RocketChat.callbacks.add 'renderMessage', Emojione, RocketChat.callbacks.priority.LOW
+# 			else
+# 				RocketChat.callbacks.remove 'renderMessage', 'Emojione'
