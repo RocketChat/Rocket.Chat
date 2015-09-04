@@ -43,6 +43,7 @@ Meteor.startup ->
 	RocketChat.settings.add 'SMTP_Port', '', { type: 'string', group: 'SMTP' }
 	RocketChat.settings.add 'SMTP_Username', '', { type: 'string', group: 'SMTP' }
 	RocketChat.settings.add 'SMTP_Password', '', { type: 'string', group: 'SMTP' }
+	RocketChat.settings.add 'From_Email', 'no-reply@rocket.chat', { type: 'string', group: 'SMTP' }
 
 	RocketChat.settings.addGroup 'Message'
 	RocketChat.settings.add 'Message_AllowEditing', true, { type: 'boolean', group: 'Message', public: true }
