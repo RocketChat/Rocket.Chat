@@ -44,17 +44,22 @@ code {
 	font-size: 13px;
 	font-weight: bold;
 	margin: 5px 0;
-	overflow-x: auto;
 	padding: 0.5em;
 	vertical-align: middle;
 	word-wrap: break-word;
 	text-align: left;
+	white-space: pre-wrap;
 	&.inline {
-		display: inline-block;
-		padding: 0 5px;
-		margin: 0;
+		display: inline;
+		padding: 0 0.5em;
+		margin: 0 0.1em;
 		line-height: 16px;
+		font-family: monospace;
 	}
+}
+
+code.hljs {
+	overflow-y: hidden;
 }
 
 pre {
@@ -67,11 +72,12 @@ blockquote {
 	position: relative;
 	&:before {
 		content: ' ';
-		background-color: #ccc;
+		background-color: #eaeaea;
 		height: 100%;
-		width: 3px;
+		width: 4px;
 		position: absolute;
 		left: 0px;
+		border-radius: 10px;
 	}
 }
 
@@ -1902,7 +1908,7 @@ a.github-fork {
 .page-settings {
 	.rocket-form {
 		max-width: none;
-		width: 100%; 
+		width: 100%;
 		padding: 0;
 	}
 }
@@ -2258,6 +2264,9 @@ a.github-fork {
 	}
 	.popup-user-status-busy {
 		background-color: @status-busy;
+	}
+	.popup-slash-command-description {
+		float: right;
 	}
 	.message-form {
 		> div {
@@ -3673,6 +3682,13 @@ a.github-fork {
 #particles-js {
 	&:extend(.fill-all);
 	position: fixed;
+}
+
+.mention-link.mention-link-me {
+	background-color: #E6F4FD;
+	border-radius: 4px;
+	padding: 0px 3px 2px 2px;
+	font-weight: bold;
 }
 
 .avatar-suggestions {

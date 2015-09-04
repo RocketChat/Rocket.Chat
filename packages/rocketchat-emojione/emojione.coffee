@@ -10,4 +10,12 @@ class Emojione
 			
 		return message
 
-RocketChat.callbacks.add 'renderMessage', Emojione, RocketChat.callbacks.priority.LOW
+RocketChat.callbacks.add 'renderMessage', Emojione, RocketChat.callbacks.priority.LOW, 'emoji'
+
+if Meteor.isClient
+	Meteor.startup ->
+		Tracker.autorun ->
+			if Meteor.user()?.settings?.preferences?.useEmojis or not Meteor.user()?.settings?.preferences?.useEmojis?
+				RocketChat.callbacks.add 'renderMessage', Emojione, RocketChat.callbacks.priority.LOW, 'emoji'
+			else
+				RocketChat.callbacks.remove 'renderMessage', 'emoji'

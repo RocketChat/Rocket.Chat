@@ -15,6 +15,7 @@ Package.onUse(function(api) {
 	]);
 
 	api.addFiles('emojione.coffee', ['server','client']);
+	api.addFiles('rocketchat.coffee', 'client');
 });
 
 Package.onTest(function(api) {

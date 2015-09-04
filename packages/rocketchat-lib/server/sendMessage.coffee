@@ -153,10 +153,10 @@ RocketChat.sendMessage = (user, message, room, options) ->
 					if usersOfMentionIds.length > 0
 						Push.send
 							from: 'push'
-							title: "##{room.name}"
+							title: "@#{user.username} @ ##{room.name}"
 							text: message.msg
 							apn:
-								text: "##{room.name}:\n#{message.msg}"
+								text: "@#{user.username} @ ##{room.name}:\n#{message.msg}"
 							badge: 1
 							sound: 'chime'
 							payload:
