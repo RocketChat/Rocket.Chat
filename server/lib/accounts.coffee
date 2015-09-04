@@ -1,8 +1,8 @@
 # Deny Account.createUser in client
 Accounts.config { forbidClientAccountCreation: true }
 
-Accounts.emailTemplates.siteName = "ROCKET.CHAT";
-Accounts.emailTemplates.from = "ROCKET.CHAT <no-reply@rocket.chat>";
+Accounts.emailTemplates.siteName = RocketChat.settings.get 'Site_Name';
+Accounts.emailTemplates.from = "#{RocketChat.settings.get 'Site_Name'} <#{RocketChat.settings.get 'From_Email'}>";
 
 verifyEmailText = Accounts.emailTemplates.verifyEmail.text
 Accounts.emailTemplates.verifyEmail.text = (user, url) ->
