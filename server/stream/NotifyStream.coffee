@@ -1,41 +1,39 @@
-# ALL
-@notifyAllStream = new Meteor.Stream 'notify-all'
+@NotifyClient = new class
+	constructor: ->
+		self = @
 
-notifyAllStream.permissions.write -> return @userId?
-notifyAllStream.permissions.read -> return @userId?
-
-notifyAllStream.on 'notify', (data) ->
-	notifyAllStream.emit 'notify', data
-
-
-# ROOM
-@notifyRoomStream = new Meteor.Stream 'notify-room'
-
-notifyRoomStream.permissions.write -> return @userId?
-notifyRoomStream.permissions.read (event) ->
-	if not @userId?
-		return false
-
-	if event is 'notify' then return true
-
-	user = Meteor.users.findOne @userId, {fields: {username: 1}}
-	return ChatRoom.findOne({_id: event, usernames: user.username}, {fields: {_id: 1}})?
-
-notifyRoomStream.on 'notify', (room, data) ->
-	notifyRoomStream.emit room, data
+		@streamAll = new Meteor.Stream 'notify-all'
+		@streamRoom = new Meteor.Stream 'notify-room'
+		@streamUser = new Meteor.Stream 'notify-user'
 
 
-# USER
-@notifyUserStream = new Meteor.Stream 'notify-user'
+		@streamAll.permissions.write -> return @userId?
+		@streamAll.permissions.read -> return @userId?
 
-notifyUserStream.permissions.write -> return @userId?
-notifyUserStream.permissions.read (event) ->
-	if not @userId?
-		return false
+		@streamRoom.permissions.write -> return @userId?
+		@streamRoom.permissions.read (event) ->
+			if not @userId? then return false
 
-	if event is 'notify' then return true
+			if event is 'notify' then return true
 
-	return @userId is event
+			user = Meteor.users.findOne @userId, {fields: {username: 1}}
+			return ChatRoom.findOne({_id: event, usernames: user.username}, {fields: {_id: 1}})?
 
-notifyUserStream.on 'notify', (userId, data) ->
-	notifyUserStream.emit userId, data
+		@streamUser.permissions.write -> return @userId?
+		@streamUser.permissions.read (event) ->
+			if not @userId? then return false
+
+			return event is 'notify' or event is @userId
+
+
+		@streamRoom.on 'notify', self.notifyRoom.bind(@)
+		@streamUser.on 'notify', self.notifyUser.bind(@)
+
+	notifyAll: (data) ->
+		@streamAll.emit 'notify', data
+
+	notifyRoom: (room, data) ->
+		@streamRoom.emit room, data
+
+	notifyUser: (userId, data) ->
+		@streamUser.emit userId, data
