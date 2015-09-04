@@ -11,23 +11,21 @@ Package.onUse(function(api) {
 	api.use([
 		'reactive-dict',
 		'coffeescript',
+		'random',
 		'underscore',
 		'underscorestring:underscore.string'
 	]);
 
 	api.addFiles('lib/core.coffee', ['server', 'client']);
 	api.addFiles('lib/callbacks.coffee', ['server', 'client']);
+	api.addFiles('lib/slashCommand.coffee', ['server', 'client']);
 	
 	api.addFiles([
 		'server/functions/checkUsernameAvailability.coffee',
-		'server/functions/getAvgStatistics.coffee',
-		'server/functions/getStatistics.coffee',
-		'server/functions/saveStatistics.coffee',
 		'server/functions/setUsername.coffee'
 	], ['server']);
 	
 	api.addFiles([
-		'server/methods/generateStatistics.coffee',
 		'server/methods/joinDefaultChannels.coffee',
 		'server/methods/setAdminStatus.coffee',
 		'server/methods/setUsername.coffee',
@@ -35,8 +33,6 @@ Package.onUse(function(api) {
 	], ['server']);
 
 	api.addFiles('server/sendMessage.coffee', ['server']);
-	api.addFiles('server/slashCommand.coffee', ['server']);
-	api.addFiles('client/slashCommand.coffee', ['client']);
 
 	api.addFiles([
 		'settings/lib/settings.coffee',
@@ -50,7 +46,8 @@ Package.onUse(function(api) {
 		'settings/server/methods.coffee',
 		'settings/server/publication.coffee',
 		'settings/server/startup.coffee',
-		'settings/server/updateServices.coffee'
+		'settings/server/updateServices.coffee',
+		'settings/server/addOAuthService.coffee'
 	], ['server']);
 
 	api.addFiles('server/cdn.coffee', ['server']);

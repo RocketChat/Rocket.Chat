@@ -1,5 +1,5 @@
 RocketChat.setUsername = (user, username) ->
-	username = _.trim username
+	username = s.trim username
 	if not user or not username
 		return false
 
