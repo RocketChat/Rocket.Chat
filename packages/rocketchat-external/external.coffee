@@ -13,7 +13,7 @@ WebApp.connectHandlers.use '/external/', (req, res, next) ->
 			<script type="text/javascript">
 				__meteor_runtime_config__ = {
 					"meteorRelease": "METEOR@1.1.0.2",
-					"ROOT_URL": "http://localhost:3000/",
+					"ROOT_URL": "#{Meteor.absoluteUrl()}",
 					"ROOT_URL_PATH_PREFIX": "",
 					"autoupdateVersion": "#{Autoupdate.autoupdateVersion}",
 					"autoupdateVersionRefreshable": "#{Autoupdate.autoupdateVersionRefreshable}",
