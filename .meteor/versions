@@ -115,6 +115,8 @@ rocketchat:markdown@0.0.1
 rocketchat:me@0.0.1
 rocketchat:mentions@0.0.1
 rocketchat:oembed@0.0.1
+rocketchat:slashcommands-invite@0.0.1
+rocketchat:slashcommands-leave@0.0.1
 rocketchat:statistics@0.0.1
 rocketchat:webrtc@0.0.1
 routepolicy@1.0.5
@@ -126,6 +128,7 @@ simple:json-routes@1.0.4
 spacebars@1.0.6
 spacebars-compiler@1.0.6
 srp@1.0.3
+steffo:meteor-accounts-saml@0.0.1
 tap:i18n@1.5.1
 templating@1.1.1
 tmeasday:crypto-base@3.1.2

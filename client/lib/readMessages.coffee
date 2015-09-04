@@ -40,6 +40,8 @@
 		rid ?= Session.get 'openedRoom'
 		if rid?
 			subscription = ChatSubscription.findOne rid: rid
+			if not subscription? then return
+
 			room = RoomManager.openedRooms[subscription.t + subscription.name]
 			if room?
 				$roomDom = $(room.dom)

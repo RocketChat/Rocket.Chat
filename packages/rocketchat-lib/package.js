@@ -11,12 +11,14 @@ Package.onUse(function(api) {
 	api.use([
 		'reactive-dict',
 		'coffeescript',
+		'random',
 		'underscore',
 		'underscorestring:underscore.string'
 	]);
 
 	api.addFiles('lib/core.coffee', ['server', 'client']);
 	api.addFiles('lib/callbacks.coffee', ['server', 'client']);
+	api.addFiles('lib/slashCommand.coffee', ['server', 'client']);
 	
 	api.addFiles([
 		'server/functions/checkUsernameAvailability.coffee',
@@ -31,8 +33,6 @@ Package.onUse(function(api) {
 	], ['server']);
 
 	api.addFiles('server/sendMessage.coffee', ['server']);
-	api.addFiles('server/slashCommand.coffee', ['server']);
-	api.addFiles('client/slashCommand.coffee', ['client']);
 
 	api.addFiles([
 		'settings/lib/settings.coffee',
