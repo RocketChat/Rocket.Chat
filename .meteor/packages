@@ -41,7 +41,7 @@ rocketchat:slashcommands-invite
 rocketchat:slashcommands-leave
 rocketchat:statistics
 rocketchat:webrtc
-rocketchat:external
+#rocketchat:external
 #rocketchat:hubot
 #rocketchat:irc
 
