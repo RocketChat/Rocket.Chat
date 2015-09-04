@@ -1,5 +1,4 @@
 @MsgTyping = do ->
-	stream = new Meteor.Stream 'typing'
 	timeout = 15000
 	timeouts = {}
 	renew = true
@@ -11,7 +10,10 @@
 	addStream = (room) ->
 		if _.isEmpty usersTyping[room]?.users
 			usersTyping[room] = { users: {} }
-			stream.on room, (typing) ->
+			Notify.onRoom room, (type, typing) ->
+				console.log arguments
+				if type isnt 'typing' then return
+
 				unless typing?.username is Meteor.user()?.username
 					if typing.start
 						users = usersTyping[room].users
@@ -41,7 +43,7 @@
 
 		renew = false
 		selfTyping.set true
-		stream.emit 'typing', { room: room, username: Meteor.user()?.username, start: true }
+		Notify.notifyRoom room, 'typing', { room: room, username: Meteor.user()?.username, start: true }
 		clearTimeout timeouts[room]
 		timeouts[room] = Meteor.setTimeout ->
 			stop(room)
@@ -51,10 +53,10 @@
 		renew = true
 		selfTyping.set false
 		if timeouts?[room]?
-			clearTimeout(timeouts[room]) 
+			clearTimeout(timeouts[room])
 			timeouts[room] = null
-		stream.emit 'typing', { room: room, username: Meteor.user()?.username, stop: true }
-		
+		Notify.notifyRoom room, 'typing', { room: room, username: Meteor.user()?.username, stop: true }
+
 	get = (room) ->
 		dep.depend()
 		unless usersTyping[room]
@@ -62,7 +64,7 @@
 		users = usersTyping[room].users
 		return _.keys(users) or []
 
-	return { 
+	return {
 		start: start
 		stop: stop
 		get: get

@@ -57,7 +57,6 @@ Meteor.startup ->
 		'NotifyClient.streamAll': NotifyClient.streamAll
 		'NotifyClient.streamRoom': NotifyClient.streamRoom
 		'NotifyClient.streamUser': NotifyClient.streamUser
-		'typing': typingStream
 		'deleteMsgStream': deleteMsgStream
 
 	if webrtc
