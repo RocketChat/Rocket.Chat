@@ -1,8 +1,7 @@
 Template.message.helpers
 
 	own: ->
-		return ''
-		# return 'own' if this.u?._id is Meteor.userId()
+		return 'own' if this.u?._id is Meteor.userId()
 
 	time: ->
 		return moment(this.ts).format('HH:mm')
@@ -14,6 +13,9 @@ Template.message.helpers
 		if @temp is true
 			return 'temp'
 		return
+
+	error: ->
+		return 'msg-error' if @error
 
 	body: ->
 		switch this.t
@@ -27,8 +29,8 @@ Template.message.helpers
 			# when 'rtc' then RocketChat.callbacks.run 'renderRtcMessage', this
 			else
 				this.html = this.msg
-				if _.trim(this.html) isnt ''
-					this.html = _.escapeHTML this.html
+				if s.trim(this.html) isnt ''
+					this.html = s.escapeHTML this.html
 				# message = RocketChat.callbacks.run 'renderMessage', this
 				message = this
 				this.html = message.html.replace /\n/gm, '<br/>'
@@ -71,7 +73,7 @@ Template.message.onViewRendered = (context) ->
 		if not lastNode.nextElementSibling?
 			if lastNode.classList.contains('own') is true
 				view.parentView.parentView.parentView.parentView.parentView.templateInstance().atBottom = true
-			# else
-			# 	if view.parentView.parentView.parentView.parentView.parentView.templateInstance().atBottom isnt true
-			# 		newMessage = document.querySelector(".new-message")
-			# 		newMessage.className = "new-message"
+			else
+				if view.parentView.parentView.parentView.parentView.parentView.templateInstance().atBottom isnt true
+					newMessage = document.querySelector(".new-message")
+					newMessage.className = "new-message"
