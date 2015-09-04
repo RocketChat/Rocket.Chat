@@ -54,6 +54,7 @@ Accounts.onCreateUser (options, user) ->
 
 Accounts.validateLoginAttempt (login) ->
 	login = RocketChat.callbacks.run 'beforeValidateLogin', login
+
 	if login.allowed isnt true
 		return login.allowed
 
