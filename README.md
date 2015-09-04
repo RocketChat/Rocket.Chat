@@ -6,6 +6,10 @@ The Complete Open Source Chat Solution
 
 Checkout the latest version at [https://demo.rocket.chat](https://demo.rocket.chat)
 
+Available from the AppStore:
+
+[![Rocket.Chat on Apple AppStore](http://linkmaker.itunes.apple.com/images/badges/en-us/badge_appstore-lrg.svg)](https://geo.itunes.apple.com/us/app/rocket.chat/id1028869439?mt=8)
+
 Get the app for your Android phone:
 
 [![Rocket.Chat on Google Play](https://developer.android.com/images/brand/en_app_rgb_wo_45.png)](https://play.google.com/store/apps/details?id=com.konecty.rocket.chat)
@@ -69,6 +73,8 @@ It is a great solution for communities and companies wanting to privately host t
 - Sent Message Edit and Deletion
 - Transcripts / History
 - File Upload / Sharing
+- Full text search
+- Support for Okta SSO through SAML v2
 - I18n - Supports 22 Languages [Internationalization with Lingohub](https://translate.lingohub.com/engelgabriel/rocket-dot-chat/dashboard)
 - Hubot Friendly - [Hubot Integration Project](https://github.com/RocketChat/hubot-rocketchat)
 - Media Embeds
@@ -78,8 +84,9 @@ It is a great solution for communities and companies wanting to privately host t
 - REST APIs - [Ready for testing ...](https://github.com/RocketChat/Rocket.Chat/wiki/REST-APIs)
 - Remote Locations Video Monitoring - [Early access ...](https://github.com/RocketChat/Rocket.Chat/wiki/Remote-Video-Monitoring)
 - Native Cross-Platform Desktop Application [Rocket.Chat.Electron - HELP WANTED](https://github.com/RocketChat/Rocket.Chat.Electron/releases)
-- Mobile app for iPhone, iPad, and iPod touch [Available now! - help us test](https://github.com/RocketChat/Rocket.Chat/wiki/Mobile-app-for-iPhones,-iPads,-iPod-Touch)
+- Mobile app for iPhone, iPad, and iPod touch [Download on AppStore!](https://geo.itunes.apple.com/us/app/rocket.chat/id1028869439?mt=8)
 - Mobile app for Android phone, tablet, and TV stick [Available now on Google Play!](https://play.google.com/store/apps/details?id=com.konecty.rocket.chat)
+
 
 ### Roadmap
 
@@ -92,7 +99,6 @@ It is a great solution for communities and companies wanting to privately host t
 #### Planned
 
 - Off-the-Record (OTR) Messaging [Issue #36 - HELP WANTED](https://github.com/RocketChat/Rocket.Chat/issues/36)
-- Full text search
 - Kerberos Authentication
 - XMPP Multi-user chat (MUC)
 
@@ -175,7 +181,10 @@ Thanks to
 [Marcelo Schmidt](https://github.com/marceloschmidt),
 [Rafael Caferati](https://github.com/rcaferati),
 [Rodrigo Nascimento](https://github.com/rodrigok),
-[Sing Li](https://github.com/Sing-Li)
+[Sing Li](https://github.com/Sing-Li),
+[Aaron Ogle](https://github.com/geekgonecrazy),
+[Graywolf336](https://github.com/Graywolf336)
+
 
 Emoji provided free by [Emoji One](http://emojione.com)
 

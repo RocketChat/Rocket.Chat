@@ -6,6 +6,9 @@ Template.room.helpers
 	tQuickSearch: ->
 		return t('Quick_Search')
 
+	searchResult: ->
+		return Template.instance().searchResult.get()
+
 	favorite: ->
 		sub = ChatSubscription.findOne { rid: this._id }, { fields: { f: 1 } }
 		return 'icon-star favorite-room' if sub?.f? and sub.f
@@ -275,34 +278,46 @@ Template.room.helpers
 
 
 Template.room.events
-	"touchstart .message, touchstart .message *": (e, t) ->
+	"keydown #room-search": (e) ->
+		if e.keyCode is 13
+			e.preventDefault()
+
+	"keyup #room-search": _.debounce (e, t) ->
+		t.searchResult.set undefined
+		value = e.target.value.trim()
+		if value is ''
+			return
+
+		Tracker.nonreactive ->
+			Meteor.call 'messageSearch', value, Session.get('openedRoom'), (error, result) ->
+				if result? and (result.messages?.length > 0 or result.users?.length > 0 or result.channels?.length > 0)
+					t.searchResult.set result
+	, 1000
+
+	"touchstart .message": (e, t) ->
 		message = this._arguments[1]
-		# e.stopPropagation()
-		e.preventDefault()
 		doLongTouch = ->
 			mobileMessageMenu.show(message, t)
 
-		t.touchtime ?= Meteor.setTimeout doLongTouch, 500
+		t.touchtime = Meteor.setTimeout doLongTouch, 500
 
-	"touchend .message, touchend .message *": (e, t) ->
+	"touchend .message": (e, t) ->
 		Meteor.clearTimeout t.touchtime
-		t.touchtime = undefined
 
-	"touchmove .message, touchmove .message *": (e, t) ->
+	"touchmove .message": (e, t) ->
 		Meteor.clearTimeout t.touchtime
-		t.touchtime = undefined
 
-	"touchcancel .message, touchcancel .message *": (e, t) ->
+	"touchcancel .message": (e, t) ->
 		Meteor.clearTimeout t.touchtime
-		t.touchtime = undefined
 
 	"click .upload-progress-item > a": ->
 		Session.set "uploading-cancel-#{this.id}", true
 
-	"click .flex-tab .more": (event) ->
+	"click .flex-tab .more": (event, t) ->
 		if (Session.get('flexOpened'))
 			Session.set('rtcLayoutmode', 0)
 			Session.set('flexOpened',false)
+			t.searchResult.set undefined
 		else
 			Session.set('flexOpened', true)
 
@@ -635,6 +650,7 @@ Template.room.onCreated ->
 	# this.typing = new msgTyping this.data._id
 	this.showUsersOffline = new ReactiveVar false
 	this.atBottom = true
+	this.searchResult = new ReactiveVar
 
 	self = @
 

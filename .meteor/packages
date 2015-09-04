@@ -7,8 +7,8 @@ accounts-facebook
 accounts-github
 accounts-google
 accounts-meteor-developer
-accounts-twitter
 accounts-password
+accounts-twitter
 coffeescript
 email
 fastclick
@@ -24,9 +24,12 @@ arunoda:streams
 rocketchat:lib
 
 rocketchat:autolinker
+rocketchat:colors
+rocketchat:custom-oauth
 rocketchat:emojione
 rocketchat:favico
 rocketchat:file
+rocketchat:gitlab
 rocketchat:highlight
 rocketchat:ldap
 rocketchat:logger
@@ -34,6 +37,9 @@ rocketchat:markdown
 rocketchat:me
 rocketchat:mentions
 rocketchat:oembed
+rocketchat:slashcommands-invite
+rocketchat:slashcommands-leave
+rocketchat:statistics
 rocketchat:webrtc
 rocketchat:external
 #rocketchat:hubot
@@ -49,6 +55,8 @@ konecty:user-presence
 chrismbeckett:toastr
 dispatch:run-as-user
 francocatena:status
+jalik:ufs
+jalik:ufs-gridfs
 jparker:gravatar
 kadira:blaze-layout
 kadira:flow-router
@@ -57,15 +65,18 @@ meteorhacks:kadira
 mizzao:autocomplete
 mizzao:timesync
 momentjs:moment
+monbro:mongodb-mapreduce-aggregation
 mrt:reactive-store
 mystor:device-detection
 nimble:restivus
 nooitaf:colors
 pauli:accounts-linkedin
 percolate:migrations
-percolatestudio:synced-cron
+percolate:synced-cron
 raix:handlebar-helpers
+raix:push@2.6.13-rc.1
 raix:ui-dropped-event
+steffo:meteor-accounts-saml
 tap:i18n
 tmeasday:crypto-md5
 tmeasday:errors
@@ -73,11 +84,3 @@ todda00:friendly-slugs
 underscorestring:underscore.string
 yasaricli:slugify
 yasinuslu:blaze-meta
-rocketchat:colors
-raix:push@2.6.13-rc.1
-jalik:ufs
-jalik:ufs-gridfs
-monbro:mongodb-mapreduce-aggregation
-accounts-gitlab
-gitlab
-rocketchat:gitlab

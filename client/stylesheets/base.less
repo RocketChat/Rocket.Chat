@@ -44,17 +44,22 @@ code {
 	font-size: 13px;
 	font-weight: bold;
 	margin: 5px 0;
-	overflow-x: auto;
 	padding: 0.5em;
 	vertical-align: middle;
 	word-wrap: break-word;
 	text-align: left;
+	white-space: pre-wrap;
 	&.inline {
-		display: inline-block;
-		padding: 0 5px;
-		margin: 0;
+		display: inline;
+		padding: 0 0.5em;
+		margin: 0 0.1em;
 		line-height: 16px;
+		font-family: monospace;
 	}
+}
+
+code.hljs {
+	overflow-y: hidden;
 }
 
 pre {
@@ -67,11 +72,12 @@ blockquote {
 	position: relative;
 	&:before {
 		content: ' ';
-		background-color: #ccc;
+		background-color: #eaeaea;
 		height: 100%;
-		width: 3px;
+		width: 4px;
 		position: absolute;
 		left: 0px;
+		border-radius: 10px;
 	}
 }
 
@@ -449,6 +455,7 @@ input:focus {
 textarea,
 select,
 input[type='text'],
+input[type='number'],
 input[type='email'],
 input[type='password'] {
 	-webkit-appearance: none;
@@ -1898,6 +1905,14 @@ a.github-fork {
 	}
 }
 
+.page-settings {
+	.rocket-form {
+		max-width: none;
+		width: 100%;
+		padding: 0;
+	}
+}
+
 .page-static {
 	.content {
 		> div {
@@ -1910,6 +1925,19 @@ a.github-fork {
 			margin-bottom: 12px;
 			&:nth-last-child(1) {
 				margin-bottom: 0;
+			}
+		}
+		.section {
+			h1 {
+				font-size: 20px;
+				margin-top: 40px;
+				padding: 0 0 0 10px;
+				font-weight: 500;
+			}
+			.section-content {
+				border: 1px solid #ddd;
+				padding: 20px;
+				border-radius: 5px;
 			}
 		}
 		h1,
@@ -2237,6 +2265,9 @@ a.github-fork {
 	.popup-user-status-busy {
 		background-color: @status-busy;
 	}
+	.popup-slash-command-description {
+		float: right;
+	}
 	.message-form {
 		> div {
 			position: relative;
@@ -2443,6 +2474,10 @@ a.github-fork {
 		cursor: pointer;
 		bottom: 8px;
 		left: 50%;
+		-webkit-user-select: none;
+		-moz-user-select: none;
+		-ms-user-select: none;
+		user-select: none;
 		.transition(transform 0.3s ease-out);
 		.transform(translateY(0));
 		&.not {
@@ -2455,148 +2490,149 @@ a.github-fork {
 			border-radius: 4px;
 		}
 	}
-	.message {
-		font-size: 14px;
-		padding-left: 50px;
-		position: relative;
-		line-height: 20px;
-		margin: 12px 20px 5px;
-		margin-top: 12px;
-		min-height: 40px;
-		&:nth-child(1) {
-			margin-top: 0;
-		}
-		&.new-day {
-			margin-top: 60px;
-		}
-		&.new-day {
-			&:before {
-				content: attr(data-date);
-				display: block;
-				position: absolute;
-				top: -30px;
-				left: 0;
-				font-size: 12px;
-				font-weight: 600;
-				text-align: center;
-				.calc(left,
-				~"50% - 70px");
-				color: @secondary-font-color;
-				z-index: 10;
-				padding: 0 10px;
-				background-color: #FFF;
-				min-width: 140px;
-			}
-			&:after {
-				content: " ";
-				display: block;
-				position: absolute;
-				top: -20px;
-				left: 0;
-				width: 100%;
-				border-top: 1px solid #ddd;
-			}
-		}
-		.edit-message {
-			display: none;
-			cursor: pointer;
-		}
-		&.own:hover:not(.system) .edit-message {
-			display: inline-block;
-		}
-		.delete-message {
-			display: none;
-			cursor: pointer;
-		}
-		&.own:hover:not(.system) .delete-message {
-			display: inline-block;
-		}
-		.user {
-			display: inline-block;
+}
+
+.message {
+	font-size: 14px;
+	padding-left: 50px;
+	position: relative;
+	line-height: 20px;
+	margin: 12px 20px 5px;
+	margin-top: 12px;
+	min-height: 40px;
+	&:nth-child(1) {
+		margin-top: 0;
+	}
+	&.new-day {
+		margin-top: 60px;
+	}
+	&.new-day {
+		&:before {
+			content: attr(data-date);
+			display: block;
+			position: absolute;
+			top: -30px;
+			left: 0;
+			font-size: 12px;
 			font-weight: 600;
-			color: #444444;
-			margin-right: 5px;
-			&:hover {
-				color: #333;
-			}
+			text-align: center;
+			.calc(left,
+			~"50% - 70px");
+			color: @secondary-font-color;
+			z-index: 10;
+			padding: 0 10px;
+			background-color: #FFF;
+			min-width: 140px;
+		}
+		&:after {
+			content: " ";
+			display: block;
+			position: absolute;
+			top: -20px;
+			left: 0;
+			width: 100%;
+			border-top: 1px solid #ddd;
+		}
+	}
+	.edit-message {
+		display: none;
+		cursor: pointer;
+	}
+	&.own:hover:not(.system) .edit-message {
+		display: inline-block;
+	}
+	.delete-message {
+		display: none;
+		cursor: pointer;
+	}
+	&.own:hover:not(.system) .delete-message {
+		display: inline-block;
+	}
+	.user {
+		display: inline-block;
+		font-weight: 600;
+		color: #444444;
+		margin-right: 5px;
+		&:hover {
+			color: #333;
+		}
+	}
+	.thumb {
+		position: absolute;
+		left: 0;
+		top: 0;
+		display: block;
+		width: 40px;
+		height: 40px;
+	}
+	.info {
+		font-size: 12px;
+		color: @info-font-color;
+	}
+	&.sequential {
+		margin-top: 5px;
+		min-height: 20px;
+		.user {
+			display: none;
 		}
 		.thumb {
-			position: absolute;
-			left: 0;
-			top: 0;
-			display: block;
-			width: 40px;
-			height: 40px;
+			display: none;
 		}
 		.info {
-			font-size: 12px;
-			color: @info-font-color;
-		}
-		&.sequential {
-			margin-top: 5px;
-			min-height: 20px;
-			.user {
+			position: absolute;
+			text-align: right;
+			left: -20px;
+			width: 65px;
+			.time {
 				display: none;
 			}
-			.thumb {
+			.edited {
+				display: inline-block;
+			}
+			.edit-message {
+				float: left;
+				margin-left: 1px;
+			}
+			.delete-message {
+				float: left;
+			}
+		}
+		&:hover {
+			.time {
+				display: inline-block;
+			}
+			.edited {
 				display: none;
 			}
-			.info {
-				position: absolute;
-				text-align: right;
-				left: -20px;
-				width: 65px;
-				.time {
-					display: none;
-				}
-				.edited {
-					display: inline-block;
-				}
-				.edit-message {
-					float: left;
-					margin-left: 1px;
-				}
-				.delete-message {
-					float: left;
-				}
-			}
-			&:hover {
-				.time {
-					display: inline-block;
-				}
-				.edited {
-					display: none;
-				}
-			}
 		}
-		&.system {
-			.body {
-				color: @info-font-color;
-				font-style: italic;
-				text-transform: lowercase;
-				em {
-					font-weight: 600;
-				}
-			}
-		}
-		.avatar-initials {
-			line-height: 40px;
-		}
-		a {
-			color: @link-font-color;
-			font-weight: 400;
-			&:hover {
-				color: darken(@link-font-color, 10%);
-				text-decoration: underline;
-			}
-		}
+	}
+	&.system {
 		.body {
-			opacity: 1;
-			.transition(opacity 1s linear);
+			color: @info-font-color;
+			font-style: italic;
+			text-transform: lowercase;
+			em {
+				font-weight: 600;
+			}
 		}
-		&.temp .body {
-			opacity: .5;
+	}
+	.avatar-initials {
+		line-height: 40px;
+	}
+	a {
+		color: @link-font-color;
+		font-weight: 400;
+		&:hover {
+			color: darken(@link-font-color, 10%);
+			text-decoration: underline;
 		}
+	}
+	.body {
+		opacity: 1;
+		.transition(opacity 1s linear);
+	}
+	&.temp .body {
+		opacity: .5;
 	}
 }
 
@@ -2700,7 +2736,7 @@ a.github-fork {
 			> div {
 				position: relative;
 			}
-			.icon-plus {
+		.icon-plus {
 				position: absolute;
 				top: 11px;
 				left: 8px;
@@ -2740,8 +2776,6 @@ a.github-fork {
 		overflow-x: hidden;
 		overflow-y: auto;
 		-webkit-overflow-scrolling: touch;
-		.calc(height,
-		~"100% - " @footer-min-height + @header-min-height);
 		> div {
 			.transition(transform .45s cubic-bezier(.5,
 			0,
@@ -3504,6 +3538,8 @@ a.github-fork {
 	z-index: 1;
 	display: -webkit-flex;
 	display: flex;
+	flex-wrap: wrap;
+	-webkit-flex-wrap: wrap;
 	margin-bottom: 20px;
 	h3 {
 		&:extend(.rocket-h3);
@@ -3519,9 +3555,6 @@ a.github-fork {
 		padding: 0;
 		-webkit-flex-grow: 1;
 		flex-grow: 1;
-		span {
-			display: none;
-		}
 	}
 }
 
@@ -3649,6 +3682,13 @@ a.github-fork {
 #particles-js {
 	&:extend(.fill-all);
 	position: fixed;
+}
+
+.mention-link.mention-link-me {
+	background-color: #E6F4FD;
+	border-radius: 4px;
+	padding: 0px 3px 2px 2px;
+	font-weight: bold;
 }
 
 .avatar-suggestions {
@@ -3818,6 +3858,22 @@ a.github-fork {
 			}
 		}
 	}
+
+	.sweet-alert {
+		h2 {
+			font-size: 20px;
+			line-height: 30px;
+			margin: 10px 0;
+		}
+		button {
+			margin-top: 6px;
+			padding: 10px 22px;
+		}
+		p {
+			max-height: 40px;
+			overflow: hidden;
+		}
+	}
 }
 
 @media all and(max-width: 500px) {
@@ -3896,6 +3952,13 @@ a.github-fork {
 	}
 
 	.message {
+		-webkit-user-select: none;
+		-moz-user-select: none;
+		-ms-user-select: none;
+		user-select: none;
+	}
+
+	.mobile-message-menu {
 		-webkit-user-select: none;
 		-moz-user-select: none;
 		-ms-user-select: none;

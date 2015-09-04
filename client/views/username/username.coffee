@@ -46,3 +46,4 @@ Template.username.events
 
 			if not err?
 				Meteor.call 'joinDefaultChannels'
+				FlowRouter.go 'index'

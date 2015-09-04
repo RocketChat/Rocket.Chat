@@ -1,31 +1,35 @@
 Meteor.startup ->
 	RocketChat.settings.addGroup 'Accounts'
-	RocketChat.settings.add 'Accounts_RegistrationRequired', true, { type: 'boolean', group: 'Accounts', public: true }
-	RocketChat.settings.add 'Accounts_EmailVerification', false, { type: 'boolean', group: 'Accounts', public: true }
+	RocketChat.settings.add 'Accounts_RegistrationRequired', true, { type: 'boolean', group: 'Accounts', public: true, section: 'Registration' }
+	RocketChat.settings.add 'Accounts_EmailVerification', false, { type: 'boolean', group: 'Accounts', public: true, section: 'Registration' }
+	RocketChat.settings.add 'Accounts_ManuallyApproveNewUsers', false, { type: 'boolean', group: 'Accounts', section: 'Registration' }
 
-	RocketChat.settings.add 'Accounts_Facebook', false, { type: 'boolean', group: 'Accounts' }
-	RocketChat.settings.add 'Accounts_Facebook_id', '', { type: 'string', group: 'Accounts' }
-	RocketChat.settings.add 'Accounts_Facebook_secret', '', { type: 'string', group: 'Accounts' }
-	RocketChat.settings.add 'Accounts_Google', false, { type: 'boolean', group: 'Accounts' }
-	RocketChat.settings.add 'Accounts_Google_id', '', { type: 'string', group: 'Accounts' }
-	RocketChat.settings.add 'Accounts_Google_secret', '', { type: 'string', group: 'Accounts' }
-	RocketChat.settings.add 'Accounts_Github', false, { type: 'boolean', group: 'Accounts' }
-	RocketChat.settings.add 'Accounts_Github_id', '', { type: 'string', group: 'Accounts' }
-	RocketChat.settings.add 'Accounts_Github_secret', '', { type: 'string', group: 'Accounts' }
-	RocketChat.settings.add 'Accounts_Gitlab', false, { type: 'boolean', group: 'Accounts' }
-	RocketChat.settings.add 'Accounts_Gitlab_id', '', { type: 'string', group: 'Accounts' }
-	RocketChat.settings.add 'Accounts_Gitlab_secret', '', { type: 'string', group: 'Accounts' }
+	RocketChat.settings.add 'Accounts_AvatarStoreType', 'GridFS', { type: 'string', group: 'Accounts', section: 'Avatar' }
+	RocketChat.settings.add 'Accounts_AvatarStorePath', '/var/www/rocket.chat/uploads/avatar/', { type: 'string', group: 'Accounts', section: 'Avatar' }
+	RocketChat.settings.add 'Accounts_AvatarResize', false, { type: 'boolean', group: 'Accounts', section: 'Avatar' }
+	RocketChat.settings.add 'Accounts_AvatarSize', 200, { type: 'int', group: 'Accounts', section: 'Avatar' }
 
-	RocketChat.settings.add 'Accounts_Linkedin', false, { type: 'boolean', group: 'Accounts' }
-	RocketChat.settings.add 'Accounts_Linkedin_id', '', { type: 'string', group: 'Accounts' }
-	RocketChat.settings.add 'Accounts_Linkedin_secret', '', { type: 'string', group: 'Accounts' }
-	RocketChat.settings.add 'Accounts_Meteor', false, { type: 'boolean', group: 'Accounts' }
-	RocketChat.settings.add 'Accounts_Meteor_id', '', { type: 'string', group: 'Accounts' }
-	RocketChat.settings.add 'Accounts_Meteor_secret', '', { type: 'string', group: 'Accounts' }
-	RocketChat.settings.add 'Accounts_Twitter', false, { type: 'boolean', group: 'Accounts' }
-	RocketChat.settings.add 'Accounts_Twitter_id', '', { type: 'string', group: 'Accounts' }
-	RocketChat.settings.add 'Accounts_Twitter_secret', '', { type: 'string', group: 'Accounts' }
-	RocketChat.settings.add 'Accounts_ManuallyApproveNewUsers', false, { type: 'boolean', group: 'Accounts' }
+	RocketChat.settings.add 'Accounts_OAuth_Facebook', false, { type: 'boolean', group: 'Accounts', section: 'Facebook' }
+	RocketChat.settings.add 'Accounts_OAuth_Facebook_id', '', { type: 'string', group: 'Accounts', section: 'Facebook' }
+	RocketChat.settings.add 'Accounts_OAuth_Facebook_secret', '', { type: 'string', group: 'Accounts', section: 'Facebook' }
+	RocketChat.settings.add 'Accounts_OAuth_Google', false, { type: 'boolean', group: 'Accounts', section: 'Google' }
+	RocketChat.settings.add 'Accounts_OAuth_Google_id', '', { type: 'string', group: 'Accounts', section: 'Google' }
+	RocketChat.settings.add 'Accounts_OAuth_Google_secret', '', { type: 'string', group: 'Accounts', section: 'Google' }
+	RocketChat.settings.add 'Accounts_OAuth_Github', false, { type: 'boolean', group: 'Accounts', section: 'Github' }
+	RocketChat.settings.add 'Accounts_OAuth_Github_id', '', { type: 'string', group: 'Accounts', section: 'Github' }
+	RocketChat.settings.add 'Accounts_OAuth_Github_secret', '', { type: 'string', group: 'Accounts', section: 'Github' }
+	RocketChat.settings.add 'Accounts_OAuth_Gitlab', false, { type: 'boolean', group: 'Accounts', section: 'Gitlab' }
+	RocketChat.settings.add 'Accounts_OAuth_Gitlab_id', '', { type: 'string', group: 'Accounts', section: 'Gitlab' }
+	RocketChat.settings.add 'Accounts_OAuth_Gitlab_secret', '', { type: 'string', group: 'Accounts', section: 'Gitlab' }
+	RocketChat.settings.add 'Accounts_OAuth_Linkedin', false, { type: 'boolean', group: 'Accounts', section: 'Linkedin' }
+	RocketChat.settings.add 'Accounts_OAuth_Linkedin_id', '', { type: 'string', group: 'Accounts', section: 'Linkedin' }
+	RocketChat.settings.add 'Accounts_OAuth_Linkedin_secret', '', { type: 'string', group: 'Accounts', section: 'Linkedin' }
+	RocketChat.settings.add 'Accounts_OAuth_Meteor', false, { type: 'boolean', group: 'Accounts', section: 'Meteor' }
+	RocketChat.settings.add 'Accounts_OAuth_Meteor_id', '', { type: 'string', group: 'Accounts', section: 'Meteor' }
+	RocketChat.settings.add 'Accounts_OAuth_Meteor_secret', '', { type: 'string', group: 'Accounts', section: 'Meteor' }
+	RocketChat.settings.add 'Accounts_OAuth_Twitter', false, { type: 'boolean', group: 'Accounts', section: 'Twitter' }
+	RocketChat.settings.add 'Accounts_OAuth_Twitter_id', '', { type: 'string', group: 'Accounts', section: 'Twitter' }
+	RocketChat.settings.add 'Accounts_OAuth_Twitter_secret', '', { type: 'string', group: 'Accounts', section: 'Twitter' }
 
 	RocketChat.settings.addGroup 'General'
 	RocketChat.settings.add 'Site_Name', 'Rocket.Chat', { type: 'string', group: 'General', public: true }
@@ -70,11 +74,15 @@ Meteor.startup ->
 	RocketChat.settings.add 'Push_gcm_project_number', '', { type: 'string', group: 'Push', public: true }
 
 	RocketChat.settings.addGroup 'Layout'
-	RocketChat.settings.add 'Layout_Home_Title', 'Home', { type: 'string', group: 'Layout', public: true }
-	RocketChat.settings.add 'Layout_Home_Body', 'Welcome to Rocket.Chat <br> Go to APP SETTINGS -> Layout to customize this intro.', { type: 'string', multiline: true, group: 'Layout', public: true }
-	RocketChat.settings.add 'Layout_Terms_of_Service', 'Terms of Service <br> Go to APP SETTINGS -> Layout to customize this page.', { type: 'string', multiline: true, group: 'Layout', public: true }
-	RocketChat.settings.add 'Layout_Privacy_Policy', 'Privacy Policy <br> Go to APP SETTINGS -> Layout to customize this page.', { type: 'string', multiline: true, group: 'Layout', public: true }
+	RocketChat.settings.add 'Layout_Home_Title', 'Home', { type: 'string', group: 'Layout', public: true, section: 'Content' }
+	RocketChat.settings.add 'Layout_Home_Body', 'Welcome to Rocket.Chat <br> Go to APP SETTINGS -> Layout to customize this intro.', { type: 'string', multiline: true, group: 'Layout', public: true, section: 'Content' }
+	RocketChat.settings.add 'Layout_Terms_of_Service', 'Terms of Service <br> Go to APP SETTINGS -> Layout to customize this page.', { type: 'string', multiline: true, group: 'Layout', public: true, section: 'Content' }
+	RocketChat.settings.add 'Layout_Privacy_Policy', 'Privacy Policy <br> Go to APP SETTINGS -> Layout to customize this page.', { type: 'string', multiline: true, group: 'Layout', public: true, section: 'Content' }
 	RocketChat.settings.add 'Layout_Sidenav_Footer', '<a href="https://github.com/RocketChat/Rocket.Chat" class="logo" target="_blank"> <img src="/images/logo/logo.svg?v=3" /> <small><i class="icon-github-circled"></i> Fork it on github</small> </a>', { type: 'string', group: 'Layout', public: true, i18nDescription: 'Layout_Sidenav_Footer_description' }
+	RocketChat.settings.add 'Layout_Login_Header', '<a class="logo" href="/"><img src="/images/logo/logo.svg?v=3" /></a>', { type: 'string', multiline: true, group: 'Layout', public: true, section: 'Login' }
+	RocketChat.settings.add 'Layout_Login_Terms', 'By proceeding to create your account and use Rocket.Chat, you are agreeing to our <a href="/terms-of-service">Terms of Service</a> and <a href="/privacy-policy">Privacy Policy</a>. If you do not agree, you cannot use Rocket.Chat.', { type: 'string', multiline: true, group: 'Layout', public: true, section: 'Login' }
+
+	RocketChat.settings.add 'Statistics_opt_out', false, { type: 'boolean', group: false }
 
 	if process?.env? and not process.env['MAIL_URL']? and RocketChat.settings.get('SMTP_Host') and RocketChat.settings.get('SMTP_Username') and RocketChat.settings.get('SMTP_Password')
 		process.env['MAIL_URL'] = "smtp://" + encodeURIComponent(RocketChat.settings.get('SMTP_Username')) + ':' + encodeURIComponent(RocketChat.settings.get('SMTP_Password')) + '@' + encodeURIComponent(RocketChat.settings.get('SMTP_Host'))

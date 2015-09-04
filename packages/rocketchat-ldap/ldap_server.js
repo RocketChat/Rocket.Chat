@@ -1,5 +1,10 @@
 Future = Npm.require('fibers/future');
 
+var slug = function (text) {
+	text = slugify(text, '.');
+	return text.replace(/[^0-9a-z-_.]/g, '');
+}
+
 // At a minimum, set up LDAP_DEFAULTS.url and .dn according to
 // your needs. url should appear as "ldap://your.url.here"
 // dn should appear in normal ldap format of comma separated attribute=value
@@ -164,7 +169,7 @@ Accounts.registerLoginHandler("ldap", function(loginRequest) {
 
 		// Look to see if user already exists
 		var user = Meteor.users.findOne({
-			username: ldapResponse.username
+			username: slug(ldapResponse.username)
 		});
 
 		// Login user if they exist
@@ -192,7 +197,7 @@ Accounts.registerLoginHandler("ldap", function(loginRequest) {
 		// Otherwise create user if option is set
 		else if (ldapObj.options.createNewUser) {
 			var userObject = {
-				username: ldapResponse.username,
+				username: slug(ldapResponse.username),
 				ldap: true
 			};
 			// Set email
