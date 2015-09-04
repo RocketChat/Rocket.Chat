@@ -7,7 +7,7 @@ Package.describe({
 // Loads all i18n.json files into tapi18nFiles
 var _ = Npm.require('underscore');
 var fs = Npm.require('fs');
-tapi18nFiles = _.map(fs.readdirSync('packages/rocketchat-gitlab/i18n'), function(filename) { return 'i18n/' + filename });
+tapi18nFiles = _.map(fs.readdirSync('packages/rocketchat-gitlab/i18n'), function(filename) { if fs.statSync('packages/rocketchat-gitlab/i18n/' + filename).size > 0 then return 'i18n/' + filename });
 
 Package.onUse(function(api) {
 	api.versionsFrom('1.0');
