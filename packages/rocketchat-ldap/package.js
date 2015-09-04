@@ -12,8 +12,8 @@ Npm.depends({
 // Loads all i18n.json files into tapi18nFiles
 var _ = Npm.require('underscore');
 var fs = Npm.require('fs');
-tapi18nFiles = _.map(fs.readdirSync('packages/rocketchat-gitlab/i18n'), function(filename) {
-    if (fs.statSync('packages/rocketchat-gitlab/i18n/' + filename).size > 0) {
+tapi18nFiles = fs.readdirSync('packages/rocketchat-ldap/i18n').forEach(function(filename) {
+    if (fs.statSync('packages/rocketchat-ldap/i18n/' + filename).size > 16) {
         return 'i18n/' + filename;
     }
 });
