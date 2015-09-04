@@ -1,30 +1,37 @@
 @Notify = new class
 	constructor: ->
+		@debug = true
 		@streamAll = new Meteor.Stream 'notify-all'
 		@streamRoom = new Meteor.Stream 'notify-room'
 		@streamUser = new Meteor.Stream 'notify-user'
 
-		@streamAll.on 'notify', @onAll
-		# @stream.on room, @onRoom
-		@streamUser.on Meteor.userId(), @onUser
+		if @debug is true
+			@onAll -> console.log "Notify: onAll", arguments
+			@onUser -> console.log "Notify: onAll", arguments
 
-	listenRoom: (room) ->
-		@streamRoom.on room, @onRoom
 
-	notifyAll: (data) ->
-		@streamAll.emit 'notify', data
+	notifyRoom: (room, args...) ->
+		console.log "Notify: notifyRoom", arguments if @debug is true
 
-	notifyRoom: (room, data) ->
-		@streamRoom.emit 'notify', room, data
+		args = [room].concat args
+		@streamRoom.emit.apply @streamRoom, args
 
-	notifyUser: (userId, data) ->
-		@streamUser.emit 'notify', userId, data
+	notifyUser: (userId, args...) ->
+		console.log "Notify: notifyUser", arguments if @debug is true
 
-	onAll: (data) ->
-		console.log 'onAll', data
+		args = [userId].concat args
+		@streamUser.emit.apply @streamUser, args
 
-	onRoom: (data) ->
-		console.log 'onRoom', data
 
-	onUser: (data) ->
-		console.log 'onUser', data
+	onAll: (callback) ->
+		@streamAll.on 'notify', callback
+
+	onRoom: (room, callback) ->
+		console.log 'onRoom'
+		if @debug is true
+			@streamRoom.on room, -> console.log "Notify: onRoom #{room}", arguments
+
+		@streamRoom.on room, callback
+
+	onUser: (callback) ->
+		@streamUser.on Meteor.userId(), callback
