@@ -104,7 +104,6 @@ rocketchat:autolinker@0.0.1
 rocketchat:colors@0.0.1
 rocketchat:custom-oauth@1.0.0
 rocketchat:emojione@0.0.1
-rocketchat:external@0.0.1
 rocketchat:favico@0.0.1
 rocketchat:file@0.0.1
 rocketchat:gitlab@0.0.1
