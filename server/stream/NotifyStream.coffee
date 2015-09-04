@@ -2,6 +2,8 @@
 	constructor: ->
 		self = @
 
+		@debug = true
+
 		@streamAll = new Meteor.Stream 'notify-all'
 		@streamRoom = new Meteor.Stream 'notify-room'
 		@streamUser = new Meteor.Stream 'notify-user'
@@ -26,14 +28,20 @@
 			return event is 'notify' or event is @userId
 
 
-		@streamRoom.on 'notify', self.notifyRoom.bind(@)
-		@streamUser.on 'notify', self.notifyUser.bind(@)
+	notifyAll: (args...) ->
+		console.log 'notifyAll', arguments if @debug is true
 
-	notifyAll: (data) ->
-		@streamAll.emit 'notify', data
+		args.unshift 'notify'
+		@streamAll.emit.apply @streamAll, args
 
-	notifyRoom: (room, data) ->
-		@streamRoom.emit room, data
+	notifyRoom: (room, args...) ->
+		console.log 'notifyRoom', arguments if @debug is true
 
-	notifyUser: (userId, data) ->
-		@streamUser.emit userId, data
+		args.unshift room
+		@streamRoom.emit.apply @streamRoom, args
+
+	notifyUser: (userId, args...) ->
+		console.log 'notifyUser', arguments if @debug is true
+
+		args.unshift userId
+		@streamUser.emit.apply @streamUser, args
