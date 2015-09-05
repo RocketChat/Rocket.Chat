@@ -16,5 +16,9 @@ Meteor.methods
 		unless userData.name
 			throw new Meteor.Error 'name-is-required', 'Name field is required'
 
+		unless userData.username
+			throw new Meteor.Error 'user-name-is-required', 'Username field is required'
+
 		Meteor.users.update { _id: userData._id }, { $set: { name: userData.name } }
+		Meteor.users.update { _id: userData._id }, { $set: { username: userData.username } }
 		return true
