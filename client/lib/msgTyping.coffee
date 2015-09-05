@@ -11,7 +11,6 @@
 		if _.isEmpty usersTyping[room]?.users
 			usersTyping[room] = { users: {} }
 			RocketChat.Notifications.onRoom room, (type, typing) ->
-				console.log arguments
 				if type isnt 'typing' then return
 
 				unless typing?.username is Meteor.user()?.username

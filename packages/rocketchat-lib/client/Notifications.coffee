@@ -35,3 +35,13 @@ RocketChat.Notifications = new class
 
 	onUser: (callback) ->
 		@streamUser.on Meteor.userId(), callback
+
+
+	unAll: (callback) ->
+		@streamAll.removeListener 'notify', callback
+
+	unRoom: (room, callback) ->
+		@streamRoom.removeListener room, callback
+
+	unUser: (callback) ->
+		@streamUser.removeListener Meteor.userId(), callback
