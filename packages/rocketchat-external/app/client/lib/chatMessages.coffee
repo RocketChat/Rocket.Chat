@@ -66,25 +66,46 @@ class @ChatMessages
 			this.editing.saved = this.input.value
 
 	send: (rid, input) ->
-		if _.trim(input.value) isnt ''
+		if s.trim(input.value) isnt ''
 			if this.isMessageTooLong(input)
 				return Errors.throw t('Error_message_too_long')
 			# KonchatNotification.removeRoomNotification(rid)
 			msg = input.value
 			input.value = ''
-			msgObject = { _id: Random.id(), rid: rid, msg: msg}
-			# this.stopTyping(rid)
-			#Check if message starts with /command
-			if msg[0] is '/'
-				match = msg.match(/^\/([^\s]+)(?:\s+(.*))?$/m)
-				if(match?)
-					command = match[1]
-					param = match[2]
-					Meteor.call 'slashCommand', {cmd: command, params: param, msg: msgObject }
+			rid ?= visitor.getRoom(true)
+
+			sendMessage = ->
+				msgObject = { _id: Random.id(), rid: rid, msg: msg, token: visitor.getToken() }
+				MsgTyping.stop(rid)
+				#Check if message starts with /command
+				if msg[0] is '/'
+					match = msg.match(/^\/([^\s]+)(?:\s+(.*))?$/m)
+					if(match?)
+						command = match[1]
+						param = match[2]
+						Meteor.call 'slashCommand', {cmd: command, params: param, msg: msgObject }
+				else
+					#Run to allow local encryption
+					# Meteor.call 'onClientBeforeSendMessage', {}
+					Meteor.call 'sendMessageExternal', msgObject, (error, result) ->
+						if error
+							ChatMessage.update msgObject._id, { $set: { error: true } }
+							showError error.reason
+
+			if not Meteor.userId()
+				Meteor.call 'registerGuest', visitor.getToken(), (error, result) ->
+					if error?
+						ChatMessage.update msgObject._id, { $set: { error: true } }
+						return showError error.reason
+
+					Meteor.loginWithPassword result.user, result.pass, (error) ->
+						if error
+							ChatMessage.update msgObject._id, { $set: { error: true } }
+							return showError error.reason
+
+						sendMessage()
 			else
-				#Run to allow local encryption
-				#Meteor.call 'onClientBeforeSendMessage', {}
-				Meteor.call 'sendMessageExternal', msgObject
+				sendMessage()
 
 	deleteMsg: (message) ->
 		Meteor.call 'deleteMessage', message, (error, result) ->
@@ -92,20 +113,17 @@ class @ChatMessages
 				return Errors.throw error.reason
 
 	update: (id, rid, input) ->
-		if _.trim(input.value) isnt ''
+		if s.trim(input.value) isnt ''
 			msg = input.value
 			Meteor.call 'updateMessage', { id: id, msg: msg }
 			this.clearEditing()
-			# this.stopTyping(rid)
+			MsgTyping.stop(rid)
 
 	startTyping: (rid, input) ->
-		if _.trim(input.value) isnt ''
+		if s.trim(input.value) isnt ''
 			MsgTyping.start(rid)
 		else
 			MsgTyping.stop(rid)
-
-	stopTyping: (rid) ->
-		MsgTyping.stop(rid)
 
 	bindEvents: ->
 		if this.wrapper?.length
@@ -147,8 +165,8 @@ class @ChatMessages
 		keyCodes.push i for i in [35..40] # Home, End, Arrow Keys
 		keyCodes.push i for i in [112..123] # F1 - F12
 
-		# unless k in keyCodes
-		# 	this.startTyping(rid, input)
+		unless k in keyCodes
+			this.startTyping(rid, input)
 
 	keydown: (rid, event) ->
 		input = event.currentTarget
@@ -174,16 +192,16 @@ class @ChatMessages
 				event.stopPropagation()
 				this.clearEditing()
 				return
-		else if k is 38 or k is 40 # Arrow Up or down
-			if k is 38
-				return if input.value.slice(0, input.selectionStart).match(/[\n]/) isnt null
-				this.toPrevMessage()
-			else
-				return if input.value.slice(input.selectionEnd, input.value.length).match(/[\n]/) isnt null
-				this.toNextMessage()
+		# else if k is 38 or k is 40 # Arrow Up or down
+		# 	if k is 38
+		# 		return if input.value.slice(0, input.selectionStart).match(/[\n]/) isnt null
+		# 		this.toPrevMessage()
+		# 	else
+		# 		return if input.value.slice(input.selectionEnd, input.value.length).match(/[\n]/) isnt null
+		# 		this.toNextMessage()
 
-			event.preventDefault()
-			event.stopPropagation()
+		# 	event.preventDefault()
+		# 	event.stopPropagation()
 
 		# ctrl (command) + shift + k -> clear room messages
 		else if k is 75 and ((navigator?.platform?.indexOf('Mac') isnt -1 and event.metaKey and event.shiftKey) or (navigator?.platform?.indexOf('Mac') is -1 and event.ctrlKey and event.shiftKey))
