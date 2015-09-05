@@ -9,6 +9,9 @@ Template.accountProfile.helpers
 	userLanguage: (key) ->
 		return (localStorage.getItem('userLanguage') or defaultUserLanguage())?.split('-').shift().toLowerCase() is key
 
+	username: ->
+		return Meteor.user().username
+
 Template.accountProfile.onCreated ->
 	settingsTemplate = this.parentTemplate(3)
 	settingsTemplate.child ?= []
