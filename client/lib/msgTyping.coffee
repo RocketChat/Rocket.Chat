@@ -10,9 +10,7 @@
 	addStream = (room) ->
 		if _.isEmpty usersTyping[room]?.users
 			usersTyping[room] = { users: {} }
-			RocketChat.Notifications.onRoom room, (type, typing) ->
-				if type isnt 'typing' then return
-
+			RocketChat.Notifications.onRoom room, 'typing', (typing) ->
 				unless typing?.username is Meteor.user()?.username
 					if typing.start
 						users = usersTyping[room].users

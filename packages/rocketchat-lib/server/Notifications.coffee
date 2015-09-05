@@ -13,19 +13,17 @@ RocketChat.Notifications = new class
 		@streamAll.permissions.read -> return @userId?
 
 		@streamRoom.permissions.write -> return @userId?
-		@streamRoom.permissions.read (event) ->
+		@streamRoom.permissions.read (eventName) ->
 			if not @userId? then return false
 
-			if event is 'notify' then return true
+			roomId = eventName.split('/')[0]
 
 			user = Meteor.users.findOne @userId, {fields: {username: 1}}
-			return ChatRoom.findOne({_id: event, usernames: user.username}, {fields: {_id: 1}})?
+			return ChatRoom.findOne({_id: roomId, usernames: user.username}, {fields: {_id: 1}})?
 
 		@streamUser.permissions.write -> return @userId?
-		@streamUser.permissions.read (event) ->
+		@streamUser.permissions.read (eventName) ->
 			if not @userId? then return false
-
-			return event is 'notify' or event is @userId
 
 
 	notifyAll: (args...) ->
@@ -34,10 +32,10 @@ RocketChat.Notifications = new class
 		args.unshift 'notify'
 		@streamAll.emit.apply @streamAll, args
 
-	notifyRoom: (room, args...) ->
+	notifyRoom: (room, eventName, args...) ->
 		console.log 'notifyRoom', arguments if @debug is true
 
-		args.unshift room
+		args.unshift "#{room}/#{eventName}"
 		@streamRoom.emit.apply @streamRoom, args
 
 	notifyUser: (userId, args...) ->
