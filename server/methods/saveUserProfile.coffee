@@ -8,7 +8,7 @@ Meteor.methods
 				Accounts.setPassword Meteor.userId(), settings.password, { logout: false }
 
 			if settings.username?
-                                Meteor.users.update Meteor.userId(), { $set: { "username": settings.username } }
+				Meteor.call 'setUsername', settings.username
 
 			profile = {}
 
