@@ -10,13 +10,9 @@
 			<div class="rocket-form">
 				<fieldset>
 					<div class="input-line">
-						<label for="language">{{_ "Language"}}</label>
+						<label for="username">{{_ "Username"}}</label>
 						<div>
-							<select id="language" class="required">
-								{{#each languages}}
-								<option value="{{key}}" selected="{{userLanguage key}}" dir="auto">{{name}}</option>
-								{{/each}}
-							</select>
+							<input type="text" name="username" id="username" />
 						</div>
 					</div>
 					<div class="input-line">
@@ -26,9 +22,13 @@
 						</div>
 					</div>
 					<div class="input-line">
-						<label for="username">{{_ "Username"}}</label>
+						<label for="language">{{_ "Language"}}</label>
 						<div>
-							<input type="text" name="username" id="username" />
+							<select id="language" class="required">
+								{{#each languages}}
+								<option value="{{key}}" selected="{{userLanguage key}}" dir="auto">{{name}}</option>
+								{{/each}}
+							</select>
 						</div>
 					</div>
 				</fieldset>
