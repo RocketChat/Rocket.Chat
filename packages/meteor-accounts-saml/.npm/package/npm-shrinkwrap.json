@@ -1,94 +1,94 @@
 {
   "dependencies": {
     "connect": {
-      "version": "http://registry.npmjs.org/connect/-/connect-2.7.10.tgz",
+      "version": "2.7.10",
       "dependencies": {
         "qs": {
-          "version": "http://registry.npmjs.org/qs/-/qs-0.6.5.tgz"
+          "version": "0.6.5"
         },
         "formidable": {
-          "version": "http://registry.npmjs.org/formidable/-/formidable-1.0.14.tgz"
+          "version": "1.0.14"
         },
         "cookie-signature": {
-          "version": "http://registry.npmjs.org/cookie-signature/-/cookie-signature-1.0.1.tgz"
+          "version": "1.0.1"
         },
         "buffer-crc32": {
-          "version": "http://registry.npmjs.org/buffer-crc32/-/buffer-crc32-0.2.1.tgz"
+          "version": "0.2.1"
         },
         "cookie": {
-          "version": "http://registry.npmjs.org/cookie/-/cookie-0.0.5.tgz"
+          "version": "0.0.5"
         },
         "send": {
-          "version": "http://registry.npmjs.org/send/-/send-0.1.0.tgz",
+          "version": "0.1.0",
           "dependencies": {
             "mime": {
-              "version": "http://registry.npmjs.org/mime/-/mime-1.2.6.tgz"
+              "version": "1.2.6"
             },
             "range-parser": {
-              "version": "http://registry.npmjs.org/range-parser/-/range-parser-0.0.4.tgz"
+              "version": "0.0.4"
             }
           }
         },
         "bytes": {
-          "version": "http://registry.npmjs.org/bytes/-/bytes-0.2.0.tgz"
+          "version": "0.2.0"
         },
         "fresh": {
-          "version": "http://registry.npmjs.org/fresh/-/fresh-0.1.0.tgz"
+          "version": "0.1.0"
         },
         "pause": {
-          "version": "http://registry.npmjs.org/pause/-/pause-0.0.1.tgz"
+          "version": "0.0.1"
         },
         "debug": {
-          "version": "http://registry.npmjs.org/debug/-/debug-2.2.0.tgz",
+          "version": "2.2.0",
           "dependencies": {
             "ms": {
-              "version": "http://registry.npmjs.org/ms/-/ms-0.7.1.tgz"
+              "version": "0.7.1"
             }
           }
         }
       }
     },
     "querystring": {
-      "version": "http://registry.npmjs.org/querystring/-/querystring-0.2.0.tgz"
+      "version": "0.2.0"
     },
     "xml-crypto": {
-      "version": "http://registry.npmjs.org/xml-crypto/-/xml-crypto-0.6.0.tgz",
+      "version": "0.6.0",
       "dependencies": {
         "xpath.js": {
-          "version": "http://registry.npmjs.org/xpath.js/-/xpath.js-1.0.6.tgz"
+          "version": "1.0.6"
         }
       }
     },
     "xml-encryption": {
-      "version": "http://registry.npmjs.org/xml-encryption/-/xml-encryption-0.7.2.tgz",
+      "version": "0.7.2",
       "dependencies": {
         "ejs": {
-          "version": "http://registry.npmjs.org/ejs/-/ejs-0.8.8.tgz"
+          "version": "0.8.8"
         },
         "async": {
-          "version": "http://registry.npmjs.org/async/-/async-0.2.10.tgz"
+          "version": "0.2.10"
         },
         "xpath": {
-          "version": "http://registry.npmjs.org/xpath/-/xpath-0.0.5.tgz"
+          "version": "0.0.5"
         },
         "node-forge": {
-          "version": "http://registry.npmjs.org/node-forge/-/node-forge-0.2.24.tgz"
+          "version": "0.2.24"
         }
       }
     },
     "xml2js": {
-      "version": "http://registry.npmjs.org/xml2js/-/xml2js-0.2.0.tgz",
+      "version": "0.2.0",
       "dependencies": {
         "sax": {
-          "version": "http://registry.npmjs.org/sax/-/sax-1.1.2.tgz"
+          "version": "1.1.2"
         }
       }
     },
     "xmlbuilder": {
-      "version": "http://registry.npmjs.org/xmlbuilder/-/xmlbuilder-2.6.4.tgz",
+      "version": "2.6.4",
       "dependencies": {
         "lodash": {
-          "version": "http://registry.npmjs.org/lodash/-/lodash-3.10.1.tgz"
+          "version": "3.10.1"
         }
       }
     },
