@@ -23,13 +23,14 @@ RocketChat.Notifications = new class
 
 		@streamUser.permissions.write -> return @userId?
 		@streamUser.permissions.read (eventName) ->
-			if not @userId? then return false
+			userId = eventName.split('/')[0]
+			return @userId? and @userId is userId
 
 
-	notifyAll: (args...) ->
+	notifyAll: (eventName, args...) ->
 		console.log 'notifyAll', arguments if @debug is true
 
-		args.unshift 'notify'
+		args.unshift eventName
 		@streamAll.emit.apply @streamAll, args
 
 	notifyRoom: (room, eventName, args...) ->
@@ -38,8 +39,8 @@ RocketChat.Notifications = new class
 		args.unshift "#{room}/#{eventName}"
 		@streamRoom.emit.apply @streamRoom, args
 
-	notifyUser: (userId, args...) ->
+	notifyUser: (userId, eventName, args...) ->
 		console.log 'notifyUser', arguments if @debug is true
 
-		args.unshift userId
+		args.unshift "#{userId}/#{eventName}"
 		@streamUser.emit.apply @streamUser, args
