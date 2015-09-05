@@ -31,6 +31,8 @@ Template.loginForm.helpers
 			when 'register'
 				return t('Submit')
 			when 'login'
+				if RocketChat.settings.get('LDAP_Enable')
+					return t('Login') + ' (LDAP)'
 				return t('Login')
 			when 'email-verification'
 				return t('Send_confirmation_email')
@@ -39,6 +41,9 @@ Template.loginForm.helpers
 
 	waitActivation: ->
 		return Template.instance().state.get() is 'wait-activation'
+
+	loginTerms: ->
+		return RocketChat.settings.get 'Layout_Login_Terms'
 		
 Template.loginForm.events
 	'submit #login-card': (event, instance) ->
@@ -83,7 +88,11 @@ Template.loginForm.events
 						# else
 							# FlowRouter.go 'index'
 			else
-				Meteor.loginWithPassword formData.emailOrUsername, formData.pass, (error) ->
+				loginMethod = 'loginWithPassword'
+				if RocketChat.settings.get('LDAP_Enable')
+					loginMethod = 'loginWithLDAP'
+
+				Meteor[loginMethod] formData.emailOrUsername, formData.pass, (error) ->
 					RocketChat.Button.reset(button)
 					if error?
 						if error.error is 'no-valid-email'

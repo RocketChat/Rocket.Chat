@@ -39,10 +39,10 @@ Meteor.methods
 			$set:
 				ts: now
 				ls: now
+				open: true
 			$setOnInsert:
 				name: to.username
 				t: 'd'
-				open: true
 				alert: false
 				unread: 0
 				u:

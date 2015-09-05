@@ -167,12 +167,8 @@ class HubotScripts
 		scriptsToLoad = [
 			'alot.coffee'
 			'applause.coffee'
-			'bang-bang.coffee'
-			'base58.coffee'
-			'base64.coffee'
 			'beerme.coffee'
 			'botsnack.coffee'
-			'brewerydb.coffee'
 			'calm-down.coffee'
 			'carlton.coffee'
 			'chuck-norris.coffee'
@@ -194,7 +190,6 @@ class HubotScripts
 			'hangout.coffee'
 			'hashing.coffee'
 			'hello.coffee'
-			'homer.coffee'
 			'httpcat.coffee'
 			'karma.coffee'
 			'megusta.coffee'
@@ -285,8 +280,8 @@ RocketBot.adapter = new RocketChatAdapter RocketBot
 HubotScripts(RocketBot)
 RocketBot.run()
 
-RocketBot.hear /^test/i, (res) ->
-	res.send "Test? TESTING? WE DON'T NEED NO TEST, EVERYTHING WORKS!"
+# RocketBot.hear /^test/i, (res) ->
+#	res.send "Test? TESTING? WE DON'T NEED NO TEST, EVERYTHING WORKS!"
 
 RocketChat.callbacks.add 'afterSaveMessage', RocketBotReceiver, RocketChat.callbacks.priority.LOW
 

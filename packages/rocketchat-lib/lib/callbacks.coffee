@@ -20,25 +20,32 @@ RocketChat.callbacks.priority =
 # @param {Function} callback - The callback function
 ###
 
-RocketChat.callbacks.add = (hook, callback, priority) ->
+RocketChat.callbacks.add = (hook, callback, priority, id) ->
 	# if callback array doesn't exist yet, initialize it
 	priority ?= RocketChat.callbacks.priority.MEDIUM
 	unless _.isNumber priority
 		priority = RocketChat.callbacks.priority.MEDIUM
 	callback.priority = priority
+	callback.id = id or Random.id()
 	RocketChat.callbacks[hook] ?= []
+	
+	# Avoid adding the same callback twice
+	for cb in RocketChat.callbacks[hook]
+		if cb.id is callback.id
+			return
+			
 	RocketChat.callbacks[hook].push callback
 	return
 
 ###
 # Remove a callback from a hook
 # @param {string} hook - The name of the hook
-# @param {string} functionName - The name of the function to remove
+# @param {string} id - The callback's id
 ###
 
-RocketChat.callbacks.remove = (hookName, callbackName) ->
+RocketChat.callbacks.remove = (hookName, id) ->
 	RocketChat.callbacks[hookName] = _.reject RocketChat.callbacks[hookName], (callback) ->
-		callback.name is callbackName
+		callback.id is id
 	return
 
 ###
