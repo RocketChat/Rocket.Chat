@@ -30,16 +30,13 @@ a {
 	text-decoration: none;
 	&:hover,
 	&:active {
-		color: @primary-font-color;
 		text-decoration: none;
 	}
 }
 
 code {
-	background: #f8f8f8;
 	border-radius: 4px;
-	border: 1px solid #ccc;
-	color: #333;
+	border: 1px solid;
 	display: block;
 	font-size: 13px;
 	font-weight: bold;
@@ -72,7 +69,6 @@ blockquote {
 	position: relative;
 	&:before {
 		content: ' ';
-		background-color: #eaeaea;
 		height: 100%;
 		width: 4px;
 		position: absolute;
@@ -83,22 +79,18 @@ blockquote {
 
 .login-terms {
 	max-width: 400px;
-	color: #C2E7FF;
 	margin: auto;
 
 	a {
 		font-weight: bold !important;
 		text-decoration: underline;
-		color: #C2E7FF;
 
 		&:hover {
-			color: white;
 		}
 	}
 }
 
 .upload-preview {
-	background-color: #f5f5f5;
 	.upload-preview-file {
 		height: 200px;
 		background-size: contain;
@@ -108,7 +100,6 @@ blockquote {
 }
 
 .upload-preview-title {
-	background-color: #eee;
 	padding: 3px;
 	border-radius: 0 0 5px 5px;
 }
@@ -138,18 +129,15 @@ blockquote {
 	&.first-unread-opaque {
 		.body {
 			&::before {
-				background-color: #E6E6E6;
 			}
 
 			&::after {
-				color: #B3B3B3;
 			}
 		}
 	}
 	.body {
 		&::before {
 			content: "";
-			background-color: #FF8080;
 			display: block;
 			height: 1px;
 			position: absolute;
@@ -168,9 +156,7 @@ blockquote {
 			text-transform: uppercase;
 			font-size: 8px;
 			line-height: 10px;
-			background-color: white;
 			padding-left: 5px;
-			color: #FF0000;
 			.transition(color, .5s, linear);
 		}
 	}
@@ -191,20 +177,14 @@ blockquote {
 .alert {
 	padding: 15px;
 	margin-bottom: 20px;
-	border: 1px solid rgba(0, 0, 0, 0);
+	border: 1px solid;
 	border-radius: 4px;
 }
 
 .alert-warning {
-	color: #8A6D3B;
-	background-color: #FCF8E3;
-	border-color: #FAEBCC;
 }
 
 .alert-danger {
-	color: #A94442;
-	background-color: #F2DEDE;
-	border-color: #EBCCD1;
 }
 
 .full-page .hidden {
@@ -231,23 +211,8 @@ blockquote {
 	left: 0;
 }
 
-.custom-scroll(@background, @thumb, @width: 6px) {
-	&::-webkit-scrollbar {
-		width: @width;
-		background: @background;
-	}
-	&::-webkit-scrollbar-thumb {
-		background-color: @thumb;
-		-webkit-border-radius: 50px;
-	}
-	&::-webkit-scrollbar-corner {
-		background-color: @background;
-	}
-}
-
 .scrollable {
 	&:extend(.fill-all);
-	.custom-scroll(transparent, #BFBFBF);
 	overflow-y: scroll;
 	-webkit-overflow-scrolling: touch;
 }
@@ -255,7 +220,7 @@ blockquote {
 .rocket-form {
 	max-width: 620px;
 	width: 90%;
-	
+
 	legend {
 		margin-bottom: 23px;
 		position: relative;
@@ -267,7 +232,6 @@ blockquote {
 		&:after {
 			content: " ";
 			height: 1px;
-			background-color: #DFDFDF;
 			display: block;
 			position: absolute;
 			width: 100%;
@@ -299,14 +263,12 @@ blockquote {
 	&.search {
 		.icon-search {
 			position: absolute;
-			color: @secondary-font-color;
 			left: 5px;
 			top: 10px;
 			font-weight: 400;
 		}
 		.icon-spin4 {
 			position: absolute;
-			color: @secondary-font-color;
 			right: 5px;
 			top: 10px;
 			font-weight: 400;
@@ -335,7 +297,6 @@ blockquote {
 	> label {
 		display: block;
 		margin-bottom: 4px;
-		color: @primary-font-color;
 	}
 	input[type='text'] {
 		display: block;
@@ -395,7 +356,6 @@ blockquote {
 	font-size: 20px;
 	letter-spacing: -0.5px;
 	margin: 18px 0;
-	color: #EFEFEF;
 }
 
 .unselectable {
@@ -411,12 +371,10 @@ blockquote {
 	font-size: 16px;
 	letter-spacing: -0.5px;
 	margin: 18px 0;
-	color: #EAEAEA;
 }
 
 html {
 	overflow-y: scroll;
-	.custom-scroll(transparent, rgba(255, 255, 255, 0.05), 3px);
 	height: 100%;
 	&.noscroll {
 		overflow: hidden;
@@ -426,7 +384,6 @@ html {
 body {
 	font-family: "Roboto", "HelveticaNeue-Light", "sans-serif";
 	font-size: 14px;
-	color: @primary-font-color;
 	height: 100%;
 	width: 100%;
 	-webkit-font-smoothing: antialiased;
@@ -434,7 +391,6 @@ body {
 	padding: 0;
 	overflow: visible;
 	position: relative;
-	background-color: @primary-background-color;
 }
 
 // input & form styles
@@ -461,8 +417,7 @@ input[type='password'] {
 	-webkit-appearance: none;
 	height: 35px;
 	line-height: normal;
-	border: 1px solid #E7E7E7;
-	background-color: #fff;
+	border: 1px solid;
 	border-radius: 5px;
 	padding: 2px 8px;
 	position: relative;
@@ -490,7 +445,6 @@ input.search {
 		position: absolute;
 		top: 0;
 		left: 0;
-		background-color: #000;
 	}
 }
 
@@ -513,7 +467,6 @@ input.search {
 .form-horizontal .control-label {
 	padding-top: 12px;
 	font-weight: bold;
-	color: @primary-font-color;
 }
 
 .-autocomplete-container {
@@ -525,7 +478,6 @@ input.search {
 	p {
 		font-size: 14px;
 		padding: 8px 8px;
-		color: @secondary-font-color;
 	}
 	> i {
 		visibility: hidden;
@@ -546,48 +498,37 @@ input.search {
 	padding: 8px 5px;
 	font-size: 12px;
 	cursor: pointer;
-	color: @secondary-font-color;
 	i {
-		color: @secondary-font-color;
 	}
 	&.selected {
-		background-color: @tertiary-background-color;
-		color: @primary-font-color;
 	}
 }
 
 label.required:after {
 	content: ' *';
-	color: red;
 }
 
 .status-offline,
 .icon-at.status-offline {
-	color: @status-offline;
 }
 
 .status-online,
 .icon-at.status-online {
-	color: @status-online;
 }
 
 .status-busy,
 .icon-at.status-busy {
-	color: @status-busy;
 }
 
 .status-away,
 .icon-at.status-away {
-	color: @status-away;
 }
 
 // TODO -- Refactor favorite styles and logic;
 .favorite-room {
-	color: #FECF09;
 }
 
 .toggle-favorite {
-	color: #AAA;
 }
 
 .loading {
@@ -607,14 +548,11 @@ label.required:after {
 }
 
 .btn-loading {
-	color: #444 !important;
 	pointer-events: none;
 	cursor: not-allowed;
-	background-color: transparent !important;
 	box-shadow: none !important;
 	border: none;
 	&:hover {
-		background-color: transparent !important;
 	}
 	i {
 		display: block;
@@ -629,8 +567,6 @@ label.required:after {
 	&:extend(.unselectable);
 	display: inline-block;
 	padding: 9px 12px;
-	background-color: #FFF;
-	color: rgba(255, 255, 255, 0.85);
 	font-weight: 500;
 	font-size: 13px;
 	margin: 4px;
@@ -640,7 +576,6 @@ label.required:after {
 	border: none;
 	line-height: 16px;
 	position: relative;
-	background-color: lighten(desaturate(@primary-background-color, 15%), 12.5%);
 	cursor: pointer;
 	span {
 		position: relative;
@@ -653,40 +588,32 @@ label.required:after {
 		left: 0;
 		width: 100%;
 		height: 100%;
-		background-color: rgba(0, 0, 0, 0.1);
 		opacity: 0;
 		z-index: 1;
 		.transition(opacity .1s ease-out);
 	}
 	&:hover {
 		text-decoration: none;
-		color: #FFF;
 		&:before {
 			opacity: 1;
 		}
 	}
 	&.secondary {
-		background-color: @tertiary-background-color;
-		color: @primary-font-color;
 		&:before {
-			background-color: rgba(0, 0, 0, 0.045);
 		}
 	}
 	&.delete,
 	&.remove,
 	&.red {
 		min-width: 120px;
-		background-color: #bc2031;
 	}
 	&.short {
 		min-width: 100px;
 	}
 	&.lightblue {
 		min-width: 100px;
-		background-color: #02acec;
 	}
 	&.clean {
-		background-color: rgba(0, 0, 0, 0.025);
 		font-size: 14px;
 		box-shadow: 0 0 3px rgba(0, 0, 0, 0.08);
 		&.primary {
@@ -694,25 +621,18 @@ label.required:after {
 		}
 	}
 	&.facebook {
-		background-color: #325c99;
 	}
 	&.twitter {
-		background-color: #02acec;
 	}
 	&.google {
-		background-color: #dd4b39;
 	}
 	&.github {
-		background-color: #4c4c4c;
 	}
 	&.gitlab {
-		background-color: #373d47;
 	}
 	&.trello {
-		background-color: #026aa7;
 	}
 	&.meteor-developer {
-		background-color: #de4f4f;
 	}
 	&.button-block {
 		display: block;
@@ -749,7 +669,6 @@ label.required:after {
 		height: 2px;
 		width: 20px;
 		margin: 5px 0;
-		background-color: #333;
 		opacity: .8;
 		.transition(transform .2s ease-out,
 		width .2s ease-out);
@@ -762,14 +681,12 @@ label.required:after {
 	}
 
 	.unread-burger-alert {
-		background-color: #F95555;
 		border-radius: 20px;
 		position: absolute;
 		min-width: 18px;
 		height: 18px;
 		line-height: 18px;
 		text-align: center;
-		color: white;
 		font-weight: bold;
 		font-size: 12px;
 		top: 8px;
@@ -790,7 +707,6 @@ label.required:after {
 	&:after {
 		content: " ";
 		display: block;
-		background-color: #aaa;
 		width: 2px;
 		height: 10px;
 		position: absolute;
@@ -853,7 +769,6 @@ label.required:after {
 	&:after {
 		content: " ";
 		display: block;
-		background-color: #aaa;
 		width: 2px;
 		height: 10px;
 		position: absolute;
@@ -892,8 +807,6 @@ a.github-fork {
 	top: 50px;
 	background-size: 100% auto;
 	cursor: pointer;
-	background-color: #5c5c5c;
-	color: #f0f0f0;
 	padding: 1em 0 0.95em;
 	line-height: 1.04em;
 	text-decoration: none;
@@ -910,12 +823,10 @@ a.github-fork {
 	1) 2.15s,
 	opacity .2s ease-out 2.15);
 	&:hover {
-		background-color: #4b4b4b;
-		color: #FFF;
 	}
 	&:before {
 		content: " ";
-		border-top: 1px dashed #f0f0f0;
+		border-top: 1px dashed;
 		position: absolute;
 		top: 3px;
 		width: 100%;
@@ -925,7 +836,7 @@ a.github-fork {
 	}
 	&:after {
 		content: " ";
-		border-top: 1px dashed #f0f0f0;
+		border-top: 1px dashed;
 		position: absolute;
 		bottom: 2px;
 		z-index: 1;
@@ -942,25 +853,21 @@ a.github-fork {
 	display: block;
 	position: relative;
 	height: 24px;
-	background-color: #ddd;
 	width: 100%;
 	z-index: 10;
 	i {
 		height: 12px;
 		width: 12px;
 		display: inline-block;
-		background-color: #ff5f57;
 		border-radius: 50%;
 		position: absolute;
 		top: 6px;
 		left: 10px;
 		&:nth-child(2) {
 			left: 26px;
-			background-color: #ffbd2e;
 		}
 		&:nth-child(3) {
 			left: 42px;
-			background-color: #28ca41;
 		}
 	}
 }
@@ -978,7 +885,6 @@ a.github-fork {
 		min-width: 20px;
 		display: block;
 		position: relative;
-		background-color: transparent;
 		background-size: cover;
 		background-repeat: no-repeat;
 		background-position: center;
@@ -992,7 +898,6 @@ a.github-fork {
 		text-align: center;
 		width: 100%;
 		height: 100%;
-		color: #FFF;
 		.flex-center;
 		justify-content: center;
 		font-family: Helvetica;
@@ -1012,7 +917,6 @@ a.github-fork {
 	height: auto;
 	opacity: 1;
 	visibility: visible;
-	background-color: #fff;
 	.transition(opacity .2s ease-out);
 	&.-hidden {
 		visibility: hidden;
@@ -1069,7 +973,6 @@ a.github-fork {
 		h4 {
 			display: block;
 			line-height: 18px;
-			color: rgba(255, 255, 255, 0.65);
 			font-size: 16px;
 			margin-top: 3px;
 			font-weight: 400;
@@ -1082,31 +985,22 @@ a.github-fork {
 		}
 		&.status-offline {
 			.thumb:after {
-				border-color: darken(@status-offline, 5%);
-				background-color: @status-offline;
 			}
 		}
 		&.status-online {
 			.thumb:after {
-				border-color: darken(@status-online, 5%);
-				background-color: @status-online;
 			}
 		}
 		&.status-away {
 			.thumb:after {
-				border-color: darken(@status-away, 5%);
-				background-color: @status-away;
 			}
 		}
 		&.status-busy {
 			.thumb:after {
-				border-color: darken(@status-busy, 5%);
-				background-color: @status-busy;
 			}
 		}
 	}
 	.options {
-		background-color: @primary-background-color;
 		position: fixed;
 		top: @header-min-height;
 		left: 0;
@@ -1115,7 +1009,6 @@ a.github-fork {
 		overflow-x: hidden;
 		overflow-y: auto;
 		-webkit-overflow-scrolling: touch;
-		.custom-scroll(transparent, rgba(255, 255, 255, 0.05));
 		direction: rtl;
 		.calc(height, ~'100% - ' @header-min-height + @footer-min-height);
 		.transition(transform .3s cubic-bezier(.5, 0, .1, 1));
@@ -1133,7 +1026,7 @@ a.github-fork {
 				display: block;
 				width: 13px;
 				height: 13px;
-				border: 1px solid #6f6f6f;
+				border: 1px solid;
 				border-radius: 50%;
 				z-index: 5;
 				position: absolute;
@@ -1143,26 +1036,18 @@ a.github-fork {
 			}
 			&.offline {
 				&:after {
-					border-color: #666666;
-					background-color: #7b7b7b;
 				}
 			}
 			&.online {
 				&:after {
-					border-color: #2c9210;
-					background-color: #35AC19;
 				}
 			}
 			&.away {
 				&:after {
-					border-color: #e69200;
-					background-color: #fcb316;
 				}
 			}
 			&.busy {
 				&:after {
-					border-color: #9f0030;
-					background-color: #D30230;
 				}
 			}
 		}
@@ -1171,7 +1056,6 @@ a.github-fork {
 			width: 100px;
 			position: absolute;
 			right: -30px;
-			color: #aaa;
 			font-size: 10px;
 			top: 17px;
 		}
@@ -1184,19 +1068,15 @@ a.github-fork {
 		a {
 			position: relative;
 			display: table;
-			color: rgba(255, 255, 255, 0.5);
 			width: 100%;
 			height: 20px;
 			padding: 15px 12px;
 			line-height: 1;
 			text-decoration: none;
-			border-bottom: 1px solid darken(@primary-background-color, 2%);
+			border-bottom: 1px solid;
 			&:nth-child(even) {
-				// background-color: #EFEFEF;
 			}
 			&:hover {
-				background-color: darken(@primary-background-color, 2%);
-				color: rgba(255, 255, 255, 0.75);
 				text-decoration: none;
 			}
 		}
@@ -1214,20 +1094,16 @@ a.github-fork {
 	&.active .info,
 	.info:hover {
 		h4 {
-			color: rgba(255, 255, 255, 0.85);
 		}
 	}
 	.hover & {
 		.info h4 {
-			color: rgba(255, 255, 255, 0.85);
 		}
 	}
 }
 
 // rooms-box
 .flex-nav {
-	//background-color: @primary-background-color;
-	background-color: transparent;
 	position: fixed;
 	top: 0;
 	left: 0;
@@ -1236,16 +1112,7 @@ a.github-fork {
 	overflow-y: auto;
 	overflow-x: hidden;
 	width: @rooms-box-width;
-	color: @tertiary-font-color;
-	.transition(transform .3s cubic-bezier(.5,
-	0,
-	.1,
-	1));
-	.custom-scroll(transparent,
-	rgba(255,
-	255,
-	255,
-	0.05));
+	.transition(transform .3s cubic-bezier(.5, 0, .1, 1));
 	&.hidden {
 		.transform(translateX(-100%));
 		header,
@@ -1277,7 +1144,6 @@ a.github-fork {
 		height: @header-min-height;
 		padding-left: 15px;
 		.transition-delay(.05s);
-		background-color: @primary-background-color;
 		> div {
 			display: table-cell;
 			vertical-align: middle;
@@ -1308,9 +1174,7 @@ a.github-fork {
 		padding: 0 10px;
 		z-index: 120;
 		text-align: left;
-		background: #fff;
 		min-height: @footer-min-height;
-		background-color: @primary-background-color;
 		.transition-delay(.22s);
 		> div {
 			display: table-cell;
@@ -1331,13 +1195,7 @@ a.github-fork {
 		-webkit-overflow-scrolling: touch;
 		box-shadow: 0 0 5px rgba(0, 0, 0, 0.4) inset;
 		padding: 35px 10px;
-		.custom-scroll(transparent,
-		rgba(255,
-		255,
-		255,
-		0.05));
 		.transition-delay(.135s);
-		background-color: @primary-background-color;
 		&.no-shadow {
 			box-shadow: 0 0 0;
 		}
@@ -1360,15 +1218,11 @@ a.github-fork {
 			text-transform: uppercase;
 			font-weight: 400;
 			margin-bottom: 0;
-			color: inherit;
 		}
 		input[type='text'],
 		input[type='password'],
 		select {
 			border-width: 0 0 1px 0;
-			border-color: @tertiary-font-color;
-			background-color: #04436a;
-			color: @quaternary-font-color;
 			padding: 0 8px;
 			box-shadow: 0 0 0;
 			border-radius: 0;
@@ -1384,7 +1238,6 @@ a.github-fork {
 		li {
 			display: inline-block;
 			padding: 5px;
-			background-color: rgba(0, 0, 0, 0.1);
 			margin-right: 2px;
 			margin-bottom: 2px;
 		}
@@ -1403,9 +1256,7 @@ a.github-fork {
 	width: @rooms-box-width;
 	height: auto;
 	overflow: visible;
-	background-color: #F4F4F4;
 	z-index: 100;
-	color: #000;
 	padding: 12px 0 0 0;
 	.transition(transform .3s ease-out);
 	&:before {
@@ -1415,7 +1266,6 @@ a.github-fork {
 		left: 8px;
 		position: absolute;
 		top: 59px;
-		background-color: #dfdfdf;
 	}
 	.rooms-list {
 		direction: rtl;
@@ -1429,12 +1279,6 @@ a.github-fork {
 		display: block;
 		-webkit-overflow-scrolling: touch;
 		box-shadow: 0 0 5px rgba(0, 0, 0, 0.4) inset;
-		background-color: lighten(@primary-background-color, 2%);
-		.custom-scroll(transparent,
-		rgba(255,
-		255,
-		255,
-		0.05));
 		> .wrapper {
 			direction: ltr;
 			padding-left: 8px;
@@ -1443,17 +1287,14 @@ a.github-fork {
 	}
 	.more {
 		display: block;
-		color: @tertiary-font-color;
 		font-size: 11px;
 		padding: 4px 0 4px 10px;
 		margin-top: 2px;
 		&:hover {
-			background-color: rgba(0, 0, 0, 0.1);
 		}
 	}
 	.input-error {
 		text-align: center;
-		color: #f09286;
 		font-size: 12px;
 		padding: 0;
 		text-align: left;
@@ -1468,19 +1309,16 @@ a.github-fork {
 		padding-left: 10px;
 		font-size: 11px;
 		padding: 2px 0 2px 10px;
-		color: @tertiary-font-color;
 	}
 	.header {
 		position: absolute;
 		top: 0;
 		left: 0;
 		width: 100%;
-		color: #fff;
 		z-index: 110;
 		cursor: pointer;
 		min-height: @header-min-height;
 		height: @header-min-height;
-		background-color: @primary-background-color;
 	}
 	> .arrow {
 		position: absolute;
@@ -1492,7 +1330,6 @@ a.github-fork {
 		&:hover {
 			&:before,
 			&:after {
-				background-color: rgba(255, 255, 255, 0.85);
 			}
 		}
 	}
@@ -1504,10 +1341,8 @@ a.github-fork {
 		padding: 10px 15px 0px 15px;
 		z-index: 120;
 		text-align: right;
-		background: #fff;
 		min-height: @footer-min-height;
 		height: @footer-min-height;
-		background-color: @primary-background-color;
 		.logo {
 			display: block;
 			width: 100%;
@@ -1522,7 +1357,6 @@ a.github-fork {
 			width: 100%;
 			display: block;
 			text-transform: lowercase;
-			color: @tertiary-font-color;
 			margin-bottom: 0;
 			font-weight: 400;
 			padding-right: 4px;
@@ -1551,15 +1385,12 @@ a.github-fork {
 		text-transform: uppercase;
 		font-weight: 500;
 		margin: 25px 0 0 0;
-		color: @tertiary-font-color;
 		line-height: 28px;
 		padding-left: 10px;
 		a {
-			color: inherit;
 			display: block;
 		}
 		&:hover {
-			background-color: rgba(0, 0, 0, 0.1);
 		}
 		&.add-room {
 			&:hover {
@@ -1580,11 +1411,9 @@ a.github-fork {
 		}
 	}
 	.unread {
-		background-color: #1dce73;
 		min-width: 15px;
 		padding: 0 2px;
 		border-radius: 2px;
-		color: #FFF;
 		text-align: center;
 		position: absolute;
 		right: 6px;
@@ -1608,7 +1437,6 @@ a.github-fork {
 				display: block;
 				right: -18px;
 				top: 2px;
-				color: #666;
 				opacity: 0;
 				.transform(translateX(-10px));
 				.transition(opacity .15s ease .35s,
@@ -1616,18 +1444,14 @@ a.github-fork {
 			}
 			&:hover {
 				.opt {
-					background-color: transparent;
 					opacity: 1;
 					.transform(translateX(0));
 				}
 			}
 			&.active {
 				a {
-					background-color: rgba(255, 255, 255, 0.075);
-					color: rgba(255, 255, 255, 0.75);
 				}
 				.opt {
-					background-color: transparent;
 				}
 			}
 			&.has-unread {
@@ -1637,13 +1461,11 @@ a.github-fork {
 			}
 			&.has-alert {
 				.name {
-					color: #ffffff;
 					font-weight: bold;
 				}
 			}
 			&.away {
 				a {
-					color: #666;
 				}
 			}
 		}
@@ -1660,10 +1482,8 @@ a.github-fork {
 			text-overflow: ellipsis;
 			vertical-align: middle;
 			text-decoration: none;
-			color: @tertiary-font-color;
 			text-shadow: 0 1px 1px rgba(0, 0, 0, 0.25);
 			&:hover {
-				background-color: rgba(255, 255, 255, 0.05);
 				text-decoration: none;
 			}
 		}
@@ -1674,7 +1494,6 @@ a.github-fork {
 			padding-right: 10px;
 			text-align: right;
 			opacity: 0;
-			background-color: transparent;
 			display: block;
 			top: 7px;
 			.transform(translateX(-10px));
@@ -1682,9 +1501,7 @@ a.github-fork {
 			transform .15s ease-out .25s);
 			i {
 				margin: 0 1px;
-				color: rgba(255, 255, 255, 0.5);
 				&:hover {
-					color: rgba(255, 255, 255, 0.75);
 				}
 			}
 			.icon-cancel-circled:before {
@@ -1695,13 +1512,11 @@ a.github-fork {
 			}
 		}
 		i {
-			color: rgba(255, 255, 255, 0.35);
 			font-size: 14px;
 			width: 16px;
 			display: inline-block;
 		}
 		input[type="text"] {
-			color: #000;
 			width: 100%;
 			font-size: 12px;
 		}
@@ -1726,8 +1541,6 @@ a.github-fork {
 		-webkit-overflow-scrolling: touch;
 		.calc(height,
 		~'100% - 60px');
-		.custom-scroll(transparent,
-		#EAEAEA);
 	}
 }
 
@@ -1736,8 +1549,7 @@ a.github-fork {
 	.flex-center;
 	flex-flow: row nowrap;
 	padding: 0 10px 0 20px;
-	background: #fff;
-	border-bottom: 1px solid @tertiary-background-color;
+	border-bottom: 1px solid;
 	z-index: 100;
 	top: 0;
 	left: 0;
@@ -1789,15 +1601,12 @@ a.github-fork {
 .cms-page {
 	max-width: 800px;
 	margin: 40px auto;
-	color: #444;
-	background-color: white;
 	padding: 20px;
 	border-radius: 5px;
 	box-shadow: 1px 1px 4px rgba(0,0,0,.3);
 }
 
 .spotlight {
-	background-color: rgba(0,0,0,.3);
 	position: fixed;
 	top: 0;
 	bottom: 0;
@@ -1813,7 +1622,6 @@ a.github-fork {
 		width: 100%;
 		max-width: 600px;
 		font-size: 24px;
-		color: #444;
 		margin-top: 6%;
 
 		> input {
@@ -1831,14 +1639,12 @@ a.github-fork {
 			line-height: 46px;
 			width: 46px;
 			text-align: center;
-			color: #aaa;
 			font-weight: 100;
 		}
 	}
 }
 
 .mobile-message-menu {
-	background-color: rgba(0,0,0,.3);
 	position: fixed;
 	top: 0;
 	bottom: 0;
@@ -1933,13 +1739,13 @@ a.github-fork {
 				padding: 0 0 0 10px;
 				font-weight: 500;
 			}
-			
+
 			&:first-of-type > h1 {
 				margin-top: 0px;
 			}
-			
+
 			.section-content {
-				border: 1px solid #ddd;
+				border: 1px solid;
 				padding: 20px;
 				border-radius: 5px;
 			}
@@ -1987,27 +1793,24 @@ a.github-fork {
 	}
 	.results {
 		padding: 10px 0;
-		border-bottom: 1px solid #DFDFDF;
+		border-bottom: 1px solid;
 		margin-bottom: 10px;
 		font-weight: 300;
-		color: @secondary-font-color;
 		p {
 			font-size: 12px;
 			text-transform: uppercase;
 		}
 	}
-	
+
 	.list {
 		a {
 			.clearfix;
 			display: block;
 			padding: 10px 16px;
 			width: 100%;
-			color: @primary-font-color;
-			border-bottom: 1px solid @secondary-background-color;
+			border-bottom: 1px solid;
 			.transition(background .15s ease-out);
 			&:hover {
-				background-color: @secondary-background-color;
 			}
 		}
 		ul {
@@ -2017,14 +1820,12 @@ a.github-fork {
 			display: inline-block;
 			margin-right: 14px;
 			font-size: 11px;
-			color: @secondary-font-color;
 			position: relative;
 			&:after {
 				content: " ";
 				width: 4px;
 				height: 4px;
 				border-radius: 50%;
-				background-color: @secondary-font-color;
 				position: absolute;
 				right: -12px;
 				.calc(top,
@@ -2051,7 +1852,6 @@ a.github-fork {
 			}
 			a {
 				text-decoration: none;
-				color: @primary-font-color;
 			}
 		}
 		.status {
@@ -2059,7 +1859,6 @@ a.github-fork {
 			float: right;
 			width: 150px;
 			min-height: 30px;
-			color: @secondary-font-color;
 			text-align: right;
 			strong {
 				font-size: 12px;
@@ -2070,13 +1869,11 @@ a.github-fork {
 }
 
 .image-to-download {
-	background-color: #fafafa;
 	border-radius: 6px;
-	border: 1px dashed #ddd;
+	border: 1px dashed;
 	padding: 20px 15px;
 	margin-bottom: 5px;
 	text-transform: uppercase;
-	color: #aaa;
 	text-align: center;
 	cursor: pointer;
 	height: 200px;
@@ -2105,7 +1902,6 @@ a.github-fork {
 	justify-content: center;
 	-webkit-justify-content: center;
 	font-size: 30px;
-	color: orange;
 
 	div {
 		line-height: 40px;
@@ -2121,10 +1917,8 @@ a.github-fork {
 .upload-progress {
 	position: absolute;
 	top: 60px;
-	background-color: #b2d5c9;
 	width: 100%;
 	z-index: 11;
-	color: white;
 	font-weight: bold;
 	text-shadow: 1px 1px 0px rgba(0,0,0,.2);
 
@@ -2132,15 +1926,13 @@ a.github-fork {
 		position: relative;
 		line-height: 24px;
 		padding: 0 10px;
-		border-bottom: 1px solid #6a8179;
+		border-bottom: 1px solid;
 
 		&:first-child {
-			border-top: 1px solid #6a8179;
+			border-top: 1px solid;
 		}
 
 		&.upload-error {
-			background-color: #FF6161;
-			border-color: #863737;
 		}
 
 		.upload-progress-progress {
@@ -2148,7 +1940,6 @@ a.github-fork {
 			left: 0px;
 			height: 100%;
 			width: 0%;
-			background-color: #4c9789;
 			z-index: -1;
 			.transition(width, 1s, ease-out);
 		}
@@ -2158,7 +1949,6 @@ a.github-fork {
 			text-transform: uppercase;
 
 			&:hover {
-				color: #eee;
 				cursor: pointer;
 			}
 		}
@@ -2177,11 +1967,9 @@ a.github-fork {
 	-ms-user-select: text;
 	user-select: text;
 	.edit-room-title {
-		color: @secondary-font-color;
 		margin-left: 4px;
 		font-size: 16px;
 		&:hover {
-			color: @primary-font-color;
 		}
 	}
 	.wrapper {
@@ -2194,14 +1982,11 @@ a.github-fork {
 		overflow-x: hidden;
 		word-wrap: break-word;
 		-webkit-overflow-scrolling: touch;
-		.custom-scroll(transparent,
-		#EAEAEA);
 	}
 	.footer {
 		position: absolute;
 		padding: 10px 20px 0px 20px;
-		background: #FCFCFC;
-		border-top: 1px solid @tertiary-background-color;
+		border-top: 1px solid;
 		z-index: 100;
 		bottom: 0;
 		left: 0;
@@ -2213,7 +1998,6 @@ a.github-fork {
 	}
 	.message-popup {
 		position: absolute;
-		background: #FAFAFA;
 		z-index: 101;
 		bottom: 0px;
 		left: 0px;
@@ -2222,8 +2006,7 @@ a.github-fork {
 		box-shadow: 0px 0px 4px rgba(0,0,0,0.5);
 	}
 	.message-popup-title {
-		background-color: @secondary-background-color;
-		border-bottom: 1px solid #EEE;
+		border-bottom: 1px solid;
 		padding: 10px 20px;
 		font-size: 18px;
 		font-weight: 300;
@@ -2233,10 +2016,7 @@ a.github-fork {
 		line-height: 24px;
 		cursor: pointer;
 		user-select: none;
-		color: @secondary-font-color;
 		&.selected {
-			background-color: @tertiary-background-color;
-			color: @primary-font-color;
 		}
 	}
 	.popup-user-avatar {
@@ -2248,26 +2028,21 @@ a.github-fork {
 		margin: -7px 4px;
 	}
 	.popup-user-status {
-		border: 1px solid rgba(0,0,0,.2);
+		border: 1px solid;
 		width: 10px;
 		height: 10px;
 		display: inline-block;
 		border-radius: 10px;
 	}
 	.popup-user-status-system {
-		border-color: transparent;
 	}
 	.popup-user-status-offline {
-		background-color: @status-offline;
 	}
 	.popup-user-status-online {
-		background-color: @status-online;
 	}
 	.popup-user-status-away {
-		background-color: @status-away;
 	}
 	.popup-user-status-busy {
-		background-color: @status-busy;
 	}
 	.popup-slash-command-description {
 		float: right;
@@ -2286,16 +2061,12 @@ a.github-fork {
 				font-size: 22px;
 				padding: 6px 0;
 				text-align: center;
-				border: 1px solid #E7E7E7;
+				border: 1px solid;
 				border-radius: 5px 0 0 5px;
 				border-right: none;
 				cursor: pointer;
-				color: #888;
-				background-color: #FCFCFC;
 				.transition(background-color 0.1s linear, color 0.1s linear);
 				&:hover {
-					background-color: #F1F1F1;
-					color: #666;
 				}
 
 				input {
@@ -2320,13 +2091,9 @@ a.github-fork {
 				margin-left: 4px;
 				text-align: center;
 				cursor: pointer;
-				color: #888;
 				border-radius: 30px;
-				background-color: #FCFCFC;
 				.transition(background-color 0.1s linear, color 0.1s linear);
 				&:hover {
-					background-color: #F1F1F1;
-					color: #666;
 				}
 			}
 		}
@@ -2340,7 +2107,6 @@ a.github-fork {
 			overflow-y: hidden;
 			resize: none;
 			&.editing {
-				background-color: #fff7d8;
 			}
 		}
 		.icon-paper-plane {
@@ -2350,17 +2116,13 @@ a.github-fork {
 			cursor: pointer;
 			padding: 8px;
 			font-size: 16px;
-			color: @secondary-font-color;
 			&:hover {
-				color: @primary-font-color;
 			}
 		}
 		.users-typing {
 			float: left;
 			height: 23px;
 			font-size: 12px;
-			color: #888888;
-			background: #FCFCFC;
 			padding: 3px;
 			display: inline-block;
 			white-space: nowrap;
@@ -2373,7 +2135,6 @@ a.github-fork {
 			float: right;
 			height: 23px;
 			font-size: 11px;
-			color: #888888;
 			padding: 3px;
 			display: inline-block;
 			white-space: nowrap;
@@ -2381,17 +2142,15 @@ a.github-fork {
 			position: absolute;
 			right: 20px;
 			&:hover {
-				color: #444444;
 			}
 			q {
 				padding: 0 0 0 3px;
-				border-left: 3px solid #ccc;
+				border-left: 3px solid;
 				&:before {
 					content: none !important;
 				}
 			}
 			code {
-				color: inherit;
 				line-height: 13px;
 				overflow: hidden;
 				vertical-align: top;
@@ -2411,14 +2170,12 @@ a.github-fork {
 				float: left;
 				height: 23px;
 				font-size: 11px;
-				color: #888888;
 				padding: 3px;
 			}
 			.editing-commands-save {
 				float: right;
 				height: 23px;
 				font-size: 11px;
-				color: #888888;
 				padding: 3px;
 			}
 		}
@@ -2453,26 +2210,22 @@ a.github-fork {
 	.load-more {
 		text-align: center;
 		span {
-			border: 1px solid #CCC;
+			border: 1px solid;
 			border-radius: 20px;
 			padding: 5px 14px;
-			background-color: #EEE;
 		}
 	}
 	.start {
 		text-align: center;
 		margin-top: 12px;
-		color: @secondary-font-color;
 	}
 	.new-message {
 		margin: 0 -65px;
 		position: absolute;
-		background: #428bca;
 		border-radius: 20px;
 		width: 130px;
 		height: 30px;
 		text-align: center;
-		color: #FFF;
 		line-height: 30px;
 		font-size: 0.8em;
 		cursor: pointer;
@@ -2490,7 +2243,6 @@ a.github-fork {
 	}
 	.editing {
 		.body {
-			background-color: #fff7d8;
 			border-radius: 4px;
 		}
 	}
@@ -2522,10 +2274,8 @@ a.github-fork {
 			text-align: center;
 			.calc(left,
 			~"50% - 70px");
-			color: @secondary-font-color;
 			z-index: 10;
 			padding: 0 10px;
-			background-color: #FFF;
 			min-width: 140px;
 		}
 		&:after {
@@ -2535,7 +2285,7 @@ a.github-fork {
 			top: -20px;
 			left: 0;
 			width: 100%;
-			border-top: 1px solid #ddd;
+			border-top: 1px solid;
 		}
 	}
 	.edit-message {
@@ -2555,10 +2305,8 @@ a.github-fork {
 	.user {
 		display: inline-block;
 		font-weight: 600;
-		color: #444444;
 		margin-right: 5px;
 		&:hover {
-			color: #333;
 		}
 	}
 	.thumb {
@@ -2571,7 +2319,6 @@ a.github-fork {
 	}
 	.info {
 		font-size: 12px;
-		color: @info-font-color;
 	}
 	&.sequential {
 		margin-top: 5px;
@@ -2612,7 +2359,6 @@ a.github-fork {
 	}
 	&.system {
 		.body {
-			color: @info-font-color;
 			font-style: italic;
 			text-transform: lowercase;
 			em {
@@ -2624,10 +2370,8 @@ a.github-fork {
 		line-height: 40px;
 	}
 	a {
-		color: @link-font-color;
 		font-weight: 400;
 		&:hover {
-			color: darken(@link-font-color, 10%);
 			text-decoration: underline;
 		}
 	}
@@ -2642,8 +2386,7 @@ a.github-fork {
 
 // FLEX-TAB and FLEX-TAB views
 .flex-tab {
-	background-color: @secondary-background-color;
-	border-left: 1px solid @tertiary-background-color;
+	border-left: 1px solid;
 	overflow-x: visible;
 	position: fixed;
 	z-index: 100;
@@ -2663,7 +2406,6 @@ a.github-fork {
 		text-align: left;
 		z-index: 100;
 		padding: 12px 30px 12px;
-		background-color: @secondary-background-color;
 		> a,
 		> form {
 			float: left;
@@ -2673,7 +2415,6 @@ a.github-fork {
 			height: 1px;
 			left: 15px;
 			position: absolute;
-			background-color: @tertiary-background-color;
 			bottom: 0px;
 			.calc(width, ~'100% - 15px');
 		}
@@ -2685,12 +2426,10 @@ a.github-fork {
 			position: absolute;
 			left: 0;
 			top: 0px;
-			background-color: @tertiary-background-color;
 			border: none;
 			height: 60px;
 			width: 30px;
-			border-bottom: 1px solid @tertiary-background-color;
-			color: @secondary-font-color;
+			border-bottom: 1px solid;
 			cursor: pointer;
 			.transform(translateX(-27px));
 			.transition(transform .25s ease-out .475s,
@@ -2700,7 +2439,6 @@ a.github-fork {
 					.arrow {
 						&:before,
 						&:after {
-							background-color: #4a4a4a;
 						}
 					}
 				}
@@ -2708,7 +2446,6 @@ a.github-fork {
 			.arrow {
 				&:before,
 				&:after {
-					background-color: #7a7a7a;
 				}
 			}
 			i {
@@ -2721,14 +2458,12 @@ a.github-fork {
 				margin-top: 1px;
 			}
 			.flex-opened & {
-				background-color: @secondary-background-color;
 				.transition-delay(0s);
 				.transform(translateX(0));
 				&:hover {
 					.arrow {
 						&:before,
 						&:after {
-							background-color: #7a7a7a;
 						}
 					}
 				}
@@ -2740,12 +2475,11 @@ a.github-fork {
 			> div {
 				position: relative;
 			}
-		.icon-plus {
+			.icon-plus {
 				position: absolute;
 				top: 11px;
 				left: 8px;
 				font-size: 13px;
-				color: @secondary-font-color;
 			}
 		}
 		.info-tabs {
@@ -2761,21 +2495,17 @@ a.github-fork {
 				height: 60px;
 				line-height: 60px;
 				vertical-align: middle;
-				color: inherit;
-				border-left: 1px solid rgb(234, 234, 234);
+				border-left: 1px solid;
 				&.active {
-					background-color: #F4F4F4;
 				}
 				&:last-child {
-					border-right: 1px solid rgb(234, 234, 234);
+					border-right: 1px solid;
 				}
 			}
 		}
 	}
 	.content {
 		&:extend(.fill-all);
-		.custom-scroll(transparent,
-		#DADADA);
 		margin-top: 60px;
 		overflow-x: hidden;
 		overflow-y: auto;
@@ -2851,7 +2581,6 @@ a.github-fork {
 		}
 		p {
 			font-size: 12px;
-			color: @secondary-font-color;
 			margin-top: 4px;
 		}
 		b {
@@ -2859,9 +2588,7 @@ a.github-fork {
 		}
 		.see-all {
 			float: right;
-			color: @secondary-font-color;
 			border: none;
-			background-color: transparent;
 		}
 	}
 }
@@ -2907,26 +2634,18 @@ a.github-fork {
 
 			i.status-offline {
 				&:after {
-					border-color: darken(@status-offline, 5%);
-					background-color: @status-offline;
 				}
 			}
 			i.status-online {
 				&:after {
-					border-color: darken(@status-online, 5%);
-					background-color: @status-online;
 				}
 			}
 			i.status-away {
 				&:after {
-					border-color: darken(@status-away, 5%);
-					background-color: @status-away;
 				}
 			}
 			i.status-busy {
 				&:after {
-					border-color: darken(@status-busy, 5%);
-					background-color: @status-busy;
 				}
 			}
 		}
@@ -2934,7 +2653,6 @@ a.github-fork {
 			line-height: 18px;
 			font-size: 12px;
 			font-weight: 300;
-			color: @secondary-font-color;
 		}
 	}
 	.stats {
@@ -2942,7 +2660,6 @@ a.github-fork {
 			margin-bottom: 3px;
 			display: inline-block;
 			padding: 4px 6px;
-			background-color: #e9e9e9;
 			border-right: 2px;
 			border-radius: 2px;
 		}
@@ -2961,7 +2678,6 @@ a.github-fork {
 			width: 100%;
 			bottom: -10px;
 			left: 0;
-			background-color: #CDCDCD;
 			position: absolute;
 		}
 	}
@@ -2969,7 +2685,6 @@ a.github-fork {
 		li {
 			display: inline-block;
 			padding: 4px;
-			background-color: #CDCDCD;
 			border-right: 2px;
 		}
 	}
@@ -2986,7 +2701,6 @@ a.github-fork {
 			display: block;
 			border-radius: 2px;
 			padding: 0 5px;
-			color: #6f6f6f;
 			line-height: 22px;
 			position: relative;
 			.transition(background .18s ease,
@@ -3001,9 +2715,7 @@ a.github-fork {
 			}
 			&:hover {
 				padding-right: 34px;
-				background-color: #e9e9e9;
 				text-decoration: none;
-				color: #333;
 				&:before {
 					opacity: 1;
 				}
@@ -3027,7 +2739,6 @@ a.github-fork {
 			line-height: 18px;
 			font-size: 12px;
 			font-weight: 300;
-			color: @secondary-font-color;
 		}
 		a {
 			white-space: nowrap;
@@ -3037,7 +2748,6 @@ a.github-fork {
 			display: block;
 			border-radius: 2px;
 			padding: 0 5px;
-			color: #6f6f6f;
 			line-height: 22px;
 			position: relative;
 			.transition(background .18s ease,
@@ -3066,7 +2776,6 @@ a.github-fork {
 			line-height: 18px;
 			font-size: 12px;
 			font-weight: 300;
-			color: @secondary-font-color;
 		}
 		> .input-line {
 			margin-top: 20px;
@@ -3077,7 +2786,6 @@ a.github-fork {
 .user-image-status(@color) {
 	.avatar {
 		&:after {
-			background-color: darken(@color, 5%);
 		}
 	}
 }
@@ -3088,7 +2796,6 @@ a.github-fork {
 	height: @user-image-square;
 	width: @user-image-square;
 	cursor: pointer;
-	background-color: @tertiary-background-color;
 	font-size: 12px;
 	position: relative;
 	display: inline-table;
@@ -3105,26 +2812,21 @@ a.github-fork {
 			}
 			.status-offline {
 				&:after {
-					background-color: @status-offline;
 				}
 			}
 			.status-online {
 				&:after {
-					background-color: @status-online;
 				}
 			}
 			.status-away {
 				&:after {
-					background-color: @status-away;
 				}
 			}
 			.status-busy {
 				&:after {
-					background-color: @status-busy;
 				}
 			}
 			p {
-				color: @primary-font-color;
 			}
 		}
 	}
@@ -3150,7 +2852,6 @@ a.github-fork {
 	.lines & {
 		width: 100%;
 		margin: 0;
-		background-color: transparent;
 		&:after {
 			display: none;
 		}
@@ -3158,7 +2859,6 @@ a.github-fork {
 			.clearfix;
 			padding: 5px 0;
 			height: 30px;
-			background-color: transparent;
 			display: block;
 			> div {
 				float: left;
@@ -3176,7 +2876,6 @@ a.github-fork {
 			text-overflow: ellipsis;
 			position: relative;
 			padding-left: 10px;
-			color: @secondary-font-color;
 			.calc(width,
 			~"100% - 45px");
 		}
@@ -3185,18 +2884,6 @@ a.github-fork {
 		display: block;
 		width: 100%;
 		height: 100%;
-	}
-	&.status-offline {
-		.user-image-status(@status-offline);
-	}
-	&.status-online {
-		.user-image-status(@status-online);
-	}
-	&.status-away {
-		.user-image-status(@status-away);
-	}
-	&.status-busy {
-		.user-image-status(@status-busy);
 	}
 }
 
@@ -3224,10 +2911,8 @@ a.github-fork {
 			margin-bottom: 6px;
 		}
 		a {
-			color: @primary-font-color;
 			&:hover {
 				text-decoration: none;
-				color: @secondary-font-color;
 			}
 		}
 	}
@@ -3243,7 +2928,6 @@ a.github-fork {
 	left: 0;
 	width: 100%;
 	height: 100%;
-	background-color: rgba(0, 0, 0, 0.5);
 	z-index: 1000;
 	visibility: hidden;
 	&.fluid {
@@ -3252,8 +2936,6 @@ a.github-fork {
 			main {
 				position: absolute;
 				overflow-y: scroll;
-				.custom-scroll(transparent,
-				#CFCFCF);
 				.calc(height,
 				~'100% - 112px');
 			}
@@ -3311,7 +2993,6 @@ a.github-fork {
 		position: relative;
 		text-transform: uppercase;
 		font-size: 13px;
-		color: @secondary-font-color;
 		i {
 			margin-right: 4px;
 		}
@@ -3319,7 +3000,6 @@ a.github-fork {
 			content: " ";
 			width: 100%;
 			height: 1px;
-			background-color: #dfdfdf;
 			position: absolute;
 			top: 19px;
 			left: 0;
@@ -3338,10 +3018,8 @@ a.github-fork {
 		box-shadow: 4px 4px 0 rgba(0, 0, 0, .15);
 		padding: 56px 0;
 		opacity: 0;
-		background-color: #FFF;
 		header {
 			height: 55px;
-			background-color: #DADADA;
 			position: absolute;
 			top: 0;
 			width: 100%;
@@ -3369,11 +3047,9 @@ a.github-fork {
 				opacity: 1;
 				i {
 					font-size: 24px;
-					color: @secondary-font-color;
 				}
 				&:hover {
 					i {
-						color: @primary-font-color;
 					}
 				}
 			}
@@ -3384,12 +3060,10 @@ a.github-fork {
 			height: 100%;
 			overflow-y: auto;
 			overflow-x: hidden;
-			background-color: #FFF;
 			padding: 20px 25px;
 		}
 		footer {
 			height: 55px;
-			background-color: #eaeaea;
 			position: absolute;
 			bottom: 0;
 			width: 100%;
@@ -3419,7 +3093,6 @@ a.github-fork {
 	max-width: 520px;
 	padding: 20px;
 	margin: 20px auto;
-	background-color: #FAFAFA;
 	box-shadow: 0 0 6px 10px rgba(0, 0, 0, 0.1);
 	border-radius: 2px;
 	position: relative;
@@ -3436,31 +3109,25 @@ a.github-fork {
 	}
 	h2 {
 		&:extend(.rocket-h2);
-		color: @primary-font-color;
 		line-height: 24px;
 		margin: 0;
 		&.error {
-			color: #b40202;
 		}
 	}
 	h3 {
 		&:extend(.rocket-h3);
 		&.error {
-			color: #b40202;
 		}
 	}
 	img {
 		width: 200px;
 	}
 	a {
-		color: @primary-background-color;
 		margin: 4px 0;
 		display: inline-block;
 		&:active {
-			color: @primary-background-color;
 		}
 		&:hover {
-			color: darken(@primary-background-color, 10%);
 		}
 	}
 	.options {
@@ -3500,38 +3167,31 @@ a.github-fork {
 		}
 		input {
 			box-shadow: 0 0 0;
-			background-color: transparent;
 			border-width: 0;
 			position: relative;
 			padding: 4px 8px;
 			font-size: 18px;
-			border-bottom: 1px solid #DFDFDF;
+			border-bottom: 1px solid;
 			font-family: "Roboto", "HelveticaNeue-Light", "sans-serif";
 			font-weight: 400;
 			&.error {
-				border-bottom: 1px solid #b40202;
+				border-bottom: 1px solid;
 				&::-webkit-input-placeholder {
-					color: #b40202;
 				}
 				&:-moz-placeholder {
-					color: #b40202;
 				}
 				/* Firefox 18- */
 				&::-moz-placeholder {
-					color: #b40202;
 				}
 				/* Firefox 19+ */
 				&:-ms-input-placeholder {
-					color: #b40202;
 				}
 			}
 		}
 		input:-webkit-autofill {
-			color: #fff !important;
 		}
 		input:-webkit-autofill {
 			-webkit-box-shadow: 0 0 0px 1000px #f4f4f4 inset;
-			background-color: transparent !important;
 		}
 	}
 }
@@ -3570,8 +3230,6 @@ a.github-fork {
 	width: 100%;
 	min-height: 100%;
 	z-index: 101;
-	background-color: darken(@primary-background-color, 10%);
-	.background-image(linear-gradient(darken(@primary-background-color,10%),@primary-background-color));
 	.wrapper {
 		text-align: center;
 		z-index: 10;
@@ -3606,7 +3264,6 @@ a.github-fork {
 		z-index: 1;
 	}
 	.text {
-		color: #FFF;
 		font-weight: 300;
 		margin-bottom: 25px;
 		margin: 0 auto 25px;
@@ -3614,8 +3271,6 @@ a.github-fork {
 		position: relative;
 		z-index: 1;
 		.button {
-			background-color: #bc2031;
-			color: #FFF;
 			font-weight: 400;
 			padding: 16px 20px;
 			margin-top: 20px;
@@ -3643,7 +3298,6 @@ a.github-fork {
 		}
 	}
 	footer {
-		color: #fff;
 		padding: 20px 0 0;
 		position: relative;
 		z-index: 1;
@@ -3656,7 +3310,6 @@ a.github-fork {
 		div.switch-language {
 			margin-top: 20px;
 			a {
-				color: @secondary-font-color;
 			}
 		}
 	}
@@ -3707,8 +3360,7 @@ a.github-fork {
 	flex-flow: row nowrap;
 	width: 100%;
 	padding: 12px;
-	background-color: @secondary-background-color;
-	border: 1px solid darken(@secondary-background-color, 10%);
+	border: 1px solid;
 	.transition(background-color .15s ease-out,
 	border-color .15s ease-out);
 	&:first-child {
@@ -3724,7 +3376,6 @@ a.github-fork {
 		background-size: cover;
 		font-size: 40px;
 		text-align: center;
-		background-color: @tertiary-background-color;
 		position: relative;
 	}
 	.question-mark {
@@ -3736,7 +3387,6 @@ a.github-fork {
 			height: 100%;
 			margin: 0;
 			line-height: 55px;
-			color: darken(@tertiary-background-color, 10%);
 		}
 	}
 	.action {
@@ -3768,7 +3418,7 @@ a.github-fork {
 	width:100%;
 	tr {
 		background-color:#FFFFFF;
-		
+
 		&:nth-of-type(even) {
 			background-color:#FBFBFB;
 		}
@@ -3826,7 +3476,6 @@ a.github-fork {
 			left: 0;
 			.transition(transform .2s linear);
 			z-index: 1000;
-			background-color: white;
 
 			&.notransition {
 				.transition(transform .0s);
@@ -3916,7 +3565,6 @@ a.github-fork {
 		display: none;
 	}
 	&.over .dropzone-overlay {
-		background-color: rgba(0, 0, 0, 0.5);
 		position: fixed;
 		top: 0;
 		left: 0;
@@ -3924,13 +3572,11 @@ a.github-fork {
 		right: 0;
 		z-index: 1000000;
 		display: block;
-		color: white;
 		font-size: 50px;
 		display: flex;
 		align-items: center;
 		justify-content: center;
 		> div {
-			background-color: rgba(0, 0, 0, 0.6);
 			padding: 40px;
 			border-radius: 10px;
 			pointer-events: none;
@@ -3945,7 +3591,6 @@ a.github-fork {
 		}
 
 		button.more {
-			background-color: #fff;
 			width: 60px;
 			.transform(translateX(-57px));
 		}
@@ -3994,3 +3639,5 @@ a.github-fork {
 		margin-bottom: 10px;
 	}
 }
+
+@import "utils/_colors.import.less";
