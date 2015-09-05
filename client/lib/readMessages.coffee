@@ -70,7 +70,7 @@ Meteor.startup ->
 		readMessage.read()
 
 	$(window).on 'keyup', (e) ->
-		key = event.which
+		key = e.which
 
 		if key is 27
 			readMessage.enable()
