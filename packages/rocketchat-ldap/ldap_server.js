@@ -1,5 +1,10 @@
 Future = Npm.require('fibers/future');
 
+var slug = function (text) {
+	text = slugify(text, '.');
+	return text.replace(/[^0-9a-z-_.]/g, '');
+}
+
 // At a minimum, set up LDAP_DEFAULTS.url and .dn according to
 // your needs. url should appear as "ldap://your.url.here"
 // dn should appear in normal ldap format of comma separated attribute=value
@@ -10,7 +15,8 @@ LDAP_DEFAULTS = {
 	dn: false,
 	createNewUser: true,
 	defaultDomain: false,
-	searchResultsProfileMap: false
+	searchResultsProfileMap: false,
+	bindSearch: undefined
 };
 
 /**
@@ -76,47 +82,77 @@ LDAP.prototype.ldapCheck = function(options) {
 			username = options.username;
 		}
 
+		var bind = function(dn) {
+			console.log('Attempt to bind', dn)
+			//Attempt to bind to ldap server with provided info
+			client.bind(dn, options.ldapPass, function(err) {
+				try {
+					if (err) {
+						// Bind failure, return error
+						console.log(err);
+						throw new Meteor.Error(err.code, err.message);
+					} else {
+						// Bind auth successful
+						// Create return object
+						var retObject = {
+							username: username,
+							searchResults: null
+						};
+						// Set email on return object
+						retObject.email = domain ? username + '@' + domain : false;
+						// Return search results if specified
+						if (self.options.searchResultsProfileMap) {
+							client.search(dn, {}, function(err, res) {
+								res.on('searchEntry', function(entry) {
+									// Add entry results to return object
+									retObject.searchResults = entry.object;
 
-		//Attempt to bind to ldap server with provided info
-		client.bind(self.options.dn, options.ldapPass, function(err) {
-			try {
-				if (err) {
-					// Bind failure, return error
-					throw new Meteor.Error(err.code, err.message);
-				} else {
-					// Bind auth successful
-					// Create return object
-					var retObject = {
-						username: username,
-						searchResults: null
-					};
-					// Set email on return object
-					retObject.email = domain ? username + '@' + domain : false;
+									ldapAsyncFut.return(retObject);
+								});
 
-					// Return search results if specified
-					if (self.options.searchResultsProfileMap) {
-						client.search(self.options.dn, {}, function(err, res) {
-
-							res.on('searchEntry', function(entry) {
-								// Add entry results to return object
-								retObject.searchResults = entry.object;
-
-								ldapAsyncFut.return(retObject);
 							});
-
-						});
+						}
+						// No search results specified, return username and email object
+						else {
+							ldapAsyncFut.return(retObject);
+						}
 					}
-					// No search results specified, return username and email object
-					else {
-						ldapAsyncFut.return(retObject);
-					}
+				} catch (e) {
+					console.log(e);
+					ldapAsyncFut.return({
+						error: e
+					});
 				}
-			} catch (e) {
-				ldapAsyncFut.return({
-					error: e
+			});
+		}
+
+		if (LDAP_DEFAULTS.bindSearch && LDAP_DEFAULTS.bindSearch.trim() != '') {
+			try {
+				var bindSearch = LDAP_DEFAULTS.bindSearch.replace(/#{username}/g, options.username);
+				var opts = JSON.parse(bindSearch);
+
+				client.search(options.ldapOptions.dn, opts, function(err, res) {
+					if (err) {
+						console.log('LDAP: Error', err);
+						return bind(self.options.dn);
+					}
+					var dn = self.options.dn;
+					res.on('searchEntry', function(entry) {
+						dn = entry.object.dn;
+					});
+					res.on('error', function(err) {
+						console.log('LDAP: Error', err);
+					});
+					res.on('end', function(result) {
+						bind(dn);
+					});
 				});
+			} catch (e) {
+				console.log('LDAP: Error', e);
 			}
-		});
+		} else {
+			bind(self.options.dn);
+		}
 
 		return ldapAsyncFut.wait();
 
@@ -164,7 +200,7 @@ Accounts.registerLoginHandler("ldap", function(loginRequest) {
 
 		// Look to see if user already exists
 		var user = Meteor.users.findOne({
-			username: ldapResponse.username
+			username: slug(ldapResponse.username)
 		});
 
 		// Login user if they exist
@@ -192,8 +228,7 @@ Accounts.registerLoginHandler("ldap", function(loginRequest) {
 		// Otherwise create user if option is set
 		else if (ldapObj.options.createNewUser) {
 			var userObject = {
-				username: ldapResponse.username,
-				ldap: true
+				username: slug(ldapResponse.username)
 			};
 			// Set email
 			if (ldapResponse.email) userObject.email = ldapResponse.email;
@@ -220,6 +255,9 @@ Accounts.registerLoginHandler("ldap", function(loginRequest) {
 
 
 			userId = Accounts.createUser(userObject);
+			Meteor.users.update(userId, {$set: {
+				ldap: true
+			}});
 		} else {
 			// Ldap success, but no user created
 			return {
