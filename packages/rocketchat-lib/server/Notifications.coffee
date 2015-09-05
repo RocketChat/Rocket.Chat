@@ -1,4 +1,4 @@
-@NotifyClient = new class
+RocketChat.Notifications = new class
 	constructor: ->
 		self = @
 

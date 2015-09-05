@@ -10,7 +10,7 @@
 	addStream = (room) ->
 		if _.isEmpty usersTyping[room]?.users
 			usersTyping[room] = { users: {} }
-			Notify.onRoom room, (type, typing) ->
+			RocketChat.Notifications.onRoom room, (type, typing) ->
 				console.log arguments
 				if type isnt 'typing' then return
 
@@ -43,7 +43,7 @@
 
 		renew = false
 		selfTyping.set true
-		Notify.notifyRoom room, 'typing', { room: room, username: Meteor.user()?.username, start: true }
+		RocketChat.Notifications.notifyRoom room, 'typing', { room: room, username: Meteor.user()?.username, start: true }
 		clearTimeout timeouts[room]
 		timeouts[room] = Meteor.setTimeout ->
 			stop(room)
@@ -55,7 +55,7 @@
 		if timeouts?[room]?
 			clearTimeout(timeouts[room])
 			timeouts[room] = null
-		Notify.notifyRoom room, 'typing', { room: room, username: Meteor.user()?.username, stop: true }
+		RocketChat.Notifications.notifyRoom room, 'typing', { room: room, username: Meteor.user()?.username, stop: true }
 
 	get = (room) ->
 		dep.depend()
