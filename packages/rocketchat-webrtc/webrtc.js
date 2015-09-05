@@ -125,9 +125,7 @@ webrtc.start = function (isCaller, fromUsername) {
 	}
 }
 
-RocketChat.Notifications.onUser(function(eventName, data) {
-	if (eventName !== 'webrtc') return
-
+RocketChat.Notifications.onUser('webrtc', function(data) {
 	webrtc.log('stream.on', Meteor.userId(), data)
 	if (!webrtc.to) {
 		webrtc.to = data.room.replace(Meteor.userId(), '');

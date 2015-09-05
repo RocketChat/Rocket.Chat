@@ -16,15 +16,15 @@ RocketChat.Notifications = new class
 		args.unshift "#{room}/#{eventName}"
 		@streamRoom.emit.apply @streamRoom, args
 
-	notifyUser: (userId, args...) ->
+	notifyUser: (userId, eventName, args...) ->
 		console.log "RocketChat.Notifications: notifyUser", arguments if @debug is true
 
-		args = [userId].concat args
+		args.unshift "#{userId}/#{eventName}"
 		@streamUser.emit.apply @streamUser, args
 
 
-	onAll: (callback) ->
-		@streamAll.on 'notify', callback
+	onAll: (eventName, callback) ->
+		@streamAll.on eventName, callback
 
 	onRoom: (room, eventName, callback) ->
 		console.log 'onRoom'
@@ -33,8 +33,8 @@ RocketChat.Notifications = new class
 
 		@streamRoom.on "#{room}/#{eventName}", callback
 
-	onUser: (callback) ->
-		@streamUser.on Meteor.userId(), callback
+	onUser: (eventName, callback) ->
+		@streamUser.on "#{Meteor.userId()}/#{eventName}", callback
 
 
 	unAll: (callback) ->
