@@ -57,6 +57,5 @@ Meteor.startup ->
 		'RocketChat.Notifications.streamAll': RocketChat.Notifications.streamAll
 		'RocketChat.Notifications.streamRoom': RocketChat.Notifications.streamRoom
 		'RocketChat.Notifications.streamUser': RocketChat.Notifications.streamUser
-		'deleteMsgStream': deleteMsgStream
 
 	startStreamBroadcast config
