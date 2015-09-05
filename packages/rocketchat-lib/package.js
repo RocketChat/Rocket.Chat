@@ -8,51 +8,53 @@ Package.describe({
 Package.onUse(function(api) {
 	api.versionsFrom('1.0');
 
-	api.use([
-		'reactive-dict',
-		'coffeescript',
-		'random',
-		'underscore',
-		'underscorestring:underscore.string'
-	]);
+	api.use('reactive-dict');
+	api.use('coffeescript');
+	api.use('random');
+	api.use('underscore');
+	api.use('underscorestring:underscore.string');
 
-	api.addFiles('lib/core.coffee', ['server', 'client']);
-	api.addFiles('lib/callbacks.coffee', ['server', 'client']);
-	api.addFiles('lib/slashCommand.coffee', ['server', 'client']);
-	
-	api.addFiles([
-		'server/functions/checkUsernameAvailability.coffee',
-		'server/functions/setUsername.coffee'
-	], ['server']);
-	
-	api.addFiles([
-		'server/methods/joinDefaultChannels.coffee',
-		'server/methods/setAdminStatus.coffee',
-		'server/methods/setUsername.coffee',
-		'server/methods/updateUser.coffee'
-	], ['server']);
 
-	api.addFiles('server/sendMessage.coffee', ['server']);
+	// COMMON
+	api.addFiles('lib/core.coffee');
+	api.addFiles('lib/callbacks.coffee');
+	api.addFiles('lib/slashCommand.coffee');
 
-	api.addFiles([
-		'settings/lib/settings.coffee',
-		'settings/lib/rocketchat.coffee'
-	], ['server', 'client']);
+	api.addFiles('settings/lib/settings.coffee');
+	api.addFiles('settings/lib/rocketchat.coffee');
 
-	api.addFiles('settings/client/startup.coffee', ['client']);
-	api.addFiles('settings/client/rocketchat.coffee', ['client']);
 
-	api.addFiles([
-		'settings/server/methods.coffee',
-		'settings/server/publication.coffee',
-		'settings/server/startup.coffee',
-		'settings/server/updateServices.coffee',
-		'settings/server/addOAuthService.coffee'
-	], ['server']);
+	// CLIENT
+	api.addFiles('client/Notifications.coffee', 'client');
 
-	api.addFiles('server/cdn.coffee', ['server']);
+	api.addFiles('settings/client/startup.coffee', 'client');
+	api.addFiles('settings/client/rocketchat.coffee', 'client');
 
-	api.export(['RocketChat'], ['server', 'client']);
+
+	// SERVER
+	api.addFiles('server/functions/checkUsernameAvailability.coffee', 'server');
+	api.addFiles('server/functions/setUsername.coffee', 'server');
+
+	api.addFiles('server/methods/joinDefaultChannels.coffee', 'server');
+	api.addFiles('server/methods/setAdminStatus.coffee', 'server');
+	api.addFiles('server/methods/setUsername.coffee', 'server');
+	api.addFiles('server/methods/updateUser.coffee', 'server');
+
+	api.addFiles('server/sendMessage.coffee', 'server');
+
+	api.addFiles('server/Notifications.coffee', 'server');
+
+	api.addFiles('settings/server/methods.coffee', 'server');
+	api.addFiles('settings/server/publication.coffee', 'server');
+	api.addFiles('settings/server/startup.coffee', 'server');
+	api.addFiles('settings/server/updateServices.coffee', 'server');
+	api.addFiles('settings/server/addOAuthService.coffee', 'server');
+
+	api.addFiles('server/cdn.coffee', 'server');
+
+
+	// EXPORT
+	api.export('RocketChat');
 });
 
 Package.onTest(function(api) {

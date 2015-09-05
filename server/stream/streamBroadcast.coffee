@@ -54,9 +54,9 @@
 
 Meteor.startup ->
 	config =
-		'NotifyClient.streamAll': NotifyClient.streamAll
-		'NotifyClient.streamRoom': NotifyClient.streamRoom
-		'NotifyClient.streamUser': NotifyClient.streamUser
+		'RocketChat.Notifications.streamAll': RocketChat.Notifications.streamAll
+		'RocketChat.Notifications.streamRoom': RocketChat.Notifications.streamRoom
+		'RocketChat.Notifications.streamUser': RocketChat.Notifications.streamUser
 		'deleteMsgStream': deleteMsgStream
 
 	if webrtc
