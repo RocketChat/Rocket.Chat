@@ -133,7 +133,7 @@ Follow these [deployment instructions](https://github.com/RocketChat/Rocket.Chat
 Solid five-nine deployment with industry workhorse FreeBSD (coming soon).
 
 
-![FreeBSD Daemon](https://github.com/Sing-Li/bbug/blob/master/images/freebsd.svg)
+![FreeBSD Daemon](https://raw.githubusercontent.com/Sing-Li/bbug/master/images/freebsd.svg)
 
 ### Ubuntu Software Center
 
