@@ -1,3 +1,10 @@
 Template.oembedImageWidget.helpers
 	showImage: ->
-		return @downloadImages is true or not Meteor.Device.isPhone()
+
+		if Meteor.user()?.settings?.preferences?.autoImageLoad is false
+			return false
+
+		if Meteor.Device.isPhone() and Meteor.user()?.settings?.preferences?.saveMobileBandwidth
+			return false
+
+		return true
