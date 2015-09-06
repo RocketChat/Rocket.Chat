@@ -11,10 +11,10 @@ Meteor.methods
 			return username
 
 		if not /^[0-9a-zA-Z-_.]+$/.test username
-			throw new Meteor.Error 'username-invalid', TAPi18next.t('project:Username_invalid', username)
+			throw new Meteor.Error 'username-invalid', t('Username_invalid', username)
 
 		if not RocketChat.checkUsernameAvailability username
-			throw new Meteor.Error 'username-unavailable'
+			throw new Meteor.Error 'username-unavailable', t('Username_unavaliable')
 
 		unless RocketChat.setUsername user, username
 			throw new Meteor.Error 'could-not-change-username', t('Could_not_change_username')
