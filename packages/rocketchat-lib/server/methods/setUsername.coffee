@@ -11,7 +11,7 @@ Meteor.methods
 			return username
 
 		if not /^[0-9a-zA-Z-_.]+$/.test username
-			throw new Meteor.Error 'username-invalid'
+			throw new Meteor.Error 'username-invalid', TAPi18next.t('project:Username_invalid', username)
 
 		if not RocketChat.checkUsernameAvailability username
 			throw new Meteor.Error 'username-unavailable'
