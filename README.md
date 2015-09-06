@@ -130,7 +130,7 @@ Follow these [deployment instructions](https://github.com/RocketChat/Rocket.Chat
 
 ### FreeBSD
 
-Solid five-nine deployment with industry workhorse FreeBSD (coming soon).
+Solid five-nines deployment with industry workhorse FreeBSD (coming soon).
 
 
 ![FreeBSD Daemon](https://raw.githubusercontent.com/Sing-Li/bbug/master/images/freebsd.png)
