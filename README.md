@@ -128,6 +128,20 @@ Checkout [Github Wiki](https://github.com/RocketChat/Rocket.Chat/wiki) (coming s
 
 Follow these [deployment instructions](https://github.com/RocketChat/Rocket.Chat/wiki/Deploy-Rocket.Chat-without-docker).
 
+### FreeBSD
+
+Solid five-nine deployment with industry workhorse FreeBSD (coming soon).
+
+
+[![FreeBSD Daemon](https://raw.githubusercontent.com/Sing-Li/bbug/master/images/freebsd.svg)]()
+
+### Ubuntu Software Center
+
+Easy one click install right from your Ubuntu Desktop (coming soon).
+
+[![Ubuntu Software Center](https://raw.githubusercontent.com/Sing-Li/bbug/master/images/ubuntusoft.png)]()
+
+
 ### Docker
 
 Use the automated build at our [Official Docker Registry](https://registry.hub.docker.com/u/rocketchat/rocket.chat/)
