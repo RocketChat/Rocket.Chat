@@ -1,4 +1,3 @@
-
 Meteor.methods
 	updateUser: (userData) ->
 		if not Meteor.userId()
@@ -20,5 +19,9 @@ Meteor.methods
 		unless userData.username
 			throw new Meteor.Error 'user-name-is-required', 'Username field is required'
 
-		Meteor.users.update { _id: userData._id }, { $set: { name: userData.name, username: userData.username } }
+		Meteor.users.update { _id: userData._id }, { $set: { name: userData.name } }
+
+		Meteor.runAsUser userData._id, ->
+			Meteor.call 'setUsername', userData.username
+
 		return true
