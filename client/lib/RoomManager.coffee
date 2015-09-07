@@ -30,12 +30,15 @@ Meteor.startup ->
 				ChatMessage.update {_id: recordAfter._id}, {$set: {tick: new Date}}
 
 
+onDeleteMessageStream = (msg) ->
+	ChatMessage.remove _id: msg._id
+
+
 @RoomManager = new class
 	defaultTime = 600000 # 10 minutes
 	openedRooms = {}
 	subscription = null
 	msgStream = new Meteor.Stream 'messages'
-	deleteMsgStream = new Meteor.Stream 'delete-message'
 	onlineUsers = new ReactiveVar {}
 
 	Dep = new Tracker.Dependency
@@ -52,7 +55,7 @@ Meteor.startup ->
 
 			if openedRooms[typeName].rid?
 				msgStream.removeListener openedRooms[typeName].rid
-				deleteMsgStream.removeListener openedRooms[typeName].rid
+				RocketChat.Notifications.unRoom openedRooms[typeName].rid, 'deleteMessage', onDeleteMessageStream
 
 			openedRooms[typeName].ready = false
 			openedRooms[typeName].active = false
@@ -101,8 +104,7 @@ Meteor.startup ->
 										RoomManager.close type + FlowRouter.getParam('name')
 										FlowRouter.go FlowRouter.current().route.name, name: msg.msg
 
-						deleteMsgStream.on openedRooms[typeName].rid, (msg) ->
-							ChatMessage.remove _id: msg._id
+						RocketChat.Notifications.onRoom openedRooms[typeName].rid, 'deleteMessage', onDeleteMessageStream
 
 				Dep.changed()
 
