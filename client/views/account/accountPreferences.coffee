@@ -4,7 +4,7 @@ Template.accountPreferences.helpers
 			currentValue = value
 		else if Meteor.user()?.settings?.preferences?[property]?
 			currentValue = !!Meteor.user()?.settings?.preferences?[property]
-		
+
 		return currentValue is value
 
 Template.accountPreferences.onCreated ->
@@ -23,7 +23,7 @@ Template.accountPreferences.onCreated ->
 				$('#convertAsciiEmoji').hide()
 
 	@clearForm = ->
-		
+
 	@save = ->
 		instance = @
 		data = {}
@@ -32,12 +32,14 @@ Template.accountPreferences.onCreated ->
 		data.disableNewMessageNotification = $('input[name=disableNewMessageNotification]:checked').val()
 		data.useEmojis = $('input[name=useEmojis]:checked').val()
 		data.convertAsciiEmoji = $('input[name=convertAsciiEmoji]:checked').val()
-		
+		data.saveMobileBandwidth = $('input[name=saveMobileBandwidth]:checked').val()
+		data.autoImageLoad = $('input[name=autoImageLoad]:checked').val()
+
 		Meteor.call 'saveUserPreferences', data, (error, results) ->
-			if results 
+			if results
 				toastr.success t('Preferences_saved')
 				instance.clearForm()
-				
+
 			if error
 				toastr.error error.reason
 
