@@ -16,7 +16,10 @@ Meteor.methods
 		rs = RocketChatFile.bufferToStream new Buffer(image, 'base64')
 		ws = RocketChatFileAvatarInstance.createWriteStream "#{user.username}.jpg", contentType
 		ws.on 'end', Meteor.bindEnvironment ->
-			Meteor.users.update {_id: user._id}, {$set: {avatarOrigin: service}}
+			Meteor.setTimeout ->
+				Meteor.users.update {_id: user._id}, {$set: {avatarOrigin: service}}
+				RocketChat.Notifications.notifyAll 'updateAvatar', {username: user.username}
+			, 500
 
 		rs.pipe(ws)
 		return
