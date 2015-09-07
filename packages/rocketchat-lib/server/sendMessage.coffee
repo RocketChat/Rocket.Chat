@@ -74,9 +74,18 @@ RocketChat.sendMessage = (user, message, room, options) ->
 				$inc:
 					unread: 1
 
-			if Push.enabled is true
-				userOfMention = Meteor.users.findOne({_id: message.rid.replace(message.u._id, ''), statusConnection: {$ne: 'online'}}, {fields: {username: 1}})
-				if userOfMention?
+			userOfMention = Meteor.users.findOne({_id: message.rid.replace(message.u._id, '')}, {fields: {username: 1, statusConnection: 1}})
+			if userOfMention?
+				RocketChat.Notifications.notifyUser userOfMention._id, 'notification',
+					title: "@#{user.username}"
+					text: message.msg
+					payload:
+						rid: message.rid
+						sender: message.u
+						type: room.t
+						name: room.name
+
+				if Push.enabled is true and userOfMention.statusConnection isnt 'online'
 					Push.send
 						from: 'push'
 						title: "@#{user.username}"
@@ -134,23 +143,33 @@ RocketChat.sendMessage = (user, message, room, options) ->
 				,
 					multi: true
 
-				if Push.enabled is true
-					query =
-						statusConnection: {$ne: 'online'}
+				query =
+					statusConnection: {$ne: 'online'}
 
-					if mentionIds.indexOf('all') > -1
-						if room.usernames?.length > 0
-							query.username =
-								$in: room.usernames
-						else
-							query.username =
-								$in: []
+				if mentionIds.indexOf('all') > -1
+					if room.usernames?.length > 0
+						query.username =
+							$in: room.usernames
 					else
-						query._id =
-							$in: mentionIds
+						query.username =
+							$in: []
+				else
+					query._id =
+						$in: mentionIds
 
-					usersOfMentionIds = _.pluck(usersOfMention, '_id');
-					if usersOfMentionIds.length > 0
+				usersOfMentionIds = _.pluck(usersOfMention, '_id');
+				if usersOfMentionIds.length > 0
+					for usersOfMentionId in usersOfMentionIds
+						RocketChat.Notifications.notifyUser usersOfMentionId, 'notification',
+							title: "@#{user.username} @ ##{room.name}"
+							text: message.msg
+							payload:
+								rid: message.rid
+								sender: message.u
+								type: room.t
+								name: room.name
+
+					if Push.enabled is true
 						Push.send
 							from: 'push'
 							title: "@#{user.username} @ ##{room.name}"
