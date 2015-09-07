@@ -75,6 +75,19 @@ Template.body.onRendered ->
 				property: 'msvalidate.01'
 				content: RocketChat.settings.get 'Meta_msvalidate01'
 
+	Tracker.autorun (c) ->
+		c.stop()
+
+		Meta.set
+			name: 'name'
+			property: 'application-name'
+			content: RocketChat.settings.get 'Site_Name'
+
+		Meta.set
+			name: 'name'
+			property: 'apple-mobile-web-app-title'
+			content: RocketChat.settings.get 'Site_Name'
+
 	if Meteor.isCordova
 		$(document.body).addClass 'is-cordova'
 

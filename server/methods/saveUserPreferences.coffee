@@ -16,7 +16,13 @@ Meteor.methods
 
 			if settings.convertAsciiEmoji?
 				preferences.convertAsciiEmoji = if settings.convertAsciiEmoji is "1" then true else false
-			
+
+			if settings.saveMobileBandwidth?
+				preferences.saveMobileBandwidth = if settings.saveMobileBandwidth is "1" then true else false
+
+			if settings.autoImageLoad?
+				preferences.autoImageLoad = if settings.autoImageLoad is "1" then true else false
+
 			Meteor.users.update Meteor.userId(), { $set: { "settings.preferences": preferences } }
 
 			return true

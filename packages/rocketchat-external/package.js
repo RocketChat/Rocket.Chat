@@ -18,13 +18,13 @@ Package.registerBuildPlugin({
 Package.onUse(function(api) {
 	api.versionsFrom('1.0');
 
-	api.use('coffeescript', 'server');
-	api.use('webapp', 'server');
-	api.use('autoupdate', 'server');
+	api.use(['coffeescript', 'webapp', 'autoupdate'], 'server');
 
 	api.addFiles('external.coffee', 'server');
 	api.addFiles('methods.coffee', 'server');
+	api.addFiles('publications.coffee', 'server');
 
+	api.addFiles('rocket-external.js', 'client', {isAsset: true});
 	api.addFiles('public/external.css', 'client', {isAsset: true});
 	api.addFiles('public/external.js', 'client', {isAsset: true});
 	api.addFiles('public/head.html', 'server', {isAsset: true});

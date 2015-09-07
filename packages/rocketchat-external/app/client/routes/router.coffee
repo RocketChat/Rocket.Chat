@@ -3,7 +3,7 @@ FlowRouter.route '/external',
 
 	triggersEnter: [
 		->
-			console.log 'entrando na rota'
+			visitor.register()
 	]
 
 	action: ->
