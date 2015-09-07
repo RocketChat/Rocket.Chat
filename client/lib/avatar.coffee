@@ -8,6 +8,16 @@
 
 Blaze.registerHelper 'avatarUrlFromUsername', getAvatarUrlFromUsername
 
+@getAvatarAsPng = (username) ->
+	image = new Image
+	image.src = getAvatarUrlFromUsername(username)
+	canvas = document.createElement('canvas');
+	canvas.width = image.width;
+	canvas.height = image.height;
+	context = canvas.getContext('2d');
+	context.drawImage(image, 0, 0);
+	return canvas.toDataURL('image/png');
+
 @updateAvatarOfUsername = (username) ->
 	key = "avatar_random_#{username}"
 	Session.set key, Math.round(Math.random() * 1000)
