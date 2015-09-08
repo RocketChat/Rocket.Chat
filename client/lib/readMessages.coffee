@@ -37,7 +37,7 @@ Meteor.startup ->
 
 		# Only read messages if user saw the first unread message
 		position = $('.message.first-unread').position()
-		if position? and position.top >= 0
+		if (position? and position.top >= 0) or room.unreadCount.get() is 0
 			Meteor.call 'readMessages', rid, ->
 				self.refreshUnreadMark()
 
