@@ -38,6 +38,14 @@
 					</div>
 				{{/each}}
 			</div>
+			{{#if roomManager.unreadCount.get}}
+				<div class="unread-bar">
+					{{roomManager.unreadCount.get}} new messages since {{formatUnreadSince roomManager.unreadSince.get}}
+					<a>
+						mark as read
+					</a>
+				</div>
+			{{/if}}
 			<div class="messages-box">
 				<div class="wrapper">
 					<ul>
