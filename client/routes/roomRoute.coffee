@@ -40,7 +40,6 @@ openRoom = (type, name) ->
 			readMessage.disable()
 			Meteor.setTimeout ->
 				readMessage.refreshUnreadMark()
-				readMessage.enable()
 				readMessage.readNow()
 			, 2000
 			# KonchatNotification.removeRoomNotification(params._id)
