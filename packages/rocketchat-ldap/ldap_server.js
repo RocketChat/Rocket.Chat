@@ -67,6 +67,8 @@ LDAP.prototype.ldapCheck = function(options) {
 			url: fullUrl
 		});
 
+		var bindSync = Meteor.wrapAsync(client.bind.bind(client));
+
 		// Slide @xyz.whatever from username if it was passed in
 		// and replace it with the domain specified in defaults
 		var emailSliceIndex = options.username.indexOf('@');
@@ -132,24 +134,48 @@ LDAP.prototype.ldapCheck = function(options) {
 				var bindSearch = LDAP_DEFAULTS.bindSearch.replace(/#{username}/g, options.username);
 				var opts = JSON.parse(bindSearch);
 
+				if (opts.userDN && opts.password) {
+					try {
+						console.log('Bind before search', opts.userDN, opts.password);
+						bindSync(opts.userDN, opts.password);
+						delete opts.userDN;
+						delete opts.password;
+					} catch(e) {
+						console.log('LDAP: Error', e);
+						ldapAsyncFut.return({
+							error: e
+						});
+					}
+				}
+
+				console.log('LDAP search dn', options.ldapOptions.dn);
+				console.log('LDAP search options', opts);
 				client.search(options.ldapOptions.dn, opts, function(err, res) {
 					if (err) {
-						console.log('LDAP: Error', err);
-						return bind(self.options.dn);
+						console.log('LDAP: Search Error', err);
+						ldapAsyncFut.return({
+							error: err
+						});
 					}
 					var dn = self.options.dn;
 					res.on('searchEntry', function(entry) {
 						dn = entry.object.dn;
 					});
 					res.on('error', function(err) {
-						console.log('LDAP: Error', err);
+						console.log('LDAP: Search on Error', err);
+						ldapAsyncFut.return({
+							error: err
+						});
 					});
 					res.on('end', function(result) {
 						bind(dn);
 					});
 				});
 			} catch (e) {
-				console.log('LDAP: Error', e);
+				console.log('LDAP: BindSearch Error', e);
+				ldapAsyncFut.return({
+					error: e
+				});
 			}
 		} else {
 			bind(self.options.dn);
