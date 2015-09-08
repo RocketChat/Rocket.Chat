@@ -280,7 +280,10 @@ Template.room.helpers
 		room = ChatRoom.findOne(this._id, { reactive: false })
 		return RoomManager.openedRooms[room.t + room.name]
 
-	formatUnreadSince: (date) ->
+	formatUnreadSince: ->
+		room = ChatRoom.findOne(this._id, { reactive: false })
+		room = RoomManager.openedRooms[room.t + room.name]
+		date = room?.unreadSince.get()
 		if not date? then return
 
 		return moment(date).calendar(null, {sameDay: 'LT'})
