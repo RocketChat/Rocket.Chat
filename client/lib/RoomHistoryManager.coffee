@@ -38,7 +38,7 @@
 			wrapper.scrollTop += heightDiff
 
 			Meteor.defer ->
-				readMessage.refreshUnreadMark(rid)
+				readMessage.refreshUnreadMark(rid, true)
 
 			room.isLoading.set false
 			room.loaded += result.length
