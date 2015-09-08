@@ -24,7 +24,7 @@ Template.room.helpers
 		return RoomHistoryManager.hasMore this._id
 
 	isLoading: ->
-		return 'btn-loading' if RoomHistoryManager.isLoading this._id
+		return RoomHistoryManager.isLoading this._id
 
 	windowId: ->
 		return "chat-window-#{this._id}"
@@ -276,6 +276,17 @@ Template.room.helpers
 	canRecordAudio: ->
 		return navigator.getUserMedia? or navigator.webkitGetUserMedia?
 
+	roomManager: ->
+		room = ChatRoom.findOne(this._id, { reactive: false })
+		return RoomManager.openedRooms[room.t + room.name]
+
+	formatUnreadSince: ->
+		room = ChatRoom.findOne(this._id, { reactive: false })
+		room = RoomManager.openedRooms[room.t + room.name]
+		date = room?.unreadSince.get()
+		if not date? then return
+
+		return moment(date).calendar(null, {sameDay: 'LT'})
 
 Template.room.events
 	"keydown #room-search": (e) ->
@@ -312,6 +323,9 @@ Template.room.events
 
 	"click .upload-progress-item > a": ->
 		Session.set "uploading-cancel-#{this.id}", true
+
+	"click .unread-bar > a": ->
+		readMessage.readNow(true)
 
 	"click .flex-tab .more": (event, t) ->
 		if (Session.get('flexOpened'))
@@ -440,9 +454,6 @@ Template.room.events
 			if result?.rid?
 				FlowRouter.go('direct', { username: Session.get('showUserInfo') })
 
-	'click button.load-more': (e) ->
-		RoomHistoryManager.getMore @_id
-
 	'autocompleteselect #user-add-search': (event, template, doc) ->
 		roomData = Session.get('roomData' + Session.get('openedRoom'))
 
@@ -478,13 +489,14 @@ Template.room.events
 
 			$('#room-search').val('')
 
-	# 'scroll .wrapper': (e, instance) ->
-		# console.log 'room scroll .wrapper' if window.rocketDebug
-		# if e.currentTarget.offsetHeight + e.currentTarget.scrollTop < e.currentTarget.scrollHeight
-		# 	instance.scrollOnBottom = false
-		# else
-		# 	instance.scrollOnBottom = true
-		# 	$('.new-message').addClass('not')
+	'scroll .wrapper': _.throttle (e, instance) ->
+		if RoomHistoryManager.hasMore(@_id) is true and RoomHistoryManager.isLoading(@_id) is false
+			if e.target.scrollTop is 0
+				RoomHistoryManager.getMore(@_id)
+	, 200
+
+	'click .load-more > a': ->
+		RoomHistoryManager.getMore(@_id)
 
 	'click .new-message': (e) ->
 		Template.instance().atBottom = true
