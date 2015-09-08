@@ -7,25 +7,43 @@
 - The default method *read* has a delay of 2000ms to prevent multiple reads and to user be able to see the mark
 ###
 
+Meteor.startup ->
+	window.addEventListener 'focus', ->
+		readMessage.refreshUnreadMark()
+
 @readMessage = new class
 	constructor: ->
 		@canReadMessage = false
 
 	readNow: (force=false) ->
-		return if @canReadMessage is false
+		self = @
+		return if force isnt true and @canReadMessage is false
 
 		rid = Session.get 'openedRoom'
-		if rid?
-			subscription = ChatSubscription.findOne rid: rid
-			if subscription? and (subscription.alert is true or subscription.unread > 0)
-				# Only read messages if user saw the first unread message
-				position = $('.message.first-unread').position()
-				if force is true or not position? or position.top >= 0
-					Meteor.call 'readMessages', rid
+		if not rid?
+			return
+
+		if force is true
+			return Meteor.call 'readMessages', rid, ->
+				self.refreshUnreadMark()
+
+		subscription = ChatSubscription.findOne rid: rid
+		if not subscription? or (subscription.alert is false and subscription.unread is 0)
+			return
+
+		room = RoomManager.openedRooms[subscription.t + subscription.name]
+		if not room?
+			return
+
+		# Only read messages if user saw the first unread message
+		position = $('.message.first-unread').position()
+		if position? and position.top >= 0
+			Meteor.call 'readMessages', rid, ->
+				self.refreshUnreadMark()
 
 	read: _.debounce (force) ->
 		@readNow(force)
-	, 2000
+	, 1000
 
 	disable: ->
 		@canReadMessage = false
@@ -37,20 +55,42 @@
 		return @canReadMessage is true
 
 	refreshUnreadMark: (rid) ->
+		self = @
+		@disable()
 		rid ?= Session.get 'openedRoom'
-		if rid?
-			subscription = ChatSubscription.findOne rid: rid
-			if not subscription? then return
+		if not rid?
+			return @enable()
 
-			room = RoomManager.openedRooms[subscription.t + subscription.name]
-			if room?
-				$roomDom = $(room.dom)
-				$roomDom.find('.message.first-unread').addClass('first-unread-opaque')
-				if (subscription.rid isnt rid or readMessage.isEnable() is false) and (subscription.alert or subscription.unread > 0)
-					$roomDom.find('.message.first-unread').removeClass('first-unread').removeClass('first-unread-opaque')
-					firstUnreadId = ChatMessage.findOne({rid: subscription.rid, ts: {$gt: subscription.ls}, 'u._id': {$ne: Meteor.userId()}}, {sort: {ts: 1}})?._id
-					if firstUnreadId?
-						$roomDom.find('.message#'+firstUnreadId).addClass('first-unread')
+		subscription = ChatSubscription.findOne rid: rid
+		if not subscription?
+			return @enable()
+
+		room = RoomManager.openedRooms[subscription.t + subscription.name]
+		if not room?
+			return @enable()
+
+		room.loadingUnread = true
+
+		$roomDom = $(room.dom)
+		$roomDom.find('.message.first-unread').addClass('first-unread-opaque')
+
+		# if (subscription.rid isnt rid or readMessage.isEnable() is false)
+
+		if not subscription.alert and subscription.unread is 0
+			room.unreadLoading = false
+			room.unreadCount.set 0
+			return @enable()
+
+		$roomDom.find('.message.first-unread').removeClass('first-unread').removeClass('first-unread-opaque')
+		Meteor.call 'countAndFirstId', subscription.rid, (error, data) ->
+			room.unreadLoading = false
+			room.unreadCount.set data.count
+			room.unreadSince.set data.since
+			room.unreadFirstId = data.firstUnreadId
+
+			self.enable()
+			if data.firstUnreadId?
+				$roomDom.find('.message#'+data.firstUnreadId).addClass('first-unread')
 
 
 Meteor.startup ->
