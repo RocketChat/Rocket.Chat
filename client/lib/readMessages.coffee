@@ -89,8 +89,6 @@ Meteor.startup ->
 			room.unreadFirstId = data.firstUnreadId
 
 			self.enable()
-			console.log arguments
-			# firstUnreadId = ChatMessage.findOne({rid: subscription.rid, ts: {$gt: subscription.ls}, 'u._id': {$ne: Meteor.userId()}}, {sort: {ts: 1}})?._id
 			if data.firstUnreadId?
 				$roomDom.find('.message#'+data.firstUnreadId).addClass('first-unread')
 
