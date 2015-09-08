@@ -9,7 +9,7 @@
 
 Meteor.startup ->
 	window.addEventListener 'focus', ->
-		readMessage.refreshUnreadMark()
+		readMessage.refreshUnreadMark(undefined, true)
 
 @readMessage = new class
 	constructor: ->
@@ -54,34 +54,36 @@ Meteor.startup ->
 	isEnable: ->
 		return @canReadMessage is true
 
-	refreshUnreadMark: (rid) ->
+	refreshUnreadMark: (rid, force) ->
 		self = @
-		@disable()
+
 		rid ?= Session.get 'openedRoom'
 		if not rid?
-			return @enable()
+			return
 
 		subscription = ChatSubscription.findOne rid: rid
 		if not subscription?
-			return @enable()
+			return
 
 		room = RoomManager.openedRooms[subscription.t + subscription.name]
 		if not room?
-			return @enable()
+			return
 
 		room.loadingUnread = true
 
 		$roomDom = $(room.dom)
 		$roomDom.find('.message.first-unread').addClass('first-unread-opaque')
 
-		# if (subscription.rid isnt rid or readMessage.isEnable() is false)
-
 		if not subscription.alert and subscription.unread is 0
 			room.unreadLoading = false
 			room.unreadCount.set 0
-			return @enable()
+			return
+
+		if not force? and subscription.rid is Session.get('openedRoom') and document.hasFocus()
+			return
 
 		$roomDom.find('.message.first-unread').removeClass('first-unread').removeClass('first-unread-opaque')
+		@disable()
 		Meteor.call 'countAndFirstId', subscription.rid, (error, data) ->
 			room.unreadLoading = false
 			room.unreadCount.set data.count
