@@ -38,15 +38,24 @@
 					</div>
 				{{/each}}
 			</div>
+			{{#if roomManager.unreadCount.get}}
+				<div class="unread-bar">
+					{{_ "S_new_messages_since_s" roomManager.unreadCount.get formatUnreadSince}}
+					<a>
+						{{_ "Mark_as_read"}}
+					</a>
+				</div>
+			{{/if}}
 			<div class="messages-box">
 				<div class="wrapper">
 					<ul>
 						{{#if hasMore}}
 							<li class="load-more">
-								<button class="button secondary load-more {{isLoading}}">
-									<i class="icon-spin4 animate-spin loading-icon hidden"></i>
-									<div>{{_ "Load_more"}}</div>
-								</button>
+								{{#if isLoading}}
+									<div class="load-more-loading">{{_ "Loading_more_from_history"}}...</div>
+								{{else}}
+									<a href="">{{_ "Has_more"}}...</a>
+								{{/if}}
 							</li>
 						{{else}}
 							<li class="start">
