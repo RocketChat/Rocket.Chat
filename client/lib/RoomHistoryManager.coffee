@@ -19,7 +19,6 @@
 
 		room.isLoading.set true
 
-		#$('.messages-box .wrapper').data('previous-height', $('.messages-box .wrapper').get(0)?.scrollHeight - $('.messages-box .wrapper').get(0)?.scrollTop)
 		# ScrollListener.setLoader true
 		lastMessage = ChatMessage.findOne({rid: rid}, {sort: {ts: 1}})
 		# lastMessage ?= ChatMessage.findOne({rid: rid}, {sort: {ts: 1}})
@@ -30,7 +29,14 @@
 			ts = new Date
 
 		Meteor.call 'loadHistory', rid, ts, limit, 0, (err, result) ->
+			wrapper = $('.messages-box .wrapper').get(0)
+			previousHeight = wrapper.scrollHeight
+
 			ChatMessage.insert item for item in result
+
+			heightDiff = wrapper.scrollHeight - previousHeight
+			wrapper.scrollTop += heightDiff
+
 			room.isLoading.set false
 			room.loaded += result.length
 			if result.length < limit
