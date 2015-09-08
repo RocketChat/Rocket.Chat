@@ -276,6 +276,14 @@ Template.room.helpers
 	canRecordAudio: ->
 		return navigator.getUserMedia? or navigator.webkitGetUserMedia?
 
+	roomManager: ->
+		room = ChatRoom.findOne(this._id, { reactive: false })
+		return RoomManager.openedRooms[room.t + room.name]
+
+	formatUnreadSince: (date) ->
+		if not date? then return
+
+		return moment(date).calendar(null, {sameDay: 'LT'})
 
 Template.room.events
 	"keydown #room-search": (e) ->
@@ -312,6 +320,9 @@ Template.room.events
 
 	"click .upload-progress-item > a": ->
 		Session.set "uploading-cancel-#{this.id}", true
+
+	"click .unread-bar > a": ->
+		readMessage.readNow(true)
 
 	"click .flex-tab .more": (event, t) ->
 		if (Session.get('flexOpened'))

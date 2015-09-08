@@ -1914,6 +1914,30 @@ a.github-fork {
 	}
 }
 
+.unread-bar {
+	position: absolute;
+	top: 60px;
+	width: 100%;
+	z-index: 11;
+	font-weight: bold;
+	background-color: #E6F4FD;
+	line-height: 30px;
+	font-size: 12px;
+	padding: 0 10px;
+	box-shadow: 1px 1px 2px rgba(0,0,0,.2);
+	color: #068FE4;
+	text-transform: uppercase;
+	text-align: center;
+
+	> a {
+		float: right;
+
+		&:hover {
+			cursor: pointer;
+		}
+	}
+}
+
 .upload-progress {
 	position: absolute;
 	top: 60px;
