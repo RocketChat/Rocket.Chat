@@ -37,6 +37,9 @@
 			heightDiff = wrapper.scrollHeight - previousHeight
 			wrapper.scrollTop += heightDiff
 
+			Meteor.defer ->
+				readMessage.refreshUnreadMark(rid)
+
 			room.isLoading.set false
 			room.loaded += result.length
 			if result.length < limit
