@@ -10,12 +10,11 @@ webrtc = {
 			{url: "stun:stun.l.google.com:19302"}
 		]
 	},
-	stream: stream,
 	send: function(data) {
 		data.to = webrtc.to;
 		data.room = webrtc.room;
 		data.from = Meteor.user().username;
-		stream.emit('send', data);
+		RocketChat.Notifications.notifyUser(data.to, 'webrtc', data);
 	},
 	stop: function(sendEvent) {
 		if (webrtc.pc) {
@@ -23,7 +22,7 @@ webrtc = {
 				webrtc.pc.close();
 			}
 			if (sendEvent != false) {
-				stream.emit('send', {to: webrtc.to, room: webrtc.room, from: Meteor.userId(), close: true});
+				RocketChat.Notifications.notifyUser(webrtc.to, 'webrtc', {to: webrtc.to, room: webrtc.room, from: Meteor.userId(), close: true});
 			}
 		}
 	},
@@ -126,7 +125,7 @@ webrtc.start = function (isCaller, fromUsername) {
 	}
 }
 
-stream.on(Meteor.userId(), function(data) {
+RocketChat.Notifications.onUser('webrtc', function(data) {
 	webrtc.log('stream.on', Meteor.userId(), data)
 	if (!webrtc.to) {
 		webrtc.to = data.room.replace(Meteor.userId(), '');

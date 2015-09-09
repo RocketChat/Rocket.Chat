@@ -23,12 +23,13 @@ Template.adminUserEdit.onCreated ->
 	@save = ->
 		userData = { _id: Template.currentData()._id }
 		userData.name = $("#name", ".edit-form").val()
+		userData.username = $("#username", ".edit-form").val()
 
 		unless userData._id and userData.name
 			toastr.error TAPi18next.t 'project:The_field_is_required', TAPi18next.t 'project:Name'
 		else
 			Meteor.call 'updateUser', userData, (error, result) ->
-				if result 
+				if result
 					toastr.success t('User_updated_successfully')
 					instance.cancel()
 				if error
