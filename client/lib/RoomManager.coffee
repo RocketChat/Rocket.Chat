@@ -124,7 +124,6 @@ onDeleteMessageStream = (msg) ->
 			openedRooms[typeName] =
 				active: false
 				ready: false
-				unreadCount: new ReactiveVar 0
 				unreadSince: new ReactiveVar undefined
 
 		setRoomExpireExcept typeName

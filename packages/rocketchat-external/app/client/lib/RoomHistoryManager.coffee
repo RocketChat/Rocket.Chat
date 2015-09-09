@@ -29,11 +29,11 @@
 		else
 			ts = new Date
 
-		Meteor.call 'loadHistory', rid, ts, limit, 0, (err, result) ->
-			ChatMessage.insert item for item in result
+		Meteor.call 'loadHistory', rid, ts, limit, undefined, (err, result) ->
+			ChatMessage.insert item for item in result.messages
 			room.isLoading.set false
-			room.loaded += result.length
-			if result.length < limit
+			room.loaded += result.messages.length
+			if result.messages.length < limit
 				room.hasMore.set false
 
 	hasMore = (rid) ->

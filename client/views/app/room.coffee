@@ -280,6 +280,9 @@ Template.room.helpers
 		room = ChatRoom.findOne(this._id, { reactive: false })
 		return RoomManager.openedRooms[room.t + room.name]
 
+	unreadCount: ->
+		return RoomHistoryManager.getRoom(@_id).unreadNotLoaded.get() + Template.instance().unreadCount.get()
+
 	formatUnreadSince: ->
 		room = ChatRoom.findOne(this._id, { reactive: false })
 		room = RoomManager.openedRooms[room.t + room.name]
@@ -663,6 +666,7 @@ Template.room.onCreated ->
 	this.showUsersOffline = new ReactiveVar false
 	this.atBottom = true
 	this.searchResult = new ReactiveVar
+	this.unreadCount = new ReactiveVar 0
 
 	self = @
 
@@ -680,9 +684,22 @@ Template.room.onRendered ->
 
 	template = this
 
+	wrapperOffset = $('.messages-box > .wrapper').offset()
+
 	onscroll = _.throttle ->
 		template.atBottom = wrapper.scrollTop >= wrapper.scrollHeight - wrapper.clientHeight
 	, 200
+
+	updateUnreadCount = _.throttle ->
+		firstMessageOnScreen = document.elementFromPoint(wrapperOffset.left+1, wrapperOffset.top+50)
+		if firstMessageOnScreen?.id?
+			firstMessage = ChatMessage.findOne firstMessageOnScreen.id
+			if firstMessage?
+				subscription = ChatSubscription.findOne rid: template.data._id
+				template.unreadCount.set ChatMessage.find({rid: template.data._id, ts: {$lt: firstMessage.ts, $gt: subscription.ls}}).count()
+			else
+				template.unreadCount.set 0
+	, 300
 
 	Meteor.setInterval ->
 		if template.atBottom
@@ -701,6 +718,7 @@ Template.room.onRendered ->
 	wrapper.addEventListener 'scroll', ->
 		template.atBottom = false
 		onscroll()
+		updateUnreadCount()
 
 	wrapper.addEventListener 'mousewheel', ->
 		template.atBottom = false
