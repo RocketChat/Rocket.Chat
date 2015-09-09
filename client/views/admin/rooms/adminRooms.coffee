@@ -1,6 +1,4 @@
 Template.adminRooms.helpers
-	isAdmin: ->
-		return Meteor.user().admin is true
 	isReady: ->
 		return Template.instance().ready?.get()
 	rooms: ->

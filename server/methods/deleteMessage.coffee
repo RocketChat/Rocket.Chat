@@ -3,13 +3,12 @@ Meteor.methods
 		if not Meteor.userId()
 			throw new Meteor.Error('invalid-user', "[methods] deleteMessage -> Invalid user")
 
-		if not RocketChat.settings.get 'Message_AllowDeleting'
-			throw new Meteor.Error 'message-deleting-not-allowed', "[methods] updateMessage -> Message deleting not allowed"
+		hasPermission = RocketChat.authz.hasPermission(Meteor.userId(), 'delete-message', message.rid)
+		deleteAllowed = RocketChat.settings.get 'Message_AllowDeleting'
+		deleteOwn = message?.u?._id is Meteor.userId()
 
-		user = Meteor.users.findOne Meteor.userId()
-
-		unless user?.admin is true or message.u._id is Meteor.userId()
-			throw new Meteor.Error 'not-authorized', '[methods] deleteMessage -> Not authorized'
+		unless hasPermission or (deleteAllowed and deleteOwn)
+			throw new Meteor.Error 'message-deleting-not-allowed', "[methods] deleteMessage -> Message deleting not allowed"
 
 		console.log '[methods] deleteMessage -> '.green, 'userId:', Meteor.userId(), 'arguments:', arguments
 
@@ -18,7 +17,7 @@ Meteor.methods
 
 		deleteQuery = 
 			_id: message._id
-		deleteQuery['u._id'] = Meteor.userId() if user?.admin isnt true 
+		#deleteQuery['u._id'] = Meteor.userId() if user?.admin isnt true 
 
 		if keepHistory
 			if showDeletedStatus

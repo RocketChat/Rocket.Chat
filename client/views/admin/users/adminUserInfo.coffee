@@ -1,6 +1,4 @@
 Template.adminUserInfo.helpers
-	isAdmin: ->
-		return Meteor.user()?.admin is true
 	name: ->
 		return if @name then @name else TAPi18next.t 'project:Unnamed'
 	email: ->
@@ -20,6 +18,9 @@ Template.adminUserInfo.helpers
 				@utcOffset = "+#{@utcOffset}"
 
 			return "UTC #{@utcOffset}"
+	hasAdminRole: ->
+		console.log 'hasAdmin: ', RocketChat.authz.hasRole(@_id, 'admin')
+		return RocketChat.authz.hasRole(@_id, 'admin')
 
 Template.adminUserInfo.events
 	'click .deactivate': (e) ->
