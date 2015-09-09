@@ -96,6 +96,10 @@ onDeleteMessageStream = (msg) ->
 
 						msgStream.on openedRooms[typeName].rid, (msg) ->
 							ChatMessage.upsert { _id: msg._id }, msg
+
+							Meteor.defer ->
+								RoomManager.updateMentionsMarksOfRoom typeName
+
 							# If room was renamed then close current room and send user to the new one
 							Tracker.nonreactive ->
 								if msg.t is 'r'
@@ -146,7 +150,7 @@ onDeleteMessageStream = (msg) ->
 		if not room?
 			return
 
-		if not room.dom?
+		if not room.dom? and rid?
 			room.dom = document.createElement 'div'
 			room.dom.classList.add 'room-container'
 			Blaze.renderWithData Template.room, { _id: rid }, room.dom
@@ -169,6 +173,23 @@ onDeleteMessageStream = (msg) ->
 
 		onlineUsers.set onlineUsersValue
 
+	updateMentionsMarksOfRoom = (typeName) ->
+		dom = getDomOfRoom typeName
+		if not dom?
+			return
+
+		ticksBar = $(dom).find('.ticks-bar')
+		$(dom).find('.ticks-bar > .tick').remove()
+
+		scrollTop = $(dom).find('.messages-box > .wrapper').scrollTop() - 50
+		totalHeight = $(dom).find('.messages-box > .wrapper > ul').height() + 40
+
+		$('.mention-link-me').each (index, item) ->
+			topOffset = $(item).offset().top + scrollTop
+			percent = 100 / totalHeight * topOffset
+			ticksBar.append('<div class="tick" style="top: '+percent+'%;"></div>')
+
+
 	open: open
 	close: close
 	init: init
@@ -178,3 +199,4 @@ onDeleteMessageStream = (msg) ->
 	openedRooms: openedRooms
 	updateUserStatus: updateUserStatus
 	onlineUsers: onlineUsers
+	updateMentionsMarksOfRoom: updateMentionsMarksOfRoom
