@@ -37,7 +37,7 @@ openRoom = (type, name) ->
 			Session.set 'openedRoom', room._id
 
 			Session.set 'editRoomTitle', false
-			readMessage.disable()
+			RoomManager.updateMentionsMarksOfRoom type + name
 			Meteor.setTimeout ->
 				readMessage.readNow()
 			, 2000
