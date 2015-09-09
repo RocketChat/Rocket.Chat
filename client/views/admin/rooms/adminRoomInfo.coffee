@@ -1,4 +1,7 @@
 Template.adminRoomInfo.helpers
+	canDeleteRoom: ->
+		return RocketChat.authz.hasAtLeastOnePermission("delete-#{@t}")
+
 	type: ->
 		return if @t is 'd' then 'at' else if @t is 'p' then 'lock' else 'hash'
 	name: ->

@@ -1,6 +1,5 @@
 Template.sideNav.helpers
-	isAdmin: ->
-		return Meteor.user()?.admin is true
+
 	flexTemplate: ->
 		return SideNav.getFlex().template
 	flexData: ->

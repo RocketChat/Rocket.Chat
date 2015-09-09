@@ -4,7 +4,7 @@ Meteor.methods
 			throw new Meteor.Error('invalid-user', "[methods] deleteUser -> Invalid user")
 		
 		user = Meteor.users.findOne Meteor.userId()
-		unless user?.admin is true
+		unless RocketChat.authz.hasPermission(Meteor.userId(), 'delete-user') is true
 			throw new Meteor.Error 'not-authorized', '[methods] deleteUser -> Not authorized'
 
 		user = Meteor.users.findOne userId

@@ -1,6 +1,4 @@
 Template.userInfo.helpers
-	isAdmin: ->
-		return Meteor.user()?.admin is true
 	utc: ->
 		if @utcOffset?
 			if @utcOffset > 0
