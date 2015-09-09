@@ -8,18 +8,12 @@ Package.describe({
 Package.onUse(function(api) {
 	api.versionsFrom('1.0');
 
-	api.use([
-		'coffeescript',
-		'arunoda:streams@0.1.17',
-		'rocketchat:lib@0.0.1'
-	]);
+	api.use('rocketchat:lib@0.0.1', 'client');
 
-	api.addFiles('common.js');
-	api.addFiles('adapter.js', ['client']);
-	api.addFiles('webrtc.js', ['client']);
-	api.addFiles('server.js', ['server']);
+	api.addFiles('adapter.js', 'client');
+	api.addFiles('webrtc.js', 'client');
 
-	api.export('webrtc')
+	api.export('webrtc');
 });
 
 

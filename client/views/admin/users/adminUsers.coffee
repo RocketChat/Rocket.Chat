@@ -84,6 +84,7 @@ Template.adminUsers.events
 	'click .user-info': (e) ->
 		e.preventDefault()
 		Session.set 'adminSelectedUser', $(e.currentTarget).data('id')
+		Session.set 'showUserInfo', Meteor.users.findOne($(e.currentTarget).data('id'))?.username or true
 		Session.set 'flexOpened', true
 
 	'click .info-tabs a': (e) ->

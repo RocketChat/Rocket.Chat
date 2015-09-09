@@ -1339,7 +1339,7 @@ a.github-fork {
 		left: 0;
 		width: 100%;
 		padding: 10px 15px 0px 15px;
-		z-index: 120;
+		z-index: 1000;
 		text-align: right;
 		min-height: @footer-min-height;
 		height: @footer-min-height;
@@ -1914,6 +1914,30 @@ a.github-fork {
 	}
 }
 
+.unread-bar {
+	position: absolute;
+	top: 60px;
+	width: 100%;
+	z-index: 11;
+	font-weight: bold;
+	background-color: #E6F4FD;
+	line-height: 30px;
+	font-size: 12px;
+	padding: 0 10px;
+	box-shadow: 1px 1px 2px rgba(0,0,0,.2);
+	color: #068FE4;
+	text-transform: uppercase;
+	text-align: center;
+
+	> a {
+		float: right;
+
+		&:hover {
+			cursor: pointer;
+		}
+	}
+}
+
 .upload-progress {
 	position: absolute;
 	top: 60px;
@@ -2205,11 +2229,13 @@ a.github-fork {
 		padding: 21px 0 10px;
 	}
 	.load-more {
+		text-transform: lowercase;
 		text-align: center;
-		span {
-			border: 1px solid;
-			border-radius: 20px;
-			padding: 5px 14px;
+		line-height: 40px;
+		font-style: italic;
+
+		.load-more-loading {
+			color: #aaa;
 		}
 	}
 	.start {
@@ -2242,13 +2268,26 @@ a.github-fork {
 	}
 }
 
+.ticks-bar {
+	width: 10px;
+	position: absolute;
+	right: 2px;
+	height: 100%;
+
+	.tick {
+		background-color: #008ce3;
+		height: 2px;
+		width: 100%;
+		top: 50%;
+		position: absolute;
+	}
+}
+
 .message {
 	font-size: 14px;
-	padding-left: 50px;
+	padding: 8px 20px 8px 70px;
 	position: relative;
 	line-height: 20px;
-	margin: 12px 20px 5px;
-	margin-top: 12px;
 	min-height: 40px;
 	&:nth-child(1) {
 		margin-top: 0;
@@ -2305,8 +2344,8 @@ a.github-fork {
 	}
 	.thumb {
 		position: absolute;
-		left: 0;
-		top: 0;
+		left: 20px;
+		top: 10px;
 		display: block;
 		width: 40px;
 		height: 40px;
@@ -2315,7 +2354,6 @@ a.github-fork {
 		font-size: 12px;
 	}
 	&.sequential {
-		margin-top: 5px;
 		min-height: 20px;
 		.user {
 			display: none;
@@ -2326,7 +2364,7 @@ a.github-fork {
 		.info {
 			position: absolute;
 			text-align: right;
-			left: -20px;
+			left: 0px;
 			width: 65px;
 			.time {
 				display: none;
