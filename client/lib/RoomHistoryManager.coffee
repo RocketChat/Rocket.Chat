@@ -48,6 +48,7 @@
 
 			Meteor.defer ->
 				readMessage.refreshUnreadMark(rid, true)
+				RoomManager.updateMentionsMarksOfRoom subscription.t + subscription.name
 
 			room.isLoading.set false
 			room.loaded += result.messages.length
