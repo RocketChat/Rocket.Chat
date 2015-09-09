@@ -118,6 +118,7 @@ rocketchat:oembed@0.0.1
 rocketchat:slashcommands-invite@0.0.1
 rocketchat:slashcommands-leave@0.0.1
 rocketchat:statistics@0.0.1
+rocketchat:theme-colors@0.0.1
 rocketchat:webrtc@0.0.1
 routepolicy@1.0.5
 service-configuration@1.0.4
