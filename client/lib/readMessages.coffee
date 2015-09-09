@@ -7,9 +7,9 @@
 - The default method *read* has a delay of 2000ms to prevent multiple reads and to user be able to see the mark
 ###
 
-Meteor.startup ->
-	window.addEventListener 'focus', ->
-		readMessage.refreshUnreadMark(undefined, true)
+# Meteor.startup ->
+	# window.addEventListener 'focus', ->
+		# readMessage.refreshUnreadMark(undefined, true)
 
 @readMessage = new class
 	constructor: ->
@@ -37,7 +37,7 @@ Meteor.startup ->
 
 		# Only read messages if user saw the first unread message
 		position = $('.message.first-unread').position()
-		if (position? and position.top >= 0) or room.unreadCount.get() is 0
+		if (position? and position.top >= 0) or not room.unreadSince.get()?
 			Meteor.call 'readMessages', rid, ->
 				self.refreshUnreadMark()
 
@@ -69,30 +69,51 @@ Meteor.startup ->
 		if not room?
 			return
 
-		room.loadingUnread = true
-
 		$roomDom = $(room.dom)
 		$roomDom.find('.message.first-unread').addClass('first-unread-opaque')
 
 		if not subscription.alert and subscription.unread is 0
-			room.unreadLoading = false
-			room.unreadCount.set 0
+			room.unreadSince.set undefined
 			return
 
 		if not force? and subscription.rid is Session.get('openedRoom') and document.hasFocus()
 			return
 
 		$roomDom.find('.message.first-unread').removeClass('first-unread').removeClass('first-unread-opaque')
-		@disable()
-		Meteor.call 'countAndFirstId', subscription.rid, (error, data) ->
-			room.unreadLoading = false
-			room.unreadCount.set data.count
-			room.unreadSince.set data.since
-			room.unreadFirstId = data.firstUnreadId
 
-			self.enable()
-			if data.firstUnreadId?
-				$roomDom.find('.message#'+data.firstUnreadId).addClass('first-unread')
+		lastReadRecord = ChatMessage.findOne
+			rid: subscription.rid
+			ts:
+				$lt: subscription.ls
+			# 'u._id':
+			# 	$ne: Meteor.userId()
+		,
+			sort:
+				ts: -1
+
+		if not lastReadRecord? and RoomHistoryManager.getRoom(room.rid).unreadNotLoaded.get() is 0
+			lastReadRecord =
+				ts: new Date(0)
+
+		if lastReadRecord? or RoomHistoryManager.getRoom(room.rid).unreadNotLoaded.get() > 0
+			room.unreadSince.set subscription.ls
+		else
+			room.unreadSince.set undefined
+
+		if lastReadRecord?
+			firstUnreadRecord = ChatMessage.findOne
+				rid: subscription.rid
+				ts:
+					$gt: lastReadRecord.ts
+				'u._id':
+					$ne: Meteor.userId()
+			,
+				sort:
+					ts: 1
+
+			if firstUnreadRecord?
+				room.unreadFirstId = firstUnreadRecord._id
+				$roomDom.find('.message#'+firstUnreadRecord._id).addClass('first-unread')
 
 
 Meteor.startup ->

@@ -46,7 +46,7 @@ Meteor.startup ->
 
 	Tracker.autorun ->
 		siteName = RocketChat.settings.get 'Site_Name'
-		
+
 		unread = Session.get 'unread'
 		fireGlobalEvent 'unread-changed', unread
 		favico?.badge unread, bgColor: if typeof unread isnt 'number' then '#3d8a3a' else '#ac1b1b'
