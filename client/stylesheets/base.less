@@ -2426,17 +2426,21 @@ a.github-fork {
 	height: 100%;
 	top: 0;
 	right: 0;
-	background: #FCFCFC;
-	border-left: 1px solid #eaeaea;
+	background: #f4f4f4;
 	z-index: 9;
 
 	.tab-button {
 		padding: 10px;
-		background: #FCFCFC;
+		background: #f4f4f4;
 		border-bottom: 1px solid #eaeaea;
+		border-left: 1px solid #eaeaea;
 
 		&:hover {
 			background: #DED6D6;
+		}
+
+		&.active {
+			border-left: 1px solid #f4f4f4;
 		}
 	}
 }
@@ -2470,10 +2474,10 @@ a.github-fork {
 		&:before {
 			content: " ";
 			height: 1px;
-			left: 15px;
 			position: absolute;
+			left: 0px;
 			bottom: 0px;
-			.calc(width, ~'100% - 15px');
+			width: 100%;
 		}
 		.button {
 			min-height: 36px;
