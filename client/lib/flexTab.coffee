@@ -28,8 +28,10 @@
 		return
 
 	setFlex = (t, d = {}) ->
+		return if animating is true
 		template.set t
 		data.set d
+		openFlex()
 
 	getFlex = ->
 		return {
@@ -37,17 +39,17 @@
 			data: data.get()
 		}
 
-	openFlex = () ->
-		return if animating == true
+	openFlex = ->
+		return if animating is true
 		toggleFlex 1
 		focusInput()
 
-	closeFlex = () ->
-		return if animating == true
+	closeFlex = ->
+		return if animating is true
 		toggleFlex -1
 
 	toggleFlex = (status = null, callback = null) ->
-		return if animating == true
+		return if animating is true
 		animating = true
 		if status is -1 or (status isnt 1 and open)
 			open = false
