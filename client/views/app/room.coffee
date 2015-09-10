@@ -297,6 +297,9 @@ Template.room.helpers
 	flexData: ->
 		return FlexTab.getFlex().data
 
+	adminClass: ->
+		return 'admin' if Meteor.user()?.admin is true
+
 Template.room.events
 	"keydown #room-search": (e) ->
 		if e.keyCode is 13
