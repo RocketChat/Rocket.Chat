@@ -1,14 +1,9 @@
 @FlexTab = new class
-	flexTab = {}
 	animating = false
 	open = false
 
 	template = new ReactiveVar ''
 	data = new ReactiveVar {}
-
-	init = ->
-		flexTab = $('.flex-tab-bar')
-		show()
 
 	check = ->
 		$flex = $("section.flex-tab")
@@ -23,15 +18,15 @@
 
 	focusInput = ->
 		setTimeout ->
-			flexTab.find("input[type='text']:first")?.focus()
+			$('.flex-tab')?.find("input[type='text']:first")?.focus()
 		, 200
 		return
 
-	setFlex = (t, d = {}) ->
+	setFlex = (t, d = {}, callback) ->
 		return if animating is true
 		template.set t
 		data.set d
-		openFlex()
+		openFlex(callback)
 
 	getFlex = ->
 		return {
@@ -39,23 +34,26 @@
 			data: data.get()
 		}
 
-	openFlex = ->
+	openFlex = (callback) ->
 		return if animating is true
-		toggleFlex 1
-		focusInput()
+		toggleFlex 1, callback
+		# focusInput()
 
-	closeFlex = ->
+	closeFlex = (callback) ->
 		return if animating is true
-		toggleFlex -1
+		toggleFlex -1, callback
 
-	toggleFlex = (status = null, callback = null) ->
+	toggleFlex = (status, callback) ->
 		return if animating is true
 		animating = true
+		$('.tab-button').removeClass 'active'
+
 		if status is -1 or (status isnt 1 and open)
 			open = false
 			Session.set 'flexOpened'
 		else
 			open = true
+			$(".tab-button[data-target='#{template.get()}']").addClass 'active'
 
 			# added a delay to make sure the template is already rendered before animating it
 			setTimeout ->
@@ -67,18 +65,15 @@
 		, 500
 
 	show = ->
-		flexTab.show() if flexTab
+		$('.flex-tab-bar').show()
 	
 	hide = ->
-		flexTab.hide() if flexTab
+		closeFlex()
+		$('.flex-tab-bar').hide()
 
 	isOpen = ->
 		return open
 
-	getFlexTab = ->
-		return flexTab
-
-	init: init
 	check: check
 	setFlex: setFlex
 	getFlex: getFlex
@@ -87,4 +82,3 @@
 	show: show
 	hide: hide
 	isOpen: isOpen
-	getFlexTab: getFlexTab

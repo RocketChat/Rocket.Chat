@@ -2,13 +2,11 @@ Template.flexTabBar.events
 	'click .tab-button': (e, t) ->
 		e.preventDefault()
 
-		$('.tab-button').removeClass 'active'
-
 		if FlexTab.isOpen() and FlexTab.getFlex().template is $(e.currentTarget).data('target')
 			FlexTab.closeFlex()
 		else
-			$(e.currentTarget).addClass 'active'
-			FlexTab.setFlex $(e.currentTarget).data('target')
+			FlexTab.setFlex $(e.currentTarget).data('target'), {}, ->
+				$('.flex-tab')?.find("input[type='text']:first")?.focus()
 
 		# if Session.get('flexOpened') and Session.equals('whichFlexOpened', $(e.currentTarget).data('target'))
 		# 	Session.set('rtcLayoutmode', 0)
@@ -21,6 +19,3 @@ Template.flexTabBar.events
 
 		# # $('.user-info-content').hide()
 		# # $($(e.currentTarget).attr('href')).show()
-
-Template.flexTabBar.onCreated ->
-	FlexTab.init()
