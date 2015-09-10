@@ -291,6 +291,9 @@ Template.room.helpers
 
 		return moment(date).calendar(null, {sameDay: 'LT'})
 
+	adminClass: ->
+		return 'admin' if Meteor.user()?.admin is true
+
 Template.room.events
 	"keydown #room-search": (e) ->
 		if e.keyCode is 13
