@@ -4,13 +4,11 @@ Template.flexTabBar.events
 
 		$('.tab-button').removeClass 'active'
 
-		if FlexTab.getFlex().template is $(e.currentTarget).data('target')
-			FlexTab.setFlex ''
+		if FlexTab.isOpen() and FlexTab.getFlex().template is $(e.currentTarget).data('target')
 			FlexTab.closeFlex()
 		else
 			$(e.currentTarget).addClass 'active'
 			FlexTab.setFlex $(e.currentTarget).data('target')
-			FlexTab.openFlex()
 
 		# if Session.get('flexOpened') and Session.equals('whichFlexOpened', $(e.currentTarget).data('target'))
 		# 	Session.set('rtcLayoutmode', 0)

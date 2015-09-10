@@ -292,7 +292,6 @@ Template.room.helpers
 		return moment(date).calendar(null, {sameDay: 'LT'})
 
 	flexTemplate: ->
-		console.log FlexTab.getFlex().template
 		return FlexTab.getFlex().template
 
 	flexData: ->
