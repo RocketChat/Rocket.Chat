@@ -1,8 +1,8 @@
 # Deny Account.createUser in client
 Accounts.config { forbidClientAccountCreation: true }
 
-Accounts.emailTemplates.siteName = "ROCKET.CHAT";
-Accounts.emailTemplates.from = "ROCKET.CHAT <no-reply@rocket.chat>";
+Accounts.emailTemplates.siteName = RocketChat.settings.get 'Site_Name';
+Accounts.emailTemplates.from = "#{RocketChat.settings.get 'Site_Name'} <#{RocketChat.settings.get 'From_Email'}>";
 
 verifyEmailText = Accounts.emailTemplates.verifyEmail.text
 Accounts.emailTemplates.verifyEmail.text = (user, url) ->
@@ -18,6 +18,8 @@ Accounts.onCreateUser (options, user) ->
 	# console.log 'onCreateUser ->',JSON.stringify arguments, null, '  '
 	# console.log 'options ->',JSON.stringify options, null, '  '
 	# console.log 'user ->',JSON.stringify user, null, '  '
+
+	RocketChat.callbacks.run 'beforeCreateUser', options, user
 
 	user.status = 'offline'
 	user.active = not RocketChat.settings.get 'Accounts_ManuallyApproveNewUsers'
@@ -44,11 +46,15 @@ Accounts.onCreateUser (options, user) ->
 					verified: true
 				]
 
+	Meteor.defer ->
+		RocketChat.callbacks.run 'afterCreateUser', options, user
+
 	return user
 
 
 Accounts.validateLoginAttempt (login) ->
 	login = RocketChat.callbacks.run 'beforeValidateLogin', login
+
 	if login.allowed isnt true
 		return login.allowed
 

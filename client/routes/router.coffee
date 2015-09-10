@@ -16,7 +16,19 @@ FlowRouter.route '/',
 	name: 'index'
 
 	action: ->
-		FlowRouter.go 'home'
+		BlazeLayout.render 'main', {center: 'loading'}
+		if not Meteor.userId()
+			return FlowRouter.go 'home'
+
+		Tracker.autorun (c) ->
+			if FlowRouter.subsReady() is true
+				Meteor.defer ->
+					if Meteor.user().defaultRoom?
+						room = Meteor.user().defaultRoom.split('/')
+						FlowRouter.go room[0], {name: room[1]}
+					else
+						FlowRouter.go 'home'
+				c.stop()
 
 
 FlowRouter.route '/login',

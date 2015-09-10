@@ -9,6 +9,15 @@ Npm.depends({
   ldapjs: "0.7.1", 
 });
 
+// Loads all i18n.json files into tapi18nFiles
+var _ = Npm.require('underscore');
+var fs = Npm.require('fs');
+tapi18nFiles = fs.readdirSync('packages/rocketchat-ldap/i18n').forEach(function(filename) {
+    if (fs.statSync('packages/rocketchat-ldap/i18n/' + filename).size > 16) {
+        return 'i18n/' + filename;
+    }
+});
+
 Package.onUse(function(api) {
   api.versionsFrom('1.0.3.1');
 
@@ -23,10 +32,11 @@ Package.onUse(function(api) {
   api.use('accounts-password', 'server');
 
 
-  // Commom
+  // Common
+  // TAP
   api.addFiles('package-tap.i18n');
-  api.addFiles('i18n/en.i18n.json');
-  api.addFiles('i18n/pt.i18n.json');
+  api.addFiles(tapi18nFiles);
+
   // Client
   api.addFiles('ldap_client.js', 'client');
   // Server
