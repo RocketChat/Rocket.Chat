@@ -22,8 +22,8 @@ Template.userInfo.helpers
 		if @createdAt
 			return moment(@createdAt).format('LLL')
 
-	canDirectMessage: ->
-		return Meteor.user()?.username isnt this.username
+	canDirectMessage: (username) ->
+		return Meteor.user()?.username isnt username
 
 	linkedinUsername: ->
 		return s.strRight @services.linkedin.publicProfileUrl, '/in/'
@@ -55,6 +55,16 @@ Template.userInfo.helpers
 	userTime: ->
 		if @utcOffset?
 			return Template.instance().now.get().utcOffset(@utcOffset).format('HH:mm')
+
+Template.userInfo.events
+	'click .pvt-msg': (e) ->
+		Meteor.call 'createDirectMessage', Session.get('showUserInfo'), (error, result) ->
+			console.log result
+			if error
+				return Errors.throw error.reason
+
+			if result?.rid?
+				FlowRouter.go('direct', { username: Session.get('showUserInfo') })
 
 Template.userInfo.onCreated ->
 	@now = new ReactiveVar moment()
