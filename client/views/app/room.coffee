@@ -291,6 +291,13 @@ Template.room.helpers
 
 		return moment(date).calendar(null, {sameDay: 'LT'})
 
+	flexTemplate: ->
+		console.log FlexTab.getFlex().template
+		return FlexTab.getFlex().template
+
+	flexData: ->
+		return FlexTab.getFlex().data
+
 Template.room.events
 	"keydown #room-search": (e) ->
 		if e.keyCode is 13
