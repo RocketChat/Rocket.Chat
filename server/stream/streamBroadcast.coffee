@@ -18,11 +18,11 @@
 				connections[record.extraInformation.port].disconnect()
 				delete connections[record.extraInformation.port]
 
-	broadcast = (streamName, eventName, args, userId) ->
+	broadcast = (streamName, args, userId) ->
 		for port, connection of connections
 			if connection.status().connected is true
-				console.log 'broadcast to', port, streamName, eventName, args
-				connection.call 'stream', streamName, eventName, args
+				console.log 'broadcast to', port, streamName, args
+				connection.call 'stream', streamName, args
 
 
 	Meteor.methods
@@ -36,24 +36,26 @@
 
 	for streamName, stream of streams
 		do (streamName, stream) ->
-			emitters[streamName] = stream.emit
-			stream.emit = (eventName, args...) ->
-				broadcast streamName, eventName, args
-				emitters[streamName].apply {}, arguments
+			emitters[streamName] = stream.emitToSubscriptions
+			stream.emitToSubscriptions = (args, subscriptionId, userId) ->
+				if subscriptionId isnt 'broadcasted'
+					broadcast streamName, args
+
+				emitters[streamName] args, subscriptionId, userId
 
 	Meteor.methods
-		stream: (streamName, eventName, args) ->
-			console.log 'method stream', streamName, eventName, args
-			args.unshift eventName
-			emitters[streamName]?.apply {}, args
+		stream: (streamName, args) ->
+			console.log 'method stream', streamName, args
+			if not emitters[streamName]?
+				console.log "Stream for broadcast with name #{streamName} does not exists".red
+			else
+				emitters[streamName].call null, args, 'broadcasted'
 
 
 Meteor.startup ->
 	config =
-		'typing': typingStream
-		'deleteMsgStream': deleteMsgStream
-
-	if webrtc
-		config['webrtc.stream'] = webrtc.stream
+		'RocketChat.Notifications.streamAll': RocketChat.Notifications.streamAll
+		'RocketChat.Notifications.streamRoom': RocketChat.Notifications.streamRoom
+		'RocketChat.Notifications.streamUser': RocketChat.Notifications.streamUser
 
 	startStreamBroadcast config

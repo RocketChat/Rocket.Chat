@@ -48,4 +48,4 @@ Meteor.methods
 					t: 'rm'
 					ets: new Date()
 		else
-			deleteMsgStream.emit message.rid, { _id: message._id }
+			RocketChat.Notifications.notifyRoom message.rid, 'deleteMessage', { _id: message._id }

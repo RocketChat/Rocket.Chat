@@ -1,5 +1,4 @@
 @msgStream = new Meteor.Stream 'messages'
-@deleteMsgStream = new Meteor.Stream 'delete-message'
 
 msgStream.permissions.write (eventName) ->
 	console.log('stream.permissions.write', this.userId);
@@ -19,17 +18,6 @@ msgStream.permissions.read (eventName) ->
 	catch e
 		return false
 
-
-deleteMsgStream.permissions.write (eventName) ->
-	return false
-
-deleteMsgStream.permissions.read (eventName) ->
-	try
-		canAccess = Meteor.call 'canAccessRoom', eventName, this.userId
-
-		return !!canAccess
-	catch e
-		return false
 
 Meteor.startup ->
 	filter =
