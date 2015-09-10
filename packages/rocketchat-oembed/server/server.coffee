@@ -15,6 +15,7 @@ getUrlContent = (urlObj, redirectCount = 5, callback) ->
 		port: urlObj.port
 		hostname: urlObj.hostname
 		path: urlObj.path
+		rejectUnauthorized: false
 
 	httpOrHttps = if urlObj.protocol is 'https:' then https else http
 
