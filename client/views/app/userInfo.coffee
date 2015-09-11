@@ -17,6 +17,10 @@ Template.userInfo.helpers
 	lastLogin: ->
 		if @lastLogin
 			return moment(@lastLogin).format('LLL')
+	
+	createdAt: ->
+		if @createdAt
+			return moment(@createdAt).format('LLL')
 
 	canDirectMessage: ->
 		return Meteor.user()?.username isnt this.username
