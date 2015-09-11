@@ -48,6 +48,12 @@ openRoom = (type, name) ->
 					$('.message-form .input-message').focus()
 				, 100
 
+			RocketChat.TabBar.resetButtons()
+			RocketChat.TabBar.addButton({ id: 'message-search', title: t('Search'), icon: 'icon-search', template: 'messageSearch', order: 1 })
+			if type is 'd'
+				RocketChat.TabBar.addButton({ id: 'members-list', title: t('User_Info'), icon: 'icon-user', template: 'membersList', order: 2 })
+			else
+				RocketChat.TabBar.addButton({ id: 'members-list', title: t('Members_List'), icon: 'icon-users', template: 'membersList', order: 2 })
 
 roomExit = ->
 	mainNode = document.querySelector('.main-content')

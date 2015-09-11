@@ -1710,10 +1710,12 @@ a.github-fork {
 	right: 0;
 	width: auto;
 	height: auto;
+	margin-right: 40px;
 	.transition(width .25s cubic-bezier(.5, 0, .1, 1));
 	&.flex-opened {
 		right: @flex-tab-width;
 		.flex-tab {
+			right: 40px;
 			.transform(translateX(0));
 		}
 	}
@@ -2460,6 +2462,34 @@ a.github-fork {
 	}
 }
 
+.flex-tab-bar {
+	position: absolute;
+	width: 40px;
+	height: 100%;
+	top: 0;
+	right: 0;
+	background: #FCFCFC;
+	border-left: 1px solid #eaeaea;
+	z-index: 9;
+
+	.tab-button {
+		cursor: pointer;
+		padding: 10px;
+		background: #FCFCFC;
+		border-bottom: 1px solid #eaeaea;
+
+		&:hover {
+			background: #EAEAEA;
+		}
+
+		&.active {
+			background-color: #F4F4F4;
+			margin-left: -1px;
+			padding-left: 11px;
+		}
+	}
+}
+
 // FLEX-TAB and FLEX-TAB views
 .flex-tab {
 	border-left: 1px solid;
@@ -2485,14 +2515,6 @@ a.github-fork {
 		> a,
 		> form {
 			float: left;
-		}
-		&:before {
-			content: " ";
-			height: 1px;
-			left: 15px;
-			position: absolute;
-			bottom: 0px;
-			.calc(width, ~'100% - 15px');
 		}
 		.button {
 			min-height: 36px;
@@ -2582,7 +2604,6 @@ a.github-fork {
 	}
 	.content {
 		&:extend(.fill-all);
-		margin-top: 60px;
 		overflow-x: hidden;
 		overflow-y: auto;
 		-webkit-overflow-scrolling: touch;
