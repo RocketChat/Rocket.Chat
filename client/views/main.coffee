@@ -113,7 +113,7 @@ Template.main.helpers
 
 	flexOpened: ->
 		console.log 'layout.helpers flexOpened' if window.rocketDebug
-		return 'flex-opened' if FlexTab.isOpen()
+		return 'flex-opened' if RocketChat.TabBar.isFlexOpen()
 
 	flexOpenedRTC1: ->
 		console.log 'layout.helpers flexOpenedRTC1' if window.rocketDebug

@@ -119,10 +119,10 @@ Template.room.helpers
 		return 'hidden' if not Session.get('editRoomTitle')
 
 	flexOpened: ->
-		return 'opened' if FlexTab.isOpen()
+		return 'opened' if RocketChat.TabBar.isFlexOpen()
 
 	arrowPosition: ->
-		return 'left' unless FlexTab.isOpen()
+		return 'left' unless RocketChat.TabBar.isFlexOpen()
 
 	phoneNumber: ->
 		return '' unless this.phoneNumber
@@ -223,10 +223,10 @@ Template.room.helpers
 		return moment(date).calendar(null, {sameDay: 'LT'})
 
 	flexTemplate: ->
-		return FlexTab.getFlex().template
+		return RocketChat.TabBar.getTemplate()
 
 	flexData: ->
-		return FlexTab.getFlex().data
+		return RocketChat.TabBar.getData()
 
 	adminClass: ->
 		return 'admin' if Meteor.user()?.admin is true
@@ -255,16 +255,16 @@ Template.room.events
 		readMessage.readNow(true)
 
 	"click .flex-tab .more": (event, t) ->
-		if FlexTab.isOpen()
+		if RocketChat.TabBar.isFlexOpen()
 			Session.set('rtcLayoutmode', 0)
-			FlexTab.closeFlex()
+			RocketChat.TabBar.closeFlex()
 			t.searchResult.set undefined
 		else
-			FlexTab.openFlex()
+			RocketChat.TabBar.openFlex()
 
 
 	"click .flex-tab  .video-remote" : (e) ->
-		if FlexTab.isOpen()
+		if RocketChat.TabBar.isFlexOpen()
 			if (!Session.get('rtcLayoutmode'))
 				Session.set('rtcLayoutmode', 1)
 			else
@@ -359,7 +359,7 @@ Template.room.events
 		$(".fixed-title").removeClass "visible"
 
 	"click .flex-tab .user-image > a" : (e) ->
-		FlexTab.openFlex()
+		RocketChat.TabBar.openFlex()
 		Session.set('showUserInfo', $(e.currentTarget).data('username'))
 
 	'click .user-card-message': (e) ->
@@ -369,7 +369,7 @@ Template.room.events
 			Session.set('showUserInfo', $(e.currentTarget).data('username'))
 		# else
 			# Session.set('flexOpened', true)
-		FlexTab.setFlex 'membersList'
+		RocketChat.TabBar.setTemplate 'membersList'
 
 	'autocompleteselect #user-add-search': (event, template, doc) ->
 		roomData = Session.get('roomData' + Session.get('openedRoom'))
@@ -425,7 +425,7 @@ Template.room.events
 			FlowRouter.go 'channel', {name: channel}
 			return
 
-		FlexTab.openFlex()
+		RocketChat.TabBar.openFlex()
 		Session.set('showUserInfo', $(e.currentTarget).data('username'))
 
 	'click .image-to-download': (event) ->
@@ -569,8 +569,10 @@ Template.room.onCreated ->
 	@autorun ->
 		self.subscribe 'fullUserData', Session.get('showUserInfo'), 1
 
+Template.room.onDestroyed ->
+	RocketChat.TabBar.resetButtons()
+
 Template.room.onRendered ->
-	FlexTab.check()
 	this.chatMessages = new ChatMessages
 	this.chatMessages.init(this.firstNode)
 	# ScrollListener.init()
@@ -632,11 +634,11 @@ Template.room.onRendered ->
 	$.data(this.firstNode, 'renderedAt', new Date)
 
 	webrtc.onRemoteUrl = (url) ->
-		FlexTab.openFlex()
+		RocketChat.TabBar.openFlex()
 		Session.set('remoteVideoUrl', url)
 
 	webrtc.onSelfUrl = (url) ->
-		FlexTab.openFlex()
+		RocketChat.TabBar.openFlex()
 		Session.set('selfVideoUrl', url)
 
 	RoomHistoryManager.getMoreIfIsEmpty this.data._id

@@ -36,12 +36,12 @@
 			ls = subscription.ls
 
 		Meteor.call 'loadHistory', rid, ts, limit, ls, (err, result) ->
-			room.unreadNotLoaded.set result.unreadNotLoaded
+			room.unreadNotLoaded.set result?.unreadNotLoaded
 
 			wrapper = $('.messages-box .wrapper').get(0)
 			previousHeight = wrapper.scrollHeight
 
-			ChatMessage.insert item for item in result.messages
+			ChatMessage.insert item for item in result?.messages or []
 
 			heightDiff = wrapper.scrollHeight - previousHeight
 			wrapper.scrollTop += heightDiff
@@ -51,8 +51,8 @@
 				RoomManager.updateMentionsMarksOfRoom subscription.t + subscription.name
 
 			room.isLoading.set false
-			room.loaded += result.messages.length
-			if result.messages.length < limit
+			room.loaded += result?.messages?.length
+			if result?.messages?.length < limit
 				room.hasMore.set false
 
 	hasMore = (rid) ->
