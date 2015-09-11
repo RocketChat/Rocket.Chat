@@ -72,7 +72,7 @@ Template.membersList.events
 			toggleAddUser()
 
 	"click .flex-tab .user-image > a" : (e) ->
-		FlexTab.openFlex()
+		RocketChat.TabBar.openFlex()
 		Session.set('showUserInfo', $(e.currentTarget).data('username'))
 
 	'autocompleteselect #user-add-search': (event, template, doc) ->

@@ -1,11 +1,17 @@
+Template.flexTabBar.helpers
+	active: ->
+		return 'active' if @template is RocketChat.TabBar.getTemplate() and RocketChat.TabBar.isFlexOpen()
+	buttons: ->
+		return RocketChat.TabBar.getButtons()
+
 Template.flexTabBar.events
 	'click .tab-button': (e, t) ->
 		e.preventDefault()
 
-		if FlexTab.isOpen() and FlexTab.getFlex().template is $(e.currentTarget).data('target')
-			FlexTab.closeFlex()
+		if RocketChat.TabBar.isFlexOpen() and RocketChat.TabBar.getTemplate() is $(e.currentTarget).data('template')
+			RocketChat.TabBar.closeFlex()
 		else
-			FlexTab.setFlex $(e.currentTarget).data('target'), {}, ->
+			RocketChat.TabBar.setTemplate $(e.currentTarget).data('template'), ->
 				$('.flex-tab')?.find("input[type='text']:first")?.focus()
 
 		# if Session.get('flexOpened') and Session.equals('whichFlexOpened', $(e.currentTarget).data('target'))

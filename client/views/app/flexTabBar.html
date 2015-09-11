@@ -1,10 +1,15 @@
 <template name="flexTabBar">
-	<div class="tab-button" data-target="messageSearch" title="Search">
+	{{#each buttons}}
+		<div class="tab-button {{active}}" data-template="{{template}}" title="{{title}}">
+			<i class="{{icon}}"></i>
+		</div>
+	{{/each}}
+	{{!-- <div class="tab-button" data-target="messageSearch" title="Search">
 		<i class="icon-search"></i>
 	</div>
 	<div class="tab-button" data-target="membersList" title="Member List">
 		<i class="icon-users"></i>
-	</div>
+	</div> --}}
 	{{!-- <div class="tab-button" data-target="pinned-messages" title="Pinned Messages">
 		<i class="icon-pin"></i>
 	</div>

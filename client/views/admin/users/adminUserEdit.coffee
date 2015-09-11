@@ -17,8 +17,7 @@ Template.adminUserEdit.onCreated ->
 	instance = @
 
 	@cancel = ->
-		$('.user-info-content').hide()
-		$('#adminUserInfo').show()
+		RocketChat.TabBar.setTemplate 'adminUserInfo'
 
 	@save = ->
 		userData = { _id: Template.currentData()._id }

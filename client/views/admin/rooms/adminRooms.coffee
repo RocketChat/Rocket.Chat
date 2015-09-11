@@ -6,9 +6,9 @@ Template.adminRooms.helpers
 	rooms: ->
 		return Template.instance().rooms()
 	flexOpened: ->
-		return 'opened' if FlexTab.isOpen()
+		return 'opened' if RocketChat.TabBar.isFlexOpen()
 	arrowPosition: ->
-		return 'left' unless FlexTab.isOpen()
+		return 'left' unless RocketChat.TabBar.isFlexOpen()
 	isLoading: ->
 		return 'btn-loading' unless Template.instance().ready?.get()
 	hasMore: ->
@@ -83,15 +83,15 @@ Template.adminRooms.events
 		t.filter.set e.currentTarget.value
 
 	'click .flex-tab .more': ->
-		if FlexTab.isOpen()
-			FlexTab.closeFlex()
+		if RocketChat.TabBar.isFlexOpen()
+			RocketChat.TabBar.closeFlex()
 		else
-			FlexTab.openFlex()
+			RocketChat.TabBar.openFlex()
 
 	'click .room-info': (e) ->
 		e.preventDefault()
 		Session.set 'adminRoomsSelected', $(e.currentTarget).data('id')
-		FlexTab.openFlex()
+		RocketChat.TabBar.openFlex()
 
 	'click .room-info-tabs a': (e) ->
 		e.preventDefault()

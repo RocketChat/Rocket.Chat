@@ -1,9 +1,9 @@
 Template.account.helpers
 	flexOpened: ->
-		return 'opened' if FlexTab.isOpen()
+		return 'opened' if RocketChat.TabBar.isFlexOpen()
 	arrowPosition: ->
 		console.log 'room.helpers arrowPosition' if window.rocketDebug
-		return 'left' unless FlexTab.isOpen()
+		return 'left' unless RocketChat.TabBar.isFlexOpen()
 
 Template.account.onRendered ->
 	Tracker.afterFlush ->

@@ -67,7 +67,7 @@ Template.userInfo.events
 				FlowRouter.go('direct', { username: Session.get('showUserInfo') })
 
 	"click .flex-tab  .video-remote" : (e) ->
-		if FlexTab.isOpen()
+		if RocketChat.TabBar.isFlexOpen()
 			if (!Session.get('rtcLayoutmode'))
 				Session.set('rtcLayoutmode', 1)
 			else
