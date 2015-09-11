@@ -48,6 +48,8 @@ openRoom = (type, name) ->
 					$('.message-form .input-message').focus()
 				, 100
 
+			# update user's room subscription
+			Meteor.call 'openRoom', room._id
 
 roomExit = ->
 	mainNode = document.querySelector('.main-content')
