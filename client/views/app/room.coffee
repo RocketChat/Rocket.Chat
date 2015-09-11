@@ -1,14 +1,5 @@
 # @TODO bug com o botão para "rolar até o fim" (novas mensagens) quando há uma mensagem com texto que gere rolagem horizontal
 Template.room.helpers
-	tAddUsers: ->
-		return t('Add_users')
-
-	tQuickSearch: ->
-		return t('Quick_Search')
-
-	searchResult: ->
-		return Template.instance().searchResult.get()
-
 	favorite: ->
 		sub = ChatSubscription.findOne { rid: this._id }, { fields: { f: 1 } }
 		return 'icon-star favorite-room' if sub?.f? and sub.f
@@ -75,10 +66,6 @@ Template.room.helpers
 			when 'c' then return 'icon-hash'
 			when 'p' then return 'icon-lock'
 
-	flexUserInfo: ->
-		username = Session.get('showUserInfo')
-		return Meteor.users.findOne({ username: String(username) }) or { username: String(username) }
-
 	userStatus: ->
 		roomData = Session.get('roomData' + this._id)
 
@@ -90,24 +77,6 @@ Template.room.helpers
 
 		else
 			return 'offline'
-
-	autocompleteSettingsAddUser: ->
-		return {
-			limit: 10
-			# inputDelay: 300
-			rules: [
-				{
-					collection: 'UserAndRoom'
-					subscription: 'roomSearch'
-					field: 'name'
-					template: Template.roomSearch
-					noMatchTemplate: Template.roomSearchEmpty
-					matchAll: true
-					filter: { type: 'u', uid: { $ne: Meteor.userId() } }
-					sort: 'name'
-				}
-			]
-		}
 
 	autocompleteSettingsRoomSearch: ->
 		return {
@@ -132,11 +101,6 @@ Template.room.helpers
 		return '' unless roomData
 		return roomData.t is 'c'
 
-	canAddUser: ->
-		roomData = Session.get('roomData' + this._id)
-		return '' unless roomData
-		return roomData.t in ['p', 'c'] and roomData.u?._id is Meteor.userId()
-
 	canEditName: ->
 		roomData = Session.get('roomData' + this._id)
 		return '' unless roomData
@@ -155,10 +119,10 @@ Template.room.helpers
 		return 'hidden' if not Session.get('editRoomTitle')
 
 	flexOpened: ->
-		return 'opened' if Session.equals('flexOpened', true)
+		return 'opened' if RocketChat.TabBar.isFlexOpen()
 
 	arrowPosition: ->
-		return 'left' unless Session.equals('flexOpened', true)
+		return 'left' unless RocketChat.TabBar.isFlexOpen()
 
 	phoneNumber: ->
 		return '' unless this.phoneNumber
@@ -167,44 +131,11 @@ Template.room.helpers
 		else
 			return "(#{this.phoneNumber.substr(0,2)}) #{this.phoneNumber.substr(2,4)}-#{this.phoneNumber.substr(6)}"
 
-	isGroupChat: ->
-		room = ChatRoom.findOne(this._id, { reactive: false })
-		return room?.t in ['c', 'p']
-
 	userActiveByUsername: (username) ->
 		status = Session.get 'user_' + username + '_status'
 		if status in ['online', 'away', 'busy']
 			return {username: username, status: status}
 		return
-
-	roomUsers: ->
-		room = ChatRoom.findOne(this._id, { reactive: false })
-		users = []
-		onlineUsers = RoomManager.onlineUsers.get()
-
-		for username in room?.usernames or []
-			if onlineUsers[username]?
-				utcOffset = onlineUsers[username]?.utcOffset
-				if utcOffset?
-					if utcOffset > 0
-						utcOffset = "+#{utcOffset}"
-
-					utcOffset = "(UTC #{utcOffset})"
-
-				users.push
-					username: username
-					status: onlineUsers[username]?.status
-					utcOffset: utcOffset
-
-		users = _.sortBy users, 'username'
-
-		ret =
-			_id: this._id
-			total: room?.usernames?.length or 0
-			totalOnline: users.length
-			users: users
-
-		return ret
 
 	seeAll: ->
 		if Template.instance().showUsersOffline.get()
@@ -291,26 +222,16 @@ Template.room.helpers
 
 		return moment(date).calendar(null, {sameDay: 'LT'})
 
+	flexTemplate: ->
+		return RocketChat.TabBar.getTemplate()
+
+	flexData: ->
+		return RocketChat.TabBar.getData()
+
 	adminClass: ->
 		return 'admin' if Meteor.user()?.admin is true
 
 Template.room.events
-	"keydown #room-search": (e) ->
-		if e.keyCode is 13
-			e.preventDefault()
-
-	"keyup #room-search": _.debounce (e, t) ->
-		t.searchResult.set undefined
-		value = e.target.value.trim()
-		if value is ''
-			return
-
-		Tracker.nonreactive ->
-			Meteor.call 'messageSearch', value, Session.get('openedRoom'), (error, result) ->
-				if result? and (result.messages?.length > 0 or result.users?.length > 0 or result.channels?.length > 0)
-					t.searchResult.set result
-	, 1000
-
 	"touchstart .message": (e, t) ->
 		message = this._arguments[1]
 		doLongTouch = ->
@@ -334,16 +255,16 @@ Template.room.events
 		readMessage.readNow(true)
 
 	"click .flex-tab .more": (event, t) ->
-		if (Session.get('flexOpened'))
+		if RocketChat.TabBar.isFlexOpen()
 			Session.set('rtcLayoutmode', 0)
-			Session.set('flexOpened',false)
+			RocketChat.TabBar.closeFlex()
 			t.searchResult.set undefined
 		else
-			Session.set('flexOpened', true)
+			RocketChat.TabBar.openFlex()
 
 
 	"click .flex-tab  .video-remote" : (e) ->
-		if (Session.get('flexOpened'))
+		if RocketChat.TabBar.isFlexOpen()
 			if (!Session.get('rtcLayoutmode'))
 				Session.set('rtcLayoutmode', 1)
 			else
@@ -438,27 +359,17 @@ Template.room.events
 		$(".fixed-title").removeClass "visible"
 
 	"click .flex-tab .user-image > a" : (e) ->
-		Session.set('flexOpened', true)
+		RocketChat.TabBar.openFlex()
 		Session.set('showUserInfo', $(e.currentTarget).data('username'))
 
 	'click .user-card-message': (e) ->
 		roomData = Session.get('roomData' + this._arguments[1].rid)
 		if roomData.t in ['c', 'p']
-			Session.set('flexOpened', true)
+			# Session.set('flexOpened', true)
 			Session.set('showUserInfo', $(e.currentTarget).data('username'))
-		else
-			Session.set('flexOpened', true)
-
-	'click .user-view nav .back': (e) ->
-		Session.set('showUserInfo', null)
-
-	'click .user-view nav .pvt-msg': (e) ->
-		Meteor.call 'createDirectMessage', Session.get('showUserInfo'), (error, result) ->
-			if error
-				return Errors.throw error.reason
-
-			if result?.rid?
-				FlowRouter.go('direct', { username: Session.get('showUserInfo') })
+		# else
+			# Session.set('flexOpened', true)
+		RocketChat.TabBar.setTemplate 'membersList'
 
 	'autocompleteselect #user-add-search': (event, template, doc) ->
 		roomData = Session.get('roomData' + Session.get('openedRoom'))
@@ -477,23 +388,6 @@ Template.room.events
 
 				$('#user-add-search').val('')
 				toggleAddUser()
-
-	'autocompleteselect #room-search': (event, template, doc) ->
-		if doc.type is 'u'
-			Meteor.call 'createDirectMessage', doc.username, (error, result) ->
-				if error
-					return Errors.throw error.reason
-
-				if result?.rid?
-					FlowRouter.go('direct', { username: doc.username })
-					$('#room-search').val('')
-		else if doc.type is 'r'
-			if doc.t is 'c'
-				FlowRouter.go('channel', { name: doc.name })
-			else if doc.t is 'p'
-				FlowRouter.go('group', { name: doc.name })
-
-			$('#room-search').val('')
 
 	'scroll .wrapper': _.throttle (e, instance) ->
 		if RoomHistoryManager.hasMore(@_id) is true and RoomHistoryManager.isLoading(@_id) is false
@@ -531,7 +425,7 @@ Template.room.events
 			FlowRouter.go 'channel', {name: channel}
 			return
 
-		Session.set('flexOpened', true)
+		RocketChat.TabBar.openFlex()
 		Session.set('showUserInfo', $(e.currentTarget).data('username'))
 
 	'click .image-to-download': (event) ->
@@ -668,7 +562,6 @@ Template.room.onCreated ->
 	# this.typing = new msgTyping this.data._id
 	this.showUsersOffline = new ReactiveVar false
 	this.atBottom = true
-	this.searchResult = new ReactiveVar
 	this.unreadCount = new ReactiveVar 0
 
 	self = @
@@ -676,8 +569,10 @@ Template.room.onCreated ->
 	@autorun ->
 		self.subscribe 'fullUserData', Session.get('showUserInfo'), 1
 
+Template.room.onDestroyed ->
+	RocketChat.TabBar.resetButtons()
+
 Template.room.onRendered ->
-	FlexTab.check()
 	this.chatMessages = new ChatMessages
 	this.chatMessages.init(this.firstNode)
 	# ScrollListener.init()
@@ -739,11 +634,11 @@ Template.room.onRendered ->
 	$.data(this.firstNode, 'renderedAt', new Date)
 
 	webrtc.onRemoteUrl = (url) ->
-		Session.set('flexOpened', true)
+		RocketChat.TabBar.openFlex()
 		Session.set('remoteVideoUrl', url)
 
 	webrtc.onSelfUrl = (url) ->
-		Session.set('flexOpened', true)
+		RocketChat.TabBar.openFlex()
 		Session.set('selfVideoUrl', url)
 
 	RoomHistoryManager.getMoreIfIsEmpty this.data._id

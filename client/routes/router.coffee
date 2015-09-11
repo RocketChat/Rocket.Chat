@@ -42,6 +42,7 @@ FlowRouter.route '/home',
 	name: 'home'
 
 	action: ->
+		RocketChat.TabBar.reset()
 		BlazeLayout.render 'main', {center: 'home'}
 		KonchatNotification.getDesktopPermission()
 
@@ -52,39 +53,13 @@ FlowRouter.route '/changeavatar',
 	action: ->
 		BlazeLayout.render 'main', {center: 'avatarPrompt'}
 
-
-FlowRouter.route '/admin/users',
-	name: 'admin-users'
-
-	action: ->
-		BlazeLayout.render 'main', {center: 'adminUsers'}
-
-
-FlowRouter.route '/admin/rooms',
-	name: 'admin-rooms'
-
-	action: ->
-		BlazeLayout.render 'main', {center: 'adminRooms'}
-
-
-FlowRouter.route '/admin/statistics',
-	name: 'admin-statistics'
-
-	action: ->
-		BlazeLayout.render 'main', {center: 'adminStatistics'}
-
-
-FlowRouter.route '/admin/:group?',
-	name: 'admin'
-
-	action: ->
-		BlazeLayout.render 'main', {center: 'admin'}
-
-
 FlowRouter.route '/account/:group?',
 	name: 'account'
 
 	action: (params) ->
+		RocketChat.TabBar.closeFlex()
+		RocketChat.TabBar.resetButtons()
+
 		unless params.group
 			params.group = 'Preferences'
 		params.group = _.capitalize params.group, true

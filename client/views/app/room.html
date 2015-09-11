@@ -139,74 +139,7 @@
 			</footer>
 		</section>
 		<section class="flex-tab">
-			<div class="control">
-				<button class="more"><span class="arrow {{arrowPosition}}"></span></button>
-				<form class="search-form" role="form">
-					<div class="input-line search">
-						<!-- {{> inputAutocomplete settings=autocompleteSettingsRoomSearch id="room-search" class="search" placeholder=tQuickSearch autocomplete="off"}} -->
-						<input type="text" id="room-search" class="search" placeholder="{{tQuickSearch}}" autocomplete="off" />
-						<i class="icon-search"></i>
-					</div>
-				</form>
-			</div>
-			{{#if flexOpened}}
-				<div class="content">
-					{{#if searchResult.messages}}
-						<ul>
-							{{#each searchResult.messages}}
-								{{#nrr nrrargs 'message' .}}{{/nrr}}
-							{{/each}}
-						</ul>
-						<!-- {{#each searchResult.users}}
-							@{{username}}
-						{{/each}}
-						{{#each searchResult.rooms}}
-							#{{name}}
-						{{/each}} -->
-					{{else}}
-						{{#if isGroupChat}}
-							<div class="list-view{{#if $.Session.get 'showUserInfo'}} -hidden{{/if}}">
-								{{#with roomUsers}}
-									<div class="status">
-										<h2>{{_ "Members_List"}}</h2>
-										<p>
-											{{{_ "Showing_online_users" total_online=totalOnline total=total}}}
-											{{!--<button class="see-all">{{seeAll}}</button>--}}
-										</p>
-										{{#if canAddUser}}
-											<div class="control">
-												<div class="search-form">
-													<div class="input-line search">
-														{{> inputAutocomplete settings=autocompleteSettingsAddUser id="user-add-search" class="search" placeholder=tAddUsers}}
-														<i class="icon-plus"></i>
-													</div>
-												</div>
-											</div>
-										{{/if}}
-									</div>
-									<ul class='list clearfix lines'>
-										{{#each users}}
-											<li class='user-image user-card-room status-{{status}}'>
-												<a data-username="{{username}}" tabindex="0" title="{{username}}">
-													{{> avatar username=username}}
-													<p>{{username}} {{utcOffset}}</p>
-												</a>
-											</li>
-										{{/each}}
-									</ul>
-								{{/with}}
-							</div>
-							<div class="user-view animated{{#unless $.Session.get 'showUserInfo'}} -hidden{{/unless}}">
-								{{> userInfo user=flexUserInfo showAll=true}}
-							</div>
-						{{else}}
-							<div class="user-view">
-								{{> userInfo user=flexUserInfo video=true}}
-							</div>
-						{{/if}}
-					{{/if}}
-				</div>
-			{{/if}}
+			{{> Template.dynamic template=flexTemplate data=flexData}}
 		</section>
 	</div>
 </template>
