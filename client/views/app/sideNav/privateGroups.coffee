@@ -12,3 +12,7 @@ Template.privateGroups.events
 	'click .add-room': (e, instance) ->
 		SideNav.setFlex "privateGroupsFlex"
 		SideNav.openFlex()
+
+	'click .more-groups': ->
+		SideNav.setFlex "listPrivateGroupsFlex"
+		SideNav.openFlex()
