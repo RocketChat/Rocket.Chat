@@ -28,6 +28,8 @@ Meteor.startup ->
 
 			readMessage.refreshUnreadMark(subscription.rid)
 
+		menu.updateUnreadBars()
+
 		if unreadCount > 0
 			if unreadCount > 999
 				Session.set 'unread', '999+'

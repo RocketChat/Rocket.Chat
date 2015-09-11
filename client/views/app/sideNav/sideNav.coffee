@@ -21,6 +21,12 @@ Template.sideNav.events
 	'mouseleave .header': ->
 		SideNav.leaveArrow()
 
+	'scroll .rooms-list': ->
+		menu.updateUnreadBars()
+
 Template.sideNav.onRendered ->
 	SideNav.init()
 	menu.init()
+
+	Meteor.defer ->
+		menu.updateUnreadBars()
