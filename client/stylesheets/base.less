@@ -1521,6 +1521,35 @@ a.github-fork {
 			font-size: 12px;
 		}
 	}
+	.unread-rooms {
+		background-color: #068FE4;
+		position: absolute;
+		z-index: 1000;
+		width: 100%;
+		text-align: center;
+		line-height: 24px;
+		color: white;
+		text-transform: uppercase;
+		font-weight: bold;
+		display: -webkit-flex;
+		display: flex;
+		align-items: center;
+		-webkit-align-items: center;
+		justify-content: center;
+		-webkit-justify-content: center;
+
+		&.top-unread-rooms {
+			top: 60px;
+		}
+		&.bottom-unread-rooms {
+			bottom: 70px;
+		}
+
+		i {
+			margin-left: 5px;
+			font-size: 12px;
+		}
+	}
 }
 
 .new-room-highlight a {
