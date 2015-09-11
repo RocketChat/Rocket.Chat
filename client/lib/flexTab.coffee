@@ -1,7 +1,6 @@
 @FlexTab = new class
 	animating = false
-	open = false
-
+	open = new ReactiveVar false
 	template = new ReactiveVar ''
 	data = new ReactiveVar {}
 
@@ -48,16 +47,14 @@
 		animating = true
 		$('.tab-button').removeClass 'active'
 
-		if status is -1 or (status isnt 1 and open)
-			open = false
-			Session.set 'flexOpened'
+		if status is -1 or (status isnt 1 and open.get())
+			open.set false
 		else
-			open = true
-			$(".tab-button[data-target='#{template.get()}']").addClass 'active'
+			$(".tab-button[data-target='#{template.get()}']").addClass 'active' if template.get()
 
 			# added a delay to make sure the template is already rendered before animating it
 			setTimeout ->
-				Session.set 'flexOpened', true
+				open.set true
 			, 50
 		setTimeout ->
 			animating = false
@@ -72,7 +69,7 @@
 		$('.flex-tab-bar').hide()
 
 	isOpen = ->
-		return open
+		return open.get()
 
 	check: check
 	setFlex: setFlex

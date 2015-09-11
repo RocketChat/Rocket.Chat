@@ -119,10 +119,10 @@ Template.room.helpers
 		return 'hidden' if not Session.get('editRoomTitle')
 
 	flexOpened: ->
-		return 'opened' if Session.equals('flexOpened', true)
+		return 'opened' if FlexTab.isOpen()
 
 	arrowPosition: ->
-		return 'left' unless Session.equals('flexOpened', true)
+		return 'left' unless FlexTab.isOpen()
 
 	phoneNumber: ->
 		return '' unless this.phoneNumber
@@ -255,16 +255,16 @@ Template.room.events
 		readMessage.readNow(true)
 
 	"click .flex-tab .more": (event, t) ->
-		if (Session.get('flexOpened'))
+		if FlexTab.isOpen()
 			Session.set('rtcLayoutmode', 0)
-			Session.set('flexOpened',false)
+			FlexTab.closeFlex()
 			t.searchResult.set undefined
 		else
-			Session.set('flexOpened', true)
+			FlexTab.openFlex()
 
 
 	"click .flex-tab  .video-remote" : (e) ->
-		if (Session.get('flexOpened'))
+		if FlexTab.isOpen()
 			if (!Session.get('rtcLayoutmode'))
 				Session.set('rtcLayoutmode', 1)
 			else
@@ -359,7 +359,7 @@ Template.room.events
 		$(".fixed-title").removeClass "visible"
 
 	"click .flex-tab .user-image > a" : (e) ->
-		Session.set('flexOpened', true)
+		FlexTab.openFlex()
 		Session.set('showUserInfo', $(e.currentTarget).data('username'))
 
 	'click .user-card-message': (e) ->
@@ -425,7 +425,7 @@ Template.room.events
 			FlowRouter.go 'channel', {name: channel}
 			return
 
-		Session.set('flexOpened', true)
+		FlexTab.openFlex()
 		Session.set('showUserInfo', $(e.currentTarget).data('username'))
 
 	'click .image-to-download': (event) ->
@@ -632,11 +632,11 @@ Template.room.onRendered ->
 	$.data(this.firstNode, 'renderedAt', new Date)
 
 	webrtc.onRemoteUrl = (url) ->
-		Session.set('flexOpened', true)
+		FlexTab.openFlex()
 		Session.set('remoteVideoUrl', url)
 
 	webrtc.onSelfUrl = (url) ->
-		Session.set('flexOpened', true)
+		FlexTab.openFlex()
 		Session.set('selfVideoUrl', url)
 
 	RoomHistoryManager.getMoreIfIsEmpty this.data._id

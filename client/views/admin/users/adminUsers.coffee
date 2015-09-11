@@ -6,9 +6,9 @@ Template.adminUsers.helpers
 	users: ->
 		return Template.instance().users()
 	flexOpened: ->
-		return 'opened' if Session.equals('flexOpened', true)
+		return 'opened' if FlexTab.isOpen()
 	arrowPosition: ->
-		return 'left' unless Session.equals('flexOpened', true)
+		return 'left' unless FlexTab.isOpen()
 	userData: ->
 		return Meteor.users.findOne Session.get 'adminSelectedUser'
 	userChannels: ->
@@ -76,16 +76,16 @@ Template.adminUsers.events
 		t.filter.set e.currentTarget.value
 
 	'click .flex-tab .more': ->
-		if (Session.get('flexOpened'))
-			Session.set('flexOpened',false)
+		if FlexTab.isOpen()
+			FlexTab.closeFlex()
 		else
-			Session.set('flexOpened', true)
+			FlexTab.openFlex()
 
 	'click .user-info': (e) ->
 		e.preventDefault()
 		Session.set 'adminSelectedUser', $(e.currentTarget).data('id')
 		Session.set 'showUserInfo', Meteor.users.findOne($(e.currentTarget).data('id'))?.username or true
-		Session.set 'flexOpened', true
+		FlexTab.openFlex()
 
 	'click .info-tabs a': (e) ->
 		e.preventDefault()
