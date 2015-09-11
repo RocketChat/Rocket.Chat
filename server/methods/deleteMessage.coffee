@@ -16,6 +16,10 @@ Meteor.methods
 		keepHistory = RocketChat.settings.get 'Message_KeepHistory'
 		showDeletedStatus = RocketChat.settings.get 'Message_ShowDeletedStatus'
 
+		deleteQuery = 
+			_id: message._id
+		deleteQuery['u._id'] = Meteor.userId() if user?.admin isnt true 
+
 		if keepHistory
 			if showDeletedStatus
 				history = ChatMessage.findOne message._id
@@ -25,24 +29,16 @@ Meteor.methods
 				delete history._id
 				ChatMessage.insert history
 			else
-				ChatMessage.update
-					_id: message._id
-					'u._id': Meteor.userId()
-				,
+				ChatMessage.update deleteQuery,
 					$set:
 						_hidden: true
 
 		else
 			if not showDeletedStatus
-				ChatMessage.remove
-					_id: message._id
-					'u._id': Meteor.userId()
+				ChatMessage.remove deleteQuery
 
 		if showDeletedStatus
-			ChatMessage.update
-				_id: message._id
-				'u._id': Meteor.userId()
-			,
+			ChatMessage.update deleteQuery,
 				$set:
 					msg: ''
 					t: 'rm'
