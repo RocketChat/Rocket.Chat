@@ -142,8 +142,8 @@ blockquote {
 			height: 1px;
 			position: absolute;
 			right: 0px;
-			left: 50px;
-			top: -3px;
+			left: 20px;
+			top: 0px;
 			.transition(background-color, .5s, linear);
 		}
 
@@ -152,11 +152,11 @@ blockquote {
 			display: block;
 			position: absolute;
 			right: 0px;
-			top: -7px;
+			top: -4px;
 			text-transform: uppercase;
 			font-size: 8px;
 			line-height: 10px;
-			padding-left: 5px;
+			padding: 0 5px;
 			.transition(color, .5s, linear);
 		}
 	}
@@ -1521,6 +1521,35 @@ a.github-fork {
 			font-size: 12px;
 		}
 	}
+	.unread-rooms {
+		background-color: #068FE4;
+		position: absolute;
+		z-index: 1000;
+		width: 100%;
+		text-align: center;
+		line-height: 24px;
+		color: white;
+		text-transform: uppercase;
+		font-weight: bold;
+		display: -webkit-flex;
+		display: flex;
+		align-items: center;
+		-webkit-align-items: center;
+		justify-content: center;
+		-webkit-justify-content: center;
+
+		&.top-unread-rooms {
+			top: 60px;
+		}
+		&.bottom-unread-rooms {
+			bottom: 70px;
+		}
+
+		i {
+			margin-left: 5px;
+			font-size: 12px;
+		}
+	}
 }
 
 .new-room-highlight a {
@@ -2159,12 +2188,19 @@ a.github-fork {
 			height: 23px;
 			font-size: 11px;
 			padding: 3px;
-			display: inline-block;
-			white-space: nowrap;
+			display: -webkit-flex;
+			display: flex;
+			align-items: center;
 			overflow: hidden;
 			position: absolute;
 			right: 20px;
+			opacity: .5;
+			.transition(opacity .2 linear);
+			> * {
+				margin: 0 3px;
+			}
 			&:hover {
+				opacity: 1;
 			}
 			q {
 				padding: 0 0 0 3px;
@@ -3403,10 +3439,14 @@ a.github-fork {
 }
 
 .mention-link.mention-link-me {
-	background-color: #E6F4FD;
+	background-color: #008ce3;
 	border-radius: 4px;
-	padding: 0px 3px 2px 2px;
+	padding: 0px 4px 2px 4px;
 	font-weight: bold;
+	color: white;
+	&:hover {
+		color: white;
+	}
 }
 
 .avatar-suggestions {
