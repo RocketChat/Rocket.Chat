@@ -23,10 +23,10 @@ Template.admin.helpers
 		return sectionsArray
 
 	flexOpened: ->
-		return 'opened' if Session.equals('flexOpened', true)
+		return 'opened' if FlexTab.isOpen()
 	arrowPosition: ->
 		console.log 'room.helpers arrowPosition' if window.rocketDebug
-		return 'left' unless Session.equals('flexOpened', true)
+		return 'left' unless FlexTab.isOpen()
 	label: ->
 		label = @i18nLabel or @_id
 		if label?.indexOf(':') is -1
