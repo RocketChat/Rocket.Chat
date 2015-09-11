@@ -13,6 +13,7 @@ Template.flexTabBar.events
 		else
 			RocketChat.TabBar.setTemplate $(e.currentTarget).data('template'), ->
 				$('.flex-tab')?.find("input[type='text']:first")?.focus()
+				$('.flex-tab .content')?.scrollTop(0)
 
 		# if Session.get('flexOpened') and Session.equals('whichFlexOpened', $(e.currentTarget).data('target'))
 		# 	Session.set('rtcLayoutmode', 0)
