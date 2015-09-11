@@ -16,6 +16,7 @@ Meteor.publish 'fullUserData', (filter, limit) ->
 			phone: 1
 			statusConnection: 1
 			admin: 1
+			createdAt: 1
 			lastLogin: 1
 			active: 1
 			services: 1
