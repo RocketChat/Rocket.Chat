@@ -39,12 +39,14 @@
 			room.unreadNotLoaded.set result?.unreadNotLoaded
 
 			wrapper = $('.messages-box .wrapper').get(0)
-			previousHeight = wrapper.scrollHeight
+			if wrapper?
+				previousHeight = wrapper.scrollHeight
 
 			ChatMessage.insert item for item in result?.messages or []
 
-			heightDiff = wrapper.scrollHeight - previousHeight
-			wrapper.scrollTop += heightDiff
+			if wrapper?
+				heightDiff = wrapper.scrollHeight - previousHeight
+				wrapper.scrollTop += heightDiff
 
 			Meteor.defer ->
 				readMessage.refreshUnreadMark(rid, true)
