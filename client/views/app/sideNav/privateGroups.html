@@ -10,5 +10,7 @@
 			<p class="empty">{{_ "No_groups_yet" }}</p>
 		{{/each}}
 	</ul>
-	<a href="" class="more more-groups">{{_ "More_groups"}} ..</a>
+	{{#if $gt total totalOpen}}
+		<a href="" class="more more-groups">{{_ "More_groups"}} ..</a>
+	{{/if}}
 </template>
