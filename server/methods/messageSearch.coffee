@@ -51,9 +51,9 @@ Meteor.methods
 				score:
 					$meta: "textScore"
 
-			options.sort =
-				score:
-					$meta: 'textScore'
+			# options.sort =
+			# 	score:
+			# 		$meta: 'textScore'
 
 		if Object.keys(query).length > 0
 			# Filter by room
@@ -62,6 +62,7 @@ Meteor.methods
 				try
 					if Meteor.call('canAccessRoom', rid, this.userId) isnt false
 						result.messages = ChatMessage.find(query, options).fetch()
+
 
 		# ###
 		# # USERS
