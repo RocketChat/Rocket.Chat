@@ -2,7 +2,7 @@ RocketChat.Notifications = new class
 	constructor: ->
 		self = @
 
-		@debug = true
+		@debug = false
 
 		@streamAll = new Meteor.Stream 'notify-all'
 		@streamRoom = new Meteor.Stream 'notify-room'
