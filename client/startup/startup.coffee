@@ -1,4 +1,6 @@
 Meteor.startup ->
+	TimeSync.loggingEnabled = false
+
 	UserPresence.awayTime = 300000
 	UserPresence.start()
 	Meteor.subscribe("activeUsers")
