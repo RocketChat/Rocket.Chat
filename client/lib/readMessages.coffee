@@ -12,34 +12,53 @@
 		# readMessage.refreshUnreadMark(undefined, true)
 
 @readMessage = new class
+	debug: false
+
 	constructor: ->
 		@canReadMessage = false
 
 	readNow: (force=false) ->
+		console.log '--------------' if @debug
+		console.log 'readMessage -> readNow init process force:', force if @debug
 		self = @
-		return if force isnt true and @canReadMessage is false
+		if force isnt true and @canReadMessage is false
+			console.log 'readMessage -> readNow canceled by canReadMessage: false' if @debug
+			return
 
 		rid = Session.get 'openedRoom'
 		if not rid?
+			console.log 'readMessage -> readNow canceled, no rid informed' if @debug
 			return
 
 		if force is true
+			console.log 'readMessage -> readNow via force rid:', rid if @debug
 			return Meteor.call 'readMessages', rid, ->
 				self.refreshUnreadMark()
 
 		subscription = ChatSubscription.findOne rid: rid
-		if not subscription? or (subscription.alert is false and subscription.unread is 0)
+		if not subscription?
+			console.log 'readMessage -> readNow canceled, no subscription found for rid:', rid if @debug
+			return
+
+		if subscription.alert is false and subscription.unread is 0
+			console.log 'readMessage -> readNow canceled, alert', subscription.alert, 'and unread', subscription.unread if @debug
 			return
 
 		room = RoomManager.openedRooms[subscription.t + subscription.name]
 		if not room?
+			console.log 'readMessage -> readNow canceled, no room found for typeName:', subscription.t + subscription.name if @debug
 			return
 
 		# Only read messages if user saw the first unread message
 		position = $('.message.first-unread').position()
-		if (position? and position.top >= 0) or not room.unreadSince.get()?
-			Meteor.call 'readMessages', rid, ->
-				self.refreshUnreadMark()
+		visible = position?.top >= 0
+		if not visible and room.unreadSince.get()?
+			console.log 'readMessage -> readNow canceled, unread mark visible:', visible, 'unread since exists', room.unreadSince.get()? if @debug
+			return
+
+		console.log 'readMessage -> readNow rid:', rid if @debug
+		Meteor.call 'readMessages', rid, ->
+			self.refreshUnreadMark()
 
 	read: _.debounce (force) ->
 		@readNow(force)
