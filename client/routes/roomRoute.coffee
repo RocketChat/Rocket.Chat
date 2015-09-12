@@ -60,6 +60,8 @@ openRoom = (type, name) ->
 				Meteor.call 'openRoom', room._id
 
 roomExit = ->
+	BlazeLayout.render 'main', {center: 'none'}
+
 	mainNode = document.querySelector('.main-content')
 	if mainNode?
 		for child in mainNode.children
