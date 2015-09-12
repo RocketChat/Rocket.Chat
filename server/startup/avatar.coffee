@@ -69,10 +69,10 @@ Meteor.startup ->
 				</text>
 			</svg>
 			"""
-			
+
 			res.write svg
 			res.end()
-			return 
+			return
 
 		res.setHeader 'content-type', 'image/jpeg'
 		res.setHeader 'Content-Length', file.length

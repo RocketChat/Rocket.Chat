@@ -1,4 +1,6 @@
 Template.adminUserInfo.helpers
+	isAdmin: ->
+		return Meteor.user()?.admin is true
 	name: ->
 		return if @name then @name else TAPi18next.t 'project:Unnamed'
 	email: ->
@@ -81,10 +83,9 @@ Template.adminUserInfo.events
 			Meteor.call 'deleteUser', _id, (error, result) ->
 				if error
 					toastr.error error.reason
+				Session.set 'adminSelectedUser'
 				
 	'click .edit-user': (e) ->
 		e.stopPropagation()
 		e.preventDefault()
-
-		$('.user-info-content').hide()
-		$('#user-edit-form').show()
+		RocketChat.TabBar.setTemplate 'adminUserEdit'
