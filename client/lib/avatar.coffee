@@ -8,7 +8,7 @@
 
 Blaze.registerHelper 'avatarUrlFromUsername', getAvatarUrlFromUsername
 
-@getAvatarAsPng = (username) ->
+@getAvatarAsPng = (username, cb) ->
 	image = new Image
 	image.src = getAvatarUrlFromUsername(username)
 
@@ -18,9 +18,9 @@ Blaze.registerHelper 'avatarUrlFromUsername', getAvatarUrlFromUsername
 		canvas.height = image.height
 		context = canvas.getContext('2d')
 		context.drawImage(image, 0, 0)
-		return canvas.toDataURL('image/png')
+		cb canvas.toDataURL('image/png')
 	image.onerror = ->
-		return ''
+		cb ''
 
 @updateAvatarOfUsername = (username) ->
 	key = "avatar_random_#{username}"
