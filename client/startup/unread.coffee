@@ -15,8 +15,9 @@ Meteor.startup ->
 		subscriptions = ChatSubscription.find({open: true}, { fields: { unread: 1, alert: 1, rid: 1, t: 1, name: 1, ls: 1 } })
 
 		rid = undefined
-		if FlowRouter.getRouteName() in ['channel', 'group', 'direct']
-			rid = Session.get 'openedRoom'
+		Tracker.nonreactive ->
+			if FlowRouter.getRouteName() in ['channel', 'group', 'direct']
+				rid = Session.get 'openedRoom'
 
 		for subscription in subscriptions.fetch()
 			if subscription.rid is rid and (subscription.alert or subscription.unread > 0)
