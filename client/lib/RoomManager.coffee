@@ -71,13 +71,11 @@ onDeleteMessageStream = (msg) ->
 			do (typeName, record) ->
 				record.sub = [
 					Meteor.subscribe 'room', typeName
-					# Meteor.subscribe 'messages', typeName
 				]
 
-				record.ready = record.sub[0].ready()
-				# record.ready = record.sub[0].ready() and record.sub[1].ready()
+				ready = record.sub[0].ready() and subscription.ready()
 
-				if record.ready is true
+				if ready is true
 					type = typeName.substr(0, 1)
 					name = typeName.substr(1)
 
@@ -93,6 +91,10 @@ onDeleteMessageStream = (msg) ->
 
 					if room?
 						openedRooms[typeName].rid = room._id
+
+						RoomHistoryManager.getMoreIfIsEmpty room._id
+						record.ready = RoomHistoryManager.isLoading(room._id) is false
+						Dep.changed()
 
 						msgStream.on openedRooms[typeName].rid, (msg) ->
 							ChatMessage.upsert { _id: msg._id }, msg
