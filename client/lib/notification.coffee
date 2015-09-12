@@ -12,7 +12,7 @@
 		if not window.document.hasFocus?() and Meteor.user().status isnt 'busy'
 			if window.Notification && Notification.permission == "granted"
 				n = new Notification notification.title,
-					icon: '/images/logo/1024x1024-circle.png'
+					icon: getAvatarAsPng(notification.payload.sender.username)
 					body: _.stripTags(notification.text)
 
 				if notification.payload?.rid?
