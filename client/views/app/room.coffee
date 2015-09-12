@@ -641,7 +641,6 @@ Template.room.onRendered ->
 		RocketChat.TabBar.openFlex()
 		Session.set('selfVideoUrl', url)
 
-	RoomHistoryManager.getMoreIfIsEmpty this.data._id
 
 renameRoom = (rid, name) ->
 	name = name?.toLowerCase().trim()

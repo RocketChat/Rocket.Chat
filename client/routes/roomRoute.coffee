@@ -1,11 +1,10 @@
 openRoom = (type, name) ->
 	Session.set 'openedRoom', null
 
-	BlazeLayout.render 'main', {center: 'loading'}
-
 	Meteor.defer ->
 		Tracker.autorun (c) ->
 			if RoomManager.open(type + name).ready() isnt true
+				BlazeLayout.render 'main', {center: 'loading'}
 				return
 
 			c.stop()
