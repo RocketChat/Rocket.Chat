@@ -17,12 +17,11 @@ Template.mobileMessageMenu.events
 	'mousedown, touchstart': (event, template) ->
 		template.locked = false
 
-	'click #cancel': (event, template, doc) ->
+	'touchend #cancel, click #cancel': (event, template, doc) ->
 		if template.locked is true then return
-
 		mobileMessageMenu.hide()
 
-	'click #delete-message': (event, template, doc) ->
+	'touchend #delete-message, click #delete-message': (event, template, doc) ->
 		if template.locked is true then return
 
 		mobileMessageMenu.hide()
@@ -40,16 +39,16 @@ Template.mobileMessageMenu.events
 			closeOnConfirm: false
 			html: false
 		}, ->
-			swal 
+			swal
 				title: t('Deleted')
 				text: t('Your_entry_has_been_deleted')
 				type: 'success'
 				timer: 1000
-				showConfirmButton: false 
+				showConfirmButton: false
 
 			instance.chatMessages.deleteMsg(message)
 
-	'click #report-abuse': (event, template, doc) ->
+	'touchend #report-abuse, click #report-abuse': (event, template, doc) ->
 		if template.locked is true then return
 
 		swal {
@@ -73,11 +72,11 @@ Template.mobileMessageMenu.events
 
 			Meteor.call 'reportMessage', mobileMessageMenu.message, inputValue
 
-			swal 
+			swal
 				title: "Report sent"
 				text: "Thank you!"
 				type: 'success'
 				timer: 1000
-				showConfirmButton: false 
+				showConfirmButton: false
 
 		mobileMessageMenu.hide()
