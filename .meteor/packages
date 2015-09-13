@@ -38,6 +38,7 @@ rocketchat:me
 rocketchat:mentions
 rocketchat:oembed
 rocketchat:slashcommands-invite
+rocketchat:slashcommands-join
 rocketchat:slashcommands-leave
 rocketchat:statistics
 rocketchat:webrtc
