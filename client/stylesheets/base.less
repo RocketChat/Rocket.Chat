@@ -938,6 +938,7 @@ a.github-fork {
 		position: relative;
 		height: 100%;
 		padding: 10px 0px 10px 18px;
+		z-index:100;
 		.thumb {
 			float: left;
 			height: 100%;
@@ -1012,6 +1013,8 @@ a.github-fork {
 		direction: rtl;
 		.calc(height, ~'100% - ' @header-min-height + @footer-min-height);
 		.transition(transform .3s cubic-bezier(.5, 0, .1, 1));
+		z-index:99;
+		
 		&._hidden {
 			.transform(translateY(-100%) translateY(-50px));
 		}
@@ -1583,7 +1586,7 @@ a.github-fork {
 	top: 0;
 	left: 0;
 	width: 100%;
-	height: @header-min-height;
+	height: @header-min-height+1px;
 	&.visible {
 		h2 {
 			overflow: visible;
@@ -2037,7 +2040,7 @@ a.github-fork {
 	}
 	.footer {
 		position: absolute;
-		padding: 10px 20px 0px 20px;
+		padding: 8px 20px 0px 20px;
 		border-top: 1px solid;
 		z-index: 100;
 		bottom: 0;
@@ -2110,6 +2113,8 @@ a.github-fork {
 			}
 			> .file {
 				width: 44px;
+				height: 38px;
+				margin: 1px 0 0 0;
 				font-size: 22px;
 				padding: 6px 0;
 				text-align: center;
@@ -2118,6 +2123,7 @@ a.github-fork {
 				border-right: none;
 				cursor: pointer;
 				.transition(background-color 0.1s linear, color 0.1s linear);
+				
 				&:hover {
 				}
 
@@ -2349,8 +2355,7 @@ a.github-fork {
 			font-size: 12px;
 			font-weight: 600;
 			text-align: center;
-			.calc(left,
-			~"50% - 70px");
+			.calc(left,~"50% - 70px");
 			z-index: 10;
 			padding: 0 10px;
 			min-width: 140px;
@@ -2361,8 +2366,9 @@ a.github-fork {
 			position: absolute;
 			top: -20px;
 			left: 0;
-			width: 100%;
 			border-top: 1px solid;
+			width: 96%;
+			margin-left: 2%;
 		}
 	}
 	.edit-message {
