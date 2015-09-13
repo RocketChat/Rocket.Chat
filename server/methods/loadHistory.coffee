@@ -25,7 +25,7 @@ Meteor.methods
 
 		if ls?
 			fistMessage = messages[messages.length - 1]
-			if fistMessage.ts > ls
+			if fistMessage?.ts > ls
 				query.ts.$lt = fistMessage.ts
 				query.ts.$gt = ls
 				delete options.limit
