@@ -24,6 +24,12 @@ else
 			if not user?
 				return
 
+			# verify the user isn't already in this room
+			room = ChatRoom.findOne({ _id: item.rid, usernames: { $nin: [ user.username ]} })
+
+			if not room?
+				return
+
 			Meteor.runAsUser user._id, ->
 				Meteor.call 'joinRoom', item.rid
 
