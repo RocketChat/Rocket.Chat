@@ -53,6 +53,32 @@ RocketChat.sendMessage = (user, message, room, options) ->
 	Meteor.defer ->
 
 		if not room.t? or room.t is 'd'
+
+			otherUser = null
+			if room.usernames[0]
+			room.usernames.some (username) ->
+				if username isnt user.username
+					otherUser = username
+					return true
+
+			to = Meteor.users.findOne { username: otherUser }, { fields: { _id: 1, username: 1 } }
+
+
+			# Make user the target user has a subcription to this room
+			ChatSubscription.upsert
+				rid: message.rid
+				$and: [{'u._id': to._id}]
+			,
+				$setOnInsert:
+					name: me.username
+					t: 'd'
+					open: false
+					alert: false
+					unread: 0
+					u:
+						_id: to._id
+						username: to.username
+
 			###
 			Update the other subscriptions
 			###
