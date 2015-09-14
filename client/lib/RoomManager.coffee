@@ -34,6 +34,13 @@ onDeleteMessageStream = (msg) ->
 	ChatMessage.remove _id: msg._id
 
 
+RocketChat.Notifications.onUser 'message', (msg) ->
+	msg.u =
+		username: 'rocketbot'
+
+	ChatMessage.upsert { _id: msg._id }, msg
+
+
 @RoomManager = new class
 	defaultTime = 600000 # 10 minutes
 	openedRooms = {}
