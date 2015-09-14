@@ -202,6 +202,7 @@
   "Not_found_or_not_allowed" : "Not Found or Not Allowed",
   "Nothing_found" : "Nothing found",
   "Notify_all_in_this_room" : "Notify all in this room",
+  "Only_you_can_see_this_message" : "Only you can see this message",
   "Online" : "Online",
   "Oops!" : "Oops",
   "Opt_out_statistics" : "Don't send my anonymous statistics to Rocket.Chat",
