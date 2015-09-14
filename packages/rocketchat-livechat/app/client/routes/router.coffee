@@ -1,4 +1,4 @@
-FlowRouter.route '/external',
+FlowRouter.route '/livechat',
 	name: 'index'
 
 	triggersEnter: [

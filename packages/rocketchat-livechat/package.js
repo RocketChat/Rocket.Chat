@@ -1,14 +1,14 @@
 Package.describe({
-	name: 'rocketchat:external',
+	name: 'rocketchat:livechat',
 	version: '0.0.1',
-	summary: 'External for Rocket.Chat'
+	summary: 'Livechat plugin for Rocket.Chat'
 });
 
 Package.registerBuildPlugin({
-	name: "builExternal",
+	name: "builLivechat",
 	use: [],
 	sources: [
-		'plugin/build-external.js'
+		'plugin/build-livechat.js'
 	],
 	npmDependencies: {
 		"shelljs": "0.5.1"
@@ -20,12 +20,12 @@ Package.onUse(function(api) {
 
 	api.use(['coffeescript', 'webapp', 'autoupdate'], 'server');
 
-	api.addFiles('external.coffee', 'server');
+	api.addFiles('livechat.coffee', 'server');
 	api.addFiles('methods.coffee', 'server');
 	api.addFiles('publications.coffee', 'server');
 
-	api.addFiles('rocket-external.js', 'client', {isAsset: true});
-	api.addFiles('public/external.css', 'client', {isAsset: true});
-	api.addFiles('public/external.js', 'client', {isAsset: true});
+	api.addFiles('rocket-livechat.js', 'client', {isAsset: true});
+	api.addFiles('public/livechat.css', 'client', {isAsset: true});
+	api.addFiles('public/livechat.js', 'client', {isAsset: true});
 	api.addFiles('public/head.html', 'server', {isAsset: true});
 });

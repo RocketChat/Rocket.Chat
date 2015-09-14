@@ -42,7 +42,7 @@ rocketchat:slashcommands-join
 rocketchat:slashcommands-leave
 rocketchat:statistics
 rocketchat:webrtc
-#rocketchat:external
+#rocketchat:livechat
 #rocketchat:hubot
 #rocketchat:irc
 
