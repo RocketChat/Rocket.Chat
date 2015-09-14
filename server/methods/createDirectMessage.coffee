@@ -49,6 +49,21 @@ Meteor.methods
 					_id: me._id
 					username: me.username
 
+		# Make user the target user has a subcription to this room
+		ChatSubscription.upsert
+			rid: rid
+			$and: [{'u._id': to._id}]
+		,
+			$setOnInsert:
+				name: me.username
+				t: 'd'
+				open: false
+				alert: false
+				unread: 0
+				u:
+					_id: to._id
+					username: to.username
+
 		return {
 			rid: rid
 		}
