@@ -1,5 +1,5 @@
 Meteor.methods
-	sendMessageExternal: (message) ->
+	sendMessageLivechat: (message) ->
 		if s.trim(message.msg) isnt ''
 
 			message.ts = new Date(Date.now() + TimeSync.serverOffset())

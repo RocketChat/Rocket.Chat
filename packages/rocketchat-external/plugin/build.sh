@@ -1,16 +1,16 @@
-cd packages/rocketchat-external/app
+cd packages/rocketchat-livechat/app
 meteor build .meteor/build/ --directory
 
 mkdir -p ../public
 
-rm -f ../public/external.css
-rm -f ../public/external.js
+rm -f ../public/livechat.css
+rm -f ../public/livechat.js
 rm -f ../public/head.html
 
-cp .meteor/build/bundle/programs/web.browser/*.css ../public/external.css
-cp .meteor/build/bundle/programs/web.browser/*.js ../public/external.js
+cp .meteor/build/bundle/programs/web.browser/*.css ../public/livechat.css
+cp .meteor/build/bundle/programs/web.browser/*.js ../public/livechat.js
 cp .meteor/build/bundle/programs/web.browser/head.html ../public/head.html
 
-# echo "body {background-color: red;}" > external.css
+# echo "body {background-color: red;}" > livechat.css
 
 rm -rf .meteor/build/
