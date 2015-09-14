@@ -37,6 +37,7 @@ onDeleteMessageStream = (msg) ->
 RocketChat.Notifications.onUser 'message', (msg) ->
 	msg.u =
 		username: 'rocketbot'
+	msg.private = true
 
 	ChatMessage.upsert { _id: msg._id }, msg
 
