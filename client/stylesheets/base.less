@@ -1014,7 +1014,7 @@ a.github-fork {
 		.calc(height, ~'100% - ' @header-min-height + @footer-min-height);
 		.transition(transform .3s cubic-bezier(.5, 0, .1, 1));
 		z-index:99;
-		
+
 		&._hidden {
 			.transform(translateY(-100%) translateY(-50px));
 		}
@@ -2123,7 +2123,7 @@ a.github-fork {
 				border-right: none;
 				cursor: pointer;
 				.transition(background-color 0.1s linear, color 0.1s linear);
-				
+
 				&:hover {
 				}
 
@@ -2403,6 +2403,9 @@ a.github-fork {
 	.info {
 		font-size: 12px;
 	}
+	.private {
+		margin-left: 10px;
+	}
 	&.sequential {
 		min-height: 20px;
 		padding-top: 4px;
@@ -2423,6 +2426,9 @@ a.github-fork {
 			}
 			.edited {
 				display: inline-block;
+			}
+			.private {
+				display: none;
 			}
 			.edit-message {
 				float: left;

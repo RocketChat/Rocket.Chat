@@ -7,6 +7,9 @@
 		{{#if edited}}
 			<span class="edited">({{_ "edited"}})</span>
 		{{/if}}
+		{{#if private}}
+			<span class="private">{{_ "Only_you_can_see_this_message"}}</span>
+		{{/if}}
 
 		{{#if canEdit}}
 			<i class="icon-pencil edit-message"></i>
