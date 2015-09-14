@@ -32,8 +32,8 @@ Meteor.methods
 			pass: pass
 		}
 
-	sendMessageExternal: (message) ->
-		console.log 'sendMessageExternal ->',arguments
+	sendMessageLivechat: (message) ->
+		console.log 'sendMessageLivechat ->',arguments
 
 		check message.rid, String
 		check message.token, String

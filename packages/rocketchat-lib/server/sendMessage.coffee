@@ -53,6 +53,7 @@ RocketChat.sendMessage = (user, message, room, options) ->
 	Meteor.defer ->
 
 		if not room.t? or room.t is 'd'
+
 			###
 			Update the other subscriptions
 			###
