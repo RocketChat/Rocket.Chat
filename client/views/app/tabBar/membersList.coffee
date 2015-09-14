@@ -56,7 +56,7 @@ Template.membersList.helpers
 					template: Template.roomSearch
 					noMatchTemplate: Template.roomSearchEmpty
 					matchAll: true
-					filter: { type: 'u', uid: { $ne: Meteor.userId() } }
+					filter: { type: 'u', uid: { $ne: Meteor.userId() }, active: { $eq: true } }
 					sort: 'name'
 				}
 			]
