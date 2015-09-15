@@ -12,7 +12,7 @@ Meteor.methods
 
 		now = new Date()
 
-		user = Meteor.users.findOne Meteor.userId()
+		user = RocketChat.models.Users.findOneById Meteor.userId()
 
 		RocketChat.callbacks.run 'beforeJoinRoom', user, room
 

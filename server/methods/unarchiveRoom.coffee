@@ -15,7 +15,7 @@ Meteor.methods
 			ChatRoom.update rid, update
 
 			for username in room.usernames
-				member = Meteor.users.findOne({ username: username },{ fields: { username: 1 }})
+				member = RocketChat.models.Users.findOneByUsername(username, { fields: { username: 1 }})
 				if not member?
 					continue
 

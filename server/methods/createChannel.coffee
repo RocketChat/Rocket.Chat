@@ -35,7 +35,7 @@ Meteor.methods
 		rid = ChatRoom.insert room
 
 		for username in members
-			member = Meteor.users.findOne({username: username})
+			member = RocketChat.models.Users.findOneByUsername username
 			if not member?
 				continue
 

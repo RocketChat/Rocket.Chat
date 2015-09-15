@@ -2,7 +2,7 @@ Meteor.publish 'userChannels', (userId) ->
 	unless this.userId
 		return this.ready()
 
-	user = Meteor.users.findOne this.userId
+	user = RocketChat.models.Users.findOneById this.userId
 	if user.admin isnt true
 		return this.ready()
 

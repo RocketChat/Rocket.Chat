@@ -7,7 +7,7 @@ Package.describe({
 
 Package.onUse(function(api) {
 	api.versionsFrom('1.0');
-	
+
 	api.use('reactive-var');
 	api.use('reactive-dict');
 	api.use('coffeescript');
@@ -52,6 +52,9 @@ Package.onUse(function(api) {
 	api.addFiles('settings/server/addOAuthService.coffee', 'server');
 
 	api.addFiles('server/cdn.coffee', 'server');
+
+	api.addFiles('server/models/_Base.coffee', 'server');
+	api.addFiles('server/models/Users.coffee', 'server');
 
 
 	// EXPORT

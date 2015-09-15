@@ -12,7 +12,7 @@ Meteor.methods
 			$pull:
 				usernames: data.username
 
-		removedUser = Meteor.users.findOne username: data.username
+		removedUser = RocketChat.models.Users.findOneByUsername data.username
 
 		ChatRoom.update data.rid, update
 

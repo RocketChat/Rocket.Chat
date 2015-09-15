@@ -2,7 +2,7 @@ Meteor.publish 'adminRooms', (filter, types, limit) ->
 	unless this.userId
 		return this.ready()
 
-	user = Meteor.users.findOne this.userId
+	user = RocketChat.models.Users.findOneById this.userId
 	if user.admin isnt true
 		return this.ready()
 
@@ -10,7 +10,7 @@ Meteor.publish 'adminRooms', (filter, types, limit) ->
 		types = []
 
 	query = {}
-	
+
 	filter = _.trim filter
 	if filter
 		if limit is 1
@@ -18,7 +18,7 @@ Meteor.publish 'adminRooms', (filter, types, limit) ->
 		else
 			filterReg = new RegExp filter, "i"
 			query = { $or: [ { name: filterReg }, { t: 'd', usernames: filterReg } ] }
-	
+
 	if types.length
 		query['t'] = { $in: types }
 

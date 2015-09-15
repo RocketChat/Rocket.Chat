@@ -2,14 +2,14 @@ Meteor.publish 'fullUserData', (filter, limit) ->
 	unless @userId
 		return @ready()
 
-	user = Meteor.users.findOne @userId
+	user = RocketChat.models.Users.findOneById @userId
 
 	fields =
 		name: 1
 		username: 1
 		status: 1
 		utcOffset: 1
-		
+
 	if user.admin is true
 		fields = _.extend fields,
 			emails: 1
@@ -39,7 +39,7 @@ Meteor.publish 'fullUserData', (filter, limit) ->
 
 	console.log '[publish] fullUserData'.green, filter, limit
 
-	Meteor.users.find query, 
+	Meteor.users.find query,
 		fields: fields
 		limit: limit
 		sort: { username: 1 }
