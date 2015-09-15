@@ -1,8 +1,8 @@
-Meteor.publish 'onlineUsers', (name) ->
+Meteor.publish 'filteredUsers', (name) ->
 	unless this.userId
 		return this.ready()
 
-	console.log '[publish] onlineUsers'.green, name
+	console.log '[publish] filteredUsers'.green, name
 
 	exp = new RegExp(name, 'i')
 
@@ -29,13 +29,13 @@ Meteor.publish 'onlineUsers', (name) ->
 
 	cursorHandle = Meteor.users.find(query, options).observeChanges
 		added: (_id, record) ->
-			pub.added('online-users', _id, record)
+			pub.added('filtered-users', _id, record)
 
 		changed: (_id, record) ->
-			pub.changed('online-users', _id, record)
+			pub.changed('filtered-users', _id, record)
 
 		removed: (_id, record) ->
-			pub.removed('online-users', _id, record)
+			pub.removed('filtered-users', _id, record)
 
 	@ready()
 	@onStop ->
