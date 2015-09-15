@@ -28,18 +28,18 @@ Meteor.publish 'fullUserData', (filter, limit) ->
 	if not filter and limit is 1
 		return @ready()
 
-	if filter
-		if limit is 1
-			query = { username: filter }
-		else
-			filterReg = new RegExp filter, "i"
-			query = { $or: [ { username: filterReg }, { name: filterReg }, { "emails.address": filterReg } ] }
-	else
-		query = {}
-
-	console.log '[publish] fullUserData'.green, filter, limit
-
-	Meteor.users.find query,
+	options =
 		fields: fields
 		limit: limit
 		sort: { username: 1 }
+
+	console.log '[publish] fullUserData'.green, filter, limit
+
+	if filter
+		if limit is 1
+			return RocketChat.models.Users.findByUsername filter, options
+		else
+			filterReg = new RegExp filter, "i"
+			return RocketChat.models.Users.findByUsernameNameOrEmailAddress filterReg, options
+
+	return RocketChat.models.Users.find {}, options

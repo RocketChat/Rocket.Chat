@@ -14,7 +14,7 @@ Meteor.publish 'roomSearch', (selector, options, collName) ->
 		delete selector.type
 
 	if not searchType? or searchType is 'u'
-		subHandleUsers = Meteor.users.find(selector, { limit: 10, fields: { name: 1, username: 1, status: 1 } }).observeChanges
+		subHandleUsers = RocketChat.models.Users.find(selector, { limit: 10, fields: { name: 1, username: 1, status: 1 } }).observeChanges
 			added: (id, fields) ->
 				data = { type: 'u', uid: id, name: fields.name, username: fields.username, status: fields.status }
 				self.added("autocompleteRecords", id, data)

@@ -6,15 +6,6 @@ Meteor.publish 'filteredUsers', (name) ->
 
 	exp = new RegExp(name, 'i')
 
-	query =
-		username:
-			$exists: 1
-
-		$or: [
-			{name: exp}
-			{username: exp}
-		]
-
 	options =
 		fields:
 			username: 1
@@ -27,7 +18,7 @@ Meteor.publish 'filteredUsers', (name) ->
 
 	pub = this
 
-	cursorHandle = Meteor.users.find(query, options).observeChanges
+	cursorHandle = RocketChat.models.Users.findUsersByNameOrUsername(exp, options).observeChanges
 		added: (_id, record) ->
 			pub.added('filtered-users', _id, record)
 

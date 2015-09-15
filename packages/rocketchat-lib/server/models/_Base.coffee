@@ -1,24 +1,24 @@
 RocketChat.models._Base = class
 	find: ->
-		return @model.find.call @model, arguments
+		return @model.find.apply @model, arguments
 
 	findOne: ->
-		return @model.findOne.call @model, arguments
+		return @model.findOne.apply @model, arguments
 
 	insert: ->
-		return @model.insert.call @model, arguments
+		return @model.insert.apply @model, arguments
 
 	update: ->
-		return @model.update.call @model, arguments
+		return @model.update.apply @model, arguments
 
 	upsert: ->
-		return @model.upsert.call @model, arguments
+		return @model.upsert.apply @model, arguments
 
 	remove: ->
-		return @model.remove.call @model, arguments
+		return @model.remove.apply @model, arguments
 
 	allow: ->
-		return @model.allow.call @model, arguments
+		return @model.allow.apply @model, arguments
 
 	deny: ->
-		return @model.allow.call @model, arguments
+		return @model.allow.apply @model, arguments

@@ -20,7 +20,7 @@ Meteor.startup ->
 
 
 			console.log 'Adding username to all users'
-			Meteor.users.find({ 'username': {'$exists':0}, 'emails': {'$exists':1} }).forEach (user) ->
+			RocketChat.models.Users.find({ 'username': {'$exists':0}, 'emails': {'$exists':1} }).forEach (user) ->
 				newUserName = user.emails[0].address.split("@")[0]
 				if RocketChat.models.Users.findOneByUsername(newUserName)
 					newUserName = newUserName + Math.floor((Math.random() * 10) + 1)
@@ -51,7 +51,7 @@ Meteor.startup ->
 
 
 			console.log 'Adding u.username to all documents'
-			Meteor.users.find({},{'username':1}).forEach (user) ->
+			RocketChat.models.Users.find({},{'username':1}).forEach (user) ->
 				console.log 'Adding: u.username ' + user.username + ' to all document'
 				ChatRoom.update({'u._id':user._id},{'$set':{'u.username':user.username}},{'multi':1})
 				ChatSubscription.update({'u._id':user._id},{'$set':{'u.username':user.username}},{'multi':1})

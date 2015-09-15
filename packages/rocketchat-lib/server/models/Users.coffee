@@ -3,7 +3,7 @@ RocketChat.models.Users = new class asd extends RocketChat.models._Base
 		@model = Meteor.users
 
 
-	# FIND
+	# FIND ONE
 	findOneById: (_id, options) ->
 		return @findOne _id, options
 
@@ -19,12 +19,12 @@ RocketChat.models.Users = new class asd extends RocketChat.models._Base
 
 		return @findOne query, options
 
-	findOneByEmailAddressAndVerified: (emailAddress, verified=true, options) ->
+	findOneByVerifiedEmailAddress: (emailAddress, options) ->
 		query =
 			emails:
 				$elemMatch:
 					address: emailAddress
-					verified: verified
+					verified: true
 
 		return @findOne query, options
 
@@ -35,8 +35,50 @@ RocketChat.models.Users = new class asd extends RocketChat.models._Base
 		return @findOne query, options
 
 
+	# FIND
+	findUsersNotOffline: (options) ->
+		query =
+			username:
+				$exists: 1
+			status:
+				$in: ['online', 'away', 'busy']
+
+		return @find query, options
+
+
+	findByUsername: (username, options) ->
+		query =
+			username: username
+
+		return @find query, options
+
+	findUsersByNameOrUsername: (nameOrUsername, options) ->
+		query =
+			username:
+				$exists: 1
+
+			$or: [
+				{name: nameOrUsername}
+				{username: nameOrUsername}
+			]
+
+		return @find query, options
+
+	findByUsernameNameOrEmailAddress: (usernameNameOrEmailAddress, options) ->
+		query =
+			$or: [
+				{name: usernameNameOrEmailAddress}
+				{username: usernameNameOrEmailAddress}
+				{'emails.address': usernameNameOrEmailAddress}
+			]
+
+		return @find query, options
+
+
 	# UPDATE
 	updateLastLoginById: (_id) ->
-		return @update _id,
+		update =
 			$set:
 				lastLogin: new Date
+
+		return @update _id, update

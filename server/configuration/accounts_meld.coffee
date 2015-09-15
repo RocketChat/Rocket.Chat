@@ -22,7 +22,7 @@ Accounts.updateOrCreateUserFromExternalService = (serviceName, serviceData, opti
 		notVerifiedUser = Meteor.users.remove({emails: {$elemMatch: {address: serviceData.email, verified: false}}})
 
 		# Try to get existent user with same email verified
-		user = RocketChat.models.Users.findOneByEmailAddressAndVerified(serviceData.email, true)
+		user = RocketChat.models.Users.findOneByVerifiedEmailAddress(serviceData.email, true)
 
 		if user?
 			serviceIdKey = "services." + serviceName + ".id"
