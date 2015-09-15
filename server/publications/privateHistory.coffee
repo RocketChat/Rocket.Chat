@@ -5,7 +5,7 @@ Meteor.publish 'privateHistory', ->
 	console.log '[publish] privateHistory'.green
 
 	ChatRoom.find
-		usernames: Meteor.users.findOne(this.userId).username
+		usernames: RocketChat.models.Users.findOneById(this.userId).username
 	,
 		fields:
 			t: 1

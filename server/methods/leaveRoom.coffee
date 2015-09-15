@@ -36,7 +36,7 @@ Meteor.methods
 		if room.u? and room.u._id is Meteor.userId()
 			newOwner = _.without(room.usernames, user.username)[0]
 			if newOwner?
-				newOwner = Meteor.users.findOne username: newOwner
+				newOwner = RocketChat.models.Users.findOneByUsername newOwner
 
 				if newOwner?
 					if not update.$set?

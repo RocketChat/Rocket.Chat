@@ -19,7 +19,7 @@ Meteor.methods
 			$addToSet:
 				usernames: data.username
 
-		newUser = Meteor.users.findOne username: data.username
+		newUser = RocketChat.models.Users.findOneByUsername username: data.username
 
 		ChatRoom.update data.rid, update
 

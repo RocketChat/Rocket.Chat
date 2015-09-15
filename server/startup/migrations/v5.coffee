@@ -22,11 +22,11 @@ Meteor.startup ->
 			console.log 'Adding username to all users'
 			Meteor.users.find({ 'username': {'$exists':0}, 'emails': {'$exists':1} }).forEach (user) ->
 				newUserName = user.emails[0].address.split("@")[0]
-				if Meteor.users.findOne({'username':newUserName})
+				if RocketChat.models.Users.findOneByUsername(newUserName)
 					newUserName = newUserName + Math.floor((Math.random() * 10) + 1)
-					if Meteor.users.findOne({'username':newUserName})
+					if RocketChat.models.Users.findOneByUsername(newUserName)
 						newUserName = newUserName + Math.floor((Math.random() * 10) + 1)
-						if Meteor.users.findOne({'username':newUserName})
+						if RocketChat.models.Users.findOneByUsername(newUserName)
 							newUserName = newUserName + Math.floor((Math.random() * 10) + 1);
 				console.log 'Adding: username ' + newUserName + ' to all user ' + user._id;
 				Meteor.users.update({'_id':user._id},{'$set':{'username':newUserName}});
@@ -35,8 +35,8 @@ Meteor.startup ->
 			console.log 'Fixing _id of direct messages rooms'
 			ChatRoom.find({'t': 'd'}).forEach (room) ->
 				newId = ''
-				id0 = Meteor.users.findOne({ 'username': room.usernames[0] })._id
-				id1 = Meteor.users.findOne({ 'username': room.usernames[1] })._id
+				id0 = RocketChat.models.Users.findOneByUsername(room.usernames[0])._id
+				id1 = RocketChat.models.Users.findOneByUsername(room.usernames[1])._id
 				ids = [id0,id1]
 				newId = ids.sort().join('')
 				if (newId != room._id)

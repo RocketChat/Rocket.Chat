@@ -25,7 +25,7 @@ Accounts.onCreateUser (options, user) ->
 	user.active = not RocketChat.settings.get 'Accounts_ManuallyApproveNewUsers'
 
 	# when inserting first user, set admin: true
-	unless Meteor.users.findOne()
+	unless RocketChat.models.Users.findOne()
 		user.admin = true
 
 	if not user?.name? or user.name is ''
@@ -70,7 +70,8 @@ Accounts.validateLoginAttempt (login) ->
 			throw new Meteor.Error 'no-valid-email'
 			return false
 
-	Meteor.users.update {_id: login.user._id}, {$set: {lastLogin: new Date}}
+	RocketChat.models.Users.updateLastLoginById login.user._id
+
 	Meteor.defer ->
 		RocketChat.callbacks.run 'afterValidateLogin', login
 

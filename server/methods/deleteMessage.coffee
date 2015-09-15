@@ -6,7 +6,7 @@ Meteor.methods
 		if not RocketChat.settings.get 'Message_AllowDeleting'
 			throw new Meteor.Error 'message-deleting-not-allowed', "[methods] updateMessage -> Message deleting not allowed"
 
-		user = Meteor.users.findOne Meteor.userId()
+		user = RocketChat.models.Users.findOneById Meteor.userId()
 
 		unless user?.admin is true or message.u._id is Meteor.userId()
 			throw new Meteor.Error 'not-authorized', '[methods] deleteMessage -> Not authorized'
@@ -16,9 +16,9 @@ Meteor.methods
 		keepHistory = RocketChat.settings.get 'Message_KeepHistory'
 		showDeletedStatus = RocketChat.settings.get 'Message_ShowDeletedStatus'
 
-		deleteQuery = 
+		deleteQuery =
 			_id: message._id
-		deleteQuery['u._id'] = Meteor.userId() if user?.admin isnt true 
+		deleteQuery['u._id'] = Meteor.userId() if user?.admin isnt true
 
 		if keepHistory
 			if showDeletedStatus

@@ -2,7 +2,7 @@ Meteor.methods
 	eraseRoom: (rid) ->
 		fromId = Meteor.userId()
 
-		user = Meteor.users.findOne Meteor.userId()
+		user = RocketChat.models.Users.findOneById Meteor.userId()
 		if user.admin is true
 
 

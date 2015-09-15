@@ -6,7 +6,7 @@ Meteor.methods
 		if not RocketChat.settings.get 'Message_AllowEditing'
 			throw new Meteor.Error 'message-editing-not-allowed', "[methods] updateMessage -> Message editing not allowed"
 
-		user = Meteor.users.findOne Meteor.userId()
+		user = RocketChat.models.Users.findOneById Meteor.userId()
 
 		originalMessage = ChatMessage.findOne message._id
 

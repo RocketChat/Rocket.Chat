@@ -18,11 +18,11 @@ Meteor.publish 'room', (typeName) ->
 			name: name
 
 		if type is 'p'
-			user = Meteor.users.findOne this.userId, fields: username: 1
+			user = RocketChat.models.Users.findOneById this.userId, fields: username: 1
 			query.usernames = user.username
 
 	else if type is 'd'
-		user = Meteor.users.findOne this.userId, fields: username: 1
+		user = RocketChat.models.Users.findOneById this.userId, fields: username: 1
 		query =
 			t: 'd'
 			usernames:

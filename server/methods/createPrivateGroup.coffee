@@ -32,7 +32,7 @@ Meteor.methods
 			msgs: 0
 
 		for username in members
-			member = Meteor.users.findOne({ username: username },{ fields: { username: 1 }})
+			member = RocketChat.models.Users.findOneByUsername(username, { fields: { username: 1 }})
 			if not member?
 				continue
 
