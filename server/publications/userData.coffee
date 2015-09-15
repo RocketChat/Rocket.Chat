@@ -4,7 +4,7 @@ Meteor.publish 'userData', ->
 
 	console.log '[publish] userData'.green
 
-	Meteor.users.find this.userId,
+	RocketChat.models.Users.find this.userId,
 		fields:
 			name: 1
 			username: 1

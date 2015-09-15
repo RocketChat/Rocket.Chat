@@ -2,7 +2,7 @@ Meteor.startup ->
 	Migrations.add
 		version: 2
 		up: ->
-			Meteor.users.find({avatarOrigin: {$exists: false}, username: {$exists: true}}).forEach (user) ->
+			RocketChat.models.Users.find({avatarOrigin: {$exists: false}, username: {$exists: true}}).forEach (user) ->
 				avatars = getAvatarSuggestionForUser user
 
 				services = Object.keys avatars
