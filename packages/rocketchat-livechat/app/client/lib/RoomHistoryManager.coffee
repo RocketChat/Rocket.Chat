@@ -30,7 +30,7 @@
 			ts = new Date
 
 		Meteor.call 'loadHistory', rid, ts, limit, undefined, (err, result) ->
-			ChatMessage.insert item for item in result.messages
+			ChatMessage.upsert {_id: item._id}, item for item in result?.messages or []
 			room.isLoading.set false
 			room.loaded += result.messages.length
 			if result.messages.length < limit
