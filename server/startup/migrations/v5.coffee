@@ -29,7 +29,7 @@ Meteor.startup ->
 						if RocketChat.models.Users.findOneByUsername(newUserName)
 							newUserName = newUserName + Math.floor((Math.random() * 10) + 1);
 				console.log 'Adding: username ' + newUserName + ' to all user ' + user._id;
-				Meteor.users.update({'_id':user._id},{'$set':{'username':newUserName}});
+				RocketChat.models.Users.setUsername user._id, newUserName
 
 
 			console.log 'Fixing _id of direct messages rooms'
