@@ -58,6 +58,7 @@ usernameIsAvaliable = (username) ->
 		return username
 
 	return undefined
+RocketChat.generateUsernameSuggestion = generateSuggestion
 
 Meteor.methods
 	getUsernameSuggestion: ->

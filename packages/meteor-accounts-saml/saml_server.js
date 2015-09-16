@@ -2,6 +2,7 @@ if (!Accounts.saml) {
 	Accounts.saml = {
 		settings: {
 			debug: true,
+			generateUsername: false,
 			providers: []
 		}
 	};
@@ -83,13 +84,22 @@ Accounts.registerLoginHandler(function (loginRequest) {
 		});
 
 		if (!user) {
-			Meteor.users.insert({
-				name: loginResult.profile.cn,
+			var newUser = {
+				name: loginResult.profile.cn || loginResult.profile.username,
 				active: true,
 				emails: [{
 					address: loginResult.profile.email
 				}]
-			});
+			};
+
+			if (Accounts.saml.settings.generateUsername === true) {
+				var username = RocketChat.generateUsernameSuggestion(newUser);
+				if (username) {
+					newUser.username = username;
+				}
+			}
+
+			Meteor.users.insert(newUser);
 			user = Meteor.users.findOne({
 				'emails.address': loginResult.profile.email
 			});
@@ -231,7 +241,7 @@ middleware = function (req, res, next) {
 					});
 					res.end();
 				} else {
-					// TBD thinking of sth meaning full.   
+					// TBD thinking of sth meaning full.
 				}
 			})
 			break;

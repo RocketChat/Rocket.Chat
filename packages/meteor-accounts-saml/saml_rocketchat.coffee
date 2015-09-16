@@ -9,6 +9,7 @@ Meteor.methods
 		RocketChat.settings.add "SAML_Custom_#{name}_button_label_text" , ''                                                            , { type: 'string' , group: 'SAML', section: name, i18nLabel: 'Accounts_OAuth_Custom_Button_Label_Text'}
 		RocketChat.settings.add "SAML_Custom_#{name}_button_label_color", '#FFFFFF'                                                     , { type: 'string' , group: 'SAML', section: name, i18nLabel: 'Accounts_OAuth_Custom_Button_Label_Color'}
 		RocketChat.settings.add "SAML_Custom_#{name}_button_color"      , '#13679A'                                                     , { type: 'string' , group: 'SAML', section: name, i18nLabel: 'Accounts_OAuth_Custom_Button_Color'}
+		RocketChat.settings.add "SAML_Custom_#{name}_generate_username" , false                                                         , { type: 'boolean', group: 'SAML', section: name, i18nLabel: 'SAML_Custom_Generate_Username'}
 
 timer = undefined
 updateServices = ->
@@ -31,6 +32,8 @@ updateServices = ->
 					buttonColor: Settings.findOne({_id: "#{service._id}_button_color"})?.value
 					clientConfig:
 						provider: Settings.findOne({_id: "#{service._id}_provider"})?.value
+
+				Accounts.saml.settings.generateUsername = Settings.findOne({_id: "#{service._id}_generate_username"})?.value
 
 				Accounts.saml.settings.providers.push
 					provider: data.clientConfig.provider
