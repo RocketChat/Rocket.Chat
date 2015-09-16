@@ -16,8 +16,11 @@ Template.privateGroups.helpers
 
 Template.privateGroups.events
 	'click .add-room': (e, instance) ->
-		SideNav.setFlex "privateGroupsFlex"
-		SideNav.openFlex()
+		if RocketChat.authz.hasAtLeastOnePermission('create-p')
+			SideNav.setFlex "privateGroupsFlex"
+			SideNav.openFlex()
+		else
+			e.preventDefault()
 
 	'click .more-groups': ->
 		SideNav.setFlex "listPrivateGroupsFlex"

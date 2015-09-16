@@ -10,8 +10,11 @@ Template.channels.helpers
 
 Template.channels.events
 	'click .add-room': (e, instance) ->
-		SideNav.setFlex "createChannelFlex"
-		SideNav.openFlex()
+		if RocketChat.authz.hasAtLeastOnePermission('create-c')
+			SideNav.setFlex "createChannelFlex"
+			SideNav.openFlex()
+		else 
+			e.preventDefault()	
 
 	'click .more-channels': ->
 		SideNav.setFlex "listChannelsFlex"
