@@ -31,7 +31,6 @@ Package.onUse(function(api) {
   api.addFiles('server/functions/hasPermission.coffee', ['server']);
   api.addFiles('server/functions/hasRole.coffee', ['server']);
   api.addFiles('server/functions/removeUsersFromRoles.coffee', ['server']);
-  api.addFiles('server/functions/methods.coffee', ['server']);
 
   api.addFiles('server/publication.coffee', ['server']);
   api.addFiles('server/startup.coffee', ['server']);
