@@ -2,8 +2,7 @@ Meteor.publish 'userChannels', (userId) ->
 	unless this.userId
 		return this.ready()
 
-	user = RocketChat.models.Users.findOneById this.userId
-	if user.admin isnt true
+	if RocketChat.authz.hasPermission( @userId, 'view-other-user-channels') isnt true
 		return this.ready()
 
 	query = { "u._id": userId }

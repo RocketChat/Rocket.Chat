@@ -6,6 +6,9 @@ Meteor.methods
 		if not /^[0-9a-z-_]+$/.test name
 			throw new Meteor.Error 'name-invalid'
 
+		if RocketChat.authz.hasPermission(Meteor.userId(), 'create-c') isnt true
+			throw new Meteor.Error 'not-authorized', '[methods] createChannel -> Not authorized'
+
 		console.log '[methods] createChannel -> '.green, 'userId:', Meteor.userId(), 'arguments:', arguments
 
 		now = new Date()
@@ -33,6 +36,8 @@ Meteor.methods
 
 		# create new room
 		rid = ChatRoom.insert room
+		# set creator as channel moderator.  permission limited to channel by scoping to rid
+		RocketChat.authz.addUsersToRoles(Meteor.userId(), 'moderator', rid)
 
 		for username in members
 			member = RocketChat.models.Users.findOneByUsername username

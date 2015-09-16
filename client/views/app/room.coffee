@@ -104,7 +104,10 @@ Template.room.helpers
 	canEditName: ->
 		roomData = Session.get('roomData' + this._id)
 		return '' unless roomData
-		return roomData.u?._id is Meteor.userId() and roomData.t in ['c', 'p']
+		if roomData.t in ['c', 'p']
+			return RocketChat.authz.hasAtLeastOnePermission('edit-room', this._id)
+		else
+			return ''
 
 	canDirectMessage: ->
 		return Meteor.user()?.username isnt this.username
@@ -182,9 +185,6 @@ Template.room.helpers
 
 	maxMessageLength: ->
 		return RocketChat.settings.get('Message_MaxAllowedSize')
-
-	isAdmin: ->
-		return Meteor.user()?.admin is true
 
 	utc: ->
 		if @utcOffset?
