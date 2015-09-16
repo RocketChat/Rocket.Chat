@@ -61,7 +61,7 @@ Meteor.methods
 				v:
 					token: message.token
 
-			ChatSubscription.insert
+			RocketChat.models.Subscriptions.insert
 				rid: message.rid
 				name: guest.username
 				alert: true
