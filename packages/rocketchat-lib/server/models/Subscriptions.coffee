@@ -1,5 +1,4 @@
 RocketChat.models.Subscriptions = new class asd extends RocketChat.models._Base
-RocketChat.models.Subscriptions = new class asd extends RocketChat.models._Base
 	constructor: ->
 		@model = new Meteor.Collection 'rocketchat_subscription'
 
@@ -10,6 +9,14 @@ RocketChat.models.Subscriptions = new class asd extends RocketChat.models._Base
 		@tryEnsureIndex { 'unread': 1 }
 		@tryEnsureIndex { 'ts': 1 }
 
+
+	# FIND ONE
+	findOneByRoomIdAndUserId: (roomId, userId) ->
+		query =
+			rid: roomId
+			"u._id": userId
+
+		return @findOne query
 
 	# FIND
 	findByUserId: (userId, options) ->
@@ -104,6 +111,44 @@ RocketChat.models.Subscriptions = new class asd extends RocketChat.models._Base
 				alert: true
 
 		return @update query, update, { multi: true }
+
+	setUserUsernameByUserId: (userId, username) ->
+		query =
+			"u._id": userId
+
+		update =
+			$set:
+				"u.username": username
+
+		return @update query, update, { multi: true }
+
+	setNameForDirectRoomsWithOldName: (oldName, name) ->
+		query =
+			name: oldName
+			t: "d"
+
+		update =
+			$set:
+				name: name
+
+		return @update query, update, { multi: true }
+
+	incUnreadOfDirectForRoomIdExcludingUserId: (roomId, userId, inc=1) ->
+		query =
+			rid: roomId
+			t: 'd'
+			'u._id':
+				$ne: userId
+
+		update =
+			$set:
+				alert: true
+				open: true
+			$inc:
+				unread: inc
+
+		return @update query, update, { multi: true }
+
 
 	# INSERT
 	createWithRoomAndUser: (room, user, extraData) ->

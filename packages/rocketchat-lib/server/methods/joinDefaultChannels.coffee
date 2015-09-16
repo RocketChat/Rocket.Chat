@@ -16,21 +16,14 @@ Meteor.methods
 				$addToSet:
 					usernames: user.username
 
-			if not ChatSubscription.findOne(rid: room._id, 'u._id': user._id)?
+			if not RocketChat.models.Subscriptions.findOneByRoomIdAndUserId(room._id, user._id)?
 
 				# Add a subscription to this user
-				ChatSubscription.insert
-					rid: room._id
-					name: room.name
+				RocketChat.models.Subscriptions.createWithRoomAndUser room, user,
 					ts: new Date()
-					t: room.t
-					f: false
 					open: true
 					alert: true
 					unread: 1
-					u:
-						_id: user._id
-						username: user.username
 
 				# Insert user joined message
 				ChatMessage.insert

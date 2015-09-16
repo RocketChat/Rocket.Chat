@@ -328,7 +328,8 @@ class IrcClient
 				t: 'd'
 				msgs: 0
 				ts: now
-		ChatSubscription.upsert
+
+		RocketChat.models.Subscriptions.upsert
 			rid: rid
 			$and: [{'u._id': target._id}]
 		,
