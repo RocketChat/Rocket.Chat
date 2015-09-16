@@ -3,12 +3,13 @@ Meteor.methods
 		if not Meteor.userId()
 			throw new Meteor.Error('invalid-user', "[methods] deleteMessage -> Invalid user")
 
-		hasPermission = RocketChat.authz.hasPermission(Meteor.userId(), 'delete-message', message.rid)
-		deleteAllowed = RocketChat.settings.get 'Message_AllowDeleting'
-
 		originalMessage = ChatMessage.findOne message._id, {fields: {u: 1, rid: 1}}
 		if not originalMessage?
 			throw new Meteor.Error 'message-deleting-not-allowed', "[methods] deleteMessage -> Message with id [#{message._id} dos not exists]"
+
+		hasPermission = RocketChat.authz.hasPermission(Meteor.userId(), 'delete-message', originalMessage.rid)
+		deleteAllowed = RocketChat.settings.get 'Message_AllowDeleting'
+
 
 		deleteOwn = originalMessage?.u?._id is Meteor.userId()
 
