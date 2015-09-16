@@ -9,7 +9,7 @@ Meteor.methods
 			throw new Meteor.Error 403, 'Not allowed'
 
 		unless RocketChat.authz.hasPermission(Meteor.userId(), 'edit-room', rid)
-		#if room.u._id isnt Meteor.userId() and not hasPermission 
+		#if room.u._id isnt Meteor.userId() and not hasPermission
 			throw new Meteor.Error 403, 'Not allowed'
 
 		if not /^[0-9a-z-_]+$/.test name
@@ -28,14 +28,7 @@ Meteor.methods
 			$set:
 				name: name
 
-		ChatSubscription.update
-			rid: rid
-		,
-			$set:
-				name: name
-				alert: true
-		,
-			multi: true
+		RocketChat.models.Subscriptions.updateNameByRoomId rid, name
 
 		ChatMessage.insert
 			rid: rid

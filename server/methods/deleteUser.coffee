@@ -14,7 +14,7 @@ Meteor.methods
 
 		ChatMessage.remove { "u._id": userId } # Remove user messages
 
-		ChatSubscription.find({ "u._id": userId }).forEach (subscription) ->
+		RocketChat.models.Subscriptions.findByUserId(userId).forEach (subscription) ->
 			room = ChatRoom.findOne subscription.rid
 			if room.t isnt 'c' and room.usernames.length is 1
 				ChatRoom.remove subscription.rid # Remove non-channel rooms with only 1 user (the one being deleted)
