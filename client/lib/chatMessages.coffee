@@ -114,6 +114,18 @@ class @ChatMessages
 			if error
 				return Errors.throw error.reason
 
+	starMsg: (message) ->
+		message.starred = Meteor.userId()
+		Meteor.call 'starMessage', message, (error, result) ->
+			if error
+				return Errors.throw error.reason
+
+	unstarMsg: (message) ->
+		message.starred = false
+		Meteor.call 'starMessage', message, (error, result) ->
+			if error
+				return Errors.throw error.reason
+
 	update: (id, rid, input) ->
 		if _.trim(input.value) isnt ''
 			msg = input.value

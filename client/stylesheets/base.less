@@ -2261,7 +2261,7 @@ a.github-fork {
 	}
 
 	&.admin {
-		.message:hover:not(.system) .delete-message {
+		.message:hover:not(.system) .message-action {
 			display: inline-block;
 		}
 	}
@@ -2370,18 +2370,11 @@ a.github-fork {
 			margin-left: 2%;
 		}
 	}
-	.edit-message {
+	.message-action {
 		display: none;
 		cursor: pointer;
 	}
-	&.own:hover:not(.system) .edit-message {
-		display: inline-block;
-	}
-	.delete-message {
-		display: none;
-		cursor: pointer;
-	}
-	&.own:hover:not(.system) .delete-message {
+	&.own:hover:not(.system) .message-action {
 		display: inline-block;
 	}
 	.user {
@@ -2429,12 +2422,9 @@ a.github-fork {
 			.private {
 				display: none;
 			}
-			.edit-message {
+			.message-action {
 				float: left;
 				margin-left: 1px;
-			}
-			.delete-message {
-				float: left;
 			}
 		}
 		&:hover {
