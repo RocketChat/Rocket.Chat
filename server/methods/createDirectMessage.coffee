@@ -31,9 +31,9 @@ Meteor.methods
 				ts: now
 
 		# Make user I have a subcription to this room
-		ChatSubscription.upsert
+		RocketChat.models.Subscriptions.upsert
 			rid: rid
-			$and: [{'u._id': me._id}]
+			'u._id': me._id
 		,
 			$set:
 				ts: now
@@ -49,9 +49,9 @@ Meteor.methods
 					username: me.username
 
 		# Make user the target user has a subcription to this room
-		ChatSubscription.upsert
+		RocketChat.models.Subscriptions.upsert
 			rid: rid
-			$and: [{'u._id': to._id}]
+			'u._id': to._id
 		,
 			$setOnInsert:
 				name: me.username
