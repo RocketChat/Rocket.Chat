@@ -8,7 +8,7 @@ Meteor.startup ->
 				console.log 'Dropped: ', room.name
 				ChatRoom.remove room._id
 				ChatMessage.remove {rid: room._id}
-				ChatSubscription.remove {rid: room._id}
+				RocketChat.models.Subscriptions.removeByRoomId room._id
 
 
 			console.log 'Dropping test rooms with less than 2 user'
@@ -16,7 +16,7 @@ Meteor.startup ->
 				console.log 'Dropped: ', room.name
 				ChatRoom.remove room._id
 				ChatMessage.remove {rid: room._id}
-				ChatSubscription.remove {rid: room._id}
+				RocketChat.models.Subscriptions.removeByRoomId room._id
 
 
 			console.log 'Adding username to all users'

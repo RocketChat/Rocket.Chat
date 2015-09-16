@@ -117,15 +117,22 @@ RocketChat.models.Subscriptions = new class asd extends RocketChat.models._Base
 		return @insert subscription
 
 
-	# # REMOVE
-	# removeById: (_id) ->
-	# 	return @remove _id
+	# REMOVE
+	removeByUserId: (userId) ->
+		query =
+			"u._id": userId
 
-	# removeByUnverifiedEmail: (email) ->
-	# 	query =
-	# 		emails:
-	# 			$elemMatch:
-	# 				address: email
-	# 				verified: false
+		return @remove query
 
-	# 	return @remove query
+	removeByRoomId: (roomId) ->
+		query =
+			rid: roomId
+
+		return @remove query
+
+	removeByRoomIdAndUserId: (roomId, userId) ->
+		query =
+			rid: roomId
+			"u._id": userId
+
+		return @remove query
