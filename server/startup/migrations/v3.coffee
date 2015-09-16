@@ -3,10 +3,9 @@ Meteor.startup ->
 		version: 3
 		up: ->
 
-			try
-				ChatSubscription._dropIndex 'uid_1'
-			try
-				ChatSubscription._dropIndex 'rid_1_uid_1'
+
+			RocketChat.models.Subscriptions.tryDropIndex 'uid_1'
+			RocketChat.models.Subscriptions.tryDropIndex 'rid_1_uid_1'
 
 
 			console.log 'Fixing ChatSubscription uid'
