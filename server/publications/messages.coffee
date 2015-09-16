@@ -23,9 +23,11 @@ Meteor.publish 'messages', (rid, start) ->
 
 	cursorHandle = cursor.observeChanges
 		added: (_id, record) ->
+			record.starred = _.contains record.starred, publication.userId
 			publication.added('rocketchat_message', _id, record)
 
 		changed: (_id, record) ->
+			record.starred = _.contains record.starred, publication.userId
 			publication.changed('rocketchat_message', _id, record)
 
 	cursorDelete = ChatMessage.find

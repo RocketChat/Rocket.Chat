@@ -45,6 +45,8 @@ Template.message.helpers
 		return RocketChat.settings.get 'Message_AllowDeleting'
 	canPin: ->
 		return RocketChat.settings.get 'Message_AllowPinning'
+	canStar: ->
+		return RocketChat.settings.get 'Message_AllowStarring'
 	showEditedStatus: ->
 		return RocketChat.settings.get 'Message_ShowEditedStatus'
 
