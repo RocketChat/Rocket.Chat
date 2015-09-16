@@ -22,8 +22,6 @@ Meteor.methods
 
 		deleteQuery =
 			_id: originalMessage._id
-		deleteQuery['u._id'] = Meteor.userId() unless hasPermission
-		#deleteQuery['u._id'] = Meteor.userId() if user?.admin isnt true
 
 		if keepHistory
 			if showDeletedStatus
