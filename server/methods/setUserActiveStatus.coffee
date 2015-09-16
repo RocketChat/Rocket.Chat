@@ -3,8 +3,7 @@ Meteor.methods
 		if not Meteor.userId()
 			throw new Meteor.Error 'invalid-user', '[methods] setUserActiveStatus -> Invalid user'
 
-		user = RocketChat.models.Users.findOneById Meteor.userId()
-		unless user?.admin is true
+		unless RocketChat.authz.hasPermission( Meteor.userId(), 'edit-other-user-active-status') is true
 			throw new Meteor.Error 'not-authorized', '[methods] setUserActiveStatus -> Not authorized'
 
 		RocketChat.models.Users.setUserActive userId, active

@@ -21,7 +21,9 @@
 	</div>
 	<footer>
 		<div>
+		{{#if hasPermission 'create-c'}}
 			<button class="button clean create">{{_ "Create_new"}}</button>
+		{{/if}}
 		</div>
 	</footer>
 </template>

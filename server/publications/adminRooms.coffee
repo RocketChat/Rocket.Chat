@@ -2,8 +2,7 @@ Meteor.publish 'adminRooms', (filter, types, limit) ->
 	unless this.userId
 		return this.ready()
 
-	user = RocketChat.models.Users.findOneById this.userId
-	if user.admin isnt true
+	if RocketChat.authz.hasPermission(@userId, 'view-room-administration') isnt true
 		return this.ready()
 
 	unless _.isArray types
