@@ -172,3 +172,14 @@ RocketChat.models.Users = new class asd extends RocketChat.models._Base
 				utcOffset: utcOffset
 
 		return @update query, update
+
+
+	# INSERT
+	create: (data) ->
+		user =
+			createdAt: new Date
+			avatarOrigin: 'none'
+
+		_.extend user, data
+
+		return @insert user

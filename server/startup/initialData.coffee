@@ -24,14 +24,12 @@ Meteor.startup ->
 						console.log 'Inserting admin user'.red
 						console.log "email: #{process.env.ADMIN_EMAIL} | password: #{process.env.ADMIN_PASS}".red
 
-						id = Meteor.users.insert
-							createdAt: new Date
+						id = RocketChat.models.Users.create
 							emails: [
 								address: process.env.ADMIN_EMAIL
 								verified: true
 							],
 							name: 'Admin'
-							avatarOrigin: 'none'
 							admin: true
 
 						Accounts.setPassword id, process.env.ADMIN_PASS
