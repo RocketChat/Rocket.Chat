@@ -82,3 +82,93 @@ RocketChat.models.Users = new class asd extends RocketChat.models._Base
 				lastLogin: new Date
 
 		return @update _id, update
+
+	setServiceId: (_id, serviceName, serviceId) ->
+		update =
+			$set: {}
+
+		serviceIdKey = "services.#{serviceName}.id"
+		update.$set[serviceIdKey] = serviceData.id
+
+		return @update _id, update
+
+	setUsername: (_id, username) ->
+		update =
+			$set: username: username
+
+		return @update _id, update
+
+	setName: (_id, name) ->
+		update =
+			$set:
+				name: name
+
+		return @update _id, update
+
+	setAvatarOrigin: (_id, origin) ->
+		update =
+			$set:
+				avatarOrigin: origin
+
+		return @update _id, update
+
+	unsetAvatarOrigin: (_id) ->
+		update =
+			$unset:
+				avatarOrigin: 1
+
+		return @update _id, update
+
+	setUserActive: (_id, active=true) ->
+		update =
+			$set:
+				active: active
+
+		return @update _id, update
+
+	setAllUsersActive: (active) ->
+		update =
+			$set:
+				active: active
+
+		return @update {}, update, { multi: true }
+
+	unsetLoginTokens: (_id) ->
+		update =
+			$set:
+				"services.resume.loginTokens" : []
+
+		return @update _id, update
+
+	setLanguage: (_id, language) ->
+		update =
+			$set:
+				language: language
+
+		return @update _id, update
+
+	setProfile: (_id, profile) ->
+		update =
+			$set:
+				"settings.profile": profile
+
+		return @update _id, update
+
+	setPreferences: (_id, preferences) ->
+		update =
+			$set:
+				"settings.preferences": preferences
+
+		return @update _id, update
+
+	setUtcOffset: (_id, utcOffset) ->
+		query =
+			_id: _id
+			utcOffset:
+				$ne: utcOffset
+
+		update =
+			$set:
+				utcOffset: utcOffset
+
+		return @update query, update

@@ -20,6 +20,6 @@ Meteor.startup ->
 				rs = RocketChatFile.bufferToStream new Buffer(image, 'base64')
 				ws = RocketChatFileAvatarInstance.createWriteStream "#{user.username}.jpg", contentType
 				ws.on 'end', Meteor.bindEnvironment ->
-					Meteor.users.update {_id: user._id}, {$set: {avatarOrigin: service}}
+					RocketChat.models.Users.setAvatarOrigin user._id, service
 
 				rs.pipe(ws)

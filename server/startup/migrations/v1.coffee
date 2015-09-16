@@ -5,6 +5,6 @@ Meteor.startup ->
 			RocketChat.models.Users.find({username: {$exists: false}, lastLogin: {$exists: true}}).forEach (user) ->
 				username = generateSuggestion(user)
 				if username? and username.trim() isnt ''
-					Meteor.users.update({_id: user._id}, {$set: {username: username}})
+					RocketChat.models.Users.setUsername user._id, username
 				else
 					console.log "User without username", JSON.stringify(user, null, ' ')

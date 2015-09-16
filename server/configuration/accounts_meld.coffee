@@ -25,13 +25,6 @@ Accounts.updateOrCreateUserFromExternalService = (serviceName, serviceData, opti
 		user = RocketChat.models.Users.findOneByVerifiedEmailAddress(serviceData.email, true)
 
 		if user?
-			serviceIdKey = "services." + serviceName + ".id"
-			update = {}
-			update[serviceIdKey] = serviceData.id
-			Meteor.users.update({
-				_id: user._id
-			}, {
-				$set: update
-			})
+			RocketChat.models.Users.setServiceId user._id, serviceName, serviceData.id
 
 	return orig_updateOrCreateUserFromExternalService.apply(this, arguments)
