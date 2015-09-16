@@ -183,3 +183,17 @@ RocketChat.models.Users = new class asd extends RocketChat.models._Base
 		_.extend user, data
 
 		return @insert user
+
+
+	# REMOVE
+	removeById: (_id) ->
+		return @remove _id
+
+	removeByUnverifiedEmail: (email) ->
+		query =
+			emails:
+				$elemMatch:
+					address: email
+					verified: false
+
+		return @remove query
