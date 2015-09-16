@@ -10,7 +10,6 @@ Meteor.methods
 		hasPermission = RocketChat.authz.hasPermission(Meteor.userId(), 'delete-message', originalMessage.rid)
 		deleteAllowed = RocketChat.settings.get 'Message_AllowDeleting'
 
-
 		deleteOwn = originalMessage?.u?._id is Meteor.userId()
 
 		unless hasPermission or (deleteAllowed and deleteOwn)
