@@ -8,14 +8,14 @@ Meteor.startup ->
 
 
 			console.log 'Rename rn to name'
-			ChatSubscription.update({rn: {$exists: true}}, {$rename: {rn: 'name'}}, {multi: true})
+			RocketChat.models.Subscriptions.update({rn: {$exists: true}}, {$rename: {rn: 'name'}}, {multi: true})
 
 
 			console.log 'Adding names to rooms without name'
 			ChatRoom.find({name: ''}).forEach (item) ->
 				name = Random.id().toLowerCase()
 				ChatRoom.update item._id, {$set: {name: name}}
-				ChatSubscription.update {rid: item._id}, {$set: {name: name}}, {multi: true}
+				RocketChat.models.Subscriptions.update {rid: item._id}, {$set: {name: name}}, {multi: true}
 
 
 			console.log 'Making room names unique'
@@ -23,7 +23,7 @@ Meteor.startup ->
 				ChatRoom.find({name: room.name, _id: {$ne: room._id}}).forEach (item) ->
 					name = room.name + '-' + Random.id(2).toLowerCase()
 					ChatRoom.update item._id, {$set: {name: name}}
-					ChatSubscription.update {rid: item._id}, {$set: {name: name}}, {multi: true}
+					RocketChat.models.Subscriptions.update {rid: item._id}, {$set: {name: name}}, {multi: true}
 
 
 			console.log 'End'

@@ -15,12 +15,6 @@ Meteor.methods
 			$pull:
 				usernames: user.username
 
-		ChatSubscription.update { rid: rid },
-			$set:
-				name: room.name
-		,
-			multi: true
-
 		if room.t isnt 'c' and room.usernames.indexOf(user.username) isnt -1
 			removedUser = user
 

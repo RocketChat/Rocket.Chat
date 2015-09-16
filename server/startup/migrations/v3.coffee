@@ -10,7 +10,7 @@ Meteor.startup ->
 
 
 			console.log 'Fixing ChatSubscription uid'
-			ChatSubscription.find({uid: {$exists: true}}, {nonreactive: true}).forEach (sub) ->
+			RocketChat.models.Subscriptions.find({uid: {$exists: true}}, {nonreactive: true}).forEach (sub) ->
 				update = {}
 				user = RocketChat.models.Users.findOneById(sub.uid, {fields: {username: 1}})
 				if user?
@@ -21,7 +21,7 @@ Meteor.startup ->
 					update.$unset.uid = 1
 
 				if Object.keys(update).length > 0
-					ChatSubscription.update(sub._id, update)
+					RocketChat.models.Subscriptions.update(sub._id, update)
 
 
 			console.log 'Fixing ChatRoom uids'
@@ -52,7 +52,7 @@ Meteor.startup ->
 					room._id = usernames.sort().join(',')
 					ChatRoom.insert(room)
 					ChatRoom.remove({_id: oldId})
-					ChatSubscription.update({rid: oldId}, {$set: {rid: room._id}}, {multi: true})
+					RocketChat.models.Subscriptions.update({rid: oldId}, {$set: {rid: room._id}}, {multi: true})
 					ChatMessage.update({rid: oldId}, {$set: {rid: room._id}}, {multi: true})
 				else
 					ChatRoom.update(room._id, update)

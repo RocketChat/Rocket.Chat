@@ -41,20 +41,20 @@ Meteor.startup ->
 				newId = ids.sort().join('')
 				if (newId != room._id)
 					console.log 'Fixing: _id ' + room._id + ' to ' + newId
-					ChatSubscription.update({'rid':room._id},{'$set':{'rid':newId}},{'multi':1})
+					RocketChat.models.Subscriptions.update({'rid':room._id},{'$set':{'rid':newId}},{'multi':1})
 					ChatMessage.update({'rid':room._id},{'$set':{'rid':newId}},{'multi':1})
 					ChatRoom.remove({'_id':room._id})
 					room._id = newId
 					ChatRoom.insert(room)
-				ChatSubscription.update({'rid':room._id,'u._id':id0},{'$set':{'name':room.usernames[1]}})
-				ChatSubscription.update({'rid':room._id,'u._id':id1},{'$set':{'name':room.usernames[0]}})
+				RocketChat.models.Subscriptions.update({'rid':room._id,'u._id':id0},{'$set':{'name':room.usernames[1]}})
+				RocketChat.models.Subscriptions.update({'rid':room._id,'u._id':id1},{'$set':{'name':room.usernames[0]}})
 
 
 			console.log 'Adding u.username to all documents'
 			RocketChat.models.Users.find({},{'username':1}).forEach (user) ->
 				console.log 'Adding: u.username ' + user.username + ' to all document'
 				ChatRoom.update({'u._id':user._id},{'$set':{'u.username':user.username}},{'multi':1})
-				ChatSubscription.update({'u._id':user._id},{'$set':{'u.username':user.username}},{'multi':1})
+				RocketChat.models.Subscriptions.update({'u._id':user._id},{'$set':{'u.username':user.username}},{'multi':1})
 				ChatMessage.update({'u._id':user._id},{'$set':{'u.username':user.username}},{'multi':1})
 				ChatMessage.update({'uid':user._id},{'$set':{'u':user}},{'multi':1})
 				ChatMessage.update({'by':user._id},{'$set':{'u':user}},{'multi':1})

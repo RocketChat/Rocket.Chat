@@ -19,11 +19,4 @@ Meteor.methods
 				if not member?
 					continue
 
-				ChatSubscription.update
-					rid: rid
-					'u._id': member._id
-				,
-					$set:
-						alert: false
-						open: false
-						archived: true
+				RocketChat.models.Subscriptions.archiveByRoomIdAndUserId rid, member._id
