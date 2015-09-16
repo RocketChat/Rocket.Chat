@@ -16,7 +16,7 @@ Meteor.methods
 
 		ChatRoom.update data.rid, update
 
-		ChatSubscription.remove { 'u._id': data.username, rid: data.rid }
+		RocketChat.models.Subscriptions.removeByRoomIdAndUserId data.rid, data.username
 
 		switch room.t
 			when 'c'

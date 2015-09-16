@@ -21,7 +21,7 @@ Meteor.methods
 
 
 
-		ChatSubscription.remove { "u._id": userId } # Remove user subscriptions
+		RocketChat.models.Subscriptions.removeByUserId userId # Remove user subscriptions
 
 		rooms = ChatRoom.find({ "u._id": userId }).fetch()
 

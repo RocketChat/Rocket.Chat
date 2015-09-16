@@ -39,7 +39,7 @@ Meteor.methods
 					update.$set['u._id'] = newOwner._id
 					update.$set['u.username'] = newOwner.username
 
-		ChatSubscription.remove { rid: rid, 'u._id': Meteor.userId() }
+		RocketChat.models.Subscriptions.removeByRoomIdAndUserId rid, Meteor.userId()
 
 		ChatRoom.update rid, update
 
