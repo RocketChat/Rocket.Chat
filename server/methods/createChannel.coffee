@@ -35,35 +35,26 @@ Meteor.methods
 		RocketChat.callbacks.run 'beforeCreateChannel', user, room
 
 		# create new room
-		rid = ChatRoom.insert room
+		room._id = ChatRoom.insert room
 		# set creator as channel moderator.  permission limited to channel by scoping to rid
-		RocketChat.authz.addUsersToRoles(Meteor.userId(), 'moderator', rid)
+		RocketChat.authz.addUsersToRoles(Meteor.userId(), 'moderator', room._id)
 
 		for username in members
 			member = RocketChat.models.Users.findOneByUsername username
 			if not member?
 				continue
 
-			sub =
-				rid: rid
-				ts: now
-				name: name
-				t: 'c'
-				unread: 0
-				u:
-					_id: member._id
-					username: username
+			extra = {}
 
 			if username is user.username
-				sub.ls = now
-				sub.open = true
+				extra.ls = now
+				extra.open = true
 
-			ChatSubscription.insert sub
+			RocketChat.models.Subscriptions.createWithRoomAndUser room, member, extra
 
 		Meteor.defer ->
-
 			RocketChat.callbacks.run 'afterCreateChannel', user, room
 
 		return {
-			rid: rid
+			rid: room._id
 		}

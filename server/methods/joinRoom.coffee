@@ -22,17 +22,11 @@ Meteor.methods
 
 		ChatRoom.update rid, update
 
-		ChatSubscription.insert
-			rid: rid
+		RocketChat.models.Subscriptions.createWithRoomAndUser room, user,
 			ts: now
-			name: room.name
-			t: room.t
 			open: true
 			alert: true
 			unread: 1
-			u:
-				_id: user._id
-				username: user.username
 
 		ChatMessage.insert
 			rid: rid
