@@ -1,5 +1,3 @@
-updateMessage = (originalMessage, message) ->
-
 Meteor.methods
 	updateMessage: (message) ->
 		if not Meteor.userId()
@@ -41,4 +39,4 @@ Meteor.methods
 
 		# Meteor.defer ->
 		# 	RocketChat.callbacks.run 'afterSaveMessage', ChatMessage.findOne(message.id)
-		
+
