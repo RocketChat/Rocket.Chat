@@ -50,7 +50,7 @@ Meteor.methods
 		if Meteor.userId()?
 			user = Meteor.users.findOne Meteor.userId()
 		
-		unless user?.admin is true
+		unless RocketChat.authz.hasPermission(Meteor.userId(), 'edit-privileged-setting') is true
 			throw new Meteor.Error 503, 'Not authorized'
 
 		# console.log "saveSetting -> ".green, _id, value
