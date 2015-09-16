@@ -3,7 +3,7 @@ Meteor.methods
 		if not Meteor.userId()
 			throw new Meteor.Error 'invalid-user', "[methods] createPrivateGroup -> Invalid user"
 
-		unless RocketChat.authz.hasPermission(Meteor.userId(), 'create-p') 
+		unless RocketChat.authz.hasPermission(Meteor.userId(), 'create-p')
 			throw new Meteor.Error 'not-authorized', '[methods] createPrivateGroup -> Not authorized'
 
 		console.log '[methods] createPrivateGroup -> '.green, 'userId:', Meteor.userId(), 'arguments:', arguments
@@ -24,7 +24,7 @@ Meteor.methods
 			throw new Meteor.Error 'duplicate-name'
 
 		# create new room
-		rid = ChatRoom.insert
+		room =
 			usernames: members
 			ts: now
 			t: 'p'
@@ -34,31 +34,25 @@ Meteor.methods
 			name: name
 			msgs: 0
 
+		room._id = ChatRoom.insert room
+
 		# set creator as group moderator.  permission limited to group by scoping to rid
-		RocketChat.authz.addUsersToRoles(Meteor.userId(), 'moderator', rid)
+		RocketChat.authz.addUsersToRoles(Meteor.userId(), 'moderator', room._id)
 
 		for username in members
 			member = RocketChat.models.Users.findOneByUsername(username, { fields: { username: 1 }})
 			if not member?
 				continue
 
-			subscription =
-				rid: rid
-				ts: now
-				name: name
-				t: 'p'
-				open: true
-				u:
-					_id: member._id
-					username: member.username
+			extra = {}
 
 			if username is me.username
-				subscription.ls = now
+				extra.ls = now
 			else
-				subscription.alert = true
+				extra.alert = true
 
-			ChatSubscription.insert subscription
+			RocketChat.models.Subscriptions.createWithRoomAndUser room, member, extra
 
 		return {
-			rid: rid
+			rid: room._id
 		}
