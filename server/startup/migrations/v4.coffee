@@ -4,7 +4,7 @@ Meteor.startup ->
 		up: ->
 
 			try ChatMessage._dropIndex 'rid_1'
-			try ChatSubscription._dropIndex 'u._id_1'
+			RocketChat.models.Subscriptions.tryDropIndex 'u._id_1'
 
 
 			console.log 'Rename rn to name'
