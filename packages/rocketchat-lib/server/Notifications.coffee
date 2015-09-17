@@ -9,7 +9,7 @@ RocketChat.Notifications = new class
 		@streamUser = new Meteor.Stream 'notify-user'
 
 
-		@streamAll.permissions.write -> return @userId?
+		@streamAll.permissions.write -> return false
 		@streamAll.permissions.read -> return @userId?
 
 		@streamRoom.permissions.write -> return @userId?
