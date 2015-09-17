@@ -8,7 +8,7 @@ Meteor.startup ->
 			if room?._id is not 'GENERAL'
 				RocketChat.models.Subscriptions.update({'rid':room._id},{'$set':{'rid':'GENERAL'}},{'multi':1})
 				ChatMessage.update({'rid':room._id},{'$set':{'rid':'GENERAL'}},{'multi':1})
-				ChatRoom.remove({'_id':room._id})
+				RocketChat.models.Rooms.removeById(room._id)
 				delete room._id
 				ChatRoom.upsert({'_id':'GENERAL'},{$set: room})
 

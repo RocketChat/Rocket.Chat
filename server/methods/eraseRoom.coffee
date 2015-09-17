@@ -11,7 +11,7 @@ Meteor.methods
 
 			ChatMessage.remove({rid: rid})
 			RocketChat.models.Subscriptions.removeByRoomId rid
-			ChatRoom.remove(rid)
+			RocketChat.models.Rooms.removeById rid
 			# @TODO remove das mensagens lidas do usuário
 		else
 			throw new Meteor.Error 'unauthorized'
