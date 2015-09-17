@@ -17,8 +17,7 @@ Meteor.methods
 		RocketChat.models.Subscriptions.findByUserId(userId).forEach (subscription) ->
 			room = RocketChat.models.Rooms.findOneById subscription.rid
 			if room.t isnt 'c' and room.usernames.length is 1
-				ChatRoom.remove subscription.rid # Remove non-channel rooms with only 1 user (the one being deleted)
-
+				RocketChat.models.Rooms.removeById subscription.rid # Remove non-channel rooms with only 1 user (the one being deleted)
 
 
 		RocketChat.models.Subscriptions.removeByUserId userId # Remove user subscriptions
@@ -26,7 +25,7 @@ Meteor.methods
 		rooms = RocketChat.models.Rooms.findByUserId(userId).fetch()
 
 
-		ChatRoom.remove { t: 'd', usernames: user.username } # Remove direct rooms with the user
+		ChatRoom.RocketChat.models.Rooms.removeByTypeContainingUsername 'd', user.username # Remove direct rooms with the user
 		ChatRoom.update {}, { $pull: { usernames: user.username } }, { multi: true } # Remove user from all other rooms
 		RocketChat.models.Users.removeById userId # Remove user from users database
 

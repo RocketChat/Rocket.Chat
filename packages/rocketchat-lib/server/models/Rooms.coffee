@@ -179,9 +179,16 @@ RocketChat.models.Rooms = new class asd extends RocketChat.models._Base
 	# 	return @insert subscription
 
 
-	# # REMOVE
-	# removeByUserId: (userId) ->
-	# 	query =
-	# 		"u._id": userId
+	# REMOVE
+	removeById: (_id) ->
+		query =
+			_id: _id
 
-	# 	return @remove query
+		return @remove query
+
+	removeByTypeContainingUsername: (type, username) ->
+		query =
+			t: type
+			username: username
+
+		return @remove query

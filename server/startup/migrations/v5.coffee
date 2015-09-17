@@ -6,7 +6,7 @@ Meteor.startup ->
 			console.log 'Dropping test rooms with less than 2 messages'
 			RocketChat.models.Rooms.find({msgs: {'$lt': 2}}).forEach (room) ->
 				console.log 'Dropped: ', room.name
-				ChatRoom.remove room._id
+				RocketChat.models.Rooms.removeById room._id
 				ChatMessage.remove {rid: room._id}
 				RocketChat.models.Subscriptions.removeByRoomId room._id
 
@@ -14,7 +14,7 @@ Meteor.startup ->
 			console.log 'Dropping test rooms with less than 2 user'
 			RocketChat.models.Rooms.find({usernames: {'$size':1}}).forEach (room) ->
 				console.log 'Dropped: ', room.name
-				ChatRoom.remove room._id
+				RocketChat.models.Rooms.removeById room._id
 				ChatMessage.remove {rid: room._id}
 				RocketChat.models.Subscriptions.removeByRoomId room._id
 
@@ -43,7 +43,7 @@ Meteor.startup ->
 					console.log 'Fixing: _id ' + room._id + ' to ' + newId
 					RocketChat.models.Subscriptions.update({'rid':room._id},{'$set':{'rid':newId}},{'multi':1})
 					ChatMessage.update({'rid':room._id},{'$set':{'rid':newId}},{'multi':1})
-					ChatRoom.remove({'_id':room._id})
+					RocketChat.models.Rooms.removeById(room._id)
 					room._id = newId
 					ChatRoom.insert(room)
 				RocketChat.models.Subscriptions.update({'rid':room._id,'u._id':id0},{'$set':{'name':room.usernames[1]}})
