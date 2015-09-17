@@ -24,8 +24,7 @@ Meteor.publish 'roomSearch', (selector, options, collName) ->
 				self.removed("autocompleteRecords", id)
 
 	if not searchType? or searchType is 'r'
-		roomSelector = _.extend { t: { $in: ['c','p'] }, usernames: RocketChat.models.Users.findOneById(this.userId).username }, selector
-		subHandleRooms = ChatRoom.find(roomSelector, { limit: 10, fields: { t: 1, name: 1 } }).observeChanges
+		subHandleRooms = RocketChat.models.Rooms.findByTypesAndNotUserIdContainingUsername(['c', 'p'], selector.uid?.$ne, RocketChat.models.Users.findOneById(this.userId).username, { limit: 10, fields: { t: 1, name: 1 } }).observeChanges
 			added: (id, fields) ->
 				data = { type: 'r', rid: id, name: fields.name, t: fields.t }
 				self.added("autocompleteRecords", id, data)

@@ -1,6 +1,7 @@
 RocketChat.models.Rooms = new class asd extends RocketChat.models._Base
 	constructor: ->
-		@model = new Meteor.Collection 'rocketchat_room'
+		# @model = new Meteor.Collection 'rocketchat_room'
+		@model = @ChatRoom
 
 		@tryEnsureIndex { 'name': 1 }, { unique: 1, sparse: 1 }
 		@tryEnsureIndex { 'u._id': 1 }
@@ -42,12 +43,106 @@ RocketChat.models.Rooms = new class asd extends RocketChat.models._Base
 
 		return @findOne query, options
 
-	# # FIND
-	# findByUserId: (userId, options) ->
-	# 	query =
-	# 		"u._id": userId
 
-	# 	return @find query, options
+	# FIND
+	findByType: (type, options) ->
+		query =
+			t: type
+
+		return @find query, options
+
+	findByTypes: (types, options) ->
+		query =
+			t:
+				$in: types
+
+		return @find query, options
+
+	findByUserId: (userId, options) ->
+		query =
+			"u._id": userId
+
+		return @find query, options
+
+	findByNameContaining: (name, options) ->
+		nameRegex = new RegExp name, "i"
+
+		query =
+			$or: [
+				name: nameRegex
+			,
+				t: 'd'
+				usernames: nameRegex
+			]
+
+		return @find query, options
+
+	findByNameContainingAndTypes: (name, types, options) ->
+		nameRegex = new RegExp name, "i"
+
+		query =
+			t:
+				$in: types
+			$or: [
+				name: nameRegex
+			,
+				t: 'd'
+				usernames: nameRegex
+			]
+
+		return @find query, options
+
+	findByDefaultAndTypes: (defaultValue, types, options) ->
+		query =
+			default: defaultValue
+			t:
+				$in: types
+
+		return @find query, options
+
+	findByTypeContainigUsername: (type, username, options) ->
+		query =
+			t: type
+			usernames: username
+
+		return @find query, options
+
+	findByTypesAndNotUserIdContainingUsername: (types, userId, username, options) ->
+		query =
+			t:
+				$in: types
+			uid:
+				$ne: userId
+			usernames: username
+
+		return @find query, options
+
+	findByContainigUsername: (username, options) ->
+		query =
+			usernames: username
+
+		return @find query, options
+
+	findByTypeAndName: (type, name, options) ->
+		query =
+			t: type
+			name: name
+
+		return @find query, options
+
+	findByTypeAndNameContainigUsername: (type, name, username, options) ->
+		query =
+			t: type
+			name: name
+			usernames: username
+
+		return @find query, options
+
+	findByVisitorToken: (visitorToken, options) ->
+		query =
+			"v.token": visitorToken
+
+		return @find query, options
 
 
 	# # UPDATE

@@ -4,7 +4,7 @@ Meteor.startup ->
 		up: ->
 
 			console.log 'Dropping test rooms with less than 2 messages'
-			ChatRoom.find({msgs: {'$lt': 2}}).forEach (room) ->
+			RocketChat.models.Rooms.find({msgs: {'$lt': 2}}).forEach (room) ->
 				console.log 'Dropped: ', room.name
 				ChatRoom.remove room._id
 				ChatMessage.remove {rid: room._id}
@@ -12,7 +12,7 @@ Meteor.startup ->
 
 
 			console.log 'Dropping test rooms with less than 2 user'
-			ChatRoom.find({usernames: {'$size':1}}).forEach (room) ->
+			RocketChat.models.Rooms.find({usernames: {'$size':1}}).forEach (room) ->
 				console.log 'Dropped: ', room.name
 				ChatRoom.remove room._id
 				ChatMessage.remove {rid: room._id}
@@ -33,7 +33,7 @@ Meteor.startup ->
 
 
 			console.log 'Fixing _id of direct messages rooms'
-			ChatRoom.find({'t': 'd'}).forEach (room) ->
+			RocketChat.models.Rooms.findByType('d').forEach (room) ->
 				newId = ''
 				id0 = RocketChat.models.Users.findOneByUsername(room.usernames[0])._id
 				id1 = RocketChat.models.Users.findOneByUsername(room.usernames[1])._id

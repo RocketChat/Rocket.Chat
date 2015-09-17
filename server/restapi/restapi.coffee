@@ -11,7 +11,7 @@ Api.addRoute 'version', authRequired: false,
 
 Api.addRoute 'publicRooms', authRequired: true,
 	get: ->
-		rooms = ChatRoom.find({ t: 'c' }, { sort: { msgs:-1 } }).fetch()
+		rooms = RocketChat.models.Rooms.findByType('c', { sort: { msgs:-1 } }).fetch()
 		status: 'success', rooms: rooms
 
 # join a room

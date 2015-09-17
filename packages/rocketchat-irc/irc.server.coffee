@@ -231,15 +231,12 @@ class IrcClient
 		msg = "PRIVMSG #{target} :#{message.msg}\r\n"
 		@sendRawMessage msg
 
-	initRoomList: () ->
-		roomsCursor = ChatRoom.find
-			usernames:
-				$in: [@user.username]
-			t: 'c'
-		,
+	initRoomList: ->
+		roomsCursor = RocketChat.models.Rooms.findByTypeContainigUsername 'c', @user.username,
 			fields:
 				name: 1
 				t: 1
+
 		rooms = roomsCursor.fetch()
 		for room in rooms
 			@joinRoom(room)

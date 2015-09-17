@@ -9,7 +9,7 @@ Meteor.methods
 
 		RocketChat.callbacks.run 'beforeJoinDefaultChannels', user
 
-		ChatRoom.find({default: true, t: {$in: ['c', 'p']}}).forEach (room) ->
+		RocketChat.models.Rooms.findByDefaultAndTypes(true, ['c', 'p']).forEach (room) ->
 
 			# put user in default rooms
 			ChatRoom.update room._id,
