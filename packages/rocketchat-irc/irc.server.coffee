@@ -160,7 +160,7 @@ class IrcClient
 		console.log '[irc] onReceiveMessage -> '.yellow, 'source:', source, 'target:', target, 'content:', content
 		source = @createUserWhenNotExist source
 		if target[0] == '#'
-			room = ChatRoom.findOne {name: target.substring 1}
+			room = RocketChat.models.Rooms.findOneByName target.substring(1)
 		else
 			room = @createDirectRoomWhenNotExist(source, @user)
 
@@ -178,7 +178,7 @@ class IrcClient
 	onEndMemberList: (roomName) ->
 		newMembers = @receiveMemberListBuf[roomName]
 		console.log '[irc] onEndMemberList -> '.yellow, 'room:', roomName, 'members:', newMembers.join ','
-		room = ChatRoom.findOne {name: roomName, t: 'c'}
+		room = RocketChat.models.Rooms.findOneByNameAndType roomName, 'c'
 		unless room
 			return
 
@@ -374,7 +374,7 @@ class IrcSender
 		if ircReceiveMessageCache.get cacheKey
 			return message
 
-		room = ChatRoom.findOne message.rid, { fields: { name: 1, usernames: 1, t: 1 } }
+		room = RocketChat.models.Rooms.findOneById message.rid, { fields: { name: 1, usernames: 1, t: 1 } }
 		ircClient = IrcClient.getByUid message.u._id
 		ircClient.sendMessage room, message
 		return message

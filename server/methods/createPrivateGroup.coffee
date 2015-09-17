@@ -20,7 +20,7 @@ Meteor.methods
 		name = s.slugify name
 
 		# avoid duplicate names
-		if ChatRoom.findOne({name:name})
+		if RocketChat.models.Rooms.findOneByName name
 			throw new Meteor.Error 'duplicate-name'
 
 		# create new room

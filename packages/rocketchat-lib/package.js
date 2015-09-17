@@ -57,6 +57,7 @@ Package.onUse(function(api) {
 	api.addFiles('server/models/_Base.coffee', 'server');
 	api.addFiles('server/models/Users.coffee', 'server');
 	api.addFiles('server/models/Subscriptions.coffee', 'server');
+	api.addFiles('server/models/Rooms.coffee', 'server');
 
 
 	// EXPORT

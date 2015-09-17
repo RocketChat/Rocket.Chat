@@ -6,7 +6,7 @@ Meteor.methods
 		unless Meteor.userId()?
 			throw new Meteor.Error 300, 'Usuário não logado'
 
-		room = ChatRoom.findOne rid
+		room = RocketChat.models.Rooms.findOneById rid
 		user = Meteor.user()
 
 		RocketChat.callbacks.run 'beforeLeaveRoom', user, room

@@ -5,7 +5,7 @@ Meteor.methods
 
 		console.log '[methods] archiveRoom -> '.green, 'userId:', Meteor.userId(), 'arguments:', arguments
 
-		room = ChatRoom.findOne rid
+		room = RocketChat.models.Rooms.findOneById rid
 
 		if room.u? and room.u._id is Meteor.userId() or Meteor.user().admin?
 			update =

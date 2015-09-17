@@ -17,7 +17,7 @@ Meteor.methods
 		members.push user.username
 
 		# avoid duplicate names
-		if ChatRoom.findOne({name:name})
+		if RocketChat.models.Rooms.findOneByName name
 			throw new Meteor.Error 'duplicate-name'
 
 		# name = s.slugify name

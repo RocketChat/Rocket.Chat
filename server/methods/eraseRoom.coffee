@@ -2,7 +2,7 @@ Meteor.methods
 	eraseRoom: (rid) ->
 		fromId = Meteor.userId()
 
-		roomType = ChatRoom.findOne(rid)?.t
+		roomType = RocketChat.models.Rooms.findOneById(rid)?.t
 
 		if RocketChat.authz.hasPermission( fromId, "delete-#{roomType}", rid )
 			# console.log '[methods] eraseRoom -> '.green, 'fromId:', fromId, 'rid:', rid

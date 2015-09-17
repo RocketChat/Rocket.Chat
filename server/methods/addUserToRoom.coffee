@@ -3,7 +3,7 @@ Meteor.methods
 		fromId = Meteor.userId()
 		# console.log '[methods] addUserToRoom -> '.green, 'fromId:', fromId, 'data:', data
 
-		room = ChatRoom.findOne data.rid
+		room = RocketChat.models.Rooms.findOneById data.rid
 
 		# if room.username isnt Meteor.user().username and room.t is 'c'
 		if room.t is 'c' and room.u?.username isnt Meteor.user().username

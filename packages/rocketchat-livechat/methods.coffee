@@ -40,7 +40,7 @@ Meteor.methods
 
 		guest = Meteor.users.findOne Meteor.userId(), fields: username: 1
 
-		room = ChatRoom.findOne message.rid
+		room = RocketChat.models.Rooms.findOneById message.rid
 
 		if not room?
 
