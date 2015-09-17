@@ -20,7 +20,7 @@ Meteor.methods
 		now = new Date()
 
 		# Make sure we have a room
-		ChatRoom.upsert
+		ChatRoom.RocketChat.models.Rooms.upsert
 			_id: rid
 		,
 			$set:
