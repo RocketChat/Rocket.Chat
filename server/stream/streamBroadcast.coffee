@@ -4,16 +4,18 @@
 
 	# connections = {}
 
-	InstanceStatus.getCollection().find().observe
+	InstanceStatus.getCollection().find({'extraInformation.port': {$exists: true}}).observe
 		added: (record) ->
 			if record.extraInformation.port is process.env.PORT or connections[record.extraInformation.port]?
 				return
 
 			console.log 'connecting in', "localhost:#{record.extraInformation.port}"
 			connections[record.extraInformation.port] = DDP.connect("localhost:#{record.extraInformation.port}", {_dontPrintErrors: true})
+			connections[record.extraInformation.port].call 'broadcastAuth', record._id, InstanceStatus.id(), (err, ok) ->
+				console.log "broadcastAuth with localhost:#{record.extraInformation.port}", ok
 
 		removed: (record) ->
-			if connections[record.extraInformation.port]? and not InstanceStatus.getCollection().findOne({'extraInformation.port': {$ne: record.extraInformation.port}})?
+			if connections[record.extraInformation.port]? and not InstanceStatus.getCollection().findOne({'extraInformation.port': record.extraInformation.port})?
 				console.log 'disconnecting from', "localhost:#{record.extraInformation.port}"
 				connections[record.extraInformation.port].disconnect()
 				delete connections[record.extraInformation.port]
@@ -44,7 +46,25 @@
 				emitters[streamName] args, subscriptionId, userId
 
 	Meteor.methods
+		broadcastAuth: (selfId, remoteId) ->
+			check selfId, String
+			check remoteId, String
+
+			@unblock()
+			if InstanceStatus.id() is selfId and InstanceStatus.getCollection().findOne({_id: remoteId})?
+				@connection.broadcastAuth = true
+
+			return @connection.broadcastAuth is true
+
 		stream: (streamName, args) ->
+			# Prevent call from self and client
+			if not @connection? or @connection.clientAddress?
+				return
+
+			# Prevent call from unauthrorized connections
+			if @connection.broadcastAuth isnt true
+				return
+
 			console.log 'method stream', streamName, args
 			if not emitters[streamName]?
 				console.log "Stream for broadcast with name #{streamName} does not exists".red
