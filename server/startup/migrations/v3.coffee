@@ -24,7 +24,7 @@ Meteor.startup ->
 
 
 			console.log 'Fixing ChatRoom uids'
-			ChatRoom.find({'uids.0': {$exists: true}}, {nonreactive: true}).forEach (room) ->
+			RocketChat.models.Rooms.find({'uids.0': {$exists: true}}, {nonreactive: true}).forEach (room) ->
 				update = {}
 				users = RocketChat.models.Users.find {_id: {$in: room.uids}, username: {$exists: true}}, {fields: {username: 1}}
 				usernames = users.map (user) ->

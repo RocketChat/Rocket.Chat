@@ -7,7 +7,7 @@ Meteor.startup ->
 			###
 
 			count = 0
-			ChatRoom.find({'usernames.0': {$exists: true}}, {fields: {usernames: 1}}).forEach (room) ->
+			RocketChat.models.Rooms.find({'usernames.0': {$exists: true}}, {fields: {usernames: 1}}).forEach (room) ->
 				newUsernames = _.uniq room.usernames
 				if newUsernames.length isnt room.usernames.length
 					count++

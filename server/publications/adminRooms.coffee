@@ -8,22 +8,7 @@ Meteor.publish 'adminRooms', (filter, types, limit) ->
 	unless _.isArray types
 		types = []
 
-	query = {}
-
-	filter = _.trim filter
-	if filter
-		if limit is 1
-			query = { name: filter }
-		else
-			filterReg = new RegExp filter, "i"
-			query = { $or: [ { name: filterReg }, { t: 'd', usernames: filterReg } ] }
-
-	if types.length
-		query['t'] = { $in: types }
-
-	console.log '[publish] adminRooms'.green, filter, types, limit, query
-
-	ChatRoom.find query,
+	options =
 		fields:
 			name: 1
 			t: 1
@@ -31,4 +16,18 @@ Meteor.publish 'adminRooms', (filter, types, limit) ->
 			u: 1
 			usernames: 1
 		limit: limit
-		sort: { name: 1 }
+		sort:
+			name: 1
+
+	filter = _.trim filter
+
+	console.log '[publish] adminRooms'.green, filter, types, limit
+
+	if filter and types.length
+		return RocketChat.models.Rooms.findByNameContainingAndTypes filter, types, options
+
+	if filter
+		return RocketChat.models.Rooms.findByNameContaining filter, options
+
+	if types.length
+		return RocketChat.models.Rooms.findByTypes types, options

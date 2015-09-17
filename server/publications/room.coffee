@@ -10,32 +10,26 @@ Meteor.publish 'room', (typeName) ->
 	type = typeName.substr(0, 1)
 	name = typeName.substr(1)
 
-	query = {}
-
-	if type in ['c', 'p']
-		query =
-			t: type
-			name: name
-
-		if type is 'p'
-			user = RocketChat.models.Users.findOneById this.userId, fields: username: 1
-			query.usernames = user.username
-
-	else if type is 'd'
-		user = RocketChat.models.Users.findOneById this.userId, fields: username: 1
-		query =
-			t: 'd'
-			usernames:
-				$all: [user.username, name]
-
-	# Change to validate access manualy
-	# if not Meteor.call 'canAccessRoom', rid, this.userId
-	# 	return this.ready()
-
-	ChatRoom.find query,
+	options =
 		fields:
 			name: 1
 			t: 1
 			cl: 1
 			u: 1
 			usernames: 1
+
+	switch type
+		when 'c'
+			return RocketChat.models.Rooms.findByTypeContainigUsername 'c', name, options
+
+		when 'p'
+			user = RocketChat.models.Users.findOneById this.userId, fields: username: 1
+			return RocketChat.models.Rooms.findByTypeAndNameContainigUsername 'p', name, user.username, options
+
+		when 'd'
+			user = RocketChat.models.Users.findOneById this.userId, fields: username: 1
+			return RocketChat.models.Rooms.findByTypeContainigUsername 'd', user.username, options
+
+	# Change to validate access manualy
+	# if not Meteor.call 'canAccessRoom', rid, this.userId
+	# 	return this.ready()
