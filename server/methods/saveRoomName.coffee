@@ -3,7 +3,7 @@ Meteor.methods
 		if not Meteor.userId()
 			throw new Meteor.Error('invalid-user', "[methods] sendMessage -> Invalid user")
 
-		room = ChatRoom.findOne rid
+		room = RocketChat.models.Rooms.findOneById rid
 
 		if room.t not in ['c', 'p']
 			throw new Meteor.Error 403, 'Not allowed'
@@ -21,7 +21,7 @@ Meteor.methods
 			return
 
 		# avoid duplicate names
-		if ChatRoom.findOne({name:name})
+		if RocketChat.models.Rooms.findOneByName name
 			throw new Meteor.Error 'duplicate-name'
 
 		ChatRoom.update rid,

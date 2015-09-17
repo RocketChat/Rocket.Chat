@@ -4,7 +4,7 @@ Meteor.startup ->
 		up: ->
 
 			console.log 'Changin _id of #general channel room from XXX to GENERAL'
-			room = ChatRoom.findOne('name':'general')
+			room = RocketChat.models.Rooms.findOneByName('general')
 			if room?._id is not 'GENERAL'
 				RocketChat.models.Subscriptions.update({'rid':room._id},{'$set':{'rid':'GENERAL'}},{'multi':1})
 				ChatMessage.update({'rid':room._id},{'$set':{'rid':'GENERAL'}},{'multi':1})

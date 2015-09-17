@@ -3,7 +3,7 @@ Meteor.methods
 		fromId = Meteor.userId()
 		# console.log '[methods] removeUserFromRoom -> '.green, 'fromId:', fromId, 'data:', data
 
-		room = ChatRoom.findOne data.rid
+		room = RocketChat.models.Rooms.findOneById data.rid
 
 		if room.u?._id isnt Meteor.userId() and room.t is 'c'
 			throw new Meteor.Error 403, 'Not allowed'

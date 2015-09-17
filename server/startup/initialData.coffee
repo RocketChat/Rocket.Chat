@@ -6,7 +6,7 @@ Meteor.startup ->
 				_id: 'uniqueID'
 				value: Random.id()
 
-		if not ChatRoom.findOne('name': 'general')?
+		if not RocketChat.models.Rooms.findOneByName('general')?
 			ChatRoom.insert
 				_id: 'GENERAL'
 				default: true

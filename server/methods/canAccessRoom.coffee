@@ -10,7 +10,7 @@ Meteor.methods
 		unless rid
 			throw new Meteor.Error 'invalid-room', '[methods] canAccessRoom -> Cannot access empty room'
 
-		room = ChatRoom.findOne rid, { fields: { usernames: 1, t: 1, name: 1 } }
+		room = RocketChat.models.Rooms.findOneById rid, { fields: { usernames: 1, t: 1, name: 1 } }
 
 		if room
 			if room.t is 'c'
