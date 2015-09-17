@@ -406,11 +406,20 @@ Template.room.events
 		instance.showUsersOffline.set(!instance.showUsersOffline.get())
 
 	"click .edit-message": (e) ->
-		Template.instance().chatMessages.edit(e.currentTarget.parentNode.parentNode)
+		message = e.currentTarget.parentNode.parentNode
+		Template.instance().chatMessages.edit(message)
+
+		$("\##{message.id} .message-dropdown").hide()
+
 		input = Template.instance().find('.input-message')
 		Meteor.setTimeout ->
 			input.focus()
 		, 200
+
+	'click .message-cog': (e) ->
+		message_id = e.currentTarget.parentNode.parentNode.id
+
+		$("\##{message_id} .message-dropdown").toggle()
 
 	"click .editing-commands-cancel > a": (e) ->
 		Template.instance().chatMessages.clearEditing()
@@ -434,6 +443,9 @@ Template.room.events
 	'click .delete-message': (event) ->
 		message = @_arguments[1]
 		msg = event.currentTarget.parentNode.parentNode
+
+		$("\##{msg.id} .message-dropdown").hide()
+
 		instance = Template.instance()
 		return if msg.classList.contains("system")
 		swal {

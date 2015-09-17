@@ -2375,15 +2375,56 @@ a.github-fork {
 		cursor: pointer;
 	}
 	&:hover:not(.system) .edit-message {
-		display: inline-block;
+		display: block;
 	}
 	.delete-message {
 		display: none;
 		cursor: pointer;
 	}
 	&:hover:not(.system) .delete-message {
+		display: block;
+	}
+	.message-cog {
+		display: none;
+		cursor: pointer;
+	}
+	&:hover:not(.system) .message-cog {
 		display: inline-block;
 	}
+
+	.message-dropdown {
+		position: absolute;
+		top: 65%;
+		left: 85px;
+		z-index: 1000;
+		float: left;
+		min-width: 110px;
+		display: none;
+		padding: 5px 0;
+		margin: 2px 0 0;
+		font-size: 14px;
+		text-align: left;
+		list-style: none;
+		background-color: #fff;
+		-webkit-background-clip: padding-box;
+		background-clip: padding-box;
+		border: 1px solid #ccc;
+		border: 1px solid rgba(0,0,0,.15);
+		border-radius: 4px;
+		-webkit-box-shadow: 0 6px 12px rgba(0,0,0,.175);
+		box-shadow: 0 6px 12px rgba(0,0,0,.175);
+
+		li {
+			display: block;
+			padding: 3px 20px;
+			clear: both;
+			font-weight: 400;
+			line-height: 1.42857143;
+			color: #333;
+			white-space: nowrap;
+		}
+	}
+
 	.user {
 		display: inline-block;
 		font-weight: 600;
@@ -2437,6 +2478,12 @@ a.github-fork {
 				float: left;
 			}
 		}
+
+		.message-dropdown {
+			top: 100%;
+			left: 0;
+		}
+
 		&:hover {
 			.time {
 				display: inline-block;
