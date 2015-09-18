@@ -1,4 +1,6 @@
 Template.message.helpers
+	actions: ->
+		return Template.instance()?.actions?.getButtons()
 
 	own: ->
 		return 'own' if this.u?._id is Meteor.userId()
@@ -57,6 +59,7 @@ Template.message.helpers
 
 Template.message.onViewRendered = (context) ->
 	view = this
+	console.log view
 	this._domrange.onAttached (domRange) ->
 		lastNode = domRange.lastNode()
 		if lastNode.previousElementSibling?.dataset?.date isnt lastNode.dataset.date
@@ -92,3 +95,9 @@ Template.message.onViewRendered = (context) ->
 				if view.parentView.parentView.parentView.parentView.parentView.templateInstance?().atBottom isnt true
 					newMessage = document.querySelector(".new-message")
 					newMessage.className = "new-message"
+
+		# if RocketChat.authz.hasAtLeastOnePermission('edit-message', context.rid ) or (RocketChat.settings.get('Message_AllowEditing') and context.u?._id is Meteor.userId())
+		# 	view.instance().actions.addButton({ id: 'edit-message', icon: 'icon-pencil', label: 'Edit' })
+
+Template.message.onCreated ->
+	@actions = new MessageAction

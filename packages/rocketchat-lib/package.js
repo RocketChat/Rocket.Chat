@@ -27,6 +27,7 @@ Package.onUse(function(api) {
 	// CLIENT
 	api.addFiles('client/Notifications.coffee', 'client');
 	api.addFiles('client/TabBar.coffee', 'client');
+	api.addFiles('client/MessageAction.coffee', 'client');
 
 	api.addFiles('settings/client/startup.coffee', 'client');
 	api.addFiles('settings/client/rocketchat.coffee', 'client');

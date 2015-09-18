@@ -15,12 +15,18 @@
 		</span>
 
 		<ul class="message-dropdown">
-			{{#if canEdit}}
+			
+			{{#each actions}}
+				<li class="{{id}}"><i class="{{icon}}"></i>{{label}}</li>
+			{{/each}}
+
+
+			{{!-- {{#if canEdit}}
 				<li class="edit-message"><i class="icon-pencil"></i>Edit</li>
 			{{/if}}
 			{{#if canDelete}}
 				<li class="delete-message"><i class="icon-trash-1"></i>Delete</li>
-			{{/if}}
+			{{/if}} --}}
 		</ul>
 
 		<div class="body" dir="auto">
