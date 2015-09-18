@@ -2396,6 +2396,24 @@ a.github-fork {
 		visibility: visible;
 	}
 
+	@keyframes dropdown-in {
+		0% {
+			display: none;
+			opacity: 0;
+		}
+
+		1% {
+			display: block;
+			opacity: 0;
+			transform: scale(0);
+		}
+
+		100% {
+			opacity: 1;
+			transform: scale(1);
+		}
+	}
+
 	.message-dropdown {
 		position: absolute;
 		top: -5px;
@@ -2406,7 +2424,10 @@ a.github-fork {
 		border: 1px solid #eee;
 		border-radius: 4px;
 		overflow: hidden;
-		box-shadow: 1px 1px 4px #eee;
+		box-shadow: 1px 1px 4px #B3B3B3;
+		transition: transform .3s ease-in-out, opacity .3s ease-in-out;
+		animation: dropdown-in .3s ease-in-out;
+
 		ul {
 			display: flex;
 			display: -webkit-flex;
@@ -2421,7 +2442,7 @@ a.github-fork {
 				cursor: pointer;
 				color: #666;
 				&:first-child {
-					padding-left: 0px;
+					padding-left: 6px;
 					background-color: #f8f8f8;
 					border-right: 1px solid #eee;
 				}
