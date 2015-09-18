@@ -6,7 +6,7 @@ Template.admin.helpers
 	sections: ->
 		group = FlowRouter.getParam('group')
 		group ?= Settings.findOne({ type: 'group' })?._id
-		settings = Settings.find({ group: group }, {sort: {section: 1}}).fetch()
+		settings = Settings.find({ group: group }, {sort: {section: 1, i18nLabel: 1}}).fetch()
 		sections = {}
 		for setting in settings
 			sections[setting.section or ''] ?= []
