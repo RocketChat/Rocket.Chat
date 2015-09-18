@@ -1,4 +1,5 @@
 @onlineUsers = new Mongo.Collection 'online-users'
+@channelAutocomplete = new Mongo.Collection 'channel-autocomplete'
 
 Template.messagePopupConfig.helpers
 	popupUserConfig: ->
@@ -49,12 +50,17 @@ Template.messagePopupConfig.helpers
 		template = Template.instance()
 		config =
 			title: 'Channels'
-			collection: ChatSubscription
+			collection: channelAutocomplete
 			trigger: '#'
 			template: 'messagePopupChannel'
 			getInput: self.getInput
 			getFilter: (collection, filter) ->
-				return collection.find({t: 'c', name: new RegExp(filter, 'i')}, {limit: 10})
+				exp = new RegExp(filter, 'i')
+
+				Meteor.subscribe 'channelAutocomplete', filter
+				items = channelAutocomplete.find( { name: exp }, { limit: 10 }).fetch()
+
+				return items
 			getValue: (_id, collection) ->
 				return collection.findOne(_id)?.name
 
