@@ -24,8 +24,8 @@ RocketChat.setUsername = (user, username) ->
 			updatedMsg = msg.msg.replace(new RegExp("@#{previousUsername}", "ig"), "@#{username}")
 			ChatMessage.update { _id: msg._id, "mentions.username": previousUsername }, { $set: { "mentions.$.username": username, "msg": updatedMsg } }
 
-		ChatRoom.update { usernames: previousUsername }, { $set: { "usernames.$": username } }, { multi: true }
-		ChatRoom.update { "u._id": user._id }, { $set: { "u.username": username } }, { multi: true }
+		RocketChat.models.Rooms.replaceUsername previousUsername, username
+		RocketChat.models.Rooms.replaceUsernameOfUserByUserId user._id, username
 
 		RocketChat.models.Subscriptions.setUserUsernameByUserId user._id, username
 		RocketChat.models.Subscriptions.setNameForDirectRoomsWithOldName previousUsername, username

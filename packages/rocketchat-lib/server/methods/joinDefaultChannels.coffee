@@ -12,9 +12,7 @@ Meteor.methods
 		RocketChat.models.Rooms.findByDefaultAndTypes(true, ['c', 'p']).forEach (room) ->
 
 			# put user in default rooms
-			ChatRoom.update room._id,
-				$addToSet:
-					usernames: user.username
+			RocketChat.models.Rooms.addUsernameById room._id, user.username
 
 			if not RocketChat.models.Subscriptions.findOneByRoomIdAndUserId(room._id, user._id)?
 

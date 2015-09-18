@@ -24,9 +24,7 @@ Meteor.methods
 		if RocketChat.models.Rooms.findOneByName name
 			throw new Meteor.Error 'duplicate-name'
 
-		ChatRoom.update rid,
-			$set:
-				name: name
+		RocketChat.models.Rooms.setNameById rid, name
 
 		RocketChat.models.Subscriptions.updateNameByRoomId rid, name
 

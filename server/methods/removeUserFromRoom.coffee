@@ -8,13 +8,9 @@ Meteor.methods
 		if room.u?._id isnt Meteor.userId() and room.t is 'c'
 			throw new Meteor.Error 403, 'Not allowed'
 
-		update =
-			$pull:
-				usernames: data.username
-
 		removedUser = RocketChat.models.Users.findOneByUsername data.username
 
-		ChatRoom.update data.rid, update
+		RocketChat.models.Rooms.removeUsernameById data.rid, data.username
 
 		RocketChat.models.Subscriptions.removeByRoomIdAndUserId data.rid, data.username
 

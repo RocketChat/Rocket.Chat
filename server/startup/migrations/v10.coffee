@@ -11,6 +11,6 @@ Meteor.startup ->
 				newUsernames = _.uniq room.usernames
 				if newUsernames.length isnt room.usernames.length
 					count++
-					ChatRoom.update {_id: room._id}, {$set: {usernames: newUsernames}}
+					RocketChat.models.Rooms.update {_id: room._id}, {$set: {usernames: newUsernames}}
 
 			console.log "Removed duplicated usernames from #{count} rooms"
