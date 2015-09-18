@@ -10,7 +10,7 @@ Meteor.methods
 
 		# If we keep history of edits, insert a new message to store history information
 		if RocketChat.settings.get 'Message_KeepHistory'
-			history = ChatMessage.findOne message._id
+			history = RocketChat.models.Messages.findOneById message._id
 			history._hidden = true
 			history.parent = history._id
 			history.pts = new Date()
@@ -32,4 +32,4 @@ Meteor.methods
 
 
 		# Meteor.defer ->
-		# 	RocketChat.callbacks.run 'afterSaveMessage', ChatMessage.findOne(message.id)
+		# 	RocketChat.callbacks.run 'afterSaveMessage', RocketChat.models.Messages.findOneById(message.id)

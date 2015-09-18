@@ -3,7 +3,7 @@ Meteor.methods
 		if not Meteor.userId()
 			throw new Meteor.Error('invalid-user', "[methods] updateMessage -> Invalid user")
 
-		originalMessage = ChatMessage.findOne message._id
+		originalMessage = RocketChat.models.Messages.findOneById message._id
 
 		hasPermission = RocketChat.authz.hasPermission(Meteor.userId(), 'edit-message', message.rid)
 		editAllowed = RocketChat.settings.get 'Message_AllowEditing'
@@ -38,5 +38,5 @@ Meteor.methods
 			$set: message
 
 		# Meteor.defer ->
-		# 	RocketChat.callbacks.run 'afterSaveMessage', ChatMessage.findOne(message.id)
+		# 	RocketChat.callbacks.run 'afterSaveMessage', RocketChat.models.Messages.findOneById(message.id)
 

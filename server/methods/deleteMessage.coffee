@@ -3,7 +3,7 @@ Meteor.methods
 		if not Meteor.userId()
 			throw new Meteor.Error('invalid-user', "[methods] deleteMessage -> Invalid user")
 
-		originalMessage = ChatMessage.findOne message._id, {fields: {u: 1, rid: 1}}
+		originalMessage = RocketChat.models.Messages.findOneById message._id, {fields: {u: 1, rid: 1}}
 		if not originalMessage?
 			throw new Meteor.Error 'message-deleting-not-allowed', "[methods] deleteMessage -> Message with id [#{message._id} dos not exists]"
 
@@ -25,7 +25,7 @@ Meteor.methods
 
 		if keepHistory
 			if showDeletedStatus
-				history = ChatMessage.findOne originalMessage._id
+				history = RocketChat.models.Messages.findOneById originalMessage._id
 				history._hidden = true
 				history.parent = history._id
 				history.ets = new Date()
