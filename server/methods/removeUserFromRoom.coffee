@@ -18,6 +18,12 @@ Meteor.methods
 
 		ChatSubscription.remove { 'u._id': data.username, rid: data.rid }
 
+		switch room.t
+			when 'c'
+				RocketChat.authz.removeUsersFromRole(removedUser._id; 'channel-moderator',  data.rid)
+			when 'p'
+				RocketChat.authz.removeUsersFromRole(removedUser._id; 'group-moderator',  data.rid)
+
 		ChatMessage.insert
 			rid: data.rid
 			ts: (new Date)

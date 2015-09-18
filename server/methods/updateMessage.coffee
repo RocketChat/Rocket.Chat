@@ -3,15 +3,14 @@ Meteor.methods
 		if not Meteor.userId()
 			throw new Meteor.Error('invalid-user', "[methods] updateMessage -> Invalid user")
 
-		if not RocketChat.settings.get 'Message_AllowEditing'
-			throw new Meteor.Error 'message-editing-not-allowed', "[methods] updateMessage -> Message editing not allowed"
-
-		user = Meteor.users.findOne Meteor.userId()
-
 		originalMessage = ChatMessage.findOne message._id
 
-		unless user?.admin is true or originalMessage?.u?._id is Meteor.userId()
-			throw new Meteor.Error 'not-authorized', '[methods] updateMessage -> Not authorized'
+		hasPermission = RocketChat.authz.hasPermission(Meteor.userId(), 'edit-message', message.rid)
+		editAllowed = RocketChat.settings.get 'Message_AllowEditing'
+		editOwn = originalMessage?.u?._id is Meteor.userId()
+
+		unless hasPermission or (editAllowed and editOwn)
+			throw new Meteor.Error 'message-editing-not-allowed', "[methods] updateMessage -> Message editing not allowed"
 
 		console.log '[methods] updateMessage -> '.green, 'userId:', Meteor.userId(), 'arguments:', arguments
 
@@ -35,9 +34,9 @@ Meteor.methods
 
 		ChatMessage.update
 			_id: tempid
-			'u._id': Meteor.userId()
 		,
 			$set: message
 
 		# Meteor.defer ->
 		# 	RocketChat.callbacks.run 'afterSaveMessage', ChatMessage.findOne(message.id)
+

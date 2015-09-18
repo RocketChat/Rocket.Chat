@@ -40,11 +40,15 @@ class @ChatMessages
 		return -1
 
 	edit: (element, index) ->
-		return unless RocketChat.settings.get 'Message_AllowEditing'
+		id = element.getAttribute("id")
+		message = ChatMessage.findOne { _id: id } 
+		hasPermission = RocketChat.authz.hasAtLeastOnePermission('edit-message', message.rid)
+		editAllowed = RocketChat.settings.get 'Message_AllowEditing'
+		editOwn = message?.u?._id is Meteor.userId()
+
+		return unless hasPermission or (editAllowed and editOwn)
 		return if element.classList.contains("system")
 		this.clearEditing()
-		id = element.getAttribute("id")
-		message = ChatMessage.findOne { _id: id, 'u._id': Meteor.userId() }
 		this.input.value = message.msg
 		this.editing.element = element
 		this.editing.index = index or this.getEditingIndex(element)

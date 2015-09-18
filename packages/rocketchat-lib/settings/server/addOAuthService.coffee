@@ -5,7 +5,7 @@ Meteor.methods
 
 		console.log '[methods] addOAuthService -> '.green, 'userId:', Meteor.userId(), 'arguments:', arguments
 
-		unless Meteor.user()?.admin is true
+		unless RocketChat.authz.hasALeastOnePermission( Meteor.userId(), 'add-oath-service') is true
 			throw new Meteor.Error 'not-authorized', '[methods] addOAuthService -> Not authorized'
 
 		name = s.capitalize(name)

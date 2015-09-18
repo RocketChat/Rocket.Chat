@@ -2,10 +2,9 @@ Meteor.methods
 	eraseRoom: (rid) ->
 		fromId = Meteor.userId()
 
-		user = Meteor.users.findOne Meteor.userId()
-		if user.admin is true
+		roomType = ChatRoom.findOne(rid)?.t
 
-
+		if RocketChat.authz.hasPermission( fromId, "delete-#{roomType}", rid )
 			# console.log '[methods] eraseRoom -> '.green, 'fromId:', fromId, 'rid:', rid
 
 			# ChatRoom.update({ _id: rid}, {'$pull': { userWatching: Meteor.userId(), userIn: Meteor.userId() }})
@@ -18,3 +17,5 @@ Meteor.methods
 			ChatSubscription.remove({rid: rid})
 			ChatRoom.remove(rid)
 			# @TODO remove das mensagens lidas do usuário
+		else 
+			throw new Meteor.Error 'unauthorized'

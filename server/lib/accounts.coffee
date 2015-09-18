@@ -24,10 +24,6 @@ Accounts.onCreateUser (options, user) ->
 	user.status = 'offline'
 	user.active = not RocketChat.settings.get 'Accounts_ManuallyApproveNewUsers'
 
-	# when inserting first user, set admin: true
-	unless Meteor.users.findOne()
-		user.admin = true
-
 	if not user?.name? or user.name is ''
 		if options.profile?.name?
 			user.name = options.profile?.name
@@ -46,11 +42,20 @@ Accounts.onCreateUser (options, user) ->
 					verified: true
 				]
 
-	Meteor.defer ->
-		RocketChat.callbacks.run 'afterCreateUser', options, user
-
 	return user
 
+# Wrap insertUserDoc to allow executing code after Accounts.insertUserDoc is run
+Accounts.insertUserDoc = _.wrap Accounts.insertUserDoc, (insertUserDoc) ->
+	options = arguments[1]
+	user = arguments[2]
+	_id = insertUserDoc(options, user)
+
+	# when inserting first user give them admin privileges otherwise make a regular user
+	roleName = if Meteor.users.findOne() then 'user' else 'admin'
+	
+	RocketChat.authz.addUsersToRoles(_id, roleName)
+	RocketChat.callbacks.run 'afterCreateUser', options, user
+	return _id
 
 Accounts.validateLoginAttempt (login) ->
 	login = RocketChat.callbacks.run 'beforeValidateLogin', login

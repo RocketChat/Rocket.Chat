@@ -1,6 +1,4 @@
 Template.adminUsers.helpers
-	isAdmin: ->
-		return Meteor.user().admin is true
 	isReady: ->
 		return Template.instance().ready?.get()
 	users: ->
@@ -33,6 +31,8 @@ Template.adminUsers.onCreated ->
 	@filter = new ReactiveVar ''
 	@ready = new ReactiveVar true
 
+	RocketChat.TabBar.addButton({ id: 'invite-user', title: t('Invite_Users'), icon: 'icon-plus', template: 'adminInviteUser', order: 1 })
+
 	@autorun ->
 		filter = instance.filter.get()
 		limit = instance.limit.get()
@@ -43,10 +43,11 @@ Template.adminUsers.onCreated ->
 		if Session.get 'adminSelectedUser'
 			channelSubscription = instance.subscribe 'userChannels', Session.get 'adminSelectedUser'
 			RocketChat.TabBar.setData Meteor.users.findOne Session.get 'adminSelectedUser'
-			RocketChat.TabBar.addButton({ id: 'user-info', title: t('User_Info'), icon: 'icon-user', template: 'adminUserInfo', order: 1 })
-			# RocketChat.TabBar.addButton({ id: 'user-channel', title: t('User_Channels'), icon: 'icon-hash', template: 'adminUserChannels', order: 2 })
+			RocketChat.TabBar.addButton({ id: 'user-info', title: t('User_Info'), icon: 'icon-user', template: 'adminUserInfo', order: 2 })
+			# RocketChat.TabBar.addButton({ id: 'user-channel', title: t('User_Channels'), icon: 'icon-hash', template: 'adminUserChannels', order: 3 })
 		else
 			RocketChat.TabBar.reset()
+			RocketChat.TabBar.addButton({ id: 'invite-user', title: t('Invite_Users'), icon: 'icon-plus', template: 'adminInviteUser', order: 1 })
 
 	@users = ->
 		filter = _.trim instance.filter?.get()
