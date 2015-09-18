@@ -21,7 +21,7 @@ RocketChat.statistics.get = ->
 	statistics.totalDirect = RocketChat.models.Rooms.findByType('d').count()
 
 	# Message statistics
-	statistics.totalMessages = ChatMessage.find().count()
+	statistics.totalMessages = RocketChat.models.Messages.find().count()
 
 	m = ->
 		emit 1,

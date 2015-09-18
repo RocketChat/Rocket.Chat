@@ -4,7 +4,7 @@ Meteor.startup ->
 		up: ->
 
 			console.log 'Populate urls in messages'
-			query = ChatMessage.find({ 'urls.0': { $exists: true } })
+			query = RocketChat.models.Messages.find({ 'urls.0': { $exists: true } })
 			count = query.count()
 			query.forEach (message, index) ->
 				console.log "#{index + 1} / #{count}"
