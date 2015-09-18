@@ -8,8 +8,7 @@ Meteor.publish 'admin-settings', ->
 	unless @userId
 		return @ready()
 
-	user = Meteor.users.findOne @userId
-	if user.admin
+	if RocketChat.authz.hasPermission( @userId, 'view-privileged-setting')
 		return Settings.find()
 	else
 		return @ready()

@@ -1,10 +1,10 @@
-@import url(//fonts.googleapis.com/css?family=Roboto:300,400,500,600,700&subset=latin,cyrillic-ext,greek-ext,greek,vietnamese,latin-ext,cyrillic);
 @import "global/_variables.less";
 @import "utils/_lesshat.import.less";
 @import "utils/_reset.import.less";
 @import "utils/_keyframes.import.less";
 @import "utils/_preloader.import.less";
 @import "utils/_emojione.import.less";
+@import "utils/_fonts.import.less";
 .clearfix {
 	clear: both;
 	&::after {
@@ -2374,9 +2374,81 @@ a.github-fork {
 		display: none;
 		cursor: pointer;
 	}
-	&.own:hover:not(.system) .message-action {
-		display: inline-block;
+	&:hover:not(.system) .message-action {
+		display: block;
 	}
+	.message-cog-container {
+		position: relative;
+		display: inline-block;
+		.message-cog {
+			visibility: hidden;
+			cursor: pointer;
+		}
+	}
+	&:hover:not(.system) .message-cog {
+		visibility: visible;
+	}
+
+	@keyframes dropdown-in {
+		0% {
+			display: none;
+			opacity: 0;
+		}
+
+		1% {
+			display: block;
+			opacity: 0;
+			transform: scale(0);
+		}
+
+		100% {
+			opacity: 1;
+			transform: scale(1);
+		}
+	}
+
+	.message-dropdown {
+		position: absolute;
+		top: -5px;
+		left: -2px;
+		z-index: 1000;
+		display: none;
+		background-color: #fff;
+		border: 1px solid #eee;
+		border-radius: 4px;
+		overflow: hidden;
+		box-shadow: 1px 1px 4px #B3B3B3;
+		transition: transform .15s ease-in-out, opacity .15s ease-in-out;
+		animation: dropdown-in .15s ease-in-out;
+
+		ul {
+			display: flex;
+			display: -webkit-flex;
+			padding: 0px;
+			font-size: 14px;
+
+			li {
+				display: block;
+				padding: 0px 8px;
+				font-weight: 400;
+				line-height: 26px;
+				cursor: pointer;
+				color: #666;
+				&:first-child {
+					padding-left: 6px;
+					background-color: #f8f8f8;
+					border-right: 1px solid #eee;
+				}
+				&:last-child {
+					padding-right: 13px;
+				}
+				&:hover {
+					background-color: #eee;
+				}
+			}
+		}
+	}
+
 	.user {
 		display: inline-block;
 		font-weight: 600;
@@ -2427,6 +2499,12 @@ a.github-fork {
 				margin-left: 1px;
 			}
 		}
+
+		// .message-dropdown {
+		// 	top: 100%;
+		// 	left: 0;
+		// }
+
 		&:hover {
 			.time {
 				display: inline-block;

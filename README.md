@@ -14,6 +14,8 @@ Get the app for your Android phone:
 
 [![Rocket.Chat on Google Play](https://developer.android.com/images/brand/en_app_rgb_wo_45.png)](https://play.google.com/store/apps/details?id=com.konecty.rocket.chat)
 
+Now compatible with all Android devices as old as version 4.0.x - [dowload here](https://github.com/RocketChat/Rocket.Chat/wiki/Build-the-Android-Cordova-Web-App-and-connect-to-your-own-Rocket.Chat-Server).
+
 Try it on Ubuntu:
 
 [Deploy on VPS or standalone server](https://github.com/RocketChat/Rocket.Chat/wiki/Deploy-Rocket.Chat-without-docker)
@@ -75,6 +77,7 @@ It is a great solution for communities and companies wanting to privately host t
 - File Upload / Sharing
 - Full text search
 - Support for Okta SSO through SAML v2
+- Live chat / Messaging call center -  Alpha testing now! [Issue #519](https://github.com/RocketChat/Rocket.Chat/issues/519)
 - I18n - Supports 22 Languages [Internationalization with Lingohub](https://translate.lingohub.com/engelgabriel/rocket-dot-chat/dashboard)
 - Hubot Friendly - [Hubot Integration Project](https://github.com/RocketChat/hubot-rocketchat)
 - Media Embeds
@@ -94,7 +97,6 @@ It is a great solution for communities and companies wanting to privately host t
 
 - Native iOS Application [Rocket.Chat.iOS - HELP WANTED](https://github.com/RocketChat/Rocket.Chat.iOS)
 - Native Android Application [Issue #271 - HELP WANTED](https://github.com/RocketChat/Rocket.Chat/issues/271)
-- External popout window for chat with website visitor, like Zopim, Olark, LiveChat, SnapEngage [Issue #519](https://github.com/RocketChat/Rocket.Chat/issues/519)
 
 #### Planned
 

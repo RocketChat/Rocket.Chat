@@ -5,7 +5,11 @@ Meteor.methods
 
 		room = ChatRoom.findOne rid
 
-		if room.u._id isnt Meteor.userId() or room.t not in ['c', 'p']
+		if room.t not in ['c', 'p']
+			throw new Meteor.Error 403, 'Not allowed'
+
+		unless RocketChat.authz.hasPermission(Meteor.userId(), 'edit-room', rid)
+		#if room.u._id isnt Meteor.userId() and not hasPermission 
 			throw new Meteor.Error 403, 'Not allowed'
 
 		if not /^[0-9a-z-_]+$/.test name
