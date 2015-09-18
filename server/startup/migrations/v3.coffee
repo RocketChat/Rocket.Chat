@@ -58,7 +58,7 @@ Meteor.startup ->
 
 
 			console.log 'Fixing ChatMessage uid'
-			ChatMessage.find({uid: {$exists: true}}, {nonreactive: true}).forEach (message) ->
+			RocketChat.models.Messages.find({uid: {$exists: true}}, {nonreactive: true}).forEach (message) ->
 				update = {}
 				user = RocketChat.models.Users.findOneById(message.uid, {fields: {username: 1}})
 				if user?
