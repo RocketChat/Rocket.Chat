@@ -12,11 +12,11 @@ Npm.depends({
 // Loads all i18n.json files into tapi18nFiles
 var _ = Npm.require('underscore');
 var fs = Npm.require('fs');
-tapi18nFiles = fs.readdirSync('packages/rocketchat-ldap/i18n').forEach(function(filename) {
+tapi18nFiles = _.compact(_.map(fs.readdirSync('packages/rocketchat-ldap/i18n'), function(filename) {
     if (fs.statSync('packages/rocketchat-ldap/i18n/' + filename).size > 16) {
         return 'i18n/' + filename;
     }
-});
+}));
 
 Package.onUse(function(api) {
   api.versionsFrom('1.0.3.1');
@@ -35,7 +35,6 @@ Package.onUse(function(api) {
   // Common
   // TAP
   api.addFiles('package-tap.i18n');
-  api.addFiles(tapi18nFiles);
 
   // Client
   api.addFiles('ldap_client.js', 'client');
@@ -43,6 +42,7 @@ Package.onUse(function(api) {
   api.addFiles('ldap_server.js', 'server');
   api.addFiles('config_server.coffee', 'server');
 
+  api.addFiles(tapi18nFiles);
   
   api.export('LDAP', 'server');
   api.export('LDAP_DEFAULTS', 'server');
