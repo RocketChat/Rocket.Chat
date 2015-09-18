@@ -49,7 +49,7 @@ Meteor.startup ->
 
 					oldId = room._id
 					room._id = usernames.sort().join(',')
-					ChatRoom.insert(room)
+					RocketChat.models.Rooms.insert(room)
 					RocketChat.models.Rooms.removeById(oldId)
 					RocketChat.models.Subscriptions.update({rid: oldId}, {$set: {rid: room._id}}, {multi: true})
 					ChatMessage.update({rid: oldId}, {$set: {rid: room._id}}, {multi: true})

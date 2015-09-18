@@ -22,20 +22,19 @@ Meteor.methods
 
 		# name = s.slugify name
 
-		room =
-			usernames: members
-			ts: now
+		RocketChat.callbacks.run 'beforeCreateChannel', user,
 			t: 'c'
 			name: name
-			msgs: 0
+			ts: now
+			usernames: members
 			u:
-				_id: Meteor.userId()
+				_id: user._id
 				username: user.username
 
-		RocketChat.callbacks.run 'beforeCreateChannel', user, room
-
 		# create new room
-		room._id = ChatRoom.insert room
+		room = RocketChat.models.Rooms.createWithTypeNameUserAndUsernames 'c', name, user, members,
+			ts: now
+
 		# set creator as channel moderator.  permission limited to channel by scoping to rid
 		RocketChat.authz.addUsersToRoles(Meteor.userId(), 'moderator', room._id)
 

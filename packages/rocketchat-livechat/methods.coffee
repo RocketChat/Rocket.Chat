@@ -50,7 +50,7 @@ Meteor.methods
 			unless operator
 				throw new Meteor.Error 'no-operators', 'Sorry, no online operators'
 
-			ChatRoom.insert
+			RocketChat.models.Rooms.insert
 				_id: message.rid
 				name: guest.username
 				msgs: 1
