@@ -51,6 +51,7 @@ Meteor.startup ->
 
 	RocketChat.settings.addGroup 'Message'
 	RocketChat.settings.add 'Message_AllowEditing', true, { type: 'boolean', group: 'Message', public: true }
+	RocketChat.settings.add 'Message_AllowEditing_BlockEditInMinutes', 10, { type: 'int', group: 'Message', public: true }
 	RocketChat.settings.add 'Message_AllowDeleting', true, { type: 'boolean', group: 'Message', public: true }
 	RocketChat.settings.add 'Message_AllowPinning', true, { type: 'boolean', group: 'Message', public: true }
 	RocketChat.settings.add 'Message_ShowEditedStatus', true, { type: 'boolean', group: 'Message', public: true }
