@@ -2375,15 +2375,87 @@ a.github-fork {
 		cursor: pointer;
 	}
 	&:hover:not(.system) .edit-message {
-		display: inline-block;
+		display: block;
 	}
 	.delete-message {
 		display: none;
 		cursor: pointer;
 	}
 	&:hover:not(.system) .delete-message {
-		display: inline-block;
+		display: block;
 	}
+	.message-cog-container {
+		position: relative;
+		display: inline-block;
+		.message-cog {
+			visibility: hidden;
+			cursor: pointer;
+		}
+	}
+	&:hover:not(.system) .message-cog {
+		visibility: visible;
+	}
+
+	@keyframes dropdown-in {
+		0% {
+			display: none;
+			opacity: 0;
+		}
+
+		1% {
+			display: block;
+			opacity: 0;
+			transform: scale(0);
+		}
+
+		100% {
+			opacity: 1;
+			transform: scale(1);
+		}
+	}
+
+	.message-dropdown {
+		position: absolute;
+		top: -5px;
+		left: -2px;
+		z-index: 1000;
+		display: none;
+		background-color: #fff;
+		border: 1px solid #eee;
+		border-radius: 4px;
+		overflow: hidden;
+		box-shadow: 1px 1px 4px #B3B3B3;
+		transition: transform .3s ease-in-out, opacity .3s ease-in-out;
+		animation: dropdown-in .3s ease-in-out;
+
+		ul {
+			display: flex;
+			display: -webkit-flex;
+			padding: 0px;
+			font-size: 14px;
+
+			li {
+				display: block;
+				padding: 0px 8px;
+				font-weight: 400;
+				line-height: 26px;
+				cursor: pointer;
+				color: #666;
+				&:first-child {
+					padding-left: 6px;
+					background-color: #f8f8f8;
+					border-right: 1px solid #eee;
+				}
+				&:last-child {
+					padding-right: 13px;
+				}
+				&:hover {
+					background-color: #eee;
+				}
+			}
+		}
+	}
+
 	.user {
 		display: inline-block;
 		font-weight: 600;
@@ -2437,6 +2509,12 @@ a.github-fork {
 				float: left;
 			}
 		}
+
+		// .message-dropdown {
+		// 	top: 100%;
+		// 	left: 0;
+		// }
+
 		&:hover {
 			.time {
 				display: inline-block;
