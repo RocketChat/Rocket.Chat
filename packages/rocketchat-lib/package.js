@@ -71,6 +71,7 @@ Package.onUse(function(api) {
 	api.addFiles('server/models/Users.coffee', 'server');
 	api.addFiles('server/models/Subscriptions.coffee', 'server');
 	api.addFiles('server/models/Rooms.coffee', 'server');
+	api.addFiles('server/models/Messages.coffee', 'server');
 
 	// TAPi18n -- needs to be added last
 	api.addFiles(tapi18nFiles, ["client", "server"]);
