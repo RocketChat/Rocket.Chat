@@ -25,7 +25,7 @@ Meteor.methods
 		rooms = RocketChat.models.Rooms.findByUserId(userId).fetch()
 
 
-		ChatRoom.RocketChat.models.Rooms.removeByTypeContainingUsername 'd', user.username # Remove direct rooms with the user
+		RocketChat.models.Rooms.removeByTypeContainingUsername 'd', user.username # Remove direct rooms with the user
 		RocketChat.models.Rooms.removeUsernameFromAll user.username # Remove user from all other rooms
 		RocketChat.models.Users.removeById userId # Remove user from users database
 

@@ -300,7 +300,7 @@ class IrcClient
 		console.log '[irc] createDirectRoomWhenNotExist -> '.yellow, 'source:', source, 'target:', target
 		rid = [source._id, target._id].sort().join('')
 		now = new Date()
-		ChatRoom.RocketChat.models.Rooms.upsert
+		RocketChat.models.Rooms.upsert
 			_id: rid
 		,
 			$set:
