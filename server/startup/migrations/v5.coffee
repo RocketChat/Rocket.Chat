@@ -45,7 +45,7 @@ Meteor.startup ->
 					ChatMessage.update({'rid':room._id},{'$set':{'rid':newId}},{'multi':1})
 					RocketChat.models.Rooms.removeById(room._id)
 					room._id = newId
-					ChatRoom.insert(room)
+					RocketChat.models.Rooms.insert(room)
 				RocketChat.models.Subscriptions.update({'rid':room._id,'u._id':id0},{'$set':{'name':room.usernames[1]}})
 				RocketChat.models.Subscriptions.update({'rid':room._id,'u._id':id1},{'$set':{'name':room.usernames[0]}})
 

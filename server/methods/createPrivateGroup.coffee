@@ -24,17 +24,8 @@ Meteor.methods
 			throw new Meteor.Error 'duplicate-name'
 
 		# create new room
-		room =
-			usernames: members
+		room = RocketChat.models.Rooms.createWithTypeNameUserAndUsernames 'p', name, me, members,
 			ts: now
-			t: 'p'
-			u:
-				_id: me._id
-				username: me.username
-			name: name
-			msgs: 0
-
-		room._id = ChatRoom.insert room
 
 		# set creator as group moderator.  permission limited to group by scoping to rid
 		RocketChat.authz.addUsersToRoles(Meteor.userId(), 'moderator', room._id)

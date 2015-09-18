@@ -7,14 +7,8 @@ Meteor.startup ->
 				value: Random.id()
 
 		if not RocketChat.models.Rooms.findOneByName('general')?
-			ChatRoom.insert
-				_id: 'GENERAL'
+			RocketChat.models.Rooms.createWithIdTypeAndName 'GENERAL', 'c', 'general',
 				default: true
-				usernames: []
-				ts: new Date()
-				t: 'c'
-				name: 'general'
-				msgs: 0
 
 		if process.env.ADMIN_EMAIL? and process.env.ADMIN_PASS?
 			re = /^([\w-]+(?:\.[\w-]+)*)@((?:[\w-]+\.)*\w[\w-]{0,66})\.([a-z]{2,6}(?:\.[a-z]{2})?)$/i

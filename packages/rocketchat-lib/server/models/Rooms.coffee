@@ -292,23 +292,35 @@ RocketChat.models.Rooms = new class asd extends RocketChat.models._Base
 		return @update query, update
 
 
-	# # INSERT
-	# createWithRoomAndUser: (room, user, extraData) ->
-	# 	subscription =
-	# 		open: false
-	# 		alert: false
-	# 		unread: 0
-	# 		ts: room.ts
-	# 		rid: room._id
-	# 		name: room.name
-	# 		t: room.t
-	# 		u:
-	# 			_id: user._id
-	# 			username: user.username
+	# INSERT
+	createWithTypeNameUserAndUsernames: (type, name, user, usernames, extraData) ->
+		room =
+			t: type
+			name: name
+			usernames: usernames
+			msgs: 0
+			u:
+				_id: user._id
+				username: user.username
 
-	# 	_.extend subscription, extraData
+		_.extend room, extraData
 
-	# 	return @insert subscription
+		room._id = @insert room
+		return room
+
+	createWithIdTypeAndName: (_id, type, name, extraData) ->
+		room =
+			_id: _id
+			ts: new Date()
+			t: type
+			name: name
+			usernames: []
+			msgs: 0
+
+		_.extend room, extraData
+
+		@insert room
+		return room
 
 
 	# REMOVE
