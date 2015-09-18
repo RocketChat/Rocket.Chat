@@ -15,6 +15,19 @@ Package.onUse(function(api) {
 	api.use('underscore');
 	api.use('underscorestring:underscore.string');
 
+	// TAPi18n
+	api.use('templating', 'client');
+	var _ = Npm.require('underscore');
+	var fs = Npm.require('fs');
+	tapi18nFiles = _.compact(_.map(fs.readdirSync('packages/rocketchat-lib/i18n'), function(filename) {
+		if (fs.statSync('packages/rocketchat-lib/i18n/' + filename).size > 16) {
+			return 'i18n/' + filename;
+		}
+	}));
+	api.use(["tap:i18n@1.5.1"], ["client", "server"]);
+	api.imply('tap:i18n');
+	api.addFiles("package-tap.i18n", ["client", "server"]);
+
 	// COMMON
 	api.addFiles('lib/core.coffee');
 	api.addFiles('lib/callbacks.coffee');
@@ -23,7 +36,6 @@ Package.onUse(function(api) {
 	api.addFiles('settings/lib/settings.coffee');
 	api.addFiles('settings/lib/rocketchat.coffee');
 
-
 	// CLIENT
 	api.addFiles('client/Notifications.coffee', 'client');
 	api.addFiles('client/TabBar.coffee', 'client');
@@ -31,7 +43,6 @@ Package.onUse(function(api) {
 
 	api.addFiles('settings/client/startup.coffee', 'client');
 	api.addFiles('settings/client/rocketchat.coffee', 'client');
-
 
 	// SERVER
 	api.addFiles('server/functions/checkUsernameAvailability.coffee', 'server');
@@ -47,6 +58,7 @@ Package.onUse(function(api) {
 
 	api.addFiles('server/Notifications.coffee', 'server');
 
+	// Settings
 	api.addFiles('settings/server/methods.coffee', 'server');
 	api.addFiles('settings/server/publication.coffee', 'server');
 	api.addFiles('settings/server/startup.coffee', 'server');
@@ -55,6 +67,8 @@ Package.onUse(function(api) {
 
 	api.addFiles('server/cdn.coffee', 'server');
 
+	// TAPi18n -- needs to be added last
+	api.addFiles(tapi18nFiles, ["client", "server"]);
 
 	// EXPORT
 	api.export('RocketChat');

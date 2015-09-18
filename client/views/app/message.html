@@ -15,18 +15,9 @@
 		</span>
 
 		<ul class="message-dropdown">
-			
 			{{#each actions}}
-				<li class="{{id}}"><i class="{{icon}}"></i>{{label}}</li>
+				<li class="{{id}} {{classes}}"><i class="{{icon}}"></i>{{_t i18nLabel}}</li>
 			{{/each}}
-
-
-			{{!-- {{#if canEdit}}
-				<li class="edit-message"><i class="icon-pencil"></i>Edit</li>
-			{{/if}}
-			{{#if canDelete}}
-				<li class="delete-message"><i class="icon-trash-1"></i>Delete</li>
-			{{/if}} --}}
 		</ul>
 
 		<div class="body" dir="auto">
