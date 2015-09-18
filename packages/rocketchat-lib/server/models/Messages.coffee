@@ -1,7 +1,6 @@
 RocketChat.models.Messages = new class asd extends RocketChat.models._Base
 	constructor: ->
-		# @model = new Meteor.Collection 'rocketchat_message'
-		@model = @ChatMessage
+		@model = new Meteor.Collection 'rocketchat_message'
 
 		@tryEnsureIndex { 'rid': 1, 'ts': 1 }
 		@tryEnsureIndex { 'ets': 1 }, { sparse: 1 }
@@ -65,12 +64,12 @@ RocketChat.models.Messages = new class asd extends RocketChat.models._Base
 				$ne: true
 			rid: roomId
 			ts:
-				$gt = afterTimestamp
-				$lt = beforeTimestamp
+				$gt: afterTimestamp
+				$lt: beforeTimestamp
 
 		return @find query, options
 
-	findVisibleCreatedOrEditedAfterTimestamp: (timestamp) ->
+	findVisibleCreatedOrEditedAfterTimestamp: (timestamp, options) ->
 		query =
 			_hidden: { $ne: true }
 			$or: [
