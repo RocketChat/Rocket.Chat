@@ -10,7 +10,7 @@
 		{{#if private}}
 			<span class="private">{{_ "Only_you_can_see_this_message"}}</span>
 		{{/if}}
-
+		{{#if actions.length}}
 			<div class="message-cog-container">
 				<i class="icon-cog message-cog"></i>
 				<div class="message-dropdown">
@@ -22,6 +22,7 @@
 					</ul>
 				</div>
 			</div>
+		{{/if}}
 		</span>
 
 		<div class="body" dir="auto">
