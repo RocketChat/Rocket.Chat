@@ -24,9 +24,6 @@ Accounts.onCreateUser (options, user) ->
 	user.status = 'offline'
 	user.active = not RocketChat.settings.get 'Accounts_ManuallyApproveNewUsers'
 
-	# when inserting first user give them admin privileges otherwise make a regular user
-	roleName = if Meteor.users.findOne() then 'user' else 'admin'
-
 	if not user?.name? or user.name is ''
 		if options.profile?.name?
 			user.name = options.profile?.name
@@ -45,14 +42,20 @@ Accounts.onCreateUser (options, user) ->
 					verified: true
 				]
 
-	Meteor.defer ->
-		# need to defer role assignment because underlying alanning:roles requires user
-		# to exist in users collection
-		RocketChat.authz.addUsersToRoles( user._id, roleName)
-		RocketChat.callbacks.run 'afterCreateUser', options, user
-
 	return user
 
+# Wrap insertUserDoc to allow executing code after Accounts.insertUserDoc is run
+Accounts.insertUserDoc = _.wrap Accounts.insertUserDoc, (insertUserDoc) ->
+	options = arguments[1]
+	user = arguments[2]
+	_id = insertUserDoc(options, user)
+
+	# when inserting first user give them admin privileges otherwise make a regular user
+	roleName = if Meteor.users.findOne() then 'user' else 'admin'
+	
+	RocketChat.authz.addUsersToRoles(_id, roleName)
+	RocketChat.callbacks.run 'afterCreateUser', options, user
+	return _id
 
 Accounts.validateLoginAttempt (login) ->
 	login = RocketChat.callbacks.run 'beforeValidateLogin', login
