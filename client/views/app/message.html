@@ -11,17 +11,21 @@
 			<span class="private">{{_ "Only_you_can_see_this_message"}}</span>
 		{{/if}}
 
-			<i class="icon-cog message-cog"></i>
+			<div class="message-cog-container">
+				<i class="icon-cog message-cog"></i>
+				<div class="message-dropdown">
+					<ul>
+						<li class="message-dropdown-close"><i class="icon-cancel"></i></li>
+						{{#if canEdit}}
+							<li class="edit-message"><i class="icon-pencil"></i></li>
+						{{/if}}
+						{{#if canDelete}}
+							<li class="delete-message"><i class="icon-trash-1"></i></li>
+						{{/if}}
+					</ul>
+				</div>
+			</div>
 		</span>
-
-		<ul class="message-dropdown">
-			{{#if canEdit}}
-				<li class="edit-message"><i class="icon-pencil"></i>Edit</li>
-			{{/if}}
-			{{#if canDelete}}
-				<li class="delete-message"><i class="icon-trash-1"></i>Delete</li>
-			{{/if}}
-		</ul>
 
 		<div class="body" dir="auto">
 			{{{body}}}

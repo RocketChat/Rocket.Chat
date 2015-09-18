@@ -416,8 +416,8 @@ Template.room.events
 			input.focus()
 		, 200
 
-	'click .message-cog': (e) ->
-		message_id = e.currentTarget.parentNode.parentNode.id
+	'click .message-cog, click .message-dropdown-close': (e) ->
+		message_id = $(e.currentTarget).closest('.message').attr('id')
 
 		$("\##{message_id} .message-dropdown").toggle()
 
