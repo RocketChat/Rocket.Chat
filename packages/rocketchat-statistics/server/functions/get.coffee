@@ -49,7 +49,7 @@ RocketChat.statistics.get = ->
 		v.avg = v.sum / v.count
 		return v
 
-	result = ChatRoom.mapReduce(m, r, { finalize: f, out: "rocketchat_mr_statistics" })
+	result = RocketChat.models.Rooms.model.mapReduce(m, r, { finalize: f, out: "rocketchat_mr_statistics" })
 
 	statistics.maxRoomUsers = 0
 	statistics.avgChannelUsers = 0

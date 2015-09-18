@@ -8,7 +8,7 @@ Meteor.startup ->
 			toMigrate = [
 				{
 					source: new Meteor.Collection 'data.ChatRoom'
-					target: ChatRoom
+					target: RocketChat.models.Rooms.model
 				}
 				{
 					source: new Meteor.Collection 'data.ChatSubscription'

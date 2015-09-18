@@ -10,7 +10,7 @@ Meteor.startup ->
 				ChatMessage.update({'rid':room._id},{'$set':{'rid':'GENERAL'}},{'multi':1})
 				RocketChat.models.Rooms.removeById(room._id)
 				delete room._id
-				ChatRoom.RocketChat.models.Rooms.upsert({'_id':'GENERAL'},{$set: room})
+				RocketChat.models.Rooms.upsert({'_id':'GENERAL'},{$set: room})
 
 
 			console.log 'End'
