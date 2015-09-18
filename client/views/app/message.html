@@ -11,14 +11,18 @@
 			<span class="private">{{_ "Only_you_can_see_this_message"}}</span>
 		{{/if}}
 
-			<i class="icon-cog message-cog"></i>
+			<div class="message-cog-container">
+				<i class="icon-cog message-cog"></i>
+				<div class="message-dropdown">
+					<ul>
+						<li class="message-dropdown-close"><i class="icon-cancel"></i></li>
+						{{#each actions}}
+							<li class="{{id}} {{classes}}"><i class="{{icon}}"></i></li>
+						{{/each}}
+					</ul>
+				</div>
+			</div>
 		</span>
-
-		<ul class="message-dropdown">
-			{{#each actions}}
-				<li class="{{id}} {{classes}}"><i class="{{icon}}"></i>{{_t i18nLabel}}</li>
-			{{/each}}
-		</ul>
 
 		<div class="body" dir="auto">
 			{{{body}}}

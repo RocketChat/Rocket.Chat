@@ -407,7 +407,6 @@ Template.room.events
 
 	'click .message-cog': (e) ->
 		message_id = e.currentTarget.parentNode.parentNode.id
-
 		$("\##{message_id} .message-dropdown").toggle()
 
 	"click .editing-commands-cancel > a": (e) ->
