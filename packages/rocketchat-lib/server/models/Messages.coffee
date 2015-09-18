@@ -3,8 +3,11 @@ RocketChat.models.Messages = new class asd extends RocketChat.models._Base
 		# @model = new Meteor.Collection 'rocketchat_message'
 		@model = @ChatMessage
 
-	# 	@tryEnsureIndex { 'name': 1 }, { unique: 1, sparse: 1 }
-	# 	@tryEnsureIndex { 'u._id': 1 }
+		@tryEnsureIndex { 'rid': 1, 'ts': 1 }
+		@tryEnsureIndex { 'ets': 1 }, { sparse: 1 }
+		@tryEnsureIndex { 'rid': 1, 't': 1, 'u._id': 1 }
+		@tryEnsureIndex { 'expireAt': 1 }, { expireAfterSeconds: 0 }
+		@tryEnsureIndex { 'msg': 'text' }
 
 
 	# FIND ONE

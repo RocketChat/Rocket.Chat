@@ -3,7 +3,7 @@ Meteor.startup ->
 		version: 4
 		up: ->
 
-			try ChatMessage._dropIndex 'rid_1'
+			RocketChat.models.Messages.tryDropIndex 'rid_1'
 			RocketChat.models.Subscriptions.tryDropIndex 'u._id_1'
 
 
