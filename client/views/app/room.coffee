@@ -405,8 +405,8 @@ Template.room.events
 	'click .see-all': (e, instance) ->
 		instance.showUsersOffline.set(!instance.showUsersOffline.get())
 
-	'click .message-cog': (e) ->
-		message_id = e.currentTarget.parentNode.parentNode.id
+	'click .message-cog, click .message-dropdown-close': (e) ->
+		message_id = $(e.currentTarget).closest('.message').attr('id')
 		$("\##{message_id} .message-dropdown").toggle()
 
 	"click .editing-commands-cancel > a": (e) ->
