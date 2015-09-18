@@ -26,7 +26,7 @@ Meteor.methods
 
 
 		ChatRoom.RocketChat.models.Rooms.removeByTypeContainingUsername 'd', user.username # Remove direct rooms with the user
-		ChatRoom.update {}, { $pull: { usernames: user.username } }, { multi: true } # Remove user from all other rooms
+		RocketChat.models.Rooms.removeUsernameFromAll user.username # Remove user from all other rooms
 		RocketChat.models.Users.removeById userId # Remove user from users database
 
 		return true

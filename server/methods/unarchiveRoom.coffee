@@ -8,11 +8,7 @@ Meteor.methods
 		room = RocketChat.models.Rooms.findOneById rid
 
 		if room.u? and room.u._id is Meteor.userId() or Meteor.user().admin?
-			update =
-				$set:
-					archived: false
-
-			ChatRoom.update rid, update
+			RocketChat.models.Rooms.unarchiveById rid
 
 			for username in room.usernames
 				member = RocketChat.models.Users.findOneByUsername(username, { fields: { username: 1 }})

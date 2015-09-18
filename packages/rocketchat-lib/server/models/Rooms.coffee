@@ -145,19 +145,151 @@ RocketChat.models.Rooms = new class asd extends RocketChat.models._Base
 		return @find query, options
 
 
-	# # UPDATE
-	# archiveByRoomIdAndUserId: (roomId, userId) ->
-	# 	query =
-	# 		rid: roomId
-	# 		'u._id': userId
+	# UPDATE
+	archiveById: (_id) ->
+		query =
+			_id: _id
 
-	# 	update =
-	# 		$set:
-	# 			alert: false
-	# 			open: false
-	# 			archived: true
+		update =
+			$set:
+				archived: true
 
-	# 	return @update query, update
+		return @update query, update
+
+	unarchiveById: (_id) ->
+		query =
+			_id: _id
+
+		update =
+			$set:
+				archived: false
+
+		return @update query, update
+
+	addUsernameById: (_id, username) ->
+		query =
+			_id: _id
+
+		update =
+			$addToSet:
+				usernames: username
+
+		return @update query, update
+
+	addUsernamesById: (_id, usernames) ->
+		query =
+			_id: _id
+
+		update =
+			$addToSet:
+				usernames:
+					$each: usernames
+
+		return @update query, update
+
+	addUsernameByName: (name, username) ->
+		query =
+			name: name
+
+		update =
+			$addToSet:
+				usernames: username
+
+		return @update query, update
+
+	removeUsernameById: (_id, username) ->
+		query =
+			_id: _id
+
+		update =
+			$pull:
+				usernames: username
+
+		return @update query, update
+
+	removeUsernamesById: (_id, usernames) ->
+		query =
+			_id: _id
+
+		update =
+			$pull:
+				usernames:
+					$in: usernames
+
+		return @update query, update
+
+	removeUsernameFromAll: (username) ->
+		query = {}
+
+		update =
+			$pull:
+				usernames: username
+
+		return @update query, update, { multi: true }
+
+	removeUsernameByName: (name, username) ->
+		query =
+			name: name
+
+		update =
+			$pull:
+				usernames: username
+
+		return @update query, update
+
+	setNameById: (_id, name) ->
+		query =
+			_id: _id
+
+		update =
+			$set:
+				name: name
+
+		return @update query, update
+
+	incUnreadAndSetLastMessageTimestampById: (_id, inc=1, lastMessageTimestamp) ->
+		query =
+			_id: _id
+
+		update =
+			$set:
+				lm: lastMessageTimestamp
+			$inc:
+				msgs: inc
+
+		return @update query, update
+
+	replaceUsername: (previousUsername, username) ->
+		query =
+			usernames: previousUsername
+
+		update =
+			$set:
+				"usernames.$": username
+
+		return @update query, update, { multi: true }
+
+	replaceUsernameOfUserByUserId: (userId, username) ->
+		query =
+			"u._id": userId
+
+		update =
+			$set:
+				"u.username": username
+
+		return @update query, update, { multi: true }
+
+	setUserById: (_id, user) ->
+		query =
+			_id: _id
+
+		update =
+			$set:
+				u:
+					_id: user._id
+					username: user.username
+
+		return @update query, update
 
 
 	# # INSERT

@@ -16,11 +16,7 @@ Meteor.methods
 
 		RocketChat.callbacks.run 'beforeJoinRoom', user, room
 
-		update =
-			$addToSet:
-				usernames: user.username
-
-		ChatRoom.update rid, update
+		RocketChat.models.Rooms.addUsernameById rid, user.username
 
 		RocketChat.models.Subscriptions.createWithRoomAndUser room, user,
 			ts: now

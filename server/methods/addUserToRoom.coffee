@@ -13,15 +13,11 @@ Meteor.methods
 		if room.usernames.indexOf(data.username) isnt -1
 			return
 
-		now = new Date()
-
-		update =
-			$addToSet:
-				usernames: data.username
-
 		newUser = RocketChat.models.Users.findOneByUsername username: data.username
 
-		ChatRoom.update data.rid, update
+		RocketChat.models.Rooms.addUsernameById data.rid, data.username
+
+		now = new Date()
 
 		RocketChat.models.Subscriptions.createWithRoomAndUser room, newUser,
 			ts: now

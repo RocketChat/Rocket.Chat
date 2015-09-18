@@ -11,9 +11,7 @@ Meteor.methods
 
 		RocketChat.callbacks.run 'beforeLeaveRoom', user, room
 
-		update =
-			$pull:
-				usernames: user.username
+		RocketChat.models.Rooms.removeUsernameById rid, user.username
 
 		if room.t isnt 'c' and room.usernames.indexOf(user.username) isnt -1
 			removedUser = user
@@ -27,21 +25,15 @@ Meteor.methods
 					_id: removedUser._id
 					username: removedUser.username
 
-		if room.u? and room.u._id is Meteor.userId()
+		if room.u?._id is Meteor.userId()
 			newOwner = _.without(room.usernames, user.username)[0]
 			if newOwner?
 				newOwner = RocketChat.models.Users.findOneByUsername newOwner
 
 				if newOwner?
-					if not update.$set?
-						update.$set = {}
-
-					update.$set['u._id'] = newOwner._id
-					update.$set['u.username'] = newOwner.username
+					RocketChat.models.Rooms.setUserById rid, newOwner
 
 		RocketChat.models.Subscriptions.removeByRoomIdAndUserId rid, Meteor.userId()
-
-		ChatRoom.update rid, update
 
 		Meteor.defer ->
 

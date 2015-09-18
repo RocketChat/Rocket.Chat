@@ -189,17 +189,9 @@ class IrcClient
 		for member in appendMembers
 			@createUserWhenNotExist member
 
-		update =
-			$pull:
-				usernames:
-					$in: removeMembers
-		ChatRoom.update room._id, update
-		update =
-			$addToSet:
-				usernames:
-					$each: appendMembers
+		RocketChat.models.Rooms.removeUsernamesById room._id, removeMembers
+		RocketChat.models.Rooms.addUsernamesById room._id, appendMembers
 
-		ChatRoom.update room._id, update
 		@isJoiningRoom = false
 		roomName = @pendingJoinRoomBuf.shift()
 		if roomName
@@ -273,25 +265,17 @@ class IrcClient
 
 		console.log '[irc] onAddMemberToRoom -> '.yellow, 'roomName:', roomName, 'member:', member
 		@createUserWhenNotExist member
-		update =
-			$addToSet:
-				usernames: member
 
-		ChatRoom.update {name: roomName}, update
+		RocketChat.models.Rooms.addUsernameByName roomName, member
 
 	onRemoveMemberFromRoom: (member, roomName)->
 		console.log '[irc] onRemoveMemberFromRoom -> '.yellow, 'roomName:', roomName, 'member:', member
-		update =
-			$pull:
-				usernames: member
-		ChatRoom.update {name: roomName}, update
+		RocketChat.models.Rooms.removeUsernameByName roomName, member
 
 	onQuiteMember: (member) ->
 		console.log '[irc] onQuiteMember ->'.yellow, 'username:', member
-		update =
-			$pull:
-				usernames: member
-		ChatRoom.update {}, update, {multi: true}
+		RocketChat.models.Rooms.removeUsernameFromAll member
+
 		Meteor.users.update {name: member},
 			$set:
 				status: 'offline'

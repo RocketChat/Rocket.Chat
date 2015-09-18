@@ -53,7 +53,7 @@ Meteor.startup ->
 			console.log 'Adding u.username to all documents'
 			RocketChat.models.Users.find({},{'username':1}).forEach (user) ->
 				console.log 'Adding: u.username ' + user.username + ' to all document'
-				ChatRoom.update({'u._id':user._id},{'$set':{'u.username':user.username}},{'multi':1})
+				RocketChat.models.Rooms.update({'u._id':user._id},{'$set':{'u.username':user.username}},{'multi':1})
 				RocketChat.models.Subscriptions.update({'u._id':user._id},{'$set':{'u.username':user.username}},{'multi':1})
 				ChatMessage.update({'u._id':user._id},{'$set':{'u.username':user.username}},{'multi':1})
 				ChatMessage.update({'uid':user._id},{'$set':{'u':user}},{'multi':1})

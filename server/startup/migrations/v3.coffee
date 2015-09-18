@@ -54,7 +54,7 @@ Meteor.startup ->
 					RocketChat.models.Subscriptions.update({rid: oldId}, {$set: {rid: room._id}}, {multi: true})
 					ChatMessage.update({rid: oldId}, {$set: {rid: room._id}}, {multi: true})
 				else
-					ChatRoom.update(room._id, update)
+					RocketChat.models.Rooms.update(room._id, update)
 
 
 			console.log 'Fixing ChatMessage uid'

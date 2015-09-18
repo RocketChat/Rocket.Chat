@@ -12,7 +12,7 @@ Meteor.methods
 				$set:
 					archived: true
 
-			ChatRoom.update rid, update
+			RocketChat.models.Rooms.archiveById rid
 
 			for username in room.usernames
 				member = RocketChat.models.Users.findOneByUsername(username, { fields: { username: 1 }})
