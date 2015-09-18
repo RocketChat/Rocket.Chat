@@ -60,7 +60,7 @@ Meteor.startup ->
 		icon: 'icon-pencil'
 		i18nLabel: 'rocketchat-lib:Edit'
 		action: (event, instance) ->
-			message = event.currentTarget.parentNode.parentNode
+			message = $(event.currentTarget).closest('.message')[0]
 			instance.chatMessages.edit(message)
 			$("\##{message.id} .message-dropdown").hide()
 			input = instance.find('.input-message')
@@ -70,16 +70,15 @@ Meteor.startup ->
 		validation: (message) ->
 			return RocketChat.authz.hasAtLeastOnePermission('edit-message', message.rid ) or RocketChat.settings.get('Message_AllowEditing') and message.u?._id is Meteor.userId()
 		order: 1
+
 	RocketChat.MessageAction.addButton
 		id: 'delete-message'
 		icon: 'icon-trash-1'
 		i18nLabel: 'rocketchat-lib:Delete'
 		action: (event, instance) ->
 			message = @_arguments[1]
-			msg = event.currentTarget.parentNode.parentNode
-
+			msg = $(event.currentTarget).closest('.message')[0]
 			$("\##{msg.id} .message-dropdown").hide()
-
 			return if msg.classList.contains("system")
 			swal {
 				title: t('Are_you_sure')

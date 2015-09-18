@@ -405,9 +405,13 @@ Template.room.events
 	'click .see-all': (e, instance) ->
 		instance.showUsersOffline.set(!instance.showUsersOffline.get())
 
-	'click .message-cog, click .message-dropdown-close': (e) ->
+	'click .message-cog': (e) ->
 		message_id = $(e.currentTarget).closest('.message').attr('id')
-		$("\##{message_id} .message-dropdown").toggle()
+		$('.message-dropdown:visible').hide()
+		$("\##{message_id} .message-dropdown").show()
+
+	'click .message-dropdown-close': ->
+		$('.message-dropdown:visible').hide()
 
 	"click .editing-commands-cancel > a": (e) ->
 		Template.instance().chatMessages.clearEditing()
