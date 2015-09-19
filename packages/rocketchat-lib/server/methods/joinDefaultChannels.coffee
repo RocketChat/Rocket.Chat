@@ -24,11 +24,4 @@ Meteor.methods
 					unread: 1
 
 				# Insert user joined message
-				ChatMessage.insert
-					rid: room._id
-					ts: new Date()
-					t: 'uj'
-					msg: ''
-					u:
-						_id: user._id
-						username: user.username
+				RocketChat.models.Messages.createUserJoinWithRoomIdAndUser room._id, user

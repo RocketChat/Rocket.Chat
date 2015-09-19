@@ -95,21 +95,40 @@ RocketChat.models.Messages = new class asd extends RocketChat.models._Base
 	# 	return @update query, update
 
 
-	# # INSERT
-	# createWithTypeNameUserAndUsernames: (type, name, user, usernames, extraData) ->
-	# 	room =
-	# 		t: type
-	# 		name: name
-	# 		usernames: usernames
-	# 		msgs: 0
-	# 		u:
-	# 			_id: user._id
-	# 			username: user.username
+	# INSERT
+	createWithTypeRoomIdMessageAndUser: (type, roomId, message, user, extraData) ->
+		record =
+			t: type
+			rid: roomId
+			ts: new Date
+			msg: message
+			u:
+				_id: user._id
+				username: user.username
 
-	# 	_.extend room, extraData
+		_.extend record, extraData
 
-	# 	room._id = @insert room
-	# 	return room
+		record._id = @insert record
+		return record
+
+	createUserJoinWithRoomIdAndUser: (roomId, user, extraData) ->
+		message = user.name or user.username
+		return @createWithTypeRoomIdMessageAndUser 'uj', roomId, message, user, extraData
+
+	createUserLeaveWithRoomIdAndUser: (roomId, user, extraData) ->
+		message = user.name or user.username
+		return @createWithTypeRoomIdMessageAndUser 'ul', roomId, message, user, extraData
+
+	createUserRemovedWithRoomIdAndUser: (roomId, user, extraData) ->
+		message = user.name or user.username
+		return @createWithTypeRoomIdMessageAndUser 'ru', roomId, message, user, extraData
+
+	createUserAddedWithRoomIdAndUser: (roomId, user, extraData) ->
+		message = user.name or user.username
+		return @createWithTypeRoomIdMessageAndUser 'au', roomId, message, user, extraData
+
+	createRoomRenamedWithRoomIdRoomNameAndUser: (roomId, roomName, user, extraData) ->
+		return @createWithTypeRoomIdMessageAndUser 'r', roomId, roomName, user, extraData
 
 
 	# REMOVE

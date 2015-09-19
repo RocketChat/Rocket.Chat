@@ -20,13 +20,6 @@ Meteor.methods
 			when 'p'
 				RocketChat.authz.removeUsersFromRole(removedUser._id; 'group-moderator',  data.rid)
 
-		ChatMessage.insert
-			rid: data.rid
-			ts: (new Date)
-			t: 'ru'
-			msg: removedUser.name
-			u:
-				_id: Meteor.userId()
-				username: Meteor.user().username
+		RocketChat.models.Messages.createUserRemovedWithRoomIdAndUser data.rid, removedUser
 
 		return true

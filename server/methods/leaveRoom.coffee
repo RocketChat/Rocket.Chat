@@ -16,14 +16,7 @@ Meteor.methods
 		if room.t isnt 'c' and room.usernames.indexOf(user.username) isnt -1
 			removedUser = user
 
-			ChatMessage.insert
-				rid: rid
-				ts: (new Date)
-				t: 'ul'
-				msg: removedUser.name
-				u:
-					_id: removedUser._id
-					username: removedUser.username
+			RocketChat.models.Messages.createUserJoinWithRoomIdAndUser rid, removedUser
 
 		if room.u?._id is Meteor.userId()
 			newOwner = _.without(room.usernames, user.username)[0]

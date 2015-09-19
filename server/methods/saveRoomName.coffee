@@ -28,13 +28,6 @@ Meteor.methods
 
 		RocketChat.models.Subscriptions.updateNameByRoomId rid, name
 
-		ChatMessage.insert
-			rid: rid
-			ts: (new Date)
-			t: 'r'
-			msg: name
-			u:
-				_id: Meteor.userId()
-				username: Meteor.user().username
+		RocketChat.models.Messages.createRoomRenamedWithRoomIdRoomNameAndUser rid, name, Meteor.user()
 
 		return name

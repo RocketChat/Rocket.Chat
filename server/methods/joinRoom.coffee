@@ -24,17 +24,10 @@ Meteor.methods
 			alert: true
 			unread: 1
 
-		ChatMessage.insert
-			rid: rid
+		RocketChat.models.Messages.createUserJoinWithRoomIdAndUser rid, user,
 			ts: now
-			t: 'uj'
-			msg: user.name
-			u:
-				_id: user._id
-				username: user.username
 
 		Meteor.defer ->
-
 			RocketChat.callbacks.run 'afterJoinRoom', user, room
 
 		return true
