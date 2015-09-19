@@ -112,9 +112,21 @@ RocketChat.models.Messages = new class asd extends RocketChat.models._Base
 	# 	return room
 
 
-	# # REMOVE
-	# removeById: (_id) ->
-	# 	query =
-	# 		_id: _id
+	# REMOVE
+	removeById: (_id) ->
+		query =
+			_id: _id
 
-	# 	return @remove query
+		return @remove query
+
+	removeByRoomId: (roomId) ->
+		query =
+			rid: roomId
+
+		return @remove query
+
+	removeByUserId: (userId) ->
+		query =
+			"u._id": userId
+
+		return @remove query

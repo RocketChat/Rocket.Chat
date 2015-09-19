@@ -7,7 +7,7 @@ Meteor.startup ->
 			RocketChat.models.Rooms.find({msgs: {'$lt': 2}}).forEach (room) ->
 				console.log 'Dropped: ', room.name
 				RocketChat.models.Rooms.removeById room._id
-				ChatMessage.remove {rid: room._id}
+				RocketChat.models.Messages.removeByRoomId room._id
 				RocketChat.models.Subscriptions.removeByRoomId room._id
 
 
@@ -15,7 +15,7 @@ Meteor.startup ->
 			RocketChat.models.Rooms.find({usernames: {'$size':1}}).forEach (room) ->
 				console.log 'Dropped: ', room.name
 				RocketChat.models.Rooms.removeById room._id
-				ChatMessage.remove {rid: room._id}
+				RocketChat.models.Messages.removeByRoomId room._id
 				RocketChat.models.Subscriptions.removeByRoomId room._id
 
 
