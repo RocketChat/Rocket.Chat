@@ -36,9 +36,7 @@ RocketChat.MessageAction = new class
 		allButtons = _.toArray buttons.get()
 		if message
 			allowedButtons = _.compact _.map allButtons, (button) -> 
-				unless button.validation?
-					return true
-				if button.validation(message)
+				if not button.validation? or button.validation(message)
 					return button
 		else
 			allowedButtons = allButtons

@@ -441,14 +441,6 @@ Template.room.events
 		else
 			instance.chatMessages.pinMsg(message)
 
-	'click .star-message': (event, instance) ->
-		message = @_arguments[1]
-		instance.chatMessages.starMsg(message)
-
-	'click .unstar-message': (event, instance) ->
-		message = @_arguments[1]
-		instance.chatMessages.unstarMsg(message)
-
 	'click .start-video': (event) ->
 		_id = Template.instance().data._id
 		webrtc.to = _id.replace(Meteor.userId(), '')

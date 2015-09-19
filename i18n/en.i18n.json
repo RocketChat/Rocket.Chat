@@ -166,8 +166,6 @@
   "Message" : "Message",
   "Message_AllowDeleting" : "Allow Message Deleting",
   "Message_AllowEditing" : "Allow Message Editing",
-  "Message_AllowPinning" : "Allow Message Pinning",
-  "Message_AllowStarring" : "Allow Message Starring",
   "Message_deleting_not_allowed" : "Message deleting not allowed",
   "Message_editing_not_allowed" : "Message editing not allowed",
   "Message_MaxAllowedSize" : "Message max allowed size",

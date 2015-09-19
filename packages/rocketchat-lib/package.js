@@ -52,7 +52,6 @@ Package.onUse(function(api) {
 	api.addFiles('server/methods/sendInvitationEmail.coffee', 'server');
 	api.addFiles('server/methods/setAdminStatus.coffee', 'server');
 	api.addFiles('server/methods/setUsername.coffee', 'server');
-	api.addFiles('server/methods/starMessage.coffee', 'server');
 	api.addFiles('server/methods/updateUser.coffee', 'server');
 
 	api.addFiles('server/sendMessage.coffee', 'server');

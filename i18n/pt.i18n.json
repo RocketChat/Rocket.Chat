@@ -152,7 +152,6 @@
   "Message" : "Mensagem",
   "Message_AllowDeleting" : "Permitir Exclusão de Mensagem",
   "Message_AllowEditing" : "Permitir Edição de Mensagem",
-  "Message_AllowPinning" : "Permitir Fixar Mensagem",
   "Message_deleting_not_allowed" : "Exclusão de mensagem não permitido",
   "Message_editing_not_allowed" : "Edição de mensagem não permitido",
   "Message_pinning_not_allowed" : "Não Permitir Fixar Mensagem",

@@ -6,10 +6,7 @@ Meteor.methods
 		if not RocketChat.settings.get 'Message_AllowStarring'
 			throw new Meteor.Error 'message-starring-not-allowed', "[methods] starMessage -> Message starring not allowed"
 
-		console.log '[methods] starMessage -> '.green, 'userId:', Meteor.userId(), 'arguments:', arguments
-
 		ChatMessage.update
 			_id: message._id
 		,
-			$addToSet:
-				starred: Meteor.userId()
+			$set: { starred: !!message.starred }
