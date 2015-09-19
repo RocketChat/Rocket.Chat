@@ -12,7 +12,7 @@ Meteor.methods
 		unless user?
 			throw new Meteor.Error 'not-found', '[methods] deleteUser -> User not found'
 
-		ChatMessage.remove { "u._id": userId } # Remove user messages
+		RocketChat.models.Messages.removeByUserId userId # Remove user messages
 
 		RocketChat.models.Subscriptions.findByUserId(userId).forEach (subscription) ->
 			room = RocketChat.models.Rooms.findOneById subscription.rid

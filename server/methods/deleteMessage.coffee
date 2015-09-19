@@ -38,7 +38,7 @@ Meteor.methods
 
 		else
 			if not showDeletedStatus
-				ChatMessage.remove deleteQuery
+				RocketChat.models.Messages.removeById originalMessage._id
 
 		if showDeletedStatus
 			ChatMessage.update deleteQuery,

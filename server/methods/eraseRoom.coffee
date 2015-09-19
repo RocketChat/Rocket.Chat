@@ -9,7 +9,7 @@ Meteor.methods
 
 			# ChatRoom.update({ _id: rid}, {'$pull': { userWatching: Meteor.userId(), userIn: Meteor.userId() }})
 
-			ChatMessage.remove({rid: rid})
+			RocketChat.models.Messages.removeByRoomId rid
 			RocketChat.models.Subscriptions.removeByRoomId rid
 			RocketChat.models.Rooms.removeById rid
 			# @TODO remove das mensagens lidas do usuário
