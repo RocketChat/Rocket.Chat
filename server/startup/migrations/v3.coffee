@@ -52,7 +52,7 @@ Meteor.startup ->
 					RocketChat.models.Rooms.insert(room)
 					RocketChat.models.Rooms.removeById(oldId)
 					RocketChat.models.Subscriptions.update({rid: oldId}, {$set: {rid: room._id}}, {multi: true})
-					ChatMessage.update({rid: oldId}, {$set: {rid: room._id}}, {multi: true})
+					RocketChat.models.Messages.update({rid: oldId}, {$set: {rid: room._id}}, {multi: true})
 				else
 					RocketChat.models.Rooms.update(room._id, update)
 
@@ -69,6 +69,6 @@ Meteor.startup ->
 					update.$unset.uid = 1
 
 				if Object.keys(update).length > 0
-					ChatMessage.update(message._id, update)
+					RocketChat.models.Messages.update(message._id, update)
 
 			console.log 'End'

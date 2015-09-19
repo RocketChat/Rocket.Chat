@@ -68,7 +68,7 @@ Meteor.startup ->
 							message.msg = message.msg.replace "https://demo.rocket.chat/cfs/files/Files/#{cfsRecord._id}", Meteor.absoluteUrl() + url
 							message.msg = message.msg.replace "https://rocket.chat/cfs/files/Files/#{cfsRecord._id}", Meteor.absoluteUrl() + url
 
-					ChatMessage.update {_id: message._id}, {$set: {urls: message.urls, msg: message.msg}}
+					RocketChat.models.Messages.update {_id: message._id}, {$set: {urls: message.urls, msg: message.msg}}
 
 				oldFilesCollection.remove  _id: cfsRecord._id
 				oldGridFSCollection.remove _id: oldGridFsFile._id

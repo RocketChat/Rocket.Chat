@@ -42,7 +42,7 @@ Meteor.startup ->
 				if (newId != room._id)
 					console.log 'Fixing: _id ' + room._id + ' to ' + newId
 					RocketChat.models.Subscriptions.update({'rid':room._id},{'$set':{'rid':newId}},{'multi':1})
-					ChatMessage.update({'rid':room._id},{'$set':{'rid':newId}},{'multi':1})
+					RocketChat.models.Messages.update({'rid':room._id},{'$set':{'rid':newId}},{'multi':1})
 					RocketChat.models.Rooms.removeById(room._id)
 					room._id = newId
 					RocketChat.models.Rooms.insert(room)
@@ -55,10 +55,10 @@ Meteor.startup ->
 				console.log 'Adding: u.username ' + user.username + ' to all document'
 				RocketChat.models.Rooms.update({'u._id':user._id},{'$set':{'u.username':user.username}},{'multi':1})
 				RocketChat.models.Subscriptions.update({'u._id':user._id},{'$set':{'u.username':user.username}},{'multi':1})
-				ChatMessage.update({'u._id':user._id},{'$set':{'u.username':user.username}},{'multi':1})
-				ChatMessage.update({'uid':user._id},{'$set':{'u':user}},{'multi':1})
-				ChatMessage.update({'by':user._id},{'$set':{'u':user}},{'multi':1})
-				ChatMessage.update({'uid':{'$exists':1}},{'$unset':{'uid':1,'by':1}},{'multi':1})
+				RocketChat.models.Messages.update({'u._id':user._id},{'$set':{'u.username':user.username}},{'multi':1})
+				RocketChat.models.Messages.update({'uid':user._id},{'$set':{'u':user}},{'multi':1})
+				RocketChat.models.Messages.update({'by':user._id},{'$set':{'u':user}},{'multi':1})
+				RocketChat.models.Messages.update({'uid':{'$exists':1}},{'$unset':{'uid':1,'by':1}},{'multi':1})
 
 
 			console.log 'End'
