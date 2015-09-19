@@ -1,5 +1,7 @@
 Template.message.helpers
-
+	actions: ->
+		return RocketChat.MessageAction.getButtons(this)
+		
 	own: ->
 		return 'own' if this.u?._id is Meteor.userId()
 

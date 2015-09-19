@@ -1,12 +1,15 @@
+currentTracker = undefined
+
 openRoom = (type, name) ->
 	Session.set 'openedRoom', null
 
 	Meteor.defer ->
-		Tracker.autorun (c) ->
+		currentTracker = Tracker.autorun (c) ->
 			if RoomManager.open(type + name).ready() isnt true
 				BlazeLayout.render 'main', {center: 'loading'}
 				return
 
+			currentTracker = undefined
 			c.stop()
 
 			query =
@@ -60,6 +63,9 @@ openRoom = (type, name) ->
 
 roomExit = ->
 	BlazeLayout.render 'main', {center: 'none'}
+
+	if currentTracker?
+		currentTracker.stop()
 
 	mainNode = document.querySelector('.main-content')
 	if mainNode?
