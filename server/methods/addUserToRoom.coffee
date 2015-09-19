@@ -25,13 +25,7 @@ Meteor.methods
 			alert: true
 			unread: 1
 
-		ChatMessage.insert
-			rid: data.rid
+		RocketChat.models.Messages.createUserAddedWithRoomIdAndUser data.rid, newUser,
 			ts: now
-			t: 'au'
-			msg: newUser.name
-			u:
-				_id: fromId
-				username: Meteor.user().username
 
 		return true
