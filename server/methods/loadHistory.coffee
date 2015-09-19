@@ -20,7 +20,10 @@ Meteor.methods
 		if not RocketChat.settings.get 'Message_ShowEditedStatus'
 			options.fields = { ets: 0 }
 
-		messages = ChatMessage.find(query, options).fetch()
+		messages = _.map ChatMessage.find(query, options).fetch(), (message) -> 
+			message.starred = _.contains message.starred, fromId
+			return message
+
 		unreadNotLoaded = 0
 
 		if ls?
