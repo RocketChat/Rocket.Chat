@@ -1,6 +1,6 @@
 ![Rocket.Chat logo](https://rocket.chat/images/logo/logo-dark.svg?v3)
 
-The Complete Open Source Chat Solution
+The Complete Open Source Chat    Solution
 
 ## Demo
 
