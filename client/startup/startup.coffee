@@ -31,7 +31,8 @@ Meteor.startup ->
 
 		language = language.toLowerCase()
 		if language isnt 'en'
-			Meteor.call 'loadLocale', language, (data) ->
+			Meteor.call 'loadLocale', language, (err, localeFn) ->
+				Function(localeFn)()
 				moment.locale(language)
 
 	Tracker.autorun (c) ->
