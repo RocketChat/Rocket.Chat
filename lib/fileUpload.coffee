@@ -20,3 +20,5 @@ if UploadFS?
 			contentTypes: ['image/*', 'audio/*']
 		onFinishUpload: ->
 			console.log arguments
+		onRead: (fileId, file, req, res) ->
+			res.setHeader 'content-disposition', 'download'
