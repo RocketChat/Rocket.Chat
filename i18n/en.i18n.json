@@ -166,7 +166,7 @@
   "Message" : "Message",
   "Message_AllowDeleting" : "Allow Message Deleting",
   "Message_AllowEditing" : "Allow Message Editing",
-  "Message_AllowEditing_BlockEditInMinutes" : "Block message editing after (in minutes)",
+  "Message_AllowEditing_BlockEditInMinutes" : "Block message editing after (in minutes - 0 to disable)",
   "Message_AllowPinning" : "Allow Message Pinning",
   "Message_deleting_not_allowed" : "Message deleting not allowed",
   "Message_editing_not_allowed" : "Message editing not allowed",
