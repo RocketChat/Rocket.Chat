@@ -12,6 +12,7 @@
 			console.log 'connecting in', "localhost:#{record.extraInformation.port}"
 			connections[record.extraInformation.port] = DDP.connect("localhost:#{record.extraInformation.port}", {_dontPrintErrors: true})
 			connections[record.extraInformation.port].call 'broadcastAuth', record._id, InstanceStatus.id(), (err, ok) ->
+				connections[record.extraInformation.port].broadcastAuth = ok
 				console.log "broadcastAuth with localhost:#{record.extraInformation.port}", ok
 
 		removed: (record) ->
@@ -31,7 +32,9 @@
 		showConnections: ->
 			data = {}
 			for port, connection of connections
-				data[port] = connection.status()
+				data[port] =
+					status: connection.status()
+					broadcastAuth: connection.broadcastAuth
 			return data
 
 	emitters = {}
@@ -51,9 +54,6 @@
 			check remoteId, String
 
 			@unblock()
-			console.log 'InstanceStatus.id(), selfId:', InstanceStatus.id(), selfId
-			console.log 'remoteId, InstanceStatus.getCollection().findOne({_id: remoteId}):', remoteId, InstanceStatus.getCollection().findOne({_id: remoteId})
-
 			if InstanceStatus.id() is selfId and InstanceStatus.getCollection().findOne({_id: remoteId})?
 				@connection.broadcastAuth = true
 
