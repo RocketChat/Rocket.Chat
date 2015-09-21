@@ -152,7 +152,7 @@
   "Message" : "Mensagem",
   "Message_AllowDeleting" : "Permitir Exclusão de Mensagem",
   "Message_AllowEditing" : "Permitir Edição de Mensagem",
-  "Message_AllowEditing_BlockEditInMinutes" : "Bloquear edição de mensagens após (em minutos)",
+  "Message_AllowEditing_BlockEditInMinutes" : "Bloquear edição de mensagens após (em minutos - 0 para desabilitar)",
   "Message_AllowPinning" : "Permitir Fixar Mensagem",
   "Message_deleting_not_allowed" : "Exclusão de mensagem não permitido",
   "Message_editing_not_allowed" : "Edição de mensagem não permitido",
