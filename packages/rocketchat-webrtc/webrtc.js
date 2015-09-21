@@ -67,7 +67,7 @@ webrtc.activateLocalStream = function() {
 			webrtc.onSelfUrl(URL.createObjectURL(stream));
 			webrtc.activeMediastream = stream;
 
-		}, function(e) { webrtc.log('getUserMedia failed during activateLocalStream ' + e); });
+		}, function(e) { webrtc.log('getUserMedia failed during activateLocalStream ', e); });
 }
 
 // run start(true) to initiate a call
@@ -142,7 +142,7 @@ webrtc.start = function (isCaller, fromUsername) {
 
 
 
-		var media ={ "audio": true, "video": {mandatory: {minWidth:1280, minHeight:720}}} ;
+		var media ={ "audio": true, "video": true};
 
 
 		// get the local stream, show it in the local video element and send it
@@ -158,7 +158,7 @@ webrtc.start = function (isCaller, fromUsername) {
 				webrtc.pc.createAnswer(gotDescription, onError);
 			}
 
-		}, function(e) { webrtc.log('getUserMedia failed' + e); });
+		}, function(e) { webrtc.log('getUserMedia failed', e); });
 
 	}
 
