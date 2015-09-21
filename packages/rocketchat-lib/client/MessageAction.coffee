@@ -74,10 +74,13 @@ Meteor.startup ->
 
 			return unless hasPermission or (isEditAllowed and editOwn)
 
-			msgTs = moment(message.ts) if message.ts?
-			currentTsDiff = moment().diff(msgTs, 'minutes') if msgTs?
-
-			return currentTsDiff < RocketChat.settings.get 'Message_AllowEditing_BlockEditInMinutes'
+			blockEditInMinutes = RocketChat.settings.get 'Message_AllowEditing_BlockEditInMinutes'
+			if blockEditInMinutes? and blockEditInMinutes isnt 0
+				msgTs = moment(message.ts) if message.ts?
+				currentTsDiff = moment().diff(msgTs, 'minutes') if msgTs?
+				return currentTsDiff < blockEditInMinutes
+			else
+				return true
 		order: 1
 
 	RocketChat.MessageAction.addButton

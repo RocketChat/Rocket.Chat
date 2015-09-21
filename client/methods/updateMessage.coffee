@@ -13,12 +13,13 @@ Meteor.methods
 			toastr.error t('Message_editing_not_allowed')
 			throw new Meteor.Error 'message-editing-not-allowed', t('Message_editing_not_allowed')
 
-		msgTs = moment(originalMessage.ts) if originalMessage.ts?
-		currentTsDiff = moment().diff(msgTs, 'minutes') if msgTs?
-
-		if currentTsDiff > RocketChat.settings.get 'Message_AllowEditing_BlockEditInMinutes'
-			toastr.error t('Message_editing_blocked')
-			throw new Meteor.Error 'message-editing-blocked'
+		blockEditInMinutes = RocketChat.settings.get 'Message_AllowEditing_BlockEditInMinutes'
+		if blockEditInMinutes? and blockEditInMinutes isnt 0
+			msgTs = moment(originalMessage.ts) if originalMessage.ts?
+			currentTsDiff = moment().diff(msgTs, 'minutes') if msgTs?
+			if currentTsDiff > blockEditInMinutes
+				toastr.error t('Message_editing_blocked')
+				throw new Meteor.Error 'message-editing-blocked'
 
 		Tracker.nonreactive ->
 

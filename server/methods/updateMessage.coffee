@@ -12,11 +12,12 @@ Meteor.methods
 		unless hasPermission or (editAllowed and editOwn)
 			throw new Meteor.Error 'message-editing-not-allowed', "[methods] updateMessage -> Message editing not allowed"
 
-		msgTs = moment(originalMessage.ts) if originalMessage.ts?
-		currentTsDiff = moment().diff(msgTs, 'minutes') if msgTs?
-
-		if currentTsDiff > RocketChat.settings.get 'Message_AllowEditing_BlockEditInMinutes'
-			throw new Meteor.Error 'message-editing-blocked', "[methods] updateMessage -> Message editing blocked"
+		blockEditInMinutes = RocketChat.settings.get 'Message_AllowEditing_BlockEditInMinutes'
+		if blockEditInMinutes? and blockEditInMinutes isnt 0
+			msgTs = moment(originalMessage.ts) if originalMessage.ts?
+			currentTsDiff = moment().diff(msgTs, 'minutes') if msgTs?
+			if currentTsDiff > blockEditInMinutes
+				throw new Meteor.Error 'message-editing-blocked'
 
 		console.log '[methods] updateMessage -> '.green, 'userId:', Meteor.userId(), 'arguments:', arguments
 

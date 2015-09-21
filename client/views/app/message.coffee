@@ -48,10 +48,13 @@ Template.message.helpers
 
 		return unless hasPermission or (isEditAllowed and editOwn)
 
-		msgTs = moment(this.ts) if this.ts?
-		currentTsDiff = moment().diff(msgTs, 'minutes') if msgTs?
-
-		return currentTsDiff < RocketChat.settings.get 'Message_AllowEditing_BlockEditInMinutes'
+		blockEditInMinutes = RocketChat.settings.get 'Message_AllowEditing_BlockEditInMinutes'
+		if blockEditInMinutes? and blockEditInMinutes isnt 0
+			msgTs = moment(this.ts) if this.ts?
+			currentTsDiff = moment().diff(msgTs, 'minutes') if msgTs?
+			return currentTsDiff < blockEditInMinutes
+		else
+			return true
 
 	canDelete: ->
 		if RocketChat.authz.hasAtLeastOnePermission('delete-message', this.rid )
