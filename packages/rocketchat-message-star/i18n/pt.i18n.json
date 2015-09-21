@@ -1,5 +1,6 @@
 {
 	"Message_AllowStarring" : "Permitir Mensagens Favoritas",
 	"Star_Message": "Favoritar Message",
-	"Unstar_Message": "Remover Favorito"
+	"Unstar_Message": "Remover Favorito",
+	"Stars": "Mensagens Favoritas"
 }

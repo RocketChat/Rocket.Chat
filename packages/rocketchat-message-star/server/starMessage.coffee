@@ -13,10 +13,10 @@ Meteor.methods
 				_id: message._id
 			,
 				$addToSet:
-					starred: Meteor.userId()
+					starred: { _id: Meteor.userId() }
 		else
 			ChatMessage.update
 				_id: message._id
 			,
 				$pull:
-					starred: Meteor.userId()
+					starred: { _id: Meteor.userId() }
