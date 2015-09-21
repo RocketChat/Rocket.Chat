@@ -1,0 +1,3 @@
+.starred-messages-list .message-cog, .starred-messages-list .message-dropdown {
+		display: none;
+}

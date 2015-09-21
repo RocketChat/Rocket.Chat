@@ -3,6 +3,8 @@ Template.flexTabBar.helpers
 		return 'active' if @template is RocketChat.TabBar.getTemplate() and RocketChat.TabBar.isFlexOpen()
 	buttons: ->
 		return RocketChat.TabBar.getButtons()
+	title: ->
+		return t(@i18nTitle) or @title
 
 Template.flexTabBar.events
 	'click .tab-button': (e, t) ->

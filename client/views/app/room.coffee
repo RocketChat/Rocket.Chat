@@ -408,7 +408,7 @@ Template.room.events
 	'click .message-cog': (e) ->
 		message_id = $(e.currentTarget).closest('.message').attr('id')
 		$('.message-dropdown:visible').hide()
-		$("\##{message_id} .message-dropdown").show()
+		$(".messages-box \##{message_id} .message-dropdown").show()
 
 	'click .message-dropdown-close': ->
 		$('.message-dropdown:visible').hide()

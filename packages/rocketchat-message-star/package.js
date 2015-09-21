@@ -26,11 +26,22 @@ Package.onUse(function(api) {
 	api.imply('tap:i18n');
 	api.addFiles("package-tap.i18n", ["client", "server"]);
 
-	api.addFiles('client/actionButton.coffee', ['client']);
-	api.addFiles('client/starMessage.coffee', ['client']);
-	
-	api.addFiles('server/settings.coffee', ['server']);
-	api.addFiles('server/starMessage.coffee', ['server']);
+	api.addFiles([
+		'client/lib/StarredMessage.coffee',
+		'client/actionButton.coffee',
+		'client/starMessage.coffee',
+		'client/tabBar.coffee',
+		'client/views/starredMessages.html',
+		'client/views/starredMessages.coffee',
+		'client/views/stylesheets/messagestar.css',
+	], 'client');
+
+	api.addFiles([
+		'server/settings.coffee',
+		'server/starMessage.coffee',
+		'server/publications/starredMessages.coffee',
+		'server/startup/indexes.coffee'
+	], 'server');
 
 	// TAPi18n -- needs to be added last
 	api.addFiles(tapi18nFiles, ["client", "server"]);
