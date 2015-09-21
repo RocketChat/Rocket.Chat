@@ -33,14 +33,14 @@ readAsArrayBuffer = (file, callback) ->
 							Your browser does not support the audio element.
 						</audio>
 					</div>
-					<div class='upload-preview-title'>#{file.name}</div>
+					<div class='upload-preview-title'>#{Handlebars._escape(file.name)}</div>
 				"""
 			else
 				text = """
 					<div class='upload-preview'>
 						<div class='upload-preview-file' style='background-image: url(#{fileContent})'></div>
 					</div>
-					<div class='upload-preview-title'>#{file.name}</div>
+					<div class='upload-preview-title'>#{Handlebars._escape(file.name)}</div>
 				"""
 
 			swal
