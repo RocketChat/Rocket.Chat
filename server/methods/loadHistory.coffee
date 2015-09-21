@@ -21,7 +21,7 @@ Meteor.methods
 			options.fields = { ets: 0 }
 
 		messages = _.map ChatMessage.find(query, options).fetch(), (message) ->
-			message.starred = _.contains message.starred, { _id: fromId }
+			message.starred = _.findWhere message.starred, { _id: fromId }
 			return message
 
 		unreadNotLoaded = 0
