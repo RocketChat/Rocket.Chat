@@ -11,9 +11,9 @@ Template.messagePopupConfig.helpers
 			getInput: self.getInput
 			textFilterDelay: 200
 			getFilter: (collection, filter) ->
-				exp = new RegExp(filter, 'i')
+				exp = new RegExp("^#{filter}", 'i')
 				Meteor.subscribe 'filteredUsers', filter
-				items = filteredUsers.find({$or: [{name: exp}, {username: exp}]}, {limit: 5}).fetch()
+				items = filteredUsers.find({$or: [{username: exp}, {name: exp}]}, {limit: 5}).fetch()
 
 				all =
 					_id: '@all'
@@ -25,7 +25,6 @@ Template.messagePopupConfig.helpers
 				exp = new RegExp("(^|\\s)#{filter}", 'i')
 				if exp.test(all.username) or exp.test(all.compatibility)
 					items.unshift all
-
 				return items
 
 			getValue: (_id, collection, firstPartValue) ->

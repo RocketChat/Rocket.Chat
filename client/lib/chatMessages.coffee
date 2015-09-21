@@ -48,6 +48,14 @@ class @ChatMessages
 
 		return unless hasPermission or (editAllowed and editOwn)
 		return if element.classList.contains("system")
+
+		blockEditInMinutes = RocketChat.settings.get 'Message_AllowEditing_BlockEditInMinutes'
+		if blockEditInMinutes? and blockEditInMinutes isnt 0
+			msgTs = moment(message.ts) if message.ts?
+			currentTsDiff = moment().diff(msgTs, 'minutes') if msgTs?
+			if currentTsDiff > blockEditInMinutes
+				return
+
 		this.clearEditing()
 		this.input.value = message.msg
 		this.editing.element = element
