@@ -10,8 +10,12 @@ webrtc = {
 	debug: false,
 	config: {
 		iceServers: [
+			{url: "stun:stun.l.google.com:19302"},
 			{url: "stun:23.21.150.121"},
-			{url: "stun:stun.l.google.com:19302"}
+			{
+				url: "turn:team%40rocket.chat@numb.viagenie.ca:3478",
+				"credential": "demo"
+			}
 		]
 	},
 	send: function(data) {
