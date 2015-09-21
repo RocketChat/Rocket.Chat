@@ -13,7 +13,7 @@ Template.messagePopupConfig.helpers
 			getFilter: (collection, filter) ->
 				exp = new RegExp("^#{filter}", 'i')
 				Meteor.subscribe 'onlineUsers', filter
-				items = onlineUsers.find({$or: [{name: exp}, {username: exp}]}, {limit: 5}).fetch()
+				items = onlineUsers.find({$or: [{username: exp}, {name: exp}]}, {limit: 5}).fetch()
 
 				all =
 					_id: '@all'
