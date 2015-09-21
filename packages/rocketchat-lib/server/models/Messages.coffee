@@ -82,6 +82,15 @@ RocketChat.models.Messages = new class asd extends RocketChat.models._Base
 
 		return @find query, options
 
+	cloneAndSaveAsHistoryById: (_id) ->
+		record = @findOneById _id
+		record._hidden = true
+		record.parent = record._id
+		record.ets = new Date()
+		delete record._id
+
+		return @insert record
+
 
 	# # UPDATE
 	# archiveById: (_id) ->

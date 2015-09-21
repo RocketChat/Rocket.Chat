@@ -18,7 +18,7 @@ RocketChat.sendMessage = (user, message, room, options) ->
 	if message._id? and options?.upsert is true
 		ChatMessage.upsert {_id: message._id}, message
 	else
-		message._id = ChatMessage.insert message
+		message._id = RocketChat.models.Messages.insert message
 
 	###
 	Defer other updates as their return is not interesting to the user
