@@ -36,8 +36,11 @@ Template.admin.helpers
 			description = 'project:' + description
 		return TAPi18next.t description
 
+	sectionIsCustomOath: (section) ->
+		return /^Custom OAuth:\s.+/.test section
+
 Template.admin.events
-	"click .submit": (e, t) ->
+	"click .submit .save": (e, t) ->
 		group = FlowRouter.getParam('group')
 		settings = Settings.find({ group: group }).fetch()
 		console.log 'will save settings', JSON.stringify settings
@@ -60,6 +63,41 @@ Template.admin.events
 			RocketChat.settings.batchSet updateSettings, (err, success) ->
 				return toastr.error TAPi18next.t 'project:Error_updating_settings' if err
 				toastr.success TAPi18next.t 'project:Settings_updated'
+
+	"click .submit .add-custom-oauth": (e, t) ->
+		config =
+			title: TAPi18next.t 'project:Add_custom_oauth'
+			text: TAPi18next.t 'project:Give_a_unique_name_for_the_custom_oauth'
+			type: "input",
+			showCancelButton: true,
+			closeOnConfirm: true,
+			inputPlaceholder: TAPi18next.t 'project:Custom_oauth_unique_name'
+
+		swal config, (inputValue) ->
+			if inputValue is false
+				return false
+
+			if inputValue is ""
+				swal.showInputError TAPi18next.t 'project:Name_cant_be_empty'
+				return false
+
+			Meteor.call 'addOAuthService', inputValue
+
+	"click .submit .remove-custom-oauth": (e, t) ->
+		name = this.section.replace('Custom OAuth: ', '')
+		config =
+			title: TAPi18next.t 'project:Are_you_sure'
+			type: "input",
+			type: 'warning'
+			showCancelButton: true
+			confirmButtonColor: '#DD6B55'
+			confirmButtonText: TAPi18next.t 'project:Yes_delete_it'
+			cancelButtonText: TAPi18next.t 'project:Cancel'
+			closeOnConfirm: true
+
+		swal config, ->
+			Meteor.call 'removeOAuthService', name
+
 
 Template.admin.onRendered ->
 	Tracker.afterFlush ->

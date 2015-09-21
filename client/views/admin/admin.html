@@ -63,12 +63,23 @@
 											</div>
 										{{/if}}
 									{{/each}}
+
+									{{#if section}}
+										{{#if sectionIsCustomOath section}}
+											<div class="submit">
+												<button class="button delete remove-custom-oauth"><span>{{_ "Remove_custom_oauth"}}</span></button>
+											</div>
+										{{/if}}
+									{{/if}}
 								</div>
 							</div>
 						{{/each}}
 					</fieldset>
 					<div class="submit">
-						<button class="button"><i class="icon-send"></i><span>{{_ "Save_changes"}}</span></button>
+						{{#if $eq group._id 'Accounts'}}
+							<button class="button secondary add-custom-oauth"><span>{{_ "Add_custom_oauth"}}</span></button>
+						{{/if}}
+						<button class="button save"><i class="icon-send"></i><span>{{_ "Save_changes"}}</span></button>
 					</div>
 				</div>
 			{{/unless}}
