@@ -54,7 +54,7 @@
 			check remoteId, String
 
 			@unblock()
-			if InstanceStatus.id() is selfId and InstanceStatus.getCollection().findOne({_id: remoteId})?
+			if selfId is InstanceStatus.id() and remoteId isnt InstanceStatus.id() and InstanceStatus.getCollection().findOne({_id: remoteId})?
 				@connection.broadcastAuth = true
 
 			return @connection.broadcastAuth is true
