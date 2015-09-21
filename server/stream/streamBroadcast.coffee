@@ -59,10 +59,12 @@
 		stream: (streamName, args) ->
 			# Prevent call from self and client
 			if not @connection? or @connection.clientAddress?
+				console.log "Stream for broadcast with name #{streamName} from client or self is not authorized".red
 				return
 
 			# Prevent call from unauthrorized connections
 			if @connection.broadcastAuth isnt true
+				console.log "Stream for broadcast with name #{streamName} not authorized".red
 				return
 
 			console.log 'method stream', streamName, args
