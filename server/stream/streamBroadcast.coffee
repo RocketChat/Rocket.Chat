@@ -51,6 +51,9 @@
 			check remoteId, String
 
 			@unblock()
+			console.log 'InstanceStatus.id(), selfId:', InstanceStatus.id(), selfId
+			console.log 'remoteId, InstanceStatus.getCollection().findOne({_id: remoteId}):', remoteId, InstanceStatus.getCollection().findOne({_id: remoteId})
+
 			if InstanceStatus.id() is selfId and InstanceStatus.getCollection().findOne({_id: remoteId})?
 				@connection.broadcastAuth = true
 
