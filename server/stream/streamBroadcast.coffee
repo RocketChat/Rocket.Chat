@@ -4,7 +4,7 @@
 
 	# connections = {}
 
-	InstanceStatus.getCollection().find({'extraInformation.port': {$exists: true}}).observe
+	InstanceStatus.getCollection().find({'extraInformation.port': {$exists: true}}, {sort: {_createdAt: -1}}).observe
 		added: (record) ->
 			if record.extraInformation.port is process.env.PORT or connections[record.extraInformation.port]?
 				return
