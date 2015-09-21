@@ -51,7 +51,8 @@ Accounts.insertUserDoc = _.wrap Accounts.insertUserDoc, (insertUserDoc) ->
 	_id = insertUserDoc(options, user)
 
 	# when inserting first user give them admin privileges otherwise make a regular user
-	roleName = if Meteor.users.findOne() then 'user' else 'admin'
+	firstUser = Meteor.users.findOne({},{sort:{createdAt:1}})
+	roleName = if firstUser?._id is _id then 'admin' else 'user'
 	
 	RocketChat.authz.addUsersToRoles(_id, roleName)
 	RocketChat.callbacks.run 'afterCreateUser', options, user
