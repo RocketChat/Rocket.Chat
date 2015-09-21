@@ -11,11 +11,11 @@ Template.userInfo.helpers
 			return "(#{@phoneNumber.substr(0,2)}) #{@phoneNumber.substr(2,5)}-#{@phoneNumber.substr(7)}"
 		else
 			return "(#{@phoneNumber.substr(0,2)}) #{@phoneNumber.substr(2,4)}-#{@phoneNumber.substr(6)}"
-	
+
 	lastLogin: ->
 		if @lastLogin
 			return moment(@lastLogin).format('LLL')
-	
+
 	createdAt: ->
 		if @createdAt
 			return moment(@createdAt).format('LLL')
@@ -94,7 +94,7 @@ Template.userInfo.events
 		Session.set('showUserInfo', null)
 
 	'click .start-video': (event) ->
-		_id = Template.instance().data._id
+		_id = Session.get('openedRoom')
 		webrtc.to = _id.replace(Meteor.userId(), '')
 		webrtc.room = _id
 		webrtc.mode = 1
@@ -104,16 +104,16 @@ Template.userInfo.events
 		webrtc.stop()
 
 	'click .monitor-video': (event) ->
-		_id = Template.instance().data._id
+		_id = Session.get('openedRoom')
 		webrtc.to = _id.replace(Meteor.userId(), '')
 		webrtc.room = _id
 		webrtc.mode = 2
 		webrtc.start(true)
 
-
 	'click .setup-video': (event) ->
 		webrtc.mode = 2
 		webrtc.activateLocalStream()
+
 
 Template.userInfo.onCreated ->
 	@now = new ReactiveVar moment()
