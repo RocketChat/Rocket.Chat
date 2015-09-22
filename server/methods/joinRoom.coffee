@@ -3,16 +3,22 @@ Meteor.methods
 
 		room = ChatRoom.findOne rid
 
+		console.log '[methods] joinRoom -> '.green, 'userId:', Meteor.userId(), 'arguments:', arguments
+
+		if not room?
+			throw new Meteor.Error 500, 'No channel with this id'
+
 		if room.t isnt 'c'
 			throw new Meteor.Error 403, '[methods] joinRoom -> Not allowed'
 
-		# verify if user is already in room
-		# if room.usernames.indexOf(user.username) is -1
-		console.log '[methods] joinRoom -> '.green, 'userId:', Meteor.userId(), 'arguments:', arguments
 
 		now = new Date()
 
 		user = Meteor.users.findOne Meteor.userId()
+
+		# check if user is already in room
+		if room.usernames.indexOf(user.username) > -1
+			return
 
 		RocketChat.callbacks.run 'beforeJoinRoom', user, room
 
