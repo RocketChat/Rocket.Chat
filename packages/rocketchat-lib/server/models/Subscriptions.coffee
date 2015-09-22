@@ -1,4 +1,4 @@
-RocketChat.models.Subscriptions = new class asd extends RocketChat.models._Base
+RocketChat.models.Subscriptions = new class extends RocketChat.models._Base
 	constructor: ->
 		@_initModel 'subscription'
 

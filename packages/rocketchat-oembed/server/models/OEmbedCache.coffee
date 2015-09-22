@@ -1,4 +1,4 @@
-RocketChat.models.OEmbedCache = new class asd extends RocketChat.models._Base
+RocketChat.models.OEmbedCache = new class extends RocketChat.models._Base
 	constructor: ->
 		@_initModel 'oembed_cache'
 
