@@ -10,7 +10,7 @@ Meteor.startup ->
 		Push.enabled = true
 		Push.allow
 			send: (userId, notification) ->
-				return RocketChat.models.Users.findOneById(userId)?.admin is true
+				return RocketChat.authz.hasRole(userId, 'admin')
 
 		Push.Configure
 			apn:

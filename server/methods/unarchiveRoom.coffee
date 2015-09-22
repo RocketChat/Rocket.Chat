@@ -7,7 +7,7 @@ Meteor.methods
 
 		room = RocketChat.models.Rooms.findOneById rid
 
-		if room.u? and room.u._id is Meteor.userId() or Meteor.user().admin?
+		if room.u? and room.u._id is Meteor.userId() or RocketChat.authz.hasRole(Meteor.userId(), 'admin')
 			RocketChat.models.Rooms.unarchiveById rid
 
 			for username in room.usernames
