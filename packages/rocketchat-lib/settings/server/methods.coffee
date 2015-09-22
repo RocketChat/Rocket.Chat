@@ -1,5 +1,5 @@
 ###
-# Add a setting 
+# Add a setting
 # @param {String} _id
 # @param {Mixed} value
 # @param {Object} setting
@@ -24,7 +24,7 @@ RocketChat.settings.add = (_id, value, options = {}) ->
 	updateSettings.section = options.section if options.section
 	updateSettings.public = options.public if options.public
 
-	return Settings.upsert { _id: _id }, { $setOnInsert: { value: value }, $set: updateSettings }
+	return RocketChat.models.Settings.upsert { _id: _id }, { $setOnInsert: { value: value }, $set: updateSettings }
 
 ###
 # Add a setting group
@@ -37,22 +37,37 @@ RocketChat.settings.addGroup = (_id, options = {}) ->
 
 	# console.log '[functions] RocketChat.settings.addGroup -> '.green, 'arguments:', arguments
 
-	updateSettings = 
+	updateSettings =
 		i18nLabel: options.i18nLabel or _id
 		i18nDescription: options.i18nDescription if options.i18nDescription?
 		type: 'group'
-	
-	return Settings.upsert { _id: _id }, { $set: updateSettings }
+
+	return RocketChat.models.Settings.upsert { _id: _id }, { $set: updateSettings }
+
+
+###
+# Remove a setting by id
+# @param {String} _id
+###
+
+RocketChat.settings.removeById = (_id) ->
+	if not _id
+		return false
+
+	# console.log '[functions] RocketChat.settings.add -> '.green, 'arguments:', arguments
+
+	return RocketChat.models.Settings.removeById _id
+
 
 Meteor.methods
 	saveSetting: (_id, value) ->
 		console.log '[method] saveSetting', _id, value
 		if Meteor.userId()?
 			user = Meteor.users.findOne Meteor.userId()
-		
+
 		unless RocketChat.authz.hasPermission(Meteor.userId(), 'edit-privileged-setting') is true
 			throw new Meteor.Error 503, 'Not authorized'
 
 		# console.log "saveSetting -> ".green, _id, value
-		Settings.update { _id: _id }, { $set: { value: value } }
+		RocketChat.models.Settings.updateValueById _id, value
 		return true

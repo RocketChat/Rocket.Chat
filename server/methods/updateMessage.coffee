@@ -3,7 +3,7 @@ Meteor.methods
 		if not Meteor.userId()
 			throw new Meteor.Error('invalid-user', "[methods] updateMessage -> Invalid user")
 
-		originalMessage = ChatMessage.findOne message._id
+		originalMessage = RocketChat.models.Messages.findOneById message._id
 
 		hasPermission = RocketChat.authz.hasPermission(Meteor.userId(), 'edit-message', message.rid)
 		editAllowed = RocketChat.settings.get 'Message_AllowEditing'
@@ -23,11 +23,7 @@ Meteor.methods
 
 		# If we keep history of edits, insert a new message to store history information
 		if RocketChat.settings.get 'Message_KeepHistory'
-			originalMessage._hidden = true
-			originalMessage.parent = originalMessage._id
-			originalMessage.ets = new Date()
-			delete originalMessage._id
-			ChatMessage.insert originalMessage
+			RocketChat.models.Messages.cloneAndSaveAsHistoryById originalMessage._id
 
 		message.ets = new Date()
 
@@ -39,11 +35,11 @@ Meteor.methods
 		tempid = message._id
 		delete message._id
 
-		ChatMessage.update
+		RocketChat.models.Messages.update
 			_id: tempid
 		,
 			$set: message
 
 		# Meteor.defer ->
-		# 	RocketChat.callbacks.run 'afterSaveMessage', ChatMessage.findOne(message.id)
+		# 	RocketChat.callbacks.run 'afterSaveMessage', RocketChat.models.Messages.findOneById(message.id)
 
