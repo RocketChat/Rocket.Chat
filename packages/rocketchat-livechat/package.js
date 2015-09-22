@@ -24,8 +24,8 @@ Package.onUse(function(api) {
 	api.addFiles('methods.coffee', 'server');
 	api.addFiles('publications.coffee', 'server');
 
-	api.addFiles('rocket-livechat.js', 'client', {isAsset: true});
-	api.addFiles('public/livechat.css', 'client', {isAsset: true});
-	api.addFiles('public/livechat.js', 'client', {isAsset: true});
-	api.addFiles('public/head.html', 'server', {isAsset: true});
+	api.addAssets('rocket-livechat.js', 'client');
+	api.addAssets('public/livechat.css', 'client');
+	api.addAssets('public/livechat.js', 'client');
+	api.addAssets('public/head.html', 'server');
 });
