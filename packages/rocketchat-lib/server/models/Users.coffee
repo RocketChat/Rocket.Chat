@@ -19,12 +19,12 @@ RocketChat.models.Users = new class extends RocketChat.models._Base
 
 		return @findOne query, options
 
-	findOneByVerifiedEmailAddress: (emailAddress, options) ->
+	findOneByVerifiedEmailAddress: (emailAddress, verified=true, options) ->
 		query =
 			emails:
 				$elemMatch:
 					address: emailAddress
-					verified: true
+					verified: verified
 
 		return @findOne query, options
 
