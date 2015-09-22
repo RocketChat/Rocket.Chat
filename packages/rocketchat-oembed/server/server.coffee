@@ -167,7 +167,7 @@ OEmbed.RocketUrlParser = (message) ->
 				changed = true
 
 		if changed is true
-			ChatMessage.update {_id: message._id}, { $set: { urls: message.urls } }
+			RocketChat.models.Messages.setUrlsById message._id, message.urls
 
 	return message
 

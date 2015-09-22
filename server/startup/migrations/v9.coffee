@@ -16,7 +16,7 @@ Meteor.startup ->
 				}
 				{
 					source: new Meteor.Collection 'data.ChatMessage'
-					target: ChatMessage
+					target: RocketChat.models.Messages.model
 				}
 				{
 					source: new Meteor.Collection 'settings'

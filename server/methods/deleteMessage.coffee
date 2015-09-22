@@ -20,26 +20,17 @@ Meteor.methods
 		keepHistory = RocketChat.settings.get 'Message_KeepHistory'
 		showDeletedStatus = RocketChat.settings.get 'Message_ShowDeletedStatus'
 
-		deleteQuery =
-			_id: originalMessage._id
-
 		if keepHistory
 			if showDeletedStatus
 				RocketChat.models.Messages.cloneAndSaveAsHistoryById originalMessage._id
 			else
-				ChatMessage.update deleteQuery,
-					$set:
-						_hidden: true
+				RocketChat.models.Messages.setHiddenById originalMessage._id, true
 
 		else
 			if not showDeletedStatus
 				RocketChat.models.Messages.removeById originalMessage._id
 
 		if showDeletedStatus
-			ChatMessage.update deleteQuery,
-				$set:
-					msg: ''
-					t: 'rm'
-					ets: new Date()
+			RocketChat.models.Messages.setAsDeletedById originalMessage._id
 		else
 			RocketChat.Notifications.notifyRoom originalMessage.rid, 'deleteMessage', { _id: originalMessage._id }

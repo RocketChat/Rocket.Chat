@@ -18,11 +18,11 @@ RocketChat.setUsername = (user, username) ->
 
 	# Username is available; if coming from old username, update all references
 	if previousUsername
-		ChatMessage.update { "u._id": user._id }, { $set: { "u.username": username } }, { multi: true }
+		RocketChat.models.Messages.updateAllUsernamesByUserId user._id, username
 
 		RocketChat.models.Messages.findByMention(previousUsername).forEach (msg) ->
 			updatedMsg = msg.msg.replace(new RegExp("@#{previousUsername}", "ig"), "@#{username}")
-			ChatMessage.update { _id: msg._id, "mentions.username": previousUsername }, { $set: { "mentions.$.username": username, "msg": updatedMsg } }
+			RocketChat.models.Messages.updateUsernameAndMessageOfMentionByIdAndOldUsername msg._id, previousUsername, username, updatedMsg
 
 		RocketChat.models.Rooms.replaceUsername previousUsername, username
 		RocketChat.models.Rooms.replaceUsernameOfUserByUserId user._id, username
