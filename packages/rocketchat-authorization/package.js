@@ -17,7 +17,7 @@ Package.onUse(function(api) {
   api.use('templating', 'client');
 
   api.addFiles('lib/rocketchat.coffee', ['server','client']);
-  api.addFiles('client/collection.coffee', ['server', 'client']);
+  api.addFiles('client/collection.coffee', ['client']);
   api.addFiles('client/startup.coffee', ['client']);
   api.addFiles('client/hasPermission.coffee', ['client']);
   api.addFiles('client/hasRole.coffee', ['client']);
