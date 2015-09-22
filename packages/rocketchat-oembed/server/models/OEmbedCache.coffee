@@ -12,7 +12,7 @@ RocketChat.models.OEmbedCache = new class extends RocketChat.models._Base
 
 
 	# INSERT
-	createWithIdAndData: (_id: data) ->
+	createWithIdAndData: (_id, data) ->
 		record =
 			_id: _id
 			data: data
