@@ -1,7 +1,5 @@
 Meteor.publish 'visitorRoom', (visitorToken) ->
-	return ChatRoom.find
-		"v.token": visitorToken
-	,
+	return RocketChat.models.Rooms.findByVisitorToken visitorToken,
 		fields:
 			name: 1
 			t: 1

@@ -1,4 +1,7 @@
-@Settings = new Meteor.Collection 'rocketchat_settings'
+if Meteor.isClient is true
+	@Settings = Settings = new Meteor.Collection 'rocketchat_settings'
+else
+	Settings = RocketChat.models.Settings
 
 Settings.find().observe
 	added: (record) ->

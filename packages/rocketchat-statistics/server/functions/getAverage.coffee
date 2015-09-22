@@ -1,6 +1,6 @@
 RocketChat.statistics.getAverage = ->
 	statistics = {}
-	
+
 	m = ->
 		d = this.createdAt
 		this.count = 1
@@ -30,7 +30,7 @@ RocketChat.statistics.getAverage = ->
 			a.os.loadavg[1] += b.os.loadavg[1]
 			a.os.loadavg[2] += b.os.loadavg[2]
 		return a
-	
+
 	f = (k, v) ->
 		out = {}
 		out.totalUsers = v.totalUsers / v.count
@@ -53,6 +53,6 @@ RocketChat.statistics.getAverage = ->
 		out.os.loadavg = [ (v.os.loadavg[0] / v.count), (v.os.loadavg[1] / v.count), (v.os.loadavg[2] / v.count) ]
 		return out
 
-	result = Statistics.mapReduce(m, r, { finalize: f, out: "rocketchat_mr_statistics" })
-	statistics = MapReducedStatistics.find().fetch()
+	result = RocketChat.models.Statistics.model.mapReduce(m, r, { finalize: f, out: "rocketchat_mr_statistics" })
+	statistics = RocketChat.models.MRStatistics.find().fetch()
 	return statistics

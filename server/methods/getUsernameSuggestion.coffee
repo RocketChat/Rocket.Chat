@@ -9,7 +9,7 @@ usernameIsAvaliable = (username) ->
 	if username is 'all'
 		return false
 
-	return not Meteor.users.findOne({username: {$regex : new RegExp(username, "i") }})
+	return not RocketChat.models.Users.findOneByUsername({$regex : new RegExp(username, "i") })
 
 @generateSuggestion = (user) ->
 	usernames = []
