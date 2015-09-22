@@ -33,7 +33,7 @@ Meteor.methods
 		# Make user I have a subcription to this room
 		RocketChat.models.Subscriptions.upsert
 			rid: rid
-			'u._id': me._id
+			$and: [{'u._id': me._id}] # work around to solve problems with upsert and dot
 		,
 			$set:
 				ts: now
@@ -51,7 +51,7 @@ Meteor.methods
 		# Make user the target user has a subcription to this room
 		RocketChat.models.Subscriptions.upsert
 			rid: rid
-			'u._id': to._id
+			$and: [{'u._id': to._id}] # work around to solve problems with upsert and dot
 		,
 			$setOnInsert:
 				name: me.username
