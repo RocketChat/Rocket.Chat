@@ -9,35 +9,19 @@ Meteor.methods
 
 		RocketChat.callbacks.run 'beforeJoinDefaultChannels', user
 
-		ChatRoom.find({default: true, t: {$in: ['c', 'p']}}).forEach (room) ->
+		RocketChat.models.Rooms.findByDefaultAndTypes(true, ['c', 'p']).forEach (room) ->
 
 			# put user in default rooms
-			ChatRoom.update room._id,
-				$addToSet:
-					usernames: user.username
+			RocketChat.models.Rooms.addUsernameById room._id, user.username
 
-			if not ChatSubscription.findOne(rid: room._id, 'u._id': user._id)?
+			if not RocketChat.models.Subscriptions.findOneByRoomIdAndUserId(room._id, user._id)?
 
 				# Add a subscription to this user
-				ChatSubscription.insert
-					rid: room._id
-					name: room.name
+				RocketChat.models.Subscriptions.createWithRoomAndUser room, user,
 					ts: new Date()
-					t: room.t
-					f: false
 					open: true
 					alert: true
 					unread: 1
-					u:
-						_id: user._id
-						username: user.username
 
 				# Insert user joined message
-				ChatMessage.insert
-					rid: room._id
-					ts: new Date()
-					t: 'uj'
-					msg: ''
-					u:
-						_id: user._id
-						username: user.username
+				RocketChat.models.Messages.createUserJoinWithRoomIdAndUser room._id, user

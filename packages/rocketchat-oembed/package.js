@@ -28,6 +28,7 @@ Package.onUse(function(api) {
 	api.addFiles('client/oembedUrlWidget.coffee', 'client');
 
 	api.addFiles('server/server.coffee', 'server');
+	api.addFiles('server/models/OEmbedCache.coffee', 'server');
 
 	api.export('OEmbed', 'server');
 });

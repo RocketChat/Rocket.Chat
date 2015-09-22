@@ -40,7 +40,6 @@
 		chatWidget.style.position = 'fixed';
 		chatWidget.style.width = '300px';
 		chatWidget.style.height = '30px';
-		chatWidget.style.backgroundColor = '#C1272D';
 		chatWidget.style.borderTopLeftRadius = '5px';
 		chatWidget.style.borderTopRightRadius = '5px';
 		chatWidget.style.bottom = '0';

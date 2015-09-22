@@ -2,8 +2,4 @@ Meteor.startup ->
 	Migrations.add
 		version: 17
 		up: ->
-			rawMessage = ChatMessage.rawCollection()
-			try
-				Meteor.wrapAsync(rawMessage.dropIndex, rawMessage)({ _hidden: 1 })
-			catch e
-				console.log e
+			RocketChat.models.Messages.tryDropIndex({ _hidden: 1 })

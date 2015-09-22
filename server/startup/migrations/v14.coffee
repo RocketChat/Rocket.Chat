@@ -3,17 +3,17 @@ Meteor.startup ->
 		version: 14
 		up: ->
 			# Remove unused settings
-			Settings.remove { _id: "API_Piwik_URL" }
-			Settings.remove { _id: "API_Piwik_ID" }
-			
-			Settings.remove { _id: "Message_Edit" }
-			Settings.remove { _id: "Message_Delete" }
-			Settings.remove { _id: "Message_KeepStatusHistory" }
-			
-			Settings.update { _id: "Message_ShowEditedStatus" }, { $set: { type: "boolean", value: true } }
-			Settings.update { _id: "Message_ShowDeletedStatus" }, { $set: { type: "boolean", value: false } }
+			RocketChat.models.Settings.remove { _id: "API_Piwik_URL" }
+			RocketChat.models.Settings.remove { _id: "API_Piwik_ID" }
 
-			metaKeys = [ 
+			RocketChat.models.Settings.remove { _id: "Message_Edit" }
+			RocketChat.models.Settings.remove { _id: "Message_Delete" }
+			RocketChat.models.Settings.remove { _id: "Message_KeepStatusHistory" }
+
+			RocketChat.models.Settings.update { _id: "Message_ShowEditedStatus" }, { $set: { type: "boolean", value: true } }
+			RocketChat.models.Settings.update { _id: "Message_ShowDeletedStatus" }, { $set: { type: "boolean", value: false } }
+
+			metaKeys = [
 				'old': 'Meta:language'
 				'new': 'Meta_language'
 			,
@@ -31,12 +31,12 @@ Meteor.startup ->
 			]
 
 			for oldAndNew in metaKeys
-				oldValue = Settings.findOne({_id: oldAndNew.old})?.value
-				newValue = Settings.findOne({_id: oldAndNew.new})?.value
+				oldValue = RocketChat.models.Settings.findOne({_id: oldAndNew.old})?.value
+				newValue = RocketChat.models.Settings.findOne({_id: oldAndNew.new})?.value
 				if oldValue? and not newValue?
-					Settings.update { _id: oldAndNew.new }, { $set: { value: newValue } }
-				
-				Settings.remove { _id: oldAndNew.old }
+					RocketChat.models.Settings.update { _id: oldAndNew.new }, { $set: { value: newValue } }
+
+				RocketChat.models.Settings.remove { _id: oldAndNew.old }
 
 
-			Settings.remove { _id: "SMTP_Security" }
+			RocketChat.models.Settings.remove { _id: "SMTP_Security" }
