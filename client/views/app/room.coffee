@@ -229,7 +229,7 @@ Template.room.helpers
 		return RocketChat.TabBar.getData()
 
 	adminClass: ->
-		return 'admin' if Meteor.user()?.admin is true
+		return 'admin' if RocketChat.authz.hasRole(Meteor.userId(), 'admin')
 
 Template.room.events
 	"touchstart .message": (e, t) ->
