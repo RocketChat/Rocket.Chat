@@ -1,6 +1,13 @@
-Meteor.publish 'settings', ->
+Meteor.publish 'settings', (ids = []) ->
 	console.log '[publish] settings'.green
-	return Settings.find { public: true }, { fields: _id: 1, value: 1 }
+	filter =
+		public: true
+
+	if ids.length > 0
+		filter._id =
+			$in: ids
+
+	return Settings.find filter, { fields: _id: 1, value: 1 }
 
 Meteor.publish 'admin-settings', ->
 	console.log '[publish] admin-settings'.green
