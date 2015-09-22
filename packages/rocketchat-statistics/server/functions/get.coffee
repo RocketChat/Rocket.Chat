@@ -55,18 +55,18 @@ RocketChat.statistics.get = ->
 	statistics.avgChannelUsers = 0
 	statistics.avgPrivateGroupUsers = 0
 
-	if MapReducedStatistics.findOne({ _id: 1 })
-		statistics.maxRoomUsers = MapReducedStatistics.findOne({ _id: 1 }).value.max
+	if RocketChat.models.MRStatistics.findOneById(1)
+		statistics.maxRoomUsers = RocketChat.models.MRStatistics.findOneById(1).value.max
 	else
 		console.log 'max room user statistic not found'.red
 
-	if MapReducedStatistics.findOne({ _id: 'c' })
-		statistics.avgChannelUsers = MapReducedStatistics.findOne({ _id: 'c' }).value.avg
+	if RocketChat.models.MRStatistics.findOneById('c')
+		statistics.avgChannelUsers = RocketChat.models.MRStatistics.findOneById('c').value.avg
 	else
 		console.log 'channel user statistic not found'.red
 
-	if MapReducedStatistics.findOne({ _id: 'p' })
-		statistics.avgPrivateGroupUsers = MapReducedStatistics.findOne({ _id: 'p' }).value.avg
+	if RocketChat.models.MRStatistics.findOneById('p')
+		statistics.avgPrivateGroupUsers = RocketChat.models.MRStatistics.findOneById('p').value.avg
 	else
 		console.log 'private group user statistic not found'.red
 
