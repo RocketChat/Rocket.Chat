@@ -16,8 +16,9 @@ Meteor.methods
 
 		user = Meteor.users.findOne Meteor.userId()
 
-		# check if user is already in room
-		if room.usernames.indexOf(user.username) > -1
+		# Check if user is already in room
+		subscription = ChatSubscription.findOne rid: rid, 'u._id': Meteor.userId()
+		if subscription?
 			return
 
 		RocketChat.callbacks.run 'beforeJoinRoom', user, room
