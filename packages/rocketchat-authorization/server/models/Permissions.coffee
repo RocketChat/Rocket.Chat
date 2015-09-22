@@ -6,6 +6,6 @@ RocketChat.models.Permissions = new class extends RocketChat.models._Base
 	# FIND
 	findByRole: (role, options) ->
 		query =
-			role: role
+			roles: role
 
-		return @findOne query, options
+		return @find query, options
