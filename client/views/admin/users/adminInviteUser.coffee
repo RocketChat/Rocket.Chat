@@ -1,14 +1,13 @@
 Template.adminInviteUser.helpers
 	isAdmin: ->
-		console.log 'isAdmin', Meteor.user().admin is true
-		return Meteor.user().admin is true
+		return RocketChat.authz.hasRole(Meteor.userId(), 'admin')
 	emailEnabled: ->
 		console.log 'emailEnabled', RocketChat.settings.get('MAIL_URL') or (RocketChat.settings.get('SMTP_Host') and RocketChat.settings.get('SMTP_Username') and RocketChat.settings.get('SMTP_Password'))
 		return RocketChat.settings.get('MAIL_URL') or (RocketChat.settings.get('SMTP_Host') and RocketChat.settings.get('SMTP_Username') and RocketChat.settings.get('SMTP_Password'))
 	inviteEmails: ->
 		return Template.instance().inviteEmails.get()
 
-Template.adminInviteUser.events 
+Template.adminInviteUser.events
 	'click .send': (e, instance) ->
 		emails = $('#inviteEmails').val().split /[\s,;]/
 		rfcMailPattern = /^[a-zA-Z0-9.!#$%&'*+\/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/
