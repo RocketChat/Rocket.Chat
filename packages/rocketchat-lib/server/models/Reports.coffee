@@ -1,4 +1,4 @@
-RocketChat.models.Reports = new class asd extends RocketChat.models._Base
+RocketChat.models.Reports = new class extends RocketChat.models._Base
 	constructor: ->
 		@_initModel 'reports'
 

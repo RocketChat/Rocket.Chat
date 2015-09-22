@@ -1,4 +1,4 @@
-RocketChat.models.Users = new class asd extends RocketChat.models._Base
+RocketChat.models.Users = new class extends RocketChat.models._Base
 	constructor: ->
 		@model = Meteor.users
 
