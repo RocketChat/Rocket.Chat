@@ -5,4 +5,4 @@ Meteor.methods
 
 		@unblock()
 
-		Meteor.users.update({_id: @userId, utcOffset: {$ne: utcOffset}}, {$set: {utcOffset: utcOffset}})
+		RocketChat.models.Users.setUtcOffset @userId, utcOffset

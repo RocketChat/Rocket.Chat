@@ -5,9 +5,4 @@ Meteor.methods
 
     console.log '[methods] openRoom -> '.green, 'userId:', Meteor.userId(), 'arguments:', arguments
 
-    ChatSubscription.update
-      rid: rid
-      'u._id': Meteor.userId()
-    ,
-      $set:
-        open: true
+    RocketChat.models.Subscriptions.openByRoomIdAndUserId rid, Meteor.userId()

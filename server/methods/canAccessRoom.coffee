@@ -2,7 +2,7 @@ Meteor.methods
 	canAccessRoom: (rid, userId) ->
 		console.log '[methods] canAccessRoom -> '.green, 'userId:', userId, 'rid:', rid
 
-		user = Meteor.users.findOne userId, fields: username: 1
+		user = RocketChat.models.Users.findOneById userId, fields: username: 1
 
 		unless user?.username
 			throw new Meteor.Error 'not-logged-user', "[methods] canAccessRoom -> User doesn't have enough permissions"
@@ -10,7 +10,7 @@ Meteor.methods
 		unless rid
 			throw new Meteor.Error 'invalid-room', '[methods] canAccessRoom -> Cannot access empty room'
 
-		room = ChatRoom.findOne rid, { fields: { usernames: 1, t: 1, name: 1 } }
+		room = RocketChat.models.Rooms.findOneById rid, { fields: { usernames: 1, t: 1, name: 1 } }
 
 		if room
 			if room.t is 'c'
