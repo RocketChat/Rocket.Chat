@@ -2,7 +2,7 @@ RocketChat.statistics.get = ->
 	statistics = {}
 
 	# Version
-	statistics.uniqueId = Settings.findOne({ _id: "uniqueID" })?.value
+	statistics.uniqueId = RocketChat.settings.get("uniqueID")
 	statistics.version = BuildInfo?.commit?.hash
 	statistics.versionDate = BuildInfo?.commit?.date
 
