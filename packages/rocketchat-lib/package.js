@@ -15,6 +15,7 @@ Package.onUse(function(api) {
 	api.use('check');
 	api.use('underscore');
 	api.use('underscorestring:underscore.string');
+	api.use('monbro:mongodb-mapreduce-aggregation@1.0.1');
 
 	// TAPi18n
 	api.use('templating', 'client');
@@ -29,13 +30,32 @@ Package.onUse(function(api) {
 	api.imply('tap:i18n');
 	api.addFiles("package-tap.i18n", ["client", "server"]);
 
+
 	// COMMON
 	api.addFiles('lib/core.coffee');
 	api.addFiles('lib/callbacks.coffee');
 	api.addFiles('lib/slashCommand.coffee');
 
-	api.addFiles('settings/lib/settings.coffee');
+	// MODELS SERVER
+	api.addFiles('server/models/_Base.coffee', 'server');
+	api.addFiles('server/models/Users.coffee', 'server');
+	api.addFiles('server/models/Subscriptions.coffee', 'server');
+	api.addFiles('server/models/Rooms.coffee', 'server');
+	api.addFiles('server/models/Messages.coffee', 'server');
+	api.addFiles('server/models/Reports.coffee', 'server');
+
+	// Settings
 	api.addFiles('settings/lib/rocketchat.coffee');
+
+	api.addFiles('settings/server/models/Settings.coffee', 'server');
+	api.addFiles('settings/server/methods.coffee', 'server');
+	api.addFiles('settings/server/publication.coffee', 'server');
+	api.addFiles('settings/server/startup.coffee', 'server');
+	api.addFiles('settings/server/updateServices.coffee', 'server');
+	api.addFiles('settings/server/addOAuthService.coffee', 'server');
+
+	api.addFiles('settings/lib/settings.coffee');
+
 
 	// CLIENT
 	api.addFiles('client/Notifications.coffee', 'client');
@@ -59,21 +79,7 @@ Package.onUse(function(api) {
 
 	api.addFiles('server/Notifications.coffee', 'server');
 
-	// Settings
-	api.addFiles('settings/server/methods.coffee', 'server');
-	api.addFiles('settings/server/publication.coffee', 'server');
-	api.addFiles('settings/server/startup.coffee', 'server');
-	api.addFiles('settings/server/updateServices.coffee', 'server');
-	api.addFiles('settings/server/addOAuthService.coffee', 'server');
-
 	api.addFiles('server/cdn.coffee', 'server');
-
-	api.addFiles('server/models/_Base.coffee', 'server');
-	api.addFiles('server/models/Users.coffee', 'server');
-	api.addFiles('server/models/Subscriptions.coffee', 'server');
-	api.addFiles('server/models/Rooms.coffee', 'server');
-	api.addFiles('server/models/Messages.coffee', 'server');
-	api.addFiles('server/models/Reports.coffee', 'server');
 
 	// TAPi18n -- needs to be added last
 	api.addFiles(tapi18nFiles, ["client", "server"]);

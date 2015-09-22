@@ -1,10 +1,5 @@
 Meteor.startup ->
 	Meteor.defer ->
-		# Insert server unique id if it doesn't exist
-		if not Settings.findOne { _id: 'uniqueID' }
-			Settings.insert
-				_id: 'uniqueID'
-				value: Random.id()
 
 		if not RocketChat.models.Rooms.findOneByName('general')?
 			RocketChat.models.Rooms.createWithIdTypeAndName 'GENERAL', 'c', 'general',
