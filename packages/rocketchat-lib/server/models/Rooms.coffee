@@ -1,6 +1,6 @@
 RocketChat.models.Rooms = new class asd extends RocketChat.models._Base
 	constructor: ->
-		@model = new Meteor.Collection 'rocketchat_room'
+		@_initModel 'room'
 
 		@tryEnsureIndex { 'name': 1 }, { unique: 1, sparse: 1 }
 		@tryEnsureIndex { 'u._id': 1 }
