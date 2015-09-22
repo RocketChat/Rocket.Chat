@@ -9,7 +9,7 @@ all = (toFind, toSearch) ->
 	return _.isEmpty( _.difference( toFind, toSearch))
 
 Template.registerHelper 'hasPermission', (permission, scope) ->
-	unless _.isString( scope ) 
+	unless _.isString( scope )
 		scope = Roles.GLOBAL_GROUP
 	return hasPermission( permission, scope, atLeastOne)
 
@@ -31,7 +31,7 @@ hasPermission = (permissions, scope=Roles.GLOBAL_GROUP, strategy) ->
 	unless _.isArray(permissions)
 		permissions = [permissions]
 
-	roleNames = Roles.getRolesForUser(userId, scope) 
+	roleNames = Roles.getRolesForUser(userId, scope)
 
 	userPermissions = []
 	for roleName in roleNames
