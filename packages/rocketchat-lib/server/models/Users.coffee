@@ -88,7 +88,7 @@ RocketChat.models.Users = new class extends RocketChat.models._Base
 			$set: {}
 
 		serviceIdKey = "services.#{serviceName}.id"
-		update.$set[serviceIdKey] = serviceData.id
+		update.$set[serviceIdKey] = serviceId
 
 		return @update _id, update
 
