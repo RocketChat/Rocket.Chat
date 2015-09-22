@@ -12,18 +12,11 @@ Meteor.methods
 		if RocketChat.settings.get 'Message_KeepHistory'
 			RocketChat.models.Messages.cloneAndSaveAsHistoryById message._id
 
-		message.pts = new Date()
 		message.pinned = false
 
 		message = RocketChat.callbacks.run 'beforeSaveMessage', message
 
-		ChatMessage.update
-			_id: message._id
-			'u._id': Meteor.userId()
-		,
-			$set:
-				pinned: message.pinned
-				pts : message.pts
+		RocketChat.models.Messages.setPinnedByIdAndUserId message._id, Meteor.userId(), message.pinned
 
 
 		# Meteor.defer ->

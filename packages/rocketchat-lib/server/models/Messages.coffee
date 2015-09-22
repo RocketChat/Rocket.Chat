@@ -103,6 +103,72 @@ RocketChat.models.Messages = new class asd extends RocketChat.models._Base
 
 	# 	return @update query, update
 
+	setHiddenById: (_id, hidden=true) ->
+		query =
+			_id: _id
+
+		update =
+			$set:
+				_hidden: hidden
+
+		return @update query, update
+
+	setAsDeletedById: (_id) ->
+		query =
+			_id: _id
+
+		update =
+			$set:
+				msg: ''
+				t: 'rm'
+				ets: new Date()
+
+		return @update query, update
+
+	setPinnedByIdAndUserId: (_id, userId, pinned=true) ->
+		query =
+			_id: _id
+			'u._id': userId
+
+		update =
+			$set:
+				pinned: pinned
+				pts: new Date
+
+		return @update query, update
+
+	setUrlsById: (_id, urls) ->
+		query =
+			_id: _id
+
+		update =
+			$set:
+				urls: urls
+
+		return @update query, update
+
+	updateAllUsernamesByUserId: (userId, username) ->
+		query =
+			'u._id': userId
+
+		update =
+			$set:
+				"u.username": username
+
+		return @update query, update, { multi: true }
+
+	updateUsernameAndMessageOfMentionByIdAndOldUsername: (_id, oldUsername, newUsername, newMessage) ->
+		query =
+			_id: _id
+			"mentions.username": oldUsername
+
+		update =
+			$set:
+				"mentions.$.username": newUsername
+				"msg": newMessage
+
+		return @update query, update
+
 
 	# INSERT
 	createWithTypeRoomIdMessageAndUser: (type, roomId, message, user, extraData) ->

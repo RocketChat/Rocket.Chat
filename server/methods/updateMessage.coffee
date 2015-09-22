@@ -35,7 +35,7 @@ Meteor.methods
 		tempid = message._id
 		delete message._id
 
-		ChatMessage.update
+		RocketChat.models.Messages.update
 			_id: tempid
 		,
 			$set: message
