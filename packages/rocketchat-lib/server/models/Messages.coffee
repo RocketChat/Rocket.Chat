@@ -92,17 +92,7 @@ RocketChat.models.Messages = new class asd extends RocketChat.models._Base
 		return @insert record
 
 
-	# # UPDATE
-	# archiveById: (_id) ->
-	# 	query =
-	# 		_id: _id
-
-	# 	update =
-	# 		$set:
-	# 			archived: true
-
-	# 	return @update query, update
-
+	# UPDATE
 	setHiddenById: (_id, hidden=true) ->
 		query =
 			_id: _id
