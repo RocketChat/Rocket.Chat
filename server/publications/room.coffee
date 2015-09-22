@@ -20,7 +20,7 @@ Meteor.publish 'room', (typeName) ->
 
 	switch type
 		when 'c'
-			return RocketChat.models.Rooms.findByTypeContainigUsername 'c', name, options
+			return RocketChat.models.Rooms.findByTypeAndName 'c', name, options
 
 		when 'p'
 			user = RocketChat.models.Users.findOneById this.userId, fields: username: 1
