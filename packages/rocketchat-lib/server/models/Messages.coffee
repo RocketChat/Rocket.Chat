@@ -1,6 +1,6 @@
 RocketChat.models.Messages = new class asd extends RocketChat.models._Base
 	constructor: ->
-		@model = new Meteor.Collection 'rocketchat_message'
+		@_initModel 'message'
 
 		@tryEnsureIndex { 'rid': 1, 'ts': 1 }
 		@tryEnsureIndex { 'ets': 1 }, { sparse: 1 }

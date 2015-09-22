@@ -1,4 +1,12 @@
 RocketChat.models._Base = class
+	_baseName: ->
+		return 'rocketchat_'
+
+	_initModel: (name) ->
+		check name, String
+
+		@model = new Meteor.Collection @_baseName() + name
+
 	find: ->
 		return @model.find.apply @model, arguments
 

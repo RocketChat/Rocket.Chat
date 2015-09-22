@@ -1,6 +1,6 @@
 RocketChat.models.Reports = new class asd extends RocketChat.models._Base
 	constructor: ->
-		@model = new Meteor.Collection 'rocketchat_reports'
+		@_initModel 'reports'
 
 
 	# INSERT

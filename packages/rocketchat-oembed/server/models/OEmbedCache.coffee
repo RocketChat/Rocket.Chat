@@ -1,6 +1,6 @@
 RocketChat.models.OEmbedCache = new class asd extends RocketChat.models._Base
 	constructor: ->
-		@model = new Meteor.Collection 'rocketchat_oembed_cache'
+		@_initModel 'oembed_cache'
 
 
 	# FIND ONE

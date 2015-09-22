@@ -12,6 +12,7 @@ Package.onUse(function(api) {
 	api.use('reactive-dict');
 	api.use('coffeescript');
 	api.use('random');
+	api.use('check');
 	api.use('underscore');
 	api.use('underscorestring:underscore.string');
 
