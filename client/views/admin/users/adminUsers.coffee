@@ -23,7 +23,7 @@ Template.adminUsers.helpers
 		return RocketChat.TabBar.getData()
 
 	adminClass: ->
-		return 'admin' if Meteor.user()?.admin is true
+		return 'admin' if RocketChat.authz.hasRole(Meteor.userId(), 'admin')
 
 Template.adminUsers.onCreated ->
 	instance = @
@@ -56,7 +56,7 @@ Template.adminUsers.onCreated ->
 			query = { $or: [ { username: filterReg }, { name: filterReg }, { "emails.address": filterReg } ] }
 		else
 			query = {}
-		
+
 		return Meteor.users.find(query, { limit: instance.limit?.get(), sort: { username: 1, name: 1 } }).fetch()
 
 Template.adminUsers.onRendered ->

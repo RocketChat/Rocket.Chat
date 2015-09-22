@@ -61,6 +61,8 @@ openRoom = (type, name) ->
 			if ChatSubscription.findOne({rid: room._id})?.open is false
 				Meteor.call 'openRoom', room._id
 
+			RocketChat.callbacks.run 'enter-room'
+
 roomExit = ->
 	BlazeLayout.render 'main', {center: 'none'}
 

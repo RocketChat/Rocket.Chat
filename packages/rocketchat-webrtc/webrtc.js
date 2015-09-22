@@ -32,6 +32,8 @@ webrtc = {
 
 		if (webrtc.pc) {
 			if (webrtc.pc.signalingState != 'closed') {
+				webrtc.pc.getLocalStreams().forEach(function(stream) {stream.stop()})
+				webrtc.pc.getRemoteStreams().forEach(function(stream) {stream.stop()})
 				webrtc.pc.close();
 			webrtc.pc = undefined;
 			webrtc.mode = 0;
@@ -51,7 +53,8 @@ webrtc = {
 		}
 	},
 	onRemoteUrl: function() {},
-	onSelfUrl: function() {}
+	onSelfUrl: function() {},
+	onAcceptCall: function() {}
 }
 
 function onError() {
@@ -188,6 +191,7 @@ webrtc.start = function (isCaller, fromUsername) {
 				cancelButtonText: "No"
 			}, function(isConfirm){
 				if (isConfirm) {
+					webrtc.onAcceptCall(fromUsername);
 					LocalGetUserMedia();
 				} else {
 					webrtc.stop();
