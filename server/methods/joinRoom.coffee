@@ -11,15 +11,14 @@ Meteor.methods
 		if room.t isnt 'c'
 			throw new Meteor.Error 403, '[methods] joinRoom -> Not allowed'
 
-
 		now = new Date()
-
-		user = Meteor.users.findOne Meteor.userId()
 
 		# Check if user is already in room
 		subscription = ChatSubscription.findOne rid: rid, 'u._id': Meteor.userId()
 		if subscription?
 			return
+
+		user = Meteor.users.findOne Meteor.userId()
 
 		RocketChat.callbacks.run 'beforeJoinRoom', user, room
 
