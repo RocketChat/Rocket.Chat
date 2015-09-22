@@ -6,9 +6,7 @@ Meteor.methods
 
 		userId = Accounts.createUser userData
 
-		Meteor.users.update userId,
-			$set:
-				name: formData.name
+		RocketChat.models.Users.setName userId, formData.name
 
 		if userData.email
 			Accounts.sendVerificationEmail(userId, userData.email);

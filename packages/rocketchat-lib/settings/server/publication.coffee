@@ -1,5 +1,6 @@
 Meteor.publish 'settings', (ids = []) ->
 	console.log '[publish] settings'.green
+
 	filter =
 		public: true
 
@@ -7,7 +8,7 @@ Meteor.publish 'settings', (ids = []) ->
 		filter._id =
 			$in: ids
 
-	return Settings.find filter, { fields: _id: 1, value: 1 }
+	return RocketChat.models.Settings.find filter, { fields: _id: 1, value: 1 }
 
 Meteor.publish 'admin-settings', ->
 	console.log '[publish] admin-settings'.green
@@ -16,7 +17,7 @@ Meteor.publish 'admin-settings', ->
 		return @ready()
 
 	if RocketChat.authz.hasPermission( @userId, 'view-privileged-setting')
-		return Settings.find()
+		return RocketChat.models.Settings.find()
 	else
 		return @ready()
 
