@@ -53,7 +53,8 @@ webrtc = {
 		}
 	},
 	onRemoteUrl: function() {},
-	onSelfUrl: function() {}
+	onSelfUrl: function() {},
+	onAcceptCall: function() {}
 }
 
 function onError() {
@@ -190,6 +191,7 @@ webrtc.start = function (isCaller, fromUsername) {
 				cancelButtonText: "No"
 			}, function(isConfirm){
 				if (isConfirm) {
+					webrtc.onAcceptCall(fromUsername);
 					LocalGetUserMedia();
 				} else {
 					webrtc.stop();
