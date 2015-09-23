@@ -85,8 +85,10 @@ RocketChat.models.Messages = new class extends RocketChat.models._Base
 	findStarredByUserAtRoom: (userId, roomId, options) ->
 		query =
 			_hidden: { $ne: true }
-		'starred._id': userId
-		rid: roomId
+			'starred._id': userId
+			rid: roomId
+
+		console.log 'findStarredByUserAtRoom', arguments
 
 		return @find query, options
 
