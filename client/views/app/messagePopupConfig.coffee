@@ -2,6 +2,12 @@
 @filteredUsers = new Mongo.Collection 'filtered-users'
 @channelAutocomplete = new Mongo.Collection 'channel-autocomplete'
 
+channelAutoCompleteCollection = ->
+	if CachedChannelList.find().count() isnt 0
+		return CachedChannelList
+	else
+		return channelAutocomplete
+
 Template.messagePopupConfig.helpers
 	popupUserConfig: ->
 		self = this
@@ -50,15 +56,17 @@ Template.messagePopupConfig.helpers
 		template = Template.instance()
 		config =
 			title: 'Channels'
-			collection: channelAutocomplete
+			collection: channelAutoCompleteCollection()
 			trigger: '#'
 			template: 'messagePopupChannel'
 			getInput: self.getInput
 			getFilter: (collection, filter) ->
 				exp = new RegExp(filter, 'i')
 
-				Meteor.subscribe 'channelAutocomplete', filter
-				items = channelAutocomplete.find( { name: exp }, { limit: 10 }).fetch()
+				unless _.isEqual(collection, CachedChannelList)
+					Meteor.subscribe 'channelAutocomplete', filter
+
+				items = collection.find( { name: exp }, { limit: 10 }).fetch()
 
 				return items
 			getValue: (_id, collection) ->

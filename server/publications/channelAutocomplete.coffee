@@ -18,7 +18,7 @@ Meteor.publish 'channelAutocomplete', (name) ->
 
   pub = this
 
-  cursorHandle = ChatRoom.find(query, options).observeChanges
+  cursorHandle = RocketChat.models.Rooms.find(query, options).observeChanges
     added: (_id, record) ->
       pub.added('channel-autocomplete', _id, record)
 
