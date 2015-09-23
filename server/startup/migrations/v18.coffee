@@ -26,10 +26,10 @@ Meteor.startup ->
 				Accounts_Twitter_secret: 'Accounts_OAuth_Twitter_secret'
 
 			for from, to of changes
-				record = Settings.findOne _id: from
+				record = RocketChat.models.Settings.findOne _id: from
 				if record?
 					delete record._id
-					Settings.upsert {_id: to}, record
-				Settings.remove _id: from
+					RocketChat.models.Settings.upsert {_id: to}, record
+				RocketChat.models.Settings.remove _id: from
 
 			ServiceConfiguration.configurations.remove({})

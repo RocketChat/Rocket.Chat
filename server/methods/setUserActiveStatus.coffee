@@ -6,9 +6,9 @@ Meteor.methods
 		unless RocketChat.authz.hasPermission( Meteor.userId(), 'edit-other-user-active-status') is true
 			throw new Meteor.Error 'not-authorized', '[methods] setUserActiveStatus -> Not authorized'
 
-		Meteor.users.update userId, { $set: { active: active } }
+		RocketChat.models.Users.setUserActive userId, active
 
 		if active is false
-			Meteor.users.update userId, { $set: { "services.resume.loginTokens" : [] } }
+			RocketChat.models.Users.unsetLoginTokens userId
 
 		return true

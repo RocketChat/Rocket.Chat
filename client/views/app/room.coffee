@@ -229,7 +229,7 @@ Template.room.helpers
 		return RocketChat.TabBar.getData()
 
 	adminClass: ->
-		return 'admin' if Meteor.user()?.admin is true
+		return 'admin' if RocketChat.authz.hasRole(Meteor.userId(), 'admin')
 
 Template.room.events
 	"touchstart .message": (e, t) ->
@@ -441,29 +441,6 @@ Template.room.events
 		else
 			instance.chatMessages.pinMsg(message)
 
-	'click .start-video': (event) ->
-		_id = Template.instance().data._id
-		webrtc.to = _id.replace(Meteor.userId(), '')
-		webrtc.room = _id
-		webrtc.mode = 1
-		webrtc.start(true)
-
-	'click .stop-video': (event) ->
-		webrtc.stop()
-
-	'click .monitor-video': (event) ->
-		_id = Template.instance().data._id
-		webrtc.to = _id.replace(Meteor.userId(), '')
-		webrtc.room = _id
-		webrtc.mode = 2
-		webrtc.start(true)
-
-
-	'click .setup-video': (event) ->
-		webrtc.mode = 2
-		webrtc.activateLocalStream()
-
-
 	'dragenter .dropzone': (e) ->
 		e.currentTarget.classList.add 'over'
 
@@ -616,11 +593,19 @@ Template.room.onRendered ->
 	# salva a data da renderização para exibir alertas de novas mensagens
 	$.data(this.firstNode, 'renderedAt', new Date)
 
+	webrtc.onAcceptCall = (fromUsername) ->
+		if FlowRouter.current().route.name is 'direct' and FlowRouter.current().params.username is fromUsername
+			return
+
+		FlowRouter.go 'direct', {username: fromUsername}
+
 	webrtc.onRemoteUrl = (url) ->
+		RocketChat.TabBar.setTemplate 'membersList'
 		RocketChat.TabBar.openFlex()
 		Session.set('remoteVideoUrl', url)
 
 	webrtc.onSelfUrl = (url) ->
+		RocketChat.TabBar.setTemplate 'membersList'
 		RocketChat.TabBar.openFlex()
 		Session.set('selfVideoUrl', url)
 

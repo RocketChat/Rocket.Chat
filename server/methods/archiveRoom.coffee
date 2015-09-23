@@ -5,25 +5,18 @@ Meteor.methods
 
 		console.log '[methods] archiveRoom -> '.green, 'userId:', Meteor.userId(), 'arguments:', arguments
 
-		room = ChatRoom.findOne rid
+		room = RocketChat.models.Rooms.findOneById rid
 
-		if room.u? and room.u._id is Meteor.userId() or Meteor.user().admin?
+		if room.u? and room.u._id is Meteor.userId() or RocketChat.authz.hasRole(Meteor.userId(), 'admin')
 			update =
 				$set:
 					archived: true
 
-			ChatRoom.update rid, update
+			RocketChat.models.Rooms.archiveById rid
 
 			for username in room.usernames
-				member = Meteor.users.findOne({ username: username },{ fields: { username: 1 }})
+				member = RocketChat.models.Users.findOneByUsername(username, { fields: { username: 1 }})
 				if not member?
 					continue
 
-				ChatSubscription.update
-					rid: rid
-					'u._id': member._id
-				,
-					$set:
-						alert: false
-						open: false
-						archived: true
+				RocketChat.models.Subscriptions.archiveByRoomIdAndUserId rid, member._id

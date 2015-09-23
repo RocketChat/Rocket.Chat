@@ -3,5 +3,5 @@ Meteor.startup ->
 		version: 13
 		up: ->
 			# Set all current users as active
-			Meteor.users.update {}, { $set: { active: true } }, { multi: true }
+			RocketChat.models.Users.setAllUsersActive true
 			console.log "Set all users as active"
