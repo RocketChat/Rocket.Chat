@@ -12,7 +12,7 @@ Meteor.methods
 		#if room.u._id isnt Meteor.userId() and not hasPermission
 			throw new Meteor.Error 403, 'Not allowed'
 
-		if not /^[0-9a-z-_]+$/.test name
+		if not /^[0-9a-zA-Z-_\u00C0-\u017F]+$/.test name
 			throw new Meteor.Error 'name-invalid'
 
 		name = _.slugify name

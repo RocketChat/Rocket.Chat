@@ -14,7 +14,7 @@ Meteor.methods
 		{image, contentType} = RocketChatFile.dataURIParse dataURI
 
 		rs = RocketChatFile.bufferToStream new Buffer(image, 'base64')
-		ws = RocketChatFileAvatarInstance.createWriteStream "#{user.username}.jpg", contentType
+		ws = RocketChatFileAvatarInstance.createWriteStream encodeURIComponent("#{user.username}.jpg"), contentType
 		ws.on 'end', Meteor.bindEnvironment ->
 			Meteor.setTimeout ->
 				RocketChat.models.Users.setAvatarOrigin user._id, service
