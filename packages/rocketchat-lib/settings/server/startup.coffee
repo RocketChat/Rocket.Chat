@@ -1,4 +1,8 @@
 Meteor.startup ->
+	# Insert server unique id if it doesn't exist
+	if not RocketChat.models.Settings.findOneById 'uniqueID'
+		RocketChat.models.Settings.createWithIdAndValue 'uniqueID', Random.id()
+
 	RocketChat.settings.addGroup 'Accounts'
 	RocketChat.settings.add 'Accounts_RegistrationRequired', true, { type: 'boolean', group: 'Accounts', public: true, section: 'Registration' }
 	RocketChat.settings.add 'Accounts_EmailVerification', false, { type: 'boolean', group: 'Accounts', public: true, section: 'Registration' }
@@ -45,7 +49,7 @@ Meteor.startup ->
 	RocketChat.settings.add 'SMTP_Username', '', { type: 'string', group: 'SMTP' }
 	RocketChat.settings.add 'SMTP_Password', '', { type: 'string', group: 'SMTP' }
 	RocketChat.settings.add 'From_Email', 'no-reply@rocket.chat', { type: 'string', group: 'SMTP' }
-	
+
 	RocketChat.settings.add 'Invitation_Subject', 'You have been invited to Rocket.Chat', { type: 'string', group: 'SMTP', section: 'Invitation' }
 	RocketChat.settings.add 'Invitation_HTML', '<h2>You have been invited to <h1>Rocket.Chat</h1></h2><p>Go to https://demo.rocket.chat and try the best open source chat solution available today!</p>', { type: 'string', multiline: true, group: 'SMTP', section: 'Invitation' }
 

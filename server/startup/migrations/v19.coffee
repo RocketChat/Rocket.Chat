@@ -18,9 +18,9 @@ Meteor.startup ->
 			usernames = _.pluck( users, 'username').join(', ')
 			console.log "Add #{usernames} to 'user' role".green
 
-			# Add 'moderator' role to channel/group creators 
-			rooms = ChatRoom.find({t: {$in : ['c','p']}}).fetch()
-			_.each( rooms, (room) -> 
+			# Add 'moderator' role to channel/group creators
+			rooms = RocketChat.models.Rooms.findByTypes(['c','p']).fetch()
+			_.each( rooms, (room) ->
 				creator = room?.u?._id
 				if creator
 					RocketChat.authz.addUsersToRoles( creator, ['moderator'], room._id)

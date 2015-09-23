@@ -78,7 +78,7 @@ Meteor.startup ->
 	roles = _.pluck(Roles.getAllRoles().fetch(), 'name');
 
 	for permission in permissions
-		ChatPermissions.upsert( permission._id, {$setOnInsert : permission })
+		RocketChat.models.Permissions.upsert( permission._id, {$setOnInsert : permission })
 		for role in permission.roles
 			unless role in roles
 				Roles.createRole role

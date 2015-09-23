@@ -6,4 +6,4 @@ RocketChat.authz.getPermissionsForRole = (roleName) ->
 	unless roleName in roleNames
 		throw new Meteor.Error 'invalid-role'
 
-	return _.pluck(ChatPermissions.find({roles : roleName }).fetch(), '_id')
+	return _.pluck(RocketChat.models.Permissions.findByRole( roleName ).fetch(), '_id')

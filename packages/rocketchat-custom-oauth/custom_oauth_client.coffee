@@ -8,6 +8,13 @@ class CustomOAuth
 		if not Match.test @name, String
 			return throw new Meteor.Error 'CustomOAuth: Name is required and must be String'
 
+		@configure options
+
+		Accounts.oauth.registerService @name
+
+		@configureLogin()
+
+	configure: (options) ->
 		if not Match.test options, Object
 			return throw new Meteor.Error 'CustomOAuth: Options is required and must be Object'
 
@@ -20,13 +27,9 @@ class CustomOAuth
 		@serverURL = options.serverURL
 
 		if not /^https?:\/\/.+/.test options.authorizePath
-			options.authorizePath = @serverURL + options.authorizePath
-
-		@authorizePath = options.authorizePath
-
-		Accounts.oauth.registerService @name
-
-		@configureLogin()
+			@authorizePath = @serverURL + options.authorizePath
+		else
+			@authorizePath = options.authorizePath
 
 	configureLogin: ->
 		self = @

@@ -6,12 +6,6 @@ Meteor.methods
 		unless Meteor.call 'canAccessRoom', rid, fromId
 			return false
 
-		query =
-			_hidden: { $ne: true }
-			rid: rid
-			ts:
-				$lt: end
-
 		options =
 			sort:
 				ts: -1
@@ -20,19 +14,17 @@ Meteor.methods
 		if not RocketChat.settings.get 'Message_ShowEditedStatus'
 			options.fields = { ets: 0 }
 
-		messages = _.map ChatMessage.find(query, options).fetch(), (message) ->
+		messages = _.map RocketChat.models.Messages.findVisibleByRoomIdBeforeTimestamp(rid, end, options).fetch(), (message) ->
 			message.starred = _.findWhere message.starred, { _id: fromId }
 			return message
 
 		unreadNotLoaded = 0
 
 		if ls?
-			fistMessage = messages[messages.length - 1]
-			if fistMessage?.ts > ls
-				query.ts.$lt = fistMessage.ts
-				query.ts.$gt = ls
+			firstMessage = messages[messages.length - 1]
+			if firstMessage?.ts > ls
 				delete options.limit
-				unreadNotLoaded = ChatMessage.find(query, options).count()
+				unreadNotLoaded = RocketChat.models.Messages.findVisibleByRoomIdBetweenTimestamps(rid, ls, firstMessage.ts).count()
 
 		return {
 			messages: messages

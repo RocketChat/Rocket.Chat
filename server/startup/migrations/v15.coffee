@@ -59,7 +59,7 @@ Meteor.startup ->
 						n: oldChunk.n
 						data: oldChunk.data
 
-				ChatMessage.find({$or: [{ 'urls.url': "https://demo.rocket.chat/cfs/files/Files/#{cfsRecord._id}" }, { 'urls.url': "https://rocket.chat/cfs/files/Files/#{cfsRecord._id}" }]}).forEach (message) ->
+				RocketChat.models.Messages.find({$or: [{ 'urls.url': "https://demo.rocket.chat/cfs/files/Files/#{cfsRecord._id}" }, { 'urls.url': "https://rocket.chat/cfs/files/Files/#{cfsRecord._id}" }]}).forEach (message) ->
 					for urlsItem in message.urls
 						if urlsItem.url is "https://demo.rocket.chat/cfs/files/Files/#{cfsRecord._id}" or urlsItem.url is "https://rocket.chat/cfs/files/Files/#{cfsRecord._id}"
 							urlsItem.url = Meteor.absoluteUrl() + url
@@ -68,7 +68,7 @@ Meteor.startup ->
 							message.msg = message.msg.replace "https://demo.rocket.chat/cfs/files/Files/#{cfsRecord._id}", Meteor.absoluteUrl() + url
 							message.msg = message.msg.replace "https://rocket.chat/cfs/files/Files/#{cfsRecord._id}", Meteor.absoluteUrl() + url
 
-					ChatMessage.update {_id: message._id}, {$set: {urls: message.urls, msg: message.msg}}
+					RocketChat.models.Messages.update {_id: message._id}, {$set: {urls: message.urls, msg: message.msg}}
 
 				oldFilesCollection.remove  _id: cfsRecord._id
 				oldGridFSCollection.remove _id: oldGridFsFile._id

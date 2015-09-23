@@ -1,37 +1,24 @@
 Meteor.startup ->
 	Meteor.defer ->
-		# Insert server unique id if it doesn't exist
-		if not Settings.findOne { _id: 'uniqueID' }
-			Settings.insert
-				_id: 'uniqueID'
-				value: Random.id()
 
-		if not ChatRoom.findOne('name': 'general')?
-			ChatRoom.insert
-				_id: 'GENERAL'
+		if not RocketChat.models.Rooms.findOneByName('general')?
+			RocketChat.models.Rooms.createWithIdTypeAndName 'GENERAL', 'c', 'general',
 				default: true
-				usernames: []
-				ts: new Date()
-				t: 'c'
-				name: 'general'
-				msgs: 0
 
-		if process.env.ADMIN_EMAIL? and process.env.ADMIN_PASS? 
+		if process.env.ADMIN_EMAIL? and process.env.ADMIN_PASS?
 			re = /^([\w-]+(?:\.[\w-]+)*)@((?:[\w-]+\.)*\w[\w-]{0,66})\.([a-z]{2,6}(?:\.[a-z]{2})?)$/i
 			if re.test process.env.ADMIN_EMAIL
 				if _.isEmpty(RocketChat.authz.getUsersInRole( 'admin' ).fetch())
-					if not Meteor.users.findOne({ "emails.address": process.env.ADMIN_EMAIL })
+					if not RocketChat.models.Users.findOneByEmailAddress process.env.ADMIN_EMAIL
 						console.log 'Inserting admin user'.red
 						console.log "email: #{process.env.ADMIN_EMAIL} | password: #{process.env.ADMIN_PASS}".red
 
-						id = Meteor.users.insert
-							createdAt: new Date
+						id = RocketChat.models.Users.create
 							emails: [
 								address: process.env.ADMIN_EMAIL
 								verified: true
 							],
 							name: 'Admin'
-							avatarOrigin: 'none'
 
 						Accounts.setPassword id, process.env.ADMIN_PASS
 						RocketChat.authz.addUsersToRoles( id, 'admin')
@@ -46,7 +33,7 @@ Meteor.startup ->
 		# Set oldest user as admin, if none exists yet
 		if _.isEmpty( RocketChat.authz.getUsersInRole( 'admin' ).fetch())
 			# get oldest user
-			oldestUser = Meteor.users.findOne({}, { fields: { username: 1 }, sort: {createdAt: 1}})
+			oldestUser = RocketChat.models.Users.findOne({}, { fields: { username: 1 }, sort: {createdAt: 1}})
 			if oldestUser
 				RocketChat.authz.addUsersToRoles( oldestUser._id, 'admin')
 				console.log "No admins are found. Set #{oldestUser.username} as admin for being the oldest user"
