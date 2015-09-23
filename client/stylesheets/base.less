@@ -3806,6 +3806,20 @@ a.github-fork {
 	}
 }
 
+.message-popup-results {
+	&.notready {
+		.message-popup-items {
+			background-image: url(/images/logo/loading.gif);
+			background-repeat: no-repeat;
+			background-position: 50% 50%;
+			height: 100px;
+		}
+		.popup-item {
+			display: none;
+		}
+	}
+}
+
 @media all and(max-height: 480px) {
 	#login-card {
 		padding: 10px;
