@@ -81,6 +81,7 @@
   "Create_new_public_channel" : "Create a new public channel",
   "Created_at" : "Created at",
   "Custom_oauth_unique_name" : "Custom oauth unique name",
+  "Custom_oauth_helper" : "When setting up your OAuth Provider, you'll have to inform a Callback URL. Use <pre>%s</pre> .",
   "days" : "days",
   "Deactivate" : "Deactivate",
   "Delete_User_Warning" : "Deleting a user will delete all messages from that user as well. This cannot be undone.",
