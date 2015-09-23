@@ -196,7 +196,7 @@ Template.messagePopup.events
 
 Template.messagePopup.helpers
 	isOpen: ->
-		Template.instance().open.get() and Template.instance().hasData.get()
+		Template.instance().open.get() and (Template.instance().hasData.get() or not Template.instance().parentTemplate(1).subscriptionsReady())
 
 	data: ->
 		template = Template.instance()
