@@ -61,7 +61,7 @@ Api.testapiValidateUsers =  (users) ->
 		if user.name?
 			if user.email?
 				if user.pass?
-					if  /^[0-9a-z-_]+$/i.test user.name
+					if  /^[0-9a-zA-Z-_\u00C0-\u017F]+$/i.test user.name
 						if  /\b[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]+\b/i.test user.email
 							continue
 		throw new Meteor.Error 'invalid-user-record', "[restapi] bulk/register -> record #" + i + " is invalid"
@@ -125,7 +125,7 @@ Api.testapiValidateRooms =  (rooms) ->
 		if room.name?
 			if room.members?
 				if room.members.length > 1
-					if  /^[0-9a-z-_]+$/i.test room.name
+					if  /^[0-9a-zA-Z-_\u00C0-\u017F]+$/i.test room.name
 						continue
 		throw new Meteor.Error 'invalid-room-record', "[restapi] bulk/createRoom -> record #" + i + " is invalid"
 	return
