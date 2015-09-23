@@ -10,8 +10,12 @@ webrtc = {
 	debug: false,
 	config: {
 		iceServers: [
+			{url: "stun:stun.l.google.com:19302"},
 			{url: "stun:23.21.150.121"},
-			{url: "stun:stun.l.google.com:19302"}
+			{
+				url: "turn:team%40rocket.chat@numb.viagenie.ca:3478",
+				"credential": "demo"
+			}
 		]
 	},
 	send: function(data) {
@@ -28,6 +32,8 @@ webrtc = {
 
 		if (webrtc.pc) {
 			if (webrtc.pc.signalingState != 'closed') {
+				webrtc.pc.getLocalStreams().forEach(function(stream) {stream.stop()})
+				webrtc.pc.getRemoteStreams().forEach(function(stream) {stream.stop()})
 				webrtc.pc.close();
 			webrtc.pc = undefined;
 			webrtc.mode = 0;
@@ -47,7 +53,8 @@ webrtc = {
 		}
 	},
 	onRemoteUrl: function() {},
-	onSelfUrl: function() {}
+	onSelfUrl: function() {},
+	onAcceptCall: function() {}
 }
 
 function onError() {
@@ -63,7 +70,7 @@ webrtc.activateLocalStream = function() {
 			webrtc.onSelfUrl(URL.createObjectURL(stream));
 			webrtc.activeMediastream = stream;
 
-		}, function(e) { webrtc.log('getUserMedia failed during activateLocalStream ' + e); });
+		}, function(e) { webrtc.log('getUserMedia failed during activateLocalStream ', e); });
 }
 
 // run start(true) to initiate a call
@@ -138,7 +145,7 @@ webrtc.start = function (isCaller, fromUsername) {
 
 
 
-		var media ={ "audio": true, "video": {mandatory: {minWidth:1280, minHeight:720}}} ;
+		var media ={ "audio": true, "video": true};
 
 
 		// get the local stream, show it in the local video element and send it
@@ -154,7 +161,7 @@ webrtc.start = function (isCaller, fromUsername) {
 				webrtc.pc.createAnswer(gotDescription, onError);
 			}
 
-		}, function(e) { webrtc.log('getUserMedia failed' + e); });
+		}, function(e) { webrtc.log('getUserMedia failed', e); });
 
 	}
 
@@ -184,6 +191,7 @@ webrtc.start = function (isCaller, fromUsername) {
 				cancelButtonText: "No"
 			}, function(isConfirm){
 				if (isConfirm) {
+					webrtc.onAcceptCall(fromUsername);
 					LocalGetUserMedia();
 				} else {
 					webrtc.stop();

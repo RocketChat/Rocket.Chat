@@ -20,7 +20,7 @@ else
 			channel = channel.replace('#', '')
 
 			user = Meteor.users.findOne Meteor.userId()
-			room = ChatRoom.findOne({ name: channel, t: 'c', usernames: { $nin: [ user.username ]} })
+			room = RocketChat.models.Rooms.findOneByNameAndTypeNotContainigUsername(channel, 'c', user.username)
 
 			if not room?
 				return

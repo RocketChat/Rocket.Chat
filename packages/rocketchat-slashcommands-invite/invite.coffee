@@ -24,10 +24,8 @@ else
 			if not user?
 				return
 
-			# verify the user isn't already in this room
-			room = ChatRoom.findOne({ _id: item.rid, usernames: { $nin: [ user.username ]} })
-
-			if not room?
+			# cancel if the user is already in this room
+			if RocketChat.models.Rooms.findOneByIdContainigUsername(item.rid, user.username)?
 				return
 
 			Meteor.runAsUser user._id, ->

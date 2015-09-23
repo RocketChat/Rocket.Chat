@@ -1,6 +1,6 @@
 Meteor.methods
 	sendConfirmationEmail: (email) ->
-		user = Meteor.users.findOne {'emails.address': email}
+		user = RocketChat.models.Users.findOneByEmailAddress email
 
 		if user?
 			Accounts.sendVerificationEmail(user._id, email)

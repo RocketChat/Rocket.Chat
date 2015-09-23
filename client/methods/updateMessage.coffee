@@ -10,7 +10,16 @@ Meteor.methods
 		editOwn = originalMessage?.u?._id is Meteor.userId()
 
 		unless hasPermission or (editAllowed and editOwn)
+			toastr.error t('Message_editing_not_allowed')
 			throw new Meteor.Error 'message-editing-not-allowed', t('Message_editing_not_allowed')
+
+		blockEditInMinutes = RocketChat.settings.get 'Message_AllowEditing_BlockEditInMinutes'
+		if blockEditInMinutes? and blockEditInMinutes isnt 0
+			msgTs = moment(originalMessage.ts) if originalMessage.ts?
+			currentTsDiff = moment().diff(msgTs, 'minutes') if msgTs?
+			if currentTsDiff > blockEditInMinutes
+				toastr.error t('Message_editing_blocked')
+				throw new Meteor.Error 'message-editing-blocked'
 
 		Tracker.nonreactive ->
 

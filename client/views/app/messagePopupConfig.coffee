@@ -1,4 +1,5 @@
 @onlineUsers = new Mongo.Collection 'online-users'
+@filteredUsers = new Mongo.Collection 'filtered-users'
 @channelAutocomplete = new Mongo.Collection 'channel-autocomplete'
 
 Template.messagePopupConfig.helpers
@@ -7,14 +8,14 @@ Template.messagePopupConfig.helpers
 		template = Template.instance()
 		config =
 			title: 'People'
-			collection: onlineUsers
+			collection: filteredUsers
 			template: 'messagePopupUser'
 			getInput: self.getInput
 			textFilterDelay: 200
 			getFilter: (collection, filter) ->
-				exp = new RegExp(filter, 'i')
-				Meteor.subscribe 'onlineUsers', filter
-				items = onlineUsers.find({$or: [{name: exp}, {username: exp}]}, {limit: 5}).fetch()
+				exp = new RegExp("^#{filter}", 'i')
+				Meteor.subscribe 'filteredUsers', filter
+				items = filteredUsers.find({$or: [{username: exp}, {name: exp}]}, {limit: 5}).fetch()
 
 				all =
 					_id: '@all'
@@ -26,7 +27,6 @@ Template.messagePopupConfig.helpers
 				exp = new RegExp("(^|\\s)#{filter}", 'i')
 				if exp.test(all.username) or exp.test(all.compatibility)
 					items.unshift all
-
 				return items
 
 			getValue: (_id, collection, firstPartValue) ->

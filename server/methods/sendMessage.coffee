@@ -8,7 +8,7 @@ Meteor.methods
 
 		console.log '[methods] sendMessage -> '.green, 'userId:', Meteor.userId(), 'arguments:', arguments
 
-		user = Meteor.users.findOne Meteor.userId(), fields: username: 1
+		user = RocketChat.models.Users.findOneById Meteor.userId(), fields: username: 1
 
 		room = Meteor.call 'canAccessRoom', message.rid, user._id
 

@@ -6,7 +6,7 @@ Package.describe({
 });
 
 Npm.depends({
-  ldapjs: "0.7.1", 
+  ldapjs: "0.7.1",
 });
 
 // Loads all i18n.json files into tapi18nFiles
@@ -22,6 +22,7 @@ Package.onUse(function(api) {
   api.versionsFrom('1.0.3.1');
 
   // Commom
+  api.use('rocketchat:lib@0.0.1');
   api.use('tap:i18n@1.5.1');
   api.use('yasaricli:slugify');
   api.use('coffeescript');
@@ -43,7 +44,7 @@ Package.onUse(function(api) {
   api.addFiles('config_server.coffee', 'server');
 
   api.addFiles(tapi18nFiles);
-  
+
   api.export('LDAP', 'server');
   api.export('LDAP_DEFAULTS', 'server');
   api.export('MeteorWrapperLdapjs');
