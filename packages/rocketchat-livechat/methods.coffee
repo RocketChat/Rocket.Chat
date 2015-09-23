@@ -40,7 +40,7 @@ Meteor.methods
 
 		guest = Meteor.users.findOne Meteor.userId(), fields: username: 1
 
-		room = ChatRoom.findOne message.rid
+		room = RocketChat.models.Rooms.findOneById message.rid
 
 		if not room?
 
@@ -50,7 +50,7 @@ Meteor.methods
 			unless operator
 				throw new Meteor.Error 'no-operators', 'Sorry, no online operators'
 
-			ChatRoom.insert
+			RocketChat.models.Rooms.insert
 				_id: message.rid
 				name: guest.username
 				msgs: 1
@@ -61,7 +61,7 @@ Meteor.methods
 				v:
 					token: message.token
 
-			ChatSubscription.insert
+			RocketChat.models.Subscriptions.insert
 				rid: message.rid
 				name: guest.username
 				alert: true

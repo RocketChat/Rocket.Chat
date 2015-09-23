@@ -331,9 +331,6 @@ Template.room.events
 		input.focus()
 		input.get(0).updateAutogrow()
 
-	'click .add-user': (event) ->
-		toggleAddUser()
-
 	'click .edit-room-title': (event) ->
 		event.preventDefault()
 		Session.set('editRoomTitle', true)
@@ -341,10 +338,6 @@ Template.room.events
 		Meteor.setTimeout ->
 			$('#room-title-field').focus().select()
 		, 10
-
-	'keydown #user-add-search': (event) ->
-		if event.keyCode is 27 # esc
-			toggleAddUser()
 
 	'keydown #room-title-field': (event) ->
 		if event.keyCode is 27 # esc
@@ -641,14 +634,3 @@ renameRoom = (rid, name) ->
 					toastr.error t('Duplicate_private_group_name', name)
 				return
 			toastr.error error.reason
-
-toggleAddUser = ->
-	console.log 'room toggleAddUser' if window.rocketDebug
-	btn = $('.add-user')
-	$('.add-user-search').toggleClass('show-search')
-	if $('i', btn).hasClass('icon-plus')
-		$('#user-add-search').focus()
-		$('i', btn).removeClass('icon-plus').addClass('icon-cancel')
-	else
-		$('#user-add-search').val('')
-		$('i', btn).removeClass('icon-cancel').addClass('icon-plus')
