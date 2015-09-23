@@ -6,7 +6,7 @@ Meteor.publish 'starredMessages', (rid, options = {}) ->
 
 	publication = @
 
-	cursorHandle = RocketChat.models.Messages.findStarredByUserAtRoom(this.userId, rid: rid, { sort: { ts: -1 }, limit: 50 }).observeChanges
+	cursorHandle = RocketChat.models.Messages.findStarredByUserAtRoom(this.userId, rid, { sort: { ts: -1 }, limit: 50 }).observeChanges
 		added: (_id, record) ->
 			publication.added('rocketchat_starred_message', _id, record)
 

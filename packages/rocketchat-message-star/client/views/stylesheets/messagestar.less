@@ -1,0 +1,18 @@
+.starred-messages-list {
+	margin-top: 30px;
+
+	.message-cog, .starred-messages-list .message-dropdown {
+		display: none;
+	}
+
+	&.notready {
+		background-image: url(/images/logo/loading.gif);
+		background-repeat: no-repeat;
+		background-position: 50% 50%;
+		height: 100px;
+
+		.message {
+			display: none;
+		}
+	}
+}

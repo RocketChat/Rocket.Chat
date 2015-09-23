@@ -10,6 +10,7 @@ Package.onUse(function(api) {
 
 	api.use([
 		'coffeescript',
+		'less',
 		'rocketchat:lib@0.0.1'
 	]);
 
@@ -33,7 +34,7 @@ Package.onUse(function(api) {
 		'client/tabBar.coffee',
 		'client/views/starredMessages.html',
 		'client/views/starredMessages.coffee',
-		'client/views/stylesheets/messagestar.css',
+		'client/views/stylesheets/messagestar.less',
 	], 'client');
 
 	api.addFiles([
