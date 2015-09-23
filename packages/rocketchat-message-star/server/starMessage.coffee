@@ -8,15 +8,4 @@ Meteor.methods
 
 		console.log '[methods] starMessage -> '.green, 'userId:', Meteor.userId(), 'arguments:', arguments
 
-		if message.starred
-			ChatMessage.update
-				_id: message._id
-			,
-				$addToSet:
-					starred: { _id: Meteor.userId() }
-		else
-			ChatMessage.update
-				_id: message._id
-			,
-				$pull:
-					starred: { _id: Meteor.userId() }
+		RocketChat.models.Messages.updateUserStarById(message._id, Meteor.userId(), message.starred)
