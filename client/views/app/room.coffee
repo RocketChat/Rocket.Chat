@@ -364,24 +364,6 @@ Template.room.events
 			# Session.set('flexOpened', true)
 		RocketChat.TabBar.setTemplate 'membersList'
 
-	'autocompleteselect #user-add-search': (event, template, doc) ->
-		roomData = Session.get('roomData' + Session.get('openedRoom'))
-
-		if roomData.t is 'd'
-			Meteor.call 'createGroupRoom', roomData.usernames, doc.username, (error, result) ->
-				if error
-					return Errors.throw error.reason
-
-				if result?.rid?
-					$('#user-add-search').val('')
-		else if roomData.t in ['c', 'p']
-			Meteor.call 'addUserToRoom', { rid: roomData._id, username: doc.username }, (error, result) ->
-				if error
-					return Errors.throw error.reason
-
-				$('#user-add-search').val('')
-				toggleAddUser()
-
 	'scroll .wrapper': _.throttle (e, instance) ->
 		if RoomHistoryManager.hasMore(@_id) is true and RoomHistoryManager.isLoading(@_id) is false
 			if e.target.scrollTop is 0
