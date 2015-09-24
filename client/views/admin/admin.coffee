@@ -35,9 +35,11 @@ Template.admin.helpers
 		if description?.indexOf(':') is -1
 			description = 'project:' + description
 		return TAPi18next.t description
-
 	sectionIsCustomOath: (section) ->
 		return /^Custom OAuth:\s.+/.test section
+	callbackURL: (section) ->
+		id = s.strRight(section, 'Custom OAuth: ').toLowerCase()
+		return Meteor.absoluteUrl('_oauth/' + id)
 
 Template.admin.events
 	"click .submit .save": (e, t) ->
