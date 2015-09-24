@@ -25,11 +25,10 @@ class CustomOAuth
 			options.authorizePath = '/oauth/authorize'
 
 		@serverURL = options.serverURL
+		@authorizePath = options.authorizePath
 
-		if not /^https?:\/\/.+/.test options.authorizePath
-			@authorizePath = @serverURL + options.authorizePath
-		else
-			@authorizePath = options.authorizePath
+		if not /^https?:\/\/.+/.test @authorizePath
+			@authorizePath = @serverURL + @authorizePath
 
 	configureLogin: ->
 		self = @
