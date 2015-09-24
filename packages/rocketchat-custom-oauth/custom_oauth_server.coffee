@@ -96,6 +96,11 @@ class CustomOAuth
 			console.log 'at:', accessToken
 
 			identity = self.getIdentity accessToken
+
+			# Fix WordPress-like identities having 'ID' instead of 'id'
+			if identity?.ID and not identity.id
+				identity.id = identity.ID
+
 			console.log 'id:', JSON.stringify identity, null, '  '
 
 			serviceData =

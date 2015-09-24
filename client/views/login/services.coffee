@@ -22,6 +22,9 @@ Template.loginServices.helpers
 				when 'gitlab'
 					serviceName = 'Gitlab'
 					icon = service.service
+				when 'wordpress'
+					serviceName = 'WordPress'
+					icon = service.service
 				else
 					serviceName = _.capitalize service.service
 					icon = service.service
