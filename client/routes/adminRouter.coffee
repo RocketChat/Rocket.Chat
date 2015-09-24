@@ -24,6 +24,12 @@ FlowRouter.route '/admin/statistics',
 	action: ->
 		BlazeLayout.render 'main', {center: 'adminStatistics'}
 
+FlowRouter.route '/admin/import',
+	name: 'admin-import'
+	triggersEnter: [tabReset]
+	triggersExit: [tabReset]
+	action: ->
+		BlazeLayout.render 'main', {center: 'adminImport'}
 
 FlowRouter.route '/admin/:group?',
 	name: 'admin'

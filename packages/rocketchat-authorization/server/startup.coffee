@@ -9,6 +9,9 @@ Meteor.startup ->
 		{ _id: 'view-statistics',
 		roles : ['admin', 'temp-role']}
 
+		{ _id: 'run-import',
+		roles : ['admin']}
+
 		{ _id: 'view-privileged-setting',
 		roles : ['admin']}
 
@@ -83,5 +86,3 @@ Meteor.startup ->
 			unless role in roles
 				Roles.createRole role
 				roles.push(role)
-
-
