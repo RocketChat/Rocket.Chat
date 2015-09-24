@@ -34,15 +34,14 @@ class CustomOAuth
 			options.identityPath = '/me'
 
 		@serverURL = options.serverURL
-
-		if not /^https?:\/\/.+/.test options.tokenPath
-			options.tokenPath = @serverURL + options.tokenPath
-
-		if not /^https?:\/\/.+/.test options.identityPath
-			options.identityPath = @serverURL + options.identityPath
-
 		@tokenPath = options.tokenPath
 		@identityPath = options.identityPath
+
+		if not /^https?:\/\/.+/.test @tokenPath
+			@tokenPath = @serverURL + @tokenPath
+
+		if not /^https?:\/\/.+/.test @identityPath
+			@identityPath = @serverURL + @identityPath
 
 		if Match.test options.addAutopublishFields, Object
 			Accounts.addAutopublishFields options.addAutopublishFields
