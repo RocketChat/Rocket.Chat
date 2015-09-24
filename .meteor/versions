@@ -88,6 +88,7 @@ observe-sequence@1.0.6
 ordered-dict@1.0.3
 pauli:accounts-linkedin@1.1.2
 pauli:linkedin@1.1.2
+perak:codemirror@1.2.7
 percolate:migrations@0.8.6
 percolate:synced-cron@1.2.2
 qnub:emojione@0.0.3

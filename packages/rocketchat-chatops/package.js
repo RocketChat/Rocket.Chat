@@ -30,6 +30,9 @@ Package.onUse(function(api) {
 		'client/tabBar.coffee',
 		'client/views/chatops.html',
 		'client/views/chatops.coffee',
+		'client/views/codemirror.html',
+		'client/views/codemirror.coffee',
+		'client/views/dynamicUI.html',
 		'client/views/stylesheets/chatops.css',
 	], 'client');
 
