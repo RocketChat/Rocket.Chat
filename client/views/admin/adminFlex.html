@@ -13,6 +13,12 @@
 					</li>
 				{{/if}}
 
+				{{#if hasPermission 'run-import'}}
+				<li>
+					<a href="{{pathFor 'admin-import'}}" class="admin-link">Import</a>
+				</li>
+				{{/if}}
+
 				{{#if hasPermission 'view-room-administration'}}
 					<li>
 						<a href="{{pathFor 'admin-rooms'}}" class="admin-link">{{_ "Rooms"}}</a>

@@ -46,6 +46,7 @@ rocketchat:webrtc
 #rocketchat:livechat
 #rocketchat:hubot
 #rocketchat:irc
+rocketchat:importer-test
 
 konecty:change-case
 konecty:delayed-task
