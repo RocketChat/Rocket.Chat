@@ -274,59 +274,61 @@ sendHelper = Meteor.bindEnvironment (robot, envelope, strings, map) ->
 				console.error "Hubot error: #{err}" if DEBUG
 				robot.logger.error "RocketChat send error: #{err}"
 
-RocketBot = new Robot null, null, false, 'rocketbot'
-RocketBot.alias = 'bot'
-RocketBot.adapter = new RocketChatAdapter RocketBot
-HubotScripts(RocketBot)
-RocketBot.run()
+Tracker.autorun ->
+	if RocketChat.settings.get 'RocketBot_Enabled'
+		RocketBot = new Robot null, null, false, RocketChat.settings.get 'RocketBot_Name'
+		RocketBot.alias = 'bot'
+		RocketBot.adapter = new RocketChatAdapter RocketBot
+		HubotScripts(RocketBot)
+		RocketBot.run()
 
-# RocketBot.hear /^test/i, (res) ->
-#	res.send "Test? TESTING? WE DON'T NEED NO TEST, EVERYTHING WORKS!"
+		# RocketBot.hear /^test/i, (res) ->
+		#	res.send "Test? TESTING? WE DON'T NEED NO TEST, EVERYTHING WORKS!"
 
-RocketChat.callbacks.add 'afterSaveMessage', RocketBotReceiver, RocketChat.callbacks.priority.LOW
+		RocketChat.callbacks.add 'afterSaveMessage', RocketBotReceiver, RocketChat.callbacks.priority.LOW
 
-# Meteor.startup ->
-	# console.log RocketBot;
-	# # what's (the regexp for) my name?
-	# robot.respond /(?:)/, -> false
-	# mynameRE = robot.listeners.pop().regex
-	# # register scripts
-	# HubotScripts(robot)
-	# Object.keys(share.hubot).forEach (scriptName) ->
-	# 	console.log "Loading hubot script: #{scriptName}"
-	# 	share.hubot[scriptName](robot)
-	# # register our nick
-	# n = Meteor.call 'newNick', {name: 'rocketbot'}
-	# Meteor.call 'setTag', {type:'nicks', object:n._id, name:'Gravatar', value:'rocket@printf.net', who:n.canon}
-	# # register our presence in general chat
-	# keepalive = -> Meteor.call 'setPresence',
-	# 	u:
-	# 		username: 'rocketbot'
-	# 	rid: 'GENERAL'
-	# 	present: true
-	# 	foreground: true
-	# keepalive()
-	# Meteor.setInterval keepalive, 30*1000 # every 30s refresh presence
-	# # listen to the chat room, ignoring messages sent before we startup
-	# startup = true
-	# ChatMessage.find({}).observe
-	# 	added: (message) ->
-	# 		return if startup
-	# 		return if message.u.username is "rocketbot" or message.u.username is ""
-	# 		return if message.system or message.action or message.oplog or message.bodyIsHtml
-	# 		console.log "Received from #{message.u.username} in #{message.rid}: #{message.body}"\
-	# 			if DEBUG
-	# 		user = new Hubot.User(message.u.username, room: message.rid)
-	# 		tm = new Hubot.TextMessage(user, message.body, message._id)
-	# 		tm.private = message.to?
-	# 		# if private, ensure it's treated as a direct address
-	# 		if tm.private and not mynameRE.test(tm.text)
-	# 			tm.text = "#{robot.name} #{tm.text}"
-	# 		adapter.receive tm
-	# startup = false
-	# Meteor.call "sendMessage",
-	# 	rid: 'GENERAL'
-	# 	msg: 'wakes up'
-	# 	u:
-	# 		username: "rocketbot"
-	# 	action: true
+		# Meteor.startup ->
+			# console.log RocketBot;
+			# # what's (the regexp for) my name?
+			# robot.respond /(?:)/, -> false
+			# mynameRE = robot.listeners.pop().regex
+			# # register scripts
+			# HubotScripts(robot)
+			# Object.keys(share.hubot).forEach (scriptName) ->
+			# 	console.log "Loading hubot script: #{scriptName}"
+			# 	share.hubot[scriptName](robot)
+			# # register our nick
+			# n = Meteor.call 'newNick', {name: 'rocketbot'}
+			# Meteor.call 'setTag', {type:'nicks', object:n._id, name:'Gravatar', value:'rocket@printf.net', who:n.canon}
+			# # register our presence in general chat
+			# keepalive = -> Meteor.call 'setPresence',
+			# 	u:
+			# 		username: 'rocketbot'
+			# 	rid: 'GENERAL'
+			# 	present: true
+			# 	foreground: true
+			# keepalive()
+			# Meteor.setInterval keepalive, 30*1000 # every 30s refresh presence
+			# # listen to the chat room, ignoring messages sent before we startup
+			# startup = true
+			# ChatMessage.find({}).observe
+			# 	added: (message) ->
+			# 		return if startup
+			# 		return if message.u.username is "rocketbot" or message.u.username is ""
+			# 		return if message.system or message.action or message.oplog or message.bodyIsHtml
+			# 		console.log "Received from #{message.u.username} in #{message.rid}: #{message.body}"\
+			# 			if DEBUG
+			# 		user = new Hubot.User(message.u.username, room: message.rid)
+			# 		tm = new Hubot.TextMessage(user, message.body, message._id)
+			# 		tm.private = message.to?
+			# 		# if private, ensure it's treated as a direct address
+			# 		if tm.private and not mynameRE.test(tm.text)
+			# 			tm.text = "#{robot.name} #{tm.text}"
+			# 		adapter.receive tm
+			# startup = false
+			# Meteor.call "sendMessage",
+			# 	rid: 'GENERAL'
+			# 	msg: 'wakes up'
+			# 	u:
+			# 		username: "rocketbot"
+			# 	action: true
