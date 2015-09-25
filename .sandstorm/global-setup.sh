@@ -6,7 +6,8 @@ curl https://install.sandstorm.io/ > /host-dot-sandstorm/caches/install.sh
 SANDSTORM_CURRENT_VERSION=$(curl -fs "https://install.sandstorm.io/dev?from=0&type=install")
 SANDSTORM_PACKAGE="sandstorm-$SANDSTORM_CURRENT_VERSION.tar.xz"
 if [[ ! -f /host-dot-sandstorm/caches/$SANDSTORM_PACKAGE ]] ; then
-    curl --output "/host-dot-sandstorm/caches/$SANDSTORM_PACKAGE" "https://dl.sandstorm.io/$SANDSTORM_PACKAGE"
+    curl --output "/host-dot-sandstorm/caches/$SANDSTORM_PACKAGE.partial" "https://dl.sandstorm.io/$SANDSTORM_PACKAGE"
+    mv "/host-dot-sandstorm/caches/$SANDSTORM_PACKAGE.partial" "/host-dot-sandstorm/caches/$SANDSTORM_PACKAGE"
 fi
 bash /host-dot-sandstorm/caches/install.sh -d -e "/host-dot-sandstorm/caches/$SANDSTORM_PACKAGE"
 modprobe ip_tables
