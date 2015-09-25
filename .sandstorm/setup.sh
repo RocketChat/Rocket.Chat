@@ -3,7 +3,7 @@ set -euo pipefail
 
 cd /opt/
 
-PACKAGE=meteor-spk-0.1.4
+PACKAGE=meteor-spk-0.1.7
 PACKAGE_FILENAME="$PACKAGE.tar.xz"
 CACHE_TARGET="/host-dot-sandstorm/caches/${PACKAGE_FILENAME}"
 
