@@ -1,12 +1,19 @@
+isSubscribed = (_id) ->
+	return ChatSubscription.find({ rid: _id }).count() > 0
+
+favoritesEnabled = ->
+	return !RocketChat.settings.get 'Disable_Favorite_Rooms'
+
+
 # @TODO bug com o botão para "rolar até o fim" (novas mensagens) quando há uma mensagem com texto que gere rolagem horizontal
 Template.room.helpers
 	favorite: ->
 		sub = ChatSubscription.findOne { rid: this._id }, { fields: { f: 1 } }
-		return 'icon-star favorite-room' if sub?.f? and sub.f
+		return 'icon-star favorite-room' if sub?.f? and sub.f and favoritesEnabled
 		return 'icon-star-empty'
 
 	subscribed: ->
-		return ChatSubscription.find({ rid: this._id }).count() > 0
+		return isSubscribed(this._id)
 
 	messagesHistory: ->
 		return ChatMessage.find { rid: this._id, t: { '$ne': 't' }  }, { sort: { ts: 1 } }
@@ -230,6 +237,9 @@ Template.room.helpers
 
 	adminClass: ->
 		return 'admin' if RocketChat.authz.hasRole(Meteor.userId(), 'admin')
+
+	showToggleFavorite: ->
+		return true if isSubscribed(this._id) and favoritesEnabled()
 
 Template.room.events
 	"touchstart .message": (e, t) ->
