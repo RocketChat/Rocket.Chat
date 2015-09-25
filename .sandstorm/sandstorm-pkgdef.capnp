@@ -19,7 +19,7 @@ const pkgdef :Spk.PackageDefinition = (
 
     appTitle = (defaultText = "Rocket.Chat"),
 
-    appVersion = 0,  # Increment this for every release.
+    appVersion = 1,  # Increment this for every release.
 
     appMarketingVersion = (defaultText = "0.6"),
     # Human-readable representation of appVersion. Should match the way you
@@ -39,6 +39,36 @@ const pkgdef :Spk.PackageDefinition = (
     # shut down for inactivity. Here we're using the same command as for
     # starting a new instance, but you could use different commands for each
     # case.
+
+    metadata = (
+      icons = (
+        appGrid = (svg = embed "rocket.chat-128.svg"),
+        grain = (svg = embed "rocket.chat-24.svg"),
+        market = (svg = embed "rocket.chat-150.svg"),
+      ),
+
+      website = "https://rocket.chat",
+      codeUrl = "https://github.com/RocketChat/Rocket.Chat",
+      license = (openSource = MIT),
+      categories = [office, productivity],
+
+      author = (
+        contactEmail = "team@rocket.chat",
+        pgpSignature = embed "pgp-signature",
+        upstreamAuthor = "Rocket.Chat",
+      ),
+      pgpKeyring = embed "pgp-keyring",
+
+      description = (defaultText = embed "README.md"),
+      shortDescription = (defaultText = "Messaging App"),
+
+      screenshots = [
+        (width = 448, height = 343, png = embed "screenshot.png")
+      ],
+
+      changeLog = (defaultText = embed "CHANGELOG.md"),
+    ),
+
   ),
 
   sourceMap = (
