@@ -9,9 +9,10 @@ Package.onUse(function(api) {
 	api.versionsFrom('1.0');
 
 	api.use('rocketchat:lib@0.0.1', 'client');
+	api.use('coffeescript');
 
 	api.addFiles('adapter.js', 'client');
-	api.addFiles('webrtc.js', 'client');
+	api.addFiles('webrtc.coffee', 'client');
 
 	api.export('webrtc');
 });
