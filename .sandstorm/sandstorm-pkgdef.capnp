@@ -34,7 +34,7 @@ const pkgdef :Spk.PackageDefinition = (
       )
     ],
 
-    continueCommand = .myCommand
+    continueCommand = .myCommand,
     # This is the command called to start your app back up after it has been
     # shut down for inactivity. Here we're using the same command as for
     # starting a new instance, but you could use different commands for each
@@ -49,8 +49,8 @@ const pkgdef :Spk.PackageDefinition = (
 
       website = "https://rocket.chat",
       codeUrl = "https://github.com/RocketChat/Rocket.Chat",
-      license = (openSource = MIT),
-      categories = [office, productivity],
+      license = (openSource = mit),
+      categories = [productivity],
 
       author = (
         contactEmail = "team@rocket.chat",
@@ -60,10 +60,10 @@ const pkgdef :Spk.PackageDefinition = (
       pgpKeyring = embed "pgp-keyring",
 
       description = (defaultText = embed "description.md"),
-      shortDescription = (defaultText = "Messaging App"),
+      shortDescription = (defaultText = "Chat app"),
 
       screenshots = [
-        (width = 1024, height = 733, png = embed "screenshot.png")
+        (width = 1203, height = 760, png = embed "screenshot.png")
       ],
 
       changeLog = (defaultText = embed "CHANGELOG.md"),
