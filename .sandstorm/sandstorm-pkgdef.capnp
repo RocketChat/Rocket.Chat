@@ -59,7 +59,7 @@ const pkgdef :Spk.PackageDefinition = (
       ),
       pgpKeyring = embed "pgp-keyring",
 
-      description = (defaultText = embed "../README.md"),
+      description = (defaultText = embed "description.md"),
       shortDescription = (defaultText = "Messaging App"),
 
       screenshots = [
