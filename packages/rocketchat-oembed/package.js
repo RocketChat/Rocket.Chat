@@ -23,7 +23,6 @@ Package.onUse(function(api) {
 	api.addFiles('client/oembedAudioWidget.html', 'client');
 
 	api.addFiles('client/oembedYoutubeWidget.html', 'client');
-	api.addFiles('client/oembedSpotifyWidget.html', 'client');
 
 	api.addFiles('client/oembedUrlWidget.html', 'client');
 	api.addFiles('client/oembedUrlWidget.coffee', 'client');

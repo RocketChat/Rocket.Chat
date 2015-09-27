@@ -3,7 +3,7 @@
 		<blockquote>
 			<a href="https://www.spotify.com" style="color: #9e9ea6">Spotify</a><br/>
 			{{#if match meta.ogAudio "spotify:artist:\\S+"}}
-					<a href="{{url}}">{{{meta.ogTitle}}}</a><br/>
+				<a href="{{url}}">{{{meta.ogTitle}}}</a><br/>
 			{{else}}
 				<a href="{{url}}">{{{replace meta.ogDescription ", an? (?:song|album) by (.+?) on Spotify" " - $1" true}}}</a><br/>
 			{{/if}}
