@@ -8,7 +8,10 @@ Template.registerHelper 'match', (source, regex) ->
 
 Template.oembedBaseWidget.helpers
 	template: ->
-		# console.log this
+	# console.log this
+		if this._overrideTemplate
+			return this._overrideTemplate
+
 		if this.headers?.contentType?.match(/image\/.*/)?
 			return 'oembedImageWidget'
 
@@ -17,8 +20,5 @@ Template.oembedBaseWidget.helpers
 
 		if this.parsedUrl?.host is 'www.youtube.com' and this.meta?.twitterPlayer?
 			return 'oembedYoutubeWidget'
-
-		if this.parsedUrl?.host is 'open.spotify.com' and this.meta?.ogAudio?
-			return 'oembedSpotifyWidget'
 
 		return 'oembedUrlWidget'

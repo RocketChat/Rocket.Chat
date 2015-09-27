@@ -10,9 +10,14 @@ Package.onUse(function(api) {
 
 	api.use([
 		'coffeescript',
+		'templating',
 		'underscore',
+		'rocketchat:oembed@0.0.1',
 		'rocketchat:lib@0.0.1'
 	]);
+
+	api.addFiles('client/widget.coffee', 'client');
+	api.addFiles('client/oembedSpotifyWidget.html', 'client');
 
 	api.addFiles('spotify.coffee', ['server','client']);
 });

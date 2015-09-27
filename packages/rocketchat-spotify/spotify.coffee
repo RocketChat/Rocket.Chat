@@ -1,5 +1,5 @@
 ###
-# Spotify a named function that will process Spotify (ex: spotify:track:1q6IK1l4qpYykOaWaLJkWG)
+# Spotify a named function that will process Spotify links or syntaxes (ex: spotify:track:1q6IK1l4qpYykOaWaLJkWG)
 # @param {Object} message - The message object
 ###
 
@@ -23,7 +23,7 @@ class Spotify
 		changed = false
 
 		process message, message.msg, (message, msgParts, part) ->
-			re = /spotify:([^:]+):(\S+)/g
+			re = /(?:^|\s)spotify:([^:]+):(\S+)(?:\s|$)/g
 			while match = re.exec(part)
 				url = "https://open.spotify.com/" + _.escape match[1] + "/" + _.escape match[2]
 				urls.push {'url': url}
@@ -37,9 +37,9 @@ class Spotify
 
 	@render: (message) ->
 		process message, message.html, (message, msgParts, part, index) ->
-				msgParts[index] = part.replace /(^|\s)spotify:([^:]+):(\S+)(\s|$)/g, (match, p1, p2, p3, p4) ->
-					url = 'https://open.spotify.com/' + _.escape p2 + '/' + _.escape p3
-					return p1 + '<a href="' + url + '" target="_blank">spotify:' + p2 + ':' + p3 + '</a>' + p4
+				msgParts[index] = part.replace /(^|\s)spotify:([^:]+):(\S+)(\s|$)/g, (match, before, type, id, after) ->
+					url = 'https://open.spotify.com/' + _.escape type + '/' + _.escape id
+					return before + '<a href="' + url + '" target="_blank">spotify:' + type + ':' + id + '</a>' + after
 				message.html = msgParts.join('')
 
 		return message
