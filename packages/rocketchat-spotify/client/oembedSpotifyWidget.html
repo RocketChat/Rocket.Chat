@@ -5,7 +5,7 @@
 			{{#if match meta.ogAudio "spotify:artist:\\S+"}}
 				<a href="{{url}}">{{{meta.ogTitle}}}</a><br/>
 			{{else}}
-				<a href="{{url}}">{{{replace meta.ogDescription ", an? (?:song|album) by (.+?) on Spotify" " - $1" true}}}</a><br/>
+				<a href="{{url}}">{{{replace meta.ogDescription ", an? (?:song|album) by (.+?) on Spotify" " - $1" regex=true}}}</a><br/>
 			{{/if}}
 			<iframe width="300" height="380" src="https://embed.spotify.com/?uri={{meta.ogAudio}}" frameborder="0"></iframe><br/>
 		</blockquote>
