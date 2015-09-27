@@ -1,11 +1,3 @@
-Template.registerHelper 'replace', (source, find, replace, useRegex) ->
-	if useRegex is true
-		find = new RegExp(find)
-	return source.replace(find, replace)
-
-Template.registerHelper 'match', (source, regex) ->
-	return new RegExp(regex).test(source)
-
 Template.oembedBaseWidget.helpers
 	template: ->
 	# console.log this
