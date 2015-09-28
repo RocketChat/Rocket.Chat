@@ -135,11 +135,15 @@ class RocketChatAdapter extends Hubot.Adapter
 
 class RocketBotReceiver
 	constructor: (message) ->
-		console.log message
+		#console.log message
 		if message.u.username isnt RocketBot.name
-			RocketBotUser = new Hubot.User(message.u.username, room: message.rid)
-			RocketBotTextMessage = new Hubot.TextMessage(RocketBotUser, message.msg, message._id)
-			RocketBot.adapter.receive RocketBotTextMessage
+			room = RocketChat.models.Rooms.findOneById message.rid
+
+			if room.t is 'c'
+				console.log message
+				RocketBotUser = new Hubot.User(message.u.username, room: message.rid)
+				RocketBotTextMessage = new Hubot.TextMessage(RocketBotUser, message.msg, message._id)
+				RocketBot.adapter.receive RocketBotTextMessage
 		return message
 
 class HubotScripts
