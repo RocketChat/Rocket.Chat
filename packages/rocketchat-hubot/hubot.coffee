@@ -284,7 +284,10 @@ init = =>
 	# RocketBot.hear /^test/i, (res) ->
 	#	res.send "Test? TESTING? WE DON'T NEED NO TEST, EVERYTHING WORKS!"
 
-	RocketChat.callbacks.add 'afterSaveMessage', RocketBotReceiver, RocketChat.callbacks.priority.LOW
+	if RocketChat.settings.get 'RocketBot_Enabled'
+		RocketChat.callbacks.add 'afterSaveMessage', RocketBotReceiver, RocketChat.callbacks.priority.LOW, 'rocketbot-parser'
+	else
+		RocketChat.callbacks.remove 'afterSaveMessage', 'rocketbot-parser'
 
 	# Meteor.startup ->
 		# console.log RocketBot;
@@ -332,8 +335,10 @@ init = =>
 		# 		username: "rocketbot"
 		# 	action: true
 
-RocketChat.models.Settings.find({ _id: 'RocketBot_Name' }).observe
-	added: (record) ->
+RocketChat.models.Settings.find({ _id: { $in: [ 'RocketBot_Name', 'RocketBot_Enabled'] } }).observe
+	added: ->
 		init()
-	changed: (record) ->
+	changed: ->
+		init()
+	removed: ->
 		init()

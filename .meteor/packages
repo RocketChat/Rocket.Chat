@@ -44,7 +44,7 @@ rocketchat:slashcommands-leave
 rocketchat:statistics
 rocketchat:webrtc
 #rocketchat:livechat
-rocketchat:hubot
+#rocketchat:hubot
 #rocketchat:irc
 
 konecty:change-case
