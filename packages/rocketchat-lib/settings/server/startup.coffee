@@ -94,7 +94,8 @@ RocketChat.settings.add 'Layout_Login_Terms', 'By proceeding to create your acco
 
 RocketChat.settings.add 'Statistics_opt_out', false, { type: 'boolean', group: false }
 
-if process?.env? and not process.env['MAIL_URL']? and RocketChat.settings.get('SMTP_Host') and RocketChat.settings.get('SMTP_Username') and RocketChat.settings.get('SMTP_Password')
-	process.env['MAIL_URL'] = "smtp://" + encodeURIComponent(RocketChat.settings.get('SMTP_Username')) + ':' + encodeURIComponent(RocketChat.settings.get('SMTP_Password')) + '@' + encodeURIComponent(RocketChat.settings.get('SMTP_Host'))
-	if RocketChat.settings.get('SMTP_Port')
-		process.env['MAIL_URL'] += ':' + parseInt(RocketChat.settings.get('SMTP_Port'))
+Meteor.startup ->
+	if process?.env? and not process.env['MAIL_URL']? and RocketChat.settings.get('SMTP_Host') and RocketChat.settings.get('SMTP_Username') and RocketChat.settings.get('SMTP_Password')
+		process.env['MAIL_URL'] = "smtp://" + encodeURIComponent(RocketChat.settings.get('SMTP_Username')) + ':' + encodeURIComponent(RocketChat.settings.get('SMTP_Password')) + '@' + encodeURIComponent(RocketChat.settings.get('SMTP_Host'))
+		if RocketChat.settings.get('SMTP_Port')
+			process.env['MAIL_URL'] += ':' + parseInt(RocketChat.settings.get('SMTP_Port'))
