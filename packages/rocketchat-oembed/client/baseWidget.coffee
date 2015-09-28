@@ -1,6 +1,9 @@
 Template.oembedBaseWidget.helpers
 	template: ->
-		# console.log this
+	# console.log this
+		if this._overrideTemplate
+			return this._overrideTemplate
+
 		if this.headers?.contentType?.match(/image\/.*/)?
 			return 'oembedImageWidget'
 
