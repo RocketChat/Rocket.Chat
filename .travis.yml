@@ -9,4 +9,6 @@ before_install:
 script:
   - meteor add rocketchat:livechat
   - meteor add rocketchat:hubot
+  - meteor remove-platform android
+  - meteor remove-platform ios
   - meteor build --server demo.rocket.chat ./
