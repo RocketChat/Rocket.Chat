@@ -6,6 +6,9 @@ Template.membersList.helpers
 	videoActive: ->
 		return WebRTC.getInstanceByRoomId(Session.get('openedRoom')).localUrl.get()? or WebRTC.getInstanceByRoomId(Session.get('openedRoom')).remoteItems.get()?.length > 0
 
+	callInProgress: ->
+		return WebRTC.getInstanceByRoomId(Session.get('openedRoom')).callInProgress.get()
+
 	audioEnabled: ->
 		return WebRTC.getInstanceByRoomId(Session.get('openedRoom')).audioEnabled.get()
 
@@ -153,6 +156,9 @@ Template.membersList.events
 
 	'click .start-video-call': ->
 		WebRTC.getInstanceByRoomId(Session.get('openedRoom')).startCall()
+
+	'click .join-video-call': ->
+		WebRTC.getInstanceByRoomId(Session.get('openedRoom')).joinCall()
 
 	'click .stop-call': ->
 		WebRTC.getInstanceByRoomId(Session.get('openedRoom')).stop()
