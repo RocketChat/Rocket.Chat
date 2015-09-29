@@ -161,10 +161,10 @@ Template.room.helpers
 		}
 
 	remoteVideoUrl: ->
-		return Session.get('remoteVideoUrl')
+		return WebRTC.getInstanceByRoomId(Session.get('openedRoom')).remoteUrls.get()
 
 	selfVideoUrl: ->
-		return Session.get('selfVideoUrl')
+		return WebRTC.getInstanceByRoomId(Session.get('openedRoom')).localUrl.get()
 
 	videoActive: ->
 		return (Session.get('remoteVideoUrl') || Session.get('selfVideoUrl'))
@@ -585,15 +585,14 @@ Template.room.onRendered ->
 
 		FlowRouter.go 'direct', {username: fromUsername}
 
-	webrtc.onRemoteUrl = (url) ->
-		RocketChat.TabBar.setTemplate 'membersList'
-		RocketChat.TabBar.openFlex()
-		Session.set('remoteVideoUrl', url)
+	Tracker.autorun ->
+		if webrtc.remoteUrls.get()?.length > 0
+			RocketChat.TabBar.setTemplate 'membersList'
+			RocketChat.TabBar.openFlex()
 
-	webrtc.onSelfUrl = (url) ->
-		RocketChat.TabBar.setTemplate 'membersList'
-		RocketChat.TabBar.openFlex()
-		Session.set('selfVideoUrl', url)
+		if webrtc.localUrl.get()?
+			RocketChat.TabBar.setTemplate 'membersList'
+			RocketChat.TabBar.openFlex()
 
 
 renameRoom = (rid, name) ->

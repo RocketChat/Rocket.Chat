@@ -85,6 +85,10 @@ class WebRTCClass
 	###
 	constructor: (@selfId, @room) ->
 		@peerConnections = {}
+
+		@remoteUrls = new ReactiveVar []
+		@localUrl = new ReactiveVar
+
 		@transport = new @transportClass @
 
 		@transport.onRemoteCall @onRemoteCall.bind @
@@ -105,15 +109,13 @@ class WebRTCClass
 			for remoteStream in peerConnection.getRemoteStreams()
 				urls.push URL.createObjectURL(remoteStream)
 
-		@onRemoteUrl?(urls)
+		@remoteUrls.set urls
 
 
 	###
 		@param id {String}
 	###
 	getPeerConnection: (id) ->
-		self = @
-
 		return @peerConnections[id] if @peerConnections[id]?
 
 		peerConnection = new RTCPeerConnection @config
@@ -134,14 +136,14 @@ class WebRTCClass
 		]
 
 		for eventName in eventNames
-			peerConnection.addEventListener eventName, (e) ->
-				self.log id, e.type, e
+			peerConnection.addEventListener eventName, (e) =>
+				@log id, e.type, e
 
 		peerConnection.addEventListener 'icecandidate', (e) =>
 			if not e.candidate?
 				return
 
-			self.transport.sendCandidate
+			@transport.sendCandidate
 				to: id
 				from: @selfId
 				candidate:
@@ -171,23 +173,22 @@ class WebRTCClass
 	###
 	getLocalUserMedia: (callback) ->
 		@log 'getLocalUserMedia', arguments
-		self = @
 
-		if self.localStream?
-			return callback null, self.localStream
+		if @localStream?
+			return callback null, @localStream
 
 		media =
 			audio: true
 			video: true
 
-		onSuccess = (stream) ->
-			self.localStream = stream
-			self.onSelfUrl?(URL.createObjectURL(stream))
+		onSuccess = (stream) =>
+			@localStream = stream
+			@localUrl.set URL.createObjectURL(stream)
 
-			for id, peerConnection of self.peerConnections
+			for id, peerConnection of @peerConnections
 				peerConnection.addStream stream
 
-			callback null, self.localStream
+			callback null, @localStream
 
 		navigator.getUserMedia media, onSuccess, @onError
 
@@ -211,7 +212,10 @@ class WebRTCClass
 		@updateRemoteUrls()
 
 	stop: ->
-		@localStream.stop()
+		@localStream?.stop()
+		@localUrl.set undefined
+		delete @localStream
+
 		for id, peerConnection of @peerConnections
 			@stopPeerConnection id
 

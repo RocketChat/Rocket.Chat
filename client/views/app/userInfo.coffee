@@ -29,26 +29,23 @@ Template.userInfo.helpers
 	servicesMeteor: ->
 		return @services?['meteor-developer']
 
-	videoActive: ->
-		return (Session.get('remoteVideoUrl') || Session.get('selfVideoUrl'))
+	# rtcLayout1: ->
+	# 	return (Session.get('rtcLayoutmode') == 1 ? true: false)
 
-	rtcLayout1: ->
-		return (Session.get('rtcLayoutmode') == 1 ? true: false)
+	# rtcLayout2: ->
+	# 	return (Session.get('rtcLayoutmode') == 2 ? true: false)
 
-	rtcLayout2: ->
-		return (Session.get('rtcLayoutmode') == 2 ? true: false)
+	# rtcLayout3: ->
+	# 	return (Session.get('rtcLayoutmode') == 3 ? true: false)
 
-	rtcLayout3: ->
-		return (Session.get('rtcLayoutmode') == 3 ? true: false)
+	# noRtcLayout: ->
+	# 	return (!Session.get('rtcLayoutmode') || (Session.get('rtcLayoutmode') == 0) ? true: false)
 
-	noRtcLayout: ->
-		return (!Session.get('rtcLayoutmode') || (Session.get('rtcLayoutmode') == 0) ? true: false)
+	# remoteVideoUrl: ->
+	# 	return WebRTC.getInstanceByRoomId(Session.get('openedRoom')).remoteUrls.get()
 
-	remoteVideoUrl: ->
-		return Session.get('remoteVideoUrl')
-
-	selfVideoUrl: ->
-		return Session.get('selfVideoUrl')
+	# selfVideoUrl: ->
+	# 	return WebRTC.getInstanceByRoomId(Session.get('openedRoom')).localUrl.get()
 
 	userTime: ->
 		if @utcOffset?
@@ -93,30 +90,22 @@ Template.userInfo.events
 	'click .back': (e) ->
 		Session.set('showUserInfo', null)
 
-	'click .start-video': (event) ->
-		_id = Session.get('openedRoom')
+	# 'click .start-video': (event) ->
+	# 	WebRTC.getInstanceByRoomId(Session.get('openedRoom')).startCall()
 
-		webrtc = WebRTC.getInstanceByRoomId _id
-		webrtc.startCall()
+	# 'click .stop-video': (event) ->
+	# 	WebRTC.getInstanceByRoomId(Session.get('openedRoom')).stop()
 
-		# webrtc.to = _id.replace(Meteor.userId(), '')
-		# webrtc.room = _id
-		# webrtc.mode = 1
-		# webrtc.start(true)
+	# 'click .monitor-video': (event) ->
+	# 	_id = Session.get('openedRoom')
+	# 	webrtc.to = _id.replace(Meteor.userId(), '')
+	# 	webrtc.room = _id
+	# 	webrtc.mode = 2
+	# 	webrtc.start(true)
 
-	'click .stop-video': (event) ->
-		webrtc.stop()
-
-	'click .monitor-video': (event) ->
-		_id = Session.get('openedRoom')
-		webrtc.to = _id.replace(Meteor.userId(), '')
-		webrtc.room = _id
-		webrtc.mode = 2
-		webrtc.start(true)
-
-	'click .setup-video': (event) ->
-		webrtc.mode = 2
-		webrtc.activateLocalStream()
+	# 'click .setup-video': (event) ->
+	# 	webrtc.mode = 2
+	# 	webrtc.activateLocalStream()
 
 
 Template.userInfo.onCreated ->
