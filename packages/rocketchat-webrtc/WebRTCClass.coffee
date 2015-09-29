@@ -330,7 +330,6 @@ class WebRTCClass
 			text: "Do you want to accept?"
 			type: "warning"
 			showCancelButton: true
-			confirmButtonColor: "#DD6B55"
 			confirmButtonText: "Yes"
 			cancelButtonText: "No"
 		, (isConfirm) =>
