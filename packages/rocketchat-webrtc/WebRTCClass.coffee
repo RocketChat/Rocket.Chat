@@ -88,6 +88,7 @@ class WebRTCClass
 
 		@remoteItems = new ReactiveVar []
 		@remoteItemsById = new ReactiveVar {}
+		@muted = new ReactiveVar false
 		@localUrl = new ReactiveVar
 
 		@transport = new @transportClass @
@@ -231,6 +232,17 @@ class WebRTCClass
 		peerConnection.close()
 
 		@updateRemoteItems()
+
+	setMuted: (muted=true) ->
+		if @localStream?
+			@localStream.getAudioTracks().forEach (audio) -> audio.enabled = not muted
+			@muted.set muted
+
+	mute: ->
+		@setMuted true
+
+	unmute: ->
+		@setMuted false
 
 	stop: ->
 		@active = false

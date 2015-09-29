@@ -6,6 +6,9 @@ Template.membersList.helpers
 	videoActive: ->
 		return WebRTC.getInstanceByRoomId(Session.get('openedRoom')).localUrl.get()? or WebRTC.getInstanceByRoomId(Session.get('openedRoom')).remoteItems.get()?.length > 0
 
+	muted: ->
+		return WebRTC.getInstanceByRoomId(Session.get('openedRoom')).muted.get()
+
 	remoteVideoUrl: ->
 		return WebRTC.getInstanceByRoomId(Session.get('openedRoom')).remoteItems.get()
 
@@ -150,6 +153,12 @@ Template.membersList.events
 
 	'click .video-item': (e, t) ->
 		t.mainVideo.set $(e.currentTarget).data('username')
+
+	'click .mute-call': (e, t) ->
+		WebRTC.getInstanceByRoomId(Session.get('openedRoom')).mute()
+
+	'click .unmute-call': (e, t) ->
+		WebRTC.getInstanceByRoomId(Session.get('openedRoom')).unmute()
 
 	'loadstart video[muted]': (e) ->
 		e.currentTarget.muted = true
