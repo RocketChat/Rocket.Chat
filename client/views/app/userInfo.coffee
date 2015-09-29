@@ -29,24 +29,6 @@ Template.userInfo.helpers
 	servicesMeteor: ->
 		return @services?['meteor-developer']
 
-	# rtcLayout1: ->
-	# 	return (Session.get('rtcLayoutmode') == 1 ? true: false)
-
-	# rtcLayout2: ->
-	# 	return (Session.get('rtcLayoutmode') == 2 ? true: false)
-
-	# rtcLayout3: ->
-	# 	return (Session.get('rtcLayoutmode') == 3 ? true: false)
-
-	# noRtcLayout: ->
-	# 	return (!Session.get('rtcLayoutmode') || (Session.get('rtcLayoutmode') == 0) ? true: false)
-
-	# remoteVideoUrl: ->
-	# 	return WebRTC.getInstanceByRoomId(Session.get('openedRoom')).remoteUrls.get()
-
-	# selfVideoUrl: ->
-	# 	return WebRTC.getInstanceByRoomId(Session.get('openedRoom')).localUrl.get()
-
 	userTime: ->
 		if @utcOffset?
 			return Template.instance().now.get().utcOffset(@utcOffset).format('HH:mm')
