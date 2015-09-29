@@ -356,6 +356,10 @@ class WebRTCClass
 		@log 'onRemoteJoin', arguments
 		@getLocalUserMedia (err, stream) =>
 			peerConnection = @getPeerConnection data.from
+			if peerConnection.signalingState is "have-local-offer"
+				@stopPeerConnection data.from
+				peerConnection = @getPeerConnection data.from
+
 			if peerConnection.iceConnectionState isnt 'new'
 				return
 
