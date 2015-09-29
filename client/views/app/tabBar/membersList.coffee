@@ -1,4 +1,10 @@
 Template.membersList.helpers
+	remoteVideoUrl: ->
+		return Session.get('remoteVideoUrl')
+
+	selfVideoUrl: ->
+		return Session.get('selfVideoUrl')
+
 	tAddUsers: ->
 		return t('Add_users')
 

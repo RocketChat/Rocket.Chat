@@ -64,3 +64,7 @@ func = (eventName, username, typing) ->
 	return true
 
 RocketChat.Notifications.streamRoom.permissions.write func, false # Prevent Cache
+
+RocketChat.Notifications.streamRoom.permissions.write (eventName) ->
+	[room, e] = eventName.split('/')
+	return e is 'webrtc'

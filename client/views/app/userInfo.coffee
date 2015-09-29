@@ -95,10 +95,14 @@ Template.userInfo.events
 
 	'click .start-video': (event) ->
 		_id = Session.get('openedRoom')
-		webrtc.to = _id.replace(Meteor.userId(), '')
-		webrtc.room = _id
-		webrtc.mode = 1
-		webrtc.start(true)
+
+		webrtc = WebRTC.getInstanceByRoomId _id
+		webrtc.startCall()
+
+		# webrtc.to = _id.replace(Meteor.userId(), '')
+		# webrtc.room = _id
+		# webrtc.mode = 1
+		# webrtc.start(true)
 
 	'click .stop-video': (event) ->
 		webrtc.stop()

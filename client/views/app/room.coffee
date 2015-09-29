@@ -578,6 +578,7 @@ Template.room.onRendered ->
 	# salva a data da renderização para exibir alertas de novas mensagens
 	$.data(this.firstNode, 'renderedAt', new Date)
 
+	webrtc = WebRTC.getInstanceByRoomId template.data._id
 	webrtc.onAcceptCall = (fromUsername) ->
 		if FlowRouter.current().route.name is 'direct' and FlowRouter.current().params.username is fromUsername
 			return
