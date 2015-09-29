@@ -25,7 +25,8 @@ class Spotify
 		process message, message.msg, (message, msgParts, index, part) ->
 			re = /(?:^|\s)spotify:([^:]+):([^:]+)(?::([^:]+))?(?::(\S+))?(?:\s|$)/g
 			while match = re.exec(part)
-				data = match.slice(1)
+				data = _.filter match.slice(1), (value) ->
+					return value?
 				path = _.map data, (value) ->
 					return _.escape(value)
 				.join '/'
