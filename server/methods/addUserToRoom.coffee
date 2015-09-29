@@ -1,7 +1,13 @@
 Meteor.methods
 	addUserToRoom: (data) ->
 		fromId = Meteor.userId()
-		# console.log '[methods] addUserToRoom -> '.green, 'fromId:', fromId, 'data:', data
+		console.log '[methods] addUserToRoom -> '.green, 'data:', data
+
+		unless Match.test data?.rid, String
+			throw new Meteor.Error 'invalid-rid'
+
+		unless Match.test data?.username, String
+			throw new Meteor.Error 'invalid-username'
 
 		room = RocketChat.models.Rooms.findOneById data.rid
 
@@ -13,7 +19,7 @@ Meteor.methods
 		if room.usernames.indexOf(data.username) isnt -1
 			return
 
-		newUser = RocketChat.models.Users.findOneByUsername username: data.username
+		newUser = RocketChat.models.Users.findOneByUsername data.username
 
 		RocketChat.models.Rooms.addUsernameById data.rid, data.username
 

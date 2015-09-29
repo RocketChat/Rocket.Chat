@@ -67,10 +67,6 @@ Template.membersList.helpers
 		return Meteor.users.findOne({ username: String(username) }) or { username: String(username) }
 
 Template.membersList.events
-	'keydown #user-add-search': (event) ->
-		if event.keyCode is 27 # esc
-			toggleAddUser()
-
 	"click .flex-tab .user-image > a" : (e) ->
 		RocketChat.TabBar.openFlex()
 		Session.set('showUserInfo', $(e.currentTarget).data('username'))
@@ -91,4 +87,3 @@ Template.membersList.events
 					return Errors.throw error.reason
 
 				$('#user-add-search').val('')
-				toggleAddUser()
