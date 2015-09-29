@@ -86,7 +86,8 @@ class WebRTCClass
 	constructor: (@selfId, @room) ->
 		@peerConnections = {}
 
-		@remoteUrls = new ReactiveVar []
+		@remoteItems = new ReactiveVar []
+		@remoteItemsById = new ReactiveVar {}
 		@localUrl = new ReactiveVar
 
 		@transport = new @transportClass @
@@ -103,13 +104,39 @@ class WebRTCClass
 	onError: ->
 		console.error.apply(console, arguments)
 
-	updateRemoteUrls: ->
-		urls = []
+	updateRemoteItems: ->
+		items = []
+		itemsById = {}
+
 		for id, peerConnection of @peerConnections
 			for remoteStream in peerConnection.getRemoteStreams()
-				urls.push URL.createObjectURL(remoteStream)
+				item =
+					id: id
+					url: URL.createObjectURL(remoteStream)
+					state: peerConnection.iceConnectionState
 
-		@remoteUrls.set urls
+				switch peerConnection.iceConnectionState
+					when 'checking'
+						item.stateText = 'Connecting...'
+
+					when 'connected', 'completed'
+						item.stateText = 'Connected'
+						item.connected = true
+
+					when 'disconnected'
+						item.stateText = 'Disconnected'
+
+					when 'failed'
+						item.stateText = 'Failed'
+
+					when 'closed'
+						item.stateText = 'Closed'
+
+				items.push item
+				itemsById[id] = item
+
+		@remoteItems.set items
+		@remoteItemsById.set itemsById
 
 
 	###
@@ -152,18 +179,18 @@ class WebRTCClass
 					sdpMid: e.candidate.sdpMid
 
 		peerConnection.addEventListener 'addstream', (e) =>
-			@updateRemoteUrls()
+			@updateRemoteItems()
 
 		peerConnection.addEventListener 'removestream', (e) =>
-			@updateRemoteUrls()
+			@updateRemoteItems()
 
 		peerConnection.addEventListener 'iceconnectionstatechange', (e) =>
-			target = e.srcElement or e.target
-
-			if target.iceConnectionState in ['disconnected', 'closed']
+			if peerConnection.iceConnectionState in ['disconnected', 'closed']
 				@stopPeerConnection id
 				if Object.keys(@peerConnections).length is 0
 					@stop()
+
+			@updateRemoteItems()
 
 		return peerConnection
 
@@ -203,7 +230,7 @@ class WebRTCClass
 		delete @peerConnections[id]
 		peerConnection.close()
 
-		@updateRemoteUrls()
+		@updateRemoteItems()
 
 	stop: ->
 		@localStream?.stop()

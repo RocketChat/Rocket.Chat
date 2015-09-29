@@ -1,12 +1,56 @@
+Template.membersList.onCreated ->
+	@mainVideo = new ReactiveVar '$auto'
+
+
 Template.membersList.helpers
 	videoActive: ->
-		return WebRTC.getInstanceByRoomId(Session.get('openedRoom')).localUrl.get()? or WebRTC.getInstanceByRoomId(Session.get('openedRoom')).remoteUrls.get()?.length > 0
+		return WebRTC.getInstanceByRoomId(Session.get('openedRoom')).localUrl.get()? or WebRTC.getInstanceByRoomId(Session.get('openedRoom')).remoteItems.get()?.length > 0
 
 	remoteVideoUrl: ->
-		return WebRTC.getInstanceByRoomId(Session.get('openedRoom')).remoteUrls.get()
+		return WebRTC.getInstanceByRoomId(Session.get('openedRoom')).remoteItems.get()
 
 	selfVideoUrl: ->
 		return WebRTC.getInstanceByRoomId(Session.get('openedRoom')).localUrl.get()
+
+	mainVideoUrl: ->
+		template = Template.instance()
+		webrtc = WebRTC.getInstanceByRoomId(Session.get('openedRoom'))
+
+		if template.mainVideo.get() is '$self'
+			return webrtc.localUrl.get()
+
+		if template.mainVideo.get() is '$auto'
+			remoteItems = webrtc.remoteItems.get()
+			if remoteItems?.length > 0
+				return remoteItems[0].url
+
+			return webrtc.localUrl.get()
+
+		if webrtc.remoteItemsById.get()[template.mainVideo.get()]?
+			return webrtc.remoteItemsById.get()[template.mainVideo.get()].url
+		else
+			template.mainVideo.set '$auto'
+			return
+
+	mainVideoUsername: ->
+		template = Template.instance()
+		webrtc = WebRTC.getInstanceByRoomId(Session.get('openedRoom'))
+
+		if template.mainVideo.get() is '$self'
+			return t 'you'
+
+		if template.mainVideo.get() is '$auto'
+			remoteItems = webrtc.remoteItems.get()
+			if remoteItems?.length > 0
+				return remoteItems[0].id
+
+			return t 'you'
+
+		if webrtc.remoteItemsById.get()[template.mainVideo.get()]?
+			return webrtc.remoteItemsById.get()[template.mainVideo.get()].id
+		else
+			template.mainVideo.set '$auto'
+			return
 
 	tAddUsers: ->
 		return t('Add_users')
@@ -75,6 +119,7 @@ Template.membersList.helpers
 		username = Session.get('showUserInfo')
 		return Meteor.users.findOne({ username: String(username) }) or { username: String(username) }
 
+
 Template.membersList.events
 	"click .flex-tab .user-image > a" : (e) ->
 		RocketChat.TabBar.openFlex()
@@ -102,3 +147,11 @@ Template.membersList.events
 
 	'click .stop-call': ->
 		WebRTC.getInstanceByRoomId(Session.get('openedRoom')).stop()
+
+	'click .video-item': (e, t) ->
+		t.mainVideo.set $(e.currentTarget).data('username')
+
+	'loadstart video[muted]': (e) ->
+		e.currentTarget.muted = true
+		e.currentTarget.volume = 0
+

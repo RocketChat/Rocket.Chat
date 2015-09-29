@@ -160,36 +160,6 @@ Template.room.helpers
 				return template.find('.input-message')
 		}
 
-	remoteVideoUrl: ->
-		return WebRTC.getInstanceByRoomId(Session.get('openedRoom')).remoteUrls.get()
-
-	selfVideoUrl: ->
-		return WebRTC.getInstanceByRoomId(Session.get('openedRoom')).localUrl.get()
-
-	videoActive: ->
-		return (Session.get('remoteVideoUrl') || Session.get('selfVideoUrl'))
-
-	remoteMonitoring: ->
-		return (webrtc?.stackid? && (webrtc.stackid == 'webrtc-ib'))
-
-	flexOpenedRTC1: ->
-		return 'layout1' if Session.equals('flexOpenedRTC1', true)
-
-	flexOpenedRTC2: ->
-		return 'layout2' if Session.equals('flexOpenedRTC2', true)
-
-	rtcLayout1: ->
-		return (Session.get('rtcLayoutmode') == 1 ? true: false);
-
-	rtcLayout2: ->
-		return (Session.get('rtcLayoutmode') == 2 ? true: false);
-
-	rtcLayout3: ->
-		return (Session.get('rtcLayoutmode') == 3 ? true: false);
-
-	noRtcLayout: ->
-		return (!Session.get('rtcLayoutmode') || (Session.get('rtcLayoutmode') == 0) ? true: false);
-
 	maxMessageLength: ->
 		return RocketChat.settings.get('Message_MaxAllowedSize')
 
@@ -586,7 +556,7 @@ Template.room.onRendered ->
 		FlowRouter.go 'direct', {username: fromUsername}
 
 	Tracker.autorun ->
-		if webrtc.remoteUrls.get()?.length > 0
+		if webrtc.remoteItems.get()?.length > 0
 			RocketChat.TabBar.setTemplate 'membersList'
 			RocketChat.TabBar.openFlex()
 

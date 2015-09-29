@@ -3836,23 +3836,74 @@ a.github-fork {
 @import "utils/_colors.import.less";
 
 
-.video-self {
-	width: 100%;
+.main-video {
+	background-color: black;
+
+	video {
+		width: 100%;
+		min-height: 299px;
+	}
+
+	>div {
+		background-color: rgba(0,0,0,.5);
+		margin-top: -28px;
+		position: relative;
+		line-height: 25px;
+		margin-bottom: 2px;
+		text-align: center;
+		color: white;
+		font-weight: bold;
+	}
 }
 
 .videos {
 	display: -webkit-flex;
 	display: -moz-flex;
 	display: flex;
-	margin-top: -75px;
-	padding-left: 2px;
+	flex-wrap: wrap;
+	-webkit-flex-wrap: wrap;
+	-moz-flex-wrap: wrap;
+	justify-content: center;
+	-webkit-justify-content: center;
+	-moz-justify-content: center;
 
-	video {
-		height: 70px;
-		max-width: 100px;
-		margin-right: 2px;
-		border: 1px solid white;
-		background-color: black;
+	.video-item {
+		position: relative;
+		margin-right: 3px;
+		line-height: 0;
+		width: 93px;
+		overflow: hidden;
+
+		&.state-overlay::before {
+			content: attr(data-state-text);
+			position: absolute;
+			top: 0;
+			left: 0;
+			bottom: 0;
+			right: 0;
+			display: flex;
+			justify-content: center;
+			align-items: center;
+			font-size: 12px;
+			font-weight: bold;
+			background-color: black;
+			color: white;
+		}
+
+		video {
+			height: 70px;
+			max-width: 100px;
+			background-color: black;
+		}
+
+		>div {
+			line-height: 16px;
+			font-size: 12px;
+			text-align: center;
+			text-overflow: ellipsis;
+			overflow: hidden;
+			padding: 0px 2px;
+		}
 	}
 }
 
