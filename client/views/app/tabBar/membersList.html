@@ -9,11 +9,16 @@
 				<div class="videos">
 					<div class="video-item" data-username="$self">
 						<video src="{{selfVideoUrl}}" autoplay muted="true"></video>
-						{{#if muted}}
+						{{#unless audioAndVideoEnabled}}
 							<div class="video-muted-overlay">
-								<i class="icon-mute"></i>
+								{{#unless audioEnabled}}
+									<i class="icon-mute"></i>
+								{{/unless}}
+								{{#unless videoEnabled}}
+									<i class="icon-eye-off"></i>
+								{{/unless}}
 							</div>
-						{{/if}}
+						{{/unless}}
 						<div>{{_ "you"}}</div>
 					</div>
 					{{#each remoteVideoUrl}}
@@ -26,10 +31,15 @@
 				<div class="group-call-buttons">
 					{{#if videoActive}}
 						<button class="stop-call button red"><i class="icon-stop"></i>{{_ "Stop"}}</button>
-						{{#if muted}}
-							<button class="unmute-call button"><i class="icon-mic"></i>{{_ "Unmute"}}</button>
+						{{#if audioEnabled}}
+							<button class="disable-audio button" title="{{_ 'Mute'}}"><i class="icon-mute"></i></button>
 						{{else}}
-							<button class="mute-call button"><i class="icon-mute"></i>{{_ "Mute"}}</button>
+							<button class="enable-audio button" title="{{_ 'Unmute'}}"><i class="icon-mic"></i></button>
+						{{/if}}
+						{{#if videoEnabled}}
+							<button class="disable-video button"><i class="icon-eye-off"></i></button>
+						{{else}}
+							<button class="enable-video button"><i class="icon-eye"></i></button>
 						{{/if}}
 					{{/if}}
 				</div>

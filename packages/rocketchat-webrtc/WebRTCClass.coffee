@@ -88,7 +88,8 @@ class WebRTCClass
 
 		@remoteItems = new ReactiveVar []
 		@remoteItemsById = new ReactiveVar {}
-		@muted = new ReactiveVar false
+		@audioEnabled = new ReactiveVar true
+		@videoEnabled = new ReactiveVar true
 		@localUrl = new ReactiveVar
 
 		@transport = new @transportClass @
@@ -233,16 +234,27 @@ class WebRTCClass
 
 		@updateRemoteItems()
 
-	setMuted: (muted=true) ->
+	setAudioEnabled: (enabled=true) ->
 		if @localStream?
-			@localStream.getAudioTracks().forEach (audio) -> audio.enabled = not muted
-			@muted.set muted
+			@localStream.getAudioTracks().forEach (audio) -> audio.enabled = enabled
+			@audioEnabled.set enabled
 
-	mute: ->
-		@setMuted true
+	disableAudio: ->
+		@setAudioEnabled false
 
-	unmute: ->
-		@setMuted false
+	enableAudio: ->
+		@setAudioEnabled true
+
+	setVideoEnabled: (enabled=true) ->
+		if @localStream?
+			@localStream.getVideoTracks().forEach (video) -> video.enabled = enabled
+			@videoEnabled.set enabled
+
+	disableVideo: ->
+		@setVideoEnabled false
+
+	enableVideo: ->
+		@setVideoEnabled true
 
 	stop: ->
 		@active = false
