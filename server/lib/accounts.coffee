@@ -48,7 +48,7 @@ Accounts.onCreateUser (options, user) ->
 Accounts.insertUserDoc = _.wrap Accounts.insertUserDoc, (insertUserDoc) ->
 	options = arguments[1]
 	user = arguments[2]
-	_id = insertUserDoc(options, user)
+	_id = insertUserDoc.call(Accounts, options, user)
 
 	# when inserting first user give them admin privileges otherwise make a regular user
 	firstUser = RocketChat.models.Users.findOne({},{sort:{createdAt:1}})
