@@ -15,7 +15,6 @@ fastclick
 http
 jquery
 less
-meteor-platform
 reactive-dict
 reactive-var
 service-configuration
@@ -87,3 +86,16 @@ underscorestring:underscore.string
 yasaricli:slugify
 yasinuslu:blaze-meta
 rocketchat:authorization
+standard-minifiers
+meteor-base
+mobile-experience
+mongo
+blaze-html-templates
+session
+tracker
+logging
+reload
+random
+ejson
+spacebars
+check
