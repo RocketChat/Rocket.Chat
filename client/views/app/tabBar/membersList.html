@@ -20,6 +20,14 @@
 							{{{_ "Showing_online_users" total_online=totalOnline total=total}}}
 							{{!--<button class="see-all">{{seeAll}}</button>--}}
 						</p>
+						<div class="group-call-buttons">
+							{{#if remoteVideoUrl}}
+								<button class="stop-call button red"><i class="icon-stop"></i>{{_ "Stop"}}</button>
+							{{else}}
+								<button class="start-video-call button"><i class="icon-videocam"></i></button>
+								<!-- <button class="start-audio-call button"><i class="icon-phone"></i></button> -->
+							{{/if}}
+						</div>
 						{{#if canAddUser}}
 							<div class="control">
 								<div class="search-form">

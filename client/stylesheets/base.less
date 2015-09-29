@@ -3841,6 +3841,8 @@ a.github-fork {
 }
 
 .videos {
+	display: -webkit-flex;
+	display: -moz-flex;
 	display: flex;
 	margin-top: -75px;
 	padding-left: 2px;
@@ -3851,5 +3853,17 @@ a.github-fork {
 		margin-right: 2px;
 		border: 1px solid white;
 		background-color: black;
+	}
+}
+
+.group-call-buttons {
+	display: -webkit-flex;
+	display: -moz-flex;
+	display: flex;
+
+	button {
+		-webkit-flex-grow: 1;
+		-moz-flex-grow: 1;
+		flex-grow: 1;
 	}
 }

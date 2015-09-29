@@ -93,3 +93,9 @@ Template.membersList.events
 					return Errors.throw error.reason
 
 				$('#user-add-search').val('')
+
+	'click .start-video-call': ->
+		WebRTC.getInstanceByRoomId(Session.get('openedRoom')).startCall()
+
+	'click .stop-call': ->
+		WebRTC.getInstanceByRoomId(Session.get('openedRoom')).stop()
