@@ -13,7 +13,7 @@ class Spotify
 				# Verify if this part is code
 				codeMatch = part.match(/```(\w*)[\n\ ]?([\s\S]*?)```+?/)
 				if not codeMatch?
-					callback message, msgParts, part, index
+					callback message, msgParts, index, part
 
 	@transform: (message) ->
 		urls = []
@@ -22,11 +22,15 @@ class Spotify
 
 		changed = false
 
-		process message, message.msg, (message, msgParts, part) ->
-			re = /(?:^|\s)spotify:([^:]+):(\S+)(?:\s|$)/g
+		process message, message.msg, (message, msgParts, index, part) ->
+			re = /(?:^|\s)spotify:([^:]+):([^:]+)(?::([^:]+))?(?::(\S+))?(?:\s|$)/g
 			while match = re.exec(part)
-				url = "https://open.spotify.com/" + _.escape match[1] + "/" + _.escape match[2]
-				urls.push {'url': url}
+				data = match.slice(1)
+				path = _.map data, (value) ->
+					return _.escape(value)
+				.join '/'
+				url = 'https://open.spotify.com/' + path
+				urls.push {'url': url, 'source': 'spotify:' + data.join ':'}
 				changed = true
 
 		# Re-mount message
@@ -36,11 +40,15 @@ class Spotify
 		return message
 
 	@render: (message) ->
-		process message, message.html, (message, msgParts, part, index) ->
-				msgParts[index] = part.replace /(^|\s)spotify:([^:]+):(\S+)(\s|$)/g, (match, before, type, id, after) ->
-					url = 'https://open.spotify.com/' + _.escape type + '/' + _.escape id
-					return before + '<a href="' + url + '" target="_blank">spotify:' + type + ':' + id + '</a>' + after
-				message.html = msgParts.join('')
+		process message, message.html, (message, msgParts, index, part) ->
+			if Array.isArray message.urls
+				for item in message.urls
+					if item.source
+						quotedSource = item.source.replace /[\\^$.*+?()[\]{}|]/g, '\\$&'
+						re = new RegExp '(^|\\s)' + quotedSource + '(\\s|$)', 'g'
+						part = part.replace re, '$1<a href="' + item.url + '" target="_blank">' + item.source + '</a>$2'
+				msgParts[index] = part
+				message.html = msgParts.join ''
 
 		return message
 
