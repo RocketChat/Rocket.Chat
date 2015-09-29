@@ -1,6 +1,17 @@
 <template name="membersList">
 	<div class="content">
 		{{#if isGroupChat}}
+			{{#if remoteVideoUrl}}
+				<div>
+					<video class="video-self" src="{{selfVideoUrl}}" autoplay muted></video>
+					<div class="videos">
+						<video class="" src="{{selfVideoUrl}}" autoplay muted></video>
+						{{#each remoteVideoUrl}}
+							<video class="" src="{{.}}" autoplay></video>
+						{{/each}}
+					</div>
+				</div>
+			{{/if}}
 			<div class="list-view{{#if $.Session.get 'showUserInfo'}} -hidden{{/if}}">
 				{{#with roomUsers}}
 					<div class="status">

@@ -12,9 +12,9 @@ Package.onUse(function(api) {
 	api.use('coffeescript');
 
 	api.addFiles('adapter.js', 'client');
-	api.addFiles('webrtc.coffee', 'client');
+	api.addFiles('WebRTCClass.coffee', 'client');
 
-	api.export('webrtc');
+	api.export('WebRTC');
 });
 
 
