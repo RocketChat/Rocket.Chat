@@ -1,6 +1,6 @@
 <template name="membersList">
 	<div class="content">
-		{{#if remoteVideoUrl}}
+		{{#if videoActive}}
 			<div>
 				<video class="video-self" src="{{selfVideoUrl}}" autoplay muted></video>
 				<div class="videos">
@@ -21,7 +21,7 @@
 							{{!--<button class="see-all">{{seeAll}}</button>--}}
 						</p>
 						<div class="group-call-buttons">
-							{{#if remoteVideoUrl}}
+							{{#if videoActive}}
 								<button class="stop-call button red"><i class="icon-stop"></i>{{_ "Stop"}}</button>
 							{{else}}
 								<button class="start-video-call button"><i class="icon-videocam"></i></button>
