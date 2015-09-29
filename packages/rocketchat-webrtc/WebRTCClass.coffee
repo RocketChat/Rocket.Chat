@@ -200,14 +200,8 @@ class WebRTCClass
 		peerConnection = @peerConnections[id]
 		if not peerConnection? then return
 
-		for stream in peerConnection.getLocalStreams()
-			stream.stop()
-
-		# for stream in peerConnection.getRemoteStreams
-		# 	stream.stop()
-
-		peerConnection.close()
 		delete @peerConnections[id]
+		peerConnection.close()
 
 		@updateRemoteUrls()
 

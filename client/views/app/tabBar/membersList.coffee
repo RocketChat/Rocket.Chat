@@ -1,4 +1,7 @@
 Template.membersList.helpers
+	videoActive: ->
+		return WebRTC.getInstanceByRoomId(Session.get('openedRoom')).localUrl.get()? or WebRTC.getInstanceByRoomId(Session.get('openedRoom')).remoteUrls.get()?.length > 0
+
 	remoteVideoUrl: ->
 		return WebRTC.getInstanceByRoomId(Session.get('openedRoom')).remoteUrls.get()
 
