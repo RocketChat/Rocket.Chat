@@ -3918,9 +3918,17 @@ a.github-fork {
 			top: 16px;
 			right: 0;
 			text-align: center;
-			font-size: 30px;
+			font-size: 24px;
 			color: white;
-			line-height: 54px;
+			display: flex;
+			display: -webkit-flex;
+			display: -moz-flex;
+			align-items: center;
+			-webkit-align-items: center;
+			-moz-align-items: center;
+			justify-content: center;
+			-webkit-justify-content: center;
+			-moz-justify-content: center;
 		}
 	}
 }
@@ -3930,7 +3938,7 @@ a.github-fork {
 	display: -moz-flex;
 	display: flex;
 
-	button {
+	button:first-child {
 		-webkit-flex-grow: 1;
 		-moz-flex-grow: 1;
 		flex-grow: 1;

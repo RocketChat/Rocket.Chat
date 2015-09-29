@@ -6,8 +6,14 @@ Template.membersList.helpers
 	videoActive: ->
 		return WebRTC.getInstanceByRoomId(Session.get('openedRoom')).localUrl.get()? or WebRTC.getInstanceByRoomId(Session.get('openedRoom')).remoteItems.get()?.length > 0
 
-	muted: ->
-		return WebRTC.getInstanceByRoomId(Session.get('openedRoom')).muted.get()
+	audioEnabled: ->
+		return WebRTC.getInstanceByRoomId(Session.get('openedRoom')).audioEnabled.get()
+
+	videoEnabled: ->
+		return WebRTC.getInstanceByRoomId(Session.get('openedRoom')).videoEnabled.get()
+
+	audioAndVideoEnabled: ->
+		return WebRTC.getInstanceByRoomId(Session.get('openedRoom')).audioEnabled.get() and WebRTC.getInstanceByRoomId(Session.get('openedRoom')).videoEnabled.get()
 
 	remoteVideoUrl: ->
 		return WebRTC.getInstanceByRoomId(Session.get('openedRoom')).remoteItems.get()
@@ -154,11 +160,17 @@ Template.membersList.events
 	'click .video-item': (e, t) ->
 		t.mainVideo.set $(e.currentTarget).data('username')
 
-	'click .mute-call': (e, t) ->
-		WebRTC.getInstanceByRoomId(Session.get('openedRoom')).mute()
+	'click .disable-audio': (e, t) ->
+		WebRTC.getInstanceByRoomId(Session.get('openedRoom')).disableAudio()
 
-	'click .unmute-call': (e, t) ->
-		WebRTC.getInstanceByRoomId(Session.get('openedRoom')).unmute()
+	'click .enable-audio': (e, t) ->
+		WebRTC.getInstanceByRoomId(Session.get('openedRoom')).enableAudio()
+
+	'click .disable-video': (e, t) ->
+		WebRTC.getInstanceByRoomId(Session.get('openedRoom')).disableVideo()
+
+	'click .enable-video': (e, t) ->
+		WebRTC.getInstanceByRoomId(Session.get('openedRoom')).enableVideo()
 
 	'loadstart video[muted]': (e) ->
 		e.currentTarget.muted = true
