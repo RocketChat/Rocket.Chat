@@ -31,6 +31,10 @@ class WebRTCTransportClass
 					if @callbacks['onRemoteDescription']?.length > 0
 						fn(data) for fn in @callbacks['onRemoteDescription']
 
+				when 'status'
+					if @callbacks['onRemoteStatus']?.length > 0
+						fn(data) for fn in @callbacks['onRemoteStatus']
+
 	startCall: ->
 		@log 'WebRTCTransportClass - startCall', @webrtcInstance.room, @webrtcInstance.selfId
 		RocketChat.Notifications.notifyRoom @webrtcInstance.room, 'webrtc', 'call',
@@ -49,6 +53,10 @@ class WebRTCTransportClass
 		@log 'WebRTCTransportClass - sendDescription', data, @webrtcInstance.room
 		RocketChat.Notifications.notifyRoom @webrtcInstance.room, 'webrtc', 'description', data
 
+	sendStatus: (data) ->
+		@log 'WebRTCTransportClass - sendStatus', data, @webrtcInstance.room
+		RocketChat.Notifications.notifyRoom @webrtcInstance.room, 'webrtc', 'status', data
+
 	onRemoteCall: (fn) ->
 		@callbacks['onRemoteCall'] ?= []
 		@callbacks['onRemoteCall'].push fn
@@ -64,6 +72,10 @@ class WebRTCTransportClass
 	onRemoteDescription: (fn) ->
 		@callbacks['onRemoteDescription'] ?= []
 		@callbacks['onRemoteDescription'].push fn
+
+	onRemoteStatus: (fn) ->
+		@callbacks['onRemoteStatus'] ?= []
+		@callbacks['onRemoteStatus'].push fn
 
 
 class WebRTCClass
@@ -88,6 +100,7 @@ class WebRTCClass
 
 		@remoteItems = new ReactiveVar []
 		@remoteItemsById = new ReactiveVar {}
+		@callInProgress = new ReactiveVar false
 		@audioEnabled = new ReactiveVar true
 		@videoEnabled = new ReactiveVar true
 		@localUrl = new ReactiveVar
@@ -98,6 +111,9 @@ class WebRTCClass
 		@transport.onRemoteJoin @onRemoteJoin.bind @
 		@transport.onRemoteCandidate @onRemoteCandidate.bind @
 		@transport.onRemoteDescription @onRemoteDescription.bind @
+		@transport.onRemoteStatus @onRemoteStatus.bind @
+
+		Meteor.setInterval @broadcastStatus.bind(@), 1000
 
 	log: ->
 		if @debug is true
@@ -140,6 +156,38 @@ class WebRTCClass
 		@remoteItems.set items
 		@remoteItemsById.set itemsById
 
+	resetCallInProgress: ->
+		@callInProgress.set false
+
+	broadcastStatus: ->
+		if @active isnt true then return
+
+		@transport.sendStatus
+			from: @selfId
+			remoteConnectionIds: Object.keys(@peerConnections)
+
+	###
+		@param data {Object}
+			from {String}
+			remoteConnectionIds {Array[String]}
+	###
+	onRemoteStatus: (data) ->
+		# @log 'onRemoteStatus', arguments
+
+		@callInProgress.set true
+
+		Meteor.clearTimeout @callInProgressTimeout
+		@callInProgressTimeout = Meteor.setTimeout @resetCallInProgress.bind(@), 2000
+
+		if @active isnt true then return
+
+		ids = [data.from].concat data.remoteConnectionIds
+
+		for id in ids
+			if id isnt @selfId and not @peerConnections[id]?
+				@log 'reconnecting with', id
+				@onRemoteJoin
+					from: id
 
 	###
 		@param id {String}
