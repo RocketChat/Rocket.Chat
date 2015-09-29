@@ -74,10 +74,15 @@ class WebRTCClass
 			{urls: "turn:numb.viagenie.ca:3478", username: "team@rocket.chat", credential: "demo"}
 		]
 
-	debug: true
+	debug: false
 
 	transportClass: WebRTCTransportClass
 
+
+	###
+		@param seldId {String}
+		@param room {String}
+	###
 	constructor: (@selfId, @room) ->
 		@peerConnections = {}
 		@transport = new @transportClass @
@@ -102,6 +107,10 @@ class WebRTCClass
 
 		@onRemoteUrl?(urls)
 
+
+	###
+		@param id {String}
+	###
 	getPeerConnection: (id) ->
 		self = @
 
@@ -156,6 +165,10 @@ class WebRTCClass
 
 		return peerConnection
 
+
+	###
+		@param callback {Function}
+	###
 	getLocalUserMedia: (callback) ->
 		@log 'getLocalUserMedia', arguments
 		self = @
@@ -178,6 +191,10 @@ class WebRTCClass
 
 		navigator.getUserMedia media, onSuccess, @onError
 
+
+	###
+		@param id {String}
+	###
 	stopPeerConnection: (id) ->
 		peerConnection = @peerConnections[id]
 		if not peerConnection? then return
@@ -204,9 +221,26 @@ class WebRTCClass
 			@active = true
 			@transport.startCall()
 
+
+	###
+		@param data {Object}
+			from {String}
+	###
 	onRemoteCall: (data) ->
-		# Validate with user
-		@joinCall()
+		swal
+			title: "Video call from "+data.from
+			text: "Do you want to accept?"
+			type: "warning"
+			showCancelButton: true
+			confirmButtonColor: "#DD6B55"
+			confirmButtonText: "Yes"
+			cancelButtonText: "No"
+		, (isConfirm) =>
+			if isConfirm
+				@joinCall()
+			else
+				@stop()
+
 
 	joinCall: ->
 		@log 'joinCall', arguments
@@ -214,6 +248,11 @@ class WebRTCClass
 			@active = true
 			@transport.joinCall()
 
+
+	###
+		@param data {Object}
+			from {String}
+	###
 	onRemoteJoin: (data) ->
 		if @active isnt true then return
 
@@ -231,7 +270,6 @@ class WebRTCClass
 						to: data.from
 						from: @selfId
 						type: 'offer'
-						ts: Date.now() + TimeSync.serverOffset()
 						description:
 							sdp: offer.sdp
 							type: offer.type
@@ -240,6 +278,11 @@ class WebRTCClass
 
 			peerConnection.createOffer(onOffer, @onError)
 
+
+	###
+		@param data {Object}
+			from {String}
+	###
 	onRemoteOffer: (data) ->
 		if @active isnt true then return
 
@@ -257,19 +300,16 @@ class WebRTCClass
 					to: data.from
 					from: @selfId
 					type: 'answer'
-					ts: Date.now() + TimeSync.serverOffset()
 					description:
 						sdp: answer.sdp
 						type: answer.type
-					# offer:
-					# 	description: data.description
 
 			peerConnection.setLocalDescription(new RTCSessionDescription(answer), onLocalDescription, @onError)
 
 		peerConnection.createAnswer(onAnswer, @onError)
 
 
-	### onRemoteCandidata
+	###
 		@param data {Object}
 			to {String}
 			from {String}
@@ -286,7 +326,7 @@ class WebRTCClass
 			peerConnection.addIceCandidate new RTCIceCandidate(data.candidate)
 
 
-	### onRemoteDescription
+	###
 		@param data {Object}
 			to {String}
 			from {String}
@@ -300,21 +340,11 @@ class WebRTCClass
 		@log 'onRemoteDescription', arguments
 		peerConnection = @getPeerConnection data.from
 
-		# if data.type is 'answer' and data.offer?.description?
-		# 	peerConnection.setLocalDescription(new RTCSessionDescription(data.offer.description), emptyFn, @onError)
-
-		console.log 'iceConnectionState', peerConnection.iceConnectionState
-		console.log 'iceGatheringState', peerConnection.iceGatheringState
-		console.log 'signalingState', peerConnection.signalingState
-		# console.log 'localDescription', peerConnection.localDescription?.toJSON()
-		# console.log 'remoteDescription', peerConnection.remoteDescription?.toJSON()
 		peerConnection.setRemoteDescription new RTCSessionDescription(data.description)
 
 		if data.type is 'offer'
 			@onRemoteOffer
 				from: data.from
-				ts: data.ts
-				# description: data.description
 
 
 WebRTC = new class
@@ -323,7 +353,7 @@ WebRTC = new class
 
 	getInstanceByRoomId: (roomId) ->
 		if not @instancesByRoomId[roomId]?
-			@instancesByRoomId[roomId] = new WebRTCClass Meteor.userId(), roomId
+			@instancesByRoomId[roomId] = new WebRTCClass Meteor.user().username, roomId
 
 		return @instancesByRoomId[roomId]
 
