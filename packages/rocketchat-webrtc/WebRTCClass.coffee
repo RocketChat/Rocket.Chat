@@ -74,7 +74,7 @@ class WebRTCClass
 			{urls: "turn:numb.viagenie.ca:3478", username: "team@rocket.chat", credential: "demo"}
 		]
 
-	debug: false
+	debug: true
 
 	transportClass: WebRTCTransportClass
 
@@ -233,6 +233,7 @@ class WebRTCClass
 		@updateRemoteItems()
 
 	stop: ->
+		@active = false
 		@localStream?.stop()
 		@localUrl.set undefined
 		delete @localStream
