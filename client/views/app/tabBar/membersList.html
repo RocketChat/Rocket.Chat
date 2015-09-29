@@ -8,7 +8,12 @@
 				</div>
 				<div class="videos">
 					<div class="video-item" data-username="$self">
-						<video class="" src="{{selfVideoUrl}}" autoplay muted="true"></video>
+						<video src="{{selfVideoUrl}}" autoplay muted="true"></video>
+						{{#if muted}}
+							<div class="video-muted-overlay">
+								<i class="icon-mute"></i>
+							</div>
+						{{/if}}
 						<div>{{_ "you"}}</div>
 					</div>
 					{{#each remoteVideoUrl}}
@@ -17,6 +22,16 @@
 							<div>{{id}}</div>
 						</div>
 					{{/each}}
+				</div>
+				<div class="group-call-buttons">
+					{{#if videoActive}}
+						<button class="stop-call button red"><i class="icon-stop"></i>{{_ "Stop"}}</button>
+						{{#if muted}}
+							<button class="unmute-call button"><i class="icon-mic"></i>{{_ "Unmute"}}</button>
+						{{else}}
+							<button class="mute-call button"><i class="icon-mute"></i>{{_ "Mute"}}</button>
+						{{/if}}
+					{{/if}}
 				</div>
 			</div>
 		{{/if}}
@@ -30,12 +45,10 @@
 							{{!--<button class="see-all">{{seeAll}}</button>--}}
 						</p>
 						<div class="group-call-buttons">
-							{{#if videoActive}}
-								<button class="stop-call button red"><i class="icon-stop"></i>{{_ "Stop"}}</button>
-							{{else}}
+							{{#unless videoActive}}
 								<button class="start-video-call button"><i class="icon-videocam"></i></button>
 								<!-- <button class="start-audio-call button"><i class="icon-phone"></i></button> -->
-							{{/if}}
+							{{/unless}}
 						</div>
 						{{#if canAddUser}}
 							<div class="control">
