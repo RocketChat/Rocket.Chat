@@ -1,17 +1,17 @@
 <template name="membersList">
 	<div class="content">
-		{{#if isGroupChat}}
-			{{#if remoteVideoUrl}}
-				<div>
-					<video class="video-self" src="{{selfVideoUrl}}" autoplay muted></video>
-					<div class="videos">
-						<video class="" src="{{selfVideoUrl}}" autoplay muted></video>
-						{{#each remoteVideoUrl}}
-							<video class="" src="{{.}}" autoplay></video>
-						{{/each}}
-					</div>
+		{{#if remoteVideoUrl}}
+			<div>
+				<video class="video-self" src="{{selfVideoUrl}}" autoplay muted></video>
+				<div class="videos">
+					<video class="" src="{{selfVideoUrl}}" autoplay muted></video>
+					{{#each remoteVideoUrl}}
+						<video class="" src="{{.}}" autoplay></video>
+					{{/each}}
 				</div>
-			{{/if}}
+			</div>
+		{{/if}}
+		{{#if isGroupChat}}
 			<div class="list-view{{#if $.Session.get 'showUserInfo'}} -hidden{{/if}}">
 				{{#with roomUsers}}
 					<div class="status">
@@ -52,7 +52,7 @@
 				{{/with}}
 			</div>
 		{{/if}}
-		<div class="user-view animated{{#unless $.Session.get 'showUserInfo'}} -hidden{{/unless}}">
+		<div class="user-view {{#unless $.Session.get 'showUserInfo'}} -hidden{{/unless}}">
 			{{> userInfo user=flexUserInfo showAll=isGroupChat video=isDirectChat}}
 		</div>
 	</div>

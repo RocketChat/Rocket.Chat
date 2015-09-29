@@ -1,9 +1,9 @@
 Template.membersList.helpers
 	remoteVideoUrl: ->
-		return Session.get('remoteVideoUrl')
+		return WebRTC.getInstanceByRoomId(Session.get('openedRoom')).remoteUrls.get()
 
 	selfVideoUrl: ->
-		return Session.get('selfVideoUrl')
+		return WebRTC.getInstanceByRoomId(Session.get('openedRoom')).localUrl.get()
 
 	tAddUsers: ->
 		return t('Add_users')
