@@ -30,6 +30,7 @@ rocketchat:emojione
 rocketchat:favico
 rocketchat:file
 rocketchat:gitlab
+rocketchat:wordpress
 rocketchat:highlight
 rocketchat:ldap
 rocketchat:logger

@@ -124,6 +124,7 @@ rocketchat:slashcommands-join@0.0.1
 rocketchat:slashcommands-leave@0.0.1
 rocketchat:statistics@0.0.1
 rocketchat:webrtc@0.0.1
+rocketchat:wordpress@0.0.1
 routepolicy@1.0.5
 service-configuration@1.0.4
 session@1.1.0
