@@ -7,13 +7,14 @@ class Spotify
 	process = (message, source, callback) ->
 		if _.trim source
 			# Separate text in code blocks and non code blocks
-			msgParts = source.split(/(```\w*[\n\ ]?[\s\S]*?```+?)/)
+			msgParts = source.split /(```\w*[\n ]?[\s\S]*?```+?)|(`(?:[^`]+)`)/
 
 			for part, index in msgParts
 				# Verify if this part is code
-				codeMatch = part.match(/```(\w*)[\n\ ]?([\s\S]*?)```+?/)
-				if not codeMatch?
-					callback message, msgParts, index, part
+				if part?.length? > 0
+					codeMatch = part.match /(?:```(\w*)[\n ]?([\s\S]*?)```+?)|(?:`(?:[^`]+)`)/
+					if not codeMatch?
+						callback message, msgParts, index, part
 
 	@transform: (message) ->
 		urls = []
@@ -47,8 +48,7 @@ class Spotify
 					if item.source
 						quotedSource = item.source.replace /[\\^$.*+?()[\]{}|]/g, '\\$&'
 						re = new RegExp '(^|\\s)' + quotedSource + '(\\s|$)', 'g'
-						part = part.replace re, '$1<a href="' + item.url + '" target="_blank">' + item.source + '</a>$2'
-				msgParts[index] = part
+						msgParts[index] = part.replace re, '$1<a href="' + item.url + '" target="_blank">' + item.source + '</a>$2'
 				message.html = msgParts.join ''
 
 		return message
