@@ -12,7 +12,5 @@ before_install:
 script:
   - meteor remove-platform ios
   - meteor remove-platform android
-  - meteor add rocketchat:livechat
-  - meteor add rocketchat:hubot
   - mkdir ../build
   - meteor build ../build

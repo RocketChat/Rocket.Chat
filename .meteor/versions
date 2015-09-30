@@ -137,13 +137,14 @@ rocketchat:oembed@0.0.1
 rocketchat:slashcommands-invite@0.0.1
 rocketchat:slashcommands-join@0.0.1
 rocketchat:slashcommands-leave@0.0.1
+rocketchat:spotify@0.0.1
 rocketchat:statistics@0.0.1
 rocketchat:webrtc@0.0.1
+rocketchat:wordpress@0.0.1
 routepolicy@1.0.6
 service-configuration@1.0.5
 session@1.1.1
 sha@1.0.4
-rocketchat:wordpress@0.0.1
 simple:highlight.js@1.0.9
 simple:json-routes@1.0.4
 spacebars@1.0.7
