@@ -15,50 +15,62 @@ class WebRTCTransportClass
 			@log 'WebRTCTransportClass - onRoom', type, data
 
 			switch type
-				when 'call'
-					if @callbacks['onRemoteCall']?.length > 0
-						fn(data) for fn in @callbacks['onRemoteCall']
-
-				when 'join'
-					if @callbacks['onRemoteJoin']?.length > 0
-						fn(data) for fn in @callbacks['onRemoteJoin']
-
-				when 'candidate'
-					if @callbacks['onRemoteCandidate']?.length > 0
-						fn(data) for fn in @callbacks['onRemoteCandidate']
-
-				when 'description'
-					if @callbacks['onRemoteDescription']?.length > 0
-						fn(data) for fn in @callbacks['onRemoteDescription']
-
 				when 'status'
 					if @callbacks['onRemoteStatus']?.length > 0
 						fn(data) for fn in @callbacks['onRemoteStatus']
 
+	onUserStream: (type, data) ->
+		if data.room isnt @webrtcInstance.room then return
+		@log 'WebRTCTransportClass - onUser', type, data
+
+		switch type
+			when 'call'
+				if @callbacks['onRemoteCall']?.length > 0
+					fn(data) for fn in @callbacks['onRemoteCall']
+
+			when 'join'
+				if @callbacks['onRemoteJoin']?.length > 0
+					fn(data) for fn in @callbacks['onRemoteJoin']
+
+			when 'candidate'
+				if @callbacks['onRemoteCandidate']?.length > 0
+					fn(data) for fn in @callbacks['onRemoteCandidate']
+
+			when 'description'
+				if @callbacks['onRemoteDescription']?.length > 0
+					fn(data) for fn in @callbacks['onRemoteDescription']
+
 	startCall: (media) ->
 		@log 'WebRTCTransportClass - startCall', @webrtcInstance.room, @webrtcInstance.selfId
-		RocketChat.Notifications.notifyRoom @webrtcInstance.room, 'webrtc', 'call',
+		RocketChat.Notifications.notifyUsersOfRoom @webrtcInstance.room, 'webrtc', 'call',
 			from: @webrtcInstance.selfId
+			room: @webrtcInstance.room
 			audio: media.audio
 			video: media.video
 
 	joinCall: (media) ->
 		@log 'WebRTCTransportClass - joinCall', @webrtcInstance.room, @webrtcInstance.selfId
-		RocketChat.Notifications.notifyRoom @webrtcInstance.room, 'webrtc', 'join',
+		RocketChat.Notifications.notifyUsersOfRoom @webrtcInstance.room, 'webrtc', 'join',
 			from: @webrtcInstance.selfId
+			room: @webrtcInstance.room
 			audio: media.audio
 			video: media.video
 
 	sendCandidate: (data) ->
-		@log 'WebRTCTransportClass - sendCandidate', data, @webrtcInstance.room
-		RocketChat.Notifications.notifyRoom @webrtcInstance.room, 'webrtc', 'candidate', data
+		data.from = @webrtcInstance.selfId
+		data.room = @webrtcInstance.room
+		@log 'WebRTCTransportClass - sendCandidate', data
+		RocketChat.Notifications.notifyUser data.to, 'webrtc', 'candidate', data
 
 	sendDescription: (data) ->
-		@log 'WebRTCTransportClass - sendDescription', data, @webrtcInstance.room
-		RocketChat.Notifications.notifyRoom @webrtcInstance.room, 'webrtc', 'description', data
+		data.from = @webrtcInstance.selfId
+		data.room = @webrtcInstance.room
+		@log 'WebRTCTransportClass - sendDescription', data
+		RocketChat.Notifications.notifyUser data.to, 'webrtc', 'description', data
 
 	sendStatus: (data) ->
 		@log 'WebRTCTransportClass - sendStatus', data, @webrtcInstance.room
+		data.from = @webrtcInstance.selfId
 		RocketChat.Notifications.notifyRoom @webrtcInstance.room, 'webrtc', 'status', data
 
 	onRemoteCall: (fn) ->
@@ -171,7 +183,6 @@ class WebRTCClass
 		if @active isnt true then return
 
 		@transport.sendStatus
-			from: @selfId
 			remoteConnectionIds: Object.keys(@peerConnections)
 
 	###
@@ -230,7 +241,6 @@ class WebRTCClass
 
 			@transport.sendCandidate
 				to: id
-				from: @selfId
 				candidate:
 					candidate: e.candidate.candidate
 					sdpMLineIndex: e.candidate.sdpMLineIndex
@@ -353,12 +363,13 @@ class WebRTCClass
 			video {Boolean}
 	###
 	onRemoteCall: (data) ->
+		fromUsername = Meteor.users.findOne(data.from)?.username
 		if data.video and data.audio
-			title = "Audio and video call from #{data.from}"
+			title = "Audio and video call from #{fromUsername}"
 		else if data.video
-			title = "Video call from #{data.from}"
+			title = "Video call from #{fromUsername}"
 		else if data.audio
-			title = "Audio call from #{data.from}"
+			title = "Audio call from #{fromUsername}"
 
 		swal
 			title: title
@@ -369,9 +380,11 @@ class WebRTCClass
 			cancelButtonText: "No"
 		, (isConfirm) =>
 			if isConfirm
-				@joinCall
-					audio: data.audio
-					video: data.video
+				FlowRouter.goToRoomById data.room
+				Meteor.defer =>
+					@joinCall
+						audio: data.audio
+						video: data.video
 			else
 				@stop()
 
@@ -422,7 +435,6 @@ class WebRTCClass
 				onLocalDescription = =>
 					@transport.sendDescription
 						to: data.from
-						from: @selfId
 						type: 'offer'
 						description:
 							sdp: offer.sdp
@@ -452,7 +464,6 @@ class WebRTCClass
 			onLocalDescription = =>
 				@transport.sendDescription
 					to: data.from
-					from: @selfId
 					type: 'answer'
 					description:
 						sdp: answer.sdp
@@ -507,8 +518,15 @@ WebRTC = new class
 
 	getInstanceByRoomId: (roomId) ->
 		if not @instancesByRoomId[roomId]?
-			@instancesByRoomId[roomId] = new WebRTCClass Meteor.user().username, roomId
+			@instancesByRoomId[roomId] = new WebRTCClass Meteor.userId(), roomId
 
 		return @instancesByRoomId[roomId]
 
 
+Meteor.startup ->
+	RocketChat.Notifications.onUser 'webrtc', (type, data) =>
+		if not data.room? then return
+
+		webrtc = WebRTC.getInstanceByRoomId(data.room)
+
+		webrtc.transport.onUserStream type, data
