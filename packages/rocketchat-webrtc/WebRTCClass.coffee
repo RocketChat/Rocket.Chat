@@ -368,19 +368,23 @@ class WebRTCClass
 
 		if subscription?.t is 'd'
 			if data.video
+				icon = 'videocam'
 				title = "Direct video call from #{fromUsername}"
 			else
+				icon = 'phone'
 				title = "Direct audio call from #{fromUsername}"
 		else
 			if data.video
+				icon = 'videocam'
 				title = "Group video call from #{subscription.name}"
 			else
+				icon = 'phone'
 				title = "Group audio call from #{subscription.name}"
 
 		swal
-			title: title
+			title: "<i class='icon-#{icon} alert-icon'></i>#{title}"
 			text: "Do you want to accept?"
-			type: "warning"
+			html: true
 			showCancelButton: true
 			confirmButtonText: "Yes"
 			cancelButtonText: "No"
