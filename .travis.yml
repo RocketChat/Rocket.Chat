@@ -10,7 +10,5 @@ before_install:
   - "curl https://install.meteor.com | /bin/sh"
 
 script:
-  - meteor remove-platform ios
-  - meteor remove-platform android
   - mkdir ../build
   - meteor build ../build
