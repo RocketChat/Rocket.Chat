@@ -22,6 +22,17 @@ RocketChat.Notifications = new class
 		args.unshift "#{userId}/#{eventName}"
 		@streamUser.emit.apply @streamUser, args
 
+	notifyUsersOfRoom: (room, eventName, args...) ->
+		console.log "RocketChat.Notifications: notifyUsersOfRoom", arguments if @debug is true
+
+		onlineUsers = RoomManager.onlineUsers.get()
+		room = ChatRoom.findOne(room)
+		for username in room?.usernames or []
+			if onlineUsers[username]?
+				argsToSend = ["#{onlineUsers[username]._id}/#{eventName}"].concat args
+				console.log argsToSend
+				@streamUser.emit.apply @streamUser, argsToSend
+
 
 	onAll: (eventName, callback) ->
 		@streamAll.on eventName, callback
