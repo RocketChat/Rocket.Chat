@@ -14,5 +14,5 @@ script:
   - meteor remove-platform android
   - meteor add rocketchat:livechat
   - meteor add rocketchat:hubot
-  - mkdir ./web
-  - meteor build  ./web
+  - mkdir ../build
+  - meteor build ../build
