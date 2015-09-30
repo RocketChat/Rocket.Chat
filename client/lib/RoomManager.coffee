@@ -178,6 +178,7 @@ RocketChat.Notifications.onUser 'message', (msg) ->
 			delete onlineUsersValue[user.username]
 		else
 			onlineUsersValue[user.username] =
+				_id: user._id
 				status: status
 				utcOffset: utcOffset
 
