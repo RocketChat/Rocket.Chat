@@ -35,10 +35,12 @@ class WebRTCTransportClass
 					if @callbacks['onRemoteStatus']?.length > 0
 						fn(data) for fn in @callbacks['onRemoteStatus']
 
-	startCall: ->
+	startCall: (media) ->
 		@log 'WebRTCTransportClass - startCall', @webrtcInstance.room, @webrtcInstance.selfId
 		RocketChat.Notifications.notifyRoom @webrtcInstance.room, 'webrtc', 'call',
 			from: @webrtcInstance.selfId
+			audio: media.audio
+			video: media.video
 
 	joinCall: (media) ->
 		@log 'WebRTCTransportClass - joinCall', @webrtcInstance.room, @webrtcInstance.selfId
@@ -330,21 +332,36 @@ class WebRTCClass
 		for id, peerConnection of @peerConnections
 			@stopPeerConnection id
 
+
+	###
+		@param media {Object}
+			audio {Boolean}
+			video {Boolean}
+	###
 	startCall: (media={}) ->
 		@log 'startCall', arguments
 		@media = media
 		@getLocalUserMedia =>
 			@active = true
-			@transport.startCall()
+			@transport.startCall(@media)
 
 
 	###
 		@param data {Object}
 			from {String}
+			audio {Boolean}
+			video {Boolean}
 	###
 	onRemoteCall: (data) ->
+		if data.video and data.audio
+			title = "Audio and video call from #{data.from}"
+		else if data.video
+			title = "Video call from #{data.from}"
+		else if data.audio
+			title = "Audio call from #{data.from}"
+
 		swal
-			title: "Video call from "+data.from
+			title: title
 			text: "Do you want to accept?"
 			type: "warning"
 			showCancelButton: true
@@ -352,12 +369,25 @@ class WebRTCClass
 			cancelButtonText: "No"
 		, (isConfirm) =>
 			if isConfirm
-				@joinCall()
+				@joinCall
+					audio: data.audio
+					video: data.video
 			else
 				@stop()
 
 
-	joinCall: ->
+	###
+		@param media {Object}
+			audio {Boolean}
+			video {Boolean}
+	###
+	joinCall: (media) ->
+		media ?=
+			audio: true
+			video: true
+
+		@media = media
+
 		@log 'joinCall', arguments
 		@getLocalUserMedia =>
 			console.log 'join call getLocalUserMedia'
