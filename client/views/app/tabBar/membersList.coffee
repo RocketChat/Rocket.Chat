@@ -161,7 +161,10 @@ Template.membersList.events
 		WebRTC.getInstanceByRoomId(Session.get('openedRoom')).startCall({audio: true})
 
 	'click .join-video-call': ->
-		WebRTC.getInstanceByRoomId(Session.get('openedRoom')).joinCall()
+		WebRTC.getInstanceByRoomId(Session.get('openedRoom')).joinCall({audio: true, video: true})
+
+	'click .join-audio-call': ->
+		WebRTC.getInstanceByRoomId(Session.get('openedRoom')).joinCall({audio: true})
 
 	'click .stop-call': ->
 		WebRTC.getInstanceByRoomId(Session.get('openedRoom')).stop()
