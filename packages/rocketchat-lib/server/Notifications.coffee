@@ -19,7 +19,7 @@ RocketChat.Notifications = new class
 			roomId = eventName.split('/')[0]
 
 			user = Meteor.users.findOne @userId, {fields: {username: 1}}
-			return ChatRoom.findOne({_id: roomId, usernames: user.username}, {fields: {_id: 1}})?
+			return RocketChat.models.Rooms.findOneByIdContainigUsername(roomId, user.username, {fields: {_id: 1}})?
 
 		@streamUser.permissions.write -> return @userId?
 		@streamUser.permissions.read (eventName) ->

@@ -1,6 +1,6 @@
 Meteor.methods
 	sendForgotPasswordEmail: (email) ->
-		user = Meteor.users.findOne {'emails.address': email}
+		user = RocketChat.models.Users.findOneByEmailAddress email
 
 		if user?
 			Accounts.sendResetPasswordEmail(user._id, email)

@@ -2,6 +2,14 @@ Template.room.helpers
 	messages: ->
 		return ChatMessage.find { rid: visitor.getRoom(), t: { '$ne': 't' }  }, { sort: { ts: 1 } }
 
+	title: ->
+		return '' unless Template.instance().subscriptionsReady()
+		return Settings.findOne('Livechat_title')?.value or 'Rocket.Chat'
+
+	color: ->
+		return 'transparent' unless Template.instance().subscriptionsReady()
+		return Settings.findOne('Livechat_title_color')?.value or '#C1272D'
+
 Template.room.events
 	'keyup .input-message': (event) ->
 		Template.instance().chatMessages.keyup(visitor.getRoom(), event, Template.instance())
@@ -27,6 +35,8 @@ Template.room.onCreated ->
 			if room?
 				visitor.setRoom room._id
 				RoomHistoryManager.getMoreIfIsEmpty room._id
+
+	self.subscribe 'settings', ['Livechat_title', 'Livechat_title_color']
 
 	self.atBottom = true
 

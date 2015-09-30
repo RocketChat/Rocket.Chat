@@ -32,7 +32,7 @@ class MentionsServer
 			channels = _.unique channels
 			verifiedChannels = []
 			channels.forEach (mention) ->
-				verifiedChannel = ChatRoom.findOne({ name: mention, t: 'c' }, { fields: {_id: 1, name: 1 } })
+				verifiedChannel = RocketChat.models.Rooms.findOneByNameAndType(mention, 'c', { fields: {_id: 1, name: 1 } })
 				verifiedChannels.push verifiedChannel if verifiedChannel?
 
 			if verifiedChannels.length isnt 0

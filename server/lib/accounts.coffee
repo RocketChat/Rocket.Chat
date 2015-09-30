@@ -51,9 +51,9 @@ Accounts.insertUserDoc = _.wrap Accounts.insertUserDoc, (insertUserDoc) ->
 	_id = insertUserDoc(options, user)
 
 	# when inserting first user give them admin privileges otherwise make a regular user
-	firstUser = Meteor.users.findOne({},{sort:{createdAt:1}})
+	firstUser = RocketChat.models.Users.findOne({},{sort:{createdAt:1}})
 	roleName = if firstUser?._id is _id then 'admin' else 'user'
-	
+
 	RocketChat.authz.addUsersToRoles(_id, roleName)
 	RocketChat.callbacks.run 'afterCreateUser', options, user
 	return _id
@@ -76,7 +76,8 @@ Accounts.validateLoginAttempt (login) ->
 			throw new Meteor.Error 'no-valid-email'
 			return false
 
-	Meteor.users.update {_id: login.user._id}, {$set: {lastLogin: new Date}}
+	RocketChat.models.Users.updateLastLoginById login.user._id
+
 	Meteor.defer ->
 		RocketChat.callbacks.run 'afterValidateLogin', login
 

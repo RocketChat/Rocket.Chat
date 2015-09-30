@@ -5,10 +5,4 @@ Meteor.methods
 
 		console.log '[methods] hideRoom -> '.green, 'userId:', Meteor.userId(), 'arguments:', arguments
 
-		ChatSubscription.update
-			rid: rid
-			'u._id': Meteor.userId()
-		,
-			$set:
-				alert: false
-				open: false
+		RocketChat.models.Subscriptions.hideByRoomIdAndUserId rid, Meteor.userId()
