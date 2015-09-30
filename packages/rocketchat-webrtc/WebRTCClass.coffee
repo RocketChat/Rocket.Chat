@@ -364,12 +364,18 @@ class WebRTCClass
 	###
 	onRemoteCall: (data) ->
 		fromUsername = Meteor.users.findOne(data.from)?.username
-		if data.video and data.audio
-			title = "Audio and video call from #{fromUsername}"
-		else if data.video
-			title = "Video call from #{fromUsername}"
-		else if data.audio
-			title = "Audio call from #{fromUsername}"
+		subscription = ChatSubscription.findOne({rid: data.room})
+
+		if subscription?.t is 'd'
+			if data.video
+				title = "Direct video call from #{fromUsername}"
+			else
+				title = "Direct audio call from #{fromUsername}"
+		else
+			if data.video
+				title = "Group video call from #{subscription.name}"
+			else
+				title = "Group audio call from #{subscription.name}"
 
 		swal
 			title: title
