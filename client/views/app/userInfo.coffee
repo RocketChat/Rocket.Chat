@@ -72,23 +72,6 @@ Template.userInfo.events
 	'click .back': (e) ->
 		Session.set('showUserInfo', null)
 
-	# 'click .start-video': (event) ->
-	# 	WebRTC.getInstanceByRoomId(Session.get('openedRoom')).startCall()
-
-	# 'click .stop-video': (event) ->
-	# 	WebRTC.getInstanceByRoomId(Session.get('openedRoom')).stop()
-
-	# 'click .monitor-video': (event) ->
-	# 	_id = Session.get('openedRoom')
-	# 	webrtc.to = _id.replace(Meteor.userId(), '')
-	# 	webrtc.room = _id
-	# 	webrtc.mode = 2
-	# 	webrtc.start(true)
-
-	# 'click .setup-video': (event) ->
-	# 	webrtc.mode = 2
-	# 	webrtc.activateLocalStream()
-
 
 Template.userInfo.onCreated ->
 	@now = new ReactiveVar moment()

@@ -27,17 +27,18 @@
 		</div>
 		{{/with}}
 		<nav>
-			{{#if video}}
-				{{#unless remoteVideoUrl}}
-					<button class='button start-video'><span><i class='icon-videocam'></i> {{_ "Video_Chat"}}</span></button>
-					{{#if remoteMonitoring}}
-					<button class='button short monitor-video'><span><i class='icon-videocam'></i> {{_ "Remote"}}</span></button>
-					<button class='button lightblue setup-video'><span><i class='icon-videocam'></i> {{_ "Setup"}}</span></button>
+			<div class="group-call-buttons">
+				{{#unless videoActive}}
+					{{#if callInProgress}}
+						<button class="join-video-call button secondary"><i class="icon-videocam"></i>{{_ "Join"}}</button>
+						<button class="join-audio-call button secondary"><i class="icon-phone"></i>{{_ "Join"}}</button>
+					{{else}}
+						<button class="start-video-call button"><i class="icon-videocam"></i>{{_ "Start"}}</button>
+						<button class="start-audio-call button"><i class="icon-phone"></i></button>
 					{{/if}}
-				{{else}}
-					<button class='button red stop-video'><span><i class='icon-videocam'></i> {{_ "Stop_Video"}}</span></button>
 				{{/unless}}
-			{{/if}}
+			</div>
+
 			{{#if showAll}}
 				<button class='button secondary back'><span>{{_ "View_All"}} <i class='icon-angle-right'></i></span></button>
 				{{#if canDirectMessage user.username}}
