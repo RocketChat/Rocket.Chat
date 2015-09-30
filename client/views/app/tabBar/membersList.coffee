@@ -155,7 +155,10 @@ Template.membersList.events
 				$('#user-add-search').val('')
 
 	'click .start-video-call': ->
-		WebRTC.getInstanceByRoomId(Session.get('openedRoom')).startCall()
+		WebRTC.getInstanceByRoomId(Session.get('openedRoom')).startCall({audio: true, video: true})
+
+	'click .start-audio-call': ->
+		WebRTC.getInstanceByRoomId(Session.get('openedRoom')).startCall({audio: true})
 
 	'click .join-video-call': ->
 		WebRTC.getInstanceByRoomId(Session.get('openedRoom')).joinCall()
