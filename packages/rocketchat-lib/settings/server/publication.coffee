@@ -2,6 +2,7 @@ Meteor.publish 'settings', (ids = []) ->
 	console.log '[publish] settings'.green
 
 	filter =
+		hidden: { $ne: true }
 		public: true
 
 	if ids.length > 0

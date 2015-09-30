@@ -13,6 +13,7 @@ Package.onUse(function(api) {
 	api.use('coffeescript');
 	api.use('random');
 	api.use('check');
+	api.use('ddp-rate-limiter');
 	api.use('underscore');
 	api.use('underscorestring:underscore.string');
 	api.use('monbro:mongodb-mapreduce-aggregation@1.0.1');
@@ -34,6 +35,7 @@ Package.onUse(function(api) {
 	// COMMON
 	api.addFiles('lib/core.coffee');
 	api.addFiles('lib/callbacks.coffee');
+	api.addFiles('lib/rateLimiter.coffee');
 	api.addFiles('lib/slashCommand.coffee');
 
 	// MODELS SERVER

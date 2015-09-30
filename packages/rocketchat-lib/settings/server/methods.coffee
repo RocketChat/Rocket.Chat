@@ -16,15 +16,22 @@ RocketChat.settings.add = (_id, value, options = {}) ->
 
 	updateSettings =
 		i18nLabel: options.i18nLabel or _id
-		i18nDescription: options.i18nDescription if options.i18nDescription?
 
+	updateSettings.i18nDescription = options.i18nDescription if options.i18nDescription?
 	updateSettings.type = options.type if options.type
 	updateSettings.multiline = options.multiline if options.multiline
 	updateSettings.group = options.group if options.group
 	updateSettings.section = options.section if options.section
 	updateSettings.public = options.public if options.public
 
-	return RocketChat.models.Settings.upsert { _id: _id }, { $setOnInsert: { value: value }, $set: updateSettings }
+	upsertChanges = { $setOnInsert: { value: value }, $set: updateSettings }
+
+	if options.persistent is true
+		upsertChanges.$unset = { ts: true }
+	else
+		upsertChanges.$set.ts = new Date
+
+	return RocketChat.models.Settings.upsert { _id: _id }, upsertChanges
 
 ###
 # Add a setting group
@@ -38,12 +45,18 @@ RocketChat.settings.addGroup = (_id, options = {}) ->
 	# console.log '[functions] RocketChat.settings.addGroup -> '.green, 'arguments:', arguments
 
 	updateSettings =
-		i18nLabel: options.i18nLabel or _id
-		i18nDescription: options.i18nDescription if options.i18nDescription?
 		type: 'group'
+		i18nLabel: options.i18nLabel or _id
 
-	return RocketChat.models.Settings.upsert { _id: _id }, { $set: updateSettings }
+	updateSettings.i18nDescription = options.i18nDescription if options.i18nDescription?
 
+	upsertChanges = { $set: updateSettings }
+	if options.persistent is true
+		upsertChanges.$unset = { ts: true }
+	else
+		upsertChanges.$set.ts = new Date
+
+	return RocketChat.models.Settings.upsert { _id: _id }, upsertChanges
 
 ###
 # Remove a setting by id
