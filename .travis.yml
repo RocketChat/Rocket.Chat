@@ -1,5 +1,8 @@
 sudo: required
 language: node_js
+branches:	
+  only:
+  	- travis-001
 node_js:
   - "0.10"
 
@@ -7,6 +10,9 @@ before_install:
   - "curl https://install.meteor.com | /bin/sh"
 
 script:
+  - meteor remove-platform ios
+  - meteor remove-platform android
   - meteor add rocketchat:livechat
   - meteor add rocketchat:hubot
-  - meteor build --server demo.rocket.chat ./
+  - mkdir ./web
+  - meteor build  ./web
