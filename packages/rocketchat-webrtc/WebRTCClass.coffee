@@ -40,10 +40,12 @@ class WebRTCTransportClass
 		RocketChat.Notifications.notifyRoom @webrtcInstance.room, 'webrtc', 'call',
 			from: @webrtcInstance.selfId
 
-	joinCall: ->
+	joinCall: (media) ->
 		@log 'WebRTCTransportClass - joinCall', @webrtcInstance.room, @webrtcInstance.selfId
 		RocketChat.Notifications.notifyRoom @webrtcInstance.room, 'webrtc', 'join',
 			from: @webrtcInstance.selfId
+			audio: media.audio
+			video: media.video
 
 	sendCandidate: (data) ->
 		@log 'WebRTCTransportClass - sendCandidate', data, @webrtcInstance.room
@@ -104,6 +106,10 @@ class WebRTCClass
 		@audioEnabled = new ReactiveVar true
 		@videoEnabled = new ReactiveVar true
 		@localUrl = new ReactiveVar
+
+		@media =
+			video: true
+			audio: true
 
 		@transport = new @transportClass @
 
@@ -237,8 +243,10 @@ class WebRTCClass
 		peerConnection.addEventListener 'iceconnectionstatechange', (e) =>
 			if peerConnection.iceConnectionState in ['disconnected', 'closed']
 				@stopPeerConnection id
-				if Object.keys(@peerConnections).length is 0
-					@stop()
+				Meteor.setTimeout =>
+					if Object.keys(@peerConnections).length is 0
+						@stop()
+				, 3000
 
 			@updateRemoteItems()
 
@@ -254,20 +262,19 @@ class WebRTCClass
 		if @localStream?
 			return callback null, @localStream
 
-		media =
-			audio: true
-			video: true
-
 		onSuccess = (stream) =>
 			@localStream = stream
 			@localUrl.set URL.createObjectURL(stream)
+
+			@videoEnabled.set @media.video is true
+			@audioEnabled.set @media.audio is true
 
 			for id, peerConnection of @peerConnections
 				peerConnection.addStream stream
 
 			callback null, @localStream
 
-		navigator.getUserMedia media, onSuccess, @onError
+		navigator.getUserMedia @media, onSuccess, @onError
 
 
 	###
@@ -284,8 +291,13 @@ class WebRTCClass
 
 	setAudioEnabled: (enabled=true) ->
 		if @localStream?
-			@localStream.getAudioTracks().forEach (audio) -> audio.enabled = enabled
-			@audioEnabled.set enabled
+			if enabled is true and @media.audio isnt true
+				@stop()
+				@media.audio = true
+				@joinCall()
+			else
+				@localStream.getAudioTracks().forEach (audio) -> audio.enabled = enabled
+				@audioEnabled.set enabled
 
 	disableAudio: ->
 		@setAudioEnabled false
@@ -295,8 +307,13 @@ class WebRTCClass
 
 	setVideoEnabled: (enabled=true) ->
 		if @localStream?
-			@localStream.getVideoTracks().forEach (video) -> video.enabled = enabled
-			@videoEnabled.set enabled
+			if enabled is true and @media.video isnt true
+				@stop()
+				@media.video = true
+				@joinCall()
+			else
+				@localStream.getVideoTracks().forEach (video) -> video.enabled = enabled
+				@videoEnabled.set enabled
 
 	disableVideo: ->
 		@setVideoEnabled false
@@ -313,9 +330,10 @@ class WebRTCClass
 		for id, peerConnection of @peerConnections
 			@stopPeerConnection id
 
-	startCall: ->
+	startCall: (media={}) ->
 		@log 'startCall', arguments
-		@getLocalUserMedia (err, stream) =>
+		@media = media
+		@getLocalUserMedia =>
 			@active = true
 			@transport.startCall()
 
@@ -341,22 +359,27 @@ class WebRTCClass
 
 	joinCall: ->
 		@log 'joinCall', arguments
-		@getLocalUserMedia (err, stream) =>
+		@getLocalUserMedia =>
+			console.log 'join call getLocalUserMedia'
 			@active = true
-			@transport.joinCall()
+			@transport.joinCall(@media)
 
 
 	###
 		@param data {Object}
 			from {String}
+			audio {Boolean}
+			video {Boolean}
 	###
 	onRemoteJoin: (data) ->
 		if @active isnt true then return
 
 		@log 'onRemoteJoin', arguments
-		@getLocalUserMedia (err, stream) =>
+		@getLocalUserMedia =>
 			peerConnection = @getPeerConnection data.from
-			if peerConnection.signalingState is "have-local-offer"
+			needsAudio = data.audio is true and peerConnection.getRemoteStreams()[0]?.getAudioTracks().length is 0
+			needsVideo = data.video is true and peerConnection.getRemoteStreams()[0]?.getVideoTracks().length is 0
+			if peerConnection.signalingState is "have-local-offer" or needsAudio or needsVideo
 				@stopPeerConnection data.from
 				peerConnection = @getPeerConnection data.from
 
