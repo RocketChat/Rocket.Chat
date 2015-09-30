@@ -2,7 +2,7 @@ sudo: required
 language: node_js
 branches:	
   only:
-  	- travis-001
+  - travis-001
 node_js:
   - "0.10"
 
