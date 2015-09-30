@@ -21,10 +21,10 @@
 						{{/unless}}
 						<div>{{_ "you"}}</div>
 					</div>
-					{{#each remoteVideoUrl}}
+					{{#each remoteVideoItems}}
 						<div class="video-item {{#unless connected}}state-overlay{{/unless}}" data-state-text="{{stateText}}" data-username="{{id}}">
 							<video src="{{url}}" autoplay></video>
-							<div>{{id}}</div>
+							<div>{{usernameByUserId id}}</div>
 						</div>
 					{{/each}}
 				</div>

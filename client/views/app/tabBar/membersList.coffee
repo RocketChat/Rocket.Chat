@@ -18,7 +18,7 @@ Template.membersList.helpers
 	audioAndVideoEnabled: ->
 		return WebRTC.getInstanceByRoomId(Session.get('openedRoom')).audioEnabled.get() and WebRTC.getInstanceByRoomId(Session.get('openedRoom')).videoEnabled.get()
 
-	remoteVideoUrl: ->
+	remoteVideoItems: ->
 		return WebRTC.getInstanceByRoomId(Session.get('openedRoom')).remoteItems.get()
 
 	selfVideoUrl: ->
@@ -54,15 +54,18 @@ Template.membersList.helpers
 		if template.mainVideo.get() is '$auto'
 			remoteItems = webrtc.remoteItems.get()
 			if remoteItems?.length > 0
-				return remoteItems[0].id
+				return Meteor.users.findOne(remoteItems[0].id)?.username
 
 			return t 'you'
 
 		if webrtc.remoteItemsById.get()[template.mainVideo.get()]?
-			return webrtc.remoteItemsById.get()[template.mainVideo.get()].id
+			return Meteor.users.findOne(webrtc.remoteItemsById.get()[template.mainVideo.get()].id)?.username
 		else
 			template.mainVideo.set '$auto'
 			return
+
+	usernameByUserId: (userId) ->
+		return Meteor.users.findOne(userId)?.username
 
 	tAddUsers: ->
 		return t('Add_users')
