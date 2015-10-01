@@ -20,16 +20,6 @@ msgStream.permissions.read (eventName) ->
 
 
 Meteor.startup ->
-	filter =
-		_hidden: { $ne: true }
-		$or: [
-			ts:
-				$gt: new Date()
-		,
-			ets:
-				$gt: new Date()
-		]
-
 	options = {}
 
 	if not RocketChat.settings.get 'Message_ShowEditedStatus'

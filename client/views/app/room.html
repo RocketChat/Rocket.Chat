@@ -9,7 +9,7 @@
 			<header class="fixed-title">
 				{{> burger}}
 				<h2>
-					{{#if subscribed}}
+					{{#if showToggleFavorite}}
 						<a href="#favorite" class="toggle-favorite"><i class="{{favorite}}"></i></a>
 					{{/if}}
 					<i class="{{roomIcon}} status-{{userStatus}}"></i>
@@ -115,14 +115,22 @@
 								{{/if}}
 							{{/with}}
 						</div>
+						{{#if showFormattingTips}}
 						<div class="formatting-tips" aria-hidden="true" dir="auto">
+							{{#if showMarkdown}}
 							<b>*{{_ "bold"}}*</b>
 							<i>_{{_ "italics"}}_</i>
 							<span>~<strike>{{_ "strike"}}</strike>~</span>
 							<code class="inline">`{{_ "inline_code"}}`</code>
+							{{/if}}
+							{{#if showHighlight}}
 							<code class="inline"><span class="hidden-br"><br></span>```<span class="hidden-br"><br></span><i class="icon-level-down"></i>{{_ "multi"}}<span class="hidden-br"><br></span><i class="icon-level-down"></i>{{_ "line"}}<span class="hidden-br"><br></span><i class="icon-level-down"></i>```</code>
+							{{/if}}
+							{{#if showMarkdown}}
 							<q><span class="hidden-br"><br></span>&gt;{{_ "quote"}}</q>
+							{{/if}}
 						</div>
+						{{/if}}
 						<div class="editing-commands" aria-hidden="true" dir="auto">
 							<div class="editing-commands-cancel">{{_ 'Esc_to'}} <a href="">{{_ 'Cancel'}}</a></div>
 							<div class="editing-commands-save">{{_ 'Enter_to'}} <a href="">{{_ 'Save_changes'}}</a></div>

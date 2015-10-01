@@ -17,7 +17,7 @@ usernameIsAvaliable = (username) ->
 
 	usernames.push slug user.name
 
-	nameParts = user.name.split()
+	nameParts = user?.name?.split()
 	if nameParts.length > 1
 		first = nameParts[0]
 		last = nameParts[nameParts.length - 1]

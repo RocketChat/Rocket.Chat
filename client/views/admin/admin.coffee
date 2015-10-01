@@ -35,15 +35,16 @@ Template.admin.helpers
 		if description?.indexOf(':') is -1
 			description = 'project:' + description
 		return TAPi18next.t description
-
 	sectionIsCustomOath: (section) ->
 		return /^Custom OAuth:\s.+/.test section
+	callbackURL: (section) ->
+		id = s.strRight(section, 'Custom OAuth: ').toLowerCase()
+		return Meteor.absoluteUrl('_oauth/' + id)
 
 Template.admin.events
 	"click .submit .save": (e, t) ->
 		group = FlowRouter.getParam('group')
 		settings = Settings.find({ group: group }).fetch()
-		console.log 'will save settings', JSON.stringify settings
 		updateSettings = []
 		for setting in settings
 			value = null
@@ -56,8 +57,6 @@ Template.admin.events
 
 			if value?
 				updateSettings.push { _id: setting._id, value: value }
-
-		console.log 'changed settings', JSON.stringify updateSettings
 
 		if not _.isEmpty updateSettings
 			RocketChat.settings.batchSet updateSettings, (err, success) ->

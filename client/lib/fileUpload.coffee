@@ -14,6 +14,7 @@ readAsArrayBuffer = (file, callback) ->
 
 
 @fileUpload = (files) ->
+	roomId = Session.get('openedRoom')
 	files = [].concat files
 
 	consume = ->
@@ -79,7 +80,7 @@ readAsArrayBuffer = (file, callback) ->
 							self = this
 							Meteor.call 'sendMessage', {
 								_id: Random.id()
-								rid: Session.get('openedRoom')
+								rid: roomId
 								msg: """
 									File Uploaded: *#{file.name}*
 									#{file.url}

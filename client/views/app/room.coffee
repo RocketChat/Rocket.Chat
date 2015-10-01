@@ -1,12 +1,25 @@
+isSubscribed = (_id) ->
+	return ChatSubscription.find({ rid: _id }).count() > 0
+
+favoritesEnabled = ->
+	return !RocketChat.settings.get 'Disable_Favorite_Rooms'
+
+
 # @TODO bug com o botão para "rolar até o fim" (novas mensagens) quando há uma mensagem com texto que gere rolagem horizontal
 Template.room.helpers
+	showFormattingTips: ->
+		return RocketChat.Markdown or RocketChat.Highlight
+	showMarkdown: ->
+		return RocketChat.Markdown
+	showHighlight: ->
+		return RocketChat.Highlight
 	favorite: ->
 		sub = ChatSubscription.findOne { rid: this._id }, { fields: { f: 1 } }
-		return 'icon-star favorite-room' if sub?.f? and sub.f
+		return 'icon-star favorite-room' if sub?.f? and sub.f and favoritesEnabled
 		return 'icon-star-empty'
 
 	subscribed: ->
-		return ChatSubscription.find({ rid: this._id }).count() > 0
+		return isSubscribed(this._id)
 
 	messagesHistory: ->
 		return ChatMessage.find { rid: this._id, t: { '$ne': 't' }  }, { sort: { ts: 1 } }
@@ -231,6 +244,9 @@ Template.room.helpers
 	adminClass: ->
 		return 'admin' if RocketChat.authz.hasRole(Meteor.userId(), 'admin')
 
+	showToggleFavorite: ->
+		return true if isSubscribed(this._id) and favoritesEnabled()
+
 Template.room.events
 	"touchstart .message": (e, t) ->
 		message = this._arguments[1]
@@ -363,24 +379,6 @@ Template.room.events
 		# else
 			# Session.set('flexOpened', true)
 		RocketChat.TabBar.setTemplate 'membersList'
-
-	'autocompleteselect #user-add-search': (event, template, doc) ->
-		roomData = Session.get('roomData' + Session.get('openedRoom'))
-
-		if roomData.t is 'd'
-			Meteor.call 'createGroupRoom', roomData.usernames, doc.username, (error, result) ->
-				if error
-					return Errors.throw error.reason
-
-				if result?.rid?
-					$('#user-add-search').val('')
-		else if roomData.t in ['c', 'p']
-			Meteor.call 'addUserToRoom', { rid: roomData._id, username: doc.username }, (error, result) ->
-				if error
-					return Errors.throw error.reason
-
-				$('#user-add-search').val('')
-				toggleAddUser()
 
 	'scroll .wrapper': _.throttle (e, instance) ->
 		if RoomHistoryManager.hasMore(@_id) is true and RoomHistoryManager.isLoading(@_id) is false
