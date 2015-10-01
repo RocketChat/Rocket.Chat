@@ -9,14 +9,14 @@
 			<header class="fixed-title">
 				{{> burger}}
 				<h2>
-					{{#if subscribed}}
+					{{#if showToggleFavorite}}
 						<a href="#favorite" class="toggle-favorite"><i class="{{favorite}}"></i></a>
 					{{/if}}
 					<i class="{{roomIcon}} status-{{userStatus}}"></i>
 					<span class="room-title {{editingTitle}}">{{roomName}}</span>
 					{{#if canEditName}}
 					<input type="text" id="room-title-field" class="{{showEditingTitle}}" value="{{roomNameEdit}}" dir="auto">
-					<a href="#edit" class="edit-room-title"><i class="icon-pencil"></i></a>
+					<a href="#edit" class="edit-room-title"><i class="icon-pencil" aria-label="{{_ "Edit"}}"></i></a>
 					{{/if}}
 				</h2>
 			</header>
@@ -51,7 +51,7 @@
 			<div class="messages-box">
 				<div class="ticks-bar"></div>
 				<div class="wrapper">
-					<ul>
+					<ul aria-live="polite">
 						{{#if hasMore}}
 							<li class="load-more">
 								{{#if isLoading}}
@@ -86,14 +86,14 @@
 							<div class="input-message-container">
 								{{> messagePopupConfig getPupupConfig}}
 								<textarea dir="auto" name="msg" maxlength="{{maxMessageLength}}" class="input-message autogrow-short" placeholder="{{_ 'Message'}}"></textarea>
-								<i class="icon-paper-plane" title="{{_ "Send_Message"}}"></i>
+								<i class="icon-paper-plane" title="{{_ "Send_Message"}}" aria-label="{{_ "Send_Message"}}"></i>
 							</div>
 							{{#if canRecordAudio}}
 								<div class="mic">
-									<i class="icon-mic"></i>
+									<i class="icon-mic" aria-label="{{_ "Record"}}"></i>
 								</div>
 								<div class="stop-mic hidden">
-									<i class="icon-stop"></i>
+									<i class="icon-stop" aria-label="{{_ "Stop_Recording"}}"></i>
 								</div>
 							{{/if}}
 						</div>
@@ -115,14 +115,22 @@
 								{{/if}}
 							{{/with}}
 						</div>
+						{{#if showFormattingTips}}
 						<div class="formatting-tips" aria-hidden="true" dir="auto">
+							{{#if showMarkdown}}
 							<b>*{{_ "bold"}}*</b>
 							<i>_{{_ "italics"}}_</i>
 							<span>~<strike>{{_ "strike"}}</strike>~</span>
 							<code class="inline">`{{_ "inline_code"}}`</code>
+							{{/if}}
+							{{#if showHighlight}}
 							<code class="inline"><span class="hidden-br"><br></span>```<span class="hidden-br"><br></span><i class="icon-level-down"></i>{{_ "multi"}}<span class="hidden-br"><br></span><i class="icon-level-down"></i>{{_ "line"}}<span class="hidden-br"><br></span><i class="icon-level-down"></i>```</code>
+							{{/if}}
+							{{#if showMarkdown}}
 							<q><span class="hidden-br"><br></span>&gt;{{_ "quote"}}</q>
+							{{/if}}
 						</div>
+						{{/if}}
 						<div class="editing-commands" aria-hidden="true" dir="auto">
 							<div class="editing-commands-cancel">{{_ 'Esc_to'}} <a href="">{{_ 'Cancel'}}</a></div>
 							<div class="editing-commands-save">{{_ 'Enter_to'}} <a href="">{{_ 'Save_changes'}}</a></div>

@@ -50,3 +50,4 @@ class Highlight
 		return message
 
 RocketChat.callbacks.add 'renderMessage', Highlight, RocketChat.callbacks.priority.HIGH
+RocketChat.Highlight = true
