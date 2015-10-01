@@ -1,9 +1,11 @@
+roomFiles = new Mongo.Collection 'room_files'
+
 Template.uploadedFilesList.helpers
   files: ->
-    return fileCollection.find().fetch()
+    return roomFiles.find().fetch()
 
   hasFiles: ->
-      return fileCollection.find().count() > 0
+      return roomFiles.find().count() > 0
 
   getFileIcon: (type) ->
     if type.match(/^image\/.+$/)

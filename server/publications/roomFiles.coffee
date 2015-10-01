@@ -33,8 +33,7 @@ Meteor.publish 'roomFiles', (rid) ->
       type: 1
       url: 1
 
-  fileCollection.find(fileQuery, fileOptions)
-  this.ready()
+  cursorFileList = fileCollection.find(fileQuery, fileOptions)
 
   # observe whether a new file was sent to the room and notifies subscribers
   pub = this
@@ -44,7 +43,16 @@ Meteor.publish 'roomFiles', (rid) ->
         return pub.ready()
 
       data = fileCollection.findOne({ _id: record.file._id }, fileOptions)
-      pub.added('rocketchat_uploads', record.file._id, data)
 
+      data.rid = rid
+      pub.added('room_files', record.file._id, data)
+
+  cursorFileListHandle = cursorFileList.observeChanges
+    added: (_id, record) ->
+      record.rid = rid
+      pub.added('room_files', _id, record)
+
+  this.ready()
   this.onStop ->
+    cursorFileListHandle.stop()
     cursorFileMessagesHandle.stop()
