@@ -2,6 +2,7 @@ config =
 	serverURL: ''
 	identityPath: '/api/v3/user'
 	authorizePath: '/login/oauth/authorize'
+	tokenPath: '/login/oauth/access_token'
 	addAutopublishFields:
 		forLoggedInUser: ['services.github-enterprise']
 		forOtherUsers: ['services.github-enterprise.username']
