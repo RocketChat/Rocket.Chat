@@ -4,7 +4,6 @@ updateServices = ->
 
 	timer = Meteor.setTimeout ->
 		services = RocketChat.models.Settings.find({_id: /^(Accounts_OAuth_|Accounts_OAuth_Custom_)[a-z_-]+$/i}).fetch()
-		console.log services
 		for service in services
 			console.log "Updating login service #{service._id}".blue
 
