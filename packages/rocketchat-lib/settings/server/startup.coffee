@@ -21,9 +21,6 @@ RocketChat.settings.add 'Accounts_OAuth_Google_secret', '', { type: 'string', gr
 RocketChat.settings.add 'Accounts_OAuth_Github', false, { type: 'boolean', group: 'Accounts', section: 'Github', public: true }
 RocketChat.settings.add 'Accounts_OAuth_Github_id', '', { type: 'string', group: 'Accounts', section: 'Github' }
 RocketChat.settings.add 'Accounts_OAuth_Github_secret', '', { type: 'string', group: 'Accounts', section: 'Github' }
-RocketChat.settings.add 'Accounts_OAuth_GitHub_Enterprise', false, { type: 'boolean', group: 'Accounts', section: 'GitHub Enterprise', public: true }
-RocketChat.settings.add 'Accounts_OAuth_GitHub_Enterprise_id', '', { type: 'string', group: 'Accounts', section: 'GitHub Enterprise' }
-RocketChat.settings.add 'Accounts_OAuth_GitHub_Enterprise_secret', '', { type: 'string', group: 'Accounts', section: 'GitHub Enterprise' }
 RocketChat.settings.add 'Accounts_OAuth_Gitlab', false, { type: 'boolean', group: 'Accounts', section: 'Gitlab', public: true }
 RocketChat.settings.add 'Accounts_OAuth_Gitlab_id', '', { type: 'string', group: 'Accounts', section: 'Gitlab' }
 RocketChat.settings.add 'Accounts_OAuth_Gitlab_secret', '', { type: 'string', group: 'Accounts', section: 'Gitlab' }
