@@ -1,11 +1,13 @@
 config =
 	serverURL: ''
 	identityPath: '/api/v3/user'
+	authorizePath: '/login/oauth/authorize'
+	tokenPath: '/login/oauth/access_token'
 	addAutopublishFields:
 		forLoggedInUser: ['services.github-enterprise']
 		forOtherUsers: ['services.github-enterprise.username']
 
-GitHubEnterprise = new CustomOAuth 'github-enterprise', config
+GitHubEnterprise = new CustomOAuth 'github_enterprise', config
 
 if Meteor.isServer
 	Meteor.startup ->
