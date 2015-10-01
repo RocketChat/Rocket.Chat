@@ -3,8 +3,8 @@ updateServices = ->
 	Meteor.clearTimeout timer if timer?
 
 	timer = Meteor.setTimeout ->
-		services = RocketChat.models.Settings.find({_id: /^(Accounts_OAuth_|Accounts_OAuth_Custom_)[a-z]+$/i}).fetch()
-
+		services = RocketChat.models.Settings.find({_id: /^(Accounts_OAuth_|Accounts_OAuth_Custom_)[a-z_-]+$/i}).fetch()
+		console.log services
 		for service in services
 			console.log "Updating login service #{service._id}".blue
 
@@ -20,6 +20,8 @@ updateServices = ->
 				data =
 					clientId: RocketChat.models.Settings.findOneById("#{service._id}_id")?.value
 					secret: RocketChat.models.Settings.findOneById("#{service._id}_secret")?.value
+
+				console.log serviceName
 
 				if /Accounts_OAuth_Custom_/.test service._id
 					data.custom = true
@@ -43,7 +45,7 @@ updateServices = ->
 				if serviceName is 'Twitter'
 					data.consumerKey = data.clientId
 					delete data.clientId
-
+				console.log data
 				ServiceConfiguration.configurations.upsert {service: serviceName.toLowerCase()}, $set: data
 			else
 				ServiceConfiguration.configurations.remove {service: serviceName.toLowerCase()}
