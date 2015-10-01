@@ -57,6 +57,7 @@ Template.messagePopupConfig.helpers
 			trigger: '#'
 			template: 'messagePopupChannel'
 			getInput: self.getInput
+			textFilterDelay: 200
 			getFilter: (collection, filter) ->
 				exp = new RegExp(filter, 'i')
 				template.channelFilter.set filter
