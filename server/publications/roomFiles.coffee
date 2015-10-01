@@ -12,6 +12,7 @@ Meteor.publish 'roomFiles', (rid) ->
     fields:
       _id: 1
       'file._id': 1
+    limit: 50
   cursorFileMessages = RocketChat.models.Messages.find(msgQuery, msgOptions);
   uploadedFilesMessages = cursorFileMessages.fetch()
   unless uploadedFilesMessages
