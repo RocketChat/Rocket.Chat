@@ -40,21 +40,28 @@ class WebRTCTransportClass
 				if @callbacks['onRemoteDescription']?.length > 0
 					fn(data) for fn in @callbacks['onRemoteDescription']
 
-	startCall: (media) ->
+	startCall: (data) ->
 		@log 'WebRTCTransportClass - startCall', @webrtcInstance.room, @webrtcInstance.selfId
 		RocketChat.Notifications.notifyUsersOfRoom @webrtcInstance.room, 'webrtc', 'call',
 			from: @webrtcInstance.selfId
 			room: @webrtcInstance.room
-			audio: media.audio
-			video: media.video
+			media: data.media
+			monitor: data.monitor
 
-	joinCall: (media) ->
+	joinCall: (data) ->
 		@log 'WebRTCTransportClass - joinCall', @webrtcInstance.room, @webrtcInstance.selfId
-		RocketChat.Notifications.notifyUsersOfRoom @webrtcInstance.room, 'webrtc', 'join',
-			from: @webrtcInstance.selfId
-			room: @webrtcInstance.room
-			audio: media.audio
-			video: media.video
+		if data.monitor is true
+			RocketChat.Notifications.notifyUser data.to, 'webrtc', 'join',
+				from: @webrtcInstance.selfId
+				room: @webrtcInstance.room
+				media: data.media
+				monitor: data.monitor
+		else
+			RocketChat.Notifications.notifyUsersOfRoom @webrtcInstance.room, 'webrtc', 'join',
+				from: @webrtcInstance.selfId
+				room: @webrtcInstance.room
+				media: data.media
+				monitor: data.monitor
 
 	sendCandidate: (data) ->
 		data.from = @webrtcInstance.selfId
@@ -121,6 +128,11 @@ class WebRTCClass
 		@videoEnabled = new ReactiveVar true
 		@localUrl = new ReactiveVar
 
+		@active = false
+		@remoteMonitoring = false
+		@monitor = false
+		@autoAccept = false
+
 		@media =
 			video: true
 			audio: true
@@ -180,7 +192,7 @@ class WebRTCClass
 		@callInProgress.set false
 
 	broadcastStatus: ->
-		if @active isnt true then return
+		if @active isnt true or @monitor is true or @remoteMonitoring is true then return
 
 		@transport.sendStatus
 			remoteConnectionIds: Object.keys(@peerConnections)
@@ -335,6 +347,8 @@ class WebRTCClass
 
 	stop: ->
 		@active = false
+		@monitor = false
+		@remoteMonitoring = false
 		@localStream?.stop()
 		@localUrl.set undefined
 		delete @localStream
@@ -353,28 +367,52 @@ class WebRTCClass
 		@media = media
 		@getLocalUserMedia =>
 			@active = true
-			@transport.startCall(@media)
+			@transport.startCall
+				media: @media
+
+	startCallAsMonitor: (media={}) ->
+		@log 'startCallAsMonitor', arguments
+		@media = media
+		@active = true
+		@monitor = true
+		@transport.startCall
+			media: @media
+			monitor: true
 
 
 	###
 		@param data {Object}
 			from {String}
-			audio {Boolean}
-			video {Boolean}
+			monitor {Boolean}
+			media {Object}
+				audio {Boolean}
+				video {Boolean}
 	###
 	onRemoteCall: (data) ->
+		if @autoAccept is true
+			FlowRouter.goToRoomById data.room
+			Meteor.defer =>
+				@joinCall
+					to: data.from
+					monitor: data.monitor
+					media: data.media
+			return
+
 		fromUsername = Meteor.users.findOne(data.from)?.username
 		subscription = ChatSubscription.findOne({rid: data.room})
 
-		if subscription?.t is 'd'
-			if data.video
+		if data.monitor is true
+			icon = 'eye'
+			title = "Monitor call from #{fromUsername}"
+		else if subscription?.t is 'd'
+			if data.media?.video
 				icon = 'videocam'
 				title = "Direct video call from #{fromUsername}"
 			else
 				icon = 'phone'
 				title = "Direct audio call from #{fromUsername}"
 		else
-			if data.video
+			if data.media?.video
 				icon = 'videocam'
 				title = "Group video call from #{subscription.name}"
 			else
@@ -393,65 +431,79 @@ class WebRTCClass
 				FlowRouter.goToRoomById data.room
 				Meteor.defer =>
 					@joinCall
-						audio: data.audio
-						video: data.video
+						to: data.from
+						monitor: data.monitor
+						media: data.media
 			else
 				@stop()
 
 
 	###
-		@param media {Object}
-			audio {Boolean}
-			video {Boolean}
+		@param data {Object}
+			to {String}
+			monitor {Boolean}
+			media {Object}
+				audio {Boolean}
+				video {Boolean}
 	###
-	joinCall: (media) ->
-		media ?=
-			audio: true
-			video: true
+	joinCall: (data={}) ->
+		if data.media?.audio?
+			@media.audio = data.media.audio
 
-		@media = media
+		if data.media?.video?
+			@media.video = data.media.video
+
+		data.media = @media
 
 		@log 'joinCall', arguments
 		@getLocalUserMedia =>
-			console.log 'join call getLocalUserMedia'
+			@remoteMonitoring = data.monitor
 			@active = true
-			@transport.joinCall(@media)
+			@transport.joinCall(data)
 
 
 	###
 		@param data {Object}
 			from {String}
-			audio {Boolean}
-			video {Boolean}
+			monitor {Boolean}
+			media {Object}
+				audio {Boolean}
+				video {Boolean}
 	###
 	onRemoteJoin: (data) ->
 		if @active isnt true then return
 
 		@log 'onRemoteJoin', arguments
-		@getLocalUserMedia =>
+
+		peerConnection = @getPeerConnection data.from
+		needsAudio = data.media.audio is true and peerConnection.getRemoteStreams()[0]?.getAudioTracks().length is 0
+		needsVideo = data.media.video is true and peerConnection.getRemoteStreams()[0]?.getVideoTracks().length is 0
+		if peerConnection.signalingState is "have-local-offer" or needsAudio or needsVideo
+			@stopPeerConnection data.from
 			peerConnection = @getPeerConnection data.from
-			needsAudio = data.audio is true and peerConnection.getRemoteStreams()[0]?.getAudioTracks().length is 0
-			needsVideo = data.video is true and peerConnection.getRemoteStreams()[0]?.getVideoTracks().length is 0
-			if peerConnection.signalingState is "have-local-offer" or needsAudio or needsVideo
-				@stopPeerConnection data.from
-				peerConnection = @getPeerConnection data.from
 
-			if peerConnection.iceConnectionState isnt 'new'
-				return
+		if peerConnection.iceConnectionState isnt 'new'
+			return
 
-			peerConnection.addStream @localStream if @localStream
+		peerConnection.addStream @localStream if @localStream
 
-			onOffer = (offer) =>
-				onLocalDescription = =>
-					@transport.sendDescription
-						to: data.from
-						type: 'offer'
-						description:
-							sdp: offer.sdp
-							type: offer.type
+		onOffer = (offer) =>
+			onLocalDescription = =>
+				@transport.sendDescription
+					to: data.from
+					type: 'offer'
+					description:
+						sdp: offer.sdp
+						type: offer.type
 
-				peerConnection.setLocalDescription(new RTCSessionDescription(offer), onLocalDescription, @onError)
+			peerConnection.setLocalDescription(new RTCSessionDescription(offer), onLocalDescription, @onError)
 
+		if data.monitor is true
+			peerConnection.createOffer onOffer, @onError,
+				mandatory:
+					OfferToReceiveAudio: data.media.audio
+					OfferToReceiveVideo: data.media.video
+		else
 			peerConnection.createOffer(onOffer, @onError)
 
 
