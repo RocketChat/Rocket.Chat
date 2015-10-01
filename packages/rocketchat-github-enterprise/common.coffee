@@ -1,5 +1,5 @@
 config =
-	serverURL: 'http://faushouse.vm'
+	serverURL: ''
 	identityPath: '/api/v3/user'
 	addAutopublishFields:
 		forLoggedInUser: ['services.github-enterprise']
