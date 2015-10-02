@@ -4,11 +4,7 @@ Meteor.publish 'channelAutocomplete', (name) ->
 
 	console.log '[publish] channelAutocomplete -> '.green, name
 
-	exp = new RegExp(name, 'i')
-
-	query =
-		name: exp
-		t: 'c'
+	pub = this
 
 	options =
 		fields:
@@ -16,9 +12,7 @@ Meteor.publish 'channelAutocomplete', (name) ->
 			name: 1
 		limit: 5
 
-	pub = this
-
-	cursorHandle = RocketChat.models.Rooms.find(query, options).observeChanges
+	cursorHandle = RocketChat.models.Rooms.findByNameContainingAndTypes(name, ['c'], options).observeChanges
 		added: (_id, record) ->
 			pub.added('channel-autocomplete', _id, record)
 

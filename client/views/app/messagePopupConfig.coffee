@@ -1,4 +1,3 @@
-@onlineUsers = new Mongo.Collection 'online-users'
 @filteredUsers = new Mongo.Collection 'filtered-users'
 @channelAutocomplete = new Mongo.Collection 'channel-autocomplete'
 
