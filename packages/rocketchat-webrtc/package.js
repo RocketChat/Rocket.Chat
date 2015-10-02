@@ -13,6 +13,7 @@ Package.onUse(function(api) {
 
 	api.addFiles('adapter.js', 'client');
 	api.addFiles('WebRTCClass.coffee', 'client');
+	api.addFiles('screenShare.coffee', 'client');
 
 	api.export('WebRTC');
 });
