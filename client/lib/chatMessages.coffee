@@ -207,6 +207,8 @@ class @ChatMessages
 				this.clearEditing()
 				return
 		else if k is 38 or k is 40 # Arrow Up or down
+			return true if event.shiftKey
+
 			if k is 38
 				return if input.value.slice(0, input.selectionStart).match(/[\n]/) isnt null
 				this.toPrevMessage()
