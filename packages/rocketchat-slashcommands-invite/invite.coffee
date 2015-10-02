@@ -20,13 +20,15 @@ else
 			username = username.replace('@', '')
 
 			user = Meteor.users.findOne({ username: username })
+			currentUser = Meteor.users.findOne Meteor.userId()
 
 			if not user?
+				console.log 'notify user_doesnt_exist'
 				RocketChat.Notifications.notifyUser Meteor.userId(), 'message', {
 					_id: Random.id()
 					rid: item.rid
 					ts: new Date
-					msg: "No user exists by the name of `#{username}`."#TODO: Make this a language setting
+					msg: TAPi18n.__('User_doesnt_exist', { postProcess: 'sprintf', sprintf: [ username ] }, currentUser.language)
 				}
 				return
 
@@ -36,7 +38,7 @@ else
 					_id: Random.id()
 					rid: item.rid
 					ts: new Date
-					msg: "`#{username}` is already in here."#TODO: Make this a language setting
+					msg: TAPi18n.__('Username_is_already_in_here', { postProcess: 'sprintf', sprintf: [ username ] }, currentUser.language)
 				}
 				return
 
