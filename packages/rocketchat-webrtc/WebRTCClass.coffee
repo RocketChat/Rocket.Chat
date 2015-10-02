@@ -133,6 +133,9 @@ class WebRTCClass
 		@monitor = false
 		@autoAccept = false
 
+		@navigator = if navigator.mozGetUserMedia? then 'firefox' else 'chrome'
+		@screenShareAvaliable = document.cookie.includes('rocketchatscreenshare=chrome') is true or window.rocketchatscreenshare is 'firefox'
+
 		@media =
 			video: true
 			audio: true
@@ -276,6 +279,54 @@ class WebRTCClass
 
 		return peerConnection
 
+	getUserMedia: (media, onSuccess, onError=@onError) ->
+		if media.desktop isnt true
+			navigator.getUserMedia media, onSuccess, onError
+			return
+
+		if @screenShareAvaliable isnt true
+			console.log 'Screen share is not avaliable'
+			return
+
+		getScreen = (audioStream) =>
+			getScreenSuccess = (stream) =>
+				if audioStream?
+					stream.addTrack(audioStream.getAudioTracks()[0])
+				onSuccess(stream)
+
+			if @navigator is 'firefox'
+				media =
+					audio: media.audio
+					video:
+						mozMediaSource: 'window'
+						mediaSource: 'window'
+
+				navigator.getUserMedia media, getScreenSuccess, onError
+			else
+				ChromeScreenShare.getSourceId (id) =>
+					console.log id
+					media =
+						audio: false
+						video:
+							mandatory:
+								chromeMediaSource: 'desktop'
+								chromeMediaSourceId: id
+								maxWidth: 1280
+								maxHeight: 720
+
+					navigator.getUserMedia media, getScreenSuccess, onError
+
+		if @navigator is 'firefox' or not media.audio? or media.audio is false
+			getScreen()
+		else
+			getAudioSuccess = (audioStream) =>
+				getScreen(audioStream)
+
+			getAudioError = =>
+				getScreen()
+
+			navigator.getUserMedia {audio: media.audio}, getAudioSuccess, getAudioError
+
 
 	###
 		@param callback {Function}
@@ -298,7 +349,7 @@ class WebRTCClass
 
 			callback null, @localStream
 
-		navigator.getUserMedia @media, onSuccess, @onError
+		@getUserMedia @media, onSuccess, @onError
 
 
 	###
