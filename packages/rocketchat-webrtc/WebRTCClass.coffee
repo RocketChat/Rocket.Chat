@@ -618,7 +618,7 @@ class WebRTCClass
 		if peerConnection.iceConnectionState isnt 'new'
 			return
 
-		peerConnection.addStream @localStream if @localStream
+		try peerConnection.addStream @localStream if @localStream
 
 		onAnswer = (answer) =>
 			onLocalDescription = =>
