@@ -1,12 +1,25 @@
+isSubscribed = (_id) ->
+	return ChatSubscription.find({ rid: _id }).count() > 0
+
+favoritesEnabled = ->
+	return !RocketChat.settings.get 'Disable_Favorite_Rooms'
+
+
 # @TODO bug com o botão para "rolar até o fim" (novas mensagens) quando há uma mensagem com texto que gere rolagem horizontal
 Template.room.helpers
+	showFormattingTips: ->
+		return RocketChat.Markdown or RocketChat.Highlight
+	showMarkdown: ->
+		return RocketChat.Markdown
+	showHighlight: ->
+		return RocketChat.Highlight
 	favorite: ->
 		sub = ChatSubscription.findOne { rid: this._id }, { fields: { f: 1 } }
-		return 'icon-star favorite-room' if sub?.f? and sub.f
+		return 'icon-star favorite-room' if sub?.f? and sub.f and favoritesEnabled
 		return 'icon-star-empty'
 
 	subscribed: ->
-		return ChatSubscription.find({ rid: this._id }).count() > 0
+		return isSubscribed(this._id)
 
 	messagesHistory: ->
 		return ChatMessage.find { rid: this._id, t: { '$ne': 't' }  }, { sort: { ts: 1 } }
@@ -229,7 +242,10 @@ Template.room.helpers
 		return RocketChat.TabBar.getData()
 
 	adminClass: ->
-		return 'admin' if Meteor.user()?.admin is true
+		return 'admin' if RocketChat.authz.hasRole(Meteor.userId(), 'admin')
+
+	showToggleFavorite: ->
+		return true if isSubscribed(this._id) and favoritesEnabled()
 
 Template.room.events
 	"touchstart .message": (e, t) ->
@@ -331,9 +347,6 @@ Template.room.events
 		input.focus()
 		input.get(0).updateAutogrow()
 
-	'click .add-user': (event) ->
-		toggleAddUser()
-
 	'click .edit-room-title': (event) ->
 		event.preventDefault()
 		Session.set('editRoomTitle', true)
@@ -341,10 +354,6 @@ Template.room.events
 		Meteor.setTimeout ->
 			$('#room-title-field').focus().select()
 		, 10
-
-	'keydown #user-add-search': (event) ->
-		if event.keyCode is 27 # esc
-			toggleAddUser()
 
 	'keydown #room-title-field': (event) ->
 		if event.keyCode is 27 # esc
@@ -370,24 +379,6 @@ Template.room.events
 		# else
 			# Session.set('flexOpened', true)
 		RocketChat.TabBar.setTemplate 'membersList'
-
-	'autocompleteselect #user-add-search': (event, template, doc) ->
-		roomData = Session.get('roomData' + Session.get('openedRoom'))
-
-		if roomData.t is 'd'
-			Meteor.call 'createGroupRoom', roomData.usernames, doc.username, (error, result) ->
-				if error
-					return Errors.throw error.reason
-
-				if result?.rid?
-					$('#user-add-search').val('')
-		else if roomData.t in ['c', 'p']
-			Meteor.call 'addUserToRoom', { rid: roomData._id, username: doc.username }, (error, result) ->
-				if error
-					return Errors.throw error.reason
-
-				$('#user-add-search').val('')
-				toggleAddUser()
 
 	'scroll .wrapper': _.throttle (e, instance) ->
 		if RoomHistoryManager.hasMore(@_id) is true and RoomHistoryManager.isLoading(@_id) is false
@@ -440,29 +431,6 @@ Template.room.events
 			instance.chatMessages.unpinMsg(message)
 		else
 			instance.chatMessages.pinMsg(message)
-
-	'click .start-video': (event) ->
-		_id = Template.instance().data._id
-		webrtc.to = _id.replace(Meteor.userId(), '')
-		webrtc.room = _id
-		webrtc.mode = 1
-		webrtc.start(true)
-
-	'click .stop-video': (event) ->
-		webrtc.stop()
-
-	'click .monitor-video': (event) ->
-		_id = Template.instance().data._id
-		webrtc.to = _id.replace(Meteor.userId(), '')
-		webrtc.room = _id
-		webrtc.mode = 2
-		webrtc.start(true)
-
-
-	'click .setup-video': (event) ->
-		webrtc.mode = 2
-		webrtc.activateLocalStream()
-
 
 	'dragenter .dropzone': (e) ->
 		e.currentTarget.classList.add 'over'
@@ -616,11 +584,19 @@ Template.room.onRendered ->
 	# salva a data da renderização para exibir alertas de novas mensagens
 	$.data(this.firstNode, 'renderedAt', new Date)
 
+	webrtc.onAcceptCall = (fromUsername) ->
+		if FlowRouter.current().route.name is 'direct' and FlowRouter.current().params.username is fromUsername
+			return
+
+		FlowRouter.go 'direct', {username: fromUsername}
+
 	webrtc.onRemoteUrl = (url) ->
+		RocketChat.TabBar.setTemplate 'membersList'
 		RocketChat.TabBar.openFlex()
 		Session.set('remoteVideoUrl', url)
 
 	webrtc.onSelfUrl = (url) ->
+		RocketChat.TabBar.setTemplate 'membersList'
 		RocketChat.TabBar.openFlex()
 		Session.set('selfVideoUrl', url)
 
@@ -656,14 +632,3 @@ renameRoom = (rid, name) ->
 					toastr.error t('Duplicate_private_group_name', name)
 				return
 			toastr.error error.reason
-
-toggleAddUser = ->
-	console.log 'room toggleAddUser' if window.rocketDebug
-	btn = $('.add-user')
-	$('.add-user-search').toggleClass('show-search')
-	if $('i', btn).hasClass('icon-plus')
-		$('#user-add-search').focus()
-		$('i', btn).removeClass('icon-plus').addClass('icon-cancel')
-	else
-		$('#user-add-search').val('')
-		$('i', btn).removeClass('icon-cancel').addClass('icon-plus')

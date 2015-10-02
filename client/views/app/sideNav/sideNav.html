@@ -9,7 +9,9 @@
 			</div>
 			<div class="rooms-list">
 				<div class="wrapper">
-					{{> starredRooms }}
+					{{#if showStarredRooms }}
+						{{> starredRooms }}
+					{{/if}}
 					{{> channels }}
 					{{> directMessages }}
 					{{> privateGroups }}
