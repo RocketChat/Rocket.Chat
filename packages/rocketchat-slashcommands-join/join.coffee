@@ -27,7 +27,7 @@ else
 					_id: Random.id()
 					rid: item.rid
 					ts: new Date
-					msg: "The channel `\##{channel}` does not exist."#TODO: Make this a language setting
+					msg: TAPi18n.__('Channel_doesnt_exist', { postProcess: 'sprintf', sprintf: [ channel ] }, user.language);
 				}
 				return
 
