@@ -30,7 +30,6 @@ RocketChat.Notifications = new class
 		for username in room?.usernames or []
 			if onlineUsers[username]?
 				argsToSend = ["#{onlineUsers[username]._id}/#{eventName}"].concat args
-				console.log argsToSend
 				@streamUser.emit.apply @streamUser, argsToSend
 
 
