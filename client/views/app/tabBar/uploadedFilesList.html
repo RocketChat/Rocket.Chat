@@ -10,7 +10,7 @@
             {{#each files}}
               <li>
                 <i class="{{getFileIcon type}}"></i>
-                <a title="{{name}}" href="{{url}}" target="_blank">{{name}}</a>
+                <a title="{{name}}" href="{{url}}" target="_blank" class="room-file-item {{customClassForFileType}}">{{name}}</a>
               </li>
             {{/each}}
           </ul>
