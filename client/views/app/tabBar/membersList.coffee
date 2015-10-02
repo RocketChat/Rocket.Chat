@@ -18,6 +18,12 @@ Template.membersList.helpers
 	audioAndVideoEnabled: ->
 		return WebRTC.getInstanceByRoomId(Session.get('openedRoom')).audioEnabled.get() and WebRTC.getInstanceByRoomId(Session.get('openedRoom')).videoEnabled.get()
 
+	screenShareAvaliable: ->
+		return WebRTC.getInstanceByRoomId(Session.get('openedRoom')).screenShareAvaliable
+
+	screenShareEnabled: ->
+		return WebRTC.getInstanceByRoomId(Session.get('openedRoom')).screenShareEnabled.get()
+
 	remoteVideoItems: ->
 		return WebRTC.getInstanceByRoomId(Session.get('openedRoom')).remoteItems.get()
 
@@ -186,6 +192,12 @@ Template.membersList.events
 
 	'click .enable-video': (e, t) ->
 		WebRTC.getInstanceByRoomId(Session.get('openedRoom')).enableVideo()
+
+	'click .disable-screen-share': (e, t) ->
+		WebRTC.getInstanceByRoomId(Session.get('openedRoom')).disableScreenShare()
+
+	'click .enable-screen-share': (e, t) ->
+		WebRTC.getInstanceByRoomId(Session.get('openedRoom')).enableScreenShare()
 
 	'loadstart video[muted]': (e) ->
 		e.currentTarget.muted = true

@@ -126,6 +126,7 @@ class WebRTCClass
 		@callInProgress = new ReactiveVar false
 		@audioEnabled = new ReactiveVar true
 		@videoEnabled = new ReactiveVar true
+		@screenShareEnabled = new ReactiveVar false
 		@localUrl = new ReactiveVar
 
 		@active = false
@@ -197,13 +198,23 @@ class WebRTCClass
 	broadcastStatus: ->
 		if @active isnt true or @monitor is true or @remoteMonitoring is true then return
 
+		remoteConnections = []
+		for id, peerConnections of @peerConnections
+			remoteConnections.push
+				id: id
+				media: peerConnections.remoteMedia
+
 		@transport.sendStatus
-			remoteConnectionIds: Object.keys(@peerConnections)
+			media: @media
+			remoteConnections: remoteConnections
 
 	###
 		@param data {Object}
 			from {String}
-			remoteConnectionIds {Array[String]}
+			media {Object}
+			remoteConnections {Array[Object]}
+				id {String}
+				media {Object}
 	###
 	onRemoteStatus: (data) ->
 		# @log 'onRemoteStatus', arguments
@@ -215,13 +226,14 @@ class WebRTCClass
 
 		if @active isnt true then return
 
-		ids = [data.from].concat data.remoteConnectionIds
+		remoteConnections = [{id: data.from, media: data.media}].concat data.remoteConnections
 
-		for id in ids
-			if id isnt @selfId and not @peerConnections[id]?
-				@log 'reconnecting with', id
+		for remoteConnection in remoteConnections
+			if remoteConnection.id isnt @selfId and not @peerConnections[remoteConnection.id]?
+				@log 'reconnecting with', remoteConnection.id
 				@onRemoteJoin
-					from: id
+					from: remoteConnection.id
+					media: remoteConnection.media
 
 	###
 		@param id {String}
@@ -230,6 +242,9 @@ class WebRTCClass
 		return @peerConnections[id] if @peerConnections[id]?
 
 		peerConnection = new RTCPeerConnection @config
+
+		peerConnection.remoteMedia = {}
+
 		@peerConnections[id] = peerConnection
 
 		eventNames = [
@@ -268,7 +283,7 @@ class WebRTCClass
 			@updateRemoteItems()
 
 		peerConnection.addEventListener 'iceconnectionstatechange', (e) =>
-			if peerConnection.iceConnectionState in ['disconnected', 'closed']
+			if peerConnection.iceConnectionState in ['disconnected', 'closed'] and peerConnection is @peerConnections[id]
 				@stopPeerConnection id
 				Meteor.setTimeout =>
 					if Object.keys(@peerConnections).length is 0
@@ -364,12 +379,18 @@ class WebRTCClass
 
 		@updateRemoteItems()
 
+	stopAllPeerConnections: ->
+		for id, peerConnection of @peerConnections
+				@stopPeerConnection id
+
 	setAudioEnabled: (enabled=true) ->
 		if @localStream?
 			if enabled is true and @media.audio isnt true
-				@stop()
+				delete @localStream
 				@media.audio = true
-				@joinCall()
+				@getLocalUserMedia =>
+					@stopAllPeerConnections()
+					@joinCall()
 			else
 				@localStream.getAudioTracks().forEach (audio) -> audio.enabled = enabled
 				@audioEnabled.set enabled
@@ -383,12 +404,29 @@ class WebRTCClass
 	setVideoEnabled: (enabled=true) ->
 		if @localStream?
 			if enabled is true and @media.video isnt true
-				@stop()
+				delete @localStream
 				@media.video = true
-				@joinCall()
+				@getLocalUserMedia =>
+					@stopAllPeerConnections()
+					@joinCall()
 			else
 				@localStream.getVideoTracks().forEach (video) -> video.enabled = enabled
 				@videoEnabled.set enabled
+
+	disableScreenShare: ->
+		@setScreenShareEnabled false
+
+	enableScreenShare: ->
+		@setScreenShareEnabled true
+
+	setScreenShareEnabled: (enabled=true) ->
+		if @localStream?
+			@media.desktop = enabled
+			delete @localStream
+			@getLocalUserMedia =>
+				@screenShareEnabled.set enabled
+				@stopAllPeerConnections()
+				@joinCall()
 
 	disableVideo: ->
 		@setVideoEnabled false
@@ -404,8 +442,7 @@ class WebRTCClass
 		@localUrl.set undefined
 		delete @localStream
 
-		for id, peerConnection of @peerConnections
-			@stopPeerConnection id
+		@stopAllPeerConnections()
 
 
 	###
@@ -496,6 +533,7 @@ class WebRTCClass
 			media {Object}
 				audio {Boolean}
 				video {Boolean}
+				desktop {Boolean}
 	###
 	joinCall: (data={}) ->
 		if data.media?.audio?
@@ -520,6 +558,7 @@ class WebRTCClass
 			media {Object}
 				audio {Boolean}
 				video {Boolean}
+				desktop {Boolean}
 	###
 	onRemoteJoin: (data) ->
 		if @active isnt true then return
@@ -527,14 +566,21 @@ class WebRTCClass
 		@log 'onRemoteJoin', arguments
 
 		peerConnection = @getPeerConnection data.from
-		needsAudio = data.media.audio is true and peerConnection.getRemoteStreams()[0]?.getAudioTracks().length is 0
-		needsVideo = data.media.video is true and peerConnection.getRemoteStreams()[0]?.getVideoTracks().length is 0
-		if peerConnection.signalingState is "have-local-offer" or needsAudio or needsVideo
+
+		needsRefresh = false
+		if peerConnection.iceConnectionState isnt 'new'
+			needsAudio = data.media.audio is true and peerConnection.remoteMedia.audio isnt true
+			needsVideo = data.media.video is true and peerConnection.remoteMedia.video isnt true
+			needsRefresh = needsAudio or needsVideo or data.media.desktop isnt peerConnection.remoteMedia.desktop
+
+		if peerConnection.signalingState is "have-local-offer" or needsRefresh
 			@stopPeerConnection data.from
 			peerConnection = @getPeerConnection data.from
 
 		if peerConnection.iceConnectionState isnt 'new'
 			return
+
+		peerConnection.remoteMedia = data.media
 
 		peerConnection.addStream @localStream if @localStream
 
@@ -543,6 +589,7 @@ class WebRTCClass
 				@transport.sendDescription
 					to: data.from
 					type: 'offer'
+					media: @media
 					description:
 						sdp: offer.sdp
 						type: offer.type
@@ -610,6 +657,10 @@ class WebRTCClass
 			from {String}
 			type {String} [offer, answer]
 			description {RTCSessionDescription JSON encoded}
+			media {Object}
+				audio {Boolean}
+				video {Boolean}
+				desktop {Boolean}
 	###
 	onRemoteDescription: (data) ->
 		if @active isnt true then return
@@ -621,6 +672,7 @@ class WebRTCClass
 		peerConnection.setRemoteDescription new RTCSessionDescription(data.description)
 
 		if data.type is 'offer'
+			peerConnection.remoteMedia = data.media
 			@onRemoteOffer
 				from: data.from
 
