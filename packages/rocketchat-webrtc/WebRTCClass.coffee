@@ -149,6 +149,8 @@ class WebRTCClass
 		@transport.onRemoteDescription @onRemoteDescription.bind @
 		@transport.onRemoteStatus @onRemoteStatus.bind @
 
+		Meteor.setInterval @checkPeerConnections.bind(@), 1000
+
 		Meteor.setInterval @broadcastStatus.bind(@), 1000
 
 	log: ->
@@ -157,6 +159,11 @@ class WebRTCClass
 
 	onError: ->
 		console.error.apply(console, arguments)
+
+	checkPeerConnections: ->
+		for id, peerConnection of @peerConnections
+			if peerConnection.iceConnectionState not in ['connected', 'completed'] and peerConnection.createdAt + 5000 < Date.now()
+				@stopPeerConnection id
 
 	updateRemoteItems: ->
 		items = []
@@ -243,6 +250,7 @@ class WebRTCClass
 
 		peerConnection = new RTCPeerConnection @config
 
+		peerConnection.createdAt = Date.now()
 		peerConnection.remoteMedia = {}
 
 		@peerConnections[id] = peerConnection
