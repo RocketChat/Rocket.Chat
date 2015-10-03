@@ -61,7 +61,7 @@ Meteor.methods
 				query.rid = rid
 				try
 					if Meteor.call('canAccessRoom', rid, this.userId) isnt false
-						result.messages = ChatMessage.find(query, options).fetch()
+						result.messages = RocketChat.models.Messages.find(query, options).fetch()
 
 
 		# ###

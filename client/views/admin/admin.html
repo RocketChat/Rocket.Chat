@@ -23,6 +23,15 @@
 									<h1>{{section}}</h1>
 								{{/if}}
 								<div class="section-content">
+									{{#if section}}
+										{{#if sectionIsCustomOath section}}
+											<div class="section-helper">
+												{{#with callbackURL section}}
+													{{{_ "Custom_oauth_helper" .}}}
+												{{/with}}
+											</div>
+										{{/if}}
+									{{/if}}
 									{{#each settings}}
 										{{#if $eq type 'string'}}
 											<div class="input-line double-col">

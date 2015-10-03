@@ -11,7 +11,7 @@ Api.addRoute 'version', authRequired: false,
 
 Api.addRoute 'publicRooms', authRequired: true,
 	get: ->
-		rooms = ChatRoom.find({ t: 'c' }, { sort: { msgs:-1 } }).fetch()
+		rooms = RocketChat.models.Rooms.findByType('c', { sort: { msgs:-1 } }).fetch()
 		status: 'success', rooms: rooms
 
 # join a room
@@ -35,7 +35,7 @@ Api.addRoute 'rooms/:id/messages', authRequired: true,
 	get: ->
 		try
 			if Meteor.call('canAccessRoom', @urlParams.id, this.userId)
-				msgs = ChatMessage.find({rid: @urlParams.id, _hidden: {$ne: true}}, {sort: {ts: -1}}, {limit: 50}).fetch()
+				msgs = RocketChat.models.Messages.findVisibleByRoomId(@urlParams.id, {sort: {ts: -1}, limit: 50}).fetch()
 				status: 'success', messages: msgs
 			else
 				statusCode: 403   # forbidden

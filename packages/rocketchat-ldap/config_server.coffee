@@ -14,7 +14,7 @@ updateServices = ->
 	Meteor.clearTimeout timer if timer?
 
 	timer = Meteor.setTimeout ->
-		enable = Settings.findOne({_id: 'LDAP_Enable', value: true})
+		enable = RocketChat.models.Settings.findOne({_id: 'LDAP_Enable', value: true})
 
 		if enable?
 			console.log "Enabling LDAP".blue
@@ -29,7 +29,7 @@ updateServices = ->
 			LDAP_DEFAULTS.bindSearch = undefined
 	, 2000
 
-Settings.find().observe
+RocketChat.models.Settings.find().observe
 	added: (record) ->
 		if /^LDAP_.+/.test record._id
 			updateServices()
