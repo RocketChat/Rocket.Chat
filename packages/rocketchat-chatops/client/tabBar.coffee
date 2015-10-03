@@ -24,5 +24,6 @@ Meteor.startup ->
 			i18nTitle: 'rocketchat-chatops:Chatops_Title'
 			icon: 'icon-code'
 			template: 'chatops_codemirror'
+			width: 675
 			order: 5
 	, RocketChat.callbacks.priority.MEDIUM, 'enter-room-tabbar-chatops'
