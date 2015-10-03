@@ -27,17 +27,7 @@
 		</div>
 		{{/with}}
 		<nav>
-			<div class="group-call-buttons">
-				{{#unless videoActive}}
-					{{#if callInProgress}}
-						<button class="join-video-call button secondary"><i class="icon-videocam"></i>{{_ "Join"}}</button>
-						<button class="join-audio-call button secondary"><i class="icon-phone"></i>{{_ "Join"}}</button>
-					{{else}}
-						<button class="start-video-call button"><i class="icon-videocam"></i>{{_ "Start"}}</button>
-						<button class="start-audio-call button"><i class="icon-phone"></i></button>
-					{{/if}}
-				{{/unless}}
-			</div>
+			{{> videoButtons}}
 
 			{{#if showAll}}
 				<button class='button secondary back'><span>{{_ "View_All"}} <i class='icon-angle-right'></i></span></button>

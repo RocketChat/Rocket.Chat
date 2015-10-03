@@ -3,6 +3,9 @@ Template.videoCall.onCreated ->
 
 
 Template.videoCall.helpers
+	videoAvaliable: ->
+		return WebRTC.getInstanceByRoomId(Session.get('openedRoom'))?
+
 	videoActive: ->
 		webrtc = WebRTC.getInstanceByRoomId(Session.get('openedRoom'))
 		overlay = @overlay?
@@ -83,18 +86,6 @@ Template.videoCall.helpers
 
 
 Template.videoCall.events
-	# 'click .start-video-call': ->
-	# 	WebRTC.getInstanceByRoomId(Session.get('openedRoom')).startCall({audio: true, video: true})
-
-	# 'click .start-audio-call': ->
-	# 	WebRTC.getInstanceByRoomId(Session.get('openedRoom')).startCall({audio: true})
-
-	# 'click .join-video-call': ->
-	# 	WebRTC.getInstanceByRoomId(Session.get('openedRoom')).joinCall({audio: true, video: true})
-
-	# 'click .join-audio-call': ->
-	# 	WebRTC.getInstanceByRoomId(Session.get('openedRoom')).joinCall({audio: true})
-
 	'click .stop-call': ->
 		WebRTC.getInstanceByRoomId(Session.get('openedRoom')).stop()
 

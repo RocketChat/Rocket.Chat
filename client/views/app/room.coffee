@@ -555,20 +555,15 @@ Template.room.onRendered ->
 	$.data(this.firstNode, 'renderedAt', new Date)
 
 	webrtc = WebRTC.getInstanceByRoomId template.data._id
-	webrtc.onAcceptCall = (fromUsername) ->
-		if FlowRouter.current().route.name is 'direct' and FlowRouter.current().params.username is fromUsername
-			return
+	if webrtc?
+		Tracker.autorun ->
+			if webrtc.remoteItems.get()?.length > 0
+				RocketChat.TabBar.setTemplate 'membersList'
+				RocketChat.TabBar.openFlex()
 
-		FlowRouter.go 'direct', {username: fromUsername}
-
-	Tracker.autorun ->
-		if webrtc.remoteItems.get()?.length > 0
-			RocketChat.TabBar.setTemplate 'membersList'
-			RocketChat.TabBar.openFlex()
-
-		if webrtc.localUrl.get()?
-			RocketChat.TabBar.setTemplate 'membersList'
-			RocketChat.TabBar.openFlex()
+			if webrtc.localUrl.get()?
+				RocketChat.TabBar.setTemplate 'membersList'
+				RocketChat.TabBar.openFlex()
 
 
 renameRoom = (rid, name) ->
