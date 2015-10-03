@@ -1,31 +1,35 @@
 @filteredUsers = new Mongo.Collection 'filtered-users'
+@channelAutocomplete = new Mongo.Collection 'channel-autocomplete'
 
 Template.messagePopupConfig.helpers
 	popupUserConfig: ->
 		self = this
 		template = Template.instance()
 		config =
-			title: 'People'
+			title: t('People')
 			collection: filteredUsers
 			template: 'messagePopupUser'
 			getInput: self.getInput
 			textFilterDelay: 200
 			getFilter: (collection, filter) ->
-				exp = new RegExp("^#{filter}", 'i')
-				Meteor.subscribe 'filteredUsers', filter
-				items = filteredUsers.find({$or: [{username: exp}, {name: exp}]}, {limit: 5}).fetch()
+				exp = new RegExp("#{filter}", 'i')
+				template.userFilter.set filter
+				if template.userSubscription.ready()
+					items = filteredUsers.find({$or: [{username: exp}, {name: exp}]}, {limit: 5}).fetch()
 
-				all =
-					_id: '@all'
-					username: '@all'
-					system: true
-					name: t 'Notify_all_in_this_room'
-					compatibility: 'channel group'
+					all =
+						_id: '@all'
+						username: 'all'
+						system: true
+						name: t 'Notify_all_in_this_room'
+						compatibility: 'channel group'
 
-				exp = new RegExp("(^|\\s)#{filter}", 'i')
-				if exp.test(all.username) or exp.test(all.compatibility)
-					items.unshift all
-				return items
+					exp = new RegExp("(^|\\s)#{filter}", 'i')
+					if exp.test(all.username) or exp.test(all.compatibility)
+						items.unshift all
+					return items
+				else
+					return []
 
 			getValue: (_id, collection, firstPartValue) ->
 				if _id is '@all'
@@ -47,13 +51,20 @@ Template.messagePopupConfig.helpers
 		self = this
 		template = Template.instance()
 		config =
-			title: 'Channels'
-			collection: ChatSubscription
+			title: t('Channels')
+			collection: channelAutocomplete
 			trigger: '#'
 			template: 'messagePopupChannel'
 			getInput: self.getInput
+			textFilterDelay: 200
 			getFilter: (collection, filter) ->
-				return collection.find({t: 'c', name: new RegExp(filter, 'i')}, {limit: 10})
+				exp = new RegExp(filter, 'i')
+				template.channelFilter.set filter
+				if template.channelSubscription.ready()
+					return collection.find( { name: exp }, { limit: 5 }).fetch()
+				else
+					return []
+
 			getValue: (_id, collection) ->
 				return collection.findOne(_id)?.name
 
@@ -64,7 +75,7 @@ Template.messagePopupConfig.helpers
 		template = Template.instance()
 
 		config =
-			title: 'Commands'
+			title: t('Commands')
 			collection: RocketChat.slashCommands.commands
 			trigger: '/'
 			triggerAnywhere: false
@@ -97,7 +108,7 @@ Template.messagePopupConfig.helpers
 			self = this
 			template = Template.instance()
 			config =
-				title: 'Emoji'
+				title: t('Emoji')
 				collection: RocketChat.emoji.list
 				template: 'messagePopupEmoji'
 				trigger: ':'
@@ -121,3 +132,18 @@ Template.messagePopupConfig.helpers
 					return results
 
 		return config
+
+	subscriptionNotReady: ->
+		return 'notready' unless Template.instance().subscriptionsReady()
+
+Template.messagePopupConfig.onCreated ->
+	@userFilter = new ReactiveVar ''
+	@channelFilter = new ReactiveVar ''
+
+	template = @
+	@autorun ->
+		template.userSubscription = template.subscribe 'filteredUsers', template.userFilter.get()
+
+	@autorun ->
+		template.channelSubscription = template.subscribe 'channelAutocomplete', template.channelFilter.get()
+
