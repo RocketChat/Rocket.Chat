@@ -126,6 +126,7 @@ class WebRTCClass
 		@callInProgress = new ReactiveVar false
 		@audioEnabled = new ReactiveVar true
 		@videoEnabled = new ReactiveVar true
+		@overlayEnabled = new ReactiveVar false
 		@screenShareEnabled = new ReactiveVar false
 		@localUrl = new ReactiveVar
 
