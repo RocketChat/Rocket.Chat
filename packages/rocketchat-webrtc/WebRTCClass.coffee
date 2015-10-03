@@ -705,6 +705,22 @@ WebRTC = new class
 		@instancesByRoomId = {}
 
 	getInstanceByRoomId: (roomId) ->
+		subscription = ChatSubscription.findOne({rid: roomId})
+		if not subscription
+			return
+
+		enabled = false
+		switch subscription.t
+			when 'd'
+				enabled = RocketChat.settings.get('WebRTC_Enable_Direct')
+			when 'p'
+				enabled = RocketChat.settings.get('WebRTC_Enable_Private')
+			when 'c'
+				enabled = RocketChat.settings.get('WebRTC_Enable_Channel')
+
+		if enabled is false
+			return
+
 		if not @instancesByRoomId[roomId]?
 			@instancesByRoomId[roomId] = new WebRTCClass Meteor.userId(), roomId
 
