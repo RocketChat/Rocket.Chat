@@ -6,6 +6,8 @@ Template.sideNav.helpers
 		return SideNav.getFlex().data
 	footer: ->
 		return RocketChat.settings.get 'Layout_Sidenav_Footer'
+	showStarredRooms: ->
+		return !RocketChat.settings.get 'Disable_Favorite_Rooms'
 
 Template.sideNav.events
 	'click .close-flex': ->

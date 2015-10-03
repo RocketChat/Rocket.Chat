@@ -8,6 +8,7 @@ Meteor.methods
 		unless RocketChat.authz.hasPermission( Meteor.userId(), 'add-oauth-service') is true
 			throw new Meteor.Error 'not-authorized', '[methods] addOAuthService -> Not authorized'
 
+		name = name.toLowerCase().replace(/[^a-z0-9]/g, '')
 		name = s.capitalize(name)
 		RocketChat.settings.add "Accounts_OAuth_Custom_#{name}"                   , false             , { type: 'boolean', group: 'Accounts', section: "Custom OAuth: #{name}", i18nLabel: 'Accounts_OAuth_Custom_Enable'}
 		RocketChat.settings.add "Accounts_OAuth_Custom_#{name}_url"               , ''                , { type: 'string' , group: 'Accounts', section: "Custom OAuth: #{name}", i18nLabel: 'Accounts_OAuth_Custom_URL'}
@@ -29,14 +30,15 @@ Meteor.methods
 		unless RocketChat.authz.hasPermission( Meteor.userId(), 'add-oauth-service') is true
 			throw new Meteor.Error 'not-authorized', '[methods] addOAuthService -> Not authorized'
 
+		name = name.toLowerCase().replace(/[^a-z0-9]/g, '')
 		name = s.capitalize(name)
-		Settings.remove _id: "Accounts_OAuth_Custom_#{name}"
-		Settings.remove _id: "Accounts_OAuth_Custom_#{name}_url"
-		Settings.remove _id: "Accounts_OAuth_Custom_#{name}_token_path"
-		Settings.remove _id: "Accounts_OAuth_Custom_#{name}_identity_path"
-		Settings.remove _id: "Accounts_OAuth_Custom_#{name}_authorize_path"
-		Settings.remove _id: "Accounts_OAuth_Custom_#{name}_id"
-		Settings.remove _id: "Accounts_OAuth_Custom_#{name}_secret"
-		Settings.remove _id: "Accounts_OAuth_Custom_#{name}_button_label_text"
-		Settings.remove _id: "Accounts_OAuth_Custom_#{name}_button_label_color"
-		Settings.remove _id: "Accounts_OAuth_Custom_#{name}_button_color"
+		RocketChat.settings.removeById "Accounts_OAuth_Custom_#{name}"
+		RocketChat.settings.removeById "Accounts_OAuth_Custom_#{name}_url"
+		RocketChat.settings.removeById "Accounts_OAuth_Custom_#{name}_token_path"
+		RocketChat.settings.removeById "Accounts_OAuth_Custom_#{name}_identity_path"
+		RocketChat.settings.removeById "Accounts_OAuth_Custom_#{name}_authorize_path"
+		RocketChat.settings.removeById "Accounts_OAuth_Custom_#{name}_id"
+		RocketChat.settings.removeById "Accounts_OAuth_Custom_#{name}_secret"
+		RocketChat.settings.removeById "Accounts_OAuth_Custom_#{name}_button_label_text"
+		RocketChat.settings.removeById "Accounts_OAuth_Custom_#{name}_button_label_color"
+		RocketChat.settings.removeById "Accounts_OAuth_Custom_#{name}_button_color"

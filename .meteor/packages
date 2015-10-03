@@ -15,7 +15,6 @@ fastclick
 http
 jquery
 less
-meteor-platform
 reactive-dict
 reactive-var
 service-configuration
@@ -30,6 +29,7 @@ rocketchat:emojione
 rocketchat:favico
 rocketchat:file
 rocketchat:gitlab
+rocketchat:wordpress
 rocketchat:highlight
 rocketchat:ldap
 rocketchat:logger
@@ -40,6 +40,7 @@ rocketchat:oembed
 rocketchat:slashcommands-invite
 rocketchat:slashcommands-join
 rocketchat:slashcommands-leave
+rocketchat:spotify
 rocketchat:statistics
 rocketchat:webrtc
 rocketchat:chatops
@@ -88,3 +89,16 @@ yasaricli:slugify
 yasinuslu:blaze-meta
 rocketchat:authorization
 perak:codemirror
+standard-minifiers
+meteor-base
+mobile-experience
+mongo
+blaze-html-templates
+session
+tracker
+logging
+reload
+random
+ejson
+spacebars
+check

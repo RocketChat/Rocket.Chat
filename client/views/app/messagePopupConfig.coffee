@@ -1,4 +1,4 @@
-@onlineUsers = new Mongo.Collection 'online-users'
+@filteredUsers = new Mongo.Collection 'filtered-users'
 
 Template.messagePopupConfig.helpers
 	popupUserConfig: ->
@@ -6,14 +6,14 @@ Template.messagePopupConfig.helpers
 		template = Template.instance()
 		config =
 			title: 'People'
-			collection: onlineUsers
+			collection: filteredUsers
 			template: 'messagePopupUser'
 			getInput: self.getInput
 			textFilterDelay: 200
 			getFilter: (collection, filter) ->
 				exp = new RegExp("^#{filter}", 'i')
-				Meteor.subscribe 'onlineUsers', filter
-				items = onlineUsers.find({$or: [{username: exp}, {name: exp}]}, {limit: 5}).fetch()
+				Meteor.subscribe 'filteredUsers', filter
+				items = filteredUsers.find({$or: [{username: exp}, {name: exp}]}, {limit: 5}).fetch()
 
 				all =
 					_id: '@all'
