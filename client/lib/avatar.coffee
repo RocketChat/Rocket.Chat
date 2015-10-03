@@ -11,7 +11,7 @@ Blaze.registerHelper 'avatarUrlFromUsername', getAvatarUrlFromUsername
 @getAvatarAsPng = (username, cb) ->
 	image = new Image
 	image.src = getAvatarUrlFromUsername(username)
-
+	image.setAttribute('crossOrigin', 'anonymous')
 	image.onload = ->
 		canvas = document.createElement('canvas')
 		canvas.width = image.width
