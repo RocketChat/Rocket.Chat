@@ -109,7 +109,7 @@ class WebRTCClass
 			{urls: "turn:numb.viagenie.ca:3478", username: "team@rocket.chat", credential: "demo"}
 		]
 
-	debug: true
+	debug: false
 
 	transportClass: WebRTCTransportClass
 
@@ -575,13 +575,14 @@ class WebRTCClass
 
 		peerConnection = @getPeerConnection data.from
 
-		needsRefresh = false
-		if peerConnection.iceConnectionState isnt 'new'
-			needsAudio = data.media.audio is true and peerConnection.remoteMedia.audio isnt true
-			needsVideo = data.media.video is true and peerConnection.remoteMedia.video isnt true
-			needsRefresh = needsAudio or needsVideo or data.media.desktop isnt peerConnection.remoteMedia.desktop
+		# needsRefresh = false
+		# if peerConnection.iceConnectionState isnt 'new'
+		# 	needsAudio = data.media.audio is true and peerConnection.remoteMedia.audio isnt true
+		# 	needsVideo = data.media.video is true and peerConnection.remoteMedia.video isnt true
+		# 	needsRefresh = needsAudio or needsVideo or data.media.desktop isnt peerConnection.remoteMedia.desktop
 
-		if peerConnection.signalingState is "have-local-offer" or needsRefresh
+		# if peerConnection.signalingState is "have-local-offer" or needsRefresh
+		if peerConnection.signalingState isnt "checking"
 			@stopPeerConnection data.from
 			peerConnection = @getPeerConnection data.from
 
@@ -597,6 +598,7 @@ class WebRTCClass
 				@transport.sendDescription
 					to: data.from
 					type: 'offer'
+					ts: peerConnection.createdAt
 					media: @media
 					description:
 						sdp: offer.sdp
@@ -616,6 +618,8 @@ class WebRTCClass
 	###
 		@param data {Object}
 			from {String}
+			ts {Integer}
+			description {String}
 	###
 	onRemoteOffer: (data) ->
 		if @active isnt true then return
@@ -623,8 +627,14 @@ class WebRTCClass
 		@log 'onRemoteOffer', arguments
 		peerConnection = @getPeerConnection data.from
 
+		if peerConnection.signalingState in ["have-local-offer", "stable"] and peerConnection.createdAt < data.ts
+			@stopPeerConnection data.from
+			peerConnection = @getPeerConnection data.from
+
 		if peerConnection.iceConnectionState isnt 'new'
 			return
+
+		peerConnection.setRemoteDescription new RTCSessionDescription(data.description)
 
 		try peerConnection.addStream @localStream if @localStream
 
@@ -633,6 +643,7 @@ class WebRTCClass
 				@transport.sendDescription
 					to: data.from
 					type: 'answer'
+					ts: peerConnection.createdAt
 					description:
 						sdp: answer.sdp
 						type: answer.type
@@ -665,6 +676,7 @@ class WebRTCClass
 			from {String}
 			type {String} [offer, answer]
 			description {RTCSessionDescription JSON encoded}
+			ts {Integer}
 			media {Object}
 				audio {Boolean}
 				video {Boolean}
@@ -677,12 +689,14 @@ class WebRTCClass
 		@log 'onRemoteDescription', arguments
 		peerConnection = @getPeerConnection data.from
 
-		peerConnection.setRemoteDescription new RTCSessionDescription(data.description)
-
 		if data.type is 'offer'
 			peerConnection.remoteMedia = data.media
 			@onRemoteOffer
 				from: data.from
+				ts: data.ts
+				description: data.description
+		else
+			peerConnection.setRemoteDescription new RTCSessionDescription(data.description)
 
 
 WebRTC = new class
