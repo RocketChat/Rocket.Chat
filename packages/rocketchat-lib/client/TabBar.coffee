@@ -49,7 +49,7 @@ RocketChat.TabBar = new class
 
 	show = ->
 		$('.flex-tab-bar').show()
-	
+
 	hide = ->
 		closeFlex()
 		$('.flex-tab-bar').hide()
@@ -60,7 +60,7 @@ RocketChat.TabBar = new class
 	addButton = (config) ->
 		unless config?.id
 			throw new Meteor.Error "tabBar-addButton-error", "Button id was not informed."
-		
+
 		Tracker.nonreactive ->
 			btns = buttons.get()
 			btns[config.id] = config
@@ -76,7 +76,7 @@ RocketChat.TabBar = new class
 		Tracker.nonreactive ->
 			btns = buttons.get()
 			if btns[id]
-				btns[id] = _.extend btns[id], config 
+				btns[id] = _.extend btns[id], config
 				buttons.set btns
 
 	getButtons = ->

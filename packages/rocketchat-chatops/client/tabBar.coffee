@@ -2,7 +2,7 @@ Meteor.startup ->
 
 	RocketChat.callbacks.add 'enter-room', ->
 		#if Meteor.user()?.services?.github?.id or Meteor.user()?.services?.gitlab?.id
-		console.log 'Adding chatops to tabbar'
+		# console.log 'Adding chatops to tabbar'
 		# RocketChat.TabBar.addButton
 		# 	id: 'chatops-button'
 		# 	i18nTitle: 'rocketchat-chatops:Chatops_Title'
