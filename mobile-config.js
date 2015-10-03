@@ -52,12 +52,12 @@ App.setPreference('StatusBarOverlaysWebView', false);
 App.setPreference('StatusBarStyle', 'lightcontent');
 App.setPreference('StatusBarBackgroundColor', '#000000');
 App.setPreference('ShowSplashScreenSpinner', false);
-App.setPreference('android-targetSdkVersion', '19');
+App.setPreference('android-targetSdkVersion', '22');
 App.setPreference('android-minSdkVersion', '19');
 App.accessRule('*');
 
 // Pass preferences for a particular PhoneGap/Cordova plugin
-App.configurePlugin('com.phonegap.plugins.facebookconnect', {
+App.configurePlugin('phonegap-facebook-plugin', {
 	APP_NAME: 'Rocket.Chat',
 	APP_ID: '835103589938459'
 });
