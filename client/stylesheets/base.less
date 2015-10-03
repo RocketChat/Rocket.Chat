@@ -18,6 +18,10 @@
 *:before,
 *:after {
 	.box-sizing(border-box);
+	-webkit-user-select: none;
+	-moz-user-select: none;
+	-ms-user-select: none;
+	user-select: none;
 }
 
 :focus {
@@ -2348,6 +2352,20 @@ a.github-fork {
 	position: relative;
 	line-height: 20px;
 	min-height: 40px;
+
+	.body, .user.user-card-message, .time {
+		-webkit-user-select: all;
+		-moz-user-select: all;
+		-ms-user-select: all;
+		user-select: all;
+		* {
+			-webkit-user-select: all;
+			-moz-user-select: all;
+			-ms-user-select: all;
+			user-select: all;
+		}
+	}
+
 	&:nth-child(1) {
 		margin-top: 0;
 	}
