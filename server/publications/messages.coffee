@@ -31,8 +31,6 @@ Meteor.publish 'messages', (rid, start) ->
 	cursorDeleteHandle = cursorDelete.observeChanges
 		added: (_id, record) ->
 			publication.added('rocketchat_message', _id, {_hidden: true})
-		changed: (_id, record) ->
-			publication.added('rocketchat_message', _id, {_hidden: true})
 
 	@ready()
 	@onStop ->
