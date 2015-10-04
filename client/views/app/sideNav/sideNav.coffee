@@ -7,7 +7,10 @@ Template.sideNav.helpers
 	footer: ->
 		return RocketChat.settings.get 'Layout_Sidenav_Footer'
 	showStarredRooms: ->
-		return !RocketChat.settings.get 'Disable_Favorite_Rooms'
+		favoritesEnabled = !RocketChat.settings.get 'Disable_Favorite_Rooms'
+		hasFavoriteRoomOpened = ChatSubscription.findOne({ f: true, open: true })
+
+		return true if favoritesEnabled and hasFavoriteRoomOpened
 
 Template.sideNav.events
 	'click .close-flex': ->
