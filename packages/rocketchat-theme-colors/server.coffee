@@ -1,49 +1,71 @@
-RocketChat.settings.add 'css', ''
-
 less = Npm.require('less')
 
-getText = (file) ->
-	Assets.getText file
-
-getAndCompile = (cb) ->
-
-	files = [
-		variables.getAsLess()
-		Assets.getText 'assets/stylesheets/global/_variables.less'
-		Assets.getText 'assets/stylesheets/utils/_emojione.import.less'
-		Assets.getText 'assets/stylesheets/utils/_fonts.import.less'
-		Assets.getText 'assets/stylesheets/utils/_keyframes.import.less'
-		Assets.getText 'assets/stylesheets/utils/_lesshat.import.less'
-		Assets.getText 'assets/stylesheets/utils/_preloader.import.less'
-		Assets.getText 'assets/stylesheets/utils/_reset.import.less'
-		Assets.getText 'assets/stylesheets/animation.css'
-		Assets.getText 'assets/stylesheets/base.less'
-		Assets.getText 'assets/stylesheets/fontello.css'
-		Assets.getText 'assets/stylesheets/rtl.less'
-		Assets.getText 'assets/stylesheets/swipebox.min.css'
-		Assets.getText 'assets/colors.less'
+RocketChat.theme = new class
+	variables: {}
+	files: [
+		'assets/stylesheets/global/_variables.less'
+		'assets/stylesheets/utils/_emojione.import.less'
+		'assets/stylesheets/utils/_fonts.import.less'
+		'assets/stylesheets/utils/_keyframes.import.less'
+		'assets/stylesheets/utils/_lesshat.import.less'
+		'assets/stylesheets/utils/_preloader.import.less'
+		'assets/stylesheets/utils/_reset.import.less'
+		'assets/stylesheets/animation.css'
+		'assets/stylesheets/base.less'
+		'assets/stylesheets/fontello.css'
+		'assets/stylesheets/rtl.less'
+		'assets/stylesheets/swipebox.min.css'
+		'assets/colors.less'
 	]
 
-	colors = files.join '\n'
+	constructor: ->
+		RocketChat.settings.add 'css', ''
 
-	options =
-		compress: true
+	compile: ->
+		content = [
+			@getVariablesAsLess()
+		]
 
-	console.log 'start rendering'
-	start = Date.now()
-	less.render colors, options, (err, data) ->
-		console.log 'stop rendering', Date.now() - start
-		if err?
-			return console.log err
+		content.push Assets.getText file for file in @files
 
-		RocketChat.settings.updateById 'css', data.css
+		content = content.join '\n'
 
+		options =
+			compress: true
 
-getAndCompile()
+		start = Date.now()
+		less.render content, options, (err, data) ->
+			console.log 'stop rendering', Date.now() - start
+			if err?
+				return console.log err
+
+			RocketChat.settings.updateById 'css', data.css
+
+	addColor: (name, value) ->
+		@variables[name] =
+			value: value
+			type: "color"
+
+	getVariablesAsObject: ->
+		obj = {}
+		for name, variable of @variables
+			obj[name] = variable.value
+
+		return obj
+
+	getVariablesAsLess: ->
+		items = []
+		for name, variable of @variables
+			items.push "@#{name}: #{variable.value};"
+
+		return items.join '\n'
+
+	getCss: ->
+		return RocketChat.settings.get 'css'
 
 
 WebApp.connectHandlers.use '/theme-colors.css', (req, res, next) ->
-	css = RocketChat.settings.get 'css'
+	css = RocketChat.theme.getCss()
 
 	res.setHeader 'content-type', 'text/css; charset=UTF-8'
 	res.setHeader 'Content-Disposition', 'inline'
