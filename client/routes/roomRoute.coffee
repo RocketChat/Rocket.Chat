@@ -56,6 +56,7 @@ openRoom = (type, name) ->
 				RocketChat.TabBar.addButton({ id: 'members-list', title: t('User_Info'), icon: 'icon-user', template: 'membersList', order: 2 })
 			else
 				RocketChat.TabBar.addButton({ id: 'members-list', title: t('Members_List'), icon: 'icon-users', template: 'membersList', order: 2 })
+			RocketChat.TabBar.addButton({ id: 'uploaded-files-list', title: t('Room_uploaded_file_list'), icon: 'icon-download', template: 'uploadedFilesList', order: 3 })
 
 			# update user's room subscription
 			if ChatSubscription.findOne({rid: room._id})?.open is false
@@ -110,3 +111,17 @@ FlowRouter.route '/direct/:username',
 		openRoom 'd', params.username
 
 	triggersExit: [roomExit]
+
+
+FlowRouter.goToRoomById = (roomId) ->
+	subscription = ChatSubscription.findOne({rid: roomId})
+	if subscription?
+		switch subscription.t
+			when 'c'
+				FlowRouter.go 'channel', {name: subscription.name}
+
+			when 'p'
+				FlowRouter.go 'group', {name: subscription.name}
+
+			when 'd'
+				FlowRouter.go 'direct', {username: subscription.name}
