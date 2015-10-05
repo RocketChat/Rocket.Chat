@@ -100,3 +100,4 @@ random
 ejson
 spacebars
 check
+peerlibrary:reactive-publish

@@ -17,6 +17,7 @@ Package.onUse(function(api) {
 	api.use('underscore');
 	api.use('underscorestring:underscore.string');
 	api.use('monbro:mongodb-mapreduce-aggregation@1.0.1');
+	api.use('peerlibrary:reactive-publish@0.1.0');
 
 	// TAPi18n
 	api.use('templating', 'client');

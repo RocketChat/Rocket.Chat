@@ -2,15 +2,18 @@ Meteor.publish 'userChannels', (userId) ->
 	unless this.userId
 		return this.ready()
 
-	if RocketChat.authz.hasPermission( @userId, 'view-other-user-channels') isnt true
-		return this.ready()
+	this.autorun (computation) =>
+		if RocketChat.authz.hasPermission( @userId, 'view-other-user-channels') isnt true
+			return this.ready()
 
-	console.log '[publish] userChannels'.green, userId
+		console.log '[publish] userChannels'.green, userId
 
-	RocketChat.models.Subscriptions.findByUserId userId,
-		fields:
-			rid: 1,
-			name: 1,
-			t: 1,
-			u: 1
-		sort: { t: 1, name: 1 }
+		RocketChat.models.Subscriptions.findByUserId userId,
+			fields:
+				rid: 1,
+				name: 1,
+				t: 1,
+				u: 1
+			sort: { t: 1, name: 1 }
+
+	return
