@@ -64,22 +64,30 @@
 							{{> avatarSuggestion suggestions.avatars.facebook}}
 							{{> avatarSuggestion suggestions.avatars.google}}
 							{{> avatarSuggestion suggestions.avatars.github}}
+							{{> avatarSuggestion suggestions.avatars.gitlab}}
 							{{> avatarSuggestion suggestions.avatars.linkedin}}
+							{{> avatarSuggestion suggestions.avatars.twitter}}
 
-							{{#unless suggestions.avatars.facebook}}
+							{{#if suggestAvatar 'facebook'}}
 								{{> avatarSuggestionLogin 'facebook'}}
-							{{/unless}}
-							{{#unless suggestions.avatars.google}}
+							{{/if}}
+							{{#if suggestAvatar 'google'}}
 								{{> avatarSuggestionLogin 'google'}}
-							{{/unless}}
-							{{#unless suggestions.avatars.github}}
+							{{/if}}
+							{{#if suggestAvatar 'github'}}
 								{{> avatarSuggestionLogin 'github'}}
-							{{/unless}}
-							{{#unless suggestions.avatars.linkedin}}
+							{{/if}}
+							{{#if suggestAvatar 'gitlab'}}
+								{{> avatarSuggestionLogin 'gitlab'}}
+							{{/if}}
+							{{#if suggestAvatar 'linkedin'}}
 								{{> avatarSuggestionLogin 'linkedin'}}
-							{{/unless}}
+							{{/if}}
+							{{#if suggestAvatar 'twitter'}}
+								{{> avatarSuggestionLogin 'twitter'}}
+							{{/if}}
 
-							
+
 						{{else}}
 							{{_ "Loading_suggestion"}}
 						{{/if}}

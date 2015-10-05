@@ -15,7 +15,7 @@ RocketChat.models.Users = new class extends RocketChat.models._Base
 
 	findOneByEmailAddress: (emailAddress, options) ->
 		query =
-			'email.address': emailAddress
+			'emails.address': emailAddress
 
 		return @findOne query, options
 

@@ -7,6 +7,12 @@ favoritesEnabled = ->
 
 # @TODO bug com o botão para "rolar até o fim" (novas mensagens) quando há uma mensagem com texto que gere rolagem horizontal
 Template.room.helpers
+	showFormattingTips: ->
+		return RocketChat.Markdown or RocketChat.Highlight
+	showMarkdown: ->
+		return RocketChat.Markdown
+	showHighlight: ->
+		return RocketChat.Highlight
 	favorite: ->
 		sub = ChatSubscription.findOne { rid: this._id }, { fields: { f: 1 } }
 		return 'icon-star favorite-room' if sub?.f? and sub.f and favoritesEnabled
