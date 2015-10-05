@@ -43,6 +43,7 @@ rocketchat:slashcommands-leave
 rocketchat:spotify
 rocketchat:statistics
 rocketchat:webrtc
+#rocketchat:chatops
 #rocketchat:livechat
 #rocketchat:hubot
 #rocketchat:irc
@@ -88,6 +89,7 @@ yasaricli:slugify
 yasinuslu:blaze-meta
 rocketchat:theme-colors
 rocketchat:authorization
+perak:codemirror
 standard-minifiers
 meteor-base
 mobile-experience
