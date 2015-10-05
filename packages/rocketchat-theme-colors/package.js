@@ -10,26 +10,17 @@ Package.onUse(function(api) {
 
 	api.use('rocketchat:lib');
 	api.use('coffeescript');
+	api.use('underscore');
 	api.use('webapp');
-	api.use('less@2.5.0_3');
 
-	api.addFiles('server.coffee', 'server');
-	api.addFiles('variables.coffee', 'server');
-	api.addFiles('client.coffee', 'client');
 
-	// api.addFiles('assets/stylesheets/global/_variables.less', 'client');
-	// api.addFiles('assets/stylesheets/utils/_colors.import.less', 'client');
-	// api.addFiles('assets/stylesheets/utils/_emojione.import.less', 'client');
-	// api.addFiles('assets/stylesheets/utils/_fonts.import.less', 'client');
-	// api.addFiles('assets/stylesheets/utils/_keyframes.import.less', 'client');
-	// api.addFiles('assets/stylesheets/utils/_lesshat.import.less', 'client');
-	// api.addFiles('assets/stylesheets/utils/_preloader.import.less', 'client');
-	// api.addFiles('assets/stylesheets/utils/_reset.import.less', 'client');
-	// api.addFiles('assets/stylesheets/animation.css', 'client');
-	// api.addFiles('assets/stylesheets/base.less', 'client');
-	// api.addFiles('assets/stylesheets/fontello.css', 'client');
-	// api.addFiles('assets/stylesheets/rtl.less', 'client');
-	// api.addFiles('assets/stylesheets/swipebox.min.css', 'client');
+	api.addFiles('server/server.coffee', 'server');
+	api.addFiles('server/variables.coffee', 'server');
+
+	api.addFiles('client/client.coffee', 'client');
+	api.addFiles('client/minicolors/jquery.minicolors.css', 'client');
+	api.addFiles('client/minicolors/jquery.minicolors.js', 'client');
+
 
 	api.addAssets('assets/stylesheets/global/_variables.less', 'server');
 	api.addAssets('assets/stylesheets/utils/_colors.import.less', 'server');
@@ -44,12 +35,7 @@ Package.onUse(function(api) {
 	api.addAssets('assets/stylesheets/fontello.css', 'server');
 	api.addAssets('assets/stylesheets/rtl.less', 'server');
 	api.addAssets('assets/stylesheets/swipebox.min.css', 'server');
-
 	api.addAssets('assets/colors.less', 'server');
-
-	api.export('less', 'server');
-	api.export('getText', 'server');
-	api.export('getAndCompile', 'server');
 });
 
 Npm.depends({
