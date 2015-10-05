@@ -66,6 +66,7 @@ Template.membersList.helpers
 		username = Session.get('showUserInfo')
 		return Meteor.users.findOne({ username: String(username) }) or { username: String(username) }
 
+
 Template.membersList.events
 	"click .flex-tab .user-image > a" : (e) ->
 		RocketChat.TabBar.openFlex()
