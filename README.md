@@ -65,6 +65,9 @@ It is a great solution for communities and companies wanting to privately host t
 ##### [clasesdeperiodismo.com](http://www.clasesdeperiodismo.com/2015/05/30/un-chat-de-codigo-abierto-que-puedes-anadir-a-la-web/)
 > Un chat de código abierto que puedes añadir a la web
 
+##### [snowulf.com](https://snowulf.com/2015/09/25/why-slack-when-you-can-rocket-chat/)
+> Why Slack when you can Rocket.chat?
+
 ## Features
 
 - BYOS (bring your own server)

@@ -1,0 +1,4 @@
+{
+  "User_doesnt_exist" : "No user exists by the name of `@%s`.",
+  "Username_is_already_in_here": "`@%s` is already in here."
+}

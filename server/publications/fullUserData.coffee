@@ -2,8 +2,6 @@ Meteor.publish 'fullUserData', (filter, limit) ->
 	unless @userId
 		return @ready()
 
-	user = RocketChat.models.Users.findOneById @userId
-
 	fields =
 		name: 1
 		username: 1

@@ -38,6 +38,7 @@ RocketChat.TabBar = new class
 		if status is -1 or (status isnt 1 and open.get())
 			open.set false
 		else
+			$('.flex-tab .content').scrollTop(0)
 			# added a delay to make sure the template is already rendered before animating it
 			setTimeout ->
 				open.set true
