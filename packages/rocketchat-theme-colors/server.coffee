@@ -1,44 +1,37 @@
+
+
 less = Npm.require('less')
 
 getText = (file) ->
 	Assets.getText file
 
 getAndCompile = (cb) ->
-	variables = """
-		@content-background-color: #FFF;
 
-		@primary-background-color: #04436A;
-		@secondary-background-color: #F4F4F4;
-		@tertiary-background-color: #EAEAEA;
+	# lesshat = Assets.getText 'assets/lesshat.import.less'
+	# colors = Assets.getText 'assets/colors.less'
 
-		@primary-font-color: #444444;
-		@secondary-font-color: #7F7F7F;
-		@tertiary-font-color: rgba(255, 255, 255, 0.6);
+	files = [
+		variables.getAsLess()
+		Assets.getText 'assets/stylesheets/global/_variables.less'
+		# Assets.getText 'assets/stylesheets/utils/_colors.import.less'
+		Assets.getText 'assets/stylesheets/utils/_emojione.import.less'
+		Assets.getText 'assets/stylesheets/utils/_fonts.import.less'
+		Assets.getText 'assets/stylesheets/utils/_keyframes.import.less'
+		Assets.getText 'assets/stylesheets/utils/_lesshat.import.less'
+		Assets.getText 'assets/stylesheets/utils/_preloader.import.less'
+		Assets.getText 'assets/stylesheets/utils/_reset.import.less'
+		Assets.getText 'assets/stylesheets/animation.css'
+		Assets.getText 'assets/stylesheets/base.less'
+		Assets.getText 'assets/stylesheets/fontello.css'
+		Assets.getText 'assets/stylesheets/rtl.less'
+		Assets.getText 'assets/stylesheets/swipebox.min.css'
 
-		@input-font-color: rgba(255, 255, 255, 0.85);
-		@link-font-color: #008CE3;
+		# variables
+		Assets.getText 'assets/colors.less'
+	]
 
-		@info-font-color: #AAAAAA;
-		@info-active-font-color: #FF0000;
-
-		@smallprint-font-color: #C2E7FF;
-		@smallprint-hover-color: white;
-
-		@status-online: #35AC19;
-		@status-offline: rgba(150, 150, 150, 0.50);
-		@status-busy: #D30230;
-		@status-away: #FCB316;
-
-		@code-background: #F8F8F8;
-		@code-border: #CCC;
-		@code-color: #333;
-		@blockquote-background: #CCC;
-	"""
-
-	lesshat = Assets.getText 'assets/lesshat.import.less'
-	colors = Assets.getText 'assets/colors.less'
-
-	colors = [lesshat, variables, colors].join '\n'
+	# colors = [lesshat, variables, colors].join '\n'
+	colors = files.join '\n'
 
 	options =
 		compress: true
@@ -46,8 +39,10 @@ getAndCompile = (cb) ->
 	less.render colors, options, cb
 
 WebApp.connectHandlers.use '/theme-colors.css', (req, res, next) ->
+	console.log 'start rendering'
+	start = Date.now()
 	getAndCompile (err, data) ->
-
+		console.log 'stop rendering', Date.now() - start, err
 		res.setHeader 'content-type', 'text/css; charset=UTF-8'
 		res.setHeader 'Content-Disposition', 'inline'
 		res.setHeader 'Cache-Control', 'no-cache'
@@ -56,4 +51,3 @@ WebApp.connectHandlers.use '/theme-colors.css', (req, res, next) ->
 		res.setHeader 'Content-Length', data.css.length * 8
 
 		res.end data.css
-		# less.render colors

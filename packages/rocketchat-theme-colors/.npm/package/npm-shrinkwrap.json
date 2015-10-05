@@ -37,7 +37,7 @@
           }
         },
         "request": {
-          "version": "2.61.0",
+          "version": "2.64.0",
           "dependencies": {
             "bl": {
               "version": "1.0.0",
@@ -55,7 +55,7 @@
                       "version": "0.0.1"
                     },
                     "process-nextick-args": {
-                      "version": "1.0.2"
+                      "version": "1.0.3"
                     },
                     "string_decoder": {
                       "version": "0.10.31"
@@ -88,10 +88,10 @@
               "version": "5.0.1"
             },
             "mime-types": {
-              "version": "2.1.6",
+              "version": "2.1.7",
               "dependencies": {
                 "mime-db": {
-                  "version": "1.18.0"
+                  "version": "1.19.0"
                 }
               }
             },
@@ -99,13 +99,13 @@
               "version": "1.4.3"
             },
             "qs": {
-              "version": "4.0.0"
+              "version": "5.1.0"
             },
             "tunnel-agent": {
               "version": "0.4.1"
             },
             "tough-cookie": {
-              "version": "2.0.0"
+              "version": "2.1.0"
             },
             "http-signature": {
               "version": "0.11.0",
@@ -128,13 +128,13 @@
               "version": "3.1.0",
               "dependencies": {
                 "hoek": {
-                  "version": "2.14.0"
+                  "version": "2.16.3"
                 },
                 "boom": {
-                  "version": "2.8.0"
+                  "version": "2.9.0"
                 },
                 "cryptiles": {
-                  "version": "2.0.4"
+                  "version": "2.0.5"
                 },
                 "sntp": {
                   "version": "1.0.9"
@@ -162,7 +162,7 @@
               "version": "1.8.0",
               "dependencies": {
                 "bluebird": {
-                  "version": "2.9.34"
+                  "version": "2.10.2"
                 },
                 "chalk": {
                   "version": "1.1.1",
