@@ -1,5 +1,5 @@
 loadMissedMessages = (rid) ->
-	lastMessage = ChatMessage.findOne({rid: 'GENERAL'}, {sort: {ts: -1}, limit: 1})
+	lastMessage = ChatMessage.findOne({rid: rid}, {sort: {ts: -1}, limit: 1})
 	if not lastMessage?
 		return
 
@@ -32,6 +32,14 @@ Meteor.startup ->
 
 onDeleteMessageStream = (msg) ->
 	ChatMessage.remove _id: msg._id
+
+
+RocketChat.Notifications.onUser 'message', (msg) ->
+	msg.u =
+		username: 'rocketbot'
+	msg.private = true
+
+	ChatMessage.upsert { _id: msg._id }, msg
 
 
 @RoomManager = new class
@@ -71,13 +79,11 @@ onDeleteMessageStream = (msg) ->
 			do (typeName, record) ->
 				record.sub = [
 					Meteor.subscribe 'room', typeName
-					# Meteor.subscribe 'messages', typeName
 				]
 
-				record.ready = record.sub[0].ready()
-				# record.ready = record.sub[0].ready() and record.sub[1].ready()
+				ready = record.sub[0].ready() and subscription.ready()
 
-				if record.ready is true
+				if ready is true
 					type = typeName.substr(0, 1)
 					name = typeName.substr(1)
 
@@ -94,8 +100,16 @@ onDeleteMessageStream = (msg) ->
 					if room?
 						openedRooms[typeName].rid = room._id
 
+						RoomHistoryManager.getMoreIfIsEmpty room._id
+						record.ready = RoomHistoryManager.isLoading(room._id) is false
+						Dep.changed()
+
 						msgStream.on openedRooms[typeName].rid, (msg) ->
 							ChatMessage.upsert { _id: msg._id }, msg
+
+							Meteor.defer ->
+								RoomManager.updateMentionsMarksOfRoom typeName
+
 							# If room was renamed then close current room and send user to the new one
 							Tracker.nonreactive ->
 								if msg.t is 'r'
@@ -124,7 +138,6 @@ onDeleteMessageStream = (msg) ->
 			openedRooms[typeName] =
 				active: false
 				ready: false
-				unreadCount: new ReactiveVar 0
 				unreadSince: new ReactiveVar undefined
 
 		setRoomExpireExcept typeName
@@ -147,7 +160,7 @@ onDeleteMessageStream = (msg) ->
 		if not room?
 			return
 
-		if not room.dom?
+		if not room.dom? and rid?
 			room.dom = document.createElement 'div'
 			room.dom.classList.add 'room-container'
 			Blaze.renderWithData Template.room, { _id: rid }, room.dom
@@ -170,6 +183,23 @@ onDeleteMessageStream = (msg) ->
 
 		onlineUsers.set onlineUsersValue
 
+	updateMentionsMarksOfRoom = (typeName) ->
+		dom = getDomOfRoom typeName
+		if not dom?
+			return
+
+		ticksBar = $(dom).find('.ticks-bar')
+		$(dom).find('.ticks-bar > .tick').remove()
+
+		scrollTop = $(dom).find('.messages-box > .wrapper').scrollTop() - 50
+		totalHeight = $(dom).find('.messages-box > .wrapper > ul').height() + 40
+
+		$('.mention-link-me').each (index, item) ->
+			topOffset = $(item).offset().top + scrollTop
+			percent = 100 / totalHeight * topOffset
+			ticksBar.append('<div class="tick" style="top: '+percent+'%;"></div>')
+
+
 	open: open
 	close: close
 	init: init
@@ -179,3 +209,4 @@ onDeleteMessageStream = (msg) ->
 	openedRooms: openedRooms
 	updateUserStatus: updateUserStatus
 	onlineUsers: onlineUsers
+	updateMentionsMarksOfRoom: updateMentionsMarksOfRoom

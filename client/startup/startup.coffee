@@ -1,9 +1,10 @@
 Meteor.startup ->
+	TimeSync.loggingEnabled = false
+
 	UserPresence.awayTime = 300000
 	UserPresence.start()
 	Meteor.subscribe("activeUsers")
 
-	Session.setDefault('flexOpened', false)
 	Session.setDefault('AvatarRandom', 0)
 
 	window.lastMessageWindow = {}
@@ -30,7 +31,8 @@ Meteor.startup ->
 
 		language = language.toLowerCase()
 		if language isnt 'en'
-			Meteor.call 'loadLocale', language, (data) ->
+			Meteor.call 'loadLocale', language, (err, localeFn) ->
+				Function(localeFn)()
 				moment.locale(language)
 
 	Tracker.autorun (c) ->

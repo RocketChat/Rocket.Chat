@@ -1,12 +1,13 @@
 Template.sideNav.helpers
-	isAdmin: ->
-		return Meteor.user()?.admin is true
+
 	flexTemplate: ->
 		return SideNav.getFlex().template
 	flexData: ->
 		return SideNav.getFlex().data
 	footer: ->
 		return RocketChat.settings.get 'Layout_Sidenav_Footer'
+	showStarredRooms: ->
+		return !RocketChat.settings.get 'Disable_Favorite_Rooms'
 
 Template.sideNav.events
 	'click .close-flex': ->
@@ -21,6 +22,12 @@ Template.sideNav.events
 	'mouseleave .header': ->
 		SideNav.leaveArrow()
 
+	'scroll .rooms-list': ->
+		menu.updateUnreadBars()
+
 Template.sideNav.onRendered ->
 	SideNav.init()
 	menu.init()
+
+	Meteor.defer ->
+		menu.updateUnreadBars()

@@ -15,8 +15,9 @@ Meteor.startup ->
 		subscriptions = ChatSubscription.find({open: true}, { fields: { unread: 1, alert: 1, rid: 1, t: 1, name: 1, ls: 1 } })
 
 		rid = undefined
-		if FlowRouter.getRouteName() in ['channel', 'group', 'direct']
-			rid = Session.get 'openedRoom'
+		Tracker.nonreactive ->
+			if FlowRouter.getRouteName() in ['channel', 'group', 'direct']
+				rid = Session.get 'openedRoom'
 
 		for subscription in subscriptions.fetch()
 			if subscription.rid is rid and (subscription.alert or subscription.unread > 0)
@@ -27,6 +28,8 @@ Meteor.startup ->
 					unreadAlert = '•'
 
 			readMessage.refreshUnreadMark(subscription.rid)
+
+		menu.updateUnreadBars()
 
 		if unreadCount > 0
 			if unreadCount > 999
@@ -46,7 +49,7 @@ Meteor.startup ->
 
 	Tracker.autorun ->
 		siteName = RocketChat.settings.get 'Site_Name'
-		
+
 		unread = Session.get 'unread'
 		fireGlobalEvent 'unread-changed', unread
 		favico?.badge unread, bgColor: if typeof unread isnt 'number' then '#3d8a3a' else '#ac1b1b'

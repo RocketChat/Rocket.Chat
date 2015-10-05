@@ -1,6 +1,4 @@
 Template.admin.helpers
-	isAdmin: ->
-		return Meteor.user().admin is true
 	group: ->
 		group = FlowRouter.getParam('group')
 		group ?= Settings.findOne({ type: 'group' })?._id
@@ -8,7 +6,7 @@ Template.admin.helpers
 	sections: ->
 		group = FlowRouter.getParam('group')
 		group ?= Settings.findOne({ type: 'group' })?._id
-		settings = Settings.find({ group: group }, {sort: {section: 1}}).fetch()
+		settings = Settings.find({ group: group }, {sort: {section: 1, i18nLabel: 1}}).fetch()
 		sections = {}
 		for setting in settings
 			sections[setting.section or ''] ?= []
@@ -23,10 +21,10 @@ Template.admin.helpers
 		return sectionsArray
 
 	flexOpened: ->
-		return 'opened' if Session.equals('flexOpened', true)
+		return 'opened' if RocketChat.TabBar.isFlexOpen()
 	arrowPosition: ->
 		console.log 'room.helpers arrowPosition' if window.rocketDebug
-		return 'left' unless Session.equals('flexOpened', true)
+		return 'left' unless RocketChat.TabBar.isFlexOpen()
 	label: ->
 		label = @i18nLabel or @_id
 		if label?.indexOf(':') is -1
@@ -37,12 +35,16 @@ Template.admin.helpers
 		if description?.indexOf(':') is -1
 			description = 'project:' + description
 		return TAPi18next.t description
+	sectionIsCustomOath: (section) ->
+		return /^Custom OAuth:\s.+/.test section
+	callbackURL: (section) ->
+		id = s.strRight(section, 'Custom OAuth: ').toLowerCase()
+		return Meteor.absoluteUrl('_oauth/' + id)
 
 Template.admin.events
-	"click .submit": (e, t) ->
+	"click .submit .save": (e, t) ->
 		group = FlowRouter.getParam('group')
 		settings = Settings.find({ group: group }).fetch()
-		console.log 'will save settings', JSON.stringify settings
 		updateSettings = []
 		for setting in settings
 			value = null
@@ -56,12 +58,45 @@ Template.admin.events
 			if value?
 				updateSettings.push { _id: setting._id, value: value }
 
-		console.log 'changed settings', JSON.stringify updateSettings
-
 		if not _.isEmpty updateSettings
 			RocketChat.settings.batchSet updateSettings, (err, success) ->
 				return toastr.error TAPi18next.t 'project:Error_updating_settings' if err
 				toastr.success TAPi18next.t 'project:Settings_updated'
+
+	"click .submit .add-custom-oauth": (e, t) ->
+		config =
+			title: TAPi18next.t 'project:Add_custom_oauth'
+			text: TAPi18next.t 'project:Give_a_unique_name_for_the_custom_oauth'
+			type: "input",
+			showCancelButton: true,
+			closeOnConfirm: true,
+			inputPlaceholder: TAPi18next.t 'project:Custom_oauth_unique_name'
+
+		swal config, (inputValue) ->
+			if inputValue is false
+				return false
+
+			if inputValue is ""
+				swal.showInputError TAPi18next.t 'project:Name_cant_be_empty'
+				return false
+
+			Meteor.call 'addOAuthService', inputValue
+
+	"click .submit .remove-custom-oauth": (e, t) ->
+		name = this.section.replace('Custom OAuth: ', '')
+		config =
+			title: TAPi18next.t 'project:Are_you_sure'
+			type: "input",
+			type: 'warning'
+			showCancelButton: true
+			confirmButtonColor: '#DD6B55'
+			confirmButtonText: TAPi18next.t 'project:Yes_delete_it'
+			cancelButtonText: TAPi18next.t 'project:Cancel'
+			closeOnConfirm: true
+
+		swal config, ->
+			Meteor.call 'removeOAuthService', name
+
 
 Template.admin.onRendered ->
 	Tracker.afterFlush ->

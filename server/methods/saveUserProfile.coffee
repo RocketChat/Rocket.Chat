@@ -2,16 +2,16 @@ Meteor.methods
 	saveUserProfile: (settings) ->
 		if Meteor.userId()
 			if settings.language?
-				Meteor.users.update Meteor.userId(), { $set: { language: settings.language } }
+				RocketChat.models.Users.setLanguage Meteor.userId(), settings.language
 
-			if settings.password?
-				Accounts.setPassword Meteor.userId(), settings.password, { logout: false }
+			# if settings.password?
+			# 	Accounts.setPassword Meteor.userId(), settings.password, { logout: false }
 
 			if settings.username?
 				Meteor.call 'setUsername', settings.username
 
 			profile = {}
 
-			Meteor.users.update Meteor.userId(), { $set: { "settings.profile": profile } }
+			RocketChat.models.Users.setProfile Meteor.userId(), profile
 
 			return true

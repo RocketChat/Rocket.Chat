@@ -3,8 +3,7 @@ http = Npm.require('http')
 https = Npm.require('https')
 querystring = Npm.require('querystring')
 
-OEmbed =
-	cache: new Meteor.Collection 'rocketchat_oembed_cache'
+OEmbed = {}
 
 getUrlContent = (urlObj, redirectCount = 5, callback) ->
 	if _.isString(urlObj)
@@ -15,6 +14,7 @@ getUrlContent = (urlObj, redirectCount = 5, callback) ->
 		port: urlObj.port
 		hostname: urlObj.hostname
 		path: urlObj.path
+		rejectUnauthorized: !RocketChat.settings.get 'Allow_Invalid_SelfSigned_Certs'
 
 	httpOrHttps = if urlObj.protocol is 'https:' then https else http
 
@@ -116,14 +116,14 @@ OEmbed.getUrlMeta = (url, withFragment) ->
 	}
 
 OEmbed.getUrlMetaWithCache = (url, withFragment) ->
-	cache = OEmbed.cache.findOne {_id: url}
+	cache = RocketChat.models.OEmbedCache.findOneById url
 	if cache?
 		return cache.data
 
 	data = OEmbed.getUrlMeta url, withFragment
 
 	if data?
-		OEmbed.cache.insert {_id: url, data: data, updatedAt: new Date}
+		RocketChat.models.OEmbedCache.createWithIdAndData url, data
 
 		return data
 
@@ -166,7 +166,7 @@ OEmbed.RocketUrlParser = (message) ->
 				changed = true
 
 		if changed is true
-			ChatMessage.update {_id: message._id}, { $set: { urls: message.urls } }
+			RocketChat.models.Messages.setUrlsById message._id, message.urls
 
 	return message
 

@@ -39,6 +39,9 @@ class MentionsClient
 				channels = _.unique channels
 				channels = channels.join('|')
 				msg = msg.replace new RegExp("(?:^|\\s|\\n)(#(#{channels}))\\b", 'g'), (match, mention, channel) ->
+					if not message.temp?
+						if not _.findWhere(message.channels, {name: channel})?
+							return match
 					return match.replace mention, "<a href=\"\" class=\"mention-link\" data-channel=\"#{channel}\">#{mention}</a>"
 
 

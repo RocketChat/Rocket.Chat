@@ -12,11 +12,7 @@ Meteor.publish 'messages', (rid, start) ->
 	if not Meteor.call 'canAccessRoom', rid, this.userId
 		return this.ready()
 
-	cursor = ChatMessage.find
-		rid: rid
-		_hidden:
-			$ne: true
-	,
+	cursor = RocketChat.models.Messages.findVisibleByRoomId rid,
 		sort:
 			ts: -1
 		limit: 50
@@ -28,10 +24,7 @@ Meteor.publish 'messages', (rid, start) ->
 		changed: (_id, record) ->
 			publication.changed('rocketchat_message', _id, record)
 
-	cursorDelete = ChatMessage.find
-		rid: rid
-		_hidden: true
-	,
+	cursorDelete = RocketChat.models.Messages.findInvisibleByRoomId rid,
 		fields:
 			_id: 1
 

@@ -23,6 +23,6 @@ Meteor.methods
 			if settings.autoImageLoad?
 				preferences.autoImageLoad = if settings.autoImageLoad is "1" then true else false
 
-			Meteor.users.update Meteor.userId(), { $set: { "settings.preferences": preferences } }
+			RocketChat.models.Users.setPreferences Meteor.userId(), preferences
 
 			return true

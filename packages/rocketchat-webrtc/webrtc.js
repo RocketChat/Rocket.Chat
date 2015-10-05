@@ -3,27 +3,48 @@ webrtc = {
 	pc: undefined,
 	to: undefined,
 	room: undefined,
+	activeMediastream: undefined,
+	remoteDataSDP: undefined,
+	mode: undefined,
+	lastSeenTimestamp: new Date(),
 	debug: false,
 	config: {
 		iceServers: [
+			{url: "stun:stun.l.google.com:19302"},
 			{url: "stun:23.21.150.121"},
-			{url: "stun:stun.l.google.com:19302"}
+			{
+				url: "turn:team%40rocket.chat@numb.viagenie.ca:3478",
+				"credential": "demo"
+			}
 		]
 	},
 	send: function(data) {
 		data.to = webrtc.to;
 		data.room = webrtc.room;
 		data.from = Meteor.user().username;
+		data.mod = (webrtc.mode ? webrtc.mode : 0);
 		RocketChat.Notifications.notifyUser(data.to, 'webrtc', data);
 	},
 	stop: function(sendEvent) {
+		if (webrtc.activeMediastream) {
+			webrtc.activeMediastream = undefined;
+		}
+
 		if (webrtc.pc) {
 			if (webrtc.pc.signalingState != 'closed') {
+				webrtc.pc.getLocalStreams().forEach(function(stream) {stream.stop()})
+				webrtc.pc.getRemoteStreams().forEach(function(stream) {stream.stop()})
 				webrtc.pc.close();
+			webrtc.pc = undefined;
+			webrtc.mode = 0;
 			}
-			if (sendEvent != false) {
-				RocketChat.Notifications.notifyUser(webrtc.to, 'webrtc', {to: webrtc.to, room: webrtc.room, from: Meteor.userId(), close: true});
-			}
+		}
+
+
+		this.onRemoteUrl();
+		this.onSelfUrl();
+		if (sendEvent != false) {
+			RocketChat.Notifications.notifyUser(webrtc.to, 'webrtc', {to: webrtc.to, room: webrtc.room, from: Meteor.userId(), close: true});
 		}
 	},
 	log: function() {
@@ -32,11 +53,24 @@ webrtc = {
 		}
 	},
 	onRemoteUrl: function() {},
-	onSelfUrl: function() {}
+	onSelfUrl: function() {},
+	onAcceptCall: function() {}
 }
 
 function onError() {
 	console.log(arguments);
+}
+
+webrtc.activateLocalStream = function() {
+		var media ={ "audio": true, "video": {mandatory: {minWidth:1280, minHeight:720}}} ;
+
+		// get the local stream, show it in the local video element and send it
+		navigator.getUserMedia(media, function (stream) {
+			webrtc.log('getUserMedia got stream');
+			webrtc.onSelfUrl(URL.createObjectURL(stream));
+			webrtc.activeMediastream = stream;
+
+		}, function(e) { webrtc.log('getUserMedia failed during activateLocalStream ', e); });
 }
 
 // run start(true) to initiate a call
@@ -62,7 +96,7 @@ webrtc.start = function (isCaller, fromUsername) {
 
 	// once remote stream arrives, show it in the remote video element
 	webrtc.pc.onaddstream = function (evt) {
-		webrtc.log('onaddstream', arguments)
+		webrtc.log('onaddstream', arguments);
 		webrtc.onRemoteUrl(URL.createObjectURL(evt.stream));
 	};
 
@@ -70,23 +104,53 @@ webrtc.start = function (isCaller, fromUsername) {
 		webrtc.log('oniceconnectionstatechange', arguments)
 		var srcElement = evt.srcElement || evt.target;
 		if (srcElement.iceConnectionState == 'disconnected' || srcElement.iceConnectionState == 'closed') {
-			webrtc.pc.getLocalStreams().forEach(function(stream) {
-				stream.stop();
-				webrtc.onSelfUrl();
-			});
-			webrtc.pc.getRemoteStreams().forEach(function(stream) {
-				if (stream.stop) {
+			if (webrtc.pc)  {
+				webrtc.pc.getLocalStreams().forEach(function(stream) {
 					stream.stop();
-				}
-				webrtc.onRemoteUrl();
-			});
-			webrtc.pc = undefined;
+					webrtc.onSelfUrl();
+				});
+				webrtc.pc.getRemoteStreams().forEach(function(stream) {
+					if (stream.stop) {
+						stream.stop();
+					}
+					webrtc.onRemoteUrl();
+				});
+				webrtc.pc = undefined;
+				webrtc.mode = 0;
+			}
+
 		}
 	}
 
-	var getUserMedia = function() {
+
+	var gotDescription = function(desc) {
+			webrtc.pc.setLocalDescription(desc, function() {}, onError);
+			webrtc.send({ "sdp": desc.toJSON(), cid: webrtc.cid });
+
+	}
+
+	var CreateMonitoringOffer = function() {
+
+		webrtc.pc.createOffer(gotDescription, onError,  { 'mandatory': { 'OfferToReceiveAudio': true, 'OfferToReceiveVideo': true } });
+
+	}
+
+	var AutoConnectStream = function() {
+		webrtc.pc.addStream(webrtc.activeMediastream);
+		webrtc.pc.setRemoteDescription(new RTCSessionDescription(webrtc.remoteDataSDP));
+		webrtc.pc.createAnswer(gotDescription, onError);
+
+	}
+	var LocalGetUserMedia = function() {
+
+
+
+		var media ={ "audio": true, "video": true};
+
+
 		// get the local stream, show it in the local video element and send it
-		navigator.getUserMedia({ "audio": true, "video": {mandatory: {minWidth:1280, minHeight:720}} }, function (stream) {
+		navigator.getUserMedia(media, function (stream) {
+			webrtc.log('getUserMedia got stream');
 			webrtc.onSelfUrl(URL.createObjectURL(stream));
 
 			webrtc.pc.addStream(stream);
@@ -97,36 +161,50 @@ webrtc.start = function (isCaller, fromUsername) {
 				webrtc.pc.createAnswer(gotDescription, onError);
 			}
 
-			function gotDescription(desc) {
-				webrtc.pc.setLocalDescription(desc, function() {}, onError);
-				webrtc.send({ "sdp": desc.toJSON(), cid: webrtc.cid });
-			}
-		}, function() {});
+		}, function(e) { webrtc.log('getUserMedia failed', e); });
+
 	}
 
 	if (isCaller) {
-		getUserMedia();
-	} else {
-		swal({
-			title: "Video call from "+fromUsername,
-			text: "Do you want to accept?",
-			type: "warning",
-			showCancelButton: true,
-			confirmButtonColor: "#DD6B55",
-			confirmButtonText: "Yes",
-			cancelButtonText: "No"
-		}, function(isConfirm){
-			if (isConfirm) {
-				getUserMedia();
-			} else {
-				webrtc.stop();
+		webrtc.log('isCaller LocalGetUserMedia');
+		if (webrtc.mode) {
+			if (webrtc.mode === 2) {
+				CreateMonitoringOffer();
+			} else { // node === 1
+
+				LocalGetUserMedia();
 			}
-		});
+		} else {
+			// no mode
+			LocalGetUserMedia();
+		}
+
+	} else {
+		if (!webrtc.activeMediastream) {
+			swal({
+				title: "Video call from "+fromUsername,
+				text: "Do you want to accept?",
+				type: "warning",
+				showCancelButton: true,
+				confirmButtonColor: "#DD6B55",
+				confirmButtonText: "Yes",
+				cancelButtonText: "No"
+			}, function(isConfirm){
+				if (isConfirm) {
+					webrtc.onAcceptCall(fromUsername);
+					LocalGetUserMedia();
+				} else {
+					webrtc.stop();
+				}
+			});
+		}  else {
+			AutoConnectStream();
+		}
 	}
 }
 
 RocketChat.Notifications.onUser('webrtc', function(data) {
-	webrtc.log('stream.on', Meteor.userId(), data)
+	webrtc.log('processIncomingRtcMessage()', Meteor.userId(), data)
 	if (!webrtc.to) {
 		webrtc.to = data.room.replace(Meteor.userId(), '');
 	}
@@ -135,15 +213,38 @@ RocketChat.Notifications.onUser('webrtc', function(data) {
 		webrtc.room = data.room;
 	}
 
-	if (data.close == true) {
+
+	// do not stop local video if in monitoring mode
+	if  (data.close == true) {
+
+	  if (webrtc.activeMediastream) {
+	  	if (webrtc.pc) {
+			webrtc.pc.getRemoteStreams().forEach(function(stream) {
+					if (!stream.stop) {
+						stream.stop();
+					}
+				});
+			webrtc.pc = undefined;
+			webrtc.mode = 0;
+		}
+
+	  } else {
+
 		webrtc.stop(false);
-		return
+
+	 }
+	 return
 	}
 
-	if (!webrtc.pc)
-		webrtc.start(false, data.from);
 
-	if (data.sdp) {
+	if (!webrtc.pc) {
+		if ((webrtc.activeMediastream) && (data.sdp != undefined)){
+			webrtc.remoteDataSDP = data.sdp;
+		}
+		webrtc.start(false, data.from);
+	}
+
+	if (data.sdp != undefined) {
 		webrtc.pc.setRemoteDescription(new RTCSessionDescription(data.sdp));
 	} else {
 		if( ["closed", "failed", "disconnected", "completed"].indexOf(webrtc.pc.iceConnectionState) === -1) {

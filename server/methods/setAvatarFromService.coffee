@@ -8,7 +8,7 @@ Meteor.methods
 		user = Meteor.user()
 
 		if service is 'initials'
-			Meteor.users.update {_id: user._id}, {$set: {avatarOrigin: service}}
+			RocketChat.models.Users.setAvatarOrigin user._id, service
 			return
 
 		{image, contentType} = RocketChatFile.dataURIParse dataURI
@@ -17,7 +17,7 @@ Meteor.methods
 		ws = RocketChatFileAvatarInstance.createWriteStream "#{user.username}.jpg", contentType
 		ws.on 'end', Meteor.bindEnvironment ->
 			Meteor.setTimeout ->
-				Meteor.users.update {_id: user._id}, {$set: {avatarOrigin: service}}
+				RocketChat.models.Users.setAvatarOrigin user._id, service
 				RocketChat.Notifications.notifyAll 'updateAvatar', {username: user.username}
 			, 500
 
