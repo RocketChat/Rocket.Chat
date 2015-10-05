@@ -209,6 +209,8 @@ class @ChatMessages
 		else if k is 38 or k is 40 # Arrow Up or down
 			return true if event.shiftKey
 
+			return true if $(input).val().length and !this.editing?.id
+
 			if k is 38
 				return if input.value.slice(0, input.selectionStart).match(/[\n]/) isnt null
 				this.toPrevMessage()
