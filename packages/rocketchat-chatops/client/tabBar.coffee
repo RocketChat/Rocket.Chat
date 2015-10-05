@@ -14,7 +14,7 @@ Meteor.startup ->
 		RocketChat.TabBar.addButton
 			id: 'chatops-button2'
 			i18nTitle: 'rocketchat-chatops:Chatops_Title'
-			icon: 'icon-cube'
+			icon: 'octicon octicon-hubot'
 			template: 'chatops-dynamicUI'
 			order: 4
 
@@ -22,7 +22,7 @@ Meteor.startup ->
 		RocketChat.TabBar.addButton
 			id: 'chatops-button3'
 			i18nTitle: 'rocketchat-chatops:Chatops_Title'
-			icon: 'icon-code'
+			icon: 'octicon octicon-inbox'
 			template: 'chatops_codemirror'
 			width: 675
 			order: 5
