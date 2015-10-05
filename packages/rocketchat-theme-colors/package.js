@@ -13,8 +13,8 @@ Package.onUse(function(api) {
 	api.use('webapp');
 	api.use('less@2.5.0_3');
 
-	api.addFiles('variables.coffee', 'server');
 	api.addFiles('server.coffee', 'server');
+	api.addFiles('variables.coffee', 'server');
 	api.addFiles('client.coffee', 'client');
 
 	// api.addFiles('assets/stylesheets/global/_variables.less', 'client');
