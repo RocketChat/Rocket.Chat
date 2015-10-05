@@ -1,3 +1,5 @@
+RocketChat.settings.callbacks = {}
+
 ###
 # Add a setting
 # @param {String} _id
@@ -57,6 +59,20 @@ RocketChat.settings.addGroup = (_id, options = {}) ->
 
 	return RocketChat.models.Settings.upsert { _id: _id }, upsertChanges
 
+
+RocketChat.settings.load = (key, value, initialLoad) ->
+	if RocketChat.settings.callbacks[key]?
+		for callback in RocketChat.settings.callbacks[key]
+			callback key, value, initialLoad
+
+	if RocketChat.settings.callbacks['*']?
+		for callback in RocketChat.settings.callbacks['*']
+			callback key, value, initialLoad
+
+
+RocketChat.settings.onload = (key, callback) ->
+	RocketChat.settings.callbacks[key] ?= []
+	RocketChat.settings.callbacks[key].push callback
 
 ###
 # Remove a setting by id

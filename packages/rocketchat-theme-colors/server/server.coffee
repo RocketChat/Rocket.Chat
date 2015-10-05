@@ -20,6 +20,18 @@ RocketChat.theme = new class
 
 	constructor: ->
 		RocketChat.settings.add 'css', ''
+		RocketChat.settings.addGroup 'Theme'
+
+		compile = _.debounce Meteor.bindEnvironment(@compile.bind(@)), 200
+
+		RocketChat.settings.onload '*', Meteor.bindEnvironment (key, value, initialLoad) =>
+			if /^theme-.+/.test(key) is false then return
+
+			name = key.replace /^theme-[a-z]+-/, ''
+			if @variables[name]?
+				@variables[name].value = value
+
+			compile()
 
 	compile: ->
 		content = [
@@ -41,10 +53,23 @@ RocketChat.theme = new class
 
 			RocketChat.settings.updateById 'css', data.css
 
-	addColor: (name, value) ->
+			RocketChat.Notifications.notifyAll 'theme-updated'
+
+	addVariable: (type, name, value, isPublic=true) ->
 		@variables[name] =
+			type: type
 			value: value
-			type: "color"
+
+		config =
+			group: 'Theme'
+			type: type
+			section: type
+			public: isPublic
+
+		RocketChat.settings.add "theme-#{type}-#{name}", value, config
+
+	addPublicColor: (name, value) ->
+		@addVariable 'color', name, value, true
 
 	getVariablesAsObject: ->
 		obj = {}
