@@ -7,14 +7,24 @@
 		{{#if edited}}
 			<span class="edited">({{_ "edited"}})</span>
 		{{/if}}
-
-		{{#if canEdit}}
-			<i class="icon-pencil edit-message"></i>
+		{{#if private}}
+			<span class="private">{{_ "Only_you_can_see_this_message"}}</span>
 		{{/if}}
-		{{#if canDelete}}
-			<i class="icon-trash-1 delete-message"></i>
+		{{#if actions.length}}
+			<div class="message-cog-container">
+				<i class="icon-cog message-cog"></i>
+				<div class="message-dropdown">
+					<ul>
+						<li class="message-dropdown-close"><i class=" icon-angle-left"></i></li>
+						{{#each actions}}
+							<li class="{{id}} {{classes}}" title="{{_t i18nLabel}}"><i class="{{icon}}"></i></li>
+						{{/each}}
+					</ul>
+				</div>
+			</div>
 		{{/if}}
 		</span>
+
 		<div class="body" dir="auto">
 			{{{body}}}
 		</div>

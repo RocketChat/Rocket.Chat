@@ -3,4 +3,5 @@
 # @namespace RocketChat
 ###
 
-RocketChat = {}
+RocketChat =
+	models: {}

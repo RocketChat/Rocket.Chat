@@ -91,6 +91,9 @@
 		setFlex ""
 		arrowBindHover()
 
+	getSideNav = ->
+		return sideNav
+
 	init: init
 	setFlex: setFlex
 	getFlex: getFlex
@@ -102,4 +105,5 @@
 	toggleCurrent: toggleCurrent
 	overArrow: overArrow
 	leaveArrow: leaveArrow
+	getSideNav: getSideNav
 )()

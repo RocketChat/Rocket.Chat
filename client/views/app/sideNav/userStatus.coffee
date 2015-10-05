@@ -17,8 +17,8 @@ Template.userStatus.helpers
 			username: username
 		}
 
-	isAdmin: ->
-		return Meteor.user()?.admin is true
+	showAdminOption: ->
+		return RocketChat.authz.hasAtLeastOnePermission( ['view-statistics', 'view-room-administration', 'view-user-administration', 'view-privileged-setting'])
 
 Template.userStatus.events
 	'click .options .status': (event) ->

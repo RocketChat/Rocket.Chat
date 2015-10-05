@@ -6,12 +6,6 @@ Meteor.methods
 		unless Meteor.call 'canAccessRoom', rid, fromId
 			return false
 
-		query =
-			_hidden: { $ne: true }
-			rid: rid
-			ts:
-				$gt: start
-
 		options =
 			sort:
 				ts: -1
@@ -19,4 +13,4 @@ Meteor.methods
 		if not RocketChat.settings.get 'Message_ShowEditedStatus'
 			options.fields = { ets: 0 }
 
-		return ChatMessage.find(query, options).fetch()
+		return RocketChat.models.Messages.findVisibleByRoomIdAfterTimestamp(rid, start, options).fetch()

@@ -1,3 +1,3 @@
 Meteor.methods
 	channelsList: ->
-		return { channels: ChatRoom.find({ t: 'c' }, { sort: { msgs:-1 } }).fetch() }
+		return { channels: RocketChat.models.Rooms.findByType('c', { sort: { msgs:-1 } }).fetch() }

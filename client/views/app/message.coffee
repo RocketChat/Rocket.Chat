@@ -1,5 +1,7 @@
 Template.message.helpers
-
+	actions: ->
+		return RocketChat.MessageAction.getButtons(this)
+		
 	own: ->
 		return 'own' if this.u?._id is Meteor.userId()
 
@@ -40,9 +42,25 @@ Template.message.helpers
 	pinned: ->
 		return this.pinned
 	canEdit: ->
-		return RocketChat.settings.get 'Message_AllowEditing'
+		hasPermission = RocketChat.authz.hasAtLeastOnePermission('edit-message', this.rid)
+		isEditAllowed = RocketChat.settings.get 'Message_AllowEditing'
+		editOwn = this.u?._id is Meteor.userId()
+
+		return unless hasPermission or (isEditAllowed and editOwn)
+
+		blockEditInMinutes = RocketChat.settings.get 'Message_AllowEditing_BlockEditInMinutes'
+		if blockEditInMinutes? and blockEditInMinutes isnt 0
+			msgTs = moment(this.ts) if this.ts?
+			currentTsDiff = moment().diff(msgTs, 'minutes') if msgTs?
+			return currentTsDiff < blockEditInMinutes
+		else
+			return true
+
 	canDelete: ->
-		return RocketChat.settings.get 'Message_AllowDeleting'
+		if RocketChat.authz.hasAtLeastOnePermission('delete-message', this.rid )
+			return true
+
+		return RocketChat.settings.get('Message_AllowDeleting') and this.u?._id is Meteor.userId()
 	canPin: ->
 		return RocketChat.settings.get 'Message_AllowPinning'
 	showEditedStatus: ->

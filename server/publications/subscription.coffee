@@ -4,9 +4,7 @@ Meteor.publish 'subscription', ->
 
 	console.log '[publish] subscription'.green
 
-	ChatSubscription.find
-		'u._id': this.userId
-	,
+	RocketChat.models.Subscriptions.findByUserId this.userId,
 		fields:
 			t: 1
 			ts: 1

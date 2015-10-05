@@ -7,7 +7,7 @@
 			</h2>
 		</head>
 		<div class="content">
-			{{#unless isAdmin}}
+			{{#unless hasPermission 'view-statistics'}}
 				<p>You are not authorized to view this page.</p>
 			{{else}}
 				{{#if isReady}}

@@ -258,6 +258,9 @@ label.required:after {
 	&.meteor-developer {
 		background-color: #de4f4f;
 	}
+	&.wordpress {
+		background-color: #1e8cbe;
+	}
 }
 
 .burger {
@@ -328,6 +331,7 @@ a.github-fork {
 
 .account-box {
 	.info {
+		background-color:@primary-background-color;
 		h4 {
 			color: rgba(255, 255, 255, 0.65);
 		}
@@ -436,7 +440,7 @@ a.github-fork {
 			background-color: #04436a;
 			color: @input-font-color;
 		}
-		
+
 		& label {
 			color:@input-font-color;
 		}
@@ -670,7 +674,7 @@ a.github-fork {
 		}
 	}
 	.wrapper {
-		.custom-scroll(transparent, #EAEAEA);
+		.custom-scroll(transparent, rgba(180,180,180,.75));
 	}
 	.footer {
 		background: #FCFCFC;
@@ -744,10 +748,7 @@ a.github-fork {
 			background: #FCFCFC;
 		}
 		.formatting-tips {
-			color: #888888;
-			&:hover {
-				color: #444444;
-			}
+			color: #444444;
 			q {
 				border-left-color: #ccc;
 			}

@@ -6,8 +6,4 @@ Meteor.methods
 		if not description? or description.trim() is ''
 			throw new Meteor.Error 'invalid-description', "[methods] reportMessage -> Invalid description"
 
-		ChatReports.insert
-			message: message
-			description: description
-			ts: new Date()
-			userId: Meteor.userId()
+		RocketChat.models.Reports.createWithMessageDescriptionAndUserId message, description, Meteor.userId()

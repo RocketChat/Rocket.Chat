@@ -1,10 +1,10 @@
-@import url(//fonts.googleapis.com/css?family=Roboto:300,400,500,600,700&subset=latin,cyrillic-ext,greek-ext,greek,vietnamese,latin-ext,cyrillic);
 @import "global/_variables.less";
 @import "utils/_lesshat.import.less";
 @import "utils/_reset.import.less";
 @import "utils/_keyframes.import.less";
 @import "utils/_preloader.import.less";
 @import "utils/_emojione.import.less";
+@import "utils/_fonts.import.less";
 .clearfix {
 	clear: both;
 	&::after {
@@ -18,6 +18,10 @@
 *:before,
 *:after {
 	.box-sizing(border-box);
+	-webkit-user-select: none;
+	-moz-user-select: none;
+	-ms-user-select: none;
+	user-select: none;
 }
 
 :focus {
@@ -142,8 +146,8 @@ blockquote {
 			height: 1px;
 			position: absolute;
 			right: 0px;
-			left: 50px;
-			top: -3px;
+			left: 20px;
+			top: 0px;
 			.transition(background-color, .5s, linear);
 		}
 
@@ -152,11 +156,11 @@ blockquote {
 			display: block;
 			position: absolute;
 			right: 0px;
-			top: -7px;
+			top: -4px;
 			text-transform: uppercase;
 			font-size: 8px;
 			line-height: 10px;
-			padding-left: 5px;
+			padding: 0 5px;
 			.transition(color, .5s, linear);
 		}
 	}
@@ -938,6 +942,7 @@ a.github-fork {
 		position: relative;
 		height: 100%;
 		padding: 10px 0px 10px 18px;
+		z-index:100;
 		.thumb {
 			float: left;
 			height: 100%;
@@ -1012,6 +1017,8 @@ a.github-fork {
 		direction: rtl;
 		.calc(height, ~'100% - ' @header-min-height + @footer-min-height);
 		.transition(transform .3s cubic-bezier(.5, 0, .1, 1));
+		z-index:99;
+
 		&._hidden {
 			.transform(translateY(-100%) translateY(-50px));
 		}
@@ -1306,9 +1313,8 @@ a.github-fork {
 		}
 	}
 	.empty {
-		padding-left: 10px;
 		font-size: 11px;
-		padding: 2px 0 2px 10px;
+		padding: 2px 10px;
 	}
 	.header {
 		position: absolute;
@@ -1521,6 +1527,35 @@ a.github-fork {
 			font-size: 12px;
 		}
 	}
+	.unread-rooms {
+		background-color: #068FE4;
+		position: absolute;
+		z-index: 1000;
+		width: 100%;
+		text-align: center;
+		line-height: 24px;
+		color: white;
+		text-transform: uppercase;
+		font-weight: bold;
+		display: -webkit-flex;
+		display: flex;
+		align-items: center;
+		-webkit-align-items: center;
+		justify-content: center;
+		-webkit-justify-content: center;
+
+		&.top-unread-rooms {
+			top: 60px;
+		}
+		&.bottom-unread-rooms {
+			bottom: 70px;
+		}
+
+		i {
+			margin-left: 5px;
+			font-size: 12px;
+		}
+	}
 }
 
 .new-room-highlight a {
@@ -1554,7 +1589,7 @@ a.github-fork {
 	top: 0;
 	left: 0;
 	width: 100%;
-	height: @header-min-height;
+	height: @header-min-height+1px;
 	&.visible {
 		h2 {
 			overflow: visible;
@@ -1681,10 +1716,12 @@ a.github-fork {
 	right: 0;
 	width: auto;
 	height: auto;
+	margin-right: 40px;
 	.transition(width .25s cubic-bezier(.5, 0, .1, 1));
 	&.flex-opened {
 		right: @flex-tab-width;
 		.flex-tab {
+			right: 40px;
 			.transform(translateX(0));
 		}
 	}
@@ -1748,6 +1785,15 @@ a.github-fork {
 				border: 1px solid;
 				padding: 20px;
 				border-radius: 5px;
+
+				.section-helper {
+					padding: 20px 20px 40px;
+
+					pre {
+						display: inline;
+						background-color: #eee;
+					}
+				}
 			}
 		}
 		h1,
@@ -1924,7 +1970,7 @@ a.github-fork {
 	line-height: 30px;
 	font-size: 12px;
 	padding: 0 10px;
-	box-shadow: 1px 1px 2px rgba(0,0,0,.2);
+	box-shadow: 0px 1px 2px rgba(0,0,0,.2);
 	color: #068FE4;
 	text-transform: uppercase;
 	text-align: center;
@@ -2006,7 +2052,7 @@ a.github-fork {
 	}
 	.footer {
 		position: absolute;
-		padding: 10px 20px 0px 20px;
+		padding: 8px 20px 0px 20px;
 		border-top: 1px solid;
 		z-index: 100;
 		bottom: 0;
@@ -2079,6 +2125,7 @@ a.github-fork {
 			}
 			> .file {
 				width: 44px;
+				height: 36px;
 				font-size: 22px;
 				padding: 6px 0;
 				text-align: center;
@@ -2087,6 +2134,7 @@ a.github-fork {
 				border-right: none;
 				cursor: pointer;
 				.transition(background-color 0.1s linear, color 0.1s linear);
+
 				&:hover {
 				}
 
@@ -2120,6 +2168,7 @@ a.github-fork {
 		}
 		textarea {
 			display: block;
+			margin: 0px;
 			padding-top: 9px;
 			padding-bottom: 9px;
 			padding-right: 38px;
@@ -2127,6 +2176,7 @@ a.github-fork {
 			border-bottom-left-radius: 0;
 			overflow-y: hidden;
 			resize: none;
+			line-height: 16px;
 			&.editing {
 			}
 		}
@@ -2157,12 +2207,19 @@ a.github-fork {
 			height: 23px;
 			font-size: 11px;
 			padding: 3px;
-			display: inline-block;
-			white-space: nowrap;
+			display: -webkit-flex;
+			display: flex;
+			align-items: center;
 			overflow: hidden;
 			position: absolute;
 			right: 20px;
+			opacity: .5;
+			.transition(opacity .2 linear);
+			> * {
+				margin: 0 3px;
+			}
 			&:hover {
+				opacity: 1;
 			}
 			q {
 				padding: 0 0 0 3px;
@@ -2216,6 +2273,12 @@ a.github-fork {
 		vertical-align: top;
 		width: 100%;
 	}
+
+	&.admin {
+		.message:hover:not(.system) .delete-message {
+			display: inline-block;
+		}
+	}
 }
 
 .messages-box {
@@ -2268,14 +2331,41 @@ a.github-fork {
 	}
 }
 
+.ticks-bar {
+	width: 10px;
+	position: absolute;
+	right: 2px;
+	height: 100%;
+
+	.tick {
+		background-color: #008ce3;
+		height: 2px;
+		width: 100%;
+		top: 50%;
+		position: absolute;
+	}
+}
+
 .message {
 	font-size: 14px;
-	padding-left: 50px;
+	padding: 18px 20px 4px 70px;
 	position: relative;
 	line-height: 20px;
-	margin: 12px 20px 5px;
-	margin-top: 12px;
 	min-height: 40px;
+
+	.body, .user.user-card-message, .time {
+		-webkit-user-select: all;
+		-moz-user-select: all;
+		-ms-user-select: all;
+		user-select: all;
+		* {
+			-webkit-user-select: all;
+			-moz-user-select: all;
+			-ms-user-select: all;
+			user-select: all;
+		}
+	}
+
 	&:nth-child(1) {
 		margin-top: 0;
 	}
@@ -2292,8 +2382,7 @@ a.github-fork {
 			font-size: 12px;
 			font-weight: 600;
 			text-align: center;
-			.calc(left,
-			~"50% - 70px");
+			.calc(left,~"50% - 70px");
 			z-index: 10;
 			padding: 0 10px;
 			min-width: 140px;
@@ -2304,24 +2393,97 @@ a.github-fork {
 			position: absolute;
 			top: -20px;
 			left: 0;
-			width: 100%;
 			border-top: 1px solid;
+			width: 96%;
+			margin-left: 2%;
 		}
 	}
 	.edit-message {
 		display: none;
 		cursor: pointer;
 	}
-	&.own:hover:not(.system) .edit-message {
-		display: inline-block;
+	&:hover:not(.system) .edit-message {
+		display: block;
 	}
 	.delete-message {
 		display: none;
 		cursor: pointer;
 	}
-	&.own:hover:not(.system) .delete-message {
-		display: inline-block;
+	&:hover:not(.system) .delete-message {
+		display: block;
 	}
+	.message-cog-container {
+		position: relative;
+		display: inline-block;
+		.message-cog {
+			visibility: hidden;
+			cursor: pointer;
+		}
+	}
+	&:hover:not(.system) .message-cog {
+		visibility: visible;
+	}
+
+	@keyframes dropdown-in {
+		0% {
+			display: none;
+			opacity: 0;
+		}
+
+		1% {
+			display: block;
+			opacity: 0;
+			transform: scale(0);
+		}
+
+		100% {
+			opacity: 1;
+			transform: scale(1);
+		}
+	}
+
+	.message-dropdown {
+		position: absolute;
+		top: -5px;
+		left: -2px;
+		z-index: 1000;
+		display: none;
+		background-color: #fff;
+		border: 1px solid #eee;
+		border-radius: 4px;
+		overflow: hidden;
+		box-shadow: 1px 1px 4px #B3B3B3;
+		transition: transform .15s ease-in-out, opacity .15s ease-in-out;
+		animation: dropdown-in .15s ease-in-out;
+
+		ul {
+			display: flex;
+			display: -webkit-flex;
+			padding: 0px;
+			font-size: 14px;
+
+			li {
+				display: block;
+				padding: 0px 8px;
+				font-weight: 400;
+				line-height: 26px;
+				cursor: pointer;
+				color: #666;
+				&:first-child {
+					padding-left: 6px;
+					background-color: #f8f8f8;
+					border-right: 1px solid #eee;
+				}
+				&:last-child {
+					padding-right: 13px;
+				}
+				&:hover {
+					background-color: #eee;
+				}
+			}
+		}
+	}
+
 	.user {
 		display: inline-block;
 		font-weight: 600;
@@ -2331,8 +2493,8 @@ a.github-fork {
 	}
 	.thumb {
 		position: absolute;
-		left: 0;
-		top: 0;
+		left: 20px;
+		top: 20px;
 		display: block;
 		width: 40px;
 		height: 40px;
@@ -2340,9 +2502,13 @@ a.github-fork {
 	.info {
 		font-size: 12px;
 	}
+	.private {
+		margin-left: 10px;
+	}
 	&.sequential {
-		margin-top: 14px;
 		min-height: 20px;
+		padding-top: 4px;
+		padding-bottom: 4px;
 		.user {
 			display: none;
 		}
@@ -2352,13 +2518,16 @@ a.github-fork {
 		.info {
 			position: absolute;
 			text-align: right;
-			left: -20px;
+			left: 0px;
 			width: 65px;
 			.time {
 				display: none;
 			}
 			.edited {
 				display: inline-block;
+			}
+			.private {
+				display: none;
 			}
 			.edit-message {
 				float: left;
@@ -2368,6 +2537,12 @@ a.github-fork {
 				float: left;
 			}
 		}
+
+		// .message-dropdown {
+		// 	top: 100%;
+		// 	left: 0;
+		// }
+
 		&:hover {
 			.time {
 				display: inline-block;
@@ -2404,6 +2579,34 @@ a.github-fork {
 	}
 }
 
+.flex-tab-bar {
+	position: absolute;
+	width: 40px;
+	height: 100%;
+	top: 0;
+	right: 0;
+	background: #FCFCFC;
+	border-left: 1px solid #eaeaea;
+	z-index: 13;
+
+	.tab-button {
+		cursor: pointer;
+		padding: 10px;
+		background: #FCFCFC;
+		border-bottom: 1px solid #eaeaea;
+
+		&:hover {
+			background: #EAEAEA;
+		}
+
+		&.active {
+			background-color: #F4F4F4;
+			margin-left: -1px;
+			padding-left: 11px;
+		}
+	}
+}
+
 // FLEX-TAB and FLEX-TAB views
 .flex-tab {
 	border-left: 1px solid;
@@ -2429,14 +2632,6 @@ a.github-fork {
 		> a,
 		> form {
 			float: left;
-		}
-		&:before {
-			content: " ";
-			height: 1px;
-			left: 15px;
-			position: absolute;
-			bottom: 0px;
-			.calc(width, ~'100% - 15px');
 		}
 		.button {
 			min-height: 36px;
@@ -2526,7 +2721,6 @@ a.github-fork {
 	}
 	.content {
 		&:extend(.fill-all);
-		margin-top: 60px;
 		overflow-x: hidden;
 		overflow-y: auto;
 		-webkit-overflow-scrolling: touch;
@@ -3362,10 +3556,14 @@ a.github-fork {
 }
 
 .mention-link.mention-link-me {
-	background-color: #E6F4FD;
+	background-color: #008ce3;
 	border-radius: 4px;
-	padding: 0px 3px 2px 2px;
+	padding: 0px 4px 2px 4px;
 	font-weight: bold;
+	color: white;
+	&:hover {
+		color: white;
+	}
 }
 
 .avatar-suggestions {
@@ -3632,6 +3830,20 @@ a.github-fork {
 		-moz-user-select: none;
 		-ms-user-select: none;
 		user-select: none;
+	}
+}
+
+.message-popup-results {
+	&.notready {
+		.message-popup-items {
+			background-image: url(/images/logo/loading.gif);
+			background-repeat: no-repeat;
+			background-position: 50% 50%;
+			height: 100px;
+		}
+		.popup-item {
+			display: none;
+		}
 	}
 }
 

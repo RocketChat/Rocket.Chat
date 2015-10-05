@@ -4,6 +4,8 @@
 ###
 RocketChat.settings = {}
 
+RocketChat.settings.ts = new Date
+
 RocketChat.settings.get = (_id) ->
 	return Meteor.settings?[_id]
 

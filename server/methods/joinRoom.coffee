@@ -1,50 +1,39 @@
 Meteor.methods
 	joinRoom: (rid) ->
 
-		room = ChatRoom.findOne rid
+		room = RocketChat.models.Rooms.findOneById rid
+
+		console.log '[methods] joinRoom -> '.green, 'userId:', Meteor.userId(), 'arguments:', arguments
+
+		if not room?
+			throw new Meteor.Error 500, 'No channel with this id'
 
 		if room.t isnt 'c'
 			throw new Meteor.Error 403, '[methods] joinRoom -> Not allowed'
 
-		# verify if user is already in room
-		# if room.usernames.indexOf(user.username) is -1
-		console.log '[methods] joinRoom -> '.green, 'userId:', Meteor.userId(), 'arguments:', arguments
-
 		now = new Date()
 
-		user = Meteor.users.findOne Meteor.userId()
+		# Check if user is already in room
+		subscription = RocketChat.models.Subscriptions.findOneByRoomIdAndUserId rid, Meteor.userId()
+		if subscription?
+			return
+
+		user = RocketChat.models.Users.findOneById Meteor.userId()
 
 		RocketChat.callbacks.run 'beforeJoinRoom', user, room
 
-		update =
-			$addToSet:
-				usernames: user.username
+		RocketChat.models.Rooms.addUsernameById rid, user.username
 
-		ChatRoom.update rid, update
-
-		ChatSubscription.insert
-			rid: rid
+		RocketChat.models.Subscriptions.createWithRoomAndUser room, user,
 			ts: now
-			name: room.name
-			t: room.t
 			open: true
 			alert: true
 			unread: 1
-			u:
-				_id: user._id
-				username: user.username
 
-		ChatMessage.insert
-			rid: rid
+		RocketChat.models.Messages.createUserJoinWithRoomIdAndUser rid, user,
 			ts: now
-			t: 'uj'
-			msg: user.name
-			u:
-				_id: user._id
-				username: user.username
 
 		Meteor.defer ->
-
 			RocketChat.callbacks.run 'afterJoinRoom', user, room
 
 		return true

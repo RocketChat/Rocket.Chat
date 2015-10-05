@@ -10,7 +10,8 @@ Template.listChannelsFlex.events
 		SideNav.closeFlex()
 
 	'click footer .create': ->
-		SideNav.setFlex "createChannelFlex"
+		if RocketChat.authz.hasAtLeastOnePermission( 'create-c')
+			SideNav.setFlex "createChannelFlex"
 
 	'mouseenter header': ->
 		SideNav.overArrow()
