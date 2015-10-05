@@ -43,7 +43,7 @@ rocketchat:slashcommands-leave
 rocketchat:spotify
 rocketchat:statistics
 rocketchat:webrtc
-rocketchat:chatops
+#rocketchat:chatops
 #rocketchat:livechat
 #rocketchat:hubot
 #rocketchat:irc
