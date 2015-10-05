@@ -8,6 +8,7 @@ Package.describe({
 Package.onUse(function(api) {
 	api.versionsFrom('1.0');
 
+	api.use('rocketchat:lib');
 	api.use('coffeescript');
 	api.use('webapp');
 	api.use('less@2.5.0_3');
