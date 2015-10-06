@@ -1,6 +1,6 @@
 Template.adminUserInfo.helpers
 	name: ->
-		return if @name then @name else TAPi18next.t 'project:Unnamed'
+		return if @name then @name else TAPi18n.__ 'Unnamed'
 	email: ->
 		return @emails?[0]?.address
 	phoneNumber: ->
