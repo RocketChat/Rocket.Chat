@@ -136,6 +136,7 @@ rocketchat:logger@0.0.1
 rocketchat:markdown@0.0.1
 rocketchat:me@0.0.1
 rocketchat:mentions@0.0.1
+rocketchat:message-star@0.0.1
 rocketchat:oembed@0.0.1
 rocketchat:slashcommands-invite@0.0.1
 rocketchat:slashcommands-join@0.0.1
