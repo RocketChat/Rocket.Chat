@@ -58,7 +58,7 @@ Meteor.startup ->
 	RocketChat.MessageAction.addButton
 		id: 'edit-message'
 		icon: 'icon-pencil'
-		i18nLabel: 'rocketchat-lib:Edit'
+		i18nLabel: 'Edit'
 		action: (event, instance) ->
 			message = $(event.currentTarget).closest('.message')[0]
 			instance.chatMessages.edit(message)
@@ -86,7 +86,7 @@ Meteor.startup ->
 	RocketChat.MessageAction.addButton
 		id: 'delete-message'
 		icon: 'icon-trash-1'
-		i18nLabel: 'rocketchat-lib:Delete'
+		i18nLabel: 'Delete'
 		action: (event, instance) ->
 			message = @_arguments[1]
 			msg = $(event.currentTarget).closest('.message')[0]
