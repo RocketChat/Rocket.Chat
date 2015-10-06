@@ -2,7 +2,7 @@ Meteor.startup ->
 	RocketChat.MessageAction.addButton
 		id: 'star-message'
 		icon: 'icon-star-empty'
-		i18nLabel: 'rocketchat-message-star:Star_Message'
+		i18nLabel: 'Star_Message'
 		action: (event, instance) ->
 			message = @_arguments[1]
 			message.starred = Meteor.userId()
@@ -16,7 +16,7 @@ Meteor.startup ->
 	RocketChat.MessageAction.addButton
 		id: 'unstar-message'
 		icon: 'icon-star'
-		i18nLabel: 'rocketchat-message-star:Unstar_Message'
+		i18nLabel: 'Unstar_Message'
 		action: (event, instance) ->
 			message = @_arguments[1]
 			message.starred = false

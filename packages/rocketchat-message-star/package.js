@@ -10,22 +10,9 @@ Package.onUse(function(api) {
 
 	api.use([
 		'coffeescript',
-		'less',
+		'less@2.5.0',
 		'rocketchat:lib@0.0.1'
 	]);
-
-	// TAPi18n
-	api.use('templating', 'client');
-	var _ = Npm.require('underscore');
-	var fs = Npm.require('fs');
-	tapi18nFiles = _.compact(_.map(fs.readdirSync('packages/rocketchat-message-star/i18n'), function(filename) {
-		if (fs.statSync('packages/rocketchat-message-star/i18n/' + filename).size > 16) {
-			return 'i18n/' + filename;
-		}
-	}));
-	api.use(["tap:i18n@1.5.1"], ["client", "server"]);
-	api.imply('tap:i18n');
-	api.addFiles("package-tap.i18n", ["client", "server"]);
 
 	api.addFiles([
 		'client/lib/StarredMessage.coffee',
@@ -44,7 +31,17 @@ Package.onUse(function(api) {
 		'server/startup/indexes.coffee'
 	], 'server');
 
-	// TAPi18n -- needs to be added last
+	// TAPi18n
+	api.use('templating', 'client');
+	var _ = Npm.require('underscore');
+	var fs = Npm.require('fs');
+	tapi18nFiles = _.compact(_.map(fs.readdirSync('packages/rocketchat-message-star/i18n'), function(filename) {
+		if (fs.statSync('packages/rocketchat-message-star/i18n/' + filename).size > 16) {
+			return 'i18n/' + filename;
+		}
+	}));
+	api.use(["tap:i18n@1.5.1"], ["client", "server"]);
+	api.imply('tap:i18n');
 	api.addFiles(tapi18nFiles, ["client", "server"]);
 });
 
