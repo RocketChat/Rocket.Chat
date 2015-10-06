@@ -18,9 +18,7 @@ class Markdown
 			</a>')
 
 			# Support [Text](http://link)
-			msg = msg.replace(/\[([\d\w \.-_]+)\]\((https?:\/\/([\da-z\.-]+)([\/\w \.-]*)*\/?)\)/gm, '<a href="$2">$1</a>')
-
-			msg = msg.replace()
+			msg = msg.replace(/\[([\d\w\.-_] ?)+\]\((https?:\/\/([\da-z\.-]+)([\/\w \.-]*)*\/?)\)/gm, '<a href="$2">$1</a>')
 
 			# Support `text`
 			msg = msg.replace(/(^|&gt;|[ >_*~])\`([^`]+)\`([<_*~]|\B|\b|$)/gm, '$1<span class="copyonly">`</span><code class="inline">$2</code><span class="copyonly">`</span>$3')
