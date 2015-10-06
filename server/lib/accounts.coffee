@@ -65,7 +65,7 @@ Accounts.validateLoginAttempt (login) ->
 		return login.allowed
 
 	if login.user?.active isnt true
-		throw new Meteor.Error 'inactive-user', TAPi18next.t 'project:User_is_not_activated'
+		throw new Meteor.Error 'inactive-user', TAPi18n.__ 'User_is_not_activated'
 		return false
 
 	if login.type is 'password' and RocketChat.settings.get('Accounts_EmailVerification') is true

@@ -2,12 +2,11 @@ RocketChat.slashCommands =
 	commands: {}
 
 RocketChat.slashCommands.add = (command, callback, options) ->
-	if not RocketChat.slashCommands.commands[command]?
-		RocketChat.slashCommands.commands[command] =
-			command: command
-			callback: callback
-			params: options?.params
-			description: options?.description
+	RocketChat.slashCommands.commands[command] =
+		command: command
+		callback: callback
+		params: options?.params
+		description: options?.description
 
 	return
 
