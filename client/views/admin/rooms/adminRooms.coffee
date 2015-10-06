@@ -20,11 +20,11 @@ Template.adminRooms.helpers
 			return @usernames.join ' x '
 	type: ->
 		if @t is 'c'
-			return TAPi18next.t 'project:Channel'
+			return TAPi18n.__ 'Channel'
 		else if @t is 'd'
-			return TAPi18next.t 'project:Direct Message'
+			return TAPi18n.__ 'Direct Message'
 		if @t is 'p'
-			return TAPi18next.t 'project:Private Group'
+			return TAPi18n.__ 'Private Group'
 	roomData: ->
 		return ChatRoom.findOne Session.get 'adminRoomsSelected'
 
