@@ -5,6 +5,7 @@
 @import "utils/_preloader.import.less";
 @import "utils/_emojione.import.less";
 @import "utils/_fonts.import.less";
+@import "utils/_octicons.less";
 .clearfix {
 	clear: both;
 	&::after {
@@ -265,9 +266,9 @@ blockquote {
 		margin-bottom: 0;
 	}
 	&.search {
-		.icon-search {
+		.octicon {
 			position: absolute;
-			left: 5px;
+			left: 10px;
 			top: 10px;
 			font-weight: 400;
 		}
@@ -295,7 +296,7 @@ blockquote {
 			animation-timing-function: linear;
 		}
 		input {
-			padding-left: 25px;
+			padding-left: 20px;
 		}
 	}
 	> label {
@@ -2591,6 +2592,7 @@ a.github-fork {
 		padding: 10px;
 		background: #FCFCFC;
 		border-bottom: 1px solid #eaeaea;
+		text-align: center;
 
 		&:hover {
 			background: #EAEAEA;
@@ -2600,6 +2602,7 @@ a.github-fork {
 			background-color: #F4F4F4;
 			margin-left: -1px;
 			padding-left: 11px;
+			border-right: 3px solid #ff0000;
 		}
 	}
 }
