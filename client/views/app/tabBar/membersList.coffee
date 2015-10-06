@@ -65,13 +65,6 @@ Template.membersList.helpers
 	flexUserInfo: ->
 		username = Session.get('showUserInfo')
 		return Meteor.users.findOne({ username: String(username) }) or { username: String(username) }
-	showUserInfo: ->
-		webrtc = WebRTC.getInstanceByRoomId(Session.get('openedRoom'))
-		overlay = @overlay?
-		if overlay isnt webrtc.overlayEnabled.get()
-			return false
-		videoActive = webrtc.localUrl.get()? or webrtc.remoteItems.get()?.length > 0
-		return Session.get('showUserInfo') and not videoActive
 
 
 Template.membersList.events
