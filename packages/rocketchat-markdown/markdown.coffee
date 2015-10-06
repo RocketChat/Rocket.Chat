@@ -18,7 +18,7 @@ class Markdown
 			</a>')
 
 			# Support [Text](http://link)
-			msg = msg.replace(/\[([\d\w\.-_] ?)+\]\((https?:\/\/([\da-z\.-]+)([\/\w \.-]*)*\/?)\)/gm, '<a href="$2">$1</a>')
+			msg = msg.replace(/\[(([\d\w\.-_] ?)+)\]\((https?:\/\/([\da-z\.-]+)([\/\w \.-]*)*\/?)\)/gm, '<a href="$3">$1</a>')
 
 			# Support # Text for h1
 			msg = msg.replace(/^# (([\w\d-_\/\*\.,\\] ?)+)/gm, '<h1>$1</h1>')
