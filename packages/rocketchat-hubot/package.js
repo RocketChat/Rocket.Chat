@@ -20,7 +20,7 @@ Package.onUse(function(api) {
 	], ['server']);
 
 	// TAPi18n
-	api.use('templating', client);
+	api.use('templating', 'client');
 	var _ = Npm.require('underscore');
 	var fs = Npm.require('fs');
 	tapi18nFiles = _.compact(_.map(fs.readdirSync('packages/rocketchat-hubot/i18n'), function(filename) {

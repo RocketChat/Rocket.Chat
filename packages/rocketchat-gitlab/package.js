@@ -16,7 +16,7 @@ Package.onUse(function(api) {
     api.addFiles('startup.coffee', 'server');
 
     // TAPi18n
-    api.use('templating', client);
+    api.use('templating', 'client');
     var _ = Npm.require('underscore');
     var fs = Npm.require('fs');
     tapi18nFiles = _.compact(_.map(fs.readdirSync('packages/rocketchat-gitlab/i18n'), function(filename) {
