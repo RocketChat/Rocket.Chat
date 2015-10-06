@@ -20,17 +20,18 @@ class Markdown
 			# Support [Text](http://link)
 			msg = msg.replace(/\[(([\d\w\.-_] ?)+)\]\((https?:\/\/([\da-z\.-]+)([\/\w \.-]*)*\/?)\)/gm, '<a href="$3">$1</a>')
 
-			# Support # Text for h1
-			msg = msg.replace(/^# (([\w\d-_\/\*\.,\\] ?)+)/gm, '<h1>$1</h1>')
+			if RocketChat.settings.get('Markdown_Headers')
+				# Support # Text for h1
+				msg = msg.replace(/^# (([\w\d-_\/\*\.,\\] ?)+)/gm, '<h1>$1</h1>')
 
-			# Support # Text for h2
-			msg = msg.replace(/^## (([\w\d-_\/\*\.,\\] ?)+)/gm, '<h2>$1</h2>')
+				# Support # Text for h2
+				msg = msg.replace(/^## (([\w\d-_\/\*\.,\\] ?)+)/gm, '<h2>$1</h2>')
 
-			# Support # Text for h3
-			msg = msg.replace(/^### (([\w\d-_\/\*\.,\\] ?)+)/gm, '<h3>$1</h4>')
+				# Support # Text for h3
+				msg = msg.replace(/^### (([\w\d-_\/\*\.,\\] ?)+)/gm, '<h3>$1</h4>')
 
-			# Support # Text for h4
-			msg = msg.replace(/^#### (([\w\d-_\/\*\.,\\] ?)+)/gm, '<h4>$1</h4>')
+				# Support # Text for h4
+				msg = msg.replace(/^#### (([\w\d-_\/\*\.,\\] ?)+)/gm, '<h4>$1</h4>')
 
 			# Support `text`
 			msg = msg.replace(/(^|&gt;|[ >_*~])\`([^`\r\n]+)\`([<_*~]|\B|\b|$)/gm, '$1<span class="copyonly">`</span><code class="inline">$2</code><span class="copyonly">`</span>$3')
