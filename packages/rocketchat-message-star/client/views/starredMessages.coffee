@@ -1,4 +1,7 @@
 Template.starredMessages.helpers
+	hasMessages: ->
+		return StarredMessage.find({ rid: Session.get 'openedRoom' }, { sort: { ts: -1 } }).count() > 0
+
 	messages: ->
 		return StarredMessage.find { rid: Session.get 'openedRoom' }, { sort: { ts: -1 } }
 
