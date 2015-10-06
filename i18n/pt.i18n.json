@@ -250,6 +250,8 @@
   "Room_name_changed" : "Nome da sala alterado para: <em>__room_name__</em> por <em>__user_by__</em>",
   "Room_name_changed_successfully" : "Nome da sala alterado com sucesso",
   "Room_not_found" : "Sala não encontrada",
+  "Room_uploaded_file_list" : "Lista de arquivos",
+  "Room_uploaded_file_list_empty" : "Nenhum arquivo disponível",
   "room_user_count" : "%s usuários",
   "Rooms" : "Salas",
   "Save" : "Salvar",
