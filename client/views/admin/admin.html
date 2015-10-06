@@ -43,7 +43,7 @@
 														<input type="text" name="{{_id}}" value="{{value}}" />
 													{{/if}}
 													{{#if description}}
-														<small>{{description}}</small>
+														<p><small>{{{description}}}</small></p>
 													{{/if}}
 												</div>
 											</div>
@@ -54,7 +54,7 @@
 												<div>
 													<input type="number" name="{{_id}}" value="{{value}}" />
 													{{#if description}}
-														<small>{{description}}</small>
+														<p><small>{{{description}}}</small></p>
 													{{/if}}
 												</div>
 											</div>
@@ -65,10 +65,25 @@
 												<div>
 													<label><input type="radio" name="{{_id}}" value="1" checked="{{$eq value true}}" /> {{_ "True"}}</label>
 													<label><input type="radio" name="{{_id}}" value="0" checked="{{$eq value false}}" /> {{_ "False"}}</label>
+													{{#if description}}
+														<p><small>{{{description}}}</small></p>
+													{{/if}}
 												</div>
-												{{#if description}}
-													<small>{{description}}</small>
-												{{/if}}
+											</div>
+										{{/if}}
+										{{#if $eq type 'select'}}
+											<div class="input-line double-col">
+												<label>{{label}}</label>
+												<div>
+													<select name="{{_id}}">
+														{{#each values}}
+															<option value="{{key}}" selected="{{selectedOption ../_id key}}">{{_ i18nLabel}}</option>
+														{{/each}}
+													</select>
+													{{#if description}}
+														<p><small>{{{description}}}</small></p>
+													{{/if}}
+												</div>
 											</div>
 										{{/if}}
 									{{/each}}

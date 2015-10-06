@@ -40,6 +40,8 @@ Template.admin.helpers
 	callbackURL: (section) ->
 		id = s.strRight(section, 'Custom OAuth: ').toLowerCase()
 		return Meteor.absoluteUrl('_oauth/' + id)
+	selectedOption: (_id, val) ->
+		return RocketChat.settings.get(_id) is val
 
 Template.admin.events
 	"click .submit .save": (e, t) ->

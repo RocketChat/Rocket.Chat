@@ -3,9 +3,24 @@ if not RocketChat.models.Settings.findOneById 'uniqueID'
 	RocketChat.models.Settings.createWithIdAndValue 'uniqueID', Random.id()
 
 RocketChat.settings.addGroup 'Accounts'
-RocketChat.settings.add 'Accounts_RegistrationRequired', true, { type: 'boolean', group: 'Accounts', public: true, section: 'Registration' }
+# RocketChat.settings.add 'Accounts_RegistrationRequired', true, { type: 'boolean', group: 'Accounts', public: true, section: 'Registration' }
 RocketChat.settings.add 'Accounts_EmailVerification', false, { type: 'boolean', group: 'Accounts', public: true, section: 'Registration' }
 RocketChat.settings.add 'Accounts_ManuallyApproveNewUsers', false, { type: 'boolean', group: 'Accounts', section: 'Registration' }
+RocketChat.settings.add 'Accounts_AccessPolicy', 'NoPublic',
+	type: 'select',
+	values: [
+		key: 'NoPublic'
+		i18nLabel: 'Accounts_AccessPolicy_No_Public'
+	,
+		key: 'PublicRead'
+		i18nLabel: 'Accounts_AccessPolicy_Public_Read'
+	,
+		key: 'PublicReadWrite'
+		i18nLabel: 'Accounts_AccessPolicy_Public_ReadWrite'
+	]
+	group: 'Accounts'
+	i18nDescription: 'Accounts_AccessPolicy_Description'
+	section: 'Registration'
 
 RocketChat.settings.add 'Accounts_AvatarStoreType', 'GridFS', { type: 'string', group: 'Accounts', section: 'Avatar' }
 RocketChat.settings.add 'Accounts_AvatarStorePath', '/var/www/rocket.chat/uploads/avatar/', { type: 'string', group: 'Accounts', section: 'Avatar' }
