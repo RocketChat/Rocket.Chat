@@ -11,6 +11,7 @@ Package.onUse(function(api) {
 	api.use([
 		'coffeescript',
 		'check',
+		'tracker',
 		'rocketchat:lib@0.0.1'
 	]);
 
