@@ -1,0 +1,22 @@
+<template name="starredMessages">
+	<div class="control">
+		<div class="header">
+			<h2>{{_ "Starred_Messages"}}</h2>
+		</div>
+	</div>
+	<ul class="starred-messages-list scrollable">
+	{{#if Template.subscriptionsReady}}
+		{{#if hasMessages}}
+			{{#each messages}}
+				{{#nrr nrrargs 'message' .}}{{/nrr}}
+			{{/each}}
+		{{else}}
+			<li class="empty">
+				{{_ "No_starred_messages"}}
+			</li>
+		{{/if}}
+	{{else}}
+		{{> loading}}
+	{{/if}}
+	</ul>
+</template>
