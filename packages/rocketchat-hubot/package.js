@@ -14,6 +14,11 @@ Package.onUse(function(api) {
 		'rocketchat:lib@0.0.1'
 	]);
 
+	api.addFiles([
+		'hubot.coffee',
+		'settings.coffee',
+	], ['server']);
+
 	// TAPi18n
 	api.use('templating', 'client');
 	var _ = Npm.require('underscore');
@@ -23,17 +28,9 @@ Package.onUse(function(api) {
 			return 'i18n/' + filename;
 		}
 	}));
-	api.use(["tap:i18n@1.5.1"], ["client", "server"]);
+	api.use('tap:i18n@1.6.1', ['client', 'server']);
 	api.imply('tap:i18n');
-	api.addFiles("package-tap.i18n", ["client", "server"]);
-
-	api.addFiles([
-		'hubot.coffee',
-		'settings.coffee',
-	], ['server']);
-
-	// TAPi18n -- needs to be added last
-	api.addFiles(tapi18nFiles, ["client", "server"]);
+	api.addFiles(tapi18nFiles, ['client', 'server']);
 
 	api.export('Hubot', ['server']);
 	api.export('HubotScripts', ['server']);
