@@ -5,6 +5,7 @@
 @import "utils/_preloader.import.less";
 @import "utils/_emojione.import.less";
 @import "utils/_fonts.import.less";
+@import "utils/_octicons.less";
 .clearfix {
 	clear: both;
 	&::after {
@@ -265,9 +266,9 @@ blockquote {
 		margin-bottom: 0;
 	}
 	&.search {
-		.icon-search {
+		.octicon {
 			position: absolute;
-			left: 5px;
+			left: 10px;
 			top: 10px;
 			font-weight: 400;
 		}
@@ -295,7 +296,7 @@ blockquote {
 			animation-timing-function: linear;
 		}
 		input {
-			padding-left: 25px;
+			padding-left: 20px;
 		}
 	}
 	> label {
@@ -2272,7 +2273,7 @@ a.github-fork {
 	}
 
 	&.admin {
-		.message:hover:not(.system) .delete-message {
+		.message:hover:not(.system) .message-action {
 			display: inline-block;
 		}
 	}
@@ -2395,18 +2396,11 @@ a.github-fork {
 			margin-left: 2%;
 		}
 	}
-	.edit-message {
+	.message-action {
 		display: none;
 		cursor: pointer;
 	}
-	&:hover:not(.system) .edit-message {
-		display: block;
-	}
-	.delete-message {
-		display: none;
-		cursor: pointer;
-	}
-	&:hover:not(.system) .delete-message {
+	&:hover:not(.system) .message-action {
 		display: block;
 	}
 	.message-cog-container {
@@ -2526,12 +2520,9 @@ a.github-fork {
 			.private {
 				display: none;
 			}
-			.edit-message {
+			.message-action {
 				float: left;
 				margin-left: 1px;
-			}
-			.delete-message {
-				float: left;
 			}
 		}
 
@@ -2591,6 +2582,7 @@ a.github-fork {
 		padding: 10px;
 		background: #FCFCFC;
 		border-bottom: 1px solid #eaeaea;
+		text-align: center;
 
 		&:hover {
 			background: #EAEAEA;
@@ -2600,6 +2592,7 @@ a.github-fork {
 			background-color: #F4F4F4;
 			margin-left: -1px;
 			padding-left: 11px;
+			border-right: 3px solid #ff0000;
 		}
 	}
 }
@@ -2629,6 +2622,16 @@ a.github-fork {
 		> a,
 		> form {
 			float: left;
+		}
+		.header {
+			text-align: center;
+			padding: 5px 30px 20px;
+			margin: 5px 0 15px;
+			h2 {
+				font-size: 20px;
+				line-height: 25px;
+				font-weight: 300;
+			}
 		}
 		.button {
 			min-height: 36px;

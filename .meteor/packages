@@ -36,6 +36,7 @@ rocketchat:logger
 rocketchat:markdown
 rocketchat:me
 rocketchat:mentions
+rocketchat:message-star
 rocketchat:oembed
 rocketchat:slashcommands-invite
 rocketchat:slashcommands-join
@@ -102,3 +103,5 @@ random
 ejson
 spacebars
 check
+rocketchat:github-enterprise
+rocketchat:chatops

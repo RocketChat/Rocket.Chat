@@ -142,7 +142,7 @@ Checkout [Github Wiki](https://github.com/RocketChat/Rocket.Chat/wiki) (coming s
 
 ## Production Deployment
 
-### Unbuntu VPS or server
+### Ubuntu VPS or server
 
 Follow these [deployment instructions](https://github.com/RocketChat/Rocket.Chat/wiki/Deploy-Rocket.Chat-without-docker).
 

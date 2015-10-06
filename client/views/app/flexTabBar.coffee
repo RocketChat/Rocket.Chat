@@ -4,6 +4,8 @@ Template.flexTabBar.helpers
 	buttons: ->
 		RocketChat.TabBar.getButtons()
 		return RocketChat.TabBar.getButtons()
+	title: ->
+		return t(@i18nTitle) or @title
 
 Template.flexTabBar.events
 	'click .tab-button': (e, t) ->

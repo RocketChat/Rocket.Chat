@@ -2,7 +2,7 @@ Template.adminFlex.helpers
 	groups: ->
 		return Settings.find({type: 'group'}, { sort: { sort: 1, i18nLabel: 1 } }).fetch()
 	label: ->
-		return TAPi18next.t @i18nLabel
+		return TAPi18n.__(@i18nLabel or @_id)
 
 Template.adminFlex.events
 	'mouseenter header': ->

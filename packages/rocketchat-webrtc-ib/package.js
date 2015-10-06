@@ -17,6 +17,19 @@ Package.onUse(function(api) {
 	api.addFiles('webrtc.js', ['client']);
 	api.addFiles('webrtcmsg.coffee', ['client']);
 
+	// TAPi18n
+	api.use('templating', 'client');
+	var _ = Npm.require('underscore');
+	var fs = Npm.require('fs');
+	tapi18nFiles = _.compact(_.map(fs.readdirSync('packages/rocketchat-webrtc-ib/i18n'), function(filename) {
+		if (fs.statSync('packages/rocketchat-webrtc-ib/i18n/' + filename).size > 16) {
+			return 'i18n/' + filename;
+		}
+	}));
+	api.use('tap:i18n@1.6.1', ['client', 'server']);
+	api.imply('tap:i18n');
+	api.addFiles(tapi18nFiles, ['client', 'server']);
+
 	api.export('webrtc')
 });
 
