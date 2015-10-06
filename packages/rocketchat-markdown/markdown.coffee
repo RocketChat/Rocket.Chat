@@ -13,12 +13,12 @@ class Markdown
 			msg = message.html
 
 			# Support ![alt text](http://image url)
-			msg = msg.replace(/!\[(.*)\]\((https?:\/\/([\da-z\.-]+)\.([a-z\.]{2,6})([\/\w \.-]*)*\/?)\)/gm, '<a href="$2" title="$1" class="swipebox" target="_blank">
+			msg = msg.replace(/!\[(.*)\]\((https?:\/\/([\da-z\.-]+)([\/\w \.-]*)*\/?)\)/gm, '<a href="$2" title="$1" class="swipebox" target="_blank">
 				<div style="background-image: url($2); background-size: contain; background-repeat: no-repeat; background-position: center left; height: 200px;"></div>
 			</a>')
 
 			# Support [Text](http://link)
-			msg = msg.replace(/\[(.*)\]\((https?:\/\/([\da-z\.-]+)\.([a-z\.]{2,6})([\/\w \.-]*)*\/?)\)/gm, '<a href="$2">$1</a>')
+			msg = msg.replace(/\[(.*)\]\((https?:\/\/([\da-z\.-]+)([\/\w \.-]*)*\/?)\)/gm, '<a href="$2">$1</a>')
 
 			# Support `text`
 			msg = msg.replace(/(^|&gt;|[ >_*~])\`([^`]+)\`([<_*~]|\B|\b|$)/gm, '$1<span class="copyonly">`</span><code class="inline">$2</code><span class="copyonly">`</span>$3')
