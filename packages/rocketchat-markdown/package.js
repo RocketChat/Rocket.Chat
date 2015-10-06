@@ -12,7 +12,7 @@ Package.onUse(function(api) {
 		'coffeescript',
 		'rocketchat:lib@0.0.1'
 	]);
-
+	
 	api.addFiles('markdown.coffee', ['server','client']);
 });
 
