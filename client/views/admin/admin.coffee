@@ -27,9 +27,7 @@ Template.admin.helpers
 		return 'left' unless RocketChat.TabBar.isFlexOpen()
 	label: ->
 		label = @i18nLabel or @_id
-		if label?.indexOf(':') is -1
-			label = 'project:' + label
-		return TAPi18next.t label
+		return TAPi18n.__ label
 	description: ->
 		description = @i18nDescription
 		if description?.indexOf(':') is -1
