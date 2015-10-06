@@ -98,6 +98,5 @@ WebApp.connectHandlers.use '/theme-colors.css', (req, res, next) ->
 	res.setHeader 'Cache-Control', 'no-cache'
 	res.setHeader 'Pragma', 'no-cache'
 	res.setHeader 'Expires', '0'
-	res.setHeader 'Content-Length', css.length * 8
 
 	res.end css
