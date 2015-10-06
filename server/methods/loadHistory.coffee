@@ -6,12 +6,6 @@ Meteor.methods
 		unless Meteor.call 'canAccessRoom', rid, fromId
 			return false
 
-		query =
-			_hidden: { $ne: true }
-			rid: rid
-			ts:
-				$lt: end
-
 		options =
 			sort:
 				ts: -1
@@ -20,7 +14,10 @@ Meteor.methods
 		if not RocketChat.settings.get 'Message_ShowEditedStatus'
 			options.fields = { ets: 0 }
 
-		messages = RocketChat.models.Messages.findVisibleByRoomIdBeforeTimestamp(rid, end, options).fetch()
+		messages = _.map RocketChat.models.Messages.findVisibleByRoomIdBeforeTimestamp(rid, end, options).fetch(), (message) ->
+			message.starred = _.findWhere message.starred, { _id: fromId }
+			return message
+
 		unreadNotLoaded = 0
 
 		if ls?
