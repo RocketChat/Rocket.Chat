@@ -1,4 +1,5 @@
 {
+  "Accounts_OAuth_GitHub_Enterprise" : "GitHub Enterprise OAuth",
   "API_GitHub_Enterprise_URL" : "GitHub Enterprise Server URL",
   "Accounts_OAuth_GitHub_Enterprise_id" : "GitHub OAuth Client Id",
   "Accounts_OAuth_GitHub_Enterprise_secret" : "GitHub OAuth Client Secret"
