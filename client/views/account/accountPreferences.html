@@ -13,6 +13,18 @@
 						<h1>{{_ "Messages"}}</h1>
 						<div class="section-content">
 							<div class="input-line double-col">
+								<label>{{_ "Desktop_Notifications"}}</label>
+								<div>
+									{{#if desktopNotificationEnabled}}
+										<label>{{_ "Desktop_Notifications_Enabled"}}</label>
+									{{else}} {{#if desktopNotificationDisabled}}
+										<label>{{_ "Desktop_Notifications_Disabled"}}</label>
+									{{else}}
+										<label><button class="button enable-notifications"><i class="octicon octicon-comment"></i> <span>{{_ "Enable_Desktop_Notifications"}}</span></button></label>
+									{{/if}} {{/if}}
+								</div>
+							</div>
+							<div class="input-line double-col">
 								<label>{{_ "Use_Emojis"}}</label>
 								<div>
 									<label><input type="radio" name="useEmojis" value="1" checked="{{checked 'useEmojis' true true}}" /> {{_ "True"}}</label>
