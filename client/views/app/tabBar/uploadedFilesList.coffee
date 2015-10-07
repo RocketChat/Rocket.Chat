@@ -24,11 +24,7 @@ Template.uploadedFilesList.events
       e.preventDefault()
 
 Template.uploadedFilesList.onCreated ->
-  instance = this
-  currRid = Template.currentData().rid
-  this.autorun ->
-    instance.subscribe 'roomFiles', currRid
+  this.subscribe 'roomFiles', Template.currentData().rid
 
 Template.uploadedFilesList.onRendered ->
-  console.log 'onRendered'
   $('.room-files-swipebox').swipebox()
