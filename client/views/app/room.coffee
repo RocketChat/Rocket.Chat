@@ -209,7 +209,7 @@ Template.room.helpers
 		return RocketChat.TabBar.getTemplate()
 
 	flexData: ->
-		return RocketChat.TabBar.getData()
+		return _.extend { rid: this._id }, RocketChat.TabBar.getData()
 
 	adminClass: ->
 		return 'admin' if RocketChat.authz.hasRole(Meteor.userId(), 'admin')
