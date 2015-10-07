@@ -3,19 +3,16 @@ Template.membersList.helpers
 		return t('Add_users')
 
 	isGroupChat: ->
-		room = ChatRoom.findOne(Session.get('openedRoom'), { reactive: false })
-		return room?.t in ['c', 'p']
+		return ChatRoom.findOne(this.rid, { reactive: false })?.t in ['c', 'p']
 
 	isDirectChat: ->
-		room = ChatRoom.findOne(Session.get('openedRoom'), { reactive: false })
-		return room?.t is 'd'
+		return ChatRoom.findOne(this.rid, { reactive: false })?.t is 'd'
 
 	roomUsers: ->
-		room = ChatRoom.findOne(Session.get('openedRoom'), { reactive: false })
 		users = []
 		onlineUsers = RoomManager.onlineUsers.get()
 
-		for username in room?.usernames or []
+		for username in ChatRoom.findOne(this.rid)?.usernames or []
 			if onlineUsers[username]?
 				utcOffset = onlineUsers[username]?.utcOffset
 				if utcOffset?
@@ -32,15 +29,15 @@ Template.membersList.helpers
 		users = _.sortBy users, 'username'
 
 		ret =
-			_id: Session.get('openedRoom')
-			total: room?.usernames?.length or 0
+			_id: this.rid
+			total: ChatRoom.findOne(this.rid)?.usernames?.length or 0
 			totalOnline: users.length
 			users: users
 
 		return ret
 
 	canAddUser: ->
-		roomData = Session.get('roomData' + Session.get('openedRoom'))
+		roomData = Session.get('roomData' + this._id)
 		return '' unless roomData
 		return roomData.t in ['p', 'c'] and roomData.u?._id is Meteor.userId()
 
@@ -67,7 +64,7 @@ Template.membersList.helpers
 		return Meteor.users.findOne({ username: String(username) }) or { username: String(username) }
 
 	showUserInfo: ->
-		webrtc = WebRTC.getInstanceByRoomId(Session.get('openedRoom'))
+		webrtc = WebRTC.getInstanceByRoomId(this.rid)
 		videoActive = webrtc?.localUrl?.get()? or webrtc?.remoteItems?.get()?.length > 0
 		return Session.get('showUserInfo') and not videoActive
 
@@ -77,7 +74,8 @@ Template.membersList.events
 		Session.set('showUserInfo', $(e.currentTarget).data('username'))
 
 	'autocompleteselect #user-add-search': (event, template, doc) ->
-		roomData = Session.get('roomData' + Session.get('openedRoom'))
+
+		roomData = Session.get('roomData' + template.data.rid)
 
 		if roomData.t is 'd'
 			Meteor.call 'createGroupRoom', roomData.usernames, doc.username, (error, result) ->
