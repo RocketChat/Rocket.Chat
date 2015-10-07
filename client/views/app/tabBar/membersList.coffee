@@ -52,12 +52,12 @@ Template.membersList.helpers
 				{
 					collection: 'UserAndRoom'
 					subscription: 'roomSearch'
-					field: 'name'
+					field: 'username'
 					template: Template.roomSearch
 					noMatchTemplate: Template.roomSearchEmpty
 					matchAll: true
 					filter: { type: 'u', uid: { $ne: Meteor.userId() }, active: { $eq: true } }
-					sort: 'name'
+					sort: 'username'
 				}
 			]
 		}
