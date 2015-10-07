@@ -31,7 +31,11 @@ Meteor.methods
 			alert: true
 			unread: 1
 
+		fromUser = RocketChat.models.Users.findOneById fromId
 		RocketChat.models.Messages.createUserAddedWithRoomIdAndUser data.rid, newUser,
 			ts: now
+			u:
+				_id: fromUser._id
+				username: fromUser.username
 
 		return true
