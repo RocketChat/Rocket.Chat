@@ -8,7 +8,7 @@ Meteor.methods
 		me = Meteor.user()
 
 		if me.username is username
-			return
+			throw new Meteor.Error('invalid-user', "[methods] createDirectMessage -> Invalid target user")
 
 		to = RocketChat.models.Users.findOneByUsername username
 
