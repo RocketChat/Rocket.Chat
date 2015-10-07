@@ -201,19 +201,19 @@ RocketChat.models.Messages = new class extends RocketChat.models._Base
 		return record
 
 	createUserJoinWithRoomIdAndUser: (roomId, user, extraData) ->
-		message = user.name or user.username
+		message = user.username
 		return @createWithTypeRoomIdMessageAndUser 'uj', roomId, message, user, extraData
 
 	createUserLeaveWithRoomIdAndUser: (roomId, user, extraData) ->
-		message = user.name or user.username
+		message = user.username
 		return @createWithTypeRoomIdMessageAndUser 'ul', roomId, message, user, extraData
 
 	createUserRemovedWithRoomIdAndUser: (roomId, user, extraData) ->
-		message = user.name or user.username
+		message = user.username
 		return @createWithTypeRoomIdMessageAndUser 'ru', roomId, message, user, extraData
 
 	createUserAddedWithRoomIdAndUser: (roomId, user, extraData) ->
-		message = user.name or user.username
+		message = user.username
 		return @createWithTypeRoomIdMessageAndUser 'au', roomId, message, user, extraData
 
 	createRoomRenamedWithRoomIdRoomNameAndUser: (roomId, roomName, user, extraData) ->
