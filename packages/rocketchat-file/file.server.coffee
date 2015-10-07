@@ -91,6 +91,7 @@ RocketChatFile.GridFS = class
 			readStream: rs
 			contentType: file.contentType
 			length: file.length
+			uploadDate: file.uploadDate
 		}
 
 	deleteFile: (fileName) ->
