@@ -14,7 +14,7 @@ Get the app for your Android phone:
 
 [![Rocket.Chat on Google Play](https://developer.android.com/images/brand/en_app_rgb_wo_45.png)](https://play.google.com/store/apps/details?id=com.konecty.rocket.chat)
 
-Now compatible with all Android devices as old as version 4.0.x - [dowload here](https://github.com/RocketChat/Rocket.Chat/wiki/Build-the-Android-Cordova-Web-App-and-connect-to-your-own-Rocket.Chat-Server), even on BlackBerry Passport!
+Now compatible with all Android devices as old as version 4.0.x - [download here](https://github.com/RocketChat/Rocket.Chat/wiki/Build-the-Android-Cordova-Web-App-and-connect-to-your-own-Rocket.Chat-Server), even on BlackBerry Passport!
 
 Host your own Rocket.Chat server in four seconds flat:
 
@@ -134,7 +134,7 @@ Please head over to the [Hubot Integration Project](https://github.com/RocketCha
 
 #### Many, many, many more to come!
 
-We are developing the APIs based on the competition, so stay tunned and you will see a lot happening here.
+We are developing the APIs based on the competition, so stay tuned and you will see a lot happening here.
 
 ### Documentation
 
