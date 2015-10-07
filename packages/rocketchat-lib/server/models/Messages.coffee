@@ -82,6 +82,16 @@ RocketChat.models.Messages = new class extends RocketChat.models._Base
 
 		return @find query, options
 
+	findStarredByUserAtRoom: (userId, roomId, options) ->
+		query =
+			_hidden: { $ne: true }
+			'starred._id': userId
+			rid: roomId
+
+		console.log 'findStarredByUserAtRoom', arguments
+
+		return @find query, options
+
 	cloneAndSaveAsHistoryById: (_id) ->
 		record = @findOneById _id
 		record._hidden = true
@@ -159,6 +169,20 @@ RocketChat.models.Messages = new class extends RocketChat.models._Base
 
 		return @update query, update
 
+	updateUserStarById: (_id, userId, starred) ->
+		query =
+			_id: _id
+
+		if starred
+			update =
+				$addToSet:
+					starred: { _id: userId }
+		else
+			update =
+				$pull:
+					starred: { _id: Meteor.userId() }
+
+		return @update query, update
 
 	# INSERT
 	createWithTypeRoomIdMessageAndUser: (type, roomId, message, user, extraData) ->
@@ -177,19 +201,19 @@ RocketChat.models.Messages = new class extends RocketChat.models._Base
 		return record
 
 	createUserJoinWithRoomIdAndUser: (roomId, user, extraData) ->
-		message = user.name or user.username
+		message = user.username
 		return @createWithTypeRoomIdMessageAndUser 'uj', roomId, message, user, extraData
 
 	createUserLeaveWithRoomIdAndUser: (roomId, user, extraData) ->
-		message = user.name or user.username
+		message = user.username
 		return @createWithTypeRoomIdMessageAndUser 'ul', roomId, message, user, extraData
 
 	createUserRemovedWithRoomIdAndUser: (roomId, user, extraData) ->
-		message = user.name or user.username
+		message = user.username
 		return @createWithTypeRoomIdMessageAndUser 'ru', roomId, message, user, extraData
 
 	createUserAddedWithRoomIdAndUser: (roomId, user, extraData) ->
-		message = user.name or user.username
+		message = user.username
 		return @createWithTypeRoomIdMessageAndUser 'au', roomId, message, user, extraData
 
 	createRoomRenamedWithRoomIdRoomNameAndUser: (roomId, roomName, user, extraData) ->
