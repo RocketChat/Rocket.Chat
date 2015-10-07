@@ -7,6 +7,12 @@ Template.accountPreferences.helpers
 
 		return currentValue is value
 
+	desktopNotificationEnabled: ->
+		return (KonchatNotification.notificationStatus.get() is 'granted') or (window.Notification && Notification.permission is "granted")
+
+	desktopNotificationDisabled: ->
+		return (KonchatNotification.notificationStatus.get() is 'denied') or (window.Notification && Notification.permission is "denied")
+
 Template.accountPreferences.onCreated ->
 	settingsTemplate = this.parentTemplate(3)
 	settingsTemplate.child ?= []
@@ -54,3 +60,6 @@ Template.accountPreferences.events
 
 	'change input[name=useEmojis]': (e, t) ->
 		t.useEmojis.set $(e.currentTarget).val() is '1'
+
+	'click .enable-notifications': ->
+		KonchatNotification.getDesktopPermission()
