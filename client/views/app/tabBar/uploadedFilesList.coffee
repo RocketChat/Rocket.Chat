@@ -2,10 +2,10 @@ roomFiles = new Mongo.Collection 'room_files'
 
 Template.uploadedFilesList.helpers
   files: ->
-    return roomFiles.find().fetch()
+    return roomFiles.find({ rid: this.rid }).fetch()
 
   hasFiles: ->
-      return roomFiles.find().count() > 0
+    return roomFiles.find({ rid: this.rid }).count() > 0
 
   getFileIcon: (type) ->
     if type.match(/^image\/.+$/)
@@ -23,11 +23,8 @@ Template.uploadedFilesList.events
     if $(e.currentTarget).siblings('.icon-picture').length
       e.preventDefault()
 
-
 Template.uploadedFilesList.onCreated ->
-  instance = this
-  this.autorun ->
-    instance.subscribe 'roomFiles', Session.get('openedRoom')
+  this.subscribe 'roomFiles', Template.currentData().rid
 
 Template.uploadedFilesList.onRendered ->
   $('.room-files-swipebox').swipebox()

@@ -2273,7 +2273,7 @@ a.github-fork {
 	}
 
 	&.admin {
-		.message:hover:not(.system) .delete-message {
+		.message:hover:not(.system) .message-action {
 			display: inline-block;
 		}
 	}
@@ -2396,18 +2396,11 @@ a.github-fork {
 			margin-left: 2%;
 		}
 	}
-	.edit-message {
+	.message-action {
 		display: none;
 		cursor: pointer;
 	}
-	&:hover:not(.system) .edit-message {
-		display: block;
-	}
-	.delete-message {
-		display: none;
-		cursor: pointer;
-	}
-	&:hover:not(.system) .delete-message {
+	&:hover:not(.system) .message-action {
 		display: block;
 	}
 	.message-cog-container {
@@ -2527,12 +2520,9 @@ a.github-fork {
 			.private {
 				display: none;
 			}
-			.edit-message {
+			.message-action {
 				float: left;
 				margin-left: 1px;
-			}
-			.delete-message {
-				float: left;
 			}
 		}
 
@@ -2632,6 +2622,16 @@ a.github-fork {
 		> a,
 		> form {
 			float: left;
+		}
+		.header {
+			text-align: center;
+			padding: 5px 30px 20px;
+			margin: 5px 0 15px;
+			h2 {
+				font-size: 20px;
+				line-height: 25px;
+				font-weight: 300;
+			}
 		}
 		.button {
 			min-height: 36px;

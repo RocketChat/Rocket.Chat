@@ -116,6 +116,27 @@ Template.messagePopupConfig.helpers
 				getInput: self.getInput
 				getFilter: (collection, filter) ->
 					results = []
+
+					# show common used emojis, when use input a single ':'
+					if filter == ''
+						commonEmojis = [
+					            ':laughing:',
+					            ':smiley:',
+					            ':sunglasses:',
+					            ':wink:',
+					            ':innocent:',
+					            ':flushed:',
+					            ':disappointed:',
+					            ':cry:',
+					            ':heart:',
+					            ':broken_heart:'
+					        ]
+						for shortname in commonEmojis
+							results.push
+								_id: shortname
+								data: collection[shortname]
+						return results;
+
 					for shortname, data of collection
 						if shortname.indexOf(filter) > -1
 							results.push
