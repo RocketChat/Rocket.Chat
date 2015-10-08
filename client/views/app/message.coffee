@@ -63,8 +63,15 @@ Template.message.helpers
 		return RocketChat.settings.get('Message_AllowDeleting') and this.u?._id is Meteor.userId()
 	canPin: ->
 		return RocketChat.settings.get 'Message_AllowPinning'
+	canStar: ->
+		return RocketChat.settings.get 'Message_AllowStarring'
 	showEditedStatus: ->
 		return RocketChat.settings.get 'Message_ShowEditedStatus'
+	label: ->
+		if @i18nLabel
+			return t(@i18nLabel)
+		else if @label
+			return @label
 
 Template.message.onViewRendered = (context) ->
 	view = this
@@ -102,4 +109,4 @@ Template.message.onViewRendered = (context) ->
 			else
 				if view.parentView.parentView.parentView.parentView.parentView.templateInstance?().atBottom isnt true
 					newMessage = document.querySelector(".new-message")
-					newMessage.className = "new-message"
+					newMessage?.className = "new-message"

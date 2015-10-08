@@ -56,4 +56,4 @@ class Markdown
 		return message
 
 RocketChat.callbacks.add 'renderMessage', Markdown, RocketChat.callbacks.priority.HIGH
-RocketChat.Markdown = true
+RocketChat.Markdown = Markdown
