@@ -74,13 +74,13 @@ Meteor.startup ->
 
 		reqModifiedHeader = req.headers["if-modified-since"];
 		if reqModifiedHeader?
-			if reqModifiedHeader == file.uploadDate.toUTCString()?
+			if reqModifiedHeader == file.uploadDate?.toUTCString()
 				res.setHeader 'Last-Modified', reqModifiedHeader
 				res.writeHead 304
 				res.end()
 				return
 
-		res.setHeader 'Last-Modified', file.uploadDate.toUTCString()
+		res.setHeader 'Last-Modified', file.uploadDate?.toUTCString() or new Date().toUTCString()
 		res.setHeader 'content-type', 'image/jpeg'
 		res.setHeader 'Content-Length', file.length
 
