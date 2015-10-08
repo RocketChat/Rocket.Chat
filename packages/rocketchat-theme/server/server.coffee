@@ -16,7 +16,7 @@ RocketChat.theme = new class
 		'assets/stylesheets/fontello.css'
 		'assets/stylesheets/rtl.less'
 		'assets/stylesheets/swipebox.min.css'
-		'assets/colors.less'
+		'assets/stylesheets/utils/_colors.import.less'
 	]
 
 	constructor: ->
@@ -90,7 +90,7 @@ RocketChat.theme = new class
 		return RocketChat.settings.get 'css'
 
 
-WebApp.connectHandlers.use '/theme-colors.css', (req, res, next) ->
+WebApp.connectHandlers.use '/theme.css', (req, res, next) ->
 	css = RocketChat.theme.getCss()
 
 	res.setHeader 'content-type', 'text/css; charset=UTF-8'
