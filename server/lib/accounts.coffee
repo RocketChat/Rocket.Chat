@@ -1,5 +1,5 @@
 # Deny Account.createUser in client
-Accounts.config { forbidClientAccountCreation: true }
+Accounts.config { forbidClientAccountCreation: true}
 
 Accounts.emailTemplates.siteName = RocketChat.settings.get 'Site_Name';
 Accounts.emailTemplates.from = "#{RocketChat.settings.get 'Site_Name'} <#{RocketChat.settings.get 'From_Email'}>";
@@ -18,6 +18,13 @@ Accounts.onCreateUser (options, user) ->
 	# console.log 'onCreateUser ->',JSON.stringify arguments, null, '  '
 	# console.log 'options ->',JSON.stringify options, null, '  '
 	# console.log 'user ->',JSON.stringify user, null, '  '
+	debugger;
+	userEmailDomain = user.emails.address.slice(user.emails.address.lastIndexOf("@")+1);
+	allowedDomains = ["gmail.com", "hotmail.com"];
+
+	if !_.contains(allowedDomains, userEmailDomain)
+		throw new Meteor.Error 'not-allowed-domain', TAPi18n.__ 'User_email_belongs_to_not_allowed_domain'
+		return false
 
 	RocketChat.callbacks.run 'beforeCreateUser', options, user
 
