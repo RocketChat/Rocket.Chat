@@ -1,5 +1,5 @@
 Package.describe({
-	name: 'rocketchat:theme-colors',
+	name: 'rocketchat:theme',
 	version: '0.0.1',
 	summary: '',
 	git: ''
@@ -36,7 +36,6 @@ Package.onUse(function(api) {
 	api.addAssets('assets/stylesheets/fontello.css', 'server');
 	api.addAssets('assets/stylesheets/rtl.less', 'server');
 	api.addAssets('assets/stylesheets/swipebox.min.css', 'server');
-	api.addAssets('assets/colors.less', 'server');
 });
 
 Npm.depends({

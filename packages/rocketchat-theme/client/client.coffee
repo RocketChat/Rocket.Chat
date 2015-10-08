@@ -1,6 +1,7 @@
 updateTheme = ->
-	el = $('#theme-colors')[0]
-	el.href = el.href.replace(/\?.*$/, '') + '?_dc=' + Random.id()
+	el = $('#theme')[0]
+	if el
+		el.href = el.href.replace(/\?.*$/, '') + '?_dc=' + Random.id()
 
 Meteor.startup ->
 	connected = Meteor.status().connected
