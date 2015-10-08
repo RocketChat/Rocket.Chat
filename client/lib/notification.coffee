@@ -1,9 +1,12 @@
 # @TODO implementar 'clicar na notificacao' abre a janela do chat
 @KonchatNotification =
+	notificationStatus: new ReactiveVar
+
 	# notificacoes HTML5
 	getDesktopPermission: ->
 		if window.Notification && Notification.permission != "granted"
 			Notification.requestPermission (status) ->
+				KonchatNotification.notificationStatus.set status
 				if Notification.permission != status
 					Notification.permission = status
 
