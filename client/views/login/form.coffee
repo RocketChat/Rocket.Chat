@@ -44,7 +44,7 @@ Template.loginForm.helpers
 
 	loginTerms: ->
 		return RocketChat.settings.get 'Layout_Login_Terms'
-		
+
 Template.loginForm.events
 	'submit #login-card': (event, instance) ->
 		event.preventDefault()
@@ -98,7 +98,7 @@ Template.loginForm.events
 						if error.error is 'no-valid-email'
 							instance.state.set 'email-verification'
 						else
-							toastr.error error.reason
+							toastr.error t 'User_not_found_or_incorrect_password'
 						return
 					FlowRouter.go 'index'
 
