@@ -6,7 +6,7 @@
 class Markdown
 	constructor: (message) ->
 
-		if _.trim message.html
+		if _s.trim message.html
 
 			msg = message.html
 
@@ -20,7 +20,7 @@ class Markdown
 
 			message.html = msg
 
-			console.log 'Markdown', message if window.rocketDebug
+			console.log 'Markdown', message if window?.rocketDebug
 
 		return message
 
