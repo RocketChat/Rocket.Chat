@@ -36,6 +36,7 @@ rocketchat:logger
 rocketchat:markdown
 rocketchat:me
 rocketchat:mentions
+rocketchat:message-star
 rocketchat:oembed
 rocketchat:slashcommands-invite
 rocketchat:slashcommands-join
@@ -105,3 +106,5 @@ spacebars
 check
 rocketchat:github-enterprise
 rocketchat:chatops
+# sanjo:jasmine@0.20.2
+# velocity:html-reporter

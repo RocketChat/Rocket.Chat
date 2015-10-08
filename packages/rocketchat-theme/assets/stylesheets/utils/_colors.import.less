@@ -1,5 +1,6 @@
-.custom-scroll(@background, @thumb, @width: 8px) {
+.custom-scroll(@background, @thumb, @width: 8px, @height: 8px) {
 	&::-webkit-scrollbar {
+		height: @height;
 		width: @width;
 		background: @background;
 	}
