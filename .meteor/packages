@@ -105,5 +105,5 @@ spacebars
 check
 rocketchat:github-enterprise
 rocketchat:chatops
-# sanjo:jasmine@0.20.2
-# velocity:html-reporter
+sanjo:jasmine@0.20.2
+velocity:console-reporter
