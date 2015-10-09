@@ -14,11 +14,15 @@
 		clear: both;
 	}
 }
+*,
+*:before,
+*:after{
+.box-sizing(border-box);
+}
 
 *:not(input),
 *:not(input):before,
 *:not(input):after {
-	.box-sizing(border-box);
 	-webkit-user-select: none;
 	-moz-user-select: none;
 	-ms-user-select: none;
