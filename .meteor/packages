@@ -33,7 +33,7 @@ rocketchat:wordpress
 rocketchat:highlight
 rocketchat:ldap
 rocketchat:logger
-rocketchat:markdown
+#rocketchat:markdown
 rocketchat:me
 rocketchat:mentions
 rocketchat:message-star
