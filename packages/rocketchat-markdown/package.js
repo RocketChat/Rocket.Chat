@@ -13,8 +13,8 @@ Package.onUse(function(api) {
 		'rocketchat:lib@0.0.1'
 	]);
 
-	api.addFiles('settings.coffee', ['server','client']);
-	api.addFiles('markdown.coffee', ['server','client']);
+	api.addFiles('settings.coffee', 'server');
+	api.addFiles('markdown.coffee');
 });
 
 Package.onTest(function(api) {
