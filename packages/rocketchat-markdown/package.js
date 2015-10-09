@@ -13,7 +13,8 @@ Package.onUse(function(api) {
 	api.use('underscorestring:underscore.string');
 	api.use('rocketchat:lib@0.0.1');
 
-	api.addFiles('markdown.coffee');
+	api.addFiles('settings.coffee', ['server','client']);
+	api.addFiles('markdown.coffee', ['server','client']);
 });
 
 Package.onTest(function(api) {
