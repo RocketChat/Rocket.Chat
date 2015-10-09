@@ -39,6 +39,8 @@ RocketChat.settings.add 'Site_Name', 'Rocket.Chat', { type: 'string', group: 'Ge
 RocketChat.settings.add 'Allow_Invalid_SelfSigned_Certs', false, { type: 'boolean', group: 'General' }
 RocketChat.settings.add 'Disable_Favorite_Rooms', false, { type: 'boolean', group: 'General' }
 RocketChat.settings.add 'Allowed_Domains', 'gmail.com;hotmail.com', { type: 'string', group: 'General'}
+RocketChat.settings.add 'At_Sign', '@', { type: 'string', group: 'General'}
+RocketChat.settings.add 'Values_Separator', ';', { type: 'string', group: 'General'}
 
 RocketChat.settings.addGroup 'API'
 RocketChat.settings.add 'API_Analytics', '', { type: 'string', group: 'API', public: true }

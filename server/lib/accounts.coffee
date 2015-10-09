@@ -19,17 +19,13 @@ Accounts.onCreateUser (options, user) ->
 	# console.log 'options ->',JSON.stringify options, null, '  '
 	# console.log 'user ->',JSON.stringify user, null, '  '
 
-	debugger;
-	atSign = RocketChat.settings.get 'At_Sign'
-	separator = RocketChat.settings.get 'Values_Separator'
 	userEmail = user.emails[0].address;
-	userEmailDomain = userEmail.slice(userEmail.lastIndexOf(atSign)+1);
-	parametrizedDomains = RocketChat.settings.get 'Allowed_Domains'
-	allowedDomains = parametrizedDomains.split(separator);
+	userEmailDomain = userEmail.slice(userEmail.lastIndexOf(RocketChat.settings.get 'At_Sign')+1);
+	allowedDomains = (RocketChat.settings.get 'Allowed_Domains').split(RocketChat.settings.get 'Values_Separator');
 
 	if !_.contains(allowedDomains, userEmailDomain)
 		throw new Meteor.Error 'not-allowed-domain', TAPi18n.__ 'User_email_belongs_to_not_allowed_domain'
-		return false
+
 
 	RocketChat.callbacks.run 'beforeCreateUser', options, user
 
