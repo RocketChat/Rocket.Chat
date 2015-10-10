@@ -1,5 +1,6 @@
 <template name="membersList">
 	<div class="content">
+		{{> videoCall}}
 		{{#if isGroupChat}}
 			<div class="list-view{{#if $.Session.get 'showUserInfo'}} -hidden{{/if}}">
 				{{#with roomUsers}}
@@ -9,6 +10,7 @@
 							{{{_ "Showing_online_users" total_online=totalOnline total=total}}}
 							{{!--<button class="see-all">{{seeAll}}</button>--}}
 						</p>
+						{{> videoButtons}}
 						{{#if canAddUser}}
 							<div class="control">
 								<div class="search-form">
@@ -33,7 +35,7 @@
 				{{/with}}
 			</div>
 		{{/if}}
-		<div class="user-view animated{{#unless $.Session.get 'showUserInfo'}} -hidden{{/unless}}">
+		<div class="user-view animated{{#unless showUserInfo}} -hidden{{/unless}}">
 			{{> userInfo user=flexUserInfo showAll=isGroupChat video=isDirectChat}}
 		</div>
 	</div>
