@@ -14,7 +14,6 @@ deploy:
   provider: s3
   access_key_id: "AKIAIKIA7H7D47KUHYCA"
   bucket: "rocketchatbuild"
-  region: "us standard"
   skip_cleanup: true
   local_dir: ../build
   on:
