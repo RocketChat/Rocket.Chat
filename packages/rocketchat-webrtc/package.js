@@ -8,12 +8,16 @@ Package.describe({
 Package.onUse(function(api) {
 	api.versionsFrom('1.0');
 
-	api.use('rocketchat:lib@0.0.1', 'client');
+	api.use('rocketchat:lib@0.0.1');
+	api.use('coffeescript');
 
 	api.addFiles('adapter.js', 'client');
-	api.addFiles('webrtc.js', 'client');
+	api.addFiles('WebRTCClass.coffee', 'client');
+	api.addFiles('screenShare.coffee', 'client');
 
-	api.export('webrtc');
+	api.addFiles('server/settings.coffee', 'server');
+
+	api.export('WebRTC');
 });
 
 

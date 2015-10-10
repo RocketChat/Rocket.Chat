@@ -5,6 +5,7 @@
 @import "utils/_preloader.import.less";
 @import "utils/_emojione.import.less";
 @import "utils/_fonts.import.less";
+@import "utils/_octicons.less";
 .clearfix {
 	clear: both;
 	&::after {
@@ -13,11 +14,19 @@
 		clear: both;
 	}
 }
-
 *,
 *:before,
-*:after {
+*:after{
 	.box-sizing(border-box);
+}
+
+*:not(input):not(textarea),
+*:not(input):not(textarea):before,
+*:not(input):not(textarea):after {
+	-webkit-user-select: none;
+	-moz-user-select: none;
+	-ms-user-select: none;
+	user-select: none;
 }
 
 :focus {
@@ -261,9 +270,9 @@ blockquote {
 		margin-bottom: 0;
 	}
 	&.search {
-		.icon-search {
+		.octicon {
 			position: absolute;
-			left: 5px;
+			left: 10px;
 			top: 10px;
 			font-weight: 400;
 		}
@@ -291,7 +300,7 @@ blockquote {
 			animation-timing-function: linear;
 		}
 		input {
-			padding-left: 25px;
+			padding-left: 20px;
 		}
 	}
 	> label {
@@ -604,9 +613,6 @@ label.required:after {
 	}
 	&.delete,
 	&.remove,
-	&.red {
-		min-width: 120px;
-	}
 	&.short {
 		min-width: 100px;
 	}
@@ -2271,7 +2277,7 @@ a.github-fork {
 	}
 
 	&.admin {
-		.message:hover:not(.system) .delete-message {
+		.message:hover:not(.system) .message-action {
 			display: inline-block;
 		}
 	}
@@ -2348,6 +2354,20 @@ a.github-fork {
 	position: relative;
 	line-height: 20px;
 	min-height: 40px;
+
+	.body, .user.user-card-message, .time {
+		-webkit-user-select: all;
+		-moz-user-select: all;
+		-ms-user-select: all;
+		user-select: all;
+		* {
+			-webkit-user-select: all;
+			-moz-user-select: all;
+			-ms-user-select: all;
+			user-select: all;
+		}
+	}
+
 	&:nth-child(1) {
 		margin-top: 0;
 	}
@@ -2380,18 +2400,11 @@ a.github-fork {
 			margin-left: 2%;
 		}
 	}
-	.edit-message {
+	.message-action {
 		display: none;
 		cursor: pointer;
 	}
-	&:hover:not(.system) .edit-message {
-		display: block;
-	}
-	.delete-message {
-		display: none;
-		cursor: pointer;
-	}
-	&:hover:not(.system) .delete-message {
+	&:hover:not(.system) .message-action {
 		display: block;
 	}
 	.message-cog-container {
@@ -2511,12 +2524,9 @@ a.github-fork {
 			.private {
 				display: none;
 			}
-			.edit-message {
+			.message-action {
 				float: left;
 				margin-left: 1px;
-			}
-			.delete-message {
-				float: left;
 			}
 		}
 
@@ -2555,6 +2565,13 @@ a.github-fork {
 	.body {
 		opacity: 1;
 		.transition(opacity 1s linear);
+
+		.inline-image {
+			background-size: contain;
+			background-repeat: no-repeat;
+			background-position: center left;
+			height: 200px;
+		}
 	}
 	&.temp .body {
 		opacity: .5;
@@ -2576,6 +2593,7 @@ a.github-fork {
 		padding: 10px;
 		background: #FCFCFC;
 		border-bottom: 1px solid #eaeaea;
+		text-align: center;
 
 		&:hover {
 			background: #EAEAEA;
@@ -2585,6 +2603,7 @@ a.github-fork {
 			background-color: #F4F4F4;
 			margin-left: -1px;
 			padding-left: 11px;
+			border-right: 3px solid #ff0000;
 		}
 	}
 }
@@ -2614,6 +2633,16 @@ a.github-fork {
 		> a,
 		> form {
 			float: left;
+		}
+		.header {
+			text-align: center;
+			padding: 5px 30px 20px;
+			margin: 5px 0 15px;
+			h2 {
+				font-size: 20px;
+				line-height: 25px;
+				font-weight: 300;
+			}
 		}
 		.button {
 			min-height: 36px;
@@ -3815,6 +3844,20 @@ a.github-fork {
 	}
 }
 
+.message-popup-results {
+	&.notready {
+		.message-popup-items {
+			background-image: url(/images/logo/loading.gif);
+			background-repeat: no-repeat;
+			background-position: 50% 50%;
+			height: 100px;
+		}
+		.popup-item {
+			display: none;
+		}
+	}
+}
+
 @media all and(max-height: 480px) {
 	#login-card {
 		padding: 10px;
@@ -3834,3 +3877,143 @@ a.github-fork {
 }
 
 @import "utils/_colors.import.less";
+
+.webrtc-video {
+	&.webrtc-video-overlay {
+		position: fixed;
+		left: 0;
+		right: 0;
+		bottom: 0;
+		top: 0;
+		z-index: 1000;
+		display: flex;
+		flex-direction: column;
+		justify-content: center;
+		background-color: black;
+		.main-video {
+			video {
+				max-width: 100%;
+				width: auto;
+			}
+		}
+	}
+
+	.main-video {
+		background-color: black;
+		text-align: center;
+
+		video {
+			width: 100%;
+			min-height: 299px;
+		}
+
+		>div {
+			background-color: rgba(0,0,0,.5);
+			margin-top: -28px;
+			position: relative;
+			line-height: 25px;
+			margin-bottom: 2px;
+			text-align: center;
+			color: white;
+			font-weight: bold;
+		}
+	}
+
+	.videos {
+		display: -webkit-flex;
+		display: -moz-flex;
+		display: flex;
+		flex-wrap: wrap;
+		-webkit-flex-wrap: wrap;
+		-moz-flex-wrap: wrap;
+		justify-content: center;
+		-webkit-justify-content: center;
+		-moz-justify-content: center;
+
+		.video-item {
+			position: relative;
+			margin-right: 3px;
+			line-height: 0;
+			width: 93px;
+			overflow: hidden;
+			text-align: center;
+			background-color: black;
+
+			&.state-overlay::before {
+				content: attr(data-state-text);
+				position: absolute;
+				top: 0;
+				left: 0;
+				bottom: 0;
+				right: 0;
+				display: flex;
+				justify-content: center;
+				align-items: center;
+				font-size: 12px;
+				font-weight: bold;
+				background-color: black;
+				color: white;
+			}
+
+			video {
+				height: 70px;
+				max-width: 100px;
+				background-color: black;
+			}
+
+			>div {
+				line-height: 16px;
+				font-size: 12px;
+				text-align: center;
+				text-overflow: ellipsis;
+				overflow: hidden;
+				padding: 0px 2px;
+				margin-top: -16px;
+				background-color: rgba(0,0,0,.5);
+				position: relative;
+				color: white;
+				font-weight: bold;
+			}
+
+			.video-muted-overlay {
+				background-color: rgba(0,0,0,.5);
+				position: absolute;
+				bottom: 16px;
+				left: 0;
+				top: 16px;
+				right: 0;
+				text-align: center;
+				font-size: 24px;
+				color: white;
+				display: flex;
+				display: -webkit-flex;
+				display: -moz-flex;
+				align-items: center;
+				-webkit-align-items: center;
+				-moz-align-items: center;
+				justify-content: center;
+				-webkit-justify-content: center;
+				-moz-justify-content: center;
+			}
+		}
+	}
+}
+
+.group-call-buttons {
+	display: -webkit-flex;
+	display: -moz-flex;
+	display: flex;
+
+	button:first-child {
+		-webkit-flex-grow: 1;
+		-moz-flex-grow: 1;
+		flex-grow: 1;
+	}
+}
+
+.alert-icon {
+	font-size: 80px;
+	display: block;
+	margin-bottom: 20px;
+	color: lightgreen;
+}

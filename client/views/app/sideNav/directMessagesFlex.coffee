@@ -50,6 +50,8 @@ Template.directMessagesFlex.events
 		err = SideNav.validate()
 		if not err
 			username = instance.selectedUser.get()
+			return unless username?
+
 			Meteor.call 'createDirectMessage', username, (err, result) ->
 				if err
 					return toastr.error err.reason

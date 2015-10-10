@@ -33,9 +33,10 @@ rocketchat:wordpress
 rocketchat:highlight
 rocketchat:ldap
 rocketchat:logger
-rocketchat:markdown
+#rocketchat:markdown
 rocketchat:me
 rocketchat:mentions
+rocketchat:message-star
 rocketchat:oembed
 rocketchat:slashcommands-invite
 rocketchat:slashcommands-join
@@ -43,6 +44,7 @@ rocketchat:slashcommands-leave
 rocketchat:spotify
 rocketchat:statistics
 rocketchat:webrtc
+#rocketchat:chatops
 #rocketchat:livechat
 #rocketchat:hubot
 #rocketchat:irc
@@ -87,6 +89,7 @@ underscorestring:underscore.string
 yasaricli:slugify
 yasinuslu:blaze-meta
 rocketchat:authorization
+perak:codemirror
 standard-minifiers
 meteor-base
 mobile-experience
@@ -100,3 +103,7 @@ random
 ejson
 spacebars
 check
+rocketchat:github-enterprise
+rocketchat:chatops
+# sanjo:jasmine@0.20.2
+# velocity:html-reporter
