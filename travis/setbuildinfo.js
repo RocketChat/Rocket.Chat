@@ -37,6 +37,7 @@ if (process.env.TRAVIS_JOB_ID)  {
 	     mkdirp.sync(BUILD_PATH);
 	     fs.writeFileSync(BUILD_PATH + "/version.txt", verinfo);
 	     fs.writeFileSync(BUILD_INFO_PATH, content);
+             console.log('Version is ' + verinfo);
    
 	});
 
