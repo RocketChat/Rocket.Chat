@@ -10,7 +10,7 @@ class MentionsClient
 
 			mentions = []
 
-			message.msg.replace /(?:^|\s|\n)(?:@)([0-9a-zA-Z-_.\u00C0-\u017F]+)/g, (match, mention) ->
+			message.msg.replace /(?:^|\s|\n)(?:@)([0-9a-zA-Z-_.\u00C0-\u017F\u4e00-\u9fa5]+)/g, (match, mention) ->
 				mentions.push mention
 
 			me = Meteor.user()?.username
@@ -33,7 +33,7 @@ class MentionsClient
 					return match.replace mention, "<a href=\"\" class=\"#{classes}\" data-username=\"#{username}\">#{mention}</a>"
 
 			channels = []
-			message.msg.replace /(?:^|\s|\n)(?:#)([A-Za-z0-9-_.\u00C0-\u017F]+)/g, (match, mention) ->
+			message.msg.replace /(?:^|\s|\n)(?:#)([A-Za-z0-9-_.\u00C0-\u017F\u4e00-\u9fa5]+)/g, (match, mention) ->
 				channels.push mention
 
 			if channels.length isnt 0
