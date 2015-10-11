@@ -15,6 +15,7 @@ script:
 - meteor build ../build
 - cd .travis
 - sh ./namefiles.sh
+- cd ..
 deploy:
   provider: s3
   access_key_id: "AKIAIKIA7H7D47KUHYCA"
