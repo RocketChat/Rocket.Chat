@@ -9,7 +9,7 @@ RUN groupadd -r rocketchat \
 RUN gpg --keyserver ha.pool.sks-keyservers.net --recv-keys 0E163286C20D07B9787EBE9FD7F9D0414FD08104
 
 
-RUN curl -fSL "http://http://rocketchatbuild.s3-website-us-east-1.amazonaws.com/rocket.chat-v.latest.tgz" -o rocket.chat.tgz \
+RUN curl -fSL "https://s3.amazonaws.com/rocketchatbuild/rocket.chat-v.latest.tgz" -o rocket.chat.tgz \
 &&  tar zxvf ./rocket.chat.tgz \
 &&  rm ./rocket.chat.tgz \
 &&  cd /app/bundle/programs/server \

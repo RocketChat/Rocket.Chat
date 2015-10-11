@@ -7,6 +7,7 @@ node_js:
 - '0.10'
 before_install:
 - curl https://install.meteor.com | /bin/sh
+- npm install -g npm@'>=2.13.5'
 script:
 - cd .travis
 - npm install
@@ -22,6 +23,8 @@ script:
 - cd .travis
 - sh ./namedemo.sh
 - cd ..
+after_deploy:
+- "curl -H \"Content-Type: application/json\" --data \"{'build': true}\" -X POST https://registry.hub.docker.com/u/rocketchat/hubot-rocketchat/trigger/$PUSHTOKEN/" 
 deploy:
   provider: s3
   access_key_id: "AKIAIKIA7H7D47KUHYCA"
