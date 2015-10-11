@@ -22,6 +22,11 @@ Package.onUse(function(api) {
 		'client/stylesheets/channel-settings.less',
 	], 'client');
 
+	api.addFiles([
+		'server/functions/changeRoomType.coffee',
+		'server/methods/saveRoomSettings.coffee'
+	], 'server');
+
 	// TAPi18n
 	var _ = Npm.require('underscore');
 	var fs = Npm.require('fs');
