@@ -9,12 +9,12 @@ var LineByLineReader = require('line-by-line'),
 var firstline = "";
 
 
-if (process.env.TRAVIS_JOB_ID)  {
+if (process.env.TRAVIS_BUILD_NUMBER))  {
 
 	var transformVersion = function (firstline) {
 	 var versions = firstline.split(".");
 
-	 return versions[0] + '.' + versions[1] + '.' + process.env.TRAVIS_JOB_ID + '\n';
+	 return versions[0] + '.' + versions[1] + '.' + process.env.TRAVIS_BUILD_NUMBER + '\n';
 	};
 
 
