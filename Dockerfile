@@ -9,9 +9,10 @@ RUN groupadd -r rocketchat \
 RUN gpg --keyserver ha.pool.sks-keyservers.net --recv-keys 0E163286C20D07B9787EBE9FD7F9D0414FD08104
 
 
-RUN curl -fSL "https://s3.amazonaws.com/rocketchatbuild/rocket.chat-v.latest.tgz" -o rocket.chat.tgz \
+RUN mkdir /app \
+&&  curl -fSL "https://s3.amazonaws.com/rocketchatbuild/rocket.chat-v.latest.tgz" -o rocket.chat.tgz \
 &&  tar zxvf ./rocket.chat.tgz \
-&&  rm ./rocket.chat.tgz \
+&&  rm ./rocket.chat.tgz /app \
 &&  cd /app/bundle/programs/server \
 &&  npm install
 
