@@ -9,7 +9,7 @@ var LineByLineReader = require('line-by-line'),
 var firstline = "";
 
 
-if (process.env.TRAVIS_BUILD_NUMBER))  {
+if (process.env.TRAVIS_BUILD_NUMBER)  {
 
 	var transformVersion = function (firstline) {
 	 var versions = firstline.split(".");
