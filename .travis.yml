@@ -16,6 +16,12 @@ script:
 - cd .travis
 - sh ./namefiles.sh
 - cd ..
+- meteor add rocketchat:livechat
+- meteor add rocketchat:hubot
+- meteor build --server demo.rocket.chat  ../build
+- cd .travis
+- sh ./namedemo.sh
+- cd ..
 deploy:
   provider: s3
   access_key_id: "AKIAIKIA7H7D47KUHYCA"
