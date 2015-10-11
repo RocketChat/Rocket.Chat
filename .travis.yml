@@ -8,12 +8,12 @@ node_js:
 before_install:
 - curl https://install.meteor.com | /bin/sh
 script:
-- cd travis
+- cd .travis
 - npm install
 - npm start
 - cd .. 
 - meteor build ../build
-- cd travis
+- cd .travis
 - sh ./namefiles.sh
 deploy:
   provider: s3
