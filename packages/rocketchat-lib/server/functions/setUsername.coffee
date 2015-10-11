@@ -3,7 +3,7 @@ RocketChat.setUsername = (user, username) ->
 	if not user or not username
 		return false
 
-	if not /^[0-9a-zA-Z-_.]+$/.test username
+	if not /^[0-9a-zA-Z-_.\u00C0-\u017F]+$/.test username
 		return false
 
 	# User already has desired username, return
