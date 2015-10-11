@@ -8,7 +8,7 @@ Meteor.methods
 
 		console.log '[methods] createPrivateGroup -> '.green, 'userId:', Meteor.userId(), 'arguments:', arguments
 
-		if not /^[0-9a-zA-Z-_\u00C0-\u017F]+$/.test name
+		if not /^[0-9a-zA-Z-_\u00C0-\u017F\u4e00-\u9fa5]+$/.test name
 			throw new Meteor.Error 'name-invalid'
 
 		now = new Date()
