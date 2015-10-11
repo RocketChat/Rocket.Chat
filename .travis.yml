@@ -8,8 +8,13 @@ node_js:
 before_install:
 - curl https://install.meteor.com | /bin/sh
 script:
-- mkdir ../build
+- cd travis
+- npm install
+- npm start
+- cd .. 
 - meteor build ../build
+- cd travis
+- sh ./namefiles.sh
 deploy:
   provider: s3
   access_key_id: "AKIAIKIA7H7D47KUHYCA"
