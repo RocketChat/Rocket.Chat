@@ -23,9 +23,8 @@ script:
 - cd .travis
 - sh ./namedemo.sh
 - cd ..
-- export VERSION=`cat ../build/version.txt`
 after_deploy:
-- "curl -H \"Content-Type: application/json\" --data \"{'docker_tag': '$VERSION'}\" -X POST https://registry.hub.docker.com/u/singli/rocket.chat/trigger/$PUSHTOKEN/" 
+- "curl -H \"Content-Type: application/json\" --data \"{'build': true}\" -X POST https://registry.hub.docker.com/u/singli/rocket.chat/trigger/$PUSHTOKEN/" 
 deploy:
   provider: s3
   access_key_id: "AKIAIKIA7H7D47KUHYCA"
