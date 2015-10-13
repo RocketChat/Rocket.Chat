@@ -9,6 +9,7 @@ before_install:
 - curl https://install.meteor.com | /bin/sh
 - npm install -g npm@'>=2.13.5'
 script:
+- if [[ "$TRAVIS_PULL_REQUEST" != "false" ]]; then echo "Building PR $TRAVIS_PULL_REQUEST"; meteor build ../build; exit 0; fi
 - cd .travis
 - npm install
 - npm start
