@@ -6,11 +6,15 @@
 		clear: both;
 	}
 }
-
 *,
 *:before,
-*:after {
+*:after{
 	.box-sizing(border-box);
+}
+
+*:not(input):not(textarea),
+*:not(input):not(textarea):before,
+*:not(input):not(textarea):after {
 	-webkit-user-select: none;
 	-moz-user-select: none;
 	-ms-user-select: none;
@@ -2553,6 +2557,13 @@ a.github-fork {
 	.body {
 		opacity: 1;
 		.transition(opacity 1s linear);
+
+		.inline-image {
+			background-size: contain;
+			background-repeat: no-repeat;
+			background-position: center left;
+			height: 200px;
+		}
 	}
 	&.temp .body {
 		opacity: .5;

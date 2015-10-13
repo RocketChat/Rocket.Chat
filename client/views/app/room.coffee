@@ -387,8 +387,9 @@ Template.room.events
 			FlowRouter.go 'channel', {name: channel}
 			return
 
-		RocketChat.TabBar.openFlex()
+		RocketChat.TabBar.setTemplate 'membersList'
 		Session.set('showUserInfo', $(e.currentTarget).data('username'))
+		RocketChat.TabBar.openFlex()
 
 	'click .image-to-download': (event) ->
 		ChatMessage.update {_id: this._arguments[1]._id, 'urls.url': $(event.currentTarget).data('url')}, {$set: {'urls.$.downloadImages': true}}
