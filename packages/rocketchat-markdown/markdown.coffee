@@ -2,8 +2,6 @@
 # Markdown is a named function that will parse markdown syntax
 # @param {Object} message - The message object
 ###
-##if Meteor.isClient isnt true
-##	showdown = Npm.require('showdown')
 
 class Markdown
 	constructor: (message) ->
