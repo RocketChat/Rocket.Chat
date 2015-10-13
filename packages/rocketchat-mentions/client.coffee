@@ -49,3 +49,4 @@ class MentionsClient
 		return message
 
 RocketChat.callbacks.add 'renderMessage', MentionsClient
+RocketChat.callbacks.add 'renderMentions', MentionsClient
