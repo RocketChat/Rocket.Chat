@@ -304,7 +304,8 @@ Template.room.events
 					file: item.getAsFile()
 					name: 'Clipboard'
 
-		fileUpload files
+		if files.length > 0
+			fileUpload files
 
 	'keydown .input-message': (event) ->
 		Template.instance().chatMessages.keydown(@_id, event, Template.instance())
