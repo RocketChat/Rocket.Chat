@@ -71,6 +71,17 @@
 												{{/if}}
 											</div>
 										{{/if}}
+										{{#if $eq type 'color'}}
+											<div class="input-line double-col">
+												<label>{{label}}</label>
+												<div>
+													<input type="text" class="minicolors" name="{{_id}}" value="{{value}}" />
+													{{#if description}}
+														<small>{{description}}</small>
+													{{/if}}
+												</div>
+											</div>
+										{{/if}}
 									{{/each}}
 
 									{{#if section}}
