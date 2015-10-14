@@ -15,7 +15,7 @@ Meteor.methods
 		if not /^[0-9a-zA-Z-_\u00C0-\u017F\u4e00-\u9fa5]+$/.test name
 			throw new Meteor.Error 'name-invalid'
 
-		name = _.slugify name
+		##remove name = _.slugify name
 
 		if name is room.name
 			return

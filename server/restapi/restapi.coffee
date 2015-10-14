@@ -21,7 +21,6 @@ Api.addRoute 'rooms/:id/join', authRequired: true,
 			Meteor.call('joinRoom', @urlParams.id)
 		status: 'success'   # need to handle error
 
-
 # leave a room
 Api.addRoute 'rooms/:id/leave', authRequired: true,
 	post: ->
