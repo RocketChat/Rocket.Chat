@@ -40,7 +40,7 @@
 					</div>
 				{{/each}}
 				{{#if unreadCount}}
-					{{#if roomManager.unreadSince.get}}
+					{{#if unreadSince}}
 						<div class="unread-bar">
 							{{_ "S_new_messages_since_s" unreadCount formatUnreadSince}}
 							<a>
