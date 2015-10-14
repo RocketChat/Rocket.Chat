@@ -11,6 +11,7 @@ RocketChat.theme = new class
 		'assets/stylesheets/utils/_preloader.import.less'
 		'assets/stylesheets/utils/_reset.import.less'
 		'assets/stylesheets/utils/_octicons.less'
+		'assets/stylesheets/utils/_chatops.less'
 		'assets/stylesheets/animation.css'
 		'assets/stylesheets/base.less'
 		'assets/stylesheets/fontello.css'

@@ -8,7 +8,7 @@ favoritesEnabled = ->
 # @TODO bug com o botão para "rolar até o fim" (novas mensagens) quando há uma mensagem com texto que gere rolagem horizontal
 Template.room.helpers
 	showFormattingTips: ->
-		return RocketChat.Markdown or RocketChat.Highlight
+		return RocketChat.settings.get('Message_ShowFormattingTips') and (RocketChat.Markdown or RocketChat.Highlight)
 	showMarkdown: ->
 		return RocketChat.Markdown
 	showHighlight: ->
@@ -188,7 +188,7 @@ Template.room.helpers
 		return !! ChatRoom.findOne { _id: @_id, t: 'c' }
 
 	canRecordAudio: ->
-		return navigator.getUserMedia? or navigator.webkitGetUserMedia?
+		return RocketChat.settings.get('Message_AudioRecorderEnabled') and (navigator.getUserMedia? or navigator.webkitGetUserMedia?)
 
 	roomManager: ->
 		room = ChatRoom.findOne(this._id, { reactive: false })
@@ -216,6 +216,9 @@ Template.room.helpers
 
 	showToggleFavorite: ->
 		return true if isSubscribed(this._id) and favoritesEnabled()
+
+	compactView: ->
+		return 'compact' if Meteor.user()?.settings?.preferences?.compactView
 
 Template.room.events
 	"touchstart .message": (e, t) ->
