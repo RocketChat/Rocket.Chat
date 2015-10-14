@@ -20,6 +20,9 @@ Meteor.methods
 			if settings.saveMobileBandwidth?
 				preferences.saveMobileBandwidth = if settings.saveMobileBandwidth is "1" then true else false
 
+			if settings.compactView?
+				preferences.compactView = if settings.compactView is "1" then true else false
+
 			if settings.autoImageLoad?
 				preferences.autoImageLoad = if settings.autoImageLoad is "1" then true else false
 

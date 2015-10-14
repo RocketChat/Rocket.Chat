@@ -35,6 +35,7 @@ RocketChat.settings.add 'Accounts_OAuth_Twitter_id', '', { type: 'string', group
 RocketChat.settings.add 'Accounts_OAuth_Twitter_secret', '', { type: 'string', group: 'Accounts', section: 'Twitter' }
 
 RocketChat.settings.addGroup 'General'
+RocketChat.settings.add 'Site_Url', __meteor_runtime_config__?.ROOT_URL, { type: 'string', group: 'General', i18nDescription: 'Site_Url_Description', public: true }
 RocketChat.settings.add 'Site_Name', 'Rocket.Chat', { type: 'string', group: 'General', public: true }
 RocketChat.settings.add 'Allow_Invalid_SelfSigned_Certs', false, { type: 'boolean', group: 'General' }
 RocketChat.settings.add 'Disable_Favorite_Rooms', false, { type: 'boolean', group: 'General' }
@@ -42,6 +43,7 @@ RocketChat.settings.add 'Disable_Favorite_Rooms', false, { type: 'boolean', grou
 RocketChat.settings.addGroup 'API'
 RocketChat.settings.add 'API_Analytics', '', { type: 'string', group: 'API', public: true }
 RocketChat.settings.add 'API_Embed', true, { type: 'boolean', group: 'API', public: true }
+RocketChat.settings.add 'API_EmbedDisabledFor', '', { type: 'string', group: 'API', public: true, i18nDescription: 'API_EmbedDisabledFor_Description' }
 
 RocketChat.settings.addGroup 'SMTP'
 RocketChat.settings.add 'SMTP_Host', '', { type: 'string', group: 'SMTP' }
@@ -62,6 +64,8 @@ RocketChat.settings.add 'Message_ShowEditedStatus', true, { type: 'boolean', gro
 RocketChat.settings.add 'Message_ShowDeletedStatus', false, { type: 'boolean', group: 'Message', public: true }
 RocketChat.settings.add 'Message_KeepHistory', false, { type: 'boolean', group: 'Message', public: true }
 RocketChat.settings.add 'Message_MaxAllowedSize', 5000, { type: 'int', group: 'Message', public: true }
+RocketChat.settings.add 'Message_ShowFormattingTips', true, { type: 'boolean', group: 'Message', public: true }
+RocketChat.settings.add 'Message_AudioRecorderEnabled', true, { type: 'boolean', group: 'Message', public: true }
 
 RocketChat.settings.addGroup 'Meta'
 RocketChat.settings.add 'Meta_language', '', { type: 'string', group: 'Meta' }
@@ -88,7 +92,7 @@ RocketChat.settings.add 'Layout_Home_Title', 'Home', { type: 'string', group: 'L
 RocketChat.settings.add 'Layout_Home_Body', 'Welcome to Rocket.Chat <br> Go to APP SETTINGS -> Layout to customize this intro.', { type: 'string', multiline: true, group: 'Layout', public: true, section: 'Content' }
 RocketChat.settings.add 'Layout_Terms_of_Service', 'Terms of Service <br> Go to APP SETTINGS -> Layout to customize this page.', { type: 'string', multiline: true, group: 'Layout', public: true, section: 'Content' }
 RocketChat.settings.add 'Layout_Privacy_Policy', 'Privacy Policy <br> Go to APP SETTINGS -> Layout to customize this page.', { type: 'string', multiline: true, group: 'Layout', public: true, section: 'Content' }
-RocketChat.settings.add 'Layout_Sidenav_Footer', '<a href="https://github.com/RocketChat/Rocket.Chat" class="logo" target="_blank"> <img src="/images/logo/logo.svg?v=3" /> <small><i class="icon-github-circled"></i> Fork it on github</small> </a>', { type: 'string', group: 'Layout', public: true, i18nDescription: 'Layout_Sidenav_Footer_description' }
+RocketChat.settings.add 'Layout_Sidenav_Footer', '<div><a href="https://github.com/RocketChat/Rocket.Chat" class="logo" target="_blank"> <img src="/images/logo/logo.svg?v=3" /></a><div class="github-tagline"><span class="octicon octicon-pencil" style="color: #994C00"></span> with <span class="octicon octicon-heart" style="color: red"></span> on <span class="octicon octicon-mark-github"></span></div></div>', { type: 'string', group: 'Layout', public: true, i18nDescription: 'Layout_Sidenav_Footer_description' }
 RocketChat.settings.add 'Layout_Login_Header', '<a class="logo" href="/"><img src="/images/logo/logo.svg?v=3" /></a>', { type: 'string', multiline: true, group: 'Layout', public: true, section: 'Login' }
 RocketChat.settings.add 'Layout_Login_Terms', 'By proceeding to create your account and use Rocket.Chat, you are agreeing to our <a href="/terms-of-service">Terms of Service</a> and <a href="/privacy-policy">Privacy Policy</a>. If you do not agree, you cannot use Rocket.Chat.', { type: 'string', multiline: true, group: 'Layout', public: true, section: 'Login' }
 
