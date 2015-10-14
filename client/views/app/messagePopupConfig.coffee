@@ -160,7 +160,7 @@ Template.messagePopupConfig.helpers
 
 		config =
 			title: t('Commands')
-			collection: RocketChat.botAutoComplete.commands
+			collection: RocketChat.botCommands.listCommands()
 			trigger: '@bot '
 			triggerAnywhere: false
 			template: 'messagePopupBotAutoComplete'

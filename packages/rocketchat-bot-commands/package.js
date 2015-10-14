@@ -1,7 +1,7 @@
 Package.describe({
-	name: 'rocketchat:bot-autocomplete',
+	name: 'rocketchat:bot-commands',
 	version: '0.0.1',
-	summary: 'Message pre-processor that will translate /leave commands',
+	summary: 'Bot command hook and autocomplete',
 	git: ''
 });
 
@@ -14,8 +14,8 @@ Package.onUse(function(api) {
 	]);
 
 	api.addFiles('main.coffee');
-	api.addFiles('server/methods/botAutoComplete.coffee');
-	api.addAssets('client/views/messagePopupBotAutoComplete.html', 'client');
+	api.addFiles('server/methods/addBotCommands.coffee');
+	api.addFiles('server/methods/listBotCommands.coffee', 'server');
 });
 
 Package.onTest(function(api) {

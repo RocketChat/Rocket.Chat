@@ -1,5 +1,5 @@
 
-class botAutoComplete
+class botCommands
 	constructor: ->
 		@commands = {}
 
@@ -7,6 +7,9 @@ class botAutoComplete
 		console.log "ADDING COMMAND #{command.command}"
 		name = command.command.replace(/\W+/g, '')
 		@commands[name] = command
+		
+	listCommands: () ->
+		return @commands
 
 
-RocketChat.botAutoComplete = new botAutoComplete()
+RocketChat.botCommands = new botCommands()
