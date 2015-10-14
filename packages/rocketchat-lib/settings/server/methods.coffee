@@ -4,7 +4,6 @@
 # @param {Mixed} value
 # @param {Object} setting
 ###
-
 RocketChat.settings.add = (_id, value, options = {}) ->
 	if not _id or not value?
 		return false
@@ -33,11 +32,11 @@ RocketChat.settings.add = (_id, value, options = {}) ->
 
 	return RocketChat.models.Settings.upsert { _id: _id }, upsertChanges
 
+
 ###
 # Add a setting group
 # @param {String} _id
 ###
-
 RocketChat.settings.addGroup = (_id, options = {}) ->
 	if not _id
 		return false
@@ -58,11 +57,11 @@ RocketChat.settings.addGroup = (_id, options = {}) ->
 
 	return RocketChat.models.Settings.upsert { _id: _id }, upsertChanges
 
+
 ###
 # Remove a setting by id
 # @param {String} _id
 ###
-
 RocketChat.settings.removeById = (_id) ->
 	if not _id
 		return false
@@ -70,6 +69,14 @@ RocketChat.settings.removeById = (_id) ->
 	# console.log '[functions] RocketChat.settings.add -> '.green, 'arguments:', arguments
 
 	return RocketChat.models.Settings.removeById _id
+
+
+###
+# Update a setting by id
+# @param {String} _id
+###
+RocketChat.settings.updateById = (_id, value) ->
+	RocketChat.models.Settings.updateValueById _id, value
 
 
 Meteor.methods
@@ -82,5 +89,5 @@ Meteor.methods
 			throw new Meteor.Error 503, 'Not authorized'
 
 		# console.log "saveSetting -> ".green, _id, value
-		RocketChat.models.Settings.updateValueById _id, value
+		RocketChat.settings.updateById _id, value
 		return true

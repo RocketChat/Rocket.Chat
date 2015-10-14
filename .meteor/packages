@@ -88,6 +88,7 @@ todda00:friendly-slugs
 underscorestring:underscore.string
 yasaricli:slugify
 yasinuslu:blaze-meta
+rocketchat:theme
 rocketchat:authorization
 perak:codemirror
 standard-minifiers
@@ -105,3 +106,4 @@ spacebars
 check
 rocketchat:github-enterprise
 rocketchat:chatops
+ddp-rate-limiter
