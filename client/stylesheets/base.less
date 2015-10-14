@@ -6,6 +6,7 @@
 @import "utils/_emojione.import.less";
 @import "utils/_fonts.import.less";
 @import "utils/_octicons.less";
+@import "utils/_chatops.less";
 .clearfix {
 	clear: both;
 	&::after {
@@ -2575,6 +2576,15 @@ a.github-fork {
 	}
 	&.temp .body {
 		opacity: .5;
+	}
+}
+
+.compact {
+	.message {
+		padding: 5px 20px 5px 70px;
+		.thumb .avatar {
+			margin-top: -15px;
+		}
 	}
 }
 
