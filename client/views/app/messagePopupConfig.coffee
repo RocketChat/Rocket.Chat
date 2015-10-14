@@ -154,6 +154,39 @@ Template.messagePopupConfig.helpers
 
 		return config
 
+	popupBotCommandsConfig: ->
+		self = this
+		template = Template.instance()
+
+		config =
+			title: t('Commands')
+			collection: RocketChat.botAutoComplete.commands
+			trigger: '@bot '
+			triggerAnywhere: false
+			template: 'messagePopupBotAutoComplete'
+			getInput: self.getInput
+			getFilter: (collection, filter) ->
+				console.log(collection, filter)
+				commands = []
+				for command, item of collection
+
+					if command.indexOf(filter) > -1
+						console.log item
+						commands.push
+							_id: item.command
+							params: item.params
+							description: item.description
+
+					if commands.length > 10
+						break
+
+				commands = commands.sort (a, b) ->
+					return a._id > b._id
+
+				return commands
+
+		return config
+
 	subscriptionNotReady: ->
 		return 'notready' unless Template.instance().subscriptionsReady()
 
@@ -167,4 +200,3 @@ Template.messagePopupConfig.onCreated ->
 
 	@autorun ->
 		template.channelSubscription = template.subscribe 'channelAutocomplete', template.channelFilter.get()
-
