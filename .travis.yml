@@ -7,7 +7,7 @@ before_install:
   - "curl https://install.meteor.com | /bin/sh"
   - "mkdir -p node_modules &"
   - "npm install phantomjs"
-  - "npm install velocity"
+  - "npm install velocity-cli"
   - "export PHANTOMJS_BIN=./node_modules/phantomjs/bin/phantomjs"
   - "export JASMINE_BROWSER=PhantomJS"
 
