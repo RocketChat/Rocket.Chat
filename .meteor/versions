@@ -25,7 +25,7 @@ cfs:http-methods@0.0.30
 check@1.0.6
 chrismbeckett:toastr@2.1.2_1
 coffeescript@1.0.10
-cosmos:browserify@0.5.1
+cosmos:browserify@0.8.1
 dandv:caret-position@2.1.1
 ddp@1.2.2
 ddp-client@1.2.1
@@ -72,7 +72,7 @@ less@2.5.0_3
 livedata@1.0.15
 localstorage@1.0.5
 logging@1.0.8
-matb33:collection-hooks@0.7.15
+matb33:collection-hooks@0.8.1
 meteor@1.1.9
 meteor-base@1.0.1
 meteor-developer@1.1.4
@@ -150,7 +150,7 @@ routepolicy@1.0.6
 service-configuration@1.0.5
 session@1.1.1
 sha@1.0.4
-simple:highlight.js@1.0.9
+simple:highlight.js@1.2.0
 simple:json-routes@1.0.4
 spacebars@1.0.7
 spacebars-compiler@1.0.7
