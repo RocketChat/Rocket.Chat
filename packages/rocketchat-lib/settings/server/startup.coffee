@@ -42,6 +42,7 @@ RocketChat.settings.add 'Disable_Favorite_Rooms', false, { type: 'boolean', grou
 RocketChat.settings.addGroup 'API'
 RocketChat.settings.add 'API_Analytics', '', { type: 'string', group: 'API', public: true }
 RocketChat.settings.add 'API_Embed', true, { type: 'boolean', group: 'API', public: true }
+RocketChat.settings.add 'API_EmbedDisabledFor', '', { type: 'string', group: 'API', public: true, i18nDescription: 'API_EmbedDisabledFor_Description' }
 
 RocketChat.settings.addGroup 'SMTP'
 RocketChat.settings.add 'SMTP_Host', '', { type: 'string', group: 'SMTP' }
@@ -62,6 +63,8 @@ RocketChat.settings.add 'Message_ShowEditedStatus', true, { type: 'boolean', gro
 RocketChat.settings.add 'Message_ShowDeletedStatus', false, { type: 'boolean', group: 'Message', public: true }
 RocketChat.settings.add 'Message_KeepHistory', false, { type: 'boolean', group: 'Message', public: true }
 RocketChat.settings.add 'Message_MaxAllowedSize', 5000, { type: 'int', group: 'Message', public: true }
+RocketChat.settings.add 'Message_ShowFormattingTips', true, { type: 'boolean', group: 'Message', public: true }
+RocketChat.settings.add 'Message_AudioRecorderEnabled', true, { type: 'boolean', group: 'Message', public: true }
 
 RocketChat.settings.addGroup 'Meta'
 RocketChat.settings.add 'Meta_language', '', { type: 'string', group: 'Meta' }

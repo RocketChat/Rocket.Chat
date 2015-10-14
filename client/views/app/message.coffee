@@ -105,8 +105,8 @@ Template.message.onViewRendered = (context) ->
 		ul = lastNode.parentElement
 		wrapper = ul.parentElement
 
-		if this.u?.username is not "hubot"
-			if context.urls?.length > 0 and Template.oembedBaseWidget? and RocketChat.settings.get 'API_Embed'
+		if context.urls?.length > 0 and Template.oembedBaseWidget? and RocketChat.settings.get 'API_Embed'
+			if context.u?.username not in RocketChat.settings.get('API_EmbedDisabledFor')?.split(',')
 				for item in context.urls
 					do (item) ->
 						urlNode = lastNode.querySelector('.body a[href="'+item.url+'"]')

@@ -48,7 +48,7 @@
 					</div>
 				{{/if}}
 			{{/if}}
-			<div class="messages-box">
+			<div class="messages-box {{compactView}}">
 				<div class="ticks-bar"></div>
 				<div class="wrapper">
 					<ul aria-live="polite">
@@ -86,9 +86,8 @@
 							<div class="input-message-container">
 								{{> messagePopupConfig getPupupConfig}}
 								<textarea dir="auto" name="msg" maxlength="{{maxMessageLength}}" class="input-message autogrow-short" placeholder="{{_ 'Message'}}"></textarea>
-								<!--<i class="icon-paper-plane" title="{{_ "Send_Message"}}" aria-label="{{_ "Send_Message"}}"></i>-->
 							</div>
-							<!--
+
 							{{#if canRecordAudio}}
 								<div class="mic">
 									<i class="icon-mic" aria-label="{{_ "Record"}}"></i>
@@ -97,7 +96,6 @@
 									<i class="icon-stop" aria-label="{{_ "Stop_Recording"}}"></i>
 								</div>
 							{{/if}}
-						-->
 						</div>
 						<div class="users-typing">
 							{{#with usersTyping}}
@@ -117,7 +115,7 @@
 								{{/if}}
 							{{/with}}
 						</div>
-						<!--
+
 						{{#if showFormattingTips}}
 						<div class="formatting-tips" aria-hidden="true" dir="auto">
 							{{#if showMarkdown}}
@@ -135,7 +133,6 @@
 
 						</div>
 						{{/if}}
-						-->
 						<div class="editing-commands" aria-hidden="true" dir="auto">
 							<div class="editing-commands-cancel">{{_ 'Esc_to'}} <a href="">{{_ 'Cancel'}}</a></div>
 							<div class="editing-commands-save">{{_ 'Enter_to'}} <a href="">{{_ 'Save_changes'}}</a></div>
