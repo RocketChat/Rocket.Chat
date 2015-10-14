@@ -190,9 +190,10 @@ Template.room.helpers
 	canRecordAudio: ->
 		return RocketChat.settings.get('Message_AudioRecorderEnabled') and (navigator.getUserMedia? or navigator.webkitGetUserMedia?)
 
-	roomManager: ->
+	unreadSince: ->
 		room = ChatRoom.findOne(this._id, { reactive: false })
-		return RoomManager.openedRooms[room.t + room.name]
+		if room?
+			return RoomManager.openedRooms[room.t + room.name]?.unreadSince?.get()
 
 	unreadCount: ->
 		return RoomHistoryManager.getRoom(@_id).unreadNotLoaded.get() + Template.instance().unreadCount.get()
