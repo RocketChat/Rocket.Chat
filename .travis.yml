@@ -13,6 +13,6 @@ before_install:
 
 script:
   - meteor add rocketchat:livechat rocketchat:hubot sanjo:jasmine velocity:console-reporter
-  - ./node_modules/velocity/bin/velocity test-packages --ci
-  - ./node_modules/velocity/bin/velocity test-app --ci
+  - ./node_modules/velocity-cli/bin/velocity test-packages --ci
+  - ./node_modules/velocity-cli/bin/velocity test-app --ci
   - meteor build --server demo.rocket.chat ./
