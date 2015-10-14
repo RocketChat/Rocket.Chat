@@ -24,7 +24,6 @@ Package.onUse(function(api) {
 	// COMMON
 	api.addFiles('lib/core.coffee');
 	api.addFiles('lib/callbacks.coffee');
-	api.addFiles('lib/rateLimiter.coffee');
 	api.addFiles('lib/slashCommand.coffee');
 
 	// MODELS SERVER
@@ -37,6 +36,7 @@ Package.onUse(function(api) {
 
 	// Settings
 	api.addFiles('settings/lib/rocketchat.coffee');
+	api.addFiles('settings/lib/onLoadSettings.coffee');
 
 	api.addFiles('settings/server/models/Settings.coffee', 'server');
 	api.addFiles('settings/server/methods.coffee', 'server');

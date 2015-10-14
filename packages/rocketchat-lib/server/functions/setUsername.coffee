@@ -31,6 +31,6 @@ RocketChat.setUsername = (user, username) ->
 		RocketChat.models.Subscriptions.setNameForDirectRoomsWithOldName previousUsername, username
 
 	# Set new username
-	Meteor.users.update { _id: user._id }, { $set: { username: username } }
+	RocketChat.models.Users.setUsername user._id, username
 	user.username = username
 	return user

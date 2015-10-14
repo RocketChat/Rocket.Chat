@@ -39,7 +39,7 @@
 				{{/each}}
 			</div>
 			{{#if unreadCount}}
-				{{#if roomManager.unreadSince.get}}
+				{{#if unreadSince}}
 					<div class="unread-bar">
 						{{_ "S_new_messages_since_s" unreadCount formatUnreadSince}}
 						<a>
@@ -48,7 +48,7 @@
 					</div>
 				{{/if}}
 			{{/if}}
-			<div class="messages-box">
+			<div class="messages-box {{compactView}}">
 				<div class="ticks-bar"></div>
 				<div class="wrapper">
 					<ul aria-live="polite">
@@ -80,14 +80,14 @@
 					<form class="message-form" method="post" action="/">
 						<div style="display: flex">
 							<div class="file">
-								<i class="icon-attach"></i>
+								<i class="octicon octicon-cloud-upload file"></i>
 								<input type="file" accept="image/*">
 							</div>
 							<div class="input-message-container">
 								{{> messagePopupConfig getPupupConfig}}
 								<textarea dir="auto" name="msg" maxlength="{{maxMessageLength}}" class="input-message autogrow-short" placeholder="{{_ 'Message'}}"></textarea>
-								<i class="icon-paper-plane" title="{{_ "Send_Message"}}" aria-label="{{_ "Send_Message"}}"></i>
 							</div>
+
 							{{#if canRecordAudio}}
 								<div class="mic">
 									<i class="icon-mic" aria-label="{{_ "Record"}}"></i>
@@ -115,6 +115,7 @@
 								{{/if}}
 							{{/with}}
 						</div>
+
 						{{#if showFormattingTips}}
 						<div class="formatting-tips" aria-hidden="true" dir="auto">
 							{{#if showMarkdown}}
@@ -129,6 +130,7 @@
 							{{#if showMarkdown}}
 							<q><span class="hidden-br"><br></span>&gt;{{_ "quote"}}</q>
 							{{/if}}
+
 						</div>
 						{{/if}}
 						<div class="editing-commands" aria-hidden="true" dir="auto">
