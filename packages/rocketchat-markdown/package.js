@@ -23,5 +23,5 @@ Package.onTest(function(api) {
 	api.use('rocketchat:lib');
 	api.use('rocketchat:markdown');
 
-	api.addFiles('tests/jasmine/client/unit/markdown.spec.coffee');
+	api.addFiles('tests/jasmine/client/unit/markdown.spec.coffee', 'client');
 });
