@@ -34,6 +34,7 @@ Package.onUse(function(api) {
 
 	// Settings
 	api.addFiles('settings/lib/rocketchat.coffee');
+	api.addFiles('settings/lib/onLoadSettings.coffee');
 
 	api.addFiles('settings/server/models/Settings.coffee', 'server');
 	api.addFiles('settings/server/methods.coffee', 'server');
