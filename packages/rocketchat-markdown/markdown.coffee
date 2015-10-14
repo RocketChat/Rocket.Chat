@@ -6,7 +6,7 @@
 class Markdown
 	constructor: (message) ->
 
-		if _s.trim message.html
+		if s.trim message.html
 
 			msg = message.html
 
