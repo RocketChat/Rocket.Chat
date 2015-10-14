@@ -5,7 +5,6 @@ The Complete Open Source Chat Solution
 ## Demo
 
 Checkout the latest version at [https://demo.rocket.chat](https://demo.rocket.chat)
-
 Available from the AppStore:
 
 [![Rocket.Chat on Apple AppStore](http://linkmaker.itunes.apple.com/images/badges/en-us/badge_appstore-lrg.svg)](https://geo.itunes.apple.com/us/app/rocket.chat/id1028869439?mt=8)
