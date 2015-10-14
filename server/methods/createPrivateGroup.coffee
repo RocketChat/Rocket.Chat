@@ -17,7 +17,7 @@ Meteor.methods
 
 		members.push me.username
 
-		name = s.slugify name
+		# name = s.slugify name
 
 		# avoid duplicate names
 		if RocketChat.models.Rooms.findOneByName name
