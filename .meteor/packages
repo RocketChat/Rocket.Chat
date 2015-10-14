@@ -108,3 +108,4 @@ rocketchat:github-enterprise
 rocketchat:chatops
 # sanjo:jasmine@0.20.2
 # velocity:html-reporter
+ddp-rate-limiter

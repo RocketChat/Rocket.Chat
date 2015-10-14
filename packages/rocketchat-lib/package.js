@@ -21,7 +21,6 @@ Package.onUse(function(api) {
 	// COMMON
 	api.addFiles('lib/core.coffee');
 	api.addFiles('lib/callbacks.coffee');
-	api.addFiles('lib/rateLimiter.coffee');
 	api.addFiles('lib/slashCommand.coffee');
 
 	// MODELS SERVER

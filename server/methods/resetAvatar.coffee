@@ -13,3 +13,10 @@ Meteor.methods
 
 		RocketChat.Notifications.notifyAll 'updateAvatar', {username: user.username}
 		return
+
+# Limit changing avatar once per minute
+DDPRateLimiter.addRule
+	type: 'method'
+	name: 'resetAvatar'
+	userId: -> return true
+, 1, 60000

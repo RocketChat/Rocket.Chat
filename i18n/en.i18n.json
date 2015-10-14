@@ -112,6 +112,7 @@
   "Enter_info" : "Enter your information",
   "Enter_to" : "Enter to",
   "Error_changing_password" : "Error changing password",
+  "Error_too_many_requests" : "Error, too many requests. Please slow down. You must wait %s seconds before trying again",
   "Esc_to" : "Esc to",
   "False" : "False",
   "Favorites" : "Favorites",
