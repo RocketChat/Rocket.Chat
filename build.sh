@@ -12,4 +12,4 @@ curl -fSL "https://s3.amazonaws.com/rocketchatbuild/demo.rocket.chat-v.latest.tg
 tar zxvf rocket.chat.tgz  &&  rm rocket.chat.tgz
 cd $ROOTPATH/bundle/programs/server
 npm install
-pm2 startOrRestart $ROOTPATH/current/$PM2JSON
+pm2 startOrRestart $ROOTPATH/current/$PM2FILE
