@@ -1,9 +1,12 @@
 Template.message.helpers
 	actions: ->
 		return RocketChat.MessageAction.getButtons(this)
-		
+
 	own: ->
 		return 'own' if this.u?._id is Meteor.userId()
+
+	chatops: ->
+		return 'chatops-message' if this.u?.username is RocketChat.settings.get('Chatops_Username')
 
 	time: ->
 		return moment(this.ts).format('HH:mm')
@@ -28,10 +31,16 @@ Template.message.helpers
 			when 'rm' then t('Message_removed', { user: this.u.username })
 			when 'rtc' then RocketChat.callbacks.run 'renderRtcMessage', this
 			else
+				if this.u?.username is RocketChat.settings.get('Chatops_Username')
+					this.html = this.msg
+					message = RocketChat.callbacks.run 'renderMentions', this
+					# console.log JSON.stringify message
+					return this.html
 				this.html = this.msg
 				if _.trim(this.html) isnt ''
 					this.html = _.escapeHTML this.html
 				message = RocketChat.callbacks.run 'renderMessage', this
+				# console.log JSON.stringify message
 				this.html = message.html.replace /\n/gm, '<br/>'
 				return this.html
 
@@ -96,12 +105,13 @@ Template.message.onViewRendered = (context) ->
 		ul = lastNode.parentElement
 		wrapper = ul.parentElement
 
-		if context.urls?.length > 0 and Template.oembedBaseWidget? and RocketChat.settings.get 'API_Embed'
-			for item in context.urls
-				do (item) ->
-					urlNode = lastNode.querySelector('.body a[href="'+item.url+'"]')
-					if urlNode?
-						$(lastNode.querySelector('.body')).append Blaze.toHTMLWithData Template.oembedBaseWidget, item
+		if this.u?.username is not "hubot"
+			if context.urls?.length > 0 and Template.oembedBaseWidget? and RocketChat.settings.get 'API_Embed'
+				for item in context.urls
+					do (item) ->
+						urlNode = lastNode.querySelector('.body a[href="'+item.url+'"]')
+						if urlNode?
+							$(lastNode.querySelector('.body')).append Blaze.toHTMLWithData Template.oembedBaseWidget, item
 
 		if not lastNode.nextElementSibling?
 			if lastNode.classList.contains('own') is true
