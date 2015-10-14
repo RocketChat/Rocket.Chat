@@ -1,4 +1,5 @@
 less = Npm.require('less')
+autoprefixer = Npm.require('less-plugin-autoprefix')
 
 RocketChat.theme = new class
 	variables: {}
@@ -46,6 +47,9 @@ RocketChat.theme = new class
 
 		options =
 			compress: true
+			plugins: [
+				new autoprefixer()
+			]
 
 		start = Date.now()
 		less.render content, options, (err, data) ->
