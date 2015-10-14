@@ -1,4 +1,5 @@
 {
 	"Chatops_Enabled" : "Enable Chatops",
-	"Chatops_Title": "Chatops panel"
+	"Chatops_Title": "Chatops panel",
+	"Chatops_Username": "Chatops username"
 }
