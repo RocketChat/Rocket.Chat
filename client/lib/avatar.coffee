@@ -4,7 +4,7 @@
 	if not username?
 		return
 
-	return Meteor._relativeToSiteRootUrl "/avatar/#{username}.jpg?_dc=#{random}"
+	return Meteor.absoluteUrl "avatar/#{username}.jpg?_dc=#{random}"
 
 Blaze.registerHelper 'avatarUrlFromUsername', getAvatarUrlFromUsername
 
