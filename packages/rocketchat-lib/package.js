@@ -8,6 +8,7 @@ Package.describe({
 Package.onUse(function(api) {
 	api.versionsFrom('1.0');
 
+	api.use('ddp-server');
 	api.use('reactive-var');
 	api.use('reactive-dict');
 	api.use('coffeescript');
@@ -18,8 +19,10 @@ Package.onUse(function(api) {
 	api.use('underscorestring:underscore.string');
 	api.use('monbro:mongodb-mapreduce-aggregation@1.0.1');
 
-	// COMMON
 	api.addFiles('lib/core.coffee');
+	api.addFiles('server/EnvironmentConnection.coffee', 'server');
+
+	// COMMON
 	api.addFiles('lib/callbacks.coffee');
 	api.addFiles('lib/rateLimiter.coffee');
 	api.addFiles('lib/slashCommand.coffee');
