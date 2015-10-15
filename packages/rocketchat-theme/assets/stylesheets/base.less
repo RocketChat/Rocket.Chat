@@ -1188,7 +1188,7 @@ a.github-fork {
 		position: absolute;
 		top: @header-min-height;
 		.calc(height,
-		~"100% - " @header-min-height + @footer-min-height);
+		~"100% - " @header-min-height + @footer-min-height + 42);
 		width: 100%;
 		overflow-x: hidden;
 		overflow-y: auto;
@@ -1209,6 +1209,9 @@ a.github-fork {
 			text-transform: uppercase;
 			font-size: 13px;
 		}
+	}
+	.channel-create-button {
+		bottom: 70px;
 	}
 	.input-line {
 		margin-bottom: 25px;
