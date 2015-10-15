@@ -1,24 +1,17 @@
-Meteor.startup ->
-	TimeSync.loggingEnabled = false
-
-	UserPresence.awayTime = 300000
-	UserPresence.start()
-	Meteor.subscribe("activeUsers")
-
-	Session.setDefault('AvatarRandom', 0)
-
-	window.lastMessageWindow = {}
-	window.lastMessageWindowHistory = {}
-
+kdfjdsakjf;afjasfsa
+sadfkjasfkasklfjsad;lfdsa
+f
+safkdskfksalfkdasf
+adf
+d
 	@defaultUserLanguage = ->
 		lng = window.navigator.userLanguage || window.navigator.language || 'en'
 		# Fix browsers having all-lowercase language settings eg. pt-br, en-us
-		re = /([a-z]{2}-)([a-z]{2})/
-		if re.test lng
-			lng = lng.replace re, (match, parts...) -> return parts[0] + parts[1].toUpperCase()
-		return lng
 
-	loadedLaguages = []
+safksdaflkksafsalkf
+
+skdfaskfakf
+asfsafsafs
 
 	setLanguage = (language) ->
 		if loadedLaguages.indexOf(language) > -1
