@@ -48,12 +48,12 @@
 		animating = true
 		if status is -1 or (status isnt 1 and flexNav.opened)
 			flexNav.opened = false
-			flexNav.addClass "hidden"
+			flexNav.addClass "animated-hidden"
 		else
 			flexNav.opened = true
 			# added a delay to make sure the template is already rendered before animating it
 			setTimeout ->
-				flexNav.removeClass "hidden"
+				flexNav.removeClass "animated-hidden"
 			, 50
 		setTimeout ->
 			animating = false

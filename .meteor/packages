@@ -78,7 +78,7 @@ pauli:accounts-linkedin
 percolate:migrations
 percolate:synced-cron
 raix:handlebar-helpers
-raix:push@2.6.13-rc.1
+raix:push
 raix:ui-dropped-event
 steffo:meteor-accounts-saml
 tap:i18n
@@ -106,6 +106,6 @@ spacebars
 check
 rocketchat:github-enterprise
 rocketchat:chatops
-# sanjo:jasmine@0.20.2
+# sanjo:jasmine
 # velocity:html-reporter
 ddp-rate-limiter
