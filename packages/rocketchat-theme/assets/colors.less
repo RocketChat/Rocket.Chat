@@ -1,6 +1,8 @@
-.custom-scroll(@background, @thumb, @width: 8px, @height: 8px) {
+// Colors
+// --------------
+
+.custom-scroll(@background, @thumb, @width: 8px) {
 	&::-webkit-scrollbar {
-		height: @height;
 		width: @width;
 		background: @background;
 	}
@@ -103,7 +105,6 @@ blockquote {
 }
 
 .input-line {
-	.clearfix;
 	&.search {
 		.icon-search {
 			color: @secondary-font-color;
@@ -259,9 +260,6 @@ label.required:after {
 	&.meteor-developer {
 		background-color: #de4f4f;
 	}
-	&.wordpress {
-		background-color: #1e8cbe;
-	}
 }
 
 .burger {
@@ -332,7 +330,6 @@ a.github-fork {
 
 .account-box {
 	.info {
-		background-color:@primary-background-color;
 		h4 {
 			color: rgba(255, 255, 255, 0.65);
 		}
@@ -675,7 +672,7 @@ a.github-fork {
 		}
 	}
 	.wrapper {
-		.custom-scroll(transparent, rgba(180,180,180,.75));
+		.custom-scroll(transparent, #EAEAEA);
 	}
 	.footer {
 		background: #FCFCFC;
@@ -749,7 +746,10 @@ a.github-fork {
 			background: #FCFCFC;
 		}
 		.formatting-tips {
-			color: #444444;
+			color: #888888;
+			&:hover {
+				color: #444444;
+			}
 			q {
 				border-left-color: #ccc;
 			}

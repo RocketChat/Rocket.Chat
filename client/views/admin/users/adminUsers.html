@@ -21,22 +21,32 @@
 					{{{_ "Showing_results" users.length}}}
 				</div>
 				<div class="list">
-					{{#each users}}
-					<div class="user-info" data-id="{{_id}}">
-						<li class='user-image status-{{status}}'>
-							{{> avatar username=username}}
-							<h3>{{name}}</h3>
-						</li>
-						<ul>
-							<li>@{{username}}</li>
-							{{#if email}}<li>{{email}}</li>{{/if}}
-						</ul>
-					</div>
-					{{/each}}
+					<table>
+						<thead>
+							<tr>
+								<td>&nbsp;</td>
+								<td width="34%">{{_ "Name"}}</td>
+								<td width="33%">{{_ "Username"}}</td>
+								<td width="33%">{{_ "E-mail"}}</td>
+							</tr>
+						</thead>
+						<tbody>
+							{{#each users}}
+							<tr class="user-info" data-id="{{_id}}">
+								<td>
+									<div class="user-image status-{{status}}">
+										{{> avatar username=username}}
+									</div>
+								</td>
+								<td>{{name}}</td>
+								<td>{{username}}</td>
+								<td>{{emailAddress}}</td>
+							</tr>
+							{{/each}}
+						</tbody>
+					</table>
 					{{#if hasMore}}
-						<li class="load-more">
-							<button class="button secondary load-more {{isLoading}}">{{_ "Load_more"}}</button>
-						</li>
+						<button class="button secondary load-more {{isLoading}}">{{_ "Load_more"}}</button>
 					{{/if}}
 				</div>
 			{{/unless}}
