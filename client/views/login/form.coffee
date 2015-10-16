@@ -85,8 +85,7 @@ Template.loginForm.events
 							instance.state.set 'login'
 						else if error?.error is 'inactive-user'
 							instance.state.set 'wait-activation'
-						# else
-							# FlowRouter.go 'index'
+
 			else
 				loginMethod = 'loginWithPassword'
 				if RocketChat.settings.get('LDAP_Enable')
@@ -100,7 +99,6 @@ Template.loginForm.events
 						else
 							toastr.error t 'User_not_found_or_incorrect_password'
 						return
-					FlowRouter.go 'index'
 
 	'click .register': ->
 		Template.instance().state.set 'register'
