@@ -15,25 +15,25 @@ usernameIsAvaliable = (username) ->
 	usernames = []
 	username = undefined
 
-	usernames.push slug user.name
+	usernames.push user.name
 
 	nameParts = user?.name?.split()
 	if nameParts.length > 1
 		first = nameParts[0]
 		last = nameParts[nameParts.length - 1]
 
-		usernames.push slug first[0] + last
-		usernames.push slug first + last[0]
+		usernames.push first[0] + last
+		usernames.push first + last[0]
 
 	if user.profile?.name?
-		usernames.push slug user.profile.name
+		usernames.push user.profile.name
 
 	if user.services?
 		for serviceName, service of user.services
 			if service.name?
-				usernames.push slug service.name
+				usernames.push service.name
 			else if service.username?
-				usernames.push slug service.username
+				usernames.push service.username
 
 	if user.emails?.length > 0
 		for email in user.emails when email.address? and email.verified is true

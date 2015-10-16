@@ -109,3 +109,4 @@ rocketchat:chatops
 # sanjo:jasmine
 # velocity:html-reporter
 ddp-rate-limiter
+rzymek:moment-locale-zh-cn
