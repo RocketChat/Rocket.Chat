@@ -13,13 +13,13 @@
 			SideNav.closeFlex()
 			return;
 		status = 1
-		self.options.removeClass("_hidden")
+		self.options.removeClass("animated-hidden")
 		self.box.addClass("active")
 		SideNav.toggleArrow 1
 
 	close = ->
 		status = 0
-		self.options.addClass("_hidden")
+		self.options.addClass("animated-hidden")
 		self.box.removeClass("active")
 		SideNav.toggleArrow -1
 
