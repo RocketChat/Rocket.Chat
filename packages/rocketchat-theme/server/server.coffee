@@ -1,18 +1,33 @@
 less = Npm.require('less')
 crypto = Npm.require('crypto')
 
-# program = WebApp.clientPrograms['web.browser']
-# themeManifestItem = _.find program.manifest, (item) -> return item.url is '/theme.css'
-# themeManifestItem.where = 'client'
-# themeManifestItem.type = 'css'
+calculateClientHash = WebAppHashing.calculateClientHash
+WebAppHashing.calculateClientHash = (manifest, includeFilter, runtimeConfigOverride) ->
+	css = RocketChat.theme.getCss()
 
-ClientVersions = undefined
-_defineMutationMethods = Meteor.Collection.prototype._defineMutationMethods
-Meteor.Collection.prototype._defineMutationMethods = ->
-	if this._name is 'meteor_autoupdate_clientVersions'
-		ClientVersions = this
+	WebAppInternals.staticFiles['/__cordova/theme.css'] = WebAppInternals.staticFiles['/theme.css'] =
+		cacheable: true
+		sourceMapUrl: undefined
+		type: 'css'
+		content: css
 
-	_defineMutationMethods.call this
+	hash = crypto.createHash('sha1').update(css).digest('hex')
+
+	themeManifestItem = _.find manifest, (item) -> return item.path is 'app/theme.css'
+	if not themeManifestItem?
+		themeManifestItem = {}
+		manifest.push themeManifestItem
+
+	themeManifestItem.path = 'app/theme.css'
+	themeManifestItem.type = 'css'
+	themeManifestItem.cacheable = true
+	themeManifestItem.where = 'client'
+	themeManifestItem.url = "/theme.css?#{hash}"
+	themeManifestItem.size = css.length
+	themeManifestItem.hash = hash
+
+	calculateClientHash.call this, manifest, includeFilter, runtimeConfigOverride
+
 
 RocketChat.theme = new class
 	variables: {}
@@ -69,77 +84,7 @@ RocketChat.theme = new class
 
 			RocketChat.settings.updateById 'css', data.css
 
-			WebAppInternals.staticFiles['/__cordova/theme.css'] = WebAppInternals.staticFiles['/theme.css'] =
-				cacheable: true
-				sourceMapUrl: undefined
-				type: 'css'
-				content: data.css
-
-			hash = crypto.createHash('sha1').update(data.css).digest('hex')
-
-			for arch in ['web.cordova', 'web.browser']
-				program = WebApp.clientPrograms[arch]
-				if program? and program.manifest?
-					themeManifestItem = _.find program.manifest, (item) -> return item.path is 'app/theme.css'
-					if not themeManifestItem?
-						themeManifestItem = {}
-						program.manifest.push themeManifestItem
-
-					themeManifestItem.path = 'app/theme.css'
-					themeManifestItem.type = 'css'
-					themeManifestItem.cacheable = true
-					themeManifestItem.where = 'client'
-					themeManifestItem.url = "/theme.css?#{hash}"
-					themeManifestItem.size = data.css.length
-					themeManifestItem.hash = hash
-
-					if arch is 'web.cordova'
-						program.version = WebApp.calculateClientHashCordova()
-					else
-					program.version = WebApp.calculateClientHashRefreshable()
-
-			Autoupdate.autoupdateVersion            = __meteor_runtime_config__.autoupdateVersion            = process.env.AUTOUPDATE_VERSION or WebApp.calculateClientHashNonRefreshable()
-			Autoupdate.autoupdateVersionRefreshable = __meteor_runtime_config__.autoupdateVersionRefreshable = process.env.AUTOUPDATE_VERSION or WebApp.calculateClientHashRefreshable()
-			Autoupdate.autoupdateVersionCordova     = __meteor_runtime_config__.autoupdateVersionCordova     = process.env.AUTOUPDATE_VERSION or WebApp.calculateClientHashCordova()
-
-			# reloadClientPrograms = WebAppInternals.reloadClientPrograms
-			# WebAppInternals.reloadClientPrograms = ->
-
-			WebAppInternals.generateBoilerplate()
-			# process.emit('message', {refresh: 'client'})
-
-			if not ClientVersions.findOne("version")?
-				ClientVersions.insert
-					_id: "version"
-					version: Autoupdate.autoupdateVersion
-			else
-				ClientVersions.update "version",
-					$set:
-						version: Autoupdate.autoupdateVersion
-
-			if not ClientVersions.findOne("version-cordova")?
-				ClientVersions.insert
-					_id: "version-cordova"
-					version: Autoupdate.autoupdateVersionCordova
-					refreshable: false
-			else
-				ClientVersions.update "version-cordova",
-					$set:
-						version: Autoupdate.autoupdateVersionCordova
-
-			WebApp.onListening ->
-				if not ClientVersions.findOne("version-refreshable")?
-					ClientVersions.insert
-						_id: "version-refreshable"
-						version: Autoupdate.autoupdateVersionRefreshable
-						assets: WebAppInternals.refreshableAssets
-				else
-					ClientVersions.update "version-refreshable",
-						$set:
-							version: Autoupdate.autoupdateVersionRefreshable
-							assets: WebAppInternals.refreshableAssets
-
-			# RocketChat.Notifications.notifyAll 'theme-updated'
+			process.emit('message', {refresh: 'client'})
 
 	addVariable: (type, name, value, isPublic=true) ->
 		@variables[name] =
@@ -173,15 +118,3 @@ RocketChat.theme = new class
 
 	getCss: ->
 		return RocketChat.settings.get 'css'
-
-
-# WebApp.rawConnectHandlers.use '/theme.css', (req, res, next) ->
-# 	css = RocketChat.theme.getCss()
-
-# 	res.setHeader 'content-type', 'text/css; charset=UTF-8'
-# 	res.setHeader 'Content-Disposition', 'inline'
-# 	res.setHeader 'Cache-Control', 'no-cache'
-# 	res.setHeader 'Pragma', 'no-cache'
-# 	res.setHeader 'Expires', '0'
-
-# 	res.end css
