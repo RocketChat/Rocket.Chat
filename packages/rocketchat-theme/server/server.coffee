@@ -1,4 +1,18 @@
 less = Npm.require('less')
+crypto = Npm.require('crypto')
+
+# program = WebApp.clientPrograms['web.browser']
+# themeManifestItem = _.find program.manifest, (item) -> return item.url is '/theme.css'
+# themeManifestItem.where = 'client'
+# themeManifestItem.type = 'css'
+
+ClientVersions = undefined
+_defineMutationMethods = Meteor.Collection.prototype._defineMutationMethods
+Meteor.Collection.prototype._defineMutationMethods = ->
+	if this._name is 'meteor_autoupdate_clientVersions'
+		ClientVersions = this
+
+	_defineMutationMethods.call this
 
 RocketChat.theme = new class
 	variables: {}
@@ -55,7 +69,74 @@ RocketChat.theme = new class
 
 			RocketChat.settings.updateById 'css', data.css
 
-			RocketChat.Notifications.notifyAll 'theme-updated'
+			WebAppInternals.staticFiles['/__cordova/theme.css'] = WebAppInternals.staticFiles['/theme.css'] =
+				cacheable: true
+				sourceMapUrl: undefined
+				type: 'css'
+				content: data.css
+
+			hash = crypto.createHash('sha1').update(data.css).digest('hex')
+
+			program = WebApp.clientPrograms['web.cordova']
+			themeManifestItem = _.find program.manifest, (item) -> return item.path is 'app/theme.css'
+			themeManifestItem.type = 'css'
+			themeManifestItem.where = 'client'
+			themeManifestItem.url = "/theme.css?#{hash}"
+			themeManifestItem.size = data.css.length
+			themeManifestItem.hash = hash
+			program.version = WebApp.calculateClientHashCordova()
+
+			program = WebApp.clientPrograms['web.browser']
+			themeManifestItem = _.find program.manifest, (item) -> return item.path is 'app/theme.css'
+			themeManifestItem.type = 'css'
+			themeManifestItem.where = 'client'
+			themeManifestItem.url = "/theme.css?#{hash}"
+			themeManifestItem.size = data.css.length
+			themeManifestItem.hash = hash
+			program.version = WebApp.calculateClientHashRefreshable()
+
+			Autoupdate.autoupdateVersion            = __meteor_runtime_config__.autoupdateVersion            = process.env.AUTOUPDATE_VERSION or WebApp.calculateClientHashNonRefreshable()
+			Autoupdate.autoupdateVersionRefreshable = __meteor_runtime_config__.autoupdateVersionRefreshable = process.env.AUTOUPDATE_VERSION or WebApp.calculateClientHashRefreshable()
+			Autoupdate.autoupdateVersionCordova     = __meteor_runtime_config__.autoupdateVersionCordova     = process.env.AUTOUPDATE_VERSION or WebApp.calculateClientHashCordova()
+
+			# reloadClientPrograms = WebAppInternals.reloadClientPrograms
+			# WebAppInternals.reloadClientPrograms = ->
+
+			WebAppInternals.generateBoilerplate()
+			# process.emit('message', {refresh: 'client'})
+
+			if not ClientVersions.findOne("version")?
+				ClientVersions.insert
+					_id: "version"
+					version: Autoupdate.autoupdateVersion
+			else
+				ClientVersions.update "version",
+					$set:
+						version: Autoupdate.autoupdateVersion
+
+			if not ClientVersions.findOne("version-cordova")?
+				ClientVersions.insert
+					_id: "version-cordova"
+					version: Autoupdate.autoupdateVersionCordova
+					refreshable: false
+			else
+				ClientVersions.update "version-cordova",
+					$set:
+						version: Autoupdate.autoupdateVersionCordova
+
+			WebApp.onListening ->
+				if not ClientVersions.findOne("version-refreshable")?
+					ClientVersions.insert
+						_id: "version-refreshable"
+						version: Autoupdate.autoupdateVersionRefreshable
+						assets: WebAppInternals.refreshableAssets
+				else
+					ClientVersions.update "version-refreshable",
+						$set:
+							version: Autoupdate.autoupdateVersionRefreshable
+							assets: WebAppInternals.refreshableAssets
+
+			# RocketChat.Notifications.notifyAll 'theme-updated'
 
 	addVariable: (type, name, value, isPublic=true) ->
 		@variables[name] =
@@ -91,13 +172,13 @@ RocketChat.theme = new class
 		return RocketChat.settings.get 'css'
 
 
-WebApp.connectHandlers.use '/theme.css', (req, res, next) ->
-	css = RocketChat.theme.getCss()
+# WebApp.rawConnectHandlers.use '/theme.css', (req, res, next) ->
+# 	css = RocketChat.theme.getCss()
 
-	res.setHeader 'content-type', 'text/css; charset=UTF-8'
-	res.setHeader 'Content-Disposition', 'inline'
-	res.setHeader 'Cache-Control', 'no-cache'
-	res.setHeader 'Pragma', 'no-cache'
-	res.setHeader 'Expires', '0'
+# 	res.setHeader 'content-type', 'text/css; charset=UTF-8'
+# 	res.setHeader 'Content-Disposition', 'inline'
+# 	res.setHeader 'Cache-Control', 'no-cache'
+# 	res.setHeader 'Pragma', 'no-cache'
+# 	res.setHeader 'Expires', '0'
 
-	res.end css
+# 	res.end css
