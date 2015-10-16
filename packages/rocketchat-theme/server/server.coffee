@@ -77,25 +77,26 @@ RocketChat.theme = new class
 
 			hash = crypto.createHash('sha1').update(data.css).digest('hex')
 
-			if WebApp.clientPrograms['web.cordova']?
-				program = WebApp.clientPrograms['web.cordova']
-				themeManifestItem = (_.find program?.manifest, (item) -> return item.path is 'app/theme.css') or {}
-				themeManifestItem.type = 'css'
-				themeManifestItem.where = 'client'
-				themeManifestItem.url = "/theme.css?#{hash}"
-				themeManifestItem.size = data.css.length
-				themeManifestItem.hash = hash
-				program.version = WebApp.calculateClientHashCordova()
+			for arch in ['web.cordova', 'web.browser']
+				program = WebApp.clientPrograms[arch]
+				if program? and program.manifest?
+					themeManifestItem = _.find program.manifest, (item) -> return item.path is 'app/theme.css'
+					if not themeManifestItem?
+						themeManifestItem = {}
+						program.manifest.push themeManifestItem
 
-			if WebApp.clientPrograms['web.browser']?
-				program = WebApp.clientPrograms['web.browser']
-				themeManifestItem = _.find program?.manifest, (item) -> return item.path is 'app/theme.css'
-				themeManifestItem.type = 'css'
-				themeManifestItem.where = 'client'
-				themeManifestItem.url = "/theme.css?#{hash}"
-				themeManifestItem.size = data.css.length
-				themeManifestItem.hash = hash
-				program.version = WebApp.calculateClientHashRefreshable()
+					themeManifestItem.path = 'app/theme.css'
+					themeManifestItem.type = 'css'
+					themeManifestItem.cacheable = true
+					themeManifestItem.where = 'client'
+					themeManifestItem.url = "/theme.css?#{hash}"
+					themeManifestItem.size = data.css.length
+					themeManifestItem.hash = hash
+
+					if arch is 'web.cordova'
+						program.version = WebApp.calculateClientHashCordova()
+					else
+					program.version = WebApp.calculateClientHashRefreshable()
 
 			Autoupdate.autoupdateVersion            = __meteor_runtime_config__.autoupdateVersion            = process.env.AUTOUPDATE_VERSION or WebApp.calculateClientHashNonRefreshable()
 			Autoupdate.autoupdateVersionRefreshable = __meteor_runtime_config__.autoupdateVersionRefreshable = process.env.AUTOUPDATE_VERSION or WebApp.calculateClientHashRefreshable()
