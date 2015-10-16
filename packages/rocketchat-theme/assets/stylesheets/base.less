@@ -291,6 +291,11 @@ blockquote {
 			animation-iteration-count: infinite;
 			animation-timing-function: linear;
 		}
+		.icon-search {
+			position: absolute;
+			left: 2px;
+			top: 10px;
+		}
 		input {
 			padding-left: 20px;
 		}
@@ -1842,66 +1847,20 @@ a.github-fork {
 	}
 
 	.list {
-		a {
-			.clearfix;
-			display: block;
-			padding: 10px 16px;
-			width: 100%;
-			border-bottom: 1px solid;
-			.transition(background .15s ease-out);
-			&:hover {
-			}
-		}
-		ul {
-			margin: 6px 0;
-		}
-		li {
-			display: inline-block;
-			margin-right: 14px;
-			font-size: 11px;
-			position: relative;
-			&:after {
-				content: " ";
-				width: 4px;
-				height: 4px;
-				border-radius: 50%;
-				position: absolute;
-				right: -12px;
-				.calc(top,
-				~"50% - 2px");
-			}
-			&:nth-last-child(1) {
-				&:after {
-					display: none;
-				}
-			}
-		}
-		.info {
-			display: block;
-			float: left;
-			.calc(width,~"100% - 150px");
-			i {
-				margin-right: 5px;
-				width: 20px;
-				text-align: left;
-			}
-			h3 {
-				font-size: 18px;
-				font-weight: 500;
-			}
-			a {
-				text-decoration: none;
-			}
-		}
-		.status {
-			display: block;
+		.user-image {
 			float: right;
-			width: 150px;
-			min-height: 30px;
-			text-align: right;
-			strong {
-				font-size: 12px;
-				font-weight: 500;
+			margin-left: 12px;
+		}
+		table {
+			width: 100%;
+			tbody {
+				td {
+					vertical-align: middle;
+					padding: 0 2px;
+				}
+				tr {
+					cursor: pointer;
+				}
 			}
 		}
 	}
