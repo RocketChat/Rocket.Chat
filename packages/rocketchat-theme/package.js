@@ -12,6 +12,7 @@ Package.onUse(function(api) {
 	api.use('coffeescript');
 	api.use('underscore');
 	api.use('webapp');
+	api.use('webapp-hashing');
 
 
 	api.addFiles('server/server.coffee', 'server');
