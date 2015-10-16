@@ -18,8 +18,7 @@ script:
 - cd .travis
 - sh ./namefiles.sh
 - cd ..
-- meteor add rocketchat:livechat
-- meteor add rocketchat:hubot
+- meteor add rocketchat:livechat rocketchat:hubot
 - meteor build --server demo.rocket.chat  ../build
 - cd .travis
 - sh ./namedemo.sh
