@@ -916,7 +916,7 @@ a.github-fork {
 	opacity: 1;
 	visibility: visible;
 	.transition(opacity .2s ease-out);
-	&.-hidden {
+	&.animated-hidden {
 		visibility: hidden;
 		opacity: 0;
 	}
@@ -1013,7 +1013,7 @@ a.github-fork {
 		.transition(transform .3s cubic-bezier(.5, 0, .1, 1));
 		z-index:99;
 
-		&._hidden {
+		&.animated-hidden {
 			.transform(translateY(-100%) translateY(-50px));
 		}
 		> .wrapper {
@@ -1114,7 +1114,7 @@ a.github-fork {
 	overflow-x: hidden;
 	width: @rooms-box-width;
 	.transition(transform .3s cubic-bezier(.5, 0, .1, 1));
-	&.hidden {
+	&.animated-hidden {
 		.transform(translateX(-100%));
 		header,
 		footer,
@@ -1339,7 +1339,6 @@ a.github-fork {
 		left: 0;
 		width: 100%;
 		padding: 10px 15px 0px 15px;
-		z-index: 1000;
 		text-align: right;
 		min-height: @footer-min-height;
 		height: @footer-min-height;
@@ -1607,7 +1606,7 @@ a.github-fork {
 			margin-right: -4px;
 		}
 	}
-	.hidden {
+	.animated-hidden {
 		visibility: hidden;
 		display: none;
 	}
@@ -2743,7 +2742,7 @@ a.github-fork {
 			1),
 			opacity .125s ease-out .1s);
 		}
-		> .-hidden {
+		> .animated-hidden {
 			.transform(translateX(100%));
 			opacity: 0;
 		}
