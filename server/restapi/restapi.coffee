@@ -20,16 +20,6 @@ Api.addRoute 'rooms/:id/join', authRequired: true,
 		Meteor.runAsUser this.userId, () =>
 			Meteor.call('joinRoom', @urlParams.id)
 		status: 'success'   # need to handle error
-
-# find or create a room
-Api.addRoute 'rooms/findorcreatethenjoin', authRequired: true,
-    post: ->
-        roomname = @bodyParams.roomname
-        usernames = @bodyParams.usernames
-        Meteor.runAsUser this.userId, () =>
-            Meteor.call('findOrCreateRoomThenJoin', roomname , usernames)
-        status: 'success'   # need to handle error   
-                
         
 # leave a room
 Api.addRoute 'rooms/:id/leave', authRequired: true,
