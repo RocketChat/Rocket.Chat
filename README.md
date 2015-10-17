@@ -1,6 +1,6 @@
 ![Rocket.Chat logo](https://rocket.chat/images/logo/logo-dark.svg?v3)
 
-The Complete Open Source Chat Solution
+The Complete Open Source Chat Platform
 
 ## Demo
 
@@ -94,9 +94,9 @@ It is a great solution for communities and companies wanting to privately host t
 - Audio calls
 - Multi-users Audio Conference
 - Screensharing
-- Chat-ops powered by Hubot: scalable horizontal app integration (early access)
 - REST APIs 
 - Remote Locations Video Monitoring 
+- Chat-ops powered by Hubot: scalable horizontal app integration (early access)
 - Native Cross-Platform Desktop Application [Windows, Mac OSX, or Linux](https://rocket.chat/)
 - Mobile app for iPhone, iPad, and iPod touch [Download on AppStore!](https://geo.itunes.apple.com/us/app/rocket.chat/id1028869439?mt=8)
 - Mobile app for Android phone, tablet, and TV stick [Available now on Google Play!](https://play.google.com/store/apps/details?id=com.konecty.rocket.chat)
@@ -106,22 +106,24 @@ It is a great solution for communities and companies wanting to privately host t
 ### Roadmap
 
 #### In Progress
+- Support multiple teams on the same instance / same VPS infrastructure: [Issue #658](https://github.com/RocketChat/Rocket.Chat/issues/658), [Issue #630](https://github.com/RocketChat/Rocket.Chat/issues/630)
 - Support for PostgreSQL: [Issue #533](https://github.com/RocketChat/Rocket.Chat/issues/533), [Issue #822](https://github.com/RocketChat/Rocket.Chat/issues/822)
 - Native iOS Application [Issue #270](https://github.com/RocketChat/Rocket.Chat/issues/270), [Rocket.Chat.iOS - HELP WANTED](https://github.com/RocketChat/Rocket.Chat.iOS)
 - Native Android Application [Issue #271 - HELP WANTED](https://github.com/RocketChat/Rocket.Chat/issues/271)
 - Off-the-Record (OTR) Messaging [Issue #36](https://github.com/RocketChat/Rocket.Chat/issues/36), [Issue #268 - HELP WANTED](https://github.com/RocketChat/Rocket.Chat/issues/268)
 - API-enabled methods: [Issue #202](https://github.com/RocketChat/Rocket.Chat/issues/202), [Issue #454](https://github.com/RocketChat/Rocket.Chat/issues/454), [Issue #455](https://github.com/RocketChat/Rocket.Chat/issues/455), [Issue #759](https://github.com/RocketChat/Rocket.Chat/issues/759)
+- Scalable WebRTC broadcaster / media-server integration, [Issue #1118 - HELP WANTED](https://github.com/RocketChat/Rocket.Chat/issues/1118)
 
 
 #### Planned
 - Kerberos Authentication: [Issue #839](https://github.com/RocketChat/Rocket.Chat/issues/839)
 - XMPP Multi-user chat (MUC): [Issue #404](https://github.com/RocketChat/Rocket.Chat/issues/404)
 - More webhooks: GitLab, Confluence, Jira, Piwik, Wordpress: [Issue #233](https://github.com/RocketChat/Rocket.Chat/issues/233), [Issue #525](https://github.com/RocketChat/Rocket.Chat/issues/525), [Issue #637](https://github.com/RocketChat/Rocket.Chat/issues/637), [Issue #638](https://github.com/RocketChat/Rocket.Chat/issues/638), [Issue #747](https://github.com/RocketChat/Rocket.Chat/issues/747)
-- Support multiple teams on the same instance / same VPS infrastructure: [Issue #658](https://github.com/RocketChat/Rocket.Chat/issues/658), [Issue #630](https://github.com/RocketChat/Rocket.Chat/issues/630)
 - Clusterize / Descentralize: [Issue #520](https://github.com/RocketChat/Rocket.Chat/issues/520), [Issue #601](https://github.com/RocketChat/Rocket.Chat/issues/601)
 - Anonymous use of Rocket.Chat: [Issue #604](https://github.com/RocketChat/Rocket.Chat/issues/604)
 - File Sharing via P2P and Scalable Multicast: [Issue #369](https://github.com/RocketChat/Rocket.Chat/issues/369), [Issue #370](https://github.com/RocketChat/Rocket.Chat/issues/370)
 - Anti-virus checking on file uploads: [Issue #757](https://github.com/RocketChat/Rocket.Chat/issues/757)
+- Massively scalable hosting and provisioning 
 
 ### Issues
 
