@@ -1,6 +1,6 @@
 ![Rocket.Chat logo](https://rocket.chat/images/logo/logo-dark.svg?v3)
 
-The Complete Open Source Chat Platform
+The Ultimate Open Source WebChat Platform
 
 ## Demo
 
@@ -136,6 +136,13 @@ It is a great solution for communities and companies wanting to privately host t
 The docker image is ready.
 Everyone can start hacking the adapter code, or launch his/her own bot within a few minutes now.
 Please head over to the [Hubot Integration Project](https://github.com/RocketChat/hubot-rocketchat) for more information.
+
+
+#### Chat-ops integrations powered by Hubot 
+
+Integrate your application with fly-in panels today!   Early access is available for developers.
+
+[Sample integration of a Drones Fleet Management System](https://raw.githubusercontent.com/Sing-Li/bbug/master/images/dronechatops.png)
 
 #### Many, many, many more to come!
 
