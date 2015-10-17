@@ -27,7 +27,6 @@ chrismbeckett:toastr@2.1.2_1
 coffeescript@1.0.10
 cosmos:browserify@0.8.1
 dandv:caret-position@2.1.1
-dburles:google-maps@1.1.5
 ddp@1.2.2
 ddp-client@1.2.1
 ddp-common@1.2.1
@@ -123,7 +122,6 @@ reload@1.1.4
 retry@1.0.4
 rocketchat:authorization@0.0.1
 rocketchat:autolinker@0.0.1
-rocketchat:chatops@0.0.1
 rocketchat:colors@0.0.1
 rocketchat:custom-oauth@1.0.0
 rocketchat:emojione@0.0.1
