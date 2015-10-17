@@ -105,7 +105,6 @@ ejson
 spacebars
 check
 rocketchat:github-enterprise
-rocketchat:chatops
 # sanjo:jasmine
 # velocity:html-reporter
 ddp-rate-limiter
