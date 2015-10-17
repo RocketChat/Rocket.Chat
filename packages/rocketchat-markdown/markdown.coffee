@@ -14,7 +14,7 @@ class Markdown
 			msg = msg.replace(/!\[(.*)\]\((https?:\/\/([\da-z\.-]+)([\/\w\# \.-]*)*\/?)\)/gm, '<a href="$2" title="$1" class="swipebox" target="_blank"><div class="inline-image" style="background-image: url($2);"></div></a>')
 
 			# Support [Text](http://link)
-			msg = msg.replace(/\[(([\d\w\.-_] ?)+)\]\((https?:\/\/([\da-z\.-]+)([\/\w\# \.-]*)*\/?)\)/gm, '<a href="$3">$1</a>')
+			msg = msg.replace(/\[(([\d\w\.-_] ?)+)\]\((https?:\/\/([\da-z\.-]+)([\/\w\# \.-]*)*\/?)\)/gm, '<a href="$3" target="_blank">$1</a>')
 
 			if RocketChat.settings.get('Markdown_Headers')
 				# Support # Text for h1
