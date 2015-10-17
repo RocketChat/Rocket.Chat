@@ -221,6 +221,9 @@ Template.room.helpers
 	compactView: ->
 		return 'compact' if Meteor.user()?.settings?.preferences?.compactView
 
+	fileUploadAllowedMediaTypes: ->
+		return RocketChat.settings.get('FileUpload_MediaTypeWhiteList')
+
 Template.room.events
 	"touchstart .message": (e, t) ->
 		message = this._arguments[1]
