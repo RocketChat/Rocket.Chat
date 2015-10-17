@@ -142,7 +142,7 @@ Please head over to the [Hubot Integration Project](https://github.com/RocketCha
 
 Integrate your application with fly-in panels today!   Early access is available for developers.
 
-[Sample integration of a Drones Fleet Management System](https://raw.githubusercontent.com/Sing-Li/bbug/master/images/dronechatops.png)
+![Sample integration of a Drones Fleet Management System](https://raw.githubusercontent.com/Sing-Li/bbug/master/images/dronechatops.png)
 
 #### Many, many, many more to come!
 
