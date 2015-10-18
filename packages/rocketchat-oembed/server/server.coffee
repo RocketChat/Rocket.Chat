@@ -15,6 +15,9 @@ getUrlContent = (urlObj, redirectCount = 5, callback) ->
 		hostname: urlObj.hostname
 		path: urlObj.path
 		rejectUnauthorized: !RocketChat.settings.get 'Allow_Invalid_SelfSigned_Certs'
+		headers: {
+			'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/41.0.2227.0 Safari/537.36'
+		}
 
 	httpOrHttps = if urlObj.protocol is 'https:' then https else http
 
