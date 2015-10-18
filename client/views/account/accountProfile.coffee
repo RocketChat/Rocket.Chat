@@ -46,7 +46,7 @@ Template.accountProfile.onCreated ->
 
 	@save = ->
 		instance = @
-		if !Settings.findOne("Allow_Username_Change").value
+		if !Settings.findOne("Accounts_AllowUsernameChange").value
 			toastr.error t('Username_Change_Disabled')
 			return callback()
 		oldPassword = _.trim($('#oldPassword').val())
