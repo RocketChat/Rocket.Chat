@@ -359,6 +359,7 @@
   "User_added_by" : "User <em>__user_added__</em> added by <em>__user_by__</em>.",
   "User_Channels" : "User Channels",
   "User_has_been_activated" : "User has been activated",
+  "Username_Change_Disabled" : "Your Rocket.Chat administrator has disabled the changing of usernames",
   "User_has_been_deactivated" : "User has been deactivated",
   "User_has_been_deleted" : "User has been deleted",
   "User_Info" : "User Info",
