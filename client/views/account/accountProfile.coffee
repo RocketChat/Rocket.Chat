@@ -11,6 +11,14 @@ Template.accountProfile.helpers
 
 	username: ->
 		return Meteor.user().username
+    
+	allowUsernameChange: ->
+		return Settings.findOne("Accounts_AllowUsernameChange").value
+		
+	usernameChangeDisabled: ->
+		return t('Username_Change_Disabled')
+    
+	
 
 Template.accountProfile.onCreated ->
 	settingsTemplate = this.parentTemplate(3)
@@ -38,7 +46,9 @@ Template.accountProfile.onCreated ->
 
 	@save = ->
 		instance = @
-
+		if !Settings.findOne("Allow_Username_Change").value
+			toastr.error t('Username_Change_Disabled')
+			return callback()
 		oldPassword = _.trim($('#oldPassword').val())
 		newPassword = _.trim($('#password').val())
 
