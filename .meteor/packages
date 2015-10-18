@@ -41,6 +41,7 @@ rocketchat:oembed
 rocketchat:slashcommands-invite
 rocketchat:slashcommands-join
 rocketchat:slashcommands-leave
+#rocketchat:soundcloud
 rocketchat:spotify
 rocketchat:statistics
 rocketchat:webrtc
