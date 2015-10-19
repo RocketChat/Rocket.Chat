@@ -11,7 +11,7 @@ class Markdown
 			msg = message.html
 
 			# Support ![alt text](http://image url)
-			msg = msg.replace(/\[([^\]]+)\]\((https?:\/\/[^\)]+)\)/gm, '<a href="$2" title="$1" class="swipebox" target="_blank"><div class="inline-image" style="background-image: url($2);"></div></a>')
+			msg = msg.replace(/!\[([^\]]+)\]\((https?:\/\/[^\)]+)\)/gm, '<a href="$2" title="$1" class="swipebox" target="_blank"><div class="inline-image" style="background-image: url($2);"></div></a>')
 
 			# Support [Text](http://link)
 			msg = msg.replace(/\[([^\]]+)\]\((https?:\/\/[^\)]+)\)/gm, '<a href="$2" target="_blank">$1</a>')
