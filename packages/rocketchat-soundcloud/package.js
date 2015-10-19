@@ -9,6 +9,7 @@ Package.onUse(function(api) {
 	api.versionsFrom('1.0');
 
 	api.use([
+		'rocketchat:lib',
 		'coffeescript',
 		'templating',
 		'rocketchat:oembed@0.0.1'
@@ -16,6 +17,8 @@ Package.onUse(function(api) {
 
 	api.addFiles('lib/client/widget.coffee', 'client');
 	api.addFiles('lib/client/oembedSoundcloudWidget.html', 'client');
+
+	api.addFiles('lib/server/server.coffee', 'server');
 });
 
 Package.onTest(function(api) {
