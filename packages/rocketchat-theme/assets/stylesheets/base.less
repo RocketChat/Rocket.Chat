@@ -2517,10 +2517,14 @@ a.github-fork {
 		.transition(opacity 1s linear);
 
 		.inline-image {
-			background-size: contain;
-			background-repeat: no-repeat;
-			background-position: center left;
-			height: 200px;
+			max-height: 200px;
+			max-width: 100%;
+			border: 1px solid rgba(0, 0, 0, 0.1);
+		}
+
+		.inline-image-container {
+			max-height: 200px;
+			max-width: 100%;
 		}
 	}
 	&.temp .body {
