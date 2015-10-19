@@ -91,6 +91,7 @@
   "days" : "days",
   "Deactivate" : "Deactivate",
   "Delete_User_Warning" : "Deleting a user will delete all messages from that user as well. This cannot be undone.",
+  "Delete_Room_Warning" : "Deleting a room will delete all messages posted within the room. This cannot be undone.",
   "Delete" : "Delete",
   "Deleted" : "Deleted!",
   "Desktop_Notifications" : "Desktop Notifications",
@@ -399,7 +400,7 @@
   "Yes_delete_it" : "Yes, delete it!",
   "you_are_in_preview_mode_of" : "You are in preview mode of channel #<strong>__room_name__</strong>",
   "You_need_confirm_email" : "You need to confirm your email to login!",
-  "You_will_not_be_able_to_recover" : "You will not be able to recover!",
+  "You_will_not_be_able_to_recover" : "You will not be able to recover this message!",
   "Your_entry_has_been_deleted" : "Your entry has been deleted.",
   "Your_Open_Source_solution" : "Your own Open Source chat solution"
 }
