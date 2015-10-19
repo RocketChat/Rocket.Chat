@@ -28,18 +28,14 @@ script:
 - cd .travis
 - sh ./namefiles.sh
 - cd ..
-- meteor add rocketchat:livechat
-- meteor add rocketchat:hubot
-- meteor add sanjo:jasmine@0.20.2 velocity:console-reporter
-- ./node_modules/velocity-cli/bin/velocity test-packages --ci
-- ./node_modules/velocity-cli/bin/velocity test-app --ci
-- meteor --test --once
+- meteor add-platform ios
+- meteor add rocketchat:livechat rocketchat:hubot
 - meteor build --server demo.rocket.chat  ../build
 - cd .travis
 - sh ./namedemo.sh
 - cd ..
 after_deploy:
-- "curl -H \"Content-Type: application/json\" --data \"{'build': true}\" -X POST https://registry.hub.docker.com/u/singli/rocket.chat/trigger/$PUSHTOKEN/"
+- "curl -H \"Content-Type: application/json\" --data \"{'build': true}\" -X POST https://registry.hub.docker.com/u/rocketchat/rocket.chat/trigger/$PUSHTOKEN/"
 deploy:
   provider: s3
   access_key_id: "AKIAIKIA7H7D47KUHYCA"
