@@ -1,0 +1,13 @@
+<template name="oembedSoundcloudWidget">
+	{{#if parsedUrl}}
+		<blockquote>
+			<a href="https://www.soundcloud.com" style="color: #9e9ea6">SoundCloud</a><br/>
+			{{#if meta.twitterAudioArtistName}}
+				<a href="https://www.soundcloud.com/{{meta.twitterAudioArtistName}}">{{meta.twitterAudioArtistName}}</a><br/>
+			{{/if}}
+			<a href="{{meta.ogUrl}}">{{meta.ogTitle}}</a><br/>
+			<p>{{meta.ogDescription}}</p>
+			<iframe width="100%" height="150" src="{{meta.twitterPlayer}}" frameborder="0"></iframe><br/>
+		</blockquote>
+	{{/if}}
+</template>
