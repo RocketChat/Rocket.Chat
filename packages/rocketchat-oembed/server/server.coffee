@@ -15,10 +15,17 @@ getUrlContent = (urlObj, redirectCount = 5, callback) ->
 		hostname: urlObj.hostname
 		path: urlObj.path
 		rejectUnauthorized: !RocketChat.settings.get 'Allow_Invalid_SelfSigned_Certs'
+		headers: {
+			'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/41.0.2227.0 Safari/537.36'
+		}
 
 	httpOrHttps = if urlObj.protocol is 'https:' then https else http
 
 	parsedUrl = _.pick urlObj, ['host', 'hash', 'pathname', 'protocol', 'port', 'query']
+
+	RocketChat.callbacks.run 'oembed:beforeGetUrlContent',
+		requestOptions: opts
+		parsedUrl: parsedUrl
 
 	request = httpOrHttps.request opts, (response) ->
 		if response.statusCode is 301 and response.headers.location?
@@ -108,6 +115,12 @@ OEmbed.getUrlMeta = (url, withFragment) ->
 		headers = {}
 		for header, value of content.headers
 			headers[changeCase.camelCase(header)] = value
+
+	RocketChat.callbacks.run 'oembed:afterParseContent',
+		meta: metas
+		headers: headers
+		parsedUrl: content.parsedUrl
+		content: content
 
 	return {
 		meta: metas
