@@ -24,7 +24,7 @@ class Spotify
 		changed = false
 
 		process message, message.msg, (message, msgParts, index, part) ->
-			re = /(?:^|\s)spotify:([^:]+):([^:]+)(?::([^:]+))?(?::(\S+))?(?:\s|$)/g
+			re = /(?:^|\s)spotify:([^:\s]+):([^:\s]+)(?::([^:\s]+))?(?::(\S+))?(?:\s|$)/g
 			while match = re.exec(part)
 				data = _.filter match.slice(1), (value) ->
 					return value?
@@ -55,3 +55,4 @@ class Spotify
 
 RocketChat.callbacks.add 'beforeSaveMessage', Spotify.transform, RocketChat.callbacks.priority.LOW
 RocketChat.callbacks.add 'renderMessage', Spotify.render
+RocketChat.Spotify = Spotify
