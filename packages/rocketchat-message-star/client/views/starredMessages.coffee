@@ -9,7 +9,8 @@ Template.starredMessages.helpers
 		return 'notready' unless Template.instance().subscriptionsReady()
 
 Template.starredMessages.onCreated ->
-	this.subscribe 'starredMessages', Template.currentData().rid
+	this.autorun =>
+		this.subscribe 'starredMessages', Template.currentData().rid
 
 Template.starredMessages.events
 	'click .message-cog': (e) ->
