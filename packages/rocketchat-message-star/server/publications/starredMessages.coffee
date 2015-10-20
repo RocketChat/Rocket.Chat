@@ -13,6 +13,9 @@ Meteor.publish 'starredMessages', (rid, options = {}) ->
 		changed: (_id, record) ->
 			publication.changed('rocketchat_starred_message', _id, record)
 
+		removed: (_id) ->
+			publication.removed('rocketchat_starred_message', _id)
+
 	@ready()
 	@onStop ->
 		cursorHandle.stop()
