@@ -2,6 +2,7 @@
   "Access_online_demo" : "Acesse o demo online",
   "Access_Online_Demo" : "Acesse o Demo Online",
   "Accounts" : "Contas",
+  "Accounts_AllowedDomainsList" : "Lista de domínios permitidos (separados por vírgula)",
   "Accounts_denyUnverifiedEmail" : "Proibir e-mail não verificado",
   "Accounts_EmailVerification" : "Verificação de E-mail",
   "Accounts_OAuth_Facebook" : "Login do Facebook",
