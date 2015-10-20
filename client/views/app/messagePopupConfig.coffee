@@ -116,12 +116,14 @@ Template.messagePopupConfig.helpers
 				getInput: self.getInput
 				getFilter: (collection, filter) ->
 					results = []
+					key = ':' + filter
 
 					# show common used emojis, when use input a single ':'
 					if filter == ''
 						commonEmojis = [
 					            ':laughing:',
 					            ':smiley:',
+					            ':stuck_out_tongue:',
 					            ':sunglasses:',
 					            ':wink:',
 					            ':innocent:',
@@ -137,18 +139,29 @@ Template.messagePopupConfig.helpers
 								data: collection[shortname]
 						return results;
 
+					# use ascii
+					for shortname, value of RocketChat.emoji.asciiList
+						if results.length > 10
+							break
+
+						if shortname.startsWith(key)
+							results.push
+								_id: shortname
+								data: [value]
+
+					# use shortnames
 					for shortname, data of collection
-						if shortname.indexOf(filter) > -1
+						if results.length > 10
+							break
+
+						if shortname.startsWith(key)
 							results.push
 								_id: shortname
 								data: data
 
-						if results.length > 10
-							break
-
-					if filter.length >= 3
-						results.sort (a, b) ->
-							a.length > b.length
+					#if filter.length >= 3
+					results.sort (a, b) ->
+						a._id.length - b._id.length
 
 					return results
 
@@ -167,4 +180,3 @@ Template.messagePopupConfig.onCreated ->
 
 	@autorun ->
 		template.channelSubscription = template.subscribe 'channelAutocomplete', template.channelFilter.get()
-
