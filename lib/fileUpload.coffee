@@ -12,12 +12,14 @@ if UploadFS?
 
 
 	fileUploadMediaWhiteList = ->
+		return unless RocketChat.settings.get('FileUpload_MediaTypeWhiteList')
+
 		return _.map(RocketChat.settings.get('FileUpload_MediaTypeWhiteList').split(','), (item) -> return item.trim() )
 
 	@fileUploadIsValidContentType = (type) ->
 		list = fileUploadMediaWhiteList()
 
-		if _.contains list, type
+		if !list or _.contains list, type
 			return true
 		else
 			wildCardGlob = '/*'
