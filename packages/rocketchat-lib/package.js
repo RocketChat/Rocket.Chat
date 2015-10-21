@@ -46,6 +46,7 @@ Package.onUse(function(api) {
 
 
 	// CLIENT
+	api.addFiles('client/lib/roomTypes.coffee', 'client');
 	api.addFiles('client/Notifications.coffee', 'client');
 	api.addFiles('client/TabBar.coffee', 'client');
 	api.addFiles('client/MessageAction.coffee', 'client');
