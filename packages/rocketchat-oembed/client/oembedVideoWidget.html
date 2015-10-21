@@ -1,0 +1,10 @@
+<template name="oembedVideoWidget">
+{{#if parsedUrl}}
+	<blockquote>
+		<video controls class="inline-video">
+			<source src="{{url}}" type="{{headers.contentType}}">
+			Your browser does not support the video element.
+		</video>
+	</blockquote>
+{{/if}}
+</template>

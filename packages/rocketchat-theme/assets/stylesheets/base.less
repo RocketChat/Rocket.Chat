@@ -2520,7 +2520,17 @@ a.github-fork {
 			background-size: contain;
 			background-repeat: no-repeat;
 			background-position: center left;
-			height: 200px;
+			display: inline-block;
+			line-height: 0px;
+			box-shadow: inset 0 0 0 1px rgba(0,0,0,.1);
+			border-radius: 3px;
+			overflow: hidden;
+
+			img {
+				max-height: 200px;
+				max-width: 100%;
+				opacity: 0;
+			}
 		}
 	}
 	&.temp .body {
@@ -2773,6 +2783,23 @@ a.github-fork {
 		.see-all {
 			float: right;
 			border: none;
+		}
+	}
+	&.uploaded-files-list {
+		a {
+			color: #008ce3;
+			padding: 10px 5px;
+			border-bottom: 1px solid #eaeaea;
+			display: block;
+			&:hover {
+				color: #006db0;
+				text-decoration: underline;
+			}
+		}
+		i {
+			float: left;
+			color: #444;
+			margin-right: 10px;
 		}
 	}
 }

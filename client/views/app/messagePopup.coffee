@@ -44,13 +44,13 @@ Template.messagePopup.onCreated ->
 	template.suffix = val(template.data.suffix, ' ')
 
 	if template.triggerAnywhere is true
-		template.matchSelectorRegex = val(template.data.matchSelectorRegex, new RegExp "(?:^| )#{template.trigger}[^\s]*$")
+		template.matchSelectorRegex = val(template.data.matchSelectorRegex, new RegExp "(?:^| )#{template.trigger}[^\\s]*$")
 	else
-		template.matchSelectorRegex = val(template.data.matchSelectorRegex, new RegExp "(?:^)#{template.trigger}[^\s]*$")
+		template.matchSelectorRegex = val(template.data.matchSelectorRegex, new RegExp "(?:^)#{template.trigger}[^\\s]*$")
 
-	template.selectorRegex = val(template.data.selectorRegex, new RegExp "#{template.trigger}([^\s]*)$")
+	template.selectorRegex = val(template.data.selectorRegex, new RegExp "#{template.trigger}([^\\s]*)$")
 
-	template.replaceRegex = val(template.data.replaceRegex, new RegExp "#{template.trigger}[^\s]*$")
+	template.replaceRegex = val(template.data.replaceRegex, new RegExp "#{template.trigger}[^\\s]*$")
 
 	template.getValue = val template.data.getValue, (_id) -> return _id
 
