@@ -18,11 +18,11 @@ Package.registerBuildPlugin({
 Package.onUse(function(api) {
 	api.versionsFrom('1.0');
 
-	api.use(['coffeescript', 'webapp', 'autoupdate'], 'server');
+	api.use(['ecmascript', 'webapp', 'autoupdate'], 'server');
 
-	api.addFiles('livechat.coffee', 'server');
-	api.addFiles('methods.coffee', 'server');
-	api.addFiles('publications.coffee', 'server');
+	api.addFiles('livechat.js', 'server');
+	api.addFiles('server/methods.js', 'server');
+	api.addFiles('server/publications.js', 'server');
 
 	api.addFiles('config.js', 'server');
 
