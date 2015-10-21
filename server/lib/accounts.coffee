@@ -1,8 +1,8 @@
 # Deny Account.createUser in client
 accountsConfig = { forbidClientAccountCreation: true }
 
-domainWhiteList = _.map RocketChat.settings.get('Account_AllowedDomainsList').split(','), (domain) -> domain.trim()
-if domainWhiteList
+if RocketChat.settings.get('Account_AllowedDomainsList')
+	domainWhiteList = _.map RocketChat.settings.get('Account_AllowedDomainsList').split(','), (domain) -> domain.trim()
 	accountsConfig.restrictCreationByEmailDomain = (email) ->
 		ret = false
 		for domain in domainWhiteList
