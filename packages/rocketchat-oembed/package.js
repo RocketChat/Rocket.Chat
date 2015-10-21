@@ -21,6 +21,7 @@ Package.onUse(function(api) {
 	api.addFiles('client/oembedImageWidget.coffee', 'client');
 
 	api.addFiles('client/oembedAudioWidget.html', 'client');
+	api.addFiles('client/oembedVideoWidget.html', 'client');
 
 	api.addFiles('client/oembedYoutubeWidget.html', 'client');
 
