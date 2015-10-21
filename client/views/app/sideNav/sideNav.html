@@ -35,12 +35,6 @@
 			</div>
 			<div class="rooms-list">
 				<div class="wrapper">
-					{{#if showStarredRooms }}
-						{{> starredRooms }}
-					{{/if}}
-					{{> channels }}
-					{{> directMessages }}
-					{{> privateGroups }}
 					<h3>
 						<a href="{{pathFor 'privateHistory'}}">{{_ "History"}}</a>
 					</h3>
