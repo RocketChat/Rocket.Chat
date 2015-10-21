@@ -44,14 +44,12 @@ Package.onUse(function(api) {
 
 	api.addFiles('settings/lib/settings.coffee');
 
-
 	// CLIENT
 	api.addFiles('client/lib/roomTypes.coffee', 'client');
 	api.addFiles('client/Notifications.coffee', 'client');
 	api.addFiles('client/TabBar.coffee', 'client');
 	api.addFiles('client/MessageAction.coffee', 'client');
 
-	api.addFiles('settings/client/startup.coffee', 'client');
 	api.addFiles('settings/client/rocketchat.coffee', 'client');
 
 	// SERVER
