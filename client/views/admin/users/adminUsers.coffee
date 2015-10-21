@@ -25,6 +25,12 @@ Template.adminUsers.helpers
 	adminClass: ->
 		return 'admin' if RocketChat.authz.hasRole(Meteor.userId(), 'admin')
 
+	username: ->
+		return '@' + @username if @username?
+
+	emailAddress: ->
+		return _.map(@emails, (e) -> e.address).join(', ')
+
 Template.adminUsers.onCreated ->
 	instance = @
 	@limit = new ReactiveVar 50

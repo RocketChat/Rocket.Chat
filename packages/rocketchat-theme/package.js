@@ -12,12 +12,12 @@ Package.onUse(function(api) {
 	api.use('coffeescript');
 	api.use('underscore');
 	api.use('webapp');
+	api.use('webapp-hashing');
 
 
 	api.addFiles('server/server.coffee', 'server');
 	api.addFiles('server/variables.coffee', 'server');
 
-	api.addFiles('client/client.coffee', 'client');
 	api.addFiles('client/minicolors/jquery.minicolors.css', 'client');
 	api.addFiles('client/minicolors/jquery.minicolors.js', 'client');
 

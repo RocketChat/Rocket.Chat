@@ -13,18 +13,16 @@
 							</div>
 						{{/if}}
 					</div>
-					<nav class="options _hidden">
+					<nav class="options animated-hidden">
 						<div class="wrapper">
 							<a href="" data-status="online" class="status online"><span>{{_ "Online"}}</span></a>
 							<a href="" data-status="away" class="status away"><span>{{_ "Away" context="male"}}</span></a>
 							<a href="" data-status="busy" class="status busy"><span>{{_ "Busy" context="male"}}</span></a>
 							<a href="" data-status="offline" class="status offline"><span>{{_ "Invisible"}}</span></a>
 							<a href="" id="account" class='account-link'><i class="icon-sliders"></i><span>{{_ "My_Account"}}</span></a>
-
 							{{#each registeredMenus}}
 								<a href="" class="{{class}}"><i class="{{icon}}"></i><span>{{name}}</span></a>
 							{{/each}}
-
 							{{#if showAdminOption }}
 								<a href="" id="admin" class='account-link'><i class="icon-wrench"></i><span>{{_ "Administration"}}</span></a>
 							{{/if}}
@@ -48,7 +46,7 @@
 			<div class="unread-rooms bottom-unread-rooms hidden">
 				{{_ "More_unreads"}} <i class="icon-down-big"></i>
 			</div>
-			<div class="flex-nav hidden">
+			<div class="flex-nav animated-hidden">
 				<section>
 					{{> Template.dynamic template=flexTemplate data=flexData}}
 				</section>
