@@ -19,5 +19,6 @@ before_install:
 
 script:
 - meteor add sanjo:jasmine velocity:console-reporter
+- meteor update
 - ./node_modules/velocity-cli/bin/velocity test-packages --ci
-- ./node_modules/velocity-cli/bin/velocity test-app --ci
+- meteor --test --once
