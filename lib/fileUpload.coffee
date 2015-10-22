@@ -41,8 +41,7 @@ if UploadFS?
 			onFinishUpload: ->
 				console.log arguments
 			onRead: (fileId, file, req, res) ->
-				unless file?.type?.match(/^image\/.*/)
-					res.setHeader 'content-disposition', "attachment; filename=\"#{ file.name }\""
+				res.setHeader 'content-disposition', "attachment; filename=\"#{ file.name }\""
 
 	if Meteor.isServer
 		initFileStore()
