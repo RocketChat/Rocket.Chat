@@ -2,6 +2,7 @@
   "Access_online_demo" : "Access the online demo",
   "Access_Online_Demo" : "Access the Online Demo",
   "Accounts" : "Accounts",
+  "Accounts_AllowedDomainsList" : "Comma-separated list of allowed domains",
   "Accounts_denyUnverifiedEmail" : "Deny unverified e-mail",
   "Accounts_EmailVerification" : "E-mail Verification",
   "Accounts_OAuth_Facebook" : "Facebook Login",
