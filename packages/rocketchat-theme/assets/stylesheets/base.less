@@ -1847,12 +1847,38 @@ a.github-fork {
 	}
 
 	.list {
+		a {
+			display: block;
+			padding: 3px;
+			margin-bottom: 5px;
+			.info {
+				h3 {
+					margin-bottom: 5px;
+				}
+				ul {
+					margin-left: 3px;
+				}
+			}
+		}
+		.room-info {
+			padding: 3px;
+			margin-bottom: 5px;
+			cursor: pointer;
+			h3 {
+				margin-bottom: 5px;
+			}
+		}
 		.user-image {
 			float: right;
 			margin-left: 12px;
 		}
 		table {
 			width: 100%;
+			thead {
+				th {
+					text-align: left;
+				}
+			}
 			tbody {
 				td {
 					vertical-align: middle;
@@ -2469,7 +2495,7 @@ a.github-fork {
 				display: none;
 			}
 			.edited {
-				display: inline-block;
+				display: block;
 			}
 			.private {
 				display: none;
@@ -2703,6 +2729,7 @@ a.github-fork {
 		&:extend(.fill-all);
 		overflow-x: hidden;
 		overflow-y: auto;
+		top: auto;
 		-webkit-overflow-scrolling: touch;
 		> div {
 			.transition(transform .45s cubic-bezier(.5,
@@ -2991,6 +3018,9 @@ a.github-fork {
 		> .input-line {
 			margin-top: 20px;
 		}
+	}
+	.room-info-content > div {
+		margin: 0 0 20px 0;
 	}
 }
 
