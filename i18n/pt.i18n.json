@@ -17,7 +17,7 @@
   "Accounts_OAuth_Linkedin" : "Login do LinkedIn",
   "Accounts_OAuth_Linkedin_id" : "LinkedIn Id",
   "Accounts_OAuth_Linkedin_secret" : "LinkedIn Secret",
-  "Accounts_OAuth_ManuallyApproveNewUsers" : "Aprovar manualmente novos usuários",
+  "Accounts_ManuallyApproveNewUsers" : "Aprovar manualmente novos usuários",
   "Accounts_OAuth_Meteor" : "Login do Meteor",
   "Accounts_OAuth_Meteor_id" : "Meteor Id",
   "Accounts_OAuth_Meteor_secret" : "Meteor Secret",

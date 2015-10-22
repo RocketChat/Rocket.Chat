@@ -16,7 +16,7 @@
   "Accounts_OAuth_Linkedin" : "LinkedIn-tunnus",
   "Accounts_OAuth_Linkedin_id" : "LinkedIn ID",
   "Accounts_OAuth_Linkedin_secret" : "LinkedIn salalauseke",
-  "Accounts_OAuth_ManuallyApproveNewUsers" : "Hyväksy uudet käyttäjät manuaalisesti",
+  "Accounts_ManuallyApproveNewUsers" : "Hyväksy uudet käyttäjät manuaalisesti",
   "Accounts_OAuth_Meteor" : "Meteor-tunnus",
   "Accounts_OAuth_Meteor_id" : "Meteor ID",
   "Accounts_OAuth_Meteor_secret" : "Meteor salalauseke",
