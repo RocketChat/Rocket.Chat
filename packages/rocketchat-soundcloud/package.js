@@ -9,9 +9,11 @@ Package.onUse(function(api) {
 	api.versionsFrom('1.0');
 
 	api.use([
-		'rocketchat:lib',
 		'coffeescript',
 		'templating',
+		'underscore',
+		'konecty:change-case',
+		'rocketchat:lib',
 		'rocketchat:oembed@0.0.1'
 	]);
 
