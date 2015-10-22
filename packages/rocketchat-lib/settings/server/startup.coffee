@@ -6,6 +6,7 @@ RocketChat.settings.addGroup 'Accounts'
 RocketChat.settings.add 'Accounts_RegistrationRequired', true, { type: 'boolean', group: 'Accounts', public: true, section: 'Registration' }
 RocketChat.settings.add 'Accounts_EmailVerification', false, { type: 'boolean', group: 'Accounts', public: true, section: 'Registration' }
 RocketChat.settings.add 'Accounts_ManuallyApproveNewUsers', false, { type: 'boolean', group: 'Accounts', section: 'Registration' }
+RocketChat.settings.add 'Accounts_AllowedDomainsList', '', { type: 'string', group: 'Accounts', public: true, section: 'Registration' }
 
 RocketChat.settings.add 'Accounts_AvatarStoreType', 'GridFS', { type: 'string', group: 'Accounts', section: 'Avatar' }
 RocketChat.settings.add 'Accounts_AvatarStorePath', '/var/www/rocket.chat/uploads/avatar/', { type: 'string', group: 'Accounts', section: 'Avatar' }
@@ -34,10 +35,13 @@ RocketChat.settings.add 'Accounts_OAuth_Twitter', false, { type: 'boolean', grou
 RocketChat.settings.add 'Accounts_OAuth_Twitter_id', '', { type: 'string', group: 'Accounts', section: 'Twitter' }
 RocketChat.settings.add 'Accounts_OAuth_Twitter_secret', '', { type: 'string', group: 'Accounts', section: 'Twitter' }
 
+RocketChat.settings.add 'Accounts_AllowUsernameChange', true, { type: 'boolean', group: 'Accounts', section: 'General', public: true }
+
 RocketChat.settings.addGroup 'FileUpload'
 RocketChat.settings.add 'FileUpload_Enabled', true, { type: 'boolean', group: 'FileUpload', public: true }
 RocketChat.settings.add 'FileUpload_MaxFileSize', 2097152, { type: 'int', group: 'FileUpload', public: true }
 RocketChat.settings.add 'FileUpload_MediaTypeWhiteList', 'image/*', { type: 'string', group: 'FileUpload', public: true }
+
 
 RocketChat.settings.addGroup 'General'
 RocketChat.settings.add 'Site_Url', __meteor_runtime_config__?.ROOT_URL, { type: 'string', group: 'General', i18nDescription: 'Site_Url_Description', public: true }
