@@ -143,7 +143,7 @@
   "Invalid_room_name" : "<strong>%s</strong> não é um nome válido,<br/> utilizar apenas letras, números e hífens",
   "invisible" : "invisível",
   "Invisible" : "Invisível",
-  "Invitation HTML" : "HTML do Convite",
+  "Invitation_HTML" : "HTML do Convite",
   "Invitation_Subject" : "Assunto do Convite",
   "Invite_Users" : "Convidar Usuários",
   "is_also_typing" : "também está digitando",
