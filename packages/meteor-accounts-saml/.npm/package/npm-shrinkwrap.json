@@ -54,9 +54,6 @@
     "xml-crypto": {
       "version": "0.6.0",
       "dependencies": {
-        "xmldom": {
-          "version": "0.1.19"
-        },
         "xpath.js": {
           "version": "1.0.6"
         }
