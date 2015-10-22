@@ -20,7 +20,7 @@
   "Accounts_OAuth_Meteor" : "Meteor-tunnus",
   "Accounts_OAuth_Meteor_id" : "Meteor ID",
   "Accounts_OAuth_Meteor_secret" : "Meteor salalauseke",
-  "Accounts_OAuth_RegistrationRequired" : "Rekisteröinti vaaditaan",
+  "Accounts_RegistrationRequired" : "Rekisteröinti vaaditaan",
   "Accounts_OAuth_Twitter" : "Twitter-tunnus",
   "Accounts_OAuth_Twitter_id" : "Twitter ID",
   "Accounts_OAuth_Twitter_secret" : "Twitter salalauseke",

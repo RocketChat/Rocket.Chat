@@ -20,7 +20,7 @@
   "Accounts_OAuth_Meteor" : "ចូល​តាម Meteor",
   "Accounts_OAuth_Meteor_id" : "លេខ​សម្គាល់ Meteor ",
   "Accounts_OAuth_Meteor_secret" : "Meteor សម្ងាត់",
-  "Accounts_OAuth_RegistrationRequired" : "ត្រូវ​ចុះ​ឈ្មោះ",
+  "Accounts_RegistrationRequired" : "ត្រូវ​ចុះ​ឈ្មោះ",
   "Accounts_OAuth_Twitter" : "ចូលតាម Twitter",
   "Accounts_OAuth_Twitter_id" : "លេខសម្គាល់ Twitter",
   "Accounts_OAuth_Twitter_secret" : "Twitter សម្ងាត់",
