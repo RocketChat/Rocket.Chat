@@ -9,7 +9,7 @@ Template.oembedBaseWidget.helpers
 		if this.headers?.contentType?.match(/audio\/.*/)?
 			return 'oembedAudioWidget'
 
-		if this.headers?.contentType?.match(/video\/.*/)?
+		if this.headers?.contentType?.match(/video\/.*/)? or this.meta?.twitterPlayerStreamContentType?.match(/video\/.*/)?
 			return 'oembedVideoWidget'
 
 		if this.parsedUrl?.host is 'www.youtube.com' and this.meta?.twitterPlayer?
