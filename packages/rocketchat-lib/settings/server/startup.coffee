@@ -40,7 +40,7 @@ RocketChat.settings.add 'Accounts_AllowUsernameChange', true, { type: 'boolean',
 RocketChat.settings.addGroup 'FileUpload'
 RocketChat.settings.add 'FileUpload_Enabled', true, { type: 'boolean', group: 'FileUpload', public: true }
 RocketChat.settings.add 'FileUpload_MaxFileSize', 2097152, { type: 'int', group: 'FileUpload', public: true }
-RocketChat.settings.add 'FileUpload_MediaTypeWhiteList', 'image/*', { type: 'string', group: 'FileUpload', public: true }
+RocketChat.settings.add 'FileUpload_MediaTypeWhiteList', 'image/*', { type: 'string', group: 'FileUpload', public: true, i18nDescription: 'FileUpload_MediaTypeWhiteListDescription' }
 
 
 RocketChat.settings.addGroup 'General'
@@ -66,7 +66,7 @@ RocketChat.settings.add 'Invitation_HTML', '<h2>You have been invited to <h1>Roc
 
 RocketChat.settings.addGroup 'Message'
 RocketChat.settings.add 'Message_AllowEditing', true, { type: 'boolean', group: 'Message', public: true }
-RocketChat.settings.add 'Message_AllowEditing_BlockEditInMinutes', 0, { type: 'int', group: 'Message', public: true }
+RocketChat.settings.add 'Message_AllowEditing_BlockEditInMinutes', 0, { type: 'int', group: 'Message', public: true, i18nDescription: 'Message_AllowEditing_BlockEditInMinutesDescription' }
 RocketChat.settings.add 'Message_AllowDeleting', true, { type: 'boolean', group: 'Message', public: true }
 RocketChat.settings.add 'Message_AllowPinning', true, { type: 'boolean', group: 'Message', public: true }
 RocketChat.settings.add 'Message_ShowEditedStatus', true, { type: 'boolean', group: 'Message', public: true }
