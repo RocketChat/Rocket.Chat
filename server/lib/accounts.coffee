@@ -1,5 +1,18 @@
 # Deny Account.createUser in client
-Accounts.config { forbidClientAccountCreation: true }
+accountsConfig = { forbidClientAccountCreation: true }
+
+if RocketChat.settings.get('Account_AllowedDomainsList')
+	domainWhiteList = _.map RocketChat.settings.get('Account_AllowedDomainsList').split(','), (domain) -> domain.trim()
+	accountsConfig.restrictCreationByEmailDomain = (email) ->
+		ret = false
+		for domain in domainWhiteList
+			if email.match(domain + '$')
+				ret = true
+				break;
+
+		return ret
+
+Accounts.config accountsConfig
 
 Accounts.emailTemplates.siteName = RocketChat.settings.get 'Site_Name';
 Accounts.emailTemplates.from = "#{RocketChat.settings.get 'Site_Name'} <#{RocketChat.settings.get 'From_Email'}>";
