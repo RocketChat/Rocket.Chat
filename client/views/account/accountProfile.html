@@ -12,7 +12,11 @@
 					<div class="input-line">
 						<label for="username">{{_ "Username"}}</label>
 						<div>
-							<input type="text" name="username" id="username" placeholder="{{username}}" />
+						{{#if allowUsernameChange}}
+						    <input type="text" name="username" id="username" placeholder="{{username}}" />
+						{{else}}
+						    <input type="text" name="username" id="username" placeholder="{{username}}" disabled="disabled" title="{{usernameChangeDisabled}}" />
+						{{/if}}
 						</div>
 					</div>
 					<div class="input-line">
