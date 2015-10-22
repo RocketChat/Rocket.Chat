@@ -4,7 +4,7 @@ Meteor.methods
 			throw new Meteor.Error('invalid-user', "[methods] updateMessage -> Invalid user")
 
 		originalMessage = RocketChat.models.Messages.findOneById message._id
-		
+
 		if not originalMessage?._id?
 			return
 
@@ -31,7 +31,7 @@ Meteor.methods
 		message.ets = new Date()
 
 		if urls = message.msg.match /([A-Za-z]{3,9}):\/\/([-;:&=\+\$,\w]+@{1})?([-A-Za-z0-9\.]+)+:?(\d+)?((\/[-\+=!:~%\/\.@\,\w]+)?\??([-\+=&!:;%@\/\.\,\w]+)?#?([\w]+)?)?/g
-			message.urls = urls
+			message.urls = urls.map (url) -> url: url
 
 		message = RocketChat.callbacks.run 'beforeSaveMessage', message
 
@@ -43,5 +43,5 @@ Meteor.methods
 		,
 			$set: message
 
-		# Meteor.defer ->
-		# 	RocketChat.callbacks.run 'afterSaveMessage', RocketChat.models.Messages.findOneById(message.id)
+		Meteor.defer ->
+			RocketChat.callbacks.run 'afterSaveMessage', RocketChat.models.Messages.findOneById(tempid)
