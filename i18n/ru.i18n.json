@@ -5,7 +5,7 @@
   "Accounts_OAuth_Google" : "Google логин",
   "Accounts_OAuth_Google_id" : "Google ID",
   "Accounts_OAuth_Google_secret" : "Google пароль",
-  "Accounts_OAuth_RegistrationRequired" : "Требуется регистрация",
+  "Accounts_RegistrationRequired" : "Требуется регистрация",
   "Add_Members" : "Добавить Пользователей",
   "Add_users" : "Добавить пользователей",
   "All_channels" : "Все Чаты",
