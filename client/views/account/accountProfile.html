@@ -10,6 +10,12 @@
 			<div class="rocket-form">
 				<fieldset>
 					<div class="input-line">
+						<label for="realname">{{_ "Name"}}</label>
+						<div>
+							<input type="text" name="realname" id="realname" value="{{realname}}" />
+						</div>
+					</div>
+					<div class="input-line">
 						<label for="username">{{_ "Username"}}</label>
 						<div>
 						{{#if allowUsernameChange}}
