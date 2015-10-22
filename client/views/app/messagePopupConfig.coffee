@@ -12,7 +12,7 @@ Template.messagePopupConfig.helpers
 			getInput: self.getInput
 			textFilterDelay: 200
 			getFilter: (collection, filter) ->
-				exp = new RegExp("#{filter}", 'i')
+				exp = new RegExp("#{RegExp.escape filter}", 'i')
 				template.userFilter.set filter
 				if template.userSubscription.ready()
 					items = filteredUsers.find({$or: [{username: exp}, {name: exp}]}, {limit: 5}).fetch()
@@ -24,7 +24,7 @@ Template.messagePopupConfig.helpers
 						name: t 'Notify_all_in_this_room'
 						compatibility: 'channel group'
 
-					exp = new RegExp("(^|\\s)#{filter}", 'i')
+					exp = new RegExp("(^|\\s)#{RegExp.escape filter}", 'i')
 					if exp.test(all.username) or exp.test(all.compatibility)
 						items.unshift all
 					return items
