@@ -16,7 +16,7 @@
   "Accounts_OAuth_Linkedin" : "LinkedIn Login",
   "Accounts_OAuth_Linkedin_id" : "LinkedIn Id",
   "Accounts_OAuth_Linkedin_secret" : "Linkeding Secret",
-  "Accounts_OAuth_ManuallyApproveNewUsers" : "Neue Benutzer manuell aktivieren",
+  "Accounts_ManuallyApproveNewUsers" : "Neue Benutzer manuell aktivieren",
   "Accounts_OAuth_Meteor" : "Meteor Login",
   "Accounts_OAuth_Meteor_id" : "Meteor Id",
   "Accounts_OAuth_Meteor_secret" : "Meteor Secret",

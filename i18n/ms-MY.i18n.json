@@ -16,7 +16,7 @@
   "Accounts_OAuth_Linkedin" : "Daftar masuk LinkedIn",
   "Accounts_OAuth_Linkedin_id" : "LinkedIn Id",
   "Accounts_OAuth_Linkedin_secret" : "LinkedIn Secret",
-  "Accounts_OAuth_ManuallyApproveNewUsers" : "Secara manual meluluskan pengguna baru",
+  "Accounts_ManuallyApproveNewUsers" : "Secara manual meluluskan pengguna baru",
   "Accounts_OAuth_Meteor" : "Daftar masuk Meteor",
   "Accounts_OAuth_Meteor_id" : "Meteor Id",
   "Accounts_OAuth_Meteor_secret" : "Meteor Secret",

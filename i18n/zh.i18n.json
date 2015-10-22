@@ -7,7 +7,7 @@
   "Accounts_OAuth_Facebook" : "Facebook 登入",
   "Accounts_OAuth_Facebook_id" : "Facebook应用程序ID",
   "Accounts_OAuth_Facebook_secret" : "Facebook Secret",
-  "Accounts_OAuth_ManuallyApproveNewUsers" : "手动审核新用户",
+  "Accounts_ManuallyApproveNewUsers" : "手动审核新用户",
   "Accounts_OAuth_RegistrationRequired" : "需要注册",
   "Activate" : "激活",
   "Add_Members" : "加入成员",

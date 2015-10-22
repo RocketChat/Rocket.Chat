@@ -16,7 +16,7 @@
   "Accounts_OAuth_Linkedin" : "ចូល​តាម​ LinkedIn",
   "Accounts_OAuth_Linkedin_id" : "លេខ​សម្គាល់​ LinkedIn",
   "Accounts_OAuth_Linkedin_secret" : "LinkedIn សម្ងាត់",
-  "Accounts_OAuth_ManuallyApproveNewUsers" : "ទទួល​អ្នក​ប្រើប្រាស់​ថ្មី​ដោយ​ផ្ទាល់",
+  "Accounts_ManuallyApproveNewUsers" : "ទទួល​អ្នក​ប្រើប្រាស់​ថ្មី​ដោយ​ផ្ទាល់",
   "Accounts_OAuth_Meteor" : "ចូល​តាម Meteor",
   "Accounts_OAuth_Meteor_id" : "លេខ​សម្គាល់ Meteor ",
   "Accounts_OAuth_Meteor_secret" : "Meteor សម្ងាត់",
