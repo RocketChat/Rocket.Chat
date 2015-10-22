@@ -1,8 +1,9 @@
 Meteor.startup ->
-	RocketChat.roomTypes.addType('starredRooms', 'user');
-	RocketChat.roomTypes.addType('channels', 'user');
-	RocketChat.roomTypes.addType('directMessages', 'user');
-	RocketChat.roomTypes.addType('privateGroups', 'user');
+	roles = ['admin', 'moderator', 'user']
+	RocketChat.roomTypes.addType('starredRooms', roles);
+	RocketChat.roomTypes.addType('channels', roles);
+	RocketChat.roomTypes.addType('directMessages', roles);
+	RocketChat.roomTypes.addType('privateGroups', roles);
 
 	RocketChat.roomTypes.setRoute 'c', 'channel', (sub) ->
 		return { name: sub.name }
