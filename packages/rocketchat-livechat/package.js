@@ -20,11 +20,18 @@ Package.onUse(function(api) {
 
 	api.use(['ecmascript', 'webapp', 'autoupdate'], 'server');
 
+	api.imply('alanning:roles@1.2.12');
+
 	api.addFiles('livechat.js', 'server');
 	api.addFiles('server/methods.js', 'server');
 	api.addFiles('server/publications.js', 'server');
+	api.addFiles('permissions.js', 'server');
 
 	api.addFiles('config.js', 'server');
+
+	api.addFiles('client/ui.js', 'client');
+	api.addFiles('client/views/sideNav/livechat.html', 'client');
+	api.addFiles('client/views/sideNav/livechat.js', 'client');
 
 	api.addAssets('rocket-livechat.js', 'client');
 	api.addAssets('public/livechat.css', 'client');
