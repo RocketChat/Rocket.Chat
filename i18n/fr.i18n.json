@@ -134,7 +134,7 @@
   "Invalid_room_name" : "<strong>%s</strong> n'est pas un nom de canal valide,<br>/ utilisez des lettres, des chiffres et des tirets uniquement",
   "invisible" : "invisible",
   "Invisible" : "Invisible",
-  "Invitation HTML" : "Contenu HTML de l'invitation",
+  "Invitation_HTML" : "Contenu HTML de l'invitation",
   "Invitation_Subject" : "Sujet de l'invitation",
   "Invite_Users" : "Inviter des utilisateurs",
   "is_also_typing" : "est également en train d'écrire",

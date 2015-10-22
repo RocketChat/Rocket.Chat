@@ -144,7 +144,7 @@
   "Invalid_room_name" : "<strong>%s</strong> is not a valid room name,<br/> use only letters, numbers and dashes",
   "invisible" : "invisible",
   "Invisible" : "Invisible",
-  "Invitation HTML" : "Invitation HTML",
+  "Invitation_HTML" : "Invitation HTML",
   "Invitation_Subject" : "Invitation Subject",
   "Invite_Users" : "Invite Users",
   "is_also_typing" : "is also typing",

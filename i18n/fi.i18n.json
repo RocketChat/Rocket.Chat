@@ -130,7 +130,7 @@
   "Invalid_room_name" : "<strong>%s</strong> ei ole hyväksyttävä kanavan nimi,<br/> käytä vain kirjaimia, numeroita ja viivaa",
   "invisible" : "näkymätön",
   "Invisible" : "Näkymätön",
-  "Invitation HTML" : "Kutsu HTML",
+  "Invitation_HTML" : "Kutsu HTML",
   "Invitation_Subject" : "Kutsu aihe",
   "Invite_Users" : "Kutsu käyttäjiä",
   "is_also_typing" : "kirjoittaa myös",

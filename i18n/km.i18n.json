@@ -142,7 +142,7 @@
   "Invalid_room_name" : "<strong>%s</strong> គឺ​ជា​ឈ្មោះ​បន្ទប់​មិន​ត្រឹម​ត្រូវ,<br/> ត្រូវ​ប្រើប្រាស់​​ត្រឹម​តែ​តួរ​អក្សរ, លេខ និង​ សញ្ញាចុច",
   "invisible" : "មិន​បង្ហាញ",
   "Invisible" : "មិន​បង្ហាញ",
-  "Invitation HTML" : "ការអញ្ជើញទម្រង់ HTML",
+  "Invitation_HTML" : "ការអញ្ជើញទម្រង់ HTML",
   "Invitation_Subject" : "ប្រធានបទការអញ្ជើញ",
   "Invite_Users" : "អញ្ជើញអ្នកប្រើប្រាស់",
   "is_also_typing" : "គឺ​កំពុង​វាយ",

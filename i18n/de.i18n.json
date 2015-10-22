@@ -140,7 +140,7 @@
   "Invalid_room_name" : "<strong>%s</strong> ist kein zulässiger Raumname.<br/> Benutze nur Buchstaben, Nummern und Bindestriche.",
   "invisible" : "unsichtbar",
   "Invisible" : "Unsichtbar",
-  "Invitation HTML" : "Einladungs HTML",
+  "Invitation_HTML" : "Einladungs HTML",
   "Invitation_Subject" : "Einladungs Betreff",
   "Invite_Users" : "Benutzer einladen",
   "is_also_typing" : "schreibt auch",
