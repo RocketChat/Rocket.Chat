@@ -96,7 +96,7 @@
   "Invalid_room_name" : "<strong>%s</strong>不是一个有效的聊天室名称， <br/>只能使用字母，数字，.和_",
   "invisible" : "隐身",
   "Invisible" : "隐身",
-  "Invitation HTML" : "邀请邮件HTML",
+  "Invitation_HTML" : "邀请邮件HTML",
   "Invitation_Subject" : "邀请邮件主题",
   "Invite_Users" : "邀请用户",
   "is_also_typing" : "也正在输入",
