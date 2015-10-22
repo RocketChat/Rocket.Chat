@@ -21,7 +21,7 @@
   "Accounts_OAuth_Meteor" : "Login do Meteor",
   "Accounts_OAuth_Meteor_id" : "Meteor Id",
   "Accounts_OAuth_Meteor_secret" : "Meteor Secret",
-  "Accounts_OAuth_RegistrationRequired" : "Registro Obrigatório",
+  "Accounts_RegistrationRequired" : "Registro Obrigatório",
   "Accounts_OAuth_Twitter" : "Login do Twitter",
   "Accounts_OAuth_Twitter_id" : "Twitter Id",
   "Accounts_OAuth_Twitter_secret" : "Twitter Secret",

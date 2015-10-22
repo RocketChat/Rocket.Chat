@@ -8,7 +8,7 @@
   "Accounts_OAuth_Linkedin" : "LinkedIn ile giriş",
   "Accounts_ManuallyApproveNewUsers" : "Yeni kullanıcıları onayla",
   "Accounts_OAuth_Meteor" : "Meteor ile giriş",
-  "Accounts_OAuth_RegistrationRequired" : "Kayıt Gerekli",
+  "Accounts_RegistrationRequired" : "Kayıt Gerekli",
   "Accounts_OAuth_Twitter" : "Twitter ile giriş",
   "Add_Members" : "Üye ekle",
   "Add_users" : "Kullanıcı ekle",
