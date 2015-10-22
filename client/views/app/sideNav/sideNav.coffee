@@ -95,6 +95,6 @@ Template.sideNav.onRendered ->
 	wrapper = $('.rooms-list .wrapper').get(0)
 	lastLink = $('.rooms-list h3').get(0)
 
-	RocketChat.roomTypes.get().forEach (roomType) ->
+	RocketChat.roomTypes.getTypes().forEach (roomType) ->
 		if RocketChat.authz.hasRole(Meteor.userId(), roomType.roles) && Template[roomType.template]?
 			Blaze.render Template[roomType.template], wrapper, lastLink
