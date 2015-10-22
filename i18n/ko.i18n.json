@@ -24,7 +24,7 @@
   "Accounts_OAuth_Twitter" : "트위터 로그인",
   "Accounts_OAuth_Twitter_id" : "트위터 ID",
   "Accounts_OAuth_Twitter_secret" : "트위터 암호",
-  "Accounts_OAuth_Custom_ID" : "ID",
+  "Accounts_OAuth_Custom_id" : "Id",
   "Accounts_OAuth_Custom_URL" : "URL",
   "Accounts_OAuth_Custom_Token_Path" : "Token 경로",
   "Accounts_OAuth_Custom_Identity_Path" : "Identity 경로",

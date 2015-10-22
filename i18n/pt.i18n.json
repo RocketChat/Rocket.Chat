@@ -25,7 +25,7 @@
   "Accounts_OAuth_Twitter" : "Login do Twitter",
   "Accounts_OAuth_Twitter_id" : "Twitter Id",
   "Accounts_OAuth_Twitter_secret" : "Twitter Secret",
-  "Accounts_OAuth_Custom_ID" : "ID",
+  "Accounts_OAuth_Custom_id" : "Id",
   "Accounts_OAuth_Custom_URL" : "URL",
   "Accounts_OAuth_Custom_Token_Path" : "Token Path",
   "Accounts_OAuth_Custom_Identity_Path" : "Identity Path",

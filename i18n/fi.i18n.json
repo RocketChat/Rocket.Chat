@@ -24,7 +24,7 @@
   "Accounts_OAuth_Twitter" : "Twitter-tunnus",
   "Accounts_OAuth_Twitter_id" : "Twitter ID",
   "Accounts_OAuth_Twitter_secret" : "Twitter salalauseke",
-  "Accounts_OAuth_Custom_ID" : "ID",
+  "Accounts_OAuth_Custom_id" : "Id",
   "Accounts_OAuth_Custom_URL" : "URL",
   "Accounts_OAuth_Custom_Token_Path" : "Token polku",
   "Accounts_OAuth_Custom_Identity_Path" : "Identity polku",
