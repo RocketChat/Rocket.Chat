@@ -11,6 +11,14 @@ Template.accountProfile.helpers
 
 	username: ->
 		return Meteor.user().username
+    
+	allowUsernameChange: ->
+		return RocketChat.settings.get("Accounts_AllowUsernameChange")
+		
+	usernameChangeDisabled: ->
+		return t('Username_Change_Disabled')
+    
+	
 
 Template.accountProfile.onCreated ->
 	settingsTemplate = this.parentTemplate(3)
@@ -38,7 +46,9 @@ Template.accountProfile.onCreated ->
 
 	@save = ->
 		instance = @
-
+		if !RocketChat.settings.get("Accounts_AllowUsernameChange")
+			toastr.error t('Username_Change_Disabled')
+			return
 		oldPassword = _.trim($('#oldPassword').val())
 		newPassword = _.trim($('#password').val())
 
