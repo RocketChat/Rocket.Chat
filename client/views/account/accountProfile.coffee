@@ -17,7 +17,12 @@ Template.accountProfile.helpers
 		
 	usernameChangeDisabled: ->
 		return t('Username_Change_Disabled')
-    
+  
+	allowPasswordChange: ->
+		return RocketChat.settings.get("Accounts_AllowPasswordChange")
+
+	passwordChangeDisabled: ->
+		return t('Password_Change_Disabled')  
 	
 
 Template.accountProfile.onCreated ->
@@ -29,8 +34,10 @@ Template.accountProfile.onCreated ->
 		@find('#language').value = localStorage.getItem('userLanguage')
 		@find('#oldPassword').value = ''
 		@find('#password').value = ''
+		@find('#username').value = ''
 
 	@changePassword = (oldPassword, newPassword, callback) ->
+		instance = @
 		if not oldPassword and not newPassword
 			return callback()
 
@@ -38,6 +45,10 @@ Template.accountProfile.onCreated ->
 			toastr.warning t('Old_and_new_password_required')
 
 		else if newPassword and oldPassword
+			if !RocketChat.settings.get("Accounts_AllowPasswordChange")
+				toastr.error t('Password_Change_Disabled')
+				instance.clearForm()
+				return
 			Accounts.changePassword oldPassword, newPassword, (error) ->
 				if error
 					toastr.error t('Incorrect_Password')
@@ -46,9 +57,7 @@ Template.accountProfile.onCreated ->
 
 	@save = ->
 		instance = @
-		if !RocketChat.settings.get("Accounts_AllowUsernameChange")
-			toastr.error t('Username_Change_Disabled')
-			return
+		
 		oldPassword = _.trim($('#oldPassword').val())
 		newPassword = _.trim($('#password').val())
 
@@ -63,7 +72,12 @@ Template.accountProfile.onCreated ->
 				reload = true
 
 			if _.trim $('#username').val()
-				data.username = _.trim $('#username').val()
+				if !RocketChat.settings.get("Accounts_AllowUsernameChange")
+					toastr.error t('Username_Change_Disabled')
+					instance.clearForm()
+					return
+				else
+					data.username = _.trim $('#username').val()
 
 			Meteor.call 'saveUserProfile', data, (error, results) ->
 				if results
