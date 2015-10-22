@@ -1,0 +1,4 @@
+{
+  "User_doesnt_exist" : "Yhtään käyttäjää ei ole olemassa nimellä `@%s`.",
+  "Username_is_already_in_here" : "`@%s` on jo täällä."
+}
