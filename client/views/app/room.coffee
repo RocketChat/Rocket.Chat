@@ -224,7 +224,13 @@ Template.room.helpers
 	fileUploadAllowedMediaTypes: ->
 		return RocketChat.settings.get('FileUpload_MediaTypeWhiteList')
 
+
 Template.room.events
+	"click, touchend": (e, t) ->
+		Meteor.setTimeout ->
+			t.sendToBottomIfNecessaryDebounced()
+		, 100
+
 	"touchstart .message": (e, t) ->
 		message = this._arguments[1]
 		doLongTouch = ->
@@ -241,7 +247,7 @@ Template.room.events
 	"touchcancel .message": (e, t) ->
 		Meteor.clearTimeout t.touchtime
 
-	"click .upload-progress-item > a": ->
+	"click .upload-progress > a": ->
 		Session.set "uploading-cancel-#{this.id}", true
 
 	"click .unread-bar > a": ->
@@ -503,8 +509,12 @@ Template.room.onCreated ->
 			evt["click .#{button.id}"] = button.action
 			Template.room.events evt
 
+
 Template.room.onDestroyed ->
 	RocketChat.TabBar.resetButtons()
+
+	window.removeEventListener 'resize', this.onWindowResize
+
 
 Template.room.onRendered ->
 	this.chatMessages = new ChatMessages
@@ -517,7 +527,8 @@ Template.room.onRendered ->
 
 	template = this
 
-	wrapperOffset = $('.messages-box > .wrapper').offset()
+	containerBars = $('.messages-container > .container-bars')
+	containerBarsOffset = containerBars.offset()
 
 	template.isAtBottom = ->
 		if wrapper.scrollTop >= wrapper.scrollHeight - wrapper.clientHeight
@@ -554,6 +565,12 @@ Template.room.onRendered ->
 			childList: true
 		# observer.disconnect()
 
+	template.onWindowResize = ->
+		Meteor.defer ->
+			template.sendToBottomIfNecessaryDebounced()
+
+	window.addEventListener 'resize', template.onWindowResize
+
 	wrapper.addEventListener 'mousewheel', ->
 		template.atBottom = false
 		Meteor.defer ->
@@ -577,8 +594,13 @@ Template.room.onRendered ->
 			template.checkIfScrollIsAtBottom()
 		, 2000
 
+	$('.flex-tab-bar').on 'click', (e, t) ->
+		Meteor.setTimeout ->
+			template.sendToBottomIfNecessaryDebounced()
+		, 100
+
 	updateUnreadCount = _.throttle ->
-		firstMessageOnScreen = document.elementFromPoint(wrapperOffset.left+1, wrapperOffset.top+50)
+		firstMessageOnScreen = document.elementFromPoint(containerBarsOffset.left+1, containerBarsOffset.top+containerBars.height()+1)
 		if firstMessageOnScreen?.id?
 			firstMessage = ChatMessage.findOne firstMessageOnScreen.id
 			if firstMessage?

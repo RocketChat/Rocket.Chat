@@ -65,7 +65,7 @@ rocketchat:wordpress
 #rocketchat:hubot
 #rocketchat:irc
 #rocketchat:livechat
-#rocketchat:soundcloud
+rocketchat:soundcloud
 
 konecty:change-case
 konecty:delayed-task

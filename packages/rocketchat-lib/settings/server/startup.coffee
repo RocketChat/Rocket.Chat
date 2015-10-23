@@ -36,6 +36,7 @@ RocketChat.settings.add 'Accounts_OAuth_Twitter_id', '', { type: 'string', group
 RocketChat.settings.add 'Accounts_OAuth_Twitter_secret', '', { type: 'string', group: 'Accounts', section: 'Twitter' }
 
 RocketChat.settings.add 'Accounts_AllowUsernameChange', true, { type: 'boolean', group: 'Accounts', section: 'General', public: true }
+RocketChat.settings.add 'Accounts_AllowPasswordChange', true, { type: 'boolean', group: 'Accounts', section: 'General', public: true }
 
 RocketChat.settings.addGroup 'FileUpload'
 RocketChat.settings.add 'FileUpload_Enabled', true, { type: 'boolean', group: 'FileUpload', public: true }
