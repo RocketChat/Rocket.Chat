@@ -241,7 +241,7 @@ Template.room.events
 	"touchcancel .message": (e, t) ->
 		Meteor.clearTimeout t.touchtime
 
-	"click .upload-progress-item > a": ->
+	"click .upload-progress > a": ->
 		Session.set "uploading-cancel-#{this.id}", true
 
 	"click .unread-bar > a": ->
@@ -517,7 +517,8 @@ Template.room.onRendered ->
 
 	template = this
 
-	wrapperOffset = $('.messages-box > .wrapper').offset()
+	containerBars = $('.messages-container > .container-bars')
+	containerBarsOffset = containerBars.offset()
 
 	template.isAtBottom = ->
 		if wrapper.scrollTop >= wrapper.scrollHeight - wrapper.clientHeight
@@ -578,7 +579,7 @@ Template.room.onRendered ->
 		, 2000
 
 	updateUnreadCount = _.throttle ->
-		firstMessageOnScreen = document.elementFromPoint(wrapperOffset.left+1, wrapperOffset.top+50)
+		firstMessageOnScreen = document.elementFromPoint(containerBarsOffset.left+1, containerBarsOffset.top+containerBars.height()+1)
 		if firstMessageOnScreen?.id?
 			firstMessage = ChatMessage.findOne firstMessageOnScreen.id
 			if firstMessage?

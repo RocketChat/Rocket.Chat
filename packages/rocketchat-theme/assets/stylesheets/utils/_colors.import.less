@@ -656,14 +656,15 @@ a.github-fork {
 	color: orange;
 }
 
-.upload-progress {
-	background-color: #b2d5c9;
-	color: @content-background-color;
-	.upload-progress-item {
-		border-bottom-color: #6a8179;
-		&:first-child {
-			border-top-color: #6a8179;
-		}
+.container-bars {
+	>div {
+		border-color: #ffffff;
+	}
+
+	.upload-progress {
+		background-color: #b2d5c9;
+		color: @content-background-color;
+
 		&.upload-error {
 			background-color: #FF6161;
 			border-color: #863737;
@@ -676,6 +677,11 @@ a.github-fork {
 				color: #eee;
 			}
 		}
+	}
+
+	.unread-bar {
+		background-color: #E6F4FD;
+		color: #068FE4;
 	}
 }
 
