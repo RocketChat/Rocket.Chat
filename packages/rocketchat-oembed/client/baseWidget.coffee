@@ -1,6 +1,5 @@
 Template.oembedBaseWidget.helpers
 	template: ->
-	# console.log this
 		if this._overrideTemplate
 			return this._overrideTemplate
 
@@ -9,6 +8,9 @@ Template.oembedBaseWidget.helpers
 
 		if this.headers?.contentType?.match(/audio\/.*/)?
 			return 'oembedAudioWidget'
+
+		if this.headers?.contentType?.match(/video\/.*/)? or this.meta?.twitterPlayerStreamContentType?.match(/video\/.*/)?
+			return 'oembedVideoWidget'
 
 		if this.parsedUrl?.host is 'www.youtube.com' and this.meta?.twitterPlayer?
 			return 'oembedYoutubeWidget'

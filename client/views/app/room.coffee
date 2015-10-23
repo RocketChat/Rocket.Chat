@@ -221,6 +221,9 @@ Template.room.helpers
 	compactView: ->
 		return 'compact' if Meteor.user()?.settings?.preferences?.compactView
 
+	fileUploadAllowedMediaTypes: ->
+		return RocketChat.settings.get('FileUpload_MediaTypeWhiteList')
+
 Template.room.events
 	"touchstart .message": (e, t) ->
 		message = this._arguments[1]
@@ -478,6 +481,10 @@ Template.room.events
 			if error
 				toastr.error error.reason
 
+	'load img': (e, template) ->
+		template.sendToBottomIfNecessary?()
+
+
 Template.room.onCreated ->
 	# this.scrollOnBottom = true
 	# this.typing = new msgTyping this.data._id
@@ -505,6 +512,7 @@ Template.room.onRendered ->
 	# ScrollListener.init()
 
 	wrapper = this.find('.wrapper')
+	wrapperUl = this.find('.wrapper > ul')
 	newMessage = this.find(".new-message")
 
 	template = this
@@ -512,9 +520,63 @@ Template.room.onRendered ->
 	containerBars = $('.messages-container > .container-bars')
 	containerBarsOffset = containerBars.offset()
 
-	onscroll = _.throttle ->
-		template.atBottom = wrapper.scrollTop >= wrapper.scrollHeight - wrapper.clientHeight
-	, 200
+	template.isAtBottom = ->
+		if wrapper.scrollTop >= wrapper.scrollHeight - wrapper.clientHeight
+			newMessage.className = "new-message not"
+			return true
+		return false
+
+	template.sendToBottom = ->
+		wrapper.scrollTop = wrapper.scrollHeight - wrapper.clientHeight
+		newMessage.className = "new-message not"
+
+	template.checkIfScrollIsAtBottom = ->
+		template.atBottom = template.isAtBottom()
+		readMessage.enable()
+		readMessage.read()
+
+	template.sendToBottomIfNecessary = ->
+		if template.atBottom is true and template.isAtBottom() isnt true
+			template.sendToBottom()
+
+	template.sendToBottomIfNecessaryDebounced = _.debounce template.sendToBottomIfNecessary, 10
+
+	template.sendToBottomIfNecessary()
+
+	if not window.MutationObserver?
+		wrapperUl.addEventListener 'DOMSubtreeModified', ->
+			template.sendToBottomIfNecessaryDebounced()
+	else
+		observer = new MutationObserver (mutations) ->
+			mutations.forEach (mutation) ->
+				template.sendToBottomIfNecessaryDebounced()
+
+		observer.observe wrapperUl,
+			childList: true
+		# observer.disconnect()
+
+	wrapper.addEventListener 'mousewheel', ->
+		template.atBottom = false
+		Meteor.defer ->
+			template.checkIfScrollIsAtBottom()
+
+	wrapper.addEventListener 'wheel', ->
+		template.atBottom = false
+		Meteor.defer ->
+			template.checkIfScrollIsAtBottom()
+
+	wrapper.addEventListener 'touchstart', ->
+		template.atBottom = false
+
+	wrapper.addEventListener 'touchend', ->
+		Meteor.defer ->
+			template.checkIfScrollIsAtBottom()
+		Meteor.setTimeout ->
+			template.checkIfScrollIsAtBottom()
+		, 1000
+		Meteor.setTimeout ->
+			template.checkIfScrollIsAtBottom()
+		, 2000
 
 	updateUnreadCount = _.throttle ->
 		firstMessageOnScreen = document.elementFromPoint(containerBarsOffset.left+1, containerBarsOffset.top+containerBars.height()+1)
@@ -526,37 +588,6 @@ Template.room.onRendered ->
 			else
 				template.unreadCount.set 0
 	, 300
-
-	Meteor.setInterval ->
-		if template.atBottom
-			wrapper.scrollTop = wrapper.scrollHeight - wrapper.clientHeight
-			newMessage.className = "new-message not"
-	, 100
-
-	wrapper.addEventListener 'touchstart', ->
-		template.atBottom = false
-
-	wrapper.addEventListener 'touchend', ->
-		onscroll()
-		readMessage.enable()
-		readMessage.read()
-
-	wrapper.addEventListener 'scroll', ->
-		template.atBottom = false
-		onscroll()
-		updateUnreadCount()
-
-	wrapper.addEventListener 'mousewheel', ->
-		template.atBottom = false
-		onscroll()
-		readMessage.enable()
-		readMessage.read()
-
-	wrapper.addEventListener 'wheel', ->
-		template.atBottom = false
-		onscroll()
-		readMessage.enable()
-		readMessage.read()
 
 	# salva a data da renderização para exibir alertas de novas mensagens
 	$.data(this.firstNode, 'renderedAt', new Date)

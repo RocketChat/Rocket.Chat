@@ -1,7 +1,11 @@
 URL = Npm.require('url')
 http = Npm.require('http')
 https = Npm.require('https')
+zlib = Npm.require('zlib')
 querystring = Npm.require('querystring')
+
+gunzipSync = Meteor.wrapAsync zlib.gunzip.bind(zlib)
+inflateSync = Meteor.wrapAsync zlib.inflate.bind(zlib)
 
 OEmbed = {}
 
@@ -15,12 +19,18 @@ getUrlContent = (urlObj, redirectCount = 5, callback) ->
 		hostname: urlObj.hostname
 		path: urlObj.path
 		rejectUnauthorized: !RocketChat.settings.get 'Allow_Invalid_SelfSigned_Certs'
+		headers:
+			'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/41.0.2227.0 Safari/537.36'
 
 	httpOrHttps = if urlObj.protocol is 'https:' then https else http
 
 	parsedUrl = _.pick urlObj, ['host', 'hash', 'pathname', 'protocol', 'port', 'query']
 
-	request = httpOrHttps.request opts, (response) ->
+	RocketChat.callbacks.run 'oembed:beforeGetUrlContent',
+		requestOptions: opts
+		parsedUrl: parsedUrl
+
+	request = httpOrHttps.request opts, Meteor.bindEnvironment (response) ->
 		if response.statusCode is 301 and response.headers.location?
 			request.abort()
 			console.log response.headers.location
@@ -34,16 +44,26 @@ getUrlContent = (urlObj, redirectCount = 5, callback) ->
 		if response.statusCode isnt 200
 			return callback null, {parsedUrl: parsedUrl}
 
-		str = ''
+		chunks = []
+		chunksTotalLength = 0
 		response.on 'data', (chunk) ->
-			str += chunk
-			if str.length > 250000
+			chunks.push chunk
+			chunksTotalLength += chunk.length
+			if chunksTotalLength > 250000
 				request.abort()
 
-		response.on 'end', ->
+		response.on 'end', Meteor.bindEnvironment ->
+			buffer = Buffer.concat(chunks)
+
+			try
+				if response.headers['content-encoding'] is 'gzip'
+					buffer = gunzipSync buffer
+				else if response.headers['content-encoding'] is 'deflate'
+					buffer = inflateSync buffer
+
 			callback null, {
 				headers: response.headers
-				body: str
+				body: buffer.toString()
 				parsedUrl: parsedUrl
 			}
 
@@ -109,6 +129,12 @@ OEmbed.getUrlMeta = (url, withFragment) ->
 		for header, value of content.headers
 			headers[changeCase.camelCase(header)] = value
 
+	RocketChat.callbacks.run 'oembed:afterParseContent',
+		meta: metas
+		headers: headers
+		parsedUrl: content.parsedUrl
+		content: content
+
 	return {
 		meta: metas
 		headers: headers
@@ -142,7 +168,7 @@ getRelevantHeaders = (headersObj) ->
 getRelevantMetaTags = (metaObj) ->
 	tags = {}
 	for key, value of metaObj
-		if /^(og|fb|twitter).+|description|title|pageTitle$/.test(key.toLowerCase()) and value?.trim() isnt ''
+		if /^(og|fb|twitter|oembed).+|description|title|pageTitle$/.test(key.toLowerCase()) and value?.trim() isnt ''
 			tags[key] = value
 
 	if Object.keys(tags).length > 0

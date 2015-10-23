@@ -13,26 +13,26 @@ script:
 - cd .travis
 - npm install
 - npm start
-- cd .. 
+- cd ..
 - meteor build ../build
 - cd .travis
 - sh ./namefiles.sh
 - cd ..
-- meteor add rocketchat:livechat
-- meteor add rocketchat:hubot
+- meteor add-platform ios
+- meteor add rocketchat:livechat rocketchat:hubot
 - meteor build --server demo.rocket.chat  ../build
 - cd .travis
 - sh ./namedemo.sh
 - cd ..
 after_deploy:
-- "curl -H \"Content-Type: application/json\" --data \"{'build': true}\" -X POST https://registry.hub.docker.com/u/singli/rocket.chat/trigger/$PUSHTOKEN/" 
+- "curl -H \"Content-Type: application/json\" --data \"{'build': true}\" -X POST https://registry.hub.docker.com/u/rocketchat/rocket.chat/trigger/$PUSHTOKEN/"
 deploy:
   provider: s3
   access_key_id: "AKIAIKIA7H7D47KUHYCA"
+  secret_access_key: $ACCESSKEY
   bucket: "rocketchatbuild"
   skip_cleanup: true
   local_dir: ../build
   on:
     branch: master
-  secret_access_key:
-    secure: LYA2XNdpHBTN/zs/71VWLr81b3Gb290PRIqQER72SZ3eQjDk0UpUUFkzK6mc6GkelXyqHRBRckmhBzVCEAO6KNIU9JHc9aUxyUbSt7OMTAZUZ8X36E7HL6mXN73YHtUCbEczD41aXMK+HQ9ol0EXfvbprp5gFwqT908dSVleNJCN6wZgW5ZJVzWTiC2/aaGqCrWhAWybG1XwCgl8ND8N3qFsNBZ6MDN3rpp9kVdDJ3vzp5Azkf6QrTFQTo2ai3DFFnRf7J84/8tpRL3tVcPwjik449KEkJlCPotxt7XxUTg9HrN5LQY4wYTKyKhoYxzADwse8VaU/oFhVef3A8AiLpfg8rR63ahs5ZOqJc926eiZWGumLfvcGkHD2kb+z+l9bIE8b2X7mct6gK4ub0E6Ul/NOoh1ZgppVzP3PuYZXGb2CNvZTrrSjH9dGWPWlRjZaErg4bs4BC6y6eGjgu1CqFa1eqLFO/oYdmX5c4kDskyNf0VSVVXmqLqQBWrkOGSr3Z8nR8XQ1PDQfmj8ZMmDRtvt58DuOVzOBkC71Mc/Kr/cKS0cXedwzzNg2BG4EHMsc1eTn6JWs95NFCbPbI5HzxYODumZwOwSJyXKiDgUhPmRc6I1MvgJqIIBGWFqIIGEfR715E4zaJzAYvTPWvL+8aBMfZxdQouRYH7d9kREc6U=
+

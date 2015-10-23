@@ -16,3 +16,11 @@ Meteor.methods
 			return false
 
 		RocketChat.sendMessage user, message, room, options
+
+# Limit a user to sending 5 msgs/second
+DDPRateLimiter.addRule
+	type: 'method'
+	name: 'sendMessage'
+	userId: (userId) ->
+		return RocketChat.models.Users.findOneById(userId)?.username isnt RocketChat.settings.get('RocketBot_Name')
+, 5, 1000
