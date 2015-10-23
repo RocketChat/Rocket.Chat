@@ -105,20 +105,6 @@ RocketChat.sendMessage = (user, message, room, options) ->
 					# the mentioned user if mention isn't for all
 					RocketChat.models.Subscriptions.incUnreadForRoomIdAndUserIds message.rid, mentionIds, 1
 
-				query =
-					statusConnection: {$ne: 'online'}
-
-				if toAll
-					if room.usernames?.length > 0
-						query.username =
-							$in: room.usernames
-					else
-						query.username =
-							$in: []
-				else
-					query._id =
-						$in: mentionIds
-
 				userIdsToNotify = _.pluck(usersOfMention, '_id')
 
 				# If the message is @all, send a notification to all online room users except for the sender.
