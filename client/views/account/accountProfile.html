@@ -22,13 +22,21 @@
 					<div class="input-line">
 						<label for="password">{{_ "Old_Password"}}</label>
 						<div>
+						{{#if allowPasswordChange}}
 							<input type="password" name="oldPassword" id="oldPassword" />
+						{{else}}
+							<input type="password" name="oldPassword" id="oldPassword" disabled="disabled" title="{{passwordChangeDisabled}}" />
+						{{/if}}
 						</div>
 					</div>
 					<div class="input-line">
 						<label for="password">{{_ "Password"}}</label>
 						<div>
+						{{#if allowPasswordChange}}
 							<input type="password" name="password" id="password" />
+						{{else}}
+							<input type="password" name="password" id="password" disabled="disabled" title="{{passwordChangeDisabled}}"/>
+						{{/if}}
 						</div>
 					</div>
 					<div class="input-line">
