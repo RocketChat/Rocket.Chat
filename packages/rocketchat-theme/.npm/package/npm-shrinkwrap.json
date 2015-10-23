@@ -237,6 +237,44 @@
           }
         }
       }
+    },
+    "less-plugin-autoprefix": {
+      "version": "1.4.2",
+      "dependencies": {
+        "autoprefixer-core": {
+          "version": "5.2.1",
+          "dependencies": {
+            "browserslist": {
+              "version": "0.4.0"
+            },
+            "num2fraction": {
+              "version": "1.2.2"
+            },
+            "caniuse-db": {
+              "version": "1.0.30000342"
+            }
+          }
+        },
+        "postcss": {
+          "version": "4.1.16",
+          "dependencies": {
+            "es6-promise": {
+              "version": "2.3.0"
+            },
+            "source-map": {
+              "version": "0.4.4",
+              "dependencies": {
+                "amdefine": {
+                  "version": "1.0.0"
+                }
+              }
+            },
+            "js-base64": {
+              "version": "2.1.9"
+            }
+          }
+        }
+      }
     }
   }
 }
