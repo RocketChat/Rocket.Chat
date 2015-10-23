@@ -224,6 +224,7 @@ Template.room.helpers
 	fileUploadAllowedMediaTypes: ->
 		return RocketChat.settings.get('FileUpload_MediaTypeWhiteList')
 
+
 Template.room.events
 	"touchstart .message": (e, t) ->
 		message = this._arguments[1]
@@ -503,8 +504,12 @@ Template.room.onCreated ->
 			evt["click .#{button.id}"] = button.action
 			Template.room.events evt
 
+
 Template.room.onDestroyed ->
 	RocketChat.TabBar.resetButtons()
+
+	window.removeEventListener 'resize', this.onWindowResize
+
 
 Template.room.onRendered ->
 	this.chatMessages = new ChatMessages
@@ -553,6 +558,12 @@ Template.room.onRendered ->
 		observer.observe wrapperUl,
 			childList: true
 		# observer.disconnect()
+
+	template.onWindowResize = ->
+		Meteor.defer ->
+			template.sendToBottomIfNecessaryDebounced()
+
+	window.addEventListener 'resize', template.onWindowResize
 
 	wrapper.addEventListener 'mousewheel', ->
 		template.atBottom = false
