@@ -1938,47 +1938,29 @@ a.github-fork {
 	}
 }
 
-.unread-bar {
+.container-bars {
 	position: absolute;
 	top: 60px;
 	width: 100%;
 	z-index: 11;
 	font-weight: bold;
-	background-color: #E6F4FD;
-	line-height: 30px;
-	font-size: 12px;
-	padding: 0 10px;
-	box-shadow: 0px 1px 2px rgba(0,0,0,.2);
-	color: #068FE4;
-	text-transform: uppercase;
-	text-align: center;
+	display: flex;
+	flex-direction: column;
 
-	> a {
-		float: right;
-
-		&:hover {
-			cursor: pointer;
-		}
-	}
-}
-
-.upload-progress {
-	position: absolute;
-	top: 60px;
-	width: 100%;
-	z-index: 11;
-	font-weight: bold;
-	text-shadow: 1px 1px 0px rgba(0,0,0,.2);
-
-	.upload-progress-item {
-		position: relative;
+	> div {
+		height: 24px;
 		line-height: 24px;
 		padding: 0 10px;
-		border-bottom: 1px solid;
+		border-top: 1px solid;
 
-		&:first-child {
-			border-top: 1px solid;
+		&:last-child {
+			box-shadow: 0px 1px 2px rgba(0,0,0,.2);
 		}
+	}
+
+	.upload-progress {
+		position: relative;
+		text-shadow: 1px 1px 0px rgba(0,0,0,.2);
 
 		&.upload-error {
 		}
@@ -1988,13 +1970,41 @@ a.github-fork {
 			left: 0px;
 			height: 100%;
 			width: 0%;
-			z-index: -1;
+			z-index: 1;
 			.transition(width, 1s, ease-out);
 		}
 
+		.upload-progress-text {
+			padding: 0 10px;
+			position: absolute;
+			left: 0px;
+			right: 0px;
+			height: 100%;
+			z-index: 2;
+
+			> a {
+				float: right;
+				text-transform: uppercase;
+
+				&:hover {
+					cursor: pointer;
+				}
+			}
+		}
+	}
+
+	.unread-bar {
+		background-color: #E6F4FD;
+		// line-height: 30px;
+		// font-size: 12px;
+		// padding: 0 10px;
+		// box-shadow: 0px 1px 2px rgba(0,0,0,.2);
+		color: #068FE4;
+		text-transform: uppercase;
+		text-align: center;
+
 		> a {
 			float: right;
-			text-transform: uppercase;
 
 			&:hover {
 				cursor: pointer;
@@ -2489,8 +2499,8 @@ a.github-fork {
 		.info {
 			position: absolute;
 			text-align: right;
-			left: 0px;
-			width: 65px;
+			left: 5px;
+			width: 60px;
 			.time {
 				display: none;
 			}
