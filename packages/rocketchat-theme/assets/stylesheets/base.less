@@ -291,6 +291,11 @@ blockquote {
 			animation-iteration-count: infinite;
 			animation-timing-function: linear;
 		}
+		.icon-search {
+			position: absolute;
+			left: 2px;
+			top: 10px;
+		}
 		input {
 			padding-left: 20px;
 		}
@@ -916,7 +921,7 @@ a.github-fork {
 	opacity: 1;
 	visibility: visible;
 	.transition(opacity .2s ease-out);
-	&.-hidden {
+	&.animated-hidden {
 		visibility: hidden;
 		opacity: 0;
 	}
@@ -1013,7 +1018,7 @@ a.github-fork {
 		.transition(transform .3s cubic-bezier(.5, 0, .1, 1));
 		z-index:99;
 
-		&._hidden {
+		&.animated-hidden {
 			.transform(translateY(-100%) translateY(-50px));
 		}
 		> .wrapper {
@@ -1114,7 +1119,7 @@ a.github-fork {
 	overflow-x: hidden;
 	width: @rooms-box-width;
 	.transition(transform .3s cubic-bezier(.5, 0, .1, 1));
-	&.hidden {
+	&.animated-hidden {
 		.transform(translateX(-100%));
 		header,
 		footer,
@@ -1175,7 +1180,7 @@ a.github-fork {
 		padding: 0 10px;
 		z-index: 120;
 		text-align: left;
-		min-height: @footer-min-height;
+		height: @footer-min-height;
 		.transition-delay(.22s);
 		> div {
 			display: table-cell;
@@ -1339,7 +1344,6 @@ a.github-fork {
 		left: 0;
 		width: 100%;
 		padding: 10px 15px 0px 15px;
-		z-index: 1000;
 		text-align: right;
 		min-height: @footer-min-height;
 		height: @footer-min-height;
@@ -1607,7 +1611,7 @@ a.github-fork {
 			margin-right: -4px;
 		}
 	}
-	.hidden {
+	.animated-hidden {
 		visibility: hidden;
 		display: none;
 	}
@@ -1844,65 +1848,45 @@ a.github-fork {
 
 	.list {
 		a {
-			.clearfix;
 			display: block;
-			padding: 10px 16px;
-			width: 100%;
-			border-bottom: 1px solid;
-			.transition(background .15s ease-out);
-			&:hover {
-			}
-		}
-		ul {
-			margin: 6px 0;
-		}
-		li {
-			display: inline-block;
-			margin-right: 14px;
-			font-size: 11px;
-			position: relative;
-			&:after {
-				content: " ";
-				width: 4px;
-				height: 4px;
-				border-radius: 50%;
-				position: absolute;
-				right: -12px;
-				.calc(top,
-				~"50% - 2px");
-			}
-			&:nth-last-child(1) {
-				&:after {
-					display: none;
+			padding: 3px;
+			margin-bottom: 5px;
+			.info {
+				h3 {
+					margin-bottom: 5px;
+				}
+				ul {
+					margin-left: 3px;
 				}
 			}
 		}
-		.info {
-			display: block;
-			float: left;
-			.calc(width,~"100% - 150px");
-			i {
-				margin-right: 5px;
-				width: 20px;
-				text-align: left;
-			}
+		.room-info {
+			padding: 3px;
+			margin-bottom: 5px;
+			cursor: pointer;
 			h3 {
-				font-size: 18px;
-				font-weight: 500;
-			}
-			a {
-				text-decoration: none;
+				margin-bottom: 5px;
 			}
 		}
-		.status {
-			display: block;
+		.user-image {
 			float: right;
-			width: 150px;
-			min-height: 30px;
-			text-align: right;
-			strong {
-				font-size: 12px;
-				font-weight: 500;
+			margin-left: 12px;
+		}
+		table {
+			width: 100%;
+			thead {
+				th {
+					text-align: left;
+				}
+			}
+			tbody {
+				td {
+					vertical-align: middle;
+					padding: 0 2px;
+				}
+				tr {
+					cursor: pointer;
+				}
 			}
 		}
 	}
@@ -2521,7 +2505,7 @@ a.github-fork {
 				display: none;
 			}
 			.edited {
-				display: inline-block;
+				display: block;
 			}
 			.private {
 				display: none;
@@ -2572,7 +2556,17 @@ a.github-fork {
 			background-size: contain;
 			background-repeat: no-repeat;
 			background-position: center left;
-			height: 200px;
+			display: inline-block;
+			line-height: 0px;
+			box-shadow: inset 0 0 0 1px rgba(0,0,0,.1);
+			border-radius: 3px;
+			overflow: hidden;
+
+			img {
+				max-height: 200px;
+				max-width: 100%;
+				opacity: 0;
+			}
 		}
 	}
 	&.temp .body {
@@ -2745,6 +2739,7 @@ a.github-fork {
 		&:extend(.fill-all);
 		overflow-x: hidden;
 		overflow-y: auto;
+		top: auto;
 		-webkit-overflow-scrolling: touch;
 		> div {
 			.transition(transform .45s cubic-bezier(.5,
@@ -2753,7 +2748,7 @@ a.github-fork {
 			1),
 			opacity .125s ease-out .1s);
 		}
-		> .-hidden {
+		> .animated-hidden {
 			.transform(translateX(100%));
 			opacity: 0;
 		}
@@ -2825,6 +2820,23 @@ a.github-fork {
 		.see-all {
 			float: right;
 			border: none;
+		}
+	}
+	&.uploaded-files-list {
+		a {
+			color: #008ce3;
+			padding: 10px 5px;
+			border-bottom: 1px solid #eaeaea;
+			display: block;
+			&:hover {
+				color: #006db0;
+				text-decoration: underline;
+			}
+		}
+		i {
+			float: left;
+			color: #444;
+			margin-right: 10px;
 		}
 	}
 }
@@ -3016,6 +3028,9 @@ a.github-fork {
 		> .input-line {
 			margin-top: 20px;
 		}
+	}
+	.room-info-content > div {
+		margin: 0 0 20px 0;
 	}
 }
 
@@ -4042,4 +4057,8 @@ a.github-fork {
 	input {
 		text-indent: 34px;
 	}
+}
+
+.inline-video {
+	max-height: 200px;
 }

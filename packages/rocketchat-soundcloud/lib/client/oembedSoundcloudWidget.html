@@ -1,0 +1,21 @@
+<template name="oembedSoundcloudWidget">
+	{{#if parsedUrl}}
+		<blockquote>
+			<a href="https://www.soundcloud.com" style="color: #9e9ea6">SoundCloud</a><br/>
+			{{#if meta.oembedAuthorName}}
+				{{#if meta.oembedAuthorUrl}}
+					<a href="meta.oembedAuthorUrl">{{meta.oembedAuthorName}}</a><br/>
+				{{/if}}
+			{{/if}}
+			{{#if meta.oembedTitle}}
+				{{#if meta.oembedUrl}}
+					<a href="{{meta.oembedUrl}}">{{meta.oembedTitle}}</a><br/>
+				{{/if}}
+			{{/if}}
+			{{#if meta.oembedDescription}}
+				<p>{{meta.oembedDescription}}</p>
+			{{/if}}
+			{{{meta.oembedHtml}}}
+		</blockquote>
+	{{/if}}
+</template>

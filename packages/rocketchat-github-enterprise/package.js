@@ -11,9 +11,9 @@ Package.onUse(function(api) {
     api.use('rocketchat:lib@0.0.1');
     api.use('rocketchat:custom-oauth');
 
-	api.addFiles("common.coffee");
-    api.addFiles('github-enterprise-login-button.css', 'client');
     api.addFiles('startup.coffee', 'server');
+    api.addFiles('github-enterprise-login-button.css', 'client');
+    api.addFiles('common.coffee');
 
 	// TAPi18n
     api.use('templating', 'client');

@@ -1,5 +1,34 @@
 less = Npm.require('less')
 autoprefixer = Npm.require('less-plugin-autoprefix')
+crypto = Npm.require('crypto')
+
+calculateClientHash = WebAppHashing.calculateClientHash
+WebAppHashing.calculateClientHash = (manifest, includeFilter, runtimeConfigOverride) ->
+	css = RocketChat.theme.getCss()
+
+	WebAppInternals.staticFiles['/__cordova/theme.css'] = WebAppInternals.staticFiles['/theme.css'] =
+		cacheable: true
+		sourceMapUrl: undefined
+		type: 'css'
+		content: css
+
+	hash = crypto.createHash('sha1').update(css).digest('hex')
+
+	themeManifestItem = _.find manifest, (item) -> return item.path is 'app/theme.css'
+	if not themeManifestItem?
+		themeManifestItem = {}
+		manifest.push themeManifestItem
+
+	themeManifestItem.path = 'app/theme.css'
+	themeManifestItem.type = 'css'
+	themeManifestItem.cacheable = true
+	themeManifestItem.where = 'client'
+	themeManifestItem.url = "/theme.css?#{hash}"
+	themeManifestItem.size = css.length
+	themeManifestItem.hash = hash
+
+	calculateClientHash.call this, manifest, includeFilter, runtimeConfigOverride
+
 
 RocketChat.theme = new class
 	variables: {}
@@ -59,7 +88,7 @@ RocketChat.theme = new class
 
 			RocketChat.settings.updateById 'css', data.css
 
-			RocketChat.Notifications.notifyAll 'theme-updated'
+			process.emit('message', {refresh: 'client'})
 
 	addVariable: (type, name, value, isPublic=true) ->
 		@variables[name] =
@@ -93,15 +122,3 @@ RocketChat.theme = new class
 
 	getCss: ->
 		return RocketChat.settings.get 'css'
-
-
-WebApp.connectHandlers.use '/theme.css', (req, res, next) ->
-	css = RocketChat.theme.getCss()
-
-	res.setHeader 'content-type', 'text/css; charset=UTF-8'
-	res.setHeader 'Content-Disposition', 'inline'
-	res.setHeader 'Cache-Control', 'no-cache'
-	res.setHeader 'Pragma', 'no-cache'
-	res.setHeader 'Expires', '0'
-
-	res.end css

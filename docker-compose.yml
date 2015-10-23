@@ -6,7 +6,7 @@ db:
   command: mongod --smallfiles
 
 rocketchat:
-  image: singli/rocket.chat
+  image: rocketchat/rocket.chat
   environment:
     - MONGO_URL=mongodb://db:27017/rocketchat
     - ROOT_URL=http://yourhost:8818
