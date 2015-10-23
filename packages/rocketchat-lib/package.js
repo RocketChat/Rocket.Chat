@@ -21,6 +21,7 @@ Package.onUse(function(api) {
 	// COMMON
 	api.addFiles('lib/core.coffee');
 	api.addFiles('lib/callbacks.coffee');
+	api.addFiles('lib/roomTypes.coffee');
 	api.addFiles('lib/slashCommand.coffee');
 
 	// MODELS SERVER
@@ -45,7 +46,8 @@ Package.onUse(function(api) {
 	api.addFiles('settings/lib/settings.coffee');
 
 	// CLIENT
-	api.addFiles('client/lib/roomTypes.coffee', 'client');
+	api.addFiles('client/lib/openRoom.coffee', 'client');
+	api.addFiles('client/lib/roomExit.coffee', 'client');
 	api.addFiles('client/Notifications.coffee', 'client');
 	api.addFiles('client/TabBar.coffee', 'client');
 	api.addFiles('client/MessageAction.coffee', 'client');
