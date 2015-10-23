@@ -1,6 +1,7 @@
 RocketChat.roomTypes = new class
 	rooms = []
 	routes = {}
+	publishes = {}
 
 	### Sets a route for a room type
 	@param roomType: room type (e.g.: c (for channels), d (for direct channels))
@@ -39,7 +40,29 @@ RocketChat.roomTypes = new class
 	getAllTypes = ->
 		return rooms
 
+	### add a publish for a room type
+	@param roomType: room type (e.g.: c (for channels), d (for direct channels))
+	@param callback: function that will return the publish's data
+	###
+	addPublish = (roomType, callback) ->
+		if publishes[roomType]?
+			throw new Meteor.Error 'route-publish-exists', 'Publish for the given type already exists'
+
+		publishes[roomType] = callback
+
+	### run the publish for a room type
+	@param roomType: room type (e.g.: c (for channels), d (for direct channels))
+	@param identifier: identifier of the room
+	###
+	runPublish = (roomType, identifier) ->
+		return unless publishes[roomType]?
+		return publishes[roomType].call this, identifier
+
 	addType: addType
 	getTypes: getAllTypes
+
 	setRoute: setRoute
 	getRoute: getRoute
+
+	addPublish: addPublish
+	publish: runPublish
