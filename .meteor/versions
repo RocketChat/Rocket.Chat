@@ -141,6 +141,7 @@ rocketchat:oembed@0.0.1
 rocketchat:slashcommands-invite@0.0.1
 rocketchat:slashcommands-join@0.0.1
 rocketchat:slashcommands-leave@0.0.1
+rocketchat:soundcloud@0.0.1
 rocketchat:spotify@0.0.1
 rocketchat:statistics@0.0.1
 rocketchat:theme@0.0.1
