@@ -49,6 +49,7 @@ RocketChat.settings.add 'Site_Url', __meteor_runtime_config__?.ROOT_URL, { type:
 RocketChat.settings.add 'Site_Name', 'Rocket.Chat', { type: 'string', group: 'General', public: true }
 RocketChat.settings.add 'Allow_Invalid_SelfSigned_Certs', false, { type: 'boolean', group: 'General' }
 RocketChat.settings.add 'Disable_Favorite_Rooms', false, { type: 'boolean', group: 'General' }
+RocketChat.settings.add 'CDN_PREFIX', '', { type: 'string', group: 'General' }
 
 RocketChat.settings.addGroup 'API'
 RocketChat.settings.add 'API_Analytics', '', { type: 'string', group: 'API', public: true }
