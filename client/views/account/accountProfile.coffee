@@ -9,21 +9,23 @@ Template.accountProfile.helpers
 	userLanguage: (key) ->
 		return (localStorage.getItem('userLanguage') or defaultUserLanguage())?.split('-').shift().toLowerCase() is key
 
+	realname: ->
+		return Meteor.user().name
+
 	username: ->
 		return Meteor.user().username
-    
+
 	allowUsernameChange: ->
 		return RocketChat.settings.get("Accounts_AllowUsernameChange")
-		
+
 	usernameChangeDisabled: ->
 		return t('Username_Change_Disabled')
-  
+
 	allowPasswordChange: ->
 		return RocketChat.settings.get("Accounts_AllowPasswordChange")
 
 	passwordChangeDisabled: ->
-		return t('Password_Change_Disabled')  
-	
+		return t('Password_Change_Disabled')
 
 Template.accountProfile.onCreated ->
 	settingsTemplate = this.parentTemplate(3)
@@ -57,7 +59,7 @@ Template.accountProfile.onCreated ->
 
 	@save = ->
 		instance = @
-		
+
 		oldPassword = _.trim($('#oldPassword').val())
 		newPassword = _.trim($('#password').val())
 
@@ -70,6 +72,9 @@ Template.accountProfile.onCreated ->
 				localStorage.setItem 'userLanguage', selectedLanguage
 				data.language = selectedLanguage
 				reload = true
+
+			if _.trim $('#realname').val()
+				data.realname = _.trim $('#realname').val()
 
 			if _.trim $('#username').val()
 				if !RocketChat.settings.get("Accounts_AllowUsernameChange")
