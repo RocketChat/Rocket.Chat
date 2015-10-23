@@ -105,17 +105,21 @@ RocketChat.sendMessage = (user, message, room, options) ->
 					# the mentioned user if mention isn't for all
 					RocketChat.models.Subscriptions.incUnreadForRoomIdAndUserIds message.rid, mentionIds, 1
 
+				# Get ids of all mentioned users.
 				userIdsToNotify = _.pluck(usersOfMention, '_id')
+				userIdsToPushNotify = userIdsToNotify
 
-				# If the message is @all, send a notification to all online room users except for the sender.
+				# If the message is @all, notify all room users except for the sender.
 				if toAll and room.usernames?.length > 0
-					onlineUsersOfRoom = RocketChat.models.Users.find({
+					usersOfRoom = RocketChat.models.Users.find({
 							username: {$in: room.usernames},
-							_id: {$ne: user._id}
-							status: {$in: ['online', 'away', 'busy']}},
-						{fields: {_id: 1, username: 1}})
+							_id: {$ne: user._id}},
+						{fields: {_id: 1, username: 1, status: 1}})
 						.fetch()
+					onlineUsersOfRoom = _.filter usersOfRoom, (user) ->
+						user.status in ['online', 'away', 'busy']
 					userIdsToNotify = _.union userIdsToNotify, _.pluck(onlineUsersOfRoom, '_id')
+					userIdsToPushNotify = _.union userIdsToPushNotify, _.pluck(usersOfRoom, '_id')
 
 				if userIdsToNotify.length > 0
 					for usersOfMentionId in userIdsToNotify
@@ -128,6 +132,7 @@ RocketChat.sendMessage = (user, message, room, options) ->
 								type: room.t
 								name: room.name
 
+				if userIdsToPushNotify.length > 0
 					if Push.enabled is true
 						Push.send
 							from: 'push'
@@ -143,7 +148,7 @@ RocketChat.sendMessage = (user, message, room, options) ->
 								type: room.t
 								name: room.name
 							query:
-								userId: $in: userIdsToNotify
+								userId: $in: userIdsToPushNotify
 
 		###
 		Update all other subscriptions to alert their owners but witout incrementing
