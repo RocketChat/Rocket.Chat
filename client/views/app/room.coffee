@@ -226,6 +226,11 @@ Template.room.helpers
 
 
 Template.room.events
+	"click, touchend": (e, t) ->
+		Meteor.setTimeout ->
+			t.sendToBottomIfNecessaryDebounced()
+		, 100
+
 	"touchstart .message": (e, t) ->
 		message = this._arguments[1]
 		doLongTouch = ->
@@ -588,6 +593,11 @@ Template.room.onRendered ->
 		Meteor.setTimeout ->
 			template.checkIfScrollIsAtBottom()
 		, 2000
+
+	$('.flex-tab-bar').on 'click', (e, t) ->
+		Meteor.setTimeout ->
+			template.sendToBottomIfNecessaryDebounced()
+		, 100
 
 	updateUnreadCount = _.throttle ->
 		firstMessageOnScreen = document.elementFromPoint(containerBarsOffset.left+1, containerBarsOffset.top+containerBars.height()+1)
