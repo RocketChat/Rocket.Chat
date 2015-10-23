@@ -21,6 +21,7 @@ Package.onUse(function(api) {
 	api.use(['ecmascript', 'webapp', 'autoupdate'], 'server');
 
 	api.imply('alanning:roles@1.2.12');
+	api.use('kadira:flow-router', 'client');
 
 	api.addFiles('livechat.js', 'server');
 	api.addFiles('server/methods.js', 'server');
@@ -30,6 +31,7 @@ Package.onUse(function(api) {
 	api.addFiles('config.js', 'server');
 
 	api.addFiles('client/ui.js', 'client');
+	api.addFiles('client/route.js', 'client');
 	api.addFiles('client/views/sideNav/livechat.html', 'client');
 	api.addFiles('client/views/sideNav/livechat.js', 'client');
 
