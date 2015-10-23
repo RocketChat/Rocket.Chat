@@ -48,9 +48,10 @@
 				heightDiff = wrapper.scrollHeight - previousHeight
 				wrapper.scrollTop += heightDiff
 
-			Meteor.defer ->
-				readMessage.refreshUnreadMark(rid, true)
-				RoomManager.updateMentionsMarksOfRoom subscription.t + subscription.name
+			if ls
+				Meteor.defer ->
+					readMessage.refreshUnreadMark(rid, true)
+					RoomManager.updateMentionsMarksOfRoom subscription.t + subscription.name
 
 			room.isLoading.set false
 			room.loaded += result?.messages?.length
