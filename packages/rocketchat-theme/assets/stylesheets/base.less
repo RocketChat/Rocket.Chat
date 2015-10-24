@@ -762,45 +762,6 @@ label.required:after {
 	}
 }
 
-.a-plus {
-	display: block;
-	width: 25px;
-	height: 25px;
-	z-index: 100;
-	position: relative;
-	&:before,
-	&:after {
-		content: " ";
-		display: block;
-		width: 2px;
-		height: 10px;
-		position: absolute;
-		.calc(top,
-		~"50% - 5px");
-		.calc(left,
-		~"50% - 1px");
-		.transform-origin(50%,
-		50%);
-	}
-	&:after {
-		.transform(rotate(90deg));
-		.transition(transform .315s ease-out .1s,
-		background .15s ease-out);
-	}
-	&:before {
-		.transition(transform .315s ease-out .3s,
-		background .15s ease-out);
-	}
-	&:hover {
-		&:before {
-			.transform(rotate(180deg));
-		}
-		&:after {
-			.transform(rotate(-90deg));
-		}
-	}
-}
-
 a.github-fork {
 	position: fixed;
 	display: block;
@@ -1397,16 +1358,6 @@ a.github-fork {
 		&:hover {
 		}
 		&.add-room {
-			&:hover {
-				i {
-					&:before {
-						.transform(rotate(180deg));
-					}
-					&:after {
-						.transform(rotate(-90deg));
-					}
-				}
-			}
 			i {
 				position: absolute;
 				right: 6px;
