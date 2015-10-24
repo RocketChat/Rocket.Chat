@@ -51,6 +51,7 @@
   "Administration" : "Administration",
   "All_channels" : "All channels",
   "Allow_Invalid_SelfSigned_Certs" : "Allow invalid and Self-Signed SSL certificate's for link validation and previews",
+  "CDN_PREFIX" : "CDN Prefix",
   "and" : "and",
   "API" : "API",
   "API_Analytics" : "Analytics",
