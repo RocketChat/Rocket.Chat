@@ -203,6 +203,9 @@ Accounts.registerLoginHandler("ldap", function(loginRequest) {
 
 	// Instantiate LDAP with options
 	var userOptions = loginRequest.ldapOptions || {};
+	if (RocketChat.settings.get('LDAP_Sync_User_Data')) {
+		userOptions.searchResultsProfileMap = true;
+	}
 
 	// Don't allow overwriting url and port
 	delete userOptions.url;
@@ -285,6 +288,24 @@ Accounts.registerLoginHandler("ldap", function(loginRequest) {
 		} else {
 			// Ldap success, but no user created
 			throw new Meteor.Error("LDAP-login-error", "LDAP Authentication succeded, but no user exists in Mongo. Either create a user for this email or set LDAP_DEFAULTS.createNewUser to true");
+		}
+
+		if (userId && RocketChat.settings.get('LDAP_Sync_User_Data')) {
+			userData = {};
+			if (ldapResponse.searchResults.hasOwnProperty('mail')) {
+				userData.emails = [{
+					address: ldapResponse.searchResults.mail,
+					verified: true
+				}];
+			}
+
+			if (ldapResponse.searchResults.hasOwnProperty('name')) {
+				userData.name = ldapResponse.searchResults.givenName;
+			}
+
+			if (_.size(userData)) {
+				Meteor.users.update(userId, { $set: userData });
+			}
 		}
 
 		return {
