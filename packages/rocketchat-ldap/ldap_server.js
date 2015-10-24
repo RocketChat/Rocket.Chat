@@ -293,10 +293,17 @@ Accounts.registerLoginHandler("ldap", function(loginRequest) {
 		if (userId && RocketChat.settings.get('LDAP_Sync_User_Data')) {
 			userData = {};
 			if (ldapResponse.searchResults.hasOwnProperty('mail')) {
-				userData.emails = [{
-					address: ldapResponse.searchResults.mail,
-					verified: true
-				}];
+
+				if ('object' == typeof ldapResponse.searchResults.mail) {
+					userData.emails = _.map(ldapResponse.searchResults.mail, function (item) {
+						return { address: item, verified: true};
+					});
+				} else {
+					userData.emails = [{
+						address: ldapResponse.searchResults.mail,
+						verified: true
+					}];
+				}
 			}
 
 			if (ldapResponse.searchResults.hasOwnProperty('name')) {
