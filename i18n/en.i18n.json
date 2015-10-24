@@ -303,7 +303,7 @@
   "Room_name_changed" : "Room name changed to: <em>__room_name__</em> by <em>__user_by__</em>",
   "Room_name_changed_successfully" : "Room name changed successfully",
   "Room_not_found" : "Room not found",
-  "Room_uploaded_file_list" : "Files list",
+  "Room_uploaded_file_list" : "Files List",
   "Room_uploaded_file_list_empty" : "No files available.",
   "room_user_count" : "%s users",
   "Rooms" : "Rooms",
