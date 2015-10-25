@@ -8,6 +8,7 @@ Meteor.startup ->
 	RocketChat.settings.add 'LDAP_DN', '', { type: 'string' , group: 'LDAP', i18nLabel: 'LDAP_Dn', public: true }
 	RocketChat.settings.add 'LDAP_Bind_Search', '', { type: 'string' , group: 'LDAP' }
 	RocketChat.settings.add 'LDAP_Sync_User_Data', false, { type: 'boolean' , group: 'LDAP' }
+	RocketChat.settings.add 'LDAP_Sync_User_Data_FieldMap', '{"cn":"name", "mail":"email"}', { type: 'string' , group: 'LDAP' }
 
 
 timer = undefined
