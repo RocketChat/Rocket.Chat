@@ -15,4 +15,7 @@ Template.oembedBaseWidget.helpers
 		if this.parsedUrl?.host is 'www.youtube.com' and this.meta?.twitterPlayer?
 			return 'oembedYoutubeWidget'
 
+		if this.meta?.oembedHtml?
+			return 'oembedFrameWidget'
+
 		return 'oembedUrlWidget'
