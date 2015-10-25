@@ -172,6 +172,7 @@
   "LDAP_Dn" : "DN LDAP",
   "LDAP_Port" : "Porta LDAP",
   "LDAP_Sync_User_Data" : "Manter dados dos usuários sincronizados",
+  "LDAP_Sync_User_Data_FieldMap" : "Mapeamento de campos do usuário",
   "LDAP_Url" : "URL LDAP",
   "Leave_room" : "Sair da sala",
   "line" : "linha",
