@@ -1,7 +1,11 @@
-<template name="oembedSoundcloudWidget">
+<template name="oembedFrameWidget">
 	{{#if parsedUrl}}
 		<blockquote>
-			<a href="https://www.soundcloud.com" style="color: #9e9ea6">SoundCloud</a><br/>
+			{{#if meta.oembedProviderName}}
+				{{#if meta.oembedProviderUrl}}
+					<a href="{{meta.oembedProviderUrl}}" style="color: #9e9ea6">{{meta.oembedProviderName}}</a><br/>
+				{{/if}}
+			{{/if}}
 			{{#if meta.oembedAuthorName}}
 				{{#if meta.oembedAuthorUrl}}
 					<a href="meta.oembedAuthorUrl">{{meta.oembedAuthorName}}</a><br/>
