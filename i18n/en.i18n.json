@@ -212,7 +212,7 @@
   "Message_deleting_not_allowed" : "Message deleting not allowed",
   "Message_editing_not_allowed" : "Message editing not allowed",
   "Message_editing_blocked" : "This message cannot be edited anymore",
-  "Message_MaxAllowedSize" : "Maximum Allowed Messages",
+  "Message_MaxAllowedSize" : "Maximum Allowed Message Size",
   "Message_pinning_not_allowed" : "Message pinning not allowed",
   "Message_AllowPinning" : "Allow Message Pinning",
   "Message_KeepHistory" : "Keep Message History",
