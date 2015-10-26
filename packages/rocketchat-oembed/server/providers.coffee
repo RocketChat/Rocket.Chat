@@ -25,6 +25,9 @@ providers = new Providers()
 providers.registerProvider
 	urls: [new RegExp('https?://soundcloud.com/\\S+')]
 	endPoint: 'https://soundcloud.com/oembed?format=json&maxheight=150'
+providers.registerProvider
+	urls: [new RegExp('https?://vimeo.com/[^/]+'), new RegExp('https?://vimeo.com/channels/[^/]+/[^/]+'), new RegExp('https://vimeo.com/groups/[^/]+/videos/[^/]+')]
+	endPoint: 'https://vimeo.com/api/oembed.json?maxheight=200'
 
 RocketChat.oembed = {}
 RocketChat.oembed.providers = providers
