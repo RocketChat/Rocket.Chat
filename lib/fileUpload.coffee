@@ -1,3 +1,4 @@
+#fileUpload
 if UploadFS?
 	@fileCollection = new Mongo.Collection 'rocketchat_uploads'
 	fileCollection.allow
