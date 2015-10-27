@@ -22,9 +22,7 @@ before_install:
 - export JASMINE_DEBUG=1
 - export VELOCITY_DEBUG=1
 - export VELOCITY_DEBUG_MIRROR=1
-
 script:
 - meteor add sanjo:jasmine velocity:console-reporter
-- meteor update
 - ./node_modules/velocity-cli/bin/velocity test-packages --ci
-- meteor --test --once
+- ./node_modules/velocity-cli/bin/velocity test-app --ci
