@@ -291,13 +291,13 @@ Accounts.registerLoginHandler("ldap", function(loginRequest) {
 		}
 
 		// LDAP sync data logic
-		syncUserData = RocketChat.settings.get('LDAP_Sync_User_Data');
-		syncUserDataFieldMap = RocketChat.settings.get('LDAP_Sync_User_Data_FieldMap').trim();
+		var syncUserData = RocketChat.settings.get('LDAP_Sync_User_Data');
+		var syncUserDataFieldMap = RocketChat.settings.get('LDAP_Sync_User_Data_FieldMap').trim();
 		if (userId && syncUserData && syncUserDataFieldMap) {
-			userData = {};
-			fieldMap = JSON.parse(syncUserDataFieldMap);
+			var userData = {};
+			var fieldMap = JSON.parse(syncUserDataFieldMap);
 
-			emailList = [];
+			var = emailList = [];
 			_.map(fieldMap, function(userField, ldapField) {
 				if (!ldapResponse.searchResults.hasOwnProperty(ldapField)) {
 					return;
