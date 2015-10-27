@@ -279,6 +279,9 @@ Accounts.registerLoginHandler("ldap", function(loginRequest) {
 			Meteor.users.update(userId, {$set: {
 				ldap: true
 			}});
+			Meteor.runAsUser(userId, function() {
+				Meteor.call('joinDefaultChannels');
+			});
 		} else {
 			// Ldap success, but no user created
 			throw new Meteor.Error("LDAP-login-error", "LDAP Authentication succeded, but no user exists in Mongo. Either create a user for this email or set LDAP_DEFAULTS.createNewUser to true");

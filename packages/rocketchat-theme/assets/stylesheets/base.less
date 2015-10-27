@@ -762,45 +762,6 @@ label.required:after {
 	}
 }
 
-.a-plus {
-	display: block;
-	width: 25px;
-	height: 25px;
-	z-index: 100;
-	position: relative;
-	&:before,
-	&:after {
-		content: " ";
-		display: block;
-		width: 2px;
-		height: 10px;
-		position: absolute;
-		.calc(top,
-		~"50% - 5px");
-		.calc(left,
-		~"50% - 1px");
-		.transform-origin(50%,
-		50%);
-	}
-	&:after {
-		.transform(rotate(90deg));
-		.transition(transform .315s ease-out .1s,
-		background .15s ease-out);
-	}
-	&:before {
-		.transition(transform .315s ease-out .3s,
-		background .15s ease-out);
-	}
-	&:hover {
-		&:before {
-			.transform(rotate(180deg));
-		}
-		&:after {
-			.transform(rotate(-90deg));
-		}
-	}
-}
-
 a.github-fork {
 	position: fixed;
 	display: block;
@@ -1397,16 +1358,6 @@ a.github-fork {
 		&:hover {
 		}
 		&.add-room {
-			&:hover {
-				i {
-					&:before {
-						.transform(rotate(180deg));
-					}
-					&:after {
-						.transform(rotate(-90deg));
-					}
-				}
-			}
 			i {
 				position: absolute;
 				right: 6px;
@@ -1500,9 +1451,7 @@ a.github-fork {
 			opacity: 0;
 			display: block;
 			top: 7px;
-			.transform(translateX(-10px));
-			.transition(opacity .12s ease .25s,
-			transform .15s ease-out .25s);
+			.transition(opacity .12s ease);
 			i {
 				margin: 0 1px;
 				&:hover {
@@ -1847,12 +1796,38 @@ a.github-fork {
 	}
 
 	.list {
+		a {
+			display: block;
+			padding: 3px;
+			margin-bottom: 5px;
+			.info {
+				h3 {
+					margin-bottom: 5px;
+				}
+				ul {
+					margin-left: 3px;
+				}
+			}
+		}
+		.room-info {
+			padding: 3px;
+			margin-bottom: 5px;
+			cursor: pointer;
+			h3 {
+				margin-bottom: 5px;
+			}
+		}
 		.user-image {
 			float: right;
 			margin-left: 12px;
 		}
 		table {
 			width: 100%;
+			thead {
+				th {
+					text-align: left;
+				}
+			}
 			tbody {
 				td {
 					vertical-align: middle;
@@ -1912,47 +1887,29 @@ a.github-fork {
 	}
 }
 
-.unread-bar {
+.container-bars {
 	position: absolute;
 	top: 60px;
 	width: 100%;
 	z-index: 11;
 	font-weight: bold;
-	background-color: #E6F4FD;
-	line-height: 30px;
-	font-size: 12px;
-	padding: 0 10px;
-	box-shadow: 0px 1px 2px rgba(0,0,0,.2);
-	color: #068FE4;
-	text-transform: uppercase;
-	text-align: center;
+	display: flex;
+	flex-direction: column;
 
-	> a {
-		float: right;
-
-		&:hover {
-			cursor: pointer;
-		}
-	}
-}
-
-.upload-progress {
-	position: absolute;
-	top: 60px;
-	width: 100%;
-	z-index: 11;
-	font-weight: bold;
-	text-shadow: 1px 1px 0px rgba(0,0,0,.2);
-
-	.upload-progress-item {
-		position: relative;
+	> div {
+		height: 24px;
 		line-height: 24px;
 		padding: 0 10px;
-		border-bottom: 1px solid;
+		border-top: 1px solid;
 
-		&:first-child {
-			border-top: 1px solid;
+		&:last-child {
+			box-shadow: 0px 1px 2px rgba(0,0,0,.2);
 		}
+	}
+
+	.upload-progress {
+		position: relative;
+		text-shadow: 1px 1px 0px rgba(0,0,0,.2);
 
 		&.upload-error {
 		}
@@ -1962,13 +1919,41 @@ a.github-fork {
 			left: 0px;
 			height: 100%;
 			width: 0%;
-			z-index: -1;
+			z-index: 1;
 			.transition(width, 1s, ease-out);
 		}
 
+		.upload-progress-text {
+			padding: 0 10px;
+			position: absolute;
+			left: 0px;
+			right: 0px;
+			height: 100%;
+			z-index: 2;
+
+			> a {
+				float: right;
+				text-transform: uppercase;
+
+				&:hover {
+					cursor: pointer;
+				}
+			}
+		}
+	}
+
+	.unread-bar {
+		background-color: #E6F4FD;
+		// line-height: 30px;
+		// font-size: 12px;
+		// padding: 0 10px;
+		// box-shadow: 0px 1px 2px rgba(0,0,0,.2);
+		color: #068FE4;
+		text-transform: uppercase;
+		text-align: center;
+
 		> a {
 			float: right;
-			text-transform: uppercase;
 
 			&:hover {
 				cursor: pointer;
@@ -2463,13 +2448,13 @@ a.github-fork {
 		.info {
 			position: absolute;
 			text-align: right;
-			left: 0px;
-			width: 65px;
+			left: 5px;
+			width: 60px;
 			.time {
 				display: none;
 			}
 			.edited {
-				display: inline-block;
+				display: block;
 			}
 			.private {
 				display: none;
@@ -2703,6 +2688,7 @@ a.github-fork {
 		&:extend(.fill-all);
 		overflow-x: hidden;
 		overflow-y: auto;
+		top: auto;
 		-webkit-overflow-scrolling: touch;
 		> div {
 			.transition(transform .45s cubic-bezier(.5,
@@ -2991,6 +2977,9 @@ a.github-fork {
 		> .input-line {
 			margin-top: 20px;
 		}
+	}
+	.room-info-content > div {
+		margin: 0 0 20px 0;
 	}
 }
 
@@ -3385,6 +3374,7 @@ a.github-fork {
 			border-bottom: 1px solid;
 			font-family: "Roboto", "HelveticaNeue-Light", "sans-serif";
 			font-weight: 400;
+			border-radius: 0px;
 			&.error {
 				border-bottom: 1px solid;
 				&::-webkit-input-placeholder {
@@ -4017,4 +4007,8 @@ a.github-fork {
 	input {
 		text-indent: 34px;
 	}
+}
+
+.inline-video {
+	max-height: 200px;
 }

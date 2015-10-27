@@ -282,13 +282,6 @@ label.required:after {
 	}
 }
 
-.a-plus {
-	&:before,
-	&:after {
-		background-color: #aaa;
-	}
-}
-
 a.github-fork {
 	background-color: #5c5c5c;
 	color: #f0f0f0;
@@ -438,7 +431,7 @@ a.github-fork {
 		input[type='password'],
 		select {
 			border-color: @tertiary-font-color;
-			background-color: #04436a;
+			background-color: @primary-background-color;
 			color: @input-font-color;
 		}
 
@@ -627,6 +620,11 @@ a.github-fork {
 				color: @primary-font-color;
 			}
 		}
+		.room-info {
+			&:hover {
+				background-color: @secondary-background-color;
+			}
+		}
 		.status {
 			color: @secondary-font-color;
 		}
@@ -651,14 +649,15 @@ a.github-fork {
 	color: orange;
 }
 
-.upload-progress {
-	background-color: #b2d5c9;
-	color: @content-background-color;
-	.upload-progress-item {
-		border-bottom-color: #6a8179;
-		&:first-child {
-			border-top-color: #6a8179;
-		}
+.container-bars {
+	>div {
+		border-color: #ffffff;
+	}
+
+	.upload-progress {
+		background-color: #b2d5c9;
+		color: @content-background-color;
+
 		&.upload-error {
 			background-color: #FF6161;
 			border-color: #863737;
@@ -671,6 +670,11 @@ a.github-fork {
 				color: #eee;
 			}
 		}
+	}
+
+	.unread-bar {
+		background-color: #E6F4FD;
+		color: #068FE4;
 	}
 }
 
