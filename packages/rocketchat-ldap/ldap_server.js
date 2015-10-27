@@ -297,7 +297,7 @@ Accounts.registerLoginHandler("ldap", function(loginRequest) {
 			var userData = {};
 			var fieldMap = JSON.parse(syncUserDataFieldMap);
 
-			var = emailList = [];
+			var emailList = [];
 			_.map(fieldMap, function(userField, ldapField) {
 				if (!ldapResponse.searchResults.hasOwnProperty(ldapField)) {
 					return;
