@@ -10,7 +10,9 @@ RocketChat.settings.add = (_id, value, options = {}) ->
 
 	# console.log '[functions] RocketChat.settings.add -> '.green, 'arguments:', arguments
 
-	if Meteor.settings?[_id]?
+	if process?.env?[_id]?
+		value = process.env[_id]
+	else if Meteor.settings?[_id]?
 		value = Meteor.settings[_id]
 
 	updateSettings =

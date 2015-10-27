@@ -6,6 +6,7 @@ RocketChat.settings.addGroup 'Accounts'
 RocketChat.settings.add 'Accounts_RegistrationRequired', true, { type: 'boolean', group: 'Accounts', public: true, section: 'Registration' }
 RocketChat.settings.add 'Accounts_EmailVerification', false, { type: 'boolean', group: 'Accounts', public: true, section: 'Registration' }
 RocketChat.settings.add 'Accounts_ManuallyApproveNewUsers', false, { type: 'boolean', group: 'Accounts', section: 'Registration' }
+RocketChat.settings.add 'Accounts_AllowedDomainsList', '', { type: 'string', group: 'Accounts', public: true, section: 'Registration' }
 
 RocketChat.settings.add 'Accounts_AvatarStoreType', 'GridFS', { type: 'string', group: 'Accounts', section: 'Avatar' }
 RocketChat.settings.add 'Accounts_AvatarStorePath', '/var/www/rocket.chat/uploads/avatar/', { type: 'string', group: 'Accounts', section: 'Avatar' }
@@ -34,16 +35,21 @@ RocketChat.settings.add 'Accounts_OAuth_Twitter', false, { type: 'boolean', grou
 RocketChat.settings.add 'Accounts_OAuth_Twitter_id', '', { type: 'string', group: 'Accounts', section: 'Twitter' }
 RocketChat.settings.add 'Accounts_OAuth_Twitter_secret', '', { type: 'string', group: 'Accounts', section: 'Twitter' }
 
+RocketChat.settings.add 'Accounts_AllowUsernameChange', true, { type: 'boolean', group: 'Accounts', section: 'General', public: true }
+RocketChat.settings.add 'Accounts_AllowPasswordChange', true, { type: 'boolean', group: 'Accounts', section: 'General', public: true }
+
 RocketChat.settings.addGroup 'FileUpload'
 RocketChat.settings.add 'FileUpload_Enabled', true, { type: 'boolean', group: 'FileUpload', public: true }
 RocketChat.settings.add 'FileUpload_MaxFileSize', 2097152, { type: 'int', group: 'FileUpload', public: true }
-RocketChat.settings.add 'FileUpload_MediaTypeWhiteList', 'image/*', { type: 'string', group: 'FileUpload', public: true }
+RocketChat.settings.add 'FileUpload_MediaTypeWhiteList', 'image/*', { type: 'string', group: 'FileUpload', public: true, i18nDescription: 'FileUpload_MediaTypeWhiteListDescription' }
+
 
 RocketChat.settings.addGroup 'General'
 RocketChat.settings.add 'Site_Url', __meteor_runtime_config__?.ROOT_URL, { type: 'string', group: 'General', i18nDescription: 'Site_Url_Description', public: true }
 RocketChat.settings.add 'Site_Name', 'Rocket.Chat', { type: 'string', group: 'General', public: true }
 RocketChat.settings.add 'Allow_Invalid_SelfSigned_Certs', false, { type: 'boolean', group: 'General' }
 RocketChat.settings.add 'Disable_Favorite_Rooms', false, { type: 'boolean', group: 'General' }
+RocketChat.settings.add 'CDN_PREFIX', '', { type: 'string', group: 'General' }
 
 RocketChat.settings.addGroup 'API'
 RocketChat.settings.add 'API_Analytics', '', { type: 'string', group: 'API', public: true }
@@ -62,7 +68,7 @@ RocketChat.settings.add 'Invitation_HTML', '<h2>You have been invited to <h1>Roc
 
 RocketChat.settings.addGroup 'Message'
 RocketChat.settings.add 'Message_AllowEditing', true, { type: 'boolean', group: 'Message', public: true }
-RocketChat.settings.add 'Message_AllowEditing_BlockEditInMinutes', 0, { type: 'int', group: 'Message', public: true }
+RocketChat.settings.add 'Message_AllowEditing_BlockEditInMinutes', 0, { type: 'int', group: 'Message', public: true, i18nDescription: 'Message_AllowEditing_BlockEditInMinutesDescription' }
 RocketChat.settings.add 'Message_AllowDeleting', true, { type: 'boolean', group: 'Message', public: true }
 RocketChat.settings.add 'Message_AllowPinning', true, { type: 'boolean', group: 'Message', public: true }
 RocketChat.settings.add 'Message_ShowEditedStatus', true, { type: 'boolean', group: 'Message', public: true }

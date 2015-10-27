@@ -2,12 +2,20 @@
 	{{#if parsedUrl}}
 		<blockquote>
 			<a href="https://www.soundcloud.com" style="color: #9e9ea6">SoundCloud</a><br/>
-			{{#if meta.twitterAudioArtistName}}
-				<a href="https://www.soundcloud.com/{{meta.twitterAudioArtistName}}">{{meta.twitterAudioArtistName}}</a><br/>
+			{{#if meta.oembedAuthorName}}
+				{{#if meta.oembedAuthorUrl}}
+					<a href="meta.oembedAuthorUrl">{{meta.oembedAuthorName}}</a><br/>
+				{{/if}}
 			{{/if}}
-			<a href="{{meta.ogUrl}}">{{meta.ogTitle}}</a><br/>
-			<p>{{meta.ogDescription}}</p>
-			<iframe width="100%" height="150" src="{{meta.twitterPlayer}}" frameborder="0"></iframe><br/>
+			{{#if meta.oembedTitle}}
+				{{#if meta.oembedUrl}}
+					<a href="{{meta.oembedUrl}}">{{meta.oembedTitle}}</a><br/>
+				{{/if}}
+			{{/if}}
+			{{#if meta.oembedDescription}}
+				<p>{{meta.oembedDescription}}</p>
+			{{/if}}
+			{{{meta.oembedHtml}}}
 		</blockquote>
 	{{/if}}
 </template>

@@ -1,4 +1,5 @@
 less = Npm.require('less')
+autoprefixer = Npm.require('less-plugin-autoprefix')
 crypto = Npm.require('crypto')
 
 calculateClientHash = WebAppHashing.calculateClientHash
@@ -75,6 +76,9 @@ RocketChat.theme = new class
 
 		options =
 			compress: true
+			plugins: [
+				new autoprefixer()
+			]
 
 		start = Date.now()
 		less.render content, options, (err, data) ->

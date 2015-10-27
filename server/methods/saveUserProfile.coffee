@@ -7,6 +7,9 @@ Meteor.methods
 			# if settings.password?
 			# 	Accounts.setPassword Meteor.userId(), settings.password, { logout: false }
 
+			if settings.realname?
+				Meteor.call 'setRealName', settings.realname
+
 			if settings.username?
 				Meteor.call 'setUsername', settings.username
 

@@ -35,7 +35,7 @@ if Meteor.isCordova
 		Meteor.call 'log', 'CLIENT', 'message', arguments
 
 	Tracker.autorun ->
-		if RocketChat.settings.get('Push_enable') is true
+		if RocketChat.settings.get('Push_enable') is true and Meteor.userId()?
 			Push.Configure
 				gcm:
 					projectNumber: RocketChat.settings.get 'Push_gcm_project_number'
