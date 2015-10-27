@@ -51,12 +51,12 @@ currentTracker = undefined
 				, 100
 
 			RocketChat.TabBar.resetButtons()
-			RocketChat.TabBar.addButton({ id: 'message-search', title: t('Search'), icon: 'octicon octicon-search', template: 'messageSearch', order: 1 })
+			RocketChat.TabBar.addButton({ id: 'message-search', i18nTitle: t('Search'), icon: 'octicon octicon-search', template: 'messageSearch', order: 1 })
 			if type is 'd'
-				RocketChat.TabBar.addButton({ id: 'members-list', title: t('User_Info'), icon: 'octicon octicon-person', template: 'membersList', order: 2 })
+				RocketChat.TabBar.addButton({ id: 'members-list', i18nTitle: t('User_Info'), icon: 'octicon octicon-person', template: 'membersList', order: 2 })
 			else
-				RocketChat.TabBar.addButton({ id: 'members-list', title: t('Members_List'), icon: 'octicon octicon-organization', template: 'membersList', order: 2 })
-			RocketChat.TabBar.addButton({ id: 'uploaded-files-list', title: t('Room_uploaded_file_list'), icon: 'octicon octicon-file-symlink-directory', template: 'uploadedFilesList', order: 3 })
+				RocketChat.TabBar.addButton({ id: 'members-list', i18nTitle: t('Members_List'), icon: 'octicon octicon-organization', template: 'membersList', order: 2 })
+			RocketChat.TabBar.addButton({ id: 'uploaded-files-list', i18nTitle: t('Room_uploaded_file_list'), icon: 'octicon octicon-file-symlink-directory', template: 'uploadedFilesList', order: 3 })
 
 			# update user's room subscription
 			if ChatSubscription.findOne({rid: room._id})?.open is false
