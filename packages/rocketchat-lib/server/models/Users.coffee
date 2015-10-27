@@ -34,6 +34,13 @@ RocketChat.models.Users = new class extends RocketChat.models._Base
 
 		return @findOne query, options
 
+	findOneByIdAndLoginToken: (_id, token, options) ->
+		query =
+			_id: _id
+			'services.resume.loginTokens.hashedToken' : Accounts._hashLoginToken(token)
+
+		return @findOne query, options
+
 
 	# FIND
 	findUsersNotOffline: (options) ->
