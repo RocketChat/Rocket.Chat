@@ -190,6 +190,8 @@
   "LDAP_Dn" : "Distinguished Name (DN)",
   "LDAP_Enable" : "Enable LDAP",
   "LDAP_Port" : "LDAP Port",
+  "LDAP_Sync_User_Data" : "Keep user data in sync with server",
+  "LDAP_Sync_User_Data_FieldMap" : "User data field map",
   "LDAP_Url" : "LDAP URL",
   "Leave_room" : "Leave room",
   "line" : "line",
