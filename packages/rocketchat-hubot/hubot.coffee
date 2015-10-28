@@ -55,8 +55,8 @@ class RocketChatAdapter extends Hubot.Adapter
 		console.log 'ROCKETCHATADAPTER -> send'.blue
 		# console.log envelope, strings
 		sendHelper @robot, envelope, strings, (string) =>
-			# console.log "send #{envelope.room}: #{string} (#{envelope.user.id})" if DEBUG
-			RocketChat.sendMessage  RocketBot.user, { msg: string }, { _id: envelope.room }
+			console.log "send #{envelope.room}: #{string} (#{envelope.user.id})" if DEBUG
+			RocketChat.sendMessage RocketBot.user, { msg: string }, { _id: envelope.room }
 
 	# Public: Raw method for sending emote data back to the chat source.
 	#
