@@ -31,6 +31,9 @@ providers.registerProvider
 providers.registerProvider
 	urls: [new RegExp('https?://www.youtube.com/\\S+'), new RegExp('https?://www.youtu.be/\\S+')]
 	endPoint: 'https://www.youtube.com/oembed?maxheight=200'
+providers.registerProvider
+	urls: [new RegExp('https?://www.rdio.com/\\S+'), new RegExp('https?://rd.io/\\S+')]
+	endPoint: 'http://www.rdio.com/api/oembed/?format=json&maxheight=150'
 
 RocketChat.oembed = {}
 RocketChat.oembed.providers = providers
