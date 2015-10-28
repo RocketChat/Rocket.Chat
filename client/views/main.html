@@ -41,18 +41,11 @@
 
 <template name="main">
 	{{#if subsReady}}
-<!--
 		{{#unless logged}}
 			{{> loginLayout}}
 		{{else}}
--->
 			{{#unless hasUsername}}
-				{{#if logged}}
-					{{> username}}
-				{{else}}
-					<!-- shared link cannot be disabled in sandstorm, so we show a blank page -->
-					{{> sandstormshare}}
-				{{/if}}
+				{{> username}}
 			{{else}}
 				{{> spotlight}}
 				{{> mobileMessageMenu}}
@@ -71,10 +64,7 @@
 					{{> sideNav }}
 				</div>
 				{{> audioNotification }}
-
 			{{/unless}}
-<!--
 		{{/unless}}
--->
 	{{/if}}
 </template>
