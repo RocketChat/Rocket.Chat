@@ -4,7 +4,11 @@
 	if not username?
 		return
 
-	return Meteor.absoluteUrl "avatar/#{username}.jpg?_dc=#{random}"
+	if Meteor.isCordova
+		path = Meteor.absoluteUrl()
+	else
+		path = '/'
+	return "#{path}avatar/#{username}.jpg?_dc=#{random}"
 
 Blaze.registerHelper 'avatarUrlFromUsername', getAvatarUrlFromUsername
 

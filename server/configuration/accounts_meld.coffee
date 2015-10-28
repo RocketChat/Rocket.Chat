@@ -1,5 +1,6 @@
 orig_updateOrCreateUserFromExternalService = Accounts.updateOrCreateUserFromExternalService
 Accounts.updateOrCreateUserFromExternalService = (serviceName, serviceData, options) ->
+
 	if serviceName not in ['facebook', 'github', 'gitlab', 'google', 'meteor-developer', 'linkedin', 'twitter', 'sandstorm'] and serviceData._oAuthCustom isnt true
 		return
 
