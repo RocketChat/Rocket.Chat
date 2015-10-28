@@ -110,6 +110,7 @@ It is a great solution for communities and companies wanting to privately host t
 - Support for PostgreSQL: [Issue #533](https://github.com/RocketChat/Rocket.Chat/issues/533), [Issue #822](https://github.com/RocketChat/Rocket.Chat/issues/822)
 - Native iOS Application [Issue #270](https://github.com/RocketChat/Rocket.Chat/issues/270), [Rocket.Chat.iOS - HELP WANTED](https://github.com/RocketChat/Rocket.Chat.iOS)
 - Native Android Application [Issue #271 - HELP WANTED](https://github.com/RocketChat/Rocket.Chat/issues/271)
+- Native Firefox OS Application [Issue #1204](https://github.com/RocketChat/Rocket.Chat/issues/1204)
 - Off-the-Record (OTR) Messaging [Issue #36](https://github.com/RocketChat/Rocket.Chat/issues/36), [Issue #268 - HELP WANTED](https://github.com/RocketChat/Rocket.Chat/issues/268)
 - API-enabled methods: [Issue #202](https://github.com/RocketChat/Rocket.Chat/issues/202), [Issue #454](https://github.com/RocketChat/Rocket.Chat/issues/454), [Issue #455](https://github.com/RocketChat/Rocket.Chat/issues/455), [Issue #759](https://github.com/RocketChat/Rocket.Chat/issues/759)
 - Scalable WebRTC broadcaster / media-server integration, [Issue #1118 - HELP WANTED](https://github.com/RocketChat/Rocket.Chat/issues/1118)
@@ -150,7 +151,7 @@ We are developing the APIs based on the competition, so stay tuned and you will 
 
 ### Documentation
 
-Checkout [Github Wiki](https://github.com/RocketChat/Rocket.Chat/wiki) (coming soon)
+Checkout [Github Wiki](https://github.com/RocketChat/Rocket.Chat/wiki)
 
 ## Production Deployment
 

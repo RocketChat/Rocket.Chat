@@ -159,7 +159,7 @@ Template.room.helpers
 		else
 			return t('See_all')
 
-	getPupupConfig: ->
+	getPopupConfig: ->
 		template = Template.instance()
 		return {
 			getInput: ->
