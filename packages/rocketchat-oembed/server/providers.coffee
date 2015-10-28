@@ -34,6 +34,9 @@ providers.registerProvider
 providers.registerProvider
 	urls: [new RegExp('https?://www.rdio.com/\\S+'), new RegExp('https?://rd.io/\\S+')]
 	endPoint: 'http://www.rdio.com/api/oembed/?format=json&maxheight=150'
+providers.registerProvider
+	urls: [new RegExp('https?://www.slideshare.net/[^/]+/[^/]+')]
+	endPoint: 'http://www.slideshare.net/api/oembed/2?format=json&maxheight=200'
 
 RocketChat.oembed = {}
 RocketChat.oembed.providers = providers
