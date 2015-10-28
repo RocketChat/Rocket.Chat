@@ -58,6 +58,7 @@
 								{{/unless}}
 							</div>
 						</div>
+
 						{{#if suggestions.ready}}
 							{{> avatarSuggestion suggestions.avatars.gravatar}}
 							{{> avatarSuggestion suggestions.avatars.facebook}}
@@ -85,6 +86,7 @@
 							{{#if suggestAvatar 'twitter'}}
 								{{> avatarSuggestionLogin 'twitter'}}
 							{{/if}}
+
 
 						{{else}}
 							{{_ "Loading_suggestion"}}
