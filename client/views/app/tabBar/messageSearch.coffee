@@ -13,6 +13,7 @@ Template.messageSearch.events
 	"keyup #message-search": _.debounce (e, t) ->
 		value = e.target.value.trim()
 		if value is '' and t.currentSearchTerm
+			t.currentSearchTerm = ''
 			t.searchResult.set undefined
 			return
 		else if value is t.currentSearchTerm
