@@ -9,7 +9,6 @@ updateServices = ->
 
 			serviceName = service._id.replace('Accounts_OAuth_', '')
 
-
 			if serviceName is 'Meteor'
 				serviceName = 'meteor-developer'
 
