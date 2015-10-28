@@ -4,10 +4,27 @@
 	if not username?
 		return
 
-	# return "#{Meteor.absoluteUrl()}avatar/#{username}.jpg?_dc=#{random}"
-	return "/avatar/#{username}.jpg?_dc=#{random}"
+	if Meteor.isCordova
+		path = Meteor.absoluteUrl()
+	else
+		path = '/'
+	return "#{path}avatar/#{username}.jpg?_dc=#{random}"
 
 Blaze.registerHelper 'avatarUrlFromUsername', getAvatarUrlFromUsername
+
+@getAvatarAsPng = (username, cb) ->
+	image = new Image
+	image.src = getAvatarUrlFromUsername(username)
+
+	image.onload = ->
+		canvas = document.createElement('canvas')
+		canvas.width = image.width
+		canvas.height = image.height
+		context = canvas.getContext('2d')
+		context.drawImage(image, 0, 0)
+		cb canvas.toDataURL('image/png')
+	image.onerror = ->
+		cb ''
 
 @updateAvatarOfUsername = (username) ->
 	key = "avatar_random_#{username}"

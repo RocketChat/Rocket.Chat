@@ -1,0 +1,6 @@
+{
+  "API_Wordpress_URL" : "Wordpress URL",
+  "Accounts_OAuth_Wordpress" : "WordPress Login",
+  "Accounts_OAuth_Wordpress_id" : "Wordpress-ID",
+  "Accounts_OAuth_Wordpress_secret" : "WordPress Secret"
+}

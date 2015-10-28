@@ -7,7 +7,7 @@
 			</h2>
 		</head>
 		<div class="content">
-			{{#unless isAdmin}}
+			{{#unless hasPermission 'view-privileged-setting'}}
 				<p>You are not authorized to view this page.</p>
 			{{else}}
 				{{#with group}}
@@ -23,6 +23,15 @@
 									<h1>{{section}}</h1>
 								{{/if}}
 								<div class="section-content">
+									{{#if section}}
+										{{#if sectionIsCustomOath section}}
+											<div class="section-helper">
+												{{#with callbackURL section}}
+													{{{_ "Custom_oauth_helper" .}}}
+												{{/with}}
+											</div>
+										{{/if}}
+									{{/if}}
 									{{#each settings}}
 										{{#if $eq type 'string'}}
 											<div class="input-line double-col">
@@ -62,13 +71,35 @@
 												{{/if}}
 											</div>
 										{{/if}}
+										{{#if $eq type 'color'}}
+											<div class="input-line double-col">
+												<label>{{label}}</label>
+												<div>
+													<input type="text" class="minicolors" name="{{_id}}" value="{{value}}" />
+													{{#if description}}
+														<small>{{description}}</small>
+													{{/if}}
+												</div>
+											</div>
+										{{/if}}
 									{{/each}}
+
+									{{#if section}}
+										{{#if sectionIsCustomOath section}}
+											<div class="submit">
+												<button class="button delete remove-custom-oauth"><span>{{_ "Remove_custom_oauth"}}</span></button>
+											</div>
+										{{/if}}
+									{{/if}}
 								</div>
 							</div>
 						{{/each}}
 					</fieldset>
 					<div class="submit">
-						<button class="button"><i class="icon-send"></i><span>{{_ "Save_changes"}}</span></button>
+						{{#if $eq group._id 'Accounts'}}
+							<button class="button secondary add-custom-oauth"><span>{{_ "Add_custom_oauth"}}</span></button>
+						{{/if}}
+						<button class="button save"><i class="icon-send"></i><span>{{_ "Save_changes"}}</span></button>
 					</div>
 				</div>
 			{{/unless}}

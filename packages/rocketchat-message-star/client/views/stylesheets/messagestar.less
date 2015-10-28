@@ -1,0 +1,26 @@
+.starred-messages-list {
+	padding: 30px 0;
+
+	&.notready {
+		background-image: url(/images/logo/loading.gif);
+		background-repeat: no-repeat;
+		background-position: 50% 50%;
+		height: 100px;
+
+		.message {
+			display: none;
+		}
+	}
+
+	li.empty {
+		color: #7f7f7f;
+		text-align: center;
+		margin-top: 60px;
+	}
+
+	.message-cog-container {
+		.edit-message, .delete-message {
+			display: none !important;
+		}
+	} 
+}

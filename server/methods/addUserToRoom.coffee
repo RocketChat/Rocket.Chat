@@ -1,9 +1,15 @@
 Meteor.methods
 	addUserToRoom: (data) ->
 		fromId = Meteor.userId()
-		# console.log '[methods] addUserToRoom -> '.green, 'fromId:', fromId, 'data:', data
+		console.log '[methods] addUserToRoom -> '.green, 'data:', data
 
-		room = ChatRoom.findOne data.rid
+		unless Match.test data?.rid, String
+			throw new Meteor.Error 'invalid-rid'
+
+		unless Match.test data?.username, String
+			throw new Meteor.Error 'invalid-username'
+
+		room = RocketChat.models.Rooms.findOneById data.rid
 
 		# if room.username isnt Meteor.user().username and room.t is 'c'
 		if room.t is 'c' and room.u?.username isnt Meteor.user().username
@@ -13,35 +19,23 @@ Meteor.methods
 		if room.usernames.indexOf(data.username) isnt -1
 			return
 
+		newUser = RocketChat.models.Users.findOneByUsername data.username
+
+		RocketChat.models.Rooms.addUsernameById data.rid, data.username
+
 		now = new Date()
 
-		update =
-			$addToSet:
-				usernames: data.username
-
-		newUser = Meteor.users.findOne username: data.username
-
-		ChatRoom.update data.rid, update
-
-		ChatSubscription.insert
-			rid: data.rid
+		RocketChat.models.Subscriptions.createWithRoomAndUser room, newUser,
 			ts: now
-			name: room.name
-			t: room.t
 			open: true
 			alert: true
 			unread: 1
-			u:
-				_id: newUser._id
-				username: data.username
 
-		ChatMessage.insert
-			rid: data.rid
+		fromUser = RocketChat.models.Users.findOneById fromId
+		RocketChat.models.Messages.createUserAddedWithRoomIdAndUser data.rid, newUser,
 			ts: now
-			t: 'au'
-			msg: newUser.name
 			u:
-				_id: fromId
-				username: Meteor.user().username
+				_id: fromUser._id
+				username: fromUser.username
 
 		return true

@@ -1,7 +1,7 @@
 Template.loginFooter.helpers
 	LanguageVersion: ->
 		if Template.instance().languageVersion.get()
-			return TAPi18next.t('project:Language_Version', { lng: Template.instance().languageVersion.get() })
+			return TAPi18n.__('Language_Version', { lng: Template.instance().languageVersion.get() })
 
 Template.loginFooter.events 
 	'click a.switch-language': (e, t) ->

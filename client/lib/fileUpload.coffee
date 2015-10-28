@@ -14,6 +14,7 @@ readAsArrayBuffer = (file, callback) ->
 
 
 @fileUpload = (files) ->
+	roomId = Session.get('openedRoom')
 	files = [].concat files
 
 	consume = ->
@@ -23,6 +24,8 @@ readAsArrayBuffer = (file, callback) ->
 			return
 
 		readAsDataURL file.file, (fileContent) ->
+			return unless fileUploadIsValidContentType file.file.type
+
 			text = ''
 
 			if file.type is 'audio'
@@ -33,14 +36,14 @@ readAsArrayBuffer = (file, callback) ->
 							Your browser does not support the audio element.
 						</audio>
 					</div>
-					<div class='upload-preview-title'>#{file.name}</div>
+					<div class='upload-preview-title'>#{Handlebars._escape(file.name)}</div>
 				"""
 			else
 				text = """
 					<div class='upload-preview'>
 						<div class='upload-preview-file' style='background-image: url(#{fileContent})'></div>
 					</div>
-					<div class='upload-preview-title'>#{file.name}</div>
+					<div class='upload-preview-title'>#{Handlebars._escape(file.name)}</div>
 				"""
 
 			swal
@@ -61,6 +64,7 @@ readAsArrayBuffer = (file, callback) ->
 						name: file.name or file.file.name
 						size: file.file.size
 						type: file.file.type
+						rid: roomId
 
 					upload = new UploadFS.Uploader
 						store: Meteor.fileStore
@@ -79,7 +83,7 @@ readAsArrayBuffer = (file, callback) ->
 							self = this
 							Meteor.call 'sendMessage', {
 								_id: Random.id()
-								rid: Session.get('openedRoom')
+								rid: roomId
 								msg: """
 									File Uploaded: *#{file.name}*
 									#{file.url}

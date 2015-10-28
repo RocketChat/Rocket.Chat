@@ -1,7 +1,12 @@
 Template.message.helpers
+	actions: ->
+		return RocketChat.MessageAction.getButtons(this)
 
 	own: ->
 		return 'own' if this.u?._id is Meteor.userId()
+
+	chatops: ->
+		return 'chatops-message' if this.u?.username is RocketChat.settings.get('Chatops_Username')
 
 	time: ->
 		return moment(this.ts).format('HH:mm')
@@ -26,10 +31,16 @@ Template.message.helpers
 			when 'rm' then t('Message_removed', { user: this.u.username })
 			when 'rtc' then RocketChat.callbacks.run 'renderRtcMessage', this
 			else
+				if this.u?.username is RocketChat.settings.get('Chatops_Username')
+					this.html = this.msg
+					message = RocketChat.callbacks.run 'renderMentions', this
+					# console.log JSON.stringify message
+					return this.html
 				this.html = this.msg
 				if _.trim(this.html) isnt ''
 					this.html = _.escapeHTML this.html
 				message = RocketChat.callbacks.run 'renderMessage', this
+				# console.log JSON.stringify message
 				this.html = message.html.replace /\n/gm, '<br/>'
 				return this.html
 
@@ -40,13 +51,36 @@ Template.message.helpers
 	pinned: ->
 		return this.pinned
 	canEdit: ->
-		return RocketChat.settings.get 'Message_AllowEditing'
+		hasPermission = RocketChat.authz.hasAtLeastOnePermission('edit-message', this.rid)
+		isEditAllowed = RocketChat.settings.get 'Message_AllowEditing'
+		editOwn = this.u?._id is Meteor.userId()
+
+		return unless hasPermission or (isEditAllowed and editOwn)
+
+		blockEditInMinutes = RocketChat.settings.get 'Message_AllowEditing_BlockEditInMinutes'
+		if blockEditInMinutes? and blockEditInMinutes isnt 0
+			msgTs = moment(this.ts) if this.ts?
+			currentTsDiff = moment().diff(msgTs, 'minutes') if msgTs?
+			return currentTsDiff < blockEditInMinutes
+		else
+			return true
+
 	canDelete: ->
-		return RocketChat.settings.get 'Message_AllowDeleting'
+		if RocketChat.authz.hasAtLeastOnePermission('delete-message', this.rid )
+			return true
+
+		return RocketChat.settings.get('Message_AllowDeleting') and this.u?._id is Meteor.userId()
 	canPin: ->
 		return RocketChat.settings.get 'Message_AllowPinning'
+	canStar: ->
+		return RocketChat.settings.get 'Message_AllowStarring'
 	showEditedStatus: ->
 		return RocketChat.settings.get 'Message_ShowEditedStatus'
+	label: ->
+		if @i18nLabel
+			return t(@i18nLabel)
+		else if @label
+			return @label
 
 Template.message.onViewRendered = (context) ->
 	view = this
@@ -72,16 +106,17 @@ Template.message.onViewRendered = (context) ->
 		wrapper = ul.parentElement
 
 		if context.urls?.length > 0 and Template.oembedBaseWidget? and RocketChat.settings.get 'API_Embed'
-			for item in context.urls
-				do (item) ->
-					urlNode = lastNode.querySelector('.body a[href="'+item.url+'"]')
-					if urlNode?
-						$(urlNode).replaceWith Blaze.toHTMLWithData Template.oembedBaseWidget, item
+			if context.u?.username not in RocketChat.settings.get('API_EmbedDisabledFor')?.split(',')
+				for item in context.urls
+					do (item) ->
+						urlNode = lastNode.querySelector('.body a[href="'+item.url+'"]')
+						if urlNode?
+							$(lastNode.querySelector('.body')).append Blaze.toHTMLWithData Template.oembedBaseWidget, item
 
 		if not lastNode.nextElementSibling?
 			if lastNode.classList.contains('own') is true
 				view.parentView.parentView.parentView.parentView.parentView.templateInstance?().atBottom = true
 			else
 				if view.parentView.parentView.parentView.parentView.parentView.templateInstance?().atBottom isnt true
-					newMessage = document.querySelector(".new-message")
-					newMessage.className = "new-message"
+					newMessage = view.parentView.parentView.parentView.parentView.parentView.templateInstance().find(".new-message")
+					newMessage?.className = "new-message"

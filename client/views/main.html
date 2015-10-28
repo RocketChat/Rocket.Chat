@@ -8,13 +8,10 @@
 	<meta name="distribution" content="global" />
 	<meta name="rating" content="general" />
 	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
-	<meta name="apple-mobile-web-app-title" content="Rocket.Chat">
-	<meta name="application-name" content="Rocket.Chat">
 	<meta name="msapplication-TileColor" content="#04436a">
 	<meta name="msapplication-TileImage" content="/images/logo/mstile-144x144.png?v=3">
 	<meta name="msapplication-config" content="/images/logo/browserconfig.xml?v=3">
 	<meta name="theme-color" content="#04436a">
-	<link rel="canonical" href="https://demo.rocket.chat/" />
 	<link rel="manifest" href="/images/logo/manifest.json?v=3">
 	<link rel="icon" sizes="any" type="image/svg+xml" href="/images/logo/icon.svg?v=3">
 	<link rel="icon" sizes="256x256" type="image/png" href="/images/logo/favicon-256x256.png?v=3">
@@ -59,10 +56,14 @@
 			{{else}}
 				{{> spotlight}}
 				{{> mobileMessageMenu}}
+				{{> videoCall overlay=true}}
 				<div id="user-card-popover"></div>
 				<div id="rocket-chat" class="menu-nav menu-closed">
 					<div class="connection-status">
 						{{> status}}
+					</div>
+					<div class="flex-tab-bar">
+						{{> flexTabBar}}
 					</div>
 					<div class="main-content {{flexOpened}} {{flexOpenedRTC1}} {{flexOpenedRTC2}}">
 						{{> Template.dynamic template=center}}

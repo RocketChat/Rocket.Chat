@@ -1,5 +1,5 @@
 loadMissedMessages = (rid) ->
-	lastMessage = ChatMessage.findOne({rid: 'GENERAL'}, {sort: {ts: -1}, limit: 1})
+	lastMessage = ChatMessage.findOne({rid: rid}, {sort: {ts: -1}, limit: 1})
 	if not lastMessage?
 		return
 
@@ -30,12 +30,23 @@ Meteor.startup ->
 				ChatMessage.update {_id: recordAfter._id}, {$set: {tick: new Date}}
 
 
+onDeleteMessageStream = (msg) ->
+	ChatMessage.remove _id: msg._id
+
+
+RocketChat.Notifications.onUser 'message', (msg) ->
+	msg.u =
+		username: 'rocketbot'
+	msg.private = true
+
+	ChatMessage.upsert { _id: msg._id }, msg
+
+
 @RoomManager = new class
 	defaultTime = 600000 # 10 minutes
 	openedRooms = {}
 	subscription = null
 	msgStream = new Meteor.Stream 'messages'
-	deleteMsgStream = new Meteor.Stream 'delete-message'
 	onlineUsers = new ReactiveVar {}
 
 	Dep = new Tracker.Dependency
@@ -52,7 +63,7 @@ Meteor.startup ->
 
 			if openedRooms[typeName].rid?
 				msgStream.removeListener openedRooms[typeName].rid
-				deleteMsgStream.removeListener openedRooms[typeName].rid
+				RocketChat.Notifications.unRoom openedRooms[typeName].rid, 'deleteMessage', onDeleteMessageStream
 
 			openedRooms[typeName].ready = false
 			openedRooms[typeName].active = false
@@ -68,13 +79,11 @@ Meteor.startup ->
 			do (typeName, record) ->
 				record.sub = [
 					Meteor.subscribe 'room', typeName
-					# Meteor.subscribe 'messages', typeName
 				]
 
-				record.ready = record.sub[0].ready()
-				# record.ready = record.sub[0].ready() and record.sub[1].ready()
+				ready = record.sub[0].ready() and subscription.ready()
 
-				if record.ready is true
+				if ready is true
 					type = typeName.substr(0, 1)
 					name = typeName.substr(1)
 
@@ -91,8 +100,16 @@ Meteor.startup ->
 					if room?
 						openedRooms[typeName].rid = room._id
 
+						RoomHistoryManager.getMoreIfIsEmpty room._id
+						record.ready = RoomHistoryManager.isLoading(room._id) is false
+						Dep.changed()
+
 						msgStream.on openedRooms[typeName].rid, (msg) ->
 							ChatMessage.upsert { _id: msg._id }, msg
+
+							Meteor.defer ->
+								RoomManager.updateMentionsMarksOfRoom typeName
+
 							# If room was renamed then close current room and send user to the new one
 							Tracker.nonreactive ->
 								if msg.t is 'r'
@@ -101,8 +118,7 @@ Meteor.startup ->
 										RoomManager.close type + FlowRouter.getParam('name')
 										FlowRouter.go FlowRouter.current().route.name, name: msg.msg
 
-						deleteMsgStream.on openedRooms[typeName].rid, (msg) ->
-							ChatMessage.remove _id: msg._id
+						RocketChat.Notifications.onRoom openedRooms[typeName].rid, 'deleteMessage', onDeleteMessageStream
 
 				Dep.changed()
 
@@ -122,6 +138,7 @@ Meteor.startup ->
 			openedRooms[typeName] =
 				active: false
 				ready: false
+				unreadSince: new ReactiveVar undefined
 
 		setRoomExpireExcept typeName
 
@@ -143,7 +160,7 @@ Meteor.startup ->
 		if not room?
 			return
 
-		if not room.dom?
+		if not room.dom? and rid?
 			room.dom = document.createElement 'div'
 			room.dom.classList.add 'room-container'
 			Blaze.renderWithData Template.room, { _id: rid }, room.dom
@@ -161,10 +178,28 @@ Meteor.startup ->
 			delete onlineUsersValue[user.username]
 		else
 			onlineUsersValue[user.username] =
+				_id: user._id
 				status: status
 				utcOffset: utcOffset
 
 		onlineUsers.set onlineUsersValue
+
+	updateMentionsMarksOfRoom = (typeName) ->
+		dom = getDomOfRoom typeName
+		if not dom?
+			return
+
+		ticksBar = $(dom).find('.ticks-bar')
+		$(dom).find('.ticks-bar > .tick').remove()
+
+		scrollTop = $(dom).find('.messages-box > .wrapper').scrollTop() - 50
+		totalHeight = $(dom).find('.messages-box > .wrapper > ul').height() + 40
+
+		$('.mention-link-me').each (index, item) ->
+			topOffset = $(item).offset().top + scrollTop
+			percent = 100 / totalHeight * topOffset
+			ticksBar.append('<div class="tick" style="top: '+percent+'%;"></div>')
+
 
 	open: open
 	close: close
@@ -175,3 +210,4 @@ Meteor.startup ->
 	openedRooms: openedRooms
 	updateUserStatus: updateUserStatus
 	onlineUsers: onlineUsers
+	updateMentionsMarksOfRoom: updateMentionsMarksOfRoom

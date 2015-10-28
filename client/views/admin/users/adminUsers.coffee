@@ -1,14 +1,12 @@
 Template.adminUsers.helpers
-	isAdmin: ->
-		return Meteor.user().admin is true
 	isReady: ->
 		return Template.instance().ready?.get()
 	users: ->
 		return Template.instance().users()
 	flexOpened: ->
-		return 'opened' if Session.equals('flexOpened', true)
+		return 'opened' if RocketChat.TabBar.isFlexOpen()
 	arrowPosition: ->
-		return 'left' unless Session.equals('flexOpened', true)
+		return 'left' unless RocketChat.TabBar.isFlexOpen()
 	userData: ->
 		return Meteor.users.findOne Session.get 'adminSelectedUser'
 	userChannels: ->
@@ -17,27 +15,29 @@ Template.adminUsers.helpers
 		return 'btn-loading' unless Template.instance().ready?.get()
 	hasMore: ->
 		return Template.instance().limit?.get() is Template.instance().users?().length
-	phoneNumber: ->
-		return '' unless @phoneNumber
-		if @phoneNumber.length > 10
-			return "(#{@phoneNumber.substr(0,2)}) #{@phoneNumber.substr(2,5)}-#{@phoneNumber.substr(7)}"
-		else
-			return "(#{@phoneNumber.substr(0,2)}) #{@phoneNumber.substr(2,4)}-#{@phoneNumber.substr(6)}"
-	lastLogin: ->
-		if @lastLogin
-			return moment(@lastLogin).format('LLL')
-	utcOffset: ->
-		if @utcOffset?
-			if @utcOffset > 0
-				@utcOffset = "+#{@utcOffset}"
 
-			return "UTC #{@utcOffset}"
+	flexTemplate: ->
+		return RocketChat.TabBar.getTemplate()
+
+	flexData: ->
+		return RocketChat.TabBar.getData()
+
+	adminClass: ->
+		return 'admin' if RocketChat.authz.hasRole(Meteor.userId(), 'admin')
+
+	username: ->
+		return '@' + @username if @username?
+
+	emailAddress: ->
+		return _.map(@emails, (e) -> e.address).join(', ')
 
 Template.adminUsers.onCreated ->
 	instance = @
 	@limit = new ReactiveVar 50
 	@filter = new ReactiveVar ''
 	@ready = new ReactiveVar true
+
+	RocketChat.TabBar.addButton({ id: 'invite-user', i18nTitle: t('Invite_Users'), icon: 'icon-plus', template: 'adminInviteUser', order: 1 })
 
 	@autorun ->
 		filter = instance.filter.get()
@@ -48,6 +48,12 @@ Template.adminUsers.onCreated ->
 	@autorun ->
 		if Session.get 'adminSelectedUser'
 			channelSubscription = instance.subscribe 'userChannels', Session.get 'adminSelectedUser'
+			RocketChat.TabBar.setData Meteor.users.findOne Session.get 'adminSelectedUser'
+			RocketChat.TabBar.addButton({ id: 'user-info', i18nTitle: t('User_Info'), icon: 'icon-user', template: 'adminUserInfo', order: 2 })
+			# RocketChat.TabBar.addButton({ id: 'user-channel', i18nTitle: t('User_Channels'), icon: 'icon-hash', template: 'adminUserChannels', order: 3 })
+		else
+			RocketChat.TabBar.reset()
+			RocketChat.TabBar.addButton({ id: 'invite-user', i18nTitle: t('Invite_Users'), icon: 'icon-plus', template: 'adminInviteUser', order: 1 })
 
 	@users = ->
 		filter = _.trim instance.filter?.get()
@@ -56,7 +62,7 @@ Template.adminUsers.onCreated ->
 			query = { $or: [ { username: filterReg }, { name: filterReg }, { "emails.address": filterReg } ] }
 		else
 			query = {}
-		
+
 		return Meteor.users.find(query, { limit: instance.limit?.get(), sort: { username: 1, name: 1 } }).fetch()
 
 Template.adminUsers.onRendered ->
@@ -76,15 +82,17 @@ Template.adminUsers.events
 		t.filter.set e.currentTarget.value
 
 	'click .flex-tab .more': ->
-		if (Session.get('flexOpened'))
-			Session.set('flexOpened',false)
+		if RocketChat.TabBar.isFlexOpen()
+			RocketChat.TabBar.closeFlex()
 		else
-			Session.set('flexOpened', true)
+			RocketChat.TabBar.openFlex()
 
 	'click .user-info': (e) ->
 		e.preventDefault()
 		Session.set 'adminSelectedUser', $(e.currentTarget).data('id')
-		Session.set 'flexOpened', true
+		Session.set 'showUserInfo', Meteor.users.findOne($(e.currentTarget).data('id'))?.username or true
+		RocketChat.TabBar.setTemplate 'adminUserInfo'
+		RocketChat.TabBar.openFlex()
 
 	'click .info-tabs a': (e) ->
 		e.preventDefault()

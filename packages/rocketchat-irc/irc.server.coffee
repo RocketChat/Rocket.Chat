@@ -160,7 +160,7 @@ class IrcClient
 		console.log '[irc] onReceiveMessage -> '.yellow, 'source:', source, 'target:', target, 'content:', content
 		source = @createUserWhenNotExist source
 		if target[0] == '#'
-			room = ChatRoom.findOne {name: target.substring 1}
+			room = RocketChat.models.Rooms.findOneByName target.substring(1)
 		else
 			room = @createDirectRoomWhenNotExist(source, @user)
 
@@ -178,7 +178,7 @@ class IrcClient
 	onEndMemberList: (roomName) ->
 		newMembers = @receiveMemberListBuf[roomName]
 		console.log '[irc] onEndMemberList -> '.yellow, 'room:', roomName, 'members:', newMembers.join ','
-		room = ChatRoom.findOne {name: roomName, t: 'c'}
+		room = RocketChat.models.Rooms.findOneByNameAndType roomName, 'c'
 		unless room
 			return
 
@@ -189,17 +189,9 @@ class IrcClient
 		for member in appendMembers
 			@createUserWhenNotExist member
 
-		update =
-			$pull:
-				usernames:
-					$in: removeMembers
-		ChatRoom.update room._id, update
-		update =
-			$addToSet:
-				usernames:
-					$each: appendMembers
+		RocketChat.models.Rooms.removeUsernamesById room._id, removeMembers
+		RocketChat.models.Rooms.addUsernamesById room._id, appendMembers
 
-		ChatRoom.update room._id, update
 		@isJoiningRoom = false
 		roomName = @pendingJoinRoomBuf.shift()
 		if roomName
@@ -231,15 +223,12 @@ class IrcClient
 		msg = "PRIVMSG #{target} :#{message.msg}\r\n"
 		@sendRawMessage msg
 
-	initRoomList: () ->
-		roomsCursor = ChatRoom.find
-			usernames:
-				$in: [@user.username]
-			t: 'c'
-		,
+	initRoomList: ->
+		roomsCursor = RocketChat.models.Rooms.findByTypeContainigUsername 'c', @user.username,
 			fields:
 				name: 1
 				t: 1
+
 		rooms = roomsCursor.fetch()
 		for room in rooms
 			@joinRoom(room)
@@ -276,25 +265,17 @@ class IrcClient
 
 		console.log '[irc] onAddMemberToRoom -> '.yellow, 'roomName:', roomName, 'member:', member
 		@createUserWhenNotExist member
-		update =
-			$addToSet:
-				usernames: member
 
-		ChatRoom.update {name: roomName}, update
+		RocketChat.models.Rooms.addUsernameByName roomName, member
 
 	onRemoveMemberFromRoom: (member, roomName)->
 		console.log '[irc] onRemoveMemberFromRoom -> '.yellow, 'roomName:', roomName, 'member:', member
-		update =
-			$pull:
-				usernames: member
-		ChatRoom.update {name: roomName}, update
+		RocketChat.models.Rooms.removeUsernameByName roomName, member
 
 	onQuiteMember: (member) ->
 		console.log '[irc] onQuiteMember ->'.yellow, 'username:', member
-		update =
-			$pull:
-				usernames: member
-		ChatRoom.update {}, update, {multi: true}
+		RocketChat.models.Rooms.removeUsernameFromAll member
+
 		Meteor.users.update {name: member},
 			$set:
 				status: 'offline'
@@ -319,7 +300,7 @@ class IrcClient
 		console.log '[irc] createDirectRoomWhenNotExist -> '.yellow, 'source:', source, 'target:', target
 		rid = [source._id, target._id].sort().join('')
 		now = new Date()
-		ChatRoom.upsert
+		RocketChat.models.Rooms.upsert
 			_id: rid
 		,
 			$set:
@@ -328,7 +309,8 @@ class IrcClient
 				t: 'd'
 				msgs: 0
 				ts: now
-		ChatSubscription.upsert
+
+		RocketChat.models.Subscriptions.upsert
 			rid: rid
 			$and: [{'u._id': target._id}]
 		,
@@ -373,7 +355,7 @@ class IrcSender
 		if ircReceiveMessageCache.get cacheKey
 			return message
 
-		room = ChatRoom.findOne message.rid, { fields: { name: 1, usernames: 1, t: 1 } }
+		room = RocketChat.models.Rooms.findOneById message.rid, { fields: { name: 1, usernames: 1, t: 1 } }
 		ircClient = IrcClient.getByUid message.u._id
 		ircClient.sendMessage room, message
 		return message

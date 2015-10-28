@@ -1,0 +1,27 @@
+<template name="uploadedFilesList">
+  <div class="content">
+    <div class="list-view uploaded-files-list">
+      <div class="status">
+        <h2>{{_ "Room_uploaded_file_list"}}</h2>
+      </div>
+      {{#if Template.subscriptionsReady}}
+        {{#if hasFiles }}
+          <ul class='list clearfix lines'>
+            {{#each files}}
+              <li>
+                <a title="{{name}}" href="{{url}}" target="_blank" class="room-file-item {{customClassForFileType}}">
+                  <i class="{{getFileIcon type}}"></i>
+                  <p>{{name}}</p>
+                </a>
+              </li>
+            {{/each}}
+          </ul>
+        {{else}}
+          <h2>{{_ "Room_uploaded_file_list_empty"}}</h2>
+        {{/if}}
+      {{else}}
+        <span>{{_ "Loading..."}}</span>
+      {{/if}}
+    </div>
+  </div>
+</template>

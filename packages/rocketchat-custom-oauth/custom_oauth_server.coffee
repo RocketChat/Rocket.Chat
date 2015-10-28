@@ -34,15 +34,14 @@ class CustomOAuth
 			options.identityPath = '/me'
 
 		@serverURL = options.serverURL
-
-		if not /^https?:\/\/.+/.test options.tokenPath
-			options.tokenPath = @serverURL + options.tokenPath
-
-		if not /^https?:\/\/.+/.test options.identityPath
-			options.identityPath = @serverURL + options.identityPath
-
 		@tokenPath = options.tokenPath
 		@identityPath = options.identityPath
+
+		if not /^https?:\/\/.+/.test @tokenPath
+			@tokenPath = @serverURL + @tokenPath
+
+		if not /^https?:\/\/.+/.test @identityPath
+			@identityPath = @serverURL + @identityPath
 
 		if Match.test options.addAutopublishFields, Object
 			Accounts.addAutopublishFields options.addAutopublishFields
@@ -96,6 +95,11 @@ class CustomOAuth
 			console.log 'at:', accessToken
 
 			identity = self.getIdentity accessToken
+
+			# Fix WordPress-like identities having 'ID' instead of 'id'
+			if identity?.ID and not identity.id
+				identity.id = identity.ID
+
 			console.log 'id:', JSON.stringify identity, null, '  '
 
 			serviceData =

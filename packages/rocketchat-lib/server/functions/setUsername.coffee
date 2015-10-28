@@ -10,7 +10,7 @@ RocketChat.setUsername = (user, username) ->
 	if user.username is username
 		return user
 
-	# Check username availability 
+	# Check username availability
 	unless RocketChat.checkUsernameAvailability username
 		return false
 
@@ -18,19 +18,19 @@ RocketChat.setUsername = (user, username) ->
 
 	# Username is available; if coming from old username, update all references
 	if previousUsername
-		ChatMessage.update { "u._id": user._id }, { $set: { "u.username": username } }, { multi: true }
-	
-		ChatMessage.find({ "mentions.username": previousUsername }).forEach (msg) ->
+		RocketChat.models.Messages.updateAllUsernamesByUserId user._id, username
+
+		RocketChat.models.Messages.findByMention(previousUsername).forEach (msg) ->
 			updatedMsg = msg.msg.replace(new RegExp("@#{previousUsername}", "ig"), "@#{username}")
-			ChatMessage.update { _id: msg._id, "mentions.username": previousUsername }, { $set: { "mentions.$.username": username, "msg": updatedMsg } }
+			RocketChat.models.Messages.updateUsernameAndMessageOfMentionByIdAndOldUsername msg._id, previousUsername, username, updatedMsg
 
-		ChatRoom.update { usernames: previousUsername }, { $set: { "usernames.$": username } }, { multi: true }
-		ChatRoom.update { "u._id": user._id }, { $set: { "u.username": username } }, { multi: true }
+		RocketChat.models.Rooms.replaceUsername previousUsername, username
+		RocketChat.models.Rooms.replaceUsernameOfUserByUserId user._id, username
 
-		ChatSubscription.update { "u._id": user._id }, { $set: { "u.username": username } }, { multi: true }
-		ChatSubscription.update { name: previousUsername, t: "d" }, { $set: { name: username } }, { multi: true }
+		RocketChat.models.Subscriptions.setUserUsernameByUserId user._id, username
+		RocketChat.models.Subscriptions.setNameForDirectRoomsWithOldName previousUsername, username
 
 	# Set new username
-	Meteor.users.update { _id: user._id }, { $set: { username: username } }
+	RocketChat.models.Users.setUsername user._id, username
 	user.username = username
 	return user

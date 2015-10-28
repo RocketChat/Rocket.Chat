@@ -1,0 +1,6 @@
+{
+  "API_Wordpress_URL" : "WordPress URL",
+  "Accounts_OAuth_Wordpress" : "WordPress Kirjaudu sisään",
+  "Accounts_OAuth_Wordpress_id" : "WordPress ID",
+  "Accounts_OAuth_Wordpress_secret" : "Wordpress Secret"
+}

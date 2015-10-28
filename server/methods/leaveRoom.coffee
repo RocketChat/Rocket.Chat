@@ -6,48 +6,27 @@ Meteor.methods
 		unless Meteor.userId()?
 			throw new Meteor.Error 300, 'Usuário não logado'
 
-		room = ChatRoom.findOne rid
+		room = RocketChat.models.Rooms.findOneById rid
 		user = Meteor.user()
 
 		RocketChat.callbacks.run 'beforeLeaveRoom', user, room
 
-		update =
-			$pull:
-				usernames: user.username
-
-		ChatSubscription.update { rid: rid },
-			$set:
-				name: room.name
-		,
-			multi: true
+		RocketChat.models.Rooms.removeUsernameById rid, user.username
 
 		if room.t isnt 'c' and room.usernames.indexOf(user.username) isnt -1
 			removedUser = user
 
-			ChatMessage.insert
-				rid: rid
-				ts: (new Date)
-				t: 'ul'
-				msg: removedUser.name
-				u:
-					_id: removedUser._id
-					username: removedUser.username
+			RocketChat.models.Messages.createUserJoinWithRoomIdAndUser rid, removedUser
 
-		if room.u? and room.u._id is Meteor.userId()
+		if room.u?._id is Meteor.userId()
 			newOwner = _.without(room.usernames, user.username)[0]
 			if newOwner?
-				newOwner = Meteor.users.findOne username: newOwner
+				newOwner = RocketChat.models.Users.findOneByUsername newOwner
 
 				if newOwner?
-					if not update.$set?
-						update.$set = {}
+					RocketChat.models.Rooms.setUserById rid, newOwner
 
-					update.$set['u._id'] = newOwner._id
-					update.$set['u.username'] = newOwner.username
-
-		ChatSubscription.remove { rid: rid, 'u._id': Meteor.userId() }
-
-		ChatRoom.update rid, update
+		RocketChat.models.Subscriptions.removeByRoomIdAndUserId rid, Meteor.userId()
 
 		Meteor.defer ->
 

@@ -2,7 +2,7 @@ Meteor.startup ->
 	Migrations.add
 		version: 2
 		up: ->
-			Meteor.users.find({avatarOrigin: {$exists: false}, username: {$exists: true}}).forEach (user) ->
+			RocketChat.models.Users.find({avatarOrigin: {$exists: false}, username: {$exists: true}}).forEach (user) ->
 				avatars = getAvatarSuggestionForUser user
 
 				services = Object.keys avatars
@@ -20,6 +20,6 @@ Meteor.startup ->
 				rs = RocketChatFile.bufferToStream new Buffer(image, 'base64')
 				ws = RocketChatFileAvatarInstance.createWriteStream "#{user.username}.jpg", contentType
 				ws.on 'end', Meteor.bindEnvironment ->
-					Meteor.users.update {_id: user._id}, {$set: {avatarOrigin: service}}
+					RocketChat.models.Users.setAvatarOrigin user._id, service
 
 				rs.pipe(ws)
