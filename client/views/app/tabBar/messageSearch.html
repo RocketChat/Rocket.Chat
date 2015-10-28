@@ -8,12 +8,10 @@
 				</div>
 			</form>
 		</div>
-		{{#if searchResult.messages}}
 		<ul>
-			{{#each searchResult.messages}}
+			{{#each searchResultMessages}}
 				{{#nrr nrrargs 'message' .}}{{/nrr}}
 			{{/each}}
 		</ul>
-		{{/if}}
 	</div>
 </template>
