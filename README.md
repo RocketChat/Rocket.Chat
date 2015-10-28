@@ -151,7 +151,7 @@ We are developing the APIs based on the competition, so stay tuned and you will 
 
 ### Documentation
 
-Checkout [Github Wiki](https://github.com/RocketChat/Rocket.Chat/wiki) (coming soon)
+Checkout [Github Wiki](https://github.com/RocketChat/Rocket.Chat/wiki)
 
 ## Production Deployment
 
