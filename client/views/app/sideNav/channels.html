@@ -1,7 +1,9 @@
 <template name="channels">
 	<h3 class="add-room {{isActive}}">
 		{{_ "Channels"}}
-		<i class="a-plus"></i>
+		{{#if hasPermission 'create-c'}}
+			<i class="icon-plus"></i>
+		{{/if}}
 	</h3>
 	<ul>
 		{{#each rooms}}

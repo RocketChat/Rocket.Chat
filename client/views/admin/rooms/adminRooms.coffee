@@ -1,14 +1,12 @@
 Template.adminRooms.helpers
-	isAdmin: ->
-		return Meteor.user().admin is true
 	isReady: ->
 		return Template.instance().ready?.get()
 	rooms: ->
 		return Template.instance().rooms()
 	flexOpened: ->
-		return 'opened' if Session.equals('flexOpened', true)
+		return 'opened' if RocketChat.TabBar.isFlexOpen()
 	arrowPosition: ->
-		return 'left' unless Session.equals('flexOpened', true)
+		return 'left' unless RocketChat.TabBar.isFlexOpen()
 	isLoading: ->
 		return 'btn-loading' unless Template.instance().ready?.get()
 	hasMore: ->
@@ -22,11 +20,11 @@ Template.adminRooms.helpers
 			return @usernames.join ' x '
 	type: ->
 		if @t is 'c'
-			return TAPi18next.t 'project:Channel'
+			return TAPi18n.__ 'Channel'
 		else if @t is 'd'
-			return TAPi18next.t 'project:Direct Message'
+			return TAPi18n.__ 'Direct Message'
 		if @t is 'p'
-			return TAPi18next.t 'project:Private Group'
+			return TAPi18n.__ 'Private Group'
 	roomData: ->
 		return ChatRoom.findOne Session.get 'adminRoomsSelected'
 
@@ -83,15 +81,15 @@ Template.adminRooms.events
 		t.filter.set e.currentTarget.value
 
 	'click .flex-tab .more': ->
-		if (Session.get('flexOpened'))
-			Session.set('flexOpened',false)
+		if RocketChat.TabBar.isFlexOpen()
+			RocketChat.TabBar.closeFlex()
 		else
-			Session.set('flexOpened', true)
+			RocketChat.TabBar.openFlex()
 
 	'click .room-info': (e) ->
 		e.preventDefault()
 		Session.set 'adminRoomsSelected', $(e.currentTarget).data('id')
-		Session.set 'flexOpened', true
+		RocketChat.TabBar.openFlex()
 
 	'click .room-info-tabs a': (e) ->
 		e.preventDefault()

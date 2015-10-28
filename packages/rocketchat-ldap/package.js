@@ -6,31 +6,46 @@ Package.describe({
 });
 
 Npm.depends({
-  ldapjs: "0.7.1", 
+  ldapjs: "0.7.1",
 });
+
+// Loads all i18n.json files into tapi18nFiles
+var _ = Npm.require('underscore');
+var fs = Npm.require('fs');
+tapi18nFiles = _.compact(_.map(fs.readdirSync('packages/rocketchat-ldap/i18n'), function(filename) {
+    if (fs.statSync('packages/rocketchat-ldap/i18n/' + filename).size > 16) {
+        return 'i18n/' + filename;
+    }
+}));
 
 Package.onUse(function(api) {
   api.versionsFrom('1.0.3.1');
 
-  api.use(["tap:i18n@1.5.1"], ["client", "server"]);
-  api.add_files("package-tap.i18n", ["client", "server"]);
+  // Commom
+  api.use('rocketchat:lib@0.0.1');
+  api.use('tap:i18n@1.5.1');
+  api.use('yasaricli:slugify');
+  api.use('coffeescript');
+  // Client
+  api.use('templating', 'client');
+  // Server
+  api.use('accounts-base', 'server');
+  api.use('accounts-password', 'server');
 
-  api.use(['templating'], 'client');
 
-  api.use(['accounts-base', 'accounts-password'], 'server');
+  // Common
+  // TAP
+  api.addFiles('package-tap.i18n');
 
-  api.addFiles(['ldap_client.js'], 'client');
-  api.addFiles(['ldap_server.js', 'lib/ldapjs.js'], 'server');
+  // Client
+  api.addFiles('ldap_client.js', 'client');
+  // Server
+  api.addFiles('ldap_server.js', 'server');
+  api.addFiles('config_server.coffee', 'server');
 
-  api.add_files([
-    "i18n/en.i18n.json",
-    "i18n/pt.i18n.json"
-  ], ["client", "server"]);
+  api.addFiles(tapi18nFiles);
 
   api.export('LDAP', 'server');
   api.export('LDAP_DEFAULTS', 'server');
-  api.export([
-    'MeteorWrapperLdapjs'
-  ]);
+  api.export('MeteorWrapperLdapjs');
 });
-

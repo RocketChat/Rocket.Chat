@@ -17,18 +17,18 @@ Template.adminUserEdit.onCreated ->
 	instance = @
 
 	@cancel = ->
-		$('.user-info-content').hide()
-		$('#adminUserInfo').show()
+		RocketChat.TabBar.setTemplate 'adminUserInfo'
 
 	@save = ->
 		userData = { _id: Template.currentData()._id }
 		userData.name = $("#name", ".edit-form").val()
+		userData.username = $("#username", ".edit-form").val()
 
 		unless userData._id and userData.name
-			toastr.error TAPi18next.t 'project:The_field_is_required', TAPi18next.t 'project:Name'
+			toastr.error TAPi18n.__('The_field_is_required'), TAPi18n.__('Name')
 		else
 			Meteor.call 'updateUser', userData, (error, result) ->
-				if result 
+				if result
 					toastr.success t('User_updated_successfully')
 					instance.cancel()
 				if error

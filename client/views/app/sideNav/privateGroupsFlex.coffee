@@ -29,6 +29,7 @@ Template.privateGroupsFlex.helpers
 						$and: [
 							{ _id: { $ne: Meteor.userId() } }
 							{ username: { $nin: Template.instance().selectedUsers.get() } }
+							{ active: { $eq: true } }
 						]
 					sort: 'username'
 				}

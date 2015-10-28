@@ -5,27 +5,27 @@ Meteor.startup ->
 			# Migrate existing source collection data to target collection
 			# target collection is defined in collections.coffee using the new collection name
 			# source collection is dropped after data migration
-			toMigrate = [ 
+			toMigrate = [
 				{
 					source: new Meteor.Collection 'data.ChatRoom'
-					target: ChatRoom 
+					target: RocketChat.models.Rooms.model
 				}
 				{
 					source: new Meteor.Collection 'data.ChatSubscription'
-					target: ChatSubscription 
+					target: RocketChat.models.Subscriptions.model
 				}
 				{
 					source: new Meteor.Collection 'data.ChatMessage'
-					target: ChatMessage 
+					target: RocketChat.models.Messages.model
 				}
 				{
 					source: new Meteor.Collection 'settings'
-					target: Settings 
+					target: Settings
 				}
 				{
 					# this collection may not exit
 					source: new Meteor.Collection 'oembed_cache'
-					target: OEmbed.cache 
+					target: OEmbed.cache
 				}
 			]
 
@@ -47,7 +47,7 @@ Meteor.startup ->
 				)
 
 				# Note: the following would have been much easier, but didn't work.  The serverside
-				# data was not published to the client for some reason.  
+				# data was not published to the client for some reason.
 				# newName = target.rawCollection().collectionName
-				# Meteor.wrapAsync(rawSource.rename, rawSource )(newName, {dropTarget:true}) 
+				# Meteor.wrapAsync(rawSource.rename, rawSource )(newName, {dropTarget:true})
 

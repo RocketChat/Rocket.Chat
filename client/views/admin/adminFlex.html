@@ -7,24 +7,35 @@
 	<div class="content">
 		<div class="wrapper">
 			<ul>
-				<li>
-					<a href="{{pathFor 'admin-statistics'}}" class="admin-link">{{_ "Statistics"}}</a>
-				</li>
-				<li>
-					<a href="{{pathFor 'admin-rooms'}}" class="admin-link">{{_ "Rooms"}}</a>
-				</li>
-				<li>
-					<a href="{{pathFor 'admin-users'}}" class="admin-link">{{_ "Users"}}</a>
-				</li>
-				
+				{{#if hasPermission 'view-statistics'}}
+					<li>
+						<a href="{{pathFor 'admin-statistics'}}" class="admin-link">{{_ "Statistics"}}</a>
+					</li>
+				{{/if}}
+
+				{{#if hasPermission 'view-room-administration'}}
+					<li>
+						<a href="{{pathFor 'admin-rooms'}}" class="admin-link">{{_ "Rooms"}}</a>
+					</li>
+				{{/if}}
+
+				{{#if hasPermission 'view-user-administration'}}
+					<li>
+						<a href="{{pathFor 'admin-users'}}" class="admin-link">{{_ "Users"}}</a>
+					</li>
+				{{/if}}
+
 				<h3 class="add-room">
 					{{_ "Settings"}}
 				</h3>
-				{{#each groups}}
-				<li>
-					<a href="{{pathFor 'admin' group=_id}}" class="admin-link">{{_ i18nLabel}}</a>
-				</li>
-				{{/each}}
+
+				{{#if hasPermission 'view-privileged-setting'}}
+					{{#each groups}}
+					<li>
+						<a href="{{pathFor 'admin' group=_id}}" class="admin-link">{{label}}</a>
+					</li>
+					{{/each}}
+				{{/if}}
 			</ul>
 		</div>
 	</div>

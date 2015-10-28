@@ -7,7 +7,7 @@ class Highlight
 
 	constructor: (message) ->
 
-		if _.trim message.html
+		if s.trim message.html
 
 			# Count occurencies of ```
 			count = (message.html.match(/```/g) || []).length
@@ -50,3 +50,4 @@ class Highlight
 		return message
 
 RocketChat.callbacks.add 'renderMessage', Highlight, RocketChat.callbacks.priority.HIGH
+RocketChat.Highlight = true

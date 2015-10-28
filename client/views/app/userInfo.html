@@ -2,34 +2,6 @@
 	{{#if $.Session.get 'showUserInfo'}}
 		{{#with user}}
 		<div class="about clearfix">
-			{{#if ../video}}
-				{{#if videoActive}}
-					{{#if rtcLayout3}}
-						<div id='fullscreendiv' style="width: 100%">
-						<video id='videoremote' class="video-remote" src="{{remoteVideoUrl}}" style="width: 100%; align-items: center; margin-bottom: 10px; background-color: #000; transition: width 2s, height 2s, top 2s, left 2s, transform 2s;" autoplay></video>
-						<video id='videoself' class="video-self" src="{{selfVideoUrl}}" style="width: 250px; position: absolute; top: 21px; right: 31px; border: 1px solid #FFF; background-color: #000; transition: width 2s, height 2s, top 2s, left 2s, transform 2s;" autoplay muted></video>
-						</div>
-					{{/if}}
-					{{#if rtcLayout2}}
-						<div style="display: flex; flex-direction: row; align-items: center; width: 800px; height: 350px">
-						<video id="videoremote" class="video-remote" src="{{remoteVideoUrl}}" style="flex: 1 0; min-width: 380px; height: 285px; margin: 10px; background-color: #000;"  autoplay></video>
-						<video id="videoself" class="video-self" src="{{selfVideoUrl}}" style="flex: 1 0;  min-width: 380px; height: 285px; margin: 10px; background-color: #000;" autoplay muted></video>
-					</div>
-					{{/if}}
-					{{#if rtcLayout1}}
-						<div style="display: flex; flex-direction: column; align-items: center; width: 360px; height: 500px">
-						<video class="video-remote" src="{{remoteVideoUrl}}" style="flex: 1 1;  width: 320px; margin: 10px; background-color: #000;" autoplay></video>
-						<video class="video-self" src="{{selfVideoUrl}}" style="flex: 1 1; width: 320px; margin: 10px; background-color: #000;" autoplay muted></video>
-						</div>
-					{{/if}}
-					{{#if noRtcLayout}}
-						<div>
-						<video class="video-remote" src="{{remoteVideoUrl}}" style="width: 100%; margin-bottom: 10px; background-color: #000; transition: width 2s, height 2s, top 2s, left 2s, transform 2s;" autoplay></video>
-						<video class="video-self" src="{{selfVideoUrl}}" style="width: 100px; position: absolute; top: 21px; right: 21px; border: 1px solid #FFF; background-color: #000; transition: width 2s, height 2s, top 2s, left 2s, transform 2s;" autoplay muted></video>
-						</div>
-					{{/if}}
-				{{/if}}
-			{{/if}}
 			<div class="thumb">
 				{{> avatar username=username}}
 			</div>
@@ -37,9 +9,10 @@
 				<h3 title="{{username}}"><i class="status-{{status}}"></i> {{username}}</h3>
 				<p>{{name}}</p>
 				{{#if utc}}<p><i class="icon-clock"></i>{{userTime}} (UTC {{utc}})</p>{{/if}}
-				{{#if isAdmin}}
+				{{#if hasPermission 'view-full-other-user-info'}}
 					{{#each emails}} <p><i class="icon-mail"></i> {{address}}{{#if verified}}&nbsp;<i class="icon-ok"></i>{{/if}}</p> {{/each}}
 					{{#each phone}} <p><i class="icon-phone"></i> {{phoneNumber}}</p> {{/each}}
+					{{#if lastLogin}} <p><i class="icon-calendar"></i> {{_ "Created_at"}}: {{createdAt}}</p> {{/if}}
 					{{#if lastLogin}} <p><i class="icon-calendar"></i> {{_ "Last_login"}}: {{lastLogin}}</p> {{/if}}
 					{{#if services.facebook.id}} <p><i class="icon-facebook"></i><a href="{{services.facebook.link}}" target="_blank">{{services.facebook.name}}</a></p> {{/if}}
 					{{#if services.github.id}} <p><i class="icon-github-circled"></i><a href="https://www.github.com/{{services.github.username}}" target="_blank">{{services.github.username}}</a></p> {{/if}}
@@ -48,25 +21,17 @@
 					{{#if services.linkedin.id}} <p><i class="icon-linkedin"></i><a href="{{services.linkedin.publicProfileUrl}}" target="_blank">{{linkedinUsername}}</a></p> {{/if}}
 					{{#if servicesMeteor.id}} <p><i class="icon-meteor"></i>{{servicesMeteor.username}}</p> {{/if}}
 					{{#if services.twitter.id}} <p><i class="icon-twitter"></i><a href="https://twitter.com/{{services.twitter.screenName}}" target="_blank">{{services.twitter.screenName}}</a></p> {{/if}}
+					{{#if services.wordpress.id}} <p><i class="icon-wordpress"></i>{{services.wordpress.user_login}}</p> {{/if}}
 				{{/if}}
 			</div>
 		</div>
 		{{/with}}
 		<nav>
-			{{#if video}}
-				{{#unless videoActive}}
-					<button class='button start-video'><span><i class='icon-videocam'></i> {{_ "Video_Chat"}}</span></button>
-					{{#if remoteMonitoring}}
-					<button class='button short monitor-video'><span><i class='icon-videocam'></i> {{_ "Remote"}}</span></button>
-					<button class='button lightblue setup-video'><span><i class='icon-videocam'></i> {{_ "Setup"}}</span></button>
-					{{/if}}
-				{{else}}
-					<button class='button red stop-video'><span><i class='icon-videocam'></i> {{_ "Stop_Video"}}</span></button>
-				{{/unless}}
-			{{/if}}
+			{{> videoButtons}}
+
 			{{#if showAll}}
 				<button class='button secondary back'><span>{{_ "View_All"}} <i class='icon-angle-right'></i></span></button>
-				{{#if canDirectMessage}}
+				{{#if canDirectMessage user.username}}
 				<button class='button pvt-msg'><span><i class='icon-chat'></i> {{_ "Conversation"}}</span></button>
 				{{/if}}
 			{{/if}}

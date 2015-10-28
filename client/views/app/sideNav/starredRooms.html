@@ -1,12 +1,10 @@
 <template name="starredRooms">
-	<h3 class="{{isActive}}">{{_ "Favorites"}}</h3>
 	{{#if total}}
+		<h3 class="{{isActive}}"><i class="icon-star"></i>{{_ "Favorites"}}</h3>
 		<ul>
 			{{#each rooms}}
 				{{> chatRoomItem }}
 			{{/each}}
 		</ul>
-	{{else}}
-		<p class="empty">{{_ "No_favorites_yet" }}</p>
 	{{/if}}
 </template>

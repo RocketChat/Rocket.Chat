@@ -5,24 +5,24 @@
 				{{_ "Drop_to_upload_file"}}
 			</div>
 		</div>
-		<section class="messages-container" id="{{windowId}}">
+		<section class="messages-container {{adminClass}}" id="{{windowId}}">
 			<header class="fixed-title">
 				{{> burger}}
 				<h2>
-					{{#if subscribed}}
+					{{#if showToggleFavorite}}
 						<a href="#favorite" class="toggle-favorite"><i class="{{favorite}}"></i></a>
 					{{/if}}
 					<i class="{{roomIcon}} status-{{userStatus}}"></i>
 					<span class="room-title {{editingTitle}}">{{roomName}}</span>
 					{{#if canEditName}}
 					<input type="text" id="room-title-field" class="{{showEditingTitle}}" value="{{roomNameEdit}}" dir="auto">
-					<a href="#edit" class="edit-room-title"><i class="icon-pencil"></i></a>
+					<a href="#edit" class="edit-room-title"><i class="icon-pencil" aria-label="{{_ "Edit"}}"></i></a>
 					{{/if}}
 				</h2>
 			</header>
-			<div class="upload-progress">
+			<div class="container-bars">
 				{{#each uploading}}
-					<div class="upload-progress-item {{#if error}}upload-error{{/if}}">
+					<div class="upload-progress {{#if error}}upload-error{{/if}}">
 						{{#if error}}
 							{{error}}
 							<a>
@@ -30,23 +30,37 @@
 							</a>
 						{{else}}
 							<div class="upload-progress-progress" style="width: {{percentage}}%;"></div>
-							{{name}}... {{percentage}}%
-							<a>
-								cancel
-							</a>
+							<div class="upload-progress-text">
+								{{name}}... {{percentage}}%
+								<a>
+									cancel
+								</a>
+							</div>
 						{{/if}}
 					</div>
 				{{/each}}
+				{{#if unreadCount}}
+					{{#if unreadSince}}
+						<div class="unread-bar">
+							{{_ "S_new_messages_since_s" unreadCount formatUnreadSince}}
+							<a>
+								{{_ "Mark_as_read"}}
+							</a>
+						</div>
+					{{/if}}
+				{{/if}}
 			</div>
-			<div class="messages-box">
+			<div class="messages-box {{compactView}}">
+				<div class="ticks-bar"></div>
 				<div class="wrapper">
-					<ul>
+					<ul aria-live="polite">
 						{{#if hasMore}}
 							<li class="load-more">
-								<button class="button secondary load-more {{isLoading}}">
-									<i class="icon-spin4 animate-spin loading-icon hidden"></i>
-									<div>{{_ "Load_more"}}</div>
-								</button>
+								{{#if isLoading}}
+									<div class="load-more-loading">{{_ "Loading_more_from_history"}}...</div>
+								{{else}}
+									<a href="">{{_ "Has_more"}}...</a>
+								{{/if}}
 							</li>
 						{{else}}
 							<li class="start">
@@ -68,20 +82,20 @@
 					<form class="message-form" method="post" action="/">
 						<div style="display: flex">
 							<div class="file">
-								<i class="icon-attach"></i>
-								<input type="file" accept="image/*">
+								<i class="octicon octicon-cloud-upload file"></i>
+								<input type="file" accept="{{fileUploadAllowedMediaTypes}}">
 							</div>
 							<div class="input-message-container">
-								{{> messagePopupConfig getPupupConfig}}
+								{{> messagePopupConfig getPopupConfig}}
 								<textarea dir="auto" name="msg" maxlength="{{maxMessageLength}}" class="input-message autogrow-short" placeholder="{{_ 'Message'}}"></textarea>
-								<i class="icon-paper-plane" title="{{_ "Send_Message"}}"></i>
 							</div>
+
 							{{#if canRecordAudio}}
 								<div class="mic">
-									<i class="icon-mic"></i>
+									<i class="icon-mic" aria-label="{{_ "Record"}}"></i>
 								</div>
 								<div class="stop-mic hidden">
-									<i class="icon-stop"></i>
+									<i class="icon-stop" aria-label="{{_ "Stop_Recording"}}"></i>
 								</div>
 							{{/if}}
 						</div>
@@ -103,14 +117,24 @@
 								{{/if}}
 							{{/with}}
 						</div>
+
+						{{#if showFormattingTips}}
 						<div class="formatting-tips" aria-hidden="true" dir="auto">
+							{{#if showMarkdown}}
 							<b>*{{_ "bold"}}*</b>
 							<i>_{{_ "italics"}}_</i>
 							<span>~<strike>{{_ "strike"}}</strike>~</span>
 							<code class="inline">`{{_ "inline_code"}}`</code>
+							{{/if}}
+							{{#if showHighlight}}
 							<code class="inline"><span class="hidden-br"><br></span>```<span class="hidden-br"><br></span><i class="icon-level-down"></i>{{_ "multi"}}<span class="hidden-br"><br></span><i class="icon-level-down"></i>{{_ "line"}}<span class="hidden-br"><br></span><i class="icon-level-down"></i>```</code>
+							{{/if}}
+							{{#if showMarkdown}}
 							<q><span class="hidden-br"><br></span>&gt;{{_ "quote"}}</q>
+							{{/if}}
+
 						</div>
+						{{/if}}
 						<div class="editing-commands" aria-hidden="true" dir="auto">
 							<div class="editing-commands-cancel">{{_ 'Esc_to'}} <a href="">{{_ 'Cancel'}}</a></div>
 							<div class="editing-commands-save">{{_ 'Enter_to'}} <a href="">{{_ 'Save_changes'}}</a></div>
@@ -127,74 +151,7 @@
 			</footer>
 		</section>
 		<section class="flex-tab">
-			<div class="control">
-				<button class="more"><span class="arrow {{arrowPosition}}"></span></button>
-				<form class="search-form" role="form">
-					<div class="input-line search">
-						<!-- {{> inputAutocomplete settings=autocompleteSettingsRoomSearch id="room-search" class="search" placeholder=tQuickSearch autocomplete="off"}} -->
-						<input type="text" id="room-search" class="search" placeholder="{{tQuickSearch}}" autocomplete="off" />
-						<i class="icon-search"></i>
-					</div>
-				</form>
-			</div>
-			{{#if flexOpened}}
-				<div class="content">
-					{{#if searchResult.messages}}
-						<ul>
-							{{#each searchResult.messages}}
-								{{#nrr nrrargs 'message' .}}{{/nrr}}
-							{{/each}}
-						</ul>
-						<!-- {{#each searchResult.users}}
-							@{{username}}
-						{{/each}}
-						{{#each searchResult.rooms}}
-							#{{name}}
-						{{/each}} -->
-					{{else}}
-						{{#if isGroupChat}}
-							<div class="list-view{{#if $.Session.get 'showUserInfo'}} -hidden{{/if}}">
-								{{#with roomUsers}}
-									<div class="status">
-										<h2>{{_ "Members_List"}}</h2>
-										<p>
-											{{{_ "Showing_online_users" total_online=totalOnline total=total}}}
-											{{!--<button class="see-all">{{seeAll}}</button>--}}
-										</p>
-										{{#if canAddUser}}
-											<div class="control">
-												<div class="search-form">
-													<div class="input-line search">
-														{{> inputAutocomplete settings=autocompleteSettingsAddUser id="user-add-search" class="search" placeholder=tAddUsers}}
-														<i class="icon-plus"></i>
-													</div>
-												</div>
-											</div>
-										{{/if}}
-									</div>
-									<ul class='list clearfix lines'>
-										{{#each users}}
-											<li class='user-image user-card-room status-{{status}}'>
-												<a data-username="{{username}}" tabindex="0" title="{{username}}">
-													{{> avatar username=username}}
-													<p>{{username}} {{utcOffset}}</p>
-												</a>
-											</li>
-										{{/each}}
-									</ul>
-								{{/with}}
-							</div>
-							<div class="user-view animated{{#unless $.Session.get 'showUserInfo'}} -hidden{{/unless}}">
-								{{> userInfo user=flexUserInfo showAll=true}}
-							</div>
-						{{else}}
-							<div class="user-view">
-								{{> userInfo user=flexUserInfo video=true}}
-							</div>
-						{{/if}}
-					{{/if}}
-				</div>
-			{{/if}}
+			{{> Template.dynamic template=flexTemplate data=flexData}}
 		</section>
 	</div>
 </template>

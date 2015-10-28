@@ -1,0 +1,99 @@
+{
+  "dependencies": {
+    "connect": {
+      "version": "2.7.10",
+      "dependencies": {
+        "qs": {
+          "version": "0.6.5"
+        },
+        "formidable": {
+          "version": "1.0.14"
+        },
+        "cookie-signature": {
+          "version": "1.0.1"
+        },
+        "buffer-crc32": {
+          "version": "0.2.1"
+        },
+        "cookie": {
+          "version": "0.0.5"
+        },
+        "send": {
+          "version": "0.1.0",
+          "dependencies": {
+            "mime": {
+              "version": "1.2.6"
+            },
+            "range-parser": {
+              "version": "0.0.4"
+            }
+          }
+        },
+        "bytes": {
+          "version": "0.2.0"
+        },
+        "fresh": {
+          "version": "0.1.0"
+        },
+        "pause": {
+          "version": "0.0.1"
+        },
+        "debug": {
+          "version": "2.2.0",
+          "dependencies": {
+            "ms": {
+              "version": "0.7.1"
+            }
+          }
+        }
+      }
+    },
+    "querystring": {
+      "version": "0.2.0"
+    },
+    "xml-crypto": {
+      "version": "0.6.0",
+      "dependencies": {
+        "xpath.js": {
+          "version": "1.0.6"
+        }
+      }
+    },
+    "xml-encryption": {
+      "version": "0.7.2",
+      "dependencies": {
+        "ejs": {
+          "version": "0.8.8"
+        },
+        "async": {
+          "version": "0.2.10"
+        },
+        "xpath": {
+          "version": "0.0.5"
+        },
+        "node-forge": {
+          "version": "0.2.24"
+        }
+      }
+    },
+    "xml2js": {
+      "version": "0.2.0",
+      "dependencies": {
+        "sax": {
+          "version": "1.1.3"
+        }
+      }
+    },
+    "xmlbuilder": {
+      "version": "2.6.4",
+      "dependencies": {
+        "lodash": {
+          "version": "3.10.1"
+        }
+      }
+    },
+    "xmldom": {
+      "version": "0.1.19"
+    }
+  }
+}

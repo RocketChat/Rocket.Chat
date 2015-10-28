@@ -1,12 +1,38 @@
 sudo: required
 language: node_js
+branches:
+  only:
+  - master
 node_js:
-  - "0.10"
-
+- '0.10'
 before_install:
-  - "curl https://install.meteor.com | /bin/sh"
-
+- curl https://install.meteor.com | /bin/sh
+- npm install -g npm@'>=2.13.5'
 script:
-  - meteor add rocketchat:external
-  - meteor add rocketchat:hubot
-  - meteor build --server demo.rocket.chat ./
+- if [[ "$TRAVIS_PULL_REQUEST" != "false" ]]; then echo "Building PR $TRAVIS_PULL_REQUEST"; meteor build ../build; exit $?; fi
+- cd .travis
+- npm install
+- npm start
+- cd ..
+- meteor build ../build
+- cd .travis
+- sh ./namefiles.sh
+- cd ..
+- meteor add-platform ios
+- meteor add rocketchat:livechat rocketchat:hubot
+- meteor build --server demo.rocket.chat  ../build
+- cd .travis
+- sh ./namedemo.sh
+- cd ..
+after_deploy:
+- "curl -H \"Content-Type: application/json\" --data \"{'build': true}\" -X POST https://registry.hub.docker.com/u/rocketchat/rocket.chat/trigger/$PUSHTOKEN/"
+deploy:
+  provider: s3
+  access_key_id: "AKIAIKIA7H7D47KUHYCA"
+  secret_access_key: $ACCESSKEY
+  bucket: "rocketchatbuild"
+  skip_cleanup: true
+  local_dir: ../build
+  on:
+    branch: master
+

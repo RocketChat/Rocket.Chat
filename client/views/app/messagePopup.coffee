@@ -37,15 +37,20 @@ Template.messagePopup.onCreated ->
 
 	template.trigger = val(template.data.trigger, '@')
 
+	template.triggerAnywhere = val(template.data.triggerAnywhere, true)
+
 	template.prefix = val(template.data.prefix, template.trigger)
 
 	template.suffix = val(template.data.suffix, ' ')
 
-	template.matchSelectorRegex = val(template.data.matchSelectorRegex, new RegExp "(?:^| )#{template.trigger}[A-Za-z0-9-_.]*$")
+	if template.triggerAnywhere is true
+		template.matchSelectorRegex = val(template.data.matchSelectorRegex, new RegExp "(?:^| )#{template.trigger}[^\\s]*$")
+	else
+		template.matchSelectorRegex = val(template.data.matchSelectorRegex, new RegExp "(?:^)#{template.trigger}[^\\s]*$")
 
-	template.selectorRegex = val(template.data.selectorRegex, new RegExp "#{template.trigger}([A-Za-z0-9-_.]*)$")
+	template.selectorRegex = val(template.data.selectorRegex, new RegExp "#{template.trigger}([^\\s]*)$")
 
-	template.replaceRegex = val(template.data.replaceRegex, new RegExp "#{template.trigger}[A-Za-z0-9-_.]*$")
+	template.replaceRegex = val(template.data.replaceRegex, new RegExp "#{template.trigger}[^\\s]*$")
 
 	template.getValue = val template.data.getValue, (_id) -> return _id
 
@@ -191,7 +196,7 @@ Template.messagePopup.events
 
 Template.messagePopup.helpers
 	isOpen: ->
-		Template.instance().open.get() and Template.instance().hasData.get()
+		Template.instance().open.get() and (Template.instance().hasData.get() or not Template.instance().parentTemplate(1).subscriptionsReady())
 
 	data: ->
 		template = Template.instance()

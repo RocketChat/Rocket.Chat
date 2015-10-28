@@ -1,12 +1,15 @@
-@Settings = new Meteor.Collection 'rocketchat_settings'
+if Meteor.isClient is true
+	@Settings = Settings = new Meteor.Collection 'rocketchat_settings'
+else
+	Settings = RocketChat.models.Settings
 
+initialLoad = true
 Settings.find().observe
 	added: (record) ->
 		Meteor.settings ?= {}
 		Meteor.settings[record._id] = record.value
 
-		if Meteor.isClient is true
-			RocketChat.settings.load record._id, record.value
+		RocketChat.settings.load record._id, record.value, initialLoad
 
 		if process?
 			process.env ?= {}
@@ -15,15 +18,15 @@ Settings.find().observe
 	changed: (record) ->
 		Meteor.settings?[record._id] = record.value
 
-		if Meteor.isClient is true
-			RocketChat.settings.load record._id, record.value
+		RocketChat.settings.load record._id, record.value, initialLoad
 
 		if process?
 			process.env[record._id] = record.value
 
 	removed: (record) ->
-		if Meteor.isClient is true
-			RocketChat.settings.load record._id, undefined
+		RocketChat.settings.load record._id, undefined, initialLoad
 
 		delete Meteor.settings?[record._id]
 		delete process?.env?[record._id]
+
+initialLoad = false

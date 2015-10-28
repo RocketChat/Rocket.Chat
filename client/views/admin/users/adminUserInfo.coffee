@@ -1,6 +1,6 @@
 Template.adminUserInfo.helpers
 	name: ->
-		return if @name then @name else TAPi18next.t 'project:Unnamed'
+		return if @name then @name else TAPi18n.__ 'Unnamed'
 	email: ->
 		return @emails?[0]?.address
 	phoneNumber: ->
@@ -18,6 +18,9 @@ Template.adminUserInfo.helpers
 				@utcOffset = "+#{@utcOffset}"
 
 			return "UTC #{@utcOffset}"
+	hasAdminRole: ->
+		console.log 'hasAdmin: ', RocketChat.authz.hasRole(@_id, 'admin')
+		return RocketChat.authz.hasRole(@_id, 'admin')
 
 Template.adminUserInfo.events
 	'click .deactivate': (e) ->
@@ -81,10 +84,9 @@ Template.adminUserInfo.events
 			Meteor.call 'deleteUser', _id, (error, result) ->
 				if error
 					toastr.error error.reason
+				Session.set 'adminSelectedUser'
 				
 	'click .edit-user': (e) ->
 		e.stopPropagation()
 		e.preventDefault()
-
-		$('.user-info-content').hide()
-		$('#user-edit-form').show()
+		RocketChat.TabBar.setTemplate 'adminUserEdit'

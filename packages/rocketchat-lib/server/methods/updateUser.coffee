@@ -7,7 +7,8 @@ Meteor.methods
 
 		user = Meteor.user()
 
-		if user._id isnt userData._id and user.admin isnt true
+		canEditUserPermission = RocketChat.authz.hasPermission( user._id, 'edit-other-user-info')
+		if user._id isnt userData._id and canEditUserPermission isnt true
 			throw new Meteor.Error 'not-authorized', '[methods] updateUser -> Not authorized'
 
 		unless userData._id
@@ -16,5 +17,12 @@ Meteor.methods
 		unless userData.name
 			throw new Meteor.Error 'name-is-required', 'Name field is required'
 
+		unless userData.username
+			throw new Meteor.Error 'user-name-is-required', 'Username field is required'
+
 		Meteor.users.update { _id: userData._id }, { $set: { name: userData.name } }
+
+		Meteor.runAsUser userData._id, ->
+			Meteor.call 'setUsername', userData.username
+
 		return true

@@ -8,6 +8,7 @@
 			histories[rid] =
 				hasMore: ReactiveVar true
 				isLoading: ReactiveVar false
+				unreadNotLoaded: ReactiveVar 0
 				loaded: 0
 
 		return histories[rid]
@@ -19,7 +20,6 @@
 
 		room.isLoading.set true
 
-		#$('.messages-box .wrapper').data('previous-height', $('.messages-box .wrapper').get(0)?.scrollHeight - $('.messages-box .wrapper').get(0)?.scrollTop)
 		# ScrollListener.setLoader true
 		lastMessage = ChatMessage.findOne({rid: rid}, {sort: {ts: 1}})
 		# lastMessage ?= ChatMessage.findOne({rid: rid}, {sort: {ts: 1}})
@@ -29,11 +29,37 @@
 		else
 			ts = new Date
 
-		Meteor.call 'loadHistory', rid, ts, limit, 0, (err, result) ->
-			ChatMessage.insert item for item in result
+		ls = undefined
+		typeName = undefined
+
+		subscription = ChatSubscription.findOne rid: rid
+		if subscription?
+			ls = subscription.ls
+			typeName = subscription.t + subscription.name
+		else
+			curRoomDoc = ChatRoom.findOne(_id: rid)
+			typeName = curRoomDoc?.t + curRoomDoc?.name
+
+		Meteor.call 'loadHistory', rid, ts, limit, ls, (err, result) ->
+			room.unreadNotLoaded.set result?.unreadNotLoaded
+
+			wrapper = $('.messages-box .wrapper').get(0)
+			if wrapper?
+				previousHeight = wrapper.scrollHeight
+
+			ChatMessage.upsert {_id: item._id}, item for item in result?.messages or []
+
+			if wrapper?
+				heightDiff = wrapper.scrollHeight - previousHeight
+				wrapper.scrollTop += heightDiff
+
+			Meteor.defer ->
+				readMessage.refreshUnreadMark(rid, true)
+				RoomManager.updateMentionsMarksOfRoom typeName
+
 			room.isLoading.set false
-			room.loaded += result.length
-			if result.length < limit
+			room.loaded += result?.messages?.length
+			if result?.messages?.length < limit
 				room.hasMore.set false
 
 	hasMore = (rid) ->
@@ -59,6 +85,7 @@
 			histories[rid].isLoading.set false
 			histories[rid].loaded = 0
 
+	getRoom: getRoom
 	getMore: getMore
 	getMoreIfIsEmpty: getMoreIfIsEmpty
 	hasMore: hasMore

@@ -22,6 +22,9 @@ Template.loginServices.helpers
 				when 'gitlab'
 					serviceName = 'Gitlab'
 					icon = service.service
+				when 'wordpress'
+					serviceName = 'WordPress'
+					icon = service.service
 				else
 					serviceName = _.capitalize service.service
 					icon = service.service
@@ -54,10 +57,9 @@ Template.loginServices.events
 					toastr.error error.message
 					return
 
-				FlowRouter.go 'index'
 		else
 			loginWithService = "loginWith" + (if this.service.service is 'meteor-developer' then 'MeteorDeveloperAccount' else _.capitalize(this.service.service))
-			serviceConfig = {}
+			serviceConfig = this.service.clientConfig or {}
 			Meteor[loginWithService] serviceConfig, (error) ->
 				loadingIcon.addClass 'hidden'
 				serviceIcon.removeClass 'hidden'
@@ -65,4 +67,3 @@ Template.loginServices.events
 					console.log JSON.stringify(error), error.message
 					toastr.error error.message
 					return
-				FlowRouter.go 'index'

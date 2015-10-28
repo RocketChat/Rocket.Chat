@@ -21,6 +21,11 @@ Template.avatarPrompt.helpers
 	suggestions: ->
 		return Template.instance().suggestions.get()
 
+	suggestAvatar: (service) ->
+		suggestions = Template.instance().suggestions.get()
+		console.log service, "Accounts_OAuth_#{_.capitalize service}", RocketChat.settings.get("Accounts_OAuth_#{_.capitalize service}"), suggestions
+		return RocketChat.settings.get("Accounts_OAuth_#{_.capitalize service}") and not suggestions.avatars[service]
+
 	upload: ->
 		return Template.instance().upload.get()
 
@@ -33,13 +38,17 @@ Template.avatarPrompt.helpers
 Template.avatarPrompt.events
 	'click .select-service': ->
 		if @service is 'initials'
-			Meteor.call 'resetAvatar'
-			updateAvatarOfUsername Meteor.user().username
-			toastr.success t('Avatar_changed_successfully')
+			Meteor.call 'resetAvatar', (err) ->
+				if err?.details?.timeToReset?
+					toastr.error t('Error_too_many_requests', parseInt(err.details.timeToReset / 1000))
+				else
+					toastr.success t('Avatar_changed_successfully')
 		else
-			Meteor.call 'setAvatarFromService', @blob, @contentType, @service, ->
-				updateAvatarOfUsername Meteor.user().username
-				toastr.success t('Avatar_changed_successfully')
+			Meteor.call 'setAvatarFromService', @blob, @contentType, @service, (err) ->
+				if err?.details?.timeToReset?
+					toastr.error t('Error_too_many_requests', parseInt(err.details.timeToReset / 1000))
+				else
+					toastr.success t('Avatar_changed_successfully')
 
 	'click .login-with-service': (event, template) ->
 		loginWithService = "loginWith#{_.capitalize(this)}"

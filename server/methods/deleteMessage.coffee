@@ -3,13 +3,17 @@ Meteor.methods
 		if not Meteor.userId()
 			throw new Meteor.Error('invalid-user', "[methods] deleteMessage -> Invalid user")
 
-		if not RocketChat.settings.get 'Message_AllowDeleting'
-			throw new Meteor.Error 'message-deleting-not-allowed', "[methods] updateMessage -> Message deleting not allowed"
+		originalMessage = RocketChat.models.Messages.findOneById message._id, {fields: {u: 1, rid: 1}}
+		if not originalMessage?
+			throw new Meteor.Error 'message-deleting-not-allowed', "[methods] deleteMessage -> Message with id [#{message._id} dos not exists]"
 
-		user = Meteor.users.findOne Meteor.userId()
+		hasPermission = RocketChat.authz.hasPermission(Meteor.userId(), 'delete-message', originalMessage.rid)
+		deleteAllowed = RocketChat.settings.get 'Message_AllowDeleting'
 
-		unless user?.admin is true or message.u._id is Meteor.userId()
-			throw new Meteor.Error 'not-authorized', '[methods] deleteMessage -> Not authorized'
+		deleteOwn = originalMessage?.u?._id is Meteor.userId()
+
+		unless hasPermission or (deleteAllowed and deleteOwn)
+			throw new Meteor.Error 'message-deleting-not-allowed', "[methods] deleteMessage -> Message deleting not allowed"
 
 		console.log '[methods] deleteMessage -> '.green, 'userId:', Meteor.userId(), 'arguments:', arguments
 
@@ -18,34 +22,15 @@ Meteor.methods
 
 		if keepHistory
 			if showDeletedStatus
-				history = ChatMessage.findOne message._id
-				history._hidden = true
-				history.parent = history._id
-				history.ets = new Date()
-				delete history._id
-				ChatMessage.insert history
+				RocketChat.models.Messages.cloneAndSaveAsHistoryById originalMessage._id
 			else
-				ChatMessage.update
-					_id: message._id
-					'u._id': Meteor.userId()
-				,
-					$set:
-						_hidden: true
+				RocketChat.models.Messages.setHiddenById originalMessage._id, true
 
 		else
 			if not showDeletedStatus
-				ChatMessage.remove
-					_id: message._id
-					'u._id': Meteor.userId()
+				RocketChat.models.Messages.removeById originalMessage._id
 
 		if showDeletedStatus
-			ChatMessage.update
-				_id: message._id
-				'u._id': Meteor.userId()
-			,
-				$set:
-					msg: ''
-					t: 'rm'
-					ets: new Date()
+			RocketChat.models.Messages.setAsDeletedById originalMessage._id
 		else
-			deleteMsgStream.emit message.rid, { _id: message._id }
+			RocketChat.Notifications.notifyRoom originalMessage.rid, 'deleteMessage', { _id: originalMessage._id }

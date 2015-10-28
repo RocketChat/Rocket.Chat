@@ -1,8 +1,8 @@
 RocketChat.statistics.get = ->
 	statistics = {}
-	
+
 	# Version
-	statistics.uniqueId = Settings.findOne({ _id: "uniqueID" })?.value
+	statistics.uniqueId = RocketChat.settings.get("uniqueID")
 	statistics.version = BuildInfo?.commit?.hash
 	statistics.versionDate = BuildInfo?.commit?.date
 
@@ -15,16 +15,16 @@ RocketChat.statistics.get = ->
 	statistics.offlineUsers = statistics.totalUsers - statistics.onlineUsers - statistics.awayUsers
 
 	# Room statistics
-	statistics.totalRooms = ChatRoom.find().count()
-	statistics.totalChannels = ChatRoom.find({ t: 'c' }).count()
-	statistics.totalPrivateGroups = ChatRoom.find({ t: 'p' }).count()
-	statistics.totalDirect = ChatRoom.find({ t: 'd' }).count()
+	statistics.totalRooms = RocketChat.models.Rooms.find().count()
+	statistics.totalChannels = RocketChat.models.Rooms.findByType('c').count()
+	statistics.totalPrivateGroups = RocketChat.models.Rooms.findByType('p').count()
+	statistics.totalDirect = RocketChat.models.Rooms.findByType('d').count()
 
 	# Message statistics
-	statistics.totalMessages = ChatMessage.find().count()
+	statistics.totalMessages = RocketChat.models.Messages.find().count()
 
 	m = ->
-		emit 1, 
+		emit 1,
 			sum: this.usernames.length or 0
 			min: this.usernames.length or 0
 			max: this.usernames.length or 0
@@ -44,34 +44,34 @@ RocketChat.statistics.get = ->
 			a.max = Math.max a.max, b.max
 			a.count += b.count
 		return a
-	
+
 	f = (k, v) ->
 		v.avg = v.sum / v.count
 		return v
 
-	result = ChatRoom.mapReduce(m, r, { finalize: f, out: "rocketchat_mr_statistics" })
+	result = RocketChat.models.Rooms.model.mapReduce(m, r, { finalize: f, out: "rocketchat_mr_statistics" })
 
-	statistics.maxRoomUsers = 0 
+	statistics.maxRoomUsers = 0
 	statistics.avgChannelUsers = 0
 	statistics.avgPrivateGroupUsers = 0
 
-	if MapReducedStatistics.findOne({ _id: 1 })
-		statistics.maxRoomUsers = MapReducedStatistics.findOne({ _id: 1 }).value.max
-	else 
+	if RocketChat.models.MRStatistics.findOneById(1)
+		statistics.maxRoomUsers = RocketChat.models.MRStatistics.findOneById(1).value.max
+	else
 		console.log 'max room user statistic not found'.red
 
-	if MapReducedStatistics.findOne({ _id: 'c' })
-		statistics.avgChannelUsers = MapReducedStatistics.findOne({ _id: 'c' }).value.avg
+	if RocketChat.models.MRStatistics.findOneById('c')
+		statistics.avgChannelUsers = RocketChat.models.MRStatistics.findOneById('c').value.avg
 	else
 		console.log 'channel user statistic not found'.red
 
-	if MapReducedStatistics.findOne({ _id: 'p' })
-		statistics.avgPrivateGroupUsers = MapReducedStatistics.findOne({ _id: 'p' }).value.avg 
+	if RocketChat.models.MRStatistics.findOneById('p')
+		statistics.avgPrivateGroupUsers = RocketChat.models.MRStatistics.findOneById('p').value.avg
 	else
 		console.log 'private group user statistic not found'.red
-	
+
 	os = Npm.require('os')
-	statistics.os = 
+	statistics.os =
 		type: os.type()
 		platform: os.platform()
 		arch: os.arch()

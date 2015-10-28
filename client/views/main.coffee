@@ -8,6 +8,23 @@ Template.body.onRendered ->
 		if e.keyCode is 27
 			spotlight.hide()
 
+		unread = Session.get('unread')
+		if e.keyCode is 27 and e.shiftKey is true and unread? and unread isnt ''
+			e.stopPropagation()
+			swal
+				title: t('Clear_all_unreads_question')
+				type: 'warning'
+				confirmButtonText: t('Yes_clear_all')
+				showCancelButton: true
+				cancelButtonText: t('Cancel')
+				confirmButtonColor: '#DD6B55'
+			, ->
+				subscriptions = ChatSubscription.find({open: true}, { fields: { unread: 1, alert: 1, rid: 1, t: 1, name: 1, ls: 1 } })
+				for subscription in subscriptions.fetch()
+					if subscription.alert or subscription.unread > 0
+						Meteor.call 'readMessages', subscription.rid
+
+
 	Tracker.autorun (c) ->
 		w = window
 		d = document
@@ -75,6 +92,19 @@ Template.body.onRendered ->
 				property: 'msvalidate.01'
 				content: RocketChat.settings.get 'Meta_msvalidate01'
 
+	Tracker.autorun (c) ->
+		c.stop()
+
+		Meta.set
+			name: 'name'
+			property: 'application-name'
+			content: RocketChat.settings.get 'Site_Name'
+
+		Meta.set
+			name: 'name'
+			property: 'apple-mobile-web-app-title'
+			content: RocketChat.settings.get 'Site_Name'
+
 	if Meteor.isCordova
 		$(document.body).addClass 'is-cordova'
 
@@ -100,7 +130,7 @@ Template.main.helpers
 
 	flexOpened: ->
 		console.log 'layout.helpers flexOpened' if window.rocketDebug
-		return 'flex-opened' if Session.equals('flexOpened', true)
+		return 'flex-opened' if RocketChat.TabBar.isFlexOpen()
 
 	flexOpenedRTC1: ->
 		console.log 'layout.helpers flexOpenedRTC1' if window.rocketDebug

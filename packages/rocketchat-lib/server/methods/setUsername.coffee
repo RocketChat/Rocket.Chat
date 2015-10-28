@@ -11,12 +11,21 @@ Meteor.methods
 			return username
 
 		if not /^[0-9a-zA-Z-_.]+$/.test username
-			throw new Meteor.Error 'username-invalid'
+			throw new Meteor.Error 'username-invalid', "#{username} is not a valid username, use only letters, numbers, dots and dashes"
 
 		if not RocketChat.checkUsernameAvailability username
-			throw new Meteor.Error 'username-unavailable'
+			throw new Meteor.Error 'username-unavailable', "#{username} is already in use :("
 
 		unless RocketChat.setUsername user, username
-			throw new Meteor.Error 'could-not-change-username', t('Could_not_change_username')
+			throw new Meteor.Error 'could-not-change-username', "Could not change username"
 
 		return username
+
+# Limit setting username once per minute
+DDPRateLimiter.addRule
+	type: 'method'
+	name: 'setUsername'
+	userId: (userId) ->
+		# Administrators have permission to change others usernames, so don't limit those
+		return not RocketChat.authz.hasPermission( userId, 'edit-other-user-info')
+, 1, 60000
