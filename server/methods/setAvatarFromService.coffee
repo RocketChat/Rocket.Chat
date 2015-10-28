@@ -11,6 +11,28 @@ Meteor.methods
 			RocketChat.models.Users.setAvatarOrigin user._id, service
 			return
 
+		if service is 'url'
+			try
+				result = HTTP.get dataURI, npmRequestOptions: {encoding: 'binary'}
+
+				if result.statusCode isnt 200
+					console.log "Not a valid response, #{result.statusCode}, from the avatar url: #{dataURI}"
+					throw new Meteor.Error('invalid-avatar-url', '[methods] setAvatarFromService -> url service -> error on getting the avatar from url')
+
+				ars = RocketChatFile.bufferToStream new Buffer(result.content, 'binary')
+				aws = RocketChatFileAvatarInstance.createWriteStream "#{user.username}.jpg", result.headers['content-type']
+				aws.on 'end', Meteor.bindEnvironment ->
+					Meteor.setTimeout ->
+						console.log "Set #{user.username}'s avatar from the url: #{dataURI}"
+						RocketChat.models.Users.setAvatarOrigin user._id, service
+						RocketChat.Notifications.notifyAll 'updateAvatar', { username: user.username }
+					, 500
+
+				ars.pipe(aws)
+			catch e
+				throw e
+			return
+
 		{image, contentType} = RocketChatFile.dataURIParse dataURI
 
 		rs = RocketChatFile.bufferToStream new Buffer(image, 'base64')

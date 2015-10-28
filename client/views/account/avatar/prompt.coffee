@@ -43,6 +43,15 @@ Template.avatarPrompt.events
 					toastr.error t('Error_too_many_requests', parseInt(err.details.timeToReset / 1000))
 				else
 					toastr.success t('Avatar_changed_successfully')
+		else if @service is 'url'
+			if _.trim $('#avatarurl').val()
+				Meteor.call 'setAvatarFromService', $('#avatarurl').val(), '', @service, (err) ->
+					if err?.details?.timeToReset?
+						toastr.error t('Error_too_many_requests', parseInt(err.details.timeToReset / 1000))
+					else
+						toastr.success t('Avatar_changed_successfully')
+			else
+				toastr.error t('Please_enter_value_for_url')
 		else
 			Meteor.call 'setAvatarFromService', @blob, @contentType, @service, (err) ->
 				if err?.details?.timeToReset?
