@@ -37,6 +37,9 @@ providers.registerProvider
 providers.registerProvider
 	urls: [new RegExp('https?://www.slideshare.net/[^/]+/[^/]+')]
 	endPoint: 'https://www.slideshare.net/api/oembed/2?format=json&maxheight=200'
+providers.registerProvider
+	urls: [new RegExp('https?://www.dailymotion.com/video/\\S+')]
+	endPoint: 'https://www.dailymotion.com/services/oembed?maxheight=200'
 
 RocketChat.oembed = {}
 RocketChat.oembed.providers = providers
@@ -54,8 +57,8 @@ RocketChat.callbacks.add 'oembed:beforeGetUrlContent', (data) ->
 			data.requestOptions.path = consumerUrl.path
 
 RocketChat.callbacks.add 'oembed:afterParseContent', (data) ->
-	if data.parsedUrl?
-		url = URL.format data.parsedUrl
+	if data.parsedUrl?.query?.url?
+		url = data.parsedUrl.query.url
 		provider = providers.getProviderForUrl url
 		if provider?
 			if data.content?.body?
@@ -63,5 +66,4 @@ RocketChat.callbacks.add 'oembed:afterParseContent', (data) ->
 				_.each metas, (value, key) ->
 					if _.isString value
 						data.meta[changeCase.camelCase('oembed_' + key)] = value
-			if data.parsedUrl?.query?.url?
-				data.meta['oembedUrl'] = data.parsedUrl.query.url
+				data.meta['oembedUrl'] = url
