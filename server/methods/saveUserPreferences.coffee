@@ -23,6 +23,9 @@ Meteor.methods
 			if settings.compactView?
 				preferences.compactView = if settings.compactView is "1" then true else false
 
+			if settings.unreadRoomsMode?
+				preferences.unreadRoomsMode = if settings.unreadRoomsMode is "1" then true else false
+
 			if settings.autoImageLoad?
 				preferences.autoImageLoad = if settings.autoImageLoad is "1" then true else false
 

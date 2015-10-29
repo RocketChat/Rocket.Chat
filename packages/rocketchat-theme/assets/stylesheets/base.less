@@ -1503,6 +1503,17 @@ a.github-fork {
 			font-size: 12px;
 		}
 	}
+	.unread-rooms-mode {
+		max-height: 0;
+		opacity: 0;
+		overflow: hidden;
+
+		&.has-unread {
+			.transition(max-height 1s ease-in,opacity .5s linear);
+			max-height: 5000px;
+			opacity: 1;
+		}
+	}
 }
 
 .new-room-highlight a {
