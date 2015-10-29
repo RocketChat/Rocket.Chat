@@ -53,8 +53,8 @@ Meteor.methods
 		rs.pipe(ws)
 		return
 
-# DDPRateLimiter.addRule
-# 	type: 'method'
-# 	name: 'setAvatarFromService'
-# 	userId: -> return true
-# , 1, 60000
+DDPRateLimiter.addRule
+	type: 'method'
+	name: 'setAvatarFromService'
+	userId: -> return true
+, 1, 60000
