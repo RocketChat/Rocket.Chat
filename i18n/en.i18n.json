@@ -62,6 +62,7 @@
   "are_typing" : "are typing",
   "Are_you_sure" : "Are you sure?",
   "Avatar_changed_successfully" : "Avatar changed successfully",
+  "Avatar_url_invalid_or_error": "The url provided is invalid or not accessible. Please try again, but with a different url.",
   "away" : "away",
   "Away" : "Away",
   "away_female" : "away",
