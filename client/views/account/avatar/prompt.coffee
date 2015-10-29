@@ -46,7 +46,6 @@ Template.avatarPrompt.events
 		else if @service is 'url'
 			if _.trim $('#avatarurl').val()
 				Meteor.call 'setAvatarFromService', $('#avatarurl').val(), '', @service, (err) ->
-					console.log err
 					if err
 						if err.details?.timeToReset?
 							toastr.error t('Error_too_many_requests', parseInt(err.details.timeToReset / 1000))
