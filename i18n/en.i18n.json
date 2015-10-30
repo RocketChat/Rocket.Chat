@@ -44,6 +44,7 @@
   "Accounts_OAuth_Custom_Button_Label_Text" : "Button Text",
   "Accounts_OAuth_Custom_Button_Label_Color" : "Button Text Color",
   "Accounts_OAuth_Custom_Button_Color" : "Button Color",
+  "Accounts_RequireNameForSignUp" : "Require name for signup",
   "Activate" : "Activate",
   "Add_custom_oauth" : "Add custom oauth",
   "Add_Members" : "Add Members",
