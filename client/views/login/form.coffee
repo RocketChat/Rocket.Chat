@@ -129,8 +129,6 @@ Template.loginForm.onCreated ->
 				validationObj['pass'] = t('Invalid_pass')
 
 		if instance.state.get() is 'register'
-			unless formObj['name']
-				validationObj['name'] = t('Invalid_name')
 			if formObj['confirm-pass'] isnt formObj['pass']
 				validationObj['confirm-pass'] = t('Invalid_confirm_pass')
 
