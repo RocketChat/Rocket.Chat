@@ -13,3 +13,9 @@ Template.accountFlex.events
 
 	'click .account-link': ->
 		menu.close()
+
+Template.accountFlex.helpers
+	allowUserProfileChange: ->
+		return RocketChat.settings.get("Accounts_AllowUserProfileChange")
+	allowUserAvatarChange: ->
+		return RocketChat.settings.get("Accounts_AllowUserAvatarChange")
