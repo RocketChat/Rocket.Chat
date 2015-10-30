@@ -99,7 +99,7 @@ Template.accountProfile.onCreated ->
 Template.accountProfile.onRendered ->
 	Tracker.afterFlush ->
 		# this should throw an error-template
-		window.location.href = "/" if !RocketChat.settings.get("Accounts_AllowUserAvatarChange")
+		FlowRouter.go("home") if !RocketChat.settings.get("Accounts_AllowUserAvatarChange")
 		SideNav.setFlex "accountFlex"
 		SideNav.openFlex()
 
