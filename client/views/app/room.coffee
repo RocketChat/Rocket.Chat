@@ -188,7 +188,9 @@ Template.room.helpers
 		return !! ChatRoom.findOne { _id: @_id, t: 'c' }
 
 	canRecordAudio: ->
-		return RocketChat.settings.get('Message_AudioRecorderEnabled') and (navigator.getUserMedia? or navigator.webkitGetUserMedia?)
+		wavRegex = /audio\/wav|audio\/\*/i
+		wavEnabled = RocketChat.settings.get("FileUpload_MediaTypeWhiteList").match(wavRegex)
+		return RocketChat.settings.get('Message_AudioRecorderEnabled') and (navigator.getUserMedia? or navigator.webkitGetUserMedia?) and wavEnabled
 
 	unreadSince: ->
 		room = ChatRoom.findOne(this._id, { reactive: false })
