@@ -1,7 +1,10 @@
 Meteor.methods
 	setAvatarFromService: (dataURI, contentType, service) ->
-		if not Meteor.userId()
+		unless Meteor.userId()
 			throw new Meteor.Error('invalid-user', "[methods] setAvatarFromService -> Invalid user")
+
+		unless RocketChat.settings.get("Accounts_AllowUserAvatarChange")
+			throw new Meteor.Error(403, "[methods] resetAvatar -> Invalid access")
 
 		console.log '[methods] setAvatarFromService -> '.green, 'userId:', Meteor.userId(), 'contentType:', contentType, 'service:', service
 
