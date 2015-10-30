@@ -14,6 +14,8 @@ Template.avatarPrompt.onCreated ->
 
 Template.avatarPrompt.onRendered ->
 	Tracker.afterFlush ->
+		# this should throw an error-template
+		FlowRouter.go("home") if !RocketChat.settings.get("Accounts_AllowUserAvatarChange")
 		SideNav.setFlex "accountFlex"
 		SideNav.openFlex()
 
