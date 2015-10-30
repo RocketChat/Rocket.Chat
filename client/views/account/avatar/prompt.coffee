@@ -14,6 +14,8 @@ Template.avatarPrompt.onCreated ->
 
 Template.avatarPrompt.onRendered ->
 	Tracker.afterFlush ->
+		# this should throw an error-template
+		# window.location.href = "/" if !RocketChat.settings.get("Accounts_AllowUserProfileChange")
 		SideNav.setFlex "accountFlex"
 		SideNav.openFlex()
 
