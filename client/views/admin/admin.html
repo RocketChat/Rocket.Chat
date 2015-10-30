@@ -65,10 +65,11 @@
 												<div>
 													<label><input type="radio" name="{{_id}}" value="1" checked="{{$eq value true}}" /> {{_ "True"}}</label>
 													<label><input type="radio" name="{{_id}}" value="0" checked="{{$eq value false}}" /> {{_ "False"}}</label>
-												</div>
 												{{#if description}}
-													<small>{{description}}</small>
+												<br /><small>{{description}}</small>
 												{{/if}}
+												</div>
+												
 											</div>
 										{{/if}}
 										{{#if $eq type 'color'}}
