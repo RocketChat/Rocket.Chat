@@ -2,6 +2,9 @@ Template.loginForm.helpers
 	userName: ->
 		return Meteor.user()?.username
 
+	namePlaceholder: ->
+		return if RocketChat.settings.get 'Accounts_RequireNameForSignUp' then 'Name' else 'Name(optional)'
+
 	showName: ->
 		return 'hidden' unless Template.instance().state.get() is 'register'
 
@@ -129,6 +132,8 @@ Template.loginForm.onCreated ->
 				validationObj['pass'] = t('Invalid_pass')
 
 		if instance.state.get() is 'register'
+			if RocketChat.settings.get 'Accounts_RequireNameForSignUp' and not formObj['name']
+				validationObj['name'] = t('Invalid_name')
 			if formObj['confirm-pass'] isnt formObj['pass']
 				validationObj['confirm-pass'] = t('Invalid_confirm_pass')
 
