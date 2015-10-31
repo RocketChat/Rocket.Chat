@@ -33,56 +33,33 @@
 										{{/if}}
 									{{/if}}
 									{{#each settings}}
-										{{#if $eq type 'string'}}
 											<div class="input-line double-col">
 												<label>{{label}}</label>
 												<div>
+										{{#if $eq type 'string'}}
 													{{#if multiline}}
 														<textarea name="{{_id}}" rows="4" style="height: auto">{{value}}</textarea>
 													{{else}}
 														<input type="text" name="{{_id}}" value="{{value}}" />
 													{{/if}}
-													{{#if description}}
-														<small>{{description}}</small>
-													{{/if}}
-												</div>
-											</div>
 										{{/if}}
 										{{#if $eq type 'int'}}
-											<div class="input-line double-col">
-												<label>{{label}}</label>
-												<div>
 													<input type="number" name="{{_id}}" value="{{value}}" />
-													{{#if description}}
-														<small>{{description}}</small>
-													{{/if}}
-												</div>
-											</div>
 										{{/if}}
 										{{#if $eq type 'boolean'}}
-											<div class="input-line double-col">
-												<label>{{label}}</label>
-												<div>
 													<label><input type="radio" name="{{_id}}" value="1" checked="{{$eq value true}}" /> {{_ "True"}}</label>
 													<label><input type="radio" name="{{_id}}" value="0" checked="{{$eq value false}}" /> {{_ "False"}}</label>
-												{{#if description}}
-												<br /><small>{{description}}</small>
-												{{/if}}
-												</div>
-												
-											</div>
 										{{/if}}
 										{{#if $eq type 'color'}}
-											<div class="input-line double-col">
-												<label>{{label}}</label>
-												<div>
 													<input type="text" class="minicolors" name="{{_id}}" value="{{value}}" />
-													{{#if description}}
-														<small>{{description}}</small>
-													{{/if}}
-												</div>
-											</div>
 										{{/if}}
+                          <div>
+                          {{#if description}}
+                            <small>{{description}}</small>
+                          {{/if}}
+                        </div>
+                        </div>
+                      </div><!-- end setting -->
 									{{/each}}
 
 									{{#if section}}
