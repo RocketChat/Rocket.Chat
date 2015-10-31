@@ -170,7 +170,7 @@
   "Layout_Sidenav_Footer_description" : "Die Footer Größe ist 260x70",
   "Layout_Terms_of_Service" : "Nutzungsbedingungen",
   "LDAP" : "LDAP",
-  "LDAP_Dn" : "LDAP DN",
+  "LDAP_DN" : "LDAP DN",
   "LDAP_Port" : "LDAP Port",
   "LDAP_Url" : "LDAP URL",
   "Leave_room" : "Raum verlassen",

@@ -156,7 +156,7 @@
   "Layout_Sidenav_Footer_description" : "Alatunnisteen koko on 260x70",
   "Layout_Terms_of_Service" : "Käyttöehdot",
   "LDAP" : "LDAP",
-  "LDAP_Dn" : "LDAP DN",
+  "LDAP_DN" : "LDAP DN",
   "LDAP_Port" : "LDAP portti",
   "LDAP_Url" : "LDAP URL",
   "Leave_room" : "Poistu kanavalta",

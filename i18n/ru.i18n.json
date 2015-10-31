@@ -83,7 +83,7 @@
   "Language" : "Язык",
   "Language_Version" : "Русская версия",
   "Last_message" : "Последнее сообщение",
-  "LDAP_Dn" : "LDAP домен",
+  "LDAP_DN" : "LDAP домен",
   "LDAP_Port" : "LDAP Порт",
   "LDAP_Url" : "URL-адрес LDAP",
   "Leave_room" : "Покинуть чат",
