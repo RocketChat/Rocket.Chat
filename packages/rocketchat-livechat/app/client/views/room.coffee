@@ -19,7 +19,7 @@ Template.room.events
 		# Account for no text in the textarea when increasing the height.
 		# If there is no text, reset the height.
 		inputScrollHeight = $(event.currentTarget).prop('scrollHeight')
-		if  inputScrollHeight > 28
+		if inputScrollHeight > 28
 			$(event.currentTarget).height( if $(event.currentTarget).val() == '' then '15px' else (if inputScrollHeight >= 200 then inputScrollHeight-50 else inputScrollHeight-20))
 
 	'keydown .input-message': (event) ->
