@@ -18,7 +18,12 @@ RocketChat.settings.add = (_id, value, options = {}) ->
 	updateSettings =
 		i18nLabel: options.i18nLabel or _id
 
-	updateSettings.i18nDescription = options.i18nDescription if options.i18nDescription?
+  # default description i18n key will be the setting name + "_Description"
+  # (eg: LDAP_Enable -> LDAP_Enable_Description)
+	updateSettings.i18nDescription = if options.i18nDescription?
+    options.i18nDescription
+  else
+    "#{_id}_Description"
 	updateSettings.type = options.type if options.type
 	updateSettings.multiline = options.multiline if options.multiline
 	updateSettings.group = options.group if options.group
@@ -49,7 +54,10 @@ RocketChat.settings.addGroup = (_id, options = {}) ->
 		type: 'group'
 		i18nLabel: options.i18nLabel or _id
 
-	updateSettings.i18nDescription = options.i18nDescription if options.i18nDescription?
+	updateSettings.i18nDescription = if options.i18nDescription?
+    options.i18nDescription
+  else
+    "#{_id}_Description"
 
 	upsertChanges = { $set: updateSettings }
 	if options.persistent is true
