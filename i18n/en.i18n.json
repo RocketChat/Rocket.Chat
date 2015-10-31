@@ -188,7 +188,7 @@
   "Layout_Terms_of_Service" : "Terms of Service",
   "LDAP" : "LDAP",
   "LDAP_Bind_Search" : "Bind Search",
-  "LDAP_Dn" : "Distinguished Name (DN)",
+  "LDAP_DN" : "Distinguished Name (DN)",
   "LDAP_Enable" : "Enable LDAP",
   "LDAP_Port" : "LDAP Port",
   "LDAP_Sync_User_Data" : "Keep user data in sync with server",
