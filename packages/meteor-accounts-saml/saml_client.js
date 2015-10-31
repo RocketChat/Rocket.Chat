@@ -34,7 +34,9 @@ var openCenteredPopup = function (url, width, height) {
 	var screenY = typeof window.screenY !== 'undefined' ? window.screenY : window.screenTop;
 	var outerWidth = typeof window.outerWidth !== 'undefined' ? window.outerWidth : document.body.clientWidth;
 	var outerHeight = typeof window.outerHeight !== 'undefined' ? window.outerHeight : (document.body.clientHeight - 22);
+	// INFO: please use @TODO instead of XXX.
 	// XXX what is the 22?
+		// - I think its just the vertical offset but this should be renamed or changed to a constant.
 
 	// Use `outerWidth - width` and `outerHeight - height` for help in
 	// positioning the popup centered relative to the current window
