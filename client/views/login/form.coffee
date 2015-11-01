@@ -3,7 +3,7 @@ Template.loginForm.helpers
 		return Meteor.user()?.username
 
 	namePlaceholder: ->
-		return if RocketChat.settings.get 'Accounts_RequireNameForSignUp' then 'Name' else 'Name(optional)'
+		return if RocketChat.settings.get 'Accounts_RequireNameForSignUp' then t('Name') else t('Name_optional')
 
 	showName: ->
 		return 'hidden' unless Template.instance().state.get() is 'register'
