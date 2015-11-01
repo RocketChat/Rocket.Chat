@@ -245,6 +245,7 @@
   "My_Account" : "My Account",
   "n_messages" : "%s messages",
   "Name" : "Name",
+  "Name_optional" : "Name(optional)",
   "Name_cant_be_empty" : "Name can't be empty",
   "New_messages" : "New messages",
   "New_password" : "New password",
