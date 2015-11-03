@@ -290,7 +290,7 @@ input:focus {
 		position: fixed;
 		bottom: 0;
 		width: 100%;
-		height: @footer-min-height;
+		height: auto;
 		border-top: 1px solid #E7E7E7;
 		border-left: 1px solid #E7E7E7;
 		border-right: 1px solid #E7E7E7;
@@ -301,11 +301,12 @@ input:focus {
 				display: block;
 				padding: 6px 8px;
 				padding-right: 38px;
-				overflow-y: hidden;
+				overflow-y: auto;
 				resize: none;
 				border: 1px solid #E7E7E7;
 				// margin: 10px;
 				border-radius: 5px;
+				max-height: 200px;
 				width: 100%;
 				font-size: 12px;
 				-webkit-appearance: none;
