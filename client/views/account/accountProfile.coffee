@@ -98,6 +98,8 @@ Template.accountProfile.onCreated ->
 
 Template.accountProfile.onRendered ->
 	Tracker.afterFlush ->
+		# this should throw an error-template
+		FlowRouter.go("home") if !RocketChat.settings.get("Accounts_AllowUserProfileChange")
 		SideNav.setFlex "accountFlex"
 		SideNav.openFlex()
 
