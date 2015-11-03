@@ -1,4 +1,5 @@
 URL = Npm.require('url')
+QueryString = Npm.require('querystring')
 
 class Providers
 	providers: []
@@ -57,13 +58,17 @@ RocketChat.callbacks.add 'oembed:beforeGetUrlContent', (data) ->
 			data.requestOptions.path = consumerUrl.path
 
 RocketChat.callbacks.add 'oembed:afterParseContent', (data) ->
-	if data.parsedUrl?.query?.url?
-		url = data.parsedUrl.query.url
-		provider = providers.getProviderForUrl url
-		if provider?
-			if data.content?.body?
-				metas = JSON.parse data.content.body;
-				_.each metas, (value, key) ->
-					if _.isString value
-						data.meta[changeCase.camelCase('oembed_' + key)] = value
-				data.meta['oembedUrl'] = url
+	if data.parsedUrl?.query?
+		queryString = data.parsedUrl.query
+		if _.isString data.parsedUrl.query
+			queryString = QueryString.parse data.parsedUrl.query
+		if queryString.url?
+			url = queryString.url
+			provider = providers.getProviderForUrl url
+			if provider?
+				if data.content?.body?
+					metas = JSON.parse data.content.body;
+					_.each metas, (value, key) ->
+						if _.isString value
+							data.meta[changeCase.camelCase('oembed_' + key)] = value
+					data.meta['oembedUrl'] = url
