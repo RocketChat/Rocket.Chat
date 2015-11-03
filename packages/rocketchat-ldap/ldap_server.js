@@ -3,7 +3,7 @@ Future = Npm.require('fibers/future');
 var slug = function (text) {
 	text = slugify(text, '.');
 	return text.replace(/[^0-9a-z-_.]/g, '');
-}
+};
 
 // At a minimum, set up LDAP_DEFAULTS.url and .dn according to
 // your needs. url should appear as "ldap://your.url.here"
@@ -86,7 +86,7 @@ LDAP.prototype.ldapCheck = function(options) {
 
 		var bind = function(dn) {
 			dn = dn.replace(/#{username}/g, options.username);
-			console.log('Attempt to bind', dn)
+			console.log('Attempt to bind', dn);
 			//Attempt to bind to ldap server with provided info
 			client.bind(dn, options.ldapPass, function(err) {
 				try {
@@ -127,7 +127,7 @@ LDAP.prototype.ldapCheck = function(options) {
 					});
 				}
 			});
-		}
+		};
 
 		if (LDAP_DEFAULTS.bindSearch && LDAP_DEFAULTS.bindSearch.trim() != '') {
 			try {
@@ -203,6 +203,9 @@ Accounts.registerLoginHandler("ldap", function(loginRequest) {
 
 	// Instantiate LDAP with options
 	var userOptions = loginRequest.ldapOptions || {};
+	if (RocketChat.settings.get('LDAP_Sync_User_Data')) {
+		userOptions.searchResultsProfileMap = true;
+	}
 
 	// Don't allow overwriting url and port
 	delete userOptions.url;
@@ -285,6 +288,51 @@ Accounts.registerLoginHandler("ldap", function(loginRequest) {
 		} else {
 			// Ldap success, but no user created
 			throw new Meteor.Error("LDAP-login-error", "LDAP Authentication succeded, but no user exists in Mongo. Either create a user for this email or set LDAP_DEFAULTS.createNewUser to true");
+		}
+
+		// LDAP sync data logic
+		var syncUserData = RocketChat.settings.get('LDAP_Sync_User_Data');
+		var syncUserDataFieldMap = RocketChat.settings.get('LDAP_Sync_User_Data_FieldMap').trim();
+		if (userId && syncUserData && syncUserDataFieldMap) {
+			var userData = {};
+			var fieldMap = JSON.parse(syncUserDataFieldMap);
+
+			var emailList = [];
+			_.map(fieldMap, function(userField, ldapField) {
+				if (!ldapResponse.searchResults.hasOwnProperty(ldapField)) {
+					return;
+				}
+
+				// restrict field mapping to a known list of fields
+				switch (userField) {
+
+					case 'email':
+						if ('object' == typeof ldapResponse.searchResults[ldapField]) {
+							_.map(ldapResponse.searchResults[ldapField], function (item) {
+								emailList.push({ address: item, verified: true });
+							});
+						} else {
+							emailList.push({ address: ldapResponse.searchResults[ldapField], verified: true });
+						}
+						break;
+
+					case 'name':
+						userData.name = ldapResponse.searchResults[ldapField];
+						break;
+
+					default:
+						break;
+				}
+			});
+
+			if (emailList.length) {
+				userData.emails = emailList;
+			}
+
+			if (_.size(userData)) {
+				Meteor.users.update(userId, { $set: userData });
+			}
+
 		}
 
 		return {

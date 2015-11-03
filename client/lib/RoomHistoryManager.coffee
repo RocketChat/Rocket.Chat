@@ -27,7 +27,7 @@
 		if lastMessage?
 			ts = lastMessage.ts
 		else
-			ts = new Date
+			ts = undefined
 
 		ls = undefined
 		typeName = undefined

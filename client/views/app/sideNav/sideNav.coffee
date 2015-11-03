@@ -93,7 +93,7 @@ Template.sideNav.onRendered ->
 	AccountBox.init()
 
 	wrapper = $('.rooms-list .wrapper').get(0)
-	lastLink = $('.rooms-list h3').get(0)
+	lastLink = $('.rooms-list h3.history-div').get(0)
 
 	RocketChat.roomTypes.getTypes().forEach (roomType) ->
 		if RocketChat.authz.hasRole(Meteor.userId(), roomType.roles) && Template[roomType.template]?
