@@ -358,6 +358,8 @@
   "The_field_is_required" : "O campo %s é obrigatório.",
   "True" : "Verdadeiro",
   "Unnamed" : "Sem nome",
+  "Unread_Rooms": "Não Lidas",
+  "Unread_Rooms_Mode": "Agrupar Salas Não Lidas",
   "Upload_file_question" : "Enviar arquivo?",
   "Use_Emojis" : "Usar Emojis",
   "Use_initials_avatar" : "Usar as iniciais do seu nome de usuário",
