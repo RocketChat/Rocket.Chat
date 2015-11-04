@@ -5,6 +5,9 @@ Package.describe({
 	git: ''
 });
 
+/**
+ * adds listener to useFunction
+ */
 Package.onUse(function(api) {
 	api.versionsFrom('1.0');
 

@@ -38,6 +38,7 @@ Package.onUse(function(api) {
 
 });
 
+// Is this really needed ?
 Package.onTest(function(api) {
 
 });
