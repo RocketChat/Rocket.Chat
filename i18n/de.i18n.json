@@ -220,6 +220,7 @@
   "My_Account" : "Mein Konto",
   "n_messages" : "%s Nachrichten",
   "Name" : "Name",
+  "Name_optional" : "Name(freiwillig)",
   "Name_cant_be_empty" : "Name darf nicht leer sein",
   "New_messages" : "Neue Nachrichten",
   "New_password" : "Neues Passwort",
