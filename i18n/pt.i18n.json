@@ -223,7 +223,7 @@
   "My_Account" : "Minha Conta",
   "n_messages" : "%s mensagens",
   "Name" : "Nome",
-  "Name_optional" : "Nome(opcional)",
+  "Name_optional" : "Nome (opcional)",
   "Name_cant_be_empty" : "Nome não pode ser vazio",
   "New_messages" : "Novas mensagens",
   "New_password" : "Nova senha",
