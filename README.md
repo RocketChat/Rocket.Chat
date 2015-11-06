@@ -45,7 +45,7 @@ Download the Native Cross-Platform Desktop Application at [Rocket.Chat.Electron]
 [![Build Status](https://img.shields.io/travis/RocketChat/Rocket.Chat/master.svg)](https://travis-ci.org/RocketChat/Rocket.Chat)
 [![Coverage Status](https://coveralls.io/repos/RocketChat/Rocket.Chat/badge.svg)](https://coveralls.io/r/RocketChat/Rocket.Chat)
 [![Code Climate](https://codeclimate.com/github/RocketChat/Rocket.Chat/badges/gpa.svg)](https://codeclimate.com/github/RocketChat/Rocket.Chat)
-[![MIT License](http://img.shields.io/badge/license-MIT-blue.svg?style=flat)](https://github.com/RocketChat/Rocket.Chat/raw/master/LICENSE)
+[![MIT License](https://img.shields.io/badge/license-MIT-blue.svg?style=flat)](https://github.com/RocketChat/Rocket.Chat/raw/master/LICENSE)
 [![Stories in Ready](https://badge.waffle.io/RocketChat/Rocket.Chat.png?label=ready&title=Ready)](https://waffle.io/RocketChat/Rocket.Chat)
 
 Rocket.Chat is a Web Chat Server, developed in JavaScript, using the [Meteor](https://www.meteor.com/install) fullstack framework.
@@ -57,7 +57,7 @@ It is a great solution for communities and companies wanting to privately host t
 ##### [Hacker News](https://news.ycombinator.com/item?id=9624737)
 > Yes, we made it to the #1
 
-##### [Product Hunt](http://www.producthunt.com/posts/rocket-chat)
+##### [Product Hunt](https://www.producthunt.com/tech/rocket-chat)
 > Your own open source Slack-like chat
 
 ##### [JavaScript Weekly](http://javascriptweekly.com/issues/234)
@@ -115,7 +115,7 @@ It is a great solution for communities and companies wanting to privately host t
 
 #### In Progress
 - Support multiple teams on the same instance / same VPS infrastructure: [Issue #658](https://github.com/RocketChat/Rocket.Chat/issues/658), [Issue #630](https://github.com/RocketChat/Rocket.Chat/issues/630)
-- Support for PostgreSQL: [Issue #533](https://github.com/RocketChat/Rocket.Chat/issues/533), [Issue #822](https://github.com/RocketChat/Rocket.Chat/issues/822)
+- Support for PostgreSQL: [Issue #533](https://github.com/RocketChat/Rocket.Chat/issues/533), [Issue #822](https://github.com/RocketChat/Rocket.Chat/pull/822)
 - Native iOS Application [Issue #270](https://github.com/RocketChat/Rocket.Chat/issues/270), [Rocket.Chat.iOS - HELP WANTED](https://github.com/RocketChat/Rocket.Chat.iOS)
 - Native Android Application [Issue #271 - HELP WANTED](https://github.com/RocketChat/Rocket.Chat/issues/271)
 - Off-the-Record (OTR) Messaging [Issue #36](https://github.com/RocketChat/Rocket.Chat/issues/36), [Issue #268 - HELP WANTED](https://github.com/RocketChat/Rocket.Chat/issues/268)
@@ -181,9 +181,9 @@ Easy one click install right from your Ubuntu Desktop (coming soon).
 
 ### Docker
 
-Use the automated build at our [Official Docker Registry](https://registry.hub.docker.com/u/rocketchat/rocket.chat/)
+Use the automated build at our [Official Docker Registry](https://hub.docker.com/r/rocketchat/rocket.chat/)
 
-[![Rocket.Chat logo](https://d207aa93qlcgug.cloudfront.net/1.95.5.qa/img/nav/docker-logo-loggedout.png)](https://registry.hub.docker.com/u/rocketchat/rocket.chat/)
+[![Rocket.Chat logo](https://d207aa93qlcgug.cloudfront.net/1.95.5.qa/img/nav/docker-logo-loggedout.png)](https://hub.docker.com/r/rocketchat/rocket.chat/)
 
 ```
 docker pull rocketchat/rocket.chat
@@ -256,7 +256,7 @@ If you want to help, send an email to support at rocket.chat to be invited to th
 
 ### Community
 
-Join the conversation at [Twitter](http://twitter.com/RocketChatApp), [Facebook](https://www.facebook.com/RocketChatApp) or [Google Plus](https://plus.google.com/+RocketChatApp)
+Join the conversation at [Twitter](https://twitter.com/RocketChatApp), [Facebook](https://www.facebook.com/RocketChatApp) or [Google Plus](https://plus.google.com/+RocketChatApp)
 
 ### License
 
