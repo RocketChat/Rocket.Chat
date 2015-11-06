@@ -160,7 +160,7 @@
   "Layout_Sidenav_Footer_description" : "La taille du pied de page est 260x70",
   "Layout_Terms_of_Service" : "Conditions de service",
   "LDAP" : "LDAP",
-  "LDAP_Dn" : "DN LDAP",
+  "LDAP_DN" : "DN LDAP",
   "LDAP_Port" : "Port LDAP",
   "LDAP_Url" : "Adresse LDAP",
   "Leave_room" : "Quitter le salon",
