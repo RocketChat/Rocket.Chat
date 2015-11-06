@@ -12,5 +12,8 @@ Meteor.methods
 			throw new Meteor.Error 'invalid-method', '[methods] robot.modelCall -> Invalid method'
 
 		call = RocketChat.models[model][method].apply(RocketChat.models[model], args)
-		console.log call
-		return call
+
+		if call?.fetch?()?
+			return call.fetch()
+		else
+			return call

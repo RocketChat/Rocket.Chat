@@ -28,6 +28,18 @@ RocketChat.models.Users = new class extends RocketChat.models._Base
 
 		return @findOne query, options
 
+	findOneVerifiedFromSameDomain: (email, options) ->
+		domain = s.strRight(email, '@')
+		query =
+			emails:
+				$elemMatch:
+					address:
+						$regex: new RegExp "@" + domain + "$", "i"
+						$ne: email
+					verified: true
+
+		return @findOne query, options
+
 	findOneAdmin: (admin, options) ->
 		query =
 			admin: admin
