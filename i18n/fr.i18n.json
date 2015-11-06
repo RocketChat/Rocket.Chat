@@ -209,7 +209,7 @@
   "My_Account" : "Mon compte",
   "n_messages" : "%s messages",
   "Name" : "Nom",
-  "Name_optional" : "Nom(optionnel)",
+  "Name_optional" : "Nom (optionnel)",
   "Name_cant_be_empty" : "Le nom ne peut pas être vide",
   "New_messages" : "Nouveaux messages",
   "New_password" : "Nouveau mot de passe",
