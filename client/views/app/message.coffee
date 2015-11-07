@@ -54,7 +54,17 @@ Template.message.helpers
 		moment(@ets).format('LL hh:mma') #TODO profile pref for 12hr/24hr clock?
 	editedBy: ->
 		return "" unless wasEdited(@)
-		Meteor.users.findOne(@editBy ? Meteor.userId())?.username
+		# try to return the username of the editor,
+		# otherwise a special "?" character that will be
+		# rendered as a special avatar
+		if @editBy
+			user = Meteor.users.findOne(@editBy)
+			if user?
+				user.username
+			else
+				"?"
+		else
+			"?"
 	pinned: ->
 		return this.pinned
 	canEdit: ->
