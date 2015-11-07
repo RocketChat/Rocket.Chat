@@ -29,6 +29,8 @@ Meteor.methods
 			RocketChat.models.Messages.cloneAndSaveAsHistoryById originalMessage._id
 
 		message.ets = new Date()
+		# save who message was edited by
+		message.editBy = Meteor.userId()
 
 		if urls = message.msg.match /([A-Za-z]{3,9}):\/\/([-;:&=\+\$,\w]+@{1})?([-A-Za-z0-9\.]+)+:?(\d+)?((\/[-\+=!:~%\/\.@\,\w]+)?\??([-\+=&!:;%@\/\.\,\w]+)?#?([\w]+)?)?/g
 			message.urls = urls.map (url) -> url: url
