@@ -8,7 +8,7 @@
 		path = Meteor.absoluteUrl()
 	else
 		path = '/'
-	return "#{path}avatar/#{username}.jpg?_dc=#{random}"
+	"#{path}avatar/#{encodeURIComponent(username)}.jpg?_dc=#{random}"
 
 Blaze.registerHelper 'avatarUrlFromUsername', getAvatarUrlFromUsername
 
