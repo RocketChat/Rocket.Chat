@@ -1,3 +1,5 @@
+wasEdited = (msg) ->
+	msg.ets and msg.t not in ['s', 'p', 'f', 'r', 'au', 'ru', 'ul', 'nu', 'wm', 'uj', 'rm']
 Template.message.helpers
 	actions: ->
 		return RocketChat.MessageAction.getButtons(this)
@@ -46,8 +48,13 @@ Template.message.helpers
 
 	system: ->
 		return 'system' if this.t in ['s', 'p', 'f', 'r', 'au', 'ru', 'ul', 'nu', 'wm', 'uj', 'rm']
-	edited: ->
-		return @ets and @t not in ['s', 'p', 'f', 'r', 'au', 'ru', 'ul', 'nu', 'wm', 'uj', 'rm']
+	edited: -> wasEdited(@)
+	editTime: ->
+		return "" unless wasEdited(@)
+		moment(@ets).format('LL hh:mma') #TODO profile pref for 12hr/24hr clock?
+	editedBy: ->
+		return "" unless wasEdited(@)
+		Meteor.users.findOne(@editBy ? Meteor.userId())?.username
 	pinned: ->
 		return this.pinned
 	canEdit: ->

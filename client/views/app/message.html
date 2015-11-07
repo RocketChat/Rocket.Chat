@@ -5,7 +5,17 @@
 		<span class="info">
 			<span class="time">{{time}}</span>
 		{{#if edited}}
-			<span class="edited">({{_ "edited"}})</span>
+			<span class="edited">
+				(<a
+					title='{{_ "edited"}} at {{editTime}} {{_ "by"}} {{editedBy}}'
+					class="thumb thumb-small user-card-message"
+					href="#"
+					data-username="{{editedBy}}"
+					tabindex="1">
+						{{> avatar username=editedBy}}
+				</a>
+				{{_ "edited"}})
+			</span>
 		{{/if}}
 		{{#if private}}
 			<span class="private">{{_ "Only_you_can_see_this_message"}}</span>
