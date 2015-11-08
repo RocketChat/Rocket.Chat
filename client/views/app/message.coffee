@@ -1,5 +1,5 @@
 wasEdited = (msg) ->
-	msg.ets and msg.t not in ['s', 'p', 'f', 'r', 'au', 'ru', 'ul', 'nu', 'wm', 'uj', 'rm']
+	msg.edit?.at? and msg.t not in ['s', 'p', 'f', 'r', 'au', 'ru', 'ul', 'nu', 'wm', 'uj', 'rm']
 Template.message.helpers
 	actions: ->
 		return RocketChat.MessageAction.getButtons(this)
@@ -51,14 +51,14 @@ Template.message.helpers
 	edited: -> wasEdited(@)
 	editTime: ->
 		return "" unless wasEdited(@)
-		moment(@ets).format('LL hh:mma') #TODO profile pref for 12hr/24hr clock?
+		moment(@edit.at).format('LL hh:mma') #TODO profile pref for 12hr/24hr clock?
 	editedBy: ->
 		return "" unless wasEdited(@)
 		# try to return the username of the editor,
 		# otherwise a special "?" character that will be
 		# rendered as a special avatar
-		if @editBy
-			user = Meteor.users.findOne(@editBy)
+		if @edit.by
+			user = Meteor.users.findOne(@edit.by)
 			if user?
 				user.username
 			else
