@@ -2454,10 +2454,18 @@ a.github-fork {
 			height: 20px;
 			display: inline-block;
 			vertical-align: bottom;
+			.avatar {
+				border-radius: 50%;
+			}
 		}
 	}
 	.info {
 		font-size: 12px;
+		.edited {
+			border-left: 1px dotted #BAB8B8;
+			padding-left: 3px;
+			margin-left: 3px;
+		}
 	}
 	.private {
 		margin-left: 10px;
@@ -2469,7 +2477,7 @@ a.github-fork {
 		.user {
 			display: none;
 		}
-		.thumb {
+		.thumb:not(.thumb-small) {
 			display: none;
 		}
 		.info {
@@ -2482,6 +2490,9 @@ a.github-fork {
 			}
 			.edited {
 				display: block;
+				border-left: 0;
+				margin-left: 0;
+				padding-left: 0;
 			}
 			.private {
 				display: none;

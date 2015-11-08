@@ -3,7 +3,8 @@ RocketChat.models.Messages = new class extends RocketChat.models._Base
 		@_initModel 'message'
 
 		@tryEnsureIndex { 'rid': 1, 'ts': 1 }
-		@tryEnsureIndex { 'ets': 1 }, { sparse: 1 }
+		@tryEnsureIndex { 'edit.at': 1 }, { sparse: 1 }
+		@tryEnsureIndex { 'edit.by': 1 }, { sparse: 1 }
 		@tryEnsureIndex { 'rid': 1, 't': 1, 'u._id': 1 }
 		@tryEnsureIndex { 'expireAt': 1 }, { expireAfterSeconds: 0 }
 		@tryEnsureIndex { 'msg': 'text' }
@@ -76,7 +77,7 @@ RocketChat.models.Messages = new class extends RocketChat.models._Base
 				ts:
 					$gt: timestamp
 			,
-				ets:
+				'edit.at':
 					$gt: timestamp
 			]
 
@@ -96,7 +97,9 @@ RocketChat.models.Messages = new class extends RocketChat.models._Base
 		record = @findOneById _id
 		record._hidden = true
 		record.parent = record._id
-		record.ets = new Date()
+		record.edit =
+			at: new Date()
+			by: Meteor.userId()
 		delete record._id
 
 		return @insert record
@@ -121,7 +124,8 @@ RocketChat.models.Messages = new class extends RocketChat.models._Base
 			$set:
 				msg: ''
 				t: 'rm'
-				ets: new Date()
+				'edit.at': new Date()
+				'edit.by': Meteor.userId()
 
 		return @update query, update
 

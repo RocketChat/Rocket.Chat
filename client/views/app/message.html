@@ -3,19 +3,27 @@
 		<a class="thumb user-card-message" href="#" data-username="{{u.username}}" tabindex="1">{{> avatar username=u.username}}</a>
 		<a class="user user-card-message" href="#" data-username="{{u.username}}" tabindex="1">{{u.username}}</a>
 		<span class="info">
-			<span class="time">{{time}}</span>
 		{{#if edited}}
-			<span class="edited">
-				(<a
-					title='{{_ "edited"}} at {{editTime}} {{_ "by"}} {{editedBy}}'
+			<span
+				title='{{_ "edited"}} at {{editTime}} {{_ "by"}} {{editedBy}}'
+				class="time">
+				{{time}}
+			</span>
+			<span
+				class="edited"
+				title='{{_ "edited"}} at {{editTime}} {{_ "by"}} {{editedBy}}'>
+				<i class="icon-edit"></i>
+				{{_ "by"}}
+				<a
 					class="thumb thumb-small user-card-message"
 					href="#"
 					data-username="{{editedBy}}"
 					tabindex="1">
-						{{> avatar username=editedBy}}
+					{{> avatar username=editedBy}}
 				</a>
-				{{_ "edited"}})
 			</span>
+		{{else}}
+			<span class="time">{{time}}</span>
 		{{/if}}
 		{{#if private}}
 			<span class="private">{{_ "Only_you_can_see_this_message"}}</span>
