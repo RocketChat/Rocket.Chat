@@ -24,7 +24,7 @@ getUrlContent = (urlObj, redirectCount = 5, callback) ->
 
 	httpOrHttps = if urlObj.protocol is 'https:' then https else http
 
-	parsedUrl = _.pick urlObj, ['host', 'hash', 'pathname', 'protocol', 'port', 'query']
+	parsedUrl = _.pick urlObj, ['host', 'hash', 'pathname', 'protocol', 'port', 'query', 'search']
 
 	RocketChat.callbacks.run 'oembed:beforeGetUrlContent',
 		requestOptions: opts
