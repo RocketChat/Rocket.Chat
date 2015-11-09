@@ -30,13 +30,14 @@ Meteor.startup ->
 
 	WebApp.connectHandlers.use '/avatar/', (req, res, next) ->
 		this.params =
-			username: req.url.replace(/^\//, '').replace(/\?.*$/, '')
+			username: decodeURIComponent(req.url.replace(/^\//, '').replace(/\?.*$/, ''))
 
 		if this.params.username[0] isnt '@'
 			file = RocketChatFileAvatarInstance.getFileWithReadStream this.params.username
 		else
 			this.params.username = this.params.username.replace '@', ''
 
+		#console.log "[avatar] checking username #{@params.username} (derrived from path #{req.url})"
 		res.setHeader 'Content-Disposition', 'inline'
 
 		if not file?
@@ -45,19 +46,22 @@ Meteor.startup ->
 
 			colors = ['#F44336','#E91E63','#9C27B0','#673AB7','#3F51B5','#2196F3','#03A9F4','#00BCD4','#009688','#4CAF50','#8BC34A','#CDDC39','#FFC107','#FF9800','#FF5722','#795548','#9E9E9E','#607D8B']
 
-			username = this.params.username.replace('.jpg', '')
-			position = username.length % colors.length
-			color = colors[position]
-
-			username = username.replace(/[^A-Za-z0-9]/g, '.').replace(/\.+/g, '.').replace(/(^\.)|(\.$)/g, '')
-			usernameParts = username.split('.')
+			username = @params.username.replace('.jpg', '')
+			color = ''
 			initials = ''
-			if usernameParts.length > 1
-				initials = _.first(usernameParts)[0] + _.last(usernameParts)[0]
+			if username is "?"
+				color = "#000"
+				initials = username
 			else
-				initials = username.replace(/[^A-Za-z0-9]/g, '').substr(0, 2)
-
-			initials = initials.toUpperCase()
+				position = username.length % colors.length
+				color = colors[position]
+				username = username.replace(/[^A-Za-z0-9]/g, '.').replace(/\.+/g, '.').replace(/(^\.)|(\.$)/g, '')
+				usernameParts = username.split('.')
+				initials = if usernameParts.length > 1
+					_.first(usernameParts)[0] + _.last(usernameParts)[0]
+				else
+					username.replace(/[^A-Za-z0-9]/g, '').substr(0, 2)
+				initials = initials.toUpperCase()
 
 			svg = """
 			<?xml version="1.0" encoding="UTF-8" standalone="no"?>
