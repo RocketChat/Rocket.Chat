@@ -23,7 +23,7 @@ Meteor.startup ->
 	options = {}
 
 	if not RocketChat.settings.get 'Message_ShowEditedStatus'
-		options.fields = { 'edit.at': 0 }
+		options.fields = { 'editedAt': 0 }
 
 	RocketChat.models.Messages.findVisibleCreatedOrEditedAfterTimestamp(new Date(), options).observe
 		added: (record) ->
