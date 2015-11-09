@@ -23,7 +23,9 @@ Meteor.methods
 
 		Tracker.nonreactive ->
 
-			message.ets = new Date(Date.now() + TimeSync.serverOffset())
+			message.edit =
+				by: Meteor.userId()
+				at: new Date(Date.now() + TimeSync.serverOffset())
 			message = RocketChat.callbacks.run 'beforeSaveMessage', message
 
 			ChatMessage.update
@@ -31,5 +33,6 @@ Meteor.methods
 				'u._id': Meteor.userId()
 			,
 				$set:
-					ets: message.ets
+					"edit.by": message.edit.by
+					"edit.at": message.edit.at
 					msg: message.msg
