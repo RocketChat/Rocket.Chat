@@ -12,6 +12,8 @@ Meteor.methods
 		editAllowed = RocketChat.settings.get 'Message_AllowEditing'
 		editOwn = originalMessage?.u?._id is Meteor.userId()
 
+		me = RocketChat.models.Users.findOneById Meteor.userId()
+
 		unless hasPermission or (editAllowed and editOwn)
 			throw new Meteor.Error 'message-editing-not-allowed', "[methods] updateMessage -> Message editing not allowed"
 
@@ -28,9 +30,10 @@ Meteor.methods
 		if RocketChat.settings.get 'Message_KeepHistory'
 			RocketChat.models.Messages.cloneAndSaveAsHistoryById originalMessage._id
 
-		message.edit =
-			at: new Date()
-			by: Meteor.userId()
+		message.editedAt = new Date()
+		message.editedBy =
+			_id: Meteor.userId()
+			username: me.username
 
 		if urls = message.msg.match /([A-Za-z]{3,9}):\/\/([-;:&=\+\$,\w]+@{1})?([-A-Za-z0-9\.]+)+:?(\d+)?((\/[-\+=!:~%\/\.@\,\w]+)?\??([-\+=&!:;%@\/\.\,\w]+)?#?([\w]+)?)?/g
 			message.urls = urls.map (url) -> url: url
