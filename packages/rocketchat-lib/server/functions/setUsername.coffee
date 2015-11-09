@@ -19,6 +19,7 @@ RocketChat.setUsername = (user, username) ->
 	# Username is available; if coming from old username, update all references
 	if previousUsername
 		RocketChat.models.Messages.updateAllUsernamesByUserId user._id, username
+		RocketChat.models.Messages.updateUsernameOfEditByUserId user._id, username
 
 		RocketChat.models.Messages.findByMention(previousUsername).forEach (msg) ->
 			updatedMsg = msg.msg.replace(new RegExp("@#{previousUsername}", "ig"), "@#{username}")
