@@ -13,6 +13,7 @@ addons:
     - google-chrome-stable
 before_install:
 - curl https://install.meteor.com | /bin/sh
+- npm install -g npm@'>=2.13.5'
 - mkdir -p node_modules
 - npm install phantomjs
 - npm install velocity-cli
@@ -23,6 +24,31 @@ before_install:
 - export VELOCITY_DEBUG=1
 - export VELOCITY_DEBUG_MIRROR=1
 script:
-- meteor add sanjo:jasmine velocity:console-reporter
+- if [[ "$TRAVIS_PULL_REQUEST" != "false" ]]; then echo "Building PR $TRAVIS_PULL_REQUEST"; meteor build ../build; exit $?; fi
+- cd .travis
+- npm install
+- npm start
+- cd ..
+- meteor build ../build
+- cd .travis
+- sh ./namefiles.sh
+- cd ..
+- meteor add-platform ios
+- meteor add rocketchat:livechat rocketchat:hubot sanjo:jasmine velocity:console-reporter
 - ./node_modules/velocity-cli/bin/velocity test-packages --ci
 - ./node_modules/velocity-cli/bin/velocity test-app --ci
+- meteor build --server demo.rocket.chat  ../build
+- cd .travis
+- sh ./namedemo.sh
+- cd ..
+after_deploy:
+- "curl -H \"Content-Type: application/json\" --data \"{'build': true}\" -X POST https://registry.hub.docker.com/u/rocketchat/rocket.chat/trigger/$PUSHTOKEN/"
+deploy:
+  provider: s3
+  access_key_id: "AKIAIKIA7H7D47KUHYCA"
+  secret_access_key: $ACCESSKEY
+  bucket: "rocketchatbuild"
+  skip_cleanup: true
+  local_dir: ../build
+  on:
+    branch: master
