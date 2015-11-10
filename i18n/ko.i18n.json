@@ -153,7 +153,7 @@
   "Layout_Sidenav_Footer_description" : "바닥글 크기는 260x70입니다.",
   "Layout_Terms_of_Service" : "이용약관",
   "LDAP" : "LDAP",
-  "LDAP_Dn" : "LDAP DN",
+  "LDAP_DN" : "LDAP DN",
   "LDAP_Port" : "LDAP 포트",
   "LDAP_Url" : "LDAP URL",
   "Leave_room" : "방 나가기",

@@ -14,6 +14,8 @@ Template.avatarPrompt.onCreated ->
 
 Template.avatarPrompt.onRendered ->
 	Tracker.afterFlush ->
+		# this should throw an error-template
+		FlowRouter.go("home") if !RocketChat.settings.get("Accounts_AllowUserAvatarChange")
 		SideNav.setFlex "accountFlex"
 		SideNav.openFlex()
 
@@ -43,6 +45,18 @@ Template.avatarPrompt.events
 					toastr.error t('Error_too_many_requests', parseInt(err.details.timeToReset / 1000))
 				else
 					toastr.success t('Avatar_changed_successfully')
+		else if @service is 'url'
+			if _.trim $('#avatarurl').val()
+				Meteor.call 'setAvatarFromService', $('#avatarurl').val(), '', @service, (err) ->
+					if err
+						if err.details?.timeToReset?
+							toastr.error t('Error_too_many_requests', parseInt(err.details.timeToReset / 1000))
+						else
+							toastr.error t('Avatar_url_invalid_or_error')
+					else
+						toastr.success t('Avatar_changed_successfully')
+			else
+				toastr.error t('Please_enter_value_for_url')
 		else
 			Meteor.call 'setAvatarFromService', @blob, @contentType, @service, (err) ->
 				if err?.details?.timeToReset?

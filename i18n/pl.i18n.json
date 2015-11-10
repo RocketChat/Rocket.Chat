@@ -106,7 +106,7 @@
   "Last_message" : "Ostatnia wiadomość",
   "Layout_Home_Body" : "Treść strony głównej",
   "Layout_Home_Title" : "Tytuł strony głównej",
-  "LDAP_Dn" : "LDAP DN",
+  "LDAP_DN" : "LDAP DN",
   "LDAP_Port" : "Port LDAP",
   "LDAP_Url" : "Adres URL LDAP",
   "Leave_room" : "Opuść pokój",

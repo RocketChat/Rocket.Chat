@@ -62,6 +62,7 @@ Package.onUse(function(api) {
 	api.addFiles('server/functions/setUsername.coffee', 'server');
 
 	api.addFiles('server/methods/joinDefaultChannels.coffee', 'server');
+	api.addFiles('server/methods/robotMethods.coffee', 'server');
 	api.addFiles('server/methods/sendInvitationEmail.coffee', 'server');
 	api.addFiles('server/methods/setAdminStatus.coffee', 'server');
 	api.addFiles('server/methods/setRealName.coffee', 'server');

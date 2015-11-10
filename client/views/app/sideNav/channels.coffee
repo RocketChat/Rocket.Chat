@@ -13,6 +13,10 @@ Template.channels.helpers
 		if !RocketChat.settings.get 'Disable_Favorite_Rooms'
 			query.f = { $ne: true }
 
+		if Meteor.user()?.settings?.preferences?.unreadRoomsMode
+			query.alert =
+				$ne: true
+
 		return ChatSubscription.find query, { sort: 't': 1, 'name': 1 }
 
 Template.channels.events

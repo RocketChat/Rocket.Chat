@@ -90,18 +90,19 @@ RocketChat.theme = new class
 
 			process.emit('message', {refresh: 'client'})
 
-	addVariable: (type, name, value, isPublic=true) ->
+	addVariable: (type, name, value, persist=true) ->
 		@variables[name] =
 			type: type
 			value: value
 
-		config =
-			group: 'Theme'
-			type: type
-			section: type
-			public: isPublic
+		if persist is true
+			config =
+				group: 'Theme'
+				type: type
+				section: type
+				public: false
 
-		RocketChat.settings.add "theme-#{type}-#{name}", value, config
+			RocketChat.settings.add "theme-#{type}-#{name}", value, config
 
 	addPublicColor: (name, value) ->
 		@addVariable 'color', name, value, true
