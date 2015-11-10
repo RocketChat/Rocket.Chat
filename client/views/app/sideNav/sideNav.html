@@ -38,7 +38,9 @@
 			</div>
 			<div class="rooms-list">
 				<div class="wrapper">
-					<h3>
+					{{ > unreadRooms }}
+
+					<h3 class="history-div">
 						<a href="{{pathFor 'privateHistory'}}">{{_ "History"}}</a>
 					</h3>
 				</div>

@@ -59,6 +59,7 @@ jparker:gravatar@0.4.1
 jquery@1.11.4
 kadira:blaze-layout@2.2.0
 kadira:flow-router@2.8.0
+kenton:accounts-sandstorm@0.1.7
 kevohagan:sweetalert@1.0.0
 konecty:autolinker@1.0.3
 konecty:change-case@2.3.0
@@ -141,7 +142,6 @@ rocketchat:oembed@0.0.1
 rocketchat:slashcommands-invite@0.0.1
 rocketchat:slashcommands-join@0.0.1
 rocketchat:slashcommands-leave@0.0.1
-rocketchat:soundcloud@0.0.1
 rocketchat:spotify@0.0.1
 rocketchat:statistics@0.0.1
 rocketchat:theme@0.0.1

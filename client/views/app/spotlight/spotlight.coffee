@@ -14,12 +14,11 @@ Template.spotlight.helpers
 			rules: [
 				{
 					collection: 'UserAndRoom'
-					subscription: 'roomSearch'
+					subscription: 'spotlight'
 					field: 'name'
 					template: Template.roomSearch
 					noMatchTemplate: Template.roomSearchEmpty
 					matchAll: true
-					filter: { uid: { $ne: Meteor.userId() } }
 					sort: 'name'
 				}
 			]
