@@ -62,6 +62,7 @@
   "Msgs" : "Msgs",
   "n_messages" : "% messaggi",
   "Name" : "Nome",
+  "Name_optional" : "Nome (opzionale)",
   "New_messages" : "Nuovi messaggi",
   "New_password" : "Nuova password",
   "No_channels_yet" : "Non fai parte di nessun canale ancora.",
