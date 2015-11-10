@@ -20,6 +20,12 @@
 	-ms-user-select: none;
 	user-select: none;
 }
+.allow-text-selection {
+	-webkit-user-select: text;
+	-moz-user-select: text;
+	-ms-user-select: text;
+	user-select: text;
+}
 
 :focus {
 	outline: 0 !important;
@@ -1503,6 +1509,17 @@ a.github-fork {
 			font-size: 12px;
 		}
 	}
+	.unread-rooms-mode {
+		max-height: 0;
+		opacity: 0;
+		overflow: hidden;
+
+		&.has-unread {
+			.transition(max-height 1s ease-in,opacity .5s linear);
+			max-height: 5000px;
+			opacity: 1;
+		}
+	}
 }
 
 .new-room-highlight a {
@@ -1695,6 +1712,9 @@ a.github-fork {
 }
 
 .page-settings {
+	.settings-description {
+		.allow-text-selection;
+	}
 	.rocket-form {
 		max-width: none;
 		width: 100%;
@@ -2428,9 +2448,24 @@ a.github-fork {
 		display: block;
 		width: 40px;
 		height: 40px;
+		&.thumb-small {
+			position: initial;
+			width: 20px;
+			height: 20px;
+			display: inline-block;
+			vertical-align: bottom;
+			.avatar {
+				border-radius: 50%;
+			}
+		}
 	}
 	.info {
 		font-size: 12px;
+		.edited {
+			border-left: 1px dotted #BAB8B8;
+			padding-left: 3px;
+			margin-left: 3px;
+		}
 	}
 	.private {
 		margin-left: 10px;
@@ -2442,7 +2477,7 @@ a.github-fork {
 		.user {
 			display: none;
 		}
-		.thumb {
+		.thumb:not(.thumb-small) {
 			display: none;
 		}
 		.info {
@@ -2455,6 +2490,9 @@ a.github-fork {
 			}
 			.edited {
 				display: block;
+				border-left: 0;
+				margin-left: 0;
+				padding-left: 0;
 			}
 			.private {
 				display: none;
@@ -2526,7 +2564,7 @@ a.github-fork {
 .compact {
 	.message {
 		padding: 5px 20px 5px 70px;
-		.thumb .avatar {
+		.thumb:not(.thumb-small) .avatar {
 			margin-top: -15px;
 		}
 	}

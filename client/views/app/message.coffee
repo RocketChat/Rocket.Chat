@@ -46,8 +46,16 @@ Template.message.helpers
 
 	system: ->
 		return 'system' if this.t in ['s', 'p', 'f', 'r', 'au', 'ru', 'ul', 'nu', 'wm', 'uj', 'rm']
-	edited: ->
-		return @ets and @t not in ['s', 'p', 'f', 'r', 'au', 'ru', 'ul', 'nu', 'wm', 'uj', 'rm']
+	edited: -> Template.instance().wasEdited?(@)
+	editTime: ->
+		return "" unless Template.instance().wasEdited?(@)
+		moment(@editedAt).format('LL hh:mma') #TODO profile pref for 12hr/24hr clock?
+	editedBy: ->
+		return "" unless Template.instance().wasEdited?(@)
+		# try to return the username of the editor,
+		# otherwise a special "?" character that will be
+		# rendered as a special avatar
+		return @editedBy?.username or "?"
 	pinned: ->
 		return this.pinned
 	canEdit: ->
@@ -81,6 +89,10 @@ Template.message.helpers
 			return t(@i18nLabel)
 		else if @label
 			return @label
+
+Template.message.onCreated ->
+	@wasEdited = (msg) ->
+		msg.editedAt? and msg.t not in ['s', 'p', 'f', 'r', 'au', 'ru', 'ul', 'nu', 'wm', 'uj', 'rm']
 
 Template.message.onViewRendered = (context) ->
 	view = this
