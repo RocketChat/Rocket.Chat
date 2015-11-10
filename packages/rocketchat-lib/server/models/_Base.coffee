@@ -29,7 +29,7 @@ RocketChat.models._Base = class
 		return @model.allow.apply @model, arguments
 
 	deny: ->
-		return @model.allow.apply @model, arguments
+		return @model.deny.apply @model, arguments
 
 	ensureIndex: ->
 		return @model._ensureIndex.apply @model, arguments
