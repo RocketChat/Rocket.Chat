@@ -1,6 +1,6 @@
 Meteor.methods
-	'RocketMailer.unsubscribe': (hash) ->
-		return RocketMailer.unsubscribe hash
+	'RocketMailer.unsubscribe': (_id, createdAt) ->
+		return RocketMailer.unsubscribe _id, createdAt
 
 # Limit setting username once per minute
 DDPRateLimiter.addRule

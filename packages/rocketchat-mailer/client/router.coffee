@@ -8,9 +8,8 @@ FlowRouter.route '/rocket-mailer',
 	action: ->
 		BlazeLayout.render 'main', {center: 'rocketMailer'}
 
-FlowRouter.route '/rocket-mailer/unsubscribe/:hash',
+FlowRouter.route '/rocket-mailer/unsubscribe/:_id/:createdAt',
 	name: 'rocket-mailer-unsubscribe'
 	action: (params) ->
-		console.log params.hash
-		Meteor.call 'RocketMailer.unsubscribe', params.hash
+		Meteor.call 'RocketMailer.unsubscribe', params._id, params.createdAt
 		BlazeLayout.render 'rocketMailerUnsubscribe'

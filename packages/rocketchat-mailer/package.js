@@ -30,6 +30,7 @@ Package.onUse(function(api) {
 		'server/models/Users.coffee',
 		'server/functions/sendMail.coffee',
 		'server/functions/unsubscribe.coffee',
+		'server/methods/sendMail.coffee',
 		'server/methods/unsubscribe.coffee'
 	], 'server');
 
