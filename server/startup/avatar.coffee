@@ -29,13 +29,13 @@ Meteor.startup ->
 		transformWrite: transformWrite
 
 	WebApp.connectHandlers.use '/avatar/', (req, res, next) ->
-		this.params =
+		params =
 			username: decodeURIComponent(req.url.replace(/^\//, '').replace(/\?.*$/, ''))
 
-		if this.params.username[0] isnt '@'
-			file = RocketChatFileAvatarInstance.getFileWithReadStream this.params.username
+		if params.username[0] isnt '@'
+			file = RocketChatFileAvatarInstance.getFileWithReadStream params.username
 		else
-			this.params.username = this.params.username.replace '@', ''
+			params.username = params.username.replace '@', ''
 
 		#console.log "[avatar] checking username #{@params.username} (derrived from path #{req.url})"
 		res.setHeader 'Content-Disposition', 'inline'
@@ -46,7 +46,7 @@ Meteor.startup ->
 
 			colors = ['#F44336','#E91E63','#9C27B0','#673AB7','#3F51B5','#2196F3','#03A9F4','#00BCD4','#009688','#4CAF50','#8BC34A','#CDDC39','#FFC107','#FF9800','#FF5722','#795548','#9E9E9E','#607D8B']
 
-			username = @params.username.replace('.jpg', '')
+			username = params.username.replace('.jpg', '')
 			color = ''
 			initials = ''
 			if username is "?"
