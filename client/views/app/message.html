@@ -1,7 +1,16 @@
 <template name="message">
-	<li id="{{_id}}" class="message sequential {{system}} {{t}} {{own}} {{isTemp}} {{chatops}}" data-username="{{u.username}}" data-date="{{date}}">
-		<a class="thumb user-card-message" href="#" data-username="{{u.username}}" tabindex="1">{{> avatar username=u.username}}</a>
-		<a class="user user-card-message" href="#" data-username="{{u.username}}" tabindex="1">{{u.username}}</a>
+	<li
+		id="{{_id}}"
+		class="message sequential {{system}} {{t}} {{own}} {{isTemp}} {{chatops}}"
+		data-message-type="{{t}}"
+		data-username="{{u.username}}"
+		data-date="{{date}}">
+		{{#if system}}
+			<span class="user-card-message system">{{_ "system"}}</span>
+		{{else}}
+			<a class="thumb user-card-message" href="#" data-username="{{u.username}}" tabindex="1">{{> avatar username=u.username}}</a>
+			<a class="user user-card-message" href="#" data-username="{{u.username}}" tabindex="1">{{u.username}}</a>
+		{{/if}}
 		<span class="info">
 		{{#if edited}}
 			<span
@@ -44,6 +53,11 @@
 		</span>
 
 		<div class="body" dir="auto">
+	                {{#if system}}
+				<div class="message-icon-action"></div>
+				<a class="thumb thumb-small user-card-message" href="#" data-username="{{u.username}}" tabindex="1">{{> avatar username=u.username}}</a>
+				<a class="user user-card-message" href="#" data-username="{{u.username}}" tabindex="1">{{u.username}}</a>
+			{{/if}}
 			{{{body}}}
 		</div>
 	</li>
