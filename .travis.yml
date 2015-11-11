@@ -5,9 +5,24 @@ branches:
   - master
 node_js:
 - '0.10'
+addons:
+  apt:
+    sources:
+    - google-chrome
+    packages:
+    - google-chrome-stable
 before_install:
 - curl https://install.meteor.com | /bin/sh
 - npm install -g npm@'>=2.13.5'
+- mkdir -p node_modules
+- npm install phantomjs
+- npm install velocity-cli
+- export PHANTOMJS_BIN=./node_modules/phantomjs/bin/phantomjs
+- export JASMINE_BROWSER=PhantomJS
+- export DEBUG=1
+- export JASMINE_DEBUG=1
+- export VELOCITY_DEBUG=1
+- export VELOCITY_DEBUG_MIRROR=1
 script:
 - if [[ "$TRAVIS_PULL_REQUEST" != "false" ]]; then echo "Building PR $TRAVIS_PULL_REQUEST"; meteor build ../build; exit $?; fi
 - cd .travis
@@ -19,7 +34,9 @@ script:
 - sh ./namefiles.sh
 - cd ..
 - meteor add-platform ios
-- meteor add rocketchat:livechat rocketchat:hubot
+- meteor add rocketchat:livechat rocketchat:hubot sanjo:jasmine velocity:console-reporter
+- ./node_modules/velocity-cli/bin/velocity test-packages --ci
+- ./node_modules/velocity-cli/bin/velocity test-app --ci
 - meteor build --server demo.rocket.chat  ../build
 - cd .travis
 - sh ./namedemo.sh
@@ -35,4 +52,3 @@ deploy:
   local_dir: ../build
   on:
     branch: master
-
