@@ -45,6 +45,11 @@
 
 		<div class="body" dir="auto">
 			{{{body}}}
+			{{#if hasOembed}}
+				{{#each urls}}
+					{{> oembed}}
+				{{/each}}
+			{{/if}}
 		</div>
 	</li>
 </template>
