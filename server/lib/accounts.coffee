@@ -27,6 +27,17 @@ Accounts.emailTemplates.resetPassword.text = (user, url) ->
 	url = url.replace Meteor.absoluteUrl(), Meteor.absoluteUrl() + 'login/'
 	verifyEmailText user, url
 
+if RocketChat.settings.get 'Accounts_Enrollment_Email'
+	Accounts.emailTemplates.enrollAccount.text = (user, url) ->
+		text = RocketChat.settings.get 'Accounts_Enrollment_Email'
+
+		text = text.replace /\[name\]/g, user.name or ''
+		text = text.replace /\[fname\]/g, _.strLeft(user.name, ' ') or  ''
+		text = text.replace /\[lname\]/g, _.strRightBack(user.name, ' ') or  ''
+		text = text.replace /\[email\]/g, user.emails?[0]?.address or ''
+
+		return text
+
 Accounts.onCreateUser (options, user) ->
 	# console.log 'onCreateUser ->',JSON.stringify arguments, null, '  '
 	# console.log 'options ->',JSON.stringify options, null, '  '
