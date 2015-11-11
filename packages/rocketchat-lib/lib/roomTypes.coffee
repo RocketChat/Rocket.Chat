@@ -2,6 +2,7 @@ RocketChat.roomTypes = new class
 	rooms = []
 	routes = {}
 	publishes = {}
+	icons = {}
 
 	### Sets a route for a room type
 	@param roomType: room type (e.g.: c (for channels), d (for direct channels))
@@ -58,8 +59,21 @@ RocketChat.roomTypes = new class
 		return unless publishes[roomType]?
 		return publishes[roomType].call this, identifier
 
+	getIcon = (roomType) ->
+		return icons[roomType]
+
+	###
+	@param roomType: room type (e.g.: c (for channels), d (for direct channels))
+	@param iconClass: iconClass to display on sideNav
+	###
+	setIcon = (roomType, iconClass) ->
+		icons[roomType] = iconClass
+
 	addType: addType
 	getTypes: getAllTypes
+
+	setIcon: setIcon
+	getIcon: getIcon
 
 	setRoute: setRoute
 	getRoute: getRoute
