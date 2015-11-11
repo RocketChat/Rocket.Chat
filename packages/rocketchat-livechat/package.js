@@ -25,7 +25,7 @@ Package.onUse(function(api) {
 
 	api.addFiles('livechat.js', 'server');
 	api.addFiles('server/methods.js', 'server');
-	api.addFiles('server/publications.js', 'server');
+	api.addFiles('server/startup.js', 'server');
 	api.addFiles('permissions.js', 'server');
 
 	api.addFiles('config.js', 'server');
