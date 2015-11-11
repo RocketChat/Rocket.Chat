@@ -8,9 +8,6 @@ Template.chatRoomItem.helpers
 		if (FlowRouter.getParam('_id') isnt this.rid or not document.hasFocus()) and this.unread > 0
 			return this.unread
 
-	isDirectRoom: ->
-		return this.t is 'd'
-
 	userStatus: ->
 		return 'status-' + (Session.get('user_' + this.name + '_status') or 'offline') if this.t is 'd'
 		return ''
@@ -19,10 +16,7 @@ Template.chatRoomItem.helpers
 		return this.name
 
 	roomIcon: ->
-		switch this.t
-			when 'd' then return 'icon-at'
-			when 'c' then return 'icon-hash'
-			when 'p' then return 'icon-lock'
+		return RocketChat.roomTypes.getIcon this.t
 
 	active: ->
 		if Session.get('openedRoom') is this.rid
