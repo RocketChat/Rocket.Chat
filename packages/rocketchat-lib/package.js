@@ -17,6 +17,9 @@ Package.onUse(function(api) {
 	api.use('underscore');
 	api.use('underscorestring:underscore.string');
 	api.use('monbro:mongodb-mapreduce-aggregation@1.0.1');
+	api.use('service-configuration');
+	api.use('check');
+	api.use('arunoda:streams');
 
 	// COMMON
 	api.addFiles('lib/core.coffee');
@@ -90,5 +93,9 @@ Package.onUse(function(api) {
 });
 
 Package.onTest(function(api) {
+	api.use('coffeescript');
+	api.use('sanjo:jasmine@0.20.2');
+	api.use('rocketchat:lib');
 
+  api.addFiles('tests/jasmine/server/unit/models/_Base.spec.coffee', 'server');
 });
