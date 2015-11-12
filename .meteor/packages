@@ -48,6 +48,7 @@ rocketchat:gitlab
 rocketchat:highlight
 rocketchat:ldap
 rocketchat:logger
+rocketchat:mailer
 rocketchat:markdown
 rocketchat:me
 rocketchat:mentions
