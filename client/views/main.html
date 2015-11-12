@@ -41,7 +41,7 @@
 
 <template name="main">
 	{{#if subsReady}}
-		{{#unless logged}}
+		{{#if privateAndNotLogged}}
 			{{> loginLayout}}
 		{{else}}
 			{{#unless hasUsername}}
@@ -65,6 +65,6 @@
 				</div>
 				{{> audioNotification }}
 			{{/unless}}
-		{{/unless}}
+		{{/if}}
 	{{/if}}
 </template>
