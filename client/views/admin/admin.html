@@ -51,29 +51,23 @@
 													<label><input type="radio" name="{{_id}}" value="0" checked="{{$eq value false}}" /> {{_ "False"}}</label>
 												{{/if}}
 												{{#if $eq type 'select'}}
-													<div class="input-line double-col">
-														<label>{{label}}</label>
-														<div>
-															<select name="{{_id}}">
-																{{#each values}}
-																	<option value="{{key}}" selected="{{selectedOption ../_id key}}">{{_ i18nLabel}}</option>
-																{{/each}}
-															</select>
-														</div>
-													</div>
+													<select name="{{_id}}">
+														{{#each values}}
+															<option value="{{key}}" selected="{{selectedOption ../_id key}}">{{_ i18nLabel}}</option>
+														{{/each}}
+													</select>
 												{{/if}}
 												{{#if $eq type 'color'}}
 													<input type="text" class="minicolors" name="{{_id}}" value="{{value}}" />
 												{{/if}}
-												{{#if description}}
-													<div>
+												<div>
+													{{#if description}}
 														<small class="settings-description">{{description}}</small>
-													</div>
-												{{/if}}
+													{{/if}}
 												</div>
 											</div>
+										</div>
 									{{/each}}
-
 									{{#if section}}
 										{{#if sectionIsCustomOath section}}
 											<div class="submit">
