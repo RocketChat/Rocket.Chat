@@ -5,14 +5,12 @@ Meteor.startup ->
 		i18nLabel: 'Pin_Message'
 		action: (event, instance) ->
 			message = @_arguments[1]
+			message.pinned = true
 			Meteor.call 'pinMessage', message, (error, result) ->
 				if error
 					return Errors.throw error.reason
 		validation: (message) ->
-			if message.pinned
-				return false
-
-			if !RocketChat.settings.get('Message_AllowPinning')
+			if message.pinned or not RocketChat.settings.get('Message_AllowPinning')
 				return false
 
 			if RocketChat.settings.get('Message_AllowPinningByAnyone') or RocketChat.authz.hasRole Meteor.userId(), 'admin'
@@ -27,18 +25,17 @@ Meteor.startup ->
 		i18nLabel: 'Unpin_Message'
 		action: (event, instance) ->
 			message = @_arguments[1]
+			message.pinned = false
 			Meteor.call 'unpinMessage', message, (error, result) ->
 				if error
 					return Errors.throw error.reason
 		validation: (message) ->
-			if not message.pinned
-				return false
-
-			if !RocketChat.settings.get('Message_AllowPinning')
+			if not message.pinned or not RocketChat.settings.get('Message_AllowPinning')
 				return false
 
 			if RocketChat.settings.get('Message_AllowPinningByAnyone') or RocketChat.authz.hasRole Meteor.userId(), 'admin'
 				return true
 
+			console.log 'UNpin-message', '---- is user the room owner', room.u?._id is Meteor.userId()
 			return room.u?._id is Meteor.userId()
-		order: 20
+		order: 21
