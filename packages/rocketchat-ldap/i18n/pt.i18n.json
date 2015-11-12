@@ -1,5 +1,3 @@
 {
-  "LDAP_Url" : "URL LDAP",
-  "LDAP_Port" : "Porta LDAP",
   "LDAP_Dn" : "DN LDAP"
 }
