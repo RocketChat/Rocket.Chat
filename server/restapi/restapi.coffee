@@ -99,7 +99,7 @@ NOTE:   remove room is NOT recommended; use Meteor.reset() to clear db and re-se
 ###
 Api.addRoute 'bulk/register', authRequired: true,
 	post:
-		roleRequired: ['testagent', 'adminautomation']
+		#roleRequired: ['testagent', 'adminautomation']
 		action: ->
 			try
 				Api.testapiValidateUsers  @bodyParams.users
@@ -107,10 +107,10 @@ Api.addRoute 'bulk/register', authRequired: true,
 				ids = []
 				endCount = @bodyParams.users.length - 1
 				for incoming, i in @bodyParams.users
-					ids[i] = Meteor.call 'registerUser', incoming
-					Meteor.runAsUser ids[i].uid, () =>
-						Meteor.call 'setUsername', incoming.name
-						Meteor.call 'joinDefaultChannels'
+				 	ids[i] = {uid: Meteor.call 'registerUser', incoming}
+				 	Meteor.runAsUser ids[i].uid, () =>
+				 		Meteor.call 'setUsername', incoming.name
+				 		Meteor.call 'joinDefaultChannels'
 
 				status: 'success', ids: ids
 			catch e
@@ -136,7 +136,7 @@ Api.testapiValidateRooms =  (rooms) ->
 @apiName createRoom
 @apiGroup TestAndAdminAutomation
 @apiVersion 0.0.1
-@apiParam {json} rooms An array of rooms in the body of the POST.
+@apiParam {json} rooms An array of rooms in the body of the POST. 'name' is room name, 'members' is array of usernames 
 @apiParamExample {json} POST Request Body example:
   {
     'rooms':[ {'name': 'room1',
@@ -163,7 +163,7 @@ NOTE:   remove room is NOT recommended; use Meteor.reset() to clear db and re-se
 ###
 Api.addRoute 'bulk/createRoom', authRequired: true,
 	post:
-		roleRequired: ['testagent', 'adminautomation']
+		#roleRequired: ['testagent', 'adminautomation']
 		action: ->
 			try
 				this.response.setTimeout (1000 * @bodyParams.rooms.length)

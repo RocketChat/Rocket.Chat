@@ -10,3 +10,5 @@ Meteor.methods
 
 		if userData.email
 			Accounts.sendVerificationEmail(userId, userData.email);
+
+		return userId
