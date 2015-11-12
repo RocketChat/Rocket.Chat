@@ -5,6 +5,10 @@ Meteor.startup ->
 	RocketChat.roomTypes.addType('directMessages', roles);
 	RocketChat.roomTypes.addType('privateGroups', roles);
 
+	RocketChat.roomTypes.setIcon('c', 'icon-hash');
+	RocketChat.roomTypes.setIcon('d', 'icon-at');
+	RocketChat.roomTypes.setIcon('p', 'icon-lock');
+
 	RocketChat.roomTypes.setRoute 'c', 'channel', (sub) ->
 		return { name: sub.name }
 

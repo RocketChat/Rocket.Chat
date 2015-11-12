@@ -40,11 +40,11 @@
 													{{#if multiline}}
 														<textarea name="{{_id}}" rows="4" style="height: auto">{{value}}</textarea>
 													{{else}}
-														<input type="text" name="{{_id}}" value="{{value}}" />
+														<input type="text" name="{{_id}}" value="{{value}}" placeholder="{{placeholder}}" />
 													{{/if}}
 										{{/if}}
 										{{#if $eq type 'int'}}
-													<input type="number" name="{{_id}}" value="{{value}}" />
+													<input type="number" name="{{_id}}" value="{{value}}" placeholder="{{placeholder}}" />
 										{{/if}}
 										{{#if $eq type 'boolean'}}
 													<label><input type="radio" name="{{_id}}" value="1" checked="{{$eq value true}}" /> {{_ "True"}}</label>

@@ -13,6 +13,7 @@ Package.onUse(function(api) {
 	api.use('coffeescript');
 	api.use('random');
 	api.use('check');
+	api.use('tracker');
 	api.use('ddp-rate-limiter');
 	api.use('underscore');
 	api.use('underscorestring:underscore.string');
@@ -51,6 +52,7 @@ Package.onUse(function(api) {
 	// CLIENT
 	api.addFiles('client/lib/openRoom.coffee', 'client');
 	api.addFiles('client/lib/roomExit.coffee', 'client');
+	api.addFiles('client/AdminBox.coffee', 'client');
 	api.addFiles('client/Notifications.coffee', 'client');
 	api.addFiles('client/TabBar.coffee', 'client');
 	api.addFiles('client/MessageAction.coffee', 'client');

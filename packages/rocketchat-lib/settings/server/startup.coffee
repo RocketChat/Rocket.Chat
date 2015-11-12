@@ -44,7 +44,7 @@ RocketChat.settings.add 'Accounts_RequireNameForSignUp', true, { type: 'boolean'
 RocketChat.settings.addGroup 'FileUpload'
 RocketChat.settings.add 'FileUpload_Enabled', true, { type: 'boolean', group: 'FileUpload', public: true }
 RocketChat.settings.add 'FileUpload_MaxFileSize', 2097152, { type: 'int', group: 'FileUpload', public: true }
-RocketChat.settings.add 'FileUpload_MediaTypeWhiteList', 'image/*', { type: 'string', group: 'FileUpload', public: true, i18nDescription: 'FileUpload_MediaTypeWhiteListDescription' }
+RocketChat.settings.add 'FileUpload_MediaTypeWhiteList', 'image/*, audio/*, .pdf, .doc, .txt', { type: 'string', group: 'FileUpload', public: true, i18nDescription: 'FileUpload_MediaTypeWhiteListDescription' }
 
 
 RocketChat.settings.addGroup 'General'
@@ -64,10 +64,10 @@ RocketChat.settings.add 'SMTP_Host', '', { type: 'string', group: 'SMTP' }
 RocketChat.settings.add 'SMTP_Port', '', { type: 'string', group: 'SMTP' }
 RocketChat.settings.add 'SMTP_Username', '', { type: 'string', group: 'SMTP' }
 RocketChat.settings.add 'SMTP_Password', '', { type: 'string', group: 'SMTP' }
-RocketChat.settings.add 'From_Email', 'no-reply@rocket.chat', { type: 'string', group: 'SMTP' }
+RocketChat.settings.add 'From_Email', '', { type: 'string', group: 'SMTP', placeholder: 'Name <email@domain>' }
 
 RocketChat.settings.add 'Invitation_Subject', 'You have been invited to Rocket.Chat', { type: 'string', group: 'SMTP', section: 'Invitation' }
-RocketChat.settings.add 'Invitation_HTML', '<h2>You have been invited to <h1>Rocket.Chat</h1></h2><p>Go to https://demo.rocket.chat and try the best open source chat solution available today!</p>', { type: 'string', multiline: true, group: 'SMTP', section: 'Invitation' }
+RocketChat.settings.add 'Invitation_HTML', '<h2>You have been invited to <h1>Rocket.Chat</h1></h2><p>Go to ' + __meteor_runtime_config__?.ROOT_URL + ' and try the best open source chat solution available today!</p>', { type: 'string', multiline: true, group: 'SMTP', section: 'Invitation' }
 RocketChat.settings.add 'Accounts_Enrollment_Email',  '', { type: 'string', multiline: true,  group: 'SMTP', section: 'Invitation' }
 
 RocketChat.settings.addGroup 'Message'
