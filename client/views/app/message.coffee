@@ -25,7 +25,6 @@ Template.message.helpers
 			when 'au' then t('User_added_by', { user_added: this.msg, user_by: this.u.username })
 			when 'ru' then t('User_removed_by', { user_removed: this.msg, user_by: this.u.username })
 			when 'ul' then t('User_left', { user_left: this.u.username })
-			when 'nu' then t('User_added', { user_added: this.u.username })
 			when 'uj' then t('User_joined_channel', { user: this.u.username })
 			when 'wm' then t('Welcome', { user: this.u.username })
 			when 'rm' then t('Message_removed', { user: this.u.username })
@@ -45,7 +44,7 @@ Template.message.helpers
 				return this.html
 
 	system: ->
-		return 'system' if this.t in ['s', 'p', 'f', 'r', 'au', 'ru', 'ul', 'nu', 'wm', 'uj', 'rm']
+		return 'system' if this.t in ['s', 'p', 'f', 'r', 'au', 'ru', 'ul', 'wm', 'uj', 'rm']
 	edited: -> Template.instance().wasEdited?(@)
 	editTime: ->
 		return "" unless Template.instance().wasEdited?(@)
@@ -92,7 +91,7 @@ Template.message.helpers
 
 Template.message.onCreated ->
 	@wasEdited = (msg) ->
-		msg.editedAt? and msg.t not in ['s', 'p', 'f', 'r', 'au', 'ru', 'ul', 'nu', 'wm', 'uj', 'rm']
+		msg.editedAt? and msg.t not in ['s', 'p', 'f', 'r', 'au', 'ru', 'ul', 'wm', 'uj', 'rm']
 
 Template.message.onViewRendered = (context) ->
 	view = this
