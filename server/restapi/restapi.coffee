@@ -99,23 +99,31 @@ NOTE:   remove room is NOT recommended; use Meteor.reset() to clear db and re-se
 ###
 Api.addRoute 'bulk/register', authRequired: true,
 	post:
+		# restivus 0.8.4 does not support alanning:roles using groups
 		#roleRequired: ['testagent', 'adminautomation']
 		action: ->
-			try
-				Api.testapiValidateUsers  @bodyParams.users
-				this.response.setTimeout (500 * @bodyParams.users.length)
-				ids = []
-				endCount = @bodyParams.users.length - 1
-				for incoming, i in @bodyParams.users
-				 	ids[i] = {uid: Meteor.call 'registerUser', incoming}
-				 	Meteor.runAsUser ids[i].uid, () =>
-				 		Meteor.call 'setUsername', incoming.name
-				 		Meteor.call 'joinDefaultChannels'
+			if RocketChat.authz.hasPermission(@userId, 'bulk-register-user') 
+				try
 
-				status: 'success', ids: ids
-			catch e
-				statusCode: 400    # bad request or other errors
-				body: status: 'fail', message: e.name + ' :: ' + e.message
+					Api.testapiValidateUsers  @bodyParams.users
+					this.response.setTimeout (500 * @bodyParams.users.length)
+					ids = []
+					endCount = @bodyParams.users.length - 1
+					for incoming, i in @bodyParams.users
+					 	ids[i] = {uid: Meteor.call 'registerUser', incoming}
+					 	Meteor.runAsUser ids[i].uid, () =>
+					 		Meteor.call 'setUsername', incoming.name
+					 		Meteor.call 'joinDefaultChannels'
+
+					status: 'success', ids: ids
+				catch e
+					statusCode: 400    # bad request or other errors
+					body: status: 'fail', message: e.name + ' :: ' + e.message
+			else
+				console.log '[restapi] bulk/register -> '.red, "User does not have 'bulk-register-user' permission"
+				statusCode: 403    
+				body: status: 'error', message: 'You do not have permission to do this'
+
 
 
 
@@ -163,18 +171,26 @@ NOTE:   remove room is NOT recommended; use Meteor.reset() to clear db and re-se
 ###
 Api.addRoute 'bulk/createRoom', authRequired: true,
 	post:
+		# restivus 0.8.4 does not support alanning:roles using groups
 		#roleRequired: ['testagent', 'adminautomation']
 		action: ->
-			try
-				this.response.setTimeout (1000 * @bodyParams.rooms.length)
-				Api.testapiValidateRooms @bodyParams.rooms
-				ids = []
-				Meteor.runAsUser this.userId, () =>
-					(ids[i] = Meteor.call 'createChannel', incoming.name, incoming.members) for incoming,i in @bodyParams.rooms
-				status: 'success', ids: ids   # need to handle error
-			catch e
-				statusCode: 400    # bad request or other errors
-				body: status: 'fail', message: e.name + ' :: ' + e.message
+			# user must also have create-c permission because 
+			# createChannel method requires it
+			if RocketChat.authz.hasPermission(@userId, 'bulk-create-c') 
+				try
+					this.response.setTimeout (1000 * @bodyParams.rooms.length)
+					Api.testapiValidateRooms @bodyParams.rooms
+					ids = []
+					Meteor.runAsUser this.userId, () =>
+						(ids[i] = Meteor.call 'createChannel', incoming.name, incoming.members) for incoming,i in @bodyParams.rooms
+					status: 'success', ids: ids   # need to handle error
+				catch e
+					statusCode: 400    # bad request or other errors
+					body: status: 'fail', message: e.name + ' :: ' + e.message
+			else
+				console.log '[restapi] bulk/createRoom -> '.red, "User does not have 'bulk-create-c' permission"
+				statusCode: 403    
+				body: status: 'error', message: 'You do not have permission to do this'
 
 
 
