@@ -130,5 +130,5 @@ Template.message.onViewRendered = (context) ->
 				view.parentView.parentView.parentView.parentView.parentView.templateInstance?().atBottom = true
 			else
 				if view.parentView.parentView.parentView.parentView.parentView.templateInstance?().atBottom isnt true
-					newMessage = view.parentView.parentView.parentView.parentView.parentView.templateInstance().find(".new-message")
+					newMessage = view.parentView.parentView.parentView.parentView.parentView.templateInstance?()?.find(".new-message")
 					newMessage?.className = "new-message"
