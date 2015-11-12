@@ -2,7 +2,7 @@
 	<div class="content">
 		{{> videoCall}}
 		{{#if isGroupChat}}
-			<div class="list-view{{#if $.Session.get 'showUserInfo'}} -hidden{{/if}}">
+			<div class="list-view{{#if $.Session.get 'showUserInfo'}} animated-hidden{{/if}}">
 				{{#with roomUsers}}
 					<div class="status">
 						<h2>{{_ "Members_List"}}</h2>
@@ -35,7 +35,7 @@
 				{{/with}}
 			</div>
 		{{/if}}
-		<div class="user-view animated{{#unless showUserInfo}} -hidden{{/unless}}">
+		<div class="user-view animated{{#unless showUserInfo}} animated-hidden{{/unless}}">
 			{{> userInfo user=flexUserInfo showAll=isGroupChat video=isDirectChat}}
 		</div>
 	</div>

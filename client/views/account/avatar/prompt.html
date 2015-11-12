@@ -58,6 +58,17 @@
 								{{/unless}}
 							</div>
 						</div>
+						<div class="avatar-suggestion-item">
+							{{#with service='url'}}
+								<div class="avatar question-mark icon-upload"></div>
+								<div class="action">
+									<div class="input-line">
+										<input type="text" name="avatarurl" id="avatarurl" />
+										<button type="button" class="button primary select-service">{{_ "Use_url_for_avatar"}}</button>
+									</div>
+								</div>
+							{{/with}}
+						</div>
 
 						{{#if suggestions.ready}}
 							{{> avatarSuggestion suggestions.avatars.gravatar}}

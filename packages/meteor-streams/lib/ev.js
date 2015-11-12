@@ -30,7 +30,6 @@ function _EV() {
   self.removeListener = function removeListener(event, callback) {
     if(handlers[event]) {
       var index = handlers[event].indexOf(callback);
-      console.log(index);
       if (index > -1)
         handlers[event].splice(index, 1);
     }

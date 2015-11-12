@@ -27,13 +27,18 @@
 		if lastMessage?
 			ts = lastMessage.ts
 		else
-			ts = new Date
+			ts = undefined
 
 		ls = undefined
+		typeName = undefined
 
 		subscription = ChatSubscription.findOne rid: rid
 		if subscription?
 			ls = subscription.ls
+			typeName = subscription.t + subscription.name
+		else
+			curRoomDoc = ChatRoom.findOne(_id: rid)
+			typeName = curRoomDoc?.t + curRoomDoc?.name
 
 		Meteor.call 'loadHistory', rid, ts, limit, ls, (err, result) ->
 			room.unreadNotLoaded.set result?.unreadNotLoaded
@@ -50,7 +55,7 @@
 
 			Meteor.defer ->
 				readMessage.refreshUnreadMark(rid, true)
-				RoomManager.updateMentionsMarksOfRoom subscription.t + subscription.name
+				RoomManager.updateMentionsMarksOfRoom typeName
 
 			room.isLoading.set false
 			room.loaded += result?.messages?.length

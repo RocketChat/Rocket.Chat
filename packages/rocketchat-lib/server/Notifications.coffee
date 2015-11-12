@@ -46,25 +46,20 @@ RocketChat.Notifications = new class
 		@streamUser.emit.apply @streamUser, args
 
 
-
 ## Permissions for client
 
 # Enable emit for event typing for rooms and add username to event data
 func = (eventName, username, typing) ->
-	console.log arguments
 	[room, e] = eventName.split('/')
 
-	if e isnt 'typing'
-		return false
+	if e is 'webrtc'
+		return true
 
-	user = Meteor.users.findOne(@userId, {fields: {username: 1}})
-	if not user? or user.username isnt username
-		return false
+	if e is 'typing'
+		user = Meteor.users.findOne(@userId, {fields: {username: 1}})
+		if user?.username is username
+			return true
 
-	return true
+	return false
 
 RocketChat.Notifications.streamRoom.permissions.write func, false # Prevent Cache
-
-RocketChat.Notifications.streamRoom.permissions.write (eventName) ->
-	[room, e] = eventName.split('/')
-	return e is 'webrtc'

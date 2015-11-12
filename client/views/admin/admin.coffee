@@ -50,6 +50,8 @@ Template.admin.events
 				value = parseInt(_.trim(t.$("[name=#{setting._id}]").val()))
 			else if setting.type is 'boolean' and t.$("[name=#{setting._id}]:checked").length
 				value = if t.$("[name=#{setting._id}]:checked").val() is "1" then true else false
+			else if setting.type is 'color'
+				value = _.trim(t.$("[name=#{setting._id}]").val())
 
 			if value?
 				updateSettings.push { _id: setting._id, value: value }
@@ -98,3 +100,13 @@ Template.admin.onRendered ->
 	Tracker.afterFlush ->
 		SideNav.setFlex "adminFlex"
 		SideNav.openFlex()
+
+	Meteor.setTimeout ->
+		$('input.minicolors').minicolors({theme: 'rocketchat'})
+	, 500
+
+	Tracker.autorun ->
+		FlowRouter.watchPathChange()
+		Meteor.setTimeout ->
+			$('input.minicolors').minicolors({theme: 'rocketchat'})
+		, 200
