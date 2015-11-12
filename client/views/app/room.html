@@ -20,9 +20,9 @@
 					{{/if}}
 				</h2>
 			</header>
-			<div class="upload-progress">
+			<div class="container-bars">
 				{{#each uploading}}
-					<div class="upload-progress-item {{#if error}}upload-error{{/if}}">
+					<div class="upload-progress {{#if error}}upload-error{{/if}}">
 						{{#if error}}
 							{{error}}
 							<a>
@@ -30,25 +30,27 @@
 							</a>
 						{{else}}
 							<div class="upload-progress-progress" style="width: {{percentage}}%;"></div>
-							{{name}}... {{percentage}}%
-							<a>
-								cancel
-							</a>
+							<div class="upload-progress-text">
+								{{name}}... {{percentage}}%
+								<a>
+									cancel
+								</a>
+							</div>
 						{{/if}}
 					</div>
 				{{/each}}
-			</div>
-			{{#if unreadCount}}
-				{{#if roomManager.unreadSince.get}}
-					<div class="unread-bar">
-						{{_ "S_new_messages_since_s" unreadCount formatUnreadSince}}
-						<a>
-							{{_ "Mark_as_read"}}
-						</a>
-					</div>
+				{{#if unreadCount}}
+					{{#if unreadSince}}
+						<div class="unread-bar">
+							{{_ "S_new_messages_since_s" unreadCount formatUnreadSince}}
+							<a>
+								{{_ "Mark_as_read"}}
+							</a>
+						</div>
+					{{/if}}
 				{{/if}}
-			{{/if}}
-			<div class="messages-box">
+			</div>
+			<div class="messages-box {{compactView}}">
 				<div class="ticks-bar"></div>
 				<div class="wrapper">
 					<ul aria-live="polite">
@@ -80,14 +82,14 @@
 					<form class="message-form" method="post" action="/">
 						<div style="display: flex">
 							<div class="file">
-								<i class="icon-attach"></i>
-								<input type="file" accept="image/*">
+								<i class="octicon octicon-cloud-upload file"></i>
+								<input type="file" accept="{{fileUploadAllowedMediaTypes}}">
 							</div>
 							<div class="input-message-container">
-								{{> messagePopupConfig getPupupConfig}}
+								{{> messagePopupConfig getPopupConfig}}
 								<textarea dir="auto" name="msg" maxlength="{{maxMessageLength}}" class="input-message autogrow-short" placeholder="{{_ 'Message'}}"></textarea>
-								<i class="icon-paper-plane" title="{{_ "Send_Message"}}" aria-label="{{_ "Send_Message"}}"></i>
 							</div>
+
 							{{#if canRecordAudio}}
 								<div class="mic">
 									<i class="icon-mic" aria-label="{{_ "Record"}}"></i>
@@ -115,6 +117,7 @@
 								{{/if}}
 							{{/with}}
 						</div>
+
 						{{#if showFormattingTips}}
 						<div class="formatting-tips" aria-hidden="true" dir="auto">
 							{{#if showMarkdown}}
@@ -129,6 +132,7 @@
 							{{#if showMarkdown}}
 							<q><span class="hidden-br"><br></span>&gt;{{_ "quote"}}</q>
 							{{/if}}
+
 						</div>
 						{{/if}}
 						<div class="editing-commands" aria-hidden="true" dir="auto">

@@ -447,7 +447,9 @@ class WebRTCClass
 		@active = false
 		@monitor = false
 		@remoteMonitoring = false
-		@localStream?.stop()
+		if @localStream? and typeof @localStream isnt 'undefined'
+			@localStream.getTracks().forEach (track) ->
+				track.stop()
 		@localUrl.set undefined
 		delete @localStream
 

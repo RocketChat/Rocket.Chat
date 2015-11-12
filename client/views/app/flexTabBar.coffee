@@ -4,6 +4,8 @@ Template.flexTabBar.helpers
 	buttons: ->
 		RocketChat.TabBar.getButtons()
 		return RocketChat.TabBar.getButtons()
+	title: ->
+		return t(@i18nTitle) or @title
 
 Template.flexTabBar.events
 	'click .tab-button': (e, t) ->
@@ -23,15 +25,3 @@ Template.flexTabBar.events
 			RocketChat.TabBar.setTemplate $(e.currentTarget).data('template'), ->
 				$('.flex-tab')?.find("input[type='text']:first")?.focus()
 				$('.flex-tab .content')?.scrollTop(0)
-
-		# if Session.get('flexOpened') and Session.equals('whichFlexOpened', $(e.currentTarget).data('target'))
-		# 	Session.set('rtcLayoutmode', 0)
-		# 	Session.set('flexOpened',false)
-		# 	Session.set('whichFlexOpened')
-		# else
-		# 	$(e.currentTarget).addClass 'active'
-		# 	Session.set('flexOpened', true)
-		# 	Session.set('whichFlexOpened', $(e.currentTarget).data('target'))
-
-		# # $('.user-info-content').hide()
-		# # $($(e.currentTarget).attr('href')).show()

@@ -18,13 +18,22 @@ Package.registerBuildPlugin({
 Package.onUse(function(api) {
 	api.versionsFrom('1.0');
 
-	api.use(['coffeescript', 'webapp', 'autoupdate'], 'server');
+	api.use(['ecmascript', 'webapp', 'autoupdate'], 'server');
 
-	api.addFiles('livechat.coffee', 'server');
-	api.addFiles('methods.coffee', 'server');
-	api.addFiles('publications.coffee', 'server');
+	api.imply('alanning:roles@1.2.12');
+	api.use('kadira:flow-router', 'client');
+
+	api.addFiles('livechat.js', 'server');
+	api.addFiles('server/methods.js', 'server');
+	api.addFiles('server/startup.js', 'server');
+	api.addFiles('permissions.js', 'server');
 
 	api.addFiles('config.js', 'server');
+
+	api.addFiles('client/ui.js', 'client');
+	api.addFiles('client/route.js', 'client');
+	api.addFiles('client/views/sideNav/livechat.html', 'client');
+	api.addFiles('client/views/sideNav/livechat.js', 'client');
 
 	api.addAssets('rocket-livechat.js', 'client');
 	api.addAssets('public/livechat.css', 'client');

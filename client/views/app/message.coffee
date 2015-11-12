@@ -1,9 +1,12 @@
 Template.message.helpers
 	actions: ->
 		return RocketChat.MessageAction.getButtons(this)
-		
+
 	own: ->
 		return 'own' if this.u?._id is Meteor.userId()
+
+	chatops: ->
+		return 'chatops-message' if this.u?.username is RocketChat.settings.get('Chatops_Username')
 
 	time: ->
 		return moment(this.ts).format('HH:mm')
@@ -28,17 +31,31 @@ Template.message.helpers
 			when 'rm' then t('Message_removed', { user: this.u.username })
 			when 'rtc' then RocketChat.callbacks.run 'renderRtcMessage', this
 			else
+				if this.u?.username is RocketChat.settings.get('Chatops_Username')
+					this.html = this.msg
+					message = RocketChat.callbacks.run 'renderMentions', this
+					# console.log JSON.stringify message
+					return this.html
 				this.html = this.msg
 				if _.trim(this.html) isnt ''
 					this.html = _.escapeHTML this.html
 				message = RocketChat.callbacks.run 'renderMessage', this
+				# console.log JSON.stringify message
 				this.html = message.html.replace /\n/gm, '<br/>'
 				return this.html
 
 	system: ->
 		return 'system' if this.t in ['s', 'p', 'f', 'r', 'au', 'ru', 'ul', 'nu', 'wm', 'uj', 'rm']
-	edited: ->
-		return @ets and @t not in ['s', 'p', 'f', 'r', 'au', 'ru', 'ul', 'nu', 'wm', 'uj', 'rm']
+	edited: -> Template.instance().wasEdited?(@)
+	editTime: ->
+		return "" unless Template.instance().wasEdited?(@)
+		moment(@editedAt).format('LL hh:mma') #TODO profile pref for 12hr/24hr clock?
+	editedBy: ->
+		return "" unless Template.instance().wasEdited?(@)
+		# try to return the username of the editor,
+		# otherwise a special "?" character that will be
+		# rendered as a special avatar
+		return @editedBy?.username or "?"
 	pinned: ->
 		return this.pinned
 	canEdit: ->
@@ -63,8 +80,19 @@ Template.message.helpers
 		return RocketChat.settings.get('Message_AllowDeleting') and this.u?._id is Meteor.userId()
 	canPin: ->
 		return RocketChat.settings.get 'Message_AllowPinning'
+	canStar: ->
+		return RocketChat.settings.get 'Message_AllowStarring'
 	showEditedStatus: ->
 		return RocketChat.settings.get 'Message_ShowEditedStatus'
+	label: ->
+		if @i18nLabel
+			return t(@i18nLabel)
+		else if @label
+			return @label
+
+Template.message.onCreated ->
+	@wasEdited = (msg) ->
+		msg.editedAt? and msg.t not in ['s', 'p', 'f', 'r', 'au', 'ru', 'ul', 'nu', 'wm', 'uj', 'rm']
 
 Template.message.onViewRendered = (context) ->
 	view = this
@@ -90,16 +118,17 @@ Template.message.onViewRendered = (context) ->
 		wrapper = ul.parentElement
 
 		if context.urls?.length > 0 and Template.oembedBaseWidget? and RocketChat.settings.get 'API_Embed'
-			for item in context.urls
-				do (item) ->
-					urlNode = lastNode.querySelector('.body a[href="'+item.url+'"]')
-					if urlNode?
-						$(lastNode.querySelector('.body')).append Blaze.toHTMLWithData Template.oembedBaseWidget, item
+			if context.u?.username not in RocketChat.settings.get('API_EmbedDisabledFor')?.split(',')
+				for item in context.urls
+					do (item) ->
+						urlNode = lastNode.querySelector('.body a[href="'+item.url+'"]')
+						if urlNode?
+							$(lastNode.querySelector('.body')).append Blaze.toHTMLWithData Template.oembedBaseWidget, item
 
 		if not lastNode.nextElementSibling?
 			if lastNode.classList.contains('own') is true
 				view.parentView.parentView.parentView.parentView.parentView.templateInstance?().atBottom = true
 			else
 				if view.parentView.parentView.parentView.parentView.parentView.templateInstance?().atBottom isnt true
-					newMessage = document.querySelector(".new-message")
-					newMessage.className = "new-message"
+					newMessage = view.parentView.parentView.parentView.parentView.parentView.templateInstance?()?.find(".new-message")
+					newMessage?.className = "new-message"

@@ -30,6 +30,9 @@ Template.privateHistory.helpers
 			when 'd'
 				return FlowRouter.path 'direct', { username: this.name }
 
+Template.privateHistory.onRendered ->
+	RocketChat.TabBar.reset()
+
 Template.privateHistory.events
 	'keydown #history-filter': (event) ->
 		if event.which is 13

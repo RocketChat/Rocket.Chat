@@ -3,7 +3,8 @@ RocketChat.models.Messages = new class extends RocketChat.models._Base
 		@_initModel 'message'
 
 		@tryEnsureIndex { 'rid': 1, 'ts': 1 }
-		@tryEnsureIndex { 'ets': 1 }, { sparse: 1 }
+		@tryEnsureIndex { 'editedAt': 1 }, { sparse: 1 }
+		@tryEnsureIndex { 'editedBy._id': 1 }, { sparse: 1 }
 		@tryEnsureIndex { 'rid': 1, 't': 1, 'u._id': 1 }
 		@tryEnsureIndex { 'expireAt': 1 }, { expireAfterSeconds: 0 }
 		@tryEnsureIndex { 'msg': 'text' }
@@ -76,17 +77,31 @@ RocketChat.models.Messages = new class extends RocketChat.models._Base
 				ts:
 					$gt: timestamp
 			,
-				ets:
+				'editedAt':
 					$gt: timestamp
 			]
 
 		return @find query, options
 
+	findStarredByUserAtRoom: (userId, roomId, options) ->
+		query =
+			_hidden: { $ne: true }
+			'starred._id': userId
+			rid: roomId
+
+		console.log 'findStarredByUserAtRoom', arguments
+
+		return @find query, options
+
 	cloneAndSaveAsHistoryById: (_id) ->
+		me = RocketChat.models.Users.findOneById Meteor.userId()
 		record = @findOneById _id
 		record._hidden = true
 		record.parent = record._id
-		record.ets = new Date()
+		record.editedAt = new Date
+		record.editedBy =
+			_id: Meteor.userId()
+			username: me.username
 		delete record._id
 
 		return @insert record
@@ -104,6 +119,7 @@ RocketChat.models.Messages = new class extends RocketChat.models._Base
 		return @update query, update
 
 	setAsDeletedById: (_id) ->
+		me = RocketChat.models.Users.findOneById Meteor.userId()
 		query =
 			_id: _id
 
@@ -111,7 +127,10 @@ RocketChat.models.Messages = new class extends RocketChat.models._Base
 			$set:
 				msg: ''
 				t: 'rm'
-				ets: new Date()
+				editedAt: new Date()
+				editedBy:
+					_id: Meteor.userId()
+					username: me.username
 
 		return @update query, update
 
@@ -147,6 +166,16 @@ RocketChat.models.Messages = new class extends RocketChat.models._Base
 
 		return @update query, update, { multi: true }
 
+	updateUsernameOfEditByUserId: (userId, username) ->
+		query =
+			'editedBy._id': userId
+
+		update =
+			$set:
+				"editedBy.username": username
+
+		return @update query, update, { multi: true }
+
 	updateUsernameAndMessageOfMentionByIdAndOldUsername: (_id, oldUsername, newUsername, newMessage) ->
 		query =
 			_id: _id
@@ -159,6 +188,30 @@ RocketChat.models.Messages = new class extends RocketChat.models._Base
 
 		return @update query, update
 
+	updateUserStarById: (_id, userId, starred) ->
+		query =
+			_id: _id
+
+		if starred
+			update =
+				$addToSet:
+					starred: { _id: userId }
+		else
+			update =
+				$pull:
+					starred: { _id: Meteor.userId() }
+
+		return @update query, update
+
+	upgradeEtsToEditAt: ->
+		query =
+			ets: { $exists: 1 }
+
+		update =
+			$rename:
+				"ets": "editedAt"
+
+		return @update query, update, { multi: true }
 
 	# INSERT
 	createWithTypeRoomIdMessageAndUser: (type, roomId, message, user, extraData) ->
@@ -177,19 +230,19 @@ RocketChat.models.Messages = new class extends RocketChat.models._Base
 		return record
 
 	createUserJoinWithRoomIdAndUser: (roomId, user, extraData) ->
-		message = user.name or user.username
+		message = user.username
 		return @createWithTypeRoomIdMessageAndUser 'uj', roomId, message, user, extraData
 
 	createUserLeaveWithRoomIdAndUser: (roomId, user, extraData) ->
-		message = user.name or user.username
+		message = user.username
 		return @createWithTypeRoomIdMessageAndUser 'ul', roomId, message, user, extraData
 
 	createUserRemovedWithRoomIdAndUser: (roomId, user, extraData) ->
-		message = user.name or user.username
+		message = user.username
 		return @createWithTypeRoomIdMessageAndUser 'ru', roomId, message, user, extraData
 
 	createUserAddedWithRoomIdAndUser: (roomId, user, extraData) ->
-		message = user.name or user.username
+		message = user.username
 		return @createWithTypeRoomIdMessageAndUser 'au', roomId, message, user, extraData
 
 	createRoomRenamedWithRoomIdRoomNameAndUser: (roomId, roomName, user, extraData) ->

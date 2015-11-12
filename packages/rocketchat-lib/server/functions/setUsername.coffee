@@ -19,6 +19,7 @@ RocketChat.setUsername = (user, username) ->
 	# Username is available; if coming from old username, update all references
 	if previousUsername
 		RocketChat.models.Messages.updateAllUsernamesByUserId user._id, username
+		RocketChat.models.Messages.updateUsernameOfEditByUserId user._id, username
 
 		RocketChat.models.Messages.findByMention(previousUsername).forEach (msg) ->
 			updatedMsg = msg.msg.replace(new RegExp("@#{previousUsername}", "ig"), "@#{username}")
@@ -31,6 +32,6 @@ RocketChat.setUsername = (user, username) ->
 		RocketChat.models.Subscriptions.setNameForDirectRoomsWithOldName previousUsername, username
 
 	# Set new username
-	Meteor.users.update { _id: user._id }, { $set: { username: username } }
+	RocketChat.models.Users.setUsername user._id, username
 	user.username = username
 	return user
