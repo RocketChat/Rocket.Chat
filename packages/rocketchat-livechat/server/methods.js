@@ -1,6 +1,7 @@
 Meteor.methods({
 	registerGuest: function(token) {
-		var pass, qt, user, userData, userExists, userId;
+		console.log('registerGuest ->'.green, token);
+		var pass, qt, user, userData, userExists, userId, inc = 0;
 		check(token, String);
 		user = Meteor.users.findOne({
 			"profile.token": token
@@ -17,7 +18,7 @@ Meteor.methods({
 			qt = Meteor.users.find({
 				'profile.guest': true
 			}).count() + 1;
-			user = 'guest-' + qt;
+			user = 'guest-' + (qt + inc++);
 			userExists = Meteor.users.findOne({
 				'username': user
 			}, {
@@ -25,6 +26,7 @@ Meteor.methods({
 					_id: 1
 				}
 			});
+			console.log('userExists ->',userExists);
 			if (!userExists) {
 				break;
 			}
