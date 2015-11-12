@@ -36,6 +36,5 @@ Meteor.startup ->
 			if RocketChat.settings.get('Message_AllowPinningByAnyone') or RocketChat.authz.hasRole Meteor.userId(), 'admin'
 				return true
 
-			console.log 'UNpin-message', '---- is user the room owner', room.u?._id is Meteor.userId()
 			return room.u?._id is Meteor.userId()
 		order: 21
