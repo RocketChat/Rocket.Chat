@@ -1,7 +1,9 @@
 RocketMailer.sendMail = (from, subject, body) ->
 
-	rocketchatMailPattern = /^(?:.*<)?([a-zA-Z0-9.!#$%&'*+\/=?^_`{|}~-]+@rocket.chat)(?:>?)$/
-	unless rocketchatMailPattern.test from
+	rfcMailPatternWithName = /^(?:.*<)?([a-zA-Z0-9.!#$%&'*+\/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*)(?:>?)$/
+	# rfcMailPattern = /^[a-zA-Z0-9.!#$%&'*+\/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/
+
+	unless rfcMailPatternWithName.test from
 		throw new Meteor.Error 'invalid-from-address', TAPi18n.__('You_informed_an_invalid_FROM_address')
 
 	if body.indexOf('[unsubscribe]') is -1
@@ -20,10 +22,9 @@ RocketMailer.sendMail = (from, subject, body) ->
 		html = html.replace /\[email\]/g, email
 		html = html.replace(/([^>\r\n]?)(\r\n|\n\r|\r|\n)/g, '$1' + '<br>' + '$2')
 
-		# rfcMailPatternWithName = /^(?:.*<)?([a-zA-Z0-9.!#$%&'*+\/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*)(?:>?)$/
-		# if rfcMailPatternWithName.test email
-		rfcMailPattern = /^[a-zA-Z0-9.!#$%&'*+\/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/
-		if rfcMailPattern.test email
+		email = "#{user.name} <#{email}>"
+
+		if rfcMailPatternWithName.test email
 			Meteor.defer ->
 				Email.send
 					to: email
