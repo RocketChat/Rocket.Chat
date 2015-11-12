@@ -29,6 +29,7 @@ RocketChat.settings.add = (_id, value, options = {}) ->
 	updateSettings.group = options.group if options.group
 	updateSettings.section = options.section if options.section
 	updateSettings.public = options.public if options.public
+	updateSettings.placeholder = options.placeholder if options.placeholder
 
 	upsertChanges = { $setOnInsert: { value: value }, $set: updateSettings }
 

@@ -1,0 +1,15 @@
+{
+	"From_email_warning": "<b>Warning</b>: The field <b>From</b> is subject to your mail server settings.",
+	"From_email_is_required": "From e-mail is required",
+	"Email_from": "From",
+	"Email_subject": "Subject",
+	"Email_body": "E-mail body",
+	"Rocket_Mailer": "Rocket Mailer",
+	"RocketMailer_body_tags": "You <b>must</b> use [unsubscribe] for the unsubscription link.<br />You may use [name], [fname], [lname] for the user's full name, first name or last name, respectively.<br />You may use [email] for the user's e-mail.",
+	"Send_email": "Send E-mail",
+	"The_emails_are_being_sent": "The e-mails are being sent.",
+	"You_are_not_authorized_to_view_this_page": "You are not authorized to view this page.",
+	"You_have_successfully_unsubscribed": "You have successfully unsubscribed from our Mailling List.",
+	"You_informed_an_invalid_FROM_address": "You informed an invalid FROM address.",
+	"You_must_provide_the_unsubscribe_link": "You must provide the [unsubscribe] link."
+}

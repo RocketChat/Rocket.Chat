@@ -64,10 +64,10 @@ RocketChat.settings.add 'SMTP_Host', '', { type: 'string', group: 'SMTP' }
 RocketChat.settings.add 'SMTP_Port', '', { type: 'string', group: 'SMTP' }
 RocketChat.settings.add 'SMTP_Username', '', { type: 'string', group: 'SMTP' }
 RocketChat.settings.add 'SMTP_Password', '', { type: 'string', group: 'SMTP' }
-RocketChat.settings.add 'From_Email', 'no-reply@rocket.chat', { type: 'string', group: 'SMTP' }
+RocketChat.settings.add 'From_Email', '', { type: 'string', group: 'SMTP', placeholder: 'Name <email@domain>' }
 
 RocketChat.settings.add 'Invitation_Subject', 'You have been invited to Rocket.Chat', { type: 'string', group: 'SMTP', section: 'Invitation' }
-RocketChat.settings.add 'Invitation_HTML', '<h2>You have been invited to <h1>Rocket.Chat</h1></h2><p>Go to https://demo.rocket.chat and try the best open source chat solution available today!</p>', { type: 'string', multiline: true, group: 'SMTP', section: 'Invitation' }
+RocketChat.settings.add 'Invitation_HTML', '<h2>You have been invited to <h1>Rocket.Chat</h1></h2><p>Go to ' + __meteor_runtime_config__?.ROOT_URL + ' and try the best open source chat solution available today!</p>', { type: 'string', multiline: true, group: 'SMTP', section: 'Invitation' }
 
 RocketChat.settings.addGroup 'Message'
 RocketChat.settings.add 'Message_AllowEditing', true, { type: 'boolean', group: 'Message', public: true }
