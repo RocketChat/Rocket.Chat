@@ -1,5 +1,6 @@
 {
-	"Currently_only_rocket_chat_emails": "Currently only accepting @rocket.chat e-mails",
+	"From_email_warning": "<b>Warning</b>: The field <b>From</b> is subject to your mail server settings.",
+	"From_email_is_required": "From e-mail is required",
 	"Email_from": "From",
 	"Email_subject": "Subject",
 	"Email_body": "E-mail body",
