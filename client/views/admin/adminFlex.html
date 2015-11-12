@@ -25,6 +25,14 @@
 					</li>
 				{{/if}}
 
+				{{#each adminBoxOptions}}
+					{{#if permissionGranted}}
+						<li>
+							<a href="{{pathFor href}}" class="admin-link">{{label}}</a>
+						</li>
+					{{/if}}
+				{{/each}}
+
 				<h3 class="add-room">
 					{{_ "Settings"}}
 				</h3>
@@ -32,7 +40,7 @@
 				{{#if hasPermission 'view-privileged-setting'}}
 					{{#each groups}}
 					<li>
-						<a href="{{pathFor 'admin' group=_id}}" class="admin-link">{{_ i18nLabel}}</a>
+						<a href="{{pathFor 'admin' group=_id}}" class="admin-link">{{label}}</a>
 					</li>
 					{{/each}}
 				{{/if}}

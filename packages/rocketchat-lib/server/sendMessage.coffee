@@ -49,7 +49,7 @@ RocketChat.sendMessage = (user, message, room, options) ->
 			###
 			RocketChat.models.Subscriptions.incUnreadOfDirectForRoomIdExcludingUserId message.rid, message.u._id, 1
 
-			userOfMention = Meteor.users.findOne({_id: message.rid.replace(message.u._id, '')}, {fields: {username: 1, statusConnection: 1}})
+			userOfMention = RocketChat.models.Users.findOne({_id: message.rid.replace(message.u._id, '')}, {fields: {username: 1, statusConnection: 1}})
 			if userOfMention?
 				RocketChat.Notifications.notifyUser userOfMention._id, 'notification',
 					title: "@#{user.username}"
@@ -82,10 +82,13 @@ RocketChat.sendMessage = (user, message, room, options) ->
 			message.mentions?.forEach (mention) ->
 				mentionIds.push mention._id
 
-			if mentionIds.length > 0
-				usersOfMention = Meteor.users.find({_id: {$in: mentionIds}}, {fields: {_id: 1, username: 1}}).fetch()
+			# @all?
+			toAll = mentionIds.indexOf('all') > -1
 
-				if room.t is 'c' and mentionIds.indexOf('all') is -1
+			if mentionIds.length > 0
+				usersOfMention = RocketChat.models.Users.find({_id: {$in: mentionIds}}, {fields: {_id: 1, username: 1}}).fetch()
+
+				if room.t is 'c' and !toAll
 					for usersOfMentionItem in usersOfMention
 						if room.usernames.indexOf(usersOfMentionItem.username) is -1
 							Meteor.runAsUser usersOfMentionItem._id, ->
@@ -95,30 +98,31 @@ RocketChat.sendMessage = (user, message, room, options) ->
 				Update all other subscriptions of mentioned users to alert their owners and incrementing
 				the unread counter for mentions and direct messages
 				###
-				if mentionIds.indexOf('all') > -1
+				if toAll
 					# all users except sender if mention is for all
 					RocketChat.models.Subscriptions.incUnreadForRoomIdExcludingUserId message.rid, user._id, 1
 				else
 					# the mentioned user if mention isn't for all
 					RocketChat.models.Subscriptions.incUnreadForRoomIdAndUserIds message.rid, mentionIds, 1
 
-				query =
-					statusConnection: {$ne: 'online'}
+				# Get ids of all mentioned users.
+				userIdsToNotify = _.pluck(usersOfMention, '_id')
+				userIdsToPushNotify = userIdsToNotify
 
-				if mentionIds.indexOf('all') > -1
-					if room.usernames?.length > 0
-						query.username =
-							$in: room.usernames
-					else
-						query.username =
-							$in: []
-				else
-					query._id =
-						$in: mentionIds
+				# If the message is @all, notify all room users except for the sender.
+				if toAll and room.usernames?.length > 0
+					usersOfRoom = RocketChat.models.Users.find({
+							username: {$in: room.usernames},
+							_id: {$ne: user._id}},
+						{fields: {_id: 1, username: 1, status: 1}})
+						.fetch()
+					onlineUsersOfRoom = _.filter usersOfRoom, (user) ->
+						user.status in ['online', 'away', 'busy']
+					userIdsToNotify = _.union userIdsToNotify, _.pluck(onlineUsersOfRoom, '_id')
+					userIdsToPushNotify = _.union userIdsToPushNotify, _.pluck(usersOfRoom, '_id')
 
-				usersOfMentionIds = _.pluck(usersOfMention, '_id');
-				if usersOfMentionIds.length > 0
-					for usersOfMentionId in usersOfMentionIds
+				if userIdsToNotify.length > 0
+					for usersOfMentionId in userIdsToNotify
 						RocketChat.Notifications.notifyUser usersOfMentionId, 'notification',
 							title: "@#{user.username} @ ##{room.name}"
 							text: message.msg
@@ -128,6 +132,7 @@ RocketChat.sendMessage = (user, message, room, options) ->
 								type: room.t
 								name: room.name
 
+				if userIdsToPushNotify.length > 0
 					if Push.enabled is true
 						Push.send
 							from: 'push'
@@ -143,7 +148,7 @@ RocketChat.sendMessage = (user, message, room, options) ->
 								type: room.t
 								name: room.name
 							query:
-								userId: $in: usersOfMentionIds
+								userId: $in: userIdsToPushNotify
 
 		###
 		Update all other subscriptions to alert their owners but witout incrementing

@@ -12,7 +12,7 @@ Template.messagePopupConfig.helpers
 			getInput: self.getInput
 			textFilterDelay: 200
 			getFilter: (collection, filter) ->
-				exp = new RegExp("#{filter}", 'i')
+				exp = new RegExp("#{RegExp.escape filter}", 'i')
 				template.userFilter.set filter
 				if template.userSubscription.ready()
 					items = filteredUsers.find({$or: [{username: exp}, {name: exp}]}, {limit: 5}).fetch()
@@ -24,7 +24,7 @@ Template.messagePopupConfig.helpers
 						name: t 'Notify_all_in_this_room'
 						compatibility: 'channel group'
 
-					exp = new RegExp("(^|\\s)#{filter}", 'i')
+					exp = new RegExp("(^|\\s)#{RegExp.escape filter}", 'i')
 					if exp.test(all.username) or exp.test(all.compatibility)
 						items.unshift all
 					return items
@@ -116,12 +116,14 @@ Template.messagePopupConfig.helpers
 				getInput: self.getInput
 				getFilter: (collection, filter) ->
 					results = []
+					key = ':' + filter
 
 					# show common used emojis, when use input a single ':'
 					if filter == ''
 						commonEmojis = [
 					            ':laughing:',
 					            ':smiley:',
+					            ':stuck_out_tongue:',
 					            ':sunglasses:',
 					            ':wink:',
 					            ':innocent:',
@@ -137,18 +139,29 @@ Template.messagePopupConfig.helpers
 								data: collection[shortname]
 						return results;
 
+					# use ascii
+					for shortname, value of RocketChat.emoji.asciiList
+						if results.length > 10
+							break
+
+						if shortname.startsWith(key)
+							results.push
+								_id: shortname
+								data: [value]
+
+					# use shortnames
 					for shortname, data of collection
-						if shortname.indexOf(filter) > -1
+						if results.length > 10
+							break
+
+						if shortname.startsWith(key)
 							results.push
 								_id: shortname
 								data: data
 
-						if results.length > 10
-							break
-
-					if filter.length >= 3
-						results.sort (a, b) ->
-							a.length > b.length
+					#if filter.length >= 3
+					results.sort (a, b) ->
+						a._id.length - b._id.length
 
 					return results
 
@@ -167,4 +180,3 @@ Template.messagePopupConfig.onCreated ->
 
 	@autorun ->
 		template.channelSubscription = template.subscribe 'channelAutocomplete', template.channelFilter.get()
-

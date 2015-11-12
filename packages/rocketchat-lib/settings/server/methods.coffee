@@ -4,25 +4,32 @@
 # @param {Mixed} value
 # @param {Object} setting
 ###
-
 RocketChat.settings.add = (_id, value, options = {}) ->
 	if not _id or not value?
 		return false
 
 	# console.log '[functions] RocketChat.settings.add -> '.green, 'arguments:', arguments
 
-	if Meteor.settings?[_id]?
+	if process?.env?[_id]?
+		value = process.env[_id]
+	else if Meteor.settings?[_id]?
 		value = Meteor.settings[_id]
 
 	updateSettings =
 		i18nLabel: options.i18nLabel or _id
 
-	updateSettings.i18nDescription = options.i18nDescription if options.i18nDescription?
+	# default description i18n key will be the setting name + "_Description"
+	# (eg: LDAP_Enable -> LDAP_Enable_Description)
+	updateSettings.i18nDescription = if options.i18nDescription?
+		options.i18nDescription
+	else
+		"#{_id}_Description"
 	updateSettings.type = options.type if options.type
 	updateSettings.multiline = options.multiline if options.multiline
 	updateSettings.group = options.group if options.group
 	updateSettings.section = options.section if options.section
 	updateSettings.public = options.public if options.public
+	updateSettings.placeholder = options.placeholder if options.placeholder
 
 	upsertChanges = { $setOnInsert: { value: value }, $set: updateSettings }
 
@@ -33,11 +40,11 @@ RocketChat.settings.add = (_id, value, options = {}) ->
 
 	return RocketChat.models.Settings.upsert { _id: _id }, upsertChanges
 
+
 ###
 # Add a setting group
 # @param {String} _id
 ###
-
 RocketChat.settings.addGroup = (_id, options = {}) ->
 	if not _id
 		return false
@@ -48,7 +55,10 @@ RocketChat.settings.addGroup = (_id, options = {}) ->
 		type: 'group'
 		i18nLabel: options.i18nLabel or _id
 
-	updateSettings.i18nDescription = options.i18nDescription if options.i18nDescription?
+	updateSettings.i18nDescription = if options.i18nDescription?
+		options.i18nDescription
+	else
+		"#{_id}_Description"
 
 	upsertChanges = { $set: updateSettings }
 	if options.persistent is true
@@ -58,11 +68,11 @@ RocketChat.settings.addGroup = (_id, options = {}) ->
 
 	return RocketChat.models.Settings.upsert { _id: _id }, upsertChanges
 
+
 ###
 # Remove a setting by id
 # @param {String} _id
 ###
-
 RocketChat.settings.removeById = (_id) ->
 	if not _id
 		return false
@@ -70,6 +80,14 @@ RocketChat.settings.removeById = (_id) ->
 	# console.log '[functions] RocketChat.settings.add -> '.green, 'arguments:', arguments
 
 	return RocketChat.models.Settings.removeById _id
+
+
+###
+# Update a setting by id
+# @param {String} _id
+###
+RocketChat.settings.updateById = (_id, value) ->
+	RocketChat.models.Settings.updateValueById _id, value
 
 
 Meteor.methods
@@ -82,5 +100,5 @@ Meteor.methods
 			throw new Meteor.Error 503, 'Not authorized'
 
 		# console.log "saveSetting -> ".green, _id, value
-		RocketChat.models.Settings.updateValueById _id, value
+		RocketChat.settings.updateById _id, value
 		return true

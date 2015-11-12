@@ -10,7 +10,8 @@ Package.onUse(function(api) {
 
 	api.use([
 		'coffeescript',
-		'rocketchat:lib@0.0.1'
+		'rocketchat:lib@0.0.1',
+		'dburles:google-maps@1.1.5'
 	]);
 
 	// TAPi18n
@@ -27,11 +28,14 @@ Package.onUse(function(api) {
 	api.addFiles("package-tap.i18n", ["client", "server"]);
 
 	api.addFiles([
+		'client/startup.coffee',
 		'client/tabBar.coffee',
 		'client/views/chatops.html',
 		'client/views/chatops.coffee',
 		'client/views/codemirror.html',
 		'client/views/codemirror.coffee',
+		'client/views/droneflight.html',
+		'client/views/droneflight.coffee',
 		'client/views/dynamicUI.html',
 		'client/views/stylesheets/chatops.css',
 	], 'client');

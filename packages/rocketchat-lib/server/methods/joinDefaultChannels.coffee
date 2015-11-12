@@ -1,7 +1,7 @@
 Meteor.methods
 	joinDefaultChannels: ->
 		if not Meteor.userId()
-			throw new Meteor.Error('invalid-user', "[methods] setUsername -> Invalid user")
+			throw new Meteor.Error('invalid-user', "[methods] joinDefaultChannels -> Invalid user")
 
 		console.log '[methods] joinDefaultChannels -> '.green, 'userId:', Meteor.userId(), 'arguments:', arguments
 

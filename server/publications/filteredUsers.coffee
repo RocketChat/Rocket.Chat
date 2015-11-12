@@ -18,7 +18,7 @@ Meteor.publish 'filteredUsers', (name) ->
 
 	pub = this
 
-	cursorHandle = RocketChat.models.Users.findUsersByNameOrUsername(exp, options).observeChanges
+	cursorHandle = RocketChat.models.Users.findByActiveUsersNameOrUsername(exp, options).observeChanges
 		added: (_id, record) ->
 			pub.added('filtered-users', _id, record)
 

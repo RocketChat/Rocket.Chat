@@ -58,8 +58,7 @@ SAML.prototype.generateUniqueID = function () {
 };
 
 SAML.prototype.generateInstant = function () {
-	var date = new Date();
-	return date.getUTCFullYear() + '-' + ('0' + (date.getUTCMonth() + 1)).slice(-2) + '-' + ('0' + date.getUTCDate()).slice(-2) + 'T' + ('0' + (date.getUTCHours() + 2)).slice(-2) + ":" + ('0' + date.getUTCMinutes()).slice(-2) + ":" + ('0' + date.getUTCSeconds()).slice(-2) + "Z";
+	return new Date().toISOString();
 };
 
 SAML.prototype.signRequest = function (xml) {
@@ -105,7 +104,7 @@ SAML.prototype.generateLogoutRequest = function (options) {
 	// options should be of the form
 	// nameId: <nameId as submitted during SAML SSO>
 	// sessionIndex: sessionIndex
-	// --- NO SAMLsettings: <Meteor.setting.saml  entry for the provider you want to SLO from   
+	// --- NO SAMLsettings: <Meteor.setting.saml  entry for the provider you want to SLO from
 
 	var id = "_" + this.generateUniqueID();
 	var instant = this.generateInstant();
@@ -172,7 +171,7 @@ SAML.prototype.requestToUrl = function (request, operation, callback) {
 			samlRequest.Signature = self.signRequest(querystring.stringify(samlRequest));
 		}
 
-		// TBD. We should really include a proper RelayState here 
+		// TBD. We should really include a proper RelayState here
 		if (operation === 'logout') {
 			// in case of logout we want to be redirected back to the Meteor app.
 			var relayState = Meteor.absoluteUrl();
@@ -438,7 +437,7 @@ SAML.prototype.generateServiceProviderMetadata = function (callbackUrl) {
 
 	if (!decryptionCert) {
 		decryptionCert = this.options.privateCert;
-	}  
+	}
 
 	if (this.options.privateKey) {
 		if (!decryptionCert) {
