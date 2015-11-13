@@ -42,9 +42,13 @@
 			</div>
 		{{/if}}
 		</span>
-
 		<div class="body" dir="auto">
 			{{{body}}}
+			{{#if hasOembed}}
+				{{#each urls}}
+					{{> oembedBaseWidget}}
+				{{/each}}
+			{{/if}}
 		</div>
 	</li>
 </template>

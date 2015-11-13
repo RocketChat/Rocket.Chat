@@ -20,40 +20,20 @@ Template.message.helpers
 		return
 
 	body: ->
-		messageType = RocketChat.MessageTypes.getType(this)
-		if messageType?.render?
-			return messageType.render(message)
-		else if messageType?.template?
-			# render template
-		else if messageType?.message?
-			if messageType.data?(this)?
-				return TAPi18n.__(messageType.message, messageType.data(this))
-			else
-				return TAPi18n.__(messageType.message)
-		else
-			if this.u?.username is RocketChat.settings.get('Chatops_Username')
-				this.html = this.msg
-				message = RocketChat.callbacks.run 'renderMentions', this
-				# console.log JSON.stringify message
-				return this.html
-			this.html = this.msg
-			if _.trim(this.html) isnt ''
-				this.html = _.escapeHTML this.html
-			message = RocketChat.callbacks.run 'renderMessage', this
-			# console.log JSON.stringify message
-			this.html = message.html.replace /\n/gm, '<br/>'
-			return this.html
+		return Template.instance().body
 
 	system: ->
 		if RocketChat.MessageTypes.isSystemMessage(this)
 			return 'system'
 
-	edited: -> Template.instance().wasEdited?(@)
+	edited: ->
+		return Template.instance().wasEdited
+
 	editTime: ->
-		return "" unless Template.instance().wasEdited?(@)
+		return "" unless Template.instance().wasEdited
 		moment(@editedAt).format('LL hh:mma') #TODO profile pref for 12hr/24hr clock?
 	editedBy: ->
-		return "" unless Template.instance().wasEdited?(@)
+		return "" unless Template.instance().wasEdited
 		# try to return the username of the editor,
 		# otherwise a special "?" character that will be
 		# rendered as a special avatar
@@ -92,9 +72,42 @@ Template.message.helpers
 		else if @label
 			return @label
 
+	hasOembed: ->
+		return false unless this.urls?.length > 0 and Template.oembedBaseWidget? and RocketChat.settings.get 'API_Embed'
+
+		return false unless this.u?.username not in RocketChat.settings.get('API_EmbedDisabledFor')?.split(',')
+
+		return true
+
 Template.message.onCreated ->
-	@wasEdited = (msg) ->
-		msg.editedAt? and not RocketChat.MessageTypes.isSystemMessage(this)
+	msg = Template.currentData()
+
+	@wasEdited = msg.editedAt? and not RocketChat.MessageTypes.isSystemMessage(msg)
+
+	@body = do ->
+		switch msg.t
+			when 'r'  then t('Room_name_changed', { room_name: msg.msg, user_by: msg.u.username })
+			when 'au' then t('User_added_by', { user_added: msg.msg, user_by: msg.u.username })
+			when 'ru' then t('User_removed_by', { user_removed: msg.msg, user_by: msg.u.username })
+			when 'ul' then t('User_left', { user_left: msg.u.username })
+			when 'nu' then t('User_added', { user_added: msg.u.username })
+			when 'uj' then t('User_joined_channel', { user: msg.u.username })
+			when 'wm' then t('Welcome', { user: msg.u.username })
+			when 'rm' then t('Message_removed', { user: msg.u.username })
+			when 'rtc' then RocketChat.callbacks.run 'renderRtcMessage', msg
+			else
+				if msg.u?.username is RocketChat.settings.get('Chatops_Username')
+					msg.html = msg.msg
+					message = RocketChat.callbacks.run 'renderMentions', msg
+					# console.log JSON.stringify message
+					return msg.html
+				msg.html = msg.msg
+				if _.trim(msg.html) isnt ''
+					msg.html = _.escapeHTML msg.html
+				message = RocketChat.callbacks.run 'renderMessage', msg
+				# console.log JSON.stringify message
+				msg.html = message.html.replace /\n/gm, '<br/>'
+				return msg.html
 
 Template.message.onViewRendered = (context) ->
 	view = this
@@ -115,17 +128,6 @@ Template.message.onViewRendered = (context) ->
 
 		if lastNode.nextElementSibling?.dataset?.username isnt lastNode.dataset.username
 			$(lastNode.nextElementSibling).removeClass('sequential')
-
-		ul = lastNode.parentElement
-		wrapper = ul.parentElement
-
-		if context.urls?.length > 0 and Template.oembedBaseWidget? and RocketChat.settings.get 'API_Embed'
-			if context.u?.username not in RocketChat.settings.get('API_EmbedDisabledFor')?.split(',')
-				for item in context.urls
-					do (item) ->
-						urlNode = lastNode.querySelector('.body a[href="'+item.url+'"]')
-						if urlNode?
-							$(lastNode.querySelector('.body')).append Blaze.toHTMLWithData Template.oembedBaseWidget, item
 
 		if not lastNode.nextElementSibling?
 			if lastNode.classList.contains('own') is true
