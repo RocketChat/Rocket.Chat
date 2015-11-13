@@ -78,12 +78,6 @@ Template.message.helpers
 
 		return true
 
-	oembed: ->
-		$body = $(Template.instance().body)
-		return null unless $body.is('a[href="'+this.url+'"]') or $body.has('a[href="'+this.url+'"]').is()
-
-		Template.oembedBaseWidget
-
 Template.message.onCreated ->
 	msg = Template.currentData()
 
