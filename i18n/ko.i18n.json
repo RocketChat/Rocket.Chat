@@ -338,7 +338,6 @@
   "Use_service_avatar" : "아바타 %s 사용",
   "Use_this_username" : "이 사용자 이름 사용",
   "Use_uploaded_avatar" : "업로드된 아바타 사용",
-  "User_added" : "사용자 <em>__user_added__</em> 추가함.",
   "User_added_by" : "사용자 <em>__user_added__</em>을/를 <em>__user_by__</em>에 추가함.",
   "User_Channels" : "사용자 채널",
   "User_has_been_activated" : "사용자가 활성화되었습니다",
