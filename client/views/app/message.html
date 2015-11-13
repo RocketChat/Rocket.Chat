@@ -5,12 +5,10 @@
 		data-message-type="{{t}}"
 		data-username="{{u.username}}"
 		data-date="{{date}}">
-		{{#if system}}
-			<span class="user-card-message system">{{_ "system"}}</span>
-		{{else}}
+		{{#unless system}}
 			<a class="thumb user-card-message" href="#" data-username="{{u.username}}" tabindex="1">{{> avatar username=u.username}}</a>
 			<a class="user user-card-message" href="#" data-username="{{u.username}}" tabindex="1">{{u.username}}</a>
-		{{/if}}
+		{{/unless}}
 		<span class="info">
 		{{#if edited}}
 			<span
@@ -54,7 +52,6 @@
 
 		<div class="body" dir="auto">
 	                {{#if system}}
-				<div class="message-icon-action"></div>
 				<a class="thumb thumb-small user-card-message" href="#" data-username="{{u.username}}" tabindex="1">{{> avatar username=u.username}}</a>
 				<a class="user user-card-message" href="#" data-username="{{u.username}}" tabindex="1">{{u.username}}</a>
 			{{/if}}
