@@ -259,6 +259,25 @@ blockquote {
 		text-align: right;
 	}
 }
+.message-thumb-style {
+	position: absolute;
+	left: 20px;
+	top: 20px;
+	display: block;
+	width: 40px;
+	height: 40px;
+}
+
+.message-icon-action {
+	.message-thumb-style;
+	top: 25px;
+	vertical-align: bottom;
+	background: url(/images/logo/icon-2.svg) no-repeat top left;
+	background-size: contain;
+	filter: gray; /* IE6-9 */
+	filter: grayscale(1); /* Firefox 35+ */
+	-webkit-filter: grayscale(1); /* Google Chrome, Safari 6+ & Opera 15+ */
+}
 
 .input-line {
 	.clearfix;
@@ -2309,6 +2328,20 @@ a.github-fork {
 	position: relative;
 	line-height: 20px;
 	min-height: 40px;
+	&.message-via-me {
+		&:not(.editing) .body {
+			padding-left: 5px;
+			border-left: 4px solid rgba(4, 73, 116, 0.82);
+			.created-via-me .user-card-message {
+				display: inline-block;
+				margin-right: 2px;
+				font-style: italic;
+			}
+		}
+		&.editing .body .created-via-me .octicon {
+			display: none;
+		}
+	}
 
 	.body, .user.user-card-message, .time {
 		-webkit-user-select: text;
@@ -2323,13 +2356,12 @@ a.github-fork {
 		}
 	}
 
+
 	&:nth-child(1) {
 		margin-top: 0;
 	}
 	&.new-day {
 		margin-top: 60px;
-	}
-	&.new-day {
 		&:before {
 			content: attr(data-date);
 			display: block;
@@ -2442,12 +2474,7 @@ a.github-fork {
 		}
 	}
 	.thumb {
-		position: absolute;
-		left: 20px;
-		top: 20px;
-		display: block;
-		width: 40px;
-		height: 40px;
+		.message-thumb-style;
 		&.thumb-small {
 			position: initial;
 			width: 20px;
@@ -2525,6 +2552,13 @@ a.github-fork {
 				font-weight: 600;
 			}
 		}
+		.user-card-message {
+			margin-right: 0;
+			font-weight: bold;
+			&.system {
+				margin-right: 5px;
+			}
+		}
 	}
 	.avatar-initials {
 		line-height: 40px;
@@ -2566,6 +2600,9 @@ a.github-fork {
 		padding: 5px 20px 5px 70px;
 		.thumb:not(.thumb-small) .avatar {
 			margin-top: -15px;
+		}
+		.message-icon-action {
+			top: 10px;
 		}
 	}
 }

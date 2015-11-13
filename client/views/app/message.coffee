@@ -1,3 +1,8 @@
+#TODO how to share this between Template.message.helpers and Template.message.onViewRendered?
+isSystem = (msg) ->
+	msg.t in ['s', 'p', 'f', 'r', 'au', 'ru', 'ul', 'wm', 'uj', 'rm']
+newDayClass = 'new-day'
+seqClass = 'sequential'
 Template.message.helpers
 	actions: ->
 		return RocketChat.MessageAction.getButtons(this)
@@ -18,12 +23,11 @@ Template.message.helpers
 		if @temp is true
 			return 'temp'
 		return
-
 	body: ->
 		switch this.t
-			when 'r'  then t('Room_name_changed', { room_name: this.msg, user_by: this.u.username })
-			when 'au' then t('User_added_by', { user_added: this.msg, user_by: this.u.username })
-			when 'ru' then t('User_removed_by', { user_removed: this.msg, user_by: this.u.username })
+			when 'r'  then t('Room_name_changed', { room_name: this.msg })
+			when 'au' then t('User_added_by', { user_added: this.msg })
+			when 'ru' then t('User_removed_by', { user_removed: this.msg })
 			when 'ul' then t('User_left', { user_left: this.u.username })
 			when 'uj' then t('User_joined_channel', { user: this.u.username })
 			when 'wm' then t('Welcome', { user: this.u.username })
@@ -43,8 +47,9 @@ Template.message.helpers
 				this.html = message.html.replace /\n/gm, '<br/>'
 				return this.html
 
-	system: ->
-		return 'system' if this.t in ['s', 'p', 'f', 'r', 'au', 'ru', 'ul', 'wm', 'uj', 'rm']
+	createdVia: -> if @via? then "message-via-#{@via}" else ""
+	createdViaMe: -> @via is "me"
+	system: -> 'system' if Template.instance().isSystem?(@)
 	edited: -> Template.instance().wasEdited?(@)
 	editTime: ->
 		return "" unless Template.instance().wasEdited?(@)
@@ -90,28 +95,39 @@ Template.message.helpers
 			return @label
 
 Template.message.onCreated ->
-	@wasEdited = (msg) ->
-		msg.editedAt? and msg.t not in ['s', 'p', 'f', 'r', 'au', 'ru', 'ul', 'wm', 'uj', 'rm']
+	@isSystem = (msg) -> isSystem(msg)
+	@wasEdited = (msg) -> msg.editedAt? and not isSystem(msg)
 
 Template.message.onViewRendered = (context) ->
 	view = this
 	this._domrange.onAttached (domRange) ->
 		lastNode = domRange.lastNode()
-		if lastNode.previousElementSibling?.dataset?.date isnt lastNode.dataset.date
-			$(lastNode).addClass('new-day')
-			$(lastNode).removeClass('sequential')
-		else if lastNode.previousElementSibling?.dataset?.username isnt lastNode.dataset.username
-			$(lastNode).removeClass('sequential')
+		nextNode = lastNode.nextElementSibling
+		currentData = lastNode.dataset
+		previousData = lastNode.previousElementSibling?.dataset
+		if previousData?.date isnt currentData.date
+			$(lastNode)
+				.addClass(newDayClass)
+				.removeClass(seqClass)
+		else if previousData?.username isnt currentData.username
+			$(lastNode).removeClass(seqClass)
 
-		if lastNode.nextElementSibling?.dataset?.date is lastNode.dataset.date
-			$(lastNode.nextElementSibling).removeClass('new-day')
-			$(lastNode.nextElementSibling).addClass('sequential')
+		if previousData?.date is currentData.date
+			$(nextNode)
+				.removeClass(newDayClass)
+				.addClass(seqClass)
 		else
-			$(lastNode.nextElementSibling).addClass('new-day')
-			$(lastNode.nextElementSibling).removeClass('sequential')
+			$(nextNode)
+				.addClass(newDayClass)
+				.removeClass(seqClass)
 
-		if lastNode.nextElementSibling?.dataset?.username isnt lastNode.dataset.username
-			$(lastNode.nextElementSibling).removeClass('sequential')
+		if previousData?.username isnt currentData.username
+			$(nextNode).removeClass(seqClass)
+
+		if isSystem {t: currentData.messageType}
+			$(lastNode).removeClass(seqClass)
+		else if isSystem {t: previousData?.messageType }
+			$(lastNode).removeClass(seqClass)
 
 		ul = lastNode.parentElement
 		wrapper = ul.parentElement
