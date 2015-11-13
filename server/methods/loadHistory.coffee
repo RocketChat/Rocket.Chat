@@ -12,9 +12,14 @@ Meteor.methods
 			limit: limit
 
 		if not RocketChat.settings.get 'Message_ShowEditedStatus'
-			options.fields = { ets: 0 }
+			options.fields = { 'editedAt': 0 }
 
-		messages = _.map RocketChat.models.Messages.findVisibleByRoomIdBeforeTimestamp(rid, end, options).fetch(), (message) ->
+		if end?
+			records = RocketChat.models.Messages.findVisibleByRoomIdBeforeTimestamp(rid, end, options).fetch()
+		else
+			records = RocketChat.models.Messages.findVisibleByRoomId(rid, options).fetch()
+
+		messages = _.map records, (message) ->
 			message.starred = _.findWhere message.starred, { _id: fromId }
 			return message
 

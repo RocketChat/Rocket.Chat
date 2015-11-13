@@ -1,0 +1,25 @@
+<template name="channelSettings">
+	<div class="control">
+		<div class="header">
+			<h2>{{_ "Room_Settings"}}</h2>
+		</div>
+	</div>
+	<div class="channel-settings scrollable">
+		<form>
+			<fieldset>
+				{{#if notDirect}}
+					<div class="input-line double-col">
+						<label>{{_ "Room_Type"}}</label>
+						<div>
+							<label><input type="radio" name="roomType" value="c" checked="{{$eq roomType 'c'}}" /> {{_ "Channel"}}</label>
+							<label><input type="radio" name="roomType" value="p" checked="{{$eq roomType 'p'}}" /> {{_ "Private_Group"}}</label>
+						</div>
+					</div>
+				{{/if}}
+			</fieldset>
+			<div class="submit">
+				<button class="button save"><i class="icon-send"></i><span>{{_ "Save_changes"}}</span></button>
+			</div>
+		</form>
+	</div>
+</template>

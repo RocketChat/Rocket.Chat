@@ -297,6 +297,16 @@ RocketChat.models.Rooms = new class extends RocketChat.models._Base
 
 		return @update query, update
 
+	setTypeById: (_id, type) ->
+		query = 
+			_id: _id
+
+		update = 
+			$set: 
+				t: type
+
+		return @update query, update
+
 
 	# INSERT
 	createWithTypeNameUserAndUsernames: (type, name, user, usernames, extraData) ->
@@ -339,6 +349,6 @@ RocketChat.models.Rooms = new class extends RocketChat.models._Base
 	removeByTypeContainingUsername: (type, username) ->
 		query =
 			t: type
-			username: username
+			usernames: username
 
 		return @remove query

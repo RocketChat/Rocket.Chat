@@ -6,7 +6,7 @@ Package.describe({
 });
 
 Npm.depends({
-  ldapjs: "0.7.1",
+  ldapjs: "1.0.0",
 });
 
 // Loads all i18n.json files into tapi18nFiles

@@ -3,7 +3,13 @@ Template.privateGroups.helpers
 		return t('Members_placeholder')
 
 	rooms: ->
-		return ChatSubscription.find { t: { $in: ['p']}, f: { $ne: true }, open: true }, { sort: 't': 1, 'name': 1 }
+		query = { t: { $in: ['p']}, f: { $ne: true }, open: true }
+
+		if Meteor.user()?.settings?.preferences?.unreadRoomsMode
+			query.alert =
+				$ne: true
+
+		return ChatSubscription.find query, { sort: 't': 1, 'name': 1 }
 
 	total: ->
 		return ChatSubscription.find({ t: { $in: ['p']}, f: { $ne: true } }).count()

@@ -1,53 +1,36 @@
 Template.message.helpers
 	actions: ->
 		return RocketChat.MessageAction.getButtons(this)
-
 	own: ->
 		return 'own' if this.u?._id is Meteor.userId()
-
 	chatops: ->
 		return 'chatops-message' if this.u?.username is RocketChat.settings.get('Chatops_Username')
-
 	time: ->
 		return moment(this.ts).format('HH:mm')
-
 	date: ->
 		return moment(this.ts).format('LL')
-
 	isTemp: ->
 		if @temp is true
 			return 'temp'
-		return
-
 	body: ->
-		switch this.t
-			when 'r'  then t('Room_name_changed', { room_name: this.msg, user_by: this.u.username })
-			when 'au' then t('User_added_by', { user_added: this.msg, user_by: this.u.username })
-			when 'ru' then t('User_removed_by', { user_removed: this.msg, user_by: this.u.username })
-			when 'ul' then t('User_left', { user_left: this.u.username })
-			when 'nu' then t('User_added', { user_added: this.u.username })
-			when 'uj' then t('User_joined_channel', { user: this.u.username })
-			when 'wm' then t('Welcome', { user: this.u.username })
-			when 'rm' then t('Message_removed', { user: this.u.username })
-			when 'rtc' then RocketChat.callbacks.run 'renderRtcMessage', this
-			else
-				if this.u?.username is RocketChat.settings.get('Chatops_Username')
-					this.html = this.msg
-					message = RocketChat.callbacks.run 'renderMentions', this
-					# console.log JSON.stringify message
-					return this.html
-				this.html = this.msg
-				if _.trim(this.html) isnt ''
-					this.html = _.escapeHTML this.html
-				message = RocketChat.callbacks.run 'renderMessage', this
-				# console.log JSON.stringify message
-				this.html = message.html.replace /\n/gm, '<br/>'
-				return this.html
+		return Template.instance().body
 
 	system: ->
-		return 'system' if this.t in ['s', 'p', 'f', 'r', 'au', 'ru', 'ul', 'nu', 'wm', 'uj', 'rm']
+		if RocketChat.MessageTypes.isSystemMessage(this)
+			return 'system'
+
 	edited: ->
-		return @ets and @t not in ['s', 'p', 'f', 'r', 'au', 'ru', 'ul', 'nu', 'wm', 'uj', 'rm']
+		return Template.instance().wasEdited
+
+	editTime: ->
+		if Template.instance().wasEdited
+			return moment(@editedAt).format('LL hh:mma') #TODO profile pref for 12hr/24hr clock?
+	editedBy: ->
+		return "" unless Template.instance().wasEdited
+		# try to return the username of the editor,
+		# otherwise a special "?" character that will be
+		# rendered as a special avatar
+		return @editedBy?.username or "?"
 	pinned: ->
 		return this.pinned
 	canEdit: ->
@@ -82,6 +65,45 @@ Template.message.helpers
 		else if @label
 			return @label
 
+	hasOembed: ->
+		return false unless this.urls?.length > 0 and Template.oembedBaseWidget? and RocketChat.settings.get 'API_Embed'
+
+		return false unless this.u?.username not in RocketChat.settings.get('API_EmbedDisabledFor')?.split(',')
+
+		return true
+
+Template.message.onCreated ->
+	msg = Template.currentData()
+
+	@wasEdited = msg.editedAt? and not RocketChat.MessageTypes.isSystemMessage(msg)
+
+	@body = do ->
+		messageType = RocketChat.MessageTypes.getType(msg)
+		if messageType?.render?
+			return messageType.render(message)
+		else if messageType?.template?
+			# render template
+		else if messageType?.message?
+			if messageType.data?(msg)?
+				return TAPi18n.__(messageType.message, messageType.data(msg))
+			else
+				return TAPi18n.__(messageType.message)
+		else
+			if msg.u?.username is RocketChat.settings.get('Chatops_Username')
+				msg.html = msg.msg
+				message = RocketChat.callbacks.run 'renderMentions', msg
+				# console.log JSON.stringify message
+				return msg.html
+
+			msg.html = msg.msg
+			if _.trim(msg.html) isnt ''
+				msg.html = _.escapeHTML msg.html
+
+			message = RocketChat.callbacks.run 'renderMessage', msg
+			# console.log JSON.stringify message
+			msg.html = message.html.replace /\n/gm, '<br/>'
+			return msg.html
+
 Template.message.onViewRendered = (context) ->
 	view = this
 	this._domrange.onAttached (domRange) ->
@@ -102,21 +124,10 @@ Template.message.onViewRendered = (context) ->
 		if lastNode.nextElementSibling?.dataset?.username isnt lastNode.dataset.username
 			$(lastNode.nextElementSibling).removeClass('sequential')
 
-		ul = lastNode.parentElement
-		wrapper = ul.parentElement
-
-		if context.urls?.length > 0 and Template.oembedBaseWidget? and RocketChat.settings.get 'API_Embed'
-			if context.u?.username not in RocketChat.settings.get('API_EmbedDisabledFor')?.split(',')
-				for item in context.urls
-					do (item) ->
-						urlNode = lastNode.querySelector('.body a[href="'+item.url+'"]')
-						if urlNode?
-							$(lastNode.querySelector('.body')).append Blaze.toHTMLWithData Template.oembedBaseWidget, item
-
 		if not lastNode.nextElementSibling?
 			if lastNode.classList.contains('own') is true
 				view.parentView.parentView.parentView.parentView.parentView.templateInstance?().atBottom = true
 			else
 				if view.parentView.parentView.parentView.parentView.parentView.templateInstance?().atBottom isnt true
-					newMessage = view.parentView.parentView.parentView.parentView.parentView.templateInstance().find(".new-message")
+					newMessage = view.parentView.parentView.parentView.parentView.parentView.templateInstance?()?.find(".new-message")
 					newMessage?.className = "new-message"

@@ -40,6 +40,7 @@ Template.accountPreferences.onCreated ->
 		data.convertAsciiEmoji = $('input[name=convertAsciiEmoji]:checked').val()
 		data.saveMobileBandwidth = $('input[name=saveMobileBandwidth]:checked').val()
 		data.compactView = $('input[name=compactView]:checked').val()
+		data.unreadRoomsMode = $('input[name=unreadRoomsMode]:checked').val()
 		data.autoImageLoad = $('input[name=autoImageLoad]:checked').val()
 
 		Meteor.call 'saveUserPreferences', data, (error, results) ->

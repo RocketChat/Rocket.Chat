@@ -48,9 +48,11 @@ rocketchat:gitlab
 rocketchat:highlight
 rocketchat:ldap
 rocketchat:logger
+rocketchat:mailer
 rocketchat:markdown
 rocketchat:me
 rocketchat:mentions
+rocketchat:message-pin
 rocketchat:message-star
 rocketchat:oembed
 rocketchat:slashcommands-invite
@@ -59,13 +61,14 @@ rocketchat:slashcommands-leave
 rocketchat:spotify
 rocketchat:statistics
 rocketchat:theme
+rocketchat:tutum
 rocketchat:webrtc
+rocketchat:channel-settings
 rocketchat:wordpress
 #rocketchat:chatops
 #rocketchat:hubot
 #rocketchat:irc
 #rocketchat:livechat
-rocketchat:soundcloud
 
 konecty:change-case
 konecty:delayed-task
@@ -82,6 +85,7 @@ jalik:ufs-gridfs
 jparker:gravatar
 kadira:blaze-layout
 kadira:flow-router
+kenton:accounts-sandstorm
 kevohagan:sweetalert
 meteorhacks:kadira
 mizzao:autocomplete
@@ -109,4 +113,3 @@ yasaricli:slugify
 yasinuslu:blaze-meta
 # sanjo:jasmine
 # velocity:html-reporter
-rocketchat:tutum
