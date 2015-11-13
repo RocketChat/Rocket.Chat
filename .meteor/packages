@@ -52,6 +52,7 @@ rocketchat:mailer
 rocketchat:markdown
 rocketchat:me
 rocketchat:mentions
+rocketchat:message-pin
 rocketchat:message-star
 rocketchat:oembed
 rocketchat:slashcommands-invite
