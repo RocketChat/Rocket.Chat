@@ -1,7 +1,7 @@
 <template name="message">
 	<li
 		id="{{_id}}"
-		class="message sequential {{system}} {{t}} {{own}} {{isTemp}} {{chatops}}"
+		class="message sequential {{system}} {{t}} {{own}} {{isTemp}} {{chatops}} {{createdVia}}"
 		data-message-type="{{t}}"
 		data-username="{{u.username}}"
 		data-date="{{date}}">
@@ -54,6 +54,11 @@
 	                {{#if system}}
 				<a class="thumb thumb-small user-card-message" href="#" data-username="{{u.username}}" tabindex="1">{{> avatar username=u.username}}</a>
 				<a class="user user-card-message" href="#" data-username="{{u.username}}" tabindex="1">{{u.username}}</a>
+			{{/if}}
+			{{#if createdViaMe}}
+				<span class="created-via-me">
+					<span class="octicon octicon-quote"></span>
+				</span>
 			{{/if}}
 			{{{body}}}
 		</div>

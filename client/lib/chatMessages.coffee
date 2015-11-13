@@ -100,7 +100,7 @@ class @ChatMessages
 			#Check if message starts with /command
 			if msg[0] is '/'
 				match = msg.match(/^\/([^\s]+)(?:\s+(.*))?$/m)
-				if(match?)
+				if match?
 					command = match[1]
 					param = match[2]
 					Meteor.call 'slashCommand', {cmd: command, params: param, msg: msgObject }
