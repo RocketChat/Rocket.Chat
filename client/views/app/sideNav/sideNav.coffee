@@ -95,6 +95,8 @@ Template.sideNav.onRendered ->
 	wrapper = $('.rooms-list .wrapper').get(0)
 	lastLink = $('.rooms-list h3').get(0)
 
+	# @TODO validate role/permission inside roomTypes object
 	RocketChat.roomTypes.getTypes().forEach (roomType) ->
-		if RocketChat.authz.hasRole(Meteor.userId(), roomType.roles) && Template[roomType.template]?
+		if Template[roomType.template]?
+		# if RocketChat.authz.hasRole(Meteor.userId(), roomType.roles) && Template[roomType.template]?
 			Blaze.render Template[roomType.template], wrapper, lastLink
