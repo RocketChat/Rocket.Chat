@@ -1,6 +1,12 @@
 Template.starredRooms.helpers
 	rooms: ->
-		return ChatSubscription.find { f: true, open: true }, { sort: 't': 1, 'name': 1 }
+		query = { f: true, open: true }
+
+		if Meteor.user()?.settings?.preferences?.unreadRoomsMode
+			query.alert =
+				$ne: true
+
+		return ChatSubscription.find query, { sort: 't': 1, 'name': 1 }
 	total: ->
 		return ChatSubscription.find({ f: true }).count()
 	isActive: ->

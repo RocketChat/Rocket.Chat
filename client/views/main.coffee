@@ -10,6 +10,7 @@ Template.body.onRendered ->
 
 		unread = Session.get('unread')
 		if e.keyCode is 27 and e.shiftKey is true and unread? and unread isnt ''
+			e.preventDefault()
 			e.stopPropagation()
 			swal
 				title: t('Clear_all_unreads_question')
