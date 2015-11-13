@@ -1,7 +1,8 @@
 {
-  "Message_AllowPinning_Description" : "Allow messages to be pinned to any of the channels.",
-  "Message_AllowPinningByAnyone" : "Allow Anyone to Pin Messages",
-  "Message_AllowPinningByAnyone_Description" : "If true, anyone will be able to pin a messages in any channels but if false then only channel owners and admins will be allowed to.",
+  "Message_AllowPinning" : "Allow Message Pinning",
+  "Message_AllowPinning_Description": "Allow messages to be pinned to any of the channels.",
+  "Message_AllowPinningByAnyone": "Allow Anyone to Pin Messages",
+  "Message_AllowPinningByAnyone_Description": "Allow anyone to pin messages to a channel, not just administrators.",
   "Pin_Message" : "Pin Message",
   "Unpin_Message" : "Unpin Message",
   "Pinned_Messages" : "Pinned Messages",
