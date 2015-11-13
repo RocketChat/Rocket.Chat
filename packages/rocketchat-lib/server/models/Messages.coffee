@@ -93,6 +93,14 @@ RocketChat.models.Messages = new class extends RocketChat.models._Base
 
 		return @find query, options
 
+	findPinnedByRoom: (roomId, options) ->
+		query =
+			_hidden: { $ne: true }
+			pinned: true
+			rid: roomId
+
+		return @find query, options
+
 	cloneAndSaveAsHistoryById: (_id) ->
 		me = RocketChat.models.Users.findOneById Meteor.userId()
 		record = @findOneById _id
@@ -102,6 +110,11 @@ RocketChat.models.Messages = new class extends RocketChat.models._Base
 		record.editedBy =
 			_id: Meteor.userId()
 			username: me.username
+		message.pinned = record.pinned
+		message.pinnedAt = record.pinnedAt
+		message.pinnedBy =
+			_id: record.pinnedBy?._id
+			username: record.pinnedBy?.username
 		delete record._id
 
 		return @insert record
@@ -134,15 +147,15 @@ RocketChat.models.Messages = new class extends RocketChat.models._Base
 
 		return @update query, update
 
-	setPinnedByIdAndUserId: (_id, userId, pinned=true) ->
+	setPinnedByIdAndUserId: (_id, pinnedBy, pinned=true) ->
 		query =
 			_id: _id
-			'u._id': userId
 
 		update =
 			$set:
 				pinned: pinned
-				pts: new Date
+				pinnedAt: new Date
+				pinnedBy: pinnedBy
 
 		return @update query, update
 
