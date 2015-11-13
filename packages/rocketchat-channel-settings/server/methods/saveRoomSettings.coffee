@@ -1,4 +1,4 @@
-Meteor.methods 
+Meteor.methods
 	saveRoomSettings: (rid, settings) ->
 		console.log '[method] saveRoomSettings'.green, rid, settings
 
@@ -15,5 +15,12 @@ Meteor.methods
 		if room?
 			if settings.roomType isnt room.t
 				RocketChat.changeRoomType(rid, settings.roomType)
+
+				if settings.roomType is 'c'
+					message = TAPi18n.__('Channel')
+				else
+					message = TAPi18n.__('Private_Group')
+
+				RocketChat.models.Messages.createRoomSettingsChangedWithTypeRoomIdMessageAndUser 'room_changed_privacy', rid, message, Meteor.user()
 
 		return true
