@@ -63,6 +63,7 @@ rocketchat:statistics
 rocketchat:theme
 rocketchat:tutum
 rocketchat:webrtc
+rocketchat:channel-settings
 rocketchat:wordpress
 #rocketchat:chatops
 #rocketchat:hubot
