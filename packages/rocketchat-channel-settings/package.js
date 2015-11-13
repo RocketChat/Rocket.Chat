@@ -16,15 +16,18 @@ Package.onUse(function(api) {
 	]);
 
 	api.addFiles([
-		'client/tabBar.coffee',
+		'client/startup/messageTypes.coffee',
+		'client/startup/tabBar.coffee',
+		'client/startup/trackSettingsChange.coffee',
 		'client/views/channelSettings.html',
 		'client/views/channelSettings.coffee',
-		'client/stylesheets/channel-settings.less',
+		'client/stylesheets/channel-settings.less'
 	], 'client');
 
 	api.addFiles([
 		'server/functions/changeRoomType.coffee',
-		'server/methods/saveRoomSettings.coffee'
+		'server/methods/saveRoomSettings.coffee',
+		'server/models/Messages.coffee'
 	], 'server');
 
 	// TAPi18n

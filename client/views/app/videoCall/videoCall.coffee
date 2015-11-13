@@ -9,7 +9,7 @@ Template.videoCall.helpers
 	videoActive: ->
 		webrtc = WebRTC.getInstanceByRoomId(Session.get('openedRoom'))
 		overlay = @overlay?
-		if overlay isnt webrtc.overlayEnabled.get()
+		if overlay isnt webrtc?.overlayEnabled.get()
 			return false
 
 		return webrtc.localUrl.get()? or webrtc.remoteItems.get()?.length > 0
