@@ -287,7 +287,7 @@
   "Message_AllowEditing" : "Allow Message Editing",
   "Message_AllowEditing_Description" : "",
   "Message_AllowEditing_BlockEditInMinutes" : "Block Message Editing After (n) Minutes",
-  "Message_AllowEditing_BlockEditInMinutesDescription" : "Enter 0 to disable blocking",
+  "Message_AllowEditing_BlockEditInMinutesDescription" : "Enter 0 to disable blocking.",
   "Message_AllowPinning" : "Allow Message Pinning",
   "Message_AudioRecorderEnabled" : "Audio Recorder Enabled",
   "Message_AudioRecorderEnabledDescription" : "Requires 'audio/wav' files to be an accepted media type within 'File Upload' settings.",
