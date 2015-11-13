@@ -1,59 +1,29 @@
 Template.message.helpers
 	actions: ->
 		return RocketChat.MessageAction.getButtons(this)
-
 	own: ->
 		return 'own' if this.u?._id is Meteor.userId()
-
 	chatops: ->
 		return 'chatops-message' if this.u?.username is RocketChat.settings.get('Chatops_Username')
-
 	time: ->
 		return moment(this.ts).format('HH:mm')
-
 	date: ->
 		return moment(this.ts).format('LL')
-
 	isTemp: ->
 		if @temp is true
 			return 'temp'
-		return
-
 	body: ->
-		messageType = RocketChat.MessageTypes.getType(this)
-		if messageType?.render?
-			return messageType.render(message)
-		else if messageType?.template?
-			# render template
-		else if messageType?.message?
-			if messageType.data?(this)?
-				return TAPi18n.__(messageType.message, messageType.data(this))
-			else
-				return TAPi18n.__(messageType.message)
-		else
-			if this.u?.username is RocketChat.settings.get('Chatops_Username')
-				this.html = this.msg
-				message = RocketChat.callbacks.run 'renderMentions', this
-				# console.log JSON.stringify message
-				return this.html
-			this.html = this.msg
-			if _.trim(this.html) isnt ''
-				this.html = _.escapeHTML this.html
-			message = RocketChat.callbacks.run 'renderMessage', this
-			# console.log JSON.stringify message
-			this.html = message.html.replace /\n/gm, '<br/>'
-			return this.html
-
+		return Template.instance().body
 	system: ->
 		if RocketChat.MessageTypes.isSystemMessage(this)
 			return 'system'
-
-	edited: -> Template.instance().wasEdited?(@)
+	edited: ->
+		return Template.instance().wasEdited
 	editTime: ->
-		return "" unless Template.instance().wasEdited?(@)
-		moment(@editedAt).format('LL hh:mma') #TODO profile pref for 12hr/24hr clock?
+		if Template.instance().wasEdited
+			return moment(@editedAt).format('LL hh:mma') #TODO profile pref for 12hr/24hr clock?
 	editedBy: ->
-		return "" unless Template.instance().wasEdited?(@)
+		return "" unless Template.instance().wasEdited
 		# try to return the username of the editor,
 		# otherwise a special "?" character that will be
 		# rendered as a special avatar
@@ -92,9 +62,43 @@ Template.message.helpers
 		else if @label
 			return @label
 
+	hasOembed: ->
+		return false unless this.urls?.length > 0 and Template.oembedBaseWidget? and RocketChat.settings.get 'API_Embed'
+
+		return false unless this.u?.username not in RocketChat.settings.get('API_EmbedDisabledFor')?.split(',')
+
+		return true
+
 Template.message.onCreated ->
-	@wasEdited = (msg) ->
-		msg.editedAt? and not RocketChat.MessageTypes.isSystemMessage(this)
+	msg = Template.currentData()
+
+	@wasEdited = msg.editedAt? and not RocketChat.MessageTypes.isSystemMessage(msg)
+
+	@body = do ->
+		messageType = RocketChat.MessageTypes.getType(msg)
+		if messageType?.render?
+			return messageType.render(message)
+		else if messageType?.template?
+			# render template
+		else if messageType?.message?
+			if messageType.data?(msg)?
+				return TAPi18n.__(messageType.message, messageType.data(msg))
+			else
+				return TAPi18n.__(messageType.message)
+		else
+			if msg.u?.username is RocketChat.settings.get('Chatops_Username')
+				msg.html = msg.msg
+				message = RocketChat.callbacks.run 'renderMentions', msg
+				# console.log JSON.stringify message
+				return msg.html
+			msg.html = msg.msg
+			if _.trim(msg.html) isnt ''
+				msg.html = _.escapeHTML msg.html
+
+			message = RocketChat.callbacks.run 'renderMessage', msg
+			# console.log JSON.stringify message
+			msg.html = message.html.replace /\n/gm, '<br/>'
+			return msg.html
 
 Template.message.onViewRendered = (context) ->
 	view = this
@@ -115,17 +119,6 @@ Template.message.onViewRendered = (context) ->
 
 		if lastNode.nextElementSibling?.dataset?.username isnt lastNode.dataset.username
 			$(lastNode.nextElementSibling).removeClass('sequential')
-
-		ul = lastNode.parentElement
-		wrapper = ul.parentElement
-
-		if context.urls?.length > 0 and Template.oembedBaseWidget? and RocketChat.settings.get 'API_Embed'
-			if context.u?.username not in RocketChat.settings.get('API_EmbedDisabledFor')?.split(',')
-				for item in context.urls
-					do (item) ->
-						urlNode = lastNode.querySelector('.body a[href="'+item.url+'"]')
-						if urlNode?
-							$(lastNode.querySelector('.body')).append Blaze.toHTMLWithData Template.oembedBaseWidget, item
 
 		if not lastNode.nextElementSibling?
 			if lastNode.classList.contains('own') is true

@@ -332,6 +332,6 @@ RocketChat.models.Rooms = new class extends RocketChat.models._Base
 	removeByTypeContainingUsername: (type, username) ->
 		query =
 			t: type
-			username: username
+			usernames: username
 
 		return @remove query

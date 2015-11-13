@@ -9,16 +9,10 @@
 				class="time">
 				{{time}}
 			</span>
-			<span
-				class="edited"
-				title='{{_ "edited"}} at {{editTime}} {{_ "by"}} {{editedBy}}'>
+			<span class="edited" title='{{_ "edited"}} at {{editTime}} {{_ "by"}} {{editedBy}}'>
 				<i class="icon-edit"></i>
 				{{_ "by"}}
-				<a
-					class="thumb thumb-small user-card-message"
-					href="#"
-					data-username="{{editedBy}}"
-					tabindex="1">
+				<a class="thumb thumb-small user-card-message" href="#" data-username="{{editedBy}}" tabindex="1">
 					{{> avatar username=editedBy}}
 				</a>
 			</span>
@@ -42,9 +36,13 @@
 			</div>
 		{{/if}}
 		</span>
-
 		<div class="body" dir="auto">
 			{{{body}}}
+			{{#if hasOembed}}
+				{{#each urls}}
+					{{> oembedBaseWidget}}
+				{{/each}}
+			{{/if}}
 		</div>
 	</li>
 </template>
