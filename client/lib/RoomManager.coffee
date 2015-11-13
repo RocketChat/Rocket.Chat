@@ -110,13 +110,7 @@ RocketChat.Notifications.onUser 'message', (msg) ->
 							Meteor.defer ->
 								RoomManager.updateMentionsMarksOfRoom typeName
 
-							# If room was renamed then close current room and send user to the new one
-							Tracker.nonreactive ->
-								if msg.t is 'r'
-									if Session.get('openedRoom') is msg.rid
-										type = if FlowRouter.current().route.name is 'channel' then 'c' else 'p'
-										RoomManager.close type + FlowRouter.getParam('name')
-										FlowRouter.go FlowRouter.current().route.name, name: msg.msg
+							RocketChat.callbacks.run 'streamMessage', msg
 
 						RocketChat.Notifications.onRoom openedRooms[typeName].rid, 'deleteMessage', onDeleteMessageStream
 

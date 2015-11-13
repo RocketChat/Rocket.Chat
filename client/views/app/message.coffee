@@ -14,11 +14,14 @@ Template.message.helpers
 			return 'temp'
 	body: ->
 		return Template.instance().body
+
 	system: ->
 		if RocketChat.MessageTypes.isSystemMessage(this)
 			return 'system'
+
 	edited: ->
 		return Template.instance().wasEdited
+
 	editTime: ->
 		if Template.instance().wasEdited
 			return moment(@editedAt).format('LL hh:mma') #TODO profile pref for 12hr/24hr clock?
@@ -91,6 +94,7 @@ Template.message.onCreated ->
 				message = RocketChat.callbacks.run 'renderMentions', msg
 				# console.log JSON.stringify message
 				return msg.html
+
 			msg.html = msg.msg
 			if _.trim(msg.html) isnt ''
 				msg.html = _.escapeHTML msg.html
