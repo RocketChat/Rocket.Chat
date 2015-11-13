@@ -20,32 +20,34 @@ Template.message.helpers
 		return
 
 	body: ->
-		switch this.t
-			when 'r'  then t('Room_name_changed', { room_name: this.msg, user_by: this.u.username })
-			when 'au' then t('User_added_by', { user_added: this.msg, user_by: this.u.username })
-			when 'ru' then t('User_removed_by', { user_removed: this.msg, user_by: this.u.username })
-			when 'ul' then t('User_left', { user_left: this.u.username })
-			when 'nu' then t('User_added', { user_added: this.u.username })
-			when 'uj' then t('User_joined_channel', { user: this.u.username })
-			when 'wm' then t('Welcome', { user: this.u.username })
-			when 'rm' then t('Message_removed', { user: this.u.username })
-			when 'rtc' then RocketChat.callbacks.run 'renderRtcMessage', this
+		messageType = RocketChat.MessageTypes.getType(this)
+		if messageType?.render?
+			return messageType.render(message)
+		else if messageType?.template?
+			# render template
+		else if messageType?.message?
+			if messageType.data?(this)?
+				return TAPi18n.__(messageType.message, messageType.data(this))
 			else
-				if this.u?.username is RocketChat.settings.get('Chatops_Username')
-					this.html = this.msg
-					message = RocketChat.callbacks.run 'renderMentions', this
-					# console.log JSON.stringify message
-					return this.html
+				return TAPi18n.__(messageType.message)
+		else
+			if this.u?.username is RocketChat.settings.get('Chatops_Username')
 				this.html = this.msg
-				if _.trim(this.html) isnt ''
-					this.html = _.escapeHTML this.html
-				message = RocketChat.callbacks.run 'renderMessage', this
+				message = RocketChat.callbacks.run 'renderMentions', this
 				# console.log JSON.stringify message
-				this.html = message.html.replace /\n/gm, '<br/>'
 				return this.html
+			this.html = this.msg
+			if _.trim(this.html) isnt ''
+				this.html = _.escapeHTML this.html
+			message = RocketChat.callbacks.run 'renderMessage', this
+			# console.log JSON.stringify message
+			this.html = message.html.replace /\n/gm, '<br/>'
+			return this.html
 
 	system: ->
-		return 'system' if this.t in ['s', 'p', 'f', 'r', 'au', 'ru', 'ul', 'nu', 'wm', 'uj', 'rm']
+		if RocketChat.MessageTypes.isSystemMessage(this)
+			return 'system'
+
 	edited: -> Template.instance().wasEdited?(@)
 	editTime: ->
 		return "" unless Template.instance().wasEdited?(@)
@@ -92,7 +94,7 @@ Template.message.helpers
 
 Template.message.onCreated ->
 	@wasEdited = (msg) ->
-		msg.editedAt? and msg.t not in ['s', 'p', 'f', 'r', 'au', 'ru', 'ul', 'nu', 'wm', 'uj', 'rm']
+		msg.editedAt? and not RocketChat.MessageTypes.isSystemMessage(this)
 
 Template.message.onViewRendered = (context) ->
 	view = this
