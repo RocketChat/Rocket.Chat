@@ -1,7 +1,10 @@
 {
   "Accounts_OAuth_GitHub_Enterprise" : "OAuth Enabled",
+  "Accounts_OAuth_GitHub_Enterprise_Description": "",
   "API_GitHub_Enterprise_URL" : "Server URL",
   "Accounts_OAuth_GitHub_Enterprise_id" : "Client Id",
+  "Accounts_OAuth_GitHub_Enterprise_id_Description" : "",
   "Accounts_OAuth_GitHub_Enterprise_secret" : "Client Secret",
+  "Accounts_OAuth_GitHub_Enterprise_secret_Description" : "",
   "Github_Enterprise_Url_No_Trail" : "Note: Please exclude trailing slash"
 }
