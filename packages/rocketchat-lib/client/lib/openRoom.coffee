@@ -62,4 +62,4 @@ currentTracker = undefined
 			if ChatSubscription.findOne({rid: room._id})?.open is false
 				Meteor.call 'openRoom', room._id
 
-			RocketChat.callbacks.run 'enter-room'
+			RocketChat.callbacks.run 'enter-room', ChatSubscription.findOne({rid: room._id})

@@ -72,6 +72,10 @@ It is a great solution for communities and companies wanting to privately host t
 ##### [snowulf.com](https://snowulf.com/2015/09/25/why-slack-when-you-can-rocket-chat/)
 > Why Slack when you can Rocket.chat?
 
+##### [liminality.xyz](http://liminality.xyz/self-hosting/)
+> SELF-HOSTED ALTERNATIVES TO POPULAR CLOUD SERVICES
+
+
 ## Features
 
 - BYOS (bring your own server)
