@@ -5,11 +5,10 @@
 
 class Me
 	constructor: (command, params, item) ->
-		if(command == "me")
-			if _.trim params
-				currentUser = Meteor.user()
-				msg = item
-				msg.msg = '_' + params + '_'
-				Meteor.call 'sendMessage', msg
+		return unless command is "me" and _.trim params
+		msg = item
+		msg.msg = params
+		msg.via = 'me'
+		Meteor.call 'sendMessage', msg
 
 RocketChat.slashCommands.add 'me', Me

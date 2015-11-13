@@ -2328,6 +2328,20 @@ a.github-fork {
 	position: relative;
 	line-height: 20px;
 	min-height: 40px;
+	&.message-via-me {
+		&:not(.editing) .body {
+			padding-left: 5px;
+			border-left: 4px solid rgba(4, 73, 116, 0.82);
+			.created-via-me .user-card-message {
+				display: inline-block;
+				margin-right: 2px;
+				font-style: italic;
+			}
+		}
+		&.editing .body .created-via-me .octicon {
+			display: none;
+		}
+	}
 
 	.body, .user.user-card-message, .time {
 		-webkit-user-select: text;

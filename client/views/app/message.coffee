@@ -47,6 +47,8 @@ Template.message.helpers
 				this.html = message.html.replace /\n/gm, '<br/>'
 				return this.html
 
+	createdVia: -> if @via? then "message-via-#{@via}" else ""
+	createdViaMe: -> @via is "me"
 	system: -> 'system' if Template.instance().isSystem?(@)
 	edited: -> Template.instance().wasEdited?(@)
 	editTime: ->
