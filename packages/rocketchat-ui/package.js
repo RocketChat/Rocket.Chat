@@ -53,6 +53,17 @@ Package.onUse(function(api) {
 	api.addFiles('lib/textarea-autogrow.js', 'client');
 	api.addFiles('lib/trackRoomNameChanged.coffee', 'client');
 
+	// LIB CORDOVA
+	api.addFiles('lib/cordova/facebook-login.coffee', 'client');
+	api.addFiles('lib/cordova/keyboard-fix.coffee', 'client');
+	api.addFiles('lib/cordova/push.coffee', 'client');
+	api.addFiles('lib/cordova/urls.coffee', 'client');
+	api.addFiles('lib/cordova/user-state.coffee', 'client');
+
+	// LIB RECORDERJS
+	api.addFiles('lib/recorderjs/audioRecorder.coffee', 'client');
+	api.addFiles('lib/recorderjs/recorder.js', 'client');
+
 	// TEMPLATE FILES
 	api.addFiles('views/cmsPage.html', 'client');
 	api.addFiles('views/error.html', 'client');
@@ -61,19 +72,11 @@ Package.onUse(function(api) {
 	api.addFiles('views/main.html', 'client');
 	api.addFiles('views/modal.html', 'client');
 	api.addFiles('views/404/roomNotFound.html', 'client');
-	api.addFiles('views/username/layout.html', 'client');
-	api.addFiles('views/username/username.html', 'client');
 	api.addFiles('views/app/audioNotification.html', 'client');
 	api.addFiles('views/app/burguer.html', 'client');
 	api.addFiles('views/app/flexTabBar.html', 'client');
 	api.addFiles('views/app/home.html', 'client');
 	api.addFiles('views/app/message.html', 'client');
-	api.addFiles('views/app/messagePopup.html', 'client');
-	api.addFiles('views/app/messagePopupChannel.html', 'client');
-	api.addFiles('views/app/messagePopupConfig.html', 'client');
-	api.addFiles('views/app/messagePopupEmoji.html', 'client');
-	api.addFiles('views/app/messagePopupSlashCommand.html', 'client');
-	api.addFiles('views/app/messagePopupUser.html', 'client');
 	api.addFiles('views/app/privateHistory.html', 'client');
 	api.addFiles('views/app/room.html', 'client');
 	api.addFiles('views/app/roomSearch.html', 'client');
@@ -86,20 +89,17 @@ Package.onUse(function(api) {
 	api.addFiles('views/app/tabBar/uploadedFilesList.html', 'client');
 	api.addFiles('views/app/videoCall/videoButtons.html', 'client');
 	api.addFiles('views/app/videoCall/videoCall.html', 'client');
+	api.addFiles('views/app/messageBox.html', 'client');
 
 	api.addFiles('views/cmsPage.coffee', 'client');
 	api.addFiles('views/fxos.coffee', 'client');
 	api.addFiles('views/main.coffee', 'client');
 	api.addFiles('views/modal.coffee', 'client');
 	api.addFiles('views/404/roomNotFound.coffee', 'client');
-	api.addFiles('views/username/username.coffee', 'client');
 	api.addFiles('views/app/burguer.coffee', 'client');
 	api.addFiles('views/app/flexTabBar.coffee', 'client');
 	api.addFiles('views/app/home.coffee', 'client');
 	api.addFiles('views/app/message.coffee', 'client');
-	api.addFiles('views/app/messagePopup.coffee', 'client');
-	api.addFiles('views/app/messagePopupConfig.coffee', 'client');
-	api.addFiles('views/app/messagePopupEmoji.coffee', 'client');
 	api.addFiles('views/app/privateHistory.coffee', 'client');
 	api.addFiles('views/app/room.coffee', 'client');
 	api.addFiles('views/app/roomSearch.coffee', 'client');
@@ -111,5 +111,5 @@ Package.onUse(function(api) {
 	api.addFiles('views/app/tabBar/uploadedFilesList.coffee', 'client');
 	api.addFiles('views/app/videoCall/videoButtons.coffee', 'client');
 	api.addFiles('views/app/videoCall/videoCall.coffee', 'client');
-
+	api.addFiles('views/app/messageBox.coffee', 'client');
 });

@@ -29,11 +29,14 @@ Package.onUse(function(api) {
 	api.addFiles('login/services.html', 'client');
 	api.addFiles('login/social.html', 'client');
 
+	api.addFiles('username/layout.html', 'client');
+	api.addFiles('username/username.html', 'client');
+
 	api.addFiles('login/footer.coffee', 'client');
 	api.addFiles('login/form.coffee', 'client');
 	api.addFiles('login/header.coffee', 'client');
 	api.addFiles('login/services.coffee', 'client');
 	api.addFiles('login/social.coffee', 'client');
+	api.addFiles('username/username.coffee', 'client');
 
-	// api.addAssets('styles/side-nav.less', 'client');
 });
