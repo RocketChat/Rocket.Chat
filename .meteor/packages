@@ -118,4 +118,6 @@ rocketchat:rocketchat-ui-sidenav
 rocketchat:rocketchat-ui-account
 rocketchat:rocketchat-ui-admin
 rocketchat:rocketchat-ui-login
-rocketchat:rocketchat-ui-message-input
+rocketchat:rocketchat-ui-flextab
+rocketchat:rocketchat-ui-message
+rocketchat:rocketchat-ui-master
