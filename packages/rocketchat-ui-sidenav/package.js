@@ -25,6 +25,7 @@ Package.onUse(function(api) {
 	api.addFiles('side-nav/chatRoomItem.html', 'client');
 	api.addFiles('side-nav/createChannelFlex.html', 'client');
 	api.addFiles('side-nav/directMessages.html', 'client');
+	api.addFiles('side-nav/directMessagesFlex.html', 'client');
 	api.addFiles('side-nav/listChannelsFlex.html', 'client');
 	api.addFiles('side-nav/listPrivateGroupsFlex.html', 'client');
 	api.addFiles('side-nav/privateGroups.html', 'client');
@@ -38,6 +39,7 @@ Package.onUse(function(api) {
 	api.addFiles('side-nav/chatRoomItem.coffee', 'client');
 	api.addFiles('side-nav/createChannelFlex.coffee', 'client');
 	api.addFiles('side-nav/directMessages.coffee', 'client');
+	api.addFiles('side-nav/directMessagesFlex.coffee', 'client');
 	api.addFiles('side-nav/listChannelsFlex.coffee', 'client');
 	api.addFiles('side-nav/listPrivateGroupsFlex.coffee', 'client');
 	api.addFiles('side-nav/privateGroups.coffee', 'client');
