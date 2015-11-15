@@ -16,7 +16,7 @@ Meteor.startup ->
 			if RocketChat.settings.get('Message_AllowPinningByAnyone') or RocketChat.authz.hasRole Meteor.userId(), 'admin'
 				return true
 
-			return room.u?._id is Meteor.userId()
+			return ChatRoom.findOne(message.rid).u?._id is Meteor.userId()
 		order: 20
 
 	RocketChat.MessageAction.addButton
@@ -36,5 +36,5 @@ Meteor.startup ->
 			if RocketChat.settings.get('Message_AllowPinningByAnyone') or RocketChat.authz.hasRole Meteor.userId(), 'admin'
 				return true
 
-			return room.u?._id is Meteor.userId()
+			return ChatRoom.findOne(message.rid).u?._id is Meteor.userId()
 		order: 21
