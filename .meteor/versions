@@ -146,6 +146,7 @@ rocketchat:rocketchat-ui@0.1.0
 rocketchat:rocketchat-ui-account@0.0.1
 rocketchat:rocketchat-ui-admin@0.0.1
 rocketchat:rocketchat-ui-login@0.0.1
+rocketchat:rocketchat-ui-message-input@0.1.0
 rocketchat:rocketchat-ui-sidenav@0.1.0
 rocketchat:slashcommands-invite@0.0.1
 rocketchat:slashcommands-join@0.0.1
