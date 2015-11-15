@@ -2,7 +2,6 @@ sudo: required
 language: node_js
 branches:
   only:
-  - master
   - develop
 node_js:
 - '0.10'
@@ -52,4 +51,4 @@ deploy:
   skip_cleanup: true
   local_dir: ../build
   on:
-    branch: master
+    branch: develop
