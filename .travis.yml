@@ -2,9 +2,10 @@ sudo: required
 language: node_js
 branches:
   only:
+  - master
   - develop
 node_js:
-- '0.10'
+- '0.12'
 addons:
   apt:
     sources:
@@ -33,7 +34,6 @@ script:
 - cd .travis
 - sh ./namefiles.sh
 - cd ..
-- meteor add-platform ios
 - meteor add rocketchat:livechat rocketchat:hubot sanjo:jasmine velocity:console-reporter
 - ./node_modules/velocity-cli/bin/velocity test-packages --ci
 - ./node_modules/velocity-cli/bin/velocity test-app --ci
@@ -51,4 +51,6 @@ deploy:
   skip_cleanup: true
   local_dir: ../build
   on:
-    branch: develop
+    branch:
+    - master
+    - develop
