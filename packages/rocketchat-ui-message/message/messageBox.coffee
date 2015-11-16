@@ -61,7 +61,7 @@ Template.messageBox.events
 		KonchatNotification.removeRoomNotification @_id
 
 	'keyup .input-message': (event) ->
-		Template.instance().chatMessages.keyup(@_id, event, Template.instance())
+		chatMessages[Session.get('openedRoom')].keyup(@_id, event, Template.instance())
 
 	'paste .input-message': (e) ->
 		if not e.originalEvent.clipboardData?
@@ -80,22 +80,21 @@ Template.messageBox.events
 			fileUpload files
 
 	'keydown .input-message': (event) ->
-		Template.instance().chatMessages.keydown(@_id, event, Template.instance())
+		chatMessages[Session.get('openedRoom')].keydown(@_id, event, Template.instance())
 
 	'click .message-form .icon-paper-plane': (event) ->
 		input = $(event.currentTarget).siblings("textarea")
-		Template.instance().chatMessages.send(this._id, input.get(0))
+		chatMessages[Session.get('openedRoom')].send(this._id, input.get(0))
 		event.preventDefault()
 		event.stopPropagation()
 		input.focus()
 		input.get(0).updateAutogrow()
 
 	"click .editing-commands-cancel > a": (e) ->
-		Template.instance().chatMessages.clearEditing()
+		chatMessages[Session.get('openedRoom')].clearEditing()
 
 	"click .editing-commands-save > a": (e) ->
-		chatMessages = Template.instance().chatMessages
-		chatMessages.send(@_id, chatMessages.input)
+		chatMessages[Session.get('openedRoom')].send(@_id, chatMessages.input)
 
 
 
@@ -131,5 +130,6 @@ Template.messageBox.events
 		t.$('.mic').removeClass('hidden')
 
 Template.messageBox.onRendered ->
-	this.chatMessages = new ChatMessages
-	this.chatMessages.init(this.firstNode)
+	# unless window.chatMessages[Session.get('openedRoom')]
+	# 	window.chatMessages[Session.get('openedRoom')] = new ChatMessages
+	# this.chatMessages.init(this.firstNode)
