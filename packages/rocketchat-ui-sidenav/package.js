@@ -1,5 +1,5 @@
 Package.describe({
-	name: 'rocketchat:rocketchat-ui-sidenav',
+	name: 'rocketchat:ui-sidenav',
 	version: '0.1.0',
 	// Brief, one-line summary of the package.
 	summary: '',

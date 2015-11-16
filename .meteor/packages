@@ -113,11 +113,11 @@ yasaricli:slugify
 yasinuslu:blaze-meta
 # sanjo:jasmine
 # velocity:html-reporter
-rocketchat:rocketchat-ui
-rocketchat:rocketchat-ui-sidenav
-rocketchat:rocketchat-ui-account
-rocketchat:rocketchat-ui-admin
-rocketchat:rocketchat-ui-login
-rocketchat:rocketchat-ui-flextab
-rocketchat:rocketchat-ui-message
-rocketchat:rocketchat-ui-master
+rocketchat:ui
+rocketchat:ui-sidenav
+rocketchat:ui-account
+rocketchat:ui-admin
+rocketchat:ui-login
+rocketchat:ui-flextab
+rocketchat:ui-message
+rocketchat:ui-master
