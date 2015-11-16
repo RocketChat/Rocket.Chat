@@ -162,6 +162,7 @@
   "Invalid_name" : "The name must not be empty",
   "Invalid_pass" : "The password must not be empty",
   "Invalid_room_name" : "<strong>%s</strong> is not a valid room name,<br/> use only letters, numbers and dashes",
+  "Invalid_room_type" : "<strong>%s</strong> is not a valid room type.",
   "invisible" : "invisible",
   "Invisible" : "Invisible",
   "Invitation_HTML" : "Invitation HTML",

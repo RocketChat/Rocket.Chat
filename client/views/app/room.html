@@ -13,11 +13,8 @@
 						<a href="#favorite" class="toggle-favorite"><i class="{{favorite}}"></i></a>
 					{{/if}}
 					<i class="{{roomIcon}} status-{{userStatus}}"></i>
-					<span class="room-title {{editingTitle}}">{{roomName}}</span>
-					{{#if canEditName}}
-					<input type="text" id="room-title-field" class="{{showEditingTitle}}" value="{{roomNameEdit}}" dir="auto">
-					<a href="#edit" class="edit-room-title"><i class="icon-pencil" aria-label="{{_ "Edit"}}"></i></a>
-					{{/if}}
+					<span class="room-title">{{roomName}}</span>
+					<span class="room-topic">{{roomTopic}}</span>
 				</h2>
 			</header>
 			<div class="container-bars">

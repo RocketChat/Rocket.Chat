@@ -13,7 +13,7 @@ Meteor.methods
 			throw new Meteor.Error 403, 'Not allowed'
 
 		if not /^[0-9a-z-_]+$/.test name
-			throw new Meteor.Error 'name-invalid'
+			throw new Meteor.Error 'name-invalid', 'Invalid_room_name', { channelName: name }
 
 		name = _.slugify name
 
@@ -22,7 +22,7 @@ Meteor.methods
 
 		# avoid duplicate names
 		if RocketChat.models.Rooms.findOneByName name
-			throw new Meteor.Error 'duplicate-name'
+			throw new Meteor.Error 'duplicate-name', 'Duplicate_channel_name', { channelName: name }
 
 		RocketChat.models.Rooms.setNameById rid, name
 
