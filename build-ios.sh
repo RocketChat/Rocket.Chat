@@ -1,6 +1,5 @@
 #!/bin/bash
 
-meteor add-platform ios
 rm -rf .meteor/local/cordova-build
 rm -rf ../Rocket.Chat-build
 meteor build ../Rocket.Chat-build --server https://demo.rocket.chat
