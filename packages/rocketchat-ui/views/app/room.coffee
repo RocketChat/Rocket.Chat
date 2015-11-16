@@ -368,11 +368,10 @@ Template.room.events
 	'click .pin-message': (event) ->
 		message = @_arguments[1]
 		instance = Template.instance()
-
 		if message.pinned
-			instance.chatMessages.unpinMsg(message)
+			chatMessages[Session.get('openedRoom')].unpinMsg(message)
 		else
-			instance.chatMessages.pinMsg(message)
+			chatMessages[Session.get('openedRoom')].pinMsg(message)
 
 	'dragenter .dropzone': (e) ->
 		e.currentTarget.classList.add 'over'
@@ -444,8 +443,11 @@ Template.room.onDestroyed ->
 
 
 Template.room.onRendered ->
-	this.chatMessages = new ChatMessages
-	this.chatMessages.init(this.firstNode)
+	unless window.chatMessages
+		window.chatMessages = {}
+	unless window.chatMessages[Session.get('openedRoom')]
+		window.chatMessages[Session.get('openedRoom')] = new ChatMessages
+	chatMessages[Session.get('openedRoom')].init(this.firstNode)
 	# ScrollListener.init()
 
 	wrapper = this.find('.wrapper')
