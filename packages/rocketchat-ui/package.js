@@ -23,7 +23,8 @@ Package.onUse(function(api) {
 		'templating',
 		'coffeescript',
 		'underscore',
-		'rocketchat:lib@0.0.1'
+		'rocketchat:lib@0.0.1',
+		'raix:push'
 	]);
 
 	// LIB FILES
