@@ -7,12 +7,12 @@ favoritesEnabled = ->
 
 # @TODO bug com o botão para "rolar até o fim" (novas mensagens) quando há uma mensagem com texto que gere rolagem horizontal
 Template.room.helpers
-	showFormattingTips: ->
-		return RocketChat.settings.get('Message_ShowFormattingTips') and (RocketChat.Markdown or RocketChat.Highlight)
-	showMarkdown: ->
-		return RocketChat.Markdown
-	showHighlight: ->
-		return RocketChat.Highlight
+	# showFormattingTips: ->
+	# 	return RocketChat.settings.get('Message_ShowFormattingTips') and (RocketChat.Markdown or RocketChat.Highlight)
+	# showMarkdown: ->
+	# 	return RocketChat.Markdown
+	# showHighlight: ->
+	# 	return RocketChat.Highlight
 	favorite: ->
 		sub = ChatSubscription.findOne { rid: this._id }, { fields: { f: 1 } }
 		return 'icon-star favorite-room' if sub?.f? and sub.f and favoritesEnabled
@@ -36,30 +36,30 @@ Template.room.helpers
 	uploading: ->
 		return Session.get 'uploading'
 
-	usersTyping: ->
-		users = MsgTyping.get @_id
-		if users.length is 0
-			return
-		if users.length is 1
-			return {
-				multi: false
-				selfTyping: MsgTyping.selfTyping.get()
-				users: users[0]
-			}
+	# usersTyping: ->
+	# 	users = MsgTyping.get @_id
+	# 	if users.length is 0
+	# 		return
+	# 	if users.length is 1
+	# 		return {
+	# 			multi: false
+	# 			selfTyping: MsgTyping.selfTyping.get()
+	# 			users: users[0]
+	# 		}
 
-		# usernames = _.map messages, (message) -> return message.u.username
+	# 	# usernames = _.map messages, (message) -> return message.u.username
 
-		last = users.pop()
-		if users.length > 4
-			last = t('others')
-		# else
-		usernames = users.join(', ')
-		usernames = [usernames, last]
-		return {
-			multi: true
-			selfTyping: MsgTyping.selfTyping.get()
-			users: usernames.join " #{t 'and'} "
-		}
+	# 	last = users.pop()
+	# 	if users.length > 4
+	# 		last = t('others')
+	# 	# else
+	# 	usernames = users.join(', ')
+	# 	usernames = [usernames, last]
+	# 	return {
+	# 		multi: true
+	# 		selfTyping: MsgTyping.selfTyping.get()
+	# 		users: usernames.join " #{t 'and'} "
+	# 	}
 
 	roomName: ->
 		roomData = Session.get('roomData' + this._id)
@@ -295,44 +295,6 @@ Template.room.events
 		event.preventDefault()
 		Meteor.call 'toogleFavorite', @_id, !$('i', event.currentTarget).hasClass('favorite-room')
 
-	'click .join': (event) ->
-		event.stopPropagation()
-		event.preventDefault()
-		Meteor.call 'joinRoom', @_id
-
-	'focus .input-message': (event) ->
-		KonchatNotification.removeRoomNotification @_id
-
-	'keyup .input-message': (event) ->
-		Template.instance().chatMessages.keyup(@_id, event, Template.instance())
-
-	'paste .input-message': (e) ->
-		if not e.originalEvent.clipboardData?
-			return
-
-		items = e.originalEvent.clipboardData.items
-		files = []
-		for item in items
-			if item.kind is 'file' and item.type.indexOf('image/') isnt -1
-				e.preventDefault()
-				files.push
-					file: item.getAsFile()
-					name: 'Clipboard'
-
-		if files.length > 0
-			fileUpload files
-
-	'keydown .input-message': (event) ->
-		Template.instance().chatMessages.keydown(@_id, event, Template.instance())
-
-	'click .message-form .icon-paper-plane': (event) ->
-		input = $(event.currentTarget).siblings("textarea")
-		Template.instance().chatMessages.send(this._id, input.get(0))
-		event.preventDefault()
-		event.stopPropagation()
-		input.focus()
-		input.get(0).updateAutogrow()
-
 	'click .edit-room-title': (event) ->
 		event.preventDefault()
 		Session.set('editRoomTitle', true)
@@ -390,13 +352,6 @@ Template.room.events
 	'click .message-dropdown-close': ->
 		$('.message-dropdown:visible').hide()
 
-	"click .editing-commands-cancel > a": (e) ->
-		Template.instance().chatMessages.clearEditing()
-
-	"click .editing-commands-save > a": (e) ->
-		chatMessages = Template.instance().chatMessages
-		chatMessages.send(@_id, chatMessages.input)
-
 	"click .mention-link": (e) ->
 		channel = $(e.currentTarget).data('channel')
 		if channel?
@@ -440,36 +395,6 @@ Template.room.events
 				name: file.name
 
 		fileUpload filesToUpload
-
-	'change .message-form input[type=file]': (event, template) ->
-		e = event.originalEvent or event
-		files = e.target.files
-		if not files or files.length is 0
-			files = e.dataTransfer?.files or []
-
-		filesToUpload = []
-		for file in files
-			filesToUpload.push
-				file: file
-				name: file.name
-
-		fileUpload filesToUpload
-
-	'click .message-form .mic': (e, t) ->
-		AudioRecorder.start ->
-			t.$('.stop-mic').removeClass('hidden')
-			t.$('.mic').addClass('hidden')
-
-	'click .message-form .stop-mic': (e, t) ->
-		AudioRecorder.stop (blob) ->
-			fileUpload [{
-				file: blob
-				type: 'audio'
-				name: 'Audio record'
-			}]
-
-		t.$('.stop-mic').addClass('hidden')
-		t.$('.mic').removeClass('hidden')
 
 	'click .deactivate': ->
 		username = Session.get('showUserInfo')
