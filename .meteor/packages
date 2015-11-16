@@ -38,6 +38,7 @@ rocketchat:lib
 
 rocketchat:authorization
 rocketchat:autolinker
+rocketchat:channel-settings
 rocketchat:colors
 rocketchat:custom-oauth
 rocketchat:emojione
@@ -62,8 +63,15 @@ rocketchat:spotify
 rocketchat:statistics
 rocketchat:theme
 rocketchat:tutum
+rocketchat:ui
+rocketchat:ui-account
+rocketchat:ui-admin
+rocketchat:ui-flextab
+rocketchat:ui-login
+rocketchat:ui-master
+rocketchat:ui-message
+rocketchat:ui-sidenav
 rocketchat:webrtc
-rocketchat:channel-settings
 rocketchat:wordpress
 #rocketchat:chatops
 #rocketchat:hubot
@@ -113,11 +121,3 @@ yasaricli:slugify
 yasinuslu:blaze-meta
 # sanjo:jasmine
 # velocity:html-reporter
-rocketchat:ui
-rocketchat:ui-sidenav
-rocketchat:ui-account
-rocketchat:ui-admin
-rocketchat:ui-login
-rocketchat:ui-flextab
-rocketchat:ui-message
-rocketchat:ui-master
