@@ -6,7 +6,7 @@ Meteor.startup ->
 			RocketChat.TabBar.addButton
 				id: 'channel-settings'
 				i18nTitle: 'Channel_Settings'
-				icon: 'octicon octicon-gear'
+				icon: 'octicon octicon-info'
 				template: 'channelSettings'
 				order: 0
 	, RocketChat.callbacks.priority.MEDIUM, 'enter-room-tabbar-channel-settings'

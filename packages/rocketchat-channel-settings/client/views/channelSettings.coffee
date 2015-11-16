@@ -1,8 +1,14 @@
 Template.channelSettings.helpers
+	canEdit: ->
+		return true
+	editing: (field) ->
+		return false
 	notDirect: ->
 		return ChatRoom.findOne(@rid)?.t isnt 'd'
 	roomType: ->
 		return ChatRoom.findOne(@rid)?.t
+	roomTypeDescription: ->
+		return if ChatRoom.findOne(@rid)?.t is 'c' then t('Channel') else t('Private_Group')
 	roomName: ->
 		return ChatRoom.findOne(@rid)?.name
 	roomTopic: ->

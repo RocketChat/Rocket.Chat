@@ -329,18 +329,6 @@ Template.room.events
 			$('#room-title-field').focus().select()
 		, 10
 
-	'keydown #room-title-field': (event) ->
-		if event.keyCode is 27 # esc
-			Session.set('editRoomTitle', false)
-		else if event.keyCode is 13 # enter
-			renameRoom @_id, $(event.currentTarget).val()
-
-	'blur #room-title-field': (event) ->
-		# TUDO: create a configuration to select the desired behaviour
-		# renameRoom this._id, $(event.currentTarget).val()
-		Session.set('editRoomTitle', false)
-		$(".fixed-title").removeClass "visible"
-
 	"click .flex-tab .user-image > a" : (e) ->
 		RocketChat.TabBar.openFlex()
 		Session.set('showUserInfo', $(e.currentTarget).data('username'))
@@ -613,36 +601,3 @@ Template.room.onRendered ->
 			if webrtc.localUrl.get()?
 				RocketChat.TabBar.setTemplate 'membersList'
 				RocketChat.TabBar.openFlex()
-
-
-renameRoom = (rid, name) ->
-	name = name?.toLowerCase().trim()
-	console.log 'room renameRoom' if window.rocketDebug
-	room = Session.get('roomData' + rid)
-	if room.name is name
-		Session.set('editRoomTitle', false)
-		return false
-
-	Meteor.call 'saveRoomName', rid, name, (error, result) ->
-		if result
-			Session.set('editRoomTitle', false)
-			# If room was renamed then close current room and send user to the new one
-			RoomManager.close room.t + room.name
-			switch room.t
-				when 'c'
-					FlowRouter.go 'channel', name: name
-				when 'p'
-					FlowRouter.go 'group', name: name
-
-			toastr.success t('Room_name_changed_successfully')
-		if error
-			if error.error is 'name-invalid'
-				toastr.error t('Invalid_room_name', name)
-				return
-			if error.error is 'duplicate-name'
-				if room.t is 'c'
-					toastr.error t('Duplicate_channel_name', name)
-				else
-					toastr.error t('Duplicate_private_group_name', name)
-				return
-			toastr.error error.reason

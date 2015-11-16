@@ -13,8 +13,12 @@ Meteor.methods
 
 		room = RocketChat.models.Rooms.findOneById rid
 		if room?
+			if settings.roomName isnt room.name
+				name = RocketChat.saveRoomName rid, settings.roomName
+				RocketChat.models.Messages.createRoomRenamedWithRoomIdRoomNameAndUser rid, name, Meteor.user()
+
 			if settings.roomType isnt room.t
-				RocketChat.changeRoomType(rid, settings.roomType)
+				RocketChat.saveRoomType(rid, settings.roomType)
 
 				if settings.roomType is 'c'
 					message = TAPi18n.__('Channel')
@@ -23,12 +27,8 @@ Meteor.methods
 
 				RocketChat.models.Messages.createRoomSettingsChangedWithTypeRoomIdMessageAndUser 'room_changed_privacy', rid, message, Meteor.user()
 
-			if settings.roomName isnt room.name
-				name = Meteor.call 'saveRoomName', rid, settings.roomName
-
 			if settings.roomTopic isnt room.topic
-				RocketChat.changeRoomTopic(rid, settings.roomTopic)
-				message = settings.roomTopic
-				RocketChat.models.Messages.createRoomSettingsChangedWithTypeRoomIdMessageAndUser 'room_changed_topic', rid, message, Meteor.user()
+				RocketChat.saveRoomTopic(rid, settings.roomTopic)
+				RocketChat.models.Messages.createRoomSettingsChangedWithTypeRoomIdMessageAndUser 'room_changed_topic', rid, settings.roomTopic, Meteor.user()
 
 		return true
