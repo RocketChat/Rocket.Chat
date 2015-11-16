@@ -73,7 +73,7 @@ It is a great solution for communities and companies wanting to privately host t
 > Why Slack when you can Rocket.chat?
 
 ##### [liminality.xyz](http://liminality.xyz/self-hosting/)
-> SELF-HOSTED ALTERNATIVES TO POPULAR CLOUD SERVICES
+> Self-hosted alternatives to popular cloud services
 
 
 ## Features
@@ -231,19 +231,19 @@ docker run -it -p 3000:3000 -v "$(pwd)":/app danieldent/meteor
 ## Credits
 
 Thanks to
+[Aaron Ogle](https://github.com/geekgonecrazy),
+[Bradley Hilton](https://github.com/Graywolf336)
 [Diego Sampaio](https://github.com/sampaiodiego),
 [Gabriel Engel](https://github.com/engelgabriel),
 [Marcelo Schmidt](https://github.com/marceloschmidt),
 [Rafael Caferati](https://github.com/rcaferati),
 [Rodrigo Nascimento](https://github.com/rodrigok),
 [Sing Li](https://github.com/Sing-Li),
-[Aaron Ogle](https://github.com/geekgonecrazy),
-[Graywolf336](https://github.com/Graywolf336)
 
 
 Emoji provided free by [Emoji One](http://emojione.com)
 
-Performance monitoring provided by [Kadira](https://kadira.io/)
+Performance monitoring provided by [Kadira](https://kadira.io)
 
 ### Contributions
 
