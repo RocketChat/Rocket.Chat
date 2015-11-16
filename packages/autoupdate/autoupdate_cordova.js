@@ -302,7 +302,8 @@ var ensureLocalPathPrefix = function (cb) {
       // the cordova.file symbol is attached, properties like dataDirectory
       // still can be null. Poll until we are sure the property is attached.
       console.log(DEBUG_TAG + 'cordova.file.dataDirectory is null, retrying in 20ms');
-      Meteor.setTimeout(_.bind(ensureLocalPathPrefix, null, cb), 20);
+      // REMOVED to prevent loop in new app
+      // Meteor.setTimeout(_.bind(ensureLocalPathPrefix, null, cb), 20);
     } else {
       localPathPrefix = cordova.file.dataDirectory + 'meteor/';
       cb();
