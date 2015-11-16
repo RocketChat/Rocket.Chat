@@ -1,4 +1,7 @@
 {
+  "Audio" : "Audio",
+  "Audio_Chat" : "Audio Chat",
+  "Video" : "Video",
   "Video_Chat" : "Video Chat",
   "Remote" : "Remote",
   "Setup" : "Setup",
