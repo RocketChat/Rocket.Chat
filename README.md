@@ -10,7 +10,7 @@ Available from the AppStore:
 
 [![Rocket.Chat on Apple AppStore](http://linkmaker.itunes.apple.com/images/badges/en-us/badge_appstore-lrg.svg)](https://itunes.apple.com/us/app/rocket.chat/id1028869439?mt=8)
 
-Get the app for your Android phone: 
+Get the app for your Android phone:
 
 
 [![Rocket.Chat on Google Play](https://developer.android.com/images/brand/en_app_rgb_wo_45.png)](https://play.google.com/store/apps/details?id=com.konecty.rocket.chat)
@@ -72,6 +72,10 @@ It is a great solution for communities and companies wanting to privately host t
 ##### [snowulf.com](https://snowulf.com/2015/09/25/why-slack-when-you-can-rocket-chat/)
 > Why Slack when you can Rocket.chat?
 
+##### [liminality.xyz](http://liminality.xyz/self-hosting/)
+> SELF-HOSTED ALTERNATIVES TO POPULAR CLOUD SERVICES
+
+
 ## Features
 
 - BYOS (bring your own server)
@@ -90,18 +94,18 @@ It is a great solution for communities and companies wanting to privately host t
 - Transcripts / History
 - File Upload / Sharing
 - Full text search
-- Live chat / Messaging call center 
-- LDAP Authentication 
+- Live chat / Messaging call center
+- LDAP Authentication
 - Support for Okta SSO through SAML v2
-- I18n - Supports 22 Languages 
+- I18n - Supports 22 Languages
 - Hubot Friendly
 - Face to Face Video Conferencing (aka WebRTC)
 - Multi-users Video Group Chat
 - Audio calls
 - Multi-users Audio Conference
 - Screensharing
-- REST APIs 
-- Remote Locations Video Monitoring 
+- REST APIs
+- Remote Locations Video Monitoring
 - Chat-ops powered by Hubot: scalable horizontal app integration (early access)
 - Massively scalable hosting and provisioning (beta testing now)
 - Native Cross-Platform Desktop Application [Windows, Mac OSX, or Linux](https://rocket.chat/)
@@ -145,7 +149,7 @@ Everyone can start hacking the adapter code, or launch his/her own bot within a 
 Please head over to the [Hubot Integration Project](https://github.com/RocketChat/hubot-rocketchat) for more information.
 
 
-#### Chat-ops integrations powered by Hubot 
+#### Chat-ops integrations powered by Hubot
 
 Integrate your application with fly-in panels today!   Early access is available for developers.
 
@@ -248,6 +252,12 @@ Performance monitoring provided by [Kadira](https://kadira.io/)
 A lot of work has already gone into Rocket.Chat, but we have much bigger plans for it!
 
 So if you'd like to be part of the project, please check out the [roadmap](https://github.com/RocketChat/Rocket.Chat/milestones) and [issues](https://github.com/RocketChat/Rocket.Chat/issues) to see if there's anything you can help with.
+
+### Branching Model
+
+The [Gitflow Workflow](http://nvie.com/posts/a-successful-git-branching-model/) section below is derived from Vincent Driessen at nvie.
+
+See also this [Git Workflows Comparison](https://www.atlassian.com/git/tutorials/comparing-workflows/gitflow-workflow) for more details.
 
 ### Translations
 
