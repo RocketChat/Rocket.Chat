@@ -149,6 +149,14 @@ rocketchat:spotify@0.0.1
 rocketchat:statistics@0.0.1
 rocketchat:theme@0.0.1
 rocketchat:tutum@0.0.1
+rocketchat:ui@0.1.0
+rocketchat:ui-account@0.1.0
+rocketchat:ui-admin@0.1.0
+rocketchat:ui-flextab@0.1.0
+rocketchat:ui-login@0.1.0
+rocketchat:ui-master@0.1.0
+rocketchat:ui-message@0.1.0
+rocketchat:ui-sidenav@0.1.0
 rocketchat:webrtc@0.0.1
 rocketchat:wordpress@0.0.1
 routepolicy@1.0.6
