@@ -70,6 +70,11 @@ Template.room.helpers
 		else
 			return roomData.name
 
+	roomTopic: ->
+		roomData = Session.get('roomData' + this._id)
+		return '' unless roomData
+		return roomData.topic
+
 	roomIcon: ->
 		roomData = Session.get('roomData' + this._id)
 		return '' unless roomData?.t
@@ -114,25 +119,8 @@ Template.room.helpers
 		return '' unless roomData
 		return roomData.t is 'c'
 
-	canEditName: ->
-		roomData = Session.get('roomData' + this._id)
-		return '' unless roomData
-		if roomData.t in ['c', 'p']
-			return RocketChat.authz.hasAtLeastOnePermission('edit-room', this._id)
-		else
-			return ''
-
 	canDirectMessage: ->
 		return Meteor.user()?.username isnt this.username
-
-	roomNameEdit: ->
-		return Session.get('roomData' + this._id)?.name
-
-	editingTitle: ->
-		return 'hidden' if Session.get('editRoomTitle')
-
-	showEditingTitle: ->
-		return 'hidden' if not Session.get('editRoomTitle')
 
 	flexOpened: ->
 		return 'opened' if RocketChat.TabBar.isFlexOpen()
