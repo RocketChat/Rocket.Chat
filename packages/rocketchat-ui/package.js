@@ -1,5 +1,5 @@
 Package.describe({
-	name: 'rocketchat:rocketchat-ui',
+	name: 'rocketchat:ui',
 	version: '0.1.0',
 	// Brief, one-line summary of the package.
 	summary: '',

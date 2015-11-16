@@ -1,5 +1,5 @@
 Package.describe({
-	name: 'rocketchat:rocketchat-ui-admin',
+	name: 'rocketchat:ui-admin',
 	version: '0.1.0',
 	// Brief, one-line summary of the package.
 	summary: '',
