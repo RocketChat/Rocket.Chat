@@ -14,7 +14,7 @@ Meteor.methods
 		now = new Date()
 		user = Meteor.user()
 
-		members.push user.username
+		members.push user.username if user.username not in members
 
 		# avoid duplicate names
 		if RocketChat.models.Rooms.findOneByName name

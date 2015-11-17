@@ -47,7 +47,7 @@ class Markdown
 
 			message.html = msg
 
-			console.log 'Markdown', message if window.rocketDebug
+			console.log 'Markdown', message if window?.rocketDebug
 
 		return message
 

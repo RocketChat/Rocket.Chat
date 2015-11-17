@@ -13,10 +13,14 @@ Package.onUse(function(api) {
 	api.use('coffeescript');
 	api.use('random');
 	api.use('check');
+	api.use('tracker');
 	api.use('ddp-rate-limiter');
 	api.use('underscore');
 	api.use('underscorestring:underscore.string');
 	api.use('monbro:mongodb-mapreduce-aggregation@1.0.1');
+	api.use('service-configuration');
+	api.use('check');
+	api.use('arunoda:streams');
 
 	// COMMON
 	api.addFiles('lib/core.coffee');
@@ -48,9 +52,11 @@ Package.onUse(function(api) {
 	// CLIENT
 	api.addFiles('client/lib/openRoom.coffee', 'client');
 	api.addFiles('client/lib/roomExit.coffee', 'client');
+	api.addFiles('client/AdminBox.coffee', 'client');
 	api.addFiles('client/Notifications.coffee', 'client');
 	api.addFiles('client/TabBar.coffee', 'client');
 	api.addFiles('client/MessageAction.coffee', 'client');
+	api.addFiles('client/MessageTypes.coffee', 'client');
 
 	api.addFiles('settings/client/rocketchat.coffee', 'client');
 
@@ -59,6 +65,7 @@ Package.onUse(function(api) {
 	api.addFiles('server/functions/setUsername.coffee', 'server');
 
 	api.addFiles('server/methods/joinDefaultChannels.coffee', 'server');
+	api.addFiles('server/methods/robotMethods.coffee', 'server');
 	api.addFiles('server/methods/sendInvitationEmail.coffee', 'server');
 	api.addFiles('server/methods/setAdminStatus.coffee', 'server');
 	api.addFiles('server/methods/setRealName.coffee', 'server');
@@ -89,5 +96,9 @@ Package.onUse(function(api) {
 });
 
 Package.onTest(function(api) {
+	api.use('coffeescript');
+	api.use('sanjo:jasmine@0.20.2');
+	api.use('rocketchat:lib');
 
+  api.addFiles('tests/jasmine/server/unit/models/_Base.spec.coffee', 'server');
 });

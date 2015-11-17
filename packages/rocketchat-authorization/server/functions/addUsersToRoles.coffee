@@ -16,7 +16,9 @@ RocketChat.authz.addUsersToRoles = (userIds, roleNames, scope ) ->
 	existingRoleNames = _.pluck(RocketChat.authz.getRoles().fetch(), 'name')
 	invalidRoleNames = _.difference( roleNames, existingRoleNames)
 	unless _.isEmpty(invalidRoleNames)
-		throw new Meteor.Error 'invalid-role'
+		# throw new Meteor.Error 'invalid-role'
+		for role in invalidRoleNames
+			Roles.createRole role
 
 	unless _.isString(scope)
 		scope = Roles.GLOBAL_GROUP

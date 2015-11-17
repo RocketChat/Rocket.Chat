@@ -38,6 +38,7 @@ rocketchat:lib
 
 rocketchat:authorization
 rocketchat:autolinker
+rocketchat:channel-settings
 rocketchat:colors
 rocketchat:custom-oauth
 rocketchat:emojione
@@ -48,19 +49,28 @@ rocketchat:gitlab
 rocketchat:highlight
 rocketchat:ldap
 rocketchat:logger
+rocketchat:mailer
 rocketchat:markdown
 rocketchat:me
 rocketchat:mentions
+rocketchat:message-pin
 rocketchat:message-star
 rocketchat:oembed
 rocketchat:slashcommands-invite
 rocketchat:slashcommands-join
 rocketchat:slashcommands-leave
-rocketchat:soundcloud
 rocketchat:spotify
 rocketchat:statistics
 rocketchat:theme
 rocketchat:tutum
+rocketchat:ui
+rocketchat:ui-account
+rocketchat:ui-admin
+rocketchat:ui-flextab
+rocketchat:ui-login
+rocketchat:ui-master
+rocketchat:ui-message
+rocketchat:ui-sidenav
 rocketchat:webrtc
 rocketchat:wordpress
 #rocketchat:chatops
