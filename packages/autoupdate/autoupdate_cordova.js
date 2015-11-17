@@ -208,6 +208,7 @@ Autoupdate._retrySubscription = function () {
     var checkNewVersionDocument = function (doc) {
       var self = this;
       if (doc.version !== autoupdateVersionCordova) {
+        window.fireGlobalEvent('onNewVersion', doc.version)
         onNewVersion();
       }
     };
