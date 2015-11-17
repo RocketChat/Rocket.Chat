@@ -42,6 +42,7 @@ Meteor.startup ->
 
 		if not file?
 			res.setHeader 'content-type', 'image/svg+xml'
+			res.setHeader 'cache-control', 'public'
 			res.setHeader 'Last-Modified', "Thu, 01 Jan 2015 00:00:00 GMT"
 
 			reqModifiedHeader = req.headers["if-modified-since"];
