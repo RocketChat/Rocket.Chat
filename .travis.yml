@@ -34,6 +34,7 @@ script:
 - cd .travis
 - sh ./namefiles.sh
 - cd ..
+- rm -f .meteor/versions
 - meteor add rocketchat:livechat rocketchat:hubot sanjo:jasmine velocity:console-reporter
 - ./node_modules/velocity-cli/bin/velocity test-packages --ci
 - ./node_modules/velocity-cli/bin/velocity test-app --ci
