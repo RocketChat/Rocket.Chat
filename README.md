@@ -63,6 +63,9 @@ It is a great solution for communities and companies wanting to privately host t
 ##### [JavaScript Weekly](http://javascriptweekly.com/issues/234)
 > An open source Web based, channel based chat system (a la Slack) built using Meteor, the full stack JavaScript development platform.
 
+##### [Open Source China](http://www.oschina.net/p/rocket-chat)
+> Rocket.Chat 是特性最丰富的 Slack 开源替代品之一。 主要功能：群组聊天，直接通信，私聊群，桌面通知，媒体嵌入，链接预览，文件上传，语音/视频 聊天，截图等等。
+
 ##### [wwwhatsnew.com](http://wwwhatsnew.com/2015/05/30/rocket-chat-para-los-programadores-que-quieran-ofrecer-un-chat-en-su-web/)
 > Para los programadores que quieran ofrecer un chat en su web
 
