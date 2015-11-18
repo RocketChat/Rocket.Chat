@@ -2,7 +2,6 @@ sudo: required
 language: node_js
 branches:
   only:
-  - master
   - develop
 node_js:
 - '0.12'
@@ -50,5 +49,4 @@ deploy:
   local_dir: ../build
   on:
     branch:
-    - master
     - develop
