@@ -2,7 +2,9 @@ FROM node:0.10
 
 MAINTAINER buildmaster@rocket.chat
 
-RUN apt-get update && apt-get install -y graphicsmagick
+RUN apt-get update \
+&& apt-get install -y graphicsmagick \
+&& rm -rf /var/lib/apt/lists/*
 
 RUN groupadd -r rocketchat \
 &&  useradd -r -g rocketchat rocketchat \
