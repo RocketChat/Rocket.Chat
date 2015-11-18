@@ -8,7 +8,8 @@ RUN apt-get update \
 
 RUN groupadd -r rocketchat \
 &&  useradd -r -g rocketchat rocketchat \
-&&  mkdir /app
+&&  mkdir /app  \
+&&  mkdir /app/uploads
 
 # gpg: key 4FD08014: public key "Rocket.Chat Buildmaster <buildmaster@rocket.chat>" imported
 RUN gpg --keyserver ha.pool.sks-keyservers.net --recv-keys 0E163286C20D07B9787EBE9FD7F9D0414FD08104
@@ -23,10 +24,7 @@ RUN curl -fSL "https://s3.amazonaws.com/rocketchatbuild/rocket.chat-v.latest.tgz
 
 USER rocketchat
 
-RUN mkdir /rocketchat
-RUN mkdir /rocketchat/uploads
-VOLUME /rocketchat
-
+VOLUME /app/uploads
 WORKDIR /app/bundle
 
 # needs a mongoinstance - defaults to container linking with alias 'db'
