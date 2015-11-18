@@ -1,16 +1,19 @@
 db:
   image: mongo
 # volumes:
-#    - ./data/runtime/db:/data/db
-#    - ./data/dump:/dump
+#    - $PWD/data/runtime/db:/data/db
+#    - $PWD/data/dump:/dump
   command: mongod --smallfiles
 
 rocketchat:
   image: rocketchat/rocket.chat
+# volumes:
+#    - $PWD/uploads:/app/uploads
   environment:
     - ROOT=3000
     - ROOT_URL=http://yourhost:3000
     - MONGO_URL=mongodb://db:27017/rocketchat
+    - Accounts_AvatarStorePath=/app/uploads
   links:
     - db:db
   ports:
