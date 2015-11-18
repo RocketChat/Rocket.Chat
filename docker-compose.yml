@@ -8,10 +8,11 @@ db:
 rocketchat:
   image: rocketchat/rocket.chat
   environment:
+    - ROOT=3000
+    - ROOT_URL=http://yourhost:3000
     - MONGO_URL=mongodb://db:27017/rocketchat
-    - ROOT_URL=http://yourhost:8818
   links:
     - db:db
   ports:
-    - 8818:3000
+    - 3000:3000
 

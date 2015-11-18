@@ -3,8 +3,8 @@ FROM node:0.10
 MAINTAINER buildmaster@rocket.chat
 
 RUN apt-get update \
-&& apt-get install -y graphicsmagick \
-&& rm -rf /var/lib/apt/lists/*
+&&  apt-get install -y graphicsmagick \
+&&  rm -rf /var/lib/apt/lists/*
 
 RUN groupadd -r rocketchat \
 &&  useradd -r -g rocketchat rocketchat \
@@ -21,8 +21,11 @@ RUN curl -fSL "https://s3.amazonaws.com/rocketchatbuild/rocket.chat-v.latest.tgz
 &&  cd /app/bundle/programs/server \
 &&  npm install
 
-WORKDIR /app/bundle
 USER rocketchat
+
+RUN mkdir ~/uploads
+
+WORKDIR /app/bundle
 
 # needs a mongoinstance - defaults to container linking with alias 'db'
 ENV MONGO_URL=mongodb://db:27017/meteor \
