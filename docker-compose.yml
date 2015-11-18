@@ -1,7 +1,7 @@
-db:
+mongo:
   image: mongo
 # volumes:
-#    - ./data/runtime/db:/data/db
+#    - ./data/runtime/mongo:/data/mongo
 #    - ./data/dump:/dump
   command: mongod --smallfiles
 
@@ -12,9 +12,9 @@ rocketchat:
   environment:
     - ROOT=3000
     - ROOT_URL=http://yourhost:3000
-    - MONGO_URL=mongodb://db:27017/rocketchat
+    - MONGO_URL=mongodb://mongo:27017/rocketchat
   links:
-    - db:db
+    - mongo:mongo
   ports:
     - 3000:3000
 
