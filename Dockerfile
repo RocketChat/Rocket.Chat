@@ -27,8 +27,8 @@ USER rocketchat
 VOLUME /app/uploads
 WORKDIR /app/bundle
 
-# needs a mongoinstance - defaults to container linking with alias 'db'
-ENV MONGO_URL=mongodb://db:27017/meteor \
+# needs a mongoinstance - defaults to container linking with alias 'mongo'
+ENV MONGO_URL=mongodb://mongo:27017/rocketchat \
     PORT=3000 \
     ROOT_URL=http://localhost:3000 \
     Accounts_AvatarStorePath=/app/uploads
