@@ -23,7 +23,9 @@ RUN curl -fSL "https://s3.amazonaws.com/rocketchatbuild/rocket.chat-v.latest.tgz
 
 USER rocketchat
 
-RUN mkdir ~/uploads
+RUN mkdir /rocketchat
+RUN mkdir /rocketchat/uploads
+VOLUME /rocketchat
 
 WORKDIR /app/bundle
 
