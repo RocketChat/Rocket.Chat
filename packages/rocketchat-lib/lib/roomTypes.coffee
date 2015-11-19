@@ -20,39 +20,15 @@ RocketChat.roomTypes = new class
 		roomTypesOrder.push identifier
 		roomTypes[identifier] = config
 
-	### Sets a route for a room type
-	@param roomType: room type (e.g.: c (for channels), d (for direct channels))
-	@param routeName: route's name for given type
-	@param dataCallback: callback for the route data. receives the whole subscription data as parameter
-	###
-	setRoute = (roomType, routeName, dataCallback) ->
-		if routes[roomType]?
-			throw new Meteor.Error 'route-callback-exists', 'Route callback for the given type already exists'
-
-		# dataCallback ?= -> return {}
-
-		routes[roomType] =
-			name: routeName
-			data: dataCallback or -> return {}
-
 	###
 	@param roomType: room type (e.g.: c (for channels), d (for direct channels))
 	@param subData: the user's subscription data
 	###
-	getRoute = (roomType, subData) ->
-		unless routes[roomType]?
+	getRouteLink = (roomType, subData) ->
+		unless roomTypes[roomType]?
 			throw new Meteor.Error 'route-doesnt-exists', 'There is no route for the type: ' + roomType
 
-		return FlowRouter.path routes[roomType].name, routes[roomType].data(subData)
-
-	### add a type of room
-	@param template: the name of the template to render on sideNav
-	@param roles[]: a list of roles a user must have to see the template
-	###
-	addType = (template, roles = []) ->
-		rooms.push
-			template: template
-			roles: [].concat roles
+		return FlowRouter.path roomTypes[roomType].route.name, roomTypes[roomType].route.link(subData)
 
 	getAllTypes = ->
 		typesPermitted = []
@@ -66,38 +42,42 @@ RocketChat.roomTypes = new class
 	@param roomType: room type (e.g.: c (for channels), d (for direct channels))
 	@param callback: function that will return the publish's data
 	###
-	addPublish = (roomType, callback) ->
-		if publishes[roomType]?
+	setPublish = (roomType, callback) ->
+		if roomTypes[roomType]?.publish?
 			throw new Meteor.Error 'route-publish-exists', 'Publish for the given type already exists'
 
-		publishes[roomType] = callback
+		unless roomTypes[roomType]?
+			roomTypesOrder.push roomType
+			roomTypes[roomType] = {}
+
+		roomTypes[roomType].publish = callback
 
 	### run the publish for a room type
 	@param roomType: room type (e.g.: c (for channels), d (for direct channels))
 	@param identifier: identifier of the room
 	###
 	runPublish = (roomType, identifier) ->
-		return unless publishes[roomType]?
-		return publishes[roomType].call this, identifier
+		return unless roomTypes[roomType].publish?
+		return roomTypes[roomType].publish.call this, identifier
 
 	getIcon = (roomType) ->
-		return icons[roomType]
+		return roomTypes[roomType]?.icon
 
-	###
-	@param roomType: room type (e.g.: c (for channels), d (for direct channels))
-	@param iconClass: iconClass to display on sideNav
-	###
-	setIcon = (roomType, iconClass) ->
-		icons[roomType] = iconClass
+	getIdentifiers = (except) ->
+		except = [].concat except
+		return _.reject roomTypesOrder, (t) -> return except.indexOf(t) isnt -1
 
-	addType: addType
+	# addType: addType
 	getTypes: getAllTypes
+	getIdentifiers: getIdentifiers
 
-	setIcon: setIcon
+	# setIcon: setIcon
 	getIcon: getIcon
 
-	setRoute: setRoute
-	getRoute: getRoute
+	# setRoute: setRoute
+	getRouteLink: getRouteLink
 
-	addPublish: addPublish
-	publish: runPublish
+	setPublish: setPublish
+	runPublish: runPublish
+
+	add: add

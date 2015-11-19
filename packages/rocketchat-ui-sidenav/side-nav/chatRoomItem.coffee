@@ -33,7 +33,7 @@ Template.chatRoomItem.helpers
 			return true
 
 	route: ->
-		FlowRouter.path RocketChat.roomTypes.getRoute @t, @
+		FlowRouter.path RocketChat.roomTypes.getRouteLink @t, @
 
 Template.chatRoomItem.rendered = ->
 	if not (FlowRouter.getParam('_id')? and FlowRouter.getParam('_id') is this.data.rid) and not this.data.ls
