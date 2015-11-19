@@ -70,6 +70,7 @@ RocketChat.sendMessage = (user, message, room, options) ->
 						badge: 1
 						sound: 'chime'
 						payload:
+							host: Meteor.absoluteUrl()
 							rid: message.rid
 							sender: message.u
 							type: room.t
@@ -143,6 +144,7 @@ RocketChat.sendMessage = (user, message, room, options) ->
 							badge: 1
 							sound: 'chime'
 							payload:
+								host: Meteor.absoluteUrl()
 								rid: message.rid
 								sender: message.u
 								type: room.t
