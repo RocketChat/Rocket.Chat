@@ -1,38 +1,21 @@
 if Meteor.isCordova
-	Push.addListener 'token', (token) ->
-		Meteor.call 'log', 'CLIENT', 'token', arguments
-
-	Push.addListener 'error', (err) ->
-		Meteor.call 'log', 'CLIENT', 'error', arguments
-		if err.type == 'apn.cordova'
-			Meteor.call 'log', 'CLIENT', err.error
-
-	Push.addListener 'register', (evt) ->
-		Meteor.call 'log', 'CLIENT', 'register', arguments
-
-	Push.addListener 'alert', (notification) ->
-		Meteor.call 'log', 'CLIENT', 'alert', arguments
-
-	Push.addListener 'sound', (notification) ->
-		Meteor.call 'log', 'CLIENT', 'sound', arguments
-
-	Push.addListener 'badge', (notification) ->
-		Meteor.call 'log', 'CLIENT', 'badge', arguments
-
-	Push.addListener 'startup', (notification) ->
+	window.addEventListener 'push-notification', (evt) ->
 		Meteor.call 'log', 'CLIENT', 'startup', arguments
 
-		if notification.open is true and notification.payload?.rid?
-			switch notification.payload.type
-				when 'c'
-					FlowRouter.go 'channel', name: notification.payload.name
-				when 'p'
-					FlowRouter.go 'group', name: notification.payload.name
-				when 'd'
-					FlowRouter.go 'direct', username: notification.payload.sender.username
+		notification = evt.detail
 
-	Push.addListener 'message', (notification) ->
-		Meteor.call 'log', 'CLIENT', 'message', arguments
+		if notification.additionalData.foreground is true
+			return
+
+		if notification.additionalData.ejson?.rid?
+			switch notification.additionalData.ejson.type
+				when 'c'
+					FlowRouter.go 'channel', name: notification.additionalData.ejson.name
+				when 'p'
+					FlowRouter.go 'group', name: notification.additionalData.ejson.name
+				when 'd'
+					FlowRouter.go 'direct', username: notification.additionalData.ejson.sender.username
+
 
 	Tracker.autorun ->
 		if RocketChat.settings.get('Push_enable') is true and Meteor.userId()?
@@ -40,12 +23,15 @@ if Meteor.isCordova
 			if android_senderID?
 				localStorage.setItem 'android_senderID', android_senderID
 
-			Push.Configure
-				android:
-					senderID: android_senderID
-					sound: true
-					vibrate: true
-				ios:
-					badge: true
-					sound: true
-					alert: true
+			if window.pushToken?
+				data =
+					id: localStorage.getItem 'push_stored_id'
+					token: window.pushToken,
+					appName: 'main',
+					userId: Meteor.userId()
+					metadata: undefined
+
+				Meteor.call 'raix:push-update', data, (err, result) ->
+					console.log err, result
+					if not err? and result?
+						localStorage.setItem 'push_stored_id', result._id
