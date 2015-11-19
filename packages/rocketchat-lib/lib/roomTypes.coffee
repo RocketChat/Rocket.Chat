@@ -1,8 +1,24 @@
 RocketChat.roomTypes = new class
-	rooms = []
-	routes = {}
-	publishes = {}
-	icons = {}
+	roomTypesOrder = []
+	roomTypes = {}
+
+	### Adds a room type to app
+	@param identifier MUST BE equals to `db.rocketchat_room.t` field
+	@param config
+		template: template name to render on sideNav
+		permissions: list of permissions to see the sideNav template
+		icon: icon class
+		route:
+			name: route name
+			action: route action function
+	###
+	add = (identifier, config) ->
+		if roomTypes[identifier]?
+			throw new Meteor.Error 'identifier-already-set', t('Room_type_identifier_already_set')
+
+		# @TODO validate config options
+		roomTypesOrder.push identifier
+		roomTypes[identifier] = config
 
 	### Sets a route for a room type
 	@param roomType: room type (e.g.: c (for channels), d (for direct channels))
@@ -39,7 +55,12 @@ RocketChat.roomTypes = new class
 			roles: [].concat roles
 
 	getAllTypes = ->
-		return rooms
+		typesPermitted = []
+		roomTypesOrder.forEach (type) ->
+			if roomTypes[type].permissions? and RocketChat.authz.hasAtLeastOnePermission roomTypes[type].permissions
+				typesPermitted.push roomTypes[type]
+
+		return typesPermitted
 
 	### add a publish for a room type
 	@param roomType: room type (e.g.: c (for channels), d (for direct channels))
