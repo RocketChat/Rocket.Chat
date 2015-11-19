@@ -32,6 +32,5 @@ if Meteor.isCordova
 					metadata: undefined
 
 				Meteor.call 'raix:push-update', data, (err, result) ->
-					console.log err, result
 					if not err? and result?
 						localStorage.setItem 'push_stored_id', result._id
