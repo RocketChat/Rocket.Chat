@@ -1,5 +1,6 @@
 Meteor.startup ->
 	# RocketChat.roomTypes.addType('starredRooms', roles);
+	# roles = ['admin', 'moderator', 'user']
 
 	RocketChat.roomTypes.add 'c',
 		template: 'channels'

@@ -3,10 +3,7 @@ Template.roomSearch.helpers
 		return 'icon-at' if this.type is 'u'
 
 		if this.type is 'r'
-			switch this.t
-				when 'd' then return 'icon-at'
-				when 'c' then return 'icon-hash'
-				when 'p' then return 'icon-lock'
+			return RocketChat.roomTypes.getIcon this.t
 
 	userStatus: ->
 		if this.type is 'u'
