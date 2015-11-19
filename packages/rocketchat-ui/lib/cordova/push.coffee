@@ -36,10 +36,16 @@ if Meteor.isCordova
 
 	Tracker.autorun ->
 		if RocketChat.settings.get('Push_enable') is true and Meteor.userId()?
+			android_senderID = RocketChat.settings.get 'Push_gcm_project_number'
+			if android_senderID?
+				localStorage.setItem 'android_senderID', android_senderID
+
 			Push.Configure
-				gcm:
-					projectNumber: RocketChat.settings.get 'Push_gcm_project_number'
-				badge: true
-				sound: true
-				alert: true
-				vibrate: true
+				android:
+					senderID: android_senderID
+					sound: true
+					vibrate: true
+				ios:
+					badge: true
+					sound: true
+					alert: true
