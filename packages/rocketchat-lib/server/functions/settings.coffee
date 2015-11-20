@@ -12,6 +12,7 @@ RocketChat.settings.add = (_id, value, options = {}) ->
 
 	options.packageValue = value
 	options.valueSource = 'packageValue'
+	options.ts = new Date
 
 	if process?.env?[_id]?
 		value = process.env[_id]
@@ -30,18 +31,11 @@ RocketChat.settings.add = (_id, value, options = {}) ->
 	if not options.i18nDescription?
 		options.i18nDescription = "#{_id}_Description"
 
-	upsertChanges =
+	return RocketChat.models.Settings.upsert { _id: _id },
 		$set: options
 		$setOnInsert:
 			value: value
 			createdAt: new Date
-
-	if options.persistent is true
-		upsertChanges.$unset = { ts: true }
-	else
-		upsertChanges.$set.ts = new Date
-
-	return RocketChat.models.Settings.upsert { _id: _id }, upsertChanges
 
 
 ###
@@ -60,18 +54,13 @@ RocketChat.settings.addGroup = (_id, options = {}) ->
 	if not options.i18nDescription?
 		options.i18nDescription = "#{_id}_Description"
 
-	upsertChanges =
+	options.ts = new Date
+
+	return RocketChat.models.Settings.upsert { _id: _id },
 		$set: options
 		$setOnInsert:
 			type: 'group'
 			createdAt: new Date
-
-	if options.persistent is true
-		upsertChanges.$unset = { ts: true }
-	else
-		upsertChanges.$set.ts = new Date
-
-	return RocketChat.models.Settings.upsert { _id: _id }, upsertChanges
 
 
 ###
