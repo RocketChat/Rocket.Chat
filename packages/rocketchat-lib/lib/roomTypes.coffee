@@ -33,7 +33,7 @@ RocketChat.roomTypes = new class
 	getAllTypes = ->
 		typesPermitted = []
 		roomTypesOrder.forEach (type) ->
-			if roomTypes[type].permissions? and RocketChat.authz.hasAtLeastOnePermission roomTypes[type].permissions
+			if not roomTypes[type].permissions? or RocketChat.authz.hasAtLeastOnePermission roomTypes[type].permissions
 				typesPermitted.push roomTypes[type]
 
 		return typesPermitted
