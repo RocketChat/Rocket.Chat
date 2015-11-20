@@ -23,10 +23,12 @@ RocketChat.settings.add = (_id, value, options = {}) ->
 		options.meteorSettingsValue = value
 		options.valueSource = 'meteorSettingsValue'
 
-	unless options.i18nLabel? options.i18nLabel = _id
+	if not options.i18nLabel?
+		options.i18nLabel = _id
 
 	# Default description i18n key will be the setting name + "_Description" (eg: LDAP_Enable -> LDAP_Enable_Description)
-	unless options.i18nDescription? options.i18nDescription = "#{_id}_Description"
+	if not options.i18nDescription?
+		options.i18nDescription = "#{_id}_Description"
 
 	upsertChanges =
 		$set: options
