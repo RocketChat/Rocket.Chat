@@ -54,7 +54,7 @@ Package.onUse(function(api) {
 	api.addFiles('server/methods/sendMessage.coffee', 'server');
 	api.addFiles('server/methods/setAdminStatus.coffee', 'server');
 	api.addFiles('server/methods/setRealName.coffee', 'server');
-	api.addFiles('server/methods/settings.coffee', 'server');
+	api.addFiles('server/methods/saveSetting.coffee', 'server');
 	api.addFiles('server/methods/setUsername.coffee', 'server');
 	api.addFiles('server/methods/updateUser.coffee', 'server');
 
