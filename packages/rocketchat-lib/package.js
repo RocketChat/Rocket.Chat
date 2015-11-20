@@ -38,11 +38,13 @@ Package.onUse(function(api) {
 	api.addFiles('server/models/Reports.coffee', 'server');
 	api.addFiles('server/models/Settings.coffee', 'server');
 
+	// PUBLICATIONS
+	api.addFiles('server/publications/settings.coffee', 'server');
+
 	// Settings
 	api.addFiles('settings/lib/onLoadSettings.coffee');
 
 	api.addFiles('settings/server/methods.coffee', 'server');
-	api.addFiles('settings/server/publication.coffee', 'server');
 	api.addFiles('settings/server/startup.coffee', 'server');
 	api.addFiles('settings/server/updateServices.coffee', 'server');
 	api.addFiles('settings/server/addOAuthService.coffee', 'server');
