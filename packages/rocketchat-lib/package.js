@@ -48,13 +48,15 @@ Package.onUse(function(api) {
 	api.addFiles('server/functions/setUsername.coffee', 'server');
 
 	// SERVER METHODS
+	api.addFiles('server/methods/addOAuthService.coffee', 'server');
 	api.addFiles('server/methods/joinDefaultChannels.coffee', 'server');
+	api.addFiles('server/methods/removeOAuthService.coffee', 'server');
 	api.addFiles('server/methods/robotMethods.coffee', 'server');
+	api.addFiles('server/methods/saveSetting.coffee', 'server');
 	api.addFiles('server/methods/sendInvitationEmail.coffee', 'server');
 	api.addFiles('server/methods/sendMessage.coffee', 'server');
 	api.addFiles('server/methods/setAdminStatus.coffee', 'server');
 	api.addFiles('server/methods/setRealName.coffee', 'server');
-	api.addFiles('server/methods/saveSetting.coffee', 'server');
 	api.addFiles('server/methods/setUsername.coffee', 'server');
 	api.addFiles('server/methods/updateUser.coffee', 'server');
 
@@ -63,10 +65,8 @@ Package.onUse(function(api) {
 
 	// Settings
 	api.addFiles('settings/lib/onLoadSettings.coffee');
-
 	api.addFiles('settings/server/startup.coffee', 'server');
 	api.addFiles('settings/server/updateServices.coffee', 'server');
-	api.addFiles('settings/server/addOAuthService.coffee', 'server');
 
 	// CLIENT LIB
 	api.addFiles('client/lib/openRoom.coffee', 'client');
