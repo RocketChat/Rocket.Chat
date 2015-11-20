@@ -67,7 +67,6 @@ Package.onUse(function(api) {
 	api.addFiles('server/startup/settings.coffee', 'server');
 
 	// COMMON STARTUP
-	api.addFiles('lib/startup/settings.coffee');
 	api.addFiles('lib/startup/settingsOnLoadSiteUrl.coffee');
 
 	// CLIENT LIB
@@ -77,7 +76,6 @@ Package.onUse(function(api) {
 
 	// CLIENT METHODS
 	api.addFiles('client/methods/sendMessage.coffee', 'client');
-
 	api.addFiles('client/AdminBox.coffee', 'client');
 	api.addFiles('client/Notifications.coffee', 'client');
 	api.addFiles('client/TabBar.coffee', 'client');
