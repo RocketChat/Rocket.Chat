@@ -113,23 +113,7 @@ RocketChat.settings.add 'Layout_Login_Terms', 'By proceeding to create your acco
 
 RocketChat.settings.add 'Statistics_opt_out', false, { type: 'boolean', group: false }
 
-
-initialLoad = true
-RocketChat.models.Settings.find().observe
-	added: (record) ->
-		Meteor.settings[record._id] = record.value
-		process.env[record._id] = record.value
-		RocketChat.settings.load record._id, record.value, initialLoad
-	changed: (record) ->
-		Meteor.settings[record._id] = record.value
-		process.env[record._id] = record.value
-		RocketChat.settings.load record._id, record.value, initialLoad
-	removed: (record) ->
-		delete Meteor.settings[record._id]
-		delete process.env[record._id]
-		RocketChat.settings.load record._id, undefined, initialLoad
-initialLoad = false
-
+RocketChat.settings.init()
 
 Meteor.startup ->
 	if process?.env? and not process.env['MAIL_URL']? and RocketChat.settings.get('SMTP_Host') and RocketChat.settings.get('SMTP_Username') and RocketChat.settings.get('SMTP_Password')

@@ -35,5 +35,11 @@ RocketChat.settings =
 
 
 	onload: (key, callback) ->
+		# if key is '*'
+		# 	for key, value in Meteor.settings
+		# 		callback key, value, false
+		# else if Meteor.settings?[_id]?
+		# 	callback key, Meteor.settings[_id], false
+
 		RocketChat.settings.callbacks[key] ?= []
 		RocketChat.settings.callbacks[key].push callback
