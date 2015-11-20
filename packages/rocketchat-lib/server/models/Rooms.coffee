@@ -3,6 +3,9 @@ RocketChat.models.Rooms = new class extends RocketChat.models._Base
 		@_initModel 'room'
 
 		@tryEnsureIndex { 'name': 1 }, { unique: 1, sparse: 1 }
+		@tryEnsureIndex { 'default': 1 }
+		@tryEnsureIndex { 'usernames': 1 }
+		@tryEnsureIndex { 't': 1 }
 		@tryEnsureIndex { 'u._id': 1 }
 
 
@@ -124,15 +127,15 @@ RocketChat.models.Rooms = new class extends RocketChat.models._Base
 
 	findByTypeAndName: (type, name, options) ->
 		query =
-			t: type
 			name: name
+			t: type
 
 		return @find query, options
 
 	findByTypeAndNameContainigUsername: (type, name, username, options) ->
 		query =
-			t: type
 			name: name
+			t: type
 			usernames: username
 
 		return @find query, options
@@ -291,11 +294,11 @@ RocketChat.models.Rooms = new class extends RocketChat.models._Base
 		return @update query, update
 
 	setTypeById: (_id, type) ->
-		query = 
+		query =
 			_id: _id
 
-		update = 
-			$set: 
+		update =
+			$set:
 				t: type
 
 		return @update query, update
@@ -304,8 +307,8 @@ RocketChat.models.Rooms = new class extends RocketChat.models._Base
 	# INSERT
 	createWithTypeNameUserAndUsernames: (type, name, user, usernames, extraData) ->
 		room =
-			t: type
 			name: name
+			t: type
 			usernames: usernames
 			msgs: 0
 			u:

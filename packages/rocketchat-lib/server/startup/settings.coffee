@@ -118,3 +118,8 @@ Meteor.startup ->
 		process.env['MAIL_URL'] = "smtp://" + encodeURIComponent(RocketChat.settings.get('SMTP_Username')) + ':' + encodeURIComponent(RocketChat.settings.get('SMTP_Password')) + '@' + encodeURIComponent(RocketChat.settings.get('SMTP_Host'))
 		if RocketChat.settings.get('SMTP_Port')
 			process.env['MAIL_URL'] += ':' + parseInt(RocketChat.settings.get('SMTP_Port'))
+
+# Remove runtime settings (non-persistent)
+Meteor.startup ->
+	RocketChat.models.Settings.update({ ts: { $lt: RocketChat.settings.ts } }, { $set: { hidden: true } })
+
