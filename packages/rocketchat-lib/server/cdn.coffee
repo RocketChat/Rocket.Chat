@@ -1,4 +1,3 @@
-Meteor.startup ->
-	cdnPrefix = RocketChat.settings.get 'CDN_PREFIX'
-	if cdnPrefix?.trim?() isnt ''
-		WebAppInternals.setBundledJsCssPrefix cdnPrefix
+RocketChat.settings.onload 'CDN_PREFIX', (key, value, initialLoad) ->
+	if value?.trim() isnt ''
+		WebAppInternals.setBundledJsCssPrefix value
