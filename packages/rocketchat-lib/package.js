@@ -60,6 +60,9 @@ Package.onUse(function(api) {
 	api.addFiles('server/methods/setUsername.coffee', 'server');
 	api.addFiles('server/methods/updateUser.coffee', 'server');
 
+	// SERVER STARTUP
+	api.addFiles('server/startup/settingsOnLoadCdnPrefix.coffee', 'server');
+
 	// COMMON STARTUP
 	api.addFiles('lib/startup/settings.coffee');
 	api.addFiles('lib/startup/settingsOnLoadSiteUrl.coffee');
@@ -85,7 +88,6 @@ Package.onUse(function(api) {
 
 	api.addFiles('server/Notifications.coffee', 'server');
 
-	api.addFiles('server/cdn.coffee', 'server');
 
 
 	// TAPi18n
