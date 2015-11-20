@@ -1,5 +1,5 @@
 timer = undefined
-updateServices = ->
+oAuthServicesUpdate = ->
 	Meteor.clearTimeout timer if timer?
 
 	timer = Meteor.setTimeout ->
@@ -51,12 +51,12 @@ updateServices = ->
 RocketChat.models.Settings.find().observe
 	added: (record) ->
 		if /^Accounts_OAuth_.+/.test record._id
-			updateServices()
+			oAuthServicesUpdate()
 
 	changed: (record) ->
 		if /^Accounts_OAuth_.+/.test record._id
-			updateServices()
+			oAuthServicesUpdate()
 
 	removed: (record) ->
 		if /^Accounts_OAuth_.+/.test record._id
-			updateServices()
+			oAuthServicesUpdate()
