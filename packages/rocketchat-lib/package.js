@@ -46,6 +46,7 @@ Package.onUse(function(api) {
 	api.addFiles('server/functions/sendMessage.coffee', 'server');
 	api.addFiles('server/functions/settings.coffee', 'server');
 	api.addFiles('server/functions/setUsername.coffee', 'server');
+	api.addFiles('server/functions/Notifications.coffee', 'server');
 
 	// SERVER METHODS
 	api.addFiles('server/methods/addOAuthService.coffee', 'server');
@@ -62,14 +63,12 @@ Package.onUse(function(api) {
 
 	// SERVER STARTUP
 	api.addFiles('server/startup/settingsOnLoadCdnPrefix.coffee', 'server');
+	api.addFiles('server/startup/oAuthServicesUpdate.coffee', 'server');
+	api.addFiles('server/startup/settings.coffee', 'server');
 
 	// COMMON STARTUP
 	api.addFiles('lib/startup/settings.coffee');
 	api.addFiles('lib/startup/settingsOnLoadSiteUrl.coffee');
-
-	// Settings
-	api.addFiles('settings/server/startup.coffee', 'server');
-	api.addFiles('settings/server/updateServices.coffee', 'server');
 
 	// CLIENT LIB
 	api.addFiles('client/lib/openRoom.coffee', 'client');
@@ -84,11 +83,6 @@ Package.onUse(function(api) {
 	api.addFiles('client/TabBar.coffee', 'client');
 	api.addFiles('client/MessageAction.coffee', 'client');
 	api.addFiles('client/MessageTypes.coffee', 'client');
-
-
-	api.addFiles('server/Notifications.coffee', 'server');
-
-
 
 	// TAPi18n
 	api.use('templating', 'client');
