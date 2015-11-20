@@ -62,9 +62,9 @@ Package.onUse(function(api) {
 
 	// COMMON STARTUP
 	api.addFiles('lib/startup/settings.coffee');
+	api.addFiles('lib/startup/settingsOnLoadSiteUrl.coffee');
 
 	// Settings
-	api.addFiles('settings/lib/onLoadSettings.coffee');
 	api.addFiles('settings/server/startup.coffee', 'server');
 	api.addFiles('settings/server/updateServices.coffee', 'server');
 
