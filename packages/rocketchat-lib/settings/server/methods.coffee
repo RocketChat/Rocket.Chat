@@ -5,10 +5,10 @@
 # @param {Object} setting
 ###
 RocketChat.settings.add = (_id, value, options = {}) ->
+	# console.log '[functions] RocketChat.settings.add -> '.green, 'arguments:', arguments
+
 	if not _id or not value?
 		return false
-
-	# console.log '[functions] RocketChat.settings.add -> '.green, 'arguments:', arguments
 
 	options.packageValue = value
 	options.valueSource = 'packageValue'
@@ -49,21 +49,23 @@ RocketChat.settings.add = (_id, value, options = {}) ->
 # @param {String} _id
 ###
 RocketChat.settings.addGroup = (_id, options = {}) ->
+	# console.log '[functions] RocketChat.settings.addGroup -> '.green, 'arguments:', arguments
+
 	if not _id
 		return false
 
-	# console.log '[functions] RocketChat.settings.addGroup -> '.green, 'arguments:', arguments
+	if not options.i18nLabel?
+		options.i18nLabel = _id
 
-	setting =
-		type: 'group'
-		i18nLabel: options.i18nLabel or _id
+	if not options.i18nDescription?
+		options.i18nDescription = "#{_id}_Description"
 
-	setting.i18nDescription = if options.i18nDescription?
-		options.i18nDescription
-	else
-		"#{_id}_Description"
+	upsertChanges =
+		$set: options
+		$setOnInsert:
+			type: 'group'
+			createdAt: new Date
 
-	upsertChanges = { $set: setting }
 	if options.persistent is true
 		upsertChanges.$unset = { ts: true }
 	else
@@ -77,10 +79,10 @@ RocketChat.settings.addGroup = (_id, options = {}) ->
 # @param {String} _id
 ###
 RocketChat.settings.removeById = (_id) ->
+	# console.log '[functions] RocketChat.settings.add -> '.green, 'arguments:', arguments
+
 	if not _id
 		return false
-
-	# console.log '[functions] RocketChat.settings.add -> '.green, 'arguments:', arguments
 
 	return RocketChat.models.Settings.removeById _id
 
@@ -90,7 +92,9 @@ RocketChat.settings.removeById = (_id) ->
 # @param {String} _id
 ###
 RocketChat.settings.updateById = (_id, value) ->
-	if not _id
+	# console.log '[functions] RocketChat.settings.updateById -> '.green, 'arguments:', arguments
+
+	if not _id or not value?
 		return false
 
 	return RocketChat.models.Settings.updateValueById _id, value
