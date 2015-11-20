@@ -22,38 +22,57 @@ Package.onUse(function(api) {
 	api.use('check');
 	api.use('arunoda:streams');
 
-	// COMMON
+	// COMMON LIB
 	api.addFiles('lib/core.coffee');
 	api.addFiles('lib/settings.coffee');
 	api.addFiles('lib/callbacks.coffee');
 	api.addFiles('lib/roomTypes.coffee');
 	api.addFiles('lib/slashCommand.coffee');
 
-	// MODELS SERVER
+	// SERVER MODELS
 	api.addFiles('server/models/_Base.coffee', 'server');
-	api.addFiles('server/models/Users.coffee', 'server');
-	api.addFiles('server/models/Subscriptions.coffee', 'server');
-	api.addFiles('server/models/Rooms.coffee', 'server');
 	api.addFiles('server/models/Messages.coffee', 'server');
 	api.addFiles('server/models/Reports.coffee', 'server');
+	api.addFiles('server/models/Rooms.coffee', 'server');
 	api.addFiles('server/models/Settings.coffee', 'server');
+	api.addFiles('server/models/Subscriptions.coffee', 'server');
+	api.addFiles('server/models/Users.coffee', 'server');
 
-	// PUBLICATIONS
+	// SERVER PUBLICATIONS
 	api.addFiles('server/publications/settings.coffee', 'server');
+
+	// SERVER FUNCTIONS
+	api.addFiles('server/functions/checkUsernameAvailability.coffee', 'server');
+	api.addFiles('server/functions/setUsername.coffee', 'server');
+	api.addFiles('server/functions/sendMessage.coffee', 'server');
+
+	// SERVER METHODS
+	api.addFiles('server/methods/joinDefaultChannels.coffee', 'server');
+	api.addFiles('server/methods/robotMethods.coffee', 'server');
+	api.addFiles('server/methods/sendInvitationEmail.coffee', 'server');
+	api.addFiles('server/methods/sendMessage.coffee', 'server');
+	api.addFiles('server/methods/setAdminStatus.coffee', 'server');
+	api.addFiles('server/methods/setRealName.coffee', 'server');
+	api.addFiles('server/methods/setUsername.coffee', 'server');
+	api.addFiles('server/methods/updateUser.coffee', 'server');
 
 	// Settings
 	api.addFiles('settings/lib/onLoadSettings.coffee');
+	api.addFiles('settings/lib/settings.coffee');
 
 	api.addFiles('settings/server/methods.coffee', 'server');
 	api.addFiles('settings/server/startup.coffee', 'server');
 	api.addFiles('settings/server/updateServices.coffee', 'server');
 	api.addFiles('settings/server/addOAuthService.coffee', 'server');
 
-	api.addFiles('settings/lib/settings.coffee');
 
-	// CLIENT
+	// CLIENT LIB
 	api.addFiles('client/lib/openRoom.coffee', 'client');
 	api.addFiles('client/lib/roomExit.coffee', 'client');
+
+	// CLIENT METHODS
+	api.addFiles('client/methods/sendMessage.coffee', 'client');
+
 	api.addFiles('client/AdminBox.coffee', 'client');
 	api.addFiles('client/Notifications.coffee', 'client');
 	api.addFiles('client/TabBar.coffee', 'client');
@@ -62,18 +81,6 @@ Package.onUse(function(api) {
 
 	api.addFiles('settings/client/rocketchat.coffee', 'client');
 
-	// SERVER
-	api.addFiles('server/functions/checkUsernameAvailability.coffee', 'server');
-	api.addFiles('server/functions/setUsername.coffee', 'server');
-	api.addFiles('server/functions/sendMessage.coffee', 'server');
-
-	api.addFiles('server/methods/joinDefaultChannels.coffee', 'server');
-	api.addFiles('server/methods/robotMethods.coffee', 'server');
-	api.addFiles('server/methods/sendInvitationEmail.coffee', 'server');
-	api.addFiles('server/methods/setAdminStatus.coffee', 'server');
-	api.addFiles('server/methods/setRealName.coffee', 'server');
-	api.addFiles('server/methods/setUsername.coffee', 'server');
-	api.addFiles('server/methods/updateUser.coffee', 'server');
 
 
 	api.addFiles('server/Notifications.coffee', 'server');
