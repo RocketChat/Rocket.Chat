@@ -10,28 +10,29 @@ RocketChat.settings.add = (_id, value, options = {}) ->
 
 	# console.log '[functions] RocketChat.settings.add -> '.green, 'arguments:', arguments
 
+	options.packageValue = value
+	options.valueSource = 'packageValue'
+
 	if process?.env?[_id]?
 		value = process.env[_id]
+		options.processEnvValue = value
+		options.valueSource = 'processEnvValue'
+
 	else if Meteor.settings?[_id]?
 		value = Meteor.settings[_id]
+		options.meteorSettingsValue = value
+		options.valueSource = 'meteorSettingsValue'
 
-	updateSettings =
-		i18nLabel: options.i18nLabel or _id
+	unless options.i18nLabel? options.i18nLabel = _id
 
-	# default description i18n key will be the setting name + "_Description"
-	# (eg: LDAP_Enable -> LDAP_Enable_Description)
-	updateSettings.i18nDescription = if options.i18nDescription?
-		options.i18nDescription
-	else
-		"#{_id}_Description"
-	updateSettings.type = options.type if options.type
-	updateSettings.multiline = options.multiline if options.multiline
-	updateSettings.group = options.group if options.group
-	updateSettings.section = options.section if options.section
-	updateSettings.public = options.public if options.public
-	updateSettings.placeholder = options.placeholder if options.placeholder
+	# Default description i18n key will be the setting name + "_Description" (eg: LDAP_Enable -> LDAP_Enable_Description)
+	unless options.i18nDescription? options.i18nDescription = "#{_id}_Description"
 
-	upsertChanges = { $setOnInsert: { value: value }, $set: updateSettings }
+	upsertChanges =
+		$set: options
+		$setOnInsert:
+			value: value
+			createdAt: new Date
 
 	if options.persistent is true
 		upsertChanges.$unset = { ts: true }
@@ -51,16 +52,16 @@ RocketChat.settings.addGroup = (_id, options = {}) ->
 
 	# console.log '[functions] RocketChat.settings.addGroup -> '.green, 'arguments:', arguments
 
-	updateSettings =
+	setting =
 		type: 'group'
 		i18nLabel: options.i18nLabel or _id
 
-	updateSettings.i18nDescription = if options.i18nDescription?
+	setting.i18nDescription = if options.i18nDescription?
 		options.i18nDescription
 	else
 		"#{_id}_Description"
 
-	upsertChanges = { $set: updateSettings }
+	upsertChanges = { $set: setting }
 	if options.persistent is true
 		upsertChanges.$unset = { ts: true }
 	else
@@ -87,7 +88,10 @@ RocketChat.settings.removeById = (_id) ->
 # @param {String} _id
 ###
 RocketChat.settings.updateById = (_id, value) ->
-	RocketChat.models.Settings.updateValueById _id, value
+	if not _id
+		return false
+
+	return RocketChat.models.Settings.updateValueById _id, value
 
 
 Meteor.methods
