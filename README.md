@@ -2,7 +2,7 @@
 
 The Ultimate Open Source WebChat Platform
 
-## Demo
+## Demo 
 
 Checkout the latest version at [https://demo.rocket.chat](https://demo.rocket.chat)
 

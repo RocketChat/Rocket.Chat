@@ -3,6 +3,7 @@ language: node_js
 branches:
   only:
   - develop
+  - master
 node_js:
 - '0.12'
 addons:
@@ -33,7 +34,7 @@ script:
 - cd .travis
 - sh ./namefiles.sh
 - cd ..
-- meteor add  rocketchat:livechat rocketchat:hubot 
+- meteor add  rocketchat:livechat rocketchat:hubot
 - meteor build --server demo.rocket.chat  ../build
 - cd .travis
 - sh ./namedemo.sh
@@ -50,3 +51,4 @@ deploy:
   on:
     branch:
     - develop
+    - master
