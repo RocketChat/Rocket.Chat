@@ -6,7 +6,7 @@ mongo:
   command: mongod --smallfiles
 
 rocketchat:
-  image: rocketchat/rocket.chat
+  image: rocketchat/rocket.chat:develop
 # volumes:
 #    - ./uploads:/app/uploads
   environment:
