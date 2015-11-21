@@ -8,11 +8,17 @@ var lr = new LineByLineReader(BUILD_INFO_PATH);
 
 var firstline = "";
 
+
 if (process.env.TRAVIS_BUILD_NUMBER)  {
 	var transformVersion = function (firstline) {
 		var versions = firstline.split(".");
+		var verstring = versions[0] + '.' + versions[1] + '.' + process.env.TRAVIS_BUILD_NUMBER + '-'  + process.env.TRAVIS_BRANCH + '\n';
+		if (process.env.TRAVIS_TAG) {
+			verstring = TRAVIS_TAG + '-' + process.env.TRAVIS_BRANCH  + '\n';
 
-		return versions[0] + '.' + versions[1] + '.' + process.env.TRAVIS_BUILD_NUMBER + '\n';
+		}
+
+		return verstring;
 	};
 
 
