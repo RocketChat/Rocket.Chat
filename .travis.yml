@@ -3,6 +3,7 @@ language: node_js
 branches:
   only:
   - develop
+  - master
 node_js:
 - '0.12'
 addons:
@@ -50,3 +51,4 @@ deploy:
   on:
     branch:
     - develop
+    - master
