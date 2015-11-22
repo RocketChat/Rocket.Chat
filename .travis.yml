@@ -39,6 +39,7 @@ script:
 - cd .travis
 - sh ./namedemo.sh
 - cd ..
+- sudo gem install mime-types
 after_deploy:
 - cd .travis
 - sh ./builddocker.sh
