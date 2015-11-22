@@ -15,6 +15,7 @@ addons:
 before_install:
 - curl https://install.meteor.com | /bin/sh
 - npm install -g npm@'>=2.13.5'
+- gem install mime-types
 - mkdir -p node_modules
 - npm install phantomjs
 - npm install velocity-cli
@@ -39,7 +40,6 @@ script:
 - cd .travis
 - sh ./namedemo.sh
 - cd ..
-- sudo gem install mime-types
 after_deploy:
 - cd .travis
 - sh ./builddocker.sh
