@@ -3,7 +3,7 @@ mongo:
 # volumes:
 #    - ./data/runtime/mongo:/data/mongo
 #    - ./data/dump:/dump
-  command: mongod --smallfiles
+  command: mongod --smallfiles --replSet rs0 --oplogSize 128
 
 rocketchat:
   image: rocketchat/rocket.chat
