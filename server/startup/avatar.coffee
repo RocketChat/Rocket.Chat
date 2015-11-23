@@ -41,8 +41,9 @@ Meteor.startup ->
 		res.setHeader 'Content-Disposition', 'inline'
 
 		if not file?
-			res.setHeader 'content-type', 'image/svg+xml'
-			res.setHeader 'Cache-Control', 'public, max-age=31536000'
+			res.setHeader 'Content-Type', 'image/svg+xml'
+			res.setHeader 'Cache-Control', 'public, max-age=0'
+			res.setHeader 'Expires', '-1'
 			res.setHeader 'Last-Modified', "Thu, 01 Jan 2015 00:00:00 GMT"
 
 			reqModifiedHeader = req.headers["if-modified-since"];
@@ -92,8 +93,10 @@ Meteor.startup ->
 				res.end()
 				return
 
+		res.setHeader 'Cache-Control', 'public, max-age=0'
+		res.setHeader 'Expires', '-1'
 		res.setHeader 'Last-Modified', file.uploadDate?.toUTCString() or new Date().toUTCString()
-		res.setHeader 'content-type', 'image/jpeg'
+		res.setHeader 'Content-Type', 'image/jpeg'
 		res.setHeader 'Content-Length', file.length
 
 		file.readStream.pipe res
