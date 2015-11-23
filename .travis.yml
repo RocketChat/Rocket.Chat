@@ -3,6 +3,7 @@ language: node_js
 branches:
   only:
   - develop
+  - master
 node_js:
 - '0.12'
 addons:
@@ -14,6 +15,7 @@ addons:
 before_install:
 - curl https://install.meteor.com | /bin/sh
 - npm install -g npm@'>=2.13.5'
+- gem install mime-types -v 2.99
 - mkdir -p node_modules
 - npm install phantomjs
 - npm install velocity-cli
@@ -33,13 +35,14 @@ script:
 - cd .travis
 - sh ./namefiles.sh
 - cd ..
-- meteor add  rocketchat:livechat rocketchat:hubot 
+- meteor add  rocketchat:livechat rocketchat:hubot
 - meteor build --server demo.rocket.chat  ../build
 - cd .travis
 - sh ./namedemo.sh
 - cd ..
 after_deploy:
-- "curl -H \"Content-Type: application/json\" --data \"{'build': true}\" -X POST https://registry.hub.docker.com/u/rocketchat/rocket.chat/trigger/$PUSHTOKEN/"
+- cd .travis
+- sh ./builddocker.sh
 deploy:
   provider: s3
   access_key_id: "AKIAIKIA7H7D47KUHYCA"
@@ -50,3 +53,4 @@ deploy:
   on:
     branch:
     - develop
+    - master
