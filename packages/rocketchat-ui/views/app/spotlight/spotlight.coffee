@@ -7,7 +7,7 @@
 		$('.spotlight input').focus()
 
 Template.spotlight.helpers
-	autocompleteSettingsRoomSearch: ->
+	autocompleteSettings: ->
 		return {
 			limit: 10
 			# inputDelay: 300
