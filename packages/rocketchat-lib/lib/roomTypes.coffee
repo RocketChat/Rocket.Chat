@@ -20,6 +20,12 @@ RocketChat.roomTypes = new class
 		roomTypesOrder.push identifier
 		roomTypes[identifier] = config
 
+		if config.route?.path? and config.route?.name? and config.route?.action?
+			FlowRouter.route config.route.path,
+				name: config.route.name
+				action: config.route.action
+				triggersExit: [roomExit]
+
 	###
 	@param roomType: room type (e.g.: c (for channels), d (for direct channels))
 	@param subData: the user's subscription data
