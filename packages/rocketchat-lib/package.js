@@ -21,6 +21,7 @@ Package.onUse(function(api) {
 	api.use('service-configuration');
 	api.use('check');
 	api.use('arunoda:streams');
+	api.use('kadira:flow-router', 'client');
 
 	// COMMON
 	api.addFiles('lib/core.coffee');
