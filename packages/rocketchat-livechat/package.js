@@ -21,6 +21,8 @@ Package.onUse(function(api) {
 	api.use(['ecmascript', 'webapp', 'autoupdate'], 'server');
 
 	api.imply('alanning:roles@1.2.12');
+
+	api.use('rocketchat:lib', 'client');
 	api.use('kadira:flow-router', 'client');
 
 	api.addFiles('livechat.js', 'server');
