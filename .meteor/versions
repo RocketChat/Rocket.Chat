@@ -25,7 +25,7 @@ cfs:http-methods@0.0.30
 check@1.1.0
 chrismbeckett:toastr@2.1.2_1
 coffeescript@1.0.11
-cosmos:browserify@0.9.1
+cosmos:browserify@0.9.2
 dandv:caret-position@2.1.1
 ddp@1.2.2
 ddp-client@1.2.1

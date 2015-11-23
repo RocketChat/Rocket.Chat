@@ -140,6 +140,7 @@ RocketChat.models.Messages = new class extends RocketChat.models._Base
 			$set:
 				msg: ''
 				t: 'rm'
+				urls: []
 				editedAt: new Date()
 				editedBy:
 					_id: Meteor.userId()
