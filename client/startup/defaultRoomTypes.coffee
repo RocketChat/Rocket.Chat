@@ -1,8 +1,8 @@
-RocketChat.roomTypes.add 'starred',
+RocketChat.roomTypes.add 'starred', 0,
 	template: 'starredRooms'
 	icon: 'icon-star'
 
-RocketChat.roomTypes.add 'c',
+RocketChat.roomTypes.add 'c', 10,
 	template: 'channels'
 	icon: 'icon-hash'
 	route:
@@ -15,7 +15,7 @@ RocketChat.roomTypes.add 'c',
 			return { name: sub.name }
 	permissions: [ 'view-c-room' ]
 
-RocketChat.roomTypes.add 'd',
+RocketChat.roomTypes.add 'd', 20,
 	template: 'directMessages'
 	icon: 'icon-at'
 	route:
@@ -28,7 +28,7 @@ RocketChat.roomTypes.add 'd',
 			return { username: sub.name }
 	permissions: [ 'view-d-room' ]
 
-RocketChat.roomTypes.add 'p',
+RocketChat.roomTypes.add 'p', 30,
 	template: 'privateGroups'
 	icon: 'icon-lock'
 	route:

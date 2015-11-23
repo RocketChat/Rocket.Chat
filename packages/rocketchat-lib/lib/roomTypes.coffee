@@ -1,9 +1,11 @@
 RocketChat.roomTypes = new class
 	roomTypesOrder = []
 	roomTypes = {}
+	mainOrder = 1
 
 	### Adds a room type to app
 	@param identifier MUST BE equals to `db.rocketchat_room.t` field
+	@param order Order number of the type
 	@param config
 		template: template name to render on sideNav
 		permissions: list of permissions to see the sideNav template
@@ -12,12 +14,18 @@ RocketChat.roomTypes = new class
 			name: route name
 			action: route action function
 	###
-	add = (identifier, config) ->
+	add = (identifier, order, config) ->
 		if roomTypes[identifier]?
 			throw new Meteor.Error 'identifier-already-set', t('Room_type_identifier_already_set')
 
+		if not order?
+			order = mainOrder + 10
+			mainOrder += 10
+
 		# @TODO validate config options
-		roomTypesOrder.push identifier
+		roomTypesOrder.push
+			identifier: identifier
+			order: order
 		roomTypes[identifier] = config
 
 		if config.route?.path? and config.route?.name? and config.route?.action?
@@ -38,9 +46,10 @@ RocketChat.roomTypes = new class
 
 	getAllTypes = ->
 		typesPermitted = []
-		roomTypesOrder.forEach (type) ->
-			if not roomTypes[type].permissions? or RocketChat.authz.hasAtLeastOnePermission roomTypes[type].permissions
-				typesPermitted.push roomTypes[type]
+
+		_.sortBy(roomTypesOrder, 'order').forEach (type) ->
+			if not roomTypes[type.identifier].permissions? or RocketChat.authz.hasAtLeastOnePermission roomTypes[type.identifier].permissions
+				typesPermitted.push roomTypes[type.identifier]
 
 		return typesPermitted
 
@@ -53,7 +62,12 @@ RocketChat.roomTypes = new class
 			throw new Meteor.Error 'route-publish-exists', 'Publish for the given type already exists'
 
 		unless roomTypes[roomType]?
-			roomTypesOrder.push roomType
+			order = mainOrder + 10
+			mainOrder += 10
+
+			roomTypesOrder.push
+				identifier: roomType
+				order: order
 			roomTypes[roomType] = {}
 
 		roomTypes[roomType].publish = callback
@@ -71,7 +85,8 @@ RocketChat.roomTypes = new class
 
 	getIdentifiers = (except) ->
 		except = [].concat except
-		return _.reject roomTypesOrder, (t) -> return except.indexOf(t) isnt -1
+		list = _.reject roomTypesOrder, (t) -> return except.indexOf(t.identifier) isnt -1
+		return _.map list, (t) -> return t.identifier
 
 	# addType: addType
 	getTypes: getAllTypes
