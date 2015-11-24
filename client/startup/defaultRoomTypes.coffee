@@ -22,7 +22,7 @@ RocketChat.roomTypes.add 'd', 20,
 		name: 'direct'
 		path: '/direct/:username'
 		action: (params, queryParams) ->
-			Session.set 'showUserInfo'
+			Session.set 'showUserInfo', params.username
 			openRoom 'd', params.username
 		link: (sub) ->
 			return { username: sub.name }
