@@ -13,7 +13,12 @@ Meteor.methods
 		if user.username is username
 			return username
 
-		if not /^[0-9a-zA-Z-_.\u00C0-\u017F\u4e00-\u9fa5]+$/.test username
+		try
+			nameValidation = new RegExp '^' + RocketChat.settings.get('UTF8_Names_Validation') + '$'
+		catch
+			nameValidation = new RegExp '^[0-9a-zA-Z-_.]+$'
+
+		if not nameValidation.test username
 			throw new Meteor.Error 'username-invalid', "#{username} is not a valid username, use only letters, numbers, dots and dashes"
 
 		if not RocketChat.checkUsernameAvailability username
