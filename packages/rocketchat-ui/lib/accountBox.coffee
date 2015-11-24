@@ -1,7 +1,7 @@
 @AccountBox = (->
 	status = 0
 	self = {}
-	options = new ReactiveVar []
+	items = new ReactiveVar []
 
 	setStatus = (status) ->
 		Meteor.call('UserPresence:setDefaultStatus', status)
@@ -30,20 +30,25 @@
 
 	###
 	# @param newOption:
-	#          name: Button label
-	#          icon: Button icon
-	#          class: Class of item
-	#          roles: Which roles see this options
+	#   name: Button label
+	#   icon: Button icon
+	#   class: Class of the item
+	#   permissions: Which permissions a user should have (all of them) to see this item
 	###
-	addOption = (newOption) ->
+	addItem = (newItem) ->
 		Tracker.nonreactive ->
-			actual = options.get()
-			actual.push newOption
-			options.set actual
+			actual = items.get()
+			actual.push newItem
+			items.set actual
 
-	getOptions = ->
-		return _.filter options.get(), (option) ->
-			if not option.roles? or RocketChat.authz.hasRole(Meteor.userId(), option.roles)
+			if newItem.route?.path? and newItem.route?.name? and newItem.route?.action?
+				FlowRouter.route newItem.route.path,
+					name: newItem.route.name
+					action: newItem.route.action
+
+	getItems = ->
+		return _.filter items.get(), (item) ->
+			if not item.permissions? or RocketChat.authz.hasAllPermission item.permissions
 				return true
 
 	setStatus: setStatus
@@ -51,6 +56,7 @@
 	open: open
 	close: close
 	init: init
-	addOption: addOption
-	getOptions: getOptions
+
+	addItem: addItem
+	getItems: getItems
 )()
