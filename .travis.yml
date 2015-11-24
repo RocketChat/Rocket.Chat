@@ -57,6 +57,7 @@ script:
 - ./build.sh
 - spk pack $TRAVIS_BUILD_DIR/rocket.chat.spk
 - cd $TRAVIS_BUILD_DIR
+- mv rocket.chat.spk ../build/rocket.chat.latest.spk
 after_deploy:
 - cd .travis
 - sh ./builddocker.sh
