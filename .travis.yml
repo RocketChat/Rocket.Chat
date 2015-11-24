@@ -40,7 +40,6 @@ script:
 - npm install
 - npm start
 - cd ..
-- meteor add-platform ios
 - meteor build ../build
 - cd .travis
 - sh ./namefiles.sh
