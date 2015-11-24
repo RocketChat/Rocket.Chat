@@ -7,7 +7,7 @@
 		$('.spotlight input').focus()
 
 Template.spotlight.helpers
-	autocompleteSettingsRoomSearch: ->
+	autocompleteSettings: ->
 		return {
 			limit: 10
 			# inputDelay: 300
@@ -35,10 +35,7 @@ Template.spotlight.events
 					FlowRouter.go('direct', { username: doc.username })
 					event.currentTarget.value = ''
 		else if doc.type is 'r'
-			if doc.t is 'c'
-				FlowRouter.go('channel', { name: doc.name })
-			else if doc.t is 'p'
-				FlowRouter.go('group', { name: doc.name })
+			FlowRouter.go FlowRouter.path RocketChat.roomTypes.getRouteLink doc.t, doc
 
 			event.currentTarget.value = ''
 

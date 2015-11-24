@@ -10,4 +10,4 @@ Meteor.publish 'room', (typeName) ->
 	type = typeName.substr(0, 1)
 	name = typeName.substr(1)
 
-	return RocketChat.roomTypes.publish.call(this, type, name)
+	return RocketChat.roomTypes.runPublish.call(this, type, name)

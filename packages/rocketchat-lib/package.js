@@ -21,13 +21,16 @@ Package.onUse(function(api) {
 	api.use('service-configuration');
 	api.use('check');
 	api.use('arunoda:streams');
+	api.use('kadira:flow-router', 'client');
 
 	// COMMON LIB
 	api.addFiles('lib/core.coffee');
 	api.addFiles('lib/settings.coffee');
 	api.addFiles('lib/callbacks.coffee');
-	api.addFiles('lib/roomTypes.coffee');
 	api.addFiles('lib/slashCommand.coffee');
+
+	// SERVER LIB
+	api.addFiles('server/lib/roomTypes.coffee', 'server');
 
 	// SERVER MODELS
 	api.addFiles('server/models/_Base.coffee', 'server');
@@ -73,6 +76,7 @@ Package.onUse(function(api) {
 	api.addFiles('client/lib/openRoom.coffee', 'client');
 	api.addFiles('client/lib/roomExit.coffee', 'client');
 	api.addFiles('client/lib/settings.coffee', 'client');
+	api.addFiles('client/lib/roomTypes.coffee', 'client');
 
 	// CLIENT METHODS
 	api.addFiles('client/methods/sendMessage.coffee', 'client');
