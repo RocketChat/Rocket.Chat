@@ -18,7 +18,8 @@ Package.registerBuildPlugin({
 Package.onUse(function(api) {
 	api.versionsFrom('1.0');
 
-	api.use(['ecmascript', 'webapp', 'autoupdate'], 'server');
+	api.use(['webapp', 'autoupdate'], 'server');
+	api.use('ecmascript');
 
 	api.imply('alanning:roles@1.2.12');
 
