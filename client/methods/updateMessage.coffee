@@ -33,7 +33,7 @@ Meteor.methods
 			message = RocketChat.callbacks.run 'beforeSaveMessage', message
 
 			ChatMessage.update
-				_id: message.id
+				_id: message._id
 				'u._id': Meteor.userId()
 			,
 				$set:

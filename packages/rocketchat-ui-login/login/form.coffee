@@ -29,6 +29,9 @@ Template.loginForm.helpers
 	showBackToLoginLink: ->
 		return 'hidden' unless Template.instance().state.get() in ['register', 'forgot-password', 'email-verification', 'wait-activation']
 
+	showSandstorm: ->
+		return Template.instance().state.get() is 'sandstorm'
+
 	btnLoginSave: ->
 		switch Template.instance().state.get()
 			when 'register'
@@ -114,7 +117,10 @@ Template.loginForm.events
 
 Template.loginForm.onCreated ->
 	instance = @
-	@state = new ReactiveVar('login')
+	if Meteor.settings.public.sandstorm
+		@state = new ReactiveVar('sandstorm')
+	else
+		@state = new ReactiveVar('login')
 	@validate = ->
 		formData = $("#login-card").serializeArray()
 		formObj = {}

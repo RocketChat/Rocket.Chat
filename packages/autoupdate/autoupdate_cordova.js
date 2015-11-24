@@ -81,6 +81,9 @@ var updating = false;
 var localPathPrefix = null;
 
 var onNewVersion = function () {
+  if (!window.FileTransfer) {
+    return;
+  }
   var ft = new FileTransfer();
   var urlPrefix = Meteor.absoluteUrl() + '__cordova';
   HTTP.get(urlPrefix + '/manifest.json', function (err, res) {
@@ -95,6 +98,9 @@ var onNewVersion = function () {
 };
 
 var downloadNewVersion = function (program) {
+  if (!window.FileTransfer) {
+    return;
+  }
   var urlPrefix = Meteor.absoluteUrl() + '__cordova';
   var manifest = _.clone(program.manifest);
   var version = program.version;
