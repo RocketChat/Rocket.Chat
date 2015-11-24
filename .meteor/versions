@@ -160,6 +160,7 @@ rocketchat:ui-sidenav@0.1.0
 rocketchat:webrtc@0.0.1
 rocketchat:wordpress@0.0.1
 routepolicy@1.0.6
+rzymek:moment-locale-zh-cn@2.9.0
 service-configuration@1.0.5
 session@1.1.1
 sha@1.0.4
