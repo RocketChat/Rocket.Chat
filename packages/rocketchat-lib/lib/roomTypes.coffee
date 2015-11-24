@@ -4,7 +4,7 @@ RocketChat.roomTypes = new class
 	mainOrder = 1
 
 	### Adds a room type to app
-	@param identifier MUST BE equals to `db.rocketchat_room.t` field
+	@param identifier An identifier to the room type. If a real room, MUST BE the same of `db.rocketchat_room.t` field, if not, can be null
 	@param order Order number of the type
 	@param config
 		template: template name to render on sideNav
@@ -15,6 +15,9 @@ RocketChat.roomTypes = new class
 			action: route action function
 	###
 	add = (identifier, order, config) ->
+		unless identifier?
+			identifier = Random.id()
+
 		if roomTypes[identifier]?
 			throw new Meteor.Error 'identifier-already-set', t('Room_type_identifier_already_set')
 

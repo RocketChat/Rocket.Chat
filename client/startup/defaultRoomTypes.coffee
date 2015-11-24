@@ -1,4 +1,4 @@
-RocketChat.roomTypes.add 'starred', 0,
+RocketChat.roomTypes.add null, 0,
 	template: 'starredRooms'
 	icon: 'icon-star'
 
