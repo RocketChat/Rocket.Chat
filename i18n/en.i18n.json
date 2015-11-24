@@ -267,6 +267,7 @@
   "No_favorites_yet" : "You haven't added any favorites yet.",
   "No_group_with_name_%s_was_found" : "No private group with name <strong>\"%s\"</strong> was found!",
   "No_groups_yet" : "You have no private groups yet.",
+  "No_livechats" : "You have no livechats.",
   "No_permission_to_view_room" : "You don't have permission to view this room",
   "No_user_with_username_%s_was_found" : "No user with username <strong>\"%s\"</strong> was found!",
   "Not_allowed" : "Not allowed",

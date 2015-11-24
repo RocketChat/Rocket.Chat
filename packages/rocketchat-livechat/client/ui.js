@@ -1,9 +1,18 @@
-Meteor.startup(function() {
-	RocketChat.roomTypes.addType('livechat', ['livechat-agent', 'livechat-manager']);
-	RocketChat.roomTypes.setIcon('l', 'icon-chat-empty');
-	RocketChat.roomTypes.setRoute('l', 'live', function(sub) {
-		return { name: sub.name };
-	});
-
-	AccountBox.addOption({ name: 'Livechat', icon: 'icon-chat-empty', class: 'livechat-manager', roles: ['livechat-manager'] });
+RocketChat.roomTypes.add('l', 5, {
+	template: 'livechat',
+	icon: 'icon-chat-empty',
+	route: {
+		name: 'live',
+		path: '/live/:name',
+		action: (params, queryParams) => {
+			Session.set('showUserInfo');
+			openRoom('l', params.name);
+		},
+		link: (sub) => {
+			return { name: sub.name }
+		}
+	},
+	permissions: [ 'view-l-room' ]
 });
+
+AccountBox.addOption({ name: 'Livechat', icon: 'icon-chat-empty', class: 'livechat-manager', roles: ['livechat-manager'] });

@@ -1,4 +1,9 @@
 <template name="loginForm">
+	{{#if showSandstorm}}
+		<div class="alert alert-danger">
+			You must login to Sandstorm (on the top right) in order to access this chat.
+		</div>
+	{{else}}
 	<form id="login-card" method='/'>
 		{{#if waitActivation}}
 			<header>
@@ -47,4 +52,5 @@
 	<div class='login-terms'>
 		{{{loginTerms}}}
 	</div>
+	{{/if}}
 </template>
