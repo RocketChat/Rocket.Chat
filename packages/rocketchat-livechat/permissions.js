@@ -8,5 +8,6 @@ Meteor.startup(() => {
 	}
 	if (RocketChat.models && RocketChat.models.Permissions) {
 		RocketChat.models.Permissions.createOrUpdate('view-l-room', ['livechat-agent', 'livechat-manager']);
+		RocketChat.models.Permissions.createOrUpdate('view-livechat-manager', ['livechat-manager']);
 	}
 });
