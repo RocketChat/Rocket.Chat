@@ -26,7 +26,6 @@ Package.onUse(function(api) {
 	// COMMON
 	api.addFiles('lib/core.coffee');
 	api.addFiles('lib/callbacks.coffee');
-	api.addFiles('lib/roomTypes.coffee');
 	api.addFiles('lib/slashCommand.coffee');
 
 	// MODELS SERVER
@@ -53,6 +52,7 @@ Package.onUse(function(api) {
 	// CLIENT
 	api.addFiles('client/lib/openRoom.coffee', 'client');
 	api.addFiles('client/lib/roomExit.coffee', 'client');
+	api.addFiles('client/lib/roomTypes.coffee', 'client');
 	api.addFiles('client/AdminBox.coffee', 'client');
 	api.addFiles('client/Notifications.coffee', 'client');
 	api.addFiles('client/TabBar.coffee', 'client');
@@ -60,6 +60,9 @@ Package.onUse(function(api) {
 	api.addFiles('client/MessageTypes.coffee', 'client');
 
 	api.addFiles('settings/client/rocketchat.coffee', 'client');
+
+	// SERVER COMMOM
+	api.addFiles('server/lib/roomTypes.coffee', 'server');
 
 	// SERVER
 	api.addFiles('server/functions/checkUsernameAvailability.coffee', 'server');
