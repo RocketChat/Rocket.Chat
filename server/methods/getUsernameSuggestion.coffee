@@ -15,25 +15,41 @@ usernameIsAvaliable = (username) ->
 	usernames = []
 	username = undefined
 
-	usernames.push slug user.name
+	if RocketChat.settings.get 'UTF8_Names_slugify'
+		usernames.push slug user.name
+	else
+		usernames.push user.name
 
 	nameParts = user?.name?.split()
 	if nameParts.length > 1
 		first = nameParts[0]
 		last = nameParts[nameParts.length - 1]
 
+	if RocketChat.settings.get 'UTF8_Names_slugify'
 		usernames.push slug first[0] + last
 		usernames.push slug first + last[0]
+	else
+		usernames.push first[0] + last
+		usernames.push first + last[0]
 
 	if user.profile?.name?
-		usernames.push slug user.profile.name
+		if RocketChat.settings.get 'UTF8_Names_slugify'
+			usernames.push slug user.profile.name
+		else
+			usernames.push user.profile.name
 
 	if user.services?
 		for serviceName, service of user.services
 			if service.name?
-				usernames.push slug service.name
+				if RocketChat.settings.get 'UTF8_Names_slugify'
+					usernames.push slug service.name
+				else
+					usernames.push service.name
 			else if service.username?
-				usernames.push slug service.username
+				if RocketChat.settings.get 'UTF8_Names_slugify'
+					usernames.push slug service.username
+				else
+					usernames.push service.username
 
 	if user.emails?.length > 0
 		for email in user.emails when email.address? and email.verified is true

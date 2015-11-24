@@ -21,7 +21,6 @@ Api.addRoute 'rooms/:id/join', authRequired: true,
 			Meteor.call('joinRoom', @urlParams.id)
 		status: 'success'   # need to handle error
 
-
 # leave a room
 Api.addRoute 'rooms/:id/leave', authRequired: true,
 	post: ->
@@ -61,7 +60,12 @@ Api.testapiValidateUsers =  (users) ->
 		if user.name?
 			if user.email?
 				if user.pass?
-					if  /^[0-9a-z-_]+$/i.test user.name
+					try
+						nameValidation = new RegExp '^' + RocketChat.settings.get('UTF8_Names_Validation') + '$', 'i'
+					catch
+						nameValidation = new RegExp '^[0-9a-zA-Z-_.]+$', 'i'
+
+					if nameValidation.test user.name
 						if  /\b[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]+\b/i.test user.email
 							continue
 		throw new Meteor.Error 'invalid-user-record', "[restapi] bulk/register -> record #" + i + " is invalid"
@@ -102,7 +106,7 @@ Api.addRoute 'bulk/register', authRequired: true,
 		# restivus 0.8.4 does not support alanning:roles using groups
 		#roleRequired: ['testagent', 'adminautomation']
 		action: ->
-			if RocketChat.authz.hasPermission(@userId, 'bulk-register-user') 
+			if RocketChat.authz.hasPermission(@userId, 'bulk-register-user')
 				try
 
 					Api.testapiValidateUsers  @bodyParams.users
@@ -121,7 +125,7 @@ Api.addRoute 'bulk/register', authRequired: true,
 					body: status: 'fail', message: e.name + ' :: ' + e.message
 			else
 				console.log '[restapi] bulk/register -> '.red, "User does not have 'bulk-register-user' permission"
-				statusCode: 403    
+				statusCode: 403
 				body: status: 'error', message: 'You do not have permission to do this'
 
 
@@ -133,7 +137,12 @@ Api.testapiValidateRooms =  (rooms) ->
 		if room.name?
 			if room.members?
 				if room.members.length > 1
-					if  /^[0-9a-z-_]+$/i.test room.name
+					try
+						nameValidation = new RegExp '^' + RocketChat.settings.get('UTF8_Names_Validation') + '$', 'i'
+					catch
+						nameValidation = new RegExp '^[0-9a-zA-Z-_.]+$', 'i'
+
+					if nameValidation.test room.name
 						continue
 		throw new Meteor.Error 'invalid-room-record', "[restapi] bulk/createRoom -> record #" + i + " is invalid"
 	return
@@ -144,7 +153,7 @@ Api.testapiValidateRooms =  (rooms) ->
 @apiName createRoom
 @apiGroup TestAndAdminAutomation
 @apiVersion 0.0.1
-@apiParam {json} rooms An array of rooms in the body of the POST. 'name' is room name, 'members' is array of usernames 
+@apiParam {json} rooms An array of rooms in the body of the POST. 'name' is room name, 'members' is array of usernames
 @apiParamExample {json} POST Request Body example:
   {
     'rooms':[ {'name': 'room1',
@@ -174,9 +183,9 @@ Api.addRoute 'bulk/createRoom', authRequired: true,
 		# restivus 0.8.4 does not support alanning:roles using groups
 		#roleRequired: ['testagent', 'adminautomation']
 		action: ->
-			# user must also have create-c permission because 
+			# user must also have create-c permission because
 			# createChannel method requires it
-			if RocketChat.authz.hasPermission(@userId, 'bulk-create-c') 
+			if RocketChat.authz.hasPermission(@userId, 'bulk-create-c')
 				try
 					this.response.setTimeout (1000 * @bodyParams.rooms.length)
 					Api.testapiValidateRooms @bodyParams.rooms
@@ -189,7 +198,7 @@ Api.addRoute 'bulk/createRoom', authRequired: true,
 					body: status: 'fail', message: e.name + ' :: ' + e.message
 			else
 				console.log '[restapi] bulk/createRoom -> '.red, "User does not have 'bulk-create-c' permission"
-				statusCode: 403    
+				statusCode: 403
 				body: status: 'error', message: 'You do not have permission to do this'
 
 
