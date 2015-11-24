@@ -1,11 +1,14 @@
 Meteor.methods
 	createChannel: (name, members) ->
+		# Encode the name for use in URL
+		name = encodeURIComponent(name)
+		
 		if not Meteor.userId()
 			throw new Meteor.Error 'invalid-user', "[methods] createChannel -> Invalid user"
 
-		if not /^[0-9a-z-_]+$/.test name
+		if not /^[0-9a-z-_\x00-\x7F]+$/.test name
 			throw new Meteor.Error 'name-invalid'
-
+		
 		if RocketChat.authz.hasPermission(Meteor.userId(), 'create-c') isnt true
 			throw new Meteor.Error 'not-authorized', '[methods] createChannel -> Not authorized'
 
