@@ -15,7 +15,6 @@ addons:
 before_install:
 - curl https://install.meteor.com | /bin/sh
 - npm install -g npm@'>=2.13.5'
-- gem install mime-types -v 2.99
 - mkdir -p node_modules
 - npm install phantomjs
 - npm install velocity-cli
@@ -41,6 +40,7 @@ script:
 - npm install
 - npm start
 - cd ..
+- meteor add-platform ios
 - meteor build ../build
 - cd .travis
 - sh ./namefiles.sh
