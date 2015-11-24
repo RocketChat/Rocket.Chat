@@ -28,6 +28,8 @@ Package.onUse(function(api) {
 		'raix:ui-dropped-event'
 	]);
 
+	api.use('kadira:flow-router', 'client');
+
 	// LIB FILES
 	api.addFiles('lib/accountBox.coffee', 'client');
 	api.addFiles('lib/accounts.coffee', 'client');
