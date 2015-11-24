@@ -10,7 +10,7 @@ class MentionsClient
 
 			mentions = []
 
-			msgMentionRegex = new RegExp '(?:^|\s|\n)(?:@)(' + RocketChat.settings.get('UTF8_Names_Validation') + ')', 'g'
+			msgMentionRegex = new RegExp '(?:^|\\s|\\n)(?:@)(' + RocketChat.settings.get('UTF8_Names_Validation') + ')', 'g'
 			message.msg.replace msgMentionRegex, (match, mention) ->
 				mentions.push mention
 
@@ -34,7 +34,7 @@ class MentionsClient
 					return match.replace mention, "<a href=\"\" class=\"#{classes}\" data-username=\"#{username}\">#{mention}</a>"
 
 			channels = []
-			msgChannelRegex = new RegExp '(?:^|\s|\n)(?:#)(' + RocketChat.settings.get('UTF8_Names_Validation') + ')', 'g'
+			msgChannelRegex = new RegExp '(?:^|\\s|\\n)(?:#)(' + RocketChat.settings.get('UTF8_Names_Validation') + ')', 'g'
 			message.msg.replace msgChannelRegex, (match, mention) ->
 				channels.push mention
 
