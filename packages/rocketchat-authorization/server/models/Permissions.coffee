@@ -9,3 +9,6 @@ RocketChat.models.Permissions = new class extends RocketChat.models._Base
 			roles: role
 
 		return @find query, options
+
+	createOrUpdate: (name, roles) ->
+		@upsert { _id: name }, { $set: { roles: roles } }

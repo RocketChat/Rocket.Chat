@@ -15,7 +15,6 @@ addons:
 before_install:
 - curl https://install.meteor.com | /bin/sh
 - npm install -g npm@'>=2.13.5'
-- gem install mime-types -v 2.99
 - mkdir -p node_modules
 - npm install phantomjs
 - npm install velocity-cli
@@ -55,9 +54,9 @@ script:
 - cd $TRAVIS_BUILD_DIR/.sandstorm
 - sed -i "s/\sid = .*/$SANDSTORM_ID/" sandstorm-pkgdef.capnp
 - ./build.sh
-- spk pack $TRAVIS_BUILD_DIR/rocket.chat.spk
+- sed -i "s/\spgp/#pgp/g" sandstorm-pkgdef.capnp
+- spk pack $TRAVIS_BUILD_DIR/../build/rocket.chat.latest.spk
 - cd $TRAVIS_BUILD_DIR
-- mv rocket.chat.spk ../build/rocket.chat.latest.spk
 after_deploy:
 - cd .travis
 - sh ./builddocker.sh

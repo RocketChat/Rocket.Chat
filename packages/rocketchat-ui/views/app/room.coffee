@@ -91,24 +91,6 @@ Template.room.helpers
 		else
 			return 'offline'
 
-	autocompleteSettingsRoomSearch: ->
-		return {
-			limit: 10
-			# inputDelay: 300
-			rules: [
-				{
-					collection: 'UserAndRoom'
-					subscription: 'roomSearch'
-					field: 'name'
-					template: Template.roomSearch
-					noMatchTemplate: Template.roomSearchEmpty
-					matchAll: true
-					filter: { uid: { $ne: Meteor.userId() } }
-					sort: 'name'
-				}
-			]
-		}
-
 	isChannel: ->
 		roomData = Session.get('roomData' + this._id)
 		return '' unless roomData

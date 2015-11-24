@@ -98,5 +98,8 @@ Template.sideNav.onRendered ->
 	# @TODO validate role/permission inside roomTypes object
 	RocketChat.roomTypes.getTypes().forEach (roomType) ->
 		if Template[roomType.template]?
+<<<<<<< HEAD
 		# if RocketChat.authz.hasRole(Meteor.userId(), roomType.roles) && Template[roomType.template]?
+=======
+>>>>>>> develop
 			Blaze.render Template[roomType.template], wrapper, lastLink
