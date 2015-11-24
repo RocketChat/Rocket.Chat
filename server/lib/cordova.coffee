@@ -12,16 +12,20 @@ Meteor.startup ->
 			send: (userId, notification) ->
 				return RocketChat.authz.hasRole(userId, 'admin')
 
-		Push.Configure
-			apn:
-				passphrase: RocketChat.settings.get 'Push_apn_passphrase'
-				keyData: RocketChat.settings.get 'Push_apn_key'
-				certData: RocketChat.settings.get 'Push_apn_cert'
-			'apn-dev':
+		apn =
+			passphrase: RocketChat.settings.get 'Push_apn_passphrase'
+			keyData: RocketChat.settings.get 'Push_apn_key'
+			certData: RocketChat.settings.get 'Push_apn_cert'
+
+		if RocketChat.settings.get('Push_production') isnt true
+			apn =
 				passphrase: RocketChat.settings.get 'Push_apn_dev_passphrase'
 				keyData: RocketChat.settings.get 'Push_apn_dev_key'
 				certData: RocketChat.settings.get 'Push_apn_dev_cert'
 				gateway: 'gateway.sandbox.push.apple.com'
+
+		Push.Configure
+			apn: apn
 			gcm:
 				apiKey: RocketChat.settings.get 'Push_gcm_api_key'
 				projectNumber: RocketChat.settings.get 'Push_gcm_project_number'
