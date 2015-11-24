@@ -8,7 +8,7 @@ This package contains the main libraries of Rocket.Chat.
 
 You can create your own room type using (on the client):
 
-```
+```javascript
 RocketChat.roomTypes.add('l', 5, {
     template: 'livechat',
     icon: 'icon-chat-empty',
@@ -29,7 +29,7 @@ RocketChat.roomTypes.add('l', 5, {
 
 You'll need publish information about the new room with (on the server):
 
-```
+```javascript
 RocketChat.roomTypes.setPublish('l', (identifier) => {
     return RocketChat.models.Rooms.findByTypeAndName('l', identifier, {
         fields: {
