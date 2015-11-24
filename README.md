@@ -2,7 +2,7 @@
 
 The Ultimate Open Source WebChat Platform
 
-## Demo
+## Demo 
 
 Checkout the latest version at [https://demo.rocket.chat](https://demo.rocket.chat)
 
@@ -20,6 +20,8 @@ Now compatible with all Android devices as old as version 4.0.x - [download here
 Host your own Rocket.Chat server in four seconds flat:
 
 [![Rocket.Chat on Sandstorm.io](https://raw.githubusercontent.com/Sing-Li/bbug/master/images/sandstorm.jpg)](https://apps.sandstorm.io/app/vfnwptfn02ty21w715snyyczw0nqxkv3jvawcah10c6z7hj1hnu0)
+
+_*Grab*_ the latest [Sandstorm SPK](https://s3.amazonaws.com/rocketchatbuild/rocket.chat.latest.spk) for testing on your own server.
 
 Also available as FirefoxOS app:
 
@@ -250,11 +252,9 @@ Performance monitoring provided by [Kadira](https://kadira.io)
 
 ### Contributions
 
-#### We Need Your Help!
+Already a JavaScript developer?  Familiar with Meteor?  [Pick an issue](https://github.com/RocketChat/Rocket.Chat/labels/contrib%3A%20easy), push a PR and instantly become a member of Rocket.Chat's international contributors community. 
 
 A lot of work has already gone into Rocket.Chat, but we have much bigger plans for it!
-
-So if you'd like to be part of the project, please check out the [roadmap](https://github.com/RocketChat/Rocket.Chat/milestones) and [issues](https://github.com/RocketChat/Rocket.Chat/issues) to see if there's anything you can help with.
 
 ### Branching Model
 

@@ -1,3 +1,4 @@
 {
-  "API_GitHub_Enterprise_URL" : "GitHub Enterprise"
+  "API_GitHub_Enterprise_URL" : "GitHub Enterprise",
+  "Github_Enterprise_Url_No_Trail" : "예: http://domain.com (마지막 슬래시 제외)"
 }
