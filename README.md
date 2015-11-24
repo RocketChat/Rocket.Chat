@@ -2,7 +2,7 @@
 
 The Ultimate Open Source WebChat Platform
 
-## Demo
+## Demo 
 
 Checkout the latest version at [https://demo.rocket.chat](https://demo.rocket.chat)
 
@@ -20,6 +20,8 @@ Now compatible with all Android devices as old as version 4.0.x - [download here
 Host your own Rocket.Chat server in four seconds flat:
 
 [![Rocket.Chat on Sandstorm.io](https://raw.githubusercontent.com/Sing-Li/bbug/master/images/sandstorm.jpg)](https://apps.sandstorm.io/app/vfnwptfn02ty21w715snyyczw0nqxkv3jvawcah10c6z7hj1hnu0)
+
+_*Grab*_ the latest [Sandstorm SPK](https://s3.amazonaws.com/rocketchatbuild/rocket.chat.latest.spk) for testing on your own server.
 
 Also available as FirefoxOS app:
 
@@ -63,6 +65,9 @@ It is a great solution for communities and companies wanting to privately host t
 ##### [JavaScript Weekly](http://javascriptweekly.com/issues/234)
 > An open source Web based, channel based chat system (a la Slack) built using Meteor, the full stack JavaScript development platform.
 
+##### [Open Source China](http://www.oschina.net/p/rocket-chat)
+> Rocket.Chat 是特性最丰富的 Slack 开源替代品之一。 主要功能：群组聊天，直接通信，私聊群，桌面通知，媒体嵌入，链接预览，文件上传，语音/视频 聊天，截图等等。
+
 ##### [wwwhatsnew.com](http://wwwhatsnew.com/2015/05/30/rocket-chat-para-los-programadores-que-quieran-ofrecer-un-chat-en-su-web/)
 > Para los programadores que quieran ofrecer un chat en su web
 
@@ -73,7 +78,7 @@ It is a great solution for communities and companies wanting to privately host t
 > Why Slack when you can Rocket.chat?
 
 ##### [liminality.xyz](http://liminality.xyz/self-hosting/)
-> SELF-HOSTED ALTERNATIVES TO POPULAR CLOUD SERVICES
+> Self-hosted alternatives to popular cloud services
 
 
 ## Features
@@ -231,27 +236,25 @@ docker run -it -p 3000:3000 -v "$(pwd)":/app danieldent/meteor
 ## Credits
 
 Thanks to
+[Aaron Ogle](https://github.com/geekgonecrazy),
+[Bradley Hilton](https://github.com/Graywolf336),
 [Diego Sampaio](https://github.com/sampaiodiego),
 [Gabriel Engel](https://github.com/engelgabriel),
 [Marcelo Schmidt](https://github.com/marceloschmidt),
 [Rafael Caferati](https://github.com/rcaferati),
 [Rodrigo Nascimento](https://github.com/rodrigok),
 [Sing Li](https://github.com/Sing-Li),
-[Aaron Ogle](https://github.com/geekgonecrazy),
-[Graywolf336](https://github.com/Graywolf336)
-
+and many others.
 
 Emoji provided free by [Emoji One](http://emojione.com)
 
-Performance monitoring provided by [Kadira](https://kadira.io/)
+Performance monitoring provided by [Kadira](https://kadira.io)
 
 ### Contributions
 
-#### We Need Your Help!
+Already a JavaScript developer?  Familiar with Meteor?  [Pick an issue](https://github.com/RocketChat/Rocket.Chat/labels/contrib%3A%20easy), push a PR and instantly become a member of Rocket.Chat's international contributors community. 
 
 A lot of work has already gone into Rocket.Chat, but we have much bigger plans for it!
-
-So if you'd like to be part of the project, please check out the [roadmap](https://github.com/RocketChat/Rocket.Chat/milestones) and [issues](https://github.com/RocketChat/Rocket.Chat/issues) to see if there's anything you can help with.
 
 ### Branching Model
 
