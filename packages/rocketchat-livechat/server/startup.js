@@ -1,5 +1,5 @@
-Meteor.startup(function() {
-	RocketChat.roomTypes.addPublish('l', function(identifier) {
+Meteor.startup(() => {
+	RocketChat.roomTypes.setPublish('l', (identifier) => {
 		return RocketChat.models.Rooms.findByTypeAndName('l', identifier, {
 			fields: {
 				name: 1,
