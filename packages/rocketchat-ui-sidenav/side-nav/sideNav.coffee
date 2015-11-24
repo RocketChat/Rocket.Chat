@@ -95,7 +95,6 @@ Template.sideNav.onRendered ->
 	wrapper = $('.rooms-list .wrapper').get(0)
 	lastLink = $('.rooms-list h3.history-div').get(0)
 
-	# @TODO validate role/permission inside roomTypes object
 	RocketChat.roomTypes.getTypes().forEach (roomType) ->
 		if Template[roomType.template]?
 			Blaze.render Template[roomType.template], wrapper, lastLink
