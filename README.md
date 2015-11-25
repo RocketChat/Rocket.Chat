@@ -23,6 +23,10 @@ Host your own Rocket.Chat server in four seconds flat:
 
 _*Grab*_ the latest [Sandstorm SPK](https://s3.amazonaws.com/rocketchatbuild/rocket.chat.latest.spk) for testing on your own server.
 
+Or run solid five-nines deployment on industry workhorse FreeBSD server:
+
+[![FreeBSD Daemon](https://raw.githubusercontent.com/Sing-Li/bbug/master/images/freebsd.png)](https://github.com/RocketChat/Rocket.Chat/wiki/FreeBSD)
+
 Also available as FirefoxOS app:
 
 [![Firefox OS app now available](https://raw.githubusercontent.com/Sing-Li/bbug/master/images/firefoxos.png)](https://github.com/RocketChat/Rocket.Chat/wiki/Native-Firefox-OS-app-%28hosted-webapp%29)
@@ -174,16 +178,9 @@ Checkout [Github Wiki](https://github.com/RocketChat/Rocket.Chat/wiki)
 
 Follow these [deployment instructions](https://github.com/RocketChat/Rocket.Chat/wiki/Deploy-Rocket.Chat-without-docker).
 
-### FreeBSD
-
-Solid five-nines deployment with industry workhorse FreeBSD (coming soon).
-
-
-![FreeBSD Daemon](https://raw.githubusercontent.com/Sing-Li/bbug/master/images/freebsd.png)
-
 ### Ubuntu Software Center
 
-Easy one click install right from your Ubuntu Desktop (coming soon).
+Easy one click install right from your Ubuntu Desktop (coming soon)
 
 [![Ubuntu Software Center](https://raw.githubusercontent.com/Sing-Li/bbug/master/images/ubuntusoft.png)]()
 
