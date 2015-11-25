@@ -25,12 +25,12 @@ usernameIsAvaliable = (username) ->
 		first = nameParts[0]
 		last = nameParts[nameParts.length - 1]
 
-	if RocketChat.settings.get 'UTF8_Names_slugify'
-		usernames.push slug first[0] + last
-		usernames.push slug first + last[0]
-	else
-		usernames.push first[0] + last
-		usernames.push first + last[0]
+		if RocketChat.settings.get 'UTF8_Names_slugify'
+			usernames.push slug first[0] + last
+			usernames.push slug first + last[0]
+		else
+			usernames.push first[0] + last
+			usernames.push first + last[0]
 
 	if user.profile?.name?
 		if RocketChat.settings.get 'UTF8_Names_slugify'
