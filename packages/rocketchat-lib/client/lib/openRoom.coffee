@@ -36,6 +36,7 @@ currentTracker = undefined
 				if roomDom.classList.contains('room-container')
 					roomDom.querySelector('.messages-box > .wrapper').scrollTop = roomDom.oldScrollTop
 
+			RocketChat.TabBar.setTemplate ''
 			Session.set 'openedRoom', room._id
 
 			Session.set 'editRoomTitle', false
