@@ -96,7 +96,7 @@ RocketChat.settings.addGroup 'Push'
 RocketChat.settings.add 'Push_debug', false, { type: 'boolean', group: 'Push', public: true }
 RocketChat.settings.add 'Push_enable', false, { type: 'boolean', group: 'Push', public: true }
 RocketChat.settings.add 'Push_enable_gateway', true, { type: 'boolean', group: 'Push' }
-RocketChat.settings.add 'Push_gateway', 'https://push.rocket.chat', { type: 'string', group: 'Push' }
+RocketChat.settings.add 'Push_gateway', 'https://rocket.chat', { type: 'string', group: 'Push' }
 RocketChat.settings.add 'Push_production', false, { type: 'boolean', group: 'Push', public: true }
 RocketChat.settings.add 'Push_apn_passphrase', '', { type: 'string', group: 'Push' }
 RocketChat.settings.add 'Push_apn_key', '', { type: 'string', multiline: true, group: 'Push' }
