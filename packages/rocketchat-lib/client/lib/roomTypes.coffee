@@ -10,6 +10,7 @@ RocketChat.roomTypes = new class
 		return ->
 			BlazeLayout.render 'main',
 				center: 'pageContainer'
+				# @TODO text Not_authorized don't get the correct language
 				pageTitle: t('Not_authorized')
 				pageTemplate: 'notAuthorized'
 
