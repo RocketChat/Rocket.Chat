@@ -26,7 +26,11 @@ AccountBox.addItem({
 		path: '/livechat-manager',
 		action(params, queryParams) {
 			Session.set('openedRoom');
-			BlazeLayout.render('main', { center: 'livechat-manager' });
+			BlazeLayout.render('main', {
+				center: 'page-container',
+				pageTitle: 'Live Chat Manager',
+				pageTemplate: 'livechat-manager'
+			});
 		}
 	},
 	permissions: ['view-livechat-manager']
