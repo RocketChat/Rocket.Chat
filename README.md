@@ -2,7 +2,7 @@
 
 The Ultimate Open Source WebChat Platform
 
-## Demo 
+## Demo
 
 Checkout the latest version at [https://demo.rocket.chat](https://demo.rocket.chat)
 
@@ -203,8 +203,10 @@ Host your docker container at [sloppy.io](http://sloppy.io). Get an account and 
 
 Host your own Rocket.Chat server for **FREE** with [One-Click Deploy](https://heroku.com/deploy?template=https://github.com/RocketChat/Rocket.Chat/tree/master)
 
+Branch **master** (Latest stable version):
 [![Deploy](https://www.herokucdn.com/deploy/button.png)](https://heroku.com/deploy?template=https://github.com/RocketChat/Rocket.Chat/tree/master)
-
+Branch **develop** (Newer but unstable):
+[![Deploy](https://www.herokucdn.com/deploy/button.png)](https://heroku.com/deploy?template=https://github.com/RocketChat/Rocket.Chat/tree/develop)
 
 
 ## Development Installation
@@ -249,7 +251,7 @@ Performance monitoring provided by [Kadira](https://kadira.io)
 
 ### Contributions
 
-Already a JavaScript developer?  Familiar with Meteor?  [Pick an issue](https://github.com/RocketChat/Rocket.Chat/labels/contrib%3A%20easy), push a PR and instantly become a member of Rocket.Chat's international contributors community. 
+Already a JavaScript developer?  Familiar with Meteor?  [Pick an issue](https://github.com/RocketChat/Rocket.Chat/labels/contrib%3A%20easy), push a PR and instantly become a member of Rocket.Chat's international contributors community.
 
 A lot of work has already gone into Rocket.Chat, but we have much bigger plans for it!
 
