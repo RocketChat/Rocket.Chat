@@ -72,6 +72,7 @@ rocketchat:ui-login
 rocketchat:ui-master
 rocketchat:ui-message
 rocketchat:ui-sidenav
+rocketchat:version
 rocketchat:webrtc
 rocketchat:wordpress
 #rocketchat:chatops
@@ -122,4 +123,3 @@ yasaricli:slugify
 yasinuslu:blaze-meta
 # sanjo:jasmine
 # velocity:html-reporter
-rocketchat:version
