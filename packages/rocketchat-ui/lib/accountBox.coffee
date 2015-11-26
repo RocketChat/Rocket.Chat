@@ -28,6 +28,16 @@
 		self.box = $(".account-box")
 		self.options = self.box.find(".options")
 
+	protectedAction = (item) ->
+		if not item.permissions? or RocketChat.authz.hasAllPermission item.permissions
+			return item.route.action
+
+		return ->
+			BlazeLayout.render 'main',
+				center: 'pageContainer'
+				pageTitle: t('Not_authorized')
+				pageTemplate: 'notAuthorized'
+
 	###
 	# @param newOption:
 	#   name: Button label
@@ -44,7 +54,7 @@
 			if newItem.route?.path? and newItem.route?.name? and newItem.route?.action?
 				FlowRouter.route newItem.route.path,
 					name: newItem.route.name
-					action: newItem.route.action
+					action: protectedAction newItem
 
 	getItems = ->
 		return _.filter items.get(), (item) ->
