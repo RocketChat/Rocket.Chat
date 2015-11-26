@@ -29,8 +29,9 @@ Template.admin.helpers
 		label = @i18nLabel or @_id
 		return TAPi18n.__ label if label
 	description: ->
-		description = @i18nDescription
-		return TAPi18n.__ description if description
+		description = TAPi18n.__ @i18nDescription if @i18nDescription
+		if description? and description isnt @i18nDescription
+			return description
 	sectionIsCustomOath: (section) ->
 		return /^Custom OAuth:\s.+/.test section
 	callbackURL: (section) ->
