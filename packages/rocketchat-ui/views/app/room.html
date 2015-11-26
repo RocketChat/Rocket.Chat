@@ -81,10 +81,8 @@
 				{{> messageBox}}
 			</footer>
 		</section>
-		{{#if flexTemplate}}
-			<section class="flex-tab">
-				{{> Template.dynamic template=flexTemplate data=flexData}}
-			</section>
-		{{/if}}
+		<section class="flex-tab">
+			{{> Template.dynamic template=flexTemplate data=flexData}}
+		</section>
 	</div>
 </template>
