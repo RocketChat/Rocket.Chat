@@ -20,7 +20,7 @@ Meteor.methods
 		if not nameValidation.test name
 			throw new Meteor.Error 'name-invalid'
 
-		if RocketChat.settings.get 'UTF8_Names_slugify'
+		if RocketChat.settings.get 'UTF8_Names_Slugify'
 			name = _.slugify name
 
 		if name is room.name
