@@ -1,4 +1,7 @@
 {
   "Livechat_title" : "Título Livechat",
-  "Livechat_title_color" : "Cor de fundo do título do Livechat"
+  "Livechat_title_color" : "Cor de fundo do título do Livechat",
+  "Livechat_Manager": "Administração Livechat",
+  "Livechat_managers": "Gerenciadores do Livechat ",
+  "Livechat_agents": "Agentes do Livechat"
 }
