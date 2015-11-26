@@ -81,8 +81,11 @@ docker run -it -p 3000:3000 -v "$(pwd)":/app danieldent/meteor
 Host your own Rocket.Chat server for **FREE** with [One-Click Deploy](https://heroku.com/deploy?template=https://github.com/RocketChat/Rocket.Chat/tree/master)
 
 Branch **master** (Latest stable version):
+
 [![Deploy](https://www.herokucdn.com/deploy/button.png)](https://heroku.com/deploy?template=https://github.com/RocketChat/Rocket.Chat/tree/master)
+
 Branch **develop** (Newer but unstable):
+
 [![Deploy](https://www.herokucdn.com/deploy/button.png)](https://heroku.com/deploy?template=https://github.com/RocketChat/Rocket.Chat/tree/develop)
 
 ## Sandstorm.io
