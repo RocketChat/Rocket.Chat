@@ -1,6 +1,7 @@
 {
   "Access_online_demo" : "Acesse o demo online",
   "Access_Online_Demo" : "Acesse o Demo Online",
+  "Access_not_authorized" : "Accesso não autorizado",
   "Accounts" : "Contas",
   "Accounts_AllowedDomainsList" : "Lista de domínios permitidos (separados por vírgula)",
   "Accounts_AllowUsernameChange" : "Permitir alterar usuário",
@@ -238,6 +239,7 @@
   "No_permission_to_view_room" : "Sem permissões para ver a sala",
   "No_user_with_username_%s_was_found" : "Nenhum usuário com nome de usuário <strong>\"%s\"</strong> foi encontrado!",
   "Not_allowed" : "Não permitido",
+  "Not_authorized" : "Não autorizado",
   "Not_found_or_not_allowed" : "Não encontrado ou não permitido",
   "Nothing_found" : "Nada encontrado",
   "Notify_all_in_this_room" : "Notificar todos nesta sala",
