@@ -12,7 +12,7 @@ class VersionCompiler
 			output = JSON.parse file.getContentsAsString()
 			output.compile =
 				date: new Date().toISOString()
-				version: process.version
+				nodeVersion: process.version
 				arch: process.arch
 				platform: process.platform
 				osRelease: os.release()
