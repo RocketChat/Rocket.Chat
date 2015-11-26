@@ -3,6 +3,9 @@ Api = new Restivus
 	prettyJson: true
 
 
+Api.addRoute 'info', authRequired: false,
+	get: -> RocketChatVersion
+
 
 Api.addRoute 'version', authRequired: false,
 	get: ->
