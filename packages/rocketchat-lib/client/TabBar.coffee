@@ -12,8 +12,7 @@ RocketChat.TabBar = new class
 	setTemplate = (t, callback) ->
 		return if animating is true
 		template.set t
-		if t
-			openFlex(callback)
+		openFlex(callback)
 
 	getTemplate = ->
 		return template.get()
