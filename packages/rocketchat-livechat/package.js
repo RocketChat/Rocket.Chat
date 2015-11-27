@@ -18,9 +18,12 @@ Package.registerBuildPlugin({
 Package.onUse(function(api) {
 	api.versionsFrom('1.0');
 
-	api.use(['ecmascript', 'webapp', 'autoupdate'], 'server');
+	api.use(['webapp', 'autoupdate'], 'server');
+	api.use('ecmascript');
 
 	api.imply('alanning:roles@1.2.12');
+
+	api.use('rocketchat:lib', 'client');
 	api.use('kadira:flow-router', 'client');
 
 	api.addFiles('livechat.js', 'server');
@@ -32,6 +35,8 @@ Package.onUse(function(api) {
 
 	api.addFiles('client/ui.js', 'client');
 	api.addFiles('client/route.js', 'client');
+
+	api.addFiles('client/views/app/livechat-manager.html', 'client');
 	api.addFiles('client/views/sideNav/livechat.html', 'client');
 	api.addFiles('client/views/sideNav/livechat.js', 'client');
 

@@ -7,7 +7,8 @@ class MentionsServer
 	constructor: (message) ->
 		# If message starts with /me, replace it for text formatting
 		mentions = []
-		message.msg.replace /(?:^|\s|\n)(?:@)([A-Za-z0-9-_.]+)/g, (match, mention) ->
+		msgMentionRegex = new RegExp '(?:^|\\s|\\n)(?:@)(' + RocketChat.settings.get('UTF8_Names_Validation') + ')', 'g'
+		message.msg.replace msgMentionRegex, (match, mention) ->
 			mentions.push mention
 		if mentions.length isnt 0
 			mentions = _.unique mentions
@@ -25,7 +26,8 @@ class MentionsServer
 				message.mentions = verifiedMentions
 
 		channels = []
-		message.msg.replace /(?:^|\s|\n)(?:#)([A-Za-z0-9-_.]+)/g, (match, mention) ->
+		msgChannelRegex = new RegExp '(?:^|\\s|\\n)(?:#)(' + RocketChat.settings.get('UTF8_Names_Validation') + ')', 'g'
+		message.msg.replace msgChannelRegex, (match, mention) ->
 			channels.push mention
 
 		if channels.length isnt 0

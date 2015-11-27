@@ -3,7 +3,12 @@ RocketChat.setUsername = (user, username) ->
 	if not user or not username
 		return false
 
-	if not /^[0-9a-zA-Z-_.]+$/.test username
+	try
+		nameValidation = new RegExp '^' + RocketChat.settings.get('UTF8_Names_Validation') + '$'
+	catch
+		nameValidation = new RegExp '^[0-9a-zA-Z-_.]+$'
+
+	if not nameValidation.test username
 		return false
 
 	# User already has desired username, return
@@ -15,6 +20,10 @@ RocketChat.setUsername = (user, username) ->
 		return false
 
 	previousUsername = user.username
+
+	# If first time setting username, send Enrollment Email
+	if not previousUsername and RocketChat.settings.get 'Accounts_Enrollment_Email'
+		Accounts.sendEnrollmentEmail(user._id)
 
 	# Username is available; if coming from old username, update all references
 	if previousUsername

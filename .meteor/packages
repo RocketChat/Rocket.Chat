@@ -3,6 +3,7 @@
 # 'meteor add' and 'meteor remove' will edit this file for you,
 # but you can also edit it by hand.
 
+rocketchat:cors
 accounts-facebook
 accounts-github
 accounts-google
@@ -38,6 +39,7 @@ rocketchat:lib
 
 rocketchat:authorization
 rocketchat:autolinker
+rocketchat:channel-settings
 rocketchat:colors
 rocketchat:custom-oauth
 rocketchat:emojione
@@ -48,9 +50,11 @@ rocketchat:gitlab
 rocketchat:highlight
 rocketchat:ldap
 rocketchat:logger
+rocketchat:mailer
 rocketchat:markdown
 rocketchat:me
 rocketchat:mentions
+rocketchat:message-pin
 rocketchat:message-star
 rocketchat:oembed
 rocketchat:slashcommands-invite
@@ -60,6 +64,15 @@ rocketchat:spotify
 rocketchat:statistics
 rocketchat:theme
 rocketchat:tutum
+rocketchat:ui
+rocketchat:ui-account
+rocketchat:ui-admin
+rocketchat:ui-flextab
+rocketchat:ui-login
+rocketchat:ui-master
+rocketchat:ui-message
+rocketchat:ui-sidenav
+rocketchat:version
 rocketchat:webrtc
 rocketchat:wordpress
 #rocketchat:chatops

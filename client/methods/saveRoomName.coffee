@@ -8,7 +8,8 @@ Meteor.methods
 		if room.u._id isnt Meteor.userId() or room.t not in ['c', 'p']
 			throw new Meteor.Error 403, t('Not allowed')
 
-		name = _.slugify name
+		if RocketChat.settings.get 'UTF8_Names_Slugify'
+			name = _.slugify name
 
 		if name is room.name
 			return
