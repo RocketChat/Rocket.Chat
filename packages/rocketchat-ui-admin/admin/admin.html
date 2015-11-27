@@ -50,13 +50,13 @@
 													<label><input type="radio" name="{{_id}}" value="1" checked="{{$eq value true}}" /> {{_ "True"}}</label>
 													<label><input type="radio" name="{{_id}}" value="0" checked="{{$eq value false}}" /> {{_ "False"}}</label>
 												{{/if}}
--												{{#if $eq type 'select'}}
--													<select name="{{_id}}">
--														{{#each values}}
--															<option value="{{key}}" selected="{{selectedOption ../_id key}}">{{_ i18nLabel}}</option>
--														{{/each}}
--													</select>
--												{{/if}}
+												{{#if $eq type 'select'}}
+													<select name="{{_id}}">
+														{{#each values}}
+															<option value="{{key}}" selected="{{selectedOption ../_id key}}">{{_ i18nLabel}}</option>
+														{{/each}}
+													</select>
+												{{/if}}
 												{{#if $eq type 'color'}}
 													<input type="text" class="minicolors" name="{{_id}}" value="{{value}}" />
 												{{/if}}
