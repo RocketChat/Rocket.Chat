@@ -1,6 +1,7 @@
 {
   "Access_online_demo" : "Access the online demo",
   "Access_Online_Demo" : "Access the Online Demo",
+  "Access_not_authorized" : "Access not authorized",
   "Accounts" : "Accounts",
   "Accounts_AllowedDomainsList" : "Allowed Domains List",
   "Accounts_AllowedDomainsList_Description" : "Comma-separated list of allowed domains",
@@ -271,6 +272,7 @@
   "No_permission_to_view_room" : "You don't have permission to view this room",
   "No_user_with_username_%s_was_found" : "No user with username <strong>\"%s\"</strong> was found!",
   "Not_allowed" : "Not allowed",
+  "Not_authorized" : "Not authorized",
   "Not_found_or_not_allowed" : "Not Found or Not Allowed",
   "Nothing_found" : "Nothing found",
   "Notify_all_in_this_room" : "Notify all in this room",
