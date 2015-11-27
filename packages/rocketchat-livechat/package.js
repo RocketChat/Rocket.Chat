@@ -23,6 +23,7 @@ Package.onUse(function(api) {
 	api.use('alanning:roles@1.2.12');
 	api.use('rocketchat:lib');
 	api.use('kadira:flow-router', 'client');
+	api.use('templating', 'client');
 
 	api.addFiles('livechat.js', 'server');
 	api.addFiles('server/methods.js', 'server');
@@ -60,7 +61,6 @@ Package.onUse(function(api) {
 	api.addAssets('public/head.html', 'server');
 
 	// TAPi18n
-	api.use('templating', 'client');
 	var _ = Npm.require('underscore');
 	var fs = Npm.require('fs');
 	tapi18nFiles = _.compact(_.map(fs.readdirSync('packages/rocketchat-livechat/i18n'), function(filename) {
@@ -68,7 +68,7 @@ Package.onUse(function(api) {
 			return 'i18n/' + filename;
 		}
 	}));
-	api.use('tap:i18n@1.6.1', ['client', 'server']);
-	api.imply('tap:i18n');
+	api.use('tap:i18n', ['client', 'server']);
+	// api.imply('tap:i18n');
 	api.addFiles(tapi18nFiles, ['client', 'server']);
 });

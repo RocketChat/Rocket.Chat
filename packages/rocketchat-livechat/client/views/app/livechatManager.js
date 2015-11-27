@@ -36,7 +36,7 @@ Template.livechatManager.events({
 		}, () => {
 			Meteor.call('livechat:removeManager', this.username, function(error, result) {
 				if (error) {
-					return toastr.error(error.reason || error.error);
+					return toastr.error(t(error.reason || error.error));
 				}
 				swal({
 					title: t('Removed'),
@@ -63,7 +63,7 @@ Template.livechatManager.events({
 		}, () => {
 			Meteor.call('livechat:removeAgent', this.username, function(error, result) {
 				if (error) {
-					return toastr.error(error.reason || error.error);
+					return toastr.error(t(error.reason || error.error));
 				}
 				swal({
 					title: t('Removed'),
@@ -89,17 +89,12 @@ Template.livechatManager.events({
 		Meteor.call('livechat:addManager', e.currentTarget.elements['username'].value, function(error, result) {
 			e.currentTarget.elements['add'].value = oldBtnValue;
 			if (error) {
-				console.log(error);
-				return toastr.error(error.reason || error.error);
+				return toastr.error(t(error.reason || error.error));
 			}
 
 			toastr.success(t('Manager_added'));
 			e.currentTarget.reset();
 		});
-
-		// console.log('valor ->',e.currentTarget.elements['username'].value);
-
-		// Meteor.call
 	},
 	'submit #form-agent' (e, instance) {
 		e.preventDefault();
@@ -115,17 +110,12 @@ Template.livechatManager.events({
 		Meteor.call('livechat:addAgent', e.currentTarget.elements['username'].value, function(error, result) {
 			e.currentTarget.elements['add'].value = oldBtnValue;
 			if (error) {
-				console.log(error);
-				return toastr.error(error.reason || error.error);
+				return toastr.error(t(error.reason || error.error));
 			}
 
 			toastr.success(t('Agent_added'));
 			e.currentTarget.reset();
 		});
-
-		// console.log('valor ->',e.currentTarget.elements['username'].value);
-
-		// Meteor.call
 	}
 });
 

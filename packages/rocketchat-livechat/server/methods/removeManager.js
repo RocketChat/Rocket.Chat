@@ -13,7 +13,7 @@ Meteor.methods({
 		var user = RocketChat.models.Users.findOneByUsername(username, { fields: { _id: 1 } });
 
 		if (!user) {
-			throw new Meteor.Error('user-not-found', TAPi18n.__('Username_not_found'));
+			throw new Meteor.Error('user-not-found', 'Username_not_found');
 		}
 
 		return RocketChat.authz.removeUsersFromRoles(user._id, 'livechat-manager');
