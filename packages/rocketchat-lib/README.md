@@ -44,6 +44,30 @@ RocketChat.roomTypes.setPublish('l', (identifier) => {
 });
 ```
 
+### AccountBox
+
+You can add items to the left upper corner drop menu:
+```javascript
+AccountBox.addItem({
+    name: 'Livechat',
+    icon: 'icon-chat-empty',
+    class: 'livechat-manager',
+    route: {
+        name: 'livechat-manager',
+        path: '/livechat-manager',
+        action(params, queryParams) {
+            Session.set('openedRoom');
+            BlazeLayout.render('main', {
+                center: 'page-container',
+                pageTitle: 'Live Chat Manager',
+                pageTemplate: 'livechat-manager'
+            });
+        }
+    },
+    permissions: ['view-livechat-manager']
+});
+```
+
 ### Functions
 ### Methods
 ### Publications
