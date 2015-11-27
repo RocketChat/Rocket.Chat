@@ -18,7 +18,7 @@ Meteor.publish 'admin-settings', ->
 		return @ready()
 
 	if RocketChat.authz.hasPermission( @userId, 'view-privileged-setting')
-		return RocketChat.models.Settings.find()
+		return RocketChat.models.Settings.find({ hidden: { $ne: true } })
 	else
 		return @ready()
 
