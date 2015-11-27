@@ -51,6 +51,12 @@ Template.loginForm.helpers
 	loginTerms: ->
 		return RocketChat.settings.get 'Layout_Login_Terms'
 
+	registrationAllowed: ->
+		return RocketChat.settings.get('Accounts_RegistrationForm') is 'Public'
+
+	linkReplacementText: ->
+		return RocketChat.settings.get('Accounts_RegistrationForm_LinkReplacementText')
+
 Template.loginForm.events
 	'submit #login-card': (event, instance) ->
 		event.preventDefault()

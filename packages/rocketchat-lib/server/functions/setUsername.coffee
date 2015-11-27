@@ -22,7 +22,7 @@ RocketChat.setUsername = (user, username) ->
 	previousUsername = user.username
 
 	# If first time setting username, send Enrollment Email
-	if not previousUsername and RocketChat.settings.get 'Accounts_Enrollment_Email'
+	if not previousUsername and user.emails?.length > 0 and RocketChat.settings.get 'Accounts_Enrollment_Email'
 		Accounts.sendEnrollmentEmail(user._id)
 
 	# Username is available; if coming from old username, update all references
