@@ -9,10 +9,12 @@ RocketChat.roomTypes.add('l', 5, {
 			openRoom('l', params.name);
 		},
 		link: (sub) => {
-			return { name: sub.name }
+			return {
+				name: sub.name
+			}
 		}
 	},
-	permissions: [ 'view-l-room' ]
+	permissions: ['view-l-room']
 });
 
 AccountBox.addItem({

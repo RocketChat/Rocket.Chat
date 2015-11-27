@@ -36,7 +36,10 @@ Template.sideNav.helpers
 		return RocketChat.authz.hasAtLeastOnePermission( ['view-statistics', 'view-room-administration', 'view-user-administration', 'view-privileged-setting'])
 
 	registeredMenus: ->
-		return AccountBox.getOptions()
+		return AccountBox.getItems()
+
+	itemPath: ->
+		FlowRouter.path @route.name
 
 Template.sideNav.events
 	'click .close-flex': ->
