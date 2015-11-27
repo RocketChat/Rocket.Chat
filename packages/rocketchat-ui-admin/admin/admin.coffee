@@ -55,6 +55,8 @@ Template.admin.events
 				value = if t.$("[name=#{setting._id}]:checked").val() is "1" then true else false
 			else if setting.type is 'color'
 				value = _.trim(t.$("[name=#{setting._id}]").val())
+			else if setting.type is 'select'
+				value = t.$("[name=#{setting._id}]").val()
 
 			if value?
 				updateSettings.push { _id: setting._id, value: value }

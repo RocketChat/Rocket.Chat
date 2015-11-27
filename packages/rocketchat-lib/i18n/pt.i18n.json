@@ -1,9 +1,1 @@
-{
-	"Edit": "Editar",
-	"Delete": "Excluir",
-	"Accounts_AccessPolicy": "Access Policy",
-	"Accounts_AccessPolicy_Description": "<b>Sem acesso público</b><br />&nbsp;&nbsp; Leitura: Somente com uma conta<br />&nbsp;&nbsp; Escrita: Somente com uma conta",
-	"Accounts_AccessPolicy_No_Public": "Sem acesso público",
-	"Accounts_AccessPolicy_Public_Read": "Público para leitura",
-	"Accounts_AccessPolicy_Public_ReadWrite": "Público para leitura/escrita"
-}
+{}

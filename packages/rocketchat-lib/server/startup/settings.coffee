@@ -1,26 +1,12 @@
 # Insert server unique id if it doesn't exist
 if not RocketChat.models.Settings.findOneById 'uniqueID'
-	RocketChat.models.Settings.createWithIdAndValue 'uniqueID', Random.id()
+	RocketChat.settings.add 'uniqueID', Random.id(), { persistent: true }
 
 RocketChat.settings.addGroup 'Accounts'
-# RocketChat.settings.add 'Accounts_RegistrationRequired', true, { type: 'boolean', group: 'Accounts', public: true, section: 'Registration' }
 RocketChat.settings.add 'Accounts_EmailVerification', false, { type: 'boolean', group: 'Accounts', public: true, section: 'Registration' }
 RocketChat.settings.add 'Accounts_ManuallyApproveNewUsers', false, { type: 'boolean', group: 'Accounts', section: 'Registration' }
-RocketChat.settings.add 'Accounts_AccessPolicy', 'NoPublic',
-	type: 'select',
-	values: [
-		key: 'NoPublic'
-		i18nLabel: 'Accounts_AccessPolicy_No_Public'
-	,
-		key: 'PublicRead'
-		i18nLabel: 'Accounts_AccessPolicy_Public_Read'
-	,
-		key: 'PublicReadWrite'
-		i18nLabel: 'Accounts_AccessPolicy_Public_ReadWrite'
-	]
-	group: 'Accounts'
-	i18nDescription: 'Accounts_AccessPolicy_Description'
-	section: 'Registration'
+# RocketChat.settings.add 'Accounts_AnonymousAccess', 'None', { type: 'select', values: [ { key: 'None', i18nLabel: 'Accounts_AnonymousAccess_None' }, { key: 'Read', i18nLabel: 'Accounts_AnonymousAccess_Read' }, { key: 'ReadWrite', i18nLabel: 'Accounts_AnonymousAccess_ReadWrite' } ], group: 'Accounts', section: 'Registration' }
+RocketChat.settings.add 'Accounts_AnonymousAccess', 'None', { type: 'select', values: [ { key: 'None', i18nLabel: 'Accounts_AnonymousAccess_None' } ], group: 'Accounts', section: 'Registration' }
 RocketChat.settings.add 'Accounts_AllowedDomainsList', '', { type: 'string', group: 'Accounts', public: true, section: 'Registration' }
 
 RocketChat.settings.add 'Accounts_AvatarStoreType', 'GridFS', { type: 'string', group: 'Accounts', section: 'Avatar' }
@@ -144,5 +130,5 @@ Meteor.startup ->
 
 # Remove runtime settings (non-persistent)
 Meteor.startup ->
-	RocketChat.models.Settings.update({ ts: { $lt: RocketChat.settings.ts }, persistent: false }, { $set: { hidden: true } })
-
+	RocketChat.models.Settings.update({ ts: { $lt: RocketChat.settings.ts }, persistent: { $ne: true } }, { $set: { hidden: true } }, { multi: true })
+	RocketChat.models.Settings.update({ ts: { $gte: RocketChat.settings.ts } }, { $unset: { hidden: 1 } }, { multi: true })

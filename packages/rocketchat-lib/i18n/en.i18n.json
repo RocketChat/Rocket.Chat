@@ -1,9 +1,2 @@
 {
-	"Edit": "Edit",
-	"Delete": "Delete",
-	"Accounts_AccessPolicy": "Access Policy",
-	"Accounts_AccessPolicy_Description": "<b>No Public</b><br />&nbsp;&nbsp; READ: Only with an account<br />&nbsp;&nbsp; WRITE: Only with an account<br /><b>Public Read</b><br />&nbsp;&nbsp; READ: Public; anyone can read channel messages<br />&nbsp;&nbsp; WRITE: Only with an account<br /><b>Public Read/Write</b><br />&nbsp;&nbsp; READ: Public; anyone can read channel messages<br />&nbsp;&nbsp; WRITE: Public; user has to pick a username<br />",
-	"Accounts_AccessPolicy_No_Public": "No Public",
-	"Accounts_AccessPolicy_Public_Read": "Public Read",
-	"Accounts_AccessPolicy_Public_ReadWrite": "Public Read/Write"
 }

@@ -60,17 +60,9 @@
 												{{#if $eq type 'color'}}
 													<input type="text" class="minicolors" name="{{_id}}" value="{{value}}" />
 												{{/if}}
-												<div>
-													{{#if description}}
-														<p><small class="settings-description">{{{description}}}</small></p>
-													{{/if}}
-												</div>
-												{{#if $eq type 'color'}}
-													<input type="text" class="minicolors" name="{{_id}}" value="{{value}}" />
-												{{/if}}
 												{{#if description}}
 													<div>
-														<small class="settings-description">{{{description}}}</small>
+														<div class="settings-description">{{{description}}}</div>
 													</div>
 												{{/if}}
 											</div>

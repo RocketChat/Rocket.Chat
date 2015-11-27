@@ -124,7 +124,7 @@ Template.main.helpers
 			return false
 
 	privateAndNotLogged: ->
-		if RocketChat.settings.get('Accounts_AccessPolicy') is 'NoPublic' # Private
+		if RocketChat.settings.get('Accounts_AnonymousAccess') is 'None' # Private
 			if Meteor.userId()?
 				$('html').addClass("noscroll").removeClass("scroll")
 				return false

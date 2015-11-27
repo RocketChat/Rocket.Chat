@@ -38,10 +38,13 @@ RocketChat.models.Settings = new class extends RocketChat.models._Base
 
 
 	# REMOVE
-	createWithIdAndValue: (_id, value) ->
+	createWithIdAndValue: (_id, value, extraFields = {}) ->
 		record =
 			_id: _id
 			value: value
+
+		unless _.isEmpty extraFields
+			record = _.extend record, extraFields
 
 		return @insert record
 
