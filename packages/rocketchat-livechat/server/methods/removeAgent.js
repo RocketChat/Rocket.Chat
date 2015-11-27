@@ -16,6 +16,10 @@ Meteor.methods({
 			throw new Meteor.Error('user-not-found', TAPi18n.__('Username_not_found'));
 		}
 
-		return RocketChat.authz.removeUsersFromRoles(user._id, 'livechat-agent');
+		if (RocketChat.authz.removeUsersFromRoles(user._id, 'livechat-agent')) {
+			return RocketChat.models.Users.setOperator(user._id, false);
+		}
+
+		return false;
 	}
 });

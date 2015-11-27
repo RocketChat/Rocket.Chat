@@ -21,7 +21,7 @@ Package.onUse(function(api) {
 	api.use(['webapp', 'autoupdate'], 'server');
 	api.use('ecmascript');
 	api.use('alanning:roles@1.2.12');
-	api.use('rocketchat:lib', 'client');
+	api.use('rocketchat:lib');
 	api.use('kadira:flow-router', 'client');
 
 	api.addFiles('livechat.js', 'server');
@@ -34,26 +34,30 @@ Package.onUse(function(api) {
 	api.addFiles('client/ui.js', 'client');
 	api.addFiles('client/route.js', 'client');
 
+	// client views
 	api.addFiles('client/views/app/livechatManager.html', 'client');
 	api.addFiles('client/views/app/livechatManager.js', 'client');
-
 	api.addFiles('client/views/sideNav/livechat.html', 'client');
 	api.addFiles('client/views/sideNav/livechat.js', 'client');
-
-	api.addAssets('rocket-livechat.js', 'client');
-	api.addAssets('public/livechat.css', 'client');
-	api.addAssets('public/livechat.js', 'client');
-	api.addAssets('public/head.html', 'server');
-
-	// publications
-	api.addFiles('server/publications/livechatAgents.js', 'server');
-	api.addFiles('server/publications/livechatManagers.js', 'server');
 
 	// methods
 	api.addFiles('server/methods/addAgent.js', 'server');
 	api.addFiles('server/methods/addManager.js', 'server');
 	api.addFiles('server/methods/removeAgent.js', 'server');
 	api.addFiles('server/methods/removeManager.js', 'server');
+
+	// models
+	api.addFiles('server/models/Users.js', 'server');
+
+	// publications
+	api.addFiles('server/publications/livechatAgents.js', 'server');
+	api.addFiles('server/publications/livechatManagers.js', 'server');
+
+	// livechat app
+	api.addAssets('rocket-livechat.js', 'client');
+	api.addAssets('public/livechat.css', 'client');
+	api.addAssets('public/livechat.js', 'client');
+	api.addAssets('public/head.html', 'server');
 
 	// TAPi18n
 	api.use('templating', 'client');
