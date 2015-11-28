@@ -23,5 +23,10 @@ Meteor.startup ->
 			_.each rooms, (room) ->
 				creator = room?.u?._id
 				if creator
-					RocketChat.authz.addUsersToRoles( creator, ['moderator'], room._id)
-					console.log "Add #{room.u.username} to 'moderator' role".green
+					if Meteor.users.findOne({_id: creator})
+						RocketChat.authz.addUsersToRoles( creator, ['moderator'], room._id)
+						console.log "Add #{room.u.username} to 'moderator' role".green
+					else
+						RocketChat.models.Subscriptions.removeByRoomId room._id
+						RocketChat.models.Messages.removeByRoomId room._id
+						RocketChat.models.Rooms.removeById room._id
