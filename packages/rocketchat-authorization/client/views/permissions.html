@@ -1,0 +1,20 @@
+<template name="permissions">
+	<h1>permission</h1>
+
+	<table border="1">
+		<tr>
+			<td>&nbsp;</td>
+			{{#each role}}
+				<td>{{name}}</td>
+			{{/each}}
+		</tr>
+		{{#each permission}}
+			<tr>
+				<td>{{_id}}</td>
+				{{#each role}}
+					<td>{{granted ../roles ../_id}}</td>
+				{{/each}}
+			</tr>
+		{{/each}}
+	</table>
+</template>
