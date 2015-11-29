@@ -1,9 +1,9 @@
 mongo:
   image: mongo
 # volumes:
-#    - ./data/runtime/mongo:/data/mongo
+#    - ./data/runtime/db:/data/db
 #    - ./data/dump:/dump
-  command: mongod --smallfiles --replSet rs0 --oplogSize 128
+  command: mongod --smallfiles --oplogSize 128
 
 rocketchat:
   image: rocketchat/rocket.chat:develop
@@ -19,4 +19,3 @@ rocketchat:
     - mongo:mongo
   ports:
     - 3000:3000
-
