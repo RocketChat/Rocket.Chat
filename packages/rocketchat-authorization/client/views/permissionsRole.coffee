@@ -14,6 +14,9 @@ Template.permissionsRole.helpers
 		if @emails?.length > 0
 			return @emails[0].address
 
+	hasPermission: ->
+		return RocketChat.authz.hasAllPermission 'access-rocket-permissions'
+
 Template.permissionsRole.events
 
 	'click .remove-user': (e, instance) ->
