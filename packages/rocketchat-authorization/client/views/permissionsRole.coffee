@@ -83,6 +83,20 @@ Template.permissionsRole.events
 			toastr.success t('User_added')
 			e.currentTarget.reset()
 
+	'click .delete-role': (e, instance) ->
+		e.preventDefault()
+
+		if @protected
+			return toastr.error t('Cannot_delete_an_protected_role')
+
+		Meteor.call 'authorization:deleteRole', @_id, (error, result) ->
+			if error
+				return toastr.error t(error.reason || error.error)
+
+			toastr.success t('Role_removed')
+
+			FlowRouter.go 'rocket-permissions'
+
 Template.permissionsRole.onCreated ->
 	# @roles = []
 	# @permissions = []

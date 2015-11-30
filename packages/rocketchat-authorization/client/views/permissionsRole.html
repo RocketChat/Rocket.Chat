@@ -12,7 +12,13 @@
 			<br>
 			<label>{{_ "Description"}}</label>:
 				<input type="text" name="description" value="{{description}}">
+			<br>
+
 			<button name="save" class="button primary">{{_ "Save"}}</button>
+
+			{{#unless protected}}
+				<button name="delete" class="button red delete-role">{{_ "Delete"}}</button>
+			{{/unless}}
 		</form>
 	{{/with}}
 
