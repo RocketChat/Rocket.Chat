@@ -31,7 +31,8 @@ Package.onUse(function(api) {
   // views
   api.addFiles('client/views/permissions.html', ['client']);
   api.addFiles('client/views/permissions.coffee', ['client']);
-
+  api.addFiles('client/views/permissionsRole.html', ['client']);
+  api.addFiles('client/views/permissionsRole.coffee', ['client']);
 
   api.addFiles('server/models/Permissions.coffee', ['server']);
 
@@ -44,7 +45,10 @@ Package.onUse(function(api) {
   api.addFiles('server/functions/hasRole.coffee', ['server']);
   api.addFiles('server/functions/removeUsersFromRoles.coffee', ['server']);
 
-  api.addFiles('server/publications/roles.coffee', 'server');
+  // publications
   api.addFiles('server/publication.coffee', ['server']);
+  api.addFiles('server/publications/roles.coffee', 'server');
+  api.addFiles('server/publications/usersInRole.coffee', 'server');
+
   api.addFiles('server/startup.coffee', ['server']);
 });
