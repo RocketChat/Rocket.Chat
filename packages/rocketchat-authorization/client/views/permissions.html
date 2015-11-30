@@ -1,18 +1,20 @@
 <template name="permissions">
 	<h1>{{_ "Permissions"}}</h1>
 
+	<a href="{{pathFor "rocket-permissions-new"}}" class="button primary new-role">{{_ "New_role"}}</a>
+
 	<table border="1">
 		<tr>
 			<td>&nbsp;</td>
 			{{#each role}}
-				<td title="{{description}}">{{name}} <a href="{{pathFor "rocket-permissions" name=name}}"><i class="icon-edit"></i></a></td>
+				<td title="{{description}}"><a href="{{pathFor "rocket-permissions-edit" name=name}}">{{name}}</a></td>
 			{{/each}}
 		</tr>
 		{{#each permission}}
 			<tr>
 				<td>{{_id}}</td>
 				{{#each role}}
-					<td>{{granted ../roles ../_id}}</td>
+					<td><input type="checkbox" name="perm[{{_id}}][{{../_id}}]" value="1" checked="{{granted ../roles ../_id}}"></td>
 				{{/each}}
 			</tr>
 		{{/each}}
