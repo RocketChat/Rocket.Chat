@@ -1,11 +1,11 @@
 <template name="permissions">
-	<h1>permission</h1>
+	<h1>{{_ "Permissions"}}</h1>
 
 	<table border="1">
 		<tr>
 			<td>&nbsp;</td>
 			{{#each role}}
-				<td>{{name}}</td>
+				<td>{{name}} <a href="{{pathFor "rocket-permissions" name=name}}"><i class="icon-edit"></i></a></td>
 			{{/each}}
 		</tr>
 		{{#each permission}}
