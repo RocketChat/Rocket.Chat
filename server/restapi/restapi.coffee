@@ -5,7 +5,7 @@ Api = new Restivus
 
 
 Api.addRoute 'info', authRequired: false,
-	get: -> RocketChat.Version
+	get: -> RocketChat.Info
 
 
 Api.addRoute 'version', authRequired: false,
