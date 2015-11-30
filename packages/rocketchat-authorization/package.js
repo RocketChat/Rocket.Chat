@@ -55,6 +55,8 @@ Package.onUse(function(api) {
   api.addFiles('server/methods/deleteRole.coffee', 'server');
   api.addFiles('server/methods/removeUserFromRole.coffee', 'server');
   api.addFiles('server/methods/saveRole.coffee', 'server');
+  api.addFiles('server/methods/addPermissionToRole.coffee', 'server');
+  api.addFiles('server/methods/removeRoleFromPermission.coffee', 'server');
 
   api.addFiles('server/startup.coffee', ['server']);
 });

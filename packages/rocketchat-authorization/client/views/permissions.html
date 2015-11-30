@@ -14,7 +14,9 @@
 			<tr>
 				<td>{{_id}}</td>
 				{{#each role}}
-					<td><input type="checkbox" name="perm[{{_id}}][{{../_id}}]" value="1" checked="{{granted ../roles ../_id}}"></td>
+					<td>
+						<input type="checkbox" name="perm[{{_id}}][{{../_id}}]" class="role-permission" value="1" checked="{{granted ../roles ../_id}}" data-role="{{name}}" data-permission="{{../_id}}">
+					</td>
 				{{/each}}
 			</tr>
 		{{/each}}
