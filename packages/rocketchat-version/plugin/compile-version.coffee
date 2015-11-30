@@ -2,7 +2,7 @@ exec = Npm.require('child_process').exec
 os = Npm.require('os')
 
 Plugin.registerCompiler
-	extensions: ['version']
+	extensions: ['info']
 , -> new VersionCompiler()
 
 
@@ -39,7 +39,7 @@ class VersionCompiler
 							output.branch = result.replace('\n', '')
 
 						output = """
-							RocketChat.Version = #{JSON.stringify(output, null, 4)}
+							RocketChat.Info = #{JSON.stringify(output, null, 4)}
 						"""
 
 						file.addJavaScript({ data: output, path: file.getPathInPackage() + '.js' });
