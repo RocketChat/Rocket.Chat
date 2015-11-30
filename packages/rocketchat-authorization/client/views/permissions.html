@@ -5,7 +5,7 @@
 		<tr>
 			<td>&nbsp;</td>
 			{{#each role}}
-				<td>{{name}} <a href="{{pathFor "rocket-permissions" name=name}}"><i class="icon-edit"></i></a></td>
+				<td title="{{description}}">{{name}} <a href="{{pathFor "rocket-permissions" name=name}}"><i class="icon-edit"></i></a></td>
 			{{/each}}
 		</tr>
 		{{#each permission}}
