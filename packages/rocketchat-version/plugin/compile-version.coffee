@@ -39,7 +39,7 @@ class VersionCompiler
 							output.branch = result.replace('\n', '')
 
 						output = """
-							RocketChatVersion = #{JSON.stringify(output, null, 4)}
+							RocketChat.Version = #{JSON.stringify(output, null, 4)}
 						"""
 
 						file.addJavaScript({ data: output, path: file.getPathInPackage() + '.js' });
