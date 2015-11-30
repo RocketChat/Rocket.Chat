@@ -108,6 +108,6 @@ Accounts.validateLoginAttempt (login) ->
 	return true
 
 Accounts.validateNewUser (user) ->
-	if RocketChat.settings.get('Accounts_Registration_AuthenticationServices_Enabled') is false and user.services?
+	if RocketChat.settings.get('Accounts_Registration_AuthenticationServices_Enabled') is false and RocketChat.settings.get('LDAP_Enable') is false and not user.services?.password?
 		throw new Meteor.Error 'registration-disabled-authentication-services', 'User registration is disabled for authentication services'
 	return true
