@@ -101,6 +101,13 @@ RocketChat.models.Messages = new class extends RocketChat.models._Base
 
 		return @find query, options
 
+	getLastTimestamp: (options = {}) ->
+		query = { ts: { $exists: 1 } }
+		options.sort = { ts: -1 }
+		options.limit = 1
+
+		return @find(query, options)?.fetch?()?[0]?.ts
+
 	cloneAndSaveAsHistoryById: (_id) ->
 		me = RocketChat.models.Users.findOneById Meteor.userId()
 		record = @findOneById _id
