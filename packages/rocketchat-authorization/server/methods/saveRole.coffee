@@ -5,5 +5,13 @@ Meteor.methods
 
 		console.log '[methods] authorization:saveRole -> '.green, 'arguments:', arguments
 
-		if roleData?.description?
-			return Meteor.roles.update _id, { $set: { description: roleData.description } }
+		saveData =
+			description: roleData.description
+
+		if not _id? and roleData.name?
+			saveData.name = roleData.name
+
+		if _id?
+			return Meteor.roles.update _id, { $set: saveData }
+		else
+			return Meteor.roles.insert saveData

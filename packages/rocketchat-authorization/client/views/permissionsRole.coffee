@@ -2,10 +2,17 @@ window.rolee = Roles
 
 Template.permissionsRole.helpers
 	role: ->
-		return Meteor.roles.findOne { name: FlowRouter.getParam('name') }
+		return Meteor.roles.findOne({ name: FlowRouter.getParam('name') }) or {}
 
 	userInRole: ->
 		return Roles.getUsersInRole(FlowRouter.getParam('name'))
+
+	editing: ->
+		return FlowRouter.getParam('name')?
+
+	emailAddress: ->
+		if @emails?.length > 0
+			return @emails[0].address
 
 Template.permissionsRole.events
 
@@ -40,13 +47,23 @@ Template.permissionsRole.events
 
 		e.currentTarget.elements['save'].value = t('Saving')
 
-		Meteor.call 'authorization:saveRole', @_id, { description: e.currentTarget.elements['description'].value }, (error, result) ->
+		roleData =
+			description: e.currentTarget.elements['description'].value
+
+		if not @_id?
+			roleData.name = e.currentTarget.elements['name'].value
+
+		Meteor.call 'authorization:saveRole', @_id, roleData, (error, result) =>
 			e.currentTarget.elements['save'].value = oldBtnValue
 			if error
 				return toastr.error t(error.reason || error.error)
 
-			toastr.success t('Saved')
 			e.currentTarget.reset()
+			toastr.success t('Saved')
+
+			if not @_id?
+				FlowRouter.go 'rocket-permissions-edit', { name: roleData.name }
+
 
 	'submit #form-users': (e, instance) ->
 		e.preventDefault()
