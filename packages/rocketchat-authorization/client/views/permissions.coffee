@@ -11,7 +11,7 @@ Template.permissions.helpers
 			return 'checked' if roles.indexOf(@name) isnt -1
 
 	hasPermission: ->
-		return RocketChat.authz.hasAllPermission 'access-rocket-permissions'
+		return RocketChat.authz.hasAllPermission 'access-permissions'
 
 Template.permissions.events
 	'click .role-permission': (e, instance) ->
