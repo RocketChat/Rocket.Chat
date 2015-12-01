@@ -1,6 +1,6 @@
 Meteor.methods
 	'authorization:addUserToRole': (roleName, username) ->
-		if not Meteor.userId() or not RocketChat.authz.hasPermission Meteor.userId(), 'access-rocket-permissions'
+		if not Meteor.userId() or not RocketChat.authz.hasPermission Meteor.userId(), 'access-permissions'
 			throw new Meteor.Error "not-authorized"
 
 		console.log('[methods] authorization:addUserToRole -> '.green, 'arguments:', arguments);
