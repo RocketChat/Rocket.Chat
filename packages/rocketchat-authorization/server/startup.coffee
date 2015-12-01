@@ -86,6 +86,9 @@ Meteor.startup ->
 
 		{ _id: 'view-d-room',
 		roles : ['admin', 'site-moderator', 'user']}
+
+		{ _id: 'access-rocket-permissions',
+		roles : ['admin']}
 	]
 
 	#alanning:roles

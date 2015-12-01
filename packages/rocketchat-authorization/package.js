@@ -15,6 +15,9 @@ Package.onUse(function(api) {
     'alanning:roles@1.2.12'
     ]);
 
+  api.use('mongo', 'client');
+  api.use('kadira:flow-router', 'client');
+
   api.use('templating', 'client');
 
   api.addFiles('lib/rocketchat.coffee', ['server','client']);
@@ -23,6 +26,13 @@ Package.onUse(function(api) {
   api.addFiles('client/hasPermission.coffee', ['client']);
   api.addFiles('client/hasRole.coffee', ['client']);
 
+  api.addFiles('client/route.coffee', ['client']);
+
+  // views
+  api.addFiles('client/views/permissions.html', ['client']);
+  api.addFiles('client/views/permissions.coffee', ['client']);
+  api.addFiles('client/views/permissionsRole.html', ['client']);
+  api.addFiles('client/views/permissionsRole.coffee', ['client']);
 
   api.addFiles('server/models/Permissions.coffee', ['server']);
 
@@ -35,6 +45,18 @@ Package.onUse(function(api) {
   api.addFiles('server/functions/hasRole.coffee', ['server']);
   api.addFiles('server/functions/removeUsersFromRoles.coffee', ['server']);
 
+  // publications
   api.addFiles('server/publication.coffee', ['server']);
+  api.addFiles('server/publications/roles.coffee', 'server');
+  api.addFiles('server/publications/usersInRole.coffee', 'server');
+
+  // methods
+  api.addFiles('server/methods/addUserToRole.coffee', 'server');
+  api.addFiles('server/methods/deleteRole.coffee', 'server');
+  api.addFiles('server/methods/removeUserFromRole.coffee', 'server');
+  api.addFiles('server/methods/saveRole.coffee', 'server');
+  api.addFiles('server/methods/addPermissionToRole.coffee', 'server');
+  api.addFiles('server/methods/removeRoleFromPermission.coffee', 'server');
+
   api.addFiles('server/startup.coffee', ['server']);
 });

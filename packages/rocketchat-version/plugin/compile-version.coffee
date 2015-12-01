@@ -2,7 +2,7 @@ exec = Npm.require('child_process').exec
 os = Npm.require('os')
 
 Plugin.registerCompiler
-	extensions: ['version']
+	extensions: ['info']
 , -> new VersionCompiler()
 
 
@@ -19,6 +19,12 @@ class VersionCompiler
 				totalMemmory: os.totalmem()
 				freeMemmory: os.freemem()
 				cpus: os.cpus().length
+
+			if process.env.TRAVIS_BUILD_NUMBER
+				output.travis =
+					buildNumber: process.env.TRAVIS_BUILD_NUMBER
+					branch: process.env.TRAVIS_BRANCH
+					tag: process.env.TRAVIS_TAG
 
 			exec "git log --pretty=format:'%H%n%ad%n%an%n%s' -n 1", (err, result) ->
 				if not err?
@@ -39,7 +45,7 @@ class VersionCompiler
 							output.branch = result.replace('\n', '')
 
 						output = """
-							RocketChatVersion = #{JSON.stringify(output, null, 4)}
+							RocketChat.Info = #{JSON.stringify(output, null, 4)}
 						"""
 
 						file.addJavaScript({ data: output, path: file.getPathInPackage() + '.js' });
