@@ -11,7 +11,7 @@ Meteor.methods
 		user = Meteor.users.findOne { username: username }, { fields: { _id: 1 } }
 
 		if not user?._id?
-			throw new Meteor.Error 'user-not-found'
+			throw new Meteor.Error 'user-not-found', 'User_not_found'
 
 		# return Roles.addUsersToRoles user._id, roleName
 		return Roles.addUsersToRoles user._id, roleName, Roles.GLOBAL_GROUP
