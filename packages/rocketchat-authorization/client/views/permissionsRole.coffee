@@ -88,7 +88,7 @@ Template.permissionsRole.events
 		e.preventDefault()
 
 		if @protected
-			return toastr.error t('Cannot_delete_an_protected_role')
+			return toastr.error t('Cannot_delete_a_protected_role')
 
 		Meteor.call 'authorization:deleteRole', @_id, (error, result) ->
 			if error
