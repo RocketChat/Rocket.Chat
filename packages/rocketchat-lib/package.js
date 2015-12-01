@@ -54,6 +54,7 @@ Package.onUse(function(api) {
 	// SERVER METHODS
 	api.addFiles('server/methods/addOAuthService.coffee', 'server');
 	api.addFiles('server/methods/joinDefaultChannels.coffee', 'server');
+	api.addFiles('server/methods/registerAnonymousUser.coffee', 'server');
 	api.addFiles('server/methods/removeOAuthService.coffee', 'server');
 	api.addFiles('server/methods/robotMethods.coffee', 'server');
 	api.addFiles('server/methods/saveSetting.coffee', 'server');

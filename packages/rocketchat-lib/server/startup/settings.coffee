@@ -5,8 +5,8 @@ if not RocketChat.models.Settings.findOneById 'uniqueID'
 RocketChat.settings.addGroup 'Accounts'
 RocketChat.settings.add 'Accounts_EmailVerification', false, { type: 'boolean', group: 'Accounts', public: true, section: 'Registration' }
 RocketChat.settings.add 'Accounts_ManuallyApproveNewUsers', false, { type: 'boolean', group: 'Accounts', section: 'Registration' }
-# RocketChat.settings.add 'Accounts_AnonymousAccess', 'None', { type: 'select', values: [ { key: 'None', i18nLabel: 'Accounts_AnonymousAccess_None' }, { key: 'Read', i18nLabel: 'Accounts_AnonymousAccess_Read' }, { key: 'ReadWrite', i18nLabel: 'Accounts_AnonymousAccess_ReadWrite' } ], group: 'Accounts', section: 'Registration' }
-RocketChat.settings.add 'Accounts_AnonymousAccess', 'None', { type: 'select', values: [ { key: 'None', i18nLabel: 'Accounts_AnonymousAccess_None' } ], group: 'Accounts', section: 'Registration' }
+RocketChat.settings.add 'Accounts_AnonymousAccess', 'None', { type: 'select', values: [ { key: 'None', i18nLabel: 'Accounts_AnonymousAccess_None' }, { key: 'Read', i18nLabel: 'Accounts_AnonymousAccess_Read' }, { key: 'ReadWrite', i18nLabel: 'Accounts_AnonymousAccess_ReadWrite' } ], group: 'Accounts', section: 'Registration' }
+# RocketChat.settings.add 'Accounts_AnonymousAccess', 'None', { type: 'select', values: [ { key: 'None', i18nLabel: 'Accounts_AnonymousAccess_None' } ], group: 'Accounts', section: 'Registration' }
 RocketChat.settings.add 'Accounts_AllowedDomainsList', '', { type: 'string', group: 'Accounts', public: true, section: 'Registration' }
 
 RocketChat.settings.add 'Accounts_RegistrationForm', 'Public', { type: 'select', group: 'Accounts', public: true, section: 'Registration', values: [ { key: 'Public', i18nLabel: 'Accounts_RegistrationForm_Public' }, { key: 'Disabled', i18nLabel: 'Accounts_RegistrationForm_Disabled' }, { key: 'Secret URL', i18nLabel: 'Accounts_RegistrationForm_Secret_URL' } ] }

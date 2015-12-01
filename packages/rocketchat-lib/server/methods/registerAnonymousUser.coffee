@@ -1,17 +1,7 @@
 Meteor.methods
-	setUsername: (username) ->
-		if not Meteor.userId()
-			throw new Meteor.Error('invalid-user', "[methods] setUsername -> Invalid user")
-
-		unless RocketChat.settings.get("Accounts_AllowUsernameChange")
-			throw new Meteor.Error(403, "[methods] resetAvatar -> Invalid access")
-
-		console.log '[methods] setUsername -> '.green, 'userId:', Meteor.userId(), 'arguments:', arguments
-
-		user = Meteor.user()
-
-		if user.username is username
-			return username
+	registerAnonymousUser: (username) ->
+		if RocketChat.settings.get("Accounts_AnonymousAccess") not in ['Read', 'ReadWrite']
+			throw new Meteor.Error 'anonymous-registration-not-allowed', 'Anonymous registration is not alllowed'
 
 		try
 			nameValidation = new RegExp '^' + RocketChat.settings.get('UTF8_Names_Validation') + '$'
@@ -24,10 +14,13 @@ Meteor.methods
 		if not RocketChat.checkUsernameAvailability username
 			throw new Meteor.Error 'username-unavailable', "#{username} is already in use :("
 
-		unless RocketChat.setUsername user, username
-			throw new Meteor.Error 'could-not-change-username', "Could not change username"
+		password = Random.id()
+		userData =
+			username: username
+			password: password
 
-		return username
+		userId = Accounts.createUser userData
+		return password
 
 # Limit setting username once per minute
 DDPRateLimiter.addRule
@@ -36,4 +29,4 @@ DDPRateLimiter.addRule
 	userId: (userId) ->
 		# Administrators have permission to change others usernames, so don't limit those
 		return not RocketChat.authz.hasPermission( userId, 'edit-other-user-info')
-, 1, 60000
+, 1, 1000
