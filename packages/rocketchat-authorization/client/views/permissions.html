@@ -2,13 +2,13 @@
 	{{#if hasPermission}}
 		<h1>{{_ "Permissions"}}</h1>
 
-		<a href="{{pathFor "rocket-permissions-new"}}" class="button primary new-role">{{_ "New_role"}}</a>
+		<a href="{{pathFor "admin-permissions-new"}}" class="button primary new-role">{{_ "New_role"}}</a>
 
 		<table border="1">
 			<tr>
 				<td>&nbsp;</td>
 				{{#each role}}
-					<td title="{{description}}"><a href="{{pathFor "rocket-permissions-edit" name=name}}">{{name}}</a></td>
+					<td title="{{description}}"><a href="{{pathFor "admin-permissions-edit" name=name}}">{{name}}</a></td>
 				{{/each}}
 			</tr>
 			{{#each permission}}

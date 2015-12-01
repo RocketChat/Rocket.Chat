@@ -1,5 +1,5 @@
 FlowRouter.route '/admin/permissions',
-	name: 'rocket-permissions'
+	name: 'admin-permissions'
 	action: (params) ->
 		BlazeLayout.render 'main',
 			center: 'pageContainer'
@@ -7,7 +7,7 @@ FlowRouter.route '/admin/permissions',
 			pageTemplate: 'permissions'
 
 FlowRouter.route '/admin/permissions/:name?/edit',
-	name: 'rocket-permissions-edit'
+	name: 'admin-permissions-edit'
 	action: (params) ->
 		BlazeLayout.render 'main',
 			center: 'pageContainer'
@@ -15,7 +15,7 @@ FlowRouter.route '/admin/permissions/:name?/edit',
 			pageTemplate: 'permissionsRole'
 
 FlowRouter.route '/admin/permissions/new',
-	name: 'rocket-permissions-new'
+	name: 'admin-permissions-new'
 	action: (params) ->
 		BlazeLayout.render 'main',
 			center: 'pageContainer'

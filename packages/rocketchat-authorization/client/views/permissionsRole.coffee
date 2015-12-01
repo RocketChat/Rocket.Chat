@@ -63,7 +63,7 @@ Template.permissionsRole.events
 			toastr.success t('Saved')
 
 			if not @_id?
-				FlowRouter.go 'rocket-permissions-edit', { name: roleData.name }
+				FlowRouter.go 'admin-permissions-edit', { name: roleData.name }
 
 
 	'submit #form-users': (e, instance) ->
@@ -96,7 +96,7 @@ Template.permissionsRole.events
 
 			toastr.success t('Role_removed')
 
-			FlowRouter.go 'rocket-permissions'
+			FlowRouter.go 'admin-permissions'
 
 Template.permissionsRole.onCreated ->
 	# @roles = []
