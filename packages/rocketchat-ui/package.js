@@ -73,6 +73,7 @@ Package.onUse(function(api) {
 	api.addFiles('views/fxos.html', 'client');
 	api.addFiles('views/modal.html', 'client');
 	api.addFiles('views/404/roomNotFound.html', 'client');
+	api.addFiles('views/404/invalidSecretURL.html', 'client');
 	api.addFiles('views/app/audioNotification.html', 'client');
 	api.addFiles('views/app/burguer.html', 'client');
 	api.addFiles('views/app/home.html', 'client');
