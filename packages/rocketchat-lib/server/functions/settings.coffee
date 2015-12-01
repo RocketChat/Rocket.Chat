@@ -13,6 +13,7 @@ RocketChat.settings.add = (_id, value, options = {}) ->
 	options.packageValue = value
 	options.valueSource = 'packageValue'
 	options.ts = new Date
+	options.hidden = false
 
 	if process?.env?[_id]?
 		value = process.env[_id]
@@ -55,6 +56,7 @@ RocketChat.settings.addGroup = (_id, options = {}) ->
 		options.i18nDescription = "#{_id}_Description"
 
 	options.ts = new Date
+	options.hidden = false
 
 	return RocketChat.models.Settings.upsert { _id: _id },
 		$set: options

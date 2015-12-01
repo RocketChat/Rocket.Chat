@@ -3,7 +3,7 @@ set -euo pipefail
 
 cd /opt/
 
-PACKAGE=meteor-spk-0.1.7
+PACKAGE=meteor-spk-0.1.8
 PACKAGE_FILENAME="$PACKAGE.tar.xz"
 CACHE_TARGET="/host-dot-sandstorm/caches/${PACKAGE_FILENAME}"
 
@@ -44,4 +44,3 @@ cd /home/vagrant/
 su -c "tar xf '${METEOR_CACHE_TARGET}'" vagrant
 # Link into global PATH
 ln -s /home/vagrant/.meteor/meteor /usr/bin/meteor
-

@@ -7,7 +7,7 @@ accounts-oauth@1.1.8
 accounts-password@1.1.4
 accounts-twitter@1.0.6
 alanning:roles@1.2.14
-aldeed:simple-schema@1.3.3
+aldeed:simple-schema@1.4.0
 arunoda:streams@0.1.17
 autoupdate@1.2.4
 babel-compiler@5.8.24_1
@@ -58,8 +58,8 @@ jparker:crypto-core@0.1.0
 jparker:crypto-md5@0.1.1
 jparker:gravatar@0.4.1
 jquery@1.11.4
-kadira:blaze-layout@2.2.0
-kadira:flow-router@2.9.0
+kadira:blaze-layout@2.3.0
+kadira:flow-router@2.10.0
 kenton:accounts-sandstorm@0.1.8
 kevohagan:sweetalert@1.0.0
 konecty:autolinker@1.0.3
@@ -75,6 +75,7 @@ livedata@1.0.15
 localstorage@1.0.5
 logging@1.0.8
 matb33:collection-hooks@0.8.1
+mdg:validation-error@0.1.0
 meteor@1.1.10
 meteor-base@1.0.1
 meteor-developer@1.1.5

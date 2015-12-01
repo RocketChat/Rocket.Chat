@@ -6,24 +6,24 @@ branches:
   - master
 node_js:
 - '0.12'
-addons:
-  apt:
-    sources:
-    - google-chrome
-    packages:
-    - google-chrome-stable
+#addons:
+#  apt:
+#    sources:
+#    - google-chrome
+#    packages:
+#    - google-chrome-stable
 before_install:
 - curl https://install.meteor.com | /bin/sh
 - npm install -g npm@'>=2.13.5'
 - mkdir -p node_modules
-- npm install phantomjs
-- npm install velocity-cli
-- export PHANTOMJS_BIN=./node_modules/phantomjs/bin/phantomjs
-- export JASMINE_BROWSER=PhantomJS
-- export DEBUG=1
-- export JASMINE_DEBUG=1
-- export VELOCITY_DEBUG=1
-- export VELOCITY_DEBUG_MIRROR=1
+#- npm install phantomjs
+#- npm install velocity-cli
+#- export PHANTOMJS_BIN=./node_modules/phantomjs/bin/phantomjs
+#- export JASMINE_BROWSER=PhantomJS
+#- export DEBUG=1
+#- export JASMINE_DEBUG=1
+#- export VELOCITY_DEBUG=1
+#- export VELOCITY_DEBUG_MIRROR=1
 - export SANDSTORM_VERSION=$(curl -f "https://install.sandstorm.io/dev?from=0&type=install")
 - cd /tmp
 - curl https://dl.sandstorm.io/sandstorm-$SANDSTORM_VERSION.tar.xz | tar -xJf -
@@ -32,25 +32,28 @@ before_install:
 - sudo chown -R travis /home/vagrant
 - sudo mkdir -p /opt
 - sudo chown -R travis /opt
+- cd /opt
+- curl curl https://dl.sandstorm.io/meteor-spk-0.1.8.tar.xz | tar -xJf -
+- ln -s meteor-spk-0.1.8 meteor-spk
+- cp -a /bin/bash /opt/meteor-spk/meteor-spk.deps/bin/
+- cp -a /lib/x86_64-linux-gnu/libncurses.so.* /opt/meteor-spk/meteor-spk.deps/lib/x86_64-linux-gnu/
+- cp -a /lib/x86_64-linux-gnu/libtinfo.so.* /opt/meteor-spk/meteor-spk.deps/lib/x86_64-linux-gnu/
 - cd $TRAVIS_BUILD_DIR
 - cp -r . /opt/app
 script:
 - if [[ "$TRAVIS_PULL_REQUEST" != "false" ]]; then echo "Building PR $TRAVIS_PULL_REQUEST"; meteor build ../build; exit $?; fi
-- cd .travis
-- npm install
-- npm start
-- cd ..
+- export TAG=$(git describe --abbrev=0 --tags)
 - meteor build ../build
 - cd .travis
 - sh ./namefiles.sh
-- cd ..
-- meteor add  rocketchat:livechat rocketchat:hubot
-- meteor build --server demo.rocket.chat  ../build
-- cd .travis
-- sh ./namedemo.sh
 - cd /tmp
 - spk init -p3000 -- nothing
 - export SANDSTORM_ID=$(grep '\sid =' sandstorm-pkgdef.capnp)
+- cd $TRAVIS_BUILD_DIR
+- export METEOR_WAREHOUSE_DIR="${METEOR_WAREHOUSE_DIR:-$HOME/.meteor}"
+- export METEOR_DEV_BUNDLE=$(dirname $(readlink -f "$METEOR_WAREHOUSE_DIR/meteor"))/dev_bundle
+- meteor build --directory /home/vagrant/
+- cd /home/vagrant/bundle/programs/server && "$METEOR_DEV_BUNDLE/bin/npm" install
 - cd $TRAVIS_BUILD_DIR/.sandstorm
 - sed -i "s/\sid = .*/$SANDSTORM_ID/" sandstorm-pkgdef.capnp
 - ./build.sh
@@ -58,9 +61,6 @@ script:
 - spk pack $TRAVIS_BUILD_DIR/rocket.chat.latest.spk
 - cd $TRAVIS_BUILD_DIR
 - mv rocket.chat.latest.spk ../build
-after_deploy:
-- cd .travis
-- sh ./builddocker.sh
 deploy:
   provider: s3
   access_key_id: "AKIAIKIA7H7D47KUHYCA"
@@ -72,3 +72,6 @@ deploy:
     branch:
     - develop
     - master
+after_deploy:
+- cd .travis
+- sh ./builddocker.sh

@@ -4,15 +4,15 @@ RocketChat.roomTypes = new class
 	mainOrder = 1
 
 	protectedAction = (item) ->
-		if not item.permissions? or RocketChat.authz.hasAtLeastOnePermission item.permissions
-			return item.route.action
+		# if not item.permissions? or RocketChat.authz.hasAtLeastOnePermission item.permissions
+		return item.route.action
 
-		return ->
-			BlazeLayout.render 'main',
-				center: 'pageContainer'
-				# @TODO text Not_authorized don't get the correct language
-				pageTitle: t('Not_authorized')
-				pageTemplate: 'notAuthorized'
+		# return ->
+		# 	BlazeLayout.render 'main',
+		# 		center: 'pageContainer'
+		# 		# @TODO text Not_authorized don't get the correct language
+		# 		pageTitle: t('Not_authorized')
+		# 		pageTemplate: 'notAuthorized'
 
 	### Adds a room type to app
 	@param identifier An identifier to the room type. If a real room, MUST BE the same of `db.rocketchat_room.t` field, if not, can be null
