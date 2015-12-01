@@ -20,6 +20,12 @@ class VersionCompiler
 				freeMemmory: os.freemem()
 				cpus: os.cpus().length
 
+			if process.env.TRAVIS_BUILD_NUMBER
+				output.travis =
+					buildNumber: process.env.TRAVIS_BUILD_NUMBER
+					branch: process.env.TRAVIS_BRANCH
+					tag: process.env.TRAVIS_TAG
+
 			exec "git log --pretty=format:'%H%n%ad%n%an%n%s' -n 1", (err, result) ->
 				if not err?
 					result = result.split('\n')
