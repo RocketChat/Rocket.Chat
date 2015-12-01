@@ -44,7 +44,6 @@ RocketChat.Notifications.onUser 'message', (msg) ->
 
 
 @RoomManager = new class
-	defaultTime = 600000 # 10 minutes
 	openedRooms = {}
 	subscription = null
 	msgStream = new Meteor.Stream 'messages'
@@ -68,14 +67,16 @@ RocketChat.Notifications.onUser 'message', (msg) ->
 
 			openedRooms[typeName].ready = false
 			openedRooms[typeName].active = false
-			delete openedRooms[typeName].timeout
 			Blaze.remove openedRooms[typeName].template
 			delete openedRooms[typeName].dom
 			delete openedRooms[typeName].template
 
-			if openedRooms[typeName].rid?
-				RoomHistoryManager.clear openedRooms[typeName].rid
-				ChatMessage.remove rid: openedRooms[typeName].rid
+			rid = openedRooms[typeName].rid
+			delete openedRooms[typeName]
+
+			if rid?
+				RoomHistoryManager.clear rid
+
 
 	computation = Tracker.autorun ->
 		for typeName, record of openedRooms when record.active is true
@@ -119,25 +120,29 @@ RocketChat.Notifications.onUser 'message', (msg) ->
 
 				Dep.changed()
 
-	setRoomExpireExcept = (except) ->
 
-		if openedRooms[except]?.timeout?
-			clearTimeout openedRooms[except].timeout
-			delete openedRooms[except].timeout
+	closeOlderRooms = ->
+		maxRoomsOpen = 10
+		if Object.keys(openedRooms).length <= maxRoomsOpen
+			return
 
-		for typeName of openedRooms
-			if typeName isnt except and not openedRooms[typeName].timeout?
-				openedRooms[typeName].timeout = setTimeout close, defaultTime, typeName
+		roomsToClose = _.sortBy(_.values(openedRooms), 'lastSeen').reverse().slice(maxRoomsOpen)
+		for roomToClose in roomsToClose
+			close roomToClose.typeName
+
 
 	open = (typeName) ->
-
 		if not openedRooms[typeName]?
 			openedRooms[typeName] =
+				typeName: typeName
 				active: false
 				ready: false
 				unreadSince: new ReactiveVar undefined
 
-		setRoomExpireExcept typeName
+		openedRooms[typeName].lastSeen = new Date
+
+		if openedRooms[typeName].ready
+			closeOlderRooms()
 
 		if subscription.ready()
 
