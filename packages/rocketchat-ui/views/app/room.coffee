@@ -526,6 +526,9 @@ Template.room.onRendered ->
 				template.unreadCount.set 0
 	, 300
 
+	wrapper.addEventListener 'scroll', ->
+		updateUnreadCount()
+
 	# salva a data da renderização para exibir alertas de novas mensagens
 	$.data(this.firstNode, 'renderedAt', new Date)
 
