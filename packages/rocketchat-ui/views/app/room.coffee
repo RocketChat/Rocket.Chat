@@ -332,9 +332,29 @@ Template.room.events
 		instance.showUsersOffline.set(!instance.showUsersOffline.get())
 
 	'click .message-cog': (e) ->
-		message_id = $(e.currentTarget).closest('.message').attr('id')
+		message = @_arguments[1]
 		$('.message-dropdown:visible').hide()
-		$(".messages-box \##{message_id} .message-dropdown").show()
+
+		dropDown = $(".messages-box \##{message._id} .message-dropdown")
+
+		if dropDown.length is 0
+			actions = RocketChat.MessageAction.getButtons message
+
+			el = Blaze.toHTMLWithData Template.messageDropdown,
+				actions: actions
+
+			$(".messages-box \##{message._id} .message-cog-container").append el
+
+			dropDown = $(".messages-box \##{message._id} .message-dropdown")
+
+		dropDown.show()
+
+	'click .message-dropdown .message-action': (e, t) ->
+		el = $(e.currentTarget)
+
+		button = RocketChat.MessageAction.getButtonById el.data('id')
+		if button?.action?
+			button.action.call @, e, t
 
 	'click .message-dropdown-close': ->
 		$('.message-dropdown:visible').hide()
@@ -415,12 +435,6 @@ Template.room.onCreated ->
 
 	@autorun ->
 		self.subscribe 'fullUserData', Session.get('showUserInfo'), 1
-
-	for button in RocketChat.MessageAction.getButtons()
-		if _.isFunction button.action
-			evt = {}
-			evt["click .#{button.id}"] = button.action
-			Template.room.events evt
 
 
 Template.room.onDestroyed ->
