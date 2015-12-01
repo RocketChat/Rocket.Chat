@@ -6,24 +6,24 @@ branches:
   - master
 node_js:
 - '0.12'
-addons:
-  apt:
-    sources:
-    - google-chrome
-    packages:
-    - google-chrome-stable
+#addons:
+#  apt:
+#    sources:
+#    - google-chrome
+#    packages:
+#    - google-chrome-stable
 before_install:
 - curl https://install.meteor.com | /bin/sh
 - npm install -g npm@'>=2.13.5'
 - mkdir -p node_modules
-- npm install phantomjs
-- npm install velocity-cli
-- export PHANTOMJS_BIN=./node_modules/phantomjs/bin/phantomjs
-- export JASMINE_BROWSER=PhantomJS
-- export DEBUG=1
-- export JASMINE_DEBUG=1
-- export VELOCITY_DEBUG=1
-- export VELOCITY_DEBUG_MIRROR=1
+#- npm install phantomjs
+#- npm install velocity-cli
+#- export PHANTOMJS_BIN=./node_modules/phantomjs/bin/phantomjs
+#- export JASMINE_BROWSER=PhantomJS
+#- export DEBUG=1
+#- export JASMINE_DEBUG=1
+#- export VELOCITY_DEBUG=1
+#- export VELOCITY_DEBUG_MIRROR=1
 - export SANDSTORM_VERSION=$(curl -f "https://install.sandstorm.io/dev?from=0&type=install")
 - cd /tmp
 - curl https://dl.sandstorm.io/sandstorm-$SANDSTORM_VERSION.tar.xz | tar -xJf -
