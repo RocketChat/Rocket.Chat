@@ -1,5 +1,3 @@
-window.rolee = Roles
-
 Template.permissionsRole.helpers
 	role: ->
 		return Meteor.roles.findOne({ name: FlowRouter.getParam('name') }) or {}
@@ -15,7 +13,7 @@ Template.permissionsRole.helpers
 			return @emails[0].address
 
 	hasPermission: ->
-		return RocketChat.authz.hasAllPermission 'access-rocket-permissions'
+		return RocketChat.authz.hasAllPermission 'access-permissions'
 
 Template.permissionsRole.events
 
@@ -65,7 +63,7 @@ Template.permissionsRole.events
 			toastr.success t('Saved')
 
 			if not @_id?
-				FlowRouter.go 'rocket-permissions-edit', { name: roleData.name }
+				FlowRouter.go 'admin-permissions-edit', { name: roleData.name }
 
 
 	'submit #form-users': (e, instance) ->
@@ -98,7 +96,7 @@ Template.permissionsRole.events
 
 			toastr.success t('Role_removed')
 
-			FlowRouter.go 'rocket-permissions'
+			FlowRouter.go 'admin-permissions'
 
 Template.permissionsRole.onCreated ->
 	# @roles = []
