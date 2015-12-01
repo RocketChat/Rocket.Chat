@@ -1,5 +1,4 @@
 #!/bin/bash
-source ./build-info.sh
 export METEOR_SETTINGS=$(cat settings.json)
 meteor add rocketchat:livechat rocketchat:hubot
 meteor build --server https://demo.rocket.chat --directory /var/www/rocket.chat
