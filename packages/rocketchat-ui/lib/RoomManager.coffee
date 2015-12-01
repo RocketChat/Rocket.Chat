@@ -21,13 +21,14 @@ Tracker.autorun ->
 Meteor.startup ->
 	ChatMessage.find().observe
 		removed: (record) ->
-			recordBefore = ChatMessage.findOne {ts: {$lt: record.ts}}, {sort: {ts: -1}}
-			if recordBefore?
-				ChatMessage.update {_id: recordBefore._id}, {$set: {tick: new Date}}
+			if RoomManager.getOpenedRoomByRid(record.rid)?
+				recordBefore = ChatMessage.findOne {ts: {$lt: record.ts}}, {sort: {ts: -1}}
+				if recordBefore?
+					ChatMessage.update {_id: recordBefore._id}, {$set: {tick: new Date}}
 
-			recordAfter = ChatMessage.findOne {ts: {$gt: record.ts}}, {sort: {ts: 1}}
-			if recordAfter?
-				ChatMessage.update {_id: recordAfter._id}, {$set: {tick: new Date}}
+				recordAfter = ChatMessage.findOne {ts: {$gt: record.ts}}, {sort: {ts: 1}}
+				if recordAfter?
+					ChatMessage.update {_id: recordAfter._id}, {$set: {tick: new Date}}
 
 
 onDeleteMessageStream = (msg) ->
@@ -149,6 +150,11 @@ RocketChat.Notifications.onUser 'message', (msg) ->
 				return openedRooms[typeName].ready
 		}
 
+	getOpenedRoomByRid = (rid) ->
+		for typeName, openedRoom of openedRooms
+			if openedRoom.rid is rid
+				return openedRoom
+
 	getDomOfRoom = (typeName, rid) ->
 		room = openedRooms[typeName]
 		if not room?
@@ -205,3 +211,4 @@ RocketChat.Notifications.onUser 'message', (msg) ->
 	updateUserStatus: updateUserStatus
 	onlineUsers: onlineUsers
 	updateMentionsMarksOfRoom: updateMentionsMarksOfRoom
+	getOpenedRoomByRid: getOpenedRoomByRid
