@@ -42,6 +42,7 @@ before_install:
 - cp -r . /opt/app
 script:
 - if [[ "$TRAVIS_PULL_REQUEST" != "false" ]]; then echo "Building PR $TRAVIS_PULL_REQUEST"; meteor build ../build; exit $?; fi
+- export TAG=$(git describe --abbrev=0 --tags)
 - meteor build ../build
 - cd .travis
 - sh ./namefiles.sh
