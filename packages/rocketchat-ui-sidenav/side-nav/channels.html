@@ -2,7 +2,7 @@
 	<h3 class="add-room {{isActive}}">
 		{{_ "Channels"}}
 		{{#if hasPermission 'create-c'}}
-			<i class="icon-plus"></i>
+			<i class="icon-plus" aria-label="{{_ "Create channel"}}" role="button"></i>
 		{{/if}}
 	</h3>
 	<ul>
