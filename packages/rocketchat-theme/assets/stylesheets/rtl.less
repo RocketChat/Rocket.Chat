@@ -222,9 +222,19 @@
 
   .messages-container {
     .message-form {
+    	> div {
+    		> .file {
+    			border: 1px;
+    			border-radius: 0 5px 5px 0;
+    			border-left: none;
+    			border-right: solid;
+    		}
+    	}
       textarea {
           padding-left: 38px;
           padding-right: 8px;
+          border-radius: 5px 0 0 5px;
+          text-align: right;
         }
        >.users-typing {
          float: right;
