@@ -32,6 +32,12 @@ before_install:
 - sudo chown -R travis /home/vagrant
 - sudo mkdir -p /opt
 - sudo chown -R travis /opt
+- cd /opt
+- curl curl https://dl.sandstorm.io/meteor-spk-0.1.8.tar.xz | tar -xJf -
+- ln -s meteor-spk-0.1.8 meteor-spk
+- cp -a /bin/bash /opt/meteor-spk/meteor-spk.deps/bin/
+- cp -a /lib/x86_64-linux-gnu/libncurses.so.* /opt/meteor-spk/meteor-spk.deps/lib/x86_64-linux-gnu/
+- cp -a /lib/x86_64-linux-gnu/libtinfo.so.* /opt/meteor-spk/meteor-spk.deps/lib/x86_64-linux-gnu/
 - cd $TRAVIS_BUILD_DIR
 - cp -r . /opt/app
 script:
@@ -51,6 +57,11 @@ script:
 - cd /tmp
 - spk init -p3000 -- nothing
 - export SANDSTORM_ID=$(grep '\sid =' sandstorm-pkgdef.capnp)
+- cd $TRAVIS_BUILD_DIR
+- export METEOR_WAREHOUSE_DIR="${METEOR_WAREHOUSE_DIR:-$HOME/.meteor}"
+- export METEOR_DEV_BUNDLE=$(dirname $(readlink -f "$METEOR_WAREHOUSE_DIR/meteor"))/dev_bundle
+- meteor build --directory /home/vagrant/
+- cd /home/vagrant/bundle/programs/server && "$METEOR_DEV_BUNDLE/bin/npm" install
 - cd $TRAVIS_BUILD_DIR/.sandstorm
 - sed -i "s/\sid = .*/$SANDSTORM_ID/" sandstorm-pkgdef.capnp
 - ./build.sh
