@@ -526,6 +526,10 @@ Template.room.onRendered ->
 				template.unreadCount.set 0
 	, 300
 
+	readMessage.onRead (rid) ->
+		if rid is template.data._id
+			template.unreadCount.set 0
+
 	wrapper.addEventListener 'scroll', ->
 		updateUnreadCount()
 
