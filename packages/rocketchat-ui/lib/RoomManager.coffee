@@ -69,7 +69,9 @@ RocketChat.Notifications.onUser 'message', (msg) ->
 			openedRooms[typeName].ready = false
 			openedRooms[typeName].active = false
 			delete openedRooms[typeName].timeout
+			Blaze.remove openedRooms[typeName].template
 			delete openedRooms[typeName].dom
+			delete openedRooms[typeName].template
 
 			if openedRooms[typeName].rid?
 				RoomHistoryManager.clear openedRooms[typeName].rid
@@ -163,7 +165,11 @@ RocketChat.Notifications.onUser 'message', (msg) ->
 		if not room.dom? and rid?
 			room.dom = document.createElement 'div'
 			room.dom.classList.add 'room-container'
-			Blaze.renderWithData Template.room, { _id: rid }, room.dom
+			contentAsFunc = (content) ->
+				return -> content
+
+			room.template = Blaze._TemplateWith { _id: rid }, contentAsFunc(Template.room)
+			Blaze.render room.template, room.dom #, nextNode, parentView
 
 		return room.dom
 
