@@ -1,5 +1,3 @@
-window.rolee = Roles
-
 Template.permissionsRole.helpers
 	role: ->
 		return Meteor.roles.findOne({ name: FlowRouter.getParam('name') }) or {}
@@ -15,7 +13,7 @@ Template.permissionsRole.helpers
 			return @emails[0].address
 
 	hasPermission: ->
-		return RocketChat.authz.hasAllPermission 'access-rocket-permissions'
+		return RocketChat.authz.hasAllPermission 'access-permissions'
 
 Template.permissionsRole.events
 
