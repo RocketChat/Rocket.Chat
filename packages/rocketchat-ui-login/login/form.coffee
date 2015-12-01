@@ -29,6 +29,9 @@ Template.loginForm.helpers
 	showBackToLoginLink: ->
 		return 'hidden' unless Template.instance().state.get() in ['register', 'forgot-password', 'email-verification', 'wait-activation']
 
+	showSandstorm: ->
+		return Template.instance().state.get() is 'sandstorm'
+
 	btnLoginSave: ->
 		switch Template.instance().state.get()
 			when 'register'
@@ -47,6 +50,12 @@ Template.loginForm.helpers
 
 	loginTerms: ->
 		return RocketChat.settings.get 'Layout_Login_Terms'
+
+	registrationAllowed: ->
+		return RocketChat.settings.get('Accounts_RegistrationForm') is 'Public'
+
+	linkReplacementText: ->
+		return RocketChat.settings.get('Accounts_RegistrationForm_LinkReplacementText')
 
 Template.loginForm.events
 	'submit #login-card': (event, instance) ->
@@ -114,7 +123,10 @@ Template.loginForm.events
 
 Template.loginForm.onCreated ->
 	instance = @
-	@state = new ReactiveVar('login')
+	if Meteor.settings.public.sandstorm
+		@state = new ReactiveVar('sandstorm')
+	else
+		@state = new ReactiveVar('login')
 	@validate = ->
 		formData = $("#login-card").serializeArray()
 		formObj = {}

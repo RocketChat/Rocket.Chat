@@ -24,8 +24,11 @@ Package.onUse(function(api) {
 		'coffeescript',
 		'underscore',
 		'rocketchat:lib@0.0.1',
-		'raix:push'
+		'raix:push',
+		'raix:ui-dropped-event'
 	]);
+
+	api.use('kadira:flow-router', 'client');
 
 	// LIB FILES
 	api.addFiles('lib/accountBox.coffee', 'client');
@@ -73,6 +76,8 @@ Package.onUse(function(api) {
 	api.addFiles('views/app/audioNotification.html', 'client');
 	api.addFiles('views/app/burguer.html', 'client');
 	api.addFiles('views/app/home.html', 'client');
+	api.addFiles('views/app/notAuthorized.html', 'client');
+	api.addFiles('views/app/pageContainer.html', 'client');
 	api.addFiles('views/app/privateHistory.html', 'client');
 	api.addFiles('views/app/room.html', 'client');
 	api.addFiles('views/app/roomSearch.html', 'client');

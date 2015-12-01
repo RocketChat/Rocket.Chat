@@ -18,6 +18,11 @@ Template.room.helpers
 		return 'icon-star favorite-room' if sub?.f? and sub.f and favoritesEnabled
 		return 'icon-star-empty'
 
+	favoriteLabel: ->
+		sub = ChatSubscription.findOne { rid: this._id }, { fields: { f: 1 } }
+		return "Unfavorite" if sub?.f? and sub.f and favoritesEnabled
+		return "Favorite"
+
 	subscribed: ->
 		return isSubscribed(this._id)
 
@@ -90,24 +95,6 @@ Template.room.helpers
 
 		else
 			return 'offline'
-
-	autocompleteSettingsRoomSearch: ->
-		return {
-			limit: 10
-			# inputDelay: 300
-			rules: [
-				{
-					collection: 'UserAndRoom'
-					subscription: 'roomSearch'
-					field: 'name'
-					template: Template.roomSearch
-					noMatchTemplate: Template.roomSearchEmpty
-					matchAll: true
-					filter: { uid: { $ne: Meteor.userId() } }
-					sort: 'name'
-				}
-			]
-		}
 
 	isChannel: ->
 		roomData = Session.get('roomData' + this._id)

@@ -9,8 +9,8 @@
 				class="time">
 				{{time}}
 			</span>
-			<span class="edited" title='{{_ "edited"}} at {{editTime}} {{_ "by"}} {{editedBy}}'>
-				<i class="icon-edit"></i>
+			<span class="edited" title='{{_ "edited"}} at {{editTime}} {{_ "by"}} {{editedBy}}' >
+				<i class="icon-edit" aria-label="{{_ "Edited"}}"></i>
 				{{_ "by"}}
 				<a class="thumb thumb-small user-card-message" href="#" data-username="{{editedBy}}" tabindex="1">
 					{{> avatar username=editedBy}}
@@ -24,12 +24,12 @@
 		{{/if}}
 		{{#if actions.length}}
 			<div class="message-cog-container">
-				<i class="icon-cog message-cog"></i>
+				<i class="icon-cog message-cog" aria-label="{{_ "Actions"}}"></i>
 				<div class="message-dropdown">
 					<ul>
-						<li class="message-dropdown-close"><i class=" icon-angle-left"></i></li>
+						<li class="message-dropdown-close"><i class=" icon-angle-left" aria-label="{{_ "Close"}}"></i></li>
 						{{#each actions}}
-							<li class="{{id}} {{classes}} message-action" title="{{_ i18nLabel}}"><i class="{{icon}}"></i></li>
+							<li class="{{id}} {{classes}} message-action" title="{{_ i18nLabel}}"><i class="{{icon}}" aria-label="{{_ i18nLabel}}"></i></li>
 						{{/each}}
 					</ul>
 				</div>

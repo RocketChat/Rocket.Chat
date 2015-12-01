@@ -5,12 +5,12 @@
 				{{_ "Drop_to_upload_file"}}
 			</div>
 		</div>
-		<section class="messages-container {{adminClass}}" id="{{windowId}}">
+		<section class="messages-container {{adminClass}}" id="{{windowId}}" aria-label="{{_ "Channel"}}">
 			<header class="fixed-title">
 				{{> burger}}
 				<h2>
 					{{#if showToggleFavorite}}
-						<a href="#favorite" class="toggle-favorite"><i class="{{favorite}}"></i></a>
+						<a href="#favorite" class="toggle-favorite"><i class="{{favorite}}" aria-label="{{_ favoriteLabel}}"></i></a>
 					{{/if}}
 					<i class="{{roomIcon}} status-{{userStatus}}"></i>
 					<span class="room-title {{editingTitle}}">{{roomName}}</span>
@@ -25,14 +25,14 @@
 					<div class="upload-progress {{#if error}}upload-error{{/if}}">
 						{{#if error}}
 							{{error}}
-							<a>
+							<a href="##">
 								close
 							</a>
 						{{else}}
 							<div class="upload-progress-progress" style="width: {{percentage}}%;"></div>
 							<div class="upload-progress-text">
 								{{name}}... {{percentage}}%
-								<a>
+								<a href="#">
 									cancel
 								</a>
 							</div>
