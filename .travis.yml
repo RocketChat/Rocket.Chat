@@ -42,18 +42,9 @@ before_install:
 - cp -r . /opt/app
 script:
 - if [[ "$TRAVIS_PULL_REQUEST" != "false" ]]; then echo "Building PR $TRAVIS_PULL_REQUEST"; meteor build ../build; exit $?; fi
-- cd .travis
-- npm install
-- npm start
-- cd ..
 - meteor build ../build
 - cd .travis
 - sh ./namefiles.sh
-- cd ..
-- meteor add  rocketchat:livechat rocketchat:hubot
-- meteor build --server demo.rocket.chat  ../build
-- cd .travis
-- sh ./namedemo.sh
 - cd /tmp
 - spk init -p3000 -- nothing
 - export SANDSTORM_ID=$(grep '\sid =' sandstorm-pkgdef.capnp)
@@ -69,9 +60,6 @@ script:
 - spk pack $TRAVIS_BUILD_DIR/rocket.chat.latest.spk
 - cd $TRAVIS_BUILD_DIR
 - mv rocket.chat.latest.spk ../build
-after_deploy:
-- cd .travis
-- sh ./builddocker.sh
 deploy:
   provider: s3
   access_key_id: "AKIAIKIA7H7D47KUHYCA"
@@ -83,3 +71,6 @@ deploy:
     branch:
     - develop
     - master
+after_deploy:
+- cd .travis
+- sh ./builddocker.sh
