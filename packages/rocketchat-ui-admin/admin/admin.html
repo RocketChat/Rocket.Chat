@@ -43,13 +43,16 @@
 														<input type="text" name="{{_id}}" value="{{value}}" placeholder="{{placeholder}}" />
 													{{/if}}
 												{{/if}}
+
 												{{#if $eq type 'int'}}
 													<input type="number" name="{{_id}}" value="{{value}}" placeholder="{{placeholder}}" />
 												{{/if}}
+
 												{{#if $eq type 'boolean'}}
 													<label><input type="radio" name="{{_id}}" value="1" checked="{{$eq value true}}" /> {{_ "True"}}</label>
 													<label><input type="radio" name="{{_id}}" value="0" checked="{{$eq value false}}" /> {{_ "False"}}</label>
 												{{/if}}
+
 												{{#if $eq type 'select'}}
 													<select name="{{_id}}">
 														{{#each values}}
@@ -57,9 +60,31 @@
 														{{/each}}
 													</select>
 												{{/if}}
+
 												{{#if $eq type 'color'}}
 													<input type="text" class="minicolors" name="{{_id}}" value="{{value}}" />
 												{{/if}}
+
+												{{#if $eq type 'asset'}}
+													{{#if value}}
+														<div class="settings-file-preview">
+															<div class="preview" style="background-image:url({{value}}?_dc={{random}});"></div>
+															<div class="action">
+																<button type="button" class="button red delete-asset"><i class="icon-trash"></i>{{_ 'Delete'}}</button>
+															</div>
+														</div>
+													{{else}}
+														<div class="settings-file-preview">
+															<div class="preview no-file"><i class="icon-upload"></i></div>
+															<div class="action">
+																<div class="button primary"><i class="icon-trash"></i>{{_ 'Select_file'}}
+																	<input type="file" accept="{{fileConstraints.contentType}}" />
+																</div>
+															</div>
+														</div>
+													{{/if}}
+												{{/if}}
+
 												{{#if description}}
 													<div class="settings-description">{{{description}}}</div>
 												{{/if}}
