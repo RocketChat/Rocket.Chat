@@ -15,6 +15,9 @@ Template.permissionsRole.helpers
 	hasPermission: ->
 		return RocketChat.authz.hasAllPermission 'access-permissions'
 
+	canDelete: ->
+		return @_id? and not @protected
+
 Template.permissionsRole.events
 
 	'click .remove-user': (e, instance) ->
