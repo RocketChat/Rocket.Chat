@@ -45,6 +45,11 @@
 							</tr>
 						</thead>
 						<tbody>
+							{{#unless hasUsers}}
+								<tr>
+									<td colspan="5" class="empty-role">{{_ "There_are_no_users_in_this_role"}}</td>
+								</tr>
+							{{/unless}}
 							{{#each userInRole}}
 								<tr class="user-info" data-id="{{_id}}">
 									<td>
