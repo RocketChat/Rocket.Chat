@@ -89,6 +89,9 @@ Meteor.startup ->
 
 		{ _id: 'access-permissions',
 		roles : ['admin']}
+
+		{ _id: 'manage-assets',
+		roles : ['admin']}
 	]
 
 	#alanning:roles
