@@ -4,7 +4,7 @@ Template.permissions.helpers
 		return Template.instance().roles.get()
 
 	permission: ->
-		return ChatPermissions.find()
+		return ChatPermissions.find({}, { sort: { _id: 1 } })
 
 	granted: (roles) ->
 		if roles?
