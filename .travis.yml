@@ -39,13 +39,14 @@ before_install:
 - cp -a /lib/x86_64-linux-gnu/libncurses.so.* /opt/meteor-spk/meteor-spk.deps/lib/x86_64-linux-gnu/
 - cp -a /lib/x86_64-linux-gnu/libtinfo.so.* /opt/meteor-spk/meteor-spk.deps/lib/x86_64-linux-gnu/
 - cd $TRAVIS_BUILD_DIR
+- mkdir ../build
 - cp -r . /opt/app
 script:
 - if [[ "$TRAVIS_PULL_REQUEST" != "false" ]]; then echo "Building PR $TRAVIS_PULL_REQUEST"; meteor build ../build; exit $?; fi
 - export TAG=$(git describe --abbrev=0 --tags)
-- meteor build ../build
-- cd .travis
-- sh ./namefiles.sh
+#- meteor build ../build
+#- cd .travis
+#- sh ./namefiles.sh
 - cd /tmp
 - spk init -p3000 -- nothing
 - export SANDSTORM_ID=$(grep '\sid =' sandstorm-pkgdef.capnp)
@@ -53,6 +54,9 @@ script:
 - export METEOR_WAREHOUSE_DIR="${METEOR_WAREHOUSE_DIR:-$HOME/.meteor}"
 - export METEOR_DEV_BUNDLE=$(dirname $(readlink -f "$METEOR_WAREHOUSE_DIR/meteor"))/dev_bundle
 - meteor build --directory /home/vagrant/
+- cp /home/vagrant/*  $TRAVIS_BUILD_DIR/../build
+- cd $TRAVIS_BUILD_DIR/.travis
+- sh ./namefiles.sh
 - cd /home/vagrant/bundle/programs/server && "$METEOR_DEV_BUNDLE/bin/npm" install
 - cd $TRAVIS_BUILD_DIR/.sandstorm
 - sed -i "s/\sid = .*/$SANDSTORM_ID/" sandstorm-pkgdef.capnp
