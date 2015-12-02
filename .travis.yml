@@ -55,7 +55,7 @@ script:
 - export METEOR_WAREHOUSE_DIR="${METEOR_WAREHOUSE_DIR:-$HOME/.meteor}"
 - export METEOR_DEV_BUNDLE=$(dirname $(readlink -f "$METEOR_WAREHOUSE_DIR/meteor"))/dev_bundle
 #- meteor build --directory /home/vagrant/
-- cd /home/vagrant  &&  tar zxvf ./Rocket.Chat.tar.gz
+- cd /home/vagrant  &&  tar zxf ./Rocket.Chat.tar.gz
 - rm ./Rocket.Chat.tar.gz
 - cd /home/vagrant/bundle/programs/server && "$METEOR_DEV_BUNDLE/bin/npm" install
 - cd $TRAVIS_BUILD_DIR/.sandstorm
