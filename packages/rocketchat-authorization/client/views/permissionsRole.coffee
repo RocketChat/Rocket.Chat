@@ -19,8 +19,6 @@ Template.permissionsRole.helpers
 		return @_id? and not @protected
 
 	hasUsers: ->
-		console.log Template.instance().usersInRole
-		console.log 'count ->',Template.instance().usersInRole.count()
 		return Template.instance().usersInRole.count() > 0
 
 Template.permissionsRole.events
@@ -110,4 +108,4 @@ Template.permissionsRole.onCreated ->
 	@subscribe 'roles', FlowRouter.getParam('name')
 	@subscribe 'usersInRole', FlowRouter.getParam('name')
 
-	@usersInRole = Roles.getUsersInRole(FlowRouter.getParam('name'))
+	@usersInRole = Roles.getUsersInRole(FlowRouter.getParam('name'), Roles.GLOBAL_GROUP, { sort: { username: 1 } })
