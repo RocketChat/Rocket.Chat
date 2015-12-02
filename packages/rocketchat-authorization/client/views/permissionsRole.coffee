@@ -3,7 +3,7 @@ Template.permissionsRole.helpers
 		return Meteor.roles.findOne({ name: FlowRouter.getParam('name') }) or {}
 
 	userInRole: ->
-		return Roles.getUsersInRole(FlowRouter.getParam('name'))
+		return Template.instance().usersInRole
 
 	editing: ->
 		return FlowRouter.getParam('name')?
@@ -14,6 +14,12 @@ Template.permissionsRole.helpers
 
 	hasPermission: ->
 		return RocketChat.authz.hasAllPermission 'access-permissions'
+
+	canDelete: ->
+		return @_id? and not @protected
+
+	hasUsers: ->
+		return Template.instance().usersInRole.count() > 0
 
 Template.permissionsRole.events
 
@@ -99,13 +105,7 @@ Template.permissionsRole.events
 			FlowRouter.go 'admin-permissions'
 
 Template.permissionsRole.onCreated ->
-	# @roles = []
-	# @permissions = []
-	# @permissionByRole = {}
-
-	console.log Roles
-
 	@subscribe 'roles', FlowRouter.getParam('name')
 	@subscribe 'usersInRole', FlowRouter.getParam('name')
 
-	# ChatPermissions
+	@usersInRole = Roles.getUsersInRole(FlowRouter.getParam('name'), Roles.GLOBAL_GROUP, { sort: { username: 1 } })
