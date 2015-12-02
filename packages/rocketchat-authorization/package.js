@@ -17,6 +17,7 @@ Package.onUse(function(api) {
 
   api.use('mongo', 'client');
   api.use('kadira:flow-router', 'client');
+  api.use('less@2.5.1', 'client');
 
   api.use('templating', 'client');
 
@@ -33,6 +34,9 @@ Package.onUse(function(api) {
   api.addFiles('client/views/permissions.coffee', ['client']);
   api.addFiles('client/views/permissionsRole.html', ['client']);
   api.addFiles('client/views/permissionsRole.coffee', ['client']);
+
+  // stylesheets
+  api.addFiles('client/stylesheets/permissions.less', 'client');
 
   api.addFiles('server/models/Permissions.coffee', ['server']);
 
