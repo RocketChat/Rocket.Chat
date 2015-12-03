@@ -29,15 +29,5 @@ Meteor.methods
 
 		return username
 
-# Limit setting username once per minute
-# DDPRateLimiter.addRule
-# 	type: 'method'
-# 	name: 'setUsername'
-# 	userId: (userId) ->
-# 		return true
-# 		# Administrators have permission to change others usernames, so don't limit those
-# 		return not RocketChat.authz.hasPermission( userId, 'edit-other-user-info')
-# , 1, 1000
-
 RocketChat.RateLimiter.limitMethod 'setUsername', 1, 1000,
 	userId: (userId) -> return true
