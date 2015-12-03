@@ -1,28 +1,26 @@
 RocketChat.RateLimiter = new class
-	constructor: ->
-		@rateLimiter = new RateLimiter()
+	limitFunction: (fn, numRequests, timeInterval, matchers) ->
+		rateLimiter = new RateLimiter()
+		rateLimiter.addRule matchers, numRequests, timeInterval
+		return ->
+			match = {}
+			args = arguments
+			_.each matchers, (matcher, key) ->
+				match[key] = args[key]
 
-	getErrorMessage: (rateLimitResult) ->
-		return "Error, too many requests. Please slow down. You must wait #{Math.ceil(rateLimitResult.timeToReset / 1000)} seconds before trying again."
+			rateLimiter.increment match
+			rateLimitResult = rateLimiter.check match
+			if rateLimitResult.allowed
+				return fn.apply null, arguments
+			else
+				throw new Meteor.Error 'too-many-requests', "Error, too many requests. Please slow down. You must wait #{Math.ceil(rateLimitResult.timeToReset / 1000)} seconds before trying again.", { timeToReset: rateLimitResult.timeToReset }
 
-	addRule: (matcher, numRequests, timeInterval) ->
-		if matcher.type isnt 'function'
-			return DDPRateLimiter.addRule matcher, numRequests, timeInterval
-		else
-			return @rateLimiter.addRule matcher, numRequests, timeInterval
-
-	check: (functionName, params) ->
+	limitMethod: (methodName, numRequests, timeInterval, matchers) ->
 		match =
-			type: "function",
-			name: functionName
-			params: params
+			type: 'method'
+			name: methodName
 
-		@rateLimiter.increment(match)
+		_.each matchers, (matcher, key) ->
+			match[key] = matchers[key]
 
-		rateLimitResult = @rateLimiter.check(match)
-		unless rateLimitResult.allowed
-			console.log @getErrorMessage(rateLimitResult)
-		return rateLimitResult.allowed
-
-	getRules: ->
-		return @rateLimiter.rules
+		DDPRateLimiter.addRule match, numRequests, timeInterval
