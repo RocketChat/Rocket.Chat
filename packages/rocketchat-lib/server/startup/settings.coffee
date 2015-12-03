@@ -12,6 +12,8 @@ RocketChat.settings.add 'Accounts_RegistrationForm_SecretURL', Random.id(), { ty
 RocketChat.settings.add 'Accounts_RegistrationForm_LinkReplacementText', 'New user registration is currently disabled', { type: 'string', group: 'Accounts', section: 'Registration', public: true }
 RocketChat.settings.add 'Accounts_Registration_AuthenticationServices_Enabled', true, { type: 'boolean', group: 'Accounts', section: 'Registration', public: true }
 
+RocketChat.settings.add 'Accounts_PasswordReset', true, { type: 'boolean', group: 'Accounts', public: true, section: 'Registration' }
+
 RocketChat.settings.add 'Accounts_AvatarStoreType', 'GridFS', { type: 'string', group: 'Accounts', section: 'Avatar' }
 RocketChat.settings.add 'Accounts_AvatarStorePath', '', { type: 'string', group: 'Accounts', section: 'Avatar' }
 RocketChat.settings.add 'Accounts_AvatarResize', false, { type: 'boolean', group: 'Accounts', section: 'Avatar' }
