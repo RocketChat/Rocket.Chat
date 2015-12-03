@@ -1,30 +1,37 @@
 .rtl {
 	direction: rtl;
+
 	// Mix-ins
 	.right(@right) {
 		right: @right;
 		left: auto;
 	}
+
 	.left (@left) {
 		left: @left;
 		right: auto;
 	}
+
 	.margin-right(@margin-right) {
 		margin-right: @margin-right;
 		margin-left: auto;
 	}
+
 	.margin-left(@margin-left) {
 		margin-left: @margin-left;
 		margin-right: auto;
 	}
+
 	.padding-right(@padding-right) {
 		padding-right: @padding-right;
 		padding-left: 0px;
 	}
+
 	.padding-left(@padding-left) {
 		padding-left: @padding-left;
 		padding-right: 0px;
 	}
+
 	.side-nav {
 		.right(0px);
 		.header {
@@ -79,6 +86,7 @@
 			.right(0px);
 		}
 		.rooms-list {
+			direction: ltr;
 			> .wrapper {
 				direction: rtl;
 				.padding-right(8px);
@@ -136,12 +144,25 @@
 			}
 		}
 	}
+
 	.side-nav:before {
 		.right(8px);
 	}
+
 	.main-content {
-		.margin-right(260px);
+		left: 0;
+		right: @rooms-box-width;
+		margin-right: unset;
+		margin-left: 40px;
+		&.flex-opened {
+			left: @flex-tab-width;
+			.flex-tab {
+				right: unset;
+				left: 40px
+			}
+		}
 	}
+
 	.messages-box {
 		margin: 60px 0px 20px 0px;
 		.message {
@@ -158,8 +179,7 @@
 		.message.sequential {
 			.info {
 				.right(-15px);
-				.edited,
-				.time {
+				.edited, .time {
 					float: left;
 				}
 				.edit-message {
@@ -175,14 +195,15 @@
 			}
 		}
 	}
+
 	.messages-container {
 		.message-form {
 			> div {
 				> .file {
-					border: 1px;
+					border-right-width: 1px;
 					border-radius: 0 5px 5px 0;
-					border-left: none;
-					border-right: solid;
+					border-left-style: none;
+					border-right-style: solid;
 				}
 			}
 			textarea {
@@ -191,22 +212,181 @@
 				border-radius: 5px 0 0 5px;
 				text-align: right;
 			}
-			>.users-typing {
+			> .users-typing {
+				float: right;
+			 }
+			> .formatting-tips {
+				float: left;
+				position: relative;
+				q {
+					padding: 0 3px 0 0;
+					border-right: 3px solid;
+					border-left: 0px none;
+					border-right-color: #CCC;
+				}
+			}
+		}
+	}
+
+	.account-box {
+		.options {
+			direction: ltr;
+			> .wrapper {
+				direction: rtl;
+			}
+		}
+	}
+
+	.flex-tab-bar {
+		left: 0;
+		right: unset;
+		border-right: 1px solid #eaeaea;
+		border-left: none;
+		z-index: 13;
+
+		.tab-button {
+			&.active {
+				margin-right: -1px;
+				margin-left: unset;
+				border-left: 3px solid #ff0000;
+				border-right: unset;
+			}
+		}
+	}
+
+	.flex-tab {
+		border-left: unset;
+		border-right: 1px solid;
+		right: unset;
+		left: 0;
+		.transform(translateX(-100%));
+		.control {
+			text-align: right;
+			padding: 12px 30px 12px;
+			> a,
+			> form {
 				float: right;
 			}
 		}
-		> .formatting-tips {
-			float: left;
+	}
+
+	.input-line {
+		&.search {
+			.octicon {
+				left: unset;
+				right: 10px;
+			}
+			input {
+				padding-left: unset;
+				padding-right: 20px;
+			}
 		}
-		.icon-paper-plane {
-			.left(10px);
-			transform: rotateY(180deg);
+	}
+
+	.user-image {
+		.avatar {
+			&:after {
+				left: unset;
+				right: -12px;
+			}
 		}
 	}
-	q {
-		.padding-right(10px);
+	.lines .user-image {
+		a {
+			> div {
+				float: right;
+			}
+		}
+		p {
+			float: right;
+			padding-right: 10px;
+			padding-left: unset;
+		}
 	}
-	q:before {
-		.right(50px);
+
+	.user-view {
+		.thumb {
+			float: right;
+		}
+		nav {
+			margin-left: unset;
+			margin-right: -4px;
+			.back {
+				float: left;
+			}
+		}
+		.info {
+			margin-left: unset;
+			margin-right: 120px;
+		}
+		.stats {
+			li {
+				border-right: unset;
+				border-left: 2px;
+			}
+		}
 	}
+	
+	@media all and(max-width: 1100px) {
+		#rocket-chat {
+			.flex-opened {
+				left: 0;
+				right: @rooms-box-width;
+			}
+		}
+	}
+
+	@media all and(max-width: 780px) {
+		#rocket-chat {
+			.main-content {
+				right: 0;
+			}
+			.fixed-title h2 {
+				margin-right: 45px;
+			}
+			&.menu-opened {
+				.burger {
+					i {
+						&:nth-child(1) {
+							.transform(translateY(3px) rotate(45deg));
+						}
+						&:nth-child(3) {
+							.transform(translateY(-3px) rotate(-45deg));
+						}
+					}
+				}
+				.main-content {
+					.transform(translateX(-@rooms-box-width));
+				}
+			}
+		}
+	}
+
+	.burger {
+		margin-right: 7px;
+		margin-left: unset;
+		right: 0px;
+		left: unset;
+		.unread-burger-alert {
+			left: 4px;
+			right: unset;
+		}
+	}
+
+	#swipebox-close {
+		left: 0;
+		right: unset;
+	}
+	
+	@media screen and (min-width:800px) {
+		#swipebox-close {
+			left: 10px;
+			right: unset;
+		}
+	}
+
+
+	/* Overridding the icons code to suit RTL languages */
+	.octicon-chevron-right:before { content: '\f0a4'}
+	.icon-angle-right:before { content: '\e914'; }
 }
