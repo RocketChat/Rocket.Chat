@@ -27,9 +27,9 @@ AccountBox.addItem({
 		action(params, queryParams) {
 			Session.set('openedRoom');
 			BlazeLayout.render('main', {
-				center: 'page-container',
-				pageTitle: 'Live Chat Manager',
-				pageTemplate: 'livechat-manager'
+				center: 'pageContainer',
+				pageTitle: t('Livechat_Manager'),
+				pageTemplate: 'livechatManager'
 			});
 		}
 	},
