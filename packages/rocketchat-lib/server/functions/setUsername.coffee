@@ -1,4 +1,10 @@
 RocketChat.setUsername = (user, username) ->
+	unless RocketChat.RateLimiter.check('RocketChat.setUsername', user)
+		return false
+
+	console.log 'RocketChat.setUsername'
+	return true
+
 	username = s.trim username
 	if not user or not username
 		return false
@@ -44,3 +50,10 @@ RocketChat.setUsername = (user, username) ->
 	RocketChat.models.Users.setUsername user._id, username
 	user.username = username
 	return user
+
+RocketChat.RateLimiter.addRule
+	type: 'function'
+	name: 'RocketChat.setUsername'
+	params: (user) ->
+		return true
+, 1, 60000
