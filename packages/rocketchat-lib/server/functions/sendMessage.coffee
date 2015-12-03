@@ -84,7 +84,11 @@ RocketChat.sendMessage = (user, message, room, options) ->
 				mentionIds.push mention._id
 
 			# @all?
-			toAll = mentionIds.indexOf('all') > -1
+			toAll = (mentionIds.indexOf('all') > -1 ||
+				mentionIds.indexOf('yall') > -1 ||
+				mentionIds.indexOf('everyone') > -1 ||
+				mentionIds.indexOf('channel') > -1 ||
+				mentionIds.indexOf('here') > -1)
 
 			if mentionIds.length > 0
 				usersOfMention = RocketChat.models.Users.find({_id: {$in: mentionIds}}, {fields: {_id: 1, username: 1}}).fetch()
