@@ -6,7 +6,6 @@ The Ultimate Open Source WebChat Platform
 * [Mobile apps](#mobile-apps)
 * [Desktop apps](#desktop-apps)
 * [Deployment](#deployment)
-  * [Development Installation](#development-installation)
   * [Heroku](#heroku)
   * [Sandstorm.io](#sandstormio)
   * [Sloppy.io](#sloppyio)
@@ -23,6 +22,7 @@ The Ultimate Open Source WebChat Platform
   * [Documentation](#documentation)
   * [License](#license)
 * [Development](#development)
+ * [Installation](#installation)
   * [Branching Model](#branching-model)
   * [Translations](#translations)
   * [Community](#community)
@@ -55,27 +55,6 @@ Now compatible with all Android devices as old as version 4.0.x - [download here
 # Deployment
 `Host your own Rocket.Chat server in four seconds flat`
 
-## Development Installation
-Prerequisites:
-
-* [Git](http://git-scm.com/book/en/v2/Getting-Started-Installing-Git)
-* [Meteor](https://www.meteor.com/install)
-
-Now just clone and start the app:
-
-```sh
-git clone https://github.com/RocketChat/Rocket.Chat.git
-cd Rocket.Chat
-meteor
-```
-
-or use docker:
-
-```
-git clone https://github.com/RocketChat/Rocket.Chat.git
-cd Rocket.Chat
-docker run -it -p 3000:3000 -v "$(pwd)":/app danieldent/meteor
-```
 
 ## Heroku
 Host your own Rocket.Chat server for **FREE** with [One-Click Deploy](https://heroku.com/deploy?template=https://github.com/RocketChat/Rocket.Chat/tree/master)
@@ -254,8 +233,34 @@ Note that Rocket.Chat is distributed under the [MIT License](http://opensource.o
 
 
 # Development
+
+## Installation
+Prerequisites:
+
+* [Git](http://git-scm.com/book/en/v2/Getting-Started-Installing-Git)
+* [Meteor](https://www.meteor.com/install)
+
+Now just clone and start the app:
+
+```sh
+git clone https://github.com/RocketChat/Rocket.Chat.git
+cd Rocket.Chat
+meteor
+```
+
+or use docker:
+
+```
+git clone https://github.com/RocketChat/Rocket.Chat.git
+cd Rocket.Chat
+docker run -it -p 3000:3000 -v "$(pwd)":/app danieldent/meteor
+```
+
 ## Branching Model
-The [Gitflow Workflow](http://nvie.com/posts/a-successful-git-branching-model/) section below is derived from Vincent Driessen at nvie.
+
+See [Branches and Releases](https://github.com/RocketChat/Rocket.Chat/wiki/Branches-and-Releases).
+
+It is based on [Gitflow Workflow](http://nvie.com/posts/a-successful-git-branching-model/), reference section below is derived from Vincent Driessen at nvie.
 
 See also this [Git Workflows Comparison](https://www.atlassian.com/git/tutorials/comparing-workflows/gitflow-workflow) for more details.
 
