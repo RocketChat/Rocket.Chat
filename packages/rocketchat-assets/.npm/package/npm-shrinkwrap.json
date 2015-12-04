@@ -1,0 +1,7 @@
+{
+  "dependencies": {
+    "image-size": {
+      "version": "0.4.0"
+    }
+  }
+}

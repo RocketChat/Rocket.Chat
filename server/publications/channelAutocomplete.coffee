@@ -15,13 +15,10 @@ Meteor.publish 'channelAutocomplete', (name) ->
 	cursorHandle = RocketChat.models.Rooms.findByNameContainingAndTypes(name, ['c'], options).observeChanges
 		added: (_id, record) ->
 			pub.added('channel-autocomplete', _id, record)
-
 		changed: (_id, record) ->
 			pub.changed('channel-autocomplete', _id, record)
-
 		removed: (_id, record) ->
 			pub.removed('channel-autocomplete', _id, record)
-
 	@ready()
 	@onStop ->
 		cursorHandle.stop()

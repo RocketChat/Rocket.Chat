@@ -9,7 +9,7 @@
           <ul class='list clearfix lines'>
             {{#each files}}
               <li>
-                <a title="{{name}}" href="{{url}}" target="_blank" class="room-file-item {{customClassForFileType}}">
+                <a title="{{escapedName}}" href="{{url}}" target="_blank" class="room-file-item {{customClassForFileType}}">
                   <i class="{{getFileIcon type}}"></i>
                   <p>{{name}}</p>
                 </a>

@@ -17,6 +17,8 @@ Template.uploadedFilesList.helpers
     if this.type.match(/^image\/.+$/)
       return 'room-files-swipebox'
 
+  escapedName: ->
+    return s.escapeHTML @name
 
 Template.uploadedFilesList.events
   'click .room-file-item': (e, t) ->
