@@ -8,7 +8,6 @@
 		"error_file": "/var/log/rocket.chat/err.log",
 		"port": "8080",
 		"env": {
-			"CDN_PREFIX": "//dbde4sd21oahf.cloudfront.net",
 			"MONGO_URL": "mongodb://localhost:27017/rocketchat",
 			"MONGO_OPLOG_URL": "mongodb://localhost:27017/local",
 			"ROOT_URL": "https://demo.rocket.chat",
@@ -24,7 +23,6 @@
 		"error_file": "/var/log/rocket.chat/err.log",
 		"port": "8081",
 		"env": {
-			"CDN_PREFIX": "//dbde4sd21oahf.cloudfront.net",
 			"MONGO_URL": "mongodb://localhost:27017/rocketchat",
 			"MONGO_OPLOG_URL": "mongodb://localhost:27017/local",
 			"ROOT_URL": "https://demo.rocket.chat",
@@ -40,7 +38,6 @@
 		"error_file": "/var/log/rocket.chat/err.log",
 		"port": "8082",
 		"env": {
-			"CDN_PREFIX": "//dbde4sd21oahf.cloudfront.net",
 			"MONGO_URL": "mongodb://localhost:27017/rocketchat",
 			"MONGO_OPLOG_URL": "mongodb://localhost:27017/local",
 			"ROOT_URL": "https://demo.rocket.chat",
@@ -56,7 +53,6 @@
 		"error_file": "/var/log/rocket.chat/err.log",
 		"port": "8083",
 		"env": {
-			"CDN_PREFIX": "//dbde4sd21oahf.cloudfront.net",
 			"MONGO_URL": "mongodb://localhost:27017/rocketchat",
 			"MONGO_OPLOG_URL": "mongodb://localhost:27017/local",
 			"ROOT_URL": "https://demo.rocket.chat",

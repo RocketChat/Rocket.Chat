@@ -18,10 +18,12 @@ Package.registerBuildPlugin({
 Package.onUse(function(api) {
 	api.versionsFrom('1.0');
 
-	api.use(['ecmascript', 'webapp', 'autoupdate'], 'server');
-
-	api.imply('alanning:roles@1.2.12');
+	api.use(['webapp', 'autoupdate'], 'server');
+	api.use('ecmascript');
+	api.use('alanning:roles@1.2.12');
+	api.use('rocketchat:lib');
 	api.use('kadira:flow-router', 'client');
+	api.use('templating', 'client');
 
 	api.addFiles('livechat.js', 'server');
 	api.addFiles('server/methods.js', 'server');
@@ -32,16 +34,33 @@ Package.onUse(function(api) {
 
 	api.addFiles('client/ui.js', 'client');
 	api.addFiles('client/route.js', 'client');
+
+	// client views
+	api.addFiles('client/views/app/livechatManager.html', 'client');
+	api.addFiles('client/views/app/livechatManager.js', 'client');
 	api.addFiles('client/views/sideNav/livechat.html', 'client');
 	api.addFiles('client/views/sideNav/livechat.js', 'client');
 
+	// methods
+	api.addFiles('server/methods/addAgent.js', 'server');
+	api.addFiles('server/methods/addManager.js', 'server');
+	api.addFiles('server/methods/removeAgent.js', 'server');
+	api.addFiles('server/methods/removeManager.js', 'server');
+
+	// models
+	api.addFiles('server/models/Users.js', 'server');
+
+	// publications
+	api.addFiles('server/publications/livechatAgents.js', 'server');
+	api.addFiles('server/publications/livechatManagers.js', 'server');
+
+	// livechat app
 	api.addAssets('rocket-livechat.js', 'client');
 	api.addAssets('public/livechat.css', 'client');
 	api.addAssets('public/livechat.js', 'client');
 	api.addAssets('public/head.html', 'server');
 
 	// TAPi18n
-	api.use('templating', 'client');
 	var _ = Npm.require('underscore');
 	var fs = Npm.require('fs');
 	tapi18nFiles = _.compact(_.map(fs.readdirSync('packages/rocketchat-livechat/i18n'), function(filename) {
@@ -49,7 +68,7 @@ Package.onUse(function(api) {
 			return 'i18n/' + filename;
 		}
 	}));
-	api.use('tap:i18n@1.6.1', ['client', 'server']);
-	api.imply('tap:i18n');
+	api.use('tap:i18n', ['client', 'server']);
+	// api.imply('tap:i18n');
 	api.addFiles(tapi18nFiles, ['client', 'server']);
 });
