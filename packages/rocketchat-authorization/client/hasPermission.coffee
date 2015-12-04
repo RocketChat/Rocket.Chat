@@ -28,8 +28,7 @@ hasPermission = (permissions, scope=Roles.GLOBAL_GROUP, strategy) ->
 	unless RocketChat.authz.subscription.ready()
 		return false
 
-	unless _.isArray(permissions)
-		permissions = [permissions]
+	permissions = [].concat permissions
 
 	roleNames = Roles.getRolesForUser(userId, scope)
 

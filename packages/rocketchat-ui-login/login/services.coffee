@@ -53,8 +53,11 @@ Template.loginServices.events
 				serviceIcon.removeClass 'hidden'
 
 				if error
-					console.log JSON.stringify(error), error.message
-					toastr.error error.message
+					console.log JSON.stringify(error)
+					if error.reason
+						toastr.error error.reason
+					else
+						toastr.error error.message
 					return
 
 		else
@@ -64,6 +67,9 @@ Template.loginServices.events
 				loadingIcon.addClass 'hidden'
 				serviceIcon.removeClass 'hidden'
 				if error
-					console.log JSON.stringify(error), error.message
-					toastr.error error.message
+					console.log JSON.stringify(error)
+					if error.reason
+						toastr.error error.reason
+					else
+						toastr.error error.message
 					return

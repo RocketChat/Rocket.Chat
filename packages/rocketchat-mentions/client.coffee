@@ -9,7 +9,9 @@ class MentionsClient
 			msg = message.html
 
 			mentions = []
-			message.msg.replace /(?:^|\s|\n)(?:@)([A-Za-z0-9-_.]+)/g, (match, mention) ->
+
+			msgMentionRegex = new RegExp '(?:^|\\s|\\n)(?:@)(' + RocketChat.settings.get('UTF8_Names_Validation') + ')', 'g'
+			message.msg.replace msgMentionRegex, (match, mention) ->
 				mentions.push mention
 
 			me = Meteor.user()?.username
@@ -32,7 +34,8 @@ class MentionsClient
 					return match.replace mention, "<a href=\"\" class=\"#{classes}\" data-username=\"#{username}\">#{mention}</a>"
 
 			channels = []
-			message.msg.replace /(?:^|\s|\n)(?:#)([A-Za-z0-9-_.]+)/g, (match, mention) ->
+			msgChannelRegex = new RegExp '(?:^|\\s|\\n)(?:#)(' + RocketChat.settings.get('UTF8_Names_Validation') + ')', 'g'
+			message.msg.replace msgChannelRegex, (match, mention) ->
 				channels.push mention
 
 			if channels.length isnt 0
