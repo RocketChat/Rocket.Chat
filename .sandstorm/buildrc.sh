@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -euo pipefail
+
 cd /tmp
 spk init -p3000 -- nothing
 export SANDSTORM_ID="$(grep '\sid =' sandstorm-pkgdef.capnp)"
