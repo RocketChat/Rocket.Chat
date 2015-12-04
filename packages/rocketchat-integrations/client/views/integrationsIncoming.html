@@ -1,0 +1,59 @@
+<template name="integrationsIncoming">
+	<div class="permissions-manager">
+		{{#if hasPermission}}
+			<a href="{{pathFor "admin-integrations-new"}}"><i class="icon-angle-left"></i> {{_ "Back_to_integrations"}}</a><br><br>
+			<div class="rocket-form">
+				<div class="section">
+					<div class="section-content">
+						<div class="input-line double-col">
+							<label>Post to Channel</label>
+							<div>
+								<div>
+									<label><input type="radio" name="channelType" value="c" checked="{{$eq data.channelType 'c'}}" /> {{_ "Channel"}}</label>
+									<label><input type="radio" name="channelType" value="d" checked="{{$eq data.channelType 'd'}}" /> {{_ "User"}}</label>
+								</div>
+								<input type="text" name="{{_id}}" value="{{value}}" placeholder="{{_ 'User_or_channel_name'}}" />
+								<div class="settings-description">Messages that are sent to the incoming webhook will be posted here.</div>
+							</div>
+						</div>
+						<div class="input-line double-col">
+							<label>Customize Name</label>
+							<div>
+								<input type="text" name="{{_id}}" value="{{value}}" placeholder="{{placeholder}}" />
+								<div class="settings-description">Choose the username that this integration will post as.</div>
+							</div>
+						</div>
+						<!-- <div class="input-line double-col">
+							<label>Customize Icon</label>
+							<div>
+								{{#if value}}
+									<div class="settings-file-preview">
+										<div class="preview" style="background-image:url({{value}}?_dc={{random}});"></div>
+										<div class="action">
+											<button type="button" class="button red delete-asset"><i class="icon-trash"></i>{{_ 'Delete'}}</button>
+										</div>
+									</div>
+								{{else}}
+									<div class="settings-file-preview">
+										<div class="preview no-file"><i class="icon-upload"></i></div>
+										<div class="action">
+											<div class="button primary">{{_ 'Select_file'}}
+												<input type="file" accept="{{fileConstraints.contentType}}" />
+											</div>
+										</div>
+									</div>
+								{{/if}}
+								<div class="settings-description">Change the icon that is used for messages from this integration.</div>
+							</div>
+						</div> -->
+					</div>
+				</div>
+				<div class="submit">
+					<button class="button save"><i class="icon-send"></i><span>{{_ "Save_changes"}}</span></button>
+				</div>
+			</div>
+		{{else}}
+			{{_ "Not_authorized"}}
+		{{/if}}
+	</div>
+</template>
