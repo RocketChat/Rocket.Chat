@@ -49,7 +49,7 @@ script:
 - cd .travis
 - sh ./namefiles.sh
 - cd $TRAVIS_BUILD_DIR/.sandstorm
-- sh ./buildrc.sh
+- ./buildrc.sh
 - cd $TRAVIS_BUILD_DIR
 - mv rocket.chat.latest.spk ../build
 deploy:
