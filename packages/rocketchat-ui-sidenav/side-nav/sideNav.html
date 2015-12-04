@@ -21,7 +21,7 @@
 							<a href="" data-status="offline" class="status offline"><span>{{_ "Invisible"}}</span></a>
 							<a href="" id="account" class='account-link'><i class="icon-sliders"></i><span>{{_ "My_Account"}}</span></a>
 							{{#each registeredMenus}}
-								<a href="{{itemPath}}" class="{{class}}"><i class="{{icon}}"></i><span>{{name}}</span></a>
+								<a href="{{pathFor href}}"><i class="{{icon}}"></i><span>{{name}}</span></a>
 							{{/each}}
 							{{#if showAdminOption }}
 								<a href="" id="admin" class='account-link'><i class="icon-wrench"></i><span>{{_ "Administration"}}</span></a>
