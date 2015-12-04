@@ -23,6 +23,30 @@ Template.messagePopupConfig.helpers
 						system: true
 						name: t 'Notify_all_in_this_room'
 						compatibility: 'channel group'
+					channel =
+						_id: '@channel'
+						username: 'channel'
+						system: true
+						name: t 'Notify_all_in_this_room'
+						compatibility: 'channel group'
+					everyone =
+						_id: '@everyone'
+						username: 'everyone'
+						system: true
+						name: t 'Notify_all_in_this_room'
+						compatibility: 'channel group'
+					here =
+						_id: '@here'
+						username: 'here'
+						system: true
+						name: t 'Notify_all_in_this_room'
+						compatibility: 'channel group'
+					yall =
+						_id: '@yall'
+						username: 'yall'
+						system: true
+						name: t 'Notify_all_in_this_room'
+						compatibility: 'channel group'
 
 					exp = new RegExp("(^|\\s)#{RegExp.escape filter}", 'i')
 					if exp.test(all.username) or exp.test(all.compatibility)
