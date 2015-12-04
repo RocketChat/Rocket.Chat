@@ -1,5 +1,5 @@
 Meteor.publish 'spotlight', (selector, options, collName) ->
-	unless this.userId
+	if not this.userId? or not selector?.name?.$regex?
 		return this.ready()
 
 	console.log '[publish] spotlight -> '.green, 'selector:', selector, 'options:', options, 'collName:', collName

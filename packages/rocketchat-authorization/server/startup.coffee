@@ -77,6 +77,21 @@ Meteor.startup ->
 
 		{ _id: 'bulk-create-c',
 		roles : ['admin']}
+
+		{ _id: 'view-c-room',
+		roles : ['admin', 'site-moderator', 'user']}
+
+		{ _id: 'view-p-room',
+		roles : ['admin', 'site-moderator', 'user']}
+
+		{ _id: 'view-d-room',
+		roles : ['admin', 'site-moderator', 'user']}
+
+		{ _id: 'access-permissions',
+		roles : ['admin']}
+
+		{ _id: 'manage-assets',
+		roles : ['admin']}
 	]
 
 	#alanning:roles

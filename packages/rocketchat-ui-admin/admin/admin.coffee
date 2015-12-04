@@ -29,13 +29,19 @@ Template.admin.helpers
 		label = @i18nLabel or @_id
 		return TAPi18n.__ label if label
 	description: ->
-		description = @i18nDescription
-		return TAPi18n.__ description if description
+		description = TAPi18n.__ @i18nDescription if @i18nDescription
+		if description? and description isnt @i18nDescription
+			return description
 	sectionIsCustomOath: (section) ->
 		return /^Custom OAuth:\s.+/.test section
 	callbackURL: (section) ->
 		id = s.strRight(section, 'Custom OAuth: ').toLowerCase()
 		return Meteor.absoluteUrl('_oauth/' + id)
+	selectedOption: (_id, val) ->
+		return RocketChat.settings.get(_id) is val
+
+	random: ->
+		return Random.id()
 
 Template.admin.events
 	"click .submit .save": (e, t) ->
@@ -52,6 +58,8 @@ Template.admin.events
 				value = if t.$("[name=#{setting._id}]:checked").val() is "1" then true else false
 			else if setting.type is 'color'
 				value = _.trim(t.$("[name=#{setting._id}]").val())
+			else if setting.type is 'select'
+				value = t.$("[name=#{setting._id}]").val()
 
 			if value?
 				updateSettings.push { _id: setting._id, value: value }
@@ -94,6 +102,33 @@ Template.admin.events
 
 		swal config, ->
 			Meteor.call 'removeOAuthService', name
+
+	"click .delete-asset": ->
+		Meteor.call 'unsetAsset', @asset
+
+	"change input[type=file]": ->
+		e = event.originalEvent or event
+		files = e.target.files
+		if not files or files.length is 0
+			files = e.dataTransfer?.files or []
+
+		for blob in files
+			toastr.info TAPi18n.__ 'Uploading_file'
+
+			if @fileConstraints.contentType isnt blob.type
+				toastr.error TAPi18n.__ 'Invalid_file_type'
+				return
+
+			reader = new FileReader()
+			reader.readAsBinaryString(blob)
+			reader.onloadend = =>
+				Meteor.call 'setAsset', reader.result, blob.type, @asset, (err, data) ->
+					if err?
+						toastr.error TAPi18n.__ err.error
+						console.log err.error
+						return
+
+					toastr.success TAPi18n.__ 'File_uploaded'
 
 
 Template.admin.onRendered ->
