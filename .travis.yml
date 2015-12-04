@@ -15,6 +15,7 @@ before_install:
 - cd .sandstorm
 - ./preprcbuild.sh
 script:
+- cd $TRAVIS_BUILD_DIR
 - if [[ "$TRAVIS_PULL_REQUEST" != "false" ]]; then echo "Building PR $TRAVIS_PULL_REQUEST"; meteor build ../build; exit $?; fi
 - export TAG=$(git describe --abbrev=0 --tags)
 - meteor build ../build
