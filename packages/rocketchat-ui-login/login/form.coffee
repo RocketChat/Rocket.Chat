@@ -57,6 +57,9 @@ Template.loginForm.helpers
 	linkReplacementText: ->
 		return RocketChat.settings.get('Accounts_RegistrationForm_LinkReplacementText')
 
+	passwordresetAllowed: ->
+		return RocketChat.settings.get 'Accounts_PasswordReset'
+
 Template.loginForm.events
 	'submit #login-card': (event, instance) ->
 		event.preventDefault()
