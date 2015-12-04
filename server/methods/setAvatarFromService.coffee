@@ -32,6 +32,7 @@ Meteor.methods
 				throw new Meteor.Error('invalid-avatar-url', '[methods] setAvatarFromService -> url service -> invalid content-type')
 
 			ars = RocketChatFile.bufferToStream new Buffer(result.content, 'binary')
+			RocketChatFileAvatarInstance.deleteFile "#{user.username}.jpg"
 			aws = RocketChatFileAvatarInstance.createWriteStream "#{user.username}.jpg", result.headers['content-type']
 			aws.on 'end', Meteor.bindEnvironment ->
 				Meteor.setTimeout ->
@@ -46,7 +47,8 @@ Meteor.methods
 		{image, contentType} = RocketChatFile.dataURIParse dataURI
 
 		rs = RocketChatFile.bufferToStream new Buffer(image, 'base64')
-		ws = RocketChatFileAvatarInstance.createWriteStream "#{user.username}.jpg", contentType
+		RocketChatFileAvatarInstance.deleteFile encodeURIComponent("#{user.username}.jpg")
+		ws = RocketChatFileAvatarInstance.createWriteStream encodeURIComponent("#{user.username}.jpg"), contentType
 		ws.on 'end', Meteor.bindEnvironment ->
 			Meteor.setTimeout ->
 				RocketChat.models.Users.setAvatarOrigin user._id, service

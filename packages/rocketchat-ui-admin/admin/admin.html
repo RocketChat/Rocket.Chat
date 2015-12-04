@@ -33,33 +33,63 @@
 										{{/if}}
 									{{/if}}
 									{{#each settings}}
-											<div class="input-line double-col">
-												<label>{{label}}</label>
-												<div>
-										{{#if $eq type 'string'}}
+										<div class="input-line double-col">
+											<label>{{label}}</label>
+											<div>
+												{{#if $eq type 'string'}}
 													{{#if multiline}}
 														<textarea name="{{_id}}" rows="4" style="height: auto">{{value}}</textarea>
 													{{else}}
 														<input type="text" name="{{_id}}" value="{{value}}" placeholder="{{placeholder}}" />
 													{{/if}}
-										{{/if}}
-										{{#if $eq type 'int'}}
+												{{/if}}
+
+												{{#if $eq type 'int'}}
 													<input type="number" name="{{_id}}" value="{{value}}" placeholder="{{placeholder}}" />
-										{{/if}}
-										{{#if $eq type 'boolean'}}
+												{{/if}}
+
+												{{#if $eq type 'boolean'}}
 													<label><input type="radio" name="{{_id}}" value="1" checked="{{$eq value true}}" /> {{_ "True"}}</label>
 													<label><input type="radio" name="{{_id}}" value="0" checked="{{$eq value false}}" /> {{_ "False"}}</label>
-										{{/if}}
-										{{#if $eq type 'color'}}
+												{{/if}}
+
+												{{#if $eq type 'select'}}
+													<select name="{{_id}}">
+														{{#each values}}
+															<option value="{{key}}" selected="{{selectedOption ../_id key}}">{{_ i18nLabel}}</option>
+														{{/each}}
+													</select>
+												{{/if}}
+
+												{{#if $eq type 'color'}}
 													<input type="text" class="minicolors" name="{{_id}}" value="{{value}}" />
-										{{/if}}
-										{{#if description}}
-													<div>
-														<small class="settings-description">{{{description}}}</small>
-													</div>
-										{{/if}}
-												</div>
+												{{/if}}
+
+												{{#if $eq type 'asset'}}
+													{{#if value}}
+														<div class="settings-file-preview">
+															<div class="preview" style="background-image:url({{value}}?_dc={{random}});"></div>
+															<div class="action">
+																<button type="button" class="button red delete-asset"><i class="icon-trash"></i>{{_ 'Delete'}}</button>
+															</div>
+														</div>
+													{{else}}
+														<div class="settings-file-preview">
+															<div class="preview no-file"><i class="icon-upload"></i></div>
+															<div class="action">
+																<div class="button primary"><i class="icon-trash"></i>{{_ 'Select_file'}}
+																	<input type="file" accept="{{fileConstraints.contentType}}" />
+																</div>
+															</div>
+														</div>
+													{{/if}}
+												{{/if}}
+
+												{{#if description}}
+													<div class="settings-description">{{{description}}}</div>
+												{{/if}}
 											</div>
+										</div>
 									{{/each}}
 
 									{{#if section}}

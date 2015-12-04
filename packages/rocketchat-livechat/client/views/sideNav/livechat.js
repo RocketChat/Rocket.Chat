@@ -20,6 +20,15 @@ Template.livechat.helpers({
 			t: 'l',
 			open: true
 		};
+
+		var user = Meteor.user();
+
+		if (user && user.settings && user.settings.preferences && user.settings.preferences.unreadRoomsMode) {
+			query.alert = {
+				$ne: true
+			};
+		}
+
 		return ChatSubscription.find(query, {
 			sort: {
 				't': 1,
