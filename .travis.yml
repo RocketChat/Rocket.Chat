@@ -12,6 +12,8 @@ before_install:
 - mkdir -p node_modules
 - cd $TRAVIS_BUILD_DIR
 - mkdir ../build
+- export SANDSTORM_VERSION=$(curl -f "https://install.sandstorm.io/dev?from=0&type=install")
+- export PATH=$PATH:/tmp/sandstorm-$SANDSTORM_VERSION/bin
 - cd .sandstorm
 - ./preprcbuild.sh
 script:
