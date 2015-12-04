@@ -2,47 +2,32 @@ sudo: required
 language: node_js
 branches:
   only:
-  - master
   - develop
+  - master
 node_js:
 - '0.12'
-addons:
-  apt:
-    sources:
-    - google-chrome
-    packages:
-    - google-chrome-stable
 before_install:
 - curl https://install.meteor.com | /bin/sh
 - npm install -g npm@'>=2.13.5'
 - mkdir -p node_modules
-- npm install phantomjs
-- npm install velocity-cli
-- export PHANTOMJS_BIN=./node_modules/phantomjs/bin/phantomjs
-- export JASMINE_BROWSER=PhantomJS
-- export DEBUG=1
-- export JASMINE_DEBUG=1
-- export VELOCITY_DEBUG=1
-- export VELOCITY_DEBUG_MIRROR=1
+- cd $TRAVIS_BUILD_DIR
+- mkdir ../build
+- export SANDSTORM_VERSION=$(curl -f "https://install.sandstorm.io/dev?from=0&type=install")
+- export PATH=$PATH:/tmp/sandstorm-$SANDSTORM_VERSION/bin
+- cd .sandstorm
+- ./preprcbuild.sh
 script:
+- cd $TRAVIS_BUILD_DIR
 - if [[ "$TRAVIS_PULL_REQUEST" != "false" ]]; then echo "Building PR $TRAVIS_PULL_REQUEST"; meteor build ../build; exit $?; fi
-- cd .travis
-- npm install
-- npm start
-- cd ..
+- export TAG=$(git describe --abbrev=0 --tags)
 - meteor build ../build
+- cp ../build/Rocket.Chat.tar.gz  /home/vagrant
 - cd .travis
 - sh ./namefiles.sh
-- cd ..
-- meteor add rocketchat:livechat rocketchat:hubot sanjo:jasmine velocity:console-reporter
-- ./node_modules/velocity-cli/bin/velocity test-packages --ci
-- ./node_modules/velocity-cli/bin/velocity test-app --ci
-- meteor build --server demo.rocket.chat  ../build
-- cd .travis
-- sh ./namedemo.sh
-- cd ..
-after_deploy:
-- "curl -H \"Content-Type: application/json\" --data \"{'build': true}\" -X POST https://registry.hub.docker.com/u/rocketchat/rocket.chat/trigger/$PUSHTOKEN/"
+- cd $TRAVIS_BUILD_DIR/.sandstorm
+- ./buildrc.sh
+- cd $TRAVIS_BUILD_DIR
+- mv rocket.chat.latest.spk ../build
 deploy:
   provider: s3
   access_key_id: "AKIAIKIA7H7D47KUHYCA"
@@ -52,5 +37,8 @@ deploy:
   local_dir: ../build
   on:
     branch:
-    - master
     - develop
+    - master
+after_deploy:
+- cd .travis
+- sh ./builddocker.sh

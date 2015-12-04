@@ -36,7 +36,10 @@ Template.sideNav.helpers
 		return RocketChat.authz.hasAtLeastOnePermission( ['view-statistics', 'view-room-administration', 'view-user-administration', 'view-privileged-setting'])
 
 	registeredMenus: ->
-		return AccountBox.getOptions()
+		return AccountBox.getItems()
+
+	itemPath: ->
+		FlowRouter.path @route.name
 
 Template.sideNav.events
 	'click .close-flex': ->
@@ -96,5 +99,5 @@ Template.sideNav.onRendered ->
 	lastLink = $('.rooms-list h3.history-div').get(0)
 
 	RocketChat.roomTypes.getTypes().forEach (roomType) ->
-		if RocketChat.authz.hasRole(Meteor.userId(), roomType.roles) && Template[roomType.template]?
+		if Template[roomType.template]?
 			Blaze.render Template[roomType.template], wrapper, lastLink

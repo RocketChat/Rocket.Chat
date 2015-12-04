@@ -394,8 +394,8 @@ html {
 }
 
 body {
-	font-family: "Roboto", "HelveticaNeue-Light", "sans-serif";
-	font-size: 14px;
+	font-family: 'Helvetica Neue', Helvetica, Roboto, Arial, sans-serif;
+	font-size: 0.875rem;
 	height: 100%;
 	width: 100%;
 	-webkit-font-smoothing: antialiased;
@@ -457,6 +457,15 @@ input.search {
 		position: absolute;
 		top: 0;
 		left: 0;
+	}
+}
+
+form.inline {
+	input[type='text'],
+	input[type='number'],
+	input[type='email'],
+	input[type='password'] {
+		width: auto;
 	}
 }
 
@@ -1720,6 +1729,45 @@ a.github-fork {
 		width: 100%;
 		padding: 0;
 	}
+
+	.settings-file-preview {
+		display: flex;
+		align-items: center;
+
+		input[type=file] {
+			position: absolute !important;
+			width: 100%;
+			top: 0;
+			left: 0;
+			height: 100%;
+			opacity: 0;
+			z-index: 10000;
+			cursor: pointer;
+			* {
+				cursor: pointer;
+			}
+		}
+
+		.preview {
+			height: 50px;
+			width: 100px;
+			border-radius: 4px;
+			overflow: hidden;
+			box-shadow: 0 0 1px rgba(0,0,0,.5) inset;
+			background-size: contain;
+			background-position: center center;
+			background-repeat: no-repeat;
+
+			&.no-file {
+				background-color: #fafafa;
+				display: flex;
+				align-items: center;
+				justify-content: center;
+				color: #ccc;
+				font-size: 24px;
+			}
+		}
+	}
 }
 
 .page-static {
@@ -2304,7 +2352,6 @@ a.github-fork {
 }
 
 .message {
-	font-size: 14px;
 	padding: 18px 20px 4px 70px;
 	position: relative;
 	line-height: 20px;
@@ -3410,7 +3457,6 @@ a.github-fork {
 			padding: 4px 8px;
 			font-size: 18px;
 			border-bottom: 1px solid;
-			font-family: "Roboto", "HelveticaNeue-Light", "sans-serif";
 			font-weight: 400;
 			border-radius: 0px;
 			&.error {
@@ -3489,7 +3535,6 @@ a.github-fork {
 		}
 	}
 	a {
-		font-family: "Roboto", "HelveticaNeue-Light", "sans-serif";
 		font-weight: 300;
 	}
 	.cell {
@@ -3529,7 +3574,6 @@ a.github-fork {
 			&:extend(.rocket-h3);
 		}
 		p {
-			font-family: "Muli", "Roboto", "HelveticaNeue-Light", "sans-serif";
 			margin: 18px 0;
 			font-size: 16px;
 			line-height: 24px;
@@ -4049,4 +4093,16 @@ a.github-fork {
 
 .inline-video {
 	max-height: 200px;
+}
+
+.attention-message {
+	color: white;
+	padding-top: 50px;
+	font-size: 24px;
+
+	i {
+		display: block;
+		margin-bottom: 20px;
+		font-size: 40px;
+	}
 }
