@@ -1,4 +1,5 @@
 RocketChat.setUsername = (user, username) ->
+	console.log("In setUserName")
 	username = s.trim username
 	if not user or not username
 		return false
@@ -10,11 +11,14 @@ RocketChat.setUsername = (user, username) ->
 	if user.username is username
 		return user
 
-	# Check username availability
-	unless RocketChat.checkUsernameAvailability username
-		return false
-
 	previousUsername = user.username
+
+	# Check username availability or if the user already owns a different casing of the name
+	if ( !previousUsername or !(username.toLowerCase() == previousUsername.toLowerCase()))
+		unless RocketChat.checkUsernameAvailability username
+			return false
+
+
 
 	# If first time setting username, send Enrollment Email
 	if not previousUsername and RocketChat.settings.get 'Accounts_Enrollment_Email'
