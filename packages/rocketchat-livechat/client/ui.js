@@ -40,6 +40,7 @@ AccountBox.addItem({
 	name: 'Livechat',
 	icon: 'icon-chat-empty',
 	href: 'livechat-manager',
+	sideNav: 'livechatFlex',
 	permissions: ['view-livechat-manager'],
 });
 
