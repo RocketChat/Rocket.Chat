@@ -79,6 +79,7 @@ Package.onUse(function(api) {
 	api.addFiles('views/app/home.html', 'client');
 	api.addFiles('views/app/notAuthorized.html', 'client');
 	api.addFiles('views/app/pageContainer.html', 'client');
+	api.addFiles('views/app/pageSettingsContainer.html', 'client');
 	api.addFiles('views/app/privateHistory.html', 'client');
 	api.addFiles('views/app/room.html', 'client');
 	api.addFiles('views/app/roomSearch.html', 'client');
