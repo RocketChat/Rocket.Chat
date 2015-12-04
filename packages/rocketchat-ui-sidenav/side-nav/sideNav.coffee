@@ -38,9 +38,6 @@ Template.sideNav.helpers
 	registeredMenus: ->
 		return AccountBox.getItems()
 
-	itemPath: ->
-		FlowRouter.path @route.name
-
 Template.sideNav.events
 	'click .close-flex': ->
 		SideNav.closeFlex()
