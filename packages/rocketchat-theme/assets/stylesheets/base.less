@@ -1721,6 +1721,73 @@ a.github-fork {
 }
 
 .page-settings {
+	.content {
+		padding: 20px 0;
+		background-color: #f8f8f8;
+		color: #444;
+
+		> .info {
+			max-width: auto;
+			line-height: 24px;
+			padding-left: 20px;
+			font-size: 16px;
+			font-weight: 500;
+		}
+	}
+
+	.section {
+		border: 1px solid #ddd;
+		border-left: none;
+		background-color: #fff;
+		padding: 20px;
+		margin-bottom: 20px;
+
+		.section-title {
+			font-size: 24px;
+			font-weight: 600;
+			padding: 10px 0 30px 0;
+			color: #444;
+		}
+
+		.section-content {
+			border: none !important;
+			border-radius: 0px !important;
+			padding: 0px !important;
+
+			.input-line {
+				border-bottom: 1px solid #eee;
+				padding: 20px 0;
+				margin-bottom: 0px;
+
+				&:last-child {
+					border-bottom: none;
+					padding-bottom: 0;
+				}
+
+				&:first-child {
+					padding-top: 0;
+				}
+
+				input {
+					color: #444;
+				}
+
+				> label {
+					text-align: left;
+					font-weight: 500;
+					font-size: 16px;
+					line-height: 20px;
+					color: #444;
+				}
+
+				.settings-description {
+					color: #888;
+					padding: 5px;
+				}
+			}
+		}
+	}
+
 	.settings-description {
 		.allow-text-selection;
 	}
