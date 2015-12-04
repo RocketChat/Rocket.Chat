@@ -25,6 +25,7 @@ meteor-base
 mobile-experience
 mongo
 random
+rate-limit
 reactive-dict
 reactive-var
 reload
