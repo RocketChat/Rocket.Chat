@@ -20,10 +20,15 @@
 				{{/with}}
 				<div class="rocket-form">
 					{{#each sections}}
-						<div class="section">
+						<div class="section {{#if section}}section-collapsed{{/if}}">
 							{{#if section}}
 								<div class="section-title">
-									{{section}}
+									<div class="section-title-text">
+										{{section}}
+									</div>
+									<div class="section-title-right">
+										<button class="button secondary expand"><span>{{_ "Expand"}}</span></button>
+									</div>
 								</div>
 							{{/if}}
 							<div class="section-content">

@@ -1742,17 +1742,32 @@ a.github-fork {
 		padding: 20px;
 		margin-bottom: 20px;
 
+		&.section-collapsed {
+			.section-content {
+				display: none;
+			}
+		}
+
 		.section-title {
+			display: flex;
 			font-size: 24px;
 			font-weight: 600;
-			padding: 10px 0 30px 0;
 			color: #444;
+			line-height: 40px;
+
+			.section-title-text {
+				flex-grow: 1;
+			}
+
+			.section-title-right {
+				line-height: 0px;
+			}
 		}
 
 		.section-content {
 			border: none !important;
 			border-radius: 0px !important;
-			padding: 0px !important;
+			padding: 20px 0 0 0 !important;
 
 			.input-line {
 				border-bottom: 1px solid #eee;
