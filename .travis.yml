@@ -12,6 +12,7 @@ before_install:
 - mkdir -p node_modules
 - cd $TRAVIS_BUILD_DIR
 - mkdir ../build
+- export TAG=$(git describe --abbrev=0 --tags)
 - export SANDSTORM_VERSION=$(curl -f "https://install.sandstorm.io/dev?from=0&type=install")
 - export PATH=$PATH:/tmp/sandstorm-$SANDSTORM_VERSION/bin
 - cd .sandstorm
@@ -19,7 +20,6 @@ before_install:
 script:
 - cd $TRAVIS_BUILD_DIR
 - if [[ "$TRAVIS_PULL_REQUEST" != "false" ]]; then echo "Building PR $TRAVIS_PULL_REQUEST"; meteor build ../build; exit $?; fi
-- export TAG=$(git describe --abbrev=0 --tags)
 - meteor build ../build
 - cp ../build/Rocket.Chat.tar.gz  /home/vagrant
 - cd .travis
