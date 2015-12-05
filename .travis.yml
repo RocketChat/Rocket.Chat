@@ -41,4 +41,4 @@ deploy:
     - master
 after_deploy:
 - cd .travis
-- ./builddocker.sh
+- sh ./builddocker.sh
