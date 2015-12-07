@@ -5,6 +5,9 @@ path = Npm.require('path')
 mkdirp = Npm.require('mkdirp')
 gm = Npm.require('gm')
 
+# Fix problem with usernames being converted to object id
+Grid.prototype.tryParseObjectId = -> false
+
 RocketChatFile =
 	gm: gm
 
@@ -91,6 +94,7 @@ RocketChatFile.GridFS = class
 			readStream: rs
 			contentType: file.contentType
 			length: file.length
+			uploadDate: file.uploadDate
 		}
 
 	deleteFile: (fileName) ->

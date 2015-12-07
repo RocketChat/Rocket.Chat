@@ -25,6 +25,12 @@ RocketChat.models.Subscriptions = new class extends RocketChat.models._Base
 
 		return @find query, options
 
+	getLastSeen: (options = {}) ->
+		query = { ls: { $exists: 1 } }
+		options.sort = { ls: -1 }
+		options.limit = 1
+
+		return @find(query, options)?.fetch?()?[0]?.ls
 
 	# UPDATE
 	archiveByRoomIdAndUserId: (roomId, userId) ->
@@ -191,6 +197,16 @@ RocketChat.models.Subscriptions = new class extends RocketChat.models._Base
 			$set:
 				alert: alert
 				open: true
+
+		return @update query, update, { multi: true }
+
+	updateTypeByRoomId: (roomId, type) ->
+		query =
+			rid: roomId
+
+		update =
+			$set:
+				t: type
 
 		return @update query, update, { multi: true }
 

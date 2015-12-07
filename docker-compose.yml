@@ -1,14 +1,21 @@
-rocketchat:
-  image: rocketchat/rocket.chat
-  environment:
-    - MONGO_URL=mongodb://mongodb/rocketchat
-    - ROOT_URL=http://localhost:80
-  links:
-    - mongodb
-  ports:
-    - 80:80
+mongo:
+  image: mongo
+# volumes:
+#    - ./data/runtime/db:/data/db
+#    - ./data/dump:/dump
+  command: mongod --smallfiles --oplogSize 128
 
-mongodb:
-   image: mongo
-   ports:
-     - 27017
+rocketchat:
+  image: rocketchat/rocket.chat:develop
+# volumes:
+#    - ./uploads:/app/uploads
+  environment:
+    - PORT=3000
+    - ROOT_URL=http://yourhost:3000
+    - MONGO_URL=mongodb://mongo:27017/rocketchat
+# uncomment and set the line below if you need to support mobile apps
+#   - DDP_DEFAULT_CONNECTION_URL=http://yourhost:3000
+  links:
+    - mongo:mongo
+  ports:
+    - 3000:3000

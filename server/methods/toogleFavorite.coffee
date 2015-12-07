@@ -5,4 +5,4 @@ Meteor.methods
 
 		console.log '[methods] toogleFavorite -> '.green, 'userId:', Meteor.userId(), 'arguments:', arguments
 
-		RocketChat.models.Subscriptions.setFavoriteByRoomIdAndUserId rid, Meteor.userId()
+		RocketChat.models.Subscriptions.setFavoriteByRoomIdAndUserId rid, Meteor.userId(), f
