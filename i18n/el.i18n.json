@@ -195,7 +195,6 @@
   "Room_name_changed" : "Το όνομα του δωματίου άλλαξε σε: <em>__room_name__</em> από τον χρήστη <em>__user_by__</em>",
   "Room_name_changed_successfully" : "Το όνομα του δωματίου άλλαξε επιτυχώς",
   "room_user_count" : "%s χρήστες",
-  "Save" : "Αποθήκευση",
   "Save_changes" : "Αποθήκευση αλλαγών",
   "Search" : "Αναζήτηση",
   "Search_settings" : "Ρυθμίσεις αναζήτησης",

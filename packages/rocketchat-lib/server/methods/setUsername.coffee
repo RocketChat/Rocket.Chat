@@ -21,8 +21,13 @@ Meteor.methods
 		if not nameValidation.test username
 			throw new Meteor.Error 'username-invalid', "#{username} is not a valid username, use only letters, numbers, dots and dashes"
 
-		if not RocketChat.checkUsernameAvailability username
-			throw new Meteor.Error 'username-unavailable', "#{username} is already in use :("
+		if user.username != undefined
+			if not username.toLowerCase() == user.username.toLowerCase() 
+				if not  RocketChat.checkUsernameAvailability username
+					throw new Meteor.Error 'username-unavailable', "#{username} is already in use :("
+		else
+			if not  RocketChat.checkUsernameAvailability username
+				throw new Meteor.Error 'username-unavailable', "#{username} is already in use :("
 
 		unless RocketChat.setUsername user._id, username
 			throw new Meteor.Error 'could-not-change-username', "Could not change username"

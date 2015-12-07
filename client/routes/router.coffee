@@ -107,13 +107,15 @@ FlowRouter.route '/fxos',
 FlowRouter.route '/register/:hash',
 	name: 'register-secret-url'
 	action: (params) ->
-		if RocketChat.settings.get('Accounts_RegistrationForm') is 'Secret URL'
-			Meteor.call 'checkRegistrationSecretURL', params.hash, (err, success) ->
-				if success
-					Session.set 'loginDefaultState', 'register'
-					BlazeLayout.render 'main', {center: 'home'}
-					KonchatNotification.getDesktopPermission()
-				else
-					BlazeLayout.render 'blankLayout', { render: 'invalidSecretURL' }
-		else
-			BlazeLayout.render 'blankLayout', { render: 'invalidSecretURL' }
+		BlazeLayout.render 'secretURL'
+
+		# if RocketChat.settings.get('Accounts_RegistrationForm') is 'Secret URL'
+		# 	Meteor.call 'checkRegistrationSecretURL', params.hash, (err, success) ->
+		# 		if success
+		# 			Session.set 'loginDefaultState', 'register'
+		# 			BlazeLayout.render 'main', {center: 'home'}
+		# 			KonchatNotification.getDesktopPermission()
+		# 		else
+		# 			BlazeLayout.render 'logoLayout', { render: 'invalidSecretURL' }
+		# else
+		# 	BlazeLayout.render 'logoLayout', { render: 'invalidSecretURL' }
