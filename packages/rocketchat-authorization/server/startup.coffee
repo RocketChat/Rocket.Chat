@@ -90,7 +90,10 @@ Meteor.startup ->
 		{ _id: 'view-d-room',
 		roles : ['admin', 'site-moderator', 'user']}
 
-		{ _id: 'access-rocket-permissions',
+		{ _id: 'access-permissions',
+		roles : ['admin']}
+
+		{ _id: 'manage-assets',
 		roles : ['admin']}
 	]
 

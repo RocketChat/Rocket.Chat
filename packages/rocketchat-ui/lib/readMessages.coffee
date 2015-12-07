@@ -14,6 +14,8 @@
 @readMessage = new class
 	debug: false
 
+	callbacks: []
+
 	constructor: ->
 		@canReadMessage = false
 
@@ -33,7 +35,9 @@
 		if force is true
 			console.log 'readMessage -> readNow via force rid:', rid if @debug
 			return Meteor.call 'readMessages', rid, ->
+				RoomHistoryManager.getRoom(rid).unreadNotLoaded.set 0
 				self.refreshUnreadMark()
+				self.fireRead rid
 
 		subscription = ChatSubscription.findOne rid: rid
 		if not subscription?
@@ -58,7 +62,9 @@
 
 		console.log 'readMessage -> readNow rid:', rid if @debug
 		Meteor.call 'readMessages', rid, ->
+			RoomHistoryManager.getRoom(rid).unreadNotLoaded.set 0
 			self.refreshUnreadMark()
+			self.fireRead rid
 
 	read: _.debounce (force) ->
 		@readNow(force)
@@ -72,6 +78,13 @@
 
 	isEnable: ->
 		return @canReadMessage is true
+
+	onRead: (cb) ->
+		@callbacks.push cb
+
+	fireRead: (rid) ->
+		for cb in @callbacks
+			cb(rid)
 
 	refreshUnreadMark: (rid, force) ->
 		self = @
