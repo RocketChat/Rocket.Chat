@@ -81,9 +81,7 @@
 .icon-spin1:before { content: '\39'; } /* '9' */
 .icon-spin2:before { content: '\3a'; } /* ':' */
 .icon-spin3:before { content: '\3b'; } /* ';' */
-.icon-spin4:before { content: '\3c'; } /* '&lt;' */
 .icon-spin5:before { content: '\3d'; } /* '=' */
-.icon-sliders:before { content: '\3e'; } /* '&gt;' */
 .icon-history:before { content: '\3f'; } /* '?' */
 .icon-circle-notch:before { content: '\40'; } /* '@' */
 .icon-marquee:before { content: '\41'; } /* 'A' */
@@ -132,6 +130,8 @@
 .icon-behance:before { content: '\6c'; } /* 'l' */
 .icon-gitlab:before { content: '\6d'; } /* 'm' */
 .icon-rocketchat:before { content: '\6e'; } /* 'n' */
+.icon-spin4:before { content: '\6f'; } /* 'o' */
+.icon-sliders:before { content: '\70'; } /* 'p' */
 .icon-camera:before { content: '\e800'; } /* '' */
 .icon-videocam:before { content: '\e801'; } /* '' */
 .icon-heart:before { content: '\e802'; } /* '' */
