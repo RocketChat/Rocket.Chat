@@ -1,6 +1,6 @@
 RocketChat.MessageAction = new class
 	buttons = new ReactiveVar {}
-	
+
 	###
 	config expects the following keys (only id is mandatory):
 		id (mandatory)
@@ -9,7 +9,7 @@ RocketChat.MessageAction = new class
 		action: function(event, instance)
 		validation: function(message)
 		order: integer
-	### 
+	###
 	addButton = (config) ->
 		unless config?.id
 			throw new Meteor.Error "MessageAction-addButton-error", "Button id was not informed."
@@ -29,20 +29,18 @@ RocketChat.MessageAction = new class
 		Tracker.nonreactive ->
 			btns = buttons.get()
 			if btns[id]
-				btns[id] = _.extend btns[id], config 
+				btns[id] = _.extend btns[id], config
 				buttons.set btns
 
 	getButtons = (message) ->
 		allButtons = _.toArray buttons.get()
 		if message
-			allowedButtons = _.compact _.map allButtons, (button) -> 
-				unless button.validation?
-					return true
-				if button.validation(message)
+			allowedButtons = _.compact _.map allButtons, (button) ->
+				if not button.validation? or button.validation(message)
 					return button
 		else
 			allowedButtons = allButtons
-		
+
 		return _.sortBy allowedButtons, 'order'
 
 	resetButtons = ->
@@ -58,10 +56,10 @@ Meteor.startup ->
 	RocketChat.MessageAction.addButton
 		id: 'edit-message'
 		icon: 'icon-pencil'
-		i18nLabel: 'rocketchat-lib:Edit'
+		i18nLabel: 'Edit'
 		action: (event, instance) ->
 			message = $(event.currentTarget).closest('.message')[0]
-			instance.chatMessages.edit(message)
+			chatMessages[Session.get('openedRoom')].edit(message)
 			$("\##{message.id} .message-dropdown").hide()
 			input = instance.find('.input-message')
 			Meteor.setTimeout ->
@@ -86,7 +84,7 @@ Meteor.startup ->
 	RocketChat.MessageAction.addButton
 		id: 'delete-message'
 		icon: 'icon-trash-1'
-		i18nLabel: 'rocketchat-lib:Delete'
+		i18nLabel: 'Delete'
 		action: (event, instance) ->
 			message = @_arguments[1]
 			msg = $(event.currentTarget).closest('.message')[0]
@@ -110,7 +108,7 @@ Meteor.startup ->
 					timer: 1000
 					showConfirmButton: false
 
-				instance.chatMessages.deleteMsg(message)
+				chatMessages[Session.get('openedRoom')].deleteMsg(message)
 		validation: (message) ->
 			return RocketChat.authz.hasAtLeastOnePermission('delete-message', message.rid ) or RocketChat.settings.get('Message_AllowDeleting') and message.u?._id is Meteor.userId()
 		order: 2

@@ -1,5 +1,18 @@
 # Deny Account.createUser in client
-Accounts.config { forbidClientAccountCreation: true }
+accountsConfig = { forbidClientAccountCreation: true }
+
+if RocketChat.settings.get('Account_AllowedDomainsList')
+	domainWhiteList = _.map RocketChat.settings.get('Account_AllowedDomainsList').split(','), (domain) -> domain.trim()
+	accountsConfig.restrictCreationByEmailDomain = (email) ->
+		ret = false
+		for domain in domainWhiteList
+			if email.match(domain + '$')
+				ret = true
+				break;
+
+		return ret
+
+Accounts.config accountsConfig
 
 Accounts.emailTemplates.siteName = RocketChat.settings.get 'Site_Name';
 Accounts.emailTemplates.from = "#{RocketChat.settings.get 'Site_Name'} <#{RocketChat.settings.get 'From_Email'}>";
@@ -13,6 +26,17 @@ resetPasswordText = Accounts.emailTemplates.resetPassword.text
 Accounts.emailTemplates.resetPassword.text = (user, url) ->
 	url = url.replace Meteor.absoluteUrl(), Meteor.absoluteUrl() + 'login/'
 	verifyEmailText user, url
+
+if RocketChat.settings.get 'Accounts_Enrollment_Email'
+	Accounts.emailTemplates.enrollAccount.text = (user, url) ->
+		text = RocketChat.settings.get 'Accounts_Enrollment_Email'
+
+		text = text.replace /\[name\]/g, user.name or ''
+		text = text.replace /\[fname\]/g, _.strLeft(user.name, ' ') or  ''
+		text = text.replace /\[lname\]/g, _.strRightBack(user.name, ' ') or  ''
+		text = text.replace /\[email\]/g, user.emails?[0]?.address or ''
+
+		return text
 
 Accounts.onCreateUser (options, user) ->
 	# console.log 'onCreateUser ->',JSON.stringify arguments, null, '  '
@@ -48,7 +72,7 @@ Accounts.onCreateUser (options, user) ->
 Accounts.insertUserDoc = _.wrap Accounts.insertUserDoc, (insertUserDoc) ->
 	options = arguments[1]
 	user = arguments[2]
-	_id = insertUserDoc(options, user)
+	_id = insertUserDoc.call(Accounts, options, user)
 
 	# when inserting first user give them admin privileges otherwise make a regular user
 	firstUser = RocketChat.models.Users.findOne({},{sort:{createdAt:1}})
@@ -64,8 +88,8 @@ Accounts.validateLoginAttempt (login) ->
 	if login.allowed isnt true
 		return login.allowed
 
-	if login.user?.active isnt true
-		throw new Meteor.Error 'inactive-user', TAPi18next.t 'project:User_is_not_activated'
+	if !!login.user?.active isnt true
+		throw new Meteor.Error 'inactive-user', TAPi18n.__ 'User_is_not_activated'
 		return false
 
 	if login.type is 'password' and RocketChat.settings.get('Accounts_EmailVerification') is true
@@ -81,4 +105,9 @@ Accounts.validateLoginAttempt (login) ->
 	Meteor.defer ->
 		RocketChat.callbacks.run 'afterValidateLogin', login
 
+	return true
+
+Accounts.validateNewUser (user) ->
+	if RocketChat.settings.get('Accounts_Registration_AuthenticationServices_Enabled') is false and RocketChat.settings.get('LDAP_Enable') is false and not user.services?.password?
+		throw new Meteor.Error 'registration-disabled-authentication-services', 'User registration is disabled for authentication services'
 	return true

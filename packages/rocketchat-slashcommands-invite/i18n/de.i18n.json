@@ -1,0 +1,5 @@
+{
+  "Invite_user_to_join_channel" : "Lade einen Benutzer in diesen Kanal ein",
+  "User_doesnt_exist" : "Kein Benutzer vorhanden mit dem Namen `@% s`.",
+  "Username_is_already_in_here" : "`@% s` ist bereits da"
+}

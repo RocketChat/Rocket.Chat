@@ -1,0 +1,10 @@
+<template name="messagePopupConfig">
+	<div class="message-popup-results {{subscriptionNotReady}}">
+		{{#if emojiEnabled}}
+			{{> messagePopup popupEmojiConfig}}
+		{{/if}}
+		{{> messagePopup popupChannelConfig}}
+		{{> messagePopup popupUserConfig}}
+		{{> messagePopup popupSlashCommandsConfig}}
+	</div>
+</template>

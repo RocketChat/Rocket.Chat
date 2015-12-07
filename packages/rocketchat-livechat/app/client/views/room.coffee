@@ -13,6 +13,14 @@ Template.room.helpers
 Template.room.events
 	'keyup .input-message': (event) ->
 		Template.instance().chatMessages.keyup(visitor.getRoom(), event, Template.instance())
+		# Inital height is 28. If the scrollHeight is greater than that( we have more text than area ),
+		# increase the size of the textarea. The max-height is set at 200
+		# even if the scrollHeight become bigger than that it should never exceed that.
+		# Account for no text in the textarea when increasing the height.
+		# If there is no text, reset the height.
+		inputScrollHeight = $(event.currentTarget).prop('scrollHeight')
+		if inputScrollHeight > 28
+			$(event.currentTarget).height( if $(event.currentTarget).val() == '' then '15px' else (if inputScrollHeight >= 200 then inputScrollHeight-50 else inputScrollHeight-20))
 
 	'keydown .input-message': (event) ->
 		Template.instance().chatMessages.keydown(visitor.getRoom(), event, Template.instance())
