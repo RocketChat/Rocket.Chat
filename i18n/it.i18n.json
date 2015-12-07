@@ -88,7 +88,6 @@
   "Room" : "Stanza",
   "Room_name_changed" : "Il nome della stanza è cambiato per: <em>__room_name__</em> da <em>__user_by__</em>",
   "Room_name_changed_successfully" : "Nome della stanza cambiato con successo",
-  "Save" : "Salva",
   "Search" : "Ricerca",
   "See_all" : "Guarda tuttto",
   "See_only_online" : "Solo online",
