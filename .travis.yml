@@ -32,11 +32,11 @@ deploy:
       - master
       - even-faster-deploy
   - provider: releases
-      api_key: "GITHUB OAUTH TOKEN"
-      file: "FILE TO UPLOAD"
-      skip_cleanup: true
-      on:
-        branch: master
-        tags: true
+    api_key: "GITHUB OAUTH TOKEN"
+    file: "FILE TO UPLOAD"
+    skip_cleanup: true
+    on:
+      branch: master
+      tags: true
 after_deploy:
 - sh $TRAVIS_BUILD_DIR/.travis/docker.sh
