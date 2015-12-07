@@ -66,6 +66,7 @@ Package.onUse(function(api) {
 	api.addFiles('server/publications/livechatAgents.js', 'server');
 	api.addFiles('server/publications/livechatManagers.js', 'server');
 	api.addFiles('server/publications/livechatDepartments.js', 'server');
+	api.addFiles('server/publications/visitorRoom.js', 'server');
 
 	// livechat app
 	api.addAssets('rocket-livechat.js', 'client');

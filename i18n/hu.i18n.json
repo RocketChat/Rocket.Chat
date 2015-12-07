@@ -87,7 +87,6 @@
   "Room" : "Szoba",
   "Room_name_changed" : "A szoba neve megváltozott: <em>__room_name__</em>, megváltoztatta <em>__user_by__</em>",
   "Room_name_changed_successfully" : "A szoba neve sikeresen megváltozott",
-  "Save" : "Mentés",
   "Search" : "Keresés",
   "See_all" : "Összes megtekintése",
   "See_only_online" : "Csak online",

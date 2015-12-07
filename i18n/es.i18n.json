@@ -103,7 +103,6 @@
   "Room" : "Sala",
   "Room_name_changed" : "El nombre de la sala ha sido cambiado a: <em>__room_name__</em> por <em>__user_by__</em>",
   "Room_name_changed_successfully" : "El nombre de la sala fue cambiado con éxito",
-  "Save" : "Guardar",
   "Search" : "Buscar",
   "Search_settings" : "Configuración de búsqueda",
   "See_all" : "Ver todos",
