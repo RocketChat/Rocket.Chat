@@ -65,5 +65,6 @@ if Meteor.isCordova
 						vibrate: true
 					ios:
 						badge: true
+						clearBadge: true
 						sound: true
 						alert: true
