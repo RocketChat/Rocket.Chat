@@ -32,6 +32,10 @@ RocketChat.MessageAction = new class
 				btns[id] = _.extend btns[id], config
 				buttons.set btns
 
+	getButtonById = (id) ->
+		allButtons = buttons.get()
+		return allButtons[id]
+
 	getButtons = (message) ->
 		allButtons = _.toArray buttons.get()
 		if message
@@ -50,6 +54,7 @@ RocketChat.MessageAction = new class
 	removeButton: removeButton
 	updateButton: updateButton
 	getButtons: getButtons
+	getButtonById: getButtonById
 	resetButtons: resetButtons
 
 Meteor.startup ->
