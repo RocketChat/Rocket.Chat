@@ -17,6 +17,7 @@ Package.onUse(function(api) {
 
   api.use('mongo', 'client');
   api.use('kadira:flow-router', 'client');
+  api.use('less@2.5.1', 'client');
 
   api.use('templating', 'client');
 
@@ -33,6 +34,9 @@ Package.onUse(function(api) {
   api.addFiles('client/views/permissions.coffee', ['client']);
   api.addFiles('client/views/permissionsRole.html', ['client']);
   api.addFiles('client/views/permissionsRole.coffee', ['client']);
+
+  // stylesheets
+  api.addFiles('client/stylesheets/permissions.less', 'client');
 
   api.addFiles('server/models/Permissions.coffee', ['server']);
 
@@ -59,4 +63,14 @@ Package.onUse(function(api) {
   api.addFiles('server/methods/removeRoleFromPermission.coffee', 'server');
 
   api.addFiles('server/startup.coffee', ['server']);
+
+  var _ = Npm.require('underscore');
+  var fs = Npm.require('fs');
+  tapi18nFiles = _.compact(_.map(fs.readdirSync('packages/rocketchat-authorization/i18n'), function(filename) {
+    if (fs.statSync('packages/rocketchat-authorization/i18n/' + filename).size > 16) {
+      return 'i18n/' + filename;
+    }
+  }));
+  api.use('tap:i18n', ['client', 'server']);
+  api.addFiles(tapi18nFiles, ['client', 'server']);
 });
