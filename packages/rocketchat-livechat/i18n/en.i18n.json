@@ -1,17 +1,14 @@
 {
-  "Add": "Add",
-  "Add_agent": "Add agent",
-  "Add_manager": "Add manager",
-  "Agent_added": "Agent added",
-  "Agent_removed": "Agent removed",
-  "Enter_a_username": "Enter a username",
-  "Livechat_agents": "Livechat agents",
-  "Livechat_Manager": "Livechat Manager",
-  "Livechat_managers": "Livechat managers",
+  "Add_agent" : "Add agent",
+  "Add_manager" : "Add manager",
+  "Agent_added" : "Agent added",
+  "Agent_removed" : "Agent removed",
+  "Livechat_agents" : "Livechat agents",
+  "Livechat_Manager" : "Livechat Manager",
+  "Livechat_managers" : "Livechat managers",
   "Livechat_title" : "Livechat Title",
   "Livechat_title_color" : "Livechat Title Background Color",
-  "Manager_added": "Manager added",
-  "Manager_removed": "Manager removed",
-  "Please_fill_a_username": "Please fill a username",
-  "Username_not_found": "Username not found"
+  "Manager_added" : "Manager added",
+  "Manager_removed" : "Manager removed",
+  "Username_not_found" : "Username not found"
 }
