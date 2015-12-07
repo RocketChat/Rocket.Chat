@@ -20,12 +20,20 @@ class LivechatDepartment extends RocketChat.models._Base {
 	}
 
 	// UPSERT
-	createOrUpdateDepartment(_id, enabled, name, description, extraData) {
+	createOrUpdateDepartment(_id, enabled, name, description, agents, extraData) {
 		record = {
 			enabled: enabled,
 			name: name,
-			description: description
+			description: description,
+			agents: []
 		}
+
+		if (!_.isEmpty(agents)) {
+			for (agent of agents) {
+				record.agents.push({ _id: agent._id, username: agent.username });
+			}
+		}
+
 		_.extend(record, extraData);
 		this.upsert({ _id: _id }, { $set: record });
 		return _.extend(record, { _id: _id });
