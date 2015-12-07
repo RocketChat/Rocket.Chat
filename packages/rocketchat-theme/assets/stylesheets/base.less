@@ -394,7 +394,7 @@ html {
 }
 
 body {
-	font-family: 'Helvetica Neue', Helvetica, Roboto, Arial, sans-serif;
+	font-family: 'Helvetica Neue', Helvetica, Roboto, Arial, sans-serif, "Meiryo UI";
 	font-size: 0.875rem;
 	height: 100%;
 	width: 100%;
@@ -1721,6 +1721,88 @@ a.github-fork {
 }
 
 .page-settings {
+	.content {
+		padding: 20px 0;
+		background-color: #f8f8f8;
+		color: #444;
+
+		> .info {
+			max-width: auto;
+			line-height: 24px;
+			padding-left: 20px;
+			font-size: 16px;
+			font-weight: 500;
+		}
+	}
+
+	.section {
+		border: 1px solid #ddd;
+		border-left: none;
+		background-color: #fff;
+		padding: 20px;
+		margin-bottom: 20px;
+
+		&.section-collapsed {
+			.section-content {
+				display: none;
+			}
+		}
+
+		.section-title {
+			display: flex;
+			font-size: 24px;
+			font-weight: 600;
+			color: #444;
+			line-height: 40px;
+
+			.section-title-text {
+				flex-grow: 1;
+			}
+
+			.section-title-right {
+				line-height: 0px;
+			}
+		}
+
+		.section-content {
+			border: none !important;
+			border-radius: 0px !important;
+			padding: 20px 0 0 0 !important;
+
+			.input-line {
+				border-bottom: 1px solid #eee;
+				padding: 20px 0;
+				margin-bottom: 0px;
+
+				&:last-child {
+					border-bottom: none;
+					padding-bottom: 0;
+				}
+
+				&:first-child {
+					padding-top: 0;
+				}
+
+				input {
+					color: #444;
+				}
+
+				> label {
+					text-align: left;
+					font-weight: 500;
+					font-size: 16px;
+					line-height: 20px;
+					color: #444;
+				}
+
+				.settings-description {
+					color: #888;
+					padding: 5px;
+				}
+			}
+		}
+	}
+
 	.settings-description {
 		.allow-text-selection;
 	}
