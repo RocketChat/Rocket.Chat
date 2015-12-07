@@ -81,9 +81,9 @@
 .icon-spin1:before { content: '\39'; } /* '9' */
 .icon-spin2:before { content: '\3a'; } /* ':' */
 .icon-spin3:before { content: '\3b'; } /* ';' */
-.icon-spin4:before { content: '\3c'; } /* '&lt;' */
+.icon-spin4:before { content: '\3c'; direction: ltr; } /* '&lt;' */
 .icon-spin5:before { content: '\3d'; } /* '=' */
-.icon-sliders:before { content: '\3e'; } /* '&gt;' */
+.icon-sliders:before { content: '\3e'; direction: ltr; } /* '&gt;' */
 .icon-history:before { content: '\3f'; } /* '?' */
 .icon-circle-notch:before { content: '\40'; } /* '@' */
 .icon-marquee:before { content: '\41'; } /* 'A' */
