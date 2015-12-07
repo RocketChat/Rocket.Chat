@@ -1,0 +1,17 @@
+<template name="messageSearch">
+	<div class="content">
+		<div class="control">
+			<form class="search-form" role="form">
+				<div class="input-line search">
+					<input type="text" id="message-search" class="search" placeholder="{{tSearchMessages}}" autocomplete="off" />
+					<i class="octicon octicon-chevron-right"></i>
+				</div>
+			</form>
+		</div>
+		<ul>
+			{{#each searchResultMessages}}
+				{{#nrr nrrargs 'message' .}}{{/nrr}}
+			{{/each}}
+		</ul>
+	</div>
+</template>

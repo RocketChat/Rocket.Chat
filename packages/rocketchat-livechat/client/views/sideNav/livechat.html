@@ -1,0 +1,12 @@
+<template name="livechat">
+	<h3 class="{{isActive}}">
+		{{_ "Livechat"}}
+	</h3>
+	<ul>
+		{{#each rooms}}
+			{{> chatRoomItem }}
+		{{else}}
+			<p class="empty">{{_ "No_livechats" }}</p>
+		{{/each}}
+	</ul>
+</template>

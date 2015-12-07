@@ -9,6 +9,8 @@ Meteor.methods
 		editAllowed = RocketChat.settings.get 'Message_AllowEditing'
 		editOwn = originalMessage?.u?._id is Meteor.userId()
 
+		me = Meteor.users.findOne Meteor.userId()
+
 		unless hasPermission or (editAllowed and editOwn)
 			toastr.error t('Message_editing_not_allowed')
 			throw new Meteor.Error 'message-editing-not-allowed', t('Message_editing_not_allowed')
@@ -23,13 +25,18 @@ Meteor.methods
 
 		Tracker.nonreactive ->
 
-			message.ets = new Date(Date.now() + TimeSync.serverOffset())
+			message.editedAt = new Date(Date.now() + TimeSync.serverOffset())
+			message.editedBy =
+				_id: Meteor.userId()
+				username: me.username
+
 			message = RocketChat.callbacks.run 'beforeSaveMessage', message
 
 			ChatMessage.update
-				_id: message.id
+				_id: message._id
 				'u._id': Meteor.userId()
 			,
 				$set:
-					ets: message.ets
+					"editedAt": message.editedAt
+					"editedBy": message.editedBy
 					msg: message.msg
