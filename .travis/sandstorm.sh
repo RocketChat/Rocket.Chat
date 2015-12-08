@@ -1,6 +1,6 @@
 #!/bin/bash
-
 set -euo pipefail
+IFS=$'\n\t'
 
 export SANDSTORM_VERSION=$(curl -f "https://install.sandstorm.io/dev?from=0&type=install")
 export PATH=$PATH:/tmp/sandstorm-$SANDSTORM_VERSION/bin

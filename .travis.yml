@@ -17,8 +17,8 @@ script:
 - meteor build /tmp/build
 before_deploy:
 - mkdir /tmp/deploy
-- sh $TRAVIS_BUILD_DIR/.travis/namefiles.sh
-- sh $TRAVIS_BUILD_DIR/.travis/sandstorm.sh
+- .travis/namefiles.sh
+- .travis/sandstorm.sh
 deploy:
   - provider: s3
     access_key_id: "AKIAIKIA7H7D47KUHYCA"
@@ -39,4 +39,4 @@ deploy:
       branch: master
       tags: true
 after_deploy:
-- sh $TRAVIS_BUILD_DIR/.travis/docker.sh
+- .travis/docker.sh
