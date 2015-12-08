@@ -107,7 +107,7 @@ ordered-dict@1.0.4
 pauli:accounts-linkedin@1.2.0
 pauli:linkedin@1.2.0
 perak:codemirror@1.2.8
-percolate:migrations@0.9.6
+percolate:migrations@0.9.7
 percolate:synced-cron@1.3.0
 pntbr:js-yaml-client@0.0.1
 promise@0.5.1
