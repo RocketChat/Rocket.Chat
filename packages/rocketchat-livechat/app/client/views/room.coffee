@@ -38,7 +38,7 @@ Template.room.events
 Template.room.onCreated ->
 	self = @
 	self.autorun ->
-		self.subscribe 'visitorRoom', visitor.getToken(), ->
+		self.subscribe 'livechat:visitorRoom', visitor.getToken(), ->
 			room = ChatRoom.findOne()
 			if room?
 				visitor.setRoom room._id

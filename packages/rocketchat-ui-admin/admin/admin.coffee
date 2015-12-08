@@ -130,6 +130,14 @@ Template.admin.events
 
 					toastr.success TAPi18n.__ 'File_uploaded'
 
+	"click .expand": (e) ->
+		$(e.currentTarget).closest('.section').removeClass('section-collapsed')
+		$(e.currentTarget).closest('button').removeClass('expand').addClass('collapse').find('span').text(TAPi18n.__ "Collapse")
+
+	"click .collapse": (e) ->
+		$(e.currentTarget).closest('.section').addClass('section-collapsed')
+		$(e.currentTarget).closest('button').addClass('expand').removeClass('collapse').find('span').text(TAPi18n.__ "Expand")
+
 
 Template.admin.onRendered ->
 	Tracker.afterFlush ->
