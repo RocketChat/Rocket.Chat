@@ -23,7 +23,7 @@ Template.register.events
 		unless $name.val().trim() and $email.val().trim()
 			instance.error.set(TAPi18n.__('Please_fill_name_and_email'))
 		else
-			Meteor.call 'registerGuest', visitor.getToken(), $name.val(), $email.val(), (err, result) ->
+			Meteor.call 'registerGuest', visitor.getToken(), $name.val(), $email.val(), (error, result) ->
 				if error?
 					return instance.error.set error.reason
 
