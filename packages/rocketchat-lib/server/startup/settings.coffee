@@ -59,6 +59,7 @@ RocketChat.settings.add 'Site_Name', 'Rocket.Chat', { type: 'string', group: 'Ge
 RocketChat.settings.add 'Allow_Invalid_SelfSigned_Certs', false, { type: 'boolean', group: 'General' }
 RocketChat.settings.add 'Disable_Favorite_Rooms', false, { type: 'boolean', group: 'General' }
 RocketChat.settings.add 'CDN_PREFIX', '', { type: 'string', group: 'General' }
+RocketChat.settings.add 'Restart', 'restart_server', { type: 'action', group: 'General', actionText: 'Restart_the_server' }
 
 RocketChat.settings.add 'UTF8_Names_Validation', '[0-9a-zA-Z-_.]+', { type: 'string', group: 'General', section: 'UTF8', public: true }
 RocketChat.settings.add 'UTF8_Names_Slugify', true, { type: 'boolean', group: 'General', section: 'UTF8', public: true }
@@ -100,18 +101,19 @@ RocketChat.settings.add 'Meta_msvalidate01', '', { type: 'string', group: 'Meta'
 
 RocketChat.settings.addGroup 'Push'
 RocketChat.settings.add 'Push_debug', false, { type: 'boolean', group: 'Push', public: true }
-RocketChat.settings.add 'Push_enable', false, { type: 'boolean', group: 'Push', public: true }
+RocketChat.settings.add 'Push_enable', true, { type: 'boolean', group: 'Push', public: true }
 RocketChat.settings.add 'Push_enable_gateway', true, { type: 'boolean', group: 'Push' }
 RocketChat.settings.add 'Push_gateway', 'https://rocket.chat', { type: 'string', group: 'Push' }
-RocketChat.settings.add 'Push_production', false, { type: 'boolean', group: 'Push', public: true }
-RocketChat.settings.add 'Push_apn_passphrase', '', { type: 'string', group: 'Push' }
-RocketChat.settings.add 'Push_apn_key', '', { type: 'string', multiline: true, group: 'Push' }
-RocketChat.settings.add 'Push_apn_cert', '', { type: 'string', multiline: true, group: 'Push' }
-RocketChat.settings.add 'Push_apn_dev_passphrase', '', { type: 'string', group: 'Push' }
-RocketChat.settings.add 'Push_apn_dev_key', '', { type: 'string', multiline: true, group: 'Push' }
-RocketChat.settings.add 'Push_apn_dev_cert', '', { type: 'string', multiline: true, group: 'Push' }
-RocketChat.settings.add 'Push_gcm_api_key', '', { type: 'string', group: 'Push' }
-RocketChat.settings.add 'Push_gcm_project_number', '', { type: 'string', group: 'Push', public: true }
+RocketChat.settings.add 'Push_production', true, { type: 'boolean', group: 'Push', public: true }
+RocketChat.settings.add 'Push_test_push', 'push_test', { type: 'action', group: 'Push', actionText: 'Send_a_test_push_to_my_user' }
+RocketChat.settings.add 'Push_apn_passphrase', '', { type: 'string', group: 'Push', section: 'Certificates_and_Keys' }
+RocketChat.settings.add 'Push_apn_key', '', { type: 'string', multiline: true, group: 'Push', section: 'Certificates_and_Keys' }
+RocketChat.settings.add 'Push_apn_cert', '', { type: 'string', multiline: true, group: 'Push', section: 'Certificates_and_Keys' }
+RocketChat.settings.add 'Push_apn_dev_passphrase', '', { type: 'string', group: 'Push', section: 'Certificates_and_Keys' }
+RocketChat.settings.add 'Push_apn_dev_key', '', { type: 'string', multiline: true, group: 'Push', section: 'Certificates_and_Keys' }
+RocketChat.settings.add 'Push_apn_dev_cert', '', { type: 'string', multiline: true, group: 'Push', section: 'Certificates_and_Keys' }
+RocketChat.settings.add 'Push_gcm_api_key', '', { type: 'string', group: 'Push', section: 'Certificates_and_Keys' }
+RocketChat.settings.add 'Push_gcm_project_number', '', { type: 'string', group: 'Push', public: true, section: 'Certificates_and_Keys' }
 
 RocketChat.settings.addGroup 'Layout'
 RocketChat.settings.add 'Layout_Home_Title', 'Home', { type: 'string', group: 'Layout', public: true, section: 'Content' }

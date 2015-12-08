@@ -1,4 +1,7 @@
 {
+  "Message_AllowStarring" : "Erlaube Nachricht mit einem Stern zu makieren",
   "Star_Message" : "Stern-Nachrichten",
-  "Unstar_Message" : "Stern entfernen"
+  "Unstar_Message" : "Stern entfernen",
+  "Starred_Messages" : "Nachrichten mit Stern",
+  "No_starred_messages" : "Keine Nachrichten mit einem Stern"
 }
