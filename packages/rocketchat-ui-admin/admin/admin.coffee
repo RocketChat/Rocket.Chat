@@ -147,7 +147,9 @@ Template.admin.events
 				toastr.error TAPi18n.__(err.error), TAPi18n.__('Error')
 				return
 
-			toastr.success TAPi18n.__("Your_push_was_sent_to_s_devices", data), TAPi18n.__('Success')
+			args = [data.message].concat data.params
+
+			toastr.success TAPi18n.__.apply(TAPi18n, args), TAPi18n.__('Success')
 
 
 Template.admin.onRendered ->
