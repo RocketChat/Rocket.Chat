@@ -40,7 +40,7 @@ Mailer.sendMail = (from, subject, body, dryrun) ->
 		# Meteor.users.find({ "username": /\.rocket\.team/ }).forEach (user) ->
 			email = user.emails?[0]?.address
 
-			html = body.replace /\[unsubscribe\]/g, Meteor.absoluteUrl(FlowRouter.path('rocket-mailer/unsubscribe/:hash', { hash: "#{user._id}:#{user.createdAt.getTime()}" }))
+			html = body.replace /\[unsubscribe\]/g, Meteor.absoluteUrl(FlowRouter.path('mailer/unsubscribe/:hash', { hash: "#{user._id}:#{user.createdAt.getTime()}" }))
 			html = html.replace /\[name\]/g, user.name
 			fname = _.strLeft user.name, ' '
 			lname = _.strRightBack user.name, ' '
