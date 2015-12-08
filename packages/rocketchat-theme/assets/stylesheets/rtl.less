@@ -315,7 +315,8 @@
 			.icon-spin4 {
 				.left(5px);
 			}
-			.icon-search {
+			.icon-search,
+			.icon-right-open-small {
 				.right(2px);
 			}
 			input {
@@ -606,7 +607,8 @@
 	}
 
 	.statistics-table {
-		th, td {
+		th,
+		td {
 			text-align: right;
 		}
 	}
@@ -620,9 +622,7 @@
 			.left(10px);
 		}
 	}
-
-	/* Overridding the icons Unicode to suit RTL languages
-	 * from _octicons.less */
-	.octicon-chevron-right:before { content: '\f0a4'}
-	.icon-angle-right:before { content: '\e914'; }
+	#swipebox-overlay{
+		direction: ltr;
+	}
 }

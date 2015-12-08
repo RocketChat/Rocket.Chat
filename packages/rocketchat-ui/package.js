@@ -83,6 +83,7 @@ Package.onUse(function(api) {
 	api.addFiles('views/app/privateHistory.html', 'client');
 	api.addFiles('views/app/room.html', 'client');
 	api.addFiles('views/app/roomSearch.html', 'client');
+	api.addFiles('views/app/secretURL.html', 'client');
 	api.addFiles('views/app/userSearch.html', 'client');
 	api.addFiles('views/app/spotlight/mobileMessageMenu.html', 'client');
 	api.addFiles('views/app/spotlight/spotlight.html', 'client');
@@ -98,6 +99,7 @@ Package.onUse(function(api) {
 	api.addFiles('views/app/privateHistory.coffee', 'client');
 	api.addFiles('views/app/room.coffee', 'client');
 	api.addFiles('views/app/roomSearch.coffee', 'client');
+	api.addFiles('views/app/secretURL.coffee', 'client');
 	api.addFiles('views/app/spotlight/mobileMessageMenu.coffee', 'client');
 	api.addFiles('views/app/spotlight/spotlight.coffee', 'client');
 	api.addFiles('views/app/videoCall/videoButtons.coffee', 'client');

@@ -6,39 +6,32 @@ branches:
   - master
 node_js:
 - '0.12'
+cache:
+  directories:
+    - ~/.meteor
 before_install:
-- curl https://install.meteor.com | /bin/sh
 - npm install -g npm@'>=2.13.5'
 - mkdir -p node_modules
-- cd $TRAVIS_BUILD_DIR
-- mkdir ../build
-- export SANDSTORM_VERSION=$(curl -f "https://install.sandstorm.io/dev?from=0&type=install")
-- export PATH=$PATH:/tmp/sandstorm-$SANDSTORM_VERSION/bin
-- cd .sandstorm
-- ./preprcbuild.sh
+install:
+- curl https://install.meteor.com | /bin/sh
+before_script:
+- mkdir /tmp/build
 script:
-- cd $TRAVIS_BUILD_DIR
-- if [[ "$TRAVIS_PULL_REQUEST" != "false" ]]; then echo "Building PR $TRAVIS_PULL_REQUEST"; meteor build ../build; exit $?; fi
-- export TAG=$(git describe --abbrev=0 --tags)
-- meteor build ../build
-- cp ../build/Rocket.Chat.tar.gz  /home/vagrant
-- cd .travis
-- sh ./namefiles.sh
-- cd $TRAVIS_BUILD_DIR/.sandstorm
-- ./buildrc.sh
-- cd $TRAVIS_BUILD_DIR
-- mv rocket.chat.latest.spk ../build
+- meteor build /tmp/build
+before_deploy:
+- mkdir /tmp/deploy
+- .travis/namefiles.sh
+- .travis/sandstorm.sh
 deploy:
-  provider: s3
-  access_key_id: "AKIAIKIA7H7D47KUHYCA"
-  secret_access_key: $ACCESSKEY
-  bucket: "rocketchatbuild"
-  skip_cleanup: true
-  local_dir: ../build
-  on:
-    branch:
-    - develop
-    - master
+  - provider: s3
+    access_key_id: "AKIAIKIA7H7D47KUHYCA"
+    secret_access_key: $ACCESSKEY
+    bucket: "rocketchatbuild"
+    skip_cleanup: true
+    local_dir: /tmp/deploy
+    on:
+      branch:
+      - master
+      - develop
 after_deploy:
-- cd .travis
-- sh ./builddocker.sh
+- .travis/docker.sh
