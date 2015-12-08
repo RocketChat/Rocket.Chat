@@ -31,16 +31,7 @@ deploy:
     local_dir: /tmp/deploy
     on:
       branch:
-      - develop
-  - provider: s3
-    access_key_id: "AKIAIKIA7H7D47KUHYCA"
-    secret_access_key: $ACCESSKEY
-    bucket: "rocketchatbuild"
-    skip_cleanup: true
-    local_dir: /tmp/deploy
-    on:
-      tags: true
-      branch:
       - master
+      - develop
 after_deploy:
 - .travis/docker.sh
