@@ -24,7 +24,7 @@
 							{{#if section}}
 								<div class="section-title">
 									<div class="section-title-text">
-										{{section}}
+										{{_ section}}
 									</div>
 									<div class="section-title-right">
 										<button class="button secondary expand"><span>{{_ "Expand"}}</span></button>
@@ -72,6 +72,10 @@
 
 											{{#if $eq type 'color'}}
 												<input type="text" class="minicolors" name="{{_id}}" value="{{value}}" />
+											{{/if}}
+
+											{{#if $eq type 'action'}}
+												<button type="button" class="button primary action" data-setting="{{_id}}" data-action="{{value}}">{{_ actionText}}</button>
 											{{/if}}
 
 											{{#if $eq type 'asset'}}
