@@ -69,6 +69,37 @@ Template.admin.events
 				return toastr.error TAPi18n.__ 'Error_updating_settings' if err
 				toastr.success TAPi18n.__ 'Settings_updated'
 
+	"click .submit .reset-default-theme": (e, t) ->
+		group = FlowRouter.getParam('group')
+		settings = Settings.find({ group: group }).fetch()
+		updateSettings = []
+		updateSettings.push { _id: "theme-color-content-background-color", value: "#FFF" }
+		updateSettings.push { _id: "theme-color-primary-background-color", value: "#04436A" }
+		updateSettings.push { _id: "theme-color-secondary-background-color", value: "#F4F4F4" }
+		updateSettings.push { _id: "theme-color-tertiary-background-color", value: "#EAEAEA" }
+		updateSettings.push { _id: "theme-color-primary-font-color", value: "#444444" }
+		updateSettings.push { _id: "theme-color-secondary-font-color", value: "#7F7F7F" }
+		updateSettings.push { _id: "theme-color-tertiary-font-color", value: "rgba(255, 255, 255, 0.6)" }
+		updateSettings.push { _id: "theme-color-input-font-color", value: "rgba(255, 255, 255, 0.85)" }
+		updateSettings.push { _id: "theme-color-link-font-color", value: "#008CE3" }
+		updateSettings.push { _id: "theme-color-info-font-color", value: "#AAAAAA" }
+		updateSettings.push { _id: "theme-color-info-active-font-color", value: "#FF0000" }
+		updateSettings.push { _id: "theme-color-smallprint-font-color", value: "#C2E7FF" }
+		updateSettings.push { _id: "theme-color-smallprint-hover-color", value: "#FFFFFF" }
+		updateSettings.push { _id: "theme-color-status-online", value: "#35AC19" }
+		updateSettings.push { _id: "theme-color-status-offline", value: "rgba(150, 150, 150, 0.50)" }
+		updateSettings.push { _id: "theme-color-status-busy", value: "#D30230" }
+		updateSettings.push { _id: "theme-color-status-away", value: "#FCB316" }
+		updateSettings.push { _id: "theme-color-code-background", value: "#F8F8F8" }
+		updateSettings.push { _id: "theme-color-code-border", value: "#CCC" }
+		updateSettings.push { _id: "theme-color-code-color", value: "#333" }
+		updateSettings.push { _id: "theme-color-blockquote-background", value: "#CCC" }
+
+		if not _.isEmpty updateSettings
+			RocketChat.settings.batchSet updateSettings, (err, success) ->
+				return toastr.error TAPi18n.__ 'Error Resetting Settings' if err
+				toastr.success TAPi18n.__ 'Reset to Default'
+
 	"click .submit .add-custom-oauth": (e, t) ->
 		config =
 			title: TAPi18n.__ 'Add_custom_oauth'

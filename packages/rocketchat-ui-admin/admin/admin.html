@@ -120,6 +120,9 @@
 						{{#if $eq group._id 'Accounts'}}
 							<button class="button secondary add-custom-oauth"><span>{{_ "Add_custom_oauth"}}</span></button>
 						{{/if}}
+						{{#if $eq group._id 'Theme'}}
+							<button class="button secondary reset-default-theme"><span>{{_ "Reset"}}</span></button>
+						{{/if}}
 						<button class="button save"><i class="icon-send"></i><span>{{_ "Save_changes"}}</span></button>
 					</div>
 				</div>
