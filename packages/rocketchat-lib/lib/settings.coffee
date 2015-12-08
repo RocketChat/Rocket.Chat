@@ -41,5 +41,8 @@ RocketChat.settings =
 		# else if Meteor.settings?[_id]?
 		# 	callback key, Meteor.settings[_id], false
 
-		RocketChat.settings.callbacks[key] ?= []
-		RocketChat.settings.callbacks[key].push callback
+		keys = [].concat key
+
+		for k in keys
+			RocketChat.settings.callbacks[k] ?= []
+			RocketChat.settings.callbacks[k].push callback
