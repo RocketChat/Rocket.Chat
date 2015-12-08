@@ -40,6 +40,9 @@ Template.admin.helpers
 	selectedOption: (_id, val) ->
 		return RocketChat.settings.get(_id) is val
 
+	random: ->
+		return Random.id()
+
 Template.admin.events
 	"click .submit .save": (e, t) ->
 		group = FlowRouter.getParam('group')
@@ -99,6 +102,41 @@ Template.admin.events
 
 		swal config, ->
 			Meteor.call 'removeOAuthService', name
+
+	"click .delete-asset": ->
+		Meteor.call 'unsetAsset', @asset
+
+	"change input[type=file]": ->
+		e = event.originalEvent or event
+		files = e.target.files
+		if not files or files.length is 0
+			files = e.dataTransfer?.files or []
+
+		for blob in files
+			toastr.info TAPi18n.__ 'Uploading_file'
+
+			if @fileConstraints.contentType isnt blob.type
+				toastr.error TAPi18n.__ 'Invalid_file_type'
+				return
+
+			reader = new FileReader()
+			reader.readAsBinaryString(blob)
+			reader.onloadend = =>
+				Meteor.call 'setAsset', reader.result, blob.type, @asset, (err, data) ->
+					if err?
+						toastr.error TAPi18n.__ err.error
+						console.log err.error
+						return
+
+					toastr.success TAPi18n.__ 'File_uploaded'
+
+	"click .expand": (e) ->
+		$(e.currentTarget).closest('.section').removeClass('section-collapsed')
+		$(e.currentTarget).closest('button').removeClass('expand').addClass('collapse').find('span').text(TAPi18n.__ "Collapse")
+
+	"click .collapse": (e) ->
+		$(e.currentTarget).closest('.section').addClass('section-collapsed')
+		$(e.currentTarget).closest('button').addClass('expand').removeClass('collapse').find('span').text(TAPi18n.__ "Expand")
 
 
 Template.admin.onRendered ->

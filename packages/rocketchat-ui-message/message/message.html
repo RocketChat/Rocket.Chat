@@ -22,19 +22,10 @@
 		{{#if private}}
 			<span class="private">{{_ "Only_you_can_see_this_message"}}</span>
 		{{/if}}
-		{{#if actions.length}}
-			<div class="message-cog-container">
-				<i class="icon-cog message-cog" aria-label="{{_ "Actions"}}"></i>
-				<div class="message-dropdown">
-					<ul>
-						<li class="message-dropdown-close"><i class=" icon-angle-left" aria-label="{{_ "Close"}}"></i></li>
-						{{#each actions}}
-							<li class="{{id}} {{classes}} message-action" title="{{_ i18nLabel}}"><i class="{{icon}}" aria-label="{{_ i18nLabel}}"></i></li>
-						{{/each}}
-					</ul>
-				</div>
-			</div>
-		{{/if}}
+
+		<div class="message-cog-container">
+			<i class="icon-cog message-cog" aria-label="{{_ "Actions"}}"></i>
+		</div>
 		</span>
 		<div class="body" dir="auto">
 			{{{body}}}
