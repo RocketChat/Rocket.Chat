@@ -59,6 +59,7 @@ RocketChat.settings.add 'Site_Name', 'Rocket.Chat', { type: 'string', group: 'Ge
 RocketChat.settings.add 'Allow_Invalid_SelfSigned_Certs', false, { type: 'boolean', group: 'General' }
 RocketChat.settings.add 'Disable_Favorite_Rooms', false, { type: 'boolean', group: 'General' }
 RocketChat.settings.add 'CDN_PREFIX', '', { type: 'string', group: 'General' }
+RocketChat.settings.add 'Restart', 'restart_server', { type: 'action', group: 'General', actionText: 'Restart_the_server' }
 
 RocketChat.settings.add 'UTF8_Names_Validation', '[0-9a-zA-Z-_.]+', { type: 'string', group: 'General', section: 'UTF8', public: true }
 RocketChat.settings.add 'UTF8_Names_Slugify', true, { type: 'boolean', group: 'General', section: 'UTF8', public: true }
