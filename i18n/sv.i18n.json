@@ -172,7 +172,6 @@
   "Room_name_changed" : "Rummets namn ändrat till :  <em>__room_name__</em> av <em>__user_by__</em>",
   "Room_name_changed_successfully" : "Rummets namn har ändrats ",
   "room_user_count" : "%s användare",
-  "Save" : "Spara",
   "Save_changes" : "Spara ändringar",
   "Search" : "Sök",
   "Search_settings" : "Sökinställningar",

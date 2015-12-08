@@ -94,10 +94,10 @@ RocketChat.Notifications.onUser 'message', (msg) ->
 					query =
 						t: type
 
-					if type in ['c', 'p']
-						query.name = name
-					else if type is 'd'
+					if type is 'd'
 						query.usernames = $all: [Meteor.user()?.username, name]
+					else
+						query.name = name
 
 					room = ChatRoom.findOne query, { reactive: false }
 
