@@ -34,12 +34,15 @@ Meteor.methods
 			title: "@#{user.username}"
 			text: TAPi18n.__ "This_is_a_push_test_messsage"
 			apn:
-				text: "@#{user.username} :\n" + TAPi18n.__ "This_is_a_push_test_messsage"
+				text: "@#{user.username}:\n" + TAPi18n.__ "This_is_a_push_test_messsage"
 			sound: 'chime'
 			query:
 				userId: user._id
 
-		return tokens
+		return {} =
+			message: "Your_push_was_sent_to_s_devices"
+			params: [tokens]
+
 
 Meteor.startup ->
 
