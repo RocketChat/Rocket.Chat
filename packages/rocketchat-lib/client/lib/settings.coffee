@@ -32,16 +32,17 @@ RocketChat.settings.init = ->
 RocketChat.settings.init()
 
 Meteor.startup ->
-	Tracker.autorun (c) ->
-		siteUrl = RocketChat.settings.get('Site_Url')
-		if not siteUrl or not Meteor.userId()?
-			return
+	if Meteor.isCordova is false
+		Tracker.autorun (c) ->
+			siteUrl = RocketChat.settings.get('Site_Url')
+			if not siteUrl or not Meteor.userId()?
+				return
 
-		if RocketChat.authz.hasRole(Meteor.userId(), 'admin') is false
+			if RocketChat.authz.hasRole(Meteor.userId(), 'admin') is false
+				return c.stop()
+
+			siteUrl = siteUrl.replace /\/$/, ''
+			if siteUrl isnt location.origin
+				toastr.warning TAPi18n.__('The_configured_URL_is_different_from_the_URL_you_are_accessing'), TAPi18n.__('Warning')
+
 			return c.stop()
-
-		siteUrl = siteUrl.replace /\/$/, ''
-		if siteUrl isnt location.origin
-			toastr.warning TAPi18n.__('The_configured_URL_is_different_from_the_URL_you_are_accessing'), TAPi18n.__('Warning')
-
-		return c.stop()
