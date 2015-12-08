@@ -18,7 +18,6 @@ install:
 before_script:
 - mkdir /tmp/build
 script:
-- cd $TRAVIS_BUILD_DIR
 - meteor build /tmp/build
 before_deploy:
 - mkdir /tmp/deploy
