@@ -7,13 +7,18 @@ branches:
   - even-faster-deploy
 node_js:
 - '0.12'
+cache:
+  directories:
+    - ~/.meteor
 before_install:
-- curl https://install.meteor.com | /bin/sh
 - npm install -g npm@'>=2.13.5'
 - mkdir -p node_modules
+install:
+- curl https://install.meteor.com | /bin/sh
+before_script:
+- mkdir /tmp/build
 script:
 - cd $TRAVIS_BUILD_DIR
-- mkdir /tmp/build
 - meteor build /tmp/build
 before_deploy:
 - mkdir /tmp/deploy
