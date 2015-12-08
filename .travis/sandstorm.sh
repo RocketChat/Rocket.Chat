@@ -28,7 +28,7 @@ export METEOR_DEV_BUNDLE=$(dirname $(readlink -f "$METEOR_WAREHOUSE_DIR/meteor")
 
 sudo mkdir -p /home/vagrant
 sudo chown -R travis /home/vagrant
-tar -zxf /tmp/build/Rocket.Chat.tar.gz /home/vagrant/
+tar -zxf /tmp/build/Rocket.Chat.tar.gz --directory /home/vagrant/
 cd /home/vagrant/bundle/programs/server && "$METEOR_DEV_BUNDLE/bin/npm" install
 cd $TRAVIS_BUILD_DIR/.sandstorm
 sed -i "s/\sid = .*/$SANDSTORM_ID/" sandstorm-pkgdef.capnp
