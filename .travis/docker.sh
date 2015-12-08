@@ -13,9 +13,9 @@ CURL_URL="https://registry.hub.docker.com/u/rocketchat/rocket.chat/trigger/$PUSH
 
 if [ -z ${TRAVIS_TAG+x} ];
 then
-CURL_DATA='{"source_type": "Branch", "source_name": "'$TRAVIS_BRANCH'", "docker_tag": "'$TAG.$TRAVIS_BUILD_NUMBER.$TRAVIS_BRANCH'"}';
+CURL_DATA='{"source_type": "Branch", "source_name": "'$TRAVIS_BRANCH'", "docker_tag": "'$TRAVIS_BUILD_NUMBER.$TRAVIS_BRANCH'"}';
 else
-CURL_DATA='{"source_type": "Tag", "source_name": "'$TAG'", "docker_tag": "'$TAG.$TRAVIS_BUILD_NUMBER.$TRAVIS_BRANCH'"}';
+CURL_DATA='{"source_type": "Tag", "source_name": "'$TRAVIS_TAG'", "docker_tag": "'$TRAVIS_BUILD_NUMBER.$TRAVIS_BRANCH.$TRAVIS_TAG'"}';
 fi
 
 curl -H "${CURL_HEADER}" --data "${CURL_DATA}" -X POST "${CURL_URL}"

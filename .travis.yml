@@ -4,7 +4,6 @@ branches:
   only:
   - develop
   - master
-  - even-faster-deploy
 node_js:
 - '0.12'
 cache:
@@ -33,14 +32,15 @@ deploy:
     on:
       branch:
       - develop
-      - master
-      - even-faster-deploy
-  - provider: releases
-    api_key: "GITHUB OAUTH TOKEN"
-    file: "FILE TO UPLOAD"
+  - provider: s3
+    access_key_id: "AKIAIKIA7H7D47KUHYCA"
+    secret_access_key: $ACCESSKEY
+    bucket: "rocketchatbuild"
     skip_cleanup: true
+    local_dir: /tmp/deploy
     on:
-      branch: master
       tags: true
+      branch:
+      - master
 after_deploy:
 - .travis/docker.sh
