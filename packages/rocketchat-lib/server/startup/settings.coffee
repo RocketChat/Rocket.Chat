@@ -104,6 +104,7 @@ RocketChat.settings.add 'Push_enable', true, { type: 'boolean', group: 'Push', p
 RocketChat.settings.add 'Push_enable_gateway', true, { type: 'boolean', group: 'Push' }
 RocketChat.settings.add 'Push_gateway', 'https://rocket.chat', { type: 'string', group: 'Push' }
 RocketChat.settings.add 'Push_production', true, { type: 'boolean', group: 'Push', public: true }
+RocketChat.settings.add 'Push_test_push', 'push_test', { type: 'action', group: 'Push', actionText: 'Send_a_test_push_to_my_user' }
 RocketChat.settings.add 'Push_apn_passphrase', '', { type: 'string', group: 'Push', section: 'Certificates_and_Keys' }
 RocketChat.settings.add 'Push_apn_key', '', { type: 'string', multiline: true, group: 'Push', section: 'Certificates_and_Keys' }
 RocketChat.settings.add 'Push_apn_cert', '', { type: 'string', multiline: true, group: 'Push', section: 'Certificates_and_Keys' }

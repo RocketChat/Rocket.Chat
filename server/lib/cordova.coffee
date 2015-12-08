@@ -2,6 +2,45 @@ Meteor.methods
 	log: ->
 		console.log.apply console, arguments
 
+	push_test: ->
+		user = Meteor.user()
+		if not user?
+			throw new Meteor.Error 'unauthorized', '[methods] push_test -> Unauthorized'
+
+		if not RocketChat.authz.hasRole(user._id, 'admin')
+			throw new Meteor.Error 'unauthorized', '[methods] push_test -> Unauthorized'
+
+		if Push.enabled isnt true
+			throw new Meteor.Error 'push_disabled'
+
+		query =
+			$and: [
+				userId: user._id
+				{
+					$or: [
+						{ 'token.apn': { $exists: true } }
+						{ 'token.gcm': { $exists: true } }
+					]
+				}
+			]
+
+		tokens = Push.appCollection.find(query).count()
+
+		if tokens is 0
+			throw new Meteor.Error 'no_tokens_for_this_user'
+
+		Push.send
+			from: 'push'
+			title: "@#{user.username}"
+			text: TAPi18n.__ "This_is_a_push_test_messsage"
+			apn:
+				text: "@#{user.username} :\n" + TAPi18n.__ "This_is_a_push_test_messsage"
+			sound: 'chime'
+			query:
+				userId: user._id
+
+		return tokens
+
 Meteor.startup ->
 
 	Push.debug = RocketChat.settings.get 'Push_debug'
