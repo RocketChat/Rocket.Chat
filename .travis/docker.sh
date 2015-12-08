@@ -1,6 +1,6 @@
 #!/bin/bash
-
 set -euo pipefail
+IFS=$'\n\t'
 
 # TRAVIS_TAG='v0.7'
 # TAG="v0.7"
