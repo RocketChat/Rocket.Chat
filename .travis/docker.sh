@@ -15,5 +15,4 @@ else
   fi
 fi
 
-echo -H "${CURL_HEADER}" --data "${CURL_DATA}" -X POST $CURL_URL
-curl -H "${CURL_HEADER}" --data "${CURL_DATA}" -X POST $CURL_URL
+curl -H '"'$CURL_HEADER'"' --data "'"$CURL_DATA"'" -X POST $CURL_URL
