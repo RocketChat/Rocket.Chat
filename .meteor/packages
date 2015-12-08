@@ -25,6 +25,7 @@ meteor-base
 mobile-experience
 mongo
 random
+rate-limit
 reactive-dict
 reactive-var
 reload
@@ -123,3 +124,4 @@ yasaricli:slugify
 yasinuslu:blaze-meta
 # sanjo:jasmine
 # velocity:html-reporter
+rocketchat:assets

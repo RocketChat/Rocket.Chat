@@ -93,6 +93,19 @@ RocketChat.settings.updateById = (_id, value) ->
 
 ###
 # Update a setting by id
+# @param {String} _id
+###
+RocketChat.settings.clearById = (_id) ->
+	# console.log '[functions] RocketChat.settings.clearById -> '.green, 'arguments:', arguments
+
+	if not _id?
+		return false
+
+	return RocketChat.models.Settings.updateValueById _id, undefined
+
+
+###
+# Update a setting by id
 ###
 RocketChat.settings.init = ->
 	initialLoad = true
