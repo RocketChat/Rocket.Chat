@@ -1,0 +1,22 @@
+<template name="register">
+	<div class="livechat-registration">
+		<div class="title" style="background-color:{{color}}">
+			<h1>{{title}}</h1>
+		</div>
+		<form id="livechat-registration" class="livechat-form">
+			<div class="wrapper">
+				<label>
+					{{{welcomeMessage}}}
+				</label>
+				<input type="text" name="name" id="guestName" placeholder="{{_ "Name"}}">
+				<input type="email" name="email" id="guestEmail" placeholder="{{_ "E-mail"}}">
+				<button type="submit" id="btnEntrar" class="-btn"> {{_ "Start_Chat"}} </button>
+			</div>
+			{{#if error}}
+				<div class="error show">
+					<span>{{error}}</span>
+				</div>
+			{{/if}}
+		</form>
+	</div>
+</template>
