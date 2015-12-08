@@ -3,11 +3,28 @@
 		{{#if hasPermission}}
 			<a href="{{pathFor "admin-integrations-new"}}" class="button primary new-role">{{_ "New_integration"}}</a>
 
-			{{#each integration}}
-				<div>
-
+			<div class="rocket-form">
+				<div class="section">
+					<div class="admin-integrations-new-panel">
+						{{#each integrations}}
+							<a href="{{pathFor "admin-integrations-incoming" token=token}}">
+								<div class="admin-integrations-new-item">
+									<i class="icon-login"></i>
+									<div class="admin-integrations-new-item-body">
+										<div class="admin-integrations-new-item-title">
+											Incoming WebHook {{#if name}}- {{name}}{{/if}}
+										</div>
+										<div class="admin-integrations-new-item-description">
+											Post to <strong>{{channel}}</strong> as <strong>{{username}}</strong>
+										</div>
+									</div>
+									<i class="icon-angle-right"></i>
+								</div>
+							</a>
+						{{/each}}
+					</div>
 				</div>
-			{{/each}}
+			</div>
 		{{else}}
 			{{_ "Not_authorized"}}
 		{{/if}}
