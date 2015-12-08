@@ -11,7 +11,7 @@ else
   if ["$TRAVIS_BRANCH" ="master" ]; then
     CURL_DATA='{"source_type":"Branch","source_name":"master","docker_tag":"latest"}';
   else
-    CURL_DATA='{"source_type":"Branch","source_name":"$TRAVIS_BRANCH","docker_tag":"$TRAVIS_BRANCH"}';
+    CURL_DATA='{"source_type":"Branch","source_name":"'$TRAVIS_BRANCH'","docker_tag":"'$TRAVIS_BRANCH'"}';
   fi
 fi
 
