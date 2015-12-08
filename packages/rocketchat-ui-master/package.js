@@ -25,7 +25,7 @@ Package.onUse(function(api) {
 	api.addFiles('master/main.html', 'client');
 	api.addFiles('master/loading.html', 'client');
 	api.addFiles('master/error.html', 'client');
-	api.addFiles('master/blankLayout.html', 'client');
+	api.addFiles('master/logoLayout.html', 'client');
 
 	api.addFiles('master/main.coffee', 'client');
 });
