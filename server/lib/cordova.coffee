@@ -44,7 +44,8 @@ Meteor.methods
 			params: [tokens]
 
 
-Meteor.startup ->
+configurePush = ->
+	console.log 'configuring push'
 
 	Push.debug = RocketChat.settings.get 'Push_debug'
 
@@ -123,3 +124,30 @@ Meteor.startup ->
 			pushGetway = DDP.connect(RocketChat.settings.get('Push_gateway'), {_dontPrintErrors: false})
 
 		Push.enabled = true
+
+
+Meteor.startup ->
+	configurePush()
+
+	## Prepared to reconfigure the push plugin
+	#
+	# keys = [
+	# 	'Push_enable'
+	# 	'Push_enable_gateway'
+	# 	'Push_gcm_api_key'
+	# 	'Push_gcm_project_number'
+	# 	'Push_apn_passphrase'
+	# 	'Push_apn_key'
+	# 	'Push_apn_cert'
+	# 	'Push_production'
+	# 	'Push_apn_dev_passphrase'
+	# 	'Push_apn_dev_key'
+	# 	'Push_apn_dev_cert'
+	# 	'Push_gateway'
+	# ]
+
+	# configurePushDebounce = _.debounce Meteor.bindEnvironment(configurePush), 1000
+
+	# RocketChat.settings.onload keys, ->
+	# 	configurePushDebounce()
+
