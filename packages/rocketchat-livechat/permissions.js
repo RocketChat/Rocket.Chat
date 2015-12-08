@@ -7,7 +7,7 @@ Meteor.startup(() => {
 		Roles.createRole('livechat-manager');
 	}
 	if (RocketChat.models && RocketChat.models.Permissions) {
-		RocketChat.models.Permissions.createOrUpdate('view-l-room', ['livechat-agent', 'livechat-manager']);
-		RocketChat.models.Permissions.createOrUpdate('view-livechat-manager', ['livechat-manager']);
+		RocketChat.models.Permissions.createOrUpdate('view-l-room', ['livechat-agent', 'livechat-manager', 'admin']);
+		RocketChat.models.Permissions.createOrUpdate('view-livechat-manager', ['livechat-manager', 'admin']);
 	}
 });

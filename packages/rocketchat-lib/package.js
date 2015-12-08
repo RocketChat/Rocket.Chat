@@ -8,6 +8,7 @@ Package.describe({
 Package.onUse(function(api) {
 	api.versionsFrom('1.0');
 
+	api.use('rate-limit');
 	api.use('reactive-var');
 	api.use('reactive-dict');
 	api.use('coffeescript');
@@ -30,6 +31,7 @@ Package.onUse(function(api) {
 	api.addFiles('lib/slashCommand.coffee');
 
 	// SERVER LIB
+	api.addFiles('server/lib/RateLimiter.coffee', 'server');
 	api.addFiles('server/lib/roomTypes.coffee', 'server');
 
 	// SERVER MODELS
@@ -53,6 +55,7 @@ Package.onUse(function(api) {
 
 	// SERVER METHODS
 	api.addFiles('server/methods/addOAuthService.coffee', 'server');
+	api.addFiles('server/methods/checkRegistrationSecretURL.coffee', 'server');
 	api.addFiles('server/methods/joinDefaultChannels.coffee', 'server');
 	api.addFiles('server/methods/removeOAuthService.coffee', 'server');
 	api.addFiles('server/methods/robotMethods.coffee', 'server');
