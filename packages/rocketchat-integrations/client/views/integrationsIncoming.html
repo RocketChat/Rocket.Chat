@@ -6,49 +6,47 @@
 				<div class="section">
 					<div class="section-content">
 						<div class="input-line double-col">
-							<label>Post to Channel</label>
+							<label>Name (optional)</label>
 							<div>
-								<div>
-									<label><input type="radio" name="channelType" value="c" checked="{{$eq data.channelType 'c'}}" /> {{_ "Channel"}}</label>
-									<label><input type="radio" name="channelType" value="d" checked="{{$eq data.channelType 'd'}}" /> {{_ "User"}}</label>
-								</div>
-								<input type="text" name="{{_id}}" value="{{value}}" placeholder="{{_ 'User_or_channel_name'}}" />
-								<div class="settings-description">Messages that are sent to the incoming webhook will be posted here.</div>
+								<input type="text" name="name" value="{{data.name}}" placeholder="{{_ 'Optional'}}" />
+								<div class="settings-description">You can give a name just to manage your integrations.</div>
 							</div>
 						</div>
 						<div class="input-line double-col">
-							<label>Customize Name</label>
+							<label>Post to Channel</label>
 							<div>
-								<input type="text" name="{{_id}}" value="{{value}}" placeholder="{{placeholder}}" />
-								<div class="settings-description">Choose the username that this integration will post as.</div>
+								<input type="text" name="channel" value="{{data.channel}}" placeholder="{{_ 'User_or_channel_name'}}" />
+								<div class="settings-description">Messages that are sent to the incoming webhook will be posted here.</div>
+								<div class="settings-description">Start with <code class="inline">@</code> for user or <code class="inline">#</code> for channel. Eg: <code class="inline">@john</code> or <code class="inline">#general</code>.</div>
 							</div>
 						</div>
-						<!-- <div class="input-line double-col">
-							<label>Customize Icon</label>
+						<div class="input-line double-col">
+							<label>Post as:</label>
 							<div>
-								{{#if value}}
-									<div class="settings-file-preview">
-										<div class="preview" style="background-image:url({{value}}?_dc={{random}});"></div>
-										<div class="action">
-											<button type="button" class="button red delete-asset"><i class="icon-trash"></i>{{_ 'Delete'}}</button>
-										</div>
-									</div>
+								{{#if data.username}}
+									<input type="text" name="username" value="{{data.username}}" disabled="disabled" />
 								{{else}}
-									<div class="settings-file-preview">
-										<div class="preview no-file"><i class="icon-upload"></i></div>
-										<div class="action">
-											<div class="button primary">{{_ 'Select_file'}}
-												<input type="file" accept="{{fileConstraints.contentType}}" />
-											</div>
-										</div>
-									</div>
+									<input type="text" name="username" value="{{data.username}}" />
 								{{/if}}
-								<div class="settings-description">Change the icon that is used for messages from this integration.</div>
+								<div class="settings-description">Choose the username that this integration will post as.</div>
+								<div class="settings-description">Should exists a user with this username.</div>
 							</div>
-						</div> -->
+						</div>
+						{{#if data.token}}
+							<div class="input-line double-col">
+								<label>Webhook URL</label>
+								<div>
+									<input type="text" name="token" value="{{data.url}}" disabled="disabled" />
+									<div class="settings-description">Send your JSON payloads to this URL. <a href="#" class="clipboard" data-clipboard-target="[name=token]">COPY TO CLIPBOARD</a></div>
+								</div>
+							</div>
+						{{/if}}
 					</div>
 				</div>
 				<div class="submit">
+					{{#if data.token}}
+						<button class="button red delete"><i class="icon-trash"></i><span>{{_ "Delete"}}</span></button>
+					{{/if}}
 					<button class="button save"><i class="icon-send"></i><span>{{_ "Save_changes"}}</span></button>
 				</div>
 			</div>
