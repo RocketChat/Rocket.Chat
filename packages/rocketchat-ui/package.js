@@ -68,6 +68,9 @@ Package.onUse(function(api) {
 	api.addFiles('lib/recorderjs/audioRecorder.coffee', 'client');
 	api.addFiles('lib/recorderjs/recorder.js', 'client');
 
+	// LIB CLIPBOARDJS
+	api.addFiles('lib/clipboardjs/clipboard.js', 'client');
+
 	// TEMPLATE FILES
 	api.addFiles('views/cmsPage.html', 'client');
 	api.addFiles('views/fxos.html', 'client');
