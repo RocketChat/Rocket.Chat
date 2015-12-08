@@ -15,14 +15,14 @@ Package.onUse(function(api) {
 		'rocketchat:authorization@0.0.1'
 	]);
 
-	api.addFiles('lib/RocketMailer.coffee');
+	api.addFiles('lib/Mailer.coffee');
 
 	api.addFiles([
 		'client/startup.coffee',
 		'client/router.coffee',
-		'client/views/rocketMailer.html',
-		'client/views/rocketMailer.coffee',
-		'client/views/rocketMailerUnsubscribe.html'
+		'client/views/mailer.html',
+		'client/views/mailer.coffee',
+		'client/views/mailerUnsubscribe.html'
 	], 'client');
 
 	api.addFiles([
@@ -47,5 +47,5 @@ Package.onUse(function(api) {
 	api.imply('tap:i18n');
 	api.addFiles(tapi18nFiles, ['client', 'server']);
 
-	api.export('RocketMailer');
+	api.export('Mailer');
 });
