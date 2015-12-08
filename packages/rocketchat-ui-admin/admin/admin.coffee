@@ -138,6 +138,17 @@ Template.admin.events
 		$(e.currentTarget).closest('.section').addClass('section-collapsed')
 		$(e.currentTarget).closest('button').addClass('expand').removeClass('collapse').find('span').text(TAPi18n.__ "Expand")
 
+	"click button.action": (e) ->
+		if @type isnt 'action'
+			return
+
+		Meteor.call @value, (err, data) ->
+			if err?
+				toastr.error TAPi18n.__(err.error), TAPi18n.__('Error')
+				return
+
+			toastr.success TAPi18n.__("Your_push_was_sent_to_s_devices", data), TAPi18n.__('Success')
+
 
 Template.admin.onRendered ->
 	Tracker.afterFlush ->
