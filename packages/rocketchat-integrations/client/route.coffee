@@ -16,10 +16,11 @@ FlowRouter.route '/admin/integrations/new',
 			pageTemplate: 'integrationsNew'
 
 
-FlowRouter.route '/admin/integrations/incoming',
+FlowRouter.route '/admin/integrations/incoming/:token?',
 	name: 'admin-integrations-incoming'
 	action: (params) ->
 		BlazeLayout.render 'main',
 			center: 'pageSettingsContainer'
 			pageTitle: t('Integration_Incoming_WebHook')
 			pageTemplate: 'integrationsIncoming'
+			params: params
