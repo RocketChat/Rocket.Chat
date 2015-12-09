@@ -5,7 +5,7 @@ Api = new Restivus
 		user: ->
 			user = RocketChat.models.Users.findOne
 				_id: @request.params.userId
-				'services.resume.loginTokens.hashedToken': @request.params.token
+				'services.resume.loginTokens.hashedToken': decodeURIComponent @request.params.token
 
 			return user: user
 
