@@ -76,11 +76,12 @@ blockquote {
 	position: relative;
 	&:before {
 		content: ' ';
-		height: 100%;
 		width: 4px;
 		position: absolute;
+		border-radius: 2px;
 		left: 0px;
-		border-radius: 10px;
+		top: -1px;
+		bottom: -1px;
 	}
 }
 
@@ -297,7 +298,8 @@ blockquote {
 			animation-iteration-count: infinite;
 			animation-timing-function: linear;
 		}
-		.icon-search {
+		.icon-search,
+		.icon-right-open-small {
 			position: absolute;
 			left: 2px;
 			top: 10px;
@@ -467,6 +469,10 @@ form.inline {
 	input[type='password'] {
 		width: auto;
 	}
+}
+
+input[disabled] {
+	background-color: #f4f4f4 !important;
 }
 
 .search-form {
@@ -2594,6 +2600,12 @@ a.github-fork {
 			border-left: 1px dotted #BAB8B8;
 			padding-left: 3px;
 			margin-left: 3px;
+		}
+		.is-bot {
+			background-color: #ccc;
+			padding: 1px 4px;
+			border-radius: 2px;
+			color: white;
 		}
 	}
 	.private {
