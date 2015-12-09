@@ -4,15 +4,15 @@ Template.integrationsIncoming.helpers
 		return RocketChat.authz.hasAllPermission 'manage-integrations'
 
 	data: ->
-		params = Template.instance().data.params()
+		params = Template.instance().data.params?()
 
-		if params.token?
-			data = ChatIntegrations.findOne({token: params.token})
-			data.url = Meteor.absoluteUrl("hooks/#{data._id}/#{data.userId}/#{data.token}")
-			return data
+		if params?.id?
+			data = ChatIntegrations.findOne({_id: params.id})
+			if data?
+				data.url = Meteor.absoluteUrl("hooks/#{data._id}/#{data.userId}/#{data.token}")
+				return data
 
-		return {} =
-			channelType: 'c'
+		return {}
 
 
 Template.integrationsIncoming.events
@@ -30,13 +30,15 @@ Template.integrationsIncoming.events
 			closeOnConfirm: false
 			html: false
 		, ->
-			Meteor.call "deleteIntegration", params._id, (err, data) ->
+			Meteor.call "deleteIntegration", params.id, (err, data) ->
 				swal
 					title: t('Deleted')
 					text: t('Your_entry_has_been_deleted')
 					type: 'success'
 					timer: 1000
 					showConfirmButton: false
+
+				FlowRouter.go "admin-integrations"
 
 	"click .submit > .save": ->
 		name = $('[name=name]').val().trim()
@@ -53,11 +55,12 @@ Template.integrationsIncoming.events
 			channel: channel
 			name: name if name isnt ''
 
-		params = Template.instance().data.params()
-		if params._id?
-			Meteor.call "updateIntegration", params._id, integration, (err, data) ->
+		params = Template.instance().data.params?()
+		if params?.id?
+			Meteor.call "updateIntegration", params.id, integration, (err, data) ->
 				if err?
-					toastr.error TAPi18n.__(err.error)
+					return toastr.error TAPi18n.__(err.error)
+
 				toastr.success TAPi18n.__("Integration_updated")
 		else
 			integration.type = 'webhook-incoming'
@@ -65,6 +68,7 @@ Template.integrationsIncoming.events
 
 			Meteor.call "addIntegration", integration, (err, data) ->
 				if err?
-					toastr.error TAPi18n.__(err.error)
+					return toastr.error TAPi18n.__(err.error)
+
 				toastr.success TAPi18n.__("Integration_added")
-				FlowRouter.go "admin-integrations-incoming", {token: data.token}
+				FlowRouter.go "admin-integrations-incoming", {id: data._id}
