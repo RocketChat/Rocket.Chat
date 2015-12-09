@@ -49,6 +49,9 @@ Template.room.onCreated ->
 	self.atBottom = true
 
 Template.room.onRendered ->
+	unless Meteor.userId()
+		return BlazeLayout.render 'main', {center: 'register'}
+
 	this.chatMessages = new ChatMessages
 	this.chatMessages.init(this.firstNode)
 
