@@ -151,6 +151,7 @@
   "FileUpload_Enabled" : "File Uploads Enabled",
   "FileUpload_MaxFileSize" : "Maximum File Upload Size (in bytes)",
   "FileUpload_MediaTypeWhiteList" : "Accepted Media Types",
+  "FileUpload_MediaType_NotAccepted" : "Media Types Not Accepted",
   "FileUpload_MediaTypeWhiteListDescription" : "Comma-separated list of media types",
   "Follow_social_profiles" : "Follow our social profiles, fork us on github and share your thoughts about the rocket.chat app on our trello board.",
   "Forgot_password" : "Forgot your password",
