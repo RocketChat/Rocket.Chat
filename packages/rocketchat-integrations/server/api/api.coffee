@@ -71,7 +71,9 @@ Api.addRoute ':integrationId/:userId/:token', authRequired: true,
 						error: 'invalid-channel-type'
 
 		message =
-			msg: @bodyParams.text
+			msg: @bodyParams.text or ''
+			attachments: @bodyParams.attachments
+			parseUrls: false
 
 		RocketChat.sendMessage user, message, room, {}
 
