@@ -15,14 +15,14 @@
 											Incoming WebHook {{#if name}}- {{name}}{{/if}}
 										</div>
 										<div class="admin-integrations-new-item-description">
-											Post to <strong>{{channel}}</strong> as <strong>{{username}}</strong>
+											{{{_ "Post_to_s_as_s" channel username}}}
 										</div>
 									</div>
 									<i class="icon-angle-right"></i>
 								</div>
 							</a>
 						{{else}}
-							<h1>There is no integrations</h1>
+							<h1>{{_ "There_is_no_integrations"}}</h1>
 						{{/each}}
 					</div>
 				</div>
