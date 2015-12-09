@@ -46,6 +46,7 @@ Package.onUse(function(api) {
 	api.addFiles('client/views/sideNav/livechat.html', 'client');
 	api.addFiles('client/views/sideNav/livechat.js', 'client');
 	api.addFiles('client/views/sideNav/livechatFlex.html', 'client');
+	api.addFiles('client/views/sideNav/livechatFlex.js', 'client');
 
 	// methods
 	api.addFiles('server/methods/addAgent.js', 'server');
