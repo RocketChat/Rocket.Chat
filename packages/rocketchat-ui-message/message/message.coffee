@@ -1,4 +1,6 @@
 Template.message.helpers
+	isBot: ->
+		return 'bot' if this.bot?
 	own: ->
 		return 'own' if this.u?._id is Meteor.userId()
 	chatops: ->
@@ -109,7 +111,7 @@ Template.message.onViewRendered = (context) ->
 		if lastNode.previousElementSibling?.dataset?.date isnt lastNode.dataset.date
 			$(lastNode).addClass('new-day')
 			$(lastNode).removeClass('sequential')
-		else if lastNode.previousElementSibling?.dataset?.username isnt lastNode.dataset.username
+		else if lastNode.previousElementSibling?.dataset?.bot is 'bot' or lastNode.previousElementSibling?.dataset?.username isnt lastNode.dataset.username
 			$(lastNode).removeClass('sequential')
 
 		if lastNode.nextElementSibling?.dataset?.date is lastNode.dataset.date
@@ -119,7 +121,7 @@ Template.message.onViewRendered = (context) ->
 			$(lastNode.nextElementSibling).addClass('new-day')
 			$(lastNode.nextElementSibling).removeClass('sequential')
 
-		if lastNode.nextElementSibling?.dataset?.username isnt lastNode.dataset.username
+		if lastNode.nextElementSibling?.dataset?.bot is 'bot' or lastNode.nextElementSibling?.dataset?.username isnt lastNode.dataset.username
 			$(lastNode.nextElementSibling).removeClass('sequential')
 
 		if not lastNode.nextElementSibling?
