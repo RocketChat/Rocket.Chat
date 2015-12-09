@@ -15,5 +15,5 @@ else
 
 RocketChat.importTool.add 'test', Test,
 	name: '[Platform X] Import'
-	fileType: 'application/zip'
+	fileTypeRegex: new RegExp 'application\/.*?zip'
 	description: 'Imports [Platform X] data into Rocket.Chat'

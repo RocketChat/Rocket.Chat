@@ -1,7 +1,7 @@
 Package.describe({
-	name: 'rocketchat:importer-test',
+	name: 'rocketchat:importer-slack',
 	version: '0.0.1',
-	summary: 'Importer for test',
+	summary: 'Importer for Slack',
 	git: ''
 });
 
@@ -18,4 +18,8 @@ Package.onUse(function(api) {
 });
 
 Package.onTest(function(api) {
+});
+
+Npm.depends({
+	"adm-zip": "0.4.7"
 });
