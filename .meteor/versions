@@ -107,7 +107,7 @@ ordered-dict@1.0.4
 pauli:accounts-linkedin@1.2.0
 pauli:linkedin@1.2.0
 perak:codemirror@1.2.8
-percolate:migrations@0.9.6
+percolate:migrations@0.9.7
 percolate:synced-cron@1.3.0
 pntbr:js-yaml-client@0.0.1
 promise@0.5.1
@@ -138,6 +138,7 @@ rocketchat:highlight@0.0.1
 rocketchat:importer@0.0.1
 rocketchat:importer-slack@0.0.1
 rocketchat:importer-test@0.0.1
+rocketchat:integrations@0.0.1
 rocketchat:ldap@0.0.1
 rocketchat:lib@0.0.1
 rocketchat:logger@0.0.1
@@ -145,6 +146,7 @@ rocketchat:mailer@0.0.1
 rocketchat:markdown@0.0.1
 rocketchat:me@0.0.1
 rocketchat:mentions@0.0.1
+rocketchat:message-attachments@0.0.1
 rocketchat:message-pin@0.0.1
 rocketchat:message-star@0.0.1
 rocketchat:oembed@0.0.1

@@ -74,6 +74,10 @@
 												<input type="text" class="minicolors" name="{{_id}}" value="{{value}}" />
 											{{/if}}
 
+											{{#if $eq type 'action'}}
+												<button type="button" class="button primary action" data-setting="{{_id}}" data-action="{{value}}">{{_ actionText}}</button>
+											{{/if}}
+
 											{{#if $eq type 'asset'}}
 												{{#if value}}
 													<div class="settings-file-preview">
@@ -86,7 +90,7 @@
 													<div class="settings-file-preview">
 														<div class="preview no-file"><i class="icon-upload"></i></div>
 														<div class="action">
-															<div class="button primary"><i class="icon-trash"></i>{{_ 'Select_file'}}
+															<div class="button primary">{{_ 'Select_file'}}
 																<input type="file" accept="{{fileConstraints.contentType}}" />
 															</div>
 														</div>
