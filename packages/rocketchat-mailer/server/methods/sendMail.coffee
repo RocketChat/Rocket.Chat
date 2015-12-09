@@ -1,9 +1,9 @@
 Meteor.methods
-	'Mailer.sendMail': (from, subject, body, dryrun) ->
+	'Mailer.sendMail': (from, subject, body, dryrun, query) ->
 
-		console.log '[method] Mailer.sendMail', from, subject, body, dryrun
+		console.log '[method] Mailer.sendMail', from, subject, body, dryrun, query
 
-		return Mailer.sendMail from, subject, body, dryrun
+		return Mailer.sendMail from, subject, body, dryrun, query
 
 # Limit setting username once per minute
 # DDPRateLimiter.addRule
