@@ -76,11 +76,12 @@ blockquote {
 	position: relative;
 	&:before {
 		content: ' ';
-		height: 100%;
 		width: 4px;
 		position: absolute;
+		border-radius: 2px;
 		left: 0px;
-		border-radius: 10px;
+		top: -1px;
+		bottom: -1px;
 	}
 }
 
@@ -297,7 +298,8 @@ blockquote {
 			animation-iteration-count: infinite;
 			animation-timing-function: linear;
 		}
-		.icon-search {
+		.icon-search,
+		.icon-right-open-small {
 			position: absolute;
 			left: 2px;
 			top: 10px;
@@ -394,8 +396,8 @@ html {
 }
 
 body {
-	font-family: "Roboto", "HelveticaNeue-Light", "sans-serif";
-	font-size: 14px;
+	font-family: 'Helvetica Neue', Helvetica, Roboto, Arial, sans-serif, "Meiryo UI";
+	font-size: 0.875rem;
 	height: 100%;
 	width: 100%;
 	-webkit-font-smoothing: antialiased;
@@ -457,6 +459,15 @@ input.search {
 		position: absolute;
 		top: 0;
 		left: 0;
+	}
+}
+
+form.inline {
+	input[type='text'],
+	input[type='number'],
+	input[type='email'],
+	input[type='password'] {
+		width: auto;
 	}
 }
 
@@ -1712,6 +1723,88 @@ a.github-fork {
 }
 
 .page-settings {
+	.content {
+		padding: 20px 0;
+		background-color: #f8f8f8;
+		color: #444;
+
+		> .info {
+			max-width: auto;
+			line-height: 24px;
+			padding-left: 20px;
+			font-size: 16px;
+			font-weight: 500;
+		}
+	}
+
+	.section {
+		border: 1px solid #ddd;
+		border-left: none;
+		background-color: #fff;
+		padding: 20px;
+		margin-bottom: 20px;
+
+		&.section-collapsed {
+			.section-content {
+				display: none;
+			}
+		}
+
+		.section-title {
+			display: flex;
+			font-size: 24px;
+			font-weight: 600;
+			color: #444;
+			line-height: 40px;
+
+			.section-title-text {
+				flex-grow: 1;
+			}
+
+			.section-title-right {
+				line-height: 0px;
+			}
+		}
+
+		.section-content {
+			border: none !important;
+			border-radius: 0px !important;
+			padding: 20px 0 0 0 !important;
+
+			.input-line {
+				border-bottom: 1px solid #eee;
+				padding: 20px 0;
+				margin-bottom: 0px;
+
+				&:last-child {
+					border-bottom: none;
+					padding-bottom: 0;
+				}
+
+				&:first-child {
+					padding-top: 0;
+				}
+
+				input {
+					color: #444;
+				}
+
+				> label {
+					text-align: left;
+					font-weight: 500;
+					font-size: 16px;
+					line-height: 20px;
+					color: #444;
+				}
+
+				.settings-description {
+					color: #888;
+					padding: 5px;
+				}
+			}
+		}
+	}
+
 	.settings-description {
 		.allow-text-selection;
 	}
@@ -1719,6 +1812,45 @@ a.github-fork {
 		max-width: none;
 		width: 100%;
 		padding: 0;
+	}
+
+	.settings-file-preview {
+		display: flex;
+		align-items: center;
+
+		input[type=file] {
+			position: absolute !important;
+			width: 100%;
+			top: 0;
+			left: 0;
+			height: 100%;
+			opacity: 0;
+			z-index: 10000;
+			cursor: pointer;
+			* {
+				cursor: pointer;
+			}
+		}
+
+		.preview {
+			height: 50px;
+			width: 100px;
+			border-radius: 4px;
+			overflow: hidden;
+			box-shadow: 0 0 1px rgba(0,0,0,.5) inset;
+			background-size: contain;
+			background-position: center center;
+			background-repeat: no-repeat;
+
+			&.no-file {
+				background-color: #fafafa;
+				display: flex;
+				align-items: center;
+				justify-content: center;
+				color: #ccc;
+				font-size: 24px;
+			}
+		}
 	}
 }
 
@@ -2308,7 +2440,6 @@ a.github-fork {
 }
 
 .message {
-	font-size: 14px;
 	padding: 18px 20px 4px 70px;
 	position: relative;
 	line-height: 20px;
@@ -3414,7 +3545,6 @@ a.github-fork {
 			padding: 4px 8px;
 			font-size: 18px;
 			border-bottom: 1px solid;
-			font-family: "Roboto", "HelveticaNeue-Light", "sans-serif";
 			font-weight: 400;
 			border-radius: 0px;
 			&.error {
@@ -3493,7 +3623,6 @@ a.github-fork {
 		}
 	}
 	a {
-		font-family: "Roboto", "HelveticaNeue-Light", "sans-serif";
 		font-weight: 300;
 	}
 	.cell {
@@ -3533,7 +3662,6 @@ a.github-fork {
 			&:extend(.rocket-h3);
 		}
 		p {
-			font-family: "Muli", "Roboto", "HelveticaNeue-Light", "sans-serif";
 			margin: 18px 0;
 			font-size: 16px;
 			line-height: 24px;
@@ -4053,4 +4181,16 @@ a.github-fork {
 
 .inline-video {
 	max-height: 200px;
+}
+
+.attention-message {
+	color: white;
+	padding-top: 50px;
+	font-size: 24px;
+
+	i {
+		display: block;
+		margin-bottom: 20px;
+		font-size: 40px;
+	}
 }

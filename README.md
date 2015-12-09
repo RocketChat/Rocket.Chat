@@ -2,45 +2,107 @@
 
 The Ultimate Open Source WebChat Platform
 
-## Demo
+* [Live Demo](#live-demo)
+* [Mobile apps](#mobile-apps)
+* [Desktop apps](#desktop-apps)
+* [Deployment](#deployment)
+  * [Heroku](#heroku)
+  * [Sandstorm.io](#sandstormio)
+  * [Sloppy.io](#sloppyio)
+  * [Docker](#docker)
+  * [FreeBSD](#freebsd)
+  * [Ubuntu VPS](#ubuntu-vps)
+  * [Ubuntu Software Center](#ubuntu-software-center)
+* [About Rocket.Chat](#about-rocketchat)
+  * [On the News](#on-the-news)
+  * [Features](#features)
+  * [Roadmap](#roadmap)
+  * [Issues](#issues)
+  * [Integrations](#integrations)
+  * [Documentation](#documentation)
+  * [License](#license)
+* [Development](#development)
+ * [Installation](#installation)
+  * [Branching Model](#branching-model)
+  * [Translations](#translations)
+  * [Community](#community)
+  * [How to Contribute](#how-to-contribute)
+* [Credits](#credits)
+* [Donate](#donate)
 
+
+# Live Demo
 Checkout the latest version at [https://demo.rocket.chat](https://demo.rocket.chat)
 
-Available from the AppStore:
 
+# Desktop Apps
+Download the Native Cross-Platform Desktop Application at [Rocket.Chat.Electron](https://github.com/RocketChat/Rocket.Chat.Electron/releases)
+
+
+# Mobile Apps
+### Available from the AppStore
 [![Rocket.Chat on Apple AppStore](http://linkmaker.itunes.apple.com/images/badges/en-us/badge_appstore-lrg.svg)](https://itunes.apple.com/us/app/rocket.chat/id1028869439?mt=8)
 
-Get the app for your Android phone:
-
-
+### Available from the Google Play
 [![Rocket.Chat on Google Play](https://developer.android.com/images/brand/en_app_rgb_wo_45.png)](https://play.google.com/store/apps/details?id=com.konecty.rocket.chat)
 
 Now compatible with all Android devices as old as version 4.0.x - [download here](https://github.com/RocketChat/Rocket.Chat/wiki/Build-the-Android-Cordova-Web-App-and-connect-to-your-own-Rocket.Chat-Server), even on BlackBerry Passport!
 
-Host your own Rocket.Chat server in four seconds flat:
-
-[![Rocket.Chat on Sandstorm.io](https://raw.githubusercontent.com/Sing-Li/bbug/master/images/sandstorm.jpg)](https://apps.sandstorm.io/app/vfnwptfn02ty21w715snyyczw0nqxkv3jvawcah10c6z7hj1hnu0)
-
-Also available as FirefoxOS app:
-
+### Also available as FirefoxOS app
 [![Firefox OS app now available](https://raw.githubusercontent.com/Sing-Li/bbug/master/images/firefoxos.png)](https://github.com/RocketChat/Rocket.Chat/wiki/Native-Firefox-OS-app-%28hosted-webapp%29)
 
 
-
-Try it on Ubuntu:
-
-[Deploy on VPS or standalone server](https://github.com/RocketChat/Rocket.Chat/wiki/Deploy-Rocket.Chat-without-docker)
-
-Try it with docker:
-
-[Deploy with docker](https://github.com/RocketChat/Rocket.Chat/wiki/Deploy-with-Docker)
+# Deployment
+`Host your own Rocket.Chat server in four seconds flat`
 
 
-Download the Native Cross-Platform Desktop Application at [Rocket.Chat.Electron](https://github.com/RocketChat/Rocket.Chat.Electron/releases)
+## Heroku
+Host your own Rocket.Chat server for **FREE** with [One-Click Deploy](https://heroku.com/deploy?template=https://github.com/RocketChat/Rocket.Chat/tree/master)
 
-[![Donate](https://www.paypalobjects.com/en_US/i/btn/btn_donateCC_LG.gif)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=49QX7TYCVZK8L)
+Branch **master** (Latest stable version):
 
-## About
+[![Deploy](https://www.herokucdn.com/deploy/button.png)](https://heroku.com/deploy?template=https://github.com/RocketChat/Rocket.Chat/tree/master)
+
+Branch **develop** (Newer but unstable):
+
+[![Deploy](https://www.herokucdn.com/deploy/button.png)](https://heroku.com/deploy?template=https://github.com/RocketChat/Rocket.Chat/tree/develop)
+
+## Sandstorm.io
+[![Rocket.Chat on Sandstorm.io](https://raw.githubusercontent.com/Sing-Li/bbug/master/images/sandstorm.jpg)](https://apps.sandstorm.io/app/vfnwptfn02ty21w715snyyczw0nqxkv3jvawcah10c6z7hj1hnu0)
+
+_*Grab*_ the latest [Sandstorm SPK](https://s3.amazonaws.com/rocketchatbuild/rocket.chat-develop.spk) for testing on your own server.
+
+## Sloppy.io
+Host your docker container at [sloppy.io](http://sloppy.io). Get an account and use the [quickstarter](https://github.com/sloppyio/quickstarters/tree/master/rocketchat)
+
+## Docker
+[Deploy with docker compose](https://github.com/RocketChat/Rocket.Chat/wiki/Deploy-with-Docker)
+
+or
+
+Use the automated build at our [Official Docker Registry](https://hub.docker.com/r/rocketchat/rocket.chat/)
+
+[![Rocket.Chat logo](https://d207aa93qlcgug.cloudfront.net/1.95.5.qa/img/nav/docker-logo-loggedout.png)](https://hub.docker.com/r/rocketchat/rocket.chat/)
+
+```
+docker pull rocketchat/rocket.chat
+```
+
+## FreeBSD
+Run solid five-nines deployment on industry workhorse FreeBSD server:
+
+[![FreeBSD Daemon](https://raw.githubusercontent.com/Sing-Li/bbug/master/images/freebsd.png)](https://github.com/RocketChat/Rocket.Chat/wiki/FreeBSD)
+
+## Ubuntu VPS
+Follow these [deployment instructions](https://github.com/RocketChat/Rocket.Chat/wiki/Deploy-Rocket.Chat-without-docker)
+
+## Ubuntu Software Center
+Easy one click install right from your Ubuntu Desktop (coming soon)
+
+[![Ubuntu Software Center](https://raw.githubusercontent.com/Sing-Li/bbug/master/images/ubuntusoft.png)]()
+
+
+# About Rocket.Chat
 
 [![Build Status](https://img.shields.io/travis/RocketChat/Rocket.Chat/master.svg)](https://travis-ci.org/RocketChat/Rocket.Chat)
 [![Coverage Status](https://coveralls.io/repos/RocketChat/Rocket.Chat/badge.svg)](https://coveralls.io/r/RocketChat/Rocket.Chat)
@@ -52,7 +114,7 @@ Rocket.Chat is a Web Chat Server, developed in JavaScript, using the [Meteor](ht
 
 It is a great solution for communities and companies wanting to privately host their own chat service or for developers looking forward to build and evolve their own chat platforms.
 
-### On the News
+## On the News
 
 ##### [Hacker News](https://news.ycombinator.com/item?id=9624737)
 > Yes, we made it to the #1
@@ -63,6 +125,9 @@ It is a great solution for communities and companies wanting to privately host t
 ##### [JavaScript Weekly](http://javascriptweekly.com/issues/234)
 > An open source Web based, channel based chat system (a la Slack) built using Meteor, the full stack JavaScript development platform.
 
+##### [Open Source China](http://www.oschina.net/p/rocket-chat)
+> Rocket.Chat 是特性最丰富的 Slack 开源替代品之一。 主要功能：群组聊天，直接通信，私聊群，桌面通知，媒体嵌入，链接预览，文件上传，语音/视频 聊天，截图等等。
+
 ##### [wwwhatsnew.com](http://wwwhatsnew.com/2015/05/30/rocket-chat-para-los-programadores-que-quieran-ofrecer-un-chat-en-su-web/)
 > Para los programadores que quieran ofrecer un chat en su web
 
@@ -71,6 +136,10 @@ It is a great solution for communities and companies wanting to privately host t
 
 ##### [snowulf.com](https://snowulf.com/2015/09/25/why-slack-when-you-can-rocket-chat/)
 > Why Slack when you can Rocket.chat?
+
+##### [liminality.xyz](http://liminality.xyz/self-hosting/)
+> Self-hosted alternatives to popular cloud services
+
 
 ## Features
 
@@ -111,7 +180,7 @@ It is a great solution for communities and companies wanting to privately host t
 - Sandstorm.io instant Rocket.Chat server [Now on Sandstorm App Store](https://apps.sandstorm.io/app/vfnwptfn02ty21w715snyyczw0nqxkv3jvawcah10c6z7hj1hnu0)
 
 
-### Roadmap
+## Roadmap
 
 #### In Progress
 - Support multiple teams on the same instance / same VPS infrastructure: [Issue #658](https://github.com/RocketChat/Rocket.Chat/issues/658), [Issue #630](https://github.com/RocketChat/Rocket.Chat/issues/630)
@@ -132,11 +201,11 @@ It is a great solution for communities and companies wanting to privately host t
 - File Sharing via P2P and Scalable Multicast: [Issue #369](https://github.com/RocketChat/Rocket.Chat/issues/369), [Issue #370](https://github.com/RocketChat/Rocket.Chat/issues/370)
 - Anti-virus checking on file uploads: [Issue #757](https://github.com/RocketChat/Rocket.Chat/issues/757)
 
-### Issues
+## Issues
 
 [Github Issues](https://github.com/RocketChat/Rocket.Chat/issues) are used to track todos, bugs, feature requests, and more.
 
-### Integrations
+## Integrations
 
 #### Hubot
 
@@ -155,54 +224,18 @@ Integrate your application with fly-in panels today!   Early access is available
 
 We are developing the APIs based on the competition, so stay tuned and you will see a lot happening here.
 
-### Documentation
+## Documentation
 
 Checkout [Github Wiki](https://github.com/RocketChat/Rocket.Chat/wiki)
 
-## Production Deployment
+## License
 
-### Ubuntu VPS or server
-
-Follow these [deployment instructions](https://github.com/RocketChat/Rocket.Chat/wiki/Deploy-Rocket.Chat-without-docker).
-
-### FreeBSD
-
-Solid five-nines deployment with industry workhorse FreeBSD (coming soon).
+Note that Rocket.Chat is distributed under the [MIT License](http://opensource.org/licenses/MIT).
 
 
-![FreeBSD Daemon](https://raw.githubusercontent.com/Sing-Li/bbug/master/images/freebsd.png)
+# Development
 
-### Ubuntu Software Center
-
-Easy one click install right from your Ubuntu Desktop (coming soon).
-
-[![Ubuntu Software Center](https://raw.githubusercontent.com/Sing-Li/bbug/master/images/ubuntusoft.png)]()
-
-
-### Docker
-
-Use the automated build at our [Official Docker Registry](https://hub.docker.com/r/rocketchat/rocket.chat/)
-
-[![Rocket.Chat logo](https://d207aa93qlcgug.cloudfront.net/1.95.5.qa/img/nav/docker-logo-loggedout.png)](https://hub.docker.com/r/rocketchat/rocket.chat/)
-
-```
-docker pull rocketchat/rocket.chat
-```
-
-### sloppy.io
-
-Host your docker container at [sloppy.io](http://sloppy.io). Get an account and use the [quickstarter](https://github.com/sloppyio/quickstarters/tree/master/rocketchat)
-
-### Heroku
-
-Host your own Rocket.Chat server for **FREE** with [One-Click Deploy](https://heroku.com/deploy?template=https://github.com/RocketChat/Rocket.Chat/tree/master)
-
-[![Deploy](https://www.herokucdn.com/deploy/button.png)](https://heroku.com/deploy?template=https://github.com/RocketChat/Rocket.Chat/tree/master)
-
-
-
-## Development Installation
-
+## Installation
 Prerequisites:
 
 * [Git](http://git-scm.com/book/en/v2/Getting-Started-Installing-Git)
@@ -224,51 +257,48 @@ cd Rocket.Chat
 docker run -it -p 3000:3000 -v "$(pwd)":/app danieldent/meteor
 ```
 
-## Credits
+## Branching Model
+
+See [Branches and Releases](https://github.com/RocketChat/Rocket.Chat/wiki/Branches-and-Releases).
+
+It is based on [Gitflow Workflow](http://nvie.com/posts/a-successful-git-branching-model/), reference section below is derived from Vincent Driessen at nvie.
+
+See also this [Git Workflows Comparison](https://www.atlassian.com/git/tutorials/comparing-workflows/gitflow-workflow) for more details.
+
+## Translations
+We are experimenting [Lingohub](https://translate.lingohub.com/engelgabriel/rocket-dot-chat/dashboard).
+If you want to help, send an email to support at rocket.chat to be invited to the translation project.
+
+## Community
+
+Join the conversation at [Twitter](https://twitter.com/RocketChatApp), [Facebook](https://www.facebook.com/RocketChatApp) or [Google Plus](https://plus.google.com/+RocketChatApp)
+
+## How to Contribute
+
+Already a JavaScript developer?  Familiar with Meteor?  [Pick an issue](https://github.com/RocketChat/Rocket.Chat/labels/contrib%3A%20easy), push a PR and instantly become a member of Rocket.Chat's international contributors community.
+
+A lot of work has already gone into Rocket.Chat, but we have much bigger plans for it!
+
+
+# Credits
 
 Thanks to
+[Aaron Ogle](https://github.com/geekgonecrazy),
+[Bradley Hilton](https://github.com/Graywolf336),
 [Diego Sampaio](https://github.com/sampaiodiego),
 [Gabriel Engel](https://github.com/engelgabriel),
 [Marcelo Schmidt](https://github.com/marceloschmidt),
 [Rafael Caferati](https://github.com/rcaferati),
 [Rodrigo Nascimento](https://github.com/rodrigok),
 [Sing Li](https://github.com/Sing-Li),
-[Aaron Ogle](https://github.com/geekgonecrazy),
-[Graywolf336](https://github.com/Graywolf336)
-
+and many others.
 
 Emoji provided free by [Emoji One](http://emojione.com)
 
-Performance monitoring provided by [Kadira](https://kadira.io/)
+Performance monitoring provided by [Kadira](https://kadira.io)
 
-### Contributions
 
-#### We Need Your Help!
-
-A lot of work has already gone into Rocket.Chat, but we have much bigger plans for it!
-
-So if you'd like to be part of the project, please check out the [roadmap](https://github.com/RocketChat/Rocket.Chat/milestones) and [issues](https://github.com/RocketChat/Rocket.Chat/issues) to see if there's anything you can help with.
-
-### Branching Model
-
-The [Gitflow Workflow](http://nvie.com/posts/a-successful-git-branching-model/) section below is derived from Vincent Driessen at nvie.
-
-See also this [Git Workflows Comparison](https://www.atlassian.com/git/tutorials/comparing-workflows/gitflow-workflow) for more details.
-
-### Translations
-
-We are experimenting [Lingohub](https://translate.lingohub.com/engelgabriel/rocket-dot-chat/dashboard).
-If you want to help, send an email to support at rocket.chat to be invited to the translation project.
-
-### Community
-
-Join the conversation at [Twitter](https://twitter.com/RocketChatApp), [Facebook](https://www.facebook.com/RocketChatApp) or [Google Plus](https://plus.google.com/+RocketChatApp)
-
-### License
-
-Note that Rocket.Chat is distributed under the [MIT License](http://opensource.org/licenses/MIT).
-
-### Donate
+# Donate
 
 Rocket.Chat will be free forever, but you can help us speed-up the development!
 

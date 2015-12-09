@@ -1,23 +1,33 @@
-RocketChat.setUsername = (user, username) ->
+RocketChat._setUsername = (userId, username) ->
 	username = s.trim username
-	if not user or not username
+	if not userId or not username
 		return false
 
-	if not /^[0-9a-zA-Z-_.]+$/.test username
+	try
+		nameValidation = new RegExp '^' + RocketChat.settings.get('UTF8_Names_Validation') + '$'
+	catch
+		nameValidation = new RegExp '^[0-9a-zA-Z-_.]+$'
+
+	if not nameValidation.test username
 		return false
+
+	user = RocketChat.models.Users.findOneById userId
 
 	# User already has desired username, return
 	if user.username is username
 		return user
 
-	# Check username availability
-	unless RocketChat.checkUsernameAvailability username
-		return false
-
 	previousUsername = user.username
 
+	# Check username availability or if the user already owns a different casing of the name
+	if ( !previousUsername or !(username.toLowerCase() == previousUsername.toLowerCase()))
+		unless RocketChat.checkUsernameAvailability username
+			return false
+
+
+
 	# If first time setting username, send Enrollment Email
-	if not previousUsername and RocketChat.settings.get 'Accounts_Enrollment_Email'
+	if not previousUsername and user.emails?.length > 0 and RocketChat.settings.get 'Accounts_Enrollment_Email'
 		Accounts.sendEnrollmentEmail(user._id)
 
 	# Username is available; if coming from old username, update all references
@@ -39,3 +49,6 @@ RocketChat.setUsername = (user, username) ->
 	RocketChat.models.Users.setUsername user._id, username
 	user.username = username
 	return user
+
+RocketChat.setUsername = RocketChat.RateLimiter.limitFunction RocketChat._setUsername, 1, 60000,
+	0: (userId) -> return true; return not RocketChat.authz.hasPermission(userId, 'edit-other-user-info') # Administrators have permission to change others usernames, so don't limit those
