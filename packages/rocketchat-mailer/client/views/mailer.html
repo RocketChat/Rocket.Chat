@@ -1,13 +1,13 @@
-<template name="rocketMailer">
+<template name="mailer">
 	<section class="page-container page-list">
 		<head class="fixed-title">
 			{{> burger}}
 			<h2>
-				<span class="room-title">{{_ "Rocket_Mailer"}}</span>
+				<span class="room-title">{{_ "Mailer"}}</span>
 			</h2>
 		</head>
 		<div class="content">
-			{{#unless hasPermission 'access-rocket-mailer'}}
+			{{#unless hasPermission 'access-mailer'}}
 				<p>{{_ "You_are_not_authorized_to_view_this_page"}}</p>
 			{{else}}
 				<form>
@@ -23,6 +23,24 @@
 								</div>
 							</div>
 							<div class="input-line">
+								<label>{{_ "Dry_run"}}</label>
+								<div>
+									<input type="checkbox" name="dryrun" value="1" />
+								</div>
+								<div>
+									<small class="settings-description">{{{_ "Dry_run_description"}}}</small>
+								</div>
+							</div>
+							<div class="input-line">
+								<label>{{_ "Query"}}</label>
+								<div>
+									<input type="text" name="query" value="" />
+								</div>
+								<div>
+									<small class="settings-description">{{{_ "Query_description"}}}</small>
+								</div>
+							</div>
+							<div class="input-line">
 								<label>{{_ "Email_subject"}}</label>
 								<div>
 									<input type="text" name="subject" value="" />
@@ -34,7 +52,7 @@
 									<textarea name="body" rows="10" style="height: auto"></textarea>
 								</div>
 								<div>
-									<small class="settings-description">{{{_ "RocketMailer_body_tags"}}}</small>
+									<small class="settings-description">{{{_ "Mailer_body_tags"}}}</small>
 								</div>
 							</div>
 						</fieldset>

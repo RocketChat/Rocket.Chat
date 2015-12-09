@@ -8,10 +8,10 @@ RocketChat.models.Users.RocketMailUnsubscribe = (_id, createdAt) ->
 
 	update =
 		$set:
-			"rocketMailer.unsubscribed": true
+			"mailer.unsubscribed": true
 
 	affectedRows = @update query, update
 
-	console.log '[RocketMailer.Unsubscribe]', _id, createdAt, new Date(parseInt createdAt), affectedRows
+	console.log '[Mailer:Unsubscribe]', _id, createdAt, new Date(parseInt createdAt), affectedRows
 
 	return affectedRows
