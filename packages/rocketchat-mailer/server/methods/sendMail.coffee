@@ -1,13 +1,13 @@
 Meteor.methods
-	'RocketMailer.sendMail': (from, subject, body) ->
+	'Mailer.sendMail': (from, subject, body, dryrun) ->
 
-		console.log '[method] RocketMailer.sendMail', from, subject, body
+		console.log '[method] Mailer.sendMail', from, subject, body, dryrun
 
-		return RocketMailer.sendMail from, subject, body
+		return Mailer.sendMail from, subject, body, dryrun
 
 # Limit setting username once per minute
 # DDPRateLimiter.addRule
 # 	type: 'method'
-# 	name: 'RocketMailer.sendMail'
+# 	name: 'Mailer.sendMail'
 # 	connectionId: -> return true
 # , 1, 60000

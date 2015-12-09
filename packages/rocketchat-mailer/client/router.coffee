@@ -1,15 +1,15 @@
 tabReset = ->
 	RocketChat.TabBar.reset()
 
-FlowRouter.route '/rocket-mailer',
-	name: 'rocket-mailer'
+FlowRouter.route '/mailer',
+	name: 'mailer'
 	triggersEnter: [tabReset]
 	triggersExit: [tabReset]
 	action: ->
-		BlazeLayout.render 'main', {center: 'rocketMailer'}
+		BlazeLayout.render 'main', {center: 'mailer'}
 
-FlowRouter.route '/rocket-mailer/unsubscribe/:_id/:createdAt',
-	name: 'rocket-mailer-unsubscribe'
+FlowRouter.route '/mailer/unsubscribe/:_id/:createdAt',
+	name: 'mailer-unsubscribe'
 	action: (params) ->
-		Meteor.call 'RocketMailer.unsubscribe', params._id, params.createdAt
-		BlazeLayout.render 'rocketMailerUnsubscribe'
+		Meteor.call 'Mailer.unsubscribe', params._id, params.createdAt
+		BlazeLayout.render 'mailerUnsubscribe'
