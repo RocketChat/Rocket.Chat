@@ -25,7 +25,6 @@ Package.onUse(function(api) {
 	api.addAssets('assets/stylesheets/global/_variables.less', 'server');
 	api.addAssets('assets/stylesheets/utils/_colors.import.less', 'server');
 	api.addAssets('assets/stylesheets/utils/_emojione.import.less', 'server');
-	api.addAssets('assets/stylesheets/utils/_fonts.import.less', 'server');
 	api.addAssets('assets/stylesheets/utils/_keyframes.import.less', 'server');
 	api.addAssets('assets/stylesheets/utils/_lesshat.import.less', 'server');
 	api.addAssets('assets/stylesheets/utils/_preloader.import.less', 'server');
@@ -37,6 +36,19 @@ Package.onUse(function(api) {
 	api.addAssets('assets/stylesheets/fontello.css', 'server');
 	api.addAssets('assets/stylesheets/rtl.less', 'server');
 	api.addAssets('assets/stylesheets/swipebox.min.css', 'server');
+
+	// TAPi18n
+	var _ = Npm.require('underscore');
+	var fs = Npm.require('fs');
+	api.use('templating', 'client');
+	tapi18nFiles = _.compact(_.map(fs.readdirSync('packages/rocketchat-theme/i18n'), function(filename) {
+		if (fs.statSync('packages/rocketchat-theme/i18n/' + filename).size > 16) {
+			return 'i18n/' + filename;
+		}
+	}));
+	api.use('tap:i18n@1.6.1', ['client', 'server']);
+	api.imply('tap:i18n');
+	api.addFiles(tapi18nFiles, ['client', 'server']);
 });
 
 Npm.depends({

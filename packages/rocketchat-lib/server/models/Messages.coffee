@@ -101,6 +101,13 @@ RocketChat.models.Messages = new class extends RocketChat.models._Base
 
 		return @find query, options
 
+	getLastTimestamp: (options = {}) ->
+		query = { ts: { $exists: 1 } }
+		options.sort = { ts: -1 }
+		options.limit = 1
+
+		return @find(query, options)?.fetch?()?[0]?.ts
+
 	cloneAndSaveAsHistoryById: (_id) ->
 		me = RocketChat.models.Users.findOneById Meteor.userId()
 		record = @findOneById _id
@@ -110,9 +117,9 @@ RocketChat.models.Messages = new class extends RocketChat.models._Base
 		record.editedBy =
 			_id: Meteor.userId()
 			username: me.username
-		message.pinned = record.pinned
-		message.pinnedAt = record.pinnedAt
-		message.pinnedBy =
+		record.pinned = record.pinned
+		record.pinnedAt = record.pinnedAt
+		record.pinnedBy =
 			_id: record.pinnedBy?._id
 			username: record.pinnedBy?.username
 		delete record._id
@@ -140,6 +147,7 @@ RocketChat.models.Messages = new class extends RocketChat.models._Base
 			$set:
 				msg: ''
 				t: 'rm'
+				urls: []
 				editedAt: new Date()
 				editedBy:
 					_id: Meteor.userId()
