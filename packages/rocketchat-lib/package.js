@@ -29,7 +29,6 @@ Package.onUse(function(api) {
 	api.addFiles('lib/settings.coffee');
 	api.addFiles('lib/callbacks.coffee');
 	api.addFiles('lib/slashCommand.coffee');
-	api.addFiles('lib/importTool.coffee');
 
 	// SERVER LIB
 	api.addFiles('server/lib/RateLimiter.coffee', 'server');

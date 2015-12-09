@@ -135,6 +135,8 @@ rocketchat:file@0.0.1
 rocketchat:github-enterprise@0.0.1
 rocketchat:gitlab@0.0.1
 rocketchat:highlight@0.0.1
+rocketchat:importer@0.0.1
+rocketchat:importer-slack@0.0.1
 rocketchat:importer-test@0.0.1
 rocketchat:ldap@0.0.1
 rocketchat:lib@0.0.1

@@ -31,6 +31,13 @@ FlowRouter.route '/admin/import',
 	action: ->
 		BlazeLayout.render 'main', {center: 'adminImport'}
 
+FlowRouter.route '/admin/import/prepare/:importer',
+	name: 'admin-import-prepare'
+	triggersEnter: [tabReset]
+	triggersExit: [tabReset]
+	action: ->
+		BlazeLayout.render 'main', {center: 'adminImportPrepare'}
+
 FlowRouter.route '/admin/:group?',
 	name: 'admin'
 	triggersEnter: [tabReset]

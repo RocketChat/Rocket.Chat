@@ -1,0 +1,65 @@
+<template name="adminImportPrepare">
+	<section class="page-container page-home page-static page-settings">
+		{{#with importer}}
+			<head class="fixed-title">
+				{{> burger}}
+				<h2>
+					<span class="room-title">{{name}} - {{ description }}</span>
+				</h2>
+			</head>
+			<div class="content">
+				{{#unless isAdmin}}
+					<p>You are not authorized to view this page.</p>
+				{{else}}
+					<div class="rocket-form">
+						<fieldset>
+							{{#if isLoaded}}
+								<div class="section">
+									<h1>Actions</h1>
+									<div class="section-content">
+										<button class="button restart"><i class="icon-send"></i><span>Restart Import</span></button>
+										<button class="button start"><i class="icon-send"></i><span>Start Importing</span></button>
+										<button class="button uncheck-deleted-users"><i class="icon-send"></i><span>Uncheck Deleted Users</span></button>
+										<button class="button uncheck-archived-channels"><i class="icon-send"></i><span>Uncheck Archived Channels</span></button>
+									</div>
+								</div>
+
+								<div class="section">
+									<h1>Users</h1>
+									<div class="section-content">
+										<ul>
+											{{#each users}}
+												{{#unless is_bot}}
+													<li>
+														<input type="checkbox" name="{{id}}" checked="checked" />{{name}} - {{profile.email}}
+														{{#if deleted }} <em>(Deleted User)</em>{{/if}}
+													</li>
+												{{/unless}}
+											{{/each}}
+										</ul>
+									</div>
+								</div>
+
+								<div class="section">
+									<h1>Channels</h1>
+									<div class="section-content">
+										<ul>
+											{{#each channels}}
+												<li>
+													<input type="checkbox" name="{{id}}" checked="checked" />{{name}}
+													{{#if is_archived}} <em>(Archived)</em>{{/if}}
+												</li>
+											{{/each}}
+										</ul>
+									</div>
+								</div>
+							{{else}}
+								<input type="file" class="import-file-input" accept="{{ fileType }}">
+							{{/if}}
+						</fieldset>
+					</div>
+				{{/unless}}
+			</div>
+		{{/with}}
+	</section>
+</template>

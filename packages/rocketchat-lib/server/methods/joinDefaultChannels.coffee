@@ -1,5 +1,5 @@
 Meteor.methods
-	joinDefaultChannels: ->
+	joinDefaultChannels: (silenced) ->
 		if not Meteor.userId()
 			throw new Meteor.Error('invalid-user', "[methods] joinDefaultChannels -> Invalid user")
 
@@ -24,4 +24,5 @@ Meteor.methods
 					unread: 1
 
 				# Insert user joined message
-				RocketChat.models.Messages.createUserJoinWithRoomIdAndUser room._id, user
+				if not silenced
+					RocketChat.models.Messages.createUserJoinWithRoomIdAndUser room._id, user
