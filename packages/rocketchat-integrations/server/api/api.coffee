@@ -74,6 +74,8 @@ Api.addRoute ':integrationId/:userId/:token', authRequired: true,
 			msg: @bodyParams.text or ''
 			attachments: @bodyParams.attachments
 			parseUrls: false
+			bot:
+				i: integration._id
 
 		RocketChat.sendMessage user, message, room, {}
 
