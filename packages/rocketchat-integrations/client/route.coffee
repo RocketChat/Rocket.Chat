@@ -16,7 +16,7 @@ FlowRouter.route '/admin/integrations/new',
 			pageTemplate: 'integrationsNew'
 
 
-FlowRouter.route '/admin/integrations/incoming/:token?',
+FlowRouter.route '/admin/integrations/incoming/:id?',
 	name: 'admin-integrations-incoming'
 	action: (params) ->
 		BlazeLayout.render 'main',
