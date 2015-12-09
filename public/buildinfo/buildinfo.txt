@@ -1,3 +1,0 @@
-v0.7.dev
-This is an unsupported non-production development release.
-

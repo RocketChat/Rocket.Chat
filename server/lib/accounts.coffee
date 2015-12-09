@@ -88,7 +88,7 @@ Accounts.validateLoginAttempt (login) ->
 	if login.allowed isnt true
 		return login.allowed
 
-	if login.user?.active isnt true
+	if !!login.user?.active isnt true
 		throw new Meteor.Error 'inactive-user', TAPi18n.__ 'User_is_not_activated'
 		return false
 
@@ -105,4 +105,9 @@ Accounts.validateLoginAttempt (login) ->
 	Meteor.defer ->
 		RocketChat.callbacks.run 'afterValidateLogin', login
 
+	return true
+
+Accounts.validateNewUser (user) ->
+	if RocketChat.settings.get('Accounts_Registration_AuthenticationServices_Enabled') is false and RocketChat.settings.get('LDAP_Enable') is false and not user.services?.password?
+		throw new Meteor.Error 'registration-disabled-authentication-services', 'User registration is disabled for authentication services'
 	return true

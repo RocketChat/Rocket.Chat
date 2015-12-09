@@ -1,0 +1,67 @@
+<template name="mailer">
+	<section class="page-container page-list">
+		<head class="fixed-title">
+			{{> burger}}
+			<h2>
+				<span class="room-title">{{_ "Mailer"}}</span>
+			</h2>
+		</head>
+		<div class="content">
+			{{#unless hasPermission 'access-mailer'}}
+				<p>{{_ "You_are_not_authorized_to_view_this_page"}}</p>
+			{{else}}
+				<form>
+					<div class="rocket-form">
+						<fieldset>
+							<div class="input-line">
+								<label>{{_ "Email_from"}}</label>
+								<div>
+									<input type="text" name="from" value="" placeholder="{{fromEmail}}" />
+								</div>
+								<div>
+									<small class="settings-description">{{{_ "From_email_warning"}}}</small>
+								</div>
+							</div>
+							<div class="input-line">
+								<label>{{_ "Dry_run"}}</label>
+								<div>
+									<input type="checkbox" name="dryrun" value="1" />
+								</div>
+								<div>
+									<small class="settings-description">{{{_ "Dry_run_description"}}}</small>
+								</div>
+							</div>
+							<div class="input-line">
+								<label>{{_ "Query"}}</label>
+								<div>
+									<input type="text" name="query" value="" />
+								</div>
+								<div>
+									<small class="settings-description">{{{_ "Query_description"}}}</small>
+								</div>
+							</div>
+							<div class="input-line">
+								<label>{{_ "Email_subject"}}</label>
+								<div>
+									<input type="text" name="subject" value="" />
+								</div>
+							</div>
+							<div class="input-line">
+								<label>{{_ "Email_body"}}</label>
+								<div>
+									<textarea name="body" rows="10" style="height: auto"></textarea>
+								</div>
+								<div>
+									<small class="settings-description">{{{_ "Mailer_body_tags"}}}</small>
+								</div>
+							</div>
+						</fieldset>
+						<div class="submit">
+							<button class="button send"><i class="icon-send"></i><span>{{_ "Send_email"}}</span></button>
+						</div>
+					</div>
+				</form>
+			{{/unless}}
+		</div>
+	</section>
+</template>

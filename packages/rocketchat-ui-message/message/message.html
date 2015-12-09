@@ -1,0 +1,39 @@
+<template name="message">
+	<li id="{{_id}}" class="message sequential {{system}} {{t}} {{own}} {{isTemp}} {{chatops}}" data-username="{{u.username}}" data-date="{{date}}">
+		<a class="thumb user-card-message" href="#" data-username="{{u.username}}" tabindex="1">{{> avatar username=u.username}}</a>
+		<a class="user user-card-message" href="#" data-username="{{u.username}}" tabindex="1">{{u.username}}</a>
+		<span class="info">
+		{{#if edited}}
+			<span
+				title='{{_ "edited"}} at {{editTime}} {{_ "by"}} {{editedBy}}'
+				class="time">
+				{{time}}
+			</span>
+			<span class="edited" title='{{_ "edited"}} at {{editTime}} {{_ "by"}} {{editedBy}}' >
+				<i class="icon-edit" aria-label="{{_ "Edited"}}"></i>
+				{{_ "by"}}
+				<a class="thumb thumb-small user-card-message" href="#" data-username="{{editedBy}}" tabindex="1">
+					{{> avatar username=editedBy}}
+				</a>
+			</span>
+		{{else}}
+			<span class="time">{{time}}</span>
+		{{/if}}
+		{{#if private}}
+			<span class="private">{{_ "Only_you_can_see_this_message"}}</span>
+		{{/if}}
+
+		<div class="message-cog-container">
+			<i class="icon-cog message-cog" aria-label="{{_ "Actions"}}"></i>
+		</div>
+		</span>
+		<div class="body" dir="auto">
+			{{{body}}}
+			{{#if hasOembed}}
+				{{#each urls}}
+					{{> oembedBaseWidget}}
+				{{/each}}
+			{{/if}}
+		</div>
+	</li>
+</template>
