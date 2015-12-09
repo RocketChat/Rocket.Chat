@@ -16,3 +16,9 @@ Template.adminImport.events
 		importer = @
 
 		console.log importer
+		Meteor.call 'setupImport', importer.key, (error, data) ->
+			console.log error, data
+			if error
+				console.log 'Error while setting up the import', error
+			else
+				FlowRouter.go '/admin/import/prepare/' + importer.key
