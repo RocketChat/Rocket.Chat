@@ -4,3 +4,6 @@ Template.integrations.helpers
 
 	integrations: ->
 		return ChatIntegrations.find()
+
+	dateFormated: (date) ->
+		return moment(date).format('L LT')

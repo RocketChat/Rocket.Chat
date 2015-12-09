@@ -40,5 +40,7 @@ Meteor.methods
 			$set:
 				name: integration.name
 				channel: integration.channel
+				_updatedAt: new Date
+				_updatedBy: RocketChat.models.Users.findOne @userId, {fields: {username: 1}}
 
 		return RocketChat.models.Integrations.findOne(integrationId)
