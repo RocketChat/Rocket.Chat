@@ -12,6 +12,9 @@ Api = new Restivus
 
 Api.addRoute ':integrationId/:userId/:token', authRequired: true,
 	post: ->
+		if @bodyParams?.payload?
+			@bodyParams = JSON.parse @bodyParams.payload
+
 		integration = RocketChat.models.Integrations.findOne(@urlParams.integrationId)
 		user = RocketChat.models.Users.findOne(@userId)
 
