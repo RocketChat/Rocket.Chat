@@ -55,6 +55,8 @@ Meteor.methods
 
 		integration.token = hashStampedToken.hashedToken
 		integration.userId = user._id
+		integration._createdAt = new Date
+		integration._createdBy = RocketChat.models.Users.findOne @userId, {fields: {username: 1}}
 
 		RocketChat.models.Users.update {_id: user._id}, updateObj
 

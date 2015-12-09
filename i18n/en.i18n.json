@@ -321,6 +321,7 @@
   "Post_as" : "Post as",
   "New_integration" : "New integration",
   "Post_to_s_as_s" : "Post to <strong>%s</strong> as <strong>%s</strong>",
+  "Created_at_s_by_s" : "Created at <strong>%s</strong> by <strong>%s</strong>",
   "Post_to_Channel" : "Post to Channel",
   "Powered_by" : "Powered by",
   "Preferences" : "Preferences",
