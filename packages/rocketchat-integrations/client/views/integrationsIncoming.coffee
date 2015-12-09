@@ -9,7 +9,7 @@ Template.integrationsIncoming.helpers
 		if params?.id?
 			data = ChatIntegrations.findOne({_id: params.id})
 			if data?
-				data.url = Meteor.absoluteUrl("hooks/#{data._id}/#{data.userId}/#{data.token}")
+				data.url = Meteor.absoluteUrl("hooks/#{encodeURIComponent(data._id)}/#{encodeURIComponent(data.userId)}/#{encodeURIComponent(data.token)}")
 				return data
 
 		return {}
