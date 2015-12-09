@@ -24,7 +24,12 @@ readAsArrayBuffer = (file, callback) ->
 			return
 
 		readAsDataURL file.file, (fileContent) ->
-			return unless fileUploadIsValidContentType file.file.type
+			if not fileUploadIsValidContentType file.file.type
+				swal
+					title: t('FileUpload_MediaType_NotAccepted')
+					type: 'error'
+					timer: 1000
+				return
 
 			text = ''
 
