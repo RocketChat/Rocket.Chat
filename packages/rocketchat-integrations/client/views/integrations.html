@@ -7,7 +7,7 @@
 				<div class="section">
 					<div class="admin-integrations-new-panel">
 						{{#each integrations}}
-							<a href="{{pathFor "admin-integrations-incoming" token=token}}">
+							<a href="{{pathFor "admin-integrations-incoming" id=_id}}">
 								<div class="admin-integrations-new-item">
 									<i class="icon-login"></i>
 									<div class="admin-integrations-new-item-body">
@@ -21,6 +21,8 @@
 									<i class="icon-angle-right"></i>
 								</div>
 							</a>
+						{{else}}
+							<h1>There is no integrations</h1>
 						{{/each}}
 					</div>
 				</div>

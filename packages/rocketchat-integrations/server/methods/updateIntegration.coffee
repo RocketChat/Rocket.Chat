@@ -1,5 +1,8 @@
 Meteor.methods
 	updateIntegration: (integrationId, integration) ->
+		if not RocketChat.authz.hasPermission @userId, 'manage-integrations'
+			throw new Meteor.Error 'not_authorized'
+
 		if not _.isString(integration.channel)
 			throw new Meteor.Error 'invalid_channel', '[methods] addIntegration -> channel must be string'
 
@@ -13,18 +16,21 @@ Meteor.methods
 			throw new Meteor.Error 'invalid_integration', '[methods] addIntegration -> integration not found'
 
 		record = undefined
-		switch integration.channel[0]
+		channelType = integration.channel[0]
+		channel = integration.channel.substr(1)
+
+		switch channelType
 			when '#'
 				record = RocketChat.models.Rooms.findOne
 					$or: [
-						{_id: integration.channel}
-						{name: integration.channel}
+						{_id: channel}
+						{name: channel}
 					]
 			when '@'
 				record = RocketChat.models.Users.findOne
 					$or: [
-						{_id: integration.channel}
-						{username: integration.channel}
+						{_id: channel}
+						{username: channel}
 					]
 
 		if record is undefined
