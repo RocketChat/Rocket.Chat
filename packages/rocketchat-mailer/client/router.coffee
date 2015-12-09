@@ -11,5 +11,5 @@ FlowRouter.route '/mailer',
 FlowRouter.route '/mailer/unsubscribe/:_id/:createdAt',
 	name: 'mailer-unsubscribe'
 	action: (params) ->
-		Meteor.call 'Mailer.unsubscribe', params._id, params.createdAt
+		Meteor.call 'Mailer:unsubscribe', params._id, params.createdAt
 		BlazeLayout.render 'mailerUnsubscribe'

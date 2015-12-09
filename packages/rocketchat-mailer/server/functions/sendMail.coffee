@@ -1,4 +1,4 @@
-Mailer.sendMail = (from, subject, body, dryrun) ->
+Mailer.sendMail = (from, subject, body, dryrun, query) ->
 
 	rfcMailPatternWithName = /^(?:.*<)?([a-zA-Z0-9.!#$%&'*+\/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*)(?:>?)$/
 	# rfcMailPattern = /^[a-zA-Z0-9.!#$%&'*+\/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/
@@ -8,6 +8,10 @@ Mailer.sendMail = (from, subject, body, dryrun) ->
 
 	if body.indexOf('[unsubscribe]') is -1
 		throw new Meteor.Error 'missing-unsubscribe-link', TAPi18n.__('You_must_provide_the_unsubscribe_link')
+
+	userQuery = { "mailer.unsubscribed": { $exists: 0 } }
+	if query
+		userQuery = { $and: [ userQuery, EJSON.parse(query) ] }
 
 	if dryrun
 		Meteor.users.find({ "emails.address": from }).forEach (user) ->

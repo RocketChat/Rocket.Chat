@@ -8,6 +8,8 @@
   "Email_body" : "E-mail body",
   "Mailer" : "Mailer",
   "Mailer_body_tags" : "You <b>must</b> use [unsubscribe] for the unsubscription link.<br />You may use [name], [fname], [lname] for the user's full name, first name or last name, respectively.<br />You may use [email] for the user's e-mail.",
+  "Query" : "Query",
+  "Query_description" : "Additional conditions for determining which users to send the e-mail to. Unsubscribed users are automatically removed from the query. It must be a valid JSON. Example: \"{\"createdAt\":{\"$gt\":{\"$date\": \"2015-01-01T00:00:00.000Z\"}}}\"",
   "Send_email" : "Send E-mail",
   "The_emails_are_being_sent" : "The e-mails are being sent.",
   "You_are_not_authorized_to_view_this_page" : "You are not authorized to view this page.",

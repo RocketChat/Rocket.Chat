@@ -12,6 +12,6 @@ RocketChat.models.Users.RocketMailUnsubscribe = (_id, createdAt) ->
 
 	affectedRows = @update query, update
 
-	console.log '[Mailer.Unsubscribe]', _id, createdAt, new Date(parseInt createdAt), affectedRows
+	console.log '[Mailer:Unsubscribe]', _id, createdAt, new Date(parseInt createdAt), affectedRows
 
 	return affectedRows
