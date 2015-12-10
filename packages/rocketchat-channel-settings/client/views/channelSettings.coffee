@@ -3,6 +3,8 @@ Template.channelSettings.helpers
 		return ChatRoom.findOne(@rid)?.t isnt 'd'
 	roomType: ->
 		return ChatRoom.findOne(@rid)?.t
+	archived: ->
+		return ChatRoom.findOne(@rid)?.archived
 
 Template.channelSettings.events
 	'click .save': (e, t) ->
@@ -15,6 +17,19 @@ Template.channelSettings.events
 			return toastr.error err.reason if err
 			toastr.success TAPi18n.__ 'Settings_updated'
 
+	'click .archive': (e, t) ->
+		e.preventDefault()
+
+		Meteor.call 'archiveRoom', t.data.rid, true, (err, results) ->
+			return toastr.error err.reason if err
+			toastr.success 'Channel archived'
+
+	'click .unarchive': (e, t) ->
+		e.preventDefault()
+
+		Meteor.call 'unarchiveRoom', t.data.rid, true, (err, results) ->
+			return toastr.error err.reason if err
+			toastr.success 'Channel unarchived'
 
 			# switch room.t
 			# 	when 'c'
