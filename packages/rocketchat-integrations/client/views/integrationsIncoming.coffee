@@ -12,7 +12,8 @@ Template.integrationsIncoming.helpers
 				data.url = Meteor.absoluteUrl("hooks/#{encodeURIComponent(data._id)}/#{encodeURIComponent(data.userId)}/#{encodeURIComponent(data.token)}")
 				return data
 
-		return {}
+		return {} =
+			username: 'rocket.cat'
 
 
 Template.integrationsIncoming.events
