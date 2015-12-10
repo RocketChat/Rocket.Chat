@@ -53,40 +53,40 @@ Template.room.onRendered ->
 	this.chatMessages.init(this.firstNode)
 
 Template.room.onRendered ->
-	wrapper = this.find('.wrapper')
+	messages = this.find('.messages')
 	newMessage = this.find(".new-message")
 
 	template = this
 
 	onscroll = _.throttle ->
-		template.atBottom = wrapper.scrollTop >= wrapper.scrollHeight - wrapper.clientHeight
+		template.atBottom = messages.scrollTop >= messages.scrollHeight - messages.clientHeight
 	, 200
 
 	Meteor.setInterval ->
 		if template.atBottom
-			wrapper.scrollTop = wrapper.scrollHeight - wrapper.clientHeight
+			messages.scrollTop = messages.scrollHeight - messages.clientHeight
 			newMessage.className = "new-message not"
 	, 100
 
-	wrapper.addEventListener 'touchstart', ->
+	messages.addEventListener 'touchstart', ->
 		template.atBottom = false
 
-	wrapper.addEventListener 'touchend', ->
+	messages.addEventListener 'touchend', ->
 		onscroll()
 		# readMessage.enable()
 		# readMessage.read()
 
-	wrapper.addEventListener 'scroll', ->
+	messages.addEventListener 'scroll', ->
 		template.atBottom = false
 		onscroll()
 
-	wrapper.addEventListener 'mousewheel', ->
+	messages.addEventListener 'mousewheel', ->
 		template.atBottom = false
 		onscroll()
 		# readMessage.enable()
 		# readMessage.read()
 
-	wrapper.addEventListener 'wheel', ->
+	messages.addEventListener 'wheel', ->
 		template.atBottom = false
 		onscroll()
 		# readMessage.enable()
