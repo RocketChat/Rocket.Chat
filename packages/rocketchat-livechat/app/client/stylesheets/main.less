@@ -49,7 +49,7 @@ input:focus {
 	height: 100%;
 
 	.title {
-		flex: 1 1 @header-min-height;
+		flex: 1 0 @header-min-height;
 
 		line-height: @header-min-height;
 
@@ -62,8 +62,13 @@ input:focus {
 			margin: 0;
 			padding: 0 5px;
 			font-size: 9pt;
-			display: table-cell;
-			vertical-align: middle;
+			display: inline-block;
+		}
+
+		.toolbar {
+			display: inline-block;
+			float: right;
+			padding-right: 5px;
 		}
 	}
 	.messages {
@@ -286,7 +291,7 @@ input:focus {
 		}
 	}
 	.footer {
-		flex: 1 1 @footer-min-height;
+		flex: 1 0 @footer-min-height;
 
 		z-index: 10;
 
