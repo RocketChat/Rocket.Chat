@@ -3,5 +3,7 @@
 	"Name": "Name",
 	"Message": "Message",
 	"Please_fill_name_and_email": "Please fill name and e-mail",
-	"Start_Chat": "Start Chat"
+	"Start_Chat": "Start Chat",
+	"Please_answer_survey": "Please take a moment to answer a quick survey about this chat:",
+	"User_left" : "Has left the channel."
 }
