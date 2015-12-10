@@ -9,6 +9,9 @@
 	-moz-box-sizing: border-box;
 	-webkit-box-sizing: border-box;
 }
+html, body {
+	height: 100%;
+}
 body {
 	padding: 0;
 	margin: 0;
@@ -21,7 +24,7 @@ body {
 	-webkit-font-smoothing: antialiased;
 	line-height: 1rem;
 	padding: 0;
-	overflow: visible;
+	overflow: hidden;
 	position: relative;
 	// background-color: @primary-background-color;
 }
@@ -41,18 +44,18 @@ input:focus {
 }
 
 .livechat-room {
-	position: fixed;
-	top: 0;
-	bottom: 0;
+	display: flex;
+	flex-direction: column;
+	height: 100%;
+
 	.title {
+		flex: 1 1 @header-min-height;
+
+		line-height: @header-min-height;
+
 		border-top-right-radius: 5px;
 		border-top-left-radius: 5px;
 		color: #FFF;
-		position: fixed;
-		top: 0;
-		width: 100%;
-		height: @header-min-height;
-		display: table;
 		z-index: 10;
 		cursor: pointer;
 		h1 {
@@ -64,17 +67,13 @@ input:focus {
 		}
 	}
 	.messages {
-		display: block;
+		flex: 1 1 100%;
+
 		background-color: #FFF;
-		top: @header-min-height;
-		bottom: @footer-min-height;
 		border-left: 1px solid #E7E7E7;
 		border-right: 1px solid #E7E7E7;
-		position: fixed;
-		width: 100%;
+		overflow-y: auto;
 		.wrapper {
-			height: 100%;
-			overflow-y: auto;
 			padding-bottom: 6px;
 
 			ul {
@@ -262,10 +261,11 @@ input:focus {
 			cursor: pointer;
 			bottom: 8px;
 			left: 50%;
+			z-index: 5;
 			.transition(transform 0.3s ease-out);
-			.transform(translateY(0));
+			.transform(translateY(-40px));
 			&.not {
-				.transform(translateY(150%));
+				.transform(translateY(100%));
 			}
 		}
 
@@ -275,6 +275,7 @@ input:focus {
 			width: 100%;
 			background-color: #F7D799;
 			padding: 5px;
+			z-index: 5;
 
 			.transition(transform 0.3s ease-out);
 			.transform(translateY(200%));
@@ -285,12 +286,11 @@ input:focus {
 		}
 	}
 	.footer {
-		display: block;
+		flex: 1 1 @footer-min-height;
+
+		z-index: 10;
+
 		background-color: #FCFCFC;
-		position: fixed;
-		bottom: 0;
-		width: 100%;
-		height: auto;
 		border-top: 1px solid #E7E7E7;
 		border-left: 1px solid #E7E7E7;
 		border-right: 1px solid #E7E7E7;
