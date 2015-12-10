@@ -15,6 +15,24 @@ Template.integrationsIncoming.helpers
 		return {} =
 			username: 'rocket.cat'
 
+	example: ->
+		return {} =
+			_id: Random.id()
+			msg: 'Example message'
+			bot:
+				i: Random.id()
+			attachments: [{
+				title: "Rocket.Chat"
+				title_link: "https://rocket.chat"
+				text: "Rocket.Chat, the best open source chat"
+				image_url: "https://rocket.chat/images/mockup.png"
+				color: "#764FA5"
+			}]
+			ts: new Date
+			u:
+				_id: Random.id()
+				username: "rocket.cat"
+
 
 Template.integrationsIncoming.events
 	"click .submit > .delete": ->
