@@ -1,6 +1,13 @@
 Template.privateHistory.helpers
 	history: ->
-		items = ChatSubscription.find { name: { $regex: Session.get('historyFilter'), $options: 'i' }, t: { $in: ['d', 'c', 'p'] } }, {'sort': { 'ts': -1 } }
+		items = ChatSubscription.find { name: { $regex: Session.get('historyFilter'), $options: 'i' }, t: { $in: ['d', 'c', 'p'] }, archived: { $ne: true } }, {'sort': { 'ts': -1 } }
+		return {
+			items: items
+			length: items.count()
+		}
+
+	archivedHistory: ->
+		items = ChatSubscription.find { name: { $regex: Session.get('historyFilter'), $options: 'i' }, t: { $in: ['d', 'c', 'p'] }, archived: true }, {'sort': { 'ts': -1 } }
 		return {
 			items: items
 			length: items.count()
