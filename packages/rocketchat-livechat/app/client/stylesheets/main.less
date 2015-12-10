@@ -270,18 +270,18 @@ input:focus {
 		}
 
 		.error {
-			bottom: 50px;
+			bottom: 40px;
 			position: fixed;
 			width: 100%;
 			background-color: #F7D799;
 			padding: 5px;
-			z-index: 5;
+			z-index: 8;
 
-			.transition(transform 0.3s ease-out);
-			.transform(translateY(200%));
+			.transition(transform 0.2s ease-out);
+			.transform(translateY(100%));
 
 			&.show {
-				.transform(translateY(8px));
+				.transform(translateY(0));
 			}
 		}
 	}
