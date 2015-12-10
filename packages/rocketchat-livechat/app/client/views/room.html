@@ -1,6 +1,11 @@
 <template name="room">
 	<div class="livechat-room">
 		<div class="title" style="background-color:{{color}}">
+			<div class="toolbar">
+				{{#unless popoutActive}}
+					<i class="popout icon-link-ext" title="Open in a new window"></i>
+				{{/unless}}
+			</div>
 			<h1>{{title}}</h1>
 		</div>
 		<div class="messages">
