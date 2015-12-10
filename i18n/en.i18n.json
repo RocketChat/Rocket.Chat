@@ -405,6 +405,7 @@
   "Settings_updated" : "Settings updated",
   "Should_exists_a_user_with_this_username" : "Should exists a user with this username.",
   "Showing_online_users" : "Showing <b>__total_online__</b> of __total__ users",
+  "Showing_archived_results" : "<p>Showing <b>%s</b> archived results</p>",
   "Showing_results" : "<p>Showing <b>%s</b> results</p>",
   "Silence" : "Silence",
   "since_creation" : "since %s",
