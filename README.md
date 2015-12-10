@@ -72,6 +72,17 @@ Branch **develop** (Newer but unstable):
 
 _*Grab*_ the latest [Sandstorm SPK](https://s3.amazonaws.com/rocketchatbuild/rocket.chat-develop.spk) for testing on your own server.
 
+## Scalingo
+Deploy your own Rocket.Chat server instantly on [Scalingo](https://scalingo.com)
+
+Branch **master** (Latest stable version):
+
+[![Deploy on Scalingo](https://cdn.scalingo.com/deploy/button.svg)](https://my.scalingo.com/deploy?source=https://github.com/RocketChat/Rocket.Chat#master)
+
+Branch **develop** (Newer but unstable):
+
+[![Deploy on Scalingo](https://cdn.scalingo.com/deploy/button.svg)](https://my.scalingo.com/deploy?source=https://github.com/RocketChat/Rocket.Chat#develop)
+
 ## Sloppy.io
 Host your docker container at [sloppy.io](http://sloppy.io). Get an account and use the [quickstarter](https://github.com/sloppyio/quickstarters/tree/master/rocketchat)
 
