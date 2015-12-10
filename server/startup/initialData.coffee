@@ -5,8 +5,9 @@ Meteor.startup ->
 			RocketChat.models.Rooms.createWithIdTypeAndName 'GENERAL', 'c', 'general',
 				default: true
 
-		if not RocketChat.models.Users.findOneByUsername('rocket.cat')?
-			userId = RocketChat.models.Users.create
+		if not RocketChat.models.Users.findOneById('rocket.cat')?
+			RocketChat.models.Users.create
+				_id: 'rocket.cat'
 				name: "Rocket.Cat"
 				username: 'rocket.cat'
 				status: "offline"
@@ -19,7 +20,7 @@ Meteor.startup ->
 			RocketChatFileAvatarInstance.deleteFile "rocket.cat.jpg"
 			ws = RocketChatFileAvatarInstance.createWriteStream "rocket.cat.jpg", 'image/png'
 			ws.on 'end', Meteor.bindEnvironment ->
-				RocketChat.models.Users.setAvatarOrigin userId, 'local'
+				RocketChat.models.Users.setAvatarOrigin 'rocket.cat', 'local'
 
 			rs.pipe(ws)
 
