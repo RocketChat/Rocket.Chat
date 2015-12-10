@@ -68,3 +68,8 @@ Meteor.startup ->
 		id: 'rtc'
 		render: (message) ->
 			RocketChat.callbacks.run 'renderRtcMessage', message
+
+	RocketChat.MessageTypes.registerType
+		id: 'command'
+		system: true
+		render: ->
