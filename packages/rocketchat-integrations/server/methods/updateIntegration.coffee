@@ -39,6 +39,8 @@ Meteor.methods
 		RocketChat.models.Integrations.update integrationId,
 			$set:
 				name: integration.name
+				avatar: integration.avatar
+				alias: integration.alias
 				channel: integration.channel
 				_updatedAt: new Date
 				_updatedBy: RocketChat.models.Users.findOne @userId, {fields: {username: 1}}

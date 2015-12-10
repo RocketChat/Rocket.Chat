@@ -32,6 +32,21 @@
 								<div class="settings-description">{{_ "Should_exists_a_user_with_this_username"}}</div>
 							</div>
 						</div>
+						<div class="input-line double-col">
+							<label>{{_ "Alias"}} ({{_ "optional"}})</label>
+							<div>
+								<input type="text" name="alias" value="{{data.alias}}" placeholder="{{_ 'Optional'}}" />
+								<div class="settings-description">{{_ "Choose_the_alias_that_will_appear_before_the_username_in_messages"}}</div>
+							</div>
+						</div>
+						<div class="input-line double-col">
+							<label>{{_ "Avatar_URL"}} ({{_ "optional"}})</label>
+							<div>
+								<input type="url" name="avatar" value="{{data.avatar}}" placeholder="{{_ 'Optional'}}" />
+								<div class="settings-description">{{_ "You_can_change_a_different_avatar_too"}}</div>
+								<div class="settings-description">{{_ "Should_be_a_URL_of_an_image"}}</div>
+							</div>
+						</div>
 						{{#if data.token}}
 							<div class="input-line double-col">
 								<label>Webhook URL</label>
@@ -42,7 +57,7 @@
 								</div>
 							</div>
 						{{/if}}
-						<div class="input-line double-col message-example">
+						<div class="input-line message-example">
 							{{#nrr nrrargs 'message' example}}{{/nrr}}
 						</div>
 					</div>
