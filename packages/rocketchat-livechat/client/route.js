@@ -10,7 +10,12 @@ FlowRouter.route('/live/:name', {
 	triggersExit: [roomExit]
 });
 
-FlowRouter.route('/livechat-manager/departments', {
+livechatManagerRoutes = FlowRouter.group({
+	prefix: '/livechat-manager',
+	name: 'livechat-manager'
+});
+
+livechatManagerRoutes.route('/departments', {
 	name: 'livechat-departments',
 
 	action: function(params, queryParams) {
@@ -18,7 +23,7 @@ FlowRouter.route('/livechat-manager/departments', {
 	}
 });
 
-FlowRouter.route('/livechat-manager/department/:_id?', {
+livechatManagerRoutes.route('/department/:_id?', {
 	name: 'livechat-department',
 
 	action: function(params, queryParams) {
