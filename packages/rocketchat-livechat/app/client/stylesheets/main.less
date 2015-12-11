@@ -325,6 +325,34 @@ input:focus {
 	}
 }
 
+.livechat-form {
+	flex: 1 1 100%;
+	display: block;
+	background-color: #FFF;
+	border-left: 1px solid #E7E7E7;
+	border-right: 1px solid #E7E7E7;
+
+	input, button {
+		display: block;
+		padding: 5px;
+		margin: 5px;
+	}
+	.error {
+		display: none;
+		// width: 100%;
+		background-color: #F7D799;
+		padding: 5px;
+
+		// .transition(transform 0.3s ease-out);
+		// .transform(translateY(-100%));
+
+		&.show {
+			display: block;
+			// .transform(translateY(0px));
+		}
+	}
+}
+
 @media all and(max-height: 200px) {
 	.livechat-room {
 		.title {

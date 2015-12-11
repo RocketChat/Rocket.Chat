@@ -427,6 +427,7 @@ select,
 input[type='text'],
 input[type='number'],
 input[type='email'],
+input[type='url'],
 input[type='password'] {
 	-webkit-appearance: none;
 	height: 35px;
@@ -466,6 +467,7 @@ form.inline {
 	input[type='text'],
 	input[type='number'],
 	input[type='email'],
+	input[type='url'],
 	input[type='password'] {
 		width: auto;
 	}
@@ -2699,6 +2701,11 @@ a.github-fork {
 	}
 	&.temp .body {
 		opacity: .5;
+	}
+	.message-alias {
+		color: #aaa;
+		font-weight: 400;
+		padding-left: 2px;
 	}
 }
 
