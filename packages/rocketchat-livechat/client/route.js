@@ -35,3 +35,11 @@ livechatManagerRoutes.route('/department/:_id?', {
 		BlazeLayout.render('main', { center: 'pageContainer', pageTemplate: 'livechatDepartmentForm', pageTitle: pageTitle});
 	}
 });
+
+livechatManagerRoutes.route('/triggers', {
+	name: 'livechat-triggers',
+
+	action: function(params, queryParams) {
+		BlazeLayout.render('main', { center: 'pageContainer', pageTemplate: 'livechatTriggers', pageTitle: t('Triggers') });
+	}
+});
