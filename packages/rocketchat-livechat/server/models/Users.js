@@ -12,3 +12,16 @@ RocketChat.models.Users.setOperator = function(_id, operator) {
 
 	return this.update(_id, update);
 };
+
+/**
+ * Gets visitor by token
+ * @param {string} token - Visitor token
+ */
+RocketChat.models.Users.getVisitorByToken = function(token, options) {
+	var query = {
+		"profile.guest": true,
+		"profile.token": token
+	};
+
+	return this.findOne(query, options);
+};
