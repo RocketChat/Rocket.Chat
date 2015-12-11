@@ -5,6 +5,26 @@ Meteor.startup ->
 			RocketChat.models.Rooms.createWithIdTypeAndName 'GENERAL', 'c', 'general',
 				default: true
 
+		if not RocketChat.models.Users.findOneById('rocket.cat')?
+			RocketChat.models.Users.create
+				_id: 'rocket.cat'
+				name: "Rocket.Cat"
+				username: 'rocket.cat'
+				status: "offline"
+				statusDefault: "offline"
+				utcOffset: 0
+				active: true
+				bot: true
+
+			rs = RocketChatFile.bufferToStream new Buffer(Assets.getBinary('avatars/rocketcat.png'), 'utf8')
+			RocketChatFileAvatarInstance.deleteFile "rocket.cat.jpg"
+			ws = RocketChatFileAvatarInstance.createWriteStream "rocket.cat.jpg", 'image/png'
+			ws.on 'end', Meteor.bindEnvironment ->
+				RocketChat.models.Users.setAvatarOrigin 'rocket.cat', 'local'
+
+			rs.pipe(ws)
+
+
 		if process.env.ADMIN_EMAIL? and process.env.ADMIN_PASS?
 			re = /^([\w-]+(?:\.[\w-]+)*)@((?:[\w-]+\.)*\w[\w-]{0,66})\.([a-z]{2,6}(?:\.[a-z]{2})?)$/i
 			if re.test process.env.ADMIN_EMAIL
