@@ -22,14 +22,14 @@ Template.channelSettings.events
 
 		Meteor.call 'archiveRoom', t.data.rid, true, (err, results) ->
 			return toastr.error err.reason if err
-			toastr.success 'Channel archived'
+			toastr.success TAPi18n.__ 'Room_archived'
 
 	'click .unarchive': (e, t) ->
 		e.preventDefault()
 
 		Meteor.call 'unarchiveRoom', t.data.rid, true, (err, results) ->
 			return toastr.error err.reason if err
-			toastr.success 'Channel unarchived'
+			toastr.success TAPi18n.__ 'Room_unarchived'
 
 			# switch room.t
 			# 	when 'c'
