@@ -20,8 +20,7 @@ Template.room.helpers({
 
 Template.room.events({
 	'click .title': function() {
-		console.log('toggleWindow');
-		return parentCall('toggleWindow');
+		parentCall('toggleWindow');
 	},
 	'click .popout': function(event) {
 		event.stopPropagation();
