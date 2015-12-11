@@ -1,3 +1,8 @@
+Template.integrationsIncoming.onCreated ->
+	@record = new ReactiveVar
+		username: 'rocket.cat'
+
+
 Template.integrationsIncoming.helpers
 
 	hasPermission: ->
@@ -10,12 +15,42 @@ Template.integrationsIncoming.helpers
 			data = ChatIntegrations.findOne({_id: params.id})
 			if data?
 				data.url = Meteor.absoluteUrl("hooks/#{encodeURIComponent(data._id)}/#{encodeURIComponent(data.userId)}/#{encodeURIComponent(data.token)}")
+				Template.instance().record.set data
 				return data
 
-		return {}
+		return Template.instance().record.curValue
+
+	example: ->
+		record = Template.instance().record.get()
+		return {} =
+			_id: Random.id()
+			alias: record.alias
+			avatar: record.avatar
+			msg: 'Example message'
+			bot:
+				i: Random.id()
+			attachments: [{
+				title: "Rocket.Chat"
+				title_link: "https://rocket.chat"
+				text: "Rocket.Chat, the best open source chat"
+				image_url: "https://rocket.chat/images/mockup.png"
+				color: "#764FA5"
+			}]
+			ts: new Date
+			u:
+				_id: Random.id()
+				username: record.username
 
 
 Template.integrationsIncoming.events
+	"blur input": (e, t) ->
+		t.record.set
+			name: $('[name=name]').val().trim()
+			alias: $('[name=alias]').val().trim()
+			avatar: $('[name=avatar]').val().trim()
+			channel: $('[name=channel]').val().trim()
+			username: $('[name=username]').val().trim()
+
 	"click .submit > .delete": ->
 		params = Template.instance().data.params()
 
@@ -42,6 +77,8 @@ Template.integrationsIncoming.events
 
 	"click .submit > .save": ->
 		name = $('[name=name]').val().trim()
+		alias = $('[name=alias]').val().trim()
+		avatar = $('[name=avatar]').val().trim()
 		channel = $('[name=channel]').val().trim()
 		username = $('[name=username]').val().trim()
 
@@ -53,6 +90,8 @@ Template.integrationsIncoming.events
 
 		integration =
 			channel: channel
+			alias: alias if alias isnt ''
+			avatar: avatar if avatar isnt ''
 			name: name if name isnt ''
 
 		params = Template.instance().data.params?()
