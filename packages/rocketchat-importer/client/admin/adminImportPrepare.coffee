@@ -39,6 +39,11 @@ Template.adminImportPrepare.events
 						toastr.error error.reason
 						return
 
+					if data.error
+						console.log 'An error occured while importing:', data
+						toastr.error 'Could not store all the data for the import, see the console.'
+						return
+
 					template.users.set data.users
 					template.channels.set data.channels
 					template.loaded.set true
