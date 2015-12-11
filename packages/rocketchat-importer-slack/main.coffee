@@ -44,21 +44,33 @@ else
 						tempMessages[channelName][msgGroupData] = JSON.parse entry.getData().toString()
 
 			# Create the records to store the data
+			RocketChat.models.Imports.update { _id: @importRecord._id }, { $set: { 'status': 'entries.users.started', 'count.users': tempUsers.length }}
 			usersId = @collection.insert { 'import': importId, 'type': 'users', 'users': tempUsers }#, 'channels', channels, 'messages': messages
 			@users = @collection.findOne usersId
+			RocketChat.models.Imports.update { _id: @importRecord._id }, { $set: { 'status': 'entries.users.finished', 'count.channels': tempChannels.length }}
 
+			RocketChat.models.Imports.update { _id: @importRecord._id }, { $set: { 'status': 'entries.channels.started' }}
 			channelsId = @collection.insert { 'import': importId, 'type': 'channels', 'channels': tempChannels }#, 'messages': messages
 			@channels = @collection.findOne channelsId
+			RocketChat.models.Imports.update { _id: @importRecord._id }, { $set: { 'status': 'entries.channels.finished' }}
 
+			RocketChat.models.Imports.update { _id: @importRecord._id }, { $set: { 'status': 'entries.messages.started' }}
 			@messages = {}
+			messagesCount = 0
 			for channel, messagesObj of tempMessages
 				if not @messages[channel]
 					@messages[channel] = {}
 				for date, msgs of messagesObj
-					messagesId = @collection.insert { 'import': importId, 'type': 'messages', 'name': "#{channel}/#{date}", 'messages': msgs }
-					@messages[channel][date] = @collection.findOne messagesId
+					messagesCount += msgs.length
+					RocketChat.models.Imports.update { _id: @importRecord._id }, { $set: { 'status': "entries.messages.started:#{channel}/#{date}" }}
+					try
+						messagesId = @collection.insert { 'import': importId, 'type': 'messages', 'name': "#{channel}/#{date}", 'messages': msgs }
+						@messages[channel][date] = @collection.findOne messagesId
+					catch error
+						RocketChat.models.Imports.update { _id: @importRecord._id }, { $set: { 'status': "entries.messages.error:#{channel}/#{date}", 'error': error, 'count.messages': messagesCount }}
+						return error
 
-			RocketChat.models.Imports.update { _id: @importRecord._id }, { $set: { 'status': 'entries' }}
+			RocketChat.models.Imports.update { _id: @importRecord._id }, { $set: { 'status': 'entries', 'count.messages': messagesCount }}
 			return {} =
 				users: @users.users,
 				channels: @channels.channels
