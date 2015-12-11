@@ -35,6 +35,7 @@ id-map@1.0.4
 jquery@1.11.4
 kadira:blaze-layout@2.3.0
 kadira:flow-router@2.10.0
+kevohagan:sweetalert@1.0.0
 konecty:nrr@2.0.2
 less@2.5.1
 livedata@1.0.15

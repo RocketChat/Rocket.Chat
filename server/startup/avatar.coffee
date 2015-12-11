@@ -33,7 +33,7 @@ Meteor.startup ->
 			username: decodeURIComponent(req.url.replace(/^\//, '').replace(/\?.*$/, ''))
 
 		if params.username[0] isnt '@'
-			file = RocketChatFileAvatarInstance.getFileWithReadStream params.username
+			file = RocketChatFileAvatarInstance.getFileWithReadStream encodeURIComponent(params.username)
 		else
 			params.username = params.username.replace '@', ''
 

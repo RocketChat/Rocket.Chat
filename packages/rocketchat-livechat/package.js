@@ -52,12 +52,14 @@ Package.onUse(function(api) {
 	api.addFiles('server/methods/addAgent.js', 'server');
 	api.addFiles('server/methods/addManager.js', 'server');
 	api.addFiles('server/methods/saveDepartment.js', 'server');
+	api.addFiles('server/methods/saveSurveyFeedback.js', 'server');
 	api.addFiles('server/methods/searchAgent.js', 'server');
 	api.addFiles('server/methods/removeAgent.js', 'server');
 	api.addFiles('server/methods/removeManager.js', 'server');
 	api.addFiles('server/methods/removeDepartment.js', 'server');
 	// models
 	api.addFiles('server/models/Users.js', 'server');
+	api.addFiles('server/models/Rooms.js', 'server');
 	api.addFiles('server/models/LivechatDepartment.js', 'server');
 
 	// collections
