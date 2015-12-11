@@ -63,15 +63,22 @@ else
 				for date, msgs of messagesObj
 					messagesCount += msgs.length
 					RocketChat.models.Imports.update { _id: @importRecord._id }, { $set: { 'status': "entries.messages.started:#{channel}/#{date}" }}
-					try
+
+					# a "typical" slack message is around 204 bytes and the max we can store is 16777216 bytes
+					# but we want to round it down to 16000000 since some messages are bigger than regular
+					msgsBsonSize = msgs.length * 204
+					if msgsBsonSize > 16000000
+						maxSize = Math.floor(msgs.length / (Math.ceil(msgsBsonSize / 16000000)))
+						splitArray = []
+						i = 0
+						while i < msgs.length
+							splitArray.push(msgs.slice(i, i += maxSize))
+						for splitMsg, i in splitArray
+							messagesId = @collection.insert { 'import': importId, 'type': 'messages', 'name': "#{channel}/#{date}.#{i}", 'messages': splitMsg }
+							@messages[channel]["#{date}.#{i}"] = @collection.findOne messagesId
+					else
 						messagesId = @collection.insert { 'import': importId, 'type': 'messages', 'name': "#{channel}/#{date}", 'messages': msgs }
 						@messages[channel][date] = @collection.findOne messagesId
-					catch error
-						RocketChat.models.Imports.update { _id: @importRecord._id }, { $set: { 'status': "entries.messages.error:#{channel}/#{date}", 'error': error, 'count.messages': messagesCount, 'count.dateoferror': msgs.length }}
-						console.log RocketChat.models.Imports.findOne importId
-						return {} =
-							import: RocketChat.models.Imports.findOne importId
-							error: true
 
 			RocketChat.models.Imports.update { _id: @importRecord._id }, { $set: { 'status': 'entries', 'count.messages': messagesCount }}
 			return {} =
@@ -86,6 +93,7 @@ else
 			@collection.update { _id: @channels._id }, { $set: { 'channels': data.channels }}
 			@channels = @collection.findOne @channels._id
 
+			RocketChat.models.Imports.update { _id: @importRecord._id }, { $set: { 'status': 'started.users' }}
 			for user in @users.users when user.doImport
 				existantUser = RocketChat.models.Users.findOneByEmailAddress user.profile.email
 				if existantUser
@@ -123,6 +131,7 @@ else
 
 			@collection.update { _id: @users._id }, { $set: { 'users': @users.users }}
 
+			RocketChat.models.Imports.update { _id: @importRecord._id }, { $set: { 'status': 'started.channels' }}
 			for channel in @channels.channels when channel.doImport
 				existantRoom = RocketChat.models.Rooms.findOneByName channel.name
 				if existantRoom or channel.is_general
@@ -149,6 +158,7 @@ else
 
 			@collection.update { _id: @channels._id }, { $set: { 'channels': @channels.channels }}
 
+			RocketChat.models.Imports.update { _id: @importRecord._id }, { $set: { 'status': 'started.messages' }}
 			for channel, messagesObj of @messages
 				slackChannel = @getSlackChannelFromName channel
 				if slackChannel?.doImport
@@ -156,6 +166,7 @@ else
 					room = RocketChat.models.Rooms.findOneById slackChannel.rocketId, { fields: { usernames: 1, t: 1, name: 1 } }
 					for date, msgs of messagesObj
 						console.log "#{channel} from #{date} length #{msgs.messages.length}"
+						RocketChat.models.Imports.update { _id: @importRecord._id }, { $set: { 'status': "started.messages.#{channel}/#{date}.#{msgs.messages.length}" }}
 						for message in msgs.messages
 							if message.type is 'message'
 								if message.subtype? and message.subtype isnt 'bot_message'
@@ -172,14 +183,26 @@ else
 									else
 										console.log message.subtype
 								else
-									msgObj =
-										msg: @convertSlackMessageToRocketChat message.text
-										ts: new Date(parseInt(message.ts.split('.')[0]) * 1000)
+									user = @getRocketUser(message.user)
+									if user?
+										msgObj =
+											msg: @convertSlackMessageToRocketChat message.text
+											ts: new Date(parseInt(message.ts.split('.')[0]) * 1000)
+											rid: room._id
+											u:
+												_id: user._id
+												username: user.username
 
-									if message.edited?
-										msgObj.ets = new Date(parseInt(message.edited.ts.split('.')[0]) * 1000)
+										# borrowed from sendMessage.coffee#14
+										if urls = msgObj.msg.match /([A-Za-z]{3,9}):\/\/([-;:&=\+\$,\w]+@{1})?([-A-Za-z0-9\.]+)+:?(\d+)?((\/[-\+=!:~%\/\.@\,\w]+)?\??([-\+=&!:;%@\/\.\,\w]+)?#?([\w]+)?)?/g
+											msgObj.urls = urls.map (url) -> url: url
 
-									RocketChat.sendMessage @getRocketUser(message.user), msgObj, room
+										if message.edited?
+											msgObj.ets = new Date(parseInt(message.edited.ts.split('.')[0]) * 1000)
+
+										RocketChat.models.Messages.insert msgObj
+
+										#RocketChat.sendMessage @getRocketUser(message.user), msgObj, room
 
 			# loop through all the rooms and if they're deleted/archived then archive them
 			# as it will void the messages if the channel is archived before hand
