@@ -29,7 +29,9 @@ if Meteor.isServer
 	RocketChat.importTool.import = (name, input) ->
 		if RocketChat.importTool.importers[name]?.importerInstance?
 			importer = RocketChat.importTool.importers[name].importerInstance.doImport
-			importer input
+			result = importer input
+			RocketChat.importTool.importers[name].importerInstance = undefined #clear data
+			return result
 
 	RocketChat.importTool.restart = (name) ->
 		if RocketChat.importTool.importers[name]?
