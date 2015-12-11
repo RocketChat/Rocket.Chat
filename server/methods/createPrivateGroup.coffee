@@ -26,7 +26,10 @@ Meteor.methods
 
 		# avoid duplicate names
 		if RocketChat.models.Rooms.findOneByName name
-			throw new Meteor.Error 'duplicate-name'
+			if RocketChat.models.Rooms.findOneByName(name).archived
+				throw new Meteor.Error 'archived-duplicate-name'
+			else
+				throw new Meteor.Error 'duplicate-name'
 
 		# create new room
 		room = RocketChat.models.Rooms.createWithTypeNameUserAndUsernames 'p', name, me, members,
