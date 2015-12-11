@@ -1,0 +1,24 @@
+<template name="livechatTriggers">
+	<form id="trigger-form">
+		<div class="rocket-form">
+			<fieldset>
+				<div class="input-line">
+					<label>{{_ "Trigger_by_URL"}}</label>
+					<input type="text" name="url-regex" placeholder="{{_ "Enter_a_regex"}}" value="{{urlRegex}}">
+				</div>
+				<div class="input-line">
+					<label>{{_ "Trigger_by_time"}}</label>
+					<input type="number" name="trigger-time" placeholder="{{_ "Time_in_seconds_at_the_same_page"}}" value="{{time}}">
+				</div>
+				<div class="input-line">
+					<label>{{_ "Trigger_message"}}</label>
+					<input type="text" name="trigger-message" placeholder="{{_ "Enter_a_message_to_your_customer"}}" value="{{message}}">
+				</div>
+			</fieldset>
+			<div class="submit">
+				<button type="reset" class="button secondary reset"><i class="icon-ccw"></i><span>{{_ "Reset"}}</span></button>
+				<button class="button save"><i class="icon-floppy"></i><span>{{_ "Save"}}</span></button>
+			</div>
+		</div>
+	</form>
+</template>

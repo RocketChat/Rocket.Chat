@@ -43,6 +43,8 @@ Package.onUse(function(api) {
 	api.addFiles('client/views/app/livechatDepartments.js', 'client');
 	api.addFiles('client/views/app/livechatDepartmentForm.html', 'client');
 	api.addFiles('client/views/app/livechatDepartmentForm.js', 'client');
+	api.addFiles('client/views/app/livechatTriggers.html', 'client');
+	api.addFiles('client/views/app/livechatTriggers.js', 'client');
 	api.addFiles('client/views/sideNav/livechat.html', 'client');
 	api.addFiles('client/views/sideNav/livechat.js', 'client');
 	api.addFiles('client/views/sideNav/livechatFlex.html', 'client');
@@ -56,17 +58,22 @@ Package.onUse(function(api) {
 	api.addFiles('server/methods/removeAgent.js', 'server');
 	api.addFiles('server/methods/removeManager.js', 'server');
 	api.addFiles('server/methods/removeDepartment.js', 'server');
+	api.addFiles('server/methods/saveTrigger.js', 'server');
+
 	// models
 	api.addFiles('server/models/Users.js', 'server');
 	api.addFiles('server/models/LivechatDepartment.js', 'server');
+	api.addFiles('server/models/LivechatTrigger.js', 'server');
 
 	// collections
 	api.addFiles('client/lib/LivechatDepartment.js', 'client');
+	api.addFiles('client/lib/LivechatTrigger.js', 'client');
 
 	// publications
 	api.addFiles('server/publications/livechatAgents.js', 'server');
 	api.addFiles('server/publications/livechatManagers.js', 'server');
 	api.addFiles('server/publications/livechatDepartments.js', 'server');
+	api.addFiles('server/publications/trigger.js', 'server');
 	api.addFiles('server/publications/visitorRoom.js', 'server');
 
 	// livechat app
