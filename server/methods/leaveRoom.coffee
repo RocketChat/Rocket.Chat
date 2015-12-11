@@ -18,6 +18,10 @@ Meteor.methods
 
 			RocketChat.models.Messages.createUserLeaveWithRoomIdAndUser rid, removedUser
 
+		if room.t is 'l'
+			RocketChat.models.Messages.createCommandWithRoomIdAndUser 'survey', rid, user
+
+
 		if room.u?._id is Meteor.userId()
 			newOwner = _.without(room.usernames, user.username)[0]
 			if newOwner?
