@@ -4,24 +4,38 @@
 // 		var h = d.getElementsByTagName(s)[0],
 // 			j = d.createElement(s);
 // 		j.async = true;
-// 		j.src = 'rocket-livechat.js';
+// 		j.src = '/packages/rocketchat_livechat/assets/rocket-livechat.js';
 // 		h.parentNode.insertBefore(j, h);
 // 	})(window, document, 'script', 'initRocket', 'http://localhost:5000/livechat');
 // </script>
 
 ;(function(w) {
 	var exports = {};
+	var config = {};
+	var widget;
+
+	var closeWidget = () => {
+		widget.dataset.state = 'closed';
+		widget.style.height = '30px';
+	};
+
+	var openWidget = () => {
+		widget.dataset.state = 'opened';
+		widget.style.height = '300px';
+	};
 
 	var api = {
-		toggleWindow: function() {
-			var widget = document.querySelector('.rocketchat-widget');
+		toggleWindow: function(forceClose) {
 			if (widget.dataset.state === 'closed') {
-				widget.dataset.state = 'opened';
-				widget.style.height = '300px';
+				openWidget();
 			} else {
-				widget.dataset.state = 'closed';
-				widget.style.height = '30px';
+				closeWidget();
 			}
+		},
+		openPopout: function() {
+			closeWidget();
+			var popup = window.open(config.url + '?mode=popout', 'livechat-popout', 'width=400, height=450, toolbars=no');
+			popup.focus();
 		}
 	};
 
@@ -29,6 +43,8 @@
 		if (!url) {
 			return;
 		}
+
+		config.url = url;
 
 		var chatWidget = document.createElement('div');
 		chatWidget.dataset.state = 'closed';
@@ -47,6 +63,8 @@
 		chatWidget.style.zIndex = '12345';
 
 		document.getElementsByTagName('body')[0].appendChild(chatWidget);
+
+		widget = document.querySelector('.rocketchat-widget');
 
 		w.addEventListener('message', function(msg) {
 			if (typeof msg.data === 'object' && msg.data.src !== undefined && msg.data.src === 'rocketchat') {

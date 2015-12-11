@@ -49,7 +49,7 @@ input:focus {
 	height: 100%;
 
 	.title {
-		flex: 1 1 @header-min-height;
+		flex: 1 0 @header-min-height;
 
 		line-height: @header-min-height;
 
@@ -62,8 +62,13 @@ input:focus {
 			margin: 0;
 			padding: 0 5px;
 			font-size: 9pt;
-			display: table-cell;
-			vertical-align: middle;
+			display: inline-block;
+		}
+
+		.toolbar {
+			display: inline-block;
+			float: right;
+			padding-right: 5px;
 		}
 	}
 	.messages {
@@ -286,7 +291,7 @@ input:focus {
 		}
 	}
 	.footer {
-		flex: 1 1 @footer-min-height;
+		flex: 1 0 @footer-min-height;
 
 		z-index: 10;
 
@@ -320,62 +325,30 @@ input:focus {
 	}
 }
 
-.livechat-registration {
-	position: fixed;
-	top: 0;
-	bottom: 0;
-	.title {
-		border-top-right-radius: 5px;
-		border-top-left-radius: 5px;
-		color: #FFF;
-		position: fixed;
-		top: 0;
-		width: 100%;
-		height: @header-min-height;
-		display: table;
-		z-index: 10;
-		cursor: pointer;
-		h1 {
-			margin: 0;
-			padding: 0 5px;
-			font-size: 9pt;
-			display: table-cell;
-			vertical-align: middle;
-		}
-	}
-	.livechat-form {
+.livechat-form {
+	flex: 1 1 100%;
+	display: block;
+	background-color: #FFF;
+	border-left: 1px solid #E7E7E7;
+	border-right: 1px solid #E7E7E7;
+
+	input, button {
 		display: block;
-		background-color: #FFF;
-		top: @header-min-height;
-		bottom: @footer-min-height;
-		border-left: 1px solid #E7E7E7;
-		border-right: 1px solid #E7E7E7;
-		position: fixed;
-		width: 100%;
-		.wrapper {
-			height: 100%;
-			overflow-y: auto;
-			padding-bottom: 6px;
+		padding: 5px;
+		margin: 5px;
+	}
+	.error {
+		display: none;
+		// width: 100%;
+		background-color: #F7D799;
+		padding: 5px;
 
-			input, button {
-				display: block;
-				padding: 5px;
-				margin: 5px;
-			}
-		}
-		.error {
-			bottom: 50px;
-			position: fixed;
-			width: 100%;
-			background-color: #F7D799;
-			padding: 5px;
+		// .transition(transform 0.3s ease-out);
+		// .transform(translateY(-100%));
 
-			.transition(transform 0.3s ease-out);
-			.transform(translateY(200%));
-
-			&.show {
-				.transform(translateY(8px));
-			}
+		&.show {
+			display: block;
+			// .transform(translateY(0px));
 		}
 	}
 }

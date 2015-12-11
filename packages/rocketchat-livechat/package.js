@@ -70,7 +70,8 @@ Package.onUse(function(api) {
 	api.addFiles('server/publications/visitorRoom.js', 'server');
 
 	// livechat app
-	api.addAssets('rocket-livechat.js', 'client');
+	api.addAssets('assets/demo.html', 'client');
+	api.addAssets('assets/rocket-livechat.js', 'client');
 	api.addAssets('public/livechat.css', 'client');
 	api.addAssets('public/livechat.js', 'client');
 	api.addAssets('public/head.html', 'server');
