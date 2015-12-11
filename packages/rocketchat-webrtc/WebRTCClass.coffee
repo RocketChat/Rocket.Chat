@@ -135,8 +135,15 @@ class WebRTCClass
 		@monitor = false
 		@autoAccept = false
 
-		@navigator = if navigator.mozGetUserMedia? then 'firefox' else 'chrome'
-		@screenShareAvaliable = document.cookie.includes('rocketchatscreenshare=chrome') is true or window.rocketchatscreenshare is 'firefox'
+		@navigator = undefined
+		if navigator.userAgent.toLocaleLowerCase().indexOf('chrome') > -1
+			@navigator = 'chrome'
+		else if navigator.userAgent.toLocaleLowerCase().indexOf('firefox') > -1
+			@navigator = 'firefox'
+		else if navigator.userAgent.toLocaleLowerCase().indexOf('safari') > -1
+			@navigator = 'safari'
+
+		@screenShareAvailable = @navigator in ['chrome', 'firefox']
 
 		@media =
 			video: true
@@ -308,11 +315,30 @@ class WebRTCClass
 			navigator.getUserMedia media, onSuccess, onError
 			return
 
-		if @screenShareAvaliable isnt true
+		if @screenShareAvailable isnt true
 			console.log 'Screen share is not avaliable'
 			return
 
 		getScreen = (audioStream) =>
+			if document.cookie.indexOf("rocketchatscreenshare=chrome") is -1 and not window.rocketchatscreenshare?
+				swal
+					type: "warning"
+					title: TAPi18n.__ "Screen_Share"
+					text: TAPi18n.__ "You_need_install_an_extension_to_allow_screen_sharing"
+					html: true
+					showCancelButton: true
+					confirmButtonText: TAPi18n.__ "Install_Extension"
+					cancelButtonText: TAPi18n.__ "Cancel"
+				, (isConfirm) =>
+					if isConfirm
+						if @navigator is 'chrome'
+							chrome.webstore.install undefined, undefined, ->
+								window.open('https://chrome.google.com/webstore/detail/rocketchat-screen-share/nocfbnnmjnndkbipkabodnheejiegccf')
+						else if @navigator is 'firefox'
+							window.open('https://addons.mozilla.org/en-GB/firefox/addon/rocketchat-screen-share/')
+
+				return
+
 			getScreenSuccess = (stream) =>
 				if audioStream?
 					stream.addTrack(audioStream.getAudioTracks()[0])
