@@ -4,7 +4,7 @@
 // 		var h = d.getElementsByTagName(s)[0],
 // 			j = d.createElement(s);
 // 		j.async = true;
-// 		j.src = 'rocket-livechat.js';
+// 		j.src = '/packages/rocketchat_livechat/assets/rocket-livechat.js';
 // 		h.parentNode.insertBefore(j, h);
 // 	})(window, document, 'script', 'initRocket', 'http://localhost:5000/livechat');
 // </script>
