@@ -109,12 +109,13 @@ RocketChat.Notifications.onUser 'message', (msg) ->
 						Dep.changed()
 
 						msgStream.on openedRooms[typeName].rid, (msg) ->
-							ChatMessage.upsert { _id: msg._id }, msg
+							if msg.t isnt 'command'
+								ChatMessage.upsert { _id: msg._id }, msg
+							else
+								Meteor.defer ->
+									RoomManager.updateMentionsMarksOfRoom typeName
 
-							Meteor.defer ->
-								RoomManager.updateMentionsMarksOfRoom typeName
-
-							RocketChat.callbacks.run 'streamMessage', msg
+								RocketChat.callbacks.run 'streamMessage', msg
 
 						RocketChat.Notifications.onRoom openedRooms[typeName].rid, 'deleteMessage', onDeleteMessageStream
 
