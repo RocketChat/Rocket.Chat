@@ -134,6 +134,7 @@
   "Disable_New_Message_Notification" : "Disable New Message Notification",
   "Disable_New_Room_Notification" : "Disable New Room Notification",
   "Drop_to_upload_file" : "Drop to upload file",
+  "Duplicate_archived_channel_name" : "An archived Channel with name '%s' exists",
   "Duplicate_channel_name" : "A Channel with name '%s' exists",
   "Duplicate_private_group_name" : "A Private Group with name '%s' exists",
   "E-mail" : "E-mail",
