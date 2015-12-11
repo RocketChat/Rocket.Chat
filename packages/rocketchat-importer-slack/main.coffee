@@ -67,7 +67,7 @@ else
 						messagesId = @collection.insert { 'import': importId, 'type': 'messages', 'name': "#{channel}/#{date}", 'messages': msgs }
 						@messages[channel][date] = @collection.findOne messagesId
 					catch error
-						RocketChat.models.Imports.update { _id: @importRecord._id }, { $set: { 'status': "entries.messages.error:#{channel}/#{date}", 'error': error, 'count.messages': messagesCount }}
+						RocketChat.models.Imports.update { _id: @importRecord._id }, { $set: { 'status': "entries.messages.error:#{channel}/#{date}", 'error': error, 'count.messages': messagesCount, 'count.dateoferror': msgs.length }}
 						return error
 
 			RocketChat.models.Imports.update { _id: @importRecord._id }, { $set: { 'status': 'entries', 'count.messages': messagesCount }}
