@@ -26,8 +26,6 @@ Template.message.helpers
 			when 'uj' then tr('User_joined_channel', { context: this.u.gender }, { user: this.u.username })
 			when 'wm' then t('Welcome', { user: this.u.username })
 			# when 'rtc' then RocketChat.callbacks.run 'renderRtcMessage', this
-			when 'command'
-				if this.msg is 'survey' then t('Please_answer_survey')
 			else
 				this.html = this.msg
 				if s.trim(this.html) isnt ''

@@ -272,7 +272,6 @@ RocketChat.models.Messages = new class extends RocketChat.models._Base
 	createCommandWithRoomIdAndUser: (command, roomId, user, extraData) ->
 		return @createWithTypeRoomIdMessageAndUser 'command', roomId, command, user, extraData
 
-
 	# REMOVE
 	removeById: (_id) ->
 		query =
