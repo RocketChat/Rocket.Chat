@@ -9,7 +9,4 @@ FlowRouter.route '/livechat',
 	]
 
 	action: ->
-		if Meteor.userId()
-			BlazeLayout.render 'main', {center: 'room'}
-		else
-			BlazeLayout.render 'main', {center: 'register'}
+		BlazeLayout.render 'main', {center: 'room'}
