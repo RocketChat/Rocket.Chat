@@ -36,7 +36,7 @@ Template.message.helpers
 				return this.html
 
 	system: ->
-		return 'system' if this.t in ['s', 'p', 'f', 'r', 'au', 'ru', 'ul', 'wm', 'uj', 'command']
+		return 'system' if this.t in ['s', 'p', 'f', 'r', 'au', 'ru', 'ul', 'wm', 'uj']
 
 
 Template.message.onViewRendered = (context) ->
