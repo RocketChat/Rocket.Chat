@@ -28,7 +28,7 @@
 
 	var api = {
 		ready: function() {
-			console.log('ready!!!');
+			// console.log('ready!!!');
 			ready = true;
 			if (hookQueue.length > 0) {
 				hookQueue.forEach(function(hookParams) {
@@ -48,6 +48,11 @@
 			closeWidget();
 			var popup = window.open(config.url + '?mode=popout', 'livechat-popout', 'width=400, height=450, toolbars=no');
 			popup.focus();
+		},
+		triggerMessage: function(msg) {
+			console.log('trigger fired!!!! ->',msg);
+
+			openWidget();
 		}
 	};
 
@@ -57,7 +62,7 @@
 			console.log('queueing hook ->',action);
 			return hookQueue.push(arguments);
 		}
-		console.log('calling hook ->',action);
+		// console.log('calling hook ->',action);
 		var data = {
 			src: 'rocketchat',
 			fn: action,
@@ -67,7 +72,7 @@
 	};
 
 	var pageVisited = function() {
-		console.log('calling pageVisited');
+		// console.log('calling pageVisited');
 		callHook('pageVisited', JSON.parse(JSON.stringify(document.location)));
 	};
 
