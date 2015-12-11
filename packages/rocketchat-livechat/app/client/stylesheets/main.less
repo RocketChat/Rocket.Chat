@@ -43,6 +43,65 @@ input:focus {
 	box-shadow: 0 0 0;
 }
 
+.button {
+	&:extend(.unselectable);
+	display: inline-block;
+	padding: 9px 12px;
+	font-weight: 500;
+	font-size: 13px;
+	margin: 4px;
+	text-transform: uppercase;
+	word-spacing: 0;
+	box-shadow: 1px 1px 0 rgba(0, 0, 0, 0.125);
+	border: none;
+	line-height: 16px;
+	position: relative;
+	cursor: pointer;background-color: #FFF;
+	color: rgba(255, 255, 255, 0.85);
+	background-color: lighten(desaturate(@primary-background-color, 15%), 12.5%);
+	span {
+		position: relative;
+		z-index: 2;
+	}
+	&:before {
+		background-color: rgba(0, 0, 0, 0.1);
+		content: " ";
+		position: absolute;
+		top: 0;
+		left: 0;
+		width: 100%;
+		height: 100%;
+		opacity: 0;
+		z-index: 1;
+		.transition(opacity .1s ease-out);
+	}
+	&:hover {
+		text-decoration: none;
+		color: #FFF;
+		&:before {
+			opacity: 1;
+		}
+	}
+	&.secondary {
+		background-color: @tertiary-background-color;
+		color: @primary-font-color;
+		&:before {
+			background-color: rgba(0, 0, 0, 0.045);
+		}
+	}
+	&.clean {
+		font-size: 14px;
+		box-shadow: 0 0 3px rgba(0, 0, 0, 0.08);
+		&.primary {
+			font-weight: 600;
+		}
+	}
+	&.button-block {
+		display: block;
+		width: 100%;
+	}
+}
+
 .livechat-room {
 	display: flex;
 	flex-direction: column;
@@ -349,6 +408,64 @@ input:focus {
 		&.show {
 			display: block;
 			// .transform(translateY(0px));
+		}
+	}
+}
+
+#survey {
+	.overlay {
+		background-color: rgba(0,0,0,0.5);
+		position: fixed;
+		height: 100%;
+		width: 100%;
+
+		.wrapper {
+			background: white;
+			position: fixed;
+			height: 60vh;
+			width: 60vw;
+			top: 20vh;
+			left: 20vw;
+			border-radius: 6px;
+			display: flex;
+			flex-direction: column;
+
+			header {
+				flex: 1 0 40px;
+				padding: 0 15px;
+				border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+				line-height: 40px;
+			}
+
+			.content {
+				overflow-y: scroll;
+				padding: 10px;
+				flex: 1 1 100%;
+
+				.instructions {
+					margin-top: 5px;
+				}
+
+				.survey-item {
+					margin-top: 20px;
+
+					.question {
+						display: block;
+					}
+
+					.answer {
+						margin-right: 5px;
+					}
+				}
+			}
+
+			footer {
+				flex: 1 0 60px;
+				border-top: 1px solid rgba(0, 0, 0, 0.1);
+				line-height: 60px;
+				text-align: right;
+				padding-right: 20px;
+			}
 		}
 	}
 }
