@@ -77,7 +77,6 @@ Accounts.insertUserDoc = _.wrap Accounts.insertUserDoc, (insertUserDoc) ->
 	# when inserting first user give them admin privileges otherwise make a regular user
 	firstUser = RocketChat.models.Users.findOne({ _id: { $ne: 'rocket.cat' }}, { sort: { createdAt: 1 }})
 	roleName = if firstUser?._id is _id then 'admin' else 'user'
-	console.log "The role for #{_id} is #{roleName}."
 
 	RocketChat.authz.addUsersToRoles(_id, roleName)
 	RocketChat.callbacks.run 'afterCreateUser', options, user
