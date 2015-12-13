@@ -1,7 +1,7 @@
 if Meteor.isClient
 	Test = undefined
 else
-	aTest = new RocketChat.importTool.TestImporter
+	#aTest = new RocketChat.importTool.TestImporter
 
 	class Test
 		constructor: () ->
