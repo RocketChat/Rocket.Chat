@@ -36,6 +36,9 @@
 			closeWidget();
 			var popup = window.open(config.url + '?mode=popout', 'livechat-popout', 'width=400, height=450, toolbars=no');
 			popup.focus();
+		},
+		removeWidget: function() {
+			document.getElementsByTagName('body')[0].removeChild(widget);
 		}
 	};
 
