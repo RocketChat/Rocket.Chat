@@ -15,6 +15,12 @@ Template.room.helpers({
 	},
 	popoutActive: function() {
 		return FlowRouter.getQueryParam('mode') === 'popout';
+	},
+	livechatStartedEnabled: function() {
+		return Template.instance().startedEnabled.get() !== null;
+	},
+	livechatEnabled: function() {
+		return Template.instance().startedEnabled.get();
 	}
 });
 
@@ -26,4 +32,27 @@ Template.room.events({
 		event.stopPropagation();
 		parentCall('openPopout');
 	}
+});
+
+Template.room.onCreated(function() {
+	self = this;
+
+	self.startedEnabled = new ReactiveVar(null);
+
+	self.subscribe('settings', ['Livechat_title', 'Livechat_title_color', 'Livechat_enabled']);
+
+	var initialCheck = true;
+
+	self.autorun(function() {
+		if (self.subscriptionsReady()) {
+			var enabled = Settings.findOne('Livechat_enabled');
+			if (enabled !== undefined) {
+				if (!enabled.value && initialCheck) {
+					parentCall('removeWidget');
+				}
+				initialCheck = false;
+				self.startedEnabled.set(enabled.value);
+			}
+		}
+	});
 });
