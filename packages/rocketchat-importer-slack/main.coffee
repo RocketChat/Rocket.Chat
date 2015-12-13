@@ -1,12 +1,12 @@
 # Slack Importer class
 if Meteor.isClient
-	Slack = undefined
+	SlackBefore = undefined
 else
 	#Status: new = prepare method was called, started to load the zip's content
 	#		 entries = entries from the import where loaded
 	#		 started = the import was started
 	#		 completed = the import was completed
-	class Slack
+	class SlackBefore
 		constructor: (@collection) ->
 			console.log 'Initializing the Slack Importer'
 			@fileTypeRegex = new RegExp 'application\/.*?zip'
@@ -64,10 +64,10 @@ else
 					messagesCount += msgs.length
 					RocketChat.models.Imports.update { _id: @importRecord._id }, { $set: { 'status': "entries.messages.started:#{channel}/#{date}" }}
 
-					# a "typical" slack message is around 204 bytes and the max we can store is 16777216 bytes
-					# but we want to round it down to 16000000 since some messages are bigger than regular
-					msgsBsonSize = msgs.length * 204
+					# The max we can store is 16777216 bytes but we want to round it down to 16000000 since we add some additional properties
+					msgsBsonSize = MongoInternals.NpmModules.mongodb.module.BSON.calculateObjectSize msgs
 					if msgsBsonSize > 16000000
+						console.log "The size of #{channel}/#{date} is #{msgsBsonSize} bytes!"
 						maxSize = Math.floor(msgs.length / (Math.ceil(msgsBsonSize / 16000000)))
 						splitArray = []
 						i = 0
@@ -188,14 +188,11 @@ else
 										msgObj =
 											msg: @convertSlackMessageToRocketChat message.text
 											ts: new Date(parseInt(message.ts.split('.')[0]) * 1000)
+											slack: message.ts
 											rid: room._id
 											u:
 												_id: user._id
 												username: user.username
-
-										# borrowed from sendMessage.coffee#14
-										if urls = msgObj.msg.match /([A-Za-z]{3,9}):\/\/([-;:&=\+\$,\w]+@{1})?([-A-Za-z0-9\.]+)+:?(\d+)?((\/[-\+=!:~%\/\.@\,\w]+)?\??([-\+=&!:;%@\/\.\,\w]+)?#?([\w]+)?)?/g
-											msgObj.urls = urls.map (url) -> url: url
 
 										if message.edited?
 											msgObj.ets = new Date(parseInt(message.edited.ts.split('.')[0]) * 1000)
@@ -234,7 +231,7 @@ else
 					message = message.replace userReplace.slackLong, userReplace.rocket
 				return message
 
-RocketChat.importTool.add 'slack', Slack,
+RocketChat.importTool.add 'slack', SlackBefore,
 	name: 'Slack Importer'
 	fileTypeRegex: new RegExp 'application\/.*?zip'
 	description: 'Imports Slack\'s exported data into Rocket.Chat'
