@@ -1,10 +1,8 @@
-###
-# Invite is a named function that will replace /invite commands
-# @param {Object} message - The message object
-###
 if Meteor.isClient
 	Test = undefined
 else
+	aTest = new RocketChat.importTool.TestImporter
+
 	class Test
 		constructor: () ->
 			console.log 'Importer Test initialized'
