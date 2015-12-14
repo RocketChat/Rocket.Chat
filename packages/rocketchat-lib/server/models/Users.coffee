@@ -28,6 +28,18 @@ RocketChat.models.Users = new class extends RocketChat.models._Base
 
 		return @findOne query, options
 
+	findOneVerifiedFromSameDomain: (email, options) ->
+		domain = s.strRight(email, '@')
+		query =
+			emails:
+				$elemMatch:
+					address:
+						$regex: new RegExp "@" + domain + "$", "i"
+						$ne: email
+					verified: true
+
+		return @findOne query, options
+
 	findOneAdmin: (admin, options) ->
 		query =
 			admin: admin
@@ -94,6 +106,12 @@ RocketChat.models.Users = new class extends RocketChat.models._Base
 
 		return @find query, options
 
+	getLastLogin: (options = {}) ->
+		query = { lastLogin: { $exists: 1 } }
+		options.sort = { lastLogin: -1 }
+		options.limit = 1
+
+		return @find(query, options)?.fetch?()?[0]?.lastLogin
 
 	# UPDATE
 	updateLastLoginById: (_id) ->

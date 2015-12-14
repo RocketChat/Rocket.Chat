@@ -6,16 +6,17 @@ Package.describe({
 });
 
 Package.onUse(function(api) {
+
 	api.versionsFrom('1.0');
 
 	api.use([
 		'coffeescript',
 		'check',
-		'tracker',
 		'rocketchat:lib@0.0.1'
 	]);
 
-	api.addFiles('invite.coffee');
+	api.addFiles('client.coffee', 'client');
+	api.addFiles('server.coffee', 'server');
 
 	// TAPi18n
 	api.use('templating', 'client');
