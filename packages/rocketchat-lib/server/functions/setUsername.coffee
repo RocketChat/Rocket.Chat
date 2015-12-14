@@ -45,13 +45,13 @@ RocketChat._setUsername = (userId, username) ->
 		RocketChat.models.Subscriptions.setUserUsernameByUserId user._id, username
 		RocketChat.models.Subscriptions.setNameForDirectRoomsWithOldName previousUsername, username
 
-	rs = RocketChatFileAvatarInstance.getFileWithReadStream("#{previousUsername}.jpg")
-	if rs?
-		RocketChatFileAvatarInstance.deleteFile "#{username}.jpg"
-		ws = RocketChatFileAvatarInstance.createWriteStream "#{username}.jpg", rs.contentType
-		ws.on 'end', Meteor.bindEnvironment ->
-			RocketChatFileAvatarInstance.deleteFile "#{previousUsername}.jpg"
-		rs.readStream.pipe(ws)
+		rs = RocketChatFileAvatarInstance.getFileWithReadStream(encodeURIComponent("#{previousUsername}.jpg"))
+		if rs?
+			RocketChatFileAvatarInstance.deleteFile encodeURIComponent("#{username}.jpg")
+			ws = RocketChatFileAvatarInstance.createWriteStream encodeURIComponent("#{username}.jpg"), rs.contentType
+			ws.on 'end', Meteor.bindEnvironment ->
+				RocketChatFileAvatarInstance.deleteFile encodeURIComponent("#{previousUsername}.jpg")
+			rs.readStream.pipe(ws)
 
 	# Set new username
 	RocketChat.models.Users.setUsername user._id, username
