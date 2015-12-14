@@ -24,14 +24,14 @@ getUrlContent = (urlObj, redirectCount = 5, callback) ->
 
 	httpOrHttps = if urlObj.protocol is 'https:' then https else http
 
-	parsedUrl = _.pick urlObj, ['host', 'hash', 'pathname', 'protocol', 'port', 'query']
+	parsedUrl = _.pick urlObj, ['host', 'hash', 'pathname', 'protocol', 'port', 'query', 'search']
 
 	RocketChat.callbacks.run 'oembed:beforeGetUrlContent',
 		requestOptions: opts
 		parsedUrl: parsedUrl
 
 	request = httpOrHttps.request opts, Meteor.bindEnvironment (response) ->
-		if response.statusCode is 301 and response.headers.location?
+		if response.statusCode in [301,302,307] and response.headers.location?
 			request.abort()
 			console.log response.headers.location
 

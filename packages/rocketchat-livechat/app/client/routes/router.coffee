@@ -1,3 +1,5 @@
+BlazeLayout.setRoot('body');
+
 FlowRouter.route '/livechat',
 	name: 'index'
 
