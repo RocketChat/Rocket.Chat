@@ -87,19 +87,31 @@ readAsArrayBuffer = (file, callback) ->
 						onComplete: (file) ->
 							self = this
 							url = file.url.replace(Meteor.absoluteUrl(), '/')
-							Meteor.call 'sendMessage', {
+
+							attachment =
+								title: "File Uploaded: #{file.name}"
+								title_link: url
+
+							if /^image\/.+/.test file.type
+								attachment.image_url = url
+								attachment.image_type = file.type
+								attachment.image_size = file.size
+
+							if /^audio\/.+/.test file.type
+								attachment.audio_url = url
+								attachment.audio_type = file.type
+								attachment.audio_size = file.size
+
+							msg =
 								_id: Random.id()
 								rid: roomId
 								msg: ""
 								file:
 									_id: file._id
 								groupable: false
-								attachments: [{
-									image_url: url
-									title: "File Uploaded: #{file.name}"
-									title_link: url
-								}]
-							}, ->
+								attachments: [attachment]
+
+							Meteor.call 'sendMessage', msg, ->
 								Meteor.setTimeout ->
 									uploading = Session.get 'uploading'
 									if uploading?
