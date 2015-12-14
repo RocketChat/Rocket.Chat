@@ -47,6 +47,8 @@ RocketChat.settings.add 'Accounts_AllowUsernameChange', true, { type: 'boolean',
 RocketChat.settings.add 'Accounts_AllowPasswordChange', true, { type: 'boolean', group: 'Accounts', section: 'General', public: true }
 RocketChat.settings.add 'Accounts_RequireNameForSignUp', true, { type: 'boolean', group: 'Accounts', section: 'General', public: true }
 
+RocketChat.settings.add 'Accounts_LoginExpiration', 90, { type: 'int', group: 'Accounts', section: 'General', public: true }
+
 RocketChat.settings.addGroup 'FileUpload'
 RocketChat.settings.add 'FileUpload_Enabled', true, { type: 'boolean', group: 'FileUpload', public: true }
 RocketChat.settings.add 'FileUpload_MaxFileSize', 2097152, { type: 'int', group: 'FileUpload', public: true }
@@ -59,8 +61,9 @@ RocketChat.settings.add 'Site_Name', 'Rocket.Chat', { type: 'string', group: 'Ge
 RocketChat.settings.add 'Allow_Invalid_SelfSigned_Certs', false, { type: 'boolean', group: 'General' }
 RocketChat.settings.add 'Disable_Favorite_Rooms', false, { type: 'boolean', group: 'General' }
 RocketChat.settings.add 'CDN_PREFIX', '', { type: 'string', group: 'General' }
+RocketChat.settings.add 'Restart', 'restart_server', { type: 'action', group: 'General', actionText: 'Restart_the_server' }
 
-RocketChat.settings.add 'UTF8_Names_Validation', '[0-9a-zA-Z-_.]+', { type: 'string', group: 'General', section: 'UTF8', public: true }
+RocketChat.settings.add 'UTF8_Names_Validation', '[0-9a-zA-Z-_.]+', { type: 'string', group: 'General', section: 'UTF8', public: true  ,i18nDescription: 'UTF8_Names_Validation_Description'}
 RocketChat.settings.add 'UTF8_Names_Slugify', true, { type: 'boolean', group: 'General', section: 'UTF8', public: true }
 
 RocketChat.settings.addGroup 'API'
@@ -104,6 +107,7 @@ RocketChat.settings.add 'Push_enable', true, { type: 'boolean', group: 'Push', p
 RocketChat.settings.add 'Push_enable_gateway', true, { type: 'boolean', group: 'Push' }
 RocketChat.settings.add 'Push_gateway', 'https://rocket.chat', { type: 'string', group: 'Push' }
 RocketChat.settings.add 'Push_production', true, { type: 'boolean', group: 'Push', public: true }
+RocketChat.settings.add 'Push_test_push', 'push_test', { type: 'action', group: 'Push', actionText: 'Send_a_test_push_to_my_user' }
 RocketChat.settings.add 'Push_apn_passphrase', '', { type: 'string', group: 'Push', section: 'Certificates_and_Keys' }
 RocketChat.settings.add 'Push_apn_key', '', { type: 'string', multiline: true, group: 'Push', section: 'Certificates_and_Keys' }
 RocketChat.settings.add 'Push_apn_cert', '', { type: 'string', multiline: true, group: 'Push', section: 'Certificates_and_Keys' }

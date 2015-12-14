@@ -10,7 +10,7 @@ Template.listPrivateGroupsFlex.events
 		SideNav.closeFlex()
 
 	'click footer .create': ->
-		SideNav.setFlex "createChannelFlex"
+		SideNav.setFlex "privateGroupsFlex"
 
 	'mouseenter header': ->
 		SideNav.overArrow()

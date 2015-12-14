@@ -1,5 +1,5 @@
 Meteor.methods({
-	registerGuest: function(token) {
+	registerGuest: function(token, name, email) {
 		console.log('registerGuest ->'.green, token);
 		var pass, qt, user, userData, userExists, userId, inc = 0;
 		check(token, String);
@@ -36,12 +36,19 @@ Meteor.methods({
 			password: pass
 		};
 		userId = Accounts.createUser(userData);
+
+		updateUser = {
+			name: name || user,
+			"profile.guest": true,
+			"profile.token": token
+		}
+
+		if (email && email.trim() !== "") {
+			updateUser.emails = [{ "address": email }];
+		}
+
 		Meteor.users.update(userId, {
-			$set: {
-				name: user,
-				"profile.guest": true,
-				"profile.token": token
-			}
+			$set: updateUser
 		});
 		return {
 			user: user,
