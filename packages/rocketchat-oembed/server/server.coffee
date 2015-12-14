@@ -7,7 +7,10 @@ querystring = Npm.require('querystring')
 gunzipSync = Meteor.wrapAsync zlib.gunzip.bind(zlib)
 inflateSync = Meteor.wrapAsync zlib.inflate.bind(zlib)
 
-OEmbed = {}
+OEmbed = {
+	rc_uid: 'OEmbed'
+	rc_token: Random.id()
+}
 
 getUrlContent = (urlObj, redirectCount = 5, callback) ->
 	if _.isString(urlObj)
@@ -21,6 +24,7 @@ getUrlContent = (urlObj, redirectCount = 5, callback) ->
 		rejectUnauthorized: !RocketChat.settings.get 'Allow_Invalid_SelfSigned_Certs'
 		headers:
 			'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/41.0.2227.0 Safari/537.36'
+			'Cookie': "rc_uid=#{OEmbed.rc_uid}; rc_token=#{OEmbed.rc_token}"
 
 	httpOrHttps = if urlObj.protocol is 'https:' then https else http
 
