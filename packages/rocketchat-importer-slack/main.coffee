@@ -9,6 +9,8 @@ else
 	class SlackBefore
 		constructor: (@collection) ->
 			console.log 'Initializing the Slack Importer'
+			console.log Importer.ProgressStep.PREPARING
+			@progress = new Importer.Progress 'Slack'
 			@fileTypeRegex = new RegExp 'application\/.*?zip'
 			@AdmZip = Npm.require 'adm-zip'
 			@users = []
@@ -66,9 +68,9 @@ else
 
 					# The max we can store is 16777216 bytes but we want to round it down to 16000000 since we add some additional properties
 					msgsBsonSize = MongoInternals.NpmModules.mongodb.module.BSON.calculateObjectSize msgs
-					if msgsBsonSize > 16000000
+					if msgsBsonSize > 8000000
 						console.log "The size of #{channel}/#{date} is #{msgsBsonSize} bytes!"
-						maxSize = Math.floor(msgs.length / (Math.ceil(msgsBsonSize / 16000000)))
+						maxSize = Math.floor(msgs.length / (Math.ceil(msgsBsonSize / 8000000)))
 						splitArray = []
 						i = 0
 						while i < msgs.length
@@ -230,6 +232,8 @@ else
 					message = message.replace userReplace.slack, userReplace.rocket
 					message = message.replace userReplace.slackLong, userReplace.rocket
 				return message
+		getProgress: =>
+			return @progress
 
 RocketChat.importTool.add 'slack', SlackBefore,
 	name: 'Slack Importer'
