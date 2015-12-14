@@ -52,7 +52,14 @@ if UploadFS?
 					uid = cookie.get('rc_uid', rawCookies) if rawCookies?
 					token = cookie.get('rc_token', rawCookies) if rawCookies?
 
-					unless uid and token and RocketChat.models.Users.findOneByIdAndLoginToken(uid, token)
+					if not uid or not token
+						throw new Meteor.Error 403, 'Not Allowed'
+
+					if uid is OEmbed.rc_uid
+						if token isnt OEmbed.rc_token
+							throw new Meteor.Error 403, 'Not Allowed'
+
+					else if not RocketChat.models.Users.findOneByIdAndLoginToken(uid, token)
 						throw new Meteor.Error 403, 'Not Allowed'
 
 				res.setHeader 'content-disposition', "attachment; filename=\"#{ encodeURIComponent(file.name) }\""
