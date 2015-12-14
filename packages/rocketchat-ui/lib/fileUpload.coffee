@@ -102,6 +102,11 @@ readAsArrayBuffer = (file, callback) ->
 								attachment.audio_type = file.type
 								attachment.audio_size = file.size
 
+							if /^video\/.+/.test file.type
+								attachment.video_url = url
+								attachment.video_type = file.type
+								attachment.video_size = file.size
+
 							msg =
 								_id: Random.id()
 								rid: roomId
