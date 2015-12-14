@@ -78,6 +78,7 @@ Api.addRoute ':integrationId/:userId/:token', authRequired: true,
 			parseUrls: false
 			bot:
 				i: integration._id
+			groupable: false
 
 		RocketChat.sendMessage user, message, room, {}
 
