@@ -47,6 +47,8 @@ RocketChat.settings.add 'Accounts_AllowUsernameChange', true, { type: 'boolean',
 RocketChat.settings.add 'Accounts_AllowPasswordChange', true, { type: 'boolean', group: 'Accounts', section: 'General', public: true }
 RocketChat.settings.add 'Accounts_RequireNameForSignUp', true, { type: 'boolean', group: 'Accounts', section: 'General', public: true }
 
+RocketChat.settings.add 'Accounts_LoginExpiration', 90, { type: 'int', group: 'Accounts', section: 'General', public: true }
+
 RocketChat.settings.addGroup 'FileUpload'
 RocketChat.settings.add 'FileUpload_Enabled', true, { type: 'boolean', group: 'FileUpload', public: true }
 RocketChat.settings.add 'FileUpload_MaxFileSize', 2097152, { type: 'int', group: 'FileUpload', public: true }
