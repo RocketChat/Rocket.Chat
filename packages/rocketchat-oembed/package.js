@@ -12,7 +12,6 @@ Package.onUse(function(api) {
 		'templating',
 		'coffeescript',
 		'underscore',
-		'random',
 		'konecty:change-case',
 		'rocketchat:lib@0.0.1'
 	]);
