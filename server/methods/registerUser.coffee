@@ -1,5 +1,11 @@
 Meteor.methods
 	registerUser: (formData) ->
+		if RocketChat.settings.get('Accounts_RegistrationForm') is 'Disabled'
+			throw new Meteor.Error 'registration-disabled', 'User registration is disabled'
+
+		else if RocketChat.settings.get('Accounts_RegistrationForm') is 'Secret URL' and (not formData.secretURL or formData.secretURL isnt RocketChat.settings.get('Accounts_RegistrationForm_SecretURL'))
+			throw new Meteor.Error 'registration-disabled', 'User registration is only allowed via Secret URL'
+
 		userData =
 			email: formData.email
 			password: formData.pass
@@ -10,3 +16,5 @@ Meteor.methods
 
 		if userData.email
 			Accounts.sendVerificationEmail(userId, userData.email);
+
+		return userId

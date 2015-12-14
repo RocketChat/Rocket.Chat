@@ -12,10 +12,16 @@ Meteor.methods
 		#if room.u._id isnt Meteor.userId() and not hasPermission
 			throw new Meteor.Error 403, 'Not allowed'
 
-		if not /^[0-9a-z-_]+$/.test name
+		try
+			nameValidation = new RegExp '^' + RocketChat.settings.get('UTF8_Names_Validation') + '$'
+		catch
+			nameValidation = new RegExp '^[0-9a-zA-Z-_.]+$'
+
+		if not nameValidation.test name
 			throw new Meteor.Error 'name-invalid'
 
-		name = _.slugify name
+		if RocketChat.settings.get 'UTF8_Names_Slugify'
+			name = _.slugify name
 
 		if name is room.name
 			return

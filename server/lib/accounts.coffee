@@ -1,5 +1,5 @@
-# Deny Account.createUser in client
-accountsConfig = { forbidClientAccountCreation: true }
+# Deny Account.createUser in client and set Meteor.loginTokenExpires
+accountsConfig = { forbidClientAccountCreation: true, loginExpirationInDays: RocketChat.settings.get 'Accounts_LoginExpiration' }
 
 if RocketChat.settings.get('Account_AllowedDomainsList')
 	domainWhiteList = _.map RocketChat.settings.get('Account_AllowedDomainsList').split(','), (domain) -> domain.trim()
@@ -26,6 +26,17 @@ resetPasswordText = Accounts.emailTemplates.resetPassword.text
 Accounts.emailTemplates.resetPassword.text = (user, url) ->
 	url = url.replace Meteor.absoluteUrl(), Meteor.absoluteUrl() + 'login/'
 	verifyEmailText user, url
+
+if RocketChat.settings.get 'Accounts_Enrollment_Email'
+	Accounts.emailTemplates.enrollAccount.text = (user, url) ->
+		text = RocketChat.settings.get 'Accounts_Enrollment_Email'
+
+		text = text.replace /\[name\]/g, user.name or ''
+		text = text.replace /\[fname\]/g, _.strLeft(user.name, ' ') or  ''
+		text = text.replace /\[lname\]/g, _.strRightBack(user.name, ' ') or  ''
+		text = text.replace /\[email\]/g, user.emails?[0]?.address or ''
+
+		return text
 
 Accounts.onCreateUser (options, user) ->
 	# console.log 'onCreateUser ->',JSON.stringify arguments, null, '  '
@@ -64,7 +75,7 @@ Accounts.insertUserDoc = _.wrap Accounts.insertUserDoc, (insertUserDoc) ->
 	_id = insertUserDoc.call(Accounts, options, user)
 
 	# when inserting first user give them admin privileges otherwise make a regular user
-	firstUser = RocketChat.models.Users.findOne({},{sort:{createdAt:1}})
+	firstUser = RocketChat.models.Users.findOne({ _id: { $ne: 'rocket.cat' }}, { sort: { createdAt: 1 }})
 	roleName = if firstUser?._id is _id then 'admin' else 'user'
 
 	RocketChat.authz.addUsersToRoles(_id, roleName)
@@ -77,7 +88,7 @@ Accounts.validateLoginAttempt (login) ->
 	if login.allowed isnt true
 		return login.allowed
 
-	if login.user?.active isnt true
+	if !!login.user?.active isnt true
 		throw new Meteor.Error 'inactive-user', TAPi18n.__ 'User_is_not_activated'
 		return false
 
@@ -94,4 +105,9 @@ Accounts.validateLoginAttempt (login) ->
 	Meteor.defer ->
 		RocketChat.callbacks.run 'afterValidateLogin', login
 
+	return true
+
+Accounts.validateNewUser (user) ->
+	if RocketChat.settings.get('Accounts_Registration_AuthenticationServices_Enabled') is false and RocketChat.settings.get('LDAP_Enable') is false and not user.services?.password?
+		throw new Meteor.Error 'registration-disabled-authentication-services', 'User registration is disabled for authentication services'
 	return true

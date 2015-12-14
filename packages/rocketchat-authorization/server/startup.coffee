@@ -72,6 +72,29 @@ Meteor.startup ->
 		{ _id: 'delete-d',
 		roles : ['admin', 'site-moderator']}
 
+		{ _id: 'bulk-register-user',
+		roles : ['admin']}
+
+		{ _id: 'bulk-create-c',
+		roles : ['admin']}
+
+		{ _id: 'view-c-room',
+		roles : ['admin', 'site-moderator', 'user']}
+
+		{ _id: 'view-p-room',
+		roles : ['admin', 'site-moderator', 'user']}
+
+		{ _id: 'view-d-room',
+		roles : ['admin', 'site-moderator', 'user']}
+
+		{ _id: 'access-permissions',
+		roles : ['admin']}
+
+		{ _id: 'manage-assets',
+		roles : ['admin']}
+
+		{ _id: 'manage-integrations',
+		roles : ['admin']}
 	]
 
 	#alanning:roles

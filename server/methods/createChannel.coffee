@@ -3,7 +3,12 @@ Meteor.methods
 		if not Meteor.userId()
 			throw new Meteor.Error 'invalid-user', "[methods] createChannel -> Invalid user"
 
-		if not /^[0-9a-z-_]+$/.test name
+		try
+			nameValidation = new RegExp '^' + RocketChat.settings.get('UTF8_Names_Validation') + '$'
+		catch
+			nameValidation = new RegExp '^[0-9a-zA-Z-_.]+$'
+
+		if not nameValidation.test name
 			throw new Meteor.Error 'name-invalid'
 
 		if RocketChat.authz.hasPermission(Meteor.userId(), 'create-c') isnt true
@@ -14,7 +19,7 @@ Meteor.methods
 		now = new Date()
 		user = Meteor.user()
 
-		members.push user.username
+		members.push user.username if user.username not in members
 
 		# avoid duplicate names
 		if RocketChat.models.Rooms.findOneByName name
