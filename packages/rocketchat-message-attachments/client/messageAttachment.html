@@ -62,6 +62,15 @@
 				</div>
 			{{/if}}
 
+			{{#if audio_url}}
+				<div class="attachment-audio">
+					<audio controls>
+						<source src="{{fixCordova audio_url}}" type="{{audio_type}}">
+						Your browser does not support the audio element.
+					</audio>
+				</div>
+			{{/if}}
+
 			{{#if fields}}
 				<div class="attachment-fields">
 					{{#each fields}}
