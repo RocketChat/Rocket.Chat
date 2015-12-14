@@ -9,8 +9,8 @@ else
 	class SlackBefore
 		constructor: (@collection) ->
 			console.log 'Initializing the Slack Importer'
-			console.log Importer.ProgressStep.PREPARING
-			@progress = new Importer.Progress 'Slack'
+			#console.log Importer.ProgressStep.PREPARING
+			#@progress = new Importer.Progress 'Slack'
 			@fileTypeRegex = new RegExp 'application\/.*?zip'
 			@AdmZip = Npm.require 'adm-zip'
 			@users = []
@@ -66,7 +66,7 @@ else
 					messagesCount += msgs.length
 					RocketChat.models.Imports.update { _id: @importRecord._id }, { $set: { 'status': "entries.messages.started:#{channel}/#{date}" }}
 
-					# The max we can store is 16777216 bytes but we want to round it down to 16000000 since we add some additional properties
+					# The max we can store is 16777216 bytes but we want to round it down to 8000000 since we add some additional properties
 					msgsBsonSize = MongoInternals.NpmModules.mongodb.module.BSON.calculateObjectSize msgs
 					if msgsBsonSize > 8000000
 						console.log "The size of #{channel}/#{date} is #{msgsBsonSize} bytes!"
