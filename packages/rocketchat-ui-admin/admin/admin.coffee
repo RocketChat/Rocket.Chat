@@ -138,6 +138,19 @@ Template.admin.events
 		$(e.currentTarget).closest('.section').addClass('section-collapsed')
 		$(e.currentTarget).closest('button').addClass('expand').removeClass('collapse').find('span').text(TAPi18n.__ "Expand")
 
+	"click button.action": (e) ->
+		if @type isnt 'action'
+			return
+
+		Meteor.call @value, (err, data) ->
+			if err?
+				toastr.error TAPi18n.__(err.error), TAPi18n.__('Error')
+				return
+
+			args = [data.message].concat data.params
+
+			toastr.success TAPi18n.__.apply(TAPi18n, args), TAPi18n.__('Success')
+
 
 Template.admin.onRendered ->
 	Tracker.afterFlush ->

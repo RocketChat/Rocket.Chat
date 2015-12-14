@@ -4,6 +4,7 @@
   "Add_manager" : "Adicionar gerente",
   "Agent_added" : "Agente adicionado",
   "Agent_removed" : "Agente removido",
+  "Description" : "Descrição",
   "Enter_a_username" : "Nome de usuário",
   "Livechat_agents" : "Agentes do Livechat",
   "Livechat_Manager" : "Administração Livechat",
@@ -13,5 +14,6 @@
   "Manager_added" : "Gerente adicionado",
   "Manager_removed" : "Gerente removido",
   "Please_fill_a_username" : "Por favor preencha um nome de usuário",
+  "Saved" : "Salvo",
   "Username_not_found" : "Nome de usuário não encontrado"
 }

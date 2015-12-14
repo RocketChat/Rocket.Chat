@@ -1,0 +1,80 @@
+<template name="messageAttachment">
+	<div class="attachment">
+		<!-- <div>fallback: {{fallback}}</div> -->
+		{{pretext}}
+		<div class="attachment-block">
+			<div class="attachment-block-border" style="background-color: {{color}}"></div>
+
+			{{#if author_name}}
+				{{#if author_link}}
+					<div class="attachment-author">
+						{{#if author_icon}}
+							<img src="{{author_icon}}">
+						{{/if}}
+						<a href="{{author_link}}" target="_blank">{{author_name}}</a>
+					</div>
+				{{else}}
+					<div class="attachment-author">
+						{{#if author_icon}}
+							<img src="{{author_icon}}">
+						{{/if}}
+						{{author_name}}
+					</div>
+				{{/if}}
+			{{/if}}
+
+			{{#if title}}
+				{{#if title_link}}
+					<div class="attachment-title"><a href="{{title_link}}" target="_blank">{{title}}</a></div>
+				{{else}}
+					<div class="attachment-title">{{title}}</div>
+				{{/if}}
+			{{/if}}
+
+			<div class="attachment-flex">
+				{{#if thumb_url}}
+					<div class="attachment-thumb">
+						<img src="{{thumb_url}}">
+					</div>
+				{{/if}}
+
+				{{#if text}}
+					<div class="attachment-flex-column-grow attachment-text">
+						{{{RocketChatMarkdown text}}}
+					</div>
+				{{/if}}
+			</div>
+
+			{{#if image_url}}
+				<div class="attachment-image">
+					<a href="{{image_url}}" class="swipebox" target="_blank">
+						<div class="inline-image" style="background-image: url({{image_url}});">
+							<img src="{{image_url}}">
+						</div>
+					</a>
+				</div>
+			{{/if}}
+
+			{{#if fields}}
+				<div class="attachment-fields">
+					{{#each fields}}
+						{{#unless short}}
+							<div class="attachment-field">
+								<div class="attachment-field-title">{{title}}</div>
+								{{value}}
+							</div>
+						{{/unless}}
+					{{/each}}
+					{{#each fields}}
+						{{#if short}}
+							<div class="attachment-field attachment-field-short">
+								<div class="attachment-field-title">{{title}}</div>
+								{{value}}
+							</div>
+						{{/if}}
+					{{/each}}
+				</div>
+			{{/if}}
+		</div>
+	</div>
+</template>
