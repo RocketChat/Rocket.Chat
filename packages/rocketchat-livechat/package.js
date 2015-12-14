@@ -25,6 +25,7 @@ Package.onUse(function(api) {
 	api.use('kadira:flow-router', 'client');
 	api.use('templating', 'client');
 	api.use('mongo');
+	api.use('less@2.5.1');
 
 	api.addFiles('livechat.js', 'server');
 	api.addFiles('server/methods.js', 'server');
@@ -35,6 +36,8 @@ Package.onUse(function(api) {
 
 	api.addFiles('client/ui.js', 'client');
 	api.addFiles('client/route.js', 'client');
+
+	api.addFiles('client/stylesheets/livechat.less', 'client');
 
 	// client views
 	api.addFiles('client/views/app/livechatManager.html', 'client');
@@ -50,6 +53,11 @@ Package.onUse(function(api) {
 	api.addFiles('client/views/sideNav/livechatFlex.html', 'client');
 	api.addFiles('client/views/sideNav/livechatFlex.js', 'client');
 
+	api.addFiles('client/views/app/triggers/livechatTriggerAction.html', 'client');
+	api.addFiles('client/views/app/triggers/livechatTriggerAction.js', 'client');
+	api.addFiles('client/views/app/triggers/livechatTriggerCondition.html', 'client');
+	api.addFiles('client/views/app/triggers/livechatTriggerCondition.js', 'client');
+
 	// methods
 	api.addFiles('server/methods/addAgent.js', 'server');
 	api.addFiles('server/methods/addManager.js', 'server');
@@ -59,6 +67,7 @@ Package.onUse(function(api) {
 	api.addFiles('server/methods/removeManager.js', 'server');
 	api.addFiles('server/methods/removeDepartment.js', 'server');
 	api.addFiles('server/methods/saveTrigger.js', 'server');
+	api.addFiles('server/methods/removeTrigger.js', 'server');
 
 	// models
 	api.addFiles('server/models/Users.js', 'server');
