@@ -53,6 +53,8 @@ code {
 	word-wrap: break-word;
 	text-align: left;
 	white-space: pre-wrap;
+	unicode-bidi: embed;
+	direction: ltr;
 	&.inline {
 		display: inline;
 		padding: 0 0.5em;
@@ -76,11 +78,12 @@ blockquote {
 	position: relative;
 	&:before {
 		content: ' ';
-		height: 100%;
 		width: 4px;
 		position: absolute;
+		border-radius: 2px;
 		left: 0px;
-		border-radius: 10px;
+		top: -1px;
+		bottom: -1px;
 	}
 }
 
@@ -297,7 +300,8 @@ blockquote {
 			animation-iteration-count: infinite;
 			animation-timing-function: linear;
 		}
-		.icon-search {
+		.icon-search,
+		.icon-right-open-small {
 			position: absolute;
 			left: 2px;
 			top: 10px;
@@ -425,6 +429,7 @@ select,
 input[type='text'],
 input[type='number'],
 input[type='email'],
+input[type='url'],
 input[type='password'] {
 	-webkit-appearance: none;
 	height: 35px;
@@ -464,9 +469,14 @@ form.inline {
 	input[type='text'],
 	input[type='number'],
 	input[type='email'],
+	input[type='url'],
 	input[type='password'] {
 		width: auto;
 	}
+}
+
+input[disabled] {
+	background-color: #f4f4f4 !important;
 }
 
 .search-form {
@@ -2595,6 +2605,12 @@ a.github-fork {
 			padding-left: 3px;
 			margin-left: 3px;
 		}
+		.is-bot {
+			background-color: #ccc;
+			padding: 1px 4px;
+			border-radius: 2px;
+			color: white;
+		}
 	}
 	.private {
 		margin-left: 10px;
@@ -2687,6 +2703,11 @@ a.github-fork {
 	}
 	&.temp .body {
 		opacity: .5;
+	}
+	.message-alias {
+		color: #aaa;
+		font-weight: 400;
+		padding-left: 2px;
 	}
 }
 

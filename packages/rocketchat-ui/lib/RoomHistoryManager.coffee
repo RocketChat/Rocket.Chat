@@ -47,7 +47,7 @@
 			if wrapper?
 				previousHeight = wrapper.scrollHeight
 
-			ChatMessage.upsert {_id: item._id}, item for item in result?.messages or []
+			ChatMessage.upsert {_id: item._id}, item for item in result?.messages or [] when item.t isnt 'command'
 
 			if wrapper?
 				heightDiff = wrapper.scrollHeight - previousHeight

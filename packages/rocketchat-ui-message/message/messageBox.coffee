@@ -50,6 +50,9 @@ Template.messageBox.helpers
 			selfTyping: MsgTyping.selfTyping.get()
 			users: usernames.join " #{t 'and'} "
 		}
+	fileUploadAllowedMediaTypes: ->
+		return RocketChat.settings.get('FileUpload_MediaTypeWhiteList')
+
 
 Template.messageBox.events
 	'click .join': (event) ->
