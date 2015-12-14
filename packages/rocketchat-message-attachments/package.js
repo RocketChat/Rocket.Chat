@@ -16,6 +16,7 @@ Package.onUse(function(api) {
 	]);
 
 	api.addFiles('client/messageAttachment.html', 'client');
+	api.addFiles('client/messageAttachment.coffee', 'client');
 
 	// stylesheets
 	api.addAssets('client/stylesheets/messageAttachments.less', 'server');
