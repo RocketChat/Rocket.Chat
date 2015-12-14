@@ -1,57 +1,57 @@
 this.Triggers = (function() {
-	var urlRegex = null;
-	var time = null;
-	var message = 'Default trigger message';
-
-	var timeout = null;
+	var triggers = [];
 
 	var init = function() {
-		console.log('init!!');
 		Tracker.autorun(function() {
-			var trigger = Trigger.findOne();
-			console.log('trigger found ->',trigger);
-			if (trigger) {
-				urlRegex = trigger.urlRegex;
-				time = trigger.time;
-				message = trigger.message;
-			}
+			triggers = Trigger.find().fetch();
 		});
 	};
 
-	var fire = function() {
+	var fire = function(actions) {
 		if (Meteor.userId()) {
 			console.log('already logged user - does nothing');
 			return;
 		}
-		parentCall('triggerMessage', message);
+		actions.forEach(function(action) {
+			if (action.name === 'send-message') {
+				var room = Random.id();
+				visitor.setRoom(room);
 
-		var room = Random.id();
-		visitor.setRoom(room);
+				Session.set('triggered', true);
+				ChatMessage.insert({
+					msg: action.params.msg,
+					rid: room,
+					u: {
+						username: action.params.name
+					}
+				});
 
-		Session.set('triggered', true);
-		ChatMessage.insert({
-			msg: message,
-			rid: room,
-			u: {
-				username: 'random-agent'
+				parentCall('openWidget');
 			}
 		});
 	};
 
 	var processRequest = function(request) {
-		if (urlRegex && urlRegex !== '') {
-			if (request.href.match(urlRegex)) {
-				fire();
-			}
-		}
+		triggers.forEach(function(trigger) {
+			trigger.conditions.forEach(function(condition) {
+				switch (condition.name) {
+					case 'page-url':
+						if (request.href.match(new RegExp(urlRegex))) {
+							fire(trigger.actions);
+						}
+						break;
 
-		if (time) {
-			console.log('registerTimeout ->',time);
-			clearTimeout(timeout);
-			timeout = setTimeout(function() {
-				fire();
-			}, time * 1000);
-		}
+					case 'time-on-site':
+						if (trigger.timeout) {
+							clearTimeout(trigger.timeout);
+						}
+						trigger.timeout = setTimeout(function() {
+							fire(trigger.actions);
+						}, parseInt(condition.value) * 1000);
+						break;
+				}
+			});
+		});
 	};
 
 	return {

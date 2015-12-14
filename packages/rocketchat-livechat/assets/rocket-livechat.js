@@ -49,9 +49,7 @@
 			var popup = window.open(config.url + '?mode=popout', 'livechat-popout', 'width=400, height=450, toolbars=no');
 			popup.focus();
 		},
-		triggerMessage: function(msg) {
-			console.log('trigger fired!!!! ->',msg);
-
+		openWidget: function() {
 			openWidget();
 		}
 	};

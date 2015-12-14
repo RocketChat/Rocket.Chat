@@ -17,6 +17,10 @@ class LivechatTrigger extends RocketChat.models._Base {
 			return this.insert(data);
 		}
 	}
+
+	removeAll() {
+		this.remove({});
+	}
 }
 
 RocketChat.models.LivechatTrigger = new LivechatTrigger();

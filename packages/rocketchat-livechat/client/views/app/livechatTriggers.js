@@ -1,13 +1,16 @@
 Template.livechatTriggers.helpers({
-	urlRegex() {
-		return Template.instance().trigger.get().urlRegex;
+	conditions() {
+		var trigger = Template.instance().trigger.get();
+		if (!trigger) return [];
+
+		return trigger.conditions;
 	},
-	time() {
-		return Template.instance().trigger.get().time;
-	},
-	message() {
-		return Template.instance().trigger.get().message;
-	},
+	actions() {
+		var trigger = Template.instance().trigger.get();
+		if (!trigger) return [];
+
+		return trigger.actions;
+	}
 });
 
 Template.livechatTriggers.events({
@@ -19,10 +22,33 @@ Template.livechatTriggers.events({
 		$btn.html(t('Saving'));
 
 		var data = {
-			urlRegex: instance.$('input[name=url-regex]').val(),
-			time: instance.$('input[name=trigger-time]').val(),
-			message: instance.$('input[name=trigger-message]').val()
+			conditions: [],
+			actions: []
 		};
+
+		$('.each-condition').each(function() {
+			data.conditions.push({
+				name: $('.trigger-condition', this).val(),
+				value: $('.' + $('.trigger-condition', this).val() + '-value').val()
+			});
+		});
+
+		$('.each-action').each(function() {
+			if ($('.trigger-action', this).val() === 'send-message') {
+				data.actions.push({
+					name: $('.trigger-action', this).val(),
+					params: {
+						name: $('[name=send-message-name]', this).val(),
+						msg: $('[name=send-message-msg]', this).val()
+					}
+				});
+			} else {
+				data.actions.push({
+					name: $('.trigger-action', this).val(),
+					value: $('.' + $('.trigger-action', this).val() + '-value').val()
+				});
+			}
+		});
 
 		Meteor.call('livechat:saveTrigger', data, function(error, result) {
 			$btn.html(oldBtnValue);
@@ -33,19 +59,40 @@ Template.livechatTriggers.events({
 			toastr.success(t('Saved'));
 		});
 	},
+	'click .delete-trigger' (e, instance) {
+		e.preventDefault()
+
+		swal({
+			title: t('Are_you_sure'),
+			type: 'warning',
+			showCancelButton: true,
+			confirmButtonColor: '#DD6B55',
+			confirmButtonText: t('Yes'),
+			cancelButtonText: t('Cancel'),
+			closeOnConfirm: false,
+			html: false,
+		}, () => {
+			Meteor.call('livechat:removeTrigger', function(error, result) {
+				if (error) {
+					return toastr.error(t(error.reason || error.error));
+				}
+
+				swal({
+					title: t('Removed'),
+					text: t('Trigger_removed'),
+					type: 'success',
+					timer: 1000,
+					showConfirmButton: false,
+				});
+			});
+		});
+	}
 });
 
 Template.livechatTriggers.onCreated(function() {
 	this.subscribe('livechat:trigger');
-	this.trigger = new ReactiveVar({
-		urlRegex: '',
-		time: '',
-		message: '',
-	});
+	this.trigger = new ReactiveVar(null);
 	this.autorun(() => {
-		trigger = LivechatTrigger.findOne();
-		if (trigger) {
-			this.trigger.set(trigger);
-		}
+		this.trigger.set(LivechatTrigger.findOne());
 	});
 });

@@ -2,21 +2,29 @@
 	<form id="trigger-form">
 		<div class="rocket-form">
 			<fieldset>
-				<div class="input-line">
-					<label>{{_ "Trigger_by_URL"}}</label>
-					<input type="text" name="url-regex" placeholder="{{_ "Enter_a_regex"}}" value="{{urlRegex}}">
+				<legend>{{_ "Condition"}}</legend>
+				<div class="conditions">
+					{{#each conditions}}
+						{{> livechatTriggerCondition}}
+					{{/each}}
+					{{#unless conditions}}
+						{{> livechatTriggerCondition}}
+					{{/unless}}
 				</div>
-				<div class="input-line">
-					<label>{{_ "Trigger_by_time"}}</label>
-					<input type="number" name="trigger-time" placeholder="{{_ "Time_in_seconds_at_the_same_page"}}" value="{{time}}">
-				</div>
-				<div class="input-line">
-					<label>{{_ "Trigger_message"}}</label>
-					<input type="text" name="trigger-message" placeholder="{{_ "Enter_a_message_to_your_customer"}}" value="{{message}}">
+			</fieldset>
+			<fieldset>
+				<legend>{{_ "Action"}}</legend>
+				<div class="actions">
+					{{#each actions}}
+						{{> livechatTriggerAction}}
+					{{/each}}
+					{{#unless actions}}
+						{{> livechatTriggerAction}}
+					{{/unless}}
 				</div>
 			</fieldset>
 			<div class="submit">
-				<button type="reset" class="button secondary reset"><i class="icon-ccw"></i><span>{{_ "Reset"}}</span></button>
+				<button type="button" class="button red delete-trigger">{{_ "Delete"}}</button>
 				<button class="button save"><i class="icon-floppy"></i><span>{{_ "Save"}}</span></button>
 			</div>
 		</div>
