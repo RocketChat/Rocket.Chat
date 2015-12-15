@@ -1,0 +1,40 @@
+<template name="livechatAppearance">
+	<h1>{{_ "Preview"}}</h1>
+
+	<div class="livechat-preview">
+		{{#with sampleData}}
+			<div class="livechat-room">
+				<div class="title" style="background-color:{{color}}">
+					<div class="toolbar">
+						&nbsp;
+						<i class="popout icon-link-ext" title="Open in a new window"></i>
+					</div>
+					<h1>{{title}}</h1>
+				</div>
+				<div class="messages">
+					<div class="wrapper">
+						<ul>
+							{{#each messages}}
+								<li id="{{_id}}" class="message sequential" data-username="{{u.username}}" data-date="{{date}}">
+									<span class="thumb thumb-small" href="#" data-username="{{u.username}}" tabindex="1">{{> avatar username=u.username}}</span>
+									<span class="user" href="#" data-username="{{u.username}}" tabindex="1">{{u.username}}</span>
+									<span class="info">
+										<span class="time">{{time}}</span>
+									</span>
+									<div class="body" dir="auto">
+										{{{body}}}
+									</div>
+								</li>
+							{{/each}}
+						</ul>
+					</div>
+				</div>
+				<div class="footer">
+					<div class="input-wrapper">
+						<textarea class="input-message" placeholder="Type your message"></textarea>
+					</div>
+				</div>
+			</div>
+		{{/with}}
+	</div>
+</template>
