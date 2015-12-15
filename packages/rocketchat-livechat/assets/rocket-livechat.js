@@ -59,10 +59,8 @@
 	// hooks
 	var callHook = function(action, params) {
 		if (!ready) {
-			console.log('queueing hook ->',action);
 			return hookQueue.push(arguments);
 		}
-		// console.log('calling hook ->',action);
 		var data = {
 			src: 'rocketchat',
 			fn: action,
@@ -72,7 +70,6 @@
 	};
 
 	var pageVisited = function() {
-		// console.log('calling pageVisited');
 		callHook('pageVisited', JSON.parse(JSON.stringify(document.location)));
 	};
 
