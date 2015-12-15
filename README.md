@@ -11,6 +11,7 @@ The Ultimate Open Source WebChat Platform
   * [Sloppy.io](#sloppyio)
   * [Docker](#docker)
   * [FreeBSD](#freebsd)
+  * [Ansible](#ansible)
   * [Ubuntu VPS](#ubuntu-vps)
   * [Ubuntu Software Center](#ubuntu-software-center)
 * [About Rocket.Chat](#about-rocketchat)
@@ -92,6 +93,11 @@ docker pull rocketchat/rocket.chat
 Run solid five-nines deployment on industry workhorse FreeBSD server:
 
 [![FreeBSD Daemon](https://raw.githubusercontent.com/Sing-Li/bbug/master/images/freebsd.png)](https://github.com/RocketChat/Rocket.Chat/wiki/FreeBSD)
+
+## Ansible
+Automated production-grade deployment in minutes, for RHEL / CentOS 7 or Ubuntu 14.04 LTS / 15.04:
+
+[![Ansible deployment](https://raw.githubusercontent.com/Sing-Li/bbug/master/images/ansible.png)](https://galaxy.ansible.com/detail#/role/6478)
 
 ## Ubuntu VPS
 Follow these [deployment instructions](https://github.com/RocketChat/Rocket.Chat/wiki/Deploy-Rocket.Chat-without-docker)

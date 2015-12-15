@@ -32,6 +32,7 @@ WebAppHashing.calculateClientHash = (manifest, includeFilter, runtimeConfigOverr
 
 RocketChat.theme = new class
 	variables: {}
+	packageCallbacks: []
 	files: [
 		'assets/stylesheets/global/_variables.less'
 		'assets/stylesheets/utils/_emojione.import.less'
@@ -70,6 +71,11 @@ RocketChat.theme = new class
 		]
 
 		content.push Assets.getText file for file in @files
+
+		for packageCallback in @packageCallbacks
+			result = packageCallback()
+			if _.isString result
+				content.push result
 
 		content = content.join '\n'
 
@@ -119,6 +125,9 @@ RocketChat.theme = new class
 			items.push "@#{name}: #{variable.value};"
 
 		return items.join '\n'
+
+	addPackageAsset: (cb) ->
+		@packageCallbacks.push cb
 
 	getCss: ->
 		return RocketChat.settings.get 'css'

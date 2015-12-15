@@ -576,6 +576,9 @@
 			}
 		}
 		&.uploaded-files-list {
+			a {
+				direction: ltr;
+			}
 			i {
 				float: right;
 				.margin-left(10px);
@@ -624,5 +627,10 @@
 	}
 	#swipebox-overlay{
 		direction: ltr;
+	}
+	
+	/* Override toastr messages to show on hte left side */
+	.toast-top-right {
+		.left(12px);
 	}
 }
