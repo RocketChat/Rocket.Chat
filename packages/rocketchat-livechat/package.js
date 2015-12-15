@@ -41,6 +41,7 @@ Package.onUse(function(api) {
 
 	// client views
 	api.addFiles('client/views/app/livechatAppearance.html', 'client');
+	api.addFiles('client/views/app/livechatAppearance.js', 'client');
 	api.addFiles('client/views/app/livechatDashboard.html', 'client');
 	api.addFiles('client/views/app/livechatDepartmentForm.html', 'client');
 	api.addFiles('client/views/app/livechatDepartmentForm.js', 'client');
