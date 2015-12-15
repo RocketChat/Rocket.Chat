@@ -16,19 +16,18 @@
 	var hookQueue = [];
 	var ready = false;
 
-	var closeWidget = () => {
+	var closeWidget = function() {
 		widget.dataset.state = 'closed';
 		widget.style.height = '30px';
 	};
 
-	var openWidget = () => {
+	var openWidget = function() {
 		widget.dataset.state = 'opened';
 		widget.style.height = '300px';
 	};
 
 	var api = {
 		ready: function() {
-			// console.log('ready!!!');
 			ready = true;
 			if (hookQueue.length > 0) {
 				hookQueue.forEach(function(hookParams) {
