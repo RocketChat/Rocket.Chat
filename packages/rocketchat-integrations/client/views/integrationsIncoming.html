@@ -47,6 +47,14 @@
 								<div class="settings-description">{{_ "Should_be_a_URL_of_an_image"}}</div>
 							</div>
 						</div>
+						<div class="input-line double-col">
+							<label>{{_ "Emoji"}} ({{_ "optional"}})</label>
+							<div>
+								<input type="text" name="emoji" value="{{data.emoji}}" placeholder="{{_ 'Optional'}}" />
+								<div class="settings-description">{{_ "You_can_use_an_emoji_as_avatar"}}</div>
+								<div class="settings-description">{{_ "Example_s" ":ghost:"}}</div>
+							</div>
+						</div>
 						{{#if data.token}}
 							<div class="input-line double-col">
 								<label>Webhook URL</label>
