@@ -16,6 +16,9 @@ Template.room.helpers({
 	popoutActive: function() {
 		return FlowRouter.getQueryParam('mode') === 'popout';
 	},
+	showMessages: function() {
+		return Session.get('triggered') || Meteor.userId();
+	},
 	livechatStartedEnabled: function() {
 		return Template.instance().startedEnabled.get() !== null;
 	},
