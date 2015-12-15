@@ -10,14 +10,15 @@
 				</div>
 				<h1>{{title}}</h1>
 			</div>
-			{{#if currentUser}}
-				{{> messages}}
-			{{else}}
-				{{#if livechatEnabled}}
-					{{> register}}
+
+			{{#if livechatEnabled}}
+				{{#if showMessages}}
+					{{> messages}}
 				{{else}}
-					<div class="offline">{{_ "We_are_offline_Sorry_for_the_inconvenience"}}</div>
+					{{> register}}
 				{{/if}}
+			{{else}}
+				<div class="offline">{{_ "We_are_offline_Sorry_for_the_inconvenience"}}</div>
 			{{/if}}
 		</div>
 	{{/if}}
