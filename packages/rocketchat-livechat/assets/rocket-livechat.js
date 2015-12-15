@@ -50,6 +50,9 @@
 		},
 		openWidget: function() {
 			openWidget();
+		},
+		removeWidget: function() {
+			document.getElementsByTagName('body')[0].removeChild(widget);
 		}
 	};
 

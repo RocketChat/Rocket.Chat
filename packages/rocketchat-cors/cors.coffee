@@ -4,6 +4,14 @@ WebApp.rawConnectHandlers.use (req, res, next) ->
 	res.setHeader("Access-Control-Allow-Origin", "*")
 	res.setHeader("X-Rocket-Chat-Version", VERSION)
 	res.setHeader("Access-Control-Expose-Headers",  "X-Rocket-Chat-Version")
+
+	# Block next handlers to override CORS with value http://meteor.local
+	setHeader = res.setHeader
+	res.setHeader = (key, val) ->
+		if key.toLowerCase() is 'access-control-allow-origin' and val is 'http://meteor.local'
+			return
+		return setHeader.apply @, arguments
+
 	return next()
 
 _staticFilesMiddleware = WebAppInternals.staticFilesMiddleware
