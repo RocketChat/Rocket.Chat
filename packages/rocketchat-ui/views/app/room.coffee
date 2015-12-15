@@ -177,7 +177,7 @@ Template.room.helpers
 
 	formatUnreadSince: ->
 		room = ChatRoom.findOne(this._id, { reactive: false })
-		room = RoomManager.openedRooms[room.t + room.name]
+		room = RoomManager.openedRooms[room?.t + room?.name]
 		date = room?.unreadSince.get()
 		if not date? then return
 
