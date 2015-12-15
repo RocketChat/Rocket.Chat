@@ -1,18 +1,24 @@
 <template name="room">
-	<div class="livechat-room">
-		<div class="title" style="background-color:{{color}}">
-			<div class="toolbar">
-				&nbsp;
-				{{#unless popoutActive}}
-					<i class="popout icon-link-ext" title="Open in a new window"></i>
-				{{/unless}}
+	{{#if livechatStartedEnabled}}
+		<div class="livechat-room">
+			<div class="title" style="background-color:{{color}}">
+				<div class="toolbar">
+					&nbsp;
+					{{#unless popoutActive}}
+						<i class="popout icon-link-ext" title="Open in a new window"></i>
+					{{/unless}}
+				</div>
+				<h1>{{title}}</h1>
 			</div>
-			<h1>{{title}}</h1>
+			{{#if currentUser}}
+				{{> messages}}
+			{{else}}
+				{{#if livechatEnabled}}
+					{{> register}}
+				{{else}}
+					<div class="offline">{{_ "We_are_offline_Sorry_for_the_inconvenience"}}</div>
+				{{/if}}
+			{{/if}}
 		</div>
-		{{#if showMessages}}
-			{{> messages}}
-		{{else}}
-			{{> register}}
-		{{/if}}
-	</div>
+	{{/if}}
 </template>

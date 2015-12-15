@@ -53,7 +53,7 @@ Meteor.startup ->
 		# Set oldest user as admin, if none exists yet
 		if _.isEmpty( RocketChat.authz.getUsersInRole( 'admin' ).fetch())
 			# get oldest user
-			oldestUser = RocketChat.models.Users.findOne({}, { fields: { username: 1 }, sort: {createdAt: 1}})
+			oldestUser = RocketChat.models.Users.findOne({ _id: { $ne: 'rocket.cat' }}, { fields: { username: 1 }, sort: {createdAt: 1}})
 			if oldestUser
 				RocketChat.authz.addUsersToRoles( oldestUser._id, 'admin')
 				console.log "No admins are found. Set #{oldestUser.username} as admin for being the oldest user"
