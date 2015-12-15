@@ -397,6 +397,7 @@ input:focus {
 	background-color: #FFF;
 	border-left: 1px solid #E7E7E7;
 	border-right: 1px solid #E7E7E7;
+	padding: 5px;
 
 	input, button {
 		display: block;
@@ -425,54 +426,60 @@ input:focus {
 		position: fixed;
 		height: 100%;
 		width: 100%;
+		z-index: 9990;
+		top: 0;
+		left: 0;
+	}
 
-		.wrapper {
-			background: white;
-			position: fixed;
-			height: 60vh;
-			width: 60vw;
-			top: 20vh;
-			left: 20vw;
-			border-radius: 6px;
-			display: flex;
-			flex-direction: column;
+	.wrapper {
+		z-index: 9999;
+		background: white;
+		position: fixed;
+		height: 60vh;
+		width: 60vw;
+		top: 20vh;
+		left: 20vw;
+		border-radius: 6px;
+		display: flex;
+		flex-direction: column;
 
-			header {
-				flex: 1 0 40px;
-				padding: 0 15px;
-				border-bottom: 1px solid rgba(0, 0, 0, 0.1);
-				line-height: 40px;
+		header {
+			flex: 1 0 40px;
+			padding: 0 15px;
+			border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+			line-height: 40px;
+		}
+
+		.content {
+			overflow-y: scroll;
+			padding: 10px;
+			flex: 1 1 100%;
+
+			.instructions {
+				margin-top: 5px;
 			}
 
-			.content {
-				overflow-y: scroll;
-				padding: 10px;
-				flex: 1 1 100%;
+			.survey-item {
+				margin-top: 20px;
 
-				.instructions {
-					margin-top: 5px;
+				.question {
+					display: block;
 				}
 
-				.survey-item {
-					margin-top: 20px;
-
-					.question {
-						display: block;
-					}
-
-					.answer {
-						margin-right: 5px;
-					}
+				.answer {
+					margin-right: 5px;
+					display: inline-block;
+					text-align: center;
 				}
 			}
+		}
 
-			footer {
-				flex: 1 0 60px;
-				border-top: 1px solid rgba(0, 0, 0, 0.1);
-				line-height: 60px;
-				text-align: right;
-				padding-right: 20px;
-			}
+		footer {
+			flex: 1 0 60px;
+			border-top: 1px solid rgba(0, 0, 0, 0.1);
+			line-height: 60px;
+			text-align: right;
+			padding-right: 20px;
 		}
 	}
 }
