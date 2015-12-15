@@ -40,14 +40,18 @@ Package.onUse(function(api) {
 	api.addFiles('client/stylesheets/livechat.less', 'client');
 
 	// client views
-	api.addFiles('client/views/app/livechatManager.html', 'client');
-	api.addFiles('client/views/app/livechatManager.js', 'client');
-	api.addFiles('client/views/app/livechatDepartments.html', 'client');
-	api.addFiles('client/views/app/livechatDepartments.js', 'client');
+	api.addFiles('client/views/app/livechatAppearance.html', 'client');
+	api.addFiles('client/views/app/livechatDashboard.html', 'client');
 	api.addFiles('client/views/app/livechatDepartmentForm.html', 'client');
 	api.addFiles('client/views/app/livechatDepartmentForm.js', 'client');
+	api.addFiles('client/views/app/livechatDepartments.html', 'client');
+	api.addFiles('client/views/app/livechatDepartments.js', 'client');
+	api.addFiles('client/views/app/livechatInstallation.html', 'client');
+	api.addFiles('client/views/app/livechatInstallation.js', 'client');
 	api.addFiles('client/views/app/livechatTriggers.html', 'client');
 	api.addFiles('client/views/app/livechatTriggers.js', 'client');
+	api.addFiles('client/views/app/livechatUsers.html', 'client');
+	api.addFiles('client/views/app/livechatUsers.js', 'client');
 	api.addFiles('client/views/sideNav/livechat.html', 'client');
 	api.addFiles('client/views/sideNav/livechat.js', 'client');
 	api.addFiles('client/views/sideNav/livechatFlex.html', 'client');
