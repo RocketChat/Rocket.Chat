@@ -78,6 +78,13 @@ Accounts.registerLoginHandler(function (loginRequest) {
 		console.log("RESULT :" + JSON.stringify(loginResult));
 	}
 
+	if (loginResult == undefined) {
+		return {
+			type: "saml",
+			error: new Meteor.Error(Accounts.LoginCancelledError.numericError, "No matching login attempt found")
+		}
+	}
+
 	if (loginResult && loginResult.profile && loginResult.profile.email) {
 		var user = Meteor.users.findOne({
 			'emails.address': loginResult.profile.email
