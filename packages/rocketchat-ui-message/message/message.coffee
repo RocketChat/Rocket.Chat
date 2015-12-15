@@ -1,4 +1,10 @@
 Template.message.helpers
+	isBot: ->
+		return 'bot' if this.bot?
+	isGroupable: ->
+		return 'false' if this.groupable is false
+	isSequential: ->
+		return 'sequential' if this.groupable isnt false
 	own: ->
 		return 'own' if this.u?._id is Meteor.userId()
 	chatops: ->
@@ -112,9 +118,11 @@ Template.message.onViewRendered = (context) ->
 		else if lastNode.previousElementSibling?.dataset?.username isnt lastNode.dataset.username
 			$(lastNode).removeClass('sequential')
 
+		if lastNode.previousElementSibling?.dataset?.groupable is 'false'
+			$(lastNode).removeClass('sequential')
+
 		if lastNode.nextElementSibling?.dataset?.date is lastNode.dataset.date
 			$(lastNode.nextElementSibling).removeClass('new-day')
-			$(lastNode.nextElementSibling).addClass('sequential')
 		else
 			$(lastNode.nextElementSibling).addClass('new-day')
 			$(lastNode.nextElementSibling).removeClass('sequential')

@@ -1,5 +1,5 @@
-# Deny Account.createUser in client
-accountsConfig = { forbidClientAccountCreation: true }
+# Deny Account.createUser in client and set Meteor.loginTokenExpires
+accountsConfig = { forbidClientAccountCreation: true, loginExpirationInDays: RocketChat.settings.get 'Accounts_LoginExpiration' }
 
 if RocketChat.settings.get('Account_AllowedDomainsList')
 	domainWhiteList = _.map RocketChat.settings.get('Account_AllowedDomainsList').split(','), (domain) -> domain.trim()
@@ -75,7 +75,7 @@ Accounts.insertUserDoc = _.wrap Accounts.insertUserDoc, (insertUserDoc) ->
 	_id = insertUserDoc.call(Accounts, options, user)
 
 	# when inserting first user give them admin privileges otherwise make a regular user
-	firstUser = RocketChat.models.Users.findOne({},{sort:{createdAt:1}})
+	firstUser = RocketChat.models.Users.findOne({ _id: { $ne: 'rocket.cat' }}, { sort: { createdAt: 1 }})
 	roleName = if firstUser?._id is _id then 'admin' else 'user'
 
 	RocketChat.authz.addUsersToRoles(_id, roleName)

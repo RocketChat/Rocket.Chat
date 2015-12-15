@@ -266,6 +266,12 @@ RocketChat.models.Messages = new class extends RocketChat.models._Base
 		message = user.username
 		return @createWithTypeRoomIdMessageAndUser 'au', roomId, message, user, extraData
 
+	createRoomRenamedWithRoomIdRoomNameAndUser: (roomId, roomName, user, extraData) ->
+		return @createWithTypeRoomIdMessageAndUser 'r', roomId, roomName, user, extraData
+
+	createCommandWithRoomIdAndUser: (command, roomId, user, extraData) ->
+		return @createWithTypeRoomIdMessageAndUser 'command', roomId, command, user, extraData
+
 	# REMOVE
 	removeById: (_id) ->
 		query =
