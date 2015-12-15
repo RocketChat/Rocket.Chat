@@ -8,13 +8,12 @@
 		<div class="wrapper">
 			<ul>
 				<li>
-					<a href="#link" class="admin-link">{{_ "Dashboard"}}</a>
-					<a href="#link" class="admin-link">{{_ "User_management"}}</a>
-					<a href="{{pathFor 'livechat-departments'}}" class="admin-link">{{_ "Departments"}}</a>
-					<a href="{{pathFor 'livechat-triggers'}}" class="admin-link">{{_ "Triggers"}}</a>
-					<a href="#link" class="admin-link">{{_ "Theme"}}</a>
-					<a href="#link" class="admin-link">{{_ "Integrations"}}</a>
-					<a href="#link" class="admin-link">{{_ "Live_sessions"}}</a>
+					<a href="{{pathFor 'livechat-dashboard'}}" class="{{active 'livechat-dashboard'}}">{{_ "Dashboard"}}</a>
+					<a href="{{pathFor 'livechat-users'}}" class="{{active 'livechat-users'}}">{{_ "User_management"}}</a>
+					<a href="{{pathFor 'livechat-departments'}}" class="{{active 'livechat-departments'}}">{{_ "Departments"}}</a>
+					<a href="{{pathFor 'livechat-triggers'}}" class="{{active 'livechat-triggers'}}">{{_ "Triggers"}}</a>
+					<a href="{{pathFor 'livechat-installation'}}" class="{{active 'livechat-installation'}}">{{_ "Installation"}}</a>
+					<a href="{{pathFor 'livechat-appearance'}}" class="{{active 'livechat-appearance'}}">{{_ "Appearance"}}</a>
 				</li>
 			</ul>
 		</div>
