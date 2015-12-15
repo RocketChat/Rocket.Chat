@@ -7,7 +7,15 @@
 				</div>
 			</a>
 		{{else}}
-			<a class="thumb user-card-message" href="#" data-username="{{u.username}}" tabindex="1">{{> avatar username=u.username}}</a>
+			{{#if emoji}}
+				<a class="thumb user-card-message" href="#" data-username="{{u.username}}" tabindex="1">
+					<div class="avatar">
+						{{{getEmoji emoji}}}
+					</div>
+				</a>
+			{{else}}
+				<a class="thumb user-card-message" href="#" data-username="{{u.username}}" tabindex="1">{{> avatar username=u.username}}</a>
+			{{/if}}
 		{{/if}}
 		{{#if alias}}
 			<a class="user user-card-message" href="#" data-username="{{u.username}}" tabindex="1">{{alias}} <span class="message-alias">@{{u.username}}</span></a>

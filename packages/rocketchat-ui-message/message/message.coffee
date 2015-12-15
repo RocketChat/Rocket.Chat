@@ -5,6 +5,8 @@ Template.message.helpers
 		return 'false' if this.groupable is false
 	isSequential: ->
 		return 'sequential' if this.groupable isnt false
+	getEmoji: (emoji) ->
+		return emojione.toImage emoji
 	own: ->
 		return 'own' if this.u?._id is Meteor.userId()
 	chatops: ->
