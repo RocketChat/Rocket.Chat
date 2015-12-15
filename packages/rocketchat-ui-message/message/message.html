@@ -1,5 +1,5 @@
 <template name="message">
-	<li id="{{_id}}" class="message sequential {{system}} {{t}} {{own}} {{isTemp}} {{chatops}}" data-username="{{u.username}}" data-bot="{{isBot}}" data-date="{{date}}">
+	<li id="{{_id}}" class="message {{isSequential}} {{system}} {{t}} {{own}} {{isTemp}} {{chatops}}" data-username="{{u.username}}" data-groupable="{{isGroupable}}" data-date="{{date}}">
 		{{#if avatar}}
 			<a class="thumb user-card-message" href="#" data-username="{{u.username}}" tabindex="1">
 				<div class="avatar">
@@ -7,7 +7,15 @@
 				</div>
 			</a>
 		{{else}}
-			<a class="thumb user-card-message" href="#" data-username="{{u.username}}" tabindex="1">{{> avatar username=u.username}}</a>
+			{{#if emoji}}
+				<a class="thumb user-card-message" href="#" data-username="{{u.username}}" tabindex="1">
+					<div class="avatar">
+						{{{getEmoji emoji}}}
+					</div>
+				</a>
+			{{else}}
+				<a class="thumb user-card-message" href="#" data-username="{{u.username}}" tabindex="1">{{> avatar username=u.username}}</a>
+			{{/if}}
 		{{/if}}
 		{{#if alias}}
 			<a class="user user-card-message" href="#" data-username="{{u.username}}" tabindex="1">{{alias}} <span class="message-alias">@{{u.username}}</span></a>
