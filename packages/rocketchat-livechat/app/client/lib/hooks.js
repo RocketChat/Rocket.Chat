@@ -1,6 +1,5 @@
 var api = {
 	pageVisited: function(info) {
-		console.log('pageVisited ->',info);
 		Triggers.processRequest(info);
 	}
 };
