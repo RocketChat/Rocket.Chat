@@ -40,6 +40,7 @@ Meteor.methods
 			$set:
 				name: integration.name
 				avatar: integration.avatar
+				emoji: integration.emoji
 				alias: integration.alias
 				channel: integration.channel
 				_updatedAt: new Date
