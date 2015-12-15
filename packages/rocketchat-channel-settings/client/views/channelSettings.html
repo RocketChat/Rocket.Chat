@@ -12,9 +12,9 @@
 						<label>{{_ "Name"}}</label>
 						<div>
 							{{#if editing 'roomName'}}
-								<input type="text" name="roomName" value="{{roomName}}" />
+								<input type="text" name="roomName" value="{{roomName}}" class="editing" /> <button type="button" class="button secondary cancel">{{_ "Cancel"}}</button> <button type="button" class="button primary save">{{_ "Save"}}</button>
 							{{else}}
-								{{roomName}}{{#if canEdit}} <i class="octicon octicon-pencil"></i>{{/if}}
+								{{roomName}}{{#if canEdit}} <i class="octicon octicon-pencil" data-edit="roomName"></i>{{/if}}
 							{{/if}}
 						</div>
 					</div>
@@ -23,9 +23,9 @@
 					<label>{{_ "Topic"}}</label>
 					<div>
 						{{#if editing 'roomTopic'}}
-							<input type="text" name="roomTopic" value="{{roomTopic}}" />
+							<input type="text" name="roomTopic" value="{{roomTopic}}" class="editing" /> <button type="button" class="button secondary cancel">{{_ "Cancel"}}</button> <button type="button" class="button primary save">{{_ "Save"}}</button>
 						{{else}}
-							{{roomTopic}}{{#if canEdit}} <i class="octicon octicon-pencil"></i>{{/if}}
+							{{roomTopic}}{{#if canEdit}} <i class="octicon octicon-pencil" data-edit="roomTopic"></i>{{/if}}
 						{{/if}}
 					</div>
 				</div>
@@ -34,10 +34,12 @@
 						<label>{{_ "Type"}}</label>
 						<div>
 							{{#if editing 'roomType'}}
-								<label><input type="radio" name="roomType" value="c" checked="{{$eq roomType 'c'}}" /> {{_ "Channel"}}</label>
+								<label><input type="radio" name="roomType" class="editing" value="c" checked="{{$eq roomType 'c'}}" /> {{_ "Channel"}}</label>
 								<label><input type="radio" name="roomType" value="p" checked="{{$eq roomType 'p'}}" /> {{_ "Private_Group"}}</label>
+								<button type="button" class="button secondary cancel">{{_ "Cancel"}}</button>
+								<button type="button" class="button primary save">{{_ "Save"}}</button>
 							{{else}}
-								{{roomTypeDescription}}{{#if canEdit}} <i class="octicon octicon-pencil"></i>{{/if}}
+								{{roomTypeDescription}}{{#if canEdit}} <i class="octicon octicon-pencil" data-edit="roomType"></i>{{/if}}
 							{{/if}}
 						</div>
 					</div>
