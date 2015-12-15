@@ -7,7 +7,7 @@ accounts-oauth@1.1.8
 accounts-password@1.1.4
 accounts-twitter@1.0.6
 alanning:roles@1.2.14
-aldeed:simple-schema@1.4.0
+aldeed:simple-schema@1.5.0
 arunoda:streams@0.1.17
 autoupdate@1.2.4
 babel-compiler@5.8.24_1
@@ -135,6 +135,7 @@ rocketchat:file@0.0.1
 rocketchat:github-enterprise@0.0.1
 rocketchat:gitlab@0.0.1
 rocketchat:highlight@0.0.1
+rocketchat:integrations@0.0.1
 rocketchat:ldap@0.0.1
 rocketchat:lib@0.0.1
 rocketchat:logger@0.0.1
@@ -142,6 +143,7 @@ rocketchat:mailer@0.0.1
 rocketchat:markdown@0.0.1
 rocketchat:me@0.0.1
 rocketchat:mentions@0.0.1
+rocketchat:message-attachments@0.0.1
 rocketchat:message-pin@0.0.1
 rocketchat:message-star@0.0.1
 rocketchat:oembed@0.0.1

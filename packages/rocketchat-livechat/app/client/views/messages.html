@@ -1,0 +1,23 @@
+<template name="messages">
+	<div class="messages">
+		<div class="wrapper">
+			<ul>
+				{{#each messages}}
+					{{#nrr nrrargs 'message' .}}{{/nrr}}
+				{{/each}}
+			</ul>
+		</div>
+		<div class="new-message not">
+			<span>New messages</span>
+		</div>
+
+		<div class="error">
+			<span></span>
+		</div>
+	</div>
+	<div class="footer">
+		<div class="input-wrapper">
+			<textarea class="input-message" placeholder="Type your message"></textarea>
+		</div>
+	</div>
+</template>

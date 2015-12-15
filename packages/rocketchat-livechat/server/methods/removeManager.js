@@ -4,9 +4,7 @@ Meteor.methods({
 			throw new Meteor.Error("not-authorized");
 		}
 
-		if (!username || !_.isString(username)) {
-			throw new Meteor.Error('invalid-arguments');
-		}
+		check(username, String);
 
 		console.log('[methods] livechat:removeManager -> '.green, 'arguments:', arguments);
 

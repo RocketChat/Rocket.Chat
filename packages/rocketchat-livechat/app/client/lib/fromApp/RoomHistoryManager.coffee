@@ -30,7 +30,9 @@
 			ts = new Date
 
 		Meteor.call 'loadHistory', rid, ts, limit, undefined, (err, result) ->
-			ChatMessage.upsert {_id: item._id}, item for item in result?.messages or []
+			for item in result?.messages or []
+				if item.t isnt 'command'
+					ChatMessage.upsert {_id: item._id}, item
 			room.isLoading.set false
 			room.loaded += result.messages.length
 			if result.messages.length < limit

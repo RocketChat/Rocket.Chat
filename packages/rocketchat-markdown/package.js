@@ -10,6 +10,7 @@ Package.onUse(function(api) {
 
 	api.use('coffeescript');
 	api.use('underscore');
+	api.use('templating');
 	api.use('underscorestring:underscore.string');
 	api.use('rocketchat:lib@0.0.1');
 
