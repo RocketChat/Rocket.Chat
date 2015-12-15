@@ -374,6 +374,7 @@
   "Restart" : "Restart",
   "Restart_the_server" : "Restart the server",
   "Room" : "Room",
+  "Room_has_been_deleted" : "Room has been deleted",
   "Room_name_changed" : "Room name changed to: <em>__room_name__</em> by <em>__user_by__</em>",
   "Room_name_changed_successfully" : "Room name changed successfully",
   "Room_not_found" : "Room not found",
