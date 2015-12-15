@@ -42,6 +42,45 @@ Template.integrationsIncoming.helpers
 				_id: Random.id()
 				username: record.username
 
+	exampleJson: ->
+		record = Template.instance().record.get()
+		data =
+			username: record.alias
+			icon_emoji: record.emoji
+			icon_url: record.avatar
+			text: 'Example message'
+			attachments: [{
+				title: "Rocket.Chat"
+				title_link: "https://rocket.chat"
+				text: "Rocket.Chat, the best open source chat"
+				image_url: "https://rocket.chat/images/mockup.png"
+				color: "#764FA5"
+			}]
+
+		for key, value of data
+			delete data[key] if value in [null, ""]
+
+		return hljs.highlight('json', JSON.stringify(data, null, 2)).value
+
+	curl: ->
+		record = Template.instance().record.get()
+		data =
+			username: record.alias
+			icon_emoji: record.emoji
+			icon_url: record.avatar
+			text: 'Example message'
+			attachments: [{
+				title: "Rocket.Chat"
+				title_link: "https://rocket.chat"
+				text: "Rocket.Chat, the best open source chat"
+				image_url: "https://rocket.chat/images/mockup.png"
+				color: "#764FA5"
+			}]
+
+		for key, value of data
+			delete data[key] if value in [null, ""]
+
+		return "curl -X POST --data-urlencode 'payload=#{JSON.stringify(data)}' #{record.url}"
 
 Template.integrationsIncoming.events
 	"blur input": (e, t) ->
