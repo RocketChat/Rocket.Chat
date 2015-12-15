@@ -10,5 +10,6 @@
   "Start_Chat" : "Aloita chat",
   "Survey" : "Tutkimus",
   "Survey_instructions" : "Arvioi jokainen kysymys sen mukaan miten tyytyväinen olet, 1 tarkoittaa että olet täysin tyytymätön ja 5 tarkoittaa että olet täysin tyytyväinen.",
-  "Thank_you_for_your_feedback" : "Kiitos palautteestasi"
+  "Thank_you_for_your_feedback" : "Kiitos palautteestasi",
+  "We_are_offline_Sorry_for_the_inconvenience" : "Palvelu on offline-tilassa. Pahoittelut häiriöstä."
 }

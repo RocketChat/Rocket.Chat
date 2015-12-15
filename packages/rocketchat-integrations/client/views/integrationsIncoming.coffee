@@ -25,6 +25,7 @@ Template.integrationsIncoming.helpers
 		return {} =
 			_id: Random.id()
 			alias: record.alias
+			emoji: record.emoji
 			avatar: record.avatar
 			msg: 'Example message'
 			bot:
@@ -41,12 +42,52 @@ Template.integrationsIncoming.helpers
 				_id: Random.id()
 				username: record.username
 
+	exampleJson: ->
+		record = Template.instance().record.get()
+		data =
+			username: record.alias
+			icon_emoji: record.emoji
+			icon_url: record.avatar
+			text: 'Example message'
+			attachments: [{
+				title: "Rocket.Chat"
+				title_link: "https://rocket.chat"
+				text: "Rocket.Chat, the best open source chat"
+				image_url: "https://rocket.chat/images/mockup.png"
+				color: "#764FA5"
+			}]
+
+		for key, value of data
+			delete data[key] if value in [null, ""]
+
+		return hljs.highlight('json', JSON.stringify(data, null, 2)).value
+
+	curl: ->
+		record = Template.instance().record.get()
+		data =
+			username: record.alias
+			icon_emoji: record.emoji
+			icon_url: record.avatar
+			text: 'Example message'
+			attachments: [{
+				title: "Rocket.Chat"
+				title_link: "https://rocket.chat"
+				text: "Rocket.Chat, the best open source chat"
+				image_url: "https://rocket.chat/images/mockup.png"
+				color: "#764FA5"
+			}]
+
+		for key, value of data
+			delete data[key] if value in [null, ""]
+
+		return "curl -X POST --data-urlencode 'payload=#{JSON.stringify(data)}' #{record.url}"
 
 Template.integrationsIncoming.events
 	"blur input": (e, t) ->
 		t.record.set
 			name: $('[name=name]').val().trim()
 			alias: $('[name=alias]').val().trim()
+			emoji: $('[name=emoji]').val().trim()
 			avatar: $('[name=avatar]').val().trim()
 			channel: $('[name=channel]').val().trim()
 			username: $('[name=username]').val().trim()
@@ -78,6 +119,7 @@ Template.integrationsIncoming.events
 	"click .submit > .save": ->
 		name = $('[name=name]').val().trim()
 		alias = $('[name=alias]').val().trim()
+		emoji = $('[name=emoji]').val().trim()
 		avatar = $('[name=avatar]').val().trim()
 		channel = $('[name=channel]').val().trim()
 		username = $('[name=username]').val().trim()
@@ -91,6 +133,7 @@ Template.integrationsIncoming.events
 		integration =
 			channel: channel
 			alias: alias if alias isnt ''
+			emoji: emoji if emoji isnt ''
 			avatar: avatar if avatar isnt ''
 			name: name if name isnt ''
 
