@@ -32,11 +32,6 @@
 		padding-right: 0px;
 	}
 
-	code {
-		unicode-bidi: embed;
-		direction: ltr;
-	}
-
 	.side-nav {
 		.right(0px);
 		.header {
@@ -632,5 +627,10 @@
 	}
 	#swipebox-overlay{
 		direction: ltr;
+	}
+	
+	/* Override toastr messages to show on hte left side */
+	.toast-top-right {
+		.left(12px);
 	}
 }

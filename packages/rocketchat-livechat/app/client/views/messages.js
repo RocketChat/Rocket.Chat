@@ -52,7 +52,6 @@ Template.messages.onCreated(function() {
 			}
 		});
 	});
-	self.subscribe('settings', ['Livechat_title', 'Livechat_title_color']);
 	self.atBottom = true;
 });
 
