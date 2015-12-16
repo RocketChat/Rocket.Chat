@@ -210,6 +210,27 @@ RocketChat.models.Subscriptions = new class extends RocketChat.models._Base
 
 		return @update query, update, { multi: true }
 
+	muteUserByRoomIdAndUserId: (roomId, userId) ->
+		query =
+			rid: roomId
+			"u._id": userId
+
+		update =
+			$set:
+				mute: true
+
+		return @update query, update
+
+	unmuteUserByRoomIdAndUserId: (roomId, userId) ->
+		query =
+			rid: roomId
+			"u._id": userId
+
+		update =
+			$unset:
+				mute: true
+
+		return @update query, update
 
 	# INSERT
 	createWithRoomAndUser: (room, user, extraData) ->
