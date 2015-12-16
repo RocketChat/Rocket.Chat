@@ -5,8 +5,12 @@ Template.message.helpers
 		return 'false' if this.groupable is false
 	isSequential: ->
 		return 'sequential' if this.groupable isnt false
+	getEmoji: (emoji) ->
+		return emojione.toImage emoji
 	own: ->
 		return 'own' if this.u?._id is Meteor.userId()
+	timestamp: ->
+		return +this.ts
 	chatops: ->
 		return 'chatops-message' if this.u?.username is RocketChat.settings.get('Chatops_Username')
 	time: ->
@@ -111,29 +115,38 @@ Template.message.onCreated ->
 Template.message.onViewRendered = (context) ->
 	view = this
 	this._domrange.onAttached (domRange) ->
-		lastNode = domRange.lastNode()
-		if lastNode.previousElementSibling?.dataset?.date isnt lastNode.dataset.date
-			$(lastNode).addClass('new-day')
-			$(lastNode).removeClass('sequential')
-		else if lastNode.previousElementSibling?.dataset?.username isnt lastNode.dataset.username
-			$(lastNode).removeClass('sequential')
+		currentNode = domRange.lastNode()
+		currentDataset = currentNode.dataset
+		previousNode = currentNode.previousElementSibling
+		nextNode = currentNode.nextElementSibling
+		$currentNode = $(currentNode)
+		$previousNode = $(previousNode)
+		$nextNode = $(nextNode)
 
-		if lastNode.previousElementSibling?.dataset?.groupable is 'false'
-			$(lastNode).removeClass('sequential')
+		if previousNode?.dataset?
+			previousDataset = previousNode.dataset
 
-		if lastNode.nextElementSibling?.dataset?.date is lastNode.dataset.date
-			$(lastNode.nextElementSibling).removeClass('new-day')
-		else
-			$(lastNode.nextElementSibling).addClass('new-day')
-			$(lastNode.nextElementSibling).removeClass('sequential')
+			if previousDataset.date isnt currentDataset.date
+				$currentNode.addClass('new-day').removeClass('sequential')
 
-		if lastNode.nextElementSibling?.dataset?.username isnt lastNode.dataset.username
-			$(lastNode.nextElementSibling).removeClass('sequential')
+			if previousDataset.groupable is 'false' or previousDataset.username isnt currentDataset.username or parseInt(currentDataset.timestamp) - parseInt(previousDataset.timestamp) > RocketChat.settings.get('Message_GroupingPeriod') * 1000
+				$currentNode.removeClass('sequential')
 
-		if not lastNode.nextElementSibling?
-			if lastNode.classList.contains('own') is true
-				view.parentView.parentView.parentView.parentView.parentView.templateInstance?().atBottom = true
-			else
-				if view.parentView.parentView.parentView.parentView.parentView.templateInstance?().atBottom isnt true
-					newMessage = view.parentView.parentView.parentView.parentView.parentView.templateInstance?()?.find(".new-message")
-					newMessage?.className = "new-message"
+		if nextNode?.dataset?
+			nextDataset = nextNode.dataset
+
+			if nextDataset.date isnt currentDataset.date
+				$nextNode.addClass('new-day').removeClass('sequential')
+
+			if nextDataset.username isnt currentDataset.username or parseInt(nextDataset.timestamp) - parseInt(currentDataset.timestamp) > RocketChat.settings.get('Message_GroupingPeriod') * 1000
+				$nextNode.removeClass('sequential')
+
+			if not nextNode?
+				templateInstance = view.parentView.parentView.parentView.parentView.parentView.templateInstance?()
+
+				if currentNode.classList.contains('own') is true
+					templateInstance?.atBottom = true
+				else
+					if templateInstance?.atBottom isnt true
+						newMessage = templateInstance?.find(".new-message")
+						newMessage?.className = "new-message"

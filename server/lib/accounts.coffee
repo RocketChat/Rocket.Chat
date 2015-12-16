@@ -69,16 +69,25 @@ Accounts.onCreateUser (options, user) ->
 	return user
 
 # Wrap insertUserDoc to allow executing code after Accounts.insertUserDoc is run
-Accounts.insertUserDoc = _.wrap Accounts.insertUserDoc, (insertUserDoc) ->
-	options = arguments[1]
-	user = arguments[2]
+Accounts.insertUserDoc = _.wrap Accounts.insertUserDoc, (insertUserDoc, options, user) ->
+	roles = []
+	if Match.test(user.globalRoles, [String]) and user.globalRoles.length > 0
+		roles = roles.concat user.globalRoles
+
+	delete user.globalRoles
+
 	_id = insertUserDoc.call(Accounts, options, user)
 
-	# when inserting first user give them admin privileges otherwise make a regular user
-	firstUser = RocketChat.models.Users.findOne({ _id: { $ne: 'rocket.cat' }}, { sort: { createdAt: 1 }})
-	roleName = if firstUser?._id is _id then 'admin' else 'user'
+	if roles.length is 0
+		# when inserting first user give them admin privileges otherwise make a regular user
+		firstUser = RocketChat.models.Users.findOne({ _id: { $ne: 'rocket.cat' }}, { sort: { createdAt: 1 }})
+		if firstUser?._id is _id
+			roles.push 'admin'
+		else
+			roles.push 'user'
 
-	RocketChat.authz.addUsersToRoles(_id, roleName)
+	RocketChat.authz.addUsersToRoles(_id, roles)
+
 	RocketChat.callbacks.run 'afterCreateUser', options, user
 	return _id
 

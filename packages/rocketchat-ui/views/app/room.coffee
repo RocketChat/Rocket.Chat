@@ -301,7 +301,7 @@ Template.room.events
 
 	"click .flex-tab .user-image > a" : (e) ->
 		RocketChat.TabBar.openFlex()
-		Session.set('showUserInfo', $(e.currentTarget).data('username'))
+		Session.set('showUserInfo', @username)
 
 	'click .user-card-message': (e) ->
 		roomData = Session.get('roomData' + this._arguments[1].rid)
