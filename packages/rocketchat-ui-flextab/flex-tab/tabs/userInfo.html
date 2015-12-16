@@ -32,7 +32,10 @@
 			{{#if showAll}}
 				<button class='button secondary back'><span>{{_ "View_All"}} <i class='icon-angle-right'></i></span></button>
 				{{#if canDirectMessage user.username}}
-				<button class='button pvt-msg'><span><i class='icon-chat'></i> {{_ "Conversation"}}</span></button>
+					<button class='button pvt-msg'><span><i class='icon-chat'></i> {{_ "Conversation"}}</span></button>
+				{{/if}}
+				{{#if canRemoveUser}}
+					<button class="button remove-user red"><span>{{_ "Remove_from_room"}}</span></button>
 				{{/if}}
 			{{/if}}
 		</nav>

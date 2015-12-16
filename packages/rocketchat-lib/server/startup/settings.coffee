@@ -16,7 +16,7 @@ RocketChat.settings.add 'Accounts_PasswordReset', true, { type: 'boolean', group
 
 RocketChat.settings.add 'Accounts_AvatarStoreType', 'GridFS', { type: 'string', group: 'Accounts', section: 'Avatar' }
 RocketChat.settings.add 'Accounts_AvatarStorePath', '', { type: 'string', group: 'Accounts', section: 'Avatar' }
-RocketChat.settings.add 'Accounts_AvatarResize', false, { type: 'boolean', group: 'Accounts', section: 'Avatar' }
+RocketChat.settings.add 'Accounts_AvatarResize', true, { type: 'boolean', group: 'Accounts', section: 'Avatar' }
 RocketChat.settings.add 'Accounts_AvatarSize', 200, { type: 'int', group: 'Accounts', section: 'Avatar' }
 
 RocketChat.settings.add 'Accounts_OAuth_Facebook', false, { type: 'boolean', group: 'Accounts', section: 'Facebook', public: true }
@@ -53,6 +53,7 @@ RocketChat.settings.addGroup 'FileUpload'
 RocketChat.settings.add 'FileUpload_Enabled', true, { type: 'boolean', group: 'FileUpload', public: true }
 RocketChat.settings.add 'FileUpload_MaxFileSize', 2097152, { type: 'int', group: 'FileUpload', public: true }
 RocketChat.settings.add 'FileUpload_MediaTypeWhiteList', 'image/*,audio/*,application/pdf,text/plain,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document', { type: 'string', group: 'FileUpload', public: true, i18nDescription: 'FileUpload_MediaTypeWhiteListDescription' }
+RocketChat.settings.add 'FileUpload_ProtectFiles', true, { type: 'boolean', group: 'FileUpload', public: true, i18nDescription: 'FileUpload_ProtectFilesDescription' }
 
 
 RocketChat.settings.addGroup 'General'
@@ -93,6 +94,7 @@ RocketChat.settings.add 'Message_KeepHistory', false, { type: 'boolean', group: 
 RocketChat.settings.add 'Message_MaxAllowedSize', 5000, { type: 'int', group: 'Message', public: true }
 RocketChat.settings.add 'Message_ShowFormattingTips', true, { type: 'boolean', group: 'Message', public: true }
 RocketChat.settings.add 'Message_AudioRecorderEnabled', true, { type: 'boolean', group: 'Message', public: true, i18nDescription: 'Message_AudioRecorderEnabledDescription' }
+RocketChat.settings.add 'Message_GroupingPeriod', 300, { type: 'int', group: 'Message', public: true, i18nDescription: 'Message_GroupingPeriodDescription' }
 
 RocketChat.settings.addGroup 'Meta'
 RocketChat.settings.add 'Meta_language', '', { type: 'string', group: 'Meta' }

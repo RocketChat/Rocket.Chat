@@ -43,6 +43,21 @@ Meteor.startup ->
 
 			siteUrl = siteUrl.replace /\/$/, ''
 			if siteUrl isnt location.origin
-				toastr.warning TAPi18n.__('The_configured_URL_is_different_from_the_URL_you_are_accessing'), TAPi18n.__('Warning')
+				swal
+					type: 'warning'
+					title: t('Warning')
+					text: t("The_setting_s_is_configured_to_s_and_you_are_accessing_from_s", t('Site_Url'), siteUrl, location.origin) + '<br/><br/>' + t("Do_you_want_to_change_to_s_question", location.origin)
+					showCancelButton: true
+					confirmButtonText: t('Yes')
+					cancelButtonText: t('Cancel')
+					closeOnConfirm: false
+					html: true
+				, ->
+					Meteor.call 'saveSetting', 'Site_Url', location.origin, ->
+						swal
+							title: t('Saved')
+							type: 'success'
+							timer: 1000
+							showConfirmButton: false
 
 			return c.stop()

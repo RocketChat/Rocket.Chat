@@ -12,3 +12,6 @@ Template.messageAttachment.helpers
 			return false
 
 		return true
+
+	getImageHeight: (height) ->
+		return height or 200
