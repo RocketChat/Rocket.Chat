@@ -15,9 +15,7 @@ Meteor.methods
 		if not room
 			return false
 
-		subscription = RocketChat.models.Subscriptions.findOneByRoomIdAndUserId room._id, user._id
-		console.log subscription
-		if not subscription or subscription.mute is true
+		if user.username in (room.muted or [])
 			RocketChat.Notifications.notifyUser Meteor.userId(), 'message', {
 				_id: Random.id()
 				rid: room._id

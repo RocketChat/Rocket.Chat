@@ -13,11 +13,12 @@ Meteor.startup ->
 			job: ->
 				statistics = RocketChat.statistics.save()
 				statistics.host = Meteor.absoluteUrl()
+				# statistics.environment = 'tutum' if process.env.TUTUM_REDIS_HOST and Meteor.absoluteUrl() is *.rocket.chat
 				unless RocketChat.settings.get 'Statistics_opt_out'
 					console.log 'Sending statistics data to Rocket.Chat'
-					HTTP.post 'https://rocket.chat/stats', 
+					HTTP.post 'https://rocket.chat/stats',
 						data: statistics
-					
+
 				return
 
 		SyncedCron.start()
