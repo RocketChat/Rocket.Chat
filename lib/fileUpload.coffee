@@ -46,6 +46,27 @@ if UploadFS?
 				contentTypes: fileUploadMediaWhiteList()
 			onFinishUpload: ->
 				console.log arguments
+			transformWrite: (readStream, writeStream, fileId, file) ->
+				if RocketChatFile.enabled is false or not /^image\/.+/.test(file.type)
+					return readStream.pipe writeStream
+
+				stream = undefined
+
+				identify = (err, data) ->
+					if err?
+						return stream.pipe writeStream
+
+					file.identify =
+						format: data.format
+						size: data.size
+
+					if data.Orientation? and data.Orientation not in ['', 'Unknown', 'Undefined']
+						RocketChatFile.gm(stream).autoOrient().stream().pipe(writeStream)
+					else
+						stream.pipe writeStream
+
+				stream = RocketChatFile.gm(readStream).identify(identify).stream()
+
 			onRead: (fileId, file, req, res) ->
 				if RocketChat.settings.get 'FileUpload_ProtectFiles'
 					rawCookies = req.headers.cookie if req?.headers?.cookie?

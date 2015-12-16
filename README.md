@@ -7,6 +7,7 @@ The Ultimate Open Source WebChat Platform
 * [Desktop apps](#desktop-apps)
 * [Deployment](#deployment)
   * [Heroku](#heroku)
+  * [Scalingo](#scalingo)
   * [Sandstorm.io](#sandstormio)
   * [Sloppy.io](#sloppyio)
   * [Docker](#docker)
@@ -67,6 +68,17 @@ Branch **master** (Latest stable version):
 Branch **develop** (Newer but unstable):
 
 [![Deploy](https://www.herokucdn.com/deploy/button.png)](https://heroku.com/deploy?template=https://github.com/RocketChat/Rocket.Chat/tree/develop)
+
+## Scalingo
+Deploy your own Rocket.Chat server instantly on [Scalingo](https://scalingo.com)
+
+Branch **master** (Latest stable version):
+
+[![Deploy on Scalingo](https://cdn.scalingo.com/deploy/button.svg)](https://my.scalingo.com/deploy?source=https://github.com/RocketChat/Rocket.Chat#master)
+
+Branch **develop** (Newer but unstable):
+
+[![Deploy on Scalingo](https://cdn.scalingo.com/deploy/button.svg)](https://my.scalingo.com/deploy?source=https://github.com/RocketChat/Rocket.Chat#develop)
 
 ## Sandstorm.io
 [![Rocket.Chat on Sandstorm.io](https://raw.githubusercontent.com/Sing-Li/bbug/master/images/sandstorm.jpg)](https://apps.sandstorm.io/app/vfnwptfn02ty21w715snyyczw0nqxkv3jvawcah10c6z7hj1hnu0)
