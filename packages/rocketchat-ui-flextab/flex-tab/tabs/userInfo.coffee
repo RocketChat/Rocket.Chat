@@ -40,7 +40,10 @@ Template.userInfo.helpers
 		return RocketChat.authz.hasAllPermission('mute-user', Session.get('openedRoom'))
 
 	userMuted: ->
-		return ChatSubscription.findOne({rid: Session.get('openedRoom')})?.mute is true
+		room = ChatRoom.findOne(Session.get('openedRoom'))
+		if _.isArray(room?.muted) and room.muted.indexOf(Session.get('showUserInfo')) isnt -1
+			return true
+		return false
 
 Template.userInfo.events
 	'click .pvt-msg': (e) ->

@@ -310,6 +310,26 @@ RocketChat.models.Rooms = new class extends RocketChat.models._Base
 
 		return @update query, update
 
+	muteUsernameByRoomId: (_id, username) ->
+		query =
+			_id: _id
+
+		update =
+			$addToSet:
+				muted: username
+
+		return @update query, update
+
+	unmuteUsernameByRoomId: (_id, username) ->
+		query =
+			_id: _id
+
+		update =
+			$pull:
+				muted: username
+
+		return @update query, update
+
 
 	# INSERT
 	createWithTypeNameUserAndUsernames: (type, name, user, usernames, extraData) ->
