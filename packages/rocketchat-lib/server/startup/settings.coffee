@@ -16,7 +16,7 @@ RocketChat.settings.add 'Accounts_PasswordReset', true, { type: 'boolean', group
 
 RocketChat.settings.add 'Accounts_AvatarStoreType', 'GridFS', { type: 'string', group: 'Accounts', section: 'Avatar' }
 RocketChat.settings.add 'Accounts_AvatarStorePath', '', { type: 'string', group: 'Accounts', section: 'Avatar' }
-RocketChat.settings.add 'Accounts_AvatarResize', false, { type: 'boolean', group: 'Accounts', section: 'Avatar' }
+RocketChat.settings.add 'Accounts_AvatarResize', true, { type: 'boolean', group: 'Accounts', section: 'Avatar' }
 RocketChat.settings.add 'Accounts_AvatarSize', 200, { type: 'int', group: 'Accounts', section: 'Avatar' }
 
 RocketChat.settings.add 'Accounts_OAuth_Facebook', false, { type: 'boolean', group: 'Accounts', section: 'Facebook', public: true }
