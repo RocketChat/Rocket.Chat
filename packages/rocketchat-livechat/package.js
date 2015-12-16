@@ -28,7 +28,6 @@ Package.onUse(function(api) {
 	api.use('less@2.5.1');
 
 	api.addFiles('livechat.js', 'server');
-	api.addFiles('server/methods.js', 'server');
 	api.addFiles('server/startup.js', 'server');
 	api.addFiles('permissions.js', 'server');
 
@@ -66,14 +65,16 @@ Package.onUse(function(api) {
 	// methods
 	api.addFiles('server/methods/addAgent.js', 'server');
 	api.addFiles('server/methods/addManager.js', 'server');
+	api.addFiles('server/methods/registerGuest.js', 'server');
+	api.addFiles('server/methods/removeAgent.js', 'server');
+	api.addFiles('server/methods/removeDepartment.js', 'server');
+	api.addFiles('server/methods/removeManager.js', 'server');
+	api.addFiles('server/methods/removeTrigger.js', 'server');
 	api.addFiles('server/methods/saveDepartment.js', 'server');
 	api.addFiles('server/methods/saveSurveyFeedback.js', 'server');
-	api.addFiles('server/methods/searchAgent.js', 'server');
-	api.addFiles('server/methods/removeAgent.js', 'server');
-	api.addFiles('server/methods/removeManager.js', 'server');
-	api.addFiles('server/methods/removeDepartment.js', 'server');
 	api.addFiles('server/methods/saveTrigger.js', 'server');
-	api.addFiles('server/methods/removeTrigger.js', 'server');
+	api.addFiles('server/methods/searchAgent.js', 'server');
+	api.addFiles('server/methods/sendMessageLivechat.js', 'server');
 
 	// models
 	api.addFiles('server/models/Users.js', 'server');
