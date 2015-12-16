@@ -62,6 +62,7 @@ rocketchat:slashcommands-invite
 rocketchat:slashcommands-join
 rocketchat:slashcommands-leave
 rocketchat:slashcommands-kick
+rocketchat:slashcommands-mute
 rocketchat:spotify
 rocketchat:statistics
 rocketchat:theme

@@ -36,6 +36,12 @@ Template.userInfo.helpers
 	canRemoveUser: ->
 		return RocketChat.authz.hasAllPermission('remove-user', Session.get('openedRoom'))
 
+	canMuteUser: ->
+		return RocketChat.authz.hasAllPermission('mute-user', Session.get('openedRoom'))
+
+	userMuted: ->
+		return ChatSubscription.findOne({rid: Session.get('openedRoom')})?.mute is true
+
 Template.userInfo.events
 	'click .pvt-msg': (e) ->
 		Meteor.call 'createDirectMessage', Session.get('showUserInfo'), (error, result) ->
@@ -88,6 +94,29 @@ Template.userInfo.events
 		else
 			toastr.error(TAPi18n.__ 'Not_allowed')
 
+	'click .mute-user': (e, t) ->
+		e.preventDefault()
+		rid = Session.get('openedRoom')
+		room = ChatRoom.findOne rid
+		if RocketChat.authz.hasAllPermission('mute-user', rid)
+			Meteor.call 'muteUserInRoom', { rid: rid, username: @user.username }, (err, result) ->
+				if err
+					return toastr.error(err.reason or err.message)
+				toastr.success TAPi18n.__ 'User_muted_in_room'
+		else
+			toastr.error(TAPi18n.__ 'Not_allowed')
+
+	'click .unmute-user': (e, t) ->
+		e.preventDefault()
+		rid = Session.get('openedRoom')
+		room = ChatRoom.findOne rid
+		if RocketChat.authz.hasAllPermission('mute-user', rid)
+			Meteor.call 'unmuteUserInRoom', { rid: rid, username: @user.username }, (err, result) ->
+				if err
+					return toastr.error(err.reason or err.message)
+				toastr.success TAPi18n.__ 'User_unmuted_in_room'
+		else
+			toastr.error(TAPi18n.__ 'Not_allowed')
 
 Template.userInfo.onCreated ->
 	@now = new ReactiveVar moment()
