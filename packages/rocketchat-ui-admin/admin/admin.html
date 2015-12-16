@@ -101,6 +101,9 @@
 											{{#if description}}
 												<div class="settings-description">{{{description}}}</div>
 											{{/if}}
+											{{#if alert}}
+												<div class="settings-alert"><i class="icon-attention"></i>{{{_ alert}}}</div>
+											{{/if}}
 										</div>
 									</div>
 								{{/each}}

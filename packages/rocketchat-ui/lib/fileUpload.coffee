@@ -96,6 +96,7 @@ readAsArrayBuffer = (file, callback) ->
 								attachment.image_url = url
 								attachment.image_type = file.type
 								attachment.image_size = file.size
+								attachment.image_dimensions = file.identify?.size
 
 							if /^audio\/.+/.test file.type
 								attachment.audio_url = url
