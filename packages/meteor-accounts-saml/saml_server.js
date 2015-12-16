@@ -78,6 +78,13 @@ Accounts.registerLoginHandler(function (loginRequest) {
 		console.log("RESULT :" + JSON.stringify(loginResult));
 	}
 
+	if (loginResult == undefined) {
+		return {
+			type: "saml",
+			error: new Meteor.Error(Accounts.LoginCancelledError.numericError, "No matching login attempt found")
+		}
+	}
+
 	if (loginResult && loginResult.profile && loginResult.profile.email) {
 		var user = Meteor.users.findOne({
 			'emails.address': loginResult.profile.email
@@ -87,8 +94,10 @@ Accounts.registerLoginHandler(function (loginRequest) {
 			var newUser = {
 				name: loginResult.profile.cn || loginResult.profile.username,
 				active: true,
+				globalRoles: ['user'],
 				emails: [{
-					address: loginResult.profile.email
+					address: loginResult.profile.email,
+					verified: true
 				}]
 			};
 
@@ -99,10 +108,8 @@ Accounts.registerLoginHandler(function (loginRequest) {
 				}
 			}
 
-			Meteor.users.insert(newUser);
-			user = Meteor.users.findOne({
-				'emails.address': loginResult.profile.email
-			});
+			var userId = Accounts.insertUserDoc({}, newUser);
+			user = Meteor.users.findOne(userId);
 		}
 
 		//creating the token and adding to the user
