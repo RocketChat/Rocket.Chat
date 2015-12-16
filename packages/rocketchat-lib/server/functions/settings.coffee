@@ -92,6 +92,19 @@ RocketChat.settings.updateById = (_id, value) ->
 
 
 ###
+# Update options of a setting by id
+# @param {String} _id
+###
+RocketChat.settings.updateOptionsById = (_id, options) ->
+	# console.log '[functions] RocketChat.settings.updateOptionsById -> '.green, 'arguments:', arguments
+
+	if not _id or not options?
+		return false
+
+	return RocketChat.models.Settings.updateOptionsById _id, options
+
+
+###
 # Update a setting by id
 # @param {String} _id
 ###
