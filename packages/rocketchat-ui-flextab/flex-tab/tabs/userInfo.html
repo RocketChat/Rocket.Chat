@@ -37,6 +37,13 @@
 				{{#if canRemoveUser}}
 					<button class="button remove-user red"><span>{{_ "Remove_from_room"}}</span></button>
 				{{/if}}
+				{{#if canMuteUser}}
+					{{#if userMuted}}
+						<button class="button unmute-user primary"><span>{{_ "Unmute_user"}}</span></button>
+					{{else}}
+						<button class="button mute-user red"><span>{{_ "Mute_user"}}</span></button>
+					{{/if}}
+				{{/if}}
 			{{/if}}
 		</nav>
 	{{/if}}
