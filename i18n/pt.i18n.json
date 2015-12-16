@@ -130,7 +130,7 @@
   "Enter_to" : "Enter para",
   "Error" : "Erro",
   "Error_changing_password" : "Erro ao alterar senha",
-  "Error_too_many_requests" : "Erro, foram realizadas muitas solicitações. Por favor, diminua a velocidade. Você dev esperar %s segundos antes de tentar novamente",
+  "Error_too_many_requests" : "Erro, foram realizadas muitas solicitações. Por favor, diminua a velocidade. Você deve esperar %s segundos antes de tentar novamente",
   "Esc_to" : "Esc para",
   "False" : "Não",
   "Favorites" : "Favoritos",
