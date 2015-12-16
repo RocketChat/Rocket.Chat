@@ -278,6 +278,16 @@ RocketChat.models.Rooms = new class extends RocketChat.models._Base
 
 		return @update query, update, { multi: true }
 
+	replaceMutedUsername: (previousUsername, username) ->
+		query =
+			muted: previousUsername
+
+		update =
+			$set:
+				"muted.$": username
+
+		return @update query, update, { multi: true }
+
 	replaceUsernameOfUserByUserId: (userId, username) ->
 		query =
 			"u._id": userId
