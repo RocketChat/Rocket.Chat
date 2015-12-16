@@ -540,7 +540,7 @@ Template.room.onRendered ->
 			firstMessage = ChatMessage.findOne firstMessageOnScreen.id
 			if firstMessage?
 				subscription = ChatSubscription.findOne rid: template.data._id
-				template.unreadCount.set ChatMessage.find({rid: template.data._id, ts: {$lt: firstMessage.ts, $gt: subscription.ls}}).count()
+				template.unreadCount.set ChatMessage.find({rid: template.data._id, ts: {$lt: firstMessage.ts, $gt: subscription?.ls}}).count()
 			else
 				template.unreadCount.set 0
 	, 300
