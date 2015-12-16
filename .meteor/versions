@@ -104,6 +104,7 @@ oauth1@1.1.5
 oauth2@1.1.5
 observe-sequence@1.0.7
 ordered-dict@1.0.4
+ostrio:cookies@2.0.1
 pauli:accounts-linkedin@1.2.0
 pauli:linkedin@1.2.0
 perak:codemirror@1.2.8
@@ -149,6 +150,7 @@ rocketchat:message-star@0.0.1
 rocketchat:oembed@0.0.1
 rocketchat:slashcommands-invite@0.0.1
 rocketchat:slashcommands-join@0.0.1
+rocketchat:slashcommands-kick@0.0.1
 rocketchat:slashcommands-leave@0.0.1
 rocketchat:spotify@0.0.1
 rocketchat:statistics@0.0.1
