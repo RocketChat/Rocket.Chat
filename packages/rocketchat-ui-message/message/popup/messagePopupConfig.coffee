@@ -88,7 +88,7 @@ Template.messagePopupConfig.helpers
 						commands.push
 							_id: command
 							params: item.params
-							description: item.description
+							description: TAPi18n.__ item.description
 
 					if commands.length > 10
 						break
