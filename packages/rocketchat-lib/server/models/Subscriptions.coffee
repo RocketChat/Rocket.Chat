@@ -210,7 +210,6 @@ RocketChat.models.Subscriptions = new class extends RocketChat.models._Base
 
 		return @update query, update, { multi: true }
 
-
 	# INSERT
 	createWithRoomAndUser: (room, user, extraData) ->
 		subscription =
