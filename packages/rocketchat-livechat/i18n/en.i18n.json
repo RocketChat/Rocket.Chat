@@ -5,6 +5,7 @@
   "Agent_added" : "Agent added",
   "Agent_removed" : "Agent removed",
   "Back" : "Back",
+  "Copy_to_clipboard": "Copy to clipboard",
   "Dashboard" : "Dashboard",
   "Department_not_found" : "Department not found",
   "Department_removed" : "Department removed",
