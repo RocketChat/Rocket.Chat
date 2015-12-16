@@ -14,32 +14,38 @@ RocketChat.settings.add 'Accounts_Registration_AuthenticationServices_Enabled', 
 
 RocketChat.settings.add 'Accounts_PasswordReset', true, { type: 'boolean', group: 'Accounts', public: true, section: 'Registration' }
 
-RocketChat.settings.add 'Accounts_AvatarStoreType', 'GridFS', { type: 'string', group: 'Accounts', section: 'Avatar' }
-RocketChat.settings.add 'Accounts_AvatarStorePath', '', { type: 'string', group: 'Accounts', section: 'Avatar' }
 RocketChat.settings.add 'Accounts_AvatarResize', true, { type: 'boolean', group: 'Accounts', section: 'Avatar' }
-RocketChat.settings.add 'Accounts_AvatarSize', 200, { type: 'int', group: 'Accounts', section: 'Avatar' }
+RocketChat.settings.add 'Accounts_AvatarSize', 200, { type: 'int', group: 'Accounts', section: 'Avatar', enableQuery: {_id: 'Accounts_AvatarResize', value: true} }
+RocketChat.settings.add 'Accounts_AvatarStoreType', 'GridFS', { type: 'select', group: 'Accounts', section: 'Avatar', values: [ { key: 'GridFS', i18nLabel: 'GridFS' }, { key: 'FileSystem', i18nLabel: 'FileSystem' } ] }
+RocketChat.settings.add 'Accounts_AvatarStorePath', '', { type: 'string', group: 'Accounts', section: 'Avatar', enableQuery: {_id: 'Accounts_AvatarStoreType', value: 'FileSystem'} }
 
 RocketChat.settings.add 'Accounts_OAuth_Facebook', false, { type: 'boolean', group: 'Accounts', section: 'Facebook', public: true }
-RocketChat.settings.add 'Accounts_OAuth_Facebook_id', '', { type: 'string', group: 'Accounts', section: 'Facebook' }
-RocketChat.settings.add 'Accounts_OAuth_Facebook_secret', '', { type: 'string', group: 'Accounts', section: 'Facebook' }
+RocketChat.settings.add 'Accounts_OAuth_Facebook_id', '', { type: 'string', group: 'Accounts', section: 'Facebook', enableQuery: {_id: 'Accounts_OAuth_Facebook', value: true} }
+RocketChat.settings.add 'Accounts_OAuth_Facebook_secret', '', { type: 'string', group: 'Accounts', section: 'Facebook', enableQuery: {_id: 'Accounts_OAuth_Facebook', value: true} }
+
 RocketChat.settings.add 'Accounts_OAuth_Google', false, { type: 'boolean', group: 'Accounts', section: 'Google', public: true }
-RocketChat.settings.add 'Accounts_OAuth_Google_id', '', { type: 'string', group: 'Accounts', section: 'Google' }
-RocketChat.settings.add 'Accounts_OAuth_Google_secret', '', { type: 'string', group: 'Accounts', section: 'Google' }
+RocketChat.settings.add 'Accounts_OAuth_Google_id', '', { type: 'string', group: 'Accounts', section: 'Google', enableQuery: {_id: 'Accounts_OAuth_Google', value: true} }
+RocketChat.settings.add 'Accounts_OAuth_Google_secret', '', { type: 'string', group: 'Accounts', section: 'Google', enableQuery: {_id: 'Accounts_OAuth_Google', value: true} }
+
 RocketChat.settings.add 'Accounts_OAuth_Github', false, { type: 'boolean', group: 'Accounts', section: 'Github', public: true }
-RocketChat.settings.add 'Accounts_OAuth_Github_id', '', { type: 'string', group: 'Accounts', section: 'Github' }
-RocketChat.settings.add 'Accounts_OAuth_Github_secret', '', { type: 'string', group: 'Accounts', section: 'Github' }
+RocketChat.settings.add 'Accounts_OAuth_Github_id', '', { type: 'string', group: 'Accounts', section: 'Github', enableQuery: {_id: 'Accounts_OAuth_Github', value: true} }
+RocketChat.settings.add 'Accounts_OAuth_Github_secret', '', { type: 'string', group: 'Accounts', section: 'Github', enableQuery: {_id: 'Accounts_OAuth_Github', value: true} }
+
 RocketChat.settings.add 'Accounts_OAuth_Gitlab', false, { type: 'boolean', group: 'Accounts', section: 'Gitlab', public: true }
-RocketChat.settings.add 'Accounts_OAuth_Gitlab_id', '', { type: 'string', group: 'Accounts', section: 'Gitlab' }
-RocketChat.settings.add 'Accounts_OAuth_Gitlab_secret', '', { type: 'string', group: 'Accounts', section: 'Gitlab' }
+RocketChat.settings.add 'Accounts_OAuth_Gitlab_id', '', { type: 'string', group: 'Accounts', section: 'Gitlab', enableQuery: {_id: 'Accounts_OAuth_Gitlab', value: true} }
+RocketChat.settings.add 'Accounts_OAuth_Gitlab_secret', '', { type: 'string', group: 'Accounts', section: 'Gitlab', enableQuery: {_id: 'Accounts_OAuth_Gitlab', value: true} }
+
 RocketChat.settings.add 'Accounts_OAuth_Linkedin', false, { type: 'boolean', group: 'Accounts', section: 'Linkedin', public: true }
-RocketChat.settings.add 'Accounts_OAuth_Linkedin_id', '', { type: 'string', group: 'Accounts', section: 'Linkedin' }
-RocketChat.settings.add 'Accounts_OAuth_Linkedin_secret', '', { type: 'string', group: 'Accounts', section: 'Linkedin' }
+RocketChat.settings.add 'Accounts_OAuth_Linkedin_id', '', { type: 'string', group: 'Accounts', section: 'Linkedin', enableQuery: {_id: 'Accounts_OAuth_Linkedin', value: true} }
+RocketChat.settings.add 'Accounts_OAuth_Linkedin_secret', '', { type: 'string', group: 'Accounts', section: 'Linkedin', enableQuery: {_id: 'Accounts_OAuth_Linkedin', value: true} }
+
 RocketChat.settings.add 'Accounts_OAuth_Meteor', false, { type: 'boolean', group: 'Accounts', section: 'Meteor', public: true }
-RocketChat.settings.add 'Accounts_OAuth_Meteor_id', '', { type: 'string', group: 'Accounts', section: 'Meteor' }
-RocketChat.settings.add 'Accounts_OAuth_Meteor_secret', '', { type: 'string', group: 'Accounts', section: 'Meteor' }
+RocketChat.settings.add 'Accounts_OAuth_Meteor_id', '', { type: 'string', group: 'Accounts', section: 'Meteor', enableQuery: {_id: 'Accounts_OAuth_Meteor', value: true} }
+RocketChat.settings.add 'Accounts_OAuth_Meteor_secret', '', { type: 'string', group: 'Accounts', section: 'Meteor', enableQuery: {_id: 'Accounts_OAuth_Meteor', value: true} }
+
 RocketChat.settings.add 'Accounts_OAuth_Twitter', false, { type: 'boolean', group: 'Accounts', section: 'Twitter', public: true }
-RocketChat.settings.add 'Accounts_OAuth_Twitter_id', '', { type: 'string', group: 'Accounts', section: 'Twitter' }
-RocketChat.settings.add 'Accounts_OAuth_Twitter_secret', '', { type: 'string', group: 'Accounts', section: 'Twitter' }
+RocketChat.settings.add 'Accounts_OAuth_Twitter_id', '', { type: 'string', group: 'Accounts', section: 'Twitter', enableQuery: {_id: 'Accounts_OAuth_Twitter', value: true} }
+RocketChat.settings.add 'Accounts_OAuth_Twitter_secret', '', { type: 'string', group: 'Accounts', section: 'Twitter', enableQuery: {_id: 'Accounts_OAuth_Twitter', value: true} }
 
 RocketChat.settings.add 'Accounts_AllowUserProfileChange', true, { type: 'boolean', group: 'Accounts', section: 'General', public: true }
 RocketChat.settings.add 'Accounts_AllowUserAvatarChange', true, { type: 'boolean', group: 'Accounts', section: 'General', public: true }
