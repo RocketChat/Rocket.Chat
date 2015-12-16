@@ -20,7 +20,7 @@ RocketChat.roomTypes.add('l', 5, {
 AccountBox.addItem({
 	name: 'Livechat',
 	icon: 'icon-chat-empty',
-	href: 'livechat-dashboard',
+	href: 'livechat-users',
 	sideNav: 'livechatFlex',
 	permissions: ['view-livechat-manager'],
 });
