@@ -47,6 +47,14 @@
 								<div class="settings-description">{{_ "Should_be_a_URL_of_an_image"}}</div>
 							</div>
 						</div>
+						<div class="input-line double-col">
+							<label>{{_ "Emoji"}} ({{_ "optional"}})</label>
+							<div>
+								<input type="text" name="emoji" value="{{data.emoji}}" placeholder="{{_ 'Optional'}}" />
+								<div class="settings-description">{{_ "You_can_use_an_emoji_as_avatar"}}</div>
+								<div class="settings-description">{{_ "Example_s" ":ghost:"}}</div>
+							</div>
+						</div>
 						{{#if data.token}}
 							<div class="input-line double-col">
 								<label>Webhook URL</label>
@@ -57,6 +65,14 @@
 								</div>
 							</div>
 						{{/if}}
+						<div class="input-line double-col">
+							<label>{{_ "Example"}}</label>
+							<div>
+								<pre><code class="hljs json json-example">{{{exampleJson}}}</code></pre>
+								<input type="text" name="curl" value="{{curl}}" disabled="disabled" />
+								<div class="settings-description"><a href="#" class="clipboard" data-clipboard-target="[name=curl]">{{_ "COPY_TO_CLIPBOARD"}}</a></div>
+							</div>
+						</div>
 						<div class="input-line message-example">
 							{{#nrr nrrargs 'message' example}}{{/nrr}}
 						</div>
