@@ -50,7 +50,7 @@
 					{{#if showImage}}
 						<a href="{{fixCordova image_url}}" class="swipebox" target="_blank">
 							<div class="inline-image" style="background-image: url({{fixCordova image_url}});">
-								<img src="{{fixCordova image_url}}">
+								<img src="{{fixCordova image_url}}" height="{{getImageHeight image_dimensions.height}}">
 							</div>
 						</a>
 					{{else}}
@@ -73,7 +73,7 @@
 
 			{{#if video_url}}
 				<div class="attachment-video">
-					<video controls class="inline-video">
+					<video controls class="inline-video" height="300">
 						<source src="{{fixCordova video_url}}" type="{{video_type}}">
 						Your browser does not support the video element.
 					</video>
