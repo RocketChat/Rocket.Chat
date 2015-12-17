@@ -3,12 +3,12 @@ MeteorWrapperLdapjs = Npm.require 'ldapjs'
 Meteor.startup ->
 	RocketChat.settings.addGroup 'LDAP'
 	RocketChat.settings.add 'LDAP_Enable', false, { type: 'boolean', group: 'LDAP', public: true }
-	RocketChat.settings.add 'LDAP_Url', 'ldap://', { type: 'string' , group: 'LDAP' }
-	RocketChat.settings.add 'LDAP_Port', '389', { type: 'string' , group: 'LDAP' }
-	RocketChat.settings.add 'LDAP_DN', '', { type: 'string' , group: 'LDAP', public: true }
-	RocketChat.settings.add 'LDAP_Bind_Search', '', { type: 'string' , group: 'LDAP' }
-	RocketChat.settings.add 'LDAP_Sync_User_Data', false, { type: 'boolean' , group: 'LDAP' }
-	RocketChat.settings.add 'LDAP_Sync_User_Data_FieldMap', '{"cn":"name", "mail":"email"}', { type: 'string' , group: 'LDAP' }
+	RocketChat.settings.add 'LDAP_Url', 'ldap://', { type: 'string' , group: 'LDAP', enableQuery: {_id: 'LDAP_Enable', value: true} }
+	RocketChat.settings.add 'LDAP_Port', '389', { type: 'string' , group: 'LDAP', enableQuery: {_id: 'LDAP_Enable', value: true} }
+	RocketChat.settings.add 'LDAP_DN', '', { type: 'string' , group: 'LDAP', public: true, enableQuery: {_id: 'LDAP_Enable', value: true} }
+	RocketChat.settings.add 'LDAP_Bind_Search', '', { type: 'string' , group: 'LDAP', enableQuery: {_id: 'LDAP_Enable', value: true} }
+	RocketChat.settings.add 'LDAP_Sync_User_Data', false, { type: 'boolean' , group: 'LDAP', enableQuery: {_id: 'LDAP_Enable', value: true} }
+	RocketChat.settings.add 'LDAP_Sync_User_Data_FieldMap', '{"cn":"name", "mail":"email"}', { type: 'string' , group: 'LDAP', enableQuery: {_id: 'LDAP_Enable', value: true} }
 
 
 timer = undefined
