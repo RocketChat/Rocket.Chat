@@ -65,7 +65,11 @@ LDAP.prototype.ldapCheck = function(options) {
 		var fullUrl = self.options.url + ':' + self.options.port;
 		var client = self.ldapjs.createClient({
 			url: fullUrl,
-			reconnect: true
+			reconnect: false
+		});
+
+		client.on('error', function() {
+			console.log('Client Error:', arguments);
 		});
 
 		var bindSync = Meteor.wrapAsync(client.bind.bind(client));
