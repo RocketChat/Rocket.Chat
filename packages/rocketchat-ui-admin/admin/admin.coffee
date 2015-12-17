@@ -16,7 +16,7 @@ Template.admin.helpers
 	sections: ->
 		group = FlowRouter.getParam('group')
 		group ?= TempSettings.findOne({ type: 'group' })?._id
-		settings = TempSettings.find({ group: group }, {sort: {section: 1, sort: 1, i18nLabel: 1}}).fetch()
+		settings = TempSettings.find({ group: group }, {sort: {section: 1, sorter: 1, i18nLabel: 1}}).fetch()
 
 		sections = {}
 		for setting in settings
