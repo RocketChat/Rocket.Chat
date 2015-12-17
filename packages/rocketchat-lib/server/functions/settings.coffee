@@ -46,11 +46,15 @@ RocketChat.settings.add = (_id, value, options = {}) ->
 # Add a setting group
 # @param {String} _id
 ###
-RocketChat.settings.addGroup = (_id, options = {}) ->
+RocketChat.settings.addGroup = (_id, options = {}, cb) ->
 	# console.log '[functions] RocketChat.settings.addGroup -> '.green, 'arguments:', arguments
 
 	if not _id
 		return false
+
+	if _.isFunction(options)
+		cb = options
+		options = {}
 
 	if not options.i18nLabel?
 		options.i18nLabel = _id
@@ -61,11 +65,26 @@ RocketChat.settings.addGroup = (_id, options = {}) ->
 	options.ts = new Date
 	options.hidden = false
 
-	return RocketChat.models.Settings.upsert { _id: _id },
+	RocketChat.models.Settings.upsert { _id: _id },
 		$set: options
 		$setOnInsert:
 			type: 'group'
 			createdAt: new Date
+
+	if cb?
+		cb.call
+			add: (id, value, options = {}) ->
+				options.group = _id
+				RocketChat.settings.add id, value, options
+
+			section: (section, cb) ->
+				cb.call
+					add: (id, value, options = {}) ->
+						options.group = _id
+						options.section = section
+						RocketChat.settings.add id, value, options
+
+	return
 
 
 ###
