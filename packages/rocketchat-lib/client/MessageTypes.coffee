@@ -68,3 +68,17 @@ Meteor.startup ->
 		id: 'rtc'
 		render: (message) ->
 			RocketChat.callbacks.run 'renderRtcMessage', message
+
+	RocketChat.MessageTypes.registerType
+		id: 'user-muted'
+		system: true
+		message: 'User_muted_by'
+		data: (message) ->
+			return { user_muted: message.msg, user_by: message.u.username }
+
+	RocketChat.MessageTypes.registerType
+		id: 'user-unmuted'
+		system: true
+		message: 'User_unmuted_by'
+		data: (message) ->
+			return { user_unmuted: message.msg, user_by: message.u.username }
