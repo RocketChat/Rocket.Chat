@@ -64,7 +64,8 @@ LDAP.prototype.ldapCheck = function(options) {
 		// Create ldap client
 		var fullUrl = self.options.url + ':' + self.options.port;
 		var client = self.ldapjs.createClient({
-			url: fullUrl
+			url: fullUrl,
+			reconnect: true
 		});
 
 		var bindSync = Meteor.wrapAsync(client.bind.bind(client));
@@ -142,7 +143,7 @@ LDAP.prototype.ldapCheck = function(options) {
 						delete opts.password;
 					} catch(e) {
 						console.log('LDAP: Error', e);
-						ldapAsyncFut.return({
+						return ldapAsyncFut.return({
 							error: e
 						});
 					}
@@ -153,7 +154,7 @@ LDAP.prototype.ldapCheck = function(options) {
 				client.search(options.ldapOptions.dn, opts, function(err, res) {
 					if (err) {
 						console.log('LDAP: Search Error', err);
-						ldapAsyncFut.return({
+						return ldapAsyncFut.return({
 							error: err
 						});
 					}
