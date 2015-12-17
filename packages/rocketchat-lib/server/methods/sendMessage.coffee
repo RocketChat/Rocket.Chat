@@ -15,6 +15,15 @@ Meteor.methods
 		if not room
 			return false
 
+		if user.username in (room.muted or [])
+			RocketChat.Notifications.notifyUser Meteor.userId(), 'message', {
+				_id: Random.id()
+				rid: room._id
+				ts: new Date
+				msg: TAPi18n.__('You_have_been_muted', {}, user.language);
+			}
+			return false
+
 		RocketChat.sendMessage user, message, room, options
 
 # Limit a user to sending 5 msgs/second
