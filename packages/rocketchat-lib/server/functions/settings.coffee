@@ -1,3 +1,5 @@
+RocketChat.settings._sorter = 0
+
 ###
 # Add a setting
 # @param {String} _id
@@ -14,6 +16,7 @@ RocketChat.settings.add = (_id, value, options = {}) ->
 	options.valueSource = 'packageValue'
 	options.ts = new Date
 	options.hidden = false
+	options.sorter ?= RocketChat.settings._sorter++
 
 	if process?.env?[_id]?
 		value = process.env[_id]
