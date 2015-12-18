@@ -15,6 +15,7 @@ Meteor.publish 'adminRooms', (filter, types, limit) ->
 			cl: 1
 			u: 1
 			usernames: 1
+			muted: 1
 		limit: limit
 		sort:
 			name: 1

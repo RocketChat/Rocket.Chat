@@ -15,6 +15,7 @@ Template.integrationsIncoming.helpers
 			data = ChatIntegrations.findOne({_id: params.id})
 			if data?
 				data.url = Meteor.absoluteUrl("hooks/#{encodeURIComponent(data._id)}/#{encodeURIComponent(data.userId)}/#{encodeURIComponent(data.token)}")
+				data.completeToken = "#{encodeURIComponent(data._id)}/#{encodeURIComponent(data.userId)}/#{encodeURIComponent(data.token)}"
 				Template.instance().record.set data
 				return data
 
@@ -30,6 +31,7 @@ Template.integrationsIncoming.helpers
 			msg: 'Example message'
 			bot:
 				i: Random.id()
+			groupable: false
 			attachments: [{
 				title: "Rocket.Chat"
 				title_link: "https://rocket.chat"
