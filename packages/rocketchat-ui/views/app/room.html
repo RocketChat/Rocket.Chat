@@ -52,7 +52,7 @@
 			</div>
 			<div class="messages-box {{compactView}}">
 				<div class="ticks-bar"></div>
-				<div class="wrapper">
+				<div class="wrapper {{#if hasMoreNext}}has-more-next{{/if}}">
 					<ul aria-live="polite">
 						{{#if hasMore}}
 							<li class="load-more">
@@ -70,11 +70,23 @@
 						{{#each messagesHistory}}
 							{{#nrr nrrargs 'message' .}}{{/nrr}}
 						{{/each}}
+						{{#if hasMoreNext}}
+							<li class="load-more">
+								{{#if isLoading}}
+									<div class="load-more-loading">{{_ "Loading_more_from_history"}}...</div>
+								{{else}}
+									<a href="">{{_ "Has_more"}}...</a>
+								{{/if}}
+							</li>
+						{{/if}}
 					</ul>
 				</div>
 				<div class="new-message not">
 					<i class="icon-down-big"></i>
 					<span>{{_ "New_messages"}}</span>
+				</div>
+				<div class="jump-recent {{#unless hasMoreNext}}not{{/unless}}">
+					<span class="jump-link">{{_ "Jump_to_recent_messages"}} <i class="icon-level-down"></i></span>
 				</div>
 			</div>
 			<footer class="footer">
