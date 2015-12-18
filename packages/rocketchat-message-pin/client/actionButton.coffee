@@ -4,6 +4,8 @@ Meteor.startup ->
 		icon: 'icon-pin'
 		i18nLabel: 'Pin_Message'
 		action: (event, instance) ->
+			event.preventDefault()
+			event.stopPropagation()
 			message = @_arguments[1]
 			message.pinned = true
 			Meteor.call 'pinMessage', message, (error, result) ->
@@ -21,9 +23,11 @@ Meteor.startup ->
 
 	RocketChat.MessageAction.addButton
 		id: 'unpin-message'
-		icon: 'icon-pin'
+		icon: 'icon-eraser'
 		i18nLabel: 'Unpin_Message'
 		action: (event, instance) ->
+			event.preventDefault()
+			event.stopPropagation()
 			message = @_arguments[1]
 			message.pinned = false
 			Meteor.call 'unpinMessage', message, (error, result) ->
@@ -38,3 +42,14 @@ Meteor.startup ->
 
 			return ChatRoom.findOne(message.rid).u?._id is Meteor.userId()
 		order: 21
+
+	RocketChat.MessageAction.addButton
+		id: 'jump-to-pin-message'
+		icon: 'icon-right-hand'
+		i18nLabel: 'Jump_to_message'
+		action: (event, instance) ->
+			message = @_arguments[1]
+			$('.message-dropdown:visible').hide()
+			RoomHistoryManager.getSurroundingMessages(message, 50)
+		order: 100
+

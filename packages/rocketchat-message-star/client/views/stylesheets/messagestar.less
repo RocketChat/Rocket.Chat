@@ -1,6 +1,14 @@
-.starred-messages-list {
-	padding: 30px 0;
+.messages-box {
+	.message-cog-container {
+		.message-action {
+			&.jump-to-star-message {
+				display: none !important;
+			}
+		}
+	}
+}
 
+.starred-messages-list {
 	&.notready {
 		background-image: url(/images/logo/loading.gif);
 		background-repeat: no-repeat;
@@ -19,8 +27,22 @@
 	}
 
 	.message-cog-container {
-		.edit-message, .delete-message, .pin-message, .unpin-message {
+		.message-action {
 			display: none !important;
+			&.star-message, &.unstar-message, &.jump-to-star-message {
+				display: block !important;
+			}
+		}
+	}
+
+	.load-more {
+		text-transform: lowercase;
+		text-align: center;
+		line-height: 40px;
+		font-style: italic;
+
+		.load-more-loading {
+			color: #aaa;
 		}
 	}
 }
