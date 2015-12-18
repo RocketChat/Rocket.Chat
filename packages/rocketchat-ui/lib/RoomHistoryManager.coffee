@@ -7,18 +7,19 @@
 		if not histories[rid]?
 			histories[rid] =
 				hasMore: ReactiveVar true
+				hasMoreNext: ReactiveVar false
 				isLoading: ReactiveVar false
 				unreadNotLoaded: ReactiveVar 0
 				loaded: 0
 
 		return histories[rid]
 
-	getMore = (rid, limit=defaultLimit) ->
+	getMore = (rid, limit=defaultLimit, setLoading=true) ->
 		room = getRoom rid
 		if room.hasMore.curValue isnt true
 			return
 
-		room.isLoading.set true
+		room.isLoading.set true if setLoading
 
 		# ScrollListener.setLoader true
 		lastMessage = ChatMessage.findOne({rid: rid}, {sort: {ts: 1}})
@@ -57,15 +58,43 @@
 				readMessage.refreshUnreadMark(rid, true)
 				RoomManager.updateMentionsMarksOfRoom typeName
 
-			room.isLoading.set false
+			room.isLoading.set false if setLoading
 			room.loaded += result?.messages?.length
 			if result?.messages?.length < limit
 				room.hasMore.set false
+
+	getMoreNext = (rid, limit=defaultLimit, setLoading=true) ->
+		room = getRoom rid
+		if room.hasMoreNext.curValue isnt true
+			return
+
+		room.isLoading.set true if setLoading
+
+		lastMessage = ChatMessage.findOne({rid: rid}, {sort: {ts: -1}})
+
+		ts = lastMessage.ts
+
+		if ts
+			Meteor.call 'loadNextMessages', rid, ts, limit, (err, result) ->
+				for item in result?.messages or []
+					if item.t isnt 'command'
+						ChatMessage.upsert {_id: item._id}, item
+				room.isLoading.set false if setLoading
+				room.loaded += result.messages.length
+				if result.messages.length < limit
+					room.hasMoreNext.set false
 
 	hasMore = (rid) ->
 		room = getRoom rid
 
 		return room.hasMore.get()
+
+	hasMoreNext = (rid, override) ->
+		room = getRoom rid
+		if override?
+			room.hasMoreNext.set(override)
+		return room.hasMoreNext.get()
+
 
 	getMoreIfIsEmpty = (rid) ->
 		room = getRoom rid
@@ -73,9 +102,11 @@
 		if room.loaded is 0
 			getMore rid
 
-	isLoading = (rid) ->
-		room = getRoom rid
 
+	isLoading = (rid, override) ->
+		room = getRoom rid
+		if override?
+			room.isLoading.set(override)
 		return room.isLoading.get()
 
 	clear = (rid) ->
@@ -87,7 +118,9 @@
 
 	getRoom: getRoom
 	getMore: getMore
+	getMoreNext: getMoreNext
 	getMoreIfIsEmpty: getMoreIfIsEmpty
 	hasMore: hasMore
+	hasMoreNext: hasMoreNext
 	isLoading: isLoading
 	clear: clear

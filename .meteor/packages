@@ -55,6 +55,7 @@ rocketchat:mailer
 rocketchat:markdown
 rocketchat:me
 rocketchat:mentions
+rocketchat:mentions-flextab
 rocketchat:message-pin
 rocketchat:message-star
 rocketchat:oembed

@@ -207,7 +207,7 @@ RocketChat.Notifications.onUser 'message', (msg) ->
 		scrollTop = $(dom).find('.messages-box > .wrapper').scrollTop() - 50
 		totalHeight = $(dom).find('.messages-box > .wrapper > ul').height() + 40
 
-		$('.mention-link-me').each (index, item) ->
+		$('.messages-box .mention-link-me').each (index, item) ->
 			topOffset = $(item).offset().top + scrollTop
 			percent = 100 / totalHeight * topOffset
 			ticksBar.append('<div class="tick" style="top: '+percent+'%;"></div>')
