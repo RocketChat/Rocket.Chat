@@ -2,8 +2,6 @@ Meteor.publish 'pinnedMessages', (rid, options = {}) ->
 	unless this.userId
 		return this.ready()
 
-	console.log '[publish] pinnedMessages -> '.green, 'rid:', rid, 'options:', options
-
 	publication = @
 
 	cursorHandle = RocketChat.models.Messages.findPinnedByRoom(rid, { sort: { ts: -1 }, limit: 50 }).observeChanges

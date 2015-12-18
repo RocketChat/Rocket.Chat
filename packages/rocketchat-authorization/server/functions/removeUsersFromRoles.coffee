@@ -1,5 +1,4 @@
 RocketChat.authz.removeUsersFromRoles = (userIds, roleNames, scope ) ->
-	console.log '[methods] removeUsersFromRoles -> '.green, 'arguments:', arguments
 	if not userIds or not roleNames
 		return false
 
