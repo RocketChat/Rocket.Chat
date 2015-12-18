@@ -79,8 +79,6 @@ mdg:validation-error@0.1.0
 meteor@1.1.10
 meteor-base@1.0.1
 meteor-developer@1.1.5
-meteorhacks:kadira@2.26.3
-meteorhacks:meteorx@1.4.1
 meteorspark:util@0.2.0
 minifiers@1.1.7
 minimongo@1.0.10

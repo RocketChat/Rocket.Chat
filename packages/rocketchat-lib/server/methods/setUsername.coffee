@@ -8,8 +8,6 @@ Meteor.methods
 		if user.username? and not RocketChat.settings.get("Accounts_AllowUsernameChange")
 			throw new Meteor.Error(403, "[methods] setUsername -> Username change not allowed")
 
-		console.log '[methods] setUsername -> '.green, 'userId:', Meteor.userId(), 'arguments:', arguments
-
 		if user.username is username
 			return username
 
@@ -22,7 +20,7 @@ Meteor.methods
 			throw new Meteor.Error 'username-invalid', "#{username} is not a valid username, use only letters, numbers, dots and dashes"
 
 		if user.username != undefined
-			if not username.toLowerCase() == user.username.toLowerCase() 
+			if not username.toLowerCase() == user.username.toLowerCase()
 				if not  RocketChat.checkUsernameAvailability username
 					throw new Meteor.Error 'username-unavailable', "#{username} is already in use :("
 		else

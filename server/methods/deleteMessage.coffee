@@ -15,8 +15,6 @@ Meteor.methods
 		unless hasPermission or (deleteAllowed and deleteOwn)
 			throw new Meteor.Error 'message-deleting-not-allowed', "[methods] deleteMessage -> Message deleting not allowed"
 
-		console.log '[methods] deleteMessage -> '.green, 'userId:', Meteor.userId(), 'arguments:', arguments
-
 		keepHistory = RocketChat.settings.get 'Message_KeepHistory'
 		showDeletedStatus = RocketChat.settings.get 'Message_ShowDeletedStatus'
 

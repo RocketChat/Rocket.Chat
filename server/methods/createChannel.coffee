@@ -14,8 +14,6 @@ Meteor.methods
 		if RocketChat.authz.hasPermission(Meteor.userId(), 'create-c') isnt true
 			throw new Meteor.Error 'not-authorized', '[methods] createChannel -> Not authorized'
 
-		console.log '[methods] createChannel -> '.green, 'userId:', Meteor.userId(), 'arguments:', arguments
-
 		now = new Date()
 		user = Meteor.user()
 
