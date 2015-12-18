@@ -1,29 +1,28 @@
 Meteor.methods({
 	sendMessageLivechat: function(message) {
-		var guest, operator, room;
-		console.log('sendMessageLivechat ->', arguments);
+		var guest, agent, room;
+
 		check(message.rid, String);
 		check(message.token, String);
+
 		guest = Meteor.users.findOne(Meteor.userId(), {
 			fields: {
 				username: 1
 			}
 		});
+
 		room = RocketChat.models.Rooms.findOneById(message.rid);
 		if (room == null) {
-			operator = Meteor.users.findOne({
-				operator: true,
-				status: 'online'
-			});
-			if (!operator) {
-				throw new Meteor.Error('no-operators', 'Sorry, no online operators');
+			agent = getNextAgent();
+			if (!agent) {
+				throw new Meteor.Error('no-agent-online', 'Sorry, no online agents');
 			}
 			RocketChat.models.Rooms.insert({
 				_id: message.rid,
 				name: guest.username,
 				msgs: 1,
 				lm: new Date(),
-				usernames: [operator.username, guest.username],
+				usernames: [agent.username, guest.username],
 				t: 'l',
 				ts: new Date(),
 				v: {
@@ -38,8 +37,8 @@ Meteor.methods({
 				unread: 1,
 				answered: false,
 				u: {
-					_id: operator._id,
-					username: operator.username
+					_id: agent._id,
+					username: agent.username
 				},
 				t: 'l'
 			});
