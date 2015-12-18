@@ -88,6 +88,12 @@ Api.addRoute ':integrationId/:userId/:token', authRequired: true,
 		else if integration.emoji?
 			message.emoji = integration.emoji
 
+		if _.isArray message.attachments
+			for attachment in message.attachments
+				if attachment.msg
+					attachment.text = attachment.msg
+					delete attachment.msg
+
 		RocketChat.sendMessage user, message, room, {}
 
 		return {} =
