@@ -1,7 +1,6 @@
 Meteor.methods
 	loadSurroundingMessages: (message, limit=50) ->
 		fromId = Meteor.userId()
-		console.log '[methods] loadSurroundingMessages -> '.green, 'fromId:', fromId, 'message:', message, 'limit:', limit
 
 		unless message?.rid
 			return false

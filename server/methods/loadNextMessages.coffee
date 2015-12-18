@@ -1,7 +1,6 @@
 Meteor.methods
 	loadNextMessages: (rid, end, limit=20) ->
 		fromId = Meteor.userId()
-		console.log '[methods] loadNextMessages -> '.green, 'fromId:', fromId, 'rid:', rid, 'end:', end, 'limit:', limit
 
 		unless Meteor.call 'canAccessRoom', rid, fromId
 			return false
