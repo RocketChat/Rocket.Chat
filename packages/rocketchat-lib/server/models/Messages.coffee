@@ -24,6 +24,13 @@ RocketChat.models.Messages = new class extends RocketChat.models._Base
 
 		return @find query, options
 
+	findByMentionAndRoomId: (username, rid, options) ->
+		query =
+			"mentions.username": username
+			"rid": rid
+
+		return @find query, options
+
 	findVisibleByRoomId: (roomId, options) ->
 		query =
 			_hidden:
