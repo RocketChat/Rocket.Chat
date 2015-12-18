@@ -24,8 +24,6 @@ Meteor.methods
 			if currentTsDiff > blockEditInMinutes
 				throw new Meteor.Error 'message-editing-blocked'
 
-		console.log '[methods] updateMessage -> '.green, 'userId:', Meteor.userId(), 'arguments:', arguments
-
 		# If we keep history of edits, insert a new message to store history information
 		if RocketChat.settings.get 'Message_KeepHistory'
 			RocketChat.models.Messages.cloneAndSaveAsHistoryById originalMessage._id

@@ -7,8 +7,6 @@ Meteor.publish('livechat:agents', function() {
 		throw new Meteor.Error('not-authorized');
 	}
 
-	console.log('[publish] livechat:agents -> '.green, 'arguments:', arguments);
-
 	var self = this;
 
 	var handle = RocketChat.authz.getUsersInRole('livechat-agent').observeChanges({

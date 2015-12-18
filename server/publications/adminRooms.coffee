@@ -22,8 +22,6 @@ Meteor.publish 'adminRooms', (filter, types, limit) ->
 
 	filter = _.trim filter
 
-	console.log '[publish] adminRooms'.green, filter, types, limit
-
 	if filter and types.length
 		return RocketChat.models.Rooms.findByNameContainingAndTypes filter, types, options
 

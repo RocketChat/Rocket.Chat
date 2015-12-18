@@ -6,8 +6,6 @@ Meteor.methods
 		unless RocketChat.authz.hasPermission(Meteor.userId(), 'create-p')
 			throw new Meteor.Error 'not-authorized', '[methods] createPrivateGroup -> Not authorized'
 
-		console.log '[methods] createPrivateGroup -> '.green, 'userId:', Meteor.userId(), 'arguments:', arguments
-
 		try
 			nameValidation = new RegExp '^' + RocketChat.settings.get('UTF8_Names_Validation') + '$'
 		catch
