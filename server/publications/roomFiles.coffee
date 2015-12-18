@@ -2,8 +2,6 @@ Meteor.publish 'roomFiles', (rid) ->
   unless this.userId
     return this.ready()
 
-  console.log '[publish] roomFiles '.green, rid
-
   pub = this
 
   fileQuery =

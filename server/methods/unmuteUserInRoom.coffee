@@ -1,8 +1,6 @@
 Meteor.methods
 	unmuteUserInRoom: (data) ->
 		fromId = Meteor.userId()
-		console.log '[methods] unmuteUserInRoom -> '.green, 'fromId:', fromId, 'data:', data
-
 		check(data, Match.ObjectIncluding({ rid: String, username: String }))
 
 		unless RocketChat.authz.hasPermission(fromId, 'mute-user', data.rid)

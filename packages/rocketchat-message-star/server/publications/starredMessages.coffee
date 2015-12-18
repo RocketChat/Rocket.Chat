@@ -2,8 +2,6 @@ Meteor.publish 'starredMessages', (rid, options = {}) ->
 	unless this.userId
 		return this.ready()
 
-	console.log '[publish] starredMessages -> '.green, 'rid:', rid, 'options:', options
-
 	publication = @
 
 	cursorHandle = RocketChat.models.Messages.findStarredByUserAtRoom(this.userId, rid, { sort: { ts: -1 }, limit: 50 }).observeChanges
