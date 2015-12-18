@@ -155,6 +155,7 @@ RocketChat.models.Messages = new class extends RocketChat.models._Base
 				msg: ''
 				t: 'rm'
 				urls: []
+				mentions: []
 				attachments: []
 				editedAt: new Date()
 				editedBy:

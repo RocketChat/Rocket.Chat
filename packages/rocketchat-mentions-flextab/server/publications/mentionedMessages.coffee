@@ -1,4 +1,4 @@
-Meteor.publish 'mentionedMessages', (rid, options = {}) ->
+Meteor.publish 'mentionedMessages', (rid, limit=50) ->
 	unless this.userId
 		return this.ready()
 
@@ -8,7 +8,7 @@ Meteor.publish 'mentionedMessages', (rid, options = {}) ->
 	unless user
 		return this.ready()
 
-	cursorHandle = RocketChat.models.Messages.findByMentionAndRoomId(user.username, rid, { sort: { ts: -1 }, limit: 50 }).observeChanges
+	cursorHandle = RocketChat.models.Messages.findByMentionAndRoomId(user.username, rid, { sort: { ts: -1 }, limit: limit }).observeChanges
 		added: (_id, record) ->
 			record.mentionedList = true
 			publication.added('rocketchat_mentioned_message', _id, record)
