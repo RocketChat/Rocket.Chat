@@ -1,7 +1,5 @@
 Meteor.methods({
 	'livechat:saveDepartment' (_id, departmentData) {
-		console.log('[methods] livechat:saveDepartment -> '.green, 'arguments:', arguments);
-
 		if (!Meteor.userId() || !RocketChat.authz.hasPermission(Meteor.userId(), 'view-livechat-manager')) {
 			throw new Meteor.Error("not-authorized");
 		}
