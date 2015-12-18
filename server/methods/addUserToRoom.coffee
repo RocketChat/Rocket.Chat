@@ -1,8 +1,6 @@
 Meteor.methods
 	addUserToRoom: (data) ->
 		fromId = Meteor.userId()
-		console.log '[methods] addUserToRoom -> '.green, 'data:', data
-
 		unless Match.test data?.rid, String
 			throw new Meteor.Error 'invalid-rid'
 

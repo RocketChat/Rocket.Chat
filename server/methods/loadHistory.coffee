@@ -1,8 +1,6 @@
 Meteor.methods
 	loadHistory: (rid, end, limit=20, ls) ->
 		fromId = Meteor.userId()
-		console.log '[methods] loadHistory -> '.green, 'fromId:', fromId, 'rid:', rid, 'end:', end, 'limit:', limit, 'ls:', ls
-
 		unless Meteor.call 'canAccessRoom', rid, fromId
 			return false
 

@@ -4,8 +4,6 @@ Meteor.methods({
 		check(visitorRoom, String);
 		check(formData, [Match.ObjectIncluding({ name: String, value: String })]);
 
-		console.log('[methods] livechat:saveSurveyFeedback -> '.green, 'arguments:', arguments);
-
 		visitor = RocketChat.models.Users.getVisitorByToken(visitorToken);
 		room = RocketChat.models.Rooms.findOneById(visitorRoom);
 

@@ -5,8 +5,6 @@ Meteor.methods
 		roomType = RocketChat.models.Rooms.findOneById(rid)?.t
 
 		if RocketChat.authz.hasPermission( fromId, "delete-#{roomType}", rid )
-			# console.log '[methods] eraseRoom -> '.green, 'fromId:', fromId, 'rid:', rid
-
 			# ChatRoom.update({ _id: rid}, {'$pull': { userWatching: Meteor.userId(), userIn: Meteor.userId() }})
 
 			RocketChat.models.Messages.removeByRoomId rid

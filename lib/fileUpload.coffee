@@ -74,6 +74,10 @@ if UploadFS?
 					token = cookie.get('rc_token', rawCookies) if rawCookies?
 
 					unless uid and token and RocketChat.models.Users.findOneByIdAndLoginToken(uid, token)
+						res.statusCode = 403
+						res.end('Not Allowed')
+						# Just to abort the request
+						# See https://github.com/jalik/jalik-ufs/issues/28
 						throw new Meteor.Error 403, 'Not Allowed'
 
 				res.setHeader 'content-disposition', "attachment; filename=\"#{ encodeURIComponent(file.name) }\""
