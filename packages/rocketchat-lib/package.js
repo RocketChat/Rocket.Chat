@@ -25,6 +25,9 @@ Package.onUse(function(api) {
 	api.use('rocketchat:version');
 	api.use('kadira:flow-router', 'client');
 
+	// DEBUGGER
+	api.addFiles('server/lib/debug.js');
+
 	// COMMON LIB
 	api.addFiles('lib/core.coffee');
 	api.addFiles('lib/settings.coffee');

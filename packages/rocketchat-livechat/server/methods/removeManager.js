@@ -6,8 +6,6 @@ Meteor.methods({
 
 		check(username, String);
 
-		console.log('[methods] livechat:removeManager -> '.green, 'arguments:', arguments);
-
 		var user = RocketChat.models.Users.findOneByUsername(username, { fields: { _id: 1 } });
 
 		if (!user) {
