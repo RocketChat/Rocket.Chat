@@ -155,10 +155,8 @@
 
 		return room.hasMore.get()
 
-	hasMoreNext = (rid, override) ->
+	hasMoreNext = (rid) ->
 		room = getRoom rid
-		if override?
-			room.hasMoreNext.set(override)
 		return room.hasMoreNext.get()
 
 
@@ -169,10 +167,8 @@
 			getMore rid
 
 
-	isLoading = (rid, override) ->
+	isLoading = (rid) ->
 		room = getRoom rid
-		if override?
-			room.isLoading.set(override)
 		return room.isLoading.get()
 
 	clear = (rid) ->
