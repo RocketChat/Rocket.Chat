@@ -1,8 +1,6 @@
 Meteor.methods
 	leaveRoom: (rid) ->
 		fromId = Meteor.userId()
-		# console.log '[methods] leaveRoom -> '.green, 'fromId:', fromId, 'rid:', rid
-
 		unless Meteor.userId()?
 			throw new Meteor.Error 300, 'Usuário não logado'
 

@@ -39,8 +39,11 @@ Meteor.startup ->
 		if Meteor.user()?.language?
 			c.stop()
 
-			localStorage.setItem("userLanguage", Meteor.user().language)
-			setLanguage Meteor.user().language
+			if localStorage.getItem('userLanguage') isnt Meteor.user().language
+				localStorage.setItem("userLanguage", Meteor.user().language)
+				setLanguage Meteor.user().language
+				if isRtl localStorage.getItem "userLanguage"
+					$('html').addClass "rtl"
 
 	userLanguage = localStorage.getItem("userLanguage")
 	userLanguage ?= defaultUserLanguage()

@@ -1,5 +1,4 @@
 RocketChat.authz.addUsersToRoles = (userIds, roleNames, scope ) ->
-	console.log '[methods] addUserToRoles -> '.green, 'arguments:', arguments
 	if not userIds or not roleNames
 		return false
 

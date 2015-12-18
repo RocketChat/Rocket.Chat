@@ -3,8 +3,6 @@ Meteor.methods
 		if not Meteor.userId()
 			throw new Meteor.Error('invalid-user', "[methods] updateUser -> Invalid user")
 
-		console.log '[methods] updateUser -> '.green, 'userId:', Meteor.userId(), 'arguments:', arguments
-
 		user = Meteor.user()
 
 		canEditUserPermission = RocketChat.authz.hasPermission( user._id, 'edit-other-user-info')

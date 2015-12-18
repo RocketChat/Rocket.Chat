@@ -1,8 +1,6 @@
 Meteor.methods
 	removeUserFromRoom: (data) ->
 		fromId = Meteor.userId()
-		console.log '[methods] removeUserFromRoom -> '.green, 'fromId:', fromId, 'data:', data
-
 		check(data, Match.ObjectIncluding({ rid: String, username: String }))
 
 		unless RocketChat.authz.hasPermission(fromId, 'remove-user', data.rid)
