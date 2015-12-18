@@ -2,8 +2,6 @@ Meteor.publish 'mentionedMessages', (rid, options = {}) ->
 	unless this.userId
 		return this.ready()
 
-	console.log '[publish] mentionedMessages -> '.green, 'rid:', rid, 'options:', options
-
 	publication = @
 
 	user = RocketChat.models.Users.findOneById this.userId
