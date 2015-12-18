@@ -317,9 +317,9 @@ Template.room.events
 
 	'scroll .wrapper': _.throttle (e, instance) ->
 		if RoomHistoryManager.isLoading(@_id) is false and (RoomHistoryManager.hasMore(@_id) is true or RoomHistoryManager.hasMoreNext(@_id) is true)
-			if e.target.scrollTop is 0
+			if RoomHistoryManager.hasMore(@_id) is true and e.target.scrollTop is 0
 				RoomHistoryManager.getMore(@_id)
-			else if e.target.scrollTop >= e.target.scrollHeight - e.target.clientHeight
+			else if RoomHistoryManager.hasMoreNext(@_id) is true and e.target.scrollTop >= e.target.scrollHeight - e.target.clientHeight
 				RoomHistoryManager.getMoreNext(@_id)
 	, 200
 
@@ -435,6 +435,7 @@ Template.room.events
 
 	'click .jump-recent .jump-link': (e, template) ->
 		e.preventDefault()
+		template.atBottom = true
 		RoomHistoryManager.clear(template?.data?._id)
 
 Template.room.onCreated ->
