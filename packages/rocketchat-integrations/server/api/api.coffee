@@ -71,9 +71,9 @@ Api.addRoute ':integrationId/:userId/:token', authRequired: true,
 						error: 'invalid-channel-type'
 
 		message =
-			avatar: integration.avatar or @bodyParams.avatar or @bodyParams.icon_url
-			emoji: integration.emoji or @bodyParams.emoji or @bodyParams.icon_emoji
-			alias: integration.alias or @bodyParams.alias or @bodyParams.username
+			avatar: @bodyParams.icon_url or @bodyParams.avatar or integration.avatar
+			emoji: @bodyParams.icon_emoji or @bodyParams.emoji or integration.emoji
+			alias: @bodyParams.username or @bodyParams.alias or integration.alias
 			msg: @bodyParams.text or ''
 			attachments: @bodyParams.attachments
 			parseUrls: false
