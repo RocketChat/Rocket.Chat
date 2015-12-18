@@ -72,7 +72,7 @@ Api.addRoute ':integrationId/:userId/:token', authRequired: true,
 
 		message =
 			alias: @bodyParams.username or @bodyParams.alias or integration.alias
-			msg: @bodyParams.text or ''
+			msg: @bodyParams.text or @bodyParams.msg or ''
 			attachments: @bodyParams.attachments
 			parseUrls: false
 			bot:
