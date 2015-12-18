@@ -8,8 +8,6 @@ Meteor.methods({
 			throw new Meteor.Error('invalid-arguments');
 		}
 
-		console.log('[methods] livechat:addAgent -> '.green, 'arguments:', arguments);
-
 		var user = RocketChat.models.Users.findOneByUsername(username, { fields: { _id: 1 } });
 
 		if (!user) {

@@ -1,7 +1,5 @@
 Meteor.methods
 	saveRoomSettings: (rid, settings) ->
-		console.log '[method] saveRoomSettings'.green, rid, settings
-
 		unless Match.test rid, String
 			throw new Meteor.Error 'invalid-rid'
 
