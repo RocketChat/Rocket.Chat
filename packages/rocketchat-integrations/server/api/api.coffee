@@ -71,15 +71,28 @@ Api.addRoute ':integrationId/:userId/:token', authRequired: true,
 						error: 'invalid-channel-type'
 
 		message =
-			avatar: integration.avatar or @bodyParams.avatar or @bodyParams.icon_url
-			emoji: integration.emoji or @bodyParams.emoji or @bodyParams.icon_emoji
-			alias: integration.alias or @bodyParams.alias or @bodyParams.username
-			msg: @bodyParams.text or ''
+			alias: @bodyParams.username or @bodyParams.alias or integration.alias
+			msg: @bodyParams.text or @bodyParams.msg or ''
 			attachments: @bodyParams.attachments
 			parseUrls: false
 			bot:
 				i: integration._id
 			groupable: false
+
+		if @bodyParams.icon_url? or @bodyParams.avatar?
+			message.avatar = @bodyParams.icon_url or @bodyParams.avatar
+		else if @bodyParams.icon_emoji? or @bodyParams.emoji?
+			message.emoji = @bodyParams.icon_emoji or @bodyParams.emoji
+		else if integration.avatar?
+			message.avatar = integration.avatar
+		else if integration.emoji?
+			message.emoji = integration.emoji
+
+		if _.isArray message.attachments
+			for attachment in message.attachments
+				if attachment.msg
+					attachment.text = attachment.msg
+					delete attachment.msg
 
 		RocketChat.sendMessage user, message, room, {}
 

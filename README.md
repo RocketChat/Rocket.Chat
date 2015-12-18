@@ -109,7 +109,7 @@ Run solid five-nines deployment on industry workhorse FreeBSD server:
 ## Ansible
 Automated production-grade deployment in minutes, for RHEL / CentOS 7 or Ubuntu 14.04 LTS / 15.04:
 
-[![Ansible deployment](https://raw.githubusercontent.com/Sing-Li/bbug/master/images/ansible.png)](https://galaxy.ansible.com/detail#/role/6478)
+[![Ansible deployment](https://raw.githubusercontent.com/Sing-Li/bbug/master/images/ansible.png)](https://github.com/RocketChat/Rocket.Chat/wiki/Easy,-hands-off-deployment-with-Ansible)
 
 ## Ubuntu VPS
 Follow these [deployment instructions](https://github.com/RocketChat/Rocket.Chat/wiki/Deploy-Rocket.Chat-without-docker)
