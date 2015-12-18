@@ -59,9 +59,16 @@
 							<div class="input-line double-col">
 								<label>Webhook URL</label>
 								<div>
-									<input type="text" name="token" value="{{data.url}}" disabled="disabled" />
+									<input type="text" name="webhookurl" value="{{data.url}}" disabled="disabled" />
 									<div class="settings-description">{{_ "Send_your_JSON_payloads_to_this_URL"}}</div>
-									<div class="settings-description"><a href="#" class="clipboard" data-clipboard-target="[name=token]">{{_ "COPY_TO_CLIPBOARD"}}</a></div>
+									<div class="settings-description"><a href="#" class="clipboard" data-clipboard-target="[name=webhookurl]">{{_ "COPY_TO_CLIPBOARD"}}</a></div>
+								</div>
+							</div>
+							<div class="input-line double-col">
+								<label>Token</label>
+								<div>
+									<input type="text" name="completeToken" value="{{data.completeToken}}" disabled="disabled" />
+									<div class="settings-description"><a href="#" class="clipboard" data-clipboard-target="[name=completeToken]">{{_ "COPY_TO_CLIPBOARD"}}</a></div>
 								</div>
 							</div>
 						{{/if}}
