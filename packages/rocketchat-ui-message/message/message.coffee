@@ -123,7 +123,10 @@ Template.message.onViewRendered = (context) ->
 		$previousNode = $(previousNode)
 		$nextNode = $(nextNode)
 
-		if previousNode?.dataset?
+		unless previousNode?
+			$currentNode.addClass('new-day').removeClass('sequential')
+
+		else if previousNode?.dataset?
 			previousDataset = previousNode.dataset
 
 			if previousDataset.date isnt currentDataset.date
