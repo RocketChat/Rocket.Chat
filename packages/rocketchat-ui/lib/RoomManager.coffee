@@ -109,13 +109,17 @@ RocketChat.Notifications.onUser 'message', (msg) ->
 						Dep.changed()
 
 						msgStream.on openedRooms[typeName].rid, (msg) ->
-							if msg.t isnt 'command'
-								ChatMessage.upsert { _id: msg._id }, msg
+							# Should not send message to room if room has not loaded all the current messages
+							if RoomHistoryManager.hasMoreNext(openedRooms[typeName].rid) is false
 
-							Meteor.defer ->
-								RoomManager.updateMentionsMarksOfRoom typeName
+								# Do not load command messages into channel
+								if msg.t isnt 'command'
+									ChatMessage.upsert { _id: msg._id }, msg
 
-							RocketChat.callbacks.run 'streamMessage', msg
+								Meteor.defer ->
+									RoomManager.updateMentionsMarksOfRoom typeName
+
+								RocketChat.callbacks.run 'streamMessage', msg
 
 						RocketChat.Notifications.onRoom openedRooms[typeName].rid, 'deleteMessage', onDeleteMessageStream
 
