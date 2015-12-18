@@ -9,6 +9,7 @@ Package.onUse(function(api) {
 
 	api.use([
 		'coffeescript',
+		'underscore',
 		'less@2.5.0',
 		'rocketchat:lib@0.0.1'
 	]);
