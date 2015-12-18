@@ -32,6 +32,9 @@ Template.room.helpers
 	hasMore: ->
 		return RoomHistoryManager.hasMore this._id
 
+	hasMoreNext: ->
+		return RoomHistoryManager.hasMoreNext this._id
+
 	isLoading: ->
 		return RoomHistoryManager.isLoading this._id
 
@@ -313,9 +316,11 @@ Template.room.events
 		RocketChat.TabBar.setTemplate 'membersList'
 
 	'scroll .wrapper': _.throttle (e, instance) ->
-		if RoomHistoryManager.hasMore(@_id) is true and RoomHistoryManager.isLoading(@_id) is false
-			if e.target.scrollTop is 0
+		if RoomHistoryManager.isLoading(@_id) is false and (RoomHistoryManager.hasMore(@_id) is true or RoomHistoryManager.hasMoreNext(@_id) is true)
+			if RoomHistoryManager.hasMore(@_id) is true and e.target.scrollTop is 0
 				RoomHistoryManager.getMore(@_id)
+			else if RoomHistoryManager.hasMoreNext(@_id) is true and e.target.scrollTop >= e.target.scrollHeight - e.target.clientHeight
+				RoomHistoryManager.getMoreNext(@_id)
 	, 200
 
 	'click .load-more > a': ->
@@ -428,6 +433,10 @@ Template.room.events
 	'load img': (e, template) ->
 		template.sendToBottomIfNecessary?()
 
+	'click .jump-recent .jump-link': (e, template) ->
+		e.preventDefault()
+		template.atBottom = true
+		RoomHistoryManager.clear(template?.data?._id)
 
 Template.room.onCreated ->
 	# this.scrollOnBottom = true
