@@ -147,17 +147,18 @@ Template.message.onViewRendered = (context) ->
 			else
 				$nextNode.removeClass('new-day')
 
-			if nextDataset.username isnt currentDataset.username or parseInt(nextDataset.timestamp) - parseInt(currentDataset.timestamp) > RocketChat.settings.get('Message_GroupingPeriod') * 1000
-				$nextNode.removeClass('sequential')
-			else
-				$nextNode.addClass('sequential')
-
-			if not nextNode?
-				templateInstance = view.parentView.parentView.parentView.parentView.parentView.templateInstance?()
-
-				if currentNode.classList.contains('own') is true
-					templateInstance?.atBottom = true
+			if nextDataset.groupable isnt 'false'
+				if nextDataset.username isnt currentDataset.username or parseInt(nextDataset.timestamp) - parseInt(currentDataset.timestamp) > RocketChat.settings.get('Message_GroupingPeriod') * 1000
+					$nextNode.removeClass('sequential')
 				else
-					if templateInstance?.atBottom isnt true
-						newMessage = templateInstance?.find(".new-message")
-						newMessage?.className = "new-message"
+					$nextNode.addClass('sequential')
+
+		if not nextNode?
+			templateInstance = view.parentView.parentView.parentView.parentView.parentView.templateInstance?()
+
+			if currentNode.classList.contains('own') is true
+				templateInstance?.atBottom = true
+			else
+				if templateInstance?.atBottom isnt true
+					newMessage = templateInstance?.find(".new-message")
+					newMessage?.className = "new-message"
