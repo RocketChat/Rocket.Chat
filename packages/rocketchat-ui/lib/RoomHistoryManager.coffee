@@ -14,12 +14,12 @@
 
 		return histories[rid]
 
-	getMore = (rid, limit=defaultLimit, setLoading=true) ->
+	getMore = (rid, limit=defaultLimit) ->
 		room = getRoom rid
 		if room.hasMore.curValue isnt true
 			return
 
-		room.isLoading.set true if setLoading
+		room.isLoading.set true
 
 		# ScrollListener.setLoader true
 		lastMessage = ChatMessage.findOne({rid: rid}, {sort: {ts: 1}})
@@ -58,12 +58,12 @@
 				readMessage.refreshUnreadMark(rid, true)
 				RoomManager.updateMentionsMarksOfRoom typeName
 
-			room.isLoading.set false if setLoading
+			room.isLoading.set false
 			room.loaded += result?.messages?.length
 			if result?.messages?.length < limit
 				room.hasMore.set false
 
-	getMoreNext = (rid, limit=defaultLimit, setLoading=true) ->
+	getMoreNext = (rid, limit=defaultLimit) ->
 		room = getRoom rid
 		if room.hasMoreNext.curValue isnt true
 			return
@@ -71,7 +71,7 @@
 		instance = Blaze.getView($('.messages-box .wrapper')[0]).templateInstance()
 		instance.atBottom = false
 
-		room.isLoading.set true if setLoading
+		room.isLoading.set true
 
 		lastMessage = ChatMessage.findOne({rid: rid}, {sort: {ts: -1}})
 
@@ -96,7 +96,7 @@
 				Meteor.defer ->
 					RoomManager.updateMentionsMarksOfRoom typeName
 
-				room.isLoading.set false if setLoading
+				room.isLoading.set false
 				room.loaded += result.messages.length
 				if result.messages.length < limit
 					room.hasMoreNext.set false
