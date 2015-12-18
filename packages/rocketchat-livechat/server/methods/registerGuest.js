@@ -1,8 +1,9 @@
 Meteor.methods({
 	registerGuest: function(token, name, email) {
-		console.log('registerGuest ->'.green, token);
 		var pass, qt, user, userData, userExists, userId, inc = 0;
+
 		check(token, String);
+
 		user = Meteor.users.findOne({
 			"profile.token": token
 		}, {
@@ -10,9 +11,11 @@ Meteor.methods({
 				_id: 1
 			}
 		});
+
 		if (user != null) {
 			throw new Meteor.Error('token-already-exists', 'Token already exists');
 		}
+
 		while (true) {
 			qt = Meteor.users.find({
 				'profile.guest': true
