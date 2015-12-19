@@ -1,3 +1,12 @@
+Template.livechatFlex.helpers({
+	active (route) {
+		FlowRouter.watchPathChange();
+		if (FlowRouter.current().route.name === route) {
+			return 'active';
+		}
+	}
+});
+
 Template.livechatFlex.events({
 	'mouseenter header' () {
 		SideNav.overArrow()
@@ -10,4 +19,4 @@ Template.livechatFlex.events({
 	'click header' () {
 		SideNav.closeFlex()
 	}
-})
+});
