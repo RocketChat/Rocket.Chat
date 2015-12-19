@@ -9,6 +9,17 @@
 
 
 Template.admin.helpers
+	languages: ->
+		languages = TAPi18n.getLanguages()
+		result = []
+		for key, language of languages
+			result.push _.extend(language, { key: key })
+		return _.sortBy(result, 'key')
+
+	appLanguage: (key) ->
+		selected = (RocketChat.settings.get('Language') or defaultUserLanguage())?.split('-').shift().toLowerCase() is key
+		return selected
+
 	group: ->
 		group = FlowRouter.getParam('group')
 		group ?= TempSettings.findOne({ type: 'group' })?._id
