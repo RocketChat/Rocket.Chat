@@ -6,7 +6,7 @@ Meteor.startup(function() {
 	ManagerUsers = new Mongo.Collection('managerUsers');
 });
 
-Template.livechatManager.helpers({
+Template.livechatUsers.helpers({
 	managers() {
 		return ManagerUsers.find({}, { sort: { name: 1 } });
 	},
@@ -20,7 +20,7 @@ Template.livechatManager.helpers({
 	}
 });
 
-Template.livechatManager.events({
+Template.livechatUsers.events({
 	'click .remove-manager' (e, instance) {
 		e.preventDefault();
 
@@ -119,7 +119,7 @@ Template.livechatManager.events({
 	}
 });
 
-Template.livechatManager.onCreated(function() {
+Template.livechatUsers.onCreated(function() {
 	this.subscribe('livechat:agents');
 	this.subscribe('livechat:managers');
 });
