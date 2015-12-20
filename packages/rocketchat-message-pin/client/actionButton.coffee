@@ -4,8 +4,6 @@ Meteor.startup ->
 		icon: 'icon-pin'
 		i18nLabel: 'Pin_Message'
 		action: (event, instance) ->
-			event.preventDefault()
-			event.stopPropagation()
 			message = @_arguments[1]
 			message.pinned = true
 			Meteor.call 'pinMessage', message, (error, result) ->
@@ -26,8 +24,6 @@ Meteor.startup ->
 		icon: 'icon-eraser'
 		i18nLabel: 'Unpin_Message'
 		action: (event, instance) ->
-			event.preventDefault()
-			event.stopPropagation()
 			message = @_arguments[1]
 			message.pinned = false
 			Meteor.call 'unpinMessage', message, (error, result) ->
