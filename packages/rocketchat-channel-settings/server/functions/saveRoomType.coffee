@@ -1,6 +1,4 @@
 RocketChat.saveRoomType = (rid, roomType) ->
-	console.log '[function] RocketChat.saveRoomType'.green, rid, roomType
-
 	unless Match.test rid, String
 		throw new Meteor.Error 'invalid-rid'
 
