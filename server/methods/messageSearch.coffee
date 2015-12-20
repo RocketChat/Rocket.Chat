@@ -4,8 +4,6 @@ Meteor.methods
 			text = 'from:rodrigo mention:gabriel chat'
 		###
 
-		# console.log '[method] -> messageSearch', text
-
 		result =
 			messages: []
 			users: []

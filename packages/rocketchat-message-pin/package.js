@@ -9,6 +9,7 @@ Package.onUse(function(api) {
 
 	api.use([
 		'coffeescript',
+		'underscore',
 		'less@2.5.0',
 		'rocketchat:lib@0.0.1'
 	]);
@@ -16,6 +17,7 @@ Package.onUse(function(api) {
 	api.addFiles([
 		'client/lib/PinnedMessage.coffee',
 		'client/actionButton.coffee',
+		'client/pinMessage.coffee',
 		'client/tabBar.coffee',
 		'client/views/pinnedMessages.html',
 		'client/views/pinnedMessages.coffee',
