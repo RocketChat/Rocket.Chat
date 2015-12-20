@@ -97,7 +97,7 @@ class @ChatMessages
 					if error?
 						return showError error.reason
 
-					Meteor.loginWithPassword result.user, result.pass, (error) ->
+					Meteor.loginWithToken result.token, (error) ->
 						if error
 							return showError error.reason
 

@@ -7,7 +7,7 @@ accounts-oauth@1.1.8
 accounts-password@1.1.4
 accounts-twitter@1.0.6
 alanning:roles@1.2.14
-aldeed:simple-schema@1.5.0
+aldeed:simple-schema@1.5.1
 arunoda:streams@0.1.17
 autoupdate@1.2.4
 babel-compiler@5.8.24_1
@@ -79,8 +79,6 @@ mdg:validation-error@0.1.0
 meteor@1.1.10
 meteor-base@1.0.1
 meteor-developer@1.1.5
-meteorhacks:kadira@2.26.3
-meteorhacks:meteorx@1.4.1
 meteorspark:util@0.2.0
 minifiers@1.1.7
 minimongo@1.0.10
@@ -104,6 +102,7 @@ oauth1@1.1.5
 oauth2@1.1.5
 observe-sequence@1.0.7
 ordered-dict@1.0.4
+ostrio:cookies@2.0.1
 pauli:accounts-linkedin@1.2.0
 pauli:linkedin@1.2.0
 perak:codemirror@1.2.8
@@ -143,13 +142,16 @@ rocketchat:mailer@0.0.1
 rocketchat:markdown@0.0.1
 rocketchat:me@0.0.1
 rocketchat:mentions@0.0.1
+rocketchat:mentions-flextab@0.0.1
 rocketchat:message-attachments@0.0.1
 rocketchat:message-pin@0.0.1
 rocketchat:message-star@0.0.1
 rocketchat:oembed@0.0.1
 rocketchat:slashcommands-invite@0.0.1
 rocketchat:slashcommands-join@0.0.1
+rocketchat:slashcommands-kick@0.0.1
 rocketchat:slashcommands-leave@0.0.1
+rocketchat:slashcommands-mute@0.0.1
 rocketchat:spotify@0.0.1
 rocketchat:statistics@0.0.1
 rocketchat:theme@0.0.1

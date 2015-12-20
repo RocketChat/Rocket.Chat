@@ -28,7 +28,6 @@ Package.onUse(function(api) {
 	api.use('less@2.5.1');
 
 	api.addFiles('livechat.js', 'server');
-	api.addFiles('server/methods.js', 'server');
 	api.addFiles('server/startup.js', 'server');
 	api.addFiles('permissions.js', 'server');
 
@@ -40,14 +39,19 @@ Package.onUse(function(api) {
 	api.addFiles('client/stylesheets/livechat.less', 'client');
 
 	// client views
-	api.addFiles('client/views/app/livechatManager.html', 'client');
-	api.addFiles('client/views/app/livechatManager.js', 'client');
-	api.addFiles('client/views/app/livechatDepartments.html', 'client');
-	api.addFiles('client/views/app/livechatDepartments.js', 'client');
+	api.addFiles('client/views/app/livechatAppearance.html', 'client');
+	api.addFiles('client/views/app/livechatAppearance.js', 'client');
+	api.addFiles('client/views/app/livechatDashboard.html', 'client');
 	api.addFiles('client/views/app/livechatDepartmentForm.html', 'client');
 	api.addFiles('client/views/app/livechatDepartmentForm.js', 'client');
+	api.addFiles('client/views/app/livechatDepartments.html', 'client');
+	api.addFiles('client/views/app/livechatDepartments.js', 'client');
+	api.addFiles('client/views/app/livechatInstallation.html', 'client');
+	api.addFiles('client/views/app/livechatInstallation.js', 'client');
 	api.addFiles('client/views/app/livechatTriggers.html', 'client');
 	api.addFiles('client/views/app/livechatTriggers.js', 'client');
+	api.addFiles('client/views/app/livechatUsers.html', 'client');
+	api.addFiles('client/views/app/livechatUsers.js', 'client');
 	api.addFiles('client/views/sideNav/livechat.html', 'client');
 	api.addFiles('client/views/sideNav/livechat.js', 'client');
 	api.addFiles('client/views/sideNav/livechatFlex.html', 'client');
@@ -61,14 +65,16 @@ Package.onUse(function(api) {
 	// methods
 	api.addFiles('server/methods/addAgent.js', 'server');
 	api.addFiles('server/methods/addManager.js', 'server');
+	api.addFiles('server/methods/registerGuest.js', 'server');
+	api.addFiles('server/methods/removeAgent.js', 'server');
+	api.addFiles('server/methods/removeDepartment.js', 'server');
+	api.addFiles('server/methods/removeManager.js', 'server');
+	api.addFiles('server/methods/removeTrigger.js', 'server');
 	api.addFiles('server/methods/saveDepartment.js', 'server');
 	api.addFiles('server/methods/saveSurveyFeedback.js', 'server');
-	api.addFiles('server/methods/searchAgent.js', 'server');
-	api.addFiles('server/methods/removeAgent.js', 'server');
-	api.addFiles('server/methods/removeManager.js', 'server');
-	api.addFiles('server/methods/removeDepartment.js', 'server');
 	api.addFiles('server/methods/saveTrigger.js', 'server');
-	api.addFiles('server/methods/removeTrigger.js', 'server');
+	api.addFiles('server/methods/searchAgent.js', 'server');
+	api.addFiles('server/methods/sendMessageLivechat.js', 'server');
 
 	// models
 	api.addFiles('server/models/Users.js', 'server');
