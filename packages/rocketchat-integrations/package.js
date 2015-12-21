@@ -29,6 +29,8 @@ Package.onUse(function(api) {
   api.addFiles('client/views/integrationsNew.coffee', 'client');
   api.addFiles('client/views/integrationsIncoming.html', 'client');
   api.addFiles('client/views/integrationsIncoming.coffee', 'client');
+  api.addFiles('client/views/integrationsOutgoing.html', 'client');
+  api.addFiles('client/views/integrationsOutgoing.coffee', 'client');
 
   // stylesheets
   api.addAssets('client/stylesheets/integrations.less', 'server');
