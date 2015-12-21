@@ -1,12 +1,12 @@
 {
   "Additional_Feedback" : "Lisäpalaute",
-  "Skip" : "Ohita",
   "How_friendly_was_the_chat_agent" : "Kuinka ystävällinen oli chat agentti?",
   "How_knowledgeable_was_the_chat_agent" : "Miten osaava oli chat agentti?",
   "How_responsive_was_the_chat_agent" : "Miten reagoiva oli chat agentti?",
   "How_satisfied_were_you_with_this_chat" : "Kuinka tyytyväinen olet tähän chattiin?",
   "Please_answer_survey" : "Käytä hetki vastataksesi pikakyselyyn tästä chatista",
   "Please_fill_name_and_email" : "Täytä nimi ja sähköpostiosoite",
+  "Skip" : "Ohita",
   "Start_Chat" : "Aloita chat",
   "Survey" : "Tutkimus",
   "Survey_instructions" : "Arvioi jokainen kysymys sen mukaan miten tyytyväinen olet, 1 tarkoittaa että olet täysin tyytymätön ja 5 tarkoittaa että olet täysin tyytyväinen.",
