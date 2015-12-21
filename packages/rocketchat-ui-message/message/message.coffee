@@ -39,8 +39,6 @@ Template.message.helpers
 		# otherwise a special "?" character that will be
 		# rendered as a special avatar
 		return @editedBy?.username or "?"
-	pinned: ->
-		return this.pinned
 	canEdit: ->
 		hasPermission = RocketChat.authz.hasAtLeastOnePermission('edit-message', this.rid)
 		isEditAllowed = RocketChat.settings.get 'Message_AllowEditing'
@@ -61,10 +59,6 @@ Template.message.helpers
 			return true
 
 		return RocketChat.settings.get('Message_AllowDeleting') and this.u?._id is Meteor.userId()
-	canPin: ->
-		return RocketChat.settings.get 'Message_AllowPinning'
-	canStar: ->
-		return RocketChat.settings.get 'Message_AllowStarring'
 	showEditedStatus: ->
 		return RocketChat.settings.get 'Message_ShowEditedStatus'
 	label: ->
