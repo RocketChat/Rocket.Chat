@@ -3,6 +3,8 @@ Template.channelSettings.helpers
 		return ChatRoom.findOne(@rid)?.t isnt 'd'
 	roomType: ->
 		return ChatRoom.findOne(@rid)?.t
+	channelSettings: ->
+		return RocketChat.ChannelSettings.getOptions()
 
 Template.channelSettings.events
 	'click .save': (e, t) ->

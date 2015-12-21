@@ -16,6 +16,9 @@
 						</div>
 					</div>
 				{{/if}}
+				{{#each channelSettings}}
+					{{> Template.dynamic template=template data=data}}
+				{{/each}}
 			</fieldset>
 			<div class="submit">
 				<button class="button save"><i class="icon-send"></i><span>{{_ "Save_changes"}}</span></button>
