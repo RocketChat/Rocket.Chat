@@ -14,10 +14,18 @@ Template.admin.helpers
 		result = []
 		for key, language of languages
 			result.push _.extend(language, { key: key })
-		return _.sortBy(result, 'key')
+		result = _.sortBy(result, 'key')
+		result.unshift {
+			"name": "Default",
+			"en": "Default",
+			"key": ""
+		}
+		return result;
 
 	appLanguage: (key) ->
-		selected = (RocketChat.settings.get('Language') or defaultUserLanguage())?.split('-').shift().toLowerCase() is key
+		if !key
+			return !RocketChat.settings.get('Language')
+		selected = (RocketChat.settings.get('Language'))?.split('-').shift().toLowerCase() is key
 		return selected
 
 	group: ->
