@@ -60,6 +60,12 @@ Meteor.startup ->
 		{ _id: 'delete-message',
 		roles : ['admin', 'site-moderator', 'moderator']}
 
+		{ _id: 'remove-user',
+		roles : ['admin', 'site-moderator', 'moderator']}
+
+		{ _id: 'mute-user',
+		roles : ['admin', 'site-moderator', 'moderator']}
+
 		{ _id: 'ban-user',
 		roles : ['admin', 'site-moderator', 'moderator']}
 

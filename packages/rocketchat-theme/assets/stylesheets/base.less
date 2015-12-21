@@ -867,6 +867,10 @@ a.github-fork {
 	overflow: hidden;
 	position: relative;
 	border-radius: 4px;
+	.emojione {
+		height: 100%;
+		margin: 0px;
+	}
 	.avatar-image {
 		height: 100%;
 		width: 100%;
@@ -1793,6 +1797,12 @@ a.github-fork {
 					padding-top: 0;
 				}
 
+				&.setting-changed {
+					> label {
+						color: #627CFF
+					}
+				}
+
 				input {
 					color: #444;
 				}
@@ -1807,6 +1817,14 @@ a.github-fork {
 
 				.settings-description {
 					color: #888;
+					padding: 5px;
+				}
+
+				.settings-alert {
+					background-color: rgb(255, 255, 230);
+					border: 1px solid rgb(255, 242, 196);
+					color: orange;
+					font-weight: bold;
 					padding: 5px;
 				}
 			}
@@ -2385,6 +2403,9 @@ a.github-fork {
 	width: 100%;
 	.calc(height,
 	~'100% - 120px');
+	.wrapper.has-more-next {
+		padding-bottom: 24px;
+	}
 	ul {
 		padding: 21px 0 10px;
 	}
@@ -2421,6 +2442,30 @@ a.github-fork {
 			.transform(translateY(150%));
 		}
 	}
+	.jump-recent {
+		z-index: 15;
+		background-color: #E7E7E7;
+		position: absolute;
+		text-align: right;
+		height: 24px;
+		line-height: 24px;
+		font-size: 0.8em;
+		padding-right: 20px;
+		bottom: 0;
+		left: 20px;
+		right: 20px;
+		border-top-left-radius: 4px;
+		border-top-right-radius: 4px;
+
+		span {
+			cursor: pointer;
+		}
+		.transition(transform 0.3s ease-out);
+		.transform(translateY(0));
+		&.not {
+			.transform(translateY(150%));
+		}
+	}
 	.editing {
 		.body {
 			border-radius: 4px;
@@ -2444,7 +2489,7 @@ a.github-fork {
 }
 
 .message {
-	padding: 18px 20px 4px 70px;
+	padding: 11px 20px 11px 70px;
 	position: relative;
 	line-height: 20px;
 	min-height: 40px;
@@ -2464,6 +2509,9 @@ a.github-fork {
 
 	&:nth-child(1) {
 		margin-top: 0;
+	}
+	&:hover {
+		background-color: @message-hover-background-color;
 	}
 	&.new-day {
 		margin-top: 60px;
@@ -2583,7 +2631,7 @@ a.github-fork {
 	.thumb {
 		position: absolute;
 		left: 20px;
-		top: 20px;
+		top: 11px;
 		display: block;
 		width: 40px;
 		height: 40px;
@@ -2714,8 +2762,8 @@ a.github-fork {
 .compact {
 	.message {
 		padding: 5px 20px 5px 70px;
-		.thumb:not(.thumb-small) .avatar {
-			margin-top: -15px;
+		.thumb {
+			top: 5px;
 		}
 	}
 }
@@ -4195,7 +4243,7 @@ a.github-fork {
 }
 
 .inline-video {
-	max-height: 200px;
+	max-height: 300px;
 }
 
 .attention-message {

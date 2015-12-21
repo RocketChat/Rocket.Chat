@@ -11,6 +11,7 @@ Package.onUse(function(api) {
 
   api.use('coffeescript');
   api.use('underscore');
+  api.use('simple:highlight.js');
   api.use('rocketchat:lib@0.0.1');
 
   api.use('kadira:flow-router', 'client');

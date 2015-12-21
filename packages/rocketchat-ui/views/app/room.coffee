@@ -32,6 +32,9 @@ Template.room.helpers
 	hasMore: ->
 		return RoomHistoryManager.hasMore this._id
 
+	hasMoreNext: ->
+		return RoomHistoryManager.hasMoreNext this._id
+
 	isLoading: ->
 		return RoomHistoryManager.isLoading this._id
 
@@ -301,7 +304,7 @@ Template.room.events
 
 	"click .flex-tab .user-image > a" : (e) ->
 		RocketChat.TabBar.openFlex()
-		Session.set('showUserInfo', $(e.currentTarget).data('username'))
+		Session.set('showUserInfo', @username)
 
 	'click .user-card-message': (e) ->
 		roomData = Session.get('roomData' + this._arguments[1].rid)
@@ -313,9 +316,11 @@ Template.room.events
 		RocketChat.TabBar.setTemplate 'membersList'
 
 	'scroll .wrapper': _.throttle (e, instance) ->
-		if RoomHistoryManager.hasMore(@_id) is true and RoomHistoryManager.isLoading(@_id) is false
-			if e.target.scrollTop is 0
+		if RoomHistoryManager.isLoading(@_id) is false and (RoomHistoryManager.hasMore(@_id) is true or RoomHistoryManager.hasMoreNext(@_id) is true)
+			if RoomHistoryManager.hasMore(@_id) is true and e.target.scrollTop is 0
 				RoomHistoryManager.getMore(@_id)
+			else if RoomHistoryManager.hasMoreNext(@_id) is true and e.target.scrollTop >= e.target.scrollHeight - e.target.clientHeight
+				RoomHistoryManager.getMoreNext(@_id)
 	, 200
 
 	'click .load-more > a': ->
@@ -347,6 +352,8 @@ Template.room.events
 		dropDown.show()
 
 	'click .message-dropdown .message-action': (e, t) ->
+		e.preventDefault()
+		e.stopPropagation()
 		el = $(e.currentTarget)
 
 		button = RocketChat.MessageAction.getButtonById el.data('id')
@@ -368,14 +375,7 @@ Template.room.events
 
 	'click .image-to-download': (event) ->
 		ChatMessage.update {_id: this._arguments[1]._id, 'urls.url': $(event.currentTarget).data('url')}, {$set: {'urls.$.downloadImages': true}}
-
-	'click .pin-message': (event) ->
-		message = @_arguments[1]
-		instance = Template.instance()
-		if message.pinned
-			chatMessages[Session.get('openedRoom')].unpinMsg(message)
-		else
-			chatMessages[Session.get('openedRoom')].pinMsg(message)
+		ChatMessage.update {_id: this._arguments[1]._id, 'attachments.image_url': $(event.currentTarget).data('url')}, {$set: {'attachments.$.downloadImages': true}}
 
 	'dragenter .dropzone': (e) ->
 		e.currentTarget.classList.add 'over'
@@ -427,6 +427,10 @@ Template.room.events
 	'load img': (e, template) ->
 		template.sendToBottomIfNecessary?()
 
+	'click .jump-recent .jump-link': (e, template) ->
+		e.preventDefault()
+		template.atBottom = true
+		RoomHistoryManager.clear(template?.data?._id)
 
 Template.room.onCreated ->
 	# this.scrollOnBottom = true
@@ -539,7 +543,7 @@ Template.room.onRendered ->
 			firstMessage = ChatMessage.findOne firstMessageOnScreen.id
 			if firstMessage?
 				subscription = ChatSubscription.findOne rid: template.data._id
-				template.unreadCount.set ChatMessage.find({rid: template.data._id, ts: {$lt: firstMessage.ts, $gt: subscription.ls}}).count()
+				template.unreadCount.set ChatMessage.find({rid: template.data._id, ts: {$lt: firstMessage.ts, $gt: subscription?.ls}}).count()
 			else
 				template.unreadCount.set 0
 	, 300
