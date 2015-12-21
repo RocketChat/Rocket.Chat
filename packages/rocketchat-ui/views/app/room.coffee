@@ -213,6 +213,8 @@ Template.room.helpers
 	compactView: ->
 		return 'compact' if Meteor.user()?.settings?.preferences?.compactView
 
+	selectable: ->
+		return Template.instance().selectable.get()
 
 Template.room.events
 	"click, touchend": (e, t) ->
@@ -432,17 +434,90 @@ Template.room.events
 		template.atBottom = true
 		RoomHistoryManager.clear(template?.data?._id)
 
+	'click .message': (e, template) ->
+		e.preventDefault()
+		e.stopPropagation()
+		if template.selectable.get()
+			data = Blaze.getData(e.currentTarget)
+			_id = data?._arguments?[1]?._id
+
+			if !template.selectablePointer or !e.shiftKey
+				template.selectablePointer = _id
+				template.selectableShiftPointer = null
+
+			document.selection?.empty() or window.getSelection?().removeAllRanges()
+			template.selectMessages _id
+
 Template.room.onCreated ->
 	# this.scrollOnBottom = true
 	# this.typing = new msgTyping this.data._id
 	this.showUsersOffline = new ReactiveVar false
 	this.atBottom = true
 	this.unreadCount = new ReactiveVar 0
+	this.selectable = new ReactiveVar false
+	this.selectedMessages = new ReactiveVar []
+	this.selectablePointer = null
+	this.selectableShiftPointer = null
 
-	self = @
+	this.resetSelection = (enabled) =>
+		this.selectable.set(enabled)
+		$('.messages-box .message.selected').removeClass 'selected'
+		this.selectedMessages.set []
+		this.selectablePointer = null
+		this.selectableShiftPointer = null
 
-	@autorun ->
-		self.subscribe 'fullUserData', Session.get('showUserInfo'), 1
+	this.selectMessages = (to) =>
+		messages = this.selectedMessages.get()
+		if this.selectablePointer is to
+			this.selectablePointer = this.selectableShiftPointer or this.selectablePointer
+			if messages.indexOf(to) is -1
+				messages.push to
+				$(".messages-box ##{to}").addClass 'selected'
+			else
+				messages = _.without messages, to
+				$(".messages-box ##{to}").removeClass 'selected'
+		else
+			includeFrom = true
+			addItems = messages.indexOf(to) is -1
+			if addItems
+				fromMessage = ChatMessage.findOne this.selectablePointer
+				toMessage = ChatMessage.findOne to
+				# this.selectablePointer = this.selectableShiftPointer or this.selectablePointer
+				this.selectableShiftPointer = to
+			else
+				if this.selectableShiftPointer?
+					fromMessage = ChatMessage.findOne this.selectableShiftPointer
+				else
+					console.log 'set includeFrom = false'
+					includeFrom = false
+					fromMessage = ChatMessage.findOne this.selectablePointer
+				toMessage = ChatMessage.findOne to
+				this.selectableShiftPointer = null
+
+			if fromMessage.ts <= toMessage.ts
+				if includeFrom
+					query = { rid: fromMessage.rid, ts: { $gte: fromMessage.ts, $lte: toMessage.ts } }
+				else
+					query = { rid: fromMessage.rid, ts: { $gt: fromMessage.ts, $lte: toMessage.ts } }
+			else
+				if includeFrom
+					query = { rid: fromMessage.rid, ts: { $lte: fromMessage.ts, $gte: toMessage.ts } }
+				else
+					query = { rid: fromMessage.rid, ts: { $lt: fromMessage.ts, $gte: toMessage.ts } }
+
+			ChatMessage.find(query).forEach (message) ->
+				if addItems
+					messages.push message._id
+					$(".messages-box ##{message._id}").addClass 'selected'
+				else
+					messages = _.without messages, message._id
+					$(".messages-box ##{message._id}").removeClass 'selected'
+
+		console.log addItems, this.selectablePointer, this.selectableShiftPointer
+		this.selectedMessages.set messages
+
+	@autorun =>
+		@subscribe 'fullUserData', Session.get('showUserInfo'), 1
 
 
 Template.room.onDestroyed ->
