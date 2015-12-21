@@ -31,6 +31,13 @@ readAsArrayBuffer = (file, callback) ->
 					timer: 1000
 				return
 
+			if file.file.size is 0
+				swal
+					title: t('FileUpload_File_Empty')
+					type: 'error'
+					timer: 1000
+				return
+
 			text = ''
 
 			if file.type is 'audio'
