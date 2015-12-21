@@ -1,5 +1,5 @@
 Api = new Restivus
-	enableCors: false
+	enableCors: true
 	apiPath: 'hooks/'
 	auth:
 		user: ->
