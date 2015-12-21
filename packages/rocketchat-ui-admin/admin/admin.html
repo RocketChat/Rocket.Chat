@@ -42,28 +42,28 @@
 									{{/if}}
 								{{/if}}
 								{{#each settings}}
-									<div class="input-line double-col">
+									<div class="input-line double-col {{#if changed}}setting-changed{{/if}}">
 										<label>{{label}}</label>
 										<div>
 											{{#if $eq type 'string'}}
 												{{#if multiline}}
-													<textarea name="{{_id}}" rows="4" style="height: auto">{{value}}</textarea>
+													<textarea class="input-monitor" name="{{_id}}" rows="4" style="height: auto" {{isDisabled}}>{{value}}</textarea>
 												{{else}}
-													<input type="text" name="{{_id}}" value="{{value}}" placeholder="{{placeholder}}" />
+													<input class="input-monitor" type="text" name="{{_id}}" value="{{value}}" placeholder="{{placeholder}}" {{isDisabled}}/>
 												{{/if}}
 											{{/if}}
 
 											{{#if $eq type 'int'}}
-												<input type="number" name="{{_id}}" value="{{value}}" placeholder="{{placeholder}}" />
+												<input class="input-monitor" type="number" name="{{_id}}" value="{{value}}" placeholder="{{placeholder}}" {{isDisabled}}/>
 											{{/if}}
 
 											{{#if $eq type 'boolean'}}
-												<label><input type="radio" name="{{_id}}" value="1" checked="{{$eq value true}}" /> {{_ "True"}}</label>
-												<label><input type="radio" name="{{_id}}" value="0" checked="{{$eq value false}}" /> {{_ "False"}}</label>
+												<label><input class="input-monitor" type="radio" name="{{_id}}" value="1" checked="{{$eq value true}}" {{isDisabled}}/> {{_ "True"}}</label>
+												<label><input class="input-monitor" type="radio" name="{{_id}}" value="0" checked="{{$eq value false}}" {{isDisabled}}/> {{_ "False"}}</label>
 											{{/if}}
 
 											{{#if $eq type 'select'}}
-												<select name="{{_id}}">
+												<select class="input-monitor" name="{{_id}}" {{isDisabled}}>
 													{{#each values}}
 														<option value="{{key}}" selected="{{selectedOption ../_id key}}">{{_ i18nLabel}}</option>
 													{{/each}}
@@ -71,11 +71,11 @@
 											{{/if}}
 
 											{{#if $eq type 'color'}}
-												<input type="text" class="minicolors" name="{{_id}}" value="{{value}}" />
+												<input class="input-monitor minicolors" type="text" name="{{_id}}" value="{{value}}" {{isDisabled}}/>
 											{{/if}}
 
 											{{#if $eq type 'action'}}
-												<button type="button" class="button primary action" data-setting="{{_id}}" data-action="{{value}}">{{_ actionText}}</button>
+												<button type="button" class="button primary action" data-setting="{{_id}}" data-action="{{value}}" {{isDisabled}}>{{_ actionText}}</button>
 											{{/if}}
 
 											{{#if $eq type 'asset'}}
@@ -101,6 +101,9 @@
 											{{#if description}}
 												<div class="settings-description">{{{description}}}</div>
 											{{/if}}
+											{{#if alert}}
+												<div class="settings-alert"><i class="icon-attention"></i>{{{_ alert}}}</div>
+											{{/if}}
 										</div>
 									</div>
 								{{/each}}
@@ -112,6 +115,12 @@
 										</div>
 									{{/if}}
 								{{/if}}
+
+								{{#if hasChanges section}}
+									<div class="submit">
+										<button class="button save"><i class="icon-send"></i><span>{{_ "Save_changes"}}</span></button>
+									</div>
+								{{/if}}
 							</div>
 						</div>
 					{{/each}}
@@ -120,7 +129,6 @@
 						{{#if $eq group._id 'Accounts'}}
 							<button class="button secondary add-custom-oauth"><span>{{_ "Add_custom_oauth"}}</span></button>
 						{{/if}}
-						<button class="button save"><i class="icon-send"></i><span>{{_ "Save_changes"}}</span></button>
 					</div>
 				</div>
 			{{/unless}}

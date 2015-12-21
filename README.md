@@ -93,12 +93,23 @@ Host your docker container at [sloppy.io](http://sloppy.io). Get an account and 
 
 or
 
-Use the automated build at our [Official Docker Registry](https://hub.docker.com/r/rocketchat/rocket.chat/)
+Use the automated build image of our [most recent in-development code](https://hub.docker.com/r/rocketchat/rocket.chat/)
 
 [![Rocket.Chat logo](https://d207aa93qlcgug.cloudfront.net/1.95.5.qa/img/nav/docker-logo-loggedout.png)](https://hub.docker.com/r/rocketchat/rocket.chat/)
 
 ```
-docker pull rocketchat/rocket.chat
+docker pull rocketchat/rocket.chat:develop
+```
+
+OR the latest available stable (master) branch code:
+```
+docker pull rocketchat/rocket.chat:lastest
+```
+
+OR our [official docker registry image](https://hub.docker.com/_/rocket.chat/), containing recent MAJOR release:
+
+```
+docker pull rocket.chat
 ```
 
 ## FreeBSD
@@ -109,7 +120,7 @@ Run solid five-nines deployment on industry workhorse FreeBSD server:
 ## Ansible
 Automated production-grade deployment in minutes, for RHEL / CentOS 7 or Ubuntu 14.04 LTS / 15.04:
 
-[![Ansible deployment](https://raw.githubusercontent.com/Sing-Li/bbug/master/images/ansible.png)](https://galaxy.ansible.com/detail#/role/6478)
+[![Ansible deployment](https://raw.githubusercontent.com/Sing-Li/bbug/master/images/ansible.png)](https://github.com/RocketChat/Rocket.Chat/wiki/Easy,-hands-off-deployment-with-Ansible)
 
 ## Ubuntu VPS
 Follow these [deployment instructions](https://github.com/RocketChat/Rocket.Chat/wiki/Deploy-Rocket.Chat-without-docker)

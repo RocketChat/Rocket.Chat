@@ -3,8 +3,6 @@ Meteor.methods
 		if not Meteor.userId() or not RocketChat.authz.hasPermission Meteor.userId(), 'access-permissions'
 			throw new Meteor.Error "not-authorized"
 
-		console.log('[methods] authorization:removeUserFromRole -> '.green, 'arguments:', arguments);
-
 		if not roleName or not _.isString(roleName) or not username or not _.isString(username)
 			throw new Meteor.Error 'invalid-arguments'
 

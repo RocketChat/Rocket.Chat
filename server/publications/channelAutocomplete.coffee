@@ -2,8 +2,6 @@ Meteor.publish 'channelAutocomplete', (name) ->
 	unless this.userId
 		return this.ready()
 
-	console.log '[publish] channelAutocomplete -> '.green, name
-
 	pub = this
 
 	options =
