@@ -5,8 +5,8 @@
   "Agent_added" : "Agentti lisätty",
   "Agent_removed" : "Agentti poistettu",
   "Back" : "Takaisin",
-  "Dashboard" : "Kojelauta",
-  "Department_not_found" : "Osasto ei löytynyt",
+  "Dashboard" : "Ohjauspaneeli",
+  "Department_not_found" : "Osastoa ei löytynyt",
   "Department_removed" : "Osasto poistettu",
   "Departments" : "Osastot",
   "Description" : "Kuvaus",
@@ -29,8 +29,8 @@
   "Please_fill_a_username" : "Täytä käyttäjätunnus",
   "Please_select_enabled_yes_or_no" : "Valitse vaihtoehto Käytössä",
   "Saved" : "Tallennettu",
-  "Theme" : "Teema",
+  "Theme" : "Ulkoasu",
   "There_are_no_agents_added_to_this_department_yet" : "Yhtään agenttia ei ole vielä lisätty tähän osastoon.",
-  "User_management" : "Käyttäjien hallinta",
+  "User_management" : "Käyttäjähallinta",
   "Username_not_found" : "Käyttäjätunnusta ei löydy"
 }
