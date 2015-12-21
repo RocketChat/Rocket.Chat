@@ -1,0 +1,8 @@
+{
+  "Channel" : "Canal",
+  "Private_Group" : "Grup privat",
+  "Room_Type" : "Tipul camerei",
+  "Room_Settings" : "Setări cameră",
+  "room_changed_privacy" : "Tipul camerei schimbat în: <em>__room_type__</em> by <em>__user_by__</em>",
+  "room_changed_topic" : "Subiectul camerei schimbat în: <em>__room_topic__</em> by <em>__user_by__</em>"
+}

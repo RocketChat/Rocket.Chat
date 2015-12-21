@@ -8,9 +8,9 @@ Template.livechatInstallation.helpers({
 	var h = d.getElementsByTagName(s)[0],
 		j = d.createElement(s);
 	j.async = true;
-	j.src = '${RocketChat.settings.get('Site_Url')}packages/rocketchat_livechat/assets/rocket-livechat.js';
+	j.src = '${RocketChat.settings.get('Site_Url')}/packages/rocketchat_livechat/assets/rocket-livechat.js';
 	h.parentNode.insertBefore(j, h);
-})(window, document, 'script', 'initRocket', '${RocketChat.settings.get('Site_Url')}livechat');
+})(window, document, 'script', 'initRocket', '${RocketChat.settings.get('Site_Url')}/livechat');
 </script>
 <!-- End of Rocket.Chat Livechat Script -->`;
 	}

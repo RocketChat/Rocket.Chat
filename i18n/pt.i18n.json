@@ -397,7 +397,6 @@
   "strike" : "tachado",
   "Submit" : "Enviar",
   "Success" : "Sucesso",
-  "The_configured_URL_is_different_from_the_URL_you_are_accessing" : "A URL configurada é diferente da URL que você está acessando!",
   "The_field_is_required" : "O campo %s é obrigatório.",
   "The_server_will_restart_in_s_seconds" : "O servidor será reiniciado em %s segundos",
   "This_is_a_push_test_messsage" : "Este é uma mensagem de teste de push notification",

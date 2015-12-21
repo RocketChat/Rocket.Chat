@@ -1,6 +1,20 @@
-.pinned-messages-list {
-	padding: 30px 0;
+.icon-pin.rotate-45:before {
+	-ms-transform: rotate(45deg);
+	-webkit-transform: rotate(45deg);
+	transform: rotate(45deg);
+}
 
+.messages-box {
+	.message-cog-container {
+		.message-action {
+			&.jump-to-pin-message {
+				display: none !important;
+			}
+		}
+	}
+}
+
+.pinned-messages-list {
 	&.notready {
 		background-image: url(/images/logo/loading.gif);
 		background-repeat: no-repeat;
@@ -19,8 +33,22 @@
 	}
 
 	.message-cog-container {
-		.edit-message, .delete-message, .star-message, .unstar-message {
+		.message-action {
 			display: none !important;
+			&.pin-message, &.unpin-message, &.jump-to-pin-message {
+				display: block !important;
+			}
+		}
+	}
+
+	.load-more {
+		text-transform: lowercase;
+		text-align: center;
+		line-height: 40px;
+		font-style: italic;
+
+		.load-more-loading {
+			color: #aaa;
 		}
 	}
 }

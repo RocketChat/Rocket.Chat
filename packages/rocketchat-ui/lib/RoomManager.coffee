@@ -109,6 +109,7 @@ RocketChat.Notifications.onUser 'message', (msg) ->
 						Dep.changed()
 
 						msgStream.on openedRooms[typeName].rid, (msg) ->
+
 							# Should not send message to room if room has not loaded all the current messages
 							if RoomHistoryManager.hasMoreNext(openedRooms[typeName].rid) is false
 
