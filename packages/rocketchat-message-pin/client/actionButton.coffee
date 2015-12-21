@@ -21,7 +21,7 @@ Meteor.startup ->
 
 	RocketChat.MessageAction.addButton
 		id: 'unpin-message'
-		icon: 'icon-eraser'
+		icon: 'icon-pin rotate-45'
 		i18nLabel: 'Unpin_Message'
 		action: (event, instance) ->
 			message = @_arguments[1]
