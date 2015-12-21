@@ -3,8 +3,6 @@ Meteor.methods
 		if not Meteor.userId() or not RocketChat.authz.hasPermission Meteor.userId(), 'access-permissions'
 			throw new Meteor.Error "not-authorized"
 
-		console.log '[methods] authorization:saveRole -> '.green, 'arguments:', arguments
-
 		saveData =
 			description: roleData.description
 

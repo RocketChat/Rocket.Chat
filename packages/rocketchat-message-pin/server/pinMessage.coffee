@@ -6,8 +6,6 @@ Meteor.methods
 		if not RocketChat.settings.get 'Message_AllowPinning'
 			throw new Meteor.Error 'message-pinning-not-allowed', '[methods] pinMessage -> Message pinning not allowed'
 
-		console.log '[methods] pinMessage -> '.green, 'userId:', Meteor.userId()
-
 		# If we keep history of edits, insert a new message to store history information
 		if RocketChat.settings.get 'Message_KeepHistory'
 			RocketChat.models.Messages.cloneAndSaveAsHistoryById message._id
@@ -30,8 +28,6 @@ Meteor.methods
 
 		if not RocketChat.settings.get 'Message_AllowPinning'
 			throw new Meteor.Error 'message-pinning-not-allowed', '[methods] pinMessage -> Message pinning not allowed'
-
-		console.log '[methods] unpinMessage -> '.green, 'userId:', Meteor.userId()
 
 		# If we keep history of edits, insert a new message to store history information
 		if RocketChat.settings.get 'Message_KeepHistory'

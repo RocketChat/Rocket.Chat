@@ -22,7 +22,11 @@ Package.onUse(function(api) {
 	api.use('service-configuration');
 	api.use('check');
 	api.use('arunoda:streams');
+	api.use('rocketchat:version');
 	api.use('kadira:flow-router', 'client');
+
+	// DEBUGGER
+	api.addFiles('server/lib/debug.js');
 
 	// COMMON LIB
 	api.addFiles('lib/core.coffee');
@@ -89,6 +93,9 @@ Package.onUse(function(api) {
 	api.addFiles('client/TabBar.coffee', 'client');
 	api.addFiles('client/MessageAction.coffee', 'client');
 	api.addFiles('client/MessageTypes.coffee', 'client');
+
+	// VERSION
+	api.addFiles('rocketchat.info');
 
 	// TAPi18n
 	api.use('templating', 'client');

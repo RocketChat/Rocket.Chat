@@ -109,9 +109,13 @@ RocketChat.Notifications.onUser 'message', (msg) ->
 						Dep.changed()
 
 						msgStream.on openedRooms[typeName].rid, (msg) ->
-							if msg.t isnt 'command'
-								ChatMessage.upsert { _id: msg._id }, msg
-							else
+							# Should not send message to room if room has not loaded all the current messages
+							if RoomHistoryManager.hasMoreNext(openedRooms[typeName].rid) is false
+
+								# Do not load command messages into channel
+								if msg.t isnt 'command'
+									ChatMessage.upsert { _id: msg._id }, msg
+
 								Meteor.defer ->
 									RoomManager.updateMentionsMarksOfRoom typeName
 
@@ -207,7 +211,7 @@ RocketChat.Notifications.onUser 'message', (msg) ->
 		scrollTop = $(dom).find('.messages-box > .wrapper').scrollTop() - 50
 		totalHeight = $(dom).find('.messages-box > .wrapper > ul').height() + 40
 
-		$('.mention-link-me').each (index, item) ->
+		$('.messages-box .mention-link-me').each (index, item) ->
 			topOffset = $(item).offset().top + scrollTop
 			percent = 100 / totalHeight * topOffset
 			ticksBar.append('<div class="tick" style="top: '+percent+'%;"></div>')
