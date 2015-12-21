@@ -7,7 +7,9 @@ Meteor.startup ->
 				cl: 1
 				u: 1
 				usernames: 1
+				topic: 1
 				muted: 1
+
 		return RocketChat.models.Rooms.findByTypeAndName 'c', identifier, options
 
 	RocketChat.roomTypes.setPublish 'p', (identifier) ->
@@ -18,7 +20,9 @@ Meteor.startup ->
 				cl: 1
 				u: 1
 				usernames: 1
+				topic: 1
 				muted: 1
+
 		user = RocketChat.models.Users.findOneById this.userId, fields: username: 1
 		return RocketChat.models.Rooms.findByTypeAndNameContainigUsername 'p', identifier, user.username, options
 
