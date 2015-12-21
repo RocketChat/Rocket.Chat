@@ -26,7 +26,7 @@ Package.onUse(function(api) {
 	api.use('kadira:flow-router', 'client');
 
 	// DEBUGGER
-	api.addFiles('server/lib/debug.js');
+	api.addFiles('server/lib/debug.js', 'server');
 
 	// COMMON LIB
 	api.addFiles('lib/core.coffee');
