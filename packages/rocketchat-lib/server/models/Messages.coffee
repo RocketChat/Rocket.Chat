@@ -24,8 +24,9 @@ RocketChat.models.Messages = new class extends RocketChat.models._Base
 
 		return @find query, options
 
-	findByMentionAndRoomId: (username, rid, options) ->
+	findVisibleByMentionAndRoomId: (username, rid, options) ->
 		query =
+			_hidden: { $ne: true }
 			"mentions.username": username
 			"rid": rid
 
