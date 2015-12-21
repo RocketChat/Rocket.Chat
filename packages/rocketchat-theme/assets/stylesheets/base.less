@@ -2147,7 +2147,11 @@ a.github-fork {
 	height: 100%;
 	top: 0;
 	left: 0;
-
+	.room-topic {
+		font-size: 14px;
+		opacity: 0.4;
+		margin-left: 10px;
+	}
 	.edit-room-title {
 		margin-left: 4px;
 		font-size: 16px;
@@ -2489,7 +2493,7 @@ a.github-fork {
 }
 
 .message {
-	padding: 18px 20px 4px 70px;
+	padding: 11px 20px 11px 70px;
 	position: relative;
 	line-height: 20px;
 	min-height: 40px;
@@ -2631,7 +2635,7 @@ a.github-fork {
 	.thumb {
 		position: absolute;
 		left: 20px;
-		top: 20px;
+		top: 11px;
 		display: block;
 		width: 40px;
 		height: 40px;
@@ -2762,8 +2766,8 @@ a.github-fork {
 .compact {
 	.message {
 		padding: 5px 20px 5px 70px;
-		.thumb:not(.thumb-small) .avatar {
-			margin-top: -15px;
+		.thumb {
+			top: 5px;
 		}
 	}
 }

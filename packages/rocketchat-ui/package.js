@@ -55,7 +55,6 @@ Package.onUse(function(api) {
 	api.addFiles('lib/sideNav.coffee', 'client');
 	api.addFiles('lib/tapi18n.coffee', 'client');
 	api.addFiles('lib/textarea-autogrow.js', 'client');
-	api.addFiles('lib/trackRoomNameChanged.coffee', 'client');
 
 	// LIB CORDOVA
 	api.addFiles('lib/cordova/facebook-login.coffee', 'client');
