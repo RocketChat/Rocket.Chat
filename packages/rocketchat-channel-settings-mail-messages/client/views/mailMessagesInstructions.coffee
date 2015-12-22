@@ -76,4 +76,4 @@ Template.mailMessagesInstructions.onCreated ->
 
 	@autorun =>
 		if Session.get('channelSettingsMailMessages') isnt Session.get('openedRoom')
-			RocketChat.TabBar.setTemplate('channelSettings')
+			this.reset()

@@ -19,7 +19,7 @@ Package.onUse(function(api) {
 	]);
 
 	api.addFiles([
-		'client/lib/ChannelSettings.coffee',
+		'client/lib/startup.coffee',
 		'client/stylesheets/mail-messages.less',
 		'client/views/channelSettingsMailMessages.html',
 		'client/views/channelSettingsMailMessages.coffee',
