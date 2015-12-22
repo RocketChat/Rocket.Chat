@@ -24,34 +24,50 @@
 					</div>
 					<hr />
 					<h2>{{_ "Agents"}}</h2>
-					<div class="input-line double-col">
-						<input type="text" name="agent" placeholder="{{_ "Enter_a_username"}}">
-						<button name="addAgent" type="button" class="button add-agent">{{_ "Add_agent"}}</button>
-					</div>
-					<div class="list">
-						<table>
-							<thead>
-								<tr>
-									<th width="25%">{{_ "Username"}}</th>
-									<th>{{_ "Delete"}}</th>
-								</tr>
-							</thead>
-							<tbody>
-								{{#if agents.length}}
-									{{#each agents}}
-										<tr class="agent-info" data-id="{{_id}}">
+
+					<fieldset>
+						<legend>{{_ "Available_agents"}}</legend>
+
+						<ul class="department-agents available-agents">
+							{{#each availableAgents}}
+								<li>{{username}}</li>
+							{{/each}}
+						</ul>
+					</fieldset>
+
+					<fieldset>
+						<legend>{{_ "Selected_agents"}}</legend>
+
+						<div class="list">
+							<table>
+								<thead>
+									<tr>
+										<th width="25%">{{_ "Username"}}</th>
+										<th>{{_ "Count"}}</th>
+										<th>{{_ "Order"}}</th>
+										<th>&nbsp;</th>
+									</tr>
+								</thead>
+								<tbody>
+									{{#each selectedAgents}}
+										<tr class="agent-info">
 											<td>{{username}}</td>
-											<td><a href="#remove" class="remove-agent"><i class="icon-trash"></i></a></td>
+											<td><input type="text" class="count-{{_id}}" name="count" value="{{count}}" size="3"></td>
+											<td><input type="text" class="order-{{_id}}" name="order" value="{{order}}" size="3"></td>
+											<td><a href="#remove" class=""><i class="icon-trash remove-agent"></i></a></td>
 										</tr>
 									{{/each}}
-								{{else}}
-									<tr>
-										<td colspan="2">{{_ "There_are_no_agents_added_to_this_department_yet"}}</td>
-									</tr>
-								{{/if}}
-							</tbody>
-						</table>
-					</div>
+									<!-- {{else}}
+										<tr>
+											<td colspan="2">{{_ "There_are_no_agents_added_to_this_department_yet"}}</td>
+										</tr>
+									{{/if}} -->
+								</tbody>
+							</table>
+						</div>
+
+					</fieldset>
+
 				</fieldset>
 				<div class="submit">
 					<button type="button" class="button secondary back"><i class="icon-left-big"></i><span>{{_ "Back"}}</span></button>
