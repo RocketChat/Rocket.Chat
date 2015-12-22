@@ -1,5 +1,12 @@
 Template.messageAttachment.helpers
 	fixCordova: (url) ->
+		slash = url.lastIndexOf('/') + 1
+
+		fileName = url.substr slash
+		filePath = url.substr 0, slash
+
+		url = filePath + encodeURIComponent fileName
+
 		if Meteor.isCordova and url?[0] is '/'
 			return Meteor.absoluteUrl().replace(/\/$/, '') + url
 		return url
