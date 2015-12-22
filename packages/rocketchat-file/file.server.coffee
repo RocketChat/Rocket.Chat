@@ -22,6 +22,7 @@ RocketChatFile =
 
 console.log 'GM: Getting GraphicsMagick version'
 exec 'gm version', Meteor.bindEnvironment (error, stdout, stderr) ->
+	console.log 'GM: GraphicsMagick', arguments
 	if not error? and stdout.indexOf('GraphicsMagick') > -1
 		console.log 'GM: GraphicsMagick installed'
 		RocketChatFile.enable()
@@ -36,6 +37,7 @@ exec 'gm version', Meteor.bindEnvironment (error, stdout, stderr) ->
 
 	console.log 'GM: Getting ImageMagick version'
 	exec 'convert -version', Meteor.bindEnvironment (error, stdout, stderr) ->
+		console.log 'GM: ImageMagick', arguments
 		if not error? and stdout.indexOf('ImageMagick') > -1
 			console.log 'GM: ImageMagick installed'
 			if RocketChatFile.enabled isnt true
