@@ -23,6 +23,7 @@ Template.adminUserEdit.onCreated ->
 		userData = { _id: Template.currentData()._id }
 		userData.name = $("#name", ".edit-form").val()
 		userData.username = $("#username", ".edit-form").val()
+		userData.password = $("#password", ".edit-form").val()
 
 		unless userData._id and userData.name
 			toastr.error TAPi18n.__('The_field_is_required'), TAPi18n.__('Name')
