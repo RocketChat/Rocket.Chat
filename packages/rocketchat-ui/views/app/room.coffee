@@ -411,8 +411,6 @@ Template.room.events
 		RoomHistoryManager.clear(template?.data?._id)
 
 	'click .message': (e, template) ->
-		e.preventDefault()
-		e.stopPropagation()
 		if template.selectable.get()
 			document.selection?.empty() or window.getSelection?().removeAllRanges()
 			data = Blaze.getData(e.currentTarget)
