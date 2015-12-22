@@ -1,36 +1,32 @@
 <template name="channelSettings">
-	<div class="control">
-		<div class="header">
-			<h2>{{_ "Room_Info"}}</h2>
-		</div>
-	</div>
-	<div class="channel-settings scrollable">
-		<form>
-			<fieldset>
-				{{#if notDirect}}
-					<div class="input-line double-col">
+	<div class="content">
+		<div class="list-view channel-settings">
+			<div class="status">
+				<h2>{{_ "Room_Info"}}</h2>
+			</div>
+			<form>
+				<ul class="list clearfix">
+					<li>
 						<label>{{_ "Name"}}</label>
 						<div>
 							{{#if editing 'roomName'}}
 								<input type="text" name="roomName" value="{{roomName}}" class="editing" /> <button type="button" class="button secondary cancel">{{_ "Cancel"}}</button> <button type="button" class="button primary save">{{_ "Save"}}</button>
 							{{else}}
-								{{roomName}}{{#if canEdit}} <i class="octicon octicon-pencil" data-edit="roomName"></i>{{/if}}
+								<span>{{roomName}}{{#if canEdit}} <i class="octicon octicon-pencil" data-edit="roomName"></i>{{/if}}</span>
 							{{/if}}
 						</div>
-					</div>
-				{{/if}}
-				<div class="input-line double-col">
-					<label>{{_ "Topic"}}</label>
-					<div>
-						{{#if editing 'roomTopic'}}
-							<input type="text" name="roomTopic" value="{{roomTopic}}" class="editing" /> <button type="button" class="button secondary cancel">{{_ "Cancel"}}</button> <button type="button" class="button primary save">{{_ "Save"}}</button>
-						{{else}}
-							{{roomTopic}}{{#if canEdit}} <i class="octicon octicon-pencil" data-edit="roomTopic"></i>{{/if}}
-						{{/if}}
-					</div>
-				</div>
-				{{#if notDirect}}
-					<div class="input-line double-col">
+					</li>
+					<li>
+						<label>{{_ "Topic"}}</label>
+						<div>
+							{{#if editing 'roomTopic'}}
+								<input type="text" name="roomTopic" value="{{roomTopic}}" class="editing" /> <button type="button" class="button secondary cancel">{{_ "Cancel"}}</button> <button type="button" class="button primary save">{{_ "Save"}}</button>
+							{{else}}
+								<span>{{roomTopic}}{{#if canEdit}} <i class="octicon octicon-pencil" data-edit="roomTopic"></i>{{/if}}</span>
+							{{/if}}
+						</div>
+					</li>
+					<li>
 						<label>{{_ "Type"}}</label>
 						<div>
 							{{#if editing 'roomType'}}
@@ -39,15 +35,15 @@
 								<button type="button" class="button secondary cancel">{{_ "Cancel"}}</button>
 								<button type="button" class="button primary save">{{_ "Save"}}</button>
 							{{else}}
-								{{roomTypeDescription}}{{#if canEdit}} <i class="octicon octicon-pencil" data-edit="roomType"></i>{{/if}}
+								<span>{{roomTypeDescription}}{{#if canEdit}} <i class="octicon octicon-pencil" data-edit="roomType"></i>{{/if}}</span>
 							{{/if}}
 						</div>
-					</div>
-				{{/if}}
-				{{#each channelSettings}}
-					{{> Template.dynamic template=template data=data}}
-				{{/each}}
-			</fieldset>
-		</form>
+					</li>
+					{{#each channelSettings}}
+						{{> Template.dynamic template=template data=data}}
+					{{/each}}
+				</ul>
+			</form>
+		</div>
 	</div>
 </template>

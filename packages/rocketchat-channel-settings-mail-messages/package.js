@@ -14,17 +14,23 @@ Package.onUse(function(api) {
 		'reactive-var',
 		'less@2.5.0',
 		'rocketchat:lib@0.0.1',
-		'rocketchat:channel-settings'
+		'rocketchat:channel-settings',
+		'momentjs:moment'
 	]);
 
 	api.addFiles([
 		'client/lib/ChannelSettings.coffee',
-		'client/lib/RocketChatChannelSettingsMailMessages.coffee',
+		'client/stylesheets/mail-messages.less',
 		'client/views/channelSettingsMailMessages.html',
 		'client/views/channelSettingsMailMessages.coffee',
 		'client/views/mailMessagesInstructions.html',
 		'client/views/mailMessagesInstructions.coffee'
 	], 'client');
+
+
+	api.addFiles([
+		'server/methods/mailMessages.coffee'
+	], 'server');
 
 	// TAPi18n
 	var _ = Npm.require('underscore');

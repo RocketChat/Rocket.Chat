@@ -116,6 +116,14 @@ RocketChat.models.Messages = new class extends RocketChat.models._Base
 
 		return @find(query, options)?.fetch?()?[0]?.ts
 
+	findByRoomIdAndMessageIds: (rid, messageIds, options) ->
+		query =
+			rid: rid
+			_id:
+				$in: messageIds
+
+		return @find query, options
+
 	cloneAndSaveAsHistoryById: (_id) ->
 		me = RocketChat.models.Users.findOneById Meteor.userId()
 		record = @findOneById _id
@@ -133,7 +141,6 @@ RocketChat.models.Messages = new class extends RocketChat.models._Base
 		delete record._id
 
 		return @insert record
-
 
 	# UPDATE
 	setHiddenById: (_id, hidden=true) ->
