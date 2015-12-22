@@ -1,4 +1,6 @@
 @roomExit = ->
+	RocketChat.callbacks.run 'roomExit'
+
 	BlazeLayout.render 'main', {center: 'none'}
 
 	if currentTracker?
