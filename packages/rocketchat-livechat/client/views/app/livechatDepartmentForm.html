@@ -52,8 +52,8 @@
 									{{#each selectedAgents}}
 										<tr class="agent-info">
 											<td>{{username}}</td>
-											<td><input type="text" class="count-{{_id}}" name="count" value="{{count}}" size="3"></td>
-											<td><input type="text" class="order-{{_id}}" name="order" value="{{order}}" size="3"></td>
+											<td><input type="text" class="count-{{agentId}}" name="count" value="{{count}}" size="3"></td>
+											<td><input type="text" class="order-{{agentId}}" name="order" value="{{order}}" size="3"></td>
 											<td><a href="#remove" class=""><i class="icon-trash remove-agent"></i></a></td>
 										</tr>
 									{{/each}}
