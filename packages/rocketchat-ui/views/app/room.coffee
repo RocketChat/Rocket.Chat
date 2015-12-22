@@ -438,15 +438,28 @@ Template.room.events
 		e.preventDefault()
 		e.stopPropagation()
 		if template.selectable.get()
+			document.selection?.empty() or window.getSelection?().removeAllRanges()
 			data = Blaze.getData(e.currentTarget)
 			_id = data?._arguments?[1]?._id
 
-			if !template.selectablePointer or !e.shiftKey
+			if !template.selectablePointer
 				template.selectablePointer = _id
-				template.selectableShiftPointer = null
 
-			document.selection?.empty() or window.getSelection?().removeAllRanges()
+			if !e.shiftKey
+				template.selectedMessages = template.getSelectedMessages()
+				template.selectedRange = []
+				template.selectablePointer = _id
+
 			template.selectMessages _id
+
+			selectedMessages = $('.messages-box .message.selected').map((i, message) -> message.id)
+			removeClass = _.difference selectedMessages, template.getSelectedMessages()
+			addClass = _.difference template.getSelectedMessages(), selectedMessages
+			for message in removeClass
+				$(".messages-box ##{message}").removeClass('selected')
+			for message in addClass
+				$(".messages-box ##{message}").addClass('selected')
+
 
 Template.room.onCreated ->
 	# this.scrollOnBottom = true
@@ -454,67 +467,45 @@ Template.room.onCreated ->
 	this.showUsersOffline = new ReactiveVar false
 	this.atBottom = true
 	this.unreadCount = new ReactiveVar 0
+
 	this.selectable = new ReactiveVar false
-	this.selectedMessages = new ReactiveVar []
+	this.selectedMessages = []
+	this.selectedRange = []
 	this.selectablePointer = null
-	this.selectableShiftPointer = null
 
 	this.resetSelection = (enabled) =>
 		this.selectable.set(enabled)
 		$('.messages-box .message.selected').removeClass 'selected'
-		this.selectedMessages.set []
+		this.selectedMessages = []
+		this.selectedRange = []
 		this.selectablePointer = null
-		this.selectableShiftPointer = null
 
 	this.selectMessages = (to) =>
-		messages = this.selectedMessages.get()
-		if this.selectablePointer is to
-			this.selectablePointer = this.selectableShiftPointer or this.selectablePointer
-			if messages.indexOf(to) is -1
-				messages.push to
-				$(".messages-box ##{to}").addClass 'selected'
-			else
-				messages = _.without messages, to
-				$(".messages-box ##{to}").removeClass 'selected'
+		if this.selectablePointer is to and this.selectedRange.length > 0
+			this.selectedRange = []
 		else
-			includeFrom = true
-			addItems = messages.indexOf(to) is -1
-			if addItems
-				fromMessage = ChatMessage.findOne this.selectablePointer
-				toMessage = ChatMessage.findOne to
-				# this.selectablePointer = this.selectableShiftPointer or this.selectablePointer
-				this.selectableShiftPointer = to
-			else
-				if this.selectableShiftPointer?
-					fromMessage = ChatMessage.findOne this.selectableShiftPointer
-				else
-					console.log 'set includeFrom = false'
-					includeFrom = false
-					fromMessage = ChatMessage.findOne this.selectablePointer
-				toMessage = ChatMessage.findOne to
-				this.selectableShiftPointer = null
+			message1 = ChatMessage.findOne this.selectablePointer
+			message2 = ChatMessage.findOne to
 
-			if fromMessage.ts <= toMessage.ts
-				if includeFrom
-					query = { rid: fromMessage.rid, ts: { $gte: fromMessage.ts, $lte: toMessage.ts } }
-				else
-					query = { rid: fromMessage.rid, ts: { $gt: fromMessage.ts, $lte: toMessage.ts } }
-			else
-				if includeFrom
-					query = { rid: fromMessage.rid, ts: { $lte: fromMessage.ts, $gte: toMessage.ts } }
-				else
-					query = { rid: fromMessage.rid, ts: { $lt: fromMessage.ts, $gte: toMessage.ts } }
+			minTs = _.min([message1.ts, message2.ts])
+			maxTs = _.max([message1.ts, message2.ts])
 
-			ChatMessage.find(query).forEach (message) ->
-				if addItems
-					messages.push message._id
-					$(".messages-box ##{message._id}").addClass 'selected'
-				else
-					messages = _.without messages, message._id
-					$(".messages-box ##{message._id}").removeClass 'selected'
+			this.selectedRange = _.pluck(ChatMessage.find({ rid: message1.rid, ts: { $gte: minTs, $lte: maxTs } }).fetch(), '_id')
 
-		console.log addItems, this.selectablePointer, this.selectableShiftPointer
-		this.selectedMessages.set messages
+	this.getSelectedMessages = =>
+		messages = this.selectedMessages
+		addMessages = false
+		for message in this.selectedRange
+			if messages.indexOf(message) is -1
+				addMessages = true
+				break
+
+		if addMessages
+			previewMessages = _.compact(_.uniq(this.selectedMessages.concat(this.selectedRange)))
+		else
+			previewMessages = _.compact(_.difference(this.selectedMessages, this.selectedRange))
+
+		return previewMessages
 
 	@autorun =>
 		@subscribe 'fullUserData', Session.get('showUserInfo'), 1
