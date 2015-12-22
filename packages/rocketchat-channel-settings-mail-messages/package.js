@@ -29,6 +29,7 @@ Package.onUse(function(api) {
 
 
 	api.addFiles([
+		'server/lib/startup.coffee',
 		'server/methods/mailMessages.coffee'
 	], 'server');
 
