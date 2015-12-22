@@ -19,27 +19,10 @@ Template.channelSettings.helpers
 		return ChatRoom.findOne(@rid)?.name
 	roomTopic: ->
 		return ChatRoom.findOne(@rid)?.topic
+	archived: ->
+		return ChatRoom.findOne(@rid)?.archived
 
 Template.channelSettings.events
-	# 'click .save': (e, t) ->
-	# 	e.preventDefault()
-
-	# 	settings =
-	# 		roomType: t.$('input[name=roomType]:checked').val()
-	# 		roomName: t.$('input[name=roomName]').val()
-	# 		roomTopic: t.$('input[name=roomTopic]').val()
-
-	# 	if t.validate()
-	# 		Meteor.call 'saveRoomSettings', t.data.rid, settings, (err, results) ->
-	# 			if err
-	# 				if err.error in [ 'duplicate-name', 'name-invalid' ]
-	# 					return toastr.error TAPi18n.__(err.reason, err.details.channelName)
-	# 				if err.error is 'invalid-room-type'
-	# 					return toastr.error TAPi18n.__(err.reason, err.details.roomType)
-	# 				return toastr.error TAPi18n.__(err.reason)
-
-	# 			toastr.success TAPi18n.__ 'Settings_updated'
-
 	'keydown input[type=text]': (e, t) ->
 		if e.keyCode is 13
 			e.preventDefault()
@@ -57,6 +40,20 @@ Template.channelSettings.events
 	'click .save': (e, t) ->
 		e.preventDefault()
 		t.saveSetting()
+
+	'click .archive': (e, t) ->
+		e.preventDefault()
+
+		Meteor.call 'archiveRoom', t.data.rid, true, (err, results) ->
+			return toastr.error err.reason if err
+			toastr.success TAPi18n.__ 'Room_archived'
+
+	'click .unarchive': (e, t) ->
+		e.preventDefault()
+
+		Meteor.call 'unarchiveRoom', t.data.rid, true, (err, results) ->
+			return toastr.error err.reason if err
+			toastr.success TAPi18n.__ 'Room_unarchived'
 
 Template.channelSettings.onCreated ->
 	@editing = new ReactiveVar

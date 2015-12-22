@@ -85,6 +85,9 @@ Template.privateGroupsFlex.events
 					if err.error is 'duplicate-name'
 						instance.error.set({ duplicate: true })
 						return
+					if err.error is 'archived-duplicate-name'
+						instance.error.set({ archivedduplicate: true })
+						return
 					return toastr.error err.reason
 				SideNav.closeFlex()
 				instance.clearForm()
