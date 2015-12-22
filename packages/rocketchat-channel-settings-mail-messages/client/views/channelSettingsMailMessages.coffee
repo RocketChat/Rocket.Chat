@@ -3,8 +3,8 @@ Template.channelSettingsMailMessages.events
 		Session.set 'channelSettingsMailMessages', Session.get('openedRoom')
 		RocketChat.TabBar.setTemplate('mailMessagesInstructions')
 		view = Blaze.getView($('.messages-box')[0])
-		view?.templateInstance?().resetSelection(true)
+		view?.templateInstance?().resetSelection?(true)
 
 Template.channelSettingsMailMessages.onCreated ->
 	view = Blaze.getView($('.messages-box')[0])
-	view?.templateInstance?().resetSelection(false)
+	view?.templateInstance?().resetSelection?(false)
