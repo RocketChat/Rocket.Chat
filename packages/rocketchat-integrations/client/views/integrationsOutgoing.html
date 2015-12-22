@@ -24,7 +24,7 @@
 						<div class="input-line double-col">
 							<label>{{_ "Trigger_Words"}}</label>
 							<div>
-								<input type="text" name="username" value="{{data.triggerWords}}" />
+								<input type="text" name="username" value="{{join data.triggerWords ','}}" />
 								<div class="settings-description">{{_ "When a line starts with one of these words, post to the URL(s) below"}}</div>
 								<div class="settings-description">{{_ "Optional if a channel is chosen"}}</div>
 								<div class="settings-description">{{_ "Separate multiple words with commas"}}</div>
@@ -33,7 +33,7 @@
 						<div class="input-line double-col">
 							<label>{{_ "URLs"}}</label>
 							<div>
-								<textarea name="urls" rows="5">{{data.urls}}</textarea>
+								<textarea name="urls" style="height: 100px;">{{join data.urls "\n"}}</textarea>
 								<div class="settings-description">{{_ "Enter as many URLs as you like, one per line, please"}}</div>
 							</div>
 						</div>
@@ -67,11 +67,11 @@
 							</div>
 						</div>
 						<div class="input-line double-col">
-							<label>{{_ "Example"}}</label>
+							<label>{{_ "Responding"}}</label>
 							<div>
+								<div class="settings-description">{{{_ "If the handler wishes to post a response back into the Slack channel, the following JSON should be returned as the body of the response:"}}}</div>
 								<pre><code class="hljs json json-example">{{{exampleJson}}}</code></pre>
-								<input type="text" name="curl" value="{{curl}}" disabled="disabled" />
-								<div class="settings-description"><a href="#" class="clipboard" data-clipboard-target="[name=curl]">{{_ "COPY_TO_CLIPBOARD"}}</a></div>
+								<div class="settings-description">{{{_ "Empty bodies or bodies with an empty text property will simply be ignored. Non-200 responses will be retried a reasonable number of times. A response will be posted using the alias and avatar specified above. You can override these informations as in the example above."}}}</div>
 							</div>
 						</div>
 						<div class="input-line message-example">
