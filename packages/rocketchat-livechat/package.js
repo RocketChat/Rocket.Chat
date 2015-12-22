@@ -38,6 +38,11 @@ Package.onUse(function(api) {
 
 	api.addFiles('client/stylesheets/livechat.less', 'client');
 
+	// collections
+	api.addFiles('client/collections/AgentUsers.js', 'client');
+	api.addFiles('client/collections/LivechatDepartment.js', 'client');
+	api.addFiles('client/collections/LivechatTrigger.js', 'client');
+
 	// client views
 	api.addFiles('client/views/app/livechatAppearance.html', 'client');
 	api.addFiles('client/views/app/livechatAppearance.js', 'client');
@@ -81,10 +86,6 @@ Package.onUse(function(api) {
 	api.addFiles('server/models/Rooms.js', 'server');
 	api.addFiles('server/models/LivechatDepartment.js', 'server');
 	api.addFiles('server/models/LivechatTrigger.js', 'server');
-
-	// collections
-	api.addFiles('client/lib/LivechatDepartment.js', 'client');
-	api.addFiles('client/lib/LivechatTrigger.js', 'client');
 
 	// publications
 	api.addFiles('server/publications/livechatAgents.js', 'server');
