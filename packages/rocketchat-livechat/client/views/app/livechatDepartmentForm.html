@@ -49,19 +49,20 @@
 									</tr>
 								</thead>
 								<tbody>
-									{{#each selectedAgents}}
-										<tr class="agent-info">
-											<td>{{username}}</td>
-											<td><input type="text" class="count-{{agentId}}" name="count" value="{{count}}" size="3"></td>
-											<td><input type="text" class="order-{{agentId}}" name="order" value="{{order}}" size="3"></td>
-											<td><a href="#remove" class=""><i class="icon-trash remove-agent"></i></a></td>
-										</tr>
-									{{/each}}
-									<!-- {{else}}
+									{{#if selectedAgents}}
+										{{#each selectedAgents}}
+											<tr class="agent-info">
+												<td>{{username}}</td>
+												<td><input type="text" class="count-{{agentId}}" name="count" value="{{count}}" size="3"></td>
+												<td><input type="text" class="order-{{agentId}}" name="order" value="{{order}}" size="3"></td>
+												<td><a href="#remove" class="remove-agent"><i class="icon-trash"></i></a></td>
+											</tr>
+										{{/each}}
+									{{else}}
 										<tr>
-											<td colspan="2">{{_ "There_are_no_agents_added_to_this_department_yet"}}</td>
+											<td colspan="4">{{_ "There_are_no_agents_added_to_this_department_yet"}}</td>
 										</tr>
-									{{/if}} -->
+									{{/if}}
 								</tbody>
 							</table>
 						</div>
