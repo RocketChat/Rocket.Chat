@@ -27,7 +27,6 @@
 								<span>{{roomTopic}}{{#if canEdit}} <i class="octicon octicon-pencil" data-edit="roomTopic"></i>{{/if}}</span>
 							{{/if}}
 						</div>
-<<<<<<< HEAD
 					</li>
 					{{#if notDirect}}
 						<li>
@@ -44,31 +43,21 @@
 							</div>
 						</li>
 					{{/if}}
+					{{#if notDirect}}
+						<li>
+							<label>{{_ "Archive_Unarchive"}}</label>
+							{{#if archived}}
+								<button class="button unarchive"><span>{{_ "Unarchive"}}</span></button>
+							{{else}}
+								<button class="button archive"><span>{{_ "Archive"}}</span></button>
+							{{/if}}
+						</li>
+					{{/if}}
 					{{#each channelSettings}}
 						{{> Template.dynamic template=template data=data}}
 					{{/each}}
 				</ul>
 			</form>
 		</div>
-=======
-					</div>
-				{{/if}}
-			</fieldset>
-			<div class="submit">
-				<button class="button save"><i class="icon-send"></i><span>{{_ "Save_changes"}}</span></button>
-			</div>
-		</form>
-		<form>
-			{{#if notDirect}}
-				<div class="submit">
-					{{#if archived}}
-					<button class="button unarchive"><span>{{_ "Unarchive"}}</span></button>
-					{{else}}
-						<button class="button archive"><span>{{_ "Archive"}}</span></button>
-					{{/if}}
-				</div>
-			{{/if}}
-		</form>
->>>>>>> f838e9efb88902148d9cf0400d18802de24abc4c
 	</div>
 </template>
