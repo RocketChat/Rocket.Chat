@@ -41,6 +41,7 @@ rocketchat:lib
 rocketchat:authorization
 rocketchat:autolinker
 rocketchat:channel-settings
+rocketchat:channel-settings-mail-messages
 rocketchat:colors
 rocketchat:custom-oauth
 rocketchat:emojione
