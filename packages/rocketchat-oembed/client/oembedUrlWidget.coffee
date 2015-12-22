@@ -28,6 +28,13 @@ Template.oembedUrlWidget.helpers
 
 		decodedOgImage = @meta.ogImage?.replace?(/&amp;/g, '&')
 
+		slash = decodedOgImage.lastIndexOf('/') + 1
+
+		fileName = decodedOgImage.substr slash
+		filePath = decodedOgImage.substr 0, slash
+
+		decodedOgImage = filePath + encodeURIComponent fileName
+
 		return decodedOgImage or this.meta.twitterImage
 
 	show: ->
