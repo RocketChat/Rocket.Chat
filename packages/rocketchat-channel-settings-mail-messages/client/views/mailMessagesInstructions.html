@@ -5,6 +5,34 @@
 				<h2>{{_ "Mail_Messages"}}</h2>
 			</div>
 			<p>{{_ "Mail_Messages_Instructions"}}</p>
+			<form>
+				<fieldset>
+					<div class="input-line double-col">
+						<label>{{_ "From"}}</label>
+						<div>
+							<input type="text" name="from" value="" />
+						</div>
+					</div>
+					<div class="input-line double-col">
+						<label>{{_ "To"}}</label>
+						<div>
+							<input type="text" name="to" value="" />
+						</div>
+					</div>
+					<div class="input-line double-col">
+						<label>{{_ "Subject"}}</label>
+						<div>
+							<input type="text" name="subject" value="" />
+						</div>
+					</div>
+					<div class="input-line double-col">
+						<label>{{_ "Body"}}</label>
+						<div>
+							{{body}}
+						</div>
+					</div>
+				</fieldset>
+			</form>
 			<p style="margin-top: 30px">
 				<button type="button" class="button secondary cancel">{{_ "Cancel"}}</button>
 				<button type="button" class="button primary send">{{_ "Send"}}</button>
