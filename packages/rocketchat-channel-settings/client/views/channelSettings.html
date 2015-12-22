@@ -43,6 +43,16 @@
 							</div>
 						</li>
 					{{/if}}
+					{{#if notDirect}}
+						<li>
+							<label>{{_ "Archive_Unarchive"}}</label>
+							{{#if archived}}
+								<button class="button unarchive"><span>{{_ "Unarchive"}}</span></button>
+							{{else}}
+								<button class="button archive"><span>{{_ "Archive"}}</span></button>
+							{{/if}}
+						</li>
+					{{/if}}
 					{{#each channelSettings}}
 						{{> Template.dynamic template=template data=data}}
 					{{/each}}

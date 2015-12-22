@@ -1,7 +1,7 @@
 Meteor.methods
-	unArchiveRoom: (rid) ->
+	unarchiveRoom: (rid) ->
 		if not Meteor.userId()
-			throw new Meteor.Error 'invalid-user', '[methods] unArchiveRoom -> Invalid user'
+			throw new Meteor.Error 'invalid-user', '[methods] unarchiveRoom -> Invalid user'
 
 		room = RocketChat.models.Rooms.findOneById rid
 
