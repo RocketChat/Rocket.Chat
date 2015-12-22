@@ -23,11 +23,10 @@ Meteor.methods
 			localeFn = Meteor.call 'loadLocale', data.language
 			if localeFn
 				Function(localeFn)()
-				moment.locale(data.language)
 
 		html = ""
 		RocketChat.models.Messages.findByRoomIdAndMessageIds(data.rid, data.messages, { sort: { ts: 1 } }).forEach (message) ->
-			dateTime = moment(message.ts).format('L LT')
+			dateTime = moment(message.ts).locale(data.language).format('L LT')
 			html += "<p style='margin-bottom: 5px'><b>#{message.u.username}</b> <span style='color: #aaa; font-size: 12px'>#{dateTime}</span><br />" + RocketChat.Message.parse(message, data.language) + "</p>"
 
 		Meteor.defer ->
