@@ -1,3 +1,7 @@
+Template.mailMessagesInstructions.helpers
+	body: ->
+		return ''
+
 Template.mailMessagesInstructions.events
 	'click .cancel': (e, t) ->
 		RocketChat.TabBar.setTemplate('channelSettings')
