@@ -87,6 +87,9 @@ Package.onUse(function(api) {
 	api.addFiles('server/models/LivechatDepartment.js', 'server');
 	api.addFiles('server/models/LivechatTrigger.js', 'server');
 
+	// server lib
+	api.addFiles('server/lib/getNextAgent.js', 'server');
+
 	// publications
 	api.addFiles('server/publications/livechatAgents.js', 'server');
 	api.addFiles('server/publications/livechatManagers.js', 'server');
