@@ -47,7 +47,7 @@ exec 'gm version', Meteor.bindEnvironment (error, stdout, stderr) ->
 				enabled: true
 				version: stdout
 		else
-			console.log 'GM: ImageMagick installed'
+			console.log 'GM: ImageMagick not installed'
 			if RocketChatFile.enabled isnt true
 				RocketChatFile.disable()
 
