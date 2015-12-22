@@ -19,7 +19,6 @@ class LivechatDepartment extends RocketChat.models._Base {
 		return this.find(query, options);
 	}
 
-	// UPSERT
 	createOrUpdateDepartment(_id, enabled, name, description, agents, extraData) {
 		var agents = [].concat(agents);
 
@@ -27,14 +26,8 @@ class LivechatDepartment extends RocketChat.models._Base {
 			enabled: enabled,
 			name: name,
 			description: description,
-			numAgents: agents.count()
+			numAgents: agents.length
 		};
-
-		// if (agents.length > 0) {
-		// 	for (agent of agents) {
-		// 		record.agents.push({ _id: agent._id, username: agent.username });
-		// 	}
-		// }
 
 		_.extend(record, extraData);
 
@@ -44,13 +37,24 @@ class LivechatDepartment extends RocketChat.models._Base {
 			_id = this.insert(record);
 		}
 
-		agents.forEach((agent) => {
-			agent.departmentId = _id;
+		var savedAgents = _.pluck(RocketChat.models.LivechatDepartmentAgents.findByDepartmentId(_id).fetch(), 'agentId');
+		var agentsToSave = _.pluck(agents, 'agentId');
 
-			RocketChat.models.LivechatDepartmentAgents.saveAgent(agent);
+		// remove other agents
+		_.difference(savedAgents, agentsToSave).forEach((agentId) => {
+			RocketChat.models.LivechatDepartmentAgents.removeByDepartmentIdAndAgentId(_id, agentId);
 		});
 
-		// this.upsert({ _id: _id }, { $set: record });
+		agents.forEach((agent) => {
+			RocketChat.models.LivechatDepartmentAgents.saveAgent({
+				agentId: agent.agentId,
+				departmentId: _id,
+				username: agent.username,
+				count: agent.count,
+				order: agent.order
+			});
+		});
+
 		return _.extend(record, { _id: _id });
 	}
 

@@ -48,12 +48,13 @@ Template.livechatDepartmentForm.events({
 		var departmentAgents = [];
 
 		instance.selectedAgents.get().forEach((agent) => {
-			agent.count = instance.$('.count-' + agent._id).val();
-			agent.order = instance.$('.order-' + agent._id).val();
+			agent.count = instance.$('.count-' + agent.agentId).val();
+			agent.order = instance.$('.order-' + agent.agentId).val();
 
 			departmentAgents.push(agent);
 		});
 
+		console.log('save - departmentAgents ->',departmentAgents);
 
 		Meteor.call('livechat:saveDepartment', _id, departmentData, departmentAgents, function(error, result) {
 			$btn.html(oldBtnValue);
@@ -111,7 +112,10 @@ Template.livechatDepartmentForm.events({
 
 	'click .available-agents li' (e, instance) {
 		var selectedAgents = instance.selectedAgents.get();
-		selectedAgents.push(this);
+		var agent = _.clone(this);
+		agent.agentId = this._id;
+		delete agent._id;
+		selectedAgents.push(agent);
 		instance.selectedAgents.set(selectedAgents);
 	}
 });
@@ -129,7 +133,13 @@ Template.livechatDepartmentForm.onCreated(function() {
 			if (department) {
 				this.department.set(department);
 
-				this.subscribe('livechat:departmentAgents', department._id);
+				this.subscribe('livechat:departmentAgents', department._id, () => {
+					var newSelectedAgents = [];
+					LivechatDepartmentAgents.find({ departmentId: department._id }).forEach((agent) => {
+						newSelectedAgents.push(agent);
+					});
+					this.selectedAgents.set(newSelectedAgents);
+				});
 			}
 		}
 	});
