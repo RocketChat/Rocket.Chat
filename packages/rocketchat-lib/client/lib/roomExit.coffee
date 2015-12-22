@@ -10,8 +10,9 @@
 			if child?
 				if child.classList.contains('room-container')
 					wrapper = child.querySelector('.messages-box > .wrapper')
-					if wrapper.scrollTop >= wrapper.scrollHeight - wrapper.clientHeight
-						child.oldScrollTop = 10e10
-					else
-						child.oldScrollTop = wrapper.scrollTop
+					if wrapper
+						if wrapper.scrollTop >= wrapper.scrollHeight - wrapper.clientHeight
+							child.oldScrollTop = 10e10
+						else
+							child.oldScrollTop = wrapper.scrollTop
 				mainNode.removeChild child
