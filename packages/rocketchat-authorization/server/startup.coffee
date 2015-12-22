@@ -27,6 +27,9 @@ Meteor.startup ->
 		{ _id: 'edit-other-user-info',
 		roles : ['admin']}
 
+		{ _id: 'edit-other-user-password',
+		roles : ['admin']}
+
 		{ _id: 'assign-admin-role',
 		roles : ['admin']}
 
