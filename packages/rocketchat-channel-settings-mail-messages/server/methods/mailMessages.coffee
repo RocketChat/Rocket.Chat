@@ -19,7 +19,11 @@ Meteor.methods
 		name = user.name
 		email = user.emails?[0]?.address
 
-		moment.locale(data.language)
+		if data.language isnt 'en'
+			localeFn = Meteor.call 'loadLocale', data.language
+			if localeFn
+				Function(localeFn)()
+				moment.locale(data.language)
 
 		html = ""
 		RocketChat.models.Messages.findByRoomIdAndMessageIds(data.rid, data.messages, { sort: { ts: 1 } }).forEach (message) ->
