@@ -45,6 +45,7 @@ Package.onUse(function(api) {
   api.addFiles('server/methods/addIntegration.coffee', 'server');
   api.addFiles('server/methods/updateIntegration.coffee', 'server');
   api.addFiles('server/methods/deleteIntegration.coffee', 'server');
+  api.addFiles('server/methods/outgoing/addOutgoingIntegration.coffee', 'server');
 
   // api
   api.addFiles('server/api/api.coffee', 'server');

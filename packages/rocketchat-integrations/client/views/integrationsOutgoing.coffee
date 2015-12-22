@@ -1,9 +1,19 @@
 Template.integrationsOutgoing.onCreated ->
 	@record = new ReactiveVar
-		username: 'rocket.cat'
+		name: 'name'
+		alias: 'alias'
+		channel: '#general'
+		triggerWords: ['send', 'sent']
+		urls: ['https://www.google.com', 'https://www.google.com']
 
 
 Template.integrationsOutgoing.helpers
+
+	join: (arr, sep) ->
+		if not arr?.join?
+			return arr
+
+		return arr.join sep
 
 	hasPermission: ->
 		return RocketChat.authz.hasAllPermission 'manage-integrations'
@@ -14,9 +24,8 @@ Template.integrationsOutgoing.helpers
 		if params?.id?
 			data = ChatIntegrations.findOne({_id: params.id})
 			if data?
-				data.url = Meteor.absoluteUrl("hooks/#{encodeURIComponent(data._id)}/#{encodeURIComponent(data.userId)}/#{encodeURIComponent(data.token)}")
-				data.completeToken = "#{encodeURIComponent(data._id)}/#{encodeURIComponent(data.userId)}/#{encodeURIComponent(data.token)}"
-				Template.instance().record.set data
+				if not data.token?
+					data.token = Random.id(24)
 				return data
 
 		return Template.instance().record.curValue
@@ -28,7 +37,7 @@ Template.integrationsOutgoing.helpers
 			alias: record.alias
 			emoji: record.emoji
 			avatar: record.avatar
-			msg: 'Example message'
+			msg: 'Response text'
 			bot:
 				i: Random.id()
 			groupable: false
@@ -50,7 +59,7 @@ Template.integrationsOutgoing.helpers
 			username: record.alias
 			icon_emoji: record.emoji
 			icon_url: record.avatar
-			text: 'Example message'
+			text: 'Response text'
 			attachments: [{
 				title: "Rocket.Chat"
 				title_link: "https://rocket.chat"
@@ -64,25 +73,6 @@ Template.integrationsOutgoing.helpers
 
 		return hljs.highlight('json', JSON.stringify(data, null, 2)).value
 
-	curl: ->
-		record = Template.instance().record.get()
-		data =
-			username: record.alias
-			icon_emoji: record.emoji
-			icon_url: record.avatar
-			text: 'Example message'
-			attachments: [{
-				title: "Rocket.Chat"
-				title_link: "https://rocket.chat"
-				text: "Rocket.Chat, the best open source chat"
-				image_url: "https://rocket.chat/images/mockup.png"
-				color: "#764FA5"
-			}]
-
-		for key, value of data
-			delete data[key] if value in [null, ""]
-
-		return "curl -X POST --data-urlencode 'payload=#{JSON.stringify(data)}' #{record.url}"
 
 Template.integrationsOutgoing.events
 	"blur input": (e, t) ->
@@ -92,7 +82,10 @@ Template.integrationsOutgoing.events
 			emoji: $('[name=emoji]').val().trim()
 			avatar: $('[name=avatar]').val().trim()
 			channel: $('[name=channel]').val().trim()
-			username: $('[name=username]').val().trim()
+			triggerWords: $('[name=triggerWords]').val().trim()
+			urls: $('[name=urls]').val().trim()
+			token: $('[name=token]').val().trim()
+
 
 	"click .submit > .delete": ->
 		params = Template.instance().data.params()
@@ -124,13 +117,20 @@ Template.integrationsOutgoing.events
 		emoji = $('[name=emoji]').val().trim()
 		avatar = $('[name=avatar]').val().trim()
 		channel = $('[name=channel]').val().trim()
-		username = $('[name=username]').val().trim()
+		triggerWords = $('[name=triggerWords]').val().trim()
+		urls = $('[name=urls]').val().trim()
+		token = $('[name=token]').val().trim()
 
-		if channel is ''
-			return toastr.error TAPi18n.__("The_channel_name_is_required")
+		if triggerWords is ''
+			return toastr.error TAPi18n.__("You should inform at least one trigger word if you do not inform a channel")
 
-		if username is ''
-			return toastr.error TAPi18n.__("The_username_is_required")
+		urlsArr = urls.split('\n')
+		urls = []
+		for url in urlsArr
+			urls.push url.trim() if url.trim() isnt ''
+
+		if urls.length is 0
+			return toastr.error TAPi18n.__("You_should_inform_one_url_at_least")
 
 		integration =
 			channel: channel
@@ -138,21 +138,23 @@ Template.integrationsOutgoing.events
 			emoji: emoji if emoji isnt ''
 			avatar: avatar if avatar isnt ''
 			name: name if name isnt ''
+			triggerWords: triggerWords if triggerWords isnt ''
+			urls: urls if urls isnt ''
+			token: token if token isnt ''
 
 		params = Template.instance().data.params?()
 		if params?.id?
-			Meteor.call "updateIntegration", params.id, integration, (err, data) ->
+			Meteor.call "updateOutgoingIntegration", params.id, integration, (err, data) ->
 				if err?
 					return toastr.error TAPi18n.__(err.error)
 
 				toastr.success TAPi18n.__("Integration_updated")
 		else
-			integration.type = 'webhook-incoming'
-			integration.username = username
+			integration.type = 'webhook-outgoing'
 
-			Meteor.call "addIntegration", integration, (err, data) ->
+			Meteor.call "addOutgoingIntegration", integration, (err, data) ->
 				if err?
 					return toastr.error TAPi18n.__(err.error)
 
 				toastr.success TAPi18n.__("Integration_added")
-				FlowRouter.go "admin-integrations-incoming", {id: data._id}
+				FlowRouter.go "admin-integrations-outgoing", {id: data._id}
