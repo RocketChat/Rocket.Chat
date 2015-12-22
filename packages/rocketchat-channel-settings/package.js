@@ -28,7 +28,9 @@ Package.onUse(function(api) {
 	], 'client');
 
 	api.addFiles([
-		'server/functions/changeRoomType.coffee',
+		'server/functions/saveRoomType.coffee',
+		'server/functions/saveRoomTopic.coffee',
+		'server/functions/saveRoomName.coffee',
 		'server/methods/saveRoomSettings.coffee',
 		'server/models/Messages.coffee'
 	], 'server');

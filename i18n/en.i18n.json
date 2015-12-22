@@ -200,6 +200,7 @@
   "Invalid_name" : "The name must not be empty",
   "Invalid_pass" : "The password must not be empty",
   "Invalid_room_name" : "<strong>%s</strong> is not a valid room name,<br/> use only letters, numbers and dashes",
+  "Invalid_room_type" : "<strong>%s</strong> is not a valid room type.",
   "Invalid_Secret_URL" : "Invalid Secret URL",
   "Invalid_secret_URL_message" : "The URL provided is invalid.",
   "invisible" : "invisible",
