@@ -9,6 +9,9 @@ Meteor.methods
 		unless room
 			throw new Meteor.Error('invalid-room', "[methods] mailMessages -> Invalid room")
 
+		unless RocketChat.authz.hasPermission(Meteor.userId(), 'mail-messages')
+			throw new Meteor.Error 'not-authorized'
+
 		rfcMailPatternWithName = /^(?:.*<)?([a-zA-Z0-9.!#$%&'*+\/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*)(?:>?)$/
 		emails = data.to.trim().split(',')
 		for email in emails
