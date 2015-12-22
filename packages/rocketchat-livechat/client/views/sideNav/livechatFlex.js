@@ -1,7 +1,7 @@
 Template.livechatFlex.helpers({
-	active (route) {
+	active (...routes) {
 		FlowRouter.watchPathChange();
-		if (FlowRouter.current().route.name === route) {
+		if (routes.indexOf(FlowRouter.current().route.name) !== -1) {
 			return 'active';
 		}
 	}
