@@ -201,6 +201,8 @@ Template.room.helpers
 	compactView: ->
 		return 'compact' if Meteor.user()?.settings?.preferences?.compactView
 
+	selectable: ->
+		return Template.instance().selectable.get()
 
 Template.room.events
 	"click, touchend": (e, t) ->
@@ -408,6 +410,33 @@ Template.room.events
 		template.atBottom = true
 		RoomHistoryManager.clear(template?.data?._id)
 
+	'click .message': (e, template) ->
+		e.preventDefault()
+		e.stopPropagation()
+		if template.selectable.get()
+			document.selection?.empty() or window.getSelection?().removeAllRanges()
+			data = Blaze.getData(e.currentTarget)
+			_id = data?._arguments?[1]?._id
+
+			if !template.selectablePointer
+				template.selectablePointer = _id
+
+			if !e.shiftKey
+				template.selectedMessages = template.getSelectedMessages()
+				template.selectedRange = []
+				template.selectablePointer = _id
+
+			template.selectMessages _id
+
+			selectedMessages = $('.messages-box .message.selected').map((i, message) -> message.id)
+			removeClass = _.difference selectedMessages, template.getSelectedMessages()
+			addClass = _.difference template.getSelectedMessages(), selectedMessages
+			for message in removeClass
+				$(".messages-box ##{message}").removeClass('selected')
+			for message in addClass
+				$(".messages-box ##{message}").addClass('selected')
+
+
 Template.room.onCreated ->
 	# this.scrollOnBottom = true
 	# this.typing = new msgTyping this.data._id
@@ -415,10 +444,47 @@ Template.room.onCreated ->
 	this.atBottom = true
 	this.unreadCount = new ReactiveVar 0
 
-	self = @
+	this.selectable = new ReactiveVar false
+	this.selectedMessages = []
+	this.selectedRange = []
+	this.selectablePointer = null
 
-	@autorun ->
-		self.subscribe 'fullUserData', Session.get('showUserInfo'), 1
+	this.resetSelection = (enabled) =>
+		this.selectable.set(enabled)
+		$('.messages-box .message.selected').removeClass 'selected'
+		this.selectedMessages = []
+		this.selectedRange = []
+		this.selectablePointer = null
+
+	this.selectMessages = (to) =>
+		if this.selectablePointer is to and this.selectedRange.length > 0
+			this.selectedRange = []
+		else
+			message1 = ChatMessage.findOne this.selectablePointer
+			message2 = ChatMessage.findOne to
+
+			minTs = _.min([message1.ts, message2.ts])
+			maxTs = _.max([message1.ts, message2.ts])
+
+			this.selectedRange = _.pluck(ChatMessage.find({ rid: message1.rid, ts: { $gte: minTs, $lte: maxTs } }).fetch(), '_id')
+
+	this.getSelectedMessages = =>
+		messages = this.selectedMessages
+		addMessages = false
+		for message in this.selectedRange
+			if messages.indexOf(message) is -1
+				addMessages = true
+				break
+
+		if addMessages
+			previewMessages = _.compact(_.uniq(this.selectedMessages.concat(this.selectedRange)))
+		else
+			previewMessages = _.compact(_.difference(this.selectedMessages, this.selectedRange))
+
+		return previewMessages
+
+	@autorun =>
+		@subscribe 'fullUserData', Session.get('showUserInfo'), 1
 
 
 Template.room.onDestroyed ->

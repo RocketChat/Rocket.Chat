@@ -7,6 +7,8 @@ Template.channelSettings.helpers
 		return ChatRoom.findOne(@rid)?.t isnt 'd'
 	roomType: ->
 		return ChatRoom.findOne(@rid)?.t
+	channelSettings: ->
+		return RocketChat.ChannelSettings.getOptions()
 	roomTypeDescription: ->
 		roomType = ChatRoom.findOne(@rid)?.t
 		if roomType is 'c'
