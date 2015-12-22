@@ -24,7 +24,7 @@
 						<div class="input-line double-col">
 							<label>{{_ "Trigger_Words"}}</label>
 							<div>
-								<input type="text" name="username" value="{{join data.triggerWords ','}}" />
+								<input type="text" name="triggerWords" value="{{join data.triggerWords ','}}" />
 								<div class="settings-description">{{_ "When a line starts with one of these words, post to the URL(s) below"}}</div>
 								<div class="settings-description">{{_ "Optional if a channel is chosen"}}</div>
 								<div class="settings-description">{{_ "Separate multiple words with commas"}}</div>
@@ -35,6 +35,14 @@
 							<div>
 								<textarea name="urls" style="height: 100px;">{{join data.urls "\n"}}</textarea>
 								<div class="settings-description">{{_ "Enter as many URLs as you like, one per line, please"}}</div>
+							</div>
+						</div>
+						<div class="input-line double-col">
+							<label>{{_ "Post_as"}}</label>
+							<div>
+								<input type="text" name="username" value="{{data.username}}" />
+								<div class="settings-description">{{_ "Choose_the_username_that_this_integration_will_post_as"}}</div>
+								<div class="settings-description">{{_ "Should_exists_a_user_with_this_username"}}</div>
 							</div>
 						</div>
 						<div class="input-line double-col">
@@ -63,7 +71,7 @@
 						<div class="input-line double-col">
 							<label>Token</label>
 							<div>
-								<input type="text" name="completeToken" value="{{data.completeToken}}" />
+								<input type="text" name="token" value="{{data.token}}" />
 							</div>
 						</div>
 						<div class="input-line double-col">
