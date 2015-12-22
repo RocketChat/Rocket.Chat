@@ -1,7 +1,11 @@
 {
+	"Body" : "Body",
 	"Cancel" : "Cancel",
 	"Choose_messages" : "Choose messages",
+	"From" : "From",
 	"Mail_Messages" : "Mail Messages",
 	"Mail_Messages_Instructions" : "Choose which messages you want to send via e-mail by clicking the messages",
-	"Send" : "Send"
+	"Send" : "Send",
+	"Subject" : "Subject",
+	"To" : "To"
 }
