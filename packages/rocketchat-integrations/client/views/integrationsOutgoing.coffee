@@ -1,10 +1,7 @@
 Template.integrationsOutgoing.onCreated ->
 	@record = new ReactiveVar
-		name: 'name'
-		alias: 'alias'
-		channel: '#general'
-		triggerWords: ['send', 'sent']
-		urls: ['https://www.google.com', 'https://www.google.com']
+		username: 'rocket.cat'
+		token: Random.id(24)
 
 
 Template.integrationsOutgoing.helpers
@@ -82,6 +79,7 @@ Template.integrationsOutgoing.events
 			emoji: $('[name=emoji]').val().trim()
 			avatar: $('[name=avatar]').val().trim()
 			channel: $('[name=channel]').val().trim()
+			username: $('[name=username]').val().trim()
 			triggerWords: $('[name=triggerWords]').val().trim()
 			urls: $('[name=urls]').val().trim()
 			token: $('[name=token]').val().trim()
@@ -101,7 +99,7 @@ Template.integrationsOutgoing.events
 			closeOnConfirm: false
 			html: false
 		, ->
-			Meteor.call "deleteIntegration", params.id, (err, data) ->
+			Meteor.call "deleteOutgoingIntegration", params.id, (err, data) ->
 				swal
 					title: t('Deleted')
 					text: t('Your_entry_has_been_deleted')
@@ -117,23 +115,37 @@ Template.integrationsOutgoing.events
 		emoji = $('[name=emoji]').val().trim()
 		avatar = $('[name=avatar]').val().trim()
 		channel = $('[name=channel]').val().trim()
+		username = $('[name=username]').val().trim()
 		triggerWords = $('[name=triggerWords]').val().trim()
 		urls = $('[name=urls]').val().trim()
 		token = $('[name=token]').val().trim()
 
-		if triggerWords is ''
+		if username is ''
+			return toastr.error TAPi18n.__("The_username_is_required")
+
+		triggerWords = triggerWords.split(',')
+		for triggerWord, index in triggerWords
+			triggerWords[index] = triggerWord.trim()
+			delete triggerWords[index] if triggerWord.trim() is ''
+
+		triggerWords = _.without triggerWords, [undefined]
+
+		if triggerWords.length is 0 and channel.trim() is ''
 			return toastr.error TAPi18n.__("You should inform at least one trigger word if you do not inform a channel")
 
-		urlsArr = urls.split('\n')
-		urls = []
-		for url in urlsArr
-			urls.push url.trim() if url.trim() isnt ''
+		urls = urls.split('\n')
+		for url, index in urls
+			urls[index] = url.trim()
+			delete urls[index] if url.trim() is ''
+
+		urls = _.without urls, [undefined]
 
 		if urls.length is 0
 			return toastr.error TAPi18n.__("You_should_inform_one_url_at_least")
 
 		integration =
 			channel: channel
+			username: username
 			alias: alias if alias isnt ''
 			emoji: emoji if emoji isnt ''
 			avatar: avatar if avatar isnt ''
