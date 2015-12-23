@@ -53,6 +53,7 @@ Meteor.methods
 					hashedToken: hashStampedToken.hashedToken
 					integration: true
 
+		integration.type = 'webhook-incoming'
 		integration.token = hashStampedToken.hashedToken
 		integration.userId = user._id
 		integration._createdAt = new Date

@@ -162,8 +162,6 @@ Template.integrationsOutgoing.events
 
 				toastr.success TAPi18n.__("Integration_updated")
 		else
-			integration.type = 'webhook-outgoing'
-
 			Meteor.call "addOutgoingIntegration", integration, (err, data) ->
 				if err?
 					return toastr.error TAPi18n.__(err.error)

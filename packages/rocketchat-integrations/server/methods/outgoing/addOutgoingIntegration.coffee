@@ -63,6 +63,7 @@ Meteor.methods
 		if not user?
 			throw new Meteor.Error 'user_does_not_exists', "[methods] addOutgoingIntegration -> The username does not exists"
 
+		integration.type = 'webhook-outgoing'
 		integration.userId = user._id
 		integration._createdAt = new Date
 		integration._createdBy = RocketChat.models.Users.findOne @userId, {fields: {username: 1}}
