@@ -13,20 +13,19 @@
 							</div>
 						</div>
 						<div class="input-line double-col">
-							<label>{{_ "Channel"}}</label>
+							<label>{{_ "Channel"}} ({{_ "optional"}})</label>
 							<div>
 								<input type="text" name="channel" value="{{data.channel}}" placeholder="{{_ 'User_or_channel_name'}}" />
 								<div class="settings-description">{{_ "Optional channel to listen on"}}</div>
 								<div class="settings-description">{{{_ "Start_with_s_for_user_or_s_for_channel_Eg_s_or_s" "@" "#" "@john" "#general"}}}</div>
-								<div class="settings-description">{{{_ "Leave empty to listen <strong>any</strong> channel"}}}</div>
+								<div class="settings-description">{{{_ "Leave empty to listen <strong>any public channel</strong>"}}}</div>
 							</div>
 						</div>
 						<div class="input-line double-col">
-							<label>{{_ "Trigger_Words"}}</label>
+							<label>{{_ "Trigger_Words"}} ({{_ "optional"}})</label>
 							<div>
 								<input type="text" name="triggerWords" value="{{join data.triggerWords ','}}" />
 								<div class="settings-description">{{_ "When a line starts with one of these words, post to the URL(s) below"}}</div>
-								<div class="settings-description">{{_ "Optional if a channel is chosen"}}</div>
 								<div class="settings-description">{{_ "Separate multiple words with commas"}}</div>
 							</div>
 						</div>
@@ -69,7 +68,7 @@
 							</div>
 						</div>
 						<div class="input-line double-col">
-							<label>Token</label>
+							<label>Token ({{_ "optional"}})</label>
 							<div>
 								<input type="text" name="token" value="{{data.token}}" />
 							</div>

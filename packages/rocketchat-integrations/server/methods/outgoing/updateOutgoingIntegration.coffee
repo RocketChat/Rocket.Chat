@@ -32,9 +32,6 @@ Meteor.methods
 
 			integration.triggerWords = _.without integration.triggerWords, [undefined]
 
-			if integration.triggerWords.length is 0 and not integration.channel?
-				throw new Meteor.Error 'invalid_triggerWords', '[methods] updateOutgoingIntegration -> triggerWords is required if channel is empty'
-
 		if not RocketChat.models.Integrations.findOne(integrationId)?
 			throw new Meteor.Error 'invalid_integration', '[methods] updateOutgoingIntegration -> integration not found'
 
