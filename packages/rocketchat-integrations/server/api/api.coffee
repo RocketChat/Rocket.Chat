@@ -60,7 +60,7 @@ Api.addRoute ':integrationId/:userId/:token', authRequired: true,
 
 				if not room
 					Meteor.runAsUser user._id, ->
-						Meteor.call 'createDirectMessage', roomUser._id
+						Meteor.call 'createDirectMessage', roomUser.username
 						room = RocketChat.models.Rooms.findOne(rid)
 
 			else
