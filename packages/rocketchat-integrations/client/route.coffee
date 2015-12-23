@@ -24,3 +24,13 @@ FlowRouter.route '/admin/integrations/incoming/:id?',
 			pageTitle: t('Integration_Incoming_WebHook')
 			pageTemplate: 'integrationsIncoming'
 			params: params
+
+
+FlowRouter.route '/admin/integrations/outgoing/:id?',
+	name: 'admin-integrations-outgoing'
+	action: (params) ->
+		BlazeLayout.render 'main',
+			center: 'pageSettingsContainer'
+			pageTitle: t('Integration_Outgoing_WebHook')
+			pageTemplate: 'integrationsOutgoing'
+			params: params
