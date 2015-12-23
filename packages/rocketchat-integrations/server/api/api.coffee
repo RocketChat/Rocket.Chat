@@ -38,8 +38,9 @@ Api.addRoute ':integrationId/:userId/:token', authRequired: true,
 							error: 'invalid-channel'
 
 				rid = room._id
-				Meteor.runAsUser user._id, ->
-					Meteor.call 'joinRoom', room._id
+				if room.t is 'c'
+					Meteor.runAsUser user._id, ->
+						Meteor.call 'joinRoom', room._id
 
 			when '@'
 				roomUser = RocketChat.models.Users.findOne
