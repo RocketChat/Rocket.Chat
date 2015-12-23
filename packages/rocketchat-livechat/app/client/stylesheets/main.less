@@ -1,4 +1,3 @@
-@import url(//fonts.googleapis.com/css?family=Roboto:300,400,500,600,700&subset=latin,cyrillic-ext,greek-ext,greek,vietnamese,latin-ext,cyrillic);
 @import "_variables.less";
 @import "utils/_lesshat.import.less";
 @import "utils/_reset.import.less";
@@ -13,11 +12,9 @@ html, body {
 	height: 100%;
 }
 body {
-	padding: 0;
 	margin: 0;
-	font-size: 10pt;
-	font-family: "Roboto", "HelveticaNeue", sans-serif;
-	// font-size: 14px;
+	font-family: 'Helvetica Neue', Helvetica, Roboto, Arial, sans-serif, "Meiryo UI";
+	font-size: 0.8rem;
 	color: @primary-font-color;
 	height: 100%;
 	width: 100%;
@@ -36,6 +33,11 @@ textarea {
 	font-family: inherit;
 	font-size: inherit;
 	line-height: inherit;
+	padding: 5px;
+	margin: 5px;
+	border: 1px solid #E7E7E7;
+	border-radius: 5px;
+	outline: none;
 }
 
 input:focus {
@@ -54,6 +56,7 @@ input:focus {
 	word-spacing: 0;
 	box-shadow: 1px 1px 0 rgba(0, 0, 0, 0.125);
 	border: none;
+	border-radius: 0;
 	line-height: 16px;
 	position: relative;
 	cursor: pointer;background-color: #FFF;
@@ -367,9 +370,7 @@ input:focus {
 				padding-right: 38px;
 				overflow-y: auto;
 				resize: none;
-				border: 1px solid #E7E7E7;
-				// margin: 10px;
-				border-radius: 5px;
+				margin: 0;
 				max-height: 200px;
 				width: 100%;
 				font-size: 12px;
@@ -378,7 +379,6 @@ input:focus {
 				line-height: normal;
 				background-color: #fff;
 				position: relative;
-				outline: none;
 			}
 		}
 	}
@@ -399,11 +399,10 @@ input:focus {
 	border-right: 1px solid #E7E7E7;
 	padding: 5px;
 
-	input, button {
+	input, button, select {
 		display: block;
-		padding: 5px;
-		margin: 5px;
 	}
+
 	.error {
 		display: none;
 		// width: 100%;

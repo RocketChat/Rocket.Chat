@@ -128,7 +128,7 @@ Template.message.onViewRendered = (context) ->
 			else
 				$currentNode.removeClass('new-day')
 
-			if previousDataset.groupable is 'false'
+			if previousDataset.groupable is 'false' or currentDataset.groupable is 'false'
 				$currentNode.removeClass('sequential')
 			else
 				if previousDataset.username isnt currentDataset.username or parseInt(currentDataset.timestamp) - parseInt(previousDataset.timestamp) > RocketChat.settings.get('Message_GroupingPeriod') * 1000
