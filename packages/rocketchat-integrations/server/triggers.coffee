@@ -54,6 +54,10 @@ ExecuteTriggerUrl = (url, trigger, message, room, tries=0) ->
 	HTTP.call 'POST', url, opts, (error, result) ->
 		console.log error, result
 		if not result? or result.statusCode isnt 200
+			if result.statusCode is 410
+				RocketChat.models.Integrations.remove _id: trigger._id
+				return
+
 			if tries <= 6
 				# Try again in 0.1s, 1s, 10s, 1m40s, 16m40s, 2h46m40s and 27h46m40s
 				Meteor.setTimeout ->
