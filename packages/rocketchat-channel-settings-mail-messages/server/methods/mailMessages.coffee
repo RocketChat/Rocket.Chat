@@ -13,8 +13,8 @@ Meteor.methods
 			throw new Meteor.Error 'not-authorized'
 
 		rfcMailPatternWithName = /^(?:.*<)?([a-zA-Z0-9.!#$%&'*+\/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*)(?:>?)$/
-		emails = data.to_emails.trim().split(',')
 
+		emails = _.compact(data.to_emails.trim().split(','))
 		missing = []
 		if data.to_users.length > 0
 			for username in data.to_users
@@ -23,10 +23,10 @@ Meteor.methods
 					emails.push user.emails[0].address
 				else
 					missing.push username
-
+		console.log emails
 		for email in emails
 			unless rfcMailPatternWithName.test email.trim()
-				throw new Meteor.Error('invalid-email', "[methods] mailMessages -> Invalid e-mail")
+				throw new Meteor.Error('invalid-email', "[methods] mailMessages -> Invalid e-mail #{email}")
 
 		user = Meteor.user()
 		name = user.name
