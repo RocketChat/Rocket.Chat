@@ -7,13 +7,14 @@ Meteor.methods({
 
 		guest = Meteor.users.findOne(Meteor.userId(), {
 			fields: {
-				username: 1
+				username: 1,
+				department: 1
 			}
 		});
 
 		room = RocketChat.models.Rooms.findOneById(message.rid);
 		if (room == null) {
-			agent = getNextAgent();
+			agent = getNextAgent(guest.department);
 			if (!agent) {
 				throw new Meteor.Error('no-agent-online', 'Sorry, no online agents');
 			}
