@@ -38,8 +38,9 @@ Api.addRoute ':integrationId/:userId/:token', authRequired: true,
 							error: 'invalid-channel'
 
 				rid = room._id
-				Meteor.runAsUser user._id, ->
-					Meteor.call 'joinRoom', room._id
+				if room.t is 'c'
+					Meteor.runAsUser user._id, ->
+						Meteor.call 'joinRoom', room._id
 
 			when '@'
 				roomUser = RocketChat.models.Users.findOne
@@ -60,7 +61,7 @@ Api.addRoute ':integrationId/:userId/:token', authRequired: true,
 
 				if not room
 					Meteor.runAsUser user._id, ->
-						Meteor.call 'createDirectMessage', roomUser._id
+						Meteor.call 'createDirectMessage', roomUser.username
 						room = RocketChat.models.Rooms.findOne(rid)
 
 			else
@@ -95,6 +96,32 @@ Api.addRoute ':integrationId/:userId/:token', authRequired: true,
 					delete attachment.msg
 
 		RocketChat.sendMessage user, message, room, {}
+
+		return {} =
+			statusCode: 200
+			body:
+				success: true
+
+
+Api.addRoute 'manageintegrations/:integrationId/:userId/:token', authRequired: true,
+	post: ->
+		if @bodyParams?.payload?
+			@bodyParams = JSON.parse @bodyParams.payload
+
+		integration = RocketChat.models.Integrations.findOne(@urlParams.integrationId)
+		user = RocketChat.models.Users.findOne(@userId)
+
+		if not integration?
+			return {} =
+				statusCode: 400
+				body:
+					success: false
+					error: 'Invalid integraiton id'
+
+		switch @bodyParams.action
+			when 'addOutgoingIntegration'
+				Meteor.runAsUser user._id, =>
+					Meteor.call 'addOutgoingIntegration', @bodyParams.data
 
 		return {} =
 			statusCode: 200
