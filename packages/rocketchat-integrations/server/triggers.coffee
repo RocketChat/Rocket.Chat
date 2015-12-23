@@ -76,11 +76,11 @@ ExecuteTriggers = (message, room) ->
 
 	triggersToExecute = []
 
-	if triggers[room._id]?
-		triggersToExecute.push trigger for key, trigger of triggers[room._id]
+	if triggers['#'+room._id]?
+		triggersToExecute.push trigger for key, trigger of triggers['#'+room._id]
 
-	if triggers[room.name]?
-		triggersToExecute.push trigger for key, trigger of triggers[room.name]
+	if triggers['#'+room.name]?
+		triggersToExecute.push trigger for key, trigger of triggers['#'+room.name]
 
 	if triggers.__any?
 		triggersToExecute.push trigger for key, trigger of triggers.__any
