@@ -6,7 +6,7 @@ Template.register.helpers({
 		return "";
 	},
 	hasDepartments() {
-		return Department.find().count() > 0;
+		return Department.find().count() > 1;
 	},
 	departments() {
 		return Department.find();
@@ -22,11 +22,19 @@ Template.register.events({
 		if (!($name.val().trim() && $email.val().trim())) {
 			return instance.showError(TAPi18n.__('Please_fill_name_and_email'));
 		} else {
+			var departmentId = instance.$('select[name=department]').val();
+			if (!departmentId) {
+				var department = Department.findOne();
+				if (department) {
+					departmentId = department._id;
+				}
+			}
+
 			var guest = {
 				token: visitor.getToken(),
 				name: $name.val(),
 				email: $email.val(),
-				department: instance.$('select[name=department]').val()
+				department: departmentId
 			};
 			Meteor.call('livechat:registerGuest', guest, function(error, result) {
 				if (error != null) {
