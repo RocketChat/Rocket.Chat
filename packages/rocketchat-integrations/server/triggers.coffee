@@ -31,8 +31,6 @@ ExecuteTriggerUrl = (url, trigger, message, room, tries=0) ->
 
 	data =
 		token: trigger.token
-		# team_id=T0001
-		# team_domain=example
 		channel_id: room._id
 		channel_name: room.name
 		timestamp: message.ts
@@ -86,7 +84,7 @@ ExecuteTriggers = (message, room) ->
 	if triggers['#'+room.name]?
 		triggersToExecute.push trigger for key, trigger of triggers['#'+room.name]
 
-	if triggers.__any?
+	if triggers.__any? and room.t is 'c'
 		triggersToExecute.push trigger for key, trigger of triggers.__any
 
 	for triggerToExecute in triggersToExecute
