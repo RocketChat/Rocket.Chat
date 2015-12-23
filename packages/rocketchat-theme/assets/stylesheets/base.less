@@ -2493,7 +2493,7 @@ a.github-fork {
 }
 
 .message {
-	padding: 11px 20px 11px 70px;
+	padding: 8px 20px 4px 70px;
 	position: relative;
 	line-height: 20px;
 	min-height: 40px;
@@ -2635,7 +2635,6 @@ a.github-fork {
 	.thumb {
 		position: absolute;
 		left: 20px;
-		top: 11px;
 		display: block;
 		width: 40px;
 		height: 40px;
@@ -2671,6 +2670,7 @@ a.github-fork {
 		min-height: 20px;
 		padding-top: 4px;
 		padding-bottom: 4px;
+		margin-top: 0px;
 		.user {
 			display: none;
 		}
@@ -2698,6 +2698,9 @@ a.github-fork {
 				float: left;
 				margin-left: 1px;
 			}
+		}
+		.body {
+			margin-top: 0px;
 		}
 
 		// .message-dropdown {
@@ -2735,6 +2738,7 @@ a.github-fork {
 	.body {
 		opacity: 1;
 		.transition(opacity 1s linear);
+		margin-top: 2px;
 
 		.inline-image {
 			background-size: contain;
@@ -2765,9 +2769,9 @@ a.github-fork {
 
 .compact {
 	.message {
-		padding: 5px 20px 5px 70px;
-		.thumb {
-			top: 5px;
+		padding: 4px 20px 4px 70px;
+		.body {
+			margin-top: 0px;
 		}
 	}
 }
