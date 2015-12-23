@@ -37,7 +37,7 @@ Meteor.methods({
 				unread: 1,
 				answered: false,
 				u: {
-					_id: agent._id,
+					_id: agent.agentId,
 					username: agent.username
 				},
 				t: 'l'
