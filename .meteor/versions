@@ -7,7 +7,7 @@ accounts-oauth@1.1.8
 accounts-password@1.1.4
 accounts-twitter@1.0.6
 alanning:roles@1.2.14
-aldeed:simple-schema@1.5.1
+aldeed:simple-schema@1.5.2
 arunoda:streams@0.1.17
 autoupdate@1.2.4
 babel-compiler@5.8.24_1
@@ -25,7 +25,7 @@ cfs:http-methods@0.0.30
 check@1.1.0
 chrismbeckett:toastr@2.1.2_1
 coffeescript@1.0.11
-cosmos:browserify@0.9.2
+cosmos:browserify@0.9.3
 dandv:caret-position@2.1.1
 ddp@1.2.2
 ddp-client@1.2.1
@@ -39,7 +39,7 @@ ecmascript@0.1.6
 ecmascript-runtime@0.2.6
 ejson@1.0.7
 email@1.0.8
-emojione:emojione@1.5.2
+emojione:emojione@2.0.0
 facebook@1.2.2
 fastclick@1.0.7
 francocatena:status@1.5.0
@@ -75,7 +75,7 @@ livedata@1.0.15
 localstorage@1.0.5
 logging@1.0.8
 matb33:collection-hooks@0.8.1
-mdg:validation-error@0.1.0
+mdg:validation-error@0.2.0
 meteor@1.1.10
 meteor-base@1.0.1
 meteor-developer@1.1.5
@@ -125,6 +125,7 @@ rocketchat:assets@0.0.1
 rocketchat:authorization@0.0.1
 rocketchat:autolinker@0.0.1
 rocketchat:channel-settings@0.0.1
+rocketchat:channel-settings-mail-messages@0.0.1
 rocketchat:colors@0.0.1
 rocketchat:cors@0.0.1
 rocketchat:custom-oauth@1.0.0

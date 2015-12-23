@@ -19,23 +19,42 @@ class LivechatDepartment extends RocketChat.models._Base {
 		return this.find(query, options);
 	}
 
-	// UPSERT
 	createOrUpdateDepartment(_id, enabled, name, description, agents, extraData) {
-		record = {
+		var agents = [].concat(agents);
+
+		var record = {
 			enabled: enabled,
 			name: name,
 			description: description,
-			agents: []
-		}
-
-		if (!_.isEmpty(agents)) {
-			for (agent of agents) {
-				record.agents.push({ _id: agent._id, username: agent.username });
-			}
-		}
+			numAgents: agents.length
+		};
 
 		_.extend(record, extraData);
-		this.upsert({ _id: _id }, { $set: record });
+
+		if (_id) {
+			this.update({ _id: _id }, { $set: record });
+		} else {
+			_id = this.insert(record);
+		}
+
+		var savedAgents = _.pluck(RocketChat.models.LivechatDepartmentAgents.findByDepartmentId(_id).fetch(), 'agentId');
+		var agentsToSave = _.pluck(agents, 'agentId');
+
+		// remove other agents
+		_.difference(savedAgents, agentsToSave).forEach((agentId) => {
+			RocketChat.models.LivechatDepartmentAgents.removeByDepartmentIdAndAgentId(_id, agentId);
+		});
+
+		agents.forEach((agent) => {
+			RocketChat.models.LivechatDepartmentAgents.saveAgent({
+				agentId: agent.agentId,
+				departmentId: _id,
+				username: agent.username,
+				count: parseInt(agent.count),
+				order: parseInt(agent.order)
+			});
+		});
+
 		return _.extend(record, { _id: _id });
 	}
 
