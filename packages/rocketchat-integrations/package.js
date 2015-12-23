@@ -13,6 +13,7 @@ Package.onUse(function(api) {
   api.use('underscore');
   api.use('simple:highlight.js');
   api.use('rocketchat:lib@0.0.1');
+  api.use('alanning:roles@1.2.12');
 
   api.use('kadira:flow-router', 'client');
   api.use('templating', 'client');

@@ -61,6 +61,8 @@ Meteor.methods
 
 		RocketChat.models.Users.update {_id: user._id}, updateObj
 
+		Roles.addUsersToRoles user._id, 'bot', 'bot'
+
 		integration._id = RocketChat.models.Integrations.insert integration
 
 		return integration
