@@ -10,12 +10,15 @@ Package.onUse(function(api) {
 
 	api.use([
 		'coffeescript',
+		'reactive-var',
+		'tracker',
 		'templating',
 		'less@2.5.0',
 		'rocketchat:lib@0.0.1'
 	]);
 
 	api.addFiles([
+		'client/lib/ChannelSettings.coffee',
 		'client/startup/messageTypes.coffee',
 		'client/startup/tabBar.coffee',
 		'client/startup/trackSettingsChange.coffee',

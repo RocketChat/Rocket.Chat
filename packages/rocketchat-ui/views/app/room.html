@@ -47,7 +47,7 @@
 					{{/if}}
 				{{/if}}
 			</div>
-			<div class="messages-box {{compactView}}">
+			<div class="messages-box {{#if selectable}}selectable{{/if}} {{compactView}}">
 				<div class="ticks-bar"></div>
 				<div class="wrapper {{#if hasMoreNext}}has-more-next{{/if}}">
 					<ul aria-live="polite">

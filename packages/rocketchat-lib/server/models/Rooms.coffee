@@ -147,6 +147,17 @@ RocketChat.models.Rooms = new class extends RocketChat.models._Base
 
 		return @find query, options
 
+	findByTypeAndArchivationState: (type, archivationstate, options) ->
+		query =
+			t: type
+
+		if archivationstate
+			query.archived = true
+		else
+			query.archived = { $ne: true }
+
+		return @find query, options
+
 	findByVisitorToken: (visitorToken, options) ->
 		query =
 			"v.token": visitorToken
