@@ -1,5 +1,5 @@
 Meteor.methods({
-	registerGuest: function(token, name, email) {
+	'livechat:registerGuest': function({ token, name, email, department } = {}) {
 		var pass, qt, user, userData, userExists, userId, inc = 0;
 
 		check(token, String);
@@ -35,7 +35,8 @@ Meteor.methods({
 		}
 		userData = {
 			username: user,
-			globalRoles: 'livechat-guest'
+			globalRoles: 'livechat-guest',
+			department: department
 		};
 		userId = Accounts.insertUserDoc({}, userData);
 
