@@ -93,6 +93,7 @@ Package.onUse(function(api) {
 	api.addFiles('server/lib/getNextAgent.js', 'server');
 
 	// publications
+	api.addFiles('server/publications/availableDepartments.js', 'server');
 	api.addFiles('server/publications/departmentAgents.js', 'server');
 	api.addFiles('server/publications/livechatAgents.js', 'server');
 	api.addFiles('server/publications/livechatManagers.js', 'server');

@@ -1,9 +1,16 @@
-Template.integrationsIncoming.onCreated ->
+Template.integrationsOutgoing.onCreated ->
 	@record = new ReactiveVar
 		username: 'rocket.cat'
+		token: Random.id(24)
 
 
-Template.integrationsIncoming.helpers
+Template.integrationsOutgoing.helpers
+
+	join: (arr, sep) ->
+		if not arr?.join?
+			return arr
+
+		return arr.join sep
 
 	hasPermission: ->
 		return RocketChat.authz.hasAllPermission 'manage-integrations'
@@ -14,9 +21,8 @@ Template.integrationsIncoming.helpers
 		if params?.id?
 			data = ChatIntegrations.findOne({_id: params.id})
 			if data?
-				data.url = Meteor.absoluteUrl("hooks/#{encodeURIComponent(data._id)}/#{encodeURIComponent(data.userId)}/#{encodeURIComponent(data.token)}")
-				data.completeToken = "#{encodeURIComponent(data._id)}/#{encodeURIComponent(data.userId)}/#{encodeURIComponent(data.token)}"
-				Template.instance().record.set data
+				if not data.token?
+					data.token = Random.id(24)
 				return data
 
 		return Template.instance().record.curValue
@@ -28,7 +34,7 @@ Template.integrationsIncoming.helpers
 			alias: record.alias
 			emoji: record.emoji
 			avatar: record.avatar
-			msg: 'Example message'
+			msg: 'Response text'
 			bot:
 				i: Random.id()
 			groupable: false
@@ -50,7 +56,7 @@ Template.integrationsIncoming.helpers
 			username: record.alias
 			icon_emoji: record.emoji
 			icon_url: record.avatar
-			text: 'Example message'
+			text: 'Response text'
 			attachments: [{
 				title: "Rocket.Chat"
 				title_link: "https://rocket.chat"
@@ -64,27 +70,8 @@ Template.integrationsIncoming.helpers
 
 		return hljs.highlight('json', JSON.stringify(data, null, 2)).value
 
-	curl: ->
-		record = Template.instance().record.get()
-		data =
-			username: record.alias
-			icon_emoji: record.emoji
-			icon_url: record.avatar
-			text: 'Example message'
-			attachments: [{
-				title: "Rocket.Chat"
-				title_link: "https://rocket.chat"
-				text: "Rocket.Chat, the best open source chat"
-				image_url: "https://rocket.chat/images/mockup.png"
-				color: "#764FA5"
-			}]
 
-		for key, value of data
-			delete data[key] if value in [null, ""]
-
-		return "curl -X POST --data-urlencode 'payload=#{JSON.stringify(data)}' #{record.url}"
-
-Template.integrationsIncoming.events
+Template.integrationsOutgoing.events
 	"blur input": (e, t) ->
 		t.record.set
 			name: $('[name=name]').val().trim()
@@ -93,6 +80,10 @@ Template.integrationsIncoming.events
 			avatar: $('[name=avatar]').val().trim()
 			channel: $('[name=channel]').val().trim()
 			username: $('[name=username]').val().trim()
+			triggerWords: $('[name=triggerWords]').val().trim()
+			urls: $('[name=urls]').val().trim()
+			token: $('[name=token]').val().trim()
+
 
 	"click .submit > .delete": ->
 		params = Template.instance().data.params()
@@ -108,7 +99,7 @@ Template.integrationsIncoming.events
 			closeOnConfirm: false
 			html: false
 		, ->
-			Meteor.call "deleteIncomingIntegration", params.id, (err, data) ->
+			Meteor.call "deleteOutgoingIntegration", params.id, (err, data) ->
 				swal
 					title: t('Deleted')
 					text: t('Your_entry_has_been_deleted')
@@ -125,33 +116,55 @@ Template.integrationsIncoming.events
 		avatar = $('[name=avatar]').val().trim()
 		channel = $('[name=channel]').val().trim()
 		username = $('[name=username]').val().trim()
-
-		if channel is ''
-			return toastr.error TAPi18n.__("The_channel_name_is_required")
+		triggerWords = $('[name=triggerWords]').val().trim()
+		urls = $('[name=urls]').val().trim()
+		token = $('[name=token]').val().trim()
 
 		if username is ''
 			return toastr.error TAPi18n.__("The_username_is_required")
 
+		triggerWords = triggerWords.split(',')
+		for triggerWord, index in triggerWords
+			triggerWords[index] = triggerWord.trim()
+			delete triggerWords[index] if triggerWord.trim() is ''
+
+		triggerWords = _.without triggerWords, [undefined]
+
+		if triggerWords.length is 0 and channel.trim() is ''
+			return toastr.error TAPi18n.__("You should inform at least one trigger word if you do not inform a channel")
+
+		urls = urls.split('\n')
+		for url, index in urls
+			urls[index] = url.trim()
+			delete urls[index] if url.trim() is ''
+
+		urls = _.without urls, [undefined]
+
+		if urls.length is 0
+			return toastr.error TAPi18n.__("You_should_inform_one_url_at_least")
+
 		integration =
 			channel: channel
+			username: username
 			alias: alias if alias isnt ''
 			emoji: emoji if emoji isnt ''
 			avatar: avatar if avatar isnt ''
 			name: name if name isnt ''
+			triggerWords: triggerWords if triggerWords isnt ''
+			urls: urls if urls isnt ''
+			token: token if token isnt ''
 
 		params = Template.instance().data.params?()
 		if params?.id?
-			Meteor.call "updateIncomingIntegration", params.id, integration, (err, data) ->
+			Meteor.call "updateOutgoingIntegration", params.id, integration, (err, data) ->
 				if err?
 					return toastr.error TAPi18n.__(err.error)
 
 				toastr.success TAPi18n.__("Integration_updated")
 		else
-			integration.username = username
-
-			Meteor.call "addIncomingIntegration", integration, (err, data) ->
+			Meteor.call "addOutgoingIntegration", integration, (err, data) ->
 				if err?
 					return toastr.error TAPi18n.__(err.error)
 
 				toastr.success TAPi18n.__("Integration_added")
-				FlowRouter.go "admin-integrations-incoming", {id: data._id}
+				FlowRouter.go "admin-integrations-outgoing", {id: data._id}
