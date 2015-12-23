@@ -1,6 +1,6 @@
 Meteor.methods
 	addOutgoingIntegration: (integration) ->
-		if not RocketChat.authz.hasPermission @userId, 'manage-integrations'
+		if not RocketChat.authz.hasPermission(@userId, 'manage-integrations') and not RocketChat.authz.hasPermission(@userId, 'manage-integrations', 'bot')
 			throw new Meteor.Error 'not_authorized'
 
 		if integration.username.trim() is ''
