@@ -1,4 +1,4 @@
-<template name="integrationsIncoming">
+<template name="integrationsOutgoing">
 	<div class="permissions-manager">
 		{{#if hasPermission}}
 			<a href="{{pathFor "admin-integrations"}}"><i class="icon-angle-left"></i> {{_ "Back_to_integrations"}}</a><br><br>
@@ -13,21 +13,34 @@
 							</div>
 						</div>
 						<div class="input-line double-col">
-							<label>{{_ "Post_to_Channel"}}</label>
+							<label>{{_ "Channel"}}</label>
 							<div>
 								<input type="text" name="channel" value="{{data.channel}}" placeholder="{{_ 'User_or_channel_name'}}" />
-								<div class="settings-description">{{_ "Messages_that_are_sent_to_the_Incoming_WebHook_will_be_posted_here"}}</div>
+								<div class="settings-description">{{_ "Optional channel to listen on"}}</div>
 								<div class="settings-description">{{{_ "Start_with_s_for_user_or_s_for_channel_Eg_s_or_s" "@" "#" "@john" "#general"}}}</div>
+								<div class="settings-description">{{{_ "Leave empty to listen <strong>any</strong> channel"}}}</div>
+							</div>
+						</div>
+						<div class="input-line double-col">
+							<label>{{_ "Trigger_Words"}}</label>
+							<div>
+								<input type="text" name="triggerWords" value="{{join data.triggerWords ','}}" />
+								<div class="settings-description">{{_ "When a line starts with one of these words, post to the URL(s) below"}}</div>
+								<div class="settings-description">{{_ "Optional if a channel is chosen"}}</div>
+								<div class="settings-description">{{_ "Separate multiple words with commas"}}</div>
+							</div>
+						</div>
+						<div class="input-line double-col">
+							<label>{{_ "URLs"}}</label>
+							<div>
+								<textarea name="urls" style="height: 100px;">{{join data.urls "\n"}}</textarea>
+								<div class="settings-description">{{_ "Enter as many URLs as you like, one per line, please"}}</div>
 							</div>
 						</div>
 						<div class="input-line double-col">
 							<label>{{_ "Post_as"}}</label>
 							<div>
-								{{#if data.token}}
-									<input type="text" name="username" value="{{data.username}}" disabled="disabled" />
-								{{else}}
-									<input type="text" name="username" value="{{data.username}}" />
-								{{/if}}
+								<input type="text" name="username" value="{{data.username}}" />
 								<div class="settings-description">{{_ "Choose_the_username_that_this_integration_will_post_as"}}</div>
 								<div class="settings-description">{{_ "Should_exists_a_user_with_this_username"}}</div>
 							</div>
@@ -55,29 +68,18 @@
 								<div class="settings-description">{{{_ "Example_s" ":ghost:"}}}</div>
 							</div>
 						</div>
-						{{#if data.token}}
-							<div class="input-line double-col">
-								<label>Webhook URL</label>
-								<div>
-									<input type="text" name="webhookurl" value="{{data.url}}" disabled="disabled" />
-									<div class="settings-description">{{_ "Send_your_JSON_payloads_to_this_URL"}}</div>
-									<div class="settings-description"><a href="#" class="clipboard" data-clipboard-target="[name=webhookurl]">{{_ "COPY_TO_CLIPBOARD"}}</a></div>
-								</div>
-							</div>
-							<div class="input-line double-col">
-								<label>Token</label>
-								<div>
-									<input type="text" name="completeToken" value="{{data.completeToken}}" disabled="disabled" />
-									<div class="settings-description"><a href="#" class="clipboard" data-clipboard-target="[name=completeToken]">{{_ "COPY_TO_CLIPBOARD"}}</a></div>
-								</div>
-							</div>
-						{{/if}}
 						<div class="input-line double-col">
-							<label>{{_ "Example"}}</label>
+							<label>Token</label>
 							<div>
+								<input type="text" name="token" value="{{data.token}}" />
+							</div>
+						</div>
+						<div class="input-line double-col">
+							<label>{{_ "Responding"}}</label>
+							<div>
+								<div class="settings-description">{{{_ "If the handler wishes to post a response back into the Slack channel, the following JSON should be returned as the body of the response:"}}}</div>
 								<pre><code class="hljs json json-example">{{{exampleJson}}}</code></pre>
-								<input type="text" name="curl" value="{{curl}}" disabled="disabled" />
-								<div class="settings-description"><a href="#" class="clipboard" data-clipboard-target="[name=curl]">{{_ "COPY_TO_CLIPBOARD"}}</a></div>
+								<div class="settings-description">{{{_ "Empty bodies or bodies with an empty text property will simply be ignored. Non-200 responses will be retried a reasonable number of times. A response will be posted using the alias and avatar specified above. You can override these informations as in the example above."}}}</div>
 							</div>
 						</div>
 						<div class="input-line message-example">

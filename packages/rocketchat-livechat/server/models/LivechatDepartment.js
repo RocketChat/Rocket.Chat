@@ -63,6 +63,14 @@ class LivechatDepartment extends RocketChat.models._Base {
 		query = { _id: _id };
 		return this.remove(query);
 	}
+
+	findEnabledWithAgents() {
+		var query = {
+			numAgents: { $gt: 0 },
+			enabled: true
+		};
+		return this.find(query);
+	}
 }
 
 RocketChat.models.LivechatDepartment = new LivechatDepartment();
