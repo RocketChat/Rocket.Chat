@@ -130,9 +130,6 @@ Template.integrationsOutgoing.events
 
 		triggerWords = _.without triggerWords, [undefined]
 
-		if triggerWords.length is 0 and channel.trim() is ''
-			return toastr.error TAPi18n.__("You should inform at least one trigger word if you do not inform a channel")
-
 		urls = urls.split('\n')
 		for url, index in urls
 			urls[index] = url.trim()
@@ -144,8 +141,8 @@ Template.integrationsOutgoing.events
 			return toastr.error TAPi18n.__("You_should_inform_one_url_at_least")
 
 		integration =
-			channel: channel
 			username: username
+			channel: channel if channel isnt ''
 			alias: alias if alias isnt ''
 			emoji: emoji if emoji isnt ''
 			avatar: avatar if avatar isnt ''
