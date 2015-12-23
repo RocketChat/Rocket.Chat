@@ -1,8 +1,6 @@
-var AgentUsers;
 var ManagerUsers;
 
 Meteor.startup(function() {
-	AgentUsers = new Mongo.Collection('agentUsers');
 	ManagerUsers = new Mongo.Collection('managerUsers');
 });
 
