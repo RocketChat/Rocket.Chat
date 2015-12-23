@@ -100,3 +100,29 @@ Api.addRoute ':integrationId/:userId/:token', authRequired: true,
 			statusCode: 200
 			body:
 				success: true
+
+
+Api.addRoute 'manageintegrations/:integrationId/:userId/:token', authRequired: true,
+	post: ->
+		if @bodyParams?.payload?
+			@bodyParams = JSON.parse @bodyParams.payload
+
+		integration = RocketChat.models.Integrations.findOne(@urlParams.integrationId)
+		user = RocketChat.models.Users.findOne(@userId)
+
+		if not integration?
+			return {} =
+				statusCode: 400
+				body:
+					success: false
+					error: 'Invalid integraiton id'
+
+		switch @bodyParams.action
+			when 'addOutgoingIntegration'
+				Meteor.runAsUser user._id, =>
+					Meteor.call 'addOutgoingIntegration', @bodyParams.data
+
+		return {} =
+			statusCode: 200
+			body:
+				success: true
