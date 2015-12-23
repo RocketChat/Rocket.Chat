@@ -1,11 +1,6 @@
 Template.livechatDepartments.helpers({
 	"departments": () => {
 		return LivechatDepartment.find();
-	},
-	"numAgents"() {
-		if (Array.isArray(this.agents)) {
-			return this.agents.length;
-		}
 	}
 });
 
