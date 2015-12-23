@@ -17,8 +17,6 @@ RocketChat.models.Integrations.find({type: 'webhook-outgoing'}).observe
 
 
 ExecuteTriggerUrl = (url, trigger, message, room, tries=0) ->
-	urlObj = URL.parse url
-
 	console.log tries
 	word = undefined
 	if trigger.triggerWords?.length > 0
