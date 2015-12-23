@@ -9,7 +9,7 @@
 				{{#if author_link}}
 					<div class="attachment-author">
 						{{#if author_icon}}
-							<img src="{{author_icon}}">
+							<img src="{{fixCordova author_icon}}">
 						{{/if}}
 						<a href="{{fixCordova author_link}}" target="_blank">{{author_name}}</a>
 					</div>
@@ -49,7 +49,7 @@
 				<div class="attachment-image">
 					{{#if showImage}}
 						<a href="{{fixCordova image_url}}" class="swipebox" target="_blank">
-							<div class="inline-image" style="background-image: url({{fixCordova image_url}});">
+							<div class="inline-image" style="background-image: url('{{fixCordova image_url}}');">
 								<img src="{{fixCordova image_url}}" height="{{getImageHeight image_dimensions.height}}">
 							</div>
 						</a>
