@@ -1,5 +1,8 @@
 Meteor.methods
 	addOutgoingIntegration: (integration) ->
+		if integration.channel?.trim? and integration.channel.trim() is ''
+			delete integration.channel
+
 		if not RocketChat.authz.hasPermission(@userId, 'manage-integrations') and not RocketChat.authz.hasPermission(@userId, 'manage-integrations', 'bot')
 			throw new Meteor.Error 'not_authorized'
 
@@ -17,11 +20,8 @@ Meteor.methods
 		if integration.urls.length is 0
 			throw new Meteor.Error 'invalid_urls', '[methods] addOutgoingIntegration -> urls is required'
 
-		if integration.channel?.trim() isnt '' and integration.channel[0] not in ['@', '#']
+		if integration.channel? and integration.channel[0] not in ['@', '#']
 			throw new Meteor.Error 'invalid_channel', '[methods] addOutgoingIntegration -> channel should start with # or @'
-
-		if not integration.token? or integration.token?.trim() is ''
-			throw new Meteor.Error 'invalid_token', '[methods] addOutgoingIntegration -> token is required'
 
 		if integration.triggerWords?
 			if not Match.test integration.triggerWords, [String]
@@ -32,11 +32,7 @@ Meteor.methods
 
 			integration.triggerWords = _.without integration.triggerWords, [undefined]
 
-			if integration.triggerWords.length is 0 and not integration.channel?
-				throw new Meteor.Error 'invalid_triggerWords', '[methods] addOutgoingIntegration -> triggerWords is required if channel is empty'
-
-
-		if integration.channel?.trim() isnt ''
+		if integration.channel?
 			record = undefined
 			channelType = integration.channel[0]
 			channel = integration.channel.substr(1)
