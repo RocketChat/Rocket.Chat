@@ -3,7 +3,7 @@ Meteor.methods
 		if not Meteor.userId()
 			throw new Meteor.Error('invalid-user', "[methods] mailMessages -> Invalid user")
 
-		check(data, Match.ObjectIncluding({ rid: String, to: String, subject: String, messages: [ String ], language: String }))
+		check(data, Match.ObjectIncluding({ rid: String, to_users: [ String ], to_emails: String, subject: String, messages: [ String ], language: String }))
 
 		room = Meteor.call 'canAccessRoom', data.rid, Meteor.userId()
 		unless room
@@ -13,7 +13,17 @@ Meteor.methods
 			throw new Meteor.Error 'not-authorized'
 
 		rfcMailPatternWithName = /^(?:.*<)?([a-zA-Z0-9.!#$%&'*+\/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*)(?:>?)$/
-		emails = data.to.trim().split(',')
+		emails = data.to_emails.trim().split(',')
+
+		missing = []
+		if data.to_users.length > 0
+			for username in data.to_users
+				user = RocketChat.models.Users.findOneByUsername(username)
+				if user?.emails?[0]?.address
+					emails.push user.emails[0].address
+				else
+					missing.push username
+
 		for email in emails
 			unless rfcMailPatternWithName.test email.trim()
 				throw new Meteor.Error('invalid-email', "[methods] mailMessages -> Invalid e-mail")
@@ -42,5 +52,4 @@ Meteor.methods
 
 			console.log 'Sending email to ' + emails.join(', ')
 
-
-		return true
+		return { success: true, missing: missing }
