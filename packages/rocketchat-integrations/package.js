@@ -52,6 +52,9 @@ Package.onUse(function(api) {
   // api
   api.addFiles('server/api/api.coffee', 'server');
 
+
+  api.addFiles('server/triggers.coffee', 'server');
+
   var _ = Npm.require('underscore');
   var fs = Npm.require('fs');
   tapi18nFiles = _.compact(_.map(fs.readdirSync('packages/rocketchat-integrations/i18n'), function(filename) {
