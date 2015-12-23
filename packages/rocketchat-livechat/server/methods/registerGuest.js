@@ -1,5 +1,5 @@
 Meteor.methods({
-	'livechat:registerGuest': function({ token, name, email, department }) {
+	'livechat:registerGuest': function({ token, name, email, department } = {}) {
 		var pass, qt, user, userData, userExists, userId, inc = 0;
 
 		check(token, String);
