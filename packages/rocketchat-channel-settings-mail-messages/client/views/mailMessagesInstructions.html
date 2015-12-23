@@ -13,9 +13,20 @@
 						<div>{{email}}</div>
 					</div>
 					<div class="input-line double-col">
-						<label>{{_ "To"}}</label>
+						<label>{{_ "To_users"}}</label>
 						<div>
-							<input type="text" name="to" value="" />
+							{{> inputAutocomplete settings=autocompleteSettings id="to_users" name="to_users" class="search" autocomplete="off"}}
+							<ul class="selected-users">
+								{{#each selectedUsers}}
+									<li>{{.}} <i class="icon-cancel remove-to-user"></i></li>
+								{{/each}}
+							</ul>
+						</div>
+					</div>
+					<div class="input-line double-col">
+						<label>{{_ "Additional_emails"}}</label>
+						<div>
+							<input type="text" name="to_emails" value="" />
 						</div>
 					</div>
 					<div class="input-line double-col">

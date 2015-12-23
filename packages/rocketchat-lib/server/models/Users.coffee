@@ -71,6 +71,24 @@ RocketChat.models.Users = new class extends RocketChat.models._Base
 
 		return @find query, options
 
+	findActiveByUsernameRegexWithExceptions: (username, exceptions = [], options = {}) ->
+		console.log 'findActiveByUsernameRegexWithExceptions', username, exceptions
+		if not _.isArray exceptions
+			exceptions = [ exceptions ]
+
+		usernameRegex = new RegExp username, "i"
+		query =
+			$and: [
+				{ active: true }
+				{ username: { $nin: exceptions } }
+				{ username: usernameRegex }
+			]
+			# username: { $regex: usernameRegex, $nin: exceptions }
+			# username: { $nin: exceptions }
+
+		console.log 'findActiveByUsernameRegexWithExceptions query', JSON.stringify query, null, ' '
+		return @find query, options
+
 	findByActiveUsersNameOrUsername: (nameOrUsername, options) ->
 		query =
 			username:
