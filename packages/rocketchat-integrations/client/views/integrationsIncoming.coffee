@@ -147,7 +147,6 @@ Template.integrationsIncoming.events
 
 				toastr.success TAPi18n.__("Integration_updated")
 		else
-			integration.type = 'webhook-incoming'
 			integration.username = username
 
 			Meteor.call "addIncomingIntegration", integration, (err, data) ->
