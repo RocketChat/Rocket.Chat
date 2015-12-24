@@ -1,9 +1,20 @@
 this.Triggers = (function() {
 	var triggers = [];
+	var initiated = false;
+	var requests = [];
 
 	var init = function() {
+		initiated = true;
 		Tracker.autorun(function() {
 			triggers = Trigger.find().fetch();
+
+			if (requests.length > 0 && triggers.length > 0) {
+				requests.forEach(function(request) {
+					processRequest(request);
+				});
+
+				requests = [];
+			}
 		});
 	};
 
@@ -14,13 +25,17 @@ this.Triggers = (function() {
 		}
 		actions.forEach(function(action) {
 			if (action.name === 'send-message') {
-				var room = Random.id();
-				visitor.setRoom(room);
+				var roomId = visitor.getRoom();
+
+				if (!roomId) {
+					roomId = Random.id();
+					visitor.setRoom(roomId);
+				}
 
 				Session.set('triggered', true);
 				ChatMessage.insert({
 					msg: action.params.msg,
-					rid: room,
+					rid: roomId,
 					u: {
 						username: action.params.name
 					}
@@ -32,6 +47,9 @@ this.Triggers = (function() {
 	};
 
 	var processRequest = function(request) {
+		if (!initiated) {
+			return requests.push(request);
+		}
 		triggers.forEach(function(trigger) {
 			trigger.conditions.forEach(function(condition) {
 				switch (condition.name) {
