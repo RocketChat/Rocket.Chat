@@ -11,9 +11,7 @@ Meteor.publish 'userAutocomplete', (selector) ->
 			status: 1
 		limit: 10
 
-	user = RocketChat.models.Users.findOneById this.userId
 	exceptions = selector.exceptions or []
-	exceptions.push user.username
 
 	cursorHandle = RocketChat.models.Users.findActiveByUsernameRegexWithExceptions(selector.username, exceptions, options).observeChanges
 		added: (_id, record) ->
