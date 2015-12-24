@@ -130,7 +130,7 @@ Api.addRoute 'add/:integrationId/:userId/:token', authRequired: true,
 					Meteor.call 'addOutgoingIntegration',
 						username: 'rocket.cat'
 						urls: [@bodyParams.target_url]
-						name: @bodyParams.data.name
+						name: @bodyParams.name
 						channel: @bodyParams.data.channel_name
 						triggerWords: @bodyParams.data.trigger_words
 
@@ -141,7 +141,7 @@ Api.addRoute 'add/:integrationId/:userId/:token', authRequired: true,
 					Meteor.call 'addOutgoingIntegration',
 						username: 'rocket.cat'
 						urls: [@bodyParams.target_url]
-						name: @bodyParams.data.name
+						name: @bodyParams.name
 						channel: @bodyParams.data.username
 						triggerWords: @bodyParams.data.trigger_words
 
