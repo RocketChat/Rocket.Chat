@@ -124,6 +124,8 @@ Api.addRoute 'add/:integrationId/:userId/:token', authRequired: true,
 		Meteor.runAsUser user._id, =>
 			switch @bodyParams['event']
 				when 'newMessageOnChannel'
+					@bodyParams.data ?= {}
+
 					if @bodyParams.data.channel_name? and @bodyParams.data.channel_name.indexOf('#') is -1
 						@bodyParams.data.channel_name = '#' + @bodyParams.data.channel_name
 
