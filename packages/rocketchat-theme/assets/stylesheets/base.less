@@ -4271,3 +4271,39 @@ a.github-fork {
 		font-size: 40px;
 	}
 }
+
+.search-messages-list {
+	.message-cog-container {
+		.message-action {
+			display: none !important;
+			&.jump-to-star-message {
+				display: block !important;
+			}
+		}
+	}
+
+	.load-more {
+		text-transform: lowercase;
+		text-align: center;
+		line-height: 40px;
+		font-style: italic;
+
+		.load-more-loading {
+			color: #aaa;
+		}
+	}
+
+	.no-results {
+		text-align: center;
+	}
+}
+
+.messages-box {
+	.message-cog-container {
+		.message-action {
+			&.jump-to-search-message {
+				display: none !important;
+			}
+		}
+	}
+}
