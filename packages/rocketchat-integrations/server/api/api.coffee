@@ -195,7 +195,7 @@ Api.addRoute 'sample/:integrationId/:userId/:token', authRequired: true,
 				user_name: 'rocket.cat'
 				text: 'Sample text 1'
 				trigger_word: 'Sample'
-			],[
+			,
 				token: Random.id(24)
 				channel_id: Random.id()
 				channel_name: 'general'
@@ -204,7 +204,7 @@ Api.addRoute 'sample/:integrationId/:userId/:token', authRequired: true,
 				user_name: 'rocket.cat'
 				text: 'Sample text 2'
 				trigger_word: 'Sample'
-			],[
+			,
 				token: Random.id(24)
 				channel_id: Random.id()
 				channel_name: 'general'
