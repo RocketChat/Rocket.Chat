@@ -17,7 +17,6 @@ RocketChat.models.Integrations.find({type: 'webhook-outgoing'}).observe
 
 
 ExecuteTriggerUrl = (url, trigger, message, room, tries=0) ->
-	console.log tries
 	word = undefined
 	if trigger.triggerWords?.length > 0
 		for triggerWord in trigger.triggerWords
@@ -50,7 +49,6 @@ ExecuteTriggerUrl = (url, trigger, message, room, tries=0) ->
 			'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/41.0.2227.0 Safari/537.36'
 
 	HTTP.call 'POST', url, opts, (error, result) ->
-		console.log error, result
 		if not result? or result.statusCode isnt 200
 			if result.statusCode is 410
 				RocketChat.models.Integrations.remove _id: trigger._id
@@ -78,14 +76,30 @@ ExecuteTriggers = (message, room) ->
 
 	triggersToExecute = []
 
-	if triggers['#'+room._id]?
-		triggersToExecute.push trigger for key, trigger of triggers['#'+room._id]
+	switch room.t
+		when 'd'
+			id = room._id.replace(message.u._id, '')
 
-	if triggers['#'+room.name]?
-		triggersToExecute.push trigger for key, trigger of triggers['#'+room.name]
+			username = _.without room.usernames, message.u.username
+			username = username[0]
 
-	if triggers.__any? and room.t is 'c'
-		triggersToExecute.push trigger for key, trigger of triggers.__any
+			if triggers['@'+id]?
+				triggersToExecute.push trigger for key, trigger of triggers['@'+id]
+
+			if id isnt username and triggers['@'+username]?
+				triggersToExecute.push trigger for key, trigger of triggers['@'+username]
+
+		when 'c'
+			if triggers.__any?
+				triggersToExecute.push trigger for key, trigger of triggers.__any
+
+		else
+			if triggers['#'+room._id]?
+				triggersToExecute.push trigger for key, trigger of triggers['#'+room._id]
+
+			if room._id isnt room.name and triggers['#'+room.name]?
+				triggersToExecute.push trigger for key, trigger of triggers['#'+room.name]
+
 
 	for triggerToExecute in triggersToExecute
 		ExecuteTrigger triggerToExecute, message, room
