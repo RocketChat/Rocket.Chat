@@ -85,14 +85,14 @@
 }
 
 body::-webkit-scrollbar {
-    width: 1em;
+    width: 4em;
 }
- 
+
 body::-webkit-scrollbar-track {
-    -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.3);
+    -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.7);
 }
- 
+
 body::-webkit-scrollbar-thumb {
-  background-color: darkgrey;
-  outline: 1px solid slategrey;
+  background-color: rgb(156, 156, 156);
+  outline: 2px solid rgb(59, 57, 58);
 }
