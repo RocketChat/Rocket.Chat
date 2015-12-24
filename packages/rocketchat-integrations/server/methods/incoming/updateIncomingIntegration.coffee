@@ -12,7 +12,8 @@ Meteor.methods
 		if integration.channel[0] not in ['@', '#']
 			throw new Meteor.Error 'invalid_channel', '[methods] updateIncomingIntegration -> channel should start with # or @'
 
-		if not RocketChat.models.Integrations.findOne(integrationId)?
+		currentIntegration = RocketChat.models.Integrations.findOne(integrationId)
+		if not currentIntegration?
 			throw new Meteor.Error 'invalid_integration', '[methods] updateIncomingIntegration -> integration not found'
 
 		record = undefined
@@ -35,6 +36,9 @@ Meteor.methods
 
 		if record is undefined
 			throw new Meteor.Error 'channel_does_not_exists', "[methods] updateIncomingIntegration -> The channel does not exists"
+
+		user = RocketChat.models.Users.findOne({username: currentIntegration.username})
+		Roles.addUsersToRoles user._id, 'bot', 'bot'
 
 		RocketChat.models.Integrations.update integrationId,
 			$set:
