@@ -363,7 +363,7 @@ input:focus {
 		border-right: 1px solid #E7E7E7;
 
 		.input-wrapper {
-			padding: 6px;
+			padding: 6px 6px 0 6px;
 			textarea {
 				display: block;
 				padding: 6px 8px;
@@ -479,6 +479,31 @@ input:focus {
 			line-height: 60px;
 			text-align: right;
 			padding-right: 20px;
+		}
+	}
+}
+
+.powered-by {
+	text-align: right;
+	font-size: 0.65rem;
+	height: 20px;
+	line-height: 20px;
+	color: #666;
+	padding: 0 1em;
+	opacity: 0.5;
+
+	.transition(opacity .15s ease-out);
+
+	&:hover {
+		opacity: 1;
+	}
+
+	a {
+		text-decoration: none;
+		margin-left: 1px;
+		img {
+			height: 14px;
+			vertical-align: middle;
 		}
 	}
 }
