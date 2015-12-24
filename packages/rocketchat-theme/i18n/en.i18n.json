@@ -20,5 +20,12 @@
   "theme-color-status-offline" : "Offline Status Color",
   "theme-color-status-online" : "Online Status Color",
   "theme-color-tertiary-background-color" : "Tertiary Background Color",
-  "theme-color-tertiary-font-color" : "Tertiary Font Color"
+  "theme-color-tertiary-font-color" : "Tertiary Font Color",
+  "theme-color-quaternary-font-color": "Quaternary Font Color",
+  "theme-color-active-channel-background-color": "Active Channel Background Color",
+  "theme-color-active-channel-font-color": "Active Channel Font Color",
+  "theme-color-custom-scrollbar-color": "Custom Scrollbar Color",
+  "theme-color-action-buttons-color": "Actions Buttons Color",
+  "theme-color-clean-buttons-color": "Clean Buttons Color",
+  "theme-color-unread-notification-color": "Unread Notifications Color"
 }
