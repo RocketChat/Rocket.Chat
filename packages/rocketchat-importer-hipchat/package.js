@@ -1,7 +1,7 @@
 Package.describe({
-	name: 'rocketchat:importer-slack',
+	name: 'rocketchat:importer-hipchat',
 	version: '0.0.1',
-	summary: 'Importer for Slack',
+	summary: 'Importer for HipChat',
 	git: ''
 });
 
@@ -9,11 +9,13 @@ Package.onUse(function(api) {
 	api.versionsFrom('1.0');
 	api.use([
 		'coffeescript',
+		'underscore',
 		'rocketchat:lib@0.0.1',
 		'rocketchat:importer@0.0.1'
 	]);
+	api.use(['mrt:moment-timezone@0.2.1'], 'server');
 
-	api.addFiles('server/SlackImporter.coffee', 'server');
+	api.addFiles('server/HipChatImporter.coffee', 'server');
 	api.addFiles('main.coffee', ['client', 'server']);
 
 	// TAPi18n

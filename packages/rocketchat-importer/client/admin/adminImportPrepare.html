@@ -4,7 +4,7 @@
 			<head class="fixed-title">
 				{{> burger}}
 				<h2>
-					<span class="room-title">{{name}} - {{ description }}</span>
+					<span class="room-title">{{name}} - {{_ description }}</span>
 				</h2>
 			</head>
 			<div class="content">
@@ -31,8 +31,8 @@
 											{{#each users}}
 												{{#unless is_bot}}
 													<li>
-														<input type="checkbox" name="{{id}}" checked="checked" />{{name}} - {{profile.email}}
-														{{#if deleted }} <em>(Deleted User)</em>{{/if}}
+														<input type="checkbox" name="{{user_id}}" checked="checked" />{{username}} - {{email}}
+														{{#if is_deleted }} <em>(Deleted User)</em>{{/if}}
 													</li>
 												{{/unless}}
 											{{/each}}
@@ -46,7 +46,7 @@
 										<ul>
 											{{#each channels}}
 												<li>
-													<input type="checkbox" name="{{id}}" checked="checked" />{{name}}
+													<input type="checkbox" name="{{channel_id}}" checked="checked" />{{name}}
 													{{#if is_archived}} <em>(Archived)</em>{{/if}}
 												</li>
 											{{/each}}
@@ -54,7 +54,11 @@
 									</div>
 								</div>
 							{{else}}
-								<input type="file" class="import-file-input" accept="{{ fileType }}">
+								{{#if isPreparing}}
+									{{> loading}}
+								{{else}}
+									<input type="file" class="import-file-input" accept="{{ fileType }}">
+								{{/if}}
 							{{/if}}
 						</fieldset>
 					</div>
