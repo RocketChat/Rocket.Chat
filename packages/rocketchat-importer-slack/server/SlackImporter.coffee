@@ -1,0 +1,249 @@
+Importer.Slack = class Importer.Slack extends Importer.Base
+	constructor: (name, descriptionI18N, fileTypeRegex) ->
+		super(name, descriptionI18N, fileTypeRegex)
+		@userTags = []
+
+	prepare: (dataURI, sentContentType, fileName) =>
+		super(dataURI, sentContentType, fileName)
+
+		try
+			{image, contentType} = RocketChatFile.dataURIParse dataURI
+			zip = new @AdmZip(new Buffer(image, 'base64'))
+			zipEntries = zip.getEntries()
+
+			tempChannels = []
+			tempUsers = []
+			tempMessages = {}
+			for entry in zipEntries
+				do (entry) =>
+					if entry.entryName == 'channels.json'
+						@updateProgress Importer.ProgressStep.PREPARING_CHANNELS
+						tempChannels = JSON.parse entry.getData().toString()
+					else if entry.entryName == 'users.json'
+						@updateProgress Importer.ProgressStep.PREPARING_USERS
+						tempUsers = JSON.parse entry.getData().toString()
+					else if not entry.isDirectory and entry.entryName.indexOf('/') > -1
+						item = entry.entryName.split('/') #random/2015-10-04.json
+						channelName = item[0] #random
+						msgGroupData = item[1].split('.')[0] #2015-10-04
+						if not tempMessages[channelName]
+							tempMessages[channelName] = {}
+						tempMessages[channelName][msgGroupData] = JSON.parse entry.getData().toString()
+
+			# Insert the users record, eventually this might have to be split into several ones as well
+			# if someone tries to import a several thousands users instance
+			usersId = @collection.insert { 'import': @importRecord._id, 'importer': @name, 'type': 'users', 'users': tempUsers }
+			@users = @collection.findOne usersId
+			@updateRecord { 'count.users': tempUsers.length }
+			@addCountToTotal tempUsers.length
+
+			# Insert the channels records.
+			channelsId = @collection.insert { 'import': @importRecord._id, 'importer': @name, 'type': 'channels', 'channels': tempChannels }
+			@channels = @collection.findOne channelsId
+			@updateRecord { 'count.channels': tempChannels.length }
+			@addCountToTotal tempChannels.length
+
+			# Insert the messages records
+			@updateProgress Importer.ProgressStep.PREPARING_MESSAGES
+			messagesCount = 0
+			for channel, messagesObj of tempMessages
+				do (channel, messagesObj) =>
+					if not @messages[channel]
+						@messages[channel] = {}
+					for date, msgs of messagesObj
+						messagesCount += msgs.length
+						@updateRecord { 'messagesstatus': "#{channel}/#{date}" }
+
+						if Importer.Base.getBSONSize(msgs) > Importer.Base.MaxBSONSize
+							for splitMsg, i in Importer.Base.getBSONSafeArraysFromAnArray(msgs)
+								messagesId = @collection.insert { 'import': @importRecord._id, 'importer': @name, 'type': 'messages', 'name': "#{channel}/#{date}.#{i}", 'messages': splitMsg }
+								@messages[channel]["#{date}.#{i}"] = @collection.findOne messagesId
+						else
+							messagesId = @collection.insert { 'import': @importRecord._id, 'importer': @name, 'type': 'messages', 'name': "#{channel}/#{date}", 'messages': msgs }
+							@messages[channel][date] = @collection.findOne messagesId
+
+			@updateRecord { 'count.messages': messagesCount, 'messagesstatus': null }
+			@addCountToTotal messagesCount
+
+			selectionUsers = tempUsers.map (user) ->
+				return new Importer.SelectionUser user.id, user.name, user.profile.email, user.deleted, user.is_bot, !user.is_bot
+			selectionChannels = tempChannels.map (channel) ->
+				return new Importer.SelectionChannel channel.id, channel.name, channel.is_archived, true
+
+			@updateProgress Importer.ProgressStep.USER_SELECTION
+			return new Importer.Selection @name, selectionUsers, selectionChannels
+		catch error
+			@updateRecord { 'failed': true, 'error': error }
+			console.error Importer.ProgressStep.ERROR
+			throw new Error 'import-slack-error', error
+
+	startImport: (importSelection) =>
+		super(importSelection)
+		start = Date.now()
+
+		for user in importSelection.users
+			for u in @users.users when u.id is user.user_id
+				u.do_import = user.do_import
+		@collection.update { _id: @users._id }, { $set: { 'users': @users.users }}
+
+		for channel in importSelection.channels
+			for c in @channels.channels when c.id is channel.channel_id
+				c.do_import = channel.do_import
+		@collection.update { _id: @channels._id }, { $set: { 'channels': @channels.channels }}
+
+		startedByUserId = Meteor.userId()
+		Meteor.defer =>
+			try
+				@updateProgress Importer.ProgressStep.IMPORTING_USERS
+				for user in @users.users when user.do_import
+					do (user) =>
+						Meteor.runAsUser startedByUserId, () =>
+							existantUser = RocketChat.models.Users.findOneByEmailAddress user.profile.email
+							if existantUser
+								user.rocketId = existantUser._id
+								@userTags.push
+									slack: "<@#{user.id}>"
+									slackLong: "<@#{user.id}|#{user.name}>"
+									rocket: "@#{existantUser.username}"
+							else
+								userId = Accounts.createUser { email: user.profile.email, password: Date.now() + user.name + user.profile.email.toUpperCase() }
+								Meteor.runAsUser userId, () =>
+									Meteor.call 'setUsername', user.name
+									Meteor.call 'joinDefaultChannels', true
+									url = null
+									if user.profile.image_original
+										url = user.profile.image_original
+									else if user.profile.image_512
+										url = user.profile.image_512
+									Meteor.call 'setAvatarFromService', url, null, 'url'
+									# Slack's is -18000 which translates to Rocket.Chat's after dividing by 3600
+									if user.tz_offset
+										Meteor.call 'updateUserUtcOffset', user.tz_offset / 3600
+
+								if user.profile.real_name
+									RocketChat.models.Users.setName userId, user.profile.real_name
+								#Deleted users are 'inactive' users in Rocket.Chat
+								if user.deleted
+									Meteor.call 'setUserActiveStatus', userId, false
+								#TODO: Maybe send emails?
+								user.rocketId = userId
+								@userTags.push
+									slack: "<@#{user.id}>"
+									slackLong: "<@#{user.id}|#{user.name}>"
+									rocket: "@#{user.name}"
+							@addCountCompleted 1
+				@collection.update { _id: @users._id }, { $set: { 'users': @users.users }}
+
+				@updateProgress Importer.ProgressStep.IMPORTING_CHANNELS
+				for channel in @channels.channels when channel.do_import
+					do (channel) =>
+						Meteor.runAsUser startedByUserId, () =>
+							existantRoom = RocketChat.models.Rooms.findOneByName channel.name
+							if existantRoom or channel.is_general
+								if channel.is_general and channel.name isnt existantRoom?.name
+									Meteor.call 'saveRoomName', 'GENERAL', channel.name
+								channel.rocketId = if channel.is_general then 'GENERAL' else existantRoom._id
+							else
+								users = []
+								for member in channel.members when member isnt channel.creator
+									user = @getRocketUser member
+									if user?
+										users.push user.username
+
+								userId = ''
+								for user in @users.users when user.id is channel.creator
+									userId = user.rocketId
+
+								Meteor.runAsUser userId, () =>
+									returned = Meteor.call 'createChannel', channel.name, users
+									channel.rocketId = returned.rid
+								RocketChat.models.Rooms.update { _id: channel.rocketId }, { $set: { 'ts': new Date(channel.created * 1000) }}
+							@addCountCompleted 1
+				@collection.update { _id: @channels._id }, { $set: { 'channels': @channels.channels }}
+
+				@updateProgress Importer.ProgressStep.IMPORTING_MESSAGES
+				for channel, messagesObj of @messages
+					do (channel, messagesObj) =>
+						Meteor.runAsUser startedByUserId, () =>
+							slackChannel = @getSlackChannelFromName channel
+							if slackChannel?.do_import
+								room = RocketChat.models.Rooms.findOneById slackChannel.rocketId, { fields: { usernames: 1, t: 1, name: 1 } }
+								for date, msgs of messagesObj
+									@updateRecord { 'messagesstatus': "#{channel}/#{date}.#{msgs.messages.length}" }
+									for message in msgs.messages
+										if message.type is 'message'
+											if message.subtype?
+												if message.subtype is 'channel_join'
+													if @getRocketUser(message.user)?
+														RocketChat.models.Messages.createUserJoinWithRoomIdAndUser room._id, @getRocketUser(message.user),
+															ts: new Date(parseInt(message.ts.split('.')[0]) * 1000)
+												else if message.subtype is 'channel_leave'
+													if @getRocketUser(message.user)?
+														RocketChat.models.Messages.createUserLeaveWithRoomIdAndUser room._id, @getRocketUser(message.user),
+															ts: new Date(parseInt(message.ts.split('.')[0]) * 1000)
+												else if message.subtype is 'me_message'
+													RocketChat.sendMessage @getRocketUser(message.user), { msg: '_' + @convertSlackMessageToRocketChat(message.text) + '_', ts: new Date(parseInt(message.ts.split('.')[0]) * 1000) }, room
+											else
+												user = @getRocketUser(message.user)
+												if user?
+													msgObj =
+														msg: @convertSlackMessageToRocketChat message.text
+														ts: new Date(parseInt(message.ts.split('.')[0]) * 1000)
+														rid: room._id
+														u:
+															_id: user._id
+															username: user.username
+
+													if message.edited?
+														msgObj.ets = new Date(parseInt(message.edited.ts.split('.')[0]) * 1000)
+
+													#RocketChat.models.Messages.insert msgObj
+													RocketChat.sendMessage @getRocketUser(message.user), msgObj, room
+										@addCountCompleted 1
+
+				@updateProgress Importer.ProgressStep.FINISHING
+				for channel in @channels.channels when channel.do_import and channel.is_archived
+					do (channel) =>
+						Meteor.runAsUser startedByUserId, () =>
+							Meteor.call 'archiveRoom', channel.rocketId
+
+				@updateProgress Importer.ProgressStep.DONE
+				timeTook = Date.now() - start
+				console.log "Import took #{timeTook} milliseconds."
+			catch error
+				@updateRecord { 'failed': true, 'error': error }
+				@updateProgress Importer.ProgressStep.ERROR
+				console.error Importer.ProgressStep.ERROR
+				throw new Error 'import-slack-error', error
+
+		return @getProgress()
+
+	getSlackChannelFromName: (channelName) =>
+		for channel in @channels.channels when channel.name is channelName
+			return channel
+
+	getRocketUser: (slackId) =>
+		for user in @users.users when user.id is slackId
+			return RocketChat.models.Users.findOneById user.rocketId, { fields: { username: 1 }}
+
+	convertSlackMessageToRocketChat: (message) =>
+		if message?
+			message = message.replace /<!everyone>/g, '@all'
+			message = message.replace /<!channel>/g, '@all'
+			message = message.replace /&gt;/g, '<'
+			message = message.replace /&lt;/g, '>'
+			message = message.replace /&amp;/g, '&'
+			message = message.replace /:simple_smile:/g, ':smile:'
+			for userReplace in @userTags
+				message = message.replace /userReplace.slack/g, userReplace.rocket
+				message = message.replace /userReplace.slackLong/g, userReplace.rocket
+			return message
+
+	getSelection: () =>
+		selectionUsers = @users.users.map (user) ->
+			#HipChat's export doesn't contain bot users, from the data I've seen
+			return new Importer.SelectionUser user.id, user.name, user.profile.email, user.deleted, user.is_bot, !user.is_bot
+		selectionChannels = @channels.channels.map (room) ->
+			return new Importer.SelectionChannel channel.id, channel.name, channel.is_archived, true
+
+		return new Importer.Selection @name, selectionUsers, selectionChannels
