@@ -1,4 +1,3 @@
-RocketChat.models.RawImports = class extends RocketChat.models._Base
-	constructor: (name) ->
-		@name = name
-		@_initModel "raw_#{name}_import"
+Importer.RawImports = new class Importer.RawImports extends RocketChat.models._Base
+	constructor: ->
+		@_initModel 'raw_imports'

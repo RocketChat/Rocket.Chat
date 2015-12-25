@@ -50,8 +50,8 @@ rocketchat:github-enterprise
 rocketchat:gitlab
 rocketchat:highlight
 rocketchat:importer
+rocketchat:importer-hipchat
 rocketchat:importer-slack
-rocketchat:importer-test
 rocketchat:ldap
 rocketchat:logger
 rocketchat:mailer
