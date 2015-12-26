@@ -1,7 +1,13 @@
 Template.messageAttachment.helpers
 	fixCordova: (url) ->
 		if Meteor.isCordova and url?[0] is '/'
-			return Meteor.absoluteUrl().replace(/\/$/, '') + url
+			url = Meteor.absoluteUrl().replace(/\/$/, '') + url
+			query = "rc_uid=#{Meteor.userId()}&rc_token=#{Meteor._localStorage.getItem('Meteor.loginToken')}"
+			if url.indexOf('?') is -1
+				url = url + '?' + query
+			else
+				url = url + '&' + query
+
 		return url
 
 	showImage: ->
