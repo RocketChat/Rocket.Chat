@@ -91,10 +91,10 @@ RocketChat.settings.addGroup 'API', ->
 
 
 RocketChat.settings.addGroup 'SMTP', ->
-	@add 'SMTP_Host', '', { type: 'string' }
-	@add 'SMTP_Port', '', { type: 'string' }
-	@add 'SMTP_Username', '', { type: 'string' }
-	@add 'SMTP_Password', '', { type: 'string' }
+	@add 'SMTP_Host', '', { type: 'string', env: true }
+	@add 'SMTP_Port', '', { type: 'string', env: true }
+	@add 'SMTP_Username', '', { type: 'string', env: true }
+	@add 'SMTP_Password', '', { type: 'string', env: true }
 	@add 'From_Email', '', { type: 'string', placeholder: 'email@domain' }
 
 	@section 'Invitation', ->
