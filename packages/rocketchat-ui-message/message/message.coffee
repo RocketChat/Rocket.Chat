@@ -102,6 +102,10 @@ Template.message.onCreated ->
 				msg.html = _.escapeHTML msg.html
 
 			message = RocketChat.callbacks.run 'renderMessage', msg
+			if message.tokens?.length > 0
+				for token in message.tokens
+					message.html = message.html.replace token.token, token.text
+
 			# console.log JSON.stringify message
 			msg.html = message.html.replace /\n/gm, '<br/>'
 			return msg.html
