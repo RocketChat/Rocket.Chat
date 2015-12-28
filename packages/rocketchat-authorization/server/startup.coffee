@@ -27,6 +27,9 @@ Meteor.startup ->
 		{ _id: 'edit-other-user-info',
 		roles : ['admin']}
 
+		{ _id: 'edit-other-user-password',
+		roles : ['admin']}
+
 		{ _id: 'assign-admin-role',
 		roles : ['admin']}
 
@@ -100,14 +103,14 @@ Meteor.startup ->
 		roles : ['admin']}
 
 		{ _id: 'manage-integrations',
-		roles : ['admin']}
+		roles : ['admin', 'bot']}
 	]
 
 	#alanning:roles
 	roles = _.pluck(Roles.getAllRoles().fetch(), 'name');
 
 	for permission in permissions
-		RocketChat.models.Permissions.upsert( permission._id, {$setOnInsert : permission })
+		RocketChat.models.Permissions.upsert( permission._id, {$set: permission })
 		for role in permission.roles
 			unless role in roles
 				Roles.createRole role

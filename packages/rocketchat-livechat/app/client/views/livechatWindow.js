@@ -1,60 +1,62 @@
-Template.room.helpers({
-	title: function() {
+Template.livechatWindow.helpers({
+	title() {
 		var ref;
 		if (!Template.instance().subscriptionsReady()) {
 			return '';
 		}
 		return ((ref = Settings.findOne('Livechat_title')) != null ? ref.value : void 0) || 'Rocket.Chat';
 	},
-	color: function() {
+	color() {
 		var ref;
 		if (!Template.instance().subscriptionsReady()) {
 			return 'transparent';
 		}
 		return ((ref = Settings.findOne('Livechat_title_color')) != null ? ref.value : void 0) || '#C1272D';
 	},
-	popoutActive: function() {
+	popoutActive() {
 		return FlowRouter.getQueryParam('mode') === 'popout';
 	},
-	showMessages: function() {
-		return Session.get('triggered') || Meteor.userId();
+	showRegisterForm() {
+		if (Session.get('triggered')  || Meteor.userId()) {
+			return false;
+		}
+		var form = Settings.findOne('Livechat_registration_form');
+		return form.value;
 	},
-	livechatStartedEnabled: function() {
+	livechatStartedEnabled() {
 		return Template.instance().startedEnabled.get() !== null;
 	},
-	livechatEnabled: function() {
+	livechatEnabled() {
 		return Template.instance().startedEnabled.get();
 	}
 });
 
-Template.room.events({
-	'click .title': function() {
+Template.livechatWindow.events({
+	'click .title'() {
 		parentCall('toggleWindow');
 	},
-	'click .popout': function(event) {
+	'click .popout'(event) {
 		event.stopPropagation();
 		parentCall('openPopout');
 	}
 });
 
-Template.room.onCreated(function() {
-	self = this;
+Template.livechatWindow.onCreated(function() {
+	this.startedEnabled = new ReactiveVar(null);
 
-	self.startedEnabled = new ReactiveVar(null);
-
-	self.subscribe('settings', ['Livechat_title', 'Livechat_title_color', 'Livechat_enabled']);
+	this.subscribe('settings', ['Livechat_title', 'Livechat_title_color', 'Livechat_enabled', 'Livechat_registration_form']);
 
 	var initialCheck = true;
 
-	self.autorun(function() {
-		if (self.subscriptionsReady()) {
+	this.autorun(() => {
+		if (this.subscriptionsReady()) {
 			var enabled = Settings.findOne('Livechat_enabled');
 			if (enabled !== undefined) {
 				if (!enabled.value && initialCheck) {
 					parentCall('removeWidget');
 				}
 				initialCheck = false;
-				self.startedEnabled.set(enabled.value);
+				this.startedEnabled.set(enabled.value);
 			}
 		}
 	});

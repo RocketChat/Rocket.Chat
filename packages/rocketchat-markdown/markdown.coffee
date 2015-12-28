@@ -13,6 +13,20 @@ class Markdown
 			else
 				return message
 
+		# Support `text`
+		if _.isString message
+			msg = msg.replace(/(^|&gt;|[ >_*~])\`([^`\r\n]+)\`([<_*~]|\B|\b|$)/gm, '$1<span class="copyonly">`</span><span><code class="inline">$2</code></span><span class="copyonly">`</span>$3')
+		else
+			message.tokens ?= []
+			msg = msg.replace /(^|&gt;|[ >_*~])\`([^`\r\n]+)\`([<_*~]|\B|\b|$)/gm, (match, p1, p2, p3, offset, text) ->
+				token = "$#{Random.id()}$"
+
+				message.tokens.push
+					token: token
+					text: "#{p1}<span class=\"copyonly\">`</span><span><code class=\"inline\">#{p2}</code></span><span class=\"copyonly\">`</span>#{p3}"
+
+				return token
+
 		# Support ![alt text](http://image url)
 		msg = msg.replace(/!\[([^\]]+)\]\((https?:\/\/[^\)]+)\)/gm, '<a href="$2" title="$1" class="swipebox" target="_blank"><div class="inline-image" style="background-image: url($2);"></div></a>')
 
@@ -34,9 +48,6 @@ class Markdown
 
 			# Support # Text for h4
 			msg = msg.replace(/^#### (([\w\d-_\/\*\.,\\] ?)+)/gm, '<h4>$1</h4>')
-
-		# Support `text`
-		msg = msg.replace(/(^|&gt;|[ >_*~])\`([^`\r\n]+)\`([<_*~]|\B|\b|$)/gm, '$1<span class="copyonly">`</span><code class="inline">$2</code><span class="copyonly">`</span>$3')
 
 		# Support *text* to make bold
 		msg = msg.replace(/(^|&gt;|[ >_~`])\*{1,2}([^\*\r\n]+)\*{1,2}([<_~`]|\B|\b|$)/gm, '$1<span class="copyonly">*</span><strong>$2</strong><span class="copyonly">*</span>$3')
