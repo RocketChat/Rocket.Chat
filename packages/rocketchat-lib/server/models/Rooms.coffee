@@ -3,6 +3,9 @@ RocketChat.models.Rooms = new class extends RocketChat.models._Base
 		@_initModel 'room'
 
 		@tryEnsureIndex { 'name': 1 }, { unique: 1, sparse: 1 }
+		@tryEnsureIndex { 'default': 1 }
+		@tryEnsureIndex { 'usernames': 1 }
+		@tryEnsureIndex { 't': 1 }
 		@tryEnsureIndex { 'u._id': 1 }
 
 
@@ -106,6 +109,13 @@ RocketChat.models.Rooms = new class extends RocketChat.models._Base
 
 		return @find query, options
 
+	findByTypeContainigUsernames: (type, username, options) ->
+		query =
+			t: type
+			usernames: { $all: [].concat(username) }
+
+		return @find query, options
+
 	findByTypesAndNotUserIdContainingUsername: (types, userId, username, options) ->
 		query =
 			t:
@@ -124,16 +134,27 @@ RocketChat.models.Rooms = new class extends RocketChat.models._Base
 
 	findByTypeAndName: (type, name, options) ->
 		query =
-			t: type
 			name: name
+			t: type
 
 		return @find query, options
 
 	findByTypeAndNameContainigUsername: (type, name, username, options) ->
 		query =
-			t: type
 			name: name
+			t: type
 			usernames: username
+
+		return @find query, options
+
+	findByTypeAndArchivationState: (type, archivationstate, options) ->
+		query =
+			t: type
+
+		if archivationstate
+			query.archived = true
+		else
+			query.archived = { $ne: true }
 
 		return @find query, options
 
@@ -268,6 +289,16 @@ RocketChat.models.Rooms = new class extends RocketChat.models._Base
 
 		return @update query, update, { multi: true }
 
+	replaceMutedUsername: (previousUsername, username) ->
+		query =
+			muted: previousUsername
+
+		update =
+			$set:
+				"muted.$": username
+
+		return @update query, update, { multi: true }
+
 	replaceUsernameOfUserByUserId: (userId, username) ->
 		query =
 			"u._id": userId
@@ -290,12 +321,52 @@ RocketChat.models.Rooms = new class extends RocketChat.models._Base
 
 		return @update query, update
 
+	setTypeById: (_id, type) ->
+		query =
+			_id: _id
+
+		update =
+			$set:
+				t: type
+
+		return @update query, update
+
+	setTopicById: (_id, topic) ->
+		query =
+			_id: _id
+
+		update =
+			$set:
+				topic: topic
+
+		return @update query, update
+
+	muteUsernameByRoomId: (_id, username) ->
+		query =
+			_id: _id
+
+		update =
+			$addToSet:
+				muted: username
+
+		return @update query, update
+
+	unmuteUsernameByRoomId: (_id, username) ->
+		query =
+			_id: _id
+
+		update =
+			$pull:
+				muted: username
+
+		return @update query, update
+
 
 	# INSERT
 	createWithTypeNameUserAndUsernames: (type, name, user, usernames, extraData) ->
 		room =
-			t: type
 			name: name
+			t: type
 			usernames: usernames
 			msgs: 0
 			u:
@@ -332,6 +403,6 @@ RocketChat.models.Rooms = new class extends RocketChat.models._Base
 	removeByTypeContainingUsername: (type, username) ->
 		query =
 			t: type
-			username: username
+			usernames: username
 
 		return @remove query

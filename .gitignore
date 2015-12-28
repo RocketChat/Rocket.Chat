@@ -46,7 +46,6 @@
 .Trashes
 .wtpmodules
 \#*\#
-BuildInfo.js
 Desktop.ini
 ehthumbs.db
 example.css
@@ -67,3 +66,4 @@ tramp
 ecosystem.json
 pm2.json
 settings.json
+build.sh

@@ -1,0 +1,8 @@
+{
+  "Channel" : "Kanał",
+  "Private_Group" : "Grupa Prywatna",
+  "Room_Type" : "Rodzaj pokoju",
+  "Room_Settings" : "Ustawienia pokoju",
+  "room_changed_privacy" : "<em>__user_by__</em> zmienił(a) rodzaj pokoju na: <em>__room_type__</em>",
+  "room_changed_topic" : "<em>__user_by__</em> zmienił(a) temat pokoju na: <em>__room_topic__</em>"
+}

@@ -3,6 +3,7 @@
 # 'meteor add' and 'meteor remove' will edit this file for you,
 # but you can also edit it by hand.
 
+rocketchat:cors
 accounts-facebook
 accounts-github
 accounts-google
@@ -24,6 +25,7 @@ meteor-base
 mobile-experience
 mongo
 random
+rate-limit
 reactive-dict
 reactive-var
 reload
@@ -38,6 +40,8 @@ rocketchat:lib
 
 rocketchat:authorization
 rocketchat:autolinker
+rocketchat:channel-settings
+rocketchat:channel-settings-mail-messages
 rocketchat:colors
 rocketchat:custom-oauth
 rocketchat:emojione
@@ -48,24 +52,38 @@ rocketchat:gitlab
 rocketchat:highlight
 rocketchat:ldap
 rocketchat:logger
+rocketchat:mailer
 rocketchat:markdown
 rocketchat:me
 rocketchat:mentions
+rocketchat:mentions-flextab
+rocketchat:message-pin
 rocketchat:message-star
 rocketchat:oembed
 rocketchat:slashcommands-invite
 rocketchat:slashcommands-join
 rocketchat:slashcommands-leave
+rocketchat:slashcommands-kick
+rocketchat:slashcommands-mute
 rocketchat:spotify
 rocketchat:statistics
 rocketchat:theme
+rocketchat:tutum
+rocketchat:ui
+rocketchat:ui-account
+rocketchat:ui-admin
+rocketchat:ui-flextab
+rocketchat:ui-login
+rocketchat:ui-master
+rocketchat:ui-message
+rocketchat:ui-sidenav
+rocketchat:version
 rocketchat:webrtc
 rocketchat:wordpress
 #rocketchat:chatops
 #rocketchat:hubot
 #rocketchat:irc
 #rocketchat:livechat
-rocketchat:soundcloud
 
 konecty:change-case
 konecty:delayed-task
@@ -82,8 +100,8 @@ jalik:ufs-gridfs
 jparker:gravatar
 kadira:blaze-layout
 kadira:flow-router
+kenton:accounts-sandstorm
 kevohagan:sweetalert
-meteorhacks:kadira
 mizzao:autocomplete
 mizzao:timesync
 momentjs:moment
@@ -92,6 +110,7 @@ mrt:reactive-store
 mystor:device-detection
 nimble:restivus
 nooitaf:colors
+ostrio:cookies@2.0.1
 pauli:accounts-linkedin
 perak:codemirror
 percolate:migrations
@@ -109,4 +128,6 @@ yasaricli:slugify
 yasinuslu:blaze-meta
 # sanjo:jasmine
 # velocity:html-reporter
-rocketchat:tutum
+rocketchat:assets
+rocketchat:integrations
+rocketchat:message-attachments

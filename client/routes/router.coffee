@@ -97,3 +97,25 @@ FlowRouter.route '/room-not-found/:type/:name',
 	action: (params) ->
 		Session.set 'roomNotFound', {type: params.type, name: params.name}
 		BlazeLayout.render 'main', {center: 'roomNotFound'}
+
+FlowRouter.route '/fxos',
+	name: 'firefox-os-install'
+
+	action: ->
+		BlazeLayout.render 'fxOsInstallPrompt'
+
+FlowRouter.route '/register/:hash',
+	name: 'register-secret-url'
+	action: (params) ->
+		BlazeLayout.render 'secretURL'
+
+		# if RocketChat.settings.get('Accounts_RegistrationForm') is 'Secret URL'
+		# 	Meteor.call 'checkRegistrationSecretURL', params.hash, (err, success) ->
+		# 		if success
+		# 			Session.set 'loginDefaultState', 'register'
+		# 			BlazeLayout.render 'main', {center: 'home'}
+		# 			KonchatNotification.getDesktopPermission()
+		# 		else
+		# 			BlazeLayout.render 'logoLayout', { render: 'invalidSecretURL' }
+		# else
+		# 	BlazeLayout.render 'logoLayout', { render: 'invalidSecretURL' }
