@@ -26,13 +26,15 @@ Package.onUse(function(api) {
 	api.use('kadira:flow-router', 'client');
 
 	// DEBUGGER
-	api.addFiles('server/lib/debug.js');
+	api.addFiles('server/lib/debug.js', 'server');
 
 	// COMMON LIB
 	api.addFiles('lib/core.coffee');
 	api.addFiles('lib/settings.coffee');
 	api.addFiles('lib/callbacks.coffee');
 	api.addFiles('lib/slashCommand.coffee');
+	api.addFiles('lib/Message.coffee');
+	api.addFiles('lib/MessageTypes.coffee');
 
 	// SERVER LIB
 	api.addFiles('server/lib/RateLimiter.coffee', 'server');
@@ -92,7 +94,6 @@ Package.onUse(function(api) {
 	api.addFiles('client/Notifications.coffee', 'client');
 	api.addFiles('client/TabBar.coffee', 'client');
 	api.addFiles('client/MessageAction.coffee', 'client');
-	api.addFiles('client/MessageTypes.coffee', 'client');
 
 	// VERSION
 	api.addFiles('rocketchat.info');

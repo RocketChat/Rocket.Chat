@@ -147,14 +147,17 @@ RocketChat.settings.init = ->
 	RocketChat.models.Settings.find().observe
 		added: (record) ->
 			Meteor.settings[record._id] = record.value
-			process.env[record._id] = record.value
+			if record.env is true
+				process.env[record._id] = record.value
 			RocketChat.settings.load record._id, record.value, initialLoad
 		changed: (record) ->
 			Meteor.settings[record._id] = record.value
-			process.env[record._id] = record.value
+			if record.env is true
+				process.env[record._id] = record.value
 			RocketChat.settings.load record._id, record.value, initialLoad
 		removed: (record) ->
 			delete Meteor.settings[record._id]
-			delete process.env[record._id]
+			if record.env is true
+				delete process.env[record._id]
 			RocketChat.settings.load record._id, undefined, initialLoad
 	initialLoad = false

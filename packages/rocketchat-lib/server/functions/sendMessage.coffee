@@ -30,7 +30,7 @@ RocketChat.sendMessage = (user, message, room, options) ->
 	###
 	Meteor.defer ->
 
-		RocketChat.callbacks.run 'afterSaveMessage', message
+		RocketChat.callbacks.run 'afterSaveMessage', message, room
 
 	###
 	Update all the room activity tracker fields

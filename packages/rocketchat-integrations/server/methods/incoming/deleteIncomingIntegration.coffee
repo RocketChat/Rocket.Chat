@@ -1,12 +1,12 @@
 Meteor.methods
-	deleteIntegration: (integrationId) ->
+	deleteIncomingIntegration: (integrationId) ->
 		if not RocketChat.authz.hasPermission @userId, 'manage-integrations'
 			throw new Meteor.Error 'not_authorized'
 
 		integration = RocketChat.models.Integrations.findOne(integrationId)
 
 		if not integration?
-			throw new Meteor.Error 'invalid_integration', '[methods] addIntegration -> integration not found'
+			throw new Meteor.Error 'invalid_integration', '[methods] deleteIncomingIntegration -> integration not found'
 
 		updateObj =
 			$pull:
