@@ -8,6 +8,7 @@ class Highlight
 	constructor: (message) ->
 
 		if s.trim message.html
+			message.tokens ?= []
 
 			# Count occurencies of ```
 			count = (message.html.match(/```/g) || []).length
@@ -40,7 +41,15 @@ class Highlight
 							result = hljs.highlightAuto code
 						else
 							result = hljs.highlight lang, code
-						msgParts[index] = "<pre><code class='hljs " + result.language + "'><span class='copyonly'>```<br></span>" + result.value + "<span class='copyonly'><br>```</span></code></pre>"
+
+						token = "$#{Random.id()}$"
+
+						message.tokens.push
+							highlight: true
+							token: token
+							text: "<pre><code class='hljs " + result.language + "'><span class='copyonly'>```<br></span>" + result.value + "<span class='copyonly'><br>```</span></code></pre>"
+
+						msgParts[index] = token
 					else
 						msgParts[index] = part
 
