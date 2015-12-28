@@ -13,6 +13,12 @@
 					<label for="username">{{_ "Username"}}</label>
 					<input type="text" id="username" autocomplete="off" value="{{username}}">
 				</div>
+				{{#if hasPermission 'edit-other-user-password'}}
+				<div class="input-line">
+					<label for="password">{{_ "Password"}}</label>
+					<input type="password" id="password" autocomplete="off" value="">
+				</div>
+				{{/if}}
 			</form>
 		</div>
 		<nav>

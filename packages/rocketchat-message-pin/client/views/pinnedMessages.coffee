@@ -5,9 +5,6 @@ Template.pinnedMessages.helpers
 	messages: ->
 		return PinnedMessage.find { rid: @rid }, { sort: { ts: -1 } }
 
-	notReadySubscription: ->
-		return 'notready' unless Template.instance().subscriptionsReady()
-
 	hasMore: ->
 		return Template.instance().hasMore.get()
 

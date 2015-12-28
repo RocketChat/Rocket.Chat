@@ -102,6 +102,10 @@ Template.message.onCreated ->
 				msg.html = _.escapeHTML msg.html
 
 			message = RocketChat.callbacks.run 'renderMessage', msg
+			if message.tokens?.length > 0
+				for token in message.tokens
+					message.html = message.html.replace token.token, token.text
+
 			# console.log JSON.stringify message
 			msg.html = message.html.replace /\n/gm, '<br/>'
 			return msg.html
@@ -128,12 +132,12 @@ Template.message.onViewRendered = (context) ->
 			else
 				$currentNode.removeClass('new-day')
 
-			if previousDataset.groupable is 'false'
+			if previousDataset.groupable is 'false' or currentDataset.groupable is 'false'
 				$currentNode.removeClass('sequential')
 			else
 				if previousDataset.username isnt currentDataset.username or parseInt(currentDataset.timestamp) - parseInt(previousDataset.timestamp) > RocketChat.settings.get('Message_GroupingPeriod') * 1000
 					$currentNode.removeClass('sequential')
-				else
+				else if not $currentNode.hasClass 'new-day'
 					$currentNode.addClass('sequential')
 
 		if nextNode?.dataset?
@@ -147,7 +151,7 @@ Template.message.onViewRendered = (context) ->
 			if nextDataset.groupable isnt 'false'
 				if nextDataset.username isnt currentDataset.username or parseInt(nextDataset.timestamp) - parseInt(currentDataset.timestamp) > RocketChat.settings.get('Message_GroupingPeriod') * 1000
 					$nextNode.removeClass('sequential')
-				else
+				else if not $nextNode.hasClass 'new-day'
 					$nextNode.addClass('sequential')
 
 		if not nextNode?

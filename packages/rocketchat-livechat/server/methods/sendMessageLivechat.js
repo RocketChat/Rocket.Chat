@@ -7,13 +7,23 @@ Meteor.methods({
 
 		guest = Meteor.users.findOne(Meteor.userId(), {
 			fields: {
-				username: 1
+				username: 1,
+				department: 1
 			}
 		});
 
 		room = RocketChat.models.Rooms.findOneById(message.rid);
 		if (room == null) {
-			agent = getNextAgent();
+
+			// if no department selected verify if there is only one active and use it
+			if (!guest.department) {
+				var departments = RocketChat.models.LivechatDepartment.findEnabledWithAgents();
+				if (departments.count() === 1) {
+					guest.department = departments.fetch()[0]._id;
+				}
+			}
+
+			agent = getNextAgent(guest.department);
 			if (!agent) {
 				throw new Meteor.Error('no-agent-online', 'Sorry, no online agents');
 			}
@@ -37,7 +47,7 @@ Meteor.methods({
 				unread: 1,
 				answered: false,
 				u: {
-					_id: agent._id,
+					_id: agent.agentId,
 					username: agent.username
 				},
 				t: 'l'

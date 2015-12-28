@@ -1,19 +1,20 @@
 Meteor.methods
-	updateIntegration: (integrationId, integration) ->
+	updateIncomingIntegration: (integrationId, integration) ->
 		if not RocketChat.authz.hasPermission @userId, 'manage-integrations'
 			throw new Meteor.Error 'not_authorized'
 
 		if not _.isString(integration.channel)
-			throw new Meteor.Error 'invalid_channel', '[methods] addIntegration -> channel must be string'
+			throw new Meteor.Error 'invalid_channel', '[methods] updateIncomingIntegration -> channel must be string'
 
 		if integration.channel.trim() is ''
-			throw new Meteor.Error 'invalid_channel', '[methods] addIntegration -> channel can\'t be empty'
+			throw new Meteor.Error 'invalid_channel', '[methods] updateIncomingIntegration -> channel can\'t be empty'
 
 		if integration.channel[0] not in ['@', '#']
-			throw new Meteor.Error 'invalid_channel', '[methods] addIntegration -> channel should start with # or @'
+			throw new Meteor.Error 'invalid_channel', '[methods] updateIncomingIntegration -> channel should start with # or @'
 
-		if not RocketChat.models.Integrations.findOne(integrationId)?
-			throw new Meteor.Error 'invalid_integration', '[methods] addIntegration -> integration not found'
+		currentIntegration = RocketChat.models.Integrations.findOne(integrationId)
+		if not currentIntegration?
+			throw new Meteor.Error 'invalid_integration', '[methods] updateIncomingIntegration -> integration not found'
 
 		record = undefined
 		channelType = integration.channel[0]
@@ -34,7 +35,10 @@ Meteor.methods
 					]
 
 		if record is undefined
-			throw new Meteor.Error 'channel_does_not_exists', "[methods] addIntegration -> The channel does not exists"
+			throw new Meteor.Error 'channel_does_not_exists', "[methods] updateIncomingIntegration -> The channel does not exists"
+
+		user = RocketChat.models.Users.findOne({username: currentIntegration.username})
+		Roles.addUsersToRoles user._id, 'bot', 'bot'
 
 		RocketChat.models.Integrations.update integrationId,
 			$set:

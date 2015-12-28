@@ -108,7 +108,7 @@ Template.integrationsIncoming.events
 			closeOnConfirm: false
 			html: false
 		, ->
-			Meteor.call "deleteIntegration", params.id, (err, data) ->
+			Meteor.call "deleteIncomingIntegration", params.id, (err, data) ->
 				swal
 					title: t('Deleted')
 					text: t('Your_entry_has_been_deleted')
@@ -141,16 +141,15 @@ Template.integrationsIncoming.events
 
 		params = Template.instance().data.params?()
 		if params?.id?
-			Meteor.call "updateIntegration", params.id, integration, (err, data) ->
+			Meteor.call "updateIncomingIntegration", params.id, integration, (err, data) ->
 				if err?
 					return toastr.error TAPi18n.__(err.error)
 
 				toastr.success TAPi18n.__("Integration_updated")
 		else
-			integration.type = 'webhook-incoming'
 			integration.username = username
 
-			Meteor.call "addIntegration", integration, (err, data) ->
+			Meteor.call "addIncomingIntegration", integration, (err, data) ->
 				if err?
 					return toastr.error TAPi18n.__(err.error)
 
