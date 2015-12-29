@@ -7,4 +7,3 @@ Importer.Selection = class Importer.Selection
 	# @param [Array<Importer.Channel>] channels the array of channels
 	#
 	constructor: (@name, @users, @channels) ->
-		console.log "Importer Selection created for #{@name}."

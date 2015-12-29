@@ -15,24 +15,24 @@
 						<fieldset>
 							{{#if isLoaded}}
 								<div class="section">
-									<h1>Actions</h1>
+									<h1>{{_ "Actions"}}</h1>
 									<div class="section-content">
-										<button class="button restart"><i class="icon-send"></i><span>Restart Import</span></button>
-										<button class="button start"><i class="icon-send"></i><span>Start Importing</span></button>
-										<button class="button uncheck-deleted-users"><i class="icon-send"></i><span>Uncheck Deleted Users</span></button>
-										<button class="button uncheck-archived-channels"><i class="icon-send"></i><span>Uncheck Archived Channels</span></button>
+										<button class="button restart"><i class="icon-send"></i><span>{{_ "Importer_Prepare_Restart_Import"}}</span></button>
+										<button class="button start"><i class="icon-send"></i><span>{{_ "Importer_Prepare_Start_Import"}}</span></button>
+										<button class="button uncheck-deleted-users"><i class="icon-send"></i><span>{{_ "Importer_Prepare_Uncheck_Deleted_Users"}}</span></button>
+										<button class="button uncheck-archived-channels"><i class="icon-send"></i><span>{{_ "Importer_Prepare_Uncheck_Archived_Channels"}}</span></button>
 									</div>
 								</div>
 
 								<div class="section">
-									<h1>Users</h1>
+									<h1>{{_ "Users"}}</h1>
 									<div class="section-content">
 										<ul>
 											{{#each users}}
 												{{#unless is_bot}}
 													<li>
 														<input type="checkbox" name="{{user_id}}" checked="checked" />{{username}} - {{email}}
-														{{#if is_deleted }} <em>(Deleted User)</em>{{/if}}
+														{{#if is_deleted }} <em>({{_ "Deleted"}})</em>{{/if}}
 													</li>
 												{{/unless}}
 											{{/each}}
@@ -41,13 +41,13 @@
 								</div>
 
 								<div class="section">
-									<h1>Channels</h1>
+									<h1>{{_ "Channels"}}</h1>
 									<div class="section-content">
 										<ul>
 											{{#each channels}}
 												<li>
 													<input type="checkbox" name="{{channel_id}}" checked="checked" />{{name}}
-													{{#if is_archived}} <em>(Archived)</em>{{/if}}
+													{{#if is_archived}} <em>({{_ "Importer_Archived"}})</em>{{/if}}
 												</li>
 											{{/each}}
 										</ul>

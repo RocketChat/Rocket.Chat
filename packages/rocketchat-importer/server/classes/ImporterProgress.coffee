@@ -5,6 +5,5 @@ Importer.Progress = class Importer.Progress
 	# @param [String] name the name of the Importer
 	#
 	constructor: (@name) ->
-		console.log "Importer Progress for #{@name}."
 		@step = Importer.ProgressStep.NEW
 		@count = { completed: 0, total: 0 }
