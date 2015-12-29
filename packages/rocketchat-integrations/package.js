@@ -63,6 +63,6 @@ Package.onUse(function(api) {
       return 'i18n/' + filename;
     }
   }));
-  api.use('tap:i18n', ['client', 'server']);
-  api.addFiles(tapi18nFiles, ['client', 'server']);
+  api.use('tap:i18n');
+  api.addFiles(tapi18nFiles);
 });
