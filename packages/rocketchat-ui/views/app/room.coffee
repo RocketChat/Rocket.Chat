@@ -32,6 +32,9 @@ Template.room.helpers
 	hasMore: ->
 		return RoomHistoryManager.hasMore this._id
 
+	hasMoreNext: ->
+		return RoomHistoryManager.hasMoreNext this._id
+
 	isLoading: ->
 		return RoomHistoryManager.isLoading this._id
 
@@ -75,6 +78,11 @@ Template.room.helpers
 		else
 			return roomData.name
 
+	roomTopic: ->
+		roomData = Session.get('roomData' + this._id)
+		return '' unless roomData
+		return roomData.topic
+
 	roomIcon: ->
 		roomData = Session.get('roomData' + this._id)
 		return '' unless roomData?.t
@@ -101,25 +109,8 @@ Template.room.helpers
 		return '' unless roomData
 		return roomData.t is 'c'
 
-	canEditName: ->
-		roomData = Session.get('roomData' + this._id)
-		return '' unless roomData
-		if roomData.t in ['c', 'p']
-			return RocketChat.authz.hasAtLeastOnePermission('edit-room', this._id)
-		else
-			return ''
-
 	canDirectMessage: ->
 		return Meteor.user()?.username isnt this.username
-
-	roomNameEdit: ->
-		return Session.get('roomData' + this._id)?.name
-
-	editingTitle: ->
-		return 'hidden' if Session.get('editRoomTitle')
-
-	showEditingTitle: ->
-		return 'hidden' if not Session.get('editRoomTitle')
 
 	flexOpened: ->
 		return 'opened' if RocketChat.TabBar.isFlexOpen()
@@ -189,7 +180,7 @@ Template.room.helpers
 
 	formatUnreadSince: ->
 		room = ChatRoom.findOne(this._id, { reactive: false })
-		room = RoomManager.openedRooms[room.t + room.name]
+		room = RoomManager.openedRooms[room?.t + room?.name]
 		date = room?.unreadSince.get()
 		if not date? then return
 
@@ -210,6 +201,8 @@ Template.room.helpers
 	compactView: ->
 		return 'compact' if Meteor.user()?.settings?.preferences?.compactView
 
+	selectable: ->
+		return Template.instance().selectable.get()
 
 Template.room.events
 	"click, touchend": (e, t) ->
@@ -287,21 +280,9 @@ Template.room.events
 			$('#room-title-field').focus().select()
 		, 10
 
-	'keydown #room-title-field': (event) ->
-		if event.keyCode is 27 # esc
-			Session.set('editRoomTitle', false)
-		else if event.keyCode is 13 # enter
-			renameRoom @_id, $(event.currentTarget).val()
-
-	'blur #room-title-field': (event) ->
-		# TUDO: create a configuration to select the desired behaviour
-		# renameRoom this._id, $(event.currentTarget).val()
-		Session.set('editRoomTitle', false)
-		$(".fixed-title").removeClass "visible"
-
 	"click .flex-tab .user-image > a" : (e) ->
 		RocketChat.TabBar.openFlex()
-		Session.set('showUserInfo', $(e.currentTarget).data('username'))
+		Session.set('showUserInfo', @username)
 
 	'click .user-card-message': (e) ->
 		roomData = Session.get('roomData' + this._arguments[1].rid)
@@ -313,9 +294,11 @@ Template.room.events
 		RocketChat.TabBar.setTemplate 'membersList'
 
 	'scroll .wrapper': _.throttle (e, instance) ->
-		if RoomHistoryManager.hasMore(@_id) is true and RoomHistoryManager.isLoading(@_id) is false
-			if e.target.scrollTop is 0
+		if RoomHistoryManager.isLoading(@_id) is false and (RoomHistoryManager.hasMore(@_id) is true or RoomHistoryManager.hasMoreNext(@_id) is true)
+			if RoomHistoryManager.hasMore(@_id) is true and e.target.scrollTop is 0
 				RoomHistoryManager.getMore(@_id)
+			else if RoomHistoryManager.hasMoreNext(@_id) is true and e.target.scrollTop >= e.target.scrollHeight - e.target.clientHeight
+				RoomHistoryManager.getMoreNext(@_id)
 	, 200
 
 	'click .load-more > a': ->
@@ -347,6 +330,8 @@ Template.room.events
 		dropDown.show()
 
 	'click .message-dropdown .message-action': (e, t) ->
+		e.preventDefault()
+		e.stopPropagation()
 		el = $(e.currentTarget)
 
 		button = RocketChat.MessageAction.getButtonById el.data('id')
@@ -368,14 +353,7 @@ Template.room.events
 
 	'click .image-to-download': (event) ->
 		ChatMessage.update {_id: this._arguments[1]._id, 'urls.url': $(event.currentTarget).data('url')}, {$set: {'urls.$.downloadImages': true}}
-
-	'click .pin-message': (event) ->
-		message = @_arguments[1]
-		instance = Template.instance()
-		if message.pinned
-			chatMessages[Session.get('openedRoom')].unpinMsg(message)
-		else
-			chatMessages[Session.get('openedRoom')].pinMsg(message)
+		ChatMessage.update {_id: this._arguments[1]._id, 'attachments.image_url': $(event.currentTarget).data('url')}, {$set: {'attachments.$.downloadImages': true}}
 
 	'dragenter .dropzone': (e) ->
 		e.currentTarget.classList.add 'over'
@@ -427,6 +405,35 @@ Template.room.events
 	'load img': (e, template) ->
 		template.sendToBottomIfNecessary?()
 
+	'click .jump-recent .jump-link': (e, template) ->
+		e.preventDefault()
+		template.atBottom = true
+		RoomHistoryManager.clear(template?.data?._id)
+
+	'click .message': (e, template) ->
+		if template.selectable.get()
+			document.selection?.empty() or window.getSelection?().removeAllRanges()
+			data = Blaze.getData(e.currentTarget)
+			_id = data?._arguments?[1]?._id
+
+			if !template.selectablePointer
+				template.selectablePointer = _id
+
+			if !e.shiftKey
+				template.selectedMessages = template.getSelectedMessages()
+				template.selectedRange = []
+				template.selectablePointer = _id
+
+			template.selectMessages _id
+
+			selectedMessages = $('.messages-box .message.selected').map((i, message) -> message.id)
+			removeClass = _.difference selectedMessages, template.getSelectedMessages()
+			addClass = _.difference template.getSelectedMessages(), selectedMessages
+			for message in removeClass
+				$(".messages-box ##{message}").removeClass('selected')
+			for message in addClass
+				$(".messages-box ##{message}").addClass('selected')
+
 
 Template.room.onCreated ->
 	# this.scrollOnBottom = true
@@ -435,10 +442,47 @@ Template.room.onCreated ->
 	this.atBottom = true
 	this.unreadCount = new ReactiveVar 0
 
-	self = @
+	this.selectable = new ReactiveVar false
+	this.selectedMessages = []
+	this.selectedRange = []
+	this.selectablePointer = null
 
-	@autorun ->
-		self.subscribe 'fullUserData', Session.get('showUserInfo'), 1
+	this.resetSelection = (enabled) =>
+		this.selectable.set(enabled)
+		$('.messages-box .message.selected').removeClass 'selected'
+		this.selectedMessages = []
+		this.selectedRange = []
+		this.selectablePointer = null
+
+	this.selectMessages = (to) =>
+		if this.selectablePointer is to and this.selectedRange.length > 0
+			this.selectedRange = []
+		else
+			message1 = ChatMessage.findOne this.selectablePointer
+			message2 = ChatMessage.findOne to
+
+			minTs = _.min([message1.ts, message2.ts])
+			maxTs = _.max([message1.ts, message2.ts])
+
+			this.selectedRange = _.pluck(ChatMessage.find({ rid: message1.rid, ts: { $gte: minTs, $lte: maxTs } }).fetch(), '_id')
+
+	this.getSelectedMessages = =>
+		messages = this.selectedMessages
+		addMessages = false
+		for message in this.selectedRange
+			if messages.indexOf(message) is -1
+				addMessages = true
+				break
+
+		if addMessages
+			previewMessages = _.compact(_.uniq(this.selectedMessages.concat(this.selectedRange)))
+		else
+			previewMessages = _.compact(_.difference(this.selectedMessages, this.selectedRange))
+
+		return previewMessages
+
+	@autorun =>
+		@subscribe 'fullUserData', Session.get('showUserInfo'), 1
 
 
 Template.room.onDestroyed ->
@@ -539,7 +583,7 @@ Template.room.onRendered ->
 			firstMessage = ChatMessage.findOne firstMessageOnScreen.id
 			if firstMessage?
 				subscription = ChatSubscription.findOne rid: template.data._id
-				template.unreadCount.set ChatMessage.find({rid: template.data._id, ts: {$lt: firstMessage.ts, $gt: subscription.ls}}).count()
+				template.unreadCount.set ChatMessage.find({rid: template.data._id, ts: {$lt: firstMessage.ts, $gt: subscription?.ls}}).count()
 			else
 				template.unreadCount.set 0
 	, 300
@@ -564,36 +608,3 @@ Template.room.onRendered ->
 			if webrtc.localUrl.get()?
 				RocketChat.TabBar.setTemplate 'membersList'
 				RocketChat.TabBar.openFlex()
-
-
-renameRoom = (rid, name) ->
-	name = name?.toLowerCase().trim()
-	console.log 'room renameRoom' if window.rocketDebug
-	room = Session.get('roomData' + rid)
-	if room.name is name
-		Session.set('editRoomTitle', false)
-		return false
-
-	Meteor.call 'saveRoomName', rid, name, (error, result) ->
-		if result
-			Session.set('editRoomTitle', false)
-			# If room was renamed then close current room and send user to the new one
-			RoomManager.close room.t + room.name
-			switch room.t
-				when 'c'
-					FlowRouter.go 'channel', name: name
-				when 'p'
-					FlowRouter.go 'group', name: name
-
-			toastr.success t('Room_name_changed_successfully')
-		if error
-			if error.error is 'name-invalid'
-				toastr.error t('Invalid_room_name', name)
-				return
-			if error.error is 'duplicate-name'
-				if room.t is 'c'
-					toastr.error t('Duplicate_channel_name', name)
-				else
-					toastr.error t('Duplicate_private_group_name', name)
-				return
-			toastr.error error.reason

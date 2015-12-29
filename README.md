@@ -7,10 +7,12 @@ The Ultimate Open Source WebChat Platform
 * [Desktop apps](#desktop-apps)
 * [Deployment](#deployment)
   * [Heroku](#heroku)
+  * [Scalingo](#scalingo)
   * [Sandstorm.io](#sandstormio)
   * [Sloppy.io](#sloppyio)
   * [Docker](#docker)
   * [FreeBSD](#freebsd)
+  * [Ansible](#ansible)
   * [Ubuntu VPS](#ubuntu-vps)
   * [Ubuntu Software Center](#ubuntu-software-center)
 * [About Rocket.Chat](#about-rocketchat)
@@ -67,6 +69,17 @@ Branch **develop** (Newer but unstable):
 
 [![Deploy](https://www.herokucdn.com/deploy/button.png)](https://heroku.com/deploy?template=https://github.com/RocketChat/Rocket.Chat/tree/develop)
 
+## Scalingo
+Deploy your own Rocket.Chat server instantly on [Scalingo](https://scalingo.com)
+
+Branch **master** (Latest stable version):
+
+[![Deploy on Scalingo](https://cdn.scalingo.com/deploy/button.svg)](https://my.scalingo.com/deploy?source=https://github.com/RocketChat/Rocket.Chat#master)
+
+Branch **develop** (Newer but unstable):
+
+[![Deploy on Scalingo](https://cdn.scalingo.com/deploy/button.svg)](https://my.scalingo.com/deploy?source=https://github.com/RocketChat/Rocket.Chat#develop)
+
 ## Sandstorm.io
 [![Rocket.Chat on Sandstorm.io](https://raw.githubusercontent.com/Sing-Li/bbug/master/images/sandstorm.jpg)](https://apps.sandstorm.io/app/vfnwptfn02ty21w715snyyczw0nqxkv3jvawcah10c6z7hj1hnu0)
 
@@ -80,18 +93,34 @@ Host your docker container at [sloppy.io](http://sloppy.io). Get an account and 
 
 or
 
-Use the automated build at our [Official Docker Registry](https://hub.docker.com/r/rocketchat/rocket.chat/)
+Use the automated build image of our [most recent in-development code](https://hub.docker.com/r/rocketchat/rocket.chat/)
 
 [![Rocket.Chat logo](https://d207aa93qlcgug.cloudfront.net/1.95.5.qa/img/nav/docker-logo-loggedout.png)](https://hub.docker.com/r/rocketchat/rocket.chat/)
 
 ```
-docker pull rocketchat/rocket.chat
+docker pull rocketchat/rocket.chat:develop
+```
+
+OR the latest available stable (master) branch code:
+```
+docker pull rocketchat/rocket.chat:lastest
+```
+
+OR our [official docker registry image](https://hub.docker.com/_/rocket.chat/), containing recent MAJOR release:
+
+```
+docker pull rocket.chat
 ```
 
 ## FreeBSD
 Run solid five-nines deployment on industry workhorse FreeBSD server:
 
 [![FreeBSD Daemon](https://raw.githubusercontent.com/Sing-Li/bbug/master/images/freebsd.png)](https://github.com/RocketChat/Rocket.Chat/wiki/FreeBSD)
+
+## Ansible
+Automated production-grade deployment in minutes, for RHEL / CentOS 7 or Ubuntu 14.04 LTS / 15.04:
+
+[![Ansible deployment](https://raw.githubusercontent.com/Sing-Li/bbug/master/images/ansible.png)](https://github.com/RocketChat/Rocket.Chat/wiki/Easy,-hands-off-deployment-with-Ansible)
 
 ## Ubuntu VPS
 Follow these [deployment instructions](https://github.com/RocketChat/Rocket.Chat/wiki/Deploy-Rocket.Chat-without-docker)
