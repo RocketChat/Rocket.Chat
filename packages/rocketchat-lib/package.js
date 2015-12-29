@@ -25,11 +25,12 @@ Package.onUse(function(api) {
 	api.use('rocketchat:version');
 	api.use('kadira:flow-router', 'client');
 
+	api.addFiles('lib/core.coffee');
+
 	// DEBUGGER
 	api.addFiles('server/lib/debug.js', 'server');
 
 	// COMMON LIB
-	api.addFiles('lib/core.coffee');
 	api.addFiles('lib/settings.coffee');
 	api.addFiles('lib/callbacks.coffee');
 	api.addFiles('lib/slashCommand.coffee');
