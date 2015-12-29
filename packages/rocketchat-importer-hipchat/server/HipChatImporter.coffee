@@ -46,8 +46,6 @@ Importer.HipChat = class Importer.HipChat extends Importer.Base
 								tempUsers = JSON.parse(entry.getData().toString()).users
 							else
 								console.warn "Unexpected file in the #{@name} import: #{entry.entryName}"
-						else
-							console.warn "Unexpected file in the #{@name} import: #{entry.entryName}"
 
 			# Insert the users record, eventually this might have to be split into several ones as well
 			# if someone tries to import a several thousands users instance
@@ -83,6 +81,10 @@ Importer.HipChat = class Importer.HipChat extends Importer.Base
 
 			@updateRecord { 'count.messages': messagesCount, 'messagesstatus': null }
 			@addCountToTotal messagesCount
+
+			if tempUsers.length is 0 or tempRooms.length is 0 or messagesCount is 0
+				@updateProgress Importer.ProgressStep.ERROR
+				return @getProgress()
 
 			selectionUsers = tempUsers.map (user) ->
 				#HipChat's export doesn't contain bot users, from the data I've seen
@@ -152,7 +154,6 @@ Importer.HipChat = class Importer.HipChat extends Importer.Base
 							channel.name = channel.name.replace(/ /g, '')
 							existantRoom = RocketChat.models.Rooms.findOneByName channel.name
 							if existantRoom
-								console.log "#{channel.name} already exists."
 								channel.rocketId = existantRoom._id
 							else
 								userId = ''
@@ -160,7 +161,6 @@ Importer.HipChat = class Importer.HipChat extends Importer.Base
 									userId = user.rocketId
 
 								if userId isnt ''
-									console.log "Importing the channel/room #{channel.name}"
 									Meteor.runAsUser userId, () =>
 										returned = Meteor.call 'createChannel', channel.name, []
 										channel.rocketId = returned.rid
@@ -197,9 +197,9 @@ Importer.HipChat = class Importer.HipChat extends Importer.Base
 													nousers[message.from.user_id] = message.from
 										else
 											if not _.isArray message
-												console.log message
+												console.warn 'Please report the following:', message
 										@addCountCompleted 1
-				console.log 'The following did not have users:', nousers
+				console.warn 'The following did not have users:', nousers
 
 				@updateProgress Importer.ProgressStep.FINISHING
 				for channel in @channels.channels when channel.do_import and channel.is_archived

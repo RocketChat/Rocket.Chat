@@ -106,7 +106,6 @@ Importer.Base = class Importer.Base
 	#
 	addCountToTotal: (count) =>
 		@progress.count.total = @progress.count.total + count
-		console.log "Added #{count} to the total and the total is now #{@progress.count.total}"
 		@updateRecord { 'count.total': @progress.count.total }
 
 		return @progress

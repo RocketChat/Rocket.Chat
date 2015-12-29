@@ -31,6 +31,7 @@ Template.adminImportPrepare.events
 			template.preparing.set true
 			if not importer.fileTypeRegex.test blob.type
 				toastr.error t('Invalid_Import_File_Type')
+				template.preparing.set false
 				return
 
 			reader = new FileReader()
@@ -38,20 +39,20 @@ Template.adminImportPrepare.events
 			reader.onloadend = ->
 				Meteor.call 'prepareImport', importer.key, reader.result, blob.type, blob.name, (error, data) ->
 					if error
-						console.log 'Errored out preparing the import:', error
+						console.warn 'Errored out preparing the import:', error
 						toastr.error error.reason
 						return
 
-					if data.error
-						console.log 'An error occured while importing:', data
-						toastr.error 'Could not store all the data for the import, see the console.'
+					if data.step
+						console.warn 'Invalid file.'
+						toastr.error t('Invalid_Export_File', importer.key)
+						template.preparing.set false
 						return
 
 					template.users.set data.users
 					template.channels.set data.channels
 					template.loaded.set true
 					template.preparing.set false
-					console.log 'User and Channel data:', data
 
 	'click .button.start': (event, template) ->
 		btn = this
@@ -64,7 +65,6 @@ Template.adminImportPrepare.events
 			channel.do_import = $("[name=#{channel.channel_id}]").is(':checked')
 
 		Meteor.call 'startImport', FlowRouter.getParam('importer'), { users: template.users.get(), channels: template.channels.get() }, (error, data) ->
-			console.log 'startImport', arguments
 			if error
 				console.warn 'Error on starting the import:', error
 				toastr.error error.reason
@@ -75,7 +75,7 @@ Template.adminImportPrepare.events
 	'click .button.restart': (event, template) ->
 		Meteor.call 'restartImport', FlowRouter.getParam('importer'), (error, data) ->
 			if error
-				console.warn 'Error on restarting the import:', error
+				console.warn 'Error while restarting the import:', error
 				toastr.error error.reason
 				return
 
@@ -84,12 +84,12 @@ Template.adminImportPrepare.events
 			template.loaded.set false
 
 	'click .button.uncheck-deleted-users': (event, template) ->
-		for user in template.users.get() when user.deleted
-			$("[name=#{user.id}]").attr('checked', false);
+		for user in template.users.get() when user.is_deleted
+			$("[name=#{user.user_id}]").attr('checked', false);
 
 	'click .button.uncheck-archived-channels': (event, template) ->
-				for channel in template.channels.get() when channel.is_archived
-					$("[name=#{channel.id}]").attr('checked', false);
+		for channel in template.channels.get() when channel.is_archived
+			$("[name=#{channel.channel_id}]").attr('checked', false);
 
 
 Template.adminImportPrepare.onCreated ->
@@ -108,7 +108,6 @@ Template.adminImportPrepare.onCreated ->
 				# when the import is done, restart it (new instance)
 				when 'importer_user_selection'
 					Meteor.call 'getSelectionData', FlowRouter.getParam('importer'), (error, data) ->
-						console.log 'getSelectionData data', arguments
 						instance.users.set data.users
 						instance.channels.set data.channels
 						instance.loaded.set true
@@ -124,7 +123,7 @@ Template.adminImportPrepare.onCreated ->
 	# Load the initial progress to determine what we need to do
 	Meteor.call 'getImportProgress', FlowRouter.getParam('importer'), (error, progress) ->
 		if error
-			console.warn 'Error on getting the import data:', error
+			console.warn 'Error while getting the import progress:', error
 			toastr.error error.reason
 			return
 
