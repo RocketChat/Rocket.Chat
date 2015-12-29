@@ -4,11 +4,7 @@ Meteor.methods({
 			throw new Meteor.Error("not-authorized");
 		}
 
-		if (!username || !_.isString(username)) {
-			throw new Meteor.Error('invalid-arguments');
-		}
-
-		console.log('[methods] livechat:removeManager -> '.green, 'arguments:', arguments);
+		check(username, String);
 
 		var user = RocketChat.models.Users.findOneByUsername(username, { fields: { _id: 1 } });
 

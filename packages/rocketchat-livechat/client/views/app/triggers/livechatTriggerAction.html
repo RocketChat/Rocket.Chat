@@ -1,0 +1,15 @@
+<template name="livechatTriggerAction">
+	<div class="input-line each-action">
+		<div class="trigger-option">
+			<select name="action" class="trigger-action">
+				<option value="send-message">{{_ "Send_a_message"}}</option>
+			</select>
+		</div>
+		<div class="trigger-value">
+			<div class="send-message {{hiddenValue 'send-message'}}">
+				<input type="text" name="send-message-name" placeholder="{{_ "Name_of_agent"}}" value="{{params.name}}" size="15">
+				<input type="text" name="send-message-msg" placeholder="{{_ "Message"}}" value="{{params.msg}}">
+			</div>
+		</div>
+	</div>
+</template>

@@ -4,8 +4,6 @@ Meteor.publish 'messages', (rid, start) ->
 
 	publication = this
 
-	console.log '[publish] messages ->'.green, 'rid:', rid, 'start:', start
-
 	if typeof rid isnt 'string'
 		return this.ready()
 

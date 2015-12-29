@@ -1,6 +1,4 @@
 Meteor.publish('livechat:visitorRoom', function(visitorToken) {
-	console.log('[publish] livechat:visitorRoom -> '.green, 'arguments:', arguments);
-
 	return RocketChat.models.Rooms.findByVisitorToken(visitorToken, {
 		fields: {
 			name: 1,

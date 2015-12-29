@@ -5,8 +5,6 @@ Meteor.publish 'userChannels', (userId) ->
 	if RocketChat.authz.hasPermission( @userId, 'view-other-user-channels') isnt true
 		return this.ready()
 
-	console.log '[publish] userChannels'.green, userId
-
 	RocketChat.models.Subscriptions.findByUserId userId,
 		fields:
 			rid: 1,

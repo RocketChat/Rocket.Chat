@@ -7,6 +7,7 @@
 		if not histories[rid]?
 			histories[rid] =
 				hasMore: ReactiveVar true
+				hasMoreNext: ReactiveVar false
 				isLoading: ReactiveVar false
 				unreadNotLoaded: ReactiveVar 0
 				loaded: 0
@@ -47,7 +48,7 @@
 			if wrapper?
 				previousHeight = wrapper.scrollHeight
 
-			ChatMessage.upsert {_id: item._id}, item for item in result?.messages or []
+			ChatMessage.upsert {_id: item._id}, item for item in result?.messages or [] when item.t isnt 'command'
 
 			if wrapper?
 				heightDiff = wrapper.scrollHeight - previousHeight
@@ -62,10 +63,102 @@
 			if result?.messages?.length < limit
 				room.hasMore.set false
 
+	getMoreNext = (rid, limit=defaultLimit) ->
+		room = getRoom rid
+		if room.hasMoreNext.curValue isnt true
+			return
+
+		instance = Blaze.getView($('.messages-box .wrapper')[0]).templateInstance()
+		instance.atBottom = false
+
+		room.isLoading.set true
+
+		lastMessage = ChatMessage.findOne({rid: rid}, {sort: {ts: -1}})
+
+		typeName = undefined
+
+		subscription = ChatSubscription.findOne rid: rid
+		if subscription?
+			ls = subscription.ls
+			typeName = subscription.t + subscription.name
+		else
+			curRoomDoc = ChatRoom.findOne(_id: rid)
+			typeName = curRoomDoc?.t + curRoomDoc?.name
+
+		ts = lastMessage.ts
+
+		if ts
+			Meteor.call 'loadNextMessages', rid, ts, limit, (err, result) ->
+				for item in result?.messages or []
+					if item.t isnt 'command'
+						ChatMessage.upsert {_id: item._id}, item
+
+				Meteor.defer ->
+					RoomManager.updateMentionsMarksOfRoom typeName
+
+				room.isLoading.set false
+				room.loaded += result.messages.length
+				if result.messages.length < limit
+					room.hasMoreNext.set false
+
+	getSurroundingMessages = (message, limit=defaultLimit) ->
+		unless message?.rid
+			return
+
+		if ChatMessage.findOne message._id
+			wrapper = $('.messages-box .wrapper')
+			msgElement = $("##{message._id}", wrapper)
+			pos = wrapper.scrollTop() + msgElement.offset().top - wrapper.height()/2
+			wrapper.animate({
+				scrollTop: pos
+			}, 500)
+		else
+			room = getRoom message.rid
+			room.isLoading.set true
+			ChatMessage.remove { rid: message.rid }
+
+			typeName = undefined
+
+			subscription = ChatSubscription.findOne rid: message.rid
+			if subscription?
+				ls = subscription.ls
+				typeName = subscription.t + subscription.name
+			else
+				curRoomDoc = ChatRoom.findOne(_id: message.rid)
+				typeName = curRoomDoc?.t + curRoomDoc?.name
+
+			Meteor.call 'loadSurroundingMessages', message, limit, (err, result) ->
+				for item in result?.messages or []
+					if item.t isnt 'command'
+						ChatMessage.upsert {_id: item._id}, item
+
+				instance = Blaze.getView($('.messages-box .wrapper')[0]).templateInstance()
+				Meteor.defer ->
+					RoomManager.updateMentionsMarksOfRoom typeName
+					wrapper = $('.messages-box .wrapper')
+					msgElement = $("##{message._id}", wrapper)
+					pos = wrapper.scrollTop() + msgElement.offset().top - wrapper.height()/2
+					wrapper.animate({
+						scrollTop: pos
+					}, 500)
+					setTimeout ->
+						room.isLoading.set false
+						instance.atBottom = !result.moreAfter
+					, 500
+
+				room.loaded += result.messages.length
+				room.hasMore.set result.moreBefore
+				room.hasMoreNext.set result.moreAfter
+
 	hasMore = (rid) ->
 		room = getRoom rid
 
 		return room.hasMore.get()
+
+	hasMoreNext = (rid) ->
+		room = getRoom rid
+		return room.hasMoreNext.get()
+
 
 	getMoreIfIsEmpty = (rid) ->
 		room = getRoom rid
@@ -73,9 +166,9 @@
 		if room.loaded is 0
 			getMore rid
 
+
 	isLoading = (rid) ->
 		room = getRoom rid
-
 		return room.isLoading.get()
 
 	clear = (rid) ->
@@ -87,7 +180,10 @@
 
 	getRoom: getRoom
 	getMore: getMore
+	getMoreNext: getMoreNext
 	getMoreIfIsEmpty: getMoreIfIsEmpty
 	hasMore: hasMore
+	hasMoreNext: hasMoreNext
 	isLoading: isLoading
 	clear: clear
+	getSurroundingMessages: getSurroundingMessages
