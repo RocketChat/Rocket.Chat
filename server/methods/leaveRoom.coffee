@@ -1,8 +1,6 @@
 Meteor.methods
 	leaveRoom: (rid) ->
 		fromId = Meteor.userId()
-		# console.log '[methods] leaveRoom -> '.green, 'fromId:', fromId, 'rid:', rid
-
 		unless Meteor.userId()?
 			throw new Meteor.Error 300, 'Usuário não logado'
 
@@ -17,6 +15,10 @@ Meteor.methods
 			removedUser = user
 
 			RocketChat.models.Messages.createUserLeaveWithRoomIdAndUser rid, removedUser
+
+		if room.t is 'l'
+			RocketChat.models.Messages.createCommandWithRoomIdAndUser 'survey', rid, user
+
 
 		if room.u?._id is Meteor.userId()
 			newOwner = _.without(room.usernames, user.username)[0]

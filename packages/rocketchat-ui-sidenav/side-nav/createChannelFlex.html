@@ -40,6 +40,12 @@
 					{{{_ "Duplicate_channel_name" roomName}}}
 				</div>
 			{{/if}}
+			{{#if error.archivedduplicate}}
+				<div class="input-error">
+					<strong>{{_ "Oops!"}}</strong>
+					{{{_ "Duplicate_archived_channel_name" roomName}}}
+				</div>
+			{{/if}}
 			<div class="input-submit">
 				<button class="button clean primary save-channel">{{_ "Save" }}</button>
 				<button class="button clean cancel-channel">{{_ "Cancel" }}</button>

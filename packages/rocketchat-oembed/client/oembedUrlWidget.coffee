@@ -26,7 +26,9 @@ Template.oembedUrlWidget.helpers
 		if not this.meta?
 			return
 
-		return this.meta.ogImage or this.meta.twitterImage
+		decodedOgImage = @meta.ogImage?.replace?(/&amp;/g, '&')
+
+		return decodedOgImage or this.meta.twitterImage
 
 	show: ->
 		return getDescription(this)? or getTitle(this)?
