@@ -73,7 +73,7 @@ Api.addRoute ':integrationId/:userId/:token', authRequired: true,
 
 		message =
 			alias: @bodyParams.username or @bodyParams.alias or integration.alias
-			msg: @bodyParams.text or @bodyParams.msg or ''
+			msg: _.trim(@bodyParams.text or @bodyParams.msg or '')
 			attachments: @bodyParams.attachments
 			parseUrls: false
 			bot:
@@ -92,7 +92,7 @@ Api.addRoute ':integrationId/:userId/:token', authRequired: true,
 		if _.isArray message.attachments
 			for attachment in message.attachments
 				if attachment.msg
-					attachment.text = attachment.msg
+					attachment.text = _.trim(attachment.msg)
 					delete attachment.msg
 
 		RocketChat.sendMessage user, message, room, {}
