@@ -21,3 +21,10 @@ Template.messageAttachment.helpers
 
 	getImageHeight: (height) ->
 		return height or 200
+
+	color: ->
+		switch @color
+			when 'good' then return '#35AC19'
+			when 'warning' then return '#FCB316'
+			when 'danger' then return '#D30230'
+			else return @color
