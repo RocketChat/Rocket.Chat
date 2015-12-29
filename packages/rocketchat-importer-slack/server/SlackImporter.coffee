@@ -249,7 +249,6 @@ Importer.Slack = class Importer.Slack extends Importer.Base
 
 	getSelection: () =>
 		selectionUsers = @users.users.map (user) ->
-			#HipChat's export doesn't contain bot users, from the data I've seen
 			return new Importer.SelectionUser user.id, user.name, user.profile.email, user.deleted, user.is_bot, !user.is_bot
 		selectionChannels = @channels.channels.map (channel) ->
 			return new Importer.SelectionChannel channel.id, channel.name, channel.is_archived, true
