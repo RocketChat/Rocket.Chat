@@ -16,7 +16,7 @@ Package.onUse(function(api) {
 	]);
 
 	//Import Framework
-	api.addFiles('server/classes/_importer.coffee');
+	api.addFiles('lib/_importer.coffee');
 	api.addFiles('lib/importTool.coffee');
 	api.addFiles('server/classes/ImporterBase.coffee', 'server');
 	api.addFiles('server/classes/ImporterProgress.coffee', 'server');

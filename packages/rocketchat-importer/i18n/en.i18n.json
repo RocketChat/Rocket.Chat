@@ -1,5 +1,6 @@
 {
   "Invalid_Import_File_Type" : "Invalid Import file type.",
+  "Invalid_Export_File" : "The file uploaded isn't a valid %s export file.",
   "Delete" : "Delete",
   "importer_not_defined_properly": "The importer was not defined correctly, it is missing the Import class.",
   "importer_setup_error": "An error occured while setting up the importer.",
@@ -11,5 +12,11 @@
   "importer_finishing": "Finising up the import.",
   "importer_done": "Importing complete!",
   "importer_import_failed": "An error occured while running the import.",
-  "importer_progress_error": "Failed to get the progress for the import."
+  "importer_import_cancelled": "Import cancelled.",
+  "importer_progress_error": "Failed to get the progress for the import.",
+  "Importer_Prepare_Restart_Import": "Restart Import",
+  "Importer_Prepare_Start_Import": "Start Importing",
+  "Importer_Prepare_Uncheck_Deleted_Users": "Uncheck Deleted Users",
+  "Importer_Prepare_Uncheck_Archived_Channels": "Uncheck Archived Channels",
+  "Importer_Archived": "Archived"
 }

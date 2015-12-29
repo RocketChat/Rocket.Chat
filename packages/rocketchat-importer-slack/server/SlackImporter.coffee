@@ -6,76 +6,84 @@ Importer.Slack = class Importer.Slack extends Importer.Base
 	prepare: (dataURI, sentContentType, fileName) =>
 		super(dataURI, sentContentType, fileName)
 
-		try
-			{image, contentType} = RocketChatFile.dataURIParse dataURI
-			zip = new @AdmZip(new Buffer(image, 'base64'))
-			zipEntries = zip.getEntries()
+		# try
+		{image, contentType} = RocketChatFile.dataURIParse dataURI
+		zip = new @AdmZip(new Buffer(image, 'base64'))
+		zipEntries = zip.getEntries()
 
-			tempChannels = []
-			tempUsers = []
-			tempMessages = {}
-			for entry in zipEntries
-				do (entry) =>
-					if entry.entryName == 'channels.json'
-						@updateProgress Importer.ProgressStep.PREPARING_CHANNELS
-						tempChannels = JSON.parse entry.getData().toString()
-					else if entry.entryName == 'users.json'
-						@updateProgress Importer.ProgressStep.PREPARING_USERS
-						tempUsers = JSON.parse entry.getData().toString()
-					else if not entry.isDirectory and entry.entryName.indexOf('/') > -1
-						item = entry.entryName.split('/') #random/2015-10-04.json
-						channelName = item[0] #random
-						msgGroupData = item[1].split('.')[0] #2015-10-04
-						if not tempMessages[channelName]
-							tempMessages[channelName] = {}
+		tempChannels = []
+		tempUsers = []
+		tempMessages = {}
+		for entry in zipEntries
+			do (entry) =>
+				if entry.entryName == 'channels.json'
+					@updateProgress Importer.ProgressStep.PREPARING_CHANNELS
+					tempChannels = JSON.parse entry.getData().toString()
+				else if entry.entryName == 'users.json'
+					@updateProgress Importer.ProgressStep.PREPARING_USERS
+					tempUsers = JSON.parse entry.getData().toString()
+				else if not entry.isDirectory and entry.entryName.indexOf('/') > -1
+					item = entry.entryName.split('/') #random/2015-10-04.json
+					channelName = item[0] #random
+					msgGroupData = item[1].split('.')[0] #2015-10-04
+					if not tempMessages[channelName]
+						tempMessages[channelName] = {}
+					# Catch files which aren't valid JSON files, ignore them
+					try
 						tempMessages[channelName][msgGroupData] = JSON.parse entry.getData().toString()
+					catch
+						console.warn "#{entry.entryName} is not a valid JSON file! Unable to import it."
 
-			# Insert the users record, eventually this might have to be split into several ones as well
-			# if someone tries to import a several thousands users instance
-			usersId = @collection.insert { 'import': @importRecord._id, 'importer': @name, 'type': 'users', 'users': tempUsers }
-			@users = @collection.findOne usersId
-			@updateRecord { 'count.users': tempUsers.length }
-			@addCountToTotal tempUsers.length
+		# Insert the users record, eventually this might have to be split into several ones as well
+		# if someone tries to import a several thousands users instance
+		usersId = @collection.insert { 'import': @importRecord._id, 'importer': @name, 'type': 'users', 'users': tempUsers }
+		@users = @collection.findOne usersId
+		@updateRecord { 'count.users': tempUsers.length }
+		@addCountToTotal tempUsers.length
 
-			# Insert the channels records.
-			channelsId = @collection.insert { 'import': @importRecord._id, 'importer': @name, 'type': 'channels', 'channels': tempChannels }
-			@channels = @collection.findOne channelsId
-			@updateRecord { 'count.channels': tempChannels.length }
-			@addCountToTotal tempChannels.length
+		# Insert the channels records.
+		channelsId = @collection.insert { 'import': @importRecord._id, 'importer': @name, 'type': 'channels', 'channels': tempChannels }
+		@channels = @collection.findOne channelsId
+		@updateRecord { 'count.channels': tempChannels.length }
+		@addCountToTotal tempChannels.length
 
-			# Insert the messages records
-			@updateProgress Importer.ProgressStep.PREPARING_MESSAGES
-			messagesCount = 0
-			for channel, messagesObj of tempMessages
-				do (channel, messagesObj) =>
-					if not @messages[channel]
-						@messages[channel] = {}
-					for date, msgs of messagesObj
-						messagesCount += msgs.length
-						@updateRecord { 'messagesstatus': "#{channel}/#{date}" }
+		# Insert the messages records
+		@updateProgress Importer.ProgressStep.PREPARING_MESSAGES
+		messagesCount = 0
+		for channel, messagesObj of tempMessages
+			do (channel, messagesObj) =>
+				if not @messages[channel]
+					@messages[channel] = {}
+				for date, msgs of messagesObj
+					messagesCount += msgs.length
+					@updateRecord { 'messagesstatus': "#{channel}/#{date}" }
 
-						if Importer.Base.getBSONSize(msgs) > Importer.Base.MaxBSONSize
-							for splitMsg, i in Importer.Base.getBSONSafeArraysFromAnArray(msgs)
-								messagesId = @collection.insert { 'import': @importRecord._id, 'importer': @name, 'type': 'messages', 'name': "#{channel}/#{date}.#{i}", 'messages': splitMsg }
-								@messages[channel]["#{date}.#{i}"] = @collection.findOne messagesId
-						else
-							messagesId = @collection.insert { 'import': @importRecord._id, 'importer': @name, 'type': 'messages', 'name': "#{channel}/#{date}", 'messages': msgs }
-							@messages[channel][date] = @collection.findOne messagesId
+					if Importer.Base.getBSONSize(msgs) > Importer.Base.MaxBSONSize
+						for splitMsg, i in Importer.Base.getBSONSafeArraysFromAnArray(msgs)
+							messagesId = @collection.insert { 'import': @importRecord._id, 'importer': @name, 'type': 'messages', 'name': "#{channel}/#{date}.#{i}", 'messages': splitMsg }
+							@messages[channel]["#{date}.#{i}"] = @collection.findOne messagesId
+					else
+						messagesId = @collection.insert { 'import': @importRecord._id, 'importer': @name, 'type': 'messages', 'name': "#{channel}/#{date}", 'messages': msgs }
+						@messages[channel][date] = @collection.findOne messagesId
 
-			@updateRecord { 'count.messages': messagesCount, 'messagesstatus': null }
-			@addCountToTotal messagesCount
+		@updateRecord { 'count.messages': messagesCount, 'messagesstatus': null }
+		@addCountToTotal messagesCount
 
-			selectionUsers = tempUsers.map (user) ->
-				return new Importer.SelectionUser user.id, user.name, user.profile.email, user.deleted, user.is_bot, !user.is_bot
-			selectionChannels = tempChannels.map (channel) ->
-				return new Importer.SelectionChannel channel.id, channel.name, channel.is_archived, true
+		if tempUsers.length is 0 or tempChannels.length is 0 or messagesCount is 0
+			@updateProgress Importer.ProgressStep.ERROR
+			return @getProgress()
 
-			@updateProgress Importer.ProgressStep.USER_SELECTION
-			return new Importer.Selection @name, selectionUsers, selectionChannels
-		catch error
-			@updateRecord { 'failed': true, 'error': error }
-			console.error Importer.ProgressStep.ERROR
-			throw new Error 'import-slack-error', error
+		selectionUsers = tempUsers.map (user) ->
+			return new Importer.SelectionUser user.id, user.name, user.profile.email, user.deleted, user.is_bot, !user.is_bot
+		selectionChannels = tempChannels.map (channel) ->
+			return new Importer.SelectionChannel channel.id, channel.name, channel.is_archived, true
+
+		@updateProgress Importer.ProgressStep.USER_SELECTION
+		return new Importer.Selection @name, selectionUsers, selectionChannels
+		# catch error
+		# 	@updateRecord { 'failed': true, 'error': error }
+		# 	console.error Importer.ProgressStep.ERROR
+		# 	throw new Error 'import-slack-error', error
 
 	startImport: (importSelection) =>
 		super(importSelection)
@@ -243,7 +251,7 @@ Importer.Slack = class Importer.Slack extends Importer.Base
 		selectionUsers = @users.users.map (user) ->
 			#HipChat's export doesn't contain bot users, from the data I've seen
 			return new Importer.SelectionUser user.id, user.name, user.profile.email, user.deleted, user.is_bot, !user.is_bot
-		selectionChannels = @channels.channels.map (room) ->
+		selectionChannels = @channels.channels.map (channel) ->
 			return new Importer.SelectionChannel channel.id, channel.name, channel.is_archived, true
 
 		return new Importer.Selection @name, selectionUsers, selectionChannels
