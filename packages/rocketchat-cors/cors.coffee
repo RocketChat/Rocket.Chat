@@ -12,6 +12,9 @@ WebApp.rawConnectHandlers.use (req, res, next) ->
 	req.setEncoding('utf8')
 	req.on 'data', (chunk) -> buf += chunk
 	req.on 'end', ->
+		if RocketChat?.debugLevel? and RocketChat.debugLevel is 'debug'
+			console.log '[request]'.green, req.method, req.url, '\nheaders ->', req.headers, '\nbody ->', buf
+
 		try
 			req.body = JSON.parse(buf)
 		catch err
