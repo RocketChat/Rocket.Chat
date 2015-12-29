@@ -78,6 +78,9 @@ Importer.Base = class Importer.Base
 
 		@updateProgress Importer.ProgressStep.IMPORTING_STARTED
 
+	# Gets the Importer.Selection object for the import.
+	#
+	# @return [Importer.Selection] the users and channels selection
 	getSelection: () =>
 		throw new Error "Invalid 'getSelection' called on #{@name}, it must be overridden and super can not be called."
 
