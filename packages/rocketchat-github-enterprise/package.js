@@ -15,7 +15,7 @@ Package.onUse(function(api) {
     api.addFiles('github-enterprise-login-button.css', 'client');
     api.addFiles('common.coffee');
 
-	// TAPi18n
+    // TAPi18n
     api.use('templating', 'client');
     var _ = Npm.require('underscore');
     var fs = Npm.require('fs');
@@ -24,9 +24,8 @@ Package.onUse(function(api) {
             return 'i18n/' + filename;
         }
     }));
-    api.use('tap:i18n@1.6.1', ['client', 'server']);
-    api.imply('tap:i18n');
-    api.addFiles(tapi18nFiles, ['client', 'server']);
+    api.use('tap:i18n');
+    api.addFiles(tapi18nFiles);
 
 });
 
