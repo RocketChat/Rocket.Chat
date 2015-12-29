@@ -43,7 +43,7 @@
 <template name="main">
 	{{#if subsReady}}
 		{{#unless logged}}
-			{{> loginLayout}}
+			{{> loginLayout center="loginForm"}}
 		{{else}}
 			{{#unless hasUsername}}
 				{{> username}}
