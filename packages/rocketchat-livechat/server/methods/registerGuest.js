@@ -35,7 +35,7 @@ Meteor.methods({
 		}
 		userData = {
 			username: user,
-			globalRoles: 'livechat-guest',
+			globalRoles: ['livechat-guest'],
 			department: department
 		};
 		userId = Accounts.insertUserDoc({}, userData);
