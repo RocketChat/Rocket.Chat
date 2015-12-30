@@ -23,7 +23,7 @@ Package.onUse(function(api) {
 
   // Commom
   api.use('rocketchat:lib@0.0.1');
-  api.use('tap:i18n@1.5.1');
+  api.use('tap:i18n');
   api.use('yasaricli:slugify');
   api.use('coffeescript');
   // Client

@@ -23,8 +23,7 @@ Package.onUse(function(api) {
 			return 'i18n/' + filename;
 		}
 	}));
-	api.use(["tap:i18n@1.5.1"], ["client", "server"]);
-	api.imply('tap:i18n');
+	api.use('tap:i18n');
 	api.addFiles("package-tap.i18n", ["client", "server"]);
 
 	api.addFiles([
@@ -45,7 +44,7 @@ Package.onUse(function(api) {
 	], 'server');
 
 	// TAPi18n -- needs to be added last
-	api.addFiles(tapi18nFiles, ["client", "server"]);
+	api.addFiles(tapi18nFiles);
 });
 
 Package.onTest(function(api) {
