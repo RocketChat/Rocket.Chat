@@ -61,6 +61,7 @@
   "Accounts_RegistrationForm_SecretURL_Description" : "You must provide a random string that will be added to your registration URL. Example: https://demo.rocket.chat/register/[secret_hash]",
   "Accounts_RegistrationRequired" : "Registration Required",
   "Accounts_RequireNameForSignUp" : "Require Name For Signup",
+  "Accounts_ShowFormLogin" : "Show form-based Login",
   "Activate" : "Activate",
   "Add_custom_oauth" : "Add custom oauth",
   "Add_Members" : "Add Members",
