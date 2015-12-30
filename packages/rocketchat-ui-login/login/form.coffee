@@ -5,6 +5,9 @@ Template.loginForm.helpers
 	namePlaceholder: ->
 		return if RocketChat.settings.get 'Accounts_RequireNameForSignUp' then t('Name') else t('Name_optional')
 
+	showFormLogin: ->
+		return RocketChat.settings.get 'Accounts_ShowFormLogin' 
+
 	showName: ->
 		return 'hidden' unless Template.instance().state.get() is 'register'
 
