@@ -3,7 +3,7 @@ Template.visitorInfo.helpers({
 		var user = Meteor.users.findOne({ username: 'guest-54' });
 		// user.ip = user.ip;
 
-		if (user.userAgent) {
+		if (user && user.userAgent) {
 			var ua = new UAParser();
 			ua.setUA(user.userAgent);
 
