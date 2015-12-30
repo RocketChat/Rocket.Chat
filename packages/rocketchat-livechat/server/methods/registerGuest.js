@@ -38,6 +38,11 @@ Meteor.methods({
 			globalRoles: ['livechat-guest'],
 			department: department
 		};
+
+		userData.userAgent = this.connection.httpHeaders['user-agent'];
+		userData.ip = this.connection.httpHeaders['x-real-ip'] || this.connection.clientAddress;
+		userData.host = this.connection.httpHeaders['host'];
+
 		userId = Accounts.insertUserDoc({}, userData);
 
 		updateUser = {
