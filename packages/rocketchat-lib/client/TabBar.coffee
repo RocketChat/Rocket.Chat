@@ -9,6 +9,8 @@ RocketChat.TabBar = new class
 	template = new ReactiveVar ''
 	data = new ReactiveVar {}
 
+	visibleGroup = new ReactiveVar ''
+
 	setTemplate = (t, callback) ->
 		return if animating is true
 		template.set t
@@ -93,6 +95,12 @@ RocketChat.TabBar = new class
 	resetButtons = ->
 		buttons.set {}
 
+	showGroup = (group) ->
+		visibleGroup.set group
+
+	getVisibleGroup = ->
+		visibleGroup.get()
+
 	setTemplate: setTemplate
 	setData: setData
 	getTemplate: getTemplate
@@ -108,3 +116,6 @@ RocketChat.TabBar = new class
 	getButtons: getButtons
 	reset: reset
 	resetButtons: resetButtons
+
+	showGroup: showGroup
+	getVisibleGroup: getVisibleGroup

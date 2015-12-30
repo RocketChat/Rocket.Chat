@@ -96,6 +96,8 @@ Package.onUse(function(api) {
 	api.addFiles('client/TabBar.coffee', 'client');
 	api.addFiles('client/MessageAction.coffee', 'client');
 
+	api.addFiles('client/defaultTabBars.js', 'client');
+
 	// VERSION
 	api.addFiles('rocketchat.info');
 

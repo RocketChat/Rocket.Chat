@@ -63,13 +63,13 @@
 			name: newRoute.name
 			action: ->
 				Session.set 'openedRoom'
+				RocketChat.TabBar.showGroup newRoute.name
 				BlazeLayout.render 'main', routeConfig
 			triggersEnter: [ ->
 				if newRoute.sideNav?
 					SideNav.setFlex newRoute.sideNav
 					SideNav.openFlex()
 			]
-
 
 	setStatus: setStatus
 	toggle: toggle
