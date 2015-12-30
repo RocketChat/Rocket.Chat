@@ -9,7 +9,7 @@ RocketChat.TabBar.addButton({
 
 RocketChat.TabBar.addButton({
 	groups: ['directmessage'],
-	id: 'members-list',
+	id: 'user-info',
 	i18nTitle: TAPi18n.__('User_Info'),
 	icon: 'octicon octicon-person',
 	template: 'membersList',
