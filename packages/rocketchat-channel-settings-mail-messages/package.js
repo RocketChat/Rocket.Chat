@@ -41,8 +41,7 @@ Package.onUse(function(api) {
 			return 'i18n/' + filename;
 		}
 	}));
-	api.use('tap:i18n@1.6.1');
-	api.imply('tap:i18n');
+	api.use('tap:i18n');
 	api.addFiles(tapi18nFiles);
 });
 
