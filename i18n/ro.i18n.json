@@ -61,6 +61,7 @@
   "Accounts_RegistrationForm_SecretURL_Description" : "Trebuie să furnizați un șir aleatoriu care va fi adăugat la URL-ul dvs. de înregistrare. Exemplu: https://demo.rocket.chat/register/[secret_hash]",
   "Accounts_RegistrationRequired" : "Înregistrare necesară",
   "Accounts_RequireNameForSignUp" : "Cere nume pentru înregistrare",
+  "Accounts_ShowFormLogin" : "Arată Formularul pentru autentificare",
   "Activate" : "Activează",
   "Add_custom_oauth" : "Adaugă OAuth personalizat",
   "Add_Members" : "Adaugă membri",
