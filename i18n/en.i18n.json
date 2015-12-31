@@ -421,6 +421,7 @@
   "Select_service_to_login" : "Select a service to login to load your picture or upload one directly from your computer",
   "Selected_users" : "Selected members",
   "Send" : "Send",
+  "Send_a_test_mail_to_my_user" : "Send a test mail to my user",
   "Send_a_test_push_to_my_user" : "Send a test push to my user",
   "Send_confirmation_email" : "Send confirmation email",
   "Send_data_into_RocketChat_in_realtime" : "Send data into Rocket.Chat in real-time.",
@@ -447,6 +448,7 @@
   "SMTP_Host" : "SMTP Host",
   "SMTP_Password" : "SMTP Password",
   "SMTP_Port" : "SMTP Port",
+  "SMTP_Test_Button" : "Test SMTP Settings",
   "SMTP_Username" : "SMTP Username",
   "Sound" : "Sound",
   "Start_of_conversation" : "Start of conversation",
@@ -559,5 +561,6 @@
   "You_will_not_be_able_to_recover" : "You will not be able to recover this message!",
   "Your_entry_has_been_deleted" : "Your entry has been deleted.",
   "Your_Open_Source_solution" : "Your own Open Source chat solution",
+  "Your_mail_was_sent_to_s" : "Your mail was sent to %s",
   "Your_push_was_sent_to_s_devices" : "Your push was sent to %s devices"
 }
