@@ -26,6 +26,7 @@
   "Accounts_OAuth_Custom_Enable" : "Enable",
   "Accounts_OAuth_Custom_id" : "Id",
   "Accounts_OAuth_Custom_Identity_Path" : "Identity Path",
+  "Accounts_OAuth_Custom_Login_Style" : "Login Style",
   "Accounts_OAuth_Custom_Secret" : "Secret",
   "Accounts_OAuth_Custom_Token_Path" : "Token Path",
   "Accounts_OAuth_Custom_URL" : "URL",
