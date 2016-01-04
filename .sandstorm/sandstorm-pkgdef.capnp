@@ -19,9 +19,9 @@ const pkgdef :Spk.PackageDefinition = (
 
     appTitle = (defaultText = "Rocket.Chat"),
 
-    appVersion = 1,  # Increment this for every release.
+    appVersion = 7,  # Increment this for every release.
 
-    appMarketingVersion = (defaultText = "0.6"),
+    appMarketingVersion = (defaultText = "0.11.0"),
     # Human-readable representation of appVersion. Should match the way you
     # identify versions of your app in documentation and marketing.
 
@@ -50,7 +50,7 @@ const pkgdef :Spk.PackageDefinition = (
       website = "https://rocket.chat",
       codeUrl = "https://github.com/RocketChat/Rocket.Chat",
       license = (openSource = mit),
-      categories = [communications, productivity],
+      categories = [communications, productivity, office, social, developerTools],
 
       author = (
         contactEmail = "team@rocket.chat",

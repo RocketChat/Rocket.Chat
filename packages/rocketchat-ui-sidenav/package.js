@@ -21,7 +21,12 @@ Package.onUse(function(api) {
 		'rocketchat:lib@0.0.1'
 	]);
 
+<<<<<<< HEAD
 	//api.addFiles('side-nav/channels.html', 'client');
+=======
+	api.addFiles('side-nav/accountBox.html', 'client');
+	api.addFiles('side-nav/channels.html', 'client');
+>>>>>>> RocketChat/develop
 	api.addFiles('side-nav/chatRoomItem.html', 'client');
 	api.addFiles('side-nav/createChannelFlex.html', 'client');
 	api.addFiles('side-nav/directMessages.html', 'client');
@@ -35,7 +40,12 @@ Package.onUse(function(api) {
 	api.addFiles('side-nav/unreadRooms.html', 'client');
 	api.addFiles('side-nav/userStatus.html', 'client');
 
+<<<<<<< HEAD
 	//api.addFiles('side-nav/channels.coffee', 'client');
+=======
+	api.addFiles('side-nav/accountBox.coffee', 'client');
+	api.addFiles('side-nav/channels.coffee', 'client');
+>>>>>>> RocketChat/develop
 	api.addFiles('side-nav/chatRoomItem.coffee', 'client');
 	api.addFiles('side-nav/createChannelFlex.coffee', 'client');
 	api.addFiles('side-nav/directMessages.coffee', 'client');

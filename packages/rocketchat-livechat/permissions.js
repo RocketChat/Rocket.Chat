@@ -6,8 +6,11 @@ Meteor.startup(() => {
 	if (roles.indexOf('livechat-manager') === -1) {
 		Roles.createRole('livechat-manager');
 	}
+	if (roles.indexOf('livechat-guest') === -1) {
+		Roles.createRole('livechat-guest');
+	}
 	if (RocketChat.models && RocketChat.models.Permissions) {
-		RocketChat.models.Permissions.createOrUpdate('view-l-room', ['livechat-agent', 'livechat-manager']);
-		RocketChat.models.Permissions.createOrUpdate('view-livechat-manager', ['livechat-manager']);
+		RocketChat.models.Permissions.createOrUpdate('view-l-room', ['livechat-agent', 'livechat-manager', 'admin']);
+		RocketChat.models.Permissions.createOrUpdate('view-livechat-manager', ['livechat-manager', 'admin']);
 	}
 });

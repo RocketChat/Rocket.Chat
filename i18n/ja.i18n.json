@@ -109,7 +109,6 @@
   "Room" : "ルーム",
   "Room_name_changed" : "ルーム名を変更しました: <em>__room_name__</em> by <em>__user_by__</em>",
   "Room_name_changed_successfully" : "ルーム名の変更が成功しました",
-  "Save" : "保存",
   "Save_Mobile_Bandwidth" : "モバイルデータ通信量を節約する",
   "Search" : "検索",
   "See_all" : "すべて見る",

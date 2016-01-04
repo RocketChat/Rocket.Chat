@@ -20,18 +20,7 @@ RocketChat.roomTypes.add('l', 5, {
 AccountBox.addItem({
 	name: 'Livechat',
 	icon: 'icon-chat-empty',
-	class: 'livechat-manager',
-	route: {
-		name: 'livechat-manager',
-		path: '/livechat-manager',
-		action(params, queryParams) {
-			Session.set('openedRoom');
-			BlazeLayout.render('main', {
-				center: 'page-container',
-				pageTitle: 'Live Chat Manager',
-				pageTemplate: 'livechat-manager'
-			});
-		}
-	},
-	permissions: ['view-livechat-manager']
+	href: 'livechat-users',
+	sideNav: 'livechatFlex',
+	permissions: ['view-livechat-manager'],
 });

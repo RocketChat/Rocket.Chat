@@ -6,8 +6,6 @@ Meteor.methods
 		unless RocketChat.settings.get("Accounts_AllowUserAvatarChange")
 			throw new Meteor.Error(403, "[methods] resetAvatar -> Invalid access")
 
-		console.log '[methods] setAvatarFromService -> '.green, 'userId:', Meteor.userId(), 'contentType:', contentType, 'service:', service
-
 		user = Meteor.user()
 
 		if service is 'initials'
@@ -32,7 +30,8 @@ Meteor.methods
 				throw new Meteor.Error('invalid-avatar-url', '[methods] setAvatarFromService -> url service -> invalid content-type')
 
 			ars = RocketChatFile.bufferToStream new Buffer(result.content, 'binary')
-			aws = RocketChatFileAvatarInstance.createWriteStream "#{user.username}.jpg", result.headers['content-type']
+			RocketChatFileAvatarInstance.deleteFile encodeURIComponent("#{user.username}.jpg")
+			aws = RocketChatFileAvatarInstance.createWriteStream encodeURIComponent("#{user.username}.jpg"), result.headers['content-type']
 			aws.on 'end', Meteor.bindEnvironment ->
 				Meteor.setTimeout ->
 					console.log "Set #{user.username}'s avatar from the url: #{dataURI}"
@@ -46,6 +45,7 @@ Meteor.methods
 		{image, contentType} = RocketChatFile.dataURIParse dataURI
 
 		rs = RocketChatFile.bufferToStream new Buffer(image, 'base64')
+		RocketChatFileAvatarInstance.deleteFile encodeURIComponent("#{user.username}.jpg")
 		ws = RocketChatFileAvatarInstance.createWriteStream encodeURIComponent("#{user.username}.jpg"), contentType
 		ws.on 'end', Meteor.bindEnvironment ->
 			Meteor.setTimeout ->
@@ -60,4 +60,4 @@ DDPRateLimiter.addRule
 	type: 'method'
 	name: 'setAvatarFromService'
 	userId: -> return true
-, 1, 60000
+, 1, 5000

@@ -25,6 +25,7 @@ meteor-base
 mobile-experience
 mongo
 random
+rate-limit
 reactive-dict
 reactive-var
 reload
@@ -40,6 +41,7 @@ rocketchat:lib
 rocketchat:authorization
 rocketchat:autolinker
 rocketchat:channel-settings
+rocketchat:channel-settings-mail-messages
 rocketchat:colors
 rocketchat:custom-oauth
 rocketchat:emojione
@@ -54,12 +56,15 @@ rocketchat:mailer
 rocketchat:markdown
 rocketchat:me
 rocketchat:mentions
+rocketchat:mentions-flextab
 rocketchat:message-pin
 rocketchat:message-star
 rocketchat:oembed
 rocketchat:slashcommands-invite
 rocketchat:slashcommands-join
 rocketchat:slashcommands-leave
+rocketchat:slashcommands-kick
+rocketchat:slashcommands-mute
 rocketchat:spotify
 rocketchat:statistics
 rocketchat:theme
@@ -97,7 +102,6 @@ kadira:blaze-layout
 kadira:flow-router
 kenton:accounts-sandstorm
 kevohagan:sweetalert
-meteorhacks:kadira
 mizzao:autocomplete
 mizzao:timesync
 momentjs:moment
@@ -106,6 +110,7 @@ mrt:reactive-store
 mystor:device-detection
 nimble:restivus
 nooitaf:colors
+ostrio:cookies@2.0.1
 pauli:accounts-linkedin
 perak:codemirror
 percolate:migrations
@@ -123,7 +128,13 @@ yasaricli:slugify
 yasinuslu:blaze-meta
 # sanjo:jasmine
 # velocity:html-reporter
+<<<<<<< HEAD
 
 
 npm-container
 meteorhacks:npm
+=======
+rocketchat:assets
+rocketchat:integrations
+rocketchat:message-attachments
+>>>>>>> RocketChat/develop

@@ -20,6 +20,13 @@ Package.onUse(function(api) {
 		'rocketchat:lib@0.0.1'
 	]);
 
+	api.use('kadira:flow-router', 'client');
+
+	api.addFiles('routes.js', 'client');
+
+	api.addFiles('reset-password/resetPassword.html', 'client');
+	api.addFiles('reset-password/resetPassword.js', 'client');
+
 	api.addFiles('login/footer.html', 'client');
 	api.addFiles('login/form.html', 'client');
 	api.addFiles('login/header.html', 'client');
@@ -38,7 +45,10 @@ Package.onUse(function(api) {
 	api.addFiles('login/social.coffee', 'client');
 	api.addFiles('username/username.coffee', 'client');
 });
+<<<<<<< HEAD
 
 Npm.depends({
     'request': '2.67.0'
 });
+=======
+>>>>>>> RocketChat/develop

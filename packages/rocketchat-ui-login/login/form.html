@@ -46,9 +46,11 @@
 			{{else}}{{#if linkReplacementText}}
 				{{{linkReplacementText}}}
 			{{/if}}{{/if}}
+			{{#if passwordresetAllowed}}
 			<div class="forgot-password {{showForgotPasswordLink}}">
 				<a href="">{{_ 'Forgot_password'}}</a>
 			</div>
+			{{/if}}
 		{{/if}}
 		<div class="back-to-login {{showBackToLoginLink}}">
 			<a href="">{{_ 'Back_to_login'}}</a>

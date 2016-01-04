@@ -4,78 +4,42 @@ branches:
   only:
   - develop
   - master
+  - /^v(\d+\.)?(\d+\.)?(\*|\d+)$/
+git:
+  depth: 1
 node_js:
 - '0.12'
-#addons:
-#  apt:
-#    sources:
-#    - google-chrome
-#    packages:
-#    - google-chrome-stable
+cache:
+  directories:
+  - "~/.meteor"
 before_install:
-- curl https://install.meteor.com | /bin/sh
 - npm install -g npm@'>=2.13.5'
 - mkdir -p node_modules
-#- npm install phantomjs
-#- npm install velocity-cli
-#- export PHANTOMJS_BIN=./node_modules/phantomjs/bin/phantomjs
-#- export JASMINE_BROWSER=PhantomJS
-#- export DEBUG=1
-#- export JASMINE_DEBUG=1
-#- export VELOCITY_DEBUG=1
-#- export VELOCITY_DEBUG_MIRROR=1
-- export SANDSTORM_VERSION=$(curl -f "https://install.sandstorm.io/dev?from=0&type=install")
-- cd /tmp
-- curl https://dl.sandstorm.io/sandstorm-$SANDSTORM_VERSION.tar.xz | tar -xJf -
-- export PATH=$PATH:${PWD}/sandstorm-$SANDSTORM_VERSION/bin
-- sudo mkdir -p /home/vagrant
-- sudo chown -R travis /home/vagrant
-- sudo mkdir -p /opt
-- sudo chown -R travis /opt
-- cd /opt
-- curl curl https://dl.sandstorm.io/meteor-spk-0.1.8.tar.xz | tar -xJf -
-- ln -s meteor-spk-0.1.8 meteor-spk
-- cp -a /bin/bash /opt/meteor-spk/meteor-spk.deps/bin/
-- cp -a /lib/x86_64-linux-gnu/libncurses.so.* /opt/meteor-spk/meteor-spk.deps/lib/x86_64-linux-gnu/
-- cp -a /lib/x86_64-linux-gnu/libtinfo.so.* /opt/meteor-spk/meteor-spk.deps/lib/x86_64-linux-gnu/
-- cd $TRAVIS_BUILD_DIR
-- mkdir ../build
-- cp -r . /opt/app
+install:
+- curl https://install.meteor.com | /bin/sh
+before_script:
+- mkdir /tmp/build
 script:
-- if [[ "$TRAVIS_PULL_REQUEST" != "false" ]]; then echo "Building PR $TRAVIS_PULL_REQUEST"; meteor build ../build; exit $?; fi
-- export TAG=$(git describe --abbrev=0 --tags)
-#- meteor build ../build
-#- cd .travis
-#- sh ./namefiles.sh
-- cd /tmp
-- spk init -p3000 -- nothing
-- export SANDSTORM_ID=$(grep '\sid =' sandstorm-pkgdef.capnp)
-- cd $TRAVIS_BUILD_DIR
-- export METEOR_WAREHOUSE_DIR="${METEOR_WAREHOUSE_DIR:-$HOME/.meteor}"
-- export METEOR_DEV_BUNDLE=$(dirname $(readlink -f "$METEOR_WAREHOUSE_DIR/meteor"))/dev_bundle
-- meteor build --directory /home/vagrant/
-- cp /home/vagrant/*  $TRAVIS_BUILD_DIR/../build
-- cd $TRAVIS_BUILD_DIR/.travis
-- sh ./namefiles.sh
-- cd /home/vagrant/bundle/programs/server && "$METEOR_DEV_BUNDLE/bin/npm" install
-- cd $TRAVIS_BUILD_DIR/.sandstorm
-- sed -i "s/\sid = .*/$SANDSTORM_ID/" sandstorm-pkgdef.capnp
-- ./build.sh
-- sed -i "s/\spgp/#pgp/g" sandstorm-pkgdef.capnp
-- spk pack $TRAVIS_BUILD_DIR/rocket.chat.latest.spk
-- cd $TRAVIS_BUILD_DIR
-- mv rocket.chat.latest.spk ../build
+- meteor build /tmp/build
+before_deploy:
+- source ".travis/setbranch.sh"
+- source ".travis/setdeploydir.sh"
+- ".travis/setupsig.sh"
+- ".travis/namefiles.sh"
+- ".travis/sandstorm.sh"
 deploy:
-  provider: s3
-  access_key_id: "AKIAIKIA7H7D47KUHYCA"
-  secret_access_key: $ACCESSKEY
-  bucket: "rocketchatbuild"
-  skip_cleanup: true
-  local_dir: ../build
+  provider: releases
+  api_key:
+    secure: SLtbGv9vL6qC3rKGwKuXfUSFuRCeLsBFiRA1nBDWoyua7F3rLy8fBvhS3sXRDCqAF6hJgXQwZzX2pS1Lljwjjmwi/80Ns7VDtreX5QstHukFAxaJh2E0Lz5zQdSqAb61KdAipZmYfp2fgCr8T+xztE/mvtPD5R8CcIQIjJpl9rh+mrkkshkcaNOY4JQrqyrcTeCOeBQMXTZSkkbdJr4gb9++A2c61K0txfid9+VwqGm5MwvaT80JC5wLQkL8rS9OUcNJHFf90ELFZpRZnZnI2lsfmTBAxRKL994UZgzru3XNMhUTsJPh7OyVn/xSlyjLcvsn4dSon1PE9t3RkuxsbTxx/XY+gIkXSGl38jZlhextaJoV0gTFkEg33tF/aZ4+I+iZM8LYfRAoUuZU0fSzGnFtFZp4xptF2ECLKmI/3dmuE6iwr+G1xUer9g2Rq9fXXrHgUA164544IdY4aDisxd9U78U0K7WaPtbvphiVl4GbgVnfTEgNVdpXcQxUtcXPZMiBRz5+E+1fExmCfO6+7mZ/yzDrsFYoRdmuo1SMGRI4iqb5jl/PImZ9ukTqRmQdqd3WJp3zzPbIEJPwhMtS5LMxzBMSfugXwjEajkXybcH5CWQ7jo+ogNqcM/CcJ3q4ahYuLTN7VeZWZ8h5kwr9bPxPooZuhWw0WPRa+XUM22o=
+  file: 
+  - "$ROCKET_DEPLOY_DIR/rocket.chat-$ROCKET_BRANCH.tgz"
+  - "$ROCKET_DEPLOY_DIR/rocket.chat-$ROCKET_BRANCH.tgz.asc"
+  - "$ROCKET_DEPLOY_DIR/rocket.chat-$ROCKET_BRANCH.spk"
   on:
-    branch:
-    - develop
-    - master
+    tags: true
+    all_branches: true
 after_deploy:
-- cd .travis
-- sh ./builddocker.sh
+- ".travis/docker.sh"
+env:
+  global:
+    secure: y9LYMUBDtiAUlIwJEvubBrYLVrjPsPg7ClY5HcFisdm7OwOzMqHcjTFX8Sj2tN/6IXNcZLqFOhHcwuSdM0uUbBIDooTVnwMVSIy6ExZFOaZNrvAf/Axf2k6p15iAmtPmVo7o+us5SRVRQvuP6GqdUPMYIYn71jHrrjUKQp3/hgRZBlpIn7dyPs5WuLVXZda5hVjIjJpSfK1RZDoGd/b7o8jywvFgSdvBiB+lX1VXCVisRJU9yS28CGIcpoxeQg9AFk4Uez6+8+b/koLp3imQddY9VjYyYx2D8fNxRcUujUHux24VG5MSzQRtJh9JwLlJ+pyAN1KUSvoam6R3MQGoKJg0AH3UxikmSQ4yGZwsSkPSqWbRCRgSVmNtq/YLuTJjQEUHmMCxXUb53HdJisAaxaQiOfg/IfqMVtUWeeIfSDDNEhO9WgpuNvf4fOltdwlL2N1YwubR/fGw8/W/to9jSu94FxJHw6c2V4KQOJqq1XA+KtwMMYak82NjfS2DIhcwyf4EaKagkg4HD3z5BYpuxQdeQnkQkvvkvkI26kV+jPkqUGRlejS7AXG4PrhcUUf/nBvvWjUFrLwvk+epkMP3D2k94r2XUl7apyrANTfyTVyOCc1ogUu9N2XC4ShF2uxu5hoNxk+hNTo1D7uSrFE7aM1GpDFRPOUjtpt2E0mqOoQ=

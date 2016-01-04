@@ -1,8 +1,15 @@
 {
-  "Channel" : "Channel",
-  "Private_Group" : "Private Group",
-  "Room_Type" : "Room Type",
-  "Room_Settings" : "Room Settings",
-  "room_changed_privacy" : "Room type changed to: <em>__room_type__</em> by <em>__user_by__</em>",
-  "room_changed_topic" : "Room topic changed to: <em>__room_topic__</em> by <em>__user_by__</em>"
+	"Archive_Unarchive": "Archive / Unarchive",
+	"Cancel": "Cancel",
+	"Channel": "Channel",
+	"Private_Group": "Private Group",
+	"Name": "Name",
+	"Save": "Save",
+	"Topic": "Topic",
+	"Type": "Type",
+	"Room_Info": "Room Info",
+	"room_changed_privacy": "Room type changed to: <em>__room_type__</em> by <em>__user_by__</em>",
+	"room_changed_topic": "Room topic changed to: <em>__room_topic__</em> by <em>__user_by__</em>",
+	"Room_topic_changed_successfully": "Room topic changed successfully",
+	"Room_type_changed_successfully": "Room type changed successfully"
 }

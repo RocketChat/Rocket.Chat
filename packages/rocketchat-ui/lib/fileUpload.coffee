@@ -24,7 +24,19 @@ readAsArrayBuffer = (file, callback) ->
 			return
 
 		readAsDataURL file.file, (fileContent) ->
-			return unless fileUploadIsValidContentType file.file.type
+			if not fileUploadIsValidContentType file.file.type
+				swal
+					title: t('FileUpload_MediaType_NotAccepted')
+					type: 'error'
+					timer: 1000
+				return
+
+			if file.file.size is 0
+				swal
+					title: t('FileUpload_File_Empty')
+					type: 'error'
+					timer: 1000
+				return
 
 			text = ''
 
@@ -81,16 +93,38 @@ readAsArrayBuffer = (file, callback) ->
 
 						onComplete: (file) ->
 							self = this
-							Meteor.call 'sendMessage', {
+							url = file.url.replace(Meteor.absoluteUrl(), '/')
+
+							attachment =
+								title: "File Uploaded: #{file.name}"
+								title_link: url
+
+							if /^image\/.+/.test file.type
+								attachment.image_url = url
+								attachment.image_type = file.type
+								attachment.image_size = file.size
+								attachment.image_dimensions = file.identify?.size
+
+							if /^audio\/.+/.test file.type
+								attachment.audio_url = url
+								attachment.audio_type = file.type
+								attachment.audio_size = file.size
+
+							if /^video\/.+/.test file.type
+								attachment.video_url = url
+								attachment.video_type = file.type
+								attachment.video_size = file.size
+
+							msg =
 								_id: Random.id()
 								rid: roomId
-								msg: """
-									File Uploaded: *#{file.name}*
-									#{file.url}
-								"""
+								msg: ""
 								file:
 									_id: file._id
-							}, ->
+								groupable: false
+								attachments: [attachment]
+
+							Meteor.call 'sendMessage', msg, ->
 								Meteor.setTimeout ->
 									uploading = Session.get 'uploading'
 									if uploading?

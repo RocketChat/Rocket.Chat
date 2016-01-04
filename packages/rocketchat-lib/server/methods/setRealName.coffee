@@ -3,8 +3,6 @@ Meteor.methods
 		if not Meteor.userId()
 			throw new Meteor.Error('invalid-user', "[methods] setRealName -> Invalid user")
 
-		console.log '[methods] setRealName -> '.green, 'userId:', Meteor.userId(), 'arguments:', arguments
-
 		user = Meteor.user()
 
 		if user.name is name

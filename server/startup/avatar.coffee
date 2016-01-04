@@ -11,12 +11,14 @@ Meteor.startup ->
 
 	console.log "Using #{storeType} for Avatar storage".green
 
-	transformWrite = undefined
-	if RocketChat.settings.get('Accounts_AvatarResize') is true
+	transformWrite = (file, readStream, writeStream) ->
+		if RocketChatFile.enabled is false or RocketChat.settings.get('Accounts_AvatarResize') isnt true
+			return readStream.pipe writeStream
+
 		height = RocketChat.settings.get 'Accounts_AvatarSize'
 		width = height
-		transformWrite = (file, readStream, writeStream) ->
-			RocketChatFile.gm(readStream, file.fileName).background('#ffffff').resize(width, height+'^>').gravity('Center').extent(width, height).stream('jpeg').pipe(writeStream)
+
+		RocketChatFile.gm(readStream, file.fileName).background('#ffffff').resize(width, height+'^>').gravity('Center').extent(width, height).stream('jpeg').pipe(writeStream)
 
 	path = "~/uploads"
 
@@ -33,7 +35,7 @@ Meteor.startup ->
 			username: decodeURIComponent(req.url.replace(/^\//, '').replace(/\?.*$/, ''))
 
 		if params.username[0] isnt '@'
-			file = RocketChatFileAvatarInstance.getFileWithReadStream params.username
+			file = RocketChatFileAvatarInstance.getFileWithReadStream encodeURIComponent(params.username)
 		else
 			params.username = params.username.replace '@', ''
 

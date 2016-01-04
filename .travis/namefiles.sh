@@ -1,4 +1,9 @@
-cd ../../build
-FILENAME=rocket.chat-"$TAG.$TRAVIS_BUILD_NUMBER.$TRAVIS_BRANCH".tgz
-mv Rocket.Chat.tar.gz  "$FILENAME"
-ln -s  "$FILENAME" "$TRAVIS_BRANCH.rocket.chat-v.latest.tgz"
+#!/bin/bash 
+set -xeuo pipefail
+IFS=$'\n\t'
+
+#cd $TRAVIS_BUILD_DIR
+#export TAG=$(git describe --abbrev=0 --tags)
+cp /tmp/build/Rocket.Chat.tar.gz "$ROCKET_DEPLOY_DIR/rocket.chat-$ROCKET_BRANCH.tgz"
+gpg --armor --detach-sign "$ROCKET_DEPLOY_DIR/rocket.chat-$ROCKET_BRANCH.tgz"
+ls -l $ROCKET_DEPLOY_DIR
