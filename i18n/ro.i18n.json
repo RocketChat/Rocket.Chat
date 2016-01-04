@@ -486,7 +486,7 @@
   "The_image_resize_will_not_work_because_we_can_not_detect_ImageMagick_or_GraphicsMagick_installed_in_your_server" : "Redimensionarea imaginii nu va funcționa, deoarece nu putem detecta ImageMagick sau GraphicsMagick instalat pe server.",
   "The_server_will_restart_in_s_seconds" : "Serverul va reporni în %s secunde",
   "The_setting_s_is_configured_to_s_and_you_are_accessing_from_s" : "Setarea <strong>%s</strong> e configurată să <strong>%s</strong> iar dumneavoastră accesați din <strong>%s</strong>!",
-  "There_is_no_integrations" : "Nu sunt integrări",
+  "There_are_no_integrations" : "Nu sunt integrări",
   "This_is_a_push_test_messsage" : "Acesta este un test de notificare Push",
   "True" : "Adevărat",
   "Type_your_new_password" : "Introduceți noua parolă",
