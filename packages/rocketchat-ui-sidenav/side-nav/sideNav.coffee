@@ -15,7 +15,6 @@ Template.sideNav.helpers
 		return true if favoritesEnabled and hasFavoriteRoomOpened
 
 	roomType: ->
-		console.log 'roomType ->',RocketChat.roomTypes.getTypes()
 		return RocketChat.roomTypes.getTypes()
 
 	canShowRoomType: ->
