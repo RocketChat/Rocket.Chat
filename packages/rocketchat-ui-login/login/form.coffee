@@ -5,20 +5,20 @@ Template.loginForm.helpers
 	namePlaceholder: ->
 		return if RocketChat.settings.get 'Accounts_RequireNameForSignUp' then t('Name') else t('Name_optional')
 
-	showName: ->
-		return 'hidden' unless Template.instance().state.get() is 'register'
+	#showName: ->
+		#return 'hidden' unless Template.instance().state.get() is 'register'
 
 	showPassword: ->
-		return 'hidden' unless Template.instance().state.get() in ['login', 'register']
+		return 'hidden' unless Template.instance().state.get() is 'login'
 
-	showConfirmPassword: ->
-		return 'hidden' unless Template.instance().state.get() is 'register'
+	#showConfirmPassword: ->
+		#return 'hidden' unless Template.instance().state.get() is 'register'
 
 	showEmailOrUsername: ->
 		return 'hidden' unless Template.instance().state.get() is 'login'
 
-	showEmail: ->
-		return 'hidden' unless Template.instance().state.get() in ['register', 'forgot-password', 'email-verification']
+	#showEmail: ->
+		#return 'hidden' unless Template.instance().state.get() in ['register', 'forgot-password', 'email-verification']
 
 	showRegisterLink: ->
 		return 'hidden' unless Template.instance().state.get() is 'login'
@@ -57,13 +57,14 @@ Template.loginForm.helpers
 	linkReplacementText: ->
 		return RocketChat.settings.get('Accounts_RegistrationForm_LinkReplacementText')
 
+
 Template.loginForm.events
 	'submit #login-card': (event, instance) ->
 		event.preventDefault()
 
+
 		button = $(event.target).find('button.login')
 		RocketChat.Button.loading(button)
-
 		formData = instance.validate()
 		if formData
 			if instance.state.get() is 'email-verification'
@@ -100,9 +101,44 @@ Template.loginForm.events
 							instance.state.set 'wait-activation'
 
 			else
-				loginMethod = 'loginWithPassword'
+				 #connect to mcn account
+						userName = document.getElementsByName('emailOrUsername')[0].value;
+						password = document.getElementsByName('pass')[0].value;
+
+
+
+						Meteor.call 'checkaccount', userName, password, (error, result) ->
+							if (result==200)
+								Meteor.call 'registerUser', formData, (error, result) ->
+									RocketChat.Button.reset(button)
+
+									if error?
+										if error.error is 'Email already exists.'
+											#toastr.error t 'Email_already_exists'#
+										else
+											#toastr.error error.reason
+								loginMethod = 'loginWithPassword'
+								if RocketChat.settings.get('LDAP_Enable')
+									loginMethod = 'loginWithLDAP'
+
+
+								Meteor[loginMethod] formData.emailOrUsername, formData.pass, (error) ->
+									RocketChat.Button.reset(button)
+									if error?
+										if error.error is 'no-valid-email'
+											instance.state.set 'email-verification'
+										else
+											toastr.error t 'User_not_found_or_incorrect_password'
+										return
+							else
+								RocketChat.Button.reset(button)
+								toastr.error t 'User_not_found_or_incorrect_password'
+
+
+				###loginMethod = 'loginWithPassword'
 				if RocketChat.settings.get('LDAP_Enable')
 					loginMethod = 'loginWithLDAP'
+
 
 				Meteor[loginMethod] formData.emailOrUsername, formData.pass, (error) ->
 					RocketChat.Button.reset(button)
@@ -111,13 +147,16 @@ Template.loginForm.events
 							instance.state.set 'email-verification'
 						else
 							toastr.error t 'User_not_found_or_incorrect_password'
-						return
+						return###
 
 	'click .register': ->
 		Template.instance().state.set 'register'
 
 	'click .back-to-login': ->
-		Template.instance().state.set 'login'
+		Template.instance().state.set 'login',
+		Meteor.call 'checkaccount'
+
+
 
 	'click .forgot-password': ->
 		Template.instance().state.set 'forgot-password'
@@ -142,7 +181,7 @@ Template.loginForm.onCreated ->
 			formObj[field.name] = field.value
 
 		if instance.state.get() isnt 'login'
-			unless formObj['email'] and /\b[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]+\b/i.test(formObj['email'])
+			unless formObj['email'] and /\b[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]+\b/i.test(formObj['email']) #using regular expression to check email form
 				validationObj['email'] = t('Invalid_email')
 
 		if instance.state.get() isnt 'forgot-password'

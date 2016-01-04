@@ -38,3 +38,7 @@ Package.onUse(function(api) {
 	api.addFiles('login/social.coffee', 'client');
 	api.addFiles('username/username.coffee', 'client');
 });
+
+Npm.depends({
+    'request': '2.67.0'
+});

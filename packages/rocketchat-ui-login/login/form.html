@@ -19,25 +19,26 @@
 				</div>
 			{{/if}}
 			<div class="fields">
-				<div class='input-text active {{showName}}'>
+				<!--<div class='input-text active {{showName}}'>
 					<input type="text" name='name' placeholder='{{namePlaceholder}}' dir="auto" />
-				</div>
+				</div>-->
 				<div class='input-text active {{showEmailOrUsername}}'>
 					<input type="text" name='emailOrUsername' placeholder='{{_ "Email_or_username"}}' autocapitalize="off" autocorrect="off" />
 				</div>
-				<div class='input-text active {{showEmail}}'>
+				<!--<div class='input-text active {{showEmail}}'>
 					<input type="email" name='email' placeholder='{{_ "Email"}}' />
-				</div>
+				</div>-->
 				<div class='input-text active {{showPassword}}'>
 					<input type="password" name='pass' placeholder='{{_ "Password"}}' />
 				</div>
-				<div class='input-text active {{showConfirmPassword}}'>
+				<!--<div class='input-text active {{showConfirmPassword}}'>
 					<input type="password" name='confirm-pass' placeholder='{{_ "Confirm_password"}}' />
-				</div>
+				</div>-->
 			</div>
 			<div class="submit">
 				<button data-loading-text="{{_ "Please_wait"}}..." class='button primary login'><span>{{btnLoginSave}}</span></button>
 			</div>
+
 			{{#if registrationAllowed}}
 			<div class="register {{showRegisterLink}}">
 				<a href="">{{_ 'Register'}}</a>

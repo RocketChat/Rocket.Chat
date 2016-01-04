@@ -7,7 +7,7 @@ Meteor.methods
 			throw new Meteor.Error 'registration-disabled', 'User registration is only allowed via Secret URL'
 
 		userData =
-			email: formData.email
+			email: formData.emailOrUsername
 			password: formData.pass
 
 		userId = Accounts.createUser userData
