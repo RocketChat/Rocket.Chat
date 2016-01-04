@@ -69,7 +69,15 @@ RocketChat.models.Users.getNextAgent = function() {
 		}
 	};
 
-	return findAndModify(query, sort, update);
+	var user = findAndModify(query, sort, update);
+	if (user) {
+		return {
+			agentId: user._id,
+			username: user.username
+		}
+	} else {
+		return null;
+	}
 };
 
 /**
