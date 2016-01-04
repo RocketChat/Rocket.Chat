@@ -36,5 +36,6 @@ Meteor.startup ->
 				cl: 1
 				u: 1
 				usernames: 1
+				topic: 1
 		user = RocketChat.models.Users.findOneById this.userId, fields: username: 1
 		return RocketChat.models.Rooms.findByTypeContainigUsernames 'd', [user.username, identifier], options
