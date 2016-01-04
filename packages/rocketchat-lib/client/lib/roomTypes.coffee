@@ -3,23 +3,11 @@ RocketChat.roomTypes = new class
 	roomTypes = {}
 	mainOrder = 1
 
-	protectedAction = (item) ->
-		# if not item.permissions? or RocketChat.authz.hasAtLeastOnePermission item.permissions
-		return item.route.action
-
-		# return ->
-		# 	BlazeLayout.render 'main',
-		# 		center: 'pageContainer'
-		# 		# @TODO text Not_authorized don't get the correct language
-		# 		pageTitle: t('Not_authorized')
-		# 		pageTemplate: 'notAuthorized'
-
 	### Adds a room type to app
 	@param identifier An identifier to the room type. If a real room, MUST BE the same of `db.rocketchat_room.t` field, if not, can be null
 	@param order Order number of the type
 	@param config
 		template: template name to render on sideNav
-		permissions: list of permissions to see the sideNav template
 		icon: icon class
 		route:
 			name: route name
@@ -45,7 +33,7 @@ RocketChat.roomTypes = new class
 		if config.route?.path? and config.route?.name? and config.route?.action?
 			FlowRouter.route config.route.path,
 				name: config.route.name
-				action: protectedAction config
+				action: config.route.action
 				triggersExit: [roomExit]
 
 	###
@@ -58,14 +46,16 @@ RocketChat.roomTypes = new class
 
 		return FlowRouter.path roomTypes[roomType].route.name, roomTypes[roomType].route.link(subData)
 
+	checkCondition = (roomType) ->
+		return not roomType.condition? or roomType.condition()
+
 	getAllTypes = ->
-		typesPermitted = []
+		orderedTypes = []
 
 		_.sortBy(roomTypesOrder, 'order').forEach (type) ->
-			if not roomTypes[type.identifier].permissions? or RocketChat.authz.hasAtLeastOnePermission roomTypes[type.identifier].permissions
-				typesPermitted.push roomTypes[type.identifier]
+			orderedTypes.push roomTypes[type.identifier]
 
-		return typesPermitted
+		return orderedTypes
 
 	getIcon = (roomType) ->
 		return roomTypes[roomType]?.icon
@@ -84,5 +74,7 @@ RocketChat.roomTypes = new class
 
 	# setRoute: setRoute
 	getRouteLink: getRouteLink
+
+	checkCondition: checkCondition
 
 	add: add

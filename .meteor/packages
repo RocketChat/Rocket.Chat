@@ -83,7 +83,7 @@ rocketchat:wordpress
 #rocketchat:chatops
 #rocketchat:hubot
 #rocketchat:irc
-#rocketchat:livechat
+rocketchat:livechat
 
 konecty:change-case
 konecty:delayed-task
