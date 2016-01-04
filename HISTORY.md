@@ -1,6 +1,23 @@
 ## v.NEXT
 
 
+## v0.12.0, 2016-Jan-04
+
+- Settings: unset section if none is given on update
+- Hide registration and forgot password links when hidding login form
+- Upload build artifacts to GitHub and sign tgz for docker images
+- Add a setting to disable form-based login
+- Button to test SMTP settings
+- No need to reload server for SMTP settings to take effect
+- Fix livechat trigger by url
+- Increase the delay to render color fields
+- Fix guest users default role
+- Improved clean button color
+- Support named color for message attachments
+- Added request debug messages
+- Trim integration messages
+- Try to parse all request bodies as JSON
+- New password reset screen
 
 ## v0.11.0, 2015-Dec-28
 
