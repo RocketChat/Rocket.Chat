@@ -484,12 +484,8 @@ Template.room.onCreated ->
 	@autorun =>
 		@subscribe 'fullUserData', Session.get('showUserInfo'), 1
 
-
 Template.room.onDestroyed ->
-	RocketChat.TabBar.resetButtons()
-
 	window.removeEventListener 'resize', this.onWindowResize
-
 
 Template.room.onRendered ->
 	unless window.chatMessages
