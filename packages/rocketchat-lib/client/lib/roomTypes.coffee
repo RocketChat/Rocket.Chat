@@ -58,12 +58,17 @@ RocketChat.roomTypes = new class
 
 		return FlowRouter.path roomTypes[roomType].route.name, roomTypes[roomType].route.link(subData)
 
+	checkPermission = (roomType) ->
+		return not roomType.permissions? or RocketChat.authz.hasAtLeastOnePermission roomType.permissions
+
+	checkCondition = (roomType) ->
+		return not roomType.condition? or roomType.condition()
+
 	getAllTypes = ->
 		typesPermitted = []
 
 		_.sortBy(roomTypesOrder, 'order').forEach (type) ->
-			if not roomTypes[type.identifier].permissions? or RocketChat.authz.hasAtLeastOnePermission roomTypes[type.identifier].permissions
-				typesPermitted.push roomTypes[type.identifier]
+			typesPermitted.push roomTypes[type.identifier]
 
 		return typesPermitted
 
@@ -84,5 +89,9 @@ RocketChat.roomTypes = new class
 
 	# setRoute: setRoute
 	getRouteLink: getRouteLink
+
+	checkCondition: checkCondition
+
+	checkPermission: checkPermission
 
 	add: add

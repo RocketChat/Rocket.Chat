@@ -11,6 +11,12 @@
 				<div class="wrapper">
 					{{ > unreadRooms }}
 
+					{{#each roomType}}
+						{{#if canShowRoomType}}
+							{{> Template.dynamic template=templateName }}
+						{{/if}}
+					{{/each}}
+
 					<h3 class="history-div">
 						<a href="{{pathFor 'privateHistory'}}">{{_ "History"}}</a>
 					</h3>
