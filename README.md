@@ -103,7 +103,7 @@ docker pull rocketchat/rocket.chat:develop
 
 OR the latest available stable (master) branch code:
 ```
-docker pull rocketchat/rocket.chat:lastest
+docker pull rocketchat/rocket.chat:latest
 ```
 
 OR our [official docker registry image](https://hub.docker.com/_/rocket.chat/), containing recent MAJOR release:
