@@ -31,6 +31,9 @@ Meteor.startup ->
 
 		if isRtl language
 			$('html').addClass "rtl"
+		else
+			$('html').removeClass "rtl"
+
 		language = language.split('-').shift()
 		TAPi18n.setLanguage(language)
 
