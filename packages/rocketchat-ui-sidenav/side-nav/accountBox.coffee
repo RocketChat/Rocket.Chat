@@ -36,9 +36,6 @@ Template.accountBox.events
 		user = Meteor.user()
 		Meteor.logout ->
 			FlowRouter.go 'home'
-			# remove userLanguage in localStorage
-			# in case of another account with different language login
-			localStorage.removeItem('userLanguage')
 			Meteor.call('logoutCleanUp', user)
 
 	'click #avatar': (event) ->
