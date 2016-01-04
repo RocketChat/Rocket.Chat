@@ -49,6 +49,7 @@
   "Accounts_RegistrationForm_Secret_URL" : "URL Secreta",
   "Accounts_RegistrationRequired" : "Registro Obrigatório",
   "Accounts_RequireNameForSignUp" : "Nome é obrigatório para cadastro",
+  "Accounts_ShowFormLogin" : "Mostrar formulário de login",
   "Activate" : "Ativar",
   "Add_custom_oauth" : "Adicionar oauth customizado",
   "Add_Members" : "Adicionar membros",

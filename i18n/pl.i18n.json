@@ -58,6 +58,7 @@
   "Accounts_RegistrationForm_SecretURL" : "Sekretny adres URL formularza rejestracyjnego",
   "Accounts_RegistrationRequired" : "Musisz się zarejestrować",
   "Accounts_RequireNameForSignUp" : "Wymagaj podana nazwy podczas rejestracji",
+  "Accounts_ShowFormLogin" : "Pokaż Formularz logowania",
   "Activate" : "Aktywuj",
   "Add_custom_oauth" : "Dodaj własne OAuth",
   "Add_Members" : "Dodaj członków",
