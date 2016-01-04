@@ -1,5 +1,5 @@
 {
-  "RocketBot_Enabled" : "RocketBot aktivieren",
-  "RocketBot_Name" : "RocketBot Name",
-  "RocketBot_Name_Description" : "RocketBot Name muss einen registrierten Benutzernamen auf dem Server haben."
+  "RocketBot_Enabled" : "RocketBot aktiviert",
+  "RocketBot_Name" : "Name des RocketBots",
+  "RocketBot_Name_Description" : "Der Name des RocketBots muss den Namen eines registrierten Benutzers auf dem Server besitzen."
 }
