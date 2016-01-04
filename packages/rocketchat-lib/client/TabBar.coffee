@@ -4,6 +4,8 @@ RocketChat.TabBar = new class
 
 	buttons = new ReactiveVar {}
 
+	extraGroups = {}
+
 	animating = false
 	open = new ReactiveVar false
 	template = new ReactiveVar ''
@@ -67,6 +69,12 @@ RocketChat.TabBar = new class
 		Tracker.nonreactive ->
 			btns = buttons.get()
 			btns[config.id] = config
+
+			if extraGroups[config.id]?
+				btns[config.id].groups ?= []
+				btns[config.id].groups = _.union btns[config.id].groups, extraGroups[config.id]
+				delete extraGroups[config.id]
+
 			buttons.set btns
 
 	removeButton = (id) ->
@@ -101,6 +109,17 @@ RocketChat.TabBar = new class
 	getVisibleGroup = ->
 		visibleGroup.get()
 
+	addGroup = (id, groups) ->
+		Tracker.nonreactive ->
+			btns = buttons.get()
+			if btns[id]
+				btns[id].groups ?= []
+				btns[id].groups = _.union btns[id].groups, groups
+				buttons.set btns
+			else
+				extraGroups[id] ?= []
+				extraGroups[id] = _.union extraGroups[id], groups
+
 	setTemplate: setTemplate
 	setData: setData
 	getTemplate: getTemplate
@@ -119,3 +138,4 @@ RocketChat.TabBar = new class
 
 	showGroup: showGroup
 	getVisibleGroup: getVisibleGroup
+	addGroup: addGroup
