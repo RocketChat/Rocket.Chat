@@ -19,7 +19,7 @@ Template.sideNav.helpers
 		return RocketChat.roomTypes.getTypes()
 
 	canShowRoomType: ->
-		return RocketChat.roomTypes.checkPermission(@) and RocketChat.roomTypes.checkCondition(@)
+		return RocketChat.roomTypes.checkCondition(@)
 
 	templateName: ->
 		return @template

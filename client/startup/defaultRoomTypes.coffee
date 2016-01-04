@@ -13,7 +13,8 @@ RocketChat.roomTypes.add 'c', 10,
 			openRoom 'c', params.name
 		link: (sub) ->
 			return { name: sub.name }
-	permissions: [ 'view-c-room' ]
+	condition: ->
+		return RocketChat.authz.hasAllPermission 'view-c-room'
 
 RocketChat.roomTypes.add 'd', 20,
 	template: 'directMessages'
@@ -26,7 +27,8 @@ RocketChat.roomTypes.add 'd', 20,
 			openRoom 'd', params.username
 		link: (sub) ->
 			return { username: sub.name }
-	permissions: [ 'view-d-room' ]
+	condition: ->
+		return RocketChat.authz.hasAllPermission 'view-d-room'
 
 RocketChat.roomTypes.add 'p', 30,
 	template: 'privateGroups'
@@ -39,4 +41,5 @@ RocketChat.roomTypes.add 'p', 30,
 			openRoom 'p', params.name
 		link: (sub) ->
 			return { name: sub.name }
-	permissions: [ 'view-p-room' ]
+	condition: ->
+		return RocketChat.authz.hasAllPermission 'view-p-room'
