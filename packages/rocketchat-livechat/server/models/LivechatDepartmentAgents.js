@@ -64,7 +64,15 @@ class LivechatDepartmentAgents extends RocketChat.models._Base {
 		var collectionObj = this.model.rawCollection();
 		var findAndModify = Meteor.wrapAsync(collectionObj.findAndModify, collectionObj);
 
-		return findAndModify(query, sort, update);
+		var agent = findAndModify(query, sort, update);
+		if (agent) {
+			return {
+				agentId: agent.agentId,
+				username: agent.username
+			}
+		} else {
+			return null;
+		}
 	}
 }
 
