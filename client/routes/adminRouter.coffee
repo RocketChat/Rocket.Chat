@@ -11,7 +11,7 @@ FlowRouter.route '/admin/users',
 FlowRouter.route '/admin/rooms',
 	name: 'admin-rooms'
 	action: ->
-		RocketChat.TabBar.showGroup 'rooms'
+		RocketChat.TabBar.showGroup 'adminrooms'
 		BlazeLayout.render 'main', {center: 'adminRooms'}
 
 FlowRouter.route '/admin/statistics',
