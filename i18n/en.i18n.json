@@ -336,6 +336,7 @@
   "Not_found_or_not_allowed" : "Not Found or Not Allowed",
   "Nothing_found" : "Nothing found",
   "Notify_all_in_this_room" : "Notify all in this room",
+  "OAuth_Application" : "OAuth Application",
   "OAuth_Applications" : "OAuth Applications",
   "Old_and_new_password_required" : "You need to provide both old and new password for changing your password.",
   "Old_Password" : "Old Password",
