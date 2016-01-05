@@ -69,6 +69,7 @@ Package.onUse(function(api) {
 	api.addFiles('server/methods/saveSetting.coffee', 'server');
 	api.addFiles('server/methods/sendInvitationEmail.coffee', 'server');
 	api.addFiles('server/methods/sendMessage.coffee', 'server');
+	api.addFiles('server/methods/sendSMTPTestEmail.coffee', 'server');
 	api.addFiles('server/methods/setAdminStatus.coffee', 'server');
 	api.addFiles('server/methods/setRealName.coffee', 'server');
 	api.addFiles('server/methods/setUsername.coffee', 'server');
@@ -77,6 +78,7 @@ Package.onUse(function(api) {
 
 	// SERVER STARTUP
 	api.addFiles('server/startup/settingsOnLoadCdnPrefix.coffee', 'server');
+	api.addFiles('server/startup/settingsOnLoadSMTP.coffee', 'server');
 	api.addFiles('server/startup/oAuthServicesUpdate.coffee', 'server');
 	api.addFiles('server/startup/settings.coffee', 'server');
 

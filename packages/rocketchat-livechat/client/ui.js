@@ -15,7 +15,9 @@ RocketChat.roomTypes.add('l', 5, {
 			}
 		}
 	},
-	permissions: ['view-l-room']
+	condition: () => {
+		return RocketChat.settings.get('Livechat_enabled') && RocketChat.authz.hasAllPermission('view-l-room');
+	}
 });
 
 AccountBox.addItem({
@@ -23,7 +25,9 @@ AccountBox.addItem({
 	icon: 'icon-chat-empty',
 	href: 'livechat-users',
 	sideNav: 'livechatFlex',
-	permissions: ['view-livechat-manager'],
+	condition: () => {
+		return RocketChat.settings.get('Livechat_enabled') && RocketChat.authz.hasAllPermission('view-livechat-manager');
+	},
 });
 
 RocketChat.TabBar.addButton({
