@@ -16,14 +16,24 @@ Package.onUse(function(api) {
 	api.use('templating', 'client');
 	api.use('kadira:flow-router', 'client');
 
-	api.addFiles('oauth/server/oauth2-server.coffee', 'server');
+	//// General //
+	// Server
+	api.addFiles('server/models/OAuthApps.coffee', 'server');
 
-	api.addFiles('oauth/client/oauth2-client.html', 'client');
-	api.addFiles('oauth/client/oauth2-client.coffee', 'client');
+	//// OAuth //
+	// Server
+	api.addFiles('oauth/server/oauth2-server.coffee', 'server');
 
 	api.addAssets('oauth/client/stylesheets/oauth2.less', 'server');
 	api.addFiles('oauth/client/stylesheets/load.coffee', 'server');
 
+	// Client
+	api.addFiles('oauth/client/oauth2-client.html', 'client');
+	api.addFiles('oauth/client/oauth2-client.coffee', 'client');
+
+
+	//// Admin //
+	// Client
 	api.addFiles('admin/client/startup.coffee', 'client');
 	api.addFiles('admin/client/collection.coffee', 'client');
 	api.addFiles('admin/client/route.coffee', 'client');
@@ -32,7 +42,7 @@ Package.onUse(function(api) {
 	api.addFiles('admin/client/views/oauthApps.html', 'client');
 	api.addFiles('admin/client/views/oauthApps.coffee', 'client');
 
-	api.addFiles('admin/server/models/OAuthApps.coffee', 'server');
+	// Server
 	api.addFiles('admin/server/publications/oauthApps.coffee', 'server');
 	api.addFiles('admin/server/methods/addOAuthApp.coffee', 'server');
 	api.addFiles('admin/server/methods/updateOAuthApp.coffee', 'server');

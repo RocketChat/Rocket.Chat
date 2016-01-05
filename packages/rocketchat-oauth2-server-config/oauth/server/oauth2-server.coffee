@@ -1,11 +1,11 @@
 oauth2server = new OAuth2Server
-	accessTokensCollectionName: 'rocketchat-oauth-access-tokens'
-	refreshTokensCollectionName: 'rocketchat-oauth-refresh-tokens'
-	clientsCollectionName: 'rocketchat-oauth-clients'
-	authCodesCollectionName: 'rocketchat-oauth-auth-codes'
+	accessTokensCollectionName: 'rocketchat_oauth_access_tokens'
+	refreshTokensCollectionName: 'rocketchat_oauth_refresh_tokens'
+	authCodesCollectionName: 'rocketchat_oauth_auth_codes'
+	clientsCollection: RocketChat.models.OAuthApps.model
 	debug: true
 
-WebApp.rawConnectHandlers.use oauth2server.app
+WebApp.connectHandlers.use oauth2server.app
 # JsonRoutes.Middleware.use oauth2server.app
 
 if not oauth2server.model.Clients.findOne()
