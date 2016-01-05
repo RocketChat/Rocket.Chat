@@ -162,8 +162,10 @@ LDAP.prototype.ldapCheck = function(options) {
 							error: err
 						});
 					}
+					var entryCount = 0;
 					var dn = self.options.dn;
 					res.on('searchEntry', function(entry) {
+						entryCount++;
 						dn = entry.object.dn;
 					});
 					res.on('error', function(err) {
@@ -173,7 +175,15 @@ LDAP.prototype.ldapCheck = function(options) {
 						});
 					});
 					res.on('end', function(result) {
-						bind(dn);
+						if (entryCount === 1) {
+							bind(dn);
+						} else {
+							console.log('LDAP: Search returned', entryCount, 'record(s)');
+							var err = new Error('User not Found');
+							ldapAsyncFut.return({
+								error: err
+							});
+						}
 					});
 				});
 			} catch (e) {
