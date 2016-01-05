@@ -106,14 +106,17 @@ Meteor.startup ->
 		roles : ['admin', 'bot']}
 	]
 
-	#alanning:roles
-	roles = _.pluck(Roles.getAllRoles().fetch(), 'name');
-
 	for permission in permissions
 		RocketChat.models.Permissions.upsert( permission._id, {$set: permission })
-		for role in permission.roles
-			unless role in roles
-				Roles.createRole role
-				roles.push(role)
 
+	roles = _.pluck(Roles.getAllRoles().fetch(), 'name');
+	defaultRoles = [
+		{ name: 'admin', scope: 'Users' }
+		{ name: 'moderator', scope: 'Subscriptions' }
+		{ name: 'user', scope: 'Users' }
+		{ name: 'bot', scope: 'Users' }
+	]
 
+	for role in defaultRoles
+		unless role.name in roles
+			Roles.createRole role
