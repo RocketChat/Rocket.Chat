@@ -23,11 +23,16 @@ Meteor.startup ->
 
 	loadedLaguages = []
 
-	setLanguage = (language) ->
+	@setLanguage = (language) ->
 		if loadedLaguages.indexOf(language) > -1
 			return
 
 		loadedLaguages.push language
+
+		if isRtl language
+			$('html').addClass "rtl"
+		else
+			$('html').removeClass "rtl"
 
 		language = language.split('-').shift()
 		TAPi18n.setLanguage(language)
@@ -44,8 +49,6 @@ Meteor.startup ->
 
 		if localStorage.getItem('userLanguage') isnt userLanguage
 			localStorage.setItem('userLanguage', userLanguage)
-			if isRtl localStorage.getItem 'userLanguage'
-				$('html').addClass "rtl"
 
 		setLanguage userLanguage
 	)
