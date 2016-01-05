@@ -196,8 +196,11 @@
 			}
 		}
 		.unread-bar {
-			> a {
+			> a.mark-read {
 				float: left;
+			}
+			> a.jump-to {
+				float: right;
 			}
 		}
 	}
@@ -297,7 +300,7 @@
 			}
 		}
 	}
-	
+
 	.flex-opened {
 		.flex-tab {
 			.control {
@@ -387,7 +390,7 @@
 			}
 		}
 	}
-	
+
 	@media all and(max-width: 1100px) {
 		#rocket-chat {
 			.flex-opened {
@@ -629,7 +632,7 @@
 	#swipebox-overlay{
 		direction: ltr;
 	}
-	
+
 	/* Override toastr messages to show on hte left side */
 	.toast-top-right {
 		.left(12px);
