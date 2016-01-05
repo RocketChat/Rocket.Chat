@@ -20,8 +20,8 @@ Package.onUse(function(api) {
 
 	api.use(['webapp', 'autoupdate'], 'server');
 	api.use('ecmascript');
-	api.use('alanning:roles@1.2.12');
 	api.use('rocketchat:lib');
+	api.use('rocketchat:authorization');
 	api.use('kadira:flow-router', 'client');
 	api.use('templating', 'client');
 	api.use('mongo');
