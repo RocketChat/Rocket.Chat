@@ -4,11 +4,14 @@ branches:
   only:
   - develop
   - master
+  - "/^v(\\d+\\.)?(\\d+\\.)?(\\*|\\d+)$/"
+git:
+  depth: 1
 node_js:
 - '0.12'
 cache:
   directories:
-    - ~/.meteor
+  - "~/.meteor"
 before_install:
 - npm install -g npm@'>=2.13.5'
 - mkdir -p node_modules
@@ -19,19 +22,23 @@ before_script:
 script:
 - meteor build /tmp/build
 before_deploy:
-- mkdir /tmp/deploy
-- .travis/namefiles.sh
-- .travis/sandstorm.sh
+- source ".travis/setdeploydir.sh"
+- ".travis/setupsig.sh"
+- ".travis/namefiles.sh"
+- ".travis/sandstorm.sh"
 deploy:
-  - provider: s3
-    access_key_id: "AKIAIKIA7H7D47KUHYCA"
-    secret_access_key: $ACCESSKEY
-    bucket: "rocketchatbuild"
-    skip_cleanup: true
-    local_dir: /tmp/deploy
-    on:
-      branch:
-      - master
-      - develop
+  provider: releases
+  api_key:
+    secure: SLtbGv9vL6qC3rKGwKuXfUSFuRCeLsBFiRA1nBDWoyua7F3rLy8fBvhS3sXRDCqAF6hJgXQwZzX2pS1Lljwjjmwi/80Ns7VDtreX5QstHukFAxaJh2E0Lz5zQdSqAb61KdAipZmYfp2fgCr8T+xztE/mvtPD5R8CcIQIjJpl9rh+mrkkshkcaNOY4JQrqyrcTeCOeBQMXTZSkkbdJr4gb9++A2c61K0txfid9+VwqGm5MwvaT80JC5wLQkL8rS9OUcNJHFf90ELFZpRZnZnI2lsfmTBAxRKL994UZgzru3XNMhUTsJPh7OyVn/xSlyjLcvsn4dSon1PE9t3RkuxsbTxx/XY+gIkXSGl38jZlhextaJoV0gTFkEg33tF/aZ4+I+iZM8LYfRAoUuZU0fSzGnFtFZp4xptF2ECLKmI/3dmuE6iwr+G1xUer9g2Rq9fXXrHgUA164544IdY4aDisxd9U78U0K7WaPtbvphiVl4GbgVnfTEgNVdpXcQxUtcXPZMiBRz5+E+1fExmCfO6+7mZ/yzDrsFYoRdmuo1SMGRI4iqb5jl/PImZ9ukTqRmQdqd3WJp3zzPbIEJPwhMtS5LMxzBMSfugXwjEajkXybcH5CWQ7jo+ogNqcM/CcJ3q4ahYuLTN7VeZWZ8h5kwr9bPxPooZuhWw0WPRa+XUM22o=
+  file:
+  - "$ROCKET_DEPLOY_DIR/rocket.chat.tgz"
+  - "$ROCKET_DEPLOY_DIR/rocket.chat.tgz.asc"
+  - "$ROCKET_DEPLOY_DIR/rocket.chat.spk"
+  on:
+    tags: true
+    all_branches: true
 after_deploy:
-- .travis/docker.sh
+- ".travis/docker.sh"
+env:
+  global:
+    secure: lDiDmo2SGHx1v4G49wsCp8kvg84SFAsAvPuFd5ngba7j038GwgcIVfqgc+7Vgi007gUL86Z74B124mtV4rQjyXhgoSxyg482FDoOx1Hh4vKzcnW3xWI/Du0epyl3MVDijDh1Y34WTWLH7YST1ViDk4GKk+Nvwv+sydac3IwsRHLRtUnzAIwa9DigE+wA9vChBqPL2kAdGlnpkl8bWUhMB8MYtyQY9gR2jVxaTGBLIJKIy1mVEAg8MOVGEKZ7POQQ/yP29MfNd7GvGt8Gz+k09z4iMJrU4Plq4UCGPXM3QVSh6yG4CXXFkMsv8TwFBNrdmkxmUK33IP8XT4B15tUirbSNUvf0BQ1+WHdgHiv1omhmBnp4c3b+CI4Mzh7FBVmQYdkkucS/v7n+HJk25MRWdg43VXyxib/fkIS5vx4pTokbA/ftOvZOCA3fM5wc5McFalwefn9SEia0zDgKJM+aoxgB4wIACUJcjzI0hfclDUn7SzSTuXxaCYLM47EgKBN0I0D4GCITKKm8wlNwUnm6n+f3PqVykzKIYt08iFNI3SlVgTRMHGWYQlWR/HjYRkpq8wEdL21scTVz2652AP2/tbKqok26fFbphrgHxzhYG2xp2HOT3NMpCC0oprTaUFSWHru7bLAmbwBJL4VWwiVCN35rG9SU6X2Zq2StXbaM6B0=
