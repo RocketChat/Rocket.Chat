@@ -74,6 +74,12 @@ Template.admin.helpers
 
 		return TempSettings.find(query).count() > 0
 
+	translateSection: (section) ->
+		if section.indexOf(':') > -1
+			return section
+
+		return t(section)
+
 	flexOpened: ->
 		return 'opened' if RocketChat.TabBar.isFlexOpen()
 	arrowPosition: ->
