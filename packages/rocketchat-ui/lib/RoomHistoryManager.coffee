@@ -10,6 +10,7 @@
 				hasMoreNext: ReactiveVar false
 				isLoading: ReactiveVar false
 				unreadNotLoaded: ReactiveVar 0
+				firstUnread: ReactiveVar {}
 				loaded: 0
 
 		return histories[rid]
@@ -43,6 +44,7 @@
 
 		Meteor.call 'loadHistory', rid, ts, limit, ls, (err, result) ->
 			room.unreadNotLoaded.set result?.unreadNotLoaded
+			room.firstUnread.set result?.firstUnread
 
 			wrapper = $('.messages-box .wrapper').get(0)
 			if wrapper?
@@ -134,6 +136,7 @@
 
 				instance = Blaze.getView($('.messages-box .wrapper')[0]).templateInstance()
 				Meteor.defer ->
+					readMessage.refreshUnreadMark(message.rid, true)
 					RoomManager.updateMentionsMarksOfRoom typeName
 					wrapper = $('.messages-box .wrapper')
 					msgElement = $("##{message._id}", wrapper)
