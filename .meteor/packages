@@ -34,6 +34,7 @@ session
 spacebars
 standard-minifiers
 tracker
+rocketchat:oauth2-server-config
 
 arunoda:streams
 rocketchat:lib
