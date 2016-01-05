@@ -8,6 +8,9 @@ WebApp.rawConnectHandlers.use (req, res, next) ->
 	if req.headers['transfer-encoding'] is undefined and isNaN(req.headers['content-length'])
 		return next()
 
+	if req.headers['content-type'] not in ['', undefined]
+		return next()
+
 	buf = ''
 	req.setEncoding('utf8')
 	req.on 'data', (chunk) -> buf += chunk
@@ -20,6 +23,7 @@ WebApp.rawConnectHandlers.use (req, res, next) ->
 		catch err
 			req.body = buf
 
+		req._body = true
 		next()
 
 
