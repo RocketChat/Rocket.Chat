@@ -27,9 +27,12 @@ Meteor.methods
 			firstMessage = messages[messages.length - 1]
 			if firstMessage?.ts > ls
 				delete options.limit
-				unreadNotLoaded = RocketChat.models.Messages.findVisibleByRoomIdBetweenTimestamps(rid, ls, firstMessage.ts).count()
+				unreadMessages = RocketChat.models.Messages.findVisibleByRoomIdBetweenTimestamps(rid, ls, firstMessage.ts, { limit: 1, sort: { ts: 1 } })
+				firstUnread = unreadMessages.fetch()[0]
+				unreadNotLoaded = unreadMessages.count()
 
 		return {
 			messages: messages
+			firstUnread: firstUnread
 			unreadNotLoaded: unreadNotLoaded
 		}

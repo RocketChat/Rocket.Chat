@@ -2130,8 +2130,16 @@ a.github-fork {
 		text-transform: uppercase;
 		text-align: center;
 
-		> a {
+		> a.mark-read {
 			float: right;
+
+			&:hover {
+				cursor: pointer;
+			}
+		}
+
+		> a.jump-to {
+			float: left;
 
 			&:hover {
 				cursor: pointer;
