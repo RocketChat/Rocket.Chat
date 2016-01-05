@@ -41,9 +41,12 @@
 			actual.push newItem
 			items.set actual
 
+	checkCondition = (item) ->
+		return not item.condition? or item.condition()
+
 	getItems = ->
 		return _.filter items.get(), (item) ->
-			if not item.permissions? or RocketChat.authz.hasAllPermission item.permissions
+			if checkCondition(item)
 				return true
 
 	addRoute = (newRoute, router = FlowRouter) ->
@@ -63,13 +66,13 @@
 			name: newRoute.name
 			action: ->
 				Session.set 'openedRoom'
+				RocketChat.TabBar.showGroup newRoute.name
 				BlazeLayout.render 'main', routeConfig
 			triggersEnter: [ ->
 				if newRoute.sideNav?
 					SideNav.setFlex newRoute.sideNav
 					SideNav.openFlex()
 			]
-
 
 	setStatus: setStatus
 	toggle: toggle

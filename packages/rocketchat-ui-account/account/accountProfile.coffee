@@ -7,7 +7,7 @@ Template.accountProfile.helpers
 		return _.sortBy(result, 'key')
 
 	userLanguage: (key) ->
-		return (localStorage.getItem('userLanguage') or Meteor.user().language or defaultUserLanguage())?.split('-').shift().toLowerCase() is key
+		return (Meteor.user().language or defaultUserLanguage())?.split('-').shift().toLowerCase() is key
 
 	realname: ->
 		return Meteor.user().name

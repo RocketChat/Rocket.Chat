@@ -35,11 +35,17 @@ RocketChat.settings.add = (_id, value, options = {}) ->
 	if not options.i18nDescription?
 		options.i18nDescription = "#{_id}_Description"
 
-	return RocketChat.models.Settings.upsert { _id: _id },
+	updateOperations =
 		$set: options
 		$setOnInsert:
 			value: value
 			createdAt: new Date
+
+	if not options.section?
+		updateOperations.$unset = { section: 1 }
+
+	return RocketChat.models.Settings.upsert { _id: _id }, updateOperations
+
 
 
 ###
