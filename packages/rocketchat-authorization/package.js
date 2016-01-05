@@ -11,15 +11,20 @@ Package.onUse(function(api) {
   api.use([
     'coffeescript',
     'underscore',
-    'rocketchat:lib@0.0.1',
-    'alanning:roles@1.2.12'
+    'rocketchat:lib'
     ]);
 
   api.use('mongo', 'client');
   api.use('kadira:flow-router', 'client');
   api.use('less@2.5.1', 'client');
+  api.use('tracker', 'client');
 
   api.use('templating', 'client');
+
+  // roles
+  api.addFiles('server/roles.js', ['server']);
+  api.addFiles('lib/roles.js', ['client', 'server']);
+  api.addFiles('client/roles.js', ['client']);
 
   api.addFiles('lib/rocketchat.coffee', ['server','client']);
   api.addFiles('client/collection.coffee', ['client']);
@@ -73,4 +78,6 @@ Package.onUse(function(api) {
   }));
   api.use('tap:i18n');
   api.addFiles(tapi18nFiles);
+
+  api.export('Roles');
 });
