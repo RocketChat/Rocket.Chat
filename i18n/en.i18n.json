@@ -67,6 +67,7 @@
   "Add_Members" : "Add Members",
   "Add_users" : "Add users",
   "Administration" : "Administration",
+  "After_OAuth2_authentication_users_will_be_redirected_to_this_URL" : "After OAuth2 authentication, users will be redirected to this URL",
   "Alias" : "Alias",
   "All_channels" : "All channels",
   "Allow_Invalid_SelfSigned_Certs" : "Allow Invalid Self-Signed Certs",
@@ -178,6 +179,7 @@
   "Get_to_know_the_team" : "Get to know the Rocket.Team",
   "github_no_public_email" : "You don't have any email as public email in your GitHub account",
   "Give_a_unique_name_for_the_custom_oauth" : "Give a unique name for the custom oauth",
+  "Give_the_application_a_name_This_will_be_seen_by_your_users" : "Give the application a name. This will be seen by your users.",
   "Has_more" : "Has more",
   "Have_your_own_chat" : "Have your own web chat. Developed with Meteor.com, the Rocket.Chat is a great solution for developers looking forward to build and evolve their own chat platform.",
   "Hide_room" : "Hide room",
@@ -560,7 +562,7 @@
   "You_should_name_it_to_easily_manage_your_integrations" : "You should name it to easily manage your integrations.",
   "You_will_not_be_able_to_recover" : "You will not be able to recover this message!",
   "Your_entry_has_been_deleted" : "Your entry has been deleted.",
-  "Your_Open_Source_solution" : "Your own Open Source chat solution",
   "Your_mail_was_sent_to_s" : "Your mail was sent to %s",
+  "Your_Open_Source_solution" : "Your own Open Source chat solution",
   "Your_push_was_sent_to_s_devices" : "Your push was sent to %s devices"
 }
