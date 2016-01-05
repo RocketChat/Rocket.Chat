@@ -6,27 +6,23 @@
  *   ex: { _id: "123", name: "admin" }
  */
 if (!Meteor.roles) {
-  Meteor.roles = new Meteor.Collection("roles")
+	Meteor.roles = new Mongo.Collection("roles")
 
-  // Create default indexes for roles collection
-  Meteor.roles._ensureIndex('name', {unique: 1})
+	// Create default indexes for roles collection
+	Meteor.roles._ensureIndex('name', {unique: 1})
 }
 
 
 /**
- * Publish logged-in user's roles so client-side checks can work.
+ * Publish logged-in user's roles (global) so client-side checks can work.
  *
  * Use a named publish function so clients can check `ready()` state.
  */
-Meteor.publish('_roles', function () {
-  var loggedInUserId = this.userId,
-      fields = {roles: 1}
+Meteor.publish('scope-roles', function (scope) {
+	if (!this.userId || "undefined" === typeof RocketChat.models[scope] || "function" !== typeof RocketChat.models[scope].findRolesByUserId) {
+		this.ready()
+		return
+	}
 
-  if (!loggedInUserId) {
-    this.ready()
-    return
-  }
-
-  return Meteor.users.find({_id: loggedInUserId},
-                           {fields: fields})
-})
+	return RocketChat.models[scope].findRolesByUserId(this.userId);
+});

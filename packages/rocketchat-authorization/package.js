@@ -14,7 +14,7 @@ Package.onUse(function(api) {
     'rocketchat:lib'
     ]);
 
-  api.use('mongo', 'client');
+  api.use('mongo', ['client', 'server']);
   api.use('kadira:flow-router', 'client');
   api.use('less@2.5.1', 'client');
   api.use('tracker', 'client');
@@ -25,6 +25,7 @@ Package.onUse(function(api) {
   api.addFiles('server/roles.js', ['server']);
   api.addFiles('lib/roles.js', ['client', 'server']);
   api.addFiles('client/roles.js', ['client']);
+  api.addFiles('server/models/Users.js', ['server']);
 
   api.addFiles('lib/rocketchat.coffee', ['server','client']);
   api.addFiles('client/collection.coffee', ['client']);
@@ -79,5 +80,5 @@ Package.onUse(function(api) {
   api.use('tap:i18n');
   api.addFiles(tapi18nFiles);
 
-  api.export('Roles');
+  api.export('Roles', 'server');
 });
