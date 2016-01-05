@@ -21,8 +21,8 @@ Meteor.methods
 
 		RocketChat.models.OAuthApps.update applicationId,
 			$set:
-				name: integration.name
-				redirectUri: integration.redirectUri
+				name: application.name
+				redirectUri: application.redirectUri
 				_updatedAt: new Date
 				_updatedBy: RocketChat.models.Users.findOne @userId, {fields: {username: 1}}
 
