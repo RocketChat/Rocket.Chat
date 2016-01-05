@@ -40,7 +40,7 @@ Template.adminUsers.onCreated ->
 	RocketChat.TabBar.addButton({
 		groups: ['adminusers', 'adminusers-selected'],
 		id: 'invite-user',
-		i18nTitle: t('Invite_Users'),
+		i18nTitle: 'Invite_Users',
 		icon: 'icon-plus',
 		template: 'adminInviteUser',
 		order: 1
@@ -48,8 +48,8 @@ Template.adminUsers.onCreated ->
 
 	RocketChat.TabBar.addButton({
 		groups: ['adminusers-selected']
-		id: 'user-info',
-		i18nTitle: t('User_Info'),
+		id: 'admin-user-info',
+		i18nTitle: 'User_Info',
 		icon: 'icon-user',
 		template: 'adminUserInfo',
 		order: 2
