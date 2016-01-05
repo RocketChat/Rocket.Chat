@@ -458,7 +458,7 @@
   "Success" : "Onnistui",
   "The_field_is_required" : "Kenttä %s vaaditaan.",
   "The_server_will_restart_in_s_seconds" : "Palvelin käynnistyy %s sekunnin kuluttua",
-  "There_is_no_integrations" : "Integraatioita ei ole",
+  "There_are_no_integrations" : "Integraatioita ei ole",
   "This_is_a_push_test_messsage" : "Tämä on testi-pushviesti",
   "True" : "Kyllä",
   "Unnamed" : "Nimetön",
