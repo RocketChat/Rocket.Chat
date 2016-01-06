@@ -193,7 +193,7 @@ Importer.Slack = class Importer.Slack extends Importer.Base
 												else if message.subtype is 'me_message'
 													RocketChat.sendMessage @getRocketUser(message.user), { msg: '_' + @convertSlackMessageToRocketChat(message.text) + '_', ts: new Date(parseInt(message.ts.split('.')[0]) * 1000) }, room
 												else if message.subtype is 'bot_message'
-													RocketChat.sendMessage
+													#RocketChat.sendMessage
 												else
 													if not missedTypes[message.subtype]
 														missedTypes[message.subtype] = message
