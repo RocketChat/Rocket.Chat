@@ -22,7 +22,7 @@ RocketChat.roomTypes.add('l', 5, {
 
 AccountBox.addItem({
 	name: 'Livechat',
-	icon: 'icon-chat-empty',
+	icon: 'octicon octicon-info',
 	href: 'livechat-users',
 	sideNav: 'livechatFlex',
 	condition: () => {
