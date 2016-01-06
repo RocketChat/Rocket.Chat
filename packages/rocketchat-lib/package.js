@@ -25,11 +25,12 @@ Package.onUse(function(api) {
 	api.use('rocketchat:version');
 	api.use('kadira:flow-router', 'client');
 
+	api.addFiles('lib/core.coffee');
+
 	// DEBUGGER
 	api.addFiles('server/lib/debug.js', 'server');
 
 	// COMMON LIB
-	api.addFiles('lib/core.coffee');
 	api.addFiles('lib/settings.coffee');
 	api.addFiles('lib/callbacks.coffee');
 	api.addFiles('lib/slashCommand.coffee');
@@ -68,6 +69,7 @@ Package.onUse(function(api) {
 	api.addFiles('server/methods/saveSetting.coffee', 'server');
 	api.addFiles('server/methods/sendInvitationEmail.coffee', 'server');
 	api.addFiles('server/methods/sendMessage.coffee', 'server');
+	api.addFiles('server/methods/sendSMTPTestEmail.coffee', 'server');
 	api.addFiles('server/methods/setAdminStatus.coffee', 'server');
 	api.addFiles('server/methods/setRealName.coffee', 'server');
 	api.addFiles('server/methods/setUsername.coffee', 'server');
@@ -76,6 +78,7 @@ Package.onUse(function(api) {
 
 	// SERVER STARTUP
 	api.addFiles('server/startup/settingsOnLoadCdnPrefix.coffee', 'server');
+	api.addFiles('server/startup/settingsOnLoadSMTP.coffee', 'server');
 	api.addFiles('server/startup/oAuthServicesUpdate.coffee', 'server');
 	api.addFiles('server/startup/settings.coffee', 'server');
 
@@ -95,6 +98,8 @@ Package.onUse(function(api) {
 	api.addFiles('client/TabBar.coffee', 'client');
 	api.addFiles('client/MessageAction.coffee', 'client');
 
+	api.addFiles('client/defaultTabBars.js', 'client');
+
 	// VERSION
 	api.addFiles('rocketchat.info');
 
@@ -107,9 +112,8 @@ Package.onUse(function(api) {
 			return 'i18n/' + filename;
 		}
 	}));
-	api.use('tap:i18n@1.6.1', ['client', 'server']);
-	api.imply('tap:i18n');
-	api.addFiles(tapi18nFiles, ['client', 'server']);
+	api.use('tap:i18n');
+	api.addFiles(tapi18nFiles);
 
 	// EXPORT
 	api.export('RocketChat');
