@@ -11,7 +11,7 @@ Package.onUse(function(api) {
   api.use([
     'coffeescript',
     'underscore',
-    'rocketchat:lib@0.0.1',
+    'rocketchat:lib',
     'alanning:roles@1.2.12'
     ]);
 
