@@ -2,8 +2,9 @@ sudo: required
 language: node_js
 branches:
   only:
-  - develop
   - master
+  - develop
+  - beta
   - "/^v(\\d+\\.)?(\\d+\\.)?(\\*|\\d+)$/"
 git:
   depth: 1
