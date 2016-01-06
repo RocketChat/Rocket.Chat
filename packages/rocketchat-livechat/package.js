@@ -77,6 +77,7 @@ Package.onUse(function(api) {
 	// methods
 	api.addFiles('server/methods/addAgent.js', 'server');
 	api.addFiles('server/methods/addManager.js', 'server');
+	api.addFiles('server/methods/pageVisited.js', 'server');
 	api.addFiles('server/methods/registerGuest.js', 'server');
 	api.addFiles('server/methods/removeAgent.js', 'server');
 	api.addFiles('server/methods/removeDepartment.js', 'server');
@@ -93,6 +94,7 @@ Package.onUse(function(api) {
 	api.addFiles('server/models/Rooms.js', 'server');
 	api.addFiles('server/models/LivechatDepartment.js', 'server');
 	api.addFiles('server/models/LivechatDepartmentAgents.js', 'server');
+	api.addFiles('server/models/LivechatPageVisited.js', 'server');
 	api.addFiles('server/models/LivechatTrigger.js', 'server');
 
 	// server lib
