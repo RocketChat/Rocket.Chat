@@ -52,6 +52,7 @@ rocketchat:github-enterprise
 rocketchat:gitlab
 rocketchat:highlight
 rocketchat:ldap
+rocketchat:livechat
 rocketchat:logger
 rocketchat:mailer
 rocketchat:markdown
@@ -63,8 +64,8 @@ rocketchat:message-star
 rocketchat:oembed
 rocketchat:slashcommands-invite
 rocketchat:slashcommands-join
-rocketchat:slashcommands-leave
 rocketchat:slashcommands-kick
+rocketchat:slashcommands-leave
 rocketchat:slashcommands-mute
 rocketchat:spotify
 rocketchat:statistics
@@ -84,7 +85,6 @@ rocketchat:wordpress
 #rocketchat:chatops
 #rocketchat:hubot
 #rocketchat:irc
-rocketchat:livechat
 
 konecty:change-case
 konecty:delayed-task
