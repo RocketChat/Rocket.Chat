@@ -34,6 +34,7 @@ session
 spacebars
 standard-minifiers
 tracker
+rocketchat:oauth2-server-config
 
 arunoda:streams
 rocketchat:lib
@@ -54,6 +55,7 @@ rocketchat:importer
 rocketchat:importer-hipchat
 rocketchat:importer-slack
 rocketchat:ldap
+rocketchat:livechat
 rocketchat:logger
 rocketchat:mailer
 rocketchat:markdown
@@ -65,8 +67,8 @@ rocketchat:message-star
 rocketchat:oembed
 rocketchat:slashcommands-invite
 rocketchat:slashcommands-join
-rocketchat:slashcommands-leave
 rocketchat:slashcommands-kick
+rocketchat:slashcommands-leave
 rocketchat:slashcommands-mute
 rocketchat:spotify
 rocketchat:statistics
@@ -86,7 +88,6 @@ rocketchat:wordpress
 #rocketchat:chatops
 #rocketchat:hubot
 #rocketchat:irc
-#rocketchat:livechat
 
 konecty:change-case
 konecty:delayed-task

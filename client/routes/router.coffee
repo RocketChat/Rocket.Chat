@@ -3,7 +3,6 @@ Blaze.registerHelper 'pathFor', (path, kw) ->
 
 BlazeLayout.setRoot 'body'
 
-
 FlowRouter.subscriptions = ->
 	Tracker.autorun =>
 		RoomManager.init()
@@ -42,7 +41,7 @@ FlowRouter.route '/home',
 	name: 'home'
 
 	action: ->
-		RocketChat.TabBar.reset()
+		RocketChat.TabBar.showGroup 'home'
 		BlazeLayout.render 'main', {center: 'home'}
 		KonchatNotification.getDesktopPermission()
 
@@ -51,18 +50,17 @@ FlowRouter.route '/changeavatar',
 	name: 'changeAvatar'
 
 	action: ->
+		RocketChat.TabBar.showGroup 'changeavatar'
 		BlazeLayout.render 'main', {center: 'avatarPrompt'}
 
 FlowRouter.route '/account/:group?',
 	name: 'account'
 
 	action: (params) ->
-		RocketChat.TabBar.closeFlex()
-		RocketChat.TabBar.resetButtons()
-
 		unless params.group
 			params.group = 'Preferences'
 		params.group = _.capitalize params.group, true
+		RocketChat.TabBar.showGroup 'account'
 		BlazeLayout.render 'main', { center: "account#{params.group}" }
 
 
@@ -74,6 +72,7 @@ FlowRouter.route '/history/private',
 
 	action: ->
 		Session.setDefault('historyFilter', '')
+		RocketChat.TabBar.showGroup 'private-history'
 		BlazeLayout.render 'main', {center: 'privateHistory'}
 
 
