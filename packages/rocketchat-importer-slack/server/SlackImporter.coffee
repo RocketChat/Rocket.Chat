@@ -149,7 +149,7 @@ Importer.Slack = class Importer.Slack extends Importer.Base
 							existantRoom = RocketChat.models.Rooms.findOneByName channel.name
 							if existantRoom or channel.is_general
 								if channel.is_general and channel.name isnt existantRoom?.name
-									Meteor.call 'saveRoomName', 'GENERAL', channel.name
+									Meteor.call 'saveRoomSettings', 'GENERAL', 'roomName', channel.name
 								channel.rocketId = if channel.is_general then 'GENERAL' else existantRoom._id
 							else
 								users = []
@@ -169,6 +169,7 @@ Importer.Slack = class Importer.Slack extends Importer.Base
 							@addCountCompleted 1
 				@collection.update { _id: @channels._id }, { $set: { 'channels': @channels.channels }}
 
+				missedTypes = {}
 				@updateProgress Importer.ProgressStep.IMPORTING_MESSAGES
 				for channel, messagesObj of @messages
 					do (channel, messagesObj) =>
@@ -191,6 +192,11 @@ Importer.Slack = class Importer.Slack extends Importer.Base
 															ts: new Date(parseInt(message.ts.split('.')[0]) * 1000)
 												else if message.subtype is 'me_message'
 													RocketChat.sendMessage @getRocketUser(message.user), { msg: '_' + @convertSlackMessageToRocketChat(message.text) + '_', ts: new Date(parseInt(message.ts.split('.')[0]) * 1000) }, room
+												else if message.subtype is 'bot_message'
+													RocketChat.sendMessage
+												else
+													if not missedTypes[message.subtype]
+														missedTypes[message.subtype] = message
 											else
 												user = @getRocketUser(message.user)
 												if user?
@@ -208,7 +214,7 @@ Importer.Slack = class Importer.Slack extends Importer.Base
 													#RocketChat.models.Messages.insert msgObj
 													RocketChat.sendMessage @getRocketUser(message.user), msgObj, room
 										@addCountCompleted 1
-
+				#console.log missedTypes
 				@updateProgress Importer.ProgressStep.FINISHING
 				for channel in @channels.channels when channel.do_import and channel.is_archived
 					do (channel) =>
