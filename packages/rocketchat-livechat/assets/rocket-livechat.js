@@ -70,7 +70,10 @@
 	};
 
 	var pageVisited = function() {
-		callHook('pageVisited', JSON.parse(JSON.stringify(document.location)));
+		callHook('pageVisited', {
+			location: JSON.parse(JSON.stringify(document.location)),
+			title: document.title
+		});
 	};
 
 	var currentPage = {
