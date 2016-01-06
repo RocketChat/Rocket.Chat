@@ -9,7 +9,4 @@ Meteor.methods
 		if not _id? and roleData.name?
 			saveData.name = roleData.name
 
-		if _id?
-			return Meteor.roles.update _id, { $set: saveData }
-		else
-			return Meteor.roles.insert saveData
+		return RocketChat.models.Roles.createOrUpdate saveData.name, 'Users', roleData.description
