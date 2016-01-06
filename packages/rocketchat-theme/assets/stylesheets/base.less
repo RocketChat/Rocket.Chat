@@ -1726,6 +1726,10 @@ a.github-fork {
 			.transform(translateX(0));
 		}
 	}
+	&.main-modal {
+		left: 0px;
+		margin-right: 0px;
+	}
 	.container-fluid {
 		padding-top: 0;
 	}
@@ -2130,8 +2134,16 @@ a.github-fork {
 		text-transform: uppercase;
 		text-align: center;
 
-		> a {
+		> a.mark-read {
 			float: right;
+
+			&:hover {
+				cursor: pointer;
+			}
+		}
+
+		> a.jump-to {
+			float: left;
 
 			&:hover {
 				cursor: pointer;

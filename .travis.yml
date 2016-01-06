@@ -2,8 +2,9 @@ sudo: required
 language: node_js
 branches:
   only:
-  - develop
   - master
+  - develop
+  - beta
   - "/^v(\\d+\\.)?(\\d+\\.)?(\\*|\\d+)$/"
 git:
   depth: 1
@@ -41,4 +42,4 @@ after_deploy:
 - ".travis/docker.sh"
 env:
   global:
-    secure: lDiDmo2SGHx1v4G49wsCp8kvg84SFAsAvPuFd5ngba7j038GwgcIVfqgc+7Vgi007gUL86Z74B124mtV4rQjyXhgoSxyg482FDoOx1Hh4vKzcnW3xWI/Du0epyl3MVDijDh1Y34WTWLH7YST1ViDk4GKk+Nvwv+sydac3IwsRHLRtUnzAIwa9DigE+wA9vChBqPL2kAdGlnpkl8bWUhMB8MYtyQY9gR2jVxaTGBLIJKIy1mVEAg8MOVGEKZ7POQQ/yP29MfNd7GvGt8Gz+k09z4iMJrU4Plq4UCGPXM3QVSh6yG4CXXFkMsv8TwFBNrdmkxmUK33IP8XT4B15tUirbSNUvf0BQ1+WHdgHiv1omhmBnp4c3b+CI4Mzh7FBVmQYdkkucS/v7n+HJk25MRWdg43VXyxib/fkIS5vx4pTokbA/ftOvZOCA3fM5wc5McFalwefn9SEia0zDgKJM+aoxgB4wIACUJcjzI0hfclDUn7SzSTuXxaCYLM47EgKBN0I0D4GCITKKm8wlNwUnm6n+f3PqVykzKIYt08iFNI3SlVgTRMHGWYQlWR/HjYRkpq8wEdL21scTVz2652AP2/tbKqok26fFbphrgHxzhYG2xp2HOT3NMpCC0oprTaUFSWHru7bLAmbwBJL4VWwiVCN35rG9SU6X2Zq2StXbaM6B0=
+    secure: HrPOM5sBibYkMcf9aeQThYPCDiXeLkg0Xgv0HvH88/ku/gphDpNEjHNReHZM3cyfm9y3RhHpVdD+Zzy38S2goKyewRzpXJsuyerOYkjND0v3tivhs9CAX8PAUxj1U5zllTyH4bgW2ZwRtNnwnmtIM/JJlnySMpKVDqIZBpbhn3ph9bJ2J+BW3D3Jw8meQ1vCX8szIibyJK/5QX6HG2RBFXJGYoQ8DmR8jQv0aJQvT1Az5DO4yImk8tX4NP95qOc19Jywr1DsbaSBZeJ8lFJAmBpIGx7KAmUVCcxSxfbXGRhs2K4iEYb3rJ/dU6KiyPsKGUG4aYNGgbvcX0ZxX/BZ6ZU9ff0E4IIf43IxoN3ElrOqOFk5msJAXbrJEreINSzDqKOy8NFYtCQ49E2gwzfage4ZXkhFyx3wMPa5bzpr3ncsTceMjMVz03uL781X6NLuCkUmXv+n8K2MNhJU9Xinpdx1GRJm+0lXJspNNJ1ruHeJtls4epj4bmCwKmmZbFKPXqa5e8xVcMIkwt1LMiHduhE+WgKNHdOMhXrCcTxF62ybLlsHXmyLLJeNjTeKS8QG2XSoonClDAz/1R41I1DsMPblcgz9uvYCf7UtyftbhJ83bnJeEmOYQiwijLG0+QMq+B2+mmZan3Z7Hl7O53dnwuLxz7EO7EhQhY+CqHVgc6s=
