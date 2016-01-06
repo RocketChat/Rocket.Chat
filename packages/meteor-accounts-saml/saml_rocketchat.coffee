@@ -1,3 +1,7 @@
+logger = new Logger 'steffo:meteor-accounts-saml',
+	methods:
+		updated: 'log'
+
 RocketChat.settings.addGroup 'SAML'
 Meteor.methods
 	addSamlService: (name) ->
@@ -21,7 +25,7 @@ updateServices = ->
 		Accounts.saml.settings.providers = []
 
 		for service in services
-			console.log "Updating login service #{service._id}".blue
+			logger.updated service._id
 
 			serviceName = 'saml'
 

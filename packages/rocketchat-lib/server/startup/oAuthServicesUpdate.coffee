@@ -1,3 +1,7 @@
+logger = new Logger 'rocketchat:lib',
+	methods:
+		oauth_updated: 'log'
+
 timer = undefined
 oAuthServicesUpdate = ->
 	Meteor.clearTimeout timer if timer?
@@ -5,7 +9,7 @@ oAuthServicesUpdate = ->
 	timer = Meteor.setTimeout ->
 		services = RocketChat.models.Settings.find({_id: /^(Accounts_OAuth_|Accounts_OAuth_Custom_)[a-z_-]+$/i}).fetch()
 		for service in services
-			console.log "Updating login service #{service._id}".blue
+			logger.oauth_updated service._id
 
 			serviceName = service._id.replace('Accounts_OAuth_', '')
 
