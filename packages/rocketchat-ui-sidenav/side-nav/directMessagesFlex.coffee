@@ -17,7 +17,6 @@ Template.directMessagesFlex.helpers
 					matchAll: true
 					filter:
 						type: 'u'
-						_id: { $ne: Meteor.userId() }
 						active: { $eq: true }
 					sort: 'username'
 				}
