@@ -22,7 +22,7 @@ RocketChat.roomTypes.add('l', 5, {
 
 AccountBox.addItem({
 	name: 'Livechat',
-	icon: 'octicon octicon-info',
+	icon: 'icon-chat-empty',
 	href: 'livechat-users',
 	sideNav: 'livechatFlex',
 	condition: () => {
@@ -34,7 +34,7 @@ RocketChat.TabBar.addButton({
 	groups: ['livechat'],
 	id: 'visitor-info',
 	i18nTitle: 'Visitor_Info',
-	icon: 'icon-chat',
+	icon: 'octicon octicon-info',
 	template: 'visitorInfo',
 	order: 0
 });
