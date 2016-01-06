@@ -14,7 +14,7 @@ Package.onUse(function(api) {
 		'tracker',
 		'templating',
 		'less@2.5.0',
-		'rocketchat:lib@0.0.1'
+		'rocketchat:lib'
 	]);
 
 	api.addFiles([

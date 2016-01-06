@@ -7,7 +7,7 @@ Package.describe({
 Package.onUse(function(api) {
 	api.versionsFrom('1.0');
 	api.use('coffeescript');
-	api.use('rocketchat:lib@0.0.1');
+	api.use('rocketchat:lib');
 	api.use('rocketchat:custom-oauth');
 	api.addFiles("common.coffee");
 	api.addFiles('wordpress-login-button.css', 'client');
