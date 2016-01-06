@@ -7,7 +7,7 @@ Meteor.startup ->
 	permissions = [
 
 		{ _id: 'view-statistics',
-		roles : ['admin', 'temp-role']}
+		roles : ['admin']}
 
 		{ _id: 'view-privileged-setting',
 		roles : ['admin']}
@@ -34,7 +34,7 @@ Meteor.startup ->
 		roles : ['admin']}
 
 		{ _id: 'edit-other-user-active-status',
-		roles : ['admin', 'site-moderator']}
+		roles : ['admin']}
 
 		{ _id: 'delete-user',
 		roles : ['admin']}
@@ -49,37 +49,37 @@ Meteor.startup ->
 		roles : ['admin']}
 
 		{ _id: 'create-c',
-		roles : ['admin', 'site-moderator', 'user']}
+		roles : ['admin', 'user']}
 
 		{ _id: 'delete-c',
-		roles : ['admin', 'site-moderator']}
+		roles : ['admin']}
 
 		{ _id: 'edit-room',
-		roles : ['admin', 'site-moderator', 'moderator']}
+		roles : ['admin', 'moderator']}
 
 		{ _id: 'edit-message',
-		roles : ['admin', 'site-moderator', 'moderator']}
+		roles : ['admin', 'moderator']}
 
 		{ _id: 'delete-message',
-		roles : ['admin', 'site-moderator', 'moderator']}
+		roles : ['admin', 'moderator']}
 
 		{ _id: 'remove-user',
-		roles : ['admin', 'site-moderator', 'moderator']}
+		roles : ['admin', 'moderator']}
 
 		{ _id: 'mute-user',
-		roles : ['admin', 'site-moderator', 'moderator']}
+		roles : ['admin', 'moderator']}
 
 		{ _id: 'ban-user',
-		roles : ['admin', 'site-moderator', 'moderator']}
+		roles : ['admin', 'moderator']}
 
 		{ _id: 'create-p',
-		roles : ['admin', 'site-moderator', 'user']}
+		roles : ['admin', 'user']}
 
 		{ _id: 'delete-p',
-		roles : ['admin', 'site-moderator']}
+		roles : ['admin']}
 
 		{ _id: 'delete-d',
-		roles : ['admin', 'site-moderator']}
+		roles : ['admin']}
 
 		{ _id: 'bulk-register-user',
 		roles : ['admin']}
@@ -88,13 +88,13 @@ Meteor.startup ->
 		roles : ['admin']}
 
 		{ _id: 'view-c-room',
-		roles : ['admin', 'site-moderator', 'user']}
+		roles : ['admin', 'user']}
 
 		{ _id: 'view-p-room',
-		roles : ['admin', 'site-moderator', 'user']}
+		roles : ['admin', 'user']}
 
 		{ _id: 'view-d-room',
-		roles : ['admin', 'site-moderator', 'user']}
+		roles : ['admin', 'user']}
 
 		{ _id: 'access-permissions',
 		roles : ['admin']}
@@ -109,7 +109,6 @@ Meteor.startup ->
 	for permission in permissions
 		RocketChat.models.Permissions.upsert( permission._id, {$set: permission })
 
-	roles = _.pluck(Roles.getAllRoles().fetch(), 'name');
 	defaultRoles = [
 		{ name: 'admin', scope: 'Users' }
 		{ name: 'moderator', scope: 'Subscriptions' }
@@ -118,5 +117,4 @@ Meteor.startup ->
 	]
 
 	for role in defaultRoles
-		unless role.name in roles
-			Roles.createRole role
+		RocketChat.models.Roles.createOrUpdate role.name, role.scope

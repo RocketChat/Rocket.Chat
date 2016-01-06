@@ -21,14 +21,12 @@ Package.onUse(function(api) {
 
   api.use('templating', 'client');
 
-  // roles
-  api.addFiles('server/roles.js', ['server']);
-  api.addFiles('lib/roles.js', ['client', 'server']);
-  api.addFiles('client/roles.js', ['client']);
-  api.addFiles('server/models/Users.js', ['server']);
-
   api.addFiles('lib/rocketchat.coffee', ['server','client']);
-  api.addFiles('client/collection.coffee', ['client']);
+  api.addFiles('client/lib/ChatPermissions.coffee', ['client']);
+  api.addFiles('client/lib/models/Roles.coffee', ['client']);
+  api.addFiles('client/lib/models/Users.js', ['client']);
+  api.addFiles('client/lib/models/Subscriptions.js', ['client']);
+
   api.addFiles('client/startup.coffee', ['client']);
   api.addFiles('client/hasPermission.coffee', ['client']);
   api.addFiles('client/hasRole.coffee', ['client']);
@@ -45,19 +43,22 @@ Package.onUse(function(api) {
   api.addFiles('client/stylesheets/permissions.less', 'client');
 
   api.addFiles('server/models/Permissions.coffee', ['server']);
+  api.addFiles('server/models/Roles.coffee', ['server']);
+  api.addFiles('server/models/Users.js', ['server']);
+  api.addFiles('server/models/Subscriptions.js', ['server']);
 
-  api.addFiles('server/functions/addUsersToRoles.coffee', ['server']);
+  api.addFiles('server/functions/addUserRoles.coffee', ['server']);
   api.addFiles('server/functions/getPermissionsForRole.coffee', ['server']);
   api.addFiles('server/functions/getRoles.coffee', ['server']);
-  api.addFiles('server/functions/getRolesForUser.coffee', ['server']);
   api.addFiles('server/functions/getUsersInRole.coffee', ['server']);
   api.addFiles('server/functions/hasPermission.coffee', ['server']);
   api.addFiles('server/functions/hasRole.coffee', ['server']);
-  api.addFiles('server/functions/removeUsersFromRoles.coffee', ['server']);
+  api.addFiles('server/functions/removeUserFromRoles.coffee', ['server']);
 
   // publications
-  api.addFiles('server/publication.coffee', ['server']);
+  api.addFiles('server/publications/permissions.js', 'server');
   api.addFiles('server/publications/roles.coffee', 'server');
+  api.addFiles('server/publications/scopedRoles.js', 'server');
   api.addFiles('server/publications/usersInRole.coffee', 'server');
 
   // methods
@@ -79,6 +80,4 @@ Package.onUse(function(api) {
   }));
   api.use('tap:i18n');
   api.addFiles(tapi18nFiles);
-
-  api.export('Roles', 'server');
 });

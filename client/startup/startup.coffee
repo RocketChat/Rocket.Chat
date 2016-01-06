@@ -24,6 +24,9 @@ Meteor.startup ->
 	loadedLaguages = []
 
 	@setLanguage = (language) ->
+		if !language
+			return
+
 		if loadedLaguages.indexOf(language) > -1
 			return
 

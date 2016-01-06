@@ -42,7 +42,7 @@ Meteor.methods
 			ts: now
 
 		# set creator as channel moderator.  permission limited to channel by scoping to rid
-		RocketChat.authz.addUsersToRoles(Meteor.userId(), 'moderator', room._id)
+		RocketChat.authz.addUserRoles(Meteor.userId(), 'moderator', room._id)
 
 		for username in members
 			member = RocketChat.models.Users.findOneByUsername username
