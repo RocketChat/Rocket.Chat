@@ -27,6 +27,20 @@
 			<nav>
 				<!-- <button class="button pvt-msg"><span><i class="icon-forward"></i> {{_ "Forward"}}</span></button> -->
 			</nav>
+
+			<h4>{{_ "Navigation_History_20_last_pages"}}</h4>
+
+			<div class="visitor-navigation">
+				{{#if loadingNavigation}}
+					{{_ "Loading..."}}
+				{{else}}
+					<ul>
+						{{#each pageVisited}}
+							<li><a href="{{page.location.href}}" target="_blank" title="{{accessDateTime}}">{{pageTitle}}</a></li>
+						{{/each}}
+					</ul>
+				{{/if}}
+			</div>
 		</div>
 	</div>
 </template>

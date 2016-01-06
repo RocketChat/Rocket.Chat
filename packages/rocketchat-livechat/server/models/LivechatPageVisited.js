@@ -26,7 +26,7 @@ class LivechatPageVisitied extends RocketChat.models._Base {
 	}
 
 	findByToken(token) {
-		return this.find({ token: token });
+		return this.find({ token: token }, { sort : { ts: -1 }, limit: 20 });
 	}
 
 	keepHistoryForToken(token) {
