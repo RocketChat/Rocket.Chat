@@ -10,9 +10,5 @@ Meteor.startup ->
 			url = $link.attr('href')
 
 			if /^https?:\/\/.+/.test(url) is true
-				switch platform
-					when 'ios'
-						window.open url, '_system'
-					when 'android'
-						navigator.app.loadUrl url, {openExternal: true}
+				window.open url, '_system'
 				e.preventDefault()
