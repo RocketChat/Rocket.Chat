@@ -9,6 +9,7 @@ Package.onUse(function(api) {
 	api.versionsFrom('1.0');
 
 	api.use('coffeescript');
+	api.use('underscore');
 	api.use('logging');
 	api.use('nooitaf:colors');
 	api.use('templating', 'client', {weak: true});

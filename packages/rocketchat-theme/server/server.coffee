@@ -2,6 +2,11 @@ less = Npm.require('less')
 autoprefixer = Npm.require('less-plugin-autoprefix')
 crypto = Npm.require('crypto')
 
+logger = new Logger 'rocketchat:theme',
+	methods:
+		stop_rendering: 'log'
+
+
 calculateClientHash = WebAppHashing.calculateClientHash
 WebAppHashing.calculateClientHash = (manifest, includeFilter, runtimeConfigOverride) ->
 	css = RocketChat.theme.getCss()
@@ -87,7 +92,7 @@ RocketChat.theme = new class
 
 		start = Date.now()
 		less.render content, options, (err, data) ->
-			console.log 'stop rendering', Date.now() - start
+			logger.stop_rendering Date.now() - start
 			if err?
 				return console.log err
 
