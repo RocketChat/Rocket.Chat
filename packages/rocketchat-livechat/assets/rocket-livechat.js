@@ -79,13 +79,13 @@
 	};
 	var trackNavigation = function() {
 		setInterval(function() {
-			if (document.title !== currentPage.title) {
+			if (document.location.href !== currentPage.href) {
 				pageVisited();
 
 				currentPage.href = document.location.href;
 				currentPage.title = document.title;
 			}
-		}, 500);
+		}, 800);
 	};
 
 	var initRocket = function(url) {
