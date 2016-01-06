@@ -8,8 +8,13 @@ Package.describe({
 Package.onUse(function(api) {
 	api.versionsFrom('1.0');
 
-	api.use('coffeescript', 'client');
+	api.use('coffeescript');
+	api.use('logging');
+	api.use('nooitaf:colors');
 	api.use('templating', 'client', {weak: true});
 
 	api.addFiles('logger.coffee', 'client');
+	api.addFiles('server.coffee', 'server');
+
+	api.export('Logger');
 });
