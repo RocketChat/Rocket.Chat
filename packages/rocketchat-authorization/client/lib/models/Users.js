@@ -1,3 +1,7 @@
+if (_.isUndefined(RocketChat.models.Users)) {
+	RocketChat.models.Users = {}
+}
+
 RocketChat.models.Users.findRolesByUserId = function(userId) {
 	var query = {
 		_id: userId

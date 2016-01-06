@@ -31,11 +31,8 @@ Template.permissions.onCreated ->
 		added: {}
 		removed: {}
 
-	subs = @subscribe 'roles'
-
 	Tracker.autorun =>
-		if subs.ready()
-			@roles.set Roles.getAllRoles().fetch()
+		@roles.set RocketChat.models.Roles.find().fetch()
 
 	Tracker.autorun =>
 		if subs.ready()
