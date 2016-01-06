@@ -15,6 +15,10 @@ Api.addRoute ':integrationId/:userId/:token', authRequired: true,
 		if @bodyParams?.payload?
 			@bodyParams = JSON.parse @bodyParams.payload
 
+		console.log 'Post integration'
+		console.log '@urlParams', @urlParams
+		console.log '@bodyParams', @bodyParams
+
 		integration = RocketChat.models.Integrations.findOne(@urlParams.integrationId)
 		user = RocketChat.models.Users.findOne(@userId)
 
