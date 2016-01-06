@@ -1,5 +1,7 @@
 LoggerManager = new class
 	loggers: {}
+	showPackage: false
+	showFileAndLine: false
 
 @Logger = class Logger
 	defaultTypes:
@@ -7,7 +9,11 @@ LoggerManager = new class
 		warn: 'magenta'
 		error: 'red'
 
-	constructor: (@name, @config={}) ->
+	config: {}
+
+	constructor: (@name, config={}) ->
+		_.extend @config, config
+
 		if LoggerManager.loggers[@name]?
 			LoggerManager.loggers[@name].warn 'Duplicated instance'
 			return LoggerManager.loggers[@name]
@@ -40,16 +46,19 @@ LoggerManager = new class
 		prefix = ""
 
 		if options.method?
-			prefix = "[#{@name}->#{options.method}]"
+			prefix = "[#{@name} #{options.method}]"
 		else
 			prefix = "[#{@name}]"
 
 		details = @_getCallerDetails()
 
 		detailParts = []
-		if details.package? then detailParts.push details.package
-		if details.file? then detailParts.push details.file
-		if details.line? then detailParts.push details.line
+		if details.package? and LoggerManager.showPackage is true
+			detailParts.push details.package
+		if details.file? and LoggerManager.showFileAndLine is true
+			detailParts.push details.file
+		if details.line? and LoggerManager.showFileAndLine is true
+			detailParts.push details.line
 
 		if detailParts.length > 0
 			prefix = "(#{detailParts.join(':')})#{prefix}"
