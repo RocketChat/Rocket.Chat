@@ -69,7 +69,15 @@ RocketChat.models.Users.getNextAgent = function() {
 		}
 	};
 
-	return findAndModify(query, sort, update);
+	var user = findAndModify(query, sort, update);
+	if (user) {
+		return {
+			agentId: user._id,
+			username: user.username
+		}
+	} else {
+		return null;
+	}
 };
 
 /**
@@ -83,4 +91,17 @@ RocketChat.models.Users.getVisitorByToken = function(token, options) {
 	};
 
 	return this.findOne(query, options);
+};
+
+/**
+ * Gets visitor by token
+ * @param {string} token - Visitor token
+ */
+RocketChat.models.Users.findVisitorByToken = function(token) {
+	var query = {
+		"profile.guest": true,
+		"profile.token": token
+	};
+
+	return this.find(query);
 };
