@@ -61,22 +61,10 @@ Now compatible with all Android devices as old as version 4.0.x - [download here
 ## Heroku
 Host your own Rocket.Chat server for **FREE** with [One-Click Deploy](https://heroku.com/deploy?template=https://github.com/RocketChat/Rocket.Chat/tree/master)
 
-Branch **master** (Latest stable version):
-
-[![Deploy](https://www.herokucdn.com/deploy/button.png)](https://heroku.com/deploy?template=https://github.com/RocketChat/Rocket.Chat/tree/master)
-
-Branch **develop** (Newer but unstable):
-
 [![Deploy](https://www.herokucdn.com/deploy/button.png)](https://heroku.com/deploy?template=https://github.com/RocketChat/Rocket.Chat/tree/develop)
 
 ## Scalingo
 Deploy your own Rocket.Chat server instantly on [Scalingo](https://scalingo.com)
-
-Branch **master** (Latest stable version):
-
-[![Deploy on Scalingo](https://cdn.scalingo.com/deploy/button.svg)](https://my.scalingo.com/deploy?source=https://github.com/RocketChat/Rocket.Chat#master)
-
-Branch **develop** (Newer but unstable):
 
 [![Deploy on Scalingo](https://cdn.scalingo.com/deploy/button.svg)](https://my.scalingo.com/deploy?source=https://github.com/RocketChat/Rocket.Chat#develop)
 
@@ -93,20 +81,20 @@ Host your docker container at [sloppy.io](http://sloppy.io). Get an account and 
 
 or
 
-Use the automated build image of our [most recent in-development code](https://hub.docker.com/r/rocketchat/rocket.chat/)
+Use the automated build image of our [most recent release](https://hub.docker.com/r/rocketchat/rocket.chat/)
 
 [![Rocket.Chat logo](https://d207aa93qlcgug.cloudfront.net/1.95.5.qa/img/nav/docker-logo-loggedout.png)](https://hub.docker.com/r/rocketchat/rocket.chat/)
 
 ```
-docker pull rocketchat/rocket.chat:develop
+docker pull rocketchat/rocket.chat:lastest
 ```
 
-OR the latest available stable (master) branch code:
+OR select a specific release ([details of releases available](https://github.com/RocketChat/Rocket.Chat/releases)):
 ```
-docker pull rocketchat/rocket.chat:latest
+docker pull rocketchat/rocket.chat:vX.X.X
 ```
 
-OR our [official docker registry image](https://hub.docker.com/_/rocket.chat/), containing recent MAJOR release:
+OR our [official docker registry image](https://hub.docker.com/_/rocket.chat/), containing recent stable release build approved by Docker:
 
 ```
 docker pull rocket.chat
