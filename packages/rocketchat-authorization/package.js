@@ -44,11 +44,11 @@ Package.onUse(function(api) {
 
   api.addFiles('server/models/Permissions.coffee', ['server']);
   api.addFiles('server/models/Roles.coffee', ['server']);
+  api.addFiles('server/models/Base.js', ['server']);
   api.addFiles('server/models/Users.js', ['server']);
   api.addFiles('server/models/Subscriptions.js', ['server']);
 
   api.addFiles('server/functions/addUserRoles.coffee', ['server']);
-  api.addFiles('server/functions/getPermissionsForRole.coffee', ['server']);
   api.addFiles('server/functions/getRoles.coffee', ['server']);
   api.addFiles('server/functions/getUsersInRole.coffee', ['server']);
   api.addFiles('server/functions/hasPermission.coffee', ['server']);

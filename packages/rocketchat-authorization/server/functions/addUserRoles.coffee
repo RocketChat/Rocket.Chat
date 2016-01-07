@@ -8,7 +8,7 @@ RocketChat.authz.addUserRoles = (userId, roleNames, scope) ->
 
 	roleNames = [].concat roleNames
 
-	existingRoleNames = _.pluck(RocketChat.authz.getRoles(), 'name')
+	existingRoleNames = _.pluck(RocketChat.authz.getRoles(), '_id')
 	invalidRoleNames = _.difference(roleNames, existingRoleNames)
 	unless _.isEmpty(invalidRoleNames)
 		for role in invalidRoleNames
