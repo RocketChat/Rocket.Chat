@@ -1,5 +1,4 @@
 Meteor.subscribe 'roles'
-Meteor.subscribe 'scopedRoles', 'Users'
 
 RocketChat.authz.subscription = Meteor.subscribe 'permissions'
 

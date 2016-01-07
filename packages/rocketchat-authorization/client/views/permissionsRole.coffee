@@ -1,6 +1,6 @@
 Template.permissionsRole.helpers
 	role: ->
-		return Meteor.roles.findOne({ name: FlowRouter.getParam('name') }) or {}
+		return RocketChat.models.Roles.findOne({ _id: FlowRouter.getParam('name') }) or {}
 
 	userInRole: ->
 		return Template.instance().usersInRole

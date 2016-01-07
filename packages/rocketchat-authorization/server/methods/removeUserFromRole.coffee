@@ -11,4 +11,4 @@ Meteor.methods
 		if not user?._id?
 			throw new Meteor.Error 'user-not-found'
 
-		return RocketChat.models.Roles.removeUserRole user._id, roleName
+		return RocketChat.models.Roles.removeUserRoles user._id, roleName
