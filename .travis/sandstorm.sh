@@ -35,4 +35,4 @@ sed -i "s/\sid = .*/$SANDSTORM_ID/" sandstorm-pkgdef.capnp
 mkdir -p /home/vagrant/bundle/opt/app/.sandstorm/
 cp /opt/app/.sandstorm/launcher.sh /home/vagrant/bundle/opt/app/.sandstorm/
 sed -i "s/\spgp/#pgp/g" sandstorm-pkgdef.capnp
-spk pack $ROCKET_DEPLOY_DIR/rocket.chat.spk
+spk pack $ROCKET_DEPLOY_DIR/rocket.chat-$ARTIFACT_NAME.spk
