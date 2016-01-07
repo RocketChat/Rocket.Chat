@@ -19,6 +19,7 @@ RocketChat.models.Roles = new class extends RocketChat.models._Base
 	createOrUpdate: (name, scope, description, protectedRole) ->
 		scope ?= 'Users'
 		updateData = {}
+		updateData.name = name
 		updateData.scope = scope
 		if description?
 			updateData.description = description
@@ -38,5 +39,5 @@ RocketChat.models.Roles = new class extends RocketChat.models._Base
 		roles = [].concat roles
 		for roleName in roles
 			role = @findOne roleName
-			roleScope = role?.scope os 'Users'
+			roleScope = role?.scope or 'Users'
 			RocketChat.models[roleScope]?.removeRolesByUserId?(userId, roleName, scope)
