@@ -15,6 +15,9 @@ Meteor.methods
 		if application.redirectUri.trim() is ''
 			throw new Meteor.Error 'invalid_redirectUri', '[methods] addOAuthApp -> redirectUri can\'t be empty'
 
+		if not _.isBoolean(application.active)
+			throw new Meteor.Error 'invalid_active', '[methods] addOAuthApp -> active must be boolean'
+
 		application.clientId = Random.id()
 		application.clientSecret = Random.secret()
 		application._createdAt = new Date

@@ -6,9 +6,16 @@
 				<div class="section">
 					<div class="section-content">
 						<div class="input-line double-col">
+							<label>{{_ "Active"}}</label>
+							<div>
+								<label><input class="input-monitor" type="radio" name="active" value="1" checked="{{$eq data.active true}}" /> {{_ "True"}}</label>
+								<label><input class="input-monitor" type="radio" name="active" value="0" checked="{{$eq data.active false}}" /> {{_ "False"}}</label>
+							</div>
+						</div>
+						<div class="input-line double-col">
 							<label>{{_ "Application_Name"}}</label>
 							<div>
-								<input type="text" name="name" value="{{data.name}}" placeholder="{{_ 'Optional'}}" />
+								<input type="text" name="name" value="{{data.name}}" />
 								<div class="settings-description">{{_ "Give_the_application_a_name_This_will_be_seen_by_your_users"}}</div>
 							</div>
 						</div>
