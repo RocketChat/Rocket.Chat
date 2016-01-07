@@ -13,7 +13,7 @@ Package.onUse(function(api) {
 		'underscore',
 		'webapp',
 		'rocketchat:file',
-		'rocketchat:lib@0.0.1'
+		'rocketchat:lib'
 	]);
 
 	api.addFiles('server/assets.coffee', 'server');

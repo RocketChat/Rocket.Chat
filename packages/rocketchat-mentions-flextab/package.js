@@ -12,7 +12,7 @@ Package.onUse(function(api) {
 		'coffeescript',
 		'underscore',
 		'less@2.5.0',
-		'rocketchat:lib@0.0.1'
+		'rocketchat:lib'
 	]);
 
 	api.addFiles([

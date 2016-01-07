@@ -437,3 +437,56 @@
 		height: 24px;
 	}
 }
+
+.user-view {
+	li {
+		color: @secondary-font-color;
+		line-height: 18px;
+		font-size: 12px;
+		font-weight: 300;
+	}
+}
+
+.icon-chat-empty.status-offline {
+	color: @status-offline;
+}
+
+.icon-chat-empty.status-online {
+	color: @status-online;
+}
+
+.icon-chat-empty.status-busy {
+	color: @status-busy;
+}
+
+.icon-chat-empty.status-away {
+	color: @status-away;
+}
+
+.visitor-navigation {
+	height: 130px;
+	overflow-y: auto;
+	border: 1px solid #E7E7E7;
+	border-radius: 4px;
+	padding: 4px;
+	margin-top: 4px;
+
+	ul {
+		li {
+			white-space: nowrap;
+
+			a {
+				text-overflow: ellipsis;
+				display: block;
+				overflow: hidden;
+
+				color: @secondary-font-color;
+				text-decoration: underline;
+
+				&:hover {
+					text-decoration: none;
+				}
+			}
+		}
+	}
+}

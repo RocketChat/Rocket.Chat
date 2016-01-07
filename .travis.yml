@@ -3,8 +3,7 @@ language: node_js
 branches:
   only:
   - develop
-  - master
-  - "/^v(\\d+\\.)?(\\d+\\.)?(\\*|\\d+)$/"
+  - "/^(\\d+\\.)?(\\d+\\.)?(\\*|\\d+)$/"
 git:
   depth: 1
 node_js:
@@ -22,20 +21,21 @@ before_script:
 script:
 - meteor build /tmp/build
 before_deploy:
+- source ".travis/setartname.sh"
 - source ".travis/setdeploydir.sh"
 - ".travis/setupsig.sh"
 - ".travis/namefiles.sh"
 - ".travis/sandstorm.sh"
 deploy:
-  provider: releases
-  api_key:
-    secure: SLtbGv9vL6qC3rKGwKuXfUSFuRCeLsBFiRA1nBDWoyua7F3rLy8fBvhS3sXRDCqAF6hJgXQwZzX2pS1Lljwjjmwi/80Ns7VDtreX5QstHukFAxaJh2E0Lz5zQdSqAb61KdAipZmYfp2fgCr8T+xztE/mvtPD5R8CcIQIjJpl9rh+mrkkshkcaNOY4JQrqyrcTeCOeBQMXTZSkkbdJr4gb9++A2c61K0txfid9+VwqGm5MwvaT80JC5wLQkL8rS9OUcNJHFf90ELFZpRZnZnI2lsfmTBAxRKL994UZgzru3XNMhUTsJPh7OyVn/xSlyjLcvsn4dSon1PE9t3RkuxsbTxx/XY+gIkXSGl38jZlhextaJoV0gTFkEg33tF/aZ4+I+iZM8LYfRAoUuZU0fSzGnFtFZp4xptF2ECLKmI/3dmuE6iwr+G1xUer9g2Rq9fXXrHgUA164544IdY4aDisxd9U78U0K7WaPtbvphiVl4GbgVnfTEgNVdpXcQxUtcXPZMiBRz5+E+1fExmCfO6+7mZ/yzDrsFYoRdmuo1SMGRI4iqb5jl/PImZ9ukTqRmQdqd3WJp3zzPbIEJPwhMtS5LMxzBMSfugXwjEajkXybcH5CWQ7jo+ogNqcM/CcJ3q4ahYuLTN7VeZWZ8h5kwr9bPxPooZuhWw0WPRa+XUM22o=
-  file:
-  - "$ROCKET_DEPLOY_DIR/rocket.chat.tgz"
-  - "$ROCKET_DEPLOY_DIR/rocket.chat.tgz.asc"
-  - "$ROCKET_DEPLOY_DIR/rocket.chat.spk"
+  provider: s3
+  access_key_id: "AKIAIKIA7H7D47KUHYCA"
+  secret_access_key: $ACCESSKEY
+  bucket: "rocketchat"
+  skip_cleanup: true
+  upload_dir: build
+  local_dir: $ROCKET_DEPLOY_DIR
   on:
-    tags: true
+    condition: "$TRAVIS_PULL_REQUEST=false"
     all_branches: true
 after_deploy:
 - ".travis/docker.sh"
