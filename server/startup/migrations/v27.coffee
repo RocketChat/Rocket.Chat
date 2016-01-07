@@ -8,4 +8,4 @@ Meteor.startup ->
 				for scope, roles of user._roles
 					RocketChat.models.Roles.addUserRoles(user._id, roles, scope)
 
-			# RocketChat.models.Users.update({}, { $unset: { _roles: 1 } }, { multi: true })
+			RocketChat.models.Users.update({}, { $unset: { _roles: 1 } }, { multi: true })
