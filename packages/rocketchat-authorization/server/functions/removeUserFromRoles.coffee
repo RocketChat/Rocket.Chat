@@ -13,6 +13,6 @@ RocketChat.authz.removeUserFromRoles = (userId, roleNames, scope) ->
 	unless _.isEmpty(invalidRoleNames)
 		throw new Meteor.Error 'invalid-role'
 
-	RocketChat.models.Roles.removeUserRoles(userIds, roleNames, scope)
+	RocketChat.models.Roles.removeUserRoles(userId, roleNames, scope)
 
 	return true
