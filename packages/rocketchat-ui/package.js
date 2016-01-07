@@ -24,7 +24,7 @@ Package.onUse(function(api) {
 		'templating',
 		'coffeescript',
 		'underscore',
-		'rocketchat:lib@0.0.1',
+		'rocketchat:lib',
 		'raix:push',
 		'raix:ui-dropped-event'
 	]);

@@ -9,7 +9,7 @@ Package.onUse(function(api) {
 
 	api.use('webapp');
 	api.use('coffeescript');
-	api.use('rocketchat:lib@0.0.1');
+	api.use('rocketchat:lib');
 	api.use('rocketchat:theme');
 	api.use('rocketchat:oauth2-server');
 
