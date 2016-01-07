@@ -104,6 +104,9 @@ Meteor.startup ->
 
 		{ _id: 'manage-integrations',
 		roles : ['admin', 'bot']}
+
+		{ _id: 'manage-oauth-apps',
+		roles : ['admin']}
 	]
 
 	for permission in permissions

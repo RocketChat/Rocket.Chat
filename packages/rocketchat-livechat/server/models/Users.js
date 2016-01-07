@@ -89,3 +89,16 @@ RocketChat.models.Users.getVisitorByToken = function(token, options) {
 
 	return this.findOne(query, options);
 };
+
+/**
+ * Gets visitor by token
+ * @param {string} token - Visitor token
+ */
+RocketChat.models.Users.findVisitorByToken = function(token) {
+	var query = {
+		"profile.guest": true,
+		"profile.token": token
+	};
+
+	return this.find(query);
+};
