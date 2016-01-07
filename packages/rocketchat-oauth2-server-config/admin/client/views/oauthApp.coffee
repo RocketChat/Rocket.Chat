@@ -1,5 +1,6 @@
 Template.oauthApp.onCreated ->
-	@record = new ReactiveVar {}
+	@record = new ReactiveVar
+		active: true
 
 
 Template.oauthApp.helpers
@@ -48,6 +49,7 @@ Template.oauthApp.events
 
 	"click .submit > .save": ->
 		name = $('[name=name]').val().trim()
+		active = $('[name=active]:checked').val().trim() is "1"
 		redirectUri = $('[name=redirectUri]').val().trim()
 
 		if name is ''
@@ -58,6 +60,7 @@ Template.oauthApp.events
 
 		app =
 			name: name
+			active: active
 			redirectUri: redirectUri
 
 		params = Template.instance().data.params?()
