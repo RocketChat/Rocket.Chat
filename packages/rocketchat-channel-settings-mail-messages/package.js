@@ -13,7 +13,7 @@ Package.onUse(function(api) {
 		'templating',
 		'reactive-var',
 		'less@2.5.0',
-		'rocketchat:lib@0.0.1',
+		'rocketchat:lib',
 		'rocketchat:channel-settings',
 		'momentjs:moment'
 	]);
