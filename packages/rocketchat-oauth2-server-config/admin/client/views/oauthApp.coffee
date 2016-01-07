@@ -1,5 +1,6 @@
 Template.oauthApp.onCreated ->
-	@record = new ReactiveVar {}
+	@record = new ReactiveVar
+		active: true
 
 
 Template.oauthApp.helpers
@@ -12,6 +13,9 @@ Template.oauthApp.helpers
 		if params?.id?
 			data = ChatOAuthApps.findOne({_id: params.id})
 			if data?
+				data.authorization_url = Meteor.absoluteUrl("oauth/authorize")
+				data.access_token_url = Meteor.absoluteUrl("oauth/token")
+
 				Template.instance().record.set data
 				return data
 
@@ -45,6 +49,7 @@ Template.oauthApp.events
 
 	"click .submit > .save": ->
 		name = $('[name=name]').val().trim()
+		active = $('[name=active]:checked').val().trim() is "1"
 		redirectUri = $('[name=redirectUri]').val().trim()
 
 		if name is ''
@@ -55,6 +60,7 @@ Template.oauthApp.events
 
 		app =
 			name: name
+			active: active
 			redirectUri: redirectUri
 
 		params = Template.instance().data.params?()
