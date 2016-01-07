@@ -1,7 +1,13 @@
 Template.messageAttachment.helpers
 	fixCordova: (url) ->
 		if Meteor.isCordova and url?[0] is '/'
-			return Meteor.absoluteUrl().replace(/\/$/, '') + url
+			url = Meteor.absoluteUrl().replace(/\/$/, '') + url
+			query = "rc_uid=#{Meteor.userId()}&rc_token=#{Meteor._localStorage.getItem('Meteor.loginToken')}"
+			if url.indexOf('?') is -1
+				url = url + '?' + query
+			else
+				url = url + '&' + query
+
 		return url
 
 	showImage: ->
@@ -15,3 +21,10 @@ Template.messageAttachment.helpers
 
 	getImageHeight: (height) ->
 		return height or 200
+
+	color: ->
+		switch @color
+			when 'good' then return '#35AC19'
+			when 'warning' then return '#FCB316'
+			when 'danger' then return '#D30230'
+			else return @color

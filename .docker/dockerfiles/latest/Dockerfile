@@ -2,10 +2,6 @@ FROM node:0.10
 
 MAINTAINER buildmaster@rocket.chat
 
-RUN apt-get update \
-&&  apt-get install -y graphicsmagick \
-&&  rm -rf /var/lib/apt/lists/*
-
 RUN groupadd -r rocketchat \
 &&  useradd -r -g rocketchat rocketchat \
 &&  mkdir /app  \
@@ -16,9 +12,9 @@ RUN gpg --keyserver ha.pool.sks-keyservers.net --recv-keys 0E163286C20D07B9787EB
 
 WORKDIR /app
 
-RUN URL="https://github.com/RocketChat/Rocket.Chat/releases/latest" \
+RUN URL="https://builds.rocket.chat/releases/latest" \
 &&  FILE="/rocket.chat.tgz" \
-&&  HEADER=$(curl -I -s "$URL" | grep -Fi Location: | sed -En 's/.*(https?:\/\/[a-zA-Z0-9\/.-_]*).*$/\1/p') \
+&&  HEADER=$(curl -I -s "$URL" | grep -Fi Location: | sed -En 's/.*(https?:\/\/[a-zA-Z0-9\/.-_]*).*$/\1/p' | sed 's/\/tag\//\/download\//' ) \
 &&  curl -fSL "$HEADER$FILE" -o rocket.chat.tgz \
 &&  tar zxvf ./rocket.chat.tgz \
 &&  rm ./rocket.chat.tgz  \

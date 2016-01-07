@@ -11,7 +11,7 @@ Package.onUse(function(api) {
   api.use([
     'coffeescript',
     'underscore',
-    'rocketchat:lib@0.0.1',
+    'rocketchat:lib',
     'alanning:roles@1.2.12'
     ]);
 
@@ -71,6 +71,6 @@ Package.onUse(function(api) {
       return 'i18n/' + filename;
     }
   }));
-  api.use('tap:i18n', ['client', 'server']);
-  api.addFiles(tapi18nFiles, ['client', 'server']);
+  api.use('tap:i18n');
+  api.addFiles(tapi18nFiles);
 });

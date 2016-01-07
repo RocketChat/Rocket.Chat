@@ -1,1 +1,5 @@
-{ }
+{
+  "All_logs" : "Alle logs",
+  "Debug_Level" : "Debug Level",
+  "Only_errors" : "Alleen fouten"
+}

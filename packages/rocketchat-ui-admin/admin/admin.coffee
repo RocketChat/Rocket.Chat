@@ -74,6 +74,12 @@ Template.admin.helpers
 
 		return TempSettings.find(query).count() > 0
 
+	translateSection: (section) ->
+		if section.indexOf(':') > -1
+			return section
+
+		return t(section)
+
 	flexOpened: ->
 		return 'opened' if RocketChat.TabBar.isFlexOpen()
 	arrowPosition: ->
@@ -224,10 +230,10 @@ Template.admin.onRendered ->
 
 	Meteor.setTimeout ->
 		$('input.minicolors').minicolors({theme: 'rocketchat'})
-	, 500
+	, 1000
 
 	Tracker.autorun ->
 		FlowRouter.watchPathChange()
 		Meteor.setTimeout ->
 			$('input.minicolors').minicolors({theme: 'rocketchat'})
-		, 200
+		, 400

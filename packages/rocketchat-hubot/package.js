@@ -11,7 +11,7 @@ Package.onUse(function(api) {
 	api.use([
 		'coffeescript',
 		'tracker',
-		'rocketchat:lib@0.0.1'
+		'rocketchat:lib'
 	]);
 
 	api.addFiles([
@@ -28,9 +28,8 @@ Package.onUse(function(api) {
 			return 'i18n/' + filename;
 		}
 	}));
-	api.use('tap:i18n@1.6.1', ['client', 'server']);
-	api.imply('tap:i18n');
-	api.addFiles(tapi18nFiles, ['client', 'server']);
+	api.use('tap:i18n');
+	api.addFiles(tapi18nFiles);
 
 	api.export('Hubot', ['server']);
 	api.export('HubotScripts', ['server']);

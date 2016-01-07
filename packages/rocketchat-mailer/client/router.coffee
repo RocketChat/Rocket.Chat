@@ -1,11 +1,7 @@
-tabReset = ->
-	RocketChat.TabBar.reset()
-
 FlowRouter.route '/mailer',
 	name: 'mailer'
-	triggersEnter: [tabReset]
-	triggersExit: [tabReset]
 	action: ->
+		RocketChat.TabBar.showGroup 'mailer'
 		BlazeLayout.render 'main', {center: 'mailer'}
 
 FlowRouter.route '/mailer/unsubscribe/:_id/:createdAt',

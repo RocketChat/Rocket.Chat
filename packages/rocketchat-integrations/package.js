@@ -12,7 +12,7 @@ Package.onUse(function(api) {
   api.use('coffeescript');
   api.use('underscore');
   api.use('simple:highlight.js');
-  api.use('rocketchat:lib@0.0.1');
+  api.use('rocketchat:lib');
   api.use('alanning:roles@1.2.12');
 
   api.use('kadira:flow-router', 'client');
@@ -63,6 +63,6 @@ Package.onUse(function(api) {
       return 'i18n/' + filename;
     }
   }));
-  api.use('tap:i18n', ['client', 'server']);
-  api.addFiles(tapi18nFiles, ['client', 'server']);
+  api.use('tap:i18n');
+  api.addFiles(tapi18nFiles);
 });

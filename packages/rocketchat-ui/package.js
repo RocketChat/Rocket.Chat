@@ -14,6 +14,7 @@ Package.onUse(function(api) {
 	api.versionsFrom('1.2.1');
 
 	api.use([
+		'accounts-base',
 		'mongo',
 		'session',
 		'jquery',
@@ -23,7 +24,7 @@ Package.onUse(function(api) {
 		'templating',
 		'coffeescript',
 		'underscore',
-		'rocketchat:lib@0.0.1',
+		'rocketchat:lib',
 		'raix:push',
 		'raix:ui-dropped-event'
 	]);
