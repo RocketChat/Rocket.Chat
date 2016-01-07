@@ -23,6 +23,7 @@ Package.onUse(function(api) {
 	//// OAuth //
 	// Server
 	api.addFiles('oauth/server/oauth2-server.coffee', 'server');
+	api.addFiles('oauth/server/default-services.coffee', 'server');
 
 	api.addAssets('oauth/client/stylesheets/oauth2.less', 'server');
 	api.addFiles('oauth/client/stylesheets/load.coffee', 'server');
