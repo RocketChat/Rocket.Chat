@@ -12,10 +12,9 @@ RUN gpg --keyserver ha.pool.sks-keyservers.net --recv-keys 0E163286C20D07B9787EB
 
 WORKDIR /app
 
-RUN URL="https://builds.rocket.chat/releases/latest" \
-&&  FILE="/rocket.chat.tgz" \
-&&  HEADER=$(curl -I -s "$URL" | grep -Fi Location: | sed -En 's/.*(https?:\/\/[a-zA-Z0-9\/.-_]*).*$/\1/p' | sed 's/\/tag\//\/download\//' ) \
-&&  curl -fSL "$HEADER$FILE" -o rocket.chat.tgz \
+RUN curl -fSL https://rocket.chat/releases/latest/download -o rocket.chat.tgz \
+&&  curl -fSL https://rocket.chat/releases/latest/asc -o rocket.chat.tgz.asc \
+&&  gpg --verify rocket.chat.tgz.asc \
 &&  tar zxvf ./rocket.chat.tgz \
 &&  rm ./rocket.chat.tgz  \
 &&  cd /app/bundle/programs/server \
