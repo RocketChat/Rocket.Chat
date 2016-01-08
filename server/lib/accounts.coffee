@@ -86,7 +86,7 @@ Accounts.insertUserDoc = _.wrap Accounts.insertUserDoc, (insertUserDoc, options,
 		else
 			roles.push 'user'
 
-	RocketChat.authz.addUsersToRoles(_id, roles)
+	RocketChat.authz.addUserRoles(_id, roles)
 
 	RocketChat.callbacks.run 'afterCreateUser', options, user
 	return _id
