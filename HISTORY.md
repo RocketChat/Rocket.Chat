@@ -1,7 +1,12 @@
-## v.NEXT
+## NEXT
 
+-
 
-## v0.12.0, 2016-Jan-04
+## 0.12.1, 2016-Jan-05
+
+- Fix problem with middleware that tries to parse json body
+
+## 0.12.0, 2016-Jan-04
 
 - Settings: unset section if none is given on update
 - Hide registration and forgot password links when hidding login form
@@ -19,7 +24,7 @@
 - Try to parse all request bodies as JSON
 - New password reset screen
 
-## v0.11.0, 2015-Dec-28
+## 0.11.0, 2015-Dec-28
 
 - Add role bot to users of integrations in scope bot
 - Add route to cadastre new integrations via API
@@ -62,15 +67,15 @@
 - Turn channel and triggerWords optional in triggers
 - Using branding image from main APP
 
-## v0.10.2, 2015-Dec-22
+## 0.10.2, 2015-Dec-22
 
 - Fixes image preview bugs with filenames containing spaces
 
-## v0.10.1, 2015-Dec-21
+## 0.10.1, 2015-Dec-21
 
 - Fix upload permissions introduced in raik:ufs 0.3.4
 
-## v0.10.0, 2015-Dec-21
+## 0.10.0, 2015-Dec-21
 
 - Accept property *msg* as text in attachments
 - Add "Room has been deleted" entry
@@ -170,7 +175,7 @@
 - Use attachments to render preview of uploads and use relative paths
 - Using flow-router group routes
 
-## v0.9.0, 2015-Dec-14
+## 0.9.0, 2015-Dec-14
 
 - Fix broken image-link when og:image contains "&amp;" (e.g. Google Maps)
 - Error message when file upload media type it not accepted
@@ -212,7 +217,7 @@
 - Fixed blockquote non-continous border
 - Moved accountBox HTML to new separated template
 
-## v0.8.0, 2015-Dec-8
+## 0.8.0, 2015-Dec-8
 
 - Fixed error: when allow change username was set to false, registration
 - Improve message rendering removing MessageAction from render time
@@ -243,6 +248,6 @@
 - Clear iOS app badge on app startup
 - Fix for image swipebox to show in RTL interface
 
-## v0.1.0, 2015-May-19
+## 0.1.0, 2015-May-19
 
 - Initial public launch

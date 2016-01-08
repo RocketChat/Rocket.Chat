@@ -1,6 +1,6 @@
 Template.permissionsRole.helpers
 	role: ->
-		return Meteor.roles.findOne({ name: FlowRouter.getParam('name') }) or {}
+		return RocketChat.models.Roles.findOne({ _id: FlowRouter.getParam('name') }) or {}
 
 	userInRole: ->
 		return Template.instance().usersInRole
@@ -108,4 +108,4 @@ Template.permissionsRole.onCreated ->
 	@subscribe 'roles', FlowRouter.getParam('name')
 	@subscribe 'usersInRole', FlowRouter.getParam('name')
 
-	@usersInRole = Roles.getUsersInRole(FlowRouter.getParam('name'), Roles.GLOBAL_GROUP, { sort: { username: 1 } })
+	@usersInRole = RocketChat.models.Roles.findUsersInRole(FlowRouter.getParam('name'), null, { sort: { username: 1 } })

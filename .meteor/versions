@@ -6,7 +6,6 @@ accounts-meteor-developer@1.0.6
 accounts-oauth@1.1.8
 accounts-password@1.1.4
 accounts-twitter@1.0.6
-alanning:roles@1.2.14
 aldeed:simple-schema@1.5.3
 arunoda:streams@0.1.17
 autoupdate@1.2.4
@@ -148,7 +147,7 @@ rocketchat:mentions-flextab@0.0.1
 rocketchat:message-attachments@0.0.1
 rocketchat:message-pin@0.0.1
 rocketchat:message-star@0.0.1
-rocketchat:oauth2-server@1.1.1
+rocketchat:oauth2-server@1.2.0
 rocketchat:oauth2-server-config@1.0.0
 rocketchat:oembed@0.0.1
 rocketchat:slashcommands-invite@0.0.1

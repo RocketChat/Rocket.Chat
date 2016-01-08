@@ -2,10 +2,6 @@ FROM node:0.10
 
 MAINTAINER buildmaster@rocket.chat
 
-RUN apt-get update \
-&&  apt-get install -y graphicsmagick \
-&&  rm -rf /var/lib/apt/lists/*
-
 RUN groupadd -r rocketchat \
 &&  useradd -r -g rocketchat rocketchat \
 &&  mkdir /app  \
@@ -16,7 +12,7 @@ RUN gpg --keyserver ha.pool.sks-keyservers.net --recv-keys 0E163286C20D07B9787EB
 
 WORKDIR /app
 
-RUN curl -fSL "https://s3.amazonaws.com/build/rocket.chat-develop.tgz" -o rocket.chat.tgz \
+RUN curl -fSL https://rocket.chat/releases/develop/download -o rocket.chat.tgz \
 &&  tar zxvf ./rocket.chat.tgz \
 &&  rm ./rocket.chat.tgz  \
 &&  cd /app/bundle/programs/server \
