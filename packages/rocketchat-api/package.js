@@ -12,7 +12,7 @@ Package.onUse(function(api) {
 		'coffeescript',
 		'underscore',
 		'rocketchat:lib',
-		'nimble:restivus@0.8.4'
+		'nimble:restivus'
 	]);
 
 	api.addFiles('server/api.coffee', 'server');
