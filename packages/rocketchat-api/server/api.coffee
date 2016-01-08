@@ -6,7 +6,7 @@ class API extends Restivus
 	addAuthMethod: (method) ->
 		@authMethods.push method
 
-	success: (result) ->
+	success: (result={}) ->
 		if _.isObject(result)
 			result.success = true
 
