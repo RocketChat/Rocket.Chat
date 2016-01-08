@@ -13,6 +13,8 @@ RUN gpg --keyserver ha.pool.sks-keyservers.net --recv-keys 0E163286C20D07B9787EB
 WORKDIR /app
 
 RUN curl -fSL https://rocket.chat/releases/develop/download -o rocket.chat.tgz \
+&&  curl -fSL https://rocket.chat/releases/develop/asc -o rocket.chat.tgz.asc \
+&&  gpg --verify rocket.chat.tgz.asc \
 &&  tar zxvf ./rocket.chat.tgz \
 &&  rm ./rocket.chat.tgz  \
 &&  cd /app/bundle/programs/server \
