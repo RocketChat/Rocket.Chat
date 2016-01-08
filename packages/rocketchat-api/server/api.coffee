@@ -45,6 +45,9 @@ RocketChat.API.v1 = new API
 	auth:
 		token: 'services.resume.loginTokens.hashedToken'
 		user: ->
+			if @bodyParams?.payload?
+				@bodyParams = JSON.parse @bodyParams.payload
+
 			for method in RocketChat.API.v1.authMethods
 				result = method.apply @, arguments
 				if result not in [undefined, null, false]
