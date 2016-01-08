@@ -18,31 +18,75 @@ RocketChat.API.v1.addRoute 'me', authRequired: true,
 
 
 # Send Channel Message
-# params
-# 	channel
-# 	text
-# 	username
-# 	as_user
-# 	parse
-# 	link_names
-# 	attachments
-# 	unfurl_links
-# 	unfurl_media
-# 	icon_url
-# 	icon_emoji
-#
-# response
-# 	{
-# 			"ok": true,
-# 			"ts": "1405895017.000506",
-# 			"channel": "C024BE91L",
-# 			"message": {
-# 					…
-# 			}
-# 	}
 RocketChat.API.v1.addRoute 'chat.postMessage', authRequired: true,
-	get: ->
-		# TODO
+	post: ->
+		channel = @bodyParams.channel
+		channelType = channel[0]
+		channel = channel.substr(1)
+
+		switch channelType
+			when '#'
+				room = RocketChat.models.Rooms.findOne
+					$or: [
+						{_id: channel}
+						{name: channel}
+					]
+
+				if not room?
+					return RocketChat.API.v1.failure 'invalid-channel'
+
+				rid = room._id
+				if room.t is 'c'
+					Meteor.runAsUser @userId, ->
+						Meteor.call 'joinRoom', room._id
+
+			when '@'
+				roomUser = RocketChat.models.Users.findOne
+					$or: [
+						{_id: channel}
+						{username: channel}
+					]
+
+				if not roomUser?
+					return RocketChat.API.v1.failure 'invalid-channel'
+
+				rid = [@useId, roomUser._id].sort().join('')
+				room = RocketChat.models.Rooms.findOne(rid)
+
+				if not room
+					Meteor.runAsUser @userId, ->
+						Meteor.call 'createDirectMessage', roomUser.username
+						room = RocketChat.models.Rooms.findOne(rid)
+
+			else
+				return RocketChat.API.v1.failure 'invalid-channel-type'
+
+		message =
+			alias: @bodyParams.username or @bodyParams.alias
+			msg: _.trim(@bodyParams.text or @bodyParams.msg or '')
+			attachments: @bodyParams.attachments
+			parseUrls: false
+			bot:
+				u: @userId
+			groupable: false
+
+		if @bodyParams.icon_url? or @bodyParams.avatar?
+			message.avatar = @bodyParams.icon_url or @bodyParams.avatar
+		else if @bodyParams.icon_emoji? or @bodyParams.emoji?
+			message.emoji = @bodyParams.icon_emoji or @bodyParams.emoji
+
+		if _.isArray message.attachments
+			for attachment in message.attachments
+				if attachment.msg
+					attachment.text = _.trim(attachment.msg)
+					delete attachment.msg
+
+		message = RocketChat.sendMessage @user, message, room, {}
+
+		return RocketChat.API.v1.success
+			ts: Date.now()
+			channel: channel
+			message: message
 
 
 # Set Channel Topic
