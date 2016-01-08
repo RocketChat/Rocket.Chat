@@ -9,6 +9,14 @@ FlowRouter.route '/oauth/authorize',
 			state: queryParams.state
 
 
+FlowRouter.route '/oauth/error/:error',
+	action: (params, queryParams) ->
+		BlazeLayout.render 'main',
+			center: 'oauth404'
+			modal: true
+			error: params.error
+
+
 Template.authorize.onCreated ->
 	@subscribe 'authorizedOAuth'
 
