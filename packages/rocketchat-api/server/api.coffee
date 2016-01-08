@@ -6,6 +6,33 @@ class API extends Restivus
 	addAuthMethod: (method) ->
 		@authMethods.push method
 
+	success: (result) ->
+		if _.isObject(result)
+			result.success = true
+
+		return {} =
+			statusCode: 200
+			body: result
+
+	failure: (result) ->
+		if _.isObject(result)
+			result.success = false
+		else
+			result =
+				success: false
+				error: result
+
+		return {} =
+			statusCode: 400
+			body: result
+
+	unauthorized: (msg) ->
+		return {} =
+			statusCode: 401
+			body:
+				success: false
+				error: msg or 'unauthorized'
+
 
 RocketChat.API = {}
 
