@@ -3,6 +3,9 @@ Api = new Restivus
 	apiPath: 'hooks/'
 	auth:
 		user: ->
+			if @bodyParams?.payload?
+				@bodyParams = JSON.parse @bodyParams.payload
+
 			user = RocketChat.models.Users.findOne
 				_id: @request.params.userId
 				'services.resume.loginTokens.hashedToken': decodeURIComponent @request.params.token
@@ -12,9 +15,6 @@ Api = new Restivus
 
 Api.addRoute ':integrationId/:userId/:token', authRequired: true,
 	post: ->
-		if @bodyParams?.payload?
-			@bodyParams = JSON.parse @bodyParams.payload
-
 		console.log 'Post integration'
 		console.log '@urlParams', @urlParams
 		console.log '@bodyParams', @bodyParams
@@ -107,83 +107,82 @@ Api.addRoute ':integrationId/:userId/:token', authRequired: true,
 				success: true
 
 
+createIntegration = (options, user) ->
+	console.log 'Add integration'
+	console.log options
+
+	Meteor.runAsUser user._id, =>
+		switch options['event']
+			when 'newMessageOnChannel'
+				options.data ?= {}
+
+				if options.data.channel_name? and options.data.channel_name.indexOf('#') is -1
+					options.data.channel_name = '#' + options.data.channel_name
+
+				Meteor.call 'addOutgoingIntegration',
+					username: 'rocket.cat'
+					urls: [options.target_url]
+					name: options.name
+					channel: options.data.channel_name
+					triggerWords: options.data.trigger_words
+
+			when 'newMessageToUser'
+				if options.data.username.indexOf('@') is -1
+					options.data.username = '@' + options.data.username
+
+				Meteor.call 'addOutgoingIntegration',
+					username: 'rocket.cat'
+					urls: [options.target_url]
+					name: options.name
+					channel: options.data.username
+					triggerWords: options.data.trigger_words
+
+	return RocketChat.API.v1.success()
+
+
+removeIntegration = (options, user) ->
+	console.log 'Remove integration'
+	console.log options
+
+	integrationToRemove = RocketChat.models.Integrations.findOne urls: options.target_url
+	Meteor.runAsUser user._id, =>
+		Meteor.call 'deleteOutgoingIntegration', integrationToRemove._id
+
+	return RocketChat.API.v1.success()
+
+
 Api.addRoute 'add/:integrationId/:userId/:token', authRequired: true,
 	post: ->
-		console.log 'Add integration'
-		console.log @bodyParams
-
-		if @bodyParams?.payload?
-			@bodyParams = JSON.parse @bodyParams.payload
-
 		integration = RocketChat.models.Integrations.findOne(@urlParams.integrationId)
-		user = RocketChat.models.Users.findOne(@userId)
 
 		if not integration?
-			return {} =
-				statusCode: 400
-				body:
-					success: false
-					error: 'Invalid integraiton id'
+			return RocketChat.API.v1.failure 'Invalid integraiton id'
 
-		Meteor.runAsUser user._id, =>
-			switch @bodyParams['event']
-				when 'newMessageOnChannel'
-					@bodyParams.data ?= {}
+		user = RocketChat.models.Users.findOne(@userId)
 
-					if @bodyParams.data.channel_name? and @bodyParams.data.channel_name.indexOf('#') is -1
-						@bodyParams.data.channel_name = '#' + @bodyParams.data.channel_name
-
-					Meteor.call 'addOutgoingIntegration',
-						username: 'rocket.cat'
-						urls: [@bodyParams.target_url]
-						name: @bodyParams.name
-						channel: @bodyParams.data.channel_name
-						triggerWords: @bodyParams.data.trigger_words
-
-				when 'newMessageToUser'
-					if @bodyParams.data.username.indexOf('@') is -1
-						@bodyParams.data.username = '@' + @bodyParams.data.username
-
-					Meteor.call 'addOutgoingIntegration',
-						username: 'rocket.cat'
-						urls: [@bodyParams.target_url]
-						name: @bodyParams.name
-						channel: @bodyParams.data.username
-						triggerWords: @bodyParams.data.trigger_words
-
-		return {} =
-			statusCode: 200
-			body:
-				success: true
+		return createIntegration @bodyParams, user
 
 
 Api.addRoute 'remove/:integrationId/:userId/:token', authRequired: true,
 	post: ->
-		console.log 'Remove integration'
-		console.log @bodyParams
-
-		if @bodyParams?.payload?
-			@bodyParams = JSON.parse @bodyParams.payload
-
 		integration = RocketChat.models.Integrations.findOne(@urlParams.integrationId)
-		user = RocketChat.models.Users.findOne(@userId)
 
 		if not integration?
-			return {} =
-				statusCode: 400
-				body:
-					success: false
-					error: 'Invalid integraiton id'
+			return RocketChat.API.v1.failure 'Invalid integraiton id'
+
+		user = RocketChat.models.Users.findOne(@userId)
+
+		return removeIntegration @bodyParams, user
 
 
-		integrationToRemove = RocketChat.models.Integrations.findOne urls: @bodyParams.target_url
-		Meteor.runAsUser user._id, =>
-			Meteor.call 'deleteOutgoingIntegration', integrationToRemove._id
+RocketChat.API.v1.addRoute 'integrations.create', authRequired: true,
+	post: ->
+		return createIntegration @bodyParams, @user
 
-		return {} =
-			statusCode: 200
-			body:
-				success: true
+
+RocketChat.API.v1.addRoute 'integrations.remove', authRequired: true,
+	post: ->
+		return removeIntegration @bodyParams, @user
 
 
 Api.addRoute 'sample/:integrationId/:userId/:token', authRequired: true,
