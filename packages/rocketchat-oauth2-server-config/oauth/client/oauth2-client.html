@@ -18,3 +18,16 @@
 		{{> loginButtons}}
 	{{/if}}
 </template>
+
+<template name="oauth404">
+		<div class="oauth-panel">
+			<form>
+				{{#if $eq error '404'}}
+					<h2>Invalid OAuth client</h2>
+				{{/if}}
+				{{#if $eq error 'invalid_redirect_uri'}}
+					<h2>Redirect URL does not match</h2>
+				{{/if}}
+			</form>
+		</div>
+</template>
