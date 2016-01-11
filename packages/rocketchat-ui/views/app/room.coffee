@@ -1,5 +1,3 @@
-@RoomModerators = new Mongo.Collection 'room_moderators'
-
 isSubscribed = (_id) ->
 	return ChatSubscription.find({ rid: _id }).count() > 0
 
