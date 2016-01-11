@@ -161,7 +161,7 @@ Template.userInfo.events
 		e.preventDefault()
 
 		userModerator = RoomModerators.findOne({ rid: Session.get('openedRoom'), "u._id": @user._id }, { fields: { _id: 1 } })
-		unless userModerator
+		unless userModerator?
 			Meteor.call 'addRoomModerator', Session.get('openedRoom'), @user._id, (err, results) =>
 				if err
 					return toastr.error(err.reason or err.message)
@@ -173,7 +173,7 @@ Template.userInfo.events
 		e.preventDefault()
 
 		userModerator = RoomModerators.findOne({ rid: Session.get('openedRoom'), "u._id": @user._id }, { fields: { _id: 1 } })
-		unless userModerator
+		if userModerator?
 			Meteor.call 'removeRoomModerator', Session.get('openedRoom'), @user._id, (err, results) =>
 				if err
 					return toastr.error(err.reason or err.message)
