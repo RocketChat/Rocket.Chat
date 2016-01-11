@@ -11,7 +11,7 @@ Package.onUse(function(api) {
 		'coffeescript',
 		'ddp-rate-limiter',
 		'kadira:flow-router',
-		'rocketchat:lib@0.0.1',
+		'rocketchat:lib',
 		'rocketchat:authorization@0.0.1'
 	]);
 

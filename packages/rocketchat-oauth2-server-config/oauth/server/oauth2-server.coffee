@@ -5,18 +5,45 @@ oauth2server = new OAuth2Server
 	clientsCollection: RocketChat.models.OAuthApps.model
 	debug: true
 
+
 WebApp.connectHandlers.use oauth2server.app
-# JsonRoutes.Middleware.use oauth2server.app
 
-if not oauth2server.model.Clients.findOne()
-	oauth2server.model.Clients.insert
-		clientId: 'papers3'
-		clientSecret: '123'
-		redirectUri: 'http://localhost:3000/_oauth/rc'
 
-oauth2server.routes.get '/account', oauth2server.oauth.authorise(), (req, res, next) ->
-	user = Meteor.users.findOne req.user.id
+RocketChat.API.v1.addAuthMethod ->
+	console.log @request.method, @request.url
 
-	res.send
-		id: user._id
-		name: user.name
+	headerToken = @request.headers['authorization']
+	getToken = @request.query.access_token
+
+	if headerToken?
+		if matches = headerToken.match(/Bearer\s(\S+)/)
+			headerToken = matches[1]
+		else
+			headerToken = undefined
+
+	bearerToken = headerToken or getToken
+
+	if not bearerToken?
+		# console.log 'token not found'.red
+		return
+
+	# console.log 'bearerToken', bearerToken
+
+	getAccessToken = Meteor.wrapAsync oauth2server.oauth.model.getAccessToken, oauth2server.oauth.model
+	accessToken = getAccessToken bearerToken
+
+	if not accessToken?
+		# console.log 'accessToken not found'.red
+		return
+
+	if accessToken.expires? and accessToken.expires isnt 0 and accessToken.expires < new Date()
+		# console.log 'accessToken expired'.red
+		return
+
+	user = RocketChat.models.Users.findOne(accessToken.userId)
+	if not user?
+		# console.log 'user not found'.red
+		return
+
+	return user: user
+
