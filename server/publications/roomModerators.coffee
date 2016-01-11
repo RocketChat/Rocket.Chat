@@ -13,6 +13,7 @@ Meteor.publish 'roomModerators', (rid, limit = 50) ->
 		sort:
 			"u.username": 1
 		fields:
+			rid: 1
 			u: 1
 
 	cursor = RocketChat.models.Subscriptions.find(query, options).observeChanges

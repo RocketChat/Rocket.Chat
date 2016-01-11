@@ -49,7 +49,7 @@ Template.userInfo.helpers
 		return RocketChat.authz.hasAllPermission('set-moderator', Session.get('openedRoom'))
 
 	isModerator: ->
-		return !!RoomModerators.findOne({ "u._id": @user?._id })
+		return !!RoomModerators.findOne({ rid: Session.get('openedRoom'), "u._id": @user?._id })
 
 Template.userInfo.events
 	'click .pvt-msg': (e) ->
@@ -159,22 +159,26 @@ Template.userInfo.events
 
 	'click .set-moderator': (e, t) ->
 		e.preventDefault()
-		room = ChatRoom.findOne(Session.get('openedRoom'))
-		moderators = _.map RoomModerators.find().fetch(), (moderator) -> return moderator.u?._id
-		if @user._id not in moderators
+
+		userModerator = RoomModerators.findOne({ rid: Session.get('openedRoom'), "u._id": @user._id }, { fields: { _id: 1 } })
+		unless userModerator
 			Meteor.call 'addRoomModerator', Session.get('openedRoom'), @user._id, (err, results) =>
 				if err
 					return toastr.error(err.reason or err.message)
+
+				room = ChatRoom.findOne(Session.get('openedRoom'))
 				toastr.success TAPi18n.__ 'User__username__is_now_a_moderator_of__room_name_', { username: @user.username, room_name: room.name }
 
 	'click .unset-moderator': (e, t) ->
 		e.preventDefault()
-		room = ChatRoom.findOne(Session.get('openedRoom'))
-		moderators = _.map RoomModerators.find().fetch(), (moderator) -> return moderator.u?._id
-		if @user._id in moderators
+
+		userModerator = RoomModerators.findOne({ rid: Session.get('openedRoom'), "u._id": @user._id }, { fields: { _id: 1 } })
+		unless userModerator
 			Meteor.call 'removeRoomModerator', Session.get('openedRoom'), @user._id, (err, results) =>
 				if err
 					return toastr.error(err.reason or err.message)
+
+				room = ChatRoom.findOne(Session.get('openedRoom'))
 				toastr.success TAPi18n.__ 'User__username__removed_from__room_name__moderators', { username: @user.username, room_name: room.name }
 
 Template.userInfo.onCreated ->
