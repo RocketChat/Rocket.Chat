@@ -210,6 +210,26 @@ RocketChat.models.Subscriptions = new class extends RocketChat.models._Base
 
 		return @update query, update, { multi: true }
 
+	addRoleById: (_id, role) ->
+		query =
+			_id: _id
+
+		update =
+			$addToSet:
+				roles: role
+
+		return @update query, update
+
+	removeRoleById: (_id, role) ->
+		query =
+			_id: _id
+
+		update =
+			$pull:
+				roles: role
+
+		return @update query, update
+
 	# INSERT
 	createWithRoomAndUser: (room, user, extraData) ->
 		subscription =
