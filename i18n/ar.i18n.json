@@ -290,7 +290,7 @@
   "Submit" : "تقديم",
   "The_channel_name_is_required" : "اسم القناة مطلوب",
   "The_field_is_required" : "هذا الحقل %s مطلوب.",
-  "The_server_will_restart_in_s_seconds" : "سيتم إعادة تشغيل السيرفر في٪ s ثانية",
+  "The_server_will_restart_in_s_seconds" : "سيتم إعادة تشغيل السيرفر في ٪s ثانية",
   "True" : "نعم",
   "Type_your_new_password" : "اكتب كلمة المرور الجديدة",
   "Unmute_user" : "إلغاء اسكات المستخدم",
