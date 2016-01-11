@@ -2,27 +2,69 @@
 
 -
 
+## 0.13.0, 2016-Jan-11
+
+- Add api `chat.messageExample`
+- Add apis 'integrations.create' and 'integrations.remove'
+- Add group to tabbar buttons
+- Add helper methods to return data as success, failure, etc
+- Add method to athenticate api via oauth
+- Add more logs on integrations
+- Add oauth2-server and oauth2-server-config
+- Add option to disable oauth apps, default is enabled
+- Add visitor info into tabbar
+- Add visitor status colors
+- Adding livechat package as default
+- Adds a link in the unread bar to jump to first unread message
+- Changed icon for visitor information tabbar
+- Create package rocketchat:api
+- Create routes `channels.setTopic` and `channels.create`
+- Create template to show errors from oauth login
+- Fix LDAP
+- Fix livechat error message position
+- Fix min-height on link oembed.
+- Fix open links for Android
+- Fix problem with middleware that tries to parse json body
+- Fix the wrong language display in the view of accountProfile
+- Gix pinned tabbar button not showing sometimes
+- Highlight messages when jump-to is used Allow selecting user info text
+- Implement an interface to manage oauth apps
+- Implement api chat.postMessage
+- Improved closeFlex logic when switching tabbars
+- Insert the zapier default server
+- Parse bodyParams.payload as json if it exists
+- Permissions rework
+- Remove docker dependency on graphicsmagick
+- Remove restivus package version
+- Removed byte array for debug statements for ufsWrite
+- Save visitor's page navigation history
+- Set current app language to user's language after user login
+- Show the auth and token urls in oauth admin page
+- Shows visitor's navigation history
+- Update log.coffee
+- Use different ids for members info and user info tabbars
+
 ## 0.12.1, 2016-Jan-05
 
 - Fix problem with middleware that tries to parse json body
 
 ## 0.12.0, 2016-Jan-04
 
-- Settings: unset section if none is given on update
-- Hide registration and forgot password links when hidding login form
-- Upload build artifacts to GitHub and sign tgz for docker images
 - Add a setting to disable form-based login
+- Add request debug messages
 - Button to test SMTP settings
-- No need to reload server for SMTP settings to take effect
-- Fix livechat trigger by url
-- Increase the delay to render color fields
 - Fix guest users default role
+- Fix livechat trigger by url
+- Hide registration and forgot password links when hidding login form
 - Improved clean button color
+- Increase the delay to render color fields
+- New password reset screen
+- No need to reload server for SMTP settings to take effect
+- Settings: unset section if none is given on update
 - Support named color for message attachments
-- Added request debug messages
 - Trim integration messages
 - Try to parse all request bodies as JSON
-- New password reset screen
+- Upload build artifacts to GitHub and sign tgz for docker images
 
 ## 0.11.0, 2015-Dec-28
 
@@ -104,7 +146,7 @@
 - Centralize messages
 - Change order of loading variables
 - Change the rate limit of method setAvatarFromService from 1m to 5s
-- Changes to layout and added infinite scroll to mentions bar
+- Changes to layout and add infinite scroll to mentions bar
 - Check if file is empty before upload
 - Closes #1691; Fiz a grouping error in messages from history
 - Code cleanup
@@ -179,7 +221,7 @@
 
 - Fix broken image-link when og:image contains "&amp;" (e.g. Google Maps)
 - Error message when file upload media type it not accepted
-- Added setting Accounts_LoginExpiration
+- Add setting Accounts_LoginExpiration
 - Fix 'create new' in private group list opening 'create channel' flex
 - Moved RocketMailer to Mailer
 - Move avatars on username change
@@ -229,7 +271,7 @@
 - Close rooms when more than 10 is open instead of closing rooms
 - Reset avatar before uploading to prevent caching
 - Create page to manage assets and change favicons
-- Added option to disable "Forgot Password" link on login page
+- Add option to disable "Forgot Password" link on login page
 - New RocketChat.RateLimiter
 - Favico.js update
 - Better RTL support
@@ -237,7 +279,7 @@
 - Improve Settings layout
 - Collapse sub groups of settings
 - Change translations in PT for False and True
-- Added Secret URL
+- Add Secret URL
 - Fix push notification for android
 - Enable push bay default and improve settings organization
 - Alert admin if configured url is different from current
