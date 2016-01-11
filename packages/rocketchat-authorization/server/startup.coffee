@@ -73,7 +73,11 @@ Meteor.startup ->
 		roles : ['admin', 'moderator']}
 
 		{ _id: 'set-moderator',
-		roles : ['admin', 'moderator']}
+		roles : ['admin', 'owner']}
+
+		{ _id: 'set-owner',
+		roles : ['admin']}
+
 		{ _id: 'create-p',
 		roles : ['admin', 'user']}
 
@@ -117,6 +121,7 @@ Meteor.startup ->
 	defaultRoles = [
 		{ name: 'admin', scope: 'Users' }
 		{ name: 'moderator', scope: 'Subscriptions' }
+		{ name: 'owner', scope: 'Subscriptions' }
 		{ name: 'user', scope: 'Users' }
 		{ name: 'bot', scope: 'Users' }
 	]

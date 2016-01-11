@@ -51,6 +51,12 @@ Template.userInfo.helpers
 	isModerator: ->
 		return !!RoomModerators.findOne({ "u._id": @user?._id })
 
+	canSetOwner: ->
+		return RocketChat.authz.hasAllPermission('set-owner', Session.get('openedRoom'))
+
+	isOwner: ->
+		return !!RoomOwners.findOne({ "u._id": @user?._id })
+
 Template.userInfo.events
 	'click .pvt-msg': (e) ->
 		Meteor.call 'createDirectMessage', Session.get('showUserInfo'), (error, result) ->
@@ -167,6 +173,16 @@ Template.userInfo.events
 					return toastr.error(err.reason or err.message)
 				toastr.success TAPi18n.__ 'User__username__is_now_a_moderator_of__room_name_', { username: @user.username, room_name: room.name }
 
+	'click .set-owner': (e, t) ->
+		e.preventDefault()
+		room = ChatRoom.findOne(Session.get('openedRoom'))
+		owners = _.map RoomOwners.find().fetch(), (owner) -> return owner.u?._id
+		if @user._id not in owners
+			Meteor.call 'addRoomOwner', Session.get('openedRoom'), @user._id, (err, results) =>
+				if err
+					return toastr.error(err.reason or err.message)
+				toastr.success TAPi18n.__ 'User__username__is_now_a_owner_of__room_name_', { username: @user.username, room_name: room.name }
+
 	'click .unset-moderator': (e, t) ->
 		e.preventDefault()
 		room = ChatRoom.findOne(Session.get('openedRoom'))
@@ -176,6 +192,16 @@ Template.userInfo.events
 				if err
 					return toastr.error(err.reason or err.message)
 				toastr.success TAPi18n.__ 'User__username__removed_from__room_name__moderators', { username: @user.username, room_name: room.name }
+
+	'click .unset-owner': (e, t) ->
+		e.preventDefault()
+		room = ChatRoom.findOne(Session.get('openedRoom'))
+		owners = _.map RoomOwners.find().fetch(), (owner) -> return owner.u?._id
+		if @user._id in owners
+			Meteor.call 'removeRoomOwner', Session.get('openedRoom'), @user._id, (err, results) =>
+				if err
+					return toastr.error(err.reason or err.message)
+				toastr.success TAPi18n.__ 'User__username__removed_from__room_name__owners', { username: @user.username, room_name: room.name }
 
 Template.userInfo.onCreated ->
 	@now = new ReactiveVar moment()

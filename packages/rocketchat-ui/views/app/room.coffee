@@ -1,3 +1,4 @@
+@RoomOwners = new Mongo.Collection 'room_owners'
 @RoomModerators = new Mongo.Collection 'room_moderators'
 
 isSubscribed = (_id) ->
@@ -497,6 +498,7 @@ Template.room.onCreated ->
 
 	@autorun =>
 		@subscribe 'roomModerators', Session.get('openedRoom')
+		@subscribe 'roomOwners', Session.get('openedRoom')
 
 Template.room.onDestroyed ->
 	window.removeEventListener 'resize', this.onWindowResize
