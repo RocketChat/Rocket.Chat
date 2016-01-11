@@ -6,5 +6,5 @@
   "Pin_Message" : "Nachricht fixieren",
   "Unpin_Message" : "Nachicht nicht mehr fixieren",
   "Pinned_Messages" : "Fixierte Nachrichten",
-  "No_pinned_messages" : "Keine fixierten Nachrichten vorhanden."
+  "No_pinned_messages" : "Es wurden bisher keine Nachrichten fixiert."
 }

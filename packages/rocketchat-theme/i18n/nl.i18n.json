@@ -1,3 +1,6 @@
 {
-  "theme-color-message-hover-background-color" : "Achtergrondkleur als muis er boven is"
+  "theme-color-active-channel-background-color" : "Actieve Kanaal Achtergrondkleur",
+  "theme-color-active-channel-font-color" : "Actieve Kanaal Tekstkleur",
+  "theme-color-message-hover-background-color" : "Achtergrondkleur als muis er boven is",
+  "theme-color-unread-notification-color" : "Ongelezen Notificaties Kleur"
 }
