@@ -55,22 +55,22 @@ Meteor.startup ->
 		roles : ['admin']}
 
 		{ _id: 'edit-room',
-		roles : ['admin', 'moderator']}
+		roles : ['admin', 'moderator', 'owner']}
 
 		{ _id: 'edit-message',
-		roles : ['admin', 'moderator']}
+		roles : ['admin', 'moderator', 'owner']}
 
 		{ _id: 'delete-message',
-		roles : ['admin', 'moderator']}
+		roles : ['admin', 'moderator', 'owner']}
 
 		{ _id: 'remove-user',
-		roles : ['admin', 'moderator']}
+		roles : ['admin', 'moderator', 'owner']}
 
 		{ _id: 'mute-user',
-		roles : ['admin', 'moderator']}
+		roles : ['admin', 'moderator', 'owner']}
 
 		{ _id: 'ban-user',
-		roles : ['admin', 'moderator']}
+		roles : ['admin', 'moderator', 'owner']}
 
 		{ _id: 'set-moderator',
 		roles : ['admin', 'owner']}
