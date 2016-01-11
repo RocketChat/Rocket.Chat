@@ -1,3 +1,5 @@
+@RoomModerators = new Mongo.Collection 'room_moderators'
+
 isSubscribed = (_id) ->
 	return ChatSubscription.find({ rid: _id }).count() > 0
 
@@ -492,6 +494,9 @@ Template.room.onCreated ->
 
 	@autorun =>
 		@subscribe 'fullUserData', Session.get('showUserInfo'), 1
+
+	@autorun =>
+		@subscribe 'roomModerators', Session.get('openedRoom')
 
 Template.room.onDestroyed ->
 	window.removeEventListener 'resize', this.onWindowResize
