@@ -72,6 +72,8 @@ Meteor.startup ->
 		{ _id: 'ban-user',
 		roles : ['admin', 'moderator']}
 
+		{ _id: 'set-moderator',
+		roles : ['admin', 'moderator']}
 		{ _id: 'create-p',
 		roles : ['admin', 'user']}
 
