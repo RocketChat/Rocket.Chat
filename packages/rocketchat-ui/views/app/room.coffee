@@ -493,6 +493,8 @@ Template.room.onCreated ->
 	@autorun =>
 		@subscribe 'fullUserData', Session.get('showUserInfo'), 1
 
+	@subscribe 'roomModerators', @data._id
+
 Template.room.onDestroyed ->
 	window.removeEventListener 'resize', this.onWindowResize
 
