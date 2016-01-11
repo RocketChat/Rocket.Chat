@@ -45,6 +45,18 @@ Template.userInfo.helpers
 			return true
 		return false
 
+	canSetModerator: ->
+		return RocketChat.authz.hasAllPermission('set-moderator', Session.get('openedRoom'))
+
+	isModerator: ->
+		return !!RoomModerators.findOne({ "u._id": @user?._id })
+
+	canSetOwner: ->
+		return RocketChat.authz.hasAllPermission('set-owner', Session.get('openedRoom'))
+
+	isOwner: ->
+		return !!RoomOwners.findOne({ "u._id": @user?._id })
+
 Template.userInfo.events
 	'click .pvt-msg': (e) ->
 		Meteor.call 'createDirectMessage', Session.get('showUserInfo'), (error, result) ->
@@ -84,30 +96,60 @@ Template.userInfo.events
 	'click .back': (e) ->
 		Session.set('showUserInfo', null)
 
-	'click .remove-user': (e, t) ->
+	'click .remove-user': (e) ->
 		e.preventDefault()
 		rid = Session.get('openedRoom')
 		room = ChatRoom.findOne rid
 		if RocketChat.authz.hasAllPermission('remove-user', rid)
-			Meteor.call 'removeUserFromRoom', { rid: rid, username: @user.username }, (err, result) ->
-				if err
-					return toastr.error(err.reason or err.message)
-				toastr.success TAPi18n.__ 'User_removed_from_room'
-				Session.set('showUserInfo', null)
+			swal {
+				title: t('Are_you_sure')
+				text: t('The_user_will_be_removed_from_s', room.name)
+				type: 'warning'
+				showCancelButton: true
+				confirmButtonColor: '#DD6B55'
+				confirmButtonText: t('Yes_remove_user')
+				cancelButtonText: t('Cancel')
+				closeOnConfirm: false
+				html: false
+			}, =>
+				Meteor.call 'removeUserFromRoom', { rid: rid, username: @user.username }, (err, result) ->
+					if err
+						return toastr.error(err.reason or err.message)
+					swal
+						title: t('Removed')
+						text: t('User_has_been_removed_from_s', room.name)
+						type: 'success'
+						timer: 2000
+						showConfirmButton: false
+					Session.set('showUserInfo', null)
 		else
 			toastr.error(TAPi18n.__ 'Not_allowed')
 
-	'click .mute-user': (e, t) ->
+	'click .mute-user': (e) ->
 		e.preventDefault()
 		rid = Session.get('openedRoom')
 		room = ChatRoom.findOne rid
 		if RocketChat.authz.hasAllPermission('mute-user', rid)
-			Meteor.call 'muteUserInRoom', { rid: rid, username: @user.username }, (err, result) ->
-				if err
-					return toastr.error(err.reason or err.message)
-				toastr.success TAPi18n.__ 'User_muted_in_room'
-		else
-			toastr.error(TAPi18n.__ 'Not_allowed')
+			swal {
+				title: t('Are_you_sure')
+				text: t('The_user_wont_be_able_to_type_in_s', room.name)
+				type: 'warning'
+				showCancelButton: true
+				confirmButtonColor: '#DD6B55'
+				confirmButtonText: t('Yes_mute_user')
+				cancelButtonText: t('Cancel')
+				closeOnConfirm: false
+				html: false
+			}, =>
+				Meteor.call 'muteUserInRoom', { rid: rid, username: @user.username }, (err, result) ->
+					if err
+						return toastr.error(err.reason or err.message)
+					swal
+						title: t('Muted')
+						text: t('User_has_been_muted_in_s', room.name)
+						type: 'success'
+						timer: 2000
+						showConfirmButton: false
 
 	'click .unmute-user': (e, t) ->
 		e.preventDefault()
@@ -120,6 +162,46 @@ Template.userInfo.events
 				toastr.success TAPi18n.__ 'User_unmuted_in_room'
 		else
 			toastr.error(TAPi18n.__ 'Not_allowed')
+
+	'click .set-moderator': (e, t) ->
+		e.preventDefault()
+		room = ChatRoom.findOne(Session.get('openedRoom'))
+		moderators = _.map RoomModerators.find().fetch(), (moderator) -> return moderator.u?._id
+		if @user._id not in moderators
+			Meteor.call 'addRoomModerator', Session.get('openedRoom'), @user._id, (err, results) =>
+				if err
+					return toastr.error(err.reason or err.message)
+				toastr.success TAPi18n.__ 'User__username__is_now_a_moderator_of__room_name_', { username: @user.username, room_name: room.name }
+
+	'click .set-owner': (e, t) ->
+		e.preventDefault()
+		room = ChatRoom.findOne(Session.get('openedRoom'))
+		owners = _.map RoomOwners.find().fetch(), (owner) -> return owner.u?._id
+		if @user._id not in owners
+			Meteor.call 'addRoomOwner', Session.get('openedRoom'), @user._id, (err, results) =>
+				if err
+					return toastr.error(err.reason or err.message)
+				toastr.success TAPi18n.__ 'User__username__is_now_a_owner_of__room_name_', { username: @user.username, room_name: room.name }
+
+	'click .unset-moderator': (e, t) ->
+		e.preventDefault()
+		room = ChatRoom.findOne(Session.get('openedRoom'))
+		moderators = _.map RoomModerators.find().fetch(), (moderator) -> return moderator.u?._id
+		if @user._id in moderators
+			Meteor.call 'removeRoomModerator', Session.get('openedRoom'), @user._id, (err, results) =>
+				if err
+					return toastr.error(err.reason or err.message)
+				toastr.success TAPi18n.__ 'User__username__removed_from__room_name__moderators', { username: @user.username, room_name: room.name }
+
+	'click .unset-owner': (e, t) ->
+		e.preventDefault()
+		room = ChatRoom.findOne(Session.get('openedRoom'))
+		owners = _.map RoomOwners.find().fetch(), (owner) -> return owner.u?._id
+		if @user._id in owners
+			Meteor.call 'removeRoomOwner', Session.get('openedRoom'), @user._id, (err, results) =>
+				if err
+					return toastr.error(err.reason or err.message)
+				toastr.success TAPi18n.__ 'User__username__removed_from__room_name__owners', { username: @user.username, room_name: room.name }
 
 Template.userInfo.onCreated ->
 	@now = new ReactiveVar moment()

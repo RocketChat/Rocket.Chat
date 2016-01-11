@@ -55,22 +55,28 @@ Meteor.startup ->
 		roles : ['admin']}
 
 		{ _id: 'edit-room',
-		roles : ['admin', 'moderator']}
+		roles : ['admin', 'moderator', 'owner']}
 
 		{ _id: 'edit-message',
-		roles : ['admin', 'moderator']}
+		roles : ['admin', 'moderator', 'owner']}
 
 		{ _id: 'delete-message',
-		roles : ['admin', 'moderator']}
+		roles : ['admin', 'moderator', 'owner']}
 
 		{ _id: 'remove-user',
-		roles : ['admin', 'moderator']}
+		roles : ['admin', 'moderator', 'owner']}
 
 		{ _id: 'mute-user',
-		roles : ['admin', 'moderator']}
+		roles : ['admin', 'moderator', 'owner']}
 
 		{ _id: 'ban-user',
-		roles : ['admin', 'moderator']}
+		roles : ['admin', 'moderator', 'owner']}
+
+		{ _id: 'set-moderator',
+		roles : ['admin', 'owner']}
+
+		{ _id: 'set-owner',
+		roles : ['admin']}
 
 		{ _id: 'create-p',
 		roles : ['admin', 'user']}
@@ -115,6 +121,7 @@ Meteor.startup ->
 	defaultRoles = [
 		{ name: 'admin', scope: 'Users' }
 		{ name: 'moderator', scope: 'Subscriptions' }
+		{ name: 'owner', scope: 'Subscriptions' }
 		{ name: 'user', scope: 'Users' }
 		{ name: 'bot', scope: 'Users' }
 	]
