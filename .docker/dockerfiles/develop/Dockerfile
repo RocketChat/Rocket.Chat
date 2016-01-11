@@ -1,5 +1,8 @@
 FROM node:0.10
 
+# IMPORTANT - this is a release + deployment dockerfile
+# Please DO NOT attempt to use this for development.
+
 # crafted and tuned by pierre@ozoux.net and sing.li@rocket.chat
 MAINTAINER buildmaster@rocket.chat
 
