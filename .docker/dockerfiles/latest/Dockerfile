@@ -4,9 +4,7 @@ FROM node:0.10
 MAINTAINER buildmaster@rocket.chat
 
 RUN groupadd -r rocketchat \
-&&  useradd -r -g rocketchat rocketchat \
-&&  mkdir /app  \
-&&  mkdir /app/uploads
+&&  useradd -r -g rocketchat rocketchat
 
 VOLUME /app/uploads
 
