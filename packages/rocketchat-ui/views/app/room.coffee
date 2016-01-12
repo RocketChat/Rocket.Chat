@@ -493,7 +493,22 @@ Template.room.onCreated ->
 	@autorun =>
 		@subscribe 'fullUserData', Session.get('showUserInfo'), 1
 
-	@subscribe 'roomModerators', @data._id
+	Meteor.call 'getRoomModerators', @data._id, (error, results) ->
+		if error
+			return toastr.error error.reason
+
+		for record in results
+			RoomModerators.insert record
+
+	RocketChat.callbacks.add('streamMessage', (msg) ->
+		if msg.t is 'new-moderator'
+			user = Meteor.users.findOne({ username: msg.msg }, { fields: { username: 1 } })
+			RoomModerators.upsert({ _id: msg._id }, { $set: { rid: msg.rid, u: user } }) # use message _id to prevent from running it twice (https://github.com/RocketChat/Rocket.Chat/issues/1876)
+		else if msg.t is 'moderator-removed'
+			user = Meteor.users.findOne({ username: msg.msg })
+			RoomModerators.remove({ rid: msg.rid, "u._id": user._id });
+		return msg
+	, RocketChat.callbacks.priority.LOW, 'addOrRemoveModerator')
 
 Template.room.onDestroyed ->
 	window.removeEventListener 'resize', this.onWindowResize
