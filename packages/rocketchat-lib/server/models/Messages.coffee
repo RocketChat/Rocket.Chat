@@ -294,6 +294,14 @@ RocketChat.models.Messages = new class extends RocketChat.models._Base
 		message = user.username
 		return @createWithTypeRoomIdMessageAndUser 'user-unmuted', roomId, message, user, extraData
 
+	createNewModeratorWithRoomIdAndUser: (roomId, user, extraData) ->
+		message = user.username
+		return @createWithTypeRoomIdMessageAndUser 'new-moderator', roomId, message, user, extraData
+
+	createModeratorRemovedWithRoomIdAndUser: (roomId, user, extraData) ->
+		message = user.username
+		return @createWithTypeRoomIdMessageAndUser 'moderator-removed', roomId, message, user, extraData
+
 	# REMOVE
 	removeById: (_id) ->
 		query =
