@@ -85,6 +85,9 @@ RocketChat.Notifications.onUser 'message', (msg) ->
 					Meteor.subscribe 'room', typeName
 				]
 
+				if record.ready is true
+					return
+
 				ready = record.sub[0].ready() and subscription.ready()
 
 				if ready is true
