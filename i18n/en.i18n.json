@@ -276,6 +276,8 @@
   "Login_with" : "Login with %s",
   "login_with" : "Or login directly with",
   "Logout" : "Logout",
+  "Logout_Others" : "Logout From Other Logged In Locations",
+  "Logged_out_of_other_clients_successfully" : "Logged out of other clients successfully",
   "Make_Admin" : "Make Admin",
   "Mark_as_read" : "Mark as read",
   "Markdown_Headers" : "Markdown Headers",
