@@ -61,8 +61,12 @@ ExecuteTriggerUrl = (url, trigger, message, room, tries=0) ->
 				, Math.pow(10, tries+2)
 			return
 
-		# TODO process return and insert message if necessary
+		# process outgoing webhook response as a new message
+		else if result?.statusCode is 200 and (result.data?.text? or result.data?.attachments?)
+			user = RocketChat.models.Users.findOneByUsername(trigger.username)
 
+			if result.data?.text? or result.data?.attachments?
+				return processWebhookMessage trigger, result.data, user
 
 
 ExecuteTrigger = (trigger, message, room) ->
