@@ -50,4 +50,3 @@ describe 'Spotify integration', () ->
 			message = RocketChat.Spotify.transform {'urls': [], 'msg': 'a text before spotify:track:34AWo71Ya5gq7wpNnatwr7 a text after', 'html': 'a text before spotify:track:34AWo71Ya5gq7wpNnatwr7 a text after'}
 			output = RocketChat.Spotify.render message
 			expect(output.html).toEqual 'a text before <a href="https://open.spotify.com/track/34AWo71Ya5gq7wpNnatwr7" target="_blank">spotify:track:34AWo71Ya5gq7wpNnatwr7</a> a text after'
-
