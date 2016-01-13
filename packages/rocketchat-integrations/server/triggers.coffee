@@ -75,10 +75,12 @@ ExecuteTriggerUrl = (url, trigger, message, room, tries=0) ->
 				emoji: trigger.emoji
 
 			try
-				if processWebhookMessage result.data, user, defaultValues
-					return RocketChat.API.v1.success()
-				else
+				message = processWebhookMessage result.data, user, defaultValues
+
+				if not message?
 					return RocketChat.API.v1.failure 'unknown-error'
+
+				return RocketChat.API.v1.success()
 			catch e
 				return RocketChat.API.v1.failure e.error
 
