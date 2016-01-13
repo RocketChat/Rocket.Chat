@@ -22,7 +22,22 @@ Api.addRoute ':integrationId/:userId/:token', authRequired: true,
 		integration = RocketChat.models.Integrations.findOne(@urlParams.integrationId)
 		user = RocketChat.models.Users.findOne(@userId)
 
-		return processWebhookMessage integration, @bodyParams, user
+		@bodyParams.bot =
+			i: integration._id
+
+		defaultValues =
+			channel: integration.channel
+			alias: integration.alias
+			avatar: integration.avatar
+			emoji: integration.emoji
+
+		try
+			if processWebhookMessage @bodyParams, user, defaultValues
+				return RocketChat.API.v1.success()
+			else
+				return RocketChat.API.v1.failure 'unknown-error'
+		catch e
+			return RocketChat.API.v1.failure e.error
 
 
 createIntegration = (options, user) ->
