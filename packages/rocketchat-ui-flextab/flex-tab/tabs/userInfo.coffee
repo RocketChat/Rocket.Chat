@@ -55,7 +55,7 @@ Template.userInfo.helpers
 		return RocketChat.authz.hasAllPermission('set-owner', Session.get('openedRoom'))
 
 	isOwner: ->
-		return !!RoomModeratorsAndOwners.findOne({ rid: Session.get('openedRoom'), "u._id": @user?._id, role: 'owner' })
+		return !!RoomModeratorsAndOwners.findOne({ rid: Session.get('openedRoom'), "u._id": @user?._id, roles: 'owner' })
 
 Template.userInfo.events
 	'click .pvt-msg': (e) ->
