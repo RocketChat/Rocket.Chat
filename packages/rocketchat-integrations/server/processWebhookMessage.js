@@ -93,7 +93,10 @@ this.processWebhookMessage = function(messageObj, user, defaultValues) {
 		}
 	}
 
-	RocketChat.sendMessage(user, message, room, {});
+	var messageReturn = RocketChat.sendMessage(user, message, room, {});
 
-	return true;
+	return {
+		channel: channel,
+		message: messageReturn
+	}
 };
