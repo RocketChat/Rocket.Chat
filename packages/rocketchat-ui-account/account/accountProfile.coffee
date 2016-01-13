@@ -111,4 +111,4 @@ Template.accountProfile.events
 			if error
 				toastr.error error.reason
 			else
-				toastr.success t('Logged out of other clients successfully')
+				toastr.success t('Logged_out_of_other_clients_successfully')
