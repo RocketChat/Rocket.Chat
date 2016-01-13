@@ -28,13 +28,7 @@ this.processWebhookMessage = function(messageObj, user, defaultValues) {
 				]
 			});
 			if (room == null) {
-				return {
-					statusCode: 400,
-					body: {
-						success: false,
-						error: 'invalid-channel'
-					}
-				};
+				throw new Meteor.Error('invalid-channel');
 			}
 			rid = room._id;
 			if (room.t === 'c') {
@@ -54,13 +48,7 @@ this.processWebhookMessage = function(messageObj, user, defaultValues) {
 				]
 			});
 			if (roomUser == null) {
-				return {
-					statusCode: 400,
-					body: {
-						success: false,
-						error: 'invalid-channel'
-					}
-				};
+				throw new Meteor.Error('invalid-channel');
 			}
 			rid = [user._id, roomUser._id].sort().join('');
 			room = RocketChat.models.Rooms.findOne(rid);
@@ -72,13 +60,7 @@ this.processWebhookMessage = function(messageObj, user, defaultValues) {
 			}
 			break;
 		default:
-			return {
-				statusCode: 400,
-				body: {
-					success: false,
-					error: 'invalid-channel-type'
-				}
-			};
+			throw new Meteor.Error('invalid-channel-type');
 	}
 
 	message = {
@@ -113,10 +95,5 @@ this.processWebhookMessage = function(messageObj, user, defaultValues) {
 
 	RocketChat.sendMessage(user, message, room, {});
 
-	return {
-		statusCode: 200,
-		body: {
-			success: true
-		}
-	};
+	return true;
 };
