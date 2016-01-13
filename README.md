@@ -61,29 +61,17 @@ Now compatible with all Android devices as old as version 4.0.x - [download here
 ## Heroku
 Host your own Rocket.Chat server for **FREE** with [One-Click Deploy](https://heroku.com/deploy?template=https://github.com/RocketChat/Rocket.Chat/tree/master)
 
-Branch **master** (Latest stable version):
-
-[![Deploy](https://www.herokucdn.com/deploy/button.png)](https://heroku.com/deploy?template=https://github.com/RocketChat/Rocket.Chat/tree/master)
-
-Branch **develop** (Newer but unstable):
-
 [![Deploy](https://www.herokucdn.com/deploy/button.png)](https://heroku.com/deploy?template=https://github.com/RocketChat/Rocket.Chat/tree/develop)
 
 ## Scalingo
 Deploy your own Rocket.Chat server instantly on [Scalingo](https://scalingo.com)
-
-Branch **master** (Latest stable version):
-
-[![Deploy on Scalingo](https://cdn.scalingo.com/deploy/button.svg)](https://my.scalingo.com/deploy?source=https://github.com/RocketChat/Rocket.Chat#master)
-
-Branch **develop** (Newer but unstable):
 
 [![Deploy on Scalingo](https://cdn.scalingo.com/deploy/button.svg)](https://my.scalingo.com/deploy?source=https://github.com/RocketChat/Rocket.Chat#develop)
 
 ## Sandstorm.io
 [![Rocket.Chat on Sandstorm.io](https://raw.githubusercontent.com/Sing-Li/bbug/master/images/sandstorm.jpg)](https://apps.sandstorm.io/app/vfnwptfn02ty21w715snyyczw0nqxkv3jvawcah10c6z7hj1hnu0)
 
-_*Grab*_ the latest [Sandstorm SPK](https://s3.amazonaws.com/rocketchatbuild/rocket.chat-develop.spk) for testing on your own server.
+_*Grab*_ the [Sandstorm SPK for the latest Rocket.Chat release](https://github.com/RocketChat/Rocket.Chat/releases/latest) for testing on your own server.
 
 ## Sloppy.io
 Host your docker container at [sloppy.io](http://sloppy.io). Get an account and use the [quickstarter](https://github.com/sloppyio/quickstarters/tree/master/rocketchat)
@@ -93,20 +81,20 @@ Host your docker container at [sloppy.io](http://sloppy.io). Get an account and 
 
 or
 
-Use the automated build image of our [most recent in-development code](https://hub.docker.com/r/rocketchat/rocket.chat/)
+Use the automated build image of our [most recent release](https://hub.docker.com/r/rocketchat/rocket.chat/)
 
 [![Rocket.Chat logo](https://d207aa93qlcgug.cloudfront.net/1.95.5.qa/img/nav/docker-logo-loggedout.png)](https://hub.docker.com/r/rocketchat/rocket.chat/)
 
 ```
-docker pull rocketchat/rocket.chat:develop
+docker pull rocketchat/rocket.chat:latest
 ```
 
-OR the latest available stable (master) branch code:
+OR select a specific release ([details of releases available](https://github.com/RocketChat/Rocket.Chat/releases)):
 ```
-docker pull rocketchat/rocket.chat:lastest
+docker pull rocketchat/rocket.chat:vX.X.X
 ```
 
-OR our [official docker registry image](https://hub.docker.com/_/rocket.chat/), containing recent MAJOR release:
+OR our [official docker registry image](https://hub.docker.com/_/rocket.chat/), containing recent stable release build approved by Docker:
 
 ```
 docker pull rocket.chat

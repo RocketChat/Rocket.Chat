@@ -1,0 +1,33 @@
+<template name="authorize">
+	{{#if currentUser}}
+		<div class="oauth-panel">
+			<form method="post" action="" role="form" class="{{#unless Template.subscriptionsReady}}hidden{{/unless}}">
+				<h2>Authorize?</h2>
+				<input type="hidden" name="allow" value="yes">
+				<input type="hidden" name="token" value="{{getToken}}">
+				<input type="hidden" name="client_id" value="{{client_id}}">
+				<input type="hidden" name="redirect_uri" value="{{redirect_uri}}">
+				<input type="hidden" name="response_type" value="code">
+				<button type="submit" class="button">Authorize</button>
+			</form>
+			{{#unless Template.subscriptionsReady}}
+				loading...
+			{{/unless}}
+		</div>
+	{{else}}
+		{{> loginButtons}}
+	{{/if}}
+</template>
+
+<template name="oauth404">
+		<div class="oauth-panel">
+			<form>
+				{{#if $eq error '404'}}
+					<h2>Invalid OAuth client</h2>
+				{{/if}}
+				{{#if $eq error 'invalid_redirect_uri'}}
+					<h2>Redirect URL does not match</h2>
+				{{/if}}
+			</form>
+		</div>
+</template>

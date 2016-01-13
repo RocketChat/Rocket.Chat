@@ -8,14 +8,14 @@ Package.onUse(function(api) {
     api.versionsFrom('1.0');
 
     api.use('coffeescript');
-    api.use('rocketchat:lib@0.0.1');
+    api.use('rocketchat:lib');
     api.use('rocketchat:custom-oauth');
 
     api.addFiles('startup.coffee', 'server');
     api.addFiles('github-enterprise-login-button.css', 'client');
     api.addFiles('common.coffee');
 
-	// TAPi18n
+    // TAPi18n
     api.use('templating', 'client');
     var _ = Npm.require('underscore');
     var fs = Npm.require('fs');
@@ -24,9 +24,8 @@ Package.onUse(function(api) {
             return 'i18n/' + filename;
         }
     }));
-    api.use('tap:i18n@1.6.1', ['client', 'server']);
-    api.imply('tap:i18n');
-    api.addFiles(tapi18nFiles, ['client', 'server']);
+    api.use('tap:i18n');
+    api.addFiles(tapi18nFiles);
 
 });
 

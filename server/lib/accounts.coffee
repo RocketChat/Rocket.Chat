@@ -24,8 +24,8 @@ Accounts.emailTemplates.verifyEmail.text = (user, url) ->
 
 resetPasswordText = Accounts.emailTemplates.resetPassword.text
 Accounts.emailTemplates.resetPassword.text = (user, url) ->
-	url = url.replace Meteor.absoluteUrl(), Meteor.absoluteUrl() + 'login/'
-	verifyEmailText user, url
+	url = url.replace /\/#\//, '/'
+	resetPasswordText user, url
 
 if RocketChat.settings.get 'Accounts_Enrollment_Email'
 	Accounts.emailTemplates.enrollAccount.text = (user, url) ->
@@ -86,7 +86,7 @@ Accounts.insertUserDoc = _.wrap Accounts.insertUserDoc, (insertUserDoc, options,
 		else
 			roles.push 'user'
 
-	RocketChat.authz.addUsersToRoles(_id, roles)
+	RocketChat.authz.addUserRoles(_id, roles)
 
 	RocketChat.callbacks.run 'afterCreateUser', options, user
 	return _id

@@ -10,6 +10,7 @@
 				hasMoreNext: ReactiveVar false
 				isLoading: ReactiveVar false
 				unreadNotLoaded: ReactiveVar 0
+				firstUnread: ReactiveVar {}
 				loaded: 0
 
 		return histories[rid]
@@ -43,6 +44,7 @@
 
 		Meteor.call 'loadHistory', rid, ts, limit, ls, (err, result) ->
 			room.unreadNotLoaded.set result?.unreadNotLoaded
+			room.firstUnread.set result?.firstUnread
 
 			wrapper = $('.messages-box .wrapper').get(0)
 			if wrapper?
@@ -105,6 +107,8 @@
 		unless message?.rid
 			return
 
+		instance = Blaze.getView($('.messages-box .wrapper')[0]).templateInstance()
+
 		if ChatMessage.findOne message._id
 			wrapper = $('.messages-box .wrapper')
 			msgElement = $("##{message._id}", wrapper)
@@ -112,6 +116,15 @@
 			wrapper.animate({
 				scrollTop: pos
 			}, 500)
+			msgElement.addClass('highlight')
+
+			setTimeout ->
+				messages = wrapper[0]
+				instance.atBottom = messages.scrollTop >= messages.scrollHeight - messages.clientHeight;
+
+			setTimeout ->
+				msgElement.removeClass('highlight')
+			, 3000
 		else
 			room = getRoom message.rid
 			room.isLoading.set true
@@ -132,8 +145,8 @@
 					if item.t isnt 'command'
 						ChatMessage.upsert {_id: item._id}, item
 
-				instance = Blaze.getView($('.messages-box .wrapper')[0]).templateInstance()
 				Meteor.defer ->
+					readMessage.refreshUnreadMark(message.rid, true)
 					RoomManager.updateMentionsMarksOfRoom typeName
 					wrapper = $('.messages-box .wrapper')
 					msgElement = $("##{message._id}", wrapper)
@@ -141,11 +154,18 @@
 					wrapper.animate({
 						scrollTop: pos
 					}, 500)
+
+					msgElement.addClass('highlight')
+
 					setTimeout ->
 						room.isLoading.set false
-						instance.atBottom = !result.moreAfter
+						messages = wrapper[0]
+						instance.atBottom = !result.moreAfter && messages.scrollTop >= messages.scrollHeight - messages.clientHeight;
 					, 500
 
+					setTimeout ->
+						msgElement.removeClass('highlight')
+					, 3000
 				room.loaded += result.messages.length
 				room.hasMore.set result.moreBefore
 				room.hasMoreNext.set result.moreAfter

@@ -1,4 +1,6 @@
 {
+  "All_logs" : "Tous les journaux",
   "Delete" : "Supprimer",
-  "Edit" : "Modifier"
+  "Edit" : "Modifier",
+  "Only_errors" : "Seules les erreurs"
 }

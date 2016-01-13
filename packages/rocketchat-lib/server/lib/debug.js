@@ -1,22 +1,23 @@
-var debugLevel = 'debug';
+RocketChat.debugLevel = 'debug';
 
 Meteor.startup(function() {
 	RocketChat.settings.onload('Debug_Level', function(key, value, initialLoad) {
 		if (value) {
-			debugLevel = value;
+			RocketChat.debugLevel = value;
 		}
 	});
 
 	var value = RocketChat.settings.get('Debug_Level');
 	if (value) {
-		debugLevel = value;
+		RocketChat.debugLevel = value;
 	}
 });
 
 var wrapMethods = function(name, originalHandler, methodsMap) {
 	methodsMap[name] = function() {
-		if (debugLevel === 'debug') {
-			console.log('[methods]'.green, name, '-> userId:', Meteor.userId(), ', arguments: ', arguments);
+		if (RocketChat.debugLevel === 'debug') {
+			var args = name === "ufsWrite" ? Array.prototype.slice.call(arguments, 1) : arguments;
+			console.log('[methods]'.green, name, '-> userId:', Meteor.userId(), ', arguments: ', args);
 		}
 
 		return originalHandler.apply(this, arguments);
@@ -36,7 +37,7 @@ var originalMeteorPublish = Meteor.publish;
 
 Meteor.publish = function(name, func) {
 	return originalMeteorPublish(name, function() {
-		if (debugLevel === 'debug') {
+		if (RocketChat.debugLevel === 'debug') {
 			console.log('[publish]'.green, name, '-> userId:', this.userId, ', arguments: ', arguments);
 		}
 
