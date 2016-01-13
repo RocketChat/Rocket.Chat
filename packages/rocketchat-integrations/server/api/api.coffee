@@ -32,10 +32,12 @@ Api.addRoute ':integrationId/:userId/:token', authRequired: true,
 			emoji: integration.emoji
 
 		try
-			if processWebhookMessage @bodyParams, user, defaultValues
-				return RocketChat.API.v1.success()
-			else
+			message = processWebhookMessage @bodyParams, user, defaultValues
+
+			if not message?
 				return RocketChat.API.v1.failure 'unknown-error'
+
+			return RocketChat.API.v1.success()
 		catch e
 			return RocketChat.API.v1.failure e.error
 
