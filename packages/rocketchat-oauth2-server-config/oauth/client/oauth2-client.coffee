@@ -1,3 +1,5 @@
+# @ChatOAuthApps = new Meteor.Collection 'rocketchat_oauth_apps'
+
 FlowRouter.route '/oauth/authorize',
 	action: (params, queryParams) ->
 		BlazeLayout.render 'main',
@@ -19,11 +21,23 @@ FlowRouter.route '/oauth/error/:error',
 
 Template.authorize.onCreated ->
 	@subscribe 'authorizedOAuth'
+	@subscribe 'oauthClient', @data.client_id()
 
 
 Template.authorize.helpers
 	getToken: ->
 		return localStorage.getItem('Meteor.loginToken')
+
+	getClient: ->
+		return ChatOAuthApps.findOne()
+
+
+Template.authorize.events
+	'click #logout-oauth': ->
+		return Meteor.logout()
+
+	'click #cancel-oauth': ->
+		return window.close()
 
 
 Template.authorize.onRendered ->
