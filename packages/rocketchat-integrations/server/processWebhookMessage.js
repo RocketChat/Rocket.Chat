@@ -1,7 +1,16 @@
-this.processWebhookMessage = function(integration, messageObj, user) {
+this.processWebhookMessage = function(messageObj, user, defaultValues) {
 	var attachment, channel, channelType, i, len, message, ref, rid, room, roomUser;
 
-	channel = messageObj.channel || integration.channel;
+	if (!defaultValues) {
+		defaultValues = {
+			channel: '',
+			alias: '',
+			avatar: '',
+			emoji: ''
+		};
+	}
+
+	channel = messageObj.channel || defaultValues.channel;
 
 	channelType = channel[0];
 
@@ -73,13 +82,11 @@ this.processWebhookMessage = function(integration, messageObj, user) {
 	}
 
 	message = {
-		alias: messageObj.username || messageObj.alias || integration.alias,
+		alias: messageObj.username || messageObj.alias || defaultValues.alias,
 		msg: _.trim(messageObj.text || messageObj.msg || ''),
 		attachments: messageObj.attachments,
 		parseUrls: false,
-		bot: {
-			i: integration._id
-		},
+		bot: messageObj.bot,
 		groupable: false
 	};
 
@@ -87,10 +94,10 @@ this.processWebhookMessage = function(integration, messageObj, user) {
 		message.avatar = messageObj.icon_url || messageObj.avatar;
 	} else if ((messageObj.icon_emoji != null) || (messageObj.emoji != null)) {
 		message.emoji = messageObj.icon_emoji || messageObj.emoji;
-	} else if (integration.avatar != null) {
-		message.avatar = integration.avatar;
-	} else if (integration.emoji != null) {
-		message.emoji = integration.emoji;
+	} else if (defaultValues.avatar != null) {
+		message.avatar = defaultValues.avatar;
+	} else if (defaultValues.emoji != null) {
+		message.emoji = defaultValues.emoji;
 	}
 
 	if (_.isArray(message.attachments)) {
