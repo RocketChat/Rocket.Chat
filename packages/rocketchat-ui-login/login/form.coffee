@@ -112,15 +112,16 @@ Template.loginForm.events
 
 				Meteor[loginMethod] formData.emailOrUsername, formData.pass, (error) ->
 					RocketChat.Button.reset(button)
-					if error?
-						if error.error is 'no-valid-email'
-							instance.state.set 'email-verification'
-						else
-							toastr.error t 'User_not_found_or_incorrect_password'
-						return
+					loginMethod = 'loginWithPassword'
+					Meteor[loginMethod] formData.emailOrUsername, formData.pass, (error) ->
+						if error?
+							if error.error is 'no-valid-email'
+								instance.state.set 'email-verification'
+							else
+								toastr.error t 'User_not_found_or_incorrect_password'
+							return
 					localStorage.setItem('userLanguage', Meteor.user()?.language)
 					setLanguage(Meteor.user()?.language)
-
 	'click .register': ->
 		Template.instance().state.set 'register'
 
