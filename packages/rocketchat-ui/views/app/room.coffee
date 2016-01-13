@@ -503,20 +503,28 @@ Template.room.onCreated ->
 	RocketChat.callbacks.add('streamMessage', (msg) ->
 		if msg.t is 'new-moderator'
 			user = Meteor.users.findOne({ username: msg.msg }, { fields: { username: 1 } })
-			RoomModeratorsAndOwners.upsert({ _id: msg._id }, { $set: { rid: msg.rid, u: user }, $addToSet: { roles: 'moderator' } }) # use message _id to prevent from running it twice (https://github.com/RocketChat/Rocket.Chat/issues/1876)
+			RoomModeratorsAndOwners.upsert({ rid: msg.rid, "u._id": user._id }, { $setOnInsert: { u: user }, $addToSet: { roles: 'moderator' } })
 		else if msg.t is 'moderator-removed'
 			user = Meteor.users.findOne({ username: msg.msg })
-			RoomModeratorsAndOwners.remove({ rid: msg.rid, "u._id": user._id });
+			moderator = RoomModeratorsAndOwners.findOne({ rid: msg.rid, "u._id": user._id, roles: 'moderator' })
+			if moderator?.roles?.length is 1 and moderator.roles[0] is 'moderator'
+				RoomModeratorsAndOwners.remove({ rid: msg.rid, "u._id": user._id, roles: 'moderator' })
+			else if moderator?
+				RoomModeratorsAndOwners.update({ rid: msg.rid, "u._id": user._id }, { $pull: { roles: 'moderator' } })
 		return msg
 	, RocketChat.callbacks.priority.LOW, 'addOrRemoveModerator')
 
 	RocketChat.callbacks.add('streamMessage', (msg) ->
 		if msg.t is 'new-owner'
 			user = Meteor.users.findOne({ username: msg.msg }, { fields: { username: 1 } })
-			RoomModeratorsAndOwners.upsert({ _id: msg._id }, { $set: { rid: msg.rid, u: user }, $addToSet: { roles: 'owner' } }) # use message _id to prevent from running it twice (https://github.com/RocketChat/Rocket.Chat/issues/1876)
+			RoomModeratorsAndOwners.upsert({ rid: msg.rid, "u._id": user._id }, { $setOnInsert: { u: user }, $addToSet: { roles: 'owner' } })
 		else if msg.t is 'owner-removed'
 			user = Meteor.users.findOne({ username: msg.msg })
-			RoomModeratorsAndOwners.remove({ rid: msg.rid, "u._id": user._id });
+			owner = RoomModeratorsAndOwners.findOne({ rid: msg.rid, "u._id": user._id, roles: 'owner' })
+			if owner?.roles?.length is 1 and owner.roles[0] is 'owner'
+				RoomModeratorsAndOwners.remove({ rid: msg.rid, "u._id": user._id, roles: 'owner' })
+			else if owner?
+				RoomModeratorsAndOwners.update({ rid: msg.rid, "u._id": user._id }, { $pull: { roles: 'owner' } })
 		return msg
 	, RocketChat.callbacks.priority.LOW, 'addOrRemoveOwner')
 
