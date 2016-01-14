@@ -61,9 +61,28 @@ ExecuteTriggerUrl = (url, trigger, message, room, tries=0) ->
 				, Math.pow(10, tries+2)
 			return
 
-		# TODO process return and insert message if necessary
+		# process outgoing webhook response as a new message
+		else if result?.statusCode is 200 and (result.data?.text? or result.data?.attachments?)
+			user = RocketChat.models.Users.findOneByUsername(trigger.username)
 
+			result.data.bot =
+				i: trigger._id
 
+			defaultValues =
+				channel: trigger.channel
+				alias: trigger.alias
+				avatar: trigger.avatar
+				emoji: trigger.emoji
+
+			try
+				message = processWebhookMessage result.data, user, defaultValues
+
+				if not message?
+					return RocketChat.API.v1.failure 'unknown-error'
+
+				return RocketChat.API.v1.success()
+			catch e
+				return RocketChat.API.v1.failure e.error
 
 ExecuteTrigger = (trigger, message, room) ->
 	for url in trigger.urls
