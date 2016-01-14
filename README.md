@@ -24,7 +24,7 @@ The Ultimate Open Source WebChat Platform
   * [Documentation](#documentation)
   * [License](#license)
 * [Development](#development)
- * [Installation](#installation)
+ * [Quick Start](#quick-start-for-code-developers)
   * [Branching Model](#branching-model)
   * [Translations](#translations)
   * [Community](#community)
@@ -71,7 +71,7 @@ Deploy your own Rocket.Chat server instantly on [Scalingo](https://scalingo.com)
 ## Sandstorm.io
 [![Rocket.Chat on Sandstorm.io](https://raw.githubusercontent.com/Sing-Li/bbug/master/images/sandstorm.jpg)](https://apps.sandstorm.io/app/vfnwptfn02ty21w715snyyczw0nqxkv3jvawcah10c6z7hj1hnu0)
 
-_*Grab*_ the [Sandstorm SPK for the latest Rocket.Chat release](https://github.com/RocketChat/Rocket.Chat/releases/latest) for testing on your own server.
+_*Grab*_ the [Sandstorm SPK for the latest Rocket.Chat release](https://rocket.chat/releases/latest/spk) for testing on your own server.
 
 ## Sloppy.io
 Host your docker container at [sloppy.io](http://sloppy.io). Get an account and use the [quickstarter](https://github.com/sloppyio/quickstarters/tree/master/rocketchat)
@@ -252,7 +252,7 @@ Note that Rocket.Chat is distributed under the [MIT License](http://opensource.o
 
 # Development
 
-## Installation
+## Quick start for code developers
 Prerequisites:
 
 * [Git](http://git-scm.com/book/en/v2/Getting-Started-Installing-Git)
@@ -266,13 +266,7 @@ cd Rocket.Chat
 meteor
 ```
 
-or use docker:
-
-```
-git clone https://github.com/RocketChat/Rocket.Chat.git
-cd Rocket.Chat
-docker run -it -p 3000:3000 -v "$(pwd)":/app danieldent/meteor
-```
+If you are not a developer and just want to run the server - see [deployment methods](https://github.com/RocketChat/Rocket.Chat/wiki#deployment).
 
 ## Branching Model
 
