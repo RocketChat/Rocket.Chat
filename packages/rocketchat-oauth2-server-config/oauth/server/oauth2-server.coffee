@@ -9,6 +9,15 @@ oauth2server = new OAuth2Server
 WebApp.connectHandlers.use oauth2server.app
 
 
+Meteor.publish 'oauthClient', (clientId) ->
+	unless @userId
+		return @ready()
+
+	return RocketChat.models.OAuthApps.find {clientId: clientId, active: true},
+		fields:
+			name: 1
+
+
 RocketChat.API.v1.addAuthMethod ->
 	console.log @request.method, @request.url
 
