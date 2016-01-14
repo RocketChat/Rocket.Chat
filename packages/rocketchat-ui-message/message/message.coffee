@@ -104,6 +104,7 @@ Template.message.onCreated ->
 			message = RocketChat.callbacks.run 'renderMessage', msg
 			if message.tokens?.length > 0
 				for token in message.tokens
+					token.text = token.text.replace(/([^\$])(\$[^\$])/gm, '$1$$$2')
 					message.html = message.html.replace token.token, token.text
 
 			# console.log JSON.stringify message
