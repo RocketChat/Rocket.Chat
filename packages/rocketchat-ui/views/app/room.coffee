@@ -498,35 +498,8 @@ Template.room.onCreated ->
 			return toastr.error error.reason
 
 		for record in results
-			RoomModeratorsAndOwners.insert record
-
-	RocketChat.callbacks.add('streamMessage', (msg) ->
-		if msg.t is 'new-moderator'
-			user = Meteor.users.findOne({ username: msg.msg }, { fields: { username: 1 } })
-			RoomModeratorsAndOwners.upsert({ rid: msg.rid, "u._id": user._id }, { $setOnInsert: { u: user }, $addToSet: { roles: 'moderator' } })
-		else if msg.t is 'moderator-removed'
-			user = Meteor.users.findOne({ username: msg.msg })
-			moderator = RoomModeratorsAndOwners.findOne({ rid: msg.rid, "u._id": user._id, roles: 'moderator' })
-			if moderator?.roles?.length is 1 and moderator.roles[0] is 'moderator'
-				RoomModeratorsAndOwners.remove({ rid: msg.rid, "u._id": user._id, roles: 'moderator' })
-			else if moderator?
-				RoomModeratorsAndOwners.update({ rid: msg.rid, "u._id": user._id }, { $pull: { roles: 'moderator' } })
-		return msg
-	, RocketChat.callbacks.priority.LOW, 'addOrRemoveModerator')
-
-	RocketChat.callbacks.add('streamMessage', (msg) ->
-		if msg.t is 'new-owner'
-			user = Meteor.users.findOne({ username: msg.msg }, { fields: { username: 1 } })
-			RoomModeratorsAndOwners.upsert({ rid: msg.rid, "u._id": user._id }, { $setOnInsert: { u: user }, $addToSet: { roles: 'owner' } })
-		else if msg.t is 'owner-removed'
-			user = Meteor.users.findOne({ username: msg.msg })
-			owner = RoomModeratorsAndOwners.findOne({ rid: msg.rid, "u._id": user._id, roles: 'owner' })
-			if owner?.roles?.length is 1 and owner.roles[0] is 'owner'
-				RoomModeratorsAndOwners.remove({ rid: msg.rid, "u._id": user._id, roles: 'owner' })
-			else if owner?
-				RoomModeratorsAndOwners.update({ rid: msg.rid, "u._id": user._id }, { $pull: { roles: 'owner' } })
-		return msg
-	, RocketChat.callbacks.priority.LOW, 'addOrRemoveOwner')
+			delete record._id
+			RoomModeratorsAndOwners.upsert { rid: record.rid, "u._id": record.u._id }, record
 
 Template.room.onDestroyed ->
 	window.removeEventListener 'resize', this.onWindowResize
