@@ -493,7 +493,13 @@ Template.room.onCreated ->
 	@autorun =>
 		@subscribe 'fullUserData', Session.get('showUserInfo'), 1
 
-	@subscribe 'roomModerators', @data._id
+	Meteor.call 'getRoomModeratorsAndOwners', @data._id, (error, results) ->
+		if error
+			return toastr.error error.reason
+
+		for record in results
+			delete record._id
+			RoomModeratorsAndOwners.upsert { rid: record.rid, "u._id": record.u._id }, record
 
 Template.room.onDestroyed ->
 	window.removeEventListener 'resize', this.onWindowResize
