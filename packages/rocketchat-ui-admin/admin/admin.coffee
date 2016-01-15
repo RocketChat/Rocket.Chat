@@ -54,7 +54,20 @@ Template.admin.helpers
 		if not @enableQuery?
 			return {}
 
-		return if TempSettings.findOne(@enableQuery)? then {} else {disabled: 'disabled'}
+		if _.isString(@enableQuery)
+			enableQuery = JSON.parse(@enableQuery)
+		else
+			enableQuery = @enableQuery
+
+		if not _.isArray(enableQuery)
+			enableQuery = [enableQuery]
+
+		found = 0
+		for item in enableQuery
+			if TempSettings.findOne(item)?
+				found++
+
+		return if found is enableQuery.length then {} else {disabled: 'disabled'}
 
 	hasChanges: (section) ->
 		group = FlowRouter.getParam('group')
