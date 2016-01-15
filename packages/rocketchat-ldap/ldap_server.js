@@ -11,6 +11,7 @@ var slug = function (text) {
 // e.g. "uid=someuser,cn=users,dc=somevalue"
 LDAP_DEFAULTS = {
 	url: false,
+	TLS: false,
 	port: '389',
 	dn: false,
 	createNewUser: true,
@@ -42,6 +43,25 @@ var LDAP = function(options) {
 	this.ldapjs = MeteorWrapperLdapjs;
 };
 
+
+function startTLS(client) {
+	var opts = {
+		rejectUnauthorized: LDAP_DEFAULTS.rejectUnauthorized
+	};
+
+	if ( LDAP_DEFAULTS.CACert && LDAP_DEFAULTS.CACert != '' ){
+		opts.ca = [LDAP_DEFAULTS.CACert];
+	}
+
+	var starttlsSync = Meteor.wrapAsync(client.starttls);
+
+	var res = starttlsSync(opts , null);
+	if (res) {
+		console.log("StartTLS Result: " + res);
+	}
+}
+
+
 /**
  * Attempt to bind (authenticate) ldap
  * and perform a dn search if specified
@@ -67,6 +87,10 @@ LDAP.prototype.ldapCheck = function(options) {
 			url: fullUrl,
 			reconnect: false
 		});
+
+		if (LDAP_DEFAULTS.TLS == true) {
+			startTLS(client);
+		}
 
 		client.on('error', function() {
 			console.log('Client Error:', arguments);
