@@ -13,6 +13,7 @@ The Ultimate Open Source WebChat Platform
   * [Docker](#docker)
   * [FreeBSD](#freebsd)
   * [Ansible](#ansible)
+  * [Raspberry Pi 2](#raspberry-pi-2)
   * [Ubuntu VPS](#ubuntu-vps)
   * [Ubuntu Software Center](#ubuntu-software-center)
 * [About Rocket.Chat](#about-rocketchat)
@@ -109,6 +110,11 @@ Run solid five-nines deployment on industry workhorse FreeBSD server:
 Automated production-grade deployment in minutes, for RHEL / CentOS 7 or Ubuntu 14.04 LTS / 15.04:
 
 [![Ansible deployment](https://raw.githubusercontent.com/Sing-Li/bbug/master/images/ansible.png)](https://github.com/RocketChat/Rocket.Chat/wiki/Easy,-hands-off-deployment-with-Ansible)
+
+## Raspberry Pi 2
+Run Rocket.Chat on this world famous $30 quad core server:
+
+[![Raspberry Pi 2](https://raw.githubusercontent.com/Sing-Li/bbug/master/images/pitiny.png)](https://github.com/RocketChat/Rocket.Chat.RaspberryPi)
 
 ## Ubuntu VPS
 Follow these [deployment instructions](https://github.com/RocketChat/Rocket.Chat/wiki/Deploy-Rocket.Chat-without-docker)
