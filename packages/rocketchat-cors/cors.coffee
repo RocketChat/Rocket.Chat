@@ -47,3 +47,38 @@ WebAppInternals._staticFilesMiddleware = (staticFiles, req, res, next) ->
 	res.setHeader("X-Rocket-Chat-Version", VERSION)
 	res.setHeader("Access-Control-Expose-Headers",  "X-Rocket-Chat-Version")
 	_staticFilesMiddleware(staticFiles, req, res, next)
+
+
+url = Npm.require("url")
+
+httpServer = WebApp.httpServer
+oldHttpServerListeners = httpServer.listeners('request').slice(0)
+httpServer.removeAllListeners('request')
+
+httpServer.addListener 'request', (req, res) ->
+	if RocketChat.settings.get('Force_SSL') isnt true
+		return
+
+	remoteAddress = req.connection.remoteAddress or req.socket.remoteAddress
+
+	localhostRegexp = /^\s*(127\.0\.0\.1|::1)\s*$/
+	localhostTest = (x) ->
+		return localhostRegexp.test(x)
+
+	isLocal = localhostRegexp.test(remoteAddress) and (not req.headers['x-forwarded-for'] or _.all(req.headers['x-forwarded-for'].split(','), localhostTest))
+
+	isSsl = req.connection.pair or (req.headers['x-forwarded-proto'] and req.headers['x-forwarded-proto'].indexOf('https') isnt -1)
+
+	if not isLocal and not isSsl
+		host = url.parse(Meteor.absoluteUrl()).hostname
+
+		host = host.replace(/:\d+$/, '')
+
+		res.writeHead 302,
+			'Location': 'https://' + host + req.url
+		res.end()
+		return
+
+
+for oldListener in oldHttpServerListeners
+	httpServer.addListener 'request', oldListener
