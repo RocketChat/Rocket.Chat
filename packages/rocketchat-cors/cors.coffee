@@ -56,7 +56,13 @@ oldHttpServerListeners = httpServer.listeners('request').slice(0)
 httpServer.removeAllListeners('request')
 
 httpServer.addListener 'request', (req, res) ->
+	args = arguments
+	next = ->
+		for oldListener in oldHttpServerListeners
+			oldListener.apply(httpServer, args)
+
 	if RocketChat.settings.get('Force_SSL') isnt true
+		next()
 		return
 
 	remoteAddress = req.connection.remoteAddress or req.socket.remoteAddress
@@ -70,7 +76,7 @@ httpServer.addListener 'request', (req, res) ->
 	isSsl = req.connection.pair or (req.headers['x-forwarded-proto'] and req.headers['x-forwarded-proto'].indexOf('https') isnt -1)
 
 	if not isLocal and not isSsl
-		host = url.parse(Meteor.absoluteUrl()).hostname
+		host = req.headers['host'] or url.parse(Meteor.absoluteUrl()).hostname
 
 		host = host.replace(/:\d+$/, '')
 
@@ -79,6 +85,4 @@ httpServer.addListener 'request', (req, res) ->
 		res.end()
 		return
 
-
-for oldListener in oldHttpServerListeners
-	httpServer.addListener 'request', oldListener
+	next()
