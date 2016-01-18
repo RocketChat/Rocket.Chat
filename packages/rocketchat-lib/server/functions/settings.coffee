@@ -18,6 +18,9 @@ RocketChat.settings.add = (_id, value, options = {}) ->
 	options.hidden = false
 	options.sorter ?= RocketChat.settings._sorter++
 
+	if options.enableQuery?
+		options.enableQuery = JSON.stringify options.enableQuery
+
 	if process?.env?[_id]?
 		value = process.env[_id]
 		options.processEnvValue = value
