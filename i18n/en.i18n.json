@@ -182,6 +182,7 @@
   "FileUpload_ProtectFiles" : "Protect uploaded files",
   "FileUpload_ProtectFilesDescription" : "Only authenticated users will have access",
   "Follow_social_profiles" : "Follow our social profiles, fork us on github and share your thoughts about the rocket.chat app on our trello board.",
+  "Force_SSL" : "Force SSL",
   "Forgot_password" : "Forgot your password",
   "Fork_it_on_github" : "Fork it on github",
   "From_Email" : "From Email",
