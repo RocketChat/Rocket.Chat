@@ -8,14 +8,12 @@ Meteor.methods({
 			throw new Meteor.Error('invalid-arguments');
 		}
 
-		console.log('[methods] livechat:addManager -> '.green, 'arguments:', arguments);
-
 		var user = RocketChat.models.Users.findOneByUsername(username, { fields: { _id: 1 } });
 
 		if (!user) {
 			throw new Meteor.Error('user-not-found', 'Username_not_found');
 		}
 
-		return RocketChat.authz.addUsersToRoles(user._id, 'livechat-manager');
+		return RocketChat.authz.addUserRoles(user._id, 'livechat-manager');
 	}
 });

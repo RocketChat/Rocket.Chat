@@ -11,7 +11,7 @@ Package.onUse(function(api) {
 		'coffeescript',
 		'ddp-rate-limiter',
 		'kadira:flow-router',
-		'rocketchat:lib@0.0.1',
+		'rocketchat:lib',
 		'rocketchat:authorization@0.0.1'
 	]);
 
@@ -43,9 +43,8 @@ Package.onUse(function(api) {
 			return 'i18n/' + filename;
 		}
 	}));
-	api.use('tap:i18n@1.6.1', ['client', 'server']);
-	api.imply('tap:i18n');
-	api.addFiles(tapi18nFiles, ['client', 'server']);
+	api.use('tap:i18n');
+	api.addFiles(tapi18nFiles);
 
 	api.export('Mailer');
 });

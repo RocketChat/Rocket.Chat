@@ -116,7 +116,6 @@ Template.messageBox.events
 		fileUpload filesToUpload
 
 	'click .message-form .mic': (e, t) ->
-		console.log window.AudioRecorder
 		AudioRecorder.start ->
 			t.$('.stop-mic').removeClass('hidden')
 			t.$('.mic').addClass('hidden')

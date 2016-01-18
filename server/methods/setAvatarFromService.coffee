@@ -6,8 +6,6 @@ Meteor.methods
 		unless RocketChat.settings.get("Accounts_AllowUserAvatarChange")
 			throw new Meteor.Error(403, "[methods] resetAvatar -> Invalid access")
 
-		console.log '[methods] setAvatarFromService -> '.green, 'userId:', Meteor.userId(), 'contentType:', contentType, 'service:', service
-
 		user = Meteor.user()
 
 		if service is 'initials'
@@ -62,4 +60,4 @@ DDPRateLimiter.addRule
 	type: 'method'
 	name: 'setAvatarFromService'
 	userId: -> return true
-, 1, 60000
+, 1, 5000

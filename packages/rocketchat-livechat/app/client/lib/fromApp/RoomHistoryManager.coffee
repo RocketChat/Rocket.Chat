@@ -30,6 +30,8 @@
 			ts = new Date
 
 		Meteor.call 'loadHistory', rid, ts, limit, undefined, (err, result) ->
+			return if err?
+
 			for item in result?.messages or []
 				if item.t isnt 'command'
 					ChatMessage.upsert {_id: item._id}, item
