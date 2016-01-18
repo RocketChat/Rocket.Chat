@@ -42,7 +42,7 @@
 									{{/if}}
 								{{/if}}
 								{{#each settings}}
-									<div class="input-line double-col {{#if changed}}setting-changed{{/if}}">
+									<div class="input-line double-col {{#if changed}}setting-changed{{/if}}" {{isDisabled}}>
 										<label>{{label}}</label>
 										<div>
 											{{#if $eq type 'string'}}
