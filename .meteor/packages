@@ -10,6 +10,7 @@ accounts-google
 accounts-meteor-developer
 accounts-password
 accounts-twitter
+atoy40:accounts-cas
 blaze-html-templates
 check
 coffeescript
@@ -41,6 +42,7 @@ rocketchat:lib
 
 rocketchat:authorization
 rocketchat:autolinker
+rocketchat:cas
 rocketchat:channel-settings
 rocketchat:channel-settings-mail-messages
 rocketchat:colors
