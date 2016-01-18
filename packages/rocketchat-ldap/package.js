@@ -26,6 +26,7 @@ Package.onUse(function(api) {
   api.use('tap:i18n');
   api.use('yasaricli:slugify');
   api.use('coffeescript');
+  api.use('sha');
   // Client
   api.use('templating', 'client');
   // Server
