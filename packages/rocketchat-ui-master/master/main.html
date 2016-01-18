@@ -43,6 +43,9 @@
 <template name="main">
 	{{#if subsReady}}
 		{{#unless logged}}
+			<div class="connection-status">
+				{{> status}}
+			</div>
 			{{> loginLayout center="loginForm"}}
 		{{else}}
 			{{#unless hasUsername}}
