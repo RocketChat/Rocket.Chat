@@ -2,6 +2,55 @@
 
 -
 
+## 0.14.0, 2016-Jan-18
+
+- Added admin setting to Force SSL
+- Added connections status bar to login page
+- Added options to enable TLS on LDAP
+- Added package dependecy because of RoomModerators collection
+- Added Raspberry Pi support announcement
+- Added UI to Add/Remove Room Moderators and Owners
+- Adds aria-label to button with icons only
+- Allow multi-line title on oembed
+- Allow SMTP server with no login
+- Display burger icon on History page
+- Display time based on locale instead of using fixed 24h format
+- Do not close Desktop Notifications to keep them in notification center
+- Escape dollar before message token replacement
+- Fallback LDAP login to local account if LDAP fails
+- Fixed audio-recorder not stoping
+- Fixed confusing text labels on video/audio call buttons
+- Fixed overlapping windows
+- Fixed unset moderator test
+- Fixed Warning: Site URL configuration for Sandstorm.io
+- Fixes a bug with search results, where sometimes cog wasn't displayed.
+- Fixes adding/removing owners and moderators
+- Fixes Domain whitelist not restricting
+- Get the correct language when senging messages via email
+- Implement logging out of other logged-in clients
+- Improved code execution on open room computation
+- Improved processWebhookMessage return
+- Improved room moderator subscription and tests
+- Improved the layout and info of the oauth popup
+- Make oembed parse title in ungreedy form
+- Moved collection definition to a better place
+- Moved logic to create a message from webhooks to a new file
+- Moved response logic outside of processWebhookMessage
+- Parse urls with fragments correctly
+- Prevent browsers from trying to validate the input field
+- Prevent erros update outgoing webhooks with empty channel
+- Prevent multiple listeners on message stream per room
+- Process outgoing webhook response as a new message
+- Remove toUpperCase from emojione popup config
+- Send correct content-type for livechat
+- Set/Unset moderator via streams
+- Sort room files by uploadedAt
+- Update oembedVideoWidget removing static height
+- Update strings with localized strings in en
+- Use 'mim-types' ty check content type and compare to extension
+- Using default values instead of integration data
+- Using processWebhookMessage on V1 APIs
+
 ## 0.13.0, 2016-Jan-11
 
 - Add api `chat.messageExample`

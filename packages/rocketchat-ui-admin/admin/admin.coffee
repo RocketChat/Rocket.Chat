@@ -54,7 +54,20 @@ Template.admin.helpers
 		if not @enableQuery?
 			return {}
 
-		return if TempSettings.findOne(@enableQuery)? then {} else {disabled: 'disabled'}
+		if _.isString(@enableQuery)
+			enableQuery = JSON.parse(@enableQuery)
+		else
+			enableQuery = @enableQuery
+
+		if not _.isArray(enableQuery)
+			enableQuery = [enableQuery]
+
+		found = 0
+		for item in enableQuery
+			if TempSettings.findOne(item)?
+				found++
+
+		return if found is enableQuery.length then {} else {disabled: 'disabled'}
 
 	hasChanges: (section) ->
 		group = FlowRouter.getParam('group')
@@ -186,17 +199,17 @@ Template.admin.events
 		for blob in files
 			toastr.info TAPi18n.__ 'Uploading_file'
 
-			if @fileConstraints.contentType isnt blob.type
-				toastr.error TAPi18n.__ 'Invalid_file_type'
-				return
+			# if @fileConstraints.contentType isnt blob.type
+			# 	toastr.error blob.type, TAPi18n.__ 'Invalid_file_type'
+			# 	return
 
 			reader = new FileReader()
 			reader.readAsBinaryString(blob)
 			reader.onloadend = =>
 				Meteor.call 'setAsset', reader.result, blob.type, @asset, (err, data) ->
 					if err?
-						toastr.error TAPi18n.__ err.error
-						console.log err.error
+						toastr.error err.reason, TAPi18n.__ err.error
+						console.log err
 						return
 
 					toastr.success TAPi18n.__ 'File_uploaded'
