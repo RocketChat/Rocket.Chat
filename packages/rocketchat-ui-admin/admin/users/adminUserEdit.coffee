@@ -1,6 +1,9 @@
 Template.adminUserEdit.helpers
-	email: ->
-		return @emails?[0]?.address
+	canEditOrAdd: ->
+		return (Session.get('adminSelectedUser') and RocketChat.authz.hasAtLeastOnePermission('edit-other-user-info')) or (not Session.get('adminSelectedUser') and RocketChat.authz.hasAtLeastOnePermission('add-user'))
+
+	user: ->
+		return Meteor.users.findOne(Session.get('adminSelectedUser'))
 
 Template.adminUserEdit.events
 	'click .cancel': (e, t) ->
