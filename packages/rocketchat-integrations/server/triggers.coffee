@@ -74,20 +74,17 @@ ExecuteTriggerUrl = (url, trigger, message, room, tries=0) ->
 				i: trigger._id
 
 			defaultValues =
-				channel: trigger.channel
 				alias: trigger.alias
 				avatar: trigger.avatar
 				emoji: trigger.emoji
 
-			try
-				message = processWebhookMessage result.data, user, defaultValues
+			if room.t is 'd'
+				defaultValues.channel = '@'+room._id
+			else
+				defaultValues.channel = '#'+room._id
 
-				if not message?
-					return RocketChat.API.v1.failure 'unknown-error'
+			message = processWebhookMessage result.data, user, defaultValues
 
-				return RocketChat.API.v1.success()
-			catch e
-				return RocketChat.API.v1.failure e.error
 
 ExecuteTrigger = (trigger, message, room) ->
 	for url in trigger.urls
