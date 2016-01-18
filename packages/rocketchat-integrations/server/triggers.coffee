@@ -54,6 +54,11 @@ ExecuteTriggerUrl = (url, trigger, message, room, tries=0) ->
 				RocketChat.models.Integrations.remove _id: trigger._id
 				return
 
+			if result.statusCode is 500
+				console.log 'Request Error [500]', url
+				console.log result.content
+				return
+
 			if tries <= 6
 				# Try again in 0.1s, 1s, 10s, 1m40s, 16m40s, 2h46m40s and 27h46m40s
 				Meteor.setTimeout ->
