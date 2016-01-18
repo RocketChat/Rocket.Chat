@@ -5,7 +5,6 @@
   "Cannot_delete_role_because_its_in_use" : "Cannot delete role because it's in use",
   "New_role" : "New role",
   "Permissions" : "Permissions",
-  "Removed" : "Removed",
   "Role" : "Role",
   "Role_Editing" : "Role Editing",
   "Role_removed" : "Role removed",

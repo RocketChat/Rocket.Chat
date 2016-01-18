@@ -1,12 +1,10 @@
 FROM node:0.10
 
-# crafted and tuned by pierre@ozoux.net and sing.li@rocket.chat
+# IMPORTANT - FOR TESTING ONLY - DO NOT USE THIS FOR DEVELOPMENT OR PRODUCTION!
 MAINTAINER buildmaster@rocket.chat
 
 RUN groupadd -r rocketchat \
-&&  useradd -r -g rocketchat rocketchat \
-&&  mkdir /app  \
-&&  mkdir /app/uploads
+&&  useradd -r -g rocketchat rocketchat
 
 VOLUME /app/uploads
 

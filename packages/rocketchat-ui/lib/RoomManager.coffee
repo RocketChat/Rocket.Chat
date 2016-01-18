@@ -62,7 +62,7 @@ RocketChat.Notifications.onUser 'message', (msg) ->
 					sub.stop()
 
 			if openedRooms[typeName].rid?
-				msgStream.removeListener openedRooms[typeName].rid
+				msgStream.removeAllListeners openedRooms[typeName].rid
 				RocketChat.Notifications.unRoom openedRooms[typeName].rid, 'deleteMessage', onDeleteMessageStream
 
 			openedRooms[typeName].ready = false
@@ -84,6 +84,9 @@ RocketChat.Notifications.onUser 'message', (msg) ->
 				record.sub = [
 					Meteor.subscribe 'room', typeName
 				]
+
+				if record.ready is true
+					return
 
 				ready = record.sub[0].ready() and subscription.ready()
 
@@ -108,21 +111,23 @@ RocketChat.Notifications.onUser 'message', (msg) ->
 						record.ready = RoomHistoryManager.isLoading(room._id) is false
 						Dep.changed()
 
-						msgStream.on openedRooms[typeName].rid, (msg) ->
+						if openedRooms[typeName].streamActive isnt true
+							openedRooms[typeName].streamActive = true
+							msgStream.on openedRooms[typeName].rid, (msg) ->
 
-							# Should not send message to room if room has not loaded all the current messages
-							if RoomHistoryManager.hasMoreNext(openedRooms[typeName].rid) is false
+								# Should not send message to room if room has not loaded all the current messages
+								if RoomHistoryManager.hasMoreNext(openedRooms[typeName].rid) is false
 
-								# Do not load command messages into channel
-								if msg.t isnt 'command'
-									ChatMessage.upsert { _id: msg._id }, msg
+									# Do not load command messages into channel
+									if msg.t isnt 'command'
+										ChatMessage.upsert { _id: msg._id }, msg
 
-								Meteor.defer ->
-									RoomManager.updateMentionsMarksOfRoom typeName
+									Meteor.defer ->
+										RoomManager.updateMentionsMarksOfRoom typeName
 
-								RocketChat.callbacks.run 'streamMessage', msg
+									RocketChat.callbacks.run 'streamMessage', msg
 
-						RocketChat.Notifications.onRoom openedRooms[typeName].rid, 'deleteMessage', onDeleteMessageStream
+							RocketChat.Notifications.onRoom openedRooms[typeName].rid, 'deleteMessage', onDeleteMessageStream
 
 				Dep.changed()
 
