@@ -7,7 +7,7 @@ Template.accountProfile.helpers
 		return _.sortBy(result, 'key')
 
 	userLanguage: (key) ->
-		return (localStorage.getItem('userLanguage') or defaultUserLanguage())?.split('-').shift().toLowerCase() is key
+		return (Meteor.user().language or defaultUserLanguage())?.split('-').shift().toLowerCase() is key
 
 	realname: ->
 		return Meteor.user().name
@@ -106,3 +106,9 @@ Template.accountProfile.onRendered ->
 Template.accountProfile.events
 	'click .submit button': (e, t) ->
 		t.save()
+	'click .logoutOthers button': (event, templateInstance) ->
+		Meteor.logoutOtherClients (error) -> 
+			if error
+				toastr.error error.reason
+			else
+				toastr.success t('Logged_out_of_other_clients_successfully')

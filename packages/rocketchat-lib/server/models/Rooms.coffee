@@ -147,6 +147,17 @@ RocketChat.models.Rooms = new class extends RocketChat.models._Base
 
 		return @find query, options
 
+	findByTypeAndArchivationState: (type, archivationstate, options) ->
+		query =
+			t: type
+
+		if archivationstate
+			query.archived = true
+		else
+			query.archived = { $ne: true }
+
+		return @find query, options
+
 	findByVisitorToken: (visitorToken, options) ->
 		query =
 			"v.token": visitorToken
@@ -278,6 +289,16 @@ RocketChat.models.Rooms = new class extends RocketChat.models._Base
 
 		return @update query, update, { multi: true }
 
+	replaceMutedUsername: (previousUsername, username) ->
+		query =
+			muted: previousUsername
+
+		update =
+			$set:
+				"muted.$": username
+
+		return @update query, update, { multi: true }
+
 	replaceUsernameOfUserByUserId: (userId, username) ->
 		query =
 			"u._id": userId
@@ -307,6 +328,36 @@ RocketChat.models.Rooms = new class extends RocketChat.models._Base
 		update =
 			$set:
 				t: type
+
+		return @update query, update
+
+	setTopicById: (_id, topic) ->
+		query =
+			_id: _id
+
+		update =
+			$set:
+				topic: topic
+
+		return @update query, update
+
+	muteUsernameByRoomId: (_id, username) ->
+		query =
+			_id: _id
+
+		update =
+			$addToSet:
+				muted: username
+
+		return @update query, update
+
+	unmuteUsernameByRoomId: (_id, username) ->
+		query =
+			_id: _id
+
+		update =
+			$pull:
+				muted: username
 
 		return @update query, update
 
