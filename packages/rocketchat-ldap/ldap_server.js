@@ -256,6 +256,8 @@ Accounts.registerLoginHandler("ldap", function(loginRequest) {
 	var ldapResponse = ldapObj.ldapCheck(loginRequest);
 
 	if (ldapResponse.error) {
+		console.log(ldapResponse.error);
+		console.log('[LDAP] Falling back to standard account base');
 		if (typeof loginRequest.username === 'string')
 			if (loginRequest.username.indexOf('@') === -1)
 				loginRequest.username = {username: loginRequest.username};
