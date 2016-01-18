@@ -41,29 +41,38 @@
 			actual.push newItem
 			items.set actual
 
+	checkCondition = (item) ->
+		return not item.condition? or item.condition()
+
 	getItems = ->
 		return _.filter items.get(), (item) ->
-			if not item.permissions? or RocketChat.authz.hasAllPermission item.permissions
+			if checkCondition(item)
 				return true
 
-	addRoute = (newRoute) ->
+	addRoute = (newRoute, router = FlowRouter) ->
 
 		# @TODO check for mandatory fields
+		routeConfig =
+			center: 'pageContainer'
+			pageTemplate: newRoute.pageTemplate
 
-		FlowRouter.route newRoute.path,
+		if newRoute.i18nPageTitle?
+			routeConfig.i18nPageTitle = newRoute.i18nPageTitle
+
+		if newRoute.pageTitle?
+			routeConfig.pageTitle = newRoute.pageTitle
+
+		router.route newRoute.path,
 			name: newRoute.name
 			action: ->
 				Session.set 'openedRoom'
-				BlazeLayout.render 'main',
-					center: 'pageContainer'
-					pageTitle: newRoute.pageTitle
-					pageTemplate: newRoute.pageTemplate
+				RocketChat.TabBar.showGroup newRoute.name
+				BlazeLayout.render 'main', routeConfig
 			triggersEnter: [ ->
 				if newRoute.sideNav?
 					SideNav.setFlex newRoute.sideNav
 					SideNav.openFlex()
 			]
-
 
 	setStatus: setStatus
 	toggle: toggle

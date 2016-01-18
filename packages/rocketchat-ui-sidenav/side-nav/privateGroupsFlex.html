@@ -40,6 +40,12 @@
 					{{{_ "Duplicate_private_group_name" groupName}}}
 				</div>
 			{{/if}}	
+			{{#if error.archivedduplicate}}
+				<div class="input-error">
+					<strong>{{_ "Oops!"}}</strong>
+					{{{_ "Duplicate_archived_private_group_name" groupName}}}
+				</div>
+			{{/if}}	
 			<div class="input-submit">
 				<button class="button clean primary save-pvt-group">{{_ "Save" }}</button>
 				<button class="button clean cancel-pvt-group">{{_ "Cancel" }}</button>

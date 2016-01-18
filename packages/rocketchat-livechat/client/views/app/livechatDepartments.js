@@ -1,20 +1,10 @@
 Template.livechatDepartments.helpers({
 	"departments": () => {
 		return LivechatDepartment.find();
-	},
-	"numAgents"() {
-		if (Array.isArray(this.agents)) {
-			return this.agents.length;
-		}
 	}
 });
 
 Template.livechatDepartments.events({
-	"click button[name=newDepartment]": (event, instance) => {
-		event.preventDefault();
-		FlowRouter.go('livechat-department');
-	},
-
 	'click .remove-department' (e, instance) {
 		e.preventDefault();
 		e.stopPropagation();
@@ -46,7 +36,7 @@ Template.livechatDepartments.events({
 
 	'click .department-info' (e, instance) {
 		e.preventDefault();
-		FlowRouter.go('livechat-department', { _id: this._id });
+		FlowRouter.go('livechat-department-edit', { _id: this._id });
 	}
 });
 
