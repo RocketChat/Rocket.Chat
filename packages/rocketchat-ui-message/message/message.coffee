@@ -14,7 +14,7 @@ Template.message.helpers
 	chatops: ->
 		return 'chatops-message' if this.u?.username is RocketChat.settings.get('Chatops_Username')
 	time: ->
-		return moment(this.ts).format('HH:mm')
+		return moment(this.ts).format('LT')
 	date: ->
 		return moment(this.ts).format('LL')
 	isTemp: ->
@@ -32,7 +32,7 @@ Template.message.helpers
 
 	editTime: ->
 		if Template.instance().wasEdited
-			return moment(@editedAt).format('LL hh:mma') #TODO profile pref for 12hr/24hr clock?
+			return moment(@editedAt).format('LL LT') #TODO profile pref for 12hr/24hr clock?
 	editedBy: ->
 		return "" unless Template.instance().wasEdited
 		# try to return the username of the editor,
