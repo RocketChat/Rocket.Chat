@@ -22,89 +22,24 @@ Api.addRoute ':integrationId/:userId/:token', authRequired: true,
 		integration = RocketChat.models.Integrations.findOne(@urlParams.integrationId)
 		user = RocketChat.models.Users.findOne(@userId)
 
-		channel = @bodyParams.channel or integration.channel
-		channelType = channel[0]
-		channel = channel.substr(1)
+		@bodyParams.bot =
+			i: integration._id
 
-		switch channelType
-			when '#'
-				room = RocketChat.models.Rooms.findOne
-					$or: [
-						{_id: channel}
-						{name: channel}
-					]
+		defaultValues =
+			channel: integration.channel
+			alias: integration.alias
+			avatar: integration.avatar
+			emoji: integration.emoji
 
-				if not room?
-					return {} =
-						statusCode: 400
-						body:
-							success: false
-							error: 'invalid-channel'
+		try
+			message = processWebhookMessage @bodyParams, user, defaultValues
 
-				rid = room._id
-				if room.t is 'c'
-					Meteor.runAsUser user._id, ->
-						Meteor.call 'joinRoom', room._id
+			if not message?
+				return RocketChat.API.v1.failure 'unknown-error'
 
-			when '@'
-				roomUser = RocketChat.models.Users.findOne
-					$or: [
-						{_id: channel}
-						{username: channel}
-					]
-
-				if not roomUser?
-					return {} =
-						statusCode: 400
-						body:
-							success: false
-							error: 'invalid-channel'
-
-				rid = [user._id, roomUser._id].sort().join('')
-				room = RocketChat.models.Rooms.findOne(rid)
-
-				if not room
-					Meteor.runAsUser user._id, ->
-						Meteor.call 'createDirectMessage', roomUser.username
-						room = RocketChat.models.Rooms.findOne(rid)
-
-			else
-				return {} =
-					statusCode: 400
-					body:
-						success: false
-						error: 'invalid-channel-type'
-
-		message =
-			alias: @bodyParams.username or @bodyParams.alias or integration.alias
-			msg: _.trim(@bodyParams.text or @bodyParams.msg or '')
-			attachments: @bodyParams.attachments
-			parseUrls: false
-			bot:
-				i: integration._id
-			groupable: false
-
-		if @bodyParams.icon_url? or @bodyParams.avatar?
-			message.avatar = @bodyParams.icon_url or @bodyParams.avatar
-		else if @bodyParams.icon_emoji? or @bodyParams.emoji?
-			message.emoji = @bodyParams.icon_emoji or @bodyParams.emoji
-		else if integration.avatar?
-			message.avatar = integration.avatar
-		else if integration.emoji?
-			message.emoji = integration.emoji
-
-		if _.isArray message.attachments
-			for attachment in message.attachments
-				if attachment.msg
-					attachment.text = _.trim(attachment.msg)
-					delete attachment.msg
-
-		RocketChat.sendMessage user, message, room, {}
-
-		return {} =
-			statusCode: 200
-			body:
-				success: true
+			return RocketChat.API.v1.success()
+		catch e
+			return RocketChat.API.v1.failure e.error
 
 
 createIntegration = (options, user) ->
