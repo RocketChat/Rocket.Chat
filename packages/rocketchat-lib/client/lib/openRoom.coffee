@@ -27,6 +27,7 @@ currentTracker = undefined
 				BlazeLayout.render 'main', {center: 'roomNotFound'}
 				return
 
+			$('.rocket-loader').remove();
 			mainNode = document.querySelector('.main-content')
 			if mainNode?
 				for child in mainNode.children

@@ -475,7 +475,8 @@ form.inline {
 	}
 }
 
-input[disabled] {
+input[disabled],
+textarea[disabled] {
 	background-color: #f4f4f4 !important;
 }
 
@@ -1804,6 +1805,12 @@ a.github-fork {
 				&.setting-changed {
 					> label {
 						color: #627CFF
+					}
+				}
+
+				&[disabled] {
+					label {
+						color: #888;
 					}
 				}
 
