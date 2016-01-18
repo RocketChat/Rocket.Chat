@@ -13,6 +13,7 @@ The Ultimate Open Source WebChat Platform
   * [Docker](#docker)
   * [FreeBSD](#freebsd)
   * [Ansible](#ansible)
+  * [Raspberry Pi 2](#raspberry-pi-2)
   * [Ubuntu VPS](#ubuntu-vps)
   * [Ubuntu Software Center](#ubuntu-software-center)
 * [About Rocket.Chat](#about-rocketchat)
@@ -24,7 +25,7 @@ The Ultimate Open Source WebChat Platform
   * [Documentation](#documentation)
   * [License](#license)
 * [Development](#development)
- * [Installation](#installation)
+ * [Quick Start](#quick-start-for-code-developers)
   * [Branching Model](#branching-model)
   * [Translations](#translations)
   * [Community](#community)
@@ -71,7 +72,7 @@ Deploy your own Rocket.Chat server instantly on [Scalingo](https://scalingo.com)
 ## Sandstorm.io
 [![Rocket.Chat on Sandstorm.io](https://raw.githubusercontent.com/Sing-Li/bbug/master/images/sandstorm.jpg)](https://apps.sandstorm.io/app/vfnwptfn02ty21w715snyyczw0nqxkv3jvawcah10c6z7hj1hnu0)
 
-_*Grab*_ the [Sandstorm SPK for the latest Rocket.Chat release](https://github.com/RocketChat/Rocket.Chat/releases/latest) for testing on your own server.
+_*Grab*_ the [Sandstorm SPK for the latest Rocket.Chat release](https://rocket.chat/releases/latest/spk) for testing on your own server.
 
 ## Sloppy.io
 Host your docker container at [sloppy.io](http://sloppy.io). Get an account and use the [quickstarter](https://github.com/sloppyio/quickstarters/tree/master/rocketchat)
@@ -109,6 +110,11 @@ Run solid five-nines deployment on industry workhorse FreeBSD server:
 Automated production-grade deployment in minutes, for RHEL / CentOS 7 or Ubuntu 14.04 LTS / 15.04:
 
 [![Ansible deployment](https://raw.githubusercontent.com/Sing-Li/bbug/master/images/ansible.png)](https://github.com/RocketChat/Rocket.Chat/wiki/Easy,-hands-off-deployment-with-Ansible)
+
+## Raspberry Pi 2
+Run Rocket.Chat on this world famous $30 quad core server:
+
+[![Raspberry Pi 2](https://raw.githubusercontent.com/Sing-Li/bbug/master/images/pitiny.png)](https://github.com/RocketChat/Rocket.Chat.RaspberryPi)
 
 ## Ubuntu VPS
 Follow these [deployment instructions](https://github.com/RocketChat/Rocket.Chat/wiki/Deploy-Rocket.Chat-without-docker)
@@ -252,7 +258,7 @@ Note that Rocket.Chat is distributed under the [MIT License](http://opensource.o
 
 # Development
 
-## Installation
+## Quick start for code developers
 Prerequisites:
 
 * [Git](http://git-scm.com/book/en/v2/Getting-Started-Installing-Git)
@@ -266,13 +272,7 @@ cd Rocket.Chat
 meteor
 ```
 
-or use docker:
-
-```
-git clone https://github.com/RocketChat/Rocket.Chat.git
-cd Rocket.Chat
-docker run -it -p 3000:3000 -v "$(pwd)":/app danieldent/meteor
-```
+If you are not a developer and just want to run the server - see [deployment methods](https://github.com/RocketChat/Rocket.Chat/wiki#deployment).
 
 ## Branching Model
 
