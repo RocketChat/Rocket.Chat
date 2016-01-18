@@ -41,9 +41,21 @@ Template.adminUsers.onCreated ->
 		groups: ['adminusers', 'adminusers-selected'],
 		id: 'invite-user',
 		i18nTitle: 'Invite_Users',
-		icon: 'icon-plus',
+		icon: 'icon-paper-plane',
 		template: 'adminInviteUser',
 		order: 1
+	})
+
+	RocketChat.TabBar.addButton({
+		groups: ['adminusers', 'adminusers-selected'],
+		id: 'add-user',
+		i18nTitle: 'Add_User',
+		icon: 'icon-plus',
+		template: 'adminUserEdit',
+		openClick: (e, t) ->
+			Session.set('adminSelectedUser')
+			return true
+		order: 2
 	})
 
 	RocketChat.TabBar.addButton({
@@ -52,7 +64,7 @@ Template.adminUsers.onCreated ->
 		i18nTitle: 'User_Info',
 		icon: 'icon-user',
 		template: 'adminUserInfo',
-		order: 2
+		order: 3
 	})
 
 	@autorun ->
