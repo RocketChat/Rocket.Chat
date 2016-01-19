@@ -2,8 +2,6 @@ Meteor.publish 'roomSearch', (selector, options, collName) ->
 	unless this.userId
 		return this.ready()
 
-	console.log '[publish] roomSearch -> '.green, 'selector:', selector, 'options:', options, 'collName:', collName
-
 	self = this
 	searchType = null
 	subHandleUsers = null

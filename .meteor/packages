@@ -34,6 +34,7 @@ session
 spacebars
 standard-minifiers
 tracker
+rocketchat:oauth2-server-config
 
 arunoda:streams
 rocketchat:lib
@@ -41,6 +42,7 @@ rocketchat:lib
 rocketchat:authorization
 rocketchat:autolinker
 rocketchat:channel-settings
+rocketchat:channel-settings-mail-messages
 rocketchat:colors
 rocketchat:custom-oauth
 rocketchat:emojione
@@ -50,17 +52,21 @@ rocketchat:github-enterprise
 rocketchat:gitlab
 rocketchat:highlight
 rocketchat:ldap
+rocketchat:livechat
 rocketchat:logger
 rocketchat:mailer
 rocketchat:markdown
 rocketchat:me
 rocketchat:mentions
+rocketchat:mentions-flextab
 rocketchat:message-pin
 rocketchat:message-star
 rocketchat:oembed
 rocketchat:slashcommands-invite
 rocketchat:slashcommands-join
+rocketchat:slashcommands-kick
 rocketchat:slashcommands-leave
+rocketchat:slashcommands-mute
 rocketchat:spotify
 rocketchat:statistics
 rocketchat:theme
@@ -79,7 +85,6 @@ rocketchat:wordpress
 #rocketchat:chatops
 #rocketchat:hubot
 #rocketchat:irc
-#rocketchat:livechat
 
 konecty:change-case
 konecty:delayed-task
@@ -98,7 +103,6 @@ kadira:blaze-layout
 kadira:flow-router
 kenton:accounts-sandstorm
 kevohagan:sweetalert
-meteorhacks:kadira
 mizzao:autocomplete
 mizzao:timesync
 momentjs:moment
@@ -107,6 +111,7 @@ mrt:reactive-store
 mystor:device-detection
 nimble:restivus
 nooitaf:colors
+ostrio:cookies@2.0.1
 pauli:accounts-linkedin
 perak:codemirror
 percolate:migrations
@@ -127,3 +132,4 @@ yasinuslu:blaze-meta
 rocketchat:assets
 rocketchat:integrations
 rocketchat:message-attachments
+rocketchat:api

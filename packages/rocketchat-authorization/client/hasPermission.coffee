@@ -1,25 +1,29 @@
-atLeastOne = (toFind, toSearch) ->
-	console.log 'toFind: ', toFind if window.rocketDebug
-	console.log 'toSearch: ', toSearch if window.rocketDebug
-	return  not _.isEmpty(_.intersection(toFind, toSearch))
+atLeastOne = (permissions, scope) ->
+	return _.some permissions, (permissionId) ->
+		permission = ChatPermissions.findOne permissionId
+		return _.some permission.roles, (roleName) ->
+			role = RocketChat.models.Roles.findOne roleName
+			roleScope = role?.scope
+			return RocketChat.models[roleScope]?.isUserInRole?(Meteor.userId(), roleName, scope)
 
-all = (toFind, toSearch) ->
-	toFind = _.uniq(toFind)
-	toSearch = _.uniq(toSearch)
-	return _.isEmpty( _.difference( toFind, toSearch))
+all = (permissions, scope) ->
+	return _.every permissions, (permissionId) ->
+		permission = ChatPermissions.findOne permissionId
+		return _.some permission.roles, (roleName) ->
+			role = RocketChat.models.Roles.findOne roleName
+			roleScope = role?.scope
+			return RocketChat.models[roleScope]?.isUserInRole?(Meteor.userId(), roleName, scope)
 
 Template.registerHelper 'hasPermission', (permission, scope) ->
-	unless _.isString( scope )
-		scope = Roles.GLOBAL_GROUP
-	return hasPermission( permission, scope, atLeastOne)
+	return hasPermission(permission, scope, atLeastOne)
 
-RocketChat.authz.hasAllPermission = (permissions, scope=Roles.GLOBAL_GROUP) ->
-	return hasPermission( permissions, scope, all )
+RocketChat.authz.hasAllPermission = (permissions, scope) ->
+	return hasPermission(permissions, scope, all)
 
-RocketChat.authz.hasAtLeastOnePermission = (permissions, scope=Roles.GLOBAL_GROUP) ->
+RocketChat.authz.hasAtLeastOnePermission = (permissions, scope) ->
 	return hasPermission(permissions, scope, atLeastOne)
 
-hasPermission = (permissions, scope=Roles.GLOBAL_GROUP, strategy) ->
+hasPermission = (permissions, scope, strategy) ->
 	userId = Meteor.userId()
 
 	unless userId
@@ -30,10 +34,4 @@ hasPermission = (permissions, scope=Roles.GLOBAL_GROUP, strategy) ->
 
 	permissions = [].concat permissions
 
-	roleNames = Roles.getRolesForUser(userId, scope)
-
-	userPermissions = []
-	for roleName in roleNames
-		userPermissions = userPermissions.concat(_.pluck(ChatPermissions.find({roles : roleName }).fetch(), '_id'))
-
-	return strategy( permissions, userPermissions)
+	return strategy(permissions, scope)

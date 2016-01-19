@@ -1,3 +1,5 @@
+RocketChat.settings._sorter = 0
+
 ###
 # Add a setting
 # @param {String} _id
@@ -14,6 +16,10 @@ RocketChat.settings.add = (_id, value, options = {}) ->
 	options.valueSource = 'packageValue'
 	options.ts = new Date
 	options.hidden = false
+	options.sorter ?= RocketChat.settings._sorter++
+
+	if options.enableQuery?
+		options.enableQuery = JSON.stringify options.enableQuery
 
 	if process?.env?[_id]?
 		value = process.env[_id]
@@ -32,22 +38,32 @@ RocketChat.settings.add = (_id, value, options = {}) ->
 	if not options.i18nDescription?
 		options.i18nDescription = "#{_id}_Description"
 
-	return RocketChat.models.Settings.upsert { _id: _id },
+	updateOperations =
 		$set: options
 		$setOnInsert:
 			value: value
 			createdAt: new Date
+
+	if not options.section?
+		updateOperations.$unset = { section: 1 }
+
+	return RocketChat.models.Settings.upsert { _id: _id }, updateOperations
+
 
 
 ###
 # Add a setting group
 # @param {String} _id
 ###
-RocketChat.settings.addGroup = (_id, options = {}) ->
+RocketChat.settings.addGroup = (_id, options = {}, cb) ->
 	# console.log '[functions] RocketChat.settings.addGroup -> '.green, 'arguments:', arguments
 
 	if not _id
 		return false
+
+	if _.isFunction(options)
+		cb = options
+		options = {}
 
 	if not options.i18nLabel?
 		options.i18nLabel = _id
@@ -58,11 +74,26 @@ RocketChat.settings.addGroup = (_id, options = {}) ->
 	options.ts = new Date
 	options.hidden = false
 
-	return RocketChat.models.Settings.upsert { _id: _id },
+	RocketChat.models.Settings.upsert { _id: _id },
 		$set: options
 		$setOnInsert:
 			type: 'group'
 			createdAt: new Date
+
+	if cb?
+		cb.call
+			add: (id, value, options = {}) ->
+				options.group = _id
+				RocketChat.settings.add id, value, options
+
+			section: (section, cb) ->
+				cb.call
+					add: (id, value, options = {}) ->
+						options.group = _id
+						options.section = section
+						RocketChat.settings.add id, value, options
+
+	return
 
 
 ###
@@ -92,6 +123,19 @@ RocketChat.settings.updateById = (_id, value) ->
 
 
 ###
+# Update options of a setting by id
+# @param {String} _id
+###
+RocketChat.settings.updateOptionsById = (_id, options) ->
+	# console.log '[functions] RocketChat.settings.updateOptionsById -> '.green, 'arguments:', arguments
+
+	if not _id or not options?
+		return false
+
+	return RocketChat.models.Settings.updateOptionsById _id, options
+
+
+###
 # Update a setting by id
 # @param {String} _id
 ###
@@ -112,14 +156,17 @@ RocketChat.settings.init = ->
 	RocketChat.models.Settings.find().observe
 		added: (record) ->
 			Meteor.settings[record._id] = record.value
-			process.env[record._id] = record.value
+			if record.env is true
+				process.env[record._id] = record.value
 			RocketChat.settings.load record._id, record.value, initialLoad
 		changed: (record) ->
 			Meteor.settings[record._id] = record.value
-			process.env[record._id] = record.value
+			if record.env is true
+				process.env[record._id] = record.value
 			RocketChat.settings.load record._id, record.value, initialLoad
 		removed: (record) ->
 			delete Meteor.settings[record._id]
-			delete process.env[record._id]
+			if record.env is true
+				delete process.env[record._id]
 			RocketChat.settings.load record._id, undefined, initialLoad
 	initialLoad = false

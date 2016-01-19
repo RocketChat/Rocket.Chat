@@ -40,6 +40,7 @@ RocketChat._setUsername = (userId, username) ->
 			RocketChat.models.Messages.updateUsernameAndMessageOfMentionByIdAndOldUsername msg._id, previousUsername, username, updatedMsg
 
 		RocketChat.models.Rooms.replaceUsername previousUsername, username
+		RocketChat.models.Rooms.replaceMutedUsername previousUsername, username
 		RocketChat.models.Rooms.replaceUsernameOfUserByUserId user._id, username
 
 		RocketChat.models.Subscriptions.setUserUsernameByUserId user._id, username

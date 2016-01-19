@@ -11,6 +11,7 @@ var slug = function (text) {
 // e.g. "uid=someuser,cn=users,dc=somevalue"
 LDAP_DEFAULTS = {
 	url: false,
+	TLS: false,
 	port: '389',
 	dn: false,
 	createNewUser: true,
@@ -42,6 +43,25 @@ var LDAP = function(options) {
 	this.ldapjs = MeteorWrapperLdapjs;
 };
 
+
+function startTLS(client) {
+	var opts = {
+		rejectUnauthorized: LDAP_DEFAULTS.rejectUnauthorized
+	};
+
+	if ( LDAP_DEFAULTS.CACert && LDAP_DEFAULTS.CACert != '' ){
+		opts.ca = [LDAP_DEFAULTS.CACert];
+	}
+
+	var starttlsSync = Meteor.wrapAsync(client.starttls);
+
+	var res = starttlsSync(opts , null);
+	if (res) {
+		console.log("StartTLS Result: " + res);
+	}
+}
+
+
 /**
  * Attempt to bind (authenticate) ldap
  * and perform a dn search if specified
@@ -56,17 +76,29 @@ LDAP.prototype.ldapCheck = function(options) {
 
 	options = options || {};
 
-	if (options.hasOwnProperty('username') && options.hasOwnProperty('ldapPass')) {
+	if (!options.hasOwnProperty('username') || !options.hasOwnProperty('ldapPass')) {
+		throw new Meteor.Error(403, "Missing LDAP Auth Parameter");
+	}
 
-		var ldapAsyncFut = new Future();
+	var ldapAsyncFut = new Future();
 
 
-		// Create ldap client
-		var fullUrl = self.options.url + ':' + self.options.port;
-		var client = self.ldapjs.createClient({
-			url: fullUrl
-		});
+	// Create ldap client
+	var fullUrl = self.options.url + ':' + self.options.port;
+	var client = self.ldapjs.createClient({
+		url: fullUrl,
+		reconnect: false
+	});
 
+	if (LDAP_DEFAULTS.TLS == true) {
+		startTLS(client);
+	}
+
+	client.on('error', function(e) {
+		ldapAsyncFut.return({error: e});
+	});
+
+	client.on('connect', function(e) {
 		var bindSync = Meteor.wrapAsync(client.bind.bind(client));
 
 		// Slide @xyz.whatever from username if it was passed in
@@ -142,7 +174,7 @@ LDAP.prototype.ldapCheck = function(options) {
 						delete opts.password;
 					} catch(e) {
 						console.log('LDAP: Error', e);
-						ldapAsyncFut.return({
+						return ldapAsyncFut.return({
 							error: e
 						});
 					}
@@ -153,12 +185,14 @@ LDAP.prototype.ldapCheck = function(options) {
 				client.search(options.ldapOptions.dn, opts, function(err, res) {
 					if (err) {
 						console.log('LDAP: Search Error', err);
-						ldapAsyncFut.return({
+						return ldapAsyncFut.return({
 							error: err
 						});
 					}
+					var entryCount = 0;
 					var dn = self.options.dn;
 					res.on('searchEntry', function(entry) {
+						entryCount++;
 						dn = entry.object.dn;
 					});
 					res.on('error', function(err) {
@@ -168,7 +202,15 @@ LDAP.prototype.ldapCheck = function(options) {
 						});
 					});
 					res.on('end', function(result) {
-						bind(dn);
+						if (entryCount === 1) {
+							bind(dn);
+						} else {
+							console.log('LDAP: Search returned', entryCount, 'record(s)');
+							var err = new Error('User not Found');
+							ldapAsyncFut.return({
+								error: err
+							});
+						}
 					});
 				});
 			} catch (e) {
@@ -180,13 +222,9 @@ LDAP.prototype.ldapCheck = function(options) {
 		} else {
 			bind(self.options.dn);
 		}
+	});
 
-		return ldapAsyncFut.wait();
-
-	} else {
-		throw new Meteor.Error(403, "Missing LDAP Auth Parameter");
-	}
-
+	return ldapAsyncFut.wait();
 };
 
 
@@ -195,6 +233,7 @@ LDAP.prototype.ldapCheck = function(options) {
 // Meteor.loginWithLDAP on client side
 // @param {Object} loginRequest will consist of username, ldapPass, ldap, and ldapOptions
 Accounts.registerLoginHandler("ldap", function(loginRequest) {
+	var self = this;
 	// If "ldap" isn't set in loginRequest object,
 	// then this isn't the proper handler (return undefined)
 	if (!loginRequest.ldap) {
@@ -217,7 +256,24 @@ Accounts.registerLoginHandler("ldap", function(loginRequest) {
 	var ldapResponse = ldapObj.ldapCheck(loginRequest);
 
 	if (ldapResponse.error) {
-		throw new Meteor.Error("LDAP-login-error", ldapResponse.error);
+		console.log(ldapResponse.error);
+		console.log('[LDAP] Falling back to standard account base');
+		if (typeof loginRequest.username === 'string')
+			if (loginRequest.username.indexOf('@') === -1)
+				loginRequest.username = {username: loginRequest.username};
+			else
+				loginRequest.username = {email: loginRequest.username};
+
+		loginRequest = {
+			user: loginRequest.username,
+			password: {
+				digest: SHA256(loginRequest.ldapPass),
+				algorithm: "sha-256"
+			}
+		}
+
+		return Accounts._runLoginHandlers(self, loginRequest);
+		// throw new Meteor.Error("LDAP-login-error", ldapResponse.error);
 	} else {
 		// Set initial userId and token vals
 		var userId = null;

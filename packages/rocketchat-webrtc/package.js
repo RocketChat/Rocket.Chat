@@ -8,7 +8,7 @@ Package.describe({
 Package.onUse(function(api) {
 	api.versionsFrom('1.0');
 
-	api.use('rocketchat:lib@0.0.1');
+	api.use('rocketchat:lib');
 	api.use('coffeescript');
 
 	api.addFiles('adapter.js', 'client');
@@ -26,9 +26,8 @@ Package.onUse(function(api) {
 			return 'i18n/' + filename;
 		}
 	}));
-	api.use('tap:i18n@1.6.1', ['client', 'server']);
-	api.imply('tap:i18n');
-	api.addFiles(tapi18nFiles, ['client', 'server']);
+	api.use('tap:i18n');
+	api.addFiles(tapi18nFiles);
 
 	api.export('WebRTC');
 });

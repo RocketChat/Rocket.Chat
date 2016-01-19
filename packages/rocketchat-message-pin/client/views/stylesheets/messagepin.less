@@ -1,17 +1,20 @@
-.pinned-messages-list {
-	padding: 30px 0;
+.icon-pin.rotate-45:before {
+	-ms-transform: rotate(45deg);
+	-webkit-transform: rotate(45deg);
+	transform: rotate(45deg);
+}
 
-	&.notready {
-		background-image: url(/images/logo/loading.gif);
-		background-repeat: no-repeat;
-		background-position: 50% 50%;
-		height: 100px;
-
-		.message {
-			display: none;
+.messages-box {
+	.message-cog-container {
+		.message-action {
+			&.jump-to-pin-message {
+				display: none !important;
+			}
 		}
 	}
+}
 
+.pinned-messages-list {
 	li.empty {
 		color: #7f7f7f;
 		text-align: center;
@@ -19,8 +22,22 @@
 	}
 
 	.message-cog-container {
-		.edit-message, .delete-message, .star-message, .unstar-message {
+		.message-action {
 			display: none !important;
+			&.pin-message, &.unpin-message, &.jump-to-pin-message {
+				display: block !important;
+			}
+		}
+	}
+
+	.load-more {
+		text-transform: lowercase;
+		text-align: center;
+		line-height: 40px;
+		font-style: italic;
+
+		.load-more-loading {
+			color: #aaa;
 		}
 	}
 }

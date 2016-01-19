@@ -14,8 +14,6 @@ Meteor.methods
 		if RocketChat.authz.hasPermission(Meteor.userId(), 'create-c') isnt true
 			throw new Meteor.Error 'not-authorized', '[methods] createChannel -> Not authorized'
 
-		console.log '[methods] createChannel -> '.green, 'userId:', Meteor.userId(), 'arguments:', arguments
-
 		now = new Date()
 		user = Meteor.user()
 
@@ -23,7 +21,10 @@ Meteor.methods
 
 		# avoid duplicate names
 		if RocketChat.models.Rooms.findOneByName name
-			throw new Meteor.Error 'duplicate-name'
+			if RocketChat.models.Rooms.findOneByName(name).archived
+				throw new Meteor.Error 'archived-duplicate-name'
+			else
+				throw new Meteor.Error 'duplicate-name'
 
 		# name = s.slugify name
 
@@ -40,9 +41,6 @@ Meteor.methods
 		room = RocketChat.models.Rooms.createWithTypeNameUserAndUsernames 'c', name, user, members,
 			ts: now
 
-		# set creator as channel moderator.  permission limited to channel by scoping to rid
-		RocketChat.authz.addUsersToRoles(Meteor.userId(), 'moderator', room._id)
-
 		for username in members
 			member = RocketChat.models.Users.findOneByUsername username
 			if not member?
@@ -55,6 +53,9 @@ Meteor.methods
 				extra.open = true
 
 			RocketChat.models.Subscriptions.createWithRoomAndUser room, member, extra
+
+		# set creator as channel moderator.  permission limited to channel by scoping to rid
+		RocketChat.authz.addUserRoles(Meteor.userId(), ['moderator','owner'], room._id)
 
 		Meteor.defer ->
 			RocketChat.callbacks.run 'afterCreateChannel', user, room

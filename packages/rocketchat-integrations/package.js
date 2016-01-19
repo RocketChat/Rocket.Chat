@@ -11,7 +11,10 @@ Package.onUse(function(api) {
 
   api.use('coffeescript');
   api.use('underscore');
-  api.use('rocketchat:lib@0.0.1');
+  api.use('simple:highlight.js');
+  api.use('rocketchat:lib');
+  api.use('rocketchat:authorization');
+  api.use('rocketchat:api');
 
   api.use('kadira:flow-router', 'client');
   api.use('templating', 'client');
@@ -28,6 +31,8 @@ Package.onUse(function(api) {
   api.addFiles('client/views/integrationsNew.coffee', 'client');
   api.addFiles('client/views/integrationsIncoming.html', 'client');
   api.addFiles('client/views/integrationsIncoming.coffee', 'client');
+  api.addFiles('client/views/integrationsOutgoing.html', 'client');
+  api.addFiles('client/views/integrationsOutgoing.coffee', 'client');
 
   // stylesheets
   api.addAssets('client/stylesheets/integrations.less', 'server');
@@ -39,12 +44,20 @@ Package.onUse(function(api) {
   api.addFiles('server/publications/integrations.coffee', 'server');
 
   // methods
-  api.addFiles('server/methods/addIntegration.coffee', 'server');
-  api.addFiles('server/methods/updateIntegration.coffee', 'server');
-  api.addFiles('server/methods/deleteIntegration.coffee', 'server');
+  api.addFiles('server/methods/incoming/addIncomingIntegration.coffee', 'server');
+  api.addFiles('server/methods/incoming/updateIncomingIntegration.coffee', 'server');
+  api.addFiles('server/methods/incoming/deleteIncomingIntegration.coffee', 'server');
+  api.addFiles('server/methods/outgoing/addOutgoingIntegration.coffee', 'server');
+  api.addFiles('server/methods/outgoing/updateOutgoingIntegration.coffee', 'server');
+  api.addFiles('server/methods/outgoing/deleteOutgoingIntegration.coffee', 'server');
 
   // api
   api.addFiles('server/api/api.coffee', 'server');
+
+
+  api.addFiles('server/triggers.coffee', 'server');
+
+  api.addFiles('server/processWebhookMessage.js', 'server');
 
   var _ = Npm.require('underscore');
   var fs = Npm.require('fs');
@@ -53,6 +66,6 @@ Package.onUse(function(api) {
       return 'i18n/' + filename;
     }
   }));
-  api.use('tap:i18n', ['client', 'server']);
-  api.addFiles(tapi18nFiles, ['client', 'server']);
+  api.use('tap:i18n');
+  api.addFiles(tapi18nFiles);
 });

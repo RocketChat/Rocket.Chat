@@ -1,6 +1,6 @@
 <template name="flexTabBar">
 	{{#each buttons}}
-		<div class="tab-button {{active}}" data-template="{{template}}" data-width="{{width}}" title="{{title}}">
+		<div class="tab-button {{active}} {{visible}}" title="{{title}}">
 			<i class="{{icon}}" aria-label="{{title}}" role="button" tabindex="0"></i>
 		</div>
 	{{/each}}
