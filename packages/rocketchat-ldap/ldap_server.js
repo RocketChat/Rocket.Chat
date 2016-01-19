@@ -98,7 +98,7 @@ LDAP.prototype.ldapCheck = function(options) {
 		ldapAsyncFut.return({error: e});
 	});
 
-	client.on('connect', function(e) {
+	client.on('connect', Meteor.bindEnvironment(function(e) {
 		var bindSync = Meteor.wrapAsync(client.bind.bind(client));
 
 		// Slide @xyz.whatever from username if it was passed in
@@ -222,7 +222,7 @@ LDAP.prototype.ldapCheck = function(options) {
 		} else {
 			bind(self.options.dn);
 		}
-	});
+	}));
 
 	return ldapAsyncFut.wait();
 };
