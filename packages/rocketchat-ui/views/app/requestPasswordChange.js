@@ -18,7 +18,7 @@ Template.requestPasswordChange.onCreated(function() {
 				if(error) {
 					toastr.error(t('Incorrect_Password'));
 				} else {
-					Meteor.call('clearRequestPasswordChange', function() {
+					Meteor.call('clearRequirePasswordChange', function() {
 						toastr.success(t('Password_changed_successfully'))
 						return true;
 					});
