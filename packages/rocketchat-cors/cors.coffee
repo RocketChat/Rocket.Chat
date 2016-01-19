@@ -75,6 +75,13 @@ httpServer.addListener 'request', (req, res) ->
 
 	isSsl = req.connection.pair or (req.headers['x-forwarded-proto'] and req.headers['x-forwarded-proto'].indexOf('https') isnt -1)
 
+	if RocketChat?.debugLevel? and RocketChat.debugLevel is 'debug'
+		console.log 'req.url', req.url
+		console.log 'remoteAddress', remoteAddress
+		console.log 'isLocal', isLocal
+		console.log 'isSsl', isSsl
+		console.log 'req.headers', req.headers
+
 	if not isLocal and not isSsl
 		host = req.headers['host'] or url.parse(Meteor.absoluteUrl()).hostname
 
