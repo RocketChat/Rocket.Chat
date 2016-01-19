@@ -55,11 +55,11 @@ Package.onUse(function(api) {
 
 	// SERVER FUNCTIONS
 	api.addFiles('server/functions/checkUsernameAvailability.coffee', 'server');
-	api.addFiles('server/functions/checkEmailAvailability.coffee', 'server');
+	api.addFiles('server/functions/checkEmailAvailability.js', 'server');
 	api.addFiles('server/functions/sendMessage.coffee', 'server');
 	api.addFiles('server/functions/settings.coffee', 'server');
 	api.addFiles('server/functions/setUsername.coffee', 'server');
-	api.addFiles('server/functions/setEmail.coffee', 'server');
+	api.addFiles('server/functions/setEmail.js', 'server');
 	api.addFiles('server/functions/Notifications.coffee', 'server');
 
 	// SERVER METHODS
@@ -75,7 +75,7 @@ Package.onUse(function(api) {
 	api.addFiles('server/methods/setAdminStatus.coffee', 'server');
 	api.addFiles('server/methods/setRealName.coffee', 'server');
 	api.addFiles('server/methods/setUsername.coffee', 'server');
-	api.addFiles('server/methods/setEmail.coffee', 'server');
+	api.addFiles('server/methods/setEmail.js', 'server');
 	api.addFiles('server/methods/updateUser.coffee', 'server');
 	api.addFiles('server/methods/restartServer.coffee', 'server');
 
