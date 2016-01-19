@@ -47,9 +47,17 @@ Template.adminUserEdit.onCreated ->
 
 	@save = =>
 		if this.validate()
-			Meteor.call 'insertOrUpdateUser', this.getUserData(), (error, result) =>
+			userData = this.getUserData()
+			Meteor.call 'insertOrUpdateUser', userData, (error, result) =>
 				if result
-					toastr.success t('User_updated_successfully')
+					if userData._id
+						toastr.success t('User_updated_successfully')
+					else
+						toastr.success t('User_added_successfully')
+						Session.set('adminSelectedUser', result);
+						Session.set('showUserInfo', result);
+						Meteor.subscribe 'fullUserData', userData.username, 1
+
 					this.cancel()
 				if error
 					toastr.error error.reason

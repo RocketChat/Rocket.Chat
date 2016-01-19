@@ -11,6 +11,8 @@ Template.requestPasswordChange.onCreated(function() {
 	this.changePassword = function(oldPassword, newPassword) {
 		if (!oldPassword || !newPassword) {
 			toastr.warning(t('Old_and_new_password_required'));
+		} else if (oldPassword === newPassword) {
+			toastr.warning(t('Old_and_new_password_must_be_different'));
 		} else {
 			Accounts.changePassword(oldPassword, newPassword, function(error) {
 				if(error) {
