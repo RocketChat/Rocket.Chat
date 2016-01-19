@@ -314,6 +314,7 @@ Emoji provided free by [Emoji One](http://emojione.com)
 
 Performance monitoring provided by [Kadira](https://kadira.io)
 
+Hosting powered by [Rackspace](https://rackspace.com)
 
 # Donate
 
