@@ -9,8 +9,8 @@
 						<td>&nbsp;</td>
 						{{#each role}}
 							<td title="{{description}}">
-								<a href="{{pathFor "admin-permissions-edit" name=name}}">
-									{{name}}
+								<a href="{{pathFor "admin-permissions-edit" name=_id}}">
+									{{_id}}
 									<i class="icon-edit"></i>
 								</a>
 							</td>
@@ -23,7 +23,7 @@
 							<td>{{_id}}</td>
 							{{#each role}}
 								<td>
-									<input type="checkbox" name="perm[{{_id}}][{{../_id}}]" class="role-permission" value="1" checked="{{granted ../roles ../_id}}" data-role="{{name}}" data-permission="{{../_id}}">
+									<input type="checkbox" name="perm[{{_id}}][{{../_id}}]" class="role-permission" value="1" checked="{{granted ../roles}}" data-role="{{_id}}" data-permission="{{../_id}}">
 								</td>
 							{{/each}}
 						</tr>

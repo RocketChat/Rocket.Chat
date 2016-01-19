@@ -6,8 +6,6 @@ Meteor.methods({
 
 		check(_id, String);
 
-		console.log('[methods] livechat:removeDepartment -> '.green, 'arguments:', arguments);
-
 		var department = RocketChat.models.LivechatDepartment.findOneById(_id, { fields: { _id: 1 } });
 
 		if (!department) {

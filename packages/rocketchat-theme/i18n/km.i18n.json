@@ -1,1 +1,6 @@
-{ }
+{
+  "theme-color-code-background" : "កូដពណ៌ផ្ទៃខាងក្រោម",
+  "theme-color-code-border" : "កូដពណ៌ជាយ",
+  "theme-color-code-color" : "កូដពណ៌",
+  "theme-color-content-background-color" : "ពណ៌ផ្ទៃខាងក្រោយអត្ថបទ"
+}

@@ -13,7 +13,7 @@ Package.onUse(function(api) {
 		'templating',
 		'underscore',
 		'rocketchat:oembed@0.0.1',
-		'rocketchat:lib@0.0.1'
+		'rocketchat:lib'
 	]);
 
 	api.addFiles('lib/client/widget.coffee', 'client');

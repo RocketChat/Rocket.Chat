@@ -15,13 +15,12 @@ Meteor.publish 'adminRooms', (filter, types, limit) ->
 			cl: 1
 			u: 1
 			usernames: 1
+			muted: 1
 		limit: limit
 		sort:
 			name: 1
 
 	filter = _.trim filter
-
-	console.log '[publish] adminRooms'.green, filter, types, limit
 
 	if filter and types.length
 		return RocketChat.models.Rooms.findByNameContainingAndTypes filter, types, options

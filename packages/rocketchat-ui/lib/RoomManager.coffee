@@ -62,7 +62,7 @@ RocketChat.Notifications.onUser 'message', (msg) ->
 					sub.stop()
 
 			if openedRooms[typeName].rid?
-				msgStream.removeListener openedRooms[typeName].rid
+				msgStream.removeAllListeners openedRooms[typeName].rid
 				RocketChat.Notifications.unRoom openedRooms[typeName].rid, 'deleteMessage', onDeleteMessageStream
 
 			openedRooms[typeName].ready = false
@@ -84,6 +84,9 @@ RocketChat.Notifications.onUser 'message', (msg) ->
 				record.sub = [
 					Meteor.subscribe 'room', typeName
 				]
+
+				if record.ready is true
+					return
 
 				ready = record.sub[0].ready() and subscription.ready()
 
@@ -108,16 +111,23 @@ RocketChat.Notifications.onUser 'message', (msg) ->
 						record.ready = RoomHistoryManager.isLoading(room._id) is false
 						Dep.changed()
 
-						msgStream.on openedRooms[typeName].rid, (msg) ->
-							if msg.t isnt 'command'
-								ChatMessage.upsert { _id: msg._id }, msg
-							else
-								Meteor.defer ->
-									RoomManager.updateMentionsMarksOfRoom typeName
+						if openedRooms[typeName].streamActive isnt true
+							openedRooms[typeName].streamActive = true
+							msgStream.on openedRooms[typeName].rid, (msg) ->
 
-								RocketChat.callbacks.run 'streamMessage', msg
+								# Should not send message to room if room has not loaded all the current messages
+								if RoomHistoryManager.hasMoreNext(openedRooms[typeName].rid) is false
 
-						RocketChat.Notifications.onRoom openedRooms[typeName].rid, 'deleteMessage', onDeleteMessageStream
+									# Do not load command messages into channel
+									if msg.t isnt 'command'
+										ChatMessage.upsert { _id: msg._id }, msg
+
+									Meteor.defer ->
+										RoomManager.updateMentionsMarksOfRoom typeName
+
+									RocketChat.callbacks.run 'streamMessage', msg
+
+							RocketChat.Notifications.onRoom openedRooms[typeName].rid, 'deleteMessage', onDeleteMessageStream
 
 				Dep.changed()
 
@@ -207,7 +217,7 @@ RocketChat.Notifications.onUser 'message', (msg) ->
 		scrollTop = $(dom).find('.messages-box > .wrapper').scrollTop() - 50
 		totalHeight = $(dom).find('.messages-box > .wrapper > ul').height() + 40
 
-		$('.mention-link-me').each (index, item) ->
+		$('.messages-box .mention-link-me').each (index, item) ->
 			topOffset = $(item).offset().top + scrollTop
 			percent = 100 / totalHeight * topOffset
 			ticksBar.append('<div class="tick" style="top: '+percent+'%;"></div>')

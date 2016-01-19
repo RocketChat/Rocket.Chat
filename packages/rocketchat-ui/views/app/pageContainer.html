@@ -3,7 +3,13 @@
 		<head class="fixed-title">
 			{{> burger}}
 			<h2>
-				<span class="page-title">{{pageTitle}}</span>
+				<span class="page-title">
+					{{#if i18nPageTitle}}
+						{{_ i18nPageTitle}}
+					{{else}}
+						{{pageTitle}}
+					{{/if}}
+				</span>
 			</h2>
 		</head>
 		<div class="content">
