@@ -1,7 +1,7 @@
 Meteor.methods({
-	clearRequestPasswordChange: function() {
+	clearRequirePasswordChange: function() {
 		if (!Meteor.userId()) {
-			throw new Meteor.Error('invalid-user', "[methods] clearRequestPasswordChange -> Invalid user");
+			throw new Meteor.Error('invalid-user', "[methods] clearRequirePasswordChange -> Invalid user");
 		}
 
 		return RocketChat.models.Users.unsetRequirePasswordChange(Meteor.userId());
