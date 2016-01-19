@@ -25,10 +25,10 @@ Meteor.methods
 
 		if not userData._id
 			if not RocketChat.checkUsernameAvailability userData.username
-				throw new Meteor.Error 'username-unavailable', "#{username} is already in use :("
+				throw new Meteor.Error 'username-unavailable', "#{userData.username} is already in use :("
 
 			if userData.email and not RocketChat.checkEmailAvailability userData.email
-				throw new Meteor.Error 'username-unavailable', "#{username} is already in use :("
+				throw new Meteor.Error 'email-unavailable', "#{userData.email} is already in use :("
 
 			# insert user
 			createUser = { username: userData.username, password: userData.password }
@@ -39,6 +39,7 @@ Meteor.methods
 			if userData.requirePasswordChange
 				Meteor.users.update { _id: _id }, { $set: { name: userData.name, requirePasswordChange: userData.requirePasswordChange } }
 
+			return _id
 		else
 			#update user
 			Meteor.users.update { _id: userData._id }, { $set: { name: userData.name, requirePasswordChange: userData.requirePasswordChange } }
@@ -50,4 +51,4 @@ Meteor.methods
 			if canEditUserPassword and userData.password.trim()
 				Accounts.setPassword userData._id, userData.password.trim()
 
-		return true
+			return true
