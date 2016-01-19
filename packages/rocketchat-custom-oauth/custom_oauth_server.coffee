@@ -82,7 +82,10 @@ class CustomOAuth
 				params:
 					access_token: accessToken
 
-			return response.content
+			if response.data
+				return response.data
+			else
+				return JSON.parse response.content
 
 		catch err
 			error = new Error("Failed to fetch identity from #{@name} at #{@identityPath}. " + err.message)
@@ -94,7 +97,7 @@ class CustomOAuth
 			accessToken = self.getAccessToken query
 			console.log 'at:', accessToken
 
-			identity = JSON.parse(self.getIdentity(accessToken))
+			identity = self.getIdentity accessToken
 
 			# Fix WordPress-like identities having 'ID' instead of 'id'
 			if identity?.ID and not identity.id
