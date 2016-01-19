@@ -30,7 +30,7 @@ deploy:
   provider: s3
   access_key_id: "AKIAIKIA7H7D47KUHYCA"
   secret_access_key: $ACCESSKEY
-  bucket: "rocketchat"
+  bucket: "download.rocket.chat"
   skip_cleanup: true
   upload_dir: build
   local_dir: $ROCKET_DEPLOY_DIR
