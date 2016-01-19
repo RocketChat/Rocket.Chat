@@ -9,8 +9,6 @@ Template.adminUsers.helpers
 		return 'left' unless RocketChat.TabBar.isFlexOpen()
 	userData: ->
 		return Meteor.users.findOne Session.get 'adminSelectedUser'
-	userChannels: ->
-		return ChatSubscription.find({ "u._id": Session.get 'adminSelectedUser' }, { fields: { rid: 1, name: 1, t: 1 }, sort: { t: 1, name: 1 } }).fetch()
 	isLoading: ->
 		return 'btn-loading' unless Template.instance().ready?.get()
 	hasMore: ->
@@ -54,6 +52,7 @@ Template.adminUsers.onCreated ->
 		template: 'adminUserEdit',
 		openClick: (e, t) ->
 			Session.set('adminSelectedUser')
+			Session.set('showUserInfo')
 			return true
 		order: 2
 	})
@@ -75,7 +74,9 @@ Template.adminUsers.onCreated ->
 
 	@autorun ->
 		if Session.get 'adminSelectedUser'
-			channelSubscription = instance.subscribe 'userChannels', Session.get 'adminSelectedUser'
+			instance.subscribe 'fullUserData', Session.get('adminSelectedUser'), 1
+			Session.set 'showUserInfo', Session.get('adminSelectedUser')
+
 			RocketChat.TabBar.setData Meteor.users.findOne Session.get 'adminSelectedUser'
 
 			RocketChat.TabBar.showGroup 'adminusers-selected'
@@ -117,7 +118,7 @@ Template.adminUsers.events
 	'click .user-info': (e) ->
 		e.preventDefault()
 		Session.set 'adminSelectedUser', @_id
-		Session.set 'showUserInfo', Meteor.users.findOne(@_id)?.username or true
+		Session.set 'showUserInfo', Meteor.users.findOne(@_id)?.username
 		RocketChat.TabBar.setTemplate 'adminUserInfo'
 		RocketChat.TabBar.openFlex()
 
