@@ -196,6 +196,13 @@ RocketChat.models.Users = new class extends RocketChat.models._Base
 
 		return @update _id, update
 
+	unsetRequirePasswordChange: (_id) ->
+		update =
+			$unset:
+				"requirePasswordChange" : true
+
+		return @update _id, update
+
 	setLanguage: (_id, language) ->
 		update =
 			$set:
