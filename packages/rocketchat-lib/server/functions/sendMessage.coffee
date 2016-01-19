@@ -11,7 +11,7 @@ RocketChat.sendMessage = (user, message, room, options) ->
 	message.rid = room._id
 
 	if message.parseUrls isnt false
-		if urls = message.msg.match /([A-Za-z]{3,9}):\/\/([-;:&=\+\$,\w]+@{1})?([-A-Za-z0-9\.]+)+:?(\d+)?((\/[-\+=!:~%\/\.@\,\w]+)?\??([-\+=&!:;%@\/\.\,\w]+)?#?([\w]+)?)?/g
+		if urls = message.msg.match /([A-Za-z]{3,9}):\/\/([-;:&=\+\$,\w]+@{1})?([-A-Za-z0-9\.]+)+:?(\d+)?((\/[-\+=!:~%\/\.@\,\w]+)?\??([-\+=&!:;%@\/\.\,\w]+)?#?([^\s]+)?)?/g
 			message.urls = urls.map (url) -> url: url
 
 	message = RocketChat.callbacks.run 'beforeSaveMessage', message
@@ -30,7 +30,7 @@ RocketChat.sendMessage = (user, message, room, options) ->
 	###
 	Meteor.defer ->
 
-		RocketChat.callbacks.run 'afterSaveMessage', message
+		RocketChat.callbacks.run 'afterSaveMessage', message, room
 
 	###
 	Update all the room activity tracker fields

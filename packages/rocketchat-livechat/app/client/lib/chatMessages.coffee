@@ -93,11 +93,11 @@ class @ChatMessages
 							showError error.reason
 
 			if not Meteor.userId()
-				Meteor.call 'registerGuest', visitor.getToken(), (error, result) ->
+				Meteor.call 'livechat:registerGuest', { token: visitor.getToken() }, (error, result) ->
 					if error?
 						return showError error.reason
 
-					Meteor.loginWithPassword result.user, result.pass, (error) ->
+					Meteor.loginWithToken result.token, (error) ->
 						if error
 							return showError error.reason
 

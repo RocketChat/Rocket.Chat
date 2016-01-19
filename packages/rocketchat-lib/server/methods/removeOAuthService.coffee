@@ -3,8 +3,6 @@ Meteor.methods
 		if not Meteor.userId()
 			throw new Meteor.Error('invalid-user', "[methods] addOAuthService -> Invalid user")
 
-		console.log '[methods] addOAuthService -> '.green, 'userId:', Meteor.userId(), 'arguments:', arguments
-
 		unless RocketChat.authz.hasPermission( Meteor.userId(), 'add-oauth-service') is true
 			throw new Meteor.Error 'not-authorized', '[methods] addOAuthService -> Not authorized'
 

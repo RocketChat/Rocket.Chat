@@ -31,8 +31,6 @@ Meteor.publish 'fullUserData', (filter, limit) ->
 		limit: limit
 		sort: { username: 1 }
 
-	console.log '[publish] fullUserData'.green, filter, limit
-
 	if filter
 		if limit is 1
 			return RocketChat.models.Users.findByUsername filter, options
