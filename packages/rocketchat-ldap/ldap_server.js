@@ -236,7 +236,7 @@ Accounts.registerLoginHandler("ldap", function(loginRequest) {
 	var self = this;
 	// If "ldap" isn't set in loginRequest object,
 	// then this isn't the proper handler (return undefined)
-	if (!loginRequest.ldap) {
+	if (!loginRequest.ldapOptions) {
 		return undefined;
 	}
 
