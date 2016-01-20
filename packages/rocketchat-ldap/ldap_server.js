@@ -53,7 +53,7 @@ function startTLS(client) {
 		opts.ca = [LDAP_DEFAULTS.CACert];
 	}
 
-	var starttlsSync = Meteor.wrapAsync(client.starttls);
+	var starttlsSync = Meteor.wrapAsync(client.starttls.bind(client));
 
 	var res = starttlsSync(opts , null);
 	if (res) {
