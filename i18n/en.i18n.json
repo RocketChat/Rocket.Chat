@@ -256,6 +256,7 @@
   "LDAP_Bind_Search" : "Bind Search",
   "LDAP_Bind_Search_Description" : "A piece of JSON that governs bind and connection info and is of the form {\"filter\": \"(&(objectCategory=person)(objectclass=user)(memberOf=CN=ROCKET_ACCESS,CN=Users,DC=domain,DC=com)(sAMAccountName=#{username}))\", \"scope\": \"sub\", \"userDN\": \"rocket.service@domain.com\", \"password\": \"urpass\"}",
   "LDAP_CA_Cert" : "CA Cert",
+  "LDAP_Default_Domain" : "Default Domain",
   "LDAP_Description" : "LDAP is a hierarchical database that many companies use to provide single sign on - a facility for sharing one password between multiple sites and services. For advanced configuration information and examples, please consult our wiki: https://github.com/RocketChat/Rocket.Chat/wiki/LDAP-Authentication.",
   "LDAP_DN" : "Distinguished Name (DN)",
   "LDAP_DN_Description" : "Search root; example: dc=domain,dc=com",
