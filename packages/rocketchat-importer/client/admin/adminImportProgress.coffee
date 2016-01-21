@@ -29,7 +29,9 @@ Template.adminImportProgress.onCreated ->
 					instance.step.set t(progress.step)
 					instance.completed.set progress.count.completed
 					instance.total.set progress.count.total
-					setTimeout instance.updateProgress(), 750
+					setTimeout(() ->
+						instance.updateProgress()
+					, 100)
 			else
 				toastr.warning t('importer_not_in_progress')
 				FlowRouter.go '/admin/import/prepare/' + FlowRouter.getParam('importer')
