@@ -23,6 +23,10 @@ RocketChat.settings.add = (_id, value, options = {}) ->
 
 	if process?.env?[_id]?
 		value = process.env[_id]
+		if value.toLowerCase() is "true"
+			value = true
+		else if value.toLowerCase() is "false"
+			value = false
 		options.processEnvValue = value
 		options.valueSource = 'processEnvValue'
 
