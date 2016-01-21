@@ -18,6 +18,7 @@ Meteor.startup ->
 		@add 'LDAP_Bind_Search', '', { type: 'string' , enableQuery: enableQuery }
 		@add 'LDAP_Sync_User_Data', false, { type: 'boolean' , enableQuery: enableQuery }
 		@add 'LDAP_Sync_User_Data_FieldMap', '{"cn":"name", "mail":"email"}', { type: 'string', enableQuery: enableQuery }
+		@add 'LDAP_Default_Domain', '', { type: 'string' , enableQuery: enableQuery }
 
 
 timer = undefined
@@ -36,6 +37,7 @@ updateServices = ->
 			LDAP_DEFAULTS.port = RocketChat.settings.get 'LDAP_Port' if RocketChat.settings.get 'LDAP_Port'
 			LDAP_DEFAULTS.dn = RocketChat.settings.get 'LDAP_DN' or false
 			LDAP_DEFAULTS.bindSearch = RocketChat.settings.get 'LDAP_Bind_Search' or ''
+			LDAP_DEFAULTS.defaultDomain = RocketChat.settings.get 'LDAP_Default_Domain' or ''
 		else
 			LDAP_DEFAULTS.TLS = undefined
 			LDAP_DEFAULTS.CACert = undefined
@@ -44,6 +46,7 @@ updateServices = ->
 			LDAP_DEFAULTS.port = undefined
 			LDAP_DEFAULTS.dn = undefined
 			LDAP_DEFAULTS.bindSearch = undefined
+			LDAP_DEFAULTS.defaultDomain = undefined
 	, 2000
 
 RocketChat.models.Settings.find().observe
