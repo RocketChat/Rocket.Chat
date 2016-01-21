@@ -15,7 +15,7 @@ LDAP_DEFAULTS = {
 	port: '389',
 	dn: false,
 	createNewUser: true,
-	defaultDomain: false,
+	defaultDomain: '',
 	searchResultsProfileMap: false,
 	bindSearch: undefined
 };
@@ -49,7 +49,7 @@ function startTLS(client) {
 		rejectUnauthorized: LDAP_DEFAULTS.rejectUnauthorized
 	};
 
-	if ( LDAP_DEFAULTS.CACert && LDAP_DEFAULTS.CACert != '' ){
+	if ( LDAP_DEFAULTS.CACert && LDAP_DEFAULTS.CACert !== '' ){
 		opts.ca = [LDAP_DEFAULTS.CACert];
 	}
 
@@ -75,6 +75,8 @@ LDAP.prototype.ldapCheck = function(options) {
 	var self = this;
 
 	options = options || {};
+
+	options.defaultDomain = options.defaultDomain || LDAP_DEFAULTS.defaultDomain;
 
 	if (!options.hasOwnProperty('username') || !options.hasOwnProperty('ldapPass')) {
 		throw new Meteor.Error(403, "Missing LDAP Auth Parameter");
@@ -111,7 +113,7 @@ LDAP.prototype.ldapCheck = function(options) {
 		// And use the defaults.defaultDomain if set
 		if (emailSliceIndex !== -1) {
 			username = options.username.substring(0, emailSliceIndex);
-			domain = domain || options.username.substring((emailSliceIndex + 1), options.username.length);
+			domain = options.username.substring((emailSliceIndex + 1), options.username.length) || domain;
 		} else {
 			username = options.username;
 		}
@@ -270,7 +272,7 @@ Accounts.registerLoginHandler("ldap", function(loginRequest) {
 				digest: SHA256(loginRequest.ldapPass),
 				algorithm: "sha-256"
 			}
-		}
+		};
 
 		return Accounts._runLoginHandlers(self, loginRequest);
 		// throw new Meteor.Error("LDAP-login-error", ldapResponse.error);
