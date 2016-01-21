@@ -170,6 +170,7 @@ Importer.Slack = class Importer.Slack extends Importer.Base
 				@collection.update { _id: @channels._id }, { $set: { 'channels': @channels.channels }}
 
 				missedTypes = {}
+				ignoreTypes = { 'bot_add': true, 'file_comment': true, 'file_mention': true }
 				@updateProgress Importer.ProgressStep.IMPORTING_MESSAGES
 				for channel, messagesObj of @messages
 					do (channel, messagesObj) =>
@@ -192,10 +193,21 @@ Importer.Slack = class Importer.Slack extends Importer.Base
 															ts: new Date(parseInt(message.ts.split('.')[0]) * 1000)
 												else if message.subtype is 'me_message'
 													RocketChat.sendMessage @getRocketUser(message.user), { msg: '_' + @convertSlackMessageToRocketChat(message.text) + '_', ts: new Date(parseInt(message.ts.split('.')[0]) * 1000) }, room
-												else if message.subtype is 'bot_message'
+												#else if message.subtype is 'bot_message'
 													#RocketChat.sendMessage
+												else if message.subtype is 'channel_purpose'
+													RocketChat.models.Messages.createRoomSettingsChangedWithTypeRoomIdMessageAndUser 'room_changed_topic', room._id, message.purpose, @getRocketUser(message.user)
+												else if message.subtype is 'channel_topic'
+													RocketChat.models.Messages.createRoomSettingsChangedWithTypeRoomIdMessageAndUser 'room_changed_topic', room._id, message.topic, @getRocketUser(message.user)
+												else if message.subtype is 'file_share'
+													details =
+														name: message.file.name
+														size: message.file.size
+														type: message.file.filetype,
+														rid: room._id
+													@uploadFile details, message.file.url, @getRocketUser(message.user), room, new Date(parseInt(message.ts.split('.')[0]) * 1000)
 												else
-													if not missedTypes[message.subtype]
+													if not missedTypes[message.subtype] and not ignoreTypes[message.subtype]
 														missedTypes[message.subtype] = message
 											else
 												user = @getRocketUser(message.user)
@@ -211,10 +223,9 @@ Importer.Slack = class Importer.Slack extends Importer.Base
 													if message.edited?
 														msgObj.ets = new Date(parseInt(message.edited.ts.split('.')[0]) * 1000)
 
-													#RocketChat.models.Messages.insert msgObj
 													RocketChat.sendMessage @getRocketUser(message.user), msgObj, room
 										@addCountCompleted 1
-				#console.log missedTypes
+				console.log missedTypes
 				@updateProgress Importer.ProgressStep.FINISHING
 				for channel in @channels.channels when channel.do_import and channel.is_archived
 					do (channel) =>
@@ -249,8 +260,8 @@ Importer.Slack = class Importer.Slack extends Importer.Base
 			message = message.replace /&amp;/g, '&'
 			message = message.replace /:simple_smile:/g, ':smile:'
 			for userReplace in @userTags
-				message = message.replace /userReplace.slack/g, userReplace.rocket
-				message = message.replace /userReplace.slackLong/g, userReplace.rocket
+				message = message.replace userReplace.slack, userReplace.rocket
+				message = message.replace userReplace.slackLong, userReplace.rocket
 			return message
 
 	getSelection: () =>

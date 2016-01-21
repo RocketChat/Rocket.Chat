@@ -13,6 +13,8 @@
 # @version 1.0.0
 Importer.Base = class Importer.Base
 	@MaxBSONSize = 8000000
+	@http = Npm.require 'http'
+	@https = Npm.require 'https'
 
 	@getBSONSize: (object) ->
 		# The max BSON object size we can store in MongoDB is 16777216 bytes
@@ -136,3 +138,58 @@ Importer.Base = class Importer.Base
 		@importRecord = Importer.Imports.findOne @importRecord._id
 
 		return @importRecord
+
+	# Uploads the file to the storage.
+	#
+	# @param [Object] details an object with details about the upload. name, size, type, and rid
+	# @param [String] fileUrl url of the file to download/import
+	# @param [Object] user the Rocket.Chat user
+	# @param [Object] room the Rocket.Chat room
+	# @param [Date] timeStamp the timestamp the file was uploaded
+	#
+	uploadFile: (details, fileUrl, user, room, timeStamp) =>
+		console.log "Uploading the file #{details.name} from #{fileUrl}."
+		requestModule = if /https/i.test(fileUrl) then Importer.Base.https else Importer.Base.http
+
+		requestModule.get fileUrl, Meteor.bindEnvironment((stream) ->
+			fileId = Meteor.fileStore.create details
+			if fileId
+				Meteor.fileStore.write stream, fileId, (err, file) ->
+					if err
+						throw new Error(err)
+					else
+						url = file.url.replace(Meteor.absoluteUrl(), '/')
+
+						attachment =
+							title: "File Uploaded: #{file.name}"
+							title_link: url
+
+						if /^image\/.+/.test file.type
+							attachment.image_url = url
+							attachment.image_type = file.type
+							attachment.image_size = file.size
+							attachment.image_dimensions = file.identify?.size
+
+						if /^audio\/.+/.test file.type
+							attachment.audio_url = url
+							attachment.audio_type = file.type
+							attachment.audio_size = file.size
+
+						if /^video\/.+/.test file.type
+							attachment.video_url = url
+							attachment.video_type = file.type
+							attachment.video_size = file.size
+
+						msg =
+							rid: details.rid
+							ts: timeStamp
+							msg: ''
+							file:
+								_id: file._id
+							groupable: false
+							attachments: [attachment]
+
+						RocketChat.sendMessage user, msg, room
+			else
+				console.error "Failed to create the store for #{fileUrl}!!!"
+		)
