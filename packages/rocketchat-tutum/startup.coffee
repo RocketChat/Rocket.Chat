@@ -24,10 +24,9 @@ if process.env.TUTUM_REDIS_HOST?
 	terminateAppIfInactive = ->
 		subscription = RocketChat.models.Subscriptions.findOne({ls: {$exists: true}}, {sort: {ls: -1}, fields: {ls: 1}})
 
-		if subscription?
-			if Date.now() - subscription.ls > inactiveDays * day
-				client.del("frontend:#{process.env.TUTUM_CLIENT_HOST}")
-				process.exit 0
+		if not subscription? or Date.now() - subscription.ls > inactiveDays * day
+			client.del("frontend:#{process.env.TUTUM_CLIENT_HOST}")
+			process.exit 0
 
 	Meteor.setInterval ->
 		now = new Date()
