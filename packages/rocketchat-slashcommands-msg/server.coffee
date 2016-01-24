@@ -12,10 +12,10 @@ class Msg
 		usernameOrig = trimmedParams.slice(0, trimmedParams.indexOf(' '))
 		message = trimmedParams.slice(trimmedParams.indexOf(' ') + 1)
 
+		username = usernameOrig.replace('@', '')
+
 		if username is ''
 			return
-
-		username = usernameOrig.replace('@', '')
 
 		user = Meteor.users.findOne Meteor.userId()
 		msgUser = RocketChat.models.Users.findOneByUsername username
