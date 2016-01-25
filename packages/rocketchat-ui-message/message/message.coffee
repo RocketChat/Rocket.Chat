@@ -14,7 +14,7 @@ Template.message.helpers
 	chatops: ->
 		return 'chatops-message' if this.u?.username is RocketChat.settings.get('Chatops_Username')
 	time: ->
-		return moment(this.ts).format('LT').replace(/(AM|PM)$/i, '')
+		return moment(this.ts).format('LT')
 	date: ->
 		return moment(this.ts).format('LL')
 	isTemp: ->
