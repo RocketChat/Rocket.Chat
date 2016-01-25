@@ -1,4 +1,7 @@
 {
+  "Back" : "Назад",
+  "Dashboard" : "Панель",
   "Livechat_enabled" : "Включен Livechat",
-  "Livechat_title" : "Название чата"
+  "Livechat_title" : "Название чата",
+  "Saved" : "Сохранено"
 }
