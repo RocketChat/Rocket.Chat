@@ -17,14 +17,15 @@ Template.flexTabBar.events
 			RocketChat.TabBar.closeFlex()
 			$('.flex-tab').css('max-width', '')
 		else
-			if @width?
-				$('.flex-tab').css('max-width', "#{@width}px")
-			else
-				$('.flex-tab').css('max-width', '')
+			if not @openClick? or @openClick(e,t)
+				if @width?
+					$('.flex-tab').css('max-width', "#{@width}px")
+				else
+					$('.flex-tab').css('max-width', '')
 
-			RocketChat.TabBar.setTemplate @template, ->
-				$('.flex-tab')?.find("input[type='text']:first")?.focus()
-				$('.flex-tab .content')?.scrollTop(0)
+				RocketChat.TabBar.setTemplate @template, ->
+					$('.flex-tab')?.find("input[type='text']:first")?.focus()
+					$('.flex-tab .content')?.scrollTop(0)
 
 Template.flexTabBar.onCreated ->
 	# close flex if the visible group changed and the opened template is not in the new visible group
