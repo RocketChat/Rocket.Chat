@@ -23,6 +23,10 @@ Meteor.methods
 		Meteor.runAsUser userData._id, ->
 			Meteor.call 'setUsername', userData.username
 
+		if userData.email
+			Meteor.runAsUser userData._id, ->
+				Meteor.call 'setEmail', userData.email
+
 		canEditUserPassword = RocketChat.authz.hasPermission( user._id, 'edit-other-user-password')
 		if canEditUserPassword and userData.password.trim()
 			Accounts.setPassword userData._id, userData.password.trim()
