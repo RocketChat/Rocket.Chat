@@ -2,6 +2,7 @@ Importer.Slack = class Importer.Slack extends Importer.Base
 	constructor: (name, descriptionI18N, fileTypeRegex) ->
 		super(name, descriptionI18N, fileTypeRegex)
 		@userTags = []
+		@bots = {}
 
 	prepare: (dataURI, sentContentType, fileName) =>
 		super(dataURI, sentContentType, fileName)
@@ -22,6 +23,10 @@ Importer.Slack = class Importer.Slack extends Importer.Base
 					else if entry.entryName == 'users.json'
 						@updateProgress Importer.ProgressStep.PREPARING_USERS
 						tempUsers = JSON.parse entry.getData().toString()
+
+						for user in tempUsers when user.is_bot
+							@bots[user.profile.bot_id] = user
+
 					else if not entry.isDirectory and entry.entryName.indexOf('/') > -1
 						item = entry.entryName.split('/') #random/2015-10-04.json
 						channelName = item[0] #random
@@ -170,7 +175,7 @@ Importer.Slack = class Importer.Slack extends Importer.Base
 				@collection.update { _id: @channels._id }, { $set: { 'channels': @channels.channels }}
 
 				missedTypes = {}
-				ignoreTypes = { 'bot_add': true, 'file_comment': true, 'file_mention': true }
+				ignoreTypes = { 'bot_add': true, 'file_comment': true, 'file_mention': true, 'channel_name': true }
 				@updateProgress Importer.ProgressStep.IMPORTING_MESSAGES
 				for channel, messagesObj of @messages
 					do (channel, messagesObj) =>
@@ -193,8 +198,26 @@ Importer.Slack = class Importer.Slack extends Importer.Base
 															ts: new Date(parseInt(message.ts.split('.')[0]) * 1000)
 												else if message.subtype is 'me_message'
 													RocketChat.sendMessage @getRocketUser(message.user), { msg: '_' + @convertSlackMessageToRocketChat(message.text) + '_', ts: new Date(parseInt(message.ts.split('.')[0]) * 1000) }, room
-												#else if message.subtype is 'bot_message'
-													#RocketChat.sendMessage
+												else if message.subtype is 'bot_message'
+													botUser = RocketChat.models.Users.findOneById 'rocket.cat', { fields: { username: 1 }}
+													botUsername = if @bots[message.bot_id] then @bots[message.bot_id]?.name else message.username
+													msgObj =
+														msg: if message.text then message.text else ''
+														ts: new Date(parseInt(message.ts.split('.')[0]) * 1000)
+														rid: room._id
+														bot: true
+														attachments: message.attachments
+														username: if botUsername then botUsername else undefined
+
+													if message.edited?
+														msgObj.ets = new Date(parseInt(message.edited.ts.split('.')[0]) * 1000)
+
+													if message.icons?
+														msgObj.emoji = message.icons.emoji
+
+													msgObj.msg = @convertSlackMessageToRocketChat(msgObj.msg)
+
+													RocketChat.sendMessage botUser, msgObj, room
 												else if message.subtype is 'channel_purpose'
 													RocketChat.models.Messages.createRoomSettingsChangedWithTypeRoomIdMessageAndUser 'room_changed_topic', room._id, message.purpose, @getRocketUser(message.user)
 												else if message.subtype is 'channel_topic'
@@ -259,6 +282,9 @@ Importer.Slack = class Importer.Slack extends Importer.Base
 			message = message.replace /&lt;/g, '>'
 			message = message.replace /&amp;/g, '&'
 			message = message.replace /:simple_smile:/g, ':smile:'
+			message = message.replace /:memo:/g, ':pencil:'
+			message = message.replace /:piggy:/g, ':pig:'
+			message = message.replace /:uk:/g, ':gb:'
 			for userReplace in @userTags
 				message = message.replace userReplace.slack, userReplace.rocket
 				message = message.replace userReplace.slackLong, userReplace.rocket
