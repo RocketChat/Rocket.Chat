@@ -85,6 +85,7 @@ Package.onUse(function(api) {
 	api.addFiles('views/app/pageContainer.html', 'client');
 	api.addFiles('views/app/pageSettingsContainer.html', 'client');
 	api.addFiles('views/app/privateHistory.html', 'client');
+	api.addFiles('views/app/requestPasswordChange.html', 'client');
 	api.addFiles('views/app/room.html', 'client');
 	api.addFiles('views/app/roomSearch.html', 'client');
 	api.addFiles('views/app/secretURL.html', 'client');
@@ -101,6 +102,7 @@ Package.onUse(function(api) {
 	api.addFiles('views/app/burguer.coffee', 'client');
 	api.addFiles('views/app/home.coffee', 'client');
 	api.addFiles('views/app/privateHistory.coffee', 'client');
+	api.addFiles('views/app/requestPasswordChange.js', 'client');
 	api.addFiles('views/app/room.coffee', 'client');
 	api.addFiles('views/app/roomSearch.coffee', 'client');
 	api.addFiles('views/app/secretURL.coffee', 'client');

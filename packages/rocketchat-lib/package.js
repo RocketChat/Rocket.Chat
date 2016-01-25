@@ -65,6 +65,7 @@ Package.onUse(function(api) {
 	// SERVER METHODS
 	api.addFiles('server/methods/addOAuthService.coffee', 'server');
 	api.addFiles('server/methods/checkRegistrationSecretURL.coffee', 'server');
+	api.addFiles('server/methods/clearRequirePasswordChange.js', 'server');
 	api.addFiles('server/methods/joinDefaultChannels.coffee', 'server');
 	api.addFiles('server/methods/removeOAuthService.coffee', 'server');
 	api.addFiles('server/methods/robotMethods.coffee', 'server');
@@ -75,8 +76,8 @@ Package.onUse(function(api) {
 	api.addFiles('server/methods/setAdminStatus.coffee', 'server');
 	api.addFiles('server/methods/setRealName.coffee', 'server');
 	api.addFiles('server/methods/setUsername.coffee', 'server');
+	api.addFiles('server/methods/insertOrUpdateUser.coffee', 'server');
 	api.addFiles('server/methods/setEmail.js', 'server');
-	api.addFiles('server/methods/updateUser.coffee', 'server');
 	api.addFiles('server/methods/restartServer.coffee', 'server');
 
 	// SERVER STARTUP
