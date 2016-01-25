@@ -154,6 +154,14 @@ RocketChat.models.Users = new class extends RocketChat.models._Base
 
 		return @update _id, update
 
+	setEmail: (_id, email) ->
+		update =
+			$set:
+				'emails.0.address': email
+				'emails.0.verified': false
+
+		return @update _id, update
+
 	setName: (_id, name) ->
 		update =
 			$set:

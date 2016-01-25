@@ -46,8 +46,8 @@ Download the Native Cross-Platform Desktop Application at [Rocket.Chat.Electron]
 ### Available from the AppStore
 [![Rocket.Chat on Apple AppStore](http://linkmaker.itunes.apple.com/images/badges/en-us/badge_appstore-lrg.svg)](https://itunes.apple.com/us/app/rocket.chat/id1028869439?mt=8)
 
-### Available from the Google Play
-[![Rocket.Chat on Google Play](https://developer.android.com/images/brand/en_app_rgb_wo_45.png)](https://play.google.com/store/apps/details?id=com.konecty.rocket.chat)
+### Available from Google Play
+[![Rocket.Chat on Google Play](https://upload.wikimedia.org/wikipedia/commons/thumb/5/58/Google_Play_logo_2015.PNG/220px-Google_Play_logo_2015.PNG)](https://play.google.com/store/apps/details?id=com.konecty.rocket.chat)
 
 Now compatible with all Android devices as old as version 4.0.x - [download here](https://github.com/RocketChat/Rocket.Chat/wiki/Build-the-Android-Cordova-Web-App-and-connect-to-your-own-Rocket.Chat-Server), even on BlackBerry Passport!
 
@@ -314,6 +314,7 @@ Emoji provided free by [Emoji One](http://emojione.com)
 
 Performance monitoring provided by [Kadira](https://kadira.io)
 
+Hosting powered by [Rackspace](https://rackspace.com)
 
 # Donate
 

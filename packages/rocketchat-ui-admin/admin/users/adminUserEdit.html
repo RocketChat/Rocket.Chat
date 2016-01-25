@@ -21,6 +21,10 @@
 					<label for="email">{{_ "E-mail"}}</label>
 					<input type="email" id="email" autocomplete="off" value="{{user.emails.[0].address}}">
 				</div>
+				<div class="input-line">
+					<label for="email">{{_ "E-mail"}}</label>
+					<input type="email" id="email" autocomplete="off" value="{{email}}">
+				</div>
 				{{#if hasPermission 'edit-other-user-password'}}
 				<div class="input-line">
 					<label for="password">{{_ "Password"}}</label>
