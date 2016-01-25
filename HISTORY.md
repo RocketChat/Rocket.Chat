@@ -1,7 +1,27 @@
 ## NEXT
 
-- Ability to change email on account #1462
 -
+
+## 0.15.0, 2016-Jan-25
+
+- Ability to change email on account
+- Temporary fix for AM/PM timestamp breaking cog
+- Fixed typo in oembed widget
+- Change to process.exit(1) to restart server
+- Add "Default Domain" to LDAP config
+- Fix boolean environment variables
+- Include a fallback click event for loading more messages
+- Fix html h3 tag was closed with h4
+- Allow changing e-mail; invalidates verification on e-mail change
+- Enable editing via admin / users
+- Log error when trigger url returns 500
+- Bind starttls correctly for LDAP
+- Custom oAuth supporting json or plain content_types responses of the identity
+- Allow pass room id to direct rooms
+- Outgoing: Get the room from posted message to reply
+- Change Meteor.absoluteUrl to force SSL if Force_SSL is true
+- Escape regexp on checking email availability; change type of input to email
+- Fix check for MAIL_URL when it's server side only
 
 ## 0.14.0, 2016-Jan-18
 
