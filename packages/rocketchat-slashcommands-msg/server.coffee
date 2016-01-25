@@ -8,28 +8,35 @@ class Msg
 			return
 
 		trimmedParams = params.trim()
-
-		usernameOrig = trimmedParams.slice(0, trimmedParams.indexOf(' '))
-		message = trimmedParams.slice(trimmedParams.indexOf(' ') + 1)
-
-		username = usernameOrig.replace('@', '')
-
-		if username is ''
-			return
+		separator = trimmedParams.indexOf(' ')
 
 		user = Meteor.users.findOne Meteor.userId()
-		msgUser = RocketChat.models.Users.findOneByUsername username
 
-		if not msgUser?
+		if separator is -1
 			RocketChat.Notifications.notifyUser Meteor.userId(), 'message', {
 				_id: Random.id()
 				rid: item.rid
 				ts: new Date
-				msg: TAPi18n.__('Username_doesnt_exist', { postProcess: 'sprintf', sprintf: [ usernameOrig ] }, user.language)
+				msg: TAPi18n.__('Username_and_message_must_not_be_empty', null, user.language)
 			}
 			return
 
-		rid = Meteor.call 'createDirectMessage', username
+		message = trimmedParams.slice(separator + 1)
+
+		targetUsernameOrig = trimmedParams.slice(0, separator)
+		targetUsername = targetUsernameOrig.replace('@', '')
+		targetUser = RocketChat.models.Users.findOneByUsername targetUsername
+
+		if not targetUser?
+			RocketChat.Notifications.notifyUser Meteor.userId(), 'message', {
+				_id: Random.id()
+				rid: item.rid
+				ts: new Date
+				msg: TAPi18n.__('Username_doesnt_exist', { postProcess: 'sprintf', sprintf: [ targetUsernameOrig ] }, user.language)
+			}
+			return
+
+		rid = Meteor.call 'createDirectMessage', targetUsername
 		msgObject = { _id: Random.id(), rid: rid.rid, msg: message}
 		Meteor.call 'sendMessage', msgObject
 
