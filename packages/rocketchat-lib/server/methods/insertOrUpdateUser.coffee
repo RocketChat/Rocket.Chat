@@ -14,11 +14,19 @@ Meteor.methods
 		if not userData._id and canAddUser isnt true
 			throw new Meteor.Error 'not-authorized', '[methods] updateUser -> Not authorized'
 
-		unless userData.name
+		unless s.trim(userData.name)
 			throw new Meteor.Error 'name-is-required', 'Name field is required'
 
-		unless userData.username
+		unless s.trim(userData.username)
 			throw new Meteor.Error 'user-name-is-required', 'Username field is required'
+
+		try
+			nameValidation = new RegExp '^' + RocketChat.settings.get('UTF8_Names_Validation') + '$'
+		catch
+			nameValidation = new RegExp '^[0-9a-zA-Z-_.]+$'
+
+		if not nameValidation.test userData.username
+			throw new Meteor.Error 'username-invalid', "#{username} is not a valid username"
 
 		if not userData._id and not userData.password
 			throw new Meteor.Error 'password-is-required', 'Password is required when adding a user'
