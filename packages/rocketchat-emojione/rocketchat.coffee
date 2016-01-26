@@ -7,6 +7,9 @@ RocketChat.emoji.list = emojione.emojioneList
 # RocketChat.emoji.class is the name of the registered class for emojis
 RocketChat.emoji.class = 'Emojione'
 
+# Use local copy of emojione
+emojione.imagePathPNG = '/images/emojione/png/'
+
 # Additional settings -- ascii emojis
 Meteor.startup ->
 	Tracker.autorun ->
