@@ -100,11 +100,13 @@ Template.channelSettings.onCreated ->
 						toastr.success TAPi18n.__ 'Room_type_changed_successfully'
 			when 'archivationState'
 				if @$('input[name=archivationState]:checked').val() is 'true'
-					Meteor.call 'archiveRoom', @data?.rid, (err, results) ->
-						return toastr.error err.reason if err
-						toastr.success TAPi18n.__ 'Room_archived'
+					if ChatRoom.findOne(@data.rid)?.archived isnt true
+						Meteor.call 'archiveRoom', @data?.rid, (err, results) ->
+							return toastr.error err.reason if err
+							toastr.success TAPi18n.__ 'Room_archived'
 				else
-					Meteor.call 'unarchiveRoom', @data?.rid, (err, results) ->
-						return toastr.error err.reason if err
-						toastr.success TAPi18n.__ 'Room_unarchived'
+					if ChatRoom.findOne(@data.rid)?.archived is true
+						Meteor.call 'unarchiveRoom', @data?.rid, (err, results) ->
+							return toastr.error err.reason if err
+							toastr.success TAPi18n.__ 'Room_unarchived'
 		@editing.set()
