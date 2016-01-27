@@ -1,6 +1,8 @@
 sizeOf = Npm.require 'image-size'
 mime = Npm.require 'mime-types'
 
+mime.extensions['image/vnd.microsoft.icon'] = ['ico']
+
 @RocketChatAssetsInstance = new RocketChatFile.GridFS
 	name: 'assets'
 
