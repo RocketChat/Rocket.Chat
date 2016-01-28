@@ -6,8 +6,8 @@ Meteor.methods
 			throw new Meteor.Error "not-authorized", '[methods] migrateTo'
 
 		this.unblock()
-		Migrations.migrateTo version
+		RocketChat.Migrations.migrateTo version
 		return version
 
 	getMigrationVersion: ->
-		return Migrations.getVersion()
+		return RocketChat.Migrations.getVersion()

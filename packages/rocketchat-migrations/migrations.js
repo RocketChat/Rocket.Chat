@@ -28,7 +28,10 @@
 
 // since we'll be at version 0 by default, we should have a migration set for
 // it.
-var DefaultMigration = {version: 0, up: function(){}};
+var DefaultMigration = {version: 0, up: function(){
+  // @TODO: check if collection "migrations" exist
+  // If exists, rename and rerun _migrateTo
+}};
 
 Migrations = {
   _list: [DefaultMigration],
@@ -39,12 +42,32 @@ Migrations = {
     logger: null,
     // enable/disable info log "already at latest."
     logIfLatest: true,
+    // retry interval in seconds
+    retryInterval: 10,
+    // max number of attempts to retry unlock
+    maxAttempts: 5,
     // migrations collection name
     collectionName: "migrations"
+    // collectionName: "rocketchat_migrations"
   },
   config: function(opts) {
     this.options = _.extend({}, this.options, opts);
   },
+}
+
+Migrations._collection = new Mongo.Collection(Migrations.options.collectionName);
+
+/* Create a box around messages for displaying on a console.log */
+function makeABox(message, color = 'red') {
+  if (!_.isArray(message)) {
+    message = message.split("\n");
+  }
+  let len = _(message).reduce(function(memo, msg) { return Math.max(memo, msg.length) }, 0) + 4;
+  let text = message.map((msg) => { return "|"[color] + s.lrpad(msg, len)[color] + "|"[color] }).join("\n");
+  let topLine = "+"[color] + s.pad('', len, '-')[color] + "+"[color];
+  let separator = "|"[color] + s.pad('', len, '') + "|"[color];
+  let bottomLine = "+"[color] + s.pad('', len, '-')[color] + "+"[color];
+  return `\n${topLine}\n${separator}\n${text}\n${separator}\n${bottomLine}\n`;
 }
 
 /*
@@ -66,7 +89,7 @@ function createLogger(prefix) {
 
   return function(level, message) {
     check(level, Match.OneOf('info', 'error', 'warn', 'debug'));
-    check(message, String);
+    check(message, Match.OneOf(String, [String]));
 
     var logger = Migrations.options && Migrations.options.logger;
 
@@ -86,21 +109,18 @@ function createLogger(prefix) {
 
 var log;
 
-Meteor.startup(function () {
-  var options = Migrations.options;
+var options = Migrations.options;
 
-  // collection holding the control record
-  Migrations._collection = new Mongo.Collection(options.collectionName);
+// collection holding the control record
 
-  log = createLogger('Migrations');
+log = createLogger('Migrations');
 
-  ['info', 'warn', 'error', 'debug'].forEach(function(level) {
-    log[level] = _.partial(log, level);
-  });
-
-  if (process.env.MIGRATE)
-    Migrations.migrateTo(process.env.MIGRATE);
+['info', 'warn', 'error', 'debug'].forEach(function(level) {
+  log[level] = _.partial(log, level);
 });
+
+  // if (process.env.MIGRATE)
+  //   Migrations.migrateTo(process.env.MIGRATE);
 
 // Add a new migration:
 // {up: function *required
@@ -139,10 +159,46 @@ Migrations.migrateTo = function(command) {
     var subcommand = command.split(',')[1];
   }
 
-  if (version === 'latest') {
-    this._migrateTo(_.last(this._list).version);
-  } else {
-    this._migrateTo(parseInt(version), (subcommand === 'rerun'));
+  const maxAttempts = Migrations.options.maxAttempts;
+  const retryInterval = Migrations.options.retryInterval;
+  for (let attempts = 1; attempts <= maxAttempts; attempts++) {
+    if (version === 'latest') {
+      migrated = this._migrateTo(_.last(this._list).version);
+    } else {
+      migrated = this._migrateTo(parseInt(version), (subcommand === 'rerun'));
+    }
+    if (migrated) {
+      break;
+    } else {
+      let willRetry;
+      if (attempts < maxAttempts) {
+        willRetry = ` Trying again in ${retryInterval} seconds.`;
+        Meteor._sleepForMs(retryInterval * 1000);
+      } else {
+        willRetry = "";
+      }
+      console.log(`Not migrating, control is locked. Attempt ${attempts}/${maxAttempts}.${willRetry}`.yellow);
+    }
+  }
+  if (!migrated) {
+    let control = this._getControl(); // Side effect: upserts control document.
+    console.log(makeABox([
+      "ERROR! SERVER STOPPED",
+      "",
+      "Your database migration control is locked.",
+      "Please make sure you are running the latest version and try again.",
+      "If the problem persists, please contact support.",
+      "",
+      "This Rocket.Chat version: " + RocketChat.Info.version,
+      "Database locked at version: " + control.version,
+      "Database target version: " + (version === 'latest' ? _.last(this._list).version : version),
+      "",
+      "Commit: " + RocketChat.Info.commit.hash,
+      "Date: " + RocketChat.Info.commit.date,
+      "Branch: " + RocketChat.Info.commit.branch,
+      "Tag: " + RocketChat.Info.commit.tag
+    ]));
+    process.exit(1);
   }
 
   // remember to run meteor with --once otherwise it will restart
@@ -162,8 +218,9 @@ Migrations._migrateTo = function(version, rerun) {
   var currentVersion = control.version;
 
   if (lock() === false) {
-    log.info('Not migrating, control is locked.');
-    return;
+    // log.info('Not migrating, control is locked.');
+    // Warning
+    return false;
   }
 
   if (rerun) {
@@ -171,23 +228,22 @@ Migrations._migrateTo = function(version, rerun) {
     migrate('up', version);
     log.info('Finished migrating.');
     unlock();
-    return;
+    return true;
   }
 
   if (currentVersion === version) {
-    if (Migrations.options.logIfLatest) {
+    if (this.options.logIfLatest) {
       log.info('Not migrating, already at version ' + version);
     }
     unlock();
-    return;
+    return true;
   }
 
   var startIdx = this._findIndexByVersion(currentVersion);
   var endIdx = this._findIndexByVersion(version);
 
   // log.info('startIdx:' + startIdx + ' endIdx:' + endIdx);
-  log.info('Migrating from version ' + this._list[startIdx].version
-    + ' -> ' + this._list[endIdx].version);
+  log.info('Migrating from version ' + this._list[startIdx].version + ' -> ' + this._list[endIdx].version);
 
   // run the actual migration
   function migrate(direction, idx) {
@@ -195,27 +251,50 @@ Migrations._migrateTo = function(version, rerun) {
 
     if (typeof migration[direction] !== 'function') {
       unlock();
-      throw new Meteor.Error('Cannot migrate ' + direction + ' on version '
-        + migration.version);
+      throw new Meteor.Error('Cannot migrate ' + direction + ' on version ' + migration.version);
     }
 
     function maybeName() {
       return migration.name ? ' (' + migration.name + ')' : '';
     }
 
-    log.info('Running ' + direction + '() on version '
-      + migration.version + maybeName());
+    log.info('Running ' + direction + '() on version ' + migration.version + maybeName());
 
-    migration[direction](migration);
+    try {
+      migration[direction](migration);
+    } catch (e) {
+      console.log(makeABox([
+        "ERROR! SERVER STOPPED",
+        "",
+        "Your database migration failed:",
+        e.message,
+        "",
+        "Please make sure you are running the latest version and try again.",
+        "If the problem persists, please contact support.",
+        "",
+        "This Rocket.Chat version: " + RocketChat.Info.version,
+        "Database locked at version: " + control.version,
+        "Database target version: " + version,
+        "",
+        "Commit: " + RocketChat.Info.commit.hash,
+        "Date: " + RocketChat.Info.commit.date,
+        "Branch: " + RocketChat.Info.commit.branch,
+        "Tag: " + RocketChat.Info.commit.tag
+      ]));
+      process.exit(1);
+    }
   }
 
   // Returns true if lock was acquired.
   function lock() {
+    const date = new Date();
+    const dateMinusInterval = moment(date).subtract(self.options.retryInterval, 'minutes').toDate();
+
     // This is atomic. The selector ensures only one caller at a time will see
     // the unlocked control, and locking occurs in the same update's modifier.
     // All other simultaneous callers will get false back from the update.
     return self._collection.update(
-      {_id: 'control', locked: false}, {$set: {locked: true, lockedAt: new Date()}}
+      {_id: 'control', $or: [ { locked: false }, { lockedAt: { $lt: dateMinusInterval } } ] }, {$set: {locked: true, lockedAt: date}}
     ) === 1;
   }
 
@@ -274,3 +353,5 @@ Migrations._reset = function() {
   this._list = [{version: 0, up: function(){}}];
   this._collection.remove({});
 }
+
+RocketChat.Migrations = Migrations;
