@@ -4,6 +4,7 @@
   "Message_AllowPinningByAnyone" : "អនុញ្ញាតឱ្យគ្រាប់គ្នាខ្ទាស់សារ",
   "Message_AllowPinningByAnyone_Description" : "អនុញ្ញាតិឲ្យគ្រប់គ្នាអាចខ្ទាស់សារទៅកាន់ប៉ុស្តិ៍ណាមួយ ដោយមិនចាំបាច់សិទ្ធជាអ្នកគ្រប់គ្រង។",
   "Pin_Message" : "ខ្ទាស់សារ",
+  "Unpin_Message" : "សារមិនខ្ទាស់",
   "Pinned_Messages" : "មិនខ្ទាស់សារ",
   "No_pinned_messages" : "មិនមានសារបានខ្ទាស់"
 }
