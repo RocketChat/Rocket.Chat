@@ -591,7 +591,6 @@
   "Username_cant_be_empty" : "The username cannot be empty",
   "Username_Change_Disabled" : "Your Rocket.Chat administrator has disabled the changing of usernames",
   "Username_description" : "The username is used to allow others to mention you in messages.",
-  "Username_doesnt_exist" : "The username `#%s` doesn't exist.",
   "Username_doesnt_exist" : "The username `%s` doesn't exist.",
   "Username_invalid" : "<strong>%s</strong> is not a valid username,<br/> use only letters, numbers, dots and dashes",
   "Username_is_not_in_this_room" : "The user `#%s` is not in this room.",
