@@ -29,12 +29,8 @@ Template.adminInfo.helpers
 		return _.numberFormat(number, 2)
 	optOut: ->
 		return RocketChat.settings.get 'Statistics_opt_out'
-	server: ->
+	info: ->
 		return RocketChat.Info
-	commit: ->
-		return _.extend(RocketChat.Info?.commit, { tag: RocketChat.Info?.tag, branch: RocketChat.Info?.branch })
-	migration: ->
-		return Template.instance().migration.get()
 	build: ->
 		return RocketChat.Info?.compile || RocketChat.Info?.build
 
@@ -71,7 +67,6 @@ Template.adminInfo.onRendered ->
 Template.adminInfo.onCreated ->
 	instance = @
 	@statistics = new ReactiveVar {}
-	@migration = new ReactiveVar {}
 	@ready = new ReactiveVar false
 
 	Meteor.call 'getStatistics', (error, statistics) ->

@@ -3,6 +3,7 @@ RocketChat.statistics.get = ->
 
 	# Version
 	statistics.uniqueId = RocketChat.settings.get("uniqueID")
+	statistics.createdAt = RocketChat.models.Settings.findOne("uniqueID")?._createdAt
 	statistics.version = RocketChat.Info?.version
 	statistics.tag = RocketChat.Info?.tag
 	statistics.branch = RocketChat.Info?.branch
@@ -84,5 +85,14 @@ RocketChat.statistics.get = ->
 		totalmem: os.totalmem()
 		freemem: os.freemem()
 		cpus: os.cpus()
+
+	statistics.process =
+		nodeVersion: process.version
+		pid: process.pid
+		uptime: process.uptime()
+
+	statistics.migration = RocketChat.Migrations._getControl()
+
+	statistics.instanceCount = InstanceStatus.getCollection().find().count()
 
 	return statistics
