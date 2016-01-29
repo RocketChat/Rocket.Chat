@@ -1,5 +1,2 @@
 {
-  "Direct_message_someone" : "Jemandem eine private Nachricht schicken",
-  "Username_doesnt_exist" : "Der Benutzername `%s` existiert nicht.",
-  "Username_and_message_must_not_be_empty" : "Benutzername und Nachricht dürfen nicht leer sein."
 }
