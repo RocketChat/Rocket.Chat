@@ -11,31 +11,35 @@
 			<table class="statistics-table">
 				<tr>
 					<th>{{_ "Version"}}</th>
-					<td>{{server.version}}</td>
+					<td>{{statistics.version}}</td>
 				</tr>
 				<tr>
 					<th>{{_ "DB_Migration"}}</th>
-					<td>{{migration.version}}</td>
+					<td>{{statistics.migration.version}}</td>
+				</tr>
+				<tr>
+					<th>{{_ "DB_Migration_Date"}}</th>
+					<td>{{statistics.migration.lockedAt}}</td>
 				</tr>
 				<tr>
 					<th>{{_ "Installed_at"}}</th>
-					<td></td>
+					<td>{{statistics.createdAt}}</td>
 				</tr>
 				<tr>
-					<th>{{_ "Started_at"}}</th>
-					<td></td>
+					<th>{{_ "Uptime"}}</th>
+					<td>{{humanReadableTime statistics.process.uptime}}</td>
 				</tr>
 				<tr>
 					<th>{{_ "Deployment_ID"}}</th>
-					<td></td>
+					<td>{{statistics.uniqueId}}</td>
 				</tr>
 				<tr>
-					<th>{{_ "Instance_ID"}}</th>
-					<td></td>
+					<th>{{_ "PID"}}</th>
+					<td>{{statistics.process.pid}}</td>
 				</tr>
 				<tr>
 					<th>{{_ "Running_Instances"}}</th>
-					<td></td>
+					<td>{{statistics.instanceCount}}</td>
 				</tr>
 			</table>
 
@@ -43,27 +47,27 @@
 			<table class="statistics-table">
 				<tr>
 					<th>{{_ "Hash"}}</th>
-					<td>{{commit.hash}}</td>
+					<td>{{info.commit.hash}}</td>
 				</tr>
 				<tr>
 					<th>{{_ "Date"}}</th>
-					<td>{{commit.date}}</td>
+					<td>{{info.commit.date}}</td>
 				</tr>
 				<tr>
 					<th>{{_ "Branch"}}</th>
-					<td>{{commit.branch}}</td>
+					<td>{{info.commit.branch}}</td>
 				</tr>
 				<tr>
 					<th>{{_ "Tag"}}</th>
-					<td>{{commit.tag}}</td>
+					<td>{{info.commit.tag}}</td>
 				</tr>
 				<tr>
 					<th>{{_ "Author"}}</th>
-					<td>{{commit.author}}</td>
+					<td>{{info.commit.author}}</td>
 				</tr>
 				<tr>
 					<th>{{_ "Subject"}}</th>
-					<td>{{commit.subject}}</td>
+					<td>{{info.commit.subject}}</td>
 				</tr>
 			</table>
 
@@ -91,7 +95,7 @@
 						</tr>
 						<tr>
 							<th>{{_ "Node_version"}}</th>
-							<td></td>
+							<td>{{statistics.process.nodeVersion}}</td>
 						</tr>
 						<tr>
 							<th>{{_ "OS_Uptime"}}</th>
