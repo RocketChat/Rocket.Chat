@@ -6,7 +6,7 @@ Meteor.methods
 		if not room?
 			throw new Meteor.Error 500, 'No channel with this id'
 
-		if room.t isnt 'c'
+		if room.t isnt 'c' or RocketChat.authz.hasPermission(Meteor.userId(), 'view-c-room') isnt true
 			throw new Meteor.Error 403, '[methods] joinRoom -> Not allowed'
 
 		now = new Date()
