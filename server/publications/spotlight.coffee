@@ -13,7 +13,7 @@ Meteor.publish 'spotlight', (selector, options, collName) ->
 		removed: (id) ->
 			self.removed("autocompleteRecords", id)
 
-	subHandleRooms = RocketChat.models.Rooms.findByNameContainingAndTypes(selector.name.$regex, ['c'], { limit: 10, fields: { t: 1, name: 1 } }).observeChanges
+	subHandleRooms = RocketChat.models.Rooms.findByNameContainingAndTypes(selector.name.$regex, ['c'], { limit: 10, fields: { t: 1, name: 1 }, sort: {name: 1}}).observeChanges
 		added: (id, fields) ->
 			data = { type: 'r', rid: id, name: fields.name, t: fields.t }
 			self.added("autocompleteRecords", id, data)
