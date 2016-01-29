@@ -24,7 +24,7 @@ Package.onUse(function(api) {
 	// template files
 	api.addFiles('admin/admin.html', 'client');
 	api.addFiles('admin/adminFlex.html', 'client');
-	api.addFiles('admin/adminStatistics.html', 'client');
+	api.addFiles('admin/adminInfo.html', 'client');
 
 	api.addFiles('admin/rooms/adminRoomInfo.html', 'client');
 	api.addFiles('admin/rooms/adminRooms.html', 'client');
@@ -38,7 +38,7 @@ Package.onUse(function(api) {
 	// coffee files
 	api.addFiles('admin/admin.coffee', 'client');
 	api.addFiles('admin/adminFlex.coffee', 'client');
-	api.addFiles('admin/adminStatistics.coffee', 'client');
+	api.addFiles('admin/adminInfo.coffee', 'client');
 
 	api.addFiles('admin/rooms/adminRoomInfo.coffee', 'client');
 	api.addFiles('admin/rooms/adminRooms.coffee', 'client');
