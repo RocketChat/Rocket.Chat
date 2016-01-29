@@ -10,6 +10,8 @@ Meteor.publish 'userAutocomplete', (selector) ->
 			username: 1
 			status: 1
 		limit: 10
+		sort:
+			name: 1
 
 	exceptions = selector.exceptions or []
 

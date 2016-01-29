@@ -54,39 +54,39 @@
 					<h3>{{_ "Runtime_Environment"}}</h3>
 					<table class="statistics-table">
 						<tr>
-							<th>{{_ "Type"}}</th>
+							<th>{{_ "OS_Type"}}</th>
 							<td>{{statistics.os.type}}</td>
 						</tr>
 						<tr>
-							<th>{{_ "Platform"}}</th>
+							<th>{{_ "OS_Platform"}}</th>
 							<td>{{statistics.os.platform}}</td>
 						</tr>
 						<tr>
-							<th>{{_ "Arch"}}</th>
+							<th>{{_ "OS_Arch"}}</th>
 							<td>{{statistics.os.arch}}</td>
 						</tr>
 						<tr>
-							<th>{{_ "Release"}}</th>
+							<th>{{_ "OS_Release"}}</th>
 							<td>{{statistics.os.release}}</td>
 						</tr>
 						<tr>
-							<th>{{_ "Uptime"}}</th>
+							<th>{{_ "OS_Uptime"}}</th>
 							<td>{{humanReadableTime statistics.os.uptime}}</td>
 						</tr>
 						<tr>
-							<th>{{_ "Loadavg"}}</th>
+							<th>{{_ "OS_Loadavg"}}</th>
 							<td>{{numFormat statistics.os.loadavg.[0]}}, {{numFormat statistics.os.loadavg.[1]}}, {{numFormat statistics.os.loadavg.[2]}}</td>
 						</tr>
 						<tr>
-							<th>{{_ "Totalmem"}}</th>
+							<th>{{_ "OS_Totalmem"}}</th>
 							<td>{{inGB statistics.os.totalmem}}</td>
 						</tr>
 						<tr>
-							<th>{{_ "Freemem"}}</th>
+							<th>{{_ "OS_Freemem"}}</th>
 							<td>{{inGB statistics.os.freemem}}</td>
 						</tr>
 						<tr>
-							<th>{{_ "Cpus"}}</th>
+							<th>{{_ "OS_Cpus"}}</th>
 							<td>{{statistics.os.cpus.length}}</td>
 						</tr>
 					</table>
@@ -94,15 +94,15 @@
 					<h3>{{_ "Build_Environment"}}</h3>
 					<table class="statistics-table">
 						<tr>
-							<th>{{_ "Platform"}}</th>
+							<th>{{_ "OS_Platform"}}</th>
 							<td>{{build.platform}}</td>
 						</tr>
 						<tr>
-							<th>{{_ "Arch"}}</th>
+							<th>{{_ "OS_Arch"}}</th>
 							<td>{{build.arch}}</td>
 						</tr>
 						<tr>
-							<th>{{_ "Release"}}</th>
+							<th>{{_ "OS_Release"}}</th>
 							<td>{{build.osRelease}}</td>
 						</tr>
 						<tr>

@@ -1,5 +1,1 @@
-{
-  "Direct_message_someone" : "Direct message someone",
-  "Username_doesnt_exist" : "The username `%s` doesn't exist.",
-  "Username_and_message_must_not_be_empty" : "Username and message must not be empty."
-}
+{ }
