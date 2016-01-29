@@ -9,3 +9,8 @@ RocketChat.models.Statistics = new class extends RocketChat.models._Base
 			_id: _id
 
 		return @findOne query, options
+
+	findLast: ->
+		query = {}
+		options = sort: createdAt: -1
+		return @find(query, options).fetch()?[0]

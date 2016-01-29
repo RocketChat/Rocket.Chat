@@ -1,6 +1,6 @@
 <template name="adminRoomInfo">
 	{{#unless hasPermission 'view-room-administration'}}
-		<p>You are not authorized to view this page.</p>
+		<p>{{_ "You_are_not_authorized_to_view_this_page"}}</p>
 	{{else}}
 		<div>
 			<h3><a href="{{route}}"><i class="icon-{{type}}"></i> {{name}}</a></h3>
