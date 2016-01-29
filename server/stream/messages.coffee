@@ -6,7 +6,7 @@ msgStream.permissions.write (eventName) ->
 	return false
 
 msgStream.permissions.read (eventName) ->
-	console.log('stream.permissions.read', this.userId, eventName);
+	# console.log('stream.permissions.read', this.userId, eventName);
 	# return this.userId == eventName;
 
 	try
