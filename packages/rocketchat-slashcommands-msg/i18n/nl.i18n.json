@@ -1,1 +1,5 @@
-{ }
+{
+  "Direct_message_someone" : "Stuur iemand een direct bericht",
+  "Username_doesnt_exist" : "De gebruikersnaam `%s` bestaat niet.",
+  "Username_and_message_must_not_be_empty" : "Gebruikersnaam en bericht moeten ingevuld zijn."
+}

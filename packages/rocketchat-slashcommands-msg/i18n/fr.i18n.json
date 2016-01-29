@@ -1,1 +1,3 @@
-{ }
+{
+  "Username_doesnt_exist" : "L'utilisateur `#%s` n'existe pas."
+}
