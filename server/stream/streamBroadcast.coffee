@@ -23,9 +23,30 @@
 
 	broadcast = (streamName, args, userId) ->
 		for port, connection of connections
-			if connection.status().connected is true
-				console.log 'broadcast to', port, streamName, args
-				connection.call 'stream', streamName, args
+			do (port, connection) ->
+				if connection.status().connected is true
+					connection.call 'stream', streamName, args, (error, response) ->
+						if error?
+							console.log "Stream broadcast error", error
+
+						switch response
+							when 'self-not-authorized'
+								console.log "Stream broadcast from:#{process.env.PORT} to:#{connection._stream.endpoint} with name #{streamName} to self is not authorized".red
+								console.log "    -> connection authorized".red, connection.broadcastAuth
+								console.log "    -> connection status".red, connection.status()
+								console.log "    -> arguments".red, args
+
+							when 'not-authorized'
+								console.log "Stream broadcast from:#{process.env.PORT} to:#{connection._stream.endpoint} with name #{streamName} not authorized".red
+								console.log "    -> connection authorized".red, connection.broadcastAuth
+								console.log "    -> connection status".red, connection.status()
+								console.log "    -> arguments".red, args
+
+							when 'stream-not-exists'
+								console.log "Stream broadcast from:#{process.env.PORT} to:#{connection._stream.endpoint} with name #{streamName} does not exists".red
+								console.log "    -> connection authorized".red, connection.broadcastAuth
+								console.log "    -> connection status".red, connection.status()
+								console.log "    -> arguments".red, args
 
 
 	Meteor.methods
@@ -62,19 +83,18 @@
 		stream: (streamName, args) ->
 			# Prevent call from self and client
 			if not @connection?
-				console.log "Stream for broadcast with name #{streamName} from self is not authorized".red, @connection
-				return
+				return 'self-not-authorized'
 
 			# Prevent call from unauthrorized connections
 			if @connection.broadcastAuth isnt true
-				console.log "Stream for broadcast with name #{streamName} not authorized".red
-				return
+				return 'not-authorized'
 
-			console.log 'method stream', streamName, args
 			if not emitters[streamName]?
-				console.log "Stream for broadcast with name #{streamName} does not exists".red
-			else
-				emitters[streamName].call null, args, 'broadcasted'
+				return 'stream-not-exists'
+
+			emitters[streamName].call null, args, 'broadcasted'
+
+			return undefined
 
 
 Meteor.startup ->
