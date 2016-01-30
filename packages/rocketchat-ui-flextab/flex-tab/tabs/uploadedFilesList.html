@@ -1,4 +1,11 @@
 <template name="uploadedFilesList">
+	<style>
+		i.red-hover:hover
+		{
+			color: red;
+            cursor: pointer;
+		}
+	</style>
 	<div class="content">
 		<div class="list-view uploaded-files-list">
 			<div class="status">
@@ -7,6 +14,9 @@
 			<ul class="list clearfix lines">
 				{{#each files}}
 					<li>
+						{{#if canDelete}}
+                        <i class="icon-trash red-hover" style="float: right; padding-top: 10px;"></i>
+						{{/if}}
 						<a title="{{escapedName}}" href="{{url}}" target="_blank" class="room-file-item {{customClassForFileType}}">
 							<i class="{{getFileIcon type}}"></i>
 							<p>{{name}}</p>
