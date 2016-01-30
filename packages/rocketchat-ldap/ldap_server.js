@@ -292,11 +292,15 @@ Accounts.registerLoginHandler("ldap", function(loginRequest) {
 
 		// Login user if they exist
 		if (user) {
-			if (user.ldap !== true) {
-				throw new Meteor.Error("LDAP-login-error", "LDAP Authentication succeded, but there's already an existing user with provided username ["+username+"] in Mongo.");
-			}
-
 			userId = user._id;
+
+			if (user.ldap !== true) {
+				// LDAP Authentication succeeded, but there's already an existing user
+				// with the same username in Mongo, so update the user in Mongo.
+				Meteor.users.update(userId, {$set: {
+					ldap: true
+				}});
+			}
 
 			// Create hashed token so user stays logged in
 			stampedToken = Accounts._generateStampedLoginToken();
