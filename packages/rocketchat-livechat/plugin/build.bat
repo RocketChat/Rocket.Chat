@@ -1,7 +1,7 @@
 @echo off
 
 cd packages/rocketchat-livechat/app
-meteor build .meteor/build/ --directory
+call meteor build .meteor/build/ --directory
 
 cd ..
 mkdir public
