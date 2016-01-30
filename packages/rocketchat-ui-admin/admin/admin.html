@@ -9,7 +9,7 @@
 
 		<div class="content">
 			{{#unless hasPermission 'view-privileged-setting'}}
-				<p>You are not authorized to view this page.</p>
+				<p>{{_ "You_are_not_authorized_to_view_this_page"}}</p>
 			{{else}}
 				{{#with group}}
 					{{#if description}}

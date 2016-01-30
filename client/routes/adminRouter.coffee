@@ -16,11 +16,11 @@ FlowRouter.route '/admin/rooms',
 		RocketChat.TabBar.showGroup 'adminrooms'
 		BlazeLayout.render 'main', {center: 'adminRooms'}
 
-FlowRouter.route '/admin/statistics',
-	name: 'admin-statistics'
+FlowRouter.route '/admin/info',
+	name: 'admin-info'
 	action: ->
-		RocketChat.TabBar.showGroup 'adminstatistics'
-		BlazeLayout.render 'main', {center: 'adminStatistics'}
+		RocketChat.TabBar.showGroup 'adminInfo'
+		BlazeLayout.render 'main', {center: 'adminInfo'}
 
 FlowRouter.route '/admin/:group?',
 	name: 'admin'

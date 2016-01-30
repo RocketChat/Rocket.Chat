@@ -7,12 +7,9 @@
 	<div class="content">
 		<div class="wrapper">
 			<ul>
-				{{#if hasPermission 'view-statistics'}}
-					<li>
-						<a href="{{pathFor 'admin-statistics'}}" class="admin-link">{{_ "Statistics"}}</a>
-					</li>
-				{{/if}}
-
+				<li>
+					<a href="{{pathFor 'admin-info'}}" class="admin-link">{{_ "Info"}}</a>
+				</li>
 				{{#if hasPermission 'view-room-administration'}}
 					<li>
 						<a href="{{pathFor 'admin-rooms'}}" class="admin-link">{{_ "Rooms"}}</a>

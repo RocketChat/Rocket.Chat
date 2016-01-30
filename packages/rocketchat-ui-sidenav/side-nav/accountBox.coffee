@@ -49,6 +49,7 @@ Template.accountBox.events
 	'click #admin': ->
 		SideNav.setFlex "adminFlex"
 		SideNav.openFlex()
+		FlowRouter.go 'admin-info'
 
 	'click .account-link': ->
 		menu.close()

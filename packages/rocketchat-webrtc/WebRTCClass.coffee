@@ -159,7 +159,7 @@ class WebRTCClass
 
 		Meteor.setInterval @checkPeerConnections.bind(@), 1000
 
-		Meteor.setInterval @broadcastStatus.bind(@), 1000
+		# Meteor.setInterval @broadcastStatus.bind(@), 1000
 
 	log: ->
 		if @debug is true
