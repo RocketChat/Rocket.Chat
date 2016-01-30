@@ -6,7 +6,6 @@ os = Npm.require('os')
 
 RocketChat.Info.uniqueId = RocketChat.settings.get("uniqueID")
 RocketChat.Info.createdAt = RocketChat.models.Settings.findOne("uniqueID")?._createdAt
-# RocketChat.Info.migration = RocketChat.Migrations._getControl()
 
 RocketChat.Info.process =
 	date: new Date().toISOString()
