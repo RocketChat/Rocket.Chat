@@ -32,7 +32,7 @@ Template.adminInfo.helpers
 	info: ->
 		return RocketChat.Info
 	build: ->
-		return RocketChat.Info?.compile || RocketChat.Info?.build
+		return RocketChat.Info?.build
 
 Template.adminInfo.events
 	'click input[name=opt-out-statistics]': (e) ->
