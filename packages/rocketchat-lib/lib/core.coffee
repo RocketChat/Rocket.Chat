@@ -5,3 +5,4 @@
 
 RocketChat =
 	models: {}
+	Info: {}

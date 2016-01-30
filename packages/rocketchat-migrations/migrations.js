@@ -193,8 +193,8 @@ Migrations.migrateTo = function(command) {
 			console.log(`Not migrating, control is locked. Attempt ${attempts}/${maxAttempts}.${willRetry}`.yellow);
 		}
 	}
+	RocketChat.Info.migration = _.pick(this._getControl(), 'version', 'lockedAt'); // Side effect: upserts control document.
 	if (!migrated) {
-		let control = this._getControl(); // Side effect: upserts control document.
 		console.log(makeABox([
 			"ERROR! SERVER STOPPED",
 			"",
@@ -203,7 +203,7 @@ Migrations.migrateTo = function(command) {
 			"If the problem persists, please contact support.",
 			"",
 			"This Rocket.Chat version: " + RocketChat.Info.version,
-			"Database locked at version: " + control.version,
+			"Database locked at version: " + RocketChat.Info.migration.version,
 			"Database target version: " + (version === 'latest' ? _.last(this._list).version : version),
 			"",
 			"Commit: " + RocketChat.Info.commit.hash,
@@ -213,7 +213,6 @@ Migrations.migrateTo = function(command) {
 		]));
 		process.exit(1);
 	}
-
 	// remember to run meteor with --once otherwise it will restart
 	if (subcommand === 'exit')
 		process.exit(0);

@@ -47,7 +47,7 @@ RocketChat.models.Settings = new class extends RocketChat.models._Base
 		return @update query, update
 
 
-	# REMOVE
+	# CREATE
 	createWithIdAndValue: (_id, value) ->
 		record =
 			_id: _id

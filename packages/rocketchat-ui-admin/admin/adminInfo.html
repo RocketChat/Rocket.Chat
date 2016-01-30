@@ -81,39 +81,39 @@
 							</tr>
 							<tr>
 								<th>{{_ "OS_Type"}}</th>
-								<td>{{statistics.os.type}}</td>
+								<td>{{statistics.process.osType}}</td>
 							</tr>
 							<tr>
 								<th>{{_ "OS_Platform"}}</th>
-								<td>{{statistics.os.platform}}</td>
+								<td>{{statistics.process.osPlatform}}</td>
 							</tr>
 							<tr>
 								<th>{{_ "OS_Arch"}}</th>
-								<td>{{statistics.os.arch}}</td>
+								<td>{{statistics.process.osArch}}</td>
 							</tr>
 							<tr>
 								<th>{{_ "OS_Release"}}</th>
-								<td>{{statistics.os.release}}</td>
+								<td>{{statistics.process.osRelease}}</td>
 							</tr>
 							<tr>
 								<th>{{_ "OS_Uptime"}}</th>
-								<td>{{humanReadableTime statistics.os.uptime}}</td>
+								<td>{{humanReadableTime statistics.process.osUptime}}</td>
 							</tr>
 							<tr>
 								<th>{{_ "OS_Loadavg"}}</th>
-								<td>{{numFormat statistics.os.loadavg.[0]}}, {{numFormat statistics.os.loadavg.[1]}}, {{numFormat statistics.os.loadavg.[2]}}</td>
+								<td>{{numFormat statistics.process.osLoadavg.[0]}}, {{numFormat statistics.process.osLoadavg.[1]}}, {{numFormat statistics.process.osLoadavg.[2]}}</td>
 							</tr>
 							<tr>
 								<th>{{_ "OS_Totalmem"}}</th>
-								<td>{{inGB statistics.os.totalmem}}</td>
+								<td>{{inGB statistics.process.osTotalmem}}</td>
 							</tr>
 							<tr>
 								<th>{{_ "OS_Freemem"}}</th>
-								<td>{{inGB statistics.os.freemem}}</td>
+								<td>{{inGB statistics.process.osFreemem}}</td>
 							</tr>
 							<tr>
 								<th>{{_ "OS_Cpus"}}</th>
-								<td>{{statistics.os.cpus.length}}</td>
+								<td>{{statistics.process.osCpus.length}}</td>
 							</tr>
 						</table>
 						<h3>{{_ "Build_Environment"}}</h3>
@@ -124,15 +124,15 @@
 							</tr>
 							<tr>
 								<th>{{_ "OS_Type"}}</th>
-								<td>{{build.type}}</td>
+								<td>{{build.osType}}</td>
 							</tr>
 							<tr>
 								<th>{{_ "OS_Platform"}}</th>
-								<td>{{build.platform}}</td>
+								<td>{{build.osPlatform}}</td>
 							</tr>
 							<tr>
 								<th>{{_ "OS_Arch"}}</th>
-								<td>{{build.arch}}</td>
+								<td>{{build.osArch}}</td>
 							</tr>
 							<tr>
 								<th>{{_ "OS_Release"}}</th>

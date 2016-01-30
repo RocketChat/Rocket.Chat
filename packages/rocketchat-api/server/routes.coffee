@@ -1,5 +1,5 @@
 RocketChat.API.v1.addRoute 'info', authRequired: false,
-	get: -> RocketChat.Info
+	get: -> _.pick(RocketChat.Info, 'version')
 
 
 RocketChat.API.v1.addRoute 'me', authRequired: true,

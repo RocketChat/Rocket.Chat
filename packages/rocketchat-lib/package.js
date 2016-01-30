@@ -5,9 +5,17 @@ Package.describe({
 	git: ''
 });
 
+Package.registerBuildPlugin({
+	name: "compileVersion",
+	use: ['coffeescript'],
+	sources: ['plugin/infoCompiler.coffee']
+});
+
+
 Package.onUse(function(api) {
 	api.versionsFrom('1.0');
 
+	api.use('isobuild:compiler-plugin@1.0.0');
 	api.use('rate-limit');
 	api.use('reactive-var');
 	api.use('reactive-dict');
@@ -22,10 +30,13 @@ Package.onUse(function(api) {
 	api.use('service-configuration');
 	api.use('check');
 	api.use('arunoda:streams');
-	api.use('rocketchat:info');
 	api.use('kadira:flow-router', 'client');
 
+	// RocketChat
 	api.addFiles('lib/core.coffee');
+
+	// RocketChat.Info Builder
+	api.addFiles('rocketchat.info');
 
 	// DEBUGGER
 	api.addFiles('server/lib/debug.js', 'server');
@@ -104,8 +115,8 @@ Package.onUse(function(api) {
 
 	api.addFiles('client/defaultTabBars.js', 'client');
 
-	// VERSION
-	api.addFiles('rocketchat.info');
+	// RocketChat.Info Runtime
+	api.addFiles('server/lib/info.coffee', 'server');
 
 	// TAPi18n
 	api.use('templating', 'client');

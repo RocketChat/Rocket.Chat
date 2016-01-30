@@ -80,7 +80,6 @@ rocketchat:ui-login
 rocketchat:ui-master
 rocketchat:ui-message
 rocketchat:ui-sidenav
-rocketchat:info
 rocketchat:webrtc
 rocketchat:wordpress
 #rocketchat:chatops
