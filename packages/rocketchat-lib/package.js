@@ -22,7 +22,7 @@ Package.onUse(function(api) {
 	api.use('service-configuration');
 	api.use('check');
 	api.use('arunoda:streams');
-	api.use('rocketchat:version');
+	api.use('rocketchat:info');
 	api.use('kadira:flow-router', 'client');
 
 	api.addFiles('lib/core.coffee');

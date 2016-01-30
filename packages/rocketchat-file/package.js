@@ -9,7 +9,7 @@ Package.onUse(function(api) {
 	api.versionsFrom('1.0');
 
 	api.use('rocketchat:lib');
-	api.use('rocketchat:version');
+	api.use('rocketchat:info');
 	api.use('coffeescript');
 
 	api.addFiles('file.server.coffee', 'server');

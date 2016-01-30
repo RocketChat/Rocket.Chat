@@ -1,5 +1,5 @@
 Package.describe({
-  name: 'rocketchat:version',
+  name: 'rocketchat:info',
   summary: "",
   version: "1.0.0"
 });
@@ -7,7 +7,7 @@ Package.describe({
 Package.registerBuildPlugin({
   name: "compileVersion",
   use: ['coffeescript'],
-  sources: ['plugin/compile-version.coffee']
+  sources: ['plugin/infoCompiler.coffee']
 });
 
 Package.onUse(function (api) {
