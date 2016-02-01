@@ -182,7 +182,7 @@
   "FileUpload_MaxFileSize" : "Maximum File Upload Size (in bytes)",
   "FileUpload_MediaType_NotAccepted" : "Media Types Not Accepted",
   "FileUpload_MediaTypeWhiteList" : "Accepted Media Types",
-  "FileUpload_MediaTypeWhiteListDescription" : "Comma-separated list of media types",
+  "FileUpload_MediaTypeWhiteListDescription" : "Comma-separated list of media types. Leave it blank for accepting all media types.",
   "FileUpload_ProtectFiles" : "Protect uploaded files",
   "FileUpload_ProtectFilesDescription" : "Only authenticated users will have access",
   "Follow_social_profiles" : "Follow our social profiles, fork us on github and share your thoughts about the rocket.chat app on our trello board.",

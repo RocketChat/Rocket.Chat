@@ -26,7 +26,7 @@ Template.messageBox.helpers
 		}
 	canRecordAudio: ->
 		wavRegex = /audio\/wav|audio\/\*/i
-		wavEnabled = RocketChat.settings.get("FileUpload_MediaTypeWhiteList").match(wavRegex)
+		wavEnabled = !RocketChat.settings.get("FileUpload_MediaTypeWhiteList") || RocketChat.settings.get("FileUpload_MediaTypeWhiteList").match(wavRegex)
 		return RocketChat.settings.get('Message_AudioRecorderEnabled') and (navigator.getUserMedia? or navigator.webkitGetUserMedia?) and wavEnabled and RocketChat.settings.get('FileUpload_Enabled')
 	usersTyping: ->
 		users = MsgTyping.get @_id
