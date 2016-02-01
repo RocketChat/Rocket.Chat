@@ -36,19 +36,19 @@ Template.uploadedFilesList.events
 	'click .icon-trash': (e, t) ->
 		self = this
 		swal {
-			title: 'Are you sure?'
-			text: 'You will not be able to recover this file.'
+			title: TAPi18n.__('Are_you_sure')
+			text: TAPi18n.__('You_will_not_be_able_to_recover_file')
 			type: 'warning'
 			showCancelButton: true
 			confirmButtonColor: '#DD6B55'
-			confirmButtonText: 'Yes delete it'
-			cancelButtonText: 'Cancel'
+			confirmButtonText: TAPi18n.__('Yes_delete_it')
+			cancelButtonText: TAPi18n.__('Cancel')
 			closeOnConfirm: false
 			html: false
 		}, ->
 			swal
-				title: 'Deleted'
-				text: 'Your file has been deleted.'
+				title: TAPi18n.__('Deleted')
+				text: TAPi18n.__('Your_file_has_been_deleted')
 				type: 'success'
 				timer: 1000
 				showConfirmButton: false
