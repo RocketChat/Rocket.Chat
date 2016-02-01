@@ -1,5 +1,7 @@
 ## NEXT
 
+## 0.16.0, 2016-Feb-01
+
 - Added option for admins to manually add new users
 - Added option for admin to require user to change password
 - Changed admin statistics with admin info
