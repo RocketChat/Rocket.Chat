@@ -14,7 +14,7 @@ if process.env.TUTUM_REDIS_HOST?
 	client.rpush("frontend:#{process.env.TUTUM_CLIENT_HOST}", process.env.TUTUM_CLIENT_NAME)
 	client.rpush("frontend:#{process.env.TUTUM_CLIENT_HOST}", "http://#{process.env.TUTUM_IP_ADDRESS.split('/')[0]}:3000")
 
-	day = 3600000
+	day = 86400000
 
 	inactiveDays = 30
 
