@@ -34,7 +34,7 @@ currentTracker = undefined
 				else
 					Session.set 'roomNotFound', {type: type, name: name}
 					BlazeLayout.render 'main', {center: 'roomNotFound'}
-					return
+				return
 
 			$('.rocket-loader').remove();
 			mainNode = document.querySelector('.main-content')
