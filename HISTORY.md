@@ -3,6 +3,15 @@
 - Added option for admins to manually add new users
 - Added option for admin to require user to change password
 - Changed admin statistics with admin info
+- Show "Room not Found" correctly
+- Update konecty:multiple-instances-status to 1.0.5
+- Closes #1888; Add mimetye image/vnd.microsoft.icon to mimtype list
+- Disable WebRTC broadcastStatus
+- Closes #2078; ObserveChanges on rocketchat_room Not Using Oplog
+- Add sort for all queries with limit
+- Do not get field `usernames` with room on joinDefaultChannel
+- Improve logs of stream broadcast
+- Create script to build livechat on windows
 
 ## 0.15.0, 2016-Jan-25
 
