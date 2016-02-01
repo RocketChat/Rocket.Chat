@@ -155,7 +155,7 @@ RocketChat.Notifications.onUser 'message', (msg) ->
 		if openedRooms[typeName].ready
 			closeOlderRooms()
 
-		if subscription.ready()
+		if subscription.ready() && Meteor.userId()
 
 			if openedRooms[typeName].active isnt true
 				openedRooms[typeName].active = true
