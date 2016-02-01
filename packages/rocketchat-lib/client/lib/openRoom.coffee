@@ -23,9 +23,14 @@ currentTracker = undefined
 
 			room = ChatRoom.findOne(query)
 			if not room?
-				Session.set 'roomNotFound', {type: type, name: name}
-				BlazeLayout.render 'main', {center: 'roomNotFound'}
-				return
+
+				if type is 'd'
+					Meteor.call 'createDirectMessage', name, ->
+						openRoom('d', name)
+				else
+					Session.set 'roomNotFound', {type: type, name: name}
+					BlazeLayout.render 'main', {center: 'roomNotFound'}
+					return
 
 			$('.rocket-loader').remove();
 			mainNode = document.querySelector('.main-content')
