@@ -67,7 +67,8 @@ RocketChat.Notifications.onUser 'message', (msg) ->
 
 			openedRooms[typeName].ready = false
 			openedRooms[typeName].active = false
-			Blaze.remove openedRooms[typeName].template
+			if openedRooms[typeName].template?
+				Blaze.remove openedRooms[typeName].template
 			delete openedRooms[typeName].dom
 			delete openedRooms[typeName].template
 
@@ -104,7 +105,9 @@ RocketChat.Notifications.onUser 'message', (msg) ->
 
 					room = ChatRoom.findOne query, { reactive: false }
 
-					if room?
+					if not room?
+						record.ready = true
+					else
 						openedRooms[typeName].rid = room._id
 
 						RoomHistoryManager.getMoreIfIsEmpty room._id
@@ -155,7 +158,7 @@ RocketChat.Notifications.onUser 'message', (msg) ->
 		if openedRooms[typeName].ready
 			closeOlderRooms()
 
-		if subscription.ready()
+		if subscription.ready() && Meteor.userId()
 
 			if openedRooms[typeName].active isnt true
 				openedRooms[typeName].active = true
