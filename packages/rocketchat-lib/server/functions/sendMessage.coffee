@@ -50,7 +50,7 @@ RocketChat.sendMessage = (user, message, room, options) ->
 			###
 			RocketChat.models.Subscriptions.incUnreadOfDirectForRoomIdExcludingUserId message.rid, message.u._id, 1
 
-			userOfMention = RocketChat.models.Users.findOne({_id: message.rid.replace(message.u._id, '')}, {fields: {username: 1, statusConnection: 1}})
+			userOfMention = RocketChat.models.Users.findOne({_id: message.rid.replace(message.u._id, '')}, {fields: {username: 1, statusConnection: 1, status: 1, emails: 1}})
 			if userOfMention?
 				RocketChat.Notifications.notifyUser userOfMention._id, 'notification',
 					title: "@#{user.username}"
@@ -78,6 +78,13 @@ RocketChat.sendMessage = (user, message, room, options) ->
 							name: room.name
 						query:
 							userId: userOfMention._id
+
+				if userOfMention.status is 'offline'
+					Email.send
+						to: userOfMention.emails[0].address
+						from: RocketChat.settings.get('From_Email')
+						subject: "[#{RocketChat.settings.get('Site_Name')}] You have been direct messaged by #{user.username}"
+						html: "> " + message.msg
 
 		else
 			mentionIds = []
