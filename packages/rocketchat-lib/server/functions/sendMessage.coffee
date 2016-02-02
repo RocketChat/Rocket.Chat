@@ -88,7 +88,7 @@ RocketChat.sendMessage = (user, message, room, options) ->
 			toAll = mentionIds.indexOf('all') > -1
 
 			if mentionIds.length > 0
-				usersOfMention = RocketChat.models.Users.find({_id: {$in: mentionIds}}, {fields: {_id: 1, username: 1}}).fetch()
+				usersOfMention = RocketChat.models.Users.find({_id: {$in: mentionIds}}, {fields: {_id: 1, username: 1, status: 1, emails: 1}}).fetch()
 
 				if room.t is 'c' and !toAll
 					for usersOfMentionItem in usersOfMention
@@ -111,17 +111,22 @@ RocketChat.sendMessage = (user, message, room, options) ->
 				userIdsToNotify = _.pluck(usersOfMention, '_id')
 				userIdsToPushNotify = userIdsToNotify
 
+				offlineMentionsRoom = _.filter usersOfMention, (user) ->
+					user.status is 'offline'
+
 				# If the message is @all, notify all room users except for the sender.
 				if toAll and room.usernames?.length > 0
 					usersOfRoom = RocketChat.models.Users.find({
 							username: {$in: room.usernames},
 							_id: {$ne: user._id}},
-						{fields: {_id: 1, username: 1, status: 1}})
+						{fields: {_id: 1, username: 1, status: 1, emails: 1}})
 						.fetch()
 					onlineUsersOfRoom = _.filter usersOfRoom, (user) ->
 						user.status in ['online', 'away', 'busy']
 					userIdsToNotify = _.union userIdsToNotify, _.pluck(onlineUsersOfRoom, '_id')
 					userIdsToPushNotify = _.union userIdsToPushNotify, _.pluck(usersOfRoom, '_id')
+					offlineMentionsRoom = _.filter usersOfRoom, (user) ->
+						user.status is 'offline'
 
 				if userIdsToNotify.length > 0
 					for usersOfMentionId in userIdsToNotify
@@ -153,6 +158,13 @@ RocketChat.sendMessage = (user, message, room, options) ->
 							query:
 								userId: $in: userIdsToPushNotify
 
+				if offlineMentionsRoom.length > 0
+					for offlineUser in offlineMentionsRoom
+						Email.send
+							to: offlineUser.emails[0].address
+							from: RocketChat.settings.get('From_Email')
+							subject: "[#{RocketChat.settings.get('Site_Name')}] You have been mentioned by #{user.username} in ##{room.name}"
+							html: "> " + message.msg
 		###
 		Update all other subscriptions to alert their owners but witout incrementing
 		the unread counter, as it is only for mentions and direct messages
