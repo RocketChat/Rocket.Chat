@@ -20,7 +20,7 @@ RocketChat.Migrations.add
 		return unless cursorFileMessages.count()
 
 		_.each( cursorFileMessages.fetch(), (msg) ->
-			fileCollection.update({ _id: msg?.file?._id }, { $set: { rid: msg.rid } }, { $multi: true })
+			RocketChat.models.Uploads.update({ _id: msg?.file?._id }, { $set: { rid: msg.rid } }, { $multi: true })
 		)
 
 		console.log 'Updated rocketchat_uploads documents to include the room Id in which they were sent.'
