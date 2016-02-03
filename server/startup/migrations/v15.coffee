@@ -7,7 +7,7 @@ RocketChat.Migrations.add
 		oldGridFSCollection = new Meteor.Collection 'cfs_gridfs.files.files'
 		oldChunkCollection  = new Meteor.Collection 'cfs_gridfs.files.chunks'
 
-		newFilesCollection  = fileCollection
+		newFilesCollection  = RocketChat.models.Uploads
 		newGridFSCollection = new Meteor.Collection 'rocketchat_uploads.files'
 		newChunkCollection  = new Meteor.Collection 'rocketchat_uploads.chunks'
 

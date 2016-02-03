@@ -17,8 +17,10 @@ Package.onUse(function(api) {
 	api.use('tracker');
 	api.use('ddp-rate-limiter');
 	api.use('underscore');
+	api.use('mongo');
 	api.use('underscorestring:underscore.string');
 	api.use('monbro:mongodb-mapreduce-aggregation@1.0.1');
+	api.use('matb33:collection-hooks');
 	api.use('service-configuration');
 	api.use('check');
 	api.use('arunoda:streams');
@@ -48,6 +50,7 @@ Package.onUse(function(api) {
 	api.addFiles('server/models/Rooms.coffee', 'server');
 	api.addFiles('server/models/Settings.coffee', 'server');
 	api.addFiles('server/models/Subscriptions.coffee', 'server');
+	api.addFiles('server/models/Uploads.coffee', 'server');
 	api.addFiles('server/models/Users.coffee', 'server');
 
 	// SERVER PUBLICATIONS
@@ -103,6 +106,10 @@ Package.onUse(function(api) {
 	api.addFiles('client/MessageAction.coffee', 'client');
 
 	api.addFiles('client/defaultTabBars.js', 'client');
+
+	// CLIENT MODELS
+	api.addFiles('client/models/_Base.coffee', 'client');
+	api.addFiles('client/models/Uploads.coffee', 'client');
 
 	// VERSION
 	api.addFiles('rocketchat.info');

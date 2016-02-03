@@ -32,19 +32,13 @@ RocketChat.models._Base = class
 		return @model.deny.apply @model, arguments
 
 	ensureIndex: ->
-		return @model._ensureIndex.apply @model, arguments
+		return
 
 	dropIndex: ->
-		return @model._dropIndex.apply @model, arguments
+		return
 
 	tryEnsureIndex: ->
-		try
-			return @ensureIndex.apply @, arguments
-		catch e
-			console.log e
+		return
 
 	tryDropIndex: ->
-		try
-			return @dropIndex.apply @, arguments
-		catch e
-			console.log e
+		return
