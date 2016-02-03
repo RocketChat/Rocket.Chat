@@ -1,6 +1,7 @@
 logger = new Logger 'rocketchat:lib',
 	methods:
-		oauth_updated: 'log'
+		oauth_updated:
+			type: 'info'
 
 timer = undefined
 oAuthServicesUpdate = ->
