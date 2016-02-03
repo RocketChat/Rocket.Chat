@@ -8,6 +8,8 @@ Meteor.publish 'roomFiles', (rid, limit = 50) ->
 		rid: rid
 		complete: true
 		uploading: false
+		_hidden:
+			$ne: true
 
 	fileOptions =
 		limit: limit
