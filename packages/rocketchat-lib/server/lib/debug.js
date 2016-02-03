@@ -16,7 +16,8 @@ Meteor.startup(function() {
 var wrapMethods = function(name, originalHandler, methodsMap) {
 	methodsMap[name] = function() {
 		if (RocketChat.debugLevel === 'debug') {
-			console.log('[methods]'.green, name, '-> userId:', Meteor.userId(), ', arguments: ', arguments);
+			var args = name === "ufsWrite" ? Array.prototype.slice.call(arguments, 1) : arguments;
+			console.log('[methods]'.green, name, '-> userId:', Meteor.userId(), ', arguments: ', args);
 		}
 
 		return originalHandler.apply(this, arguments);

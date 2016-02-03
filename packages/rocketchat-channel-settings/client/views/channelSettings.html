@@ -45,12 +45,17 @@
 					{{/if}}
 					{{#if notDirect}}
 						<li>
-							<label>{{_ "Archive_Unarchive"}}</label>
-							{{#if archived}}
-								<button class="button unarchive"><span>{{_ "Unarchive"}}</span></button>
-							{{else}}
-								<button class="button archive"><span>{{_ "Archive"}}</span></button>
-							{{/if}}
+							<label>{{_ "Room_archivation_state"}}</label>
+							<div>
+								{{#if editing 'archivationState'}}
+									<label><input type="radio" name="archivationState" class="editing" value="true" checked="{{$eq archivationState true}}" /> {{_ "Room_archivation_state_true"}}</label>
+									<label><input type="radio" name="archivationState" value="false" checked="{{$neq archivationState true}}" /> {{_ "Room_archivation_state_false"}}</label>
+									<button type="button" class="button secondary cancel">{{_ "Cancel"}}</button>
+									<button type="button" class="button primary save">{{_ "Save"}}</button>
+								{{else}}
+									<span>{{archivationStateDescription}}{{#if canEdit}} <i class="octicon octicon-pencil" data-edit="archivationState"></i>{{/if}}</span>
+								{{/if}}
+							</div>
 						</li>
 					{{/if}}
 					{{#each channelSettings}}

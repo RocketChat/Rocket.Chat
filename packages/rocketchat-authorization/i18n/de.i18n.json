@@ -5,7 +5,6 @@
   "Cannot_delete_role_because_its_in_use" : "Die Rolle kann nicht gelöscht werden, da sie gerade verwendet wird.",
   "New_role" : "Neue Rolle",
   "Permissions" : "Berechtigungen",
-  "Removed" : "Entfernt",
   "Role" : "Rolle",
   "Role_Editing" : "Rolle bearbeiten",
   "Role_removed" : "Die Rolle wurde entfernt.",
@@ -14,5 +13,5 @@
   "User_added" : "Der Benutzer <em>__user_added__</em> wurde hinzugefügt.",
   "User_not_found" : "Der Benutzer konnte nicht gefunden werden.",
   "User_removed" : "Der Benutzer wurde gelöscht.",
-  "Users_in_role" : "Dieser Rolle zugeordneten Benutzer"
+  "Users_in_role" : "Zugeordnete Nutzer"
 }

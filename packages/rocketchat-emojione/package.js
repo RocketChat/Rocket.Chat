@@ -11,7 +11,7 @@ Package.onUse(function(api) {
 	api.use([
 		'coffeescript',
 		'emojione:emojione',
-		'rocketchat:lib@0.0.1'
+		'rocketchat:lib'
 	]);
 
 	api.addFiles('emojione.coffee', ['server','client']);

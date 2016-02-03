@@ -9,8 +9,7 @@ Template.chatRoomItem.helpers
 			return this.unread
 
 	userStatus: ->
-		return 'status-' + (Session.get('user_' + this.name + '_status') or 'offline') if this.t is 'd'
-		return ''
+		return 'status-' + (Session.get('user_' + this.name + '_status') or 'offline')
 
 	name: ->
 		return this.name
@@ -48,18 +47,56 @@ Template.chatRoomItem.events
 		e.stopPropagation()
 		e.preventDefault()
 
-		if FlowRouter.getRouteName() in ['channel', 'group', 'direct'] and Session.get('openedRoom') is this.rid
-			FlowRouter.go 'home'
+		rid = this.rid
+		name = this.name
 
-		Meteor.call 'hideRoom', this.rid
+		warnText = switch
+			when this.t == 'c' then 'Hide_Room_Warning'
+			when this.t == 'p' then 'Hide_Group_Warning'
+			when this.t == 'd' then 'Hide_Private_Warning'
+			
+		
+		swal {
+			title: t('Are_you_sure')
+			text: t(warnText, name)
+			type: 'warning'
+			showCancelButton: true
+			confirmButtonColor: '#DD6B55'
+			confirmButtonText: t('Yes_hide_it')
+			cancelButtonText: t('Cancel')
+			closeOnConfirm: true
+			html: false
+		}, ->
+			if FlowRouter.getRouteName() in ['channel', 'group', 'direct'] and Session.get('openedRoom') is rid
+				FlowRouter.go 'home'
+
+			Meteor.call 'hideRoom', rid
 
 	'click .leave-room': (e) ->
 		e.stopPropagation()
 		e.preventDefault()
 
-		if FlowRouter.getRouteName() in ['channel', 'group', 'direct'] and Session.get('openedRoom') is this.rid
-			FlowRouter.go 'home'
+		rid = this.rid
+		name = this.name
 
-		RoomManager.close this.rid
+		warnText = switch
+			when this.t == 'c' then 'Leave_Room_Warning'
+			when this.t == 'p' then 'Leave_Group_Warning'
+			when this.t == 'd' then 'Leave_Private_Warning'
+		swal {
+			title: t('Are_you_sure')
+			text: t(warnText, name)
+			type: 'warning'
+			showCancelButton: true
+			confirmButtonColor: '#DD6B55'
+			confirmButtonText: t('Yes_leave_it')
+			cancelButtonText: t('Cancel')
+			closeOnConfirm: true
+			html: false
+		}, ->
+			if FlowRouter.getRouteName() in ['channel', 'group', 'direct'] and Session.get('openedRoom') is rid
+				FlowRouter.go 'home'
 
-		Meteor.call 'leaveRoom', this.rid
+			RoomManager.close rid
+
+			Meteor.call 'leaveRoom', rid

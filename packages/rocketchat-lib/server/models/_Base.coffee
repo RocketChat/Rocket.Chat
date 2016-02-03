@@ -5,7 +5,7 @@ RocketChat.models._Base = class
 	_initModel: (name) ->
 		check name, String
 
-		@model = new Meteor.Collection @_baseName() + name
+		@model = new Mongo.Collection @_baseName() + name
 
 	find: ->
 		return @model.find.apply @model, arguments

@@ -20,8 +20,9 @@ Package.onUse(function(api) {
 
 	api.use(['webapp', 'autoupdate'], 'server');
 	api.use('ecmascript');
-	api.use('alanning:roles@1.2.12');
 	api.use('rocketchat:lib');
+	api.use('rocketchat:authorization');
+	api.use('rocketchat:ui');
 	api.use('kadira:flow-router', 'client');
 	api.use('templating', 'client');
 	api.use('mongo');
@@ -36,12 +37,15 @@ Package.onUse(function(api) {
 	api.addFiles('client/ui.js', 'client');
 	api.addFiles('client/route.js', 'client');
 
-	api.addFiles('client/stylesheets/livechat.less', 'client');
+	// add stylesheets to theme compiler
+	api.addAssets('client/stylesheets/livechat.less', 'server');
+	api.addFiles('client/stylesheets/load.js', 'server');
 
 	// collections
 	api.addFiles('client/collections/AgentUsers.js', 'client');
 	api.addFiles('client/collections/LivechatDepartment.js', 'client');
 	api.addFiles('client/collections/LivechatDepartmentAgents.js', 'client');
+	api.addFiles('client/collections/LivechatPageVisited.js', 'client');
 	api.addFiles('client/collections/LivechatTrigger.js', 'client');
 
 	// client views
@@ -58,6 +62,10 @@ Package.onUse(function(api) {
 	api.addFiles('client/views/app/livechatTriggers.js', 'client');
 	api.addFiles('client/views/app/livechatUsers.html', 'client');
 	api.addFiles('client/views/app/livechatUsers.js', 'client');
+
+	api.addFiles('client/views/app/tabbar/visitorInfo.html', 'client');
+	api.addFiles('client/views/app/tabbar/visitorInfo.js', 'client');
+
 	api.addFiles('client/views/sideNav/livechat.html', 'client');
 	api.addFiles('client/views/sideNav/livechat.js', 'client');
 	api.addFiles('client/views/sideNav/livechatFlex.html', 'client');
@@ -71,6 +79,7 @@ Package.onUse(function(api) {
 	// methods
 	api.addFiles('server/methods/addAgent.js', 'server');
 	api.addFiles('server/methods/addManager.js', 'server');
+	api.addFiles('server/methods/pageVisited.js', 'server');
 	api.addFiles('server/methods/registerGuest.js', 'server');
 	api.addFiles('server/methods/removeAgent.js', 'server');
 	api.addFiles('server/methods/removeDepartment.js', 'server');
@@ -87,6 +96,7 @@ Package.onUse(function(api) {
 	api.addFiles('server/models/Rooms.js', 'server');
 	api.addFiles('server/models/LivechatDepartment.js', 'server');
 	api.addFiles('server/models/LivechatDepartmentAgents.js', 'server');
+	api.addFiles('server/models/LivechatPageVisited.js', 'server');
 	api.addFiles('server/models/LivechatTrigger.js', 'server');
 
 	// server lib
@@ -96,9 +106,11 @@ Package.onUse(function(api) {
 	api.addFiles('server/publications/availableDepartments.js', 'server');
 	api.addFiles('server/publications/departmentAgents.js', 'server');
 	api.addFiles('server/publications/livechatAgents.js', 'server');
-	api.addFiles('server/publications/livechatManagers.js', 'server');
 	api.addFiles('server/publications/livechatDepartments.js', 'server');
+	api.addFiles('server/publications/livechatManagers.js', 'server');
 	api.addFiles('server/publications/trigger.js', 'server');
+	api.addFiles('server/publications/visitorInfo.js', 'server');
+	api.addFiles('server/publications/visitorPageVisited.js', 'server');
 	api.addFiles('server/publications/visitorRoom.js', 'server');
 
 	// livechat app

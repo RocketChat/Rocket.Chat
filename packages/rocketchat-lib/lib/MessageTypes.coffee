@@ -82,3 +82,31 @@ Meteor.startup ->
 		message: 'User_unmuted_by'
 		data: (message) ->
 			return { user_unmuted: message.msg, user_by: message.u.username }
+
+	RocketChat.MessageTypes.registerType
+		id: 'new-moderator'
+		system: true
+		message: 'User__username__was_added_as_a_moderator_by__user_by_'
+		data: (message) ->
+			return { username: message.msg, user_by: message.u.username }
+
+	RocketChat.MessageTypes.registerType
+		id: 'moderator-removed'
+		system: true
+		message: 'User__username__was_removed_as_a_moderator_by__user_by_'
+		data: (message) ->
+			return { username: message.msg, user_by: message.u.username }
+
+	RocketChat.MessageTypes.registerType
+		id: 'new-owner'
+		system: true
+		message: 'User__username__was_added_as_a_owner_by__user_by_'
+		data: (message) ->
+			return { username: message.msg, user_by: message.u.username }
+
+	RocketChat.MessageTypes.registerType
+		id: 'owner-removed'
+		system: true
+		message: 'User__username__was_removed_as_a_owner_by__user_by_'
+		data: (message) ->
+			return { username: message.msg, user_by: message.u.username }

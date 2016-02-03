@@ -18,7 +18,7 @@ Template.livechatAppearance.helpers({
 					u: {
 						username: 'guest'
 					},
-					time: moment(this.ts).format('HH:mm'),
+					time: moment(this.ts).format('LT'),
 					date: moment(this.ts).format('LL'),
 					body: 'Hello',
 					sequential: null
@@ -28,7 +28,7 @@ Template.livechatAppearance.helpers({
 					u: {
 						username: 'rocketchat-agent'
 					},
-					time: moment(this.ts).format('HH:mm'),
+					time: moment(this.ts).format('LT'),
 					date: moment(this.ts).format('LL'),
 					body: 'Hey, what can I help you with?',
 					sequential: null
@@ -38,7 +38,7 @@ Template.livechatAppearance.helpers({
 					u: {
 						username: 'guest'
 					},
-					time: moment(this.ts).format('HH:mm'),
+					time: moment(this.ts).format('LT'),
 					date: moment(this.ts).format('LL'),
 					body: 'I\'m looking for informations about your product.',
 					sequential: null
@@ -48,7 +48,7 @@ Template.livechatAppearance.helpers({
 					u: {
 						username: 'rocketchat-agent'
 					},
-					time: moment(this.ts).format('HH:mm'),
+					time: moment(this.ts).format('LT'),
 					date: moment(this.ts).format('LL'),
 					body: 'Our product is open source, you can do what you want with it! =D',
 					sequential: null
@@ -58,7 +58,7 @@ Template.livechatAppearance.helpers({
 					u: {
 						username: 'guest'
 					},
-					time: moment(this.ts).format('HH:mm'),
+					time: moment(this.ts).format('LT'),
 					date: moment(this.ts).format('LL'),
 					body: 'Yay, thanks. That\'s awesome.',
 					sequential: null
@@ -68,7 +68,7 @@ Template.livechatAppearance.helpers({
 					u: {
 						username: 'rocketchat-agent'
 					},
-					time: moment(this.ts).format('HH:mm'),
+					time: moment(this.ts).format('LT'),
 					date: moment(this.ts).format('LL'),
 					body: 'You\'re welcome.',
 					sequential: null

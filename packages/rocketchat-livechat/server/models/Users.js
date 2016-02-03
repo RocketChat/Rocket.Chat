@@ -20,10 +20,8 @@ RocketChat.models.Users.setOperator = function(_id, operator) {
 RocketChat.models.Users.findOnlineAgents = function() {
 	var query = {
 		status: 'online',
-		roles: {}
+		roles: 'livechat-agent'
 	};
-
-	query.roles[Roles.GLOBAL_GROUP] = 'livechat-agent';
 
 	return this.find(query);
 };
@@ -50,10 +48,9 @@ RocketChat.models.Users.findOnlineUserFromList = function(userList) {
  */
 RocketChat.models.Users.getNextAgent = function() {
 	var query = {
-		status: 'online'
+		status: 'online',
+		roles: 'livechat-agent'
 	};
-
-	query['roles.' + Roles.GLOBAL_GROUP] = 'livechat-agent';
 
 	var collectionObj = this.model.rawCollection();
 	var findAndModify = Meteor.wrapAsync(collectionObj.findAndModify, collectionObj);
@@ -91,4 +88,17 @@ RocketChat.models.Users.getVisitorByToken = function(token, options) {
 	};
 
 	return this.findOne(query, options);
+};
+
+/**
+ * Gets visitor by token
+ * @param {string} token - Visitor token
+ */
+RocketChat.models.Users.findVisitorByToken = function(token) {
+	var query = {
+		"profile.guest": true,
+		"profile.token": token
+	};
+
+	return this.find(query);
 };

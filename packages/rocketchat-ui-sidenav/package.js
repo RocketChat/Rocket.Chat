@@ -18,7 +18,8 @@ Package.onUse(function(api) {
 		'templating',
 		'coffeescript',
 		'underscore',
-		'rocketchat:lib@0.0.1'
+		'rocketchat:lib',
+		'rocketchat:ui'
 	]);
 
 	api.addFiles('side-nav/accountBox.html', 'client');

@@ -113,6 +113,8 @@ Meteor.startup ->
 					timer: 1000
 					showConfirmButton: false
 
+				if chatMessages[Session.get('openedRoom')].editing.id is message._id
+					chatMessages[Session.get('openedRoom')].clearEditing(message)
 				chatMessages[Session.get('openedRoom')].deleteMsg(message)
 		validation: (message) ->
 			return RocketChat.authz.hasAtLeastOnePermission('delete-message', message.rid ) or RocketChat.settings.get('Message_AllowDeleting') and message.u?._id is Meteor.userId()

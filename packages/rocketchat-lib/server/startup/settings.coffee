@@ -6,6 +6,7 @@ RocketChat.settings.addGroup 'Accounts', ->
 	@add 'Accounts_AllowUserProfileChange', true, { type: 'boolean', public: true }
 	@add 'Accounts_AllowUserAvatarChange', true, { type: 'boolean', public: true }
 	@add 'Accounts_AllowUsernameChange', true, { type: 'boolean', public: true }
+	@add 'Accounts_AllowEmailChange', true, { type: 'boolean', public: true }
 	@add 'Accounts_AllowPasswordChange', true, { type: 'boolean', public: true }
 	@add 'Accounts_RequireNameForSignUp', true, { type: 'boolean', public: true }
 	@add 'Accounts_LoginExpiration', 90, { type: 'int', public: true }
@@ -77,6 +78,7 @@ RocketChat.settings.addGroup 'General', ->
 	@add 'Allow_Invalid_SelfSigned_Certs', false, { type: 'boolean' }
 	@add 'Disable_Favorite_Rooms', false, { type: 'boolean' }
 	@add 'CDN_PREFIX', '', { type: 'string' }
+	@add 'Force_SSL', false, { type: 'boolean', public: true }
 	@add 'Debug_Level', 'error', { type: 'select', values: [ { key: 'error', i18nLabel: 'Only_errors' }, { key: 'debug', i18nLabel: 'All_logs' } ] }
 	@add 'Restart', 'restart_server', { type: 'action', actionText: 'Restart_the_server' }
 
@@ -84,6 +86,8 @@ RocketChat.settings.addGroup 'General', ->
 		@add 'UTF8_Names_Validation', '[0-9a-zA-Z-_.]+', { type: 'string', public: true, i18nDescription: 'UTF8_Names_Validation_Description'}
 		@add 'UTF8_Names_Slugify', true, { type: 'boolean', public: true }
 
+	@section 'Reporting', ->
+		@add 'Statistics_opt_out', false, { type: 'boolean', i18nLabel: "Opt_out_statistics" }
 
 RocketChat.settings.addGroup 'API', ->
 	@add 'API_Analytics', '', { type: 'string', public: true }
@@ -159,8 +163,6 @@ RocketChat.settings.addGroup 'Layout', ->
 		@add 'Layout_Login_Header', '<a class="logo" href="/"><img src="/images/logo/logo.svg?v=3" /></a>', { type: 'string', multiline: true, public: true }
 		@add 'Layout_Login_Terms', 'By proceeding to create your account and use Rocket.Chat, you are agreeing to our <a href="/terms-of-service">Terms of Service</a> and <a href="/privacy-policy">Privacy Policy</a>. If you do not agree, you cannot use Rocket.Chat.', { type: 'string', multiline: true, public: true }
 
-
-RocketChat.settings.add 'Statistics_opt_out', false, { type: 'boolean', group: false }
 
 RocketChat.settings.init()
 

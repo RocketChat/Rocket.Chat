@@ -16,6 +16,9 @@ Meteor.methods
 			if settings.username?
 				Meteor.call 'setUsername', settings.username
 
+			if settings.email?
+				Meteor.call 'setEmail', settings.email
+
 			profile = {}
 
 			RocketChat.models.Users.setProfile Meteor.userId(), profile

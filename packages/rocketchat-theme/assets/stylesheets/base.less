@@ -261,6 +261,23 @@ blockquote {
 		margin-top: 20px;
 		text-align: right;
 	}
+
+	&.request-password {
+		margin: 0 auto;
+
+		fieldset {
+			margin-top: 20px;
+
+			label {
+				display: block;
+				margin-top: 20px;
+			}
+		}
+
+		.submit {
+			text-align: center;
+		}
+	}
 }
 
 .input-line {
@@ -475,7 +492,8 @@ form.inline {
 	}
 }
 
-input[disabled] {
+input[disabled],
+textarea[disabled] {
 	background-color: #f4f4f4 !important;
 }
 
@@ -1807,6 +1825,12 @@ a.github-fork {
 					}
 				}
 
+				&[disabled] {
+					label {
+						color: #888;
+					}
+				}
+
 				input {
 					color: #444;
 				}
@@ -2516,6 +2540,13 @@ a.github-fork {
 	line-height: 20px;
 	min-height: 40px;
 
+	&.highlight {
+		-webkit-animation: highlight 3s;
+		-moz-animation: highlight 3s;
+		-o-animation: highlight 3s;
+		animation: highlight 3s;
+	}
+
 	.body, .user.user-card-message, .time {
 		-webkit-user-select: text;
 		-moz-user-select: text;
@@ -2728,7 +2759,7 @@ a.github-fork {
 
 		&:hover {
 			.time {
-				display: inline-block;
+				// display: inline-block;
 			}
 			.edited {
 				display: none;
@@ -3048,6 +3079,15 @@ a.github-fork {
 			float: left;
 			color: #444;
 			margin-right: 10px;
+
+			&.file-delete {
+				float: right;
+				padding-top: 10px;
+				&:hover {
+					color: red;
+					cursor: pointer;
+				}
+			}
 		}
 	}
 }
@@ -3073,7 +3113,12 @@ a.github-fork {
 		margin-left: 120px;
 		white-space: normal;
 		.calc(width, ~'100% - 120px');
+
 		h3 {
+			-webkit-user-select: text;
+			-moz-user-select: text;
+			-ms-user-select: text;
+			user-select: text;
 			font-size: 24px;
 			margin-bottom: 8px;
 			line-height: 27px;
@@ -3109,6 +3154,10 @@ a.github-fork {
 			}
 		}
 		p {
+			-webkit-user-select: text;
+			-moz-user-select: text;
+			-ms-user-select: text;
+			user-select: text;
 			line-height: 18px;
 			font-size: 12px;
 			font-weight: 300;
@@ -3878,18 +3927,26 @@ a.github-fork {
 }
 
 .statistics-table {
-	border: 1px solid;
-	width:100%;
+	margin-bottom: 30px;
+	border: 2px solid #F5F5F5;
+	width: 100%;
 	tr {
-		background-color:#FFFFFF;
+		background-color: #FFFFFF;
 
 		&:nth-of-type(even) {
-			background-color:#FBFBFB;
+			background-color: #F5F5F5;
 		}
 	}
 	th, td {
 		text-align: left;
-		padding: 3px 10px;
+		padding: 6px 8px;
+	}
+	th {
+		text-align: right;
+		width: 30%;
+	}
+	td {
+		width: 70%;
 	}
 }
 
@@ -4269,11 +4326,13 @@ a.github-fork {
 }
 
 .inline-video {
-	max-height: 300px;
+    height: auto;
+    width: 100%;
+    max-width: 480px;
+    max-height: 270px;
 }
 
 .attention-message {
-	color: white;
 	padding-top: 50px;
 	font-size: 24px;
 
@@ -4281,6 +4340,10 @@ a.github-fork {
 		display: block;
 		margin-bottom: 20px;
 		font-size: 40px;
+	}
+
+	span {
+		display: block;
 	}
 }
 

@@ -7,6 +7,9 @@
 			<ul class="list clearfix lines">
 				{{#each files}}
 					<li>
+						{{#if canDelete}}
+                        <i class="icon-trash file-delete"></i>
+						{{/if}}
 						<a title="{{escapedName}}" href="{{url}}" target="_blank" class="room-file-item {{customClassForFileType}}">
 							<i class="{{getFileIcon type}}"></i>
 							<p>{{name}}</p>

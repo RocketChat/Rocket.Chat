@@ -38,7 +38,7 @@ Meteor.startup ->
 			if not siteUrl or not Meteor.userId()?
 				return
 
-			if RocketChat.authz.hasRole(Meteor.userId(), 'admin') is false
+			if RocketChat.authz.hasRole(Meteor.userId(), 'admin') is false or Meteor.settings.public.sandstorm
 				return c.stop()
 
 			siteUrl = siteUrl.replace /\/$/, ''

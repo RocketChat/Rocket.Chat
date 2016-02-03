@@ -32,6 +32,8 @@ Meteor.methods
 		name = user.name
 		email = user.emails?[0]?.address
 
+		data.language = data.language.split('-').shift().toLowerCase()
+
 		if data.language isnt 'en'
 			localeFn = Meteor.call 'loadLocale', data.language
 			if localeFn
