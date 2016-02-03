@@ -1,70 +1,104 @@
-LoggerManager = new class
-	loggers: {}
-	showPackage: false
-	showFileAndLine: false
+@LoggerManager = new class extends EventEmitter
+	constructor: ->
+		@loggers = {}
+		@showPackage = true
+		@showFileAndLine = true
+		@logLevel = 2
+
+	register: (logger) ->
+		if not logger instanceof Logger
+			return
+
+		@loggers[logger.name] = logger
+
+		@emit 'register', logger
+
+@LoggerManager.on 'register', ->
+	console.log('on register', arguments)
+
 
 @Logger = class Logger
 	defaultTypes:
-		log: 'blue'
-		warn: 'magenta'
-		error: 'red'
-
-	config: {}
+		log:
+			name: 'info'
+			color: 'blue'
+			level: 1
+		info:
+			name: 'info'
+			color: 'blue'
+			level: 1
+		debug:
+			name: 'debug'
+			color: 'blue'
+			level: 2
+		warn:
+			name: 'warn'
+			color: 'magenta'
+			level: 1
+		error:
+			name: 'error'
+			color: 'red'
+			level: 0
 
 	constructor: (@name, config={}) ->
+		@config = {}
+
 		_.extend @config, config
 
 		if LoggerManager.loggers[@name]?
 			LoggerManager.loggers[@name].warn 'Duplicated instance'
 			return LoggerManager.loggers[@name]
 
-		for type, color of @defaultTypes
-			do (type, color) =>
+		for type, typeConfig of @defaultTypes
+			do (type, typeConfig) =>
 				@[type] = (args...) =>
 					@_log
 						type: type
+						level: typeConfig.level
+						method: typeConfig.name
 						arguments: args
 
 		if @config.methods?
-			for method, type of @config.methods
-				do (method, type) =>
+			for method, typeConfig of @config.methods
+				do (method, typeConfig) =>
 					if @[method]?
 						@warn "Method", method, "already exists"
 
-					if not @defaultTypes[type]?
-						@warn "Method type", type, "doest not exists"
+					if not @defaultTypes[typeConfig.type]?
+						@warn "Method type", typeConfig.type, "doest not exists"
 
 					@[method] = (args...) =>
 						@_log
-							type: type
+							type: typeConfig.type
+							level: if typeConfig.level? then typeConfig.level? else @defaultTypes[typeConfig.type]?.level
 							method: method
 							arguments: args
 
+		LoggerManager.register @
 		return @
 
 	getPrefix: (options) ->
-		prefix = ""
-
-		if options.method?
-			prefix = "[#{@name} #{options.method}]"
-		else
-			prefix = "[#{@name}]"
+		prefix = "#{@name} ➔ #{options.method}"
 
 		details = @_getCallerDetails()
 
 		detailParts = []
 		if details.package? and LoggerManager.showPackage is true
 			detailParts.push details.package
-		if details.file? and LoggerManager.showFileAndLine is true
-			detailParts.push details.file
-		if details.line? and LoggerManager.showFileAndLine is true
-			detailParts.push details.line
-
-		if detailParts.length > 0
-			prefix = "(#{detailParts.join(':')})#{prefix}"
+		if LoggerManager.showFileAndLine is true
+			if details.file? and details.line?
+				detailParts.push "#{details.file}:#{details.line}"
+			else
+				if details.file?
+					detailParts.push details.file
+				if details.line?
+					detailParts.push details.line
 
 		if @defaultTypes[options.type]?
-			return prefix[@defaultTypes[options.type]]
+			prefix = prefix[@defaultTypes[options.type].color]
+
+		if detailParts.length > 0
+			prefix = "#{detailParts.join(' ')} #{prefix}"
 
 		return prefix
 
@@ -119,5 +153,10 @@ LoggerManager = new class
 		return details
 
 	_log: (options) ->
+		options.level ?= 1
+
+		if LoggerManager.logLevel < options.level
+			return
+
 		options.arguments.unshift @getPrefix(options)
 		console.log.apply console, options.arguments

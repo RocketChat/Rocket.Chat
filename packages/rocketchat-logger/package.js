@@ -12,6 +12,7 @@ Package.onUse(function(api) {
 	api.use('underscore');
 	api.use('logging');
 	api.use('nooitaf:colors');
+	api.use('raix:eventemitter');
 	api.use('templating', 'client', {weak: true});
 
 	api.addFiles('logger.coffee', 'client');

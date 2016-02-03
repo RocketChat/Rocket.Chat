@@ -1,6 +1,7 @@
 logger = new Logger 'steffo:meteor-accounts-saml',
 	methods:
-		updated: 'log'
+		updated:
+			type: 'info'
 
 RocketChat.settings.addGroup 'SAML'
 Meteor.methods

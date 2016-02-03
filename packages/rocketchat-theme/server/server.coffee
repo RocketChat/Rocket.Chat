@@ -4,7 +4,8 @@ crypto = Npm.require('crypto')
 
 logger = new Logger 'rocketchat:theme',
 	methods:
-		stop_rendering: 'log'
+		stop_rendering:
+			type: 'info'
 
 
 calculateClientHash = WebAppHashing.calculateClientHash
