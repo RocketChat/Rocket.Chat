@@ -22,10 +22,11 @@ Package.onUse(function(api) {
   api.versionsFrom('1.0.3.1');
 
   // Commom
-  api.use('rocketchat:lib@0.0.1');
+  api.use('rocketchat:lib');
   api.use('tap:i18n');
   api.use('yasaricli:slugify');
   api.use('coffeescript');
+  api.use('sha');
   // Client
   api.use('templating', 'client');
   // Server

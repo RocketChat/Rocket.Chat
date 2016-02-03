@@ -19,9 +19,19 @@
 						<label for="username">{{_ "Username"}}</label>
 						<div>
 						{{#if allowUsernameChange}}
-						    <input type="text" name="username" id="username" placeholder="{{username}}" />
+							<input type="text" name="username" id="username" placeholder="{{username}}" />
 						{{else}}
-						    <input type="text" name="username" id="username" placeholder="{{username}}" disabled="disabled" title="{{usernameChangeDisabled}}" />
+							<input type="text" name="username" id="username" placeholder="{{username}}" disabled="disabled" title="{{usernameChangeDisabled}}" />
+						{{/if}}
+						</div>
+					</div>
+					<div class="input-line">
+						<label for="email">{{_ "E-mail"}}</label>
+						<div>
+						{{#if allowEmailChange}}
+							<input type="email" name="email" id="email" placeholder="{{email}}" />
+						{{else}}
+							<input type="email" name="email" id="email" placeholder="{{email}}" disabled="disabled" title="{{emailChangeDisabled}}" />
 						{{/if}}
 						</div>
 					</div>
@@ -58,6 +68,9 @@
 				</fieldset>
 				<div class="submit">
 					<button class="button"><i class="icon-send"></i><span>{{_ "Save_changes"}}</span></button>
+				</div>
+				<div class="logoutOthers">
+					<button class="button">{{_ "Logout_Others"}}</button>
 				</div>
 			</div>
 		</div>

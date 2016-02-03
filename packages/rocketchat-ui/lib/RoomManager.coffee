@@ -62,12 +62,13 @@ RocketChat.Notifications.onUser 'message', (msg) ->
 					sub.stop()
 
 			if openedRooms[typeName].rid?
-				msgStream.removeListener openedRooms[typeName].rid
+				msgStream.removeAllListeners openedRooms[typeName].rid
 				RocketChat.Notifications.unRoom openedRooms[typeName].rid, 'deleteMessage', onDeleteMessageStream
 
 			openedRooms[typeName].ready = false
 			openedRooms[typeName].active = false
-			Blaze.remove openedRooms[typeName].template
+			if openedRooms[typeName].template?
+				Blaze.remove openedRooms[typeName].template
 			delete openedRooms[typeName].dom
 			delete openedRooms[typeName].template
 
@@ -85,6 +86,9 @@ RocketChat.Notifications.onUser 'message', (msg) ->
 					Meteor.subscribe 'room', typeName
 				]
 
+				if record.ready is true
+					return
+
 				ready = record.sub[0].ready() and subscription.ready()
 
 				if ready is true
@@ -101,28 +105,32 @@ RocketChat.Notifications.onUser 'message', (msg) ->
 
 					room = ChatRoom.findOne query, { reactive: false }
 
-					if room?
+					if not room?
+						record.ready = true
+					else
 						openedRooms[typeName].rid = room._id
 
 						RoomHistoryManager.getMoreIfIsEmpty room._id
 						record.ready = RoomHistoryManager.isLoading(room._id) is false
 						Dep.changed()
 
-						msgStream.on openedRooms[typeName].rid, (msg) ->
+						if openedRooms[typeName].streamActive isnt true
+							openedRooms[typeName].streamActive = true
+							msgStream.on openedRooms[typeName].rid, (msg) ->
 
-							# Should not send message to room if room has not loaded all the current messages
-							if RoomHistoryManager.hasMoreNext(openedRooms[typeName].rid) is false
+								# Should not send message to room if room has not loaded all the current messages
+								if RoomHistoryManager.hasMoreNext(openedRooms[typeName].rid) is false
 
-								# Do not load command messages into channel
-								if msg.t isnt 'command'
-									ChatMessage.upsert { _id: msg._id }, msg
+									# Do not load command messages into channel
+									if msg.t isnt 'command'
+										ChatMessage.upsert { _id: msg._id }, msg
 
-								Meteor.defer ->
-									RoomManager.updateMentionsMarksOfRoom typeName
+									Meteor.defer ->
+										RoomManager.updateMentionsMarksOfRoom typeName
 
-								RocketChat.callbacks.run 'streamMessage', msg
+									RocketChat.callbacks.run 'streamMessage', msg
 
-						RocketChat.Notifications.onRoom openedRooms[typeName].rid, 'deleteMessage', onDeleteMessageStream
+							RocketChat.Notifications.onRoom openedRooms[typeName].rid, 'deleteMessage', onDeleteMessageStream
 
 				Dep.changed()
 
@@ -150,7 +158,7 @@ RocketChat.Notifications.onUser 'message', (msg) ->
 		if openedRooms[typeName].ready
 			closeOlderRooms()
 
-		if subscription.ready()
+		if subscription.ready() && Meteor.userId()
 
 			if openedRooms[typeName].active isnt true
 				openedRooms[typeName].active = true

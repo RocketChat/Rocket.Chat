@@ -54,6 +54,11 @@ ExecuteTriggerUrl = (url, trigger, message, room, tries=0) ->
 				RocketChat.models.Integrations.remove _id: trigger._id
 				return
 
+			if result.statusCode is 500
+				console.log 'Request Error [500]', url
+				console.log result.content
+				return
+
 			if tries <= 6
 				# Try again in 0.1s, 1s, 10s, 1m40s, 16m40s, 2h46m40s and 27h46m40s
 				Meteor.setTimeout ->
@@ -61,8 +66,24 @@ ExecuteTriggerUrl = (url, trigger, message, room, tries=0) ->
 				, Math.pow(10, tries+2)
 			return
 
-		# TODO process return and insert message if necessary
+		# process outgoing webhook response as a new message
+		else if result?.statusCode is 200 and (result.data?.text? or result.data?.attachments?)
+			user = RocketChat.models.Users.findOneByUsername(trigger.username)
 
+			result.data.bot =
+				i: trigger._id
+
+			defaultValues =
+				alias: trigger.alias
+				avatar: trigger.avatar
+				emoji: trigger.emoji
+
+			if room.t is 'd'
+				defaultValues.channel = '@'+room._id
+			else
+				defaultValues.channel = '#'+room._id
+
+			message = processWebhookMessage result.data, user, defaultValues
 
 
 ExecuteTrigger = (trigger, message, room) ->
@@ -92,6 +113,12 @@ ExecuteTriggers = (message, room) ->
 		when 'c'
 			if triggers.__any?
 				triggersToExecute.push trigger for key, trigger of triggers.__any
+
+			if triggers['#'+room._id]?
+				triggersToExecute.push trigger for key, trigger of triggers['#'+room._id]
+
+			if room._id isnt room.name and triggers['#'+room.name]?
+				triggersToExecute.push trigger for key, trigger of triggers['#'+room.name]
 
 		else
 			if triggers['#'+room._id]?

@@ -167,7 +167,7 @@ Template.room.helpers
 
 	canRecordAudio: ->
 		wavRegex = /audio\/wav|audio\/\*/i
-		wavEnabled = RocketChat.settings.get("FileUpload_MediaTypeWhiteList").match(wavRegex)
+		wavEnabled = !RocketChat.settings.get("FileUpload_MediaTypeWhiteList") || RocketChat.settings.get("FileUpload_MediaTypeWhiteList").match(wavRegex)
 		return RocketChat.settings.get('Message_AudioRecorderEnabled') and (navigator.getUserMedia? or navigator.webkitGetUserMedia?) and wavEnabled and RocketChat.settings.get('FileUpload_Enabled')
 
 	unreadSince: ->
@@ -492,6 +492,14 @@ Template.room.onCreated ->
 
 	@autorun =>
 		@subscribe 'fullUserData', Session.get('showUserInfo'), 1
+
+	Meteor.call 'getRoomModeratorsAndOwners', @data._id, (error, results) ->
+		if error
+			return toastr.error error.reason
+
+		for record in results
+			delete record._id
+			RoomModeratorsAndOwners.upsert { rid: record.rid, "u._id": record.u._id }, record
 
 Template.room.onDestroyed ->
 	window.removeEventListener 'resize', this.onWindowResize

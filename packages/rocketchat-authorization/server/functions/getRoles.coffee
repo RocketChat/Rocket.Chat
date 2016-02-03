@@ -1,2 +1,2 @@
 RocketChat.authz.getRoles = ->
-	return Roles.getAllRoles()
+	return RocketChat.models.Roles.find().fetch()

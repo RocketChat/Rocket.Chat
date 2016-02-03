@@ -82,7 +82,10 @@ class CustomOAuth
 				params:
 					access_token: accessToken
 
-			return response.data
+			if response.data
+				return response.data
+			else
+				return JSON.parse response.content
 
 		catch err
 			error = new Error("Failed to fetch identity from #{@name} at #{@identityPath}. " + err.message)

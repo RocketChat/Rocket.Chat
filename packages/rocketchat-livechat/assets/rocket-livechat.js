@@ -70,7 +70,10 @@
 	};
 
 	var pageVisited = function() {
-		callHook('pageVisited', JSON.parse(JSON.stringify(document.location)));
+		callHook('pageVisited', {
+			location: JSON.parse(JSON.stringify(document.location)),
+			title: document.title
+		});
 	};
 
 	var currentPage = {
@@ -79,13 +82,13 @@
 	};
 	var trackNavigation = function() {
 		setInterval(function() {
-			if (document.title !== currentPage.title) {
+			if (document.location.href !== currentPage.href) {
 				pageVisited();
 
 				currentPage.href = document.location.href;
 				currentPage.title = document.title;
 			}
-		}, 500);
+		}, 800);
 	};
 
 	var initRocket = function(url) {

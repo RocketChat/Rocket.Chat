@@ -1,6 +1,8 @@
 var api = {
 	pageVisited: function(info) {
 		Triggers.processRequest(info);
+
+		Meteor.call('livechat:pageVisited', visitor.getToken(), info);
 	}
 };
 

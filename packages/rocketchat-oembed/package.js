@@ -13,7 +13,7 @@ Package.onUse(function(api) {
 		'coffeescript',
 		'underscore',
 		'konecty:change-case',
-		'rocketchat:lib@0.0.1'
+		'rocketchat:lib'
 	]);
 
 	api.addFiles('client/baseWidget.html', 'client');

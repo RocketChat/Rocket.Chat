@@ -41,7 +41,7 @@ Meteor.startup ->
 							name: 'Admin'
 
 						Accounts.setPassword id, process.env.ADMIN_PASS
-						RocketChat.authz.addUsersToRoles( id, 'admin')
+						RocketChat.authz.addUserRoles( id, 'admin')
 
 					else
 						console.log 'E-mail exists; ignoring environment variables ADMIN_EMAIL and ADMIN_PASS'.red
@@ -55,5 +55,5 @@ Meteor.startup ->
 			# get oldest user
 			oldestUser = RocketChat.models.Users.findOne({ _id: { $ne: 'rocket.cat' }}, { fields: { username: 1 }, sort: {createdAt: 1}})
 			if oldestUser
-				RocketChat.authz.addUsersToRoles( oldestUser._id, 'admin')
+				RocketChat.authz.addUserRoles( oldestUser._id, 'admin')
 				console.log "No admins are found. Set #{oldestUser.username} as admin for being the oldest user"

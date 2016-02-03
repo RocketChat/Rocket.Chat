@@ -13,8 +13,6 @@ rocketchat:
     - PORT=3000
     - ROOT_URL=http://yourhost:3000
     - MONGO_URL=mongodb://mongo:27017/rocketchat
-# uncomment and set the line below if you need to support mobile apps
-#   - DDP_DEFAULT_CONNECTION_URL=http://yourhost:3000
   links:
     - mongo:mongo
   ports:
@@ -24,7 +22,7 @@ rocketchat:
 hubot:
   image: rocketchat/hubot-rocketchat
   environment:
-    - ROCKETCHAT_URL=yourhost:3000
+    - ROCKETCHAT_URL=rocketchat:3000
     - ROCKETCHAT_ROOM=GENERAL
     - ROCKETCHAT_USER=bot
     - ROCKETCHAT_PASSWORD=botpassword

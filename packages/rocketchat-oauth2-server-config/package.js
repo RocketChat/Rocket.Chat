@@ -9,7 +9,8 @@ Package.onUse(function(api) {
 
 	api.use('webapp');
 	api.use('coffeescript');
-	api.use('rocketchat:lib@0.0.1');
+	api.use('rocketchat:lib');
+	api.use('rocketchat:api');
 	api.use('rocketchat:theme');
 	api.use('rocketchat:oauth2-server');
 
@@ -23,6 +24,7 @@ Package.onUse(function(api) {
 	//// OAuth //
 	// Server
 	api.addFiles('oauth/server/oauth2-server.coffee', 'server');
+	api.addFiles('oauth/server/default-services.coffee', 'server');
 
 	api.addAssets('oauth/client/stylesheets/oauth2.less', 'server');
 	api.addFiles('oauth/client/stylesheets/load.coffee', 'server');

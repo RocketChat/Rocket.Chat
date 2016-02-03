@@ -17,7 +17,12 @@ Meteor.methods
 		if integration.urls.length is 0
 			throw new Meteor.Error 'invalid_urls', '[methods] updateOutgoingIntegration -> urls is required'
 
-		if integration.channel?.trim() isnt '' and integration.channel[0] not in ['@', '#']
+		if _.isString(integration.channel)
+			integration.channel = integration.channel.trim()
+		else
+			integration.channel = undefined
+
+		if integration.channel? and integration.channel[0] not in ['@', '#']
 			throw new Meteor.Error 'invalid_channel', '[methods] updateOutgoingIntegration -> channel should start with # or @'
 
 		if not integration.token? or integration.token?.trim() is ''
@@ -36,7 +41,7 @@ Meteor.methods
 			throw new Meteor.Error 'invalid_integration', '[methods] updateOutgoingIntegration -> integration not found'
 
 
-		if integration.channel?.trim() isnt ''
+		if integration.channel?
 			record = undefined
 			channelType = integration.channel[0]
 			channel = integration.channel.substr(1)

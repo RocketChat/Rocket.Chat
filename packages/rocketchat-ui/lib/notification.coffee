@@ -30,10 +30,6 @@
 								when 'p'
 									FlowRouter.go 'group', {name: notification.payload.name}
 
-					setTimeout ->
-						n.close()
-					, 10000
-
 	newMessage: ->
 		unless Session.equals('user_' + Meteor.userId() + '_status', 'busy') or Meteor.user()?.settings?.preferences?.disableNewMessageNotification
 			$('#chatAudioNotification')[0].play()

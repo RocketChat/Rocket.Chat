@@ -11,7 +11,7 @@ Package.onUse(function(api) {
 	api.use([
 		'coffeescript',
 		'konecty:autolinker',
-		'rocketchat:lib@0.0.1'
+		'rocketchat:lib'
 	]);
 
 	api.addFiles('autolinker.coffee', ['server','client']);

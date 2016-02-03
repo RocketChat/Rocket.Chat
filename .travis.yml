@@ -2,10 +2,8 @@ sudo: required
 language: node_js
 branches:
   only:
-  - master
   - develop
-  - beta
-  - "/^v(\\d+\\.)?(\\d+\\.)?(\\*|\\d+)$/"
+  - "/^(\\d+\\.)?(\\d+\\.)?(\\*|\\d+)$/"
 git:
   depth: 1
 node_js:
@@ -23,23 +21,25 @@ before_script:
 script:
 - meteor build /tmp/build
 before_deploy:
+- source ".travis/setartname.sh"
 - source ".travis/setdeploydir.sh"
 - ".travis/setupsig.sh"
 - ".travis/namefiles.sh"
 - ".travis/sandstorm.sh"
 deploy:
-  provider: releases
-  api_key:
-    secure: SLtbGv9vL6qC3rKGwKuXfUSFuRCeLsBFiRA1nBDWoyua7F3rLy8fBvhS3sXRDCqAF6hJgXQwZzX2pS1Lljwjjmwi/80Ns7VDtreX5QstHukFAxaJh2E0Lz5zQdSqAb61KdAipZmYfp2fgCr8T+xztE/mvtPD5R8CcIQIjJpl9rh+mrkkshkcaNOY4JQrqyrcTeCOeBQMXTZSkkbdJr4gb9++A2c61K0txfid9+VwqGm5MwvaT80JC5wLQkL8rS9OUcNJHFf90ELFZpRZnZnI2lsfmTBAxRKL994UZgzru3XNMhUTsJPh7OyVn/xSlyjLcvsn4dSon1PE9t3RkuxsbTxx/XY+gIkXSGl38jZlhextaJoV0gTFkEg33tF/aZ4+I+iZM8LYfRAoUuZU0fSzGnFtFZp4xptF2ECLKmI/3dmuE6iwr+G1xUer9g2Rq9fXXrHgUA164544IdY4aDisxd9U78U0K7WaPtbvphiVl4GbgVnfTEgNVdpXcQxUtcXPZMiBRz5+E+1fExmCfO6+7mZ/yzDrsFYoRdmuo1SMGRI4iqb5jl/PImZ9ukTqRmQdqd3WJp3zzPbIEJPwhMtS5LMxzBMSfugXwjEajkXybcH5CWQ7jo+ogNqcM/CcJ3q4ahYuLTN7VeZWZ8h5kwr9bPxPooZuhWw0WPRa+XUM22o=
-  file:
-  - "$ROCKET_DEPLOY_DIR/rocket.chat.tgz"
-  - "$ROCKET_DEPLOY_DIR/rocket.chat.tgz.asc"
-  - "$ROCKET_DEPLOY_DIR/rocket.chat.spk"
+  provider: s3
+  access_key_id: "AKIAIKIA7H7D47KUHYCA"
+  secret_access_key: $ACCESSKEY
+  bucket: "download.rocket.chat"
+  skip_cleanup: true
+  upload_dir: build
+  local_dir: $ROCKET_DEPLOY_DIR
   on:
-    tags: true
+    condition: "$TRAVIS_PULL_REQUEST=false"
     all_branches: true
 after_deploy:
 - ".travis/docker.sh"
+- ".travis/update-releases.sh"
 env:
   global:
     secure: HrPOM5sBibYkMcf9aeQThYPCDiXeLkg0Xgv0HvH88/ku/gphDpNEjHNReHZM3cyfm9y3RhHpVdD+Zzy38S2goKyewRzpXJsuyerOYkjND0v3tivhs9CAX8PAUxj1U5zllTyH4bgW2ZwRtNnwnmtIM/JJlnySMpKVDqIZBpbhn3ph9bJ2J+BW3D3Jw8meQ1vCX8szIibyJK/5QX6HG2RBFXJGYoQ8DmR8jQv0aJQvT1Az5DO4yImk8tX4NP95qOc19Jywr1DsbaSBZeJ8lFJAmBpIGx7KAmUVCcxSxfbXGRhs2K4iEYb3rJ/dU6KiyPsKGUG4aYNGgbvcX0ZxX/BZ6ZU9ff0E4IIf43IxoN3ElrOqOFk5msJAXbrJEreINSzDqKOy8NFYtCQ49E2gwzfage4ZXkhFyx3wMPa5bzpr3ncsTceMjMVz03uL781X6NLuCkUmXv+n8K2MNhJU9Xinpdx1GRJm+0lXJspNNJ1ruHeJtls4epj4bmCwKmmZbFKPXqa5e8xVcMIkwt1LMiHduhE+WgKNHdOMhXrCcTxF62ybLlsHXmyLLJeNjTeKS8QG2XSoonClDAz/1R41I1DsMPblcgz9uvYCf7UtyftbhJ83bnJeEmOYQiwijLG0+QMq+B2+mmZan3Z7Hl7O53dnwuLxz7EO7EhQhY+CqHVgc6s=

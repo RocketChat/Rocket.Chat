@@ -143,6 +143,9 @@ Template.main.helpers
 		console.log 'layout.helpers flexOpenedRTC2' if window.rocketDebug
 		return 'layout2' if (Session.get('rtcLayoutmode') > 1)
 
+	requirePasswordChange: ->
+		return Meteor.user()?.requirePasswordChange is true
+
 
 Template.main.events
 

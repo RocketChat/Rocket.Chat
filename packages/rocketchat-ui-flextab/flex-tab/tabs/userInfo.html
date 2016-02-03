@@ -30,20 +30,34 @@
 			{{> videoButtons}}
 
 			{{#if showAll}}
-				<button class='button secondary back'><span>{{_ "View_All"}} <i class='icon-angle-right'></i></span></button>
 				{{#if canDirectMessage user.username}}
-					<button class='button pvt-msg'><span><i class='icon-chat'></i> {{_ "Conversation"}}</span></button>
+					<button class='button button-block pvt-msg'><span><i class='icon-chat'></i> {{_ "Conversation"}}</span></button>
+				{{/if}}
+				{{#if canSetOwner}}
+					{{#if isOwner}}
+						<button class="button button-block unset-owner lightblue"><span>{{_ "Remove_as_owner"}}</span></button>
+					{{else}}
+						<button class="button button-block set-owner lightblue"><span>{{_ "Set_as_owner"}}</span></button>
+					{{/if}}
+				{{/if}}
+				{{#if canSetModerator}}
+					{{#if isModerator}}
+						<button class="button button-block unset-moderator lightblue"><span>{{_ "Remove_as_moderator"}}</span></button>
+					{{else}}
+						<button class="button button-block set-moderator lightblue"><span>{{_ "Set_as_moderator"}}</span></button>
+					{{/if}}
 				{{/if}}
 				{{#if canRemoveUser}}
-					<button class="button remove-user red"><span>{{_ "Remove_from_room"}}</span></button>
+					<button class="button button-block remove-user red"><span>{{_ "Remove_from_room"}}</span></button>
 				{{/if}}
 				{{#if canMuteUser}}
 					{{#if userMuted}}
-						<button class="button unmute-user primary"><span>{{_ "Unmute_user"}}</span></button>
+						<button class="button button-block unmute-user primary"><span>{{_ "Unmute_user"}}</span></button>
 					{{else}}
-						<button class="button mute-user red"><span>{{_ "Mute_user"}}</span></button>
+						<button class="button button-block mute-user red"><span>{{_ "Mute_user"}}</span></button>
 					{{/if}}
 				{{/if}}
+				<button class='button secondary back'><span>{{_ "View_All"}} <i class='icon-angle-right'></i></span></button>
 			{{/if}}
 		</nav>
 	{{/if}}

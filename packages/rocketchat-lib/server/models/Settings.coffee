@@ -52,6 +52,7 @@ RocketChat.models.Settings = new class extends RocketChat.models._Base
 		record =
 			_id: _id
 			value: value
+			_createdAt: new Date
 
 		return @insert record
 

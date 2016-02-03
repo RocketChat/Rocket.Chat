@@ -7,7 +7,7 @@ Meteor.methods
 			throw new Meteor.Error 'not-authorized', '[methods] restart_server -> Not authorized'
 
 		Meteor.setTimeout ->
-			process.exit(0)
+			process.exit(1)
 		, 2000
 
 		return {} =
