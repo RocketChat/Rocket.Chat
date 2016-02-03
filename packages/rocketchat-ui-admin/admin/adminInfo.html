@@ -10,8 +10,20 @@
 			<h3>{{_ "Rocket.Chat"}}</h3>
 			<table class="statistics-table">
 				<tr>
+					<th>{{_ "Deployment_ID"}}</th>
+					<td>{{statistics.uniqueId}}</td>
+				</tr>
+				<tr>
+					<th>{{_ "Installed_at"}}</th>
+					<td>{{statistics.createdAt}}</td>
+				</tr>
+				<tr>
 					<th>{{_ "Version"}}</th>
 					<td>{{statistics.version}}</td>
+				</tr>
+				<tr>
+					<th>{{_ "Updated_at"}}</th>
+					<td>{{statistics.createdAt}}</td>
 				</tr>
 				<tr>
 					<th>{{_ "DB_Migration"}}</th>
@@ -20,26 +32,6 @@
 				<tr>
 					<th>{{_ "DB_Migration_Date"}}</th>
 					<td>{{statistics.migration.lockedAt}}</td>
-				</tr>
-				<tr>
-					<th>{{_ "Installed_at"}}</th>
-					<td>{{statistics.createdAt}}</td>
-				</tr>
-				<tr>
-					<th>{{_ "Uptime"}}</th>
-					<td>{{humanReadableTime statistics.process.uptime}}</td>
-				</tr>
-				<tr>
-					<th>{{_ "Deployment_ID"}}</th>
-					<td>{{statistics.uniqueId}}</td>
-				</tr>
-				<tr>
-					<th>{{_ "PID"}}</th>
-					<td>{{statistics.process.pid}}</td>
-				</tr>
-				<tr>
-					<th>{{_ "Running_Instances"}}</th>
-					<td>{{statistics.instanceCount}}</td>
 				</tr>
 			</table>
 			<h3>{{_ "Commit"}}</h3>
@@ -75,6 +67,18 @@
 					{{#if isReady}}
 						<h3>{{_ "Runtime_Environment"}}</h3>
 						<table class="statistics-table">
+							<tr>
+								<th>{{_ "Uptime"}}</th>
+								<td>{{humanReadableTime statistics.process.uptime}}</td>
+							</tr>
+							<tr>
+								<th>{{_ "PID"}}</th>
+								<td>{{statistics.process.pid}}</td>
+							</tr>
+							<tr>
+								<th>{{_ "PORT"}}</th>
+								<td>{{statistics.process.port}}</td>
+							</tr>
 							<tr>
 								<th>{{_ "Node_version"}}</th>
 								<td>{{statistics.process.nodeVersion}}</td>
@@ -119,6 +123,10 @@
 						<h3>{{_ "Build_Environment"}}</h3>
 						<table class="statistics-table">
 							<tr>
+								<th>{{_ "Date"}}</th>
+								<td>{{formatDate build.date}}</td>
+							</tr>
+							<tr>
 								<th>{{_ "Node_version"}}</th>
 								<td>{{build.nodeVersion}}</td>
 							</tr>
@@ -138,13 +146,13 @@
 								<th>{{_ "OS_Release"}}</th>
 								<td>{{build.osRelease}}</td>
 							</tr>
-							<tr>
-								<th>{{_ "Date"}}</th>
-								<td>{{formatDate build.date}}</td>
-							</tr>
 						</table>
 						<h3>{{_ "Usage"}}</h3>
 						<table class="statistics-table">
+							<tr>
+								<th>{{_ "Running_Processes"}}</th>
+								<td>{{statistics.instanceCount}}</td>
+							</tr>
 							<tr>
 								<th>{{_ "Stats_Total_Users"}}</th>
 								<td>{{statistics.totalUsers}}</td>
