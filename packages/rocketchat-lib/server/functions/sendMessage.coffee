@@ -83,7 +83,7 @@ RocketChat.sendMessage = (user, message, room, options) ->
 					Email.send
 						to: userOfMention.emails[0].address
 						from: RocketChat.settings.get('From_Email')
-						subject: "[#{RocketChat.settings.get('Site_Name')}] You have been direct messaged by #{user.username}"
+						subject: TAPi18n.__ "Offline_DM_Email", {site: RocketChat.settings.get('Site_Name'), user: user.username}
 						html: "> " + message.msg
 
 		else
@@ -170,7 +170,7 @@ RocketChat.sendMessage = (user, message, room, options) ->
 						Email.send
 							to: offlineUser.emails[0].address
 							from: RocketChat.settings.get('From_Email')
-							subject: "[#{RocketChat.settings.get('Site_Name')}] You have been mentioned by #{user.username} in ##{room.name}"
+							subject: TAPi18n.__ "Offline_Mention_Email", {site: RocketChat.settings.get('Site_Name'), user: user.username, room: room.name}
 							html: "> " + message.msg
 		###
 		Update all other subscriptions to alert their owners but witout incrementing

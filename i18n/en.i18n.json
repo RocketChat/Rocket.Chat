@@ -358,6 +358,8 @@
   "Notify_all_in_this_room" : "Notify all in this room",
   "OAuth_Application" : "OAuth Application",
   "OAuth_Applications" : "OAuth Applications",
+  "Offline_DM_Email" : "[__site__] You have been direct messaged by __user__",
+  "Offline_Mention_Email" : "[__site__] You have been mentioned by __user__ in #__room__",
   "Old_and_new_password_must_be_different" : "The new password must be different from the old password.",
   "Old_and_new_password_required" : "You need to provide both old and new password for changing your password.",
   "Old_Password" : "Old Password",
