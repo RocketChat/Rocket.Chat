@@ -1,5 +1,7 @@
 ## NEXT
 
+- Closes #1367; Add ability to delete files
+
 ## 0.16.0, 2016-Feb-01
 
 - Added option for admins to manually add new users
