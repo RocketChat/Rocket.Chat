@@ -107,6 +107,10 @@ Package.onUse(function(api) {
 
 	api.addFiles('client/defaultTabBars.js', 'client');
 
+	// CLIENT MODELS
+	api.addFiles('client/models/_Base.coffee', 'client');
+	api.addFiles('client/models/Uploads.coffee', 'client');
+
 	// VERSION
 	api.addFiles('rocketchat.info');
 
