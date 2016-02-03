@@ -50,7 +50,7 @@ RocketChat.sendMessage = (user, message, room, options) ->
 			###
 			RocketChat.models.Subscriptions.incUnreadOfDirectForRoomIdExcludingUserId message.rid, message.u._id, 1
 
-			userOfMention = RocketChat.models.Users.findOne({_id: message.rid.replace(message.u._id, '')}, {fields: {username: 1, statusConnection: 1, status: 1, emails: 1}})
+			userOfMention = RocketChat.models.Users.findOne({_id: message.rid.replace(message.u._id, '')}, {fields: {username: 1, statusConnection: 1, status: 1, emails: 1, settings: 1}})
 			if userOfMention?
 				RocketChat.Notifications.notifyUser userOfMention._id, 'notification',
 					title: "@#{user.username}"
@@ -79,7 +79,7 @@ RocketChat.sendMessage = (user, message, room, options) ->
 						query:
 							userId: userOfMention._id
 
-				if userOfMention.status is 'offline'
+				if userOfMention.status is 'offline' and userOfMention.settings?.preferences?.emailNotificationMode is true
 					Email.send
 						to: userOfMention.emails[0].address
 						from: RocketChat.settings.get('From_Email')
@@ -95,7 +95,7 @@ RocketChat.sendMessage = (user, message, room, options) ->
 			toAll = mentionIds.indexOf('all') > -1
 
 			if mentionIds.length > 0
-				usersOfMention = RocketChat.models.Users.find({_id: {$in: mentionIds}}, {fields: {_id: 1, username: 1, status: 1, emails: 1}}).fetch()
+				usersOfMention = RocketChat.models.Users.find({_id: {$in: mentionIds}}, {fields: {_id: 1, username: 1, status: 1, emails: 1, settings: 1}}).fetch()
 
 				if room.t is 'c' and !toAll
 					for usersOfMentionItem in usersOfMention
@@ -119,21 +119,21 @@ RocketChat.sendMessage = (user, message, room, options) ->
 				userIdsToPushNotify = userIdsToNotify
 
 				offlineMentionsRoom = _.filter usersOfMention, (user) ->
-					user.status is 'offline'
+					user.status is 'offline' and user.settings?.preferences?.emailNotificationMode is true
 
 				# If the message is @all, notify all room users except for the sender.
 				if toAll and room.usernames?.length > 0
 					usersOfRoom = RocketChat.models.Users.find({
 							username: {$in: room.usernames},
 							_id: {$ne: user._id}},
-						{fields: {_id: 1, username: 1, status: 1, emails: 1}})
+						{fields: {_id: 1, username: 1, status: 1, emails: 1, settings: 1}})
 						.fetch()
 					onlineUsersOfRoom = _.filter usersOfRoom, (user) ->
 						user.status in ['online', 'away', 'busy']
 					userIdsToNotify = _.union userIdsToNotify, _.pluck(onlineUsersOfRoom, '_id')
 					userIdsToPushNotify = _.union userIdsToPushNotify, _.pluck(usersOfRoom, '_id')
 					offlineMentionsRoom = _.filter usersOfRoom, (user) ->
-						user.status is 'offline'
+						user.status is 'offline' and user.settings?.preferences?.emailNotificationMode is true
 
 				if userIdsToNotify.length > 0
 					for usersOfMentionId in userIdsToNotify
