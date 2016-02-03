@@ -10,7 +10,7 @@ Package.onUse(function(api) {
 
 	api.use([
 		'coffeescript',
-		'rocketchat:lib@0.0.1'
+		'rocketchat:lib'
 	]);
 
 	api.addFiles('server.coffee', 'server');

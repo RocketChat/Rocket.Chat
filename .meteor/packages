@@ -61,6 +61,7 @@ rocketchat:mentions
 rocketchat:mentions-flextab
 rocketchat:message-pin
 rocketchat:message-star
+rocketchat:migrations
 rocketchat:oembed
 rocketchat:slashcommands-invite
 rocketchat:slashcommands-join
@@ -114,7 +115,6 @@ nooitaf:colors
 ostrio:cookies@2.0.1
 pauli:accounts-linkedin
 perak:codemirror
-percolate:migrations
 percolate:synced-cron
 raix:handlebar-helpers
 raix:push
@@ -132,3 +132,4 @@ yasinuslu:blaze-meta
 rocketchat:assets
 rocketchat:integrations
 rocketchat:message-attachments
+rocketchat:api

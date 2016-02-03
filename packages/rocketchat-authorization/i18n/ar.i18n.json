@@ -2,9 +2,8 @@
   "Add_user" : "إضافة مستخدم",
   "Back_to_permissions" : "العودة إلى التصريحات",
   "Permissions" : "التصريحات",
-  "Removed" : "تمت اﻹزالة",
   "Saving" : "جاري الحفظ",
-  "User_added" : "وأضاف العضو <em>__user_added__</em>.",
+  "User_added" : "تمت إضافة المستخدم",
   "User_not_found" : "لم يتم العثور على المستخدم",
   "User_removed" : "تم إزالة المستخدم"
 }

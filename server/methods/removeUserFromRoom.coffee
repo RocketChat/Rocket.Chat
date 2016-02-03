@@ -18,7 +18,7 @@ Meteor.methods
 		RocketChat.models.Subscriptions.removeByRoomIdAndUserId data.rid, removedUser._id
 
 		if room.t in [ 'c', 'p' ]
-			RocketChat.authz.removeUsersFromRoles(removedUser._id; 'moderator', data.rid)
+			RocketChat.authz.removeUserFromRoles(removedUser._id, ['moderator', 'owner'], data.rid)
 
 		fromUser = RocketChat.models.Users.findOneById fromId
 		RocketChat.models.Messages.createUserRemovedWithRoomIdAndUser data.rid, removedUser,

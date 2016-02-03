@@ -15,6 +15,9 @@ Meteor.methods
 		if application.redirectUri.trim() is ''
 			throw new Meteor.Error 'invalid_redirectUri', '[methods] updateOAuthApp -> redirectUri can\'t be empty'
 
+		if not _.isBoolean(application.active)
+			throw new Meteor.Error 'invalid_active', '[methods] updateOAuthApp -> active must be boolean'
+
 		currentApplication = RocketChat.models.OAuthApps.findOne(applicationId)
 		if not currentApplication?
 			throw new Meteor.Error 'invalid_application', '[methods] updateOAuthApp -> application not found'
@@ -22,6 +25,7 @@ Meteor.methods
 		RocketChat.models.OAuthApps.update applicationId,
 			$set:
 				name: application.name
+				active: application.active
 				redirectUri: application.redirectUri
 				_updatedAt: new Date
 				_updatedBy: RocketChat.models.Users.findOne @userId, {fields: {username: 1}}

@@ -38,7 +38,7 @@ Meteor.methods
 			throw new Meteor.Error 'channel_does_not_exists', "[methods] updateIncomingIntegration -> The channel does not exists"
 
 		user = RocketChat.models.Users.findOne({username: currentIntegration.username})
-		Roles.addUsersToRoles user._id, 'bot', 'bot'
+		RocketChat.models.Roles.addUserRoles user._id, 'bot'
 
 		RocketChat.models.Integrations.update integrationId,
 			$set:

@@ -34,7 +34,7 @@ Meteor.methods
 			ts: now
 
 		# set creator as group moderator.  permission limited to group by scoping to rid
-		RocketChat.authz.addUsersToRoles(Meteor.userId(), 'moderator', room._id)
+		RocketChat.authz.addUserRoles(Meteor.userId(), ['moderator','owner'], room._id)
 
 		for username in members
 			member = RocketChat.models.Users.findOneByUsername(username, { fields: { username: 1 }})

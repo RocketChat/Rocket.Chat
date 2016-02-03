@@ -54,7 +54,7 @@ this.Triggers = (function() {
 			trigger.conditions.forEach(function(condition) {
 				switch (condition.name) {
 					case 'page-url':
-						if (request.href.match(new RegExp(condition.value))) {
+						if (request.location.href.match(new RegExp(condition.value))) {
 							fire(trigger.actions);
 						}
 						break;

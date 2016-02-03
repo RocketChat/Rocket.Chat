@@ -1,5 +1,7 @@
 sizeOf = Npm.require 'image-size'
+mime = Npm.require 'mime-types'
 
+mime.extensions['image/vnd.microsoft.icon'] = ['ico']
 
 @RocketChatAssetsInstance = new RocketChatFile.GridFS
 	name: 'assets'
@@ -11,8 +13,7 @@ assets =
 		defaultUrl: 'favicon.ico?v=3'
 		constraints:
 			type: 'image'
-			contentType: 'image/vnd.microsoft.icon'
-			extention: 'ico'
+			extension: 'ico'
 			width: undefined
 			height: undefined
 	'favicon.svg':
@@ -20,8 +21,7 @@ assets =
 		defaultUrl: '/images/logo/icon.svg?v=3'
 		constraints:
 			type: 'image'
-			contentType: 'image/svg+xml'
-			extention: 'svg'
+			extension: 'svg'
 			width: undefined
 			height: undefined
 	'favicon_64.png':
@@ -29,8 +29,7 @@ assets =
 		defaultUrl: 'images/logo/favicon-64x64.png?v=3'
 		constraints:
 			type: 'image'
-			contentType: 'image/png'
-			extention: 'png'
+			extension: 'png'
 			width: 64
 			height: 64
 	'favicon_96.png':
@@ -38,8 +37,7 @@ assets =
 		defaultUrl: 'images/logo/favicon-96x96.png?v=3'
 		constraints:
 			type: 'image'
-			contentType: 'image/png'
-			extention: 'png'
+			extension: 'png'
 			width: 96
 			height: 96
 	'favicon_128.png':
@@ -47,8 +45,7 @@ assets =
 		defaultUrl: 'images/logo/favicon-128x128.png?v=3'
 		constraints:
 			type: 'image'
-			contentType: 'image/png'
-			extention: 'png'
+			extension: 'png'
 			width: 128
 			height: 128
 	'favicon_192.png':
@@ -56,8 +53,7 @@ assets =
 		defaultUrl: 'images/logo/android-chrome-192x192.png?v=3'
 		constraints:
 			type: 'image'
-			contentType: 'image/png'
-			extention: 'png'
+			extension: 'png'
 			width: 192
 			height: 192
 	'favicon_256.png':
@@ -65,8 +61,7 @@ assets =
 		defaultUrl: 'images/logo/favicon-256x256.png?v=3'
 		constraints:
 			type: 'image'
-			contentType: 'image/png'
-			extention: 'png'
+			extension: 'png'
 			width: 256
 			height: 256
 
@@ -104,8 +99,8 @@ Meteor.methods
 		if not assets[asset]?
 			throw new Meteor.Error "Invalid_asset"
 
-		if contentType isnt assets[asset].constraints.contentType
-			throw new Meteor.Error "Invalid_file_type"
+		if mime.extension(contentType) isnt assets[asset].constraints.extension
+			throw new Meteor.Error "Invalid_file_type", contentType
 
 		file = new Buffer(binaryContent, 'binary')
 

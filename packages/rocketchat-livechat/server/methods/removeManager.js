@@ -12,6 +12,6 @@ Meteor.methods({
 			throw new Meteor.Error('user-not-found', 'Username_not_found');
 		}
 
-		return RocketChat.authz.removeUsersFromRoles(user._id, 'livechat-manager');
+		return RocketChat.authz.removeUserFromRoles(user._id, 'livechat-manager');
 	}
 });

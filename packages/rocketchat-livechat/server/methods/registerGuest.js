@@ -20,7 +20,9 @@ Meteor.methods({
 			qt = Meteor.users.find({
 				'profile.guest': true
 			}).count() + 1;
+
 			user = 'guest-' + (qt + inc++);
+
 			userExists = Meteor.users.findOne({
 				'username': user
 			}, {
@@ -28,7 +30,7 @@ Meteor.methods({
 					_id: 1
 				}
 			});
-			console.log('userExists ->',userExists);
+
 			if (!userExists) {
 				break;
 			}
@@ -38,6 +40,11 @@ Meteor.methods({
 			globalRoles: ['livechat-guest'],
 			department: department
 		};
+
+		userData.userAgent = this.connection.httpHeaders['user-agent'];
+		userData.ip = this.connection.httpHeaders['x-real-ip'] || this.connection.clientAddress;
+		userData.host = this.connection.httpHeaders['host'];
+
 		userId = Accounts.insertUserDoc({}, userData);
 
 		updateUser = {
@@ -62,6 +69,10 @@ Meteor.methods({
 		Meteor.users.update(userId, {
 			$set: updateUser
 		});
+
+		// update visited page history to not expire
+		RocketChat.models.LivechatPageVisitied.keepHistoryForToken(token);
+
 		return {
 			userId: userId,
 			token: stampedToken.token

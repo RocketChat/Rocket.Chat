@@ -1,5 +1,6 @@
 {
-  "Message_AllowPinning" : "السماح بتثبيث الرسائل",
+  "Message_AllowPinning" : "السماح بتثبيت الرسائل",
+  "Message_AllowPinningByAnyone" : "السماح للجميع بتثبيت الرسائل",
   "Pin_Message" : "تثبيث الرسالة",
   "Unpin_Message" : "إلغاء تثبيث الرسالة",
   "Pinned_Messages" : "رسائل مثبتة",

@@ -12,8 +12,9 @@ Package.onUse(function(api) {
   api.use('coffeescript');
   api.use('underscore');
   api.use('simple:highlight.js');
-  api.use('rocketchat:lib@0.0.1');
-  api.use('alanning:roles@1.2.12');
+  api.use('rocketchat:lib');
+  api.use('rocketchat:authorization');
+  api.use('rocketchat:api');
 
   api.use('kadira:flow-router', 'client');
   api.use('templating', 'client');
@@ -55,6 +56,8 @@ Package.onUse(function(api) {
 
 
   api.addFiles('server/triggers.coffee', 'server');
+
+  api.addFiles('server/processWebhookMessage.js', 'server');
 
   var _ = Npm.require('underscore');
   var fs = Npm.require('fs');
