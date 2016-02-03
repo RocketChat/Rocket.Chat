@@ -25,14 +25,14 @@ Meteor.methods
 				RocketChat.models.Messages.setHiddenById originalMessage._id, true
 
 			if originalMessage.file?._id?
-				fileCollection.update originalMessage.file._id, {$set: {_hidden: true}}
+				RocketChat.models.Uploads.update originalMessage.file._id, {$set: {_hidden: true}}
 
 		else
 			if not showDeletedStatus
 				RocketChat.models.Messages.removeById originalMessage._id
 
 			if originalMessage.file?._id?
-				fileCollection.remove originalMessage.file._id
+				RocketChat.models.Uploads.remove originalMessage.file._id
 				Meteor.fileStore.delete originalMessage.file._id
 
 		if showDeletedStatus
