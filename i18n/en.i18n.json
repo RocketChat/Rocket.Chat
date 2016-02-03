@@ -163,6 +163,7 @@
   "edited" : "edited",
   "Email_already_exists" : "Email already exists",
   "Email_Change_Disabled" : "Your Rocket.Chat administrator has disabled the changing of e-mail",
+  "Email_Notification_Mode" : "Email Notifications On",
   "Email_or_username" : "Email or username",
   "Email_verified" : "Email verified",
   "Emoji" : "Emoji",
