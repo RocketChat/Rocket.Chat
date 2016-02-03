@@ -42,6 +42,7 @@ Template.accountPreferences.onCreated ->
 		data.compactView = $('input[name=compactView]:checked').val()
 		data.unreadRoomsMode = $('input[name=unreadRoomsMode]:checked').val()
 		data.autoImageLoad = $('input[name=autoImageLoad]:checked').val()
+		data.emailNotificationMode = $('input[name=emailNotificationMode]:checked').val()
 
 		Meteor.call 'saveUserPreferences', data, (error, results) ->
 			if results
