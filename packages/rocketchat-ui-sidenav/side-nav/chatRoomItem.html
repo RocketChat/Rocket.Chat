@@ -6,12 +6,14 @@
 			{{/if}}
 			<i class="{{roomIcon}} {{userStatus}}" aria-label=""></i>
 			<span class='name'>{{name}}</span>
-			<span class='opt'>
-				<i class="icon-eye-off hide-room" title="{{_ "Hide_room"}}" aria-label="{{_ "Hide_room"}}"></i>
-				{{#if canLeave}}
-					<i class="octicon octicon-sign-out leave-room" title="{{_ "Leave_room"}}" aria-label="{{_ "Leave_room"}}"></i>
-				{{/if}}
-			</span>
+			{{#if $not unread}}
+				<span class='opt'>
+					<i class="icon-eye-off hide-room" title="{{_ "Hide_room"}}" aria-label="{{_ "Hide_room"}}"></i>
+					{{#if canLeave}}
+						<i class="octicon octicon-sign-out leave-room" title="{{_ "Leave_room"}}" aria-label="{{_ "Leave_room"}}"></i>
+					{{/if}}
+				</span>
+			{{/if}}
 		</a>
 	</li>
 </template>
