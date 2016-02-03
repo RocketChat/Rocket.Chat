@@ -1,6 +1,5 @@
 if UploadFS?
-	@fileCollection = new Mongo.Collection 'rocketchat_uploads'
-	fileCollection.allow
+	RocketChat.models.Uploads.model.allow
 		insert: (userId, doc) ->
 			return userId
 
@@ -38,7 +37,7 @@ if UploadFS?
 			cookie.send()
 
 		Meteor.fileStore = new UploadFS.store.GridFS
-			collection: fileCollection
+			collection: RocketChat.models.Uploads.model
 			name: 'rocketchat_uploads'
 			collectionName: 'rocketchat_uploads'
 			filter: new UploadFS.Filter
