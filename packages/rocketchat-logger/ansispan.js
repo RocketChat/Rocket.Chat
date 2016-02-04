@@ -30,12 +30,12 @@ ansispan = function (str) {
 };
 
 ansispan.foregroundColors = {
-  '30': 'black',
+  '30': 'gray',
   '31': 'red',
   '32': 'green',
   '33': 'yellow',
-  '34': 'blue',
-  '35': 'purple',
+  '34': '#6B98FF',
+  '35': '#FF00FF',
   '36': 'cyan',
   '37': 'white'
 };

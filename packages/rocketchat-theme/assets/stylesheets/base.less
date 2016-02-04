@@ -4395,3 +4395,36 @@ a.github-fork {
 		}
 	}
 }
+
+.terminal {
+	background-color: #000 !important;
+	color: #fff;
+	position: absolute;
+	top: 0px;
+	bottom: 0px;
+	margin: 0;
+	right: 0;
+	left: 0;
+	overflow-y: scroll;
+	border: none !important;
+	padding: 8px 10px !important;
+	-webkit-user-select: text;
+	-moz-user-select: text;
+	-ms-user-select: text;
+	user-select: text;
+
+	* {
+		-webkit-user-select: text;
+		-moz-user-select: text;
+		-ms-user-select: text;
+		user-select: text;
+	}
+
+	> div {
+		word-break: break-all;
+
+		> .time {
+			color: #666;
+		}
+	}
+}

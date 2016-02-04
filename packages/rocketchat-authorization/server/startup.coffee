@@ -115,6 +115,9 @@ Meteor.startup ->
 		roles : ['admin', 'bot']}
 
 		{ _id: 'manage-oauth-apps',
+		roles : ['admin']},
+
+		{ _id: 'view-logs',
 		roles : ['admin']}
 	]
 

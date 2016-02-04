@@ -194,12 +194,55 @@
 		options.arguments.unshift @getPrefix(options)
 		console.log.apply console, options.arguments
 
-# Meteor.publish 'stdout', ->
-# 	write = process.stdout.write
-# 	process.stdout.write = (string, encoding, fd) =>
-# 		write.apply(process.stdout, arguments)
-# 		id = Random.id()
-# 		@added 'stdout', id, {string: string}
-# 		@removed 'stdout', id
+processString = (string, date) ->
+	if string[0] is '{'
+		try
+			return Log.format EJSON.parse(string), {color: true}
 
-# 	@ready()
+	try
+		return Log.format {message: string, time: date, level: 'info'}, {color: true}
+
+	return string
+
+StdOut = new class extends EventEmitter
+	constructor: ->
+		@queue = []
+		write = process.stdout.write
+		process.stdout.write = (string, encoding, fd) =>
+			write.apply(process.stdout, arguments)
+			date = new Date
+			string = processString string, date
+
+			item =
+				id: Random.id()
+				string: string
+				ts: date
+
+			@queue.push item
+
+			if RocketChat?.settings?.get('Log_View_Limit')? and @queue.length > RocketChat.settings.get('Log_View_Limit')
+				@queue.shift()
+
+			@emit 'write', string, item
+
+
+Meteor.publish 'stdout', ->
+	unless @userId
+		return @ready()
+
+	if RocketChat.authz.hasPermission(@userId, 'view-logs') isnt true
+		return @ready()
+
+	for item in StdOut.queue
+		@added 'stdout', item.id,
+			string: item.string
+			ts: item.ts
+
+	@ready()
+
+	StdOut.on 'write', (string, item) =>
+		@added 'stdout', item.id,
+			string: item.string
+			ts: item.ts
+
+	return
