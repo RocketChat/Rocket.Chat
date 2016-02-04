@@ -160,3 +160,13 @@
 
 		options.arguments.unshift @getPrefix(options)
 		console.log.apply console, options.arguments
+
+# Meteor.publish 'stdout', ->
+# 	write = process.stdout.write
+# 	process.stdout.write = (string, encoding, fd) =>
+# 		write.apply(process.stdout, arguments)
+# 		id = Random.id()
+# 		@added 'stdout', id, {string: string}
+# 		@removed 'stdout', id
+
+# 	@ready()
