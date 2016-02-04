@@ -168,7 +168,7 @@ RocketChat.settings.addGroup 'Logs', ->
 	@add 'Log_Level', '0', { type: 'select', values: [ { key: '0', i18nLabel: '0_Errors_Only' }, { key: '1', i18nLabel: '1_Errors_and_Information' }, { key: '2', i18nLabel: '2_Erros_Information_and_Debug' } ] , public: true }
 	@add 'Log_Package', false, { type: 'boolean', public: true }
 	@add 'Log_File', false, { type: 'boolean', public: true }
-	@add 'Log_View_Limit', 10000, { type: 'int' }
+	@add 'Log_View_Limit', 1000, { type: 'int' }
 
 
 RocketChat.settings.init()

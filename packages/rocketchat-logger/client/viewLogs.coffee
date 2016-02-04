@@ -12,5 +12,5 @@ FlowRouter.route '/admin/view-logs',
 	action: (params) ->
 		BlazeLayout.render 'main',
 			center: 'pageSettingsContainer'
-			pageTitle: t('Logs')
+			pageTitle: t('View_Logs')
 			pageTemplate: 'viewLogs'
