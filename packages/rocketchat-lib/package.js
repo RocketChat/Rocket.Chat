@@ -35,6 +35,7 @@ Package.onUse(function(api) {
 
 	// COMMON LIB
 	api.addFiles('lib/settings.coffee');
+	api.addFiles('lib/configLogger.coffee');
 	api.addFiles('lib/callbacks.coffee');
 	api.addFiles('lib/slashCommand.coffee');
 	api.addFiles('lib/Message.coffee');
