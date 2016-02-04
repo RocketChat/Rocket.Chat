@@ -15,6 +15,7 @@ Package.onUse(function(api) {
 	api.use('raix:eventemitter');
 	api.use('templating', 'client', {weak: true});
 
+	api.addFiles('ansispan.js', 'client');
 	api.addFiles('logger.coffee', 'client');
 	api.addFiles('server.coffee', 'server');
 
