@@ -40,8 +40,6 @@ Template.loginForm.helpers
 			when 'register'
 				return t('Submit')
 			when 'login'
-				if RocketChat.settings.get('LDAP_Enable')
-					return t('Login') + ' (LDAP)'
 				return t('Login')
 			when 'email-verification'
 				return t('Send_confirmation_email')
