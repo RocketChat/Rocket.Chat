@@ -1,9 +1,12 @@
 @LoggerManager = new class extends EventEmitter
 	constructor: ->
+		@enabled = false
 		@loggers = {}
-		@showPackage = true
-		@showFileAndLine = true
-		@logLevel = 2
+		@queue = []
+
+		@showPackage = false
+		@showFileAndLine = false
+		@logLevel = 0
 
 	register: (logger) ->
 		if not logger instanceof Logger
@@ -13,12 +16,41 @@
 
 		@emit 'register', logger
 
-@LoggerManager.on 'register', ->
-	console.log('on register', arguments)
+	addToQueue: (logger, args)->
+		@queue.push
+			logger: logger
+			args: args
+
+	dispatchQueue: ->
+		for item in @queue
+			item.logger._log.apply item.logger, item.args
+
+		@clearQueue()
+
+	clearQueue: ->
+		@queue = []
+
+	disable: ->
+		@enabled = false
+
+	enable: (dispatchQueue=false) ->
+		@enabled = true
+		if dispatchQueue is true
+			@dispatchQueue()
+		else
+			@clearQueue()
+
+
+# @LoggerManager.on 'register', ->
+# 	console.log('on register', arguments)
 
 
 @Logger = class Logger
 	defaultTypes:
+		debug:
+			name: 'debug'
+			color: 'blue'
+			level: 2
 		log:
 			name: 'info'
 			color: 'blue'
@@ -27,10 +59,6 @@
 			name: 'info'
 			color: 'blue'
 			level: 1
-		debug:
-			name: 'debug'
-			color: 'blue'
-			level: 2
 		warn:
 			name: 'warn'
 			color: 'magenta'
@@ -83,9 +111,10 @@
 		details = @_getCallerDetails()
 
 		detailParts = []
-		if details.package? and LoggerManager.showPackage is true
+		if details.package? and (LoggerManager.showPackage is true or options.type is 'error')
 			detailParts.push details.package
-		if LoggerManager.showFileAndLine is true
+
+		if LoggerManager.showFileAndLine is true or options.type is 'error'
 			if details.file? and details.line?
 				detailParts.push "#{details.file}:#{details.line}"
 			else
@@ -153,6 +182,10 @@
 		return details
 
 	_log: (options) ->
+		if LoggerManager.enabled is false
+			LoggerManager.addToQueue @, arguments
+			return
+
 		options.level ?= 1
 
 		if LoggerManager.logLevel < options.level
