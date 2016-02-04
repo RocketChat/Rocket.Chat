@@ -2,8 +2,8 @@
 accountsConfig = { forbidClientAccountCreation: true, loginExpirationInDays: RocketChat.settings.get 'Accounts_LoginExpiration' }
 Accounts.config accountsConfig
 
-RocketChat.settings.onload 'Accounts_AllowedDomainsList', ->
-	domainWhiteList = _.map RocketChat.settings.get('Accounts_AllowedDomainsList').split(','), (domain) -> domain.trim()
+RocketChat.settings.get 'Accounts_AllowedDomainsList', (_id, value) ->
+	domainWhiteList = _.map value.split(','), (domain) -> domain.trim()
 	restrictCreationByEmailDomain = (email) ->
 		ret = false
 		for domain in domainWhiteList
