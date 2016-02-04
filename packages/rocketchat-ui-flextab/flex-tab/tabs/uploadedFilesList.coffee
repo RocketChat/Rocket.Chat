@@ -54,7 +54,7 @@ Template.uploadedFilesList.events
 				showConfirmButton: false
 
 				msg = ChatMessage.findOne { file: { _id: self._id } }
-				fileCollection.remove self._id, () ->
+				RocketChat.models.Uploads.remove self._id, () ->
 					chatMessages[Session.get('openedRoom')].deleteMsg(msg);
 
 	'scroll .content': _.throttle (e, t) ->
