@@ -193,7 +193,7 @@
 
 		return details
 
-	makeABox: (message) ->
+	makeABox: (message, title) ->
 		if not _.isArray(message)
 			message = message.split("\n")
 
@@ -201,16 +201,23 @@
 		for line in message
 			len = Math.max(len, line.length)
 
-		len += 4
+		topLine = "+--" + s.pad('', len, '-') + "--+"
+		separator = "|  " + s.pad('', len, '') + "  |"
+		lines = []
 
-		text = message.map (msg) =>
-			return "|" + s.lrpad(msg, len) + "|"
+		lines.push topLine
+		if title?
+			lines.push "|  " + s.lrpad(title, len) + "  |"
+			lines.push topLine
 
-		text = text.join("\n")
-		topLine = "+" + s.pad('', len, '=') + "+"
-		separator = "|" + s.pad('', len, '') + "|"
-		bottomLine = "+" + s.pad('', len, '=') + "+"
-		return [topLine, separator, text, separator, bottomLine]
+		lines.push separator
+
+		for line in message
+			lines.push "|  " + s.rpad(line, len) + "  |"
+
+		lines.push separator
+		lines.push topLine
+		return lines
 
 
 	_log: (options) ->
@@ -230,7 +237,7 @@
 			if @defaultTypes[options.type]?
 				color = @defaultTypes[options.type].color
 
-			box = @makeABox options.arguments[0], color
+			box = @makeABox options.arguments[0], options.arguments[1]
 			subPrefix = '➔'
 			if color?
 				subPrefix = subPrefix[color]
