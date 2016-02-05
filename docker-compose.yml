@@ -4,7 +4,9 @@ mongo:
 #    - ./data/runtime/db:/data/db
 #    - ./data/dump:/dump
   command: mongod --smallfiles --oplogSize 128
-
+  ports:
+    - 27017:27017
+    
 rocketchat:
   image: rocketchat/rocket.chat:latest
 # volumes:
