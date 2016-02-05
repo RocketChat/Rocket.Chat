@@ -1,0 +1,57 @@
+<template name="integrations">
+	<div class="permissions-manager">
+		{{#if hasPermission}}
+			<a href="{{pathFor "admin-integrations-new"}}" class="button primary new-role">{{_ "New_integration"}}</a>
+
+			<div class="rocket-form">
+				<div class="section">
+					<div class="admin-integrations-new-panel">
+						{{#each integrations}}
+							{{#if $eq type 'webhook-incoming'}}
+								<a href="{{pathFor "admin-integrations-incoming" id=_id}}">
+									<div class="admin-integrations-new-item">
+										<i class="icon-login"></i>
+										<div class="admin-integrations-new-item-body">
+											<div class="admin-integrations-new-item-title">
+												Incoming WebHook {{#if name}}- {{name}}{{/if}}
+											</div>
+											<div class="admin-integrations-new-item-description">
+												{{{_ "Post_to_s_as_s" channel username}}}
+											</div>
+											<div class="admin-integrations-new-item-description">
+												{{{_ "Created_at_s_by_s" (dateFormated _createdAt) _createdBy.username}}}
+											</div>
+										</div>
+										<i class="icon-angle-right"></i>
+									</div>
+								</a>
+							{{/if}}
+						{{else}}
+							<h1>{{_ "There_are_no_integrations"}}</h1>
+						{{/each}}
+						{{#each integrations}}
+							{{#if $eq type 'webhook-outgoing'}}
+								<a href="{{pathFor "admin-integrations-outgoing" id=_id}}">
+									<div class="admin-integrations-new-item">
+										<i class="icon-login"></i>
+										<div class="admin-integrations-new-item-body">
+											<div class="admin-integrations-new-item-title">
+												Outgoing WebHook {{#if name}}- {{name}}{{/if}}
+											</div>
+											<div class="admin-integrations-new-item-description">
+												{{{_ "Created_at_s_by_s" (dateFormated _createdAt) _createdBy.username}}}
+											</div>
+										</div>
+										<i class="icon-angle-right"></i>
+									</div>
+								</a>
+							{{/if}}
+						{{/each}}
+					</div>
+				</div>
+			</div>
+		{{else}}
+			{{_ "Not_authorized"}}
+		{{/if}}
+	</div>
+</template>

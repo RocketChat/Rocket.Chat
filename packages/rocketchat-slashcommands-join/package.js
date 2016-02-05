@@ -6,21 +6,20 @@ Package.describe({
 });
 
 Package.onUse(function(api) {
-	var client = 'client';
-	var both   = ['client', 'server'];
 
 	api.versionsFrom('1.0');
-	
+
 	api.use([
 		'coffeescript',
 		'check',
-		'rocketchat:lib@0.0.1'
-	], both);
+		'rocketchat:lib'
+	]);
 
-	api.addFiles('join.coffee', both);
+	api.addFiles('client.coffee', 'client');
+	api.addFiles('server.coffee', 'server');
 
 	// TAPi18n
-	api.use('templating', client);
+	api.use('templating', 'client');
 	var _ = Npm.require('underscore');
 	var fs = Npm.require('fs');
 	tapi18nFiles = _.compact(_.map(fs.readdirSync('packages/rocketchat-slashcommands-join/i18n'), function(filename) {
@@ -28,9 +27,8 @@ Package.onUse(function(api) {
 			return 'i18n/' + filename;
 		}
 	}));
-	api.use('tap:i18n@1.6.1', both);
-	api.imply('tap:i18n');
-	api.addFiles(tapi18nFiles, both);
+	api.use('tap:i18n');
+	api.addFiles(tapi18nFiles);
 });
 
 Package.onTest(function(api) {

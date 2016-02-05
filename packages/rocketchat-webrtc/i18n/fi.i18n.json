@@ -1,0 +1,5 @@
+{
+  "WebRTC_Enable_Channel" : "Ota käyttöön julkisilla kanavilla",
+  "WebRTC_Enable_Direct" : "Ota käyttöön yksityisviesteissä",
+  "WebRTC_Enable_Private" : "Ota käyttöön privaattiryhmissä"
+}

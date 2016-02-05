@@ -18,13 +18,12 @@ Meteor.methods
 			room = RocketChat.models.Rooms.findOneById subscription.rid
 			if room.t isnt 'c' and room.usernames.length is 1
 				RocketChat.models.Rooms.removeById subscription.rid # Remove non-channel rooms with only 1 user (the one being deleted)
+			if room.t is 'd' 
+				RocketChat.models.Subscriptions.removeByRoomId subscription.rid
+				RocketChat.models.Messages.removeByRoomId subscription.rid
 
 
 		RocketChat.models.Subscriptions.removeByUserId userId # Remove user subscriptions
-
-		rooms = RocketChat.models.Rooms.findByUserId(userId).fetch()
-
-
 		RocketChat.models.Rooms.removeByTypeContainingUsername 'd', user.username # Remove direct rooms with the user
 		RocketChat.models.Rooms.removeUsernameFromAll user.username # Remove user from all other rooms
 		RocketChat.models.Users.removeById userId # Remove user from users database

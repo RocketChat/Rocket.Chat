@@ -26,3 +26,13 @@ Meteor.startup ->
 		validation: (message) ->
 			return RocketChat.settings.get('Message_AllowStarring') and message.starred
 		order: 10
+
+	RocketChat.MessageAction.addButton
+		id: 'jump-to-star-message'
+		icon: 'icon-right-hand'
+		i18nLabel: 'Jump_to_message'
+		action: (event, instance) ->
+			message = @_arguments[1]
+			$('.message-dropdown:visible').hide()
+			RoomHistoryManager.getSurroundingMessages(message, 50)
+		order: 100

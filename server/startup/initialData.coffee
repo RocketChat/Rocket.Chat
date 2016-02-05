@@ -1,9 +1,29 @@
 Meteor.startup ->
 	Meteor.defer ->
 
-		if not RocketChat.models.Rooms.findOneByName('general')?
+		if not RocketChat.models.Rooms.findOneById('GENERAL')?
 			RocketChat.models.Rooms.createWithIdTypeAndName 'GENERAL', 'c', 'general',
 				default: true
+
+		if not RocketChat.models.Users.findOneById('rocket.cat')?
+			RocketChat.models.Users.create
+				_id: 'rocket.cat'
+				name: "Rocket.Cat"
+				username: 'rocket.cat'
+				status: "offline"
+				statusDefault: "offline"
+				utcOffset: 0
+				active: true
+				bot: true
+
+			rs = RocketChatFile.bufferToStream new Buffer(Assets.getBinary('avatars/rocketcat.png'), 'utf8')
+			RocketChatFileAvatarInstance.deleteFile "rocket.cat.jpg"
+			ws = RocketChatFileAvatarInstance.createWriteStream "rocket.cat.jpg", 'image/png'
+			ws.on 'end', Meteor.bindEnvironment ->
+				RocketChat.models.Users.setAvatarOrigin 'rocket.cat', 'local'
+
+			rs.pipe(ws)
+
 
 		if process.env.ADMIN_EMAIL? and process.env.ADMIN_PASS?
 			re = /^([\w-]+(?:\.[\w-]+)*)@((?:[\w-]+\.)*\w[\w-]{0,66})\.([a-z]{2,6}(?:\.[a-z]{2})?)$/i
@@ -21,7 +41,7 @@ Meteor.startup ->
 							name: 'Admin'
 
 						Accounts.setPassword id, process.env.ADMIN_PASS
-						RocketChat.authz.addUsersToRoles( id, 'admin')
+						RocketChat.authz.addUserRoles( id, 'admin')
 
 					else
 						console.log 'E-mail exists; ignoring environment variables ADMIN_EMAIL and ADMIN_PASS'.red
@@ -33,7 +53,7 @@ Meteor.startup ->
 		# Set oldest user as admin, if none exists yet
 		if _.isEmpty( RocketChat.authz.getUsersInRole( 'admin' ).fetch())
 			# get oldest user
-			oldestUser = RocketChat.models.Users.findOne({}, { fields: { username: 1 }, sort: {createdAt: 1}})
+			oldestUser = RocketChat.models.Users.findOne({ _id: { $ne: 'rocket.cat' }}, { fields: { username: 1 }, sort: {createdAt: 1}})
 			if oldestUser
-				RocketChat.authz.addUsersToRoles( oldestUser._id, 'admin')
+				RocketChat.authz.addUserRoles( oldestUser._id, 'admin')
 				console.log "No admins are found. Set #{oldestUser.username} as admin for being the oldest user"

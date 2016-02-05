@@ -4,13 +4,15 @@ Meteor.methods
 			throw new Meteor.Error('invalid-user', "[methods] updateMessage -> Invalid user")
 
 		originalMessage = RocketChat.models.Messages.findOneById message._id
-		
+
 		if not originalMessage?._id?
 			return
 
 		hasPermission = RocketChat.authz.hasPermission(Meteor.userId(), 'edit-message', message.rid)
 		editAllowed = RocketChat.settings.get 'Message_AllowEditing'
 		editOwn = originalMessage?.u?._id is Meteor.userId()
+
+		me = RocketChat.models.Users.findOneById Meteor.userId()
 
 		unless hasPermission or (editAllowed and editOwn)
 			throw new Meteor.Error 'message-editing-not-allowed', "[methods] updateMessage -> Message editing not allowed"
@@ -22,16 +24,17 @@ Meteor.methods
 			if currentTsDiff > blockEditInMinutes
 				throw new Meteor.Error 'message-editing-blocked'
 
-		console.log '[methods] updateMessage -> '.green, 'userId:', Meteor.userId(), 'arguments:', arguments
-
 		# If we keep history of edits, insert a new message to store history information
 		if RocketChat.settings.get 'Message_KeepHistory'
 			RocketChat.models.Messages.cloneAndSaveAsHistoryById originalMessage._id
 
-		message.ets = new Date()
+		message.editedAt = new Date()
+		message.editedBy =
+			_id: Meteor.userId()
+			username: me.username
 
-		if urls = message.msg.match /([A-Za-z]{3,9}):\/\/([-;:&=\+\$,\w]+@{1})?([-A-Za-z0-9\.]+)+:?(\d+)?((\/[-\+=!:~%\/\.@\,\w]+)?\??([-\+=&!:;%@\/\.\,\w]+)?#?([\w]+)?)?/g
-			message.urls = urls
+		if urls = message.msg.match /([A-Za-z]{3,9}):\/\/([-;:&=\+\$,\w]+@{1})?([-A-Za-z0-9\.]+)+:?(\d+)?((\/[-\+=!:~%\/\.@\,\w]+)?\??([-\+=&!:;%@\/\.\,\w]+)?(?:#([^\s\)]+))?)?/g
+			message.urls = urls.map (url) -> url: url
 
 		message = RocketChat.callbacks.run 'beforeSaveMessage', message
 
@@ -43,5 +46,5 @@ Meteor.methods
 		,
 			$set: message
 
-		# Meteor.defer ->
-		# 	RocketChat.callbacks.run 'afterSaveMessage', RocketChat.models.Messages.findOneById(message.id)
+		Meteor.defer ->
+			RocketChat.callbacks.run 'afterSaveMessage', RocketChat.models.Messages.findOneById(tempid)

@@ -1,0 +1,19 @@
+<template name="pageContainer">
+	<section class="page-container page-home page-static page-list">
+		<head class="fixed-title">
+			{{> burger}}
+			<h2>
+				<span class="page-title">
+					{{#if i18nPageTitle}}
+						{{_ i18nPageTitle}}
+					{{else}}
+						{{pageTitle}}
+					{{/if}}
+				</span>
+			</h2>
+		</head>
+		<div class="content">
+			{{> Template.dynamic template=pageTemplate}}
+		</div>
+	</section>
+</template>

@@ -1,0 +1,145 @@
+<template name="admin">
+	<section class="page-container page-home page-static page-settings">
+		<head class="fixed-title">
+			{{> burger}}
+			<h2>
+				<span class="room-title">{{#with group}}{{label}}{{/with}}</span>
+			</h2>
+		</head>
+
+		<div class="content">
+			{{#unless hasPermission 'view-privileged-setting'}}
+				<p>{{_ "You_are_not_authorized_to_view_this_page"}}</p>
+			{{else}}
+				{{#with group}}
+					{{#if description}}
+						<div class="info">
+							<p class="settings-description">{{description}}</p>
+						</div>
+					{{/if}}
+				{{/with}}
+				<div class="rocket-form">
+					{{#each sections}}
+						<div class="section {{#if section}}section-collapsed{{/if}}">
+							{{#if section}}
+								<div class="section-title">
+									<div class="section-title-text">
+										{{translateSection section}}
+									</div>
+									<div class="section-title-right">
+										<button class="button secondary expand"><span>{{_ "Expand"}}</span></button>
+									</div>
+								</div>
+							{{/if}}
+							<div class="section-content">
+								{{#if section}}
+									{{#if sectionIsCustomOath section}}
+										<div class="section-helper">
+											{{#with callbackURL section}}
+												{{{_ "Custom_oauth_helper" .}}}
+											{{/with}}
+										</div>
+									{{/if}}
+								{{/if}}
+								{{#each settings}}
+									<div class="input-line double-col {{#if changed}}setting-changed{{/if}}" {{isDisabled}}>
+										<label>{{label}}</label>
+										<div>
+											{{#if $eq type 'string'}}
+												{{#if multiline}}
+													<textarea class="input-monitor" name="{{_id}}" rows="4" style="height: auto" {{isDisabled}}>{{value}}</textarea>
+												{{else}}
+													<input class="input-monitor" type="text" name="{{_id}}" value="{{value}}" placeholder="{{placeholder}}" {{isDisabled}}/>
+												{{/if}}
+											{{/if}}
+
+											{{#if $eq type 'int'}}
+												<input class="input-monitor" type="number" name="{{_id}}" value="{{value}}" placeholder="{{placeholder}}" {{isDisabled}}/>
+											{{/if}}
+
+											{{#if $eq type 'boolean'}}
+												<label><input class="input-monitor" type="radio" name="{{_id}}" value="1" checked="{{$eq value true}}" {{isDisabled}}/> {{_ "True"}}</label>
+												<label><input class="input-monitor" type="radio" name="{{_id}}" value="0" checked="{{$eq value false}}" {{isDisabled}}/> {{_ "False"}}</label>
+											{{/if}}
+
+											{{#if $eq type 'select'}}
+												<select class="input-monitor" name="{{_id}}" {{isDisabled}}>
+													{{#each values}}
+														<option value="{{key}}" selected="{{selectedOption ../_id key}}">{{_ i18nLabel}}</option>
+													{{/each}}
+												</select>
+											{{/if}}
+
+											{{#if $eq type 'language'}}
+												<select class="input-monitor" name="{{_id}}" {{isDisabled}}>
+													{{#each languages}}
+													<option value="{{key}}" selected="{{appLanguage key}}" dir="auto">{{name}}</option>
+													{{/each}}
+												</select>
+											{{/if}}
+
+											{{#if $eq type 'color'}}
+												<input class="input-monitor minicolors" type="text" name="{{_id}}" value="{{value}}" {{isDisabled}}/>
+											{{/if}}
+
+											{{#if $eq type 'action'}}
+												<button type="button" class="button primary action" data-setting="{{_id}}" data-action="{{value}}" {{isDisabled}}>{{_ actionText}}</button>
+											{{/if}}
+
+											{{#if $eq type 'asset'}}
+												{{#if value}}
+													<div class="settings-file-preview">
+														<div class="preview" style="background-image:url({{value}}?_dc={{random}});"></div>
+														<div class="action">
+															<button type="button" class="button red delete-asset"><i class="icon-trash"></i>{{_ 'Delete'}}</button>
+														</div>
+													</div>
+												{{else}}
+													<div class="settings-file-preview">
+														<div class="preview no-file"><i class="icon-upload"></i></div>
+														<div class="action">
+															<div class="button primary">{{_ 'Select_file'}}
+																<input type="file" accept="{{fileConstraints.contentType}}" />
+															</div>
+														</div>
+													</div>
+												{{/if}}
+											{{/if}}
+
+											{{#if description}}
+												<div class="settings-description">{{{description}}}</div>
+											{{/if}}
+											{{#if alert}}
+												<div class="settings-alert"><i class="icon-attention"></i>{{{_ alert}}}</div>
+											{{/if}}
+										</div>
+									</div>
+								{{/each}}
+
+								{{#if section}}
+									{{#if sectionIsCustomOath section}}
+										<div class="submit">
+											<button class="button delete remove-custom-oauth"><span>{{_ "Remove_custom_oauth"}}</span></button>
+										</div>
+									{{/if}}
+								{{/if}}
+
+								{{#if hasChanges section}}
+									<div class="submit">
+										<button class="button save"><i class="icon-send"></i><span>{{_ "Save_changes"}}</span></button>
+									</div>
+								{{/if}}
+							</div>
+						</div>
+					{{/each}}
+
+					<div class="submit">
+						{{#if $eq group._id 'Accounts'}}
+							<button class="button secondary add-custom-oauth"><span>{{_ "Add_custom_oauth"}}</span></button>
+						{{/if}}
+					</div>
+				</div>
+			{{/unless}}
+		</div>
+	</section>
+</template>

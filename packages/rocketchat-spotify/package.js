@@ -13,13 +13,13 @@ Package.onUse(function(api) {
 		'templating',
 		'underscore',
 		'rocketchat:oembed@0.0.1',
-		'rocketchat:lib@0.0.1'
+		'rocketchat:lib'
 	]);
 
-	api.addFiles('client/widget.coffee', 'client');
-	api.addFiles('client/oembedSpotifyWidget.html', 'client');
+	api.addFiles('lib/client/widget.coffee', 'client');
+	api.addFiles('lib/client/oembedSpotifyWidget.html', 'client');
 
-	api.addFiles('spotify.coffee', ['server','client']);
+	api.addFiles('lib/spotify.coffee', ['server','client']);
 });
 
 Package.onTest(function(api) {

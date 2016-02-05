@@ -1,7 +1,7 @@
 {
-	"Message_AllowStarring" : "Permitir Mensagens Favoritas",
-	"Star_Message": "Favoritar Message",
-	"Unstar_Message": "Remover Favorito",
-	"No_starred_messages": "Não há mensagens favoritas",
-	"Starred_Messages": "Mensagens Favoritas"
+  "Message_AllowStarring" : "Permitir Mensagens Favoritas",
+  "Star_Message" : "Favoritar Message",
+  "Unstar_Message" : "Remover Favorito",
+  "Starred_Messages" : "Mensagens Favoritas",
+  "No_starred_messages" : "Não há mensagens favoritas"
 }

@@ -1,9 +1,0 @@
-<template name="adminUserChannels">
-	{{#unless hasPermission 'view-full-other-user-info'}}
-		<p>You are not authorized to view this page.</p>
-	{{else}}
-		<div class="user-info-channel">
-			<h3><a href="{{route}}"><i class="icon-{{type}}"></i> {{name}}</a></h3>
-		</div>
-	{{/unless}}
-</template>

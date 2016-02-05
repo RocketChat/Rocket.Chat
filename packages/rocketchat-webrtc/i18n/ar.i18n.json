@@ -1,0 +1,5 @@
+{
+  "WebRTC_Enable_Channel" : "تمكين للقنوات العامة",
+  "WebRTC_Enable_Direct" : "تمكين للرسائل المباشرة",
+  "WebRTC_Enable_Private" : "تمكين للقنوات الخاصة"
+}

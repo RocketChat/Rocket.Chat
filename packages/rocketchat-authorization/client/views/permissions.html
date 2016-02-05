@@ -1,0 +1,37 @@
+<template name="permissions">
+	<div class="permissions-manager">
+		{{#if hasPermission}}
+			<a href="{{pathFor "admin-permissions-new"}}" class="button primary new-role">{{_ "New_role"}}</a>
+
+			<table border="1" class="permission-grid">
+				<thead>
+					<tr>
+						<td>&nbsp;</td>
+						{{#each role}}
+							<td title="{{description}}">
+								<a href="{{pathFor "admin-permissions-edit" name=_id}}">
+									{{_id}}
+									<i class="icon-edit"></i>
+								</a>
+							</td>
+						{{/each}}
+					</tr>
+				</thead>
+				<tbody>
+					{{#each permission}}
+						<tr>
+							<td>{{_id}}</td>
+							{{#each role}}
+								<td>
+									<input type="checkbox" name="perm[{{_id}}][{{../_id}}]" class="role-permission" value="1" checked="{{granted ../roles}}" data-role="{{_id}}" data-permission="{{../_id}}">
+								</td>
+							{{/each}}
+						</tr>
+					{{/each}}
+				</tbody>
+			</table>
+		{{else}}
+			{{_ "Not_authorized"}}
+		{{/if}}
+	</div>
+</template>

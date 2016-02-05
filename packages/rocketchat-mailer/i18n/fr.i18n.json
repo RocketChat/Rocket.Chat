@@ -1,0 +1,14 @@
+{
+  "From_email_warning" : "<b>Attention</b> : le champ <b>De</b> est forcé par vos paramètres de serveur mail",
+  "From_email_is_required" : "Le champ \"De\" est requis.",
+  "Email_from" : "De",
+  "Email_subject" : "Sujet",
+  "Email_body" : "Corps du mail",
+  "Mailer_body_tags" : "Vous <b>devez</b> utiliser [unsubscribe] pour le lien de désinscription.<br />Vous pouvez utiliser [name], [fname], [lname] pour le nom complet de l'utilisateur, le prénom et le nom de famille respectivement.<br />Vous pouvez utiliser [email] pour le mail de l'utilisateur.",
+  "Send_email" : "Envoyer le courriel",
+  "The_emails_are_being_sent" : "Les courriels sont en train d'être envoyés.",
+  "You_are_not_authorized_to_view_this_page" : "Vous n'avez pas l'autorisation de voir cette page.",
+  "You_have_successfully_unsubscribed" : "Vous êtes désabonné avec succès de notre Liste de diffusion.",
+  "You_informed_an_invalid_FROM_address" : "Vous avez entré un expéditeur invalide (champ FROM).",
+  "You_must_provide_the_unsubscribe_link" : "Vous devez fournir le lien de désinscription [unsubscribe]."
+}

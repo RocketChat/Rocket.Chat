@@ -1,0 +1,68 @@
+<template name="channelSettings">
+	<div class="content">
+		<div class="list-view channel-settings">
+			<div class="status">
+				<h2>{{_ "Room_Info"}}</h2>
+			</div>
+			<form>
+				<ul class="list clearfix">
+					{{#if notDirect}}
+						<li>
+							<label>{{_ "Name"}}</label>
+							<div>
+								{{#if editing 'roomName'}}
+									<input type="text" name="roomName" value="{{roomName}}" class="editing" /> <button type="button" class="button secondary cancel">{{_ "Cancel"}}</button> <button type="button" class="button primary save">{{_ "Save"}}</button>
+								{{else}}
+									<span>{{roomName}}{{#if canEdit}} <i class="octicon octicon-pencil" data-edit="roomName"></i>{{/if}}</span>
+								{{/if}}
+							</div>
+						</li>
+					{{/if}}
+					<li>
+						<label>{{_ "Topic"}}</label>
+						<div>
+							{{#if editing 'roomTopic'}}
+								<input type="text" name="roomTopic" value="{{roomTopic}}" class="editing" /> <button type="button" class="button secondary cancel">{{_ "Cancel"}}</button> <button type="button" class="button primary save">{{_ "Save"}}</button>
+							{{else}}
+								<span>{{roomTopic}}{{#if canEdit}} <i class="octicon octicon-pencil" data-edit="roomTopic"></i>{{/if}}</span>
+							{{/if}}
+						</div>
+					</li>
+					{{#if notDirect}}
+						<li>
+							<label>{{_ "Type"}}</label>
+							<div>
+								{{#if editing 'roomType'}}
+									<label><input type="radio" name="roomType" class="editing" value="c" checked="{{$eq roomType 'c'}}" /> {{_ "Channel"}}</label>
+									<label><input type="radio" name="roomType" value="p" checked="{{$eq roomType 'p'}}" /> {{_ "Private_Group"}}</label>
+									<button type="button" class="button secondary cancel">{{_ "Cancel"}}</button>
+									<button type="button" class="button primary save">{{_ "Save"}}</button>
+								{{else}}
+									<span>{{roomTypeDescription}}{{#if canEdit}} <i class="octicon octicon-pencil" data-edit="roomType"></i>{{/if}}</span>
+								{{/if}}
+							</div>
+						</li>
+					{{/if}}
+					{{#if notDirect}}
+						<li>
+							<label>{{_ "Room_archivation_state"}}</label>
+							<div>
+								{{#if editing 'archivationState'}}
+									<label><input type="radio" name="archivationState" class="editing" value="true" checked="{{$eq archivationState true}}" /> {{_ "Room_archivation_state_true"}}</label>
+									<label><input type="radio" name="archivationState" value="false" checked="{{$neq archivationState true}}" /> {{_ "Room_archivation_state_false"}}</label>
+									<button type="button" class="button secondary cancel">{{_ "Cancel"}}</button>
+									<button type="button" class="button primary save">{{_ "Save"}}</button>
+								{{else}}
+									<span>{{archivationStateDescription}}{{#if canEdit}} <i class="octicon octicon-pencil" data-edit="archivationState"></i>{{/if}}</span>
+								{{/if}}
+							</div>
+						</li>
+					{{/if}}
+					{{#each channelSettings}}
+						{{> Template.dynamic template=template data=data}}
+					{{/each}}
+				</ul>
+			</form>
+		</div>
+	</div>
+</template>

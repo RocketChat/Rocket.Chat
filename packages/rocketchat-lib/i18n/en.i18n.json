@@ -1,4 +1,7 @@
 {
-	"Edit": "Edit",
-	"Delete": "Delete"
+  "All_logs" : "All logs",
+  "Debug_Level" : "Debug Level",
+  "Delete" : "Delete",
+  "Edit" : "Edit",
+  "Only_errors" : "Only errors"
 }

@@ -135,8 +135,15 @@ class WebRTCClass
 		@monitor = false
 		@autoAccept = false
 
-		@navigator = if navigator.mozGetUserMedia? then 'firefox' else 'chrome'
-		@screenShareAvaliable = document.cookie.includes('rocketchatscreenshare=chrome') is true or window.rocketchatscreenshare is 'firefox'
+		@navigator = undefined
+		if navigator.userAgent.toLocaleLowerCase().indexOf('chrome') > -1
+			@navigator = 'chrome'
+		else if navigator.userAgent.toLocaleLowerCase().indexOf('firefox') > -1
+			@navigator = 'firefox'
+		else if navigator.userAgent.toLocaleLowerCase().indexOf('safari') > -1
+			@navigator = 'safari'
+
+		@screenShareAvailable = @navigator in ['chrome', 'firefox']
 
 		@media =
 			video: true
@@ -152,7 +159,7 @@ class WebRTCClass
 
 		Meteor.setInterval @checkPeerConnections.bind(@), 1000
 
-		Meteor.setInterval @broadcastStatus.bind(@), 1000
+		# Meteor.setInterval @broadcastStatus.bind(@), 1000
 
 	log: ->
 		if @debug is true
@@ -308,11 +315,37 @@ class WebRTCClass
 			navigator.getUserMedia media, onSuccess, onError
 			return
 
-		if @screenShareAvaliable isnt true
+		if @screenShareAvailable isnt true
 			console.log 'Screen share is not avaliable'
 			return
 
 		getScreen = (audioStream) =>
+			if document.cookie.indexOf("rocketchatscreenshare=chrome") is -1 and not window.rocketchatscreenshare?
+				refresh = ->
+					swal
+						type: "warning"
+						title: TAPi18n.__ "Refresh_your_page_after_install_to_enable_screen_sharing"
+
+				swal
+					type: "warning"
+					title: TAPi18n.__ "Screen_Share"
+					text: TAPi18n.__ "You_need_install_an_extension_to_allow_screen_sharing"
+					html: true
+					showCancelButton: true
+					confirmButtonText: TAPi18n.__ "Install_Extension"
+					cancelButtonText: TAPi18n.__ "Cancel"
+				, (isConfirm) =>
+					if isConfirm
+						if @navigator is 'chrome'
+							chrome.webstore.install undefined, refresh, ->
+								window.open('https://chrome.google.com/webstore/detail/rocketchat-screen-share/nocfbnnmjnndkbipkabodnheejiegccf')
+								refresh()
+						else if @navigator is 'firefox'
+							window.open('https://addons.mozilla.org/en-GB/firefox/addon/rocketchat-screen-share/')
+							refresh()
+
+				return onError(false)
+
 			getScreenSuccess = (stream) =>
 				if audioStream?
 					stream.addTrack(audioStream.getAudioTracks()[0])
@@ -324,7 +357,6 @@ class WebRTCClass
 					video:
 						mozMediaSource: 'window'
 						mediaSource: 'window'
-
 				navigator.getUserMedia media, getScreenSuccess, onError
 			else
 				ChromeScreenShare.getSourceId (id) =>
@@ -373,7 +405,11 @@ class WebRTCClass
 
 			callback null, @localStream
 
-		@getUserMedia @media, onSuccess, @onError
+		onError = (error) =>
+			callback false
+			@onError error
+
+		@getUserMedia @media, onSuccess, onError
 
 
 	###
@@ -432,7 +468,9 @@ class WebRTCClass
 		if @localStream?
 			@media.desktop = enabled
 			delete @localStream
-			@getLocalUserMedia =>
+			@getLocalUserMedia (err) =>
+				if err?
+					return
 				@screenShareEnabled.set enabled
 				@stopAllPeerConnections()
 				@joinCall()
@@ -447,7 +485,9 @@ class WebRTCClass
 		@active = false
 		@monitor = false
 		@remoteMonitoring = false
-		@localStream?.stop()
+		if @localStream? and typeof @localStream isnt 'undefined'
+			@localStream.getTracks().forEach (track) ->
+				track.stop()
 		@localUrl.set undefined
 		delete @localStream
 

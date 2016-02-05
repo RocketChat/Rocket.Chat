@@ -28,9 +28,28 @@ RocketChat.models.Users = new class extends RocketChat.models._Base
 
 		return @findOne query, options
 
+	findOneVerifiedFromSameDomain: (email, options) ->
+		domain = s.strRight(email, '@')
+		query =
+			emails:
+				$elemMatch:
+					address:
+						$regex: new RegExp "@" + domain + "$", "i"
+						$ne: email
+					verified: true
+
+		return @findOne query, options
+
 	findOneAdmin: (admin, options) ->
 		query =
 			admin: admin
+
+		return @findOne query, options
+
+	findOneByIdAndLoginToken: (_id, token, options) ->
+		query =
+			_id: _id
+			'services.resume.loginTokens.hashedToken' : Accounts._hashLoginToken(token)
 
 		return @findOne query, options
 
@@ -49,6 +68,37 @@ RocketChat.models.Users = new class extends RocketChat.models._Base
 	findByUsername: (username, options) ->
 		query =
 			username: username
+
+		return @find query, options
+
+	findActiveByUsernameRegexWithExceptions: (username, exceptions = [], options = {}) ->
+		console.log 'findActiveByUsernameRegexWithExceptions', username, exceptions
+		if not _.isArray exceptions
+			exceptions = [ exceptions ]
+
+		usernameRegex = new RegExp username, "i"
+		query =
+			$and: [
+				{ active: true }
+				{ username: { $nin: exceptions } }
+				{ username: usernameRegex }
+			]
+			# username: { $regex: usernameRegex, $nin: exceptions }
+			# username: { $nin: exceptions }
+
+		console.log 'findActiveByUsernameRegexWithExceptions query', JSON.stringify query, null, ' '
+		return @find query, options
+
+	findByActiveUsersNameOrUsername: (nameOrUsername, options) ->
+		query =
+			username:
+				$exists: 1
+			active: true
+
+			$or: [
+				{name: nameOrUsername}
+				{username: nameOrUsername}
+			]
 
 		return @find query, options
 
@@ -74,6 +124,12 @@ RocketChat.models.Users = new class extends RocketChat.models._Base
 
 		return @find query, options
 
+	getLastLogin: (options = {}) ->
+		query = { lastLogin: { $exists: 1 } }
+		options.sort = { lastLogin: -1 }
+		options.limit = 1
+
+		return @find(query, options)?.fetch?()?[0]?.lastLogin
 
 	# UPDATE
 	updateLastLoginById: (_id) ->
@@ -95,6 +151,14 @@ RocketChat.models.Users = new class extends RocketChat.models._Base
 	setUsername: (_id, username) ->
 		update =
 			$set: username: username
+
+		return @update _id, update
+
+	setEmail: (_id, email) ->
+		update =
+			$set:
+				'emails.0.address': email
+				'emails.0.verified': false
 
 		return @update _id, update
 
@@ -137,6 +201,13 @@ RocketChat.models.Users = new class extends RocketChat.models._Base
 		update =
 			$set:
 				"services.resume.loginTokens" : []
+
+		return @update _id, update
+
+	unsetRequirePasswordChange: (_id) ->
+		update =
+			$unset:
+				"requirePasswordChange" : true
 
 		return @update _id, update
 

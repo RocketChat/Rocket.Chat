@@ -6,16 +6,17 @@ Package.describe({
 });
 
 Package.onUse(function(api) {
+
 	api.versionsFrom('1.0');
 
 	api.use([
 		'coffeescript',
 		'check',
-		'tracker',
-		'rocketchat:lib@0.0.1'
+		'rocketchat:lib'
 	]);
 
-	api.addFiles('invite.coffee');
+	api.addFiles('client.coffee', 'client');
+	api.addFiles('server.coffee', 'server');
 
 	// TAPi18n
 	api.use('templating', 'client');
@@ -26,9 +27,8 @@ Package.onUse(function(api) {
 			return 'i18n/' + filename;
 		}
 	}));
-	api.use('tap:i18n@1.6.1', ['client', 'server']);
-	api.imply('tap:i18n');
-	api.addFiles(tapi18nFiles, ['client', 'server']);
+	api.use('tap:i18n');
+	api.addFiles(tapi18nFiles);
 });
 
 Package.onTest(function(api) {

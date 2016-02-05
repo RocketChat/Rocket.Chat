@@ -1,12 +1,5 @@
 Meteor.startup ->
 
-	ChatSubscription.find({}, { fields: { unread: 1 } }).observeChanges
-		changed: (id, fields) ->
-			if fields.unread and fields.unread > 0
-				KonchatNotification.newMessage()
-
-Meteor.startup ->
-
 	Tracker.autorun ->
 
 		unreadCount = 0
@@ -14,18 +7,26 @@ Meteor.startup ->
 
 		subscriptions = ChatSubscription.find({open: true}, { fields: { unread: 1, alert: 1, rid: 1, t: 1, name: 1, ls: 1 } })
 
-		rid = undefined
+		openedRoomId = undefined
 		Tracker.nonreactive ->
 			if FlowRouter.getRouteName() in ['channel', 'group', 'direct']
-				rid = Session.get 'openedRoom'
+				openedRoomId = Session.get 'openedRoom'
 
 		for subscription in subscriptions.fetch()
-			if subscription.rid is rid and (subscription.alert or subscription.unread > 0)
-				readMessage.readNow()
-			else
-				unreadCount += subscription.unread
-				if subscription.alert is true
-					unreadAlert = '•'
+
+			if subscription.alert or subscription.unread > 0
+				# This logic is duplicated in /client/notifications/notification.coffee.
+				hasFocus = readMessage.isEnable()
+				subscriptionIsTheOpenedRoom = openedRoomId is subscription.rid
+				if hasFocus and subscriptionIsTheOpenedRoom
+					# The user has probably read all messages in this room.
+					# TODO: readNow() should return whether it has actually marked the room as read.
+					readMessage.readNow()
+				else
+					# Increment the total unread count.
+					unreadCount += subscription.unread
+					if subscription.alert is true
+						unreadAlert = '•'
 
 			readMessage.refreshUnreadMark(subscription.rid)
 

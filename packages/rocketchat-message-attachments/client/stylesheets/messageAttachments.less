@@ -1,0 +1,96 @@
+.attachment {
+	.attachment-block {
+		padding-left: 15px;
+		margin: 5px 0;
+		position: relative;
+
+		.attachment-block-border {
+			width: 4px;
+			position: absolute;
+			border-radius: 8px;
+			left: 0;
+			top: 0;
+			bottom: 0;
+			background-color: #ccc;
+		}
+	}
+
+	.attachment-author {
+		font-size: 0.95rem;
+		font-weight: 600;
+		line-height: 1.2rem;
+
+		> a {
+			font-weight: 600;
+			color: #444;
+		}
+
+		img {
+			max-height: 16px;
+			margin-right: 2px;
+			margin-bottom: -2px;
+		}
+	}
+
+	.attachment-title {
+		font-size: 1.02rem;
+		font-weight: 500;
+		line-height: 1.5rem;
+
+		> a {
+			font-weight: 500;
+		}
+	}
+
+	.attachment-text {
+		line-height: 1rem;
+		padding: 3px 0;
+	}
+
+	.attachment-image {
+		margin-top: 4px;
+	}
+
+	.attachment-fields {
+		margin-top: 4px;
+
+		.attachment-field {
+			&.attachment-field-short {
+				width: 48%;
+				display: inline-block;
+			}
+
+			.attachment-field-title {
+				font-weight: 600;
+				line-height: 1rem;
+			}
+		}
+	}
+
+	.attachment-field ~ .attachment-field {
+		margin-top: 8px;
+	}
+
+	.attachment-thumb {
+		padding-right: 10px;
+		padding-top: 5px;
+		line-height: 0px;
+
+		img {
+			max-width: 100px;
+		}
+	}
+
+	.attachment-flex {
+		display: flex;
+		align-items: flex-start;
+
+		.attachment-flex-column-grow {
+			flex-grow: 1;
+		}
+	}
+
+	.attachment-small-content {
+		max-width: 700px;
+	}
+}

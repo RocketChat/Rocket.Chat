@@ -6,6 +6,8 @@ Package.describe({
 
 Package.on_use(function (api, where) {
   api.use('underscore', ['client', 'server']);
+  api.use('check');
+  api.use('random');
   api.add_files(['lib/ev.js', 'lib/server.js', 'lib/stream_permission.js'], 'server');
   api.add_files(['lib/ev.js', 'lib/client.js'], 'client');
 });

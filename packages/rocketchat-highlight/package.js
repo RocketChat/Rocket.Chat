@@ -11,7 +11,7 @@ Package.onUse(function(api) {
 	api.use([
 		'coffeescript',
 		'simple:highlight.js',
-		'rocketchat:lib@0.0.1'
+		'rocketchat:lib'
 	]);
 
 	api.addFiles('highlight.coffee', ['server','client']);

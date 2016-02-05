@@ -3,8 +3,6 @@ Meteor.methods
 		if not Meteor.userId()
 			throw new Meteor.Error 'invalid-user', '[methods] archiveRoom -> Invalid user'
 
-		console.log '[methods] archiveRoom -> '.green, 'userId:', Meteor.userId(), 'arguments:', arguments
-
 		room = RocketChat.models.Rooms.findOneById rid
 
 		if room.u? and room.u._id is Meteor.userId() or RocketChat.authz.hasRole(Meteor.userId(), 'admin')

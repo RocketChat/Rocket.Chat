@@ -1,0 +1,28 @@
+<template name="livechatDepartments">
+	<div class="list">
+		<table>
+			<thead>
+				<tr>
+					<th width="25%">{{_ "Name"}}</th>
+					<th width="25%">{{_ "Description"}}</th>
+					<th width="25%">{{_ "Num_Agents"}}</th>
+					<th width="25%">{{_ "Enabled"}}</th>
+					<th>{{_ "Delete"}}</th>
+				</tr>
+			</thead>
+			<tbody>
+				{{#each departments}}
+					<tr class="department-info" data-id="{{_id}}">
+						<td>{{name}}</td>
+						<td>{{description}}</td>
+						<td>{{numAgents}}</td>
+						<td>{{#if enabled}}{{_ "Yes"}}{{else}}{{_ "No"}}{{/if}}</td>
+						<td><a href="#remove" class="remove-department"><i class="icon-trash"></i></a></td>
+					</tr>
+				{{/each}}
+			</tbody>
+		</table>
+	</div>
+
+	<a href="{{pathFor 'livechat-department-new'}}" class="button primary">{{_ "New_Department"}}</a>
+</template>

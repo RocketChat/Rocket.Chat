@@ -1,0 +1,1 @@
+The Complete Open Source Chat Solution. Rocket.Chat is a Web Chat Server, developed in JavaScript. It is a great solution for communities and companies wanting to privately host their own chat service or for developers looking forward to build and evolve their own chat platforms.

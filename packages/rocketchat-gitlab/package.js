@@ -8,7 +8,7 @@ Package.onUse(function(api) {
     api.versionsFrom('1.0');
 
     api.use('coffeescript');
-    api.use('rocketchat:lib@0.0.1');
+    api.use('rocketchat:lib');
     api.use('rocketchat:custom-oauth');
 
     api.addFiles("common.coffee");
@@ -24,9 +24,8 @@ Package.onUse(function(api) {
             return 'i18n/' + filename;
         }
     }));
-    api.use('tap:i18n@1.6.1', ['client', 'server']);
-    api.imply('tap:i18n');
-    api.addFiles(tapi18nFiles, ['client', 'server']);
+    api.use('tap:i18n');
+    api.addFiles(tapi18nFiles);
 });
 
 Package.onTest(function(api) {
