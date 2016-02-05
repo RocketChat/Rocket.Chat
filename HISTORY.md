@@ -1,6 +1,8 @@
 ## NEXT
 
 - Closes #1367; Add ability to delete files
+- Parse URLs by default on messages from REST APIs/webhooks/integrations - #1362
+- Messages from REST APIs are not from bot by default
 
 ## 0.16.0, 2016-Feb-01
 
