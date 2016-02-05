@@ -1,0 +1,14 @@
+<template name="viewLogs">
+	{{#if hasPermission}}
+		<div class="section terminal">
+			{{#each logs}}
+				<div>
+					<!-- <span class="time">{{formatTS ts}}</span>  -->
+					{{{ansispan string}}}
+				</div>
+			{{/each}}
+		</div>
+	{{else}}
+		{{_ "Not_authorized"}}
+	{{/if}}
+</template>
