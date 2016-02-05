@@ -1,4 +1,7 @@
 ansispan = function (str) {
+  str = str.replace(/>/g, '&gt;');
+  str = str.replace(/</g, '&lt;');
+
   Object.keys(ansispan.foregroundColors).forEach(function (ansi) {
     var span = '<span style="color: ' + ansispan.foregroundColors[ansi] + '">';
 
@@ -32,7 +35,7 @@ ansispan = function (str) {
 ansispan.foregroundColors = {
   '30': 'gray',
   '31': 'red',
-  '32': 'green',
+  '32': 'lime',
   '33': 'yellow',
   '34': '#6B98FF',
   '35': '#FF00FF',
