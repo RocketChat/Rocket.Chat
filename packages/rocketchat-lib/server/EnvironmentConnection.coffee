@@ -17,7 +17,11 @@ Meteor.methods = (methods) ->
 	_.each methods, (func, name) ->
 		methods[name] = ->
 			self = this
-			RocketChat.connection.withValue this.connection, ->
+			if not self.connection?
+				func.apply self, arguments
+				return
+
+			RocketChat.connection.withValue self.connection, ->
 				func.apply self, arguments
 
 	originalMethods methods
