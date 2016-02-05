@@ -20,6 +20,20 @@
 							{{/if}}
 						</div>
 					</li>
+					<li>
+						<label>{{_ "Mobile_push_notifications"}}</label>
+						<div>
+							{{#if editing 'mobilePushNotifications'}}
+								<label><input type="radio" name="mobilePushNotifications" value="all" checked="{{$eq mobilePushNotifications 'all'}}" /> {{_ "All_messages"}}</label>
+								<label><input type="radio" name="mobilePushNotifications" value="mentions" checked="{{$eq mobilePushNotifications 'mentions'}}" /> {{_ "Mentions_default"}}</label>
+								<label><input type="radio" name="mobilePushNotifications" value="nothing" checked="{{$eq mobilePushNotifications 'nothing'}}" /> {{_ "Nothing"}}</label>
+								<button type="button" class="button secondary cancel">{{_ "Cancel"}}</button>
+								<button type="button" class="button primary save">{{_ "Save"}}</button>
+							{{else}}
+								<span>{{mobilePushNotificationsValue}} <i class="octicon octicon-pencil" data-edit="mobilePushNotifications"></i></span>
+							{{/if}}
+						</div>
+					</li>
 				</ul>
 			</form>
 		</div>

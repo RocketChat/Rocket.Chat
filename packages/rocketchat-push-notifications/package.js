@@ -23,7 +23,8 @@ Package.onUse(function(api) {
 	], 'client');
 
 	api.addFiles([
-
+		'server/methods/saveNotificationSettings.js',
+		'server/models/Subscriptions.js'
 	], 'server');
 
 	// TAPi18n
