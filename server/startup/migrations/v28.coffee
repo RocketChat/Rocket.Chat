@@ -1,5 +1,4 @@
-Meteor.startup ->
-  Migrations.add
-    version: 28
-    up: ->
-      RocketChat.models.Permissions.addRole 'view-c-room', 'bot'
+RocketChat.Migrations.add
+	version: 28
+	up: ->
+		RocketChat.models.Permissions.addRole 'view-c-room', 'bot'
