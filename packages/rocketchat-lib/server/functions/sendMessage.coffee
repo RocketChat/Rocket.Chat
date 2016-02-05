@@ -79,7 +79,7 @@ RocketChat.sendMessage = (user, message, room, options) ->
 						query:
 							userId: userOfMention._id
 
-				if userOfMention.status is 'offline' and userOfMention.settings?.preferences?.emailNotificationMode is true
+				if userOfMention.status is 'offline' and userOfMention.settings?.preferences?.emailNotificationMode is true and userOfMention.emails and userOfMention.emails.length > 0
 					Email.send
 						to: userOfMention.emails[0].address
 						from: RocketChat.settings.get('From_Email')
@@ -167,11 +167,12 @@ RocketChat.sendMessage = (user, message, room, options) ->
 
 				if offlineMentionsRoom.length > 0
 					for offlineUser in offlineMentionsRoom
-						Email.send
-							to: offlineUser.emails[0].address
-							from: RocketChat.settings.get('From_Email')
-							subject: TAPi18n.__ "Offline_Mention_Email", {site: RocketChat.settings.get('Site_Name'), user: user.username, room: room.name}
-							html: "> " + message.msg
+						if offlineUser.emails and offlineUser.emails.length > 0
+							Email.send
+								to: offlineUser.emails[0].address
+								from: RocketChat.settings.get('From_Email')
+								subject: TAPi18n.__ "Offline_Mention_Email", {site: RocketChat.settings.get('Site_Name'), user: user.username, room: room.name}
+								html: "> " + message.msg
 		###
 		Update all other subscriptions to alert their owners but witout incrementing
 		the unread counter, as it is only for mentions and direct messages
