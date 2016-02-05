@@ -59,6 +59,10 @@
 			name: 'info'
 			color: 'blue'
 			level: 1
+		success:
+			name: 'info'
+			color: 'green'
+			level: 1
 		warn:
 			name: 'warn'
 			color: 'magenta'
@@ -82,6 +86,14 @@
 				@[type] = (args...) =>
 					@_log
 						type: type
+						level: typeConfig.level
+						method: typeConfig.name
+						arguments: args
+
+				@[type+"Box"] = (args...) =>
+					@_log
+						type: type
+						box: true
 						level: typeConfig.level
 						method: typeConfig.name
 						arguments: args
@@ -181,6 +193,33 @@
 
 		return details
 
+	makeABox: (message, title) ->
+		if not _.isArray(message)
+			message = message.split("\n")
+
+		len = 0
+		for line in message
+			len = Math.max(len, line.length)
+
+		topLine = "+--" + s.pad('', len, '-') + "--+"
+		separator = "|  " + s.pad('', len, '') + "  |"
+		lines = []
+
+		lines.push topLine
+		if title?
+			lines.push "|  " + s.lrpad(title, len) + "  |"
+			lines.push topLine
+
+		lines.push separator
+
+		for line in message
+			lines.push "|  " + s.rpad(line, len) + "  |"
+
+		lines.push separator
+		lines.push topLine
+		return lines
+
+
 	_log: (options) ->
 		if LoggerManager.enabled is false
 			LoggerManager.addToQueue @, arguments
@@ -191,8 +230,33 @@
 		if LoggerManager.logLevel < options.level
 			return
 
-		options.arguments.unshift @getPrefix(options)
-		console.log.apply console, options.arguments
+		prefix = @getPrefix(options)
+
+		if options.box is true and _.isString(options.arguments[0])
+			color = undefined
+			if @defaultTypes[options.type]?
+				color = @defaultTypes[options.type].color
+
+			box = @makeABox options.arguments[0], options.arguments[1]
+			subPrefix = '➔'
+			if color?
+				subPrefix = subPrefix[color]
+
+			console.log subPrefix, prefix
+			for line in box
+				if color?
+					console.log subPrefix, line[color]
+				else
+					console.log subPrefix, line
+		else
+			options.arguments.unshift prefix
+			console.log.apply console, options.arguments
+
+		return
+
+
+@SystemLogger = new Logger 'System'
+
 
 processString = (string, date) ->
 	if string[0] is '{'
