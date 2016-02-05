@@ -88,8 +88,9 @@ RocketChat.sendMessage = (user, message, room, options) ->
 			toAll = mentionIds.indexOf('all') > -1
 
 			if mentionIds.length > 0
-				usersOfMention = RocketChat.models.Users.find({_id: {$in: mentionIds}}, {fields: {_id: 1, username: 1}}).fetch()
+				usersOfMention = RocketChat.models.Users.find({_id: {$in: mentionIds}}, {fields: {_id: 1, username: 1, statusConnection: 1}}).fetch()
 
+				# when a user is mentioned on a channel, make the user join that channel
 				if room.t is 'c' and !toAll
 					for usersOfMentionItem in usersOfMention
 						if room.usernames.indexOf(usersOfMentionItem.username) is -1
@@ -109,19 +110,22 @@ RocketChat.sendMessage = (user, message, room, options) ->
 
 				# Get ids of all mentioned users.
 				userIdsToNotify = _.pluck(usersOfMention, '_id')
-				userIdsToPushNotify = userIdsToNotify
+				userIdsToPushNotify = _.pluck(_.filter(usersOfMention, (user) -> return user.statusConnection isnt 'online'), '_id')
 
 				# If the message is @all, notify all room users except for the sender.
 				if toAll and room.usernames?.length > 0
 					usersOfRoom = RocketChat.models.Users.find({
 							username: {$in: room.usernames},
 							_id: {$ne: user._id}},
-						{fields: {_id: 1, username: 1, status: 1}})
-						.fetch()
-					onlineUsersOfRoom = _.filter usersOfRoom, (user) ->
-						user.status in ['online', 'away', 'busy']
-					userIdsToNotify = _.union userIdsToNotify, _.pluck(onlineUsersOfRoom, '_id')
-					userIdsToPushNotify = _.union userIdsToPushNotify, _.pluck(usersOfRoom, '_id')
+						{fields: {_id: 1, username: 1, status: 1, statusConnection: 1}})
+						.forEach (user) ->
+							if user.status in ['online', 'away', 'busy']
+								userIdsToNotify.push user._id
+							if user.statusConnection isnt 'online'
+								userIdsToPushNotify.push user._id
+
+					userIdsToNotify = _.unique userIdsToNotify
+					userIdsToPushNotify = _.unique userIdsToPushNotify
 
 				if userIdsToNotify.length > 0
 					for usersOfMentionId in userIdsToNotify
