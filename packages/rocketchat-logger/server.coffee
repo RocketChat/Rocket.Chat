@@ -90,7 +90,7 @@
 						method: typeConfig.name
 						arguments: args
 
-				@[type+"Box"] = (args...) =>
+				@[type+"_box"] = (args...) =>
 					@_log
 						type: type
 						box: true
@@ -110,7 +110,15 @@
 					@[method] = (args...) =>
 						@_log
 							type: typeConfig.type
-							level: if typeConfig.level? then typeConfig.level? else @defaultTypes[typeConfig.type]?.level
+							level: if typeConfig.level? then typeConfig.level else @defaultTypes[typeConfig.type]?.level
+							method: method
+							arguments: args
+
+					@[method+"_box"] = (args...) =>
+						@_log
+							type: typeConfig.type
+							box: true
+							level: if typeConfig.level? then typeConfig.level else @defaultTypes[typeConfig.type]?.level
 							method: method
 							arguments: args
 
@@ -255,7 +263,11 @@
 		return
 
 
-@SystemLogger = new Logger 'System'
+@SystemLogger = new Logger 'System',
+	methods:
+		startup:
+			type: 'success'
+			level: 0
 
 
 processString = (string, date) ->
