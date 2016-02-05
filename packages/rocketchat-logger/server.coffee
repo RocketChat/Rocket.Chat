@@ -59,6 +59,10 @@
 			name: 'info'
 			color: 'blue'
 			level: 1
+		success:
+			name: 'info'
+			color: 'green'
+			level: 1
 		warn:
 			name: 'warn'
 			color: 'magenta'
@@ -82,6 +86,14 @@
 				@[type] = (args...) =>
 					@_log
 						type: type
+						level: typeConfig.level
+						method: typeConfig.name
+						arguments: args
+
+				@[type+"Box"] = (args...) =>
+					@_log
+						type: type
+						box: true
 						level: typeConfig.level
 						method: typeConfig.name
 						arguments: args
@@ -181,6 +193,26 @@
 
 		return details
 
+	makeABox: (message) ->
+		if not _.isArray(message)
+			message = message.split("\n")
+
+		len = 0
+		for line in message
+			len = Math.max(len, line.length)
+
+		len += 4
+
+		text = message.map (msg) =>
+			return "|" + s.lrpad(msg, len) + "|"
+
+		text = text.join("\n")
+		topLine = "+" + s.pad('', len, '=') + "+"
+		separator = "|" + s.pad('', len, '') + "|"
+		bottomLine = "+" + s.pad('', len, '=') + "+"
+		return [topLine, separator, text, separator, bottomLine]
+
+
 	_log: (options) ->
 		if LoggerManager.enabled is false
 			LoggerManager.addToQueue @, arguments
@@ -191,8 +223,29 @@
 		if LoggerManager.logLevel < options.level
 			return
 
-		options.arguments.unshift @getPrefix(options)
-		console.log.apply console, options.arguments
+		prefix = @getPrefix(options)
+
+		if options.box is true and _.isString(options.arguments[0])
+			color = undefined
+			if @defaultTypes[options.type]?
+				color = @defaultTypes[options.type].color
+
+			box = @makeABox options.arguments[0], color
+			subPrefix = '➔'
+			if color?
+				subPrefix = subPrefix[color]
+
+			console.log subPrefix, prefix
+			for line in box
+				if color?
+					console.log subPrefix, line[color]
+				else
+					console.log subPrefix, line
+		else
+			options.arguments.unshift prefix
+			console.log.apply console, options.arguments
+
+		return
 
 processString = (string, date) ->
 	if string[0] is '{'
