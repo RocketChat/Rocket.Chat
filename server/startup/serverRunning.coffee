@@ -6,5 +6,5 @@ Meteor.startup ->
 			"    Site URL: #{RocketChat.settings.get('Site_Url')}"
 		].join('\n')
 
-		SystemLogger.successBox msg, 'SERVER RUNNING'
+		SystemLogger.startup_box msg, 'SERVER RUNNING'
 	, 100
