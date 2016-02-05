@@ -6,7 +6,7 @@ Template.loginForm.helpers
 		return if RocketChat.settings.get 'Accounts_RequireNameForSignUp' then t('Name') else t('Name_optional')
 
 	showFormLogin: ->
-		return RocketChat.settings.get 'Accounts_ShowFormLogin' 
+		return RocketChat.settings.get 'Accounts_ShowFormLogin'
 
 	showName: ->
 		return 'hidden' unless Template.instance().state.get() is 'register'
@@ -156,7 +156,7 @@ Template.loginForm.onCreated ->
 				validationObj['pass'] = t('Invalid_pass')
 
 		if instance.state.get() is 'register'
-			if RocketChat.settings.get 'Accounts_RequireNameForSignUp' and not formObj['name']
+			if RocketChat.settings.get('Accounts_RequireNameForSignUp') and not formObj['name']
 				validationObj['name'] = t('Invalid_name')
 			if formObj['confirm-pass'] isnt formObj['pass']
 				validationObj['confirm-pass'] = t('Invalid_confirm_pass')
