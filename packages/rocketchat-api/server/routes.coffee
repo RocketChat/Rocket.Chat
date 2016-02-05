@@ -55,7 +55,7 @@ RocketChat.API.v1.addRoute 'chat.messageExamples', authRequired: true,
 RocketChat.API.v1.addRoute 'chat.postMessage', authRequired: true,
 	post: ->
 		try
-			messageReturn = processWebhookMessage _.extend({ parseUrls: true }, @bodyParams), @user
+			messageReturn = processWebhookMessage @bodyParams, @user
 
 			if not messageReturn?
 				return RocketChat.API.v1.failure 'unknown-error'
