@@ -254,6 +254,10 @@
 
 		return
 
+
+@SystemLogger = new Logger 'System'
+
+
 processString = (string, date) ->
 	if string[0] is '{'
 		try
