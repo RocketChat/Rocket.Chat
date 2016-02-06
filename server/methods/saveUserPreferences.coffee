@@ -28,7 +28,7 @@ Meteor.methods
 				preferences.autoImageLoad = if settings.autoImageLoad is "1" then true else false
 
 			if settings.emailNotificationMode?
-				preferences.emailNotificationMode = if settings.emailNotificationMode is "1" then true else false
+				preferences.emailNotificationMode = settings.emailNotificationMode
 
 			RocketChat.models.Users.setPreferences Meteor.userId(), preferences
 

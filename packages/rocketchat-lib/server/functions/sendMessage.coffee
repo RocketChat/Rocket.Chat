@@ -79,7 +79,7 @@ RocketChat.sendMessage = (user, message, room, options) ->
 						query:
 							userId: userOfMention._id
 
-				if userOfMention.status is 'offline' and userOfMention.settings?.preferences?.emailNotificationMode is true and userOfMention.emails and userOfMention.emails.length > 0
+				if userOfMention.status is 'offline' and !(userOfMention.settings?.preferences?.emailNotificationMode is 'disabled') and userOfMention.emails and userOfMention.emails.length > 0
 					Email.send
 						to: userOfMention.emails[0].address
 						from: RocketChat.settings.get('From_Email')
@@ -119,7 +119,7 @@ RocketChat.sendMessage = (user, message, room, options) ->
 				userIdsToPushNotify = userIdsToNotify
 
 				offlineMentionsRoom = _.filter usersOfMention, (user) ->
-					user.status is 'offline' and user.settings?.preferences?.emailNotificationMode is true
+					user.status is 'offline' and !(user.settings?.preferences?.emailNotificationMode is 'disabled')
 
 				# If the message is @all, notify all room users except for the sender.
 				if toAll and room.usernames?.length > 0
@@ -133,7 +133,7 @@ RocketChat.sendMessage = (user, message, room, options) ->
 					userIdsToNotify = _.union userIdsToNotify, _.pluck(onlineUsersOfRoom, '_id')
 					userIdsToPushNotify = _.union userIdsToPushNotify, _.pluck(usersOfRoom, '_id')
 					offlineMentionsRoom = _.filter usersOfRoom, (user) ->
-						user.status is 'offline' and user.settings?.preferences?.emailNotificationMode is true
+						user.status is 'offline' and !(user.settings?.preferences?.emailNotificationMode is 'disabled')
 
 				if userIdsToNotify.length > 0
 					for usersOfMentionId in userIdsToNotify
