@@ -97,7 +97,7 @@ Meteor.startup ->
 		roles : ['admin']}
 
 		{ _id: 'view-c-room',
-		roles : ['admin', 'user']}
+		roles : ['admin', 'user', 'bot']}
 
 		{ _id: 'view-p-room',
 		roles : ['admin', 'user']}
