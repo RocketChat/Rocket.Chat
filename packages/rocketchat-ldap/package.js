@@ -22,10 +22,12 @@ Package.onUse(function(api) {
   api.versionsFrom('1.0.3.1');
 
   // Commom
+  api.use('rocketchat:logger');
   api.use('rocketchat:lib');
   api.use('tap:i18n');
   api.use('yasaricli:slugify');
   api.use('coffeescript');
+  api.use('ecmascript');
   api.use('sha');
   // Client
   api.use('templating', 'client');
@@ -43,10 +45,12 @@ Package.onUse(function(api) {
   // Server
   api.addFiles('ldap_server.js', 'server');
   api.addFiles('config_server.coffee', 'server');
+  api.addFiles('server/ldap.js', 'server');
 
   api.addFiles(tapi18nFiles);
 
   api.export('LDAP', 'server');
+  api.export('LDAP2', 'server');
   api.export('LDAP_DEFAULTS', 'server');
   api.export('MeteorWrapperLdapjs');
 });
