@@ -44,13 +44,13 @@ Package.onUse(function(api) {
   api.addFiles('ldap_client.js', 'client');
   // Server
   api.addFiles('ldap_server.js', 'server');
-  api.addFiles('config_server.coffee', 'server');
   api.addFiles('server/ldap.js', 'server');
+  api.addFiles('config_server.coffee', 'server');
+
 
   api.addFiles(tapi18nFiles);
 
   api.export('LDAP', 'server');
-  api.export('LDAP2', 'server');
   api.export('LDAP_DEFAULTS', 'server');
   api.export('MeteorWrapperLdapjs');
 });
