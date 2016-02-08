@@ -7,7 +7,7 @@ const logger = new Logger('LDAP', {
 	}
 });
 
-LDAP2 = class LDAP2 {
+LDAP = class LDAP {
 	constructor(options) {
 		const self = this;
 
@@ -122,8 +122,11 @@ LDAP2 = class LDAP2 {
 		const self = this;
 
 		if (self.options.use_custom_domain_search === true) {
-			// TODO test parse error
-			const custom_domain_search = JSON.parse(self.options.custom_domain_search);
+			try {
+				const custom_domain_search = JSON.parse(self.options.custom_domain_search);
+			} catch(error) {
+				throw new Error('Invalid Custom Domain Search JSON');
+			}
 
 			return {
 				filter: custom_domain_search.filter,
@@ -157,7 +160,7 @@ LDAP2 = class LDAP2 {
 		};
 	}
 
-	searchUserSync(username) {
+	searchUsersSync(username) {
 		const self = this;
 
 		let domain_search = self.getDomainBindSearch();
@@ -177,15 +180,7 @@ LDAP2 = class LDAP2 {
 		console.log('LDAP search dn', self.options.domain_base);
 		console.log('LDAP search options', searchOptions);
 
-		let entries = self.searchAllSync(self.options.domain_base, searchOptions);
-		return entries;
-
-		// if (entries.length !== 1) {
-		// 	console.log('LDAP: Search returned', entryCount, 'record(s)');
-		// 	throw new Error('User not Found');
-		// }
-
-		// bind(entries[0].object.dn);
+		return self.searchAllSync(self.options.domain_base, searchOptions);
 	}
 
 	searchAllAsync(domain_base, options, callback) {
@@ -207,7 +202,7 @@ LDAP2 = class LDAP2 {
 			let entries = [];
 
 			res.on('searchEntry', function(entry) {
-				entries.push(entry);
+				entries.push(entry.object);
 			});
 
 			res.on('end', function(result) {
@@ -219,45 +214,20 @@ LDAP2 = class LDAP2 {
 	authSync(dn, password) {
 		const self = this;
 
-		console.log('Attempt to bind', dn);
+		console.log('authSync', dn, password);
 
-		let bind = self.bindSync(dn, password);
-		console.log('bind', bind);
-
-		// TODO remover
-		let username = 'asd';
-		let domain = 'asd';
-
-		let retObject = {
-			username: username,
-			searchResults: null
-		};
-
-		retObject.email = domain ? username + '@' + domain : false;
-
-		if (self.options.searchResultsProfileMap) {
-			try {
-				retObject.searchResults = self.searchAllSync(dn, {});
-			} catch(error) {}
+		try {
+			self.bindSync(dn, password);
+			return true;
+		} catch(error) {
+			return false;
 		}
+	}
 
-		return retObject;
+	disconnect() {
+		const self = this;
+
+		self.connected = false;
+		self.client.unbind();
 	}
 };
-
-
-
-// // Slide @xyz.whatever from username if it was passed in
-// // and replace it with the domain specified in defaults
-// var emailSliceIndex = options.username.indexOf('@');
-// var username;
-// var domain = self.options.defaultDomain;
-
-// // If user appended email domain, strip it out
-// // And use the defaults.defaultDomain if set
-// if (emailSliceIndex !== -1) {
-// 	username = options.username.substring(0, emailSliceIndex);
-// 	domain = options.username.substring((emailSliceIndex + 1), options.username.length) || domain;
-// } else {
-// 	username = options.username;
-// }
