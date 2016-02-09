@@ -184,6 +184,7 @@ It is a great solution for communities and companies wanting to privately host t
 - Full text search
 - Live chat / Messaging call center
 - LDAP Authentication
+- CAS 1.0 supporting major education institutions and hosting providers worldwide
 - Support for Okta SSO through SAML v2
 - I18n - Supports 22 Languages
 - Hubot Friendly
@@ -192,6 +193,7 @@ It is a great solution for communities and companies wanting to privately host t
 - Audio calls
 - Multi-users Audio Conference
 - Screensharing
+- XMPP bridge ([try it](https://demo.rocket.chat/channel/xmppbridge))
 - REST APIs
 - Remote Locations Video Monitoring
 - Chat-ops powered by Hubot: scalable horizontal app integration (early access)
