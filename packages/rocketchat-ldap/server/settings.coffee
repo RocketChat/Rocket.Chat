@@ -28,7 +28,7 @@ Meteor.startup ->
 		@add 'LDAP_Use_Custom_Domain_Search', false, { type: 'boolean' , enableQuery: enableQuery }
 		@add 'LDAP_Custom_Domain_Search', '', { type: 'string' , enableQuery: customBindSearchEnabledQuery }
 		@add 'LDAP_Domain_Search_User', '', { type: 'string', enableQuery: customBindSearchDisabledQuery }
-		@add 'LDAP_Domain_Search_Password', '', { type: 'string', enableQuery: customBindSearchDisabledQuery }
+		@add 'LDAP_Domain_Search_Password', '', { type: 'password', enableQuery: customBindSearchDisabledQuery }
 		@add 'LDAP_Restricted_User_Groups', '', { type: 'string', enableQuery: customBindSearchDisabledQuery }
 		@add 'LDAP_Domain_Search_User_ID', 'sAMAccountName', { type: 'string', enableQuery: customBindSearchDisabledQuery }
 		@add 'LDAP_Domain_Search_Object_Class', 'user', { type: 'string', enableQuery: customBindSearchDisabledQuery }
