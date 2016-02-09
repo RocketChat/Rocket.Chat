@@ -1,5 +1,9 @@
 {
   "WebRTC_Enable_Channel" : "Enable for Public Channels",
   "WebRTC_Enable_Direct" : "Enable for Direct Messages",
-  "WebRTC_Enable_Private" : "Enable for Private Channels"
+  "WebRTC_Enable_Private" : "Enable for Private Channels",
+  "WebRTC_STUN_Server" : "STUN Server",
+  "WebRTC_TURN_Server" : "TURN Server",
+  "WebRTC_TURN_Username" : "TURN Server Username",
+  "WebRTC_TURN_Password" : "TURN Server Password"
 }
