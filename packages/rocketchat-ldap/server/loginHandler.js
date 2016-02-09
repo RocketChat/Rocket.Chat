@@ -31,23 +31,23 @@ function getDataToSyncUserData(ldapUser) {
 
 		let emailList = [];
 		_.map(fieldMap, function(userField, ldapField) {
-			if (!ldapUser.hasOwnProperty(ldapField)) {
+			if (!ldapUser.object.hasOwnProperty(ldapField)) {
 				return;
 			}
 
 			switch (userField) {
 				case 'email':
-					if (_.isObject(ldapUser[ldapField] === 'object')) {
-						_.map(ldapUser[ldapField], function (item) {
+					if (_.isObject(ldapUser.object[ldapField] === 'object')) {
+						_.map(ldapUser.object[ldapField], function (item) {
 							emailList.push({ address: item, verified: true });
 						});
 					} else {
-						emailList.push({ address: ldapUser[ldapField], verified: true });
+						emailList.push({ address: ldapUser.object[ldapField], verified: true });
 					}
 					break;
 
 				case 'name':
-					userData.name = ldapUser[ldapField];
+					userData.name = ldapUser.object[ldapField];
 					break;
 			}
 		});
@@ -66,6 +66,20 @@ function syncUserData(userId, ldapUser) {
 	const userData = getDataToSyncUserData(ldapUser);
 	if (userId && userData) {
 		Meteor.users.update(userId, { $set: userData });
+	}
+}
+
+function getLdapUserUniqueID(ldapUser, fallback) {
+	let Unique_Identifier_Field = RocketChat.settings.get('LDAP_Unique_Identifier_Field');
+
+	if (Unique_Identifier_Field !== '') {
+		Unique_Identifier_Field = Unique_Identifier_Field.split(',').find((field) => {
+			return !_.isEmpty(ldapUser.object[field]);
+		});
+		if (Unique_Identifier_Field) {
+			Unique_Identifier_Field = ldapUser.raw[Unique_Identifier_Field].toString('hex');
+		}
+		return Unique_Identifier_Field || fallback;
 	}
 }
 
@@ -108,12 +122,29 @@ Accounts.registerLoginHandler("ldap", function(loginRequest) {
 		return fallbackDefaultAccountSystem(self, loginRequest.username, loginRequest.ldapPass);
 	}
 
-	const username = slug(loginRequest.username);
+	let username;
+
+	if (RocketChat.settings.get('LDAP_Username_Field') !== '') {
+		username = slug(ldapUser.object[RocketChat.settings.get('LDAP_Username_Field')]);
+	} else {
+		username = slug(loginRequest.username);
+	}
 
 	// Look to see if user already exists
-	const user = Meteor.users.findOne({
-		username: username
-	});
+	let userQuery;
+
+	let Unique_Identifier_Field = getLdapUserUniqueID(ldapUser, username);
+	if (Unique_Identifier_Field) {
+		userQuery = {
+			'services.ldap.id': Unique_Identifier_Field
+		};
+	} else {
+		userQuery = {
+			username: username
+		};
+	}
+
+	const user = Meteor.users.findOne(userQuery);
 
 	// Login user if they exist
 	if (user) {
@@ -145,8 +176,8 @@ Accounts.registerLoginHandler("ldap", function(loginRequest) {
 
 	if (userData && userData.emails) {
 		userObject.email = userData.emails[0].address;
-	} else if (ldapUser.mail && ldapUser.mail.indexOf('@') > -1) {
-		userObject.email = ldapUser.mail;
+	} else if (ldapUser.object.mail && ldapUser.object.mail.indexOf('@') > -1) {
+		userObject.email = ldapUser.object.mail;
 	} else if (RocketChat.settings.get('LDAP_Default_Domain') !== '') {
 		userObject.email = username + '@' + RocketChat.settings.get('LDAP_Default_Domain');
 	} else {
@@ -156,10 +187,17 @@ Accounts.registerLoginHandler("ldap", function(loginRequest) {
 	let userId = Accounts.createUser(userObject);
 
 	syncUserData(userId, ldapUser);
+
+	let ldapUserService = {
+		ldap: true
+	};
+
+	if (Unique_Identifier_Field) {
+		ldapUserService['services.ldap.id'] = Unique_Identifier_Field;
+	}
+
 	Meteor.users.update(userId, {
-		$set: {
-			ldap: true
-		}
+		$set: ldapUserService
 	});
 
 	Meteor.runAsUser(userId, function() {

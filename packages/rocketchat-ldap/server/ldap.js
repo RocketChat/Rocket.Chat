@@ -11,6 +11,8 @@ LDAP = class LDAP {
 	constructor(options) {
 		const self = this;
 
+		self.ldapjs = ldapjs;
+
 		self.connected = false;
 
 		self.options = {
@@ -149,7 +151,16 @@ LDAP = class LDAP {
 			filter.push(`(memberOf=${self.options.restricted_user_groups},${self.options.domain_base})`);
 		}
 
-		filter.push(`(${self.options.domain_search_user_id}=#{username})`);
+		domain_search_user_id = self.options.domain_search_user_id.split(',');
+		if (domain_search_user_id.length === 1) {
+			filter.push(`(${domain_search_user_id[0]}=#{username})`);
+		} else {
+			filter.push('(|');
+			domain_search_user_id.forEach((item) => {
+				filter.push(`(${item}=#{username})`);
+			});
+			filter.push(')');
+		}
 
 		filter.push(')');
 
@@ -160,20 +171,26 @@ LDAP = class LDAP {
 		};
 	}
 
-	searchUsersSync(username) {
+	bindIfNecessary() {
 		const self = this;
 
-		let domain_search = self.getDomainBindSearch();
+		const domain_search = self.getDomainBindSearch();
 
 		if (domain_search.domain_search_user !== '' && domain_search.domain_search_password !== '') {
 			console.log('Bind before search', domain_search.domain_search_user, domain_search.domain_search_password);
 			self.bindSync(domain_search.domain_search_user, domain_search.domain_search_password);
 		}
+	}
 
-		domain_search.filter = domain_search.filter.replace(/#{username}/g, username);
+	searchUsersSync(username) {
+		const self = this;
+
+		self.bindIfNecessary();
+
+		const domain_search = self.getDomainBindSearch();
 
 		const searchOptions = {
-			filter: domain_search.filter,
+			filter: domain_search.filter.replace(/#{username}/g, username),
 			scope: 'sub'
 		};
 
@@ -202,10 +219,11 @@ LDAP = class LDAP {
 			let entries = [];
 
 			res.on('searchEntry', function(entry) {
-				entries.push(entry.object);
+				entries.push(entry);
 			});
 
 			res.on('end', function(result) {
+				console.log('searchAllAsync', entries);
 				callback(null, entries);
 			});
 		});
