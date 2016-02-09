@@ -6,7 +6,7 @@ RocketChat.Migrations.add
 		LDAP_DN = RocketChat.models.Settings.findOne('LDAP_DN')?.value
 		LDAP_Bind_Search = RocketChat.models.Settings.findOne('LDAP_Bind_Search')?.value
 
-		if LDAP_Url?.trim() isnt ''
+		if LDAP_Url? and LDAP_Url.trim() isnt ''
 			LDAP_Url = LDAP_Url.replace(/ldaps?:\/\//i, '')
 			RocketChat.models.Settings.upsert
 				_id: 'LDAP_Host'
@@ -25,7 +25,7 @@ RocketChat.Migrations.add
 				$setOnInsert:
 					createdAt: new Date
 
-		if LDAP_DN?.trim() isnt ''
+		if LDAP_DN? and LDAP_DN.trim() isnt ''
 			RocketChat.models.Settings.upsert
 				_id: 'LDAP_Domain_Base'
 			,
@@ -34,7 +34,23 @@ RocketChat.Migrations.add
 				$setOnInsert:
 					createdAt: new Date
 
-		if LDAP_Bind_Search?.trim() isnt ''
+			RocketChat.models.Settings.upsert
+				_id: 'LDAP_Username_Field'
+			,
+				$set:
+					value: ''
+				$setOnInsert:
+					createdAt: new Date
+
+			RocketChat.models.Settings.upsert
+				_id: 'LDAP_Unique_Identifier_Field'
+			,
+				$set:
+					value: ''
+				$setOnInsert:
+					createdAt: new Date
+
+		if LDAP_Bind_Search? and LDAP_Bind_Search.trim() isnt ''
 			RocketChat.models.Settings.upsert
 				_id: 'LDAP_Custom_Domain_Search'
 			,
