@@ -165,8 +165,8 @@ LDAP = class LDAP {
 
 		let domain_search = self.getDomainBindSearch();
 
-		if (domain_search.domain_search_user && domain_search.domain_search_password) {
-			console.log('Bind before search', domain_search.userDN, domain_search.domain_search_password);
+		if (domain_search.domain_search_user !== '' && domain_search.domain_search_password !== '') {
+			console.log('Bind before search', domain_search.domain_search_user, domain_search.domain_search_password);
 			self.bindSync(domain_search.domain_search_user, domain_search.domain_search_password);
 		}
 
