@@ -53,6 +53,10 @@
 												{{/if}}
 											{{/if}}
 
+											{{#if $eq type 'password'}}
+												<input class="input-monitor" type="password" name="{{_id}}" value="{{value}}" placeholder="{{placeholder}}" {{isDisabled}}/>
+											{{/if}}
+
 											{{#if $eq type 'int'}}
 												<input class="input-monitor" type="number" name="{{_id}}" value="{{value}}" placeholder="{{placeholder}}" {{isDisabled}}/>
 											{{/if}}
