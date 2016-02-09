@@ -8,6 +8,7 @@ accounts-password@1.1.4
 accounts-twitter@1.0.6
 aldeed:simple-schema@1.5.3
 arunoda:streams@0.1.17
+atoy40:accounts-cas@0.0.2
 autoupdate@1.2.4
 babel-compiler@5.8.24_1
 babel-runtime@0.1.4
@@ -123,6 +124,7 @@ rocketchat:api@0.0.1
 rocketchat:assets@0.0.1
 rocketchat:authorization@0.0.1
 rocketchat:autolinker@0.0.1
+rocketchat:cas@1.0.0
 rocketchat:channel-settings@0.0.1
 rocketchat:channel-settings-mail-messages@0.0.1
 rocketchat:colors@0.0.1
