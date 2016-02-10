@@ -30,6 +30,7 @@ Package.onUse(function(api) {
   api.addFiles('server/ldap.js', 'server');
   api.addFiles('server/loginHandler.js', 'server');
   api.addFiles('server/settings.coffee', 'server');
+  api.addFiles('server/testConnection.js', 'server');
 
   api.export('LDAP', 'server');
 });
