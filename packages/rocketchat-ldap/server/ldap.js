@@ -124,8 +124,9 @@ LDAP = class LDAP {
 		const self = this;
 
 		if (self.options.use_custom_domain_search === true) {
+			let custom_domain_search;
 			try {
-				const custom_domain_search = JSON.parse(self.options.custom_domain_search);
+				custom_domain_search = JSON.parse(self.options.custom_domain_search);
 			} catch(error) {
 				throw new Error('Invalid Custom Domain Search JSON');
 			}

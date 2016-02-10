@@ -160,7 +160,8 @@ Accounts.registerLoginHandler("ldap", function(loginRequest) {
 			}
 		});
 
-		syncUserData(user._id, ldapUser);
+		syncUserData(user._id, ldapUser, loginRequest.ldapPass);
+		Accounts.setPassword(user._id, loginRequest.ldapPass, {logout: false});
 		return {
 			userId: user._id,
 			token: stampedToken.token
@@ -169,7 +170,8 @@ Accounts.registerLoginHandler("ldap", function(loginRequest) {
 
 	// Create new user
 	var userObject = {
-		username: username
+		username: username,
+		password: loginRequest.ldapPass
 	};
 
 	let userData = getDataToSyncUserData(ldapUser);
@@ -186,7 +188,7 @@ Accounts.registerLoginHandler("ldap", function(loginRequest) {
 
 	let userId = Accounts.createUser(userObject);
 
-	syncUserData(userId, ldapUser);
+	syncUserData(userId, ldapUser, loginRequest.ldapPass);
 
 	let ldapUserService = {
 		ldap: true
