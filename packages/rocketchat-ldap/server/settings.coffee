@@ -29,12 +29,12 @@ Meteor.startup ->
 		@add 'LDAP_Custom_Domain_Search', '', { type: 'string' , enableQuery: customBindSearchEnabledQuery }
 		@add 'LDAP_Domain_Search_User', '', { type: 'string', enableQuery: customBindSearchDisabledQuery }
 		@add 'LDAP_Domain_Search_Password', '', { type: 'password', enableQuery: customBindSearchDisabledQuery }
-		@add 'LDAP_Restricted_User_Groups', '', { type: 'string', enableQuery: customBindSearchDisabledQuery }
+		@add 'LDAP_Domain_Search_Filter', '', { type: 'string', enableQuery: customBindSearchDisabledQuery }
 		@add 'LDAP_Domain_Search_User_ID', 'sAMAccountName', { type: 'string', enableQuery: customBindSearchDisabledQuery }
 		@add 'LDAP_Domain_Search_Object_Class', 'user', { type: 'string', enableQuery: customBindSearchDisabledQuery }
 		@add 'LDAP_Domain_Search_Object_Category', 'person', { type: 'string', enableQuery: customBindSearchDisabledQuery }
 		@add 'LDAP_Username_Field', 'sAMAccountName', { type: 'string', enableQuery: enableQuery }
-		@add 'LDAP_Unique_Identifier_Field', 'objectGUID,ibm-entryUUID,GUID,dominoUNID,nsuniqueId', { type: 'string', enableQuery: enableQuery }
+		@add 'LDAP_Unique_Identifier_Field', 'objectGUID,ibm-entryUUID,GUID,dominoUNID,nsuniqueId,uidNumber', { type: 'string', enableQuery: enableQuery }
 		@add 'LDAP_Sync_User_Data', false, { type: 'boolean' , enableQuery: enableQuery }
 		@add 'LDAP_Sync_User_Data_FieldMap', '{"cn":"name", "mail":"email"}', { type: 'string', enableQuery: syncDataQuery }
 		@add 'LDAP_Default_Domain', '', { type: 'string' , enableQuery: enableQuery }

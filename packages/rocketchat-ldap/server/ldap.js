@@ -26,7 +26,7 @@ LDAP = class LDAP {
 			custom_domain_search: RocketChat.settings.get('LDAP_Custom_Domain_Search'),
 			domain_search_user: RocketChat.settings.get('LDAP_Domain_Search_User'),
 			domain_search_password: RocketChat.settings.get('LDAP_Domain_Search_Password'),
-			restricted_user_groups: RocketChat.settings.get('LDAP_Restricted_User_Groups'),
+			domain_search_filter: RocketChat.settings.get('LDAP_Domain_Search_Filter'),
 			domain_search_user_id: RocketChat.settings.get('LDAP_Domain_Search_User_ID'),
 			domain_search_object_class: RocketChat.settings.get('LDAP_Domain_Search_Object_Class'),
 			domain_search_object_category: RocketChat.settings.get('LDAP_Domain_Search_Object_Category')
@@ -148,8 +148,8 @@ LDAP = class LDAP {
 			filter.push(`(objectclass=${self.options.domain_search_object_class})`);
 		}
 
-		if (self.options.restricted_user_groups !== '') {
-			filter.push(`(memberOf=${self.options.restricted_user_groups},${self.options.domain_base})`);
+		if (self.options.domain_search_filter !== '') {
+			filter.push(`(${self.options.domain_search_filter})`);
 		}
 
 		domain_search_user_id = self.options.domain_search_user_id.split(',');
