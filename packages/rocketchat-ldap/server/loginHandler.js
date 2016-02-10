@@ -62,10 +62,27 @@ function getDataToSyncUserData(ldapUser) {
 	}
 }
 
-function syncUserData(userId, ldapUser) {
+function syncUserData(user, ldapUser) {
+	console.log('sync user data', arguments);
 	const userData = getDataToSyncUserData(ldapUser);
-	if (userId && userData) {
-		Meteor.users.update(userId, { $set: userData });
+	if (user && user._id && userData) {
+		Meteor.users.update(user._id, { $set: userData });
+	}
+
+	if (user && user._id) {
+		const avatar = ldapUser.raw.thumbnailPhoto || ldapUser.raw.jpegPhoto;
+		if (avatar) {
+			const rs = RocketChatFile.bufferToStream(avatar);
+			RocketChatFileAvatarInstance.deleteFile(encodeURIComponent(`${user.username}.jpg`));
+			const ws = RocketChatFileAvatarInstance.createWriteStream(encodeURIComponent(`${user.username}.jpg`), 'image/jpeg');
+			ws.on('end', Meteor.bindEnvironment(function() {
+				Meteor.setTimeout(function() {
+					RocketChat.models.Users.setAvatarOrigin(user._id, 'ldap');
+					RocketChat.Notifications.notifyAll('updateAvatar', {username: user.username});
+				}, 500);
+			}));
+			rs.pipe(ws);
+		}
 	}
 }
 
@@ -160,7 +177,7 @@ Accounts.registerLoginHandler("ldap", function(loginRequest) {
 			}
 		});
 
-		syncUserData(user._id, ldapUser, loginRequest.ldapPass);
+		syncUserData(user, ldapUser, loginRequest.ldapPass);
 		Accounts.setPassword(user._id, loginRequest.ldapPass, {logout: false});
 		return {
 			userId: user._id,
@@ -186,9 +203,9 @@ Accounts.registerLoginHandler("ldap", function(loginRequest) {
 		throw new Meteor.Error("LDAP-login-error", "LDAP Authentication succeded, there is no email to create an account.");
 	}
 
-	let userId = Accounts.createUser(userObject);
+	userObject._id = Accounts.createUser(userObject);
 
-	syncUserData(userId, ldapUser, loginRequest.ldapPass);
+	syncUserData(userObject, ldapUser, loginRequest.ldapPass);
 
 	let ldapUserService = {
 		ldap: true
@@ -198,15 +215,15 @@ Accounts.registerLoginHandler("ldap", function(loginRequest) {
 		ldapUserService['services.ldap.id'] = Unique_Identifier_Field;
 	}
 
-	Meteor.users.update(userId, {
+	Meteor.users.update(userObject._id, {
 		$set: ldapUserService
 	});
 
-	Meteor.runAsUser(userId, function() {
+	Meteor.runAsUser(userObject._id, function() {
 		Meteor.call('joinDefaultChannels');
 	});
 
 	return {
-		userId: userId
+		userId: userObject._id
 	};
 });
