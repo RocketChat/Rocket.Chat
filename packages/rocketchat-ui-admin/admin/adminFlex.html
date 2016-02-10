@@ -7,16 +7,14 @@
 	<div class="content">
 		<div class="wrapper">
 			<ul>
-				{{#if hasPermission 'view-statistics'}}
-					<li>
-						<a href="{{pathFor 'admin-statistics'}}" class="admin-link">{{_ "Statistics"}}</a>
-					</li>
-				{{/if}}
+				<li>
+					<a href="{{pathFor 'admin-info'}}" class="admin-link">{{_ "Info"}}</a>
+				</li>
 
 				{{#if hasPermission 'run-import'}}
-				<li>
-					<a href="{{pathFor 'admin-import'}}" class="admin-link">Import</a>
-				</li>
+					<li>
+						<a href="{{pathFor 'admin-import'}}" class="admin-link">Import</a>
+					</li>
 				{{/if}}
 
 				{{#if hasPermission 'view-room-administration'}}

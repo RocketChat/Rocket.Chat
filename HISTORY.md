@@ -1,6 +1,54 @@
 ## NEXT
 
--
+## 0.17.0, 2016-Feb-09
+
+- Closes #1367; Add ability to delete files
+- Parse URLs by default on messages from REST APIs/webhooks/integrations - #1362
+- Messages from REST APIs are not from bot by default
+- Show that server is running on logs
+- Add permission 'view-c-room' to bots
+- Fixed checking username availability
+- Show startup message
+- Created a global Logger called "SystemLogger"
+- Allow pass title for logs of type box as seconde parameter
+- Hablity to view server longs on the administration interface
+- Use the RocketChat.Info.version on headers
+- Parse URLs on messages from REST
+- Do not process all messages from REST as bot
+- Fixed name not being required for registration with settings requiring it.
+- Remove the LDAP string form login form as it is irrelevant to end users.
+- Changed settings.get to automatically setup and call a specifed callback
+- Remove the need for server restart after changing registration domain whitelist
+- Fixed trying to read build from RocketChat.Info when it is not available.
+- Add an example of how to send logs from server to client
+- Fix problem removing file via side bar
+- Require 'view-c-room' permission for accessing channels
+- Add new logger types; Implement LoggerManager as an EventEmmiter; Filter logs by level; Improve log layout
+- Allow send hooks from a specific public channel
+- Add Uploads model at client side too
+- Convert file uploads to model style
+- Show confirmation dialog on leave/hide room
+- Hide "leave/hide room" buttons when showing unread message counter
+- Add i18n to rocketchat-ui-flextab package, with default strings for file deletion dialogue
+- Move delete button style to base.less in theme package
+- Add a button to allow deleting an uploaded file
+- Add logger as dependencies for theme and lib packages
+- Add some options to logger and use it in some places
+
+## 0.16.0, 2016-Feb-01
+
+- Added option for admins to manually add new users
+- Added option for admin to require user to change password
+- Changed admin statistics with admin info
+- Show "Room not Found" correctly
+- Update konecty:multiple-instances-status to 1.0.5
+- Closes #1888; Add mimetye image/vnd.microsoft.icon to mimtype list
+- Disable WebRTC broadcastStatus
+- Closes #2078; ObserveChanges on rocketchat_room Not Using Oplog
+- Add sort for all queries with limit
+- Do not get field `usernames` with room on joinDefaultChannel
+- Improve logs of stream broadcast
+- Create script to build livechat on windows
 
 ## 0.15.0, 2016-Jan-25
 
