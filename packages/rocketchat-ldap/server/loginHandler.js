@@ -1,4 +1,7 @@
 var slug = function (text) {
+	if (RocketChat.settings.get('UTF8_Names_Slugify') !== true) {
+		return text;
+	}
 	text = slugify(text, '.');
 	return text.replace(/[^0-9a-z-_.]/g, '');
 };
