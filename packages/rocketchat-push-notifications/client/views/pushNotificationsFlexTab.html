@@ -1,0 +1,41 @@
+<template name="pushNotificationsFlexTab">
+	<div class="content">
+		<div class="list-view push-notifications">
+			<div class="status">
+				<h2>{{_ "Push_notifications"}}</h2>
+			</div>
+			<form>
+				<ul class="list clearfix">
+					<li>
+						<label>{{_ "Desktop_notifications"}}</label>
+						<div>
+							{{#if editing 'desktopNotifications'}}
+								<label><input type="radio" name="desktopNotifications" value="all" checked="{{$eq desktopNotifications 'all'}}" /> {{_ "All_messages"}}</label>
+								<label><input type="radio" name="desktopNotifications" value="mentions" checked="{{$eq desktopNotifications 'mentions'}}" /> {{_ "Mentions_default"}}</label>
+								<label><input type="radio" name="desktopNotifications" value="nothing" checked="{{$eq desktopNotifications 'nothing'}}" /> {{_ "Nothing"}}</label>
+								<button type="button" class="button secondary cancel">{{_ "Cancel"}}</button>
+								<button type="button" class="button primary save">{{_ "Save"}}</button>
+							{{else}}
+								<span>{{desktopNotificationsValue}} <i class="octicon octicon-pencil" data-edit="desktopNotifications"></i></span>
+							{{/if}}
+						</div>
+					</li>
+					<li>
+						<label>{{_ "Mobile_push_notifications"}}</label>
+						<div>
+							{{#if editing 'mobilePushNotifications'}}
+								<label><input type="radio" name="mobilePushNotifications" value="all" checked="{{$eq mobilePushNotifications 'all'}}" /> {{_ "All_messages"}}</label>
+								<label><input type="radio" name="mobilePushNotifications" value="mentions" checked="{{$eq mobilePushNotifications 'mentions'}}" /> {{_ "Mentions_default"}}</label>
+								<label><input type="radio" name="mobilePushNotifications" value="nothing" checked="{{$eq mobilePushNotifications 'nothing'}}" /> {{_ "Nothing"}}</label>
+								<button type="button" class="button secondary cancel">{{_ "Cancel"}}</button>
+								<button type="button" class="button primary save">{{_ "Save"}}</button>
+							{{else}}
+								<span>{{mobilePushNotificationsValue}} <i class="octicon octicon-pencil" data-edit="mobilePushNotifications"></i></span>
+							{{/if}}
+						</div>
+					</li>
+				</ul>
+			</form>
+		</div>
+	</div>
+</template>
