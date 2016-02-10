@@ -301,6 +301,7 @@ Migrations._migrateTo = function(version, rerun) {
 	function lock() {
 		const date = new Date();
 		const dateMinusInterval = moment(date).subtract(self.options.lockExpiration, 'minutes').toDate();
+		const build = RocketChat.Info ? RocketChat.Info.build.date : date;
 
 		// This is atomic. The selector ensures only one caller at a time will see
 		// the unlocked control, and locking occurs in the same update's modifier.
@@ -315,14 +316,14 @@ Migrations._migrateTo = function(version, rerun) {
 				}
 			}, {
 				buildAt: {
-					$ne: RocketChat.Info.build.date
+					$ne: build
 				}
 			}]
 		}, {
 			$set: {
 				locked: true,
 				lockedAt: date,
-				buildAt: RocketChat.Info.build.date
+				buildAt: build
 			}
 		}) === 1;
 	}

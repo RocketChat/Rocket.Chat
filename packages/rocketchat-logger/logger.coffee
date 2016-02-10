@@ -63,3 +63,11 @@ wrapLifeCycle = (original, prefix, color) ->
 Template.prototype.onCreated = wrapLifeCycle Template.prototype.onCreated, 'onCreated', 'blue'
 Template.prototype.onRendered = wrapLifeCycle Template.prototype.onRendered, 'onRendered', 'green'
 Template.prototype.onDestroyed = wrapLifeCycle Template.prototype.onDestroyed, 'onDestroyed', 'red'
+
+# stdout = new Meteor.Collection 'stdout'
+
+# Meteor.subscribe 'stdout'
+
+# stdout.find().observe
+# 	added: (record) ->
+# 		console.log ansispan record.string
