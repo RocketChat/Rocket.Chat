@@ -140,7 +140,7 @@ RocketChat.sendMessage = (user, message, room, options) ->
 					.forEach (user) ->
 						if user.status in ['online', 'away', 'busy'] and user._id not in dontNotifyDesktopUsers
 							userIdsToNotify.push user._id
-						if user.status is 'offline' and user._id not in dontNotifyDesktopUsers
+						if user.status is 'offline'
 							offlineUserIdsToNotify.push user._id
 						if user.statusConnection isnt 'online' and user._id not in dontNotifyMobileUsers
 							userIdsToPushNotify.push user._id
