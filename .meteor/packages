@@ -64,6 +64,7 @@ rocketchat:message-pin
 rocketchat:message-star
 rocketchat:migrations
 rocketchat:oembed
+rocketchat:push-notifications
 rocketchat:slashcommands-invite
 rocketchat:slashcommands-join
 rocketchat:slashcommands-kick
