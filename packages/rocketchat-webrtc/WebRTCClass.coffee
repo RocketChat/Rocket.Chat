@@ -104,9 +104,17 @@ class WebRTCTransportClass
 class WebRTCClass
 	config:
 		iceServers: [
-			{urls: "stun:stun.l.google.com:19302"}
-			{urls: "stun:23.21.150.121"}
-			{urls: "turn:numb.viagenie.ca:3478", username: "team@rocket.chat", credential: "demo"}
+			{
+				urls: RocketChat.settings.get("WebRTC_STUN_Server")
+			},
+			{
+				urls: RocketChat.settings.get("WebRTC_STUN_Server")
+			},
+			{
+				urls: RocketChat.settings.get("WebRTC_TURN_Server"),
+				username: RocketChat.settings.get("WebRTC_TURN_Username"),
+				credential: RocketChat.settings.get("WebRTC_TURN_Password")
+			}
 		]
 
 	debug: false
@@ -159,7 +167,7 @@ class WebRTCClass
 
 		Meteor.setInterval @checkPeerConnections.bind(@), 1000
 
-		Meteor.setInterval @broadcastStatus.bind(@), 1000
+		# Meteor.setInterval @broadcastStatus.bind(@), 1000
 
 	log: ->
 		if @debug is true

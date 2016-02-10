@@ -8,6 +8,8 @@ Meteor.publish 'roomFiles', (rid, limit = 50) ->
 		rid: rid
 		complete: true
 		uploading: false
+		_hidden:
+			$ne: true
 
 	fileOptions =
 		limit: limit
@@ -20,7 +22,7 @@ Meteor.publish 'roomFiles', (rid, limit = 50) ->
 			type: 1
 			url: 1
 
-	cursorFileListHandle = fileCollection.find(fileQuery, fileOptions).observeChanges
+	cursorFileListHandle = RocketChat.models.Uploads.find(fileQuery, fileOptions).observeChanges
 		added: (_id, record) ->
 			pub.added('room_files', _id, record)
 

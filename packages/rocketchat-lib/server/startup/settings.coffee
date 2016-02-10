@@ -86,6 +86,8 @@ RocketChat.settings.addGroup 'General', ->
 		@add 'UTF8_Names_Validation', '[0-9a-zA-Z-_.]+', { type: 'string', public: true, i18nDescription: 'UTF8_Names_Validation_Description'}
 		@add 'UTF8_Names_Slugify', true, { type: 'boolean', public: true }
 
+	@section 'Reporting', ->
+		@add 'Statistics_opt_out', false, { type: 'boolean', i18nLabel: "Opt_out_statistics" }
 
 RocketChat.settings.addGroup 'API', ->
 	@add 'API_Analytics', '', { type: 'string', public: true }
@@ -162,7 +164,12 @@ RocketChat.settings.addGroup 'Layout', ->
 		@add 'Layout_Login_Terms', 'By proceeding to create your account and use Rocket.Chat, you are agreeing to our <a href="/terms-of-service">Terms of Service</a> and <a href="/privacy-policy">Privacy Policy</a>. If you do not agree, you cannot use Rocket.Chat.', { type: 'string', multiline: true, public: true }
 
 
-RocketChat.settings.add 'Statistics_opt_out', false, { type: 'boolean', group: false }
+RocketChat.settings.addGroup 'Logs', ->
+	@add 'Log_Level', '0', { type: 'select', values: [ { key: '0', i18nLabel: '0_Errors_Only' }, { key: '1', i18nLabel: '1_Errors_and_Information' }, { key: '2', i18nLabel: '2_Erros_Information_and_Debug' } ] , public: true }
+	@add 'Log_Package', false, { type: 'boolean', public: true }
+	@add 'Log_File', false, { type: 'boolean', public: true }
+	@add 'Log_View_Limit', 1000, { type: 'int' }
+
 
 RocketChat.settings.init()
 
