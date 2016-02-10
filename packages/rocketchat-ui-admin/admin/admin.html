@@ -53,6 +53,10 @@
 												{{/if}}
 											{{/if}}
 
+											{{#if $eq type 'password'}}
+												<input class="input-monitor" type="password" name="{{_id}}" value="{{value}}" placeholder="{{placeholder}}" {{isDisabled}}/>
+											{{/if}}
+
 											{{#if $eq type 'int'}}
 												<input class="input-monitor" type="number" name="{{_id}}" value="{{value}}" placeholder="{{placeholder}}" {{isDisabled}}/>
 											{{/if}}
@@ -83,7 +87,11 @@
 											{{/if}}
 
 											{{#if $eq type 'action'}}
-												<button type="button" class="button primary action" data-setting="{{_id}}" data-action="{{value}}" {{isDisabled}}>{{_ actionText}}</button>
+												{{#if hasChanges section}}
+													<span style="line-height: 40px; color: #888;">{{_ "Save_to_enable_this_action"}}</span>
+												{{else}}
+													<button type="button" class="button primary action" data-setting="{{_id}}" data-action="{{value}}" {{isDisabled}}>{{_ actionText}}</button>
+												{{/if}}
 											{{/if}}
 
 											{{#if $eq type 'asset'}}
@@ -107,7 +115,7 @@
 											{{/if}}
 
 											{{#if description}}
-												<div class="settings-description">{{{description}}}</div>
+												<div class="settings-description">{{{RocketChatMarkdown description}}}</div>
 											{{/if}}
 											{{#if alert}}
 												<div class="settings-alert"><i class="icon-attention"></i>{{{_ alert}}}</div>
