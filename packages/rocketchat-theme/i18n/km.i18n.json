@@ -1,6 +1,9 @@
 {
+  "theme-color-blockquote-background" : "ពណ៌ផ្ទៃខាងក្រោយនៃ Blockquote",
   "theme-color-code-background" : "កូដពណ៌ផ្ទៃខាងក្រោម",
   "theme-color-code-border" : "កូដពណ៌ជាយ",
   "theme-color-code-color" : "កូដពណ៌",
-  "theme-color-content-background-color" : "ពណ៌ផ្ទៃខាងក្រោយអត្ថបទ"
+  "theme-color-content-background-color" : "ពណ៌ផ្ទៃខាងក្រោយអត្ថបទ",
+  "theme-color-info-active-font-color" : "ពណ៌ពុម្ពអក្សររបស់ Active Info",
+  "theme-color-info-font-color" : "ពណ៌ពុម្ពអក្សររបស់ Info"
 }

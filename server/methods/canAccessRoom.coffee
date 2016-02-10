@@ -11,10 +11,10 @@ Meteor.methods
 		room = RocketChat.models.Rooms.findOneById rid, { fields: { usernames: 1, t: 1, name: 1, muted: 1 } }
 
 		if room
-			if room.t is 'c'
+			if room.usernames.indexOf(user.username) isnt -1
 				canAccess = true
-			else if room.usernames.indexOf(user.username) isnt -1
-				canAccess = true
+			else if room.t is 'c'
+				canAccess = RocketChat.authz.hasPermission(userId, 'view-c-room')
 
 			if canAccess isnt true
 				return false

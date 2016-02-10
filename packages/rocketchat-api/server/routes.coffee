@@ -55,9 +55,6 @@ RocketChat.API.v1.addRoute 'chat.messageExamples', authRequired: true,
 RocketChat.API.v1.addRoute 'chat.postMessage', authRequired: true,
 	post: ->
 		try
-			@bodyParams.bot =
-				u: @userId
-
 			messageReturn = processWebhookMessage @bodyParams, @user
 
 			if not messageReturn?

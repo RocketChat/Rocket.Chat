@@ -17,12 +17,15 @@ Package.onUse(function(api) {
 	api.use('tracker');
 	api.use('ddp-rate-limiter');
 	api.use('underscore');
+	api.use('mongo');
 	api.use('underscorestring:underscore.string');
 	api.use('monbro:mongodb-mapreduce-aggregation@1.0.1');
+	api.use('matb33:collection-hooks');
 	api.use('service-configuration');
 	api.use('check');
 	api.use('arunoda:streams');
 	api.use('rocketchat:version');
+	api.use('rocketchat:logger');
 	api.use('kadira:flow-router', 'client');
 
 	api.addFiles('lib/core.coffee');
@@ -32,6 +35,7 @@ Package.onUse(function(api) {
 
 	// COMMON LIB
 	api.addFiles('lib/settings.coffee');
+	api.addFiles('lib/configLogger.coffee');
 	api.addFiles('lib/callbacks.coffee');
 	api.addFiles('lib/slashCommand.coffee');
 	api.addFiles('lib/Message.coffee');
@@ -48,6 +52,7 @@ Package.onUse(function(api) {
 	api.addFiles('server/models/Rooms.coffee', 'server');
 	api.addFiles('server/models/Settings.coffee', 'server');
 	api.addFiles('server/models/Subscriptions.coffee', 'server');
+	api.addFiles('server/models/Uploads.coffee', 'server');
 	api.addFiles('server/models/Users.coffee', 'server');
 
 	// SERVER PUBLICATIONS
@@ -65,6 +70,7 @@ Package.onUse(function(api) {
 	// SERVER METHODS
 	api.addFiles('server/methods/addOAuthService.coffee', 'server');
 	api.addFiles('server/methods/checkRegistrationSecretURL.coffee', 'server');
+	api.addFiles('server/methods/clearRequirePasswordChange.js', 'server');
 	api.addFiles('server/methods/joinDefaultChannels.coffee', 'server');
 	api.addFiles('server/methods/removeOAuthService.coffee', 'server');
 	api.addFiles('server/methods/robotMethods.coffee', 'server');
@@ -75,8 +81,8 @@ Package.onUse(function(api) {
 	api.addFiles('server/methods/setAdminStatus.coffee', 'server');
 	api.addFiles('server/methods/setRealName.coffee', 'server');
 	api.addFiles('server/methods/setUsername.coffee', 'server');
+	api.addFiles('server/methods/insertOrUpdateUser.coffee', 'server');
 	api.addFiles('server/methods/setEmail.js', 'server');
-	api.addFiles('server/methods/updateUser.coffee', 'server');
 	api.addFiles('server/methods/restartServer.coffee', 'server');
 
 	// SERVER STARTUP
@@ -102,6 +108,10 @@ Package.onUse(function(api) {
 	api.addFiles('client/MessageAction.coffee', 'client');
 
 	api.addFiles('client/defaultTabBars.js', 'client');
+
+	// CLIENT MODELS
+	api.addFiles('client/models/_Base.coffee', 'client');
+	api.addFiles('client/models/Uploads.coffee', 'client');
 
 	// VERSION
 	api.addFiles('rocketchat.info');

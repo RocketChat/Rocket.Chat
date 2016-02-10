@@ -9,6 +9,8 @@ Meteor.publish 'channelAutocomplete', (name) ->
 			_id: 1
 			name: 1
 		limit: 5
+		sort:
+			name: 1
 
 	cursorHandle = RocketChat.models.Rooms.findByNameContainingAndTypes(name, ['c'], options).observeChanges
 		added: (_id, record) ->

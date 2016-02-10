@@ -27,6 +27,9 @@ Meteor.startup ->
 		{ _id: 'view-full-other-user-info',
 		roles : ['admin']}
 
+		{ _id: 'add-user',
+		roles : ['admin']}
+
 		{ _id: 'edit-other-user-info',
 		roles : ['admin']}
 
@@ -97,7 +100,7 @@ Meteor.startup ->
 		roles : ['admin']}
 
 		{ _id: 'view-c-room',
-		roles : ['admin', 'user']}
+		roles : ['admin', 'user', 'bot']}
 
 		{ _id: 'view-p-room',
 		roles : ['admin', 'user']}
@@ -115,6 +118,9 @@ Meteor.startup ->
 		roles : ['admin', 'bot']}
 
 		{ _id: 'manage-oauth-apps',
+		roles : ['admin']},
+
+		{ _id: 'view-logs',
 		roles : ['admin']}
 	]
 
