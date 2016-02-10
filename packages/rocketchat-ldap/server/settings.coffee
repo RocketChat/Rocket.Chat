@@ -38,3 +38,4 @@ Meteor.startup ->
 		@add 'LDAP_Sync_User_Data', false, { type: 'boolean' , enableQuery: enableQuery }
 		@add 'LDAP_Sync_User_Data_FieldMap', '{"cn":"name", "mail":"email"}', { type: 'string', enableQuery: syncDataQuery }
 		@add 'LDAP_Default_Domain', '', { type: 'string' , enableQuery: enableQuery }
+		@add 'LDAP_Test_Connection', 'ldap_test_connection', { type: 'action', actionText: 'Test_Connection' }
