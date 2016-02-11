@@ -1,12 +1,12 @@
 Meteor.startup(function(){
     RocketChat.settings.addGroup('CAS', function() {
-        this.add("CAS_enabled", false, { type: 'boolean', group: 'CAS'});
-        this.add("CAS_base_url" , '' , { type: 'string' , group: 'CAS' });
-        this.add("CAS_login_url" , '' , { type: 'string' , group: 'CAS' });
+        this.add("CAS_enabled", false, { type: 'boolean', group: 'CAS', public: true });
+        this.add("CAS_base_url" , '' , { type: 'string' , group: 'CAS', public: true });
+        this.add("CAS_login_url" , '' , { type: 'string' , group: 'CAS', public: true });
 
         this.section('CAS Login Layout', function() {
-            this.add("CAS_popup_width" , '810' , { type: 'string' , group: 'CAS'});
-            this.add("CAS_popup_height" , '610' , { type: 'string' , group: 'CAS'});
+            this.add("CAS_popup_width" , '810' , { type: 'string' , group: 'CAS', public: true });
+            this.add("CAS_popup_height" , '610' , { type: 'string' , group: 'CAS', public: true });
             this.add("CAS_button_label_text" , 'CAS' , { type: 'string' , group: 'CAS'});
             this.add("CAS_button_label_color", '#FFFFFF' , { type: 'color' , group: 'CAS'});
             this.add("CAS_button_color" , '#13679A' , { type: 'color' , group: 'CAS'});
@@ -41,13 +41,8 @@ function updateServices(record) {
         // Either register or deregister the CAS login service based upon its configuration
         if( data.enabled ) {
             ServiceConfiguration.configurations.upsert({service: 'cas'}, { $set: data });
-            // Export needed settings for meteor-accounts-cas here
-            Meteor.settings.public.cas = { loginUrl: data.login_url };
-            Meteor.settings.cas = { baseUrl: data.base_url };
         } else {
             ServiceConfiguration.configurations.remove({service: 'cas'});
-            Meteor.settings.public.cas = {};
-            Meteor.settings.cas = {};
         }
     }, 2000);
 };
