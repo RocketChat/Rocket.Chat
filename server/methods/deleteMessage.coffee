@@ -38,4 +38,8 @@ Meteor.methods
 		if showDeletedStatus
 			RocketChat.models.Messages.setAsDeletedById originalMessage._id
 		else
-			RocketChat.Notifications.notifyRoom originalMessage.rid, 'deleteMessage', { _id: originalMessage._id }
+			RocketChat.Notifications.notifyRoom originalMessage.rid, 'deleteMessage', {_id: originalMessage._id}
+
+	,
+	deleteFileMessage: (fileID) ->
+		Meteor.call 'deleteMessage', RocketChat.models.Messages.findOne { file: { _id: fileID } }
