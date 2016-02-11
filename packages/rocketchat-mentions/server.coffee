@@ -41,4 +41,4 @@ class MentionsServer
 				message.channels = verifiedChannels
 		return message
 
-RocketChat.callbacks.add 'beforeSaveMessage', MentionsServer
+RocketChat.callbacks.add 'beforeSaveMessage', MentionsServer, RocketChat.callbacks.priority.HIGH
