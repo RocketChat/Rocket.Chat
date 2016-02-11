@@ -49,18 +49,18 @@ middleware = function (req, res, next) {
 
 var casTicket = function (req, token, callback) {
   // get configuration
-  if (!Meteor.settings.cas && !Meteor.settings.cas.validate) {
-    console.log("accounts-cas: unable to get configuration");
+  if (!RocketChat.settings.get("CAS_enabled")) {
+    console.log("accounts-cas: cas ist not enabled");
     callback();
   }
 
   // get ticket and validate.
   var parsedUrl = url.parse(req.url, true);
   var ticketId = parsedUrl.query.ticket;
-  var baseUrl = Meteor.settings.cas.baseUrl;
+  var baseUrl = RocketChat.settings.get("CAS_base_url");
 
   var cas = new CAS({
-    base_url: Meteor.settings.cas.baseUrl,
+    base_url: baseUrl,
     service: Meteor.absoluteUrl() + "_cas/" + token
   });
 
@@ -111,7 +111,7 @@ var casTicket = function (req, token, callback) {
 		globalRoles: ['user'],
 	};
 
-	var userId = Accounts.insertUserDoc({}, newUser);
+	var userId = Meteor.users.insert(newUser);
 	user = Meteor.users.findOne(userId);
   }
 

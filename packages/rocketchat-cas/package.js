@@ -1,7 +1,7 @@
 Package.describe({
   name: "rocketchat:cas",
   summary: "CAS support for accounts",
-  version: "1.0.0",
+  version: "1.0.1",
   git: "https://github.com/rocketchat/rocketchat-cas"
 });
 
