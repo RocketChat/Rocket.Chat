@@ -8,7 +8,9 @@ const logger = new Logger('LDAP', {
 		bind_info: { type: 'info' },
 		search_info: { type: 'info' },
 		search_debug: { type: 'debug' },
-		search_error: { type: 'errorr' }
+		search_error: { type: 'errorr' },
+		auth_info: { type: 'info' },
+		auth_debug: { type: 'debug' }
 	}
 });
 
@@ -185,7 +187,7 @@ LDAP = class LDAP {
 		const domain_search = self.getDomainBindSearch();
 
 		if (domain_search.domain_search_user !== '' && domain_search.domain_search_password !== '') {
-			logger.bind_info('Binding admin user', domain_search.domain_search_user, domain_search.domain_search_password);
+			logger.bind_info('Binding admin user', domain_search.domain_search_user);
 			self.bindSync(domain_search.domain_search_user, domain_search.domain_search_password);
 		}
 	}
@@ -242,12 +244,15 @@ LDAP = class LDAP {
 	authSync(dn, password) {
 		const self = this;
 
-		console.log('authSync', dn, password);
+		logger.auth_info('Authenticating', dn);
 
 		try {
 			self.bindSync(dn, password);
+			logger.auth_info('Authenticated', dn);
 			return true;
 		} catch(error) {
+			logger.auth_info('Not authenticated', dn);
+			logger.auth_debug('error', error);
 			return false;
 		}
 	}
@@ -256,6 +261,7 @@ LDAP = class LDAP {
 		const self = this;
 
 		self.connected = false;
+		logger.connection_info('Disconecting');
 		self.client.unbind();
 	}
 };
