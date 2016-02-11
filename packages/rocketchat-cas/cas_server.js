@@ -111,7 +111,7 @@ var casTicket = function (req, token, callback) {
 		globalRoles: ['user'],
 	};
 
-	var userId = Accounts.insertUserDoc({}, newUser);
+	var userId = Meteor.users.insert(newUser);
 	user = Meteor.users.findOne(userId);
   }
 
