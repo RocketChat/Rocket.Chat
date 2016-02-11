@@ -123,6 +123,7 @@ rocketchat:api@0.0.1
 rocketchat:assets@0.0.1
 rocketchat:authorization@0.0.1
 rocketchat:autolinker@0.0.1
+rocketchat:cas@1.0.0
 rocketchat:channel-settings@0.0.1
 rocketchat:channel-settings-mail-messages@0.0.1
 rocketchat:colors@0.0.1
