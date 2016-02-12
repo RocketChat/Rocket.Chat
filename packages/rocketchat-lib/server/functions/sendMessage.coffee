@@ -58,7 +58,7 @@ RocketChat.sendMessage = (user, message, room, options) ->
 			RocketChat.models.Subscriptions.incUnreadOfDirectForRoomIdExcludingUserId message.rid, message.u._id, 1
 
 			userOfMentionId = message.rid.replace(message.u._id, '')
-			userOfMention = RocketChat.models.Users.findOne({_id: userOfMentionId}, {fields: {username: 1, statusConnection: 1}})
+			userOfMention = RocketChat.models.Users.findOne({_id: userOfMentionId}, {fields: {username: 1, statusConnection: 1, status: 1, emails: 1, settings: 1}})
 
 			if userOfMention? and (dontNotifyDesktopUsers.indexOf(userOfMentionId) is -1 || alwaysNotifyDesktopUsers.indexOf(userOfMentionId) isnt -1)
 				RocketChat.Notifications.notifyUser userOfMention._id, 'notification',
@@ -89,6 +89,13 @@ RocketChat.sendMessage = (user, message, room, options) ->
 						query:
 							userId: userOfMention._id
 
+				if userOfMention.status is 'offline' and !(userOfMention.settings?.preferences?.emailNotificationMode is 'disabled') and userOfMention.emails and userOfMention.emails.length > 0
+					Email.send
+						to: userOfMention.emails[0].address
+						from: RocketChat.settings.get('From_Email')
+						subject: TAPi18n.__ "Offline_DM_Email", {site: RocketChat.settings.get('Site_Name'), user: user.username}
+						html: "> " + message.msg
+
 		else
 			mentionIds = []
 			message.mentions?.forEach (mention) ->
@@ -100,7 +107,7 @@ RocketChat.sendMessage = (user, message, room, options) ->
 			if mentionIds.length > 0 || alwaysNotifyDesktopUsers.length > 0
 				desktopMentionIds = _.union mentionIds, alwaysNotifyDesktopUsers
 				desktopMentionIds = _.difference desktopMentionIds, dontNotifyDesktopUsers
-				usersOfDesktopMentions = RocketChat.models.Users.find({_id: {$in: desktopMentionIds}}, {fields: {_id: 1, username: 1}}).fetch()
+				usersOfDesktopMentions = RocketChat.models.Users.find({_id: {$in: desktopMentionIds}}, {fields: {_id: 1, username: 1, status: 1}}).fetch()
 
 				# when a user is mentioned on a channel, make the user join that channel
 				if room.t is 'c' and !toAll
@@ -111,6 +118,9 @@ RocketChat.sendMessage = (user, message, room, options) ->
 
 				# Get ids of all mentioned users and users with notifications set to always.
 				userIdsToNotify = _.pluck(usersOfDesktopMentions, '_id')
+				offlineUsersToNotify = _.filter usersOfDesktopMentions, (user) ->
+					user.status is 'offline'
+				offlineUserIdsToNotify = _.pluck(offlineUsersToNotify, '_id')
 
 			if mentionIds.length > 0 || alwaysNotifyMobileUsers.length > 0
 				mobileMentionIds = _.union mentionIds, alwaysNotifyMobileUsers
@@ -130,11 +140,14 @@ RocketChat.sendMessage = (user, message, room, options) ->
 					.forEach (user) ->
 						if user.status in ['online', 'away', 'busy'] and user._id not in dontNotifyDesktopUsers
 							userIdsToNotify.push user._id
+						if user.status is 'offline'
+							offlineUserIdsToNotify.push user._id
 						if user.statusConnection isnt 'online' and user._id not in dontNotifyMobileUsers
 							userIdsToPushNotify.push user._id
 
 				userIdsToNotify = _.unique userIdsToNotify
 				userIdsToPushNotify = _.unique userIdsToPushNotify
+				offlineUserIdsToNotify = _.unique offlineUserIdsToNotify
 
 			if userIdsToNotify.length > 0
 				for usersOfMentionId in userIdsToNotify
@@ -146,6 +159,16 @@ RocketChat.sendMessage = (user, message, room, options) ->
 							sender: message.u
 							type: room.t
 							name: room.name
+
+			if offlineUserIdsToNotify.length > 0
+				offlineUsersToNotify = RocketChat.models.Users.find({_id: {$in: offlineUserIdsToNotify}}, {fields: {_id: 1, username: 1, emails: 1, settings: 1}}).fetch()
+				for offlineUser in offlineUsersToNotify
+					if !(offlineUser.settings?.preferences?.emailNotificationMode is 'disabled') and offlineUser.emails and offlineUser.emails.length > 0
+						Email.send
+							to: offlineUser.emails[0].address
+							from: RocketChat.settings.get('From_Email')
+							subject: TAPi18n.__ "Offline_Mention_Email", {site: RocketChat.settings.get('Site_Name'), user: user.username, room: room.name}
+							html: "> " + message.msg
 
 			if userIdsToPushNotify.length > 0
 				if Push.enabled is true
@@ -177,7 +200,6 @@ RocketChat.sendMessage = (user, message, room, options) ->
 				else
 					# the mentioned user if mention isn't for all
 					RocketChat.models.Subscriptions.incUnreadForRoomIdAndUserIds message.rid, mentionIds, 1
-
 
 		###
 		Update all other subscriptions to alert their owners but witout incrementing

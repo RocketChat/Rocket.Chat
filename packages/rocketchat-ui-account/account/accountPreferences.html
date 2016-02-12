@@ -69,6 +69,15 @@
 									<label><input type="radio" name="unreadRoomsMode" value="0" checked="{{checked 'unreadRoomsMode' false true}}" /> {{_ "False"}}</label>
 								</div>
 							</div>
+							<div class="input-line double-col" id="emailNotificationMode">
+								<label>{{_ "Email_Notification_Mode"}}</label>
+								<div>
+									<select class="input-monitor" name="emailNotificationMode">
+										<option value="disabled" selected="{{selected 'emailNotificationMode' 'disabled' false}}">{{_ "Email_Notification_Mode_Disabled"}}</option>
+										<option value="all" selected="{{selected 'emailNotificationMode' 'all' true}}">{{_ "Email_Notification_Mode_All"}}</option>
+									</select>
+								</div>
+							</div>
 						</div>
 					</div>
 					<div class="section">
