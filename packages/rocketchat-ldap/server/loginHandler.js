@@ -1,3 +1,5 @@
+const logger = new Logger('LDAPHandler', {});
+
 var slug = function (text) {
 	if (RocketChat.settings.get('UTF8_Names_Slugify') !== true) {
 		return text;
@@ -12,6 +14,8 @@ function fallbackDefaultAccountSystem(bind, username, password) {
 			username = {username: username};
 		else
 			username = {email: username};
+
+	logger.info('Fallback to default account systen', username);
 
 	loginRequest = {
 		user: username,
@@ -66,7 +70,10 @@ function getDataToSyncUserData(ldapUser) {
 }
 
 function syncUserData(user, ldapUser) {
-	console.log('sync user data', arguments);
+	logger.info('Syncing user data');
+	logger.debug('user', user);
+	logger.debug('ldapUser', ldapUser);
+
 	const userData = getDataToSyncUserData(ldapUser);
 	if (user && user._id && userData) {
 		Meteor.users.update(user._id, { $set: userData });
@@ -75,6 +82,7 @@ function syncUserData(user, ldapUser) {
 	if (user && user._id) {
 		const avatar = ldapUser.raw.thumbnailPhoto || ldapUser.raw.jpegPhoto;
 		if (avatar) {
+			logger.info('Syncing user avatar');
 			const rs = RocketChatFile.bufferToStream(avatar);
 			RocketChatFileAvatarInstance.deleteFile(encodeURIComponent(`${user.username}.jpg`));
 			const ws = RocketChatFileAvatarInstance.createWriteStream(encodeURIComponent(`${user.username}.jpg`), 'image/jpeg');
@@ -110,6 +118,8 @@ Accounts.registerLoginHandler("ldap", function(loginRequest) {
 		return undefined;
 	}
 
+	logger.info('Init login', loginRequest.username);
+
 	if (RocketChat.settings.get('LDAP_Enable') !== true) {
 		return fallbackDefaultAccountSystem(self, loginRequest.username, loginRequest.ldapPass);
 	}
@@ -122,23 +132,22 @@ Accounts.registerLoginHandler("ldap", function(loginRequest) {
 		users = ldap.searchUsersSync(loginRequest.username);
 
 		if (users.length !== 1) {
-			console.log('LDAP: Search returned', users.length, 'record(s)');
+			logger.info('Search returned', users.length, 'record(s) for', loginRequest.username);
 			throw new Error('User not Found');
 		}
 
 		if (ldap.authSync(users[0].dn, loginRequest.ldapPass) === true) {
 			ldapUser = users[0];
 		} else {
-			console.log('wrong password');
+			logger.info('Wrong password for', loginRequest.username);
 		}
 	} catch(error) {
-		console.log(error);
+		logger.error(error);
 	}
 
 	ldap.disconnect();
 
 	if (ldapUser === undefined) {
-		console.log('[LDAP] Falling back to standard account base');
 		return fallbackDefaultAccountSystem(self, loginRequest.username, loginRequest.ldapPass);
 	}
 
@@ -164,13 +173,19 @@ Accounts.registerLoginHandler("ldap", function(loginRequest) {
 		};
 	}
 
+	logger.info('Querying user');
+	logger.debug('userQuery', userQuery);
+
 	const user = Meteor.users.findOne(userQuery);
 
 	// Login user if they exist
 	if (user) {
 		if (user.ldap !== true) {
+			logger.info('User exists without "ldap: true"');
 			throw new Meteor.Error("LDAP-login-error", "LDAP Authentication succeded, but there's already an existing user with provided username ["+username+"] in Mongo.");
 		}
+
+		logger.info('Logging user');
 
 		const stampedToken = Accounts._generateStampedLoginToken();
 		const hashStampedToken =
@@ -188,6 +203,7 @@ Accounts.registerLoginHandler("ldap", function(loginRequest) {
 		};
 	}
 
+	logger.info('User does not exists, creating', username);
 	// Create new user
 	var userObject = {
 		username: username,
@@ -222,6 +238,7 @@ Accounts.registerLoginHandler("ldap", function(loginRequest) {
 		$set: ldapUserService
 	});
 
+	logger.info('Joining user to default channels');
 	Meteor.runAsUser(userObject._id, function() {
 		Meteor.call('joinDefaultChannels');
 	});
