@@ -8,7 +8,7 @@ const logger = new Logger('LDAP', {
 		bind_info: { type: 'info' },
 		search_info: { type: 'info' },
 		search_debug: { type: 'debug' },
-		search_error: { type: 'errorr' },
+		search_error: { type: 'error' },
 		auth_info: { type: 'info' },
 		auth_debug: { type: 'debug' }
 	}
