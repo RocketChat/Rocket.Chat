@@ -47,6 +47,7 @@ Package.onUse(function(api) {
 	api.addFiles('server/lib/roomTypes.coffee', 'server');
 	api.addFiles('server/lib/sendNotificationsOnMessage.js', 'server');
 	api.addFiles('server/lib/notifyUsersOnMessage.js', 'server');
+	api.addFiles('server/lib/sendEmailOnMessage.js', 'server');
 
 	// SERVER MODELS
 	api.addFiles('server/models/_Base.coffee', 'server');
