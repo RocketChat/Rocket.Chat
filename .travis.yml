@@ -1,4 +1,4 @@
-sudo: required
+sudo: false
 language: node_js
 branches:
   only:
@@ -16,6 +16,7 @@ before_install:
 - mkdir -p node_modules
 install:
 - curl https://install.meteor.com | /bin/sh
+- export PATH="$HOME/.meteor:$PATH"
 before_script:
 - mkdir /tmp/build
 script:
