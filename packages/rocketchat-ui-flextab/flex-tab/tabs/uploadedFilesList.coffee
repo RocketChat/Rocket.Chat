@@ -24,9 +24,7 @@ Template.uploadedFilesList.helpers
 		return s.escapeHTML @name
 
 	canDelete: ->
-		msg = ChatMessage.findOne { file: { _id: @_id } }
-		if msg
-			return RocketChat.authz.hasAtLeastOnePermission('delete-message', msg.rid) or RocketChat.settings.get('Message_AllowDeleting') and msg.u?._id is Meteor.userId()
+		return RocketChat.authz.hasAtLeastOnePermission('delete-message', @rid) or RocketChat.settings.get('Message_AllowDeleting') and @userId is Meteor.userId()
 
 Template.uploadedFilesList.events
 	'click .room-file-item': (e, t) ->
@@ -53,9 +51,15 @@ Template.uploadedFilesList.events
 				timer: 1000
 				showConfirmButton: false
 
+				# Check if the upload message for this file is currently loaded
 				msg = ChatMessage.findOne { file: { _id: self._id } }
 				RocketChat.models.Uploads.remove self._id, () ->
-					chatMessages[Session.get('openedRoom')].deleteMsg(msg);
+					if msg
+						chatMessages[Session.get('openedRoom')].deleteMsg(msg);
+					else
+						Meteor.call 'deleteFileMessage', self._id, (error, result) ->
+							if error
+								return Errors.throw error.reason
 
 	'scroll .content': _.throttle (e, t) ->
 		if e.target.scrollTop >= e.target.scrollHeight - e.target.clientHeight
