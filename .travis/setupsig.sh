@@ -1,6 +1,5 @@
 #!/bin/bash
-
-set -euo pipefail
+set -euvo pipefail
 
 cp .travis/sign.key.gpg  /tmp
 gpg --yes --batch --passphrase=$mypass /tmp/sign.key.gpg

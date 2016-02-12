@@ -74,7 +74,7 @@ const pkgdef :Spk.PackageDefinition = (
   sourceMap = (
     # The following directories will be copied into your package.
     searchPath = [
-      ( sourcePath = "/home/vagrant/bundle" ),
+      ( sourcePath = "~/vagrant/bundle" ),
       ( sourcePath = "/opt/meteor-spk/meteor-spk.deps" )
     ]
   ),
