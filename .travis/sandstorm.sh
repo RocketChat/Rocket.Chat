@@ -1,5 +1,5 @@
 #!/bin/bash
-set -euo pipefail
+set -euvo pipefail
 IFS=$'\n\t'
 
 export SANDSTORM_VERSION=$(curl -f "https://install.sandstorm.io/dev?from=0&type=install")
@@ -8,15 +8,14 @@ export PATH=$PATH:/tmp/sandstorm-$SANDSTORM_VERSION/bin
 cd /tmp
 curl https://dl.sandstorm.io/sandstorm-$SANDSTORM_VERSION.tar.xz | tar -xJf -
 
-sudo mkdir -p /opt
-sudo chown -R travis /opt
-cd /opt
+mkdir -p ~/opt
+cd ~/opt
 curl https://dl.sandstorm.io/meteor-spk-0.1.8.tar.xz | tar -xJf -
 ln -s meteor-spk-0.1.8 meteor-spk
-cp -a /bin/bash /opt/meteor-spk/meteor-spk.deps/bin/
-cp -a /lib/x86_64-linux-gnu/libncurses.so.* /opt/meteor-spk/meteor-spk.deps/lib/x86_64-linux-gnu/
-cp -a /lib/x86_64-linux-gnu/libtinfo.so.* /opt/meteor-spk/meteor-spk.deps/lib/x86_64-linux-gnu/
-ln -s $TRAVIS_BUILD_DIR /opt/app
+cp -a /bin/bash ~/opt/meteor-spk/meteor-spk.deps/bin/
+cp -a /lib/x86_64-linux-gnu/libncurses.so.* ~/opt/meteor-spk/meteor-spk.deps/lib/x86_64-linux-gnu/
+cp -a /lib/x86_64-linux-gnu/libtinfo.so.* ~/opt/meteor-spk/meteor-spk.deps/lib/x86_64-linux-gnu/
+ln -s $TRAVIS_BUILD_DIR ~/opt/app
 
 cd /tmp
 spk init -p3000 -- nothing
@@ -26,13 +25,12 @@ cd $TRAVIS_BUILD_DIR
 export METEOR_WAREHOUSE_DIR="${METEOR_WAREHOUSE_DIR:-$HOME/.meteor}"
 export METEOR_DEV_BUNDLE=$(dirname $(readlink -f "$METEOR_WAREHOUSE_DIR/meteor"))/dev_bundle
 
-sudo mkdir -p /home/vagrant
-sudo chown -R travis /home/vagrant
-tar -zxf /tmp/build/Rocket.Chat.tar.gz --directory /home/vagrant/
-cd /home/vagrant/bundle/programs/server && "$METEOR_DEV_BUNDLE/bin/npm" install
+mkdir -p ~/vagrant
+tar -zxf /tmp/build/Rocket.Chat.tar.gz --directory ~/vagrant/
+cd ~/vagrant/bundle/programs/server && "$METEOR_DEV_BUNDLE/bin/npm" install
 cd $TRAVIS_BUILD_DIR/.sandstorm
 sed -i "s/\sid = .*/$SANDSTORM_ID/" sandstorm-pkgdef.capnp
-mkdir -p /home/vagrant/bundle/opt/app/.sandstorm/
-cp /opt/app/.sandstorm/launcher.sh /home/vagrant/bundle/opt/app/.sandstorm/
+mkdir -p ~/vagrant/bundle/opt/app/.sandstorm/
+cp ~/opt/app/.sandstorm/launcher.sh ~/vagrant/bundle/opt/app/.sandstorm/
 sed -i "s/\spgp/#pgp/g" sandstorm-pkgdef.capnp
 spk pack $ROCKET_DEPLOY_DIR/rocket.chat-$ARTIFACT_NAME.spk

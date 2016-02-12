@@ -31,7 +31,7 @@
 
 	showDesktop: (notification) ->
 		if not window.document.hasFocus?() and Meteor.user().status isnt 'busy'
-			@KonchatNotification._showDesktop(notification)
+			KonchatNotification._showDesktop(notification)
 
 	newMessage: ->
 		unless Session.equals('user_' + Meteor.userId() + '_status', 'busy') or Meteor.user()?.settings?.preferences?.disableNewMessageNotification
