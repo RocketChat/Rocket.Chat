@@ -7,6 +7,12 @@ Template.accountPreferences.helpers
 
 		return currentValue is value
 
+	selected: (property, value, defaultValue) ->
+		if not Meteor.user()?.settings?.preferences?[property]
+			return defaultValue
+		else
+			return Meteor.user()?.settings?.preferences?[property] == value
+
 	desktopNotificationEnabled: ->
 		return (KonchatNotification.notificationStatus.get() is 'granted') or (window.Notification && Notification.permission is "granted")
 
@@ -42,6 +48,7 @@ Template.accountPreferences.onCreated ->
 		data.compactView = $('input[name=compactView]:checked').val()
 		data.unreadRoomsMode = $('input[name=unreadRoomsMode]:checked').val()
 		data.autoImageLoad = $('input[name=autoImageLoad]:checked').val()
+		data.emailNotificationMode = $('select[name=emailNotificationMode]').val()
 
 		Meteor.call 'saveUserPreferences', data, (error, results) ->
 			if results
