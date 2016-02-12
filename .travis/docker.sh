@@ -1,5 +1,5 @@
 #!/bin/bash
-set -euo pipefail
+set -euvo pipefail
 IFS=$'\n\t'
 
 CURL_URL="https://registry.hub.docker.com/u/rocketchat/rocket.chat/trigger/$PUSHTOKEN/"
