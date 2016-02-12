@@ -17,6 +17,7 @@ Meteor.publish 'roomFiles', (rid, limit = 50) ->
 			uploadedAt: -1
 		fields:
 			_id: 1
+			userId: 1
 			rid: 1
 			name: 1
 			type: 1
