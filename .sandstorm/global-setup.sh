@@ -17,14 +17,12 @@ modprobe ip_tables
 # `spk dev` work.
 usermod -a -G 'sandstorm' 'vagrant'
 # Bind to all addresses, so the vagrant port-forward works.
-sed --in-place='' \
-        --expression='s/^BIND_IP=.*/BIND_IP=0.0.0.0/' \
-        ~/opt/sandstorm/sandstorm.conf
+sudo sed --in-place='' --expression='s/^BIND_IP=.*/BIND_IP=0.0.0.0/' /opt/sandstorm/sandstorm.conf
 # TODO: update sandstorm installer script to ask about dev accounts, and
 # specify a value for this option in the default config?
-if ! grep --quiet --no-messages ALLOW_DEV_ACCOUNTS=true ~/opt/sandstorm/sandstorm.conf ; then
-    echo "ALLOW_DEV_ACCOUNTS=true" | tee -a ~/opt/sandstorm/sandstorm.conf
-    service sandstorm restart
+if ! grep --quiet --no-messages ALLOW_DEV_ACCOUNTS=true /opt/sandstorm/sandstorm.conf ; then
+    echo "ALLOW_DEV_ACCOUNTS=true" | sudo tee -a /opt/sandstorm/sandstorm.conf
+    sudo service sandstorm restart
 fi
 # Enable apt-cacher-ng proxy to make things faster if one appears to be running on the gateway IP
 GATEWAY_IP=$(ip route  | grep ^default  | cut -d ' ' -f 3)
