@@ -29,9 +29,9 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 
   # Use a shell script to "provision" the box. This installs Sandstorm using
   # the bundled installer.
-  config.vm.provision "shell", inline: "bash ~/opt/app/.sandstorm/global-setup.sh"
+  config.vm.provision "shell", inline: "sudo bash /opt/app/.sandstorm/global-setup.sh"
   # Then, do stack-specific and app-specific setup.
-  config.vm.provision "shell", inline: "bash ~/opt/app/.sandstorm/setup.sh"
+  config.vm.provision "shell", inline: "sudo bash /opt/app/.sandstorm/setup.sh"
 
   # Shared folders are configured per-provider since vboxsf can't handle >4096 open files,
   # NFS requires privilege escalation every time you bring a VM up,
@@ -79,16 +79,18 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     vb.cpus = cpus
     vb.memory = assign_ram_mb
     vb.name = VM_NAME
+
     override.vm.synced_folder "..", "/opt/app"
-    override.vm.synced_folder "..", "/vagrant"
     override.vm.synced_folder ENV["HOME"] + "/.sandstorm", "/host-dot-sandstorm"
+    override.vm.synced_folder "..", "/vagrant"
   end
   config.vm.provider :libvirt do |libvirt, override|
     libvirt.cpus = cpus
     libvirt.memory = assign_ram_mb
     libvirt.default_prefix = VM_NAME
+
     override.vm.synced_folder "..", "/opt/app", type: "9p", accessmode: "passthrough"
-    override.vm.synced_folder "..", "/vagrant", type: "9p", accessmode: "passthrough"
     override.vm.synced_folder ENV["HOME"] + "/.sandstorm", "/host-dot-sandstorm", type: "9p", accessmode: "passthrough"
+    override.vm.synced_folder "..", "/vagrant", type: "9p", accessmode: "passthrough"
   end
 end
