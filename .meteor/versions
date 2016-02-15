@@ -90,6 +90,8 @@ monbro:mongodb-mapreduce-aggregation@1.0.1
 mongo@1.1.3
 mongo-id@1.0.1
 mongo-livedata@1.0.9
+mrt:moment@2.8.1
+mrt:moment-timezone@0.2.1
 mrt:reactive-store@0.0.1
 mystor:device-detection@0.2.0
 nimble:restivus@0.8.4
@@ -135,6 +137,9 @@ rocketchat:file@0.0.1
 rocketchat:github-enterprise@0.0.1
 rocketchat:gitlab@0.0.1
 rocketchat:highlight@0.0.1
+rocketchat:importer@0.0.1
+rocketchat:importer-hipchat@0.0.1
+rocketchat:importer-slack@0.0.1
 rocketchat:integrations@0.0.1
 rocketchat:ldap@0.0.1
 rocketchat:lib@0.0.1
