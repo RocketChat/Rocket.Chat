@@ -10,9 +10,9 @@ Template.membersList.helpers
 
 	seeAll: ->
 		if Template.instance().showAllUsers.get()
-			return t('See_only_online')
+			return t('Show_only_online')
 		else
-			return t('See_all')
+			return t('Show_all')
 
 	roomUsers: ->
 		users = []
@@ -38,11 +38,17 @@ Template.membersList.helpers
 		# sortBy is stable, so we can do this
 		users = _.sortBy users, (u) -> !u.status?
 
+		users = _.first(users, Template.instance().usersLimit.get())
+
+		totalUsers = roomUsernames.length
+		totalShowing = users.length
+
 		ret =
 			_id: this.rid
-			total: roomUsernames.length
-			totalOnline: (1 for user in users when onlineUsers[user.username]?).length
+			total: totalUsers
+			totalShowing: totalShowing
 			users: users
+			hasMore: totalShowing > 0 and totalShowing < totalUsers
 
 		return ret
 
@@ -84,7 +90,11 @@ Template.membersList.events
 		Session.set('showUserInfo', $(e.currentTarget).data('username'))
 
 	'click .see-all': (e, instance) ->
-		instance.showAllUsers.set(!instance.showAllUsers.get())
+		seeAll = instance.showAllUsers.get()
+		instance.showAllUsers.set(!seeAll)
+
+		if not seeAll
+			instance.usersLimit.set 100
 
 	'autocompleteselect #user-add-search': (event, template, doc) ->
 
@@ -104,5 +114,10 @@ Template.membersList.events
 
 				$('#user-add-search').val('')
 
+	'click .show-more-users': (e, instance) ->
+		instance.usersLimit.set(instance.usersLimit.get() + 100)
+
+
 Template.membersList.onCreated ->
 	@showAllUsers = new ReactiveVar false
+	@usersLimit = new ReactiveVar 100

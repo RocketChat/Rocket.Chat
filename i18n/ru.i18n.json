@@ -309,7 +309,7 @@
   "Send_Message" : "Отправить сообщение",
   "Settings" : "Настройки",
   "Settings_updated" : "Настройки обновлены",
-  "Showing_online_users" : "Отображено <b>__total_online__</b> из __total__ users",
+  "Showing_online_users" : "Отображено <b>__total_showing__</b> из __total__ users",
   "Showing_results" : "<p>Отображено <b>%s</b> результатов</p>",
   "Silence" : "Тишина",
   "since_creation" : "с %s",
