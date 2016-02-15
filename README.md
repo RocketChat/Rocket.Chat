@@ -196,6 +196,7 @@ It is a great solution for communities and companies wanting to privately host t
 - XMPP bridge ([try it](https://demo.rocket.chat/channel/xmppbridge))
 - REST APIs
 - Remote Locations Video Monitoring
+- Native real-time APIs for Microsoft C#, Visual Basic, F# and other .NET supported languages ([Get it!](https://www.nuget.org/packages/Rocket.Chat.Net/0.0.12-pre))
 - Chat-ops powered by Hubot: scalable horizontal app integration (early access)
 - Massively scalable hosting and provisioning (beta testing now)
 - Native Cross-Platform Desktop Application [Windows, Mac OSX, or Linux](https://rocket.chat/)
