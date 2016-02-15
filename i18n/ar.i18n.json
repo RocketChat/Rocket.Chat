@@ -276,7 +276,7 @@
   "Send_Message" : "أرسل رسالة",
   "Settings" : "اﻹعدادات",
   "Settings_updated" : "تم تحديث الإعدادات",
-  "Showing_online_users" : "عرض <b>__total_online__</b>من __total__ عضو",
+  "Showing_online_users" : "عرض <b>__total_showing__</b>من __total__ عضو",
   "Showing_results" : "<p>يعرض <b>%s</b> نتائج</p>",
   "Silence" : "الصمت",
   "since_creation" : "منذ %s",

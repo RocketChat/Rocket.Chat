@@ -350,7 +350,7 @@
   "Send_Message" : "ផ្ញើរសារ",
   "Settings" : "ការកំណត់",
   "Settings_updated" : "ការ​កំណត់​ការ​ធ្វើ​ឱ្យ​ទាន់​សម័យ",
-  "Showing_online_users" : "កំពុង​បង្ហាញ <b>__total_online__</b> នៃ __total__ users",
+  "Showing_online_users" : "កំពុង​បង្ហាញ <b>__total_showing__</b> នៃ __total__ users",
   "Showing_results" : "<p>កំពុង​បង្ហាញ <b>%s</b> លទ្ធផល</p>",
   "Silence" : "ស្ងាត់",
   "since_creation" : "តាំងពី %s",

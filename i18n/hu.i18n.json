@@ -96,7 +96,7 @@
   "Send_confirmation_email" : "Megerősítő email elküldése",
   "Send_Message" : "Üzenet küldése",
   "Settings" : "Beállítások",
-  "Showing_online_users" : "<b>__total_online__</b> online a __total___ felhasználóból",
+  "Showing_online_users" : "<b>__total_showing__</b> online a __total___ felhasználóból",
   "Showing_results" : "<p><b>%s</b> eredmény megjelenítve</p>",
   "Silence" : "Némítás",
   "since_creation" : "%s óta",
