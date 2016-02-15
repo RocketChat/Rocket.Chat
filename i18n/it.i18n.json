@@ -97,7 +97,7 @@
   "Send_confirmation_email" : "Invia email di conferma",
   "Send_Message" : "Invia il messaggio",
   "Settings" : "Impostazioni",
-  "Showing_online_users" : "Mostra <b>__total_online__</b> di __total__users",
+  "Showing_online_users" : "Mostra <b>__total_showing__</b> di __total__users",
   "Showing_results" : "<p>Mostra <b>%s</b> resultati</p>",
   "Silence" : "Silenzio",
   "since_creation" : "da %s",

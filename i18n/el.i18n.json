@@ -216,7 +216,7 @@
   "Send_Message" : "Αποστολή Μηνύματος",
   "Settings" : "Ρυθμίσεις",
   "Settings_updated" : "Οι ρυθμίσεις ενημερώθηκαν",
-  "Showing_online_users" : "Εμφανίζονται <b>__total_online__</b> από __total__ users",
+  "Showing_online_users" : "Εμφανίζονται <b>__total_showing__</b> από __total__ users",
   "Showing_results" : "<p>Εμφανιζονται <b>%s</b> αποτελεσματα</p>",
   "Silence" : "Ησυχία",
   "since_creation" : "από %s",

@@ -293,7 +293,7 @@
   "Send_Message" : "Hantar mesej",
   "Settings" : "Tetapan",
   "Settings_updated" : "Tetapan dikemaskini",
-  "Showing_online_users" : "Menunjukkan <b>__total_online__</b> dari  __total__ pengguna",
+  "Showing_online_users" : "Menunjukkan <b>__total_showing__</b> dari  __total__ pengguna",
   "Showing_results" : "<p>Menunjukan <b>%s</b> keputusan</p>",
   "Silence" : "Senyap",
   "since_creation" : "sejak %s",
