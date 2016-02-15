@@ -298,6 +298,7 @@ Importer.Slack = class Importer.Slack extends Importer.Base
 			message = message.replace /:memo:/g, ':pencil:'
 			message = message.replace /:piggy:/g, ':pig:'
 			message = message.replace /:uk:/g, ':gb:'
+			message = message.replace /<(http[s]?:[^>]*)>/g, '$1'
 			for userReplace in @userTags
 				message = message.replace userReplace.slack, userReplace.rocket
 				message = message.replace userReplace.slackLong, userReplace.rocket
