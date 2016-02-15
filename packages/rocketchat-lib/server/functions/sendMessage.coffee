@@ -1,5 +1,4 @@
 RocketChat.sendMessage = (user, message, room, options) ->
-
 	if not user or not message or not room._id
 		return false
 

@@ -9,6 +9,9 @@ Meteor.startup ->
 		{ _id: 'view-statistics',
 		roles : ['admin']}
 
+		{ _id: 'run-import',
+		roles : ['admin']}
+
 		{ _id: 'view-privileged-setting',
 		roles : ['admin']}
 
