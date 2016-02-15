@@ -7,8 +7,8 @@
 					<div class="status">
 						<h2>{{_ "Members_List"}}</h2>
 						<p>
-							{{{_ "Showing_online_users" total_online=totalOnline total=total}}}
-							<button class="button see-all">{{seeAll}}</button>
+							{{{_ "Showing_online_users" total_showing=totalShowing total=total}}}
+							<a class="see-all">{{seeAll}}</a>
 						</p>
 						{{> videoButtons}}
 						{{#if canAddUser}}
@@ -32,6 +32,9 @@
 							</li>
 						{{/each}}
 					</ul>
+					{{#if hasMore}}
+						<button class="button show-more-users">{{_ "Show_more"}}</button>
+					{{/if}}
 				{{/with}}
 			</div>
 		{{/if}}

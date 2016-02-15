@@ -503,7 +503,7 @@
   "Should_be_a_URL_of_an_image" : "Dies soll die URL des Bildes sein.",
   "Should_exists_a_user_with_this_username" : "Der Benutzer muss bereits vorhanden sein.",
   "Showing_archived_results" : "<b>%s</b> archivierte Räume",
-  "Showing_online_users" : "<b>__total_online__</b> von __total__ Nutzer sind online",
+  "Showing_online_users" : "<b>__total_showing__</b> von __total__ Nutzer sind online",
   "Showing_results" : "<p><b>%s</b> Ergebnisse</p>",
   "Silence" : "Ruhe",
   "since_creation" : "seit %s",

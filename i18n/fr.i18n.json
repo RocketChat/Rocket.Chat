@@ -401,7 +401,7 @@
   "Settings" : "Paramètres",
   "Settings_updated" : "Paramètres mis à jour",
   "Showing_archived_results" : "<p>Affichage de <b>%s</b> résultats archivés</p>",
-  "Showing_online_users" : "<b>__total_online__</b> utilisateur(s) sur un total de __total__ affichés",
+  "Showing_online_users" : "<b>__total_showing__</b> utilisateur(s) sur un total de __total__ affichés",
   "Showing_results" : "<p><b>%s</b> résultat(s)</p>",
   "Silence" : "Silence",
   "since_creation" : "depuis %s",

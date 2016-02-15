@@ -197,7 +197,7 @@
   "Send_Message" : "Mesaj Gönder",
   "Settings" : "Ayarlar",
   "Settings_updated" : "Ayarlar güncellendi",
-  "Showing_online_users" : "Gösterilen <b>__total_online__</b>__Total__ kullanıcıların",
+  "Showing_online_users" : "Gösterilen <b>__total_showing__</b>__Total__ kullanıcıların",
   "Showing_results" : "<p> <b>%s</b> kayıt bulundu</p>",
   "Silence" : "Sessizlik",
   "since_creation" : "tarih %s",

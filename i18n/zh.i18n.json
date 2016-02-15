@@ -238,7 +238,7 @@
   "Send_Message" : "发送",
   "Settings" : "设置",
   "Settings_updated" : "设置已更新",
-  "Showing_online_users" : "显示 __total__ 位用户中的 <b>__total_online__</b> 位",
+  "Showing_online_users" : "显示 __total__ 位用户中的 <b>__total_showing__</b> 位",
   "Showing_results" : "<p>显示<b>%s</b>条结果</p>",
   "Silence" : "静音",
   "since_creation" : "自从%s",

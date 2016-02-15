@@ -96,7 +96,7 @@
   "Send_Message" : "نامەی نوێ",
   "Send_your_JSON_payloads_to_this_URL" : "پەیلۆدە جەیسنەکانت بنێرە بۆ ئەم URL",
   "Should_exists_a_user_with_this_username" : "ئەبێ بەکارهێنەرێ بەم ناوە هەبێت",
-  "Showing_online_users" : "<b>__total_online__</b> لە __total__ users نیشاندراوە",
+  "Showing_online_users" : "<b>__total_showing__</b> لە __total__ users نیشاندراوە",
   "Showing_results" : "<p>نیشاندانی <b>%s</b> ئەنجام</p>",
   "since_creation" : "لە %s ـەوە",
   "Start_of_conversation" : "سەرەتای گفتوگۆ",

@@ -236,7 +236,7 @@
   "Send_Message" : "שליחת הודעה",
   "Settings" : "הגדרות",
   "Settings_updated" : "ההגדרות עודכנו",
-  "Showing_online_users" : "מציג <b>__total_online__</b> מתוך __total__ משתמשים",
+  "Showing_online_users" : "מציג <b>__total_showing__</b> מתוך __total__ משתמשים",
   "Showing_results" : "<p>מוצגות <b>%s</b> תוצאות</p>",
   "Silence" : "השתקה",
   "since_creation" : "מאז %s",
