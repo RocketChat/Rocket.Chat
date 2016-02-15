@@ -120,7 +120,7 @@
   "Send_confirmation_email" : "確認メールを送信",
   "Send_Message" : "メッセージを送信",
   "Settings" : "設定",
-  "Showing_online_users" : "__total__ ユーザ中 <b>__total_online__</b> ユーザが見ています",
+  "Showing_online_users" : "__total__ ユーザ中 <b>__total_showing__</b> ユーザが見ています",
   "Showing_results" : "<p><b>%s</b> 件の結果を表示</p>",
   "Silence" : "サイレンス",
   "since_creation" : "since %s",

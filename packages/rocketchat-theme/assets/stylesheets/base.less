@@ -3070,7 +3070,17 @@ a.github-fork {
 		.see-all {
 			float: right;
 			border: none;
+			text-decoration: underline;
+			cursor: pointer;
+			&:hover {
+				text-decoration: none;
+			}
 		}
+
+	}
+	.show-more-users {
+		margin: 1em auto 0 auto;
+		display: block;
 	}
 	&.uploaded-files-list {
 		a {

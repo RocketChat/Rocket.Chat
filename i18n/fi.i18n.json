@@ -468,7 +468,7 @@
   "Should_be_a_URL_of_an_image" : "Kuvan URL-osoite",
   "Should_exists_a_user_with_this_username" : "Käyttäjä tällä käyttäjätunnuksella tulisi olla olemassa",
   "Showing_archived_results" : "<p>Näytetään <b>%s</b> arkistoitua tulosta</p>",
-  "Showing_online_users" : "Näytetään <b>__total_online__</b>/__total__ users",
+  "Showing_online_users" : "Näytetään <b>__total_showing__</b>/__total__ users",
   "Showing_results" : "<p>Näytetään <b>%s</b> tulosta</p>",
   "Silence" : "Hiljaisuus",
   "since_creation" : "%s saakka",

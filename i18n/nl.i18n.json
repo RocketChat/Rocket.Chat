@@ -489,7 +489,7 @@
   "Should_be_a_URL_of_an_image" : "Dit moet een URL van een afbeelding zijn.",
   "Should_exists_a_user_with_this_username" : "De gebruiker moet al bestaan.",
   "Showing_archived_results" : "<p>Zichtbaar: <b>%s</b> gearchiveerde resultaten</p>",
-  "Showing_online_users" : "Toont <b>__total_online__</b> van de __total__ gebruikers",
+  "Showing_online_users" : "Toont <b>__total_showing__</b> van de __total__ gebruikers",
   "Showing_results" : "<p>Toon <b>%s</b> resultaten</p>",
   "Silence" : "Stilte",
   "since_creation" : "sinds %s",
