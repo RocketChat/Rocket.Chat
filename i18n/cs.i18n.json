@@ -36,7 +36,7 @@
   "See_only_online" : "Pouze online",
   "Selected_users" : "Vybraní členové",
   "Send_Message" : "Poslat zprávu",
-  "Showing_online_users" : "Viditelných <b>__total_online__</b> z __total__ users",
+  "Showing_online_users" : "Viditelných <b>__total_showing__</b> z __total__ users",
   "Start_of_conversation" : "Začít konverzaci",
   "User_added_by" : "<em>__user_by__</em> přidal uživatele <em>__user_added__</em>.",
   "User_left" : "Opustil(a) kanál.",

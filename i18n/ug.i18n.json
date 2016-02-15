@@ -107,7 +107,7 @@
   "Send_confirmation_email" : "جەزملەشتۈرۈش ئىلخىتى ئەۋەتىش",
   "Send_Message" : "خەت ئەۋەتىش",
   "Settings" : "تەڭشەكلەر",
-  "Showing_online_users" : "__total__ ئەزانىڭ ئىچىدىكى <b>__total_online__</b> كۆرسىتىلدى",
+  "Showing_online_users" : "__total__ ئەزانىڭ ئىچىدىكى <b>__total_showing__</b> كۆرسىتىلدى",
   "Showing_results" : "<p><b>%s</b> نەتىجە تېپىلدى</p>",
   "Silence" : "جىمجىت",
   "since_creation" : "%s باشلاپ",

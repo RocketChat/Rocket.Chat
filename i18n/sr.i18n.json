@@ -95,7 +95,7 @@
   "Send_confirmation_email" : "Пошаљи потврдну поруку",
   "Send_Message" : "Пошаљи поруку",
   "Settings" : "Подешавања",
-  "Showing_online_users" : "Приказујем <b>__total_online__</b> од __total__ корисника",
+  "Showing_online_users" : "Приказујем <b>__total_showing__</b> од __total__ корисника",
   "Showing_results" : "<p>Приказујем <b>%s</b> резултата</p>",
   "Silence" : "Утишај",
   "since_creation" : "пре %s",

@@ -97,7 +97,7 @@
   "Send_confirmation_email" : "Надіслати електронною поштою підтвердження",
   "Send_Message" : "Надіслати повідомлення",
   "Settings" : "Налаштування",
-  "Showing_online_users" : "Показані <b>__total_online__</b>з __total__ користувачів",
+  "Showing_online_users" : "Показані <b>__total_showing__</b>з __total__ користувачів",
   "Showing_results" : "<p>Показано <b>% s</b>Результати</p>",
   "Silence" : "Тиша",
   "since_creation" : "з %s",
