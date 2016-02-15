@@ -12,7 +12,6 @@
   "Query_description" : "Zusätzliche Bedingungen für die Bestimmung, an welche Benutzer die E-Mails gesendet werden sollen. Ausgetragene Benutzer werden automatisch aus der Abfrage entfernt. Es muss ein gültiger JSON sein. Beispiel: \"{\"createdAt\":{\"$gt\":{\"$date\": \"2015-01-01T00:00:00.000Z\"}}}\"",
   "Send_email" : "E-Mail senden",
   "The_emails_are_being_sent" : "Die E-Mails werden gesendet.",
-  "You_are_not_authorized_to_view_this_page" : "Sie sind nicht berechtigt, diese Seite zu sehen.",
   "You_have_successfully_unsubscribed" : "Sie haben sich erfolgreich von unserem Verteiler abgemeldet.",
   "You_informed_an_invalid_FROM_address" : "Sie haben eine ungültige E-Mail-Adresse als Empfänger angegeben.",
   "You_must_provide_the_unsubscribe_link" : "Sie müssen einen Link zum Abmelden vom Verteiler angeben."
