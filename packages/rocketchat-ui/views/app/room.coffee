@@ -279,7 +279,7 @@ Template.room.events
 	'click .toggle-favorite': (event) ->
 		event.stopPropagation()
 		event.preventDefault()
-		Meteor.call 'toogleFavorite', @_id, !$('i', event.currentTarget).hasClass('favorite-room')
+		Meteor.call 'toggleFavorite', @_id, !$('i', event.currentTarget).hasClass('favorite-room')
 
 	'click .edit-room-title': (event) ->
 		event.preventDefault()
