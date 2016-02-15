@@ -131,12 +131,6 @@ Template.room.helpers
 			return {username: username, status: status}
 		return
 
-	seeAll: ->
-		if Template.instance().showUsersOffline.get()
-			return t('See_only_online')
-		else
-			return t('See_all')
-
 	getPopupConfig: ->
 		template = Template.instance()
 		return {
@@ -316,9 +310,6 @@ Template.room.events
 	'click .new-message': (e) ->
 		Template.instance().atBottom = true
 		Template.instance().find('.input-message').focus()
-
-	'click .see-all': (e, instance) ->
-		instance.showUsersOffline.set(!instance.showUsersOffline.get())
 
 	'click .message-cog': (e) ->
 		message = @_arguments[1]
