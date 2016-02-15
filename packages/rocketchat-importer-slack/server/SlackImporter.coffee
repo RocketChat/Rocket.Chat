@@ -170,7 +170,20 @@ Importer.Slack = class Importer.Slack extends Importer.Base
 								Meteor.runAsUser userId, () =>
 									returned = Meteor.call 'createChannel', channel.name, users
 									channel.rocketId = returned.rid
-								RocketChat.models.Rooms.update { _id: channel.rocketId }, { $set: { 'ts': new Date(channel.created * 1000) }}
+
+								# @TODO implement model specific function
+								roomUpdate =
+									ts: new Date(channel.created * 1000)
+
+								if not _.isEmpty channel.topic?.value
+									roomUpdate.topic = channel.topic.value
+									lastSetTopic = channel.topic.last_set
+
+								if not _.isEmpty(channel.purpose?.value) and channel.purpose.last_set > lastSetTopic
+									roomUpdate.topic = channel.purpose.value
+
+								RocketChat.models.Rooms.update { _id: channel.rocketId }, { $set: roomUpdate }
+
 							@addCountCompleted 1
 				@collection.update { _id: @channels._id }, { $set: { 'channels': @channels.channels }}
 
