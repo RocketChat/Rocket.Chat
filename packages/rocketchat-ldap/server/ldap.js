@@ -142,8 +142,8 @@ LDAP = class LDAP {
 
 			return {
 				filter: custom_domain_search.filter,
-				domain_search_user: custom_domain_search.userDN,
-				domain_search_password: custom_domain_search.password
+				domain_search_user: custom_domain_search.userDN || '',
+				domain_search_password: custom_domain_search.password || ''
 			};
 		}
 
@@ -176,8 +176,8 @@ LDAP = class LDAP {
 
 		return {
 			filter: filter.join(''),
-			domain_search_user: self.options.domain_search_user,
-			domain_search_password: self.options.domain_search_password
+			domain_search_user: self.options.domain_search_user || '',
+			domain_search_password: self.options.domain_search_password || ''
 		};
 	}
 
