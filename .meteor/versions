@@ -125,6 +125,7 @@ rocketchat:api@0.0.1
 rocketchat:assets@0.0.1
 rocketchat:authorization@0.0.1
 rocketchat:autolinker@0.0.1
+rocketchat:cas@1.0.0
 rocketchat:channel-settings@0.0.1
 rocketchat:channel-settings-mail-messages@0.0.1
 rocketchat:colors@0.0.1
@@ -156,6 +157,7 @@ rocketchat:migrations@0.0.1
 rocketchat:oauth2-server@1.4.0
 rocketchat:oauth2-server-config@1.0.0
 rocketchat:oembed@0.0.1
+rocketchat:push-notifications@0.0.1
 rocketchat:slashcommands-invite@0.0.1
 rocketchat:slashcommands-join@0.0.1
 rocketchat:slashcommands-kick@0.0.1

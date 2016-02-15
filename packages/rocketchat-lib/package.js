@@ -12,6 +12,7 @@ Package.onUse(function(api) {
 	api.use('reactive-var');
 	api.use('reactive-dict');
 	api.use('coffeescript');
+	api.use('ecmascript');
 	api.use('random');
 	api.use('check');
 	api.use('tracker');
@@ -44,6 +45,9 @@ Package.onUse(function(api) {
 	// SERVER LIB
 	api.addFiles('server/lib/RateLimiter.coffee', 'server');
 	api.addFiles('server/lib/roomTypes.coffee', 'server');
+	api.addFiles('server/lib/sendNotificationsOnMessage.js', 'server');
+	api.addFiles('server/lib/notifyUsersOnMessage.js', 'server');
+	api.addFiles('server/lib/sendEmailOnMessage.js', 'server');
 
 	// SERVER MODELS
 	api.addFiles('server/models/_Base.coffee', 'server');

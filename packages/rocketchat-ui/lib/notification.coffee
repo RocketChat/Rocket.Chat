@@ -11,24 +11,27 @@
 					Notification.permission = status
 
 	# notificacoes HTML5
+	_showDesktop: (notification) ->
+		if window.Notification && Notification.permission == "granted"
+			getAvatarAsPng notification.payload.sender.username, (avatarImage) ->
+				n = new Notification notification.title,
+					icon: avatarImage
+					body: _.stripTags(notification.text)
+
+				if notification.payload?.rid?
+					n.onclick = ->
+						window.focus()
+						switch notification.payload.type
+							when 'd'
+								FlowRouter.go 'direct', {username: notification.payload.sender.username}
+							when 'c'
+								FlowRouter.go 'channel', {name: notification.payload.name}
+							when 'p'
+								FlowRouter.go 'group', {name: notification.payload.name}
+
 	showDesktop: (notification) ->
 		if not window.document.hasFocus?() and Meteor.user().status isnt 'busy'
-			if window.Notification && Notification.permission == "granted"
-				getAvatarAsPng notification.payload.sender.username, (avatarImage) ->
-					n = new Notification notification.title,
-						icon: avatarImage
-						body: _.stripTags(notification.text)
-
-					if notification.payload?.rid?
-						n.onclick = ->
-							window.focus()
-							switch notification.payload.type
-								when 'd'
-									FlowRouter.go 'direct', {username: notification.payload.sender.username}
-								when 'c'
-									FlowRouter.go 'channel', {name: notification.payload.name}
-								when 'p'
-									FlowRouter.go 'group', {name: notification.payload.name}
+			KonchatNotification._showDesktop(notification)
 
 	newMessage: ->
 		unless Session.equals('user_' + Meteor.userId() + '_status', 'busy') or Meteor.user()?.settings?.preferences?.disableNewMessageNotification
