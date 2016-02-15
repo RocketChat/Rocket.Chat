@@ -630,7 +630,9 @@
   "You_need_to_change_your_password" : "Je moet je paswoord wijzigen",
   "You_should_name_it_to_easily_manage_your_integrations" : "Je moet het een naam geven om je integraties eenvoudig te kunnen beheren.",
   "You_will_not_be_able_to_recover" : "Dit bericht zal niet meer te herstellen zijn!",
+  "You_will_not_be_able_to_recover_file" : "Je kunt dit bestand niet terughalen!",
   "Your_entry_has_been_deleted" : "Uw bericht is verwijderd.",
+  "Your_file_has_been_deleted" : "Je bestand is verwijderd.",
   "Your_mail_was_sent_to_s" : "Uw e-mail werd verzonden naar %s",
   "Your_Open_Source_solution" : "Uw eigen Open Source chat-oplossing",
   "Your_push_was_sent_to_s_devices" : "Je push werd verzonden naar %s apparaten"
