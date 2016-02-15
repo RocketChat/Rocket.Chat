@@ -468,7 +468,7 @@
   "Should_be_a_URL_of_an_image" : "Ar trebui să fie o adresă URL a unei imagini.",
   "Should_exists_a_user_with_this_username" : "Trebuie să existe deja un utilizator cu acest nume de utilizator.",
   "Showing_archived_results" : "<p>Se arată <b>%s</b> rezultate arhivate</p>",
-  "Showing_online_users" : "Se afișează <b>__total_online__</b> din __total__ users",
+  "Showing_online_users" : "Se afișează <b>__total_showing__</b> din __total__ users",
   "Showing_results" : "<p>Se afișează <b>%s</b> rezultate</p>",
   "Silence" : "Tăcere",
   "since_creation" : "de la %s",

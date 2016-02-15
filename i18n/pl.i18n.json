@@ -395,7 +395,7 @@
   "Send_Message" : "Wyślij wiadomość",
   "Settings" : "Ustawienia",
   "Settings_updated" : "Ustawienia zapisane",
-  "Showing_online_users" : "Widocznych <b>__total_online__</b> z __total__users",
+  "Showing_online_users" : "Widocznych <b>__total_showing__</b> z __total__users",
   "Showing_results" : "<p>Wyświetlono <b>%s</b> wyników</p>",
   "Silence" : "Cisza",
   "since_creation" : "od %s",
