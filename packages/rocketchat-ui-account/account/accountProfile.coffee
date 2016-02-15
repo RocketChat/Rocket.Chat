@@ -19,7 +19,7 @@ Template.accountProfile.helpers
 		return Meteor.user().emails?[0]?.address
 
 	allowUsernameChange: ->
-		return RocketChat.settings.get("Accounts_AllowUsernameChange")
+		return RocketChat.settings.get("Accounts_AllowUsernameChange") and RocketChat.settings.get("LDAP_Enable") isnt true
 
 	allowEmailChange: ->
 		return RocketChat.settings.get("Accounts_AllowEmailChange")

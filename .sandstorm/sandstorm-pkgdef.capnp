@@ -19,9 +19,9 @@ const pkgdef :Spk.PackageDefinition = (
 
     appTitle = (defaultText = "Rocket.Chat"),
 
-    appVersion = 13,  # Increment this for every release.
+    appVersion = 14,  # Increment this for every release.
 
-    appMarketingVersion = (defaultText = "0.17.0"),
+    appMarketingVersion = (defaultText = "0.18.0"),
     # Human-readable representation of appVersion. Should match the way you
     # identify versions of your app in documentation and marketing.
 
@@ -92,6 +92,7 @@ const myCommand :Spk.Manifest.Command = (
   environ = [
     # Note that this defines the *entire* environment seen by your app.
     (key = "PATH", value = "/usr/local/bin:/usr/bin:/bin"),
-    (key = "SANDSTORM", value = "1")
+    (key = "SANDSTORM", value = "1"),
+    (key = "Statistics_opt_out", value = "true")
   ]
 );

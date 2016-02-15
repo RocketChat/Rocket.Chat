@@ -8,6 +8,7 @@ RocketChat.models.Messages = new class extends RocketChat.models._Base
 		@tryEnsureIndex { 'rid': 1, 't': 1, 'u._id': 1 }
 		@tryEnsureIndex { 'expireAt': 1 }, { expireAfterSeconds: 0 }
 		@tryEnsureIndex { 'msg': 'text' }
+		@tryEnsureIndex { 'file._id': 1 }, { sparse: 1 }
 
 
 	# FIND ONE
@@ -328,3 +329,6 @@ RocketChat.models.Messages = new class extends RocketChat.models._Base
 			"u._id": userId
 
 		return @remove query
+
+	getMessageByFileId: (fileID) ->
+		return @findOne { 'file._id': fileID }

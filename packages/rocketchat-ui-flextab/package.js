@@ -23,6 +23,7 @@ Package.onUse(function(api) {
 	]);
 
 	api.use('rocketchat:ui');
+	api.use('tap:i18n');
 
 	api.addFiles('flex-tab/flexTabBar.html', 'client');
 	api.addFiles('flex-tab/tabs/membersList.html', 'client');
@@ -35,16 +36,5 @@ Package.onUse(function(api) {
 	api.addFiles('flex-tab/tabs/messageSearch.coffee', 'client');
 	api.addFiles('flex-tab/tabs/uploadedFilesList.coffee', 'client');
 	api.addFiles('flex-tab/tabs/userInfo.coffee', 'client');
-
-	// TAPi18n
-	var _ = Npm.require('underscore');
-	var fs = Npm.require('fs');
-	tapi18nFiles = _.compact(_.map(fs.readdirSync('packages/rocketchat-lib/i18n'), function(filename) {
-		if (fs.statSync('packages/rocketchat-lib/i18n/' + filename).size > 16) {
-			return 'i18n/' + filename;
-		}
-	}));
-	api.use('tap:i18n');
-	api.addFiles(tapi18nFiles);
 
 });

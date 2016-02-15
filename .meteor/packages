@@ -43,6 +43,7 @@ rocketchat:authorization
 rocketchat:autolinker
 rocketchat:channel-settings
 rocketchat:channel-settings-mail-messages
+rocketchat:cas
 rocketchat:colors
 rocketchat:custom-oauth
 rocketchat:emojione
@@ -66,6 +67,7 @@ rocketchat:message-pin
 rocketchat:message-star
 rocketchat:migrations
 rocketchat:oembed
+rocketchat:push-notifications
 rocketchat:slashcommands-invite
 rocketchat:slashcommands-join
 rocketchat:slashcommands-kick
