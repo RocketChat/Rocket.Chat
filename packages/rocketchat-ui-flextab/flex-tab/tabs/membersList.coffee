@@ -8,12 +8,19 @@ Template.membersList.helpers
 	isDirectChat: ->
 		return ChatRoom.findOne(this.rid, { reactive: false })?.t is 'd'
 
+	seeAll: ->
+		if Template.instance().showAllUsers.get()
+			return t('See_only_online')
+		else
+			return t('See_all')
+
 	roomUsers: ->
 		users = []
 		onlineUsers = RoomManager.onlineUsers.get()
+		roomUsernames = ChatRoom.findOne(this.rid)?.usernames or []
 
-		for username in ChatRoom.findOne(this.rid)?.usernames or []
-			if onlineUsers[username]?
+		for username in roomUsernames
+			if Template.instance().showAllUsers.get() or onlineUsers[username]?
 				utcOffset = onlineUsers[username]?.utcOffset
 				if utcOffset?
 					if utcOffset > 0
@@ -27,11 +34,14 @@ Template.membersList.helpers
 					utcOffset: utcOffset
 
 		users = _.sortBy users, 'username'
+		# show online users first.
+		# sortBy is stable, so we can do this
+		users = _.sortBy users, (u) -> !u.status?
 
 		ret =
 			_id: this.rid
-			total: ChatRoom.findOne(this.rid)?.usernames?.length or 0
-			totalOnline: users.length
+			total: roomUsernames.length
+			totalOnline: (1 for user in users when onlineUsers[user.username]?).length
 			users: users
 
 		return ret
@@ -73,6 +83,9 @@ Template.membersList.events
 		RocketChat.TabBar.openFlex()
 		Session.set('showUserInfo', $(e.currentTarget).data('username'))
 
+	'click .see-all': (e, instance) ->
+		instance.showAllUsers.set(!instance.showAllUsers.get())
+
 	'autocompleteselect #user-add-search': (event, template, doc) ->
 
 		roomData = Session.get('roomData' + template.data.rid)
@@ -90,3 +103,6 @@ Template.membersList.events
 					return Errors.throw error.reason
 
 				$('#user-add-search').val('')
+
+Template.membersList.onCreated ->
+	@showAllUsers = new ReactiveVar false
