@@ -119,7 +119,7 @@ reactive-dict@1.1.3
 reactive-var@1.0.6
 reload@1.1.4
 retry@1.0.4
-rocketchat-highlights@0.0.1
+rocketchat-highlight-words@0.0.1
 rocketchat:api@0.0.1
 rocketchat:assets@0.0.1
 rocketchat:authorization@0.0.1

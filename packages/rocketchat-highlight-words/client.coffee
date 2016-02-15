@@ -3,7 +3,7 @@
 # @param {Object} message - The message object
 ###
 
-class HighlightsClient
+class HighlightWordsClient
   constructor: (message) ->
     msg = message
 
@@ -22,4 +22,4 @@ class HighlightsClient
     message.html = msg
     return message
 
-RocketChat.callbacks.add 'renderMessage', HighlightsClient
+RocketChat.callbacks.add 'renderMessage', HighlightWordsClient
