@@ -272,7 +272,7 @@
   "Settings" : "Postavke",
   "Settings_updated" : "Postavke su ažurirane",
   "Should_exists_a_user_with_this_username" : "Korisnik mora već postojati.",
-  "Showing_online_users" : "Prikazujem <b>__total_online__</b> od __total__ korisnika",
+  "Showing_online_users" : "Prikazujem <b>__total_showing__</b> od __total__ korisnika",
   "Showing_results" : "<p>Prikazujem <b>%s</b> rezultata</p>",
   "Silence" : "Tišina",
   "since_creation" : "%s",

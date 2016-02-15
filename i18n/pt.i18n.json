@@ -372,7 +372,7 @@
   "Send_Message" : "Enviar Mensagem",
   "Settings" : "Configurações",
   "Settings_updated" : "Configurações atualizadas",
-  "Showing_online_users" : "Mostrando <b>__total_online__</b> de __total__ usuários",
+  "Showing_online_users" : "Mostrando <b>__total_showing__</b> de __total__ usuários",
   "Showing_results" : "<p>Exibindo <b>%s</b> resultados</p>",
   "Silence" : "Silenciar",
   "since_creation" : "desde %s",

@@ -373,7 +373,7 @@
   "Send_Message" : "메시지 보내기",
   "Settings" : "설정",
   "Settings_updated" : "설정 업데이트",
-  "Showing_online_users" : "__total__ 사용자의 <b>__total_online__</b> 표시",
+  "Showing_online_users" : "__total__ 사용자의 <b>__total_showing__</b> 표시",
   "Showing_results" : "<p><b>%s</b> 결과 확인</p>",
   "Silence" : "소리끄기",
   "since_creation" : "%s 이후",

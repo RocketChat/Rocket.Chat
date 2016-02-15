@@ -113,7 +113,7 @@
   "Send_confirmation_email" : "Enviar email de confirmación",
   "Send_Message" : "Enviar Mensaje",
   "Settings" : "Configuración",
-  "Showing_online_users" : "Mostrando <b>__total_online__</b> de __total__ usuarios",
+  "Showing_online_users" : "Mostrando <b>__total_showing__</b> de __total__ usuarios",
   "Showing_results" : "<p>Mostrando <b>%s</b> resultados</p>",
   "Silence" : "Silencio",
   "since_creation" : "desde %s",
