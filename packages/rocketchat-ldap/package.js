@@ -2,16 +2,13 @@ Package.describe({
   name: 'rocketchat:ldap',
   version: '0.0.1',
   summary: 'Accounts login handler for LDAP using ldapjs from npm',
-  git: 'https://github.com/rocketchat/rocketchat-ldap'
-});
-
-Npm.depends({
-  ldapjs: "1.0.0",
+  git: ''
 });
 
 Package.onUse(function(api) {
-  api.versionsFrom('1.0.3.1');
+  api.versionsFrom('1.0');
 
+  api.use('rocketchat:ldapjs');
   api.use('rocketchat:logger');
   api.use('rocketchat:lib');
   api.use('tap:i18n');
