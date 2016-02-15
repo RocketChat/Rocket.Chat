@@ -45,6 +45,8 @@ Meteor.methods
 			_id: tempid
 		,
 			$set: message
+			
+		room = RocketChat.models.Rooms.findOneById message.rid
 
 		Meteor.defer ->
-			RocketChat.callbacks.run 'afterSaveMessage', RocketChat.models.Messages.findOneById(tempid)
+			RocketChat.callbacks.run 'afterSaveMessage', RocketChat.models.Messages.findOneById(tempid), room
