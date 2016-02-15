@@ -203,12 +203,10 @@ Importer.Slack = class Importer.Slack extends Importer.Base
 											if message.subtype?
 												if message.subtype is 'channel_join'
 													if @getRocketUser(message.user)?
-														RocketChat.models.Messages.createUserJoinWithRoomIdAndUser room._id, @getRocketUser(message.user),
-															ts: new Date(parseInt(message.ts.split('.')[0]) * 1000)
+														RocketChat.models.Messages.createUserJoinWithRoomIdAndUser room._id, @getRocketUser(message.user), { ts: new Date(parseInt(message.ts.split('.')[0]) * 1000) }
 												else if message.subtype is 'channel_leave'
 													if @getRocketUser(message.user)?
-														RocketChat.models.Messages.createUserLeaveWithRoomIdAndUser room._id, @getRocketUser(message.user),
-															ts: new Date(parseInt(message.ts.split('.')[0]) * 1000)
+														RocketChat.models.Messages.createUserLeaveWithRoomIdAndUser room._id, @getRocketUser(message.user), { ts: new Date(parseInt(message.ts.split('.')[0]) * 1000) }
 												else if message.subtype is 'me_message'
 													RocketChat.sendMessage @getRocketUser(message.user), { msg: '_' + @convertSlackMessageToRocketChat(message.text) + '_', ts: new Date(parseInt(message.ts.split('.')[0]) * 1000) }, room
 												else if message.subtype is 'bot_message'
