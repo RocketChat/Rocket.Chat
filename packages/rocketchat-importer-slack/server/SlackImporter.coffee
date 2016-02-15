@@ -219,9 +219,9 @@ Importer.Slack = class Importer.Slack extends Importer.Base
 
 													RocketChat.sendMessage botUser, msgObj, room
 												else if message.subtype is 'channel_purpose'
-													RocketChat.models.Messages.createRoomSettingsChangedWithTypeRoomIdMessageAndUser 'room_changed_topic', room._id, message.purpose, @getRocketUser(message.user)
+													RocketChat.models.Messages.createRoomSettingsChangedWithTypeRoomIdMessageAndUser 'room_changed_topic', room._id, message.purpose, @getRocketUser(message.user), { ts: new Date(parseInt(message.ts.split('.')[0]) * 1000) }
 												else if message.subtype is 'channel_topic'
-													RocketChat.models.Messages.createRoomSettingsChangedWithTypeRoomIdMessageAndUser 'room_changed_topic', room._id, message.topic, @getRocketUser(message.user)
+													RocketChat.models.Messages.createRoomSettingsChangedWithTypeRoomIdMessageAndUser 'room_changed_topic', room._id, message.topic, @getRocketUser(message.user), { ts: new Date(parseInt(message.ts.split('.')[0]) * 1000) }
 												else if message.subtype is 'file_share' && message.file.url_private_download isnt undefined
 													details =
 														name: message.file.name
