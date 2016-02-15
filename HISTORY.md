@@ -1,5 +1,30 @@
 ## NEXT
 
+## 0.18.0, 2016-Feb-15
+
+- Add .jshintrc to project
+- Add button to test desktop notifications
+- Add email notification preference
+- Added HIGH priority to mentions message callback
+- Added working CAS 1.0 login module based on meteor-account-cas and meteor-account-saml
+- Allow deleting of files whose corresponding message is not currently loaded in the client
+- Allow settings descriptions to use markdown
+- Allow text selection in settings area
+- Change from LDAP_Restricted_User_Groups to LDAP_Domain_Search_Filter
+- Email all offline users
+- Fixed: if mobile app was open and in background, it would still read ... ...messages in the active room.
+- Fixed: user received mobile notification even when browser was open.
+- Improve delete message by file
+- Push Notifications settings
+- Replace current LDAP with new LDAP system
+- Send emails to offline users when direct messaged
+- Send emails to offline users when mentioned in a channel
+- SendMessage cleanup - moving notifications stuff to callbacks
+- Server settings added for custom STUN and TURN servers
+- Settings: Disable action buttons when form has changes
+- Terminal output should be displayed in LTR always
+- Using REST to send pushes through gateway
+
 ## 0.17.0, 2016-Feb-09
 
 - Closes #1367; Add ability to delete files
