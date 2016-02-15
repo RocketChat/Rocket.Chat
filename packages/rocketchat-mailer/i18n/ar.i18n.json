@@ -5,7 +5,6 @@
   "Email_subject" : "الموضوع",
   "Send_email" : "إرسال البريد الإلكتروني",
   "The_emails_are_being_sent" : "يتم إرسال رسائل البريد الإلكتروني.",
-  "You_are_not_authorized_to_view_this_page" : "لا تملك الصلاحية لمشاهدة هذه الصفحة.",
   "You_have_successfully_unsubscribed" : "لقد تم إلغاء اشتراكك بنجاح من القائمة البريدية لدينا.",
   "You_must_provide_the_unsubscribe_link" : "يجب توفير رابط [إلغاء الاشتراك]."
 }
