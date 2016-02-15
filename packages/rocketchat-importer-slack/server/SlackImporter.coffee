@@ -239,7 +239,7 @@ Importer.Slack = class Importer.Slack extends Importer.Base
 													details =
 														name: message.file.name
 														size: message.file.size
-														type: message.file.filetype,
+														type: message.file.mimetype
 														rid: room._id
 													@uploadFile details, message.file.url_private_download, @getRocketUser(message.user), room, new Date(parseInt(message.ts.split('.')[0]) * 1000)
 												else
