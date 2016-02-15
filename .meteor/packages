@@ -52,6 +52,9 @@ rocketchat:file
 rocketchat:github-enterprise
 rocketchat:gitlab
 rocketchat:highlight
+rocketchat:importer
+rocketchat:importer-hipchat
+rocketchat:importer-slack
 rocketchat:ldap
 rocketchat:livechat
 rocketchat:logger

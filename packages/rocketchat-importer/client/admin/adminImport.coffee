@@ -1,0 +1,22 @@
+Template.adminImport.helpers
+	isAdmin: ->
+		return RocketChat.authz.hasRole(Meteor.userId(), 'admin')
+	isImporters: ->
+		return Object.keys(Importer.Importers).length > 0
+	importers: ->
+		importers = []
+		_.each Importer.Importers, (importer, key) ->
+			importer.key = key
+			importers.push importer
+		return importers
+
+Template.adminImport.events
+	'click .start-import': (event) ->
+		importer = @
+
+		Meteor.call 'setupImporter', importer.key, (error, data) ->
+			if error
+				console.log t('importer_setup_error'), importer.key, error
+				toastr.error t('importer_setup_error')
+			else
+				FlowRouter.go '/admin/import/prepare/' + importer.key

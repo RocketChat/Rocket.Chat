@@ -22,6 +22,21 @@ FlowRouter.route '/admin/info',
 		RocketChat.TabBar.showGroup 'adminInfo'
 		BlazeLayout.render 'main', {center: 'adminInfo'}
 
+FlowRouter.route '/admin/import',
+	name: 'admin-import'
+	action: ->
+		BlazeLayout.render 'main', {center: 'adminImport'}
+
+FlowRouter.route '/admin/import/prepare/:importer',
+	name: 'admin-import-prepare'
+	action: ->
+		BlazeLayout.render 'main', {center: 'adminImportPrepare'}
+
+FlowRouter.route '/admin/import/progress/:importer',
+	name: 'admin-import-progress'
+	action: ->
+		BlazeLayout.render 'main', {center: 'adminImportProgress'}
+
 FlowRouter.route '/admin/:group?',
 	name: 'admin'
 	action: ->
