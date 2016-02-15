@@ -12,7 +12,6 @@
   "Query_description" : "Additional conditions for determining which users to send the e-mail to. Unsubscribed users are automatically removed from the query. It must be a valid JSON. Example: \"{\"createdAt\":{\"$gt\":{\"$date\": \"2015-01-01T00:00:00.000Z\"}}}\"",
   "Send_email" : "Verstuur e-mail",
   "The_emails_are_being_sent" : "De e-mails worden verzonden.",
-  "You_are_not_authorized_to_view_this_page" : "U bent niet bevoegd om deze pagina te bekijken.",
   "You_have_successfully_unsubscribed" : "U bent uitgeschreven van onze mailinglijst.",
   "You_informed_an_invalid_FROM_address" : "You informed an invalid FROM address.",
   "You_must_provide_the_unsubscribe_link" : "Je moet een [unsubscribe] link toevoegen."
