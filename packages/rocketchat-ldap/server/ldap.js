@@ -1,4 +1,4 @@
-const ldapjs = Npm.require('ldapjs');
+const ldapjs = LDAPJS;
 
 const logger = new Logger('LDAP', {
 	methods: {
