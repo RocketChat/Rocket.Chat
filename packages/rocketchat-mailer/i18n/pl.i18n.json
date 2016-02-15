@@ -9,7 +9,6 @@
   "Query" : "Zapytanie",
   "Send_email" : "Wyślij wiadomość",
   "The_emails_are_being_sent" : "Wiadomości e-mail są wysyłane.",
-  "You_are_not_authorized_to_view_this_page" : "Nie masz uprawnień, aby zobaczyć tę stronę.",
   "You_have_successfully_unsubscribed" : "Twój email został usunięty z naszej listy powiadomień.",
   "You_informed_an_invalid_FROM_address" : "Adres nadawcy jest nieprawidłowy",
   "You_must_provide_the_unsubscribe_link" : "Musisz wstawić w treści znacznik [unsubscribe]."
