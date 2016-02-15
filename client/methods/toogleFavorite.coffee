@@ -1,5 +1,5 @@
 Meteor.methods
-	toogleFavorite: (rid, f) ->
+	toggleFavorite: (rid, f) ->
 		if not Meteor.userId()
 			throw new Meteor.Error 203, t('User_logged_out')
 
