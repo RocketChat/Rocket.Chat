@@ -18,7 +18,7 @@ Meteor.methods
 				_id: Random.id()
 				rid: room._id
 				ts: new Date
-				msg: TAPi18n.__('You_have_been_muted', {}, user.language);
+				msg: TAPi18n.__('You_have_been_muted', {}, user.language)
 			}
 			return false
 

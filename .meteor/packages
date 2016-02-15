@@ -51,7 +51,6 @@ rocketchat:favico
 rocketchat:file
 rocketchat:github-enterprise
 rocketchat:gitlab
-rocketchat:highlight
 rocketchat:ldap
 rocketchat:livechat
 rocketchat:logger
@@ -135,3 +134,4 @@ rocketchat:assets
 rocketchat:integrations
 rocketchat:message-attachments
 rocketchat:api
+rocketchat-highlights

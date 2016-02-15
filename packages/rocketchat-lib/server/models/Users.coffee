@@ -124,6 +124,23 @@ RocketChat.models.Users = new class extends RocketChat.models._Base
 
 		return @find query, options
 
+#	findByMessageMatchHighlight: (message, options) ->
+#		console.log 'message', message
+#		console.log 'splitted', message.split(' ')
+#		query =
+#			'settings.preferences.highlights':
+#				$elemMatch:
+
+	findByHighlight: (highlight, options) ->
+		query =
+			'settings.preferences.highlights': highlight
+
+		return @find query, options
+
+
+		return @find query, options
+
+
 	getLastLogin: (options = {}) ->
 		query = { lastLogin: { $exists: 1 } }
 		options.sort = { lastLogin: -1 }
