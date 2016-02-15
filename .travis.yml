@@ -1,4 +1,4 @@
-sudo: required
+sudo: false
 language: node_js
 branches:
   only:
@@ -16,6 +16,7 @@ before_install:
 - mkdir -p node_modules
 install:
 - curl https://install.meteor.com | /bin/sh
+- export PATH="$HOME/.meteor:$PATH"
 before_script:
 - mkdir /tmp/build
 script:
@@ -25,7 +26,7 @@ before_deploy:
 - source ".travis/setdeploydir.sh"
 - ".travis/setupsig.sh"
 - ".travis/namefiles.sh"
-- ".travis/sandstorm.sh"
+- echo ".travis/sandstorm.sh"
 deploy:
   provider: s3
   access_key_id: "AKIAIKIA7H7D47KUHYCA"

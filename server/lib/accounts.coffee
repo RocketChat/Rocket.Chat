@@ -13,7 +13,9 @@ RocketChat.settings.get 'Accounts_AllowedDomainsList', (_id, value) ->
 
 		return ret
 	delete Accounts._options['restrictCreationByEmailDomain']
-	Accounts.config({ restrictCreationByEmailDomain: restrictCreationByEmailDomain });
+
+	if not _.isEmpty value
+		Accounts.config({ restrictCreationByEmailDomain: restrictCreationByEmailDomain });
 
 Accounts.emailTemplates.siteName = RocketChat.settings.get 'Site_Name';
 Accounts.emailTemplates.from = "#{RocketChat.settings.get 'Site_Name'} <#{RocketChat.settings.get 'From_Email'}>";

@@ -21,16 +21,16 @@ Meteor.startup ->
 	@defaultUserLanguage = ->
 		return RocketChat.settings.get('Language') || defaultAppLanguage()
 
-	loadedLaguages = []
+	loadedLanguages = []
 
 	@setLanguage = (language) ->
 		if !language
 			return
 
-		if loadedLaguages.indexOf(language) > -1
+		if loadedLanguages.indexOf(language) > -1
 			return
 
-		loadedLaguages.push language
+		loadedLanguages.push language
 
 		if isRtl language
 			$('html').addClass "rtl"
