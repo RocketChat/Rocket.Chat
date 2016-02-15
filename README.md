@@ -10,6 +10,7 @@ The Ultimate Open Source WebChat Platform
   * [Scalingo](#scalingo)
   * [Sandstorm.io](#sandstormio)
   * [Sloppy.io](#sloppyio)
+  * [IndieHosters](#indiehosters)
   * [Docker](#docker)
   * [FreeBSD](#freebsd)
   * [Ansible](#ansible)
@@ -76,6 +77,11 @@ _*Grab*_ the [Sandstorm SPK for the latest Rocket.Chat release](https://rocket.c
 
 ## Sloppy.io
 Host your docker container at [sloppy.io](http://sloppy.io). Get an account and use the [quickstarter](https://github.com/sloppyio/quickstarters/tree/master/rocketchat)
+
+## IndieHosters
+Get your Rocket.Chat instance hosted in a "as a Service" style. You register and we manage it for you! (updates, backup...)
+
+[![Rocket.Chat on IndieHosters](https://indie.host/signup.png)](https://indiehosters.net/shop/product/rocket-chat-21)
 
 ## Docker
 [Deploy with docker compose](https://github.com/RocketChat/Rocket.Chat/wiki/Deploy-with-Docker)
