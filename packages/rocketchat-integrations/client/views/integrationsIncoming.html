@@ -24,7 +24,7 @@
 							<label>{{_ "Post_as"}}</label>
 							<div>
 								{{#if data.token}}
-									<input type="text" name="username" value="{{data.username}}" disabled="disabled" />
+									<input type="text" name="username" value="{{data.username}}" readonly="readonly" />
 								{{else}}
 									<input type="text" name="username" value="{{data.username}}" />
 								{{/if}}
@@ -59,7 +59,7 @@
 							<div class="input-line double-col">
 								<label>Webhook URL</label>
 								<div>
-									<input type="text" name="webhookurl" value="{{data.url}}" disabled="disabled" />
+									<input type="text" name="webhookurl" value="{{data.url}}" readonly="readonly" />
 									<div class="settings-description">{{_ "Send_your_JSON_payloads_to_this_URL"}}</div>
 									<div class="settings-description"><a href="#" class="clipboard" data-clipboard-target="[name=webhookurl]">{{_ "COPY_TO_CLIPBOARD"}}</a></div>
 								</div>
@@ -67,7 +67,7 @@
 							<div class="input-line double-col">
 								<label>Token</label>
 								<div>
-									<input type="text" name="completeToken" value="{{data.completeToken}}" disabled="disabled" />
+									<input type="text" name="completeToken" value="{{data.completeToken}}" readonly="readonly" />
 									<div class="settings-description"><a href="#" class="clipboard" data-clipboard-target="[name=completeToken]">{{_ "COPY_TO_CLIPBOARD"}}</a></div>
 								</div>
 							</div>
@@ -76,7 +76,7 @@
 							<label>{{_ "Example"}}</label>
 							<div>
 								<pre><code class="hljs json json-example">{{{exampleJson}}}</code></pre>
-								<input type="text" name="curl" value="{{curl}}" disabled="disabled" />
+								<input type="text" name="curl" value="{{curl}}" readonly="readonly" />
 								<div class="settings-description"><a href="#" class="clipboard" data-clipboard-target="[name=curl]">{{_ "COPY_TO_CLIPBOARD"}}</a></div>
 							</div>
 						</div>
