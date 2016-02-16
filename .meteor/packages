@@ -138,3 +138,4 @@ rocketchat:assets
 rocketchat:integrations
 rocketchat:message-attachments
 rocketchat:api
+rocketchat:highlight-words
