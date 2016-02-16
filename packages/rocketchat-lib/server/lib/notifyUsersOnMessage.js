@@ -32,7 +32,7 @@ RocketChat.callbacks.add('afterSaveMessage', function(message, room) {
 		mentionIds = [];
 		highlightsIds = [];
 		toAll = false;
-		highlights = RocketChat.models.Users.find({}, { fields: { '_id': 1, 'settings.preferences.highlights': 1 }}).fetch();
+		highlights = RocketChat.models.Users.findUsersByUsernames(room.usernames, { fields: { '_id': 1, 'settings.preferences.highlights': 1 }}).fetch();
 
 		if (message.mentions != null) {
 			message.mentions.forEach(function(mention) {
