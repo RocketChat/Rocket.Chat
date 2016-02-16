@@ -63,7 +63,18 @@ LDAP = class LDAP {
 		};
 
 		if (self.options.ca_cert && self.options.ca_cert !== '') {
-			tlsOptions.ca = [self.options.ca_cert];
+			// Split CA cert into array of strings
+			var chainLines = RocketChat.settings.get('LDAP_CA_Cert').split("\n");
+			var cert = [];
+			var ca = [];
+			chainLines.forEach(function(line) {
+				cert.push(line);
+				if (line.match(/-END CERTIFICATE-/)) {
+					ca.push(cert.join("\n"));
+					cert = [];
+				}
+			});
+			tlsOptions.ca = ca;
 		}
 
 		if (self.options.encryption === 'ssl') {
