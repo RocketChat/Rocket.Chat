@@ -43,6 +43,10 @@ Meteor.startup ->
 		res.setHeader 'Content-Disposition', 'inline'
 
 		if not file?
+
+			if Meteor.settings.public.sandstorm
+				console.log "Should redirect to: ", RocketChat.models.Users.findOneByUsername(params.username.replace('.jpg', '')).services.sandstorm.picture
+
 			res.setHeader 'Content-Type', 'image/svg+xml'
 			res.setHeader 'Cache-Control', 'public, max-age=0'
 			res.setHeader 'Expires', '-1'

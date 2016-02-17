@@ -17,6 +17,10 @@ Accounts.updateOrCreateUserFromExternalService = (serviceName, serviceData, opti
 	if serviceName is 'linkedin'
 		serviceData.email = serviceData.emailAddress
 
+	if serviceName is 'sandstorm'
+		console.log "Grab data from: ", serviceData
+		serviceData.username = serviceData.preferredHandle
+
 	if serviceData.email
 
 		# Remove not verified users that have same email
