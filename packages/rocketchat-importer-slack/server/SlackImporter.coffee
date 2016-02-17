@@ -233,13 +233,14 @@ Importer.Slack = class Importer.Slack extends Importer.Base
 													RocketChat.models.Messages.createRoomSettingsChangedWithTypeRoomIdMessageAndUser 'room_changed_topic', room._id, message.purpose, @getRocketUser(message.user), { ts: new Date(parseInt(message.ts.split('.')[0]) * 1000) }
 												else if message.subtype is 'channel_topic'
 													RocketChat.models.Messages.createRoomSettingsChangedWithTypeRoomIdMessageAndUser 'room_changed_topic', room._id, message.topic, @getRocketUser(message.user), { ts: new Date(parseInt(message.ts.split('.')[0]) * 1000) }
-												else if message.subtype is 'file_share' && message.file.url_private_download isnt undefined
-													details =
-														name: message.file.name
-														size: message.file.size
-														type: message.file.mimetype
-														rid: room._id
-													@uploadFile details, message.file.url_private_download, @getRocketUser(message.user), room, new Date(parseInt(message.ts.split('.')[0]) * 1000)
+												else if message.subtype is 'file_share'
+													if message.file?.url_private_download isnt undefined
+														details =
+															name: message.file.name
+															size: message.file.size
+															type: message.file.mimetype
+															rid: room._id
+														@uploadFile details, message.file.url_private_download, @getRocketUser(message.user), room, new Date(parseInt(message.ts.split('.')[0]) * 1000)
 												else
 													if not missedTypes[message.subtype] and not ignoreTypes[message.subtype]
 														missedTypes[message.subtype] = message
