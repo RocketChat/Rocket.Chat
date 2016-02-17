@@ -34,6 +34,7 @@ Meteor.startup ->
 						console.log "email: #{process.env.ADMIN_EMAIL} | password: #{process.env.ADMIN_PASS}".red
 
 						id = RocketChat.models.Users.create
+							active: true
 							emails: [
 								address: process.env.ADMIN_EMAIL
 								verified: true
