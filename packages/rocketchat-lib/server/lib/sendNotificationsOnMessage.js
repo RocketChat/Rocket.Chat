@@ -263,17 +263,6 @@ RocketChat.callbacks.add('afterSaveMessage', function(message, room) {
 				});
 			}
 		}
-		// if (mentionIds > 0) {
-		// 	/*
-		// 	Update all other subscriptions of mentioned users to alert their owners and incrementing
-		// 	the unread counter for mentions and direct messages
-		// 	 */
-		// 	if (toAll) {
-		// 		RocketChat.models.Subscriptions.incUnreadForRoomIdExcludingUserId(message.rid, user._id, 1);
-		// 	} else {
-		// 		RocketChat.models.Subscriptions.incUnreadForRoomIdAndUserIds(message.rid, mentionIds, 1);
-		// 	}
-		// }
 	}
 
 	return message;
