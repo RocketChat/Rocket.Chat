@@ -131,6 +131,13 @@ RocketChat.models.Users = new class extends RocketChat.models._Base
 
 		return @find(query, options)?.fetch?()?[0]?.lastLogin
 
+	findUsersByUsernames: (usernames, options) ->
+		query =
+			username:
+				$in: usernames
+
+		return @find query, options
+
 	# UPDATE
 	updateLastLoginById: (_id) ->
 		update =
