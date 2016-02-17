@@ -30,6 +30,8 @@ Meteor.methods
 			if settings.emailNotificationMode?
 				preferences.emailNotificationMode = settings.emailNotificationMode
 
+			preferences.highlights = settings.highlights
+
 			RocketChat.models.Users.setPreferences Meteor.userId(), preferences
 
 			return true
