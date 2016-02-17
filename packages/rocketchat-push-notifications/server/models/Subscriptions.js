@@ -26,6 +26,20 @@ RocketChat.models.Subscriptions.updateMobilePushNotificationsById = function(_id
 	return this.update(query, update);
 }
 
+RocketChat.models.Subscriptions.updateEmailNotificationsById = function(_id, emailNotifications) {
+	query = {
+		_id: _id
+	}
+
+	update = {
+		$set: {
+			emailNotifications: emailNotifications
+		}
+	}
+
+	return this.update(query, update);
+}
+
 RocketChat.models.Subscriptions.findAlwaysNotifyDesktopUsersByRoomId = function(roomId) {
 	query = {
 		rid: roomId,
