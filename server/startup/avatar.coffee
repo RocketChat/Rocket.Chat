@@ -35,6 +35,13 @@ Meteor.startup ->
 			username: decodeURIComponent(req.url.replace(/^\//, '').replace(/\?.*$/, ''))
 
 		if params.username[0] isnt '@'
+			if Meteor.settings?.public?.sandstorm
+				user = RocketChat.models.Users.findOneByUsername(params.username.replace('.jpg', ''))
+				if user?.services?.sandstorm?.picture
+					res.setHeader 'Location', user.services.sandstorm.picture
+					res.writeHead 302
+					res.end()
+					return
 			file = RocketChatFileAvatarInstance.getFileWithReadStream encodeURIComponent(params.username)
 		else
 			params.username = params.username.replace '@', ''
