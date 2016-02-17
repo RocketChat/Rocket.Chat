@@ -8,7 +8,7 @@ Meteor.methods({
 		check(field, String);
 		check(value, String);
 
-		if (['desktopNotifications', 'mobilePushNotifications'].indexOf(field) === -1) {
+		if (['desktopNotifications', 'mobilePushNotifications', 'emailNotifications'].indexOf(field) === -1) {
 			throw new Meteor.Error('invalid-settings', 'Invalid settings field');
 		}
 
@@ -25,6 +25,8 @@ Meteor.methods({
 			RocketChat.models.Subscriptions.updateDesktopNotificationsById(subscription._id, value);
 		} else if (field === 'mobilePushNotifications') {
 			RocketChat.models.Subscriptions.updateMobilePushNotificationsById(subscription._id, value);
+		} else if (field === 'emailNotifications') {
+			RocketChat.models.Subscriptions.updateEmailNotificationsById(subscription._id, value);
 		}
 
 		return true;

@@ -1,41 +1,50 @@
 Template.pushNotificationsFlexTab.helpers({
 	"desktopNotifications"() {
-		const sub = ChatSubscription.findOne({ rid: Session.get('openedRoom') });
+		var sub = ChatSubscription.findOne({
+			rid: Session.get('openedRoom')
+		}, {
+			fields: {
+				desktopNotifications: 1
+			}
+		});
 		return sub ? sub.desktopNotifications : '';
 	},
-	"desktopNotificationsValue"() {
-		sub = ChatSubscription.findOne({ rid: Session.get('openedRoom') });
-		if (sub) {
-			switch (sub.desktopNotifications) {
-				case 'all':
-					return TAPi18n.__('All_messages');
-					break;
-				case 'nothing':
-					return TAPi18n.__('Nothing');
-					break;
-				default:
-					return TAPi18n.__('Mentions');
-					break;
-			}
-		}
-	},
 	"mobilePushNotifications"() {
-		const sub = ChatSubscription.findOne({ rid: Session.get('openedRoom') });
+		var sub = ChatSubscription.findOne({
+			rid: Session.get('openedRoom')
+		}, {
+			fields: {
+				mobilePushNotifications: 1
+			}
+		});
 		return sub ? sub.mobilePushNotifications : '';
 	},
-	"mobilePushNotificationsValue"() {
-		sub = ChatSubscription.findOne({ rid: Session.get('openedRoom') });
+	"emailNotifications"() {
+		var sub = ChatSubscription.findOne({
+			rid: Session.get('openedRoom')
+		}, {
+			fields: {
+				emailNotifications: 1
+			}
+		});
+		return sub ? sub.emailNotifications : '';
+	},
+	"subValue"(field) {
+		var sub = ChatSubscription.findOne({
+			rid: Session.get('openedRoom')
+		}, {
+			fields: {
+				[field]: 1
+			}
+		});
 		if (sub) {
-			switch (sub.mobilePushNotifications) {
+			switch (sub[field]) {
 				case 'all':
 					return TAPi18n.__('All_messages');
-					break;
 				case 'nothing':
 					return TAPi18n.__('Nothing');
-					break;
 				default:
 					return TAPi18n.__('Mentions');
-					break;
 			}
 		}
 	},
