@@ -16,8 +16,7 @@ usernameIsAvaliable = (username) ->
 	username = undefined
 
 	if Meteor.settings.public.sandstorm
-		console.log "preferredHandle: ", user.services.sandstorm.preferredHandle
-		return user.services.sandstorm.preferredHandle
+		usernames.push user.services.sandstorm.preferredHandle
 
 	if RocketChat.settings.get 'UTF8_Names_Slugify'
 		usernames.push slug user.name
