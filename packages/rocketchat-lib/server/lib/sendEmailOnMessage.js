@@ -1,4 +1,9 @@
 RocketChat.callbacks.add('afterSaveMessage', function(message, room) {
+	// skips this callback if the message was edited
+	if (message.editedAt) {
+		return message;
+	}
+
 	var emailSubject, mentionIds = [];
 
 	if (room.t === 'd') {
