@@ -94,5 +94,6 @@ const myCommand :Spk.Manifest.Command = (
     (key = "PATH", value = "/usr/local/bin:/usr/bin:/bin"),
     (key = "SANDSTORM", value = "1"),
     (key = "Statistics_opt_out", value = "true")
+    (key = "Accounts_AllowUserAvatarChange", value = "false")
   ]
 );
