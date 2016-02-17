@@ -36,15 +36,7 @@ Meteor.startup ->
 
 		if params.username[0] isnt '@'
 			file = RocketChatFileAvatarInstance.getFileWithReadStream encodeURIComponent(params.username)
-		else
-			params.username = params.username.replace '@', ''
-
-		#console.log "[avatar] checking username #{@params.username} (derrived from path #{req.url})"
-		res.setHeader 'Content-Disposition', 'inline'
-
-		if not file?
-
-			if Meteor.settings?.public?.sandstorm
+			if not file? and Meteor.settings?.public?.sandstorm
 				user = RocketChat.models.Users.findOneByUsername(params.username.replace('.jpg', ''))
 				if user?.services?.sandstorm?.picture
 					console.log "Should redirect to: ", user.services.sandstorm.picture
@@ -52,6 +44,13 @@ Meteor.startup ->
 					res.writeHead 302
 					res.end()
 					return
+		else
+			params.username = params.username.replace '@', ''
+
+		#console.log "[avatar] checking username #{@params.username} (derrived from path #{req.url})"
+		res.setHeader 'Content-Disposition', 'inline'
+
+		if not file?
 
 			res.setHeader 'Content-Type', 'image/svg+xml'
 			res.setHeader 'Cache-Control', 'public, max-age=0'
