@@ -12,10 +12,8 @@ cache:
   directories:
   - "~/.meteor"
 before_install:
-- npm install -g npm@'>=2.13.5'
-- mkdir -p node_modules
+- if [ ! -e "$HOME/.meteor/meteor" ]; then curl https://install.meteor.com | /bin/sh; fi
 install:
-- curl https://install.meteor.com | /bin/sh
 - export PATH="$HOME/.meteor:$PATH"
 before_script:
 - mkdir /tmp/build

@@ -1,6 +1,6 @@
 # Insert server unique id if it doesn't exist
 if not RocketChat.models.Settings.findOneById 'uniqueID'
-	RocketChat.models.Settings.createWithIdAndValue 'uniqueID', Random.id()
+	RocketChat.models.Settings.createWithIdAndValue 'uniqueID', process.env.DEPLOYMENT_ID or Random.id()
 
 RocketChat.settings.addGroup 'Accounts', ->
 	@add 'Accounts_AllowUserProfileChange', true, { type: 'boolean', public: true }

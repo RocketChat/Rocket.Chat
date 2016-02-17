@@ -1,4 +1,8 @@
 RocketChat.callbacks.add('afterSaveMessage', function(message, room) {
+	// skips this callback if the message was edited
+	if (message.editedAt) {
+		return message;
+	}
 	if (room.t != null && room.t === 'd') {
 		// Update the other subscriptions
 		RocketChat.models.Subscriptions.incUnreadOfDirectForRoomIdExcludingUserId(message.rid, message.u._id, 1);
