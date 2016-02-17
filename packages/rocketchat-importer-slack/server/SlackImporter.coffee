@@ -243,7 +243,7 @@ Importer.Slack = class Importer.Slack extends Importer.Base
 													when 'file_share'
 														if message.file?.url_private_download isnt undefined
 															details =
-																slack_msg_id: "S#{message.ts}"
+																message_id: "S#{message.ts}"
 																name: message.file.name
 																size: message.file.size
 																type: message.file.mimetype

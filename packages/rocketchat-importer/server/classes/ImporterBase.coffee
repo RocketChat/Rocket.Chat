@@ -181,7 +181,6 @@ Importer.Base = class Importer.Base
 							attachment.video_size = file.size
 
 						msg =
-							_id: details.slack_msg_id
 							rid: details.rid
 							ts: timeStamp
 							msg: ''
@@ -189,6 +188,9 @@ Importer.Base = class Importer.Base
 								_id: file._id
 							groupable: false
 							attachments: [attachment]
+
+						if details.message_id?
+							msg['_id'] = details.message_id
 
 						RocketChat.sendMessage user, msg, room
 			else
