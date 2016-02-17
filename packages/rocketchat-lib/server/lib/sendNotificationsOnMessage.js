@@ -42,8 +42,12 @@ RocketChat.callbacks.add('afterSaveMessage', function(message, room) {
 		if (! highlights || highlights.length == 0) { return false; }
 
 		var has = false;
-		highlights.forEach(function (highlight) {
-			if (message.msg.includes(highlight)) { has = true; }
+		highlights.some(function (highlight) {
+			var regexp = new RegExp(s.escapeRegExp(highlight),'i');
+			if (regexp.test(message.msg)) {
+				has = true;
+				return true;
+			}
 		});
 
 		return has;
@@ -259,6 +263,17 @@ RocketChat.callbacks.add('afterSaveMessage', function(message, room) {
 				});
 			}
 		}
+		// if (mentionIds > 0) {
+		// 	/*
+		// 	Update all other subscriptions of mentioned users to alert their owners and incrementing
+		// 	the unread counter for mentions and direct messages
+		// 	 */
+		// 	if (toAll) {
+		// 		RocketChat.models.Subscriptions.incUnreadForRoomIdExcludingUserId(message.rid, user._id, 1);
+		// 	} else {
+		// 		RocketChat.models.Subscriptions.incUnreadForRoomIdAndUserIds(message.rid, mentionIds, 1);
+		// 	}
+		// }
 	}
 
 	return message;
