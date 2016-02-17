@@ -16,8 +16,12 @@ RocketChat.callbacks.add('afterSaveMessage', function(message, room) {
 		if (! highlights || highlights.length == 0) { return false; }
 
 		var has = false;
-		highlights.forEach(function (highlight) {
-			if (message.msg.includes(highlight)) { has = true; }
+		highlights.some(function (highlight) {
+			var regexp = new RegExp(s.escapeRegExp(highlight),'i');
+			if (regexp.test(message.msg)) {
+				has = true;
+				return true;
+			}
 		});
 
 		return has;
