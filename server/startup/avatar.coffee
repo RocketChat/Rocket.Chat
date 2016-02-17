@@ -44,10 +44,11 @@ Meteor.startup ->
 
 		if not file?
 
-			if Meteor.settings.public.sandstorm
-				if sandstormPictureUrl = RocketChat.models.Users.findOneByUsername(params.username.replace('.jpg', '')).services.sandstorm.picture?
-					console.log "Should redirect to: ", sandstormPictureUrl
-					res.setHeader 'Location', sandstormPictureUrl
+			if Meteor.settings?.public?.sandstorm
+				user = RocketChat.models.Users.findOneByUsername(params.username.replace('.jpg', ''))
+				if user?.services?.sandstorm?.picture
+					console.log "Should redirect to: ", user.services.sandstorm.picture
+					res.setHeader 'Location', user.services.sandstorm.picture
 					res.writeHead 302
 					res.end()
 					return
