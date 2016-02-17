@@ -33,13 +33,18 @@ Meteor.startup ->
 						console.log 'Inserting admin user'.red
 						console.log "email: #{process.env.ADMIN_EMAIL} | password: #{process.env.ADMIN_PASS}".red
 
-						id = RocketChat.models.Users.create
+						adminUser =
 							active: true
 							emails: [
 								address: process.env.ADMIN_EMAIL
 								verified: true
 							],
 							name: 'Admin'
+
+						if process.env.ADMIN_USERNAME?
+							adminUser.username = process.env.ADMIN_USERNAME
+
+						id = RocketChat.models.Users.create adminUser
 
 						Accounts.setPassword id, process.env.ADMIN_PASS
 						RocketChat.authz.addUserRoles( id, 'admin')
