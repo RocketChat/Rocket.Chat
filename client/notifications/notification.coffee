@@ -3,19 +3,24 @@
 # group messages in which the user is mentioned.
 
 Meteor.startup ->
-	RocketChat.Notifications.onUser 'notification', (notification) ->
 
-		openedRoomId = undefined
-		if FlowRouter.getRouteName() in ['channel', 'group', 'direct']
-			openedRoomId = Session.get 'openedRoom'
+	Tracker.autorun ->
 
-		# This logic is duplicated in /client/startup/unread.coffee.
-		hasFocus = readMessage.isEnable()
-		messageIsInOpenedRoom = openedRoomId is notification.payload.rid
+		if Meteor.userId()
 
-		if !(hasFocus and messageIsInOpenedRoom)
-			# Play a sound.
-			KonchatNotification.newMessage()
+			RocketChat.Notifications.onUser 'notification', (notification) ->
 
-			# Show a notification.
-			KonchatNotification.showDesktop notification
+				openedRoomId = undefined
+				if FlowRouter.getRouteName() in ['channel', 'group', 'direct']
+					openedRoomId = Session.get 'openedRoom'
+
+				# This logic is duplicated in /client/startup/unread.coffee.
+				hasFocus = readMessage.isEnable()
+				messageIsInOpenedRoom = openedRoomId is notification.payload.rid
+
+				if !(hasFocus and messageIsInOpenedRoom)
+					# Play a sound.
+					KonchatNotification.newMessage()
+
+					# Show a notification.
+					KonchatNotification.showDesktop notification
