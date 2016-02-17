@@ -95,5 +95,6 @@ const myCommand :Spk.Manifest.Command = (
     (key = "SANDSTORM", value = "1"),
     (key = "Statistics_opt_out", value = "true")
     (key = "Accounts_AllowUserAvatarChange", value = "false")
+    (key = "Accounts_AllowUserProfileChange", value = "false")
   ]
 );
