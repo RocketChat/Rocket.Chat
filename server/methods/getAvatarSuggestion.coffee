@@ -31,6 +31,11 @@
 			service: 'gitlab'
 			url: user.services.gitlab.avatar_url
 
+	if user.services.sandstorm?.picture? and Meteor.settings.public.sandstorm
+		avatars.push
+			service: 'sandstorm'
+			url: user.services.sandstorm.picture
+
 	if user.emails?.length > 0
 		for email in user.emails when email.verified is true
 			avatars.push
