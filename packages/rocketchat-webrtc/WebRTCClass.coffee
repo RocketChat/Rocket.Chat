@@ -103,19 +103,7 @@ class WebRTCTransportClass
 
 class WebRTCClass
 	config:
-		iceServers: [
-			{
-				urls: RocketChat.settings.get("WebRTC_STUN_Server")
-			},
-			{
-				urls: RocketChat.settings.get("WebRTC_STUN_Server")
-			},
-			{
-				urls: RocketChat.settings.get("WebRTC_TURN_Server"),
-				username: RocketChat.settings.get("WebRTC_TURN_Username"),
-				credential: RocketChat.settings.get("WebRTC_TURN_Password")
-			}
-		]
+		iceServers: []
 
 	debug: false
 
@@ -127,6 +115,24 @@ class WebRTCClass
 		@param room {String}
 	###
 	constructor: (@selfId, @room) ->
+		@config.iceServers = []
+
+		servers = RocketChat.settings.get("WebRTC_Servers")
+		if servers?.trim() isnt ''
+			servers = servers.replace /\s/g, ''
+			servers = servers.split ','
+			for server in servers
+				server = server.split '@'
+				serverConfig =
+					urls: server.pop()
+
+				if server.length is 1
+					server = server[0].split ':'
+					serverConfig.username = decodeURIComponent(server[0])
+					serverConfig.credential = decodeURIComponent(server[1])
+
+				@config.iceServers.push serverConfig
+
 		@peerConnections = {}
 
 		@remoteItems = new ReactiveVar []
