@@ -10,8 +10,8 @@ Meteor.startup ->
 				_id: 'rocket.cat'
 				name: "Rocket.Cat"
 				username: 'rocket.cat'
-				status: "offline"
-				statusDefault: "offline"
+				status: "online"
+				statusDefault: "online"
 				utcOffset: 0
 				active: true
 				bot: true
@@ -25,36 +25,58 @@ Meteor.startup ->
 			rs.pipe(ws)
 
 
-		if process.env.ADMIN_EMAIL? and process.env.ADMIN_PASS?
-			re = /^([\w-]+(?:\.[\w-]+)*)@((?:[\w-]+\.)*\w[\w-]{0,66})\.([a-z]{2,6}(?:\.[a-z]{2})?)$/i
-			if re.test process.env.ADMIN_EMAIL
-				if _.isEmpty(RocketChat.authz.getUsersInRole( 'admin' ).fetch())
-					if not RocketChat.models.Users.findOneByEmailAddress process.env.ADMIN_EMAIL
-						console.log 'Inserting admin user'.red
-						console.log "email: #{process.env.ADMIN_EMAIL} | password: #{process.env.ADMIN_PASS}".red
+		if process.env.ADMIN_PASS?
+			if _.isEmpty(RocketChat.authz.getUsersInRole( 'admin' ).fetch())
+				console.log 'Inserting admin user:'.green
 
-						adminUser =
-							active: true
-							emails: [
+				adminUser =
+					name: "Administrator"
+					username: "admin"
+					status: "offline"
+					statusDefault: "online"
+					utcOffset: 0
+					active: true
+
+				if process.env.ADMIN_NAME?
+					adminUser.name = process.env.ADMIN_NAME
+				console.log "Name: #{adminUser.name}".green
+
+				if process.env.ADMIN_EMAIL?
+					re = /^([\w-]+(?:\.[\w-]+)*)@((?:[\w-]+\.)*\w[\w-]{0,66})\.([a-z]{2,6}(?:\.[a-z]{2})?)$/i
+					if re.test process.env.ADMIN_EMAIL
+						if not RocketChat.models.Users.findOneByEmailAddress process.env.ADMIN_EMAIL
+							adminUser.emails = [
 								address: process.env.ADMIN_EMAIL
 								verified: true
-							],
-							name: 'Admin'
-
-						if process.env.ADMIN_USERNAME?
-							adminUser.username = process.env.ADMIN_USERNAME
-
-						id = RocketChat.models.Users.create adminUser
-
-						Accounts.setPassword id, process.env.ADMIN_PASS
-						RocketChat.authz.addUserRoles( id, 'admin')
-
+							]
+							console.log "Email: #{process.env.ADMIN_EMAIL}".green
+						else
+							console.log 'E-mail provided already exists; Ignoring environment variables ADMIN_EMAIL'.red
 					else
-						console.log 'E-mail exists; ignoring environment variables ADMIN_EMAIL and ADMIN_PASS'.red
-				else
-					console.log 'Admin user exists; ignoring environment variables ADMIN_EMAIL and ADMIN_PASS'.red
+						console.log 'E-mail provided is invalid; Ignoring environment variables ADMIN_EMAIL'.red
+
+				if process.env.ADMIN_USERNAME?
+					try
+						nameValidation = new RegExp '^' + RocketChat.settings.get('UTF8_Names_Validation') + '$'
+					catch
+						nameValidation = new RegExp '^[0-9a-zA-Z-_.]+$'
+					if nameValidation.test process.env.ADMIN_USERNAME
+						if RocketChat.checkUsernameAvailability(process.env.ADMIN_USERNAME)
+							adminUser.username = process.env.ADMIN_USERNAME
+						else
+							console.log 'Username provided already exists; Ignoring environment variables ADMIN_USERNAME'.red
+					else
+						console.log 'Username provided is invalid; Ignoring environment variables ADMIN_USERNAME'.red
+				console.log "Username: #{adminUser.username}".green
+
+				id = RocketChat.models.Users.create adminUser
+
+				Accounts.setPassword id, process.env.ADMIN_PASS
+				console.log "Password: #{process.env.ADMIN_PASS}".green
+				RocketChat.authz.addUserRoles( id, 'admin')
+
 			else
-				console.log 'E-mail provided is invalid; ignoring environment variables ADMIN_EMAIL and ADMIN_PASS'.red
+				console.log 'Users with admin role already exist; Ignoring environment variables ADMIN_PASS'.red
 
 		# Set oldest user as admin, if none exists yet
 		if _.isEmpty( RocketChat.authz.getUsersInRole( 'admin' ).fetch())
