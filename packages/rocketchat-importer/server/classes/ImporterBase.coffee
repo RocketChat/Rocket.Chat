@@ -181,6 +181,7 @@ Importer.Base = class Importer.Base
 							attachment.video_size = file.size
 
 						msg =
+							_id: details.slack_msg_id
 							rid: details.rid
 							ts: timeStamp
 							msg: ''

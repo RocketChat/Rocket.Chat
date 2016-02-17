@@ -200,65 +200,74 @@ Importer.Slack = class Importer.Slack extends Importer.Base
 									@updateRecord { 'messagesstatus': "#{channel}/#{date}.#{msgs.messages.length}" }
 									for message in msgs.messages
 										if message.type is 'message'
+											msgDataDefaults =
+												_id: "s#{message.ts}"
+												ts: new date(parseint(message.ts.split('.')[0]) * 1000)
+
 											if message.subtype?
-												if message.subtype is 'channel_join'
-													if @getRocketUser(message.user)?
-														RocketChat.models.Messages.createUserJoinWithRoomIdAndUser room._id, @getRocketUser(message.user), { ts: new Date(parseInt(message.ts.split('.')[0]) * 1000) }
-												else if message.subtype is 'channel_leave'
-													if @getRocketUser(message.user)?
-														RocketChat.models.Messages.createUserLeaveWithRoomIdAndUser room._id, @getRocketUser(message.user), { ts: new Date(parseInt(message.ts.split('.')[0]) * 1000) }
-												else if message.subtype is 'me_message'
-													RocketChat.sendMessage @getRocketUser(message.user), { msg: '_' + @convertSlackMessageToRocketChat(message.text) + '_', ts: new Date(parseInt(message.ts.split('.')[0]) * 1000) }, room
-												else if message.subtype is 'bot_message'
-													botUser = RocketChat.models.Users.findOneById 'rocket.cat', { fields: { username: 1 }}
-													botUsername = if @bots[message.bot_id] then @bots[message.bot_id]?.name else message.username
-													msgObj =
-														msg: if message.text then message.text else ''
-														ts: new Date(parseInt(message.ts.split('.')[0]) * 1000)
-														rid: room._id
-														bot: true
-														attachments: message.attachments
-														username: if botUsername then botUsername else undefined
-
-													if message.edited?
-														msgObj.ets = new Date(parseInt(message.edited.ts.split('.')[0]) * 1000)
-
-													if message.icons?
-														msgObj.emoji = message.icons.emoji
-
-													msgObj.msg = @convertSlackMessageToRocketChat(msgObj.msg)
-
-													RocketChat.sendMessage botUser, msgObj, room
-												else if message.subtype is 'channel_purpose'
-													RocketChat.models.Messages.createRoomSettingsChangedWithTypeRoomIdMessageAndUser 'room_changed_topic', room._id, message.purpose, @getRocketUser(message.user), { ts: new Date(parseInt(message.ts.split('.')[0]) * 1000) }
-												else if message.subtype is 'channel_topic'
-													RocketChat.models.Messages.createRoomSettingsChangedWithTypeRoomIdMessageAndUser 'room_changed_topic', room._id, message.topic, @getRocketUser(message.user), { ts: new Date(parseInt(message.ts.split('.')[0]) * 1000) }
-												else if message.subtype is 'file_share'
-													if message.file?.url_private_download isnt undefined
-														details =
-															name: message.file.name
-															size: message.file.size
-															type: message.file.mimetype
+												switch message.subtype
+													when 'channel_join'
+														if @getRocketUser(message.user)?
+															RocketChat.models.Messages.createUserJoinWithRoomIdAndUser room._id, @getRocketUser(message.user), msgDataDefaults
+													when 'channel_leave'
+														if @getRocketUser(message.user)?
+															RocketChat.models.Messages.createUserLeaveWithRoomIdAndUser room._id, @getRocketUser(message.user), msgDataDefaults
+													when 'me_message'
+														msgObj =
+															msg: "_#{@convertSlackMessageToRocketChat(message.text)}_"
+														_.extend msgObj, msgDataDefaults
+														RocketChat.sendMessage @getRocketUser(message.user), msgObj, room, upsert: true
+													when 'bot_message'
+														botUser = RocketChat.models.Users.findOneById 'rocket.cat', { fields: { username: 1 }}
+														botUsername = if @bots[message.bot_id] then @bots[message.bot_id]?.name else message.username
+														msgObj =
+															msg: @convertSlackMessageToRocketChat(message.text)
 															rid: room._id
-														@uploadFile details, message.file.url_private_download, @getRocketUser(message.user), room, new Date(parseInt(message.ts.split('.')[0]) * 1000)
-												else
-													if not missedTypes[message.subtype] and not ignoreTypes[message.subtype]
-														missedTypes[message.subtype] = message
+															bot: true
+															attachments: message.attachments
+															username: if botUsername then botUsername else undefined
+
+														_.extend msgObj, msgDataDefaults
+
+														if message.edited?
+															msgObj.ets = new Date(parseInt(message.edited.ts.split('.')[0]) * 1000)
+
+														if message.icons?
+															msgObj.emoji = message.icons.emoji
+
+														RocketChat.sendMessage botUser, msgObj, room, upsert: true
+													when 'channel_purpose'
+														RocketChat.models.Messages.createRoomSettingsChangedWithTypeRoomIdMessageAndUser 'room_changed_topic', room._id, message.purpose, @getRocketUser(message.user), msgDataDefaults
+													when 'channel_topic'
+														RocketChat.models.Messages.createRoomSettingsChangedWithTypeRoomIdMessageAndUser 'room_changed_topic', room._id, message.topic, @getRocketUser(message.user), msgDataDefaults
+													when 'file_share'
+														if message.file?.url_private_download isnt undefined
+															details =
+																slack_msg_id: "S#{message.ts}"
+																name: message.file.name
+																size: message.file.size
+																type: message.file.mimetype
+																rid: room._id
+															@uploadFile details, message.file.url_private_download, @getRocketUser(message.user), room, new Date(parseInt(message.ts.split('.')[0]) * 1000)
+													else
+														if not missedTypes[message.subtype] and not ignoreTypes[message.subtype]
+															missedTypes[message.subtype] = message
 											else
 												user = @getRocketUser(message.user)
 												if user?
 													msgObj =
 														msg: @convertSlackMessageToRocketChat message.text
-														ts: new Date(parseInt(message.ts.split('.')[0]) * 1000)
 														rid: room._id
 														u:
 															_id: user._id
 															username: user.username
 
+													_.extend msgObj, msgDataDefaults
+
 													if message.edited?
 														msgObj.ets = new Date(parseInt(message.edited.ts.split('.')[0]) * 1000)
 
-													RocketChat.sendMessage @getRocketUser(message.user), msgObj, room
+													RocketChat.sendMessage @getRocketUser(message.user), msgObj, room, upsert: true
 										@addCountCompleted 1
 				console.log missedTypes
 				@updateProgress Importer.ProgressStep.FINISHING
@@ -301,7 +310,9 @@ Importer.Slack = class Importer.Slack extends Importer.Base
 			for userReplace in @userTags
 				message = message.replace userReplace.slack, userReplace.rocket
 				message = message.replace userReplace.slackLong, userReplace.rocket
-			return message
+		else
+			message = ''
+		return message
 
 	getSelection: () =>
 		selectionUsers = @users.users.map (user) ->
