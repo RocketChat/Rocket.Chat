@@ -1,1 +1,1 @@
-Closes issue: 
+Closes Issue #.
