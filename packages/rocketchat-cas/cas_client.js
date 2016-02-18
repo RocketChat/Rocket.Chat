@@ -2,24 +2,20 @@
 Meteor.loginWithCas = function(callback) {
 
     var credentialToken = Random.id();
+    var login_url = RocketChat.settings.get("CAS_login_url");
+    var popup_width = RocketChat.settings.get("CAS_popup_width");
+    var popup_height = RocketChat.settings.get("CAS_popup_height");
 
-    if (!Meteor.settings.public &&
-        !Meteor.settings.public.cas &&
-        !Meteor.settings.public.cas.loginUrl) {
+    if (!login_url) { 
         return;
     }
 
-    var settings = Meteor.settings.public.cas;
-
-    var loginUrl = settings.loginUrl +
-        "?" + (settings.service || "service") + "=" +
-        Meteor.absoluteUrl('_cas/') +
-        credentialToken;
+    var loginUrl = login_url + "?service=" + Meteor.absoluteUrl('_cas/') + credentialToken;
 
     var popup = openCenteredPopup(
         loginUrl,
-        settings.width || 800,
-        settings.height || 600
+        popup_width || 800,
+        popup_height || 600
     );
 
     var checkPopupOpen = setInterval(function() {
