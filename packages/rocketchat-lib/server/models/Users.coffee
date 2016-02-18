@@ -124,6 +124,12 @@ RocketChat.models.Users = new class extends RocketChat.models._Base
 
 		return @find query, options
 
+	findLDAPUsers: (options) ->
+		query =
+			ldap: true
+
+		return @find query, options
+
 	getLastLogin: (options = {}) ->
 		query = { lastLogin: { $exists: 1 } }
 		options.sort = { lastLogin: -1 }
