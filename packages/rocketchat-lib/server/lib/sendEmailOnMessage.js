@@ -4,10 +4,10 @@ RocketChat.callbacks.add('afterSaveMessage', function(message, room) {
 		return message;
 	}
 
-	var emailSubject, mentionIds = [];
+	var emailSubject, usersToSendEmail = {};
 
 	if (room.t === 'd') {
-		mentionIds.push(message.rid.replace(message.u._id, ''));
+		usersToSendEmail[message.rid.replace(message.u._id, '')] = 1;
 
 		emailSubject = TAPi18n.__("Offline_DM_Email", {
 			site: RocketChat.settings.get('Site_Name'),
@@ -17,7 +17,7 @@ RocketChat.callbacks.add('afterSaveMessage', function(message, room) {
 	} else {
 		if (message.mentions) {
 			message.mentions.forEach(function(mention) {
-				return mentionIds.push(mention._id);
+				return usersToSendEmail[mention._id] = 1;
 			});
 		}
 
@@ -39,11 +39,34 @@ RocketChat.callbacks.add('afterSaveMessage', function(message, room) {
 	}
 	message.html = message.html.replace(/\n/gm, '<br/>');
 
-	if (mentionIds.length > 0) {
-		var usersOfMention = RocketChat.models.Users.getUsersToSendOfflineEmail(mentionIds).fetch();
+	RocketChat.models.Subscriptions.findWithSendEmailByRoomId(room._id).forEach((sub) => {
+		switch (sub.emailNotifications) {
+			case 'all':
+				usersToSendEmail[sub.u._id] = 'force';
+				break;
+			case 'mentions':
+				if (usersToSendEmail[sub.u._id]) {
+					usersToSendEmail[sub.u._id] = 'force';
+				}
+				break;
+			case 'nothing':
+				delete usersToSendEmail[sub.u._id];
+				break;
+			case 'default':
+				break;
+		}
+	});
+
+	userIdsToSendEmail = Object.keys(usersToSendEmail);
+
+	if (userIdsToSendEmail.length > 0) {
+		var usersOfMention = RocketChat.models.Users.getUsersToSendOfflineEmail(userIdsToSendEmail).fetch();
 
 		if (usersOfMention && usersOfMention.length > 0) {
 			usersOfMention.forEach((user) => {
+				if (user.settings && user.settings.preferences && user.settings.preferences.emailNotificationMode && user.settings.preferences.emailNotificationMode === 'disabled' && usersToSendEmail[user._id] !== 'force') {
+					return;
+				}
 				user.emails.some((email) => {
 					if (email.verified) {
 						var email = {
