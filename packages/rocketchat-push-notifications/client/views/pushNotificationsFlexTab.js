@@ -55,12 +55,12 @@ Template.pushNotificationsFlexTab.helpers({
 				case 'nothing':
 					return t('Nothing');
 				case 'default':
-					return t('Respect_account_preference');
+					return t('Use_account_preference');
 				case 'mentions':
 					return t('Mentions');
 				default:
 					if (field === 'emailNotifications') {
-						return t('Respect_account_preference');
+						return t('Use_account_preference');
 					} else {
 						return t('Mentions');
 					}
