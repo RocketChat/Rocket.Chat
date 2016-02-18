@@ -201,11 +201,16 @@ LDAP = class LDAP {
 	bindIfNecessary() {
 		const self = this;
 
+		if (self.domainBinded === true) {
+			return;
+		}
+
 		const domain_search = self.getDomainBindSearch();
 
 		if (domain_search.domain_search_user !== '' && domain_search.domain_search_password !== '') {
 			logger.bind_info('Binding admin user', domain_search.domain_search_user);
 			self.bindSync(domain_search.domain_search_user, domain_search.domain_search_password);
+			self.domainBinded = true;
 		}
 	}
 
@@ -228,6 +233,85 @@ LDAP = class LDAP {
 		return self.searchAllSync(self.options.domain_base, searchOptions);
 	}
 
+	getUserByIdSync(id, attribute) {
+		const self = this;
+
+		self.bindIfNecessary();
+
+		const domain_search = self.getDomainBindSearch();
+
+		let Unique_Identifier_Field = RocketChat.settings.get('LDAP_Unique_Identifier_Field').split(',');
+
+		let filter;
+
+		if (attribute) {
+			filter = new self.ldapjs.filters.EqualityFilter({
+				attribute: attribute,
+				value: new Buffer(id, 'hex')
+			});
+		} else {
+			const filters = [];
+			Unique_Identifier_Field.forEach(function(item) {
+				filters.push(new self.ldapjs.filters.EqualityFilter({
+					attribute: item,
+					value: new Buffer(id, 'hex')
+				}));
+			});
+
+			filter = new self.ldapjs.filters.OrFilter({filters: filters});
+		}
+
+		const searchOptions = {
+			filter: filter,
+			scope: 'sub'
+		};
+
+		logger.search_info('Searching by id', id);
+		logger.search_debug('search filter', searchOptions.filter.toString());
+		logger.search_debug('domain_base', self.options.domain_base);
+
+		const result = self.searchAllSync(self.options.domain_base, searchOptions);
+
+		if (!Array.isArray(result) || result.length === 0) {
+			return;
+		}
+
+		if (result.length > 1) {
+			logger.search_error('Search by id', id, 'returned', result.length, 'records');
+		}
+
+		return result[0];
+	}
+
+	getUserByUsernameSync(username) {
+		const self = this;
+
+		self.bindIfNecessary();
+
+		const domain_search = self.getDomainBindSearch();
+
+		const searchOptions = {
+			filter: domain_search.filter.replace(/#{username}/g, username),
+			scope: 'sub'
+		};
+
+		logger.search_info('Searching user', username);
+		logger.search_debug('searchOptions', searchOptions);
+		logger.search_debug('domain_base', self.options.domain_base);
+
+		const result = self.searchAllSync(self.options.domain_base, searchOptions);
+
+		if (!Array.isArray(result) || result.length === 0) {
+			return;
+		}
+
+		if (result.length > 1) {
+			logger.search_error('Search by id', id, 'returned', result.length, 'records');
+		}
+
+		return result[0];
+	}
+
 	searchAllAsync(domain_base, options, callback) {
 		const self = this;
 
@@ -244,15 +328,17 @@ LDAP = class LDAP {
 				return;
 			});
 
-			let entries = [];
+			const entries = [];
+			const jsonEntries = [];
 
 			res.on('searchEntry', function(entry) {
 				entries.push(entry);
+				jsonEntries.push(entry.json);
 			});
 
 			res.on('end', function(result) {
 				logger.search_info('Search result count', entries.length);
-				logger.search_debug('Search result', entries);
+				logger.search_debug('Search result', JSON.stringify(jsonEntries, null, 2));
 				callback(null, entries);
 			});
 		});
