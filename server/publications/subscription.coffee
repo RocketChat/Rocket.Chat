@@ -16,3 +16,4 @@ Meteor.publish 'subscription', ->
 			archived: 1
 			desktopNotifications: 1
 			mobilePushNotifications: 1
+			emailNotifications: 1

@@ -290,8 +290,6 @@ RocketChat.models.Users = new class extends RocketChat.models._Base
 			statusConnection:
 				$ne: 'online'
 			'emails.verified': true
-			'settings.preferences.emailNotificationMode':
-				$ne: 'disabled'
 
-		return @find query, { fields: { emails: 1 } }
+		return @find query, { fields: { name: 1, username: 1, emails: 1, 'settings.preferences.emailNotificationMode': 1 } }
 
