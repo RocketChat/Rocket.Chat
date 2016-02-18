@@ -13,8 +13,8 @@ Template.accountPreferences.helpers
 		else
 			return Meteor.user()?.settings?.preferences?[property] == value
 
-  highlights: ->
-		return Meteor.user()?.settings?.preferences?['highlights']
+	highlights: ->
+		return Meteor.user()?.settings?.preferences?['highlights'].join(', ')
 
 	desktopNotificationEnabled: ->
 		return (KonchatNotification.notificationStatus.get() is 'granted') or (window.Notification && Notification.permission is "granted")
