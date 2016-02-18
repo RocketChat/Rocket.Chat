@@ -25,9 +25,11 @@ Package.onUse(function(api) {
   api.addFiles('client/loginHelper.js', 'client');
 
   api.addFiles('server/ldap.js', 'server');
+  api.addFiles('server/sync.js', 'server');
   api.addFiles('server/loginHandler.js', 'server');
   api.addFiles('server/settings.coffee', 'server');
   api.addFiles('server/testConnection.js', 'server');
+  api.addFiles('server/syncUsers.js', 'server');
 
   api.export('LDAP', 'server');
 });
