@@ -8,6 +8,7 @@ var slug = function (text) {
 	return text.replace(/[^0-9a-z-_.]/g, '');
 };
 
+
 function fallbackDefaultAccountSystem(bind, username, password) {
 	if (typeof username === 'string')
 		if (username.indexOf('@') === -1)
@@ -28,88 +29,6 @@ function fallbackDefaultAccountSystem(bind, username, password) {
 	return Accounts._runLoginHandlers(bind, loginRequest);
 }
 
-function getDataToSyncUserData(ldapUser) {
-	const syncUserData = RocketChat.settings.get('LDAP_Sync_User_Data');
-	const syncUserDataFieldMap = RocketChat.settings.get('LDAP_Sync_User_Data_FieldMap').trim();
-
-	if (syncUserData && syncUserDataFieldMap) {
-		const fieldMap = JSON.parse(syncUserDataFieldMap);
-		let userData = {};
-
-		let emailList = [];
-		_.map(fieldMap, function(userField, ldapField) {
-			if (!ldapUser.object.hasOwnProperty(ldapField)) {
-				return;
-			}
-
-			switch (userField) {
-				case 'email':
-					if (_.isObject(ldapUser.object[ldapField] === 'object')) {
-						_.map(ldapUser.object[ldapField], function (item) {
-							emailList.push({ address: item, verified: true });
-						});
-					} else {
-						emailList.push({ address: ldapUser.object[ldapField], verified: true });
-					}
-					break;
-
-				case 'name':
-					userData.name = ldapUser.object[ldapField];
-					break;
-			}
-		});
-
-		if (emailList.length > 0) {
-			userData.emails = emailList;
-		}
-
-		if (_.size(userData)) {
-			return userData;
-		}
-	}
-}
-
-function syncUserData(user, ldapUser) {
-	logger.info('Syncing user data');
-	logger.debug('user', user);
-	logger.debug('ldapUser', ldapUser);
-
-	const userData = getDataToSyncUserData(ldapUser);
-	if (user && user._id && userData) {
-		Meteor.users.update(user._id, { $set: userData });
-	}
-
-	if (user && user._id) {
-		const avatar = ldapUser.raw.thumbnailPhoto || ldapUser.raw.jpegPhoto;
-		if (avatar) {
-			logger.info('Syncing user avatar');
-			const rs = RocketChatFile.bufferToStream(avatar);
-			RocketChatFileAvatarInstance.deleteFile(encodeURIComponent(`${user.username}.jpg`));
-			const ws = RocketChatFileAvatarInstance.createWriteStream(encodeURIComponent(`${user.username}.jpg`), 'image/jpeg');
-			ws.on('end', Meteor.bindEnvironment(function() {
-				Meteor.setTimeout(function() {
-					RocketChat.models.Users.setAvatarOrigin(user._id, 'ldap');
-					RocketChat.Notifications.notifyAll('updateAvatar', {username: user.username});
-				}, 500);
-			}));
-			rs.pipe(ws);
-		}
-	}
-}
-
-function getLdapUserUniqueID(ldapUser, fallback) {
-	let Unique_Identifier_Field = RocketChat.settings.get('LDAP_Unique_Identifier_Field');
-
-	if (Unique_Identifier_Field !== '') {
-		Unique_Identifier_Field = Unique_Identifier_Field.split(',').find((field) => {
-			return !_.isEmpty(ldapUser.object[field]);
-		});
-		if (Unique_Identifier_Field) {
-			Unique_Identifier_Field = ldapUser.raw[Unique_Identifier_Field].toString('hex');
-		}
-		return Unique_Identifier_Field || fallback;
-	}
-}
 
 Accounts.registerLoginHandler("ldap", function(loginRequest) {
 	const self = this;
@@ -162,21 +81,25 @@ Accounts.registerLoginHandler("ldap", function(loginRequest) {
 	// Look to see if user already exists
 	let userQuery;
 
-	let Unique_Identifier_Field = getLdapUserUniqueID(ldapUser, username);
-	if (Unique_Identifier_Field) {
-		userQuery = {
-			'services.ldap.id': Unique_Identifier_Field
-		};
-	} else {
-		userQuery = {
-			username: username
-		};
-	}
+	let Unique_Identifier_Field = getLdapUserUniqueID(ldapUser, 'username', username);
+	userQuery = {
+		'services.ldap.id': Unique_Identifier_Field.value
+	};
 
 	logger.info('Querying user');
 	logger.debug('userQuery', userQuery);
 
-	const user = Meteor.users.findOne(userQuery);
+	let user = Meteor.users.findOne(userQuery);
+
+	if (!user) {
+		userQuery = {
+			username: username
+		};
+
+		logger.debug('userQuery', userQuery);
+
+		user = Meteor.users.findOne(userQuery);
+	}
 
 	// Login user if they exist
 	if (user) {
@@ -195,7 +118,7 @@ Accounts.registerLoginHandler("ldap", function(loginRequest) {
 			}
 		});
 
-		syncUserData(user, ldapUser, loginRequest.ldapPass);
+		syncUserData(user, ldapUser);
 		Accounts.setPassword(user._id, loginRequest.ldapPass, {logout: false});
 		return {
 			userId: user._id,
@@ -210,7 +133,7 @@ Accounts.registerLoginHandler("ldap", function(loginRequest) {
 		password: loginRequest.ldapPass
 	};
 
-	let userData = getDataToSyncUserData(ldapUser);
+	let userData = getDataToSyncUserData(ldapUser, {});
 
 	if (userData && userData.emails) {
 		userObject.email = userData.emails[0].address;
@@ -224,14 +147,15 @@ Accounts.registerLoginHandler("ldap", function(loginRequest) {
 
 	userObject._id = Accounts.createUser(userObject);
 
-	syncUserData(userObject, ldapUser, loginRequest.ldapPass);
+	syncUserData(userObject, ldapUser);
 
 	let ldapUserService = {
 		ldap: true
 	};
 
 	if (Unique_Identifier_Field) {
-		ldapUserService['services.ldap.id'] = Unique_Identifier_Field;
+		ldapUserService['services.ldap.idAttribute'] = Unique_Identifier_Field.attribute;
+		ldapUserService['services.ldap.id'] = Unique_Identifier_Field.value;
 	}
 
 	Meteor.users.update(userObject._id, {
