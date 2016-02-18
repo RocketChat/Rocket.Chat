@@ -6,5 +6,6 @@
   "Mentions_default" : "Mentions (default)",
   "Mobile_push_notifications" : "Mobile push notifications",
   "Nothing" : "Nothing",
-  "Push_notifications" : "Push notifications"
+  "Push_notifications" : "Push notifications",
+  "Use_account_preference": "Use account preference"
 }
