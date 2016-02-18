@@ -39,8 +39,11 @@
 						<div>
 							{{#if editing 'emailNotifications'}}
 								<label><input type="radio" name="emailNotifications" value="all" checked="{{$eq emailNotifications 'all'}}" /> {{_ "All_messages"}}</label>
-								<label><input type="radio" name="emailNotifications" value="mentions" checked="{{$eq emailNotifications 'mentions'}}" /> {{_ "Mentions_default"}}</label>
+								{{#if showEmailMentions}}
+									<label><input type="radio" name="emailNotifications" value="mentions" checked="{{$eq emailNotifications 'mentions'}}" /> {{_ "Mentions"}}</label>
+								{{/if}}
 								<label><input type="radio" name="emailNotifications" value="nothing" checked="{{$eq emailNotifications 'nothing'}}" /> {{_ "Nothing"}}</label>
+								<label><input type="radio" name="emailNotifications" value="default" checked="{{$eq emailNotifications 'default'}}" /> {{_ "Respect_account_preference"}}</label>
 								<button type="button" class="button secondary cancel">{{_ "Cancel"}}</button>
 								<button type="button" class="button primary save">{{_ "Save"}}</button>
 							{{else}}

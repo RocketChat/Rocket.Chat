@@ -75,3 +75,14 @@ RocketChat.models.Subscriptions.findDontNotifyMobileUsersByRoomId = function(roo
 
 	return this.find(query);
 }
+
+RocketChat.models.Subscriptions.findWithSendEmailByRoomId = function(roomId) {
+	var query = {
+		rid: roomId,
+		emailNotifications: {
+			$exists: true
+		}
+	};
+
+	return this.find(query, { fields: { emailNotifications: 1, u: 1 } });
+};

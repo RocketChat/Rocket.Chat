@@ -12,7 +12,7 @@ Meteor.methods({
 			throw new Meteor.Error('invalid-settings', 'Invalid settings field');
 		}
 
-		if (['all', 'mentions', 'nothing'].indexOf(value) === -1) {
+		if (['all', 'mentions', 'nothing', 'default'].indexOf(value) === -1) {
 			throw new Meteor.Error('invalid-settings', 'Invalid settings value');
 		}
 

@@ -29,22 +29,41 @@ Template.pushNotificationsFlexTab.helpers({
 		});
 		return sub ? sub.emailNotifications : '';
 	},
+	"showEmailMentions"() {
+		var sub = ChatSubscription.findOne({
+			rid: Session.get('openedRoom')
+		}, {
+			fields: {
+				t: 1
+			}
+		});
+		return sub && sub.t !== 'd';
+	},
 	"subValue"(field) {
 		var sub = ChatSubscription.findOne({
 			rid: Session.get('openedRoom')
 		}, {
 			fields: {
+				t: 1,
 				[field]: 1
 			}
 		});
 		if (sub) {
 			switch (sub[field]) {
 				case 'all':
-					return TAPi18n.__('All_messages');
+					return t('All_messages');
 				case 'nothing':
-					return TAPi18n.__('Nothing');
+					return t('Nothing');
+				case 'default':
+					return t('Respect_account_preference');
+				case 'mentions':
+					return t('Mentions');
 				default:
-					return TAPi18n.__('Mentions');
+					if (field === 'emailNotifications') {
+						return t('Respect_account_preference');
+					} else {
+						return t('Mentions');
+					}
 			}
 		}
 	},
@@ -58,8 +77,8 @@ Template.pushNotificationsFlexTab.onCreated(function() {
 
 	this.validateSetting = (field) => {
 		const value = this.$('input[name='+ field +']:checked').val();
-		if (['all', 'mentions', 'nothing'].indexOf(value) === -1) {
-			toastr.error(TAPi18n.__('Invalid_notification_setting_s', value || ''));
+		if (['all', 'mentions', 'nothing', 'default'].indexOf(value) === -1) {
+			toastr.error(t('Invalid_notification_setting_s', value || ''));
 			return false;
 		}
 		return true;
@@ -71,11 +90,11 @@ Template.pushNotificationsFlexTab.onCreated(function() {
 		if (this.validateSetting(field)) {
 			Meteor.call('saveNotificationSettings', Session.get('openedRoom'), field, value, (err, result) => {
 				if (err) {
-					return toastr.error(TAPi18n.__(err.reason || err.message));
+					return toastr.error(t(err.reason || err.message));
 				}
+				this.editing.set();
 			});
 		}
-		this.editing.set();
 	};
 });
 
