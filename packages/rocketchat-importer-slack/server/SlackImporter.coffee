@@ -202,7 +202,7 @@ Importer.Slack = class Importer.Slack extends Importer.Base
 										if message.type is 'message'
 											msgDataDefaults =
 												_id: "S#{message.ts}"
-												ts: new date(parseint(message.ts.split('.')[0]) * 1000)
+												ts: new Date(parseint(message.ts.split('.')[0]) * 1000)
 
 											if message.subtype?
 												switch message.subtype
