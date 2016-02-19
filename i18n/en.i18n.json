@@ -298,6 +298,7 @@
   "LDAP_Port" : "Port",
   "LDAP_Port_Description" : "Port to access LDAP. eg: `389` or `636` for LDAPS",
   "LDAP_Reject_Unauthorized" : "Reject Unauthorized",
+  "LDAP_Sync_User_Avatar" : "Sync User Avatar",
   "LDAP_Sync_User_Data" : "Sync Data",
   "LDAP_Sync_User_Data_Description" : "Keep user data in sync with server on login (eg: name, email).",
   "LDAP_Sync_User_Data_FieldMap" : "User Data Field Map",
