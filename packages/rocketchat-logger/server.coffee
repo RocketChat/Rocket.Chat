@@ -73,6 +73,7 @@
 			level: 0
 
 	constructor: (@name, config={}) ->
+		self = @
 		@config = {}
 
 		_.extend @config, config
@@ -82,16 +83,18 @@
 			return LoggerManager.loggers[@name]
 
 		for type, typeConfig of @defaultTypes
-			do (type, typeConfig) =>
-				@[type] = (args...) =>
-					@_log
+			do (type, typeConfig) ->
+				self[type] = (args...) ->
+					self._log.call self,
+						section: this.__section
 						type: type
 						level: typeConfig.level
 						method: typeConfig.name
 						arguments: args
 
-				@[type+"_box"] = (args...) =>
-					@_log
+				self[type+"_box"] = (args...) ->
+					self._log.call self,
+						section: this.__section
 						type: type
 						box: true
 						level: typeConfig.level
@@ -100,33 +103,58 @@
 
 		if @config.methods?
 			for method, typeConfig of @config.methods
-				do (method, typeConfig) =>
-					if @[method]?
-						@warn "Method", method, "already exists"
+				do (method, typeConfig) ->
+					if self[method]?
+						self.warn "Method", method, "already exists"
 
-					if not @defaultTypes[typeConfig.type]?
-						@warn "Method type", typeConfig.type, "doest not exists"
+					if not self.defaultTypes[typeConfig.type]?
+						self.warn "Method type", typeConfig.type, "doest not exists"
 
-					@[method] = (args...) =>
-						@_log
+					self[method] = (args...) ->
+						self._log.call self,
+							section: this.__section
 							type: typeConfig.type
-							level: if typeConfig.level? then typeConfig.level else @defaultTypes[typeConfig.type]?.level
+							level: if typeConfig.level? then typeConfig.level else self.defaultTypes[typeConfig.type]?.level
 							method: method
 							arguments: args
 
-					@[method+"_box"] = (args...) =>
-						@_log
+					self[method+"_box"] = (args...) ->
+						self._log.call self,
+							section: this.__section
 							type: typeConfig.type
 							box: true
-							level: if typeConfig.level? then typeConfig.level else @defaultTypes[typeConfig.type]?.level
+							level: if typeConfig.level? then typeConfig.level else self.defaultTypes[typeConfig.type]?.level
 							method: method
 							arguments: args
+
+		if @config.sections?
+			for section, name of @config.sections
+				do (section, name) ->
+					self[section] = {}
+					for type, typeConfig of self.defaultTypes
+						do (type, typeConfig) =>
+							self[section][type] = =>
+								self[type].apply {__section: name}, arguments
+
+							self[section][type+"_box"] = =>
+								self[type+"_box"].apply {__section: name}, arguments
+
+					for method, typeConfig of self.config.methods
+						do (method, typeConfig) =>
+							self[section][method] = =>
+								self[method].apply {__section: name}, arguments
+
+							self[section][method+"_box"] = =>
+								self[method+"_box"].apply {__section: name}, arguments
 
 		LoggerManager.register @
 		return @
 
 	getPrefix: (options) ->
-		prefix = "#{@name} ➔ #{options.method}"
+		if options.section?
+			prefix = "#{@name} ➔ #{options.section}.#{options.method}"
+		else
+			prefix = "#{@name} ➔ #{options.method}"
 
 		details = @_getCallerDetails()
 
