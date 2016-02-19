@@ -49,6 +49,7 @@ Package.onUse(function(api) {
 	api.addFiles('admin/users/adminUserInfo.coffee', 'client');
 	api.addFiles('admin/users/adminUsers.coffee', 'client');
 
+	api.addFiles('publications/adminRooms.coffee', 'server');
 
 	// api.addAssets('styles/side-nav.less', 'client');
 });
