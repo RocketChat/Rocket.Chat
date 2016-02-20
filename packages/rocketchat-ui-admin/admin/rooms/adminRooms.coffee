@@ -33,6 +33,12 @@ Template.adminRooms.helpers
 	flexData: ->
 		return RocketChat.TabBar.getData()
 
+	default: ->
+		if this.default
+			return t('True')
+		else
+			return t('False')
+
 Template.adminRooms.onCreated ->
 	instance = @
 	@limit = new ReactiveVar 50
