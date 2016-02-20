@@ -17,10 +17,12 @@ Meteor.publish('adminRooms', function(filter, types, limit) {
 			u: 1,
 			usernames: 1,
 			muted: 1,
-			default: 1
+			default: 1,
+			topic: 1
 		},
 		limit: limit,
 		sort: {
+			default: -1,
 			name: 1
 		}
 	};

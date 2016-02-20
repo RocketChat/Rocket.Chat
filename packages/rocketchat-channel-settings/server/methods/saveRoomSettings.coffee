@@ -3,10 +3,13 @@ Meteor.methods
 		unless Match.test rid, String
 			throw new Meteor.Error 'invalid-rid', 'Invalid room'
 
-		if setting not in ['roomName', 'roomTopic', 'roomType']
+		if setting not in ['roomName', 'roomTopic', 'roomType', 'default']
 			throw new Meteor.Error 'invalid-settings', 'Invalid settings provided'
 
 		unless RocketChat.authz.hasPermission(Meteor.userId(), 'edit-room', rid)
+			throw new Meteor.Error 503, 'Not authorized'
+
+		if setting is 'default' and not RocketChat.authz.hasPermission(@userId, 'view-room-administration')
 			throw new Meteor.Error 503, 'Not authorized'
 
 		room = RocketChat.models.Rooms.findOneById rid
@@ -27,5 +30,7 @@ Meteor.methods
 						else
 							message = TAPi18n.__('Private_Group')
 						RocketChat.models.Messages.createRoomSettingsChangedWithTypeRoomIdMessageAndUser 'room_changed_privacy', rid, message, Meteor.user()
+				when 'default'
+					RocketChat.models.Rooms.saveDefaultById rid, value
 
 		return true
