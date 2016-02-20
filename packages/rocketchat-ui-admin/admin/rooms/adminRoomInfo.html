@@ -5,16 +5,11 @@
 		<div>
 			<h3><a href="{{route}}"><i class="icon-{{type}}"></i> {{name}}</a></h3>
 		</div>
-		<div>
-			<h3>{{_ "Users"}}:</h3>
-			{{#each usernames}}
-				{{.}}<br />
-			{{/each}}
-		</div>
-		{{#if canDeleteRoom}}
 		<nav>
-			<button class='button delete red'><span><i class='icon-trash'></i> {{_ "Delete"}}</span></button>
+			{{#if canDeleteRoom}}
+				<button class='button delete red'><span><i class='icon-trash'></i> {{_ "Delete"}}</span></button>
+			{{/if}}
+			<button class='button delete'><span>{{_ "Make_default"}}</span></button>
 		</nav>
-		{{/if}}
 	{{/unless}}
 </template>
