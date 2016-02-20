@@ -45,9 +45,17 @@ Template.adminRooms.onCreated ->
 		id: 'admin-room',
 		i18nTitle: 'Room_Info',
 		icon: 'octicon octicon-info',
-		template: 'adminRoomInfo',
+		template: 'channelSettings',
 		order: 1
 	});
+
+	RocketChat.ChannelSettings.addOption
+		id: 'make-default'
+		template: 'channelSettingsDefault'
+		data: ->
+			return Session.get('adminRoomsSelected')
+		validation: ->
+			return RocketChat.authz.hasAllPermission('view-room-administration')
 
 	@autorun ->
 		filter = instance.filter.get()
@@ -73,7 +81,7 @@ Template.adminRooms.onCreated ->
 		if types.length
 			query['t'] = { $in: types }
 
-		return ChatRoom.find(query, { limit: instance.limit?.get(), sort: { name: 1 } })
+		return ChatRoom.find(query, { limit: instance.limit?.get(), sort: { default: -1, name: 1 } })
 
 	@getSearchTypes = ->
 		return _.map $('[name=room-type]:checked'), (input) -> return $(input).val()
@@ -96,10 +104,11 @@ Template.adminRooms.events
 
 	'click .room-info': (e) ->
 		e.preventDefault()
-		# Session.set 'adminRoomsSelected', @_id
-		RocketChat.TabBar.setData @
-		RocketChat.TabBar.setTemplate('adminRoomInfo')
-		# RocketChat.TabBar.openFlex()
+
+		Session.set('adminRoomsSelected', { rid: @_id });
+
+		RocketChat.TabBar.setData { rid: @_id }
+		RocketChat.TabBar.setTemplate('channelSettings')
 
 	'click .load-more': (e, t) ->
 		e.preventDefault()

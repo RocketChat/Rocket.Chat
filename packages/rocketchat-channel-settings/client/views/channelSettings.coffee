@@ -10,19 +10,19 @@ Template.channelSettings.helpers
 	channelSettings: ->
 		return RocketChat.ChannelSettings.getOptions()
 	roomTypeDescription: ->
-		roomType = ChatRoom.findOne(@rid)?.t
+		roomType = ChatRoom.findOne(@rid, { fields: { t: 1 }})?.t
 		if roomType is 'c'
 			return t('Channel')
 		else if roomType is 'p'
 			return t('Private_Group')
 	roomName: ->
-		return ChatRoom.findOne(@rid)?.name
+		return ChatRoom.findOne(@rid, { fields: { name: 1 }})?.name
 	roomTopic: ->
-		return ChatRoom.findOne(@rid)?.topic
+		return ChatRoom.findOne(@rid, { fields: { topic: 1 }})?.topic
 	archivationState: ->
-		return ChatRoom.findOne(@rid)?.archived
+		return ChatRoom.findOne(@rid, { fields: { archived: 1 }})?.archived
 	archivationStateDescription: ->
-		archivationState = ChatRoom.findOne(@rid)?.archived
+		archivationState = ChatRoom.findOne(@rid, { fields: { archived: 1 }})?.archived
 		if archivationState is true
 			return t('Room_archivation_state_true')
 		else
