@@ -24,43 +24,34 @@
 					{{{_ "Showing_results" roomCount}}}
 				</div>
 				<div class="list">
-					{{#each rooms}}
-					<div class="room-info" data-id="{{_id}}">
-						<li>
-							<h3>{{name}}</h3>
-						</li>
-						<ul>
-							<li>{{_ "room_user_count" usernames.length}}</li>
-							<li>{{type}}</li>
-						</ul>
-					</div>
-					{{/each}}
+					<table>
+						<thead>
+							<tr>
+								<th width="30%">{{_ "Name"}}</th>
+								<th width="20%">{{_ "Qty_users"}}</th>
+								<th width="25%">{{_ "Type"}}</th>
+								<th width="25%">{{_ "Default"}}</th>
+							</tr>
+						</thead>
+						<tbody>
+							{{#each rooms}}
+							<tr class="room-info">
+								<td>{{name}}</td>
+								<td>{{usernames.length}}</td>
+								<td>{{type}}</td>
+								<td>{{default}}</td>
+							</tr>
+							{{/each}}
+						</tbody>
+					</table>
 					{{#if hasMore}}
-						<li class="load-more">
-							<button class="button secondary load-more {{isLoading}}">{{_ "Load_more"}}</button>
-						</li>
+						<button class="button secondary load-more {{isLoading}}">{{_ "Load_more"}}</button>
 					{{/if}}
 				</div>
 			{{/unless}}
 		</div>
 	</section>
 	<section class="flex-tab">
-		<div class="control">
-			<button class="more"><span class="arrow {{arrowPosition}}"></span></button>
-			<div class="info-tabs">
-				<a href="#adminRoomInfo" class="active"><i class="icon-cancel"></i></a>
-			</div>
-		</div>
-		{{#if flexOpened}}
-			<div class="content">
-				<div class="user-view">
-					<div id="adminRoomInfo" class="room-info-content">
-						{{#if roomData}}
-							{{> adminRoomInfo roomData}}
-						{{/if}}
-					</div>
-				</div>
-			</div>
-		{{/if}}
+		{{> Template.dynamic template=flexTemplate data=flexData}}
 	</section>
 </template>

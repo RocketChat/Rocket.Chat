@@ -28,12 +28,26 @@ Template.adminRooms.helpers
 	roomData: ->
 		return ChatRoom.findOne Session.get 'adminRoomsSelected'
 
+	flexTemplate: ->
+		return RocketChat.TabBar.getTemplate()
+	flexData: ->
+		return RocketChat.TabBar.getData()
+
 Template.adminRooms.onCreated ->
 	instance = @
 	@limit = new ReactiveVar 50
 	@filter = new ReactiveVar ''
 	@types = new ReactiveVar []
 	@ready = new ReactiveVar true
+
+	RocketChat.TabBar.addButton({
+		groups: ['adminrooms'],
+		id: 'admin-room',
+		i18nTitle: 'Room_Info',
+		icon: 'octicon octicon-info',
+		template: 'adminRoomInfo',
+		order: 1
+	});
 
 	@autorun ->
 		filter = instance.filter.get()
@@ -45,20 +59,20 @@ Template.adminRooms.onCreated ->
 	@rooms = ->
 		filter = _.trim instance.filter?.get()
 		types = instance.types?.get()
-		
+
 		unless _.isArray types
 			types = []
 
 		query = {}
-	
+
 		filter = _.trim filter
 		if filter
 			filterReg = new RegExp filter, "i"
 			query = { $or: [ { name: filterReg }, { t: 'd', usernames: filterReg } ] }
-		
+
 		if types.length
 			query['t'] = { $in: types }
-		
+
 		return ChatRoom.find(query, { limit: instance.limit?.get(), sort: { name: 1 } })
 
 	@getSearchTypes = ->
@@ -80,21 +94,12 @@ Template.adminRooms.events
 		e.preventDefault()
 		t.filter.set e.currentTarget.value
 
-	'click .flex-tab .more': ->
-		if RocketChat.TabBar.isFlexOpen()
-			RocketChat.TabBar.closeFlex()
-		else
-			RocketChat.TabBar.openFlex()
-
 	'click .room-info': (e) ->
 		e.preventDefault()
-		Session.set 'adminRoomsSelected', $(e.currentTarget).data('id')
-		RocketChat.TabBar.openFlex()
-
-	'click .room-info-tabs a': (e) ->
-		e.preventDefault()
-		$('.room-info-tabs a').removeClass 'active'
-		$(e.currentTarget).addClass 'active'
+		# Session.set 'adminRoomsSelected', @_id
+		RocketChat.TabBar.setData @
+		RocketChat.TabBar.setTemplate('adminRoomInfo')
+		# RocketChat.TabBar.openFlex()
 
 	'click .load-more': (e, t) ->
 		e.preventDefault()
