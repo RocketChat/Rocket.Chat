@@ -82,7 +82,7 @@ syncUserData = function syncUserData(user, ldapUser) {
 		logger.debug('setting', JSON.stringify(userData, null, 2));
 	}
 
-	if (user && user._id) {
+	if (user && user._id && RocketChat.settings.get('LDAP_Sync_User_Avatar') === true) {
 		const avatar = ldapUser.raw.thumbnailPhoto || ldapUser.raw.jpegPhoto;
 		if (avatar) {
 			logger.info('Syncing user avatar');
