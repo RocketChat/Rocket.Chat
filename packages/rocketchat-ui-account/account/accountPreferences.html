@@ -17,6 +17,7 @@
 								<div>
 									{{#if desktopNotificationEnabled}}
 										<label>{{_ "Desktop_Notifications_Enabled"}}</label>
+										<label><button class="button test-notifications"><i class="octicon octicon-comment"></i> <span>{{_ "Test_Desktop_Notifications"}}</span></button></label>
 									{{else}}
 										{{#if desktopNotificationDisabled}}
 											<label>{{_ "Desktop_Notifications_Disabled"}}</label>
@@ -68,8 +69,29 @@
 									<label><input type="radio" name="unreadRoomsMode" value="0" checked="{{checked 'unreadRoomsMode' false true}}" /> {{_ "False"}}</label>
 								</div>
 							</div>
+							<div class="input-line double-col" id="emailNotificationMode">
+								<label>{{_ "Email_Notification_Mode"}}</label>
+								<div>
+									<select class="input-monitor" name="emailNotificationMode">
+										<option value="disabled" selected="{{selected 'emailNotificationMode' 'disabled' false}}">{{_ "Email_Notification_Mode_Disabled"}}</option>
+										<option value="all" selected="{{selected 'emailNotificationMode' 'all' true}}">{{_ "Email_Notification_Mode_All"}}</option>
+									</select>
+								</div>
+							</div>
 						</div>
 					</div>
+                    <div class="section">
+                        <h1>{{_ "Highlights"}}</h1>
+                        <div class="section-content">
+                            <div class="input-line double-col">
+                                <label>{{_ "Highlights_List"}}</label>
+                                <div>
+                                    <label>{{_ "Highlights_How_To"}}</label>
+                                    <textarea name="highlights" id="highlights" cols="30" rows="10">{{highlights}}</textarea>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
 					<div class="section">
 						<h1>{{_ "Sound"}}</h1>
 						<div class="section-content">

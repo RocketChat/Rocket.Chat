@@ -46,12 +46,16 @@ this.processWebhookMessage = function(messageObj, user, defaultValues) {
 						username: channel
 					}
 				]
+			}) || {};
+			rid = [user._id, roomUser._id].sort().join('');
+			room = RocketChat.models.Rooms.findOne({
+				_id: {
+					$in: [rid, channel]
+				}
 			});
-			if (roomUser == null) {
+			if (roomUser == null && room == null) {
 				throw new Meteor.Error('invalid-channel');
 			}
-			rid = [user._id, roomUser._id].sort().join('');
-			room = RocketChat.models.Rooms.findOne(rid);
 			if (!room) {
 				Meteor.runAsUser(user._id, function() {
 					Meteor.call('createDirectMessage', roomUser.username);
@@ -67,7 +71,7 @@ this.processWebhookMessage = function(messageObj, user, defaultValues) {
 		alias: messageObj.username || messageObj.alias || defaultValues.alias,
 		msg: _.trim(messageObj.text || messageObj.msg || ''),
 		attachments: messageObj.attachments,
-		parseUrls: false,
+		parseUrls: messageObj.parseUrls || true,
 		bot: messageObj.bot,
 		groupable: false
 	};

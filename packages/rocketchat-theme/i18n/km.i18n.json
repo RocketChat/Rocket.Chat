@@ -1,6 +1,15 @@
 {
+  "theme-color-blockquote-background" : "ពណ៌ផ្ទៃខាងក្រោយនៃ Blockquote",
   "theme-color-code-background" : "កូដពណ៌ផ្ទៃខាងក្រោម",
   "theme-color-code-border" : "កូដពណ៌ជាយ",
   "theme-color-code-color" : "កូដពណ៌",
-  "theme-color-content-background-color" : "ពណ៌ផ្ទៃខាងក្រោយអត្ថបទ"
+  "theme-color-content-background-color" : "ពណ៌ផ្ទៃខាងក្រោយអត្ថបទ",
+  "theme-color-info-active-font-color" : "ពណ៌ពុម្ពអក្សររបស់ Active Info",
+  "theme-color-info-font-color" : "ពណ៌ពុម្ពអក្សររបស់ Info",
+  "theme-color-input-font-color" : "ពណ៌ពុម្ពអក្សរបញ្ចូល",
+  "theme-color-link-font-color" : "ពណ៌ពុម្ពអក្សរតំណភ្ជាប់",
+  "theme-color-status-away" : "ពណ៌ស្ថានភាពនៅឆ្ងាយ",
+  "theme-color-status-busy" : "ពណ៌ស្ថានភាពរវល់",
+  "theme-color-status-offline" : "ពណ៌ស្ថានភាពក្រៅបណ្តាញ",
+  "theme-color-status-online" : "ពណ៌ស្ថានភាពលើបណ្តាញ"
 }

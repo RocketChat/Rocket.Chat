@@ -15,8 +15,14 @@ Template.accountProfile.helpers
 	username: ->
 		return Meteor.user().username
 
+	email: ->
+		return Meteor.user().emails?[0]?.address
+
 	allowUsernameChange: ->
-		return RocketChat.settings.get("Accounts_AllowUsernameChange")
+		return RocketChat.settings.get("Accounts_AllowUsernameChange") and RocketChat.settings.get("LDAP_Enable") isnt true
+
+	allowEmailChange: ->
+		return RocketChat.settings.get("Accounts_AllowEmailChange")
 
 	usernameChangeDisabled: ->
 		return t('Username_Change_Disabled')
@@ -84,6 +90,14 @@ Template.accountProfile.onCreated ->
 				else
 					data.username = _.trim $('#username').val()
 
+			if _.trim $('#email').val()
+				if !RocketChat.settings.get("Accounts_AllowEmailChange")
+					toastr.error t('Email_Change_Disabled')
+					instance.clearForm()
+					return
+				else
+					data.email = _.trim $('#email').val()
+
 			Meteor.call 'saveUserProfile', data, (error, results) ->
 				if results
 					toastr.success t('Profile_saved_successfully')
@@ -107,7 +121,7 @@ Template.accountProfile.events
 	'click .submit button': (e, t) ->
 		t.save()
 	'click .logoutOthers button': (event, templateInstance) ->
-		Meteor.logoutOtherClients (error) -> 
+		Meteor.logoutOtherClients (error) ->
 			if error
 				toastr.error error.reason
 			else

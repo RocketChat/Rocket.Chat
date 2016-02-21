@@ -131,12 +131,6 @@ Template.room.helpers
 			return {username: username, status: status}
 		return
 
-	seeAll: ->
-		if Template.instance().showUsersOffline.get()
-			return t('See_only_online')
-		else
-			return t('See_all')
-
 	getPopupConfig: ->
 		template = Template.instance()
 		return {
@@ -167,7 +161,7 @@ Template.room.helpers
 
 	canRecordAudio: ->
 		wavRegex = /audio\/wav|audio\/\*/i
-		wavEnabled = RocketChat.settings.get("FileUpload_MediaTypeWhiteList").match(wavRegex)
+		wavEnabled = !RocketChat.settings.get("FileUpload_MediaTypeWhiteList") || RocketChat.settings.get("FileUpload_MediaTypeWhiteList").match(wavRegex)
 		return RocketChat.settings.get('Message_AudioRecorderEnabled') and (navigator.getUserMedia? or navigator.webkitGetUserMedia?) and wavEnabled and RocketChat.settings.get('FileUpload_Enabled')
 
 	unreadSince: ->
@@ -279,7 +273,7 @@ Template.room.events
 	'click .toggle-favorite': (event) ->
 		event.stopPropagation()
 		event.preventDefault()
-		Meteor.call 'toogleFavorite', @_id, !$('i', event.currentTarget).hasClass('favorite-room')
+		Meteor.call 'toggleFavorite', @_id, !$('i', event.currentTarget).hasClass('favorite-room')
 
 	'click .edit-room-title': (event) ->
 		event.preventDefault()
@@ -316,9 +310,6 @@ Template.room.events
 	'click .new-message': (e) ->
 		Template.instance().atBottom = true
 		Template.instance().find('.input-message').focus()
-
-	'click .see-all': (e, instance) ->
-		instance.showUsersOffline.set(!instance.showUsersOffline.get())
 
 	'click .message-cog': (e) ->
 		message = @_arguments[1]

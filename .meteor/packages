@@ -43,6 +43,7 @@ rocketchat:authorization
 rocketchat:autolinker
 rocketchat:channel-settings
 rocketchat:channel-settings-mail-messages
+rocketchat:cas
 rocketchat:colors
 rocketchat:custom-oauth
 rocketchat:emojione
@@ -51,6 +52,9 @@ rocketchat:file
 rocketchat:github-enterprise
 rocketchat:gitlab
 rocketchat:highlight
+rocketchat:importer
+rocketchat:importer-hipchat
+rocketchat:importer-slack
 rocketchat:ldap
 rocketchat:livechat
 rocketchat:logger
@@ -61,7 +65,9 @@ rocketchat:mentions
 rocketchat:mentions-flextab
 rocketchat:message-pin
 rocketchat:message-star
+rocketchat:migrations
 rocketchat:oembed
+rocketchat:push-notifications
 rocketchat:slashcommands-invite
 rocketchat:slashcommands-join
 rocketchat:slashcommands-kick
@@ -114,7 +120,6 @@ nooitaf:colors
 ostrio:cookies@2.0.1
 pauli:accounts-linkedin
 perak:codemirror
-percolate:migrations
 percolate:synced-cron
 raix:handlebar-helpers
 raix:push
@@ -133,3 +138,4 @@ rocketchat:assets
 rocketchat:integrations
 rocketchat:message-attachments
 rocketchat:api
+rocketchat:highlight-words

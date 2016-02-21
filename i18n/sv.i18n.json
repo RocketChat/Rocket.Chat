@@ -185,7 +185,7 @@
   "Send_Message" : "Skicka meddelande",
   "Settings" : "Inställningar",
   "Settings_updated" : "Inställningar uppdaterade",
-  "Showing_online_users" : "Visar <b>__total_online__</b> av __total__ users",
+  "Showing_online_users" : "Visar <b>__total_showing__</b> av __total__ users",
   "Showing_results" : "<p>Visar <b>%s</b> resultat</p>",
   "Silence" : "Tystnad",
   "since_creation" : "sedan %s",

@@ -103,11 +103,7 @@ class WebRTCTransportClass
 
 class WebRTCClass
 	config:
-		iceServers: [
-			{urls: "stun:stun.l.google.com:19302"}
-			{urls: "stun:23.21.150.121"}
-			{urls: "turn:numb.viagenie.ca:3478", username: "team@rocket.chat", credential: "demo"}
-		]
+		iceServers: []
 
 	debug: false
 
@@ -119,6 +115,24 @@ class WebRTCClass
 		@param room {String}
 	###
 	constructor: (@selfId, @room) ->
+		@config.iceServers = []
+
+		servers = RocketChat.settings.get("WebRTC_Servers")
+		if servers?.trim() isnt ''
+			servers = servers.replace /\s/g, ''
+			servers = servers.split ','
+			for server in servers
+				server = server.split '@'
+				serverConfig =
+					urls: server.pop()
+
+				if server.length is 1
+					server = server[0].split ':'
+					serverConfig.username = decodeURIComponent(server[0])
+					serverConfig.credential = decodeURIComponent(server[1])
+
+				@config.iceServers.push serverConfig
+
 		@peerConnections = {}
 
 		@remoteItems = new ReactiveVar []
@@ -159,7 +173,7 @@ class WebRTCClass
 
 		Meteor.setInterval @checkPeerConnections.bind(@), 1000
 
-		Meteor.setInterval @broadcastStatus.bind(@), 1000
+		# Meteor.setInterval @broadcastStatus.bind(@), 1000
 
 	log: ->
 		if @debug is true

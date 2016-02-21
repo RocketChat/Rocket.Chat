@@ -12,17 +12,21 @@ Package.onUse(function(api) {
 	api.use('reactive-var');
 	api.use('reactive-dict');
 	api.use('coffeescript');
+	api.use('ecmascript');
 	api.use('random');
 	api.use('check');
 	api.use('tracker');
 	api.use('ddp-rate-limiter');
 	api.use('underscore');
+	api.use('mongo');
 	api.use('underscorestring:underscore.string');
 	api.use('monbro:mongodb-mapreduce-aggregation@1.0.1');
+	api.use('matb33:collection-hooks');
 	api.use('service-configuration');
 	api.use('check');
 	api.use('arunoda:streams');
 	api.use('rocketchat:version');
+	api.use('rocketchat:logger');
 	api.use('kadira:flow-router', 'client');
 
 	api.addFiles('lib/core.coffee');
@@ -32,6 +36,7 @@ Package.onUse(function(api) {
 
 	// COMMON LIB
 	api.addFiles('lib/settings.coffee');
+	api.addFiles('lib/configLogger.coffee');
 	api.addFiles('lib/callbacks.coffee');
 	api.addFiles('lib/slashCommand.coffee');
 	api.addFiles('lib/Message.coffee');
@@ -40,6 +45,9 @@ Package.onUse(function(api) {
 	// SERVER LIB
 	api.addFiles('server/lib/RateLimiter.coffee', 'server');
 	api.addFiles('server/lib/roomTypes.coffee', 'server');
+	api.addFiles('server/lib/sendNotificationsOnMessage.js', 'server');
+	api.addFiles('server/lib/notifyUsersOnMessage.js', 'server');
+	api.addFiles('server/lib/sendEmailOnMessage.js', 'server');
 
 	// SERVER MODELS
 	api.addFiles('server/models/_Base.coffee', 'server');
@@ -48,6 +56,7 @@ Package.onUse(function(api) {
 	api.addFiles('server/models/Rooms.coffee', 'server');
 	api.addFiles('server/models/Settings.coffee', 'server');
 	api.addFiles('server/models/Subscriptions.coffee', 'server');
+	api.addFiles('server/models/Uploads.coffee', 'server');
 	api.addFiles('server/models/Users.coffee', 'server');
 
 	// SERVER PUBLICATIONS
@@ -55,14 +64,17 @@ Package.onUse(function(api) {
 
 	// SERVER FUNCTIONS
 	api.addFiles('server/functions/checkUsernameAvailability.coffee', 'server');
+	api.addFiles('server/functions/checkEmailAvailability.js', 'server');
 	api.addFiles('server/functions/sendMessage.coffee', 'server');
 	api.addFiles('server/functions/settings.coffee', 'server');
 	api.addFiles('server/functions/setUsername.coffee', 'server');
+	api.addFiles('server/functions/setEmail.js', 'server');
 	api.addFiles('server/functions/Notifications.coffee', 'server');
 
 	// SERVER METHODS
 	api.addFiles('server/methods/addOAuthService.coffee', 'server');
 	api.addFiles('server/methods/checkRegistrationSecretURL.coffee', 'server');
+	api.addFiles('server/methods/clearRequirePasswordChange.js', 'server');
 	api.addFiles('server/methods/joinDefaultChannels.coffee', 'server');
 	api.addFiles('server/methods/removeOAuthService.coffee', 'server');
 	api.addFiles('server/methods/robotMethods.coffee', 'server');
@@ -73,7 +85,8 @@ Package.onUse(function(api) {
 	api.addFiles('server/methods/setAdminStatus.coffee', 'server');
 	api.addFiles('server/methods/setRealName.coffee', 'server');
 	api.addFiles('server/methods/setUsername.coffee', 'server');
-	api.addFiles('server/methods/updateUser.coffee', 'server');
+	api.addFiles('server/methods/insertOrUpdateUser.coffee', 'server');
+	api.addFiles('server/methods/setEmail.js', 'server');
 	api.addFiles('server/methods/restartServer.coffee', 'server');
 
 	// SERVER STARTUP
@@ -99,6 +112,10 @@ Package.onUse(function(api) {
 	api.addFiles('client/MessageAction.coffee', 'client');
 
 	api.addFiles('client/defaultTabBars.js', 'client');
+
+	// CLIENT MODELS
+	api.addFiles('client/models/_Base.coffee', 'client');
+	api.addFiles('client/models/Uploads.coffee', 'client');
 
 	// VERSION
 	api.addFiles('rocketchat.info');

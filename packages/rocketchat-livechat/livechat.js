@@ -2,7 +2,7 @@ WebApp = Package.webapp.WebApp;
 Autoupdate = Package.autoupdate.Autoupdate;
 
 WebApp.connectHandlers.use('/livechat/', (req, res, next) => {
-	res.setHeader('content-type', 'html');
+	res.setHeader('content-type', 'text/html; charset=utf-8');
 
 	head = Assets.getText('public/head.html');
 

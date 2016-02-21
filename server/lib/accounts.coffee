@@ -1,9 +1,10 @@
 # Deny Account.createUser in client and set Meteor.loginTokenExpires
 accountsConfig = { forbidClientAccountCreation: true, loginExpirationInDays: RocketChat.settings.get 'Accounts_LoginExpiration' }
+Accounts.config accountsConfig
 
-if RocketChat.settings.get('Accounts_AllowedDomainsList')
-	domainWhiteList = _.map RocketChat.settings.get('Accounts_AllowedDomainsList').split(','), (domain) -> domain.trim()
-	accountsConfig.restrictCreationByEmailDomain = (email) ->
+RocketChat.settings.get 'Accounts_AllowedDomainsList', (_id, value) ->
+	domainWhiteList = _.map value.split(','), (domain) -> domain.trim()
+	restrictCreationByEmailDomain = (email) ->
 		ret = false
 		for domain in domainWhiteList
 			if email.match(domain + '$')
@@ -11,8 +12,10 @@ if RocketChat.settings.get('Accounts_AllowedDomainsList')
 				break;
 
 		return ret
+	delete Accounts._options['restrictCreationByEmailDomain']
 
-Accounts.config accountsConfig
+	if not _.isEmpty value
+		Accounts.config({ restrictCreationByEmailDomain: restrictCreationByEmailDomain });
 
 Accounts.emailTemplates.siteName = RocketChat.settings.get 'Site_Name';
 Accounts.emailTemplates.from = "#{RocketChat.settings.get 'Site_Name'} <#{RocketChat.settings.get 'From_Email'}>";

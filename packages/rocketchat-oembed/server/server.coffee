@@ -103,7 +103,7 @@ OEmbed.getUrlMeta = (url, withFragment) ->
 
 	if content?.body?
 		metas = {}
-		content.body.replace /<title>(.+)<\/title>/gmi, (meta, title) ->
+		content.body.replace /<title>((.|\n)+?)<\/title>/gmi, (meta, title) ->
 			metas.pageTitle = title
 
 		content.body.replace /<meta[^>]*(?:name|property)=[']([^']*)['][^>]*content=[']([^']*)['][^>]*>/gmi, (meta, name, value) ->

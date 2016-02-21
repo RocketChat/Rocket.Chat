@@ -1,11 +1,12 @@
 {
+  "From_email_warning" : "<b>ព្រមាន៖</b>ចន្លោះ<b>FROM</b> គឺជាចំណងជើងទៅម៉ាស៊ីនមេអ៊ីមែលរបស់អ្នកកំណត់។",
   "From_email_is_required" : "From អ៊ីមែលគឺត្រូវបំពេញ",
   "Email_from" : "ពី",
   "Email_subject" : "ប្រធានបទ",
   "Email_body" : "រាងកាយអ៊ីមែល",
   "Send_email" : "ផ្ញើ​រ​អ៊ី​ម៉ែ​ល",
   "The_emails_are_being_sent" : "នេះ​អ៊ីមែល​ត្រូវ​បាន​បញ្ជូន​។",
-  "You_are_not_authorized_to_view_this_page" : "អ្នក​មិន​ត្រូវ​បាន​អនុញ្ញាត​ឱ្យ​មើល​ទំព័រ​នេះ​។",
   "You_have_successfully_unsubscribed" : "អ្នក​បាន unsubscribed ដោយ​ជោគជ័យ​ពី​បញ្ជី Mailling របស់​យើង​។",
+  "You_informed_an_invalid_FROM_address" : "អ្នកបានបំពេញមិនត្រឹមត្រូវក្នុងចន្លោះ FROM អាស័យដ្ឋាន",
   "You_must_provide_the_unsubscribe_link" : "អ្នកត្រូវតែផ្ដល់តំណភ្ជាប់ [unsubscribe] ។"
 }

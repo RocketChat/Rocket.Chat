@@ -82,8 +82,6 @@ configurePush = ->
 			sendBatchSize: 10
 
 		if RocketChat.settings.get('Push_enable_gateway') is true
-			pushGetway = undefined
-
 			Push.serverSend = (options) ->
 				options = options or { badge: 0 }
 				query = undefined
@@ -116,12 +114,16 @@ configurePush = ->
 						console.log('send to token', app.token)
 
 					if app.token.apn?
-						pushGetway.call 'sendPushNotification', 'apn', app.token.apn, options
-
+						service = 'apn'
+						token = app.token.apn
 					else if app.token.gcm?
-						pushGetway.call 'sendPushNotification', 'gcm', app.token.gcm, options
+						service = 'gcm'
+						token = app.token.gcm
 
-			pushGetway = DDP.connect(RocketChat.settings.get('Push_gateway'), {_dontPrintErrors: false})
+					HTTP.post RocketChat.settings.get('Push_gateway') + "/push/#{service}/send",
+						data:
+							token: token
+							options: options
 
 		Push.enabled = true
 

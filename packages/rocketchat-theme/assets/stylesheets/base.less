@@ -27,6 +27,13 @@
 	user-select: text;
 }
 
+.page-settings, .page-settings * {
+	-webkit-user-select: text;
+	-moz-user-select: text;
+	-ms-user-select: text;
+	user-select: text;
+}
+
 :focus {
 	outline: 0 !important;
 	outline-color: transparent;
@@ -46,7 +53,7 @@ code {
 	border: 1px solid;
 	display: block;
 	font-size: 13px;
-	font-weight: bold;
+	font-weight: 600;
 	margin: 5px 0;
 	padding: 0.5em;
 	vertical-align: middle;
@@ -55,12 +62,13 @@ code {
 	white-space: pre-wrap;
 	unicode-bidi: embed;
 	direction: ltr;
+	font-family: "Source Code Pro", Monaco, monospace, Courier, "Lucida Console";
 	&.inline {
 		display: inline;
 		padding: 0 0.5em;
 		margin: 0 0.1em;
 		line-height: 16px;
-		font-family: monospace;
+		font-family: "Source Code Pro", Monaco, monospace, Courier, "Lucida Console";
 	}
 }
 
@@ -261,6 +269,23 @@ blockquote {
 		margin-top: 20px;
 		text-align: right;
 	}
+
+	&.request-password {
+		margin: 0 auto;
+
+		fieldset {
+			margin-top: 20px;
+
+			label {
+				display: block;
+				margin-top: 20px;
+			}
+		}
+
+		.submit {
+			text-align: center;
+		}
+	}
 }
 
 .input-line {
@@ -307,7 +332,7 @@ blockquote {
 			top: 10px;
 		}
 		input {
-			padding-left: 20px;
+			padding-left: 30px;
 		}
 	}
 	> label {
@@ -475,7 +500,9 @@ form.inline {
 	}
 }
 
+input[readonly],
 input[disabled],
+textarea[readonly],
 textarea[disabled] {
 	background-color: #f4f4f4 !important;
 }
@@ -1829,6 +1856,7 @@ a.github-fork {
 				.settings-description {
 					color: #888;
 					padding: 5px;
+					line-height: 20px;
 				}
 
 				.settings-alert {
@@ -2742,7 +2770,7 @@ a.github-fork {
 
 		&:hover {
 			.time {
-				display: inline-block;
+				// display: inline-block;
 			}
 			.edited {
 				display: none;
@@ -3045,7 +3073,17 @@ a.github-fork {
 		.see-all {
 			float: right;
 			border: none;
+			text-decoration: underline;
+			cursor: pointer;
+			&:hover {
+				text-decoration: none;
+			}
 		}
+
+	}
+	.show-more-users {
+		margin: 1em auto 0 auto;
+		display: block;
 	}
 	&.uploaded-files-list {
 		a {
@@ -3062,6 +3100,15 @@ a.github-fork {
 			float: left;
 			color: #444;
 			margin-right: 10px;
+
+			&.file-delete {
+				float: right;
+				padding-top: 10px;
+				&:hover {
+					color: red;
+					cursor: pointer;
+				}
+			}
 		}
 	}
 }
@@ -3835,6 +3882,10 @@ a.github-fork {
 	}
 }
 
+.highlight-text {
+  background: #F1DD7A none repeat scroll 0% 0%;
+}
+
 .avatar-suggestions {
 	display: flex;
 	flex-flow: column nowrap;
@@ -3901,18 +3952,26 @@ a.github-fork {
 }
 
 .statistics-table {
-	border: 1px solid;
-	width:100%;
+	margin-bottom: 30px;
+	border: 2px solid #F5F5F5;
+	width: 100%;
 	tr {
-		background-color:#FFFFFF;
+		background-color: #FFFFFF;
 
 		&:nth-of-type(even) {
-			background-color:#FBFBFB;
+			background-color: #F5F5F5;
 		}
 	}
 	th, td {
 		text-align: left;
-		padding: 3px 10px;
+		padding: 6px 8px;
+	}
+	th {
+		text-align: right;
+		width: 30%;
+	}
+	td {
+		width: 70%;
 	}
 }
 
@@ -4299,7 +4358,6 @@ a.github-fork {
 }
 
 .attention-message {
-	color: white;
 	padding-top: 50px;
 	font-size: 24px;
 
@@ -4307,6 +4365,10 @@ a.github-fork {
 		display: block;
 		margin-bottom: 20px;
 		font-size: 40px;
+	}
+
+	span {
+		display: block;
 	}
 }
 
@@ -4357,4 +4419,43 @@ a.github-fork {
 			}
 		}
 	}
+}
+
+.terminal {
+	background-color: #000 !important;
+	color: #fff;
+	position: absolute;
+	top: 0px;
+	bottom: 0px;
+	margin: 0;
+	right: 0;
+	left: 0;
+	overflow-y: scroll;
+	border: none !important;
+	padding: 8px 10px !important;
+	font-family: "Source Code Pro", Monaco, monospace, Courier, "Lucida Console";
+	font-weight: 500;
+	-webkit-user-select: text;
+	-moz-user-select: text;
+	-ms-user-select: text;
+	user-select: text;
+
+	* {
+		-webkit-user-select: text;
+		-moz-user-select: text;
+		-ms-user-select: text;
+		user-select: text;
+	}
+
+	> div {
+		word-break: break-all;
+
+		.time {
+			color: #666;
+		}
+	}
+}
+
+.powered-by {
+	margin-top: 1em;
 }

@@ -124,12 +124,25 @@ RocketChat.models.Users = new class extends RocketChat.models._Base
 
 		return @find query, options
 
+	findLDAPUsers: (options) ->
+		query =
+			ldap: true
+
+		return @find query, options
+
 	getLastLogin: (options = {}) ->
 		query = { lastLogin: { $exists: 1 } }
 		options.sort = { lastLogin: -1 }
 		options.limit = 1
 
 		return @find(query, options)?.fetch?()?[0]?.lastLogin
+
+	findUsersByUsernames: (usernames, options) ->
+		query =
+			username:
+				$in: usernames
+
+		return @find query, options
 
 	# UPDATE
 	updateLastLoginById: (_id) ->
@@ -151,6 +164,14 @@ RocketChat.models.Users = new class extends RocketChat.models._Base
 	setUsername: (_id, username) ->
 		update =
 			$set: username: username
+
+		return @update _id, update
+
+	setEmail: (_id, email) ->
+		update =
+			$set:
+				'emails.0.address': email
+				'emails.0.verified': false
 
 		return @update _id, update
 
@@ -193,6 +214,13 @@ RocketChat.models.Users = new class extends RocketChat.models._Base
 		update =
 			$set:
 				"services.resume.loginTokens" : []
+
+		return @update _id, update
+
+	unsetRequirePasswordChange: (_id) ->
+		update =
+			$unset:
+				"requirePasswordChange" : true
 
 		return @update _id, update
 
@@ -253,3 +281,21 @@ RocketChat.models.Users = new class extends RocketChat.models._Base
 					verified: false
 
 		return @remove query
+
+	###
+	Find users to send a message by email if:
+	- he is not online
+	- has a verified email
+	- has not disabled email notifications
+	###
+	getUsersToSendOfflineEmail: (usersIds) ->
+		query =
+			_id:
+				$in: usersIds
+			status: 'offline'
+			statusConnection:
+				$ne: 'online'
+			'emails.verified': true
+
+		return @find query, { fields: { name: 1, username: 1, emails: 1, 'settings.preferences.emailNotificationMode': 1 } }
+
