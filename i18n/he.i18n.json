@@ -257,6 +257,7 @@
   "The_channel_name_is_required" : "שם הערוץ נדרש",
   "The_field_is_required" : "השדה %s הוא חובה.",
   "The_server_will_restart_in_s_seconds" : "השרת יפעיל את עצמו מחדש בעוד ",
+  "Type" : "סוג",
   "Upload_file_question" : "להעלות קובץ?",
   "Use_Emojis" : "שימוש באימוג׳י",
   "Use_initials_avatar" : "שימוש בראשי התיבות של שם המשתמש שלך",
