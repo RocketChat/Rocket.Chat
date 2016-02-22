@@ -1,6 +1,7 @@
 ## NEXT
 
 - Re authorize streams on reconnect
+- Don't automatically parse URLs in incoming webhooks message body if an attachment is also present
 
 ## 0.18.0, 2016-Feb-15
 
