@@ -1,9 +1,5 @@
 {
   "WebRTC_Enable_Channel" : "Toestaan voor openbare kanalen",
   "WebRTC_Enable_Direct" : "Toestaan directe berichten",
-  "WebRTC_Enable_Private" : "Toestaan voor privé-berichten",
-  "WebRTC_STUN_Server" : "STUN Server",
-  "WebRTC_TURN_Server" : "TURN Server",
-  "WebRTC_TURN_Username" : "TURN Server Gebruikersnaam",
-  "WebRTC_TURN_Password" : "TURN Server Paswoord"
+  "WebRTC_Enable_Private" : "Toestaan voor privé-berichten"
 }
