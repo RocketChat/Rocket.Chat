@@ -61,6 +61,12 @@ Template.loginForm.helpers
 	passwordresetAllowed: ->
 		return RocketChat.settings.get 'Accounts_PasswordReset'
 
+	emailOrUsernamePlaceholder: ->
+		return RocketChat.settings.get('Accounts_EmailOrUsernamePlaceholder') or t("Email_or_username")
+
+	passwordPlaceholder: ->
+		return RocketChat.settings.get('Accounts_PasswordPlaceholder') or t("Password")
+
 Template.loginForm.events
 	'submit #login-card': (event, instance) ->
 		event.preventDefault()
