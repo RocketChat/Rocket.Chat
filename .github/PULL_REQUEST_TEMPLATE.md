@@ -1,1 +1,1 @@
-Closes Issue #.
+Closes #(insert issue number)
