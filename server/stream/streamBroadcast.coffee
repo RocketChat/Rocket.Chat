@@ -1,6 +1,19 @@
+logger = new Logger 'StreamBroadcast',
+	sections:
+		connection: 'Connection'
+		auth: 'Auth'
+		stream: 'Stream'
+
+
+authorizeConnection = (connection, record) ->
+	logger.auth.info "Authorizing with localhost:#{record.extraInformation.port}"
+	connection.call 'broadcastAuth', record._id, InstanceStatus.id(), (err, ok) ->
+		connection.broadcastAuth = ok
+		logger.auth.info "broadcastAuth with localhost:#{record.extraInformation.port}", ok
+
 @connections = {}
 @startStreamBroadcast = (streams) ->
-	console.log 'startStreamBroadcast'
+	logger.info 'startStreamBroadcast'
 
 	# connections = {}
 
@@ -9,15 +22,15 @@
 			if record.extraInformation.port is process.env.PORT or connections[record.extraInformation.port]?
 				return
 
-			console.log 'connecting in', "localhost:#{record.extraInformation.port}"
+			logger.connection.info 'connecting in', "localhost:#{record.extraInformation.port}"
 			connections[record.extraInformation.port] = DDP.connect("localhost:#{record.extraInformation.port}", {_dontPrintErrors: true})
-			connections[record.extraInformation.port].call 'broadcastAuth', record._id, InstanceStatus.id(), (err, ok) ->
-				connections[record.extraInformation.port].broadcastAuth = ok
-				console.log "broadcastAuth with localhost:#{record.extraInformation.port}", ok
+			authorizeConnection(connections[record.extraInformation.port], record);
+			connections[record.extraInformation.port].onReconnect = ->
+				authorizeConnection(connections[record.extraInformation.port], record);
 
 		removed: (record) ->
 			if connections[record.extraInformation.port]? and not InstanceStatus.getCollection().findOne({'extraInformation.port': record.extraInformation.port})?
-				console.log 'disconnecting from', "localhost:#{record.extraInformation.port}"
+				logger.connection.info 'disconnecting from', "localhost:#{record.extraInformation.port}"
 				connections[record.extraInformation.port].disconnect()
 				delete connections[record.extraInformation.port]
 
@@ -27,26 +40,26 @@
 				if connection.status().connected is true
 					connection.call 'stream', streamName, args, (error, response) ->
 						if error?
-							console.log "Stream broadcast error", error
+							logger.error "Stream broadcast error", error
 
 						switch response
 							when 'self-not-authorized'
-								console.log "Stream broadcast from:#{process.env.PORT} to:#{connection._stream.endpoint} with name #{streamName} to self is not authorized".red
-								console.log "    -> connection authorized".red, connection.broadcastAuth
-								console.log "    -> connection status".red, connection.status()
-								console.log "    -> arguments".red, args
+								logger.stream.error "Stream broadcast from:#{process.env.PORT} to:#{connection._stream.endpoint} with name #{streamName} to self is not authorized".red
+								logger.stream.debug "    -> connection authorized".red, connection.broadcastAuth
+								logger.stream.debug "    -> connection status".red, connection.status()
+								logger.stream.debug "    -> arguments".red, args
 
 							when 'not-authorized'
-								console.log "Stream broadcast from:#{process.env.PORT} to:#{connection._stream.endpoint} with name #{streamName} not authorized".red
-								console.log "    -> connection authorized".red, connection.broadcastAuth
-								console.log "    -> connection status".red, connection.status()
-								console.log "    -> arguments".red, args
+								logger.stream.error "Stream broadcast from:#{process.env.PORT} to:#{connection._stream.endpoint} with name #{streamName} not authorized".red
+								logger.stream.debug "    -> connection authorized".red, connection.broadcastAuth
+								logger.stream.debug "    -> connection status".red, connection.status()
+								logger.stream.debug "    -> arguments".red, args
 
 							when 'stream-not-exists'
-								console.log "Stream broadcast from:#{process.env.PORT} to:#{connection._stream.endpoint} with name #{streamName} does not exists".red
-								console.log "    -> connection authorized".red, connection.broadcastAuth
-								console.log "    -> connection status".red, connection.status()
-								console.log "    -> arguments".red, args
+								logger.stream.error "Stream broadcast from:#{process.env.PORT} to:#{connection._stream.endpoint} with name #{streamName} does not exists".red
+								logger.stream.debug "    -> connection authorized".red, connection.broadcastAuth
+								logger.stream.debug "    -> connection status".red, connection.status()
+								logger.stream.debug "    -> arguments".red, args
 
 
 	Meteor.methods
