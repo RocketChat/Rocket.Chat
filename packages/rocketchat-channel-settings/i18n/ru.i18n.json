@@ -4,7 +4,6 @@
   "Private_Group" : "Приватный чат",
   "Save" : "Сохранить",
   "Topic" : "Тема",
-  "Type" : "Тип",
   "room_changed_privacy" : "Тип чата изменен на: <em>__room_type__</em> by <em>__user_by__</em>",
   "room_changed_topic" : "Тема чата сменена <em>__user_by__</em> на: <em>__room_topic__</em>",
   "Room_topic_changed_successfully" : "Тема чата успешно изменена",
