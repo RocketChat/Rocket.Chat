@@ -129,12 +129,12 @@ Meteor.startup ->
 			RocketChat.models.Permissions.upsert( permission._id, {$set: permission })
 
 	defaultRoles = [
-		{ name: 'admin', scope: 'Users' }
-		{ name: 'moderator', scope: 'Subscriptions' }
-		{ name: 'owner', scope: 'Subscriptions' }
-		{ name: 'user', scope: 'Users' }
-		{ name: 'bot', scope: 'Users' }
+		{ name: 'admin', scope: 'Users', description: 'Rocket.Chat admins' }
+		{ name: 'moderator', scope: 'Subscriptions', description: 'Room moderators' }
+		{ name: 'owner', scope: 'Subscriptions', description: 'Room owners' }
+		{ name: 'user', scope: 'Users', description: 'Users' }
+		{ name: 'bot', scope: 'Users', description: 'Bots' }
 	]
 
 	for role in defaultRoles
-		RocketChat.models.Roles.createOrUpdate role.name, role.scope
+		RocketChat.models.Roles.createOrUpdate role.name, role.scope, role.description, true
