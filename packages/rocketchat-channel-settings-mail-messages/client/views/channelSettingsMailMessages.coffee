@@ -1,3 +1,7 @@
+Template.channelSettingsMailMessages.helpers
+	canSendEmail: ->
+		return FlowRouter.getRouteName() isnt 'admin-rooms'
+
 Template.channelSettingsMailMessages.events
 	'click button.mail-messages': (e, t) ->
 		Session.set 'channelSettingsMailMessages', Session.get('openedRoom')

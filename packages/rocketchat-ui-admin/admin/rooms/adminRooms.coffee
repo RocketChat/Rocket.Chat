@@ -25,8 +25,17 @@ Template.adminRooms.helpers
 			return TAPi18n.__ 'Direct Message'
 		if @t is 'p'
 			return TAPi18n.__ 'Private Group'
-	roomData: ->
-		return ChatRoom.findOne Session.get 'adminRoomsSelected'
+
+	flexTemplate: ->
+		return RocketChat.TabBar.getTemplate()
+	flexData: ->
+		return RocketChat.TabBar.getData()
+
+	default: ->
+		if this.default
+			return t('True')
+		else
+			return t('False')
 
 Template.adminRooms.onCreated ->
 	instance = @
@@ -34,6 +43,23 @@ Template.adminRooms.onCreated ->
 	@filter = new ReactiveVar ''
 	@types = new ReactiveVar []
 	@ready = new ReactiveVar true
+
+	RocketChat.TabBar.addButton({
+		groups: ['adminrooms'],
+		id: 'admin-room',
+		i18nTitle: 'Room_Info',
+		icon: 'octicon octicon-info',
+		template: 'adminRoomInfo',
+		order: 1
+	});
+
+	RocketChat.ChannelSettings.addOption
+		id: 'make-default'
+		template: 'channelSettingsDefault'
+		data: ->
+			return Session.get('adminRoomsSelected')
+		validation: ->
+			return RocketChat.authz.hasAllPermission('view-room-administration')
 
 	@autorun ->
 		filter = instance.filter.get()
@@ -45,21 +71,21 @@ Template.adminRooms.onCreated ->
 	@rooms = ->
 		filter = _.trim instance.filter?.get()
 		types = instance.types?.get()
-		
+
 		unless _.isArray types
 			types = []
 
 		query = {}
-	
+
 		filter = _.trim filter
 		if filter
 			filterReg = new RegExp filter, "i"
 			query = { $or: [ { name: filterReg }, { t: 'd', usernames: filterReg } ] }
-		
+
 		if types.length
 			query['t'] = { $in: types }
-		
-		return ChatRoom.find(query, { limit: instance.limit?.get(), sort: { name: 1 } })
+
+		return ChatRoom.find(query, { limit: instance.limit?.get(), sort: { default: -1, name: 1 } })
 
 	@getSearchTypes = ->
 		return _.map $('[name=room-type]:checked'), (input) -> return $(input).val()
@@ -80,21 +106,12 @@ Template.adminRooms.events
 		e.preventDefault()
 		t.filter.set e.currentTarget.value
 
-	'click .flex-tab .more': ->
-		if RocketChat.TabBar.isFlexOpen()
-			RocketChat.TabBar.closeFlex()
-		else
-			RocketChat.TabBar.openFlex()
-
 	'click .room-info': (e) ->
 		e.preventDefault()
-		Session.set 'adminRoomsSelected', $(e.currentTarget).data('id')
-		RocketChat.TabBar.openFlex()
 
-	'click .room-info-tabs a': (e) ->
-		e.preventDefault()
-		$('.room-info-tabs a').removeClass 'active'
-		$(e.currentTarget).addClass 'active'
+		Session.set('adminRoomsSelected', { rid: @_id });
+
+		RocketChat.TabBar.setTemplate('adminRoomInfo')
 
 	'click .load-more': (e, t) ->
 		e.preventDefault()
