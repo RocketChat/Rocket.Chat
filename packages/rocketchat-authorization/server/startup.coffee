@@ -125,7 +125,8 @@ Meteor.startup ->
 	]
 
 	for permission in permissions
-		RocketChat.models.Permissions.upsert( permission._id, {$set: permission })
+		unless RocketChat.models.Permissions.findOneById( permission._id)?
+			RocketChat.models.Permissions.upsert( permission._id, {$set: permission })
 
 	defaultRoles = [
 		{ name: 'admin', scope: 'Users' }
