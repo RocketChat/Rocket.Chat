@@ -27,6 +27,8 @@ Package.onUse(function(api) {
 	api.addFiles('admin/adminInfo.html', 'client');
 
 	api.addFiles('admin/rooms/adminRooms.html', 'client');
+	api.addFiles('admin/rooms/adminRoomInfo.html', 'client');
+	api.addFiles('admin/rooms/adminRoomInfo.coffee', 'client');
 	api.addFiles('admin/rooms/channelSettingsDefault.html', 'client');
 	api.addFiles('admin/rooms/channelSettingsDefault.js', 'client');
 
