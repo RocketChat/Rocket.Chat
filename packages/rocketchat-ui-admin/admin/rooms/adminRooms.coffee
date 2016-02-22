@@ -25,8 +25,6 @@ Template.adminRooms.helpers
 			return TAPi18n.__ 'Direct Message'
 		if @t is 'p'
 			return TAPi18n.__ 'Private Group'
-	roomData: ->
-		return ChatRoom.findOne Session.get 'adminRoomsSelected'
 
 	flexTemplate: ->
 		return RocketChat.TabBar.getTemplate()
@@ -51,7 +49,7 @@ Template.adminRooms.onCreated ->
 		id: 'admin-room',
 		i18nTitle: 'Room_Info',
 		icon: 'octicon octicon-info',
-		template: 'channelSettings',
+		template: 'adminRoomInfo',
 		order: 1
 	});
 
@@ -113,8 +111,7 @@ Template.adminRooms.events
 
 		Session.set('adminRoomsSelected', { rid: @_id });
 
-		RocketChat.TabBar.setData { rid: @_id }
-		RocketChat.TabBar.setTemplate('channelSettings')
+		RocketChat.TabBar.setTemplate('adminRoomInfo')
 
 	'click .load-more': (e, t) ->
 		e.preventDefault()

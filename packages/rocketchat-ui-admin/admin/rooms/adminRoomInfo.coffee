@@ -1,4 +1,6 @@
-Template.channelSettings.helpers
+Template.adminRoomInfo.helpers
+	selectedRoom: ->
+		return Session.get 'adminRoomsSelected'
 	canEdit: ->
 		return RocketChat.authz.hasAllPermission('edit-room', @rid)
 	editing: (field) ->
@@ -28,7 +30,7 @@ Template.channelSettings.helpers
 		else
 			return t('Room_archivation_state_false')
 
-Template.channelSettings.events
+Template.adminRoomInfo.events
 	'keydown input[type=text]': (e, t) ->
 		if e.keyCode is 13
 			e.preventDefault()
@@ -47,7 +49,7 @@ Template.channelSettings.events
 		e.preventDefault()
 		t.saveSetting()
 
-Template.channelSettings.onCreated ->
+Template.adminRoomInfo.onCreated ->
 	@editing = new ReactiveVar
 
 	@validateRoomType = =>
