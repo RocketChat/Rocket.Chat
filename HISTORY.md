@@ -1,5 +1,7 @@
 ## NEXT
 
+- Re authorize streams on reconnect
+
 ## 0.18.0, 2016-Feb-15
 
 - Add .jshintrc to project
