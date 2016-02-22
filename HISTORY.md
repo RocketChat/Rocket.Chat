@@ -1,7 +1,43 @@
 ## NEXT
 
+## 0.19.0, 2016-Feb-22
+
 - Re authorize streams on reconnect
 - Don't automatically parse URLs in incoming webhooks message body if an attachment is also present
+- Add alerts for highlight words
+- Add button to show offline users in a room
+- Add Import framework
+- Add importing of the files from slack
+- Add notifications for highlight words
+- Add pagination to user's list
+- Add per room email preferences
+- Add preferences for highlight words
+- Admin is now active when created on setup
+- Allow imports with a ton of messages in the same day (thousands)
+- Allow to set Name and Username for initial admin user via environment variables - Closes #2231
+- Closes #2096; LDAP broken when using meteor deploy
+- Closes #2218; LDAP: Add a setting to disable avatar sync
+- Closes #2221; LDAP Custom Domain Search gives "TypeError"
+- Closes #2262; Implement LDAP user sync
+- Do not notify edited messages again
+- Don't try to parse an upload if it doesn't contain a file.
+- Fix "topic changed" messages with incorrect timestamp
+- Fix and improve webrtc settings
+- Fix blocked settings
+- Fix broken items after the latest merge
+- Fix broken ldap when custom filter specifies no userId
+- Fix room's topic not get applied
+- Fix starttls issue by setting tls.connect hostname parameter.
+- Fix the sendMessage with nothing after it being left in
+- Fix upload previews
+- Really respect the limit of the mongo database.
+- Reduce the size of the max records we input to half of what it was, to reduce the stress on mongo
+- Remove unused files: splash
+- Replaces "disabled" by "readonly" and Closes #2241
+- Send emails respecting room preferences
+- Settings to change placeholders in login form - closes #2204
+- Split CA cert into array of strings.
+- Switched CAS configuration from Meteor.settings to RocketChat.settings.
 
 ## 0.18.0, 2016-Feb-15
 
