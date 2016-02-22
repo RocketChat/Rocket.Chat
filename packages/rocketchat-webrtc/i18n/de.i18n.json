@@ -2,8 +2,6 @@
   "WebRTC_Enable_Channel" : "Für öffentliche Kanäle aktivieren",
   "WebRTC_Enable_Direct" : "Für private Nachrichten aktivieren",
   "WebRTC_Enable_Private" : "Für private Kanäle aktivieren",
-  "WebRTC_STUN_Server" : "STUN-Server",
-  "WebRTC_TURN_Server" : "TURN-Server",
-  "WebRTC_TURN_Username" : "Benutzername für den TURN-Server",
-  "WebRTC_TURN_Password" : "Passwort für den TURN-Server"
+  "WebRTC_Servers" : "STUN/TURN-Server",
+  "WebRTC_Servers_Description" : "Kommata-getrennte Liste von STUN- und TURN-Servern.<br/>Benutzernamen, Passwörter und Ports sind in diesen Formaten erlaubt: `username:password@stun:host:port` oder `username:password@turn:host:port"
 }
