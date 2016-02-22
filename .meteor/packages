@@ -35,6 +35,9 @@ spacebars
 standard-minifiers
 tracker
 
+arunoda:streams
+rocketchat:lib
+
 rocketchat:api
 rocketchat:assets
 rocketchat:authorization
@@ -56,7 +59,6 @@ rocketchat:importer-hipchat
 rocketchat:importer-slack
 rocketchat:integrations
 rocketchat:ldap
-rocketchat:lib
 rocketchat:livechat
 rocketchat:logger
 rocketchat:mailer
@@ -102,7 +104,6 @@ konecty:multiple-instances-status
 konecty:nrr
 konecty:user-presence
 
-arunoda:streams
 chrismbeckett:toastr
 dispatch:run-as-user
 francocatena:status
