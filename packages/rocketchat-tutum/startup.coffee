@@ -14,6 +14,10 @@ if process.env.TUTUM_REDIS_HOST?
 	client.rpush("frontend:#{process.env.TUTUM_CLIENT_HOST}", process.env.TUTUM_CLIENT_NAME)
 	client.rpush("frontend:#{process.env.TUTUM_CLIENT_HOST}", "http://#{process.env.TUTUM_IP_ADDRESS.split('/')[0]}:3000")
 
+	# removes the redis entry on a SIGTERM
+	process.on 'SIGTERM', ->
+		client.del("frontend:#{process.env.TUTUM_CLIENT_HOST}")
+
 	day = 86400000
 
 	inactiveDays = 30
