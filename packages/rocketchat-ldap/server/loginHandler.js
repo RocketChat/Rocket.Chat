@@ -129,8 +129,7 @@ Accounts.registerLoginHandler("ldap", function(loginRequest) {
 	logger.info('User does not exists, creating', username);
 	// Create new user
 	var userObject = {
-		username: username,
-		password: loginRequest.ldapPass
+		username: username
 	};
 
 	let userData = getDataToSyncUserData(ldapUser, {});
@@ -146,6 +145,8 @@ Accounts.registerLoginHandler("ldap", function(loginRequest) {
 	}
 
 	logger.debug('New user data', userObject);
+
+	userObject.password = loginRequest.ldapPass;
 
 	try {
 		userObject._id = Accounts.createUser(userObject);
