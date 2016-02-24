@@ -78,7 +78,7 @@ Template.accountPreferences.events
 		KonchatNotification.getDesktopPermission()
 
 	'click .test-notifications': ->
-		KonchatNotification._showDesktop
+		KonchatNotification.notify
 			payload:
 				sender:
 					username: 'rocket.cat'
