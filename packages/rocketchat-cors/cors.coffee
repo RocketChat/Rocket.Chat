@@ -28,7 +28,8 @@ WebApp.rawConnectHandlers.use (req, res, next) ->
 
 
 WebApp.rawConnectHandlers.use (req, res, next) ->
-	res.setHeader("Access-Control-Allow-Origin", "*")
+	if /^\/(api|_timesync|sockjs)(\/|$)/.test req.url
+		res.setHeader("Access-Control-Allow-Origin", "*")
 
 	# Block next handlers to override CORS with value http://meteor.local
 	setHeader = res.setHeader
