@@ -221,3 +221,5 @@ Template.main.onRendered ->
 		$('html').addClass "rtl"
 	else
 		$('html').removeClass "rtl"
+
+	$('.page-loading').remove()
