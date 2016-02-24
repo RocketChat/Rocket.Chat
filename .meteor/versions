@@ -23,6 +23,7 @@ callback-hook@1.0.4
 cfs:http-methods@0.0.30
 check@1.1.0
 chrismbeckett:toastr@2.1.2_1
+chuangbo:cookie@1.1.0
 coffeescript@1.0.11
 cosmos:browserify@0.9.4
 dandv:caret-position@2.1.1
@@ -78,6 +79,10 @@ mdg:validation-error@0.4.0
 meteor@1.1.10
 meteor-base@1.0.1
 meteor-developer@1.1.5
+meteorhacks:fast-render@2.10.0
+meteorhacks:inject-data@1.4.1
+meteorhacks:inject-initial@1.0.3
+meteorhacks:picker@1.0.3
 meteorspark:util@0.2.0
 minifiers@1.1.7
 minimongo@1.0.10
