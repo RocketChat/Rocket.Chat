@@ -86,6 +86,21 @@ RocketChat.callbacks.add('afterSaveMessage', function(message, room) {
 		}
 	});
 
+	//Set variables depending on Push Notification settings
+	if (RocketChat.settings.get('Push_show_message')) {
+		push_message = message.msg
+	} else {
+		push_message = ' '
+	}
+
+	if (RocketChat.settings.get('Push_show_username_room')) {
+		push_username = "@" + user.username
+		push_room = " @ #" + room.name
+	} else {
+		push_username = ' '
+		push_room = ' '
+	}
+
 	if ((room.t == null) || room.t === 'd') {
 		userOfMentionId = message.rid.replace(message.u._id, '');
 		userOfMention = RocketChat.models.Users.findOne({
@@ -112,10 +127,11 @@ RocketChat.callbacks.add('afterSaveMessage', function(message, room) {
 			if (Push.enabled === true && userOfMention.statusConnection !== 'online') {
 				Push.send({
 					from: 'push',
-					title: "@" + user.username,
-					text: message.msg,
+					title: push_username,
+					text: push_message,
 					apn: {
-						text: "@" + user.username + ":\n" + message.msg
+						// ternary operator
+						text: push_username + ((push_username != ' ' && push_message != ' ') ? ":\n" : '') + push_message
 					},
 					badge: 1,
 					sound: 'chime',
@@ -241,10 +257,11 @@ RocketChat.callbacks.add('afterSaveMessage', function(message, room) {
 			if (Push.enabled === true) {
 				Push.send({
 					from: 'push',
-					title: "@" + user.username + " @ #" + room.name,
-					text: message.msg,
+					title: push_username + push_room,
+					text: push_message,
 					apn: {
-						text: "@" + user.username + " @ #" + room.name + ":\n" + message.msg
+						// ternary operator
+						text: push_username + push_room + ((push_username != ' ' && push_room != ' ' && push_message != ' ') ? ":\n" : '') + push_message
 					},
 					badge: 1,
 					sound: 'chime',
