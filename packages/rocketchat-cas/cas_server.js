@@ -15,7 +15,7 @@ WebApp.connectHandlers.use(function(req, res, next) {
   }).run();
 });
 
-middleware = function (req, res, next) {
+var middleware = function (req, res, next) {
   // Make sure to catch any exceptions because otherwise we'd crash
   // the runner
   try {
@@ -42,15 +42,16 @@ middleware = function (req, res, next) {
     });
 
   } catch (err) {
-    console.log("account-cas: unexpected error : " + err.message);
+    logger.error("Unexpected error : " + err.message);
     closePopup(res);
   }
 };
 
 var casTicket = function (req, token, callback) {
+
   // get configuration
   if (!RocketChat.settings.get("CAS_enabled")) {
-    console.log("accounts-cas: cas ist not enabled");
+    logger.error("Got ticket validation request, but CAS is not enabled");
     callback();
   }
 
@@ -58,6 +59,7 @@ var casTicket = function (req, token, callback) {
   var parsedUrl = url.parse(req.url, true);
   var ticketId = parsedUrl.query.ticket;
   var baseUrl = RocketChat.settings.get("CAS_base_url");
+  logger.debug("Using CAS_base_url: " + baseUrl);
 
   var cas = new CAS({
     base_url: baseUrl,
@@ -66,19 +68,18 @@ var casTicket = function (req, token, callback) {
 
   cas.validate(ticketId, function(err, status, username) {
     if (err) {
-      console.log("accounts-cas: error when trying to validate " + err);
+      logger.error("error when trying to validate " + err);
     } else {
       if (status) {
-        console.log("accounts-cas: user validated " + username);
+        logger.info("Validated user: " + username);
         _casCredentialTokens[token] = { id: username };
       } else {
-        console.log("accounts-cas: unable to validate " + ticketId);
+        logger.error("Unable to validate ticket: " + ticketId);
       }
     }
 
     callback();
   });
-  console.log("Validated: " + ticketId);
 
   return; 
 };
@@ -100,22 +101,24 @@ var casTicket = function (req, token, callback) {
 
   var result = _retrieveCredential(options.cas.credentialToken);
   var options = { profile: { name: result.id } };
-  //var user = Accounts.updateOrCreateUserFromExternalService("cas", result, options);
 
+  logger.debug("Looking up user with username: " + result.id );
   var user = Meteor.users.findOne({ 'username': result.id });
 
-  if (!user) {
+  if (user) {
+    logger.debug("Using existing user for '" + result.id + "' with id: " + user._id);
+  } else {
 	var newUser = {
 		username: result.id,
 		active: true,
 		globalRoles: ['user'],
 	};
 
+    logger.debug("User '" + result.id + "'does not exist yet, creating it");
 	var userId = Accounts.insertUserDoc({}, newUser);
 	user = Meteor.users.findOne(userId);
+    logger.debug("Created new user for '" + result.id + "' with id: " + user._id);
   }
-
-  console.log("Using user: " + user._id);
 
   return { userId: user._id };
 });
