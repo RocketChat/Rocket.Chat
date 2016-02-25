@@ -38,6 +38,8 @@ Template.membersList.helpers
 		# sortBy is stable, so we can do this
 		users = _.sortBy users, (u) -> !u.status?
 
+		hasMore = users.length > Template.instance().usersLimit.get()
+
 		users = _.first(users, Template.instance().usersLimit.get())
 
 		totalUsers = roomUsernames.length
@@ -48,7 +50,7 @@ Template.membersList.helpers
 			total: totalUsers
 			totalShowing: totalShowing
 			users: users
-			hasMore: totalShowing > 0 and totalShowing < totalUsers
+			hasMore: hasMore
 
 		return ret
 
