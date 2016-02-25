@@ -151,6 +151,10 @@ RocketChat.settings.addGroup 'Push', ->
 		@add 'Push_gcm_api_key', '', { type: 'string' }
 		@add 'Push_gcm_project_number', '', { type: 'string', public: true }
 
+	@section 'Privacy', ->
+		@add 'Push_show_username_room', true, { type: 'boolean', public: true }
+		@add 'Push_show_message', true, { type: 'boolean', public: true }
+
 
 RocketChat.settings.addGroup 'Layout', ->
 	@add 'Layout_Sidenav_Footer', '<div><a href="https://github.com/RocketChat/Rocket.Chat" class="logo" target="_blank"> <img src="/images/logo/logo.svg?v=3" /></a><div class="github-tagline"><span class="octicon octicon-pencil" style="color: #994C00"></span> with <span class="octicon octicon-heart" style="color: red"></span> on <span class="octicon octicon-mark-github"></span></div></div>', { type: 'string', public: true, i18nDescription: 'Layout_Sidenav_Footer_description' }
