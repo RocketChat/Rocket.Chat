@@ -213,6 +213,10 @@ Template.main.events
 				else
 					menu.close()
 
+	'transitionend .main-content': ->
+		$('<style></style>').appendTo($(document.body)).remove()
+		console.log('hello')
+
 
 Template.main.onRendered ->
 

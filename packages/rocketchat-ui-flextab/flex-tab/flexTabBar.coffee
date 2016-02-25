@@ -26,6 +26,7 @@ Template.flexTabBar.events
 				RocketChat.TabBar.setTemplate @template, ->
 					$('.flex-tab')?.find("input[type='text']:first")?.focus()
 					$('.flex-tab .content')?.scrollTop(0)
+		$('<style></style>').appendTo($(document.body)).remove()
 
 Template.flexTabBar.onCreated ->
 	# close flex if the visible group changed and the opened template is not in the new visible group
