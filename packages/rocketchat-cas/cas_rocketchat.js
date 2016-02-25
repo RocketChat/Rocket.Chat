@@ -1,3 +1,5 @@
+logger = new Logger('CAS', {});
+
 Meteor.startup(function(){
     RocketChat.settings.addGroup('CAS', function() {
         this.add("CAS_enabled", false, { type: 'boolean', group: 'CAS', public: true });
@@ -23,7 +25,6 @@ function updateServices(record) {
     }
 
     timer = Meteor.setTimeout(function() {
-        console.log("Updating login service CAS".blue)
         data = {
             // These will pe passed to 'node-cas' as options
             enabled:          RocketChat.settings.get("CAS_enabled"),
@@ -40,8 +41,10 @@ function updateServices(record) {
 
         // Either register or deregister the CAS login service based upon its configuration
         if( data.enabled ) {
+            logger.info("Enabling CAS login service")
             ServiceConfiguration.configurations.upsert({service: 'cas'}, { $set: data });
         } else {
+            logger.info("Disabling CAS login service");
             ServiceConfiguration.configurations.remove({service: 'cas'});
         }
     }, 2000);
