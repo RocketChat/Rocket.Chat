@@ -15,6 +15,7 @@
 			n = new Notification notification.title,
 				icon: notification.icon or getAvatarUrlFromUsername notification.payload.sender.username
 				body: _.stripTags(notification.text)
+				silent: true
 
 			if notification.payload?.rid?
 				n.onclick = ->
