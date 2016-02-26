@@ -1,4 +1,4 @@
-RocketChat.settings.onload 'Site_Url', (key, value, initialLoad) ->
+RocketChat.settings.get 'Site_Url', (key, value) ->
 	if value?.trim() isnt ''
 		__meteor_runtime_config__.ROOT_URL = value
 		if Meteor.absoluteUrl.defaultOptions?.rootUrl?
