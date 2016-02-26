@@ -339,7 +339,7 @@ init = =>
 		# 		username: "rocketbot"
 		# 	action: true
 
-RocketChat.models.Settings.find({ _id: { $in: [ 'RocketBot_Name', 'RocketBot_Enabled'] } }).observe
+RocketChat.models.Settings.findByIds([ 'RocketBot_Name', 'RocketBot_Enabled']).observe
 	added: ->
 		init()
 	changed: ->
