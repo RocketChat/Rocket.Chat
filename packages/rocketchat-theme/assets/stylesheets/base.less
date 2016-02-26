@@ -2844,7 +2844,7 @@ a.github-fork {
 	right: 0;
 	background: #FCFCFC;
 	border-left: 1px solid #eaeaea;
-	z-index: 13;
+	z-index: 130;
 
 	.tab-button {
 		cursor: pointer;
@@ -2871,7 +2871,7 @@ a.github-fork {
 	border-left: 1px solid;
 	overflow-x: visible;
 	position: fixed;
-	z-index: 100;
+	z-index: 110;
 	max-width: @flex-tab-width;
 	width: 90%;
 	bottom: 0;
@@ -4020,12 +4020,14 @@ a.github-fork {
 		}
 		.main-content {
 			left: 0;
-			.transition(transform .2s linear);
-			z-index: 1000;
+			z-index: 120;
 
 			&.notransition {
 				.transition(transform .0s);
 			}
+		}
+		.main-content, .flex-tab-bar {
+			.transition(transform .2s linear);
 		}
 		.fixed-title h2 {
 			margin-left: 45px;
@@ -4059,7 +4061,7 @@ a.github-fork {
 					}
 				}
 			}
-			.main-content {
+			.main-content, .flex-tab-bar {
 				.transform(translateX(@rooms-box-width));
 			}
 		}
