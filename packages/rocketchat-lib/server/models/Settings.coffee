@@ -2,6 +2,7 @@ RocketChat.models.Settings = new class extends RocketChat.models._Base
 	constructor: ->
 		@_initModel 'settings'
 
+		@tryEnsureIndex { 'blocked': 1 }, { sparse: 1 }
 		@tryEnsureIndex { 'hidden': 1 }, { sparse: 1 }
 
 	# FIND ONE
@@ -10,7 +11,6 @@ RocketChat.models.Settings = new class extends RocketChat.models._Base
 			_id: _id
 
 		return @findOne query, options
-
 
 	# FIND
 	findById: (_id) ->
@@ -57,6 +57,7 @@ RocketChat.models.Settings = new class extends RocketChat.models._Base
 	# UPDATE
 	updateValueById: (_id, value) ->
 		query =
+			blocked: { $ne: true }
 			_id: _id
 
 		update =
@@ -65,9 +66,9 @@ RocketChat.models.Settings = new class extends RocketChat.models._Base
 
 		return @update query, update
 
-
 	updateOptionsById: (_id, options) ->
 		query =
+			blocked: { $ne: true }
 			_id: _id
 
 		update =
@@ -75,8 +76,7 @@ RocketChat.models.Settings = new class extends RocketChat.models._Base
 
 		return @update query, update
 
-
-	# REMOVE
+	# INSERT
 	createWithIdAndValue: (_id, value) ->
 		record =
 			_id: _id
@@ -85,10 +85,10 @@ RocketChat.models.Settings = new class extends RocketChat.models._Base
 
 		return @insert record
 
-
 	# REMOVE
 	removeById: (_id) ->
 		query =
+			blocked: { $ne: true }
 			_id: _id
 
 		return @remove query
