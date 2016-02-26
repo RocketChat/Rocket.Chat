@@ -182,4 +182,3 @@ RocketChat.settings.init()
 # Remove runtime settings (non-persistent)
 Meteor.startup ->
 	RocketChat.models.Settings.update({ ts: { $lt: RocketChat.settings.ts }, persistent: { $ne: true } }, { $set: { hidden: true } }, { multi: true })
-	RocketChat.models.Settings.update({ ts: { $gte: RocketChat.settings.ts } }, { $unset: { hidden: 1 } }, { multi: true })

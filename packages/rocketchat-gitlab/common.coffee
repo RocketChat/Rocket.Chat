@@ -9,7 +9,7 @@ Gitlab = new CustomOAuth 'gitlab', config
 
 if Meteor.isServer
 	Meteor.startup ->
-		RocketChat.models.Settings.find({ _id: 'API_Gitlab_URL' }).observe
+		RocketChat.models.Settings.findById('API_Gitlab_URL').observe
 			added: (record) ->
 				config.serverURL = RocketChat.settings.get 'API_Gitlab_URL'
 				Gitlab.configure config

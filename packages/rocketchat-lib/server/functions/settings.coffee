@@ -1,3 +1,11 @@
+blockedSettings = {}
+process.env.SETTINGS_BLOCKED?.split(',').forEach (settingId) ->
+	blockedSettings[settingId] = 1
+
+hiddenSettings = {}
+process.env.SETTINGS_HIDDEN?.split(',').forEach (settingId) ->
+	hiddenSettings[settingId] = 1
+
 RocketChat.settings._sorter = 0
 
 ###
@@ -16,6 +24,7 @@ RocketChat.settings.add = (_id, value, options = {}) ->
 	options.valueSource = 'packageValue'
 	options.ts = new Date
 	options.hidden = false
+	options.blocked = false
 	options.sorter ?= RocketChat.settings._sorter++
 
 	if options.enableQuery?
@@ -41,6 +50,22 @@ RocketChat.settings.add = (_id, value, options = {}) ->
 	# Default description i18n key will be the setting name + "_Description" (eg: LDAP_Enable -> LDAP_Enable_Description)
 	if not options.i18nDescription?
 		options.i18nDescription = "#{_id}_Description"
+
+	if blockedSettings[_id]?
+		options.blocked = true
+
+	if hiddenSettings[_id]?
+		options.hidden = true
+
+	if process?.env?['SETTING_OVERWRITE_' + _id]?
+		value = process.env['SETTING_OVERWRITE_' + _id]
+		if value.toLowerCase() is "true"
+			value = true
+		else if value.toLowerCase() is "false"
+			value = false
+		options.value = value
+		options.processEnvValue = value
+		options.valueSource = 'processEnvValue'
 
 	updateOperations =
 		$set: options
@@ -76,7 +101,14 @@ RocketChat.settings.addGroup = (_id, options = {}, cb) ->
 		options.i18nDescription = "#{_id}_Description"
 
 	options.ts = new Date
+	options.blocked = false
 	options.hidden = false
+
+	if blockedSettings[_id]?
+		options.blocked = true
+
+	if hiddenSettings[_id]?
+		options.hidden = true
 
 	RocketChat.models.Settings.upsert { _id: _id },
 		$set: options

@@ -51,6 +51,9 @@ Template.admin.helpers
 		return sectionsArray
 
 	isDisabled: ->
+		if @blocked
+			return { disabled: 'disabled' }
+
 		if not @enableQuery?
 			return {}
 
