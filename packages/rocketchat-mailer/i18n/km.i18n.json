@@ -4,6 +4,7 @@
   "Email_from" : "ពី",
   "Email_subject" : "ប្រធានបទ",
   "Email_body" : "រាងកាយអ៊ីមែល",
+  "Mailer_body_tags" : "អ្នក<b>ត្រូវ</b>ប្រើប្រាស់ [unsubcribe] សម្រាប់ដកដំណភ្ជាប់ជាវជាប្រចាំ។<br/> អ្នកប្រហែលជាត្រូវប្រើប្រាស់ [name], [fname], [lname] ធ្វើជាឈ្មោះពេញរបស់អ្នកប្រើប្រាស់។<br/> អ្នកប្រហែលជាប្រើ [email] ធ្វើជាអ៊ីមែលរបស់អ្នកប្រើប្រាស់។",
   "Send_email" : "ផ្ញើ​រ​អ៊ី​ម៉ែ​ល",
   "The_emails_are_being_sent" : "នេះ​អ៊ីមែល​ត្រូវ​បាន​បញ្ជូន​។",
   "You_have_successfully_unsubscribed" : "អ្នក​បាន unsubscribed ដោយ​ជោគជ័យ​ពី​បញ្ជី Mailling របស់​យើង​។",
