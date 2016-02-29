@@ -19,7 +19,7 @@ RocketChat.saveRoomName = (rid, name) ->
 	if not nameValidation.test name
 		throw new Meteor.Error 'name-invalid', 'Invalid_room_name', { channelName: name }
 
-	name = _.slugify name
+	# name = _.slugify name
 
 	if name is room.name
 		return
