@@ -14,3 +14,4 @@ FlowRouter.route '/admin/view-logs',
 			center: 'pageSettingsContainer'
 			pageTitle: t('View_Logs')
 			pageTemplate: 'viewLogs'
+			noScroll: true
