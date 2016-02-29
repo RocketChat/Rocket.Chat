@@ -233,6 +233,14 @@ Importer.Slack = class Importer.Slack extends Importer.Base
 													RocketChat.models.Messages.createRoomSettingsChangedWithTypeRoomIdMessageAndUser 'room_changed_topic', room._id, message.purpose, @getRocketUser(message.user), { ts: new Date(parseInt(message.ts.split('.')[0]) * 1000) }
 												else if message.subtype is 'channel_topic'
 													RocketChat.models.Messages.createRoomSettingsChangedWithTypeRoomIdMessageAndUser 'room_changed_topic', room._id, message.topic, @getRocketUser(message.user), { ts: new Date(parseInt(message.ts.split('.')[0]) * 1000) }
+												else if message.subtype is 'pinned_item'
+													RocketChat.models.Messages.createWithTypeRoomIdMessageAndUser 'message_pinned', room._id, '', @getRocketUser(message.user),
+														ts: new Date(parseInt(message.ts.split('.')[0]) * 1000)
+														attachments: [
+															"text" : @convertSlackMessageToRocketChat message.attachments[0].text
+															"author_name" : message.attachments[0].author_subname
+															"author_icon" : getAvatarUrlFromUsername(message.attachments[0].author_subname)
+														]
 												else if message.subtype is 'file_share'
 													if message.file?.url_private_download isnt undefined
 														details =

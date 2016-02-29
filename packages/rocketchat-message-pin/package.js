@@ -17,6 +17,7 @@ Package.onUse(function(api) {
 	api.addFiles([
 		'client/lib/PinnedMessage.coffee',
 		'client/actionButton.coffee',
+		'client/messageType.js',
 		'client/pinMessage.coffee',
 		'client/tabBar.coffee',
 		'client/views/pinnedMessages.html',
