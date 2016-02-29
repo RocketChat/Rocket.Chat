@@ -61,7 +61,6 @@ jquery@1.11.4
 kadira:blaze-layout@2.3.0
 kadira:flow-router@2.10.1
 kenton:accounts-sandstorm@0.1.8
-kevohagan:sweetalert@1.0.0
 konecty:autolinker@1.0.3
 konecty:change-case@2.3.0
 konecty:delayed-task@1.0.0
@@ -191,6 +190,7 @@ session@1.1.1
 sha@1.0.4
 simple:highlight.js@1.2.0
 simple:json-routes@1.0.4
+smoral:sweetalert@1.1.1
 spacebars@1.0.7
 spacebars-compiler@1.0.7
 srp@1.0.4
