@@ -11,7 +11,12 @@ RocketChat.saveRoomName = (rid, name) ->
 	#if room.u._id isnt Meteor.userId() and not hasPermission
 		throw new Meteor.Error 403, 'Not allowed'
 
-	if not /^[0-9a-z-_]+$/.test name
+	try
+		nameValidation = new RegExp '^' + RocketChat.settings.get('UTF8_Names_Validation') + '$'
+	catch
+		nameValidation = new RegExp '^[0-9a-zA-Z-_.]+$'
+
+	if not nameValidation.test name
 		throw new Meteor.Error 'name-invalid', 'Invalid_room_name', { channelName: name }
 
 	name = _.slugify name
