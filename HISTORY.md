@@ -1,5 +1,43 @@
 ## NEXT
 
+## 0.20.0, 2016-Feb-29
+
+- Ability to disable sending nickname and message via push notification
+- Added back 'delete room' button - closes #2351
+- Added block and hidden options that can be set by env vars
+- Added description and protected flag to default roles
+- Added zh-TW and zh-HK
+- Allow markdown in attachment fields
+- Avoid using SVG for Sandstorm
+- CAS Plugin: refactored logging
+- Closes #2178; Admin View Logs should auto-scroll to end
+- Closes #2316; Send test mail will block the server
+- Closes #780; Do not change the sweet alert size in small screens, change the upload-preview size
+- Closes #800; Add loading before main page render and add Fast Render
+- Do not print passwor in new LDAP log
+- Do not reset permission's roles at startup - closes #2164
+- Do not slugify room names at renaming - fixes #1571
+- Enable username as template from LDAP and enable username sync
+- Expose getAvatarUrlFromUsername function to server side
+- Fix 'render' callback of MessageTypes
+- Fix publish user_data  under "spotlight"
+- Fix root url on server side
+- Fix show more users button
+- Fixed errors saving room info in admin
+- Improve WebRTC audio quality
+- Improved sidebar overlay - should fix RocketChat/Rocket.Chat.Cordova#15
+- Improved system messages style
+- Message with types are not groupable by default
+- Moving room name to the beginning of the push notifications msg
+- Observe API embed setting and apply immediatly - fixes #1989
+- Remove _emojione.import.less from server.coffee
+- Remove native sound of notifications
+- Remove newline from en.i18n.json
+- Remove unused files and closes #801
+- Support for pinned message notification
+- Updated sweetalert
+- Uses the setting for validating rooms renaming - closes #2297
+
 ## 0.19.0, 2016-Feb-22
 
 - Re authorize streams on reconnect
