@@ -65,7 +65,13 @@ Template.channelSettings.onCreated ->
 			return false
 
 		name = $('input[name=roomName]').val()
-		if not /^[0-9a-z-_]+$/.test name
+
+		try
+			nameValidation = new RegExp '^' + RocketChat.settings.get('UTF8_Names_Validation') + '$'
+		catch
+			nameValidation = new RegExp '^[0-9a-zA-Z-_.]+$'
+
+		if not nameValidation.test name
 			toastr.error t('Invalid_room_name', name)
 			return false
 
