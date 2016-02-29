@@ -28,17 +28,19 @@
 						<thead>
 							<tr>
 								<th width="30%">{{_ "Name"}}</th>
+								<th width="20%">{{_ "Type"}}</th>
 								<th width="20%">{{_ "Users"}}</th>
-								<th width="25%">{{_ "Type"}}</th>
-								<th width="25%">{{_ "Default"}}</th>
+								<th width="10%">{{_ "Msgs"}}</th>
+								<th width="20%">{{_ "Default"}}</th>
 							</tr>
 						</thead>
 						<tbody>
 							{{#each rooms}}
 							<tr class="room-info">
 								<td>{{name}}</td>
-								<td>{{usernames.length}}</td>
 								<td>{{type}}</td>
+								<td>{{usernames.length}}</td>
+								<td>{{msgs}}</td>
 								<td>{{default}}</td>
 							</tr>
 							{{/each}}
