@@ -189,6 +189,9 @@ Importer.Base = class Importer.Base
 							groupable: false
 							attachments: [attachment]
 
+						if details.message_id? and (typeof details.message_id is 'string')
+							msg['_id'] = details.message_id
+
 						RocketChat.sendMessage user, msg, room
 			else
 				console.error "Failed to create the store for #{fileUrl}!!!"
