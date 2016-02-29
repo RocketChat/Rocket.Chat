@@ -95,7 +95,7 @@ RocketChat.callbacks.add('afterSaveMessage', function(message, room) {
 
 	if (RocketChat.settings.get('Push_show_username_room')) {
 		push_username = "@" + user.username
-		push_room = " @ #" + room.name
+		push_room = "#" + room.name + " "
 	} else {
 		push_username = ' '
 		push_room = ' '
@@ -257,11 +257,11 @@ RocketChat.callbacks.add('afterSaveMessage', function(message, room) {
 			if (Push.enabled === true) {
 				Push.send({
 					from: 'push',
-					title: push_username + push_room,
+					title: push_room + push_username,
 					text: push_message,
 					apn: {
 						// ternary operator
-						text: push_username + push_room + ((push_username != ' ' && push_room != ' ' && push_message != ' ') ? ":\n" : '') + push_message
+						text: push_room + push_username + ((push_username != ' ' && push_room != ' ' && push_message != ' ') ? ":\n" : '') + push_message
 					},
 					badge: 1,
 					sound: 'chime',
