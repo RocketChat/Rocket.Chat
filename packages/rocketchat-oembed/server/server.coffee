@@ -196,5 +196,8 @@ OEmbed.RocketUrlParser = (message) ->
 
 	return message
 
-if RocketChat.settings.get 'API_Embed'
-	RocketChat.callbacks.add 'afterSaveMessage', OEmbed.RocketUrlParser, RocketChat.callbacks.priority.LOW
+RocketChat.settings.get 'API_Embed', (key, value) ->
+	if value
+		RocketChat.callbacks.add 'afterSaveMessage', OEmbed.RocketUrlParser, RocketChat.callbacks.priority.LOW, 'API_Embed'
+	else
+		RocketChat.callbacks.remove 'afterSaveMessage', 'API_Embed'
