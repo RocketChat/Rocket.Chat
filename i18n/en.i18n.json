@@ -311,7 +311,7 @@
   "LDAP_Use_Custom_Domain_Search" : "Use Custom Domain Search",
   "LDAP_Use_Custom_Domain_Search_Description" : "Write your own filter to search users in the LDAP server.",
   "LDAP_Username_Field" : "Username Field",
-  "LDAP_Username_Field_Description" : "Which field will be used as *username* for new users. Leave empty to use the username informed on longin page.<br/>Default value is `sAMAccountName`.",
+  "LDAP_Username_Field_Description" : "Which field will be used as *username* for new users. Leave empty to use the username informed on longin page.<br/>You can use template tags too, like `#{givenName}.#{sn}`.<br/>Default value is `sAMAccountName`.",
   "Leave_Group_Warning" : "Are you sure you want to leave the group \"%s\"?",
   "Leave_Private_Warning" : "Are you sure you want to leave the discussion with \"%s\"?",
   "Leave_room" : "Leave room",
