@@ -1,14 +1,5 @@
 const logger = new Logger('LDAPHandler', {});
 
-var slug = function (text) {
-	if (RocketChat.settings.get('UTF8_Names_Slugify') !== true) {
-		return text;
-	}
-	text = slugify(text, '.');
-	return text.replace(/[^0-9a-z-_.]/g, '');
-};
-
-
 function fallbackDefaultAccountSystem(bind, username, password) {
 	if (typeof username === 'string')
 		if (username.indexOf('@') === -1)
@@ -73,7 +64,7 @@ Accounts.registerLoginHandler("ldap", function(loginRequest) {
 	let username;
 
 	if (RocketChat.settings.get('LDAP_Username_Field') !== '') {
-		username = slug(ldapUser.object[RocketChat.settings.get('LDAP_Username_Field')]);
+		username = slug(getLdapUsername(ldapUser));
 	} else {
 		username = slug(loginRequest.username);
 	}
@@ -81,15 +72,19 @@ Accounts.registerLoginHandler("ldap", function(loginRequest) {
 	// Look to see if user already exists
 	let userQuery;
 
-	let Unique_Identifier_Field = getLdapUserUniqueID(ldapUser, 'username', username);
-	userQuery = {
-		'services.ldap.id': Unique_Identifier_Field.value
-	};
+	let Unique_Identifier_Field = getLdapUserUniqueID(ldapUser);
+	let user;
 
-	logger.info('Querying user');
-	logger.debug('userQuery', userQuery);
+	if (Unique_Identifier_Field) {
+		userQuery = {
+			'services.ldap.id': Unique_Identifier_Field.value
+		};
 
-	let user = Meteor.users.findOne(userQuery);
+		logger.info('Querying user');
+		logger.debug('userQuery', userQuery);
+
+		user = Meteor.users.findOne(userQuery);
+	}
 
 	if (!user) {
 		userQuery = {
