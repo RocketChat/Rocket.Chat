@@ -63,7 +63,7 @@ Template.adminRoomInfo.events
 	'keydown input[type=text]': (e, t) ->
 		if e.keyCode is 13
 			e.preventDefault()
-			t.saveSetting()
+			t.saveSetting(@rid)
 
 	'click [data-edit]': (e, t) ->
 		e.preventDefault()
@@ -76,22 +76,21 @@ Template.adminRoomInfo.events
 
 	'click .save': (e, t) ->
 		e.preventDefault()
-		t.saveSetting()
+		t.saveSetting(@rid)
 
 Template.adminRoomInfo.onCreated ->
 	@editing = new ReactiveVar
 
-	@validateRoomType = =>
+	@validateRoomType = (rid) =>
 		type = @$('input[name=roomType]:checked').val()
 		if type not in ['c', 'p']
 			toastr.error t('Invalid_room_type', type)
 		return true
 
-	@validateRoomName = =>
-		rid = Template.currentData()?.rid
+	@validateRoomName = (rid) =>
 		room = ChatRoom.findOne rid
 
-		if not RocketChat.authz.hasAllPermission('edit-room', @rid) or room.t not in ['c', 'p']
+		if not RocketChat.authz.hasAllPermission('edit-room', rid) or room.t not in ['c', 'p']
 			toastr.error t('Not_allowed')
 			return false
 
@@ -102,28 +101,28 @@ Template.adminRoomInfo.onCreated ->
 
 		return true
 
-	@validateRoomTopic = =>
+	@validateRoomTopic = (rid) =>
 		return true
 
-	@saveSetting = =>
+	@saveSetting = (rid) =>
 		switch @editing.get()
 			when 'roomName'
-				if @validateRoomName()
-					Meteor.call 'saveRoomSettings', @data?.rid, 'roomName', @$('input[name=roomName]').val(), (err, result) ->
+				if @validateRoomName(rid)
+					Meteor.call 'saveRoomSettings', rid, 'roomName', @$('input[name=roomName]').val(), (err, result) ->
 						if err
 							if err.error in [ 'duplicate-name', 'name-invalid' ]
 								return toastr.error TAPi18n.__(err.reason, err.details.channelName)
 							return toastr.error TAPi18n.__(err.reason)
 						toastr.success TAPi18n.__ 'Room_name_changed_successfully'
 			when 'roomTopic'
-				if @validateRoomTopic()
-					Meteor.call 'saveRoomSettings', @data?.rid, 'roomTopic', @$('input[name=roomTopic]').val(), (err, result) ->
+				if @validateRoomTopic(rid)
+					Meteor.call 'saveRoomSettings', rid, 'roomTopic', @$('input[name=roomTopic]').val(), (err, result) ->
 						if err
 							return toastr.error TAPi18n.__(err.reason)
 						toastr.success TAPi18n.__ 'Room_topic_changed_successfully'
 			when 'roomType'
-				if @validateRoomType()
-					Meteor.call 'saveRoomSettings', @data?.rid, 'roomType', @$('input[name=roomType]:checked').val(), (err, result) ->
+				if @validateRoomType(rid)
+					Meteor.call 'saveRoomSettings', rid, 'roomType', @$('input[name=roomType]:checked').val(), (err, result) ->
 						if err
 							if err.error is 'invalid-room-type'
 								return toastr.error TAPi18n.__(err.reason, err.details.roomType)
@@ -131,13 +130,13 @@ Template.adminRoomInfo.onCreated ->
 						toastr.success TAPi18n.__ 'Room_type_changed_successfully'
 			when 'archivationState'
 				if @$('input[name=archivationState]:checked').val() is 'true'
-					if ChatRoom.findOne(@data.rid)?.archived isnt true
-						Meteor.call 'archiveRoom', @data?.rid, (err, results) ->
+					if ChatRoom.findOne(rid)?.archived isnt true
+						Meteor.call 'archiveRoom', rid, (err, results) ->
 							return toastr.error err.reason if err
 							toastr.success TAPi18n.__ 'Room_archived'
 				else
-					if ChatRoom.findOne(@data.rid)?.archived is true
-						Meteor.call 'unarchiveRoom', @data?.rid, (err, results) ->
+					if ChatRoom.findOne(rid)?.archived is true
+						Meteor.call 'unarchiveRoom', rid, (err, results) ->
 							return toastr.error err.reason if err
 							toastr.success TAPi18n.__ 'Room_unarchived'
 		@editing.set()
