@@ -27,6 +27,10 @@
 	user-select: text;
 }
 
+.no-scroll {
+	overflow: hidden !important;
+}
+
 .page-settings, .page-settings * {
 	-webkit-user-select: text;
 	-moz-user-select: text;
@@ -4445,6 +4449,7 @@ a.github-fork {
 	-moz-user-select: text;
 	-ms-user-select: text;
 	user-select: text;
+	margin-bottom: 0px !important;
 
 	* {
 		-webkit-user-select: text;
@@ -4459,6 +4464,28 @@ a.github-fork {
 		.time {
 			color: #666;
 		}
+	}
+}
+
+.new-logs {
+	margin: 0 -65px;
+	position: absolute;
+	border-radius: 20px;
+	width: 130px;
+	height: 30px;
+	text-align: center;
+	line-height: 30px;
+	font-size: 0.8em;
+	cursor: pointer;
+	bottom: 8px;
+	left: 50%;
+	background: #FFF;
+	color: #428bca;
+
+	.transition(transform 0.3s ease-out);
+	.transform(translateY(0));
+	&.not {
+		.transform(translateY(150%));
 	}
 }
 
