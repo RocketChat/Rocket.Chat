@@ -3,6 +3,8 @@ Template.listChannelsFlex.helpers
 		return Template.instance().channelsList?.get()
 	hasMore: ->
 		return Template.instance().hasMore.get()
+	tSearchChannels: ->
+		return t('Search_Channels')
 
 Template.listChannelsFlex.events
 	'click header': ->
@@ -26,13 +28,18 @@ Template.listChannelsFlex.events
 			t.limit.set(t.limit.get() + 50)
 	, 200
 
+	'keyup #channel-search': _.debounce (e, instance) ->
+		instance.nameFilter.set($(e.currentTarget).val())
+	, 300
+
 Template.listChannelsFlex.onCreated ->
 	@channelsList = new ReactiveVar []
 	@hasMore = new ReactiveVar true
 	@limit = new ReactiveVar 50
+	@nameFilter = new ReactiveVar ''
 
 	@autorun =>
-		Meteor.call 'channelsList', @limit.get(), (err, result) =>
+		Meteor.call 'channelsList', @nameFilter.get(), @limit.get(), (err, result) =>
 			if result
 				@channelsList.set result.channels
 				if result.length < @limit.get()
