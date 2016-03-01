@@ -19,18 +19,15 @@ Template.privateGroupsFlex.helpers
 				{
 					# @TODO maybe change this 'collection' and/or template
 					collection: 'UserAndRoom'
-					subscription: 'roomSearch'
+					subscription: 'userAutocomplete'
 					field: 'username'
 					template: Template.userSearch
 					noMatchTemplate: Template.userSearchEmpty
 					matchAll: true
 					filter:
-						type: 'u'
-						$and: [
-							{ _id: { $ne: Meteor.userId() } }
-							{ username: { $nin: Template.instance().selectedUsers.get() } }
-							{ active: { $eq: true } }
-						]
+						exceptions: [Meteor.user().username].concat(Template.instance().selectedUsers.get())
+					selector: (match) ->
+						return { username: match }
 					sort: 'username'
 				}
 			]
