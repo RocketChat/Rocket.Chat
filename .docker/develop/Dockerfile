@@ -1,27 +1,20 @@
-FROM node:0.10
-
-# IMPORTANT - FOR TESTING ONLY - DO NOT USE THIS FOR DEVELOPMENT OR PRODUCTION!
-MAINTAINER buildmaster@rocket.chat
-
-RUN groupadd -r rocketchat \
-&&  useradd -r -g rocketchat rocketchat
-
-VOLUME /app/uploads
-
-# gpg: key 4FD08014: public key "Rocket.Chat Buildmaster <buildmaster@rocket.chat>" imported
-RUN gpg --keyserver ha.pool.sks-keyservers.net --recv-keys 0E163286C20D07B9787EBE9FD7F9D0414FD08104
+FROM rocketchat/base
 
 ENV RC_VERSION develop
 
-WORKDIR /app
+MAINTAINER buildmaster@rocket.chat
 
-RUN curl -fSL "https://rocket.chat/releases/${RC_VERSION}/download" -o rocket.chat.tgz \
-&&  curl -fSL "https://rocket.chat/releases/${RC_VERSION}/asc" -o rocket.chat.tgz.asc \
-&&  gpg --verify rocket.chat.tgz.asc \
-&&  tar zxvf rocket.chat.tgz \
-&&  rm rocket.chat.tgz  \
-&&  cd bundle/programs/server \
-&&  npm install
+VOLUME /app/uploads
+
+RUN set -x \
+ && curl -SLf "https://rocket.chat/releases/${RC_VERSION}/download" -o rocket.chat.tgz \
+ && curl -SLf "https://rocket.chat/releases/${RC_VERSION}/asc" -o rocket.chat.tgz.asc \
+ && gpg --verify rocket.chat.tgz.asc \
+ && tar -zxf rocket.chat.tgz -C /app \
+ && rm rocket.chat.tgz rocket.chat.tgz.asc \
+ && cd /app/bundle/programs/server \
+ && npm install \
+ && npm cache clear
 
 USER rocketchat
 
