@@ -16,6 +16,15 @@
 					</a>
 				</li>
 			{{/each}}
+			{{#if hasMore}}
+				<li class="load-more">
+					{{#if Template.subscriptionsReady}}
+						<a href="">{{_ "Has_more"}}...</a>
+					{{else}}
+						<div class="load-more-loading">{{_ "Loading..."}}</div>
+					{{/if}}
+				</li>
+			{{/if}}
 			</ul>
 		</div>
 	</div>
