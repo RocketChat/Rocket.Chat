@@ -1,6 +1,8 @@
 Template.listChannelsFlex.helpers
 	channel: ->
 		return Template.instance().channelsList?.get()
+	hasMore: ->
+		return Template.instance().hasMore.get()
 
 Template.listChannelsFlex.events
 	'click header': ->
@@ -19,11 +21,19 @@ Template.listChannelsFlex.events
 	'mouseleave header': ->
 		SideNav.leaveArrow()
 
+	'scroll .content': _.throttle (e, t) ->
+		if e.target.scrollTop >= e.target.scrollHeight - e.target.clientHeight
+			t.limit.set(t.limit.get() + 50)
+	, 200
+
 Template.listChannelsFlex.onCreated ->
-	instance = this
-	instance.channelsList = new ReactiveVar []
+	@channelsList = new ReactiveVar []
+	@hasMore = new ReactiveVar true
+	@limit = new ReactiveVar 50
 
-	Meteor.call 'channelsList', (err, result) ->
-		if result
-			instance.channelsList.set result.channels
-
+	@autorun =>
+		Meteor.call 'channelsList', @limit.get(), (err, result) =>
+			if result
+				@channelsList.set result.channels
+				if result.length < @limit.get()
+					@hasMore.set false
