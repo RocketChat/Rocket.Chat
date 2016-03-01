@@ -1229,6 +1229,32 @@ a.github-fork {
 		}
 		> .wrapper {
 			direction: ltr;
+
+			.flex-control {
+				.search {
+					display: table;
+					width: 100%;
+					margin-bottom: 10px;
+				}
+				.sort {
+					display: table;
+					width: 100%;
+					margin-bottom: 30px;
+					position: relative;
+
+					.sort-item {
+						display: table-cell;
+						vertical-align: middle;
+						text-align: center;
+						position: relative;
+						padding-right: 5px;
+
+						&:first {
+							width: 1px;
+						}
+					}
+				}
+			}
 		}
 		h4 {
 			margin-bottom: 30px;
