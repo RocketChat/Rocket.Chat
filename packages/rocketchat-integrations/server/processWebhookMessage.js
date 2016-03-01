@@ -60,7 +60,6 @@ this.processWebhookMessage = function(messageObj, user, defaultValues) {
 				Meteor.runAsUser(user._id, function() {
 					Meteor.call('createDirectMessage', roomUser.username);
 					room = RocketChat.models.Rooms.findOne(rid);
-					return room;
 				});
 			}
 			break;
@@ -69,7 +68,7 @@ this.processWebhookMessage = function(messageObj, user, defaultValues) {
 	}
 
 	if (messageObj.attachments && !_.isArray(messageObj.attachments)) {
-		console.log('Attachments should be Array, ingnoring value'.red, messageObj.attachments);
+		console.log('Attachments should be Array, ignoring value'.red, messageObj.attachments);
 		messageObj.attachments = undefined;
 	}
 
