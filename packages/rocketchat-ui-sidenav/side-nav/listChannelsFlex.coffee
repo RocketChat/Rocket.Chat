@@ -1,6 +1,8 @@
 Template.listChannelsFlex.helpers
 	channel: ->
 		return Template.instance().channelsList?.get()
+	tSearchChannels: ->
+		return t('Search_Channels')
 
 Template.listChannelsFlex.events
 	'click header': ->
@@ -19,11 +21,18 @@ Template.listChannelsFlex.events
 	'mouseleave header': ->
 		SideNav.leaveArrow()
 
+	'keyup #channel-search': _.debounce (e, instance) ->
+		instance.nameFilter.set($(e.currentTarget).val())
+	, 300
+
+
 Template.listChannelsFlex.onCreated ->
 	instance = this
+	instance.nameFilter = new ReactiveVar ''
 	instance.channelsList = new ReactiveVar []
 
-	Meteor.call 'channelsList', (err, result) ->
-		if result
-			instance.channelsList.set result.channels
+	instance.autorun ->
+		Meteor.call 'channelsList', instance.nameFilter.get(), (err, result) ->
+			if result
+				instance.channelsList.set result.channels
 
