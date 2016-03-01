@@ -70,7 +70,7 @@ RocketChat.models.Rooms = new class extends RocketChat.models._Base
 		return @find query, options
 
 	findByNameContaining: (name, options) ->
-		nameRegex = new RegExp name, "i"
+		nameRegex = new RegExp s.trim(s.escapeRegExp(name)), "i"
 
 		query =
 			$or: [
@@ -83,7 +83,7 @@ RocketChat.models.Rooms = new class extends RocketChat.models._Base
 		return @find query, options
 
 	findByNameContainingAndTypes: (name, types, options) ->
-		nameRegex = new RegExp name, "i"
+		nameRegex = new RegExp s.trim(s.escapeRegExp(name)), "i"
 
 		query =
 			t:
