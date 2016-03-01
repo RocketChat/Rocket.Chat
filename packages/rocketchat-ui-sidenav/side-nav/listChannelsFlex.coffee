@@ -41,6 +41,7 @@ Template.listChannelsFlex.onCreated ->
 	@autorun =>
 		Meteor.call 'channelsList', @nameFilter.get(), @limit.get(), (err, result) =>
 			if result
+				@hasMore.set true
 				@channelsList.set result.channels
-				if result.length < @limit.get()
+				if result.channels.length < @limit.get()
 					@hasMore.set false
