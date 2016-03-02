@@ -70,8 +70,10 @@ RocketChat.settings.add = (_id, value, options = {}) ->
 	updateOperations =
 		$set: options
 		$setOnInsert:
-			value: value
 			createdAt: new Date
+
+	if not options.value?
+		updateOperations.$setOnInsert.value = value
 
 	if not options.section?
 		updateOperations.$unset = { section: 1 }
