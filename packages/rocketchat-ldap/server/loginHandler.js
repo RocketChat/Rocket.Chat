@@ -136,7 +136,9 @@ Accounts.registerLoginHandler("ldap", function(loginRequest) {
 	} else if (RocketChat.settings.get('LDAP_Default_Domain') !== '') {
 		userObject.email = username + '@' + RocketChat.settings.get('LDAP_Default_Domain');
 	} else {
-		throw new Meteor.Error("LDAP-login-error", "LDAP Authentication succeded, there is no email to create an account.");
+		const error = new Meteor.Error("LDAP-login-error", "LDAP Authentication succeded, there is no email to create an account.");
+		logger.error(error);
+		throw error;
 	}
 
 	logger.debug('New user data', userObject);
