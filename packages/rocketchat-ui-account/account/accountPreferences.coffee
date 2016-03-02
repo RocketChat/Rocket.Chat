@@ -105,7 +105,6 @@ Template.accountPreferences.events
 						swal.showInputError(t("Your_password_is_wrong"));
 					else
 						swal.close();
-						toastr.remove();
 			else
 				swal.showInputError(t("You_need_to_type_in_your_password_in_order_to_do_this"));
 				return false;
