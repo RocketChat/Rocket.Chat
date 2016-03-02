@@ -1,7 +1,7 @@
 Template.createChannelFlex.helpers
 	tRoomMembers: ->
-		return t('Members_placeholder')
-	
+		return t('Members')
+
 	selectedUsers: ->
 		return Template.instance().selectedUsers.get()
 
