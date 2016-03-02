@@ -57,8 +57,8 @@ RocketChat.settings.add = (_id, value, options = {}) ->
 	if hiddenSettings[_id]?
 		options.hidden = true
 
-	if process?.env?['SETTING_OVERWRITE_' + _id]?
-		value = process.env['SETTING_OVERWRITE_' + _id]
+	if process?.env?['OVERWRITE_SETTING_' + _id]?
+		value = process.env['OVERWRITE_SETTING_' + _id]
 		if value.toLowerCase() is "true"
 			value = true
 		else if value.toLowerCase() is "false"
