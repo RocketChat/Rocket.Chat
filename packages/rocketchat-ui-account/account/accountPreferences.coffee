@@ -1,4 +1,7 @@
 Template.accountPreferences.helpers
+	allowDeleteOwnAccount: ->
+		return RocketChat.settings.get('Accounts_AllowDeleteOwnAccount')
+
 	checked: (property, value, defaultValue) ->
 		if not Meteor.user()?.settings?.preferences?[property]? and defaultValue is true
 			currentValue = value

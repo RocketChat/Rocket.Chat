@@ -4,6 +4,10 @@ Meteor.methods({
 			throw new Meteor.Error('invalid-user', "[methods] deleteUserOwnAccount -> Invalid user");
 		}
 
+		if (!RocketChat.settings.get('Accounts_AllowDeleteOwnAccount')) {
+			throw new Meteor.Error('not-authorized', "[methods] deleteUserOwnAccount -> Not authorized");
+		}
+
 		const userId = Meteor.userId();
 		const user = RocketChat.models.Users.findOneById(userId);
 

@@ -115,9 +115,11 @@
 				<div class="submit">
 					<button class="button"><i class="icon-send"></i><span>{{_ "Save_changes"}}</span></button>
 				</div>
+				{{#if allowDeleteOwnAccount}}
 				<div class="delete-account text-right">
 					<button class="button red"><i class="icon-trash"></i><span>{{_ "Delete_my_account"}}</span></button>
 				</div>
+				{{/if}}
 			</div>
 		</div>
 	</section>
