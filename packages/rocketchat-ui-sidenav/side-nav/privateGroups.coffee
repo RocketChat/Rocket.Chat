@@ -1,7 +1,4 @@
 Template.privateGroups.helpers
-	tRoomMembers: ->
-		return t('Members_placeholder')
-
 	rooms: ->
 		query = { t: { $in: ['p']}, f: { $ne: true }, open: true }
 
