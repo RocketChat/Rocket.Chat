@@ -18,7 +18,8 @@ Package.onUse(function(api) {
 		'templating',
 		'coffeescript',
 		'underscore',
-		'rocketchat:lib'
+		'rocketchat:lib',
+		'sha'
 	]);
 
 	api.addFiles('account/account.html', 'client');
