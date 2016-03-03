@@ -19,9 +19,9 @@
 						<label for="username">{{_ "Username"}}</label>
 						<div>
 						{{#if allowUsernameChange}}
-							<input type="text" name="username" id="username" placeholder="{{username}}" />
+							<input type="text" name="username" id="username" value="{{username}}" />
 						{{else}}
-							<input type="text" name="username" id="username" placeholder="{{username}}" readonly="readonly" title="{{usernameChangeDisabled}}" />
+							<input type="text" name="username" id="username" value="{{username}}" readonly="readonly" title="{{usernameChangeDisabled}}" />
 						{{/if}}
 						</div>
 					</div>
@@ -29,9 +29,9 @@
 						<label for="email">{{_ "E-mail"}}</label>
 						<div>
 						{{#if allowEmailChange}}
-							<input type="email" name="email" id="email" placeholder="{{email}}" />
+							<input type="email" name="email" id="email" value="{{email}}" />
 						{{else}}
-							<input type="email" name="email" id="email" placeholder="{{email}}" readonly="readonly" title="{{emailChangeDisabled}}" />
+							<input type="email" name="email" id="email" value="{{email}}" readonly="readonly" title="{{emailChangeDisabled}}" />
 						{{/if}}
 						</div>
 					</div>
@@ -66,11 +66,11 @@
 						</div>
 					</div>
 				</fieldset>
+				<div class="logoutOthers">
+					<button class="button red">{{_ "Logout_Others"}}</button>
+				</div>
 				<div class="submit">
 					<button class="button"><i class="icon-send"></i><span>{{_ "Save_changes"}}</span></button>
-				</div>
-				<div class="logoutOthers">
-					<button class="button">{{_ "Logout_Others"}}</button>
 				</div>
 			</div>
 		</div>
