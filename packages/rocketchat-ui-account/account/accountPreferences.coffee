@@ -1,4 +1,7 @@
 Template.accountPreferences.helpers
+	allowDeleteOwnAccount: ->
+		return RocketChat.settings.get('Accounts_AllowDeleteOwnAccount')
+
 	checked: (property, value, defaultValue) ->
 		if not Meteor.user()?.settings?.preferences?[property]? and defaultValue is true
 			currentValue = value
@@ -84,3 +87,27 @@ Template.accountPreferences.events
 					username: 'rocket.cat'
 			title: TAPi18n.__('Desktop_Notification_Test')
 			text: TAPi18n.__('This_is_a_desktop_notification')
+
+	'click .delete-account button': (e) ->
+		e.preventDefault();
+
+		swal
+			title: t("Are_you_sure_you_want_to_delete_your_account"),
+			text: t("If_you_are_sure_type_in_your_password"),
+			type: "input",
+			inputType: "password",
+			showCancelButton: true,
+			closeOnConfirm: false
+
+		, (typedPassword) =>
+			if typedPassword
+				toastr.warning(t("Please_wait_while_your_account_is_being_deleted"));
+				Meteor.call 'deleteUserOwnAccount', SHA256(typedPassword), (error, results) ->
+					if error
+						toastr.remove();
+						swal.showInputError(t("Your_password_is_wrong"));
+					else
+						swal.close();
+			else
+				swal.showInputError(t("You_need_to_type_in_your_password_in_order_to_do_this"));
+				return false;
