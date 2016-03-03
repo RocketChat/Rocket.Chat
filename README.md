@@ -6,6 +6,7 @@ The Ultimate Open Source WebChat Platform
 * [Mobile apps](#mobile-apps)
 * [Desktop apps](#desktop-apps)
 * [Deployment](#deployment)
+   * [Cloudron.io](#cloudronio)
    * [Sandstorm.io](#sandstormio) 
    * [DPlatform](#dplatform)
    * [Heroku](#heroku)
@@ -58,6 +59,12 @@ Now compatible with all Android devices as old as version 4.0.x - [download here
 
 
 # Deployment
+
+## Cloudron.io
+
+Install Rocket.Chat on [Cloudron](https://cloudron.io) Smartserver:
+
+[![Install](https://cloudron.io/img/button.svg)](https://cloudron.io/button.html?app=chat.rocket.cloudronapp)
 
 ## Sandstorm.io
 Host your own Rocket.Chat server in four seconds flat:
@@ -217,7 +224,7 @@ It is a great solution for communities and companies wanting to privately host t
 - Mobile app for Android phone, tablet, and TV stick [Available now on Google Play!](https://play.google.com/store/apps/details?id=com.konecty.rocket.chat)
 - Native Firefox OS Application (also for Desktop Firefox and Firefox for Android!) - [Check the wiki page for install instructions](https://github.com/RocketChat/Rocket.Chat/wiki/Native-Firefox-OS-app-%28hosted-webapp%29)
 - Sandstorm.io instant Rocket.Chat server [Now on Sandstorm App Store](https://apps.sandstorm.io/app/vfnwptfn02ty21w715snyyczw0nqxkv3jvawcah10c6z7hj1hnu0)
-
+- Available on [Cloudron Store](https://cloudron.io/appstore.html#chat.rocket.cloudronapp)
 
 ## Roadmap
 
