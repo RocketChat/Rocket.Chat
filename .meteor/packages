@@ -57,7 +57,7 @@ rocketchat:importer-slack
 rocketchat:integrations
 rocketchat:ldap
 rocketchat:lib
-rocketchat:livechat
+#rocketchat:livechat
 rocketchat:logger
 rocketchat:mailer
 rocketchat:markdown
@@ -91,6 +91,7 @@ rocketchat:ui-sidenav
 rocketchat:version
 rocketchat:webrtc
 rocketchat:wordpress
+rocketchat:crm
 #rocketchat:chatops
 #rocketchat:hubot
 #rocketchat:irc
