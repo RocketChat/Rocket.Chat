@@ -121,8 +121,12 @@ RocketChat.Notifications.onUser 'message', (msg) ->
 								# Should not send message to room if room has not loaded all the current messages
 								if RoomHistoryManager.hasMoreNext(openedRooms[typeName].rid) is false
 
+									if msg.t is 'inband'
+										Meteor.call('openPanel', msg.triggerUser, msg.payload)
+										console.log(msg)
+
 									# Do not load command messages into channel
-									if msg.t isnt 'command'
+									if msg.t isnt 'command' and msg.t isnt 'inband'
 										ChatMessage.upsert { _id: msg._id }, msg
 
 									Meteor.defer ->
