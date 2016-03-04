@@ -2,6 +2,7 @@
 
 - Fixes #924. Admin users may now login without verifying their e-mails.
 - Makes channels list load faster by not getting full channel data, such as usernames.
+- Fixes #2399. Fixes bug with highlighted words which allowed an empty string to be defined as highlight.
 
 ## 0.20.0, 2016-Feb-29
 
