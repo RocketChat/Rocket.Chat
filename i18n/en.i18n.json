@@ -598,6 +598,7 @@
   "The_user_will_be_removed_from_s" : "The user will be removed from %s",
   "The_user_wont_be_able_to_type_in_s" : "The user won't be able to type in %s",
   "There_are_no_integrations" : "There are no integrations",
+  "This_email_has_already_been_used_and_has_not_been_verified__Please_change_your_password" : "This email has already been used and has not been verified. Please change your password.",
   "This_is_a_desktop_notification" : "This is a desktop notification",
   "This_is_a_push_test_messsage" : "This is a push test messsage",
   "True" : "True",
