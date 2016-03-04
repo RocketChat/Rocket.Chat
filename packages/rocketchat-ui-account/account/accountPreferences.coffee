@@ -17,7 +17,7 @@ Template.accountPreferences.helpers
 			return Meteor.user()?.settings?.preferences?[property] == value
 
 	highlights: ->
-		return Meteor.user()?.settings?.preferences?['highlights'].join(', ')
+		return Meteor.user()?.settings?.preferences?['highlights']?.join(', ')
 
 	desktopNotificationEnabled: ->
 		return (KonchatNotification.notificationStatus.get() is 'granted') or (window.Notification && Notification.permission is "granted")
@@ -55,7 +55,7 @@ Template.accountPreferences.onCreated ->
 		data.unreadRoomsMode = $('input[name=unreadRoomsMode]:checked').val()
 		data.autoImageLoad = $('input[name=autoImageLoad]:checked').val()
 		data.emailNotificationMode = $('select[name=emailNotificationMode]').val()
-		data.highlights = _.collect($('[name=highlights]').val().split(','), (e) -> return _.trim(e))
+		data.highlights = _.compact(_.map($('[name=highlights]').val().split(','), (e) -> return _.trim(e)))
 
 		Meteor.call 'saveUserPreferences', data, (error, results) ->
 			if results
