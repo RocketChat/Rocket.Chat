@@ -220,7 +220,7 @@ Template.room.events
 	"touchcancel .message": (e, t) ->
 		Meteor.clearTimeout t.touchtime
 
-	"click .upload-progress > a": ->
+	"click .upload-progress-text > a": ->
 		Session.set "uploading-cancel-#{this.id}", true
 
 	"click .unread-bar > a.mark-read": ->
