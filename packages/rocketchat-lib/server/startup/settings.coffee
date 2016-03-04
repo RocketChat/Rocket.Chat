@@ -35,36 +35,43 @@ RocketChat.settings.addGroup 'Accounts', ->
 		@add 'Accounts_OAuth_Facebook', false, { type: 'boolean', public: true }
 		@add 'Accounts_OAuth_Facebook_id', '', { type: 'string', enableQuery: {_id: 'Accounts_OAuth_Facebook', value: true} }
 		@add 'Accounts_OAuth_Facebook_secret', '', { type: 'string', enableQuery: {_id: 'Accounts_OAuth_Facebook', value: true} }
+		@add 'Accounts_OAuth_Facebook_callback_url', __meteor_runtime_config__?.ROOT_URL + '_oauth/facebook', { type: 'string', blocked: true }
 
 	@section 'Google', ->
 		@add 'Accounts_OAuth_Google', false, { type: 'boolean', public: true }
 		@add 'Accounts_OAuth_Google_id', '', { type: 'string', enableQuery: {_id: 'Accounts_OAuth_Google', value: true} }
 		@add 'Accounts_OAuth_Google_secret', '', { type: 'string', enableQuery: {_id: 'Accounts_OAuth_Google', value: true} }
+		@add 'Accounts_OAuth_Google_callback_url', __meteor_runtime_config__?.ROOT_URL + '_oauth/google', { type: 'string', blocked: true }
 
 	@section 'Github', ->
 		@add 'Accounts_OAuth_Github', false, { type: 'boolean', public: true }
 		@add 'Accounts_OAuth_Github_id', '', { type: 'string', enableQuery: {_id: 'Accounts_OAuth_Github', value: true} }
 		@add 'Accounts_OAuth_Github_secret', '', { type: 'string', enableQuery: {_id: 'Accounts_OAuth_Github', value: true} }
+		@add 'Accounts_OAuth_Github_callback_url', __meteor_runtime_config__?.ROOT_URL + '_oauth/github', { type: 'string', blocked: true }
 
 	@section 'Gitlab', ->
 		@add 'Accounts_OAuth_Gitlab', false, { type: 'boolean', public: true }
 		@add 'Accounts_OAuth_Gitlab_id', '', { type: 'string', enableQuery: {_id: 'Accounts_OAuth_Gitlab', value: true} }
 		@add 'Accounts_OAuth_Gitlab_secret', '', { type: 'string', enableQuery: {_id: 'Accounts_OAuth_Gitlab', value: true} }
+		@add 'Accounts_OAuth_Gitlab_callback_url', __meteor_runtime_config__?.ROOT_URL + '_oauth/gitlab', { type: 'string', blocked: true }
 
 	@section 'Linkedin', ->
 		@add 'Accounts_OAuth_Linkedin', false, { type: 'boolean', public: true }
 		@add 'Accounts_OAuth_Linkedin_id', '', { type: 'string', enableQuery: {_id: 'Accounts_OAuth_Linkedin', value: true} }
 		@add 'Accounts_OAuth_Linkedin_secret', '', { type: 'string', enableQuery: {_id: 'Accounts_OAuth_Linkedin', value: true} }
+		@add 'Accounts_OAuth_Linkedin_callback_url', __meteor_runtime_config__?.ROOT_URL + '_oauth/linkedin', { type: 'string', blocked: true }
 
 	@section 'Meteor', ->
 		@add 'Accounts_OAuth_Meteor', false, { type: 'boolean', public: true }
 		@add 'Accounts_OAuth_Meteor_id', '', { type: 'string', enableQuery: {_id: 'Accounts_OAuth_Meteor', value: true} }
 		@add 'Accounts_OAuth_Meteor_secret', '', { type: 'string', enableQuery: {_id: 'Accounts_OAuth_Meteor', value: true} }
+		@add 'Accounts_OAuth_Meteor_callback_url', __meteor_runtime_config__?.ROOT_URL + '_oauth/meteor', { type: 'string', blocked: true }
 
 	@section 'Twitter', ->
 		@add 'Accounts_OAuth_Twitter', false, { type: 'boolean', public: true }
 		@add 'Accounts_OAuth_Twitter_id', '', { type: 'string', enableQuery: {_id: 'Accounts_OAuth_Twitter', value: true} }
 		@add 'Accounts_OAuth_Twitter_secret', '', { type: 'string', enableQuery: {_id: 'Accounts_OAuth_Twitter', value: true} }
+		@add 'Accounts_OAuth_Twitter_callback_url', __meteor_runtime_config__?.ROOT_URL + '_oauth/twitter', { type: 'string', blocked: true }
 
 
 RocketChat.settings.addGroup 'FileUpload', ->
