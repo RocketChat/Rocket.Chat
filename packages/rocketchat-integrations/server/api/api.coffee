@@ -1,3 +1,5 @@
+vm = Npm.require('vm')
+
 Api = new Restivus
 	enableCors: true
 	apiPath: 'hooks/'
@@ -22,14 +24,65 @@ Api.addRoute ':integrationId/:userId/:token', authRequired: true,
 		integration = RocketChat.models.Integrations.findOne(@urlParams.integrationId)
 		user = RocketChat.models.Users.findOne(@userId)
 
-		@bodyParams.bot =
-			i: integration._id
-
 		defaultValues =
 			channel: integration.channel
 			alias: integration.alias
 			avatar: integration.avatar
 			emoji: integration.emoji
+
+
+		if integration.processIncomingRequestScript? and integration.processIncomingRequestScript.trim() isnt ''
+			sandbox =
+				url:
+					hash: @request._parsedUrl.hash
+					search: @request._parsedUrl.search
+					query: @queryParams
+					pathname: @request._parsedUrl.pathname
+					path: @request._parsedUrl.path
+				url_raw: @request.url
+				url_params: @urlParams
+				content: @bodyParams
+				content_raw: @request.body
+				headers: @request.headers
+				user:
+					_id: @user._id
+					name: @user.name
+					username: @user.username
+
+			script = undefined
+			vmScript = undefined
+			try
+				script = "result = (function() {\n"+integration.processIncomingRequestScript+"\n}());"
+				vmScript = vm.createScript script, 'script.js'
+				console.log vmScript
+				console.log 'will execute script', script
+				console.log 'with context', sandbox
+			catch e
+				console.error "[Error evaluating Script:]"
+				console.error script.replace(/^/gm, '  ')
+				console.error "\n[Stack:]"
+				console.error e.stack.replace(/^/gm, '  ')
+				return RocketChat.API.v1.failure 'error-evaluating-script'
+
+			try
+				vmScript.runInNewContext sandbox
+				if sandbox.result.error?
+					return RocketChat.API.v1.failure sandbox.result.error
+
+				@bodyParams = sandbox.result?.content
+				console.log 'result', @bodyParams
+			catch e
+				console.error "[Error running Script:]"
+				console.error script.replace(/^/gm, '  ')
+				console.error "\n[Stack:]"
+				console.error e.stack.replace(/^/gm, '  ')
+				return RocketChat.API.v1.failure 'error-running-script'
+
+		if not @bodyParams?
+			RocketChat.API.v1.failure 'body-empty'
+
+		@bodyParams.bot =
+			i: integration._id
 
 		try
 			message = processWebhookMessage @bodyParams, user, defaultValues
