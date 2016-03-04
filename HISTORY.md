@@ -1,5 +1,8 @@
 ## NEXT
 
+- Fixes oauth registration deleting account with unverified e-mail
+- Improves layout of new password requested
+
 ## 0.20.0, 2016-Feb-29
 
 - Ability to disable sending nickname and message via push notification

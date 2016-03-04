@@ -19,15 +19,6 @@ RocketChat.models.Users = new class extends RocketChat.models._Base
 
 		return @findOne query, options
 
-	findOneByVerifiedEmailAddress: (emailAddress, verified=true, options) ->
-		query =
-			emails:
-				$elemMatch:
-					address: emailAddress
-					verified: verified
-
-		return @findOne query, options
-
 	findOneVerifiedFromSameDomain: (email, options) ->
 		domain = s.strRight(email, '@')
 		query =
@@ -171,6 +162,20 @@ RocketChat.models.Users = new class extends RocketChat.models._Base
 
 		return @update _id, update
 
+	setEmailVerified: (_id, email) ->
+		query =
+			_id: _id
+			emails:
+				$elemMatch:
+					address: email
+					verified: false
+
+		update =
+			$set:
+				'emails.$.verified': true
+
+		return @update query, update
+
 	setName: (_id, name) ->
 		update =
 			$set:
@@ -217,6 +222,17 @@ RocketChat.models.Users = new class extends RocketChat.models._Base
 		update =
 			$unset:
 				"requirePasswordChange" : true
+				"requirePasswordChangeReason" : true
+
+		return @update _id, update
+
+	resetPasswordAndSetRequirePasswordChange: (_id, requirePasswordChange, requirePasswordChangeReason) ->
+		update =
+			$unset:
+				"services.password": 1
+			$set:
+				"requirePasswordChange" : requirePasswordChange,
+				"requirePasswordChangeReason": requirePasswordChangeReason
 
 		return @update _id, update
 
@@ -268,15 +284,6 @@ RocketChat.models.Users = new class extends RocketChat.models._Base
 	# REMOVE
 	removeById: (_id) ->
 		return @remove _id
-
-	removeByUnverifiedEmail: (email) ->
-		query =
-			emails:
-				$elemMatch:
-					address: email
-					verified: false
-
-		return @remove query
 
 	###
 	Find users to send a message by email if:
