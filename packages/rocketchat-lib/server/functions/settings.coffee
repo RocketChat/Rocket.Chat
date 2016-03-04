@@ -24,7 +24,7 @@ RocketChat.settings.add = (_id, value, options = {}) ->
 	options.valueSource = 'packageValue'
 	options.ts = new Date
 	options.hidden = false
-	options.blocked = false
+	options.blocked = options.blocked || false
 	options.sorter ?= RocketChat.settings._sorter++
 
 	if options.enableQuery?
