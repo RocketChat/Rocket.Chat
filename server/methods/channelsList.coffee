@@ -1,6 +1,6 @@
 Meteor.methods
 	channelsList: (filter, limit) ->
-		options =  { sort: { msgs:-1 } }
+		options =  { fields: { name: 1 }, sort: { msgs:-1 } }
 		if _.isNumber limit
 			options.limit = limit
 
