@@ -16,7 +16,7 @@ RocketChat.settings.addGroup 'Accounts', ->
 	@add 'Accounts_PasswordPlaceholder', '', { type: 'string', public: true, i18nLabel: 'Placeholder_for_password_login_field' }
 
 	@section 'Registration', ->
-		@add 'Accounts_EmailVerification', false, { type: 'boolean', public: true }
+		@add 'Accounts_EmailVerification', false, { type: 'boolean', public: true, enableQuery: {_id: 'SMTP_Host', value: { $exists: 1, $ne: "" } } }
 		@add 'Accounts_ManuallyApproveNewUsers', false, { type: 'boolean' }
 		@add 'Accounts_AllowedDomainsList', '', { type: 'string', public: true }
 		@add 'Accounts_RegistrationForm', 'Public', { type: 'select', public: true, values: [ { key: 'Public', i18nLabel: 'Accounts_RegistrationForm_Public' }, { key: 'Disabled', i18nLabel: 'Accounts_RegistrationForm_Disabled' }, { key: 'Secret URL', i18nLabel: 'Accounts_RegistrationForm_Secret_URL' } ] }
