@@ -21,16 +21,18 @@
 				{{#each uploading}}
 					<div class="upload-progress {{#if error}}upload-error{{/if}}">
 						{{#if error}}
-							{{error}}
-							<a href="##">
-								close
-							</a>
+							<div class="upload-progress-text">
+								{{error}}
+								<a href="#">
+									{{_ "close"}}
+								</a>
+							</div>
 						{{else}}
 							<div class="upload-progress-progress" style="width: {{percentage}}%;"></div>
 							<div class="upload-progress-text">
 								{{name}}... {{percentage}}%
 								<a href="#">
-									cancel
+									{{_ "cancel"}}
 								</a>
 							</div>
 						{{/if}}
