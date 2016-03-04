@@ -1,6 +1,7 @@
 ## NEXT
 
 - Fixes #924. Admin users may now login without verifying their e-mails.
+- Makes channels list load faster by not getting full channel data, such as usernames.
 
 ## 0.20.0, 2016-Feb-29
 
