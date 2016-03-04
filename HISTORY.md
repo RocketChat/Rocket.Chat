@@ -1,5 +1,7 @@
 ## NEXT
 
+- Fixes #924. Admin users may now login without verifying their e-mails.
+
 ## 0.20.0, 2016-Feb-29
 
 - Ability to disable sending nickname and message via push notification
