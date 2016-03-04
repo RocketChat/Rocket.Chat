@@ -99,8 +99,6 @@ Template.messageBox.events
 	"click .editing-commands-save > a": (e) ->
 		chatMessages[Session.get('openedRoom')].send(@_id, chatMessages.input)
 
-
-
 	'change .message-form input[type=file]': (event, template) ->
 		e = event.originalEvent or event
 		files = e.target.files
@@ -125,7 +123,7 @@ Template.messageBox.events
 			fileUpload [{
 				file: blob
 				type: 'audio'
-				name: 'Audio record'
+				name: TAPi18n.__('Audio record') + '.wav'
 			}]
 
 		t.$('.stop-mic').addClass('hidden')
