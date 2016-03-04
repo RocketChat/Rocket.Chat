@@ -19,6 +19,7 @@ Meteor.publish 'fullUserData', (filter, limit) ->
 			services: 1
 			roles : 1
 			requirePasswordChange : 1
+			requirePasswordChangeReason : 1
 	else
 		limit = 1
 
