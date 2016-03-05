@@ -27,6 +27,14 @@
 	user-select: text;
 }
 
+.text-right {
+	text-align: right;
+}
+
+.no-scroll {
+	overflow: hidden !important;
+}
+
 .page-settings, .page-settings * {
 	-webkit-user-select: text;
 	-moz-user-select: text;
@@ -265,6 +273,10 @@ blockquote {
 			font-size: 11px;
 		}
 	}
+	.logoutOthers {
+		text-align: right;
+	}
+
 	.submit {
 		margin-top: 20px;
 		text-align: right;
@@ -1225,6 +1237,32 @@ a.github-fork {
 		}
 		> .wrapper {
 			direction: ltr;
+
+			.flex-control {
+				.search {
+					display: table;
+					width: 100%;
+					margin-bottom: 10px;
+				}
+				.sort {
+					display: table;
+					width: 100%;
+					margin-bottom: 30px;
+					position: relative;
+
+					.sort-item {
+						display: table-cell;
+						vertical-align: middle;
+						text-align: center;
+						position: relative;
+						padding-right: 5px;
+
+						&:first {
+							width: 1px;
+						}
+					}
+				}
+			}
 		}
 		h4 {
 			margin-bottom: 30px;
@@ -2048,7 +2086,7 @@ a.github-fork {
 			tbody {
 				td {
 					vertical-align: middle;
-					padding: 0 2px;
+					padding: 2px 2px;
 				}
 				tr {
 					cursor: pointer;
@@ -2780,9 +2818,11 @@ a.github-fork {
 	&.system {
 		.body {
 			font-style: italic;
-			text-transform: lowercase;
 			em {
 				font-weight: 600;
+			}
+			.attachment {
+				font-style: normal;
 			}
 		}
 	}
@@ -2844,7 +2884,7 @@ a.github-fork {
 	right: 0;
 	background: #FCFCFC;
 	border-left: 1px solid #eaeaea;
-	z-index: 13;
+	z-index: 130;
 
 	.tab-button {
 		cursor: pointer;
@@ -2871,7 +2911,7 @@ a.github-fork {
 	border-left: 1px solid;
 	overflow-x: visible;
 	position: fixed;
-	z-index: 100;
+	z-index: 110;
 	max-width: @flex-tab-width;
 	width: 90%;
 	bottom: 0;
@@ -4020,12 +4060,14 @@ a.github-fork {
 		}
 		.main-content {
 			left: 0;
-			.transition(transform .2s linear);
-			z-index: 1000;
+			z-index: 120;
 
 			&.notransition {
 				.transition(transform .0s);
 			}
+		}
+		.main-content, .flex-tab-bar {
+			.transition(transform .2s linear);
 		}
 		.fixed-title h2 {
 			margin-left: 45px;
@@ -4059,7 +4101,7 @@ a.github-fork {
 					}
 				}
 			}
-			.main-content {
+			.main-content, .flex-tab-bar {
 				.transform(translateX(@rooms-box-width));
 			}
 		}
@@ -4075,10 +4117,12 @@ a.github-fork {
 			margin-top: 6px;
 			padding: 10px 22px;
 		}
-		p {
-			max-height: 40px;
-			overflow: hidden;
-		}
+	}
+}
+
+@media all and(max-height: 400px) {
+	.upload-preview .upload-preview-file {
+		height: 100px;
 	}
 }
 
@@ -4439,6 +4483,7 @@ a.github-fork {
 	-moz-user-select: text;
 	-ms-user-select: text;
 	user-select: text;
+	margin-bottom: 0px !important;
 
 	* {
 		-webkit-user-select: text;
@@ -4456,6 +4501,94 @@ a.github-fork {
 	}
 }
 
+.new-logs {
+	margin: 0 -65px;
+	position: absolute;
+	border-radius: 20px;
+	width: 130px;
+	height: 30px;
+	text-align: center;
+	line-height: 30px;
+	font-size: 0.8em;
+	cursor: pointer;
+	bottom: 8px;
+	left: 50%;
+	background: #FFF;
+	color: #428bca;
+
+	.transition(transform 0.3s ease-out);
+	.transform(translateY(0));
+	&.not {
+		.transform(translateY(150%));
+	}
+}
+
 .powered-by {
 	margin-top: 1em;
+}
+
+.page-loading {
+	position: absolute;
+	top: 0;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	background-color: rgba(0,0,0,.5);
+	z-index: 1000;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+
+	.spinner {
+		margin: 10px auto;
+		width: 50px;
+		height: 40px;
+		text-align: center;
+		font-size: 10px;
+	}
+
+	.spinner > div {
+		background-color: #fff;
+		height: 100%;
+		width: 6px;
+		display: inline-block;
+
+		-webkit-animation: sk-stretchdelay 1.2s infinite ease-in-out;
+		animation: sk-stretchdelay 1.2s infinite ease-in-out;
+	}
+
+	.spinner .rect2 {
+		-webkit-animation-delay: -1.1s;
+		animation-delay: -1.1s;
+	}
+
+	.spinner .rect3 {
+		-webkit-animation-delay: -1.0s;
+		animation-delay: -1.0s;
+	}
+
+	.spinner .rect4 {
+		-webkit-animation-delay: -0.9s;
+		animation-delay: -0.9s;
+	}
+
+	.spinner .rect5 {
+		-webkit-animation-delay: -0.8s;
+		animation-delay: -0.8s;
+	}
+
+	@-webkit-keyframes sk-stretchdelay {
+		0%, 40%, 100% { -webkit-transform: scaleY(0.4) }
+		20% { -webkit-transform: scaleY(1.0) }
+	}
+
+	@keyframes sk-stretchdelay {
+		0%, 40%, 100% {
+			transform: scaleY(0.4);
+			-webkit-transform: scaleY(0.4);
+		}  20% {
+			transform: scaleY(1.0);
+			-webkit-transform: scaleY(1.0);
+		}
+	}
 }

@@ -6,7 +6,7 @@
 				<span class="page-title">{{pageTitle}}</span>
 			</h2>
 		</head>
-		<div class="content">
+		<div class="content {{#if noScroll}}no-scroll{{/if}}">
 			{{> Template.dynamic template=pageTemplate}}
 		</div>
 	</section>

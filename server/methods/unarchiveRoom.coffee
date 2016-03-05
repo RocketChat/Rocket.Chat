@@ -5,6 +5,9 @@ Meteor.methods
 
 		room = RocketChat.models.Rooms.findOneById rid
 
+		unless room
+			throw new Meteor.Error 'invalid-room', '[methods] unarchiveRoom -> Invalid room'
+
 		if room.u? and room.u._id is Meteor.userId() or RocketChat.authz.hasRole(Meteor.userId(), 'admin')
 			RocketChat.models.Rooms.unarchiveById rid
 

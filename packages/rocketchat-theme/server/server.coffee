@@ -41,7 +41,6 @@ RocketChat.theme = new class
 	packageCallbacks: []
 	files: [
 		'assets/stylesheets/global/_variables.less'
-		'assets/stylesheets/utils/_emojione.import.less'
 		'assets/stylesheets/utils/_keyframes.import.less'
 		'assets/stylesheets/utils/_lesshat.import.less'
 		'assets/stylesheets/utils/_preloader.import.less'

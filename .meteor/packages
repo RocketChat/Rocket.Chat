@@ -34,16 +34,14 @@ session
 spacebars
 standard-minifiers
 tracker
-rocketchat:oauth2-server-config
 
-arunoda:streams
-rocketchat:lib
-
+rocketchat:api
+rocketchat:assets
 rocketchat:authorization
 rocketchat:autolinker
+rocketchat:cas
 rocketchat:channel-settings
 rocketchat:channel-settings-mail-messages
-rocketchat:cas
 rocketchat:colors
 rocketchat:custom-oauth
 rocketchat:emojione
@@ -52,10 +50,13 @@ rocketchat:file
 rocketchat:github-enterprise
 rocketchat:gitlab
 rocketchat:highlight
+rocketchat:highlight-words
 rocketchat:importer
 rocketchat:importer-hipchat
 rocketchat:importer-slack
+rocketchat:integrations
 rocketchat:ldap
+rocketchat:lib
 rocketchat:livechat
 rocketchat:logger
 rocketchat:mailer
@@ -63,9 +64,11 @@ rocketchat:markdown
 rocketchat:me
 rocketchat:mentions
 rocketchat:mentions-flextab
+rocketchat:message-attachments
 rocketchat:message-pin
 rocketchat:message-star
 rocketchat:migrations
+rocketchat:oauth2-server-config
 rocketchat:oembed
 rocketchat:push-notifications
 rocketchat:slashcommands-invite
@@ -99,6 +102,7 @@ konecty:multiple-instances-status
 konecty:nrr
 konecty:user-presence
 
+arunoda:streams
 chrismbeckett:toastr
 dispatch:run-as-user
 francocatena:status
@@ -108,7 +112,6 @@ jparker:gravatar
 kadira:blaze-layout
 kadira:flow-router
 kenton:accounts-sandstorm
-kevohagan:sweetalert
 mizzao:autocomplete
 mizzao:timesync
 momentjs:moment
@@ -134,8 +137,4 @@ yasaricli:slugify
 yasinuslu:blaze-meta
 # sanjo:jasmine
 # velocity:html-reporter
-rocketchat:assets
-rocketchat:integrations
-rocketchat:message-attachments
-rocketchat:api
-rocketchat:highlight-words
+smoral:sweetalert

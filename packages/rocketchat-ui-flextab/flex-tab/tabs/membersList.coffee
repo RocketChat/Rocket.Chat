@@ -38,6 +38,8 @@ Template.membersList.helpers
 		# sortBy is stable, so we can do this
 		users = _.sortBy users, (u) -> !u.status?
 
+		hasMore = users.length > Template.instance().usersLimit.get()
+
 		users = _.first(users, Template.instance().usersLimit.get())
 
 		totalUsers = roomUsernames.length
@@ -48,7 +50,7 @@ Template.membersList.helpers
 			total: totalUsers
 			totalShowing: totalShowing
 			users: users
-			hasMore: totalShowing > 0 and totalShowing < totalUsers
+			hasMore: hasMore
 
 		return ret
 
@@ -64,12 +66,15 @@ Template.membersList.helpers
 			rules: [
 				{
 					collection: 'UserAndRoom'
-					subscription: 'roomSearch'
+					subscription: 'userAutocomplete'
 					field: 'username'
-					template: Template.roomSearch
-					noMatchTemplate: Template.roomSearchEmpty
+					template: Template.userSearch
+					noMatchTemplate: Template.userSearchEmpty
 					matchAll: true
-					filter: { type: 'u', uid: { $ne: Meteor.userId() }, active: { $eq: true } }
+					filter:
+						exceptions: [Meteor.user().username]
+					selector: (match) ->
+						return { username: match }
 					sort: 'username'
 				}
 			]

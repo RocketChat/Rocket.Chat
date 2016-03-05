@@ -7,6 +7,8 @@ Meteor.methods
 		unless user.emails?[0]?.address
 			throw new Meteor.Error 'invalid-email', "[methods] sendSMTPTestEmail -> Invalid e-mail"
 
+		this.unblock()
+
 		Email.send
 			to: user.emails[0].address
 			from: RocketChat.settings.get('From_Email')

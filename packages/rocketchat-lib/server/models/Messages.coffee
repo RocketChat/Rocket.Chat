@@ -104,6 +104,7 @@ RocketChat.models.Messages = new class extends RocketChat.models._Base
 
 	findPinnedByRoom: (roomId, options) ->
 		query =
+			t: { $ne: 'rm' }
 			_hidden: { $ne: true }
 			pinned: true
 			rid: roomId
@@ -262,6 +263,7 @@ RocketChat.models.Messages = new class extends RocketChat.models._Base
 			u:
 				_id: user._id
 				username: user.username
+			groupable: false
 
 		_.extend record, extraData
 

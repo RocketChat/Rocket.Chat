@@ -10,28 +10,32 @@
 				if Notification.permission != status
 					Notification.permission = status
 
-	# notificacoes HTML5
-	_showDesktop: (notification) ->
+	notify: (notification) ->
 		if window.Notification && Notification.permission == "granted"
-			getAvatarAsPng notification.payload.sender.username, (avatarImage) ->
-				n = new Notification notification.title,
-					icon: avatarImage
-					body: _.stripTags(notification.text)
+			n = new Notification notification.title,
+				icon: notification.icon or getAvatarUrlFromUsername notification.payload.sender.username
+				body: _.stripTags(notification.text)
+				silent: true
 
-				if notification.payload?.rid?
-					n.onclick = ->
-						window.focus()
-						switch notification.payload.type
-							when 'd'
-								FlowRouter.go 'direct', {username: notification.payload.sender.username}
-							when 'c'
-								FlowRouter.go 'channel', {name: notification.payload.name}
-							when 'p'
-								FlowRouter.go 'group', {name: notification.payload.name}
+			if notification.payload?.rid?
+				n.onclick = ->
+					window.focus()
+					switch notification.payload.type
+						when 'd'
+							FlowRouter.go 'direct', {username: notification.payload.sender.username}
+						when 'c'
+							FlowRouter.go 'channel', {name: notification.payload.name}
+						when 'p'
+							FlowRouter.go 'group', {name: notification.payload.name}
 
 	showDesktop: (notification) ->
 		if not window.document.hasFocus?() and Meteor.user().status isnt 'busy'
-			KonchatNotification._showDesktop(notification)
+			if Meteor.settings.public.sandstorm
+				KonchatNotification.notify(notification)
+			else
+				getAvatarAsPng notification.payload.sender.username, (avatarAsPng) ->
+					notification.icon = avatarAsPng
+					KonchatNotification.notify(notification)
 
 	newMessage: ->
 		unless Session.equals('user_' + Meteor.userId() + '_status', 'busy') or Meteor.user()?.settings?.preferences?.disableNewMessageNotification

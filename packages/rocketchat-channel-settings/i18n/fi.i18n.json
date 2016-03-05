@@ -4,7 +4,6 @@
   "Private_Group" : "Privaattiryhmä",
   "Save" : "Tallenna",
   "Topic" : "Aihe",
-  "Type" : "Tyyppi",
   "Room_Info" : "Huoneen info",
   "room_changed_privacy" : "Huoneen tyyppi vaihdettu <em>__room_type__</em> käyttäjän <em>__user_by__</em> toimesta",
   "room_changed_topic" : "Huoneen aihe vaihdettu <em>__room_topic__</em> käyttäjän <em>__user_by__</em> toimesta",

@@ -47,6 +47,9 @@ RocketChat.models.Rooms = new class extends RocketChat.models._Base
 
 
 	# FIND
+	findById: (roomId) ->
+		return @find { _id: roomId }, options
+
 	findByType: (type, options) ->
 		query =
 			t: type
@@ -67,7 +70,7 @@ RocketChat.models.Rooms = new class extends RocketChat.models._Base
 		return @find query, options
 
 	findByNameContaining: (name, options) ->
-		nameRegex = new RegExp name, "i"
+		nameRegex = new RegExp s.trim(s.escapeRegExp(name)), "i"
 
 		query =
 			$or: [
@@ -80,7 +83,7 @@ RocketChat.models.Rooms = new class extends RocketChat.models._Base
 		return @find query, options
 
 	findByNameContainingAndTypes: (name, types, options) ->
-		nameRegex = new RegExp name, "i"
+		nameRegex = new RegExp s.trim(s.escapeRegExp(name)), "i"
 
 		query =
 			t:
@@ -361,6 +364,15 @@ RocketChat.models.Rooms = new class extends RocketChat.models._Base
 
 		return @update query, update
 
+	saveDefaultById: (_id, defaultValue) ->
+		query =
+			_id: _id
+
+		update =
+			$set:
+				default: defaultValue is 'true'
+
+		return @update query, update
 
 	# INSERT
 	createWithTypeNameUserAndUsernames: (type, name, user, usernames, extraData) ->

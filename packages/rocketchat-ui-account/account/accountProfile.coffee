@@ -42,7 +42,6 @@ Template.accountProfile.onCreated ->
 		@find('#language').value = localStorage.getItem('userLanguage')
 		@find('#oldPassword').value = ''
 		@find('#password').value = ''
-		@find('#username').value = ''
 
 	@changePassword = (oldPassword, newPassword, callback) ->
 		instance = @

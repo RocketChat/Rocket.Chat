@@ -10,15 +10,15 @@ Template.directMessagesFlex.helpers
 				{
 					# @TODO maybe change this 'collection' and/or template
 					collection: 'UserAndRoom'
-					subscription: 'roomSearch'
+					subscription: 'userAutocomplete'
 					field: 'username'
 					template: Template.userSearch
 					noMatchTemplate: Template.userSearchEmpty
 					matchAll: true
 					filter:
-						type: 'u'
-						_id: { $ne: Meteor.userId() }
-						active: { $eq: true }
+						exceptions: [Meteor.user().username]
+					selector: (match) ->
+						return { username: match }
 					sort: 'username'
 				}
 			]

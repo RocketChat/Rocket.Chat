@@ -15,6 +15,7 @@ Package.onUse(function(api) {
   api.use('rocketchat:lib');
   api.use('rocketchat:authorization');
   api.use('rocketchat:api');
+  api.use('rocketchat:theme');
 
   api.use('kadira:flow-router', 'client');
   api.use('templating', 'client');
