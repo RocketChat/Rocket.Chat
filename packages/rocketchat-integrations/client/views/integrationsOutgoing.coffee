@@ -119,6 +119,8 @@ Template.integrationsOutgoing.events
 		triggerWords = $('[name=triggerWords]').val().trim()
 		urls = $('[name=urls]').val().trim()
 		token = $('[name=token]').val().trim()
+		prepareOutgoingRequestScript = $('[name=prepareOutgoingRequestScript]').val().trim()
+		processOutgoingResponseScript = $('[name=processOutgoingResponseScript]').val().trim()
 
 		if username is ''
 			return toastr.error TAPi18n.__("The_username_is_required")
@@ -150,6 +152,8 @@ Template.integrationsOutgoing.events
 			triggerWords: triggerWords if triggerWords isnt ''
 			urls: urls if urls isnt ''
 			token: token if token isnt ''
+			prepareOutgoingRequestScript: prepareOutgoingRequestScript if prepareOutgoingRequestScript isnt ''
+			processOutgoingResponseScript: processOutgoingResponseScript if processOutgoingResponseScript isnt ''
 
 		params = Template.instance().data.params?()
 		if params?.id?
