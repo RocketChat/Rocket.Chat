@@ -1,3 +1,5 @@
+vm = Npm.require('vm')
+
 triggers = {}
 
 RocketChat.models.Integrations.find({type: 'webhook-outgoing'}).observe
@@ -41,15 +43,58 @@ ExecuteTriggerUrl = (url, trigger, message, room, tries=0) ->
 		data.trigger_word = word
 
 	opts =
+		params: {}
+		method: 'POST'
+		url: url
 		data: data
+		auth: undefined
 		npmRequestOptions:
 			rejectUnauthorized: !RocketChat.settings.get 'Allow_Invalid_SelfSigned_Certs'
 			strictSSL: !RocketChat.settings.get 'Allow_Invalid_SelfSigned_Certs'
 		headers:
 			'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/41.0.2227.0 Safari/537.36'
 
-	HTTP.call 'POST', url, opts, (error, result) ->
+	if trigger.prepareOutgoingRequestScript? and trigger.prepareOutgoingRequestScript.trim() isnt ''
+		sandbox =
+			request: opts
+
+		script = undefined
+		vmScript = undefined
+		try
+			script = "result = (function() {\n"+trigger.prepareOutgoingRequestScript+"\n}());"
+			vmScript = vm.createScript script, 'script.js'
+			console.log vmScript
+			console.log 'will execute script', script
+			console.log 'with context', sandbox
+		catch e
+			console.error "[Error evaluating Script:]"
+			console.error script.replace(/^/gm, '  ')
+			console.error "\n[Stack:]"
+			console.error e.stack.replace(/^/gm, '  ')
+			return
+
+		try
+			vmScript.runInNewContext sandbox
+			opts = sandbox.result
+			console.log 'result', opts
+		catch e
+			console.error "[Error running Script:]"
+			console.error script.replace(/^/gm, '  ')
+			console.error "\n[Stack:]"
+			console.error e.stack.replace(/^/gm, '  ')
+			return
+
+	if not opts?
+		return
+
+
+	HTTP.call opts.method, opts.url, opts, (error, result) ->
 		if not result? or result.statusCode isnt 200
+			if error?
+				console.error error
+			if result?
+				console.log result
+
 			if result.statusCode is 410
 				RocketChat.models.Integrations.remove _id: trigger._id
 				return
@@ -67,7 +112,47 @@ ExecuteTriggerUrl = (url, trigger, message, room, tries=0) ->
 			return
 
 		# process outgoing webhook response as a new message
-		else if result?.statusCode is 200 and (result.data?.text? or result.data?.attachments?)
+		else if result?.statusCode is 200
+			if trigger.processOutgoingResponseScript? and trigger.processOutgoingResponseScript.trim() isnt ''
+				sandbox =
+					request: opts
+					response:
+						content: result.data
+						content_raw: result.content
+						headers: result.headers
+
+				script = undefined
+				vmScript = undefined
+				try
+					script = "result = (function() {\n"+trigger.processOutgoingResponseScript+"\n}());"
+					vmScript = vm.createScript script, 'script.js'
+					console.log vmScript
+					console.log 'will execute script', script
+					console.log 'with context', sandbox
+				catch e
+					console.error "[Error evaluating Script:]"
+					console.error script.replace(/^/gm, '  ')
+					console.error "\n[Stack:]"
+					console.error e.stack.replace(/^/gm, '  ')
+					return
+
+				try
+					vmScript.runInNewContext sandbox
+					result = sandbox.result.content
+					if result?
+						result = data: result
+					console.log 'result', result
+				catch e
+					console.error "[Error running Script:]"
+					console.error script.replace(/^/gm, '  ')
+					console.error "\n[Stack:]"
+					console.error e.stack.replace(/^/gm, '  ')
+					return RocketChat.API.v1.failure 'error-running-script'
+
+
+			if not result?.data?.text? and not result?.data?.attachments?
+				return
+
 			user = RocketChat.models.Users.findOneByUsername(trigger.username)
 
 			result.data.bot =
