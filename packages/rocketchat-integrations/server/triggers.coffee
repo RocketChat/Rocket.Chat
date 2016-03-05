@@ -42,6 +42,25 @@ ExecuteTriggerUrl = (url, trigger, message, room, tries=0) ->
 	if word?
 		data.trigger_word = word
 
+	sendMessage = (message) ->
+		user = RocketChat.models.Users.findOneByUsername(trigger.username)
+
+		message.bot =
+			i: trigger._id
+
+		defaultValues =
+			alias: trigger.alias
+			avatar: trigger.avatar
+			emoji: trigger.emoji
+
+		if room.t is 'd'
+			defaultValues.channel = '@'+room._id
+		else
+			defaultValues.channel = '#'+room._id
+
+		message = processWebhookMessage message, user, defaultValues
+
+
 	opts =
 		params: {}
 		method: 'POST'
@@ -77,6 +96,8 @@ ExecuteTriggerUrl = (url, trigger, message, room, tries=0) ->
 			vmScript.runInNewContext sandbox
 			opts = sandbox.result
 			console.log 'result', opts
+			if opts.message?
+				return sendMessage opts.message
 		catch e
 			console.error "[Error running Script:]"
 			console.error script.replace(/^/gm, '  ')
@@ -150,25 +171,8 @@ ExecuteTriggerUrl = (url, trigger, message, room, tries=0) ->
 					return RocketChat.API.v1.failure 'error-running-script'
 
 
-			if not result?.data?.text? and not result?.data?.attachments?
-				return
-
-			user = RocketChat.models.Users.findOneByUsername(trigger.username)
-
-			result.data.bot =
-				i: trigger._id
-
-			defaultValues =
-				alias: trigger.alias
-				avatar: trigger.avatar
-				emoji: trigger.emoji
-
-			if room.t is 'd'
-				defaultValues.channel = '@'+room._id
-			else
-				defaultValues.channel = '#'+room._id
-
-			message = processWebhookMessage result.data, user, defaultValues
+			if result?.data?.text? or result?.data?.attachments?
+				sendMessage result.data
 
 
 ExecuteTrigger = (trigger, message, room) ->
