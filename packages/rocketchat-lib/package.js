@@ -38,6 +38,7 @@ Package.onUse(function(api) {
 	api.addFiles('lib/settings.coffee');
 	api.addFiles('lib/configLogger.coffee');
 	api.addFiles('lib/callbacks.coffee');
+	api.addFiles('lib/fileUploadRestrictions.js');
 	api.addFiles('lib/slashCommand.coffee');
 	api.addFiles('lib/Message.coffee');
 	api.addFiles('lib/MessageTypes.coffee');
