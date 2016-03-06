@@ -27,3 +27,24 @@ RocketChat.models.Uploads = new class extends RocketChat.models._Base
 				uploadedAt: 1
 
 		return @find fileQuery, fileOptions
+
+	insertFile: (roomId, userId, store, file) ->
+		fileData =
+			rid: roomId
+			userId: userId
+			name: file.name
+			size: file.size
+			type: file.type
+			extension: s.strRightBack(file.name, '.')
+			url: file.url
+			complete: true
+			uploading: false
+			progress: 1
+			uploadedAt: new Date()
+
+		if @model.direct?.insert?
+			file = @model.direct.insert fileData
+		else
+			file = @insert fileData
+
+		return file
