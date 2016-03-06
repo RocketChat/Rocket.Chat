@@ -37,6 +37,7 @@ diff-sequence@1.0.1
 dispatch:run-as-user@1.1.1
 ecmascript@0.1.6
 ecmascript-runtime@0.2.6
+edgee:slingshot@0.7.1
 ejson@1.0.7
 email@1.0.8
 emojione:emojione@2.1.0
@@ -138,6 +139,7 @@ rocketchat:custom-oauth@1.0.0
 rocketchat:emojione@0.0.1
 rocketchat:favico@0.0.1
 rocketchat:file@0.0.1
+rocketchat:file-upload@0.0.1
 rocketchat:github-enterprise@0.0.1
 rocketchat:gitlab@0.0.1
 rocketchat:highlight@0.0.1
