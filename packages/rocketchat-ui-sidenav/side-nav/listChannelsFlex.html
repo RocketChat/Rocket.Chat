@@ -15,6 +15,13 @@
 						</div>
 					</form>
 				</div>
+				<div class="sort">
+					<i class="icon-sort-alt-up"></i>
+					<select class="c-select" id="sort">
+						<option value="name" selected="{{sortSelected 'name'}}">{{_ "Name"}}</option>
+						<option value="msgs" selected="{{sortSelected 'msgs'}}">{{_ "Number_of_messages"}}</option>
+					</select>
+				</div>
 			</div>
 			<h4>{{_ "Channels_list"}}</h4>
 			<ul>

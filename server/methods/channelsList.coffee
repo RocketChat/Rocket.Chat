@@ -1,11 +1,16 @@
 Meteor.methods
-	channelsList: (filter, limit) ->
+	channelsList: (filter, limit, sort) ->
 		options =  { fields: { name: 1 }, sort: { msgs:-1 } }
 		if _.isNumber limit
 			options.limit = limit
+		if _.trim(sort)
+			switch sort
+				when 'name'
+					options.sort = { name: 1 }
+				when 'msgs'
+					options.sort = { msgs: -1 }
 
 		if filter
-			options.sort = { name: 1 }
 			return { channels: RocketChat.models.Rooms.findByNameContainingAndTypes(filter, ['c'], options).fetch() }
 		else
 			return { channels: RocketChat.models.Rooms.findByTypeAndArchivationState('c', false, options).fetch() }
