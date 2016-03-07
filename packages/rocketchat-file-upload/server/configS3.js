@@ -17,14 +17,8 @@ createS3Directive = _.debounce(() => {
 			AWSSecretAccessKey: secretKey,
 			key: function (file, metaContext) {
 				var serverIdentifier = '';
-
-				// @TODO what should we do when a file already exists with the given name?
 				var path = serverIdentifier + this.userId + '-' + metaContext.rid + "/";
-				if (file.name) {
-					return path + file.name;
-				} else {
-					return path + Random.id();
-				}
+				return path + Random.id();
 			}
 		};
 
