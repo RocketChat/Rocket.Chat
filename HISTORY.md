@@ -6,6 +6,7 @@
 - Makes channels list load faster by not getting full channel data, such as usernames.
 - Fixes #2399. Fixes bug with highlighted words which allowed an empty string to be defined as highlight.
 - Fix #766; Disable E-mail Confirmation setting when SMTP is not set.
+- Closes #691; Adds sorting to channels list.
 
 ## 0.20.0, 2016-Feb-29
 

@@ -1240,26 +1240,28 @@ a.github-fork {
 
 			.flex-control {
 				.search {
-					display: table;
 					width: 100%;
 					margin-bottom: 10px;
 				}
 				.sort {
-					display: table;
 					width: 100%;
 					margin-bottom: 30px;
 					position: relative;
 
-					.sort-item {
-						display: table-cell;
-						vertical-align: middle;
-						text-align: center;
-						position: relative;
-						padding-right: 5px;
+					i {
+						display: inline-block;
+					}
 
-						&:first {
-							width: 1px;
-						}
+					select {
+						display: inline-block;
+						width: calc(@rooms-box-width - 76px);
+						margin-left: 10px;
+						border: none;
+						border-radius: 0;
+						border-bottom: 1px solid rgba(255,255,255,0.6);
+						color: rgba(255,255,255,0.85);
+						-webkit-appearance: none;
+						background-size: 8px 10px;
 					}
 				}
 			}
