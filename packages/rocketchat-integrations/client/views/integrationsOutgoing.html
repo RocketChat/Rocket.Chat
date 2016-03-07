@@ -74,6 +74,18 @@
 							</div>
 						</div>
 						<div class="input-line double-col">
+							<label>{{_ "Prepare_Outgoing_Request"}} ({{_ "optional"}})</label>
+							<div>
+								<textarea rows="4" style="height: auto" name="prepareOutgoingRequestScript" value="{{data.prepareOutgoingRequestScript}}"></textarea>
+							</div>
+						</div>
+						<div class="input-line double-col">
+							<label>{{_ "Process_Outgoing_Response"}} ({{_ "optional"}})</label>
+							<div>
+								<textarea rows="4" style="height: auto" name="processOutgoingResponseScript" value="{{data.processOutgoingResponseScript}}"></textarea>
+							</div>
+						</div>
+						<div class="input-line double-col">
 							<label>{{_ "Responding"}}</label>
 							<div>
 								<div class="settings-description">{{{_ "If the handler wishes to post a response back into the Slack channel, the following JSON should be returned as the body of the response:"}}}</div>

@@ -76,7 +76,7 @@ this.processWebhookMessage = function(messageObj, user, defaultValues) {
 		alias: messageObj.username || messageObj.alias || defaultValues.alias,
 		msg: _.trim(messageObj.text || messageObj.msg || ''),
 		attachments: messageObj.attachments,
-		parseUrls: messageObj.parseUrls || !messageObj.attachments,
+		parseUrls: messageObj.parseUrls !== undefined ? messageObj.parseUrls : !messageObj.attachments,
 		bot: messageObj.bot,
 		groupable: false
 	};
