@@ -79,6 +79,8 @@ Meteor.methods
 				userId: user._id
 				urls: integration.urls
 				token: integration.token
+				prepareOutgoingRequestScript: integration.prepareOutgoingRequestScript
+				processOutgoingResponseScript: integration.processOutgoingResponseScript
 				triggerWords: integration.triggerWords
 				_updatedAt: new Date
 				_updatedBy: RocketChat.models.Users.findOne @userId, {fields: {username: 1}}
