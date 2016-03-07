@@ -13,14 +13,14 @@
 							<input type="text" id="channel-search" class="search" placeholder="{{tSearchChannels}}" autocomplete="off" />
 							<i class="icon-right-open-small"></i>
 						</div>
+						<div class="input-line search">
+							<select class="c-select" id="sort">
+								<option value="name" selected="{{sortSelected 'name'}}">{{_ "Name"}}</option>
+								<option value="msgs" selected="{{sortSelected 'msgs'}}">{{_ "Number_of_messages"}}</option>
+							</select>
+							<i class="icon-sort-alt-up"></i>
+						</div>
 					</form>
-				</div>
-				<div class="sort">
-					<i class="icon-sort-alt-up"></i>
-					<select class="c-select" id="sort">
-						<option value="name" selected="{{sortSelected 'name'}}">{{_ "Name"}}</option>
-						<option value="msgs" selected="{{sortSelected 'msgs'}}">{{_ "Number_of_messages"}}</option>
-					</select>
 				</div>
 			</div>
 			<h4>{{_ "Channels_list"}}</h4>
