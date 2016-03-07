@@ -5,6 +5,8 @@ Template.listChannelsFlex.helpers
 		return Template.instance().hasMore.get()
 	tSearchChannels: ->
 		return t('Search_Channels')
+	sortSelected: (sort) ->
+		return Template.instance().sort.get() is sort
 
 Template.listChannelsFlex.events
 	'click header': ->
@@ -32,14 +34,18 @@ Template.listChannelsFlex.events
 		instance.nameFilter.set($(e.currentTarget).val())
 	, 300
 
+	'change #sort': (e, instance) ->
+		instance.sort.set($(e.currentTarget).val())
+
 Template.listChannelsFlex.onCreated ->
 	@channelsList = new ReactiveVar []
 	@hasMore = new ReactiveVar true
 	@limit = new ReactiveVar 50
 	@nameFilter = new ReactiveVar ''
+	@sort = new ReactiveVar 'msgs'
 
 	@autorun =>
-		Meteor.call 'channelsList', @nameFilter.get(), @limit.get(), (err, result) =>
+		Meteor.call 'channelsList', @nameFilter.get(), @limit.get(), @sort.get(), (err, result) =>
 			if result
 				@hasMore.set true
 				@channelsList.set result.channels
