@@ -82,27 +82,27 @@ ExecuteTriggerUrl = (url, trigger, message, room, tries=0) ->
 		try
 			script = "result = (function() {\n"+trigger.prepareOutgoingRequestScript+"\n}());"
 			vmScript = vm.createScript script, 'script.js'
-			console.log vmScript
-			console.log 'will execute script', script
-			console.log 'with context', sandbox
+			logger.outgoing.info 'will execute script prepareOutgoingRequestScript'
+			logger.outgoing.debug script
+			logger.outgoing.debug 'with context', sandbox
 		catch e
-			console.error "[Error evaluating Script:]"
-			console.error script.replace(/^/gm, '  ')
-			console.error "\n[Stack:]"
-			console.error e.stack.replace(/^/gm, '  ')
+			logger.outgoing.error "[Error evaluating Script:]"
+			logger.outgoing.error script.replace(/^/gm, '  ')
+			logger.outgoing.error "\n[Stack:]"
+			logger.outgoing.error e.stack.replace(/^/gm, '  ')
 			return
 
 		try
 			vmScript.runInNewContext sandbox
 			opts = sandbox.result
-			console.log 'result', opts
-			if opts.message?
+			logger.outgoing.debug 'result', opts
+			if opts?.message?
 				return sendMessage opts.message
 		catch e
-			console.error "[Error running Script:]"
-			console.error script.replace(/^/gm, '  ')
-			console.error "\n[Stack:]"
-			console.error e.stack.replace(/^/gm, '  ')
+			logger.outgoing.error "[Error running Script:]"
+			logger.outgoing.error script.replace(/^/gm, '  ')
+			logger.outgoing.error "\n[Stack:]"
+			logger.outgoing.error e.stack.replace(/^/gm, '  ')
 			return
 
 	if not opts?
@@ -112,17 +112,17 @@ ExecuteTriggerUrl = (url, trigger, message, room, tries=0) ->
 	HTTP.call opts.method, opts.url, opts, (error, result) ->
 		if not result? or result.statusCode isnt 200
 			if error?
-				console.error error
+				logger.outgoing.error error
 			if result?
-				console.log result
+				logger.outgoing.error result
 
 			if result.statusCode is 410
 				RocketChat.models.Integrations.remove _id: trigger._id
 				return
 
 			if result.statusCode is 500
-				console.log 'Request Error [500]', url
-				console.log result.content
+				logger.outgoing.error 'Request Error [500]', url
+				logger.outgoing.error result.content
 				return
 
 			if tries <= 6
@@ -147,14 +147,14 @@ ExecuteTriggerUrl = (url, trigger, message, room, tries=0) ->
 				try
 					script = "result = (function() {\n"+trigger.processOutgoingResponseScript+"\n}());"
 					vmScript = vm.createScript script, 'script.js'
-					console.log vmScript
-					console.log 'will execute script', script
-					console.log 'with context', sandbox
+					logger.outgoing.info 'will execute script processOutgoingResponseScript'
+					logger.outgoing.debug script
+					logger.outgoing.debug 'with context', sandbox
 				catch e
-					console.error "[Error evaluating Script:]"
-					console.error script.replace(/^/gm, '  ')
-					console.error "\n[Stack:]"
-					console.error e.stack.replace(/^/gm, '  ')
+					logger.outgoing.error "[Error evaluating Script:]"
+					logger.outgoing.error script.replace(/^/gm, '  ')
+					logger.outgoing.error "\n[Stack:]"
+					logger.outgoing.error e.stack.replace(/^/gm, '  ')
 					return
 
 				try
@@ -162,13 +162,13 @@ ExecuteTriggerUrl = (url, trigger, message, room, tries=0) ->
 					result = sandbox.result.content
 					if result?
 						result = data: result
-					console.log 'result', result
+					logger.outgoing.debug 'result', result
 				catch e
-					console.error "[Error running Script:]"
-					console.error script.replace(/^/gm, '  ')
-					console.error "\n[Stack:]"
-					console.error e.stack.replace(/^/gm, '  ')
-					return RocketChat.API.v1.failure 'error-running-script'
+					logger.outgoing.error "[Error running Script:]"
+					logger.outgoing.error script.replace(/^/gm, '  ')
+					logger.outgoing.error "\n[Stack:]"
+					logger.outgoing.error e.stack.replace(/^/gm, '  ')
+					return
 
 
 			if result?.data?.text? or result?.data?.attachments?

@@ -16,6 +16,7 @@ Package.onUse(function(api) {
   api.use('rocketchat:authorization');
   api.use('rocketchat:api');
   api.use('rocketchat:theme');
+  api.use('rocketchat:logger');
 
   api.use('kadira:flow-router', 'client');
   api.use('templating', 'client');
@@ -38,6 +39,8 @@ Package.onUse(function(api) {
   // stylesheets
   api.addAssets('client/stylesheets/integrations.less', 'server');
   api.addFiles('client/stylesheets/load.coffee', 'server');
+
+  api.addFiles('server/logger.js', 'server');
 
   api.addFiles('server/models/Integrations.coffee', 'server');
 
