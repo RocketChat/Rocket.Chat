@@ -11,12 +11,10 @@ createS3Directive = _.debounce(() => {
 		if (Slingshot._directives[directiveName]) {
 			delete Slingshot._directives[directiveName];
 		}
-		Slingshot.createDirective(directiveName, Slingshot.S3Storage, {
+		var config = {
 			bucket: bucket,
-			acl: acl,
 			AWSAccessKeyId: accessKey,
 			AWSSecretAccessKey: secretKey,
-
 			key: function (file, metaContext) {
 				var serverIdentifier = '';
 
@@ -28,7 +26,13 @@ createS3Directive = _.debounce(() => {
 					return path + Random.id();
 				}
 			}
-		});
+		};
+
+		if (!_.isEmpty(acl)) {
+			config.acl = acl;
+		}
+
+		Slingshot.createDirective(directiveName, Slingshot.S3Storage, config);
 	} else {
 		if (Slingshot._directives[directiveName]) {
 			delete Slingshot._directives[directiveName];
