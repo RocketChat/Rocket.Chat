@@ -99,14 +99,15 @@ class @ChatMessages
 			#Check if message starts with /command
 			if msg[0] is '/'
 				match = msg.match(/^\/([^\s]+)(?:\s+(.*))?$/m)
-				if(match?)
+				if match? and RocketChat.slashCommands.commands[match[1]]
 					command = match[1]
 					param = match[2]
 					Meteor.call 'slashCommand', {cmd: command, params: param, msg: msgObject }
-			else
-				#Run to allow local encryption
-				#Meteor.call 'onClientBeforeSendMessage', {}
-				Meteor.call 'sendMessage', msgObject
+					return
+
+			#Run to allow local encryption
+			#Meteor.call 'onClientBeforeSendMessage', {}
+			Meteor.call 'sendMessage', msgObject
 
 	deleteMsg: (message) ->
 		Meteor.call 'deleteMessage', message, (error, result) ->

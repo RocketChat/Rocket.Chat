@@ -1,3 +1,5 @@
+vm = Npm.require('vm')
+
 Api = new Restivus
 	enableCors: true
 	apiPath: 'hooks/'
@@ -15,21 +17,72 @@ Api = new Restivus
 
 Api.addRoute ':integrationId/:userId/:token', authRequired: true,
 	post: ->
-		console.log 'Post integration'
-		console.log '@urlParams', @urlParams
-		console.log '@bodyParams', @bodyParams
+		logger.incoming.info 'Post integration'
+		logger.incoming.debug '@urlParams', @urlParams
+		logger.incoming.debug '@bodyParams', @bodyParams
 
 		integration = RocketChat.models.Integrations.findOne(@urlParams.integrationId)
 		user = RocketChat.models.Users.findOne(@userId)
-
-		@bodyParams.bot =
-			i: integration._id
 
 		defaultValues =
 			channel: integration.channel
 			alias: integration.alias
 			avatar: integration.avatar
 			emoji: integration.emoji
+
+
+		if integration.processIncomingRequestScript? and integration.processIncomingRequestScript.trim() isnt ''
+			sandbox =
+				url:
+					hash: @request._parsedUrl.hash
+					search: @request._parsedUrl.search
+					query: @queryParams
+					pathname: @request._parsedUrl.pathname
+					path: @request._parsedUrl.path
+				url_raw: @request.url
+				url_params: @urlParams
+				content: @bodyParams
+				content_raw: @request.body
+				headers: @request.headers
+				user:
+					_id: @user._id
+					name: @user.name
+					username: @user.username
+
+			script = undefined
+			vmScript = undefined
+			try
+				script = "result = (function() {\n"+integration.processIncomingRequestScript+"\n}());"
+				vmScript = vm.createScript script, 'script.js'
+				logger.incoming.info 'will execute script processIncomingRequestScript'
+				logger.incoming.debug script
+				logger.incoming.debug 'with context', sandbox
+			catch e
+				logger.incoming.error "[Error evaluating Script:]"
+				logger.incoming.error script.replace(/^/gm, '  ')
+				logger.incoming.error "\n[Stack:]"
+				logger.incoming.error e.stack.replace(/^/gm, '  ')
+				return RocketChat.API.v1.failure 'error-evaluating-script'
+
+			try
+				vmScript.runInNewContext sandbox
+				if sandbox.result.error?
+					return RocketChat.API.v1.failure sandbox.result.error
+
+				@bodyParams = sandbox.result?.content
+				logger.incoming.debug 'result', @bodyParams
+			catch e
+				logger.incoming.error "[Error running Script:]"
+				logger.incoming.error script.replace(/^/gm, '  ')
+				logger.incoming.error "\n[Stack:]"
+				logger.incoming.error e.stack.replace(/^/gm, '  ')
+				return RocketChat.API.v1.failure 'error-running-script'
+
+		if not @bodyParams?
+			RocketChat.API.v1.failure 'body-empty'
+
+		@bodyParams.bot =
+			i: integration._id
 
 		try
 			message = processWebhookMessage @bodyParams, user, defaultValues
@@ -43,8 +96,8 @@ Api.addRoute ':integrationId/:userId/:token', authRequired: true,
 
 
 createIntegration = (options, user) ->
-	console.log 'Add integration'
-	console.log options
+	logger.incoming.info 'Add integration'
+	logger.incoming.debug options
 
 	Meteor.runAsUser user._id, =>
 		switch options['event']
@@ -76,8 +129,8 @@ createIntegration = (options, user) ->
 
 
 removeIntegration = (options, user) ->
-	console.log 'Remove integration'
-	console.log options
+	logger.incoming.info 'Remove integration'
+	logger.incoming.debug options
 
 	integrationToRemove = RocketChat.models.Integrations.findOne urls: options.target_url
 	Meteor.runAsUser user._id, =>
@@ -122,7 +175,7 @@ RocketChat.API.v1.addRoute 'integrations.remove', authRequired: true,
 
 Api.addRoute 'sample/:integrationId/:userId/:token', authRequired: true,
 	get: ->
-		console.log 'Sample Integration'
+		logger.incoming.info 'Sample Integration'
 
 		return {} =
 			statusCode: 200
@@ -158,7 +211,7 @@ Api.addRoute 'sample/:integrationId/:userId/:token', authRequired: true,
 
 Api.addRoute 'info/:integrationId/:userId/:token', authRequired: true,
 	get: ->
-		console.log 'Info integration'
+		logger.incoming.info 'Info integration'
 
 		return {} =
 			statusCode: 200

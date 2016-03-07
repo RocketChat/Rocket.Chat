@@ -1,3 +1,5 @@
+vm = Npm.require('vm')
+
 triggers = {}
 
 RocketChat.models.Integrations.find({type: 'webhook-outgoing'}).observe
@@ -40,23 +42,87 @@ ExecuteTriggerUrl = (url, trigger, message, room, tries=0) ->
 	if word?
 		data.trigger_word = word
 
+	sendMessage = (message) ->
+		user = RocketChat.models.Users.findOneByUsername(trigger.username)
+
+		message.bot =
+			i: trigger._id
+
+		defaultValues =
+			alias: trigger.alias
+			avatar: trigger.avatar
+			emoji: trigger.emoji
+
+		if room.t is 'd'
+			defaultValues.channel = '@'+room._id
+		else
+			defaultValues.channel = '#'+room._id
+
+		message = processWebhookMessage message, user, defaultValues
+
+
 	opts =
+		params: {}
+		method: 'POST'
+		url: url
 		data: data
+		auth: undefined
 		npmRequestOptions:
 			rejectUnauthorized: !RocketChat.settings.get 'Allow_Invalid_SelfSigned_Certs'
 			strictSSL: !RocketChat.settings.get 'Allow_Invalid_SelfSigned_Certs'
 		headers:
 			'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/41.0.2227.0 Safari/537.36'
 
-	HTTP.call 'POST', url, opts, (error, result) ->
+	if trigger.prepareOutgoingRequestScript? and trigger.prepareOutgoingRequestScript.trim() isnt ''
+		sandbox =
+			request: opts
+
+		script = undefined
+		vmScript = undefined
+		try
+			script = "result = (function() {\n"+trigger.prepareOutgoingRequestScript+"\n}());"
+			vmScript = vm.createScript script, 'script.js'
+			logger.outgoing.info 'will execute script prepareOutgoingRequestScript'
+			logger.outgoing.debug script
+			logger.outgoing.debug 'with context', sandbox
+		catch e
+			logger.outgoing.error "[Error evaluating Script:]"
+			logger.outgoing.error script.replace(/^/gm, '  ')
+			logger.outgoing.error "\n[Stack:]"
+			logger.outgoing.error e.stack.replace(/^/gm, '  ')
+			return
+
+		try
+			vmScript.runInNewContext sandbox
+			opts = sandbox.result
+			logger.outgoing.debug 'result', opts
+			if opts?.message?
+				return sendMessage opts.message
+		catch e
+			logger.outgoing.error "[Error running Script:]"
+			logger.outgoing.error script.replace(/^/gm, '  ')
+			logger.outgoing.error "\n[Stack:]"
+			logger.outgoing.error e.stack.replace(/^/gm, '  ')
+			return
+
+	if not opts?
+		return
+
+
+	HTTP.call opts.method, opts.url, opts, (error, result) ->
 		if not result? or result.statusCode isnt 200
+			if error?
+				logger.outgoing.error error
+			if result?
+				logger.outgoing.error result
+
 			if result.statusCode is 410
 				RocketChat.models.Integrations.remove _id: trigger._id
 				return
 
 			if result.statusCode is 500
-				console.log 'Request Error [500]', url
-				console.log result.content
+				logger.outgoing.error 'Request Error [500]', url
+				logger.outgoing.error result.content
 				return
 
 			if tries <= 6
@@ -67,23 +133,46 @@ ExecuteTriggerUrl = (url, trigger, message, room, tries=0) ->
 			return
 
 		# process outgoing webhook response as a new message
-		else if result?.statusCode is 200 and (result.data?.text? or result.data?.attachments?)
-			user = RocketChat.models.Users.findOneByUsername(trigger.username)
+		else if result?.statusCode is 200
+			if trigger.processOutgoingResponseScript? and trigger.processOutgoingResponseScript.trim() isnt ''
+				sandbox =
+					request: opts
+					response:
+						content: result.data
+						content_raw: result.content
+						headers: result.headers
 
-			result.data.bot =
-				i: trigger._id
+				script = undefined
+				vmScript = undefined
+				try
+					script = "result = (function() {\n"+trigger.processOutgoingResponseScript+"\n}());"
+					vmScript = vm.createScript script, 'script.js'
+					logger.outgoing.info 'will execute script processOutgoingResponseScript'
+					logger.outgoing.debug script
+					logger.outgoing.debug 'with context', sandbox
+				catch e
+					logger.outgoing.error "[Error evaluating Script:]"
+					logger.outgoing.error script.replace(/^/gm, '  ')
+					logger.outgoing.error "\n[Stack:]"
+					logger.outgoing.error e.stack.replace(/^/gm, '  ')
+					return
 
-			defaultValues =
-				alias: trigger.alias
-				avatar: trigger.avatar
-				emoji: trigger.emoji
+				try
+					vmScript.runInNewContext sandbox
+					result = sandbox.result.content
+					if result?
+						result = data: result
+					logger.outgoing.debug 'result', result
+				catch e
+					logger.outgoing.error "[Error running Script:]"
+					logger.outgoing.error script.replace(/^/gm, '  ')
+					logger.outgoing.error "\n[Stack:]"
+					logger.outgoing.error e.stack.replace(/^/gm, '  ')
+					return
 
-			if room.t is 'd'
-				defaultValues.channel = '@'+room._id
-			else
-				defaultValues.channel = '#'+room._id
 
-			message = processWebhookMessage result.data, user, defaultValues
+			if result?.data?.text? or result?.data?.attachments?
+				sendMessage result.data
 
 
 ExecuteTrigger = (trigger, message, room) ->
