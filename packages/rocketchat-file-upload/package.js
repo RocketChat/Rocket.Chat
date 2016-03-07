@@ -13,6 +13,7 @@ Package.onUse(function(api) {
 	api.use('rocketchat:lib');
 	api.use('random');
 	api.use('underscore');
+	api.use('webapp');
 
 	api.addFiles('globalFileRestrictions.js');
 
@@ -24,6 +25,7 @@ Package.onUse(function(api) {
 	api.addFiles('client/lib/fileUploadHandler.js', 'client');
 
 	api.addFiles('server/configS3.js', 'server');
+	api.addFiles('server/requests.js', 'server');
 	api.addFiles('server/settings.js', 'server');
 
 	api.addFiles('server/methods/sendFileMessage.js', 'server');

@@ -18,23 +18,26 @@ Meteor.methods({
 			fileId = file._id;
 		}
 
+		var fileUrl = '/file-upload/' + fileId + '/' + file.name;
+
 		var attachment = {
 			title: `File Uploaded: ${file.name}`,
-			title_link: file.url
+			title_link: fileUrl
 		};
 
 		if (/^image\/.+/.test(file.type)) {
-			attachment.image_url = file.url;
+			attachment.image_url = fileUrl;
 			attachment.image_type = file.type;
 			attachment.image_size = file.size;
-			// @TODO
-			// attachment.image_dimensions = file.identify?.size;
+			if (file.identify && file.identify.size) {
+				attachment.image_dimensions = file.identify.size;
+			}
 		} else if (/^audio\/.+/.test(file.type)) {
-			attachment.audio_url = file.url;
+			attachment.audio_url = fileUrl;
 			attachment.audio_type = file.type;
 			attachment.audio_size = file.size;
 		} else if (/^video\/.+/.test(file.type)) {
-			attachment.video_url = file.url;
+			attachment.video_url = fileUrl;
 			attachment.video_type = file.type;
 			attachment.video_size = file.size;
 		}1
