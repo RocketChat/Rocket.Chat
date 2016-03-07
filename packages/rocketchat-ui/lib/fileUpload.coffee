@@ -24,7 +24,7 @@ readAsArrayBuffer = (file, callback) ->
 			return
 
 		readAsDataURL file.file, (fileContent) ->
-			if not fileUploadIsValidContentType file.file.type
+			if not RocketChat.fileUploadIsValidContentType file.file.type
 				swal
 					title: t('FileUpload_MediaType_NotAccepted')
 					type: 'error'
@@ -79,7 +79,6 @@ readAsArrayBuffer = (file, callback) ->
 						roomId: roomId
 
 					upload = fileUploadHandler record, file.file, data
-
 
 					# // Reactive method to get upload progress
 					Tracker.autorun (c) ->
