@@ -35,6 +35,7 @@ RocketChat.models.Uploads = new class extends RocketChat.models._Base
 			name: file.name
 			size: file.size
 			type: file.type
+			store: store
 			extension: s.strRightBack(file.name, '.')
 			url: file.url
 			complete: true

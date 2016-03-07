@@ -22,10 +22,9 @@ FileUpload.GridFS = class FileUploadGridFS extends FileUploadBase {
 			onComplete: (fileData) => {
 				var file = _.pick(fileData, '_id', 'type', 'size', 'name');
 
-				// @TODO verify if this is applied correctly
 				file.url = fileData.url.replace(Meteor.absoluteUrl(), '/');
 
-				Meteor.call('sendFileMessage', this.meta.roomId, file, () => {
+				Meteor.call('sendFileMessage', this.meta.rid, null, file, () => {
 					Meteor.setTimeout(() => {
 						uploading = Session.get('uploading');
 						if (uploading != null) {

@@ -1,5 +1,5 @@
 Meteor.methods({
-	'sendFileMessage'(roomId, file) {
+	'sendFileMessage'(roomId, store, file) {
 		var fileId;
 
 		if (!Meteor.userId()) {
@@ -12,10 +12,10 @@ Meteor.methods({
 			return false;
 		}
 
-		if (!file.id) {
-			fileId = RocketChat.models.Uploads.insertFile(roomId, Meteor.userId(), 's3', file);
+		if (!file._id) {
+			fileId = RocketChat.models.Uploads.insertFile(roomId, Meteor.userId(), store, file);
 		} else {
-			fileId = file.id;
+			fileId = file._id;
 		}
 
 		var attachment = {
