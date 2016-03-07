@@ -1,4 +1,7 @@
 {
+  "All_logs" : "Todos los registros",
+  "Debug_Level" : "Nivel de depuración ",
   "Delete" : "Eliminar",
-  "Edit" : "Editar"
+  "Edit" : "Editar",
+  "Only_errors" : "Solamente errores"
 }

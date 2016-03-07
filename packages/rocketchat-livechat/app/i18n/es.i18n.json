@@ -1,9 +1,11 @@
 {
   "Additional_Feedback" : "Retroalimentación adicional",
+  "Appearance" : "Apariencia",
   "How_friendly_was_the_chat_agent" : "Que tan amigable fue nuestro agente de chat?",
   "How_knowledgeable_was_the_chat_agent" : "Que tanto sabia nuestro agente de chat?",
   "How_responsive_was_the_chat_agent" : "Que tan rápido respondió nuestro agente de chat?",
   "How_satisfied_were_you_with_this_chat" : "Que tan satisfecho quedo después de esta sesión de chat?",
+  "Installation" : "Instalación ",
   "Please_answer_survey" : "Por favor tome un momento para responder una encuesta rápida sobre este chat",
   "Please_fill_name_and_email" : "Por favor introduzca su usuario y correo electronico. ",
   "Skip" : "Saltar",
