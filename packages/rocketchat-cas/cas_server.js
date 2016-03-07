@@ -103,7 +103,7 @@ var casTicket = function (req, token, callback) {
   var options = { profile: { name: result.id } };
 
   logger.debug("Looking up user with username: " + result.id );
-  var user = Meteor.users.findOne({ 'username': result.id });
+  var user = Meteor.users.findOne({ 'services.cas.external_id': result.id });
 
   if (user) {
     logger.debug("Using existing user for '" + result.id + "' with id: " + user._id);
@@ -112,6 +112,11 @@ var casTicket = function (req, token, callback) {
 		username: result.id,
 		active: true,
 		globalRoles: ['user'],
+        services: {
+            cas: {
+                external_id: result.id
+            }
+        }
 	};
 
     logger.debug("User '" + result.id + "'does not exist yet, creating it");
