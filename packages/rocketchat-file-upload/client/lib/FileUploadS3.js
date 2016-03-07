@@ -1,7 +1,7 @@
 FileUpload.S3 = class FileUploadS3 extends FileUploadBase {
 	constructor(meta, file, data) {
 		super(meta, file, data);
-		this.uploader = new Slingshot.Upload('rocketchat-uploads', { roomId: meta.roomId });
+		this.uploader = new Slingshot.Upload('rocketchat-uploads', { rid: meta.rid });
 	}
 	start() {
 		this.uploader.send(this.file, (error, downloadUrl) => {
@@ -24,7 +24,7 @@ FileUpload.S3 = class FileUploadS3 extends FileUploadBase {
 				file = _.pick(this.meta, 'type', 'size', 'name');
 				file.url = downloadUrl;
 
-				Meteor.call('sendFileMessage', this.meta.roomId, file, () => {
+				Meteor.call('sendFileMessage', this.meta.rid, 's3', file, () => {
 					Meteor.setTimeout(() => {
 						uploading = Session.get('uploading');
 						if (uploading != null) {

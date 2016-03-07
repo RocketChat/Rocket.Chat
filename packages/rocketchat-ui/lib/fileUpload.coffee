@@ -76,7 +76,7 @@ readAsArrayBuffer = (file, callback) ->
 						name: file.name or file.file.name
 						size: file.file.size
 						type: file.file.type
-						roomId: roomId
+						rid: roomId
 
 					upload = fileUploadHandler record, file.file, data
 
