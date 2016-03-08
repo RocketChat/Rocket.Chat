@@ -24,9 +24,13 @@ Package.onUse(function(api) {
 
 	api.addFiles('client/lib/fileUploadHandler.js', 'client');
 
+	api.addFiles('server/lib/fileUploadResponse.js', 'server');
+	api.addFiles('server/lib/requests.js', 'server');
+	api.addFiles('server/lib/responseGridFS.js', 'server');
+	api.addFiles('server/lib/responseS3.js', 'server');
+
 	api.addFiles('server/configS3.js', 'server');
-	api.addFiles('server/requests.js', 'server');
-	api.addFiles('server/settings.js', 'server');
+	api.addFiles('server/startup/settings.js', 'server');
 
 	api.addFiles('server/methods/sendFileMessage.js', 'server');
 
