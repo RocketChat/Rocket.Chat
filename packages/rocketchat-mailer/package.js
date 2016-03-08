@@ -22,7 +22,8 @@ Package.onUse(function(api) {
 		'client/router.coffee',
 		'client/views/mailer.html',
 		'client/views/mailer.coffee',
-		'client/views/mailerUnsubscribe.html'
+		'client/views/mailerUnsubscribe.html',
+		'client/views/mailerUnsubscribe.coffee'
 	], 'client');
 
 	api.addFiles([

@@ -27,7 +27,7 @@ this.processWebhookMessage = function(messageObj, user, defaultValues) {
 					}
 				]
 			});
-			if (room == null) {
+			if (!_.isObject(room)) {
 				throw new Meteor.Error('invalid-channel');
 			}
 			rid = room._id;
@@ -53,13 +53,13 @@ this.processWebhookMessage = function(messageObj, user, defaultValues) {
 					$in: [rid, channel]
 				}
 			});
-			if (roomUser == null && room == null) {
+			if (!_.isObject(roomUser) && !_.isObject(room)) {
 				throw new Meteor.Error('invalid-channel');
 			}
 			if (!room) {
 				Meteor.runAsUser(user._id, function() {
 					Meteor.call('createDirectMessage', roomUser.username);
-					return room = RocketChat.models.Rooms.findOne(rid);
+					room = RocketChat.models.Rooms.findOne(rid);
 				});
 			}
 			break;
@@ -67,22 +67,27 @@ this.processWebhookMessage = function(messageObj, user, defaultValues) {
 			throw new Meteor.Error('invalid-channel-type');
 	}
 
+	if (messageObj.attachments && !_.isArray(messageObj.attachments)) {
+		console.log('Attachments should be Array, ignoring value'.red, messageObj.attachments);
+		messageObj.attachments = undefined;
+	}
+
 	message = {
 		alias: messageObj.username || messageObj.alias || defaultValues.alias,
 		msg: _.trim(messageObj.text || messageObj.msg || ''),
 		attachments: messageObj.attachments,
-		parseUrls: messageObj.parseUrls || !messageObj.attachments,
+		parseUrls: messageObj.parseUrls !== undefined ? messageObj.parseUrls : !messageObj.attachments,
 		bot: messageObj.bot,
 		groupable: false
 	};
 
-	if ((messageObj.icon_url != null) || (messageObj.avatar != null)) {
+	if (!_.isEmpty(messageObj.icon_url) || !_.isEmpty(messageObj.avatar)) {
 		message.avatar = messageObj.icon_url || messageObj.avatar;
-	} else if ((messageObj.icon_emoji != null) || (messageObj.emoji != null)) {
+	} else if (!_.isEmpty(messageObj.icon_emoji) || !_.isEmpty(messageObj.emoji)) {
 		message.emoji = messageObj.icon_emoji || messageObj.emoji;
-	} else if (defaultValues.avatar != null) {
+	} else if (!_.isEmpty(defaultValues.avatar)) {
 		message.avatar = defaultValues.avatar;
-	} else if (defaultValues.emoji != null) {
+	} else if (!_.isEmpty(defaultValues.emoji)) {
 		message.emoji = defaultValues.emoji;
 	}
 
@@ -102,5 +107,5 @@ this.processWebhookMessage = function(messageObj, user, defaultValues) {
 	return {
 		channel: channel,
 		message: messageReturn
-	}
+	};
 };

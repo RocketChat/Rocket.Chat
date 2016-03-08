@@ -6,6 +6,23 @@
 	</header>
 	<div class="content">
 		<div class="wrapper">
+			<div class="flex-control">
+				<div class="search">
+					<form class="search-form" role="form">
+						<div class="input-line search">
+							<input type="text" id="channel-search" class="search" placeholder="{{tSearchChannels}}" autocomplete="off" />
+							<i class="icon-right-open-small"></i>
+						</div>
+						<div class="input-line search">
+							<select class="c-select" id="sort">
+								<option value="name" selected="{{sortSelected 'name'}}">{{_ "Name"}}</option>
+								<option value="msgs" selected="{{sortSelected 'msgs'}}">{{_ "Number_of_messages"}}</option>
+							</select>
+							<i class="icon-sort-alt-up"></i>
+						</div>
+					</form>
+				</div>
+			</div>
 			<h4>{{_ "Channels_list"}}</h4>
 			<ul>
 			{{#each channel}}
@@ -16,6 +33,15 @@
 					</a>
 				</li>
 			{{/each}}
+			{{#if hasMore}}
+				<li class="load-more">
+					{{#if Template.subscriptionsReady}}
+						<a href="">{{_ "Has_more"}}...</a>
+					{{else}}
+						<div class="load-more-loading">{{_ "Loading..."}}</div>
+					{{/if}}
+				</li>
+			{{/if}}
 			</ul>
 		</div>
 	</div>
