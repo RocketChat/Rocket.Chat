@@ -17,7 +17,7 @@ createS3Directive = _.debounce(() => {
 			AWSSecretAccessKey: secretKey,
 			key: function (file, metaContext) {
 				var serverIdentifier = '';
-				var path = serverIdentifier + this.userId + '-' + metaContext.rid + "/";
+				var path = serverIdentifier + metaContext.rid + '/' + this.userId + "/";
 				return path + Random.id();
 			}
 		};
