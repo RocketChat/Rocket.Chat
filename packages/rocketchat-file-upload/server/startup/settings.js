@@ -21,7 +21,7 @@ Meteor.startup(function() {
 			value: 'AmazonS3'
 		}
 	});
-	RocketChat.settings.add('FileUpload_S3_Acl', 'public-read', {
+	RocketChat.settings.add('FileUpload_S3_Acl', '', {
 		group: 'FileUpload',
 		section: 'Amazon S3',
 		type: 'string',
