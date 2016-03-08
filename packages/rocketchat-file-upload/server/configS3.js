@@ -6,6 +6,7 @@ createS3Directive = _.debounce(() => {
 	var acl = RocketChat.settings.get('FileUpload_S3_Acl');
 	var accessKey = RocketChat.settings.get('FileUpload_S3_AWSAccessKeyId');
 	var secretKey = RocketChat.settings.get('FileUpload_S3_AWSSecretAccessKey');
+	var cdn = RocketChat.settings.get('FileUpload_S3_CDN');
 
 	if (type === 'AmazonS3' && !_.isEmpty(bucket) && !_.isEmpty(accessKey) && !_.isEmpty(secretKey)) {
 		if (Slingshot._directives[directiveName]) {
@@ -24,6 +25,10 @@ createS3Directive = _.debounce(() => {
 
 		if (!_.isEmpty(acl)) {
 			config.acl = acl;
+		}
+
+		if (!_.isEmpty(cdn)) {
+			config.cdn = cdn;
 		}
 
 		Slingshot.createDirective(directiveName, Slingshot.S3Storage, config);
@@ -51,5 +56,9 @@ RocketChat.settings.get('FileUpload_S3_AWSAccessKeyId', function(settingKey, set
 });
 
 RocketChat.settings.get('FileUpload_S3_AWSSecretAccessKey', function(settingKey, settingValue) {
+	createS3Directive();
+});
+
+RocketChat.settings.get('FileUpload_S3_CDN', function(settingKey, settingValue) {
 	createS3Directive();
 });
