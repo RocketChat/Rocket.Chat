@@ -22,6 +22,14 @@ executeScript = (scriptContent, name, sandbox) ->
 		sandbox._ = _
 		sandbox.s = s
 		sandbox.console = console
+		sandbox.HTTP = (method, url, options) ->
+			try
+				return {} =
+					result: HTTP.call method, url, options
+			catch e
+				return {} =
+					error: e
+
 
 		vmScript.runInNewContext sandbox
 		logger.outgoing.debug 'result', sandbox.result
