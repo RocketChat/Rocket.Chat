@@ -7,8 +7,6 @@ mongo:
 
 rocketchat:
   image: rocketchat/rocket.chat:latest
-# volumes:
-#    - ./uploads:/app/uploads
   environment:
     - PORT=3000
     - ROOT_URL=http://yourhost:3000
