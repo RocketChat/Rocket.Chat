@@ -123,7 +123,28 @@ ExecuteTriggerUrl = (url, trigger, message, room, tries=0) ->
 		return
 
 	HTTP.call opts.method, opts.url, opts, (error, result) ->
-		if not result? or result.statusCode isnt 200
+		scriptResult = undefined
+		if trigger.processOutgoingResponseScript? and trigger.processOutgoingResponseScript.trim() isnt ''
+			sandbox =
+				request: opts
+				response:
+					error: error
+					status_code: result.statusCode
+					content: result.data
+					content_raw: result.content
+					headers: result.headers
+				store: trigger.store
+
+			scriptResult = executeScript trigger.processOutgoingResponseScript, 'processOutgoingResponseScript', sandbox
+
+			if scriptResult?.content
+				sendMessage scriptResult.content
+				return
+
+			if scriptResult is false
+				return
+
+		if not result? or result.statusCode not in [200, 201, 202]
 			if error?
 				logger.outgoing.error error
 			if result?
@@ -143,23 +164,11 @@ ExecuteTriggerUrl = (url, trigger, message, room, tries=0) ->
 				Meteor.setTimeout ->
 					ExecuteTriggerUrl url, trigger, message, room, tries+1
 				, Math.pow(10, tries+2)
+
 			return
 
 		# process outgoing webhook response as a new message
-		else if result?.statusCode is 200
-			if trigger.processOutgoingResponseScript? and trigger.processOutgoingResponseScript.trim() isnt ''
-				sandbox =
-					request: opts
-					response:
-						content: result.data
-						content_raw: result.content
-						headers: result.headers
-					store: trigger.store
-
-				scriptResult = executeScript trigger.processOutgoingResponseScript, 'processOutgoingResponseScript', sandbox
-				result =
-					data: scriptResult?.content
-
+		if result?.statusCode in [200, 201, 202]
 			if result?.data?.text? or result?.data?.attachments?
 				sendMessage result.data
 
