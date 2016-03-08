@@ -48,5 +48,14 @@ Meteor.startup(function() {
 			value: 'AmazonS3'
 		}
 	});
+	RocketChat.settings.add('FileUpload_S3_CDN', '', {
+		group: 'FileUpload',
+		section: 'Amazon S3',
+		type: 'string',
+		enableQuery: {
+			_id: 'FileUpload_Storage_Type',
+			value: 'AmazonS3'
+		}
+	});
 });
 
