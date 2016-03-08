@@ -2,6 +2,38 @@ vm = Npm.require('vm')
 
 triggers = {}
 
+executeScript = (scriptContent, name, sandbox) ->
+	script = undefined
+	vmScript = undefined
+	try
+		script = "result = (function() {\n"+scriptContent+"\n}());"
+		vmScript = vm.createScript script, 'script.js'
+		logger.outgoing.info 'will execute script ' + name
+		logger.outgoing.debug script
+		logger.outgoing.debug 'with context', sandbox
+	catch e
+		logger.outgoing.error "[Error evaluating Script:]"
+		logger.outgoing.error script.replace(/^/gm, '  ')
+		logger.outgoing.error "\n[Stack:]"
+		logger.outgoing.error e.stack.replace(/^/gm, '  ')
+		return
+
+	try
+		sandbox._ = _
+		sandbox.s = s
+		sandbox.console = console
+
+		vmScript.runInNewContext sandbox
+		logger.outgoing.debug 'result', sandbox.result
+		return sandbox.result
+	catch e
+		logger.outgoing.error "[Error running Script:]"
+		logger.outgoing.error script.replace(/^/gm, '  ')
+		logger.outgoing.error "\n[Stack:]"
+		logger.outgoing.error e.stack.replace(/^/gm, '  ')
+		return
+
+
 RocketChat.models.Integrations.find({type: 'webhook-outgoing'}).observe
 	added: (record) ->
 		channel = record.channel or '__any'
@@ -74,43 +106,18 @@ ExecuteTriggerUrl = (url, trigger, message, room, tries=0) ->
 			'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/41.0.2227.0 Safari/537.36'
 
 	if trigger.prepareOutgoingRequestScript? and trigger.prepareOutgoingRequestScript.trim() isnt ''
+		trigger.store ?= {}
 		sandbox =
 			request: opts
+			store: trigger.store
 
-		script = undefined
-		vmScript = undefined
-		try
-			script = "result = (function() {\n"+trigger.prepareOutgoingRequestScript+"\n}());"
-			vmScript = vm.createScript script, 'script.js'
-			logger.outgoing.info 'will execute script prepareOutgoingRequestScript'
-			logger.outgoing.debug script
-			logger.outgoing.debug 'with context', sandbox
-		catch e
-			logger.outgoing.error "[Error evaluating Script:]"
-			logger.outgoing.error script.replace(/^/gm, '  ')
-			logger.outgoing.error "\n[Stack:]"
-			logger.outgoing.error e.stack.replace(/^/gm, '  ')
-			return
-
-		try
-			sandbox._ = _
-			sandbox.s = s
-			sandbox.console = console
-			vmScript.runInNewContext sandbox
-			opts = sandbox.result
-			logger.outgoing.debug 'result', opts
-			if opts?.message?
-				return sendMessage opts.message
-		catch e
-			logger.outgoing.error "[Error running Script:]"
-			logger.outgoing.error script.replace(/^/gm, '  ')
-			logger.outgoing.error "\n[Stack:]"
-			logger.outgoing.error e.stack.replace(/^/gm, '  ')
-			return
+		opts = executeScript trigger.prepareOutgoingRequestScript, 'prepareOutgoingRequestScript', sandbox
 
 	if not opts?
 		return
 
+	if opts.message?
+		return sendMessage opts.message
 
 	HTTP.call opts.method, opts.url, opts, (error, result) ->
 		if not result? or result.statusCode isnt 200
@@ -144,37 +151,11 @@ ExecuteTriggerUrl = (url, trigger, message, room, tries=0) ->
 						content: result.data
 						content_raw: result.content
 						headers: result.headers
+					store: trigger.store
 
-				script = undefined
-				vmScript = undefined
-				try
-					script = "result = (function() {\n"+trigger.processOutgoingResponseScript+"\n}());"
-					vmScript = vm.createScript script, 'script.js'
-					logger.outgoing.info 'will execute script processOutgoingResponseScript'
-					logger.outgoing.debug script
-					logger.outgoing.debug 'with context', sandbox
-				catch e
-					logger.outgoing.error "[Error evaluating Script:]"
-					logger.outgoing.error script.replace(/^/gm, '  ')
-					logger.outgoing.error "\n[Stack:]"
-					logger.outgoing.error e.stack.replace(/^/gm, '  ')
-					return
-
-				try
-					sandbox._ = _
-					sandbox.s = s
-					sandbox.console = console
-					vmScript.runInNewContext sandbox
-					result = sandbox.result?.content
-					if result?
-						result = data: result
-					logger.outgoing.debug 'result', result
-				catch e
-					logger.outgoing.error "[Error running Script:]"
-					logger.outgoing.error script.replace(/^/gm, '  ')
-					logger.outgoing.error "\n[Stack:]"
-					logger.outgoing.error e.stack.replace(/^/gm, '  ')
-					return
+				scriptResult = executeScript trigger.processOutgoingResponseScript, 'processOutgoingResponseScript', sandbox
+				result =
+					data: scriptResult?.content
 
 			if result?.data?.text? or result?.data?.attachments?
 				sendMessage result.data
