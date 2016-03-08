@@ -18,3 +18,4 @@ Meteor.methods
 		RocketChat.settings.removeById "Accounts_OAuth_Custom_#{name}_button_label_text"
 		RocketChat.settings.removeById "Accounts_OAuth_Custom_#{name}_button_label_color"
 		RocketChat.settings.removeById "Accounts_OAuth_Custom_#{name}_button_color"
+		RocketChat.settings.removeById "Accounts_OAuth_Custom_#{name}_login_style"

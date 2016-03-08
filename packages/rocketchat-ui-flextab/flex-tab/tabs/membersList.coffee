@@ -66,12 +66,15 @@ Template.membersList.helpers
 			rules: [
 				{
 					collection: 'UserAndRoom'
-					subscription: 'roomSearch'
+					subscription: 'userAutocomplete'
 					field: 'username'
-					template: Template.roomSearch
-					noMatchTemplate: Template.roomSearchEmpty
+					template: Template.userSearch
+					noMatchTemplate: Template.userSearchEmpty
 					matchAll: true
-					filter: { type: 'u', uid: { $ne: Meteor.userId() }, active: { $eq: true } }
+					filter:
+						exceptions: [Meteor.user().username]
+					selector: (match) ->
+						return { username: match }
 					sort: 'username'
 				}
 			]

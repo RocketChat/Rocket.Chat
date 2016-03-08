@@ -7,11 +7,12 @@ The Ultimate Open Source WebChat Platform
 * [Desktop apps](#desktop-apps)
 * [Deployment](#deployment)
    * [Sandstorm.io](#sandstormio) 
-   * [DPlatform](#dplatform)
+   * [DPlatform](#dplatform) 
+   * [IndieHosters](#indiehosters)
+   * [Cloudron.io](#cloudronio) 
    * [Heroku](#heroku)
   * [Scalingo](#scalingo)
   * [Sloppy.io](#sloppyio)
-  * [IndieHosters](#indiehosters)
   * [Docker](#docker)
   * [FreeBSD](#freebsd)
   * [Ansible](#ansible)
@@ -64,10 +65,24 @@ Host your own Rocket.Chat server in four seconds flat:
 
 [![Rocket.Chat on Sandstorm.io](https://raw.githubusercontent.com/Sing-Li/bbug/master/images/sandstorm.jpg)](https://apps.sandstorm.io/app/vfnwptfn02ty21w715snyyczw0nqxkv3jvawcah10c6z7hj1hnu0)
 
+_*Grab*_ the [Sandstorm SPK for the latest Rocket.Chat release](https://rocket.chat/releases/latest/spk) for testing on your own server.
+
 ## DPlatform
 
 Easiest way to install a ready-to-run Rocket.Chat server on a Linux machine, VM, or VPS - [@j8r's   DPlatform](https://github.com/j8r/DPlatform), now in Alpha! 
 
+[![deploy](https://raw.githubusercontent.com/j8r/DPlatform/gh-pages/img/deploy.png)](https://j8r.github.io/DPlatform/)
+
+## IndieHosters
+Get your Rocket.Chat instance hosted in a "as a Service" style. You register and we manage it for you! (updates, backup...)
+
+[![Rocket.Chat on IndieHosters](https://indie.host/signup.png)](https://indiehosters.net/shop/product/rocket-chat-21)
+
+## Cloudron.io
+
+Install Rocket.Chat on [Cloudron](https://cloudron.io) Smartserver:
+
+[![Install](https://cloudron.io/img/button.svg)](https://cloudron.io/button.html?app=chat.rocket.cloudronapp)
 ## Heroku
 Host your own Rocket.Chat server for **FREE** with [One-Click Deploy](https://heroku.com/deploy)
 
@@ -79,16 +94,9 @@ Deploy your own Rocket.Chat server instantly on [Scalingo](https://scalingo.com)
 [![Deploy on Scalingo](https://cdn.scalingo.com/deploy/button.svg)](https://my.scalingo.com/deploy?source=https://github.com/RocketChat/Rocket.Chat#develop)
 
 
-
-_*Grab*_ the [Sandstorm SPK for the latest Rocket.Chat release](https://rocket.chat/releases/latest/spk) for testing on your own server.
-
 ## Sloppy.io
 Host your docker container at [sloppy.io](http://sloppy.io). Get an account and use the [quickstarter](https://github.com/sloppyio/quickstarters/tree/master/rocketchat)
 
-## IndieHosters
-Get your Rocket.Chat instance hosted in a "as a Service" style. You register and we manage it for you! (updates, backup...)
-
-[![Rocket.Chat on IndieHosters](https://indie.host/signup.png)](https://indiehosters.net/shop/product/rocket-chat-21)
 
 ## Docker
 [Deploy with docker compose](https://github.com/RocketChat/Rocket.Chat/wiki/Deploy-with-Docker)
@@ -217,7 +225,7 @@ It is a great solution for communities and companies wanting to privately host t
 - Mobile app for Android phone, tablet, and TV stick [Available now on Google Play!](https://play.google.com/store/apps/details?id=com.konecty.rocket.chat)
 - Native Firefox OS Application (also for Desktop Firefox and Firefox for Android!) - [Check the wiki page for install instructions](https://github.com/RocketChat/Rocket.Chat/wiki/Native-Firefox-OS-app-%28hosted-webapp%29)
 - Sandstorm.io instant Rocket.Chat server [Now on Sandstorm App Store](https://apps.sandstorm.io/app/vfnwptfn02ty21w715snyyczw0nqxkv3jvawcah10c6z7hj1hnu0)
-
+- Available on [Cloudron Store](https://cloudron.io/appstore.html#chat.rocket.cloudronapp)
 
 ## Roadmap
 
@@ -234,6 +242,7 @@ It is a great solution for communities and companies wanting to privately host t
 
 
 #### Planned
+- CRM integrations: Microsoft Dynamics CRM,  Salesforce.com, Zoho.com, SugarCRM, SuiteCRM and more
 - Kerberos Authentication: [Issue #839](https://github.com/RocketChat/Rocket.Chat/issues/839)
 - More webhooks: GitLab, Confluence, Jira, Piwik, Wordpress: [Issue #233](https://github.com/RocketChat/Rocket.Chat/issues/233), [Issue #525](https://github.com/RocketChat/Rocket.Chat/issues/525), [Issue #637](https://github.com/RocketChat/Rocket.Chat/issues/637), [Issue #638](https://github.com/RocketChat/Rocket.Chat/issues/638), [Issue #747](https://github.com/RocketChat/Rocket.Chat/issues/747)
 - Anonymous use of Rocket.Chat: [Issue #604](https://github.com/RocketChat/Rocket.Chat/issues/604)

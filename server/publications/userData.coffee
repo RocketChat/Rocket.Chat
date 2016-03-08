@@ -17,3 +17,4 @@ Meteor.publish 'userData', ->
 			'services.github.id': 1
 			'services.gitlab.id': 1
 			requirePasswordChange: 1
+			requirePasswordChangeReason: 1

@@ -47,6 +47,7 @@ Meteor.methods
 				emoji: integration.emoji
 				alias: integration.alias
 				channel: integration.channel
+				processIncomingRequestScript: integration.processIncomingRequestScript
 				_updatedAt: new Date
 				_updatedBy: RocketChat.models.Users.findOne @userId, {fields: {username: 1}}
 

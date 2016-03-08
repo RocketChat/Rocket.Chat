@@ -1,1 +1,5 @@
-{ }
+{
+  "WebRTC_Enable_Channel" : "Habilitar para Canales Publicos",
+  "WebRTC_Enable_Direct" : "Habilitar para Mensajes Directos",
+  "WebRTC_Enable_Private" : "Habilitar para Canales Privados"
+}

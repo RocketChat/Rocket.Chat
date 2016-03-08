@@ -76,6 +76,7 @@ Package.onUse(function(api) {
 	api.addFiles('server/methods/addOAuthService.coffee', 'server');
 	api.addFiles('server/methods/checkRegistrationSecretURL.coffee', 'server');
 	api.addFiles('server/methods/clearRequirePasswordChange.js', 'server');
+	api.addFiles('server/methods/deleteUserOwnAccount.js', 'server');
 	api.addFiles('server/methods/joinDefaultChannels.coffee', 'server');
 	api.addFiles('server/methods/removeOAuthService.coffee', 'server');
 	api.addFiles('server/methods/robotMethods.coffee', 'server');
