@@ -125,6 +125,7 @@ Template.integrationsIncoming.events
 		avatar = $('[name=avatar]').val().trim()
 		channel = $('[name=channel]').val().trim()
 		username = $('[name=username]').val().trim()
+		processIncomingRequestScript = $('[name=processIncomingRequestScript]').val().trim()
 
 		if channel is ''
 			return toastr.error TAPi18n.__("The_channel_name_is_required")
@@ -138,6 +139,7 @@ Template.integrationsIncoming.events
 			emoji: emoji if emoji isnt ''
 			avatar: avatar if avatar isnt ''
 			name: name if name isnt ''
+			processIncomingRequestScript: processIncomingRequestScript if processIncomingRequestScript isnt ''
 
 		params = Template.instance().data.params?()
 		if params?.id?

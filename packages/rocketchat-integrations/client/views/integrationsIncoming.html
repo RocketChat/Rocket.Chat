@@ -55,6 +55,12 @@
 								<div class="settings-description">{{{_ "Example_s" ":ghost:"}}}</div>
 							</div>
 						</div>
+						<div class="input-line double-col">
+							<label>{{_ "Process_Incoming_Request"}} ({{_ "optional"}})</label>
+							<div>
+								<textarea rows="4" style="height: auto" name="processIncomingRequestScript" value="{{data.processIncomingRequestScript}}"></textarea>
+							</div>
+						</div>
 						{{#if data.token}}
 							<div class="input-line double-col">
 								<label>Webhook URL</label>

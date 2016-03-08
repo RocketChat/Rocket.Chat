@@ -24,7 +24,7 @@ RocketChat.settings.add = (_id, value, options = {}) ->
 	options.valueSource = 'packageValue'
 	options.ts = new Date
 	options.hidden = false
-	options.blocked = false
+	options.blocked = options.blocked || false
 	options.sorter ?= RocketChat.settings._sorter++
 
 	if options.enableQuery?
@@ -57,8 +57,8 @@ RocketChat.settings.add = (_id, value, options = {}) ->
 	if hiddenSettings[_id]?
 		options.hidden = true
 
-	if process?.env?['SETTING_OVERWRITE_' + _id]?
-		value = process.env['SETTING_OVERWRITE_' + _id]
+	if process?.env?['OVERWRITE_SETTING_' + _id]?
+		value = process.env['OVERWRITE_SETTING_' + _id]
 		if value.toLowerCase() is "true"
 			value = true
 		else if value.toLowerCase() is "false"
@@ -70,8 +70,10 @@ RocketChat.settings.add = (_id, value, options = {}) ->
 	updateOperations =
 		$set: options
 		$setOnInsert:
-			value: value
 			createdAt: new Date
+
+	if not options.value?
+		updateOperations.$setOnInsert.value = value
 
 	if not options.section?
 		updateOperations.$unset = { section: 1 }

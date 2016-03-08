@@ -8,12 +8,11 @@ oAuthServicesUpdate = ->
 	Meteor.clearTimeout timer if timer?
 
 	timer = Meteor.setTimeout ->
-		services = RocketChat.models.Settings.find({_id: /^(Accounts_OAuth_|Accounts_OAuth_Custom_)[a-z_-]+$/i}).fetch()
+		services = RocketChat.models.Settings.find({_id: /^(Accounts_OAuth_|Accounts_OAuth_Custom_)[a-z0-9_-]+$/i}).fetch()
 		for service in services
 			logger.oauth_updated service._id
 
 			serviceName = service._id.replace('Accounts_OAuth_', '')
-
 			if serviceName is 'Meteor'
 				serviceName = 'meteor-developer'
 

@@ -27,6 +27,10 @@
 	user-select: text;
 }
 
+.text-right {
+	text-align: right;
+}
+
 .no-scroll {
 	overflow: hidden !important;
 }
@@ -269,6 +273,10 @@ blockquote {
 			font-size: 11px;
 		}
 	}
+	.logoutOthers {
+		text-align: right;
+	}
+
 	.submit {
 		margin-top: 20px;
 		text-align: right;
@@ -330,7 +338,8 @@ blockquote {
 			animation-timing-function: linear;
 		}
 		.icon-search,
-		.icon-right-open-small {
+		.icon-right-open-small,
+		.icon-sort-alt-up {
 			position: absolute;
 			left: 2px;
 			top: 10px;
@@ -1222,13 +1231,22 @@ a.github-fork {
 		display: block;
 		-webkit-overflow-scrolling: touch;
 		box-shadow: 0 0 5px rgba(0, 0, 0, 0.4) inset;
-		padding: 35px 10px;
+		padding: 20px 10px;
 		.transition-delay(.135s);
 		&.no-shadow {
 			box-shadow: 0 0 0;
 		}
 		> .wrapper {
 			direction: ltr;
+
+			.flex-control {
+				margin-bottom: 30px;
+
+				.search {
+					width: 100%;
+					margin-bottom: 10px;
+				}
+			}
 		}
 		h4 {
 			margin-bottom: 30px;

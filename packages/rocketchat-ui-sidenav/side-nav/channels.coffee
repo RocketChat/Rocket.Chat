@@ -1,7 +1,4 @@
 Template.channels.helpers
-	tRoomMembers: ->
-		return t('Members_placeholder')
-
 	isActive: ->
 		return 'active' if ChatSubscription.findOne({ t: { $in: ['c']}, f: { $ne: true }, open: true, rid: Session.get('openedRoom') }, { fields: { _id: 1 } })?
 
