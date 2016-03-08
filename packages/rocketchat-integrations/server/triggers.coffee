@@ -117,7 +117,10 @@ ExecuteTriggerUrl = (url, trigger, message, room, tries=0) ->
 		return
 
 	if opts.message?
-		return sendMessage opts.message
+		sendMessage opts.message
+
+	if not opts.url? or not opts.method?
+		return
 
 	HTTP.call opts.method, opts.url, opts, (error, result) ->
 		if not result? or result.statusCode isnt 200
