@@ -93,6 +93,9 @@ ExecuteTriggerUrl = (url, trigger, message, room, tries=0) ->
 			return
 
 		try
+			sandbox._ = _
+			sandbox.s = s
+			sandbox.console = console
 			vmScript.runInNewContext sandbox
 			opts = sandbox.result
 			logger.outgoing.debug 'result', opts
@@ -158,8 +161,11 @@ ExecuteTriggerUrl = (url, trigger, message, room, tries=0) ->
 					return
 
 				try
+					sandbox._ = _
+					sandbox.s = s
+					sandbox.console = console
 					vmScript.runInNewContext sandbox
-					result = sandbox.result.content
+					result = sandbox.result?.content
 					if result?
 						result = data: result
 					logger.outgoing.debug 'result', result
@@ -169,7 +175,6 @@ ExecuteTriggerUrl = (url, trigger, message, room, tries=0) ->
 					logger.outgoing.error "\n[Stack:]"
 					logger.outgoing.error e.stack.replace(/^/gm, '  ')
 					return
-
 
 			if result?.data?.text? or result?.data?.attachments?
 				sendMessage result.data
