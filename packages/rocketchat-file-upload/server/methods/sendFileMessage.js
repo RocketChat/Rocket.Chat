@@ -1,9 +1,7 @@
 Meteor.methods({
 	'sendFileMessage'(roomId, store, file) {
-		var fileId;
-
 		if (!Meteor.userId()) {
-			throw new Meteor.Error(203, t('User_logged_out'));
+			throw new Meteor.Error(203, 'User_logged_out');
 		}
 
 		var room = Meteor.call('canAccessRoom', roomId, Meteor.userId());
@@ -12,13 +10,9 @@ Meteor.methods({
 			return false;
 		}
 
-		if (!file._id) {
-			fileId = RocketChat.models.Uploads.insertFile(roomId, Meteor.userId(), store, file);
-		} else {
-			fileId = file._id;
-		}
+		RocketChat.models.Uploads.updateFileComplete(file._id, Meteor.userId(), _.omit(file, '_id'));
 
-		var fileUrl = '/file-upload/' + fileId + '/' + file.name;
+		var fileUrl = '/file-upload/' + file._id + '/' + file.name;
 
 		var attachment = {
 			title: `File Uploaded: ${file.name}`,
@@ -40,14 +34,14 @@ Meteor.methods({
 			attachment.video_url = fileUrl;
 			attachment.video_type = file.type;
 			attachment.video_size = file.size;
-		}1
+		}
 
 		msg = {
 			_id: Random.id(),
 			rid: roomId,
-			msg: "",
+			msg: '',
 			file: {
-				_id: fileId
+				_id: file._id
 			},
 			groupable: false,
 			attachments: [attachment]
