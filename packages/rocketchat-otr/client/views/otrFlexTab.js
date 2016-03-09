@@ -16,11 +16,11 @@ Template.otrFlexTab.helpers({
 			}
 		}
 	},
-	OTREstablished() {
+	rsaReady() {
 		const otr = RocketChat.OTR.getInstanceByRoomId(this.rid);
-		return otr && otr.established.get();
+		return otr && otr.rsaReady.get();
 	},
-	OTREstablishing() {
+	establishing() {
 		const otr = RocketChat.OTR.getInstanceByRoomId(this.rid);
 		return otr && otr.establishing.get();
 	}
@@ -35,7 +35,8 @@ Template.otrFlexTab.events({
 			t.timeout = Meteor.setTimeout(() => {
 				swal("Timeout", "", "error");
 				otr.establishing.set(false);
-				otr.established.set(false);
+				otr.rsaReady.set(false);
+				otr.aesReady.set(false);
 			}, 10000);
 		}
 	},
@@ -44,7 +45,8 @@ Template.otrFlexTab.events({
 		const otr = RocketChat.OTR.getInstanceByRoomId(this.rid);
 		if (otr) {
 			otr.end();
-			otr.established.set(false);
+			otr.rsaReady.set(false);
+			otr.aesReady.set(false);
 		}
 	}
 });
@@ -53,7 +55,7 @@ Template.otrFlexTab.onCreated(function() {
 	this.timeout = null;
 	this.autorun(() => {
 		const otr = RocketChat.OTR.getInstanceByRoomId(this.data.rid);
-		if (otr && otr.established.get()) {
+		if (otr && otr.aesReady.get()) {
 			Meteor.clearTimeout(this.timeout);
 		}
 	})
