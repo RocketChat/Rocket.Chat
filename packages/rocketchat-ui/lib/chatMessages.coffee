@@ -106,8 +106,9 @@ class @ChatMessages
 					return
 
 			#Run to allow local encryption
-			#Meteor.call 'onClientBeforeSendMessage', {}
-			Meteor.call 'sendMessage', msgObject
+			# Meteor.call 'onClientBeforeSendMessage', {}
+			RocketChat.promises.run('onClientBeforeSendMessage', msgObject).then (msgObject) ->
+				Meteor.call 'sendMessage', msgObject
 
 	deleteMsg: (message) ->
 		Meteor.call 'deleteMessage', message, (error, result) ->
