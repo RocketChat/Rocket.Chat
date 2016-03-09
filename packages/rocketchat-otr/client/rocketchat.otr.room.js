@@ -59,8 +59,7 @@ RocketChat.OTR.Room = class {
 		this.aesReady.set(true);
 		this.encryptAES(localStorage.getItem('sharedSecret')).then((args) => {
 			[sharedSecret, iv] = args;
-			console.log(sharedSecret, iv);
-			// RocketChat.Notifications.notifyUser(this.peerId, 'otr', 'sharedSecret-acknowledge', { roomId: this.roomId, userId: this.userId, sharedSecret: sharedSecret, iv: iv });
+			RocketChat.Notifications.notifyUser(this.peerId, 'otr', 'sharedSecret-acknowledge', { roomId: this.roomId, userId: this.userId, sharedSecret: sharedSecret, iv: iv });
 		});
 	}
 
@@ -161,7 +160,7 @@ RocketChat.OTR.Room = class {
 		.then((encrypted) => {
 			return this.bytesToHexString(encrypted);
 		})
-		.catch(function(err){
+		.catch((err) => {
 			console.log(err);
 			return message;
 		});
@@ -178,7 +177,7 @@ RocketChat.OTR.Room = class {
 			//returns an ArrayBuffer containing the decrypted data
 			return new TextDecoder("UTF-8").decode(new Uint8Array(decrypted));
 		})
-		.catch(function(err){
+		.catch((err) => {
 			console.log(err);
 			return message;
 		});
@@ -216,10 +215,29 @@ RocketChat.OTR.Room = class {
 			this.sharedSecret, //from generateKey or importKey above
 			new TextEncoder("UTF-8").encode(message) //ArrayBuffer of data you want to encrypt
 		)
-		.then(function(encrypted){
-			return [this.bytesToHexString(encrypted), iv];
+		.then((encrypted) => {
+			return [this.bytesToHexString(encrypted), this.bytesToHexString(iv)];
 		})
-		.catch(function(err){
+		.catch((err) => {
+			console.log(err);
+			return message;
+		});
+	}
+
+	decryptAES(message, iv) {
+		return window.crypto.subtle.decrypt(
+			{
+				name: "AES-CBC",
+				iv: new this.hexStringToUint8Array(iv), //The initialization vector you used to encrypt
+			},
+			this.sharedSecret, //from generateKey or importKey above
+			new this.hexStringToUint8Array(message) //ArrayBuffer of the data
+		)
+		.then((decrypted) => {
+			//returns an ArrayBuffer containing the decrypted data
+			return new TextDecoder("UTF-8").decode(new Uint8Array(decrypted));
+		})
+		.catch((err) => {
 			console.log(err);
 			return message;
 		});
@@ -288,9 +306,18 @@ RocketChat.OTR.Room = class {
 				});
 				break;
 			case 'sharedSecret-acknowledge':
-				console.log(data.sharedSecret);
-				this.establishing.set(false);
-				this.aesReady.set(true);
+				this.decryptAES(data.sharedSecret, data.iv)
+				.then((sharedSecret) => {
+					if (sharedSecret === JSON.stringify(this.sharedSecretJWK)) {
+						this.establishing.set(false);
+						this.aesReady.set(true);
+					} else {
+						this.establishing.set(false);
+						this.rsaReady.set(false);
+						this.aesReady.set(false);
+						swal(TAPi18n.__("Error establishing encrypted connection"), null, "error");
+					}
+				})
 				break;
 			case 'deny':
 				this.establishing.set(false);
