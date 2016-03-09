@@ -190,7 +190,7 @@ service-configuration@1.0.5
 session@1.1.1
 sha@1.0.4
 simple:highlight.js@1.2.0
-simple:json-routes@1.0.4
+simple:json-routes@2.0.1
 smoral:sweetalert@1.1.1
 spacebars@1.0.7
 spacebars-compiler@1.0.7
