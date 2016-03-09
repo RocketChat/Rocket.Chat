@@ -47,6 +47,7 @@ rocketchat:custom-oauth
 rocketchat:emojione
 rocketchat:favico
 rocketchat:file
+rocketchat:file-upload
 rocketchat:github-enterprise
 rocketchat:gitlab
 rocketchat:highlight
