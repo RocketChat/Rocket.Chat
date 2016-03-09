@@ -1,6 +1,5 @@
 Slingshot.fileRestrictions('rocketchat-uploads', {
 	authorize: function(file, metaContext) {
-		console.log('authorize ->',file);
 		if (!RocketChat.fileUploadIsValidContentType(file.type)) {
 			throw new Meteor.Error(TAPi18n.__('Invalid_file_type'));
 		}

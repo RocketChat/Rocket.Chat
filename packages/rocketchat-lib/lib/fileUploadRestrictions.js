@@ -1,7 +1,6 @@
 RocketChat.fileUploadMediaWhiteList = function() {
 	var mediaTypeWhiteList = RocketChat.settings.get('FileUpload_MediaTypeWhiteList');
 
-	console.log('mediaTypeWhiteList ->',mediaTypeWhiteList);
 	if (!mediaTypeWhiteList) {
 		return;
 	}
