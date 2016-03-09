@@ -32,8 +32,7 @@ Meteor.methods
 				RocketChat.models.Messages.removeById originalMessage._id
 
 			if originalMessage.file?._id?
-				RocketChat.models.Uploads.remove originalMessage.file._id
-				Meteor.fileStore.delete originalMessage.file._id
+				FileUpload.delete(originalMessage.file._id)
 
 		if showDeletedStatus
 			RocketChat.models.Messages.setAsDeletedById originalMessage._id

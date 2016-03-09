@@ -2,7 +2,7 @@ roomFiles = new Mongo.Collection 'room_files'
 
 Template.uploadedFilesList.helpers
 	files: ->
-		return roomFiles.find({ rid: @rid }, { sort: { uploadedAt: -1 } }).fetch()
+		return roomFiles.find({ rid: @rid }, { sort: { uploadedAt: -1 } })
 
 	hasFiles: ->
 		return roomFiles.find({ rid: @rid }).count() > 0
