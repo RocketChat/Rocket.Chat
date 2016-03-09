@@ -1,0 +1,35 @@
+<template name="rocketchatcrm_leads">
+	<div class="control" style="text-align:center;">
+		<h2>RocketChat CRM Integration</h2>
+		<h3>Lead Email Response</h3>
+	 </div>
+	 {{#with payload}}
+			<div class="control">
+
+				<div class="botgen" style="margin-bottom: 10px;">
+				<label>From: </label>
+					<input type="text" id="gistbutton" value="{{from}}" autocomplete="off" />
+				</div>
+
+				<div class="botgen" style="margin-bottom: 10px;">
+					<label>To: </label>
+					<input type="text" id="gistbutton" value="{{to}}" autocomplete="off" />
+				</div>
+
+				<div class="botgen" style="margin-bottom: 10px;">
+					<label>Subject: </label>
+					<input type="text" id="gistbutton" value="RE: {{subject}}" autocomplete="off" />
+				</div>
+
+				<div class="botgen" style="margin-bottom: 10px;">
+					<label>Response: </label>
+					<textarea class="search" style="height: 100px" placeholder="Your reply here..."></textarea>
+				</div>
+
+				<div class="botgen" style="margin-bottom: 10px;">
+					<button class='button'><span> {{_ "Send"}}</span></button>
+				</div>
+			</div>
+		{{/with}}
+
+</template>
