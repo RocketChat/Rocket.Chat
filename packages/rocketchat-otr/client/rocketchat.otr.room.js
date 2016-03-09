@@ -5,6 +5,7 @@ RocketChat.OTR.Room = class {
 		this.peerId = roomId.replace(userId, '');
 		this.established = new ReactiveVar(false);
 		this.establishing = new ReactiveVar(false);
+		this.publicKeyJWK = null;
 		this.publicKey = null;
 		this.privateKey = null;
 		this.peerPublicKey = null;
@@ -14,7 +15,7 @@ RocketChat.OTR.Room = class {
 		this.establishing.set(true);
 		this.established.set(false);
 		this.getPublicAndPrivateKeys(false, () => {
-			RocketChat.Notifications.notifyUser(this.peerId, 'otr', 'handshake', { roomId: this.roomId, userId: this.userId, publicKey: this.publicKey });
+			RocketChat.Notifications.notifyUser(this.peerId, 'otr', 'handshake', { roomId: this.roomId, userId: this.userId, publicKey: this.publicKeyJWK });
 		});
 	}
 
@@ -22,7 +23,7 @@ RocketChat.OTR.Room = class {
 		this.establishing.set(false);
 		this.established.set(true);
 		this.getPublicAndPrivateKeys(false, () => {
-			RocketChat.Notifications.notifyUser(this.peerId, 'otr', 'acknowledge', { roomId: this.roomId, userId: this.userId, publicKey: this.publicKey });
+			RocketChat.Notifications.notifyUser(this.peerId, 'otr', 'acknowledge', { roomId: this.roomId, userId: this.userId, publicKey: this.publicKeyJWK });
 		});
 	}
 
@@ -38,20 +39,31 @@ RocketChat.OTR.Room = class {
 		RocketChat.Notifications.notifyUser(this.peerId, 'otr', 'end', { roomId: this.roomId, userId: this.userId });
 	}
 
-	convertStringToArrayBufferView(str) {
-		var bytes = new Uint8Array(str.length);
-		for (var iii = 0; iii < str.length; iii++) {
-			bytes[iii] = str.charCodeAt(iii);
+	bytesToHexString(bytes) {
+		if (!bytes)
+			return null;
+		bytes = new Uint8Array(bytes);
+		var hexBytes = [];
+		for (var i = 0; i < bytes.length; ++i) {
+			var byteString = bytes[i].toString(16);
+			if (byteString.length < 2)
+				byteString = "0" + byteString;
+			hexBytes.push(byteString);
 		}
-		return bytes;
+		return hexBytes.join("");
 	}
 
-	convertArrayBufferViewtoString(buffer) {
-		var str = "";
-		for (var iii = 0; iii < buffer.byteLength; iii++) {
-			str += String.fromCharCode(buffer[iii]);
+	hexStringToUint8Array(hexString) {
+		if (hexString.length % 2 != 0)
+			throw "Invalid hexString";
+		var arrayBuffer = new Uint8Array(hexString.length / 2);
+		for (var i = 0; i < hexString.length; i += 2) {
+			var byteValue = parseInt(hexString.substr(i, 2), 16);
+			if (byteValue == NaN)
+				throw "Invalid hexString";
+			arrayBuffer[i/2] = byteValue;
 		}
-		return str;
+		return arrayBuffer;
 	}
 
 	getPublicAndPrivateKeys(refreshKeys, callback) {
@@ -69,13 +81,14 @@ RocketChat.OTR.Room = class {
 			.then((key) => {
 				// export private key
 				this.privateKey = key.privateKey;
+				this.publicKey = key.publicKey;
 				// export public key
 				window.crypto.subtle.exportKey(
 					"jwk", //can be "jwk" (public or private), "spki" (public only), or "pkcs8" (private only)
 					key.publicKey //can be a publicKey or privateKey, as long as extractable was true
 				)
 				.then((publicKey) => {
-					this.publicKey = publicKey;
+					this.publicKeyJWK = publicKey;
 				})
 				.then(() => {
 					if (callback) {
@@ -117,8 +130,8 @@ RocketChat.OTR.Room = class {
 					text: TAPi18n.__("Username_wants_to_start_otr_Do_you_want_to_accept", { username: user.username }),
 					html: true,
 					showCancelButton: true,
-					confirmButtonText: "Yes",
-					cancelButtonText: "No"
+					confirmButtonText: TAPi18n.__("Yes"),
+					cancelButtonText: TAPi18n.__("No")
 				}, (isConfirm) => {
 					if (isConfirm) {
 						Meteor.clearTimeout(timeout);
@@ -160,16 +173,26 @@ RocketChat.OTR.Room = class {
 	}
 
 	encrypt(message) {
+		const textMsg = message.msg;
+		// Encrypt with peer's public key
 		return window.crypto.subtle.encrypt({
 				name: "RSA-OAEP",
 			},
 			this.peerPublicKey,
-			this.convertStringToArrayBufferView(message.msg) //ArrayBuffer of data you want to encrypt
+			new TextEncoder("UTF-8").encode(textMsg) //ArrayBuffer of data you want to encrypt
 		)
 		.then((encrypted) => {
-			message.msg = btoa(this.convertArrayBufferViewtoString(new Uint8Array(encrypted)));
+			message.msg = this.bytesToHexString(encrypted);
 			message.otr = true;
-			return message;
+			return window.crypto.subtle.encrypt({
+					name: "RSA-OAEP",
+				},
+				this.publicKey,
+				new TextEncoder("UTF-8").encode(textMsg) //ArrayBuffer of data you want to encrypt
+			).then((encrypted) => {
+				message.ownMsg = this.bytesToHexString(encrypted);
+				return message;
+			})
 		})
 		.catch(function(err){
 			return message;
@@ -181,11 +204,11 @@ RocketChat.OTR.Room = class {
 				name: "RSA-OAEP",
 			},
 			this.privateKey,
-			this.convertStringToArrayBufferView(atob(message.msg)) //ArrayBuffer of the data
+			new this.hexStringToUint8Array(message.u._id === Meteor.userId() ? message.ownMsg : message.msg) //ArrayBuffer of the data
 		)
 		.then((decrypted) => {
 			//returns an ArrayBuffer containing the decrypted data
-			message.msg = this.convertArrayBufferViewtoString(new Uint8Array(decrypted));
+			message.msg = new TextDecoder("UTF-8").decode(new Uint8Array(decrypted));
 			return message;
 		})
 		.catch(function(err){
