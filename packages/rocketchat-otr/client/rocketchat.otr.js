@@ -37,7 +37,7 @@ Meteor.startup(function() {
 		}
 	});
 	RocketChat.promises.add('onClientBeforeSendMessage', function(message) {
-		if (message.rid && RocketChat.OTR.instancesByRoomId && RocketChat.OTR.instancesByRoomId[message.rid] && RocketChat.OTR.instancesByRoomId[message.rid].established.get()) {
+		if (message.rid && RocketChat.OTR.instancesByRoomId && RocketChat.OTR.instancesByRoomId[message.rid] && RocketChat.OTR.instancesByRoomId[message.rid].aesReady.get()) {
 			return RocketChat.OTR.instancesByRoomId[message.rid].encrypt(message);
 		} else {
 			return Promise.resolve(message);
@@ -46,7 +46,7 @@ Meteor.startup(function() {
 
 
 	RocketChat.promises.add('onClientMessageReceived', function(message) {
-		if (message.rid && RocketChat.OTR.instancesByRoomId && RocketChat.OTR.instancesByRoomId[message.rid] && RocketChat.OTR.instancesByRoomId[message.rid].established.get()) {
+		if (message.rid && RocketChat.OTR.instancesByRoomId && RocketChat.OTR.instancesByRoomId[message.rid] && RocketChat.OTR.instancesByRoomId[message.rid].aesReady.get()) {
 			return RocketChat.OTR.instancesByRoomId[message.rid].decrypt(message);
 		} else {
 			return Promise.resolve(message);
