@@ -38,7 +38,13 @@ Meteor.startup(function() {
 	});
 	RocketChat.promises.add('onClientBeforeSendMessage', function(message) {
 		if (message.rid && RocketChat.OTR.instancesByRoomId && RocketChat.OTR.instancesByRoomId[message.rid] && RocketChat.OTR.instancesByRoomId[message.rid].aesReady.get()) {
-			return RocketChat.OTR.instancesByRoomId[message.rid].encrypt(message);
+			return RocketChat.OTR.instancesByRoomId[message.rid].encryptAES(message.msg)
+			.then((params) => {
+				[msg, iv] = params;
+				message.msg = msg;
+				message.iv = iv;
+				return message;
+			});
 		} else {
 			return Promise.resolve(message);
 		}
@@ -46,8 +52,12 @@ Meteor.startup(function() {
 
 
 	RocketChat.promises.add('onClientMessageReceived', function(message) {
-		if (message.rid && RocketChat.OTR.instancesByRoomId && RocketChat.OTR.instancesByRoomId[message.rid] && RocketChat.OTR.instancesByRoomId[message.rid].aesReady.get()) {
-			return RocketChat.OTR.instancesByRoomId[message.rid].decrypt(message);
+		if (message.rid && message.iv && RocketChat.OTR.instancesByRoomId && RocketChat.OTR.instancesByRoomId[message.rid] && RocketChat.OTR.instancesByRoomId[message.rid].aesReady.get()) {
+			return RocketChat.OTR.instancesByRoomId[message.rid].decryptAES(message.msg, message.iv)
+			.then((msg) => {
+				message.msg = msg;
+				return message;
+			})
 		} else {
 			return Promise.resolve(message);
 		}
