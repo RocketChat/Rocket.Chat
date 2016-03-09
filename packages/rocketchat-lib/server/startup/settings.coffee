@@ -74,13 +74,6 @@ RocketChat.settings.addGroup 'Accounts', ->
 		@add 'Accounts_OAuth_Twitter_callback_url', __meteor_runtime_config__?.ROOT_URL + '_oauth/twitter', { type: 'string', blocked: true }
 
 
-RocketChat.settings.addGroup 'FileUpload', ->
-	@add 'FileUpload_Enabled', true, { type: 'boolean', public: true }
-	@add 'FileUpload_MaxFileSize', 2097152, { type: 'int', public: true }
-	@add 'FileUpload_MediaTypeWhiteList', 'image/*,audio/*,application/pdf,text/plain,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document', { type: 'string', public: true, i18nDescription: 'FileUpload_MediaTypeWhiteListDescription' }
-	@add 'FileUpload_ProtectFiles', true, { type: 'boolean', public: true, i18nDescription: 'FileUpload_ProtectFilesDescription' }
-
-
 RocketChat.settings.addGroup 'General', ->
 	@add 'Site_Url', __meteor_runtime_config__?.ROOT_URL, { type: 'string', i18nDescription: 'Site_Url_Description', public: true }
 	@add 'Site_Name', 'Rocket.Chat', { type: 'string', public: true }
