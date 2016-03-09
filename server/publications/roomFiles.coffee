@@ -4,26 +4,7 @@ Meteor.publish 'roomFiles', (rid, limit = 50) ->
 
 	pub = this
 
-	fileQuery =
-		rid: rid
-		complete: true
-		uploading: false
-		_hidden:
-			$ne: true
-
-	fileOptions =
-		limit: limit
-		sort:
-			uploadedAt: -1
-		fields:
-			_id: 1
-			userId: 1
-			rid: 1
-			name: 1
-			type: 1
-			url: 1
-
-	cursorFileListHandle = RocketChat.models.Uploads.find(fileQuery, fileOptions).observeChanges
+	cursorFileListHandle = RocketChat.models.Uploads.findNotHiddenFilesOfRoom(rid, limit).observeChanges
 		added: (_id, record) ->
 			pub.added('room_files', _id, record)
 
