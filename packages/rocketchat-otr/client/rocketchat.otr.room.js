@@ -94,22 +94,16 @@ RocketChat.OTR.Room = class {
 	}
 
 	importPublicKey(publicKey) {
-		window.crypto.subtle.importKey(
+		return window.crypto.subtle.importKey(
 			"jwk", //can be "jwk" (public or private), "spki" (public only), or "pkcs8" (private only)
 			publicKey,
 			{   //these are the algorithm options
 				name: "RSA-OAEP",
 				hash: {name: "SHA-256"}, //can be "SHA-1", "SHA-256", "SHA-384", or "SHA-512"
 			},
-			false, //whether the key is extractable (i.e. can be used in exportKey)
+			true, //whether the key is extractable (i.e. can be used in exportKey)
 			["encrypt"] //"encrypt" or "wrapKey" for public key import or
 		)
-		.then(function(publicKey){
-			return publicKey;
-		})
-		.catch(function(err){
-			console.error(err);
-		});
 	}
 
 	onUserStream(type, data) {
@@ -128,10 +122,12 @@ RocketChat.OTR.Room = class {
 				}, (isConfirm) => {
 					if (isConfirm) {
 						Meteor.clearTimeout(timeout);
-						this.peerPublicKey = this.importPublicKey(data.publicKey);
-						FlowRouter.goToRoomById(data.roomId);
-						Meteor.defer(() => {
-							this.acknowledge();
+						this.importPublicKey(data.publicKey).then((publicKey) => {
+							this.peerPublicKey = publicKey;
+							FlowRouter.goToRoomById(data.roomId);
+							Meteor.defer(() => {
+								this.acknowledge();
+							});
 						});
 					} else {
 						Meteor.clearTimeout(timeout);
@@ -144,9 +140,11 @@ RocketChat.OTR.Room = class {
 				}, 10000);
 				break;
 			case 'acknowledge':
-				this.peerPublicKey = this.importPublicKey(data.publicKey);
-				this.establishing.set(false);
-				this.established.set(true);
+				this.importPublicKey(data.publicKey).then((publicKey) => {
+					this.peerPublicKey = publicKey;
+					this.establishing.set(false);
+					this.established.set(true);
+				});
 				break;
 			case 'deny':
 				this.establishing.set(false);
@@ -162,7 +160,7 @@ RocketChat.OTR.Room = class {
 	}
 
 	encrypt(message) {
-		window.crypto.subtle.encrypt({
+		return window.crypto.subtle.encrypt({
 				name: "RSA-OAEP",
 			},
 			this.peerPublicKey,
@@ -170,6 +168,7 @@ RocketChat.OTR.Room = class {
 		)
 		.then((encrypted) => {
 			message.msg = btoa(this.convertArrayBufferViewtoString(new Uint8Array(encrypted)));
+			message.otr = true;
 			return message;
 		})
 		.catch(function(err){
@@ -178,12 +177,11 @@ RocketChat.OTR.Room = class {
 	}
 
 	decrypt(message) {
-		message.msg = atob(message.msg);
-		window.crypto.subtle.decrypt({
+		return window.crypto.subtle.decrypt({
 				name: "RSA-OAEP",
 			},
 			this.privateKey,
-			this.convertStringToArrayBufferView(message.msg) //ArrayBuffer of the data
+			this.convertStringToArrayBufferView(atob(message.msg)) //ArrayBuffer of the data
 		)
 		.then((decrypted) => {
 			//returns an ArrayBuffer containing the decrypted data

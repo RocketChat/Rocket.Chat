@@ -30,26 +30,26 @@ RocketChat.OTR = new (class {
 
 Meteor.startup(function() {
 	RocketChat.Notifications.onUser('otr', (type, data) => {
-		if (!data.roomId || data.userId === Meteor.userId()) {
+		if (!data.roomId || !data.userId || data.userId === Meteor.userId()) {
 			return;
 		} else {
 			RocketChat.OTR.getInstanceByRoomId(data.roomId).onUserStream(type, data);
 		}
 	});
-	RocketChat.callbacks.add('onClientBeforeSendMessage', function(message) {
+	RocketChat.promises.add('onClientBeforeSendMessage', function(message) {
 		if (message.rid && RocketChat.OTR.instancesByRoomId && RocketChat.OTR.instancesByRoomId[message.rid] && RocketChat.OTR.instancesByRoomId[message.rid].established.get()) {
 			return RocketChat.OTR.instancesByRoomId[message.rid].encrypt(message);
 		} else {
-			return message;
+			return new Promise(function(resolve, reject) { resolve(message); });
 		}
-	}, RocketChat.callbacks.priority.HIGH);
-	RocketChat.callbacks.add('renderMessage', function(message) {
-		if (message.rid && RocketChat.OTR.instancesByRoomId && RocketChat.OTR.instancesByRoomId[message.rid] && RocketChat.OTR.instancesByRoomId[message.rid].established.get()) {
-			return RocketChat.OTR.instancesByRoomId[message.rid].decrypt(message);
-		} else {
-			return message;
-		}
-	}, RocketChat.callbacks.priority.HIGH);
+	}, RocketChat.promises.priority.HIGH);
+	// RocketChat.promises.add('onClientBeforeRenderMessage', function(message) {
+	// 	if (message.rid && RocketChat.OTR.instancesByRoomId && RocketChat.OTR.instancesByRoomId[message.rid] && RocketChat.OTR.instancesByRoomId[message.rid].established.get()) {
+	// 		return RocketChat.OTR.instancesByRoomId[message.rid].decrypt(message);
+	// 	} else {
+	// 		return new Promise(function(resolve, reject) { resolve(message); });
+	// 	}
+	// }, RocketChat.promises.priority.HIGH);
 });
 
 // RocketChat.OTR = class { enabled: false };
