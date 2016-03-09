@@ -125,7 +125,7 @@ Meteor.methods
 		return
 
 
-WebApp.connectHandlers.use '/assets/', (req, res, next) ->
+WebApp.connectHandlers.use '/assets/', Meteor.bindEnvironment (req, res, next) ->
 	params =
 		asset: decodeURIComponent(req.url.replace(/^\//, '').replace(/\?.*$/, ''))
 
