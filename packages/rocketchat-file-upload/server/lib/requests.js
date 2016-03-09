@@ -1,3 +1,4 @@
+/* globals FileUpload, WebApp, Cookies */
 var protectedFiles;
 
 RocketChat.settings.get('FileUpload_ProtectFiles', function(key, value) {
@@ -6,8 +7,6 @@ RocketChat.settings.get('FileUpload_ProtectFiles', function(key, value) {
 
 WebApp.connectHandlers.use('/file-upload/', function(req, res, next) {
 	var file;
-
-	var dd = new Date();
 
 	var match = /^\/([^\/]+)\/(.*)/.exec(req.url);
 
@@ -19,7 +18,7 @@ WebApp.connectHandlers.use('/file-upload/', function(req, res, next) {
 				var cookie, rawCookies, ref, token, uid;
 				cookie = new Cookies();
 
-				if ((typeof req !== "undefined" && req !== null ? (ref = req.headers) != null ? ref.cookie : void 0 : void 0) != null) {
+				if ((typeof req !== 'undefined' && req !== null ? (ref = req.headers) != null ? ref.cookie : void 0 : void 0) != null) {
 					rawCookies = req.headers.cookie;
 				}
 
@@ -43,7 +42,7 @@ WebApp.connectHandlers.use('/file-upload/', function(req, res, next) {
 				}
 			}
 
-			return fileUploadResponse.process(file, req, res, next);
+			return FileUpload.get(file, req, res, next);
 		}
 	}
 

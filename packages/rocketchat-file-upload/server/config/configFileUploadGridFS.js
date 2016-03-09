@@ -1,3 +1,4 @@
+/* globals FileUpload, UploadFS */
 var stream = Npm.require('stream');
 var zlib = Npm.require('zlib');
 
@@ -50,10 +51,16 @@ var readFromGridFS = function(storeName, fileId, file, req, res) {
 	}
 };
 
-fileUploadResponse.register('rocketchat_uploads', function(file, req, res, next) {
-	res.setHeader('Content-Disposition', "attachment; filename=\"" + encodeURIComponent(file.name) + "\"");
-	res.setHeader('Last-Modified', file.uploadedAt.toUTCString());
-	res.setHeader('Content-Type', file.type);
-	res.setHeader('Content-Length', file.size);
-	return readFromGridFS(file.store, file._id, file, req, res);
+FileUpload.addHandler('rocketchat_uploads', {
+	get(file, req, res) {
+		res.setHeader('Content-Disposition', 'attachment; filename="' + encodeURIComponent(file.name) + '"');
+		res.setHeader('Last-Modified', file.uploadedAt.toUTCString());
+		res.setHeader('Content-Type', file.type);
+		res.setHeader('Content-Length', file.size);
+		return readFromGridFS(file.store, file._id, file, req, res);
+	},
+	delete(file) {
+		console.log('will delete file from GridFS',file);
+		return Meteor.fileStore.delete(file._id);
+	}
 });
