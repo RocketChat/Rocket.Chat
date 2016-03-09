@@ -71,6 +71,7 @@ rocketchat:message-star
 rocketchat:migrations
 rocketchat:oauth2-server-config
 rocketchat:oembed
+rocketchat:otr
 rocketchat:push-notifications
 rocketchat:slashcommands-invite
 rocketchat:slashcommands-join
