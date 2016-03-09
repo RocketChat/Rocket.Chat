@@ -31,20 +31,18 @@ RocketChat.models.Uploads = new class extends RocketChat.models._Base
 
 		return @find fileQuery, fileOptions
 
-	insertFile: (roomId, userId, store, file) ->
+	insertFileInit: (roomId, userId, store, file, extra) ->
 		fileData =
 			rid: roomId
 			userId: userId
-			name: file.name
-			size: file.size
-			type: file.type
 			store: store
+			complete: false
+			uploading: true
+			progress: 0
 			extension: s.strRightBack(file.name, '.')
-			url: file.url
-			complete: true
-			uploading: false
-			progress: 1
 			uploadedAt: new Date()
+
+		_.extend(fileData, file, extra);
 
 		if @model.direct?.insert?
 			file = @model.direct.insert fileData
@@ -52,3 +50,26 @@ RocketChat.models.Uploads = new class extends RocketChat.models._Base
 			file = @insert fileData
 
 		return file
+
+	updateFileComplete: (fileId, userId, file) ->
+		if not fileId
+			return
+
+		filter =
+			_id: fileId
+			userId: userId
+
+		update =
+			$set:
+				complete: true
+				uploading: false
+				progress: 1
+
+		update.$set = _.extend file, update.$set
+
+		if @model.direct?.insert?
+			result = @model.direct.update filter, update
+		else
+			result = @update filter, update
+
+		return result
