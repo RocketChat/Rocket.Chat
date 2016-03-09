@@ -36,7 +36,7 @@ FileUpload.GridFS = class FileUploadGridFS extends FileUploadBase {
 					}, 2000);
 				});
 			}
-		});;
+		});
 	}
 	start() {
 		return this.handler.start();

@@ -1,4 +1,38 @@
-/* globals createS3Directive:true, Slingshot */
+/* globals createS3Directive:true, Slingshot, FileUpload, AWS */
+var crypto = Npm.require('crypto');
+
+var S3accessKey, S3secretKey;
+
+var generateURL = function(file) {
+	if (!file || !file.s3) {
+		return;
+	}
+	let resourceURL = '/' + file.s3.bucket + '/' + file.s3.path + file._id;
+	let expires = parseInt(new Date().getTime() / 1000) + 60;
+	let StringToSign = 'GET\n\n\n' + expires +'\n'+resourceURL;
+	let signature = crypto.createHmac('sha1', S3secretKey).update(new Buffer(StringToSign, 'utf-8')).digest('base64');
+	return file.url + '?AWSAccessKeyId='+encodeURIComponent(S3accessKey)+'&Expires='+expires+'&Signature='+encodeURIComponent(signature);
+};
+
+FileUpload.addHandler('s3', {
+	get(file, req, res) {
+		let fileUrl = generateURL(file);
+
+		if (fileUrl) {
+			res.setHeader('Location', fileUrl);
+			res.writeHead(302);
+		}
+		res.end();
+	},
+	delete(file) {
+		let s3 = new AWS.S3();
+		let request = s3.deleteObject({
+			Bucket: file.s3.bucket,
+			Key: file.s3.path + file._id
+		});
+		request.send();
+	}
+});
 
 createS3Directive = _.debounce(() => {
 	var directiveName = 'rocketchat-uploads';
@@ -11,6 +45,11 @@ createS3Directive = _.debounce(() => {
 	var cdn = RocketChat.settings.get('FileUpload_S3_CDN');
 	var region = RocketChat.settings.get('FileUpload_S3_Region');
 	var bucketUrl = RocketChat.settings.get('FileUpload_S3_BucketURL');
+
+	AWS.config.update({
+		accessKeyId: RocketChat.settings.get('FileUpload_S3_AWSAccessKeyId'),
+		secretAccessKey: RocketChat.settings.get('FileUpload_S3_AWSSecretAccessKey')
+	});
 
 	if (type === 'AmazonS3' && !_.isEmpty(bucket) && !_.isEmpty(accessKey) && !_.isEmpty(secretKey)) {
 		if (Slingshot._directives[directiveName]) {
@@ -72,11 +111,13 @@ RocketChat.settings.get('FileUpload_S3_Acl', function() {
 	createS3Directive();
 });
 
-RocketChat.settings.get('FileUpload_S3_AWSAccessKeyId', function() {
+RocketChat.settings.get('FileUpload_S3_AWSAccessKeyId', function(key, value) {
+	S3accessKey = value;
 	createS3Directive();
 });
 
-RocketChat.settings.get('FileUpload_S3_AWSSecretAccessKey', function() {
+RocketChat.settings.get('FileUpload_S3_AWSSecretAccessKey', function(key, value) {
+	S3secretKey = value;
 	createS3Directive();
 });
 

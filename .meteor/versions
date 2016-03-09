@@ -112,6 +112,8 @@ ordered-dict@1.0.4
 ostrio:cookies@2.0.1
 pauli:accounts-linkedin@1.2.0
 pauli:linkedin@1.2.0
+peerlibrary:aws-sdk@2.0.17_2
+peerlibrary:blocking@0.4.3
 perak:codemirror@1.2.9
 percolate:synced-cron@1.3.0
 pntbr:js-yaml-client@0.0.1
