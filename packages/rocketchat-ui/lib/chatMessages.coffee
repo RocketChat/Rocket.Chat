@@ -58,6 +58,7 @@ class @ChatMessages
 
 		this.clearEditing()
 		this.input.value = message.msg
+		this.hasValue.set true
 		this.editing.element = element
 		this.editing.index = index or this.getEditingIndex(element)
 		this.editing.id = id
@@ -77,6 +78,7 @@ class @ChatMessages
 			this.editing.element = null
 			this.editing.index = null
 			this.input.value = this.editing.saved or ""
+			this.hasValue.set this.input.value isnt ''
 		else
 			this.editing.saved = this.input.value
 
@@ -95,6 +97,7 @@ class @ChatMessages
 			KonchatNotification.removeRoomNotification(rid)
 			msg = input.value
 			input.value = ''
+			this.hasValue.set false
 			msgObject = { _id: Random.id(), rid: rid, msg: msg}
 			this.stopTyping(rid)
 			#Check if message starts with /command
