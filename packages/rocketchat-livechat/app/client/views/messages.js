@@ -19,12 +19,9 @@ Template.messages.events({
 		instance.updateMessageInputHeight(event.currentTarget);
 	},
 	'keydown .input-message': function(event, instance) {
-		$('.input-message.autogrow-short').val();
 		return instance.chatMessages.keydown(visitor.getRoom(), event, instance);
 	},
 	'click .send-button': function(event, instance) {
-		$('.input-message.autogrow-short').val();
-
 		let input = instance.find('.input-message');
 		let sent = instance.chatMessages.send(visitor.getRoom(), input);
 		input.focus();
