@@ -1,6 +1,6 @@
 Template.otrFlexTab.helpers({
 	otrAvailable() {
-		return RocketChat.OTR && RocketChat.OTR.enabled === true;
+		return RocketChat.OTR && RocketChat.OTR.isEnabled();
 	},
 	userIsOnline() {
 		// I have to appear online for the other user
