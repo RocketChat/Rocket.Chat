@@ -365,6 +365,7 @@
 
 				.input-wrapper {
 					padding: 6px;
+					padding-right: 30px;
 					textarea {
 						display: block;
 						padding: 6px 8px;
@@ -383,6 +384,20 @@
 						background-color: #fff;
 						position: relative;
 						outline: none;
+					}
+				}
+
+				.send-button {
+					float: right;
+					position: relative;
+					right: 7px;
+					top: -28px;
+					color: @secondary-font-color;
+					cursor: pointer;
+					.transition(color .15s ease-out);
+
+					&:hover {
+						color: @primary-font-color;
 					}
 				}
 			}
