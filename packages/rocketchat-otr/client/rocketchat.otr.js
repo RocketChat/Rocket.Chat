@@ -1,34 +1,38 @@
+RocketChat.OTR = new (class {
+	constructor() {
+		this.enabled = new ReactiveVar(false);
+		this.instancesByRoomId = {};
+	}
+
+	isEnabled() {
+		return this.enabled.get();
+	}
+
+	getInstanceByRoomId(roomId) {
+		var enabled, subscription;
+		subscription = ChatSubscription.findOne({
+			rid: roomId
+		});
+		if (!subscription) {
+			return;
+		}
+		enabled = false;
+		switch (subscription.t) {
+			case 'd':
+				enabled = RocketChat.settings.get('OTR_Enabled');
+				break;
+		}
+		if (enabled === false) {
+			return;
+		}
+		if (this.instancesByRoomId[roomId] == null) {
+			this.instancesByRoomId[roomId] = new RocketChat.OTR.Room(Meteor.userId(), roomId);
+		}
+		return this.instancesByRoomId[roomId];
+	}
+})();
+
 Meteor.startup(function() {
-	RocketChat.OTR = new (class {
-		constructor() {
-			this.enabled = !!(window.crypto && window.crypto.subtle) && RocketChat.settings.get('OTR_Enable');
-			this.instancesByRoomId = {};
-		}
-
-		getInstanceByRoomId(roomId) {
-			var enabled, subscription;
-			subscription = ChatSubscription.findOne({
-				rid: roomId
-			});
-			if (!subscription) {
-				return;
-			}
-			enabled = false;
-			switch (subscription.t) {
-				case 'd':
-					enabled = RocketChat.settings.get('OTR_Enabled');
-					break;
-			}
-			if (enabled === false) {
-				return;
-			}
-			if (this.instancesByRoomId[roomId] == null) {
-				this.instancesByRoomId[roomId] = new RocketChat.OTR.Room(Meteor.userId(), roomId);
-			}
-			return this.instancesByRoomId[roomId];
-		}
-	})();
-
 	RocketChat.Notifications.onUser('otr', (type, data) => {
 		if (!data.roomId || !data.userId || data.userId === Meteor.userId()) {
 			return;
