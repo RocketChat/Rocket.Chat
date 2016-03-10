@@ -4,6 +4,7 @@ class @ChatMessages
 		this.messageMaxSize = RocketChat.settings.get('Message_MaxAllowedSize')
 		this.wrapper = $(node).find(".wrapper")
 		this.input = $(node).find(".input-message").get(0)
+		this.hasValue = new ReactiveVar false
 		this.bindEvents()
 		return
 
@@ -186,6 +187,8 @@ class @ChatMessages
 		unless k in keyCodes
 			this.startTyping(rid, input)
 
+		this.hasValue.set input.value isnt ''
+
 	keydown: (rid, event) ->
 		input = event.currentTarget
 		k = event.which
@@ -228,3 +231,6 @@ class @ChatMessages
 
 	isMessageTooLong: (input) ->
 		input?.value.length > this.messageMaxSize
+
+	isEmpty: ->
+		return !this.hasValue.get()
