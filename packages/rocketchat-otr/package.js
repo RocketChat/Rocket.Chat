@@ -13,7 +13,8 @@ Package.onUse(function(api) {
 		'ecmascript',
 		'less@2.5.0',
 		'rocketchat:lib',
-		'tracker'
+		'tracker',
+		'reactive-var'
 	]);
 
 	api.addFiles([
