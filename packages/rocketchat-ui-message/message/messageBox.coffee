@@ -78,6 +78,7 @@ Template.messageBox.events
 		chatMessages[@_id].send(@_id, input)
 		input.focus()
 		input.updateAutogrow()
+		instance.isMessageFieldEmpty.set(chatMessages[@_id].isEmpty())
 
 	'keyup .input-message': (event, instance) ->
 		chatMessages[@_id].keyup(@_id, event, instance)
@@ -100,13 +101,13 @@ Template.messageBox.events
 			fileUpload files
 
 	'keydown .input-message': (event) ->
-		chatMessages[Session.get('openedRoom')].keydown(@_id, event, Template.instance())
+		chatMessages[@_id].keydown(@_id, event, Template.instance())
 
 	"click .editing-commands-cancel > a": (e) ->
-		chatMessages[Session.get('openedRoom')].clearEditing()
+		chatMessages[@_id].clearEditing()
 
 	"click .editing-commands-save > a": (e) ->
-		chatMessages[Session.get('openedRoom')].send(@_id, chatMessages.input)
+		chatMessages[@_id].send(@_id, chatMessages.input)
 
 	'change .message-form input[type=file]': (event, template) ->
 		e = event.originalEvent or event
