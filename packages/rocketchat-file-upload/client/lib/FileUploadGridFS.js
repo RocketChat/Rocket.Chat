@@ -20,7 +20,7 @@ FileUpload.GridFS = class FileUploadGridFS extends FileUploadBase {
 				}
 			},
 			onComplete: (fileData) => {
-				var file = _.pick(fileData, '_id', 'type', 'size', 'name');
+				var file = _.pick(fileData, '_id', 'type', 'size', 'name', 'identify');
 
 				file.url = fileData.url.replace(Meteor.absoluteUrl(), '/');
 
