@@ -4,6 +4,7 @@ class @ChatMessages
 		this.messageMaxSize = RocketChat.settings.get('Message_MaxAllowedSize')
 		this.wrapper = $(node).find(".wrapper")
 		this.input = $(node).find(".input-message").get(0)
+		this.hasValue = new ReactiveVar false
 		this.bindEvents()
 		return
 
@@ -57,6 +58,7 @@ class @ChatMessages
 
 		this.clearEditing()
 		this.input.value = message.msg
+		this.hasValue.set true
 		this.editing.element = element
 		this.editing.index = index or this.getEditingIndex(element)
 		this.editing.id = id
@@ -76,6 +78,7 @@ class @ChatMessages
 			this.editing.element = null
 			this.editing.index = null
 			this.input.value = this.editing.saved or ""
+			this.hasValue.set this.input.value isnt ''
 		else
 			this.editing.saved = this.input.value
 
@@ -94,6 +97,7 @@ class @ChatMessages
 			KonchatNotification.removeRoomNotification(rid)
 			msg = input.value
 			input.value = ''
+			this.hasValue.set false
 			msgObject = { _id: Random.id(), rid: rid, msg: msg}
 			this.stopTyping(rid)
 			#Check if message starts with /command
@@ -186,6 +190,8 @@ class @ChatMessages
 		unless k in keyCodes
 			this.startTyping(rid, input)
 
+		this.hasValue.set input.value isnt ''
+
 	keydown: (rid, event) ->
 		input = event.currentTarget
 		k = event.which
@@ -228,3 +234,6 @@ class @ChatMessages
 
 	isMessageTooLong: (input) ->
 		input?.value.length > this.messageMaxSize
+
+	isEmpty: ->
+		return !this.hasValue.get()
