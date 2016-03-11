@@ -212,6 +212,7 @@
   "FileUpload_S3_CDN" : "CDN domain for downloads",
   "FileUpload_S3_Region" : "Region",
   "FileUpload_Storage_Type" : "Storage Type",
+  "FileUpload_FileSystemPath" : "System Path",
   "Follow_social_profiles" : "Follow our social profiles, fork us on github and share your thoughts about the rocket.chat app on our trello board.",
   "Force_SSL" : "Force SSL",
   "Forgot_password" : "Forgot your password",

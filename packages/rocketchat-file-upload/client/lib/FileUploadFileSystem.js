@@ -1,9 +1,18 @@
-/* globals FileUploadBase, UploadFS, FileUpload:true */
-FileUpload.GridFS = class FileUploadGridFS extends FileUploadBase {
+/* globals FileUploadBase, UploadFS, FileUpload:true, FileSystemStore:true */
+
+FileSystemStore = new UploadFS.store.Local({
+	collection: RocketChat.models.Uploads.model,
+	name: 'fileSystem',
+	filter: new UploadFS.Filter({
+		onCheck: FileUpload.validateFileUpload
+	}),
+});
+
+FileUpload.FileSystem = class FileUploadFileSystem extends FileUploadBase {
 	constructor(meta, file, data) {
 		super(meta, file, data);
 		this.handler = new UploadFS.Uploader({
-			store: Meteor.fileStore,
+			store: FileSystemStore,
 			data: data,
 			file: meta,
 			onError: (err) => {
