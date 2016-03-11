@@ -68,7 +68,7 @@ class @ChatMessages
 	send: (rid, input) ->
 		if s.trim(input.value) isnt ''
 			if this.isMessageTooLong(input)
-				return toastr.error t('Error_message_too_long')
+				return toastr.error t('Message_too_long')
 			# KonchatNotification.removeRoomNotification(rid)
 			msg = input.value
 			input.value = ''
