@@ -200,7 +200,7 @@
 - Enable editing via admin / users
 - Log error when trigger url returns 500
 - Bind starttls correctly for LDAP
-- Custom oAuth supporting json or plain content_types responses of the identity
+- Custom OAuth supporting json or plain content_types responses of the identity
 - Allow pass room id to direct rooms
 - Outgoing: Get the room from posted message to reply
 - Change Meteor.absoluteUrl to force SSL if Force_SSL is true
@@ -529,7 +529,7 @@
 - New RocketChat.RateLimiter
 - Favico.js update
 - Better RTL support
-- Remove custom oAuth record when removed from settings
+- Remove custom OAuth record when removed from settings
 - Improve Settings layout
 - Collapse sub groups of settings
 - Change translations in PT for False and True

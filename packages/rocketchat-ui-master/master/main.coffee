@@ -33,7 +33,7 @@ Template.body.onRendered ->
 		d = document
 		s = 'script'
 		l = 'dataLayer'
-		i = RocketChat.settings.get 'API_Analytics'
+		i = RocketChat.settings.get 'GoogleTagManager_id'
 		if Match.test(i, String) and i.trim() isnt ''
 			c.stop()
 			do (w,d,s,l,i) ->

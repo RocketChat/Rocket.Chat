@@ -38,7 +38,7 @@
   "Accounts_OAuth_Github_id" : "Id de Cliente",
   "Accounts_OAuth_Github_secret" : "Secreto de Cliente",
   "Accounts_OAuth_Gitlab" : "OAuth Habilitado",
-  "Accounts_OAuth_Gitlab_id" : "Id de Gitlab",
+  "Accounts_OAuth_Gitlab_id" : "Id de GitLab",
   "Accounts_OAuth_Gitlab_secret" : "Secreto de Cliente",
   "Accounts_OAuth_Google" : "Iniciar de Sesión con Google",
   "Accounts_OAuth_Google_id" : "Id de Google",

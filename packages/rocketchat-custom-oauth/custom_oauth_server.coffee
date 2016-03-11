@@ -110,7 +110,7 @@ class CustomOAuth
 			console.log 'id:', JSON.stringify identity, null, '  '
 
 			serviceData =
-				_oAuthCustom: true
+				_OAuthCustom: true
 				accessToken: accessToken
 
 			_.extend serviceData, identity

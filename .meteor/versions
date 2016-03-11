@@ -25,7 +25,7 @@ check@1.1.0
 chrismbeckett:toastr@2.1.2_1
 chuangbo:cookie@1.1.0
 coffeescript@1.0.11
-cosmos:browserify@0.9.4
+cosmos:browserify@0.10.0
 dandv:caret-position@2.1.1
 ddp@1.2.2
 ddp-client@1.2.1
@@ -37,9 +37,10 @@ diff-sequence@1.0.1
 dispatch:run-as-user@1.1.1
 ecmascript@0.1.6
 ecmascript-runtime@0.2.6
+edgee:slingshot@0.7.1
 ejson@1.0.7
 email@1.0.8
-emojione:emojione@2.1.0
+emojione:emojione@2.1.1
 facebook@1.2.2
 fastclick@1.0.7
 francocatena:status@1.5.1
@@ -74,13 +75,14 @@ livedata@1.0.15
 localstorage@1.0.5
 logging@1.0.8
 matb33:collection-hooks@0.8.1
-mdg:validation-error@0.4.0
+mdg:validation-error@0.5.1
 meteor@1.1.10
 meteor-base@1.0.1
 meteor-developer@1.1.5
-meteorhacks:fast-render@2.10.0
-meteorhacks:inject-data@1.4.1
+meteorhacks:fast-render@2.13.0
+meteorhacks:inject-data@2.0.0
 meteorhacks:inject-initial@1.0.3
+meteorhacks:meteorx@1.4.1
 meteorhacks:picker@1.0.3
 meteorspark:util@0.2.0
 minifiers@1.1.7
@@ -89,7 +91,7 @@ mizzao:autocomplete@0.5.1
 mizzao:timesync@0.3.4
 mobile-experience@1.0.1
 mobile-status-bar@1.0.6
-momentjs:moment@2.11.2
+momentjs:moment@2.12.0
 monbro:mongodb-mapreduce-aggregation@1.0.1
 mongo@1.1.3
 mongo-id@1.0.1
@@ -98,8 +100,8 @@ mrt:moment@2.8.1
 mrt:moment-timezone@0.2.1
 mrt:reactive-store@0.0.1
 mystor:device-detection@0.2.0
-nimble:restivus@0.8.4
-nooitaf:colors@0.0.2
+nimble:restivus@0.8.7
+nooitaf:colors@0.0.3
 npm-bcrypt@0.7.8_2
 npm-mongo@1.4.39_1
 oauth@1.1.6
@@ -110,6 +112,8 @@ ordered-dict@1.0.4
 ostrio:cookies@2.0.1
 pauli:accounts-linkedin@1.2.0
 pauli:linkedin@1.2.0
+peerlibrary:aws-sdk@2.0.17_2
+peerlibrary:blocking@0.4.3
 perak:codemirror@1.2.9
 percolate:synced-cron@1.3.0
 pntbr:js-yaml-client@0.0.1
@@ -138,6 +142,7 @@ rocketchat:custom-oauth@1.0.0
 rocketchat:emojione@0.0.1
 rocketchat:favico@0.0.1
 rocketchat:file@0.0.1
+rocketchat:file-upload@0.0.1
 rocketchat:github-enterprise@0.0.1
 rocketchat:gitlab@0.0.1
 rocketchat:highlight@0.0.1
@@ -163,6 +168,7 @@ rocketchat:migrations@0.0.1
 rocketchat:oauth2-server@1.4.0
 rocketchat:oauth2-server-config@1.0.0
 rocketchat:oembed@0.0.1
+rocketchat:otr@0.0.1
 rocketchat:push-notifications@0.0.1
 rocketchat:slashcommands-invite@0.0.1
 rocketchat:slashcommands-join@0.0.1
@@ -189,7 +195,7 @@ service-configuration@1.0.5
 session@1.1.1
 sha@1.0.4
 simple:highlight.js@1.2.0
-simple:json-routes@1.0.4
+simple:json-routes@2.0.1
 smoral:sweetalert@1.1.1
 spacebars@1.0.7
 spacebars-compiler@1.0.7
@@ -201,13 +207,12 @@ templating@1.1.5
 templating-tools@1.0.0
 tmeasday:crypto-base@3.1.2
 tmeasday:crypto-md5@3.1.2
-tmeasday:errors@2.0.0
 todda00:friendly-slugs@0.3.6
 tracker@1.0.9
 twitter@1.1.5
 ui@1.0.8
 underscore@1.0.4
-underscorestring:underscore.string@3.2.3
+underscorestring:underscore.string@3.3.4
 url@1.0.5
 webapp@1.2.3
 webapp-hashing@1.0.5

@@ -30,7 +30,7 @@
   "Accounts_OAuth_Github_id" : "GitHub Id",
   "Accounts_OAuth_Github_secret" : "GitHub Secret",
   "Accounts_OAuth_Gitlab" : "OAuth Ativado",
-  "Accounts_OAuth_Gitlab_id" : "Gitlab Id",
+  "Accounts_OAuth_Gitlab_id" : "GitLab Id",
   "Accounts_OAuth_Gitlab_secret" : "Segredo",
   "Accounts_OAuth_Google" : "Login do Google",
   "Accounts_OAuth_Google_id" : "Google Id",

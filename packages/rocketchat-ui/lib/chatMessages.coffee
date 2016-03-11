@@ -4,6 +4,7 @@ class @ChatMessages
 		this.messageMaxSize = RocketChat.settings.get('Message_MaxAllowedSize')
 		this.wrapper = $(node).find(".wrapper")
 		this.input = $(node).find(".input-message").get(0)
+		this.hasValue = new ReactiveVar false
 		this.bindEvents()
 		return
 
@@ -57,6 +58,7 @@ class @ChatMessages
 
 		this.clearEditing()
 		this.input.value = message.msg
+		this.hasValue.set true
 		this.editing.element = element
 		this.editing.index = index or this.getEditingIndex(element)
 		this.editing.id = id
@@ -76,6 +78,7 @@ class @ChatMessages
 			this.editing.element = null
 			this.editing.index = null
 			this.input.value = this.editing.saved or ""
+			this.hasValue.set this.input.value isnt ''
 		else
 			this.editing.saved = this.input.value
 
@@ -85,50 +88,55 @@ class @ChatMessages
 			readMessage.readNow()
 			$('.message.first-unread').removeClass('first-unread')
 
-			if this.editing.id
-				this.update(this.editing.id, rid, input)
-				return
-
-			if this.isMessageTooLong(input)
-				return Errors.throw t('Error_message_too_long')
-			KonchatNotification.removeRoomNotification(rid)
 			msg = input.value
-			input.value = ''
 			msgObject = { _id: Random.id(), rid: rid, msg: msg}
-			this.stopTyping(rid)
-			#Check if message starts with /command
-			if msg[0] is '/'
-				match = msg.match(/^\/([^\s]+)(?:\s+(.*))?$/m)
-				if match? and RocketChat.slashCommands.commands[match[1]]
-					command = match[1]
-					param = match[2]
-					Meteor.call 'slashCommand', {cmd: command, params: param, msg: msgObject }
+
+			# Run to allow local encryption, and maybe other client specific actions to be run before send
+			RocketChat.promises.run('onClientBeforeSendMessage', msgObject).then (msgObject) =>
+
+				# checks for the final msgObject.msg size before actually sending the message
+				if this.isMessageTooLong(msgObject.msg)
+					return toastr.error t('Message_too_long')
+
+				if this.editing.id
+					this.update(this.editing.id, rid, msgObject.msg)
 					return
 
-			#Run to allow local encryption
-			#Meteor.call 'onClientBeforeSendMessage', {}
-			Meteor.call 'sendMessage', msgObject
+				KonchatNotification.removeRoomNotification(rid)
+				input.value = ''
+				this.hasValue.set false
+				this.stopTyping(rid)
+
+				#Check if message starts with /command
+				if msg[0] is '/'
+					match = msg.match(/^\/([^\s]+)(?:\s+(.*))?$/m)
+					if match? and RocketChat.slashCommands.commands[match[1]]
+						command = match[1]
+						param = match[2]
+						Meteor.call 'slashCommand', {cmd: command, params: param, msg: msgObject }
+						return
+
+				Meteor.call 'sendMessage', msgObject
 
 	deleteMsg: (message) ->
 		Meteor.call 'deleteMessage', message, (error, result) ->
 			if error
-				return Errors.throw error.reason
+				return toastr.error error.reason
 
 	pinMsg: (message) ->
 		message.pinned = true
 		Meteor.call 'pinMessage', message, (error, result) ->
 			if error
-				return Errors.throw error.reason
+				return toastr.error error.reason
 
 	unpinMsg: (message) ->
 		message.pinned = false
 		Meteor.call 'unpinMessage', message, (error, result) ->
 			if error
-				return Errors.throw error.reason
+				return toastr.error error.reason
 
-	update: (id, rid, input) ->
-		if _.trim(input.value) isnt ''
-			msg = input.value
+	update: (id, rid, msg) ->
+		if _.trim(msg) isnt ''
 			Meteor.call 'updateMessage', { _id: id, msg: msg, rid: rid }
 			this.clearEditing()
 			this.stopTyping(rid)
@@ -185,6 +193,8 @@ class @ChatMessages
 		unless k in keyCodes
 			this.startTyping(rid, input)
 
+		this.hasValue.set input.value isnt ''
+
 	keydown: (rid, event) ->
 		input = event.currentTarget
 		k = event.which
@@ -225,5 +235,8 @@ class @ChatMessages
 		else if k is 75 and ((navigator?.platform?.indexOf('Mac') isnt -1 and event.metaKey and event.shiftKey) or (navigator?.platform?.indexOf('Mac') is -1 and event.ctrlKey and event.shiftKey))
 			RoomHistoryManager.clear rid
 
-	isMessageTooLong: (input) ->
-		input?.value.length > this.messageMaxSize
+	isMessageTooLong: (message) ->
+		message?.length > this.messageMaxSize
+
+	isEmpty: ->
+		return !this.hasValue.get()
