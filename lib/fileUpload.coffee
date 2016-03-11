@@ -21,10 +21,7 @@ if UploadFS?
 			name: 'rocketchat_uploads'
 			collectionName: 'rocketchat_uploads'
 			filter: new UploadFS.Filter
-				maxSize: RocketChat.settings.get('FileUpload_MaxFileSize')
-				contentTypes: RocketChat.fileUploadMediaWhiteList()
-			onFinishUpload: ->
-				console.log arguments
+				onCheck: FileUpload.validateFileUpload
 			transformWrite: (readStream, writeStream, fileId, file) ->
 				if RocketChatFile.enabled is false or not /^image\/.+/.test(file.type)
 					return readStream.pipe writeStream
