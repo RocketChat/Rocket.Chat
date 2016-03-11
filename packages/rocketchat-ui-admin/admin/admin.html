@@ -33,7 +33,7 @@
 							{{/if}}
 							<div class="section-content">
 								{{#if section}}
-									{{#if sectionIsCustomOath section}}
+									{{#if sectionIsCustomOAuth section}}
 										<div class="section-helper">
 											{{#with callbackURL section}}
 												{{{_ "Custom_oauth_helper" .}}}
@@ -125,7 +125,7 @@
 								{{/each}}
 
 								{{#if section}}
-									{{#if sectionIsCustomOath section}}
+									{{#if sectionIsCustomOAuth section}}
 										<div class="submit">
 											<button class="button delete remove-custom-oauth"><span>{{_ "Remove_custom_oauth"}}</span></button>
 										</div>
@@ -142,7 +142,7 @@
 					{{/each}}
 
 					<div class="submit">
-						{{#if $eq group._id 'Accounts'}}
+						{{#if $eq group._id 'OAuth'}}
 							<button class="button secondary add-custom-oauth"><span>{{_ "Add_custom_oauth"}}</span></button>
 						{{/if}}
 					</div>
