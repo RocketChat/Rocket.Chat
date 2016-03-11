@@ -38,6 +38,18 @@ Template.otrFlexTab.events({
 			}, 10000);
 		}
 	},
+	'click button.refresh': function(e, t) {
+		e.preventDefault();
+		const otr = RocketChat.OTR.getInstanceByRoomId(this.rid);
+		if (otr) {
+			otr.reset();
+			otr.handshake(true);
+			t.timeout = Meteor.setTimeout(() => {
+				swal("Timeout", "", "error");
+				otr.establishing.set(false);
+			}, 10000);
+		}
+	},
 	'click button.end': function(e, t) {
 		e.preventDefault();
 		const otr = RocketChat.OTR.getInstanceByRoomId(this.rid);
