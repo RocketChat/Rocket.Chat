@@ -42,7 +42,7 @@
   "Accounts_OAuth_Github_id" : "Client Id",
   "Accounts_OAuth_Github_secret" : "Client Secret",
   "Accounts_OAuth_Gitlab" : "OAuth Enabled",
-  "Accounts_OAuth_Gitlab_id" : "Gitlab Id",
+  "Accounts_OAuth_Gitlab_id" : "GitLab Id",
   "Accounts_OAuth_Gitlab_secret" : "Client Secret",
   "Accounts_OAuth_Google" : "Google Inloggen",
   "Accounts_OAuth_Google_id" : "Google Id",

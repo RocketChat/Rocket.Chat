@@ -38,7 +38,7 @@
   "Accounts_OAuth_Github_id" : "Client ID",
   "Accounts_OAuth_Github_secret" : "Client Secret",
   "Accounts_OAuth_Gitlab" : "OAuth käytössä",
-  "Accounts_OAuth_Gitlab_id" : "Gitlab Id",
+  "Accounts_OAuth_Gitlab_id" : "GitLab Id",
   "Accounts_OAuth_Gitlab_secret" : "Client Secret",
   "Accounts_OAuth_Google" : "Google-tunnus",
   "Accounts_OAuth_Google_id" : "Google ID",
