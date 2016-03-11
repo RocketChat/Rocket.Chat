@@ -1,4 +1,4 @@
-RocketChat.settings.addGroup 'Accounts', ->
+RocketChat.settings.addGroup 'OAuth', ->
 	@section 'GitHub Enterprise', ->
 		enableQuery = {_id: 'Accounts_OAuth_GitHub_Enterprise', value: true}
 		@add 'Accounts_OAuth_GitHub_Enterprise', false, {type: 'boolean'}

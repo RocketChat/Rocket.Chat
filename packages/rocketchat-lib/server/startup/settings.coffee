@@ -31,7 +31,7 @@ RocketChat.settings.addGroup 'Accounts', ->
 		@add 'Accounts_AvatarStoreType', 'GridFS', { type: 'select', values: [ { key: 'GridFS', i18nLabel: 'GridFS' }, { key: 'FileSystem', i18nLabel: 'FileSystem' } ] }
 		@add 'Accounts_AvatarStorePath', '', { type: 'string', enableQuery: {_id: 'Accounts_AvatarStoreType', value: 'FileSystem'} }
 
-RocketChat.settings.addGroup 'oAuth', ->
+RocketChat.settings.addGroup 'OAuth', ->
 
 	@section 'Facebook', ->
 		@add 'Accounts_OAuth_Facebook', false, { type: 'boolean', public: true }
