@@ -2,7 +2,7 @@ roomFiles = new Mongo.Collection 'room_files'
 
 Template.uploadedFilesList.helpers
 	files: ->
-		return roomFiles.find({ rid: @rid }, { sort: { uploadedAt: -1 } }).fetch()
+		return roomFiles.find({ rid: @rid }, { sort: { uploadedAt: -1 } })
 
 	hasFiles: ->
 		return roomFiles.find({ rid: @rid }).count() > 0
@@ -51,15 +51,15 @@ Template.uploadedFilesList.events
 				timer: 1000
 				showConfirmButton: false
 
-				# Check if the upload message for this file is currently loaded
-				msg = ChatMessage.findOne { file: { _id: self._id } }
-				RocketChat.models.Uploads.remove self._id, () ->
-					if msg
-						chatMessages[Session.get('openedRoom')].deleteMsg(msg);
-					else
-						Meteor.call 'deleteFileMessage', self._id, (error, result) ->
-							if error
-								return Errors.throw error.reason
+			# Check if the upload message for this file is currently loaded
+			msg = ChatMessage.findOne { file: { _id: self._id } }
+			RocketChat.models.Uploads.remove self._id, () ->
+				if msg
+					chatMessages[Session.get('openedRoom')].deleteMsg(msg);
+				else
+					Meteor.call 'deleteFileMessage', self._id, (error, result) ->
+						if error
+							return toastr.error error.reason
 
 	'scroll .content': _.throttle (e, t) ->
 		if e.target.scrollTop >= e.target.scrollHeight - e.target.clientHeight

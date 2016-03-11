@@ -57,7 +57,7 @@ RocketChat.theme = new class
 
 	constructor: ->
 		RocketChat.settings.add 'css', ''
-		RocketChat.settings.addGroup 'Theme'
+		RocketChat.settings.addGroup 'Layout'
 
 		compile = _.debounce Meteor.bindEnvironment(@compile.bind(@)), 200
 
@@ -107,9 +107,9 @@ RocketChat.theme = new class
 
 		if persist is true
 			config =
-				group: 'Theme'
+				group: 'Layout'
 				type: type
-				section: type
+				section: 'Colors'
 				public: false
 
 			RocketChat.settings.add "theme-#{type}-#{name}", value, config

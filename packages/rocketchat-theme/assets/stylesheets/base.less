@@ -2341,17 +2341,42 @@ a.github-fork {
 					cursor: pointer;
 				}
 			}
-			> .mic, .stop-mic {
+		}
+		.message-buttons {
+			padding-left: 4px;
+
+			.mic, .stop-mic {
 				width: 40px;
 				font-size: 22px;
+				height: 36px;
 				padding: 7px 0;
-				margin-left: 4px;
 				text-align: center;
 				cursor: pointer;
 				border-radius: 30px;
-				.transition(background-color 0.1s linear, color 0.1s linear);
-				&:hover {
+				display: none;
+			}
+
+			&.show-mic .mic, &.show-mic .mic .stop-mic {
+				display: inline-block;
+			}
+
+			.send-button {
+				position: inherit;
+				width: 40px;
+				font-size: 20px;
+				height: 36px;
+				padding: 7px 0;
+				text-align: center;
+				cursor: pointer;
+				border-radius: 30px;
+				display: none;
+				i {
+					margin-right: 2px;
 				}
+			}
+
+			&.show-send .send-button {
+				display: inline-block;
 			}
 		}
 		textarea {
@@ -2366,16 +2391,6 @@ a.github-fork {
 			resize: none;
 			line-height: 16px;
 			&.editing {
-			}
-		}
-		.icon-paper-plane {
-			position: absolute;
-			top: 2px;
-			right: 0px;
-			cursor: pointer;
-			padding: 8px;
-			font-size: 16px;
-			&:hover {
 			}
 		}
 		.users-typing {
