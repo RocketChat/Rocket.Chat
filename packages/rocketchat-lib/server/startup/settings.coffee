@@ -79,9 +79,8 @@ RocketChat.settings.addGroup 'General', ->
 	@add 'Disable_Favorite_Rooms', false, { type: 'boolean' }
 	@add 'CDN_PREFIX', '', { type: 'string' }
 	@add 'Force_SSL', false, { type: 'boolean', public: true }
-	@add 'Debug_Level', 'error', { type: 'select', values: [ { key: 'error', i18nLabel: 'Only_errors' }, { key: 'debug', i18nLabel: 'All_logs' } ] }
+	@add 'GoogleTagManager_id', '', { type: 'string', public: true }
 	@add 'Restart', 'restart_server', { type: 'action', actionText: 'Restart_the_server' }
-	@add 'API_Analytics', '', { type: 'string', public: true }
 
 	@section 'UTF8', ->
 		@add 'UTF8_Names_Validation', '[0-9a-zA-Z-_.]+', { type: 'string', public: true, i18nDescription: 'UTF8_Names_Validation_Description'}
@@ -167,6 +166,7 @@ RocketChat.settings.addGroup 'Layout', ->
 
 
 RocketChat.settings.addGroup 'Logs', ->
+	@add 'Debug_Level', 'error', { type: 'select', values: [ { key: 'error', i18nLabel: 'Only_errors' }, { key: 'debug', i18nLabel: 'All_logs' } ] }
 	@add 'Log_Level', '0', { type: 'select', values: [ { key: '0', i18nLabel: '0_Errors_Only' }, { key: '1', i18nLabel: '1_Errors_and_Information' }, { key: '2', i18nLabel: '2_Erros_Information_and_Debug' } ] , public: true }
 	@add 'Log_Package', false, { type: 'boolean', public: true }
 	@add 'Log_File', false, { type: 'boolean', public: true }
