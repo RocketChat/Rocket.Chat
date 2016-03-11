@@ -108,7 +108,7 @@ Template.admin.helpers
 		description = TAPi18n.__ @i18nDescription if @i18nDescription
 		if description? and description isnt @i18nDescription
 			return description
-	sectionIsCustomOath: (section) ->
+	sectionIsCustomOAuth: (section) ->
 		return /^Custom OAuth:\s.+/.test section
 	callbackURL: (section) ->
 		id = s.strRight(section, 'Custom OAuth: ').toLowerCase()

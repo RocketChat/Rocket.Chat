@@ -12,21 +12,23 @@
 
 	notify: (notification) ->
 		if window.Notification && Notification.permission == "granted"
-			n = new Notification notification.title,
-				icon: notification.icon or getAvatarUrlFromUsername notification.payload.sender.username
-				body: _.stripTags(notification.text)
-				silent: true
+			message = { rid: notification.payload?.rid, msg: notification.text, notification: true }
+			RocketChat.promises.run('onClientMessageReceived', message).then (message) ->
+				n = new Notification notification.title,
+					icon: notification.icon or getAvatarUrlFromUsername notification.payload.sender.username
+					body: _.stripTags(message.msg)
+					silent: true
 
-			if notification.payload?.rid?
-				n.onclick = ->
-					window.focus()
-					switch notification.payload.type
-						when 'd'
-							FlowRouter.go 'direct', {username: notification.payload.sender.username}
-						when 'c'
-							FlowRouter.go 'channel', {name: notification.payload.name}
-						when 'p'
-							FlowRouter.go 'group', {name: notification.payload.name}
+				if notification.payload?.rid?
+					n.onclick = ->
+						window.focus()
+						switch notification.payload.type
+							when 'd'
+								FlowRouter.go 'direct', {username: notification.payload.sender.username}
+							when 'c'
+								FlowRouter.go 'channel', {name: notification.payload.name}
+							when 'p'
+								FlowRouter.go 'group', {name: notification.payload.name}
 
 	showDesktop: (notification) ->
 		if not window.document.hasFocus?() and Meteor.user().status isnt 'busy'
