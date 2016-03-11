@@ -83,6 +83,7 @@
     "globals"       : {
         "Promise"    : true,      // Avoid "redefinition of Promise" warning
         "Meteor"     : true,
+        "Package"    : true,
         "Session"    : true,
         "RocketChat" : true,
         "Npm"        : true,
