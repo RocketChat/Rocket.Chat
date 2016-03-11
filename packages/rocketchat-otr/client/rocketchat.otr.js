@@ -55,11 +55,16 @@ Meteor.startup(function() {
 
 	RocketChat.promises.add('onClientMessageReceived', function(message) {
 		if (message.rid && RocketChat.OTR.instancesByRoomId && RocketChat.OTR.instancesByRoomId[message.rid] && RocketChat.OTR.instancesByRoomId[message.rid].established.get()) {
-			return RocketChat.OTR.instancesByRoomId[message.rid].decrypt(message.msg, message.iv)
-			.then((msg) => {
-				message.msg = msg;
-				return message;
-			})
+			if (message.notification) {
+				message.msg = t("Encrypted_message");
+				return Promise.resolve(message);
+			} else {
+				return RocketChat.OTR.instancesByRoomId[message.rid].decrypt(message.msg)
+				.then((msg) => {
+					message.msg = msg;
+					return message;
+				})
+			}
 		} else {
 			return Promise.resolve(message);
 		}
