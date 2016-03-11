@@ -3,6 +3,6 @@
   "API_GitHub_Enterprise_URL" : "Server URL",
   "Accounts_OAuth_GitHub_Enterprise_id" : "Client Id",
   "Accounts_OAuth_GitHub_Enterprise_secret" : "Client Secret",
-  "Accounts_OAuth_GitHub_Enterprise_callback_url" : "Github Enterprise Callback URL",
+  "Accounts_OAuth_GitHub_Enterprise_callback_url" : "GitHub Enterprise Callback URL",
   "API_GitHub_Enterprise_URL_Description" : "Example: http://domain.com (excluding trailing slash)"
 }

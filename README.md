@@ -251,7 +251,7 @@ It is a great solution for communities and companies wanting to privately host t
 
 ## Issues
 
-[Github Issues](https://github.com/RocketChat/Rocket.Chat/issues) are used to track todos, bugs, feature requests, and more.
+[GitHub Issues](https://github.com/RocketChat/Rocket.Chat/issues) are used to track todos, bugs, feature requests, and more.
 
 ## Integrations
 
@@ -274,7 +274,7 @@ We are developing the APIs based on the competition, so stay tuned and you will 
 
 ## Documentation
 
-Checkout [Github Wiki](https://github.com/RocketChat/Rocket.Chat/wiki)
+Checkout [GitHub Wiki](https://github.com/RocketChat/Rocket.Chat/wiki)
 
 ## License
 
