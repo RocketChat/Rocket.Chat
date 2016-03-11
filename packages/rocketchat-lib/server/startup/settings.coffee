@@ -31,6 +31,8 @@ RocketChat.settings.addGroup 'Accounts', ->
 		@add 'Accounts_AvatarStoreType', 'GridFS', { type: 'select', values: [ { key: 'GridFS', i18nLabel: 'GridFS' }, { key: 'FileSystem', i18nLabel: 'FileSystem' } ] }
 		@add 'Accounts_AvatarStorePath', '', { type: 'string', enableQuery: {_id: 'Accounts_AvatarStoreType', value: 'FileSystem'} }
 
+RocketChat.settings.addGroup 'oAuth', ->
+
 	@section 'Facebook', ->
 		@add 'Accounts_OAuth_Facebook', false, { type: 'boolean', public: true }
 		@add 'Accounts_OAuth_Facebook_id', '', { type: 'string', enableQuery: {_id: 'Accounts_OAuth_Facebook', value: true} }
@@ -69,6 +71,7 @@ RocketChat.settings.addGroup 'Accounts', ->
 
 
 RocketChat.settings.addGroup 'General', ->
+
 	@add 'Site_Url', __meteor_runtime_config__?.ROOT_URL, { type: 'string', i18nDescription: 'Site_Url_Description', public: true }
 	@add 'Site_Name', 'Rocket.Chat', { type: 'string', public: true }
 	@add 'Language', '', { type: 'language', public: true }
@@ -78,6 +81,7 @@ RocketChat.settings.addGroup 'General', ->
 	@add 'Force_SSL', false, { type: 'boolean', public: true }
 	@add 'Debug_Level', 'error', { type: 'select', values: [ { key: 'error', i18nLabel: 'Only_errors' }, { key: 'debug', i18nLabel: 'All_logs' } ] }
 	@add 'Restart', 'restart_server', { type: 'action', actionText: 'Restart_the_server' }
+	@add 'API_Analytics', '', { type: 'string', public: true }
 
 	@section 'UTF8', ->
 		@add 'UTF8_Names_Validation', '[0-9a-zA-Z-_.]+', { type: 'string', public: true, i18nDescription: 'UTF8_Names_Validation_Description'}
@@ -85,11 +89,6 @@ RocketChat.settings.addGroup 'General', ->
 
 	@section 'Reporting', ->
 		@add 'Statistics_opt_out', false, { type: 'boolean', i18nLabel: "Opt_out_statistics" }
-
-RocketChat.settings.addGroup 'API', ->
-	@add 'API_Analytics', '', { type: 'string', public: true }
-	@add 'API_Embed', true, { type: 'boolean', public: true }
-	@add 'API_EmbedDisabledFor', '', { type: 'string', public: true, i18nDescription: 'API_EmbedDisabledFor_Description' }
 
 
 RocketChat.settings.addGroup 'SMTP', ->
@@ -118,6 +117,8 @@ RocketChat.settings.addGroup 'Message', ->
 	@add 'Message_ShowFormattingTips', true, { type: 'boolean', public: true }
 	@add 'Message_AudioRecorderEnabled', true, { type: 'boolean', public: true, i18nDescription: 'Message_AudioRecorderEnabledDescription' }
 	@add 'Message_GroupingPeriod', 300, { type: 'int', public: true, i18nDescription: 'Message_GroupingPeriodDescription' }
+	@add 'API_Embed', true, { type: 'boolean', public: true }
+	@add 'API_EmbedDisabledFor', '', { type: 'string', public: true, i18nDescription: 'API_EmbedDisabledFor_Description' }
 
 
 RocketChat.settings.addGroup 'Meta', ->
@@ -152,13 +153,13 @@ RocketChat.settings.addGroup 'Push', ->
 
 
 RocketChat.settings.addGroup 'Layout', ->
-	@add 'Layout_Sidenav_Footer', '<div><a href="https://github.com/RocketChat/Rocket.Chat" class="logo" target="_blank"> <img src="/images/logo/logo.svg?v=3" /></a><div class="github-tagline"><span class="octicon octicon-pencil" style="color: #994C00"></span> with <span class="octicon octicon-heart" style="color: red"></span> on <span class="octicon octicon-mark-github"></span></div></div>', { type: 'string', public: true, i18nDescription: 'Layout_Sidenav_Footer_description' }
 
 	@section 'Content', ->
 		@add 'Layout_Home_Title', 'Home', { type: 'string', public: true }
 		@add 'Layout_Home_Body', 'Welcome to Rocket.Chat <br> Go to APP SETTINGS -> Layout to customize this intro.', { type: 'string', multiline: true, public: true }
 		@add 'Layout_Terms_of_Service', 'Terms of Service <br> Go to APP SETTINGS -> Layout to customize this page.', { type: 'string', multiline: true, public: true }
 		@add 'Layout_Privacy_Policy', 'Privacy Policy <br> Go to APP SETTINGS -> Layout to customize this page.', { type: 'string', multiline: true, public: true }
+		@add 'Layout_Sidenav_Footer', '<div><a href="https://github.com/RocketChat/Rocket.Chat" class="logo" target="_blank"> <img src="/images/logo/logo.svg?v=3" /></a><div class="github-tagline"><span class="octicon octicon-pencil" style="color: #994C00"></span> with <span class="octicon octicon-heart" style="color: red"></span> on <span class="octicon octicon-mark-github"></span></div></div>', { type: 'string', public: true, i18nDescription: 'Layout_Sidenav_Footer_description' }
 
 	@section 'Login', ->
 		@add 'Layout_Login_Header', '<a class="logo" href="/"><img src="/images/logo/logo.svg?v=3" /></a>', { type: 'string', multiline: true, public: true }
