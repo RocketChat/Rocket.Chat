@@ -10,7 +10,7 @@ RocketChat.OTR.Room = class {
 		this.exportedPublicKey = null;
 		this.sessionKey = null;
 
-		this.serial = "0";
+		this.serial = "3";
 		this.firstPeer = null;
 	}
 
@@ -107,15 +107,17 @@ RocketChat.OTR.Room = class {
 	}
 
 	encrypt(message) {
-		var clearText = new Uint8Array(message);
-		this.serial = (parseInt(this.serial) + 1).toString()
-		var data = new Uint8Array(1 + 1 + this.serial.length + clearText.length);
+		// var clearText = new Uint8Array(message);
+		var clearText = new TextEncoder("UTF-8").encode(message);
+		this.serial = (parseInt(this.serial) + 1).toString();
+		serial = new TextEncoder("UTF-8").encode(this.serial)
+		var data = new Uint8Array(1 + 1 + serial.length + clearText.length);
 		if (this.firstPeer) {
 			data[0] = 1;
 		}
-		data[1] = this.serial.length;
-		data.set(this.serial, 2);
-		data.set(clearText, 2 + this.serial.length);
+		data[1] = serial.length;
+		data.set(serial, 2);
+		data.set(clearText, 2 + serial.length);
 
 		var iv = crypto.getRandomValues(new Uint8Array(12));
 
@@ -132,7 +134,7 @@ RocketChat.OTR.Room = class {
 	}
 
 	decrypt(message) {
-		var cipherText = new Uint8Array(message);
+		var cipherText = new this.hexStringToUint8Array(message);
 		var iv = cipherText.slice(0, 12);
 		cipherText = cipherText.slice(12);
 
@@ -155,20 +157,26 @@ RocketChat.OTR.Room = class {
 
 			var serial = data.slice(2, 2 + data[1]);
 			var clearText = data.slice(2 + data[1]);
+			// var clearText = new TextDecoder("UTF-8").decode(new Uint8Array(data.slice(2 + data[1])));
 
 			// To copy over and make sure we do not have a shallow slice with simply non-zero byteOffset.
-			serial = new Uint8Array(serial);
-			clearText = new Uint8Array(clearText);
+			serial = new TextDecoder("UTF-8").decode(new Uint8Array(serial));
+			clearText = new TextDecoder("UTF-8").decode(new Uint8Array(clearText));
 
+			console.log(serial);
 			console.log(clearText);
 
-			// This prevents any replay attacks. Or attacks where messages are changed in order.
-			if (parseInt(serial) - parseInt(this.serial) !== 1) {
-				throw new Error("Invalid serial.");
-			}
-			this.serial = serial;
+			// // This prevents any replay attacks. Or attacks where messages are changed in order.
+			// if (parseInt(serial) - parseInt(this.serial) !== 1) {
+			// 	throw new Error("Invalid serial.");
+			// }
+			// this.serial = serial;
 
 			return clearText;
+		})
+		.catch((e) => {
+			console.log(e);
+			console.log(JSON.stringify(e));
 		});
 	}
 
