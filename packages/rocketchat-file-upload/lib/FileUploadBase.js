@@ -1,5 +1,3 @@
-FileUpload = {}
-
 FileUploadBase = class FileUploadBase {
 	constructor(meta, file, data) {
 		this.id = Random.id();
