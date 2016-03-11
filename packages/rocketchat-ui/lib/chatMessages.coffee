@@ -4,6 +4,7 @@ class @ChatMessages
 		this.messageMaxSize = RocketChat.settings.get('Message_MaxAllowedSize')
 		this.wrapper = $(node).find(".wrapper")
 		this.input = $(node).find(".input-message").get(0)
+		this.hasValue = new ReactiveVar false
 		this.bindEvents()
 		return
 
@@ -57,6 +58,7 @@ class @ChatMessages
 
 		this.clearEditing()
 		this.input.value = message.msg
+		this.hasValue.set true
 		this.editing.element = element
 		this.editing.index = index or this.getEditingIndex(element)
 		this.editing.id = id
@@ -76,6 +78,7 @@ class @ChatMessages
 			this.editing.element = null
 			this.editing.index = null
 			this.input.value = this.editing.saved or ""
+			this.hasValue.set this.input.value isnt ''
 		else
 			this.editing.saved = this.input.value
 
@@ -90,11 +93,12 @@ class @ChatMessages
 				return
 
 			if this.isMessageTooLong(input?.value)
-				return Errors.throw t('Error_message_too_long')
+				return toastr.error t('Message_too_long')
 
 			KonchatNotification.removeRoomNotification(rid)
 			msg = input.value
 			input.value = ''
+			this.hasValue.set false
 			msgObject = { _id: Random.id(), rid: rid, msg: msg}
 			this.stopTyping(rid)
 
@@ -119,19 +123,19 @@ class @ChatMessages
 	deleteMsg: (message) ->
 		Meteor.call 'deleteMessage', message, (error, result) ->
 			if error
-				return Errors.throw error.reason
+				return toastr.error error.reason
 
 	pinMsg: (message) ->
 		message.pinned = true
 		Meteor.call 'pinMessage', message, (error, result) ->
 			if error
-				return Errors.throw error.reason
+				return toastr.error error.reason
 
 	unpinMsg: (message) ->
 		message.pinned = false
 		Meteor.call 'unpinMessage', message, (error, result) ->
 			if error
-				return Errors.throw error.reason
+				return toastr.error error.reason
 
 	update: (id, rid, input) ->
 		if _.trim(input.value) isnt ''
@@ -192,6 +196,8 @@ class @ChatMessages
 		unless k in keyCodes
 			this.startTyping(rid, input)
 
+		this.hasValue.set input.value isnt ''
+
 	keydown: (rid, event) ->
 		input = event.currentTarget
 		k = event.which
@@ -234,3 +240,6 @@ class @ChatMessages
 
 	isMessageTooLong: (message) ->
 		message?.length > this.messageMaxSize
+
+	isEmpty: ->
+		return !this.hasValue.get()
