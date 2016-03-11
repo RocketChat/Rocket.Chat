@@ -207,7 +207,6 @@ templating@1.1.5
 templating-tools@1.0.0
 tmeasday:crypto-base@3.1.2
 tmeasday:crypto-md5@3.1.2
-tmeasday:errors@2.0.0
 todda00:friendly-slugs@0.3.6
 tracker@1.0.9
 twitter@1.1.5

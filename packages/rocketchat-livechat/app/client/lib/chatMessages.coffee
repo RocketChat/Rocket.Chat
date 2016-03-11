@@ -68,7 +68,7 @@ class @ChatMessages
 	send: (rid, input) ->
 		if s.trim(input.value) isnt ''
 			if this.isMessageTooLong(input)
-				return Errors.throw t('Error_message_too_long')
+				return toastr.error t('Error_message_too_long')
 			# KonchatNotification.removeRoomNotification(rid)
 			msg = input.value
 			input.value = ''
@@ -108,7 +108,7 @@ class @ChatMessages
 	deleteMsg: (message) ->
 		Meteor.call 'deleteMessage', message, (error, result) ->
 			if error
-				return Errors.throw error.reason
+				return toastr.error error.reason
 
 	update: (id, rid, input) ->
 		if s.trim(input.value) isnt ''
