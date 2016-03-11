@@ -45,7 +45,7 @@ RocketChat.settings.addGroup 'OAuth', ->
 		@add 'Accounts_OAuth_Google_secret', '', { type: 'string', enableQuery: {_id: 'Accounts_OAuth_Google', value: true} }
 		@add 'Accounts_OAuth_Google_callback_url', __meteor_runtime_config__?.ROOT_URL + '_oauth/google', { type: 'string', blocked: true }
 
-	@section 'Github', ->
+	@section 'GitHub', ->
 		@add 'Accounts_OAuth_Github', false, { type: 'boolean', public: true }
 		@add 'Accounts_OAuth_Github_id', '', { type: 'string', enableQuery: {_id: 'Accounts_OAuth_Github', value: true} }
 		@add 'Accounts_OAuth_Github_secret', '', { type: 'string', enableQuery: {_id: 'Accounts_OAuth_Github', value: true} }
