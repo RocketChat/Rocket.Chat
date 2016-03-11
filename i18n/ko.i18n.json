@@ -33,7 +33,7 @@
   "Accounts_OAuth_Github_id" : "Github ID",
   "Accounts_OAuth_Github_secret" : "Github 암호",
   "Accounts_OAuth_Gitlab" : "OAuth 활성화",
-  "Accounts_OAuth_Gitlab_id" : "Gitlab ID",
+  "Accounts_OAuth_Gitlab_id" : "GitLab ID",
   "Accounts_OAuth_Gitlab_secret" : "Client 암호",
   "Accounts_OAuth_Google" : "구글 로그인",
   "Accounts_OAuth_Google_id" : "구글 ID",
