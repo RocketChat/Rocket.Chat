@@ -89,13 +89,15 @@ class @ChatMessages
 				this.update(this.editing.id, rid, input)
 				return
 
-			if this.isMessageTooLong(input)
+			if this.isMessageTooLong(input?.value)
 				return Errors.throw t('Error_message_too_long')
+
 			KonchatNotification.removeRoomNotification(rid)
 			msg = input.value
 			input.value = ''
 			msgObject = { _id: Random.id(), rid: rid, msg: msg}
 			this.stopTyping(rid)
+
 			#Check if message starts with /command
 			if msg[0] is '/'
 				match = msg.match(/^\/([^\s]+)(?:\s+(.*))?$/m)
@@ -105,9 +107,13 @@ class @ChatMessages
 					Meteor.call 'slashCommand', {cmd: command, params: param, msg: msgObject }
 					return
 
-			#Run to allow local encryption
-			# Meteor.call 'onClientBeforeSendMessage', {}
-			RocketChat.promises.run('onClientBeforeSendMessage', msgObject).then (msgObject) ->
+			# Run to allow local encryption
+			RocketChat.promises.run('onClientBeforeSendMessage', msgObject).then (msgObject) =>
+
+				# checks for the final msgObject.msg size before actually sending the message
+				if this.isMessageTooLong(msgObject.msg)
+					return Errors.throw t('Error_message_too_long')
+
 				Meteor.call 'sendMessage', msgObject
 
 	deleteMsg: (message) ->
@@ -226,5 +232,5 @@ class @ChatMessages
 		else if k is 75 and ((navigator?.platform?.indexOf('Mac') isnt -1 and event.metaKey and event.shiftKey) or (navigator?.platform?.indexOf('Mac') is -1 and event.ctrlKey and event.shiftKey))
 			RoomHistoryManager.clear rid
 
-	isMessageTooLong: (input) ->
-		input?.value.length > this.messageMaxSize
+	isMessageTooLong: (message) ->
+		message?.length > this.messageMaxSize
