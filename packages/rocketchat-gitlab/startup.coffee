@@ -1,4 +1,4 @@
-RocketChat.settings.addGroup 'Accounts', ->
+RocketChat.settings.addGroup 'OAuth', ->
 	@section 'GitLab', ->
 		enableQuery = {_id: 'Accounts_OAuth_Gitlab', value: true}
 		@add 'Accounts_OAuth_Gitlab', false, { type: 'boolean', public: true }
