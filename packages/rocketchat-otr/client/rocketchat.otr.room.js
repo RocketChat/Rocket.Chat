@@ -14,11 +14,11 @@ RocketChat.OTR.Room = class {
 		this.peerSerial = 0;
 	}
 
-	handshake() {
+	handshake(refresh) {
 		this.establishing.set(true);
 		this.firstPeer = true;
 		this.generateKeyPair(false).then(() => {
-			RocketChat.Notifications.notifyUser(this.peerId, 'otr', 'handshake', { roomId: this.roomId, userId: this.userId, publicKey: this.bytesToHexString(this.exportedPublicKey) });
+			RocketChat.Notifications.notifyUser(this.peerId, 'otr', 'handshake', { roomId: this.roomId, userId: this.userId, publicKey: this.bytesToHexString(this.exportedPublicKey), refresh: refresh });
 		});
 	}
 
@@ -27,13 +27,23 @@ RocketChat.OTR.Room = class {
 	}
 
 	deny() {
-		this.establishing.set(false);
+		this.reset();
 		RocketChat.Notifications.notifyUser(this.peerId, 'otr', 'deny', { roomId: this.roomId, userId: this.userId });
 	}
 
 	end() {
-		this.establishing.set(false);
+		this.reset();
 		RocketChat.Notifications.notifyUser(this.peerId, 'otr', 'end', { roomId: this.roomId, userId: this.userId });
+	}
+
+	reset() {
+		this.establishing.set(false);
+		this.established.set(false);
+		this.keyPair = null;
+		this.exportedPublicKey = null;
+		this.sessionKey = null;
+		this.serial = null;
+		this.peerSerial = null;
 	}
 
 	bytesToHexString(bytes) {
@@ -128,6 +138,9 @@ RocketChat.OTR.Room = class {
 			output.set(iv, 0);
 			output.set(cipherText, iv.length);
 			return this.bytesToHexString(output);
+		}).catch((e) => {
+			console.log(e);
+			return "";
 		});
 	}
 
@@ -178,36 +191,52 @@ RocketChat.OTR.Room = class {
 		switch(type) {
 			case 'handshake':
 				let timeout = null;
-				this.establishing.set(true);
-				swal({
-					title: "<i class='icon-key alert-icon'></i>" + TAPi18n.__("OTR"),
-					text: TAPi18n.__("Username_wants_to_start_otr_Do_you_want_to_accept", { username: user.username }),
-					html: true,
-					showCancelButton: true,
-					confirmButtonText: TAPi18n.__("Yes"),
-					cancelButtonText: TAPi18n.__("No")
-				}, (isConfirm) => {
-					if (isConfirm) {
-						Meteor.clearTimeout(timeout);
-						this.generateKeyPair(false).then(() => {
-							this.importPublicKey(data.publicKey).then(() => {
-								this.firstPeer = false;
-								FlowRouter.goToRoomById(data.roomId);
-								Meteor.defer(() => {
-									this.established.set(true);
-									this.acknowledge();
-								});
+
+				establishConnection = () => {
+					this.establishing.set(true);
+					Meteor.clearTimeout(timeout);
+					this.generateKeyPair(false).then(() => {
+						this.importPublicKey(data.publicKey).then(() => {
+							this.firstPeer = false;
+							FlowRouter.goToRoomById(data.roomId);
+							Meteor.defer(() => {
+								this.established.set(true);
+								this.acknowledge();
 							});
 						});
-					} else {
-						Meteor.clearTimeout(timeout);
-						this.deny();
+					});
+				}
+
+				if (data.refresh && this.established.get()) {
+					this.reset();
+					establishConnection();
+				} else {
+					if (this.established.get()) {
+						this.reset();
 					}
-				});
+
+					swal({
+						title: "<i class='icon-key alert-icon'></i>" + TAPi18n.__("OTR"),
+						text: TAPi18n.__("Username_wants_to_start_otr_Do_you_want_to_accept", { username: user.username }),
+						html: true,
+						showCancelButton: true,
+						confirmButtonText: TAPi18n.__("Yes"),
+						cancelButtonText: TAPi18n.__("No")
+					}, (isConfirm) => {
+						if (isConfirm) {
+							establishConnection();
+						} else {
+							Meteor.clearTimeout(timeout);
+							this.deny();
+						}
+					});
+				}
+
 				timeout = Meteor.setTimeout(() => {
 					this.establishing.set(false);
 					swal.close();
 				}, 10000);
+
 				break;
 
 			case 'acknowledge':
@@ -217,13 +246,17 @@ RocketChat.OTR.Room = class {
 				break;
 
 			case 'deny':
-				this.establishing.set(false);
-				swal(TAPi18n.__("Denied"), null, "error");
+				if (this.establishing.get()) {
+					this.reset();
+					swal(TAPi18n.__("Denied"), null, "error");
+				}
 				break;
 
 			case 'end':
-				this.establishing.set(false);
-				swal(TAPi18n.__("Ended"), null, "error");
+				if (this.established.get()) {
+					this.reset();
+					swal(TAPi18n.__("Ended"), null, "error");
+				}
 				break;
 		}
 	}
