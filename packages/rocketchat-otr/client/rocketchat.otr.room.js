@@ -10,8 +10,8 @@ RocketChat.OTR.Room = class {
 		this.exportedPublicKey = null;
 		this.sessionKey = null;
 
-		this.serial = "3";
-		this.firstPeer = null;
+		this.serial = 0;
+		this.peerSerial = 0;
 	}
 
 	handshake() {
@@ -109,15 +109,13 @@ RocketChat.OTR.Room = class {
 	encrypt(message) {
 		// var clearText = new Uint8Array(message);
 		var clearText = new TextEncoder("UTF-8").encode(message);
-		this.serial = (parseInt(this.serial) + 1).toString();
-		serial = new TextEncoder("UTF-8").encode(this.serial)
-		var data = new Uint8Array(1 + 1 + serial.length + clearText.length);
-		if (this.firstPeer) {
-			data[0] = 1;
-		}
-		data[1] = serial.length;
-		data.set(serial, 2);
-		data.set(clearText, 2 + serial.length);
+		var userId = new TextEncoder("UTF-8").encode(this.userId);
+		this.serial++;
+		var data = new Uint8Array(1 + 1 + userId.length + clearText.length);
+		data[0] = this.serial;
+		data[1] = userId.length;
+		data.set(userId, 2);
+		data.set(clearText, 2 + userId.length);
 
 		var iv = crypto.getRandomValues(new Uint8Array(12));
 
@@ -144,39 +142,34 @@ RocketChat.OTR.Room = class {
 		}, this.sessionKey, cipherText).then((data) => {
 			data = new Uint8Array(data);
 
-			// if (this.firstPeer) {
-			// 	if (data[0] !== 0) {
-			// 		throw new Error("Can decrypt only encrypted data from the second peer.");
-			// 	}
-			// }
-			// else {
-			// 	if (data[0] !== 1) {
-			// 		throw new Error("Can decrypt only encrypted data from the first peer.");
-			// 	}
-			// }
-
-			var serial = data.slice(2, 2 + data[1]);
+			var serial = data[0];
+			var userId = data.slice(2, 2 + data[1]);
 			var clearText = data.slice(2 + data[1]);
-			// var clearText = new TextDecoder("UTF-8").decode(new Uint8Array(data.slice(2 + data[1])));
 
 			// To copy over and make sure we do not have a shallow slice with simply non-zero byteOffset.
-			serial = new TextDecoder("UTF-8").decode(new Uint8Array(serial));
+			userId = new TextDecoder("UTF-8").decode(new Uint8Array(userId));
 			clearText = new TextDecoder("UTF-8").decode(new Uint8Array(clearText));
 
-			console.log(serial);
-			console.log(clearText);
+			// This prevents any replay attacks. Or attacks where messages are changed in order.
+			// If message is from the same userId as me, serials must be equal
+			if (userId === this.userId && serial !== this.serial) {
+				throw new Error("Invalid serial.");
+			} else if (userId !== this.userId) {
+				// If serial difference is larger than one, message is out of order
+				var checkSerial = serial - this.peerSerial;
+				if (checkSerial !== 1 && checkSerial !== -255) {
+					throw new Error("Invalid serial.");
+				}
 
-			// // This prevents any replay attacks. Or attacks where messages are changed in order.
-			// if (parseInt(serial) - parseInt(this.serial) !== 1) {
-			// 	throw new Error("Invalid serial.");
-			// }
-			// this.serial = serial;
+				// update serial number to the last received serial
+				this.peerSerial = serial;
+			}
 
 			return clearText;
 		})
 		.catch((e) => {
 			console.log(e);
-			console.log(JSON.stringify(e));
+			return message;
 		});
 	}
 
