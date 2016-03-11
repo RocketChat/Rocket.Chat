@@ -3,5 +3,5 @@
   "API_GitHub_Enterprise_URL" : "Adres serwera",
   "Accounts_OAuth_GitHub_Enterprise_id" : "Client Id",
   "Accounts_OAuth_GitHub_Enterprise_secret" : "Client Secret",
-  "Github_Enterprise_Url_No_Trail" : "Przykład: http://domain.com (bez końcowego ukośnika)"
+  "API_GitHub_Enterprise_URL_Description" : "Przykład: http://domain.com (bez końcowego ukośnika)"
 }
