@@ -88,35 +88,33 @@ class @ChatMessages
 			readMessage.readNow()
 			$('.message.first-unread').removeClass('first-unread')
 
-			if this.editing.id
-				this.update(this.editing.id, rid, input)
-				return
-
-			if this.isMessageTooLong(input?.value)
-				return toastr.error t('Message_too_long')
-
-			KonchatNotification.removeRoomNotification(rid)
 			msg = input.value
-			input.value = ''
-			this.hasValue.set false
 			msgObject = { _id: Random.id(), rid: rid, msg: msg}
-			this.stopTyping(rid)
 
-			#Check if message starts with /command
-			if msg[0] is '/'
-				match = msg.match(/^\/([^\s]+)(?:\s+(.*))?$/m)
-				if match? and RocketChat.slashCommands.commands[match[1]]
-					command = match[1]
-					param = match[2]
-					Meteor.call 'slashCommand', {cmd: command, params: param, msg: msgObject }
-					return
-
-			# Run to allow local encryption
+			# Run to allow local encryption, and maybe other client specific actions to be run before send
 			RocketChat.promises.run('onClientBeforeSendMessage', msgObject).then (msgObject) =>
 
 				# checks for the final msgObject.msg size before actually sending the message
 				if this.isMessageTooLong(msgObject.msg)
-					return Errors.throw t('Error_message_too_long')
+					return toastr.error t('Message_too_long')
+
+				if this.editing.id
+					this.update(this.editing.id, rid, msgObject.msg)
+					return
+
+				KonchatNotification.removeRoomNotification(rid)
+				input.value = ''
+				this.hasValue.set false
+				this.stopTyping(rid)
+
+				#Check if message starts with /command
+				if msg[0] is '/'
+					match = msg.match(/^\/([^\s]+)(?:\s+(.*))?$/m)
+					if match? and RocketChat.slashCommands.commands[match[1]]
+						command = match[1]
+						param = match[2]
+						Meteor.call 'slashCommand', {cmd: command, params: param, msg: msgObject }
+						return
 
 				Meteor.call 'sendMessage', msgObject
 
@@ -137,9 +135,8 @@ class @ChatMessages
 			if error
 				return toastr.error error.reason
 
-	update: (id, rid, input) ->
-		if _.trim(input.value) isnt ''
-			msg = input.value
+	update: (id, rid, msg) ->
+		if _.trim(msg) isnt ''
 			Meteor.call 'updateMessage', { _id: id, msg: msg, rid: rid }
 			this.clearEditing()
 			this.stopTyping(rid)
