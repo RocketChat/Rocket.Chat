@@ -81,7 +81,7 @@ Template.integrationsOutgoing.helpers
 			]
 			# lint: true
 			foldGutter: true
-			lineWrapping: true
+			# lineWrapping: true
 			matchBrackets: true
 			autoCloseBrackets: true
 			matchTags: true,
@@ -137,6 +137,7 @@ Template.integrationsOutgoing.events
 		triggerWords = $('[name=triggerWords]').val().trim()
 		urls = $('[name=urls]').val().trim()
 		token = $('[name=token]').val().trim()
+		scriptEnabled = $('[name=scriptEnabled]:checked').val().trim()
 		script = $('[name=script]').val().trim()
 
 		if username is ''
@@ -170,6 +171,7 @@ Template.integrationsOutgoing.events
 			urls: urls if urls isnt ''
 			token: token if token isnt ''
 			script: script if script isnt ''
+			scriptEnabled: scriptEnabled is '1'
 
 		params = Template.instance().data.params?()
 		if params?.id?

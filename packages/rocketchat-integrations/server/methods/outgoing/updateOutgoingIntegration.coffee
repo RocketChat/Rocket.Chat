@@ -91,6 +91,7 @@ Meteor.methods
 				urls: integration.urls
 				token: integration.token
 				script: integration.script
+				scriptEnabled: integration.scriptEnabled
 				scriptCompiled: integration.scriptCompiled
 				scriptError: integration.scriptError
 				triggerWords: integration.triggerWords

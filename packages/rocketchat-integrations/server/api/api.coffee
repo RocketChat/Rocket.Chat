@@ -75,7 +75,7 @@ Api.addRoute ':integrationId/:userId/:token', authRequired: true,
 			emoji: integration.emoji
 
 
-		if integration.scriptCompiled? and integration.scriptCompiled.trim() isnt ''
+		if integration.scriptEnabled is true and integration.scriptCompiled? and integration.scriptCompiled.trim() isnt ''
 			script = undefined
 			try
 				script = getIntegrationScript(integration)
