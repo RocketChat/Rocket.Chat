@@ -1,28 +1,25 @@
 vm = Npm.require('vm')
 
-triggers = {}
+compiledScripts = {}
 
-executeScript = (scriptContent, name, sandbox) ->
-	script = undefined
+getIntegrationScript = (integration) ->
+	compiledScript = compiledScripts[integration._id]
+	if compiledScript? and +compiledScript._updatedAt is +integration._updatedAt
+		return compiledScript.script
+
+	script = integration.scriptCompiled
 	vmScript = undefined
-	try
-		script = "result = (function() {\n"+scriptContent+"\n}());"
-		vmScript = vm.createScript script, 'script.js'
-		logger.outgoing.info 'will execute script ' + name
-		logger.outgoing.debug script
-		logger.outgoing.debug 'with context', sandbox
-	catch e
-		logger.outgoing.error "[Error evaluating Script:]"
-		logger.outgoing.error script.replace(/^/gm, '  ')
-		logger.outgoing.error "\n[Stack:]"
-		logger.outgoing.error e.stack.replace(/^/gm, '  ')
-		return
-
-	try
-		sandbox._ = _
-		sandbox.s = s
-		sandbox.console = console
-		sandbox.HTTP = (method, url, options) ->
+	store = {}
+	sandbox =
+		_: _
+		s: s
+		console: console
+		Store:
+			set: (key, val) ->
+				return store[key] = val
+			get: (key) ->
+				return store[key]
+		HTTP: (method, url, options) ->
 			try
 				return {} =
 					result: HTTP.call method, url, options
@@ -30,15 +27,68 @@ executeScript = (scriptContent, name, sandbox) ->
 				return {} =
 					error: e
 
+	try
+		logger.outgoing.info 'will evaluate script'
+		logger.outgoing.debug script
+
+		vmScript = vm.createScript script, 'script.js'
 
 		vmScript.runInNewContext sandbox
-		logger.outgoing.debug 'result', sandbox.result
-		return sandbox.result
+
+		if sandbox.Script?
+			compiledScripts[integration._id] =
+				script: new sandbox.Script()
+				_updatedAt: integration._updatedAt
+
+			return compiledScripts[integration._id].script
 	catch e
-		logger.outgoing.error "[Error running Script:]"
+		logger.outgoing.error "[Error evaluating Script:]"
 		logger.outgoing.error script.replace(/^/gm, '  ')
-		logger.outgoing.error "\n[Stack:]"
+		logger.outgoing.error "[Stack:]"
 		logger.outgoing.error e.stack.replace(/^/gm, '  ')
+		throw new Meteor.Error 'error-evaluating-script'
+
+	if not sandbox.Script?
+		logger.outgoing.error "[Class 'Script' not found]"
+		throw new Meteor.Error 'class-script-not-found'
+
+
+triggers = {}
+
+hasScriptAndMethod = (integration, method) ->
+	if not integration.scriptCompiled? or integration.scriptCompiled.trim() is ''
+		return false
+
+	script = undefined
+	try
+		script = getIntegrationScript(integration)
+	catch e
+		return
+
+	return script[method]?
+
+executeScript = (integration, method, params) ->
+	script = undefined
+	try
+		script = getIntegrationScript(integration)
+	catch e
+		return
+
+	if not script[method]?
+		logger.outgoing.error "[Method '#{method}' not found]"
+		return
+
+	try
+		result = script[method](params)
+
+		logger.outgoing.debug 'result', result
+
+		return result
+	catch e
+		logger.incoming.error "[Error running Script:]"
+		logger.incoming.error integration.scriptCompiled.replace(/^/gm, '  ')
+		logger.incoming.error "[Stack:]"
+		logger.incoming.error e.stack.replace(/^/gm, '  ')
 		return
 
 
@@ -113,13 +163,11 @@ ExecuteTriggerUrl = (url, trigger, message, room, tries=0) ->
 		headers:
 			'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/41.0.2227.0 Safari/537.36'
 
-	if trigger.prepareOutgoingRequestScript? and trigger.prepareOutgoingRequestScript.trim() isnt ''
-		trigger.store ?= {}
+	if hasScriptAndMethod(trigger, 'prepare_outgoing_request')
 		sandbox =
 			request: opts
-			store: trigger.store
 
-		opts = executeScript trigger.prepareOutgoingRequestScript, 'prepareOutgoingRequestScript', sandbox
+		opts = executeScript trigger, 'prepare_outgoing_request', sandbox
 
 	if not opts?
 		return
@@ -132,7 +180,7 @@ ExecuteTriggerUrl = (url, trigger, message, room, tries=0) ->
 
 	HTTP.call opts.method, opts.url, opts, (error, result) ->
 		scriptResult = undefined
-		if trigger.processOutgoingResponseScript? and trigger.processOutgoingResponseScript.trim() isnt ''
+		if hasScriptAndMethod(trigger, 'process_outgoing_response')
 			sandbox =
 				request: opts
 				response:
@@ -141,9 +189,8 @@ ExecuteTriggerUrl = (url, trigger, message, room, tries=0) ->
 					content: result.data
 					content_raw: result.content
 					headers: result.headers
-				store: trigger.store
 
-			scriptResult = executeScript trigger.processOutgoingResponseScript, 'processOutgoingResponseScript', sandbox
+			scriptResult = executeScript trigger, 'process_outgoing_response', sandbox
 
 			if scriptResult?.content
 				sendMessage scriptResult.content

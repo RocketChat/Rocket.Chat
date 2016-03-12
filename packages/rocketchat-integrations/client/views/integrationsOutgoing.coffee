@@ -70,6 +70,24 @@ Template.integrationsOutgoing.helpers
 
 		return hljs.highlight('json', JSON.stringify(data, null, 2)).value
 
+	editorOptions: ->
+		return {} =
+			lineNumbers: true
+			mode: "javascript"
+			gutters: [
+				# "CodeMirror-lint-markers"
+				"CodeMirror-linenumbers"
+				"CodeMirror-foldgutter"
+			]
+			# lint: true
+			foldGutter: true
+			lineWrapping: true
+			matchBrackets: true
+			autoCloseBrackets: true
+			matchTags: true,
+			showTrailingSpace: true
+			highlightSelectionMatches: true
+
 
 Template.integrationsOutgoing.events
 	"blur input": (e, t) ->
@@ -119,8 +137,7 @@ Template.integrationsOutgoing.events
 		triggerWords = $('[name=triggerWords]').val().trim()
 		urls = $('[name=urls]').val().trim()
 		token = $('[name=token]').val().trim()
-		prepareOutgoingRequestScript = $('[name=prepareOutgoingRequestScript]').val().trim()
-		processOutgoingResponseScript = $('[name=processOutgoingResponseScript]').val().trim()
+		script = $('[name=script]').val().trim()
 
 		if username is ''
 			return toastr.error TAPi18n.__("The_username_is_required")
@@ -152,8 +169,7 @@ Template.integrationsOutgoing.events
 			triggerWords: triggerWords if triggerWords isnt ''
 			urls: urls if urls isnt ''
 			token: token if token isnt ''
-			prepareOutgoingRequestScript: prepareOutgoingRequestScript if prepareOutgoingRequestScript isnt ''
-			processOutgoingResponseScript: processOutgoingResponseScript if processOutgoingResponseScript isnt ''
+			script: script if script isnt ''
 
 		params = Template.instance().data.params?()
 		if params?.id?
