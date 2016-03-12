@@ -59,6 +59,7 @@ Meteor.methods
 				alias: integration.alias
 				channel: integration.channel
 				script: integration.script
+				scriptEnabled: integration.scriptEnabled
 				scriptCompiled: integration.scriptCompiled
 				scriptError: integration.scriptError
 				_updatedAt: new Date

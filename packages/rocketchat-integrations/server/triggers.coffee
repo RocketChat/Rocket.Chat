@@ -56,7 +56,7 @@ getIntegrationScript = (integration) ->
 triggers = {}
 
 hasScriptAndMethod = (integration, method) ->
-	if not integration.scriptCompiled? or integration.scriptCompiled.trim() is ''
+	if integration.scriptEnabled isnt true or not integration.scriptCompiled? or integration.scriptCompiled.trim() is ''
 		return false
 
 	script = undefined
