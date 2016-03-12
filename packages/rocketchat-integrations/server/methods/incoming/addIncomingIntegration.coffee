@@ -18,16 +18,16 @@ Meteor.methods
 		if integration.username.trim() is ''
 			throw new Meteor.Error 'invalid_username', '[methods] addIncomingIntegration -> username can\'t be empty'
 
-		if integration.processIncomingRequestScript isnt ''
+		if integration.script isnt ''
 			try
 				babelOptions = Babel.getDefaultOptions()
 				babelOptions.externalHelpers = false
 
-				integration.processIncomingRequestScriptCompiled = Babel.compile(integration.processIncomingRequestScript, babelOptions).code
-				integration.processIncomingRequestScriptError = undefined
+				integration.scriptCompiled = Babel.compile(integration.script, babelOptions).code
+				integration.scriptError = undefined
 			catch e
-				integration.processIncomingRequestScriptCompiled = undefined
-				integration.processIncomingRequestScriptError = _.pick e, 'name', 'message', 'pos', 'loc', 'codeFrame'
+				integration.scriptCompiled = undefined
+				integration.scriptError = _.pick e, 'name', 'message', 'pos', 'loc', 'codeFrame'
 
 		record = undefined
 		channelType = integration.channel[0]
