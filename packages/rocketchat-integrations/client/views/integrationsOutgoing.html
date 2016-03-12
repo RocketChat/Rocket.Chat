@@ -74,15 +74,30 @@
 							</div>
 						</div>
 						<div class="input-line double-col">
-							<label>{{_ "Prepare_Outgoing_Request"}} ({{_ "optional"}})</label>
+							<label>{{_ "Script"}} ({{_ "optional"}})</label>
 							<div>
-								<textarea rows="4" style="height: auto" name="prepareOutgoingRequestScript" value="{{data.prepareOutgoingRequestScript}}"></textarea>
-							</div>
-						</div>
-						<div class="input-line double-col">
-							<label>{{_ "Process_Outgoing_Response"}} ({{_ "optional"}})</label>
-							<div>
-								<textarea rows="4" style="height: auto" name="processOutgoingResponseScript" value="{{data.processOutgoingResponseScript}}"></textarea>
+								<div class="code-mirror-box">
+									<div class="title">
+										{{_ "Script"}}
+									</div>
+									{{> CodeMirror name="script" options=editorOptions code=data.script }}
+									<div class="buttons">
+										<button class="button button-primary button-fullscreen">
+											Full Screen
+										</button>
+										<button class="button button-primary button-restore">
+											Exit Full Screen
+										</button>
+									</div>
+								</div>
+								{{#if data.scriptError}}
+									<div class="code-error-box">
+										<div class="title">
+											{{data.scriptError.name}}
+										</div>
+										<pre>{{data.scriptError.codeFrame}}</pre>
+									</div>
+								{{/if}}
 							</div>
 						</div>
 						<div class="input-line double-col">

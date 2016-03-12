@@ -1,3 +1,5 @@
+vm = Npm.require('vm')
+
 compiledScripts = {}
 
 getIntegrationScript = (integration) ->
@@ -36,8 +38,6 @@ getIntegrationScript = (integration) ->
 	if not sandbox.Script?
 		throw RocketChat.API.v1.failure 'class-script-not-found'
 
-
-vm = Npm.require('vm')
 
 Api = new Restivus
 	enableCors: true
