@@ -74,7 +74,14 @@
 							</div>
 						</div>
 						<div class="input-line double-col">
-							<label>{{_ "Script"}} ({{_ "optional"}})</label>
+							<label>{{_ "Script_Enabled"}}</label>
+							<div>
+								<label><input type="radio" name="scriptEnabled" value="1" checked="{{$eq data.scriptEnabled true}}" /> {{_ "True"}}</label>
+								<label><input type="radio" name="scriptEnabled" value="0" checked="{{$neq data.scriptEnabled true}}" /> {{_ "False"}}</label>
+							</div>
+						</div>
+						<div class="input-line double-col">
+							<label>{{_ "Script"}}</label>
 							<div>
 								<div class="code-mirror-box">
 									<div class="title">

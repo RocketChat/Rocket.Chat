@@ -152,6 +152,7 @@ Template.integrationsIncoming.events
 		avatar = $('[name=avatar]').val().trim()
 		channel = $('[name=channel]').val().trim()
 		username = $('[name=username]').val().trim()
+		scriptEnabled = $('[name=scriptEnabled]:checked').val().trim()
 		script = $('[name=script]').val().trim()
 
 		if channel is ''
@@ -167,6 +168,7 @@ Template.integrationsIncoming.events
 			avatar: avatar if avatar isnt ''
 			name: name if name isnt ''
 			script: script if script isnt ''
+			scriptEnabled: scriptEnabled is '1'
 
 		params = Template.instance().data.params?()
 		if params?.id?
