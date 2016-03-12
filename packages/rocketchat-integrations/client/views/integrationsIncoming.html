@@ -56,13 +56,13 @@
 							</div>
 						</div>
 						<div class="input-line double-col">
-							<label>{{_ "Process_Incoming_Request"}} ({{_ "optional"}})</label>
+							<label>{{_ "Script"}} ({{_ "optional"}})</label>
 							<div>
 								<div class="code-mirror-box">
 									<div class="title">
-										{{_ "Process_Incoming_Request"}}
+										{{_ "Script"}}
 									</div>
-									{{> CodeMirror name="processIncomingRequestScript" options=editorOptions code=data.processIncomingRequestScript }}
+									{{> CodeMirror name="script" options=editorOptions code=data.script }}
 									<div class="buttons">
 										<button class="button button-primary button-fullscreen">
 											Full Screen
@@ -72,12 +72,12 @@
 										</button>
 									</div>
 								</div>
-								{{#if data.processIncomingRequestScriptError}}
+								{{#if data.scriptError}}
 									<div class="code-error-box">
 										<div class="title">
-											{{data.processIncomingRequestScriptError.name}}
+											{{data.scriptError.name}}
 										</div>
-										<pre>{{data.processIncomingRequestScriptError.codeFrame}}</pre>
+										<pre>{{data.scriptError.codeFrame}}</pre>
 									</div>
 								{{/if}}
 							</div>
