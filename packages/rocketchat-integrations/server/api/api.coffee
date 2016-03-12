@@ -100,7 +100,7 @@ Api.addRoute ':integrationId/:userId/:token', authRequired: true,
 					username: @user.username
 
 			try
-				result = script.process_incoming_request(request)
+				result = script.process_incoming_request({ request: request })
 
 				if result.error?
 					return RocketChat.API.v1.failure result.error
