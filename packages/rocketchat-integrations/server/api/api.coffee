@@ -7,15 +7,20 @@ getIntegrationScript = (integration) ->
 	if compiledScript? and +compiledScript._updatedAt is +integration._updatedAt
 		return compiledScript.script
 
-	script = integration.processIncomingRequestScriptCompiled
+	script = integration.scriptCompiled
 	vmScript = undefined
 	sandbox =
 		_: _
 		s: s
 		console: console
+		Store:
+			set: (key, val) ->
+				return store[key] = val
+			get: (key) ->
+				return store[key]
 
 	try
-		logger.incoming.info 'will evaluate script processIncomingRequestScript'
+		logger.incoming.info 'will evaluate script'
 		logger.incoming.debug script
 
 		vmScript = vm.createScript script, 'script.js'
@@ -70,7 +75,7 @@ Api.addRoute ':integrationId/:userId/:token', authRequired: true,
 			emoji: integration.emoji
 
 
-		if integration.processIncomingRequestScriptCompiled? and integration.processIncomingRequestScriptCompiled.trim() isnt ''
+		if integration.scriptCompiled? and integration.scriptCompiled.trim() isnt ''
 			script = undefined
 			try
 				script = getIntegrationScript(integration)
@@ -105,7 +110,7 @@ Api.addRoute ':integrationId/:userId/:token', authRequired: true,
 				logger.incoming.debug 'result', @bodyParams
 			catch e
 				logger.incoming.error "[Error running Script:]"
-				logger.incoming.error script.replace(/^/gm, '  ')
+				logger.incoming.error integration.scriptCompiled.replace(/^/gm, '  ')
 				logger.incoming.error "[Stack:]"
 				logger.incoming.error e.stack.replace(/^/gm, '  ')
 				return RocketChat.API.v1.failure 'error-running-script'
