@@ -131,7 +131,6 @@ RocketChat.OTR.Room = class {
 			output.set(cipherText, iv.length);
 			return this.bytesToHexString(output);
 		}).catch((e) => {
-			console.log(e);
 			return "";
 		});
 	}
@@ -165,7 +164,6 @@ RocketChat.OTR.Room = class {
 			return data.msg;
 		})
 		.catch((e) => {
-			console.log(e);
 			return message;
 		});
 	}
