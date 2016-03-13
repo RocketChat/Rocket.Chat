@@ -146,6 +146,7 @@ Template.integrationsIncoming.events
 		$('.CodeMirror')[0].CodeMirror.refresh()
 
 	"click .submit > .save": ->
+		enabled = $('[name=enabled]:checked').val().trim()
 		name = $('[name=name]').val().trim()
 		alias = $('[name=alias]').val().trim()
 		emoji = $('[name=emoji]').val().trim()
@@ -162,6 +163,7 @@ Template.integrationsIncoming.events
 			return toastr.error TAPi18n.__("The_username_is_required")
 
 		integration =
+			enabled: enabled is '1'
 			channel: channel
 			alias: alias if alias isnt ''
 			emoji: emoji if emoji isnt ''
