@@ -53,6 +53,7 @@ Meteor.methods
 
 		RocketChat.models.Integrations.update integrationId,
 			$set:
+				enabled: integration.enabled
 				name: integration.name
 				avatar: integration.avatar
 				emoji: integration.emoji

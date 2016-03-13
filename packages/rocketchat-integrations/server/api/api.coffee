@@ -66,6 +66,12 @@ Api.addRoute ':integrationId/:userId/:token', authRequired: true,
 		logger.incoming.debug '@bodyParams', @bodyParams
 
 		integration = RocketChat.models.Integrations.findOne(@urlParams.integrationId)
+
+		if integration.enabled isnt true
+			return {} =
+				statusCode: 503
+				body: 'Service Unavailable'
+
 		user = RocketChat.models.Users.findOne(@userId)
 
 		defaultValues =
@@ -181,7 +187,7 @@ Api.addRoute 'add/:integrationId/:userId/:token', authRequired: true,
 		integration = RocketChat.models.Integrations.findOne(@urlParams.integrationId)
 
 		if not integration?
-			return RocketChat.API.v1.failure 'Invalid integraiton id'
+			return RocketChat.API.v1.failure 'Invalid integration id'
 
 		user = RocketChat.models.Users.findOne(@userId)
 
@@ -193,7 +199,7 @@ Api.addRoute 'remove/:integrationId/:userId/:token', authRequired: true,
 		integration = RocketChat.models.Integrations.findOne(@urlParams.integrationId)
 
 		if not integration?
-			return RocketChat.API.v1.failure 'Invalid integraiton id'
+			return RocketChat.API.v1.failure 'Invalid integration id'
 
 		user = RocketChat.models.Users.findOne(@userId)
 
