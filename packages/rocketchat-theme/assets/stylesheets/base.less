@@ -2136,7 +2136,6 @@ a.github-fork {
 	flex-direction: column;
 
 	> div {
-		height: 24px;
 		line-height: 24px;
 		padding: 0 10px;
 		border-top: 1px solid;
@@ -2199,8 +2198,16 @@ a.github-fork {
 			}
 		}
 
+		.unread-count {
+			display: none;
+		}
+
 		> a.jump-to {
 			float: left;
+
+			.jump-to-small {
+				display: none;
+			}
 
 			&:hover {
 				cursor: pointer;
@@ -4686,6 +4693,25 @@ a.github-fork {
 	.code-mirror-box-fullscreen {
 		.CodeMirror {
 			left: 0;
+		}
+	}
+
+	.container-bars {
+		.unread-bar {
+			.unread-count {
+				display: inline-block;
+			}
+			.unread-count-since {
+				display: none;
+			}
+			> a.jump-to {
+				.jump-to-small {
+					display: inline-block;
+				}
+				.jump-to-large {
+					display: none;
+				}
+			}
 		}
 	}
 }
