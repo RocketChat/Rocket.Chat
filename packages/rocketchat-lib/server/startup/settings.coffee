@@ -14,7 +14,7 @@ RocketChat.settings.addGroup 'Accounts', ->
 	@add 'Accounts_ShowFormLogin', true, { type: 'boolean', public: true }
 	@add 'Accounts_EmailOrUsernamePlaceholder', '', { type: 'string', public: true, i18nLabel: 'Placeholder_for_email_or_username_login_field' }
 	@add 'Accounts_PasswordPlaceholder', '', { type: 'string', public: true, i18nLabel: 'Placeholder_for_password_login_field' }
-	@add 'Accounts_AnonymousAccess', 'None', { type: 'select', values: [ { key: 'None', i18nLabel: 'Accounts_AnonymousAccess_None' }, { key: 'Read', i18nLabel: 'Accounts_AnonymousAccess_Read' }, { key: 'ReadWrite', i18nLabel: 'Accounts_AnonymousAccess_ReadWrite' } ] }
+	@add 'Accounts_AnonymousAccess', 'None', { type: 'select', values: [ { key: 'None', i18nLabel: 'Accounts_AnonymousAccess_None' }, { key: 'Read', i18nLabel: 'Accounts_AnonymousAccess_Read' }, { key: 'ReadWrite', i18nLabel: 'Accounts_AnonymousAccess_ReadWrite' } ], public: true }
 
 	@section 'Registration', ->
 		@add 'Accounts_EmailVerification', false, { type: 'boolean', public: true, enableQuery: {_id: 'SMTP_Host', value: { $exists: 1, $ne: "" } } }
