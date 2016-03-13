@@ -13,7 +13,16 @@ RocketChat.Migrations.add
 
 
 		integrations.forEach (integration) ->
-			script = integration.processIncomingRequestScript or integration.prepareOutgoingRequestScript or integration.processOutgoingResponseScript
+			script = ''
+			if integration.processIncomingRequestScript
+				script += integration.processIncomingRequestScript + '\n\n'
+
+			if integration.prepareOutgoingRequestScript
+				script += integration.prepareOutgoingRequestScript + '\n\n'
+
+			if integration.processOutgoingResponseScript
+				script += integration.processOutgoingResponseScript + '\n\n'
+
 			RocketChat.models.Integrations.update integration._id,
 				$set:
 					script: scriptAlert + script.replace(/^/gm, '// ')

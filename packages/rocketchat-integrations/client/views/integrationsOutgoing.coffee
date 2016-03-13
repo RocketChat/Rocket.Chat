@@ -127,6 +127,14 @@ Template.integrationsOutgoing.events
 
 				FlowRouter.go "admin-integrations"
 
+	"click .button-fullscreen": ->
+		$('.code-mirror-box').addClass('code-mirror-box-fullscreen');
+		$('.CodeMirror')[0].CodeMirror.refresh()
+
+	"click .button-restore": ->
+		$('.code-mirror-box').removeClass('code-mirror-box-fullscreen');
+		$('.CodeMirror')[0].CodeMirror.refresh()
+
 	"click .submit > .save": ->
 		name = $('[name=name]').val().trim()
 		alias = $('[name=alias]').val().trim()

@@ -4632,7 +4632,7 @@ a.github-fork {
 		border-width: 0px 1px 1px 1px;
 	}
 
-	.CodeMirror-wrap {
+	.CodeMirror {
 		border: 1px solid #ddd;
 	}
 
@@ -4656,9 +4656,10 @@ a.github-fork {
 
 		.title {
 			display: initial;
-			padding: 10px;
+			padding-left: 10px;
 			font-size: 16px;
 			background-color: #F7F7F7;
+			line-height: 30px;
 		}
 
 		.button-fullscreen {
@@ -4669,7 +4670,7 @@ a.github-fork {
 			display: initial;
 		}
 
-		.CodeMirror-wrap {
+		.CodeMirror {
 			flex-grow: 1;
 			display: flex;
 			flex-direction: column;
@@ -4683,7 +4684,7 @@ a.github-fork {
 
 @media all and(max-width: 780px) {
 	.code-mirror-box-fullscreen {
-		.CodeMirror-wrap {
+		.CodeMirror {
 			left: 0;
 		}
 	}
