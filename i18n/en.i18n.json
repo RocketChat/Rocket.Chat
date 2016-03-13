@@ -526,6 +526,7 @@
   "room_user_count" : "%s users",
   "Rooms" : "Rooms",
   "S_new_messages_since_s" : "%s new messages since %s",
+  "N_new_messages" : "%s new messages",
   "SAML" : "SAML",
   "SAML_Custom_Cert" : "Custom Certificate",
   "SAML_Custom_Entry_point" : "Custom Entry Point",
