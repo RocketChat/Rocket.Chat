@@ -1,6 +1,96 @@
 vm = Npm.require('vm')
 
+compiledScripts = {}
+
+getIntegrationScript = (integration) ->
+	compiledScript = compiledScripts[integration._id]
+	if compiledScript? and +compiledScript._updatedAt is +integration._updatedAt
+		return compiledScript.script
+
+	script = integration.scriptCompiled
+	vmScript = undefined
+	store = {}
+	sandbox =
+		_: _
+		s: s
+		console: console
+		Store:
+			set: (key, val) ->
+				return store[key] = val
+			get: (key) ->
+				return store[key]
+		HTTP: (method, url, options) ->
+			try
+				return {} =
+					result: HTTP.call method, url, options
+			catch e
+				return {} =
+					error: e
+
+	try
+		logger.outgoing.info 'will evaluate script'
+		logger.outgoing.debug script
+
+		vmScript = vm.createScript script, 'script.js'
+
+		vmScript.runInNewContext sandbox
+
+		if sandbox.Script?
+			compiledScripts[integration._id] =
+				script: new sandbox.Script()
+				_updatedAt: integration._updatedAt
+
+			return compiledScripts[integration._id].script
+	catch e
+		logger.outgoing.error "[Error evaluating Script:]"
+		logger.outgoing.error script.replace(/^/gm, '  ')
+		logger.outgoing.error "[Stack:]"
+		logger.outgoing.error e.stack.replace(/^/gm, '  ')
+		throw new Meteor.Error 'error-evaluating-script'
+
+	if not sandbox.Script?
+		logger.outgoing.error "[Class 'Script' not found]"
+		throw new Meteor.Error 'class-script-not-found'
+
+
 triggers = {}
+
+hasScriptAndMethod = (integration, method) ->
+	if integration.scriptEnabled isnt true or not integration.scriptCompiled? or integration.scriptCompiled.trim() is ''
+		return false
+
+	script = undefined
+	try
+		script = getIntegrationScript(integration)
+	catch e
+		return
+
+	return script[method]?
+
+executeScript = (integration, method, params) ->
+	script = undefined
+	try
+		script = getIntegrationScript(integration)
+	catch e
+		return
+
+	if not script[method]?
+		logger.outgoing.error "[Method '#{method}' not found]"
+		return
+
+	try
+		result = script[method](params)
+
+		logger.outgoing.debug 'result', result
+
+		return result
+	catch e
+		logger.incoming.error "[Error running Script:]"
+		logger.incoming.error integration.scriptCompiled.replace(/^/gm, '  ')
+		logger.incoming.error "[Stack:]"
+		logger.incoming.error e.stack.replace(/^/gm, '  ')
+		return
+
 
 RocketChat.models.Integrations.find({type: 'webhook-outgoing'}).observe
 	added: (record) ->
@@ -73,44 +163,43 @@ ExecuteTriggerUrl = (url, trigger, message, room, tries=0) ->
 		headers:
 			'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/41.0.2227.0 Safari/537.36'
 
-	if trigger.prepareOutgoingRequestScript? and trigger.prepareOutgoingRequestScript.trim() isnt ''
+	if hasScriptAndMethod(trigger, 'prepare_outgoing_request')
 		sandbox =
 			request: opts
 
-		script = undefined
-		vmScript = undefined
-		try
-			script = "result = (function() {\n"+trigger.prepareOutgoingRequestScript+"\n}());"
-			vmScript = vm.createScript script, 'script.js'
-			logger.outgoing.info 'will execute script prepareOutgoingRequestScript'
-			logger.outgoing.debug script
-			logger.outgoing.debug 'with context', sandbox
-		catch e
-			logger.outgoing.error "[Error evaluating Script:]"
-			logger.outgoing.error script.replace(/^/gm, '  ')
-			logger.outgoing.error "\n[Stack:]"
-			logger.outgoing.error e.stack.replace(/^/gm, '  ')
-			return
-
-		try
-			vmScript.runInNewContext sandbox
-			opts = sandbox.result
-			logger.outgoing.debug 'result', opts
-			if opts?.message?
-				return sendMessage opts.message
-		catch e
-			logger.outgoing.error "[Error running Script:]"
-			logger.outgoing.error script.replace(/^/gm, '  ')
-			logger.outgoing.error "\n[Stack:]"
-			logger.outgoing.error e.stack.replace(/^/gm, '  ')
-			return
+		opts = executeScript trigger, 'prepare_outgoing_request', sandbox
 
 	if not opts?
 		return
 
+	if opts.message?
+		sendMessage opts.message
+
+	if not opts.url? or not opts.method?
+		return
 
 	HTTP.call opts.method, opts.url, opts, (error, result) ->
-		if not result? or result.statusCode isnt 200
+		scriptResult = undefined
+		if hasScriptAndMethod(trigger, 'process_outgoing_response')
+			sandbox =
+				request: opts
+				response:
+					error: error
+					status_code: result.statusCode
+					content: result.data
+					content_raw: result.content
+					headers: result.headers
+
+			scriptResult = executeScript trigger, 'process_outgoing_response', sandbox
+
+			if scriptResult?.content
+				sendMessage scriptResult.content
+				return
+
+			if scriptResult is false
+				return
+
+		if not result? or result.statusCode not in [200, 201, 202]
 			if error?
 				logger.outgoing.error error
 			if result?
@@ -130,47 +219,11 @@ ExecuteTriggerUrl = (url, trigger, message, room, tries=0) ->
 				Meteor.setTimeout ->
 					ExecuteTriggerUrl url, trigger, message, room, tries+1
 				, Math.pow(10, tries+2)
+
 			return
 
 		# process outgoing webhook response as a new message
-		else if result?.statusCode is 200
-			if trigger.processOutgoingResponseScript? and trigger.processOutgoingResponseScript.trim() isnt ''
-				sandbox =
-					request: opts
-					response:
-						content: result.data
-						content_raw: result.content
-						headers: result.headers
-
-				script = undefined
-				vmScript = undefined
-				try
-					script = "result = (function() {\n"+trigger.processOutgoingResponseScript+"\n}());"
-					vmScript = vm.createScript script, 'script.js'
-					logger.outgoing.info 'will execute script processOutgoingResponseScript'
-					logger.outgoing.debug script
-					logger.outgoing.debug 'with context', sandbox
-				catch e
-					logger.outgoing.error "[Error evaluating Script:]"
-					logger.outgoing.error script.replace(/^/gm, '  ')
-					logger.outgoing.error "\n[Stack:]"
-					logger.outgoing.error e.stack.replace(/^/gm, '  ')
-					return
-
-				try
-					vmScript.runInNewContext sandbox
-					result = sandbox.result.content
-					if result?
-						result = data: result
-					logger.outgoing.debug 'result', result
-				catch e
-					logger.outgoing.error "[Error running Script:]"
-					logger.outgoing.error script.replace(/^/gm, '  ')
-					logger.outgoing.error "\n[Stack:]"
-					logger.outgoing.error e.stack.replace(/^/gm, '  ')
-					return
-
-
+		if result?.statusCode in [200, 201, 202]
 			if result?.data?.text? or result?.data?.attachments?
 				sendMessage result.data
 

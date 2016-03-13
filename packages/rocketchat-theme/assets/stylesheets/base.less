@@ -4591,3 +4591,100 @@ a.github-fork {
 		}
 	}
 }
+
+.code-error-box {
+	.title {
+		background: red;
+		color: white;
+		padding: 5px;
+		font-size: 16px;
+		font-weight: bold;
+		margin-top: 5px;
+	}
+
+	pre {
+		font-size: 12px;
+		font-weight: bold;
+		padding: 6px;
+		background: rgb(255, 243, 243);
+		color: red;
+		border-left: 3px solid red;
+	}
+}
+
+.code-mirror-box {
+	.title {
+		display: none;
+	}
+
+	.button-fullscreen {
+		display: initial;
+	}
+
+	.button-restore {
+		display: none;
+	}
+
+	.buttons {
+		text-align: right;
+		background-color: #F7F7F7;
+		border: 1px solid #ddd;
+		border-width: 0px 1px 1px 1px;
+	}
+
+	.CodeMirror-wrap {
+		border: 1px solid #ddd;
+	}
+
+	&.code-mirror-box-fullscreen {
+		height: auto;
+		position: fixed;
+		top: 61px;
+		bottom: 0;
+		z-index: 100;
+		width: auto;
+		right: 40px;
+		left: 260px;
+		display: flex;
+		flex-direction: column;
+		align-items: stretch;
+		background-color: white;
+
+		.buttons {
+			border: none;
+		}
+
+		.title {
+			display: initial;
+			padding: 10px;
+			font-size: 16px;
+			background-color: #F7F7F7;
+		}
+
+		.button-fullscreen {
+			display: none;
+		}
+
+		.button-restore {
+			display: initial;
+		}
+
+		.CodeMirror-wrap {
+			flex-grow: 1;
+			display: flex;
+			flex-direction: column;
+
+			.CodeMirror-scroll {
+				flex-grow: 1;
+			}
+		}
+	}
+}
+
+@media all and(max-width: 780px) {
+	.code-mirror-box-fullscreen {
+		.CodeMirror-wrap {
+			left: 0;
+		}
+	}
+}

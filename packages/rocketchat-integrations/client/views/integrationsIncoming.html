@@ -56,9 +56,37 @@
 							</div>
 						</div>
 						<div class="input-line double-col">
-							<label>{{_ "Process_Incoming_Request"}} ({{_ "optional"}})</label>
+							<label>{{_ "Script_Enabled"}}</label>
 							<div>
-								<textarea rows="4" style="height: auto" name="processIncomingRequestScript" value="{{data.processIncomingRequestScript}}"></textarea>
+								<label><input type="radio" name="scriptEnabled" value="1" checked="{{$eq data.scriptEnabled true}}" /> {{_ "True"}}</label>
+								<label><input type="radio" name="scriptEnabled" value="0" checked="{{$neq data.scriptEnabled true}}" /> {{_ "False"}}</label>
+							</div>
+						</div>
+						<div class="input-line double-col">
+							<label>{{_ "Script"}}</label>
+							<div>
+								<div class="code-mirror-box">
+									<div class="title">
+										{{_ "Script"}}
+									</div>
+									{{> CodeMirror name="script" options=editorOptions code=data.script }}
+									<div class="buttons">
+										<button class="button button-primary button-fullscreen">
+											Full Screen
+										</button>
+										<button class="button button-primary button-restore">
+											Exit Full Screen
+										</button>
+									</div>
+								</div>
+								{{#if data.scriptError}}
+									<div class="code-error-box">
+										<div class="title">
+											{{data.scriptError.name}}
+										</div>
+										<pre>{{data.scriptError.codeFrame}}</pre>
+									</div>
+								{{/if}}
 							</div>
 						</div>
 						{{#if data.token}}
