@@ -17,7 +17,7 @@ RocketChat.OTR.Room = class {
 	handshake(refresh) {
 		this.establishing.set(true);
 		this.firstPeer = true;
-		this.generateKeyPair(false).then(() => {
+		this.generateKeyPair().then(() => {
 			RocketChat.Notifications.notifyUser(this.peerId, 'otr', 'handshake', { roomId: this.roomId, userId: this.userId, publicKey: this.bytesToHexString(this.exportedPublicKey), refresh: refresh });
 		});
 	}
@@ -73,7 +73,7 @@ RocketChat.OTR.Room = class {
 		return arrayBuffer;
 	}
 
-	generateKeyPair(refreshKeys) {
+	generateKeyPair() {
 		// Generate an ephemeral key pair.
 		return window.crypto.subtle.generateKey({
 			name: 'ECDH',
@@ -117,16 +117,8 @@ RocketChat.OTR.Room = class {
 	}
 
 	encrypt(message) {
-		// var clearText = new Uint8Array(message);
-		var clearText = new TextEncoder("UTF-8").encode(message);
-		var userId = new TextEncoder("UTF-8").encode(this.userId);
 		this.serial++;
-		var data = new Uint8Array(1 + 1 + userId.length + clearText.length);
-		data[0] = this.serial;
-		data[1] = userId.length;
-		data.set(userId, 2);
-		data.set(clearText, 2 + userId.length);
-
+		var data = new TextEncoder("UTF-8").encode(EJSON.stringify({serial: this.serial, msg: message, userId: this.userId, padding: Random.id(Random.fraction()*20) }))
 		var iv = crypto.getRandomValues(new Uint8Array(12));
 
 		return crypto.subtle.encrypt({
@@ -153,32 +145,24 @@ RocketChat.OTR.Room = class {
 			name: 'AES-GCM',
 			iv: iv
 		}, this.sessionKey, cipherText).then((data) => {
-			data = new Uint8Array(data);
-
-			var serial = data[0];
-			var userId = data.slice(2, 2 + data[1]);
-			var clearText = data.slice(2 + data[1]);
-
-			// To copy over and make sure we do not have a shallow slice with simply non-zero byteOffset.
-			userId = new TextDecoder("UTF-8").decode(new Uint8Array(userId));
-			clearText = new TextDecoder("UTF-8").decode(new Uint8Array(clearText));
+			data = EJSON.parse(new TextDecoder("UTF-8").decode(new Uint8Array(data)));
 
 			// This prevents any replay attacks. Or attacks where messages are changed in order.
 			// If message is from the same userId as me, serials must be equal
-			if (userId === this.userId && serial !== this.serial) {
+			if (data.userId === this.userId && data.serial !== this.serial) {
 				throw new Error("Invalid serial.");
-			} else if (userId !== this.userId) {
+			} else if (data.userId !== this.userId) {
 				// If serial difference is larger than one, message is out of order
-				var checkSerial = serial - this.peerSerial;
-				if (checkSerial !== 1 && checkSerial !== -255) {
+				var checkSerial = data.serial - this.peerSerial;
+				if (checkSerial !== 1) {
 					throw new Error("Invalid serial.");
 				}
 
 				// update serial number to the last received serial
-				this.peerSerial = serial;
+				this.peerSerial = data.serial;
 			}
 
-			return clearText;
+			return data.msg;
 		})
 		.catch((e) => {
 			console.log(e);
@@ -195,7 +179,7 @@ RocketChat.OTR.Room = class {
 				establishConnection = () => {
 					this.establishing.set(true);
 					Meteor.clearTimeout(timeout);
-					this.generateKeyPair(false).then(() => {
+					this.generateKeyPair().then(() => {
 						this.importPublicKey(data.publicKey).then(() => {
 							this.firstPeer = false;
 							FlowRouter.goToRoomById(data.roomId);
