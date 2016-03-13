@@ -1,17 +1,35 @@
 .flex-tab {
 	.channel-settings {
-		margin-top: 60px;
-		padding: 20px;
+		ul {
+			li {
+				margin-bottom: 20px;
+			}
+		}
 
 		form {
 			label {
+				display: block;
+				font-weight: bold;
+				margin-bottom: 5px;
+			}
 
+			div span {
+				font-size: 14px;
+				i.octicon {
+					font-size: 12px;
+					vertical-align: middle;
+					margin-left: 3px;
+				}
 			}
 		}
 
 		.submit {
 			margin-top: 30px;
 			text-align: center;
+		}
+
+		[data-edit] {
+			cursor: pointer;
 		}
 	}
 }

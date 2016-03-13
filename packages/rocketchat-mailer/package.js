@@ -11,18 +11,19 @@ Package.onUse(function(api) {
 		'coffeescript',
 		'ddp-rate-limiter',
 		'kadira:flow-router',
-		'rocketchat:lib@0.0.1',
+		'rocketchat:lib',
 		'rocketchat:authorization@0.0.1'
 	]);
 
-	api.addFiles('lib/RocketMailer.coffee');
+	api.addFiles('lib/Mailer.coffee');
 
 	api.addFiles([
 		'client/startup.coffee',
 		'client/router.coffee',
-		'client/views/rocketMailer.html',
-		'client/views/rocketMailer.coffee',
-		'client/views/rocketMailerUnsubscribe.html'
+		'client/views/mailer.html',
+		'client/views/mailer.coffee',
+		'client/views/mailerUnsubscribe.html',
+		'client/views/mailerUnsubscribe.coffee'
 	], 'client');
 
 	api.addFiles([
@@ -43,9 +44,8 @@ Package.onUse(function(api) {
 			return 'i18n/' + filename;
 		}
 	}));
-	api.use('tap:i18n@1.6.1', ['client', 'server']);
-	api.imply('tap:i18n');
-	api.addFiles(tapi18nFiles, ['client', 'server']);
+	api.use('tap:i18n');
+	api.addFiles(tapi18nFiles);
 
-	api.export('RocketMailer');
+	api.export('Mailer');
 });

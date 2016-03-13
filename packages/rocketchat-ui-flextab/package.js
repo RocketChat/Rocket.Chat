@@ -22,6 +22,9 @@ Package.onUse(function(api) {
 		'rocketchat:lib'
 	]);
 
+	api.use('rocketchat:ui');
+	api.use('tap:i18n');
+
 	api.addFiles('flex-tab/flexTabBar.html', 'client');
 	api.addFiles('flex-tab/tabs/membersList.html', 'client');
 	api.addFiles('flex-tab/tabs/messageSearch.html', 'client');

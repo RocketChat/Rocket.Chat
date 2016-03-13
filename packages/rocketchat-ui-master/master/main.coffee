@@ -1,4 +1,6 @@
 Template.body.onRendered ->
+	new Clipboard('.clipboard')
+
 	$(document.body).on 'keydown', (e) ->
 		if e.keyCode is 80 and (e.ctrlKey is true or e.metaKey is true)
 			e.preventDefault()
@@ -31,7 +33,7 @@ Template.body.onRendered ->
 		d = document
 		s = 'script'
 		l = 'dataLayer'
-		i = RocketChat.settings.get 'API_Analytics'
+		i = RocketChat.settings.get 'GoogleTagManager_id'
 		if Match.test(i, String) and i.trim() isnt ''
 			c.stop()
 			do (w,d,s,l,i) ->
@@ -152,6 +154,9 @@ Template.main.helpers
 		console.log 'layout.helpers flexOpenedRTC2' if window.rocketDebug
 		return 'layout2' if (Session.get('rtcLayoutmode') > 1)
 
+	requirePasswordChange: ->
+		return Meteor.user()?.requirePasswordChange is true
+
 
 Template.main.events
 
@@ -225,3 +230,7 @@ Template.main.onRendered ->
 	# RTL Support - Need config option on the UI
 	if isRtl localStorage.getItem "userLanguage"
 		$('html').addClass "rtl"
+	else
+		$('html').removeClass "rtl"
+
+	$('.page-loading').remove()

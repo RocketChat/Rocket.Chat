@@ -1,3 +1,5 @@
+BlazeLayout.setRoot('body');
+
 FlowRouter.route '/livechat',
 	name: 'index'
 
@@ -7,4 +9,4 @@ FlowRouter.route '/livechat',
 	]
 
 	action: ->
-		BlazeLayout.render 'main', {center: 'room'}
+		BlazeLayout.render 'main', {center: 'livechatWindow'}

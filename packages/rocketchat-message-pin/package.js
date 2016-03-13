@@ -9,13 +9,16 @@ Package.onUse(function(api) {
 
 	api.use([
 		'coffeescript',
+		'underscore',
 		'less@2.5.0',
-		'rocketchat:lib@0.0.1'
+		'rocketchat:lib'
 	]);
 
 	api.addFiles([
 		'client/lib/PinnedMessage.coffee',
 		'client/actionButton.coffee',
+		'client/messageType.js',
+		'client/pinMessage.coffee',
 		'client/tabBar.coffee',
 		'client/views/pinnedMessages.html',
 		'client/views/pinnedMessages.coffee',
@@ -38,9 +41,8 @@ Package.onUse(function(api) {
 			return 'i18n/' + filename;
 		}
 	}));
-	api.use(["tap:i18n@1.5.1"], ["client", "server"]);
-	api.imply('tap:i18n');
-	api.addFiles(tapi18nFiles, ["client", "server"]);
+	api.use('tap:i18n');
+	api.addFiles(tapi18nFiles);
 });
 
 Package.onTest(function(api) {

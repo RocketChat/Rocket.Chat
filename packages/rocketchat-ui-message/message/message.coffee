@@ -1,12 +1,20 @@
 Template.message.helpers
-	actions: ->
-		return RocketChat.MessageAction.getButtons(this)
+	isBot: ->
+		return 'bot' if this.bot?
+	isGroupable: ->
+		return 'false' if this.groupable is false
+	isSequential: ->
+		return 'sequential' if this.groupable isnt false
+	getEmoji: (emoji) ->
+		return emojione.toImage emoji
 	own: ->
 		return 'own' if this.u?._id is Meteor.userId()
+	timestamp: ->
+		return +this.ts
 	chatops: ->
 		return 'chatops-message' if this.u?.username is RocketChat.settings.get('Chatops_Username')
 	time: ->
-		return moment(this.ts).format('HH:mm')
+		return moment(this.ts).format('LT')
 	date: ->
 		return moment(this.ts).format('LL')
 	isTemp: ->
@@ -24,15 +32,13 @@ Template.message.helpers
 
 	editTime: ->
 		if Template.instance().wasEdited
-			return moment(@editedAt).format('LL hh:mma') #TODO profile pref for 12hr/24hr clock?
+			return moment(@editedAt).format('LL LT') #TODO profile pref for 12hr/24hr clock?
 	editedBy: ->
 		return "" unless Template.instance().wasEdited
 		# try to return the username of the editor,
 		# otherwise a special "?" character that will be
 		# rendered as a special avatar
 		return @editedBy?.username or "?"
-	pinned: ->
-		return this.pinned
 	canEdit: ->
 		hasPermission = RocketChat.authz.hasAtLeastOnePermission('edit-message', this.rid)
 		isEditAllowed = RocketChat.settings.get 'Message_AllowEditing'
@@ -53,10 +59,6 @@ Template.message.helpers
 			return true
 
 		return RocketChat.settings.get('Message_AllowDeleting') and this.u?._id is Meteor.userId()
-	canPin: ->
-		return RocketChat.settings.get 'Message_AllowPinning'
-	canStar: ->
-		return RocketChat.settings.get 'Message_AllowStarring'
 	showEditedStatus: ->
 		return RocketChat.settings.get 'Message_ShowEditedStatus'
 	label: ->
@@ -80,7 +82,7 @@ Template.message.onCreated ->
 	@body = do ->
 		messageType = RocketChat.MessageTypes.getType(msg)
 		if messageType?.render?
-			return messageType.render(message)
+			return messageType.render(msg)
 		else if messageType?.template?
 			# render template
 		else if messageType?.message?
@@ -100,6 +102,11 @@ Template.message.onCreated ->
 				msg.html = _.escapeHTML msg.html
 
 			message = RocketChat.callbacks.run 'renderMessage', msg
+			if message.tokens?.length > 0
+				for token in message.tokens
+					token.text = token.text.replace(/([^\$])(\$[^\$])/gm, '$1$$$2')
+					message.html = message.html.replace token.token, token.text
+
 			# console.log JSON.stringify message
 			msg.html = message.html.replace /\n/gm, '<br/>'
 			return msg.html
@@ -107,27 +114,53 @@ Template.message.onCreated ->
 Template.message.onViewRendered = (context) ->
 	view = this
 	this._domrange.onAttached (domRange) ->
-		lastNode = domRange.lastNode()
-		if lastNode.previousElementSibling?.dataset?.date isnt lastNode.dataset.date
-			$(lastNode).addClass('new-day')
-			$(lastNode).removeClass('sequential')
-		else if lastNode.previousElementSibling?.dataset?.username isnt lastNode.dataset.username
-			$(lastNode).removeClass('sequential')
+		currentNode = domRange.lastNode()
+		currentDataset = currentNode.dataset
+		previousNode = currentNode.previousElementSibling
+		nextNode = currentNode.nextElementSibling
+		$currentNode = $(currentNode)
+		$previousNode = $(previousNode)
+		$nextNode = $(nextNode)
 
-		if lastNode.nextElementSibling?.dataset?.date is lastNode.dataset.date
-			$(lastNode.nextElementSibling).removeClass('new-day')
-			$(lastNode.nextElementSibling).addClass('sequential')
-		else
-			$(lastNode.nextElementSibling).addClass('new-day')
-			$(lastNode.nextElementSibling).removeClass('sequential')
+		unless previousNode?
+			$currentNode.addClass('new-day').removeClass('sequential')
 
-		if lastNode.nextElementSibling?.dataset?.username isnt lastNode.dataset.username
-			$(lastNode.nextElementSibling).removeClass('sequential')
+		else if previousNode?.dataset?
+			previousDataset = previousNode.dataset
 
-		if not lastNode.nextElementSibling?
-			if lastNode.classList.contains('own') is true
-				view.parentView.parentView.parentView.parentView.parentView.templateInstance?().atBottom = true
+			if previousDataset.date isnt currentDataset.date
+				$currentNode.addClass('new-day').removeClass('sequential')
 			else
-				if view.parentView.parentView.parentView.parentView.parentView.templateInstance?().atBottom isnt true
-					newMessage = view.parentView.parentView.parentView.parentView.parentView.templateInstance?()?.find(".new-message")
+				$currentNode.removeClass('new-day')
+
+			if previousDataset.groupable is 'false' or currentDataset.groupable is 'false'
+				$currentNode.removeClass('sequential')
+			else
+				if previousDataset.username isnt currentDataset.username or parseInt(currentDataset.timestamp) - parseInt(previousDataset.timestamp) > RocketChat.settings.get('Message_GroupingPeriod') * 1000
+					$currentNode.removeClass('sequential')
+				else if not $currentNode.hasClass 'new-day'
+					$currentNode.addClass('sequential')
+
+		if nextNode?.dataset?
+			nextDataset = nextNode.dataset
+
+			if nextDataset.date isnt currentDataset.date
+				$nextNode.addClass('new-day').removeClass('sequential')
+			else
+				$nextNode.removeClass('new-day')
+
+			if nextDataset.groupable isnt 'false'
+				if nextDataset.username isnt currentDataset.username or parseInt(nextDataset.timestamp) - parseInt(currentDataset.timestamp) > RocketChat.settings.get('Message_GroupingPeriod') * 1000
+					$nextNode.removeClass('sequential')
+				else if not $nextNode.hasClass 'new-day'
+					$nextNode.addClass('sequential')
+
+		if not nextNode?
+			templateInstance = view.parentView.parentView.parentView.parentView.parentView.templateInstance?()
+
+			if currentNode.classList.contains('own') is true
+				templateInstance?.atBottom = true
+			else
+				if templateInstance?.atBottom isnt true
+					newMessage = templateInstance?.find(".new-message")
 					newMessage?.className = "new-message"

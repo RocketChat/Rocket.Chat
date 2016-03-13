@@ -1,11 +1,9 @@
-window.rolee = Roles
-
 Template.permissionsRole.helpers
 	role: ->
-		return Meteor.roles.findOne({ name: FlowRouter.getParam('name') }) or {}
+		return RocketChat.models.Roles.findOne({ _id: FlowRouter.getParam('name') }) or {}
 
 	userInRole: ->
-		return Roles.getUsersInRole(FlowRouter.getParam('name'))
+		return Template.instance().usersInRole
 
 	editing: ->
 		return FlowRouter.getParam('name')?
@@ -15,7 +13,13 @@ Template.permissionsRole.helpers
 			return @emails[0].address
 
 	hasPermission: ->
-		return RocketChat.authz.hasAllPermission 'access-rocket-permissions'
+		return RocketChat.authz.hasAllPermission 'access-permissions'
+
+	canDelete: ->
+		return @_id? and not @protected
+
+	hasUsers: ->
+		return Template.instance().usersInRole.count() > 0
 
 Template.permissionsRole.events
 
@@ -65,7 +69,7 @@ Template.permissionsRole.events
 			toastr.success t('Saved')
 
 			if not @_id?
-				FlowRouter.go 'rocket-permissions-edit', { name: roleData.name }
+				FlowRouter.go 'admin-permissions-edit', { name: roleData.name }
 
 
 	'submit #form-users': (e, instance) ->
@@ -90,7 +94,7 @@ Template.permissionsRole.events
 		e.preventDefault()
 
 		if @protected
-			return toastr.error t('Cannot_delete_an_protected_role')
+			return toastr.error t('Cannot_delete_a_protected_role')
 
 		Meteor.call 'authorization:deleteRole', @_id, (error, result) ->
 			if error
@@ -98,16 +102,10 @@ Template.permissionsRole.events
 
 			toastr.success t('Role_removed')
 
-			FlowRouter.go 'rocket-permissions'
+			FlowRouter.go 'admin-permissions'
 
 Template.permissionsRole.onCreated ->
-	# @roles = []
-	# @permissions = []
-	# @permissionByRole = {}
-
-	console.log Roles
-
 	@subscribe 'roles', FlowRouter.getParam('name')
 	@subscribe 'usersInRole', FlowRouter.getParam('name')
 
-	# ChatPermissions
+	@usersInRole = RocketChat.models.Roles.findUsersInRole(FlowRouter.getParam('name'), null, { sort: { username: 1 } })

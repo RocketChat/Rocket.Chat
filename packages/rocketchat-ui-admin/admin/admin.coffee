@@ -1,12 +1,42 @@
+@TempSettings = new Meteor.Collection null
+@Settings.find().observe
+	added: (data) ->
+		TempSettings.insert data
+	changed: (data) ->
+		TempSettings.update data._id, data
+	removed: (data) ->
+		TempSettings.remove data._id
+
+
 Template.admin.helpers
+	languages: ->
+		languages = TAPi18n.getLanguages()
+		result = []
+		for key, language of languages
+			result.push _.extend(language, { key: key })
+		result = _.sortBy(result, 'key')
+		result.unshift {
+			"name": "Default",
+			"en": "Default",
+			"key": ""
+		}
+		return result;
+
+	appLanguage: (key) ->
+		if !key
+			return !RocketChat.settings.get('Language')
+		selected = (RocketChat.settings.get('Language'))?.split('-').shift().toLowerCase() is key
+		return selected
+
 	group: ->
 		group = FlowRouter.getParam('group')
-		group ?= Settings.findOne({ type: 'group' })?._id
-		return Settings.findOne { _id: group, type: 'group' }
+		group ?= TempSettings.findOne({ type: 'group' })?._id
+		return TempSettings.findOne { _id: group, type: 'group' }
 	sections: ->
 		group = FlowRouter.getParam('group')
-		group ?= Settings.findOne({ type: 'group' })?._id
-		settings = Settings.find({ group: group }, {sort: {section: 1, i18nLabel: 1}}).fetch()
+		group ?= TempSettings.findOne({ type: 'group' })?._id
+		settings = TempSettings.find({ group: group }, {sort: {section: 1, sorter: 1, i18nLabel: 1}}).fetch()
+
 		sections = {}
 		for setting in settings
 			sections[setting.section or ''] ?= []
@@ -20,6 +50,52 @@ Template.admin.helpers
 
 		return sectionsArray
 
+	isDisabled: ->
+		if @blocked
+			return { disabled: 'disabled' }
+
+		if not @enableQuery?
+			return {}
+
+		if _.isString(@enableQuery)
+			enableQuery = JSON.parse(@enableQuery)
+		else
+			enableQuery = @enableQuery
+
+		if not _.isArray(enableQuery)
+			enableQuery = [enableQuery]
+
+		found = 0
+		for item in enableQuery
+			if TempSettings.findOne(item)?
+				found++
+
+		return if found is enableQuery.length then {} else {disabled: 'disabled'}
+
+	hasChanges: (section) ->
+		group = FlowRouter.getParam('group')
+
+		query =
+			group: group
+			changed: true
+
+		if section?
+			if section is ''
+				query.$or = [
+					{section: ''}
+					{section: {$exists: false}}
+				]
+			else
+				query.section = section
+
+		return TempSettings.find(query).count() > 0
+
+	translateSection: (section) ->
+		if section.indexOf(':') > -1
+			return section
+
+		return t(section)
+
 	flexOpened: ->
 		return 'opened' if RocketChat.TabBar.isFlexOpen()
 	arrowPosition: ->
@@ -32,7 +108,7 @@ Template.admin.helpers
 		description = TAPi18n.__ @i18nDescription if @i18nDescription
 		if description? and description isnt @i18nDescription
 			return description
-	sectionIsCustomOath: (section) ->
+	sectionIsCustomOAuth: (section) ->
 		return /^Custom OAuth:\s.+/.test section
 	callbackURL: (section) ->
 		id = s.strRight(section, 'Custom OAuth: ').toLowerCase()
@@ -40,29 +116,43 @@ Template.admin.helpers
 	selectedOption: (_id, val) ->
 		return RocketChat.settings.get(_id) is val
 
+	random: ->
+		return Random.id()
+
 Template.admin.events
+	"change .input-monitor": (e, t) ->
+		value = _.trim $(e.target).val()
+
+		switch @type
+			when 'int'
+				value = parseInt(value)
+			when 'boolean'
+				value = value is "1"
+
+		TempSettings.update {_id: @_id},
+			$set:
+				value: value
+				changed: Settings.findOne(@_id).value isnt value
+
 	"click .submit .save": (e, t) ->
 		group = FlowRouter.getParam('group')
-		settings = Settings.find({ group: group }).fetch()
-		updateSettings = []
-		for setting in settings
-			value = null
-			if setting.type is 'string'
-				value = _.trim(t.$("[name=#{setting._id}]").val())
-			else if setting.type is 'int'
-				value = parseInt(_.trim(t.$("[name=#{setting._id}]").val()))
-			else if setting.type is 'boolean' and t.$("[name=#{setting._id}]:checked").length
-				value = if t.$("[name=#{setting._id}]:checked").val() is "1" then true else false
-			else if setting.type is 'color'
-				value = _.trim(t.$("[name=#{setting._id}]").val())
-			else if setting.type is 'select'
-				value = t.$("[name=#{setting._id}]").val()
 
-			if value?
-				updateSettings.push { _id: setting._id, value: value }
+		query =
+			group: group
+			changed: true
 
-		if not _.isEmpty updateSettings
-			RocketChat.settings.batchSet updateSettings, (err, success) ->
+		if @section is ''
+			query.$or = [
+				{section: ''}
+				{section: {$exists: false}}
+			]
+		else
+			query.section = @section
+
+		settings = TempSettings.find(query, {fields: {_id: 1, value: 1}}).fetch()
+
+		if not _.isEmpty settings
+			RocketChat.settings.batchSet settings, (err, success) ->
 				return toastr.error TAPi18n.__ 'Error_updating_settings' if err
 				toastr.success TAPi18n.__ 'Settings_updated'
 
@@ -100,6 +190,54 @@ Template.admin.events
 		swal config, ->
 			Meteor.call 'removeOAuthService', name
 
+	"click .delete-asset": ->
+		Meteor.call 'unsetAsset', @asset
+
+	"change input[type=file]": ->
+		e = event.originalEvent or event
+		files = e.target.files
+		if not files or files.length is 0
+			files = e.dataTransfer?.files or []
+
+		for blob in files
+			toastr.info TAPi18n.__ 'Uploading_file'
+
+			# if @fileConstraints.contentType isnt blob.type
+			# 	toastr.error blob.type, TAPi18n.__ 'Invalid_file_type'
+			# 	return
+
+			reader = new FileReader()
+			reader.readAsBinaryString(blob)
+			reader.onloadend = =>
+				Meteor.call 'setAsset', reader.result, blob.type, @asset, (err, data) ->
+					if err?
+						toastr.error err.reason, TAPi18n.__ err.error
+						console.log err
+						return
+
+					toastr.success TAPi18n.__ 'File_uploaded'
+
+	"click .expand": (e) ->
+		$(e.currentTarget).closest('.section').removeClass('section-collapsed')
+		$(e.currentTarget).closest('button').removeClass('expand').addClass('collapse').find('span').text(TAPi18n.__ "Collapse")
+
+	"click .collapse": (e) ->
+		$(e.currentTarget).closest('.section').addClass('section-collapsed')
+		$(e.currentTarget).closest('button').addClass('expand').removeClass('collapse').find('span').text(TAPi18n.__ "Expand")
+
+	"click button.action": (e) ->
+		if @type isnt 'action'
+			return
+
+		Meteor.call @value, (err, data) ->
+			if err?
+				toastr.error TAPi18n.__(err.error), TAPi18n.__('Error')
+				return
+
+			args = [data.message].concat data.params
+
+			toastr.success TAPi18n.__.apply(TAPi18n, args), TAPi18n.__('Success')
+
 
 Template.admin.onRendered ->
 	Tracker.afterFlush ->
@@ -108,10 +246,10 @@ Template.admin.onRendered ->
 
 	Meteor.setTimeout ->
 		$('input.minicolors').minicolors({theme: 'rocketchat'})
-	, 500
+	, 1000
 
 	Tracker.autorun ->
 		FlowRouter.watchPathChange()
 		Meteor.setTimeout ->
 			$('input.minicolors').minicolors({theme: 'rocketchat'})
-		, 200
+		, 400

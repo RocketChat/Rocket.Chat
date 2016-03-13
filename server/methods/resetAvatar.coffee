@@ -6,8 +6,6 @@ Meteor.methods
 		unless RocketChat.settings.get("Accounts_AllowUserAvatarChange")
 			throw new Meteor.Error(403, "[methods] resetAvatar -> Invalid access")
 
-		console.log '[methods] resetAvatar -> '.green, 'userId:', Meteor.userId(), 'arguments:', arguments
-
 		user = Meteor.user()
 
 		RocketChatFileAvatarInstance.deleteFile "#{user.username}.jpg"

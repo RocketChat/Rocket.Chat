@@ -4,7 +4,7 @@
 			You must login to Sandstorm (on the top right) in order to access this chat.
 		</div>
 	{{else}}
-	<form id="login-card" method='/'>
+	<form id="login-card" method='/' novalidate>
 		{{#if waitActivation}}
 			<header>
 				<h2>{{{_ "Registration_Succeeded"}}}</h2>
@@ -18,36 +18,42 @@
 					{{_ "You_need_confirm_email"}}
 				</div>
 			{{/if}}
-			<div class="fields">
-				<div class='input-text active {{showName}}'>
-					<input type="text" name='name' placeholder='{{namePlaceholder}}' dir="auto" />
+			{{#if showFormLogin}}
+				<div class="fields">
+					<div class='input-text active {{showName}}'>
+						<input type="text" name='name' placeholder='{{namePlaceholder}}' dir="auto" />
+					</div>
+					<div class='input-text active {{showEmailOrUsername}}'>
+						<input type="text" name='emailOrUsername' placeholder='{{emailOrUsernamePlaceholder}}' autocapitalize="off" autocorrect="off" />
+					</div>
+					<div class='input-text active {{showEmail}}'>
+						<input type="email" name='email' placeholder='{{_ "Email"}}' />
+					</div>
+					<div class='input-text active {{showPassword}}'>
+						<input type="password" name='pass' placeholder='{{passwordPlaceholder}}' />
+					</div>
+					<div class='input-text active {{showConfirmPassword}}'>
+						<input type="password" name='confirm-pass' placeholder='{{_ "Confirm_password"}}' />
+					</div>
 				</div>
-				<div class='input-text active {{showEmailOrUsername}}'>
-					<input type="text" name='emailOrUsername' placeholder='{{_ "Email_or_username"}}' autocapitalize="off" autocorrect="off" />
+				<div class="submit">
+					<button data-loading-text="{{_ "Please_wait"}}..." class='button primary login'><span>{{btnLoginSave}}</span></button>
 				</div>
-				<div class='input-text active {{showEmail}}'>
-					<input type="email" name='email' placeholder='{{_ "Email"}}' />
+				{{#if registrationAllowed}}
+				<div class="register {{showRegisterLink}}">
+					<a href="">{{_ 'Register'}}</a>
 				</div>
-				<div class='input-text active {{showPassword}}'>
-					<input type="password" name='pass' placeholder='{{_ "Password"}}' />
+				{{else}}
+					{{#if linkReplacementText}}
+						{{{linkReplacementText}}}
+					{{/if}}
+				{{/if}}
+				{{#if passwordresetAllowed}}
+				<div class="forgot-password {{showForgotPasswordLink}}">
+					<a href="">{{_ 'Forgot_password'}}</a>
 				</div>
-				<div class='input-text active {{showConfirmPassword}}'>
-					<input type="password" name='confirm-pass' placeholder='{{_ "Confirm_password"}}' />
-				</div>
-			</div>
-			<div class="submit">
-				<button data-loading-text="{{_ "Please_wait"}}..." class='button primary login'><span>{{btnLoginSave}}</span></button>
-			</div>
-			{{#if registrationAllowed}}
-			<div class="register {{showRegisterLink}}">
-				<a href="">{{_ 'Register'}}</a>
-			</div>
-			{{else}}{{#if linkReplacementText}}
-				{{{linkReplacementText}}}
-			{{/if}}{{/if}}
-			<div class="forgot-password {{showForgotPasswordLink}}">
-				<a href="">{{_ 'Forgot_password'}}</a>
-			</div>
+				{{/if}}
+			{{/if}}
 		{{/if}}
 		<div class="back-to-login {{showBackToLoginLink}}">
 			<a href="">{{_ 'Back_to_login'}}</a>
@@ -55,6 +61,10 @@
 	</form>
 	<div class='login-terms'>
 		{{{loginTerms}}}
+
+		<div class="powered-by">
+			Powered by <a href="https://rocket.chat">Open Source Chat Platform Rocket.Chat</a>.
+		</div>
 	</div>
 	{{/if}}
 </template>

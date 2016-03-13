@@ -31,7 +31,7 @@ getUrlContent = (urlObj, redirectCount = 5, callback) ->
 		parsedUrl: parsedUrl
 
 	request = httpOrHttps.request opts, Meteor.bindEnvironment (response) ->
-		if response.statusCode is 301 and response.headers.location?
+		if response.statusCode in [301,302,307] and response.headers.location?
 			request.abort()
 			console.log response.headers.location
 
@@ -103,7 +103,7 @@ OEmbed.getUrlMeta = (url, withFragment) ->
 
 	if content?.body?
 		metas = {}
-		content.body.replace /<title>(.+)<\/title>/gmi, (meta, title) ->
+		content.body.replace /<title>((.|\n)+?)<\/title>/gmi, (meta, title) ->
 			metas.pageTitle = title
 
 		content.body.replace /<meta[^>]*(?:name|property)=[']([^']*)['][^>]*content=[']([^']*)['][^>]*>/gmi, (meta, name, value) ->
@@ -196,5 +196,8 @@ OEmbed.RocketUrlParser = (message) ->
 
 	return message
 
-if RocketChat.settings.get 'API_Embed'
-	RocketChat.callbacks.add 'afterSaveMessage', OEmbed.RocketUrlParser, RocketChat.callbacks.priority.LOW
+RocketChat.settings.get 'API_Embed', (key, value) ->
+	if value
+		RocketChat.callbacks.add 'afterSaveMessage', OEmbed.RocketUrlParser, RocketChat.callbacks.priority.LOW, 'API_Embed'
+	else
+		RocketChat.callbacks.remove 'afterSaveMessage', 'API_Embed'

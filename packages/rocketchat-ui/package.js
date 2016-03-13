@@ -14,6 +14,7 @@ Package.onUse(function(api) {
 	api.versionsFrom('1.2.1');
 
 	api.use([
+		'accounts-base',
 		'mongo',
 		'session',
 		'jquery',
@@ -23,7 +24,7 @@ Package.onUse(function(api) {
 		'templating',
 		'coffeescript',
 		'underscore',
-		'rocketchat:lib@0.0.1',
+		'rocketchat:lib',
 		'raix:push',
 		'raix:ui-dropped-event'
 	]);
@@ -31,6 +32,7 @@ Package.onUse(function(api) {
 	api.use('kadira:flow-router', 'client');
 
 	// LIB FILES
+	api.addFiles('lib/getAvatarUrlFromUsername.coffee');
 	api.addFiles('lib/accountBox.coffee', 'client');
 	api.addFiles('lib/accounts.coffee', 'client');
 	api.addFiles('lib/avatar.coffee', 'client');
@@ -55,7 +57,7 @@ Package.onUse(function(api) {
 	api.addFiles('lib/sideNav.coffee', 'client');
 	api.addFiles('lib/tapi18n.coffee', 'client');
 	api.addFiles('lib/textarea-autogrow.js', 'client');
-	api.addFiles('lib/trackRoomNameChanged.coffee', 'client');
+	api.addFiles('lib/updateModeratorsAndOwners.js', 'client');
 
 	// LIB CORDOVA
 	api.addFiles('lib/cordova/facebook-login.coffee', 'client');
@@ -68,19 +70,25 @@ Package.onUse(function(api) {
 	api.addFiles('lib/recorderjs/audioRecorder.coffee', 'client');
 	api.addFiles('lib/recorderjs/recorder.js', 'client');
 
+	// LIB CLIPBOARDJS
+	api.addFiles('lib/clipboardjs/clipboard.js', 'client');
+
 	// TEMPLATE FILES
 	api.addFiles('views/cmsPage.html', 'client');
 	api.addFiles('views/fxos.html', 'client');
 	api.addFiles('views/modal.html', 'client');
 	api.addFiles('views/404/roomNotFound.html', 'client');
+	api.addFiles('views/404/invalidSecretURL.html', 'client');
 	api.addFiles('views/app/audioNotification.html', 'client');
 	api.addFiles('views/app/burguer.html', 'client');
 	api.addFiles('views/app/home.html', 'client');
 	api.addFiles('views/app/notAuthorized.html', 'client');
 	api.addFiles('views/app/pageContainer.html', 'client');
+	api.addFiles('views/app/pageSettingsContainer.html', 'client');
 	api.addFiles('views/app/privateHistory.html', 'client');
 	api.addFiles('views/app/room.html', 'client');
 	api.addFiles('views/app/roomSearch.html', 'client');
+	api.addFiles('views/app/secretURL.html', 'client');
 	api.addFiles('views/app/userSearch.html', 'client');
 	api.addFiles('views/app/spotlight/mobileMessageMenu.html', 'client');
 	api.addFiles('views/app/spotlight/spotlight.html', 'client');
@@ -96,6 +104,7 @@ Package.onUse(function(api) {
 	api.addFiles('views/app/privateHistory.coffee', 'client');
 	api.addFiles('views/app/room.coffee', 'client');
 	api.addFiles('views/app/roomSearch.coffee', 'client');
+	api.addFiles('views/app/secretURL.coffee', 'client');
 	api.addFiles('views/app/spotlight/mobileMessageMenu.coffee', 'client');
 	api.addFiles('views/app/spotlight/spotlight.coffee', 'client');
 	api.addFiles('views/app/videoCall/videoButtons.coffee', 'client');

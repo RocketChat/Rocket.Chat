@@ -1,4 +1,7 @@
 {
+  "All_logs" : "Tous les journaux",
+  "Debug_Level" : "Niveau Debug",
+  "Delete" : "Supprimer",
   "Edit" : "Modifier",
-  "Delete" : "Supprimer"
+  "Only_errors" : "Seules les erreurs"
 }

@@ -1,0 +1,105 @@
+<template name="messageAttachment">
+	<div class="attachment">
+		<!-- <div>fallback: {{fallback}}</div> -->
+		{{pretext}}
+		<div class="attachment-block">
+			<div class="attachment-block-border" style="background-color: {{color}}"></div>
+
+			{{#if author_name}}
+				{{#if author_link}}
+					<div class="attachment-author">
+						{{#if author_icon}}
+							<img src="{{fixCordova author_icon}}">
+						{{/if}}
+						<a href="{{fixCordova author_link}}" target="_blank">{{author_name}}</a>
+					</div>
+				{{else}}
+					<div class="attachment-author">
+						{{#if author_icon}}
+							<img src="{{fixCordova author_icon}}">
+						{{/if}}
+						{{author_name}}
+					</div>
+				{{/if}}
+			{{/if}}
+
+			{{#if title}}
+				{{#if title_link}}
+					<div class="attachment-title"><a href="{{fixCordova title_link}}" target="_blank">{{title}}</a></div>
+				{{else}}
+					<div class="attachment-title">{{title}}</div>
+				{{/if}}
+			{{/if}}
+
+			<div class="attachment-flex">
+				{{#if thumb_url}}
+					<div class="attachment-thumb">
+						<img src="{{fixCordova thumb_url}}">
+					</div>
+				{{/if}}
+
+				{{#if text}}
+					<div class="attachment-flex-column-grow attachment-text">
+						{{{RocketChatMarkdown text}}}
+					</div>
+				{{/if}}
+			</div>
+
+			{{#if image_url}}
+				<div class="attachment-image">
+					{{#if showImage}}
+						<a href="{{fixCordova image_url}}" class="swipebox" target="_blank">
+							<div class="inline-image" style="background-image: url('{{fixCordova image_url}}');">
+								<img src="{{fixCordova image_url}}" height="{{getImageHeight image_dimensions.height}}">
+							</div>
+						</a>
+					{{else}}
+						<div class="image-to-download" data-url="{{image_url}}">
+							<i class="icon-picture"></i>
+							<div>click to load</div>
+						</div>
+					{{/if}}
+				</div>
+			{{/if}}
+
+			{{#if audio_url}}
+				<div class="attachment-audio">
+					<audio controls>
+						<source src="{{fixCordova audio_url}}" type="{{audio_type}}">
+						Your browser does not support the audio element.
+					</audio>
+				</div>
+			{{/if}}
+
+			{{#if video_url}}
+				<div class="attachment-video">
+					<video controls class="inline-video">
+						<source src="{{fixCordova video_url}}" type="{{video_type}}">
+						Your browser does not support the video element.
+					</video>
+				</div>
+			{{/if}}
+
+			{{#if fields}}
+				<div class="attachment-fields">
+					{{#each fields}}
+						{{#unless short}}
+							<div class="attachment-field">
+								<div class="attachment-field-title">{{title}}</div>
+								{{{RocketChatMarkdown value}}}
+							</div>
+						{{/unless}}
+					{{/each}}
+					{{#each fields}}
+						{{#if short}}
+							<div class="attachment-field attachment-field-short">
+								<div class="attachment-field-title">{{title}}</div>
+								{{{RocketChatMarkdown value}}}
+							</div>
+						{{/if}}
+					{{/each}}
+				</div>
+			{{/if}}
+		</div>
+	</div>
+</template>

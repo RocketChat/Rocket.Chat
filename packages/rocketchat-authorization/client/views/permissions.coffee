@@ -4,14 +4,14 @@ Template.permissions.helpers
 		return Template.instance().roles.get()
 
 	permission: ->
-		return ChatPermissions.find()
+		return ChatPermissions.find({}, { sort: { _id: 1 } })
 
 	granted: (roles) ->
 		if roles?
-			return 'checked' if roles.indexOf(@name) isnt -1
+			return 'checked' if roles.indexOf(@_id) isnt -1
 
 	hasPermission: ->
-		return RocketChat.authz.hasAllPermission 'access-rocket-permissions'
+		return RocketChat.authz.hasAllPermission 'access-permissions'
 
 Template.permissions.events
 	'click .role-permission': (e, instance) ->
@@ -31,18 +31,14 @@ Template.permissions.onCreated ->
 		added: {}
 		removed: {}
 
-	subs = @subscribe 'roles'
+	Tracker.autorun =>
+		@roles.set RocketChat.models.Roles.find().fetch()
 
 	Tracker.autorun =>
-		if subs.ready()
-			@roles.set Roles.getAllRoles().fetch()
-
-	Tracker.autorun =>
-		if subs.ready()
-			ChatPermissions.find().observeChanges
-				added: (id, fields) =>
-					@permissionByRole[id] = fields.roles
-				changed: (id, fields) =>
-					@permissionByRole[id] = fields.roles
-				removed: (id) =>
-					delete @permissionByRole[id]
+		ChatPermissions.find().observeChanges
+			added: (id, fields) =>
+				@permissionByRole[id] = fields.roles
+			changed: (id, fields) =>
+				@permissionByRole[id] = fields.roles
+			removed: (id) =>
+				delete @permissionByRole[id]

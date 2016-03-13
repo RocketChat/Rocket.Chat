@@ -10,7 +10,7 @@ Meteor.startup ->
 	window.lastMessageWindow = {}
 	window.lastMessageWindowHistory = {}
 
-	@defaultUserLanguage = ->
+	@defaultAppLanguage = ->
 		lng = window.navigator.userLanguage || window.navigator.language || 'en'
 		# Fix browsers having all-lowercase language settings eg. pt-br, en-us
 		re = /([a-z]{2}-)([a-z]{2})/
@@ -18,13 +18,24 @@ Meteor.startup ->
 			lng = lng.replace re, (match, parts...) -> return parts[0] + parts[1].toUpperCase()
 		return lng
 
-	loadedLaguages = []
+	@defaultUserLanguage = ->
+		return RocketChat.settings.get('Language') || defaultAppLanguage()
 
-	setLanguage = (language) ->
-		if loadedLaguages.indexOf(language) > -1
+	loadedLanguages = []
+
+	@setLanguage = (language) ->
+		if !language
 			return
 
-		loadedLaguages.push language
+		if loadedLanguages.indexOf(language) > -1
+			return
+
+		loadedLanguages.push language
+
+		if isRtl language
+			$('html').addClass "rtl"
+		else
+			$('html').removeClass "rtl"
 
 		language = language.split('-').shift()
 		TAPi18n.setLanguage(language)
@@ -35,14 +46,12 @@ Meteor.startup ->
 				Function(localeFn)()
 				moment.locale(language)
 
-	Tracker.autorun (c) ->
-		if Meteor.user()?.language?
-			c.stop()
+	Meteor.subscribe("userData", () ->
+		userLanguage = Meteor.user()?.language
+		userLanguage ?= defaultUserLanguage()
 
-			localStorage.setItem("userLanguage", Meteor.user().language)
-			setLanguage Meteor.user().language
+		if localStorage.getItem('userLanguage') isnt userLanguage
+			localStorage.setItem('userLanguage', userLanguage)
 
-	userLanguage = localStorage.getItem("userLanguage")
-	userLanguage ?= defaultUserLanguage()
-
-	setLanguage userLanguage
+		setLanguage userLanguage
+	)

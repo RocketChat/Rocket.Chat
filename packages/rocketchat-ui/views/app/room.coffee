@@ -32,6 +32,9 @@ Template.room.helpers
 	hasMore: ->
 		return RoomHistoryManager.hasMore this._id
 
+	hasMoreNext: ->
+		return RoomHistoryManager.hasMoreNext this._id
+
 	isLoading: ->
 		return RoomHistoryManager.isLoading this._id
 
@@ -75,6 +78,11 @@ Template.room.helpers
 		else
 			return roomData.name
 
+	roomTopic: ->
+		roomData = Session.get('roomData' + this._id)
+		return '' unless roomData
+		return roomData.topic
+
 	roomIcon: ->
 		roomData = Session.get('roomData' + this._id)
 		return '' unless roomData?.t
@@ -101,25 +109,8 @@ Template.room.helpers
 		return '' unless roomData
 		return roomData.t is 'c'
 
-	canEditName: ->
-		roomData = Session.get('roomData' + this._id)
-		return '' unless roomData
-		if roomData.t in ['c', 'p']
-			return RocketChat.authz.hasAtLeastOnePermission('edit-room', this._id)
-		else
-			return ''
-
 	canDirectMessage: ->
 		return Meteor.user()?.username isnt this.username
-
-	roomNameEdit: ->
-		return Session.get('roomData' + this._id)?.name
-
-	editingTitle: ->
-		return 'hidden' if Session.get('editRoomTitle')
-
-	showEditingTitle: ->
-		return 'hidden' if not Session.get('editRoomTitle')
 
 	flexOpened: ->
 		return 'opened' if RocketChat.TabBar.isFlexOpen()
@@ -139,12 +130,6 @@ Template.room.helpers
 		if status in ['online', 'away', 'busy']
 			return {username: username, status: status}
 		return
-
-	seeAll: ->
-		if Template.instance().showUsersOffline.get()
-			return t('See_only_online')
-		else
-			return t('See_all')
 
 	getPopupConfig: ->
 		template = Template.instance()
@@ -176,7 +161,7 @@ Template.room.helpers
 
 	canRecordAudio: ->
 		wavRegex = /audio\/wav|audio\/\*/i
-		wavEnabled = RocketChat.settings.get("FileUpload_MediaTypeWhiteList").match(wavRegex)
+		wavEnabled = !RocketChat.settings.get("FileUpload_MediaTypeWhiteList") || RocketChat.settings.get("FileUpload_MediaTypeWhiteList").match(wavRegex)
 		return RocketChat.settings.get('Message_AudioRecorderEnabled') and (navigator.getUserMedia? or navigator.webkitGetUserMedia?) and wavEnabled and RocketChat.settings.get('FileUpload_Enabled')
 
 	unreadSince: ->
@@ -189,7 +174,7 @@ Template.room.helpers
 
 	formatUnreadSince: ->
 		room = ChatRoom.findOne(this._id, { reactive: false })
-		room = RoomManager.openedRooms[room.t + room.name]
+		room = RoomManager.openedRooms[room?.t + room?.name]
 		date = room?.unreadSince.get()
 		if not date? then return
 
@@ -210,9 +195,8 @@ Template.room.helpers
 	compactView: ->
 		return 'compact' if Meteor.user()?.settings?.preferences?.compactView
 
-	fileUploadAllowedMediaTypes: ->
-		return RocketChat.settings.get('FileUpload_MediaTypeWhiteList')
-
+	selectable: ->
+		return Template.instance().selectable.get()
 
 Template.room.events
 	"click, touchend": (e, t) ->
@@ -236,11 +220,21 @@ Template.room.events
 	"touchcancel .message": (e, t) ->
 		Meteor.clearTimeout t.touchtime
 
-	"click .upload-progress > a": ->
+	"click .upload-progress-text > a": (e) ->
+		e.preventDefault();
 		Session.set "uploading-cancel-#{this.id}", true
 
-	"click .unread-bar > a": ->
+	"click .unread-bar > a.mark-read": ->
 		readMessage.readNow(true)
+
+	"click .unread-bar > a.jump-to": ->
+		message = RoomHistoryManager.getRoom(@_id)?.firstUnread.get()
+		if message?
+			RoomHistoryManager.getSurroundingMessages(message, 50)
+		else
+			subscription = ChatSubscription.findOne({ rid: @_id })
+			message = ChatMessage.find({ rid: @_id, ts: { $gt: subscription?.ls } }, { sort: { ts: 1 }, limit: 1 }).fetch()[0]
+			RoomHistoryManager.getSurroundingMessages(message, 50)
 
 	"click .flex-tab .more": (event, t) ->
 		if RocketChat.TabBar.isFlexOpen()
@@ -280,7 +274,7 @@ Template.room.events
 	'click .toggle-favorite': (event) ->
 		event.stopPropagation()
 		event.preventDefault()
-		Meteor.call 'toogleFavorite', @_id, !$('i', event.currentTarget).hasClass('favorite-room')
+		Meteor.call 'toggleFavorite', @_id, !$('i', event.currentTarget).hasClass('favorite-room')
 
 	'click .edit-room-title': (event) ->
 		event.preventDefault()
@@ -290,21 +284,9 @@ Template.room.events
 			$('#room-title-field').focus().select()
 		, 10
 
-	'keydown #room-title-field': (event) ->
-		if event.keyCode is 27 # esc
-			Session.set('editRoomTitle', false)
-		else if event.keyCode is 13 # enter
-			renameRoom @_id, $(event.currentTarget).val()
-
-	'blur #room-title-field': (event) ->
-		# TUDO: create a configuration to select the desired behaviour
-		# renameRoom this._id, $(event.currentTarget).val()
-		Session.set('editRoomTitle', false)
-		$(".fixed-title").removeClass "visible"
-
 	"click .flex-tab .user-image > a" : (e) ->
 		RocketChat.TabBar.openFlex()
-		Session.set('showUserInfo', $(e.currentTarget).data('username'))
+		Session.set('showUserInfo', @username)
 
 	'click .user-card-message': (e) ->
 		roomData = Session.get('roomData' + this._arguments[1].rid)
@@ -316,9 +298,11 @@ Template.room.events
 		RocketChat.TabBar.setTemplate 'membersList'
 
 	'scroll .wrapper': _.throttle (e, instance) ->
-		if RoomHistoryManager.hasMore(@_id) is true and RoomHistoryManager.isLoading(@_id) is false
-			if e.target.scrollTop is 0
+		if RoomHistoryManager.isLoading(@_id) is false and (RoomHistoryManager.hasMore(@_id) is true or RoomHistoryManager.hasMoreNext(@_id) is true)
+			if RoomHistoryManager.hasMore(@_id) is true and e.target.scrollTop is 0
 				RoomHistoryManager.getMore(@_id)
+			else if RoomHistoryManager.hasMoreNext(@_id) is true and e.target.scrollTop >= e.target.scrollHeight - e.target.clientHeight
+				RoomHistoryManager.getMoreNext(@_id)
 	, 200
 
 	'click .load-more > a': ->
@@ -328,13 +312,32 @@ Template.room.events
 		Template.instance().atBottom = true
 		Template.instance().find('.input-message').focus()
 
-	'click .see-all': (e, instance) ->
-		instance.showUsersOffline.set(!instance.showUsersOffline.get())
-
 	'click .message-cog': (e) ->
-		message_id = $(e.currentTarget).closest('.message').attr('id')
+		message = @_arguments[1]
 		$('.message-dropdown:visible').hide()
-		$(".messages-box \##{message_id} .message-dropdown").show()
+
+		dropDown = $(".messages-box \##{message._id} .message-dropdown")
+
+		if dropDown.length is 0
+			actions = RocketChat.MessageAction.getButtons message
+
+			el = Blaze.toHTMLWithData Template.messageDropdown,
+				actions: actions
+
+			$(".messages-box \##{message._id} .message-cog-container").append el
+
+			dropDown = $(".messages-box \##{message._id} .message-dropdown")
+
+		dropDown.show()
+
+	'click .message-dropdown .message-action': (e, t) ->
+		e.preventDefault()
+		e.stopPropagation()
+		el = $(e.currentTarget)
+
+		button = RocketChat.MessageAction.getButtonById el.data('id')
+		if button?.action?
+			button.action.call @, e, t
 
 	'click .message-dropdown-close': ->
 		$('.message-dropdown:visible').hide()
@@ -351,20 +354,20 @@ Template.room.events
 
 	'click .image-to-download': (event) ->
 		ChatMessage.update {_id: this._arguments[1]._id, 'urls.url': $(event.currentTarget).data('url')}, {$set: {'urls.$.downloadImages': true}}
-
-	'click .pin-message': (event) ->
-		message = @_arguments[1]
-		instance = Template.instance()
-		if message.pinned
-			chatMessages[Session.get('openedRoom')].unpinMsg(message)
-		else
-			chatMessages[Session.get('openedRoom')].pinMsg(message)
+		ChatMessage.update {_id: this._arguments[1]._id, 'attachments.image_url': $(event.currentTarget).data('url')}, {$set: {'attachments.$.downloadImages': true}}
 
 	'dragenter .dropzone': (e) ->
 		e.currentTarget.classList.add 'over'
 
 	'dragleave .dropzone-overlay': (e) ->
 		e.currentTarget.parentNode.classList.remove 'over'
+
+	'dragover .dropzone-overlay': (e) ->
+		e = e.originalEvent or e
+		if e.dataTransfer.effectAllowed in ['move', 'linkMove']
+			e.dataTransfer.dropEffect = 'move'
+		else
+			e.dataTransfer.dropEffect = 'copy'
 
 	'dropped .dropzone-overlay': (event) ->
 		event.currentTarget.parentNode.classList.remove 'over'
@@ -403,6 +406,35 @@ Template.room.events
 	'load img': (e, template) ->
 		template.sendToBottomIfNecessary?()
 
+	'click .jump-recent .jump-link': (e, template) ->
+		e.preventDefault()
+		template.atBottom = true
+		RoomHistoryManager.clear(template?.data?._id)
+
+	'click .message': (e, template) ->
+		if template.selectable.get()
+			document.selection?.empty() or window.getSelection?().removeAllRanges()
+			data = Blaze.getData(e.currentTarget)
+			_id = data?._arguments?[1]?._id
+
+			if !template.selectablePointer
+				template.selectablePointer = _id
+
+			if !e.shiftKey
+				template.selectedMessages = template.getSelectedMessages()
+				template.selectedRange = []
+				template.selectablePointer = _id
+
+			template.selectMessages _id
+
+			selectedMessages = $('.messages-box .message.selected').map((i, message) -> message.id)
+			removeClass = _.difference selectedMessages, template.getSelectedMessages()
+			addClass = _.difference template.getSelectedMessages(), selectedMessages
+			for message in removeClass
+				$(".messages-box ##{message}").removeClass('selected')
+			for message in addClass
+				$(".messages-box ##{message}").addClass('selected')
+
 
 Template.room.onCreated ->
 	# this.scrollOnBottom = true
@@ -411,23 +443,58 @@ Template.room.onCreated ->
 	this.atBottom = true
 	this.unreadCount = new ReactiveVar 0
 
-	self = @
+	this.selectable = new ReactiveVar false
+	this.selectedMessages = []
+	this.selectedRange = []
+	this.selectablePointer = null
 
-	@autorun ->
-		self.subscribe 'fullUserData', Session.get('showUserInfo'), 1
+	this.resetSelection = (enabled) =>
+		this.selectable.set(enabled)
+		$('.messages-box .message.selected').removeClass 'selected'
+		this.selectedMessages = []
+		this.selectedRange = []
+		this.selectablePointer = null
 
-	for button in RocketChat.MessageAction.getButtons()
-		if _.isFunction button.action
-			evt = {}
-			evt["click .#{button.id}"] = button.action
-			Template.room.events evt
+	this.selectMessages = (to) =>
+		if this.selectablePointer is to and this.selectedRange.length > 0
+			this.selectedRange = []
+		else
+			message1 = ChatMessage.findOne this.selectablePointer
+			message2 = ChatMessage.findOne to
 
+			minTs = _.min([message1.ts, message2.ts])
+			maxTs = _.max([message1.ts, message2.ts])
+
+			this.selectedRange = _.pluck(ChatMessage.find({ rid: message1.rid, ts: { $gte: minTs, $lte: maxTs } }).fetch(), '_id')
+
+	this.getSelectedMessages = =>
+		messages = this.selectedMessages
+		addMessages = false
+		for message in this.selectedRange
+			if messages.indexOf(message) is -1
+				addMessages = true
+				break
+
+		if addMessages
+			previewMessages = _.compact(_.uniq(this.selectedMessages.concat(this.selectedRange)))
+		else
+			previewMessages = _.compact(_.difference(this.selectedMessages, this.selectedRange))
+
+		return previewMessages
+
+	@autorun =>
+		@subscribe 'fullUserData', Session.get('showUserInfo'), 1
+
+	Meteor.call 'getRoomModeratorsAndOwners', @data._id, (error, results) ->
+		if error
+			return toastr.error error.reason
+
+		for record in results
+			delete record._id
+			RoomModeratorsAndOwners.upsert { rid: record.rid, "u._id": record.u._id }, record
 
 Template.room.onDestroyed ->
-	RocketChat.TabBar.resetButtons()
-
 	window.removeEventListener 'resize', this.onWindowResize
-
 
 Template.room.onRendered ->
 	unless window.chatMessages
@@ -521,10 +588,17 @@ Template.room.onRendered ->
 			firstMessage = ChatMessage.findOne firstMessageOnScreen.id
 			if firstMessage?
 				subscription = ChatSubscription.findOne rid: template.data._id
-				template.unreadCount.set ChatMessage.find({rid: template.data._id, ts: {$lt: firstMessage.ts, $gt: subscription.ls}}).count()
+				template.unreadCount.set ChatMessage.find({rid: template.data._id, ts: {$lt: firstMessage.ts, $gt: subscription?.ls}}).count()
 			else
 				template.unreadCount.set 0
 	, 300
+
+	readMessage.onRead (rid) ->
+		if rid is template.data._id
+			template.unreadCount.set 0
+
+	wrapper.addEventListener 'scroll', ->
+		updateUnreadCount()
 
 	# salva a data da renderização para exibir alertas de novas mensagens
 	$.data(this.firstNode, 'renderedAt', new Date)
@@ -539,36 +613,3 @@ Template.room.onRendered ->
 			if webrtc.localUrl.get()?
 				RocketChat.TabBar.setTemplate 'membersList'
 				RocketChat.TabBar.openFlex()
-
-
-renameRoom = (rid, name) ->
-	name = name?.toLowerCase().trim()
-	console.log 'room renameRoom' if window.rocketDebug
-	room = Session.get('roomData' + rid)
-	if room.name is name
-		Session.set('editRoomTitle', false)
-		return false
-
-	Meteor.call 'saveRoomName', rid, name, (error, result) ->
-		if result
-			Session.set('editRoomTitle', false)
-			# If room was renamed then close current room and send user to the new one
-			RoomManager.close room.t + room.name
-			switch room.t
-				when 'c'
-					FlowRouter.go 'channel', name: name
-				when 'p'
-					FlowRouter.go 'group', name: name
-
-			toastr.success t('Room_name_changed_successfully')
-		if error
-			if error.error is 'name-invalid'
-				toastr.error t('Invalid_room_name', name)
-				return
-			if error.error is 'duplicate-name'
-				if room.t is 'c'
-					toastr.error t('Duplicate_channel_name', name)
-				else
-					toastr.error t('Duplicate_private_group_name', name)
-				return
-			toastr.error error.reason

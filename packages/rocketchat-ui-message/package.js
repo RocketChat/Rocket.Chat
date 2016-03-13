@@ -24,6 +24,7 @@ Package.onUse(function(api) {
 
 	api.addFiles('message/message.html', 'client');
 	api.addFiles("message/messageBox.html", "client");
+	api.addFiles("message/messageDropdown.html", "client");
 	api.addFiles("message/popup/messagePopup.html", "client");
 	api.addFiles("message/popup/messagePopupChannel.html", "client");
 	api.addFiles("message/popup/messagePopupConfig.html", "client");

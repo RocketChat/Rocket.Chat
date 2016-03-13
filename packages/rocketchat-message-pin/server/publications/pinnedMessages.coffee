@@ -1,12 +1,14 @@
-Meteor.publish 'pinnedMessages', (rid, options = {}) ->
+Meteor.publish 'pinnedMessages', (rid, limit=50) ->
 	unless this.userId
 		return this.ready()
 
-	console.log '[publish] pinnedMessages -> '.green, 'rid:', rid, 'options:', options
-
 	publication = @
 
-	cursorHandle = RocketChat.models.Messages.findPinnedByRoom(rid, { sort: { ts: -1 }, limit: 50 }).observeChanges
+	user = RocketChat.models.Users.findOneById this.userId
+	unless user
+		return this.ready()
+
+	cursorHandle = RocketChat.models.Messages.findPinnedByRoom(rid, { sort: { ts: -1 }, limit: limit }).observeChanges
 		added: (_id, record) ->
 			publication.added('rocketchat_pinned_message', _id, record)
 

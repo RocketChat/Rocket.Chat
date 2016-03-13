@@ -62,6 +62,5 @@ Template.username.events
 				RocketChat.Button.reset(button)
 				instance.username.set(username)
 
-				if not err?
-					Meteor.call 'joinDefaultChannels'
-					FlowRouter.go 'index'
+			if not err?
+				Meteor.call 'joinDefaultChannels'

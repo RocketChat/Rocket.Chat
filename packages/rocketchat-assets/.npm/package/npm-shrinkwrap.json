@@ -1,0 +1,15 @@
+{
+  "dependencies": {
+    "image-size": {
+      "version": "0.4.0"
+    },
+    "mime-types": {
+      "version": "2.1.9",
+      "dependencies": {
+        "mime-db": {
+          "version": "1.21.0"
+        }
+      }
+    }
+  }
+}

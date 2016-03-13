@@ -3,7 +3,7 @@ Meteor.methods
 		if not Meteor.userId()
 			throw new Meteor.Error('invalid-user', "[methods] deleteMessage -> Invalid user")
 
-		originalMessage = RocketChat.models.Messages.findOneById message._id, {fields: {u: 1, rid: 1}}
+		originalMessage = RocketChat.models.Messages.findOneById message._id, {fields: {u: 1, rid: 1, file: 1}}
 		if not originalMessage?
 			throw new Meteor.Error 'message-deleting-not-allowed', "[methods] deleteMessage -> Message with id [#{message._id} dos not exists]"
 
@@ -15,8 +15,6 @@ Meteor.methods
 		unless hasPermission or (deleteAllowed and deleteOwn)
 			throw new Meteor.Error 'message-deleting-not-allowed', "[methods] deleteMessage -> Message deleting not allowed"
 
-		console.log '[methods] deleteMessage -> '.green, 'userId:', Meteor.userId(), 'arguments:', arguments
-
 		keepHistory = RocketChat.settings.get 'Message_KeepHistory'
 		showDeletedStatus = RocketChat.settings.get 'Message_ShowDeletedStatus'
 
@@ -26,11 +24,17 @@ Meteor.methods
 			else
 				RocketChat.models.Messages.setHiddenById originalMessage._id, true
 
+			if originalMessage.file?._id?
+				RocketChat.models.Uploads.update originalMessage.file._id, {$set: {_hidden: true}}
+
 		else
 			if not showDeletedStatus
 				RocketChat.models.Messages.removeById originalMessage._id
 
+			if originalMessage.file?._id?
+				FileUpload.delete(originalMessage.file._id)
+
 		if showDeletedStatus
 			RocketChat.models.Messages.setAsDeletedById originalMessage._id
 		else
-			RocketChat.Notifications.notifyRoom originalMessage.rid, 'deleteMessage', { _id: originalMessage._id }
+			RocketChat.Notifications.notifyRoom originalMessage.rid, 'deleteMessage', {_id: originalMessage._id}

@@ -14,32 +14,14 @@ Template.sideNav.helpers
 
 		return true if favoritesEnabled and hasFavoriteRoomOpened
 
-	myUserInfo: ->
-		visualStatus = "online"
-		username = Meteor.user()?.username
-		switch Session.get('user_' + username + '_status')
-			when "away"
-				visualStatus = t("away")
-			when "busy"
-				visualStatus = t("busy")
-			when "offline"
-				visualStatus = t("invisible")
-		return {
-			name: Session.get('user_' + username + '_name')
-			status: Session.get('user_' + username + '_status')
-			visualStatus: visualStatus
-			_id: Meteor.userId()
-			username: username
-		}
+	roomType: ->
+		return RocketChat.roomTypes.getTypes()
 
-	showAdminOption: ->
-		return RocketChat.authz.hasAtLeastOnePermission( ['view-statistics', 'view-room-administration', 'view-user-administration', 'view-privileged-setting'])
+	canShowRoomType: ->
+		return RocketChat.roomTypes.checkCondition(@)
 
-	registeredMenus: ->
-		return AccountBox.getItems()
-
-	itemPath: ->
-		FlowRouter.path @route.name
+	templateName: ->
+		return @template
 
 Template.sideNav.events
 	'click .close-flex': ->
@@ -57,47 +39,9 @@ Template.sideNav.events
 	'scroll .rooms-list': ->
 		menu.updateUnreadBars()
 
-	'click .options .status': (event) ->
-		event.preventDefault()
-		AccountBox.setStatus(event.currentTarget.dataset.status)
-
-	'click .account-box': (event) ->
-		AccountBox.toggle()
-
-	'click #logout': (event) ->
-		event.preventDefault()
-		user = Meteor.user()
-		Meteor.logout ->
-			FlowRouter.go 'home'
-			Meteor.call('logoutCleanUp', user)
-
-	'click #avatar': (event) ->
-		FlowRouter.go 'changeAvatar'
-
-	'click #account': (event) ->
-		SideNav.setFlex "accountFlex"
-		SideNav.openFlex()
-		FlowRouter.go 'account'
-
-	'click #admin': ->
-		SideNav.setFlex "adminFlex"
-		SideNav.openFlex()
-
-	'click .account-link': ->
-		menu.close()
-
 Template.sideNav.onRendered ->
 	SideNav.init()
 	menu.init()
 
 	Meteor.defer ->
 		menu.updateUnreadBars()
-
-	AccountBox.init()
-
-	wrapper = $('.rooms-list .wrapper').get(0)
-	lastLink = $('.rooms-list h3.history-div').get(0)
-
-	RocketChat.roomTypes.getTypes().forEach (roomType) ->
-		if Template[roomType.template]?
-			Blaze.render Template[roomType.template], wrapper, lastLink

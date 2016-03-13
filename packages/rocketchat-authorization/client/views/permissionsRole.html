@@ -1,65 +1,74 @@
 <template name="permissionsRole">
-	{{#if hasPermission}}
-		<a href="{{pathFor "rocket-permissions"}}">{{_ "Back_to_permissions"}}</a><br><br>
+	<div class="permissions-manager">
+		{{#if hasPermission}}
+			<a href="{{pathFor "admin-permissions"}}">{{_ "Back_to_permissions"}}</a><br><br>
 
-		{{#with role}}
-			<form id="form-role" class="inline">
-				<label>{{_ "Role"}}</label>:
-					{{#if editing}}
-						<span>{{name}}</span>
-					{{else}}
-						<input type="text" name="name" value="">
-					{{/if}}
-				<br>
-				<label>{{_ "Description"}}</label>:
-					<input type="text" name="description" value="{{description}}">
-				<br>
+			{{#with role}}
+				<form id="form-role" class="inline form-role">
+					<label>{{_ "Role"}} :</label>
+						{{#if editing}}
+							<span>{{_id}}</span>
+						{{else}}
+							<input type="text" name="name" value="">
+						{{/if}}
+					<br>
+					<label>{{_ "Description"}} :</label>
+						<input type="text" name="description" value="{{description}}">
+					<br>
 
-				<button name="save" class="button primary">{{_ "Save"}}</button>
+					<div class="form-buttons">
+						<button name="save" class="button primary">{{_ "Save"}}</button>
 
-				{{#unless protected}}
-					<button name="delete" class="button red delete-role">{{_ "Delete"}}</button>
-				{{/unless}}
-			</form>
-		{{/with}}
+						{{#if canDelete}}
+							<button name="delete" class="button red delete-role">{{_ "Delete"}}</button>
+						{{/if}}
+					</div>
+				</form>
+			{{/with}}
 
-		{{#if editing}}
-			<h2>{{_ "Users_in_role"}}</h2>
-			<form id="form-users" class="inline">
-				<label>{{_ "Add_user"}}</label>
-				<input type="text" name="username" placeholder="{{_ "Enter_a_username"}}">
-				<button name="add" class="button primary">{{_ "Add"}}</button>
-			</form>
-			<div class="list">
-				<table>
-					<thead>
-						<tr>
-							<th>&nbsp;</th>
-							<th width="34%">{{_ "Name"}}</th>
-							<th width="33%">{{_ "Username"}}</th>
-							<th width="33%">{{_ "E-mail"}}</th>
-							<th>&nbsp;</th>
-						</tr>
-					</thead>
-					<tbody>
-						{{#each userInRole}}
-							<tr class="user-info" data-id="{{_id}}">
-								<td>
-									<div class="user-image status-{{status}}">
-										{{> avatar username=username}}
-									</div>
-								</td>
-								<td>{{name}}</td>
-								<td>{{username}}</td>
-								<td>{{emailAddress}}</td>
-								<td><a href="#remove" class="remove-user"><i class="icon-block"></i></a></td>
+			{{#if editing}}
+				<h2>{{_ "Users_in_role"}}</h2>
+				<form id="form-users" class="inline">
+					<label>{{_ "Add_user"}}</label>
+					<input type="text" name="username" placeholder="{{_ "Enter_a_username"}}">
+					<button name="add" class="button primary">{{_ "Add"}}</button>
+				</form>
+				<div class="list">
+					<table>
+						<thead>
+							<tr>
+								<th>&nbsp;</th>
+								<th width="34%">{{_ "Name"}}</th>
+								<th width="33%">{{_ "Username"}}</th>
+								<th width="33%">{{_ "E-mail"}}</th>
+								<th>&nbsp;</th>
 							</tr>
-						{{/each}}
-					</tbody>
-				</table>
-			</div>
+						</thead>
+						<tbody>
+							{{#unless hasUsers}}
+								<tr>
+									<td colspan="5" class="empty-role">{{_ "There_are_no_users_in_this_role"}}</td>
+								</tr>
+							{{/unless}}
+							{{#each userInRole}}
+								<tr class="user-info" data-id="{{_id}}">
+									<td>
+										<div class="user-image status-{{status}}">
+											{{> avatar username=username}}
+										</div>
+									</td>
+									<td>{{name}}</td>
+									<td>{{username}}</td>
+									<td>{{emailAddress}}</td>
+									<td><a href="#remove" class="remove-user"><i class="icon-block"></i></a></td>
+								</tr>
+							{{/each}}
+						</tbody>
+					</table>
+				</div>
+			{{/if}}
+		{{else}}
+			{{_ "Not_authorized"}}
 		{{/if}}
-	{{else}}
-		{{_ "Not_authorized"}}
-	{{/if}}
+	</div>
 </template>

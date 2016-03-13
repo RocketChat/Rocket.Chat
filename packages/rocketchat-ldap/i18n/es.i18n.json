@@ -1,1 +1,3 @@
-{ }
+{
+  "LDAP_Dn" : "DN de LDAP"
+}

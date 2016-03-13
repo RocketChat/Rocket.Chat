@@ -2,7 +2,7 @@ Meteor.publish 'usersInRole', (roleName, page = 1) ->
 	unless @userId
 		return @ready()
 
-	if not RocketChat.authz.hasPermission @userId, 'access-rocket-permissions'
+	if not RocketChat.authz.hasPermission @userId, 'access-permissions'
 		throw new Meteor.Error "not-authorized"
 
 	itemsPerPage = 20

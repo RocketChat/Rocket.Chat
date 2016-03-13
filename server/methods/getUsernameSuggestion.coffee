@@ -15,12 +15,15 @@ usernameIsAvaliable = (username) ->
 	usernames = []
 	username = undefined
 
+	if Meteor.settings.public.sandstorm
+		usernames.push user.services.sandstorm.preferredHandle
+
 	if RocketChat.settings.get 'UTF8_Names_Slugify'
 		usernames.push slug user.name
 	else
 		usernames.push user.name
 
-	nameParts = user?.name?.split()
+	nameParts = user?.name?.split(' ')
 	if nameParts.length > 1
 		first = nameParts[0]
 		last = nameParts[nameParts.length - 1]
@@ -78,8 +81,8 @@ RocketChat.generateUsernameSuggestion = generateSuggestion
 
 Meteor.methods
 	getUsernameSuggestion: ->
-		if not Meteor.userId()
-			throw new Meteor.Error 203, '[methods] getUsernameSuggestion -> Usuário não logado'
+		unless Meteor.userId()
+			throw new Meteor.Error(403, "[methods] getUsernameSuggestion -> Invalid user")
 
 		user = Meteor.user()
 		return generateSuggestion(user)

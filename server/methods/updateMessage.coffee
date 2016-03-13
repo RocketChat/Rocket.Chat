@@ -24,8 +24,6 @@ Meteor.methods
 			if currentTsDiff > blockEditInMinutes
 				throw new Meteor.Error 'message-editing-blocked'
 
-		console.log '[methods] updateMessage -> '.green, 'userId:', Meteor.userId(), 'arguments:', arguments
-
 		# If we keep history of edits, insert a new message to store history information
 		if RocketChat.settings.get 'Message_KeepHistory'
 			RocketChat.models.Messages.cloneAndSaveAsHistoryById originalMessage._id
@@ -35,7 +33,7 @@ Meteor.methods
 			_id: Meteor.userId()
 			username: me.username
 
-		if urls = message.msg.match /([A-Za-z]{3,9}):\/\/([-;:&=\+\$,\w]+@{1})?([-A-Za-z0-9\.]+)+:?(\d+)?((\/[-\+=!:~%\/\.@\,\w]+)?\??([-\+=&!:;%@\/\.\,\w]+)?#?([\w]+)?)?/g
+		if urls = message.msg.match /([A-Za-z]{3,9}):\/\/([-;:&=\+\$,\w]+@{1})?([-A-Za-z0-9\.]+)+:?(\d+)?((\/[-\+=!:~%\/\.@\,\w]+)?\??([-\+=&!:;%@\/\.\,\w]+)?(?:#([^\s\)]+))?)?/g
 			message.urls = urls.map (url) -> url: url
 
 		message = RocketChat.callbacks.run 'beforeSaveMessage', message
@@ -47,6 +45,8 @@ Meteor.methods
 			_id: tempid
 		,
 			$set: message
+			
+		room = RocketChat.models.Rooms.findOneById message.rid
 
 		Meteor.defer ->
-			RocketChat.callbacks.run 'afterSaveMessage', RocketChat.models.Messages.findOneById(tempid)
+			RocketChat.callbacks.run 'afterSaveMessage', RocketChat.models.Messages.findOneById(tempid), room

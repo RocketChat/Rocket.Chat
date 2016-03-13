@@ -5,6 +5,9 @@ Template.loginForm.helpers
 	namePlaceholder: ->
 		return if RocketChat.settings.get 'Accounts_RequireNameForSignUp' then t('Name') else t('Name_optional')
 
+	showFormLogin: ->
+		return RocketChat.settings.get 'Accounts_ShowFormLogin'
+
 	showName: ->
 		return 'hidden' unless Template.instance().state.get() is 'register'
 
@@ -37,8 +40,6 @@ Template.loginForm.helpers
 			when 'register'
 				return t('Submit')
 			when 'login'
-				if RocketChat.settings.get('LDAP_Enable')
-					return t('Login') + ' (LDAP)'
 				return t('Login')
 			when 'email-verification'
 				return t('Send_confirmation_email')
@@ -52,10 +53,19 @@ Template.loginForm.helpers
 		return RocketChat.settings.get 'Layout_Login_Terms'
 
 	registrationAllowed: ->
-		return RocketChat.settings.get('Accounts_RegistrationForm') is 'Public'
+		return RocketChat.settings.get('Accounts_RegistrationForm') is 'Public' or Template.instance().validSecretURL?.get()
 
 	linkReplacementText: ->
 		return RocketChat.settings.get('Accounts_RegistrationForm_LinkReplacementText')
+
+	passwordresetAllowed: ->
+		return RocketChat.settings.get 'Accounts_PasswordReset'
+
+	emailOrUsernamePlaceholder: ->
+		return RocketChat.settings.get('Accounts_EmailOrUsernamePlaceholder') or t("Email_or_username")
+
+	passwordPlaceholder: ->
+		return RocketChat.settings.get('Accounts_PasswordPlaceholder') or t("Password")
 
 Template.loginForm.events
 	'submit #login-card': (event, instance) ->
@@ -81,6 +91,7 @@ Template.loginForm.events
 				return
 
 			if instance.state.get() is 'register'
+				formData.secretURL = FlowRouter.getParam 'hash'
 				Meteor.call 'registerUser', formData, (error, result) ->
 					RocketChat.Button.reset(button)
 
@@ -111,6 +122,8 @@ Template.loginForm.events
 						else
 							toastr.error t 'User_not_found_or_incorrect_password'
 						return
+					localStorage.setItem('userLanguage', Meteor.user()?.language)
+					setLanguage(Meteor.user()?.language)
 
 	'click .register': ->
 		Template.instance().state.set 'register'
@@ -125,8 +138,13 @@ Template.loginForm.onCreated ->
 	instance = @
 	if Meteor.settings.public.sandstorm
 		@state = new ReactiveVar('sandstorm')
+	else if Session.get 'loginDefaultState'
+		@state = new ReactiveVar(Session.get 'loginDefaultState')
 	else
 		@state = new ReactiveVar('login')
+
+	@validSecretURL = new ReactiveVar(false)
+
 	@validate = ->
 		formData = $("#login-card").serializeArray()
 		formObj = {}
@@ -144,7 +162,7 @@ Template.loginForm.onCreated ->
 				validationObj['pass'] = t('Invalid_pass')
 
 		if instance.state.get() is 'register'
-			if RocketChat.settings.get 'Accounts_RequireNameForSignUp' and not formObj['name']
+			if RocketChat.settings.get('Accounts_RequireNameForSignUp') and not formObj['name']
 				validationObj['name'] = t('Invalid_name')
 			if formObj['confirm-pass'] isnt formObj['pass']
 				validationObj['confirm-pass'] = t('Invalid_confirm_pass')
@@ -162,7 +180,12 @@ Template.loginForm.onCreated ->
 		$("#login-card input.error").removeClass "error"
 		return formObj
 
+	if FlowRouter.getParam('hash')
+		Meteor.call 'checkRegistrationSecretURL', FlowRouter.getParam('hash'), (err, success) =>
+			@validSecretURL.set true
+
 Template.loginForm.onRendered ->
+	Session.set 'loginDefaultState'
 	Tracker.autorun =>
 		switch this.state.get()
 			when 'login', 'forgot-password', 'email-verification'

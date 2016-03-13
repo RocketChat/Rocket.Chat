@@ -1,17 +1,9 @@
 Meteor.methods
 	'authorization:saveRole': (_id, roleData) ->
-		if not Meteor.userId() or not RocketChat.authz.hasPermission Meteor.userId(), 'access-rocket-permissions'
+		if not Meteor.userId() or not RocketChat.authz.hasPermission Meteor.userId(), 'access-permissions'
 			throw new Meteor.Error "not-authorized"
 
-		console.log '[methods] authorization:saveRole -> '.green, 'arguments:', arguments
+		if not roleData.name?
+			throw new Meteor.Error 'invalid-data', 'Role name is required'
 
-		saveData =
-			description: roleData.description
-
-		if not _id? and roleData.name?
-			saveData.name = roleData.name
-
-		if _id?
-			return Meteor.roles.update _id, { $set: saveData }
-		else
-			return Meteor.roles.insert saveData
+		return RocketChat.models.Roles.createOrUpdate roleData.name, 'Users', roleData.description

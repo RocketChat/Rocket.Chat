@@ -1,12 +1,10 @@
 Meteor.methods
 	removeOAuthService: (name) ->
 		if not Meteor.userId()
-			throw new Meteor.Error('invalid-user', "[methods] addOAuthService -> Invalid user")
-
-		console.log '[methods] addOAuthService -> '.green, 'userId:', Meteor.userId(), 'arguments:', arguments
+			throw new Meteor.Error('invalid-user', "[methods] removeOAuthService -> Invalid user")
 
 		unless RocketChat.authz.hasPermission( Meteor.userId(), 'add-oauth-service') is true
-			throw new Meteor.Error 'not-authorized', '[methods] addOAuthService -> Not authorized'
+			throw new Meteor.Error 'not-authorized', '[methods] removeOAuthService -> Not authorized'
 
 		name = name.toLowerCase().replace(/[^a-z0-9]/g, '')
 		name = s.capitalize(name)
@@ -20,3 +18,4 @@ Meteor.methods
 		RocketChat.settings.removeById "Accounts_OAuth_Custom_#{name}_button_label_text"
 		RocketChat.settings.removeById "Accounts_OAuth_Custom_#{name}_button_label_color"
 		RocketChat.settings.removeById "Accounts_OAuth_Custom_#{name}_button_color"
+		RocketChat.settings.removeById "Accounts_OAuth_Custom_#{name}_login_style"

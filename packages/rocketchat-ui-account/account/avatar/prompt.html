@@ -48,14 +48,12 @@
 							<div style="background-image: url({{upload.blob}});" class="avatar {{#unless upload}}question-mark icon-upload{{/unless}}">
 							</div>
 							<div class="action">
+								<div class="button primary">{{_ "Select_file"}}
+									<input type="file" class="avatar-file-input" accept="image/*">
+								</div>
 								{{#with upload}}
 									<button type="button" class="button primary select-service">{{_ "Use_uploaded_avatar"}}</button>
 								{{/with}}
-								{{#unless upload}}
-									<div class="button primary">{{_ "Select_file"}}
-										<input type="file" class="avatar-file-input" accept="image/*">
-									</div>
-								{{/unless}}
 							</div>
 						</div>
 						<div class="avatar-suggestion-item">

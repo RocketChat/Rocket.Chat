@@ -1,0 +1,30 @@
+<template name="messages">
+	<div class="messages">
+		<div class="wrapper">
+			<ul>
+				{{#each messages}}
+					{{#nrr nrrargs 'message' .}}{{/nrr}}
+				{{/each}}
+			</ul>
+		</div>
+		<div class="new-message not">
+			<span>New messages</span>
+		</div>
+
+		<div class="error">
+			<span></span>
+		</div>
+	</div>
+	<div class="footer">
+		<div class="input-wrapper">
+			<textarea class="input-message" placeholder="Type your message"></textarea>
+		</div>
+		<i class="send-button icon-paper-plane" aria-label="{{_ "Send"}}"></i>
+		<p class="powered-by">
+			Powered by
+			<a href="https://rocket.chat" target="_blank">
+				<img class="logo" src="/images/logo/logo-dark.svg?v=1">
+			</a>
+		</p>
+	</div>
+</template>

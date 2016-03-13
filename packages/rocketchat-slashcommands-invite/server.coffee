@@ -37,8 +37,9 @@ class Invite
 			}
 			return
 
-		Meteor.runAsUser user._id, ->
-			Meteor.call 'joinRoom', item.rid
+		Meteor.call 'addUserToRoom',
+			rid: item.rid
+			username: user.username
 
 
 RocketChat.slashCommands.add 'invite', Invite

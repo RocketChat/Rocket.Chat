@@ -2,7 +2,5 @@ Meteor.publish 'roles', ->
 	unless @userId
 		return @ready()
 
-	if not RocketChat.authz.hasPermission @userId, 'access-rocket-permissions'
-		throw new Meteor.Error "not-authorized"
+	return RocketChat.models.Roles.find()
 
-	return RocketChat.authz.getRoles()

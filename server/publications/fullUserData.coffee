@@ -18,6 +18,8 @@ Meteor.publish 'fullUserData', (filter, limit) ->
 			active: 1
 			services: 1
 			roles : 1
+			requirePasswordChange : 1
+			requirePasswordChangeReason : 1
 	else
 		limit = 1
 
@@ -30,8 +32,6 @@ Meteor.publish 'fullUserData', (filter, limit) ->
 		fields: fields
 		limit: limit
 		sort: { username: 1 }
-
-	console.log '[publish] fullUserData'.green, filter, limit
 
 	if filter
 		if limit is 1

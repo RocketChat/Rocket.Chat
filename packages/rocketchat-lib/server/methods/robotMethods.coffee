@@ -6,8 +6,6 @@ Meteor.methods
 		unless RocketChat.authz.hasRole Meteor.userId(), 'robot'
 			throw new Meteor.Error 'unauthorized', '[methods] robot.modelCall -> Unauthorized'
 
-		console.log '[method] robot.modelCall'.green, arguments
-
 		unless _.isFunction RocketChat.models[model]?[method]
 			throw new Meteor.Error 'invalid-method', '[methods] robot.modelCall -> Invalid method'
 

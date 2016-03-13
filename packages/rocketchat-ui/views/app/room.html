@@ -13,27 +13,26 @@
 						<a href="#favorite" class="toggle-favorite"><i class="{{favorite}}" aria-label="{{_ favoriteLabel}}"></i></a>
 					{{/if}}
 					<i class="{{roomIcon}} status-{{userStatus}}"></i>
-					<span class="room-title {{editingTitle}}">{{roomName}}</span>
-					{{#if canEditName}}
-					<input type="text" id="room-title-field" class="{{showEditingTitle}}" value="{{roomNameEdit}}" dir="auto">
-					<a href="#edit" class="edit-room-title"><i class="icon-pencil" aria-label="{{_ "Edit"}}"></i></a>
-					{{/if}}
+					<span class="room-title">{{roomName}}</span>
+					<span class="room-topic">{{roomTopic}}</span>
 				</h2>
 			</header>
 			<div class="container-bars">
 				{{#each uploading}}
 					<div class="upload-progress {{#if error}}upload-error{{/if}}">
 						{{#if error}}
-							{{error}}
-							<a href="##">
-								close
-							</a>
+							<div class="upload-progress-text">
+								{{error}}
+								<a href="#">
+									{{_ "close"}}
+								</a>
+							</div>
 						{{else}}
 							<div class="upload-progress-progress" style="width: {{percentage}}%;"></div>
 							<div class="upload-progress-text">
 								{{name}}... {{percentage}}%
 								<a href="#">
-									cancel
+									{{_ "cancel"}}
 								</a>
 							</div>
 						{{/if}}
@@ -42,17 +41,20 @@
 				{{#if unreadCount}}
 					{{#if unreadSince}}
 						<div class="unread-bar">
+							<a class="jump-to">
+								{{_ "Jump_to_first_unread"}}
+							</a>
 							{{_ "S_new_messages_since_s" unreadCount formatUnreadSince}}
-							<a>
+							<a class="mark-read">
 								{{_ "Mark_as_read"}}
 							</a>
 						</div>
 					{{/if}}
 				{{/if}}
 			</div>
-			<div class="messages-box {{compactView}}">
+			<div class="messages-box {{#if selectable}}selectable{{/if}} {{compactView}}">
 				<div class="ticks-bar"></div>
-				<div class="wrapper">
+				<div class="wrapper {{#if hasMoreNext}}has-more-next{{/if}}">
 					<ul aria-live="polite">
 						{{#if hasMore}}
 							<li class="load-more">
@@ -70,11 +72,23 @@
 						{{#each messagesHistory}}
 							{{#nrr nrrargs 'message' .}}{{/nrr}}
 						{{/each}}
+						{{#if hasMoreNext}}
+							<li class="load-more">
+								{{#if isLoading}}
+									<div class="load-more-loading">{{_ "Loading_more_from_history"}}...</div>
+								{{else}}
+									<a href="">{{_ "Has_more"}}...</a>
+								{{/if}}
+							</li>
+						{{/if}}
 					</ul>
 				</div>
 				<div class="new-message not">
 					<i class="icon-down-big"></i>
 					<span>{{_ "New_messages"}}</span>
+				</div>
+				<div class="jump-recent {{#unless hasMoreNext}}not{{/unless}}">
+					<span class="jump-link">{{_ "Jump_to_recent_messages"}} <i class="icon-level-down"></i></span>
 				</div>
 			</div>
 			<footer class="footer">

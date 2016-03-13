@@ -19,9 +19,9 @@ const pkgdef :Spk.PackageDefinition = (
 
     appTitle = (defaultText = "Rocket.Chat"),
 
-    appVersion = 1,  # Increment this for every release.
+    appVersion = 18,  # Increment this for every release.
 
-    appMarketingVersion = (defaultText = "0.6"),
+    appMarketingVersion = (defaultText = "0.21.0"),
     # Human-readable representation of appVersion. Should match the way you
     # identify versions of your app in documentation and marketing.
 
@@ -50,7 +50,7 @@ const pkgdef :Spk.PackageDefinition = (
       website = "https://rocket.chat",
       codeUrl = "https://github.com/RocketChat/Rocket.Chat",
       license = (openSource = mit),
-      categories = [communications, productivity],
+      categories = [communications, productivity, office, social, developerTools],
 
       author = (
         contactEmail = "team@rocket.chat",
@@ -63,7 +63,10 @@ const pkgdef :Spk.PackageDefinition = (
       shortDescription = (defaultText = "Chat app"),
 
       screenshots = [
-        (width = 1203, height = 760, png = embed "screenshot.png")
+        (width = 1024, height = 696, png = embed "screenshot1.png"),
+        (width = 1024, height = 696, png = embed "screenshot2.png"),
+        (width = 1024, height = 696, png = embed "screenshot3.png"),
+        (width = 1024, height = 696, png = embed "screenshot4.png")
       ],
 
       changeLog = (defaultText = embed "CHANGELOG.md"),
@@ -92,6 +95,9 @@ const myCommand :Spk.Manifest.Command = (
   environ = [
     # Note that this defines the *entire* environment seen by your app.
     (key = "PATH", value = "/usr/local/bin:/usr/bin:/bin"),
-    (key = "SANDSTORM", value = "1")
+    (key = "SANDSTORM", value = "1"),
+    (key = "Statistics_opt_out", value = "true"),
+    (key = "Accounts_AllowUserAvatarChange", value = "false"),
+    (key = "Accounts_AllowUserProfileChange", value = "false")
   ]
 );

@@ -1,1 +1,4 @@
-{ }
+{
+  "Channel_doesnt_exist" : "不存在 `#%s` 频道。",
+  "Join_the_given_channel" : "加入该频道"
+}

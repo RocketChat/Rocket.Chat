@@ -1,7 +1,5 @@
 Meteor.methods
 	saveUserPreferences: (settings) ->
-		console.log '[method] saveUserPreferences', settings
-
 		if Meteor.userId()
 			preferences = {}
 
@@ -28,6 +26,11 @@ Meteor.methods
 
 			if settings.autoImageLoad?
 				preferences.autoImageLoad = if settings.autoImageLoad is "1" then true else false
+
+			if settings.emailNotificationMode?
+				preferences.emailNotificationMode = settings.emailNotificationMode
+
+			preferences.highlights = settings.highlights
 
 			RocketChat.models.Users.setPreferences Meteor.userId(), preferences
 

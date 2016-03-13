@@ -1,9 +1,10 @@
 @SideNav = (->
-
+	initiated = false
 	sideNav = {}
 	flexNav = {}
 	arrow = {}
 	animating = false
+	openQueue = []
 
 	toggleArrow = (status = null) ->
 		if status is -1 or (status isnt 1 and arrow.hasClass "top")
@@ -61,6 +62,9 @@
 		, 500
 
 	openFlex = (callback = null) ->
+		if not initiated
+			return openQueue.push { config: getFlex(), callback: callback }
+
 		return if animating == true
 		toggleArrow 1
 		toggleFlex 1, callback
@@ -90,6 +94,14 @@
 		arrow = sideNav.children ".arrow"
 		setFlex ""
 		arrowBindHover()
+		initiated = true
+
+		if openQueue.length > 0
+			openQueue.forEach (item) ->
+				setFlex item.config.template, item.config.data
+				openFlex item.callback
+
+			openQueue = []
 
 	getSideNav = ->
 		return sideNav

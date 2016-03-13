@@ -1,4 +1,4 @@
-@AudioRecorder = new class 
+@AudioRecorder = new class
 	start: (cb) ->
 		window.AudioContext = window.AudioContext or window.webkitAudioContext
 		navigator.getUserMedia = navigator.getUserMedia or navigator.webkitGetUserMedia
@@ -28,7 +28,7 @@
 		if cb?
 			@getBlob cb
 
-		@stream.stop()
+		@stream.getAudioTracks()[0].stop()
 
 		@recorder.clear()
 

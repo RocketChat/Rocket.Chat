@@ -32,6 +32,10 @@ RocketChat.MessageAction = new class
 				btns[id] = _.extend btns[id], config
 				buttons.set btns
 
+	getButtonById = (id) ->
+		allButtons = buttons.get()
+		return allButtons[id]
+
 	getButtons = (message) ->
 		allButtons = _.toArray buttons.get()
 		if message
@@ -50,6 +54,7 @@ RocketChat.MessageAction = new class
 	removeButton: removeButton
 	updateButton: updateButton
 	getButtons: getButtons
+	getButtonById: getButtonById
 	resetButtons: resetButtons
 
 Meteor.startup ->
@@ -108,6 +113,8 @@ Meteor.startup ->
 					timer: 1000
 					showConfirmButton: false
 
+				if chatMessages[Session.get('openedRoom')].editing.id is message._id
+					chatMessages[Session.get('openedRoom')].clearEditing(message)
 				chatMessages[Session.get('openedRoom')].deleteMsg(message)
 		validation: (message) ->
 			return RocketChat.authz.hasAtLeastOnePermission('delete-message', message.rid ) or RocketChat.settings.get('Message_AllowDeleting') and message.u?._id is Meteor.userId()

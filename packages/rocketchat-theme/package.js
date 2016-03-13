@@ -9,6 +9,7 @@ Package.onUse(function(api) {
 	api.versionsFrom('1.0');
 
 	api.use('rocketchat:lib');
+	api.use('rocketchat:logger');
 	api.use('coffeescript');
 	api.use('underscore');
 	api.use('webapp');
@@ -24,7 +25,6 @@ Package.onUse(function(api) {
 
 	api.addAssets('assets/stylesheets/global/_variables.less', 'server');
 	api.addAssets('assets/stylesheets/utils/_colors.import.less', 'server');
-	api.addAssets('assets/stylesheets/utils/_emojione.import.less', 'server');
 	api.addAssets('assets/stylesheets/utils/_keyframes.import.less', 'server');
 	api.addAssets('assets/stylesheets/utils/_lesshat.import.less', 'server');
 	api.addAssets('assets/stylesheets/utils/_preloader.import.less', 'server');
@@ -46,9 +46,8 @@ Package.onUse(function(api) {
 			return 'i18n/' + filename;
 		}
 	}));
-	api.use('tap:i18n@1.6.1', ['client', 'server']);
-	api.imply('tap:i18n');
-	api.addFiles(tapi18nFiles, ['client', 'server']);
+	api.use('tap:i18n');
+	api.addFiles(tapi18nFiles);
 });
 
 Npm.depends({

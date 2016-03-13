@@ -1,14 +1,18 @@
+logger = new Logger 'rocketchat:lib',
+	methods:
+		oauth_updated:
+			type: 'info'
+
 timer = undefined
-oAuthServicesUpdate = ->
+OAuthServicesUpdate = ->
 	Meteor.clearTimeout timer if timer?
 
 	timer = Meteor.setTimeout ->
-		services = RocketChat.models.Settings.find({_id: /^(Accounts_OAuth_|Accounts_OAuth_Custom_)[a-z_-]+$/i}).fetch()
+		services = RocketChat.models.Settings.find({_id: /^(Accounts_OAuth_|Accounts_OAuth_Custom_)[a-z0-9_-]+$/i}).fetch()
 		for service in services
-			console.log "Updating login service #{service._id}".blue
+			logger.oauth_updated service._id
 
 			serviceName = service._id.replace('Accounts_OAuth_', '')
-
 			if serviceName is 'Meteor'
 				serviceName = 'meteor-developer'
 
@@ -29,12 +33,14 @@ oAuthServicesUpdate = ->
 					data.authorizePath = RocketChat.models.Settings.findOneById("#{service._id}_authorize_path")?.value
 					data.buttonLabelText = RocketChat.models.Settings.findOneById("#{service._id}_button_label_text")?.value
 					data.buttonLabelColor = RocketChat.models.Settings.findOneById("#{service._id}_button_label_color")?.value
+					data.loginStyle = RocketChat.models.Settings.findOneById("#{service._id}_login_style")?.value
 					data.buttonColor = RocketChat.models.Settings.findOneById("#{service._id}_button_color")?.value
 					new CustomOAuth serviceName.toLowerCase(),
 						serverURL: data.serverURL
 						tokenPath: data.tokenPath
 						identityPath: data.identityPath
 						authorizePath: data.authorizePath
+						loginStyle: data.loginStyle
 
 				if serviceName is 'Facebook'
 					data.appId = data.clientId
@@ -48,15 +54,21 @@ oAuthServicesUpdate = ->
 				ServiceConfiguration.configurations.remove {service: serviceName.toLowerCase()}
 	, 2000
 
+
+OAuthServicesRemove = (_id) ->
+	serviceName = _id.replace('Accounts_OAuth_Custom_', '')
+	ServiceConfiguration.configurations.remove {service: serviceName.toLowerCase()}
+
+
 RocketChat.models.Settings.find().observe
 	added: (record) ->
 		if /^Accounts_OAuth_.+/.test record._id
-			oAuthServicesUpdate()
+			OAuthServicesUpdate()
 
 	changed: (record) ->
 		if /^Accounts_OAuth_.+/.test record._id
-			oAuthServicesUpdate()
+			OAuthServicesUpdate()
 
 	removed: (record) ->
-		if /^Accounts_OAuth_.+/.test record._id
-			oAuthServicesUpdate()
+		if /^Accounts_OAuth_Custom.+/.test record._id
+			OAuthServicesRemove record._id

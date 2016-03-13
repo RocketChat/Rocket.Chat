@@ -88,7 +88,7 @@ Template.messagePopupConfig.helpers
 						commands.push
 							_id: command
 							params: item.params
-							description: item.description
+							description: TAPi18n.__ item.description
 
 					if commands.length > 10
 						break
@@ -121,18 +121,18 @@ Template.messagePopupConfig.helpers
 					# show common used emojis, when use input a single ':'
 					if filter == ''
 						commonEmojis = [
-					            ':laughing:',
-					            ':smiley:',
-					            ':stuck_out_tongue:',
-					            ':sunglasses:',
-					            ':wink:',
-					            ':innocent:',
-					            ':flushed:',
-					            ':disappointed:',
-					            ':cry:',
-					            ':heart:',
-					            ':broken_heart:'
-					        ]
+								':laughing:',
+								':smiley:',
+								':stuck_out_tongue:',
+								':sunglasses:',
+								':wink:',
+								':innocent:',
+								':flushed:',
+								':disappointed:',
+								':cry:',
+								':heart:',
+								':broken_heart:'
+							]
 						for shortname in commonEmojis
 							results.push
 								_id: shortname

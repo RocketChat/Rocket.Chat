@@ -29,8 +29,8 @@ Template.videoCall.helpers
 	audioAndVideoEnabled: ->
 		return WebRTC.getInstanceByRoomId(Session.get('openedRoom')).audioEnabled.get() and WebRTC.getInstanceByRoomId(Session.get('openedRoom')).videoEnabled.get()
 
-	screenShareAvaliable: ->
-		return WebRTC.getInstanceByRoomId(Session.get('openedRoom')).screenShareAvaliable
+	screenShareAvailable: ->
+		return WebRTC.getInstanceByRoomId(Session.get('openedRoom')).screenShareAvailable
 
 	screenShareEnabled: ->
 		return WebRTC.getInstanceByRoomId(Session.get('openedRoom')).screenShareEnabled.get()

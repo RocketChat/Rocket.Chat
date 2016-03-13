@@ -1,7 +1,7 @@
 Meteor.methods
 	saveUserProfile: (settings) ->
 		unless RocketChat.settings.get("Accounts_AllowUserProfileChange")
-			throw new Meteor.Error(403, "[methods] resetAvatar -> Invalid access")
+			throw new Meteor.Error(403, "[methods] saveUserProfile -> Invalid access")
 
 		if Meteor.userId()
 			if settings.language?
@@ -15,6 +15,9 @@ Meteor.methods
 
 			if settings.username?
 				Meteor.call 'setUsername', settings.username
+
+			if settings.email?
+				Meteor.call 'setEmail', settings.email
 
 			profile = {}
 

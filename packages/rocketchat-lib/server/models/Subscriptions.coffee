@@ -25,6 +25,15 @@ RocketChat.models.Subscriptions = new class extends RocketChat.models._Base
 
 		return @find query, options
 
+	# FIND
+	findByRoomIdAndRoles: (roomId, roles, options) ->
+		roles = [].concat roles
+		query =
+			"rid": roomId
+			"roles": { $in: roles }
+
+		return @find query, options
+
 	getLastSeen: (options = {}) ->
 		query = { ls: { $exists: 1 } }
 		options.sort = { ls: -1 }
@@ -54,7 +63,7 @@ RocketChat.models.Subscriptions = new class extends RocketChat.models._Base
 		update =
 			$set:
 				alert: false
-				open: false
+				open: true
 				archived: false
 
 		return @update query, update
@@ -210,6 +219,25 @@ RocketChat.models.Subscriptions = new class extends RocketChat.models._Base
 
 		return @update query, update, { multi: true }
 
+	addRoleById: (_id, role) ->
+		query =
+			_id: _id
+
+		update =
+			$addToSet:
+				roles: role
+
+		return @update query, update
+
+	removeRoleById: (_id, role) ->
+		query =
+			_id: _id
+
+		update =
+			$pull:
+				roles: role
+
+		return @update query, update
 
 	# INSERT
 	createWithRoomAndUser: (room, user, extraData) ->

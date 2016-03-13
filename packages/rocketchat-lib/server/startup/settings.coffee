@@ -1,139 +1,181 @@
 # Insert server unique id if it doesn't exist
 if not RocketChat.models.Settings.findOneById 'uniqueID'
-	RocketChat.settings.add 'uniqueID', Random.id(), { persistent: true }
+	RocketChat.models.Settings.createWithIdAndValue 'uniqueID', process.env.DEPLOYMENT_ID or Random.id()
 
-RocketChat.settings.addGroup 'Accounts'
-RocketChat.settings.add 'Accounts_EmailVerification', false, { type: 'boolean', group: 'Accounts', public: true, section: 'Registration' }
-RocketChat.settings.add 'Accounts_ManuallyApproveNewUsers', false, { type: 'boolean', group: 'Accounts', section: 'Registration' }
-RocketChat.settings.add 'Accounts_AnonymousAccess', 'None', { type: 'select', values: [ { key: 'None', i18nLabel: 'Accounts_AnonymousAccess_None' }, { key: 'Read', i18nLabel: 'Accounts_AnonymousAccess_Read' }, { key: 'ReadWrite', i18nLabel: 'Accounts_AnonymousAccess_ReadWrite' } ], group: 'Accounts', section: 'Registration' }
-# RocketChat.settings.add 'Accounts_AnonymousAccess', 'None', { type: 'select', values: [ { key: 'None', i18nLabel: 'Accounts_AnonymousAccess_None' } ], group: 'Accounts', section: 'Registration' }
-RocketChat.settings.add 'Accounts_AllowedDomainsList', '', { type: 'string', group: 'Accounts', public: true, section: 'Registration' }
+RocketChat.settings.addGroup 'Accounts', ->
+	@add 'Accounts_AllowDeleteOwnAccount', false, { type: 'boolean', public: true }
+	@add 'Accounts_AllowUserProfileChange', true, { type: 'boolean', public: true }
+	@add 'Accounts_AllowUserAvatarChange', true, { type: 'boolean', public: true }
+	@add 'Accounts_AllowUsernameChange', true, { type: 'boolean', public: true }
+	@add 'Accounts_AllowEmailChange', true, { type: 'boolean', public: true }
+	@add 'Accounts_AllowPasswordChange', true, { type: 'boolean', public: true }
+	@add 'Accounts_RequireNameForSignUp', true, { type: 'boolean', public: true }
+	@add 'Accounts_LoginExpiration', 90, { type: 'int', public: true }
+	@add 'Accounts_ShowFormLogin', true, { type: 'boolean', public: true }
+	@add 'Accounts_EmailOrUsernamePlaceholder', '', { type: 'string', public: true, i18nLabel: 'Placeholder_for_email_or_username_login_field' }
+	@add 'Accounts_PasswordPlaceholder', '', { type: 'string', public: true, i18nLabel: 'Placeholder_for_password_login_field' }
+	@add 'Accounts_AnonymousAccess', 'None', { type: 'select', values: [ { key: 'None', i18nLabel: 'Accounts_AnonymousAccess_None' }, { key: 'Read', i18nLabel: 'Accounts_AnonymousAccess_Read' }, { key: 'ReadWrite', i18nLabel: 'Accounts_AnonymousAccess_ReadWrite' } ] }
 
-RocketChat.settings.add 'Accounts_RegistrationForm', 'Public', { type: 'select', group: 'Accounts', public: true, section: 'Registration', values: [ { key: 'Public', i18nLabel: 'Accounts_RegistrationForm_Public' }, { key: 'Disabled', i18nLabel: 'Accounts_RegistrationForm_Disabled' }, { key: 'Secret URL', i18nLabel: 'Accounts_RegistrationForm_Secret_URL' } ] }
-RocketChat.settings.add 'Accounts_RegistrationForm_SecretURL', Random.id(), { type: 'string', group: 'Accounts', section: 'Registration' }
-RocketChat.settings.add 'Accounts_RegistrationForm_LinkReplacementText', 'New user registration is currently disabled', { type: 'string', group: 'Accounts', section: 'Registration', public: true }
-RocketChat.settings.add 'Accounts_Registration_AuthenticationServices_Enabled', true, { type: 'boolean', group: 'Accounts', section: 'Registration', public: true }
+	@section 'Registration', ->
+		@add 'Accounts_EmailVerification', false, { type: 'boolean', public: true, enableQuery: {_id: 'SMTP_Host', value: { $exists: 1, $ne: "" } } }
+		@add 'Accounts_ManuallyApproveNewUsers', false, { type: 'boolean' }
+		@add 'Accounts_AllowedDomainsList', '', { type: 'string', public: true }
+		@add 'Accounts_RegistrationForm', 'Public', { type: 'select', public: true, values: [ { key: 'Public', i18nLabel: 'Accounts_RegistrationForm_Public' }, { key: 'Disabled', i18nLabel: 'Accounts_RegistrationForm_Disabled' }, { key: 'Secret URL', i18nLabel: 'Accounts_RegistrationForm_Secret_URL' } ] }
+		@add 'Accounts_RegistrationForm_SecretURL', Random.id(), { type: 'string' }
+		@add 'Accounts_RegistrationForm_LinkReplacementText', 'New user registration is currently disabled', { type: 'string', public: true }
+		@add 'Accounts_Registration_AuthenticationServices_Enabled', true, { type: 'boolean', public: true }
+		@add 'Accounts_PasswordReset', true, { type: 'boolean', public: true }
 
-RocketChat.settings.add 'Accounts_AvatarStoreType', 'GridFS', { type: 'string', group: 'Accounts', section: 'Avatar' }
-RocketChat.settings.add 'Accounts_AvatarStorePath', '', { type: 'string', group: 'Accounts', section: 'Avatar' }
-RocketChat.settings.add 'Accounts_AvatarResize', false, { type: 'boolean', group: 'Accounts', section: 'Avatar' }
-RocketChat.settings.add 'Accounts_AvatarSize', 200, { type: 'int', group: 'Accounts', section: 'Avatar' }
+	@section 'Avatar', ->
+		@add 'Accounts_AvatarResize', true, { type: 'boolean' }
+		@add 'Accounts_AvatarSize', 200, { type: 'int', enableQuery: {_id: 'Accounts_AvatarResize', value: true} }
+		@add 'Accounts_AvatarStoreType', 'GridFS', { type: 'select', values: [ { key: 'GridFS', i18nLabel: 'GridFS' }, { key: 'FileSystem', i18nLabel: 'FileSystem' } ] }
+		@add 'Accounts_AvatarStorePath', '', { type: 'string', enableQuery: {_id: 'Accounts_AvatarStoreType', value: 'FileSystem'} }
 
-RocketChat.settings.add 'Accounts_OAuth_Facebook', false, { type: 'boolean', group: 'Accounts', section: 'Facebook', public: true }
-RocketChat.settings.add 'Accounts_OAuth_Facebook_id', '', { type: 'string', group: 'Accounts', section: 'Facebook' }
-RocketChat.settings.add 'Accounts_OAuth_Facebook_secret', '', { type: 'string', group: 'Accounts', section: 'Facebook' }
-RocketChat.settings.add 'Accounts_OAuth_Google', false, { type: 'boolean', group: 'Accounts', section: 'Google', public: true }
-RocketChat.settings.add 'Accounts_OAuth_Google_id', '', { type: 'string', group: 'Accounts', section: 'Google' }
-RocketChat.settings.add 'Accounts_OAuth_Google_secret', '', { type: 'string', group: 'Accounts', section: 'Google' }
-RocketChat.settings.add 'Accounts_OAuth_Github', false, { type: 'boolean', group: 'Accounts', section: 'Github', public: true }
-RocketChat.settings.add 'Accounts_OAuth_Github_id', '', { type: 'string', group: 'Accounts', section: 'Github' }
-RocketChat.settings.add 'Accounts_OAuth_Github_secret', '', { type: 'string', group: 'Accounts', section: 'Github' }
-RocketChat.settings.add 'Accounts_OAuth_Gitlab', false, { type: 'boolean', group: 'Accounts', section: 'Gitlab', public: true }
-RocketChat.settings.add 'Accounts_OAuth_Gitlab_id', '', { type: 'string', group: 'Accounts', section: 'Gitlab' }
-RocketChat.settings.add 'Accounts_OAuth_Gitlab_secret', '', { type: 'string', group: 'Accounts', section: 'Gitlab' }
-RocketChat.settings.add 'Accounts_OAuth_Linkedin', false, { type: 'boolean', group: 'Accounts', section: 'Linkedin', public: true }
-RocketChat.settings.add 'Accounts_OAuth_Linkedin_id', '', { type: 'string', group: 'Accounts', section: 'Linkedin' }
-RocketChat.settings.add 'Accounts_OAuth_Linkedin_secret', '', { type: 'string', group: 'Accounts', section: 'Linkedin' }
-RocketChat.settings.add 'Accounts_OAuth_Meteor', false, { type: 'boolean', group: 'Accounts', section: 'Meteor', public: true }
-RocketChat.settings.add 'Accounts_OAuth_Meteor_id', '', { type: 'string', group: 'Accounts', section: 'Meteor' }
-RocketChat.settings.add 'Accounts_OAuth_Meteor_secret', '', { type: 'string', group: 'Accounts', section: 'Meteor' }
-RocketChat.settings.add 'Accounts_OAuth_Twitter', false, { type: 'boolean', group: 'Accounts', section: 'Twitter', public: true }
-RocketChat.settings.add 'Accounts_OAuth_Twitter_id', '', { type: 'string', group: 'Accounts', section: 'Twitter' }
-RocketChat.settings.add 'Accounts_OAuth_Twitter_secret', '', { type: 'string', group: 'Accounts', section: 'Twitter' }
+RocketChat.settings.addGroup 'OAuth', ->
 
-RocketChat.settings.add 'Accounts_AllowUserProfileChange', true, { type: 'boolean', group: 'Accounts', section: 'General', public: true }
-RocketChat.settings.add 'Accounts_AllowUserAvatarChange', true, { type: 'boolean', group: 'Accounts', section: 'General', public: true }
-RocketChat.settings.add 'Accounts_AllowUsernameChange', true, { type: 'boolean', group: 'Accounts', section: 'General', public: true }
-RocketChat.settings.add 'Accounts_AllowPasswordChange', true, { type: 'boolean', group: 'Accounts', section: 'General', public: true }
-RocketChat.settings.add 'Accounts_RequireNameForSignUp', true, { type: 'boolean', group: 'Accounts', section: 'General', public: true }
+	@section 'Facebook', ->
+		@add 'Accounts_OAuth_Facebook', false, { type: 'boolean', public: true }
+		@add 'Accounts_OAuth_Facebook_id', '', { type: 'string', enableQuery: {_id: 'Accounts_OAuth_Facebook', value: true} }
+		@add 'Accounts_OAuth_Facebook_secret', '', { type: 'string', enableQuery: {_id: 'Accounts_OAuth_Facebook', value: true} }
+		@add 'Accounts_OAuth_Facebook_callback_url', __meteor_runtime_config__?.ROOT_URL + '_oauth/facebook', { type: 'string', blocked: true }
 
-RocketChat.settings.addGroup 'FileUpload'
-RocketChat.settings.add 'FileUpload_Enabled', true, { type: 'boolean', group: 'FileUpload', public: true }
-RocketChat.settings.add 'FileUpload_MaxFileSize', 2097152, { type: 'int', group: 'FileUpload', public: true }
-RocketChat.settings.add 'FileUpload_MediaTypeWhiteList', 'image/*,audio/*,application/pdf,text/plain,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document', { type: 'string', group: 'FileUpload', public: true, i18nDescription: 'FileUpload_MediaTypeWhiteListDescription' }
+	@section 'Google', ->
+		@add 'Accounts_OAuth_Google', false, { type: 'boolean', public: true }
+		@add 'Accounts_OAuth_Google_id', '', { type: 'string', enableQuery: {_id: 'Accounts_OAuth_Google', value: true} }
+		@add 'Accounts_OAuth_Google_secret', '', { type: 'string', enableQuery: {_id: 'Accounts_OAuth_Google', value: true} }
+		@add 'Accounts_OAuth_Google_callback_url', __meteor_runtime_config__?.ROOT_URL + '_oauth/google', { type: 'string', blocked: true }
+
+	@section 'GitHub', ->
+		@add 'Accounts_OAuth_Github', false, { type: 'boolean', public: true }
+		@add 'Accounts_OAuth_Github_id', '', { type: 'string', enableQuery: {_id: 'Accounts_OAuth_Github', value: true} }
+		@add 'Accounts_OAuth_Github_secret', '', { type: 'string', enableQuery: {_id: 'Accounts_OAuth_Github', value: true} }
+		@add 'Accounts_OAuth_Github_callback_url', __meteor_runtime_config__?.ROOT_URL + '_oauth/github', { type: 'string', blocked: true }
+
+	@section 'Linkedin', ->
+		@add 'Accounts_OAuth_Linkedin', false, { type: 'boolean', public: true }
+		@add 'Accounts_OAuth_Linkedin_id', '', { type: 'string', enableQuery: {_id: 'Accounts_OAuth_Linkedin', value: true} }
+		@add 'Accounts_OAuth_Linkedin_secret', '', { type: 'string', enableQuery: {_id: 'Accounts_OAuth_Linkedin', value: true} }
+		@add 'Accounts_OAuth_Linkedin_callback_url', __meteor_runtime_config__?.ROOT_URL + '_oauth/linkedin', { type: 'string', blocked: true }
+
+	@section 'Meteor', ->
+		@add 'Accounts_OAuth_Meteor', false, { type: 'boolean', public: true }
+		@add 'Accounts_OAuth_Meteor_id', '', { type: 'string', enableQuery: {_id: 'Accounts_OAuth_Meteor', value: true} }
+		@add 'Accounts_OAuth_Meteor_secret', '', { type: 'string', enableQuery: {_id: 'Accounts_OAuth_Meteor', value: true} }
+		@add 'Accounts_OAuth_Meteor_callback_url', __meteor_runtime_config__?.ROOT_URL + '_oauth/meteor', { type: 'string', blocked: true }
+
+	@section 'Twitter', ->
+		@add 'Accounts_OAuth_Twitter', false, { type: 'boolean', public: true }
+		@add 'Accounts_OAuth_Twitter_id', '', { type: 'string', enableQuery: {_id: 'Accounts_OAuth_Twitter', value: true} }
+		@add 'Accounts_OAuth_Twitter_secret', '', { type: 'string', enableQuery: {_id: 'Accounts_OAuth_Twitter', value: true} }
+		@add 'Accounts_OAuth_Twitter_callback_url', __meteor_runtime_config__?.ROOT_URL + '_oauth/twitter', { type: 'string', blocked: true }
 
 
-RocketChat.settings.addGroup 'General'
-RocketChat.settings.add 'Site_Url', __meteor_runtime_config__?.ROOT_URL, { type: 'string', group: 'General', i18nDescription: 'Site_Url_Description', public: true }
-RocketChat.settings.add 'Site_Name', 'Rocket.Chat', { type: 'string', group: 'General', public: true }
-RocketChat.settings.add 'Allow_Invalid_SelfSigned_Certs', false, { type: 'boolean', group: 'General' }
-RocketChat.settings.add 'Disable_Favorite_Rooms', false, { type: 'boolean', group: 'General' }
-RocketChat.settings.add 'CDN_PREFIX', '', { type: 'string', group: 'General' }
+RocketChat.settings.addGroup 'General', ->
 
-RocketChat.settings.add 'UTF8_Names_Validation', '[0-9a-zA-Z-_.]+', { type: 'string', group: 'General', section: 'UTF8', public: true }
-RocketChat.settings.add 'UTF8_Names_Slugify', true, { type: 'boolean', group: 'General', section: 'UTF8', public: true }
+	@add 'Site_Url', __meteor_runtime_config__?.ROOT_URL, { type: 'string', i18nDescription: 'Site_Url_Description', public: true }
+	@add 'Site_Name', 'Rocket.Chat', { type: 'string', public: true }
+	@add 'Language', '', { type: 'language', public: true }
+	@add 'Allow_Invalid_SelfSigned_Certs', false, { type: 'boolean' }
+	@add 'Disable_Favorite_Rooms', false, { type: 'boolean' }
+	@add 'CDN_PREFIX', '', { type: 'string' }
+	@add 'Force_SSL', false, { type: 'boolean', public: true }
+	@add 'GoogleTagManager_id', '', { type: 'string', public: true }
+	@add 'Restart', 'restart_server', { type: 'action', actionText: 'Restart_the_server' }
 
-RocketChat.settings.addGroup 'API'
-RocketChat.settings.add 'API_Analytics', '', { type: 'string', group: 'API', public: true }
-RocketChat.settings.add 'API_Embed', true, { type: 'boolean', group: 'API', public: true }
-RocketChat.settings.add 'API_EmbedDisabledFor', '', { type: 'string', group: 'API', public: true, i18nDescription: 'API_EmbedDisabledFor_Description' }
+	@section 'UTF8', ->
+		@add 'UTF8_Names_Validation', '[0-9a-zA-Z-_.]+', { type: 'string', public: true, i18nDescription: 'UTF8_Names_Validation_Description'}
+		@add 'UTF8_Names_Slugify', true, { type: 'boolean', public: true }
 
-RocketChat.settings.addGroup 'SMTP'
-RocketChat.settings.add 'SMTP_Host', '', { type: 'string', group: 'SMTP' }
-RocketChat.settings.add 'SMTP_Port', '', { type: 'string', group: 'SMTP' }
-RocketChat.settings.add 'SMTP_Username', '', { type: 'string', group: 'SMTP' }
-RocketChat.settings.add 'SMTP_Password', '', { type: 'string', group: 'SMTP' }
-RocketChat.settings.add 'From_Email', '', { type: 'string', group: 'SMTP', placeholder: 'email@domain' }
+	@section 'Reporting', ->
+		@add 'Statistics_opt_out', false, { type: 'boolean', i18nLabel: "Opt_out_statistics" }
 
-RocketChat.settings.add 'Invitation_Subject', 'You have been invited to Rocket.Chat', { type: 'string', group: 'SMTP', section: 'Invitation' }
-RocketChat.settings.add 'Invitation_HTML', '<h2>You have been invited to <h1>Rocket.Chat</h1></h2><p>Go to ' + __meteor_runtime_config__?.ROOT_URL + ' and try the best open source chat solution available today!</p>', { type: 'string', multiline: true, group: 'SMTP', section: 'Invitation' }
-RocketChat.settings.add 'Accounts_Enrollment_Email',  '', { type: 'string', multiline: true,  group: 'SMTP', section: 'Invitation' }
 
-RocketChat.settings.addGroup 'Message'
-RocketChat.settings.add 'Message_AllowEditing', true, { type: 'boolean', group: 'Message', public: true }
-RocketChat.settings.add 'Message_AllowEditing_BlockEditInMinutes', 0, { type: 'int', group: 'Message', public: true, i18nDescription: 'Message_AllowEditing_BlockEditInMinutesDescription' }
-RocketChat.settings.add 'Message_AllowDeleting', true, { type: 'boolean', group: 'Message', public: true }
-RocketChat.settings.add 'Message_AllowPinning', true, { type: 'boolean', group: 'Message', public: true }
-RocketChat.settings.add 'Message_ShowEditedStatus', true, { type: 'boolean', group: 'Message', public: true }
-RocketChat.settings.add 'Message_ShowDeletedStatus', false, { type: 'boolean', group: 'Message', public: true }
-RocketChat.settings.add 'Message_KeepHistory', false, { type: 'boolean', group: 'Message', public: true }
-RocketChat.settings.add 'Message_MaxAllowedSize', 5000, { type: 'int', group: 'Message', public: true }
-RocketChat.settings.add 'Message_ShowFormattingTips', true, { type: 'boolean', group: 'Message', public: true }
-RocketChat.settings.add 'Message_AudioRecorderEnabled', true, { type: 'boolean', group: 'Message', public: true, i18nDescription: 'Message_AudioRecorderEnabledDescription' }
+RocketChat.settings.addGroup 'SMTP', ->
+	@add 'SMTP_Host', '', { type: 'string', env: true }
+	@add 'SMTP_Port', '', { type: 'string', env: true }
+	@add 'SMTP_Username', '', { type: 'string', env: true }
+	@add 'SMTP_Password', '', { type: 'string', env: true }
+	@add 'From_Email', '', { type: 'string', placeholder: 'email@domain' }
+	@add 'SMTP_Test_Button', 'sendSMTPTestEmail', { type: 'action', actionText: 'Send_a_test_mail_to_my_user' }
 
-RocketChat.settings.addGroup 'Meta'
-RocketChat.settings.add 'Meta_language', '', { type: 'string', group: 'Meta' }
-RocketChat.settings.add 'Meta_fb_app_id', '', { type: 'string', group: 'Meta' }
-RocketChat.settings.add 'Meta_robots', '', { type: 'string', group: 'Meta' }
-RocketChat.settings.add 'Meta_google-site-verification', '', { type: 'string', group: 'Meta' }
-RocketChat.settings.add 'Meta_msvalidate01', '', { type: 'string', group: 'Meta' }
+	@section 'Invitation', ->
+		@add 'Invitation_Subject', 'You have been invited to Rocket.Chat', { type: 'string' }
+		@add 'Invitation_HTML', '<h2>You have been invited to <h1>Rocket.Chat</h1></h2><p>Go to ' + __meteor_runtime_config__?.ROOT_URL + ' and try the best open source chat solution available today!</p>', { type: 'string', multiline: true }
+		@add 'Accounts_Enrollment_Email',  '', { type: 'string', multiline: true }
 
-RocketChat.settings.addGroup 'Push'
-RocketChat.settings.add 'Push_debug', false, { type: 'boolean', group: 'Push', public: true }
-RocketChat.settings.add 'Push_enable', false, { type: 'boolean', group: 'Push', public: true }
-RocketChat.settings.add 'Push_enable_gateway', true, { type: 'boolean', group: 'Push' }
-RocketChat.settings.add 'Push_gateway', 'https://rocket.chat', { type: 'string', group: 'Push' }
-RocketChat.settings.add 'Push_production', false, { type: 'boolean', group: 'Push', public: true }
-RocketChat.settings.add 'Push_apn_passphrase', '', { type: 'string', group: 'Push' }
-RocketChat.settings.add 'Push_apn_key', '', { type: 'string', multiline: true, group: 'Push' }
-RocketChat.settings.add 'Push_apn_cert', '', { type: 'string', multiline: true, group: 'Push' }
-RocketChat.settings.add 'Push_apn_dev_passphrase', '', { type: 'string', group: 'Push' }
-RocketChat.settings.add 'Push_apn_dev_key', '', { type: 'string', multiline: true, group: 'Push' }
-RocketChat.settings.add 'Push_apn_dev_cert', '', { type: 'string', multiline: true, group: 'Push' }
-RocketChat.settings.add 'Push_gcm_api_key', '', { type: 'string', group: 'Push' }
-RocketChat.settings.add 'Push_gcm_project_number', '', { type: 'string', group: 'Push', public: true }
 
-RocketChat.settings.addGroup 'Layout'
-RocketChat.settings.add 'Layout_Home_Title', 'Home', { type: 'string', group: 'Layout', public: true, section: 'Content' }
-RocketChat.settings.add 'Layout_Home_Body', 'Welcome to Rocket.Chat <br> Go to APP SETTINGS -> Layout to customize this intro.', { type: 'string', multiline: true, group: 'Layout', public: true, section: 'Content' }
-RocketChat.settings.add 'Layout_Terms_of_Service', 'Terms of Service <br> Go to APP SETTINGS -> Layout to customize this page.', { type: 'string', multiline: true, group: 'Layout', public: true, section: 'Content' }
-RocketChat.settings.add 'Layout_Privacy_Policy', 'Privacy Policy <br> Go to APP SETTINGS -> Layout to customize this page.', { type: 'string', multiline: true, group: 'Layout', public: true, section: 'Content' }
-RocketChat.settings.add 'Layout_Sidenav_Footer', '<div><a href="https://github.com/RocketChat/Rocket.Chat" class="logo" target="_blank"> <img src="/images/logo/logo.svg?v=3" /></a><div class="github-tagline"><span class="octicon octicon-pencil" style="color: #994C00"></span> with <span class="octicon octicon-heart" style="color: red"></span> on <span class="octicon octicon-mark-github"></span></div></div>', { type: 'string', group: 'Layout', public: true, i18nDescription: 'Layout_Sidenav_Footer_description' }
-RocketChat.settings.add 'Layout_Login_Header', '<a class="logo" href="/"><img src="/images/logo/logo.svg?v=3" /></a>', { type: 'string', multiline: true, group: 'Layout', public: true, section: 'Login' }
-RocketChat.settings.add 'Layout_Login_Terms', 'By proceeding to create your account and use Rocket.Chat, you are agreeing to our <a href="/terms-of-service">Terms of Service</a> and <a href="/privacy-policy">Privacy Policy</a>. If you do not agree, you cannot use Rocket.Chat.', { type: 'string', multiline: true, group: 'Layout', public: true, section: 'Login' }
+RocketChat.settings.addGroup 'Message', ->
+	@add 'Message_AllowEditing', true, { type: 'boolean', public: true }
+	@add 'Message_AllowEditing_BlockEditInMinutes', 0, { type: 'int', public: true, i18nDescription: 'Message_AllowEditing_BlockEditInMinutesDescription' }
+	@add 'Message_AllowDeleting', true, { type: 'boolean', public: true }
+	@add 'Message_AllowPinning', true, { type: 'boolean', public: true }
+	@add 'Message_ShowEditedStatus', true, { type: 'boolean', public: true }
+	@add 'Message_ShowDeletedStatus', false, { type: 'boolean', public: true }
+	@add 'Message_KeepHistory', false, { type: 'boolean', public: true }
+	@add 'Message_MaxAllowedSize', 5000, { type: 'int', public: true }
+	@add 'Message_ShowFormattingTips', true, { type: 'boolean', public: true }
+	@add 'Message_AudioRecorderEnabled', true, { type: 'boolean', public: true, i18nDescription: 'Message_AudioRecorderEnabledDescription' }
+	@add 'Message_GroupingPeriod', 300, { type: 'int', public: true, i18nDescription: 'Message_GroupingPeriodDescription' }
+	@add 'API_Embed', true, { type: 'boolean', public: true }
+	@add 'API_EmbedDisabledFor', '', { type: 'string', public: true, i18nDescription: 'API_EmbedDisabledFor_Description' }
 
-RocketChat.settings.add 'Statistics_opt_out', false, { type: 'boolean', group: false }
+
+RocketChat.settings.addGroup 'Meta', ->
+	@add 'Meta_language', '', { type: 'string' }
+	@add 'Meta_fb_app_id', '', { type: 'string' }
+	@add 'Meta_robots', '', { type: 'string' }
+	@add 'Meta_google-site-verification', '', { type: 'string' }
+	@add 'Meta_msvalidate01', '', { type: 'string' }
+
+
+RocketChat.settings.addGroup 'Push', ->
+	@add 'Push_debug', false, { type: 'boolean', public: true }
+	@add 'Push_enable', true, { type: 'boolean', public: true }
+	@add 'Push_enable_gateway', true, { type: 'boolean' }
+	@add 'Push_gateway', 'https://rocket.chat', { type: 'string' }
+	@add 'Push_production', true, { type: 'boolean', public: true }
+	@add 'Push_test_push', 'push_test', { type: 'action', actionText: 'Send_a_test_push_to_my_user' }
+
+	@section 'Certificates_and_Keys', ->
+		@add 'Push_apn_passphrase', '', { type: 'string' }
+		@add 'Push_apn_key', '', { type: 'string', multiline: true }
+		@add 'Push_apn_cert', '', { type: 'string', multiline: true }
+		@add 'Push_apn_dev_passphrase', '', { type: 'string' }
+		@add 'Push_apn_dev_key', '', { type: 'string', multiline: true }
+		@add 'Push_apn_dev_cert', '', { type: 'string', multiline: true }
+		@add 'Push_gcm_api_key', '', { type: 'string' }
+		@add 'Push_gcm_project_number', '', { type: 'string', public: true }
+
+	@section 'Privacy', ->
+		@add 'Push_show_username_room', true, { type: 'boolean', public: true }
+		@add 'Push_show_message', true, { type: 'boolean', public: true }
+
+
+RocketChat.settings.addGroup 'Layout', ->
+
+	@section 'Content', ->
+		@add 'Layout_Home_Title', 'Home', { type: 'string', public: true }
+		@add 'Layout_Home_Body', 'Welcome to Rocket.Chat <br> Go to APP SETTINGS -> Layout to customize this intro.', { type: 'string', multiline: true, public: true }
+		@add 'Layout_Terms_of_Service', 'Terms of Service <br> Go to APP SETTINGS -> Layout to customize this page.', { type: 'string', multiline: true, public: true }
+		@add 'Layout_Privacy_Policy', 'Privacy Policy <br> Go to APP SETTINGS -> Layout to customize this page.', { type: 'string', multiline: true, public: true }
+		@add 'Layout_Sidenav_Footer', '<div><a href="https://github.com/RocketChat/Rocket.Chat" class="logo" target="_blank"> <img src="/images/logo/logo.svg?v=3" /></a><div class="github-tagline"><span class="octicon octicon-pencil" style="color: #994C00"></span> with <span class="octicon octicon-heart" style="color: red"></span> on <span class="octicon octicon-mark-github"></span></div></div>', { type: 'string', public: true, i18nDescription: 'Layout_Sidenav_Footer_description' }
+
+	@section 'Login', ->
+		@add 'Layout_Login_Header', '<a class="logo" href="/"><img src="/images/logo/logo.svg?v=3" /></a>', { type: 'string', multiline: true, public: true }
+		@add 'Layout_Login_Terms', 'By proceeding to create your account and use Rocket.Chat, you are agreeing to our <a href="/terms-of-service">Terms of Service</a> and <a href="/privacy-policy">Privacy Policy</a>. If you do not agree, you cannot use Rocket.Chat.', { type: 'string', multiline: true, public: true }
+
+
+RocketChat.settings.addGroup 'Logs', ->
+	@add 'Debug_Level', 'error', { type: 'select', values: [ { key: 'error', i18nLabel: 'Only_errors' }, { key: 'debug', i18nLabel: 'All_logs' } ] }
+	@add 'Log_Level', '0', { type: 'select', values: [ { key: '0', i18nLabel: '0_Errors_Only' }, { key: '1', i18nLabel: '1_Errors_and_Information' }, { key: '2', i18nLabel: '2_Erros_Information_and_Debug' } ] , public: true }
+	@add 'Log_Package', false, { type: 'boolean', public: true }
+	@add 'Log_File', false, { type: 'boolean', public: true }
+	@add 'Log_View_Limit', 1000, { type: 'int' }
+
 
 RocketChat.settings.init()
-
-Meteor.startup ->
-	if process?.env? and not process.env['MAIL_URL']? and RocketChat.settings.get('SMTP_Host') and RocketChat.settings.get('SMTP_Username') and RocketChat.settings.get('SMTP_Password')
-		process.env['MAIL_URL'] = "smtp://" + encodeURIComponent(RocketChat.settings.get('SMTP_Username')) + ':' + encodeURIComponent(RocketChat.settings.get('SMTP_Password')) + '@' + encodeURIComponent(RocketChat.settings.get('SMTP_Host'))
-		if RocketChat.settings.get('SMTP_Port')
-			process.env['MAIL_URL'] += ':' + parseInt(RocketChat.settings.get('SMTP_Port'))
-
 
 # Remove runtime settings (non-persistent)
 Meteor.startup ->
 	RocketChat.models.Settings.update({ ts: { $lt: RocketChat.settings.ts }, persistent: { $ne: true } }, { $set: { hidden: true } }, { multi: true })
-	RocketChat.models.Settings.update({ ts: { $gte: RocketChat.settings.ts } }, { $unset: { hidden: 1 } }, { multi: true })

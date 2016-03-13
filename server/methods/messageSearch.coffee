@@ -1,10 +1,8 @@
 Meteor.methods
-	messageSearch: (text, rid) ->
+	messageSearch: (text, rid, limit) ->
 		###
 			text = 'from:rodrigo mention:gabriel chat'
 		###
-
-		# console.log '[method] -> messageSearch', text
 
 		result =
 			messages: []
@@ -15,7 +13,7 @@ Meteor.methods
 		options =
 			sort:
 				ts: -1
-			limit: 20
+			limit: limit or 20
 
 		# Query for senders
 		from = []
@@ -56,13 +54,20 @@ Meteor.methods
 			# 		$meta: 'textScore'
 
 		if Object.keys(query).length > 0
+			query.t = { $ne: 'rm' } # hide removed messages (userful when searching for user messages)
+			query._hidden = { $ne: true } # don't return _hidden messages
+
 			# Filter by room
 			if rid?
 				query.rid = rid
 				try
 					if Meteor.call('canAccessRoom', rid, this.userId) isnt false
+						console.log query
 						result.messages = RocketChat.models.Messages.find(query, options).fetch()
 
+
+		# make sure we don't return more than limit results
+		# limit -= result.messages?.length
 
 		# ###
 		# # USERS

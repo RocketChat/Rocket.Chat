@@ -28,17 +28,6 @@
 		self.box = $(".account-box")
 		self.options = self.box.find(".options")
 
-	protectedAction = (item) ->
-		if not item.permissions? or RocketChat.authz.hasAllPermission item.permissions
-			return item.route.action
-
-		return ->
-			BlazeLayout.render 'main',
-				center: 'pageContainer'
-				# @TODO text Not_authorized don't get the correct language
-				pageTitle: t('Not_authorized')
-				pageTemplate: 'notAuthorized'
-
 	###
 	# @param newOption:
 	#   name: Button label
@@ -52,15 +41,38 @@
 			actual.push newItem
 			items.set actual
 
-			if newItem.route?.path? and newItem.route?.name? and newItem.route?.action?
-				FlowRouter.route newItem.route.path,
-					name: newItem.route.name
-					action: protectedAction newItem
+	checkCondition = (item) ->
+		return not item.condition? or item.condition()
 
 	getItems = ->
 		return _.filter items.get(), (item) ->
-			if not item.permissions? or RocketChat.authz.hasAllPermission item.permissions
+			if checkCondition(item)
 				return true
+
+	addRoute = (newRoute, router = FlowRouter) ->
+
+		# @TODO check for mandatory fields
+		routeConfig =
+			center: 'pageContainer'
+			pageTemplate: newRoute.pageTemplate
+
+		if newRoute.i18nPageTitle?
+			routeConfig.i18nPageTitle = newRoute.i18nPageTitle
+
+		if newRoute.pageTitle?
+			routeConfig.pageTitle = newRoute.pageTitle
+
+		router.route newRoute.path,
+			name: newRoute.name
+			action: ->
+				Session.set 'openedRoom'
+				RocketChat.TabBar.showGroup newRoute.name
+				BlazeLayout.render 'main', routeConfig
+			triggersEnter: [ ->
+				if newRoute.sideNav?
+					SideNav.setFlex newRoute.sideNav
+					SideNav.openFlex()
+			]
 
 	setStatus: setStatus
 	toggle: toggle
@@ -68,6 +80,7 @@
 	close: close
 	init: init
 
+	addRoute: addRoute
 	addItem: addItem
 	getItems: getItems
 )()

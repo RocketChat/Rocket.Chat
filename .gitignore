@@ -35,7 +35,7 @@
 .loadpath
 .map
 .metadata
-.meteor/local
+.meteor/local*
 .meteor/meteorite
 .mule
 .pmd
@@ -66,3 +66,4 @@ tramp
 ecosystem.json
 pm2.json
 settings.json
+build.sh

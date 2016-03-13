@@ -6,16 +6,31 @@ mongo:
   command: mongod --smallfiles --oplogSize 128
 
 rocketchat:
-  image: rocketchat/rocket.chat:develop
+  image: rocketchat/rocket.chat:latest
 # volumes:
 #    - ./uploads:/app/uploads
   environment:
     - PORT=3000
     - ROOT_URL=http://yourhost:3000
     - MONGO_URL=mongodb://mongo:27017/rocketchat
-# uncomment and set the line below if you need to support mobile apps
-#   - DDP_DEFAULT_CONNECTION_URL=http://yourhost:3000
   links:
     - mongo:mongo
   ports:
     - 3000:3000
+
+# hubot, the popular chatbot (add the bot user first and change the password before starting this image)
+hubot:
+  image: rocketchat/hubot-rocketchat
+  environment:
+    - ROCKETCHAT_URL=rocketchat:3000
+    - ROCKETCHAT_ROOM=GENERAL
+    - ROCKETCHAT_USER=bot
+    - ROCKETCHAT_PASSWORD=botpassword
+    - BOT_NAME=bot
+# you can add more scripts as you'd like here, they need to be installable by npm
+    - EXTERNAL_SCRIPTS=hubot-help,hubot-seen,hubot-links,hubot-diagnostics
+  links:
+    - rocketchat:rocketchat
+# this is used to expose the hubot port for notifications on the host on port 3001, e.g. for hubot-jenkins-notifier
+  ports:
+    - 3001:8080

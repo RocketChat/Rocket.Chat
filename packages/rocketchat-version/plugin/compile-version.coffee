@@ -10,7 +10,7 @@ class VersionCompiler
 	processFilesForTarget: (files) ->
 		files.forEach (file) ->
 			output = JSON.parse file.getContentsAsString()
-			output.compile =
+			output.build =
 				date: new Date().toISOString()
 				nodeVersion: process.version
 				arch: process.arch
@@ -38,11 +38,11 @@ class VersionCompiler
 
 				exec "git describe --abbrev=0 --tags", (err, result) ->
 					if not err?
-						output.tag = result.replace('\n', '')
+						output.commit?.tag = result.replace('\n', '')
 
 					exec "git rev-parse --abbrev-ref HEAD", (err, result) ->
 						if not err?
-							output.branch = result.replace('\n', '')
+							output.commit?.branch = result.replace('\n', '')
 
 						output = """
 							RocketChat.Info = #{JSON.stringify(output, null, 4)}

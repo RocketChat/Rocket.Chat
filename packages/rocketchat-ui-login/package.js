@@ -17,14 +17,22 @@ Package.onUse(function(api) {
 		'templating',
 		'coffeescript',
 		'underscore',
-		'rocketchat:lib@0.0.1'
+		'rocketchat:lib'
 	]);
+
+	api.use('kadira:flow-router', 'client');
+
+	api.addFiles('routes.js', 'client');
+
+	api.addFiles('reset-password/resetPassword.html', 'client');
+	api.addFiles('reset-password/resetPassword.js', 'client');
 
 	api.addFiles('login/footer.html', 'client');
 	api.addFiles('login/form.html', 'client');
 	api.addFiles('login/header.html', 'client');
 	api.addFiles('login/intro.html', 'client');
 	api.addFiles('login/layout.html', 'client');
+	api.addFiles('login/layout.js', 'client');
 	api.addFiles('login/services.html', 'client');
 	api.addFiles('login/social.html', 'client');
 

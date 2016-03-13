@@ -3,6 +3,7 @@ RocketChat.statistics.get = ->
 
 	# Version
 	statistics.uniqueId = RocketChat.settings.get("uniqueID")
+	statistics.createdAt = RocketChat.models.Settings.findOne("uniqueID")?._createdAt
 	statistics.version = RocketChat.Info?.version
 	statistics.tag = RocketChat.Info?.tag
 	statistics.branch = RocketChat.Info?.branch
@@ -58,18 +59,12 @@ RocketChat.statistics.get = ->
 
 	if RocketChat.models.MRStatistics.findOneById(1)
 		statistics.maxRoomUsers = RocketChat.models.MRStatistics.findOneById(1).value.max
-	else
-		console.log 'max room user statistic not found'.red
 
 	if RocketChat.models.MRStatistics.findOneById('c')
 		statistics.avgChannelUsers = RocketChat.models.MRStatistics.findOneById('c').value.avg
-	else
-		console.log 'channel user statistic not found'.red
 
 	if RocketChat.models.MRStatistics.findOneById('p')
 		statistics.avgPrivateGroupUsers = RocketChat.models.MRStatistics.findOneById('p').value.avg
-	else
-		console.log 'private group user statistic not found'.red
 
 	statistics.lastLogin = RocketChat.models.Users.getLastLogin()
 	statistics.lastMessageSentAt = RocketChat.models.Messages.getLastTimestamp()
@@ -90,5 +85,14 @@ RocketChat.statistics.get = ->
 		totalmem: os.totalmem()
 		freemem: os.freemem()
 		cpus: os.cpus()
+
+	statistics.process =
+		nodeVersion: process.version
+		pid: process.pid
+		uptime: process.uptime()
+
+	statistics.migration = RocketChat.Migrations._getControl()
+
+	statistics.instanceCount = InstanceStatus.getCollection().find().count()
 
 	return statistics

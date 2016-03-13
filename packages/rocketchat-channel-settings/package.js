@@ -10,12 +10,15 @@ Package.onUse(function(api) {
 
 	api.use([
 		'coffeescript',
+		'reactive-var',
+		'tracker',
 		'templating',
 		'less@2.5.0',
-		'rocketchat:lib@0.0.1'
+		'rocketchat:lib'
 	]);
 
 	api.addFiles([
+		'client/lib/ChannelSettings.coffee',
 		'client/startup/messageTypes.coffee',
 		'client/startup/tabBar.coffee',
 		'client/startup/trackSettingsChange.coffee',
@@ -25,7 +28,9 @@ Package.onUse(function(api) {
 	], 'client');
 
 	api.addFiles([
-		'server/functions/changeRoomType.coffee',
+		'server/functions/saveRoomType.coffee',
+		'server/functions/saveRoomTopic.coffee',
+		'server/functions/saveRoomName.coffee',
 		'server/methods/saveRoomSettings.coffee',
 		'server/models/Messages.coffee'
 	], 'server');
@@ -38,8 +43,7 @@ Package.onUse(function(api) {
 			return 'i18n/' + filename;
 		}
 	}));
-	api.use('tap:i18n@1.6.1');
-	api.imply('tap:i18n');
+	api.use('tap:i18n');
 	api.addFiles(tapi18nFiles);
 });
 

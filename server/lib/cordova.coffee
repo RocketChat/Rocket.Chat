@@ -2,7 +2,50 @@ Meteor.methods
 	log: ->
 		console.log.apply console, arguments
 
-Meteor.startup ->
+	push_test: ->
+		user = Meteor.user()
+		if not user?
+			throw new Meteor.Error 'unauthorized', '[methods] push_test -> Unauthorized'
+
+		if not RocketChat.authz.hasRole(user._id, 'admin')
+			throw new Meteor.Error 'unauthorized', '[methods] push_test -> Unauthorized'
+
+		if Push.enabled isnt true
+			throw new Meteor.Error 'push_disabled'
+
+		query =
+			$and: [
+				userId: user._id
+				{
+					$or: [
+						{ 'token.apn': { $exists: true } }
+						{ 'token.gcm': { $exists: true } }
+					]
+				}
+			]
+
+		tokens = Push.appCollection.find(query).count()
+
+		if tokens is 0
+			throw new Meteor.Error 'no_tokens_for_this_user'
+
+		Push.send
+			from: 'push'
+			title: "@#{user.username}"
+			text: TAPi18n.__ "This_is_a_push_test_messsage"
+			apn:
+				text: "@#{user.username}:\n" + TAPi18n.__ "This_is_a_push_test_messsage"
+			sound: 'chime'
+			query:
+				userId: user._id
+
+		return {} =
+			message: "Your_push_was_sent_to_s_devices"
+			params: [tokens]
+
+
+configurePush = ->
+	console.log 'configuring push'
 
 	Push.debug = RocketChat.settings.get 'Push_debug'
 
@@ -39,8 +82,6 @@ Meteor.startup ->
 			sendBatchSize: 10
 
 		if RocketChat.settings.get('Push_enable_gateway') is true
-			pushGetway = undefined
-
 			Push.serverSend = (options) ->
 				options = options or { badge: 0 }
 				query = undefined
@@ -73,11 +114,42 @@ Meteor.startup ->
 						console.log('send to token', app.token)
 
 					if app.token.apn?
-						pushGetway.call 'sendPushNotification', 'apn', app.token.apn, options
-
+						service = 'apn'
+						token = app.token.apn
 					else if app.token.gcm?
-						pushGetway.call 'sendPushNotification', 'gcm', app.token.gcm, options
+						service = 'gcm'
+						token = app.token.gcm
 
-			pushGetway = DDP.connect(RocketChat.settings.get('Push_gateway'), {_dontPrintErrors: false})
+					HTTP.post RocketChat.settings.get('Push_gateway') + "/push/#{service}/send",
+						data:
+							token: token
+							options: options
 
 		Push.enabled = true
+
+
+Meteor.startup ->
+	configurePush()
+
+	## Prepared to reconfigure the push plugin
+	#
+	# keys = [
+	# 	'Push_enable'
+	# 	'Push_enable_gateway'
+	# 	'Push_gcm_api_key'
+	# 	'Push_gcm_project_number'
+	# 	'Push_apn_passphrase'
+	# 	'Push_apn_key'
+	# 	'Push_apn_cert'
+	# 	'Push_production'
+	# 	'Push_apn_dev_passphrase'
+	# 	'Push_apn_dev_key'
+	# 	'Push_apn_dev_cert'
+	# 	'Push_gateway'
+	# ]
+
+	# configurePushDebounce = _.debounce Meteor.bindEnvironment(configurePush), 1000
+
+	# RocketChat.settings.onload keys, ->
+	# 	configurePushDebounce()
+

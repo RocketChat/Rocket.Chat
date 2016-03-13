@@ -19,15 +19,6 @@ RocketChat.models.Users = new class extends RocketChat.models._Base
 
 		return @findOne query, options
 
-	findOneByVerifiedEmailAddress: (emailAddress, verified=true, options) ->
-		query =
-			emails:
-				$elemMatch:
-					address: emailAddress
-					verified: verified
-
-		return @findOne query, options
-
 	findOneVerifiedFromSameDomain: (email, options) ->
 		domain = s.strRight(email, '@')
 		query =
@@ -46,6 +37,13 @@ RocketChat.models.Users = new class extends RocketChat.models._Base
 
 		return @findOne query, options
 
+	findOneByIdAndLoginToken: (_id, token, options) ->
+		query =
+			_id: _id
+			'services.resume.loginTokens.hashedToken' : Accounts._hashLoginToken(token)
+
+		return @findOne query, options
+
 
 	# FIND
 	findUsersNotOffline: (options) ->
@@ -61,6 +59,20 @@ RocketChat.models.Users = new class extends RocketChat.models._Base
 	findByUsername: (username, options) ->
 		query =
 			username: username
+
+		return @find query, options
+
+	findActiveByUsernameRegexWithExceptions: (username, exceptions = [], options = {}) ->
+		if not _.isArray exceptions
+			exceptions = [ exceptions ]
+
+		usernameRegex = new RegExp username, "i"
+		query =
+			$and: [
+				{ active: true }
+				{ username: { $nin: exceptions } }
+				{ username: usernameRegex }
+			]
 
 		return @find query, options
 
@@ -99,12 +111,25 @@ RocketChat.models.Users = new class extends RocketChat.models._Base
 
 		return @find query, options
 
+	findLDAPUsers: (options) ->
+		query =
+			ldap: true
+
+		return @find query, options
+
 	getLastLogin: (options = {}) ->
 		query = { lastLogin: { $exists: 1 } }
 		options.sort = { lastLogin: -1 }
 		options.limit = 1
 
 		return @find(query, options)?.fetch?()?[0]?.lastLogin
+
+	findUsersByUsernames: (usernames, options) ->
+		query =
+			username:
+				$in: usernames
+
+		return @find query, options
 
 	# UPDATE
 	updateLastLoginById: (_id) ->
@@ -128,6 +153,28 @@ RocketChat.models.Users = new class extends RocketChat.models._Base
 			$set: username: username
 
 		return @update _id, update
+
+	setEmail: (_id, email) ->
+		update =
+			$set:
+				'emails.0.address': email
+				'emails.0.verified': false
+
+		return @update _id, update
+
+	setEmailVerified: (_id, email) ->
+		query =
+			_id: _id
+			emails:
+				$elemMatch:
+					address: email
+					verified: false
+
+		update =
+			$set:
+				'emails.$.verified': true
+
+		return @update query, update
 
 	setName: (_id, name) ->
 		update =
@@ -168,6 +215,24 @@ RocketChat.models.Users = new class extends RocketChat.models._Base
 		update =
 			$set:
 				"services.resume.loginTokens" : []
+
+		return @update _id, update
+
+	unsetRequirePasswordChange: (_id) ->
+		update =
+			$unset:
+				"requirePasswordChange" : true
+				"requirePasswordChangeReason" : true
+
+		return @update _id, update
+
+	resetPasswordAndSetRequirePasswordChange: (_id, requirePasswordChange, requirePasswordChangeReason) ->
+		update =
+			$unset:
+				"services.password": 1
+			$set:
+				"requirePasswordChange" : requirePasswordChange,
+				"requirePasswordChangeReason": requirePasswordChangeReason
 
 		return @update _id, update
 
@@ -220,11 +285,20 @@ RocketChat.models.Users = new class extends RocketChat.models._Base
 	removeById: (_id) ->
 		return @remove _id
 
-	removeByUnverifiedEmail: (email) ->
+	###
+	Find users to send a message by email if:
+	- he is not online
+	- has a verified email
+	- has not disabled email notifications
+	###
+	getUsersToSendOfflineEmail: (usersIds) ->
 		query =
-			emails:
-				$elemMatch:
-					address: email
-					verified: false
+			_id:
+				$in: usersIds
+			status: 'offline'
+			statusConnection:
+				$ne: 'online'
+			'emails.verified': true
 
-		return @remove query
+		return @find query, { fields: { name: 1, username: 1, emails: 1, 'settings.preferences.emailNotificationMode': 1 } }
+

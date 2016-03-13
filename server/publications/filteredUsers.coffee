@@ -2,8 +2,6 @@ Meteor.publish 'filteredUsers', (name) ->
 	unless this.userId
 		return this.ready()
 
-	console.log '[publish] filteredUsers'.green, name
-
 	exp = new RegExp(name, 'i')
 
 	options =

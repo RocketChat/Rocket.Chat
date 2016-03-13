@@ -1,9 +1,10 @@
-# Deny Account.createUser in client
-accountsConfig = { forbidClientAccountCreation: true }
+# Deny Account.createUser in client and set Meteor.loginTokenExpires
+accountsConfig = { forbidClientAccountCreation: true, loginExpirationInDays: RocketChat.settings.get 'Accounts_LoginExpiration' }
+Accounts.config accountsConfig
 
-if RocketChat.settings.get('Account_AllowedDomainsList')
-	domainWhiteList = _.map RocketChat.settings.get('Account_AllowedDomainsList').split(','), (domain) -> domain.trim()
-	accountsConfig.restrictCreationByEmailDomain = (email) ->
+RocketChat.settings.get 'Accounts_AllowedDomainsList', (_id, value) ->
+	domainWhiteList = _.map value.split(','), (domain) -> domain.trim()
+	restrictCreationByEmailDomain = (email) ->
 		ret = false
 		for domain in domainWhiteList
 			if email.match(domain + '$')
@@ -11,8 +12,10 @@ if RocketChat.settings.get('Account_AllowedDomainsList')
 				break;
 
 		return ret
+	delete Accounts._options['restrictCreationByEmailDomain']
 
-Accounts.config accountsConfig
+	if not _.isEmpty value
+		Accounts.config({ restrictCreationByEmailDomain: restrictCreationByEmailDomain });
 
 Accounts.emailTemplates.siteName = RocketChat.settings.get 'Site_Name';
 Accounts.emailTemplates.from = "#{RocketChat.settings.get 'Site_Name'} <#{RocketChat.settings.get 'From_Email'}>";
@@ -24,8 +27,8 @@ Accounts.emailTemplates.verifyEmail.text = (user, url) ->
 
 resetPasswordText = Accounts.emailTemplates.resetPassword.text
 Accounts.emailTemplates.resetPassword.text = (user, url) ->
-	url = url.replace Meteor.absoluteUrl(), Meteor.absoluteUrl() + 'login/'
-	verifyEmailText user, url
+	url = url.replace /\/#\//, '/'
+	resetPasswordText user, url
 
 if RocketChat.settings.get 'Accounts_Enrollment_Email'
 	Accounts.emailTemplates.enrollAccount.text = (user, url) ->
@@ -69,16 +72,25 @@ Accounts.onCreateUser (options, user) ->
 	return user
 
 # Wrap insertUserDoc to allow executing code after Accounts.insertUserDoc is run
-Accounts.insertUserDoc = _.wrap Accounts.insertUserDoc, (insertUserDoc) ->
-	options = arguments[1]
-	user = arguments[2]
+Accounts.insertUserDoc = _.wrap Accounts.insertUserDoc, (insertUserDoc, options, user) ->
+	roles = []
+	if Match.test(user.globalRoles, [String]) and user.globalRoles.length > 0
+		roles = roles.concat user.globalRoles
+
+	delete user.globalRoles
+
 	_id = insertUserDoc.call(Accounts, options, user)
 
-	# when inserting first user give them admin privileges otherwise make a regular user
-	firstUser = RocketChat.models.Users.findOne({},{sort:{createdAt:1}})
-	roleName = if firstUser?._id is _id then 'admin' else 'user'
+	if roles.length is 0
+		# when inserting first user give them admin privileges otherwise make a regular user
+		firstUser = RocketChat.models.Users.findOne({ _id: { $ne: 'rocket.cat' }}, { sort: { createdAt: 1 }})
+		if firstUser?._id is _id
+			roles.push 'admin'
+		else
+			roles.push 'user'
 
-	RocketChat.authz.addUsersToRoles(_id, roleName)
+	RocketChat.authz.addUserRoles(_id, roles)
+
 	RocketChat.callbacks.run 'afterCreateUser', options, user
 	return _id
 
@@ -92,7 +104,7 @@ Accounts.validateLoginAttempt (login) ->
 		throw new Meteor.Error 'inactive-user', TAPi18n.__ 'User_is_not_activated'
 		return false
 
-	if login.type is 'password' and RocketChat.settings.get('Accounts_EmailVerification') is true and RocketChat.settings.get('Accounts_AnonymousAccess') is 'None'
+	if 'admin' not in login.user?.roles and login.type is 'password' and RocketChat.settings.get('Accounts_EmailVerification') is true and RocketChat.settings.get('Accounts_AnonymousAccess') is 'None'
 		validEmail = login.user.emails.filter (email) ->
 			return email.verified is true
 

@@ -21,13 +21,14 @@ Tracker.autorun ->
 Meteor.startup ->
 	ChatMessage.find().observe
 		removed: (record) ->
-			recordBefore = ChatMessage.findOne {ts: {$lt: record.ts}}, {sort: {ts: -1}}
-			if recordBefore?
-				ChatMessage.update {_id: recordBefore._id}, {$set: {tick: new Date}}
+			if RoomManager.getOpenedRoomByRid(record.rid)?
+				recordBefore = ChatMessage.findOne {ts: {$lt: record.ts}}, {sort: {ts: -1}}
+				if recordBefore?
+					ChatMessage.update {_id: recordBefore._id}, {$set: {tick: new Date}}
 
-			recordAfter = ChatMessage.findOne {ts: {$gt: record.ts}}, {sort: {ts: 1}}
-			if recordAfter?
-				ChatMessage.update {_id: recordAfter._id}, {$set: {tick: new Date}}
+				recordAfter = ChatMessage.findOne {ts: {$gt: record.ts}}, {sort: {ts: 1}}
+				if recordAfter?
+					ChatMessage.update {_id: recordAfter._id}, {$set: {tick: new Date}}
 
 
 onDeleteMessageStream = (msg) ->
@@ -43,7 +44,6 @@ RocketChat.Notifications.onUser 'message', (msg) ->
 
 
 @RoomManager = new class
-	defaultTime = 600000 # 10 minutes
 	openedRooms = {}
 	subscription = null
 	msgStream = new Meteor.Stream 'messages'
@@ -62,17 +62,22 @@ RocketChat.Notifications.onUser 'message', (msg) ->
 					sub.stop()
 
 			if openedRooms[typeName].rid?
-				msgStream.removeListener openedRooms[typeName].rid
+				msgStream.removeAllListeners openedRooms[typeName].rid
 				RocketChat.Notifications.unRoom openedRooms[typeName].rid, 'deleteMessage', onDeleteMessageStream
 
 			openedRooms[typeName].ready = false
 			openedRooms[typeName].active = false
-			delete openedRooms[typeName].timeout
+			if openedRooms[typeName].template?
+				Blaze.remove openedRooms[typeName].template
 			delete openedRooms[typeName].dom
+			delete openedRooms[typeName].template
 
-			if openedRooms[typeName].rid?
-				RoomHistoryManager.clear openedRooms[typeName].rid
-				ChatMessage.remove rid: openedRooms[typeName].rid
+			rid = openedRooms[typeName].rid
+			delete openedRooms[typeName]
+
+			if rid?
+				RoomHistoryManager.clear rid
+
 
 	computation = Tracker.autorun ->
 		for typeName, record of openedRooms when record.active is true
@@ -80,6 +85,9 @@ RocketChat.Notifications.onUser 'message', (msg) ->
 				record.sub = [
 					Meteor.subscribe 'room', typeName
 				]
+
+				if record.ready is true
+					return
 
 				ready = record.sub[0].ready() and subscription.ready()
 
@@ -90,53 +98,69 @@ RocketChat.Notifications.onUser 'message', (msg) ->
 					query =
 						t: type
 
-					if type in ['c', 'p']
-						query.name = name
-					else if type is 'd'
+					if type is 'd'
 						query.usernames = $all: [Meteor.user()?.username, name]
+					else
+						query.name = name
 
 					room = ChatRoom.findOne query, { reactive: false }
 
-					if room?
+					if not room?
+						record.ready = true
+					else
 						openedRooms[typeName].rid = room._id
 
 						RoomHistoryManager.getMoreIfIsEmpty room._id
 						record.ready = RoomHistoryManager.isLoading(room._id) is false
 						Dep.changed()
 
-						msgStream.on openedRooms[typeName].rid, (msg) ->
-							ChatMessage.upsert { _id: msg._id }, msg
+						if openedRooms[typeName].streamActive isnt true
+							openedRooms[typeName].streamActive = true
+							msgStream.on openedRooms[typeName].rid, (msg) ->
 
-							Meteor.defer ->
-								RoomManager.updateMentionsMarksOfRoom typeName
+								RocketChat.promises.run('onClientMessageReceived', msg).then (msg) ->
 
-							RocketChat.callbacks.run 'streamMessage', msg
+									# Should not send message to room if room has not loaded all the current messages
+									if RoomHistoryManager.hasMoreNext(openedRooms[typeName].rid) is false
 
-						RocketChat.Notifications.onRoom openedRooms[typeName].rid, 'deleteMessage', onDeleteMessageStream
+										# Do not load command messages into channel
+										if msg.t isnt 'command'
+											ChatMessage.upsert { _id: msg._id }, msg
+
+										Meteor.defer ->
+											RoomManager.updateMentionsMarksOfRoom typeName
+
+										RocketChat.callbacks.run 'streamMessage', msg
+
+							RocketChat.Notifications.onRoom openedRooms[typeName].rid, 'deleteMessage', onDeleteMessageStream
 
 				Dep.changed()
 
-	setRoomExpireExcept = (except) ->
 
-		if openedRooms[except]?.timeout?
-			clearTimeout openedRooms[except].timeout
-			delete openedRooms[except].timeout
+	closeOlderRooms = ->
+		maxRoomsOpen = 10
+		if Object.keys(openedRooms).length <= maxRoomsOpen
+			return
 
-		for typeName of openedRooms
-			if typeName isnt except and not openedRooms[typeName].timeout?
-				openedRooms[typeName].timeout = setTimeout close, defaultTime, typeName
+		roomsToClose = _.sortBy(_.values(openedRooms), 'lastSeen').reverse().slice(maxRoomsOpen)
+		for roomToClose in roomsToClose
+			close roomToClose.typeName
+
 
 	open = (typeName) ->
-
 		if not openedRooms[typeName]?
 			openedRooms[typeName] =
+				typeName: typeName
 				active: false
 				ready: false
 				unreadSince: new ReactiveVar undefined
 
-		setRoomExpireExcept typeName
+		openedRooms[typeName].lastSeen = new Date
 
-		if subscription.ready()
+		if openedRooms[typeName].ready
+			closeOlderRooms()
+
+		if subscription.ready() && Meteor.userId()
 
 			if openedRooms[typeName].active isnt true
 				openedRooms[typeName].active = true
@@ -149,6 +173,11 @@ RocketChat.Notifications.onUser 'message', (msg) ->
 				return openedRooms[typeName].ready
 		}
 
+	getOpenedRoomByRid = (rid) ->
+		for typeName, openedRoom of openedRooms
+			if openedRoom.rid is rid
+				return openedRoom
+
 	getDomOfRoom = (typeName, rid) ->
 		room = openedRooms[typeName]
 		if not room?
@@ -157,7 +186,11 @@ RocketChat.Notifications.onUser 'message', (msg) ->
 		if not room.dom? and rid?
 			room.dom = document.createElement 'div'
 			room.dom.classList.add 'room-container'
-			Blaze.renderWithData Template.room, { _id: rid }, room.dom
+			contentAsFunc = (content) ->
+				return -> content
+
+			room.template = Blaze._TemplateWith { _id: rid }, contentAsFunc(Template.room)
+			Blaze.render room.template, room.dom #, nextNode, parentView
 
 		return room.dom
 
@@ -189,7 +222,7 @@ RocketChat.Notifications.onUser 'message', (msg) ->
 		scrollTop = $(dom).find('.messages-box > .wrapper').scrollTop() - 50
 		totalHeight = $(dom).find('.messages-box > .wrapper > ul').height() + 40
 
-		$('.mention-link-me').each (index, item) ->
+		$('.messages-box .mention-link-me').each (index, item) ->
 			topOffset = $(item).offset().top + scrollTop
 			percent = 100 / totalHeight * topOffset
 			ticksBar.append('<div class="tick" style="top: '+percent+'%;"></div>')
@@ -205,3 +238,4 @@ RocketChat.Notifications.onUser 'message', (msg) ->
 	updateUserStatus: updateUserStatus
 	onlineUsers: onlineUsers
 	updateMentionsMarksOfRoom: updateMentionsMarksOfRoom
+	getOpenedRoomByRid: getOpenedRoomByRid

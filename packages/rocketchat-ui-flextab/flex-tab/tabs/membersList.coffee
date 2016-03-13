@@ -8,12 +8,19 @@ Template.membersList.helpers
 	isDirectChat: ->
 		return ChatRoom.findOne(this.rid, { reactive: false })?.t is 'd'
 
+	seeAll: ->
+		if Template.instance().showAllUsers.get()
+			return t('Show_only_online')
+		else
+			return t('Show_all')
+
 	roomUsers: ->
 		users = []
 		onlineUsers = RoomManager.onlineUsers.get()
+		roomUsernames = ChatRoom.findOne(this.rid)?.usernames or []
 
-		for username in ChatRoom.findOne(this.rid)?.usernames or []
-			if onlineUsers[username]?
+		for username in roomUsernames
+			if Template.instance().showAllUsers.get() or onlineUsers[username]?
 				utcOffset = onlineUsers[username]?.utcOffset
 				if utcOffset?
 					if utcOffset > 0
@@ -27,12 +34,23 @@ Template.membersList.helpers
 					utcOffset: utcOffset
 
 		users = _.sortBy users, 'username'
+		# show online users first.
+		# sortBy is stable, so we can do this
+		users = _.sortBy users, (u) -> !u.status?
+
+		hasMore = users.length > Template.instance().usersLimit.get()
+
+		users = _.first(users, Template.instance().usersLimit.get())
+
+		totalUsers = roomUsernames.length
+		totalShowing = users.length
 
 		ret =
 			_id: this.rid
-			total: ChatRoom.findOne(this.rid)?.usernames?.length or 0
-			totalOnline: users.length
+			total: totalUsers
+			totalShowing: totalShowing
 			users: users
+			hasMore: hasMore
 
 		return ret
 
@@ -48,12 +66,15 @@ Template.membersList.helpers
 			rules: [
 				{
 					collection: 'UserAndRoom'
-					subscription: 'roomSearch'
+					subscription: 'userAutocomplete'
 					field: 'username'
-					template: Template.roomSearch
-					noMatchTemplate: Template.roomSearchEmpty
+					template: Template.userSearch
+					noMatchTemplate: Template.userSearchEmpty
 					matchAll: true
-					filter: { type: 'u', uid: { $ne: Meteor.userId() }, active: { $eq: true } }
+					filter:
+						exceptions: [Meteor.user().username]
+					selector: (match) ->
+						return { username: match }
 					sort: 'username'
 				}
 			]
@@ -73,6 +94,13 @@ Template.membersList.events
 		RocketChat.TabBar.openFlex()
 		Session.set('showUserInfo', $(e.currentTarget).data('username'))
 
+	'click .see-all': (e, instance) ->
+		seeAll = instance.showAllUsers.get()
+		instance.showAllUsers.set(!seeAll)
+
+		if not seeAll
+			instance.usersLimit.set 100
+
 	'autocompleteselect #user-add-search': (event, template, doc) ->
 
 		roomData = Session.get('roomData' + template.data.rid)
@@ -80,13 +108,21 @@ Template.membersList.events
 		if roomData.t is 'd'
 			Meteor.call 'createGroupRoom', roomData.usernames, doc.username, (error, result) ->
 				if error
-					return Errors.throw error.reason
+					return toastr.error error.reason
 
 				if result?.rid?
 					$('#user-add-search').val('')
 		else if roomData.t in ['c', 'p']
 			Meteor.call 'addUserToRoom', { rid: roomData._id, username: doc.username }, (error, result) ->
 				if error
-					return Errors.throw error.reason
+					return toastr.error error.reason
 
 				$('#user-add-search').val('')
+
+	'click .show-more-users': (e, instance) ->
+		instance.usersLimit.set(instance.usersLimit.get() + 100)
+
+
+Template.membersList.onCreated ->
+	@showAllUsers = new ReactiveVar false
+	@usersLimit = new ReactiveVar 100

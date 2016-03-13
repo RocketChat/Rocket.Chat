@@ -68,7 +68,7 @@ class @ChatMessages
 	send: (rid, input) ->
 		if s.trim(input.value) isnt ''
 			if this.isMessageTooLong(input)
-				return Errors.throw t('Error_message_too_long')
+				return toastr.error t('Message_too_long')
 			# KonchatNotification.removeRoomNotification(rid)
 			msg = input.value
 			input.value = ''
@@ -93,11 +93,11 @@ class @ChatMessages
 							showError error.reason
 
 			if not Meteor.userId()
-				Meteor.call 'registerGuest', visitor.getToken(), (error, result) ->
+				Meteor.call 'livechat:registerGuest', { token: visitor.getToken() }, (error, result) ->
 					if error?
 						return showError error.reason
 
-					Meteor.loginWithPassword result.user, result.pass, (error) ->
+					Meteor.loginWithToken result.token, (error) ->
 						if error
 							return showError error.reason
 
@@ -108,7 +108,7 @@ class @ChatMessages
 	deleteMsg: (message) ->
 		Meteor.call 'deleteMessage', message, (error, result) ->
 			if error
-				return Errors.throw error.reason
+				return toastr.error error.reason
 
 	update: (id, rid, input) ->
 		if s.trim(input.value) isnt ''

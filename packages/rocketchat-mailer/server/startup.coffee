@@ -1,2 +1,2 @@
 Meteor.startup ->
-	RocketChat.models.Permissions.upsert( 'access-rocket-mailer', { $setOnInsert : { _id: 'access-rocket-mailer', roles : ['admin'] } })
+	RocketChat.models.Permissions.upsert( 'access-mailer', { $setOnInsert : { _id: 'access-mailer', roles : ['admin'] } })

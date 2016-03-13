@@ -7,3 +7,6 @@ Template.cmsPage.onCreated ->
 Template.cmsPage.helpers
 	page: ->
 		return Template.instance().page.get()
+
+Template.cmsPage.onRendered ->
+	$('.page-loading').remove()

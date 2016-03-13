@@ -4,7 +4,7 @@ Template.message.helpers
 		return 'own' if this.u?._id is Meteor.userId()
 
 	time: ->
-		return moment(this.ts).format('HH:mm')
+		return moment(this.ts).format('LT')
 
 	date: ->
 		return moment(this.ts).format('LL')

@@ -23,10 +23,20 @@ currentTracker = undefined
 
 			room = ChatRoom.findOne(query)
 			if not room?
-				Session.set 'roomNotFound', {type: type, name: name}
-				BlazeLayout.render 'main', {center: 'roomNotFound'}
+				if type is 'd'
+					Meteor.call 'createDirectMessage', name, (err) ->
+						if !err
+							openRoom('d', name)
+						else
+							Session.set 'roomNotFound', {type: type, name: name}
+							BlazeLayout.render 'main', {center: 'roomNotFound'}
+							return
+				else
+					Session.set 'roomNotFound', {type: type, name: name}
+					BlazeLayout.render 'main', {center: 'roomNotFound'}
 				return
 
+			$('.rocket-loader').remove();
 			mainNode = document.querySelector('.main-content')
 			if mainNode?
 				for child in mainNode.children
@@ -50,16 +60,9 @@ currentTracker = undefined
 					$('.message-form .input-message').focus()
 				, 100
 
-			RocketChat.TabBar.resetButtons()
-			RocketChat.TabBar.addButton({ id: 'message-search', i18nTitle: t('Search'), icon: 'octicon octicon-search', template: 'messageSearch', order: 1 })
-			if type is 'd'
-				RocketChat.TabBar.addButton({ id: 'members-list', i18nTitle: t('User_Info'), icon: 'octicon octicon-person', template: 'membersList', order: 2 })
-			else
-				RocketChat.TabBar.addButton({ id: 'members-list', i18nTitle: t('Members_List'), icon: 'octicon octicon-organization', template: 'membersList', order: 2 })
-			RocketChat.TabBar.addButton({ id: 'uploaded-files-list', i18nTitle: t('Room_uploaded_file_list'), icon: 'octicon octicon-file-symlink-directory', template: 'uploadedFilesList', order: 3 })
-
 			# update user's room subscription
-			if ChatSubscription.findOne({rid: room._id})?.open is false
+			sub = ChatSubscription.findOne({rid: room._id})
+			if sub?.open is false
 				Meteor.call 'openRoom', room._id
 
-			RocketChat.callbacks.run 'enter-room', ChatSubscription.findOne({rid: room._id})
+			RocketChat.callbacks.run 'enter-room', sub

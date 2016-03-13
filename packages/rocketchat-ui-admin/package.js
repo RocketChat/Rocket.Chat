@@ -18,16 +18,19 @@ Package.onUse(function(api) {
 		'templating',
 		'coffeescript',
 		'underscore',
-		'rocketchat:lib@0.0.1'
+		'rocketchat:lib'
 	]);
 
 	// template files
 	api.addFiles('admin/admin.html', 'client');
 	api.addFiles('admin/adminFlex.html', 'client');
-	api.addFiles('admin/adminStatistics.html', 'client');
+	api.addFiles('admin/adminInfo.html', 'client');
 
-	api.addFiles('admin/rooms/adminRoomInfo.html', 'client');
 	api.addFiles('admin/rooms/adminRooms.html', 'client');
+	api.addFiles('admin/rooms/adminRoomInfo.html', 'client');
+	api.addFiles('admin/rooms/adminRoomInfo.coffee', 'client');
+	api.addFiles('admin/rooms/channelSettingsDefault.html', 'client');
+	api.addFiles('admin/rooms/channelSettingsDefault.js', 'client');
 
 	api.addFiles('admin/users/adminInviteUser.html', 'client');
 	api.addFiles('admin/users/adminUserChannels.html', 'client');
@@ -38,9 +41,8 @@ Package.onUse(function(api) {
 	// coffee files
 	api.addFiles('admin/admin.coffee', 'client');
 	api.addFiles('admin/adminFlex.coffee', 'client');
-	api.addFiles('admin/adminStatistics.coffee', 'client');
+	api.addFiles('admin/adminInfo.coffee', 'client');
 
-	api.addFiles('admin/rooms/adminRoomInfo.coffee', 'client');
 	api.addFiles('admin/rooms/adminRooms.coffee', 'client');
 
 	api.addFiles('admin/users/adminInviteUser.coffee', 'client');
@@ -49,6 +51,7 @@ Package.onUse(function(api) {
 	api.addFiles('admin/users/adminUserInfo.coffee', 'client');
 	api.addFiles('admin/users/adminUsers.coffee', 'client');
 
+	api.addFiles('publications/adminRooms.js', 'server');
 
 	// api.addAssets('styles/side-nav.less', 'client');
 });

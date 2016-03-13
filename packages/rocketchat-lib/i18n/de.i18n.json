@@ -1,4 +1,7 @@
 {
+  "All_logs" : "Alle Protokolle",
+  "Debug_Level" : "Debug-Level",
+  "Delete" : "Löschen",
   "Edit" : "Bearbeiten",
-  "Delete" : "Löschen"
+  "Only_errors" : "Nur Fehler"
 }

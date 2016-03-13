@@ -100,6 +100,9 @@ blockquote {
 			background-color: #DFDFDF;
 		}
 	}
+	&.request-password {
+		color: white;
+	}
 }
 
 .input-line {
@@ -123,7 +126,7 @@ blockquote {
 }
 
 html {
-	.custom-scroll(transparent, rgba(255, 255, 255, 0.05), 3px);
+	.custom-scroll(transparent, @custom-scrollbar-color, 3px);
 }
 
 body {
@@ -136,6 +139,7 @@ select,
 input[type='text'],
 input[type='number'],
 input[type='email'],
+input[type='url'],
 input[type='password'] {
 	border-color: #E7E7E7;
 	background-color: #fff;
@@ -211,9 +215,8 @@ label.required:after {
 
 // new layout buttons
 .button {
-	background-color: #FFF;
 	color: rgba(255, 255, 255, 0.85);
-	background-color: lighten(desaturate(@primary-background-color, 15%), 12.5%);
+	background-color: @action-buttons-color;
 	&:before {
 		background-color: rgba(0, 0, 0, 0.1);
 	}
@@ -236,7 +239,7 @@ label.required:after {
 		background-color: #02acec;
 	}
 	&.clean {
-		background-color: rgba(0, 0, 0, 0.025);
+		background-color: @clean-buttons-color;
 	}
 	&.facebook {
 		background-color: #325c99;
@@ -327,7 +330,7 @@ a.github-fork {
 	.info {
 		background-color:@primary-background-color;
 		h4 {
-			color: rgba(255, 255, 255, 0.65);
+			color: fade( @quaternary-font-color, 65% );
 		}
 		&.status-offline {
 			.thumb:after {
@@ -389,23 +392,23 @@ a.github-fork {
 			color: #aaa;
 		}
 		a {
-			color: rgba(255, 255, 255, 0.5);
+			color: fade( @quaternary-font-color, 50% );
 			border-bottom-color: darken(@primary-background-color, 2%);
 			&:hover {
 				background-color: darken(@primary-background-color, 2%);
-				color: rgba(255, 255, 255, 0.75);
+				color: fade( @quaternary-font-color, 75% );
 			}
 		}
 	}
 	&.active .info,
 	.info:hover {
 		h4 {
-			color: rgba(255, 255, 255, 0.85);
+			color: fade(@quaternary-font-color, 85% );
 		}
 	}
 	.hover & {
 		.info h4 {
-			color: rgba(255, 255, 255, 0.85);
+			color: fade(@quaternary-font-color, 85% );
 		}
 	}
 }
@@ -415,7 +418,7 @@ a.github-fork {
 	//background-color: @primary-background-color;
 	background-color: transparent;
 	color: @tertiary-font-color;
-	.custom-scroll(transparent, rgba(255, 255, 255, 0.05));
+	.custom-scroll(transparent, @custom-scrollbar-color);
 	header {
 		background-color: @primary-background-color;
 	}
@@ -423,7 +426,7 @@ a.github-fork {
 		background-color: @primary-background-color;
 	}
 	.content {
-		.custom-scroll(transparent, rgba(255, 255, 255, 0.05));
+		.custom-scroll(transparent, @custom-scrollbar-color);
 		background-color: @primary-background-color;
 	}
 	.input-line {
@@ -454,7 +457,7 @@ a.github-fork {
 	}
 	.rooms-list {
 		background-color: lighten(@primary-background-color, 2%);
-		.custom-scroll(transparent, rgba(255, 255, 255, 0.05));
+		.custom-scroll(transparent, @custom-scrollbar-color);
 	}
 	.more {
 		color: @tertiary-font-color;
@@ -477,7 +480,7 @@ a.github-fork {
 		&:hover {
 			&:before,
 			&:after {
-				background-color: rgba(255, 255, 255, 0.85);
+				background-color: fade( @quaternary-font-color, 85% );
 			}
 		}
 	}
@@ -498,7 +501,7 @@ a.github-fork {
 		}
 	}
 	.unread {
-		background-color: #1dce73;
+		background-color: @unread-notification-color;
 		color: #FFF;
 	}
 	ul {
@@ -514,8 +517,8 @@ a.github-fork {
 			}
 			&.active {
 				a {
-					background-color: rgba(255, 255, 255, 0.075);
-					color: rgba(255, 255, 255, 0.75);
+					background-color: @active-channel-background-color;
+					color: @active-channel-font-color;
 				}
 				.opt {
 					background-color: transparent;
@@ -523,7 +526,7 @@ a.github-fork {
 			}
 			&.has-alert {
 				.name {
-					color: #ffffff;
+					color: @quaternary-font-color;
 				}
 			}
 			&.away {
@@ -541,14 +544,14 @@ a.github-fork {
 		.opt {
 			background-color: transparent;
 			i {
-				color: rgba(255, 255, 255, 0.5);
+				color: fade(@quaternary-font-color, 50% );
 				&:hover {
-					color: rgba(255, 255, 255, 0.75);
+					color: fade(@quaternary-font-color, 75% );
 				}
 			}
 		}
 		i {
-			color: rgba(255, 255, 255, 0.35);
+			color: fade(@quaternary-font-color, 35% );
 		}
 		input[type=text] {
 			color: #000;
@@ -736,7 +739,17 @@ a.github-fork {
 					color: #666;
 				}
 			}
-			> .mic, .stop-mic {
+		}
+		.message-buttons {
+			.mic, .stop-mic {
+				color: #888;
+				background-color: #FCFCFC;
+				&:hover {
+					background-color: #F1F1F1;
+					color: #666;
+				}
+			}
+			.send-button {
 				color: #888;
 				background-color: #FCFCFC;
 				&:hover {
@@ -748,12 +761,6 @@ a.github-fork {
 		textarea {
 			&.editing {
 				background-color: #fff7d8;
-			}
-		}
-		.icon-paper-plane {
-			color: @secondary-font-color;
-			&:hover {
-				color: @primary-font-color;
 			}
 		}
 		.users-typing {
@@ -820,6 +827,10 @@ a.github-fork {
 	&.system {
 		.body {
 			color: @info-font-color;
+
+			.attachment {
+				color: @primary-font-color;
+			}
 		}
 	}
 	a {
@@ -1180,7 +1191,7 @@ a.github-fork {
 }
 
 .statistics-table {
-	border-color: #F9F9F9;
+	border-color: #eee;
 }
 
 @media all and(max-width: 780px) {
@@ -1207,4 +1218,8 @@ a.github-fork {
 			background-color: #fff;
 		}
 	}
+}
+
+.attention-message {
+	color: white;
 }

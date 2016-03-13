@@ -1,8 +1,6 @@
 Meteor.methods
 	loadMissedMessages: (rid, start) ->
 		fromId = Meteor.userId()
-		# console.log '[methods] loadMissedMessages -> '.green, 'fromId:', fromId, 'rid:', rid, 'start:', start
-
 		unless Meteor.call 'canAccessRoom', rid, fromId
 			return false
 

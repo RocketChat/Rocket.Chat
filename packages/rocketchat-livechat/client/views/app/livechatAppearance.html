@@ -1,0 +1,69 @@
+<template name="livechatAppearance">
+	<div class="livechat-settings-div">
+		<h2>{{_ "Settings"}}</h2>
+
+		<form class="rocket-form">
+			<div class="input-line">
+				<label for="title">{{_ "Title"}}</label>
+				<input type="text" class="preview-settings" name="title" value="{{title}}">
+			</div>
+			<div class="input-line">
+				<label for="color">{{_ "Title_bar_color"}}</label>
+				<input type="text" class="preview-settings minicolors" name="color" value="{{color}}">
+			</div>
+			<div class="submit">
+				<button class="button secondary reset-settings"><i class="icon-ccw"></i>{{_ "Reset"}}</button>
+				<button class="button"><i class="icon-floppy"></i>{{_ "Save"}}</button>
+			</div>
+		</form>
+	</div>
+
+	<div class="livechat-preview-div">
+		<h2>{{_ "Preview"}}</h2>
+
+		<select class="preview-mode">
+			<option value="opened">{{_ "Opened"}}</option>
+			<option value="closed">{{_ "Closed"}}</option>
+		</select>
+
+		<div class="livechat-preview {{previewState}}">
+			<div class="preview-wrapper">
+				{{#with sampleData}}
+					<div class="livechat-room">
+						<div class="title" style="background-color:{{color}}">
+							<div class="toolbar">
+								&nbsp;
+								<i class="popout icon-link-ext" title="Open in a new window"></i>
+							</div>
+							<h1>{{title}}</h1>
+						</div>
+						<div class="messages">
+							<div class="wrapper">
+								<ul>
+									{{#each messages}}
+										<li id="{{_id}}" class="message {{sequential}}" data-username="{{u.username}}" data-date="{{date}}">
+											<span class="thumb thumb-small" href="#" data-username="{{u.username}}" tabindex="1">{{> avatar username=u.username}}</span>
+											<span class="user" href="#" data-username="{{u.username}}" tabindex="1">{{u.username}}</span>
+											<span class="info">
+												<span class="time">{{time}}</span>
+											</span>
+											<div class="body" dir="auto">
+												{{{body}}}
+											</div>
+										</li>
+									{{/each}}
+								</ul>
+							</div>
+						</div>
+						<div class="footer">
+							<div class="input-wrapper">
+								<textarea class="input-message" placeholder="Type your message"></textarea>
+							</div>
+							<i class="send-button icon-paper-plane" aria-label="{{_ "Send"}}"></i>
+						</div>
+					</div>
+				{{/with}}
+			</div>
+		</div>
+	</div>
+</template>
