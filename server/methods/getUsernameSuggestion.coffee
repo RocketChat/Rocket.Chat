@@ -81,8 +81,8 @@ RocketChat.generateUsernameSuggestion = generateSuggestion
 
 Meteor.methods
 	getUsernameSuggestion: ->
-		if not Meteor.userId()
-			throw new Meteor.Error 203, '[methods] getUsernameSuggestion -> Usuário não logado'
+		unless Meteor.userId()
+			throw new Meteor.Error(403, "[methods] getUsernameSuggestion -> Invalid user")
 
 		user = Meteor.user()
 		return generateSuggestion(user)
