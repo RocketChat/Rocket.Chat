@@ -3,7 +3,7 @@ Meteor.methods
 		if not Meteor.userId()
 			throw new Meteor.Error('invalid-user', "[methods] setUsername -> Invalid user")
 
-		unless RocketChat.settings.get("Accounts_AllowUsernameChange")
+		if user.username? and not RocketChat.settings.get("Accounts_AllowUsernameChange")
 			throw new Meteor.Error(403, "[methods] resetAvatar -> Invalid access")
 
 		user = Meteor.user()

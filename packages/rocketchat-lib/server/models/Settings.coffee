@@ -71,6 +71,11 @@ RocketChat.models.Settings = new class extends RocketChat.models._Base
 			blocked: { $ne: true }
 			_id: _id
 
+		update =
+			$set: options
+
+		return @update query, update
+
 	createWithIdAndValue: (_id, value, extraFields = {}) ->
 		record =
 			_id: _id
