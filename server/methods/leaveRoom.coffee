@@ -1,9 +1,9 @@
 Meteor.methods
 	leaveRoom: (rid) ->
+		unless Meteor.userId()
+			throw new Meteor.Error(403, "[methods] leaveRoom -> Invalid user")
+			
 		fromId = Meteor.userId()
-		unless Meteor.userId()?
-			throw new Meteor.Error 300, 'Usuário não logado'
-
 		room = RocketChat.models.Rooms.findOneById rid
 		user = Meteor.user()
 
