@@ -40,6 +40,17 @@ Meteor.methods
 		if not RocketChat.models.Integrations.findOne(integrationId)?
 			throw new Meteor.Error 'invalid_integration', '[methods] updateOutgoingIntegration -> integration not found'
 
+		if integration.script isnt ''
+			try
+				babelOptions = Babel.getDefaultOptions()
+				babelOptions.externalHelpers = false
+
+				integration.scriptCompiled = Babel.compile(integration.script, babelOptions).code
+				integration.scriptError = undefined
+			catch e
+				integration.scriptCompiled = undefined
+				integration.scriptError = _.pick e, 'name', 'message', 'pos', 'loc', 'codeFrame'
+
 
 		if integration.channel?
 			record = undefined
@@ -79,8 +90,10 @@ Meteor.methods
 				userId: user._id
 				urls: integration.urls
 				token: integration.token
-				prepareOutgoingRequestScript: integration.prepareOutgoingRequestScript
-				processOutgoingResponseScript: integration.processOutgoingResponseScript
+				script: integration.script
+				scriptEnabled: integration.scriptEnabled
+				scriptCompiled: integration.scriptCompiled
+				scriptError: integration.scriptError
 				triggerWords: integration.triggerWords
 				_updatedAt: new Date
 				_updatedBy: RocketChat.models.Users.findOne @userId, {fields: {username: 1}}
