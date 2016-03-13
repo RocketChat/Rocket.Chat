@@ -35,3 +35,9 @@ RocketChat.Migrations.add
 				processOutgoingResponseScript: 1
 
 		RocketChat.models.Integrations.update {}, update, {multi: true}
+
+		update =
+			$set:
+				enabled: true
+
+		RocketChat.models.Integrations.update {enabled: {$exists: false}}, update, {multi: true}

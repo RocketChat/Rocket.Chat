@@ -271,7 +271,8 @@ ExecuteTriggers = (message, room) ->
 
 
 	for triggerToExecute in triggersToExecute
-		ExecuteTrigger triggerToExecute, message, room
+		if triggerToExecute.enabled is true
+			ExecuteTrigger triggerToExecute, message, room
 
 	return message
 

@@ -136,6 +136,7 @@ Template.integrationsOutgoing.events
 		$('.CodeMirror')[0].CodeMirror.refresh()
 
 	"click .submit > .save": ->
+		enabled = $('[name=enabled]:checked').val().trim()
 		name = $('[name=name]').val().trim()
 		alias = $('[name=alias]').val().trim()
 		emoji = $('[name=emoji]').val().trim()
@@ -169,6 +170,7 @@ Template.integrationsOutgoing.events
 			return toastr.error TAPi18n.__("You_should_inform_one_url_at_least")
 
 		integration =
+			enabled: enabled is '1'
 			username: username
 			channel: channel if channel isnt ''
 			alias: alias if alias isnt ''

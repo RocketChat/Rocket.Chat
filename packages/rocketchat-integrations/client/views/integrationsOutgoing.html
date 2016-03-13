@@ -6,6 +6,13 @@
 				<div class="section">
 					<div class="section-content">
 						<div class="input-line double-col">
+							<label>{{_ "Enabled"}}</label>
+							<div>
+								<label><input type="radio" name="enabled" value="1" checked="{{$eq data.enabled true}}" /> {{_ "True"}}</label>
+								<label><input type="radio" name="enabled" value="0" checked="{{$neq data.enabled true}}" /> {{_ "False"}}</label>
+							</div>
+						</div>
+						<div class="input-line double-col">
 							<label>{{_ "Name"}} ({{_ "optional"}})</label>
 							<div>
 								<input type="text" name="name" value="{{data.name}}" placeholder="{{_ 'Optional'}}" />
