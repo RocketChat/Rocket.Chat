@@ -81,14 +81,16 @@
 
     // Custom Globals
     "globals"       : {
-        "Promise"     : true,      // Avoid "redefinition of Promise" warning
-        "Meteor"      : true,
-        "Package"     : true,
-        "Session"     : true,
-        "RocketChat"  : true,
-        "tapi18nFiles": true,
-        "Npm"         : true,
         "_"           : true,
-        "s"           : true
+        "Meteor"      : true,
+        "Npm"         : true,
+        "Package"     : true,
+        "Promise"     : true,      // Avoid "redefinition of Promise" warning
+        "ReactiveVar" : true,
+        "RocketChat"  : true,
+        "s"           : true,
+        "Session"     : true,
+        "t"           : true,
+        "tapi18nFiles": true
     }
 }
