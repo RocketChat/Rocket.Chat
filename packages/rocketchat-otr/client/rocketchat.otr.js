@@ -1,4 +1,3 @@
-/* globals ChatSubscription */
 class OTR {
 	constructor() {
 		this.enabled = new ReactiveVar(false);
@@ -11,7 +10,7 @@ class OTR {
 
 	getInstanceByRoomId(roomId) {
 		var enabled, subscription;
-		subscription = ChatSubscription.findOne({
+		subscription = RocketChat.models.Subscriptions.findOne({
 			rid: roomId
 		});
 		if (!subscription) {
