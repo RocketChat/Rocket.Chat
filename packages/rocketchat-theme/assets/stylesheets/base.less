@@ -2136,7 +2136,6 @@ a.github-fork {
 	flex-direction: column;
 
 	> div {
-		height: 24px;
 		line-height: 24px;
 		padding: 0 10px;
 		border-top: 1px solid;
@@ -2183,10 +2182,7 @@ a.github-fork {
 
 	.unread-bar {
 		background-color: #E6F4FD;
-		// line-height: 30px;
-		// font-size: 12px;
-		// padding: 0 10px;
-		// box-shadow: 0px 1px 2px rgba(0,0,0,.2);
+		font-size: 12px;
 		color: #068FE4;
 		text-transform: uppercase;
 		text-align: center;
@@ -2199,8 +2195,16 @@ a.github-fork {
 			}
 		}
 
+		.unread-count {
+			display: none;
+		}
+
 		> a.jump-to {
 			float: left;
+
+			.jump-to-small {
+				display: none;
+			}
 
 			&:hover {
 				cursor: pointer;
@@ -4686,6 +4690,25 @@ a.github-fork {
 	.code-mirror-box-fullscreen {
 		.CodeMirror {
 			left: 0;
+		}
+	}
+
+	.container-bars {
+		.unread-bar {
+			.unread-count {
+				display: inline-block;
+			}
+			.unread-count-since {
+				display: none;
+			}
+			> a.jump-to {
+				.jump-to-small {
+					display: inline-block;
+				}
+				.jump-to-large {
+					display: none;
+				}
+			}
 		}
 	}
 }
