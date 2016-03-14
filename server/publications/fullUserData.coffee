@@ -1,5 +1,5 @@
 Meteor.publish 'fullUserData', (filter, limit) ->
-	unless @userId
+	if not this.userId and RocketChat.settings.get("Accounts_AnonymousAccess") is 'None'
 		return @ready()
 
 	fields =

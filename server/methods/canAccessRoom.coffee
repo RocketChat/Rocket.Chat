@@ -2,7 +2,7 @@ Meteor.methods
 	canAccessRoom: (rid, userId) ->
 		user = RocketChat.models.Users.findOneById userId, fields: username: 1
 
-		unless user?.username
+		if not user?.username and RocketChat.settings.get("Accounts_AnonymousAccess") is 'None'
 			throw new Meteor.Error 'not-logged-user', "[methods] canAccessRoom -> User doesn't have enough permissions"
 
 		unless rid
@@ -11,7 +11,7 @@ Meteor.methods
 		room = RocketChat.models.Rooms.findOneById rid, { fields: { usernames: 1, t: 1, name: 1, muted: 1 } }
 
 		if room
-			if room.usernames.indexOf(user.username) isnt -1
+			if room.usernames.indexOf(user?.username) isnt -1
 				canAccess = true
 			else if room.t is 'c'
 				canAccess = RocketChat.authz.hasPermission(userId, 'view-c-room')

@@ -3,7 +3,7 @@
 		<header class="header">
 			{{> accountBox }}
 		</header>
-		{{#if currentUser}}
+		{{#if currentUserOrAnonymousAccess}}
 			<div class="unread-rooms top-unread-rooms hidden">
 				{{_ "More_unreads"}} <i class="icon-up-big"></i>
 			</div>

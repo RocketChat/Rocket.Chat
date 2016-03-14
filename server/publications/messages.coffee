@@ -1,5 +1,5 @@
 Meteor.publish 'messages', (rid, start) ->
-	unless this.userId
+	if not this.userId and RocketChat.settings.get("Accounts_AnonymousAccess") is 'None'
 		return this.ready()
 
 	publication = this
@@ -15,14 +15,15 @@ Meteor.publish 'messages', (rid, start) ->
 			ts: -1
 		limit: 50
 
-	cursorHandle = cursor.observeChanges
-		added: (_id, record) ->
-			record.starred = _.findWhere record.starred, { _id: publication.userId }
-			publication.added('rocketchat_message', _id, record)
+	if publication.userId
+		cursorHandle = cursor.observeChanges
+			added: (_id, record) ->
+				record.starred = _.findWhere record.starred, { _id: publication.userId }
+				publication.added('rocketchat_message', _id, record)
 
-		changed: (_id, record) ->
-			record.starred = _.findWhere record.starred, { _id: publication.userId }
-			publication.changed('rocketchat_message', _id, record)
+			changed: (_id, record) ->
+				record.starred = _.findWhere record.starred, { _id: publication.userId }
+				publication.changed('rocketchat_message', _id, record)
 
 	cursorDelete = RocketChat.models.Messages.findInvisibleByRoomId rid,
 		fields:

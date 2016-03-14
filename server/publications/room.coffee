@@ -1,5 +1,5 @@
 Meteor.publish 'room', (typeName) ->
-	unless this.userId
+	if not this.userId and RocketChat.settings.get("Accounts_AnonymousAccess") is 'None'
 		return this.ready()
 
 	if typeof typeName isnt 'string'

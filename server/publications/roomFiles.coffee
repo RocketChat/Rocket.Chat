@@ -1,5 +1,5 @@
 Meteor.publish 'roomFiles', (rid, limit = 50) ->
-	unless this.userId
+	if not this.userId and RocketChat.settings.get("Accounts_AnonymousAccess") is 'None'
 		return this.ready()
 
 	pub = this

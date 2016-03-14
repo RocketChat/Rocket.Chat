@@ -1,4 +1,7 @@
 Template.sideNav.helpers
+	currentUserOrAnonymousAccess: ->
+		return Meteor.userId() || RocketChat.settings.get("Accounts_AnonymousAccess") isnt "None"
+
 	flexTemplate: ->
 		return SideNav.getFlex().template
 
