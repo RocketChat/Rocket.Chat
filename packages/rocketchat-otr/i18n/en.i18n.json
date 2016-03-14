@@ -1,12 +1,12 @@
 {
-	"Denied" : "Denied",
-	"End_OTR" : "End OTR",
-	"Off_the_record_conversation" : "Off-the-record Conversation",
-	"Off_the_record_conversation_is_not_available_for_your_browser_or_device" : "Off-the-record conversation is not available for your browser or device.",
-	"OTR" : "OTR",
-	"OTR_is_only_available_when_both_users_are_online" : "OTR is only available when both users are online",
-	"Please_wait_while_OTR_is_being_established" : "Please wait while OTR is being established",
-	"Refresh_keys" : "Refresh keys",
-	"Start_OTR" : "Start OTR",
-	"Username_wants_to_start_otr_Do_you_want_to_accept" : "__username__ wants to start OTR. Do you want to accept?"
+  "Denied" : "Denied",
+  "End_OTR" : "End OTR",
+  "Off_the_record_conversation" : "Off-the-record Conversation",
+  "Off_the_record_conversation_is_not_available_for_your_browser_or_device" : "Off-the-record conversation is not available for your browser or device.",
+  "OTR" : "OTR",
+  "OTR_is_only_available_when_both_users_are_online" : "OTR is only available when both users are online",
+  "Please_wait_while_OTR_is_being_established" : "Please wait while OTR is being established",
+  "Refresh_keys" : "Refresh keys",
+  "Start_OTR" : "Start OTR",
+  "Username_wants_to_start_otr_Do_you_want_to_accept" : "__username__ wants to start OTR. Do you want to accept?"
 }
