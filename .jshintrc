@@ -82,15 +82,22 @@
     // Custom Globals
     "globals"       : {
         "_"           : true,
+        "crypto"      : true,
+        "EJSON"       : true,
+        "FlowRouter"  : true,
         "Meteor"      : true,
         "Npm"         : true,
         "Package"     : true,
         "Promise"     : true,      // Avoid "redefinition of Promise" warning
+        "Random"      : true,
         "ReactiveVar" : true,
         "RocketChat"  : true,
         "s"           : true,
         "Session"     : true,
+        "swal"        : true,
         "t"           : true,
-        "tapi18nFiles": true
+        "TAPi18n"     : true,
+        "toastr"      : true,
+        "Tracker"     : true
     }
 }
