@@ -42,3 +42,4 @@ RocketChat.TabBar.addButton({
 RocketChat.TabBar.addGroup('message-search', ['livechat']);
 RocketChat.TabBar.addGroup('starred-messages', ['livechat']);
 RocketChat.TabBar.addGroup('uploaded-files-list', ['livechat']);
+RocketChat.TabBar.addGroup('push-notifications', ['livechat']);
