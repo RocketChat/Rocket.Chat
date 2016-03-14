@@ -35,8 +35,9 @@ Template.accountBox.events
 		event.preventDefault()
 		user = Meteor.user()
 		Meteor.logout ->
-			FlowRouter.go 'home'
+			RocketChat.callbacks.run 'afterLogoutCleanUp', user
 			Meteor.call('logoutCleanUp', user)
+			FlowRouter.go 'home'
 
 	'click #avatar': (event) ->
 		FlowRouter.go 'changeAvatar'

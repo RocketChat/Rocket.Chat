@@ -10,7 +10,7 @@ RocketChat._setEmail = function(userId, email) {
 
 	emailValidation = /^[a-zA-Z0-9.!#$%&'*+\/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/;
 	if (!emailValidation.test(email)) {
-		throw new Meteor.Error('email-invalid', "#{email} is not a valid e-mail");
+		throw new Meteor.Error('email-invalid', email + " is not a valid e-mail");
 	}
 
 	user = RocketChat.models.Users.findOneById(userId);
@@ -22,7 +22,7 @@ RocketChat._setEmail = function(userId, email) {
 
 	// Check e-mail availability
 	if (!RocketChat.checkEmailAvailability(email)) {
-		throw new Meteor.Error('email-unavailable', "#{email} is already in use :(");
+		throw new Meteor.Error('email-unavailable', email + " is already in use :(");
 	}
 
 	// Set new email
