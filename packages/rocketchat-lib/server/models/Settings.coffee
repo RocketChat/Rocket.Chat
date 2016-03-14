@@ -76,12 +76,14 @@ RocketChat.models.Settings = new class extends RocketChat.models._Base
 
 		return @update query, update
 
-	# INSERT
-	createWithIdAndValue: (_id, value) ->
+	createWithIdAndValue: (_id, value, extraFields = {}) ->
 		record =
 			_id: _id
 			value: value
 			_createdAt: new Date
+
+		unless _.isEmpty extraFields
+			record = _.extend record, extraFields
 
 		return @insert record
 

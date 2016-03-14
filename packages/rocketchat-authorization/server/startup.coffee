@@ -100,7 +100,7 @@ Meteor.startup ->
 		roles : ['admin']}
 
 		{ _id: 'view-c-room',
-		roles : ['admin', 'user', 'bot']}
+		roles : ['admin', 'user', 'bot', 'anonymous']}
 
 		{ _id: 'view-p-room',
 		roles : ['admin', 'user']}
@@ -133,6 +133,7 @@ Meteor.startup ->
 		{ name: 'moderator', scope: 'Subscriptions', description: 'Room moderators' }
 		{ name: 'owner', scope: 'Subscriptions', description: 'Room owners' }
 		{ name: 'user', scope: 'Users', description: 'Users' }
+		{ name: 'anonymous', scope: 'Users', description: 'Anonymous users' }
 		{ name: 'bot', scope: 'Users', description: 'Bots' }
 	]
 

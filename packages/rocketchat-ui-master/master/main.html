@@ -42,10 +42,7 @@
 
 <template name="main">
 	{{#if subsReady}}
-		{{#unless logged}}
-			<div class="connection-status">
-				{{> status}}
-			</div>
+		{{!-- {{#if privateAndNotLogged}}
 			{{> loginLayout center="loginForm"}}
 		{{else}}
 			{{#unless hasUsername}}
@@ -53,7 +50,7 @@
 			{{else}}
 				{{#if requirePasswordChange}}
 					{{> logoLayout render="resetPassword"}}
-				{{else}}
+				{{else}} --}}
 					{{> spotlight}}
 					{{> mobileMessageMenu}}
 					{{> videoCall overlay=true}}
@@ -75,8 +72,8 @@
 						{{/unless}}
 					</div>
 					{{> audioNotification }}
-				{{/if}}
+				{{!-- {{/if}}
 			{{/unless}}
-		{{/unless}}
+		{{/if}} --}}
 	{{/if}}
 </template>

@@ -1,12 +1,8 @@
 Meteor.publish 'pinnedMessages', (rid, limit=50) ->
-	unless this.userId
+	if not this.userId and RocketChat.settings.get("Accounts_AnonymousAccess") is 'None'
 		return this.ready()
 
 	publication = @
-
-	user = RocketChat.models.Users.findOneById this.userId
-	unless user
-		return this.ready()
 
 	cursorHandle = RocketChat.models.Messages.findPinnedByRoom(rid, { sort: { ts: -1 }, limit: limit }).observeChanges
 		added: (_id, record) ->

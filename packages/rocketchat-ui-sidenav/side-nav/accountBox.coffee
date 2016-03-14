@@ -1,21 +1,29 @@
 Template.accountBox.helpers
 	myUserInfo: ->
-		visualStatus = "online"
-		username = Meteor.user()?.username
-		switch Session.get('user_' + username + '_status')
-			when "away"
-				visualStatus = t("away")
-			when "busy"
-				visualStatus = t("busy")
-			when "offline"
-				visualStatus = t("invisible")
-		return {
-			name: Session.get('user_' + username + '_name')
-			status: Session.get('user_' + username + '_status')
-			visualStatus: visualStatus
-			_id: Meteor.userId()
-			username: username
-		}
+		if Meteor.userId()
+			visualStatus = "online"
+			username = Meteor.user()?.username
+			switch Session.get('user_' + username + '_status')
+				when "away"
+					visualStatus = t("away")
+				when "busy"
+					visualStatus = t("busy")
+				when "offline"
+					visualStatus = t("invisible")
+			return {
+				name: Session.get('user_' + username + '_name')
+				status: Session.get('user_' + username + '_status')
+				visualStatus: visualStatus
+				_id: Meteor.userId()
+				username: username
+			}
+		else
+			return {
+				name: t("Anonymous_user")
+				status: "online"
+				visualStatus: "online"
+				username: t("Anonymous_user")
+			}
 
 	showAdminOption: ->
 		return RocketChat.authz.hasAtLeastOnePermission( ['view-statistics', 'view-room-administration', 'view-user-administration', 'view-privileged-setting'])

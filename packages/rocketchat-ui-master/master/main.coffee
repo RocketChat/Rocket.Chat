@@ -125,6 +125,17 @@ Template.main.helpers
 			$('html').addClass("scroll").removeClass("noscroll")
 			return false
 
+	privateAndNotLogged: ->
+		if RocketChat.settings.get('Accounts_AnonymousAccess') is 'None' # Private
+			if Meteor.userId()?
+				$('html').addClass("noscroll").removeClass("scroll")
+				return false
+			else
+				$('html').addClass("scroll").removeClass("noscroll")
+				return true
+		else
+			return false
+
 	subsReady: ->
 		return not Meteor.userId()? or (FlowRouter.subsReady('userData', 'activeUsers'))
 

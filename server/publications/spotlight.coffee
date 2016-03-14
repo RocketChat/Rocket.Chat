@@ -1,5 +1,5 @@
 Meteor.publish 'spotlight', (selector, options, collName) ->
-	if not this.userId? or not selector?.name?.$regex?
+	if not selector?.name?.$regex? or (not this.userId and RocketChat.settings.get("Accounts_AnonymousAccess") is 'None')
 		return this.ready()
 
 	self = this

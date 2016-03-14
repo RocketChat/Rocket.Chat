@@ -33,18 +33,34 @@ Template.username.events
 			RocketChat.Button.reset(button)
 			return
 
-		Meteor.call 'setUsername', value, (err, result) ->
-			if err?
-				console.log err
-				if err.error is 'username-invalid'
-					username.invalid = true
+		if RocketChat.settings.get('Accounts_AnonymousAccess') isnt 'None'
+			Meteor.call 'registerAnonymousUser', value, (err, password) ->
+				if err
+					toastr.error err.reason
+					RocketChat.Button.reset(button)
 				else
-					username.error = true
-				username.username = value
+					Meteor.loginWithPassword value, password, (error) ->
+						RocketChat.Button.reset(button)
+						if error?.error is 'no-valid-email'
+							toastr.success t('We_have_sent_registration_email')
+							instance.state.set 'login'
+						else if error?.error is 'inactive-user'
+							instance.state.set 'wait-activation'
 
-			RocketChat.Button.reset(button)
-			instance.username.set(username)
+						if not error?
+							Meteor.call 'joinDefaultChannels'
+		else
+			Meteor.call 'setUsername', value, (err, result) ->
+				if err?
+					console.log err
+					if err.error is 'username-invalid'
+						username.invalid = true
+					else
+						username.error = true
+					username.username = value
+
+				RocketChat.Button.reset(button)
+				instance.username.set(username)
 
 			if not err?
 				Meteor.call 'joinDefaultChannels'
-

@@ -1,5 +1,5 @@
 Meteor.publish 'filteredUsers', (name) ->
-	unless this.userId
+	if not this.userId and RocketChat.settings.get("Accounts_AnonymousAccess") is 'None'
 		return this.ready()
 
 	exp = new RegExp(name, 'i')
