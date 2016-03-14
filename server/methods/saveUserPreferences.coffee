@@ -3,6 +3,9 @@ Meteor.methods
 		if Meteor.userId()
 			preferences = {}
 
+			if settings.language?
+				RocketChat.models.Users.setLanguage Meteor.userId(), settings.language
+
 			if settings.disableNewRoomNotification?
 				preferences.disableNewRoomNotification = if settings.disableNewRoomNotification is "1" then true else false
 
