@@ -41,12 +41,11 @@ Meteor.startup ->
 			if RocketChat.authz.hasRole(Meteor.userId(), 'admin') is false or Meteor.settings.public.sandstorm
 				return c.stop()
 
-			siteUrl = siteUrl.replace /\/$/, ''
-			if siteUrl isnt location.origin
+			if siteUrl isnt Meteor.absoluteUrl()
 				swal
 					type: 'warning'
 					title: t('Warning')
-					text: t("The_setting_s_is_configured_to_s_and_you_are_accessing_from_s", t('Site_Url'), siteUrl, location.origin) + '<br/><br/>' + t("Do_you_want_to_change_to_s_question", location.origin)
+					text: t("The_setting_s_is_configured_to_s_and_you_are_accessing_from_s", t('Site_Url'), siteUrl, Meteor.absoluteUrl()) + '<br/><br/>' + t("Do_you_want_to_change_to_s_question", Meteor.absoluteUrl())
 					showCancelButton: true
 					confirmButtonText: t('Yes')
 					cancelButtonText: t('Cancel')
