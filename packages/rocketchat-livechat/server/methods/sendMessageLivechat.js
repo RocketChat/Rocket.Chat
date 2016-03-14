@@ -50,7 +50,10 @@ Meteor.methods({
 					_id: agent.agentId,
 					username: agent.username
 				},
-				t: 'l'
+				t: 'l',
+				desktopNotifications: 'all',
+				mobilePushNotifications: 'all',
+				emailNotifications: 'all'
 			});
 		}
 		room = Meteor.call('canAccessRoom', message.rid, guest._id);
