@@ -105,7 +105,7 @@
   "Authorization_URL" : "Authorization URL",
   "Authorize" : "Authorize",
   "Auto_Load_Images" : "Auto Load Images",
-  "Avatar" : "Change avatar",
+  "Avatar" : "Avatar",
   "Avatar_changed_successfully" : "Avatar changed successfully",
   "Avatar_URL" : "Avatar URL",
   "Avatar_url_invalid_or_error" : "The url provided is invalid or not accessible. Please try again, but with a different url.",
