@@ -6,6 +6,8 @@ RocketChat.OTR.Room = class {
 		this.established = new ReactiveVar(false);
 		this.establishing = new ReactiveVar(false);
 
+		this.userOnlineComputation = null;
+
 		this.keyPair = null;
 		this.exportedPublicKey = null;
 		this.sessionKey = null;
@@ -44,36 +46,59 @@ RocketChat.OTR.Room = class {
 		this.sessionKey = null;
 		this.serial = null;
 		this.peerSerial = null;
+		Meteor.call('deleteOldOTRMessages', this.roomId);
 	}
 
 	bytesToHexString(bytes) {
-		if (!bytes)
+		if (!bytes) {
 			return null;
+		}
 		bytes = new Uint8Array(bytes);
 		var hexBytes = [];
 		for (var i = 0; i < bytes.length; ++i) {
 			var byteString = bytes[i].toString(16);
-			if (byteString.length < 2)
-				byteString = "0" + byteString;
+			if (byteString.length < 2) {
+				byteString = '0' + byteString;
+			}
 			hexBytes.push(byteString);
 		}
-		return hexBytes.join("");
+		return hexBytes.join('');
 	}
 
 	hexStringToUint8Array(hexString) {
-		if (hexString.length % 2 != 0)
-			throw "Invalid hexString";
+		if (hexString.length % 2 !== 0) {
+			throw 'Invalid hexString';
+		}
 		var arrayBuffer = new Uint8Array(hexString.length / 2);
 		for (var i = 0; i < hexString.length; i += 2) {
 			var byteValue = parseInt(hexString.substr(i, 2), 16);
-			if (byteValue == NaN)
-				throw "Invalid hexString";
+			if (_.isNaN(byteValue)) {
+				throw 'Invalid hexString';
+			}
 			arrayBuffer[i/2] = byteValue;
 		}
 		return arrayBuffer;
 	}
 
 	generateKeyPair() {
+		if (this.userOnlineComputation) {
+			this.userOnlineComputation.stop();
+		}
+
+		this.userOnlineComputation = Tracker.autorun(() => {
+			var $room = $('#chat-window-' + this.roomId);
+			var $title = $('.fixed-title h2', $room);
+			if (this.established.get()) {
+				if ($room.length && $title.length && !$('.otr-icon', $title).length) {
+					$title.prepend('<i class=\'otr-icon icon-key-1\'></i>');
+				}
+			} else {
+				if ($title.length) {
+					$('.otr-icon', $title).remove();
+				}
+			}
+		});
+
 		// Generate an ephemeral key pair.
 		return window.crypto.subtle.generateKey({
 			name: 'ECDH',
@@ -84,9 +109,12 @@ RocketChat.OTR.Room = class {
 		})
 		.then((exportedPublicKey) => {
 			this.exportedPublicKey = exportedPublicKey;
+
+			// Once we have generated new keys, it's safe to delete old messages
+			Meteor.call('deleteOldOTRMessages', this.roomId);
 		})
-		.catch((err) => {
-			console.error(err);
+		.catch((e) => {
+			toastr.error(e);
 		});
 	}
 
@@ -118,7 +146,7 @@ RocketChat.OTR.Room = class {
 
 	encrypt(message) {
 		this.serial++;
-		var data = new TextEncoder("UTF-8").encode(EJSON.stringify({serial: this.serial, msg: message, userId: this.userId, padding: Random.id(Random.fraction()*20) }))
+		var data = new TextEncoder('UTF-8').encode(EJSON.stringify({serial: this.serial, msg: message, userId: this.userId, padding: Random.id(Random.fraction()*20) }));
 		var iv = crypto.getRandomValues(new Uint8Array(12));
 
 		return crypto.subtle.encrypt({
@@ -130,8 +158,8 @@ RocketChat.OTR.Room = class {
 			output.set(iv, 0);
 			output.set(cipherText, iv.length);
 			return this.bytesToHexString(output);
-		}).catch((e) => {
-			return "";
+		}).catch(() => {
+			return '';
 		});
 	}
 
@@ -144,17 +172,17 @@ RocketChat.OTR.Room = class {
 			name: 'AES-GCM',
 			iv: iv
 		}, this.sessionKey, cipherText).then((data) => {
-			data = EJSON.parse(new TextDecoder("UTF-8").decode(new Uint8Array(data)));
+			data = EJSON.parse(new TextDecoder('UTF-8').decode(new Uint8Array(data)));
 
 			// This prevents any replay attacks. Or attacks where messages are changed in order.
 			// If message is from the same userId as me, serials must be equal
 			if (data.userId === this.userId && data.serial !== this.serial) {
-				throw new Error("Invalid serial.");
+				throw new Error('Invalid serial.');
 			} else if (data.userId !== this.userId) {
 				// If serial difference is larger than one, message is out of order
 				var checkSerial = data.serial - this.peerSerial;
 				if (checkSerial !== 1) {
-					throw new Error("Invalid serial.");
+					throw new Error('Invalid serial.');
 				}
 
 				// update serial number to the last received serial
@@ -164,6 +192,7 @@ RocketChat.OTR.Room = class {
 			return data.msg;
 		})
 		.catch((e) => {
+			toastr.error(e);
 			return message;
 		});
 	}
@@ -174,7 +203,7 @@ RocketChat.OTR.Room = class {
 			case 'handshake':
 				let timeout = null;
 
-				establishConnection = () => {
+				let establishConnection = () => {
 					this.establishing.set(true);
 					Meteor.clearTimeout(timeout);
 					this.generateKeyPair().then(() => {
@@ -187,7 +216,7 @@ RocketChat.OTR.Room = class {
 							});
 						});
 					});
-				}
+				};
 
 				if (data.refresh && this.established.get()) {
 					this.reset();
@@ -198,12 +227,12 @@ RocketChat.OTR.Room = class {
 					}
 
 					swal({
-						title: "<i class='icon-key alert-icon'></i>" + TAPi18n.__("OTR"),
-						text: TAPi18n.__("Username_wants_to_start_otr_Do_you_want_to_accept", { username: user.username }),
+						title: '<i class=\'icon-key-1 alert-icon\'></i>' + TAPi18n.__('OTR'),
+						text: TAPi18n.__('Username_wants_to_start_otr_Do_you_want_to_accept', { username: user.username }),
 						html: true,
 						showCancelButton: true,
-						confirmButtonText: TAPi18n.__("Yes"),
-						cancelButtonText: TAPi18n.__("No")
+						confirmButtonText: TAPi18n.__('Yes'),
+						cancelButtonText: TAPi18n.__('No')
 					}, (isConfirm) => {
 						if (isConfirm) {
 							establishConnection();
@@ -230,16 +259,26 @@ RocketChat.OTR.Room = class {
 			case 'deny':
 				if (this.establishing.get()) {
 					this.reset();
-					swal(TAPi18n.__("Denied"), null, "error");
+					const user = Meteor.users.findOne(this.peerId);
+					swal({
+						title: '<i class=\'icon-key-1 alert-icon\'></i>' + TAPi18n.__('OTR'),
+						text: TAPi18n.__('Username_denied_the_OTR_session', { username: user.username }),
+						html: true
+					});
 				}
 				break;
 
 			case 'end':
 				if (this.established.get()) {
 					this.reset();
-					swal(TAPi18n.__("Ended"), null, "error");
+					const user = Meteor.users.findOne(this.peerId);
+					swal({
+						title: '<i class=\'icon-key-1 alert-icon\'></i>' + TAPi18n.__('OTR'),
+						text: TAPi18n.__('Username_ended_the_OTR_session', { username: user.username }),
+						html: true
+					});
 				}
 				break;
 		}
 	}
-}
+};
