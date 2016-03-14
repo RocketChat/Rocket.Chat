@@ -146,6 +146,12 @@ Template.main.helpers
 	requirePasswordChange: ->
 		return Meteor.user()?.requirePasswordChange is true
 
+	CustomScriptLoggedOut: ->
+		RocketChat.settings.get 'Custom_Script_Logged_Out'
+
+	CustomScriptLoggedIn: ->
+		RocketChat.settings.get 'Custom_Script_Logged_In'
+
 
 Template.main.events
 

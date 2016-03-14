@@ -28,3 +28,12 @@ RocketChat.theme.addPublicColor "status-busy", "#d30230"
 RocketChat.theme.addPublicColor "status-offline", "rgba(150, 150, 150, 0.50)"
 RocketChat.theme.addPublicColor "status-online", "#35ac19"
 RocketChat.theme.addPublicColor "unread-notification-color", "#1dce73"
+
+
+RocketChat.settings.add "theme-custom-css", '',
+	group: 'Layout'
+	type: 'code'
+	code: 'less'
+	multiline: true
+	section: 'Custom CSS'
+	public: false
