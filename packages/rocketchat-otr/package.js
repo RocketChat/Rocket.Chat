@@ -27,7 +27,9 @@ Package.onUse(function(api) {
 	], 'client');
 
 	api.addFiles([
-		'server/settings.js'
+		'server/settings.js',
+		'server/models/Messages.js',
+		'server/methods/deleteOldOTRMessages.js'
 	], 'server');
 
 	// TAPi18n
