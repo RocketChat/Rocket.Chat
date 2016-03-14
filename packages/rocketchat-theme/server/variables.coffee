@@ -33,7 +33,7 @@ RocketChat.theme.addPublicColor "unread-notification-color", "#1dce73"
 RocketChat.settings.add "theme-custom-css", '',
 	group: 'Layout'
 	type: 'code'
-	code: 'less'
+	code: 'text/x-less'
 	multiline: true
 	section: 'Custom CSS'
 	public: false
