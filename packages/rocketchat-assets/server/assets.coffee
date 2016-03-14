@@ -18,7 +18,7 @@ assets =
 			height: undefined
 	'favicon.svg':
 		label: 'favicon.svg'
-		defaultUrl: '/images/logo/icon.svg?v=3'
+		defaultUrl: 'images/logo/icon.svg?v=3'
 		constraints:
 			type: 'image'
 			extension: 'svg'
