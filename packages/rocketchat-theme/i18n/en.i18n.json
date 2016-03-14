@@ -27,5 +27,6 @@
   "theme-color-status-online" : "Online Status Color",
   "theme-color-tertiary-background-color" : "Tertiary Background Color",
   "theme-color-tertiary-font-color" : "Tertiary Font Color",
-  "theme-color-unread-notification-color" : "Unread Notifications Color"
+  "theme-color-unread-notification-color" : "Unread Notifications Color",
+  "theme-custom-css" : "Custom CSS"
 }
