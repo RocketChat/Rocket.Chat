@@ -119,6 +119,33 @@ Template.admin.helpers
 	random: ->
 		return Random.id()
 
+	getEditorOptions: ->
+		return {} =
+			lineNumbers: true
+			mode: this.code or "javascript"
+			gutters: [
+				"CodeMirror-linenumbers"
+				"CodeMirror-foldgutter"
+			]
+			foldGutter: true
+			matchBrackets: true
+			autoCloseBrackets: true
+			matchTags: true,
+			showTrailingSpace: true
+			highlightSelectionMatches: true
+
+	setEditorOnBlur: (_id) ->
+		Meteor.defer ->
+			codeMirror = $('.code-mirror-box[data-editor-id="'+_id+'"] .CodeMirror')[0].CodeMirror
+			codeMirror.on 'change', ->
+				value = codeMirror.getValue()
+				TempSettings.update {_id: _id},
+					$set:
+						value: value
+						changed: Settings.findOne(_id).value isnt value
+		return
+
+
 Template.admin.events
 	"change .input-monitor": (e, t) ->
 		value = _.trim $(e.target).val()
@@ -220,6 +247,8 @@ Template.admin.events
 	"click .expand": (e) ->
 		$(e.currentTarget).closest('.section').removeClass('section-collapsed')
 		$(e.currentTarget).closest('button').removeClass('expand').addClass('collapse').find('span').text(TAPi18n.__ "Collapse")
+		$('.code-mirror-box .CodeMirror').each (index, codeMirror) ->
+			codeMirror.CodeMirror.refresh()
 
 	"click .collapse": (e) ->
 		$(e.currentTarget).closest('.section').addClass('section-collapsed')
@@ -238,6 +267,16 @@ Template.admin.events
 
 			toastr.success TAPi18n.__.apply(TAPi18n, args), TAPi18n.__('Success')
 
+	"click .button-fullscreen": ->
+		codeMirrorBox = $('.code-mirror-box[data-editor-id="'+this._id+'"]')
+		codeMirrorBox.addClass('code-mirror-box-fullscreen')
+		codeMirrorBox.find('.CodeMirror')[0].CodeMirror.refresh()
+
+	"click .button-restore": ->
+		codeMirrorBox = $('.code-mirror-box[data-editor-id="'+this._id+'"]')
+		codeMirrorBox.removeClass('code-mirror-box-fullscreen')
+		codeMirrorBox.find('.CodeMirror')[0].CodeMirror.refresh()
+
 
 Template.admin.onRendered ->
 	Tracker.afterFlush ->
@@ -247,6 +286,18 @@ Template.admin.onRendered ->
 	Meteor.setTimeout ->
 		$('input.minicolors').minicolors({theme: 'rocketchat'})
 	, 1000
+
+	$('.code-mirror-box').each (index, codeMirrorBox) ->
+		_id = codeMirrorBox.data('code-id')
+		console.log _id
+		codeMirror = codeMirrorBox.find('.CodeMirror')[0].CodeMirror
+		codeMirror.on 'blur', ->
+			value = codeMirror.getValue()
+			console.log('blur', value)
+			TempSettings.update {_id: _id},
+				$set:
+					value: value
+					changed: Settings.findOne(_id).value isnt value
 
 	Tracker.autorun ->
 		FlowRouter.watchPathChange()
