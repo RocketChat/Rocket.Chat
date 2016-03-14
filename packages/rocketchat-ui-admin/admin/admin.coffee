@@ -287,18 +287,6 @@ Template.admin.onRendered ->
 		$('input.minicolors').minicolors({theme: 'rocketchat'})
 	, 1000
 
-	$('.code-mirror-box').each (index, codeMirrorBox) ->
-		_id = codeMirrorBox.data('code-id')
-		console.log _id
-		codeMirror = codeMirrorBox.find('.CodeMirror')[0].CodeMirror
-		codeMirror.on 'blur', ->
-			value = codeMirror.getValue()
-			console.log('blur', value)
-			TempSettings.update {_id: _id},
-				$set:
-					value: value
-					changed: Settings.findOne(_id).value isnt value
-
 	Tracker.autorun ->
 		FlowRouter.watchPathChange()
 		Meteor.setTimeout ->
