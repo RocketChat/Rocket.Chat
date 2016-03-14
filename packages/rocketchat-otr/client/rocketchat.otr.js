@@ -49,6 +49,7 @@ Meteor.startup(function() {
 			return RocketChat.OTR.instancesByRoomId[message.rid].encrypt(message.msg)
 			.then((msg) => {
 				message.msg = msg;
+				message.otr = true;
 				return message;
 			});
 		} else {
@@ -69,6 +70,9 @@ Meteor.startup(function() {
 				});
 			}
 		} else {
+			if (message.otr) {
+				message.msg = '';
+			}
 			return Promise.resolve(message);
 		}
 	}, RocketChat.promises.priority.HIGH);
