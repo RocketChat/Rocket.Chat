@@ -1,4 +1,5 @@
-RocketChat.OTR = new (class {
+/* globals ChatSubscription */
+class OTR {
 	constructor() {
 		this.enabled = new ReactiveVar(false);
 		this.instancesByRoomId = {};
@@ -30,7 +31,9 @@ RocketChat.OTR = new (class {
 		}
 		return this.instancesByRoomId[roomId];
 	}
-})();
+}
+
+RocketChat.OTR = new OTR();
 
 Meteor.startup(function() {
 	RocketChat.Notifications.onUser('otr', (type, data) => {
@@ -56,14 +59,14 @@ Meteor.startup(function() {
 	RocketChat.promises.add('onClientMessageReceived', function(message) {
 		if (message.rid && RocketChat.OTR.instancesByRoomId && RocketChat.OTR.instancesByRoomId[message.rid] && RocketChat.OTR.instancesByRoomId[message.rid].established.get()) {
 			if (message.notification) {
-				message.msg = t("Encrypted_message");
+				message.msg = t('Encrypted_message');
 				return Promise.resolve(message);
 			} else {
 				return RocketChat.OTR.instancesByRoomId[message.rid].decrypt(message.msg)
 				.then((msg) => {
 					message.msg = msg;
 					return message;
-				})
+				});
 			}
 		} else {
 			return Promise.resolve(message);

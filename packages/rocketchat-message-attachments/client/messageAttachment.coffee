@@ -10,6 +10,9 @@ Template.messageAttachment.helpers
 
 		return url
 
+	parsedText: ->
+		renderMessageBody { msg: this.text }
+
 	showImage: ->
 		if Meteor.user()?.settings?.preferences?.autoImageLoad is false and this.downloadImages? is not true
 			return false

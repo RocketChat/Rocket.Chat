@@ -2145,12 +2145,12 @@ a.github-fork {
 		}
 	}
 
+	font-size: 12px;
+
 	.upload-progress {
+		height: 24px;
 		position: relative;
 		text-shadow: 1px 1px 0px rgba(0,0,0,.2);
-
-		&.upload-error {
-		}
 
 		.upload-progress-progress {
 			position: absolute;
@@ -2172,17 +2172,14 @@ a.github-fork {
 			> a {
 				float: right;
 				text-transform: uppercase;
-
-				&:hover {
-					cursor: pointer;
-				}
+				text-shadow: none;
+				cursor: pointer;
 			}
 		}
 	}
 
 	.unread-bar {
 		background-color: #E6F4FD;
-		font-size: 12px;
 		color: #068FE4;
 		text-transform: uppercase;
 		text-align: center;
@@ -4684,6 +4681,10 @@ a.github-fork {
 			}
 		}
 	}
+}
+
+.sweet-alert .sa-input-error {
+	top: 19px;
 }
 
 @media all and(max-width: 780px) {
