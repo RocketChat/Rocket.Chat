@@ -36,17 +36,7 @@
 						</div>
 					</div>
 					<div class="input-line">
-						<label for="password">{{_ "Old_Password"}}</label>
-						<div>
-						{{#if allowPasswordChange}}
-							<input type="password" name="oldPassword" id="oldPassword" />
-						{{else}}
-							<input type="password" name="oldPassword" id="oldPassword" readonly="readonly" title="{{passwordChangeDisabled}}" />
-						{{/if}}
-						</div>
-					</div>
-					<div class="input-line">
-						<label for="password">{{_ "Password"}}</label>
+						<label for="password">{{_ "New_password"}}</label>
 						<div>
 						{{#if allowPasswordChange}}
 							<input type="password" name="password" id="password" />
@@ -55,23 +45,18 @@
 						{{/if}}
 						</div>
 					</div>
-					<div class="input-line">
-						<label for="language">{{_ "Language"}}</label>
-						<div>
-							<select id="language" class="required">
-								{{#each languages}}
-								<option value="{{key}}" selected="{{userLanguage key}}" dir="auto">{{name}}</option>
-								{{/each}}
-							</select>
-						</div>
-					</div>
 				</fieldset>
-				<div class="logoutOthers">
-					<button class="button red">{{_ "Logout_Others"}}</button>
-				</div>
 				<div class="submit">
 					<button class="button"><i class="icon-send"></i><span>{{_ "Save_changes"}}</span></button>
 				</div>
+				<div class="logoutOthers">
+					<button class="button red">{{_ "Logout_Others"}}</button>
+				</div>
+				{{#if allowDeleteOwnAccount}}
+				<div class="delete-account text-right">
+					<button class="button red"><i class="icon-trash"></i><span>{{_ "Delete_my_account"}}</span></button>
+				</div>
+				{{/if}}
 			</div>
 		</div>
 	</section>
