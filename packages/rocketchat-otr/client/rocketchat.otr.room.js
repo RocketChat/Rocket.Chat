@@ -6,6 +6,8 @@ RocketChat.OTR.Room = class {
 		this.established = new ReactiveVar(false);
 		this.establishing = new ReactiveVar(false);
 
+		this.userOnlineComputation = null;
+
 		this.keyPair = null;
 		this.exportedPublicKey = null;
 		this.sessionKey = null;
@@ -44,6 +46,7 @@ RocketChat.OTR.Room = class {
 		this.sessionKey = null;
 		this.serial = null;
 		this.peerSerial = null;
+		Meteor.call('deleteOldOTRMessages', this.roomId);
 	}
 
 	bytesToHexString(bytes) {
@@ -74,6 +77,33 @@ RocketChat.OTR.Room = class {
 	}
 
 	generateKeyPair() {
+		if (this.userOnlineComputation) {
+			this.userOnlineComputation.stop();
+		}
+
+		this.userOnlineComputation = Tracker.autorun(() => {
+			if (this.established.get()) {
+				const peerUser = Meteor.users.findOne(this.peerId);
+				var $room = $("#chat-window-" + this.roomId);
+				var $title = $('.fixed-title h2', $room);
+				if (peerUser && peerUser.status !== 'offline') {
+					if ($room.length && $title.length && !$('.otr-icon', $title).length) {
+						$title.prepend('<i class="otr-icon icon-key-1"></i>');
+					}
+				} else {
+					this.reset();
+					swal({
+						title: "<i class='icon-key-1 alert-icon'></i>" + t("OTR"),
+						text: t("User_has_disconnected"),
+						html: true
+					});
+					if ($title.length) {
+						$('.otr-icon', $title).remove();
+					}
+				}
+			}
+		});
+
 		// Generate an ephemeral key pair.
 		return window.crypto.subtle.generateKey({
 			name: 'ECDH',
@@ -84,9 +114,12 @@ RocketChat.OTR.Room = class {
 		})
 		.then((exportedPublicKey) => {
 			this.exportedPublicKey = exportedPublicKey;
+
+			// Once we have generated new keys, it's safe to delete old messages
+			Meteor.call('deleteOldOTRMessages', this.roomId);
 		})
-		.catch((err) => {
-			console.error(err);
+		.catch((e) => {
+			toastr.error(e);
 		});
 	}
 
@@ -164,6 +197,7 @@ RocketChat.OTR.Room = class {
 			return data.msg;
 		})
 		.catch((e) => {
+			toastr.error(e);
 			return message;
 		});
 	}
@@ -198,7 +232,7 @@ RocketChat.OTR.Room = class {
 					}
 
 					swal({
-						title: "<i class='icon-key alert-icon'></i>" + TAPi18n.__("OTR"),
+						title: "<i class='icon-key-1 alert-icon'></i>" + TAPi18n.__("OTR"),
 						text: TAPi18n.__("Username_wants_to_start_otr_Do_you_want_to_accept", { username: user.username }),
 						html: true,
 						showCancelButton: true,
