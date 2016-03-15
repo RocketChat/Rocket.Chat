@@ -4,7 +4,9 @@ loadMissedMessages = (rid) ->
 		return
 
 	Meteor.call 'loadMissedMessages', rid, lastMessage.ts, (err, result) ->
-		ChatMessage.upsert {_id: item._id}, item for item in result
+		for item in result
+			RocketChat.promises.run('onClientMessageReceived', item).then (item) ->
+				ChatMessage.upsert {_id: item._id}, item
 
 connectionWasOnline = true
 Tracker.autorun ->
