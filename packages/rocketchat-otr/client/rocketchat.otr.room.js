@@ -20,12 +20,12 @@ RocketChat.OTR.Room = class {
 		this.establishing.set(true);
 		this.firstPeer = true;
 		this.generateKeyPair().then(() => {
-			RocketChat.Notifications.notifyUser(this.peerId, 'otr', 'handshake', { roomId: this.roomId, userId: this.userId, publicKey: this.bytesToHexString(this.exportedPublicKey), refresh: refresh });
+			RocketChat.Notifications.notifyUser(this.peerId, 'otr', 'handshake', { roomId: this.roomId, userId: this.userId, publicKey: EJSON.stringify(new Uint8Array(this.exportedPublicKey)), refresh: refresh });
 		});
 	}
 
 	acknowledge() {
-		RocketChat.Notifications.notifyUser(this.peerId, 'otr', 'acknowledge', { roomId: this.roomId, userId: this.userId, publicKey: this.bytesToHexString(this.exportedPublicKey) });
+		RocketChat.Notifications.notifyUser(this.peerId, 'otr', 'acknowledge', { roomId: this.roomId, userId: this.userId, publicKey: EJSON.stringify(new Uint8Array(this.exportedPublicKey)) });
 	}
 
 	deny() {
@@ -49,37 +49,6 @@ RocketChat.OTR.Room = class {
 		Meteor.call('deleteOldOTRMessages', this.roomId);
 	}
 
-	bytesToHexString(bytes) {
-		if (!bytes) {
-			return null;
-		}
-		bytes = new Uint8Array(bytes);
-		var hexBytes = [];
-		for (var i = 0; i < bytes.length; ++i) {
-			var byteString = bytes[i].toString(16);
-			if (byteString.length < 2) {
-				byteString = '0' + byteString;
-			}
-			hexBytes.push(byteString);
-		}
-		return hexBytes.join('');
-	}
-
-	hexStringToUint8Array(hexString) {
-		if (hexString.length % 2 !== 0) {
-			throw 'Invalid hexString';
-		}
-		var arrayBuffer = new Uint8Array(hexString.length / 2);
-		for (var i = 0; i < hexString.length; i += 2) {
-			var byteValue = parseInt(hexString.substr(i, 2), 16);
-			if (_.isNaN(byteValue)) {
-				throw 'Invalid hexString';
-			}
-			arrayBuffer[i/2] = byteValue;
-		}
-		return arrayBuffer;
-	}
-
 	generateKeyPair() {
 		if (this.userOnlineComputation) {
 			this.userOnlineComputation.stop();
@@ -91,10 +60,12 @@ RocketChat.OTR.Room = class {
 			if (this.established.get()) {
 				if ($room.length && $title.length && !$('.otr-icon', $title).length) {
 					$title.prepend('<i class=\'otr-icon icon-key-1\'></i>');
+					$('.input-message-container').addClass('otr');
 				}
 			} else {
 				if ($title.length) {
 					$('.otr-icon', $title).remove();
+					$('.input-message-container').removeClass('otr');
 				}
 			}
 		});
@@ -119,7 +90,7 @@ RocketChat.OTR.Room = class {
 	}
 
 	importPublicKey(publicKey) {
-		return window.crypto.subtle.importKey('spki', this.hexStringToUint8Array(publicKey), {
+		return window.crypto.subtle.importKey('spki', EJSON.parse(publicKey), {
 			name: 'ECDH',
 			namedCurve: 'P-256'
 		}, false, []).then((peerPublicKey) => {
@@ -144,9 +115,10 @@ RocketChat.OTR.Room = class {
 		});
 	}
 
-	encrypt(message) {
-		this.serial++;
-		var data = new TextEncoder('UTF-8').encode(EJSON.stringify({serial: this.serial, msg: message, userId: this.userId, ack: Random.id((Random.fraction()+1)*20) }));
+	encryptText(data) {
+		if (!_.isObject(data)) {
+			data = new TextEncoder('UTF-8').encode(EJSON.stringify({ text: data, ack: Random.id((Random.fraction()+1)*20) }));
+		}
 		var iv = crypto.getRandomValues(new Uint8Array(12));
 
 		return crypto.subtle.encrypt({
@@ -157,11 +129,17 @@ RocketChat.OTR.Room = class {
 			var output = new Uint8Array(iv.length + cipherText.length);
 			output.set(iv, 0);
 			output.set(cipherText, iv.length);
-			// return this.bytesToHexString(output);
 			return EJSON.stringify(output);
 		}).catch(() => {
-			return '';
+			throw new Meteor.Error('encryption-error', 'Encryption error.');
 		});
+	}
+
+	encrypt(message) {
+		this.serial++;
+		var data = new TextEncoder('UTF-8').encode(EJSON.stringify({ serial: this.serial, text: message, userId: this.userId, ack: Random.id((Random.fraction()+1)*20) }));
+		var enc = this.encryptText(data);
+		return enc;
 	}
 
 	decrypt(message) {

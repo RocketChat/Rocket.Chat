@@ -30,7 +30,7 @@ Package.onUse(function(api) {
 		'server/settings.js',
 		'server/models/Messages.js',
 		'server/methods/deleteOldOTRMessages.js',
-		'server/methods/updateOTRAckAndType.js'
+		'server/methods/updateOTRAck.js'
 	], 'server');
 
 	// TAPi18n
