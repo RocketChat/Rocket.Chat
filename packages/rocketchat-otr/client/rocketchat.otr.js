@@ -9,25 +9,24 @@ class OTR {
 	}
 
 	getInstanceByRoomId(roomId) {
-		var enabled, subscription;
+		if (!this.enabled.get()) {
+			return;
+		}
+
+		if (this.instancesByRoomId[roomId]) {
+			return this.instancesByRoomId[roomId];
+		}
+
+		var subscription;
 		subscription = RocketChat.models.Subscriptions.findOne({
 			rid: roomId
 		});
-		if (!subscription) {
+
+		if (!subscription || subscription.t !== 'd') {
 			return;
 		}
-		enabled = false;
-		switch (subscription.t) {
-			case 'd':
-				enabled = RocketChat.settings.get('OTR_Enabled');
-				break;
-		}
-		if (enabled === false) {
-			return;
-		}
-		if (this.instancesByRoomId[roomId] == null) {
-			this.instancesByRoomId[roomId] = new RocketChat.OTR.Room(Meteor.userId(), roomId);
-		}
+
+		this.instancesByRoomId[roomId] = new RocketChat.OTR.Room(Meteor.userId(), roomId);
 		return this.instancesByRoomId[roomId];
 	}
 }
@@ -44,8 +43,8 @@ Meteor.startup(function() {
 	});
 
 	RocketChat.promises.add('onClientBeforeSendMessage', function(message) {
-		if (message.rid && RocketChat.OTR.instancesByRoomId && RocketChat.OTR.instancesByRoomId[message.rid] && RocketChat.OTR.instancesByRoomId[message.rid].established.get()) {
-			return RocketChat.OTR.instancesByRoomId[message.rid].encrypt(message.msg)
+		if (message.rid && RocketChat.OTR.getInstanceByRoomId(message.rid) && RocketChat.OTR.getInstanceByRoomId(message.rid).established.get()) {
+			return RocketChat.OTR.getInstanceByRoomId(message.rid).encrypt(message.msg)
 			.then((msg) => {
 				message.msg = msg;
 				message.t = 'otr';
@@ -57,27 +56,38 @@ Meteor.startup(function() {
 	}, RocketChat.promises.priority.HIGH);
 
 	RocketChat.promises.add('onClientMessageReceived', function(message) {
-		if (message.rid && RocketChat.OTR.instancesByRoomId && RocketChat.OTR.instancesByRoomId[message.rid] && RocketChat.OTR.instancesByRoomId[message.rid].established.get()) {
+		if (message.rid && RocketChat.OTR.getInstanceByRoomId(message.rid) && RocketChat.OTR.getInstanceByRoomId(message.rid).established.get()) {
 			if (message.notification) {
 				message.msg = t('Encrypted_message');
 				return Promise.resolve(message);
 			} else {
 				return RocketChat.OTR.instancesByRoomId[message.rid].decrypt(message.msg)
 				.then((data) => {
-					const {msg, ack} = data;
-					message.msg = msg;
-
-					if (!message.otrAck) {
-						RocketChat.OTR.instancesByRoomId[message.rid].encrypt(ack)
-						.then((ack) => {
-							Meteor.call('updateOTRAckAndType', message._id, ack);
+					const {text, ack} = data;
+					message.msg = text;
+					if (message.otrAck) {
+						return RocketChat.OTR.getInstanceByRoomId(message.rid).decrypt(message.otrAck)
+						.then((data) => {
+							if (ack === data.text) {
+								message.t = 'otr-ack';
+							}
+							return message;
 						});
+					} else {
+						if (data.userId !== Meteor.userId()) {
+							return RocketChat.OTR.instancesByRoomId[message.rid].encryptText(ack)
+							.then((ack) => {
+								Meteor.call('updateOTRAck', message._id, ack);
+								return message;
+							});
+						} else {
+							return message;
+						}
 					}
-					return message;
 				});
 			}
 		} else {
-			if (message.t === 'otr' || message.t === 'otr-ack') {
+			if (message.t === 'otr') {
 				message.msg = '';
 			}
 			return Promise.resolve(message);
