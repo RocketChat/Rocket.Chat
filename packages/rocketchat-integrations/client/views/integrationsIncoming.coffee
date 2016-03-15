@@ -138,12 +138,14 @@ Template.integrationsIncoming.events
 				FlowRouter.go "admin-integrations"
 
 	"click .button-fullscreen": ->
-		$('.code-mirror-box').addClass('code-mirror-box-fullscreen');
-		$('.CodeMirror')[0].CodeMirror.refresh()
+		codeMirrorBox = $('.code-mirror-box[data-editor-id="'+this._id+'"]')
+		codeMirrorBox.addClass('code-mirror-box-fullscreen')
+		codeMirrorBox.find('.CodeMirror')[0].CodeMirror.refresh()
 
 	"click .button-restore": ->
-		$('.code-mirror-box').removeClass('code-mirror-box-fullscreen');
-		$('.CodeMirror')[0].CodeMirror.refresh()
+		codeMirrorBox = $('.code-mirror-box[data-editor-id="'+this._id+'"]')
+		codeMirrorBox.removeClass('code-mirror-box-fullscreen')
+		codeMirrorBox.find('.CodeMirror')[0].CodeMirror.refresh()
 
 	"click .submit > .save": ->
 		enabled = $('[name=enabled]:checked').val().trim()
