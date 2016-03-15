@@ -146,7 +146,7 @@ RocketChat.OTR.Room = class {
 
 	encrypt(message) {
 		this.serial++;
-		var data = new TextEncoder('UTF-8').encode(EJSON.stringify({serial: this.serial, msg: message, userId: this.userId, padding: Random.id(Random.fraction()*20) }));
+		var data = new TextEncoder('UTF-8').encode(EJSON.stringify({serial: this.serial, msg: message, userId: this.userId, ack: Random.id((Random.fraction()+1)*20) }));
 		var iv = crypto.getRandomValues(new Uint8Array(12));
 
 		return crypto.subtle.encrypt({
@@ -157,14 +157,15 @@ RocketChat.OTR.Room = class {
 			var output = new Uint8Array(iv.length + cipherText.length);
 			output.set(iv, 0);
 			output.set(cipherText, iv.length);
-			return this.bytesToHexString(output);
+			// return this.bytesToHexString(output);
+			return EJSON.stringify(output);
 		}).catch(() => {
 			return '';
 		});
 	}
 
 	decrypt(message) {
-		var cipherText = new this.hexStringToUint8Array(message);
+		var cipherText = EJSON.parse(message);
 		var iv = cipherText.slice(0, 12);
 		cipherText = cipherText.slice(12);
 
@@ -173,23 +174,7 @@ RocketChat.OTR.Room = class {
 			iv: iv
 		}, this.sessionKey, cipherText).then((data) => {
 			data = EJSON.parse(new TextDecoder('UTF-8').decode(new Uint8Array(data)));
-
-			// This prevents any replay attacks. Or attacks where messages are changed in order.
-			// If message is from the same userId as me, serials must be equal
-			if (data.userId === this.userId && data.serial !== this.serial) {
-				throw new Error('Invalid serial.');
-			} else if (data.userId !== this.userId) {
-				// If serial difference is larger than one, message is out of order
-				var checkSerial = data.serial - this.peerSerial;
-				if (checkSerial !== 1) {
-					throw new Error('Invalid serial.');
-				}
-
-				// update serial number to the last received serial
-				this.peerSerial = data.serial;
-			}
-
-			return data.msg;
+			return data;
 		})
 		.catch((e) => {
 			toastr.error(e);
