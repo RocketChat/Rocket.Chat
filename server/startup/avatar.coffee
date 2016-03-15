@@ -30,7 +30,7 @@ Meteor.startup ->
 		absolutePath: path
 		transformWrite: transformWrite
 
-	WebApp.connectHandlers.use 'avatar/', Meteor.bindEnvironment (req, res, next) ->
+	WebApp.connectHandlers.use '/avatar/', Meteor.bindEnvironment (req, res, next) ->
 		params =
 			username: decodeURIComponent(req.url.replace(/^\//, '').replace(/\?.*$/, ''))
 
