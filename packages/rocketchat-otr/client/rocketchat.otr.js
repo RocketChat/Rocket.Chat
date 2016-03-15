@@ -61,12 +61,18 @@ Meteor.startup(function() {
 				message.msg = t('Encrypted_message');
 				return Promise.resolve(message);
 			} else {
-				return RocketChat.OTR.instancesByRoomId[message.rid].decrypt(message.msg)
+				const otrRoom = RocketChat.OTR.getInstanceByRoomId(message.rid);
+				return otrRoom.decrypt(message.msg)
 				.then((data) => {
 					const {text, ack} = data;
 					message.msg = text;
+
+					if (data.ts) {
+						message.ts = data.ts;
+					}
+
 					if (message.otrAck) {
-						return RocketChat.OTR.getInstanceByRoomId(message.rid).decrypt(message.otrAck)
+						return otrRoom.decrypt(message.otrAck)
 						.then((data) => {
 							if (ack === data.text) {
 								message.t = 'otr-ack';
@@ -75,7 +81,7 @@ Meteor.startup(function() {
 						});
 					} else {
 						if (data.userId !== Meteor.userId()) {
-							return RocketChat.OTR.instancesByRoomId[message.rid].encryptText(ack)
+							return otrRoom.encryptText(ack)
 							.then((ack) => {
 								Meteor.call('updateOTRAck', message._id, ack);
 								return message;
