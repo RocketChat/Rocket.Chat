@@ -11,11 +11,14 @@ Package.onUse(function(api) {
 
   api.use('coffeescript');
   api.use('underscore');
+  api.use('ecmascript');
+  api.use('babel-compiler');
   api.use('simple:highlight.js');
   api.use('rocketchat:lib');
   api.use('rocketchat:authorization');
   api.use('rocketchat:api');
   api.use('rocketchat:theme');
+  api.use('rocketchat:logger');
 
   api.use('kadira:flow-router', 'client');
   api.use('templating', 'client');
@@ -38,6 +41,8 @@ Package.onUse(function(api) {
   // stylesheets
   api.addAssets('client/stylesheets/integrations.less', 'server');
   api.addFiles('client/stylesheets/load.coffee', 'server');
+
+  api.addFiles('server/logger.js', 'server');
 
   api.addFiles('server/models/Integrations.coffee', 'server');
 

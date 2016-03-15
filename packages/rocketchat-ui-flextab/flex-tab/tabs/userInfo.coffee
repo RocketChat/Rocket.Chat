@@ -62,7 +62,7 @@ Template.userInfo.events
 		Meteor.call 'createDirectMessage', Session.get('showUserInfo'), (error, result) ->
 			console.log result
 			if error
-				return Errors.throw error.reason
+				return toastr.error error.reason
 
 			if result?.rid?
 				FlowRouter.go('direct', { username: Session.get('showUserInfo') })

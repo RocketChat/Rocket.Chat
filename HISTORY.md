@@ -1,11 +1,82 @@
 ## NEXT
 
-- Fixes oauth registration deleting account with unverified e-mail
-- Improves layout of new password requested
-- Fixes #924. Admin users may now login without verifying their e-mails.
-- Makes channels list load faster by not getting full channel data, such as usernames.
-- Fixes #2399. Fixes bug with highlighted words which allowed an empty string to be defined as highlight.
+## 0.22.0, 2016-Mar-14
+
+- Add AES encryption routines
+- Add CDN config option for file upload
+- Add icon to show OTR status in channel title
+- Add option to disable integration and scripts
+- Add Off-The-Record funtionallity
+- Add RocketChat.promises API
+- Allow outgoing scripts to call HTTP
+- Allow processOutgoingResponseScript to process erros
+- Allow send message and continue with the request
+- Always notifies livechat messages - Closes #2212
+- Better rendering of message attachment text
+- Client validation of valid types for upload
+- Close #1635; Add textarea for adding custom CSS/JS
+- Close #2494; Close all opened rooms on logout
+- Enables notification by displaying "Encrypted message" instead of the hash or the actual message
+- Fix bug when changing room name to same value
+- Fix code indentation - closes #2454
+- Moves change of language to preferences
+- Requires current password to change profile settings
+- Fixes #691; Adds sorting to channels list.
+- Fixes S3 config without acl
+- Improve UI of new messages bar
+- Improved send button
+- Move custom OAuth to OAuth section of admin panel
+- Moved all fileupload settings to package
+- Moving files to expose functions
+- Pass request as object to process_incoming_request
+- Protect file uploads on S3
+- Readding autocomplete to message input box - fixes #2489
+- Reduce font-size of new messages bar
+- Refactor for file upload response handlers API
+- Removed Meteor Error copy-pasted problem
+- Renaming files to match the storage config
+- Shows a send button if there is a message in the text box
+- Stops using tmeasday:errors and use toastr instead
+- Support for delete uploaded files
+- Support for region and bucketUrl S3 configs
+- Support multiple upload file handlers
+- Support to upload files to S3
+- Trim slashes from Site_Url - closes #2462
+- Upload files to file system support
+
+## 0.21.0, 2016-Mar-07
+
+- Add ability for users to delete their own accounts
+- Add infinite scrolling to channels list
+- Add search bar to the channels flex
+- Add setting to allow/deny own account deletion
+- Allow numeric characters in the OAuth2 provider name
+- Allow post messages starting with slash
+- Allow prepareOutgoingRequestScript to stop execution and return a message
+- Blank channel when sending attachments as object
+- CAS Plugin: Use Meteor.users.services.cas.external_id to identify users instead of Meteor.users.username.
+- Defers user deletion
+- Delete MAINTAINERS.md
+- Disable E-mail Confirmation setting when SMTP is not set.
+- Do not add a value in both $set and $setOnInsert
+- Escapes regex in room search
 - Fix #766; Disable E-mail Confirmation setting when SMTP is not set.
+- Fixes #2399. Fixes bug with highlighted words which allowed an empty string to be defined as highlight.
+- Fixes #924. Admin users may now login without verifying their e-mails.
+- Fixes oauth registration deleting account with unverified e-mail
+- Improve last commit
+- Improve user search when adding in channels
+- Improves layout of new password requested
+- Init incoming webhook scripting
+- Init outgoing webhook scripting
+- Log error when trying to creat a user with no email via LDAP
+- Make channels list load faster by not getting full channel data, such as usernames.
+- Profile page improvements.
+- Removes loading animation overlay after pages are rendered.
+- Removes login_style setting of custom oauth.
+- Sharing recent excitement around CRM integrations
+- Shows OAuth Callback URLs
+- Support 'user_id' in addition to 'id' and 'ID' for service identifier
 
 ## 0.20.0, 2016-Feb-29
 
@@ -173,7 +244,7 @@
 - Enable editing via admin / users
 - Log error when trigger url returns 500
 - Bind starttls correctly for LDAP
-- Custom oAuth supporting json or plain content_types responses of the identity
+- Custom OAuth supporting json or plain content_types responses of the identity
 - Allow pass room id to direct rooms
 - Outgoing: Get the room from posted message to reply
 - Change Meteor.absoluteUrl to force SSL if Force_SSL is true
@@ -502,7 +573,7 @@
 - New RocketChat.RateLimiter
 - Favico.js update
 - Better RTL support
-- Remove custom oAuth record when removed from settings
+- Remove custom OAuth record when removed from settings
 - Improve Settings layout
 - Collapse sub groups of settings
 - Change translations in PT for False and True

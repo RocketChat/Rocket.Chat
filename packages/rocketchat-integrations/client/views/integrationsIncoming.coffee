@@ -84,6 +84,25 @@ Template.integrationsIncoming.helpers
 
 		return "curl -X POST --data-urlencode 'payload=#{JSON.stringify(data)}' #{record.url}"
 
+	editorOptions: ->
+		return {} =
+			lineNumbers: true
+			mode: "javascript"
+			gutters: [
+				# "CodeMirror-lint-markers"
+				"CodeMirror-linenumbers"
+				"CodeMirror-foldgutter"
+			]
+			# lint: true
+			foldGutter: true
+			# lineWrapping: true
+			matchBrackets: true
+			autoCloseBrackets: true
+			matchTags: true,
+			showTrailingSpace: true
+			highlightSelectionMatches: true
+
+
 Template.integrationsIncoming.events
 	"blur input": (e, t) ->
 		t.record.set
@@ -118,13 +137,26 @@ Template.integrationsIncoming.events
 
 				FlowRouter.go "admin-integrations"
 
+	"click .button-fullscreen": ->
+		codeMirrorBox = $('.code-mirror-box[data-editor-id="'+this._id+'"]')
+		codeMirrorBox.addClass('code-mirror-box-fullscreen')
+		codeMirrorBox.find('.CodeMirror')[0].CodeMirror.refresh()
+
+	"click .button-restore": ->
+		codeMirrorBox = $('.code-mirror-box[data-editor-id="'+this._id+'"]')
+		codeMirrorBox.removeClass('code-mirror-box-fullscreen')
+		codeMirrorBox.find('.CodeMirror')[0].CodeMirror.refresh()
+
 	"click .submit > .save": ->
+		enabled = $('[name=enabled]:checked').val().trim()
 		name = $('[name=name]').val().trim()
 		alias = $('[name=alias]').val().trim()
 		emoji = $('[name=emoji]').val().trim()
 		avatar = $('[name=avatar]').val().trim()
 		channel = $('[name=channel]').val().trim()
 		username = $('[name=username]').val().trim()
+		scriptEnabled = $('[name=scriptEnabled]:checked').val().trim()
+		script = $('[name=script]').val().trim()
 
 		if channel is ''
 			return toastr.error TAPi18n.__("The_channel_name_is_required")
@@ -133,16 +165,23 @@ Template.integrationsIncoming.events
 			return toastr.error TAPi18n.__("The_username_is_required")
 
 		integration =
+			enabled: enabled is '1'
 			channel: channel
 			alias: alias if alias isnt ''
 			emoji: emoji if emoji isnt ''
 			avatar: avatar if avatar isnt ''
 			name: name if name isnt ''
+			script: script if script isnt ''
+			scriptEnabled: scriptEnabled is '1'
 
 		params = Template.instance().data.params?()
 		if params?.id?
 			Meteor.call "updateIncomingIntegration", params.id, integration, (err, data) ->
 				if err?
+					console.log err.error
+					if err.message
+						console.log '\n'+err.message
+						return toastr.error 'See browsers\'s console for more information', TAPi18n.__(err.error)
 					return toastr.error TAPi18n.__(err.error)
 
 				toastr.success TAPi18n.__("Integration_updated")

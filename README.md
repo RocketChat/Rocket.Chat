@@ -6,13 +6,13 @@ The Ultimate Open Source WebChat Platform
 * [Mobile apps](#mobile-apps)
 * [Desktop apps](#desktop-apps)
 * [Deployment](#deployment)
-   * [Cloudron.io](#cloudronio)
    * [Sandstorm.io](#sandstormio) 
-   * [DPlatform](#dplatform)
+   * [DPlatform](#dplatform) 
+   * [IndieHosters](#indiehosters)
+   * [Cloudron.io](#cloudronio) 
    * [Heroku](#heroku)
   * [Scalingo](#scalingo)
   * [Sloppy.io](#sloppyio)
-  * [IndieHosters](#indiehosters)
   * [Docker](#docker)
   * [FreeBSD](#freebsd)
   * [Ansible](#ansible)
@@ -60,21 +60,29 @@ Now compatible with all Android devices as old as version 4.0.x - [download here
 
 # Deployment
 
-## Cloudron.io
-
-Install Rocket.Chat on [Cloudron](https://cloudron.io) Smartserver:
-
-[![Install](https://cloudron.io/img/button.svg)](https://cloudron.io/button.html?app=chat.rocket.cloudronapp)
-
 ## Sandstorm.io
 Host your own Rocket.Chat server in four seconds flat:
 
 [![Rocket.Chat on Sandstorm.io](https://raw.githubusercontent.com/Sing-Li/bbug/master/images/sandstorm.jpg)](https://apps.sandstorm.io/app/vfnwptfn02ty21w715snyyczw0nqxkv3jvawcah10c6z7hj1hnu0)
 
+_*Grab*_ the [Sandstorm SPK for the latest Rocket.Chat release](https://rocket.chat/releases/latest/spk) for testing on your own server.
+
 ## DPlatform
 
 Easiest way to install a ready-to-run Rocket.Chat server on a Linux machine, VM, or VPS - [@j8r's   DPlatform](https://github.com/j8r/DPlatform), now in Alpha! 
 
+[![deploy](https://raw.githubusercontent.com/j8r/DPlatform/gh-pages/img/deploy.png)](https://j8r.github.io/DPlatform/)
+
+## IndieHosters
+Get your Rocket.Chat instance hosted in a "as a Service" style. You register and we manage it for you! (updates, backup...)
+
+[![Rocket.Chat on IndieHosters](https://indie.host/signup.png)](https://indiehosters.net/shop/product/rocket-chat-21)
+
+## Cloudron.io
+
+Install Rocket.Chat on [Cloudron](https://cloudron.io) Smartserver:
+
+[![Install](https://cloudron.io/img/button.svg)](https://cloudron.io/button.html?app=chat.rocket.cloudronapp)
 ## Heroku
 Host your own Rocket.Chat server for **FREE** with [One-Click Deploy](https://heroku.com/deploy)
 
@@ -86,16 +94,9 @@ Deploy your own Rocket.Chat server instantly on [Scalingo](https://scalingo.com)
 [![Deploy on Scalingo](https://cdn.scalingo.com/deploy/button.svg)](https://my.scalingo.com/deploy?source=https://github.com/RocketChat/Rocket.Chat#develop)
 
 
-
-_*Grab*_ the [Sandstorm SPK for the latest Rocket.Chat release](https://rocket.chat/releases/latest/spk) for testing on your own server.
-
 ## Sloppy.io
 Host your docker container at [sloppy.io](http://sloppy.io). Get an account and use the [quickstarter](https://github.com/sloppyio/quickstarters/tree/master/rocketchat)
 
-## IndieHosters
-Get your Rocket.Chat instance hosted in a "as a Service" style. You register and we manage it for you! (updates, backup...)
-
-[![Rocket.Chat on IndieHosters](https://indie.host/signup.png)](https://indiehosters.net/shop/product/rocket-chat-21)
 
 ## Docker
 [Deploy with docker compose](https://github.com/RocketChat/Rocket.Chat/wiki/Deploy-with-Docker)
@@ -201,6 +202,7 @@ It is a great solution for communities and companies wanting to privately host t
 - Sent Message Edit and Deletion
 - Transcripts / History
 - File Upload / Sharing
+- Scalable file sharing - S3 uploads with CDN downloads
 - Full text search
 - Live chat / Messaging call center
 - LDAP Authentication
@@ -231,22 +233,30 @@ It is a great solution for communities and companies wanting to privately host t
 #### In Progress
 - XMPP Support via [Webhook bridge](https://github.com/saqura/xmppwb) [Issue #404](https://github.com/RocketChat/Rocket.Chat/issues/404)
 - Federation via [matrix.org](https://www.matrix.org/), see [hubot-freddie](https://www.npmjs.com/package/hubot-freddie) and [Federation project](https://github.com/RocketChat/Rocket.Chat.Federation) : [Issue #520](https://github.com/RocketChat/Rocket.Chat/issues/520), [Issue #601](https://github.com/RocketChat/Rocket.Chat/issues/601)
-- Support multiple teams on the same instance / same VPS infrastructure: [Issue #658](https://github.com/RocketChat/Rocket.Chat/issues/658), [Issue #630](https://github.com/RocketChat/Rocket.Chat/issues/630)
 - Support for PostgreSQL: [Issue #533](https://github.com/RocketChat/Rocket.Chat/issues/533), [Issue #822](https://github.com/RocketChat/Rocket.Chat/pull/822)
 - Native iOS Application [Issue #270](https://github.com/RocketChat/Rocket.Chat/issues/270), [Rocket.Chat.iOS - HELP WANTED](https://github.com/RocketChat/Rocket.Chat.iOS)
 - Native Android Application [Issue #271 - HELP WANTED](https://github.com/RocketChat/Rocket.Chat/issues/271)
-- Off-the-Record (OTR) Messaging [Issue #36](https://github.com/RocketChat/Rocket.Chat/issues/36), [Issue #268 - HELP WANTED](https://github.com/RocketChat/Rocket.Chat/issues/268)
+- Off the Record Messaging [Issue #36](https://github.com/RocketChat/Rocket.Chat/issues/36), [Issue #268](https://github.com/RocketChat/Rocket.Chat/issues/268)
+- Wordpress Plug-in  [Issue # 1920](https://github.com/RocketChat/Rocket.Chat/issues/1920)
+- Drupal Plug-in [Issue # 1921](https://github.com/RocketChat/Rocket.Chat/issues/1921)
+- Integration with PSTN (telephone networks)
 - API-enabled methods: [Issue #202](https://github.com/RocketChat/Rocket.Chat/issues/202), [Issue #454](https://github.com/RocketChat/Rocket.Chat/issues/454), [Issue #455](https://github.com/RocketChat/Rocket.Chat/issues/455), [Issue #759](https://github.com/RocketChat/Rocket.Chat/issues/759)
-- Scalable WebRTC broadcaster / media-server integration, [Issue #1118 - HELP WANTED](https://github.com/RocketChat/Rocket.Chat/issues/1118)
-
+- Scalable WebRTC broadcaster / media-server integration, [Issue #1118](https://github.com/RocketChat/Rocket.Chat/issues/1118)
+- White label hosting
+- Reseller support for white label hosting
+- CRM integrations: Microsoft Dynamics CRM,  Salesforce.com, Zoho.com, SugarCRM, SuiteCRM and more
+- Support multiple teams on the same instance / same VPS infrastructure: [Issue #658](https://github.com/RocketChat/Rocket.Chat/issues/658), [Issue #630](https://github.com/RocketChat/Rocket.Chat/issues/630)
 
 #### Planned
-- CRM integrations: Microsoft Dynamics CRM,  Salesforce.com, Zoho.com, SugarCRM, SuiteCRM and more
 - Kerberos Authentication: [Issue #839](https://github.com/RocketChat/Rocket.Chat/issues/839)
 - More webhooks: GitLab, Confluence, Jira, Piwik, Wordpress: [Issue #233](https://github.com/RocketChat/Rocket.Chat/issues/233), [Issue #525](https://github.com/RocketChat/Rocket.Chat/issues/525), [Issue #637](https://github.com/RocketChat/Rocket.Chat/issues/637), [Issue #638](https://github.com/RocketChat/Rocket.Chat/issues/638), [Issue #747](https://github.com/RocketChat/Rocket.Chat/issues/747)
 - Anonymous use of Rocket.Chat: [Issue #604](https://github.com/RocketChat/Rocket.Chat/issues/604)
-- File Sharing via P2P and Scalable Multicast: [Issue #369](https://github.com/RocketChat/Rocket.Chat/issues/369), [Issue #370](https://github.com/RocketChat/Rocket.Chat/issues/370)
+- File Sharing via P2P: [Issue #369](https://github.com/RocketChat/Rocket.Chat/issues/369), [Issue #370](https://github.com/RocketChat/Rocket.Chat/issues/370)
 - Anti-virus checking on file uploads: [Issue #757](https://github.com/RocketChat/Rocket.Chat/issues/757)
+
+## Awards
+
+[![Black Duck Open Source Rookie of the Year](https://raw.githubusercontent.com/Sing-Li/bbug/master/images/blackducksm.png)](https://www2.blackducksoftware.com/news/releases/black-duck-announces-open-source-rookies-of-the-year)
 
 ## Issues
 
@@ -312,7 +322,7 @@ If you want to help, send an email to support at rocket.chat to be invited to th
 
 ## Community
 
-Join the conversation at [Twitter](https://twitter.com/RocketChatApp), [Facebook](https://www.facebook.com/RocketChatApp) or [Google Plus](https://plus.google.com/+RocketChatApp)
+Join thousands of members  world-wide 24 x 7 in our [community server](https://demo.rocket.chat).  Join the conversation at [Twitter](https://twitter.com/RocketChatApp), [Facebook](https://www.facebook.com/RocketChatApp) or [Google Plus](https://plus.google.com/+RocketChatApp)
 
 ## How to Contribute
 

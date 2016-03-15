@@ -18,37 +18,45 @@
 				</h2>
 			</header>
 			<div class="container-bars">
-				{{#each uploading}}
-					<div class="upload-progress {{#if error}}upload-error{{/if}}">
-						{{#if error}}
-							{{error}}
-							<a href="##">
-								close
-							</a>
-						{{else}}
-							<div class="upload-progress-progress" style="width: {{percentage}}%;"></div>
-							<div class="upload-progress-text">
-								{{name}}... {{percentage}}%
-								<a href="#">
-									cancel
-								</a>
-							</div>
-						{{/if}}
-					</div>
-				{{/each}}
 				{{#if unreadCount}}
 					{{#if unreadSince}}
 						<div class="unread-bar">
 							<a class="jump-to">
-								{{_ "Jump_to_first_unread"}}
+								<span class="jump-to-large">{{_ "Jump_to_first_unread"}}</span>
+								<span class="jump-to-small">{{_ "Jump"}}</span>
 							</a>
-							{{_ "S_new_messages_since_s" unreadCount formatUnreadSince}}
+							<span class="unread-count-since">
+								{{_ "S_new_messages_since_s" unreadCount formatUnreadSince}}
+							</span>
+							<span class="unread-count">
+								{{_ "N_new_messages" unreadCount}}
+							</span>
 							<a class="mark-read">
 								{{_ "Mark_as_read"}}
 							</a>
 						</div>
 					{{/if}}
 				{{/if}}
+				{{#each uploading}}
+					<div class="upload-progress {{#if error}}upload-error{{/if}}">
+						{{#if error}}
+							<div class="upload-progress-text">
+								{{error}}
+								<a href="#">
+									{{_ "close"}}
+								</a>
+							</div>
+						{{else}}
+							<div class="upload-progress-progress" style="width: {{percentage}}%;"></div>
+							<div class="upload-progress-text">
+								{{name}}... {{percentage}}%
+								<a href="#">
+									{{_ "cancel"}}
+								</a>
+							</div>
+						{{/if}}
+					</div>
+				{{/each}}
 			</div>
 			<div class="messages-box {{#if selectable}}selectable{{/if}} {{compactView}}">
 				<div class="ticks-bar"></div>

@@ -83,13 +83,17 @@ Template.channelSettings.onCreated ->
 	@saveSetting = =>
 		switch @editing.get()
 			when 'roomName'
-				if @validateRoomName()
-					Meteor.call 'saveRoomSettings', @data?.rid, 'roomName', @$('input[name=roomName]').val(), (err, result) ->
-						if err
-							if err.error in [ 'duplicate-name', 'name-invalid' ]
-								return toastr.error TAPi18n.__(err.reason, err.details.channelName)
-							return toastr.error TAPi18n.__(err.reason)
-						toastr.success TAPi18n.__ 'Room_name_changed_successfully'
+				room = ChatRoom.findOne @data?.rid
+				if $('input[name=roomName]').val() is room.name
+					toastr.success TAPi18n.__ 'Room_name_changed_successfully'
+				else
+					if @validateRoomName()
+						Meteor.call 'saveRoomSettings', @data?.rid, 'roomName', @$('input[name=roomName]').val(), (err, result) ->
+							if err
+								if err.error in [ 'duplicate-name', 'name-invalid' ]
+									return toastr.error TAPi18n.__(err.reason, err.details.channelName)
+								return toastr.error TAPi18n.__(err.reason)
+							toastr.success TAPi18n.__ 'Room_name_changed_successfully'
 			when 'roomTopic'
 				if @validateRoomTopic()
 					Meteor.call 'saveRoomSettings', @data?.rid, 'roomTopic', @$('input[name=roomTopic]').val(), (err, result) ->
