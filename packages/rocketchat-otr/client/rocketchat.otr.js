@@ -48,7 +48,7 @@ Meteor.startup(function() {
 			return RocketChat.OTR.instancesByRoomId[message.rid].encrypt(message.msg)
 			.then((msg) => {
 				message.msg = msg;
-				message.otr = true;
+				message.t = 'otr';
 				return message;
 			});
 		} else {
@@ -63,13 +63,21 @@ Meteor.startup(function() {
 				return Promise.resolve(message);
 			} else {
 				return RocketChat.OTR.instancesByRoomId[message.rid].decrypt(message.msg)
-				.then((msg) => {
+				.then((data) => {
+					const {msg, ack} = data;
 					message.msg = msg;
+
+					if (!message.otrAck) {
+						RocketChat.OTR.instancesByRoomId[message.rid].encrypt(ack)
+						.then((ack) => {
+							Meteor.call('updateOTRAckAndType', message._id, ack);
+						});
+					}
 					return message;
 				});
 			}
 		} else {
-			if (message.otr) {
+			if (message.t === 'otr' || message.t === 'otr-ack') {
 				message.msg = '';
 			}
 			return Promise.resolve(message);

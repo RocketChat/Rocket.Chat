@@ -29,22 +29,19 @@ Package.onUse(function(api) {
 	api.addFiles([
 		'server/settings.js',
 		'server/models/Messages.js',
-		'server/methods/deleteOldOTRMessages.js'
+		'server/methods/deleteOldOTRMessages.js',
+		'server/methods/updateOTRAckAndType.js'
 	], 'server');
 
 	// TAPi18n
 	api.use('templating', 'client');
 	var _ = Npm.require('underscore');
 	var fs = Npm.require('fs');
-	tapi18nFiles = _.compact(_.map(fs.readdirSync('packages/rocketchat-otr/i18n'), function(filename) {
+	var tapi18nFiles = _.compact(_.map(fs.readdirSync('packages/rocketchat-otr/i18n'), function(filename) {
 		if (fs.statSync('packages/rocketchat-otr/i18n/' + filename).size > 16) {
 			return 'i18n/' + filename;
 		}
 	}));
 	api.use('tap:i18n');
 	api.addFiles(tapi18nFiles);
-});
-
-Package.onTest(function(api) {
-
 });
