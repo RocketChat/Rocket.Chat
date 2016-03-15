@@ -12,7 +12,8 @@ Template.otrFlexTab.helpers({
 			const peerId = this.rid.replace(Meteor.userId(), '');
 			if (peerId) {
 				const user = Meteor.users.findOne(peerId);
-				return user && user.status !== 'offline';
+				const online = user && user.status !== 'offline';
+				return online;
 			}
 		}
 	},

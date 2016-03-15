@@ -56,17 +56,23 @@ RocketChat.theme = new class
 	]
 
 	constructor: ->
+		@customCSS = ''
+
 		RocketChat.settings.add 'css', ''
 		RocketChat.settings.addGroup 'Layout'
 
 		compile = _.debounce Meteor.bindEnvironment(@compile.bind(@)), 200
 
 		RocketChat.settings.onload '*', Meteor.bindEnvironment (key, value, initialLoad) =>
-			if /^theme-.+/.test(key) is false then return
-
-			name = key.replace /^theme-[a-z]+-/, ''
-			if @variables[name]?
-				@variables[name].value = value
+			if key is 'theme-custom-css'
+				if value?.trim() isnt ''
+					@customCSS = value
+			else if /^theme-.+/.test(key) is true
+				name = key.replace /^theme-[a-z]+-/, ''
+				if @variables[name]?
+					@variables[name].value = value
+			else
+				return
 
 			compile()
 
@@ -81,6 +87,8 @@ RocketChat.theme = new class
 			result = packageCallback()
 			if _.isString result
 				content.push result
+
+		content.push @customCSS
 
 		content = content.join '\n'
 
