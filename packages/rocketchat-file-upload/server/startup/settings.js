@@ -29,6 +29,9 @@ RocketChat.settings.addGroup('FileUpload', function() {
 		}, {
 			key: 'AmazonS3',
 			i18nLabel: 'AmazonS3'
+		}, {
+			key: 'FileSystem',
+			i18nLabel: 'FileSystem'
 		}],
 		public: true
 	});
@@ -83,6 +86,16 @@ RocketChat.settings.addGroup('FileUpload', function() {
 				value: 'AmazonS3'
 			},
 			i18nDescription: 'Override_URL_to_which_files_are_uploaded_This_url_also_used_for_downloads_unless_a_CDN_is_given.'
+		});
+	});
+
+	this.section('File System', function() {
+		this.add('FileUpload_FileSystemPath', '', {
+			type: 'string',
+			enableQuery: {
+				_id: 'FileUpload_Storage_Type',
+				value: 'FileSystem'
+			}
 		});
 	});
 });

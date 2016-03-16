@@ -32,6 +32,18 @@ Meteor.methods
 
 			integration.triggerWords = _.without integration.triggerWords, [undefined]
 
+		if integration.script isnt ''
+			try
+				babelOptions = Babel.getDefaultOptions()
+				babelOptions.externalHelpers = false
+
+				integration.scriptCompiled = Babel.compile(integration.script, babelOptions).code
+				integration.scriptError = undefined
+			catch e
+				integration.scriptCompiled = undefined
+				integration.scriptError = _.pick e, 'name', 'message', 'pos', 'loc', 'codeFrame'
+
+
 		if integration.channel?
 			record = undefined
 			channelType = integration.channel[0]

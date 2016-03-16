@@ -1,0 +1,10 @@
+{
+  "dependencies": {
+    "coffee-script": {
+      "version": "1.9.3"
+    },
+    "lru-cache": {
+      "version": "2.6.5"
+    }
+  }
+}

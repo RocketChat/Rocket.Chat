@@ -4,7 +4,9 @@ loadMissedMessages = (rid) ->
 		return
 
 	Meteor.call 'loadMissedMessages', rid, lastMessage.ts, (err, result) ->
-		ChatMessage.upsert {_id: item._id}, item for item in result
+		for item in result
+			RocketChat.promises.run('onClientMessageReceived', item).then (item) ->
+				ChatMessage.upsert {_id: item._id}, item
 
 connectionWasOnline = true
 Tracker.autorun ->
@@ -147,6 +149,11 @@ RocketChat.Notifications.onUser 'message', (msg) ->
 			close roomToClose.typeName
 
 
+	closeAllRooms = ->
+		for key, openedRoom of openedRooms
+			close openedRoom.typeName
+
+
 	open = (typeName) ->
 		if not openedRooms[typeName]?
 			openedRooms[typeName] =
@@ -230,6 +237,7 @@ RocketChat.Notifications.onUser 'message', (msg) ->
 
 	open: open
 	close: close
+	closeAllRooms: closeAllRooms
 	init: init
 	getDomOfRoom: getDomOfRoom
 	existsDomOfRoom: existsDomOfRoom
@@ -239,3 +247,7 @@ RocketChat.Notifications.onUser 'message', (msg) ->
 	onlineUsers: onlineUsers
 	updateMentionsMarksOfRoom: updateMentionsMarksOfRoom
 	getOpenedRoomByRid: getOpenedRoomByRid
+
+
+RocketChat.callbacks.add 'afterLogoutCleanUp', ->
+	RoomManager.closeAllRooms()

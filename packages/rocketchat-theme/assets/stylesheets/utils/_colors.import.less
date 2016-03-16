@@ -739,7 +739,17 @@ a.github-fork {
 					color: #666;
 				}
 			}
-			> .mic, .stop-mic {
+		}
+		.message-buttons {
+			.mic, .stop-mic {
+				color: #888;
+				background-color: #FCFCFC;
+				&:hover {
+					background-color: #F1F1F1;
+					color: #666;
+				}
+			}
+			.send-button {
 				color: #888;
 				background-color: #FCFCFC;
 				&:hover {
@@ -751,12 +761,6 @@ a.github-fork {
 		textarea {
 			&.editing {
 				background-color: #fff7d8;
-			}
-		}
-		.icon-paper-plane {
-			color: @secondary-font-color;
-			&:hover {
-				color: @primary-font-color;
 			}
 		}
 		.users-typing {

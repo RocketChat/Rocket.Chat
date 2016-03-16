@@ -1,3 +1,6 @@
 {
-  "User_added" : "已添加用户 <em>__user_added__</em> 。"
+  "New_role" : "新角色",
+  "Role" : "角色",
+  "Role_Editing" : "角色編輯",
+  "User_added" : "已新增用戶 <em>__user_added__</em> 。"
 }
