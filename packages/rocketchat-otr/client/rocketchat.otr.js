@@ -44,7 +44,7 @@ Meteor.startup(function() {
 
 	RocketChat.promises.add('onClientBeforeSendMessage', function(message) {
 		if (message.rid && RocketChat.OTR.getInstanceByRoomId(message.rid) && RocketChat.OTR.getInstanceByRoomId(message.rid).established.get()) {
-			return RocketChat.OTR.getInstanceByRoomId(message.rid).encrypt(message.msg)
+			return RocketChat.OTR.getInstanceByRoomId(message.rid).encrypt(message)
 			.then((msg) => {
 				message.msg = msg;
 				message.t = 'otr';
@@ -64,7 +64,8 @@ Meteor.startup(function() {
 				const otrRoom = RocketChat.OTR.getInstanceByRoomId(message.rid);
 				return otrRoom.decrypt(message.msg)
 				.then((data) => {
-					const {text, ack} = data;
+					const {_id, text, ack} = data;
+					message._id = _id;
 					message.msg = text;
 
 					if (data.ts) {
