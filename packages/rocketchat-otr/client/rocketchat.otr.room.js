@@ -11,9 +11,6 @@ RocketChat.OTR.Room = class {
 		this.keyPair = null;
 		this.exportedPublicKey = null;
 		this.sessionKey = null;
-
-		this.serial = 0;
-		this.peerSerial = 0;
 	}
 
 	handshake(refresh) {
@@ -44,8 +41,6 @@ RocketChat.OTR.Room = class {
 		this.keyPair = null;
 		this.exportedPublicKey = null;
 		this.sessionKey = null;
-		this.serial = null;
-		this.peerSerial = null;
 		Meteor.call('deleteOldOTRMessages', this.roomId);
 	}
 
@@ -136,8 +131,7 @@ RocketChat.OTR.Room = class {
 	}
 
 	encrypt(message) {
-		this.serial++;
-		var data = new TextEncoder('UTF-8').encode(EJSON.stringify({ serial: this.serial, text: message, userId: this.userId, ack: Random.id((Random.fraction()+1)*20) }));
+		var data = new TextEncoder('UTF-8').encode(EJSON.stringify({ _id: message._id, text: message.msg, userId: this.userId, ack: Random.id((Random.fraction()+1)*20), ts: new Date(Date.now() + TimeSync.serverOffset()) }));
 		var enc = this.encryptText(data);
 		return enc;
 	}
