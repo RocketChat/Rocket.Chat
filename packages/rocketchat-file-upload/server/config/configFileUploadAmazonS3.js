@@ -1,4 +1,4 @@
-/* globals createS3Directive:true, Slingshot, FileUpload, AWS */
+/* globals Slingshot, FileUpload, AWS */
 var crypto = Npm.require('crypto');
 
 var S3accessKey, S3secretKey;
@@ -34,7 +34,7 @@ FileUpload.addHandler('s3', {
 	}
 });
 
-createS3Directive = _.debounce(() => {
+var createS3Directive = _.debounce(() => {
 	var directiveName = 'rocketchat-uploads';
 
 	var type = RocketChat.settings.get('FileUpload_Storage_Type');
@@ -99,17 +99,11 @@ createS3Directive = _.debounce(() => {
 	}
 }, 500);
 
-RocketChat.settings.get('FileUpload_Storage_Type', function() {
-	createS3Directive();
-});
+RocketChat.settings.get('FileUpload_Storage_Type', createS3Directive);
 
-RocketChat.settings.get('FileUpload_S3_Bucket', function() {
-	createS3Directive();
-});
+RocketChat.settings.get('FileUpload_S3_Bucket', createS3Directive);
 
-RocketChat.settings.get('FileUpload_S3_Acl', function() {
-	createS3Directive();
-});
+RocketChat.settings.get('FileUpload_S3_Acl', createS3Directive);
 
 RocketChat.settings.get('FileUpload_S3_AWSAccessKeyId', function(key, value) {
 	S3accessKey = value;
@@ -121,14 +115,8 @@ RocketChat.settings.get('FileUpload_S3_AWSSecretAccessKey', function(key, value)
 	createS3Directive();
 });
 
-RocketChat.settings.get('FileUpload_S3_CDN', function() {
-	createS3Directive();
-});
+RocketChat.settings.get('FileUpload_S3_CDN', createS3Directive);
 
-RocketChat.settings.get('FileUpload_S3_Region', function() {
-	createS3Directive();
-});
+RocketChat.settings.get('FileUpload_S3_Region', createS3Directive);
 
-RocketChat.settings.get('FileUpload_S3_BucketURL', function() {
-	createS3Directive();
-});
+RocketChat.settings.get('FileUpload_S3_BucketURL', createS3Directive);

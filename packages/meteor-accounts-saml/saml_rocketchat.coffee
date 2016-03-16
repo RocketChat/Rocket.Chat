@@ -66,4 +66,4 @@ RocketChat.models.Settings.find().observe
 
 Meteor.startup ->
 	if not RocketChat.models.Settings.findOne({_id: /^(SAML_Custom)[a-z]+$/i})?
-		Meteor.call 'addSamlService', 'default'
+		Meteor.call 'addSamlService', 'Default'

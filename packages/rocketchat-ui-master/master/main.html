@@ -53,6 +53,7 @@
 			{{else}}
 				{{> loginLayout center="loginForm"}}
 			{{/if}}
+			<script>{{{CustomScriptLoggedOut}}}</script>
 		{{else}}
 			{{#unless hasUsername}}
 				{{> username}}
@@ -83,6 +84,7 @@
 					{{> audioNotification }}
 				{{/if}}
 			{{/unless}}
+			<script>{{{CustomScriptLoggedIn}}}</script>
 		{{/unless}}
 	{{/if}}
 </template>

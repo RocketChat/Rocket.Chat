@@ -60,7 +60,6 @@ FileUpload.addHandler('rocketchat_uploads', {
 		return readFromGridFS(file.store, file._id, file, req, res);
 	},
 	delete(file) {
-		console.log('will delete file from GridFS',file);
 		return Meteor.fileStore.delete(file._id);
 	}
 });
