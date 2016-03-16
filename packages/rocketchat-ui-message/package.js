@@ -23,20 +23,22 @@ Package.onUse(function(api) {
 	]);
 
 	api.addFiles('message/message.html', 'client');
-	api.addFiles("message/messageBox.html", "client");
-	api.addFiles("message/messageDropdown.html", "client");
-	api.addFiles("message/popup/messagePopup.html", "client");
-	api.addFiles("message/popup/messagePopupChannel.html", "client");
-	api.addFiles("message/popup/messagePopupConfig.html", "client");
-	api.addFiles("message/popup/messagePopupEmoji.html", "client");
-	api.addFiles("message/popup/messagePopupSlashCommand.html", "client");
-	api.addFiles("message/popup/messagePopupUser.html", "client");
+	api.addFiles('message/messageBox.html', 'client');
+	api.addFiles('message/messageDropdown.html', 'client');
+	api.addFiles('message/popup/messagePopup.html', 'client');
+	api.addFiles('message/popup/messagePopupChannel.html', 'client');
+	api.addFiles('message/popup/messagePopupConfig.html', 'client');
+	api.addFiles('message/popup/messagePopupEmoji.html', 'client');
+	api.addFiles('message/popup/messagePopupSlashCommand.html', 'client');
+	api.addFiles('message/popup/messagePopupUser.html', 'client');
 
 	api.addFiles('message/message.coffee', 'client');
 	api.addFiles('message/messageBox.coffee', 'client');
-	api.addFiles("message/popup/messagePopup.coffee", "client");
-	api.addFiles("message/popup/messagePopupConfig.coffee", "client");
-	api.addFiles("message/popup/messagePopupEmoji.coffee", "client");
+	api.addFiles('message/popup/messagePopup.coffee', 'client');
+	api.addFiles('message/popup/messagePopupConfig.coffee', 'client');
+	api.addFiles('message/popup/messagePopupEmoji.coffee', 'client');
 
+	api.addFiles('message/renderMessageBody.js', 'client');
 
+	api.export('renderMessageBody');
 });

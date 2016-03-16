@@ -10,16 +10,24 @@ Package.describe({
 Package.onUse(function(api) {
 	api.versionsFrom('1.2.1');
 	api.use('ecmascript');
+	api.use('rocketchat:file');
+	api.use('jalik:ufs');
+	api.use('jalik:ufs-local@0.2.5');
 	api.use('edgee:slingshot');
 	api.use('peerlibrary:aws-sdk');
 	api.use('rocketchat:lib');
 	api.use('random');
 	api.use('underscore');
+	api.use('tracker');
 	api.use('webapp');
 
 	api.addFiles('globalFileRestrictions.js');
 
-	api.addFiles('client/lib/FileUploadBase.js', 'client');
+	// commom lib
+	api.addFiles('lib/FileUpload.js');
+	api.addFiles('lib/FileUploadBase.js');
+
+	api.addFiles('client/lib/FileUploadFileSystem.js', 'client');
 	api.addFiles('client/lib/fileUploadHandler.js', 'client');
 	api.addFiles('client/lib/FileUploadAmazonS3.js', 'client');
 	api.addFiles('client/lib/FileUploadGridFS.js', 'client');
@@ -28,6 +36,7 @@ Package.onUse(function(api) {
 	api.addFiles('server/lib/requests.js', 'server');
 
 	api.addFiles('server/config/configFileUploadAmazonS3.js', 'server');
+	api.addFiles('server/config/configFileUploadFileSystem.js', 'server');
 	api.addFiles('server/config/configFileUploadGridFS.js', 'server');
 
 	api.addFiles('server/methods/sendFileMessage.js', 'server');
