@@ -1,5 +1,7 @@
 ## NEXT
 
+- Fixes #2477: Admin settings, plain-text SMTP password.
+
 ## 0.22.0, 2016-Mar-14
 
 - Add AES encryption routines
