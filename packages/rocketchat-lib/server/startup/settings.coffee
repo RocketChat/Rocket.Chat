@@ -3,7 +3,7 @@ if not RocketChat.models.Settings.findOneById 'uniqueID'
 	RocketChat.models.Settings.createWithIdAndValue 'uniqueID', process.env.DEPLOYMENT_ID or Random.id()
 
 RocketChat.settings.addGroup 'Accounts', ->
-	@add 'Accounts_AllowDeleteOwnAccount', false, { type: 'boolean', public: true }
+	@add 'Accounts_AllowDeleteOwnAccount', false, { type: 'boolean', public: true, enableQuery: { _id: 'Accounts_AllowUserProfileChange', value: true } }
 	@add 'Accounts_AllowUserProfileChange', true, { type: 'boolean', public: true }
 	@add 'Accounts_AllowUserAvatarChange', true, { type: 'boolean', public: true }
 	@add 'Accounts_AllowUsernameChange', true, { type: 'boolean', public: true }
