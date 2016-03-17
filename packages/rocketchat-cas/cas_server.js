@@ -91,41 +91,47 @@ var casTicket = function (req, token, callback) {
  */
  Accounts.registerLoginHandler(function (options) {
 
-  if (!options.cas)
-    return undefined;
+    if (!options.cas)
+        return undefined;
 
-  if (!_hasCredential(options.cas.credentialToken)) {
-    throw new Meteor.Error(Accounts.LoginCancelledError.numericError,
-      'no matching login attempt found');
-  }
+    if (!_hasCredential(options.cas.credentialToken)) {
+        throw new Meteor.Error(Accounts.LoginCancelledError.numericError,
+        'no matching login attempt found');
+    }
 
-  var result = _retrieveCredential(options.cas.credentialToken);
-  var options = { profile: { name: result.id } };
+    var result = _retrieveCredential(options.cas.credentialToken);
+    var options = { profile: { name: result.id } };
 
-  logger.debug("Looking up user with username: " + result.id );
-  var user = Meteor.users.findOne({ 'services.cas.external_id': result.id });
+    // Search existing user by its external service id
+    logger.debug("Looking up user with username: " + result.id );
+    var user = Meteor.users.findOne({ 'services.cas.external_id': result.id });
 
-  if (user) {
-    logger.debug("Using existing user for '" + result.id + "' with id: " + user._id);
-  } else {
-	var newUser = {
-		username: result.id,
-		active: true,
-		globalRoles: ['user'],
-        services: {
-            cas: {
-                external_id: result.id
+    if (user) {
+        logger.debug("Using existing user for '" + result.id + "' with id: " + user._id);
+    } else {
+
+        // Define new user
+        var newUser = {
+            username: result.id,
+            active: true,
+            globalRoles: ['user'],
+            services: {
+                cas: {
+                    external_id: result.id
+                }
             }
-        }
-	};
+        };
 
-    logger.debug("User '" + result.id + "'does not exist yet, creating it");
-	var userId = Accounts.insertUserDoc({}, newUser);
-	user = Meteor.users.findOne(userId);
-    logger.debug("Created new user for '" + result.id + "' with id: " + user._id);
-  }
+        // Create the user
+        logger.debug("User '" + result.id + "'does not exist yet, creating it");
+        var userId = Accounts.insertUserDoc({}, newUser);
 
-  return { userId: user._id };
+        // Fetch and use it
+        user = Meteor.users.findOne(userId);
+        logger.debug("Created new user for '" + result.id + "' with id: " + user._id);
+    }
+
+    return { userId: user._id };
 });
 
 var _hasCredential = function(credentialToken) {
