@@ -2,6 +2,7 @@
 
 - Fixes #2477: Admin settings, plain-text SMTP password.
 - Closes #625: Filter and sorts direct messages and private groups.
+- Closes #2172: Accepts markdown for room topic.
 
 ## 0.22.0, 2016-Mar-14
 
