@@ -10,15 +10,26 @@
 				<div class="search">
 					<form class="search-form" role="form">
 						<div class="input-line search">
-							<input type="text" id="channel-search" class="search" placeholder="{{tSearchChannels}}" autocomplete="off" />
+							<input type="text" id="channel-search" class="search" placeholder="{{_ "Search_Channels"}}" autocomplete="off" />
 							<i class="icon-right-open-small"></i>
 						</div>
 						<div class="input-line search">
-							<select class="c-select" id="sort">
-								<option value="name" selected="{{sortSelected 'name'}}">{{_ "Name"}}</option>
-								<option value="msgs" selected="{{sortSelected 'msgs'}}">{{_ "Number_of_messages"}}</option>
+							<select class="c-select" id="sort-channels" style="display: none">
+								<option value="name" selected="{{sortChannelsSelected 'name'}}">{{_ "Name"}}</option>
+								<option value="msgs" selected="{{sortChannelsSelected 'msgs'}}">{{_ "Number_of_messages"}}</option>
+							</select>
+							<select class="c-select" id="sort-subscriptions">
+								<option value="name" selected="{{sortSubscriptionsSelected 'name'}}">{{_ "Name"}}</option>
+								<option value="ls" selected="{{sortSubscriptionsSelected 'ls'}}">{{_ "Last_seen"}}</option>
 							</select>
 							<i class="icon-sort-alt-up"></i>
+						</div>
+						<div class="input-line search">
+							<select class="c-select" id="show">
+								<option value="joined" selected="{{showSelected 'joined'}}">{{_ "Joined"}}</option>
+								<option value="all" selected="{{showSelected 'all'}}">{{_ "All"}}</option>
+							</select>
+							<i class="icon-comment"></i>
 						</div>
 					</form>
 				</div>
@@ -30,6 +41,14 @@
 					<a href="{{pathFor 'channel' name=name}}" class="channel-link">
 						<i class="icon-hash"></i>
 						{{name}}
+						<span class='opt fixed'>
+							{{#if member}}
+							<i class="icon-eye" title="{{_ "Open"}}" aria-label="{{_ "Open"}}"></i>
+							{{/if}}
+							{{#if hidden}}
+							<i class="icon-eye-off" title="{{_ "Hidden"}}" aria-label="{{_ "Hidden"}}"></i>
+							{{/if}}
+						</span>
 					</a>
 				</li>
 			{{/each}}
