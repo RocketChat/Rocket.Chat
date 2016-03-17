@@ -63,7 +63,7 @@ Template.accountProfile.onCreated ->
 		if _.trim $('#realname').val()
 			data.realname = _.trim $('#realname').val()
 
-		if _.trim $('#username').val()
+		if _.trim($('#username').val()) isnt Meteor.user().username
 			if !RocketChat.settings.get("Accounts_AllowUsernameChange")
 				toastr.remove();
 				toastr.error t('Username_Change_Disabled')
@@ -72,7 +72,7 @@ Template.accountProfile.onCreated ->
 			else
 				data.username = _.trim $('#username').val()
 
-		if _.trim $('#email').val()
+		if _.trim($('#email').val()) isnt Meteor.user().emails?[0]?.address
 			if !RocketChat.settings.get("Accounts_AllowEmailChange")
 				toastr.remove();
 				toastr.error t('Email_Change_Disabled')
