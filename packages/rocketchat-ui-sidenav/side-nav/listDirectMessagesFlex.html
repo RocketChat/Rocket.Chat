@@ -1,7 +1,7 @@
-<template name="listPrivateGroupsFlex">
+<template name="listDirectMessagesFlex">
 	<header>
 		<div>
-			<h4>{{_ "Private_Groups"}}</h4>
+			<h4>{{_ "Direct_Messages"}}</h4>
 		</div>
 	</header>
 	<div class="content">
@@ -10,7 +10,7 @@
 				<div class="search">
 					<form class="search-form" role="form">
 						<div class="input-line search">
-							<input type="text" id="channel-search" class="search" placeholder="{{_ "Search_Private_Groups"}}" autocomplete="off" />
+							<input type="text" id="channel-search" class="search" placeholder="{{_ "Search_Direct_Messages"}}" autocomplete="off" />
 							<i class="icon-right-open-small"></i>
 						</div>
 						<div class="input-line search">
@@ -23,12 +23,12 @@
 					</form>
 				</div>
 			</div>
-			<h4>{{_ "Private_Groups_list"}}</h4>
+			<h4>{{_ "List_of_Direct_Messages"}}</h4>
 			<ul>
-			{{#each groups}}
+			{{#each rooms}}
 				<li>
-					<a href="{{pathFor 'group' name=name}}" class="channel-link">
-						<i class="icon-lock"></i>
+					<a href="{{pathFor 'direct' username=name}}" class="channel-link">
+						<i class="icon-at {{userStatus}}"></i>
 						{{name}}
 						<span class='opt fixed'>
 							{{#if hidden}}
@@ -50,9 +50,4 @@
 			</ul>
 		</div>
 	</div>
-	<footer>
-		<div>
-			<button class="button clean create">{{_ "Create_new"}}</button>
-		</div>
-	</footer>
 </template>

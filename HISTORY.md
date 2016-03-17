@@ -1,6 +1,7 @@
 ## NEXT
 
 - Fixes #2477: Admin settings, plain-text SMTP password.
+- Closes #625: Filter and sorts direct messages and private groups.
 
 ## 0.22.0, 2016-Mar-14
 
