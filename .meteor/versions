@@ -101,7 +101,7 @@ mrt:moment@2.8.1
 mrt:moment-timezone@0.2.1
 mrt:reactive-store@0.0.1
 mystor:device-detection@0.2.0
-nimble:restivus@0.8.7
+nimble:restivus@0.8.8
 nooitaf:colors@0.0.3
 npm-bcrypt@0.7.8_2
 npm-mongo@1.4.39_1
@@ -110,7 +110,7 @@ oauth1@1.1.5
 oauth2@1.1.5
 observe-sequence@1.0.7
 ordered-dict@1.0.4
-ostrio:cookies@2.0.1
+ostrio:cookies@2.0.2
 pauli:accounts-linkedin@1.2.0
 pauli:linkedin@1.2.0
 peerlibrary:aws-sdk@2.0.17_2
@@ -198,7 +198,7 @@ service-configuration@1.0.5
 session@1.1.1
 sha@1.0.4
 simple:highlight.js@1.2.0
-simple:json-routes@2.0.1
+simple:json-routes@2.1.0
 smoral:sweetalert@1.1.1
 spacebars@1.0.7
 spacebars-compiler@1.0.7
