@@ -29,6 +29,7 @@ Package.onUse(function(api) {
 	api.addFiles('side-nav/directMessages.html', 'client');
 	api.addFiles('side-nav/directMessagesFlex.html', 'client');
 	api.addFiles('side-nav/listChannelsFlex.html', 'client');
+	api.addFiles('side-nav/listDirectMessagesFlex.html', 'client');
 	api.addFiles('side-nav/listPrivateGroupsFlex.html', 'client');
 	api.addFiles('side-nav/privateGroups.html', 'client');
 	api.addFiles('side-nav/privateGroupsFlex.html', 'client');
@@ -44,6 +45,7 @@ Package.onUse(function(api) {
 	api.addFiles('side-nav/directMessages.coffee', 'client');
 	api.addFiles('side-nav/directMessagesFlex.coffee', 'client');
 	api.addFiles('side-nav/listChannelsFlex.coffee', 'client');
+	api.addFiles('side-nav/listDirectMessagesFlex.js', 'client');
 	api.addFiles('side-nav/listPrivateGroupsFlex.coffee', 'client');
 	api.addFiles('side-nav/privateGroups.coffee', 'client');
 	api.addFiles('side-nav/privateGroupsFlex.coffee', 'client');
