@@ -94,7 +94,7 @@ RocketChat.settings.addGroup 'SMTP', ->
 	@add 'SMTP_Host', '', { type: 'string', env: true }
 	@add 'SMTP_Port', '', { type: 'string', env: true }
 	@add 'SMTP_Username', '', { type: 'string', env: true }
-	@add 'SMTP_Password', '', { type: 'string', env: true }
+	@add 'SMTP_Password', '', { type: 'password', env: true }
 	@add 'From_Email', '', { type: 'string', placeholder: 'email@domain' }
 	@add 'SMTP_Test_Button', 'sendSMTPTestEmail', { type: 'action', actionText: 'Send_a_test_mail_to_my_user' }
 
