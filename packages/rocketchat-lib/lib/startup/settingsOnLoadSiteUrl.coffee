@@ -13,4 +13,5 @@ RocketChat.settings.get 'Site_Url', (key, value) ->
 
 			process.env.MOBILE_ROOT_URL = value
 			process.env.MOBILE_DDP_URL = value
-			# WebAppInternals.generateBoilerplate()
+			if WebAppInternals?.generateBoilerplate
+				WebAppInternals.generateBoilerplate()
