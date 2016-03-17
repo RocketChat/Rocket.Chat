@@ -129,6 +129,12 @@ var casTicket = function (req, token, callback) {
         // Fetch and use it
         user = Meteor.users.findOne(userId);
         logger.debug("Created new user for '" + result.id + "' with id: " + user._id);
+
+        logger.debug('Joining user to default channels');
+        Meteor.runAsUser(user._id, function() {
+            Meteor.call('joinDefaultChannels');
+        });
+
     }
 
     return { userId: user._id };
