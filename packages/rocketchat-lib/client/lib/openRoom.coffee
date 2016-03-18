@@ -9,6 +9,10 @@ currentTracker = undefined
 				BlazeLayout.render 'main', {center: 'loading'}
 				return
 
+			username = Meteor.user()?.username
+			unless username
+				return
+
 			currentTracker = undefined
 			c.stop()
 
@@ -19,7 +23,7 @@ currentTracker = undefined
 			if type is 'd'
 				delete query.name
 				query.usernames =
-					$all: [name, Meteor.user()?.username]
+					$all: [name, username]
 
 			room = ChatRoom.findOne(query)
 			if not room?
