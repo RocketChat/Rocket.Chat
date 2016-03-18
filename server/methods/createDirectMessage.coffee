@@ -5,6 +5,9 @@ Meteor.methods
 
 		me = Meteor.user()
 
+		unless me.username
+			throw new Meteor.Error('invalid-user', '[methods] createDirectMessage -> Invalid user')
+
 		if me.username is username
 			throw new Meteor.Error('invalid-user', "[methods] createDirectMessage -> Invalid target user")
 

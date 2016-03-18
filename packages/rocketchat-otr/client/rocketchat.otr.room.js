@@ -17,12 +17,12 @@ RocketChat.OTR.Room = class {
 		this.establishing.set(true);
 		this.firstPeer = true;
 		this.generateKeyPair().then(() => {
-			RocketChat.Notifications.notifyUser(this.peerId, 'otr', 'handshake', { roomId: this.roomId, userId: this.userId, publicKey: EJSON.stringify(new Uint8Array(this.exportedPublicKey)), refresh: refresh });
+			RocketChat.Notifications.notifyUser(this.peerId, 'otr', 'handshake', { roomId: this.roomId, userId: this.userId, publicKey: EJSON.stringify(this.exportedPublicKey), refresh: refresh });
 		});
 	}
 
 	acknowledge() {
-		RocketChat.Notifications.notifyUser(this.peerId, 'otr', 'acknowledge', { roomId: this.roomId, userId: this.userId, publicKey: EJSON.stringify(new Uint8Array(this.exportedPublicKey)) });
+		RocketChat.Notifications.notifyUser(this.peerId, 'otr', 'acknowledge', { roomId: this.roomId, userId: this.userId, publicKey: EJSON.stringify(this.exportedPublicKey) });
 	}
 
 	deny() {
@@ -66,12 +66,12 @@ RocketChat.OTR.Room = class {
 		});
 
 		// Generate an ephemeral key pair.
-		return window.crypto.subtle.generateKey({
+		return RocketChat.OTR.crypto.generateKey({
 			name: 'ECDH',
 			namedCurve: 'P-256'
 		}, false, ['deriveKey', 'deriveBits']).then((keyPair) => {
 			this.keyPair = keyPair;
-			return crypto.subtle.exportKey('spki', keyPair.publicKey);
+			return RocketChat.OTR.crypto.exportKey('jwk', keyPair.publicKey);
 		})
 		.then((exportedPublicKey) => {
 			this.exportedPublicKey = exportedPublicKey;
@@ -85,23 +85,23 @@ RocketChat.OTR.Room = class {
 	}
 
 	importPublicKey(publicKey) {
-		return window.crypto.subtle.importKey('spki', EJSON.parse(publicKey), {
+		return RocketChat.OTR.crypto.importKey('jwk', EJSON.parse(publicKey), {
 			name: 'ECDH',
 			namedCurve: 'P-256'
 		}, false, []).then((peerPublicKey) => {
-			return crypto.subtle.deriveBits({
+			return RocketChat.OTR.crypto.deriveBits({
 				name: 'ECDH',
 				namedCurve: 'P-256',
 				public: peerPublicKey
 			}, this.keyPair.privateKey, 256);
 		}).then((bits) => {
-			return crypto.subtle.digest({
+			return RocketChat.OTR.crypto.digest({
 				name: 'SHA-256'
 			}, bits);
 		}).then((hashedBits) => {
 			// We truncate the hash to 128 bits.
 			var sessionKeyData = new Uint8Array(hashedBits).slice(0, 16);
-			return crypto.subtle.importKey('raw', sessionKeyData, {
+			return RocketChat.OTR.crypto.importKey('raw', sessionKeyData, {
 				name: 'AES-GCM'
 			}, false, ['encrypt', 'decrypt']);
 		}).then((sessionKey) => {
@@ -116,7 +116,7 @@ RocketChat.OTR.Room = class {
 		}
 		var iv = crypto.getRandomValues(new Uint8Array(12));
 
-		return crypto.subtle.encrypt({
+		return RocketChat.OTR.crypto.encrypt({
 			name: 'AES-GCM',
 			iv: iv
 		}, this.sessionKey, data).then((cipherText) => {
@@ -141,7 +141,7 @@ RocketChat.OTR.Room = class {
 		var iv = cipherText.slice(0, 12);
 		cipherText = cipherText.slice(12);
 
-		return crypto.subtle.decrypt({
+		return RocketChat.OTR.crypto.decrypt({
 			name: 'AES-GCM',
 			iv: iv
 		}, this.sessionKey, cipherText).then((data) => {

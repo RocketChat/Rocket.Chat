@@ -3,7 +3,7 @@ if not RocketChat.models.Settings.findOneById 'uniqueID'
 	RocketChat.models.Settings.createWithIdAndValue 'uniqueID', process.env.DEPLOYMENT_ID or Random.id()
 
 RocketChat.settings.addGroup 'Accounts', ->
-	@add 'Accounts_AllowDeleteOwnAccount', false, { type: 'boolean', public: true }
+	@add 'Accounts_AllowDeleteOwnAccount', false, { type: 'boolean', public: true, enableQuery: { _id: 'Accounts_AllowUserProfileChange', value: true } }
 	@add 'Accounts_AllowUserProfileChange', true, { type: 'boolean', public: true }
 	@add 'Accounts_AllowUserAvatarChange', true, { type: 'boolean', public: true }
 	@add 'Accounts_AllowUsernameChange', true, { type: 'boolean', public: true }
@@ -94,7 +94,7 @@ RocketChat.settings.addGroup 'SMTP', ->
 	@add 'SMTP_Host', '', { type: 'string', env: true }
 	@add 'SMTP_Port', '', { type: 'string', env: true }
 	@add 'SMTP_Username', '', { type: 'string', env: true }
-	@add 'SMTP_Password', '', { type: 'string', env: true }
+	@add 'SMTP_Password', '', { type: 'password', env: true }
 	@add 'From_Email', '', { type: 'string', placeholder: 'email@domain' }
 	@add 'SMTP_Test_Button', 'sendSMTPTestEmail', { type: 'action', actionText: 'Send_a_test_mail_to_my_user' }
 
