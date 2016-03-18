@@ -4,7 +4,7 @@ Accounts.config accountsConfig
 
 RocketChat.settings.get 'Accounts_AllowedDomainsList', (_id, value) ->
 	domainWhiteList = _.map value.split(','), (domain) -> domain.trim()
-	restrictCreationByEmailDomain = (email) ->
+	restrictCreationByEmailDomain = if domainWhiteList.length == 1 then domainWhiteList[0] else (email) ->
 		ret = false
 		for domain in domainWhiteList
 			if email.match(domain + '$')
