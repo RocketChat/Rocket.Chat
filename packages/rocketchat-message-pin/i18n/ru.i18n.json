@@ -1,7 +1,10 @@
 {
   "Message_AllowPinning" : "Разрешить прикреплять сообщения",
   "Message_AllowPinning_Description" : "Разрешить прикреплять сообщения к любому из каналов",
+  "Message_AllowPinningByAnyone" : "Разрешить всем закреплять сообщения.",
+  "Message_AllowPinningByAnyone_Description" : "Разрешить всем закреплять сообщения к каналу (не только администраторам).",
   "Pin_Message" : "Прикрепить сообщение",
+  "Pinned_a_message" : "Прикрепленное сообщение:",
   "Unpin_Message" : "Открепить сообщение",
   "Pinned_Messages" : "Прикрепленные сообщения",
   "No_pinned_messages" : "Нет прикрепленных сообщений"
