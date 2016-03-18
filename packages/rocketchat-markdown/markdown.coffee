@@ -8,7 +8,7 @@ class Markdown
 		msg = message
 
 		if not _.isString message
-			if _.trim message.html
+			if _.trim message?.html
 				msg = message.html
 			else
 				return message

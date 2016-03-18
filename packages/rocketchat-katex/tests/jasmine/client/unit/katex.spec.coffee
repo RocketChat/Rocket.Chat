@@ -1,4 +1,4 @@
 describe 'rocketchat:katex Client', ->
 
 	it 'should exist', ->
-	 	expect(RocketChat.Katex).toBeDefined()
+	 	expect(RocketChat.katex).toBeDefined()

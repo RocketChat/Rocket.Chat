@@ -339,7 +339,7 @@ blockquote {
 		}
 		.icon-search,
 		.icon-right-open-small,
-		.icon-sort-alt-up {
+		.icon-sort-alt-up, .icon-comment {
 			position: absolute;
 			left: 2px;
 			top: 10px;
@@ -1541,6 +1541,11 @@ a.github-fork {
 			}
 			.icon-logout {
 				margin-left: 1px;
+			}
+
+			&.fixed {
+				opacity: 1;
+				.transform(translateX(0));
 			}
 		}
 		i {
