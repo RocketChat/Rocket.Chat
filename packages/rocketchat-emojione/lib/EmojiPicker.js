@@ -8,6 +8,9 @@ EmojiPicker = {
 	tone: null,
 	opened: false,
 	init() {
+		if (this.initiated) {
+			return;
+		}
 		this.initiated = true;
 
 		this.recent = window.localStorage.getItem('emoji.recent') ? window.localStorage.getItem('emoji.recent').split(',') : [];
