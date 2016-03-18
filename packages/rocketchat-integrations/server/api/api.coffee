@@ -98,7 +98,7 @@ Api.addRoute ':integrationId/:userId/:token', authRequired: true,
 				url_raw: @request.url
 				url_params: @urlParams
 				content: @bodyParams
-				content_raw: @request.body
+				content_raw: @request._readableState?.buffer?.toString()
 				headers: @request.headers
 				user:
 					_id: @user._id
