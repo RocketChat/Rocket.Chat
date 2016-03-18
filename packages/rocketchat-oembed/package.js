@@ -41,6 +41,10 @@ Package.onUse(function(api) {
 	api.export('OEmbed', 'server');
 });
 
+Npm.depends({
+	'request': '2.69.0'
+});
+
 Package.onTest(function(api) {
 
 });
