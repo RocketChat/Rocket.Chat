@@ -339,7 +339,7 @@ blockquote {
 		}
 		.icon-search,
 		.icon-right-open-small,
-		.icon-sort-alt-up {
+		.icon-sort-alt-up, .icon-comment {
 			position: absolute;
 			left: 2px;
 			top: 10px;
@@ -1542,6 +1542,11 @@ a.github-fork {
 			.icon-logout {
 				margin-left: 1px;
 			}
+
+			&.fixed {
+				opacity: 1;
+				.transform(translateX(0));
+			}
 		}
 		i {
 			font-size: 14px;
@@ -2136,7 +2141,6 @@ a.github-fork {
 	flex-direction: column;
 
 	> div {
-		height: 24px;
 		line-height: 24px;
 		padding: 0 10px;
 		border-top: 1px solid;
@@ -2146,12 +2150,12 @@ a.github-fork {
 		}
 	}
 
+	font-size: 12px;
+
 	.upload-progress {
+		height: 24px;
 		position: relative;
 		text-shadow: 1px 1px 0px rgba(0,0,0,.2);
-
-		&.upload-error {
-		}
 
 		.upload-progress-progress {
 			position: absolute;
@@ -2173,20 +2177,14 @@ a.github-fork {
 			> a {
 				float: right;
 				text-transform: uppercase;
-
-				&:hover {
-					cursor: pointer;
-				}
+				text-shadow: none;
+				cursor: pointer;
 			}
 		}
 	}
 
 	.unread-bar {
 		background-color: #E6F4FD;
-		// line-height: 30px;
-		// font-size: 12px;
-		// padding: 0 10px;
-		// box-shadow: 0px 1px 2px rgba(0,0,0,.2);
 		color: #068FE4;
 		text-transform: uppercase;
 		text-align: center;
@@ -2199,8 +2197,16 @@ a.github-fork {
 			}
 		}
 
+		.unread-count {
+			display: none;
+		}
+
 		> a.jump-to {
 			float: left;
+
+			.jump-to-small {
+				display: none;
+			}
 
 			&:hover {
 				cursor: pointer;
@@ -2341,17 +2347,42 @@ a.github-fork {
 					cursor: pointer;
 				}
 			}
-			> .mic, .stop-mic {
+		}
+		.message-buttons {
+			padding-left: 4px;
+
+			.mic, .stop-mic {
 				width: 40px;
 				font-size: 22px;
+				height: 36px;
 				padding: 7px 0;
-				margin-left: 4px;
 				text-align: center;
 				cursor: pointer;
 				border-radius: 30px;
-				.transition(background-color 0.1s linear, color 0.1s linear);
-				&:hover {
+				display: none;
+			}
+
+			&.show-mic .mic, &.show-mic .stop-mic {
+				display: inline-block;
+			}
+
+			.send-button {
+				position: inherit;
+				width: 40px;
+				font-size: 20px;
+				height: 36px;
+				padding: 7px 0;
+				text-align: center;
+				cursor: pointer;
+				border-radius: 30px;
+				display: none;
+				i {
+					margin-right: 2px;
 				}
+			}
+
+			&.show-send .send-button {
+				display: inline-block;
 			}
 		}
 		textarea {
@@ -2366,16 +2397,6 @@ a.github-fork {
 			resize: none;
 			line-height: 16px;
 			&.editing {
-			}
-		}
-		.icon-paper-plane {
-			position: absolute;
-			top: 2px;
-			right: 0px;
-			cursor: pointer;
-			padding: 8px;
-			font-size: 16px;
-			&:hover {
 			}
 		}
 		.users-typing {
@@ -4573,6 +4594,127 @@ a.github-fork {
 		}  20% {
 			transform: scaleY(1.0);
 			-webkit-transform: scaleY(1.0);
+		}
+	}
+}
+
+.code-error-box {
+	.title {
+		background: red;
+		color: white;
+		padding: 5px;
+		font-size: 16px;
+		font-weight: bold;
+		margin-top: 5px;
+	}
+
+	pre {
+		font-size: 12px;
+		font-weight: bold;
+		padding: 6px;
+		background: rgb(255, 243, 243);
+		color: red;
+		border-left: 3px solid red;
+	}
+}
+
+.code-mirror-box {
+	.title {
+		display: none;
+	}
+
+	.button-fullscreen {
+		display: initial;
+	}
+
+	.button-restore {
+		display: none;
+	}
+
+	.buttons {
+		text-align: right;
+		background-color: #F7F7F7;
+		border: 1px solid #ddd;
+		border-width: 0px 1px 1px 1px;
+	}
+
+	.CodeMirror {
+		border: 1px solid #ddd;
+	}
+
+	&.code-mirror-box-fullscreen {
+		height: auto;
+		position: fixed;
+		top: 61px;
+		bottom: 0;
+		z-index: 100;
+		width: auto;
+		right: 40px;
+		left: 260px;
+		display: flex;
+		flex-direction: column;
+		align-items: stretch;
+		background-color: white;
+
+		.buttons {
+			border: none;
+		}
+
+		.title {
+			display: initial;
+			padding-left: 10px;
+			font-size: 16px;
+			background-color: #F7F7F7;
+			line-height: 30px;
+		}
+
+		.button-fullscreen {
+			display: none;
+		}
+
+		.button-restore {
+			display: initial;
+		}
+
+		.CodeMirror {
+			flex-grow: 1;
+			display: flex;
+			flex-direction: column;
+
+			.CodeMirror-scroll {
+				flex-grow: 1;
+			}
+		}
+	}
+}
+
+.sweet-alert .sa-input-error {
+	top: 19px;
+}
+
+@media all and(max-width: 780px) {
+	.code-mirror-box-fullscreen {
+		.CodeMirror {
+			left: 0;
+		}
+	}
+
+	.container-bars {
+		.unread-bar {
+			.unread-count {
+				display: inline-block;
+			}
+			.unread-count-since {
+				display: none;
+			}
+			> a.jump-to {
+				.jump-to-small {
+					display: inline-block;
+				}
+				.jump-to-large {
+					display: none;
+				}
+			}
 		}
 	}
 }

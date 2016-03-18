@@ -16,6 +16,17 @@ Meteor.methods
 		if not currentIntegration?
 			throw new Meteor.Error 'invalid_integration', '[methods] updateIncomingIntegration -> integration not found'
 
+		if integration.script isnt ''
+			try
+				babelOptions = Babel.getDefaultOptions()
+				babelOptions.externalHelpers = false
+
+				integration.scriptCompiled = Babel.compile(integration.script, babelOptions).code
+				integration.scriptError = undefined
+			catch e
+				integration.scriptCompiled = undefined
+				integration.scriptError = _.pick e, 'name', 'message', 'pos', 'loc', 'codeFrame'
+
 		record = undefined
 		channelType = integration.channel[0]
 		channel = integration.channel.substr(1)
@@ -42,12 +53,16 @@ Meteor.methods
 
 		RocketChat.models.Integrations.update integrationId,
 			$set:
+				enabled: integration.enabled
 				name: integration.name
 				avatar: integration.avatar
 				emoji: integration.emoji
 				alias: integration.alias
 				channel: integration.channel
-				processIncomingRequestScript: integration.processIncomingRequestScript
+				script: integration.script
+				scriptEnabled: integration.scriptEnabled
+				scriptCompiled: integration.scriptCompiled
+				scriptError: integration.scriptError
 				_updatedAt: new Date
 				_updatedBy: RocketChat.models.Users.findOne @userId, {fields: {username: 1}}
 

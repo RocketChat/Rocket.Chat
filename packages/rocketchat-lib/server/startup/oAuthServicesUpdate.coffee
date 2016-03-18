@@ -4,7 +4,7 @@ logger = new Logger 'rocketchat:lib',
 			type: 'info'
 
 timer = undefined
-oAuthServicesUpdate = ->
+OAuthServicesUpdate = ->
 	Meteor.clearTimeout timer if timer?
 
 	timer = Meteor.setTimeout ->
@@ -55,7 +55,7 @@ oAuthServicesUpdate = ->
 	, 2000
 
 
-oAuthServicesRemove = (_id) ->
+OAuthServicesRemove = (_id) ->
 	serviceName = _id.replace('Accounts_OAuth_Custom_', '')
 	ServiceConfiguration.configurations.remove {service: serviceName.toLowerCase()}
 
@@ -63,12 +63,12 @@ oAuthServicesRemove = (_id) ->
 RocketChat.models.Settings.find().observe
 	added: (record) ->
 		if /^Accounts_OAuth_.+/.test record._id
-			oAuthServicesUpdate()
+			OAuthServicesUpdate()
 
 	changed: (record) ->
 		if /^Accounts_OAuth_.+/.test record._id
-			oAuthServicesUpdate()
+			OAuthServicesUpdate()
 
 	removed: (record) ->
 		if /^Accounts_OAuth_Custom.+/.test record._id
-			oAuthServicesRemove record._id
+			OAuthServicesRemove record._id

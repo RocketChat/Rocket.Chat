@@ -1,5 +1,53 @@
 ## NEXT
 
+- Fixes #2477: Admin settings, plain-text SMTP password.
+- Closes #625: Filter and sorts direct messages and private groups.
+- Closes #2172: Accepts markdown for room topic.
+
+## 0.22.0, 2016-Mar-14
+
+- Add AES encryption routines
+- Add CDN config option for file upload
+- Add icon to show OTR status in channel title
+- Add option to disable integration and scripts
+- Add Off-The-Record funtionallity
+- Add RocketChat.promises API
+- Allow outgoing scripts to call HTTP
+- Allow processOutgoingResponseScript to process erros
+- Allow send message and continue with the request
+- Always notifies livechat messages - Closes #2212
+- Better rendering of message attachment text
+- Client validation of valid types for upload
+- Close #1635; Add textarea for adding custom CSS/JS
+- Close #2494; Close all opened rooms on logout
+- Enables notification by displaying "Encrypted message" instead of the hash or the actual message
+- Fix bug when changing room name to same value
+- Fix code indentation - closes #2454
+- Moves change of language to preferences
+- Requires current password to change profile settings
+- Fixes #691; Adds sorting to channels list.
+- Fixes S3 config without acl
+- Improve UI of new messages bar
+- Improved send button
+- Move custom OAuth to OAuth section of admin panel
+- Moved all fileupload settings to package
+- Moving files to expose functions
+- Pass request as object to process_incoming_request
+- Protect file uploads on S3
+- Readding autocomplete to message input box - fixes #2489
+- Reduce font-size of new messages bar
+- Refactor for file upload response handlers API
+- Removed Meteor Error copy-pasted problem
+- Renaming files to match the storage config
+- Shows a send button if there is a message in the text box
+- Stops using tmeasday:errors and use toastr instead
+- Support for delete uploaded files
+- Support for region and bucketUrl S3 configs
+- Support multiple upload file handlers
+- Support to upload files to S3
+- Trim slashes from Site_Url - closes #2462
+- Upload files to file system support
+
 ## 0.21.0, 2016-Mar-07
 
 - Add ability for users to delete their own accounts
@@ -200,7 +248,7 @@
 - Enable editing via admin / users
 - Log error when trigger url returns 500
 - Bind starttls correctly for LDAP
-- Custom oAuth supporting json or plain content_types responses of the identity
+- Custom OAuth supporting json or plain content_types responses of the identity
 - Allow pass room id to direct rooms
 - Outgoing: Get the room from posted message to reply
 - Change Meteor.absoluteUrl to force SSL if Force_SSL is true
@@ -529,7 +577,7 @@
 - New RocketChat.RateLimiter
 - Favico.js update
 - Better RTL support
-- Remove custom oAuth record when removed from settings
+- Remove custom OAuth record when removed from settings
 - Improve Settings layout
 - Collapse sub groups of settings
 - Change translations in PT for False and True

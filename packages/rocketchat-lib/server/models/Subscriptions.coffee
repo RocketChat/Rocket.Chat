@@ -34,6 +34,23 @@ RocketChat.models.Subscriptions = new class extends RocketChat.models._Base
 
 		return @find query, options
 
+	findByType: (types, options) ->
+		query =
+			t:
+				$in: types
+
+		return @find query, options
+
+	findByNameContainingAndTypes: (name, types, options) ->
+		nameRegex = new RegExp s.trim(s.escapeRegExp(name)), "i"
+
+		query =
+			t:
+				$in: types
+				name: nameRegex
+
+		return @find query, options
+
 	getLastSeen: (options = {}) ->
 		query = { ls: { $exists: 1 } }
 		options.sort = { ls: -1 }

@@ -1,5 +1,5 @@
 {
-  "RocketBot_Enabled" : "RocketBot включен",
-  "RocketBot_Name" : "Имя RocketBot-а",
-  "RocketBot_Name_Description" : "Имя RocketBot должно быть действительным именем пользователя зарегистрированным на вашем сервере."
+  "RocketBot_Enabled" : "Чат-бот включен",
+  "RocketBot_Name" : "Имя чат-бота",
+  "RocketBot_Name_Description" : "Имя чат-бота должно быть действительным именем пользователя зарегистрированным на вашем сервере."
 }

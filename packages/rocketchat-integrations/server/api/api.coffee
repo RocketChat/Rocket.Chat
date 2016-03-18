@@ -1,5 +1,49 @@
 vm = Npm.require('vm')
 
+compiledScripts = {}
+
+getIntegrationScript = (integration) ->
+	compiledScript = compiledScripts[integration._id]
+	if compiledScript? and +compiledScript._updatedAt is +integration._updatedAt
+		return compiledScript.script
+
+	script = integration.scriptCompiled
+	vmScript = undefined
+	sandbox =
+		_: _
+		s: s
+		console: console
+		Store:
+			set: (key, val) ->
+				return store[key] = val
+			get: (key) ->
+				return store[key]
+
+	try
+		logger.incoming.info 'will evaluate script'
+		logger.incoming.debug script
+
+		vmScript = vm.createScript script, 'script.js'
+
+		vmScript.runInNewContext sandbox
+
+		if sandbox.Script?
+			compiledScripts[integration._id] =
+				script: new sandbox.Script()
+				_updatedAt: integration._updatedAt
+
+			return compiledScripts[integration._id].script
+	catch e
+		logger.incoming.error "[Error evaluating Script:]"
+		logger.incoming.error script.replace(/^/gm, '  ')
+		logger.incoming.error "[Stack:]"
+		logger.incoming.error e.stack.replace(/^/gm, '  ')
+		throw RocketChat.API.v1.failure 'error-evaluating-script'
+
+	if not sandbox.Script?
+		throw RocketChat.API.v1.failure 'class-script-not-found'
+
+
 Api = new Restivus
 	enableCors: true
 	apiPath: 'hooks/'
@@ -22,6 +66,12 @@ Api.addRoute ':integrationId/:userId/:token', authRequired: true,
 		logger.incoming.debug '@bodyParams', @bodyParams
 
 		integration = RocketChat.models.Integrations.findOne(@urlParams.integrationId)
+
+		if integration.enabled isnt true
+			return {} =
+				statusCode: 503
+				body: 'Service Unavailable'
+
 		user = RocketChat.models.Users.findOne(@userId)
 
 		defaultValues =
@@ -31,8 +81,14 @@ Api.addRoute ':integrationId/:userId/:token', authRequired: true,
 			emoji: integration.emoji
 
 
-		if integration.processIncomingRequestScript? and integration.processIncomingRequestScript.trim() isnt ''
-			sandbox =
+		if integration.scriptEnabled is true and integration.scriptCompiled? and integration.scriptCompiled.trim() isnt ''
+			script = undefined
+			try
+				script = getIntegrationScript(integration)
+			catch e
+				return e
+
+			request =
 				url:
 					hash: @request._parsedUrl.hash
 					search: @request._parsedUrl.search
@@ -49,32 +105,19 @@ Api.addRoute ':integrationId/:userId/:token', authRequired: true,
 					name: @user.name
 					username: @user.username
 
-			script = undefined
-			vmScript = undefined
 			try
-				script = "result = (function() {\n"+integration.processIncomingRequestScript+"\n}());"
-				vmScript = vm.createScript script, 'script.js'
-				logger.incoming.info 'will execute script processIncomingRequestScript'
-				logger.incoming.debug script
-				logger.incoming.debug 'with context', sandbox
-			catch e
-				logger.incoming.error "[Error evaluating Script:]"
-				logger.incoming.error script.replace(/^/gm, '  ')
-				logger.incoming.error "\n[Stack:]"
-				logger.incoming.error e.stack.replace(/^/gm, '  ')
-				return RocketChat.API.v1.failure 'error-evaluating-script'
+				result = script.process_incoming_request({ request: request })
 
-			try
-				vmScript.runInNewContext sandbox
-				if sandbox.result.error?
-					return RocketChat.API.v1.failure sandbox.result.error
+				if result.error?
+					return RocketChat.API.v1.failure result.error
 
-				@bodyParams = sandbox.result?.content
+				@bodyParams = result?.content
+
 				logger.incoming.debug 'result', @bodyParams
 			catch e
 				logger.incoming.error "[Error running Script:]"
-				logger.incoming.error script.replace(/^/gm, '  ')
-				logger.incoming.error "\n[Stack:]"
+				logger.incoming.error integration.scriptCompiled.replace(/^/gm, '  ')
+				logger.incoming.error "[Stack:]"
 				logger.incoming.error e.stack.replace(/^/gm, '  ')
 				return RocketChat.API.v1.failure 'error-running-script'
 
@@ -144,7 +187,7 @@ Api.addRoute 'add/:integrationId/:userId/:token', authRequired: true,
 		integration = RocketChat.models.Integrations.findOne(@urlParams.integrationId)
 
 		if not integration?
-			return RocketChat.API.v1.failure 'Invalid integraiton id'
+			return RocketChat.API.v1.failure 'Invalid integration id'
 
 		user = RocketChat.models.Users.findOne(@userId)
 
@@ -156,7 +199,7 @@ Api.addRoute 'remove/:integrationId/:userId/:token', authRequired: true,
 		integration = RocketChat.models.Integrations.findOne(@urlParams.integrationId)
 
 		if not integration?
-			return RocketChat.API.v1.failure 'Invalid integraiton id'
+			return RocketChat.API.v1.failure 'Invalid integration id'
 
 		user = RocketChat.models.Users.findOne(@userId)
 
