@@ -80,36 +80,30 @@ Template.message.onCreated ->
 	@wasEdited = msg.editedAt? and not RocketChat.MessageTypes.isSystemMessage(msg)
 
 	@body = do ->
+		isSystemMessage = RocketChat.MessageTypes.isSystemMessage(msg)
 		messageType = RocketChat.MessageTypes.getType(msg)
 		if messageType?.render?
-			return messageType.render(msg)
+			msg = messageType.render(msg)
 		else if messageType?.template?
 			# render template
 		else if messageType?.message?
 			if messageType.data?(msg)?
-				return TAPi18n.__(messageType.message, messageType.data(msg))
+				msg = TAPi18n.__(messageType.message, messageType.data(msg))
 			else
-				return TAPi18n.__(messageType.message)
+				msg = TAPi18n.__(messageType.message)
 		else
 			if msg.u?.username is RocketChat.settings.get('Chatops_Username')
 				msg.html = msg.msg
-				message = RocketChat.callbacks.run 'renderMentions', msg
+				msg = RocketChat.callbacks.run 'renderMentions', msg
 				# console.log JSON.stringify message
-				return msg.html
+				msg = msg.html
+			else
+				msg = renderMessageBody msg
 
-			msg.html = msg.msg
-			if _.trim(msg.html) isnt ''
-				msg.html = _.escapeHTML msg.html
-
-			message = RocketChat.callbacks.run 'renderMessage', msg
-			if message.tokens?.length > 0
-				for token in message.tokens
-					token.text = token.text.replace(/([^\$])(\$[^\$])/gm, '$1$$$2')
-					message.html = message.html.replace token.token, token.text
-
-			# console.log JSON.stringify message
-			msg.html = message.html.replace /\n/gm, '<br/>'
-			return msg.html
+		if isSystemMessage
+			return RocketChat.Markdown msg
+		else
+			return msg
 
 Template.message.onViewRendered = (context) ->
 	view = this

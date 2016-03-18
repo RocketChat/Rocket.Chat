@@ -16,11 +16,11 @@ Meteor.methods({
 
 		emailValidation = /^[a-zA-Z0-9.!#$%&'*+\/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/;
 		if (!emailValidation.test(email)) {
-			throw new Meteor.Error('email-invalid', "#{email} is not a valid e-mail");
+			throw new Meteor.Error('email-invalid', email + " is not a valid e-mail");
 		}
 
 		if (!RocketChat.checkEmailAvailability(email)) {
-			throw new Meteor.Error('email-unavailable', "#{email} is already in use :(");
+			throw new Meteor.Error('email-unavailable', email + " is already in use :(");
 		}
 
 		if (!RocketChat.setEmail(user._id, email)) {
