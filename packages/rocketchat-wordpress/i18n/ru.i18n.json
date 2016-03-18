@@ -2,5 +2,6 @@
   "API_Wordpress_URL" : "WordPress URL",
   "Accounts_OAuth_Wordpress" : "WordPress логин",
   "Accounts_OAuth_Wordpress_id" : "WordPress ID",
-  "Accounts_OAuth_Wordpress_secret" : "Пароль WordPress"
+  "Accounts_OAuth_Wordpress_secret" : "Пароль WordPress",
+  "Accounts_OAuth_Wordpress_callback_url" : "Обратный URL-адрес Wordpress"
 }
