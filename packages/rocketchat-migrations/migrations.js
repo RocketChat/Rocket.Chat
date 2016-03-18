@@ -342,11 +342,19 @@ Migrations._migrateTo = function(version, rerun) {
 		for (var i = startIdx; i < endIdx; i++) {
 			migrate('up', i + 1);
 			currentVersion = self._list[i + 1].version;
+			self._setControl({
+				locked: true,
+				version: currentVersion
+			});
 		}
 	} else {
 		for (var i = startIdx; i > endIdx; i--) {
 			migrate('down', i);
 			currentVersion = self._list[i - 1].version;
+			self._setControl({
+				locked: true,
+				version: currentVersion
+			});
 		}
 	}
 

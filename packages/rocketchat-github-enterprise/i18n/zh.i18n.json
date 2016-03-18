@@ -3,5 +3,5 @@
   "API_GitHub_Enterprise_URL" : "GitHub 企业版地址",
   "Accounts_OAuth_GitHub_Enterprise_id" : "客户端 ID",
   "Accounts_OAuth_GitHub_Enterprise_secret" : "客户端 Secret",
-  "Github_Enterprise_Url_No_Trail" : "例如：http://domain.com （不需要结尾的斜线）"
+  "API_GitHub_Enterprise_URL_Description" : "例如：http://domain.com （不需要结尾的斜线）"
 }

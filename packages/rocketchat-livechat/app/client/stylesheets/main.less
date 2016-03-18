@@ -363,6 +363,7 @@ input:focus {
 
 		.input-wrapper {
 			padding: 6px 6px 0 6px;
+			padding-right: 30px;
 			textarea {
 				display: block;
 				padding: 6px 8px;
@@ -378,6 +379,19 @@ input:focus {
 				line-height: normal;
 				background-color: #fff;
 				position: relative;
+			}
+		}
+		.send-button {
+			float: right;
+			position: relative;
+			right: 7px;
+			top: -20px;
+			color: @secondary-font-color;
+			cursor: pointer;
+			.transition(color .15s ease-out);
+
+			&:hover {
+				color: @primary-font-color;
 			}
 		}
 	}

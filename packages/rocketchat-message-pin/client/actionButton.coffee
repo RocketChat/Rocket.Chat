@@ -8,7 +8,7 @@ Meteor.startup ->
 			message.pinned = true
 			Meteor.call 'pinMessage', message, (error, result) ->
 				if error
-					return Errors.throw error.reason
+					return toastr.error error.reason
 		validation: (message) ->
 			if message.pinned or not RocketChat.settings.get('Message_AllowPinning')
 				return false
@@ -28,7 +28,7 @@ Meteor.startup ->
 			message.pinned = false
 			Meteor.call 'unpinMessage', message, (error, result) ->
 				if error
-					return Errors.throw error.reason
+					return toastr.error error.reason
 		validation: (message) ->
 			if not message.pinned or not RocketChat.settings.get('Message_AllowPinning')
 				return false

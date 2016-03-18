@@ -8,7 +8,7 @@
 				<form>
 					<ul class="list clearfix">
 						{{#if userIsOnline}}
-							{{#if rsaReady}}
+							{{#if established}}
 								<button class="button refresh"><span>{{_ "Refresh_keys"}}</span></button>
 								<button class="button red end"><span>{{_ "End_OTR"}}</span></button>
 							{{else}} {{#if establishing}}

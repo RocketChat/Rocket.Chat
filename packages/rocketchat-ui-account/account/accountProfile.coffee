@@ -1,13 +1,6 @@
 Template.accountProfile.helpers
-	languages: ->
-		languages = TAPi18n.getLanguages()
-		result = []
-		for key, language of languages
-			result.push _.extend(language, { key: key })
-		return _.sortBy(result, 'key')
-
-	userLanguage: (key) ->
-		return (Meteor.user().language or defaultUserLanguage())?.split('-').shift().toLowerCase() is key
+	allowDeleteOwnAccount: ->
+		return RocketChat.settings.get('Accounts_AllowDeleteOwnAccount')
 
 	realname: ->
 		return Meteor.user().name
@@ -39,75 +32,65 @@ Template.accountProfile.onCreated ->
 	settingsTemplate.child.push this
 
 	@clearForm = ->
-		@find('#language').value = localStorage.getItem('userLanguage')
-		@find('#oldPassword').value = ''
 		@find('#password').value = ''
 
-	@changePassword = (oldPassword, newPassword, callback) ->
+	@changePassword = (newPassword, callback) ->
 		instance = @
-		if not oldPassword and not newPassword
+		if not newPassword
 			return callback()
 
-		else if !!oldPassword ^ !!newPassword
-			toastr.warning t('Old_and_new_password_required')
-
-		else if newPassword and oldPassword
+		else
 			if !RocketChat.settings.get("Accounts_AllowPasswordChange")
+				toastr.remove();
 				toastr.error t('Password_Change_Disabled')
 				instance.clearForm()
 				return
-			Accounts.changePassword oldPassword, newPassword, (error) ->
-				if error
-					toastr.error t('Incorrect_Password')
-				else
-					return callback()
 
-	@save = ->
+			# Accounts.changePassword oldPassword, newPassword, (error) ->
+			# 	if error
+			# 		toastr.error t('Incorrect_Password')
+			# 	else
+			# 		return callback()
+
+	@save = (currentPassword) ->
 		instance = @
 
-		oldPassword = _.trim($('#oldPassword').val())
-		newPassword = _.trim($('#password').val())
+		data = { currentPassword: currentPassword }
 
-		instance.changePassword oldPassword, newPassword, ->
-			data = {}
-			reload = false
-			selectedLanguage = $('#language').val()
+		if _.trim $('#password').val()
+			data.newPassword = $('#password').val()
 
-			if localStorage.getItem('userLanguage') isnt selectedLanguage
-				localStorage.setItem 'userLanguage', selectedLanguage
-				data.language = selectedLanguage
-				reload = true
+		if _.trim $('#realname').val()
+			data.realname = _.trim $('#realname').val()
 
-			if _.trim $('#realname').val()
-				data.realname = _.trim $('#realname').val()
+		if _.trim($('#username').val()) isnt Meteor.user().username
+			if !RocketChat.settings.get("Accounts_AllowUsernameChange")
+				toastr.remove();
+				toastr.error t('Username_Change_Disabled')
+				instance.clearForm()
+				return
+			else
+				data.username = _.trim $('#username').val()
 
-			if _.trim $('#username').val()
-				if !RocketChat.settings.get("Accounts_AllowUsernameChange")
-					toastr.error t('Username_Change_Disabled')
-					instance.clearForm()
-					return
-				else
-					data.username = _.trim $('#username').val()
+		if _.trim($('#email').val()) isnt Meteor.user().emails?[0]?.address
+			if !RocketChat.settings.get("Accounts_AllowEmailChange")
+				toastr.remove();
+				toastr.error t('Email_Change_Disabled')
+				instance.clearForm()
+				return
+			else
+				data.email = _.trim $('#email').val()
 
-			if _.trim $('#email').val()
-				if !RocketChat.settings.get("Accounts_AllowEmailChange")
-					toastr.error t('Email_Change_Disabled')
-					instance.clearForm()
-					return
-				else
-					data.email = _.trim $('#email').val()
+		Meteor.call 'saveUserProfile', data, (error, results) ->
+			if results
+				toastr.remove();
+				toastr.success t('Profile_saved_successfully')
+				swal.close()
+				instance.clearForm()
 
-			Meteor.call 'saveUserProfile', data, (error, results) ->
-				if results
-					toastr.success t('Profile_saved_successfully')
-					instance.clearForm()
-					if reload
-						setTimeout ->
-							Meteor._reload.reload()
-						, 1000
-
-				if error
-					toastr.error error.reason
+			if error
+				toastr.remove();
+				toastr.error error.reason
 
 Template.accountProfile.onRendered ->
 	Tracker.afterFlush ->
@@ -117,11 +100,51 @@ Template.accountProfile.onRendered ->
 		SideNav.openFlex()
 
 Template.accountProfile.events
-	'click .submit button': (e, t) ->
-		t.save()
+	'click .submit button': (e, instance) ->
+		swal
+			title: t("Please_re_enter_your_password"),
+			text: t("For_your_security_you_must_re_enter_your_password_to_continue"),
+			type: "input",
+			inputType: "password",
+			showCancelButton: true,
+			closeOnConfirm: false
+
+		, (typedPassword) =>
+			if typedPassword
+				toastr.remove();
+				toastr.warning(t("Please_wait_while_your_profile_is_being_saved"));
+				instance.save(SHA256(typedPassword))
+			else
+				swal.showInputError(t("You_need_to_type_in_your_password_in_order_to_do_this"));
+				return false;
 	'click .logoutOthers button': (event, templateInstance) ->
 		Meteor.logoutOtherClients (error) ->
 			if error
+				toastr.remove();
 				toastr.error error.reason
 			else
+				toastr.remove();
 				toastr.success t('Logged_out_of_other_clients_successfully')
+	'click .delete-account button': (e) ->
+		e.preventDefault();
+		swal
+			title: t("Are_you_sure_you_want_to_delete_your_account"),
+			text: t("If_you_are_sure_type_in_your_password"),
+			type: "input",
+			inputType: "password",
+			showCancelButton: true,
+			closeOnConfirm: false
+
+		, (typedPassword) =>
+			if typedPassword
+				toastr.remove();
+				toastr.warning(t("Please_wait_while_your_account_is_being_deleted"));
+				Meteor.call 'deleteUserOwnAccount', SHA256(typedPassword), (error, results) ->
+					if error
+						toastr.remove();
+						swal.showInputError(t("Your_password_is_wrong"));
+					else
+						swal.close();
+			else
+				swal.showInputError(t("You_need_to_type_in_your_password_in_order_to_do_this"));
+				return false;
