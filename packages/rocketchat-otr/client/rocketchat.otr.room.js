@@ -17,12 +17,12 @@ RocketChat.OTR.Room = class {
 		this.establishing.set(true);
 		this.firstPeer = true;
 		this.generateKeyPair().then(() => {
-			RocketChat.Notifications.notifyUser(this.peerId, 'otr', 'handshake', { roomId: this.roomId, userId: this.userId, publicKey: EJSON.stringify(new Uint8Array(this.exportedPublicKey)), refresh: refresh });
+			RocketChat.Notifications.notifyUser(this.peerId, 'otr', 'handshake', { roomId: this.roomId, userId: this.userId, publicKey: EJSON.stringify(this.exportedPublicKey), refresh: refresh });
 		});
 	}
 
 	acknowledge() {
-		RocketChat.Notifications.notifyUser(this.peerId, 'otr', 'acknowledge', { roomId: this.roomId, userId: this.userId, publicKey: EJSON.stringify(new Uint8Array(this.exportedPublicKey)) });
+		RocketChat.Notifications.notifyUser(this.peerId, 'otr', 'acknowledge', { roomId: this.roomId, userId: this.userId, publicKey: EJSON.stringify(this.exportedPublicKey) });
 	}
 
 	deny() {
@@ -71,7 +71,7 @@ RocketChat.OTR.Room = class {
 			namedCurve: 'P-256'
 		}, false, ['deriveKey', 'deriveBits']).then((keyPair) => {
 			this.keyPair = keyPair;
-			return crypto.subtle.exportKey('spki', keyPair.publicKey);
+			return crypto.subtle.exportKey('jwk', keyPair.publicKey);
 		})
 		.then((exportedPublicKey) => {
 			this.exportedPublicKey = exportedPublicKey;
@@ -85,7 +85,7 @@ RocketChat.OTR.Room = class {
 	}
 
 	importPublicKey(publicKey) {
-		return window.crypto.subtle.importKey('spki', EJSON.parse(publicKey), {
+		return window.crypto.subtle.importKey('jwk', EJSON.parse(publicKey), {
 			name: 'ECDH',
 			namedCurve: 'P-256'
 		}, false, []).then((peerPublicKey) => {
