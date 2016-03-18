@@ -9,6 +9,10 @@
 				<div class="input-message-container">
 					{{> messagePopupConfig getPopupConfig}}
 					<textarea dir="auto" name="msg" maxlength="{{maxMessageLength}}" class="input-message autogrow-short" placeholder="{{_ 'Message'}}"></textarea>
+
+					<div class="inner-right-toolbar">
+						<img class="emoji-picker-icon" src="/packages/rocketchat_emojione/category_icons/people.svg">
+					</div>
 				</div>
 
 				<div class="message-buttons {{showMic}} {{showSend}}">

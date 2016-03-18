@@ -54,13 +54,16 @@
 }
 
 .input-message-container.otr {
-	&:after {
+	.input-message {
+		padding-right: 48px;
+	}
+	.inner-right-toolbar:before {
 		font-family: 'fontello';
 		content: "\e878";
 		color: green;
 		visibility: visible;
-		position: absolute;
-		top: 10px;
-		right: 10px;
+		display: inline-block;
+		vertical-align: top;
+		margin: 1px 8px;
 	}
 }
