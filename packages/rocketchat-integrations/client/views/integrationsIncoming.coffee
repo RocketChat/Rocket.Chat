@@ -66,6 +66,10 @@ Template.integrationsIncoming.helpers
 
 	curl: ->
 		record = Template.instance().record.get()
+
+		if not record.url?
+			return
+
 		data =
 			username: record.alias
 			icon_emoji: record.emoji
