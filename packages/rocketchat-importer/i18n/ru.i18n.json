@@ -1,1 +1,21 @@
-{ }
+{
+  "Invalid_Import_File_Type" : "Недействительный тип импортируемого файла.",
+  "Invalid_Export_File" : "Загруженный файл не является действительным экспортным файлом %s.",
+  "importer_not_defined_properly" : "Импортер не был определен правильно, не хватает классификации импорта.",
+  "importer_setup_error" : "При настройке импортера возникла ошибка.",
+  "importer_not_in_progress" : "Импортер на данный момент не в сети.",
+  "importer_importing_started" : "Начать импорт данных.",
+  "importer_importing_users" : "Импортировать пользователей.",
+  "importer_importing_channels" : "Импортировать каналы.",
+  "importer_importing_messages" : "Импортировать сообщения.",
+  "importer_finishing" : "Завершить импорт данных.",
+  "importer_done" : "Импорт данных завершен!",
+  "importer_import_failed" : "Во время импорта данных возникла ошибка.",
+  "importer_import_cancelled" : "Импорт данных отменен.",
+  "importer_progress_error" : "Произошла ошибка при выполнении импорта данных.",
+  "Importer_Prepare_Restart_Import" : "Перезапустить импорт данных.",
+  "Importer_Prepare_Start_Import" : "Начать импорт данных.",
+  "Importer_Prepare_Uncheck_Deleted_Users" : "Снимите флажок с удаленных пользователей",
+  "Importer_Prepare_Uncheck_Archived_Channels" : "Снимите флажок с удаленных каналов",
+  "Importer_Archived" : "Удаленные"
+}
