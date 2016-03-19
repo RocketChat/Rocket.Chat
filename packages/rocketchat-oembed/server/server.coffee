@@ -1,6 +1,6 @@
 URL = Npm.require('url')
 querystring = Npm.require('querystring')
-request = Npm.require('request')
+request = HTTPInternals.NpmModules.request.module
 
 OEmbed = {}
 
@@ -11,29 +11,45 @@ getUrlContent = (urlObj, redirectCount = 5, callback) ->
 	parsedUrl = _.pick urlObj, ['host', 'hash', 'pathname', 'protocol', 'port', 'query', 'search']
 
 	RocketChat.callbacks.run 'oembed:beforeGetUrlContent',
-		requestOptions: urlObj
+		urlObj: urlObj
 		parsedUrl: parsedUrl
 
-	request {
-		url: URL.format urlObj
+	url = URL.format urlObj
+	opts =
+		url: url
 		strictSSL: !RocketChat.settings.get 'Allow_Invalid_SelfSigned_Certs'
 		gzip: true
 		maxRedirects: redirectCount
 		headers:
 			'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/41.0.2227.0 Safari/537.36'
-	}, Meteor.bindEnvironment (error, response, body) ->
-		if error?
-			return callback null, {
-				error: error
-				parsedUrl: parsedUrl
-			}
 
+	headers = null
+	chunks = []
+	chunksTotalLength = 0
+
+	stream = request opts
+	stream.on 'response', (response) ->
 		if response.statusCode isnt 200
-			return callback null, {parsedUrl: parsedUrl}
+			return stream.abort()
+		headers = response.headers
 
+	stream.on 'data', (chunk) ->
+		chunks.push chunk
+		chunksTotalLength += chunk.length
+		if chunksTotalLength > 250000
+			stream.abort()
+
+	stream.on 'end', Meteor.bindEnvironment ->
+		buffer = Buffer.concat(chunks)
 		callback null, {
-			headers: response.headers
-			body: body
+			headers: headers
+			body: buffer.toString()
+			parsedUrl: parsedUrl
+		}
+
+	stream.on 'error', (error) ->
+		callback null, {
+			error: error
 			parsedUrl: parsedUrl
 		}
 
