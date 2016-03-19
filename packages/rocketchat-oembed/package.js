@@ -9,6 +9,7 @@ Package.onUse(function(api) {
 	api.versionsFrom('1.0');
 
 	api.use([
+		'http',
 		'templating',
 		'coffeescript',
 		'underscore',
@@ -39,10 +40,6 @@ Package.onUse(function(api) {
 	api.addFiles('server/models/OEmbedCache.coffee', 'server');
 
 	api.export('OEmbed', 'server');
-});
-
-Npm.depends({
-	'request': '2.69.0'
 });
 
 Package.onTest(function(api) {
