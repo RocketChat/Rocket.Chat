@@ -97,9 +97,9 @@ Template.emojiPicker.events({
 
 Template.emojiPicker.onCreated(function() {
 	this.tone = EmojiPicker.getTone();
-	this.currentCategory = new ReactiveVar('recent');
-
 	let recent = EmojiPicker.getRecent();
+
+	this.currentCategory = new ReactiveVar(recent.length > 0 ? 'recent' : 'people');
 
 	recent.forEach((emoji) => {
 		emojisByCategory.recent.push(emoji);
