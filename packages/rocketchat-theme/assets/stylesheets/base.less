@@ -2876,6 +2876,92 @@ a.github-fork {
 		font-weight: 400;
 		padding-left: 2px;
 	}
+
+	.reactions {
+		padding: 0;
+		> li {
+			position: relative;
+			height: 24px;
+			line-height: 22px;
+			display: inline-block;
+			border-radius: 5px;
+			border: 1px solid #06F;
+			background-color: #0AF;
+			border: 1px solid #E7E7E7;
+			background-color: #FCFCFC;
+			padding-right: 2px;
+
+			.reaction-emoji {
+				img {
+					min-width: 15px;
+					min-height: 15px;
+					width: 15px;
+					height: 15px;
+				}
+			}
+
+			.reaction-count {
+				font-size: 0.65rem;
+				margin-left: -5px;
+				color: #888;
+			}
+
+			.people {
+				position: absolute;
+				visibility: hidden;
+				background: black;
+				border-radius: 5px;
+				bottom: 28px;
+				transform: translateX(-50%);
+				left: 50%;
+				opacity: 0.9;
+				z-index: 300;
+				color: white;
+				padding: 0 4px;
+				font-size: 0.8rem;
+
+				&:after {
+					content: '';
+					position: absolute;
+					top: 100%;
+					left: 50%;
+					margin-left: -5px;
+					width: 0; height: 0;
+					border-top: 5px solid #000000;
+					border-right: 5px solid transparent;
+					border-left: 5px solid transparent;
+				}
+			}
+
+			&:hover {
+				.people {
+					visibility: visible;
+				}
+			}
+
+			&.add-reaction {
+				padding-right: 3px;
+				padding-left: 1px;
+
+				.plus-reaction {
+					color: #888;
+					text-shadow: -1px 0 #FCFCFC, 0 1px #FCFCFC, 1px 0 #FCFCFC, 0 -1px #FCFCFC;
+					margin-right: -6px;
+					z-index: 2;
+					position: relative;
+				}
+				.reaction-emoji {
+					z-index: 1;
+					position: relative;
+
+					img {
+						vertical-align: text-top;
+						opacity: 0.4;
+					}
+				}
+			}
+		}
+	}
 }
 
 .compact {

@@ -61,5 +61,23 @@
 				{{> messageAttachment}}
 			{{/each}}
 		</div>
+		<ul class="reactions {{hideReactions}}">
+			{{#each reaction in reactions}}
+				<li>
+					<span class="reaction-emoji">{{> emojione reaction.emoji}}</span>
+					<span class="reaction-count">{{reaction.count}}</span>
+					<ul class="people">
+						<li>a.big.username.here.causes.a.bad.positioning</li>
+						<li>diego2</li>
+						<li>diego3</li>
+						<li>diego4</li>
+					</ul>
+				</li>
+			{{/each}}
+			<li class="add-reaction">
+				<span class="plus-reaction">+</span>
+				<span class="reaction-emoji"><img class="emoji-reaction-icon" src="/packages/rocketchat_emojione/category_icons/people.svg"></span>
+			</li>
+		</ul>
 	</li>
 </template>
