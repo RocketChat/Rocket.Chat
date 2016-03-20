@@ -74,6 +74,19 @@ Template.message.helpers
 
 		return true
 
+	reactions: ->
+		return [
+			{
+				emoji: ':+1:'
+				count: 10
+			}
+			{
+				emoji: ':smile:'
+				count: 10
+			}
+		]
+		# return @reactions
+
 Template.message.onCreated ->
 	msg = Template.currentData()
 

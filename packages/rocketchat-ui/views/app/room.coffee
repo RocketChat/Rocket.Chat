@@ -330,6 +330,11 @@ Template.room.events
 
 		dropDown.show()
 
+	'click .add-reaction': (event) ->
+		event.preventDefault();
+		event.stopPropagation();
+		EmojiPicker.open(event.currentTarget, $('.input-message'));
+
 	'click .message-dropdown .message-action': (e, t) ->
 		e.preventDefault()
 		e.stopPropagation()
