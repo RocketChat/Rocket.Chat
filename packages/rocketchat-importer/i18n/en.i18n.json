@@ -8,7 +8,7 @@
   "importer_importing_users" : "Importing the users.",
   "importer_importing_channels" : "Importing the channels.",
   "importer_importing_messages" : "Importing the messages.",
-  "importer_finishing" : "Finising up the import.",
+  "importer_finishing" : "Finishing up the import.",
   "importer_done" : "Importing complete!",
   "importer_import_failed" : "An error occured while running the import.",
   "importer_import_cancelled" : "Import cancelled.",
