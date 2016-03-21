@@ -1,1 +1,8 @@
-{ }
+{
+  "importer_done" : "インポートが完了しました!",
+  "importer_import_failed" : "インポート中にエラーが発生しました。",
+  "importer_import_cancelled" : "インポートをキャンセルしました。",
+  "importer_progress_error" : "インポートの進行状況を取得するのに失敗しました。",
+  "Importer_Prepare_Restart_Import" : "インポートを再実行する",
+  "Importer_Prepare_Start_Import" : "インポートを開始"
+}
