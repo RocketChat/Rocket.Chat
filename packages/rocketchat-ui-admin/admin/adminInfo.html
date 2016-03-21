@@ -7,41 +7,43 @@
 			</h2>
 		</head>
 		<div class="content">
-			<h3>{{_ "Rocket.Chat"}}</h3>
-			<table class="statistics-table">
-				<tr>
-					<th>{{_ "Version"}}</th>
-					<td>{{statistics.version}}</td>
-				</tr>
-				<tr>
-					<th>{{_ "DB_Migration"}}</th>
-					<td>{{statistics.migration.version}}</td>
-				</tr>
-				<tr>
-					<th>{{_ "DB_Migration_Date"}}</th>
-					<td>{{statistics.migration.lockedAt}}</td>
-				</tr>
-				<tr>
-					<th>{{_ "Installed_at"}}</th>
-					<td>{{statistics.createdAt}}</td>
-				</tr>
-				<tr>
-					<th>{{_ "Uptime"}}</th>
-					<td>{{humanReadableTime statistics.process.uptime}}</td>
-				</tr>
-				<tr>
-					<th>{{_ "Deployment_ID"}}</th>
-					<td>{{statistics.uniqueId}}</td>
-				</tr>
-				<tr>
-					<th>{{_ "PID"}}</th>
-					<td>{{statistics.process.pid}}</td>
-				</tr>
-				<tr>
-					<th>{{_ "Running_Instances"}}</th>
-					<td>{{statistics.instanceCount}}</td>
-				</tr>
-			</table>
+			{{#if hasPermission 'view-statistics'}}
+				<h3>{{_ "Rocket.Chat"}}</h3>
+				<table class="statistics-table">
+					<tr>
+						<th>{{_ "Version"}}</th>
+						<td>{{statistics.version}}</td>
+					</tr>
+					<tr>
+						<th>{{_ "DB_Migration"}}</th>
+						<td>{{statistics.migration.version}}</td>
+					</tr>
+					<tr>
+						<th>{{_ "DB_Migration_Date"}}</th>
+						<td>{{statistics.migration.lockedAt}}</td>
+					</tr>
+					<tr>
+						<th>{{_ "Installed_at"}}</th>
+						<td>{{statistics.createdAt}}</td>
+					</tr>
+					<tr>
+						<th>{{_ "Uptime"}}</th>
+						<td>{{humanReadableTime statistics.process.uptime}}</td>
+					</tr>
+					<tr>
+						<th>{{_ "Deployment_ID"}}</th>
+						<td>{{statistics.uniqueId}}</td>
+					</tr>
+					<tr>
+						<th>{{_ "PID"}}</th>
+						<td>{{statistics.process.pid}}</td>
+					</tr>
+					<tr>
+						<th>{{_ "Running_Instances"}}</th>
+						<td>{{statistics.instanceCount}}</td>
+					</tr>
+				</table>
+			{{/if}}
 
 			<h3>{{_ "Commit"}}</h3>
 			<table class="statistics-table">
@@ -71,9 +73,7 @@
 				</tr>
 			</table>
 
-			{{#unless hasPermission 'view-statistics'}}
-				<p>{{_ "You_are_not_authorized_to_view_this_page"}}</p>
-			{{else}}
+			{{#if hasPermission 'view-statistics'}}
 				{{#if isReady}}
 					<h3>{{_ "Runtime_Environment"}}</h3>
 					<table class="statistics-table">
@@ -208,7 +208,7 @@
 				{{else}}
 					{{_ "Loading..."}}
 				{{/if}}
-			{{/unless}}
+			{{/if}}
 		</div>
 	</section>
 </template>
