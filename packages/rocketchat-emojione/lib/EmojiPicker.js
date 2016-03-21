@@ -4,6 +4,7 @@ EmojiPicker = {
 	height: 203,
 	initiated: false,
 	input: null,
+	source: null,
 	recent: [],
 	tone: null,
 	opened: false,
@@ -19,12 +20,22 @@ EmojiPicker = {
 		Blaze.render(Template.emojiPicker, document.body);
 
 		$(document).click((event) => {
+			if (!this.opened) {
+				return;
+			}
 			if(!$(event.target).closest('.emoji-picker').length && !$(event.target).is('.emoji-picker')) {
 				if (this.opened) {
 					this.close();
 				}
 			}
 		});
+
+		$(window).resize(_.debounce(() => {
+			if (!this.opened) {
+				return;
+			}
+			this.setPosition();
+		}, 300));
 	},
 	isOpened() {
 		return this.opened;
@@ -39,18 +50,27 @@ EmojiPicker = {
 	getRecent() {
 		return this.recent;
 	},
+	setPosition() {
+		let sourcePos = $(this.source).offset();
+		let left = (sourcePos.left - this.width + 50);
+
+		if (left < 0) {
+			left = 0;
+		}
+		return $('.emoji-picker')
+			.css({
+				top: (sourcePos.top - this.height - 10) + 'px',
+				left: left + 'px'
+			});
+	},
 	open(source, input) {
 		if (!this.initiated) {
 			this.init();
 		}
 		this.input = input;
-		let sourcePos = $(source).offset();
-		$('.emoji-picker')
-			.css({
-				top: (sourcePos.top - this.height - 10) + 'px',
-				left: (sourcePos.left - this.width + 50) + 'px'
-			})
-			.addClass('show');
+		this.source = source;
+
+		this.setPosition().addClass('show');
 
 		this.opened = true;
 	},
