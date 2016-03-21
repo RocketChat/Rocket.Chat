@@ -52,6 +52,18 @@ class IframeLogin {
 			}
 		};
 
+		let iframeUrl = this.iframeUrl;
+		let separator = '?';
+		if (iframeUrl.indexOf('?') > -1) {
+			separator = '&';
+		}
+
+		if (window.cordova) {
+			iframeUrl += separator + 'client=cordova';
+		} else if (navigator.userAgent.indexOf('Electron') > -1) {
+			iframeUrl += separator + 'client=electron';
+		}
+
 		HTTP.call(this.apiMethod, this.apiUrl, options, (error, result) => {
 			console.log(error, result);
 			if (result && result.data && result.data.token) {
@@ -59,14 +71,14 @@ class IframeLogin {
 				result.data.token = 'yaMadZ1RMBdMzs6kGycKybrHVptoDl7nokxtorz1me0';
 				this.loginWithToken(result.data.token, (error, result) => {
 					if (error) {
-						this.reactiveIframeUrl.set(this.iframeUrl);
+						this.reactiveIframeUrl.set(iframeUrl);
 					} else {
 						this.reactiveIframeUrl.set();
 					}
 					callback(error, result);
 				});
 			} else {
-				this.reactiveIframeUrl.set(this.iframeUrl);
+				this.reactiveIframeUrl.set(iframeUrl);
 				callback(error, result);
 			}
 		});

@@ -12,7 +12,7 @@ Template.livechatInstallation.helpers({
 	j.async = true;
 	j.src = '${siteUrl}/packages/rocketchat_livechat/assets/rocket-livechat.js';
 	h.parentNode.insertBefore(j, h);
-})(window, document, 'script', 'initRocket', '${RocketChat.settings.get('Site_Url')}/livechat');
+})(window, document, 'script', 'initRocket', '${siteUrl}/livechat');
 </script>
 <!-- End of Rocket.Chat Livechat Script -->`;
 	}
