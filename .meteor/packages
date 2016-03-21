@@ -81,6 +81,7 @@ rocketchat:slashcommands-mute
 rocketchat:spotify
 rocketchat:statistics
 rocketchat:theme
+rocketchat:tooltip
 rocketchat:tutum
 rocketchat:ui
 rocketchat:ui-account
