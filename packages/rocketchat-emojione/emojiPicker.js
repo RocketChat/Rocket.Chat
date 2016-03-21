@@ -21,7 +21,7 @@ Template.emojiPicker.helpers({
 			let emoji = emojisByCategory[category][i];
 			let tone = '';
 
-			if (actualTone > 0 && toneList[emoji]) {
+			if (actualTone > 0 && toneList.hasOwnProperty(emoji)) {
 				tone = '_tone' + actualTone;
 			}
 			html += '<li class="emoji-' + emoji + '" data-emoji="' + emoji + '">' + emojione.toImage(':' + emoji + tone + ':') + '</li>';
@@ -87,7 +87,7 @@ Template.emojiPicker.events({
 		let actualTone = Template.instance().tone;
 		let tone = '';
 
-		if (actualTone > 0 && toneList[emoji]) {
+		if (actualTone > 0 && toneList.hasOwnProperty(emoji)) {
 			tone = '_tone' + actualTone;
 		}
 
