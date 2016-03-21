@@ -2915,6 +2915,9 @@ a.github-fork {
 				visibility: hidden;
 				padding-right: 3px;
 				padding-left: 1px;
+				opacity: 0;
+
+				.transition(opacity 0.2s ease);
 
 				.plus-reaction {
 					color: #888;
@@ -2938,6 +2941,7 @@ a.github-fork {
 		&:hover {
 			> li.add-reaction {
 				visibility: visible;
+				opacity: 1;
 			}
 		}
 	}
