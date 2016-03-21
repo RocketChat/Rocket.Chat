@@ -335,6 +335,14 @@ Template.room.events
 		event.stopPropagation();
 		EmojiPicker.open(event.currentTarget, $('.input-message'));
 
+	'mouseenter .reactions > li:not(.add-reaction)': (event, instance) ->
+		event.stopPropagation();
+		RocketChat.tooltip.showElement(event.currentTarget, instance.find('.people'))
+
+	'mouseleave .reactions > li:not(.add-reaction)': (event, instance) ->
+		event.stopPropagation();
+		RocketChat.tooltip.hide()
+
 	'click .message-dropdown .message-action': (e, t) ->
 		e.preventDefault()
 		e.stopPropagation()
