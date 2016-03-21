@@ -1,1 +1,3 @@
-{ }
+{
+  "Importer_HipChat_Description" : "HipChat のデータを Rocket.Chat へインポート"
+}

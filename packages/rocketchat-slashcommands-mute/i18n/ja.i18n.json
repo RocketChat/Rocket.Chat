@@ -1,1 +1,4 @@
-{ }
+{
+  "Mute_someone_in_room" : "誰かをルームでミュートにする",
+  "Unmute_someone_in_room" : "誰かをルームでミュートを解除されました"
+}
