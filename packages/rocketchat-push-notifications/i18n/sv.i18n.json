@@ -1,1 +1,6 @@
-{ }
+{
+  "All_messages" : "Alla meddelanden",
+  "Desktop_notifications" : "Desktop notifieringar ",
+  "Invalid_notification_setting_s" : "Felaktiga notifierings inställningar: %s",
+  "Use_account_preference" : "Använd kontoinställningar"
+}
