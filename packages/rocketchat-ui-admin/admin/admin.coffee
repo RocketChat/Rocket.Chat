@@ -145,6 +145,10 @@ Template.admin.helpers
 						changed: Settings.findOne(_id).value isnt value
 		return
 
+	assetAccept: (fileConstraints) ->
+		if fileConstraints.extensions?.length > 0
+			return '.' + fileConstraints.extensions.join(', .')
+
 
 Template.admin.events
 	"change .input-monitor": (e, t) ->
