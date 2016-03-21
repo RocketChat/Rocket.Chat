@@ -1,1 +1,3 @@
-{ }
+{
+  "Importer_Slack_Description" : "Slack のデータを Rocket.Chat へインポート"
+}

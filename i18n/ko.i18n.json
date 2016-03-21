@@ -458,6 +458,7 @@
   "Yes_clear_all" : "예, 전부 지웁니다!",
   "Yes_delete_it" : "예, 삭제합니다!",
   "you_are_in_preview_mode_of" : "#<strong>__room_name__</strong> 채널 미리보기 모드",
+  "You_are_not_authorized_to_view_this_page" : "당신은 이 페이지를 볼 수 있는 권한이 없습니다.",
   "You_have_been_muted" : "당신은 이제 이 방에서 듣지도 말하지도 못합니다",
   "You_need_confirm_email" : "로그인하려면 이메일 확인이 필요합니다!",
   "You_will_not_be_able_to_recover" : "이 메시지는 복구할 수 없습니다!",

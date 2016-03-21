@@ -621,6 +621,7 @@
   "Yes_remove_user" : "Ja, verwijder gebruiker!",
   "you_are_in_preview_mode_of" : "U kijkt naar de voorbeschouwing van kanaal #<strong>__room_name__</strong>",
   "You_are_logged_in_as" : "Je bent ingelogd als",
+  "You_are_not_authorized_to_view_this_page" : "U bent niet bevoegd om deze pagina te bekijken.",
   "You_can_change_a_different_avatar_too" : "U kunt de afbeelding die bij berichten gebruikt wordt vervangen.",
   "You_can_use_an_emoji_as_avatar" : "U kunt ook een emoji gebruiken als een afbeelding.",
   "You_have_been_muted" : "Je bent tot zwijgen gebracht in deze kamer.",
