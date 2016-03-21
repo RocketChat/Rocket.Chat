@@ -1,1 +1,5 @@
-{ }
+{
+  "Invite_user_to_join_channel" : "Bjud in en användare till att ansluta till denna kanal.",
+  "User_doesnt_exist" : "Det existerar ingen användare med namnet `@%s`.",
+  "Username_is_already_in_here" : "`@%s` är redan här inne."
+}
