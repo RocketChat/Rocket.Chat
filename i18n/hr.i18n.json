@@ -353,6 +353,7 @@
   "Yes_clear_all" : "Da, makni sve!",
   "Yes_delete_it" : "Da, obriši!",
   "you_are_in_preview_mode_of" : "Ti si u preglednom načinu kanala # <strong>__room_name__</strong>",
+  "You_are_not_authorized_to_view_this_page" : "Nemate dopuštenje za pregled ove stranice.",
   "You_need_confirm_email" : "Trebaš potvrditi svoj email kako bi se prijavio!",
   "You_will_not_be_able_to_recover" : "Ovo nećeš moći promijeniti!",
   "Your_entry_has_been_deleted" : "Tvoj unos je obrisan.",

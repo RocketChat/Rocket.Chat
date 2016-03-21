@@ -1,1 +1,5 @@
-{ }
+{
+  "All_messages" : "كل الرسائل",
+  "Desktop_notifications" : "تنبيهات سطح المكتب",
+  "Mobile_push_notifications" : "تنبيهات الهاتف"
+}

@@ -1,1 +1,8 @@
-{ }
+{
+  "Accounts_OAuth_GitHub_Enterprise" : "OAuth によるログインを有効にする",
+  "API_GitHub_Enterprise_URL" : "サーバー URL",
+  "Accounts_OAuth_GitHub_Enterprise_id" : "クライアント ID",
+  "Accounts_OAuth_GitHub_Enterprise_secret" : "クライアント シークレットキー",
+  "Accounts_OAuth_GitHub_Enterprise_callback_url" : "GitHub Enterprise コールバック URL",
+  "API_GitHub_Enterprise_URL_Description" : "例: http://domain.com (末尾のスラッシュを除く)"
+}
