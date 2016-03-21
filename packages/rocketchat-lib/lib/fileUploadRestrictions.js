@@ -1,7 +1,7 @@
 RocketChat.fileUploadMediaWhiteList = function() {
 	var mediaTypeWhiteList = RocketChat.settings.get('FileUpload_MediaTypeWhiteList');
 
-	if (!mediaTypeWhiteList) {
+	if (!mediaTypeWhiteList || mediaTypeWhiteList === '*') {
 		return;
 	}
 	return _.map(mediaTypeWhiteList.split(','), function(item) {
