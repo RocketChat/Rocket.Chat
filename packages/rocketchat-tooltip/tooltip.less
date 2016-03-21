@@ -1,0 +1,31 @@
+.tooltip {
+	position: absolute;
+	visibility: hidden;
+	background: black;
+	border-radius: 5px;
+	z-index: 300;
+	color: white;
+	padding: 4px;
+	font-size: 0.8rem;
+	opacity: 0;
+
+	.transition(opacity 0.3s ease);
+
+	&.show {
+		visibility: visible;
+		opacity: 0.9;
+	}
+
+	&:after {
+		content: '';
+		position: absolute;
+		top: 100%;
+		left: 50%;
+		margin-left: -5px;
+		width: 0;
+		height: 0;
+		border-top: 5px solid #000000;
+		border-right: 5px solid transparent;
+		border-left: 5px solid transparent;
+	}
+}

@@ -181,6 +181,7 @@ rocketchat:slashcommands-mute@0.0.1
 rocketchat:spotify@0.0.1
 rocketchat:statistics@0.0.1
 rocketchat:theme@0.0.1
+rocketchat:tooltip@0.0.1
 rocketchat:tutum@0.0.1
 rocketchat:ui@0.1.0
 rocketchat:ui-account@0.1.0
