@@ -1,11 +1,15 @@
 <template name="message">
 	<li id="{{_id}}" class="message {{isSequential}} {{system}} {{t}} {{own}} {{isTemp}} {{chatops}}" data-username="{{u.username}}" data-groupable="{{isGroupable}}" data-date="{{date}}" data-timestamp="{{timestamp}}">
 		{{#if avatar}}
-			<a class="thumb user-card-message" href="#" data-username="{{u.username}}" tabindex="1">
-				<div class="avatar">
-					<div class="avatar-image" style="background-image:url({{avatar}});"></div>
-				</div>
-			</a>
+			{{#if avatarFromUsername}}
+				<a class="thumb user-card-message" href="#" data-username="{{u.username}}" tabindex="1">{{> avatar username=avatarFromUsername}}</a>
+			{{else}}
+				<a class="thumb user-card-message" href="#" data-username="{{u.username}}" tabindex="1">
+					<div class="avatar">
+						<div class="avatar-image" style="background-image:url({{avatar}});"></div>
+					</div>
+				</a>
+			{{/if}}
 		{{else}}
 			{{#if emoji}}
 				<a class="thumb user-card-message" href="#" data-username="{{u.username}}" tabindex="1">
