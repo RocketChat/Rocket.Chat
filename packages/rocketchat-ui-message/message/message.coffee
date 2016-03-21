@@ -5,6 +5,9 @@ Template.message.helpers
 		return 'false' if this.groupable is false
 	isSequential: ->
 		return 'sequential' if this.groupable isnt false
+	avatarFromUsername: ->
+		if this.avatar? and this.avatar[0] is '@'
+			return this.avatar.replace(/^@/, '')
 	getEmoji: (emoji) ->
 		return emojione.toImage emoji
 	own: ->
