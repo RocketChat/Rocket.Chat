@@ -137,12 +137,21 @@ Template.admin.helpers
 	setEditorOnBlur: (_id) ->
 		Meteor.defer ->
 			codeMirror = $('.code-mirror-box[data-editor-id="'+_id+'"] .CodeMirror')[0].CodeMirror
-			codeMirror.on 'change', ->
+			if codeMirror.changeAdded is true
+				return
+
+			onChange = ->
 				value = codeMirror.getValue()
 				TempSettings.update {_id: _id},
 					$set:
 						value: value
 						changed: Settings.findOne(_id).value isnt value
+
+			onChangeDelayed = _.debounce onChange, 500
+
+			codeMirror.on 'change', onChangeDelayed
+			codeMirror.changeAdded = true
+
 		return
 
 	assetAccept: (fileConstraints) ->
