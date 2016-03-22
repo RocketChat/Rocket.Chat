@@ -76,4 +76,6 @@ Template.uploadedFilesList.onCreated ->
 				@hasMore.set false
 
 Template.uploadedFilesList.onRendered ->
-	$('.room-files-swipebox').swipebox()
+	$('.room-files-swipebox').swipebox({
+		hideBarsDelay: 0
+	})
