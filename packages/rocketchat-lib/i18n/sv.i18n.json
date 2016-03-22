@@ -1,1 +1,5 @@
-{ }
+{
+  "Delete" : "Radera",
+  "Edit" : "Redigera",
+  "Only_errors" : "Endast fel"
+}

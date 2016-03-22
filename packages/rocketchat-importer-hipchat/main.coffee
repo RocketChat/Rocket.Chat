@@ -1,4 +1,4 @@
 Importer.AddImporter 'hipchat', Importer.HipChat,
 	name: 'HipChat'
-	description: 'Importer_HipChat_Description'
+	description: TAPi18n.__('Importer_From_Description', { from: 'HipChat' })
 	fileTypeRegex: new RegExp 'application\/.*?zip'
