@@ -11,7 +11,7 @@ RocketChat.tooltip = {
 
 		Blaze.render(Template.rocketchatTooltip, document.body);
 	},
-	showElement(source, element) {
+	showElement(element, source) {
 		if (this.opened) {
 			return;
 		}
@@ -47,15 +47,25 @@ RocketChat.tooltip = {
 
 		let sourceWidth = $(this.source).outerWidth();
 
-		let top = sourcePos.top - $('.tooltip').outerHeight() - 5;
+		const tip = $('.tooltip');
+
+		let top = sourcePos.top - tip.outerHeight() - 5;
 		let left = sourcePos.left;
 
-		left = left + (sourceWidth / 2) - ($('.tooltip').outerWidth() / 2);
+		left = left + (sourceWidth / 2) - (tip.outerWidth() / 2);
 
 		if (left < 0) {
 			left = 0;
 		}
-		return $('.tooltip')
+
+		if (top < 0) {
+			top = sourcePos.top + $(this.source).outerHeight() + 5;
+			tip.addClass('bellow');
+		} else {
+			tip.removeClass('bellow');
+		}
+
+		return tip
 			.css({
 				top: top + 'px',
 				left: left + 'px'
