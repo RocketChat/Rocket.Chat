@@ -1,5 +1,5 @@
-/* globals EmojiPicker:true, emojione, Blaze, Template */
-EmojiPicker = {
+/* globals emojione, Blaze, Template */
+RocketChat.EmojiPicker = {
 	width: 390,
 	height: 203,
 	initiated: false,
@@ -8,6 +8,7 @@ EmojiPicker = {
 	recent: [],
 	tone: null,
 	opened: false,
+	pickCallback: null,
 	init() {
 		if (this.initiated) {
 			return;
@@ -53,21 +54,26 @@ EmojiPicker = {
 	setPosition() {
 		let sourcePos = $(this.source).offset();
 		let left = (sourcePos.left - this.width + 50);
+		let top = (sourcePos.top - this.height - 10);
 
 		if (left < 0) {
-			left = 0;
+			left = 10;
 		}
+		if (top < 0) {
+			top = 10;
+		}
+
 		return $('.emoji-picker')
 			.css({
-				top: (sourcePos.top - this.height - 10) + 'px',
+				top: top + 'px',
 				left: left + 'px'
 			});
 	},
-	open(source, input) {
+	open(source, callback) {
 		if (!this.initiated) {
 			this.init();
 		}
-		this.input = input;
+		this.pickCallback = callback;
 		this.source = source;
 
 		this.setPosition().addClass('show');
@@ -78,18 +84,8 @@ EmojiPicker = {
 		$('.emoji-picker').removeClass('show');
 		this.opened = false;
 	},
-	insertEmoji(emoji) {
-		let emojiValue = ':' + emoji + ':';
-
-		var caretPos = this.input.prop('selectionStart');
-		var textAreaTxt = this.input.val();
-
-		this.input.val(textAreaTxt.substring(0, caretPos) + emojiValue + textAreaTxt.substring(caretPos) );
-
-		this.input.focus();
-
-		this.input.prop('selectionStart', caretPos + emojiValue.length);
-		this.input.prop('selectionEnd', caretPos + emojiValue.length);
+	pickEmoji(emoji) {
+		this.pickCallback(emoji);
 
 		this.close();
 		this.addRecent(emoji);
