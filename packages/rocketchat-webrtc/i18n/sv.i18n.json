@@ -1,1 +1,5 @@
-{ }
+{
+  "WebRTC_Enable_Channel" : "Aktivera för publika kanaler\n",
+  "WebRTC_Enable_Direct" : "Aktivera för direktmeddelanden\n",
+  "WebRTC_Enable_Private" : "Aktivera för privata kanaler"
+}
