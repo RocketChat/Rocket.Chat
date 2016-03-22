@@ -1,0 +1,54 @@
+.message {
+	.reactions {
+		padding: 0;
+		> li {
+			cursor: pointer;
+			position: relative;
+			height: 24px;
+			line-height: 22px;
+			display: inline-block;
+			border-radius: 5px;
+			border: 1px solid #06F;
+			background-color: #0AF;
+			border: 1px solid #E7E7E7;
+			background-color: #FCFCFC;
+			padding-right: 2px;
+
+			.reaction-emoji {
+				img {
+					min-width: 15px;
+					min-height: 15px;
+					width: 15px;
+					height: 15px;
+				}
+			}
+
+			.people {
+				display: none;
+			}
+
+			.reaction-count {
+				font-size: 0.65rem;
+				margin-left: -5px;
+				color: #888;
+			}
+
+			&.add-reaction {
+				visibility: hidden;
+				padding-left: 2px;
+				margin-left: 4px;
+				color: #888;
+				opacity: 0;
+
+				.transition(opacity 0.2s ease);
+			}
+		}
+
+		&:hover {
+			> li.add-reaction {
+				visibility: visible;
+				opacity: 1;
+			}
+		}
+	}
+}
