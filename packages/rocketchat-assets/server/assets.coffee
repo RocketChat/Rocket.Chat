@@ -10,7 +10,7 @@ mime.extensions['image/vnd.microsoft.icon'] = ['ico']
 assets =
 	'logo':
 		label: 'logo (svg, png)'
-		defaultUrl: '/images/logo/logo.svg?v=3'
+		defaultUrl: 'images/logo/logo.svg?v=3'
 		constraints:
 			type: 'image'
 			extensions: ['svg', 'png']
@@ -26,7 +26,7 @@ assets =
 			height: undefined
 	'favicon.svg':
 		label: 'favicon.svg'
-		defaultUrl: '/images/logo/icon.svg?v=3'
+		defaultUrl: 'images/logo/icon.svg?v=3'
 		constraints:
 			type: 'image'
 			extensions: ['svg']
