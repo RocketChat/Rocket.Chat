@@ -58,6 +58,12 @@ class Markdown
 		# Support ~text~ to strike through text
 		msg = msg.replace(/(^|&gt;|[ >_*`])\~{1,2}([^~\r\n]+)\~{1,2}([<_*`]|\B|\b|$)/gm, '$1<span class="copyonly">~</span><strike>$2</strike><span class="copyonly">~</span>$3')
 
+		# Support for block quote
+		# >>>
+		# Text
+		# <<<
+		msg = msg.replace(/(?:&gt;){3}\n+([\s\S]*?)\n+(?:&lt;){3}/g, '<blockquote><span class="copyonly">&gt;&gt;&gt;</span>$1<span class="copyonly">&lt;&lt;&lt;</span></blockquote>')
+
 		# Support >Text for quote
 		msg = msg.replace(/^&gt;(.*)$/gm, '<blockquote><span class="copyonly">&gt;</span>$1</blockquote>')
 		msg = msg.replace(/<\/blockquote>\n<blockquote>/gm, '</blockquote><blockquote>')
