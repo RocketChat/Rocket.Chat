@@ -73,6 +73,7 @@ rocketchat:oauth2-server-config
 rocketchat:oembed
 rocketchat:otr
 rocketchat:push-notifications
+rocketchat:reactions
 rocketchat:slashcommands-invite
 rocketchat:slashcommands-join
 rocketchat:slashcommands-kick

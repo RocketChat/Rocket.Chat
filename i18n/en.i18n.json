@@ -94,6 +94,7 @@
   "Allow_Invalid_SelfSigned_Certs" : "Allow Invalid Self-Signed Certs",
   "Allow_Invalid_SelfSigned_Certs_Description" : "Allow invalid and self-signed SSL certificate's for link validation and previews.",
   "and" : "and",
+  "And_more" : "And more __length__...",
   "API" : "API",
   "API_Analytics" : "Analytics",
   "API_Embed" : "Embed",
