@@ -3,7 +3,7 @@ Template.adminImport.helpers
 		return RocketChat.authz.hasRole(Meteor.userId(), 'admin')
 	isImporters: ->
 		return Object.keys(Importer.Importers).length > 0
-	description: ->
+	getDescription: (importer) ->
 		return TAPi18n.__('Importer_From_Description', { from: importer.name })
 	importers: ->
 		importers = []
