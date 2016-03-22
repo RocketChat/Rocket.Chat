@@ -1,9 +1,9 @@
-/* globals Template, EmojiPicker */
+/* globals Template */
 Template.messageBox.events({
 	'click .emoji-picker-icon'(event) {
 		event.stopPropagation();
-		if (EmojiPicker.isOpened()) {
-			EmojiPicker.close();
+		if (RocketChat.EmojiPicker.isOpened()) {
+			RocketChat.EmojiPicker.close();
 		} else {
 			EmojiPicker.open(event.currentTarget, $(event.currentTarget).parent().parent().find('.input-message'));
 		}
@@ -11,5 +11,5 @@ Template.messageBox.events({
 });
 
 Template.messageBox.onCreated(function() {
-	EmojiPicker.init();
+	RocketChat.EmojiPicker.init();
 });
