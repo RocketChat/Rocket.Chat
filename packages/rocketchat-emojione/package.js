@@ -42,6 +42,4 @@ Package.onUse(function(api) {
 	api.addAssets('category_icons/recent.svg', 'client');
 	api.addAssets('category_icons/symbols.svg', 'client');
 	api.addAssets('category_icons/travel.svg', 'client');
-
-	api.export('EmojiPicker');
 });
