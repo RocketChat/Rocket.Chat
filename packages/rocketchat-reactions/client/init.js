@@ -32,7 +32,7 @@ Meteor.startup(function() {
 	RocketChat.MessageAction.addButton({
 		id: 'reaction-message',
 		icon: 'icon-people-plus',
-		i18nLabel: 'Reaction',
+		i18nLabel: 'Reactions',
 		action(event) {
 			const data = Blaze.getData(event.currentTarget);
 
