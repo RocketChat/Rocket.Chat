@@ -1,1 +1,3 @@
-{ }
+{
+  "Channel_doesnt_exist" : "Kanalen `#%s`existerar inte."
+}

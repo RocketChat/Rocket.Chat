@@ -13,7 +13,7 @@ RocketChat.callbacks.add('afterSaveMessage', function(message, room) {
 	 * @returns {boolean}
      */
 	function messageContainsHighlight(message, highlights) {
-		if (! highlights || highlights.length == 0) { return false; }
+		if (! highlights || highlights.length === 0) { return false; }
 
 		var has = false;
 		highlights.some(function (highlight) {
@@ -36,7 +36,7 @@ RocketChat.callbacks.add('afterSaveMessage', function(message, room) {
 		mentionIds = [];
 		highlightsIds = [];
 		toAll = false;
-		highlights = RocketChat.models.Users.findUsersByUsernames(room.usernames, { fields: { '_id': 1, 'settings.preferences.highlights': 1 }}).fetch();
+		highlights = RocketChat.models.Users.findUsersByUsernamesWithHighlights(room.usernames, { fields: { '_id': 1, 'settings.preferences.highlights': 1 }}).fetch();
 
 		if (message.mentions != null) {
 			message.mentions.forEach(function(mention) {

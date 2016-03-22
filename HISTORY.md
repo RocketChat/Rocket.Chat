@@ -1,9 +1,48 @@
 ## NEXT
 
-- Fixes #2477: Admin settings, plain-text SMTP password.
-- Closes #625: Filter and sorts direct messages and private groups.
+## 0.23.0, 2016-Mar-21
+
+- Accept * for all media types
+- Add emoji picker
+- Add ENV to set HOME to /tmp in docker files
+- Add Katex plugin (for TeX math rendering)
+- Allow custom login page via iframe
+- Allow multiple extensions in assets and fix validation
+- CAS Plugin: Added version selector to prepare for further version support.
+- Close #2495; Allow pass @username in avatar
 - Closes #2172: Accepts markdown for room topic.
-- Fixes #2433: Directly linked channel does not load for newly created user
+- Closes #625: Filter and sorts direct messages and private groups.
+- Do not use user id in integration URL but keep compatibility
+- Encrypts _id to avoid duplicate encrypted messages
+- Fix #2346: Adds administration menu when 'manage-integrations' permission is added.
+- Fix #2433: Directly linked channel does not load for newly created user
+- Fix #2433: Directly linked channel does not load for newly created user
+- Fix #2477: Admin settings, plain-text SMTP password.
+- Fix #2515: Update profile when changing username or email is disabled.
+- Fix #2519: not showing stop record button
+- Fix #2526: CAS Plugin: Join freshly created users to default channels
+- Fix #2527: Set private group owner and moderator on creation.
+- Fix #2528: by accepting webkitSubtle as crypto.
+- Fix #2550: allows admins to change usernames and e-mails
+- Fix #2558: Remove trailing slash on livechat install code
+- Fix #2573: Proper emoji tone test
+- Fix decoding HTML entities in KaTeX plugin
+- Fix instructions for outgoing webhook response
+- Fix restricted domain registration regex
+- Only show the CURL field on integrations after token was generated
+- OTR: Encrypt message timestamp to make sure messages are retrieved in the right order.
+- OTR: Uses jwk instead of spki for exchanging public keys.
+- Pass correct raw value for content in integration scripts
+- Pass restricted domain as string when only one
+- Rebuild the cordova index when change the Site Url
+- Remove the try/catches around the imports
+- Retry to send push notification to gateway on error
+- RTL: Give `padding-right` to `.input-message`
+- Saves each successful migration as the latest locked migration version.
+- Send correct headers to download GridFS uploads
+- Set DDP_DEFAULT_CONNECTION_URL to the same value of ROOT_URL
+- Use login logo as asset
+- Use URL compatible token and do not sabe in user record
 
 ## 0.22.0, 2016-Mar-14
 
