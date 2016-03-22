@@ -1,5 +1,5 @@
-/* globals EmojiPicker:true, emojione, Blaze, Template */
-EmojiPicker = {
+/* globals emojione, Blaze, Template */
+RocketChat.EmojiPicker = {
 	width: 390,
 	height: 203,
 	initiated: false,
