@@ -8,6 +8,7 @@ RocketChat.EmojiPicker = {
 	recent: [],
 	tone: null,
 	opened: false,
+	pickCallback: null,
 	init() {
 		if (this.initiated) {
 			return;
@@ -63,11 +64,11 @@ RocketChat.EmojiPicker = {
 				left: left + 'px'
 			});
 	},
-	open(source, input) {
+	open(source, callback) {
 		if (!this.initiated) {
 			this.init();
 		}
-		this.input = input;
+		this.pickCallback = callback;
 		this.source = source;
 
 		this.setPosition().addClass('show');
@@ -78,18 +79,8 @@ RocketChat.EmojiPicker = {
 		$('.emoji-picker').removeClass('show');
 		this.opened = false;
 	},
-	insertEmoji(emoji) {
-		let emojiValue = ':' + emoji + ':';
-
-		var caretPos = this.input.prop('selectionStart');
-		var textAreaTxt = this.input.val();
-
-		this.input.val(textAreaTxt.substring(0, caretPos) + emojiValue + textAreaTxt.substring(caretPos) );
-
-		this.input.focus();
-
-		this.input.prop('selectionStart', caretPos + emojiValue.length);
-		this.input.prop('selectionEnd', caretPos + emojiValue.length);
+	pickEmoji(emoji) {
+		this.pickCallback(emoji);
 
 		this.close();
 		this.addRecent(emoji);
