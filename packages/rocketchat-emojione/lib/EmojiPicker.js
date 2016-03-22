@@ -54,13 +54,18 @@ RocketChat.EmojiPicker = {
 	setPosition() {
 		let sourcePos = $(this.source).offset();
 		let left = (sourcePos.left - this.width + 50);
+		let top = (sourcePos.top - this.height - 10);
 
 		if (left < 0) {
-			left = 0;
+			left = 10;
 		}
+		if (top < 0) {
+			top = 10;
+		}
+
 		return $('.emoji-picker')
 			.css({
-				top: (sourcePos.top - this.height - 10) + 'px',
+				top: top + 'px',
 				left: left + 'px'
 			});
 	},
