@@ -25,7 +25,6 @@ Template.avatarPrompt.helpers
 
 	suggestAvatar: (service) ->
 		suggestions = Template.instance().suggestions.get()
-		console.log service, "Accounts_OAuth_#{_.capitalize service}", RocketChat.settings.get("Accounts_OAuth_#{_.capitalize service}"), suggestions
 		return RocketChat.settings.get("Accounts_OAuth_#{_.capitalize service}") and not suggestions.avatars[service]
 
 	upload: ->

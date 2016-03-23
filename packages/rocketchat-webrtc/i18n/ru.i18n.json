@@ -1,5 +1,7 @@
 {
   "WebRTC_Enable_Channel" : "Включить для публичных чатов",
   "WebRTC_Enable_Direct" : "Включить для личных сообщений",
-  "WebRTC_Enable_Private" : "Включить для приватных чатов"
+  "WebRTC_Enable_Private" : "Включить для приватных чатов",
+  "WebRTC_Servers" : "Серверы STUN/TURN ",
+  "WebRTC_Servers_Description" : "Список STUN/TURN серверов разделен запятой.<br/>Имя пользователя, пароль и порт разрешены в формате `username:password@stun:host:port` или`username:password@turn:host:port`."
 }

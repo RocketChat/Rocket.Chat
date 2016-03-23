@@ -3,10 +3,16 @@ Template.listChannelsFlex.helpers
 		return Template.instance().channelsList?.get()
 	hasMore: ->
 		return Template.instance().hasMore.get()
-	tSearchChannels: ->
-		return t('Search_Channels')
-	sortSelected: (sort) ->
-		return Template.instance().sort.get() is sort
+	sortChannelsSelected: (sort) ->
+		return Template.instance().sortChannels.get() is sort
+	sortSubscriptionsSelected: (sort) ->
+		return Template.instance().sortSubscriptions.get() is sort
+	showSelected: (show) ->
+		return Template.instance().show.get() is show
+	member: ->
+		return !!RocketChat.models.Subscriptions.findOne({ name: @name, open: true })
+	hidden: ->
+		return !!RocketChat.models.Subscriptions.findOne({ name: @name, open: false })
 
 Template.listChannelsFlex.events
 	'click header': ->
@@ -26,7 +32,7 @@ Template.listChannelsFlex.events
 		SideNav.leaveArrow()
 
 	'scroll .content': _.throttle (e, t) ->
-		if e.target.scrollTop >= e.target.scrollHeight - e.target.clientHeight
+		if t.hasMore.get() and e.target.scrollTop >= e.target.scrollHeight - e.target.clientHeight
 			t.limit.set(t.limit.get() + 50)
 	, 200
 
@@ -34,20 +40,53 @@ Template.listChannelsFlex.events
 		instance.nameFilter.set($(e.currentTarget).val())
 	, 300
 
-	'change #sort': (e, instance) ->
-		instance.sort.set($(e.currentTarget).val())
+	'change #sort-channels': (e, instance) ->
+		instance.sortChannels.set($(e.currentTarget).val())
+
+	'change #sort-subscriptions': (e, instance) ->
+		instance.sortSubscriptions.set($(e.currentTarget).val())
+
+	'change #show': (e, instance) ->
+		show = $(e.currentTarget).val()
+		if show is 'joined'
+			instance.$('#sort-channels').hide();
+			instance.$('#sort-subscriptions').show();
+		else
+			instance.$('#sort-channels').show();
+			instance.$('#sort-subscriptions').hide();
+		instance.show.set(show)
 
 Template.listChannelsFlex.onCreated ->
 	@channelsList = new ReactiveVar []
 	@hasMore = new ReactiveVar true
 	@limit = new ReactiveVar 50
 	@nameFilter = new ReactiveVar ''
-	@sort = new ReactiveVar 'msgs'
+	@sortChannels = new ReactiveVar 'msgs'
+	@sortSubscriptions = new ReactiveVar 'name'
+	@show = new ReactiveVar 'joined'
 
 	@autorun =>
-		Meteor.call 'channelsList', @nameFilter.get(), @limit.get(), @sort.get(), (err, result) =>
-			if result
-				@hasMore.set true
-				@channelsList.set result.channels
-				if result.channels.length < @limit.get()
-					@hasMore.set false
+		if @show.get() is 'joined'
+			@hasMore.set true
+			options =  { fields: { name: 1 } }
+			if _.isNumber @limit.get()
+				options.limit = @limit.get()
+			if _.trim(@sortSubscriptions.get())
+				switch @sortSubscriptions.get()
+					when 'name'
+						options.sort = { name: 1 }
+					when 'ls'
+						options.sort = { ls: -1 }
+			@channelsList.set RocketChat.models.Subscriptions.find({
+				name: new RegExp s.trim(s.escapeRegExp(@nameFilter.get())), "i"
+				t: 'c'
+			}, options).fetch()
+			if @channelsList.get().length < @limit.get()
+				@hasMore.set false
+		else
+			Meteor.call 'channelsList', @nameFilter.get(), @limit.get(), @sortChannels.get(), (err, result) =>
+				if result
+					@hasMore.set true
+					@channelsList.set result.channels
+					if result.channels.length < @limit.get()
+						@hasMore.set false

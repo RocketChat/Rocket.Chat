@@ -16,7 +16,7 @@ Meteor.methods
 		if not currentIntegration?
 			throw new Meteor.Error 'invalid_integration', '[methods] updateIncomingIntegration -> integration not found'
 
-		if integration.script isnt ''
+		if integration.scriptEnabled is true and integration.script? and integration.script.trim() isnt ''
 			try
 				babelOptions = Babel.getDefaultOptions()
 				babelOptions.externalHelpers = false

@@ -595,6 +595,7 @@
   "Yes_remove_user" : "Kyllä, poista käyttäjä!",
   "you_are_in_preview_mode_of" : "Tämä on kanavan #<strong>__room_name__</strong> esikatselutila",
   "You_are_logged_in_as" : "Olet kirjautunut sisään käyttäjänä",
+  "You_are_not_authorized_to_view_this_page" : "Sinulla ei ole oikeuksia tarkastella tätä sivua.",
   "You_can_change_a_different_avatar_too" : "Voit vaihtaa tähän eri avatarin tätä integraatiota varten",
   "You_can_use_an_emoji_as_avatar" : "Voit käyttää myös emojia avatarina.",
   "You_have_been_muted" : "Olet mykistetty, et voi puhua tässä huoneessa.",

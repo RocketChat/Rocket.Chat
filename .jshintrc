@@ -82,6 +82,8 @@
     // Custom Globals
     "globals"       : {
         "_"           : true,
+        "Assets"      : true,
+        "Blaze"       : true,
         "crypto"      : true,
         "EJSON"       : true,
         "FlowRouter"  : true,
@@ -97,8 +99,9 @@
         "swal"        : true,
         "t"           : true,
         "TAPi18n"     : true,
+        "Template"    : true,
+        "TimeSync"    : true,
         "toastr"      : true,
-        "Tracker"     : true,
-        "TimeSync"    : true
+        "Tracker"     : true
     }
 }

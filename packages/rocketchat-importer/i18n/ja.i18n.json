@@ -1,1 +1,9 @@
-{ }
+{
+	"Importer_done": "インポートが完了しました!",
+	"Importer_From_Description": "__from__ のデータを Rocket.Chat へインポート",
+	"Importer_import_cancelled": "インポートをキャンセルしました。",
+	"Importer_import_failed": "インポート中にエラーが発生しました。",
+	"Importer_Prepare_Restart_Import": "インポートを再実行する",
+	"Importer_Prepare_Start_Import": "インポートを開始",
+	"Importer_progress_error": "インポートの進行状況を取得するのに失敗しました。"
+}
