@@ -233,8 +233,8 @@ Template.admin.events
 	"click .delete-asset": ->
 		Meteor.call 'unsetAsset', @asset
 
-	"change input[type=file]": ->
-		e = event.originalEvent or event
+	"change input[type=file]": (ev) ->
+		e = ev.originalEvent or ev
 		files = e.target.files
 		if not files or files.length is 0
 			files = e.dataTransfer?.files or []
