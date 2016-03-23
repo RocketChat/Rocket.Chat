@@ -117,8 +117,10 @@
 							<label>{{_ "Example"}}</label>
 							<div>
 								<pre><code class="hljs json json-example">{{{exampleJson}}}</code></pre>
-								<input type="text" name="curl" value="{{curl}}" readonly="readonly" />
-								<div class="settings-description"><a href="#" class="clipboard" data-clipboard-target="[name=curl]">{{_ "COPY_TO_CLIPBOARD"}}</a></div>
+								{{#if curl}}
+									<input type="text" name="curl" value="{{curl}}" readonly="readonly" />
+									<div class="settings-description"><a href="#" class="clipboard" data-clipboard-target="[name=curl]">{{_ "COPY_TO_CLIPBOARD"}}</a></div>
+								{{/if}}
 							</div>
 						</div>
 						<div class="input-line message-example">

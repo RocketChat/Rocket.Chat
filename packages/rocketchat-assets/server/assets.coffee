@@ -8,12 +8,20 @@ mime.extensions['image/vnd.microsoft.icon'] = ['ico']
 
 
 assets =
+	'logo':
+		label: 'logo (svg, png)'
+		defaultUrl: 'images/logo/logo.svg?v=3'
+		constraints:
+			type: 'image'
+			extensions: ['svg', 'png']
+			width: undefined
+			height: undefined
 	'favicon.ico':
 		label: 'favicon.ico'
 		defaultUrl: 'favicon.ico?v=3'
 		constraints:
 			type: 'image'
-			extension: 'ico'
+			extensions: ['ico']
 			width: undefined
 			height: undefined
 	'favicon.svg':
@@ -21,7 +29,7 @@ assets =
 		defaultUrl: 'images/logo/icon.svg?v=3'
 		constraints:
 			type: 'image'
-			extension: 'svg'
+			extensions: ['svg']
 			width: undefined
 			height: undefined
 	'favicon_64.png':
@@ -29,7 +37,7 @@ assets =
 		defaultUrl: 'images/logo/favicon-64x64.png?v=3'
 		constraints:
 			type: 'image'
-			extension: 'png'
+			extensions: ['png']
 			width: 64
 			height: 64
 	'favicon_96.png':
@@ -37,7 +45,7 @@ assets =
 		defaultUrl: 'images/logo/favicon-96x96.png?v=3'
 		constraints:
 			type: 'image'
-			extension: 'png'
+			extensions: ['png']
 			width: 96
 			height: 96
 	'favicon_128.png':
@@ -45,7 +53,7 @@ assets =
 		defaultUrl: 'images/logo/favicon-128x128.png?v=3'
 		constraints:
 			type: 'image'
-			extension: 'png'
+			extensions: ['png']
 			width: 128
 			height: 128
 	'favicon_192.png':
@@ -53,7 +61,7 @@ assets =
 		defaultUrl: 'images/logo/android-chrome-192x192.png?v=3'
 		constraints:
 			type: 'image'
-			extension: 'png'
+			extensions: ['png']
 			width: 192
 			height: 192
 	'favicon_256.png':
@@ -61,7 +69,7 @@ assets =
 		defaultUrl: 'images/logo/favicon-256x256.png?v=3'
 		constraints:
 			type: 'image'
-			extension: 'png'
+			extensions: ['png']
 			width: 256
 			height: 256
 
@@ -99,7 +107,7 @@ Meteor.methods
 		if not assets[asset]?
 			throw new Meteor.Error "Invalid_asset"
 
-		if mime.extension(contentType) isnt assets[asset].constraints.extension
+		if mime.extension(contentType) not in assets[asset].constraints.extensions
 			throw new Meteor.Error "Invalid_file_type", contentType
 
 		file = new Buffer(binaryContent, 'binary')

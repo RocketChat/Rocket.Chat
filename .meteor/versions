@@ -40,7 +40,7 @@ ecmascript-runtime@0.2.6
 edgee:slingshot@0.7.1
 ejson@1.0.7
 email@1.0.8
-emojione:emojione@2.1.1
+emojione:emojione@2.1.2
 facebook@1.2.2
 fastclick@1.0.7
 francocatena:status@1.5.1
@@ -101,7 +101,7 @@ mrt:moment@2.8.1
 mrt:moment-timezone@0.2.1
 mrt:reactive-store@0.0.1
 mystor:device-detection@0.2.0
-nimble:restivus@0.8.8
+nimble:restivus@0.8.9
 nooitaf:colors@0.0.3
 npm-bcrypt@0.7.8_2
 npm-mongo@1.4.39_1
@@ -113,8 +113,8 @@ ordered-dict@1.0.4
 ostrio:cookies@2.0.2
 pauli:accounts-linkedin@1.2.0
 pauli:linkedin@1.2.0
-peerlibrary:aws-sdk@2.0.17_2
-peerlibrary:blocking@0.4.3
+peerlibrary:aws-sdk@2.2.42_1
+peerlibrary:blocking@0.5.2
 perak:codemirror@1.2.9
 percolate:synced-cron@1.3.0
 pntbr:js-yaml-client@0.0.1
@@ -148,6 +148,7 @@ rocketchat:github-enterprise@0.0.1
 rocketchat:gitlab@0.0.1
 rocketchat:highlight@0.0.1
 rocketchat:highlight-words@0.0.1
+rocketchat:iframe-login@1.0.0
 rocketchat:importer@0.0.1
 rocketchat:importer-hipchat@0.0.1
 rocketchat:importer-slack@0.0.1
@@ -172,6 +173,7 @@ rocketchat:oauth2-server-config@1.0.0
 rocketchat:oembed@0.0.1
 rocketchat:otr@0.0.1
 rocketchat:push-notifications@0.0.1
+rocketchat:reactions@0.0.1
 rocketchat:slashcommands-invite@0.0.1
 rocketchat:slashcommands-join@0.0.1
 rocketchat:slashcommands-kick@0.0.1
@@ -180,6 +182,7 @@ rocketchat:slashcommands-mute@0.0.1
 rocketchat:spotify@0.0.1
 rocketchat:statistics@0.0.1
 rocketchat:theme@0.0.1
+rocketchat:tooltip@0.0.1
 rocketchat:tutum@0.0.1
 rocketchat:ui@0.1.0
 rocketchat:ui-account@0.1.0
@@ -204,12 +207,12 @@ spacebars-compiler@1.0.7
 srp@1.0.4
 standard-minifiers@1.0.2
 steffo:meteor-accounts-saml@0.0.1
-tap:i18n@1.7.0
+tap:i18n@1.8.0
 templating@1.1.5
 templating-tools@1.0.0
 tmeasday:crypto-base@3.1.2
 tmeasday:crypto-md5@3.1.2
-todda00:friendly-slugs@0.3.6
+todda00:friendly-slugs@0.4.0
 tracker@1.0.9
 twitter@1.1.5
 ui@1.0.8

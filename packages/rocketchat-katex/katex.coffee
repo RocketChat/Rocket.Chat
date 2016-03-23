@@ -78,7 +78,7 @@ class Katex
 		after  = str.substr match.outer.end
 
 		latex = str.substr match.inner.start, match.inner.length()
-		latex = _.unescape latex
+		latex = s.unescapeHTML latex
 
 		return { before: before, latex : latex, after : after } 
 
@@ -140,12 +140,11 @@ class Katex
 
 		return message
 
+RocketChat.katex = new Katex
 
-RocketChat.Katex = new Katex
-
-cb = RocketChat.Katex.render_message.bind(RocketChat.Katex)
+cb = RocketChat.katex.render_message.bind(RocketChat.katex)
 RocketChat.callbacks.add 'renderMessage', cb
 
 if Meteor.isClient
 	Blaze.registerHelper 'RocketChatKatex', (text) ->
-		return RocketChat.Katex.render_message text
+		return RocketChat.katex.render_message text

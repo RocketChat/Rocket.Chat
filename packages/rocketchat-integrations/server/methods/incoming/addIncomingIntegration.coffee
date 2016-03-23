@@ -18,7 +18,7 @@ Meteor.methods
 		if integration.username.trim() is ''
 			throw new Meteor.Error 'invalid_username', '[methods] addIncomingIntegration -> username can\'t be empty'
 
-		if integration.script isnt ''
+		if integration.scriptEnabled is true and integration.script? and integration.script.trim() isnt ''
 			try
 				babelOptions = Babel.getDefaultOptions()
 				babelOptions.externalHelpers = false
@@ -55,22 +55,13 @@ Meteor.methods
 		if not user?
 			throw new Meteor.Error 'user_does_not_exists', "[methods] addIncomingIntegration -> The username does not exists"
 
-		stampedToken = Accounts._generateStampedLoginToken()
-		hashStampedToken = Accounts._hashStampedToken(stampedToken)
-
-		updateObj =
-			$push:
-				'services.resume.loginTokens':
-					hashedToken: hashStampedToken.hashedToken
-					integration: true
+		token = Random.id(48)
 
 		integration.type = 'webhook-incoming'
-		integration.token = hashStampedToken.hashedToken
+		integration.token = token
 		integration.userId = user._id
 		integration._createdAt = new Date
 		integration._createdBy = RocketChat.models.Users.findOne @userId, {fields: {username: 1}}
-
-		RocketChat.models.Users.update {_id: user._id}, updateObj
 
 		RocketChat.models.Roles.addUserRoles user._id, 'bot'
 
