@@ -236,7 +236,9 @@ body {
       font-weight: normal;
       font-style: normal;
     }
-
+    .rtl .demo-icon {
+      direction: rtl;
+    }
 
     .demo-icon
     {
@@ -286,6 +288,13 @@ body {
         }
       }
 
+      function toggleRTL(check) {
+        if (check.checked) {
+          document.getElementById('icons').classList.add('rtl');
+        } else {
+          document.getElementById('icons').classList.remove('rtl');
+        }
+      }
     </script>
   </head>
   <body>
@@ -294,9 +303,14 @@ body {
         fontello
          <small>font demo</small>
       </h1>
-      <label class="switch">
-        <input type="checkbox" onclick="toggleCodes(this.checked)">show codes
-      </label>
+      <div class="switch">
+        <label>
+          <input type="checkbox" onclick="toggleCodes(this.checked)">show codes
+        </label>
+        <label>
+          <input type="checkbox" onclick="toggleRTL(this)">RTL
+        </label>
+      </div>
     </div>
     <div id="icons" class="container">
       <div class="row">
