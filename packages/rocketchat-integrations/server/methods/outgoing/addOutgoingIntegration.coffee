@@ -32,7 +32,7 @@ Meteor.methods
 
 			integration.triggerWords = _.without integration.triggerWords, [undefined]
 
-		if integration.script isnt ''
+		if integration.scriptEnabled is true and integration.script? and integration.script.trim() isnt ''
 			try
 				babelOptions = Babel.getDefaultOptions()
 				babelOptions.externalHelpers = false
