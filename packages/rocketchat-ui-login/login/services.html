@@ -2,7 +2,7 @@
 	{{#if loginService.length}}
 		<div class="social-login">
 			{{#each loginService}}
-				<button type="button" class="button external-login {{service.service}}" title="{{displayName}}" style="{{#if service.buttonColor}}background-color:{{service.buttonColor}};{{/if}}{{#if service.buttonLabelColor}}color:{{service.buttonLabelColor}};{{/if}}"><i class="icon-{{icon}} service-icon"></i><i class="icon-spin4 animate-spin loading-icon hidden"></i><span>{{service.buttonLabelText}}</span></button>
+				<button type="button" class="button external-login {{service.service}}" title="{{displayName}}" style="{{#if service.buttonColor}}background-color:{{service.buttonColor}};{{/if}}{{#if service.buttonLabelColor}}color:{{service.buttonLabelColor}};{{/if}}"><i class="icon-{{icon}} service-icon"></i><i class="icon-spin animate-spin loading-icon hidden"></i><span>{{service.buttonLabelText}}</span></button>
 			{{/each}}
 		</div>
 	{{/if}}
