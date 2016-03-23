@@ -88,7 +88,7 @@ Meteor.startup ->
 
 	RocketChat.MessageAction.addButton
 		id: 'delete-message'
-		icon: 'icon-trash-1'
+		icon: 'icon-trash-alt'
 		i18nLabel: 'Delete'
 		action: (event, instance) ->
 			message = @_arguments[1]
