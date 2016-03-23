@@ -48,7 +48,7 @@ Template.adminRooms.onCreated ->
 		groups: ['adminrooms'],
 		id: 'admin-room',
 		i18nTitle: 'Room_Info',
-		icon: 'octicon octicon-info',
+		icon: 'icon-info',
 		template: 'adminRoomInfo',
 		order: 1
 	});

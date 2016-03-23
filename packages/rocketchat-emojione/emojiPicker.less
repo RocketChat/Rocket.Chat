@@ -1,11 +1,16 @@
 .emoji-picker-icon {
 	cursor: pointer;
-	width: 18px;
-	opacity: 0.4;
 
-	.transition(transform 0.2s ease);
+	font-size: 18px;
+	color: @info-font-color;
+
+	&:before {
+		.transition(transform 0.2s ease);
+	}
 	&:hover {
-		.transform(scale(1.2));
+		&:before {
+			.transform(scale(1.2));
+		}
 	}
 }
 .emoji-picker {
@@ -42,16 +47,22 @@
 				display: table-cell;
 				margin: 0 2px;
 				padding: 6px 0;
-				opacity: 0.3;
 
 				border-bottom: 2px solid @secondary-background-color;
 
+				.category-link {
+					i {
+						color: @info-font-color;
+						font-size: 24px;
+					}
+				}
+
 				&:hover {
-					border-bottom: 2px solid @primary-background-color;
+					border-bottom: 2px solid @info-font-color;
 				}
 
 				&.active {
-					border-bottom: 2px solid green;
+					border-bottom: 2px solid @primary-background-color;
 				}
 
 				&.change-tone {

@@ -34,7 +34,7 @@ RocketChat.TabBar.addButton({
 	groups: ['livechat'],
 	id: 'visitor-info',
 	i18nTitle: 'Visitor_Info',
-	icon: 'octicon octicon-info',
+	icon: 'icon-info',
 	template: 'visitorInfo',
 	order: 0
 });
