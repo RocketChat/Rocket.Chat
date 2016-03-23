@@ -3,6 +3,6 @@ Meteor.startup ->
 		groups: ['channel', 'privategroup', 'directmessage']
 		id: 'channel-settings'
 		i18nTitle: 'Room_Info'
-		icon: 'octicon octicon-info'
+		icon: 'icon-info-circled'
 		template: 'channelSettings'
 		order: 0

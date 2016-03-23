@@ -5,51 +5,25 @@
 				margin-bottom: 20px;
 			}
 		}
+	}
+}
 
-		form {
-			label {
-				display: block;
-				font-weight: bold;
-				margin-bottom: 5px;
-			}
-
-			div span {
-				font-size: 14px;
-				i.octicon {
-					font-size: 12px;
-					vertical-align: middle;
-					margin-left: 3px;
-				}
-			}
-		}
-
-		.submit {
-			margin-top: 30px;
-			text-align: center;
-		}
-
-		[data-edit] {
-			cursor: pointer;
+.message {
+	&.otr, &.otr-ack {
+		.info:before {
+			font-family: 'fontello';
+			content: "\e952";
+			visibility: visible;
+			display: inline-block;
 		}
 	}
 }
 
-.message.otr .info {
-	&:before {
-		font-family: 'fontello';
-		content: "\e878";
-		visibility: visible;
-		display: inline-block;
-	}
-}
-
-.message.otr-ack .info {
-	&:before {
-		font-family: 'fontello';
-		content: "\e878";
-		color: green;
-		visibility: visible;
-		display: inline-block;
+.message {
+	&.otr-ack {
+		.info:before {
+			color: green;
+		}
 	}
 }
 
@@ -57,13 +31,12 @@
 	.input-message {
 		padding-right: 48px;
 	}
-	.inner-right-toolbar:before {
-		font-family: 'fontello';
-		content: "\e878";
-		color: green;
-		visibility: visible;
-		display: inline-block;
-		vertical-align: top;
-		margin: 1px 8px;
+	.inner-right-toolbar {
+		.otr-icon {
+			color: green;
+			display: inline-block;
+			margin-top: 2px;
+			vertical-align: top;
+		}
 	}
 }
