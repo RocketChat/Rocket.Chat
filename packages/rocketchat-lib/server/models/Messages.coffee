@@ -3,12 +3,14 @@ RocketChat.models.Messages = new class extends RocketChat.models._Base
 		@_initModel 'message'
 
 		@tryEnsureIndex { 'rid': 1, 'ts': 1 }
+		@tryEnsureIndex { 'ts': 1 }
 		@tryEnsureIndex { 'editedAt': 1 }, { sparse: 1 }
 		@tryEnsureIndex { 'editedBy._id': 1 }, { sparse: 1 }
 		@tryEnsureIndex { 'rid': 1, 't': 1, 'u._id': 1 }
 		@tryEnsureIndex { 'expireAt': 1 }, { expireAfterSeconds: 0 }
 		@tryEnsureIndex { 'msg': 'text' }
 		@tryEnsureIndex { 'file._id': 1 }, { sparse: 1 }
+		@tryEnsureIndex { 'mentions.username': 1 }, { sparse: 1 }
 
 
 	# FIND ONE
