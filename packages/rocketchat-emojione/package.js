@@ -32,14 +32,4 @@ Package.onUse(function(api) {
 
 	api.addFiles('lib/EmojiPicker.js', 'client');
 	api.addFiles('emojiButton.js', 'client');
-
-	api.addAssets('category_icons/activity.svg', 'client');
-	api.addAssets('category_icons/flags.svg', 'client');
-	api.addAssets('category_icons/foods.svg', 'client');
-	api.addAssets('category_icons/nature.svg', 'client');
-	api.addAssets('category_icons/objects.svg', 'client');
-	api.addAssets('category_icons/people.svg', 'client');
-	api.addAssets('category_icons/recent.svg', 'client');
-	api.addAssets('category_icons/symbols.svg', 'client');
-	api.addAssets('category_icons/travel.svg', 'client');
 });
