@@ -29,7 +29,7 @@ RocketChat.TabBar.addButton({
 	groups: ['channel', 'privategroup', 'directmessage'],
 	id: 'uploaded-files-list',
 	i18nTitle: 'Room_uploaded_file_list',
-	icon: 'icon-attach-1',
+	icon: 'icon-attach',
 	template: 'uploadedFilesList',
 	order: 3
 });
