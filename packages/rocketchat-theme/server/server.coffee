@@ -61,7 +61,7 @@ RocketChat.theme = new class
 		RocketChat.settings.add 'css', ''
 		RocketChat.settings.addGroup 'Layout'
 
-		compile = _.debounce Meteor.bindEnvironment(@compile.bind(@)), 200
+		@compileDelayed = _.debounce Meteor.bindEnvironment(@compile.bind(@)), 300
 
 		RocketChat.settings.onload '*', Meteor.bindEnvironment (key, value, initialLoad) =>
 			if key is 'theme-custom-css'
@@ -74,7 +74,7 @@ RocketChat.theme = new class
 			else
 				return
 
-			compile()
+			@compileDelayed()
 
 	compile: ->
 		content = [
@@ -141,6 +141,7 @@ RocketChat.theme = new class
 
 	addPackageAsset: (cb) ->
 		@packageCallbacks.push cb
+		@compileDelayed()
 
 	getCss: ->
 		return RocketChat.settings.get 'css'
