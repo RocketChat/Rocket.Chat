@@ -13,7 +13,7 @@
 								{{#if editing 'roomName'}}
 									<input type="text" name="roomName" value="{{roomName}}" class="editing" /> <button type="button" class="button secondary cancel">{{_ "Cancel"}}</button> <button type="button" class="button primary save">{{_ "Save"}}</button>
 								{{else}}
-									<span>{{roomName}}{{#if canEdit}} <i class="octicon octicon-pencil" data-edit="roomName"></i>{{/if}}</span>
+									<span>{{roomName}}{{#if canEdit}} <i class="icon-pencil" data-edit="roomName"></i>{{/if}}</span>
 								{{/if}}
 							</div>
 						</li>
@@ -24,7 +24,7 @@
 							{{#if editing 'roomTopic'}}
 								<input type="text" name="roomTopic" value="{{roomTopic}}" class="editing" /> <button type="button" class="button secondary cancel">{{_ "Cancel"}}</button> <button type="button" class="button primary save">{{_ "Save"}}</button>
 							{{else}}
-								<span>{{{RocketChatMarkdown roomTopic}}}{{#if canEdit}} <i class="octicon octicon-pencil" data-edit="roomTopic"></i>{{/if}}</span>
+								<span>{{{RocketChatMarkdown roomTopic}}}{{#if canEdit}} <i class="icon-pencil" data-edit="roomTopic"></i>{{/if}}</span>
 							{{/if}}
 						</div>
 					</li>
@@ -38,7 +38,7 @@
 									<button type="button" class="button secondary cancel">{{_ "Cancel"}}</button>
 									<button type="button" class="button primary save">{{_ "Save"}}</button>
 								{{else}}
-									<span>{{roomTypeDescription}}{{#if canEdit}} <i class="octicon octicon-pencil" data-edit="roomType"></i>{{/if}}</span>
+									<span>{{roomTypeDescription}}{{#if canEdit}} <i class="icon-pencil" data-edit="roomType"></i>{{/if}}</span>
 								{{/if}}
 							</div>
 						</li>
@@ -53,7 +53,7 @@
 									<button type="button" class="button secondary cancel">{{_ "Cancel"}}</button>
 									<button type="button" class="button primary save">{{_ "Save"}}</button>
 								{{else}}
-									<span>{{archivationStateDescription}}{{#if canEdit}} <i class="octicon octicon-pencil" data-edit="archivationState"></i>{{/if}}</span>
+									<span>{{archivationStateDescription}}{{#if canEdit}} <i class="icon-pencil" data-edit="archivationState"></i>{{/if}}</span>
 								{{/if}}
 							</div>
 						</li>

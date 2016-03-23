@@ -29,7 +29,6 @@ Package.onUse(function(api) {
 	api.addAssets('assets/stylesheets/utils/_lesshat.import.less', 'server');
 	api.addAssets('assets/stylesheets/utils/_preloader.import.less', 'server');
 	api.addAssets('assets/stylesheets/utils/_reset.import.less', 'server');
-	api.addAssets('assets/stylesheets/utils/_octicons.less', 'server');
 	api.addAssets('assets/stylesheets/utils/_chatops.less', 'server');
 	api.addAssets('assets/stylesheets/animation.css', 'server');
 	api.addAssets('assets/stylesheets/base.less', 'server');
