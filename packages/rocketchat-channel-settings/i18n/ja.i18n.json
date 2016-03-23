@@ -1,3 +1,15 @@
 {
-  "Save" : "保存"
+  "Archive_Unarchive" : "アーカイブ / アーカイブ解除",
+  "Channel" : "チャンネル",
+  "Private_Group" : "プライベートグループ",
+  "Save" : "保存",
+  "Topic" : "トピック",
+  "Room_archivation_state" : "状態",
+  "Room_archivation_state_false" : "アクティブ",
+  "Room_archivation_state_true" : "アーカイブ",
+  "Room_Info" : "ルーム情報",
+  "room_changed_privacy" : "ルームの種類を <em>__room_type__</em> へ変更しました。 by <em>__user_by__</em>",
+  "room_changed_topic" : "ルームのトピックを <em>__room_topic__</em> へ変更しました。 by <em>__user_by__</em>",
+  "Room_topic_changed_successfully" : "ルームのトピックは正常に変更されました",
+  "Room_type_changed_successfully" : "ルームの種類は正常に変更されました"
 }

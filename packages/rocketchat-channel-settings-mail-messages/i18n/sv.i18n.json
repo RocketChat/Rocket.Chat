@@ -1,1 +1,14 @@
-{ }
+{
+  "Choose_messages" : "Välj meddelanden ",
+  "From" : "Från",
+  "Mail_Message_Invalid_emails" : "Du har angett ett eller flera ogiltiga e-postmeddelanden: %s",
+  "Mail_Message_Missing_to" : "Du måste välja en eller flera användare eller tillhandahålla en eller flera e-postadresser, separerade med kommatecken.\n",
+  "Mail_Message_No_messages_selected_select_all" : "Du har inte valt några meddelanden. Vill du <a href='#' class='selest-all'>välja alla</a> synliga meddelanden?",
+  "Mail_Messages" : "E-posta meddelanden",
+  "Mail_Messages_Instructions" : "Välj vilka meddelanden du vill skicka via e-post genom att klicka på dem",
+  "Mail_Messages_Subject" : "Här är en utvald del av %s meddelanden",
+  "Sending" : "Skickar...",
+  "Subject" : "Ämne",
+  "To_users" : "Till användare",
+  "Your_email_has_been_queued_for_sending" : "Ditt e-postmeddelande har köats för att skickas"
+}

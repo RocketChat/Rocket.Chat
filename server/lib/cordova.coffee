@@ -74,6 +74,12 @@ configurePush = ->
 					certData: RocketChat.settings.get 'Push_apn_dev_cert'
 					gateway: 'gateway.sandbox.push.apple.com'
 
+			if not apn.keyData? or apn.keyData.trim() is '' or not apn.keyData? or apn.keyData.trim() is ''
+				apn = undefined
+
+			if not gcm.apiKey? or gcm.apiKey.trim() is '' or not gcm.projectNumber? or gcm.projectNumber.trim() is ''
+				gcm = undefined
+
 		Push.Configure
 			apn: apn
 			gcm: gcm
@@ -120,13 +126,27 @@ configurePush = ->
 						service = 'gcm'
 						token = app.token.gcm
 
-					HTTP.post RocketChat.settings.get('Push_gateway') + "/push/#{service}/send",
-						data:
-							token: token
-							options: options
+					sendPush service, token, options
 
 		Push.enabled = true
 
+sendPush = (service, token, options, tries=0) ->
+	try
+		HTTP.post RocketChat.settings.get('Push_gateway') + "/push/#{service}/send",
+			data:
+				token: token
+				options: options
+	catch e
+		SystemLogger.error 'Error sending push to gateway ('+tries+' try) ->', e
+		if tries <= 6
+			milli = Math.pow(10, tries+2)
+
+			SystemLogger.log 'Trying sending push to gateway again in', milli, 'milliseconds'
+
+			# Try again in 0.1s, 1s, 10s, 1m40s, 16m40s, 2h46m40s and 27h46m40s
+			Meteor.setTimeout ->
+				sendPush service, token, options, tries+1
+			, milli
 
 Meteor.startup ->
 	configurePush()

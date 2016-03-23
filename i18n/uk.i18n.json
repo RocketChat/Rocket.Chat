@@ -1,6 +1,6 @@
 {
-  "Access_Online_Demo" : "Спробувати демо-версію",
   "Access_online_demo" : "Спробувати онлайн демо",
+  "Access_Online_Demo" : "Спробувати демо-версію",
   "Add_users" : "Додати користувачів",
   "and" : "і",
   "are_also_typing" : "досі друкують",
@@ -52,8 +52,8 @@
   "Load_more" : "Показати більше",
   "Loading_suggestion" : "Завантаження інших...",
   "Login" : "Логін",
-  "login_with" : "Або авторизуйтесь за допомогою",
   "Login_with" : "Вхід з% S",
+  "login_with" : "Або авторизуйтесь за допомогою",
   "Logout" : "Вийти",
   "Members" : "Учасники",
   "Members_List" : "Список учасників",

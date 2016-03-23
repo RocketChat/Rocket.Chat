@@ -14,8 +14,8 @@ Template.integrationsIncoming.helpers
 		if params?.id?
 			data = ChatIntegrations.findOne({_id: params.id})
 			if data?
-				data.url = Meteor.absoluteUrl("hooks/#{encodeURIComponent(data._id)}/#{encodeURIComponent(data.userId)}/#{encodeURIComponent(data.token)}")
-				data.completeToken = "#{encodeURIComponent(data._id)}/#{encodeURIComponent(data.userId)}/#{encodeURIComponent(data.token)}"
+				data.url = Meteor.absoluteUrl("hooks/#{data._id}/#{data.token}")
+				data.completeToken = "#{data._id}/#{data.token}"
 				Template.instance().record.set data
 				return data
 
@@ -66,6 +66,10 @@ Template.integrationsIncoming.helpers
 
 	curl: ->
 		record = Template.instance().record.get()
+
+		if not record.url?
+			return
+
 		data =
 			username: record.alias
 			icon_emoji: record.emoji
@@ -105,13 +109,16 @@ Template.integrationsIncoming.helpers
 
 Template.integrationsIncoming.events
 	"blur input": (e, t) ->
-		t.record.set
-			name: $('[name=name]').val().trim()
-			alias: $('[name=alias]').val().trim()
-			emoji: $('[name=emoji]').val().trim()
-			avatar: $('[name=avatar]').val().trim()
-			channel: $('[name=channel]').val().trim()
-			username: $('[name=username]').val().trim()
+		value = t.record.curValue or {}
+
+		value.name = $('[name=name]').val().trim()
+		value.alias = $('[name=alias]').val().trim()
+		value.emoji = $('[name=emoji]').val().trim()
+		value.avatar = $('[name=avatar]').val().trim()
+		value.channel = $('[name=channel]').val().trim()
+		value.username = $('[name=username]').val().trim()
+
+		t.record.set value
 
 	"click .submit > .delete": ->
 		params = Template.instance().data.params()

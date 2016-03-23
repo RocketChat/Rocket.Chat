@@ -37,11 +37,11 @@
 					{{/if}}
 				{{/each}}
 
-				<h3 class="add-room">
-					{{_ "Settings"}}
-				</h3>
-
 				{{#if hasPermission 'view-privileged-setting'}}
+					<h3 class="add-room">
+						{{_ "Settings"}}
+					</h3>
+
 					{{#each groups}}
 					<li>
 						<a href="{{pathFor 'admin' group=_id}}" class="admin-link">{{label}}</a>

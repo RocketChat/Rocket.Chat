@@ -677,6 +677,7 @@
   "Yes_remove_user" : "Oui, éjecter l'utilisateur !",
   "you_are_in_preview_mode_of" : "Aperçu du salon #<strong>__room_name__</strong> ",
   "You_are_logged_in_as" : "Vous êtes connecté en tant que",
+  "You_are_not_authorized_to_view_this_page" : "Vous n'avez pas l'autorisation de voir cette page.",
   "You_can_change_a_different_avatar_too" : "Vous pouvez modifier l'avatar utilisé pour publier depuis cette intégration.",
   "You_can_use_an_emoji_as_avatar" : "Vous pouvez également utiliser un emoji comme avatar.",
   "You_have_been_muted" : "Vous avez été rendu muet et ne pouvez pas parler dans cette salle",

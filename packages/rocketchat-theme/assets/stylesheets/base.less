@@ -339,7 +339,7 @@ blockquote {
 		}
 		.icon-search,
 		.icon-right-open-small,
-		.icon-sort-alt-up {
+		.icon-sort-alt-up, .icon-comment {
 			position: absolute;
 			left: 2px;
 			top: 10px;
@@ -1542,6 +1542,11 @@ a.github-fork {
 			.icon-logout {
 				margin-left: 1px;
 			}
+
+			&.fixed {
+				opacity: 1;
+				.transform(translateX(0));
+			}
 		}
 		i {
 			font-size: 14px;
@@ -2311,6 +2316,12 @@ a.github-fork {
 			.input-message-container {
 				position: relative;
 				width: 100%;
+
+				.inner-right-toolbar {
+					position: absolute;
+					right: 10px;
+					top: 10px;
+				}
 			}
 			> .file {
 				width: 44px;
@@ -2357,7 +2368,7 @@ a.github-fork {
 				display: none;
 			}
 
-			&.show-mic .mic, &.show-mic .mic .stop-mic {
+			&.show-mic .mic, &.show-mic .stop-mic {
 				display: inline-block;
 			}
 
@@ -2688,10 +2699,9 @@ a.github-fork {
 		z-index: 1000;
 		display: none;
 		background-color: #fff;
-		border: 1px solid #eee;
 		border-radius: 4px;
 		overflow: hidden;
-		box-shadow: 1px 1px 4px #B3B3B3;
+		box-shadow: 0px 1px 1px 0 rgba(0,0,0,0.2), 0 2px 10px 0 rgba(0,0,0,.16);
 		transition: transform .15s ease-in-out, opacity .15s ease-in-out;
 		animation: dropdown-in .15s ease-in-out;
 

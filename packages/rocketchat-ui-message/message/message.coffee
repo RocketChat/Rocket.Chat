@@ -5,6 +5,9 @@ Template.message.helpers
 		return 'false' if this.groupable is false
 	isSequential: ->
 		return 'sequential' if this.groupable isnt false
+	avatarFromUsername: ->
+		if this.avatar? and this.avatar[0] is '@'
+			return this.avatar.replace(/^@/, '')
 	getEmoji: (emoji) ->
 		return emojione.toImage emoji
 	own: ->
@@ -74,30 +77,56 @@ Template.message.helpers
 
 		return true
 
+	reactions: ->
+		msgReactions = []
+
+		for emoji, reaction of @reactions
+			total = reaction.usernames.length
+			usernames = reaction.usernames.sort().slice(0, 15)
+
+			if total > 15
+				usernames.push t('And_more', { length: total - 15 })
+
+			msgReactions.push
+				emoji: emoji
+				count: reaction.usernames.length
+				usernames: usernames
+
+		return msgReactions
+
+	hideReactions: ->
+		return 'hidden' if _.isEmpty(@reactions)
+
 Template.message.onCreated ->
 	msg = Template.currentData()
 
 	@wasEdited = msg.editedAt? and not RocketChat.MessageTypes.isSystemMessage(msg)
 
 	@body = do ->
+		isSystemMessage = RocketChat.MessageTypes.isSystemMessage(msg)
 		messageType = RocketChat.MessageTypes.getType(msg)
 		if messageType?.render?
-			return messageType.render(msg)
+			msg = messageType.render(msg)
 		else if messageType?.template?
 			# render template
 		else if messageType?.message?
 			if messageType.data?(msg)?
-				return TAPi18n.__(messageType.message, messageType.data(msg))
+				msg = TAPi18n.__(messageType.message, messageType.data(msg))
 			else
-				return TAPi18n.__(messageType.message)
+				msg = TAPi18n.__(messageType.message)
 		else
 			if msg.u?.username is RocketChat.settings.get('Chatops_Username')
 				msg.html = msg.msg
-				message = RocketChat.callbacks.run 'renderMentions', msg
+				msg = RocketChat.callbacks.run 'renderMentions', msg
 				# console.log JSON.stringify message
-				return msg.html
+				msg = msg.html
+			else
+				msg = renderMessageBody msg
 
-			return renderMessageBody msg
+		if isSystemMessage
+			return RocketChat.Markdown msg
+		else
+			return msg
 
 Template.message.onViewRendered = (context) ->
 	view = this
