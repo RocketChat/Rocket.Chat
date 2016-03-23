@@ -132,7 +132,7 @@
 .icon-rocketchat:before { content: '\6e'; } /* 'n' */
 .icon-spin4:before { content: '\6f'; } /* 'o' */
 .icon-sliders:before { content: '\70'; } /* 'p' */
-.icon-spin6:before { content: '\71'; } /* 'q' */
+.icon-spin:before { content: '\71'; } /* 'q' */
 .icon-firefox:before { content: '\72'; } /* 'r' */
 .icon-angle-double-left:before { content: '\ab'; } /* '«' */
 .icon-angle-double-right:before { content: '\bb'; } /* '»' */
