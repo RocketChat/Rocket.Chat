@@ -1,4 +1,7 @@
 {
+  "All_logs" : "すべてのログ",
+  "Debug_Level" : "デバッグ レベル",
   "Delete" : "削除",
-  "Edit" : "編集"
+  "Edit" : "編集",
+  "Only_errors" : "エラーのみ"
 }

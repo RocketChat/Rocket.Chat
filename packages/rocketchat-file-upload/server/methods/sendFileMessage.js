@@ -16,7 +16,8 @@ Meteor.methods({
 
 		var attachment = {
 			title: `File Uploaded: ${file.name}`,
-			title_link: fileUrl
+			title_link: fileUrl,
+			title_link_download: true
 		};
 
 		if (/^image\/.+/.test(file.type)) {

@@ -40,7 +40,7 @@ Meteor.methods
 		if not RocketChat.models.Integrations.findOne(integrationId)?
 			throw new Meteor.Error 'invalid_integration', '[methods] updateOutgoingIntegration -> integration not found'
 
-		if integration.script isnt ''
+		if integration.scriptEnabled is true and integration.script? and integration.script.trim() isnt ''
 			try
 				babelOptions = Babel.getDefaultOptions()
 				babelOptions.externalHelpers = false

@@ -308,13 +308,7 @@ blockquote {
 		margin-bottom: 0;
 	}
 	&.search {
-		.octicon {
-			position: absolute;
-			left: 10px;
-			top: 10px;
-			font-weight: 400;
-		}
-		.icon-spin4 {
+		.icon-spin {
 			position: absolute;
 			right: 5px;
 			top: 10px;
@@ -2335,6 +2329,11 @@ a.github-fork {
 				cursor: pointer;
 				.transition(background-color 0.1s linear, color 0.1s linear);
 
+				i.file {
+					font-size: 18px;
+					vertical-align: text-bottom;
+				}
+
 				&:hover {
 				}
 
@@ -2699,10 +2698,9 @@ a.github-fork {
 		z-index: 1000;
 		display: none;
 		background-color: #fff;
-		border: 1px solid #eee;
 		border-radius: 4px;
 		overflow: hidden;
-		box-shadow: 1px 1px 4px #B3B3B3;
+		box-shadow: 0px 1px 1px 0 rgba(0,0,0,0.2), 0 2px 10px 0 rgba(0,0,0,.16);
 		transition: transform .15s ease-in-out, opacity .15s ease-in-out;
 		animation: dropdown-in .15s ease-in-out;
 

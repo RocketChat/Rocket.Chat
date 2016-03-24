@@ -18,7 +18,7 @@ Meteor.methods
 		if integration.username.trim() is ''
 			throw new Meteor.Error 'invalid_username', '[methods] addIncomingIntegration -> username can\'t be empty'
 
-		if integration.script isnt ''
+		if integration.scriptEnabled is true and integration.script? and integration.script.trim() isnt ''
 			try
 				babelOptions = Babel.getDefaultOptions()
 				babelOptions.externalHelpers = false

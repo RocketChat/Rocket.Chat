@@ -69,10 +69,11 @@ Template.adminInfo.onCreated ->
 	@statistics = new ReactiveVar {}
 	@ready = new ReactiveVar false
 
-	Meteor.call 'getStatistics', (error, statistics) ->
-		instance.ready.set true
-		if error
-			toastr.error error.reason
-		else
-			instance.statistics.set statistics
+	if RocketChat.authz.hasAllPermission('view-statistics')
+		Meteor.call 'getStatistics', (error, statistics) ->
+			instance.ready.set true
+			if error
+				toastr.error error.reason
+			else
+				instance.statistics.set statistics
 
