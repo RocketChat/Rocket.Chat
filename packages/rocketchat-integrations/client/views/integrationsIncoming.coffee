@@ -145,12 +145,12 @@ Template.integrationsIncoming.events
 				FlowRouter.go "admin-integrations"
 
 	"click .button-fullscreen": ->
-		codeMirrorBox = $('.code-mirror-box[data-editor-id="'+this._id+'"]')
+		codeMirrorBox = $('.code-mirror-box')
 		codeMirrorBox.addClass('code-mirror-box-fullscreen')
 		codeMirrorBox.find('.CodeMirror')[0].CodeMirror.refresh()
 
 	"click .button-restore": ->
-		codeMirrorBox = $('.code-mirror-box[data-editor-id="'+this._id+'"]')
+		codeMirrorBox = $('.code-mirror-box')
 		codeMirrorBox.removeClass('code-mirror-box-fullscreen')
 		codeMirrorBox.find('.CodeMirror')[0].CodeMirror.refresh()
 
