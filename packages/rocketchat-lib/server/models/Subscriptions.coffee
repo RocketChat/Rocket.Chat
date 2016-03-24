@@ -9,6 +9,8 @@ RocketChat.models.Subscriptions = new class extends RocketChat.models._Base
 		@tryEnsureIndex { 'unread': 1 }
 		@tryEnsureIndex { 'ts': 1 }
 		@tryEnsureIndex { 'ls': 1 }
+		@tryEnsureIndex { 'desktopNotifications': 1 }, { sparse: 1 }
+		@tryEnsureIndex { 'mobilePushNotifications': 1 }, { sparse: 1 }
 
 
 	# FIND ONE
