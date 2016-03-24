@@ -1,6 +1,10 @@
 # RocketChat.emoji should be set to an object representing the emoji package used
 RocketChat.emoji = emojione
 
+RocketChat.emoji.imageType = 'svg';
+RocketChat.emoji.imagePathSVGSprites = '/packages/emojione_emojione/assets/sprites/emojione.sprites.svg';
+RocketChat.emoji.sprites = true;
+
 # RocketChat.emoji.list is the collection of emojis
 RocketChat.emoji.list = emojione.emojioneList
 
