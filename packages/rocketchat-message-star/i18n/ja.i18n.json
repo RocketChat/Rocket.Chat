@@ -1,1 +1,7 @@
-{ }
+{
+  "Message_AllowStarring" : "メッセージへのスターを許可する",
+  "Star_Message" : "スターをつける",
+  "Unstar_Message" : "スターを外す",
+  "Starred_Messages" : "スターをつけたメッセージ",
+  "No_starred_messages" : "スターをつけたメッセージはありません"
+}

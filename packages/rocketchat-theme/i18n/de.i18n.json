@@ -27,5 +27,6 @@
   "theme-color-status-online" : "Farbe des Status \"online\"",
   "theme-color-tertiary-background-color" : "Tertiäre Hintergrundfarbe ",
   "theme-color-tertiary-font-color" : "Tertiäre Schriftfarbe",
-  "theme-color-unread-notification-color" : "Farbe von ungelesenen Benachrichtigungen"
+  "theme-color-unread-notification-color" : "Farbe von ungelesenen Benachrichtigungen",
+  "theme-custom-css" : "Benutzerdefiniertes CSS"
 }

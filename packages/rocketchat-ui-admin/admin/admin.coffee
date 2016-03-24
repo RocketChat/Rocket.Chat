@@ -137,13 +137,26 @@ Template.admin.helpers
 	setEditorOnBlur: (_id) ->
 		Meteor.defer ->
 			codeMirror = $('.code-mirror-box[data-editor-id="'+_id+'"] .CodeMirror')[0].CodeMirror
-			codeMirror.on 'change', ->
+			if codeMirror.changeAdded is true
+				return
+
+			onChange = ->
 				value = codeMirror.getValue()
 				TempSettings.update {_id: _id},
 					$set:
 						value: value
 						changed: Settings.findOne(_id).value isnt value
+
+			onChangeDelayed = _.debounce onChange, 500
+
+			codeMirror.on 'change', onChangeDelayed
+			codeMirror.changeAdded = true
+
 		return
+
+	assetAccept: (fileConstraints) ->
+		if fileConstraints.extensions?.length > 0
+			return '.' + fileConstraints.extensions.join(', .')
 
 
 Template.admin.events
@@ -220,8 +233,8 @@ Template.admin.events
 	"click .delete-asset": ->
 		Meteor.call 'unsetAsset', @asset
 
-	"change input[type=file]": ->
-		e = event.originalEvent or event
+	"change input[type=file]": (ev) ->
+		e = ev.originalEvent or ev
 		files = e.target.files
 		if not files or files.length is 0
 			files = e.dataTransfer?.files or []

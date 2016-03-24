@@ -1,4 +1,4 @@
-/* globals Template, emojione, EmojiPicker */
+/* globals Template, emojione */
 Template.emojiPicker.helpers({
 	category() {
 		return Object.keys(emojisByCategory);
@@ -21,7 +21,7 @@ Template.emojiPicker.helpers({
 			let emoji = emojisByCategory[category][i];
 			let tone = '';
 
-			if (actualTone > 0 && toneList[emoji]) {
+			if (actualTone > 0 && toneList.hasOwnProperty(emoji)) {
 				tone = '_tone' + actualTone;
 			}
 			html += '<li class="emoji-' + emoji + '" data-emoji="' + emoji + '">' + emojione.toImage(':' + emoji + tone + ':') + '</li>';
@@ -74,7 +74,7 @@ Template.emojiPicker.events({
 			}
 		}
 
-		EmojiPicker.setTone(tone);
+		RocketChat.EmojiPicker.setTone(tone);
 
 		instance.setCurrentTone(tone);
 
@@ -87,17 +87,17 @@ Template.emojiPicker.events({
 		let actualTone = Template.instance().tone;
 		let tone = '';
 
-		if (actualTone > 0 && toneList[emoji]) {
+		if (actualTone > 0 && toneList.hasOwnProperty(emoji)) {
 			tone = '_tone' + actualTone;
 		}
 
-		EmojiPicker.insertEmoji(emoji + tone);
+		RocketChat.EmojiPicker.pickEmoji(emoji + tone);
 	}
 });
 
 Template.emojiPicker.onCreated(function() {
-	this.tone = EmojiPicker.getTone();
-	let recent = EmojiPicker.getRecent();
+	this.tone = RocketChat.EmojiPicker.getTone();
+	let recent = RocketChat.EmojiPicker.getRecent();
 
 	this.currentCategory = new ReactiveVar(recent.length > 0 ? 'recent' : 'people');
 

@@ -25,7 +25,12 @@
 
 			{{#if title}}
 				{{#if title_link}}
-					<div class="attachment-title"><a href="{{fixCordova title_link}}" target="_blank">{{title}}</a></div>
+					<div class="attachment-title">
+						<a href="{{fixCordova title_link}}" target="_blank">{{title}}</a>
+						{{#if title_link_download}}
+							<a class="icon-download attachment-download-icon" href="{{fixCordova title_link}}" target="_blank" download=""></a>
+						{{/if}}
+					</div>
 				{{else}}
 					<div class="attachment-title">{{title}}</div>
 				{{/if}}

@@ -5,6 +5,9 @@ Template.message.helpers
 		return 'false' if this.groupable is false
 	isSequential: ->
 		return 'sequential' if this.groupable isnt false
+	avatarFromUsername: ->
+		if this.avatar? and this.avatar[0] is '@'
+			return this.avatar.replace(/^@/, '')
 	getEmoji: (emoji) ->
 		return emojione.toImage emoji
 	own: ->
@@ -73,6 +76,26 @@ Template.message.helpers
 		return false unless this.u?.username not in RocketChat.settings.get('API_EmbedDisabledFor')?.split(',')
 
 		return true
+
+	reactions: ->
+		msgReactions = []
+
+		for emoji, reaction of @reactions
+			total = reaction.usernames.length
+			usernames = reaction.usernames.sort().slice(0, 15)
+
+			if total > 15
+				usernames.push t('And_more', { length: total - 15 })
+
+			msgReactions.push
+				emoji: emoji
+				count: reaction.usernames.length
+				usernames: usernames
+
+		return msgReactions
+
+	hideReactions: ->
+		return 'hidden' if _.isEmpty(@reactions)
 
 Template.message.onCreated ->
 	msg = Template.currentData()

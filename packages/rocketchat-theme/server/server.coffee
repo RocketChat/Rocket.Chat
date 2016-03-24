@@ -45,7 +45,6 @@ RocketChat.theme = new class
 		'assets/stylesheets/utils/_lesshat.import.less'
 		'assets/stylesheets/utils/_preloader.import.less'
 		'assets/stylesheets/utils/_reset.import.less'
-		'assets/stylesheets/utils/_octicons.less'
 		'assets/stylesheets/utils/_chatops.less'
 		'assets/stylesheets/animation.css'
 		'assets/stylesheets/base.less'
@@ -61,7 +60,7 @@ RocketChat.theme = new class
 		RocketChat.settings.add 'css', ''
 		RocketChat.settings.addGroup 'Layout'
 
-		compile = _.debounce Meteor.bindEnvironment(@compile.bind(@)), 200
+		@compileDelayed = _.debounce Meteor.bindEnvironment(@compile.bind(@)), 300
 
 		RocketChat.settings.onload '*', Meteor.bindEnvironment (key, value, initialLoad) =>
 			if key is 'theme-custom-css'
@@ -74,7 +73,7 @@ RocketChat.theme = new class
 			else
 				return
 
-			compile()
+			@compileDelayed()
 
 	compile: ->
 		content = [
@@ -141,6 +140,7 @@ RocketChat.theme = new class
 
 	addPackageAsset: (cb) ->
 		@packageCallbacks.push cb
+		@compileDelayed()
 
 	getCss: ->
 		return RocketChat.settings.get 'css'
