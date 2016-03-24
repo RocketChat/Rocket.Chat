@@ -3,6 +3,7 @@ RocketChat.models.Users = new class extends RocketChat.models._Base
 		@model = Meteor.users
 
 		@tryEnsureIndex { 'roles': 1 }, { sparse: 1 }
+		@tryEnsureIndex { 'name': 1 }
 
 
 	# FIND ONE
