@@ -11,6 +11,7 @@ RocketChat.models.Messages = new class extends RocketChat.models._Base
 		@tryEnsureIndex { 'msg': 'text' }
 		@tryEnsureIndex { 'file._id': 1 }, { sparse: 1 }
 		@tryEnsureIndex { 'mentions.username': 1 }, { sparse: 1 }
+		@tryEnsureIndex { 'pinned': 1 }, { sparse: 1 }
 
 
 	# FIND ONE
