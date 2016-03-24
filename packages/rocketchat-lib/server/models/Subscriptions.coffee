@@ -3,6 +3,7 @@ RocketChat.models.Subscriptions = new class extends RocketChat.models._Base
 		@_initModel 'subscription'
 
 		@tryEnsureIndex { 'rid': 1, 'u._id': 1 }, { unique: 1 }
+		@tryEnsureIndex { 'rid': 1, 'roles': 1 }
 		@tryEnsureIndex { 'u._id': 1, 'name': 1, 't': 1 }, { unique: 1 }
 		@tryEnsureIndex { 'open': 1 }
 		@tryEnsureIndex { 'alert': 1 }
