@@ -8,6 +8,7 @@ RocketChat.models.Subscriptions = new class extends RocketChat.models._Base
 		@tryEnsureIndex { 'alert': 1 }
 		@tryEnsureIndex { 'unread': 1 }
 		@tryEnsureIndex { 'ts': 1 }
+		@tryEnsureIndex { 'ls': 1 }
 
 
 	# FIND ONE
