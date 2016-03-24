@@ -150,7 +150,9 @@ getRelevantMetaTags = (metaObj) ->
 OEmbed.RocketUrlParser = (message) ->
 	if Array.isArray message.urls
 		changed = false
-		for item in message.urls
+		message.urls.forEach (item) ->
+			if not /^https?:\/\//i.test item.url then return
+
 			data = OEmbed.getUrlMetaWithCache item.url
 
 			if data?
