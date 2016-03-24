@@ -19,6 +19,7 @@ Package.onUse(function(api) {
 		'templating',
 		'coffeescript',
 		'underscore',
+		'tracker',
 		'rocketchat:lib'
 	]);
 
