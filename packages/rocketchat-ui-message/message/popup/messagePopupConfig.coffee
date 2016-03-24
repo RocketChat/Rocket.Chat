@@ -4,10 +4,10 @@
 
 Meteor.startup ->
 	Tracker.autorun ->
-		if not Meteor.user()?
+		if not Meteor.user()? or not Session.get('openedRoom')?
 			return
 
-		filteredUsersMemory.remove()
+		filteredUsersMemory.remove({})
 		messageUsers = RocketChat.models.Messages.find({rid: Session.get('openedRoom'), 'u.username': {$ne: Meteor.user().username}}, {fields: {'u.username': 1, ts: 1}, sort: {ts: -1}}).fetch()
 		uniqueMessageUsersControl = {}
 		messageUsers.forEach (messageUser) ->
