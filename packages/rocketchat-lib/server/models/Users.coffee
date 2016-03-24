@@ -5,6 +5,7 @@ RocketChat.models.Users = new class extends RocketChat.models._Base
 		@tryEnsureIndex { 'roles': 1 }, { sparse: 1 }
 		@tryEnsureIndex { 'name': 1 }
 		@tryEnsureIndex { 'lastLogin': 1 }
+		@tryEnsureIndex { 'status': 1 }
 
 
 	# FIND ONE
