@@ -3,7 +3,7 @@ var stream = Npm.require('stream');
 var zlib = Npm.require('zlib');
 
 // code from: https://github.com/jalik/jalik-ufs/blob/master/ufs-server.js#L91
-var readFromGridFS = function(storeName, fileId, file, req, res) {
+var readFromGridFS = function(storeName, fileId, file, headers, req, res) {
 	var store = UploadFS.getStore(storeName);
 	var rs = store.getReadStream(fileId, file);
 	var ws = new stream.PassThrough();
@@ -22,10 +22,6 @@ var readFromGridFS = function(storeName, fileId, file, req, res) {
 	});
 
 	var accept = req.headers['accept-encoding'] || '';
-	var headers = {
-		'Content-Type': file.type,
-		'Content-Length': file.size
-	};
 
 	// Transform stream
 	store.transformRead(rs, ws, fileId, file, req, headers);
@@ -53,11 +49,13 @@ var readFromGridFS = function(storeName, fileId, file, req, res) {
 
 FileUpload.addHandler('rocketchat_uploads', {
 	get(file, req, res) {
-		res.setHeader('Content-Disposition', 'attachment; filename="' + encodeURIComponent(file.name) + '"');
-		res.setHeader('Last-Modified', file.uploadedAt.toUTCString());
-		res.setHeader('Content-Type', file.type);
-		res.setHeader('Content-Length', file.size);
-		return readFromGridFS(file.store, file._id, file, req, res);
+		let headers = {
+			'Content-Disposition': 'attachment; filename="' + encodeURIComponent(file.name) + '"',
+			'Last-Modified': file.uploadedAt.toUTCString(),
+			'Content-Type': file.type,
+			'Content-Length': file.size
+		};
+		return readFromGridFS(file.store, file._id, file, headers, req, res);
 	},
 	delete(file) {
 		return Meteor.fileStore.delete(file._id);

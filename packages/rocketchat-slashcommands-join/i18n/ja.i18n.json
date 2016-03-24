@@ -1,1 +1,4 @@
-{ }
+{
+  "Channel_doesnt_exist" : "`#%s` というチャンネルは、登録されていません。",
+  "Join_the_given_channel" : "チャンネルへ参加する"
+}

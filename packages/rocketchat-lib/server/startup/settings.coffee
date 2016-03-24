@@ -158,14 +158,14 @@ RocketChat.settings.addGroup 'Layout', ->
 		@add 'Layout_Home_Body', 'Welcome to Rocket.Chat <br> Go to APP SETTINGS -> Layout to customize this intro.', { type: 'code', code: 'text/html', multiline: true, public: true }
 		@add 'Layout_Terms_of_Service', 'Terms of Service <br> Go to APP SETTINGS -> Layout to customize this page.', { type: 'code', code: 'text/html', multiline: true, public: true }
 		@add 'Layout_Privacy_Policy', 'Privacy Policy <br> Go to APP SETTINGS -> Layout to customize this page.', { type: 'code', code: 'text/html', multiline: true, public: true }
-		@add 'Layout_Sidenav_Footer', '<div><a href="https://github.com/RocketChat/Rocket.Chat" class="logo" target="_blank"> <img src="/images/logo/logo.svg?v=3" /></a><div class="github-tagline"><span class="octicon octicon-pencil" style="color: #994C00"></span> with <span class="octicon octicon-heart" style="color: red"></span> on <span class="octicon octicon-mark-github"></span></div></div>', { type: 'code', code: 'text/html', public: true, i18nDescription: 'Layout_Sidenav_Footer_description' }
+		@add 'Layout_Sidenav_Footer', '<div><a href="https://github.com/RocketChat/Rocket.Chat" class="logo" target="_blank"> <img src="/images/logo/logo.svg?v=3" /></a><div class="github-tagline"><span class="icon-pencil" style="color: #994C00"></span> with <span class="icon-heart" style="color: red"></span> on <span class="icon-github-circled"></span></div></div>', { type: 'code', code: 'text/html', public: true, i18nDescription: 'Layout_Sidenav_Footer_description' }
 
 	@section 'Custom Scripts', ->
 		@add 'Custom_Script_Logged_Out', '//Add your script', { type: 'code', multiline: true, public: true }
 		@add 'Custom_Script_Logged_In', '//Add your script', { type: 'code', multiline: true, public: true }
 
 	@section 'Login', ->
-		@add 'Layout_Login_Header', '<a class="logo" href="/"><img src="/images/logo/logo.svg?v=3" /></a>', { type: 'code', code: 'text/html', multiline: true, public: true }
+		@add 'Layout_Login_Header', '<a class="logo" href="/"><img src="/assets/logo?v=3" /></a>', { type: 'code', code: 'text/html', multiline: true, public: true }
 		@add 'Layout_Login_Terms', 'By proceeding to create your account and use Rocket.Chat, you are agreeing to our <a href="/terms-of-service">Terms of Service</a> and <a href="/privacy-policy">Privacy Policy</a>. If you do not agree, you cannot use Rocket.Chat.', { type: 'string', multiline: true, public: true }
 
 
