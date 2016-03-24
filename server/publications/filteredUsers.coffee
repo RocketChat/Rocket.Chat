@@ -1,13 +1,15 @@
-Meteor.publish 'filteredUsers', (name) ->
+Meteor.publish 'filteredUsers', (filter) ->
 	unless this.userId
 		return this.ready()
 
-	exp = new RegExp(name, 'i')
+	if not _.isObject filter
+		return this.ready()
+
+	exp = new RegExp(filter.name, 'i')
 
 	options =
 		fields:
 			username: 1
-			name: 1
 			status: 1
 			utcOffset: 1
 		sort:
@@ -16,7 +18,7 @@ Meteor.publish 'filteredUsers', (name) ->
 
 	pub = this
 
-	cursorHandle = RocketChat.models.Users.findByActiveUsersNameOrUsername(exp, options).observeChanges
+	cursorHandle = RocketChat.models.Users.findByActiveUsersUsernameExcept(exp, filter.except, options).observeChanges
 		added: (_id, record) ->
 			pub.added('filtered-users', _id, record)
 
