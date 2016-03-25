@@ -35,7 +35,7 @@ Template.chatRoomItem.helpers
 		return RocketChat.roomTypes.getRouteLink @t, @
 
 Template.chatRoomItem.rendered = ->
-	if not (FlowRouter.getParam('_id')? and FlowRouter.getParam('_id') is this.data.rid) and not this.data.ls
+	if not (FlowRouter.getParam('_id')? and FlowRouter.getParam('_id') is this.data.rid) and not this.data.ls and this.data.alert is true
 		KonchatNotification.newRoom(this.data.rid)
 
 Template.chatRoomItem.events
@@ -54,8 +54,8 @@ Template.chatRoomItem.events
 			when this.t == 'c' then 'Hide_Room_Warning'
 			when this.t == 'p' then 'Hide_Group_Warning'
 			when this.t == 'd' then 'Hide_Private_Warning'
-			
-		
+
+
 		swal {
 			title: t('Are_you_sure')
 			text: t(warnText, name)
