@@ -4,6 +4,7 @@ RocketChat.models.Messages = new class extends RocketChat.models._Base
 
 		@tryEnsureIndex { 'rid': 1, 'ts': 1 }
 		@tryEnsureIndex { 'ts': 1 }
+		@tryEnsureIndex { 'u._id': 1 }
 		@tryEnsureIndex { 'editedAt': 1 }, { sparse: 1 }
 		@tryEnsureIndex { 'editedBy._id': 1 }, { sparse: 1 }
 		@tryEnsureIndex { 'rid': 1, 't': 1, 'u._id': 1 }
