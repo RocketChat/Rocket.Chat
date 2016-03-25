@@ -10,6 +10,7 @@ The Ultimate Open Source WebChat Platform
    * [DPlatform](#dplatform) 
    * [IndieHosters](#indiehosters)
    * [Cloudron.io](#cloudronio) 
+   * [Nitrous.io](#nitrousio)
    * [Heroku](#heroku)
   * [Scalingo](#scalingo)
   * [Sloppy.io](#sloppyio)
@@ -83,6 +84,14 @@ Get your Rocket.Chat instance hosted in a "as a Service" style. You register and
 Install Rocket.Chat on [Cloudron](https://cloudron.io) Smartserver:
 
 [![Install](https://cloudron.io/img/button.svg)](https://cloudron.io/button.html?app=chat.rocket.cloudronapp)
+
+## Nitrous.io
+**Free** development environment for Rocket.Chat in the cloud on [Nitrous.io](https://www.nitrous.io):
+
+<a href="https://www.nitrous.io/quickstart">
+  <img src="https://nitrous-image-icons.s3.amazonaws.com/quickstart.png" alt="Nitrous Quickstart" width=142 height=34>
+</a>
+
 ## Heroku
 Host your own Rocket.Chat server for **FREE** with [One-Click Deploy](https://heroku.com/deploy)
 
