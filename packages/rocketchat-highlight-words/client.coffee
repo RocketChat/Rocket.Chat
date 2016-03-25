@@ -17,7 +17,7 @@ class HighlightWordsClient
 
     _.forEach to_highlight, (highlight) ->
       if not _.isBlank(highlight)
-        msg = msg.replace(new RegExp("(\\b)(#{s.escapeRegExp(highlight)})(\\b)(?![^<]*>|[^<>]*<\\/)", 'gmi'), '$1<span class="highlight-text">$2</span>$3')
+        msg = msg.replace(new RegExp("(^|\\b|[\\s\\n\\r\\t.,،'\\\"\\+!?:-])(#{s.escapeRegExp(highlight)})($|\\b|[\\s\\n\\r\\t.,،'\\\"\\+!?:-])(?![^<]*>|[^<>]*<\\/)", 'gmi'), '$1<span class="highlight-text">$2</span>$3')
 
     message.html = msg
     return message
