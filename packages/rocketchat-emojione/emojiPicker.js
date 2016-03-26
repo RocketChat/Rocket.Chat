@@ -24,7 +24,7 @@ Template.emojiPicker.helpers({
 			if (actualTone > 0 && toneList.hasOwnProperty(emoji)) {
 				tone = '_tone' + actualTone;
 			}
-			html += '<li class="emoji-' + emoji + '" data-emoji="' + emoji + '">' + emojione.toImage(':' + emoji + tone + ':') + '</li>';
+			html += '<li class="emoji-' + emoji + '" data-emoji="' + emoji + '" title="' + emoji + '">' + emojione.toImage(':' + emoji + tone + ':') + '</li>';
 		}
 		return html;
 	},
