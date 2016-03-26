@@ -1,3 +1,5 @@
+/* globals Inject */
+
 Inject.rawBody('page-loading', `
 	<div class="page-loading">
 		<div class="spinner">

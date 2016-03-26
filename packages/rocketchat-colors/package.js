@@ -16,7 +16,3 @@ Package.onUse(function(api) {
 	api.addFiles('client.coffee', 'client');
 	api.addFiles('style.css', 'client');
 });
-
-Package.onTest(function(api) {
-
-});

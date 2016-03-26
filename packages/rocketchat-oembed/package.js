@@ -40,7 +40,3 @@ Package.onUse(function(api) {
 
 	api.export('OEmbed', 'server');
 });
-
-Package.onTest(function(api) {
-
-});
