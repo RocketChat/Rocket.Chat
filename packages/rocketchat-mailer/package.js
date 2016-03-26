@@ -39,7 +39,7 @@ Package.onUse(function(api) {
 	var _ = Npm.require('underscore');
 	var fs = Npm.require('fs');
 	api.use('templating', 'client');
-	tapi18nFiles = _.compact(_.map(fs.readdirSync('packages/rocketchat-mailer/i18n'), function(filename) {
+	var tapi18nFiles = _.compact(_.map(fs.readdirSync('packages/rocketchat-mailer/i18n'), function(filename) {
 		if (fs.statSync('packages/rocketchat-mailer/i18n/' + filename).size > 16) {
 			return 'i18n/' + filename;
 		}

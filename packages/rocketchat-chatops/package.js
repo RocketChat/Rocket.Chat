@@ -18,13 +18,13 @@ Package.onUse(function(api) {
 	api.use('templating', 'client');
 	var _ = Npm.require('underscore');
 	var fs = Npm.require('fs');
-	tapi18nFiles = _.compact(_.map(fs.readdirSync('packages/rocketchat-chatops/i18n'), function(filename) {
+	var tapi18nFiles = _.compact(_.map(fs.readdirSync('packages/rocketchat-chatops/i18n'), function(filename) {
 		if (fs.statSync('packages/rocketchat-chatops/i18n/' + filename).size > 16) {
 			return 'i18n/' + filename;
 		}
 	}));
 	api.use('tap:i18n');
-	api.addFiles("package-tap.i18n", ["client", "server"]);
+	api.addFiles('package-tap.i18n', ['client', 'server']);
 
 	api.addFiles([
 		'client/startup.coffee',
@@ -45,8 +45,4 @@ Package.onUse(function(api) {
 
 	// TAPi18n -- needs to be added last
 	api.addFiles(tapi18nFiles);
-});
-
-Package.onTest(function(api) {
-
 });
