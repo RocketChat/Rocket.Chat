@@ -72,7 +72,7 @@ Template.messagePopupConfig.helpers
 							items.push
 								_id: item.username
 								username: item.username
-								status: item.status
+								status: 'offline'
 
 				all =
 					_id: '@all'
