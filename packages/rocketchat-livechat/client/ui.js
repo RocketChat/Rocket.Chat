@@ -1,10 +1,12 @@
+/* globals openRoom */
+
 RocketChat.roomTypes.add('l', 5, {
 	template: 'livechat',
 	icon: 'icon-chat-empty',
 	route: {
 		name: 'live',
 		path: '/live/:name',
-		action: (params, queryParams) => {
+		action: (params/*, queryParams*/) => {
 			Session.set('showUserInfo');
 			openRoom('l', params.name);
 			RocketChat.TabBar.showGroup('livechat', 'search');
@@ -12,7 +14,7 @@ RocketChat.roomTypes.add('l', 5, {
 		link: (sub) => {
 			return {
 				name: sub.name
-			}
+			};
 		}
 	},
 	condition: () => {

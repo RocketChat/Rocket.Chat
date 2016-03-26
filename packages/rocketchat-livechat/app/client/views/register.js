@@ -3,7 +3,7 @@ Template.register.helpers({
 		return Template.instance().error.get();
 	},
 	welcomeMessage() {
-		return "";
+		return '';
 	},
 	hasDepartments() {
 		return Department.find().count() > 1;
@@ -56,7 +56,7 @@ Template.register.events({
 Template.register.onCreated(function() {
 	this.subscribe('livechat:availableDepartments');
 
-	this.error = new ReactiveVar;
+	this.error = new ReactiveVar();
 	this.showError = (msg) => {
 		$('.error').addClass('show');
 		this.error.set(msg);

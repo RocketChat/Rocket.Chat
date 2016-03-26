@@ -1,4 +1,5 @@
 /* globals RoutePolicy, SAML */
+/* jshint newcap: false */
 
 if (!Accounts.saml) {
 	Accounts.saml = {
@@ -175,7 +176,7 @@ WebApp.connectHandlers.use(connect.bodyParser()).use(function (req, res, next) {
 	}).run();
 });
 
-middleware = function (req, res, next) {
+var middleware = function (req, res, next) {
 	// Make sure to catch any exceptions because otherwise we'd crash
 	// the runner
 	try {
