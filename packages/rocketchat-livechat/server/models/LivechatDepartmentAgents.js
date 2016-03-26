@@ -69,7 +69,7 @@ class LivechatDepartmentAgents extends RocketChat.models._Base {
 			return {
 				agentId: agent.agentId,
 				username: agent.username
-			}
+			};
 		} else {
 			return null;
 		}

@@ -1,5 +1,3 @@
-packages/rocketchat-livechat/
-
 public/recorderWorker.js
 lib/ua-parser.min.js
 private/moment-locales/
@@ -16,3 +14,5 @@ packages/rocketchat-ui/lib/jquery.swipebox.min.js
 packages/rocketchat-ui/lib/particles.js
 packages/rocketchat-ui/lib/recorderjs/recorder.js
 packages/rocketchat-ui/lib/textarea-autogrow.js
+packages/rocketchat-livechat/client/lib/ua-parser.js
+packages/rocketchat-livechat/public/livechat.js

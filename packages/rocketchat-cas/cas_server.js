@@ -1,4 +1,5 @@
 /* globals RoutePolicy, logger */
+/* jshint newcap: false */
 
 var Fiber = Npm.require('fibers');
 var url = Npm.require('url');

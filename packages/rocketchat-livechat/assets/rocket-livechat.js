@@ -8,6 +8,7 @@
 // 		h.parentNode.insertBefore(j, h);
 // 	})(window, document, 'script', 'initRocket', 'http://localhost:5000/livechat');
 // </script>
+/* exported RocketChat */
 
 ;var RocketChat = (function(w) {
 	var config = {};
@@ -36,7 +37,7 @@
 				hookQueue = [];
 			}
 		},
-		toggleWindow: function(forceClose) {
+		toggleWindow: function(/*forceClose*/) {
 			if (widget.dataset.state === 'closed') {
 				openWidget();
 			} else {
