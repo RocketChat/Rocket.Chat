@@ -18,7 +18,7 @@ Package.onUse(function(api) {
   api.use('accounts-base', 'server');
 
   api.use('underscore');
-  api.use('ecmaescript');
+  api.use('ecmascript');
 
   // Server files
   api.add_files('cas_rocketchat.js', 'server');
