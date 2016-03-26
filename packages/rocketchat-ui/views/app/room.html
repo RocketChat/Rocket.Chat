@@ -18,25 +18,27 @@
 				</h2>
 			</header>
 			<div class="container-bars">
-				{{#if unreadCount}}
-					{{#if unreadSince}}
-						<div class="unread-bar">
-							<a class="jump-to">
-								<span class="jump-to-large">{{_ "Jump_to_first_unread"}}</span>
-								<span class="jump-to-small">{{_ "Jump"}}</span>
-							</a>
-							<span class="unread-count-since">
-								{{_ "S_new_messages_since_s" unreadCount formatUnreadSince}}
-							</span>
-							<span class="unread-count">
-								{{_ "N_new_messages" unreadCount}}
-							</span>
-							<a class="mark-read">
-								{{_ "Mark_as_read"}}
-							</a>
-						</div>
+				{{#with unreadData}}
+					{{#if since}}
+						{{#if count}}
+							<div class="unread-bar">
+								<a class="jump-to">
+									<span class="jump-to-large">{{_ "Jump_to_first_unread"}}</span>
+									<span class="jump-to-small">{{_ "Jump"}}</span>
+								</a>
+								<span class="unread-count-since">
+									{{_ "S_new_messages_since_s" count formatUnreadSince}}
+								</span>
+								<span class="unread-count">
+									{{_ "N_new_messages" count}}
+								</span>
+								<a class="mark-read">
+									{{_ "Mark_as_read"}}
+								</a>
+							</div>
+						{{/if}}
 					{{/if}}
-				{{/if}}
+				{{/with}}
 				{{#each uploading}}
 					<div class="upload-progress {{#if error}}upload-error{{/if}}">
 						{{#if error}}
