@@ -10,10 +10,8 @@ Meteor.publish 'filteredUsers', (filter) ->
 	options =
 		fields:
 			username: 1
-			status: 1
-			utcOffset: 1
 		sort:
-			lastLogin: -1
+			username: 1
 		limit: 5
 
 	pub = this
