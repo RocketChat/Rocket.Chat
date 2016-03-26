@@ -17,7 +17,8 @@ Package.onUse(function(api) {
 
 	api.addFiles('client/init.js', 'client');
 
-	api.addFiles('server/models/Messages.js', 'server');
+	api.addFiles('server/models/Messages.js');
+	api.addFiles('client/methods/setReaction.js', 'client');
 	api.addFiles('setReaction.js', 'server');
 
 	api.addAssets('client/stylesheets/reaction.less', 'server');

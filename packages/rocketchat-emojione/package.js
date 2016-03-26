@@ -32,4 +32,6 @@ Package.onUse(function(api) {
 
 	api.addFiles('lib/EmojiPicker.js', 'client');
 	api.addFiles('emojiButton.js', 'client');
+
+	api.addFiles('sprites.css', 'client');
 });
