@@ -1,3 +1,5 @@
+/* globals WebApp:true */
+
 WebApp = Package.webapp.WebApp;
 const Autoupdate = Package.autoupdate.Autoupdate;
 
