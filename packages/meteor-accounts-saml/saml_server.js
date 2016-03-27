@@ -241,7 +241,7 @@ var middleware = function (req, res, next) {
 								}
 							});
 						} else {
-							throw new Meteor.error('Found multiple users matching SAML inResponseTo fields');
+							throw new Meteor.Error('Found multiple users matching SAML inResponseTo fields');
 						}
 					};
 
