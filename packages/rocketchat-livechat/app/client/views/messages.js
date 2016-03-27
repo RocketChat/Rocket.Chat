@@ -33,8 +33,8 @@ Template.messages.events({
 		instance.atBottom = true;
 		return instance.find('.input-message').focus();
 	},
-	'click .error': function(/*event*/) {
-		return $(input).removeClass('show');
+	'click .error': function(event) {
+		return $(event.currentTarget).removeClass('show');
 	},
 });
 

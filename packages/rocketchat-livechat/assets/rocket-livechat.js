@@ -10,7 +10,7 @@
 // </script>
 /* exported RocketChat */
 
-;var RocketChat = (function(w) {
+var RocketChat = (function(w) {
 	var config = {};
 	var widget;
 	var iframe;
