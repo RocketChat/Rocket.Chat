@@ -18,10 +18,9 @@ Package.onUse(function(api) {
 	api.addFiles('markdown.coffee');
 
 	// TAPi18n
-	api.use('templating', 'client');
 	var _ = Npm.require('underscore');
 	var fs = Npm.require('fs');
-	tapi18nFiles = _.compact(_.map(fs.readdirSync('packages/rocketchat-markdown/i18n'), function(filename) {
+	var tapi18nFiles = _.compact(_.map(fs.readdirSync('packages/rocketchat-markdown/i18n'), function(filename) {
 		if (fs.statSync('packages/rocketchat-markdown/i18n/' + filename).size > 16) {
 			return 'i18n/' + filename;
 		}
