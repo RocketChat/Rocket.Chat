@@ -123,5 +123,9 @@
   "Welcome" : "Вітаємо, <em>%s</em>.",
   "Welcome_to_the" : "Ласкаво просимо в",
   "You_need_confirm_email" : "Для входу необхідно підтвердити e-mail!",
-  "Your_Open_Source_solution" : "Ваш власний Open Source чат"
+  "Your_Open_Source_solution" : "Ваш власний Open Source чат",
+  "User_added" : "Користувач <em>__user_added__</em> доданий.",
+  "Save" : "Зберегти",
+  "Start_Chat" : "Почати Чат",
+  "Livechat_enabled" : "Включений Livechat"
 }

@@ -185,5 +185,8 @@
   "You_need_confirm_email" : "Ju duhet për të konfirmuar email-it tuaj të identifikoheni!",
   "You_will_not_be_able_to_recover" : "Ju nuk do të jetë në gjendje të mbulojë këtë mesazh!",
   "Your_entry_has_been_deleted" : "Hyrja juaj është fshirë.",
-  "Your_Open_Source_solution" : "Vet Open Source chat zgjidhja juaj"
+  "Your_Open_Source_solution" : "Vet Open Source chat zgjidhja juaj",
+  "Save" : "Ruaj",
+  "Start_Chat" : "Fillo bisedën",
+  "Livechat_enabled" : "LiveChat aktivizuar"
 }

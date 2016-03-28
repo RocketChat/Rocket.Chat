@@ -123,5 +123,9 @@
   "Welcome" : "Benvenuto <em>%s</em>.",
   "Welcome_to_the" : "Benvenuto a",
   "You_need_confirm_email" : "Hai bisogno di confermare il tuo email per accedere!",
-  "Your_Open_Source_solution" : "La tua soluzione per chat Open Source"
+  "Your_Open_Source_solution" : "La tua soluzione per chat Open Source",
+  "User_added" : "Utente <em>__user_added__</em> aggiunto.",
+  "Save" : "Salva",
+  "Start_Chat" : "Avvia chat",
+  "Livechat_enabled" : "Livechat abilitato"
 }

@@ -134,5 +134,9 @@
   "Welcome" : "ئەسسالامۇ-ئەلەيكۇم <em>%s</em>.",
   "Welcome_to_the" : "كەلگىنىزگە مەرھابا",
   "You_need_confirm_email" : "ئىلخەتنى جەزملەشتۈرۈپ بولغاندىن كېيىن كىرەلەيسىز!",
-  "Your_Open_Source_solution" : "ئۆزىڭىزنىڭ ئوچۇق كودلۇق پاراڭلىشىش ھەل قىلىش ئۇسۇلى"
+  "Your_Open_Source_solution" : "ئۆزىڭىزنىڭ ئوچۇق كودلۇق پاراڭلىشىش ھەل قىلىش ئۇسۇلى",
+  "User_added" : "<em>__user_added__</em> ئەزا قوشۇلدى.",
+  "Save" : "ساقلاش",
+  "Start_Chat" : "Start Chat",
+  "Livechat_enabled" : "Livechat Enabled"
 }

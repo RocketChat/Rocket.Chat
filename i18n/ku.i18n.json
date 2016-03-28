@@ -115,5 +115,12 @@
   "Welcome" : "خێرهاتی <em>%s</em>.",
   "Welcome_to_the" : "خێرهاتی بۆ",
   "You_need_confirm_email" : "ئەبێ ئیمەیڵەکەت پشتڕاستکەیتەوە تا بچیتە ژوور.",
-  "Your_Open_Source_solution" : "چاتی سەرچاوە کراوەی خۆت"
+  "Your_Open_Source_solution" : "چاتی سەرچاوە کراوەی خۆت",
+  "User_added" : "بەکارهێنەر زیادکرا",
+  "Save" : "پاشەکەوت",
+  "Start_Chat" : "Start Chat",
+  "Dry_run" : "بۆ خۆشی",
+  "Dry_run_description" : "تەنها یەک ئیمەیڵ ئەنێرم، بۆ هەمان ئیمەیڵی ناو فۆرمەکە. ئیمەیڵەکە ئەبێ دروست بێت.",
+  "Mailer" : "نامەبەر",
+  "Query" : "داواکاری"
 }

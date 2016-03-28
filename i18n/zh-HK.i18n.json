@@ -311,5 +311,12 @@
   "You_need_confirm_email" : "登录前请验证您的电子邮件！",
   "You_will_not_be_able_to_recover" : "您将无法恢复！",
   "Your_entry_has_been_deleted" : "您的项目已被删除。",
-  "Your_Open_Source_solution" : "您自己的开源聊天解决方案"
+  "Your_Open_Source_solution" : "您自己的开源聊天解决方案",
+  "User_added" : "已添加用户 <em>__user_added__</em> 。",
+  "Save" : "保存",
+  "LDAP_Dn" : "LDAP DN",
+  "Delete" : "删除",
+  "Edit" : "编辑",
+  "Start_Chat" : "开始聊天",
+  "Livechat_enabled" : "在线咨询启用"
 }
