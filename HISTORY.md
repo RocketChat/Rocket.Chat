@@ -1,5 +1,62 @@
 ## NEXT
 
+## 0.24.0, 2016-Mar-28
+
+- Add a title with emoji's shortname on picker
+- Add Assets and Blaze to jshint global variables
+- Add button to download uploaded files
+- Add button to verify email address
+- Add description and params to slashcommand "me"
+- Add index for Messages pinned, Messages u._id, Subscription emailNotifications, Subscription rid, alert, u._id, Subscription rid, roles, to Subscriptions ls, to Users name, Users lastLogin, Users status, Subscriptions, mobilePushNotifications and desktopNotifications
+- Add Reactions translation
+- Add RTL switch to fontello demo page
+- Add Support for block quote
+- Add titles for emoji categories
+- Add UI for reactions
+- Close #2394; Add tab-i18n to list of allowed URLs in CORS
+- Count unreads of the opened room too
+- Debounce calls of codemirror changed
+- Do not hide navigation bar of swipebox
+- Do not override value of record on input blur
+- Emoji picker now receives a callback
+- Expose emoji picker in RocketChat namespace
+- Fix #2615; Bad Uri generation for Gitlab Oauth profile
+- Fix emoji popup using emojione's template to render emojis
+- Fix error when push gateways is active
+- Fix error with asset upload in Firefox
+- Fix flex-nav show/hide animation on RTL
+- Fix for word highlighting of none Latin characters
+- Fix full screen of code editor for new incoming integrations
+- Fix problem with ddp connection from some urls
+- Fix RTL icon issues
+- Fix set user's name on creation
+- Fix sound of new room
+- Fix url for the logo asset
+- Focus the message input on window focus
+- Get room data on sendMessage if room is incomplete
+- Improve subscription filteredUsers
+- Improve tooltip positioning
+- Improve verification of new user as admin or user
+- More channels shows all channels by default
+- New default hover message background color
+- New emoji font characters
+- New reactions package
+- New tooltip lib
+- Only compile scripts if scripts are enabled and filled
+- Prevent to use APN with empty certs
+- Recompile LESS files on each addPackageAsset call
+- Remove all references to octicons
+- Remove CW and CCW icons from mirror map
+- Try to be smarter when suggesting usernames
+- Unblock call to avatar suggestion
+- Unlock methods 'joinDefaultChannels' and 'leaveRoom'
+- Update ClipboardJS to version 1.5.9
+- Update fontello with GitHub Octicons
+- Use Emojione's sprites
+- Use new tooptip lib for reactions
+- Use the login layout for the reset password screen
+- Using PNG emoji sprites for better performance
+
 ## 0.23.0, 2016-Mar-21
 
 - Accept * for all media types

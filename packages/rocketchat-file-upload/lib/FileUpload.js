@@ -1,4 +1,8 @@
 /* globals FileUpload:true */
+/* exported FileUpload */
+
+var maxFileSize = 0;
+
 FileUpload = {
 	validateFileUpload(file) {
 		if (file.size > maxFileSize) {
@@ -13,7 +17,6 @@ FileUpload = {
 	}
 };
 
-var maxFileSize = 0;
 RocketChat.settings.get('FileUpload_MaxFileSize', function(key, value) {
 	maxFileSize = value;
 });
