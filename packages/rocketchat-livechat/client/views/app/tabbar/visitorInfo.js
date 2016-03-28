@@ -1,6 +1,6 @@
 Template.visitorInfo.helpers({
 	user() {
-		var user = Meteor.users.findOne({ "profile.token": Template.instance().visitorToken.get() });
+		var user = Meteor.users.findOne({ 'profile.token': Template.instance().visitorToken.get() });
 		if (user && user.userAgent) {
 			var ua = new UAParser();
 			ua.setUA(user.userAgent);
@@ -67,4 +67,4 @@ Template.visitorInfo.onCreated(function() {
 		this.subscribe('livechat:visitorInfo', currentData.rid);
 		this.pageVisited = this.subscribe('livechat:visitorPageVisited', currentData.rid);
 	}
-})
+});

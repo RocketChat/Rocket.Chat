@@ -87,6 +87,7 @@
   "busy_male" : "ocupado",
   "Busy_male" : "Ocupado",
   "Cancel" : "Cancelar",
+  "Cannot_invite_users_to_direct_rooms" : "Não é possível convidar pessoas para salas diretas",
   "CDN_PREFIX" : "Prefixo CDN",
   "Certificates_and_Keys" : "Certificados e Chaves",
   "Channels" : "Canais",
@@ -542,5 +543,6 @@
   "API_Wordpress_URL" : "URL do WordPress",
   "Accounts_OAuth_Wordpress" : "Login WordPress",
   "Accounts_OAuth_Wordpress_id" : "WordPress ID",
-  "Accounts_OAuth_Wordpress_secret" : "WordPress Secret"
+  "Accounts_OAuth_Wordpress_secret" : "WordPress Secret",
+  "Your_push_was_sent_to_s_devices" : "Sua natificação foi enviada para %s dispositivos"
 }

@@ -9,14 +9,14 @@ Template.livechatFlex.helpers({
 
 Template.livechatFlex.events({
 	'mouseenter header' () {
-		SideNav.overArrow()
+		SideNav.overArrow();
 	},
 
 	'mouseleave header' () {
-		SideNav.leaveArrow()
+		SideNav.leaveArrow();
 	},
 
 	'click header' () {
-		SideNav.closeFlex()
+		SideNav.closeFlex();
 	}
 });

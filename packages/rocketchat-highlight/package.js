@@ -16,7 +16,3 @@ Package.onUse(function(api) {
 
 	api.addFiles('highlight.coffee', ['server','client']);
 });
-
-Package.onTest(function(api) {
-
-});

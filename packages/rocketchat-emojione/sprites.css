@@ -1,5 +1,4 @@
 .emojione {
-  text-indent: -9999em;
   image-rendering: optimizeQuality;
   font-size: inherit;
   height: 22px;
@@ -11,7 +10,11 @@
   vertical-align: middle;
   background-image: url("/packages/emojione_emojione/assets/sprites/emojione.sprites.png");
   background-size: 4100% 4000%;
-  background-repeat: no-repeat; }
+  background-repeat: no-repeat;
+  font: 0/0 serif;
+  text-shadow: none;
+  color: transparent;
+}
 
 .emojione-0023-20e3 {
   background-position: 2.5% 0%; }
