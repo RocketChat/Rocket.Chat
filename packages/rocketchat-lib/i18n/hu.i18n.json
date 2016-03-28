@@ -49,6 +49,7 @@
   "Language_Version" : "Angol nyelvű verzió",
   "Last_message" : "Utolsó üzenet",
   "Leave_room" : "Szoba elhagyása",
+  "Livechat_enabled" : "LiveChat engedélyezve",
   "Load_more" : "Korábbiak betöltése",
   "Loading_suggestion" : "Javaslatok betöltése...",
   "Login" : "Bejelentkezés",
@@ -86,6 +87,7 @@
   "Room" : "Szoba",
   "Room_name_changed" : "A szoba neve megváltozott: <em>__room_name__</em>, megváltoztatta <em>__user_by__</em>",
   "Room_name_changed_successfully" : "A szoba neve sikeresen megváltozott",
+  "Save" : "Mentés",
   "Search" : "Keresés",
   "See_all" : "Összes megtekintése",
   "See_only_online" : "Csak online",
@@ -99,6 +101,7 @@
   "Showing_results" : "<p><b>%s</b> eredmény megjelenítve</p>",
   "Silence" : "Némítás",
   "since_creation" : "%s óta",
+  "Start_Chat" : "Start Chat",
   "Start_of_conversation" : "Beszélgetés kezdete",
   "Submit" : "Elküldés",
   "Use_initials_avatar" : "Használd a felhasználónév kezdőbetűi",
@@ -106,6 +109,7 @@
   "Use_service_avatar" : "%s használata",
   "Use_this_username" : "Használd ezt a felhasználónevet",
   "Use_uploaded_avatar" : "Feltöltött kép használata",
+  "User_added" : "<em>__user_added__</em> hozzáadva.",
   "User_added_by" : "<em>__user_added__</em> felhasználót hozzáadta <em>__user_by__</em>.",
   "User_left" : "<em>__user_left__</em> kilépett.",
   "User_logged_out" : "Nem elérhető",
@@ -122,9 +126,5 @@
   "Welcome" : "Üdvözöllek <em>%s</em>",
   "Welcome_to_the" : "Üdvözöllek a",
   "You_need_confirm_email" : "Kérlek hitelesítsd az email címed a bejelntkezéshez",
-  "Your_Open_Source_solution" : "A saját Nyílt Forrású chat-ed",
-  "User_added" : "<em>__user_added__</em> hozzáadva.",
-  "Save" : "Mentés",
-  "Start_Chat" : "Start Chat",
-  "Livechat_enabled" : "LiveChat engedélyezve"
+  "Your_Open_Source_solution" : "A saját Nyílt Forrású chat-ed"
 }
