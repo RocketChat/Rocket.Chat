@@ -26,6 +26,9 @@ Template.uploadedFilesList.helpers
 	canDelete: ->
 		return RocketChat.authz.hasAtLeastOnePermission('delete-message', @rid) or RocketChat.settings.get('Message_AllowDeleting') and @userId is Meteor.userId()
 
+	url: ->
+		return '/file-upload/' + @_id + '/' + @name
+
 Template.uploadedFilesList.events
 	'click .room-file-item': (e, t) ->
 		if $(e.currentTarget).siblings('.icon-picture').length
