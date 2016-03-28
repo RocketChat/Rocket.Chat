@@ -99,5 +99,8 @@
   "Yes_delete_it" : "ஆம், நீக்கு!",
   "You_need_confirm_email" : "நீங்கள் உள்நுழைய உங்கள் மின்னஞ்சல் முகவரியை உறுதிப்படுத்த வேண்டும்!",
   "You_will_not_be_able_to_recover" : "நீங்கள் மீட்க முடியாது!",
-  "Your_entry_has_been_deleted" : "உங்கள் உள்ளீடு நீக்கப்பட்டுவிட்டது."
+  "Your_entry_has_been_deleted" : "உங்கள் உள்ளீடு நீக்கப்பட்டுவிட்டது.",
+  "User_added" : "பயனர் <em>__user_added__</em>சேர்க்கப்பட்டார்.",
+  "Save" : "சேமி",
+  "Start_Chat" : "தொடக்க சேட்"
 }

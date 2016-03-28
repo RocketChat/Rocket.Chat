@@ -41,5 +41,8 @@
   "User_left" : "Opustil(a) kanál.",
   "User_removed_by" : "<em>__user_by__</em> odstranil uživatele <em>__user_removed__</em>.",
   "View_All" : "Zobrazit vše",
-  "Welcome" : "Vítej <em>%s</em>."
+  "Welcome" : "Vítej <em>%s</em>.",
+  "Save" : "Uložit",
+  "Start_Chat" : "Spustit chat",
+  "Livechat_enabled" : "Livechat povoleno"
 }

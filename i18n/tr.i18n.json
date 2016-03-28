@@ -262,5 +262,14 @@
   "You_need_confirm_email" : "Giriş yapabilmek için öncelikle e-posta adresinizi onaylamanız gerekmektedir!",
   "You_will_not_be_able_to_recover" : "Sen kurtarmak mümkün olmayacaktır!",
   "Your_entry_has_been_deleted" : "Sizin kaydınız silindi.",
-  "Your_Open_Source_solution" : "Açık Kaynak Sohbet Uygulaması"
+  "Your_Open_Source_solution" : "Açık Kaynak Sohbet Uygulaması",
+  "User_added" : "<em>__user_added__</em> eklendi.",
+  "Save" : "Kaydet",
+  "Delete" : "Sil",
+  "Edit" : "Düzenle",
+  "Start_Chat" : "Sohbete Başla",
+  "Livechat_enabled" : "Canlı etkin",
+  "Star_Message" : "Favorilere ekle",
+  "Starred_Messages" : "Favori İletilerim",
+  "No_starred_messages" : "Favori iletin yok"
 }
