@@ -18,7 +18,3 @@ Package.onUse(function(api) {
 
 	api.addFiles('migrations.js', 'server');
 });
-
-Package.onTest(function(api) {
-
-});

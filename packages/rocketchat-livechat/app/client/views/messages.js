@@ -34,7 +34,7 @@ Template.messages.events({
 		return instance.find('.input-message').focus();
 	},
 	'click .error': function(event) {
-		return $(input).removeClass('show');
+		return $(event.currentTarget).removeClass('show');
 	},
 });
 
@@ -68,14 +68,14 @@ Template.messages.onCreated(function() {
 });
 
 Template.messages.onRendered(function() {
-	this.chatMessages = new ChatMessages;
+	this.chatMessages = new ChatMessages();
 	this.chatMessages.init(this.firstNode);
 });
 
 Template.messages.onRendered(function() {
 	var messages, newMessage, onscroll, template;
 	messages = this.find('.messages');
-	newMessage = this.find(".new-message");
+	newMessage = this.find('.new-message');
 	template = this;
 	if (messages) {
 		onscroll = _.throttle(function() {
@@ -84,7 +84,7 @@ Template.messages.onRendered(function() {
 		Meteor.setInterval(function() {
 			if (template.atBottom) {
 				messages.scrollTop = messages.scrollHeight - messages.clientHeight;
-				newMessage.className = "new-message not";
+				newMessage.className = 'new-message not';
 			}
 		}, 100);
 		messages.addEventListener('touchstart', function() {

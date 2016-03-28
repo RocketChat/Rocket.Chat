@@ -40,7 +40,7 @@ Package.onUse(function(api) {
 	var _ = Npm.require('underscore');
 	var fs = Npm.require('fs');
 	api.use('templating', 'client');
-	tapi18nFiles = _.compact(_.map(fs.readdirSync('packages/rocketchat-theme/i18n'), function(filename) {
+	var tapi18nFiles = _.compact(_.map(fs.readdirSync('packages/rocketchat-theme/i18n'), function(filename) {
 		if (fs.statSync('packages/rocketchat-theme/i18n/' + filename).size > 16) {
 			return 'i18n/' + filename;
 		}
@@ -52,8 +52,4 @@ Package.onUse(function(api) {
 Npm.depends({
 	'less': 'https://github.com/meteor/less.js/tarball/8130849eb3d7f0ecf0ca8d0af7c4207b0442e3f6',
 	'less-plugin-autoprefix': '1.4.2'
-});
-
-Package.onTest(function(api) {
-
 });

@@ -9,7 +9,7 @@ RocketChat.callbacks.add('afterSaveMessage', function(message, room) {
 	if (room.t === 'd') {
 		usersToSendEmail[message.rid.replace(message.u._id, '')] = 1;
 
-		emailSubject = TAPi18n.__("Offline_DM_Email", {
+		emailSubject = TAPi18n.__('Offline_DM_Email', {
 			site: RocketChat.settings.get('Site_Name'),
 			user: message.u.username
 		});
@@ -17,11 +17,11 @@ RocketChat.callbacks.add('afterSaveMessage', function(message, room) {
 	} else {
 		if (message.mentions) {
 			message.mentions.forEach(function(mention) {
-				return usersToSendEmail[mention._id] = 1;
+				usersToSendEmail[mention._id] = 1;
 			});
 		}
 
-		emailSubject = TAPi18n.__("Offline_Mention_Email", {
+		emailSubject = TAPi18n.__('Offline_Mention_Email', {
 			site: RocketChat.settings.get('Site_Name'),
 			user: message.u.username,
 			room: room.name
@@ -57,7 +57,7 @@ RocketChat.callbacks.add('afterSaveMessage', function(message, room) {
 		}
 	});
 
-	userIdsToSendEmail = Object.keys(usersToSendEmail);
+	var userIdsToSendEmail = Object.keys(usersToSendEmail);
 
 	if (userIdsToSendEmail.length > 0) {
 		var usersOfMention = RocketChat.models.Users.getUsersToSendOfflineEmail(userIdsToSendEmail).fetch();
@@ -69,11 +69,11 @@ RocketChat.callbacks.add('afterSaveMessage', function(message, room) {
 				}
 				user.emails.some((email) => {
 					if (email.verified) {
-						var email = {
+						email = {
 							to: email.address,
 							from: RocketChat.settings.get('From_Email'),
 							subject: emailSubject,
-							html: "&gt; " + message.html
+							html: '&gt; ' + message.html
 						};
 
 						Email.send(email);

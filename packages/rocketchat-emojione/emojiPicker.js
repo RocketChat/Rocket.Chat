@@ -1,4 +1,8 @@
 /* globals Template, emojione */
+
+var emojisByCategory;
+var toneList;
+
 Template.emojiPicker.helpers({
 	category() {
 		return Object.keys(emojisByCategory);
@@ -24,7 +28,7 @@ Template.emojiPicker.helpers({
 			if (actualTone > 0 && toneList.hasOwnProperty(emoji)) {
 				tone = '_tone' + actualTone;
 			}
-			html += '<li class="emoji-' + emoji + '" data-emoji="' + emoji + '">' + emojione.toImage(':' + emoji + tone + ':') + '</li>';
+			html += '<li class="emoji-' + emoji + '" data-emoji="' + emoji + '" title="' + emoji + '">' + emojione.toImage(':' + emoji + tone + ':') + '</li>';
 		}
 		return html;
 	},
@@ -112,7 +116,7 @@ Template.emojiPicker.onCreated(function() {
 	};
 });
 
-var toneList = {
+toneList = {
 	'raised_hands': 1,
 	'clap': 1,
 	'wave': 1,
@@ -180,7 +184,7 @@ var toneList = {
 	'spy': 1
 };
 
-var emojisByCategory = {
+emojisByCategory = {
 	'recent': [],
 	'symbols': [
 		'100',
