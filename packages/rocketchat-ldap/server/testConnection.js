@@ -1,6 +1,8 @@
+/* globals LDAP */
+
 Meteor.methods({
 	ldap_test_connection: function() {
-		user = Meteor.user();
+		const user = Meteor.user();
 		if (!user) {
 			throw new Meteor.Error('unauthorized', '[methods] ldap_test_connection -> Unauthorized');
 		}
@@ -30,7 +32,7 @@ Meteor.methods({
 		}
 
 		return {
-			message: "Connection_success",
+			message: 'Connection_success',
 			params: []
 		};
 	}
