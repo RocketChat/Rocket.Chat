@@ -1,4 +1,5 @@
 /* globals LDAP:true, LDAPJS */
+/* exported LDAP */
 
 const ldapjs = LDAPJS;
 

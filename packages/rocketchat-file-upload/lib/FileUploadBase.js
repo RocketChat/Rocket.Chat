@@ -1,4 +1,5 @@
 /* globals FileUploadBase:true */
+/* exported FileUploadBase */
 
 FileUploadBase = class FileUploadBase {
 	constructor(meta, file/*, data*/) {
