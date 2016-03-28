@@ -134,6 +134,7 @@
   "busy_male" : "busy",
   "Busy_male" : "Busy",
   "Cancel" : "Cancel",
+  "Cannot_invite_users_to_direct_rooms" : "Cannot invite users to direct rooms",
   "CDN_PREFIX" : "CDN Prefix",
   "Certificates_and_Keys" : "Certificates and Keys",
   "Channels" : "Channels",

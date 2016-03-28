@@ -1,4 +1,6 @@
 /* global renderMessageBody:true */
+/* exported renderMessageBody */
+
 renderMessageBody = function(msg) {
 	var message;
 

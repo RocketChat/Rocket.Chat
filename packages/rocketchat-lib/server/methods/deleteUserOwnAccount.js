@@ -1,19 +1,19 @@
 Meteor.methods({
 	deleteUserOwnAccount: function(password) {
 		if (!Meteor.userId()) {
-			throw new Meteor.Error('invalid-user', "[methods] deleteUserOwnAccount -> Invalid user");
+			throw new Meteor.Error('invalid-user', '[methods] deleteUserOwnAccount -> Invalid user');
 		}
 
 		if (!RocketChat.settings.get('Accounts_AllowDeleteOwnAccount')) {
-			throw new Meteor.Error('not-authorized', "[methods] deleteUserOwnAccount -> Not authorized");
+			throw new Meteor.Error('not-authorized', '[methods] deleteUserOwnAccount -> Not authorized');
 		}
 
 		const userId = Meteor.userId();
 		const user = RocketChat.models.Users.findOneById(userId);
 
-		result = Accounts._checkPassword(user, { digest: password, algorithm: 'sha-256' });
+		const result = Accounts._checkPassword(user, { digest: password, algorithm: 'sha-256' });
 		if (result.error) {
-			throw new Meteor.Error('invalid-password', "[methods] deleteUserOwnAccount -> Invalid password");
+			throw new Meteor.Error('invalid-password', '[methods] deleteUserOwnAccount -> Invalid password');
 		}
 
 		Meteor.defer(function() {
@@ -39,4 +39,4 @@ Meteor.methods({
 
 		return true;
 	}
-})
+});

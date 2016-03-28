@@ -1,13 +1,17 @@
 Template.livechatTriggers.helpers({
 	conditions() {
 		var trigger = Template.instance().trigger.get();
-		if (!trigger) return [];
+		if (!trigger) {
+			return [];
+		}
 
 		return trigger.conditions;
 	},
 	actions() {
 		var trigger = Template.instance().trigger.get();
-		if (!trigger) return [];
+		if (!trigger) {
+			return [];
+		}
 
 		return trigger.actions;
 	}
@@ -50,7 +54,7 @@ Template.livechatTriggers.events({
 			}
 		});
 
-		Meteor.call('livechat:saveTrigger', data, function(error, result) {
+		Meteor.call('livechat:saveTrigger', data, function(error/*, result*/) {
 			$btn.html(oldBtnValue);
 			if (error) {
 				return toastr.error(t(error.reason || error.error));
@@ -59,8 +63,9 @@ Template.livechatTriggers.events({
 			toastr.success(t('Saved'));
 		});
 	},
-	'click .delete-trigger' (e, instance) {
-		e.preventDefault()
+
+	'click .delete-trigger' (e/*, instance*/) {
+		e.preventDefault();
 
 		swal({
 			title: t('Are_you_sure'),
@@ -72,7 +77,7 @@ Template.livechatTriggers.events({
 			closeOnConfirm: false,
 			html: false,
 		}, () => {
-			Meteor.call('livechat:removeTrigger', function(error, result) {
+			Meteor.call('livechat:removeTrigger', function(error/*, result*/) {
 				if (error) {
 					return toastr.error(t(error.reason || error.error));
 				}

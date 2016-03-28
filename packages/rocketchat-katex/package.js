@@ -23,12 +23,12 @@ Package.onUse(function(api) {
 	var _ = Npm.require('underscore');
 	var fs = Npm.require('fs');
 	var fontFiles = _.map(fs.readdirSync('packages/rocketchat-katex/client/fonts'), function(filename) {
-	  return 'client/fonts/' + filename;
+		return 'client/fonts/' + filename;
 	});
 
 	api.addAssets(fontFiles, 'client');
 
-	tapi18nFiles = _.compact(_.map(fs.readdirSync('packages/rocketchat-katex/i18n'), function(filename) {
+	var tapi18nFiles = _.compact(_.map(fs.readdirSync('packages/rocketchat-katex/i18n'), function(filename) {
 		if (fs.statSync('packages/rocketchat-katex/i18n/' + filename).size > 16) {
 			return 'i18n/' + filename;
 		}
