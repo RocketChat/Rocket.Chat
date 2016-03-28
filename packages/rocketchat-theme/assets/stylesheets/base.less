@@ -346,6 +346,16 @@ blockquote {
 		display: block;
 		margin-bottom: 4px;
 	}
+	> div {
+		position: relative;
+
+		.right {
+			position: absolute;
+			right: 10px;
+			top: 10px;
+			z-index: 10;
+		}
+	}
 	input[type='text'] {
 		display: block;
 	}
@@ -3938,7 +3948,9 @@ a.github-fork {
 }
 
 .highlight-text {
-  background: #F1DD7A none repeat scroll 0% 0%;
+	background: #ADD6FF;
+	border-radius: 4px;
+	padding: 2px;
 }
 
 .avatar-suggestions {

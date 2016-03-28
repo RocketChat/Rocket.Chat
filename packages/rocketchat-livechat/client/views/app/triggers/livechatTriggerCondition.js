@@ -30,4 +30,4 @@ Template.livechatTriggerCondition.events({
 
 Template.livechatTriggerCondition.onCreated(function() {
 	this.firstCondition = true;
-})
+});

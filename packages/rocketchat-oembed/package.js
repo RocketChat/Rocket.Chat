@@ -5,6 +5,10 @@ Package.describe({
 	git: ''
 });
 
+Npm.depends({
+	'iconv-lite': '0.4.13'
+});
+
 Package.onUse(function(api) {
 	api.versionsFrom('1.0');
 
@@ -40,8 +44,4 @@ Package.onUse(function(api) {
 	api.addFiles('server/models/OEmbedCache.coffee', 'server');
 
 	api.export('OEmbed', 'server');
-});
-
-Package.onTest(function(api) {
-
 });

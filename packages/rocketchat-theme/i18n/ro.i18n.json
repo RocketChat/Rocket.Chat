@@ -27,5 +27,6 @@
   "theme-color-status-online" : "Culoare status 'Activ'",
   "theme-color-tertiary-background-color" : "Culoare de fundal terțiară",
   "theme-color-tertiary-font-color" : "Culoare text terțiară",
-  "theme-color-unread-notification-color" : "Culoare notificări mesaje necitite"
+  "theme-color-unread-notification-color" : "Culoare notificări mesaje necitite",
+  "theme-custom-css" : "CSS personalizat"
 }
