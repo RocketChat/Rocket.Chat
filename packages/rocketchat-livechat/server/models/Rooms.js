@@ -3,11 +3,11 @@
  * @param {string} token - Visitor token
  */
 RocketChat.models.Rooms.updateSurveyFeedbackById = function(_id, surveyFeedback) {
-	query = {
+	const query = {
 		_id: _id
 	};
 
-	update = {
+	const update = {
 		$set: {
 			surveyFeedback: surveyFeedback
 		}
