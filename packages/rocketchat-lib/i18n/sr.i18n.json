@@ -85,6 +85,7 @@
   "Room" : "Соба",
   "Room_name_changed" : "Назив собе промењен у: <em>__room_name__</em> променио/ла <em>__user_by__</em>",
   "Room_name_changed_successfully" : "Име собе успешно промењено",
+  "Save" : "Сачувај",
   "Search" : "Претрага",
   "See_all" : "Погледај све",
   "See_only_online" : "Само на мрежи",
@@ -98,6 +99,7 @@
   "Showing_results" : "<p>Приказујем <b>%s</b> резултата</p>",
   "Silence" : "Утишај",
   "since_creation" : "пре %s",
+  "Start_Chat" : "Почетак Чат",
   "Start_of_conversation" : "Почетак разговора",
   "Submit" : "Пошаљи",
   "Use_initials_avatar" : "Користи иницијале корисничког",
@@ -105,6 +107,7 @@
   "Use_service_avatar" : "Користи аватар %s ",
   "Use_this_username" : "Користи ово корисничко име",
   "Use_uploaded_avatar" : "Користи отпремљеног аватара",
+  "User_added" : "Корисник/ца додат(а)",
   "User_added_by" : "Корисник/ца <em>__user_added__</em> је додат(а) од стране <em>__user_by__</em>.",
   "User_left" : "је напустио/ла канал.",
   "User_logged_out" : "Корисник је одјављен",
@@ -121,8 +124,5 @@
   "Welcome" : "Добродошли <em>%s</em>.",
   "Welcome_to_the" : "Добродошли у",
   "You_need_confirm_email" : "Потребно је да потврдите е-адресу да бисте се пријавили!",
-  "Your_Open_Source_solution" : "Ваше сопствено отворено решење за ћаскање",
-  "User_added" : "Корисник/ца додат(а)",
-  "Save" : "Сачувај",
-  "Start_Chat" : "Почетак Чат"
+  "Your_Open_Source_solution" : "Ваше сопствено отворено решење за ћаскање"
 }
