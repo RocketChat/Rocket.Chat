@@ -1,0 +1,7 @@
+{
+  "dependencies": {
+    "iconv-lite": {
+      "version": "0.4.13"
+    }
+  }
+}

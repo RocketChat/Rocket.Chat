@@ -16,7 +16,7 @@ Meteor.methods({
 			throw new Meteor.Error('invalid-settings', 'Invalid settings value');
 		}
 
-		subscription = RocketChat.models.Subscriptions.findOneByRoomIdAndUserId(rid, Meteor.userId());
+		const subscription = RocketChat.models.Subscriptions.findOneByRoomIdAndUserId(rid, Meteor.userId());
 		if (!subscription) {
 			throw new Meteor.Error('invalid-subscription', 'Invalid subscription');
 		}
@@ -31,4 +31,4 @@ Meteor.methods({
 
 		return true;
 	}
-})
+});
