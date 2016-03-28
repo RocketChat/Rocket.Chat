@@ -1,5 +1,0 @@
-{
-  "Invite_user_to_join_channel" : "邀请一位用户加入频道",
-  "User_doesnt_exist" : "不存在名为 `@%s` 的用户。",
-  "Username_is_already_in_here" : "用户 `@%s` 已存在。"
-}
