@@ -1,3 +1,9 @@
 {
-  "Mentions" : "Mențiuni"
+  "All_messages" : "Toate mesajele",
+  "Desktop_notifications" : "Notificări desktop",
+  "Mentions" : "Mențiuni",
+  "Mentions_default" : "Mențiuni (implicit",
+  "Mobile_push_notifications" : "Notificări push",
+  "Nothing" : "Nimic",
+  "Push_notifications" : "Notificări push"
 }

@@ -4,5 +4,8 @@
   "Email_from" : "Från",
   "Email_subject" : "Ämne",
   "Query" : "Fråga",
-  "Query_description" : "Ytterligare villkor för att avgöra vilken användare att skicka e-post till. Användare som inte prenumererar tas automatiskt bort från frågan. Det måste vara ett giltigt JSON. Exempel: \"{\"createdAt\":{\"$gt\":{\"$date\": \"2015-01-01T00:00:00.000Z\"}}}\""
+  "Query_description" : "Ytterligare villkor för att avgöra vilken användare att skicka e-post till. Användare som inte prenumererar tas automatiskt bort från frågan. Det måste vara ett giltigt JSON. Exempel: \"{\"createdAt\":{\"$gt\":{\"$date\": \"2015-01-01T00:00:00.000Z\"}}}\"",
+  "Send_email" : "Skicka e-post",
+  "The_emails_are_being_sent" : "E-postmeddelandena blir skickade.",
+  "You_have_successfully_unsubscribed" : "Du har blivit avregistrerad från vår e-postlista."
 }
