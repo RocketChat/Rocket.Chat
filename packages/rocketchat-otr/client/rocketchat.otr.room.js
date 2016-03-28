@@ -1,3 +1,5 @@
+/* globals crypto */
+
 RocketChat.OTR.Room = class {
 	constructor(userId, roomId) {
 		this.userId = userId;

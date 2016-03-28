@@ -9,7 +9,7 @@
 // 	})(window, document, 'script', 'initRocket', 'http://localhost:5000/livechat');
 // </script>
 
-;var RocketChat = (function(w) {
+window.RocketChat = (function(w) {
 	var config = {};
 	var widget;
 	var iframe;
@@ -26,6 +26,19 @@
 		widget.style.height = '300px';
 	};
 
+	// hooks
+	var callHook = function(action, params) {
+		if (!ready) {
+			return hookQueue.push(arguments);
+		}
+		var data = {
+			src: 'rocketchat',
+			fn: action,
+			args: params
+		};
+		iframe.contentWindow.postMessage(data, '*');
+	};
+
 	var api = {
 		ready: function() {
 			ready = true;
@@ -36,7 +49,7 @@
 				hookQueue = [];
 			}
 		},
-		toggleWindow: function(forceClose) {
+		toggleWindow: function(/*forceClose*/) {
 			if (widget.dataset.state === 'closed') {
 				openWidget();
 			} else {
@@ -54,19 +67,6 @@
 		removeWidget: function() {
 			document.getElementsByTagName('body')[0].removeChild(widget);
 		}
-	};
-
-	// hooks
-	var callHook = function(action, params) {
-		if (!ready) {
-			return hookQueue.push(arguments);
-		}
-		var data = {
-			src: 'rocketchat',
-			fn: action,
-			args: params
-		};
-		iframe.contentWindow.postMessage(data, '*');
 	};
 
 	var pageVisited = function() {
@@ -164,4 +164,4 @@
 	return {
 		pageVisited: pageVisited
 	};
-})(window);
+}(window));
