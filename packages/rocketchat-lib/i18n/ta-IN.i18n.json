@@ -73,6 +73,7 @@
   "Room" : "அறை",
   "Room_name_changed" : "அறை பெயர் மாற்றப்பட்டது: <em>__room_name__</em>மற்றியவர் <em>__user_by__</em>",
   "Room_name_changed_successfully" : "அறை பெயர் வெற்றிகரமாக மாற்றப்பட்டது",
+  "Save" : "சேமி",
   "Search" : "தேடு",
   "Search_settings" : "தேடல் அமைப்புகள்",
   "See_all" : "அனைத்தையும் பார்க்க",
@@ -82,9 +83,11 @@
   "Send_Message" : "செய்தியை அனுப்பவும்",
   "Settings" : "அமைப்புகள்",
   "since_creation" : "%s முதல்",
+  "Start_Chat" : "தொடக்க சேட்",
   "Submit" : "சமர்ப்பிக்கவும்",
   "Use_initials_avatar" : "உங்கள் பயனர் பெயர் முதலெழுத்துகள் பயன்படுத்தவும்",
   "Use_this_username" : "இந்த பயனர் பெயரை பயன்படுத்தவும்",
+  "User_added" : "பயனர் <em>__user_added__</em>சேர்க்கப்பட்டார்.",
   "User_added_by" : "பயனர் <em>__user_added__</em><em>__user_by__</em>மூலம் சேர்க்கப்பட்டார்.",
   "User_left" : "பயனர் <em>__user_left__</em>சென்றுவிட்டார்.",
   "User_removed_by" : "பயனர் <em>__user_removed__</em><em>__user_by__</em>மூலம் அகற்றப்பட்டார்.",
@@ -99,8 +102,5 @@
   "Yes_delete_it" : "ஆம், நீக்கு!",
   "You_need_confirm_email" : "நீங்கள் உள்நுழைய உங்கள் மின்னஞ்சல் முகவரியை உறுதிப்படுத்த வேண்டும்!",
   "You_will_not_be_able_to_recover" : "நீங்கள் மீட்க முடியாது!",
-  "Your_entry_has_been_deleted" : "உங்கள் உள்ளீடு நீக்கப்பட்டுவிட்டது.",
-  "User_added" : "பயனர் <em>__user_added__</em>சேர்க்கப்பட்டார்.",
-  "Save" : "சேமி",
-  "Start_Chat" : "தொடக்க சேட்"
+  "Your_entry_has_been_deleted" : "உங்கள் உள்ளீடு நீக்கப்பட்டுவிட்டது."
 }
