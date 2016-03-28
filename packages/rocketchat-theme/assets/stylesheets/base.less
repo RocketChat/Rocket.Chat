@@ -346,6 +346,16 @@ blockquote {
 		display: block;
 		margin-bottom: 4px;
 	}
+	> div {
+		position: relative;
+
+		.right {
+			position: absolute;
+			right: 10px;
+			top: 10px;
+			z-index: 10;
+		}
+	}
 	input[type='text'] {
 		display: block;
 	}
