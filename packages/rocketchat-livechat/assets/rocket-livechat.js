@@ -8,6 +8,7 @@
 // 		h.parentNode.insertBefore(j, h);
 // 	})(window, document, 'script', 'initRocket', 'http://localhost:5000/livechat');
 // </script>
+/* globals RocketChat:true */
 /* exported RocketChat */
 
 var RocketChat = (function(w) {
@@ -25,6 +26,19 @@ var RocketChat = (function(w) {
 	var openWidget = function() {
 		widget.dataset.state = 'opened';
 		widget.style.height = '300px';
+	};
+
+	// hooks
+	var callHook = function(action, params) {
+		if (!ready) {
+			return hookQueue.push(arguments);
+		}
+		var data = {
+			src: 'rocketchat',
+			fn: action,
+			args: params
+		};
+		iframe.contentWindow.postMessage(data, '*');
 	};
 
 	var api = {
@@ -55,19 +69,6 @@ var RocketChat = (function(w) {
 		removeWidget: function() {
 			document.getElementsByTagName('body')[0].removeChild(widget);
 		}
-	};
-
-	// hooks
-	var callHook = function(action, params) {
-		if (!ready) {
-			return hookQueue.push(arguments);
-		}
-		var data = {
-			src: 'rocketchat',
-			fn: action,
-			args: params
-		};
-		iframe.contentWindow.postMessage(data, '*');
 	};
 
 	var pageVisited = function() {
@@ -165,4 +166,4 @@ var RocketChat = (function(w) {
 	return {
 		pageVisited: pageVisited
 	};
-})(window);
+}(window));

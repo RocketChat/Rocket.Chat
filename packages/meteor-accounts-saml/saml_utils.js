@@ -146,7 +146,6 @@ SAML.prototype.generateLogoutRequest = function (options) {
 
 SAML.prototype.requestToUrl = function (request, operation, callback) {
 	var self = this;
-	var result;
 	zlib.deflateRaw(request, function (err, buffer) {
 		if (err) {
 			return callback(err);
@@ -191,7 +190,6 @@ SAML.prototype.requestToUrl = function (request, operation, callback) {
 		}
 		if (operation === 'logout') {
 			// in case of logout we want to be redirected back to the Meteor app.
-			result = target;
 			return callback(null, target);
 
 		} else {
