@@ -1,11 +1,11 @@
 Meteor.methods({
 	'livechat:registerGuest': function({ token, name, email, department } = {}) {
-		var pass, qt, user, userData, userExists, userId, inc = 0;
+		var qt, user, userData, userExists, userId, inc = 0;
 
 		check(token, String);
 
 		user = Meteor.users.findOne({
-			"profile.token": token
+			'profile.token': token
 		}, {
 			fields: {
 				_id: 1
@@ -43,18 +43,18 @@ Meteor.methods({
 
 		userData.userAgent = this.connection.httpHeaders['user-agent'];
 		userData.ip = this.connection.httpHeaders['x-real-ip'] || this.connection.clientAddress;
-		userData.host = this.connection.httpHeaders['host'];
+		userData.host = this.connection.httpHeaders.host;
 
 		userId = Accounts.insertUserDoc({}, userData);
 
-		updateUser = {
+		const updateUser = {
 			name: name || user,
-			"profile.guest": true,
-			"profile.token": token
-		}
+			'profile.guest': true,
+			'profile.token': token
+		};
 
-		if (email && email.trim() !== "") {
-			updateUser.emails = [{ "address": email }];
+		if (email && email.trim() !== '') {
+			updateUser.emails = [{ address: email }];
 		}
 
 		var stampedToken = Accounts._generateStampedLoginToken();
