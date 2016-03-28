@@ -282,5 +282,10 @@
   "You_need_confirm_email" : "Πρεπει να επιβεβαίώσετε το email σας για να συνδεθείτε!",
   "You_will_not_be_able_to_recover" : "Δεν θα μπορείτε να το επαναφέρετε!",
   "Your_entry_has_been_deleted" : "Η καταχώρησή σας έχει διαγραφεί.",
-  "Your_Open_Source_solution" : "Η δικιά σου λύση ανοιχτού κώδικα"
+  "Your_Open_Source_solution" : "Η δικιά σου λύση ανοιχτού κώδικα",
+  "User_added" : "Ο χρήστης <em>__user_added__</em> πρστέθηκε.",
+  "Save" : "Αποθήκευση",
+  "LDAP_Dn" : "LDAP DN",
+  "Start_Chat" : "Έναρξη συνομιλίας",
+  "Livechat_enabled" : "Livechat ενεργοποιημένη"
 }

@@ -122,5 +122,9 @@
   "Welcome" : "Üdvözöllek <em>%s</em>",
   "Welcome_to_the" : "Üdvözöllek a",
   "You_need_confirm_email" : "Kérlek hitelesítsd az email címed a bejelntkezéshez",
-  "Your_Open_Source_solution" : "A saját Nyílt Forrású chat-ed"
+  "Your_Open_Source_solution" : "A saját Nyílt Forrású chat-ed",
+  "User_added" : "<em>__user_added__</em> hozzáadva.",
+  "Save" : "Mentés",
+  "Start_Chat" : "Start Chat",
+  "Livechat_enabled" : "LiveChat engedélyezve"
 }
