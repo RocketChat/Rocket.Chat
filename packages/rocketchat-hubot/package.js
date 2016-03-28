@@ -23,7 +23,7 @@ Package.onUse(function(api) {
 	api.use('templating', 'client');
 	var _ = Npm.require('underscore');
 	var fs = Npm.require('fs');
-	tapi18nFiles = _.compact(_.map(fs.readdirSync('packages/rocketchat-hubot/i18n'), function(filename) {
+	var tapi18nFiles = _.compact(_.map(fs.readdirSync('packages/rocketchat-hubot/i18n'), function(filename) {
 		if (fs.statSync('packages/rocketchat-hubot/i18n/' + filename).size > 16) {
 			return 'i18n/' + filename;
 		}
@@ -40,16 +40,14 @@ Package.onUse(function(api) {
 });
 
 Npm.depends({
-	"coffee-script": "1.9.3",
-	"hubot": "2.13.1",
-	"hubot-calculator": "0.4.0",
-	"hubot-google-hangouts": "0.7.1",
-	"hubot-google-images": "0.1.5",
-	"hubot-google-translate": "0.2.0",
-	"hubot-maps": "0.0.2",
-	"hubot-help": "0.1.1",
-	"hubot-scripts": "2.16.1",
-	"hubot-youtube": "1.0.0",
+	'coffee-script': '1.9.3',
+	'hubot': '2.13.1',
+	'hubot-calculator': '0.4.0',
+	'hubot-google-hangouts': '0.7.1',
+	'hubot-google-images': '0.1.5',
+	'hubot-google-translate': '0.2.0',
+	'hubot-maps': '0.0.2',
+	'hubot-help': '0.1.1',
+	'hubot-scripts': '2.16.1',
+	'hubot-youtube': '1.0.0',
 });
-
-Package.onTest(function(api) {});

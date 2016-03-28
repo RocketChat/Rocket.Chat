@@ -1,7 +1,7 @@
 RocketChat.debugLevel = 'debug';
 
 Meteor.startup(function() {
-	RocketChat.settings.onload('Debug_Level', function(key, value, initialLoad) {
+	RocketChat.settings.onload('Debug_Level', function(key, value/*, initialLoad*/) {
 		if (value) {
 			RocketChat.debugLevel = value;
 		}
@@ -16,7 +16,7 @@ Meteor.startup(function() {
 var wrapMethods = function(name, originalHandler, methodsMap) {
 	methodsMap[name] = function() {
 		if (RocketChat.debugLevel === 'debug') {
-			var args = name === "ufsWrite" ? Array.prototype.slice.call(arguments, 1) : arguments;
+			var args = name === 'ufsWrite' ? Array.prototype.slice.call(arguments, 1) : arguments;
 			console.log('[methods]'.green, name, '-> userId:', Meteor.userId(), ', arguments: ', args);
 		}
 
@@ -42,5 +42,5 @@ Meteor.publish = function(name, func) {
 		}
 
 		return func.apply(this, arguments);
-	})
+	});
 };

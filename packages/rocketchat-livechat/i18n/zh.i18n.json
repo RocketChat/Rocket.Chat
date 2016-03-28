@@ -46,6 +46,7 @@
   "There_are_no_agents_added_to_this_department_yet" : "该部门尚未分配任何客服。",
   "Time_in_seconds" : "以秒记的事件",
   "Title_bar_color" : "标题栏颜色",
+  "To_install_RocketChat_Livechat_in_your_website_copy_paste_this_code_above_the_last_body_tag_on_your_site" : "要在您的网页中使用Rocket.Chat Livechat，请将以下代码复制到您的网页代码中最后一个 <strong>&lt;/body&gt;</strong> 标签之上。",
   "Trigger_removed" : "已删除触发器",
   "Triggers" : "触发器",
   "User_management" : "用户管理",

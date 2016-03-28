@@ -2,6 +2,11 @@ RocketChat.models.Users = new class extends RocketChat.models._Base
 	constructor: ->
 		@model = Meteor.users
 
+		@tryEnsureIndex { 'roles': 1 }, { sparse: 1 }
+		@tryEnsureIndex { 'name': 1 }
+		@tryEnsureIndex { 'lastLogin': 1 }
+		@tryEnsureIndex { 'status': 1 }
+
 
 	# FIND ONE
 	findOneById: (_id, options) ->
@@ -84,15 +89,12 @@ RocketChat.models.Users = new class extends RocketChat.models._Base
 
 		return @find query, options
 
-	findByActiveUsersNameOrUsername: (nameOrUsername, options) ->
+	findByActiveUsersUsernameExcept: (username, except, options) ->
 		query =
-			username:
-				$exists: 1
 			active: true
-
-			$or: [
-				{name: nameOrUsername}
-				{username: nameOrUsername}
+			$and: [
+				{username: {$nin: except}}
+				{username: username}
 			]
 
 		return @find query, options

@@ -346,6 +346,16 @@ blockquote {
 		display: block;
 		margin-bottom: 4px;
 	}
+	> div {
+		position: relative;
+
+		.right {
+			position: absolute;
+			right: 10px;
+			top: 10px;
+			z-index: 10;
+		}
+	}
 	input[type='text'] {
 		display: block;
 	}
@@ -464,6 +474,8 @@ input[type='email'],
 input[type='url'],
 input[type='password'] {
 	-webkit-appearance: none;
+	-moz-appearance: none;
+	appearance: none;
 	height: 35px;
 	line-height: normal;
 	border: 1px solid;
@@ -1267,7 +1279,11 @@ a.github-fork {
 			box-shadow: 0 0 0;
 			border-radius: 0;
 			-webkit-appearance: none;
+			-moz-appearance: none;
+			appearance: none;
 			-webkit-border-radius: 0px;
+			-moz-border-radius: 0px;
+			border-radius: 0px;
 		}
 	}
 	.input-submit {

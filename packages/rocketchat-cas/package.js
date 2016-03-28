@@ -1,8 +1,8 @@
 Package.describe({
-  name: "rocketchat:cas",
-  summary: "CAS support for accounts",
-  version: "1.0.0",
-  git: "https://github.com/rocketchat/rocketchat-cas"
+  name: 'rocketchat:cas',
+  summary: 'CAS support for accounts',
+  version: '1.0.0',
+  git: 'https://github.com/rocketchat/rocketchat-cas'
 });
 
 Package.onUse(function(api) {
@@ -18,6 +18,7 @@ Package.onUse(function(api) {
   api.use('accounts-base', 'server');
 
   api.use('underscore');
+  api.use('ecmascript');
 
   // Server files
   api.add_files('cas_rocketchat.js', 'server');
@@ -29,5 +30,5 @@ Package.onUse(function(api) {
 });
 
 Npm.depends({
-  cas: "0.0.3"
+  cas: '0.0.3'
 });
