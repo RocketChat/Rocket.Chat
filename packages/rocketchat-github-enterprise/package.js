@@ -11,19 +11,9 @@ Package.onUse(function(api) {
 	api.use('rocketchat:lib');
 	api.use('rocketchat:custom-oauth');
 
+	api.use('templating', 'client');
+
 	api.addFiles('common.coffee');
 	api.addFiles('github-enterprise-login-button.css', 'client');
 	api.addFiles('startup.coffee', 'server');
-
-	// TAPi18n
-	api.use('templating', 'client');
-	var _ = Npm.require('underscore');
-	var fs = Npm.require('fs');
-	var tapi18nFiles = _.compact(_.map(fs.readdirSync('packages/rocketchat-github-enterprise/i18n'), function(filename) {
-		if (fs.statSync('packages/rocketchat-github-enterprise/i18n/' + filename).size > 16) {
-			return 'i18n/' + filename;
-		}
-	}));
-	api.use('tap:i18n');
-	api.addFiles(tapi18nFiles);
 });

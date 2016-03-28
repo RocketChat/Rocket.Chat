@@ -34,15 +34,4 @@ Package.onUse(function(api) {
 		'server/methods/saveRoomSettings.coffee',
 		'server/models/Messages.coffee'
 	], 'server');
-
-	// TAPi18n
-	var _ = Npm.require('underscore');
-	var fs = Npm.require('fs');
-	var tapi18nFiles = _.compact(_.map(fs.readdirSync('packages/rocketchat-channel-settings/i18n'), function(filename) {
-		if (fs.statSync('packages/rocketchat-channel-settings/i18n/' + filename).size > 16) {
-			return 'i18n/' + filename;
-		}
-	}));
-	api.use('tap:i18n');
-	api.addFiles(tapi18nFiles);
 });

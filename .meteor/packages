@@ -132,7 +132,6 @@ raix:handlebar-helpers
 raix:push
 raix:ui-dropped-event
 steffo:meteor-accounts-saml
-tap:i18n
 tmeasday:crypto-md5
 todda00:friendly-slugs
 underscorestring:underscore.string
