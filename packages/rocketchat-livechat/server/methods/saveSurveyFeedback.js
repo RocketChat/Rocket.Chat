@@ -1,3 +1,5 @@
+/* eslint new-cap: [2, {"capIsNewExceptions": ["Match.ObjectIncluding"]}] */
+
 Meteor.methods({
 	'livechat:saveSurveyFeedback' (visitorToken, visitorRoom, formData) {
 		check(visitorToken, String);

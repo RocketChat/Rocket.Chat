@@ -1,3 +1,5 @@
+/* eslint new-cap: [2, {"capIsNewExceptions": ["Match.ObjectIncluding", "Match.Optional"]}] */
+
 Meteor.methods({
 	'livechat:saveDepartment' (_id, departmentData, departmentAgents) {
 		if (!Meteor.userId() || !RocketChat.authz.hasPermission(Meteor.userId(), 'view-livechat-manager')) {

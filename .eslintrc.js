@@ -170,15 +170,7 @@ module.exports = {
 		'block-scoped-var': 2,          // treat var statements as if they were block scoped
 		'curly': [2, 'all'],            // specify curly brace conventions for all control statements
 		'eqeqeq': [2, 'allow-null'],    // require use of === and !==
-		'new-cap': [2, {                // require a capital letter for constructors
-			'capIsNewExceptions': [
-				'SHA256',
-				'Match.ObjectIncluding',
-				'Match.Optional',
-				'Match.Optional',
-				'Match.ObjectIncluding'
-			]
-		}],
+		'new-cap': 2,                   // require a capital letter for constructors
 		'use-isnan': 2,                 // disallow comparisons with the value NaN
 		'valid-typeof': 2,              // ensure results of typeof are compared against a valid string
 		'linebreak-style': [2, 'unix'], // enforce linebreak style
