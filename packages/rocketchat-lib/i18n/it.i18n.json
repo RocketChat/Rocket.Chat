@@ -49,6 +49,7 @@
   "Language_Version" : "English Version",
   "Last_message" : "Ultimo messaggio",
   "Leave_room" : "Lasciare la stanza",
+  "Livechat_enabled" : "Livechat abilitato",
   "Load_more" : "Carica di più",
   "Loading_suggestion" : "Caricando suggestioni...",
   "Login" : "Login",
@@ -87,6 +88,7 @@
   "Room" : "Stanza",
   "Room_name_changed" : "Il nome della stanza è cambiato per: <em>__room_name__</em> da <em>__user_by__</em>",
   "Room_name_changed_successfully" : "Nome della stanza cambiato con successo",
+  "Save" : "Salva",
   "Search" : "Ricerca",
   "See_all" : "Guarda tuttto",
   "See_only_online" : "Solo online",
@@ -100,6 +102,7 @@
   "Showing_results" : "<p>Mostra <b>%s</b> resultati</p>",
   "Silence" : "Silenzio",
   "since_creation" : "da %s",
+  "Start_Chat" : "Avvia chat",
   "Start_of_conversation" : "Inizia una conversazione",
   "Submit" : "Invia",
   "Use_initials_avatar" : "Usa le iniziali del tuo nome id utente",
@@ -107,6 +110,7 @@
   "Use_service_avatar" : "Usa l'avatar %s",
   "Use_this_username" : "Usa questo nome di utente",
   "Use_uploaded_avatar" : "Usare l'avatar caricato",
+  "User_added" : "Utente <em>__user_added__</em> aggiunto.",
   "User_added_by" : "Utente <em>__user_added__</em> aggiunto da <em>__user_by__</em>.",
   "User_left" : "Utente <em>__user_left__</em> ha lasciato.",
   "User_logged_out" : "L'utente è disconnesso ",
@@ -123,9 +127,5 @@
   "Welcome" : "Benvenuto <em>%s</em>.",
   "Welcome_to_the" : "Benvenuto a",
   "You_need_confirm_email" : "Hai bisogno di confermare il tuo email per accedere!",
-  "Your_Open_Source_solution" : "La tua soluzione per chat Open Source",
-  "User_added" : "Utente <em>__user_added__</em> aggiunto.",
-  "Save" : "Salva",
-  "Start_Chat" : "Avvia chat",
-  "Livechat_enabled" : "Livechat abilitato"
+  "Your_Open_Source_solution" : "La tua soluzione per chat Open Source"
 }

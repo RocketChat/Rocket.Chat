@@ -49,6 +49,7 @@
   "Language_Version" : "Українська версія",
   "Last_message" : "Останнє повідомлення",
   "Leave_room" : "Покинути кімнату",
+  "Livechat_enabled" : "Включений Livechat",
   "Load_more" : "Показати більше",
   "Loading_suggestion" : "Завантаження інших...",
   "Login" : "Логін",
@@ -87,6 +88,7 @@
   "Room" : "Кімната",
   "Room_name_changed" : "Назва кімнати змінена: <em>__room_name__</em> користувачем <em>__user_by__</em>",
   "Room_name_changed_successfully" : "Назву кімнати змінено",
+  "Save" : "Зберегти",
   "Search" : "Пошук",
   "See_all" : "Переглянути все",
   "See_only_online" : "Тільки онлайн",
@@ -100,6 +102,7 @@
   "Showing_results" : "<p>Показано <b>% s</b>Результати</p>",
   "Silence" : "Тиша",
   "since_creation" : "з %s",
+  "Start_Chat" : "Почати Чат",
   "Start_of_conversation" : "Початок розмови",
   "Submit" : "Підтвердити",
   "Use_initials_avatar" : "Використовуйте ваші ім'я користувача ініціали",
@@ -107,6 +110,7 @@
   "Use_service_avatar" : "Використовуйте% Аватар",
   "Use_this_username" : "Використовувати це ім'я користувача ",
   "Use_uploaded_avatar" : "Використовувати завантажений аватар",
+  "User_added" : "Користувач <em>__user_added__</em> доданий.",
   "User_added_by" : "Користувач <em>__user_added__</em> даданий <em>__user_by__</em>.",
   "User_left" : "Користучач <em>__user_left__</em> вийшов.",
   "User_logged_out" : "Користувач вийшов з системи",
@@ -123,9 +127,5 @@
   "Welcome" : "Вітаємо, <em>%s</em>.",
   "Welcome_to_the" : "Ласкаво просимо в",
   "You_need_confirm_email" : "Для входу необхідно підтвердити e-mail!",
-  "Your_Open_Source_solution" : "Ваш власний Open Source чат",
-  "User_added" : "Користувач <em>__user_added__</em> доданий.",
-  "Save" : "Зберегти",
-  "Start_Chat" : "Почати Чат",
-  "Livechat_enabled" : "Включений Livechat"
+  "Your_Open_Source_solution" : "Ваш власний Open Source чат"
 }
