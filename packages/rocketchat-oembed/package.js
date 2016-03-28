@@ -13,6 +13,7 @@ Package.onUse(function(api) {
 	api.versionsFrom('1.0');
 
 	api.use([
+		'http',
 		'templating',
 		'coffeescript',
 		'underscore',
