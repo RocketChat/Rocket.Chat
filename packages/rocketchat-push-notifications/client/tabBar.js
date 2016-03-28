@@ -6,5 +6,5 @@ Meteor.startup(function() {
 		icon: 'icon-bell-alt',
 		template: 'pushNotificationsFlexTab',
 		order: 2
-	})
+	});
 });
