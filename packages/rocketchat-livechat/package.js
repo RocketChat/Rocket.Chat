@@ -5,13 +5,13 @@ Package.describe({
 });
 
 Package.registerBuildPlugin({
-	name: "builLivechat",
+	name: 'builLivechat',
 	use: [],
 	sources: [
 		'plugin/build-livechat.js'
 	],
 	npmDependencies: {
-		"shelljs": "0.5.1"
+		'shelljs': '0.5.1'
 	}
 });
 
@@ -123,7 +123,7 @@ Package.onUse(function(api) {
 	// TAPi18n
 	var _ = Npm.require('underscore');
 	var fs = Npm.require('fs');
-	tapi18nFiles = _.compact(_.map(fs.readdirSync('packages/rocketchat-livechat/i18n'), function(filename) {
+	var tapi18nFiles = _.compact(_.map(fs.readdirSync('packages/rocketchat-livechat/i18n'), function(filename) {
 		if (fs.statSync('packages/rocketchat-livechat/i18n/' + filename).size > 16) {
 			return 'i18n/' + filename;
 		}

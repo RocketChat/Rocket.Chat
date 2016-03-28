@@ -1,8 +1,20 @@
 URL = Npm.require('url')
 querystring = Npm.require('querystring')
 request = HTTPInternals.NpmModules.request.module
+iconv = Npm.require('iconv-lite')
 
 OEmbed = {}
+
+# Detect encoding
+getCharset = (body) ->
+	binary = body.toString 'binary'
+	matches = binary.match /<meta\b[^>]*charset=["']?([\w\-]+)/i
+	if matches
+		return matches[1]
+	return 'utf-8'
+
+toUtf8 = (body) ->
+	return iconv.decode body, getCharset(body)
 
 getUrlContent = (urlObj, redirectCount = 5, callback) ->
 	if _.isString(urlObj)
@@ -41,9 +53,10 @@ getUrlContent = (urlObj, redirectCount = 5, callback) ->
 
 	stream.on 'end', Meteor.bindEnvironment ->
 		buffer = Buffer.concat(chunks)
+
 		callback null, {
 			headers: headers
-			body: buffer.toString()
+			body: toUtf8 buffer
 			parsedUrl: parsedUrl
 		}
 

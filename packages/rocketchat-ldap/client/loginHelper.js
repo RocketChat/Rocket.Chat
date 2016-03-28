@@ -14,10 +14,18 @@ Meteor.loginWithLDAP = function(username, password, customLdapOptions, callback)
 
 	// Check if last argument is a function
 	// if it is, pop it off and set callback to it
-	if (typeof args[args.length-1] == 'function') callback = args.pop(); else callback = null;
+	if (typeof args[args.length-1] === 'function') {
+		callback = args.pop();
+	} else {
+		callback = null;
+	}
 
 	// if args still holds options item, grab it
-	if (args.length > 0) customLdapOptions = args.shift(); else customLdapOptions = {};
+	if (args.length > 0) {
+		customLdapOptions = args.shift();
+	} else {
+		customLdapOptions = {};
+	}
 
 	// Set up loginRequest object
 	var loginRequest = {
@@ -30,7 +38,7 @@ Meteor.loginWithLDAP = function(username, password, customLdapOptions, callback)
 		// Call login method with ldap = true
 		// This will hook into our login handler for ldap
 		methodArguments: [loginRequest],
-		userCallback: function(error, result) {
+		userCallback: function(error/*, result*/) {
 			if (error) {
 				if (callback) {
 					callback(error);

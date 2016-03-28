@@ -53,6 +53,10 @@
 												{{/if}}
 											{{/if}}
 
+											{{#if $eq type 'relativeUrl'}}
+												<input class="input-monitor" type="text" name="{{_id}}" value="{{relativeUrl value}}" placeholder="{{placeholder}}" {{isDisabled}} {{isReadonly}}/>
+											{{/if}}
+
 											{{#if $eq type 'password'}}
 												<input class="input-monitor" type="password" name="{{_id}}" value="{{value}}" placeholder="{{placeholder}}" {{isDisabled}}/>
 											{{/if}}

@@ -10,7 +10,7 @@ Package.onUse(function(api) {
 
 	api.use([
 		'coffeescript',
-		'emojione:emojione@2.1.2',
+		'emojione:emojione',
 		'rocketchat:lib'
 	]);
 	api.use('rocketchat:theme');
@@ -32,4 +32,6 @@ Package.onUse(function(api) {
 
 	api.addFiles('lib/EmojiPicker.js', 'client');
 	api.addFiles('emojiButton.js', 'client');
+
+	api.addFiles('sprites.css', 'client');
 });

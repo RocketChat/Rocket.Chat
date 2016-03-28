@@ -87,6 +87,7 @@
   "busy_male" : "ocupado",
   "Busy_male" : "Ocupado",
   "Cancel" : "Cancelar",
+  "Cannot_invite_users_to_direct_rooms" : "Não é possível convidar pessoas para salas diretas",
   "CDN_PREFIX" : "Prefixo CDN",
   "Certificates_and_Keys" : "Certificados e Chaves",
   "Channels" : "Canais",

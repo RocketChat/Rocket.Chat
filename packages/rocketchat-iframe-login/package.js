@@ -1,7 +1,7 @@
 Package.describe({
-  name: "rocketchat:iframe-login",
-  summary: "",
-  version: "1.0.0"
+  name: 'rocketchat:iframe-login',
+  summary: '',
+  version: '1.0.0'
 });
 
 Package.onUse(function(api) {
