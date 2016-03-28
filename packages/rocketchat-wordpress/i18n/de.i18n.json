@@ -1,7 +1,0 @@
-{
-  "API_Wordpress_URL" : "Wordpress-URL",
-  "Accounts_OAuth_Wordpress" : "Anmeldung über Wordpress",
-  "Accounts_OAuth_Wordpress_id" : "WordPress-ID",
-  "Accounts_OAuth_Wordpress_secret" : "Wordpress-Secret",
-  "Accounts_OAuth_Wordpress_callback_url" : "Wordpress-Callback-URL"
-}

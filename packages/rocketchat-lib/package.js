@@ -27,6 +27,8 @@ Package.onUse(function(api) {
 	api.use('arunoda:streams');
 	api.use('rocketchat:version');
 	api.use('rocketchat:logger');
+
+	api.use('templating', 'client');
 	api.use('kadira:flow-router', 'client');
 
 	api.addFiles('lib/core.coffee');
@@ -123,20 +125,21 @@ Package.onUse(function(api) {
 	// VERSION
 	api.addFiles('rocketchat.info');
 
+	// EXPORT
+	api.export('RocketChat');
+
 	// TAPi18n
-	api.use('templating', 'client');
 	var _ = Npm.require('underscore');
 	var fs = Npm.require('fs');
 	var tapi18nFiles = _.compact(_.map(fs.readdirSync('packages/rocketchat-lib/i18n'), function(filename) {
-		if (fs.statSync('packages/rocketchat-lib/i18n/' + filename).size > 16) {
+		if (filename.indexOf('.json') > -1 && fs.statSync('packages/rocketchat-lib/i18n/' + filename).size > 16) {
 			return 'i18n/' + filename;
 		}
 	}));
-	api.use('tap:i18n');
 	api.addFiles(tapi18nFiles);
 
-	// EXPORT
-	api.export('RocketChat');
+	api.use('tap:i18n');
+	api.imply('tap:i18n');
 });
 
 Package.onTest(function(api) {
