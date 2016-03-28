@@ -1,4 +1,5 @@
 /* globals LDAP, slug, getLdapUsername, getLdapUserUniqueID, syncUserData, getDataToSyncUserData */
+/* eslint new-cap: [2, {"capIsNewExceptions": ["SHA256"]}] */
 
 const logger = new Logger('LDAPHandler', {});
 
