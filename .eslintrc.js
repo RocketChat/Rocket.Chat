@@ -103,8 +103,7 @@ module.exports = {
 		'no-unreachable': 2,                       // disallow unreachable statements after a return, throw, continue, or break statement
 		'no-unused-vars': [2, {                    // disallow declaration of variables that are not used in the code
 			'vars': 'all',
-			'args': 'after-used',
-			'varsIgnorePattern': 'RocketChat'
+			'args': 'after-used'
 		}],
 
 		// 'array-bracket-spacing': [0, 'never'],
