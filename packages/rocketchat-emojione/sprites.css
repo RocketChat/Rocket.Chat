@@ -1,0 +1,4889 @@
+.emojione {
+  image-rendering: optimizeQuality;
+  font-size: inherit;
+  height: 22px;
+  width: 22px;
+  position: relative;
+  display: inline-block;
+  margin: 0 .15em;
+  line-height: normal;
+  vertical-align: middle;
+  background-image: url("/packages/emojione_emojione/assets/sprites/emojione.sprites.png");
+  background-size: 4100% 4000%;
+  background-repeat: no-repeat;
+  font: 0/0 serif;
+  text-shadow: none;
+  color: transparent;
+}
+
+.emojione-0023-20e3 {
+  background-position: 2.5% 0%; }
+
+.emojione-002a-20e3 {
+  background-position: 52.5% 71.79487%; }
+
+.emojione-0030-20e3 {
+  background-position: 0% 2.5641%; }
+
+.emojione-0031-20e3 {
+  background-position: 2.5% 2.5641%; }
+
+.emojione-0032-20e3 {
+  background-position: 5% 0%; }
+
+.emojione-0033-20e3 {
+  background-position: 5% 2.5641%; }
+
+.emojione-0034-20e3 {
+  background-position: 0% 5.12821%; }
+
+.emojione-0035-20e3 {
+  background-position: 2.5% 5.12821%; }
+
+.emojione-0036-20e3 {
+  background-position: 5% 5.12821%; }
+
+.emojione-0037-20e3 {
+  background-position: 7.5% 0%; }
+
+.emojione-0038-20e3 {
+  background-position: 7.5% 2.5641%; }
+
+.emojione-0039-20e3 {
+  background-position: 7.5% 5.12821%; }
+
+.emojione-00a9 {
+  background-position: 0% 7.69231%; }
+
+.emojione-00ae {
+  background-position: 2.5% 7.69231%; }
+
+.emojione-1f004 {
+  background-position: 5% 7.69231%; }
+
+.emojione-1f0cf {
+  background-position: 7.5% 7.69231%; }
+
+.emojione-1f170 {
+  background-position: 10% 0%; }
+
+.emojione-1f171 {
+  background-position: 10% 2.5641%; }
+
+.emojione-1f17e {
+  background-position: 10% 5.12821%; }
+
+.emojione-1f17f {
+  background-position: 10% 7.69231%; }
+
+.emojione-1f18e {
+  background-position: 0% 10.25641%; }
+
+.emojione-1f191 {
+  background-position: 2.5% 10.25641%; }
+
+.emojione-1f192 {
+  background-position: 5% 10.25641%; }
+
+.emojione-1f193 {
+  background-position: 7.5% 10.25641%; }
+
+.emojione-1f194 {
+  background-position: 10% 10.25641%; }
+
+.emojione-1f195 {
+  background-position: 12.5% 0%; }
+
+.emojione-1f196 {
+  background-position: 12.5% 2.5641%; }
+
+.emojione-1f197 {
+  background-position: 12.5% 5.12821%; }
+
+.emojione-1f198 {
+  background-position: 12.5% 7.69231%; }
+
+.emojione-1f199 {
+  background-position: 12.5% 10.25641%; }
+
+.emojione-1f19a {
+  background-position: 0% 12.82051%; }
+
+.emojione-1f1e6-1f1e8 {
+  background-position: 2.5% 12.82051%; }
+
+.emojione-1f1e6-1f1e9 {
+  background-position: 5% 12.82051%; }
+
+.emojione-1f1e6-1f1ea {
+  background-position: 7.5% 12.82051%; }
+
+.emojione-1f1e6-1f1eb {
+  background-position: 10% 12.82051%; }
+
+.emojione-1f1e6-1f1ec {
+  background-position: 12.5% 12.82051%; }
+
+.emojione-1f1e6-1f1ee {
+  background-position: 15% 0%; }
+
+.emojione-1f1e6-1f1f1 {
+  background-position: 15% 2.5641%; }
+
+.emojione-1f1e6-1f1f2 {
+  background-position: 15% 5.12821%; }
+
+.emojione-1f1e6-1f1f4 {
+  background-position: 15% 7.69231%; }
+
+.emojione-1f1e6-1f1f6 {
+  background-position: 15% 10.25641%; }
+
+.emojione-1f1e6-1f1f7 {
+  background-position: 15% 12.82051%; }
+
+.emojione-1f1e6-1f1f8 {
+  background-position: 0% 15.38462%; }
+
+.emojione-1f1e6-1f1f9 {
+  background-position: 2.5% 15.38462%; }
+
+.emojione-1f1e6-1f1fa {
+  background-position: 5% 15.38462%; }
+
+.emojione-1f1e6-1f1fc {
+  background-position: 7.5% 15.38462%; }
+
+.emojione-1f1e6-1f1fd {
+  background-position: 10% 15.38462%; }
+
+.emojione-1f1e6-1f1ff {
+  background-position: 12.5% 15.38462%; }
+
+.emojione-1f1e7-1f1e6 {
+  background-position: 15% 15.38462%; }
+
+.emojione-1f1e7-1f1e7 {
+  background-position: 17.5% 0%; }
+
+.emojione-1f1e7-1f1e9 {
+  background-position: 17.5% 2.5641%; }
+
+.emojione-1f1e7-1f1ea {
+  background-position: 17.5% 5.12821%; }
+
+.emojione-1f1e7-1f1eb {
+  background-position: 17.5% 7.69231%; }
+
+.emojione-1f1e7-1f1ec {
+  background-position: 17.5% 10.25641%; }
+
+.emojione-1f1e7-1f1ed {
+  background-position: 17.5% 12.82051%; }
+
+.emojione-1f1e7-1f1ee {
+  background-position: 17.5% 15.38462%; }
+
+.emojione-1f1e7-1f1ef {
+  background-position: 0% 17.94872%; }
+
+.emojione-1f1e7-1f1f1 {
+  background-position: 2.5% 17.94872%; }
+
+.emojione-1f1e7-1f1f2 {
+  background-position: 5% 17.94872%; }
+
+.emojione-1f1e7-1f1f3 {
+  background-position: 7.5% 17.94872%; }
+
+.emojione-1f1e7-1f1f4 {
+  background-position: 10% 17.94872%; }
+
+.emojione-1f1e7-1f1f6 {
+  background-position: 12.5% 17.94872%; }
+
+.emojione-1f1e7-1f1f7 {
+  background-position: 15% 17.94872%; }
+
+.emojione-1f1e7-1f1f8 {
+  background-position: 17.5% 17.94872%; }
+
+.emojione-1f1e7-1f1f9 {
+  background-position: 20% 0%; }
+
+.emojione-1f1e7-1f1fb {
+  background-position: 20% 2.5641%; }
+
+.emojione-1f1e7-1f1fc {
+  background-position: 20% 5.12821%; }
+
+.emojione-1f1e7-1f1fe {
+  background-position: 20% 7.69231%; }
+
+.emojione-1f1e7-1f1ff {
+  background-position: 20% 10.25641%; }
+
+.emojione-1f1e8-1f1e6 {
+  background-position: 20% 12.82051%; }
+
+.emojione-1f1e8-1f1e8 {
+  background-position: 20% 15.38462%; }
+
+.emojione-1f1e8-1f1e9 {
+  background-position: 20% 17.94872%; }
+
+.emojione-1f1e8-1f1eb {
+  background-position: 0% 20.51282%; }
+
+.emojione-1f1e8-1f1ec {
+  background-position: 2.5% 20.51282%; }
+
+.emojione-1f1e8-1f1ed {
+  background-position: 5% 20.51282%; }
+
+.emojione-1f1e8-1f1ee {
+  background-position: 7.5% 20.51282%; }
+
+.emojione-1f1e8-1f1f0 {
+  background-position: 10% 20.51282%; }
+
+.emojione-1f1e8-1f1f1 {
+  background-position: 12.5% 20.51282%; }
+
+.emojione-1f1e8-1f1f2 {
+  background-position: 15% 20.51282%; }
+
+.emojione-1f1e8-1f1f3 {
+  background-position: 17.5% 20.51282%; }
+
+.emojione-1f1e8-1f1f4 {
+  background-position: 20% 20.51282%; }
+
+.emojione-1f1e8-1f1f5 {
+  background-position: 22.5% 0%; }
+
+.emojione-1f1e8-1f1f7 {
+  background-position: 22.5% 2.5641%; }
+
+.emojione-1f1e8-1f1fa {
+  background-position: 22.5% 5.12821%; }
+
+.emojione-1f1e8-1f1fb {
+  background-position: 22.5% 7.69231%; }
+
+.emojione-1f1e8-1f1fc {
+  background-position: 22.5% 10.25641%; }
+
+.emojione-1f1e8-1f1fd {
+  background-position: 22.5% 12.82051%; }
+
+.emojione-1f1e8-1f1fe {
+  background-position: 22.5% 15.38462%; }
+
+.emojione-1f1e8-1f1ff {
+  background-position: 22.5% 17.94872%; }
+
+.emojione-1f1e9-1f1ea {
+  background-position: 22.5% 20.51282%; }
+
+.emojione-1f1e9-1f1ec {
+  background-position: 0% 23.07692%; }
+
+.emojione-1f1e9-1f1ef {
+  background-position: 2.5% 23.07692%; }
+
+.emojione-1f1e9-1f1f0 {
+  background-position: 5% 23.07692%; }
+
+.emojione-1f1e9-1f1f2 {
+  background-position: 7.5% 23.07692%; }
+
+.emojione-1f1e9-1f1f4 {
+  background-position: 10% 23.07692%; }
+
+.emojione-1f1e9-1f1ff {
+  background-position: 12.5% 23.07692%; }
+
+.emojione-1f1ea-1f1e6 {
+  background-position: 15% 23.07692%; }
+
+.emojione-1f1ea-1f1e8 {
+  background-position: 17.5% 23.07692%; }
+
+.emojione-1f1ea-1f1ea {
+  background-position: 20% 23.07692%; }
+
+.emojione-1f1ea-1f1ec {
+  background-position: 22.5% 23.07692%; }
+
+.emojione-1f1ea-1f1ed {
+  background-position: 25% 0%; }
+
+.emojione-1f1ea-1f1f7 {
+  background-position: 25% 2.5641%; }
+
+.emojione-1f1ea-1f1f8 {
+  background-position: 25% 5.12821%; }
+
+.emojione-1f1ea-1f1f9 {
+  background-position: 25% 7.69231%; }
+
+.emojione-1f1ea-1f1fa {
+  background-position: 25% 10.25641%; }
+
+.emojione-1f1eb-1f1ee {
+  background-position: 25% 12.82051%; }
+
+.emojione-1f1eb-1f1ef {
+  background-position: 25% 15.38462%; }
+
+.emojione-1f1eb-1f1f0 {
+  background-position: 25% 17.94872%; }
+
+.emojione-1f1eb-1f1f2 {
+  background-position: 25% 20.51282%; }
+
+.emojione-1f1eb-1f1f4 {
+  background-position: 25% 23.07692%; }
+
+.emojione-1f1eb-1f1f7 {
+  background-position: 0% 25.64103%; }
+
+.emojione-1f1ec-1f1e6 {
+  background-position: 2.5% 25.64103%; }
+
+.emojione-1f1ec-1f1e7 {
+  background-position: 5% 25.64103%; }
+
+.emojione-1f1ec-1f1e9 {
+  background-position: 7.5% 25.64103%; }
+
+.emojione-1f1ec-1f1ea {
+  background-position: 10% 25.64103%; }
+
+.emojione-1f1ec-1f1eb {
+  background-position: 12.5% 25.64103%; }
+
+.emojione-1f1ec-1f1ec {
+  background-position: 15% 25.64103%; }
+
+.emojione-1f1ec-1f1ed {
+  background-position: 17.5% 25.64103%; }
+
+.emojione-1f1ec-1f1ee {
+  background-position: 20% 25.64103%; }
+
+.emojione-1f1ec-1f1f1 {
+  background-position: 22.5% 25.64103%; }
+
+.emojione-1f1ec-1f1f2 {
+  background-position: 25% 25.64103%; }
+
+.emojione-1f1ec-1f1f3 {
+  background-position: 27.5% 0%; }
+
+.emojione-1f1ec-1f1f5 {
+  background-position: 27.5% 2.5641%; }
+
+.emojione-1f1ec-1f1f6 {
+  background-position: 27.5% 5.12821%; }
+
+.emojione-1f1ec-1f1f7 {
+  background-position: 27.5% 7.69231%; }
+
+.emojione-1f1ec-1f1f8 {
+  background-position: 27.5% 10.25641%; }
+
+.emojione-1f1ec-1f1f9 {
+  background-position: 27.5% 12.82051%; }
+
+.emojione-1f1ec-1f1fa {
+  background-position: 27.5% 15.38462%; }
+
+.emojione-1f1ec-1f1fc {
+  background-position: 27.5% 17.94872%; }
+
+.emojione-1f1ec-1f1fe {
+  background-position: 27.5% 20.51282%; }
+
+.emojione-1f1ed-1f1f0 {
+  background-position: 27.5% 23.07692%; }
+
+.emojione-1f1ed-1f1f2 {
+  background-position: 27.5% 25.64103%; }
+
+.emojione-1f1ed-1f1f3 {
+  background-position: 0% 28.20513%; }
+
+.emojione-1f1ed-1f1f7 {
+  background-position: 2.5% 28.20513%; }
+
+.emojione-1f1ed-1f1f9 {
+  background-position: 5% 28.20513%; }
+
+.emojione-1f1ed-1f1fa {
+  background-position: 7.5% 28.20513%; }
+
+.emojione-1f1ee-1f1e8 {
+  background-position: 10% 28.20513%; }
+
+.emojione-1f1ee-1f1e9 {
+  background-position: 12.5% 28.20513%; }
+
+.emojione-1f1ee-1f1ea {
+  background-position: 15% 28.20513%; }
+
+.emojione-1f1ee-1f1f1 {
+  background-position: 17.5% 28.20513%; }
+
+.emojione-1f1ee-1f1f2 {
+  background-position: 20% 28.20513%; }
+
+.emojione-1f1ee-1f1f3 {
+  background-position: 22.5% 28.20513%; }
+
+.emojione-1f1ee-1f1f4 {
+  background-position: 25% 28.20513%; }
+
+.emojione-1f1ee-1f1f6 {
+  background-position: 27.5% 28.20513%; }
+
+.emojione-1f1ee-1f1f7 {
+  background-position: 30% 0%; }
+
+.emojione-1f1ee-1f1f8 {
+  background-position: 30% 2.5641%; }
+
+.emojione-1f1ee-1f1f9 {
+  background-position: 30% 5.12821%; }
+
+.emojione-1f1ef-1f1ea {
+  background-position: 30% 7.69231%; }
+
+.emojione-1f1ef-1f1f2 {
+  background-position: 30% 10.25641%; }
+
+.emojione-1f1ef-1f1f4 {
+  background-position: 30% 12.82051%; }
+
+.emojione-1f1ef-1f1f5 {
+  background-position: 30% 15.38462%; }
+
+.emojione-1f1f0-1f1ea {
+  background-position: 30% 17.94872%; }
+
+.emojione-1f1f0-1f1ec {
+  background-position: 30% 20.51282%; }
+
+.emojione-1f1f0-1f1ed {
+  background-position: 30% 23.07692%; }
+
+.emojione-1f1f0-1f1ee {
+  background-position: 30% 25.64103%; }
+
+.emojione-1f1f0-1f1f2 {
+  background-position: 30% 28.20513%; }
+
+.emojione-1f1f0-1f1f3 {
+  background-position: 0% 30.76923%; }
+
+.emojione-1f1f0-1f1f5 {
+  background-position: 2.5% 30.76923%; }
+
+.emojione-1f1f0-1f1f7 {
+  background-position: 5% 30.76923%; }
+
+.emojione-1f1f0-1f1fc {
+  background-position: 7.5% 30.76923%; }
+
+.emojione-1f1f0-1f1fe {
+  background-position: 10% 30.76923%; }
+
+.emojione-1f1f0-1f1ff {
+  background-position: 12.5% 30.76923%; }
+
+.emojione-1f1f1-1f1e6 {
+  background-position: 15% 30.76923%; }
+
+.emojione-1f1f1-1f1e7 {
+  background-position: 17.5% 30.76923%; }
+
+.emojione-1f1f1-1f1e8 {
+  background-position: 20% 30.76923%; }
+
+.emojione-1f1f1-1f1ee {
+  background-position: 22.5% 30.76923%; }
+
+.emojione-1f1f1-1f1f0 {
+  background-position: 25% 30.76923%; }
+
+.emojione-1f1f1-1f1f7 {
+  background-position: 27.5% 30.76923%; }
+
+.emojione-1f1f1-1f1f8 {
+  background-position: 30% 30.76923%; }
+
+.emojione-1f1f1-1f1f9 {
+  background-position: 32.5% 0%; }
+
+.emojione-1f1f1-1f1fa {
+  background-position: 32.5% 2.5641%; }
+
+.emojione-1f1f1-1f1fb {
+  background-position: 32.5% 5.12821%; }
+
+.emojione-1f1f1-1f1fe {
+  background-position: 32.5% 7.69231%; }
+
+.emojione-1f1f2-1f1e6 {
+  background-position: 32.5% 10.25641%; }
+
+.emojione-1f1f2-1f1e8 {
+  background-position: 32.5% 12.82051%; }
+
+.emojione-1f1f2-1f1e9 {
+  background-position: 32.5% 15.38462%; }
+
+.emojione-1f1f2-1f1ea {
+  background-position: 32.5% 17.94872%; }
+
+.emojione-1f1f2-1f1eb {
+  background-position: 32.5% 20.51282%; }
+
+.emojione-1f1f2-1f1ec {
+  background-position: 32.5% 23.07692%; }
+
+.emojione-1f1f2-1f1ed {
+  background-position: 32.5% 25.64103%; }
+
+.emojione-1f1f2-1f1f0 {
+  background-position: 32.5% 28.20513%; }
+
+.emojione-1f1f2-1f1f1 {
+  background-position: 32.5% 30.76923%; }
+
+.emojione-1f1f2-1f1f2 {
+  background-position: 0% 33.33333%; }
+
+.emojione-1f1f2-1f1f3 {
+  background-position: 2.5% 33.33333%; }
+
+.emojione-1f1f2-1f1f4 {
+  background-position: 5% 33.33333%; }
+
+.emojione-1f1f2-1f1f5 {
+  background-position: 7.5% 33.33333%; }
+
+.emojione-1f1f2-1f1f6 {
+  background-position: 10% 33.33333%; }
+
+.emojione-1f1f2-1f1f7 {
+  background-position: 12.5% 33.33333%; }
+
+.emojione-1f1f2-1f1f8 {
+  background-position: 15% 33.33333%; }
+
+.emojione-1f1f2-1f1f9 {
+  background-position: 17.5% 33.33333%; }
+
+.emojione-1f1f2-1f1fa {
+  background-position: 20% 33.33333%; }
+
+.emojione-1f1f2-1f1fb {
+  background-position: 22.5% 33.33333%; }
+
+.emojione-1f1f2-1f1fc {
+  background-position: 25% 33.33333%; }
+
+.emojione-1f1f2-1f1fd {
+  background-position: 27.5% 33.33333%; }
+
+.emojione-1f1f2-1f1fe {
+  background-position: 30% 33.33333%; }
+
+.emojione-1f1f2-1f1ff {
+  background-position: 32.5% 33.33333%; }
+
+.emojione-1f1f3-1f1e6 {
+  background-position: 35% 0%; }
+
+.emojione-1f1f3-1f1e8 {
+  background-position: 35% 2.5641%; }
+
+.emojione-1f1f3-1f1ea {
+  background-position: 35% 5.12821%; }
+
+.emojione-1f1f3-1f1eb {
+  background-position: 35% 7.69231%; }
+
+.emojione-1f1f3-1f1ec {
+  background-position: 35% 10.25641%; }
+
+.emojione-1f1f3-1f1ee {
+  background-position: 35% 12.82051%; }
+
+.emojione-1f1f3-1f1f1 {
+  background-position: 35% 15.38462%; }
+
+.emojione-1f1f3-1f1f4 {
+  background-position: 35% 17.94872%; }
+
+.emojione-1f1f3-1f1f5 {
+  background-position: 35% 20.51282%; }
+
+.emojione-1f1f3-1f1f7 {
+  background-position: 35% 23.07692%; }
+
+.emojione-1f1f3-1f1fa {
+  background-position: 35% 25.64103%; }
+
+.emojione-1f1f3-1f1ff {
+  background-position: 35% 28.20513%; }
+
+.emojione-1f1f4-1f1f2 {
+  background-position: 35% 30.76923%; }
+
+.emojione-1f1f5-1f1e6 {
+  background-position: 35% 33.33333%; }
+
+.emojione-1f1f5-1f1ea {
+  background-position: 0% 35.89744%; }
+
+.emojione-1f1f5-1f1eb {
+  background-position: 2.5% 35.89744%; }
+
+.emojione-1f1f5-1f1ec {
+  background-position: 5% 35.89744%; }
+
+.emojione-1f1f5-1f1ed {
+  background-position: 7.5% 35.89744%; }
+
+.emojione-1f1f5-1f1f0 {
+  background-position: 10% 35.89744%; }
+
+.emojione-1f1f5-1f1f1 {
+  background-position: 12.5% 35.89744%; }
+
+.emojione-1f1f5-1f1f2 {
+  background-position: 15% 35.89744%; }
+
+.emojione-1f1f5-1f1f3 {
+  background-position: 17.5% 35.89744%; }
+
+.emojione-1f1f5-1f1f7 {
+  background-position: 20% 35.89744%; }
+
+.emojione-1f1f5-1f1f8 {
+  background-position: 22.5% 35.89744%; }
+
+.emojione-1f1f5-1f1f9 {
+  background-position: 25% 35.89744%; }
+
+.emojione-1f1f5-1f1fc {
+  background-position: 27.5% 35.89744%; }
+
+.emojione-1f1f5-1f1fe {
+  background-position: 30% 35.89744%; }
+
+.emojione-1f1f6-1f1e6 {
+  background-position: 32.5% 35.89744%; }
+
+.emojione-1f1f7-1f1ea {
+  background-position: 35% 35.89744%; }
+
+.emojione-1f1f7-1f1f4 {
+  background-position: 37.5% 0%; }
+
+.emojione-1f1f7-1f1f8 {
+  background-position: 37.5% 2.5641%; }
+
+.emojione-1f1f7-1f1fa {
+  background-position: 37.5% 5.12821%; }
+
+.emojione-1f1f7-1f1fc {
+  background-position: 37.5% 7.69231%; }
+
+.emojione-1f1f8-1f1e6 {
+  background-position: 37.5% 10.25641%; }
+
+.emojione-1f1f8-1f1e7 {
+  background-position: 37.5% 12.82051%; }
+
+.emojione-1f1f8-1f1e8 {
+  background-position: 37.5% 15.38462%; }
+
+.emojione-1f1f8-1f1e9 {
+  background-position: 37.5% 17.94872%; }
+
+.emojione-1f1f8-1f1ea {
+  background-position: 37.5% 20.51282%; }
+
+.emojione-1f1f8-1f1ec {
+  background-position: 37.5% 23.07692%; }
+
+.emojione-1f1f8-1f1ed {
+  background-position: 37.5% 25.64103%; }
+
+.emojione-1f1f8-1f1ee {
+  background-position: 37.5% 28.20513%; }
+
+.emojione-1f1f8-1f1ef {
+  background-position: 37.5% 30.76923%; }
+
+.emojione-1f1f8-1f1f0 {
+  background-position: 37.5% 33.33333%; }
+
+.emojione-1f1f8-1f1f1 {
+  background-position: 37.5% 35.89744%; }
+
+.emojione-1f1f8-1f1f2 {
+  background-position: 0% 38.46154%; }
+
+.emojione-1f1f8-1f1f3 {
+  background-position: 2.5% 38.46154%; }
+
+.emojione-1f1f8-1f1f4 {
+  background-position: 5% 38.46154%; }
+
+.emojione-1f1f8-1f1f7 {
+  background-position: 7.5% 38.46154%; }
+
+.emojione-1f1f8-1f1f8 {
+  background-position: 10% 38.46154%; }
+
+.emojione-1f1f8-1f1f9 {
+  background-position: 12.5% 38.46154%; }
+
+.emojione-1f1f8-1f1fb {
+  background-position: 15% 38.46154%; }
+
+.emojione-1f1f8-1f1fd {
+  background-position: 17.5% 38.46154%; }
+
+.emojione-1f1f8-1f1fe {
+  background-position: 20% 38.46154%; }
+
+.emojione-1f1f8-1f1ff {
+  background-position: 22.5% 38.46154%; }
+
+.emojione-1f1f9-1f1e6 {
+  background-position: 25% 38.46154%; }
+
+.emojione-1f1f9-1f1e8 {
+  background-position: 27.5% 38.46154%; }
+
+.emojione-1f1f9-1f1e9 {
+  background-position: 30% 38.46154%; }
+
+.emojione-1f1f9-1f1eb {
+  background-position: 32.5% 38.46154%; }
+
+.emojione-1f1f9-1f1ec {
+  background-position: 35% 38.46154%; }
+
+.emojione-1f1f9-1f1ed {
+  background-position: 37.5% 38.46154%; }
+
+.emojione-1f1f9-1f1ef {
+  background-position: 40% 0%; }
+
+.emojione-1f1f9-1f1f0 {
+  background-position: 40% 2.5641%; }
+
+.emojione-1f1f9-1f1f1 {
+  background-position: 40% 5.12821%; }
+
+.emojione-1f1f9-1f1f2 {
+  background-position: 40% 7.69231%; }
+
+.emojione-1f1f9-1f1f3 {
+  background-position: 40% 10.25641%; }
+
+.emojione-1f1f9-1f1f4 {
+  background-position: 40% 12.82051%; }
+
+.emojione-1f1f9-1f1f7 {
+  background-position: 40% 15.38462%; }
+
+.emojione-1f1f9-1f1f9 {
+  background-position: 40% 17.94872%; }
+
+.emojione-1f1f9-1f1fb {
+  background-position: 40% 20.51282%; }
+
+.emojione-1f1f9-1f1fc {
+  background-position: 40% 23.07692%; }
+
+.emojione-1f1f9-1f1ff {
+  background-position: 40% 25.64103%; }
+
+.emojione-1f1fa-1f1e6 {
+  background-position: 40% 28.20513%; }
+
+.emojione-1f1fa-1f1ec {
+  background-position: 40% 30.76923%; }
+
+.emojione-1f1fa-1f1f2 {
+  background-position: 40% 33.33333%; }
+
+.emojione-1f1fa-1f1f8 {
+  background-position: 40% 35.89744%; }
+
+.emojione-1f1fa-1f1fe {
+  background-position: 40% 38.46154%; }
+
+.emojione-1f1fa-1f1ff {
+  background-position: 0% 41.02564%; }
+
+.emojione-1f1fb-1f1e6 {
+  background-position: 2.5% 41.02564%; }
+
+.emojione-1f1fb-1f1e8 {
+  background-position: 5% 41.02564%; }
+
+.emojione-1f1fb-1f1ea {
+  background-position: 7.5% 41.02564%; }
+
+.emojione-1f1fb-1f1ec {
+  background-position: 10% 41.02564%; }
+
+.emojione-1f1fb-1f1ee {
+  background-position: 12.5% 41.02564%; }
+
+.emojione-1f1fb-1f1f3 {
+  background-position: 15% 41.02564%; }
+
+.emojione-1f1fb-1f1fa {
+  background-position: 17.5% 41.02564%; }
+
+.emojione-1f1fc-1f1eb {
+  background-position: 20% 41.02564%; }
+
+.emojione-1f1fc-1f1f8 {
+  background-position: 22.5% 41.02564%; }
+
+.emojione-1f1fd-1f1f0 {
+  background-position: 25% 41.02564%; }
+
+.emojione-1f1fe-1f1ea {
+  background-position: 27.5% 41.02564%; }
+
+.emojione-1f1fe-1f1f9 {
+  background-position: 30% 41.02564%; }
+
+.emojione-1f1ff-1f1e6 {
+  background-position: 32.5% 41.02564%; }
+
+.emojione-1f1ff-1f1f2 {
+  background-position: 35% 41.02564%; }
+
+.emojione-1f1ff-1f1fc {
+  background-position: 37.5% 41.02564%; }
+
+.emojione-1f201 {
+  background-position: 40% 41.02564%; }
+
+.emojione-1f202 {
+  background-position: 42.5% 0%; }
+
+.emojione-1f21a {
+  background-position: 42.5% 2.5641%; }
+
+.emojione-1f22f {
+  background-position: 42.5% 5.12821%; }
+
+.emojione-1f232 {
+  background-position: 42.5% 7.69231%; }
+
+.emojione-1f233 {
+  background-position: 42.5% 10.25641%; }
+
+.emojione-1f234 {
+  background-position: 42.5% 12.82051%; }
+
+.emojione-1f235 {
+  background-position: 42.5% 15.38462%; }
+
+.emojione-1f236 {
+  background-position: 42.5% 17.94872%; }
+
+.emojione-1f237 {
+  background-position: 42.5% 20.51282%; }
+
+.emojione-1f238 {
+  background-position: 42.5% 23.07692%; }
+
+.emojione-1f239 {
+  background-position: 42.5% 25.64103%; }
+
+.emojione-1f23a {
+  background-position: 42.5% 28.20513%; }
+
+.emojione-1f250 {
+  background-position: 42.5% 30.76923%; }
+
+.emojione-1f251 {
+  background-position: 42.5% 33.33333%; }
+
+.emojione-1f300 {
+  background-position: 42.5% 35.89744%; }
+
+.emojione-1f301 {
+  background-position: 42.5% 38.46154%; }
+
+.emojione-1f302 {
+  background-position: 42.5% 41.02564%; }
+
+.emojione-1f303 {
+  background-position: 0% 43.58974%; }
+
+.emojione-1f304 {
+  background-position: 2.5% 43.58974%; }
+
+.emojione-1f305 {
+  background-position: 5% 43.58974%; }
+
+.emojione-1f306 {
+  background-position: 7.5% 43.58974%; }
+
+.emojione-1f307 {
+  background-position: 10% 43.58974%; }
+
+.emojione-1f308 {
+  background-position: 12.5% 43.58974%; }
+
+.emojione-1f309 {
+  background-position: 15% 43.58974%; }
+
+.emojione-1f30a {
+  background-position: 17.5% 43.58974%; }
+
+.emojione-1f30b {
+  background-position: 20% 43.58974%; }
+
+.emojione-1f30c {
+  background-position: 22.5% 43.58974%; }
+
+.emojione-1f30d {
+  background-position: 25% 43.58974%; }
+
+.emojione-1f30e {
+  background-position: 27.5% 43.58974%; }
+
+.emojione-1f30f {
+  background-position: 30% 43.58974%; }
+
+.emojione-1f310 {
+  background-position: 32.5% 43.58974%; }
+
+.emojione-1f311 {
+  background-position: 35% 43.58974%; }
+
+.emojione-1f312 {
+  background-position: 37.5% 43.58974%; }
+
+.emojione-1f313 {
+  background-position: 40% 43.58974%; }
+
+.emojione-1f314 {
+  background-position: 42.5% 43.58974%; }
+
+.emojione-1f315 {
+  background-position: 45% 0%; }
+
+.emojione-1f316 {
+  background-position: 45% 2.5641%; }
+
+.emojione-1f317 {
+  background-position: 45% 5.12821%; }
+
+.emojione-1f318 {
+  background-position: 45% 7.69231%; }
+
+.emojione-1f319 {
+  background-position: 45% 10.25641%; }
+
+.emojione-1f31a {
+  background-position: 45% 12.82051%; }
+
+.emojione-1f31b {
+  background-position: 45% 15.38462%; }
+
+.emojione-1f31c {
+  background-position: 45% 17.94872%; }
+
+.emojione-1f31d {
+  background-position: 45% 20.51282%; }
+
+.emojione-1f31e {
+  background-position: 45% 23.07692%; }
+
+.emojione-1f31f {
+  background-position: 45% 25.64103%; }
+
+.emojione-1f320 {
+  background-position: 45% 28.20513%; }
+
+.emojione-1f321 {
+  background-position: 45% 30.76923%; }
+
+.emojione-1f324 {
+  background-position: 45% 33.33333%; }
+
+.emojione-1f325 {
+  background-position: 45% 35.89744%; }
+
+.emojione-1f326 {
+  background-position: 45% 38.46154%; }
+
+.emojione-1f327 {
+  background-position: 45% 41.02564%; }
+
+.emojione-1f328 {
+  background-position: 45% 43.58974%; }
+
+.emojione-1f329 {
+  background-position: 0% 46.15385%; }
+
+.emojione-1f32a {
+  background-position: 2.5% 46.15385%; }
+
+.emojione-1f32b {
+  background-position: 5% 46.15385%; }
+
+.emojione-1f32c {
+  background-position: 7.5% 46.15385%; }
+
+.emojione-1f32d {
+  background-position: 10% 46.15385%; }
+
+.emojione-1f32e {
+  background-position: 12.5% 46.15385%; }
+
+.emojione-1f32f {
+  background-position: 15% 46.15385%; }
+
+.emojione-1f330 {
+  background-position: 17.5% 46.15385%; }
+
+.emojione-1f331 {
+  background-position: 20% 46.15385%; }
+
+.emojione-1f332 {
+  background-position: 22.5% 46.15385%; }
+
+.emojione-1f333 {
+  background-position: 25% 46.15385%; }
+
+.emojione-1f334 {
+  background-position: 27.5% 46.15385%; }
+
+.emojione-1f335 {
+  background-position: 30% 46.15385%; }
+
+.emojione-1f336 {
+  background-position: 32.5% 46.15385%; }
+
+.emojione-1f337 {
+  background-position: 35% 46.15385%; }
+
+.emojione-1f338 {
+  background-position: 37.5% 46.15385%; }
+
+.emojione-1f339 {
+  background-position: 40% 46.15385%; }
+
+.emojione-1f33a {
+  background-position: 42.5% 46.15385%; }
+
+.emojione-1f33b {
+  background-position: 45% 46.15385%; }
+
+.emojione-1f33c {
+  background-position: 47.5% 0%; }
+
+.emojione-1f33d {
+  background-position: 47.5% 2.5641%; }
+
+.emojione-1f33e {
+  background-position: 47.5% 5.12821%; }
+
+.emojione-1f33f {
+  background-position: 47.5% 7.69231%; }
+
+.emojione-1f340 {
+  background-position: 47.5% 10.25641%; }
+
+.emojione-1f341 {
+  background-position: 47.5% 12.82051%; }
+
+.emojione-1f342 {
+  background-position: 47.5% 15.38462%; }
+
+.emojione-1f343 {
+  background-position: 47.5% 17.94872%; }
+
+.emojione-1f344 {
+  background-position: 47.5% 20.51282%; }
+
+.emojione-1f345 {
+  background-position: 47.5% 23.07692%; }
+
+.emojione-1f346 {
+  background-position: 47.5% 25.64103%; }
+
+.emojione-1f347 {
+  background-position: 47.5% 28.20513%; }
+
+.emojione-1f348 {
+  background-position: 47.5% 30.76923%; }
+
+.emojione-1f349 {
+  background-position: 47.5% 33.33333%; }
+
+.emojione-1f34a {
+  background-position: 47.5% 35.89744%; }
+
+.emojione-1f34b {
+  background-position: 47.5% 38.46154%; }
+
+.emojione-1f34c {
+  background-position: 47.5% 41.02564%; }
+
+.emojione-1f34d {
+  background-position: 47.5% 43.58974%; }
+
+.emojione-1f34e {
+  background-position: 47.5% 46.15385%; }
+
+.emojione-1f34f {
+  background-position: 0% 48.71795%; }
+
+.emojione-1f350 {
+  background-position: 2.5% 48.71795%; }
+
+.emojione-1f351 {
+  background-position: 5% 48.71795%; }
+
+.emojione-1f352 {
+  background-position: 7.5% 48.71795%; }
+
+.emojione-1f353 {
+  background-position: 10% 48.71795%; }
+
+.emojione-1f354 {
+  background-position: 12.5% 48.71795%; }
+
+.emojione-1f355 {
+  background-position: 15% 48.71795%; }
+
+.emojione-1f356 {
+  background-position: 17.5% 48.71795%; }
+
+.emojione-1f357 {
+  background-position: 20% 48.71795%; }
+
+.emojione-1f358 {
+  background-position: 22.5% 48.71795%; }
+
+.emojione-1f359 {
+  background-position: 25% 48.71795%; }
+
+.emojione-1f35a {
+  background-position: 27.5% 48.71795%; }
+
+.emojione-1f35b {
+  background-position: 30% 48.71795%; }
+
+.emojione-1f35c {
+  background-position: 32.5% 48.71795%; }
+
+.emojione-1f35d {
+  background-position: 35% 48.71795%; }
+
+.emojione-1f35e {
+  background-position: 37.5% 48.71795%; }
+
+.emojione-1f35f {
+  background-position: 40% 48.71795%; }
+
+.emojione-1f360 {
+  background-position: 42.5% 48.71795%; }
+
+.emojione-1f361 {
+  background-position: 45% 48.71795%; }
+
+.emojione-1f362 {
+  background-position: 47.5% 48.71795%; }
+
+.emojione-1f363 {
+  background-position: 50% 0%; }
+
+.emojione-1f364 {
+  background-position: 50% 2.5641%; }
+
+.emojione-1f365 {
+  background-position: 50% 5.12821%; }
+
+.emojione-1f366 {
+  background-position: 50% 7.69231%; }
+
+.emojione-1f367 {
+  background-position: 50% 10.25641%; }
+
+.emojione-1f368 {
+  background-position: 50% 12.82051%; }
+
+.emojione-1f369 {
+  background-position: 50% 15.38462%; }
+
+.emojione-1f36a {
+  background-position: 50% 17.94872%; }
+
+.emojione-1f36b {
+  background-position: 50% 20.51282%; }
+
+.emojione-1f36c {
+  background-position: 50% 23.07692%; }
+
+.emojione-1f36d {
+  background-position: 50% 25.64103%; }
+
+.emojione-1f36e {
+  background-position: 50% 28.20513%; }
+
+.emojione-1f36f {
+  background-position: 50% 30.76923%; }
+
+.emojione-1f370 {
+  background-position: 50% 33.33333%; }
+
+.emojione-1f371 {
+  background-position: 50% 35.89744%; }
+
+.emojione-1f372 {
+  background-position: 50% 38.46154%; }
+
+.emojione-1f373 {
+  background-position: 50% 41.02564%; }
+
+.emojione-1f374 {
+  background-position: 50% 43.58974%; }
+
+.emojione-1f375 {
+  background-position: 50% 46.15385%; }
+
+.emojione-1f376 {
+  background-position: 50% 48.71795%; }
+
+.emojione-1f377 {
+  background-position: 0% 51.28205%; }
+
+.emojione-1f378 {
+  background-position: 2.5% 51.28205%; }
+
+.emojione-1f379 {
+  background-position: 5% 51.28205%; }
+
+.emojione-1f37a {
+  background-position: 7.5% 51.28205%; }
+
+.emojione-1f37b {
+  background-position: 10% 51.28205%; }
+
+.emojione-1f37c {
+  background-position: 12.5% 51.28205%; }
+
+.emojione-1f37d {
+  background-position: 15% 51.28205%; }
+
+.emojione-1f37e {
+  background-position: 17.5% 51.28205%; }
+
+.emojione-1f37f {
+  background-position: 20% 51.28205%; }
+
+.emojione-1f380 {
+  background-position: 22.5% 51.28205%; }
+
+.emojione-1f381 {
+  background-position: 25% 51.28205%; }
+
+.emojione-1f382 {
+  background-position: 27.5% 51.28205%; }
+
+.emojione-1f383 {
+  background-position: 30% 51.28205%; }
+
+.emojione-1f384 {
+  background-position: 32.5% 51.28205%; }
+
+.emojione-1f385-1f3fb {
+  background-position: 35% 51.28205%; }
+
+.emojione-1f385-1f3fc {
+  background-position: 37.5% 51.28205%; }
+
+.emojione-1f385-1f3fd {
+  background-position: 40% 51.28205%; }
+
+.emojione-1f385-1f3fe {
+  background-position: 42.5% 51.28205%; }
+
+.emojione-1f385-1f3ff {
+  background-position: 45% 51.28205%; }
+
+.emojione-1f385 {
+  background-position: 47.5% 51.28205%; }
+
+.emojione-1f386 {
+  background-position: 50% 51.28205%; }
+
+.emojione-1f387 {
+  background-position: 52.5% 0%; }
+
+.emojione-1f388 {
+  background-position: 52.5% 2.5641%; }
+
+.emojione-1f389 {
+  background-position: 52.5% 5.12821%; }
+
+.emojione-1f38a {
+  background-position: 52.5% 7.69231%; }
+
+.emojione-1f38b {
+  background-position: 52.5% 10.25641%; }
+
+.emojione-1f38c {
+  background-position: 52.5% 12.82051%; }
+
+.emojione-1f38d {
+  background-position: 52.5% 15.38462%; }
+
+.emojione-1f38e {
+  background-position: 52.5% 17.94872%; }
+
+.emojione-1f38f {
+  background-position: 52.5% 20.51282%; }
+
+.emojione-1f390 {
+  background-position: 52.5% 23.07692%; }
+
+.emojione-1f391 {
+  background-position: 52.5% 25.64103%; }
+
+.emojione-1f392 {
+  background-position: 52.5% 28.20513%; }
+
+.emojione-1f393 {
+  background-position: 52.5% 30.76923%; }
+
+.emojione-1f396 {
+  background-position: 52.5% 33.33333%; }
+
+.emojione-1f397 {
+  background-position: 52.5% 35.89744%; }
+
+.emojione-1f399 {
+  background-position: 52.5% 38.46154%; }
+
+.emojione-1f39a {
+  background-position: 52.5% 41.02564%; }
+
+.emojione-1f39b {
+  background-position: 52.5% 43.58974%; }
+
+.emojione-1f39e {
+  background-position: 52.5% 46.15385%; }
+
+.emojione-1f39f {
+  background-position: 52.5% 48.71795%; }
+
+.emojione-1f3a0 {
+  background-position: 52.5% 51.28205%; }
+
+.emojione-1f3a1 {
+  background-position: 0% 53.84615%; }
+
+.emojione-1f3a2 {
+  background-position: 2.5% 53.84615%; }
+
+.emojione-1f3a3 {
+  background-position: 5% 53.84615%; }
+
+.emojione-1f3a4 {
+  background-position: 7.5% 53.84615%; }
+
+.emojione-1f3a5 {
+  background-position: 10% 53.84615%; }
+
+.emojione-1f3a6 {
+  background-position: 12.5% 53.84615%; }
+
+.emojione-1f3a7 {
+  background-position: 15% 53.84615%; }
+
+.emojione-1f3a8 {
+  background-position: 17.5% 53.84615%; }
+
+.emojione-1f3a9 {
+  background-position: 20% 53.84615%; }
+
+.emojione-1f3aa {
+  background-position: 22.5% 53.84615%; }
+
+.emojione-1f3ab {
+  background-position: 25% 53.84615%; }
+
+.emojione-1f3ac {
+  background-position: 27.5% 53.84615%; }
+
+.emojione-1f3ad {
+  background-position: 30% 53.84615%; }
+
+.emojione-1f3ae {
+  background-position: 32.5% 53.84615%; }
+
+.emojione-1f3af {
+  background-position: 35% 53.84615%; }
+
+.emojione-1f3b0 {
+  background-position: 37.5% 53.84615%; }
+
+.emojione-1f3b1 {
+  background-position: 40% 53.84615%; }
+
+.emojione-1f3b2 {
+  background-position: 42.5% 53.84615%; }
+
+.emojione-1f3b3 {
+  background-position: 45% 53.84615%; }
+
+.emojione-1f3b4 {
+  background-position: 47.5% 53.84615%; }
+
+.emojione-1f3b5 {
+  background-position: 50% 53.84615%; }
+
+.emojione-1f3b6 {
+  background-position: 52.5% 53.84615%; }
+
+.emojione-1f3b7 {
+  background-position: 55% 0%; }
+
+.emojione-1f3b8 {
+  background-position: 55% 2.5641%; }
+
+.emojione-1f3b9 {
+  background-position: 55% 5.12821%; }
+
+.emojione-1f3ba {
+  background-position: 55% 7.69231%; }
+
+.emojione-1f3bb {
+  background-position: 55% 10.25641%; }
+
+.emojione-1f3bc {
+  background-position: 55% 12.82051%; }
+
+.emojione-1f3bd {
+  background-position: 55% 15.38462%; }
+
+.emojione-1f3be {
+  background-position: 55% 17.94872%; }
+
+.emojione-1f3bf {
+  background-position: 55% 20.51282%; }
+
+.emojione-1f3c0 {
+  background-position: 55% 23.07692%; }
+
+.emojione-1f3c1 {
+  background-position: 55% 25.64103%; }
+
+.emojione-1f3c2 {
+  background-position: 55% 28.20513%; }
+
+.emojione-1f3c3-1f3fb {
+  background-position: 55% 30.76923%; }
+
+.emojione-1f3c3-1f3fc {
+  background-position: 55% 33.33333%; }
+
+.emojione-1f3c3-1f3fd {
+  background-position: 55% 35.89744%; }
+
+.emojione-1f3c3-1f3fe {
+  background-position: 55% 38.46154%; }
+
+.emojione-1f3c3-1f3ff {
+  background-position: 55% 41.02564%; }
+
+.emojione-1f3c3 {
+  background-position: 55% 43.58974%; }
+
+.emojione-1f3c4-1f3fb {
+  background-position: 55% 46.15385%; }
+
+.emojione-1f3c4-1f3fc {
+  background-position: 55% 48.71795%; }
+
+.emojione-1f3c4-1f3fd {
+  background-position: 55% 51.28205%; }
+
+.emojione-1f3c4-1f3fe {
+  background-position: 55% 53.84615%; }
+
+.emojione-1f3c4-1f3ff {
+  background-position: 0% 56.41026%; }
+
+.emojione-1f3c4 {
+  background-position: 2.5% 56.41026%; }
+
+.emojione-1f3c5 {
+  background-position: 5% 56.41026%; }
+
+.emojione-1f3c6 {
+  background-position: 7.5% 56.41026%; }
+
+.emojione-1f3c7-1f3fb {
+  background-position: 10% 56.41026%; }
+
+.emojione-1f3c7-1f3fc {
+  background-position: 12.5% 56.41026%; }
+
+.emojione-1f3c7-1f3fd {
+  background-position: 15% 56.41026%; }
+
+.emojione-1f3c7-1f3fe {
+  background-position: 17.5% 56.41026%; }
+
+.emojione-1f3c7-1f3ff {
+  background-position: 20% 56.41026%; }
+
+.emojione-1f3c7 {
+  background-position: 22.5% 56.41026%; }
+
+.emojione-1f3c8 {
+  background-position: 25% 56.41026%; }
+
+.emojione-1f3c9 {
+  background-position: 27.5% 56.41026%; }
+
+.emojione-1f3ca-1f3fb {
+  background-position: 30% 56.41026%; }
+
+.emojione-1f3ca-1f3fc {
+  background-position: 32.5% 56.41026%; }
+
+.emojione-1f3ca-1f3fd {
+  background-position: 35% 56.41026%; }
+
+.emojione-1f3ca-1f3fe {
+  background-position: 37.5% 56.41026%; }
+
+.emojione-1f3ca-1f3ff {
+  background-position: 40% 56.41026%; }
+
+.emojione-1f3ca {
+  background-position: 42.5% 56.41026%; }
+
+.emojione-1f3cb-1f3fb {
+  background-position: 45% 56.41026%; }
+
+.emojione-1f3cb-1f3fc {
+  background-position: 47.5% 56.41026%; }
+
+.emojione-1f3cb-1f3fd {
+  background-position: 50% 56.41026%; }
+
+.emojione-1f3cb-1f3fe {
+  background-position: 52.5% 56.41026%; }
+
+.emojione-1f3cb-1f3ff {
+  background-position: 55% 56.41026%; }
+
+.emojione-1f3cb {
+  background-position: 57.5% 0%; }
+
+.emojione-1f3cc {
+  background-position: 57.5% 2.5641%; }
+
+.emojione-1f3cd {
+  background-position: 57.5% 5.12821%; }
+
+.emojione-1f3ce {
+  background-position: 57.5% 7.69231%; }
+
+.emojione-1f3cf {
+  background-position: 57.5% 10.25641%; }
+
+.emojione-1f3d0 {
+  background-position: 57.5% 12.82051%; }
+
+.emojione-1f3d1 {
+  background-position: 57.5% 15.38462%; }
+
+.emojione-1f3d2 {
+  background-position: 57.5% 17.94872%; }
+
+.emojione-1f3d3 {
+  background-position: 57.5% 20.51282%; }
+
+.emojione-1f3d4 {
+  background-position: 57.5% 23.07692%; }
+
+.emojione-1f3d5 {
+  background-position: 57.5% 25.64103%; }
+
+.emojione-1f3d6 {
+  background-position: 57.5% 28.20513%; }
+
+.emojione-1f3d7 {
+  background-position: 57.5% 30.76923%; }
+
+.emojione-1f3d8 {
+  background-position: 57.5% 33.33333%; }
+
+.emojione-1f3d9 {
+  background-position: 57.5% 35.89744%; }
+
+.emojione-1f3da {
+  background-position: 57.5% 38.46154%; }
+
+.emojione-1f3db {
+  background-position: 57.5% 41.02564%; }
+
+.emojione-1f3dc {
+  background-position: 57.5% 43.58974%; }
+
+.emojione-1f3dd {
+  background-position: 57.5% 46.15385%; }
+
+.emojione-1f3de {
+  background-position: 57.5% 48.71795%; }
+
+.emojione-1f3df {
+  background-position: 57.5% 51.28205%; }
+
+.emojione-1f3e0 {
+  background-position: 57.5% 53.84615%; }
+
+.emojione-1f3e1 {
+  background-position: 57.5% 56.41026%; }
+
+.emojione-1f3e2 {
+  background-position: 0% 58.97436%; }
+
+.emojione-1f3e3 {
+  background-position: 2.5% 58.97436%; }
+
+.emojione-1f3e4 {
+  background-position: 5% 58.97436%; }
+
+.emojione-1f3e5 {
+  background-position: 7.5% 58.97436%; }
+
+.emojione-1f3e6 {
+  background-position: 10% 58.97436%; }
+
+.emojione-1f3e7 {
+  background-position: 12.5% 58.97436%; }
+
+.emojione-1f3e8 {
+  background-position: 15% 58.97436%; }
+
+.emojione-1f3e9 {
+  background-position: 17.5% 58.97436%; }
+
+.emojione-1f3ea {
+  background-position: 20% 58.97436%; }
+
+.emojione-1f3eb {
+  background-position: 22.5% 58.97436%; }
+
+.emojione-1f3ec {
+  background-position: 25% 58.97436%; }
+
+.emojione-1f3ed {
+  background-position: 27.5% 58.97436%; }
+
+.emojione-1f3ee {
+  background-position: 30% 58.97436%; }
+
+.emojione-1f3ef {
+  background-position: 32.5% 58.97436%; }
+
+.emojione-1f3f0 {
+  background-position: 35% 58.97436%; }
+
+.emojione-1f3f3 {
+  background-position: 37.5% 58.97436%; }
+
+.emojione-1f3f4 {
+  background-position: 40% 58.97436%; }
+
+.emojione-1f3f5 {
+  background-position: 42.5% 58.97436%; }
+
+.emojione-1f3f7 {
+  background-position: 45% 58.97436%; }
+
+.emojione-1f3f8 {
+  background-position: 47.5% 58.97436%; }
+
+.emojione-1f3f9 {
+  background-position: 50% 58.97436%; }
+
+.emojione-1f3fa {
+  background-position: 52.5% 58.97436%; }
+
+.emojione-1f3fb {
+  background-position: 55% 58.97436%; }
+
+.emojione-1f3fc {
+  background-position: 57.5% 58.97436%; }
+
+.emojione-1f3fd {
+  background-position: 60% 0%; }
+
+.emojione-1f3fe {
+  background-position: 60% 2.5641%; }
+
+.emojione-1f3ff {
+  background-position: 60% 5.12821%; }
+
+.emojione-1f400 {
+  background-position: 60% 7.69231%; }
+
+.emojione-1f401 {
+  background-position: 60% 10.25641%; }
+
+.emojione-1f402 {
+  background-position: 60% 12.82051%; }
+
+.emojione-1f403 {
+  background-position: 60% 15.38462%; }
+
+.emojione-1f404 {
+  background-position: 60% 17.94872%; }
+
+.emojione-1f405 {
+  background-position: 60% 20.51282%; }
+
+.emojione-1f406 {
+  background-position: 60% 23.07692%; }
+
+.emojione-1f407 {
+  background-position: 60% 25.64103%; }
+
+.emojione-1f408 {
+  background-position: 60% 28.20513%; }
+
+.emojione-1f409 {
+  background-position: 60% 30.76923%; }
+
+.emojione-1f40a {
+  background-position: 60% 33.33333%; }
+
+.emojione-1f40b {
+  background-position: 60% 35.89744%; }
+
+.emojione-1f40c {
+  background-position: 60% 38.46154%; }
+
+.emojione-1f40d {
+  background-position: 60% 41.02564%; }
+
+.emojione-1f40e {
+  background-position: 60% 43.58974%; }
+
+.emojione-1f40f {
+  background-position: 60% 46.15385%; }
+
+.emojione-1f410 {
+  background-position: 60% 48.71795%; }
+
+.emojione-1f411 {
+  background-position: 60% 51.28205%; }
+
+.emojione-1f412 {
+  background-position: 60% 53.84615%; }
+
+.emojione-1f413 {
+  background-position: 60% 56.41026%; }
+
+.emojione-1f414 {
+  background-position: 60% 58.97436%; }
+
+.emojione-1f415 {
+  background-position: 0% 61.53846%; }
+
+.emojione-1f416 {
+  background-position: 2.5% 61.53846%; }
+
+.emojione-1f417 {
+  background-position: 5% 61.53846%; }
+
+.emojione-1f418 {
+  background-position: 7.5% 61.53846%; }
+
+.emojione-1f419 {
+  background-position: 10% 61.53846%; }
+
+.emojione-1f41a {
+  background-position: 12.5% 61.53846%; }
+
+.emojione-1f41b {
+  background-position: 15% 61.53846%; }
+
+.emojione-1f41c {
+  background-position: 17.5% 61.53846%; }
+
+.emojione-1f41d {
+  background-position: 20% 61.53846%; }
+
+.emojione-1f41e {
+  background-position: 22.5% 61.53846%; }
+
+.emojione-1f41f {
+  background-position: 25% 61.53846%; }
+
+.emojione-1f420 {
+  background-position: 27.5% 61.53846%; }
+
+.emojione-1f421 {
+  background-position: 30% 61.53846%; }
+
+.emojione-1f422 {
+  background-position: 32.5% 61.53846%; }
+
+.emojione-1f423 {
+  background-position: 35% 61.53846%; }
+
+.emojione-1f424 {
+  background-position: 37.5% 61.53846%; }
+
+.emojione-1f425 {
+  background-position: 40% 61.53846%; }
+
+.emojione-1f426 {
+  background-position: 42.5% 61.53846%; }
+
+.emojione-1f427 {
+  background-position: 45% 61.53846%; }
+
+.emojione-1f428 {
+  background-position: 47.5% 61.53846%; }
+
+.emojione-1f429 {
+  background-position: 50% 61.53846%; }
+
+.emojione-1f42a {
+  background-position: 52.5% 61.53846%; }
+
+.emojione-1f42b {
+  background-position: 55% 61.53846%; }
+
+.emojione-1f42c {
+  background-position: 57.5% 61.53846%; }
+
+.emojione-1f42d {
+  background-position: 60% 61.53846%; }
+
+.emojione-1f42e {
+  background-position: 62.5% 0%; }
+
+.emojione-1f42f {
+  background-position: 62.5% 2.5641%; }
+
+.emojione-1f430 {
+  background-position: 62.5% 5.12821%; }
+
+.emojione-1f431 {
+  background-position: 62.5% 7.69231%; }
+
+.emojione-1f432 {
+  background-position: 62.5% 10.25641%; }
+
+.emojione-1f433 {
+  background-position: 62.5% 12.82051%; }
+
+.emojione-1f434 {
+  background-position: 62.5% 15.38462%; }
+
+.emojione-1f435 {
+  background-position: 62.5% 17.94872%; }
+
+.emojione-1f436 {
+  background-position: 62.5% 20.51282%; }
+
+.emojione-1f437 {
+  background-position: 62.5% 23.07692%; }
+
+.emojione-1f438 {
+  background-position: 62.5% 25.64103%; }
+
+.emojione-1f439 {
+  background-position: 62.5% 28.20513%; }
+
+.emojione-1f43a {
+  background-position: 62.5% 30.76923%; }
+
+.emojione-1f43b {
+  background-position: 62.5% 33.33333%; }
+
+.emojione-1f43c {
+  background-position: 62.5% 35.89744%; }
+
+.emojione-1f43d {
+  background-position: 62.5% 38.46154%; }
+
+.emojione-1f43e {
+  background-position: 62.5% 41.02564%; }
+
+.emojione-1f43f {
+  background-position: 62.5% 43.58974%; }
+
+.emojione-1f440 {
+  background-position: 62.5% 46.15385%; }
+
+.emojione-1f441-1f5e8 {
+  background-position: 62.5% 48.71795%; }
+
+.emojione-1f441 {
+  background-position: 62.5% 51.28205%; }
+
+.emojione-1f442-1f3fb {
+  background-position: 62.5% 53.84615%; }
+
+.emojione-1f442-1f3fc {
+  background-position: 62.5% 56.41026%; }
+
+.emojione-1f442-1f3fd {
+  background-position: 62.5% 58.97436%; }
+
+.emojione-1f442-1f3fe {
+  background-position: 62.5% 61.53846%; }
+
+.emojione-1f442-1f3ff {
+  background-position: 0% 64.10256%; }
+
+.emojione-1f442 {
+  background-position: 2.5% 64.10256%; }
+
+.emojione-1f443-1f3fb {
+  background-position: 5% 64.10256%; }
+
+.emojione-1f443-1f3fc {
+  background-position: 7.5% 64.10256%; }
+
+.emojione-1f443-1f3fd {
+  background-position: 10% 64.10256%; }
+
+.emojione-1f443-1f3fe {
+  background-position: 12.5% 64.10256%; }
+
+.emojione-1f443-1f3ff {
+  background-position: 15% 64.10256%; }
+
+.emojione-1f443 {
+  background-position: 17.5% 64.10256%; }
+
+.emojione-1f444 {
+  background-position: 20% 64.10256%; }
+
+.emojione-1f445 {
+  background-position: 22.5% 64.10256%; }
+
+.emojione-1f446-1f3fb {
+  background-position: 25% 64.10256%; }
+
+.emojione-1f446-1f3fc {
+  background-position: 27.5% 64.10256%; }
+
+.emojione-1f446-1f3fd {
+  background-position: 30% 64.10256%; }
+
+.emojione-1f446-1f3fe {
+  background-position: 32.5% 64.10256%; }
+
+.emojione-1f446-1f3ff {
+  background-position: 35% 64.10256%; }
+
+.emojione-1f446 {
+  background-position: 37.5% 64.10256%; }
+
+.emojione-1f447-1f3fb {
+  background-position: 40% 64.10256%; }
+
+.emojione-1f447-1f3fc {
+  background-position: 42.5% 64.10256%; }
+
+.emojione-1f447-1f3fd {
+  background-position: 45% 64.10256%; }
+
+.emojione-1f447-1f3fe {
+  background-position: 47.5% 64.10256%; }
+
+.emojione-1f447-1f3ff {
+  background-position: 50% 64.10256%; }
+
+.emojione-1f447 {
+  background-position: 52.5% 64.10256%; }
+
+.emojione-1f448-1f3fb {
+  background-position: 55% 64.10256%; }
+
+.emojione-1f448-1f3fc {
+  background-position: 57.5% 64.10256%; }
+
+.emojione-1f448-1f3fd {
+  background-position: 60% 64.10256%; }
+
+.emojione-1f448-1f3fe {
+  background-position: 62.5% 64.10256%; }
+
+.emojione-1f448-1f3ff {
+  background-position: 65% 0%; }
+
+.emojione-1f448 {
+  background-position: 65% 2.5641%; }
+
+.emojione-1f449-1f3fb {
+  background-position: 65% 5.12821%; }
+
+.emojione-1f449-1f3fc {
+  background-position: 65% 7.69231%; }
+
+.emojione-1f449-1f3fd {
+  background-position: 65% 10.25641%; }
+
+.emojione-1f449-1f3fe {
+  background-position: 65% 12.82051%; }
+
+.emojione-1f449-1f3ff {
+  background-position: 65% 15.38462%; }
+
+.emojione-1f449 {
+  background-position: 65% 17.94872%; }
+
+.emojione-1f44a-1f3fb {
+  background-position: 65% 20.51282%; }
+
+.emojione-1f44a-1f3fc {
+  background-position: 65% 23.07692%; }
+
+.emojione-1f44a-1f3fd {
+  background-position: 65% 25.64103%; }
+
+.emojione-1f44a-1f3fe {
+  background-position: 65% 28.20513%; }
+
+.emojione-1f44a-1f3ff {
+  background-position: 65% 30.76923%; }
+
+.emojione-1f44a {
+  background-position: 65% 33.33333%; }
+
+.emojione-1f44b-1f3fb {
+  background-position: 65% 35.89744%; }
+
+.emojione-1f44b-1f3fc {
+  background-position: 65% 38.46154%; }
+
+.emojione-1f44b-1f3fd {
+  background-position: 65% 41.02564%; }
+
+.emojione-1f44b-1f3fe {
+  background-position: 65% 43.58974%; }
+
+.emojione-1f44b-1f3ff {
+  background-position: 65% 46.15385%; }
+
+.emojione-1f44b {
+  background-position: 65% 48.71795%; }
+
+.emojione-1f44c-1f3fb {
+  background-position: 65% 51.28205%; }
+
+.emojione-1f44c-1f3fc {
+  background-position: 65% 53.84615%; }
+
+.emojione-1f44c-1f3fd {
+  background-position: 65% 56.41026%; }
+
+.emojione-1f44c-1f3fe {
+  background-position: 65% 58.97436%; }
+
+.emojione-1f44c-1f3ff {
+  background-position: 65% 61.53846%; }
+
+.emojione-1f44c {
+  background-position: 65% 64.10256%; }
+
+.emojione-1f44d-1f3fb {
+  background-position: 0% 66.66667%; }
+
+.emojione-1f44d-1f3fc {
+  background-position: 2.5% 66.66667%; }
+
+.emojione-1f44d-1f3fd {
+  background-position: 5% 66.66667%; }
+
+.emojione-1f44d-1f3fe {
+  background-position: 7.5% 66.66667%; }
+
+.emojione-1f44d-1f3ff {
+  background-position: 10% 66.66667%; }
+
+.emojione-1f44d {
+  background-position: 12.5% 66.66667%; }
+
+.emojione-1f44e-1f3fb {
+  background-position: 15% 66.66667%; }
+
+.emojione-1f44e-1f3fc {
+  background-position: 17.5% 66.66667%; }
+
+.emojione-1f44e-1f3fd {
+  background-position: 20% 66.66667%; }
+
+.emojione-1f44e-1f3fe {
+  background-position: 22.5% 66.66667%; }
+
+.emojione-1f44e-1f3ff {
+  background-position: 25% 66.66667%; }
+
+.emojione-1f44e {
+  background-position: 27.5% 66.66667%; }
+
+.emojione-1f44f-1f3fb {
+  background-position: 30% 66.66667%; }
+
+.emojione-1f44f-1f3fc {
+  background-position: 32.5% 66.66667%; }
+
+.emojione-1f44f-1f3fd {
+  background-position: 35% 66.66667%; }
+
+.emojione-1f44f-1f3fe {
+  background-position: 37.5% 66.66667%; }
+
+.emojione-1f44f-1f3ff {
+  background-position: 40% 66.66667%; }
+
+.emojione-1f44f {
+  background-position: 42.5% 66.66667%; }
+
+.emojione-1f450-1f3fb {
+  background-position: 45% 66.66667%; }
+
+.emojione-1f450-1f3fc {
+  background-position: 47.5% 66.66667%; }
+
+.emojione-1f450-1f3fd {
+  background-position: 50% 66.66667%; }
+
+.emojione-1f450-1f3fe {
+  background-position: 52.5% 66.66667%; }
+
+.emojione-1f450-1f3ff {
+  background-position: 55% 66.66667%; }
+
+.emojione-1f450 {
+  background-position: 57.5% 66.66667%; }
+
+.emojione-1f451 {
+  background-position: 60% 66.66667%; }
+
+.emojione-1f452 {
+  background-position: 62.5% 66.66667%; }
+
+.emojione-1f453 {
+  background-position: 65% 66.66667%; }
+
+.emojione-1f454 {
+  background-position: 67.5% 0%; }
+
+.emojione-1f455 {
+  background-position: 67.5% 2.5641%; }
+
+.emojione-1f456 {
+  background-position: 67.5% 5.12821%; }
+
+.emojione-1f457 {
+  background-position: 67.5% 7.69231%; }
+
+.emojione-1f458 {
+  background-position: 67.5% 10.25641%; }
+
+.emojione-1f459 {
+  background-position: 67.5% 12.82051%; }
+
+.emojione-1f45a {
+  background-position: 67.5% 15.38462%; }
+
+.emojione-1f45b {
+  background-position: 67.5% 17.94872%; }
+
+.emojione-1f45c {
+  background-position: 67.5% 20.51282%; }
+
+.emojione-1f45d {
+  background-position: 67.5% 23.07692%; }
+
+.emojione-1f45e {
+  background-position: 67.5% 25.64103%; }
+
+.emojione-1f45f {
+  background-position: 67.5% 28.20513%; }
+
+.emojione-1f460 {
+  background-position: 67.5% 30.76923%; }
+
+.emojione-1f461 {
+  background-position: 67.5% 33.33333%; }
+
+.emojione-1f462 {
+  background-position: 67.5% 35.89744%; }
+
+.emojione-1f463 {
+  background-position: 67.5% 38.46154%; }
+
+.emojione-1f464 {
+  background-position: 67.5% 41.02564%; }
+
+.emojione-1f465 {
+  background-position: 67.5% 43.58974%; }
+
+.emojione-1f466-1f3fb {
+  background-position: 67.5% 46.15385%; }
+
+.emojione-1f466-1f3fc {
+  background-position: 67.5% 48.71795%; }
+
+.emojione-1f466-1f3fd {
+  background-position: 67.5% 51.28205%; }
+
+.emojione-1f466-1f3fe {
+  background-position: 67.5% 53.84615%; }
+
+.emojione-1f466-1f3ff {
+  background-position: 67.5% 56.41026%; }
+
+.emojione-1f466 {
+  background-position: 67.5% 58.97436%; }
+
+.emojione-1f467-1f3fb {
+  background-position: 67.5% 61.53846%; }
+
+.emojione-1f467-1f3fc {
+  background-position: 67.5% 64.10256%; }
+
+.emojione-1f467-1f3fd {
+  background-position: 67.5% 66.66667%; }
+
+.emojione-1f467-1f3fe {
+  background-position: 0% 69.23077%; }
+
+.emojione-1f467-1f3ff {
+  background-position: 2.5% 69.23077%; }
+
+.emojione-1f467 {
+  background-position: 5% 69.23077%; }
+
+.emojione-1f468-1f3fb {
+  background-position: 7.5% 69.23077%; }
+
+.emojione-1f468-1f3fc {
+  background-position: 10% 69.23077%; }
+
+.emojione-1f468-1f3fd {
+  background-position: 12.5% 69.23077%; }
+
+.emojione-1f468-1f3fe {
+  background-position: 15% 69.23077%; }
+
+.emojione-1f468-1f3ff {
+  background-position: 17.5% 69.23077%; }
+
+.emojione-1f468-1f468-1f466-1f466 {
+  background-position: 20% 69.23077%; }
+
+.emojione-1f468-1f468-1f466 {
+  background-position: 22.5% 69.23077%; }
+
+.emojione-1f468-1f468-1f467-1f466 {
+  background-position: 25% 69.23077%; }
+
+.emojione-1f468-1f468-1f467-1f467 {
+  background-position: 27.5% 69.23077%; }
+
+.emojione-1f468-1f468-1f467 {
+  background-position: 30% 69.23077%; }
+
+.emojione-1f468-1f469-1f466-1f466 {
+  background-position: 32.5% 69.23077%; }
+
+.emojione-1f468-1f469-1f467-1f466 {
+  background-position: 35% 69.23077%; }
+
+.emojione-1f468-1f469-1f467-1f467 {
+  background-position: 37.5% 69.23077%; }
+
+.emojione-1f468-1f469-1f467 {
+  background-position: 40% 69.23077%; }
+
+.emojione-1f468-2764-1f468 {
+  background-position: 42.5% 69.23077%; }
+
+.emojione-1f468-2764-1f48b-1f468 {
+  background-position: 45% 69.23077%; }
+
+.emojione-1f468 {
+  background-position: 47.5% 69.23077%; }
+
+.emojione-1f469-1f3fb {
+  background-position: 50% 69.23077%; }
+
+.emojione-1f469-1f3fc {
+  background-position: 52.5% 69.23077%; }
+
+.emojione-1f469-1f3fd {
+  background-position: 55% 69.23077%; }
+
+.emojione-1f469-1f3fe {
+  background-position: 57.5% 69.23077%; }
+
+.emojione-1f469-1f3ff {
+  background-position: 60% 69.23077%; }
+
+.emojione-1f469-1f469-1f466-1f466 {
+  background-position: 62.5% 69.23077%; }
+
+.emojione-1f469-1f469-1f466 {
+  background-position: 65% 69.23077%; }
+
+.emojione-1f469-1f469-1f467-1f466 {
+  background-position: 67.5% 69.23077%; }
+
+.emojione-1f469-1f469-1f467-1f467 {
+  background-position: 70% 0%; }
+
+.emojione-1f469-1f469-1f467 {
+  background-position: 70% 2.5641%; }
+
+.emojione-1f469-2764-1f469 {
+  background-position: 70% 5.12821%; }
+
+.emojione-1f469-2764-1f48b-1f469 {
+  background-position: 70% 7.69231%; }
+
+.emojione-1f469 {
+  background-position: 70% 10.25641%; }
+
+.emojione-1f46a {
+  background-position: 70% 12.82051%; }
+
+.emojione-1f46b {
+  background-position: 70% 15.38462%; }
+
+.emojione-1f46c {
+  background-position: 70% 17.94872%; }
+
+.emojione-1f46d {
+  background-position: 70% 20.51282%; }
+
+.emojione-1f46e-1f3fb {
+  background-position: 70% 23.07692%; }
+
+.emojione-1f46e-1f3fc {
+  background-position: 70% 25.64103%; }
+
+.emojione-1f46e-1f3fd {
+  background-position: 70% 28.20513%; }
+
+.emojione-1f46e-1f3fe {
+  background-position: 70% 30.76923%; }
+
+.emojione-1f46e-1f3ff {
+  background-position: 70% 33.33333%; }
+
+.emojione-1f46e {
+  background-position: 70% 35.89744%; }
+
+.emojione-1f46f {
+  background-position: 70% 38.46154%; }
+
+.emojione-1f470-1f3fb {
+  background-position: 70% 41.02564%; }
+
+.emojione-1f470-1f3fc {
+  background-position: 70% 43.58974%; }
+
+.emojione-1f470-1f3fd {
+  background-position: 70% 46.15385%; }
+
+.emojione-1f470-1f3fe {
+  background-position: 70% 48.71795%; }
+
+.emojione-1f470-1f3ff {
+  background-position: 70% 51.28205%; }
+
+.emojione-1f470 {
+  background-position: 70% 53.84615%; }
+
+.emojione-1f471-1f3fb {
+  background-position: 70% 56.41026%; }
+
+.emojione-1f471-1f3fc {
+  background-position: 70% 58.97436%; }
+
+.emojione-1f471-1f3fd {
+  background-position: 70% 61.53846%; }
+
+.emojione-1f471-1f3fe {
+  background-position: 70% 64.10256%; }
+
+.emojione-1f471-1f3ff {
+  background-position: 70% 66.66667%; }
+
+.emojione-1f471 {
+  background-position: 70% 69.23077%; }
+
+.emojione-1f472-1f3fb {
+  background-position: 0% 71.79487%; }
+
+.emojione-1f472-1f3fc {
+  background-position: 2.5% 71.79487%; }
+
+.emojione-1f472-1f3fd {
+  background-position: 5% 71.79487%; }
+
+.emojione-1f472-1f3fe {
+  background-position: 7.5% 71.79487%; }
+
+.emojione-1f472-1f3ff {
+  background-position: 10% 71.79487%; }
+
+.emojione-1f472 {
+  background-position: 12.5% 71.79487%; }
+
+.emojione-1f473-1f3fb {
+  background-position: 15% 71.79487%; }
+
+.emojione-1f473-1f3fc {
+  background-position: 17.5% 71.79487%; }
+
+.emojione-1f473-1f3fd {
+  background-position: 20% 71.79487%; }
+
+.emojione-1f473-1f3fe {
+  background-position: 22.5% 71.79487%; }
+
+.emojione-1f473-1f3ff {
+  background-position: 25% 71.79487%; }
+
+.emojione-1f473 {
+  background-position: 27.5% 71.79487%; }
+
+.emojione-1f474-1f3fb {
+  background-position: 30% 71.79487%; }
+
+.emojione-1f474-1f3fc {
+  background-position: 32.5% 71.79487%; }
+
+.emojione-1f474-1f3fd {
+  background-position: 35% 71.79487%; }
+
+.emojione-1f474-1f3fe {
+  background-position: 37.5% 71.79487%; }
+
+.emojione-1f474-1f3ff {
+  background-position: 40% 71.79487%; }
+
+.emojione-1f474 {
+  background-position: 42.5% 71.79487%; }
+
+.emojione-1f475-1f3fb {
+  background-position: 45% 71.79487%; }
+
+.emojione-1f475-1f3fc {
+  background-position: 47.5% 71.79487%; }
+
+.emojione-1f475-1f3fd {
+  background-position: 50% 71.79487%; }
+
+.emojione-1f475-1f3fe {
+  background-position: 0% 0%; }
+
+.emojione-1f475-1f3ff {
+  background-position: 55% 71.79487%; }
+
+.emojione-1f475 {
+  background-position: 57.5% 71.79487%; }
+
+.emojione-1f476-1f3fb {
+  background-position: 60% 71.79487%; }
+
+.emojione-1f476-1f3fc {
+  background-position: 62.5% 71.79487%; }
+
+.emojione-1f476-1f3fd {
+  background-position: 65% 71.79487%; }
+
+.emojione-1f476-1f3fe {
+  background-position: 67.5% 71.79487%; }
+
+.emojione-1f476-1f3ff {
+  background-position: 70% 71.79487%; }
+
+.emojione-1f476 {
+  background-position: 72.5% 0%; }
+
+.emojione-1f477-1f3fb {
+  background-position: 72.5% 2.5641%; }
+
+.emojione-1f477-1f3fc {
+  background-position: 72.5% 5.12821%; }
+
+.emojione-1f477-1f3fd {
+  background-position: 72.5% 7.69231%; }
+
+.emojione-1f477-1f3fe {
+  background-position: 72.5% 10.25641%; }
+
+.emojione-1f477-1f3ff {
+  background-position: 72.5% 12.82051%; }
+
+.emojione-1f477 {
+  background-position: 72.5% 15.38462%; }
+
+.emojione-1f478-1f3fb {
+  background-position: 72.5% 17.94872%; }
+
+.emojione-1f478-1f3fc {
+  background-position: 72.5% 20.51282%; }
+
+.emojione-1f478-1f3fd {
+  background-position: 72.5% 23.07692%; }
+
+.emojione-1f478-1f3fe {
+  background-position: 72.5% 25.64103%; }
+
+.emojione-1f478-1f3ff {
+  background-position: 72.5% 28.20513%; }
+
+.emojione-1f478 {
+  background-position: 72.5% 30.76923%; }
+
+.emojione-1f479 {
+  background-position: 72.5% 33.33333%; }
+
+.emojione-1f47a {
+  background-position: 72.5% 35.89744%; }
+
+.emojione-1f47b {
+  background-position: 72.5% 38.46154%; }
+
+.emojione-1f47c-1f3fb {
+  background-position: 72.5% 41.02564%; }
+
+.emojione-1f47c-1f3fc {
+  background-position: 72.5% 43.58974%; }
+
+.emojione-1f47c-1f3fd {
+  background-position: 72.5% 46.15385%; }
+
+.emojione-1f47c-1f3fe {
+  background-position: 72.5% 48.71795%; }
+
+.emojione-1f47c-1f3ff {
+  background-position: 72.5% 51.28205%; }
+
+.emojione-1f47c {
+  background-position: 72.5% 53.84615%; }
+
+.emojione-1f47d {
+  background-position: 72.5% 56.41026%; }
+
+.emojione-1f47e {
+  background-position: 72.5% 58.97436%; }
+
+.emojione-1f47f {
+  background-position: 72.5% 61.53846%; }
+
+.emojione-1f480 {
+  background-position: 72.5% 64.10256%; }
+
+.emojione-1f481-1f3fb {
+  background-position: 72.5% 66.66667%; }
+
+.emojione-1f481-1f3fc {
+  background-position: 72.5% 69.23077%; }
+
+.emojione-1f481-1f3fd {
+  background-position: 72.5% 71.79487%; }
+
+.emojione-1f481-1f3fe {
+  background-position: 0% 74.35897%; }
+
+.emojione-1f481-1f3ff {
+  background-position: 2.5% 74.35897%; }
+
+.emojione-1f481 {
+  background-position: 5% 74.35897%; }
+
+.emojione-1f482-1f3fb {
+  background-position: 7.5% 74.35897%; }
+
+.emojione-1f482-1f3fc {
+  background-position: 10% 74.35897%; }
+
+.emojione-1f482-1f3fd {
+  background-position: 12.5% 74.35897%; }
+
+.emojione-1f482-1f3fe {
+  background-position: 15% 74.35897%; }
+
+.emojione-1f482-1f3ff {
+  background-position: 17.5% 74.35897%; }
+
+.emojione-1f482 {
+  background-position: 20% 74.35897%; }
+
+.emojione-1f483-1f3fb {
+  background-position: 22.5% 74.35897%; }
+
+.emojione-1f483-1f3fc {
+  background-position: 25% 74.35897%; }
+
+.emojione-1f483-1f3fd {
+  background-position: 27.5% 74.35897%; }
+
+.emojione-1f483-1f3fe {
+  background-position: 30% 74.35897%; }
+
+.emojione-1f483-1f3ff {
+  background-position: 32.5% 74.35897%; }
+
+.emojione-1f483 {
+  background-position: 35% 74.35897%; }
+
+.emojione-1f484 {
+  background-position: 37.5% 74.35897%; }
+
+.emojione-1f485-1f3fb {
+  background-position: 40% 74.35897%; }
+
+.emojione-1f485-1f3fc {
+  background-position: 42.5% 74.35897%; }
+
+.emojione-1f485-1f3fd {
+  background-position: 45% 74.35897%; }
+
+.emojione-1f485-1f3fe {
+  background-position: 47.5% 74.35897%; }
+
+.emojione-1f485-1f3ff {
+  background-position: 50% 74.35897%; }
+
+.emojione-1f485 {
+  background-position: 52.5% 74.35897%; }
+
+.emojione-1f486-1f3fb {
+  background-position: 55% 74.35897%; }
+
+.emojione-1f486-1f3fc {
+  background-position: 57.5% 74.35897%; }
+
+.emojione-1f486-1f3fd {
+  background-position: 60% 74.35897%; }
+
+.emojione-1f486-1f3fe {
+  background-position: 62.5% 74.35897%; }
+
+.emojione-1f486-1f3ff {
+  background-position: 65% 74.35897%; }
+
+.emojione-1f486 {
+  background-position: 67.5% 74.35897%; }
+
+.emojione-1f487-1f3fb {
+  background-position: 70% 74.35897%; }
+
+.emojione-1f487-1f3fc {
+  background-position: 72.5% 74.35897%; }
+
+.emojione-1f487-1f3fd {
+  background-position: 75% 0%; }
+
+.emojione-1f487-1f3fe {
+  background-position: 75% 2.5641%; }
+
+.emojione-1f487-1f3ff {
+  background-position: 75% 5.12821%; }
+
+.emojione-1f487 {
+  background-position: 75% 7.69231%; }
+
+.emojione-1f488 {
+  background-position: 75% 10.25641%; }
+
+.emojione-1f489 {
+  background-position: 75% 12.82051%; }
+
+.emojione-1f48a {
+  background-position: 75% 15.38462%; }
+
+.emojione-1f48b {
+  background-position: 75% 17.94872%; }
+
+.emojione-1f48c {
+  background-position: 75% 20.51282%; }
+
+.emojione-1f48d {
+  background-position: 75% 23.07692%; }
+
+.emojione-1f48e {
+  background-position: 75% 25.64103%; }
+
+.emojione-1f48f {
+  background-position: 75% 28.20513%; }
+
+.emojione-1f490 {
+  background-position: 75% 30.76923%; }
+
+.emojione-1f491 {
+  background-position: 75% 33.33333%; }
+
+.emojione-1f492 {
+  background-position: 75% 35.89744%; }
+
+.emojione-1f493 {
+  background-position: 75% 38.46154%; }
+
+.emojione-1f494 {
+  background-position: 75% 41.02564%; }
+
+.emojione-1f495 {
+  background-position: 75% 43.58974%; }
+
+.emojione-1f496 {
+  background-position: 75% 46.15385%; }
+
+.emojione-1f497 {
+  background-position: 75% 48.71795%; }
+
+.emojione-1f498 {
+  background-position: 75% 51.28205%; }
+
+.emojione-1f499 {
+  background-position: 75% 53.84615%; }
+
+.emojione-1f49a {
+  background-position: 75% 56.41026%; }
+
+.emojione-1f49b {
+  background-position: 75% 58.97436%; }
+
+.emojione-1f49c {
+  background-position: 75% 61.53846%; }
+
+.emojione-1f49d {
+  background-position: 75% 64.10256%; }
+
+.emojione-1f49e {
+  background-position: 75% 66.66667%; }
+
+.emojione-1f49f {
+  background-position: 75% 69.23077%; }
+
+.emojione-1f4a0 {
+  background-position: 75% 71.79487%; }
+
+.emojione-1f4a1 {
+  background-position: 75% 74.35897%; }
+
+.emojione-1f4a2 {
+  background-position: 0% 76.92308%; }
+
+.emojione-1f4a3 {
+  background-position: 2.5% 76.92308%; }
+
+.emojione-1f4a4 {
+  background-position: 5% 76.92308%; }
+
+.emojione-1f4a5 {
+  background-position: 7.5% 76.92308%; }
+
+.emojione-1f4a6 {
+  background-position: 10% 76.92308%; }
+
+.emojione-1f4a7 {
+  background-position: 12.5% 76.92308%; }
+
+.emojione-1f4a8 {
+  background-position: 15% 76.92308%; }
+
+.emojione-1f4a9 {
+  background-position: 17.5% 76.92308%; }
+
+.emojione-1f4aa-1f3fb {
+  background-position: 20% 76.92308%; }
+
+.emojione-1f4aa-1f3fc {
+  background-position: 22.5% 76.92308%; }
+
+.emojione-1f4aa-1f3fd {
+  background-position: 25% 76.92308%; }
+
+.emojione-1f4aa-1f3fe {
+  background-position: 27.5% 76.92308%; }
+
+.emojione-1f4aa-1f3ff {
+  background-position: 30% 76.92308%; }
+
+.emojione-1f4aa {
+  background-position: 32.5% 76.92308%; }
+
+.emojione-1f4ab {
+  background-position: 35% 76.92308%; }
+
+.emojione-1f4ac {
+  background-position: 37.5% 76.92308%; }
+
+.emojione-1f4ad {
+  background-position: 40% 76.92308%; }
+
+.emojione-1f4ae {
+  background-position: 42.5% 76.92308%; }
+
+.emojione-1f4af {
+  background-position: 45% 76.92308%; }
+
+.emojione-1f4b0 {
+  background-position: 47.5% 76.92308%; }
+
+.emojione-1f4b1 {
+  background-position: 50% 76.92308%; }
+
+.emojione-1f4b2 {
+  background-position: 52.5% 76.92308%; }
+
+.emojione-1f4b3 {
+  background-position: 55% 76.92308%; }
+
+.emojione-1f4b4 {
+  background-position: 57.5% 76.92308%; }
+
+.emojione-1f4b5 {
+  background-position: 60% 76.92308%; }
+
+.emojione-1f4b6 {
+  background-position: 62.5% 76.92308%; }
+
+.emojione-1f4b7 {
+  background-position: 65% 76.92308%; }
+
+.emojione-1f4b8 {
+  background-position: 67.5% 76.92308%; }
+
+.emojione-1f4b9 {
+  background-position: 70% 76.92308%; }
+
+.emojione-1f4ba {
+  background-position: 72.5% 76.92308%; }
+
+.emojione-1f4bb {
+  background-position: 75% 76.92308%; }
+
+.emojione-1f4bc {
+  background-position: 77.5% 0%; }
+
+.emojione-1f4bd {
+  background-position: 77.5% 2.5641%; }
+
+.emojione-1f4be {
+  background-position: 77.5% 5.12821%; }
+
+.emojione-1f4bf {
+  background-position: 77.5% 7.69231%; }
+
+.emojione-1f4c0 {
+  background-position: 77.5% 10.25641%; }
+
+.emojione-1f4c1 {
+  background-position: 77.5% 12.82051%; }
+
+.emojione-1f4c2 {
+  background-position: 77.5% 15.38462%; }
+
+.emojione-1f4c3 {
+  background-position: 77.5% 17.94872%; }
+
+.emojione-1f4c4 {
+  background-position: 77.5% 20.51282%; }
+
+.emojione-1f4c5 {
+  background-position: 77.5% 23.07692%; }
+
+.emojione-1f4c6 {
+  background-position: 77.5% 25.64103%; }
+
+.emojione-1f4c7 {
+  background-position: 77.5% 28.20513%; }
+
+.emojione-1f4c8 {
+  background-position: 77.5% 30.76923%; }
+
+.emojione-1f4c9 {
+  background-position: 77.5% 33.33333%; }
+
+.emojione-1f4ca {
+  background-position: 77.5% 35.89744%; }
+
+.emojione-1f4cb {
+  background-position: 77.5% 38.46154%; }
+
+.emojione-1f4cc {
+  background-position: 77.5% 41.02564%; }
+
+.emojione-1f4cd {
+  background-position: 77.5% 43.58974%; }
+
+.emojione-1f4ce {
+  background-position: 77.5% 46.15385%; }
+
+.emojione-1f4cf {
+  background-position: 77.5% 48.71795%; }
+
+.emojione-1f4d0 {
+  background-position: 77.5% 51.28205%; }
+
+.emojione-1f4d1 {
+  background-position: 77.5% 53.84615%; }
+
+.emojione-1f4d2 {
+  background-position: 77.5% 56.41026%; }
+
+.emojione-1f4d3 {
+  background-position: 77.5% 58.97436%; }
+
+.emojione-1f4d4 {
+  background-position: 77.5% 61.53846%; }
+
+.emojione-1f4d5 {
+  background-position: 77.5% 64.10256%; }
+
+.emojione-1f4d6 {
+  background-position: 77.5% 66.66667%; }
+
+.emojione-1f4d7 {
+  background-position: 77.5% 69.23077%; }
+
+.emojione-1f4d8 {
+  background-position: 77.5% 71.79487%; }
+
+.emojione-1f4d9 {
+  background-position: 77.5% 74.35897%; }
+
+.emojione-1f4da {
+  background-position: 77.5% 76.92308%; }
+
+.emojione-1f4db {
+  background-position: 0% 79.48718%; }
+
+.emojione-1f4dc {
+  background-position: 2.5% 79.48718%; }
+
+.emojione-1f4dd {
+  background-position: 5% 79.48718%; }
+
+.emojione-1f4de {
+  background-position: 7.5% 79.48718%; }
+
+.emojione-1f4df {
+  background-position: 10% 79.48718%; }
+
+.emojione-1f4e0 {
+  background-position: 12.5% 79.48718%; }
+
+.emojione-1f4e1 {
+  background-position: 15% 79.48718%; }
+
+.emojione-1f4e2 {
+  background-position: 17.5% 79.48718%; }
+
+.emojione-1f4e3 {
+  background-position: 20% 79.48718%; }
+
+.emojione-1f4e4 {
+  background-position: 22.5% 79.48718%; }
+
+.emojione-1f4e5 {
+  background-position: 25% 79.48718%; }
+
+.emojione-1f4e6 {
+  background-position: 27.5% 79.48718%; }
+
+.emojione-1f4e7 {
+  background-position: 30% 79.48718%; }
+
+.emojione-1f4e8 {
+  background-position: 32.5% 79.48718%; }
+
+.emojione-1f4e9 {
+  background-position: 35% 79.48718%; }
+
+.emojione-1f4ea {
+  background-position: 37.5% 79.48718%; }
+
+.emojione-1f4eb {
+  background-position: 40% 79.48718%; }
+
+.emojione-1f4ec {
+  background-position: 42.5% 79.48718%; }
+
+.emojione-1f4ed {
+  background-position: 45% 79.48718%; }
+
+.emojione-1f4ee {
+  background-position: 47.5% 79.48718%; }
+
+.emojione-1f4ef {
+  background-position: 50% 79.48718%; }
+
+.emojione-1f4f0 {
+  background-position: 52.5% 79.48718%; }
+
+.emojione-1f4f1 {
+  background-position: 55% 79.48718%; }
+
+.emojione-1f4f2 {
+  background-position: 57.5% 79.48718%; }
+
+.emojione-1f4f3 {
+  background-position: 60% 79.48718%; }
+
+.emojione-1f4f4 {
+  background-position: 62.5% 79.48718%; }
+
+.emojione-1f4f5 {
+  background-position: 65% 79.48718%; }
+
+.emojione-1f4f6 {
+  background-position: 67.5% 79.48718%; }
+
+.emojione-1f4f7 {
+  background-position: 70% 79.48718%; }
+
+.emojione-1f4f8 {
+  background-position: 72.5% 79.48718%; }
+
+.emojione-1f4f9 {
+  background-position: 75% 79.48718%; }
+
+.emojione-1f4fa {
+  background-position: 77.5% 79.48718%; }
+
+.emojione-1f4fb {
+  background-position: 80% 0%; }
+
+.emojione-1f4fc {
+  background-position: 80% 2.5641%; }
+
+.emojione-1f4fd {
+  background-position: 80% 5.12821%; }
+
+.emojione-1f4ff {
+  background-position: 80% 7.69231%; }
+
+.emojione-1f500 {
+  background-position: 80% 10.25641%; }
+
+.emojione-1f501 {
+  background-position: 80% 12.82051%; }
+
+.emojione-1f502 {
+  background-position: 80% 15.38462%; }
+
+.emojione-1f503 {
+  background-position: 80% 17.94872%; }
+
+.emojione-1f504 {
+  background-position: 80% 20.51282%; }
+
+.emojione-1f505 {
+  background-position: 80% 23.07692%; }
+
+.emojione-1f506 {
+  background-position: 80% 25.64103%; }
+
+.emojione-1f507 {
+  background-position: 80% 28.20513%; }
+
+.emojione-1f508 {
+  background-position: 80% 30.76923%; }
+
+.emojione-1f509 {
+  background-position: 80% 33.33333%; }
+
+.emojione-1f50a {
+  background-position: 80% 35.89744%; }
+
+.emojione-1f50b {
+  background-position: 80% 38.46154%; }
+
+.emojione-1f50c {
+  background-position: 80% 41.02564%; }
+
+.emojione-1f50d {
+  background-position: 80% 43.58974%; }
+
+.emojione-1f50e {
+  background-position: 80% 46.15385%; }
+
+.emojione-1f50f {
+  background-position: 80% 48.71795%; }
+
+.emojione-1f510 {
+  background-position: 80% 51.28205%; }
+
+.emojione-1f511 {
+  background-position: 80% 53.84615%; }
+
+.emojione-1f512 {
+  background-position: 80% 56.41026%; }
+
+.emojione-1f513 {
+  background-position: 80% 58.97436%; }
+
+.emojione-1f514 {
+  background-position: 80% 61.53846%; }
+
+.emojione-1f515 {
+  background-position: 80% 64.10256%; }
+
+.emojione-1f516 {
+  background-position: 80% 66.66667%; }
+
+.emojione-1f517 {
+  background-position: 80% 69.23077%; }
+
+.emojione-1f518 {
+  background-position: 80% 71.79487%; }
+
+.emojione-1f519 {
+  background-position: 80% 74.35897%; }
+
+.emojione-1f51a {
+  background-position: 80% 76.92308%; }
+
+.emojione-1f51b {
+  background-position: 80% 79.48718%; }
+
+.emojione-1f51c {
+  background-position: 0% 82.05128%; }
+
+.emojione-1f51d {
+  background-position: 2.5% 82.05128%; }
+
+.emojione-1f51e {
+  background-position: 5% 82.05128%; }
+
+.emojione-1f51f {
+  background-position: 7.5% 82.05128%; }
+
+.emojione-1f520 {
+  background-position: 10% 82.05128%; }
+
+.emojione-1f521 {
+  background-position: 12.5% 82.05128%; }
+
+.emojione-1f522 {
+  background-position: 15% 82.05128%; }
+
+.emojione-1f523 {
+  background-position: 17.5% 82.05128%; }
+
+.emojione-1f524 {
+  background-position: 20% 82.05128%; }
+
+.emojione-1f525 {
+  background-position: 22.5% 82.05128%; }
+
+.emojione-1f526 {
+  background-position: 25% 82.05128%; }
+
+.emojione-1f527 {
+  background-position: 27.5% 82.05128%; }
+
+.emojione-1f528 {
+  background-position: 30% 82.05128%; }
+
+.emojione-1f529 {
+  background-position: 32.5% 82.05128%; }
+
+.emojione-1f52a {
+  background-position: 35% 82.05128%; }
+
+.emojione-1f52b {
+  background-position: 37.5% 82.05128%; }
+
+.emojione-1f52c {
+  background-position: 40% 82.05128%; }
+
+.emojione-1f52d {
+  background-position: 42.5% 82.05128%; }
+
+.emojione-1f52e {
+  background-position: 45% 82.05128%; }
+
+.emojione-1f52f {
+  background-position: 47.5% 82.05128%; }
+
+.emojione-1f530 {
+  background-position: 50% 82.05128%; }
+
+.emojione-1f531 {
+  background-position: 52.5% 82.05128%; }
+
+.emojione-1f532 {
+  background-position: 55% 82.05128%; }
+
+.emojione-1f533 {
+  background-position: 57.5% 82.05128%; }
+
+.emojione-1f534 {
+  background-position: 60% 82.05128%; }
+
+.emojione-1f535 {
+  background-position: 62.5% 82.05128%; }
+
+.emojione-1f536 {
+  background-position: 65% 82.05128%; }
+
+.emojione-1f537 {
+  background-position: 67.5% 82.05128%; }
+
+.emojione-1f538 {
+  background-position: 70% 82.05128%; }
+
+.emojione-1f539 {
+  background-position: 72.5% 82.05128%; }
+
+.emojione-1f53a {
+  background-position: 75% 82.05128%; }
+
+.emojione-1f53b {
+  background-position: 77.5% 82.05128%; }
+
+.emojione-1f53c {
+  background-position: 80% 82.05128%; }
+
+.emojione-1f53d {
+  background-position: 82.5% 0%; }
+
+.emojione-1f549 {
+  background-position: 82.5% 2.5641%; }
+
+.emojione-1f54a {
+  background-position: 82.5% 5.12821%; }
+
+.emojione-1f54b {
+  background-position: 82.5% 7.69231%; }
+
+.emojione-1f54c {
+  background-position: 82.5% 10.25641%; }
+
+.emojione-1f54d {
+  background-position: 82.5% 12.82051%; }
+
+.emojione-1f54e {
+  background-position: 82.5% 15.38462%; }
+
+.emojione-1f550 {
+  background-position: 82.5% 17.94872%; }
+
+.emojione-1f551 {
+  background-position: 82.5% 20.51282%; }
+
+.emojione-1f552 {
+  background-position: 82.5% 23.07692%; }
+
+.emojione-1f553 {
+  background-position: 82.5% 25.64103%; }
+
+.emojione-1f554 {
+  background-position: 82.5% 28.20513%; }
+
+.emojione-1f555 {
+  background-position: 82.5% 30.76923%; }
+
+.emojione-1f556 {
+  background-position: 82.5% 33.33333%; }
+
+.emojione-1f557 {
+  background-position: 82.5% 35.89744%; }
+
+.emojione-1f558 {
+  background-position: 82.5% 38.46154%; }
+
+.emojione-1f559 {
+  background-position: 82.5% 41.02564%; }
+
+.emojione-1f55a {
+  background-position: 82.5% 43.58974%; }
+
+.emojione-1f55b {
+  background-position: 82.5% 46.15385%; }
+
+.emojione-1f55c {
+  background-position: 82.5% 48.71795%; }
+
+.emojione-1f55d {
+  background-position: 82.5% 51.28205%; }
+
+.emojione-1f55e {
+  background-position: 82.5% 53.84615%; }
+
+.emojione-1f55f {
+  background-position: 82.5% 56.41026%; }
+
+.emojione-1f560 {
+  background-position: 82.5% 58.97436%; }
+
+.emojione-1f561 {
+  background-position: 82.5% 61.53846%; }
+
+.emojione-1f562 {
+  background-position: 82.5% 64.10256%; }
+
+.emojione-1f563 {
+  background-position: 82.5% 66.66667%; }
+
+.emojione-1f564 {
+  background-position: 82.5% 69.23077%; }
+
+.emojione-1f565 {
+  background-position: 82.5% 71.79487%; }
+
+.emojione-1f566 {
+  background-position: 82.5% 74.35897%; }
+
+.emojione-1f567 {
+  background-position: 82.5% 76.92308%; }
+
+.emojione-1f56f {
+  background-position: 82.5% 79.48718%; }
+
+.emojione-1f570 {
+  background-position: 82.5% 82.05128%; }
+
+.emojione-1f573 {
+  background-position: 0% 84.61538%; }
+
+.emojione-1f574 {
+  background-position: 2.5% 84.61538%; }
+
+.emojione-1f575-1f3fb {
+  background-position: 5% 84.61538%; }
+
+.emojione-1f575-1f3fc {
+  background-position: 7.5% 84.61538%; }
+
+.emojione-1f575-1f3fd {
+  background-position: 10% 84.61538%; }
+
+.emojione-1f575-1f3fe {
+  background-position: 12.5% 84.61538%; }
+
+.emojione-1f575-1f3ff {
+  background-position: 15% 84.61538%; }
+
+.emojione-1f575 {
+  background-position: 17.5% 84.61538%; }
+
+.emojione-1f576 {
+  background-position: 20% 84.61538%; }
+
+.emojione-1f577 {
+  background-position: 22.5% 84.61538%; }
+
+.emojione-1f578 {
+  background-position: 25% 84.61538%; }
+
+.emojione-1f579 {
+  background-position: 27.5% 84.61538%; }
+
+.emojione-1f587 {
+  background-position: 30% 84.61538%; }
+
+.emojione-1f58a {
+  background-position: 32.5% 84.61538%; }
+
+.emojione-1f58b {
+  background-position: 35% 84.61538%; }
+
+.emojione-1f58c {
+  background-position: 37.5% 84.61538%; }
+
+.emojione-1f58d {
+  background-position: 40% 84.61538%; }
+
+.emojione-1f590-1f3fb {
+  background-position: 42.5% 84.61538%; }
+
+.emojione-1f590-1f3fc {
+  background-position: 45% 84.61538%; }
+
+.emojione-1f590-1f3fd {
+  background-position: 47.5% 84.61538%; }
+
+.emojione-1f590-1f3fe {
+  background-position: 50% 84.61538%; }
+
+.emojione-1f590-1f3ff {
+  background-position: 52.5% 84.61538%; }
+
+.emojione-1f590 {
+  background-position: 55% 84.61538%; }
+
+.emojione-1f595-1f3fb {
+  background-position: 57.5% 84.61538%; }
+
+.emojione-1f595-1f3fc {
+  background-position: 60% 84.61538%; }
+
+.emojione-1f595-1f3fd {
+  background-position: 62.5% 84.61538%; }
+
+.emojione-1f595-1f3fe {
+  background-position: 65% 84.61538%; }
+
+.emojione-1f595-1f3ff {
+  background-position: 67.5% 84.61538%; }
+
+.emojione-1f595 {
+  background-position: 70% 84.61538%; }
+
+.emojione-1f596-1f3fb {
+  background-position: 72.5% 84.61538%; }
+
+.emojione-1f596-1f3fc {
+  background-position: 75% 84.61538%; }
+
+.emojione-1f596-1f3fd {
+  background-position: 77.5% 84.61538%; }
+
+.emojione-1f596-1f3fe {
+  background-position: 80% 84.61538%; }
+
+.emojione-1f596-1f3ff {
+  background-position: 82.5% 84.61538%; }
+
+.emojione-1f596 {
+  background-position: 85% 0%; }
+
+.emojione-1f5a5 {
+  background-position: 85% 2.5641%; }
+
+.emojione-1f5a8 {
+  background-position: 85% 5.12821%; }
+
+.emojione-1f5b1 {
+  background-position: 85% 7.69231%; }
+
+.emojione-1f5b2 {
+  background-position: 85% 10.25641%; }
+
+.emojione-1f5bc {
+  background-position: 85% 12.82051%; }
+
+.emojione-1f5c2 {
+  background-position: 85% 15.38462%; }
+
+.emojione-1f5c3 {
+  background-position: 85% 17.94872%; }
+
+.emojione-1f5c4 {
+  background-position: 85% 20.51282%; }
+
+.emojione-1f5d1 {
+  background-position: 85% 23.07692%; }
+
+.emojione-1f5d2 {
+  background-position: 85% 25.64103%; }
+
+.emojione-1f5d3 {
+  background-position: 85% 28.20513%; }
+
+.emojione-1f5dc {
+  background-position: 85% 30.76923%; }
+
+.emojione-1f5dd {
+  background-position: 85% 33.33333%; }
+
+.emojione-1f5de {
+  background-position: 85% 35.89744%; }
+
+.emojione-1f5e1 {
+  background-position: 85% 38.46154%; }
+
+.emojione-1f5e3 {
+  background-position: 85% 41.02564%; }
+
+.emojione-1f5ef {
+  background-position: 85% 43.58974%; }
+
+.emojione-1f5f3 {
+  background-position: 85% 46.15385%; }
+
+.emojione-1f5fa {
+  background-position: 85% 48.71795%; }
+
+.emojione-1f5fb {
+  background-position: 85% 51.28205%; }
+
+.emojione-1f5fc {
+  background-position: 85% 53.84615%; }
+
+.emojione-1f5fd {
+  background-position: 85% 56.41026%; }
+
+.emojione-1f5fe {
+  background-position: 85% 58.97436%; }
+
+.emojione-1f5ff {
+  background-position: 85% 61.53846%; }
+
+.emojione-1f600 {
+  background-position: 85% 64.10256%; }
+
+.emojione-1f601 {
+  background-position: 85% 66.66667%; }
+
+.emojione-1f602 {
+  background-position: 85% 69.23077%; }
+
+.emojione-1f603 {
+  background-position: 85% 71.79487%; }
+
+.emojione-1f604 {
+  background-position: 85% 74.35897%; }
+
+.emojione-1f605 {
+  background-position: 85% 76.92308%; }
+
+.emojione-1f606 {
+  background-position: 85% 79.48718%; }
+
+.emojione-1f607 {
+  background-position: 85% 82.05128%; }
+
+.emojione-1f608 {
+  background-position: 85% 84.61538%; }
+
+.emojione-1f609 {
+  background-position: 0% 87.17949%; }
+
+.emojione-1f60a {
+  background-position: 2.5% 87.17949%; }
+
+.emojione-1f60b {
+  background-position: 5% 87.17949%; }
+
+.emojione-1f60c {
+  background-position: 7.5% 87.17949%; }
+
+.emojione-1f60d {
+  background-position: 10% 87.17949%; }
+
+.emojione-1f60e {
+  background-position: 12.5% 87.17949%; }
+
+.emojione-1f60f {
+  background-position: 15% 87.17949%; }
+
+.emojione-1f610 {
+  background-position: 17.5% 87.17949%; }
+
+.emojione-1f611 {
+  background-position: 20% 87.17949%; }
+
+.emojione-1f612 {
+  background-position: 22.5% 87.17949%; }
+
+.emojione-1f613 {
+  background-position: 25% 87.17949%; }
+
+.emojione-1f614 {
+  background-position: 27.5% 87.17949%; }
+
+.emojione-1f615 {
+  background-position: 30% 87.17949%; }
+
+.emojione-1f616 {
+  background-position: 32.5% 87.17949%; }
+
+.emojione-1f617 {
+  background-position: 35% 87.17949%; }
+
+.emojione-1f618 {
+  background-position: 37.5% 87.17949%; }
+
+.emojione-1f619 {
+  background-position: 40% 87.17949%; }
+
+.emojione-1f61a {
+  background-position: 42.5% 87.17949%; }
+
+.emojione-1f61b {
+  background-position: 45% 87.17949%; }
+
+.emojione-1f61c {
+  background-position: 47.5% 87.17949%; }
+
+.emojione-1f61d {
+  background-position: 50% 87.17949%; }
+
+.emojione-1f61e {
+  background-position: 52.5% 87.17949%; }
+
+.emojione-1f61f {
+  background-position: 55% 87.17949%; }
+
+.emojione-1f620 {
+  background-position: 57.5% 87.17949%; }
+
+.emojione-1f621 {
+  background-position: 60% 87.17949%; }
+
+.emojione-1f622 {
+  background-position: 62.5% 87.17949%; }
+
+.emojione-1f623 {
+  background-position: 65% 87.17949%; }
+
+.emojione-1f624 {
+  background-position: 67.5% 87.17949%; }
+
+.emojione-1f625 {
+  background-position: 70% 87.17949%; }
+
+.emojione-1f626 {
+  background-position: 72.5% 87.17949%; }
+
+.emojione-1f627 {
+  background-position: 75% 87.17949%; }
+
+.emojione-1f628 {
+  background-position: 77.5% 87.17949%; }
+
+.emojione-1f629 {
+  background-position: 80% 87.17949%; }
+
+.emojione-1f62a {
+  background-position: 82.5% 87.17949%; }
+
+.emojione-1f62b {
+  background-position: 85% 87.17949%; }
+
+.emojione-1f62c {
+  background-position: 87.5% 0%; }
+
+.emojione-1f62d {
+  background-position: 87.5% 2.5641%; }
+
+.emojione-1f62e {
+  background-position: 87.5% 5.12821%; }
+
+.emojione-1f62f {
+  background-position: 87.5% 7.69231%; }
+
+.emojione-1f630 {
+  background-position: 87.5% 10.25641%; }
+
+.emojione-1f631 {
+  background-position: 87.5% 12.82051%; }
+
+.emojione-1f632 {
+  background-position: 87.5% 15.38462%; }
+
+.emojione-1f633 {
+  background-position: 87.5% 17.94872%; }
+
+.emojione-1f634 {
+  background-position: 87.5% 20.51282%; }
+
+.emojione-1f635 {
+  background-position: 87.5% 23.07692%; }
+
+.emojione-1f636 {
+  background-position: 87.5% 25.64103%; }
+
+.emojione-1f637 {
+  background-position: 87.5% 28.20513%; }
+
+.emojione-1f638 {
+  background-position: 87.5% 30.76923%; }
+
+.emojione-1f639 {
+  background-position: 87.5% 33.33333%; }
+
+.emojione-1f63a {
+  background-position: 87.5% 35.89744%; }
+
+.emojione-1f63b {
+  background-position: 87.5% 38.46154%; }
+
+.emojione-1f63c {
+  background-position: 87.5% 41.02564%; }
+
+.emojione-1f63d {
+  background-position: 87.5% 43.58974%; }
+
+.emojione-1f63e {
+  background-position: 87.5% 46.15385%; }
+
+.emojione-1f63f {
+  background-position: 87.5% 48.71795%; }
+
+.emojione-1f640 {
+  background-position: 87.5% 51.28205%; }
+
+.emojione-1f641 {
+  background-position: 87.5% 53.84615%; }
+
+.emojione-1f642 {
+  background-position: 87.5% 56.41026%; }
+
+.emojione-1f643 {
+  background-position: 87.5% 58.97436%; }
+
+.emojione-1f644 {
+  background-position: 87.5% 61.53846%; }
+
+.emojione-1f645-1f3fb {
+  background-position: 87.5% 64.10256%; }
+
+.emojione-1f645-1f3fc {
+  background-position: 87.5% 66.66667%; }
+
+.emojione-1f645-1f3fd {
+  background-position: 87.5% 69.23077%; }
+
+.emojione-1f645-1f3fe {
+  background-position: 87.5% 71.79487%; }
+
+.emojione-1f645-1f3ff {
+  background-position: 87.5% 74.35897%; }
+
+.emojione-1f645 {
+  background-position: 87.5% 76.92308%; }
+
+.emojione-1f646-1f3fb {
+  background-position: 87.5% 79.48718%; }
+
+.emojione-1f646-1f3fc {
+  background-position: 87.5% 82.05128%; }
+
+.emojione-1f646-1f3fd {
+  background-position: 87.5% 84.61538%; }
+
+.emojione-1f646-1f3fe {
+  background-position: 87.5% 87.17949%; }
+
+.emojione-1f646-1f3ff {
+  background-position: 0% 89.74359%; }
+
+.emojione-1f646 {
+  background-position: 2.5% 89.74359%; }
+
+.emojione-1f647-1f3fb {
+  background-position: 5% 89.74359%; }
+
+.emojione-1f647-1f3fc {
+  background-position: 7.5% 89.74359%; }
+
+.emojione-1f647-1f3fd {
+  background-position: 10% 89.74359%; }
+
+.emojione-1f647-1f3fe {
+  background-position: 12.5% 89.74359%; }
+
+.emojione-1f647-1f3ff {
+  background-position: 15% 89.74359%; }
+
+.emojione-1f647 {
+  background-position: 17.5% 89.74359%; }
+
+.emojione-1f648 {
+  background-position: 20% 89.74359%; }
+
+.emojione-1f649 {
+  background-position: 22.5% 89.74359%; }
+
+.emojione-1f64a {
+  background-position: 25% 89.74359%; }
+
+.emojione-1f64b-1f3fb {
+  background-position: 27.5% 89.74359%; }
+
+.emojione-1f64b-1f3fc {
+  background-position: 30% 89.74359%; }
+
+.emojione-1f64b-1f3fd {
+  background-position: 32.5% 89.74359%; }
+
+.emojione-1f64b-1f3fe {
+  background-position: 35% 89.74359%; }
+
+.emojione-1f64b-1f3ff {
+  background-position: 37.5% 89.74359%; }
+
+.emojione-1f64b {
+  background-position: 40% 89.74359%; }
+
+.emojione-1f64c-1f3fb {
+  background-position: 42.5% 89.74359%; }
+
+.emojione-1f64c-1f3fc {
+  background-position: 45% 89.74359%; }
+
+.emojione-1f64c-1f3fd {
+  background-position: 47.5% 89.74359%; }
+
+.emojione-1f64c-1f3fe {
+  background-position: 50% 89.74359%; }
+
+.emojione-1f64c-1f3ff {
+  background-position: 52.5% 89.74359%; }
+
+.emojione-1f64c {
+  background-position: 55% 89.74359%; }
+
+.emojione-1f64d-1f3fb {
+  background-position: 57.5% 89.74359%; }
+
+.emojione-1f64d-1f3fc {
+  background-position: 60% 89.74359%; }
+
+.emojione-1f64d-1f3fd {
+  background-position: 62.5% 89.74359%; }
+
+.emojione-1f64d-1f3fe {
+  background-position: 65% 89.74359%; }
+
+.emojione-1f64d-1f3ff {
+  background-position: 67.5% 89.74359%; }
+
+.emojione-1f64d {
+  background-position: 70% 89.74359%; }
+
+.emojione-1f64e-1f3fb {
+  background-position: 72.5% 89.74359%; }
+
+.emojione-1f64e-1f3fc {
+  background-position: 75% 89.74359%; }
+
+.emojione-1f64e-1f3fd {
+  background-position: 77.5% 89.74359%; }
+
+.emojione-1f64e-1f3fe {
+  background-position: 80% 89.74359%; }
+
+.emojione-1f64e-1f3ff {
+  background-position: 82.5% 89.74359%; }
+
+.emojione-1f64e {
+  background-position: 85% 89.74359%; }
+
+.emojione-1f64f-1f3fb {
+  background-position: 87.5% 89.74359%; }
+
+.emojione-1f64f-1f3fc {
+  background-position: 90% 0%; }
+
+.emojione-1f64f-1f3fd {
+  background-position: 90% 2.5641%; }
+
+.emojione-1f64f-1f3fe {
+  background-position: 90% 5.12821%; }
+
+.emojione-1f64f-1f3ff {
+  background-position: 90% 7.69231%; }
+
+.emojione-1f64f {
+  background-position: 90% 10.25641%; }
+
+.emojione-1f680 {
+  background-position: 90% 12.82051%; }
+
+.emojione-1f681 {
+  background-position: 90% 15.38462%; }
+
+.emojione-1f682 {
+  background-position: 90% 17.94872%; }
+
+.emojione-1f683 {
+  background-position: 90% 20.51282%; }
+
+.emojione-1f684 {
+  background-position: 90% 23.07692%; }
+
+.emojione-1f685 {
+  background-position: 90% 25.64103%; }
+
+.emojione-1f686 {
+  background-position: 90% 28.20513%; }
+
+.emojione-1f687 {
+  background-position: 90% 30.76923%; }
+
+.emojione-1f688 {
+  background-position: 90% 33.33333%; }
+
+.emojione-1f689 {
+  background-position: 90% 35.89744%; }
+
+.emojione-1f68a {
+  background-position: 90% 38.46154%; }
+
+.emojione-1f68b {
+  background-position: 90% 41.02564%; }
+
+.emojione-1f68c {
+  background-position: 90% 43.58974%; }
+
+.emojione-1f68d {
+  background-position: 90% 46.15385%; }
+
+.emojione-1f68e {
+  background-position: 90% 48.71795%; }
+
+.emojione-1f68f {
+  background-position: 90% 51.28205%; }
+
+.emojione-1f690 {
+  background-position: 90% 53.84615%; }
+
+.emojione-1f691 {
+  background-position: 90% 56.41026%; }
+
+.emojione-1f692 {
+  background-position: 90% 58.97436%; }
+
+.emojione-1f693 {
+  background-position: 90% 61.53846%; }
+
+.emojione-1f694 {
+  background-position: 90% 64.10256%; }
+
+.emojione-1f695 {
+  background-position: 90% 66.66667%; }
+
+.emojione-1f696 {
+  background-position: 90% 69.23077%; }
+
+.emojione-1f697 {
+  background-position: 90% 71.79487%; }
+
+.emojione-1f698 {
+  background-position: 90% 74.35897%; }
+
+.emojione-1f699 {
+  background-position: 90% 76.92308%; }
+
+.emojione-1f69a {
+  background-position: 90% 79.48718%; }
+
+.emojione-1f69b {
+  background-position: 90% 82.05128%; }
+
+.emojione-1f69c {
+  background-position: 90% 84.61538%; }
+
+.emojione-1f69d {
+  background-position: 90% 87.17949%; }
+
+.emojione-1f69e {
+  background-position: 90% 89.74359%; }
+
+.emojione-1f69f {
+  background-position: 0% 92.30769%; }
+
+.emojione-1f6a0 {
+  background-position: 2.5% 92.30769%; }
+
+.emojione-1f6a1 {
+  background-position: 5% 92.30769%; }
+
+.emojione-1f6a2 {
+  background-position: 7.5% 92.30769%; }
+
+.emojione-1f6a3-1f3fb {
+  background-position: 10% 92.30769%; }
+
+.emojione-1f6a3-1f3fc {
+  background-position: 12.5% 92.30769%; }
+
+.emojione-1f6a3-1f3fd {
+  background-position: 15% 92.30769%; }
+
+.emojione-1f6a3-1f3fe {
+  background-position: 17.5% 92.30769%; }
+
+.emojione-1f6a3-1f3ff {
+  background-position: 20% 92.30769%; }
+
+.emojione-1f6a3 {
+  background-position: 22.5% 92.30769%; }
+
+.emojione-1f6a4 {
+  background-position: 25% 92.30769%; }
+
+.emojione-1f6a5 {
+  background-position: 27.5% 92.30769%; }
+
+.emojione-1f6a6 {
+  background-position: 30% 92.30769%; }
+
+.emojione-1f6a7 {
+  background-position: 32.5% 92.30769%; }
+
+.emojione-1f6a8 {
+  background-position: 35% 92.30769%; }
+
+.emojione-1f6a9 {
+  background-position: 37.5% 92.30769%; }
+
+.emojione-1f6aa {
+  background-position: 40% 92.30769%; }
+
+.emojione-1f6ab {
+  background-position: 42.5% 92.30769%; }
+
+.emojione-1f6ac {
+  background-position: 45% 92.30769%; }
+
+.emojione-1f6ad {
+  background-position: 47.5% 92.30769%; }
+
+.emojione-1f6ae {
+  background-position: 50% 92.30769%; }
+
+.emojione-1f6af {
+  background-position: 52.5% 92.30769%; }
+
+.emojione-1f6b0 {
+  background-position: 55% 92.30769%; }
+
+.emojione-1f6b1 {
+  background-position: 57.5% 92.30769%; }
+
+.emojione-1f6b2 {
+  background-position: 60% 92.30769%; }
+
+.emojione-1f6b3 {
+  background-position: 62.5% 92.30769%; }
+
+.emojione-1f6b4-1f3fb {
+  background-position: 65% 92.30769%; }
+
+.emojione-1f6b4-1f3fc {
+  background-position: 67.5% 92.30769%; }
+
+.emojione-1f6b4-1f3fd {
+  background-position: 70% 92.30769%; }
+
+.emojione-1f6b4-1f3fe {
+  background-position: 72.5% 92.30769%; }
+
+.emojione-1f6b4-1f3ff {
+  background-position: 75% 92.30769%; }
+
+.emojione-1f6b4 {
+  background-position: 77.5% 92.30769%; }
+
+.emojione-1f6b5-1f3fb {
+  background-position: 80% 92.30769%; }
+
+.emojione-1f6b5-1f3fc {
+  background-position: 82.5% 92.30769%; }
+
+.emojione-1f6b5-1f3fd {
+  background-position: 85% 92.30769%; }
+
+.emojione-1f6b5-1f3fe {
+  background-position: 87.5% 92.30769%; }
+
+.emojione-1f6b5-1f3ff {
+  background-position: 90% 92.30769%; }
+
+.emojione-1f6b5 {
+  background-position: 92.5% 0%; }
+
+.emojione-1f6b6-1f3fb {
+  background-position: 92.5% 2.5641%; }
+
+.emojione-1f6b6-1f3fc {
+  background-position: 92.5% 5.12821%; }
+
+.emojione-1f6b6-1f3fd {
+  background-position: 92.5% 7.69231%; }
+
+.emojione-1f6b6-1f3fe {
+  background-position: 92.5% 10.25641%; }
+
+.emojione-1f6b6-1f3ff {
+  background-position: 92.5% 12.82051%; }
+
+.emojione-1f6b6 {
+  background-position: 92.5% 15.38462%; }
+
+.emojione-1f6b7 {
+  background-position: 92.5% 17.94872%; }
+
+.emojione-1f6b8 {
+  background-position: 92.5% 20.51282%; }
+
+.emojione-1f6b9 {
+  background-position: 92.5% 23.07692%; }
+
+.emojione-1f6ba {
+  background-position: 92.5% 25.64103%; }
+
+.emojione-1f6bb {
+  background-position: 92.5% 28.20513%; }
+
+.emojione-1f6bc {
+  background-position: 92.5% 30.76923%; }
+
+.emojione-1f6bd {
+  background-position: 92.5% 33.33333%; }
+
+.emojione-1f6be {
+  background-position: 92.5% 35.89744%; }
+
+.emojione-1f6bf {
+  background-position: 92.5% 38.46154%; }
+
+.emojione-1f6c0-1f3fb {
+  background-position: 92.5% 41.02564%; }
+
+.emojione-1f6c0-1f3fc {
+  background-position: 92.5% 43.58974%; }
+
+.emojione-1f6c0-1f3fd {
+  background-position: 92.5% 46.15385%; }
+
+.emojione-1f6c0-1f3fe {
+  background-position: 92.5% 48.71795%; }
+
+.emojione-1f6c0-1f3ff {
+  background-position: 92.5% 51.28205%; }
+
+.emojione-1f6c0 {
+  background-position: 92.5% 53.84615%; }
+
+.emojione-1f6c1 {
+  background-position: 92.5% 56.41026%; }
+
+.emojione-1f6c2 {
+  background-position: 92.5% 58.97436%; }
+
+.emojione-1f6c3 {
+  background-position: 92.5% 61.53846%; }
+
+.emojione-1f6c4 {
+  background-position: 92.5% 64.10256%; }
+
+.emojione-1f6c5 {
+  background-position: 92.5% 66.66667%; }
+
+.emojione-1f6cb {
+  background-position: 92.5% 69.23077%; }
+
+.emojione-1f6cc {
+  background-position: 92.5% 71.79487%; }
+
+.emojione-1f6cd {
+  background-position: 92.5% 74.35897%; }
+
+.emojione-1f6ce {
+  background-position: 92.5% 76.92308%; }
+
+.emojione-1f6cf {
+  background-position: 92.5% 79.48718%; }
+
+.emojione-1f6d0 {
+  background-position: 92.5% 82.05128%; }
+
+.emojione-1f6e0 {
+  background-position: 92.5% 84.61538%; }
+
+.emojione-1f6e1 {
+  background-position: 92.5% 87.17949%; }
+
+.emojione-1f6e2 {
+  background-position: 92.5% 89.74359%; }
+
+.emojione-1f6e3 {
+  background-position: 92.5% 92.30769%; }
+
+.emojione-1f6e4 {
+  background-position: 0% 94.87179%; }
+
+.emojione-1f6e5 {
+  background-position: 2.5% 94.87179%; }
+
+.emojione-1f6e9 {
+  background-position: 5% 94.87179%; }
+
+.emojione-1f6eb {
+  background-position: 7.5% 94.87179%; }
+
+.emojione-1f6ec {
+  background-position: 10% 94.87179%; }
+
+.emojione-1f6f0 {
+  background-position: 12.5% 94.87179%; }
+
+.emojione-1f6f3 {
+  background-position: 15% 94.87179%; }
+
+.emojione-1f910 {
+  background-position: 17.5% 94.87179%; }
+
+.emojione-1f911 {
+  background-position: 20% 94.87179%; }
+
+.emojione-1f912 {
+  background-position: 22.5% 94.87179%; }
+
+.emojione-1f913 {
+  background-position: 25% 94.87179%; }
+
+.emojione-1f914 {
+  background-position: 27.5% 94.87179%; }
+
+.emojione-1f915 {
+  background-position: 30% 94.87179%; }
+
+.emojione-1f916 {
+  background-position: 32.5% 94.87179%; }
+
+.emojione-1f917 {
+  background-position: 35% 94.87179%; }
+
+.emojione-1f918-1f3fb {
+  background-position: 37.5% 94.87179%; }
+
+.emojione-1f918-1f3fc {
+  background-position: 40% 94.87179%; }
+
+.emojione-1f918-1f3fd {
+  background-position: 42.5% 94.87179%; }
+
+.emojione-1f918-1f3fe {
+  background-position: 45% 94.87179%; }
+
+.emojione-1f918-1f3ff {
+  background-position: 47.5% 94.87179%; }
+
+.emojione-1f918 {
+  background-position: 50% 94.87179%; }
+
+.emojione-1f980 {
+  background-position: 52.5% 94.87179%; }
+
+.emojione-1f981 {
+  background-position: 55% 94.87179%; }
+
+.emojione-1f982 {
+  background-position: 57.5% 94.87179%; }
+
+.emojione-1f983 {
+  background-position: 60% 94.87179%; }
+
+.emojione-1f984 {
+  background-position: 62.5% 94.87179%; }
+
+.emojione-1f9c0 {
+  background-position: 65% 94.87179%; }
+
+.emojione-203c {
+  background-position: 67.5% 94.87179%; }
+
+.emojione-2049 {
+  background-position: 70% 94.87179%; }
+
+.emojione-2122 {
+  background-position: 72.5% 94.87179%; }
+
+.emojione-2139 {
+  background-position: 75% 94.87179%; }
+
+.emojione-2194 {
+  background-position: 77.5% 94.87179%; }
+
+.emojione-2195 {
+  background-position: 80% 94.87179%; }
+
+.emojione-2196 {
+  background-position: 82.5% 94.87179%; }
+
+.emojione-2197 {
+  background-position: 85% 94.87179%; }
+
+.emojione-2198 {
+  background-position: 87.5% 94.87179%; }
+
+.emojione-2199 {
+  background-position: 90% 94.87179%; }
+
+.emojione-21a9 {
+  background-position: 92.5% 94.87179%; }
+
+.emojione-21aa {
+  background-position: 95% 0%; }
+
+.emojione-231a {
+  background-position: 95% 2.5641%; }
+
+.emojione-231b {
+  background-position: 95% 5.12821%; }
+
+.emojione-2328 {
+  background-position: 95% 7.69231%; }
+
+.emojione-23e9 {
+  background-position: 95% 10.25641%; }
+
+.emojione-23ea {
+  background-position: 95% 12.82051%; }
+
+.emojione-23eb {
+  background-position: 95% 15.38462%; }
+
+.emojione-23ec {
+  background-position: 95% 17.94872%; }
+
+.emojione-23ed {
+  background-position: 95% 20.51282%; }
+
+.emojione-23ee {
+  background-position: 95% 23.07692%; }
+
+.emojione-23ef {
+  background-position: 95% 25.64103%; }
+
+.emojione-23f0 {
+  background-position: 95% 28.20513%; }
+
+.emojione-23f1 {
+  background-position: 95% 30.76923%; }
+
+.emojione-23f2 {
+  background-position: 95% 33.33333%; }
+
+.emojione-23f3 {
+  background-position: 95% 35.89744%; }
+
+.emojione-23f8 {
+  background-position: 95% 38.46154%; }
+
+.emojione-23f9 {
+  background-position: 95% 41.02564%; }
+
+.emojione-23fa {
+  background-position: 95% 43.58974%; }
+
+.emojione-24c2 {
+  background-position: 95% 46.15385%; }
+
+.emojione-25aa {
+  background-position: 95% 48.71795%; }
+
+.emojione-25ab {
+  background-position: 95% 51.28205%; }
+
+.emojione-25b6 {
+  background-position: 95% 53.84615%; }
+
+.emojione-25c0 {
+  background-position: 95% 56.41026%; }
+
+.emojione-25fb {
+  background-position: 95% 58.97436%; }
+
+.emojione-25fc {
+  background-position: 95% 61.53846%; }
+
+.emojione-25fd {
+  background-position: 95% 64.10256%; }
+
+.emojione-25fe {
+  background-position: 95% 66.66667%; }
+
+.emojione-2600 {
+  background-position: 95% 69.23077%; }
+
+.emojione-2601 {
+  background-position: 95% 71.79487%; }
+
+.emojione-2602 {
+  background-position: 95% 74.35897%; }
+
+.emojione-2603 {
+  background-position: 95% 76.92308%; }
+
+.emojione-2604 {
+  background-position: 95% 79.48718%; }
+
+.emojione-260e {
+  background-position: 95% 82.05128%; }
+
+.emojione-2611 {
+  background-position: 95% 84.61538%; }
+
+.emojione-2614 {
+  background-position: 95% 87.17949%; }
+
+.emojione-2615 {
+  background-position: 95% 89.74359%; }
+
+.emojione-2618 {
+  background-position: 95% 92.30769%; }
+
+.emojione-261d-1f3fb {
+  background-position: 95% 94.87179%; }
+
+.emojione-261d-1f3fc {
+  background-position: 0% 97.4359%; }
+
+.emojione-261d-1f3fd {
+  background-position: 2.5% 97.4359%; }
+
+.emojione-261d-1f3fe {
+  background-position: 5% 97.4359%; }
+
+.emojione-261d-1f3ff {
+  background-position: 7.5% 97.4359%; }
+
+.emojione-261d {
+  background-position: 10% 97.4359%; }
+
+.emojione-2620 {
+  background-position: 12.5% 97.4359%; }
+
+.emojione-2622 {
+  background-position: 15% 97.4359%; }
+
+.emojione-2623 {
+  background-position: 17.5% 97.4359%; }
+
+.emojione-2626 {
+  background-position: 20% 97.4359%; }
+
+.emojione-262a {
+  background-position: 22.5% 97.4359%; }
+
+.emojione-262e {
+  background-position: 25% 97.4359%; }
+
+.emojione-262f {
+  background-position: 27.5% 97.4359%; }
+
+.emojione-2638 {
+  background-position: 30% 97.4359%; }
+
+.emojione-2639 {
+  background-position: 32.5% 97.4359%; }
+
+.emojione-263a {
+  background-position: 35% 97.4359%; }
+
+.emojione-2648 {
+  background-position: 37.5% 97.4359%; }
+
+.emojione-2649 {
+  background-position: 40% 97.4359%; }
+
+.emojione-264a {
+  background-position: 42.5% 97.4359%; }
+
+.emojione-264b {
+  background-position: 45% 97.4359%; }
+
+.emojione-264c {
+  background-position: 47.5% 97.4359%; }
+
+.emojione-264d {
+  background-position: 50% 97.4359%; }
+
+.emojione-264e {
+  background-position: 52.5% 97.4359%; }
+
+.emojione-264f {
+  background-position: 55% 97.4359%; }
+
+.emojione-2650 {
+  background-position: 57.5% 97.4359%; }
+
+.emojione-2651 {
+  background-position: 60% 97.4359%; }
+
+.emojione-2652 {
+  background-position: 62.5% 97.4359%; }
+
+.emojione-2653 {
+  background-position: 65% 97.4359%; }
+
+.emojione-2660 {
+  background-position: 67.5% 97.4359%; }
+
+.emojione-2663 {
+  background-position: 70% 97.4359%; }
+
+.emojione-2665 {
+  background-position: 72.5% 97.4359%; }
+
+.emojione-2666 {
+  background-position: 75% 97.4359%; }
+
+.emojione-2668 {
+  background-position: 77.5% 97.4359%; }
+
+.emojione-267b {
+  background-position: 80% 97.4359%; }
+
+.emojione-267f {
+  background-position: 82.5% 97.4359%; }
+
+.emojione-2692 {
+  background-position: 85% 97.4359%; }
+
+.emojione-2693 {
+  background-position: 87.5% 97.4359%; }
+
+.emojione-2694 {
+  background-position: 90% 97.4359%; }
+
+.emojione-2696 {
+  background-position: 92.5% 97.4359%; }
+
+.emojione-2697 {
+  background-position: 95% 97.4359%; }
+
+.emojione-2699 {
+  background-position: 97.5% 0%; }
+
+.emojione-269b {
+  background-position: 97.5% 2.5641%; }
+
+.emojione-269c {
+  background-position: 97.5% 5.12821%; }
+
+.emojione-26a0 {
+  background-position: 97.5% 7.69231%; }
+
+.emojione-26a1 {
+  background-position: 97.5% 10.25641%; }
+
+.emojione-26aa {
+  background-position: 97.5% 12.82051%; }
+
+.emojione-26ab {
+  background-position: 97.5% 15.38462%; }
+
+.emojione-26b0 {
+  background-position: 97.5% 17.94872%; }
+
+.emojione-26b1 {
+  background-position: 97.5% 20.51282%; }
+
+.emojione-26bd {
+  background-position: 97.5% 23.07692%; }
+
+.emojione-26be {
+  background-position: 97.5% 25.64103%; }
+
+.emojione-26c4 {
+  background-position: 97.5% 28.20513%; }
+
+.emojione-26c5 {
+  background-position: 97.5% 30.76923%; }
+
+.emojione-26c8 {
+  background-position: 97.5% 33.33333%; }
+
+.emojione-26ce {
+  background-position: 97.5% 35.89744%; }
+
+.emojione-26cf {
+  background-position: 97.5% 38.46154%; }
+
+.emojione-26d1 {
+  background-position: 97.5% 41.02564%; }
+
+.emojione-26d3 {
+  background-position: 97.5% 43.58974%; }
+
+.emojione-26d4 {
+  background-position: 97.5% 46.15385%; }
+
+.emojione-26e9 {
+  background-position: 97.5% 48.71795%; }
+
+.emojione-26ea {
+  background-position: 97.5% 51.28205%; }
+
+.emojione-26f0 {
+  background-position: 97.5% 53.84615%; }
+
+.emojione-26f1 {
+  background-position: 97.5% 56.41026%; }
+
+.emojione-26f2 {
+  background-position: 97.5% 58.97436%; }
+
+.emojione-26f3 {
+  background-position: 97.5% 61.53846%; }
+
+.emojione-26f4 {
+  background-position: 97.5% 64.10256%; }
+
+.emojione-26f5 {
+  background-position: 97.5% 66.66667%; }
+
+.emojione-26f7 {
+  background-position: 97.5% 69.23077%; }
+
+.emojione-26f8 {
+  background-position: 97.5% 71.79487%; }
+
+.emojione-26f9-1f3fb {
+  background-position: 97.5% 74.35897%; }
+
+.emojione-26f9-1f3fc {
+  background-position: 97.5% 76.92308%; }
+
+.emojione-26f9-1f3fd {
+  background-position: 97.5% 79.48718%; }
+
+.emojione-26f9-1f3fe {
+  background-position: 97.5% 82.05128%; }
+
+.emojione-26f9-1f3ff {
+  background-position: 97.5% 84.61538%; }
+
+.emojione-26f9 {
+  background-position: 97.5% 87.17949%; }
+
+.emojione-26fa {
+  background-position: 97.5% 89.74359%; }
+
+.emojione-26fd {
+  background-position: 97.5% 92.30769%; }
+
+.emojione-2702 {
+  background-position: 97.5% 94.87179%; }
+
+.emojione-2705 {
+  background-position: 97.5% 97.4359%; }
+
+.emojione-2708 {
+  background-position: 0% 100%; }
+
+.emojione-2709 {
+  background-position: 2.5% 100%; }
+
+.emojione-270a-1f3fb {
+  background-position: 5% 100%; }
+
+.emojione-270a-1f3fc {
+  background-position: 7.5% 100%; }
+
+.emojione-270a-1f3fd {
+  background-position: 10% 100%; }
+
+.emojione-270a-1f3fe {
+  background-position: 12.5% 100%; }
+
+.emojione-270a-1f3ff {
+  background-position: 15% 100%; }
+
+.emojione-270a {
+  background-position: 17.5% 100%; }
+
+.emojione-270b-1f3fb {
+  background-position: 20% 100%; }
+
+.emojione-270b-1f3fc {
+  background-position: 22.5% 100%; }
+
+.emojione-270b-1f3fd {
+  background-position: 25% 100%; }
+
+.emojione-270b-1f3fe {
+  background-position: 27.5% 100%; }
+
+.emojione-270b-1f3ff {
+  background-position: 30% 100%; }
+
+.emojione-270b {
+  background-position: 32.5% 100%; }
+
+.emojione-270c-1f3fb {
+  background-position: 35% 100%; }
+
+.emojione-270c-1f3fc {
+  background-position: 37.5% 100%; }
+
+.emojione-270c-1f3fd {
+  background-position: 40% 100%; }
+
+.emojione-270c-1f3fe {
+  background-position: 42.5% 100%; }
+
+.emojione-270c-1f3ff {
+  background-position: 45% 100%; }
+
+.emojione-270c {
+  background-position: 47.5% 100%; }
+
+.emojione-270d-1f3fb {
+  background-position: 50% 100%; }
+
+.emojione-270d-1f3fc {
+  background-position: 52.5% 100%; }
+
+.emojione-270d-1f3fd {
+  background-position: 55% 100%; }
+
+.emojione-270d-1f3fe {
+  background-position: 57.5% 100%; }
+
+.emojione-270d-1f3ff {
+  background-position: 60% 100%; }
+
+.emojione-270d {
+  background-position: 62.5% 100%; }
+
+.emojione-270f {
+  background-position: 65% 100%; }
+
+.emojione-2712 {
+  background-position: 67.5% 100%; }
+
+.emojione-2714 {
+  background-position: 70% 100%; }
+
+.emojione-2716 {
+  background-position: 72.5% 100%; }
+
+.emojione-271d {
+  background-position: 75% 100%; }
+
+.emojione-2721 {
+  background-position: 77.5% 100%; }
+
+.emojione-2728 {
+  background-position: 80% 100%; }
+
+.emojione-2733 {
+  background-position: 82.5% 100%; }
+
+.emojione-2734 {
+  background-position: 85% 100%; }
+
+.emojione-2744 {
+  background-position: 87.5% 100%; }
+
+.emojione-2747 {
+  background-position: 90% 100%; }
+
+.emojione-274c {
+  background-position: 92.5% 100%; }
+
+.emojione-274e {
+  background-position: 95% 100%; }
+
+.emojione-2753 {
+  background-position: 97.5% 100%; }
+
+.emojione-2754 {
+  background-position: 100% 0%; }
+
+.emojione-2755 {
+  background-position: 100% 2.5641%; }
+
+.emojione-2757 {
+  background-position: 100% 5.12821%; }
+
+.emojione-2763 {
+  background-position: 100% 7.69231%; }
+
+.emojione-2764 {
+  background-position: 100% 10.25641%; }
+
+.emojione-2795 {
+  background-position: 100% 12.82051%; }
+
+.emojione-2796 {
+  background-position: 100% 15.38462%; }
+
+.emojione-2797 {
+  background-position: 100% 17.94872%; }
+
+.emojione-27a1 {
+  background-position: 100% 20.51282%; }
+
+.emojione-27b0 {
+  background-position: 100% 23.07692%; }
+
+.emojione-27bf {
+  background-position: 100% 25.64103%; }
+
+.emojione-2934 {
+  background-position: 100% 28.20513%; }
+
+.emojione-2935 {
+  background-position: 100% 30.76923%; }
+
+.emojione-2b05 {
+  background-position: 100% 33.33333%; }
+
+.emojione-2b06 {
+  background-position: 100% 35.89744%; }
+
+.emojione-2b07 {
+  background-position: 100% 38.46154%; }
+
+.emojione-2b1b {
+  background-position: 100% 41.02564%; }
+
+.emojione-2b1c {
+  background-position: 100% 43.58974%; }
+
+.emojione-2b50 {
+  background-position: 100% 46.15385%; }
+
+.emojione-2b55 {
+  background-position: 100% 48.71795%; }
+
+.emojione-3030 {
+  background-position: 100% 51.28205%; }
+
+.emojione-303d {
+  background-position: 100% 53.84615%; }
+
+.emojione-3297 {
+  background-position: 100% 56.41026%; }
+
+.emojione-3299 {
+  background-position: 100% 58.97436%; }

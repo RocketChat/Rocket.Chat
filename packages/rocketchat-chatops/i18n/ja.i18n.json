@@ -1,1 +1,5 @@
-{ }
+{
+  "Chatops_Enabled" : "Chatops を有効にする",
+  "Chatops_Title" : "Chatops パネル",
+  "Chatops_Username" : "Chatops ユーザー名"
+}

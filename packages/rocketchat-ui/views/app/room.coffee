@@ -164,21 +164,20 @@ Template.room.helpers
 		wavEnabled = !RocketChat.settings.get("FileUpload_MediaTypeWhiteList") || RocketChat.settings.get("FileUpload_MediaTypeWhiteList").match(wavRegex)
 		return RocketChat.settings.get('Message_AudioRecorderEnabled') and (navigator.getUserMedia? or navigator.webkitGetUserMedia?) and wavEnabled and RocketChat.settings.get('FileUpload_Enabled')
 
-	unreadSince: ->
-		room = ChatRoom.findOne(this._id, { reactive: false })
-		if room?
-			return RoomManager.openedRooms[room.t + room.name]?.unreadSince?.get()
+	unreadData: ->
+		data =
+			count: RoomHistoryManager.getRoom(this._id).unreadNotLoaded.get() + Template.instance().unreadCount.get()
 
-	unreadCount: ->
-		return RoomHistoryManager.getRoom(@_id).unreadNotLoaded.get() + Template.instance().unreadCount.get()
+		room = RoomManager.getOpenedRoomByRid this._id
+		if room?
+			data.since = room.unreadSince?.get()
+
+		return data
 
 	formatUnreadSince: ->
-		room = ChatRoom.findOne(this._id, { reactive: false })
-		room = RoomManager.openedRooms[room?.t + room?.name]
-		date = room?.unreadSince.get()
-		if not date? then return
+		if not this.since? then return
 
-		return moment(date).calendar(null, {sameDay: 'LT'})
+		return moment(this.since).calendar(null, {sameDay: 'LT'})
 
 	flexTemplate: ->
 		return RocketChat.TabBar.getTemplate()
@@ -588,7 +587,8 @@ Template.room.onRendered ->
 			firstMessage = ChatMessage.findOne firstMessageOnScreen.id
 			if firstMessage?
 				subscription = ChatSubscription.findOne rid: template.data._id
-				template.unreadCount.set ChatMessage.find({rid: template.data._id, ts: {$lt: firstMessage.ts, $gt: subscription?.ls}}).count()
+				count = ChatMessage.find({rid: template.data._id, ts: {$lt: firstMessage.ts, $gt: subscription?.ls}}).count()
+				template.unreadCount.set count
 			else
 				template.unreadCount.set 0
 	, 300
