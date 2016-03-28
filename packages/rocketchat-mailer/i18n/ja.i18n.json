@@ -8,6 +8,8 @@
   "Email_body" : "メール本文",
   "Mailer" : "メーラー",
   "Mailer_body_tags" : "[unsubscribe] を購読解除のリンクとして<b>使わなければなりません</b>。<br />ユーザーのフルネームに [name], [fname], [lname] を使用できます。姓 または 名 にも対応しています。<br />メールアドレスには、 [email] を使用できます。",
+  "Query" : "条件クエリー",
+  "Query_description" : "メール送信先のユーザーを決める追加条件。購読解除されたユーザーは、自動的に条件から除外されます。条件は、有効なJSON形式でなければなりません。例:  \"{\"createdAt\":{\"$gt\":{\"$date\": \"2015-01-01T00:00:00.000Z\"}}}\"",
   "Send_email" : "メール送信",
   "The_emails_are_being_sent" : "メールは送信されました",
   "You_have_successfully_unsubscribed" : "メーリングリストから正常に購読解除されました。",

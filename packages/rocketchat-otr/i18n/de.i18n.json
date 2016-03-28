@@ -5,7 +5,7 @@
   "OTR" : "OTR",
   "OTR_is_only_available_when_both_users_are_online" : "OTR ist nur möglich, wenn beide Benutzer online sind.",
   "Please_wait_while_OTR_is_being_established" : "Bitte warten Sie, während OTR gestartet wird.",
-  "Refresh_keys" : "Aktualisierungsschlüssel",
+  "Refresh_keys" : "Schlüssel aktualisieren",
   "Start_OTR" : "OTR beginnen",
   "User_has_disconnected" : "Der Benutzer hat die Verbindung getrennt.",
   "Username_denied_the_OTR_session" : "__username__ hat die OTR-Session abgelehnt.",
