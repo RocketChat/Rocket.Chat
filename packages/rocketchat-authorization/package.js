@@ -12,7 +12,7 @@ Package.onUse(function(api) {
     'coffeescript',
     'underscore',
     'rocketchat:lib'
-    ]);
+  ]);
 
   api.use('mongo', ['client', 'server']);
   api.use('kadira:flow-router', 'client');
@@ -70,14 +70,4 @@ Package.onUse(function(api) {
   api.addFiles('server/methods/removeRoleFromPermission.coffee', 'server');
 
   api.addFiles('server/startup.coffee', ['server']);
-
-  var _ = Npm.require('underscore');
-  var fs = Npm.require('fs');
-  var tapi18nFiles = _.compact(_.map(fs.readdirSync('packages/rocketchat-authorization/i18n'), function(filename) {
-    if (fs.statSync('packages/rocketchat-authorization/i18n/' + filename).size > 16) {
-      return 'i18n/' + filename;
-    }
-  }));
-  api.use('tap:i18n');
-  api.addFiles(tapi18nFiles);
 });

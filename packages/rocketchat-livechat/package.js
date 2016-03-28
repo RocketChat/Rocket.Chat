@@ -119,15 +119,4 @@ Package.onUse(function(api) {
 	api.addAssets('public/livechat.css', 'client');
 	api.addAssets('public/livechat.js', 'client');
 	api.addAssets('public/head.html', 'server');
-
-	// TAPi18n
-	var _ = Npm.require('underscore');
-	var fs = Npm.require('fs');
-	var tapi18nFiles = _.compact(_.map(fs.readdirSync('packages/rocketchat-livechat/i18n'), function(filename) {
-		if (fs.statSync('packages/rocketchat-livechat/i18n/' + filename).size > 16) {
-			return 'i18n/' + filename;
-		}
-	}));
-	api.use('tap:i18n');
-	api.addFiles(tapi18nFiles);
 });

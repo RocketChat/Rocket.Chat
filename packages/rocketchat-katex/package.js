@@ -27,14 +27,6 @@ Package.onUse(function(api) {
 	});
 
 	api.addAssets(fontFiles, 'client');
-
-	var tapi18nFiles = _.compact(_.map(fs.readdirSync('packages/rocketchat-katex/i18n'), function(filename) {
-		if (fs.statSync('packages/rocketchat-katex/i18n/' + filename).size > 16) {
-			return 'i18n/' + filename;
-		}
-	}));
-	api.use('tap:i18n');
-	api.addFiles(tapi18nFiles);
 });
 
 Package.onTest(function(api) {

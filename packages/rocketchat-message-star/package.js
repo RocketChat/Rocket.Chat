@@ -15,6 +15,8 @@ Package.onUse(function(api) {
 		'rocketchat:lib'
 	]);
 
+	api.use('templating', 'client');
+
 	api.addFiles([
 		'client/lib/StarredMessage.coffee',
 		'client/actionButton.coffee',
@@ -31,16 +33,4 @@ Package.onUse(function(api) {
 		'server/publications/starredMessages.coffee',
 		'server/startup/indexes.coffee'
 	], 'server');
-
-	// TAPi18n
-	api.use('templating', 'client');
-	var _ = Npm.require('underscore');
-	var fs = Npm.require('fs');
-	var tapi18nFiles = _.compact(_.map(fs.readdirSync('packages/rocketchat-message-star/i18n'), function(filename) {
-		if (fs.statSync('packages/rocketchat-message-star/i18n/' + filename).size > 16) {
-			return 'i18n/' + filename;
-		}
-	}));
-	api.use('tap:i18n');
-	api.addFiles(tapi18nFiles);
 });
