@@ -124,7 +124,7 @@ mrt:reactive-store
 mystor:device-detection
 nimble:restivus
 nooitaf:colors
-ostrio:cookies@2.0.1
+ostrio:cookies
 pauli:accounts-linkedin
 perak:codemirror
 percolate:synced-cron
