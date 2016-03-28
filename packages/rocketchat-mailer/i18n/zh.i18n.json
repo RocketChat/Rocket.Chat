@@ -1,6 +1,7 @@
 {
   "From_email_warning" : "<b>警告</b>：<b>From</b>字段来自于邮件服务器的设置。",
   "From_email_is_required" : "From 字段是必填项",
+  "Dry_run" : "发送测试",
   "Dry_run_description" : "表单中的 E-mail 都只会收到一封邮件。邮件必须对应有效用户。",
   "Email_subject" : "E-mail 标题",
   "Email_body" : "E-mail 正文",

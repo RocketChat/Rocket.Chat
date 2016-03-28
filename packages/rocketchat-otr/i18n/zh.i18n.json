@@ -1,1 +1,14 @@
-{ }
+{
+  "End_OTR" : "结束“无记录对话”",
+  "Off_the_record_conversation" : "“无记录对话”",
+  "Off_the_record_conversation_is_not_available_for_your_browser_or_device" : "“无记录对话”不支持您的浏览器或设备。",
+  "OTR" : "无记录对话",
+  "OTR_is_only_available_when_both_users_are_online" : "仅当双方均在线时才可以开启“无记录对话”",
+  "Please_wait_while_OTR_is_being_established" : "请稍候，正在建立OTR连接",
+  "Refresh_keys" : "刷新key",
+  "Start_OTR" : "开启“无记录对话”",
+  "User_has_disconnected" : "用户已离线",
+  "Username_denied_the_OTR_session" : "__username__ 拒绝了“无记录对话”",
+  "Username_ended_the_OTR_session" : "__username__ 结束了“无记录对话”",
+  "Username_wants_to_start_otr_Do_you_want_to_accept" : "__username__ 要与您开启“无记录对话”，是否接受？"
+}
