@@ -27,7 +27,7 @@
   "Livechat_Manager" : "Manager du chat en direct",
   "Livechat_managers" : "Managers du chat en direct",
   "Livechat_title" : "Titre du chat en direct",
-  "Livechat_title_color" : "Couleur du fond du titre du chat en direct",
+  "Livechat_title_color" : "Couleur d'arrière plan du titre du chat en direct",
   "Livechat_Users" : "Utilisateurs du chat en direct",
   "Manager_added" : "Manager ajouté",
   "Manager_removed" : "Manager retiré",
@@ -48,11 +48,11 @@
   "There_are_no_agents_added_to_this_department_yet" : "Il n'y a pas d'assistant ajouté à ce département pour le moment",
   "Time_in_seconds" : "Temps en secondes",
   "Title_bar_color" : "Couleur de la barre de titre",
-  "To_install_RocketChat_Livechat_in_your_website_copy_paste_this_code_above_the_last_body_tag_on_your_site" : "Pour installer Rocket.Chat Livechat dans votre site web, copiez-collez ce code au dessus de la dernière balise <strong>&lt;/body&gt;</strong> du site.",
+  "To_install_RocketChat_Livechat_in_your_website_copy_paste_this_code_above_the_last_body_tag_on_your_site" : "Pour installer le chat en direct Rocket.Chat (Livechat) sur votre site web, copiez-collez ce code au dessus de la dernière balise <strong>&lt;/body&gt;</strong> du site.",
   "Trigger_removed" : "Déclencheur retiré",
   "Triggers" : "Déclencheurs",
   "User_management" : "Gestion des Utilisateurs",
   "Username_not_found" : "Nom d'utilisateur introuvable",
-  "Visitor_page_URL" : "Page d'accueil visiteur (URL)",
+  "Visitor_page_URL" : "Page d'accueil du visiteur (URL)",
   "Visitor_time_on_site" : "Temps des visiteurs sur le site"
 }
