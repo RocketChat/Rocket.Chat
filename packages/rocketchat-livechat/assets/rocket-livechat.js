@@ -8,10 +8,8 @@
 // 		h.parentNode.insertBefore(j, h);
 // 	})(window, document, 'script', 'initRocket', 'http://localhost:5000/livechat');
 // </script>
-/* globals RocketChat:true */
-/* exported RocketChat */
 
-var RocketChat = (function(w) {
+window.RocketChat = (function(w) {
 	var config = {};
 	var widget;
 	var iframe;
