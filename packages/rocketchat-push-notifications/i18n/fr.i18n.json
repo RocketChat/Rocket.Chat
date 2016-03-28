@@ -1,11 +1,11 @@
 {
   "All_messages" : "Tous les messages",
-  "Desktop_notifications" : "Notification sur le bureau ",
+  "Desktop_notifications" : "Notifications sur le bureau ",
   "Invalid_notification_setting_s" : "Paramètre de notification invalide : %s",
   "Mentions" : "Mentions",
   "Mentions_default" : "Mentions (défaut)",
-  "Mobile_push_notifications" : "Notification push sur mobile",
+  "Mobile_push_notifications" : "Notifications push sur mobile",
   "Nothing" : "Rien",
   "Push_notifications" : "Notifications Push",
-  "Use_account_preference" : "Préférence compte utilisateur"
+  "Use_account_preference" : "Préférence du compte utilisateur"
 }

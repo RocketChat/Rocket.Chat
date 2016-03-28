@@ -12,7 +12,7 @@
   "Query_description" : "Conditions additionnelles pour déterminer à quels utilisateurs l'e-mail sera envoyé. Les utilisateurs désinscrits sont automatiquement retirés de la requête. La requête doit être au format JSON. Exemple : \"{\"createdAt\":{\"$gt\":{\"$date\": \"2015-01-01T00:00:00.000Z\"}}}\"",
   "Send_email" : "Envoyer l'e-mail",
   "The_emails_are_being_sent" : "Les e-mails sont en cours d'envoi.",
-  "You_have_successfully_unsubscribed" : "Vous êtes désabonné avec succès de notre Liste de diffusion.",
-  "You_informed_an_invalid_FROM_address" : "Vous avez entré un expéditeur invalide (champ FROM).",
+  "You_have_successfully_unsubscribed" : "Vous êtes désabonné avec succès de notre liste de diffusion.",
+  "You_informed_an_invalid_FROM_address" : "Vous avez entré un expéditeur invalide (champ De).",
   "You_must_provide_the_unsubscribe_link" : "Vous devez fournir le lien de désinscription [unsubscribe]."
 }
