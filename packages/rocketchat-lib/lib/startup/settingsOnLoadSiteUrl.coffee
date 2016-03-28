@@ -10,6 +10,7 @@ RocketChat.settings.get 'Site_Url', (key, value) ->
 		__meteor_runtime_config__.ROOT_URL = host
 		__meteor_runtime_config__.ROOT_URL_PATH_PREFIX = prefix
 		__meteor_runtime_config__.DDP_DEFAULT_CONNECTION_URL = host
+
 		if Meteor.absoluteUrl.defaultOptions?.rootUrl?
 			Meteor.absoluteUrl.defaultOptions.rootUrl = host
 

@@ -7,7 +7,7 @@
   "Room_archivation_state" : "État",
   "Room_archivation_state_false" : "Actif",
   "Room_archivation_state_true" : "Archivé",
-  "Room_Info" : "Infos sur le salon",
+  "Room_Info" : "Informations sur le salon",
   "room_changed_privacy" : "Type du salon changé pour : <em>__room_type__</em> par <em>__user_by__</em>",
   "room_changed_topic" : "Sujet du salon changé pour : <em>__room_topic__</em> by <em>__user_by__</em>",
   "Room_topic_changed_successfully" : "Sujet du salon modifié avec succès",

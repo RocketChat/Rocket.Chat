@@ -21,12 +21,14 @@ Meteor.startup ->
 				if hasFocus and subscriptionIsTheOpenedRoom
 					# The user has probably read all messages in this room.
 					# TODO: readNow() should return whether it has actually marked the room as read.
-					readMessage.readNow()
-				else
-					# Increment the total unread count.
-					unreadCount += subscription.unread
-					if subscription.alert is true
-						unreadAlert = '•'
+					Meteor.setTimeout ->
+						readMessage.readNow()
+					, 500
+
+				# Increment the total unread count.
+				unreadCount += subscription.unread
+				if subscription.alert is true
+					unreadAlert = '•'
 
 			readMessage.refreshUnreadMark(subscription.rid)
 

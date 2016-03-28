@@ -3,11 +3,23 @@ http = Npm.require('http')
 https = Npm.require('https')
 zlib = Npm.require('zlib')
 querystring = Npm.require('querystring')
+iconv = Npm.require('iconv-lite')
 
 gunzipSync = Meteor.wrapAsync zlib.gunzip.bind(zlib)
 inflateSync = Meteor.wrapAsync zlib.inflate.bind(zlib)
 
 OEmbed = {}
+
+# Detect encoding
+getCharset = (body) ->
+	binary = body.toString 'binary'
+	matches = binary.match /<meta\b[^>]*charset=["']?([\w\-]+)/i
+	if matches
+		return matches[1]
+	return 'utf-8'
+
+toUtf8 = (body) ->
+	return iconv.decode body, getCharset(body)
 
 getUrlContent = (urlObj, redirectCount = 5, callback) ->
 	if _.isString(urlObj)
@@ -63,7 +75,7 @@ getUrlContent = (urlObj, redirectCount = 5, callback) ->
 
 			callback null, {
 				headers: response.headers
-				body: buffer.toString()
+				body: toUtf8 buffer
 				parsedUrl: parsedUrl
 			}
 

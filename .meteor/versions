@@ -40,7 +40,7 @@ ecmascript-runtime@0.2.6
 edgee:slingshot@0.7.1
 ejson@1.0.7
 email@1.0.8
-emojione:emojione@2.1.2
+emojione:emojione@2.1.3
 facebook@1.2.2
 fastclick@1.0.7
 francocatena:status@1.5.1
@@ -53,7 +53,7 @@ htmljs@1.0.5
 http@1.1.1
 id-map@1.0.4
 idorecall:email-normalize@1.0.0
-jalik:ufs@0.5.2
+jalik:ufs@0.5.3
 jalik:ufs-gridfs@0.1.1
 jalik:ufs-local@0.2.5
 jparker:crypto-core@0.1.0
@@ -82,7 +82,7 @@ meteor-base@1.0.1
 meteor-developer@1.1.5
 meteorhacks:fast-render@2.13.0
 meteorhacks:inject-data@2.0.0
-meteorhacks:inject-initial@1.0.3
+meteorhacks:inject-initial@1.0.4
 meteorhacks:meteorx@1.4.1
 meteorhacks:picker@1.0.3
 meteorspark:util@0.2.0
@@ -101,7 +101,7 @@ mrt:moment@2.8.1
 mrt:moment-timezone@0.2.1
 mrt:reactive-store@0.0.1
 mystor:device-detection@0.2.0
-nimble:restivus@0.8.9
+nimble:restivus@0.8.10
 nooitaf:colors@0.0.3
 npm-bcrypt@0.7.8_2
 npm-mongo@1.4.39_1

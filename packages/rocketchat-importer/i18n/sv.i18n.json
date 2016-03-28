@@ -1,4 +1,12 @@
 {
   "Importer_done" : "Importering färdig!",
-  "Importer_import_cancelled" : "Importering avbryten."
+  "Importer_finishing" : "Avslutar importen.",
+  "Importer_import_cancelled" : "Importering avbryten.",
+  "Importer_import_failed" : "Ett fel uppstod under importen.",
+  "Importer_importing_channels" : "Importerar kanalerna.",
+  "Importer_importing_messages" : "Importerar meddelandena.",
+  "Importer_importing_started" : "Startar importen.",
+  "Importer_importing_users" : "Importerar användarna.",
+  "Importer_Prepare_Restart_Import" : "Starta om import",
+  "Importer_Prepare_Start_Import" : "Börja importera"
 }

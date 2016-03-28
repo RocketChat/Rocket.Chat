@@ -1,7 +1,7 @@
 {
   "Message_AllowStarring" : "Autoriser les favoris pour les messages",
-  "Star_Message" : "Mettre en favori",
+  "Star_Message" : "Mettre en favoris",
   "Unstar_Message" : "Supprimer des favoris",
   "Starred_Messages" : "Messages favoris",
-  "No_starred_messages" : "Aucun messages en favoris"
+  "No_starred_messages" : "Aucun message en favoris"
 }

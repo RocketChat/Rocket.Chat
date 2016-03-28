@@ -1,3 +1,6 @@
+/* globals LDAP:true, LDAPJS */
+/* exported LDAP */
+
 const ldapjs = LDAPJS;
 
 const logger = new Logger('LDAP', {
@@ -10,7 +13,7 @@ const logger = new Logger('LDAP', {
 });
 
 LDAP = class LDAP {
-	constructor(options) {
+	constructor() {
 		const self = this;
 
 		self.ldapjs = ldapjs;
@@ -59,13 +62,13 @@ LDAP = class LDAP {
 
 		if (self.options.ca_cert && self.options.ca_cert !== '') {
 			// Split CA cert into array of strings
-			var chainLines = RocketChat.settings.get('LDAP_CA_Cert').split("\n");
+			var chainLines = RocketChat.settings.get('LDAP_CA_Cert').split('\n');
 			var cert = [];
 			var ca = [];
 			chainLines.forEach(function(line) {
 				cert.push(line);
 				if (line.match(/-END CERTIFICATE-/)) {
-					ca.push(cert.join("\n"));
+					ca.push(cert.join('\n'));
 					cert = [];
 				}
 			});
@@ -173,7 +176,7 @@ LDAP = class LDAP {
 			filter.push(`(${self.options.domain_search_filter})`);
 		}
 
-		domain_search_user_id = self.options.domain_search_user_id.split(',');
+		const domain_search_user_id = self.options.domain_search_user_id.split(',');
 		if (domain_search_user_id.length === 1) {
 			filter.push(`(${domain_search_user_id[0]}=#{username})`);
 		} else {
@@ -232,8 +235,6 @@ LDAP = class LDAP {
 		const self = this;
 
 		self.bindIfNecessary();
-
-		const domain_search = self.getDomainBindSearch();
 
 		let Unique_Identifier_Field = RocketChat.settings.get('LDAP_Unique_Identifier_Field').split(',');
 
@@ -301,7 +302,7 @@ LDAP = class LDAP {
 		}
 
 		if (result.length > 1) {
-			logger.search.error('Search by id', id, 'returned', result.length, 'records');
+			logger.search.error('Search by username', username, 'returned', result.length, 'records');
 		}
 
 		return result[0];
@@ -331,7 +332,7 @@ LDAP = class LDAP {
 				jsonEntries.push(entry.json);
 			});
 
-			res.on('end', function(result) {
+			res.on('end', function(/*result*/) {
 				logger.search.info('Search result count', entries.length);
 				logger.search.debug('Search result', JSON.stringify(jsonEntries, null, 2));
 				callback(null, entries);
