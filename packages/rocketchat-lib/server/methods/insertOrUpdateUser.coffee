@@ -44,8 +44,15 @@ Meteor.methods
 				createUser.email = userData.email
 
 			_id = Accounts.createUser(createUser)
+
+			updateUser =
+				$set:
+					name: userData.name
+
 			if userData.requirePasswordChange
-				Meteor.users.update { _id: _id }, { $set: { name: userData.name, requirePasswordChange: userData.requirePasswordChange } }
+				updateUser.$set.requirePasswordChange = userData.requirePasswordChange
+
+			Meteor.users.update { _id: _id }, updateUser
 
 			return _id
 		else
