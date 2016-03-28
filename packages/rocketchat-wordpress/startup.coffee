@@ -5,5 +5,5 @@ RocketChat.settings.addGroup 'OAuth', ->
 		@add 'API_Wordpress_URL', '', { type: 'string', enableQuery: enableQuery, public: true }
 		@add 'Accounts_OAuth_Wordpress_id', '', { type: 'string', enableQuery: enableQuery }
 		@add 'Accounts_OAuth_Wordpress_secret', '', { type: 'string', enableQuery: enableQuery }
-		@add 'Accounts_OAuth_Wordpress_callback_url', __meteor_runtime_config__?.ROOT_URL + '_oauth/wordpress', { type: 'string', blocked: true }
+		@add 'Accounts_OAuth_Wordpress_callback_url', '_oauth/wordpress', { type: 'relativeUrl', readonly: true, force: true, enableQuery: enableQuery }
 
