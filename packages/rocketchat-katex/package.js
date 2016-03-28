@@ -23,7 +23,7 @@ Package.onUse(function(api) {
 	var _ = Npm.require('underscore');
 	var fs = Npm.require('fs');
 	var fontFiles = _.map(fs.readdirSync('packages/rocketchat-katex/client/fonts'), function(filename) {
-	  return 'client/fonts/' + filename;
+		return 'client/fonts/' + filename;
 	});
 
 	api.addAssets(fontFiles, 'client');

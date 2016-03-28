@@ -15,5 +15,6 @@ packages/rocketchat-ui/lib/particles.js
 packages/rocketchat-ui/lib/recorderjs/recorder.js
 packages/rocketchat-ui/lib/textarea-autogrow.js
 packages/rocketchat-ui/lib/customEventPolyfill.js
+packages/rocketchat-ui/lib/constallation.js
 packages/rocketchat-livechat/client/lib/ua-parser.js
 packages/rocketchat-livechat/public/livechat.js

@@ -11,7 +11,7 @@ if (!Accounts.saml) {
 	};
 }
 
-var Fiber = Npm.require('fibers');
+var fiber = Npm.require('fibers');
 var connect = Npm.require('connect');
 RoutePolicy.declare('/_saml/', 'network');
 
@@ -166,15 +166,41 @@ Accounts.saml.retrieveCredential = function (credentialToken) {
 	return result;
 };
 
+var closePopup = function (res, err) {
+	res.writeHead(200, {
+		'Content-Type': 'text/html'
+	});
+	var content = '<html><head><script>window.close()</script></head><body><H1>Verified</H1></body></html>';
+	if (err) {
+		content = '<html><body><h2>Sorry, an annoying error occured</h2><div>' + err + '</div><a onclick="window.close();">Close Window</a></body></html>';
+	}
+	res.end(content, 'utf-8');
+};
 
-// Listen to incoming SAML http requests
-WebApp.connectHandlers.use(connect.bodyParser()).use(function (req, res, next) {
-	// Need to create a Fiber since we're using synchronous http calls and nothing
-	// else is wrapping this in a fiber automatically
-	Fiber(function () {
-		middleware(req, res, next);
-	}).run();
-});
+var samlUrlToObject = function (url) {
+	// req.url will be '/_saml/<action>/<service name>/<credentialToken>'
+	if (!url) {
+		return null;
+	}
+
+	var splitPath = url.split('/');
+
+	// Any non-saml request will continue down the default
+	// middlewares.
+	if (splitPath[1] !== '_saml') {
+		return null;
+	}
+
+	var result = {
+		actionName: splitPath[2],
+		serviceName: splitPath[3],
+		credentialToken: splitPath[4]
+	};
+	if (Accounts.saml.settings.debug) {
+		console.log(result);
+	}
+	return result;
+};
 
 var middleware = function (req, res, next) {
 	// Make sure to catch any exceptions because otherwise we'd crash
@@ -245,7 +271,7 @@ var middleware = function (req, res, next) {
 						}
 					};
 
-					Fiber(function () {
+					fiber(function () {
 						logOutUser(result);
 					}).run();
 
@@ -309,38 +335,11 @@ var middleware = function (req, res, next) {
 	}
 };
 
-var samlUrlToObject = function (url) {
-	// req.url will be '/_saml/<action>/<service name>/<credentialToken>'
-	if (!url) {
-		return null;
-	}
-
-	var splitPath = url.split('/');
-
-	// Any non-saml request will continue down the default
-	// middlewares.
-	if (splitPath[1] !== '_saml') {
-		return null;
-	}
-
-	var result = {
-		actionName: splitPath[2],
-		serviceName: splitPath[3],
-		credentialToken: splitPath[4]
-	};
-	if (Accounts.saml.settings.debug) {
-		console.log(result);
-	}
-	return result;
-};
-
-var closePopup = function (res, err) {
-	res.writeHead(200, {
-		'Content-Type': 'text/html'
-	});
-	var content = '<html><head><script>window.close()</script></head><body><H1>Verified</H1></body></html>';
-	if (err) {
-		content = '<html><body><h2>Sorry, an annoying error occured</h2><div>' + err + '</div><a onclick="window.close();">Close Window</a></body></html>';
-	}
-	res.end(content, 'utf-8');
-};
+// Listen to incoming SAML http requests
+WebApp.connectHandlers.use(connect.bodyParser()).use(function (req, res, next) {
+	// Need to create a fiber since we're using synchronous http calls and nothing
+	// else is wrapping this in a fiber automatically
+	fiber(function () {
+		middleware(req, res, next);
+	}).run();
+});

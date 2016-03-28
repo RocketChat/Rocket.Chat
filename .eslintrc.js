@@ -101,7 +101,11 @@ module.exports = {
 		'no-regex-spaces': 2,                      // disallow multiple spaces in a regular expression literal
 		'no-undef': 2,                             // disallow use of undeclared variables unless mentioned in a /*global */ block
 		'no-unreachable': 2,                       // disallow unreachable statements after a return, throw, continue, or break statement
-		'no-unused-vars': [2, {'vars': 'all', 'args': 'after-used'}], // disallow declaration of variables that are not used in the code
+		'no-unused-vars': [2, {                    // disallow declaration of variables that are not used in the code
+			'vars': 'all',
+			'args': 'after-used',
+			'varsIgnorePattern': 'RocketChat'
+		}],
 
 		// 'array-bracket-spacing': [0, 'never'],
 		// 'arrow-parens': 0,
@@ -167,7 +171,15 @@ module.exports = {
 		'block-scoped-var': 2,          // treat var statements as if they were block scoped
 		'curly': [2, 'all'],            // specify curly brace conventions for all control statements
 		'eqeqeq': [2, 'allow-null'],    // require use of === and !==
-		'new-cap': 2,                   // require a capital letter for constructors
+		'new-cap': [2, {                // require a capital letter for constructors
+			'capIsNewExceptions': [
+				'SHA256',
+				'Match.ObjectIncluding',
+				'Match.Optional',
+				'Match.Optional',
+				'Match.ObjectIncluding'
+			]
+		}],
 		'use-isnan': 2,                 // disallow comparisons with the value NaN
 		'valid-typeof': 2,              // ensure results of typeof are compared against a valid string
 		'linebreak-style': [2, 'unix'], // enforce linebreak style
