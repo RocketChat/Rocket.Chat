@@ -543,6 +543,5 @@
   "API_Wordpress_URL" : "URL do WordPress",
   "Accounts_OAuth_Wordpress" : "Login WordPress",
   "Accounts_OAuth_Wordpress_id" : "WordPress ID",
-  "Accounts_OAuth_Wordpress_secret" : "WordPress Secret",
-  "Your_push_was_sent_to_s_devices" : "Sua natificação foi enviada para %s dispositivos"
+  "Accounts_OAuth_Wordpress_secret" : "WordPress Secret"
 }
