@@ -26,7 +26,7 @@ getUrlContent = (urlObj, redirectCount = 5, callback) ->
 		urlObj: urlObj
 		parsedUrl: parsedUrl
 
-	port = if urlObj.port != null then ":#{urlObj.port}" else ''
+	port = if urlObj.port? then ":#{urlObj.port}" else ''
 	url = "#{urlObj.protocol}//#{urlObj.hostname}#{port}#{urlObj.path}"
 	opts =
 		url: url
