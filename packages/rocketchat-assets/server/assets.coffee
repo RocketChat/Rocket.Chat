@@ -139,15 +139,14 @@ WebApp.connectHandlers.use '/assets/', Meteor.bindEnvironment (req, res, next) -
 
 	file = RocketChatAssetsInstance.getFileWithReadStream params.asset
 
-	# res.setHeader 'Content-Disposition', 'inline'
-
 	if not file?
 		if assets[params.asset]?.defaultUrl?
-			res.writeHead 301,
-				Location: Meteor.absoluteUrl(assets[params.asset].defaultUrl)
+			req.url = '/'+assets[params.asset].defaultUrl
+			WebAppInternals.staticFilesMiddleware WebAppInternals.staticFiles, req, res, next
 		else
 			res.writeHead 404
-		res.end()
+			res.end()
+
 		return
 
 	reqModifiedHeader = req.headers["if-modified-since"];
