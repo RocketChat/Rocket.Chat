@@ -55,7 +55,9 @@ RocketChat.callbacks.add 'oembed:beforeGetUrlContent', (data) ->
 			_.extend data.parsedUrl, consumerUrl
 			data.urlObj.port = consumerUrl.port
 			data.urlObj.hostname = consumerUrl.hostname
-			data.urlObj.path = consumerUrl.path
+			data.urlObj.pathname = consumerUrl.pathname
+			data.urlObj.query = consumerUrl.query
+			delete data.urlObj.search
 
 RocketChat.callbacks.add 'oembed:afterParseContent', (data) ->
 	if data.parsedUrl?.query?
