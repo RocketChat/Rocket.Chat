@@ -11,9 +11,9 @@
   background-image: url("/packages/emojione_emojione/assets/sprites/emojione.sprites.png");
   background-size: 4100% 4000%;
   background-repeat: no-repeat;
-  font: 0/0 serif;
-  text-shadow: none;
-  color: transparent;
+  text-indent: 100%;
+  white-space: nowrap;
+  overflow: hidden;
 }
 
 .emojione-0023-20e3 {
