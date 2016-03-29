@@ -245,6 +245,7 @@
   "Email_body" : "E-mail body",
   "Email_Change_Disabled" : "Your Rocket.Chat administrator has disabled the changing of e-mail",
   "Email_from" : "From",
+  "Email_notifications" : "Email notifications",
   "Email_Notification_Mode" : "Offline Email Notifications",
   "Email_Notification_Mode_All" : "Every Mention/DM",
   "Email_Notification_Mode_Disabled" : "Disabled",
