@@ -226,13 +226,14 @@ Template.room.events
 	"click .unread-bar > a.mark-read": ->
 		readMessage.readNow(true)
 
-	"click .unread-bar > a.jump-to": ->
-		message = RoomHistoryManager.getRoom(@_id)?.firstUnread.get()
+	"click .unread-bar > a.jump-to": (e, t) ->
+		_id = t.data._id
+		message = RoomHistoryManager.getRoom(_id)?.firstUnread.get()
 		if message?
 			RoomHistoryManager.getSurroundingMessages(message, 50)
 		else
-			subscription = ChatSubscription.findOne({ rid: @_id })
-			message = ChatMessage.find({ rid: @_id, ts: { $gt: subscription?.ls } }, { sort: { ts: 1 }, limit: 1 }).fetch()[0]
+			subscription = ChatSubscription.findOne({ rid: _id })
+			message = ChatMessage.find({ rid: _id, ts: { $gt: subscription?.ls } }, { sort: { ts: 1 }, limit: 1 }).fetch()[0]
 			RoomHistoryManager.getSurroundingMessages(message, 50)
 
 	"click .flex-tab .more": (event, t) ->
