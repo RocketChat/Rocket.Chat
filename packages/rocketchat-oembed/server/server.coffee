@@ -26,7 +26,8 @@ getUrlContent = (urlObj, redirectCount = 5, callback) ->
 		urlObj: urlObj
 		parsedUrl: parsedUrl
 
-	url = URL.format urlObj
+	port = if urlObj.port != null then ":#{urlObj.port}" else ''
+	url = "#{urlObj.protocol}//#{urlObj.hostname}#{port}#{urlObj.path}"
 	opts =
 		url: url
 		strictSSL: !RocketChat.settings.get 'Allow_Invalid_SelfSigned_Certs'
