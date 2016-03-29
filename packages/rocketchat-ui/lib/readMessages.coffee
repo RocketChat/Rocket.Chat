@@ -23,9 +23,10 @@
 		console.log '--------------' if @debug
 		console.log 'readMessage -> readNow init process force:', force if @debug
 
+		self = @
+
 		self.refreshUnreadMark()
 
-		self = @
 		if force isnt true and @canReadMessage is false
 			console.log 'readMessage -> readNow canceled by canReadMessage: false' if @debug
 			return
