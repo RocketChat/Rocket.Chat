@@ -1,8 +1,7 @@
 RocketChat._setEmail = function(userId, email) {
 	email = s.trim(email);
-	if (!userId) {
+	if (!userId)
 		throw new Meteor.Error('invalid-user', '[methods] setEmail -> Invalid user');
-	}
 
 	if (!email) {
 		throw new Meteor.Error('invalid-email', '[methods] setEmail -> Invalid email');
@@ -13,7 +12,7 @@ RocketChat._setEmail = function(userId, email) {
 		throw new Meteor.Error('email-invalid', email + ' is not a valid e-mail');
 	}
 
-	const user = RocketChat.models.Users.findOneById(userId);
+	const user = RocketChat.models.Users.findOneById(userId)
 
 	// User already has desired username, return
 	if (user.emails && user.emails[0] && user.emails[0].address === email) {
