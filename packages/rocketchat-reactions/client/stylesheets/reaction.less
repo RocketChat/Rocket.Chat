@@ -14,6 +14,11 @@
 			border: 1px solid #E7E7E7;
 			background-color: #FCFCFC;
 			padding-right: 2px;
+			
+			html.rtl & {
+				padding-left: 2px;
+				padding-right: 0;
+			}
 
 			.reaction-emoji {
 				.emojione {
@@ -32,6 +37,11 @@
 				font-size: 0.65rem;
 				margin-left: -5px;
 				color: #888;
+				
+				html.rtl & {
+					margin-right: -5px;
+					margin-left: auto;
+				}
 			}
 
 			&.add-reaction {
@@ -42,6 +52,13 @@
 				opacity: 0;
 
 				.transition(opacity 0.2s ease);
+				
+				html.rtl & {
+					padding-right: 2px;
+					padding-left: 0px;
+					margin-right: 4px;
+					margin-left: 0px;
+				}
 			}
 		}
 
