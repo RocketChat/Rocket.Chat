@@ -2627,19 +2627,6 @@ a.github-fork {
 		animation: highlight 3s;
 	}
 
-	.body, .user.user-card-message, .time {
-		-webkit-user-select: text;
-		-moz-user-select: text;
-		-ms-user-select: text;
-		user-select: text;
-		* {
-			-webkit-user-select: text;
-			-moz-user-select: text;
-			-ms-user-select: text;
-			user-select: text;
-		}
-	}
-
 	&:nth-child(1) {
 		margin-top: 0;
 	}
@@ -2894,8 +2881,25 @@ a.github-fork {
 	}
 }
 
-body:not(.is-cordova) .message:hover:not(.system) .message-cog {
-	visibility: visible;
+body:not(.is-cordova) {
+	.message:hover:not(.system) .message-cog {
+		visibility: visible;
+	}
+
+	.message {
+		.body, .user.user-card-message, .time {
+			-webkit-user-select: text;
+			-moz-user-select: text;
+			-ms-user-select: text;
+			user-select: text;
+			* {
+				-webkit-user-select: text;
+				-moz-user-select: text;
+				-ms-user-select: text;
+				user-select: text;
+			}
+		}
+	}
 }
 
 .compact {
