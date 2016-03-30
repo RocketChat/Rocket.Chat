@@ -33,6 +33,10 @@ Meteor.startup(function() {
 		id: 'reaction-message',
 		icon: 'icon-people-plus',
 		i18nLabel: 'Reactions',
+		context: [
+			'message',
+			'message-mobile'
+		],
 		action(event) {
 			const data = Blaze.getData(event.currentTarget);
 
@@ -43,6 +47,6 @@ Meteor.startup(function() {
 		validation() {
 			return true;
 		},
-		order: 11
+		order: 22
 	});
 });
