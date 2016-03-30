@@ -4,5 +4,5 @@ Meteor.startup(function() {
 			toastr.warning(TAPi18n.__('You_have_not_verified_your_email'));
 			Session.set('Accounts_EmailVerification_Warning', true);
 		}
-	})
+	});
 });
