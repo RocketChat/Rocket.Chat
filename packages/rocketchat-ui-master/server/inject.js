@@ -1,7 +1,7 @@
 /* globals Inject */
 
 Inject.rawBody('page-loading', `
-	<div class="page-loading">
+	<div id="initial-page-loading" class="page-loading">
 		<div class="spinner">
 			<div class="rect1"></div>
 			<div class="rect2"></div>

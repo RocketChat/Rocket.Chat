@@ -1,2 +1,2 @@
 Template.mailerUnsubscribe.onRendered ->
-	$('.page-loading').remove()
+	$('#initial-page-loading').remove()
