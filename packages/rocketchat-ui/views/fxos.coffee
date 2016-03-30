@@ -11,10 +11,10 @@ Template.fxOsInstallPrompt.onRendered ->
 			BlazeLayout.render 'fxOsInstallError', {installError: this.error.name}
 
 	setTimeout(showPrompt, 2000);
-	$('.page-loading').remove();
+	$('#initial-page-loading').remove()
 
 Template.fxOsInstallDone.onRendered ->
-	$('.page-loading').remove();
+	$('#initial-page-loading').remove()
 
 Template.fxOsInstallError.onRendered ->
-	$('.page-loading').remove();
+	$('#initial-page-loading').remove()
