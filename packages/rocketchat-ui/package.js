@@ -90,7 +90,6 @@ Package.onUse(function(api) {
 	api.addFiles('views/app/roomSearch.html', 'client');
 	api.addFiles('views/app/secretURL.html', 'client');
 	api.addFiles('views/app/userSearch.html', 'client');
-	api.addFiles('views/app/spotlight/mobileMessageMenu.html', 'client');
 	api.addFiles('views/app/spotlight/spotlight.html', 'client');
 	api.addFiles('views/app/videoCall/videoButtons.html', 'client');
 	api.addFiles('views/app/videoCall/videoCall.html', 'client');

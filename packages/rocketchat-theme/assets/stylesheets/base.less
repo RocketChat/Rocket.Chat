@@ -2690,9 +2690,6 @@ a.github-fork {
 			cursor: pointer;
 		}
 	}
-	&:hover:not(.system) .message-cog {
-		visibility: visible;
-	}
 
 	@keyframes dropdown-in {
 		0% {
@@ -2895,6 +2892,10 @@ a.github-fork {
 		font-weight: 400;
 		padding-left: 2px;
 	}
+}
+
+body:not(.is-cordova) .message:hover:not(.system) .message-cog {
+	visibility: visible;
 }
 
 .compact {
