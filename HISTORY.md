@@ -1,5 +1,7 @@
 ## NEXT
 
+- Fix #2634. Admins are warned if they have not verified their e-mail and e-mail verification is true.
+
 ## 0.24.0, 2016-Mar-28
 
 - Add a title with emoji's shortname on picker
