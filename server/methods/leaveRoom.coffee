@@ -13,9 +13,8 @@ Meteor.methods
 
 		RocketChat.models.Rooms.removeUsernameById rid, user.username
 
-		if room.t isnt 'c' and room.usernames.indexOf(user.username) isnt -1
+		if room.usernames.indexOf(user.username) isnt -1
 			removedUser = user
-
 			RocketChat.models.Messages.createUserLeaveWithRoomIdAndUser rid, removedUser
 
 		if room.t is 'l'
