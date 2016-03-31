@@ -6,4 +6,7 @@ Meteor.methods
 		if not roleData.name?
 			throw new Meteor.Error 'invalid-data', 'Role name is required'
 
-		return RocketChat.models.Roles.createOrUpdate roleData.name, 'Users', roleData.description
+		if roleData.scope not in ['Users', 'Subscriptions']
+			roleData.scope = 'Users'
+
+		return RocketChat.models.Roles.createOrUpdate roleData.name, roleData.scope, roleData.description

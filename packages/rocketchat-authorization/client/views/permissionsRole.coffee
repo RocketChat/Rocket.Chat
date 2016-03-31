@@ -15,7 +15,10 @@ Template.permissionsRole.helpers
 	hasPermission: ->
 		return RocketChat.authz.hasAllPermission 'access-permissions'
 
-	canDelete: ->
+	protected: ->
+		return @protected
+
+	editable: ->
 		return @_id? and not @protected
 
 	hasUsers: ->
@@ -56,6 +59,7 @@ Template.permissionsRole.events
 
 		roleData =
 			description: e.currentTarget.elements['description'].value
+			scope: e.currentTarget.elements['scope'].value
 
 		if not @_id?
 			roleData.name = e.currentTarget.elements['name'].value
