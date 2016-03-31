@@ -32,5 +32,5 @@ RocketChat._setEmail = function(userId, email) {
 };
 
 RocketChat.setEmail = RocketChat.RateLimiter.limitFunction(RocketChat._setEmail, 1, 60000, {
-	0: function(userId) { return !RocketChat.authz.hasPermission(userId, 'edit-other-user-info'); } // Administrators have permission to change others emails, so don't limit those
+	0: function(userId) { return !Meteor.userId() || !RocketChat.authz.hasPermission(Meteor.userId(), 'edit-other-user-info'); } // Administrators have permission to change others emails, so don't limit those
 });
