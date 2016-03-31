@@ -999,6 +999,7 @@
   "you_are_in_preview_mode_of" : "You are in preview mode of channel #<strong>__room_name__</strong>",
   "You_are_logged_in_as" : "You are logged in as",
   "You_are_not_authorized_to_view_this_page" : "You are not authorized to view this page.",
+  "You_are_the_last_owner_Please_set_new_owner_before_leaving_the_room" : "You are the last owner. Please set new owner before leaving the room.",
   "You_can_change_a_different_avatar_too" : "You can override the avatar used to post from this integration.",
   "You_can_use_an_emoji_as_avatar" : "You can also use an emoji as an avatar.",
   "You_have_been_muted" : "You have been muted and cannot speak in this room",
