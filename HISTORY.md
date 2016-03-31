@@ -1,6 +1,7 @@
 ## NEXT
 
 - Fix #2634. Admins are warned if they have not verified their e-mail and e-mail verification is true.
+- Fix #2565 - Don't let the last owner leave the room. Warn user.
 
 ## 0.24.0, 2016-Mar-28
 
