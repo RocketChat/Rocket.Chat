@@ -371,8 +371,6 @@
   "Message_AllowEditing_BlockEditInMinutesDescription" : "Syötä 0 poistaaksesi muutoseston",
   "Message_AllowPinning" : "Salli viestien kiinnittäminen",
   "Message_AllowPinning_Description" : "Salli viestien kiinnitys kaikilla kanavilla.",
-  "Message_AllowPinningByAnyone" : "Salli kaikkien kiinnittää viestejä.",
-  "Message_AllowPinningByAnyone_Description" : "Salli kaikkien - myös normaalien käyttäjien - kiinnittää viestejä.",
   "Message_AllowStarring" : "Salli viesteille tähti-merkki",
   "Message_AudioRecorderEnabled" : "Äänentallennin käytössä",
   "Message_AudioRecorderEnabledDescription" : "Jotta tämä toimisi, WAV-tiedostojen (mediatyyppi 'audio/wav') lähetys tulee olla sallittu",
