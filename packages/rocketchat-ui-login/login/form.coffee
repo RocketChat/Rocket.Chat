@@ -68,7 +68,7 @@ Template.loginForm.helpers
 		return RocketChat.settings.get('Accounts_PasswordPlaceholder') or t("Password")
 
 	hasOnePassword: ->
-		return OnePassword?.findLoginForUrl?
+		return OnePassword?.findLoginForUrl? && device?.platform?.toLocaleLowerCase() is 'ios'
 
 Template.loginForm.events
 	'submit #login-card': (event, instance) ->
