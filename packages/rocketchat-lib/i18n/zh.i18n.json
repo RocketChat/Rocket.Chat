@@ -481,8 +481,6 @@
   "Message_AllowEditing_BlockEditInMinutesDescription" : "禁用屏蔽功能请输入 0",
   "Message_AllowPinning" : "允许信息固定",
   "Message_AllowPinning_Description" : "允许信息固定在频道顶部。",
-  "Message_AllowPinningByAnyone" : "允许所有人固定信息",
-  "Message_AllowPinningByAnyone_Description" : "允许管理员之外的人将信息固定在频道顶部。",
   "Message_AllowStarring" : "允许标记信息",
   "Message_AudioRecorderEnabled" : "启用音频录制",
   "Message_AudioRecorderEnabledDescription" : "需要在“文件上传”中设置“audio/wav”为可接受媒体类型。",
