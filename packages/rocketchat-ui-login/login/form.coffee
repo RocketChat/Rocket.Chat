@@ -67,6 +67,9 @@ Template.loginForm.helpers
 	passwordPlaceholder: ->
 		return RocketChat.settings.get('Accounts_PasswordPlaceholder') or t("Password")
 
+	hasOnePassword: ->
+		return OnePassword?.findLoginForUrl?
+
 Template.loginForm.events
 	'submit #login-card': (event, instance) ->
 		event.preventDefault()
@@ -133,6 +136,20 @@ Template.loginForm.events
 
 	'click .forgot-password': ->
 		Template.instance().state.set 'forgot-password'
+
+	'click .one-passsword': ->
+		if not OnePassword?.findLoginForUrl?
+			return
+
+		succesCallback = (credentials) ->
+			$('input[name=emailOrUsername]').val(credentials.username)
+			$('input[name=pass]').val(credentials.password)
+
+		errorCallback = ->
+			console.log 'OnePassword errorCallback', arguments
+
+		OnePassword.findLoginForUrl(succesCallback, errorCallback, Meteor.absoluteUrl())
+
 
 Template.loginForm.onCreated ->
 	instance = @
