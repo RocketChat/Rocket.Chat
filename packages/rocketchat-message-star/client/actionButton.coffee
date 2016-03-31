@@ -3,6 +3,11 @@ Meteor.startup ->
 		id: 'star-message'
 		icon: 'icon-star-empty'
 		i18nLabel: 'Star_Message'
+		context: [
+			'starred'
+			'message'
+			'message-mobile'
+		]
 		action: (event, instance) ->
 			message = @_arguments[1]
 			message.starred = Meteor.userId()
@@ -17,6 +22,11 @@ Meteor.startup ->
 		id: 'unstar-message'
 		icon: 'icon-star'
 		i18nLabel: 'Unstar_Message'
+		context: [
+			'starred'
+			'message'
+			'message-mobile'
+		]
 		action: (event, instance) ->
 			message = @_arguments[1]
 			message.starred = false
@@ -31,6 +41,9 @@ Meteor.startup ->
 		id: 'jump-to-star-message'
 		icon: 'icon-right-hand'
 		i18nLabel: 'Jump_to_message'
+		context: [
+			'starred'
+		]
 		action: (event, instance) ->
 			message = @_arguments[1]
 			$('.message-dropdown:visible').hide()

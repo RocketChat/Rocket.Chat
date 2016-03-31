@@ -28,7 +28,7 @@ Template.mentionsFlexTab.events
 		$('.message-dropdown:visible').hide()
 		$(".mentioned-messages-list \##{message_id} .message-dropdown").remove()
 		message = MentionedMessage.findOne message_id
-		actions = RocketChat.MessageAction.getButtons message
+		actions = RocketChat.MessageAction.getButtons message, 'mentions'
 		el = Blaze.toHTMLWithData Template.messageDropdown, { actions: actions }
 		$(".mentioned-messages-list \##{message_id} .message-cog-container").append el
 		dropDown = $(".mentioned-messages-list \##{message_id} .message-dropdown")

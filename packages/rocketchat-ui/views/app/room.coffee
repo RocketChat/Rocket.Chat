@@ -204,10 +204,20 @@ Template.room.events
 		, 100
 
 	"touchstart .message": (e, t) ->
-		message = this._arguments[1]
-		doLongTouch = ->
-			mobileMessageMenu.show(message, t)
+		if e.originalEvent.touches.length isnt 1
+			return
 
+		if e.target and e.target.nodeName is 'A'
+			return
+
+		if $(e.currentTarget).hasClass('system')
+			return
+
+		message = this._arguments[1]
+		doLongTouch = =>
+			mobileMessageMenu.show(message, t, e, this)
+
+		Meteor.clearTimeout t.touchtime
 		t.touchtime = Meteor.setTimeout doLongTouch, 500
 
 	"touchend .message": (e, t) ->
@@ -319,7 +329,7 @@ Template.room.events
 		dropDown = $(".messages-box \##{message._id} .message-dropdown")
 
 		if dropDown.length is 0
-			actions = RocketChat.MessageAction.getButtons message
+			actions = RocketChat.MessageAction.getButtons message, 'message'
 
 			el = Blaze.toHTMLWithData Template.messageDropdown,
 				actions: actions

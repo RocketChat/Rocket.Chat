@@ -2627,19 +2627,6 @@ a.github-fork {
 		animation: highlight 3s;
 	}
 
-	.body, .user.user-card-message, .time {
-		-webkit-user-select: text;
-		-moz-user-select: text;
-		-ms-user-select: text;
-		user-select: text;
-		* {
-			-webkit-user-select: text;
-			-moz-user-select: text;
-			-ms-user-select: text;
-			user-select: text;
-		}
-	}
-
 	&:nth-child(1) {
 		margin-top: 0;
 	}
@@ -2689,9 +2676,6 @@ a.github-fork {
 			visibility: hidden;
 			cursor: pointer;
 		}
-	}
-	&:hover:not(.system) .message-cog {
-		visibility: visible;
 	}
 
 	@keyframes dropdown-in {
@@ -2894,6 +2878,27 @@ a.github-fork {
 		color: #aaa;
 		font-weight: 400;
 		padding-left: 2px;
+	}
+}
+
+body:not(.is-cordova) {
+	.message:hover:not(.system) .message-cog {
+		visibility: visible;
+	}
+
+	.message {
+		.body, .user.user-card-message, .time {
+			-webkit-user-select: text;
+			-moz-user-select: text;
+			-ms-user-select: text;
+			user-select: text;
+			* {
+				-webkit-user-select: text;
+				-moz-user-select: text;
+				-ms-user-select: text;
+				user-select: text;
+			}
+		}
 	}
 }
 
@@ -4744,4 +4749,18 @@ a.github-fork {
 			}
 		}
 	}
+}
+
+.one-passsword {
+	background-image: url('/images/onepassword-button.png');
+	height: 40px;
+	width: 40px;
+	background-size: 23px;
+	background-repeat: no-repeat;
+	background-position: center;
+	float: right;
+	position: absolute;
+	right: -8px;
+	top: -5px;
+	opacity: .6;
 }
