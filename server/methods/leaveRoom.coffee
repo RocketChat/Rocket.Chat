@@ -13,7 +13,7 @@ Meteor.methods
 		if RocketChat.authz.hasRole(user._id, 'owner', room._id)
 			numOwners = RocketChat.authz.getUsersInRole('owner', room._id).fetch().length
 			if numOwners is 1
-				throw new Meteor.Error 'last-owner', '[methods] leaveRoom -> User is last owner in room.'
+				throw new Meteor.Error 'last-owner', 'You_are_the_last_owner_Please_set_new_owner_before_leaving_the_room'
 
 		RocketChat.callbacks.run 'beforeLeaveRoom', user, room
 
