@@ -207,6 +207,9 @@ Template.room.events
 		if e.originalEvent.touches.length isnt 1
 			return
 
+		if e.target and e.target.nodeName is 'A'
+			return
+
 		if $(e.currentTarget).hasClass('system')
 			return
 
