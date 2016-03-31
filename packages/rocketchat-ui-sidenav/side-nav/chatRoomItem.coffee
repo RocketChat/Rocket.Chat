@@ -99,7 +99,7 @@ Template.chatRoomItem.events
 					if err
 						swal {
 							title: t('Warning')
-							text: t("You_are_the_last_owner_Please_set_new_owner_before_leaving_the_room")
+							text: t(err.reason)
 							type: 'warning'
 							html: false
 						}
