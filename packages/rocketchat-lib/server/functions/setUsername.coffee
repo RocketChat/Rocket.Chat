@@ -60,4 +60,4 @@ RocketChat._setUsername = (userId, username) ->
 	return user
 
 RocketChat.setUsername = RocketChat.RateLimiter.limitFunction RocketChat._setUsername, 1, 60000,
-	0: (userId) -> return not Meteor.userId() or not RocketChat.authz.hasPermission(Meteor.userId(), 'edit-other-user-info') # Administrators have permission to change others usernames, so don't limit those
+	0: () -> return not Meteor.userId() or not RocketChat.authz.hasPermission(Meteor.userId(), 'edit-other-user-info') # Administrators have permission to change others usernames, so don't limit those
