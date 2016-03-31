@@ -82,7 +82,7 @@ Meteor.startup ->
 		roles : ['admin', 'owner']}
 
 		{ _id: 'set-owner',
-		roles : ['admin']}
+		roles : ['admin', 'owner']}
 
 		{ _id: 'create-p',
 		roles : ['admin', 'user']}
