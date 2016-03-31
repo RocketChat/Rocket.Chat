@@ -8,5 +8,6 @@ Meteor.methods
 			throw new Meteor.Error 'not-authorized', '[methods] setUserPassword -> Not authorized'
 
 		Accounts.setPassword(Meteor.userId(), password, { logout: false });
+		return RocketChat.models.Users.unsetRequirePasswordChange(Meteor.userId());
 
 		return true;
