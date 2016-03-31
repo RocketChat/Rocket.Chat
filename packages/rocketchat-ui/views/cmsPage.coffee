@@ -13,4 +13,4 @@ Template.cmsPage.events
 		FlowRouter.go('/')
 
 Template.cmsPage.onRendered ->
-	$('.page-loading').remove()
+	$('#initial-page-loading').remove()

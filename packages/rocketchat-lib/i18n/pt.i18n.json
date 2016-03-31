@@ -538,6 +538,7 @@
   "you_are_in_preview_mode_of" : "Esta é uma prévia do canal #<strong>__room_name__</strong>",
   "You_are_logged_in_as" : "Vocês está logado como",
   "You_are_not_authorized_to_view_this_page" : "Você não possui permissão para visualizar esta página.",
+  "You_are_the_last_owner_Please_set_new_owner_before_leaving_the_room" : "Você é o último proprietário da sala. Por favor defina um novo proprietário antes de sair.",
   "You_have_successfully_unsubscribed" : "A partir de agora você não está mais cadastrado em nossa lista de e-mails.",
   "You_need_confirm_email" : "Você precisa confirmar seu email para logar!",
   "You_will_not_be_able_to_recover" : "Você não será capaz de desfazer!",
