@@ -9,6 +9,12 @@ Meteor.methods
 		room = RocketChat.models.Rooms.findOneById rid
 		user = Meteor.user()
 
+		# If user is room owner, check if there are other owners. If there isn't anyone else, warn user to set a new owner.
+		if RocketChat.authz.hasRole(user._id, 'owner', room._id)
+			numOwners = RocketChat.authz.getUsersInRole('owner', room._id).fetch().length
+			if numOwners is 1
+				throw new Meteor.Error 'last-owner', '[methods] leaveRoom -> User is last owner in room.'
+
 		RocketChat.callbacks.run 'beforeLeaveRoom', user, room
 
 		RocketChat.models.Rooms.removeUsernameById rid, user.username
@@ -19,15 +25,6 @@ Meteor.methods
 
 		if room.t is 'l'
 			RocketChat.models.Messages.createCommandWithRoomIdAndUser 'survey', rid, user
-
-
-		if room.u?._id is Meteor.userId()
-			newOwner = _.without(room.usernames, user.username)[0]
-			if newOwner?
-				newOwner = RocketChat.models.Users.findOneByUsername newOwner
-
-				if newOwner?
-					RocketChat.models.Rooms.setUserById rid, newOwner
 
 		RocketChat.models.Subscriptions.removeByRoomIdAndUserId rid, Meteor.userId()
 
