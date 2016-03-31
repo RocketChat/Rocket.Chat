@@ -498,8 +498,6 @@
   "Message_AllowEditing_BlockEditInMinutesDescription" : "Entrez 0 pour désactiver le blocage.",
   "Message_AllowPinning" : "Autoriser l'épinglement de message",
   "Message_AllowPinning_Description" : "Autoriser les messages à être épinglés à n'importe quel canal.",
-  "Message_AllowPinningByAnyone" : "Permettre à quiconque d'épingler des messages",
-  "Message_AllowPinningByAnyone_Description" : "Permettre à quiconque d'épingler des messages à un canal, pas seulement les administrateurs.",
   "Message_AllowStarring" : "Autoriser les favoris pour les messages",
   "Message_AudioRecorderEnabled" : "Enregistrement audio activé",
   "Message_AudioRecorderEnabledDescription" : "Nécessite que les fichiers de type « audio/wav » soient acceptés en tant que média dans les réglages d'envoi de fichiers.",

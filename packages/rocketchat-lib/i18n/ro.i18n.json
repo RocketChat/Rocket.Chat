@@ -442,8 +442,6 @@
   "Message_AllowEditing_BlockEditInMinutesDescription" : "Introduceți 0 pentru a dezactiva blocarea.",
   "Message_AllowPinning" : "Permiteți fixarea mesajului",
   "Message_AllowPinning_Description" : "Permite fixarea mesajelor în oricare canal.",
-  "Message_AllowPinningByAnyone" : "Permite oricui să fixeze mesaje.",
-  "Message_AllowPinningByAnyone_Description" : "Permite oricui să fixeze mesaje pe un canal, nu doar administratorilor.",
   "Message_AllowStarring" : "Permiteți însemnarea cu steluță a mesajelor",
   "Message_AudioRecorderEnabled" : "Audio Recorder Activat",
   "Message_AudioRecorderEnabledDescription" : "Necesită \"/ WAV audio\" să fie un tip de media acceptat în setările \"upload\".",

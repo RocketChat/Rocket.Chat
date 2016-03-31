@@ -225,7 +225,6 @@
   "Message_AllowEditing_BlockEditInMinutes" : "امنع تعديل الرسائل بعد هذا العدد من الدقائق",
   "Message_AllowEditing_BlockEditInMinutesDescription" : "أدخل 0 لتعطيل الحظر.",
   "Message_AllowPinning" : "السماح بتثبيت الرسائل",
-  "Message_AllowPinningByAnyone" : "السماح للجميع بتثبيت الرسائل",
   "Message_deleting_not_allowed" : "حذف الرسائل غير مسموح",
   "Message_editing_blocked" : "لا يمكن تعديل هذه الرسالة بعد الآن",
   "Message_editing_not_allowed" : "تعديل الرسائل غير مسموح",

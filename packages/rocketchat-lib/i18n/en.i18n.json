@@ -508,8 +508,6 @@
   "Message_AllowEditing_BlockEditInMinutesDescription" : "Enter 0 to disable blocking.",
   "Message_AllowPinning" : "Allow Message Pinning",
   "Message_AllowPinning_Description" : "Allow messages to be pinned to any of the channels.",
-  "Message_AllowPinningByAnyone" : "Allow Anyone to Pin Messages",
-  "Message_AllowPinningByAnyone_Description" : "Allow anyone to pin messages to a channel, not just administrators.",
   "Message_AllowStarring" : "Allow Message Starring",
   "Message_AudioRecorderEnabled" : "Audio Recorder Enabled",
   "Message_AudioRecorderEnabledDescription" : "Requires 'audio/wav' files to be an accepted media type within 'File Upload' settings.",

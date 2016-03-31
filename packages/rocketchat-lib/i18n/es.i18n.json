@@ -351,8 +351,6 @@
   "Message_AllowEditing_BlockEditInMinutesDescription" : "Ingrese 0 para deshabilitar el bloqueo.",
   "Message_AllowPinning" : "Permitir que se fijen los mensajes",
   "Message_AllowPinning_Description" : "Permitir que los mensajes se puedan anclar a cualquier canal.",
-  "Message_AllowPinningByAnyone" : "Permitir que cualquiera pueda Anclar Mensajes",
-  "Message_AllowPinningByAnyone_Description" : "Permitir que cualquiera pueda anclar mensajes a un canal, no solo administradores",
   "Message_AllowStarring" : "Permitir Destacar  un Mensaje",
   "Message_AudioRecorderEnabled" : "Grabadora de Audio Habilitada",
   "Message_AudioRecorderEnabledDescription" : "Requiere que los archivos del tipo 'audio/wav' sean un tipo de archivo valido dentro de las opciones de 'Carga de Archivos'.",

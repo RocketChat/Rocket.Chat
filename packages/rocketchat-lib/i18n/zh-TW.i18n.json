@@ -170,7 +170,6 @@
   "Message" : "訊息",
   "Message_AllowDeleting" : "允許刪除訊息",
   "Message_AllowEditing" : "允許編輯訊息",
-  "Message_AllowPinningByAnyone" : "允許任何人釘選訊息",
   "Message_deleting_not_allowed" : "不允許刪除訊息",
   "Message_editing_not_allowed" : "不允許編輯訊息",
   "Message_KeepHistory" : "保存訊息歷史紀錄",
