@@ -8,7 +8,6 @@ RocketChat.saveRoomName = (rid, name) ->
 		throw new Meteor.Error 403, 'Not allowed'
 
 	unless RocketChat.authz.hasPermission(Meteor.userId(), 'edit-room', rid)
-	#if room.u._id isnt Meteor.userId() and not hasPermission
 		throw new Meteor.Error 403, 'Not allowed'
 
 	try
