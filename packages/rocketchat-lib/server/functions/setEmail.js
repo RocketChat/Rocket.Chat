@@ -8,10 +8,7 @@ RocketChat._setEmail = function(userId, email) {
 		throw new Meteor.Error('invalid-email', '[methods] setEmail -> Invalid email');
 	}
 
-	const emailValidation = /^[a-zA-Z0-9.!#$%&'*+\/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/;
-	if (!emailValidation.test(email)) {
-		throw new Meteor.Error('email-invalid', email + ' is not a valid e-mail');
-	}
+	RocketChat.validateEmailDomain(email);
 
 	const user = RocketChat.models.Users.findOneById(userId);
 
