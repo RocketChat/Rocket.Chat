@@ -8,6 +8,7 @@ Meteor.startup ->
 		{ _id: 'access-permissions', roles : ['admin'] }
 		{ _id: 'add-oauth-service', roles : ['admin'] }
 		{ _id: 'add-user-to-room', roles : ['admin', 'owner', 'moderator'] }
+		{ _id: 'archive-room', roles : ['admin', 'owner'] }
 		{ _id: 'assign-admin-role', roles : ['admin'] }
 		{ _id: 'ban-user', roles : ['admin', 'moderator', 'owner'] }
 		{ _id: 'bulk-create-c', roles : ['admin'] }
@@ -35,6 +36,7 @@ Meteor.startup ->
 		{ _id: 'run-migration', roles : ['admin'] }
 		{ _id: 'set-moderator', roles : ['admin', 'owner'] }
 		{ _id: 'set-owner', roles : ['admin', 'owner'] }
+		{ _id: 'unarchive-room', roles : ['admin'] }
 		{ _id: 'view-c-room', roles : ['admin', 'user', 'bot'] }
 		{ _id: 'view-d-room', roles : ['admin', 'user'] }
 		{ _id: 'view-full-other-user-info', roles : ['admin'] }
