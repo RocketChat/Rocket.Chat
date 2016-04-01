@@ -27,6 +27,8 @@ Meteor.startup ->
 		{ _id: 'view-full-other-user-info',
 		roles : ['admin']}
 
+		{ _id: 'add-user-to-room',
+		roles : ['admin', 'owner', 'moderator']}
 
 		{ _id: 'create-user',
 		roles : ['admin']}
