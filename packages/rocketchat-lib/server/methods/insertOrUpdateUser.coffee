@@ -6,7 +6,7 @@ Meteor.methods
 		user = Meteor.user()
 
 		canEditUser = RocketChat.authz.hasPermission( user._id, 'edit-other-user-info')
-		canAddUser = RocketChat.authz.hasPermission( user._id, 'add-user')
+		canAddUser = RocketChat.authz.hasPermission( user._id, 'create-user')
 
 		if userData._id and user._id isnt userData._id and canEditUser isnt true
 			throw new Meteor.Error 'not-authorized', '[methods] updateUser -> Not authorized'
