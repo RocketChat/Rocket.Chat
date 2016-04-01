@@ -117,9 +117,9 @@
 											{{/if}}
 
 											{{#if $eq type 'asset'}}
-												{{#if value}}
+												{{#if value.url}}
 													<div class="settings-file-preview">
-														<div class="preview" style="background-image:url({{value}}?_dc={{random}});"></div>
+														<div class="preview" style="background-image:url({{value.url}}?_dc={{random}});"></div>
 														<div class="action">
 															<button type="button" class="button red delete-asset"><i class="icon-trash"></i>{{_ 'Delete'}}</button>
 														</div>
