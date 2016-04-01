@@ -1,6 +1,6 @@
 Template.adminUserEdit.helpers
 	canEditOrAdd: ->
-		return (Session.get('adminSelectedUser') and RocketChat.authz.hasAtLeastOnePermission('edit-other-user-info')) or (not Session.get('adminSelectedUser') and RocketChat.authz.hasAtLeastOnePermission('add-user'))
+		return (Session.get('adminSelectedUser') and RocketChat.authz.hasAtLeastOnePermission('edit-other-user-info')) or (not Session.get('adminSelectedUser') and RocketChat.authz.hasAtLeastOnePermission('create-user'))
 
 	user: ->
 		return Meteor.users.findOne(Session.get('adminSelectedUser'))

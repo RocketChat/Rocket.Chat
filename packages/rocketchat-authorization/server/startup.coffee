@@ -27,7 +27,8 @@ Meteor.startup ->
 		{ _id: 'view-full-other-user-info',
 		roles : ['admin']}
 
-		{ _id: 'add-user',
+
+		{ _id: 'create-user',
 		roles : ['admin']}
 
 		{ _id: 'edit-other-user-info',
