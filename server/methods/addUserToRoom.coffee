@@ -10,7 +10,7 @@ Meteor.methods
 		room = RocketChat.models.Rooms.findOneById data.rid
 
 		# if room.username isnt Meteor.user().username and room.t is 'c'
-		if room.t is 'c' and room.u?.username isnt Meteor.user().username
+		if room.t is 'c' and not RocketChat.authz.hasPermission(fromId, 'add-user-to-room', room._id)
 			throw new Meteor.Error 403, '[methods] addUserToRoom -> Not allowed'
 
 		if room.t is 'd'
