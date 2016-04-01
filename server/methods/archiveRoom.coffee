@@ -8,7 +8,7 @@ Meteor.methods
 		unless room
 			throw new Meteor.Error 'invalid-room', '[methods] unarchiveRoom -> Invalid room'
 
-		if room.u? and room.u._id is Meteor.userId() or RocketChat.authz.hasRole(Meteor.userId(), 'admin')
+		if RocketChat.authz.hasPermission(Meteor.userId(), 'archive-room', room._id)
 			RocketChat.models.Rooms.archiveById rid
 
 			for username in room.usernames
