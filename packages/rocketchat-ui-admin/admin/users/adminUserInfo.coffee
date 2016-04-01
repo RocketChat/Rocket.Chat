@@ -20,6 +20,10 @@ Template.adminUserInfo.helpers
 			return "UTC #{@utcOffset}"
 	hasAdminRole: ->
 		return RocketChat.authz.hasRole(@_id, 'admin')
+	active: ->
+		if @_id
+			user = Meteor.users.findOne(@_id)
+			return user && user.active
 
 Template.adminUserInfo.events
 	'click .deactivate': (e) ->
@@ -83,10 +87,15 @@ Template.adminUserInfo.events
 			Meteor.call 'deleteUser', _id, (error, result) ->
 				if error
 					toastr.error error.reason
-				Session.set 'adminSelectedUser'
+
+				RocketChat.TabBar.setData()
+				RocketChat.TabBar.closeFlex()
+				RocketChat.TabBar.showGroup 'adminusers'
+
 				Session.set 'showUserInfo'
 
 	'click .edit-user': (e) ->
 		e.stopPropagation()
 		e.preventDefault()
 		RocketChat.TabBar.setTemplate 'adminUserEdit'
+		RocketChat.TabBar.setData Template.currentData()._id
