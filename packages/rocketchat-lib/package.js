@@ -47,11 +47,13 @@ Package.onUse(function(api) {
 	api.addFiles('lib/MessageTypes.coffee');
 
 	// SERVER LIB
+	api.addFiles('server/lib/defaultBlockedDomainsList.js', 'server');
+	api.addFiles('server/lib/notifyUsersOnMessage.js', 'server');
 	api.addFiles('server/lib/RateLimiter.coffee', 'server');
 	api.addFiles('server/lib/roomTypes.coffee', 'server');
-	api.addFiles('server/lib/sendNotificationsOnMessage.js', 'server');
-	api.addFiles('server/lib/notifyUsersOnMessage.js', 'server');
 	api.addFiles('server/lib/sendEmailOnMessage.js', 'server');
+	api.addFiles('server/lib/sendNotificationsOnMessage.js', 'server');
+	api.addFiles('server/lib/validateEmailDomain.js', 'server');
 
 	// SERVER MODELS
 	api.addFiles('server/models/_Base.coffee', 'server');
