@@ -74,26 +74,22 @@ assets =
 			width: 256
 			height: 256
 
-refreshClient = _.debounce ->
-	console.log 'refreshClient'
-	process.emit('message', {refresh: 'client'})
-, 1000
 
 RocketChat.settings.addGroup 'Assets'
 for key, value of assets
 	do (key, value) ->
 		RocketChat.settings.add "Assets_#{key}", {defaultUrl: value.defaultUrl}, { type: 'asset', group: 'Assets', fileConstraints: value.constraints, i18nLabel: value.label, asset: key, public: true }
 
+Meteor.startup ->
+	forEachAsset = (key, value) ->
 		RocketChat.settings.get "Assets_#{key}", (settingKey, settingValue) ->
 			if settingValue is undefined
 				value.cache = undefined
-				refreshClient()
 				return
 
 			file = RocketChatAssetsInstance.getFileWithReadStream key
 			if not file
 				value.cache = undefined
-				refreshClient()
 				return
 
 			data = []
@@ -103,7 +99,6 @@ for key, value of assets
 			file.readStream.on 'end', Meteor.bindEnvironment ->
 				data = Buffer.concat(data)
 				hash = crypto.createHash('sha1').update(data).digest('hex')
-				console.log 'file end', key, hash
 				extension = settingValue.url.split('.').pop()
 				value.cache =
 					path: "assets/#{key}.#{extension}"
@@ -119,11 +114,11 @@ for key, value of assets
 					contentType: file.contentType
 					hash: hash
 
-				refreshClient()
+
+	forEachAsset(key, value) for key, value of assets
 
 calculateClientHash = WebAppHashing.calculateClientHash
 WebAppHashing.calculateClientHash = (manifest, includeFilter, runtimeConfigOverride) ->
-	console.log 'WebAppHashing.calculateClientHash'
 	for key, value of assets
 		if not value.cache? && not value.defaultUrl?
 			continue
@@ -168,8 +163,19 @@ WebAppHashing.calculateClientHash = (manifest, includeFilter, runtimeConfigOverr
 		else
 			manifest.push cache
 
-	calculateClientHash.call this, manifest, includeFilter, runtimeConfigOverride
+	return calculateClientHash.call this, manifest, includeFilter, runtimeConfigOverride
 
+
+Meteor.methods
+	refreshClients: ->
+		unless Meteor.userId()
+			throw new Meteor.Error 'invalid-user', "[methods] unsetAsset -> Invalid user"
+
+		hasPermission = RocketChat.authz.hasPermission Meteor.userId(), 'manage-assets'
+		unless hasPermission
+			throw new Meteor.Error 'manage-assets-not-allowed', "[methods] unsetAsset -> Manage assets not allowed"
+
+		process.emit('message', {refresh: 'client'})
 
 Meteor.methods
 	unsetAsset: (asset) ->
@@ -234,7 +240,6 @@ WebApp.connectHandlers.use '/assets/', Meteor.bindEnvironment (req, res, next) -
 	params =
 		asset: decodeURIComponent(req.url.replace(/^\//, '').replace(/\?.*$/, '')).replace(/\.[^.]*$/, '')
 
-	console.log params.asset
 	file = assets[params.asset]?.cache
 
 	if not file?
