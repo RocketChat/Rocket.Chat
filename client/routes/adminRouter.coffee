@@ -1,11 +1,9 @@
 FlowRouter.route '/admin/users',
 	name: 'admin-users'
 	triggersExit: [ ->
-		Session.set 'adminSelectedUser'
 		Session.set 'showUserInfo'
 	]
 	action: ->
-		Session.set 'adminSelectedUser'
 		Session.set 'showUserInfo'
 		RocketChat.TabBar.showGroup 'adminusers'
 		BlazeLayout.render 'main', {center: 'adminUsers'}
