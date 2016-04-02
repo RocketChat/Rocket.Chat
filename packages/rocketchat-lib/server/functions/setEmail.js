@@ -8,10 +8,7 @@ RocketChat._setEmail = function(userId, email) {
 		throw new Meteor.Error('invalid-email', '[methods] setEmail -> Invalid email');
 	}
 
-	const emailValidation = /^[a-zA-Z0-9.!#$%&'*+\/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/;
-	if (!emailValidation.test(email)) {
-		throw new Meteor.Error('email-invalid', email + ' is not a valid e-mail');
-	}
+	RocketChat.validateEmailDomain(email);
 
 	const user = RocketChat.models.Users.findOneById(userId);
 
@@ -32,5 +29,5 @@ RocketChat._setEmail = function(userId, email) {
 };
 
 RocketChat.setEmail = RocketChat.RateLimiter.limitFunction(RocketChat._setEmail, 1, 60000, {
-	0: function(userId) { return !RocketChat.authz.hasPermission(userId, 'edit-other-user-info'); } // Administrators have permission to change others emails, so don't limit those
+	0: function() { return !Meteor.userId() || !RocketChat.authz.hasPermission(Meteor.userId(), 'edit-other-user-info'); } // Administrators have permission to change others emails, so don't limit those
 });
