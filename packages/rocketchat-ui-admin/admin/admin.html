@@ -167,6 +167,9 @@
 						{{#if $eq group._id 'OAuth'}}
 							<button class="button secondary add-custom-oauth"><span>{{_ "Add_custom_oauth"}}</span></button>
 						{{/if}}
+						{{#if $eq group._id 'Assets'}}
+							<button class="button refresh-clients"><span>{{_ "Apply_and_refresh_all_clients"}}</span></button>
+						{{/if}}
 					</div>
 				</div>
 			{{/unless}}
