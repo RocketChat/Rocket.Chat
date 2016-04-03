@@ -1,12 +1,17 @@
 <template name="oembedAudioWidget">
 	<a href="{{url}}" target="_blank">
 		{{#if parsedUrl}}
-			<blockquote>
-				<audio controls>
-					<source src="{{url}}" type="{{headers.contentType}}">
-					Your browser does not support the audio element.
-				</audio>
-			</blockquote>
+			{{#if collapsed}}
+				<span class="collapse-switch icon-right-dir" data-url="{{url}}" data-collapsed="{{collapsed}}"></span>
+			{{else}}
+				<span class="collapse-switch icon-down-dir" data-url="{{url}}" data-collapsed="{{collapsed}}"></span>
+				<blockquote>
+					<audio controls>
+						<source src="{{url}}" type="{{headers.contentType}}">
+						Your browser does not support the audio element.
+					</audio>
+				</blockquote>
+			{{/if}}
 		{{/if}}
 	</a>
 </template>

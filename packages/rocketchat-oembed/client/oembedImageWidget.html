@@ -1,20 +1,23 @@
 <template name="oembedImageWidget">
-	{{#if showImage}}
-		{{#if parsedUrl}}
-			<div>
-				<a href="{{url}}" class="swipebox" target="_blank">
-					<div class="inline-image" style="background-image: url('{{url}}');">
-						<img src="{{url}}" height="200">
-					</div>
-				</a>
-			</div>
-		{{/if}}
-	{{else}}
-		{{#if parsedUrl}}
-			<div class="image-to-download" data-url="{{url}}">
-				<i class="icon-picture"></i>
-				<div>click to load</div>
-			</div>
+	{{#if parsedUrl}}
+		{{#if collapsed}}
+			<span class="collapse-switch icon-right-dir" data-url="{{url}}" data-collapsed="{{collapsed}}"></span>
+		{{else}}
+			<span class="collapse-switch icon-down-dir" data-url="{{url}}" data-collapsed="{{collapsed}}"></span>
+			{{#if loadImage}}
+				<div>
+					<a href="{{url}}" class="swipebox" target="_blank">
+						<div class="inline-image" style="background-image: url('{{url}}');">
+							<img src="{{url}}" height="200">
+						</div>
+					</a>
+				</div>
+			{{else}}
+				<div class="image-to-download" data-url="{{url}}">
+					<i class="icon-picture"></i>
+					<div>click to load</div>
+				</div>
+			{{/if}}
 		{{/if}}
 	{{/if}}
 </template>

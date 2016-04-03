@@ -1,5 +1,5 @@
 Template.oembedImageWidget.helpers
-	showImage: ->
+	loadImage: ->
 
 		if Meteor.user()?.settings?.preferences?.autoImageLoad is false and this.downloadImages? is not true
 			return false
@@ -8,3 +8,10 @@ Template.oembedImageWidget.helpers
 			return false
 
 		return true
+
+
+	collapsed: ->
+		if this.collapsed?
+			return this.collapsed
+		else
+			return Meteor.user()?.settings?.preferences?.collapseMediaByDefault is true
