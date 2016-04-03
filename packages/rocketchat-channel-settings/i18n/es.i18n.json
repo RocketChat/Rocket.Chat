@@ -1,9 +1,0 @@
-{
-  "Channel" : "Canal",
-  "Private_Group" : "Grupo Privado",
-  "Save" : "Guardar",
-  "Topic" : "Tema",
-  "Room_Info" : "Info de la Sala",
-  "room_changed_privacy" : "Tipo de sala cambiado a:  <em>__room_type__</em> por<em>__user_by__</em>",
-  "room_changed_topic" : "Tema del la sala cambiado a:  <em>__room_topic__</em> por <em>__user_by__</em>"
-}

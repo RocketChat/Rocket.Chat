@@ -1,3 +1,6 @@
+socialSharing = (options = {}) ->
+	window.plugins.socialsharing.share(options.message, options.subject, options.file, options.link)
+
 isSubscribed = (_id) ->
 	return ChatSubscription.find({ rid: _id }).count() > 0
 
@@ -197,6 +200,9 @@ Template.room.helpers
 	selectable: ->
 		return Template.instance().selectable.get()
 
+isSocialSharingOpen = false
+touchMoved = false
+
 Template.room.events
 	"click, touchend": (e, t) ->
 		Meteor.setTimeout ->
@@ -204,16 +210,72 @@ Template.room.events
 		, 100
 
 	"touchstart .message": (e, t) ->
-		message = this._arguments[1]
-		doLongTouch = ->
-			mobileMessageMenu.show(message, t)
+		touchMoved = false
+		isSocialSharingOpen = false
+		if e.originalEvent.touches.length isnt 1
+			return
 
-		t.touchtime = Meteor.setTimeout doLongTouch, 500
+		if $(e.currentTarget).hasClass('system')
+			return
+
+		if e.target and e.target.nodeName is 'A' and /^https?:\/\/.+/.test(e.target.getAttribute('href'))
+			e.preventDefault()
+			e.stopPropagation()
+
+		message = this._arguments[1]
+		doLongTouch = =>
+
+			if window.plugins?.socialsharing?
+				isSocialSharingOpen = true
+
+				if e.target and e.target.nodeName is 'A' and /^https?:\/\/.+/.test(e.target.getAttribute('href'))
+					if message.attachments?
+						attachment = _.find message.attachments, (item) -> return item.title is e.target.innerText
+						if attachment?
+							socialSharing
+								file: e.target.href
+								subject: e.target.innerText
+								message: message.msg
+							return
+
+					socialSharing
+						link: e.target.href
+						subject: e.target.innerText
+						message: message.msg
+					return
+
+				if e.target and e.target.nodeName is 'IMG'
+					socialSharing
+						file: e.target.src
+						message: message.msg
+					return
+
+			mobileMessageMenu.show(message, t, e, this)
+
+		Meteor.clearTimeout t.touchtime
+		t.touchtime = Meteor.setTimeout doLongTouch, 300
+
+	"click .message img": (e, t) ->
+		Meteor.clearTimeout t.touchtime
+		if isSocialSharingOpen is true or touchMoved is true
+			e.preventDefault()
+			e.stopPropagation()
 
 	"touchend .message": (e, t) ->
 		Meteor.clearTimeout t.touchtime
+		if isSocialSharingOpen is true or touchMoved is true
+			e.preventDefault()
+			e.stopPropagation()
+			return
+
+		if e.target and e.target.nodeName is 'A' and /^https?:\/\/.+/.test(e.target.getAttribute('href'))
+			if cordova?.InAppBrowser?
+				cordova.InAppBrowser.open(e.target.href, '_system')
+			else
+				window.open(e.target.href)
 
 	"touchmove .message": (e, t) ->
+		touchMoved = true
 		Meteor.clearTimeout t.touchtime
 
 	"touchcancel .message": (e, t) ->
@@ -226,13 +288,14 @@ Template.room.events
 	"click .unread-bar > a.mark-read": ->
 		readMessage.readNow(true)
 
-	"click .unread-bar > a.jump-to": ->
-		message = RoomHistoryManager.getRoom(@_id)?.firstUnread.get()
+	"click .unread-bar > a.jump-to": (e, t) ->
+		_id = t.data._id
+		message = RoomHistoryManager.getRoom(_id)?.firstUnread.get()
 		if message?
 			RoomHistoryManager.getSurroundingMessages(message, 50)
 		else
-			subscription = ChatSubscription.findOne({ rid: @_id })
-			message = ChatMessage.find({ rid: @_id, ts: { $gt: subscription?.ls } }, { sort: { ts: 1 }, limit: 1 }).fetch()[0]
+			subscription = ChatSubscription.findOne({ rid: _id })
+			message = ChatMessage.find({ rid: _id, ts: { $gt: subscription?.ls } }, { sort: { ts: 1 }, limit: 1 }).fetch()[0]
 			RoomHistoryManager.getSurroundingMessages(message, 50)
 
 	"click .flex-tab .more": (event, t) ->
@@ -318,7 +381,7 @@ Template.room.events
 		dropDown = $(".messages-box \##{message._id} .message-dropdown")
 
 		if dropDown.length is 0
-			actions = RocketChat.MessageAction.getButtons message
+			actions = RocketChat.MessageAction.getButtons message, 'message'
 
 			el = Blaze.toHTMLWithData Template.messageDropdown,
 				actions: actions

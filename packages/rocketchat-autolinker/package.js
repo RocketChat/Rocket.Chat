@@ -16,7 +16,3 @@ Package.onUse(function(api) {
 
 	api.addFiles('autolinker.coffee', ['server','client']);
 });
-
-Package.onTest(function(api) {
-
-});

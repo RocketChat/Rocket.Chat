@@ -1,7 +1,0 @@
-{
-  "Accounts_OAuth_GitHub_Enterprise" : "OAuth Käytössä",
-  "API_GitHub_Enterprise_URL" : "Server URL",
-  "Accounts_OAuth_GitHub_Enterprise_id" : "Client ID",
-  "Accounts_OAuth_GitHub_Enterprise_secret" : "Client Secret",
-  "API_GitHub_Enterprise_URL_Description" : "Esim: http://example.com (ei kauttaviivaa loppuun)"
-}

@@ -1,7 +1,0 @@
-{
-  "Channel" : "채널",
-  "Private_Group" : "비밀 그룹",
-  "Save" : "저장",
-  "room_changed_privacy" : "방 종류가 <em>__user_by__</em>에서 <em>__room_type__</em>로 변경되었습니다.",
-  "room_changed_topic" : "방 주제가 <em>__user_by__</em>에서 <em>__room_topic__</em>로 변경되었습니다."
-}

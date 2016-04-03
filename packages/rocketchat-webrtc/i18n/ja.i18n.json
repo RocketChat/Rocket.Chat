@@ -1,7 +1,0 @@
-{
-  "WebRTC_Enable_Channel" : "パブリックチャンネルで有効にする",
-  "WebRTC_Enable_Direct" : "ダイレクトメッセージで有効にする",
-  "WebRTC_Enable_Private" : "プライベートチャンネルで有効にする",
-  "WebRTC_Servers" : "STUN/TURN サーバー",
-  "WebRTC_Servers_Description" : "カンマ区切りの STUN と TRUN サーバー一覧。<br/>ユーザー名、パスワードとポートは、`ユーザー名:パスワード@stun:ホスト:ポート` または `ユーザー名:パスワード@turn:ホスト:ポート` の形式で指定してください。"
-}

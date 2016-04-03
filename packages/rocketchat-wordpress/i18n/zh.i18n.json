@@ -1,7 +1,0 @@
-{
-  "API_Wordpress_URL" : "WordPress API URL",
-  "Accounts_OAuth_Wordpress" : "WordPress 帐号登录",
-  "Accounts_OAuth_Wordpress_id" : "WordPress ID",
-  "Accounts_OAuth_Wordpress_secret" : "WordPress Secret",
-  "Accounts_OAuth_Wordpress_callback_url" : "Wordpress Callback URL"
-}

@@ -1,8 +1,0 @@
-{
-  "Email_from" : "보내는 이",
-  "Email_subject" : "제목",
-  "Email_body" : "이메일 본문",
-  "Send_email" : "이메일 보내기",
-  "The_emails_are_being_sent" : "이메일을 전송 중입니다.",
-  "You_have_successfully_unsubscribed" : "지금부터 당신은 메일링 리스트를 수신하지 않습니다."
-}
