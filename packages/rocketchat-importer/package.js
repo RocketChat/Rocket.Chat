@@ -15,6 +15,8 @@ Package.onUse(function(api) {
 		'rocketchat:lib@0.0.1'
 	]);
 
+	api.use('templating', 'client');
+
 	//Import Framework
 	api.addFiles('lib/_importer.coffee');
 	api.addFiles('lib/importTool.coffee');
@@ -48,25 +50,9 @@ Package.onUse(function(api) {
 	//Imports database records cleanup, mark all as not valid.
 	api.addFiles('server/startup/setImportsToInvalid.coffee', 'server');
 
-	api.use('templating', 'client');
-	// TAPi18n
-	var _ = Npm.require('underscore');
-	var fs = Npm.require('fs');
-	tapi18nFiles = _.compact(_.map(fs.readdirSync('packages/rocketchat-importer/i18n'), function(filename) {
-		if (fs.statSync('packages/rocketchat-importer/i18n/' + filename).size > 16) {
-			return 'i18n/' + filename;
-		}
-	}));
-	api.use('tap:i18n@1.6.1', ['client', 'server']);
-	api.imply('tap:i18n');
-	api.addFiles(tapi18nFiles, ['client', 'server']);
-
 	api.export('Importer');
 });
 
-Package.onTest(function(api) {
-});
-
 Npm.depends({
-	"adm-zip": "0.4.7"
+	'adm-zip': '0.4.7'
 });

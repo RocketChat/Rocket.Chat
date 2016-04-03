@@ -36,12 +36,13 @@ RocketChat.MessageAction = new class
 		allButtons = buttons.get()
 		return allButtons[id]
 
-	getButtons = (message) ->
+	getButtons = (message, context) ->
 		allButtons = _.toArray buttons.get()
 		if message
 			allowedButtons = _.compact _.map allButtons, (button) ->
-				if not button.validation? or button.validation(message)
-					return button
+				if not button.context? or button.context.indexOf(context) > -1
+					if not button.validation? or button.validation(message, context)
+						return button
 		else
 			allowedButtons = allButtons
 
@@ -62,8 +63,15 @@ Meteor.startup ->
 		id: 'edit-message'
 		icon: 'icon-pencil'
 		i18nLabel: 'Edit'
-		action: (event, instance) ->
-			message = $(event.currentTarget).closest('.message')[0]
+		context: [
+			'message'
+			'message-mobile'
+		]
+		action: (e, instance) ->
+			console.log e
+			console.log e.currentTarget
+			message = $(e.currentTarget).closest('.message')[0]
+			console.log message
 			chatMessages[Session.get('openedRoom')].edit(message)
 			$("\##{message.id} .message-dropdown").hide()
 			input = instance.find('.input-message')
@@ -88,8 +96,12 @@ Meteor.startup ->
 
 	RocketChat.MessageAction.addButton
 		id: 'delete-message'
-		icon: 'icon-trash-1'
+		icon: 'icon-trash-alt'
 		i18nLabel: 'Delete'
+		context: [
+			'message'
+			'message-mobile'
+		]
 		action: (event, instance) ->
 			message = @_arguments[1]
 			msg = $(event.currentTarget).closest('.message')[0]

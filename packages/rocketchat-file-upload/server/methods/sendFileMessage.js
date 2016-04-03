@@ -16,7 +16,8 @@ Meteor.methods({
 
 		var attachment = {
 			title: `File Uploaded: ${file.name}`,
-			title_link: fileUrl
+			title_link: fileUrl,
+			title_link_download: true
 		};
 
 		if (/^image\/.+/.test(file.type)) {
@@ -36,7 +37,7 @@ Meteor.methods({
 			attachment.video_size = file.size;
 		}
 
-		msg = {
+		var msg = {
 			_id: Random.id(),
 			rid: roomId,
 			msg: '',
@@ -47,6 +48,6 @@ Meteor.methods({
 			attachments: [attachment]
 		};
 
-		var msg = Meteor.call('sendMessage', msg);
+		msg = Meteor.call('sendMessage', msg);
 	}
 });

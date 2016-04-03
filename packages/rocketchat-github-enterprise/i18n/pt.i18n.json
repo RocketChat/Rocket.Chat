@@ -1,7 +1,0 @@
-{
-  "Accounts_OAuth_GitHub_Enterprise" : "OAuth Ativado",
-  "API_GitHub_Enterprise_URL" : "URL do servidor",
-  "Accounts_OAuth_GitHub_Enterprise_id" : "GitHub Id",
-  "Accounts_OAuth_GitHub_Enterprise_secret" : "Segredo",
-  "API_GitHub_Enterprise_URL_Description" : "Nota: excluir barra final"
-}

@@ -71,7 +71,7 @@ RocketChat.models.Users.getNextAgent = function() {
 		return {
 			agentId: user._id,
 			username: user.username
-		}
+		};
 	} else {
 		return null;
 	}
@@ -83,8 +83,8 @@ RocketChat.models.Users.getNextAgent = function() {
  */
 RocketChat.models.Users.getVisitorByToken = function(token, options) {
 	var query = {
-		"profile.guest": true,
-		"profile.token": token
+		'profile.guest': true,
+		'profile.token': token
 	};
 
 	return this.findOne(query, options);
@@ -96,8 +96,8 @@ RocketChat.models.Users.getVisitorByToken = function(token, options) {
  */
 RocketChat.models.Users.findVisitorByToken = function(token) {
 	var query = {
-		"profile.guest": true,
-		"profile.token": token
+		'profile.guest': true,
+		'profile.token': token
 	};
 
 	return this.find(query);

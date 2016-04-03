@@ -25,7 +25,7 @@ Template.starredMessages.events
 		$('.message-dropdown:visible').hide()
 		$(".starred-messages-list \##{message_id} .message-dropdown").remove()
 		message = StarredMessage.findOne message_id
-		actions = RocketChat.MessageAction.getButtons message
+		actions = RocketChat.MessageAction.getButtons message, 'starred'
 		el = Blaze.toHTMLWithData Template.messageDropdown, { actions: actions }
 		$(".starred-messages-list \##{message_id} .message-cog-container").append el
 		dropDown = $(".starred-messages-list \##{message_id} .message-dropdown")

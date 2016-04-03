@@ -3,11 +3,17 @@ RocketChat.models.Subscriptions = new class extends RocketChat.models._Base
 		@_initModel 'subscription'
 
 		@tryEnsureIndex { 'rid': 1, 'u._id': 1 }, { unique: 1 }
+		@tryEnsureIndex { 'rid': 1, 'alert': 1, 'u._id': 1 }
+		@tryEnsureIndex { 'rid': 1, 'roles': 1 }
 		@tryEnsureIndex { 'u._id': 1, 'name': 1, 't': 1 }, { unique: 1 }
 		@tryEnsureIndex { 'open': 1 }
 		@tryEnsureIndex { 'alert': 1 }
 		@tryEnsureIndex { 'unread': 1 }
 		@tryEnsureIndex { 'ts': 1 }
+		@tryEnsureIndex { 'ls': 1 }
+		@tryEnsureIndex { 'desktopNotifications': 1 }, { sparse: 1 }
+		@tryEnsureIndex { 'mobilePushNotifications': 1 }, { sparse: 1 }
+		@tryEnsureIndex { 'emailNotifications': 1 }, { sparse: 1 }
 
 
 	# FIND ONE
@@ -31,6 +37,23 @@ RocketChat.models.Subscriptions = new class extends RocketChat.models._Base
 		query =
 			"rid": roomId
 			"roles": { $in: roles }
+
+		return @find query, options
+
+	findByType: (types, options) ->
+		query =
+			t:
+				$in: types
+
+		return @find query, options
+
+	findByNameContainingAndTypes: (name, types, options) ->
+		nameRegex = new RegExp s.trim(s.escapeRegExp(name)), "i"
+
+		query =
+			t:
+				$in: types
+				name: nameRegex
 
 		return @find query, options
 

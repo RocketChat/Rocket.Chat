@@ -4,7 +4,9 @@ loadMissedMessages = (rid) ->
 		return
 
 	Meteor.call 'loadMissedMessages', rid, lastMessage.ts, (err, result) ->
-		ChatMessage.upsert {_id: item._id}, item for item in result
+		for item in result
+			RocketChat.promises.run('onClientMessageReceived', item).then (item) ->
+				ChatMessage.upsert {_id: item._id}, item
 
 connectionWasOnline = true
 Tracker.autorun ->
@@ -82,6 +84,12 @@ RocketChat.Notifications.onUser 'message', (msg) ->
 	computation = Tracker.autorun ->
 		for typeName, record of openedRooms when record.active is true
 			do (typeName, record) ->
+
+				username = Meteor.user()?.username
+
+				unless username
+					return
+
 				record.sub = [
 					Meteor.subscribe 'room', typeName
 				]
@@ -99,7 +107,7 @@ RocketChat.Notifications.onUser 'message', (msg) ->
 						t: type
 
 					if type is 'd'
-						query.usernames = $all: [Meteor.user()?.username, name]
+						query.usernames = $all: [username, name]
 					else
 						query.name = name
 

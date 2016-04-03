@@ -1,1 +1,5 @@
-{ }
+{
+  "Accounts" : "حساب ها",
+  "Livechat_enabled" : "livechat در فعال",
+  "Start_Chat" : "شروع چت"
+}

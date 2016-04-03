@@ -1,5 +1,109 @@
 ## NEXT
 
+- Fix #2634. Admins are warned if they have not verified their e-mail and e-mail verification is true.
+- Fix #2565 - Don't let the last owner leave the room. Warn user.
+
+## 0.24.0, 2016-Mar-28
+
+- Add a title with emoji's shortname on picker
+- Add Assets and Blaze to jshint global variables
+- Add button to download uploaded files
+- Add button to verify email address
+- Add description and params to slashcommand "me"
+- Add index for Messages pinned, Messages u._id, Subscription emailNotifications, Subscription rid, alert, u._id, Subscription rid, roles, to Subscriptions ls, to Users name, Users lastLogin, Users status, Subscriptions, mobilePushNotifications and desktopNotifications
+- Add Reactions translation
+- Add RTL switch to fontello demo page
+- Add Support for block quote
+- Add titles for emoji categories
+- Add UI for reactions
+- Close #2394; Add tab-i18n to list of allowed URLs in CORS
+- Count unreads of the opened room too
+- Debounce calls of codemirror changed
+- Do not hide navigation bar of swipebox
+- Do not override value of record on input blur
+- Emoji picker now receives a callback
+- Expose emoji picker in RocketChat namespace
+- Fix #2615; Bad Uri generation for Gitlab Oauth profile
+- Fix emoji popup using emojione's template to render emojis
+- Fix error when push gateways is active
+- Fix error with asset upload in Firefox
+- Fix flex-nav show/hide animation on RTL
+- Fix for word highlighting of none Latin characters
+- Fix full screen of code editor for new incoming integrations
+- Fix problem with ddp connection from some urls
+- Fix RTL icon issues
+- Fix set user's name on creation
+- Fix sound of new room
+- Fix url for the logo asset
+- Focus the message input on window focus
+- Get room data on sendMessage if room is incomplete
+- Improve subscription filteredUsers
+- Improve tooltip positioning
+- Improve verification of new user as admin or user
+- More channels shows all channels by default
+- New default hover message background color
+- New emoji font characters
+- New reactions package
+- New tooltip lib
+- Only compile scripts if scripts are enabled and filled
+- Prevent to use APN with empty certs
+- Recompile LESS files on each addPackageAsset call
+- Remove all references to octicons
+- Remove CW and CCW icons from mirror map
+- Try to be smarter when suggesting usernames
+- Unblock call to avatar suggestion
+- Unlock methods 'joinDefaultChannels' and 'leaveRoom'
+- Update ClipboardJS to version 1.5.9
+- Update fontello with GitHub Octicons
+- Use Emojione's sprites
+- Use new tooptip lib for reactions
+- Use the login layout for the reset password screen
+- Using PNG emoji sprites for better performance
+
+## 0.23.0, 2016-Mar-21
+
+- Accept * for all media types
+- Add emoji picker
+- Add ENV to set HOME to /tmp in docker files
+- Add Katex plugin (for TeX math rendering)
+- Allow custom login page via iframe
+- Allow multiple extensions in assets and fix validation
+- CAS Plugin: Added version selector to prepare for further version support.
+- Close #2495; Allow pass @username in avatar
+- Closes #2172: Accepts markdown for room topic.
+- Closes #625: Filter and sorts direct messages and private groups.
+- Do not use user id in integration URL but keep compatibility
+- Encrypts _id to avoid duplicate encrypted messages
+- Fix #2346: Adds administration menu when 'manage-integrations' permission is added.
+- Fix #2433: Directly linked channel does not load for newly created user
+- Fix #2433: Directly linked channel does not load for newly created user
+- Fix #2477: Admin settings, plain-text SMTP password.
+- Fix #2515: Update profile when changing username or email is disabled.
+- Fix #2519: not showing stop record button
+- Fix #2526: CAS Plugin: Join freshly created users to default channels
+- Fix #2527: Set private group owner and moderator on creation.
+- Fix #2528: by accepting webkitSubtle as crypto.
+- Fix #2550: allows admins to change usernames and e-mails
+- Fix #2558: Remove trailing slash on livechat install code
+- Fix #2573: Proper emoji tone test
+- Fix decoding HTML entities in KaTeX plugin
+- Fix instructions for outgoing webhook response
+- Fix restricted domain registration regex
+- Only show the CURL field on integrations after token was generated
+- OTR: Encrypt message timestamp to make sure messages are retrieved in the right order.
+- OTR: Uses jwk instead of spki for exchanging public keys.
+- Pass correct raw value for content in integration scripts
+- Pass restricted domain as string when only one
+- Rebuild the cordova index when change the Site Url
+- Remove the try/catches around the imports
+- Retry to send push notification to gateway on error
+- RTL: Give `padding-right` to `.input-message`
+- Saves each successful migration as the latest locked migration version.
+- Send correct headers to download GridFS uploads
+- Set DDP_DEFAULT_CONNECTION_URL to the same value of ROOT_URL
+- Use login logo as asset
+- Use URL compatible token and do not sabe in user record
+
 ## 0.22.0, 2016-Mar-14
 
 - Add AES encryption routines

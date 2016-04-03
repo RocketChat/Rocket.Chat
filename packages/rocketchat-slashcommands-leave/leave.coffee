@@ -15,7 +15,15 @@ else
 	class Leave
 		constructor: (command, params, item) ->
 			if(command == "leave" || command == "part")
-				Meteor.call 'leaveRoom', item.rid
+				try
+					Meteor.call 'leaveRoom', item.rid
+				catch err
+					RocketChat.Notifications.notifyUser Meteor.userId(), 'message', {
+						_id: Random.id()
+						rid: item.rid
+						ts: new Date
+						msg: TAPi18n.__(err.reason, null, Meteor.user().language)
+					}
 
 	RocketChat.slashCommands.add 'leave', Leave
 	RocketChat.slashCommands.add 'part', Leave

@@ -1,7 +1,0 @@
-{
-  "Accounts_OAuth_GitHub_Enterprise" : "OAuth 활성화",
-  "API_GitHub_Enterprise_URL" : "Server URL",
-  "Accounts_OAuth_GitHub_Enterprise_id" : "Client ID",
-  "Accounts_OAuth_GitHub_Enterprise_secret" : "Client 암호",
-  "API_GitHub_Enterprise_URL_Description" : "예: http://domain.com (마지막 슬래시 제외)"
-}

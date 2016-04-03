@@ -13,11 +13,25 @@ Package.onUse(function(api) {
 		'emojione:emojione',
 		'rocketchat:lib'
 	]);
+	api.use('rocketchat:theme');
+	api.use('rocketchat:ui-message');
+
+	api.use('reactive-var');
+	api.use('templating');
+	api.use('ecmascript');
+	api.use('less@2.5.1');
 
 	api.addFiles('emojione.coffee', ['server','client']);
 	api.addFiles('rocketchat.coffee', 'client');
-});
 
-Package.onTest(function(api) {
+	api.addFiles('emojiPicker.html', 'client');
+	api.addFiles('emojiPicker.js', 'client');
 
+	api.addAssets('emojiPicker.less', 'server');
+	api.addFiles('loadStylesheet.js', 'server');
+
+	api.addFiles('lib/EmojiPicker.js', 'client');
+	api.addFiles('emojiButton.js', 'client');
+
+	api.addFiles('sprites.css', 'client');
 });

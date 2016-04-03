@@ -3,12 +3,16 @@
 		<form class="message-form" method="post" action="/">
 			<div style="display: flex">
 				<div class="file">
-					<i class="octicon octicon-cloud-upload file"></i>
+					<i class="icon-attach file"></i>
 					<input type="file" accept="{{fileUploadAllowedMediaTypes}}">
 				</div>
 				<div class="input-message-container">
 					{{> messagePopupConfig getPopupConfig}}
 					<textarea dir="auto" name="msg" maxlength="{{maxMessageLength}}" class="input-message autogrow-short" placeholder="{{_ 'Message'}}"></textarea>
+
+					<div class="inner-right-toolbar">
+						<i class="emoji-picker-icon icon-people"></i>
+					</div>
 				</div>
 
 				<div class="message-buttons {{showMic}} {{showSend}}">

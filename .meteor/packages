@@ -73,6 +73,7 @@ rocketchat:oauth2-server-config
 rocketchat:oembed
 rocketchat:otr
 rocketchat:push-notifications
+rocketchat:reactions
 rocketchat:slashcommands-invite
 rocketchat:slashcommands-join
 rocketchat:slashcommands-kick
@@ -81,6 +82,7 @@ rocketchat:slashcommands-mute
 rocketchat:spotify
 rocketchat:statistics
 rocketchat:theme
+rocketchat:tooltip
 rocketchat:tutum
 rocketchat:ui
 rocketchat:ui-account
@@ -122,7 +124,7 @@ mrt:reactive-store
 mystor:device-detection
 nimble:restivus
 nooitaf:colors
-ostrio:cookies@2.0.1
+ostrio:cookies
 pauli:accounts-linkedin
 perak:codemirror
 percolate:synced-cron
@@ -130,7 +132,6 @@ raix:handlebar-helpers
 raix:push
 raix:ui-dropped-event
 steffo:meteor-accounts-saml
-tap:i18n
 tmeasday:crypto-md5
 todda00:friendly-slugs
 underscorestring:underscore.string
@@ -139,4 +140,5 @@ yasinuslu:blaze-meta
 # sanjo:jasmine
 # velocity:html-reporter
 smoral:sweetalert
+rocketchat:iframe-login
 rocketchat:katex

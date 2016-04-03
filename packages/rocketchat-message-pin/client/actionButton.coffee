@@ -3,6 +3,11 @@ Meteor.startup ->
 		id: 'pin-message'
 		icon: 'icon-pin'
 		i18nLabel: 'Pin_Message'
+		context: [
+			'pinned'
+			'message'
+			'message-mobile'
+		]
 		action: (event, instance) ->
 			message = @_arguments[1]
 			message.pinned = true
@@ -23,6 +28,11 @@ Meteor.startup ->
 		id: 'unpin-message'
 		icon: 'icon-pin rotate-45'
 		i18nLabel: 'Unpin_Message'
+		context: [
+			'pinned'
+			'message'
+			'message-mobile'
+		]
 		action: (event, instance) ->
 			message = @_arguments[1]
 			message.pinned = false
@@ -43,6 +53,9 @@ Meteor.startup ->
 		id: 'jump-to-pin-message'
 		icon: 'icon-right-hand'
 		i18nLabel: 'Jump_to_message'
+		context: [
+			'pinned'
+		]
 		action: (event, instance) ->
 			message = @_arguments[1]
 			$('.message-dropdown:visible').hide()

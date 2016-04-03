@@ -68,6 +68,8 @@ Meteor.methods
 		if not Meteor.userId()
 			throw new Meteor.Error 203, '[methods] getAvatarSuggestion -> Usuário não logado'
 
+		@unblock()
+
 		user = Meteor.user()
 
 		getAvatarSuggestionForUser user

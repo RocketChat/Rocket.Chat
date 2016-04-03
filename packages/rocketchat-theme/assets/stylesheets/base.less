@@ -308,13 +308,7 @@ blockquote {
 		margin-bottom: 0;
 	}
 	&.search {
-		.octicon {
-			position: absolute;
-			left: 10px;
-			top: 10px;
-			font-weight: 400;
-		}
-		.icon-spin4 {
+		.icon-spin {
 			position: absolute;
 			right: 5px;
 			top: 10px;
@@ -339,7 +333,7 @@ blockquote {
 		}
 		.icon-search,
 		.icon-right-open-small,
-		.icon-sort-alt-up {
+		.icon-sort-alt-up, .icon-comment {
 			position: absolute;
 			left: 2px;
 			top: 10px;
@@ -351,6 +345,16 @@ blockquote {
 	> label {
 		display: block;
 		margin-bottom: 4px;
+	}
+	> div {
+		position: relative;
+
+		.right {
+			position: absolute;
+			right: 10px;
+			top: 10px;
+			z-index: 10;
+		}
 	}
 	input[type='text'] {
 		display: block;
@@ -470,6 +474,8 @@ input[type='email'],
 input[type='url'],
 input[type='password'] {
 	-webkit-appearance: none;
+	-moz-appearance: none;
+	appearance: none;
 	height: 35px;
 	line-height: normal;
 	border: 1px solid;
@@ -556,7 +562,7 @@ textarea[disabled] {
 		&:after {
 			content: " ";
 			visibility: visible;
-			background-image: url('/images/logo/loading.gif');
+			background-image: url('images/logo/loading.gif');
 			background-position: center;
 			background-repeat: no-repeat;
 			display: block;
@@ -604,7 +610,7 @@ label.required:after {
 }
 
 .loading {
-	background-image: url('/images/loading.gif');
+	background-image: url('images/loading.gif');
 	background-repeat: no-repeat;
 	background-position: 50%;
 	width: 100%;
@@ -1273,7 +1279,11 @@ a.github-fork {
 			box-shadow: 0 0 0;
 			border-radius: 0;
 			-webkit-appearance: none;
+			-moz-appearance: none;
+			appearance: none;
 			-webkit-border-radius: 0px;
+			-moz-border-radius: 0px;
+			border-radius: 0px;
 		}
 	}
 	.input-submit {
@@ -1542,6 +1552,11 @@ a.github-fork {
 			.icon-logout {
 				margin-left: 1px;
 			}
+
+			&.fixed {
+				opacity: 1;
+				.transform(translateX(0));
+			}
 		}
 		i {
 			font-size: 14px;
@@ -1676,6 +1691,11 @@ a.github-fork {
 	padding: 20px;
 	border-radius: 5px;
 	box-shadow: 1px 1px 4px rgba(0,0,0,.3);
+
+	.cms-page-close {
+		margin-bottom: 10px;
+		text-align: right;
+	}
 }
 
 .spotlight {
@@ -2311,6 +2331,12 @@ a.github-fork {
 			.input-message-container {
 				position: relative;
 				width: 100%;
+
+				.inner-right-toolbar {
+					position: absolute;
+					right: 10px;
+					top: 10px;
+				}
 			}
 			> .file {
 				width: 44px;
@@ -2323,6 +2349,11 @@ a.github-fork {
 				border-right: none;
 				cursor: pointer;
 				.transition(background-color 0.1s linear, color 0.1s linear);
+
+				i.file {
+					font-size: 18px;
+					vertical-align: text-bottom;
+				}
 
 				&:hover {
 				}
@@ -2357,7 +2388,7 @@ a.github-fork {
 				display: none;
 			}
 
-			&.show-mic .mic, &.show-mic .mic .stop-mic {
+			&.show-mic .mic, &.show-mic .stop-mic {
 				display: inline-block;
 			}
 
@@ -2596,19 +2627,6 @@ a.github-fork {
 		animation: highlight 3s;
 	}
 
-	.body, .user.user-card-message, .time {
-		-webkit-user-select: text;
-		-moz-user-select: text;
-		-ms-user-select: text;
-		user-select: text;
-		* {
-			-webkit-user-select: text;
-			-moz-user-select: text;
-			-ms-user-select: text;
-			user-select: text;
-		}
-	}
-
 	&:nth-child(1) {
 		margin-top: 0;
 	}
@@ -2659,9 +2677,6 @@ a.github-fork {
 			cursor: pointer;
 		}
 	}
-	&:hover:not(.system) .message-cog {
-		visibility: visible;
-	}
 
 	@keyframes dropdown-in {
 		0% {
@@ -2688,10 +2703,9 @@ a.github-fork {
 		z-index: 1000;
 		display: none;
 		background-color: #fff;
-		border: 1px solid #eee;
 		border-radius: 4px;
 		overflow: hidden;
-		box-shadow: 1px 1px 4px #B3B3B3;
+		box-shadow: 0px 1px 1px 0 rgba(0,0,0,0.2), 0 2px 10px 0 rgba(0,0,0,.16);
 		transition: transform .15s ease-in-out, opacity .15s ease-in-out;
 		animation: dropdown-in .15s ease-in-out;
 
@@ -2864,6 +2878,27 @@ a.github-fork {
 		color: #aaa;
 		font-weight: 400;
 		padding-left: 2px;
+	}
+}
+
+body:not(.is-cordova) {
+	.message:hover:not(.system) .message-cog {
+		visibility: visible;
+	}
+
+	.message {
+		.body, .user.user-card-message, .time {
+			-webkit-user-select: text;
+			-moz-user-select: text;
+			-ms-user-select: text;
+			user-select: text;
+			* {
+				-webkit-user-select: text;
+				-moz-user-select: text;
+				-ms-user-select: text;
+				user-select: text;
+			}
+		}
 	}
 }
 
@@ -3889,7 +3924,7 @@ a.github-fork {
 		bottom: 20px;
 		width: 100px;
 		height: 50px;
-		background: url(/images/meteor.png) no-repeat center center;
+		background: url(images/meteor.png) no-repeat center center;
 		background-size: 100% auto;
 		text-indent: -9999em;
 	}
@@ -3923,7 +3958,9 @@ a.github-fork {
 }
 
 .highlight-text {
-  background: #F1DD7A none repeat scroll 0% 0%;
+	background: #ADD6FF;
+	border-radius: 4px;
+	padding: 2px;
 }
 
 .avatar-suggestions {
@@ -4208,7 +4245,7 @@ a.github-fork {
 .message-popup-results {
 	&.notready {
 		.message-popup-items {
-			background-image: url(/images/logo/loading.gif);
+			background-image: url(images/logo/loading.gif);
 			background-repeat: no-repeat;
 			background-position: 50% 50%;
 			height: 100px;
@@ -4712,4 +4749,18 @@ a.github-fork {
 			}
 		}
 	}
+}
+
+.one-passsword {
+	background-image: url('/images/onepassword-button.png');
+	height: 40px;
+	width: 40px;
+	background-size: 23px;
+	background-repeat: no-repeat;
+	background-position: center;
+	float: right;
+	position: absolute;
+	right: -8px;
+	top: -5px;
+	opacity: .6;
 }

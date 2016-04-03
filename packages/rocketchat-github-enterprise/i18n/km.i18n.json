@@ -1,7 +1,0 @@
-{
-  "Accounts_OAuth_GitHub_Enterprise" : "OAuth បានអនុញ្ញាតិ",
-  "API_GitHub_Enterprise_URL" : "GitHub Enterprise",
-  "Accounts_OAuth_GitHub_Enterprise_id" : "លេខសម្គាល់ Client",
-  "Accounts_OAuth_GitHub_Enterprise_secret" : "Client សម្ងាត់",
-  "API_GitHub_Enterprise_URL_Description" : "ចំណាំ: សូមដកចេញនូវ trailing slash"
-}

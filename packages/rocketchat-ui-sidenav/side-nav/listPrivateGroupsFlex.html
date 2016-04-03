@@ -6,6 +6,23 @@
 	</header>
 	<div class="content">
 		<div class="wrapper">
+			<div class="flex-control">
+				<div class="search">
+					<form class="search-form" role="form">
+						<div class="input-line search">
+							<input type="text" id="channel-search" class="search" placeholder="{{_ "Search_Private_Groups"}}" autocomplete="off" />
+							<i class="icon-right-open-small"></i>
+						</div>
+						<div class="input-line search">
+							<select class="c-select" id="sort">
+								<option value="name" selected="{{sortSelected 'name'}}">{{_ "Name"}}</option>
+								<option value="ls" selected="{{sortSelected 'ls'}}">{{_ "Last_seen"}}</option>
+							</select>
+							<i class="icon-sort-alt-up"></i>
+						</div>
+					</form>
+				</div>
+			</div>
 			<h4>{{_ "Private_Groups_list"}}</h4>
 			<ul>
 			{{#each groups}}
@@ -13,9 +30,23 @@
 					<a href="{{pathFor 'group' name=name}}" class="channel-link">
 						<i class="icon-lock"></i>
 						{{name}}
+						<span class='opt fixed'>
+							{{#if hidden}}
+							<i class="icon-eye-off" title="{{_ "Hidden"}}" aria-label="{{_ "Hidden"}}"></i>
+							{{/if}}
+						</span>
 					</a>
 				</li>
 			{{/each}}
+			{{#if hasMore}}
+				<li class="load-more">
+					{{#if Template.subscriptionsReady}}
+						<a href="">{{_ "Has_more"}}...</a>
+					{{else}}
+						<div class="load-more-loading">{{_ "Loading..."}}</div>
+					{{/if}}
+				</li>
+			{{/if}}
 			</ul>
 		</div>
 	</div>
