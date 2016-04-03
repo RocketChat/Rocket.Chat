@@ -22,20 +22,23 @@
 					</div>
 				{{/if}}
 			{{/if}}
-
 			{{#if title}}
-				{{#if title_link}}
-					<div class="attachment-title">
+				<div class="attachment-title">	
+					{{#if title_link}}
 						<a href="{{fixCordova title_link}}" target="_blank">{{title}}</a>
 						{{#if title_link_download}}
 							<a class="icon-download attachment-download-icon" href="{{fixCordova title_link}}" target="_blank" download=""></a>
 						{{/if}}
-					</div>
 				{{else}}
-					<div class="attachment-title">{{title}}</div>
+					{{title}}
 				{{/if}}
+				{{#if collapsed}}
+					<span class="collapse-switch icon-right-dir" data-url="{{image_url}}" data-collapsed="{{collapsed}}"></span>
+				{{else}}
+					<span class="collapse-switch icon-down-dir" data-url="{{image_url}}" data-collapsed="{{collapsed}}"></span>
+				{{/if}}
+				</div>			
 			{{/if}}
-
 			<div class="attachment-flex">
 				{{#if thumb_url}}
 					<div class="attachment-thumb">
@@ -51,8 +54,9 @@
 			</div>
 
 			{{#if image_url}}
-				<div class="attachment-image">
-					{{#if showImage}}
+				{{#unless collapsed}}
+					<div class="attachment-image">
+					{{#if loadImage}}
 						<a href="{{fixCordova image_url}}" class="swipebox" target="_blank">
 							<div class="inline-image" style="background-image: url('{{fixCordova image_url}}');">
 								<img src="{{fixCordova image_url}}" height="{{getImageHeight image_dimensions.height}}">
@@ -64,25 +68,30 @@
 							<div>click to load</div>
 						</div>
 					{{/if}}
-				</div>
+					</div>
+				{{/unless}}
 			{{/if}}
 
 			{{#if audio_url}}
-				<div class="attachment-audio">
-					<audio controls>
-						<source src="{{fixCordova audio_url}}" type="{{audio_type}}">
-						Your browser does not support the audio element.
-					</audio>
-				</div>
+				{{#unless collapsed}}
+					<div class="attachment-audio">
+						<audio controls>
+							<source src="{{fixCordova audio_url}}" type="{{audio_type}}">
+							Your browser does not support the audio element.
+						</audio>
+					</div>
+				{{/unless}}
 			{{/if}}
 
 			{{#if video_url}}
-				<div class="attachment-video">
-					<video controls class="inline-video">
-						<source src="{{fixCordova video_url}}" type="{{video_type}}">
-						Your browser does not support the video element.
-					</video>
-				</div>
+				{{#unless collapsed}}
+					<div class="attachment-video">
+						<video controls class="inline-video">
+							<source src="{{fixCordova video_url}}" type="{{video_type}}">
+							Your browser does not support the video element.
+						</video>
+					</div>
+				{{/unless}}
 			{{/if}}
 
 			{{#if fields}}
