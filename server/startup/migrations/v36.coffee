@@ -13,9 +13,11 @@ RocketChat.Migrations.add
 			if requestUrl[0] is '/'
 				requestUrl = url.resolve(Meteor.absoluteUrl(), requestUrl)
 
-			result = HTTP.get requestUrl, npmRequestOptions: {encoding: 'binary'}
-			if result.statusCode is 200
-				RocketChat.Assets.setAsset(result.content, result.headers['content-type'], 'logo')
+			try
+				Meteor.startup ->
+					result = HTTP.get requestUrl, npmRequestOptions: {encoding: 'binary'}
+					if result.statusCode is 200
+						RocketChat.Assets.setAsset(result.content, result.headers['content-type'], 'logo')
 
 
 		RocketChat.models.Settings.remove _id: 'Layout_Login_Header'
