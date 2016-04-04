@@ -210,6 +210,10 @@ Template.admin.events
 				return toastr.error TAPi18n.__ 'Error_updating_settings' if err
 				toastr.success TAPi18n.__ 'Settings_updated'
 
+	"click .submit .refresh-clients": (e, t) ->
+		Meteor.call 'refreshClients', ->
+			toastr.success TAPi18n.__ 'Clients_will_refresh_in_a_few_seconds'
+
 	"click .submit .add-custom-oauth": (e, t) ->
 		config =
 			title: TAPi18n.__ 'Add_custom_oauth'
