@@ -6,10 +6,10 @@
 	</header>
 	<div class="content">
 		<div class="wrapper">
-			<h4>{{_ "Create_new_direct_message_room"}}</h4>
+			<h4>{{_ "Create_new"}}</h4>
 			<div class="input-line">
-				<label for="who">{{_ "With_whom" }}</label>
-				{{> inputAutocomplete settings=autocompleteSettings id="who" class="required search" autocomplete="off"}}
+				<label for="who">{{_ "Select_user" }}</label>
+				{{> inputAutocomplete settings=autocompleteSettings id="who" class="required search" autocomplete="off" placeholder=(_ "Search_by_username")}}
 			</div>
 			{{#if error}}
 				<div class="input-error">
@@ -20,7 +20,7 @@
 				</div>
 			{{/if}}
 			<div class="input-submit">
-				<button class="button clean primary save-direct-message">{{_ "Save" }}</button>
+				<button class="button clean primary save-direct-message">{{_ "Create" }}</button>
 				<button class="button clean cancel-direct-message">{{_ "Cancel" }}</button>
 			</div>
 		</div>
