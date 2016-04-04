@@ -3,7 +3,6 @@ RocketChat.Migrations.add({
 	up: function() {
 		if (RocketChat && RocketChat.models && RocketChat.models.Settings) {
 			var footer = RocketChat.models.Settings.findOne({ _id: 'Layout_Sidenav_Footer' });
-			console.log(footer);
 
 			// Replace footer octicons with icons
 			if (footer && footer.value !== '') {
