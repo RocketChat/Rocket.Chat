@@ -79,6 +79,7 @@ class CustomOAuth
 			response = HTTP.get @identityPath,
 				headers:
 					'User-Agent': @userAgent # http://doc.gitlab.com/ce/api/users.html#Current-user
+					'Authorization': 'Bearer ' + accessToken
 				params:
 					access_token: accessToken
 
