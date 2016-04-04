@@ -2,19 +2,19 @@ Meteor.methods
 	addUserToRoom: (data) ->
 		fromId = Meteor.userId()
 		unless Match.test data?.rid, String
-			throw new Meteor.Error 'invalid-rid'
+			throw new Meteor.Error 'error-invalid-room', 'Invalid room', { method: addUserToRoom }
 
 		unless Match.test data?.username, String
-			throw new Meteor.Error 'invalid-username'
+			throw new Meteor.Error 'error-invalid-username', 'Invalid username', { method: addUserToRoom }
 
 		room = RocketChat.models.Rooms.findOneById data.rid
 
 		# if room.username isnt Meteor.user().username and room.t is 'c'
 		if room.t is 'c' and not RocketChat.authz.hasPermission(fromId, 'add-user-to-room', room._id)
-			throw new Meteor.Error 403, '[methods] addUserToRoom -> Not allowed'
+			throw new Meteor.Error 'error-not-allowed', 'Not allowed', { method: addUserToRoom }
 
 		if room.t is 'd'
-			throw new Meteor.Error 'cant-invite-for-direct-room'
+			throw new Meteor.Error 'error-cant-invite-for-direct-room', 'Can\'t invite user to direct rooms', { method: addUserToRoom }
 
 		# verify if user is already in room
 		if room.usernames.indexOf(data.username) isnt -1
