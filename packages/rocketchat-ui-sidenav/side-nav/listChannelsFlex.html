@@ -14,11 +14,11 @@
 							<i class="icon-right-open-small"></i>
 						</div>
 						<div class="input-line search">
-							<select class="c-select" id="sort-channels" style="display: none">
+							<select class="c-select" id="sort-channels">
 								<option value="name" selected="{{sortChannelsSelected 'name'}}">{{_ "Name"}}</option>
 								<option value="msgs" selected="{{sortChannelsSelected 'msgs'}}">{{_ "Number_of_messages"}}</option>
 							</select>
-							<select class="c-select" id="sort-subscriptions">
+							<select class="c-select" id="sort-subscriptions" style="display: none">
 								<option value="name" selected="{{sortSubscriptionsSelected 'name'}}">{{_ "Name"}}</option>
 								<option value="ls" selected="{{sortSubscriptionsSelected 'ls'}}">{{_ "Last_seen"}}</option>
 							</select>
