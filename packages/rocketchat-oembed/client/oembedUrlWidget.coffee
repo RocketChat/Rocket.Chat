@@ -17,10 +17,10 @@ getDescription = (self) ->
 
 Template.oembedUrlWidget.helpers
 	description: ->
-		return getDescription this
+		return new Handlebars.SafeString getDescription this
 
 	title: ->
-		return getTitle this
+		return new Handlebars.SafeString getTitle this
 
 	image: ->
 		if not this.meta?
