@@ -10,11 +10,11 @@ mime.extensions['image/vnd.microsoft.icon'] = ['ico']
 
 assets =
 	'logo':
-		label: 'logo (svg, png)'
+		label: 'logo (svg, png, jpg)'
 		defaultUrl: 'images/logo/logo.svg'
 		constraints:
 			type: 'image'
-			extensions: ['svg', 'png']
+			extensions: ['svg', 'png', 'jpg', 'jpeg']
 			width: undefined
 			height: undefined
 	'favicon':
@@ -73,6 +73,52 @@ assets =
 			extensions: ['png']
 			width: 256
 			height: 256
+
+
+RocketChat.Assets = new class
+	setAsset: (binaryContent, contentType, asset) ->
+		if not assets[asset]?
+			throw new Meteor.Error "Invalid_asset"
+
+		extension = mime.extension(contentType)
+		if extension not in assets[asset].constraints.extensions
+			throw new Meteor.Error "Invalid_file_type", contentType
+
+		file = new Buffer(binaryContent, 'binary')
+		if assets[asset].constraints.width? or assets[asset].constraints.height?
+			dimensions = sizeOf file
+
+			if assets[asset].constraints.width? and assets[asset].constraints.width isnt dimensions.width
+				throw new Meteor.Error "Invalid_file_width"
+
+			if assets[asset].constraints.height? and assets[asset].constraints.height isnt dimensions.height
+				throw new Meteor.Error "Invalid_file_height"
+
+		rs = RocketChatFile.bufferToStream file
+		RocketChatAssetsInstance.deleteFile asset
+		ws = RocketChatAssetsInstance.createWriteStream asset, contentType
+		ws.on 'end', Meteor.bindEnvironment ->
+			Meteor.setTimeout ->
+				RocketChat.settings.updateById "Assets_#{asset}", {
+					url: "/assets/#{asset}.#{extension}"
+					defaultUrl: assets[asset].defaultUrl
+				}
+			, 200
+
+		rs.pipe ws
+		return
+
+	unsetAsset: (asset) ->
+		if not assets[asset]?
+			throw new Meteor.Error "Invalid_asset"
+
+		RocketChatAssetsInstance.deleteFile asset
+
+		RocketChat.settings.updateById "Assets_#{asset}", {defaultUrl: assets[asset].defaultUrl}
+		return
+
+	refreshClients: ->
+		process.emit('message', {refresh: 'client'})
 
 
 RocketChat.settings.addGroup 'Assets'
@@ -175,9 +221,9 @@ Meteor.methods
 		unless hasPermission
 			throw new Meteor.Error 'manage-assets-not-allowed', "[methods] unsetAsset -> Manage assets not allowed"
 
-		process.emit('message', {refresh: 'client'})
+		RocketChat.Assets.refreshClients
 
-Meteor.methods
+
 	unsetAsset: (asset) ->
 		unless Meteor.userId()
 			throw new Meteor.Error 'invalid-user', "[methods] unsetAsset -> Invalid user"
@@ -186,15 +232,9 @@ Meteor.methods
 		unless hasPermission
 			throw new Meteor.Error 'manage-assets-not-allowed', "[methods] unsetAsset -> Manage assets not allowed"
 
-		if not assets[asset]?
-			throw new Meteor.Error "Invalid_asset"
-
-		RocketChatAssetsInstance.deleteFile asset
-
-		RocketChat.settings.updateById "Assets_#{asset}", {defaultUrl: assets[asset].defaultUrl}
+		RocketChat.Assets.unsetAsset asset
 
 
-Meteor.methods
 	setAsset: (binaryContent, contentType, asset) ->
 		unless Meteor.userId()
 			throw new Meteor.Error 'invalid-user', "[methods] setAsset -> Invalid user"
@@ -203,36 +243,7 @@ Meteor.methods
 		unless hasPermission
 			throw new Meteor.Error 'manage-assets-not-allowed', "[methods] unsetAsset -> Manage assets not allowed"
 
-		if not assets[asset]?
-			throw new Meteor.Error "Invalid_asset"
-
-		extension = mime.extension(contentType)
-		if extension not in assets[asset].constraints.extensions
-			throw new Meteor.Error "Invalid_file_type", contentType
-
-		file = new Buffer(binaryContent, 'binary')
-
-		if assets[asset].constraints.width? or assets[asset].constraints.height?
-			dimensions = sizeOf file
-
-			if assets[asset].constraints.width? and assets[asset].constraints.width isnt dimensions.width
-				throw new Meteor.Error "Invalid_file_width"
-
-			if assets[asset].constraints.height? and assets[asset].constraints.height isnt dimensions.height
-				throw new Meteor.Error "Invalid_file_height"
-
-		rs = RocketChatFile.bufferToStream file
-		RocketChatAssetsInstance.deleteFile asset
-		ws = RocketChatAssetsInstance.createWriteStream asset, contentType
-		ws.on 'end', Meteor.bindEnvironment ->
-			Meteor.setTimeout ->
-				RocketChat.settings.updateById "Assets_#{asset}", {
-					url: "/assets/#{asset}.#{extension}"
-					defaultUrl: assets[asset].defaultUrl
-				}
-			, 200
-
-		rs.pipe ws
+		RocketChat.Assets.setAsset binaryContent, contentType, asset
 		return
 
 
