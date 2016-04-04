@@ -98,4 +98,4 @@ Template.adminUserInfo.events
 		e.stopPropagation()
 		e.preventDefault()
 		RocketChat.TabBar.setTemplate 'adminUserEdit'
-		RocketChat.TabBar.setData Template.currentData()._id
+		RocketChat.TabBar.setData Meteor.users.findOne(Template.currentData()._id)
