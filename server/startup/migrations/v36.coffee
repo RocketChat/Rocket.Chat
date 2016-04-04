@@ -1,6 +1,6 @@
 url = Npm.require 'url'
 RocketChat.Migrations.add
-	version: 35
+	version: 36
 	up: ->
 		loginHeader = RocketChat.models.Settings.findOne _id: 'Layout_Login_Header'
 
