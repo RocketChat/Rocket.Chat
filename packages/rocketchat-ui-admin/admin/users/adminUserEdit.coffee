@@ -1,9 +1,9 @@
 Template.adminUserEdit.helpers
 	canEditOrAdd: ->
-		return (Template.instance().id and RocketChat.authz.hasAtLeastOnePermission('edit-other-user-info')) or (not Template.instance().id and RocketChat.authz.hasAtLeastOnePermission('add-user'))
+		return (Template.instance().user and RocketChat.authz.hasAtLeastOnePermission('edit-other-user-info')) or (not Template.instance().user and RocketChat.authz.hasAtLeastOnePermission('add-user'))
 
 	user: ->
-		return Meteor.users.findOne(Template.instance().id)
+		return Template.instance().user
 
 Template.adminUserEdit.events
 	'click .cancel': (e, t) ->
@@ -17,19 +17,19 @@ Template.adminUserEdit.events
 		t.save()
 
 Template.adminUserEdit.onCreated ->
-	@id = this.data
+	@user = this.data
 
 	@cancel = =>
-		if @id
+		if @user
 			RocketChat.TabBar.setTemplate 'adminUserInfo'
-			RocketChat.TabBar.setData Meteor.users.findOne(@id)
+			RocketChat.TabBar.setData @user
 			RocketChat.TabBar.showGroup 'adminusers-selected'
 		else
 			RocketChat.TabBar.closeFlex()
 			RocketChat.TabBar.showGroup 'adminusers'
 
 	@getUserData = =>
-		userData = { _id: @id }
+		userData = { _id: @user?._id }
 		userData.name = s.trim(this.$("#name").val())
 		userData.username = s.trim(this.$("#username").val())
 		userData.email = s.trim(this.$("#email").val())
@@ -62,10 +62,10 @@ Template.adminUserEdit.onCreated ->
 						toastr.success t('User_updated_successfully')
 					else
 						toastr.success t('User_added_successfully')
-						@id = result
+						@user = Meteor.users.findOne result
 
 					Meteor.subscribe 'fullUserData', userData.username, 1, =>
-						Session.set 'showUserInfo', @id
+						Session.set 'showUserInfo', @user._id
 						this.cancel()
 
 				if error
