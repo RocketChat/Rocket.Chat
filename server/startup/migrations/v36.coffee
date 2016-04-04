@@ -19,7 +19,7 @@ RocketChat.Migrations.add
 						result = HTTP.get requestUrl, npmRequestOptions: {encoding: 'binary'}
 						if result.statusCode is 200
 							RocketChat.Assets.setAsset(result.content, result.headers['content-type'], 'logo')
-					, 5000
+					, 30000
 			catch e
 				console.log e
 
