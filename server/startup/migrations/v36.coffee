@@ -15,9 +15,13 @@ RocketChat.Migrations.add
 
 			try
 				Meteor.startup ->
-					result = HTTP.get requestUrl, npmRequestOptions: {encoding: 'binary'}
-					if result.statusCode is 200
-						RocketChat.Assets.setAsset(result.content, result.headers['content-type'], 'logo')
+					Meteor.setTimeout ->
+						result = HTTP.get requestUrl, npmRequestOptions: {encoding: 'binary'}
+						if result.statusCode is 200
+							RocketChat.Assets.setAsset(result.content, result.headers['content-type'], 'logo')
+					, 5000
+			catch e
+				console.log e
 
 
 		RocketChat.models.Settings.remove _id: 'Layout_Login_Header'
