@@ -22,7 +22,11 @@
 	readNow: (force=false) ->
 		console.log '--------------' if @debug
 		console.log 'readMessage -> readNow init process force:', force if @debug
+
 		self = @
+
+		self.refreshUnreadMark()
+
 		if force isnt true and @canReadMessage is false
 			console.log 'readMessage -> readNow canceled by canReadMessage: false' if @debug
 			return
@@ -54,11 +58,13 @@
 			return
 
 		# Only read messages if user saw the first unread message
-		position = $('.message.first-unread').position()
-		visible = position?.top >= 0
-		if not visible and room.unreadSince.get()?
-			console.log 'readMessage -> readNow canceled, unread mark visible:', visible, 'unread since exists', room.unreadSince.get()? if @debug
-			return
+		unreadMark = $('.message.first-unread')
+		if unreadMark.length > 0
+			position = unreadMark.position()
+			visible = position?.top >= 0
+			if not visible and room.unreadSince.get()?
+				console.log 'readMessage -> readNow canceled, unread mark visible:', visible, 'unread since exists', room.unreadSince.get()? if @debug
+				return
 
 		console.log 'readMessage -> readNow rid:', rid if @debug
 		Meteor.call 'readMessages', rid, ->

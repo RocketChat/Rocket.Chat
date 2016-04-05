@@ -1,8 +1,0 @@
-{
-  "From_email_is_required" : "Från e-post krävs",
-  "Dry_run_description" : "Kommer endast att skicka ett e-postmeddelande, till samma adress som i Från. E-postadressen måste höra till en giltig användare.",
-  "Email_from" : "Från",
-  "Email_subject" : "Ämne",
-  "Query" : "Fråga",
-  "Query_description" : "Ytterligare villkor för att avgöra vilken användare att skicka e-post till. Användare som inte prenumererar tas automatiskt bort från frågan. Det måste vara ett giltigt JSON. Exempel: \"{\"createdAt\":{\"$gt\":{\"$date\": \"2015-01-01T00:00:00.000Z\"}}}\""
-}

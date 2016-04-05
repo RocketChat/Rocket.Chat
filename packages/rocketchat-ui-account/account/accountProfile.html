@@ -28,11 +28,21 @@
 					<div class="input-line">
 						<label for="email">{{_ "E-mail"}}</label>
 						<div>
+						{{#if emailVerified}}
+							<div class="right">
+								<i class="icon-ok green" title="{{_ "Email_verified" }}"></i>
+							</div>
+						{{/if}}
 						{{#if allowEmailChange}}
 							<input type="email" name="email" id="email" value="{{email}}" />
 						{{else}}
 							<input type="email" name="email" id="email" value="{{email}}" readonly="readonly" title="{{emailChangeDisabled}}" />
 						{{/if}}
+						{{#unless emailVerified}}
+							<div class="text-right">
+								<button class="button" id="resend-verification-email">{{_ "Resend_verification_email"}}</button>
+							</div>
+						{{/unless}}
 						</div>
 					</div>
 					<div class="input-line">

@@ -1,19 +1,24 @@
+/* globals LDAP, slug, getLdapUsername, getLdapUserUniqueID, syncUserData, getDataToSyncUserData */
+/* eslint new-cap: [2, {"capIsNewExceptions": ["SHA256"]}] */
+
 const logger = new Logger('LDAPHandler', {});
 
 function fallbackDefaultAccountSystem(bind, username, password) {
-	if (typeof username === 'string')
-		if (username.indexOf('@') === -1)
+	if (typeof username === 'string') {
+		if (username.indexOf('@') === -1) {
 			username = {username: username};
-		else
+		} else {
 			username = {email: username};
+		}
+	}
 
 	logger.info('Fallback to default account systen', username);
 
-	loginRequest = {
+	const loginRequest = {
 		user: username,
 		password: {
 			digest: SHA256(password),
-			algorithm: "sha-256"
+			algorithm: 'sha-256'
 		}
 	};
 
@@ -21,7 +26,7 @@ function fallbackDefaultAccountSystem(bind, username, password) {
 }
 
 
-Accounts.registerLoginHandler("ldap", function(loginRequest) {
+Accounts.registerLoginHandler('ldap', function(loginRequest) {
 	const self = this;
 
 	if (!loginRequest.ldapOptions) {
@@ -39,7 +44,7 @@ Accounts.registerLoginHandler("ldap", function(loginRequest) {
 
 	try {
 		ldap.connectSync();
-		users = ldap.searchUsersSync(loginRequest.username);
+		const users = ldap.searchUsersSync(loginRequest.username);
 
 		if (users.length !== 1) {
 			logger.info('Search returned', users.length, 'record(s) for', loginRequest.username);
@@ -100,13 +105,13 @@ Accounts.registerLoginHandler("ldap", function(loginRequest) {
 	if (user) {
 		if (user.ldap !== true) {
 			logger.info('User exists without "ldap: true"');
-			throw new Meteor.Error("LDAP-login-error", "LDAP Authentication succeded, but there's already an existing user with provided username ["+username+"] in Mongo.");
+			throw new Meteor.Error('LDAP-login-error', 'LDAP Authentication succeded, but there\'s already an existing user with provided username ['+username+'] in Mongo.');
 		}
 
 		logger.info('Logging user');
 
 		const stampedToken = Accounts._generateStampedLoginToken();
-		const hashStampedToken =
+
 		Meteor.users.update(user._id, {
 			$push: {
 				'services.resume.loginTokens': Accounts._hashStampedToken(stampedToken)
@@ -136,7 +141,7 @@ Accounts.registerLoginHandler("ldap", function(loginRequest) {
 	} else if (RocketChat.settings.get('LDAP_Default_Domain') !== '') {
 		userObject.email = username + '@' + RocketChat.settings.get('LDAP_Default_Domain');
 	} else {
-		const error = new Meteor.Error("LDAP-login-error", "LDAP Authentication succeded, there is no email to create an account. Have you tried setting your Default Domain in LDAP Settings?");
+		const error = new Meteor.Error('LDAP-login-error', 'LDAP Authentication succeded, there is no email to create an account. Have you tried setting your Default Domain in LDAP Settings?');
 		logger.error(error);
 		throw error;
 	}

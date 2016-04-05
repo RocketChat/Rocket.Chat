@@ -1,5 +1,0 @@
-{
-  "Invite_user_to_join_channel" : "ユーザーをこのチャンネルへ招待します",
-  "User_doesnt_exist" : "`@%s` という名前のユーザーは、登録されていません。",
-  "Username_is_already_in_here" : "`@%s` は、すでにここにいます。"
-}

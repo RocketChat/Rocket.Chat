@@ -74,6 +74,12 @@ configurePush = ->
 					certData: RocketChat.settings.get 'Push_apn_dev_cert'
 					gateway: 'gateway.sandbox.push.apple.com'
 
+			if not apn.keyData? or apn.keyData.trim() is '' or not apn.keyData? or apn.keyData.trim() is ''
+				apn = undefined
+
+			if not gcm.apiKey? or gcm.apiKey.trim() is '' or not gcm.projectNumber? or gcm.projectNumber.trim() is ''
+				gcm = undefined
+
 		Push.Configure
 			apn: apn
 			gcm: gcm

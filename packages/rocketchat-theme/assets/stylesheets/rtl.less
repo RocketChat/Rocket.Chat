@@ -76,9 +76,6 @@
 		.arrow {
 			transform: rotateY(180deg);
 		}
-		.flex-nav.animated-hidden {
-			transform: translateX(100%);
-		}
 		.footer {
 			.right(0px);
 		}
@@ -139,6 +136,14 @@
 				text-align: right;
 				> div {
 					text-align: right;
+				}
+			}
+			&.animated-hidden {
+				.transform(translateX(100%));
+				header,
+				footer,
+				.content {
+					.transform(translateX(100%));
 				}
 			}
 		}
@@ -322,10 +327,7 @@
 
 	.input-line {
 		&.search {
-			.octicon {
-				.right(10px);
-			}
-			.icon-spin4 {
+			.icon-spin {
 				.left(5px);
 			}
 			.icon-search,

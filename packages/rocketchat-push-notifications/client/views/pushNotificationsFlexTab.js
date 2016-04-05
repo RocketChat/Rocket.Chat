@@ -1,5 +1,7 @@
+/* globals ChatSubscription */
+
 Template.pushNotificationsFlexTab.helpers({
-	"desktopNotifications"() {
+	desktopNotifications() {
 		var sub = ChatSubscription.findOne({
 			rid: Session.get('openedRoom')
 		}, {
@@ -9,7 +11,7 @@ Template.pushNotificationsFlexTab.helpers({
 		});
 		return sub ? sub.desktopNotifications : '';
 	},
-	"mobilePushNotifications"() {
+	mobilePushNotifications() {
 		var sub = ChatSubscription.findOne({
 			rid: Session.get('openedRoom')
 		}, {
@@ -19,7 +21,7 @@ Template.pushNotificationsFlexTab.helpers({
 		});
 		return sub ? sub.mobilePushNotifications : '';
 	},
-	"emailNotifications"() {
+	emailNotifications() {
 		var sub = ChatSubscription.findOne({
 			rid: Session.get('openedRoom')
 		}, {
@@ -29,7 +31,7 @@ Template.pushNotificationsFlexTab.helpers({
 		});
 		return sub ? sub.emailNotifications : '';
 	},
-	"showEmailMentions"() {
+	showEmailMentions() {
 		var sub = ChatSubscription.findOne({
 			rid: Session.get('openedRoom')
 		}, {
@@ -39,7 +41,7 @@ Template.pushNotificationsFlexTab.helpers({
 		});
 		return sub && sub.t !== 'd';
 	},
-	"subValue"(field) {
+	subValue(field) {
 		var sub = ChatSubscription.findOne({
 			rid: Session.get('openedRoom')
 		}, {
@@ -67,8 +69,11 @@ Template.pushNotificationsFlexTab.helpers({
 			}
 		}
 	},
-	"editing"(field) {
+	editing(field) {
 		return Template.instance().editing.get() === field;
+	},
+	emailVerified() {
+		return  Meteor.user().emails && Meteor.user().emails[0] && Meteor.user().emails[0].verified;
 	}
 });
 
@@ -88,7 +93,7 @@ Template.pushNotificationsFlexTab.onCreated(function() {
 		const field = this.editing.get();
 		const value = this.$('input[name='+ field +']:checked').val();
 		if (this.validateSetting(field)) {
-			Meteor.call('saveNotificationSettings', Session.get('openedRoom'), field, value, (err, result) => {
+			Meteor.call('saveNotificationSettings', Session.get('openedRoom'), field, value, (err/*, result*/) => {
 				if (err) {
 					return toastr.error(t(err.reason || err.message));
 				}

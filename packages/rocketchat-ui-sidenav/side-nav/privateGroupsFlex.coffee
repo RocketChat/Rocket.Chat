@@ -1,7 +1,4 @@
 Template.privateGroupsFlex.helpers
-	tRoomMembers: ->
-		return t('Members')
-
 	selectedUsers: ->
 		return Template.instance().selectedUsers.get()
 
@@ -71,6 +68,14 @@ Template.privateGroupsFlex.events
 
 	'keydown input[type="text"]': (e, instance) ->
 		Template.instance().error.set([])
+
+	'keyup #pvt-group-name': (e, instance) ->
+		if e.keyCode is 13
+			instance.$('#pvt-group-members').focus()
+
+	'keydown #pvt-group-members': (e, instance) ->
+		if $(e.currentTarget).val() is '' and e.keyCode is 13
+			instance.$('.save-pvt-group').click()
 
 	'click .save-pvt-group': (e, instance) ->
 		err = SideNav.validate()
