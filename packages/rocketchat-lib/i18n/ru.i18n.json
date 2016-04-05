@@ -490,8 +490,6 @@
   "Message_AllowEditing_BlockEditInMinutesDescription" : "Введите 0, чтобы отключить блокировку.",
   "Message_AllowPinning" : "Разрешить прикреплять сообщения",
   "Message_AllowPinning_Description" : "Разрешить прикреплять сообщения к любому из каналов",
-  "Message_AllowPinningByAnyone" : "Разрешить всем закреплять сообщения.",
-  "Message_AllowPinningByAnyone_Description" : "Разрешить всем закреплять сообщения к каналу (не только администраторам).",
   "Message_AllowStarring" : "Разрешить отмечать сообщения",
   "Message_AudioRecorderEnabled" : "Запись аудио включена",
   "Message_AudioRecorderEnabledDescription" : "Необходимо подтвердить принятие  'audio/wav' файлов в настройках \"Загрузка файла\".",

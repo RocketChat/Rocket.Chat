@@ -3,7 +3,7 @@ Template.permissionsRole.helpers
 		return RocketChat.models.Roles.findOne({ _id: FlowRouter.getParam('name') }) or {}
 
 	userInRole: ->
-		return Template.instance().usersInRole
+		return Template.instance().usersInRole.get()
 
 	editing: ->
 		return FlowRouter.getParam('name')?
@@ -15,11 +15,36 @@ Template.permissionsRole.helpers
 	hasPermission: ->
 		return RocketChat.authz.hasAllPermission 'access-permissions'
 
-	canDelete: ->
+	protected: ->
+		return @protected
+
+	editable: ->
 		return @_id? and not @protected
 
 	hasUsers: ->
-		return Template.instance().usersInRole.count() > 0
+		return Template.instance().usersInRole.get() && Template.instance().usersInRole.get().count() > 0
+
+	searchRoom: ->
+		return Template.instance().searchRoom.get()
+
+	autocompleteChannelSettings: ->
+		return {
+			limit: 10
+			# inputDelay: 300
+			rules: [
+				{
+					collection: 'CachedChannelList'
+					subscription: 'channelAndPrivateAutocomplete'
+					field: 'name'
+					template: Template.roomSearch
+					noMatchTemplate: Template.roomSearchEmpty
+					matchAll: true
+					sort: 'name'
+					selector: (match) ->
+						return { name: match }
+				}
+			]
+		}
 
 Template.permissionsRole.events
 
@@ -36,7 +61,7 @@ Template.permissionsRole.events
 			closeOnConfirm: false
 			html: false
 		, =>
-			Meteor.call 'authorization:removeUserFromRole', FlowRouter.getParam('name'), @username, (error, result) ->
+			Meteor.call 'authorization:removeUserFromRole', FlowRouter.getParam('name'), @username, instance.searchRoom.get(), (error, result) ->
 				if error
 					return toastr.error t(error.reason or error.error)
 
@@ -56,6 +81,7 @@ Template.permissionsRole.events
 
 		roleData =
 			description: e.currentTarget.elements['description'].value
+			scope: e.currentTarget.elements['scope'].value
 
 		if not @_id?
 			roleData.name = e.currentTarget.elements['name'].value
@@ -82,13 +108,16 @@ Template.permissionsRole.events
 
 		e.currentTarget.elements['add'].value = t('Saving')
 
-		Meteor.call 'authorization:addUserToRole', FlowRouter.getParam('name'), e.currentTarget.elements['username'].value, (error, result) ->
+		Meteor.call 'authorization:addUserToRole', FlowRouter.getParam('name'), e.currentTarget.elements['username'].value, instance.searchRoom.get(), (error, result) ->
 			e.currentTarget.elements['add'].value = oldBtnValue
 			if error
 				return toastr.error t(error.reason || error.error)
 
 			toastr.success t('User_added')
 			e.currentTarget.reset()
+
+	'submit #form-search-room': (e) ->
+		e.preventDefault()
 
 	'click .delete-role': (e, instance) ->
 		e.preventDefault()
@@ -104,8 +133,17 @@ Template.permissionsRole.events
 
 			FlowRouter.go 'admin-permissions'
 
+	'autocompleteselect input': (event, template, doc) ->
+		template.searchRoom.set(doc._id)
+
 Template.permissionsRole.onCreated ->
+	@searchRoom = new ReactiveVar
+	@usersInRole = new ReactiveVar
+
 	@subscribe 'roles', FlowRouter.getParam('name')
 	@subscribe 'usersInRole', FlowRouter.getParam('name')
 
-	@usersInRole = RocketChat.models.Roles.findUsersInRole(FlowRouter.getParam('name'), null, { sort: { username: 1 } })
+	@autorun =>
+		if @searchRoom.get()
+			@subscribe 'roomSubscriptionsByRole', @searchRoom.get(), FlowRouter.getParam('name')
+		@usersInRole.set(RocketChat.models.Roles.findUsersInRole(FlowRouter.getParam('name'), @searchRoom.get(), { sort: { username: 1 } }))
