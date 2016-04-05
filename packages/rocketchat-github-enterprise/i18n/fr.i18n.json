@@ -1,7 +1,0 @@
-{
-  "Accounts_OAuth_GitHub_Enterprise" : "OAuth activé",
-  "API_GitHub_Enterprise_URL" : "URL du serveur",
-  "Accounts_OAuth_GitHub_Enterprise_id" : "ID client",
-  "Accounts_OAuth_GitHub_Enterprise_secret" : "Secret du client",
-  "API_GitHub_Enterprise_URL_Description" : "Exemple: http://domain.com (sans slash final)"
-}

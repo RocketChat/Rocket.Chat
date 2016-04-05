@@ -1,7 +1,0 @@
-{
-  "Accounts_OAuth_GitHub_Enterprise" : "OAuth Activat",
-  "API_GitHub_Enterprise_URL" : "URL-ul serverului",
-  "Accounts_OAuth_GitHub_Enterprise_id" : "Client ID",
-  "Accounts_OAuth_GitHub_Enterprise_secret" : "Client Secret",
-  "API_GitHub_Enterprise_URL_Description" : "Exemplu: http://domain.com (fără '/' la final)"
-}

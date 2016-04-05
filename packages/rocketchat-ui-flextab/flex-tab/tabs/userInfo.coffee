@@ -206,7 +206,7 @@ Template.userInfo.events
 		if userOwner?
 			Meteor.call 'removeRoomOwner', Session.get('openedRoom'), @user._id, (err, results) =>
 				if err
-					return toastr.error(err.reason or err.message)
+					return toastr.error(TAPi18n.__(err.error))
 
 				room = ChatRoom.findOne(Session.get('openedRoom'))
 				toastr.success TAPi18n.__ 'User__username__removed_from__room_name__owners', { username: @user.username, room_name: room.name }

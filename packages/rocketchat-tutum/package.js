@@ -15,7 +15,3 @@ Package.onUse(function(api) {
 Npm.depends({
     'redis': '2.2.5'
 });
-
-Package.onTest(function(api) {
-
-});

@@ -10,6 +10,7 @@ The Ultimate Open Source WebChat Platform
    * [DPlatform](#dplatform) 
    * [IndieHosters](#indiehosters)
    * [Cloudron.io](#cloudronio) 
+   * [Nitrous.io](#nitrousio)
    * [Heroku](#heroku)
   * [Scalingo](#scalingo)
   * [Sloppy.io](#sloppyio)
@@ -83,6 +84,14 @@ Get your Rocket.Chat instance hosted in a "as a Service" style. You register and
 Install Rocket.Chat on [Cloudron](https://cloudron.io) Smartserver:
 
 [![Install](https://cloudron.io/img/button.svg)](https://cloudron.io/button.html?app=chat.rocket.cloudronapp)
+
+## Nitrous.io
+**Free** development environment for Rocket.Chat in the cloud on [Nitrous.io](https://www.nitrous.io):
+
+<a href="https://www.nitrous.io/quickstart">
+  <img src="https://nitrous-image-icons.s3.amazonaws.com/quickstart.png" alt="Nitrous Quickstart" width=142 height=34>
+</a>
+
 ## Heroku
 Host your own Rocket.Chat server for **FREE** with [One-Click Deploy](https://heroku.com/deploy)
 
@@ -149,6 +158,7 @@ Easy one click install right from your Ubuntu Desktop (coming soon)
 # About Rocket.Chat
 
 [![Build Status](https://img.shields.io/travis/RocketChat/Rocket.Chat/master.svg)](https://travis-ci.org/RocketChat/Rocket.Chat)
+[![Codacy Badge](https://api.codacy.com/project/badge/grade/8580571ba024426d9649e9ab389bd5dd)](https://www.codacy.com/app/RocketChat/Rocket-Chat)
 [![Coverage Status](https://coveralls.io/repos/RocketChat/Rocket.Chat/badge.svg)](https://coveralls.io/r/RocketChat/Rocket.Chat)
 [![Code Climate](https://codeclimate.com/github/RocketChat/Rocket.Chat/badges/gpa.svg)](https://codeclimate.com/github/RocketChat/Rocket.Chat)
 [![MIT License](https://img.shields.io/badge/license-MIT-blue.svg?style=flat)](https://github.com/RocketChat/Rocket.Chat/raw/master/LICENSE)
@@ -197,6 +207,8 @@ It is a great solution for communities and companies wanting to privately host t
 - Avatars
 - Markdown
 - Emojis
+- Reactions
+- TeX Math Rendering - inline math typesetting
 - Media Embeds
 - Link Previews
 - Sent Message Edit and Deletion

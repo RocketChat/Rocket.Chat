@@ -6,7 +6,7 @@ Meteor.startup ->
 				groups: ['channel', 'privategroup', 'directmessage']
 				id: 'chatops-button2'
 				i18nTitle: 'rocketchat-chatops:Chatops_Title'
-				icon: 'octicon octicon-hubot'
+				icon: 'icon-hubot'
 				template: 'chatops-dynamicUI'
 				order: 4
 
@@ -15,7 +15,7 @@ Meteor.startup ->
 				groups: ['channel', 'privategroup', 'directmessage']
 				id: 'chatops-button3'
 				i18nTitle: 'rocketchat-chatops:Chatops_Title'
-				icon: 'octicon octicon-inbox'
+				icon: 'icon-inbox'
 				template: 'chatops_droneflight'
 				width: 675
 				order: 5

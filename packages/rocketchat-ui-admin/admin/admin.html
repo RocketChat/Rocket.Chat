@@ -53,6 +53,10 @@
 												{{/if}}
 											{{/if}}
 
+											{{#if $eq type 'relativeUrl'}}
+												<input class="input-monitor" type="text" name="{{_id}}" value="{{relativeUrl value}}" placeholder="{{placeholder}}" {{isDisabled}} {{isReadonly}}/>
+											{{/if}}
+
 											{{#if $eq type 'password'}}
 												<input class="input-monitor" type="password" name="{{_id}}" value="{{value}}" placeholder="{{placeholder}}" {{isDisabled}}/>
 											{{/if}}
@@ -113,9 +117,9 @@
 											{{/if}}
 
 											{{#if $eq type 'asset'}}
-												{{#if value}}
+												{{#if value.url}}
 													<div class="settings-file-preview">
-														<div class="preview" style="background-image:url({{value}}?_dc={{random}});"></div>
+														<div class="preview" style="background-image:url({{value.url}}?_dc={{random}});"></div>
 														<div class="action">
 															<button type="button" class="button red delete-asset"><i class="icon-trash"></i>{{_ 'Delete'}}</button>
 														</div>
@@ -162,6 +166,9 @@
 					<div class="submit">
 						{{#if $eq group._id 'OAuth'}}
 							<button class="button secondary add-custom-oauth"><span>{{_ "Add_custom_oauth"}}</span></button>
+						{{/if}}
+						{{#if $eq group._id 'Assets'}}
+							<button class="button refresh-clients"><span>{{_ "Apply_and_refresh_all_clients"}}</span></button>
 						{{/if}}
 					</div>
 				</div>

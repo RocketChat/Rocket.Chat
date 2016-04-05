@@ -22,7 +22,3 @@ Npm.depends({
 	'gridfs-stream': '0.5.3',
 	'gm': '1.18.1'
 });
-
-Package.onTest(function(api) {
-
-});

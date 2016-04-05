@@ -9,32 +9,32 @@
 	<meta name="rating" content="general" />
 	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
 	<meta name="msapplication-TileColor" content="#04436a">
-	<meta name="msapplication-TileImage" content="/images/logo/mstile-144x144.png?v=3">
-	<meta name="msapplication-config" content="/images/logo/browserconfig.xml?v=3">
+	<meta name="msapplication-TileImage" content="images/logo/mstile-144x144.png?v=3">
+	<meta name="msapplication-config" content="images/logo/browserconfig.xml?v=3">
 	<meta name="theme-color" content="#04436a">
-	<link rel="manifest" href="/images/logo/manifest.json?v=3">
+	<link rel="manifest" href="images/logo/manifest.json?v=3">
 	<link rel="chrome-webstore-item" href="https://chrome.google.com/webstore/detail/nocfbnnmjnndkbipkabodnheejiegccf">
-	<link rel="icon" sizes="any" type="image/svg+xml" href="/assets/favicon.svg?v=3">
-	<link rel="icon" sizes="256x256" type="image/png" href="/assets/favicon_256.png?v=3">
-	<link rel="icon" sizes="192x192" type="image/png" href="/assets/favicon_192.png?v=3">
-	<link rel="icon" sizes="128x128" type="image/png" href="/assets/favicon_128.png?v=3">
-	<link rel="icon" sizes="96x96" type="image/png" href="/assets/favicon_96.png?v=3">
-	<link rel="icon" sizes="64x64" type="image/png" href="/assets/favicon_64.png?v=3">
+	<link rel="icon" sizes="any" type="image/svg+xml" href="assets/favicon.svg?v=3">
+	<link rel="icon" sizes="256x256" type="image/png" href="assets/favicon_256.png?v=3">
+	<link rel="icon" sizes="192x192" type="image/png" href="assets/favicon_192.png?v=3">
+	<link rel="icon" sizes="128x128" type="image/png" href="assets/favicon_128.png?v=3">
+	<link rel="icon" sizes="96x96" type="image/png" href="assets/favicon_96.png?v=3">
+	<link rel="icon" sizes="64x64" type="image/png" href="assets/favicon_64.png?v=3">
 	<!--
 	<link rel="icon" sizes="48x48" type="image/png" href="/images/logo/favicon-48x48.png?v=3">
 	<link rel="icon" sizes="32x32" type="image/png" href="/images/logo/favicon-32x32.png?v=3">
 	<link rel="icon" sizes="16x16" type="image/png" href="/images/logo/favicon-16x16.png?v=3">
 	-->
-	<link rel="shortcut icon" sizes="16x16 32x32 48x48" type="image/x-icon" href="/assets/favicon.ico?v=3" />
-	<link rel="apple-touch-icon" sizes="57x57" href="/images/logo/apple-touch-icon-57x57.png?v=3">
-	<link rel="apple-touch-icon" sizes="60x60" href="/images/logo/apple-touch-icon-60x60.png?v=3">
-	<link rel="apple-touch-icon" sizes="72x72" href="/images/logo/apple-touch-icon-72x72.png?v=3">
-	<link rel="apple-touch-icon" sizes="76x76" href="/images/logo/apple-touch-icon-76x76.png?v=3">
-	<link rel="apple-touch-icon" sizes="114x114" href="/images/logo/apple-touch-icon-114x114.png?v=3">
-	<link rel="apple-touch-icon" sizes="120x120" href="/images/logo/apple-touch-icon-120x120.png?v=3">
-	<link rel="apple-touch-icon" sizes="144x144" href="/images/logo/apple-touch-icon-144x144.png?v=3">
-	<link rel="apple-touch-icon" sizes="152x152" href="/images/logo/apple-touch-icon-152x152.png?v=3">
-	<link rel="apple-touch-icon" sizes="180x180" href="/images/logo/apple-touch-icon-180x180.png?v=3">
+	<link rel="shortcut icon" sizes="16x16 32x32 48x48" type="image/x-icon" href="assets/favicon.ico?v=3" />
+	<link rel="apple-touch-icon" sizes="57x57" href="images/logo/apple-touch-icon-57x57.png?v=3">
+	<link rel="apple-touch-icon" sizes="60x60" href="images/logo/apple-touch-icon-60x60.png?v=3">
+	<link rel="apple-touch-icon" sizes="72x72" href="images/logo/apple-touch-icon-72x72.png?v=3">
+	<link rel="apple-touch-icon" sizes="76x76" href="images/logo/apple-touch-icon-76x76.png?v=3">
+	<link rel="apple-touch-icon" sizes="114x114" href="images/logo/apple-touch-icon-114x114.png?v=3">
+	<link rel="apple-touch-icon" sizes="120x120" href="images/logo/apple-touch-icon-120x120.png?v=3">
+	<link rel="apple-touch-icon" sizes="144x144" href="images/logo/apple-touch-icon-144x144.png?v=3">
+	<link rel="apple-touch-icon" sizes="152x152" href="images/logo/apple-touch-icon-152x152.png?v=3">
+	<link rel="apple-touch-icon" sizes="180x180" href="images/logo/apple-touch-icon-180x180.png?v=3">
 </head>
 
 <body>
@@ -59,10 +59,9 @@
 				{{> username}}
 			{{else}}
 				{{#if requirePasswordChange}}
-					{{> logoLayout render="resetPassword"}}
+					{{> loginLayout center="resetPassword"}}
 				{{else}}
 					{{> spotlight}}
-					{{> mobileMessageMenu}}
 					{{> videoCall overlay=true}}
 					<div id="user-card-popover"></div>
 					<div id="rocket-chat" class="menu-nav menu-closed">
@@ -86,5 +85,7 @@
 			{{/unless}}
 			<script>{{{CustomScriptLoggedIn}}}</script>
 		{{/unless}}
+	{{else}}
+		{{> pageLoading}}
 	{{/if}}
 </template>
