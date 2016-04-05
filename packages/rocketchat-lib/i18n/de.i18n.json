@@ -502,8 +502,6 @@
   "Message_AllowEditing_BlockEditInMinutesDescription" : "Geben Sie eine 0 ein, um das Bearbeiten von Nachrichten jederzeit zu erlauben.",
   "Message_AllowPinning" : "Das Fixieren von Nachrichten erlauben",
   "Message_AllowPinning_Description" : "Benutzern das Fixieren von Nachrichten in Kanälen erlauben",
-  "Message_AllowPinningByAnyone" : "Jedem Nutzer erlauben, Nachrichten zu fixieren",
-  "Message_AllowPinningByAnyone_Description" : "Allen Benutzern das Fixieren von Nachrichten in Kanälen erlauben",
   "Message_AllowStarring" : "Erlaube es, Nachrichten zu markieren",
   "Message_AudioRecorderEnabled" : "Audioaufnahme aktivieren",
   "Message_AudioRecorderEnabledDescription" : "'audio/wav'-Dateien sind erforderlich, damit der Medientyp in den \"Dateien-Upload\"-Einstellungen akzeptiert wird.",

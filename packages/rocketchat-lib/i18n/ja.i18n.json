@@ -502,8 +502,6 @@
   "Message_AllowEditing_BlockEditInMinutesDescription" : "ブロックしない場合は、 0 を入力。",
   "Message_AllowPinning" : "メッセージのピン留めを許可する",
   "Message_AllowPinning_Description" : "どのチャンネルでもメッセージのピン留めを許可します。",
-  "Message_AllowPinningByAnyone" : "誰にでもメッセージのピン留めを許可する",
-  "Message_AllowPinningByAnyone_Description" : "管理者でなくても、メッセージのピン留めを許可します。",
   "Message_AllowStarring" : "メッセージへのスターを許可する",
   "Message_AudioRecorderEnabled" : "音声録音を有効にする",
   "Message_AudioRecorderEnabledDescription" : "'audio/wav' が 'ファイルアップロード' 設定のメディア種類で許可されていなければなりません",
