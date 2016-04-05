@@ -1,14 +1,14 @@
 RocketChat.Migrations.add({
 	version: 37,
 	up: function() {
-		if (RocketChat && RocketChat.settings && RocketChat.settings.get) {
-			const allowPinning = RocketChat.settings.get('Message_AllowPinningByAnyone');
+		if (RocketChat && RocketChat.models && RocketChat.models.Permissions) {
 
-			// If public pinning was allowed, add pinning permissions to 'users', else leave it to 'owners' and 'moderators'
-			if (allowPinning) {
-				if (RocketChat.models && RocketChat.models.Permissions) {
-					RocketChat.models.Permissions.update({ _id: 'pin-message' }, { $addToSet: { roles: 'user' } });
-				}
+			// Find permission add-user (changed it to create-user)
+			var addUserPermission = RocketChat.models.Permissions.findOne('add-user');
+
+			if (addUserPermission) {
+				RocketChat.models.Permissions.upsert({ _id: 'create-user' }, { $set: { roles: addUserPermission.roles } });
+				RocketChat.models.Permissions.remove({ _id: 'add-user' });
 			}
 		}
 	}

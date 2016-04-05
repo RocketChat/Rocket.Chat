@@ -19,6 +19,11 @@ RocketChat.settings.addGroup 'Accounts', ->
 		@add 'Accounts_EmailVerification', false, { type: 'boolean', public: true, enableQuery: {_id: 'SMTP_Host', value: { $exists: 1, $ne: "" } } }
 		@add 'Accounts_ManuallyApproveNewUsers', false, { type: 'boolean' }
 		@add 'Accounts_AllowedDomainsList', '', { type: 'string', public: true }
+
+		@add 'Accounts_BlockedDomainsList', '', { type: 'string' }
+		@add 'Accounts_UseDefaultBlockedDomainsList', true, { type: 'boolean' }
+		@add 'Accounts_UseDNSDomainCheck', true, { type: 'boolean' }
+
 		@add 'Accounts_RegistrationForm', 'Public', { type: 'select', public: true, values: [ { key: 'Public', i18nLabel: 'Accounts_RegistrationForm_Public' }, { key: 'Disabled', i18nLabel: 'Accounts_RegistrationForm_Disabled' }, { key: 'Secret URL', i18nLabel: 'Accounts_RegistrationForm_Secret_URL' } ] }
 		@add 'Accounts_RegistrationForm_SecretURL', Random.id(), { type: 'string' }
 		@add 'Accounts_RegistrationForm_LinkReplacementText', 'New user registration is currently disabled', { type: 'string', public: true }
@@ -171,7 +176,6 @@ RocketChat.settings.addGroup 'Layout', ->
 		@add 'Custom_Script_Logged_In', '//Add your script', { type: 'code', multiline: true, public: true }
 
 	@section 'Login', ->
-		@add 'Layout_Login_Header', '<a class="logo" href="/"><img src="assets/logo?v=3" /></a>', { type: 'code', code: 'text/html', multiline: true, public: true }
 		@add 'Layout_Login_Terms', 'By proceeding to create your account and use Rocket.Chat, you are agreeing to our <a href="/terms-of-service">Terms of Service</a> and <a href="/privacy-policy">Privacy Policy</a>. If you do not agree, you cannot use Rocket.Chat.', { type: 'string', multiline: true, public: true }
 
 

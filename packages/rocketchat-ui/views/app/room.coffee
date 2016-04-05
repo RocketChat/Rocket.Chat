@@ -1,3 +1,6 @@
+socialSharing = (options = {}) ->
+	window.plugins.socialsharing.share(options.message, options.subject, options.file, options.link)
+
 isSubscribed = (_id) ->
 	return ChatSubscription.find({ rid: _id }).count() > 0
 
@@ -197,6 +200,9 @@ Template.room.helpers
 	selectable: ->
 		return Template.instance().selectable.get()
 
+isSocialSharingOpen = false
+touchMoved = false
+
 Template.room.events
 	"click, touchend": (e, t) ->
 		Meteor.setTimeout ->
@@ -204,26 +210,72 @@ Template.room.events
 		, 100
 
 	"touchstart .message": (e, t) ->
+		touchMoved = false
+		isSocialSharingOpen = false
 		if e.originalEvent.touches.length isnt 1
-			return
-
-		if e.target and e.target.nodeName is 'A'
 			return
 
 		if $(e.currentTarget).hasClass('system')
 			return
 
+		if e.target and e.target.nodeName is 'A' and /^https?:\/\/.+/.test(e.target.getAttribute('href'))
+			e.preventDefault()
+			e.stopPropagation()
+
 		message = this._arguments[1]
 		doLongTouch = =>
+
+			if window.plugins?.socialsharing?
+				isSocialSharingOpen = true
+
+				if e.target and e.target.nodeName is 'A' and /^https?:\/\/.+/.test(e.target.getAttribute('href'))
+					if message.attachments?
+						attachment = _.find message.attachments, (item) -> return item.title is e.target.innerText
+						if attachment?
+							socialSharing
+								file: e.target.href
+								subject: e.target.innerText
+								message: message.msg
+							return
+
+					socialSharing
+						link: e.target.href
+						subject: e.target.innerText
+						message: message.msg
+					return
+
+				if e.target and e.target.nodeName is 'IMG'
+					socialSharing
+						file: e.target.src
+						message: message.msg
+					return
+
 			mobileMessageMenu.show(message, t, e, this)
 
 		Meteor.clearTimeout t.touchtime
-		t.touchtime = Meteor.setTimeout doLongTouch, 500
+		t.touchtime = Meteor.setTimeout doLongTouch, 300
+
+	"click .message img": (e, t) ->
+		Meteor.clearTimeout t.touchtime
+		if isSocialSharingOpen is true or touchMoved is true
+			e.preventDefault()
+			e.stopPropagation()
 
 	"touchend .message": (e, t) ->
 		Meteor.clearTimeout t.touchtime
+		if isSocialSharingOpen is true or touchMoved is true
+			e.preventDefault()
+			e.stopPropagation()
+			return
+
+		if e.target and e.target.nodeName is 'A' and /^https?:\/\/.+/.test(e.target.getAttribute('href'))
+			if cordova?.InAppBrowser?
+				cordova.InAppBrowser.open(e.target.href, '_system')
+			else
+				window.open(e.target.href)
 
 	"touchmove .message": (e, t) ->
+		touchMoved = true
 		Meteor.clearTimeout t.touchtime
 
 	"touchcancel .message": (e, t) ->
