@@ -1,7 +1,51 @@
 ## NEXT
 
-- Fix #2634. Admins are warned if they have not verified their e-mail and e-mail verification is true.
-- Fix #2565 - Don't let the last owner leave the room. Warn user.
+## 0.25.0, 2016-Apr-04
+
+- Add black list email list options
+- Add more indexes to users collection
+- Add request size limit
+- Add support for 1Password in iOS mobile app >= 2.2.4
+- Add support to social share in mobile apps
+- Better visual for highlighting
+- CanAddUser update to use owner and moderator roles instead of creator for adding users to a channel or private group
+- Close #2666; Add a back button
+- Close #2685; Jump to first unread message doesn't work
+- Create migration for Layout_Login_Header
+- Display error from leaveRoom method
+- Do not redirect assets, pass to static files middleware
+- Expose Assets methods via RocketChat.Assets
+- Fix #1194 OEmbed http requests use "request" npm package instead of official node modules.
+- Fix #2565 Don't let the last owner leave the room. Warn user.
+- Fix #2634 Admins are warned if they have not verified their e-mail and e-mail verification is true.
+- Fix #2659 security issue with required password change.
+- Fix #2687 as per vetash suggestion.
+- Fix #2697 "Create" vs "Save" button when creating a direct message room
+- Fix #2698 When creating a DM room, Enter should submit the form
+- Fix #2712 Logo on bottom left hand corner is missing icons
+- Fix accidental opening of links in mobile
+- Fix default sorting on channels list
+- Fix editing users in admin
+- Fix emoji character overlaping image on RTL
+- Fix incorrect url to supply for oAuth providers
+- Fix Oauth for django oauth toolkit
+- Fix ROOT_URL_PATH_PREFIX and add tab base
+- Fix text selection for cordova
+- Fix to package file/versions: - Do not depend on specific version of ostrio:cookies to use newer versions with fixes - Update all packages with latest versions
+- Improve the unread mark calculator 
+- Misc fixes to allow running from subdirectory rather than root (/)
+- Move i18n files to inside the lib package
+- Prevent to open message menu for long press in links on mobile
+- Reject embed if URL is not http scheme
+- Removed condition that hides "User left message" in channels
+- Serve assets with extensions
+- Set _updateAt when updating setting
+- Show loading while loading initial subscriptions
+- Show URL attributes after applying Handlebars.SafeString
+- Use absoluteUrl instead of location.origin so ROOT_URL is taken into account
+- Use native action sheet for message actions in mobile
+- Use page-loading animation when waiting subs
+- Use ReadOnly globals
 
 ## 0.24.0, 2016-Mar-28
 
