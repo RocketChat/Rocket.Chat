@@ -1,0 +1,18 @@
+{
+  "Additional_Feedback" : "Дополнительная обратная связь",
+  "Appearance" : "Внешний вид",
+  "How_friendly_was_the_chat_agent" : "Насколько дружелюбен был сотрудник чата?",
+  "How_knowledgeable_was_the_chat_agent" : "Насколько информирован был сотрудник чата?",
+  "How_responsive_was_the_chat_agent" : "Насколько отзывчив был сотрудник чата?",
+  "How_satisfied_were_you_with_this_chat" : "Насколько Вы удовлетворены использованием этого чата?",
+  "Installation" : "Установка",
+  "Please_answer_survey" : "Пожалуйста, уделите минуту для того, чтобы ответить на несколько вопросов об этом чате",
+  "Please_fill_name_and_email" : "Введите имя и электронный адрес",
+  "Select_a_department" : "Выберите раздел",
+  "Skip" : "Пропустить",
+  "Start_Chat" : "Начать чат",
+  "Survey" : "Опрос",
+  "Survey_instructions" : "Оценивайте каждый вопрос по 5-балльной шкале, где 1 означает, что Вы совсем недовольны, и 5 - полностью довольны.",
+  "Thank_you_for_your_feedback" : "Спасибо за Ваш отзыв",
+  "We_are_offline_Sorry_for_the_inconvenience" : "Мы не в сети. Извините за доставленные неудобства."
+}
