@@ -38,6 +38,8 @@ Meteor.methods
 			if userData.email and not RocketChat.checkEmailAvailability userData.email
 				throw new Meteor.Error 'email-unavailable', "#{userData.email} is already in use :("
 
+			RocketChat.validateEmailDomain(userData.email);
+
 			# insert user
 			createUser = { username: userData.username, password: userData.password }
 			if userData.email
