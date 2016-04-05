@@ -281,8 +281,6 @@
   "Message_AllowEditing_BlockEditInMinutesDescription" : "Wpisz 0, aby wyłączyć blokowanie.",
   "Message_AllowPinning" : "Pozwól na przypinanie wiadomości",
   "Message_AllowPinning_Description" : "Pozwól na przypinanie wiadomości we wszystkich kanałach.",
-  "Message_AllowPinningByAnyone" : "Pozwól każdemu na przypinanie wiadomości",
-  "Message_AllowPinningByAnyone_Description" : "Pozwól wszystkim na przypinanie wiadomości, nie tylko administratorom.",
   "Message_AllowStarring" : "Pozwól oznaczać wiadomości gwiazdką",
   "Message_AudioRecorderEnabled" : "Wysyłanie nagrań audio włączone",
   "Message_AudioRecorderEnabledDescription" : "Wymagane jest akceptowanie plików 'audio/wav' w panelu ustawień 'Przesyłanie plików'",
