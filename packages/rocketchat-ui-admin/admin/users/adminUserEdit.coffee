@@ -1,6 +1,6 @@
 Template.adminUserEdit.helpers
 	canEditOrAdd: ->
-		return (Template.instance().user and RocketChat.authz.hasAtLeastOnePermission('edit-other-user-info')) or (not Template.instance().user and RocketChat.authz.hasAtLeastOnePermission('add-user'))
+		return (Template.instance().user and RocketChat.authz.hasAtLeastOnePermission('edit-other-user-info')) or (not Template.instance().user and RocketChat.authz.hasAtLeastOnePermission('create-user'))
 
 	user: ->
 		return Template.instance().user

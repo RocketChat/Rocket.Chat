@@ -15,11 +15,15 @@
 					<label>{{_ "Description"}} :</label>
 						<input type="text" name="description" value="{{description}}">
 					<br>
-
+					<label>{{_ "Scope"}} :</label>
+					<select name="scope" disabled="{{protected}}">
+						<option value="Users" selected="{{$eq scope 'Users'}}">{{_ "Global"}}</option>
+						<option value="Subscriptions" selected="{{$eq scope 'Subscriptions'}}">{{_ "Rooms"}}</option>
+					</select>
 					<div class="form-buttons">
 						<button name="save" class="button primary">{{_ "Save"}}</button>
 
-						{{#if canDelete}}
+						{{#if editable}}
 							<button name="delete" class="button red delete-role">{{_ "Delete"}}</button>
 						{{/if}}
 					</div>
@@ -28,44 +32,53 @@
 
 			{{#if editing}}
 				<h2>{{_ "Users_in_role"}}</h2>
-				<form id="form-users" class="inline">
-					<label>{{_ "Add_user"}}</label>
-					<input type="text" name="username" placeholder="{{_ "Enter_a_username"}}">
-					<button name="add" class="button primary">{{_ "Add"}}</button>
+				{{#if $eq role.scope 'Subscriptions'}}
+				<form id="form-search-room" class="inline">
+					<label>{{_ "Choose_a_room"}}</label>
+					{{!-- <input type="text" name="room" placeholder="{{_ "Enter_a_room_name"}}"> --}}
+					{{> inputAutocomplete settings=autocompleteChannelSettings name="room" class="search" placeholder=(_ "Enter_a_room_name") autocomplete="off"}}
 				</form>
-				<div class="list">
-					<table>
-						<thead>
-							<tr>
-								<th>&nbsp;</th>
-								<th width="34%">{{_ "Name"}}</th>
-								<th width="33%">{{_ "Username"}}</th>
-								<th width="33%">{{_ "E-mail"}}</th>
-								<th>&nbsp;</th>
-							</tr>
-						</thead>
-						<tbody>
-							{{#unless hasUsers}}
+				{{/if}}
+				{{#if $or ($eq role.scope 'Users') searchRoom}}
+					<form id="form-users" class="inline">
+						<label>{{_ "Add_user"}}</label>
+						<input type="text" name="username" placeholder="{{_ "Enter_a_username"}}">
+						<button name="add" class="button primary">{{_ "Add"}}</button>
+					</form>
+					<div class="list">
+						<table>
+							<thead>
 								<tr>
-									<td colspan="5" class="empty-role">{{_ "There_are_no_users_in_this_role"}}</td>
+									<th>&nbsp;</th>
+									<th width="34%">{{_ "Name"}}</th>
+									<th width="33%">{{_ "Username"}}</th>
+									<th width="33%">{{_ "E-mail"}}</th>
+									<th>&nbsp;</th>
 								</tr>
-							{{/unless}}
-							{{#each userInRole}}
-								<tr class="user-info" data-id="{{_id}}">
-									<td>
-										<div class="user-image status-{{status}}">
-											{{> avatar username=username}}
-										</div>
-									</td>
-									<td>{{name}}</td>
-									<td>{{username}}</td>
-									<td>{{emailAddress}}</td>
-									<td><a href="#remove" class="remove-user"><i class="icon-block"></i></a></td>
-								</tr>
-							{{/each}}
-						</tbody>
-					</table>
-				</div>
+							</thead>
+							<tbody>
+								{{#unless hasUsers}}
+									<tr>
+										<td colspan="5" class="empty-role">{{_ "There_are_no_users_in_this_role"}}</td>
+									</tr>
+								{{/unless}}
+								{{#each userInRole}}
+									<tr class="user-info" data-id="{{_id}}">
+										<td>
+											<div class="user-image status-{{status}}">
+												{{> avatar username=username}}
+											</div>
+										</td>
+										<td>{{name}}</td>
+										<td>{{username}}</td>
+										<td>{{emailAddress}}</td>
+										<td><a href="#remove" class="remove-user"><i class="icon-block"></i></a></td>
+									</tr>
+								{{/each}}
+							</tbody>
+						</table>
+					</div>
+				{{/if}}
 			{{/if}}
 		{{else}}
 			{{_ "Not_authorized"}}

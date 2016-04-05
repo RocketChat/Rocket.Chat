@@ -385,8 +385,6 @@
   "Message_AllowEditing_BlockEditInMinutesDescription" : "Vul 0 in om blokkeren uit te schakelen.",
   "Message_AllowPinning" : "Bericht vastzetten toestaan",
   "Message_AllowPinning_Description" : "Sta berichten vastzetten toe op elk kanaal.",
-  "Message_AllowPinningByAnyone" : "Sta iedereen toe om berichten vast te zetten",
-  "Message_AllowPinningByAnyone_Description" : "Sta iedereen toe om berichten vast te zetten op een kanaal, niet alleen beheerders.",
   "Message_AllowStarring" : "Sta markeren toe",
   "Message_AudioRecorderEnabled" : "Audio Recorder Ingeschakeld",
   "Message_AudioRecorderEnabledDescription" : "Vereist 'audio/wav' bestanden als geaccepteerd mediatype binnen de 'File Upload' instellingen.",
