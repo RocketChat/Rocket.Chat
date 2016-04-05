@@ -245,8 +245,6 @@
   "Message_AllowEditing_BlockEditInMinutesDescription" : "បញ្ចូលលេខ 0 ដើម្បីបិទការ Block",
   "Message_AllowPinning" : "អនុញ្ញតិ​ខ្ទស់សារ​",
   "Message_AllowPinning_Description" : "អនុញ្ញាតឱ្យសារត្រូវបានខ្ទាស់ទៅច្រើនប៉ុស្តិ៍។",
-  "Message_AllowPinningByAnyone" : "អនុញ្ញាតឱ្យគ្រាប់គ្នាខ្ទាស់សារ",
-  "Message_AllowPinningByAnyone_Description" : "អនុញ្ញាតិឲ្យគ្រប់គ្នាអាចខ្ទាស់សារទៅកាន់ប៉ុស្តិ៍ណាមួយ ដោយមិនចាំបាច់សិទ្ធជាអ្នកគ្រប់គ្រង។",
   "Message_AllowStarring" : "អនុញ្ញាតិការសម្គាល់ផ្កាយលើសារ",
   "Message_AudioRecorderEnabled" : "ការថតសម្លេងបានអនុញ្ញាតិ",
   "Message_AudioRecorderEnabledDescription" : "ត្រូវការឯកសារប្រភេទ 'audio/wav' ក្នុងការកំណត់ 'File Upload' ",
