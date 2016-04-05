@@ -1,6 +1,8 @@
 Template.channelSettings.helpers
 	canEdit: ->
 		return RocketChat.authz.hasAllPermission('edit-room', @rid)
+	canArchiveOrUnarchive: ->
+		return RocketChat.authz.hasAtLeastOnePermission(['archive-room', 'unarchive-room'], @rid)
 	editing: (field) ->
 		return Template.instance().editing.get() is field
 	notDirect: ->
@@ -112,11 +114,11 @@ Template.channelSettings.onCreated ->
 				if @$('input[name=archivationState]:checked').val() is 'true'
 					if ChatRoom.findOne(@data.rid)?.archived isnt true
 						Meteor.call 'archiveRoom', @data?.rid, (err, results) ->
-							return toastr.error err.reason if err
+							return toastr.error TAPi18n.__ err.error if err
 							toastr.success TAPi18n.__ 'Room_archived'
 				else
 					if ChatRoom.findOne(@data.rid)?.archived is true
 						Meteor.call 'unarchiveRoom', @data?.rid, (err, results) ->
-							return toastr.error err.reason if err
+							return toastr.error TAPi18n.__ err.error if err
 							toastr.success TAPi18n.__ 'Room_unarchived'
 		@editing.set()

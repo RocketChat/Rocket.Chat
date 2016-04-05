@@ -253,7 +253,6 @@
   "Message_AllowEditing_BlockEditInMinutes" : "(n) 분 이후로 수정할 수 없습니다",
   "Message_AllowEditing_BlockEditInMinutesDescription" : "0을 입력하면 블로킹 비활성화",
   "Message_AllowPinning" : "허용 메시지 고정",
-  "Message_AllowPinningByAnyone" : "누구나 메시지를 보관할 수 있도록 허용",
   "Message_AllowStarring" : "메시지 별표 허용",
   "Message_AudioRecorderEnabled" : "음성 녹음 활성화",
   "Message_AudioRecorderEnabledDescription" : "'audio/wav' 파일은 '파일 업로드' 설정에서 허용한 미디어 타입이어야 합니다.",

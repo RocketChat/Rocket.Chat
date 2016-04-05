@@ -57,7 +57,7 @@ Template.membersList.helpers
 	canAddUser: ->
 		roomData = Session.get('roomData' + this._id)
 		return '' unless roomData
-		return roomData.t in ['p', 'c'] and RoomModeratorsAndOwners.findOne({ rid: this._id, 'u._id': Meteor.userId(), roles: { $in: ['moderator','owner'] }})
+		return roomData.t in ['p', 'c'] and RocketChat.authz.hasAllPermission('add-user-to-room', this._id)
 
 	autocompleteSettingsAddUser: ->
 		return {
