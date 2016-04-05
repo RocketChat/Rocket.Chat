@@ -11,6 +11,9 @@ Template.accountProfile.helpers
 	email: ->
 		return Meteor.user().emails?[0]?.address
 
+	emailVerified: ->
+		return  Meteor.user().emails?[0]?.verified
+
 	allowUsernameChange: ->
 		return RocketChat.settings.get("Accounts_AllowUsernameChange") and RocketChat.settings.get("LDAP_Enable") isnt true
 
@@ -148,3 +151,20 @@ Template.accountProfile.events
 			else
 				swal.showInputError(t("You_need_to_type_in_your_password_in_order_to_do_this"));
 				return false;
+
+	'click #resend-verification-email': (e) ->
+		e.preventDefault()
+
+		e.currentTarget.innerHTML = e.currentTarget.innerHTML + ' ...'
+		e.currentTarget.disabled = true
+
+		Meteor.call 'sendConfirmationEmail', Meteor.user().emails?[0]?.address, (error, results) =>
+			if results
+				toastr.success t('Verification_email_sent')
+			else if error?.reason?
+				toastr.error error.reason
+			else
+				toastr.error t('Error_sending_confirmation_email')
+
+			e.currentTarget.innerHTML = e.currentTarget.innerHTML.replace(' ...', '')
+			e.currentTarget.disabled = false

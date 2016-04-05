@@ -37,9 +37,25 @@ class Invite
 			}
 			return
 
-		Meteor.call 'addUserToRoom',
-			rid: item.rid
-			username: user.username
-
+		try
+			Meteor.call 'addUserToRoom',
+				rid: item.rid
+				username: user.username
+		catch e
+			if e.error is 'cant-invite-for-direct-room'
+				RocketChat.Notifications.notifyUser Meteor.userId(), 'message', {
+					_id: Random.id()
+					rid: item.rid
+					ts: new Date
+					msg: TAPi18n.__('Cannot_invite_users_to_direct_rooms', null, currentUser.language)
+				}
+			else
+				RocketChat.Notifications.notifyUser Meteor.userId(), 'message', {
+					_id: Random.id()
+					rid: item.rid
+					ts: new Date
+					msg: e.error
+				}
+			return
 
 RocketChat.slashCommands.add 'invite', Invite

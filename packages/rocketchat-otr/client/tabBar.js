@@ -7,7 +7,7 @@ Meteor.startup(function() {
 				groups: ['directmessage'],
 				id: 'otr',
 				i18nTitle: 'OTR',
-				icon: 'icon-key-1',
+				icon: 'icon-key',
 				template: 'otrFlexTab',
 				order: 11
 			});

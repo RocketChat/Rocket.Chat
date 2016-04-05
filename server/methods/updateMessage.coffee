@@ -33,7 +33,7 @@ Meteor.methods
 			_id: Meteor.userId()
 			username: me.username
 
-		if urls = message.msg.match /([A-Za-z]{3,9}):\/\/([-;:&=\+\$,\w]+@{1})?([-A-Za-z0-9\.]+)+:?(\d+)?((\/[-\+=!:~%\/\.@\,\w]+)?\??([-\+=&!:;%@\/\.\,\w]+)?(?:#([^\s\)]+))?)?/g
+		if urls = message.msg.match /([A-Za-z]{3,9}):\/\/([-;:&=\+\$,\w]+@{1})?([-A-Za-z0-9\.]+)+:?(\d+)?((\/[-\+=!:~%\/\.@\,\w]*)?\??([-\+=&!:;%@\/\.\,\w]+)?(?:#([^\s\)]+))?)?/g
 			message.urls = urls.map (url) -> url: url
 
 		message = RocketChat.callbacks.run 'beforeSaveMessage', message
@@ -45,7 +45,7 @@ Meteor.methods
 			_id: tempid
 		,
 			$set: message
-			
+
 		room = RocketChat.models.Rooms.findOneById message.rid
 
 		Meteor.defer ->

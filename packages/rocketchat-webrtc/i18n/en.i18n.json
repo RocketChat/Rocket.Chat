@@ -1,7 +1,0 @@
-{
-  "WebRTC_Enable_Channel" : "Enable for Public Channels",
-  "WebRTC_Enable_Direct" : "Enable for Direct Messages",
-  "WebRTC_Enable_Private" : "Enable for Private Channels",
-  "WebRTC_Servers" : "STUN/TURN Servers",
-  "WebRTC_Servers_Description" : "A list of STUN and TURN servers separated by comma.<br/>Username, password and port are allowed in the format `username:password@stun:host:port` or `username:password@turn:host:port`."
-}

@@ -1,19 +1,21 @@
 Meteor.methods
 	archiveRoom: (rid) ->
 		if not Meteor.userId()
-			throw new Meteor.Error 'invalid-user', '[methods] archiveRoom -> Invalid user'
+			throw new Meteor.Error 'error-invalid-user', 'Invalid user', { method: 'archiveRoom' }
 
 		room = RocketChat.models.Rooms.findOneById rid
 
 		unless room
-			throw new Meteor.Error 'invalid-room', '[methods] unarchiveRoom -> Invalid room'
+			throw new Meteor.Error 'error-invalid-room', 'Invalid room', { method: 'archiveRoom' }
 
-		if room.u? and room.u._id is Meteor.userId() or RocketChat.authz.hasRole(Meteor.userId(), 'admin')
-			RocketChat.models.Rooms.archiveById rid
+		unless RocketChat.authz.hasPermission(Meteor.userId(), 'archive-room', room._id)
+			throw new Meteor.Error 'error-not-authorized', 'Not authorized', { method: 'archiveRoom' }
 
-			for username in room.usernames
-				member = RocketChat.models.Users.findOneByUsername(username, { fields: { username: 1 }})
-				if not member?
-					continue
+		RocketChat.models.Rooms.archiveById rid
 
-				RocketChat.models.Subscriptions.archiveByRoomIdAndUserId rid, member._id
+		for username in room.usernames
+			member = RocketChat.models.Users.findOneByUsername(username, { fields: { username: 1 }})
+			if not member?
+				continue
+
+			RocketChat.models.Subscriptions.archiveByRoomIdAndUserId rid, member._id

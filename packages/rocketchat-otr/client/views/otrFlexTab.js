@@ -34,7 +34,7 @@ Template.otrFlexTab.events({
 		if (otr) {
 			otr.handshake();
 			t.timeout = Meteor.setTimeout(() => {
-				swal("Timeout", "", "error");
+				swal('Timeout', '', 'error');
 				otr.establishing.set(false);
 			}, 10000);
 		}
@@ -46,12 +46,12 @@ Template.otrFlexTab.events({
 			otr.reset();
 			otr.handshake(true);
 			t.timeout = Meteor.setTimeout(() => {
-				swal("Timeout", "", "error");
+				swal('Timeout', '', 'error');
 				otr.establishing.set(false);
 			}, 10000);
 		}
 	},
-	'click button.end': function(e, t) {
+	'click button.end': function(e/*, t*/) {
 		e.preventDefault();
 		const otr = RocketChat.OTR.getInstanceByRoomId(this.rid);
 		if (otr) {
@@ -67,5 +67,5 @@ Template.otrFlexTab.onCreated(function() {
 		if (otr && otr.established.get()) {
 			Meteor.clearTimeout(this.timeout);
 		}
-	})
+	});
 });

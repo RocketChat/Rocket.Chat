@@ -32,6 +32,7 @@ Template.admin.helpers
 		group = FlowRouter.getParam('group')
 		group ?= TempSettings.findOne({ type: 'group' })?._id
 		return TempSettings.findOne { _id: group, type: 'group' }
+
 	sections: ->
 		group = FlowRouter.getParam('group')
 		group ?= TempSettings.findOne({ type: 'group' })?._id
@@ -72,6 +73,10 @@ Template.admin.helpers
 
 		return if found is enableQuery.length then {} else {disabled: 'disabled'}
 
+	isReadonly: ->
+		if @readonly is true
+			return { readonly: 'readonly' }
+
 	hasChanges: (section) ->
 		group = FlowRouter.getParam('group')
 
@@ -98,21 +103,30 @@ Template.admin.helpers
 
 	flexOpened: ->
 		return 'opened' if RocketChat.TabBar.isFlexOpen()
+
 	arrowPosition: ->
 		console.log 'room.helpers arrowPosition' if window.rocketDebug
 		return 'left' unless RocketChat.TabBar.isFlexOpen()
+
 	label: ->
 		label = @i18nLabel or @_id
 		return TAPi18n.__ label if label
+
 	description: ->
 		description = TAPi18n.__ @i18nDescription if @i18nDescription
 		if description? and description isnt @i18nDescription
 			return description
+
 	sectionIsCustomOAuth: (section) ->
 		return /^Custom OAuth:\s.+/.test section
+
 	callbackURL: (section) ->
 		id = s.strRight(section, 'Custom OAuth: ').toLowerCase()
 		return Meteor.absoluteUrl('_oauth/' + id)
+
+	relativeUrl: (url) ->
+		return Meteor.absoluteUrl(url)
+
 	selectedOption: (_id, val) ->
 		return RocketChat.settings.get(_id) is val
 
@@ -196,6 +210,10 @@ Template.admin.events
 				return toastr.error TAPi18n.__ 'Error_updating_settings' if err
 				toastr.success TAPi18n.__ 'Settings_updated'
 
+	"click .submit .refresh-clients": (e, t) ->
+		Meteor.call 'refreshClients', ->
+			toastr.success TAPi18n.__ 'Clients_will_refresh_in_a_few_seconds'
+
 	"click .submit .add-custom-oauth": (e, t) ->
 		config =
 			title: TAPi18n.__ 'Add_custom_oauth'
@@ -233,8 +251,8 @@ Template.admin.events
 	"click .delete-asset": ->
 		Meteor.call 'unsetAsset', @asset
 
-	"change input[type=file]": ->
-		e = event.originalEvent or event
+	"change input[type=file]": (ev) ->
+		e = ev.originalEvent or ev
 		files = e.target.files
 		if not files or files.length is 0
 			files = e.dataTransfer?.files or []

@@ -6,17 +6,17 @@
 	</header>
 	<div class="content">
 		<div class="wrapper">
-			<h4>{{_ "Create_new_public_channel" }}</h4>
+			<h4>{{_ "Create_new" }}</h4>
 			<div class="input-line">
 				<label for="channel-name">{{_ "Name"}}</label>
-				<input type="text" id="channel-name" class="required" dir="auto">
+				<input type="text" id="channel-name" class="required" dir="auto" placeholder="{{_ 'Enter_name_here'}}">
 			</div>
 			<div class="input-line">
-				<label for="channel-members">{{_ "Add_Members"}}</label>
-				{{> inputAutocomplete settings=autocompleteSettings id="channel-members" class="search" placeholder=tRoomMembers autocomplete="off"}}
+				<label for="channel-members">{{_ "Select_users"}}</label>
+				{{> inputAutocomplete settings=autocompleteSettings id="channel-members" class="search" placeholder=(_ "Search_by_username") autocomplete="off"}}
 				<ul class="selected-users">
 					{{#each selectedUsers}}
-						<li>{{name}} <i class="icon-cancel remove-room-member"></i></li>
+						<li>{{.}} <i class="icon-cancel remove-room-member"></i></li>
 					{{/each}}
 				</ul>
 			</div>
@@ -47,7 +47,7 @@
 				</div>
 			{{/if}}
 			<div class="input-submit">
-				<button class="button clean primary save-channel">{{_ "Save" }}</button>
+				<button class="button clean primary save-channel">{{_ "Create" }}</button>
 				<button class="button clean cancel-channel">{{_ "Cancel" }}</button>
 			</div>
 		</div>

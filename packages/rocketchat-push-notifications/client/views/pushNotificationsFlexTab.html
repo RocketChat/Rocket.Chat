@@ -2,12 +2,12 @@
 	<div class="content">
 		<div class="list-view push-notifications">
 			<div class="status">
-				<h2>{{_ "Push_notifications"}}</h2>
+				<h2>{{_ "Notifications"}}</h2>
 			</div>
 			<form>
 				<ul class="list clearfix">
 					<li>
-						<label>{{_ "Desktop_notifications"}}</label>
+						<label>{{_ "Desktop"}}</label>
 						<div>
 							{{#if editing 'desktopNotifications'}}
 								<label><input type="radio" name="desktopNotifications" value="all" checked="{{$eq desktopNotifications 'all'}}" /> {{_ "All_messages"}}</label>
@@ -16,12 +16,12 @@
 								<button type="button" class="button secondary cancel">{{_ "Cancel"}}</button>
 								<button type="button" class="button primary save">{{_ "Save"}}</button>
 							{{else}}
-								<span>{{subValue 'desktopNotifications'}} <i class="octicon octicon-pencil" data-edit="desktopNotifications"></i></span>
+								<span>{{subValue 'desktopNotifications'}} <i class="icon-pencil" data-edit="desktopNotifications"></i></span>
 							{{/if}}
 						</div>
 					</li>
 					<li>
-						<label>{{_ "Mobile_push_notifications"}}</label>
+						<label>{{_ "Mobile_push"}}</label>
 						<div>
 							{{#if editing 'mobilePushNotifications'}}
 								<label><input type="radio" name="mobilePushNotifications" value="all" checked="{{$eq mobilePushNotifications 'all'}}" /> {{_ "All_messages"}}</label>
@@ -30,12 +30,12 @@
 								<button type="button" class="button secondary cancel">{{_ "Cancel"}}</button>
 								<button type="button" class="button primary save">{{_ "Save"}}</button>
 							{{else}}
-								<span>{{subValue 'mobilePushNotifications'}} <i class="octicon octicon-pencil" data-edit="mobilePushNotifications"></i></span>
+								<span>{{subValue 'mobilePushNotifications'}} <i class="icon-pencil" data-edit="mobilePushNotifications"></i></span>
 							{{/if}}
 						</div>
 					</li>
 					<li>
-						<label>{{_ "Email_notifications"}}</label>
+						<label>{{_ "Email"}}</label>
 						<div>
 							{{#if editing 'emailNotifications'}}
 								<label><input type="radio" name="emailNotifications" value="all" checked="{{$eq emailNotifications 'all'}}" /> {{_ "All_messages"}}</label>
@@ -47,10 +47,17 @@
 								<button type="button" class="button secondary cancel">{{_ "Cancel"}}</button>
 								<button type="button" class="button primary save">{{_ "Save"}}</button>
 							{{else}}
-								<span>{{subValue 'emailNotifications'}} <i class="octicon octicon-pencil" data-edit="emailNotifications"></i></span>
+								<span>{{subValue 'emailNotifications'}} <i class="icon-pencil" data-edit="emailNotifications"></i></span>
 							{{/if}}
 						</div>
 					</li>
+					{{#unless emailVerified}}
+					<li>
+						<div class="alert alert-warning">
+							{{_ "You_wont_receive_email_notifications_because_you_have_not_verified_your_email"}}
+						</div>
+					</li>
+					{{/unless}}
 				</ul>
 			</form>
 		</div>
