@@ -271,7 +271,7 @@ RocketChat.models.Messages = new class extends RocketChat.models._Base
 
 		_.extend record, extraData
 
-		record._id = @insert record
+		record._id = @insertOrUpsert record
 		return record
 
 	createUserJoinWithRoomIdAndUser: (roomId, user, extraData) ->
