@@ -1,3 +1,3 @@
 Template.loginLayout.onRendered(function() {
-	$('.page-loading').remove();
-})
+	$('#initial-page-loading').remove();
+});

@@ -3,11 +3,16 @@
 		<blockquote>
 			<a href="https://www.spotify.com" style="color: #9e9ea6">Spotify</a><br/>
 			{{#if match meta.ogAudio "spotify:artist:\\S+"}}
-				<a href="{{url}}">{{{meta.ogTitle}}}</a><br/>
+				<a href="{{url}}">{{{meta.ogTitle}}}</a>
 			{{else}}
-				<a href="{{url}}">{{{replace meta.ogDescription ", an? (?:song|album) by (.+?) on Spotify" " - $1" regex=true}}}</a><br/>
+				<a href="{{url}}">{{{replace meta.ogDescription ", an? (?:song|album) by (.+?) on Spotify" " - $1" regex=true}}}</a>
 			{{/if}}
-			<iframe width="300" height="380" src="https://embed.spotify.com/?uri={{meta.ogAudio}}" frameborder="0"></iframe><br/>
+			{{#if collapsed}}
+				<span class="collapse-switch icon-right-dir" data-url="{{url}}" data-collapsed="{{collapsed}}"></span>
+			{{else}}
+				<span class="collapse-switch icon-down-dir" data-url="{{url}}" data-collapsed="{{collapsed}}"></span>
+				<iframe width="300" height="380" src="https://embed.spotify.com/?uri={{meta.ogAudio}}" frameborder="0"></iframe><br/>
+			{{/if}}
 		</blockquote>
 	{{/if}}
 </template>

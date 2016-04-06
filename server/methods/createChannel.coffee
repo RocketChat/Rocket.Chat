@@ -55,7 +55,7 @@ Meteor.methods
 			RocketChat.models.Subscriptions.createWithRoomAndUser room, member, extra
 
 		# set creator as channel moderator.  permission limited to channel by scoping to rid
-		RocketChat.authz.addUserRoles(Meteor.userId(), ['moderator','owner'], room._id)
+		RocketChat.authz.addUserRoles(Meteor.userId(), ['owner'], room._id)
 
 		Meteor.defer ->
 			RocketChat.callbacks.run 'afterCreateChannel', user, room

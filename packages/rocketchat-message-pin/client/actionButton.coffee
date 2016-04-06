@@ -3,6 +3,11 @@ Meteor.startup ->
 		id: 'pin-message'
 		icon: 'icon-pin'
 		i18nLabel: 'Pin_Message'
+		context: [
+			'pinned'
+			'message'
+			'message-mobile'
+		]
 		action: (event, instance) ->
 			message = @_arguments[1]
 			message.pinned = true
@@ -13,16 +18,19 @@ Meteor.startup ->
 			if message.pinned or not RocketChat.settings.get('Message_AllowPinning')
 				return false
 
-			if RocketChat.settings.get('Message_AllowPinningByAnyone') or RocketChat.authz.hasRole Meteor.userId(), 'admin'
-				return true
+			return RocketChat.authz.hasAtLeastOnePermission 'pin-message', message.rid
 
-			return ChatRoom.findOne(message.rid).u?._id is Meteor.userId()
 		order: 20
 
 	RocketChat.MessageAction.addButton
 		id: 'unpin-message'
 		icon: 'icon-pin rotate-45'
 		i18nLabel: 'Unpin_Message'
+		context: [
+			'pinned'
+			'message'
+			'message-mobile'
+		]
 		action: (event, instance) ->
 			message = @_arguments[1]
 			message.pinned = false
@@ -33,16 +41,17 @@ Meteor.startup ->
 			if not message.pinned or not RocketChat.settings.get('Message_AllowPinning')
 				return false
 
-			if RocketChat.settings.get('Message_AllowPinningByAnyone') or RocketChat.authz.hasRole Meteor.userId(), 'admin'
-				return true
+			return RocketChat.authz.hasAtLeastOnePermission 'pin-message', message.rid
 
-			return ChatRoom.findOne(message.rid).u?._id is Meteor.userId()
 		order: 21
 
 	RocketChat.MessageAction.addButton
 		id: 'jump-to-pin-message'
 		icon: 'icon-right-hand'
 		i18nLabel: 'Jump_to_message'
+		context: [
+			'pinned'
+		]
 		action: (event, instance) ->
 			message = @_arguments[1]
 			$('.message-dropdown:visible').hide()

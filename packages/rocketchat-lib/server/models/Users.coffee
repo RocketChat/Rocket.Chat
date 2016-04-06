@@ -6,6 +6,8 @@ RocketChat.models.Users = new class extends RocketChat.models._Base
 		@tryEnsureIndex { 'name': 1 }
 		@tryEnsureIndex { 'lastLogin': 1 }
 		@tryEnsureIndex { 'status': 1 }
+		@tryEnsureIndex { 'active': 1 }, { sparse: 1 }
+		@tryEnsureIndex { 'statusConnection': 1 }, { sparse: 1 }
 
 
 	# FIND ONE
@@ -67,9 +69,9 @@ RocketChat.models.Users = new class extends RocketChat.models._Base
 
 		return @find query, options
 
-	findUsersByUsernamesWithHighlights: (username, options) ->
+	findUsersByUsernamesWithHighlights: (usernames, options) ->
 		query =
-			username: username
+			username: { $in: usernames }
 			'settings.preferences.highlights':
 				$exists: true
 

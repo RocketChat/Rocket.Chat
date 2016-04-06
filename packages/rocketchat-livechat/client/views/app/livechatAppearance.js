@@ -120,14 +120,14 @@ Template.livechatAppearance.events({
 				value: instance.color.get()
 			}
 		];
-		RocketChat.settings.batchSet(settings, (err, success) => {
+		RocketChat.settings.batchSet(settings, (err/*, success*/) => {
 			if (err) {
 				return toastr.error(t('Error_updating_settings'));
 			}
 			toastr.success(t('Settings_updated'));
 		});
 	}
-})
+});
 
 Template.livechatAppearance.onRendered(function() {
 	Meteor.setTimeout(() => {

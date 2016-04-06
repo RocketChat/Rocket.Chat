@@ -11,7 +11,6 @@ Package.onUse(function(api) {
   api.use('rocketchat:ldapjs');
   api.use('rocketchat:logger');
   api.use('rocketchat:lib');
-  api.use('tap:i18n');
   api.use('yasaricli:slugify');
   api.use('ecmascript');
   api.use('sha');
