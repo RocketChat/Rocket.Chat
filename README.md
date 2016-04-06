@@ -170,6 +170,9 @@ It is a great solution for communities and companies wanting to privately host t
 
 ## On the News
 
+##### [Wired](http://www.wired.com/2016/03/open-source-devs-racing-build-better-versions-slack/)
+> Open Sourcers Race to Build Better Versions of Slack
+
 ##### [Hacker News](https://news.ycombinator.com/item?id=9624737)
 > Yes, we made it to the #1
 
