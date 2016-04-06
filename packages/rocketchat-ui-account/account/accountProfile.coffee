@@ -49,12 +49,6 @@ Template.accountProfile.onCreated ->
 				instance.clearForm()
 				return
 
-			# Accounts.changePassword oldPassword, newPassword, (error) ->
-			# 	if error
-			# 		toastr.error t('Incorrect_Password')
-			# 	else
-			# 		return callback()
-
 	@save = (currentPassword) ->
 		instance = @
 
@@ -104,6 +98,9 @@ Template.accountProfile.onRendered ->
 
 Template.accountProfile.events
 	'click .submit button': (e, instance) ->
+		unless s.trim Meteor.user()?.services?.password?.bcrypt
+			return instance.save()
+
 		swal
 			title: t("Please_re_enter_your_password"),
 			text: t("For_your_security_you_must_re_enter_your_password_to_continue"),
@@ -130,27 +127,49 @@ Template.accountProfile.events
 				toastr.success t('Logged_out_of_other_clients_successfully')
 	'click .delete-account button': (e) ->
 		e.preventDefault();
-		swal
-			title: t("Are_you_sure_you_want_to_delete_your_account"),
-			text: t("If_you_are_sure_type_in_your_password"),
-			type: "input",
-			inputType: "password",
-			showCancelButton: true,
-			closeOnConfirm: false
+		if s.trim Meteor.user()?.services?.password?.bcrypt
+			swal
+				title: t("Are_you_sure_you_want_to_delete_your_account"),
+				text: t("If_you_are_sure_type_in_your_password"),
+				type: "input",
+				inputType: "password",
+				showCancelButton: true,
+				closeOnConfirm: false
 
-		, (typedPassword) =>
-			if typedPassword
-				toastr.remove();
-				toastr.warning(t("Please_wait_while_your_account_is_being_deleted"));
-				Meteor.call 'deleteUserOwnAccount', SHA256(typedPassword), (error, results) ->
-					if error
-						toastr.remove();
-						swal.showInputError(t("Your_password_is_wrong"));
-					else
-						swal.close();
-			else
-				swal.showInputError(t("You_need_to_type_in_your_password_in_order_to_do_this"));
-				return false;
+			, (typedPassword) =>
+				if typedPassword
+					toastr.remove();
+					toastr.warning(t("Please_wait_while_your_account_is_being_deleted"));
+					Meteor.call 'deleteUserOwnAccount', SHA256(typedPassword), (error, results) ->
+						if error
+							toastr.remove();
+							swal.showInputError(t("Your_password_is_wrong"));
+						else
+							swal.close();
+				else
+					swal.showInputError(t("You_need_to_type_in_your_password_in_order_to_do_this"));
+					return false;
+		else
+			swal
+				title: t("Are_you_sure_you_want_to_delete_your_account"),
+				text: t("If_you_are_sure_type_in_your_username"),
+				type: "input",
+				showCancelButton: true,
+				closeOnConfirm: false
+
+			, (deleteConfirmation) =>
+				if deleteConfirmation is Meteor.user()?.username
+					toastr.remove();
+					toastr.warning(t("Please_wait_while_your_account_is_being_deleted"));
+					Meteor.call 'deleteUserOwnAccount', deleteConfirmation, (error, results) ->
+						if error
+							toastr.remove();
+							swal.showInputError(t("Your_password_is_wrong"));
+						else
+							swal.close();
+				else
+					swal.showInputError(t("You_need_to_type_in_your_username_in_order_to_do_this"));
+					return false;
 
 	'click #resend-verification-email': (e) ->
 		e.preventDefault()
