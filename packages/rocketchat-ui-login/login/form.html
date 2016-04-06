@@ -25,6 +25,9 @@
 					</div>
 					<div class='input-text active {{showEmailOrUsername}}'>
 						<input type="text" name='emailOrUsername' placeholder='{{emailOrUsernamePlaceholder}}' autocapitalize="off" autocorrect="off" />
+						{{#if hasOnePassword}}
+							<div class="one-passsword"></div>
+						{{/if}}
 					</div>
 					<div class='input-text active {{showEmail}}'>
 						<input type="email" name='email' placeholder='{{_ "Email"}}' />

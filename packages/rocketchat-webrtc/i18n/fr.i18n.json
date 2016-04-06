@@ -1,7 +1,0 @@
-{
-  "WebRTC_Enable_Channel" : "Activer pour les canaux publics",
-  "WebRTC_Enable_Direct" : "Activer pour les messages privés",
-  "WebRTC_Enable_Private" : "Activer pour les canaux privés",
-  "WebRTC_Servers" : "Serveurs STUN/TURN",
-  "WebRTC_Servers_Description" : "Une liste de serveurs STUN et TURN séparés par une virgule.<br/> Vous pouvez utiliser utilisateur, mot de passe et port selon le format `utilisateur:motdepasse@stun:hôte:port` ou `utilisateur:motdepasse@turn:hôte:port`."
-}

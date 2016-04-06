@@ -234,4 +234,10 @@ Template.main.onRendered ->
 	else
 		$('html').removeClass "rtl"
 
-	$('.page-loading').remove()
+	$('#initial-page-loading').remove()
+
+	window.addEventListener 'focus', ->
+		Meteor.setTimeout ->
+			if not $(':focus').is('INPUT,TEXTAREA')
+				$('.input-message').focus()
+		, 100

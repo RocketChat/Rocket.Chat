@@ -80,7 +80,7 @@ Package.onUse(function(api) {
 	api.addFiles('views/404/roomNotFound.html', 'client');
 	api.addFiles('views/404/invalidSecretURL.html', 'client');
 	api.addFiles('views/app/audioNotification.html', 'client');
-	api.addFiles('views/app/burguer.html', 'client');
+	api.addFiles('views/app/burger.html', 'client');
 	api.addFiles('views/app/home.html', 'client');
 	api.addFiles('views/app/notAuthorized.html', 'client');
 	api.addFiles('views/app/pageContainer.html', 'client');
@@ -90,7 +90,6 @@ Package.onUse(function(api) {
 	api.addFiles('views/app/roomSearch.html', 'client');
 	api.addFiles('views/app/secretURL.html', 'client');
 	api.addFiles('views/app/userSearch.html', 'client');
-	api.addFiles('views/app/spotlight/mobileMessageMenu.html', 'client');
 	api.addFiles('views/app/spotlight/spotlight.html', 'client');
 	api.addFiles('views/app/videoCall/videoButtons.html', 'client');
 	api.addFiles('views/app/videoCall/videoCall.html', 'client');
@@ -99,7 +98,7 @@ Package.onUse(function(api) {
 	api.addFiles('views/fxos.coffee', 'client');
 	api.addFiles('views/modal.coffee', 'client');
 	api.addFiles('views/404/roomNotFound.coffee', 'client');
-	api.addFiles('views/app/burguer.coffee', 'client');
+	api.addFiles('views/app/burger.coffee', 'client');
 	api.addFiles('views/app/home.coffee', 'client');
 	api.addFiles('views/app/privateHistory.coffee', 'client');
 	api.addFiles('views/app/room.coffee', 'client');

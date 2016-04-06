@@ -6,7 +6,7 @@ Meteor.methods
 		user = Meteor.user()
 
 		canEditUser = RocketChat.authz.hasPermission( user._id, 'edit-other-user-info')
-		canAddUser = RocketChat.authz.hasPermission( user._id, 'add-user')
+		canAddUser = RocketChat.authz.hasPermission( user._id, 'create-user')
 
 		if userData._id and user._id isnt userData._id and canEditUser isnt true
 			throw new Meteor.Error 'not-authorized', '[methods] updateUser -> Not authorized'
@@ -38,14 +38,23 @@ Meteor.methods
 			if userData.email and not RocketChat.checkEmailAvailability userData.email
 				throw new Meteor.Error 'email-unavailable', "#{userData.email} is already in use :("
 
+			RocketChat.validateEmailDomain(userData.email);
+
 			# insert user
 			createUser = { username: userData.username, password: userData.password }
 			if userData.email
 				createUser.email = userData.email
 
 			_id = Accounts.createUser(createUser)
+
+			updateUser =
+				$set:
+					name: userData.name
+
 			if userData.requirePasswordChange
-				Meteor.users.update { _id: _id }, { $set: { name: userData.name, requirePasswordChange: userData.requirePasswordChange } }
+				updateUser.$set.requirePasswordChange = userData.requirePasswordChange
+
+			Meteor.users.update { _id: _id }, updateUser
 
 			return _id
 		else
