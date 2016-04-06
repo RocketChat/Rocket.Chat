@@ -23,7 +23,7 @@
 				{{/if}}
 			{{/if}}
 			{{#if title}}
-				<div class="attachment-title">	
+				<div class="attachment-title">
 					{{#if title_link}}
 						<a href="{{fixCordova title_link}}" target="_blank">{{title}}</a>
 						{{#if title_link_download}}
@@ -33,11 +33,11 @@
 					{{title}}
 				{{/if}}
 				{{#if collapsed}}
-					<span class="collapse-switch icon-right-dir" data-url="{{image_url}}" data-collapsed="{{collapsed}}"></span>
+					<span class="collapse-switch icon-right-dir" data-index="{{index}}" data-collapsed="{{collapsed}}"></span>
 				{{else}}
-					<span class="collapse-switch icon-down-dir" data-url="{{image_url}}" data-collapsed="{{collapsed}}"></span>
+					<span class="collapse-switch icon-down-dir" data-index="{{index}}" data-collapsed="{{collapsed}}"></span>
 				{{/if}}
-				</div>			
+				</div>
 			{{/if}}
 			<div class="attachment-flex">
 				{{#if thumb_url}}

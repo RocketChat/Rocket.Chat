@@ -4,9 +4,9 @@
 		<div><a href="{{url}}">{{parsedUrl.host}}</a></div>
 		<span>{{title}}</span>
 		{{#if collapsed}}
-			<span class="collapse-switch icon-right-dir" data-url="{{url}}" data-collapsed="{{collapsed}}"></span>
+			<span class="collapse-switch icon-right-dir" data-index="{{index}}" data-collapsed="{{collapsed}}"></span>
 		{{else}}
-			<span class="collapse-switch icon-down-dir" data-url="{{url}}" data-collapsed="{{collapsed}}"></span><br/>
+			<span class="collapse-switch icon-down-dir" data-index="{{index}}" data-collapsed="{{collapsed}}"></span><br/>
 			<video controls class="inline-video">
 				<source src="{{url}}" type="{{contentType}}">
 				Your browser does not support the video element.
