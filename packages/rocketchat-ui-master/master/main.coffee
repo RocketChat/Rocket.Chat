@@ -2,7 +2,7 @@ Template.body.onRendered ->
 	new Clipboard('.clipboard')
 
 	$(document.body).on 'keydown', (e) ->
-		if e.keyCode is 80 and (e.ctrlKey is true or e.metaKey is true)
+		if e.keyCode is 80 and (e.ctrlKey is true or e.metaKey is true) and e.shiftKey is false
 			e.preventDefault()
 			e.stopPropagation()
 			spotlight.show()
