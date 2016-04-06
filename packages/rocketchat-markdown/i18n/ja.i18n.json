@@ -1,3 +1,4 @@
 {
-  "Markdown_Support_Schemes_For_Link": "Markdown リンクでサポートするスキーマ"
+	"Markdown_SupportSchemesForLink": "Markdown リンクでサポートするスキーマ",
+	"Markdown_SupportSchemesForLink_Description": "許可するスキーマをカンマ区切りで記述してください。"
 }
