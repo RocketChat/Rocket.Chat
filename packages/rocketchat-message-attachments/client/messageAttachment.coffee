@@ -31,7 +31,7 @@ Template.messageAttachment.helpers
 			when 'warning' then return '#FCB316'
 			when 'danger' then return '#D30230'
 			else return @color
-				
+
 	collapsed: ->
 		if this.collapsed?
 			return this.collapsed
