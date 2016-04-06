@@ -28,16 +28,19 @@ Package.onUse(function(api) {
 	api.addFiles('client/oembedImageWidget.coffee', 'client');
 
 	api.addFiles('client/oembedAudioWidget.html', 'client');
+	api.addFiles('client/oembedAudioWidget.coffee', 'client');
 
 	api.addFiles('client/oembedVideoWidget.html', 'client');
 	api.addFiles('client/oembedVideoWidget.coffee', 'client');
 
 	api.addFiles('client/oembedYoutubeWidget.html', 'client');
+	api.addFiles('client/oembedYoutubeWidget.coffee', 'client');
 
 	api.addFiles('client/oembedUrlWidget.html', 'client');
 	api.addFiles('client/oembedUrlWidget.coffee', 'client');
 
 	api.addFiles('client/oembedFrameWidget.html', 'client');
+	api.addFiles('client/oembedFrameWidget.coffee', 'client');
 
 	api.addFiles('server/server.coffee', 'server');
 	api.addFiles('server/providers.coffee', 'server');

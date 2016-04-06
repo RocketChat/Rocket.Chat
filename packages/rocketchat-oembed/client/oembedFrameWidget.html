@@ -1,25 +1,32 @@
 <template name="oembedFrameWidget">
-	{{#if parsedUrl}}
-		<blockquote>
-			{{#if meta.oembedProviderName}}
-				{{#if meta.oembedProviderUrl}}
-					<a href="{{meta.oembedProviderUrl}}" style="color: #9e9ea6">{{meta.oembedProviderName}}</a><br/>
-				{{/if}}
+{{#if parsedUrl}}
+	<blockquote>
+		{{#if meta.oembedProviderName}}
+			{{#if meta.oembedProviderUrl}}
+				<a href="{{meta.oembedProviderUrl}}" style="color: #9e9ea6">{{meta.oembedProviderName}}</a>
 			{{/if}}
-			{{#if meta.oembedAuthorName}}
-				{{#if meta.oembedAuthorUrl}}
-					<a href="{{meta.oembedAuthorUrl}}">{{meta.oembedAuthorName}}</a><br/>
-				{{/if}}
+		{{/if}}
+		{{#if meta.oembedAuthorName}}
+			{{#if meta.oembedAuthorUrl}}
+				<br class="only-after-a"/>
+				<a href="{{meta.oembedAuthorUrl}}">{{meta.oembedAuthorName}}</a>
 			{{/if}}
-			{{#if meta.oembedTitle}}
-				{{#if meta.oembedUrl}}
-					<a href="{{meta.oembedUrl}}">{{meta.oembedTitle}}</a><br/>
-				{{/if}}
+		{{/if}}
+		{{#if meta.oembedTitle}}
+			{{#if meta.oembedUrl}}
+				<br class="only-after-a"/>
+				<a href="{{meta.oembedUrl}}">{{meta.oembedTitle}}</a>
 			{{/if}}
+		{{/if}}
+		{{#if collapsed}}
+			<span class="collapse-switch icon-right-dir" data-url="{{url}}" data-collapsed="{{collapsed}}"></span><br/>
+		{{else}}
+			<span class="collapse-switch icon-down-dir" data-url="{{url}}" data-collapsed="{{collapsed}}"></span><br/>
 			{{#if meta.oembedDescription}}
 				<p>{{meta.oembedDescription}}</p>
 			{{/if}}
 			{{{meta.oembedHtml}}}
-		</blockquote>
-	{{/if}}
+		{{/if}}
+	</blockquote>
+{{/if}}
 </template>
