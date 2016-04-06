@@ -183,6 +183,7 @@
   "Client_Secret" : "Client-Secret",
   "close" : "Schließen",
   "Closed" : "Geschlossen",
+  "Collapse_Embedded_Media_By_Default": "Eingebettete Medien standardmäßig ausblenden",
   "coming_soon" : "kommt bald",
   "Commands" : "Befehle",
   "Compact_View" : "Kompaktansicht",
