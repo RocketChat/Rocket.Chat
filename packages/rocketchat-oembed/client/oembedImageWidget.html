@@ -1,9 +1,9 @@
 <template name="oembedImageWidget">
 	{{#if parsedUrl}}
 		{{#if collapsed}}
-			<span class="collapse-switch icon-right-dir" data-url="{{url}}" data-collapsed="{{collapsed}}"></span>
+			<span class="collapse-switch icon-right-dir" data-index="{{index}}" data-collapsed="{{collapsed}}"></span>
 		{{else}}
-			<span class="collapse-switch icon-down-dir" data-url="{{url}}" data-collapsed="{{collapsed}}"></span>
+			<span class="collapse-switch icon-down-dir" data-index="{{index}}" data-collapsed="{{collapsed}}"></span>
 			{{#if loadImage}}
 				<div>
 					<a href="{{url}}" class="swipebox" target="_blank">

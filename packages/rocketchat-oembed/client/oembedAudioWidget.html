@@ -2,9 +2,9 @@
 	<a href="{{url}}" target="_blank">
 		{{#if parsedUrl}}
 			{{#if collapsed}}
-				<span class="collapse-switch icon-right-dir" data-url="{{url}}" data-collapsed="{{collapsed}}"></span>
+				<span class="collapse-switch icon-right-dir" data-index="{{index}}" data-collapsed="{{collapsed}}"></span>
 			{{else}}
-				<span class="collapse-switch icon-down-dir" data-url="{{url}}" data-collapsed="{{collapsed}}"></span>
+				<span class="collapse-switch icon-down-dir" data-index="{{index}}" data-collapsed="{{collapsed}}"></span>
 				<blockquote>
 					<audio controls>
 						<source src="{{url}}" type="{{headers.contentType}}">
