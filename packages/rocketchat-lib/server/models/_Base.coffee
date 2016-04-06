@@ -16,6 +16,17 @@ RocketChat.models._Base = class
 	insert: ->
 		return @model.insert.apply @model, arguments
 
+	insertOrUpsert: (args...) ->
+		if args[0]?._id?
+			_id = args[0]._id
+			delete args[0]._id
+			args.unshift
+				_id: _id
+			@model.upsert.apply @model, args
+			return _id
+		else
+			return @model.insert.apply @model, args
+
 	update: ->
 		return @model.update.apply @model, arguments
 
