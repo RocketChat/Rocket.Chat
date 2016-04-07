@@ -19,13 +19,17 @@ class AutoLinker
 						return regUrls.test match.matchedText
 					return null
 
+			regNonAutoLink = /(```\w*[\n ]?[\s\S]*?```+?)|(`(?:[^`]+)`)/
+			if RocketChat.settings.get 'Katex_Enabled'
+				regNonAutoLink = /(```\w*[\n ]?[\s\S]*?```+?)|(`(?:[^`]+)`)|(\\\(\w*[\n ]?[\s\S]*?\\\)+?)/
+
 			# Separate text in code blocks and non code blocks
-			msgParts = message.html.split /(```\w*[\n ]?[\s\S]*?```+?)|(`(?:[^`]+)`)/
+			msgParts = message.html.split regNonAutoLink
 
 			for part, index in msgParts
 				if part?.length? > 0
 					# Verify if this part is code
-					codeMatch = part.match /(?:```(\w*)[\n ]?([\s\S]*?)```+?)|(?:`(?:[^`]+)`)/
+					codeMatch = part.match regNonAutoLink
 					if not codeMatch?
 						msgParts[index] = autolinker.link part
 
