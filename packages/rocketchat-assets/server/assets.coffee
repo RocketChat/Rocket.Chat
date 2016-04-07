@@ -17,7 +17,7 @@ assets =
 			extensions: ['svg', 'png', 'jpg', 'jpeg']
 			width: undefined
 			height: undefined
-	'favicon':
+	'favicon_ico':
 		label: 'favicon.ico'
 		defaultUrl: 'favicon.ico'
 		constraints:
@@ -76,6 +76,9 @@ assets =
 
 
 RocketChat.Assets = new class
+	mime: mime
+	assets: assets
+
 	setAsset: (binaryContent, contentType, asset) ->
 		if not assets[asset]?
 			throw new Meteor.Error "Invalid_asset"
@@ -129,7 +132,7 @@ for key, value of assets
 Meteor.startup ->
 	forEachAsset = (key, value) ->
 		RocketChat.settings.get "Assets_#{key}", (settingKey, settingValue) ->
-			if settingValue is undefined
+			if settingValue is undefined or not settingValue.url?
 				value.cache = undefined
 				return
 
