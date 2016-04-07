@@ -59,6 +59,11 @@ RocketChat.MessageAction = new class
 	resetButtons: resetButtons
 
 Meteor.startup ->
+
+	$(document).click (event) =>
+		if !$(event.target).closest('.message-cog-container').length and !$(event.target).is('.message-cog-container')
+			$('.message-dropdown:visible').hide()
+
 	RocketChat.MessageAction.addButton
 		id: 'edit-message'
 		icon: 'icon-pencil'
