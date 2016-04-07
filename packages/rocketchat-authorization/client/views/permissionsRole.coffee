@@ -83,15 +83,17 @@ Template.permissionsRole.events
 			description: e.currentTarget.elements['description'].value
 			scope: e.currentTarget.elements['scope'].value
 
-		if not @_id?
+		if @_id
+			roleData.name = @_id
+		else
 			roleData.name = e.currentTarget.elements['name'].value
 
-		Meteor.call 'authorization:saveRole', @_id, roleData, (error, result) =>
+
+		Meteor.call 'authorization:saveRole', roleData, (error, result) =>
 			e.currentTarget.elements['save'].value = oldBtnValue
 			if error
 				return toastr.error t(error.reason || error.error)
 
-			e.currentTarget.reset()
 			toastr.success t('Saved')
 
 			if not @_id?

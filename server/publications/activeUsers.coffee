@@ -7,3 +7,4 @@ Meteor.publish 'activeUsers', ->
 			username: 1
 			status: 1
 			utcOffset: 1
+			roles: 1

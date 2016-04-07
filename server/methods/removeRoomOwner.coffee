@@ -21,9 +21,10 @@ Meteor.methods
 
 		user = RocketChat.models.Users.findOneById userId
 		fromUser = RocketChat.models.Users.findOneById Meteor.userId()
-		RocketChat.models.Messages.createOwnerRemovedWithRoomIdAndUser rid, user,
+		RocketChat.models.Messages.createSubscriptionRoleRemovedWithRoomIdAndUser rid, user,
 			u:
 				_id: fromUser._id
 				username: fromUser.username
+			role: 'owner'
 
 		return true

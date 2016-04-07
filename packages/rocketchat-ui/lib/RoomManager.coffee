@@ -133,6 +133,7 @@ RocketChat.Notifications.onUser 'message', (msg) ->
 
 										# Do not load command messages into channel
 										if msg.t isnt 'command'
+											msg.roles = _.union(Meteor.users.findOne(msg.u?._id)?.roles, RoomRoles.findOne({rid: msg.rid, 'u._id': msg.u?._id})?.roles)
 											ChatMessage.upsert { _id: msg._id }, msg
 
 										Meteor.defer ->
