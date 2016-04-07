@@ -492,6 +492,8 @@
   "Manager_removed" : "管理者を削除しました",
   "Mark_as_read" : "既読にする",
   "Markdown_Headers" : "Markdown ヘッダー",
+  "Markdown_SupportSchemesForLink": "Markdown リンクでサポートするスキーマ",
+  "Markdown_SupportSchemesForLink_Description": "許可するスキーマをカンマ区切りで記述してください。",
   "Members_List" : "メンバーリスト",
   "Mentions" : "メンション",
   "Mentions_default" : "メンション (デフォルト)",
