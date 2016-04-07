@@ -22,3 +22,6 @@ RocketChat.Migrations.add
 					, 30000
 			catch e
 				console.log e
+
+
+		RocketChat.models.Settings.remove _id: 'Layout_Login_Header'
