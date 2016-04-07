@@ -10,9 +10,11 @@ Package.onUse(function(api) {
 
 	api.use([
 		'coffeescript',
-		'konecty:autolinker',
 		'rocketchat:lib'
 	]);
 
-	api.addFiles('autolinker.coffee', ['server','client']);
+	api.addFiles([
+		'autolinker.coffee',
+		'lib/Autolinker.min.js',
+	], ['client']);
 });
