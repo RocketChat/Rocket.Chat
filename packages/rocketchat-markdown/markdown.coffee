@@ -27,7 +27,7 @@ class Markdown
 
 				return token
 
-		schemes = RocketChat.settings.get('Markdown_Schemes').split(',').join('|')
+		schemes = RocketChat.settings.get('Markdown_SupportSchemesForLink').split(',').join('|')
 
 		# Support ![alt text](http://image url)
 		msg = msg.replace(new RegExp("!\\[([^\\]]+)\\]\\(((?:#{schemes}):\\/\\/[^\\)]+)\\)", 'gm'), '<a href="$2" title="$1" class="swipebox" target="_blank"><div class="inline-image" style="background-image: url($2);"></div></a>')
