@@ -1325,13 +1325,36 @@ a.github-fork {
 		position: absolute;
 		top: 59px;
 	}
+	.team-selector {
+		position: absolute;
+		left: 0;
+		top: @header-min-height;
+		width: @teams-box-width;
+		overflow-x: hidden;
+		overflow-y: auto;
+		display: block;
+		text-align: center;
+		.calc(height,
+						~"100% - " @header-min-height + @footer-min-height);
+		.team-avatar-image {
+			&:first-of-type {
+				margin-top: 30px;
+			}
+			margin-left: auto;
+			margin-right: auto;
+			margin-top: 10px;
+			width: 50px;
+			height: 50px;
+		}
+	}
 	.rooms-list {
 		direction: rtl;
 		position: absolute;
 		top: @header-min-height;
+		left: @teams-box-width;
 		.calc(height,
 		~"100% - " @header-min-height + @footer-min-height);
-		width: 100%;
+		width: @rooms-box-width - @teams-box-width;
 		overflow-x: hidden;
 		overflow-y: auto;
 		display: block;
