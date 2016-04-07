@@ -517,6 +517,8 @@
   "Manager_removed" : "Manager removed",
   "Mark_as_read" : "Mark as read",
   "Markdown_Headers" : "Markdown Headers",
+  "Markdown_SupportSchemesForLink": "Markdown Support Schemes for Link",
+  "Markdown_SupportSchemesForLink_Description": "Comma-separated list of allowed schemes",
   "Members_List" : "Members List",
   "Mentions" : "Mentions",
   "Mentions_default" : "Mentions (default)",
