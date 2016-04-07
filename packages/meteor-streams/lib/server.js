@@ -78,6 +78,10 @@ Meteor.Stream = function Stream(name) {
       methodContext.userId = userId;
       methodContext.subscriptionId = subscriptionId;
 
+      if (args[0] === 'clear') {
+        return self.permissions.clearCache(subscriptionId, args[1]);
+      }
+
       //in order to send this to the serve callback
       methodContext.allowed = self.permissions.checkPermission('write', subscriptionId, methodContext.userId, args);
       if(methodContext.allowed) {
