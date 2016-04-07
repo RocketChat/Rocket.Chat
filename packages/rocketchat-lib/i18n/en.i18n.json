@@ -314,6 +314,7 @@
   "Food_and_Drink" : "Food & Drink",
   "For_your_security_you_must_re_enter_your_password_to_continue" : "For your security, you must re-enter your password to continue",
   "Force_SSL" : "Force SSL",
+  "Force_SSL_Description" : "*Caution!* _Force SSL_ should never be used with reverse proxy. If you have a reverse proxy, you should do the redirect THERE. This option exists for deployments like Heroku, that does not allow the redirect configuration at the reverse proxy.",
   "Forgot_password" : "Forgot your password",
   "Fork_it_on_github" : "Fork it on github",
   "Frequently_Used" : "Frequently Used",
