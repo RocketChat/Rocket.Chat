@@ -1,11 +1,30 @@
 <template name="sideNav">
 	<aside class="side-nav" role="navigation">
-		<header class="header">
+        <header class="header">
 			{{> accountBox }}
 		</header>
 		{{#if currentUser}}
 			<div class="unread-rooms top-unread-rooms hidden">
 				{{_ "More_unreads"}} <i class="icon-up-big"></i>
+			</div>
+			<div class="team-selector">
+                <div class="thumb">
+                    <div class="avatar">
+                        <a href="team1"><img class="team-avatar-image avatar-image" src="/avatar/t1.jpg"/></a>
+                    </div>
+                </div>
+
+                <div class="thumb">
+                    <div class="avatar">
+                        <a href="team2"><img class="team-avatar-image avatar-image" src="/avatar/t2.jpg"/></a>
+					</div>
+                </div>
+
+                <div class="thumb">
+                    <div class="avatar">
+                        <a href="createTeam"><img class="team-avatar-image avatar-image" src="/avatar/x.jpg"/></a>
+                    </div>
+                </div>
 			</div>
 			<div class="rooms-list" aria-label="{{_ "Channels"}}" role="region">
 				<div class="wrapper">
