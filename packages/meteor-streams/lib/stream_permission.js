@@ -8,6 +8,11 @@ Meteor.Stream.Permission = function (acceptAll, cacheAll) {
     }
   };
 
+  this.clearCache = function(subscriptionId, args) {
+    var eventName = args[0];
+    delete options['read'].results[subscriptionId + '-' + eventName];
+  };
+
   this.read = function(func, cache) {
     options['read']['func'] = func;
     options['read']['doCache'] = (cache === undefined)? cacheAll: cache; 

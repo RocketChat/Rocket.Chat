@@ -11,6 +11,13 @@ Meteor.Stream = function Stream(name, callback) {
   var pendingEvents = [];
 
   self._emit = self.emit;
+  self._on = self.on;
+
+  self.on = function on() {
+    self._on.apply(this, arguments);
+    var context = { subscriptionId: subscriptionId };
+    self.emit.call(context, 'clear', arguments);
+  };
 
   collection.find({}).observe({
     "added": function(item) {
