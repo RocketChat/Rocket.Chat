@@ -33,7 +33,8 @@ RocketChat.models.Users.findOnlineAgents = function() {
  */
 RocketChat.models.Users.findOnlineUserFromList = function(userList) {
 	var query = {
-		status: 'online',
+		statusConnection: { $ne: 'offline' },
+		statusLivechat: 'available',
 		username: {
 			$in: [].concat(userList)
 		}
@@ -48,7 +49,8 @@ RocketChat.models.Users.findOnlineUserFromList = function(userList) {
  */
 RocketChat.models.Users.getNextAgent = function() {
 	var query = {
-		status: 'online',
+		statusConnection: { $ne: 'offline' },
+		statusLivechat: 'available',
 		roles: 'livechat-agent'
 	};
 
@@ -101,4 +103,22 @@ RocketChat.models.Users.findVisitorByToken = function(token) {
 	};
 
 	return this.find(query);
+};
+
+/**
+ * Change user's livechat status
+ * @param {string} token - Visitor token
+ */
+RocketChat.models.Users.setLivechatStatus = function(userId, status) {
+	let query = {
+		'_id': userId
+	};
+
+	let update = {
+		$set: {
+			'statusLivechat': status
+		}
+	};
+
+	return this.update(query, update);
 };
