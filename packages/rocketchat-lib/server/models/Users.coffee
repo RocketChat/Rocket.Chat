@@ -8,6 +8,7 @@ RocketChat.models.Users = new class extends RocketChat.models._Base
 		@tryEnsureIndex { 'status': 1 }
 		@tryEnsureIndex { 'active': 1 }, { sparse: 1 }
 		@tryEnsureIndex { 'statusConnection': 1 }, { sparse: 1 }
+		@tryEnsureIndex { 'type': 1 }
 
 
 	# FIND ONE
@@ -111,6 +112,9 @@ RocketChat.models.Users = new class extends RocketChat.models._Base
 				{username: nameOrUsername}
 			]
 
+			type:
+				$in: ['user']
+
 		return @find query, options
 
 	findByUsernameNameOrEmailAddress: (usernameNameOrEmailAddress, options) ->
@@ -120,6 +124,8 @@ RocketChat.models.Users = new class extends RocketChat.models._Base
 				{username: usernameNameOrEmailAddress}
 				{'emails.address': usernameNameOrEmailAddress}
 			]
+			type:
+				$in: ['user', 'bot']
 
 		return @find query, options
 
