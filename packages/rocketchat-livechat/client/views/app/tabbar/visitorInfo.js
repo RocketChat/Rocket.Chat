@@ -22,6 +22,14 @@ Template.visitorInfo.helpers({
 		return !Template.instance().pageVisited.ready();
 	},
 
+	loadingCustomFields() {
+		return !Template.instance().customFields.ready();
+	},
+
+	customFields() {
+		return LivechatCustomField.find({ token: Template.instance().visitorToken.get() }, { sort: { ts: -1 } });
+	},
+
 	pageVisited() {
 		return LivechatPageVisited.find({ token: Template.instance().visitorToken.get() }, { sort: { ts: -1 } });
 	},
@@ -66,5 +74,6 @@ Template.visitorInfo.onCreated(function() {
 
 		this.subscribe('livechat:visitorInfo', currentData.rid);
 		this.pageVisited = this.subscribe('livechat:visitorPageVisited', currentData.rid);
+		this.customFields = this.subscribe('livechat:visitorCustomField', currentData.rid);
 	}
 });

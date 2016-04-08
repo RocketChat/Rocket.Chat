@@ -212,6 +212,7 @@
   "Create_new" : "Create new",
   "Created_at" : "Created at",
   "Created_at_s_by_s" : "Created at <strong>%s</strong> by <strong>%s</strong>",
+  "Custom_Fields" : "Custom Fields",
   "Custom_oauth_helper" : "When setting up your OAuth Provider, you'll have to inform a Callback URL. Use <pre>%s</pre> .",
   "Custom_oauth_unique_name" : "Custom oauth unique name",
   "Custom_Script_Logged_In" : "Custom Script for logged in users",

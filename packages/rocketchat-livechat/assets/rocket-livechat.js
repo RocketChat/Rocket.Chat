@@ -76,6 +76,10 @@ window.RocketChat = (function(w) {
 		});
 	};
 
+	var setCustomField = function(key, value) {
+		callHook('setCustomField', [ key, value ]);
+	};
+
 	var currentPage = {
 		href: null,
 		title: null
@@ -162,6 +166,7 @@ window.RocketChat = (function(w) {
 
 	// exports
 	return {
-		pageVisited: pageVisited
+		pageVisited: pageVisited,
+		setCustomField: setCustomField
 	};
 }(window));
