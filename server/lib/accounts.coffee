@@ -79,6 +79,8 @@ Accounts.insertUserDoc = _.wrap Accounts.insertUserDoc, (insertUserDoc, options,
 
 	delete user.globalRoles
 
+	user.type ?= 'user'
+
 	_id = insertUserDoc.call(Accounts, options, user)
 
 	if roles.length is 0

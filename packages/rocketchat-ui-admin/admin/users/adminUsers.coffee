@@ -66,6 +66,9 @@ Template.adminUsers.onCreated ->
 		else
 			query = {}
 
+		query.type =
+			$in: ['user', 'bot']
+
 		return Meteor.users.find(query, { limit: instance.limit?.get(), sort: { username: 1, name: 1 } }).fetch()
 
 Template.adminUsers.onRendered ->
