@@ -38,7 +38,8 @@ Meteor.methods({
 		userData = {
 			username: user,
 			globalRoles: ['livechat-guest'],
-			department: department
+			department: department,
+			type: 'visitor'
 		};
 
 		userData.userAgent = this.connection.httpHeaders['user-agent'];
