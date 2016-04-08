@@ -1,5 +1,5 @@
 RocketChat.Migrations.add({
-	version: 40,
+	version: 41,
 	up: function() {
 		if (RocketChat && RocketChat.models && RocketChat.models.Users) {
 			RocketChat.models.Users.update({ bot: true }, { $set: { type: 'bot' } }, { multi: true });
