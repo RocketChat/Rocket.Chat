@@ -14,7 +14,7 @@ Meteor.startup ->
 				statusDefault: "online"
 				utcOffset: 0
 				active: true
-				bot: true
+				type: 'bot'
 
 			rs = RocketChatFile.bufferToStream new Buffer(Assets.getBinary('avatars/rocketcat.png'), 'utf8')
 			RocketChatFileAvatarInstance.deleteFile "rocket.cat.jpg"

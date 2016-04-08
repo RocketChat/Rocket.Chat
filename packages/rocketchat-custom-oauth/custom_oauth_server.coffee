@@ -36,6 +36,7 @@ class CustomOAuth
 		@serverURL = options.serverURL
 		@tokenPath = options.tokenPath
 		@identityPath = options.identityPath
+		@tokenSentVia = options.tokenSentVia
 
 		if not /^https?:\/\/.+/.test @tokenPath
 			@tokenPath = @serverURL + @tokenPath
@@ -75,13 +76,19 @@ class CustomOAuth
 			return response.data.access_token
 
 	getIdentity: (accessToken) ->
+		params = {}
+		headers =
+			'User-Agent': @userAgent # http://doc.gitlab.com/ce/api/users.html#Current-user
+
+		if @accessTokenSentVia is 'header'
+			headers['Authorization'] = 'Bearer ' + accessToken
+		else
+			params['access_token'] = accessToken
+
 		try
 			response = HTTP.get @identityPath,
-				headers:
-					'User-Agent': @userAgent # http://doc.gitlab.com/ce/api/users.html#Current-user
-					'Authorization': 'Bearer ' + accessToken
-				params:
-					access_token: accessToken
+				headers: headers
+				params: params
 
 			if response.data
 				return response.data

@@ -35,12 +35,14 @@ OAuthServicesUpdate = ->
 					data.buttonLabelColor = RocketChat.models.Settings.findOneById("#{service._id}_button_label_color")?.value
 					data.loginStyle = RocketChat.models.Settings.findOneById("#{service._id}_login_style")?.value
 					data.buttonColor = RocketChat.models.Settings.findOneById("#{service._id}_button_color")?.value
+					data.tokenSentVia = RocketChat.models.Settings.findOneById("#{service._id}_token_sent_via")?.value
 					new CustomOAuth serviceName.toLowerCase(),
 						serverURL: data.serverURL
 						tokenPath: data.tokenPath
 						identityPath: data.identityPath
 						authorizePath: data.authorizePath
 						loginStyle: data.loginStyle
+						tokenSentVia: data.tokenSentVia
 
 				if serviceName is 'Facebook'
 					data.appId = data.clientId
