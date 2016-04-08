@@ -15,7 +15,9 @@ Meteor.methods({
 		}
 
 		if (RocketChat.authz.addUserRoles(user._id, 'livechat-agent')) {
-			return RocketChat.models.Users.setOperator(user._id, true);
+			RocketChat.models.Users.setOperator(user._id, true);
+			RocketChat.models.Users.setLivechatStatus(user._id, 'available');
+			return true;
 		}
 
 		return false;

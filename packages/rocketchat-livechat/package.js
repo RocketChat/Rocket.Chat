@@ -48,6 +48,8 @@ Package.onUse(function(api) {
 	api.addFiles('client/collections/LivechatPageVisited.js', 'client');
 	api.addFiles('client/collections/LivechatTrigger.js', 'client');
 
+	api.addFiles('client/methods/changeLivechatStatus.js', 'client');
+
 	// client views
 	api.addFiles('client/views/app/livechatAppearance.html', 'client');
 	api.addFiles('client/views/app/livechatAppearance.js', 'client');
@@ -79,6 +81,7 @@ Package.onUse(function(api) {
 	// methods
 	api.addFiles('server/methods/addAgent.js', 'server');
 	api.addFiles('server/methods/addManager.js', 'server');
+	api.addFiles('server/methods/changeLivechatStatus.js', 'server');
 	api.addFiles('server/methods/pageVisited.js', 'server');
 	api.addFiles('server/methods/registerGuest.js', 'server');
 	api.addFiles('server/methods/removeAgent.js', 'server');
