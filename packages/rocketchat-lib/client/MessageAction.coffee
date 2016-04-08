@@ -136,3 +136,18 @@ Meteor.startup ->
 		validation: (message) ->
 			return RocketChat.authz.hasAtLeastOnePermission('delete-message', message.rid ) or RocketChat.settings.get('Message_AllowDeleting') and message.u?._id is Meteor.userId()
 		order: 2
+
+	RocketChat.MessageAction.addButton
+		id: 'permalink'
+		icon: 'icon-link'
+		i18nLabel: 'Permalink'
+		context: [
+			'message'
+			'message-mobile'
+		]
+		action: (event, instance) ->
+			message = @_arguments[1]
+			msg = $(event.currentTarget).closest('.message')[0]
+			$("\##{msg.id} .message-dropdown").hide()
+			console.log(msg.id)
+		order: 3

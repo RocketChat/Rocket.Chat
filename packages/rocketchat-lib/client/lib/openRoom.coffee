@@ -69,4 +69,8 @@ currentTracker = undefined
 			if sub?.open is false
 				Meteor.call 'openRoom', room._id
 
+			if FlowRouter.getQueryParam('j')
+				msg = { _id: FlowRouter.getQueryParam('j'), rid: room._id }
+				RoomHistoryManager.getSurroundingMessages(msg);
+
 			RocketChat.callbacks.run 'enter-room', sub

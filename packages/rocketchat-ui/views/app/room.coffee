@@ -491,6 +491,7 @@ Template.room.events
 		e.preventDefault()
 		template.atBottom = true
 		RoomHistoryManager.clear(template?.data?._id)
+		FlowRouter.setQueryParams({j: null})
 
 	'click .message': (e, template) ->
 		if template.selectable.get()
