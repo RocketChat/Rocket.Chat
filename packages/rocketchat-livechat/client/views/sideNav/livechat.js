@@ -55,7 +55,7 @@ Template.livechat.helpers({
 
 Template.livechat.events({
 	'click .livechat-status'() {
-		Meteor.call('livechat:changeLivechatStatus', (err, results) => {
+		Meteor.call('livechat:changeLivechatStatus', (err /*, results*/) => {
 			if (err) {
 				return toastr.error(t(err.reason));
 			}
