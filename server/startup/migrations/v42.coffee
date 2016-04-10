@@ -1,5 +1,5 @@
 RocketChat.Migrations.add
-	version: 37.1
+	version: 42
 	up: ->
 		files = RocketChat.__migration_assets_files = new Mongo.Collection('assets.files')
 		chunks = RocketChat.__migration_assets_chunks = new Mongo.Collection('assets.chunks')
