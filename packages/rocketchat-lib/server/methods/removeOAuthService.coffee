@@ -13,6 +13,7 @@ Meteor.methods
 		RocketChat.settings.removeById "Accounts_OAuth_Custom_#{name}_token_path"
 		RocketChat.settings.removeById "Accounts_OAuth_Custom_#{name}_identity_path"
 		RocketChat.settings.removeById "Accounts_OAuth_Custom_#{name}_authorize_path"
+		RocketChat.settings.removeById "Accounts_OAuth_Custom_#{name}_token_sent_via"
 		RocketChat.settings.removeById "Accounts_OAuth_Custom_#{name}_id"
 		RocketChat.settings.removeById "Accounts_OAuth_Custom_#{name}_secret"
 		RocketChat.settings.removeById "Accounts_OAuth_Custom_#{name}_button_label_text"

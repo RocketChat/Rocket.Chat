@@ -395,6 +395,7 @@
   "Message_GroupingPeriodDescription" : "Berichten worden gegroepeerd met het vorige bericht als beide van dezelfde gebruiker zijn.",
   "Message_KeepHistory" : "Bewaar berichten geschiedenis",
   "Message_MaxAllowedSize" : "Maximaal toegestane berichtgrootte",
+  "Message_MaxAll" : "Maximale grootte kanaal voor ALL boodschap",
   "Message_pinned" : "Bericht is vastgezet",
   "Message_pinning_not_allowed" : "Bericht vastzetten niet toegestaan",
   "Message_removed" : "Bericht verwijderd",

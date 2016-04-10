@@ -252,6 +252,7 @@
   "Message_editing_not_allowed" : "تعديل الرسائل غير مسموح",
   "Message_KeepHistory" : "إبقاء محفوظات الرسائل",
   "Message_MaxAllowedSize" : "الحجم الأقصى المسموح للرسالة",
+  "Message_MaxAll" : "ALL الحد الأقصى لحجم قناة الرسالة",
   "Message_pinned" : "تم تثبيث الرسالة",
   "Message_pinning_not_allowed" : "تثبيث الرسائل غير مسموح",
   "Message_removed" : "تم حذف الرسالة",

@@ -513,6 +513,7 @@
   "Message_GroupingPeriodDescription" : "Nachrichten werden einer vorherigen Nachricht zugeordnet, wenn beide Nachrichten von dem gleichen Benutzer kommen und die abgelaufene Zeit kleiner als die mitgeteilte Zeit in Sekunden war.",
   "Message_KeepHistory" : "Nachrichtenverlauf behalten",
   "Message_MaxAllowedSize" : "Maximal zulässige Größe der Nachrichten\n",
+  "Message_MaxAll" : "Maximale Kanalgröße für ALL Nachricht",
   "Message_pinned" : "Die Nachricht wurde fixiert.",
   "Message_pinning_not_allowed" : "Das Fixieren von Nachrichten verbieten",
   "Message_removed" : "Diese Nachricht wurde entfernt.",

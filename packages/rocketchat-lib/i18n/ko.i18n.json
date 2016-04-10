@@ -261,6 +261,7 @@
   "Message_editing_not_allowed" : "메시지 수정을 할 수 없습니다.",
   "Message_KeepHistory" : "메시지 기록을 유지",
   "Message_MaxAllowedSize" : "메시지 최대 허용 크기",
+  "Message_MaxAll" : "ALL 메시지의 최대 채널 크기",
   "Message_pinned" : "메시지가 고정되었습니다.",
   "Message_pinning_not_allowed" : "메시지를 고정할 수 없습니다.",
   "Message_removed" : "메시지 제거",
