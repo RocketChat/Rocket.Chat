@@ -183,6 +183,7 @@
   "Message_editing_not_allowed" : "Penyuntingan mesej tidak dibenarkan",
   "Message_KeepHistory" : "Simpan Sejarah Mesej",
   "Message_MaxAllowedSize" : "Saiz mesej maksimum yang dibenarkan",
+  "Message_MaxAll" : "saiz saluran maksimum untuk ALL mesej",
   "Message_pinned" : "Mesej dipinkan",
   "Message_removed" : "Mesej dipadam",
   "Message_ShowDeletedStatus" : "Tunjuk Status Pemadaman",
