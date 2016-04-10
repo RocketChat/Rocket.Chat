@@ -356,6 +356,7 @@
   "Message_GroupingPeriodDescription" : "Los mensajes se agruparan con mensajes previos si ambos provienen del mismo usuario y el tiempo transcurrido fue menor al tiempo informado en segundos.",
   "Message_KeepHistory" : "Mantener el historial de mensajes",
   "Message_MaxAllowedSize" : "Tamaño Máximo Permitido de Mensaje",
+  "Message_MaxAll" : "El tamaño máximo de canales para el mensaje ALL",
   "Message_pinned" : "Mensaje fijado",
   "Message_pinning_not_allowed" : "No se permite el fijar mensajes",
   "Message_removed" : "Mensaje removido",

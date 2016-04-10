@@ -549,6 +549,7 @@
   "Message_GroupingPeriodDescription" : "Messages will be grouped with previous message if both are from the same user and the elapsed time was less than the informed time in seconds.",
   "Message_KeepHistory" : "Keep Message History",
   "Message_MaxAllowedSize" : "Maximum Allowed Message Size",
+  "Message_MaxAll" : "Maximum channel size for ALL message",
   "Message_pinned" : "Message pinned",
   "Message_pinning_not_allowed" : "Message pinning not allowed",
   "Message_removed" : "Message removed",

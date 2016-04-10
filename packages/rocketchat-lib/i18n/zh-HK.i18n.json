@@ -139,6 +139,7 @@
   "Message_editing_not_allowed" : "不允许编辑消息",
   "Message_KeepHistory" : "保存消息历史记录",
   "Message_MaxAllowedSize" : "消息最大允许大小",
+  "Message_MaxAll" : "為ALL的消息最大通道尺寸",
   "Message_removed" : "消息已删除",
   "Message_ShowDeletedStatus" : "显示删除状态",
   "Message_ShowEditedStatus" : "显示编辑状态",

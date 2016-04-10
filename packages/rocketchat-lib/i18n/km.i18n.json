@@ -253,6 +253,7 @@
   "Message_editing_not_allowed" : "ការ​កែ​សម្រួល​សារ​មិន​ត្រូវ​បាន​អនុញ្ញាតិ",
   "Message_KeepHistory" : "រក្សា​​ប្រវត្តិ​សារ",
   "Message_MaxAllowedSize" : "ទំហំអតិបរមាដែលត្រូវបានអនុញ្ញាតសារ",
+  "Message_MaxAll" : "ទំហំអតិបរមាសម្រាប់ឆានែល ALL សារ",
   "Message_pinned" : "សារ\n",
   "Message_pinning_not_allowed" : "ការខ្ទាស់​សារ​មិន​អនុញ្ញាតិ​",
   "Message_removed" : "សារ​បាន​លប់",

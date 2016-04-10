@@ -447,6 +447,7 @@
   "Message_GroupingPeriodDescription" : "Mesajele vor fi grupate cu mesajul anterior dacă sunt de la același utilizator și timpul scurs a fost mai mic decât perioada pentru grupare în secunde.",
   "Message_KeepHistory" : "Păstrează istoricul mesajelor",
   "Message_MaxAllowedSize" : "Dimensiunea maximă admisă Mesaj",
+  "Message_MaxAll" : "Dimensiunea maximă a canalului pentru mesajul ALL",
   "Message_pinned" : "Mesaj fixat",
   "Message_pinning_not_allowed" : "Nu e permisă fixarea de mesaje",
   "Message_removed" : "Mesaj eliminat",
