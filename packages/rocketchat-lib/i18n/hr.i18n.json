@@ -179,6 +179,7 @@
   "Message_editing_not_allowed" : "Uređivanje poruka nije dopušteno",
   "Message_KeepHistory" : "Zadrži Povijest Poruka",
   "Message_MaxAllowedSize" : "Maksimalna dopuštena veličina poruke",
+  "Message_MaxAll" : "Maximális csatorna mérete ALL üzenet",
   "Message_pinned" : "Poruka je pribodena",
   "Message_pinning_not_allowed" : "Pribadanje poruka nije dopušteno",
   "Message_removed" : "Poruka je maknuta",

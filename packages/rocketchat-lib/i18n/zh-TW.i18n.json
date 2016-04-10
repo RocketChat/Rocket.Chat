@@ -191,6 +191,7 @@
   "Message_editing_not_allowed" : "不允許編輯訊息",
   "Message_KeepHistory" : "保存訊息歷史紀錄",
   "Message_MaxAllowedSize" : "允許訊息最大則數",
+  "Message_MaxAll" : "为ALL的消息最大通道尺寸",
   "Message_pinned" : "訊息已被釘選",
   "Message_pinning_not_allowed" : "不允許訊息釘選",
   "Message_removed" : "訊息已刪除",
