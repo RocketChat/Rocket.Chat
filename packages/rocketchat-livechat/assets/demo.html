@@ -3,15 +3,16 @@
 <head>
 	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
 	<script type="text/javascript">
-	(function(w, d, s, f, u) {
-		w[f] = w[f] || [];
-		w[f].push(u);
+	(function(w, d, s, u) {
+		w.$RocketChat = function(c) { this._.push(c) };
+		w.$RocketChat._ = [];
+		w.$RocketChat.url = u;
 		var h = d.getElementsByTagName(s)[0],
 			j = d.createElement(s);
 		j.async = true;
 		j.src = '/packages/rocketchat_livechat/assets/rocket-livechat.js';
 		h.parentNode.insertBefore(j, h);
-	})(window, document, 'script', 'initRocket', '/livechat');
+	})(window, document, 'script', '/livechat');
 	</script>
 </head>
 
