@@ -40,11 +40,13 @@ Template.visitorInfo.helpers({
 
 		if (!_.isEmpty(livechatData)) {
 			for (let _id in livechatData) {
-				let customFields = Template.instance().customFields.get();
-				if (customFields) {
-					let field = _.findWhere(customFields, { _id: _id });
-					if (field && field.visibility !== 'hidden') {
-						fields.push({ label: field.label, value: livechatData[_id] });
+				if (livechatData.hasOwnProperty(_id)) {
+					let customFields = Template.instance().customFields.get();
+					if (customFields) {
+						let field = _.findWhere(customFields, { _id: _id });
+						if (field && field.visibility !== 'hidden') {
+							fields.push({ label: field.label, value: livechatData[_id] });
+						}
 					}
 				}
 			}
