@@ -196,6 +196,7 @@ module.exports = {
 		'Email'                       : false,
 		'FlowRouter'                  : false,
 		'getNextAgent'                : false,
+		'LivechatCustomField'         : false,
 		'LivechatDepartment'          : false,
 		'LivechatDepartmentAgents'    : false,
 		'livechatManagerRoutes'       : true,
