@@ -28,6 +28,18 @@
 				<!-- <button class="button pvt-msg"><span><i class="icon-forward"></i> {{_ "Forward"}}</span></button> -->
 			</nav>
 
+			{{#if customFields}}
+				<h4>{{_ "Custom_Fields"}}</h4>
+
+				<div class="visitor-navigation">
+					<ul>
+						{{#each customFields}}
+							<li>{{label}}: {{value}}</li>
+						{{/each}}
+					</ul>
+				</div>
+			{{/if}}
+
 			<h4>{{_ "Navigation_History_20_last_pages"}}</h4>
 
 			<div class="visitor-navigation">
