@@ -273,6 +273,7 @@
   "Message_editing_not_allowed" : "Edição de mensagem não permitido",
   "Message_KeepHistory" : "Manter Histórico de Mensagens",
   "Message_MaxAllowedSize" : "Tamanho máximo de mensagem permitido ",
+  "Message_MaxAll" : "Tamanho máximo de canais para a mensagem ALL",
   "Message_pinned" : "Mensagem fixada",
   "Message_pinning_not_allowed" : "Não Permitir Fixar Mensagem",
   "Message_removed" : "Mensagem removida",

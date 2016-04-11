@@ -376,6 +376,7 @@
   "Message_GroupingPeriodDescription" : "Viestit ryhmitellään edellisen viestin kanssa jos molemmat viestit ovat samalta käyttäjältä ja viestien välinen aika on pienempi kuin määritelty aika.",
   "Message_KeepHistory" : "Säilytä viestihistoria",
   "Message_MaxAllowedSize" : "Viestin suurin sallittu koko",
+  "Message_MaxAll" : "Suurin kanavan koko ALL viesti",
   "Message_pinned" : "Viesti kiinnitetty",
   "Message_pinning_not_allowed" : "Viestien kiinnittäminen ei sallittu",
   "Message_removed" : "Viesti poistettu\n",

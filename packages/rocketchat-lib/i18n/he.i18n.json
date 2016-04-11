@@ -319,6 +319,7 @@
   "Message_editing_not_allowed" : "לא ניתן לערוך הודעה",
   "Message_KeepHistory" : "שמירה על היסטוריית הודעות",
   "Message_MaxAllowedSize" : "גודל ההודעה המרבי המותר",
+  "Message_MaxAll" : "ALL גודל ערוץ מקסימאלי עבור הודעה",
   "Message_pinned" : "ההודעה ננעצה",
   "Message_pinning_not_allowed" : "נעיצת הודעות לא מאופשרת",
   "Message_removed" : "ההודעה הוסרה",

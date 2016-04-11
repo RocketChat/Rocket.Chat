@@ -521,6 +521,7 @@
   "Message_GroupingPeriodDescription" : "指定した秒数の間で、同じユーザーが投稿した以前のメッセージをグループ化します。",
   "Message_KeepHistory" : "メッセージ履歴を保持",
   "Message_MaxAllowedSize" : "メッセージの最大文字数",
+  "Message_MaxAll" : "ALL のメッセージの最大チャネルサイズ",
   "Message_pinned" : "メッセージをピン留めしました",
   "Message_pinning_not_allowed" : "メッセージをピン留めする権限がありません",
   "Message_removed" : "メッセージを削除しました",

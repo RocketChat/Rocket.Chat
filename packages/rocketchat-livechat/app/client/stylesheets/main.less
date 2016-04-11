@@ -447,10 +447,10 @@ input:focus {
 		z-index: 9999;
 		background: white;
 		position: fixed;
-		height: 60vh;
-		width: 60vw;
-		top: 20vh;
-		left: 20vw;
+		height: 80%;
+		width: 80%;
+		top: 15%;
+		left: 10%;
 		border-radius: 6px;
 		display: flex;
 		flex-direction: column;
@@ -460,6 +460,10 @@ input:focus {
 			padding: 0 15px;
 			border-bottom: 1px solid rgba(0, 0, 0, 0.1);
 			line-height: 40px;
+
+			white-space: nowrap;
+			text-overflow: ellipsis;
+			overflow: hidden;
 		}
 
 		.content {

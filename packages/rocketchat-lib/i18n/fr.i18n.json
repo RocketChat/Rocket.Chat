@@ -520,6 +520,7 @@
   "Message_GroupingPeriodDescription" : "Les messages seront regroupés avec les messages précédents si ils sont du même utilisateur et si le temps écoulé est inférieur au temps indiqué en secondes.",
   "Message_KeepHistory" : "Conserver l'historique des messages",
   "Message_MaxAllowedSize" : "Taille maximale d'un message",
+  "Message_MaxAll" : "Taille de canal maximale pour le message ALL",
   "Message_pinned" : "Message épinglé",
   "Message_pinning_not_allowed" : "L'épinglement de message n'est pas autorisé",
   "Message_removed" : "Message supprimé",

@@ -295,6 +295,7 @@
   "Message_GroupingPeriodDescription" : "Meddelanden kommer att grupperas med föregående meddelande om båda är från samma användare och förfluten tid var mindre än den angivna tiden i sekunder.",
   "Message_KeepHistory" : "Behåll meddelandehistorik",
   "Message_MaxAllowedSize" : "Största tillåtna meddelandestorlek",
+  "Message_MaxAll" : "Maximal kanalstorlek för ALL -meddelande",
   "Message_removed" : "Meddelandet borttaget",
   "Message_ShowDeletedStatus" : "Visa borttagenstatus",
   "Message_ShowEditedStatus" : "Visa Redigeradstatus",

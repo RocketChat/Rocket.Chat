@@ -3184,13 +3184,15 @@ body:not(.is-cordova) {
 	}
 	&.uploaded-files-list {
 		a {
-			color: #008ce3;
-			padding: 10px 5px;
-			border-bottom: 1px solid #eaeaea;
-			display: block;
-			&:hover {
-				color: #006db0;
-				text-decoration: underline;
+			&.file-name {
+				color: #008ce3;
+				padding: 10px 5px;
+				border-bottom: 1px solid #eaeaea;
+				display: block;
+				&:hover {
+			  		color: #006db0;
+			  		text-decoration: underline;
+				}
 			}
 		}
 		i {
@@ -3205,6 +3207,15 @@ body:not(.is-cordova) {
 					color: red;
 					cursor: pointer;
 				}
+			}
+
+			&.file-download {
+		  		float: right;
+		  		padding-top: 11px;
+		  		&:hover {
+					color: #006db0;
+					cursor: pointer;
+		  		}
 			}
 		}
 	}
