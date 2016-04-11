@@ -151,9 +151,7 @@
 		init(w.$RocketChat.url);
 	}
 
-	w.$RocketChat._.forEach(function(c) {
-		c.call(w.$RocketChat.livechat);
-	});
+	var queue = w.$RocketChat._;
 
 	w.$RocketChat = w.$RocketChat._.push = function(c) {
 		c.call(w.$RocketChat.livechat);
@@ -164,4 +162,9 @@
 		pageVisited: pageVisited,
 		setCustomField: setCustomField
 	};
+
+	// proccess queue
+	queue.forEach(function(c) {
+		c.call(w.$RocketChat.livechat);
+	});
 }(window));
