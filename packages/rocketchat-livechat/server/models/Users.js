@@ -122,3 +122,18 @@ RocketChat.models.Users.setLivechatStatus = function(userId, status) {
 
 	return this.update(query, update);
 };
+
+RocketChat.models.Users.updateLivechatDataByToken = function(token, key, value) {
+	const query = {
+		'profile.token': token
+	};
+
+	const update = {
+		$set: {
+			[`livechatData.${key}`]: value
+		}
+	};
+
+	return this.upsert(query, update);
+};
+

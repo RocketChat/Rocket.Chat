@@ -89,6 +89,8 @@ RocketChat.models.Users = new class extends RocketChat.models._Base
 				{ username: { $nin: exceptions } }
 				{ username: usernameRegex }
 			]
+			type:
+				$in: ['user', 'bot']
 
 		return @find query, options
 
