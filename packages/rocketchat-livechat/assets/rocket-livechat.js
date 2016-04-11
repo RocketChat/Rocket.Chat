@@ -1,5 +1,5 @@
 (function(w) {
-	w.$RocketChat = w.$RocketChat || { _: [] };
+	w.RocketChat = w.RocketChat || { _: [] };
 	var config = {};
 	var widget;
 	var iframe;
@@ -147,24 +147,24 @@
 		init(w.initRocket[0]);
 	}
 
-	if (typeof w.$RocketChat.url !== 'undefined') {
-		init(w.$RocketChat.url);
+	if (typeof w.RocketChat.url !== 'undefined') {
+		init(w.RocketChat.url);
 	}
 
-	var queue = w.$RocketChat._;
+	var queue = w.RocketChat._;
 
-	w.$RocketChat = w.$RocketChat._.push = function(c) {
-		c.call(w.$RocketChat.livechat);
+	w.RocketChat = w.RocketChat._.push = function(c) {
+		c.call(w.RocketChat.livechat);
 	};
 
 	// exports
-	w.$RocketChat.livechat = {
+	w.RocketChat.livechat = {
 		pageVisited: pageVisited,
 		setCustomField: setCustomField
 	};
 
 	// proccess queue
 	queue.forEach(function(c) {
-		c.call(w.$RocketChat.livechat);
+		c.call(w.RocketChat.livechat);
 	});
 }(window));
