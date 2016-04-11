@@ -54,6 +54,10 @@ Package.onUse(function(api) {
 	// client views
 	api.addFiles('client/views/app/livechatAppearance.html', 'client');
 	api.addFiles('client/views/app/livechatAppearance.js', 'client');
+	api.addFiles('client/views/app/livechatCustomFields.html', 'client');
+	api.addFiles('client/views/app/livechatCustomFields.js', 'client');
+	api.addFiles('client/views/app/livechatCustomFieldForm.html', 'client');
+	api.addFiles('client/views/app/livechatCustomFieldForm.js', 'client');
 	api.addFiles('client/views/app/livechatDashboard.html', 'client');
 	api.addFiles('client/views/app/livechatDepartmentForm.html', 'client');
 	api.addFiles('client/views/app/livechatDepartmentForm.js', 'client');
@@ -83,12 +87,15 @@ Package.onUse(function(api) {
 	api.addFiles('server/methods/addAgent.js', 'server');
 	api.addFiles('server/methods/addManager.js', 'server');
 	api.addFiles('server/methods/changeLivechatStatus.js', 'server');
+	api.addFiles('server/methods/getCustomFields.js', 'server');
 	api.addFiles('server/methods/pageVisited.js', 'server');
 	api.addFiles('server/methods/registerGuest.js', 'server');
 	api.addFiles('server/methods/removeAgent.js', 'server');
+	api.addFiles('server/methods/removeCustomField.js', 'server');
 	api.addFiles('server/methods/removeDepartment.js', 'server');
 	api.addFiles('server/methods/removeManager.js', 'server');
 	api.addFiles('server/methods/removeTrigger.js', 'server');
+	api.addFiles('server/methods/saveCustomField.js', 'server');
 	api.addFiles('server/methods/saveDepartment.js', 'server');
 	api.addFiles('server/methods/saveSurveyFeedback.js', 'server');
 	api.addFiles('server/methods/saveTrigger.js', 'server');
@@ -110,12 +117,12 @@ Package.onUse(function(api) {
 
 	// publications
 	api.addFiles('server/publications/availableDepartments.js', 'server');
+	api.addFiles('server/publications/customFields.js', 'server');
 	api.addFiles('server/publications/departmentAgents.js', 'server');
 	api.addFiles('server/publications/livechatAgents.js', 'server');
 	api.addFiles('server/publications/livechatDepartments.js', 'server');
 	api.addFiles('server/publications/livechatManagers.js', 'server');
 	api.addFiles('server/publications/trigger.js', 'server');
-	api.addFiles('server/publications/visitorCustomField.js', 'server');
 	api.addFiles('server/publications/visitorInfo.js', 'server');
 	api.addFiles('server/publications/visitorPageVisited.js', 'server');
 	api.addFiles('server/publications/visitorRoom.js', 'server');

@@ -5,23 +5,39 @@ class LivechatCustomField extends RocketChat.models._Base {
 	constructor() {
 		super();
 		this._initModel('livechat_custom_field');
-
-		this.tryEnsureIndex({ 'token': 1 });
-		this.tryEnsureIndex({ 'ts': 1 });
 	}
 
-	saveByToken(token, key, value) {
-		return this.upsert({
-			token: token,
-			key: key
-		}, { $set: {
-			value: value,
-			ts: new Date()
-		} });
+	// FIND
+	findOneById(_id, options) {
+		const query = { _id: _id };
+
+		return this.findOne(query, options);
 	}
 
-	findByToken(token) {
-		return this.find({ token: token }, { sort : { ts: -1 }, limit: 20 });
+	createOrUpdateCustomField(_id, field, label, scope, visibility, extraData) {
+		var record = {
+			label: label,
+			scope: scope,
+			visibility: visibility
+		};
+
+		_.extend(record, extraData);
+
+		if (_id) {
+			this.update({ _id: _id }, { $set: record });
+		} else {
+			record._id = field;
+			_id = this.insert(record);
+		}
+
+		return record;
+	}
+
+	// REMOVE
+	removeById(_id) {
+		const query = { _id: _id };
+
+		return this.remove(query);
 	}
 }
 
