@@ -35,6 +35,7 @@ Package.onUse(function(api) {
 	api.addFiles('lib/getAvatarUrlFromUsername.coffee');
 	api.addFiles('lib/accountBox.coffee', 'client');
 	api.addFiles('lib/accounts.coffee', 'client');
+	api.addFiles('lib/addOrRemoveRoomRole.js', 'client');
 	api.addFiles('lib/avatar.coffee', 'client');
 	api.addFiles('lib/chatMessages.coffee', 'client');
 	api.addFiles('lib/collections.coffee', 'client');
@@ -57,7 +58,6 @@ Package.onUse(function(api) {
 	api.addFiles('lib/sideNav.coffee', 'client');
 	api.addFiles('lib/tapi18n.coffee', 'client');
 	api.addFiles('lib/textarea-autogrow.js', 'client');
-	api.addFiles('lib/updateModeratorsAndOwners.js', 'client');
 
 	// LIB CORDOVA
 	api.addFiles('lib/cordova/facebook-login.coffee', 'client');
