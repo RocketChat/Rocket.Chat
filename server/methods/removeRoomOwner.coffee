@@ -27,6 +27,6 @@ Meteor.methods
 				username: fromUser.username
 			role: 'owner'
 
-		RocketChat.Notifications.notifyAllAndBroadcast('roles-change', { type: 'removed', _id: 'owner', u: { _id: user._id, username: user.username }, scope: rid });
+		RocketChat.Notifications.notifyAll('roles-change', { type: 'removed', _id: 'owner', u: { _id: user._id, username: user.username }, scope: rid });
 
 		return true
