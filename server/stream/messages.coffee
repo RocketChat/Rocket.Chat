@@ -1,11 +1,8 @@
-@msgStream = new Meteor.Stream 'messages'
+@msgStream = new Meteor.Streamer 'messages'
 
-msgStream.permissions.write (eventName) ->
-	# console.log('stream.permissions.write', this.userId);
-	# return eventName == 'send' && this.userId;
-	return false
+msgStream.allowWrite('none')
 
-msgStream.permissions.read (eventName) ->
+msgStream.allowRead (eventName) ->
 	# console.log('stream.permissions.read', this.userId, eventName);
 	# return this.userId == eventName;
 

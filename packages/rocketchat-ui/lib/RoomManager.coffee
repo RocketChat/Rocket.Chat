@@ -48,7 +48,7 @@ RocketChat.Notifications.onUser 'message', (msg) ->
 @RoomManager = new class
 	openedRooms = {}
 	subscription = null
-	msgStream = new Meteor.Stream 'messages'
+	msgStream = new Meteor.Streamer 'messages'
 	onlineUsers = new ReactiveVar {}
 
 	Dep = new Tracker.Dependency
