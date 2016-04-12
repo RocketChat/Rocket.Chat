@@ -143,9 +143,10 @@ Template.permissionsRole.onCreated ->
 	@usersInRole = new ReactiveVar
 
 	@subscribe 'roles', FlowRouter.getParam('name')
-	@subscribe 'usersInRole', FlowRouter.getParam('name')
 
 	@autorun =>
 		if @searchRoom.get()
 			@subscribe 'roomSubscriptionsByRole', @searchRoom.get(), FlowRouter.getParam('name')
+
+		@subscribe 'usersInRole', FlowRouter.getParam('name'), @searchRoom.get()
 		@usersInRole.set(RocketChat.models.Roles.findUsersInRole(FlowRouter.getParam('name'), @searchRoom.get(), { sort: { username: 1 } }))

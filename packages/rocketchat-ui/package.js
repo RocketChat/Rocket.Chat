@@ -35,7 +35,6 @@ Package.onUse(function(api) {
 	api.addFiles('lib/getAvatarUrlFromUsername.coffee');
 	api.addFiles('lib/accountBox.coffee', 'client');
 	api.addFiles('lib/accounts.coffee', 'client');
-	api.addFiles('lib/addOrRemoveRoomRole.js', 'client');
 	api.addFiles('lib/avatar.coffee', 'client');
 	api.addFiles('lib/chatMessages.coffee', 'client');
 	api.addFiles('lib/collections.coffee', 'client');

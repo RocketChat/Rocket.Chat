@@ -2,8 +2,8 @@ Template.message.helpers
 	isBot: ->
 		return 'bot' if this.bot?
 	roleTags: ->
-		roles = _.union(Meteor.users.findOne(this.u?._id)?.roles, RoomRoles.findOne({'u._id': this.u?._id})?.roles)
-		return _.compact(_.map(roles, (role) -> return RocketChat.models.Roles.findOne({ _id: role, description: { $exists: 1 } })?.description))
+		roles = _.union(UserRoles.findOne(this.u?._id)?.roles, RoomRoles.findOne({'u._id': this.u?._id})?.roles)
+		return _.compact(_.map(roles, (role) -> return RocketChat.models.Roles.findOne({ _id: role, description: { $exists: 1 } })?.description));
 	isGroupable: ->
 		return 'false' if this.groupable is false
 	isSequential: ->

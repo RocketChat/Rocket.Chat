@@ -566,14 +566,6 @@ Template.room.onCreated ->
 	@autorun =>
 		@subscribe 'fullUserData', Session.get('showUserInfo'), 1
 
-	RoomRoles.find({ rid: @data._id }).observe
-		added: (role) =>
-			ChatMessage.update { rid: @data._id, "u._id": role?.u?._id }, { $addToSet: { roles: role._id } }, { multi: true } # Update message to re-render DOM
-		changed: (role, oldRole) =>
-			ChatMessage.update { rid: @data._id, "u._id": role?.u?._id }, { $inc: { rerender: 1 } }, { multi: true } # Update message to re-render DOM
-		removed: (role) =>
-			ChatMessage.update { rid: @data._id, "u._id": role?.u?._id }, { $pull: { roles: role._id } }, { multi: true } # Update message to re-render DOM
-
 	Meteor.call 'getRoomRoles', @data._id, (error, results) ->
 		if error
 			return toastr.error error.reason
@@ -581,6 +573,14 @@ Template.room.onCreated ->
 		for record in results
 			delete record._id
 			RoomRoles.upsert { rid: record.rid, "u._id": record.u._id }, record
+
+	RoomRoles.find({ rid: @data._id }).observe
+		added: (role) =>
+			ChatMessage.update { rid: @data._id, "u._id": role?.u?._id }, { $addToSet: { roles: role._id } }, { multi: true } # Update message to re-render DOM
+		changed: (role, oldRole) =>
+			ChatMessage.update { rid: @data._id, "u._id": role?.u?._id }, { $inc: { rerender: 1 } }, { multi: true } # Update message to re-render DOM
+		removed: (role) =>
+			ChatMessage.update { rid: @data._id, "u._id": role?.u?._id }, { $pull: { roles: role._id } }, { multi: true } # Update message to re-render DOM
 
 Template.room.onDestroyed ->
 	window.removeEventListener 'resize', this.onWindowResize

@@ -111,6 +111,7 @@ Package.onUse(function(api) {
 	api.addFiles('client/lib/roomExit.coffee', 'client');
 	api.addFiles('client/lib/settings.coffee', 'client');
 	api.addFiles('client/lib/roomTypes.coffee', 'client');
+	api.addFiles('client/lib/userRoles.js', 'client');
 
 	// CLIENT METHODS
 	api.addFiles('client/methods/sendMessage.coffee', 'client');
