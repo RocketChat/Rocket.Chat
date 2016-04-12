@@ -2342,7 +2342,6 @@ a.github-fork {
 			}
 			> .file {
 				width: 44px;
-				height: 36px;
 				font-size: 22px;
 				padding: 6px 0;
 				text-align: center;
@@ -2353,6 +2352,9 @@ a.github-fork {
 				.transition(background-color 0.1s linear, color 0.1s linear);
 
 				i.file {
+					top: 50%;
+					transform: translateY(-50%) translateX(-50%);
+					position: absolute;
 					font-size: 18px;
 					vertical-align: text-bottom;
 				}
