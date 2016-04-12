@@ -34,3 +34,9 @@ Template.oembedUrlWidget.helpers
 
 	show: ->
 		return getDescription(this)? or getTitle(this)?
+
+	collapsed: ->
+		if this.collapsed?
+			return this.collapsed
+		else
+			return Meteor.user()?.settings?.preferences?.collapseMediaByDefault is true

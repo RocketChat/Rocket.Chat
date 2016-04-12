@@ -2818,8 +2818,8 @@ a.github-fork {
 		}
 
 		// .message-dropdown {
-		// 	top: 100%;
-		// 	left: 0;
+		//	top: 100%;
+		//	left: 0;
 		// }
 
 		&:hover {
@@ -2871,6 +2871,26 @@ a.github-fork {
 				max-width: 100%;
 				opacity: 0;
 			}
+		}
+
+		> h1 {
+			font-size: 3em;
+			line-height: 1em;
+		}
+
+		> h2 {
+			font-size: 2.5em;
+			line-height: 1em;
+		}
+
+		> h3 {
+			font-size: 2em;
+			line-height: 1em;
+		}
+
+		> h4 {
+			font-size: 1.5em;
+			line-height: 1em;
 		}
 	}
 	&.temp .body {
@@ -3164,13 +3184,15 @@ body:not(.is-cordova) {
 	}
 	&.uploaded-files-list {
 		a {
-			color: #008ce3;
-			padding: 10px 5px;
-			border-bottom: 1px solid #eaeaea;
-			display: block;
-			&:hover {
-				color: #006db0;
-				text-decoration: underline;
+			&.file-name {
+				color: #008ce3;
+				padding: 10px 5px;
+				border-bottom: 1px solid #eaeaea;
+				display: block;
+				&:hover {
+			  		color: #006db0;
+			  		text-decoration: underline;
+				}
 			}
 		}
 		i {
@@ -3185,6 +3207,15 @@ body:not(.is-cordova) {
 					color: red;
 					cursor: pointer;
 				}
+			}
+
+			&.file-download {
+		  		float: right;
+		  		padding-top: 11px;
+		  		&:hover {
+					color: #006db0;
+					cursor: pointer;
+		  		}
 			}
 		}
 	}
@@ -4765,4 +4796,17 @@ body:not(.is-cordova) {
 	right: -8px;
 	top: -5px;
 	opacity: .6;
+}
+
+.collapse-switch {
+	cursor: pointer;
+}
+
+// kinda hacky, needed in oembedFrageWidget.html
+br.only-after-a {
+	display: none;
+}
+
+a + br.only-after-a {
+	display: block;
 }

@@ -218,6 +218,9 @@ Template.room.events
 		if $(e.currentTarget).hasClass('system')
 			return
 
+		if e.target and e.target.nodeName is 'AUDIO'
+			return
+
 		if e.target and e.target.nodeName is 'A' and /^https?:\/\/.+/.test(e.target.getAttribute('href'))
 			e.preventDefault()
 			e.stopPropagation()
@@ -253,7 +256,7 @@ Template.room.events
 			mobileMessageMenu.show(message, t, e, this)
 
 		Meteor.clearTimeout t.touchtime
-		t.touchtime = Meteor.setTimeout doLongTouch, 300
+		t.touchtime = Meteor.setTimeout doLongTouch, 500
 
 	"click .message img": (e, t) ->
 		Meteor.clearTimeout t.touchtime
@@ -263,12 +266,17 @@ Template.room.events
 
 	"touchend .message": (e, t) ->
 		Meteor.clearTimeout t.touchtime
-		if isSocialSharingOpen is true or touchMoved is true
+		if isSocialSharingOpen is true
 			e.preventDefault()
 			e.stopPropagation()
 			return
 
 		if e.target and e.target.nodeName is 'A' and /^https?:\/\/.+/.test(e.target.getAttribute('href'))
+			if touchMoved is true
+				e.preventDefault()
+				e.stopPropagation()
+				return
+
 			if cordova?.InAppBrowser?
 				cordova.InAppBrowser.open(e.target.href, '_system')
 			else
@@ -417,6 +425,17 @@ Template.room.events
 	'click .image-to-download': (event) ->
 		ChatMessage.update {_id: this._arguments[1]._id, 'urls.url': $(event.currentTarget).data('url')}, {$set: {'urls.$.downloadImages': true}}
 		ChatMessage.update {_id: this._arguments[1]._id, 'attachments.image_url': $(event.currentTarget).data('url')}, {$set: {'attachments.$.downloadImages': true}}
+
+	'click .collapse-switch': (e) ->
+		index = $(e.currentTarget).data('index')
+		collapsed = $(e.currentTarget).data('collapsed')
+		id = @_arguments[1]._id
+
+		if @_arguments[1]?.attachments?
+			ChatMessage.update {_id: id}, {$set: {"attachments.#{index}.collapsed": !collapsed}}
+
+		if @_arguments[1]?.urls?
+			ChatMessage.update {_id: id}, {$set: {"urls.#{index}.collapsed": !collapsed}}
 
 	'dragenter .dropzone': (e) ->
 		e.currentTarget.classList.add 'over'

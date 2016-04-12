@@ -64,6 +64,10 @@ Template.adminRooms.onCreated ->
 	@autorun ->
 		filter = instance.filter.get()
 		types = instance.types.get()
+
+		if types.length is 0
+			types = ['c', 'd', 'p']
+
 		limit = instance.limit.get()
 		subscription = instance.subscribe 'adminRooms', filter, types, limit
 		instance.ready.set subscription.ready()

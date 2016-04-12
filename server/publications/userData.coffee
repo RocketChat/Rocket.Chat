@@ -18,3 +18,5 @@ Meteor.publish 'userData', ->
 			'services.gitlab.id': 1
 			requirePasswordChange: 1
 			requirePasswordChangeReason: 1
+			'services.password.bcrypt': 1
+			statusLivechat: 1 # @TODO create an API so a package could add fields here

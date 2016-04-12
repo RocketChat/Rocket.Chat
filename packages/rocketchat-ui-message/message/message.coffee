@@ -100,6 +100,10 @@ Template.message.helpers
 	hideReactions: ->
 		return 'hidden' if _.isEmpty(@reactions)
 
+	injectIndex: (data, index) ->
+		data.index = index
+		return
+
 Template.message.onCreated ->
 	msg = Template.currentData()
 

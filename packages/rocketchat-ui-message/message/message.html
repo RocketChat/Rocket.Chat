@@ -61,10 +61,12 @@
 			{{{body}}}
 			{{#if hasOembed}}
 				{{#each urls}}
+					{{injectIndex . @index}}
 					{{> oembedBaseWidget}}
 				{{/each}}
 			{{/if}}
 			{{#each attachments}}
+				{{injectIndex . @index}}
 				{{> messageAttachment}}
 			{{/each}}
 		</div>
