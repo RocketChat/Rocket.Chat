@@ -47,6 +47,25 @@ RocketChat.Notifications = new class
 		@streamUser.emit.apply @streamUser, args
 
 
+	notifyAllAndBroadcast: (eventName, args...) ->
+		console.log 'notifyAllAndBroadcast', arguments if @debug is true
+
+		args.unshift eventName
+		@streamAll.emitAndBroadcast.apply @streamAll, args
+
+	notifyRoomAndBroadcast: (room, eventName, args...) ->
+		console.log 'notifyRoomAndBroadcast', arguments if @debug is true
+
+		args.unshift "#{room}/#{eventName}"
+		@streamRoom.emitAndBroadcast.apply @streamRoom, args
+
+	notifyUserAndBroadcast: (userId, eventName, args...) ->
+		console.log 'notifyUserAndBroadcast', arguments if @debug is true
+
+		args.unshift "#{userId}/#{eventName}"
+		@streamUser.emitAndBroadcast.apply @streamUser, args
+
+
 ## Permissions for client
 
 # Enable emit for event typing for rooms and add username to event data
