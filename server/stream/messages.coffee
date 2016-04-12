@@ -24,7 +24,7 @@ Meteor.startup ->
 
 	RocketChat.models.Messages.findVisibleCreatedOrEditedAfterTimestamp(new Date(), options).observe
 		added: (record) ->
-			msgStream.emit record.rid, record
+			msgStream.emitWithoutBroadcast record.rid, record
 
 		changed: (record) ->
-			msgStream.emit record.rid, record
+			msgStream.emitWithoutBroadcast record.rid, record
