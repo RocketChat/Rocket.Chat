@@ -1,5 +1,44 @@
 ## NEXT
 
+## 0.26.0, 2016-Apr-11
+
+- Add a download icon to file list (#2817)
+- Add ability to hide embedded media
+- Add checks to removeRoomOwner to deny removing last owner
+- Add Livechat custom fields (#2840)
+- Add New status for livechat agents (#2821)
+- Add option on custom oauth to send access token in headers or in payload (#2818)
+- Add pin-message permission to users when public pinning was allowed
+- Add scope option to create roles
+- Allow creating new roles with room scope and add/remove users to role
+- Change add-user permission to create-user permission, to avoid mistakes with add-user-to-room permission (to be created)
+- Clear stream read permission cache on subscribe
+- Clicking outside the message actions box closes it
+- Close #2656 Add schemes settings for Markdown links (#2794)
+- Close #2656 Markdown Headers do not work
+- Close #2696 RocketChat hijacking Firefox shortcut
+- Close #2744 Add a description with warning text for Force_SSL
+- Create archive and unarchive room permissions
+- Create new model method insertOrUpsert based on _id
+- Create permission to add user to room
+- Disable auto-linking inside Katex
+- Do not set DDP_DEFAULT_CONNECTION_URL
+- Feature to add maximum channel members for an @all message to send notifications (#2826)
+- Fix #2743 loadSurroundingMessages' TypeError: Cannot set property
+- Fix #2751 When no password is set (logged in via oauth), don't ask for password when saving profile and ask for username when deleting account
+- Fix menu touch/move and audio touch
+- Fix migration 36 (assets) using a new migration 42
+- Hide livechat users and rooms from the admin pages (#2820)
+- Replace Autolinker.js and add AutoLinker settings
+- Update archive and unarchive room permissions
+- Update emojione to 2.1.4
+- Update fontello from livechat app
+- Update bash shebang on shell scripts for portability
+- Use insertOrUpsert for new messages in Messages model
+- Use new error format
+- Use RocketChat Logger as SyncedCron logger
+- When creating a room, set user only as owner, not moderator
+
 ## 0.25.0, 2016-Apr-04
 
 - Add black list email list options
