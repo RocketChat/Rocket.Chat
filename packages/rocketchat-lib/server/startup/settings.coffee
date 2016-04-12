@@ -130,6 +130,8 @@ RocketChat.settings.addGroup 'Message', ->
 	@add 'Message_GroupingPeriod', 300, { type: 'int', public: true, i18nDescription: 'Message_GroupingPeriodDescription' }
 	@add 'API_Embed', true, { type: 'boolean', public: true }
 	@add 'API_EmbedDisabledFor', '', { type: 'string', public: true, i18nDescription: 'API_EmbedDisabledFor_Description' }
+	@add 'Message_TimeFormat', 'LT', { type: 'string', public: true, i18nDescription: 'Message_TimeFormat_Description' }
+	@add 'Message_DateFormat', 'LL', { type: 'string', public: true, i18nDescription: 'Message_DateFormat_Description' }
 
 
 RocketChat.settings.addGroup 'Meta', ->
