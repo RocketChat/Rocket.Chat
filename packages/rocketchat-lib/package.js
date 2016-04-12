@@ -24,7 +24,7 @@ Package.onUse(function(api) {
 	api.use('matb33:collection-hooks');
 	api.use('service-configuration');
 	api.use('check');
-	api.use('arunoda:streams');
+	api.use('rocketchat:streamer');
 	api.use('rocketchat:version');
 	api.use('rocketchat:logger');
 
