@@ -71,6 +71,7 @@ Package.onUse(function(api) {
 	// SERVER FUNCTIONS
 	api.addFiles('server/functions/checkUsernameAvailability.coffee', 'server');
 	api.addFiles('server/functions/checkEmailAvailability.js', 'server');
+	api.addFiles('server/functions/deleteUser.js', 'server');
 	api.addFiles('server/functions/sendMessage.coffee', 'server');
 	api.addFiles('server/functions/settings.coffee', 'server');
 	api.addFiles('server/functions/setUsername.coffee', 'server');
