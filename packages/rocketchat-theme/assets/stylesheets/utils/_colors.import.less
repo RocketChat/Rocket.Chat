@@ -729,27 +729,9 @@ a.github-fork {
 		background-color: @status-busy;
 	}
 	.message-form {
-		> div {
-			> .file {
-				border-color: #E7E7E7;
-				color: #888;
-				background-color: #FCFCFC;
-				&:hover {
-					background-color: #F1F1F1;
-					color: #666;
-				}
-			}
-		}
-		.message-buttons {
-			.mic, .stop-mic {
-				color: #888;
-				background-color: #FCFCFC;
-				&:hover {
-					background-color: #F1F1F1;
-					color: #666;
-				}
-			}
-			.send-button {
+		> .message-input {
+			border-color: #E7E7E7;
+			> .file, .message-buttons {
 				color: #888;
 				background-color: #FCFCFC;
 				&:hover {
