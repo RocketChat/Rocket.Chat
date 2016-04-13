@@ -12,7 +12,7 @@ getDescription = (self) ->
 	if not description?
 		return
 
-	return description.replace /(^“)|(”$)/g, ''
+	return _.unescape description.replace /(^[“\s]*)|([”\s]*$)/g, ''
 
 
 Template.oembedUrlWidget.helpers
