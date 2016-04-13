@@ -141,6 +141,7 @@ Meteor.startup ->
 		id: 'permalink'
 		icon: 'icon-link'
 		i18nLabel: 'Permalink'
+		classes: 'clipboard'
 		context: [
 			'message'
 			'message-mobile'
@@ -149,5 +150,6 @@ Meteor.startup ->
 			message = @_arguments[1]
 			msg = $(event.currentTarget).closest('.message')[0]
 			$("\##{msg.id} .message-dropdown").hide()
-			console.log(msg.id)
+			$(event.currentTarget).attr('data-clipboard-text', document.location.origin + document.location.pathname + '?j=' + msg.id);
+			toastr.success(TAPi18n.__('Copied'))
 		order: 3

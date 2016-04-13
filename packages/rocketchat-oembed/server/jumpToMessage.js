@@ -1,28 +1,54 @@
 /* globals getAvatarUrlFromUsername */
 
+const URL = Npm.require('url');
 const QueryString = Npm.require('querystring');
 
-RocketChat.callbacks.add('oembed:afterParseContent', (data) => {
-	console.log(data);
-	if (data.parsedUrl && data.parsedUrl.query) {
-		let queryString = data.parsedUrl.query;
-		if (_.isString(queryString)) {
-			queryString = QueryString.parse(queryString);
-			if (_.isString(queryString.j)) { // Jump-to query param
-				let jumpToMessage = RocketChat.models.Messages.findOneById(queryString.j);
-				console.log(jumpToMessage);
-				if (jumpToMessage) {
-					let attachments = [
-						{
-							'text' : jumpToMessage.msg,
-							'author_name' : jumpToMessage.u.username,
-							'author_icon' : getAvatarUrlFromUsername(jumpToMessage.u.username)
+// RocketChat.callbacks.add('oembed:beforeGetUrlContent', (data) => {
+// 	if (data && data.parsedUrl && data.parsedUrl.query) {
+// 		let queryString = data.parsedUrl.query;
+// 		if (_.isString(queryString)) {
+// 			queryString = QueryString.parse(queryString);
+// 			if (_.isString(queryString.j)) { // Jump-to query param
+// 				let jumpToMessage = RocketChat.models.Messages.findOneById(queryString.j);
+// 				if (jumpToMessage) {
+// 					let attachments = [
+// 						{
+// 							'text' : jumpToMessage.msg,
+// 							'author_name' : jumpToMessage.u.username,
+// 							'author_icon' : getAvatarUrlFromUsername(jumpToMessage.u.username)
+// 						}
+// 					];
+// 					data.attachments = attachments;
+// 				}
+// 			}
+// 		}
+// 	}
+
+// 	return data;
+// }, RocketChat.callbacks.priority.LOW);
+
+RocketChat.callbacks.add('beforeSaveMessage', (msg) => {
+	if (msg && msg.urls) {
+		msg.urls.forEach((item) => {
+			if (item.url.indexOf(Meteor.absoluteUrl()) === 0) {
+				const urlObj = URL.parse(item.url);
+				if (urlObj.query) {
+					const queryString = QueryString.parse(urlObj.query);
+					if (_.isString(queryString.j)) { // Jump-to query param
+						let jumpToMessage = RocketChat.models.Messages.findOneById(queryString.j);
+						if (jumpToMessage) {
+							msg.attachments = msg.attachments || [];
+							msg.attachments.push({
+								'text' : jumpToMessage.msg,
+								'author_name' : jumpToMessage.u.username,
+								'author_icon' : getAvatarUrlFromUsername(jumpToMessage.u.username)
+							});
+							item.ignoreParse = true;
 						}
-					];
-					// RocketChat.models.Messages.setMessageAttachments(message._id, attachments);
-					console.log(attachments);
+					}
 				}
 			}
-		}
+		});
 	}
+	return msg;
 }, RocketChat.callbacks.priority.LOW);
