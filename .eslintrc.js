@@ -127,7 +127,6 @@ module.exports = {
 		// 'func-names': 0,
 		// 'func-style': [0, 'declaration'],
 		// 'generator-star-spacing': 0,
-		// 'guard-for-in': 0,
 		// 'handle-callback-err': 0,
 		// 'indent': 0,
 		// 'init-declarations': 0,
@@ -166,6 +165,7 @@ module.exports = {
 		// 'max-len': [0, 80, 4],
 		// 'indent': [2, 'tab', {'SwitchCase': 1}], //specify tab or space width for your code
 		// 'comma-dangle': [2, 'never'],   // disallow or enforce trailing commas
+		'guard-for-in': 2,
 		'wrap-iife': 2,                 // wrap-iife
 		'block-scoped-var': 2,          // treat var statements as if they were block scoped
 		'curly': [2, 'all'],            // specify curly brace conventions for all control statements

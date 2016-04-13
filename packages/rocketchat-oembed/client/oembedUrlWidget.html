@@ -5,12 +5,12 @@
 				{{#if image}}
 					{{#if meta.ogImageUserGenerated}}
 						<div>
-							<a href="{{url}}" target="_blank">
+							<a href="{{url}}" target="{{target}}">
 								<img src="{{image}}" height="200" />
 							</a>
 						</div>
 					{{else}}
-						<a href="{{url}}" target="_blank">
+						<a href="{{url}}" target="{{target}}">
 							<img src="{{image}}" height="60" align="left" style="margin-right: 10px;"/>
 						</a>
 					{{/if}}
@@ -18,7 +18,7 @@
 				<div style="color: #AAA;">{{parsedUrl.host}}</div>
 				{{#if title}}
 					<div>
-						<a href="{{url}}" target="_blank"><strong>{{{title}}}</strong></a>
+						<a href="{{url}}" target="{{target}}"><strong>{{{title}}}</strong></a>
 					</div>
 				{{/if}}
 				<div style="overflow:hidden;white-space:nowrap;text-overflow:ellipsis">{{{description}}}</div>
