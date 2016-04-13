@@ -49,13 +49,13 @@ Template.userInfo.helpers
 		return RocketChat.authz.hasAllPermission('set-moderator', Session.get('openedRoom'))
 
 	isModerator: ->
-		return !!RoomModeratorsAndOwners.findOne({ rid: Session.get('openedRoom'), "u._id": @user?._id, roles: 'moderator' })
+		return !!RoomRoles.findOne({ rid: Session.get('openedRoom'), "u._id": @user?._id, roles: 'moderator' })
 
 	canSetOwner: ->
 		return RocketChat.authz.hasAllPermission('set-owner', Session.get('openedRoom'))
 
 	isOwner: ->
-		return !!RoomModeratorsAndOwners.findOne({ rid: Session.get('openedRoom'), "u._id": @user?._id, roles: 'owner' })
+		return !!RoomRoles.findOne({ rid: Session.get('openedRoom'), "u._id": @user?._id, roles: 'owner' })
 
 Template.userInfo.events
 	'click .pvt-msg': (e) ->
@@ -166,7 +166,7 @@ Template.userInfo.events
 	'click .set-moderator': (e, t) ->
 		e.preventDefault()
 
-		userModerator = RoomModeratorsAndOwners.findOne({ rid: Session.get('openedRoom'), "u._id": @user._id, roles: 'moderator' }, { fields: { _id: 1 } })
+		userModerator = RoomRoles.findOne({ rid: Session.get('openedRoom'), "u._id": @user._id, roles: 'moderator' }, { fields: { _id: 1 } })
 		unless userModerator?
 			Meteor.call 'addRoomModerator', Session.get('openedRoom'), @user._id, (err, results) =>
 				if err
@@ -178,7 +178,7 @@ Template.userInfo.events
 	'click .unset-moderator': (e, t) ->
 		e.preventDefault()
 
-		userModerator = RoomModeratorsAndOwners.findOne({ rid: Session.get('openedRoom'), "u._id": @user._id, roles: 'moderator' }, { fields: { _id: 1 } })
+		userModerator = RoomRoles.findOne({ rid: Session.get('openedRoom'), "u._id": @user._id, roles: 'moderator' }, { fields: { _id: 1 } })
 		if userModerator?
 			Meteor.call 'removeRoomModerator', Session.get('openedRoom'), @user._id, (err, results) =>
 				if err
@@ -190,7 +190,7 @@ Template.userInfo.events
 	'click .set-owner': (e, t) ->
 		e.preventDefault()
 
-		userOwner = RoomModeratorsAndOwners.findOne({ rid: Session.get('openedRoom'), "u._id": @user._id, roles: 'owner' }, { fields: { _id: 1 } })
+		userOwner = RoomRoles.findOne({ rid: Session.get('openedRoom'), "u._id": @user._id, roles: 'owner' }, { fields: { _id: 1 } })
 		unless userOwner?
 			Meteor.call 'addRoomOwner', Session.get('openedRoom'), @user._id, (err, results) =>
 				if err
@@ -202,7 +202,7 @@ Template.userInfo.events
 	'click .unset-owner': (e, t) ->
 		e.preventDefault()
 
-		userOwner = RoomModeratorsAndOwners.findOne({ rid: Session.get('openedRoom'), "u._id": @user._id, roles: 'owner' }, { fields: { _id: 1 } })
+		userOwner = RoomRoles.findOne({ rid: Session.get('openedRoom'), "u._id": @user._id, roles: 'owner' }, { fields: { _id: 1 } })
 		if userOwner?
 			Meteor.call 'removeRoomOwner', Session.get('openedRoom'), @user._id, (err, results) =>
 				if err

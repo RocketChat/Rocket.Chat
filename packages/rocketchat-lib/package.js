@@ -24,7 +24,7 @@ Package.onUse(function(api) {
 	api.use('matb33:collection-hooks');
 	api.use('service-configuration');
 	api.use('check');
-	api.use('arunoda:streams');
+	api.use('rocketchat:streamer');
 	api.use('rocketchat:version');
 	api.use('rocketchat:logger');
 
@@ -71,6 +71,7 @@ Package.onUse(function(api) {
 	// SERVER FUNCTIONS
 	api.addFiles('server/functions/checkUsernameAvailability.coffee', 'server');
 	api.addFiles('server/functions/checkEmailAvailability.js', 'server');
+	api.addFiles('server/functions/deleteUser.js', 'server');
 	api.addFiles('server/functions/sendMessage.coffee', 'server');
 	api.addFiles('server/functions/settings.coffee', 'server');
 	api.addFiles('server/functions/setUsername.coffee', 'server');
@@ -81,6 +82,8 @@ Package.onUse(function(api) {
 	api.addFiles('server/methods/addOAuthService.coffee', 'server');
 	api.addFiles('server/methods/checkRegistrationSecretURL.coffee', 'server');
 	api.addFiles('server/methods/deleteUserOwnAccount.js', 'server');
+	api.addFiles('server/methods/getRoomRoles.js', 'server');
+	api.addFiles('server/methods/getUserRoles.js', 'server');
 	api.addFiles('server/methods/joinDefaultChannels.coffee', 'server');
 	api.addFiles('server/methods/removeOAuthService.coffee', 'server');
 	api.addFiles('server/methods/robotMethods.coffee', 'server');
@@ -109,6 +112,7 @@ Package.onUse(function(api) {
 	api.addFiles('client/lib/roomExit.coffee', 'client');
 	api.addFiles('client/lib/settings.coffee', 'client');
 	api.addFiles('client/lib/roomTypes.coffee', 'client');
+	api.addFiles('client/lib/userRoles.js', 'client');
 
 	// CLIENT METHODS
 	api.addFiles('client/methods/sendMessage.coffee', 'client');

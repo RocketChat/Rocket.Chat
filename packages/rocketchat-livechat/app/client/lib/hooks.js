@@ -3,6 +3,10 @@ var api = {
 		Triggers.processRequest(info);
 
 		Meteor.call('livechat:pageVisited', visitor.getToken(), info);
+	},
+
+	setCustomField: function(key, value) {
+		Meteor.call('livechat:setCustomField', visitor.getToken(), key, value);
 	}
 };
 

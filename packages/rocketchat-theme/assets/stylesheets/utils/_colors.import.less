@@ -697,17 +697,17 @@ a.github-fork {
 		border-top-color: @tertiary-background-color;
 	}
 	.message-popup {
-		background: #FAFAFA;
+		background: #FFF;
 	}
 	.message-popup-title {
 		background-color: @secondary-background-color;
-		border-bottom-color: #EEE;
+		border-bottom-color: #E7E7E7;
 	}
 	.popup-item {
 		color: @secondary-font-color;
 		&.selected {
-			background-color: @tertiary-background-color;
-			color: @primary-font-color;
+			background-color: #4CAEEB;
+			color: #FFF;
 		}
 	}
 	.popup-user-status {
@@ -729,27 +729,9 @@ a.github-fork {
 		background-color: @status-busy;
 	}
 	.message-form {
-		> div {
-			> .file {
-				border-color: #E7E7E7;
-				color: #888;
-				background-color: #FCFCFC;
-				&:hover {
-					background-color: #F1F1F1;
-					color: #666;
-				}
-			}
-		}
-		.message-buttons {
-			.mic, .stop-mic {
-				color: #888;
-				background-color: #FCFCFC;
-				&:hover {
-					background-color: #F1F1F1;
-					color: #666;
-				}
-			}
-			.send-button {
+		> .message-input {
+			border-color: #E7E7E7;
+			> .file, .message-buttons {
 				color: #888;
 				background-color: #FCFCFC;
 				&:hover {

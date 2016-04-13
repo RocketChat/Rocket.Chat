@@ -1,7 +1,7 @@
 /**
  * Livechat Page Visited model
  */
-class LivechatPageVisitied extends RocketChat.models._Base {
+class LivechatPageVisited extends RocketChat.models._Base {
 	constructor() {
 		super();
 		this._initModel('livechat_page_visited');
@@ -45,4 +45,4 @@ class LivechatPageVisitied extends RocketChat.models._Base {
 	}
 }
 
-RocketChat.models.LivechatPageVisitied = new LivechatPageVisitied();
+RocketChat.models.LivechatPageVisited = new LivechatPageVisited();

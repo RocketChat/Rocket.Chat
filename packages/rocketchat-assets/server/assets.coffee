@@ -132,7 +132,7 @@ for key, value of assets
 Meteor.startup ->
 	forEachAsset = (key, value) ->
 		RocketChat.settings.get "Assets_#{key}", (settingKey, settingValue) ->
-			if settingValue is undefined or not settingValue.url?
+			if not settingValue?.url?
 				value.cache = undefined
 				return
 
