@@ -17,7 +17,7 @@ class AutoLinker
 				replaceFn: (autolinker, match) ->
 					if match.getType() is 'url'
 						if regUrls.test match.matchedText
-							if match.matchedText.indexOf(document?.location?.origin) is 0
+							if match.matchedText.indexOf(Meteor.absoluteUrl()) is 0
 								tag = match.buildTag()			# returns an `Autolinker.HtmlTag` instance for an <a> tag
 								tag.setAttr('target', '' );		# sets target to empty, instead of _blank
 								return tag
