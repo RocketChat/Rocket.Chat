@@ -21,7 +21,7 @@ class MentionsClient
 				mentions = mentions.join('|')
 				msg = msg.replace new RegExp("(?:^|\\s|\\n)(@(#{mentions}):?)[:.,\s]?", 'g'), (match, mention, username) ->
 					if username is 'all'
-						return match.replace mention, "<a class=\"mention-link mention-link-me\">#{mention}</a>"
+						return match.replace mention, "<a class=\"mention-link mention-link-me mention-link-all\">#{mention}</a>"
 
 					if not message.temp?
 						if not _.findWhere(message.mentions, {username: username})?
