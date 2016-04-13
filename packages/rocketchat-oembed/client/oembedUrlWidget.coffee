@@ -24,6 +24,10 @@ Template.oembedUrlWidget.helpers
 		title = getTitle this
 		return new Handlebars.SafeString title if _.isString title
 
+	target: ->
+		if not this.parsedUrl?.host || !document?.location?.host || this.parsedUrl.host isnt document.location.host
+			return '_blank'
+
 	image: ->
 		if not this.meta?
 			return

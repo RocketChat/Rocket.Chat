@@ -180,11 +180,11 @@ Template.message.onViewRendered = (context) ->
 					$nextNode.addClass('sequential')
 
 		if not nextNode?
-			templateInstance = view.parentView.parentView.parentView.parentView.parentView.templateInstance?()
+			templateInstance = if $('.messages-container')[0] then Blaze.getView($('.messages-container')[0])?.templateInstance() else null
 
 			if currentNode.classList.contains('own') is true
 				templateInstance?.atBottom = true
 			else
-				if templateInstance?.atBottom isnt true
+				if templateInstance?.firstNode && templateInstance?.atBottom is false
 					newMessage = templateInstance?.find(".new-message")
 					newMessage?.className = "new-message"

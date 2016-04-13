@@ -16,7 +16,12 @@ class AutoLinker
 				twitter: false
 				replaceFn: (autolinker, match) ->
 					if match.getType() is 'url'
-						return regUrls.test match.matchedText
+						if regUrls.test match.matchedText
+							if match.matchedText.indexOf(Meteor.absoluteUrl()) is 0
+								tag = match.buildTag()			# returns an `Autolinker.HtmlTag` instance for an <a> tag
+								tag.setAttr('target', '' );		# sets target to empty, instead of _blank
+								return tag
+							return true
 					return null
 
 			regNonAutoLink = /(```\w*[\n ]?[\s\S]*?```+?)|(`(?:[^`]+)`)/
