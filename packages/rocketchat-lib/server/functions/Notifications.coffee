@@ -48,7 +48,7 @@ RocketChat.Notifications = new class
 
 
 	notifyAllInThisInstance: (eventName, args...) ->
-		console.log 'notifyAllAndBroadcast', arguments if @debug is true
+		console.log 'notifyAll', arguments if @debug is true
 
 		args.unshift eventName
 		@streamAll.emitWithoutBroadcast.apply @streamAll, args
