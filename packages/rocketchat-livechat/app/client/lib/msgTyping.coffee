@@ -1,5 +1,5 @@
 @MsgTyping = do ->
-	stream = new Meteor.Stream 'typing'
+	stream = new Meteor.Streamer 'typing'
 	timeout = 15000
 	timeouts = {}
 	renew = true

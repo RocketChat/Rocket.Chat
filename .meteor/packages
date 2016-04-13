@@ -106,7 +106,7 @@ konecty:multiple-instances-status
 konecty:nrr
 konecty:user-presence
 
-arunoda:streams
+rocketchat:streamer
 chrismbeckett:toastr
 dispatch:run-as-user
 francocatena:status

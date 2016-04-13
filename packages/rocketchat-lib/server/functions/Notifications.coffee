@@ -4,16 +4,18 @@ RocketChat.Notifications = new class
 
 		@debug = false
 
-		@streamAll = new Meteor.Stream 'notify-all'
-		@streamRoom = new Meteor.Stream 'notify-room'
-		@streamUser = new Meteor.Stream 'notify-user'
+		@streamAll = new Meteor.Streamer 'notify-all'
+		@streamRoom = new Meteor.Streamer 'notify-room'
+		@streamUser = new Meteor.Streamer 'notify-user'
 
 
-		@streamAll.permissions.write -> return false
-		@streamAll.permissions.read -> return @userId?
+		@streamAll.allowWrite('none')
+		@streamRoom.allowWrite('none')
+		@streamUser.allowWrite('logged')
 
-		@streamRoom.permissions.write -> return false
-		@streamRoom.permissions.read (eventName) ->
+		@streamAll.allowRead('logged')
+
+		@streamRoom.allowRead (eventName) ->
 			if not @userId? then return false
 
 			roomId = eventName.split('/')[0]
@@ -21,8 +23,7 @@ RocketChat.Notifications = new class
 			user = Meteor.users.findOne @userId, {fields: {username: 1}}
 			return RocketChat.models.Rooms.findOneByIdContainigUsername(roomId, user.username, {fields: {_id: 1}})?
 
-		@streamUser.permissions.write -> return @userId?
-		@streamUser.permissions.read (eventName) ->
+		@streamUser.allowRead (eventName) ->
 			userId = eventName.split('/')[0]
 			return @userId? and @userId is userId
 
@@ -46,6 +47,25 @@ RocketChat.Notifications = new class
 		@streamUser.emit.apply @streamUser, args
 
 
+	notifyAllInThisInstance: (eventName, args...) ->
+		console.log 'notifyAllAndBroadcast', arguments if @debug is true
+
+		args.unshift eventName
+		@streamAll.emitWithoutBroadcast.apply @streamAll, args
+
+	notifyRoomInThisInstance: (room, eventName, args...) ->
+		console.log 'notifyRoomAndBroadcast', arguments if @debug is true
+
+		args.unshift "#{room}/#{eventName}"
+		@streamRoom.emitWithoutBroadcast.apply @streamRoom, args
+
+	notifyUserInThisInstance: (userId, eventName, args...) ->
+		console.log 'notifyUserAndBroadcast', arguments if @debug is true
+
+		args.unshift "#{userId}/#{eventName}"
+		@streamUser.emitWithoutBroadcast.apply @streamUser, args
+
+
 ## Permissions for client
 
 # Enable emit for event typing for rooms and add username to event data
@@ -62,4 +82,4 @@ func = (eventName, username, typing) ->
 
 	return false
 
-RocketChat.Notifications.streamRoom.permissions.write func, false # Prevent Cache
+RocketChat.Notifications.streamRoom.allowWrite func
