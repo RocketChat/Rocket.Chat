@@ -2473,6 +2473,10 @@ a.github-fork {
 		width: 100%;
 		top: 50%;
 		position: absolute;
+		border-radius: 2px;
+	}
+	.tick-all {
+		background-color: #9C27B0;
 	}
 }
 
@@ -3776,14 +3780,20 @@ body:not(.is-cordova) {
 	position: fixed;
 }
 
-.mention-link.mention-link-me {
-	background-color: #008ce3;
-	border-radius: 4px;
-	padding: 0px 4px 2px 4px;
-	font-weight: bold;
-	color: white;
-	&:hover {
+.mention-link {
+	&.mention-link-me, &.mention-link-all {
+		background-color: #008ce3;
+		border-radius: 4px;
+		padding: 0px 4px 2px 4px;
+		font-weight: bold;
 		color: white;
+		&:hover {
+			color: white;
+		}
+
+		&.mention-link-all {
+			background-color: #9C27B0;
+		}
 	}
 }
 
