@@ -2971,13 +2971,13 @@ body:not(.is-cordova) {
 }
 
 .list-view {
+	z-index: 10;
 	padding: 5px 30px 20px;
 	.list {
 		display: flex;
 		flex-flow: column nowrap;
 		position: relative;
 		width: 100%;
-		height: 100%;
 	}
 	> .status {
 		margin: 5px 0 15px;
@@ -3045,6 +3045,7 @@ body:not(.is-cordova) {
 }
 
 .user-view {
+	z-index: 15;
 	padding: 20px;
 	.about {
 		width: 100%;
