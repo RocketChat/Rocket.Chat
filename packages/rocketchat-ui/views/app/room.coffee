@@ -186,7 +186,11 @@ Template.room.helpers
 		return RocketChat.TabBar.getTemplate()
 
 	flexData: ->
-		return _.extend { rid: this._id }, RocketChat.TabBar.getData()
+		return _.extend {
+			rid: this._id
+			userDetail: Template.instance().userDetail.get(),
+			clearUserDetail: Template.instance().clearUserDetail
+		}, RocketChat.TabBar.getData()
 
 	adminClass: ->
 		return 'admin' if RocketChat.authz.hasRole(Meteor.userId(), 'admin')
@@ -354,15 +358,19 @@ Template.room.events
 			$('#room-title-field').focus().select()
 		, 10
 
-	"click .flex-tab .user-image > a" : (e) ->
+	"click .flex-tab .user-image > a" : (e, instance) ->
 		RocketChat.TabBar.openFlex()
-		Session.set('showUserInfo', @username)
+		console.log '[room.coffee] click .flex-tab .user-image > a ->',@username
+		# Session.set('showUserInfo', @username)
+		instance.setUserDetail @username
 
-	'click .user-card-message': (e) ->
+	'click .user-card-message': (e, instance) ->
 		roomData = Session.get('roomData' + this._arguments[1].rid)
 		if roomData.t in ['c', 'p']
 			# Session.set('flexOpened', true)
-			Session.set('showUserInfo', $(e.currentTarget).data('username'))
+			console.log '[room.coffee] click .user-card-message ->',this._arguments[1].u.username
+			# Session.set('showUserInfo', $(e.currentTarget).data('username'))
+			instance.setUserDetail this._arguments[1].u.username
 		# else
 			# Session.set('flexOpened', true)
 		RocketChat.TabBar.setTemplate 'membersList'
@@ -412,14 +420,16 @@ Template.room.events
 	'click .message-dropdown-close': ->
 		$('.message-dropdown:visible').hide()
 
-	"click .mention-link": (e) ->
+	"click .mention-link": (e, instance) ->
 		channel = $(e.currentTarget).data('channel')
 		if channel?
 			FlowRouter.go 'channel', {name: channel}
 			return
 
 		RocketChat.TabBar.setTemplate 'membersList'
-		Session.set('showUserInfo', $(e.currentTarget).data('username'))
+		console.log '[room.coffee] click .mention-link ->',$(e.currentTarget).data('username')
+		instance.setUserDetail $(e.currentTarget).data('username')
+		# Session.set('showUserInfo', $(e.currentTarget).data('username'))
 		RocketChat.TabBar.openFlex()
 
 	'click .image-to-download': (event) ->
@@ -529,6 +539,8 @@ Template.room.onCreated ->
 	this.selectedRange = []
 	this.selectablePointer = null
 
+	this.userDetail = new ReactiveVar FlowRouter.getParam('username')
+
 	this.resetSelection = (enabled) =>
 		this.selectable.set(enabled)
 		$('.messages-box .message.selected').removeClass 'selected'
@@ -563,8 +575,11 @@ Template.room.onCreated ->
 
 		return previewMessages
 
-	@autorun =>
-		@subscribe 'fullUserData', Session.get('showUserInfo'), 1
+	this.setUserDetail = (username) =>
+		this.userDetail.set username
+
+	this.clearUserDetail = =>
+		this.userDetail.set null
 
 	Meteor.call 'getRoomRoles', @data._id, (error, results) ->
 		if error

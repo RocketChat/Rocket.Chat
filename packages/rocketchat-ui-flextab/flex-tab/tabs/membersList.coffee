@@ -80,19 +80,40 @@ Template.membersList.helpers
 			]
 		}
 
-	flexUserInfo: ->
-		username = Session.get('showUserInfo')
-		return Meteor.users.findOne({ username: String(username) }) or { username: String(username) }
+	# flexUserInfo: ->
+	# 	return Template.instance().userDetail.get()
+		# username = Session.get('showUserInfo')
+		# return Meteor.users.findOne({ username: String(username) }) or { username: String(username) }
 
 	showUserInfo: ->
 		webrtc = WebRTC.getInstanceByRoomId(this.rid)
 		videoActive = webrtc?.localUrl?.get()? or webrtc?.remoteItems?.get()?.length > 0
-		return Session.get('showUserInfo') and not videoActive
+		return Template.instance().showDetail.get() and not videoActive
+
+	userInfoDetail: ->
+		# username=flexUserInfo showAll=isGroupChat video=isDirectChat
+
+		room = ChatRoom.findOne(this.rid, { fields: { t: 1 } })
+
+	# isGroupChat: ->
+	# 	return ChatRoom.findOne(this.rid, { reactive: false })?.t in ['c', 'p']
+
+	# isDirectChat: ->
+	# 	return ChatRoom.findOne(this.rid, { reactive: false })?.t is 'd'
+
+
+		return {
+			username: Template.instance().userDetail.get()
+			clear: Template.instance().clearUserDetail
+			showAll: room.t in ['c', 'p']
+			video: room.t in ['d']
+		}
 
 Template.membersList.events
-	"click .flex-tab .user-image > a" : (e) ->
-		RocketChat.TabBar.openFlex()
-		Session.set('showUserInfo', $(e.currentTarget).data('username'))
+	# "click .flex-tab .user-image > a" : (e) ->
+	# 	console.log 'click .user-image > a ->', $(e.currentTarget).data('username')
+	# 	RocketChat.TabBar.openFlex()
+	# 	Session.set('showUserInfo', $(e.currentTarget).data('username'))
 
 	'click .see-all': (e, instance) ->
 		seeAll = instance.showAllUsers.get()
@@ -122,7 +143,34 @@ Template.membersList.events
 	'click .show-more-users': (e, instance) ->
 		instance.usersLimit.set(instance.usersLimit.get() + 100)
 
+	'click .back': (e) ->
+		Session.set('showUserInfo', null)
 
 Template.membersList.onCreated ->
 	@showAllUsers = new ReactiveVar false
 	@usersLimit = new ReactiveVar 100
+	@userDetail = new ReactiveVar
+	@showDetail = new ReactiveVar false
+
+	@clearUserDetail = =>
+		@showDetail.set(false)
+		setTimeout =>
+			# @userDetail.set(null)
+			@clearRoomUserDetail()
+		, 500
+
+	@showUserDetail = (username) =>
+		@showDetail.set(username?)
+		@userDetail.set(username)
+
+	console.log '@data.clearUserDetail ->',@data.clearUserDetail
+
+	@clearRoomUserDetail = @data.clearUserDetail
+
+	@autorun =>
+		data = Template.currentData()
+		console.log 'membersList.onCreated.autorun ->',data
+
+		@showUserDetail data.userDetail
+
+		# @subscribe 'fullUserData', data.userDetail, 1

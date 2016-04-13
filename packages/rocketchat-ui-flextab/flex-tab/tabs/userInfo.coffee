@@ -57,6 +57,12 @@ Template.userInfo.helpers
 	isOwner: ->
 		return !!RoomRoles.findOne({ rid: Session.get('openedRoom'), "u._id": @user?._id, roles: 'owner' })
 
+	user: ->
+		return Meteor.users.findOne({ username: @username })
+
+	isLoading: ->
+		return Template.instance().loadingUserInfo.get()
+
 Template.userInfo.events
 	'click .pvt-msg': (e) ->
 		Meteor.call 'createDirectMessage', Session.get('showUserInfo'), (error, result) ->
@@ -93,8 +99,9 @@ Template.userInfo.events
 						if i.msRequestFullscreen
 							i.msRequestFullscreen()
 
-	'click .back': (e) ->
-		Session.set('showUserInfo', null)
+	'click .back': (e, instance) ->
+		instance.clear()
+		# Session.set('showUserInfo', null)
 
 	'click .remove-user': (e) ->
 		e.preventDefault()
@@ -213,7 +220,17 @@ Template.userInfo.events
 
 Template.userInfo.onCreated ->
 	@now = new ReactiveVar moment()
-	self = @
-	Meteor.setInterval ->
-		self.now.set moment()
+
+	Meteor.setInterval =>
+		@now.set moment()
 	, 30000
+
+	@loadingUserInfo = new ReactiveVar true
+
+	@autorun =>
+		data = Template.currentData()
+		console.log 'autorun ->',data
+		@clear = data.clear
+		@loadingUserInfo.set true
+		@subscribe 'fullUserData', data.username, 1, =>
+			@loadingUserInfo.set false

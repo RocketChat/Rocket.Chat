@@ -1,5 +1,7 @@
 <template name="userInfo">
-	{{#if $.Session.get 'showUserInfo'}}
+	{{#if isLoading}}
+		{{> loading}}
+	{{else}}
 		{{#with user}}
 		<div class="about clearfix">
 			<div class="thumb">
