@@ -3,30 +3,6 @@
 const URL = Npm.require('url');
 const QueryString = Npm.require('querystring');
 
-// RocketChat.callbacks.add('oembed:beforeGetUrlContent', (data) => {
-// 	if (data && data.parsedUrl && data.parsedUrl.query) {
-// 		let queryString = data.parsedUrl.query;
-// 		if (_.isString(queryString)) {
-// 			queryString = QueryString.parse(queryString);
-// 			if (_.isString(queryString.j)) { // Jump-to query param
-// 				let jumpToMessage = RocketChat.models.Messages.findOneById(queryString.j);
-// 				if (jumpToMessage) {
-// 					let attachments = [
-// 						{
-// 							'text' : jumpToMessage.msg,
-// 							'author_name' : jumpToMessage.u.username,
-// 							'author_icon' : getAvatarUrlFromUsername(jumpToMessage.u.username)
-// 						}
-// 					];
-// 					data.attachments = attachments;
-// 				}
-// 			}
-// 		}
-// 	}
-
-// 	return data;
-// }, RocketChat.callbacks.priority.LOW);
-
 RocketChat.callbacks.add('beforeSaveMessage', (msg) => {
 	if (msg && msg.urls) {
 		msg.urls.forEach((item) => {
