@@ -1,7 +1,7 @@
 <template name="message">
 	<li id="{{_id}}" class="message sequential {{system}} {{t}} {{own}} {{isTemp}} {{error}}" data-username="{{u.username}}" data-date="{{date}}">
-		<span class="thumb thumb-small" href="#" data-username="{{u.username}}" tabindex="1">{{> avatar username=u.username}}</span>
-		<span class="user" href="#" data-username="{{u.username}}" tabindex="1">{{u.username}}</span>
+		<span class="thumb thumb-small" data-username="{{u.username}}" tabindex="1">{{> avatar username=u.username}}</span>
+		<span class="user" data-username="{{u.username}}" tabindex="1">{{u.username}}</span>
 		<span class="info">
 			<span class="time">{{time}}</span>
 			{{#if edit}}
