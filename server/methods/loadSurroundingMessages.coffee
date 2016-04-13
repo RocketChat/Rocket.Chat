@@ -2,6 +2,11 @@ Meteor.methods
 	loadSurroundingMessages: (message, limit=50) ->
 		fromId = Meteor.userId()
 
+		unless message._id
+			return false
+
+		message = RocketChat.models.Messages.findOneById(message._id);
+
 		unless message?.rid
 			return false
 

@@ -401,8 +401,6 @@ Template.room.events
 		dropDown.show()
 
 	'click .message-dropdown .message-action': (e, t) ->
-		e.preventDefault()
-		e.stopPropagation()
 		el = $(e.currentTarget)
 
 		button = RocketChat.MessageAction.getButtonById el.data('id')
@@ -521,7 +519,7 @@ Template.room.onCreated ->
 	# this.scrollOnBottom = true
 	# this.typing = new msgTyping this.data._id
 	this.showUsersOffline = new ReactiveVar false
-	this.atBottom = true
+	this.atBottom = if FlowRouter.getQueryParam('j') then false else true
 	this.unreadCount = new ReactiveVar 0
 
 	this.selectable = new ReactiveVar false

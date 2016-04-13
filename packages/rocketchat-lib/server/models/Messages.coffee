@@ -257,6 +257,17 @@ RocketChat.models.Messages = new class extends RocketChat.models._Base
 
 		return @update query, update, { multi: true }
 
+	setMessageAttachments: (_id, attachments) ->
+		query =
+			_id: _id
+
+		update =
+			$set:
+				attachments: attachments
+		console.log(query, update);
+		return @update query, update
+
+
 	# INSERT
 	createWithTypeRoomIdMessageAndUser: (type, roomId, message, user, extraData) ->
 		record =
