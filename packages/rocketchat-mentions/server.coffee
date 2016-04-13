@@ -15,9 +15,17 @@ class MentionsServer
 			verifiedMentions = []
 			mentions.forEach (mention) ->
 				if mention is 'all'
-					verifiedMention =
-						_id: mention
-						username: mention
+					messageMaxAll = RocketChat.settings.get('Message_MaxAll')
+					if messageMaxAll > 0
+						allChannel = RocketChat.models.Rooms.findOneById message.rid
+						if allChannel.usernames.length <= messageMaxAll
+							verifiedMention =
+								_id: mention
+								username: mention
+					else
+						verifiedMention =
+							_id: mention
+							username: mention
 				else
 					verifiedMention = Meteor.users.findOne({username: mention}, {fields: {_id: 1, username: 1}})
 

@@ -154,7 +154,7 @@ executeIntegrationRest = ->
 		try
 			result = script.process_incoming_request({ request: request })
 
-			if result.error?
+			if result?.error?
 				return RocketChat.API.v1.failure result.error
 
 			@bodyParams = result?.content

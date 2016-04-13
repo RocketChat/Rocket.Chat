@@ -50,7 +50,9 @@
 			if wrapper?
 				previousHeight = wrapper.scrollHeight
 
-			ChatMessage.upsert {_id: item._id}, item for item in result?.messages or [] when item.t isnt 'command'
+			for item in result?.messages or [] when item.t isnt 'command'
+				item.roles = _.union(UserRoles.findOne(item.u?._id)?.roles, RoomRoles.findOne({rid: item.rid, 'u._id': item.u?._id})?.roles)
+				ChatMessage.upsert {_id: item._id}, item
 
 			if wrapper?
 				heightDiff = wrapper.scrollHeight - previousHeight
@@ -93,6 +95,7 @@
 			Meteor.call 'loadNextMessages', rid, ts, limit, (err, result) ->
 				for item in result?.messages or []
 					if item.t isnt 'command'
+						item.roles = _.union(UserRoles.findOne(item.u?._id)?.roles, RoomRoles.findOne({rid: item.rid, 'u._id': item.u?._id})?.roles)
 						ChatMessage.upsert {_id: item._id}, item
 
 				Meteor.defer ->
@@ -143,6 +146,7 @@
 			Meteor.call 'loadSurroundingMessages', message, limit, (err, result) ->
 				for item in result?.messages or []
 					if item.t isnt 'command'
+						item.roles = _.union(UserRoles.findOne(item.u?._id)?.roles, RoomRoles.findOne({rid: item.rid, 'u._id': item.u?._id})?.roles)
 						ChatMessage.upsert {_id: item._id}, item
 
 				Meteor.defer ->

@@ -23,6 +23,7 @@ Package.onUse(function(api) {
   api.use('templating', 'client');
 
   api.addFiles('lib/rocketchat.coffee', ['server','client']);
+
   api.addFiles('client/lib/ChatPermissions.coffee', ['client']);
   api.addFiles('client/lib/models/Roles.coffee', ['client']);
   api.addFiles('client/lib/models/Users.js', ['client']);

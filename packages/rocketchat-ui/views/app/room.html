@@ -44,7 +44,7 @@
 						{{#if error}}
 							<div class="upload-progress-text">
 								{{error}}
-								<a href="#">
+								<a>
 									{{_ "close"}}
 								</a>
 							</div>
@@ -52,7 +52,7 @@
 							<div class="upload-progress-progress" style="width: {{percentage}}%;"></div>
 							<div class="upload-progress-text">
 								{{name}}... {{percentage}}%
-								<a href="#">
+								<a>
 									{{_ "cancel"}}
 								</a>
 							</div>
@@ -69,7 +69,7 @@
 								{{#if isLoading}}
 									<div class="load-more-loading">{{_ "Loading_more_from_history"}}...</div>
 								{{else}}
-									<a href="">{{_ "Has_more"}}...</a>
+									<a>{{_ "Has_more"}}...</a>
 								{{/if}}
 							</li>
 						{{else}}
@@ -85,7 +85,7 @@
 								{{#if isLoading}}
 									<div class="load-more-loading">{{_ "Loading_more_from_history"}}...</div>
 								{{else}}
-									<a href="">{{_ "Has_more"}}...</a>
+									<a>{{_ "Has_more"}}...</a>
 								{{/if}}
 							</li>
 						{{/if}}
