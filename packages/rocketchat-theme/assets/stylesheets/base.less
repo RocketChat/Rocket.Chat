@@ -6,9 +6,10 @@
 		clear: both;
 	}
 }
+
 *,
 *:before,
-*:after{
+*:after {
 	.box-sizing(border-box);
 }
 
@@ -20,6 +21,7 @@
 	-ms-user-select: none;
 	user-select: none;
 }
+
 .allow-text-selection {
 	-webkit-user-select: text;
 	-moz-user-select: text;
@@ -35,7 +37,8 @@
 	overflow: hidden !important;
 }
 
-.page-settings, .page-settings * {
+.page-settings,
+.page-settings * {
 	-webkit-user-select: text;
 	-moz-user-select: text;
 	-ms-user-select: text;
@@ -107,13 +110,10 @@ blockquote {
 .login-terms {
 	max-width: 400px;
 	margin: auto;
-
 	a {
 		font-weight: bold !important;
 		text-decoration: underline;
-
-		&:hover {
-		}
+		&:hover {}
 	}
 }
 
@@ -155,11 +155,8 @@ blockquote {
 .first-unread {
 	&.first-unread-opaque {
 		.body {
-			&::before {
-			}
-
-			&::after {
-			}
+			&::before {}
+			&::after {}
 		}
 	}
 	.body {
@@ -173,7 +170,6 @@ blockquote {
 			top: 0px;
 			.transition(background-color, .5s, linear);
 		}
-
 		&::after {
 			content: "unread messages";
 			display: block;
@@ -208,11 +204,9 @@ blockquote {
 	border-radius: 4px;
 }
 
-.alert-warning {
-}
+.alert-warning {}
 
-.alert-danger {
-}
+.alert-danger {}
 
 .full-page .hidden {
 	visibility: hidden !important;
@@ -247,7 +241,6 @@ blockquote {
 .rocket-form {
 	max-width: 620px;
 	width: 90%;
-
 	legend {
 		margin-bottom: 23px;
 		position: relative;
@@ -269,7 +262,6 @@ blockquote {
 	fieldset {
 		display: block;
 		margin-bottom: 40px;
-
 		small {
 			font-size: 11px;
 		}
@@ -277,24 +269,19 @@ blockquote {
 	.logoutOthers {
 		text-align: right;
 	}
-
 	.submit {
 		margin-top: 20px;
 		text-align: right;
 	}
-
 	&.request-password {
 		margin: 0 auto;
-
 		fieldset {
 			margin-top: 20px;
-
 			label {
 				display: block;
 				margin-top: 20px;
 			}
 		}
-
 		.submit {
 			text-align: center;
 		}
@@ -326,7 +313,6 @@ blockquote {
 			-ms-animation-duration: 2000ms;
 			-ms-animation-iteration-count: infinite;
 			-ms-animation-timing-function: linear;
-
 			animation-name: spin;
 			animation-duration: 2000ms;
 			animation-iteration-count: infinite;
@@ -334,7 +320,8 @@ blockquote {
 		}
 		.icon-search,
 		.icon-right-open-small,
-		.icon-sort-alt-up, .icon-comment {
+		.icon-sort-alt-up,
+		.icon-comment {
 			position: absolute;
 			left: 2px;
 			top: 10px;
@@ -349,7 +336,6 @@ blockquote {
 	}
 	> div {
 		position: relative;
-
 		.right {
 			position: absolute;
 			right: 10px;
@@ -389,23 +375,38 @@ blockquote {
 }
 
 @-ms-keyframes spin {
-	from { -ms-transform: rotate(0deg); }
-	to { -ms-transform: rotate(360deg); }
-}
-@-moz-keyframes spin {
-	from { -moz-transform: rotate(0deg); }
-	to { -moz-transform: rotate(360deg); }
-}
-@-webkit-keyframes spin {
-	from { -webkit-transform: rotate(0deg); }
-	to { -webkit-transform: rotate(360deg); }
-}
-@keyframes spin {
 	from {
-		transform:rotate(0deg);
+		-ms-transform: rotate(0deg);
 	}
 	to {
-		transform:rotate(360deg);
+		-ms-transform: rotate(360deg);
+	}
+}
+
+@-moz-keyframes spin {
+	from {
+		-moz-transform: rotate(0deg);
+	}
+	to {
+		-moz-transform: rotate(360deg);
+	}
+}
+
+@-webkit-keyframes spin {
+	from {
+		-webkit-transform: rotate(0deg);
+	}
+	to {
+		-webkit-transform: rotate(360deg);
+	}
+}
+
+@keyframes spin {
+	from {
+		transform: rotate(0deg);
+	}
+	to {
+		transform: rotate(360deg);
 	}
 }
 
@@ -578,10 +579,8 @@ textarea[disabled] {
 	padding: 8px 5px;
 	font-size: 12px;
 	cursor: pointer;
-	i {
-	}
-	&.selected {
-	}
+	i {}
+	&.selected {}
 }
 
 label.required:after {
@@ -589,27 +588,21 @@ label.required:after {
 }
 
 .status-offline,
-.icon-at.status-offline {
-}
+.icon-at.status-offline {}
 
 .status-online,
-.icon-at.status-online {
-}
+.icon-at.status-online {}
 
 .status-busy,
-.icon-at.status-busy {
-}
+.icon-at.status-busy {}
 
 .status-away,
-.icon-at.status-away {
-}
+.icon-at.status-away {}
 
 // TODO -- Refactor favorite styles and logic;
-.favorite-room {
-}
+.favorite-room {}
 
-.toggle-favorite {
-}
+.toggle-favorite {}
 
 .loading {
 	background-image: url('images/loading.gif');
@@ -632,8 +625,7 @@ label.required:after {
 	cursor: not-allowed;
 	box-shadow: none !important;
 	border: none;
-	&:hover {
-	}
+	&:hover {}
 	i {
 		display: block;
 	}
@@ -679,8 +671,7 @@ label.required:after {
 		}
 	}
 	&.secondary {
-		&:before {
-		}
+		&:before {}
 	}
 	&.delete,
 	&.remove,
@@ -697,20 +688,13 @@ label.required:after {
 			font-weight: 600;
 		}
 	}
-	&.facebook {
-	}
-	&.twitter {
-	}
-	&.google {
-	}
-	&.github {
-	}
-	&.gitlab {
-	}
-	&.trello {
-	}
-	&.meteor-developer {
-	}
+	&.facebook {}
+	&.twitter {}
+	&.google {}
+	&.github {}
+	&.gitlab {}
+	&.trello {}
+	&.meteor-developer {}
 	&.button-block {
 		display: block;
 		width: 100%;
@@ -747,8 +731,7 @@ label.required:after {
 		width: 20px;
 		margin: 5px 0;
 		opacity: .8;
-		.transition(transform .2s ease-out,
-		width .2s ease-out);
+		.transition(transform .2s ease-out, width .2s ease-out);
 		&:nth-child(1) {
 			//	.transition-delay(.06s);
 		}
@@ -756,7 +739,6 @@ label.required:after {
 			.transition-delay(.1s);
 		}
 	}
-
 	.unread-burger-alert {
 		border-radius: 20px;
 		position: absolute;
@@ -778,8 +760,7 @@ label.required:after {
 	width: 25px;
 	height: 25px;
 	z-index: 100;
-	.calc(top,
-	~"50% - 13px");
+	.calc(top, ~"50% - 13px");
 	&:before,
 	&:after {
 		content: " ";
@@ -787,20 +768,16 @@ label.required:after {
 		width: 2px;
 		height: 10px;
 		position: absolute;
-		.calc(top,
-		~"50% - 5px");
-		.calc(left,
-		~"50% - 5px");
+		.calc(top, ~"50% - 5px");
+		.calc(left, ~"50% - 5px");
 	}
 	&:before {
 		.transform(rotate(135deg) translateX(-4px));
-		.transition(transform .185s ease-out .085s,
-		background .15s ease-out);
+		.transition(transform .185s ease-out .085s, background .15s ease-out);
 	}
 	&:after {
 		.transform(rotate(-135deg) translateX(-4px));
-		.transition(transform .185s ease-out,
-		background .15s ease-out);
+		.transition(transform .185s ease-out, background .15s ease-out);
 	}
 	&.left {
 		&:before {
@@ -854,14 +831,8 @@ a.github-fork {
 	text-transform: uppercase;
 	font-weight: 400 !important;
 	.transform(rotate(45deg) translateY(0));
-	.transition(background-color .2s ease-out,
-	transform .45s cubic-bezier(.15,
-	0,
-	0,
-	1) 2.15s,
-	opacity .2s ease-out 2.15);
-	&:hover {
-	}
+	.transition(background-color .2s ease-out, transform .45s cubic-bezier(.15, 0, 0, 1) 2.15s, opacity .2s ease-out 2.15);
+	&:hover {}
 	&:before {
 		content: " ";
 		border-top: 1px dashed;
@@ -981,7 +952,7 @@ a.github-fork {
 		position: relative;
 		height: 100%;
 		padding: 10px 0px 10px 18px;
-		z-index:100;
+		z-index: 100;
 		.thumb {
 			float: left;
 			height: 100%;
@@ -1011,8 +982,7 @@ a.github-fork {
 			height: 100%;
 			.flex-center;
 			flex-flow: row nowrap;
-			.calc(width,
-			~"100% - 60px");
+			.calc(width, ~"100% - 60px");
 		}
 		h4 {
 			display: block;
@@ -1028,20 +998,16 @@ a.github-fork {
 			.transition(color .15s ease-out);
 		}
 		&.status-offline {
-			.thumb:after {
-			}
+			.thumb:after {}
 		}
 		&.status-online {
-			.thumb:after {
-			}
+			.thumb:after {}
 		}
 		&.status-away {
-			.thumb:after {
-			}
+			.thumb:after {}
 		}
 		&.status-busy {
-			.thumb:after {
-			}
+			.thumb:after {}
 		}
 	}
 	.options {
@@ -1056,8 +1022,7 @@ a.github-fork {
 		direction: rtl;
 		.calc(height, ~'100% - ' @header-min-height + @footer-min-height);
 		.transition(transform .3s cubic-bezier(.5, 0, .1, 1));
-		z-index:99;
-
+		z-index: 99;
 		&.animated-hidden {
 			.transform(translateY(-100%) translateY(-50px));
 		}
@@ -1077,24 +1042,19 @@ a.github-fork {
 				z-index: 5;
 				position: absolute;
 				left: 18px;
-				.calc(top,
-				~"50% - 8px");
+				.calc(top, ~"50% - 8px");
 			}
 			&.offline {
-				&:after {
-				}
+				&:after {}
 			}
 			&.online {
-				&:after {
-				}
+				&:after {}
 			}
 			&.away {
-				&:after {
-				}
+				&:after {}
 			}
 			&.busy {
-				&:after {
-				}
+				&:after {}
 			}
 		}
 		span.soon {
@@ -1120,8 +1080,7 @@ a.github-fork {
 			line-height: 1;
 			text-decoration: none;
 			border-bottom: 1px solid;
-			&:nth-child(even) {
-			}
+			&:nth-child(even) {}
 			&:hover {
 				text-decoration: none;
 			}
@@ -1139,12 +1098,10 @@ a.github-fork {
 	}
 	&.active .info,
 	.info:hover {
-		h4 {
-		}
+		h4 {}
 	}
 	.hover & {
-		.info h4 {
-		}
+		.info h4 {}
 	}
 }
 
@@ -1170,10 +1127,7 @@ a.github-fork {
 	header,
 	footer,
 	.content {
-		.transition(transform .425s cubic-bezier(0,
-		.8,
-		.05,
-		1));
+		.transition(transform .425s cubic-bezier(0, .8, .05, 1));
 	}
 	> section {
 		&:extend(.fill-all);
@@ -1232,8 +1186,7 @@ a.github-fork {
 		direction: rtl;
 		position: absolute;
 		top: @header-min-height;
-		.calc(height,
-		~"100% - " @header-min-height + @footer-min-height);
+		.calc(height, ~"100% - " @header-min-height + @footer-min-height);
 		width: 100%;
 		overflow-x: hidden;
 		overflow-y: auto;
@@ -1247,10 +1200,8 @@ a.github-fork {
 		}
 		> .wrapper {
 			direction: ltr;
-
 			.flex-control {
 				margin-bottom: 30px;
-
 				.search {
 					width: 100%;
 					margin-bottom: 10px;
@@ -1330,8 +1281,7 @@ a.github-fork {
 		direction: rtl;
 		position: absolute;
 		top: @header-min-height;
-		.calc(height,
-		~"100% - " @header-min-height + @footer-min-height);
+		.calc(height, ~"100% - " @header-min-height + @footer-min-height);
 		width: 100%;
 		overflow-x: hidden;
 		overflow-y: auto;
@@ -1349,8 +1299,7 @@ a.github-fork {
 		font-size: 11px;
 		padding: 4px 0 4px 10px;
 		margin-top: 2px;
-		&:hover {
-		}
+		&:hover {}
 	}
 	.input-error {
 		text-align: center;
@@ -1387,8 +1336,7 @@ a.github-fork {
 		&.hover,
 		&:hover {
 			&:before,
-			&:after {
-			}
+			&:after {}
 		}
 	}
 	.footer {
@@ -1447,8 +1395,7 @@ a.github-fork {
 		a {
 			display: block;
 		}
-		&:hover {
-		}
+		&:hover {}
 		&.add-room {
 			i {
 				position: absolute;
@@ -1486,8 +1433,7 @@ a.github-fork {
 				top: 2px;
 				opacity: 0;
 				.transform(translateX(-10px));
-				.transition(opacity .15s ease .35s,
-				transform .12s ease-out .35s);
+				.transition(opacity .15s ease .35s, transform .12s ease-out .35s);
 			}
 			&:hover {
 				.opt {
@@ -1496,10 +1442,8 @@ a.github-fork {
 				}
 			}
 			&.active {
-				a {
-				}
-				.opt {
-				}
+				a {}
+				.opt {}
 			}
 			&.has-unread {
 				.opt {
@@ -1512,8 +1456,7 @@ a.github-fork {
 				}
 			}
 			&.away {
-				a {
-				}
+				a {}
 			}
 		}
 		a {
@@ -1546,8 +1489,7 @@ a.github-fork {
 			.transition(opacity .12s ease);
 			i {
 				margin: 0 1px;
-				&:hover {
-				}
+				&:hover {}
 			}
 			.icon-cancel-circled:before {
 				margin-left: 2px;
@@ -1555,7 +1497,6 @@ a.github-fork {
 			.icon-logout {
 				margin-left: 1px;
 			}
-
 			&.fixed {
 				opacity: 1;
 				.transform(translateX(0));
@@ -1587,14 +1528,12 @@ a.github-fork {
 		-webkit-align-items: center;
 		justify-content: center;
 		-webkit-justify-content: center;
-
 		&.top-unread-rooms {
 			top: 60px;
 		}
 		&.bottom-unread-rooms {
 			bottom: 70px;
 		}
-
 		i {
 			margin-left: 5px;
 			font-size: 12px;
@@ -1604,9 +1543,8 @@ a.github-fork {
 		max-height: 0;
 		opacity: 0;
 		overflow: hidden;
-
 		&.has-unread {
-			.transition(max-height 1s ease-in,opacity .5s linear);
+			.transition(max-height 1s ease-in, opacity .5s linear);
 			max-height: 5000px;
 			opacity: 1;
 		}
@@ -1629,8 +1567,7 @@ a.github-fork {
 		overflow-y: scroll;
 		margin-top: 60px;
 		-webkit-overflow-scrolling: touch;
-		.calc(height,
-		~'100% - 60px');
+		.calc(height, ~'100% - 60px');
 	}
 }
 
@@ -1673,8 +1610,7 @@ a.github-fork {
 		display: none;
 	}
 	input[type='text'] {
-		.calc(width,
-		~'100% - 100px');
+		.calc(width, ~'100% - 100px');
 		vertical-align: top;
 		margin-top: -4px;
 		margin-left: -3px;
@@ -1693,8 +1629,7 @@ a.github-fork {
 	margin: 40px auto;
 	padding: 20px;
 	border-radius: 5px;
-	box-shadow: 1px 1px 4px rgba(0,0,0,.3);
-
+	box-shadow: 1px 1px 4px rgba(0, 0, 0, .3);
 	.cms-page-close {
 		margin-bottom: 10px;
 		text-align: right;
@@ -1712,22 +1647,19 @@ a.github-fork {
 	display: -webkit-flex;
 	justify-content: center;
 	padding: 0 40px;
-
 	> .spotlight-input {
 		width: 100%;
 		max-width: 600px;
 		font-size: 24px;
 		margin-top: 6%;
-
 		> input {
-			box-shadow: 0px 10px 20px rgba(0,0,0,.5);
+			box-shadow: 0px 10px 20px rgba(0, 0, 0, .5);
 			border-width: 0px;
 			line-height: 46px;
 			height: 46px;
 			padding: 18px;
 			padding-left: 46px;
 		}
-
 		> i {
 			position: absolute;
 			z-index: 10;
@@ -1748,20 +1680,17 @@ a.github-fork {
 	z-index: 1000;
 	justify-content: center;
 	padding: 0 40px;
-
 	> .buttons {
 		font-size: 24px;
 		position: absolute;
 		bottom: 0;
 		left: 10%;
 		right: 10%;
-
 		.button {
 			display: block;
 			text-align: center;
 		}
 	}
-
 	.mobile-menu-separator {
 		height: 10px;
 	}
@@ -1816,7 +1745,6 @@ a.github-fork {
 		padding: 20px 0;
 		background-color: #f8f8f8;
 		color: #444;
-
 		> .info {
 			max-width: auto;
 			line-height: 24px;
@@ -1825,71 +1753,58 @@ a.github-fork {
 			font-weight: 500;
 		}
 	}
-
 	.section {
 		border: 1px solid #ddd;
 		border-left: none;
 		background-color: #fff;
 		padding: 20px;
 		margin-bottom: 20px;
-
 		&.section-collapsed {
 			.section-content {
 				display: none;
 			}
 		}
-
 		.section-title {
 			display: flex;
 			font-size: 24px;
 			font-weight: 600;
 			color: #444;
 			line-height: 40px;
-
 			.section-title-text {
 				flex-grow: 1;
 			}
-
 			.section-title-right {
 				line-height: 0px;
 			}
 		}
-
 		.section-content {
 			border: none !important;
 			border-radius: 0px !important;
 			padding: 20px 0 0 0 !important;
-
 			.input-line {
 				border-bottom: 1px solid #eee;
 				padding: 20px 0;
 				margin-bottom: 0px;
-
 				&:last-child {
 					border-bottom: none;
 					padding-bottom: 0;
 				}
-
 				&:first-child {
 					padding-top: 0;
 				}
-
 				&.setting-changed {
 					> label {
 						color: #627CFF
 					}
 				}
-
 				&[disabled] {
 					label {
 						color: #888;
 					}
 				}
-
 				input {
 					color: #444;
 				}
-
 				> label {
 					text-align: left;
 					font-weight: 500;
@@ -1897,13 +1812,11 @@ a.github-fork {
 					line-height: 20px;
 					color: #444;
 				}
-
 				.settings-description {
 					color: #888;
 					padding: 5px;
 					line-height: 20px;
 				}
-
 				.settings-alert {
 					background-color: rgb(255, 255, 230);
 					border: 1px solid rgb(255, 242, 196);
@@ -1914,7 +1827,6 @@ a.github-fork {
 			}
 		}
 	}
-
 	.settings-description {
 		.allow-text-selection;
 	}
@@ -1923,11 +1835,9 @@ a.github-fork {
 		width: 100%;
 		padding: 0;
 	}
-
 	.settings-file-preview {
 		display: flex;
 		align-items: center;
-
 		input[type=file] {
 			position: absolute !important;
 			width: 100%;
@@ -1941,17 +1851,15 @@ a.github-fork {
 				cursor: pointer;
 			}
 		}
-
 		.preview {
 			height: 50px;
 			width: 100px;
 			border-radius: 4px;
 			overflow: hidden;
-			box-shadow: 0 0 1px rgba(0,0,0,.5) inset;
+			box-shadow: 0 0 1px rgba(0, 0, 0, .5) inset;
 			background-size: contain;
 			background-position: center center;
 			background-repeat: no-repeat;
-
 			&.no-file {
 				background-color: #fafafa;
 				display: flex;
@@ -1985,19 +1893,15 @@ a.github-fork {
 				padding: 0 0 0 10px;
 				font-weight: 500;
 			}
-
 			&:first-of-type > h1 {
 				margin-top: 0px;
 			}
-
 			.section-content {
 				border: 1px solid;
 				padding: 20px;
 				border-radius: 5px;
-
 				.section-helper {
 					padding: 20px 20px 40px;
-
 					pre {
 						display: inline;
 						background-color: #eee;
@@ -2056,7 +1960,6 @@ a.github-fork {
 			text-transform: uppercase;
 		}
 	}
-
 	.list {
 		a {
 			display: block;
@@ -2121,7 +2024,6 @@ a.github-fork {
 	justify-content: center;
 	-webkit-justify-content: center;
 	width: 200px;
-
 	i {
 		font-size: 24px;
 	}
@@ -2137,12 +2039,10 @@ a.github-fork {
 	justify-content: center;
 	-webkit-justify-content: center;
 	font-size: 30px;
-
 	div {
 		line-height: 40px;
 		text-align: center;
 	}
-
 	i {
 		font-size: 100px;
 		padding-bottom: 30px;
@@ -2157,24 +2057,19 @@ a.github-fork {
 	font-weight: bold;
 	display: flex;
 	flex-direction: column;
-
 	> div {
 		line-height: 24px;
 		padding: 0 10px;
 		border-top: 1px solid;
-
 		&:last-child {
-			box-shadow: 0px 1px 2px rgba(0,0,0,.2);
+			box-shadow: 0px 1px 2px rgba(0, 0, 0, .2);
 		}
 	}
-
 	font-size: 12px;
-
 	.upload-progress {
 		height: 24px;
 		position: relative;
-		text-shadow: 1px 1px 0px rgba(0,0,0,.2);
-
+		text-shadow: 1px 1px 0px rgba(0, 0, 0, .2);
 		.upload-progress-progress {
 			position: absolute;
 			left: 0px;
@@ -2183,7 +2078,6 @@ a.github-fork {
 			z-index: 1;
 			.transition(width, 1s, ease-out);
 		}
-
 		.upload-progress-text {
 			padding: 0 10px;
 			position: absolute;
@@ -2191,7 +2085,6 @@ a.github-fork {
 			right: 0px;
 			height: 100%;
 			z-index: 2;
-
 			> a {
 				float: right;
 				text-transform: uppercase;
@@ -2200,32 +2093,25 @@ a.github-fork {
 			}
 		}
 	}
-
 	.unread-bar {
 		background-color: #E6F4FD;
 		color: #068FE4;
 		text-transform: uppercase;
 		text-align: center;
-
 		> a.mark-read {
 			float: right;
-
 			&:hover {
 				cursor: pointer;
 			}
 		}
-
 		.unread-count {
 			display: none;
 		}
-
 		> a.jump-to {
 			float: left;
-
 			.jump-to-small {
 				display: none;
 			}
-
 			&:hover {
 				cursor: pointer;
 			}
@@ -2248,8 +2134,7 @@ a.github-fork {
 	.edit-room-title {
 		margin-left: 4px;
 		font-size: 16px;
-		&:hover {
-		}
+		&:hover {}
 	}
 	.wrapper {
 		position: absolute;
@@ -2272,6 +2157,19 @@ a.github-fork {
 		width: 100%;
 		min-height: @footer-min-height;
 	}
+	.message-popup-results {
+		&.notready {
+			.message-popup-items {
+				background-image: url(images/logo/loading.gif);
+				background-repeat: no-repeat;
+				background-position: 50% 50%;
+				height: 100px;
+			}
+			.popup-item {
+				display: none;
+			}
+		}
+	}
 	.message-popup-position {
 		position: relative;
 	}
@@ -2282,7 +2180,7 @@ a.github-fork {
 		left: 0px;
 		right: 0px;
 		overflow: hidden;
-		box-shadow: 0px 0px 4px rgba(0,0,0,0.5);
+		box-shadow: 0px 0px 4px rgba(0, 0, 0, 0.5);
 	}
 	.message-popup-title {
 		border-bottom: 1px solid;
@@ -2295,8 +2193,7 @@ a.github-fork {
 		line-height: 24px;
 		cursor: pointer;
 		user-select: none;
-		&.selected {
-		}
+		&.selected {}
 	}
 	.popup-user-avatar {
 		width: 24px;
@@ -2313,56 +2210,54 @@ a.github-fork {
 		display: inline-block;
 		border-radius: 10px;
 	}
-	.popup-user-status-system {
-	}
-	.popup-user-status-offline {
-	}
-	.popup-user-status-online {
-	}
-	.popup-user-status-away {
-	}
-	.popup-user-status-busy {
-	}
+	.popup-user-status-system {}
+	.popup-user-status-offline {}
+	.popup-user-status-online {}
+	.popup-user-status-away {}
+	.popup-user-status-busy {}
 	.popup-slash-command-description {
 		float: right;
 	}
 	.message-form {
-		> div {
+		> .message-input {
+			border: 1px solid;
+			overflow: hidden;
+			border-radius: 5px;
 			position: relative;
 			display: flex;
-			display: -webkit-flex;
 			.input-message-container {
 				position: relative;
 				width: 100%;
-
 				.inner-right-toolbar {
 					position: absolute;
 					right: 10px;
 					top: 10px;
 				}
 			}
-			> .file {
+			> .message-buttons {
+				.mic,
+				.stop-mic,
+				.send-button {
+					display: none;
+				}
+				&.show-mic .mic,
+				&.show-mic .stop-mic {
+					display: inline-block;
+				}
+				&.show-send .send-button {
+					display: inline-block;
+				}
 				width: 44px;
-				font-size: 22px;
-				padding: 6px 0;
 				text-align: center;
-				border: 1px solid;
-				border-radius: 5px 0 0 5px;
-				border-right: none;
+				border: 0;
 				cursor: pointer;
+				display: flex;
+				align-items: center;
+				justify-content: center;
 				.transition(background-color 0.1s linear, color 0.1s linear);
-
-				i.file {
-					top: 50%;
-					transform: translateY(-50%) translateX(-50%);
-					position: absolute;
+				i {
 					font-size: 18px;
-					vertical-align: text-bottom;
 				}
-
-				&:hover {
-				}
-
 				input {
 					position: absolute;
 					top: 0;
@@ -2379,56 +2274,19 @@ a.github-fork {
 				}
 			}
 		}
-		.message-buttons {
-			padding-left: 4px;
-
-			.mic, .stop-mic {
-				width: 40px;
-				font-size: 22px;
-				height: 36px;
-				padding: 7px 0;
-				text-align: center;
-				cursor: pointer;
-				border-radius: 30px;
-				display: none;
-			}
-
-			&.show-mic .mic, &.show-mic .stop-mic {
-				display: inline-block;
-			}
-
-			.send-button {
-				position: inherit;
-				width: 40px;
-				font-size: 20px;
-				height: 36px;
-				padding: 7px 0;
-				text-align: center;
-				cursor: pointer;
-				border-radius: 30px;
-				display: none;
-				i {
-					margin-right: 2px;
-				}
-			}
-
-			&.show-send .send-button {
-				display: inline-block;
-			}
-		}
 		textarea {
 			display: block;
 			margin: 0px;
 			padding-top: 9px;
 			padding-bottom: 9px;
 			padding-right: 38px;
-			border-top-left-radius: 0;
-			border-bottom-left-radius: 0;
+			border-radius: 0;
 			overflow-y: hidden;
 			resize: none;
 			line-height: 16px;
-			&.editing {
-			}
+			border-top: 0;
+			border-bottom: 0;
+			&.editing {}
 		}
 		.users-typing {
 			float: left;
@@ -2498,7 +2356,8 @@ a.github-fork {
 			}
 		}
 		&.editing {
-			.formatting-tips, .users-typing{
+			.formatting-tips,
+			.users-typing {
 				display: none;
 			}
 			.editing-commands {
@@ -2513,7 +2372,6 @@ a.github-fork {
 		vertical-align: top;
 		width: 100%;
 	}
-
 	&.admin {
 		.message:hover:not(.system) .message-action {
 			display: inline-block;
@@ -2526,8 +2384,7 @@ a.github-fork {
 	margin: 60px 20px 0px 0px;
 	overflow: hidden;
 	width: 100%;
-	.calc(height,
-	~'100% - 120px');
+	.calc(height, ~'100% - 120px');
 	.wrapper.has-more-next {
 		padding-bottom: 24px;
 	}
@@ -2539,7 +2396,6 @@ a.github-fork {
 		text-align: center;
 		line-height: 40px;
 		font-style: italic;
-
 		.load-more-loading {
 			color: #aaa;
 		}
@@ -2560,7 +2416,6 @@ a.github-fork {
 		cursor: pointer;
 		bottom: 8px;
 		left: 50%;
-
 		.transition(transform 0.3s ease-out);
 		.transform(translateY(0));
 		&.not {
@@ -2581,7 +2436,6 @@ a.github-fork {
 		right: 20px;
 		border-top-left-radius: 4px;
 		border-top-right-radius: 4px;
-
 		span {
 			cursor: pointer;
 		}
@@ -2609,7 +2463,8 @@ a.github-fork {
 	position: absolute;
 	right: 2px;
 	height: 100%;
-
+	z-index: 10;
+	pointer-events: none;
 	.tick {
 		background-color: #008ce3;
 		height: 2px;
@@ -2624,14 +2479,12 @@ a.github-fork {
 	position: relative;
 	line-height: 20px;
 	min-height: 40px;
-
 	&.highlight {
 		-webkit-animation: highlight 3s;
 		-moz-animation: highlight 3s;
 		-o-animation: highlight 3s;
 		animation: highlight 3s;
 	}
-
 	&:nth-child(1) {
 		margin-top: 0;
 	}
@@ -2651,7 +2504,7 @@ a.github-fork {
 			font-size: 12px;
 			font-weight: 600;
 			text-align: center;
-			.calc(left,~"50% - 70px");
+			.calc(left, ~"50% - 70px");
 			z-index: 10;
 			padding: 0 10px;
 			min-width: 140px;
@@ -2682,25 +2535,21 @@ a.github-fork {
 			cursor: pointer;
 		}
 	}
-
 	@keyframes dropdown-in {
 		0% {
 			display: none;
 			opacity: 0;
 		}
-
 		1% {
 			display: block;
 			opacity: 0;
 			transform: scale(0);
 		}
-
 		100% {
 			opacity: 1;
 			transform: scale(1);
 		}
 	}
-
 	.message-dropdown {
 		position: absolute;
 		top: -5px;
@@ -2710,16 +2559,14 @@ a.github-fork {
 		background-color: #fff;
 		border-radius: 4px;
 		overflow: hidden;
-		box-shadow: 0px 1px 1px 0 rgba(0,0,0,0.2), 0 2px 10px 0 rgba(0,0,0,.16);
+		box-shadow: 0px 1px 1px 0 rgba(0, 0, 0, 0.2), 0 2px 10px 0 rgba(0, 0, 0, .16);
 		transition: transform .15s ease-in-out, opacity .15s ease-in-out;
 		animation: dropdown-in .15s ease-in-out;
-
 		ul {
 			display: flex;
 			display: -webkit-flex;
 			padding: 0px;
 			font-size: 14px;
-
 			li {
 				display: block;
 				padding: 0px 8px;
@@ -2741,13 +2588,11 @@ a.github-fork {
 			}
 		}
 	}
-
 	.user {
 		display: inline-block;
 		font-weight: 600;
 		margin-right: 5px;
-		&:hover {
-		}
+		&:hover {}
 	}
 	.thumb {
 		position: absolute;
@@ -2773,7 +2618,8 @@ a.github-fork {
 			padding-left: 3px;
 			margin-left: 3px;
 		}
-		.is-bot, .role-tag {
+		.is-bot,
+		.role-tag {
 			background-color: #ccc;
 			padding: 1px 4px;
 			border-radius: 2px;
@@ -2799,7 +2645,8 @@ a.github-fork {
 			text-align: right;
 			left: 5px;
 			width: 60px;
-			.time, .role-tag {
+			.time,
+			.role-tag {
 				display: none;
 			}
 			.edited {
@@ -2819,12 +2666,10 @@ a.github-fork {
 		.body {
 			margin-top: 0px;
 		}
-
 		// .message-dropdown {
 		//	top: 100%;
 		//	left: 0;
 		// }
-
 		&:hover {
 			.time {
 				// display: inline-block;
@@ -2858,39 +2703,33 @@ a.github-fork {
 		opacity: 1;
 		.transition(opacity 1s linear);
 		margin-top: 2px;
-
 		.inline-image {
 			background-size: contain;
 			background-repeat: no-repeat;
 			background-position: center left;
 			display: inline-block;
 			line-height: 0px;
-			box-shadow: inset 0 0 0 1px rgba(0,0,0,.1);
+			box-shadow: inset 0 0 0 1px rgba(0, 0, 0, .1);
 			border-radius: 3px;
 			overflow: hidden;
-
 			img {
 				max-height: 200px;
 				max-width: 100%;
 				opacity: 0;
 			}
 		}
-
 		> h1 {
 			font-size: 3em;
 			line-height: 1em;
 		}
-
 		> h2 {
 			font-size: 2.5em;
 			line-height: 1em;
 		}
-
 		> h3 {
 			font-size: 2em;
 			line-height: 1em;
 		}
-
 		> h4 {
 			font-size: 1.5em;
 			line-height: 1em;
@@ -2910,9 +2749,10 @@ body:not(.is-cordova) {
 	.message:hover:not(.system) .message-cog {
 		visibility: visible;
 	}
-
 	.message {
-		.body, .user.user-card-message, .time {
+		.body,
+		.user.user-card-message,
+		.time {
 			-webkit-user-select: text;
 			-moz-user-select: text;
 			-ms-user-select: text;
@@ -2945,18 +2785,15 @@ body:not(.is-cordova) {
 	background: #FCFCFC;
 	border-left: 1px solid #eaeaea;
 	z-index: 130;
-
 	.tab-button {
 		cursor: pointer;
 		padding: 10px;
 		background: #FCFCFC;
 		border-bottom: 1px solid #eaeaea;
 		text-align: center;
-
 		&:hover {
 			background: #EAEAEA;
 		}
-
 		&.active {
 			background-color: #F4F4F4;
 			margin-left: -1px;
@@ -2978,10 +2815,7 @@ body:not(.is-cordova) {
 	right: 0;
 	top: 0;
 	.transform(translateX(100%));
-	.transition(transform .25s cubic-bezier(.5,
-	0,
-	.1,
-	1));
+	.transition(transform .25s cubic-bezier(.5, 0, .1, 1));
 	.control {
 		height: 60px;
 		position: relative;
@@ -3016,26 +2850,21 @@ body:not(.is-cordova) {
 			border-bottom: 1px solid;
 			cursor: pointer;
 			.transform(translateX(-27px));
-			.transition(transform .25s ease-out .475s,
-			background .075s ease-out .5s);
+			.transition(transform .25s ease-out .475s, background .075s ease-out .5s);
 			&:hover {
 				.arrow {
 					.arrow {
 						&:before,
-						&:after {
-						}
+						&:after {}
 					}
 				}
 			}
 			.arrow {
 				&:before,
-				&:after {
-				}
+				&:after {}
 			}
 			i {
-				.transform-origin(50%,
-				50%,
-				0);
+				.transform-origin(50%, 50%, 0);
 				.transition(transform .3s ease-out);
 				height: 12.5px;
 				vertical-align: top;
@@ -3047,8 +2876,7 @@ body:not(.is-cordova) {
 				&:hover {
 					.arrow {
 						&:before,
-						&:after {
-						}
+						&:after {}
 					}
 				}
 			}
@@ -3080,8 +2908,7 @@ body:not(.is-cordova) {
 				line-height: 60px;
 				vertical-align: middle;
 				border-left: 1px solid;
-				&.active {
-				}
+				&.active {}
 				&:last-child {
 					border-right: 1px solid;
 				}
@@ -3095,11 +2922,7 @@ body:not(.is-cordova) {
 		top: auto;
 		-webkit-overflow-scrolling: touch;
 		> div {
-			.transition(transform .45s cubic-bezier(.5,
-			0,
-			0,
-			1),
-			opacity .125s ease-out .1s);
+			.transition(transform .45s cubic-bezier(.5, 0, 0, 1), opacity .125s ease-out .1s);
 		}
 		> .animated-hidden {
 			.transform(translateX(100%));
@@ -3179,7 +3002,6 @@ body:not(.is-cordova) {
 				text-decoration: none;
 			}
 		}
-
 	}
 	.show-more-users {
 		margin: 1em auto 0 auto;
@@ -3193,8 +3015,8 @@ body:not(.is-cordova) {
 				border-bottom: 1px solid #eaeaea;
 				display: block;
 				&:hover {
-			  		color: #006db0;
-			  		text-decoration: underline;
+					color: #006db0;
+					text-decoration: underline;
 				}
 			}
 		}
@@ -3202,7 +3024,6 @@ body:not(.is-cordova) {
 			float: left;
 			color: #444;
 			margin-right: 10px;
-
 			&.file-delete {
 				float: right;
 				padding-top: 10px;
@@ -3211,14 +3032,13 @@ body:not(.is-cordova) {
 					cursor: pointer;
 				}
 			}
-
 			&.file-download {
-		  		float: right;
-		  		padding-top: 11px;
-		  		&:hover {
+				float: right;
+				padding-top: 11px;
+				&:hover {
 					color: #006db0;
 					cursor: pointer;
-		  		}
+				}
 			}
 		}
 	}
@@ -3245,7 +3065,6 @@ body:not(.is-cordova) {
 		margin-left: 120px;
 		white-space: normal;
 		.calc(width, ~'100% - 120px');
-
 		h3 {
 			-webkit-user-select: text;
 			-moz-user-select: text;
@@ -3258,7 +3077,6 @@ body:not(.is-cordova) {
 			width: 100%;
 			overflow: hidden;
 			white-space: nowrap;
-
 			i:after {
 				content: " ";
 				display: inline-block;
@@ -3267,22 +3085,17 @@ body:not(.is-cordova) {
 				border-radius: 4px;
 				vertical-align: middle;
 			}
-
 			i.status-offline {
-				&:after {
-				}
+				&:after {}
 			}
 			i.status-online {
-				&:after {
-				}
+				&:after {}
 			}
 			i.status-away {
-				&:after {
-				}
+				&:after {}
 			}
 			i.status-busy {
-				&:after {
-				}
+				&:after {}
 			}
 		}
 		p {
@@ -3343,8 +3156,7 @@ body:not(.is-cordova) {
 			padding: 0 5px;
 			line-height: 22px;
 			position: relative;
-			.transition(background .18s ease,
-			colo .18s ease);
+			.transition(background .18s ease, colo .18s ease);
 			&:before {
 				content: attr(data-stats);
 				position: absolute;
@@ -3390,8 +3202,7 @@ body:not(.is-cordova) {
 			padding: 0 5px;
 			line-height: 22px;
 			position: relative;
-			.transition(background .18s ease,
-			colo .18s ease);
+			.transition(background .18s ease, colo .18s ease);
 			&:before {
 				content: attr(data-stats);
 				position: absolute;
@@ -3428,8 +3239,7 @@ body:not(.is-cordova) {
 
 .user-image-status(@color) {
 	.avatar {
-		&:after {
-		}
+		&:after {}
 	}
 }
 
@@ -3454,23 +3264,18 @@ body:not(.is-cordova) {
 				.transform(scaleX(1))
 			}
 			.status-offline {
-				&:after {
-				}
+				&:after {}
 			}
 			.status-online {
-				&:after {
-				}
+				&:after {}
 			}
 			.status-away {
-				&:after {
-				}
+				&:after {}
 			}
 			.status-busy {
-				&:after {
-				}
+				&:after {}
 			}
-			p {
-			}
+			p {}
 		}
 	}
 	.avatar {
@@ -3519,8 +3324,7 @@ body:not(.is-cordova) {
 			text-overflow: ellipsis;
 			position: relative;
 			padding-left: 10px;
-			.calc(width,
-			~"100% - 45px");
+			.calc(width, ~"100% - 45px");
 		}
 	}
 	a {
@@ -3579,8 +3383,7 @@ body:not(.is-cordova) {
 			main {
 				position: absolute;
 				overflow-y: scroll;
-				.calc(height,
-				~'100% - 112px');
+				.calc(height, ~'100% - 112px');
 			}
 		}
 	}
@@ -3692,8 +3495,7 @@ body:not(.is-cordova) {
 					font-size: 24px;
 				}
 				&:hover {
-					i {
-					}
+					i {}
 				}
 			}
 		}
@@ -3754,13 +3556,11 @@ body:not(.is-cordova) {
 		&:extend(.rocket-h2);
 		line-height: 24px;
 		margin: 0;
-		&.error {
-		}
+		&.error {}
 	}
 	h3 {
 		&:extend(.rocket-h3);
-		&.error {
-		}
+		&.error {}
 	}
 	img {
 		width: 200px;
@@ -3768,10 +3568,8 @@ body:not(.is-cordova) {
 	a {
 		margin: 4px 0;
 		display: inline-block;
-		&:active {
-		}
-		&:hover {
-		}
+		&:active {}
+		&:hover {}
 	}
 	.options {
 		display: none;
@@ -3819,20 +3617,15 @@ body:not(.is-cordova) {
 			border-radius: 0px;
 			&.error {
 				border-bottom: 1px solid;
-				&::-webkit-input-placeholder {
-				}
-				&:-moz-placeholder {
-				}
+				&::-webkit-input-placeholder {}
+				&:-moz-placeholder {}
 				/* Firefox 18- */
-				&::-moz-placeholder {
-				}
+				&::-moz-placeholder {}
 				/* Firefox 19+ */
-				&:-ms-input-placeholder {
-				}
+				&:-ms-input-placeholder {}
 			}
 		}
-		input:-webkit-autofill {
-		}
+		input:-webkit-autofill {}
 		input:-webkit-autofill {
 			-webkit-box-shadow: 0 0 0px 1000px #f4f4f4 inset;
 		}
@@ -3950,8 +3743,7 @@ body:not(.is-cordova) {
 		}
 		div.switch-language {
 			margin-top: 20px;
-			a {
-			}
+			a {}
 		}
 	}
 	a.meteor {
@@ -4012,8 +3804,7 @@ body:not(.is-cordova) {
 	width: 100%;
 	padding: 12px;
 	border: 1px solid;
-	.transition(background-color .15s ease-out,
-	border-color .15s ease-out);
+	.transition(background-color .15s ease-out, border-color .15s ease-out);
 	&:first-child {
 		margin-top: 10px;
 	}
@@ -4070,12 +3861,12 @@ body:not(.is-cordova) {
 	width: 100%;
 	tr {
 		background-color: #FFFFFF;
-
 		&:nth-of-type(even) {
 			background-color: #F5F5F5;
 		}
 	}
-	th, td {
+	th,
+	td {
 		text-align: left;
 		padding: 6px 8px;
 	}
@@ -4134,12 +3925,12 @@ body:not(.is-cordova) {
 		.main-content {
 			left: 0;
 			z-index: 120;
-
 			&.notransition {
 				.transition(transform .0s);
 			}
 		}
-		.main-content, .flex-tab-bar {
+		.main-content,
+		.flex-tab-bar {
 			.transition(transform .2s linear);
 		}
 		.fixed-title h2 {
@@ -4160,7 +3951,9 @@ body:not(.is-cordova) {
 					&:nth-child(1) {
 						opacity: 1;
 						width: 10px;
-						.transform-origin(50%, 50%, 0);
+						.transform-origin(50%,
+						50%,
+						0);
 						.transform(translateY(3px) rotate(-45deg));
 					}
 					&:nth-child(2) {
@@ -4169,17 +3962,19 @@ body:not(.is-cordova) {
 					&:nth-child(3) {
 						opacity: 1;
 						width: 10px;
-						.transform-origin(50%, 50%, 0);
+						.transform-origin(50%,
+						50%,
+						0);
 						.transform(translateY(-3px) rotate(45deg));
 					}
 				}
 			}
-			.main-content, .flex-tab-bar {
+			.main-content,
+			.flex-tab-bar {
 				.transform(translateX(@rooms-box-width));
 			}
 		}
 	}
-
 	.sweet-alert {
 		h2 {
 			font-size: 20px;
@@ -4207,8 +4002,7 @@ body:not(.is-cordova) {
 		}
 		.info {
 			margin-left: 75px;
-			.calc(width,
-			~'100% - 120px');
+			.calc(width, ~'100% - 120px');
 			h3 {
 				font-size: 20px;
 			}
@@ -4252,13 +4046,11 @@ body:not(.is-cordova) {
 		.control {
 			padding-left: 50px;
 		}
-
 		button.more {
 			width: 60px;
 			.transform(translateX(-57px));
 		}
 	}
-
 	.connection-status > .alert {
 		border-width: 0 0 1px 0;
 	}
@@ -4269,7 +4061,6 @@ body:not(.is-cordova) {
 		padding-left: 10px;
 		padding-right: 10px;
 	}
-
 	.mobile-message-menu {
 		-webkit-user-select: none;
 		-moz-user-select: none;
@@ -4278,29 +4069,13 @@ body:not(.is-cordova) {
 	}
 }
 
-.message-popup-results {
-	&.notready {
-		.message-popup-items {
-			background-image: url(images/logo/loading.gif);
-			background-repeat: no-repeat;
-			background-position: 50% 50%;
-			height: 100px;
-		}
-		.popup-item {
-			display: none;
-		}
-	}
-}
-
 @media all and(max-height: 480px) {
 	#login-card {
 		padding: 10px;
 		margin: 10px auto;
-
 		.input-text {
 			margin-bottom: 6px;
 		}
-
 		.submit {
 			margin: 0px;
 		}
@@ -4329,18 +4104,15 @@ body:not(.is-cordova) {
 			}
 		}
 	}
-
 	.main-video {
 		background-color: black;
 		text-align: center;
-
 		video {
 			width: 100%;
 			min-height: 299px;
 		}
-
 		>div {
-			background-color: rgba(0,0,0,.5);
+			background-color: rgba(0, 0, 0, .5);
 			margin-top: -28px;
 			position: relative;
 			line-height: 25px;
@@ -4350,7 +4122,6 @@ body:not(.is-cordova) {
 			font-weight: bold;
 		}
 	}
-
 	.videos {
 		display: -webkit-flex;
 		display: -moz-flex;
@@ -4361,7 +4132,6 @@ body:not(.is-cordova) {
 		justify-content: center;
 		-webkit-justify-content: center;
 		-moz-justify-content: center;
-
 		.video-item {
 			position: relative;
 			margin-right: 3px;
@@ -4370,7 +4140,6 @@ body:not(.is-cordova) {
 			overflow: hidden;
 			text-align: center;
 			background-color: black;
-
 			&.state-overlay::before {
 				content: attr(data-state-text);
 				position: absolute;
@@ -4386,13 +4155,11 @@ body:not(.is-cordova) {
 				background-color: black;
 				color: white;
 			}
-
 			video {
 				height: 70px;
 				max-width: 100px;
 				background-color: black;
 			}
-
 			>div {
 				line-height: 16px;
 				font-size: 12px;
@@ -4401,14 +4168,13 @@ body:not(.is-cordova) {
 				overflow: hidden;
 				padding: 0px 2px;
 				margin-top: -16px;
-				background-color: rgba(0,0,0,.5);
+				background-color: rgba(0, 0, 0, .5);
 				position: relative;
 				color: white;
 				font-weight: bold;
 			}
-
 			.video-muted-overlay {
-				background-color: rgba(0,0,0,.5);
+				background-color: rgba(0, 0, 0, .5);
 				position: absolute;
 				bottom: 16px;
 				left: 0;
@@ -4435,7 +4201,6 @@ body:not(.is-cordova) {
 	display: -webkit-flex;
 	display: -moz-flex;
 	display: flex;
-
 	button:first-child {
 		-webkit-flex-grow: 1;
 		-moz-flex-grow: 1;
@@ -4461,29 +4226,26 @@ body:not(.is-cordova) {
 		border-width: 0 1px 0 0;
 		border-color: #e7e7e7;
 	}
-
 	input {
 		text-indent: 34px;
 	}
 }
 
 .inline-video {
-    height: auto;
-    width: 100%;
-    max-width: 480px;
-    max-height: 270px;
+	height: auto;
+	width: 100%;
+	max-width: 480px;
+	max-height: 270px;
 }
 
 .attention-message {
 	padding-top: 50px;
 	font-size: 24px;
-
 	i {
 		display: block;
 		margin-bottom: 20px;
 		font-size: 40px;
 	}
-
 	span {
 		display: block;
 	}
@@ -4498,18 +4260,15 @@ body:not(.is-cordova) {
 			}
 		}
 	}
-
 	.load-more {
 		text-transform: lowercase;
 		text-align: center;
 		line-height: 40px;
 		font-style: italic;
-
 		.load-more-loading {
 			color: #aaa;
 		}
 	}
-
 	.no-results {
 		text-align: center;
 	}
@@ -4521,7 +4280,6 @@ body:not(.is-cordova) {
 		text-align: center;
 		line-height: 40px;
 		font-style: italic;
-
 		.load-more-loading {
 			color: #aaa;
 		}
@@ -4557,17 +4315,14 @@ body:not(.is-cordova) {
 	-ms-user-select: text;
 	user-select: text;
 	margin-bottom: 0px !important;
-
 	* {
 		-webkit-user-select: text;
 		-moz-user-select: text;
 		-ms-user-select: text;
 		user-select: text;
 	}
-
 	> div {
 		word-break: break-all;
-
 		.time {
 			color: #666;
 		}
@@ -4588,7 +4343,6 @@ body:not(.is-cordova) {
 	left: 50%;
 	background: #FFF;
 	color: #428bca;
-
 	.transition(transform 0.3s ease-out);
 	.transform(translateY(0));
 	&.not {
@@ -4606,12 +4360,11 @@ body:not(.is-cordova) {
 	left: 0;
 	right: 0;
 	bottom: 0;
-	background-color: rgba(0,0,0,.5);
+	background-color: rgba(0, 0, 0, .5);
 	z-index: 1000;
 	display: flex;
 	align-items: center;
 	justify-content: center;
-
 	.spinner {
 		margin: 10px auto;
 		width: 50px;
@@ -4619,47 +4372,48 @@ body:not(.is-cordova) {
 		text-align: center;
 		font-size: 10px;
 	}
-
 	.spinner > div {
 		background-color: #fff;
 		height: 100%;
 		width: 6px;
 		display: inline-block;
-
 		-webkit-animation: sk-stretchdelay 1.2s infinite ease-in-out;
 		animation: sk-stretchdelay 1.2s infinite ease-in-out;
 	}
-
 	.spinner .rect2 {
 		-webkit-animation-delay: -1.1s;
 		animation-delay: -1.1s;
 	}
-
 	.spinner .rect3 {
 		-webkit-animation-delay: -1.0s;
 		animation-delay: -1.0s;
 	}
-
 	.spinner .rect4 {
 		-webkit-animation-delay: -0.9s;
 		animation-delay: -0.9s;
 	}
-
 	.spinner .rect5 {
 		-webkit-animation-delay: -0.8s;
 		animation-delay: -0.8s;
 	}
-
 	@-webkit-keyframes sk-stretchdelay {
-		0%, 40%, 100% { -webkit-transform: scaleY(0.4) }
-		20% { -webkit-transform: scaleY(1.0) }
+		0%,
+		40%,
+		100% {
+			-webkit-transform: scaleY(0.4)
+		}
+		20% {
+			-webkit-transform: scaleY(1.0)
+		}
 	}
-
 	@keyframes sk-stretchdelay {
-		0%, 40%, 100% {
+		0%,
+		40%,
+		100% {
 			transform: scaleY(0.4);
 			-webkit-transform: scaleY(0.4);
-		}  20% {
+		}
+		20% {
 			transform: scaleY(1.0);
 			-webkit-transform: scaleY(1.0);
 		}
@@ -4675,7 +4429,6 @@ body:not(.is-cordova) {
 		font-weight: bold;
 		margin-top: 5px;
 	}
-
 	pre {
 		font-size: 12px;
 		font-weight: bold;
@@ -4690,26 +4443,21 @@ body:not(.is-cordova) {
 	.title {
 		display: none;
 	}
-
 	.button-fullscreen {
 		display: initial;
 	}
-
 	.button-restore {
 		display: none;
 	}
-
 	.buttons {
 		text-align: right;
 		background-color: #F7F7F7;
 		border: 1px solid #ddd;
 		border-width: 0px 1px 1px 1px;
 	}
-
 	.CodeMirror {
 		border: 1px solid #ddd;
 	}
-
 	&.code-mirror-box-fullscreen {
 		height: auto;
 		position: fixed;
@@ -4723,11 +4471,9 @@ body:not(.is-cordova) {
 		flex-direction: column;
 		align-items: stretch;
 		background-color: white;
-
 		.buttons {
 			border: none;
 		}
-
 		.title {
 			display: initial;
 			padding-left: 10px;
@@ -4735,20 +4481,16 @@ body:not(.is-cordova) {
 			background-color: #F7F7F7;
 			line-height: 30px;
 		}
-
 		.button-fullscreen {
 			display: none;
 		}
-
 		.button-restore {
 			display: initial;
 		}
-
 		.CodeMirror {
 			flex-grow: 1;
 			display: flex;
 			flex-direction: column;
-
 			.CodeMirror-scroll {
 				flex-grow: 1;
 			}
@@ -4766,7 +4508,6 @@ body:not(.is-cordova) {
 			left: 0;
 		}
 	}
-
 	.container-bars {
 		.unread-bar {
 			.unread-count {
