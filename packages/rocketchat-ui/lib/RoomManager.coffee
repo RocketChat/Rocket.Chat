@@ -240,8 +240,10 @@ RocketChat.Notifications.onUser 'message', (msg) ->
 		$('.messages-box .mention-link-me').each (index, item) ->
 			topOffset = $(item).offset().top + scrollTop
 			percent = 100 / totalHeight * topOffset
-			ticksBar.append('<div class="tick" style="top: '+percent+'%;"></div>')
-
+			if $(item).hasClass('mention-link-all')
+				ticksBar.append('<div class="tick tick-all" style="top: '+percent+'%;"></div>')
+			else
+				ticksBar.append('<div class="tick" style="top: '+percent+'%;"></div>')
 
 	open: open
 	close: close
