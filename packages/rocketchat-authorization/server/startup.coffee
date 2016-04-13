@@ -62,4 +62,4 @@ Meteor.startup ->
 	]
 
 	for role in defaultRoles
-		RocketChat.models.Roles.createOrUpdate role.name, role.scope, role.description, true
+		RocketChat.models.Roles.upsert { _id: role.name }, { $setOnInsert: { scope: role.scope, description: role.description || '', protected: true } }
