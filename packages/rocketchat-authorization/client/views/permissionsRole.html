@@ -40,44 +40,48 @@
 				</form>
 				{{/if}}
 				{{#if $or ($eq role.scope 'Users') searchRoom}}
-					<form id="form-users" class="inline">
-						<label>{{_ "Add_user"}}</label>
-						<input type="text" name="username" placeholder="{{_ "Enter_a_username"}}">
-						<button name="add" class="button primary">{{_ "Add"}}</button>
-					</form>
-					<div class="list">
-						<table>
-							<thead>
-								<tr>
-									<th>&nbsp;</th>
-									<th width="34%">{{_ "Name"}}</th>
-									<th width="33%">{{_ "Username"}}</th>
-									<th width="33%">{{_ "E-mail"}}</th>
-									<th>&nbsp;</th>
-								</tr>
-							</thead>
-							<tbody>
-								{{#unless hasUsers}}
+					{{#if Template.subscriptionsReady}}
+						<form id="form-users" class="inline">
+							<label>{{_ "Add_user"}}</label>
+							<input type="text" name="username" placeholder="{{_ "Enter_a_username"}}">
+							<button name="add" class="button primary">{{_ "Add"}}</button>
+						</form>
+						<div class="list">
+							<table>
+								<thead>
 									<tr>
-										<td colspan="5" class="empty-role">{{_ "There_are_no_users_in_this_role"}}</td>
+										<th>&nbsp;</th>
+										<th width="34%">{{_ "Name"}}</th>
+										<th width="33%">{{_ "Username"}}</th>
+										<th width="33%">{{_ "E-mail"}}</th>
+										<th>&nbsp;</th>
 									</tr>
-								{{/unless}}
-								{{#each userInRole}}
-									<tr class="user-info" data-id="{{_id}}">
-										<td>
-											<div class="user-image status-{{status}}">
-												{{> avatar username=username}}
-											</div>
-										</td>
-										<td>{{name}}</td>
-										<td>{{username}}</td>
-										<td>{{emailAddress}}</td>
-										<td><a href="#remove" class="remove-user"><i class="icon-block"></i></a></td>
-									</tr>
-								{{/each}}
-							</tbody>
-						</table>
-					</div>
+								</thead>
+								<tbody>
+									{{#unless hasUsers}}
+										<tr>
+											<td colspan="5" class="empty-role">{{_ "There_are_no_users_in_this_role"}}</td>
+										</tr>
+									{{/unless}}
+									{{#each userInRole}}
+										<tr class="user-info" data-id="{{_id}}">
+											<td>
+												<div class="user-image status-{{status}}">
+													{{> avatar username=username}}
+												</div>
+											</td>
+											<td>{{name}}</td>
+											<td>{{username}}</td>
+											<td>{{emailAddress}}</td>
+											<td><a href="#remove" class="remove-user"><i class="icon-block"></i></a></td>
+										</tr>
+									{{/each}}
+								</tbody>
+							</table>
+						</div>
+					{{else}}
+						{{_ "Loading..."}}
+					{{/if}}
 				{{/if}}
 			{{/if}}
 		{{else}}

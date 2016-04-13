@@ -317,6 +317,14 @@ RocketChat.models.Messages = new class extends RocketChat.models._Base
 		message = user.username
 		return @createWithTypeRoomIdMessageAndUser 'owner-removed', roomId, message, user, extraData
 
+	createSubscriptionRoleAddedWithRoomIdAndUser: (roomId, user, extraData) ->
+		message = user.username
+		return @createWithTypeRoomIdMessageAndUser 'subscription-role-added', roomId, message, user, extraData
+
+	createSubscriptionRoleRemovedWithRoomIdAndUser: (roomId, user, extraData) ->
+		message = user.username
+		return @createWithTypeRoomIdMessageAndUser 'subscription-role-removed', roomId, message, user, extraData
+
 	# REMOVE
 	removeById: (_id) ->
 		query =
