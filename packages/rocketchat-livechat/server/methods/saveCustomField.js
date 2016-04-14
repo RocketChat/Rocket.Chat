@@ -13,7 +13,7 @@ Meteor.methods({
 		check(customFieldData, Match.ObjectIncluding({ field: String, label: String, scope: String, visibility: String }));
 
 		if (!/^[0-9a-zA-Z-_]+$/.test(customFieldData.field)) {
-			throw new Meteor.Error('error-invalid-custom-field-nmae', 'Invalid custom field name. Use only letters, numbers and dashes.', { method: 'livechat:saveCustomField' });
+			throw new Meteor.Error('error-invalid-custom-field-nmae', 'Invalid custom field name. Use only letters, numbers, hyphens and underscores.', { method: 'livechat:saveCustomField' });
 		}
 
 		if (_id) {

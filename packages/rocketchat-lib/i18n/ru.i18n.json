@@ -283,7 +283,7 @@
   "error-duplicate-channel-name" : "Чат '%s' уже существует",
   "error-invalid-password" : "Неверный пароль",
   "error-invalid-room" : "Несуществующий чат",
-  "error-invalid-room-name" : "<strong>%s</strong> is not a valid room name,<br/> use only letters, numbers and dashes",
+  "error-invalid-room-name" : "<strong>%s</strong> is not a valid room name,<br/> use only letters, numbers, hyphens and underscores",
   "error-invalid-user" : "Неверный пользователь",
   "error-invalid-username" : "Неверное имя пользователя",
   "error-not-allowed" : "Не разрешено",
