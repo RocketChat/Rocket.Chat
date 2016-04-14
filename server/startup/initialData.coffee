@@ -42,7 +42,7 @@ Meteor.startup ->
 				console.log "Name: #{adminUser.name}".green
 
 				if process.env.ADMIN_EMAIL?
-					re = /^([\w-]+(?:\.[\w-]+)*)@((?:[\w-]+\.)*\w[\w-]{0,66})\.([a-z]{2,6}(?:\.[a-z]{2})?)$/i
+					re = /^[^@].*@[^@]+$/i
 					if re.test process.env.ADMIN_EMAIL
 						if not RocketChat.models.Users.findOneByEmailAddress process.env.ADMIN_EMAIL
 							adminUser.emails = [
