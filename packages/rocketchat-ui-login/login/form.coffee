@@ -80,14 +80,14 @@ Template.loginForm.events
 		formData = instance.validate()
 		if formData
 			if instance.state.get() is 'email-verification'
-				Meteor.call 'sendConfirmationEmail', formData.email, (err, result) ->
+				Meteor.call 'sendConfirmationEmail', s.trim(formData.email), (err, result) ->
 					RocketChat.Button.reset(button)
 					toastr.success t('We_have_sent_registration_email')
 					instance.state.set 'login'
 				return
 
 			if instance.state.get() is 'forgot-password'
-				Meteor.call 'sendForgotPasswordEmail', formData.email, (err, result) ->
+				Meteor.call 'sendForgotPasswordEmail', s.trim(formData.email), (err, result) ->
 					RocketChat.Button.reset(button)
 					toastr.success t('We_have_sent_password_email')
 					instance.state.set 'login'
@@ -105,7 +105,7 @@ Template.loginForm.events
 							toastr.error error.reason
 						return
 
-					Meteor.loginWithPassword formData.email, formData.pass, (error) ->
+					Meteor.loginWithPassword s.trim(formData.email), formData.pass, (error) ->
 						if error?.error is 'no-valid-email'
 							toastr.success t('We_have_sent_registration_email')
 							instance.state.set 'login'
@@ -117,7 +117,7 @@ Template.loginForm.events
 				if RocketChat.settings.get('LDAP_Enable')
 					loginMethod = 'loginWithLDAP'
 
-				Meteor[loginMethod] formData.emailOrUsername.trim(), formData.pass, (error) ->
+				Meteor[loginMethod] s.trim(formData.emailOrUsername), formData.pass, (error) ->
 					RocketChat.Button.reset(button)
 					if error?
 						if error.error is 'no-valid-email'
