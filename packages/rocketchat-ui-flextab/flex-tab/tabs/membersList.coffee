@@ -80,7 +80,6 @@ Template.membersList.helpers
 			]
 		}
 
-
 	showUserInfo: ->
 		webrtc = WebRTC.getInstanceByRoomId(this.rid)
 		videoActive = webrtc?.localUrl?.get()? or webrtc?.remoteItems?.get()?.length > 0
@@ -92,8 +91,8 @@ Template.membersList.helpers
 		return {
 			username: Template.instance().userDetail.get()
 			clear: Template.instance().clearUserDetail
-			showAll: room.t in ['c', 'p']
-			video: room.t in ['d']
+			showAll: room?.t in ['c', 'p']
+			video: room?.t in ['d']
 		}
 
 Template.membersList.events
@@ -134,7 +133,6 @@ Template.membersList.onCreated ->
 	@clearUserDetail = =>
 		@showDetail.set(false)
 		setTimeout =>
-			# @userDetail.set(null)
 			@clearRoomUserDetail()
 		, 500
 
@@ -142,14 +140,8 @@ Template.membersList.onCreated ->
 		@showDetail.set(username?)
 		@userDetail.set(username)
 
-	console.log '@data.clearUserDetail ->',@data.clearUserDetail
-
 	@clearRoomUserDetail = @data.clearUserDetail
 
 	@autorun =>
 		data = Template.currentData()
-		console.log 'membersList.onCreated.autorun ->',data
-
 		@showUserDetail data.userDetail
-
-		# @subscribe 'fullUserData', data.userDetail, 1

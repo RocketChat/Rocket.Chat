@@ -895,6 +895,7 @@ a.github-fork {
 .list-view {
 	-webkit-overflow-scrolling: touch;
 	overflow-y: auto;
+	overflow-x: hidden;
 	.custom-scroll(transparent, #DADADA);
 	> .status {
 		p {
@@ -908,6 +909,8 @@ a.github-fork {
 }
 
 .user-view {
+	-webkit-overflow-scrolling: touch;
+	.custom-scroll(transparent, #DADADA);
 	.info {
 		h3 {
 			i.status-offline {

@@ -7,8 +7,6 @@ isSubscribed = (_id) ->
 favoritesEnabled = ->
 	return !RocketChat.settings.get 'Disable_Favorite_Rooms'
 
-
-# @TODO bug com o botão para "rolar até o fim" (novas mensagens) quando há uma mensagem com texto que gere rolagem horizontal
 Template.room.helpers
 	# showFormattingTips: ->
 	# 	return RocketChat.settings.get('Message_ShowFormattingTips') and (RocketChat.Markdown or RocketChat.Highlight)

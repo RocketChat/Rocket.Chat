@@ -17,16 +17,14 @@ Template.adminUserEdit.events
 		t.save()
 
 Template.adminUserEdit.onCreated ->
-	@user = this.data
+	@user = this.data.user
 
-	@cancel = =>
+	@cancel = (username) =>
 		if @user
-			RocketChat.TabBar.setTemplate 'adminUserInfo'
-			RocketChat.TabBar.setData @user
-			RocketChat.TabBar.showGroup 'adminusers-selected'
+			@data.back(username)
 		else
 			RocketChat.TabBar.closeFlex()
-			RocketChat.TabBar.showGroup 'adminusers'
+			@data.back(username)
 
 	@getUserData = =>
 		userData = { _id: @user?._id }
@@ -63,6 +61,7 @@ Template.adminUserEdit.onCreated ->
 					else
 						toastr.success t('User_added_successfully')
 
+					@cancel(userData.username)
 
 				if error
 					toastr.error error.reason
