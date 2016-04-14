@@ -27,6 +27,16 @@ Template.body.onRendered ->
 					if subscription.alert or subscription.unread > 0
 						Meteor.call 'readMessages', subscription.rid
 
+	$(document.body).on 'click', 'a', (e) ->
+		href = $(e.currentTarget).attr('href')
+		pattern = /msg=([a-zA-Z0-9]+)/
+		if href.indexOf(Meteor.absoluteUrl()) is 0 and pattern.test(href)
+			e.preventDefault()
+			e.stopPropagation()
+			msgId = href.match(pattern)[1]
+			console.log(msgId);
+			# msg = { _id: msgId, rid: room._id }
+			# RoomHistoryManager.getSurroundingMessages(msg);
 
 	Tracker.autorun (c) ->
 		w = window
