@@ -14,7 +14,7 @@ RocketChat.settings.get 'Site_Url', (key, value) ->
 			Meteor.absoluteUrl.defaultOptions.rootUrl = host
 
 		if Meteor.isServer
-			RocketChat.hostname = host
+			RocketChat.hostname = host.replace(/^https?:\/\//, '')
 
 			process.env.MOBILE_ROOT_URL = host
 			process.env.MOBILE_DDP_URL = host
