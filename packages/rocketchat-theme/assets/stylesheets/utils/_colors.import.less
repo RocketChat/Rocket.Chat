@@ -418,6 +418,7 @@ a.github-fork {
 	//background-color: @primary-background-color;
 	background-color: transparent;
 	color: @tertiary-font-color;
+
 	.custom-scroll(transparent, @custom-scrollbar-color);
 	header {
 		background-color: @primary-background-color;
@@ -884,10 +885,18 @@ a.github-fork {
 	}
 	.content {
 		.custom-scroll(transparent, #DADADA);
+
+		> div {
+			background-color: @secondary-background-color;
+		}
 	}
 }
 
 .list-view {
+	-webkit-overflow-scrolling: touch;
+	overflow-y: auto;
+	overflow-x: hidden;
+	.custom-scroll(transparent, #DADADA);
 	> .status {
 		p {
 			color: @secondary-font-color;
@@ -900,6 +909,8 @@ a.github-fork {
 }
 
 .user-view {
+	-webkit-overflow-scrolling: touch;
+	.custom-scroll(transparent, #DADADA);
 	.info {
 		h3 {
 			i.status-offline {

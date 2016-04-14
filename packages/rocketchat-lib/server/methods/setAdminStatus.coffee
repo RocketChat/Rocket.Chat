@@ -6,9 +6,9 @@ Meteor.methods
 		unless RocketChat.authz.hasPermission( Meteor.userId(), 'assign-admin-role') is true
 			throw new Meteor.Error 'not-authorized', '[methods] setAdminStatus -> Not authorized'
 
-		if admin
-			RocketChat.authz.addUserRoles( userId, 'admin')
-		else
-			RocketChat.authz.removeUserFromRoles( userId, 'admin')
+		user = Meteor.users.findOne({ _id: userId }, { fields: { username: 1 } })
 
-		return true
+		if admin
+			return Meteor.call('authorization:addUserToRole', 'admin', user.username);
+		else
+			return Meteor.call('authorization:removeUserFromRole', 'admin', user.username);
