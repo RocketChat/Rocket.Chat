@@ -68,10 +68,13 @@ class Markdown
 
 		# Support >Text for quote
 		msg = msg.replace(/^&gt;(.*)$/gm, '<blockquote><span class="copyonly">&gt;</span>$1</blockquote>')
-		msg = msg.replace(/<\/blockquote>\n<blockquote>/gm, '</blockquote><blockquote>')
 
 		# Remove white-space around blockquote (prevent <br>). Because blockquote is block element.
-		msg = msg.replace(/(?:\s*)(<blockquote>.*<\/blockquote>)(?:\s*)/gm, '$1')
+		msg = msg.replace(/\s*<blockquote>/gm, '<blockquote>')
+		msg = msg.replace(/<\/blockquote>\s*/gm, '</blockquote>')
+
+		# Remove new-line between blockquotes.
+		msg = msg.replace(/<\/blockquote>\n<blockquote>/gm, '</blockquote><blockquote>')
 
 		if not _.isString message
 			message.html = msg
