@@ -40,6 +40,8 @@ Meteor.startup(function() {
 		action(event) {
 			const data = Blaze.getData(event.currentTarget);
 
+			event.stopPropagation();
+
 			RocketChat.EmojiPicker.open(event.currentTarget, (emoji) => {
 				Meteor.call('setReaction', ':' + emoji + ':', data._arguments[1]._id);
 			});

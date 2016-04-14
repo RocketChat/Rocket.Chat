@@ -22,11 +22,14 @@ getUrlContent = (urlObj, redirectCount = 5, callback) ->
 
 	parsedUrl = _.pick urlObj, ['host', 'hash', 'pathname', 'protocol', 'port', 'query', 'search']
 
-	RocketChat.callbacks.run 'oembed:beforeGetUrlContent',
+	data = RocketChat.callbacks.run 'oembed:beforeGetUrlContent',
 		urlObj: urlObj
 		parsedUrl: parsedUrl
 
-	url = URL.format urlObj
+	if data.attachments?
+		return callback null, data
+
+	url = URL.format data.urlObj
 	opts =
 		url: url
 		strictSSL: !RocketChat.settings.get 'Allow_Invalid_SelfSigned_Certs'
@@ -84,6 +87,9 @@ OEmbed.getUrlMeta = (url, withFragment) ->
 
 	content = getUrlContentSync urlObj, 5
 
+	if content.attachments?
+		return content
+
 	metas = undefined
 
 	if content?.body?
@@ -114,17 +120,13 @@ OEmbed.getUrlMeta = (url, withFragment) ->
 		for header, value of content.headers
 			headers[changeCase.camelCase(header)] = value
 
-	RocketChat.callbacks.run 'oembed:afterParseContent',
+	data = RocketChat.callbacks.run 'oembed:afterParseContent',
 		meta: metas
 		headers: headers
 		parsedUrl: content.parsedUrl
 		content: content
 
-	return {
-		meta: metas
-		headers: headers
-		parsedUrl: content.parsedUrl
-	}
+	return data
 
 OEmbed.getUrlMetaWithCache = (url, withFragment) ->
 	cache = RocketChat.models.OEmbedCache.findOneById url
@@ -162,21 +164,29 @@ getRelevantMetaTags = (metaObj) ->
 
 OEmbed.RocketUrlParser = (message) ->
 	if Array.isArray message.urls
+		attachments = []
 		changed = false
 		message.urls.forEach (item) ->
+			if item.ignoreParse is true then return
 			if not /^https?:\/\//i.test item.url then return
 
 			data = OEmbed.getUrlMetaWithCache item.url
 
 			if data?
-				if data.meta?
-					item.meta = getRelevantMetaTags data.meta
+				if data.attachments
+					attachments = _.union attachments, data.attachments
+				else
+					if data.meta?
+						item.meta = getRelevantMetaTags data.meta
 
-				if data.headers?
-					item.headers = getRelevantHeaders data.headers
+					if data.headers?
+						item.headers = getRelevantHeaders data.headers
 
-				item.parsedUrl = data.parsedUrl
-				changed = true
+					item.parsedUrl = data.parsedUrl
+					changed = true
+
+		if attachments.length
+			RocketChat.models.Messages.setMessageAttachments message._id, attachments
 
 		if changed is true
 			RocketChat.models.Messages.setUrlsById message._id, message.urls
