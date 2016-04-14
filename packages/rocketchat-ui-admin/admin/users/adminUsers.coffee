@@ -95,7 +95,6 @@ Template.adminUsers.events
 
 	'click .user-info': (e) ->
 		e.preventDefault()
-		Session.set 'showUserInfo', @_id
 		RocketChat.TabBar.setTemplate 'adminUserInfo'
 		RocketChat.TabBar.setData Meteor.users.findOne @_id
 		RocketChat.TabBar.openFlex()
