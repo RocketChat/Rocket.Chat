@@ -101,7 +101,7 @@ Template.chatRoomItem.events
 					if err
 						swal {
 							title: t('Warning')
-							text: t(err.reason)
+							text: handleError(err, false)
 							type: 'warning'
 							html: false
 						}

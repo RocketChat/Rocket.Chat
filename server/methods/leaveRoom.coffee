@@ -1,7 +1,7 @@
 Meteor.methods
 	leaveRoom: (rid) ->
 		unless Meteor.userId()
-			throw new Meteor.Error(403, "[methods] leaveRoom -> Invalid user")
+			throw new Meteor.Error('error-invalid-user', "Invalid user", { method: 'leaveRoom' })
 
 		this.unblock()
 
@@ -13,7 +13,7 @@ Meteor.methods
 		if RocketChat.authz.hasRole(user._id, 'owner', room._id)
 			numOwners = RocketChat.authz.getUsersInRole('owner', room._id).fetch().length
 			if numOwners is 1
-				throw new Meteor.Error 'last-owner', 'You_are_the_last_owner_Please_set_new_owner_before_leaving_the_room'
+				throw new Meteor.Error 'error-you-are-last-owner', 'You are the last owner. Please set new owner before leaving the room.', { method: 'leaveRoom' }
 
 		RocketChat.callbacks.run 'beforeLeaveRoom', user, room
 
