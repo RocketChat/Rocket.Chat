@@ -9,12 +9,12 @@ Meteor.methods
 		RocketChat.validateEmailDomain(formData.email);
 
 		userData =
-			email: formData.email
+			email: s.trim(formData.email)
 			password: formData.pass
 
 		userId = Accounts.createUser userData
 
-		RocketChat.models.Users.setName userId, formData.name
+		RocketChat.models.Users.setName userId, s.trim(formData.name)
 
 		if userData.email
 			Accounts.sendVerificationEmail(userId, userData.email);
