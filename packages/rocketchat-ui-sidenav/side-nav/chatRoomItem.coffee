@@ -70,7 +70,9 @@ Template.chatRoomItem.events
 			if FlowRouter.getRouteName() in ['channel', 'group', 'direct'] and Session.get('openedRoom') is rid
 				FlowRouter.go 'home'
 
-			Meteor.call 'hideRoom', rid
+			Meteor.call 'hideRoom', rid, (err) ->
+				if err
+					handleError(err)
 
 	'click .leave-room': (e) ->
 		e.stopPropagation()
