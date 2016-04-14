@@ -48,7 +48,6 @@ Package.onUse(function(api) {
 	api.addFiles('admin/users/adminInviteUser.coffee', 'client');
 	api.addFiles('admin/users/adminUserChannels.coffee', 'client');
 	api.addFiles('admin/users/adminUserEdit.coffee', 'client');
-	api.addFiles('admin/users/adminUserInfo.coffee', 'client');
 	api.addFiles('admin/users/adminUsers.coffee', 'client');
 
 	api.addFiles('publications/adminRooms.js', 'server');

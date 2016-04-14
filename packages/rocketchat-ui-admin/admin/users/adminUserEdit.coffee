@@ -17,16 +17,14 @@ Template.adminUserEdit.events
 		t.save()
 
 Template.adminUserEdit.onCreated ->
-	@user = this.data
+	@user = this.data.user
 
-	@cancel = =>
+	@cancel = (username) =>
 		if @user
-			RocketChat.TabBar.setTemplate 'adminUserInfo'
-			RocketChat.TabBar.setData @user
-			RocketChat.TabBar.showGroup 'adminusers-selected'
+			@data.back(username)
 		else
 			RocketChat.TabBar.closeFlex()
-			RocketChat.TabBar.showGroup 'adminusers'
+			@data.back(username)
 
 	@getUserData = =>
 		userData = { _id: @user?._id }
@@ -62,11 +60,8 @@ Template.adminUserEdit.onCreated ->
 						toastr.success t('User_updated_successfully')
 					else
 						toastr.success t('User_added_successfully')
-						@user = Meteor.users.findOne result
 
-					Meteor.subscribe 'fullUserData', userData.username, 1, =>
-						Session.set 'showUserInfo', @user._id
-						this.cancel()
+					@cancel(userData.username)
 
 				if error
 					toastr.error error.reason
