@@ -80,10 +80,6 @@ Template.membersList.helpers
 			]
 		}
 
-	# flexUserInfo: ->
-	# 	return Template.instance().userDetail.get()
-		# username = Session.get('showUserInfo')
-		# return Meteor.users.findOne({ username: String(username) }) or { username: String(username) }
 
 	showUserInfo: ->
 		webrtc = WebRTC.getInstanceByRoomId(this.rid)
@@ -91,16 +87,7 @@ Template.membersList.helpers
 		return Template.instance().showDetail.get() and not videoActive
 
 	userInfoDetail: ->
-		# username=flexUserInfo showAll=isGroupChat video=isDirectChat
-
 		room = ChatRoom.findOne(this.rid, { fields: { t: 1 } })
-
-	# isGroupChat: ->
-	# 	return ChatRoom.findOne(this.rid, { reactive: false })?.t in ['c', 'p']
-
-	# isDirectChat: ->
-	# 	return ChatRoom.findOne(this.rid, { reactive: false })?.t is 'd'
-
 
 		return {
 			username: Template.instance().userDetail.get()
@@ -110,11 +97,6 @@ Template.membersList.helpers
 		}
 
 Template.membersList.events
-	# "click .flex-tab .user-image > a" : (e) ->
-	# 	console.log 'click .user-image > a ->', $(e.currentTarget).data('username')
-	# 	RocketChat.TabBar.openFlex()
-	# 	Session.set('showUserInfo', $(e.currentTarget).data('username'))
-
 	'click .see-all': (e, instance) ->
 		seeAll = instance.showAllUsers.get()
 		instance.showAllUsers.set(!seeAll)
@@ -142,9 +124,6 @@ Template.membersList.events
 
 	'click .show-more-users': (e, instance) ->
 		instance.usersLimit.set(instance.usersLimit.get() + 100)
-
-	'click .back': (e) ->
-		Session.set('showUserInfo', null)
 
 Template.membersList.onCreated ->
 	@showAllUsers = new ReactiveVar false

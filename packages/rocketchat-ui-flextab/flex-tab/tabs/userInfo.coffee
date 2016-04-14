@@ -65,13 +65,12 @@ Template.userInfo.helpers
 
 Template.userInfo.events
 	'click .pvt-msg': (e) ->
-		Meteor.call 'createDirectMessage', Session.get('showUserInfo'), (error, result) ->
-			console.log result
+		Meteor.call 'createDirectMessage', @username, (error, result) =>
 			if error
 				return toastr.error error.reason
 
 			if result?.rid?
-				FlowRouter.go('direct', { username: Session.get('showUserInfo') })
+				FlowRouter.go('direct', { username: @username })
 
 	"click .flex-tab  .video-remote" : (e) ->
 		if RocketChat.TabBar.isFlexOpen()
@@ -101,7 +100,6 @@ Template.userInfo.events
 
 	'click .back': (e, instance) ->
 		instance.clear()
-		# Session.set('showUserInfo', null)
 
 	'click .remove-user': (e) ->
 		e.preventDefault()
@@ -128,7 +126,6 @@ Template.userInfo.events
 						type: 'success'
 						timer: 2000
 						showConfirmButton: false
-					Session.set('showUserInfo', null)
 		else
 			toastr.error(TAPi18n.__ 'Not_allowed')
 

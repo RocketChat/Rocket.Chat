@@ -360,19 +360,12 @@ Template.room.events
 
 	"click .flex-tab .user-image > a" : (e, instance) ->
 		RocketChat.TabBar.openFlex()
-		console.log '[room.coffee] click .flex-tab .user-image > a ->',@username
-		# Session.set('showUserInfo', @username)
 		instance.setUserDetail @username
 
 	'click .user-card-message': (e, instance) ->
 		roomData = Session.get('roomData' + this._arguments[1].rid)
 		if roomData.t in ['c', 'p']
-			# Session.set('flexOpened', true)
-			console.log '[room.coffee] click .user-card-message ->',this._arguments[1].u.username
-			# Session.set('showUserInfo', $(e.currentTarget).data('username'))
 			instance.setUserDetail this._arguments[1].u.username
-		# else
-			# Session.set('flexOpened', true)
 		RocketChat.TabBar.setTemplate 'membersList'
 
 	'scroll .wrapper': _.throttle (e, instance) ->
@@ -427,9 +420,8 @@ Template.room.events
 			return
 
 		RocketChat.TabBar.setTemplate 'membersList'
-		console.log '[room.coffee] click .mention-link ->',$(e.currentTarget).data('username')
 		instance.setUserDetail $(e.currentTarget).data('username')
-		# Session.set('showUserInfo', $(e.currentTarget).data('username'))
+
 		RocketChat.TabBar.openFlex()
 
 	'click .image-to-download': (event) ->
@@ -475,24 +467,6 @@ Template.room.events
 				name: file.name
 
 		fileUpload filesToUpload
-
-	'click .deactivate': ->
-		username = Session.get('showUserInfo')
-		user = Meteor.users.findOne { username: String(username) }
-		Meteor.call 'setUserActiveStatus', user?._id, false, (error, result) ->
-			if result
-				toastr.success t('User_has_been_deactivated')
-			if error
-				toastr.error error.reason
-
-	'click .activate': ->
-		username = Session.get('showUserInfo')
-		user = Meteor.users.findOne { username: String(username) }
-		Meteor.call 'setUserActiveStatus', user?._id, true, (error, result) ->
-			if result
-				toastr.success t('User_has_been_activated')
-			if error
-				toastr.error error.reason
 
 	'load img': (e, template) ->
 		template.sendToBottomIfNecessary?()

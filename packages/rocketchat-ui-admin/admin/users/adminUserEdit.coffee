@@ -62,11 +62,7 @@ Template.adminUserEdit.onCreated ->
 						toastr.success t('User_updated_successfully')
 					else
 						toastr.success t('User_added_successfully')
-						@user = Meteor.users.findOne result
 
-					Meteor.subscribe 'fullUserData', userData.username, 1, =>
-						Session.set 'showUserInfo', @user._id
-						this.cancel()
 
 				if error
 					toastr.error error.reason
