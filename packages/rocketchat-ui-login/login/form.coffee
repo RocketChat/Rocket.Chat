@@ -114,11 +114,10 @@ Template.loginForm.events
 
 			else
 				loginMethod = 'loginWithPassword'
-				emailOrUsername = formData.emailOrUsername.replace /^\s+|\s+$/g, ""
 				if RocketChat.settings.get('LDAP_Enable')
 					loginMethod = 'loginWithLDAP'
 
-				Meteor[loginMethod] emailOrUsername, formData.pass, (error) ->
+				Meteor[loginMethod] formData.emailOrUsername.trim(), formData.pass, (error) ->
 					RocketChat.Button.reset(button)
 					if error?
 						if error.error is 'no-valid-email'
