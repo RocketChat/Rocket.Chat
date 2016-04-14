@@ -8,7 +8,7 @@ RocketChat.settings.get 'Site_Url', (key, value) ->
 			prefix = match[2].replace(/\/$/, '')
 
 		__meteor_runtime_config__.ROOT_URL = host
-		__meteor_runtime_config__.ROOT_URL_PATH_PREFIX = prefix
+		# __meteor_runtime_config__.ROOT_URL_PATH_PREFIX = prefix
 
 		if Meteor.absoluteUrl.defaultOptions?.rootUrl?
 			Meteor.absoluteUrl.defaultOptions.rootUrl = host
