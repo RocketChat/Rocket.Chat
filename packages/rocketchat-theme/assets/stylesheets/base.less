@@ -773,7 +773,7 @@ label.required:after {
 	}
 	&:before {
 		.transform(rotate(135deg) translateX(-4px));
-		.transition(transform .185s ease-out .085s, background .15s ease-out);
+		.transition(transform .185s ease-out, background .15s ease-out);
 	}
 	&:after {
 		.transform(rotate(-135deg) translateX(-4px));
@@ -789,10 +789,10 @@ label.required:after {
 	}
 	&.top {
 		&:before {
-			.transform(rotate(45deg) translateX(-2px) translateY(2px));
+			.transform(rotate(-135deg) translateX(2px) translateY(-2px));
 		}
 		&:after {
-			.transform(rotate(-45deg) translateX(2px) translateY(2px));
+			.transform(rotate(135deg) translateX(-2px) translateY(-2px));
 		}
 	}
 	&.bottom {
@@ -805,10 +805,10 @@ label.required:after {
 	}
 	&.close {
 		&:before {
-			.transform(rotate(-45deg));
+			.transform(rotate(-135deg) translateX(0) translateY(0));
 		}
 		&:after {
-			.transform(rotate(45deg));
+			.transform(rotate(135deg) translateX(0) translateY(0));
 		}
 	}
 }
@@ -2393,15 +2393,6 @@ a.github-fork {
 	ul {
 		padding: 21px 0 10px;
 	}
-	.load-more {
-		text-transform: lowercase;
-		text-align: center;
-		line-height: 40px;
-		font-style: italic;
-		.load-more-loading {
-			color: #aaa;
-		}
-	}
 	.start {
 		text-align: center;
 		margin-top: 12px;
@@ -2522,8 +2513,7 @@ a.github-fork {
 			top: -20px;
 			left: 0;
 			border-top: 1px solid;
-			width: 96%;
-			margin-left: 2%;
+			width: 100%;
 		}
 	}
 	.message-action {
@@ -2612,9 +2602,6 @@ a.github-fork {
 			height: 20px;
 			display: inline-block;
 			vertical-align: bottom;
-			.avatar {
-				border-radius: 50%;
-			}
 		}
 	}
 	.info {
@@ -2823,15 +2810,6 @@ body:not(.is-cordova) {
 	.transform(translateX(100%));
 	.transition(transform .25s cubic-bezier(.5, 0, .1, 1));
 	.control {
-		height: 60px;
-		position: relative;
-		text-align: left;
-		z-index: 100;
-		padding: 12px 30px 12px;
-		> a,
-		> form {
-			float: left;
-		}
 		.header {
 			text-align: center;
 			padding: 5px 30px 20px;
@@ -2888,11 +2866,7 @@ body:not(.is-cordova) {
 			}
 		}
 		.search-form {
-			padding: 0 4px 0 0;
 			width: 100%;
-			> div {
-				position: relative;
-			}
 			.icon-plus {
 				position: absolute;
 				top: 11px;
@@ -2978,15 +2952,23 @@ body:not(.is-cordova) {
 
 .list-view {
 	z-index: 10;
-	padding: 5px 30px 20px;
+	padding: 20px;
 	.list {
 		display: flex;
 		flex-flow: column nowrap;
 		position: relative;
 		width: 100%;
+		.message {
+			padding: 8px 0px 4px 50px;
+			&.new-day
+				&:before {
+
+				}
+			}
+		}
 	}
-	> .status {
-		margin: 5px 0 15px;
+	> .title {
+		margin: 0 0 20px;
 		h2 {
 			font-size: 20px;
 			line-height: 25px;
@@ -4273,6 +4255,16 @@ body:not(.is-cordova) {
 	}
 }
 
+.load-more {
+	text-transform: lowercase;
+	text-align: center;
+	line-height: 40px;
+	font-style: italic;
+	.load-more-loading {
+		color: #aaa;
+	}
+}
+
 .search-messages-list {
 	.message-cog-container {
 		.message-action {
@@ -4282,30 +4274,12 @@ body:not(.is-cordova) {
 			}
 		}
 	}
-	.load-more {
-		text-transform: lowercase;
-		text-align: center;
-		line-height: 40px;
-		font-style: italic;
-		.load-more-loading {
-			color: #aaa;
-		}
-	}
 	.no-results {
 		text-align: center;
 	}
 }
 
 .uploaded-files-list {
-	.load-more {
-		text-transform: lowercase;
-		text-align: center;
-		line-height: 40px;
-		font-style: italic;
-		.load-more-loading {
-			color: #aaa;
-		}
-	}
 }
 
 .messages-box {

@@ -271,7 +271,6 @@ label.required:after {
 	i {
 		background-color: #333;
 	}
-
 	.unread-burger-alert {
 		background-color: #F95555;
 		color: @content-background-color;
@@ -281,7 +280,7 @@ label.required:after {
 .arrow {
 	&:before,
 	&:after {
-		background-color: #aaa;
+		background-color: mix(@quaternary-font-color, @primary-background-color, 65%)
 	}
 }
 
@@ -330,7 +329,7 @@ a.github-fork {
 	.info {
 		background-color:@primary-background-color;
 		h4 {
-			color: fade( @quaternary-font-color, 65% );
+			color: mix(@quaternary-font-color, @primary-background-color, 65%)
 		}
 		&.status-offline {
 			.thumb:after {
@@ -451,8 +450,6 @@ a.github-fork {
 }
 
 .side-nav {
-	background-color: #F4F4F4;
-	color: #000;
 	&:before {
 		background-color: #dfdfdf;
 	}
@@ -481,7 +478,7 @@ a.github-fork {
 		&:hover {
 			&:before,
 			&:after {
-				background-color: fade( @quaternary-font-color, 85% );
+				background-color: mix(@quaternary-font-color, @primary-background-color, 85%)
 			}
 		}
 	}
@@ -885,9 +882,18 @@ a.github-fork {
 	}
 	.content {
 		.custom-scroll(transparent, #DADADA);
-
 		> div {
 			background-color: @secondary-background-color;
+		}
+	}
+	.message {
+		&.new-day {
+			&:before {
+				background-color: @secondary-background-color;
+			}
+			&:after {
+				border-top-color: @tertiary-background-color;
+			}
 		}
 	}
 }
