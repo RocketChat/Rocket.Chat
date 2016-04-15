@@ -641,8 +641,6 @@
   "Use_url_for_avatar" : "Usa url para avatar",
   "User__username__is_now_a_moderator_of__room_name_" : "El usuario __username__ es ahora moderador de la sala  __room_name__",
   "User__username__removed_from__room_name__moderators" : "El Usuario __username__ a sido eliminado como moderador de la sala __room_name__ ",
-  "User__username__was_added_as_a_moderator_by__user_by_" : "El usuario <em>__username__</em>a sido agregado como moderador por el usuario <em>__user_by__</em>",
-  "User__username__was_removed_as_a_moderator_by__user_by_" : "El usuario <em>__username__</em> a sido eliminado como moderador por <em>__user_by__</em>",
   "User_added" : "Usuario <em>__user_added__</em> añadido.",
   "User_added_by" : "El usuario <em>__user_added__</em> ha sido añadido por <em>__user_by__</em>.",
   "User_Channels" : "Canales de Usuario",
