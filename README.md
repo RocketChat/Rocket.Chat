@@ -353,6 +353,7 @@ Thanks to
 [Bradley Hilton](https://github.com/Graywolf336),
 [Diego Sampaio](https://github.com/sampaiodiego),
 [Gabriel Engel](https://github.com/engelgabriel),
+[George Secrieru](https://github.com/gmsecrieru),
 [Marcelo Schmidt](https://github.com/marceloschmidt),
 [Rafael Caferati](https://github.com/rcaferati),
 [Rodrigo Nascimento](https://github.com/rodrigok),
