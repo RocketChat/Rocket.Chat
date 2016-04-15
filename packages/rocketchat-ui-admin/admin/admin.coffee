@@ -231,7 +231,9 @@ Template.admin.events
 				swal.showInputError TAPi18n.__ 'Name_cant_be_empty'
 				return false
 
-			Meteor.call 'addOAuthService', inputValue
+			Meteor.call 'addOAuthService', inputValue, (err) ->
+				if err
+					handleError(err)
 
 	"click .submit .remove-custom-oauth": (e, t) ->
 		name = this.section.replace('Custom OAuth: ', '')
