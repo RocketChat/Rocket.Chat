@@ -1,43 +1,7 @@
 <template name="adminUserEdit">
-	{{#unless canEditOrAdd}}
-		<p>{{_ "You_are_not_authorized_to_view_this_page"}}</p>
-	{{else}}
-		<div class="about clearfix">
-			<form class="edit-form">
-				{{#if user}}
-					<h3>{{user.name}}</h3>
-				{{else}}
-					<h3>{{_ "Add_User"}}</h3>
-				{{/if}}
-				<div class="input-line">
-					<label for="name">{{_ "Name"}}</label>
-					<input type="text" id="name" autocomplete="off" value="{{user.name}}">
-				</div>
-				<div class="input-line">
-					<label for="username">{{_ "Username"}}</label>
-					<input type="text" id="username" autocomplete="off" value="{{user.username}}">
-				</div>
-				<div class="input-line">
-					<label for="email">{{_ "E-mail"}}</label>
-					<input type="email" id="email" autocomplete="off" value="{{user.emails.[0].address}}">
-				</div>
-				{{#if hasPermission 'edit-other-user-password'}}
-				<div class="input-line">
-					<label for="password">{{_ "Password"}}</label>
-					<input type="password" id="password" autocomplete="off" value="">
-				</div>
-				<div class="input-line">
-					<label for="changePassword">
-						<input type="checkbox" id="changePassword" value="1" checked="{{user.requirePasswordChange}}">
-						{{_ "Require_password_change"}}
-					</label>
-				</div>
-				{{/if}}
-			</form>
+	<div class="content">
+		<div class="user-view">
+			{{> userEdit .}}
 		</div>
-		<nav>
-			<button class='button button-block cancel secondary'><span>{{_ "Cancel"}}</span></button>
-			<button class='button button-block blue save'><span>{{_ "Save"}}</span></button>
-		</nav>
-	{{/unless}}
+	</div>
 </template>

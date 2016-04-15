@@ -1,30 +1,31 @@
-Template.adminUserEdit.helpers
+Template.userEdit.helpers
 	canEditOrAdd: ->
 		return (Template.instance().user and RocketChat.authz.hasAtLeastOnePermission('edit-other-user-info')) or (not Template.instance().user and RocketChat.authz.hasAtLeastOnePermission('create-user'))
 
 	user: ->
 		return Template.instance().user
 
-Template.adminUserEdit.events
+Template.userEdit.events
 	'click .cancel': (e, t) ->
 		e.stopPropagation()
 		e.preventDefault()
-		t.cancel()
+		t.cancel(t.find('form'))
 
-	'click .save': (e, t) ->
+	'submit form': (e, t) ->
 		e.stopPropagation()
 		e.preventDefault()
-		t.save()
 
-Template.adminUserEdit.onCreated ->
-	@user = this.data.user
+		t.save(e.currentTarget)
 
-	@cancel = (username) =>
+Template.userEdit.onCreated ->
+	@user = this.data?.user
+
+	@cancel = (form, username) =>
+		form.reset()
 		if @user
 			@data.back(username)
 		else
 			RocketChat.TabBar.closeFlex()
-			@data.back(username)
 
 	@getUserData = =>
 		userData = { _id: @user?._id }
@@ -51,7 +52,7 @@ Template.adminUserEdit.onCreated ->
 
 		return errors.length is 0
 
-	@save = =>
+	@save = (form) =>
 		if this.validate()
 			userData = this.getUserData()
 			Meteor.call 'insertOrUpdateUser', userData, (error, result) =>
@@ -61,7 +62,7 @@ Template.adminUserEdit.onCreated ->
 					else
 						toastr.success t('User_added_successfully')
 
-					@cancel(userData.username)
+					@cancel(form, userData.username)
 
 				if error
 					toastr.error error.reason

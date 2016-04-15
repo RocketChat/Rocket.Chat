@@ -11,8 +11,6 @@ Template.adminUsers.helpers
 		return RocketChat.TabBar.getTemplate()
 	flexData: ->
 		return RocketChat.TabBar.getData()
-	username: ->
-		return '@' + @username if @username?
 	emailAddress: ->
 		return _.map(@emails, (e) -> e.address).join(', ')
 
