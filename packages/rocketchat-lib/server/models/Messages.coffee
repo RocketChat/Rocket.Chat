@@ -102,8 +102,6 @@ RocketChat.models.Messages = new class extends RocketChat.models._Base
 			'starred._id': userId
 			rid: roomId
 
-		console.log 'findStarredByUserAtRoom', arguments
-
 		return @find query, options
 
 	findPinnedByRoom: (roomId, options) ->
