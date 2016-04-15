@@ -472,7 +472,7 @@
   "LDAP_Domain_Search_User" : "Domain Search User",
   "LDAP_Domain_Search_User_Description" : "The LDAP user that performs user lookups to authenticate other users when they sign in. <br/>This is typically a service account created specifically for third-party integrations. Use a fully qualified name, such as `cn=Administrator,cn=Users,dc=Example,dc=com`.",
   "LDAP_Domain_Search_User_ID" : "Domain Search User ID",
-  "LDAP_Domain_Search_User_ID_Description" : "The LDAP attribute that identifies the LDAP user who attempts authentication. This field should be `sAMAccountName` for most Active Directory installations, but it may be `uid` for other LDAP solutions, such as OpenLDAP. You can use `mail` to identify users by email or whatever attribute you want.<br>You can user multiple values separated by comma to allow users to login using multiple identifiers like username or email.",
+  "LDAP_Domain_Search_User_ID_Description" : "The LDAP attribute that identifies the LDAP user who attempts authentication. This field should be `sAMAccountName` for most Active Directory installations, but it may be `uid` for other LDAP solutions, such as OpenLDAP. You can use `mail` to identify users by email or whatever attribute you want.<br>You can use multiple values separated by comma to allow users to login using multiple identifiers like username or email.",
   "LDAP_Enable" : "Enable",
   "LDAP_Enable_Description" : "Attempt to utilize LDAP for authentication.",
   "LDAP_Encryption" : "Encryption",
