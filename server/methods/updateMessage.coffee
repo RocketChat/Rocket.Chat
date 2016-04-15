@@ -1,7 +1,7 @@
 Meteor.methods
 	updateMessage: (message) ->
 		if not Meteor.userId()
-			throw new Meteor.Error('invalid-user', "[methods] updateMessage -> Invalid user")
+			throw new Meteor.Error('error-invalid-user', "Invalid user", { method: 'updateMessage' })
 
 		originalMessage = RocketChat.models.Messages.findOneById message._id
 
@@ -15,14 +15,14 @@ Meteor.methods
 		me = RocketChat.models.Users.findOneById Meteor.userId()
 
 		unless hasPermission or (editAllowed and editOwn)
-			throw new Meteor.Error 'message-editing-not-allowed', "[methods] updateMessage -> Message editing not allowed"
+			throw new Meteor.Error 'error-action-not-allowed', 'Message editing not allowed', { method: 'updateMessage', action: 'Message_editing' }
 
 		blockEditInMinutes = RocketChat.settings.get 'Message_AllowEditing_BlockEditInMinutes'
 		if blockEditInMinutes? and blockEditInMinutes isnt 0
 			msgTs = moment(originalMessage.ts) if originalMessage.ts?
 			currentTsDiff = moment().diff(msgTs, 'minutes') if msgTs?
 			if currentTsDiff > blockEditInMinutes
-				throw new Meteor.Error 'message-editing-blocked'
+				throw new Meteor.Error 'error-message-editing-blocked', 'Message editing is blocked', { method: 'updateMessage' }
 
 		# If we keep history of edits, insert a new message to store history information
 		if RocketChat.settings.get 'Message_KeepHistory'
