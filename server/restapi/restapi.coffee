@@ -57,6 +57,19 @@ Api.addRoute 'rooms/:id/send', authRequired: true,
 			Meteor.call('sendMessage', {msg: this.bodyParams.msg, rid: @urlParams.id} )
 		status: 'success'	#need to handle error
 
+# get list of online users in a room
+Api.addRoute 'rooms/:id/online', authRequired: true,
+	get: ->
+		room = RocketChat.models.Rooms.findOneById @urlParams.id
+		online = RocketChat.models.Users.findUsersNotOffline(fields:
+			username: 1
+			status: 1).fetch()
+		onlineInRoom = []
+		for user, i in online
+			if room.usernames.indexOf(user.username) != -1
+				onlineInRoom.push user.username
+
+		status: 'success', online: onlineInRoom
 
 # validate an array of users
 Api.testapiValidateUsers =  (users) ->
