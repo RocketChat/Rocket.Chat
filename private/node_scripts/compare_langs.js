@@ -1,9 +1,9 @@
 var async = require('async');
 var fs = require('fs');
 var _ = require('underscore');
-var googleTranslate = require('google-translate')('AIzaSyCrXsIW7UrXrx2_VDYWwo5prYk5DIo-SlM');
+var googleTranslate = require('google-translate')('AIzaSyD4igBTmV0VzF7VibGtfqC1dT_30e6zpwg');
 
-var path = '../rocket.chat/packages/rocketchat-lib/i18n/';
+var path = '../../packages/rocketchat-lib/i18n/';
 var enContents = fs.readFileSync(path + 'en.i18n.json', 'utf-8');
 var en = JSON.parse(enContents);
 
@@ -13,7 +13,8 @@ googleTranslate.getSupportedLanguages(function(err, langs) {
 		return;
 	}
 	files = fs.readdirSync(path);
-	async.each(files, function(file, callback) {
+	sum = 0;
+	async.eachSeries(files, function(file, callback) {
 		if (file === 'en.i18n.json') return callback();
 
 		var lang = file.replace('.i18n.json', '');
@@ -48,6 +49,7 @@ googleTranslate.getSupportedLanguages(function(err, langs) {
 		}
 
 		if (langs.indexOf(lang) !== -1 && toTranslateLang.length > 1) {
+			console.log(lang, toTranslateLang.length);
 			googleTranslate.translate(toTranslateLang, 'en', lang, function(err, translations) {
 				if (err) {
 					console.log(lang, err);
@@ -57,9 +59,11 @@ googleTranslate.getSupportedLanguages(function(err, langs) {
 					}
 					var newJsonString = JSON.stringify(newContent, null, '  ').replace(/": "/g, '" : "');
 					fs.writeFileSync(path + file, newJsonString, 'utf8');
-					return callback();
+					setTimeout(function() { return callback() }, 100000);
 				}
 			});
 		}
+	}, function() {
+		console.log(sum);
 	});
 });
