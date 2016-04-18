@@ -1,3 +1,18 @@
 {
-  "Start_Chat" : "தொடக்க சேட்"
+  "Additional_Feedback" : "கூடுதல் கருத்துத்",
+  "Appearance" : "தோற்றம்",
+  "How_friendly_was_the_chat_agent" : "அரட்டை முகவர் எப்படி நட்பு இருந்தது?",
+  "How_knowledgeable_was_the_chat_agent" : "அரட்டை முகவர் எப்படி அறிவு இருந்தது?",
+  "How_responsive_was_the_chat_agent" : "அரட்டை முகவர் எப்படி பதிலளிக்க இருந்தது?",
+  "How_satisfied_were_you_with_this_chat" : "இந்த அரட்டை, எவ்வளவு திருப்தியாக இருந்தன?",
+  "Installation" : "நிறுவல்",
+  "Please_answer_survey" : "இந்த அரட்டை பற்றி ஒரு விரைவான கணக்கெடுப்பு பதில் ஒரு கணம் எடுத்து கொள்ளவும்",
+  "Please_fill_name_and_email" : "பெயர் மற்றும் மின்னஞ்சல் பூர்த்தி செய்து",
+  "Select_a_department" : "துறையைத் தேர்ந்தெடுக்கவும்",
+  "Skip" : "செல்க",
+  "Start_Chat" : "தொடக்க சேட்",
+  "Survey" : "சர்வே",
+  "Survey_instructions" : "உங்கள் திருப்தி படி ஒவ்வொரு கேள்விக்கும் விகிதம், 1 நீங்கள் முற்றிலும் திருப்தி இருக்கும் பொருள் மற்றும் 5 நீங்கள் முழுமையாக திருப்தி அடைந்த பொருள்.",
+  "Thank_you_for_your_feedback" : "உங்கள் கருத்துக்கு நன்றி",
+  "We_are_offline_Sorry_for_the_inconvenience" : "நாம் லைனில் உள்ளனர். சிரமத்திற்கு வருந்துகிறோம்."
 }
