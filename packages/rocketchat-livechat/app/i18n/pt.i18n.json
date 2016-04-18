@@ -1,6 +1,10 @@
 {
   "Additional_Feedback" : "Feedback Adicional",
   "Appearance" : "Aparência",
+  "How_friendly_was_the_chat_agent" : "Como amigável foi o agente de bate-papo?",
+  "How_knowledgeable_was_the_chat_agent" : "Como conhecedor foi o agente bate-papo?",
+  "How_responsive_was_the_chat_agent" : "Como responsiva foi o agente de bate-papo?",
+  "How_satisfied_were_you_with_this_chat" : "Ficou satisfeito com este bate-papo?",
   "Installation" : "Instalação",
   "Please_answer_survey" : "Por favor nos dê um momento para responder uma rápida pesquisa sobre este chat",
   "Please_fill_name_and_email" : "Por favor preencha nome e email",
@@ -8,6 +12,7 @@
   "Skip" : "Pular",
   "Start_Chat" : "Iniciar bate-papo",
   "Survey" : "Pesquisa",
+  "Survey_instructions" : "Classifique cada questão de acordo com a sua satisfação, 1 significa que você está completamente insatisfeito e 5 significa que você está completamente satisfeito.",
   "Thank_you_for_your_feedback" : "Obrigado pelo seu feedback",
   "We_are_offline_Sorry_for_the_inconvenience" : "Você está offline. Desculpe pelo inconveniente ."
 }

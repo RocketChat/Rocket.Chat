@@ -1,8 +1,18 @@
 {
   "Additional_Feedback" : "משוב נוסף",
   "Appearance" : "מראה",
+  "How_friendly_was_the_chat_agent" : "איך ידידותי היה סוכן הצ'אט?",
+  "How_knowledgeable_was_the_chat_agent" : "איך ידע היה סוכן הצ'אט?",
+  "How_responsive_was_the_chat_agent" : "מידת ההיענות היה סוכן צ'אט?",
+  "How_satisfied_were_you_with_this_chat" : "איך הייתם מרוצה הצ'אט הזה?",
   "Installation" : "התקנה",
+  "Please_answer_survey" : "קדש דק כדי לענות על סקר קצר על הצ'אט הזה",
+  "Please_fill_name_and_email" : "נא למלא את שם ואת כתובת דואר אלקטרונית",
+  "Select_a_department" : "בחר מחלקה",
+  "Skip" : "לדלג",
   "Start_Chat" : "התחל צ'אט",
   "Survey" : "סקר",
-  "Thank_you_for_your_feedback" : "תודה לך על המשוב"
+  "Survey_instructions" : "דרג כל שאלה על פי לשביעות רצונך, כש -1 פירושו אתה לא מרוצה לחלוטין ו -5 כלומר אתה מרוצה לגמרי.",
+  "Thank_you_for_your_feedback" : "תודה לך על המשוב",
+  "We_are_offline_Sorry_for_the_inconvenience" : "אנחנו במצב לא מקוון. מצטער על אי הנוחות."
 }

@@ -1,3 +1,18 @@
 {
-  "Start_Chat" : "Mula Chat"
+  "Additional_Feedback" : "Maklum balas tambahan",
+  "Appearance" : "rupa",
+  "How_friendly_was_the_chat_agent" : "Bagaimana mesra adalah ejen chat?",
+  "How_knowledgeable_was_the_chat_agent" : "Sejauh manakah ejen chat?",
+  "How_responsive_was_the_chat_agent" : "Bagaimana responsif adalah ejen chat?",
+  "How_satisfied_were_you_with_this_chat" : "Apakah tahap kepuasan hadir di sisi sembang ini?",
+  "Installation" : "pemasangan",
+  "Please_answer_survey" : "Sila luangkan sedikit masa untuk menjawab kaji selidik yang cepat mengenai sembang ini",
+  "Please_fill_name_and_email" : "Sila isikan nama dan e-mel",
+  "Select_a_department" : "Pilih jabatan",
+  "Skip" : "Langkau",
+  "Start_Chat" : "Mula Chat",
+  "Survey" : "Survey",
+  "Survey_instructions" : "Menilai setiap soalan menurut kepuasan anda, 1 bermakna anda benar-benar berpuas hati dan 5 yang bermaksud anda benar-benar berpuas hati.",
+  "Thank_you_for_your_feedback" : "Terima kasih atas maklum balas anda",
+  "We_are_offline_Sorry_for_the_inconvenience" : "Kami berada di luar talian. Maaf atas kesulitan."
 }

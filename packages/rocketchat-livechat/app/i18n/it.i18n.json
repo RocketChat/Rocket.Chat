@@ -1,3 +1,18 @@
 {
-  "Start_Chat" : "Avvia chat"
+  "Additional_Feedback" : "Commenti aggiuntivi",
+  "Appearance" : "Aspetto",
+  "How_friendly_was_the_chat_agent" : "Come amichevole è stato l'agente chat?",
+  "How_knowledgeable_was_the_chat_agent" : "Come esperto era l'agente chat?",
+  "How_responsive_was_the_chat_agent" : "Come reattivo è stato l'agente chat?",
+  "How_satisfied_were_you_with_this_chat" : "Quanto è soddisfatto eri con questa chat?",
+  "Installation" : "Installazione",
+  "Please_answer_survey" : "Si prega di prendere un momento per rispondere a un rapido sondaggio su questa chat",
+  "Please_fill_name_and_email" : "Si prega di compilare nome e indirizzo e-mail",
+  "Select_a_department" : "Selezionare un reparto",
+  "Skip" : "Salta",
+  "Start_Chat" : "Avvia chat",
+  "Survey" : "Indagine",
+  "Survey_instructions" : "Vota ogni domanda secondo la vostra soddisfazione, 1 significa che sono completamente insoddisfatto e 5 significa che sono completamente soddisfatti.",
+  "Thank_you_for_your_feedback" : "Grazie per il tuo feedback",
+  "We_are_offline_Sorry_for_the_inconvenience" : "Noi siamo in linea. Ci dispiace per l'inconvenienza."
 }
