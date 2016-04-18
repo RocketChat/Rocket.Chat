@@ -80,7 +80,7 @@ class CustomOAuth
 		headers =
 			'User-Agent': @userAgent # http://doc.gitlab.com/ce/api/users.html#Current-user
 
-		if @accessTokenSentVia is 'header'
+		if @tokenSentVia is 'header'
 			headers['Authorization'] = 'Bearer ' + accessToken
 		else
 			params['access_token'] = accessToken
