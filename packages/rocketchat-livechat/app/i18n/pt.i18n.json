@@ -1,4 +1,13 @@
 {
   "Additional_Feedback" : "Feedback Adicional",
-  "Start_Chat" : "Iniciar bate-papo"
+  "Appearance" : "Aparência",
+  "Installation" : "Instalação",
+  "Please_answer_survey" : "Por favor nos dê um momento para responder uma rápida pesquisa sobre este chat",
+  "Please_fill_name_and_email" : "Por favor preencha nome e email",
+  "Select_a_department" : "Selecione um departamento",
+  "Skip" : "Pular",
+  "Start_Chat" : "Iniciar bate-papo",
+  "Survey" : "Pesquisa",
+  "Thank_you_for_your_feedback" : "Obrigado pelo seu feedback",
+  "We_are_offline_Sorry_for_the_inconvenience" : "Você está offline. Desculpe pelo inconveniente ."
 }
