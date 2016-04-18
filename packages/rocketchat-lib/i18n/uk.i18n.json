@@ -1,8 +1,8 @@
 {
-  "500" : "Внутрішня помилка сервера",
   "0_Errors_Only" : "0 - Тільки помилки",
   "1_Errors_and_Information" : "1 - Помилки та інформації",
   "2_Erros_Information_and_Debug" : "2 - Erros, інформація та налагодження",
+  "500" : "Внутрішня помилка сервера",
   "__username__was_set__role__by__user_by_" : "__username__ був встановлений __role__ по __user_by__",
   "__username__is_no_longer__role__defined_by__user_by_" : "__username__ більше не __role__, по __user_by__",
   "Access_not_authorized" : "Доступ не дозволяється",

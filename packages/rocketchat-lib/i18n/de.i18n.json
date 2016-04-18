@@ -1,8 +1,8 @@
 {
-  "500" : "Interner Severfehler",
   "0_Errors_Only" : "0 - nur Fehler",
   "1_Errors_and_Information" : "1 - Fehler und Informationen",
   "2_Erros_Information_and_Debug" : "2 - Fehler, Informationen und Debug-Meldungen",
+  "500" : "Interner Severfehler",
   "__username__was_set__role__by__user_by_" : "__username__ ist jetzt __role__, geändert von __user_by_",
   "__username__is_no_longer__role__defined_by__user_by_" : "__username__ ist nicht länger __role__, geändert von __user_by__",
   "Access_not_authorized" : "Der Zugriff ist nicht gestattet.",

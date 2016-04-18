@@ -1,8 +1,8 @@
 {
-  "500" : "உள்ளக சர்வர் பிழை",
   "0_Errors_Only" : "0 - பிழைகளை மட்டும்",
   "1_Errors_and_Information" : "1 - பிழைகள் மற்றும் தகவல்",
   "2_Erros_Information_and_Debug" : "2 - Erros, தகவல் மற்றும் பிழை",
+  "500" : "உள்ளக சர்வர் பிழை",
   "__username__was_set__role__by__user_by_" : "__username__ __user_by__ மூலம் __role__ அமைக்கப்பட்டது",
   "__username__is_no_longer__role__defined_by__user_by_" : "__username__ __user_by__ மூலம், __role__ இனி ஆகிறது",
   "Access_not_authorized" : "அணுகல் அதிகாரம் இல்லை",

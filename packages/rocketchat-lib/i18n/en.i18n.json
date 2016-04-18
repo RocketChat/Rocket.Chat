@@ -30,7 +30,7 @@
   "Accounts_Enrollment_Email" : "Enrollment E-mail",
   "Accounts_Enrollment_Email_Description" : "You may use [name], [fname], [lname] for the user's full name, first name or last name, respectively.<br />You may use [email] for the user's email.",
   "Accounts_Iframe_api_method" : "Api Method",
-  "Accounts_Iframe_api_url" : "Api Url",
+  "Accounts_Iframe_api_url" : "API URL",
   "Accounts_iframe_enabled" : "Enabled",
   "Accounts_iframe_url" : "Iframe Url",
   "Accounts_LoginExpiration" : "Login Expiration in Days",

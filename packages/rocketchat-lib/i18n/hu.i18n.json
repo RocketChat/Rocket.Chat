@@ -1,8 +1,8 @@
 {
-  "500" : "Belső Szerverhiba",
   "0_Errors_Only" : "0 - Csak hibák",
   "1_Errors_and_Information" : "1 - Hibák és Információs",
   "2_Erros_Information_and_Debug" : "2 - azokat a hibákat, Információs és Debug",
+  "500" : "Belső Szerverhiba",
   "__username__was_set__role__by__user_by_" : "__username__ állították __role__ által __user_by__",
   "__username__is_no_longer__role__defined_by__user_by_" : "__username__ már nem __role__, által __user_by__",
   "Access_not_authorized" : "A hozzáférés nem engedélyezett",

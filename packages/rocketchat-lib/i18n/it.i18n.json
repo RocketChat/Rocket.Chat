@@ -1,8 +1,8 @@
 {
-  "500" : "Errore interno del server",
   "0_Errors_Only" : "Solo errori - 0",
   "1_Errors_and_Information" : "1 - Errori e informazioni",
   "2_Erros_Information_and_Debug" : "2 - Erros, informazione e di debug",
+  "500" : "Errore interno del server",
   "__username__was_set__role__by__user_by_" : "__username__ è stato fissato __role__ da __user_by__",
   "__username__is_no_longer__role__defined_by__user_by_" : "__username__ non è più __role__, da __user_by__",
   "Access_not_authorized" : "L'accesso non autorizzato",
@@ -440,7 +440,7 @@
   "Katex_Enabled" : "Katex Abilitato",
   "Label" : "Etichetta",
   "Language" : "Lingua",
-  "Language_Version" : "English Version",
+  "Language_Version" : "Versione Italiana",
   "Last_login" : "Ultimo accesso",
   "Last_message" : "Ultimo messaggio",
   "Last_seen" : "Ultima visualizzazione",
