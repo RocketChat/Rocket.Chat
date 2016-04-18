@@ -13,14 +13,12 @@ googleTranslate.getSupportedLanguages(function(err, langs) {
 		return;
 	}
 	files = fs.readdirSync(path);
-	sum = 0;
 	async.eachSeries(files, function(file, callback) {
 		if (file === 'en.i18n.json') return callback();
 
 		var lang = file.replace('.i18n.json', '');
 		var destContents = fs.readFileSync(path + file, 'utf-8');
 		var destJson = JSON.parse(destContents);
-
 		var toTranslate = {};
 		var newContent = {};
 
@@ -59,11 +57,11 @@ googleTranslate.getSupportedLanguages(function(err, langs) {
 					}
 					var newJsonString = JSON.stringify(newContent, null, '  ').replace(/": "/g, '" : "');
 					fs.writeFileSync(path + file, newJsonString, 'utf8');
-					setTimeout(function() { return callback() }, 100000);
+					setTimeout(function() { return callback() }, 1000);
 				}
 			});
+		} else {
+			return callback();
 		}
-	}, function() {
-		console.log(sum);
 	});
 });
