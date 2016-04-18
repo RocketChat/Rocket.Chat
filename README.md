@@ -142,12 +142,18 @@ docker pull rocket.chat
 ## FreeBSD
 Run solid five-nines deployment on industry workhorse FreeBSD server:
 
-[![FreeBSD Daemon](https://raw.githubusercontent.com/Sing-Li/bbug/master/images/freebsd.png)](https://github.com/RocketChat/Rocket.Chat/wiki/FreeBSD)
+[![FreeBSD Daemon](https://raw.githubusercontent.com/Sing-Li/bbug/master/images/freebsd.png)](https://rocket.chat/docs/master/installing-and-updating/deployment-options/freebsd)
+
+## Windows Server
+
+Deploy on your own enterprise server, or with Microsoft Azur:
+
+[![Windows 2012 or 2016 Server](https://github.com/Sing-Li/bbug/blob/master/images/windows.png)](https://rocket.chat/docs/master/installing-and-updating/deployment-options/freebsd)
 
 ## Ansible
 Automated production-grade deployment in minutes, for RHEL / CentOS 7 or Ubuntu 14.04 LTS / 15.04:
 
-[![Ansible deployment](https://raw.githubusercontent.com/Sing-Li/bbug/master/images/ansible.png)](https://github.com/RocketChat/Rocket.Chat/wiki/Easy,-hands-off-deployment-with-Ansible)
+[![Ansible deployment](https://raw.githubusercontent.com/Sing-Li/bbug/master/images/ansible.png)](https://rocket.chat/docs/master/installing-and-updating/deployment-options/ansible)
 
 ## Raspberry Pi 2
 Run Rocket.Chat on this world famous $30 quad core server:
@@ -155,7 +161,7 @@ Run Rocket.Chat on this world famous $30 quad core server:
 [![Raspberry Pi 2](https://raw.githubusercontent.com/Sing-Li/bbug/master/images/pitiny.png)](https://github.com/RocketChat/Rocket.Chat.RaspberryPi)
 
 ## Ubuntu VPS
-Follow these [deployment instructions](https://github.com/RocketChat/Rocket.Chat/wiki/Deploy-Rocket.Chat-without-docker)
+Follow these [deployment instructions](https://rocket.chat/docs/master/installing-and-updating/deployment-options/ubuntu)
 
 ## Ubuntu Software Center
 Easy one click install right from your Ubuntu Desktop (coming soon)
