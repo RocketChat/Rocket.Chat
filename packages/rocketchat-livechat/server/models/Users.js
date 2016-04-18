@@ -137,3 +137,37 @@ RocketChat.models.Users.updateLivechatDataByToken = function(token, key, value) 
 	return this.upsert(query, update);
 };
 
+/**
+ * Find a visitor by their phone number
+ * @return {object} User from db
+ */
+RocketChat.models.Users.findOneVisitorByPhone = function(phone) {
+	const query = {
+		'profile.phones.number': phone
+	};
+
+	return this.findOne(query);
+};
+
+/**
+ * Get the next visitor name
+ * @return {string} The next visitor name
+ */
+RocketChat.models.Users.getNextVisitorUsername = function() {
+	const settingsRaw = RocketChat.models.Settings.model.rawCollection();
+	const findAndModify = Meteor.wrapAsync(settingsRaw.findAndModify, settingsRaw);
+
+	const query = {
+		_id: 'Livechat_guest_count'
+	};
+
+	const update = {
+		$inc: {
+			value: 1
+		}
+	};
+
+	const livechatCount = findAndModify(query, null, update);
+
+	return 'guest-' + (livechatCount.value + 1);
+};
