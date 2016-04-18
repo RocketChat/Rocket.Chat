@@ -40,7 +40,7 @@ ecmascript-runtime@0.2.6
 edgee:slingshot@0.7.1
 ejson@1.0.7
 email@1.0.8
-emojione:emojione@2.1.3
+emojione:emojione@2.1.4
 facebook@1.2.2
 fastclick@1.0.7
 francocatena:status@1.5.1
@@ -63,7 +63,6 @@ jquery@1.11.4
 kadira:blaze-layout@2.3.0
 kadira:flow-router@2.10.1
 kenton:accounts-sandstorm@0.1.8
-konecty:autolinker@1.0.3
 konecty:change-case@2.3.0
 konecty:delayed-task@1.0.0
 konecty:mongo-counter@0.0.3
@@ -183,6 +182,7 @@ rocketchat:slashcommands-leave@0.0.1
 rocketchat:slashcommands-mute@0.0.1
 rocketchat:spotify@0.0.1
 rocketchat:statistics@0.0.1
+rocketchat:streamer@0.3.2
 rocketchat:theme@0.0.1
 rocketchat:tooltip@0.0.1
 rocketchat:tutum@0.0.1

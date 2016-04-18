@@ -1,3 +1,18 @@
 {
-  "Start_Chat" : "Почати Чат"
+  "Additional_Feedback" : "Додаткова зв'язок",
+  "Appearance" : "зовнішній вигляд",
+  "How_friendly_was_the_chat_agent" : "Як дружній був чат агент?",
+  "How_knowledgeable_was_the_chat_agent" : "Наскільки добре був чат агент?",
+  "How_responsive_was_the_chat_agent" : "Як реагувати був чат агент?",
+  "How_satisfied_were_you_with_this_chat" : "Як ви задоволені цей чат?",
+  "Installation" : "установка",
+  "Please_answer_survey" : "Будь ласка, знайдіть час, щоб відповісти на швидкий огляд про це чаті",
+  "Please_fill_name_and_email" : "Заповніть, будь ласка, ім'я та адресу електронної пошти",
+  "Select_a_department" : "Виберіть відділ",
+  "Skip" : "скакати",
+  "Start_Chat" : "Почати Чат",
+  "Survey" : "обстеження",
+  "Survey_instructions" : "Оцінити кожне питання відповідно до ваших задоволення, 1 означає, що ви повністю незадоволеним і 5 означає, що ви повністю задоволені.",
+  "Thank_you_for_your_feedback" : "Спасибі за ваш відгук",
+  "We_are_offline_Sorry_for_the_inconvenience" : "Ми в автономному режимі. Вибачте за незручності."
 }

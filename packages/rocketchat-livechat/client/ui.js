@@ -7,7 +7,6 @@ RocketChat.roomTypes.add('l', 5, {
 		name: 'live',
 		path: '/live/:name',
 		action: (params/*, queryParams*/) => {
-			Session.set('showUserInfo');
 			openRoom('l', params.name);
 			RocketChat.TabBar.showGroup('livechat', 'search');
 		},

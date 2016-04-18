@@ -1,5 +1,18 @@
 {
+  "Additional_Feedback" : "dodatni komentar",
   "Appearance" : "Izgled",
+  "How_friendly_was_the_chat_agent" : "Kako friendly bio chat agent?",
+  "How_knowledgeable_was_the_chat_agent" : "Kako obrazovan bio chat agent?",
+  "How_responsive_was_the_chat_agent" : "Kako reagiraju bio chat agent?",
+  "How_satisfied_were_you_with_this_chat" : "Koliko ste zadovoljni ovom chatu?",
   "Installation" : "Instalacija",
-  "Start_Chat" : "Početak Chat"
+  "Please_answer_survey" : "Odvojite trenutak kako bi odgovorili na anketu o ovom chatu",
+  "Please_fill_name_and_email" : "Molimo Vas da ispunite ime i e-mail",
+  "Select_a_department" : "Odaberite odjel",
+  "Skip" : "Preskočiti",
+  "Start_Chat" : "Početak Chat",
+  "Survey" : "Pregled",
+  "Survey_instructions" : "Ocijenite svako pitanje u skladu s Vaše zadovoljstvo, 1 što znači da su potpuno nezadovoljni i 5 što znači da su u potpunosti zadovoljni.",
+  "Thank_you_for_your_feedback" : "Hvala vam na povratnim informacijama",
+  "We_are_offline_Sorry_for_the_inconvenience" : "Mi smo izvan mreže. Oprostite na neugodnosti."
 }

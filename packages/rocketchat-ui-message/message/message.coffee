@@ -1,6 +1,9 @@
 Template.message.helpers
 	isBot: ->
 		return 'bot' if this.bot?
+	roleTags: ->
+		roles = _.union(UserRoles.findOne(this.u?._id)?.roles, RoomRoles.findOne({'u._id': this.u?._id, rid: this.rid })?.roles)
+		return _.compact(_.map(roles, (role) -> return RocketChat.models.Roles.findOne({ _id: role, description: { $exists: 1 } })?.description));
 	isGroupable: ->
 		return 'false' if this.groupable is false
 	isSequential: ->
@@ -17,9 +20,9 @@ Template.message.helpers
 	chatops: ->
 		return 'chatops-message' if this.u?.username is RocketChat.settings.get('Chatops_Username')
 	time: ->
-		return moment(this.ts).format('LT')
+		return moment(this.ts).format(RocketChat.settings.get('Message_TimeFormat'))
 	date: ->
-		return moment(this.ts).format('LL')
+		return moment(this.ts).format(RocketChat.settings.get('Message_DateFormat'))
 	isTemp: ->
 		if @temp is true
 			return 'temp'
@@ -177,11 +180,11 @@ Template.message.onViewRendered = (context) ->
 					$nextNode.addClass('sequential')
 
 		if not nextNode?
-			templateInstance = view.parentView.parentView.parentView.parentView.parentView.templateInstance?()
+			templateInstance = if $('.messages-container')[0] then Blaze.getView($('.messages-container')[0])?.templateInstance() else null
 
 			if currentNode.classList.contains('own') is true
 				templateInstance?.atBottom = true
 			else
-				if templateInstance?.atBottom isnt true
+				if templateInstance?.firstNode && templateInstance?.atBottom is false
 					newMessage = templateInstance?.find(".new-message")
 					newMessage?.className = "new-message"

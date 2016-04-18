@@ -7,8 +7,6 @@ isSubscribed = (_id) ->
 favoritesEnabled = ->
 	return !RocketChat.settings.get 'Disable_Favorite_Rooms'
 
-
-# @TODO bug com o botão para "rolar até o fim" (novas mensagens) quando há uma mensagem com texto que gere rolagem horizontal
 Template.room.helpers
 	# showFormattingTips: ->
 	# 	return RocketChat.settings.get('Message_ShowFormattingTips') and (RocketChat.Markdown or RocketChat.Highlight)
@@ -186,7 +184,11 @@ Template.room.helpers
 		return RocketChat.TabBar.getTemplate()
 
 	flexData: ->
-		return _.extend { rid: this._id }, RocketChat.TabBar.getData()
+		return _.extend {
+			rid: this._id
+			userDetail: Template.instance().userDetail.get(),
+			clearUserDetail: Template.instance().clearUserDetail
+		}, RocketChat.TabBar.getData()
 
 	adminClass: ->
 		return 'admin' if RocketChat.authz.hasRole(Meteor.userId(), 'admin')
@@ -354,17 +356,14 @@ Template.room.events
 			$('#room-title-field').focus().select()
 		, 10
 
-	"click .flex-tab .user-image > a" : (e) ->
+	"click .flex-tab .user-image > a" : (e, instance) ->
 		RocketChat.TabBar.openFlex()
-		Session.set('showUserInfo', @username)
+		instance.setUserDetail @username
 
-	'click .user-card-message': (e) ->
+	'click .user-card-message': (e, instance) ->
 		roomData = Session.get('roomData' + this._arguments[1].rid)
 		if roomData.t in ['c', 'p']
-			# Session.set('flexOpened', true)
-			Session.set('showUserInfo', $(e.currentTarget).data('username'))
-		# else
-			# Session.set('flexOpened', true)
+			instance.setUserDetail this._arguments[1].u.username
 		RocketChat.TabBar.setTemplate 'membersList'
 
 	'scroll .wrapper': _.throttle (e, instance) ->
@@ -401,8 +400,6 @@ Template.room.events
 		dropDown.show()
 
 	'click .message-dropdown .message-action': (e, t) ->
-		e.preventDefault()
-		e.stopPropagation()
 		el = $(e.currentTarget)
 
 		button = RocketChat.MessageAction.getButtonById el.data('id')
@@ -412,14 +409,15 @@ Template.room.events
 	'click .message-dropdown-close': ->
 		$('.message-dropdown:visible').hide()
 
-	"click .mention-link": (e) ->
+	"click .mention-link": (e, instance) ->
 		channel = $(e.currentTarget).data('channel')
 		if channel?
 			FlowRouter.go 'channel', {name: channel}
 			return
 
 		RocketChat.TabBar.setTemplate 'membersList'
-		Session.set('showUserInfo', $(e.currentTarget).data('username'))
+		instance.setUserDetail $(e.currentTarget).data('username')
+
 		RocketChat.TabBar.openFlex()
 
 	'click .image-to-download': (event) ->
@@ -466,24 +464,6 @@ Template.room.events
 
 		fileUpload filesToUpload
 
-	'click .deactivate': ->
-		username = Session.get('showUserInfo')
-		user = Meteor.users.findOne { username: String(username) }
-		Meteor.call 'setUserActiveStatus', user?._id, false, (error, result) ->
-			if result
-				toastr.success t('User_has_been_deactivated')
-			if error
-				toastr.error error.reason
-
-	'click .activate': ->
-		username = Session.get('showUserInfo')
-		user = Meteor.users.findOne { username: String(username) }
-		Meteor.call 'setUserActiveStatus', user?._id, true, (error, result) ->
-			if result
-				toastr.success t('User_has_been_activated')
-			if error
-				toastr.error error.reason
-
 	'load img': (e, template) ->
 		template.sendToBottomIfNecessary?()
 
@@ -521,13 +501,15 @@ Template.room.onCreated ->
 	# this.scrollOnBottom = true
 	# this.typing = new msgTyping this.data._id
 	this.showUsersOffline = new ReactiveVar false
-	this.atBottom = true
+	this.atBottom = if FlowRouter.getQueryParam('j') then false else true
 	this.unreadCount = new ReactiveVar 0
 
 	this.selectable = new ReactiveVar false
 	this.selectedMessages = []
 	this.selectedRange = []
 	this.selectablePointer = null
+
+	this.userDetail = new ReactiveVar FlowRouter.getParam('username')
 
 	this.resetSelection = (enabled) =>
 		this.selectable.set(enabled)
@@ -563,16 +545,27 @@ Template.room.onCreated ->
 
 		return previewMessages
 
-	@autorun =>
-		@subscribe 'fullUserData', Session.get('showUserInfo'), 1
+	this.setUserDetail = (username) =>
+		this.userDetail.set username
 
-	Meteor.call 'getRoomModeratorsAndOwners', @data._id, (error, results) ->
+	this.clearUserDetail = =>
+		this.userDetail.set null
+
+	Meteor.call 'getRoomRoles', @data._id, (error, results) ->
 		if error
 			return toastr.error error.reason
 
 		for record in results
 			delete record._id
-			RoomModeratorsAndOwners.upsert { rid: record.rid, "u._id": record.u._id }, record
+			RoomRoles.upsert { rid: record.rid, "u._id": record.u._id }, record
+
+	RoomRoles.find({ rid: @data._id }).observe
+		added: (role) =>
+			ChatMessage.update { rid: @data._id, "u._id": role?.u?._id }, { $addToSet: { roles: role._id } }, { multi: true } # Update message to re-render DOM
+		changed: (role, oldRole) =>
+			ChatMessage.update { rid: @data._id, "u._id": role?.u?._id }, { $inc: { rerender: 1 } }, { multi: true } # Update message to re-render DOM
+		removed: (role) =>
+			ChatMessage.update { rid: @data._id, "u._id": role?.u?._id }, { $pull: { roles: role._id } }, { multi: true } # Update message to re-render DOM
 
 Template.room.onDestroyed ->
 	window.removeEventListener 'resize', this.onWindowResize

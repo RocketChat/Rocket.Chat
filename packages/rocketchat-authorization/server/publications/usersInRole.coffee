@@ -1,4 +1,4 @@
-Meteor.publish 'usersInRole', (roleName, page = 1) ->
+Meteor.publish 'usersInRole', (roleName, scope, page = 1) ->
 	unless @userId
 		return @ready()
 
@@ -12,4 +12,4 @@ Meteor.publish 'usersInRole', (roleName, page = 1) ->
 		limit: itemsPerPage
 		offset: itemsPerPage * (page - 1)
 
-	return RocketChat.authz.getUsersInRole roleName, null, pagination
+	return RocketChat.authz.getUsersInRole roleName, scope, pagination

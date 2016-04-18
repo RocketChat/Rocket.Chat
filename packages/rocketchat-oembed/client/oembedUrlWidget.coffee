@@ -12,7 +12,7 @@ getDescription = (self) ->
 	if not description?
 		return
 
-	return description.replace /(^“)|(”$)/g, ''
+	return _.unescape description.replace /(^[“\s]*)|([”\s]*$)/g, ''
 
 
 Template.oembedUrlWidget.helpers
@@ -23,6 +23,10 @@ Template.oembedUrlWidget.helpers
 	title: ->
 		title = getTitle this
 		return new Handlebars.SafeString title if _.isString title
+
+	target: ->
+		if not this.parsedUrl?.host || !document?.location?.host || this.parsedUrl.host isnt document.location.host
+			return '_blank'
 
 	image: ->
 		if not this.meta?

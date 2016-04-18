@@ -1,3 +1,18 @@
 {
-  "Start_Chat" : "Spustit chat"
+  "Additional_Feedback" : "dodatečné Feedback",
+  "Appearance" : "Vzhled",
+  "How_friendly_was_the_chat_agent" : "Jak přátelský byl chatu agentem?",
+  "How_knowledgeable_was_the_chat_agent" : "Jak dobře informovaný byl chatu agentem?",
+  "How_responsive_was_the_chat_agent" : "Jak reagovat bylo chatu agentem?",
+  "How_satisfied_were_you_with_this_chat" : "Jak jste spokojeni jste byli s tímto chatu?",
+  "Installation" : "Instalace",
+  "Please_answer_survey" : "Věnujte prosím chvilku odpovědět rychlý přehled o tomto chatu",
+  "Please_fill_name_and_email" : "Prosím vyplňte jméno a e-mail",
+  "Select_a_department" : "Vyberte oddělení",
+  "Skip" : "Přeskočit",
+  "Start_Chat" : "Spustit chat",
+  "Survey" : "Průzkum",
+  "Survey_instructions" : "Hodnotit každou otázku dle vaší spokojenosti, 1 což znamená, že jsou zcela nespokojeni a 5 což znamená, že jsou zcela spokojeni.",
+  "Thank_you_for_your_feedback" : "Děkujeme vám za vaši reakci",
+  "We_are_offline_Sorry_for_the_inconvenience" : "Jsme offline. Omluvám se za nepříjemnost."
 }

@@ -14,16 +14,15 @@ Inject.rawBody('page-loading', `
 
 RocketChat.settings.get('Site_Url', function() {
 	Meteor.defer(function() {
+		let baseUrl;
 		if (__meteor_runtime_config__.ROOT_URL_PATH_PREFIX && __meteor_runtime_config__.ROOT_URL_PATH_PREFIX.trim() !== '') {
-			let base_url = __meteor_runtime_config__.ROOT_URL+__meteor_runtime_config__.ROOT_URL_PATH_PREFIX;
-
-			if(/\/$/.test(base_url) === false) {
-				base_url += '/';
-			}
-
-			Inject.rawHead('base', `<base href="${base_url}">`);
+			baseUrl = __meteor_runtime_config__.ROOT_URL_PATH_PREFIX;
 		} else {
-			Inject.rawHead('base', '');
+			baseUrl = '/';
 		}
+		if(/\/$/.test(baseUrl) === false) {
+			baseUrl += '/';
+		}
+		Inject.rawHead('base', `<base href="${baseUrl}">`);
 	});
 });

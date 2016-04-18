@@ -59,6 +59,11 @@ RocketChat.MessageAction = new class
 	resetButtons: resetButtons
 
 Meteor.startup ->
+
+	$(document).click (event) =>
+		if !$(event.target).closest('.message-cog-container').length and !$(event.target).is('.message-cog-container')
+			$('.message-dropdown:visible').hide()
+
 	RocketChat.MessageAction.addButton
 		id: 'edit-message'
 		icon: 'icon-pencil'
@@ -131,3 +136,20 @@ Meteor.startup ->
 		validation: (message) ->
 			return RocketChat.authz.hasAtLeastOnePermission('delete-message', message.rid ) or RocketChat.settings.get('Message_AllowDeleting') and message.u?._id is Meteor.userId()
 		order: 2
+
+	RocketChat.MessageAction.addButton
+		id: 'permalink'
+		icon: 'icon-link'
+		i18nLabel: 'Permalink'
+		classes: 'clipboard'
+		context: [
+			'message'
+			'message-mobile'
+		]
+		action: (event, instance) ->
+			message = @_arguments[1]
+			msg = $(event.currentTarget).closest('.message')[0]
+			$("\##{msg.id} .message-dropdown").hide()
+			$(event.currentTarget).attr('data-clipboard-text', document.location.origin + document.location.pathname + '?j=' + msg.id);
+			toastr.success(TAPi18n.__('Copied'))
+		order: 3

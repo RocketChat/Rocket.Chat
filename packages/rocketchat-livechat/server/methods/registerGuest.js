@@ -38,7 +38,8 @@ Meteor.methods({
 		userData = {
 			username: user,
 			globalRoles: ['livechat-guest'],
-			department: department
+			department: department,
+			type: 'visitor'
 		};
 
 		userData.userAgent = this.connection.httpHeaders['user-agent'];
@@ -71,7 +72,7 @@ Meteor.methods({
 		});
 
 		// update visited page history to not expire
-		RocketChat.models.LivechatPageVisitied.keepHistoryForToken(token);
+		RocketChat.models.LivechatPageVisited.keepHistoryForToken(token);
 
 		return {
 			userId: userId,

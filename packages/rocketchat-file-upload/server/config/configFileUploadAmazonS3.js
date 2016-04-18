@@ -1,4 +1,4 @@
-/* globals Slingshot, FileUpload, AWS */
+/* globals Slingshot, FileUpload, AWS, SystemLogger */
 var crypto = Npm.require('crypto');
 
 var S3accessKey, S3secretKey;
@@ -91,7 +91,11 @@ var createS3Directive = _.debounce(() => {
 			config.bucketUrl = bucketUrl;
 		}
 
-		Slingshot.createDirective(directiveName, Slingshot.S3Storage, config);
+		try {
+			Slingshot.createDirective(directiveName, Slingshot.S3Storage, config);
+		} catch (e) {
+			SystemLogger.error('Error configuring S3 ->',e.message);
+		}
 	} else {
 		if (Slingshot._directives[directiveName]) {
 			delete Slingshot._directives[directiveName];
