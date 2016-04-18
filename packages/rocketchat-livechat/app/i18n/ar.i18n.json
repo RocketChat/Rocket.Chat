@@ -1,4 +1,18 @@
 {
+  "Additional_Feedback" : "ملاحظات إضافية",
+  "Appearance" : "مظهر",
+  "How_friendly_was_the_chat_agent" : "كيف ودية وكان وكيل الدردشة؟",
+  "How_knowledgeable_was_the_chat_agent" : "معرفة كيف كان وكيل الدردشة؟",
+  "How_responsive_was_the_chat_agent" : "كيف تستجيب كان وكيل الدردشة؟",
+  "How_satisfied_were_you_with_this_chat" : "ما مدى رضاك ​​مع هذه الدردشة؟",
+  "Installation" : "تركيب",
+  "Please_answer_survey" : "يرجى ان نتوقف لحظة للرد على مسح سريع حول هذه الدردشة",
+  "Please_fill_name_and_email" : "الرجاء تعبئة اسم والبريد الإلكتروني",
+  "Select_a_department" : "حدد القسم",
   "Skip" : "تخطي",
-  "Start_Chat" : "بدأ الدردشة"
+  "Start_Chat" : "بدأ الدردشة",
+  "Survey" : "الدراسة الاستقصائية",
+  "Survey_instructions" : "معدل كل سؤال وفقا لالارتياح الخاص بك، 1 وهذا يعني أنك غير راضي تماما و 5 يعني كنت راضيا تماما.",
+  "Thank_you_for_your_feedback" : "شكرا لأفادتك",
+  "We_are_offline_Sorry_for_the_inconvenience" : "نحن حاليا. آسف للإزعاج."
 }

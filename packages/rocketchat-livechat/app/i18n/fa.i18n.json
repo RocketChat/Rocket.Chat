@@ -1,3 +1,18 @@
 {
-  "Start_Chat" : "شروع چت"
+  "Additional_Feedback" : "بازخورد اضافی",
+  "Appearance" : "ظاهر",
+  "How_friendly_was_the_chat_agent" : "عامل چت چگونه دوستانه بود؟",
+  "How_knowledgeable_was_the_chat_agent" : "عامل چت چگونه آگاه بود؟",
+  "How_responsive_was_the_chat_agent" : "عامل چت چگونه پاسخگو بود؟",
+  "How_satisfied_were_you_with_this_chat" : "چگونه رضایت شما را با این چت بود؟",
+  "Installation" : "نصب و راه اندازی",
+  "Please_answer_survey" : "لطفا یک لحظه به پاسخ به یک نظرسنجی در مورد این چت",
+  "Please_fill_name_and_email" : "لطفا نام و ایمیل را پر کنید",
+  "Select_a_department" : "انتخاب بخش",
+  "Skip" : "رفتن",
+  "Start_Chat" : "شروع چت",
+  "Survey" : "نظرسنجی",
+  "Survey_instructions" : "رای هر سوال با توجه به جلب رضایت شما، 1 معنی که شما ناراضی هستند به طور کامل و 5 این معنی که شما به طور کامل راضی هستند.",
+  "Thank_you_for_your_feedback" : "با تشکر از شما برای نظرات شما",
+  "We_are_offline_Sorry_for_the_inconvenience" : "ما آنلاین نیست. با عرض پوزش برای ناراحتی."
 }

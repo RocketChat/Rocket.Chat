@@ -1,3 +1,18 @@
 {
-  "Start_Chat" : "Start Chat"
+  "Additional_Feedback" : "Feedback Additional",
+  "Appearance" : "Xuyabûnî",
+  "How_friendly_was_the_chat_agent" : "agent chat çawa dostane bû?",
+  "How_knowledgeable_was_the_chat_agent" : "agent chat çawa zana bû?",
+  "How_responsive_was_the_chat_agent" : "agent chat çawa bersîva bû?",
+  "How_satisfied_were_you_with_this_chat" : "Çiqas memnûn we bi vê axaftinê de bûn?",
+  "Installation" : "Lêkirinî",
+  "Please_answer_survey" : "Ji kerema xwe, niha bigire ku tu bersiva anketê bi lez li ser vê chat",
+  "Please_fill_name_and_email" : "Ji kerema xwe ve name û e-mail tijî",
+  "Select_a_department" : "Select a beşa",
+  "Skip" : "Hilperkîn",
+  "Start_Chat" : "Start Chat",
+  "Survey" : "Lêkolîn",
+  "Survey_instructions" : "Pûan hev pirs li gor dilê we, 1 wateya we ne razî ne bi temamî û 5 wateya ku tu bi temamî razî ne.",
+  "Thank_you_for_your_feedback" : "Spas ji bo we Deng xwe",
+  "We_are_offline_Sorry_for_the_inconvenience" : "Em ne offline. Mixabin ji ber nerihetîya."
 }

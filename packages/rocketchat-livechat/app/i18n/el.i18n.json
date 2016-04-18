@@ -1,3 +1,18 @@
 {
-  "Start_Chat" : "Έναρξη συνομιλίας"
+  "Additional_Feedback" : "πρόσθετες Σχόλια",
+  "Appearance" : "Εμφάνιση",
+  "How_friendly_was_the_chat_agent" : "Πόσο φιλικό ήταν ο πράκτορας συνομιλία;",
+  "How_knowledgeable_was_the_chat_agent" : "Πώς γνώστες ήταν ο πράκτορας συνομιλία;",
+  "How_responsive_was_the_chat_agent" : "Πώς ανταποκρίνεται ήταν ο πράκτορας συνομιλία;",
+  "How_satisfied_were_you_with_this_chat" : "Πόσο ικανοποιημένοι είστε με αυτήν την κουβέντα;",
+  "Installation" : "Εγκατάσταση",
+  "Please_answer_survey" : "Αφιερώστε λίγο χρόνο για να απαντήσετε σε μια σύντομη έρευνα σχετικά με αυτήν την κουβέντα",
+  "Please_fill_name_and_email" : "Παρακαλούμε συμπληρώστε το όνομα και το e-mail",
+  "Select_a_department" : "Επιλέξτε ένα τμήμα",
+  "Skip" : "Παραλείπω",
+  "Start_Chat" : "Έναρξη συνομιλίας",
+  "Survey" : "Έρευνα",
+  "Survey_instructions" : "Βαθμολογήστε κάθε ερώτηση, σύμφωνα με την ικανοποίησή σας, 1 που σημαίνει ότι θα είναι εντελώς ανικανοποίητοι και 5 σημαίνει ότι είστε απόλυτα ικανοποιημένοι.",
+  "Thank_you_for_your_feedback" : "Ευχαριστούμε για την ανταπόκρισή σας",
+  "We_are_offline_Sorry_for_the_inconvenience" : "Είμαστε εκτός σύνδεσης. Συγγνώμη για την ταλαιπωρία."
 }
