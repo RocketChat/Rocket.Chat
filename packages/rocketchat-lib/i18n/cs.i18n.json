@@ -1,8 +1,8 @@
 {
-  "500" : "Internal Server Error",
   "0_Errors_Only" : "0 - Chyby Pouze",
   "1_Errors_and_Information" : "1 - Chyby a informační",
   "2_Erros_Information_and_Debug" : "2 - Erros, informační a ladění",
+  "500" : "Internal Server Error",
   "__username__was_set__role__by__user_by_" : "uživatelské jméno __username__ byl stanoven __role__ podle __user_by__",
   "__username__is_no_longer__role__defined_by__user_by_" : "uživatelské jméno __username__ již není __role__, které __user_by__",
   "Access_not_authorized" : "Přístup není povoleno",

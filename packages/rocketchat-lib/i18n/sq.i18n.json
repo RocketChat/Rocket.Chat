@@ -1,8 +1,8 @@
 {
-  "500" : "Server Error brendshme",
   "0_Errors_Only" : "0 - Gabimet Vetëm",
   "1_Errors_and_Information" : "1 - Gabimet dhe Informacione",
   "2_Erros_Information_and_Debug" : "2 - Erros, Informacion dhe Debug",
+  "500" : "Server Error brendshme",
   "__username__was_set__role__by__user_by_" : "__username__ u __role__ nga __user_by__",
   "__username__is_no_longer__role__defined_by__user_by_" : "__username__ nuk është më __role__, duke __user_by__",
   "Access_not_authorized" : "Qasja jo e autorizuar",
@@ -696,7 +696,7 @@
   "Powered_by" : "Mundësuar nga",
   "Preferences" : "preferencat",
   "Preferences_saved" : "preferencat ruajtur",
-  "Privacy" : "Privacy",
+  "Privacy" : "Intimitet",
   "Private_Group" : "Group private",
   "Private_Groups" : "Grupet Private",
   "Private_Groups_list" : "Lista e Grupeve private",

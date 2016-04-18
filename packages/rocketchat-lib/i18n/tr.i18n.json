@@ -1,8 +1,8 @@
 {
-  "500" : "İç Sunucu Hatası",
   "0_Errors_Only" : "0 - Hatalar Sadece",
   "1_Errors_and_Information" : "1 - Hatalar ve Bilgi",
   "2_Erros_Information_and_Debug" : "2 - Erros, Bilgi ve hata ayıklama",
+  "500" : "İç Sunucu Hatası",
   "__username__was_set__role__by__user_by_" : "__username__ adlı __user_by__ ile __role__ ayarlandı",
   "__username__is_no_longer__role__defined_by__user_by_" : "__username__ adlı __user_by__ ile __role__ artık",
   "Access_not_authorized" : "Erişim yetkisi yok",
@@ -56,7 +56,6 @@
   "Accounts_OAuth_GitHub_Enterprise" : "OAuth Etkin",
   "Accounts_OAuth_GitHub_Enterprise_callback_url" : "GitHub Kurumsal geri arama URL",
   "Accounts_OAuth_GitHub_Enterprise_id" : "Müşteri Kimliği",
-  "Accounts_OAuth_GitHub_Enterprise_secret" : "",
   "Accounts_OAuth_Github_id" : "Müşteri Kimliği",
   "Accounts_OAuth_Github_secret" : "Müşteri Sırrı",
   "Accounts_OAuth_Gitlab" : "OAuth Etkin",

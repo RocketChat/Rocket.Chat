@@ -1,8 +1,8 @@
 {
-  "500" : "שגיאת שרת פנימית",
   "0_Errors_Only" : "0 - שגיאות רק",
   "1_Errors_and_Information" : "1 - טעויות ומידע",
   "2_Erros_Information_and_Debug" : "2 - erros, מידע Debug",
+  "500" : "שגיאת שרת פנימית",
   "__username__was_set__role__by__user_by_" : "__שם משתמש__ נקבע __role__ ידי __user_by__",
   "__username__is_no_longer__role__defined_by__user_by_" : "__שם משתמש__ הוא כבר לא __role__, על ידי __user_by__",
   "Access_not_authorized" : "הגישה אינה מורשית.",

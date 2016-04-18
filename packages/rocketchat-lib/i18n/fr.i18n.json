@@ -1,8 +1,8 @@
 {
-  "500" : "Erreur interne au serveur",
   "0_Errors_Only" : "0 - Erreurs seulement",
   "1_Errors_and_Information" : "1 - Erreurs et Informations",
   "2_Erros_Information_and_Debug" : "2 - Erreurs, Informations et Debug",
+  "500" : "Erreur interne au serveur",
   "__username__was_set__role__by__user_by_" : "__username__ a été fixé par __role__ __user_by__",
   "__username__is_no_longer__role__defined_by__user_by_" : "__username__ est plus __role__, par __user_by__",
   "Access_not_authorized" : "Accès non autorisé",
@@ -554,7 +554,6 @@
   "Message_AudioRecorderEnabled" : "Enregistrement audio activé",
   "Message_AudioRecorderEnabledDescription" : "Nécessite que les fichiers de type « audio/wav » soient acceptés en tant que média dans les réglages d'envoi de fichiers.",
   "Message_DateFormat" : "Format de Date",
-  "Message_DateFormat_Description" : "",
   "Message_deleting_not_allowed" : "Suppression d'un message non autorisée",
   "Message_editing_blocked" : "Ce message ne peut plus être modifié",
   "Message_editing_not_allowed" : "Modification d'un message non autorisée",
