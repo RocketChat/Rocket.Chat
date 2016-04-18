@@ -16,7 +16,7 @@ oldMsgStream.permissions.read (eventName) ->
 # COMPATIBILITY
 
 
-@msgStream = new Meteor.Streamer 'messages-new'
+@msgStream = new Meteor.Streamer 'room-messages'
 
 msgStream.allowWrite('none')
 
