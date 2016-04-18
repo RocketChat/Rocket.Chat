@@ -647,7 +647,7 @@
   "Open" : "Dibuka",
   "Opened" : "dibuka",
   "Opt_out_statistics" : "Jangan hantar statistik saya ke Rocket.Chat",
-  "Opt_out_statistics_warning" : "Dengan menghantar statistik anda, ada akan membantu kami mengenalpasti berapa banyak",
+  "Opt_out_statistics_Description" : "Dengan menghantar statistik anda, ada akan membantu kami mengenalpasti berapa banyak",
   "optional" : "pilihan",
   "Order" : "Order",
   "OS_Arch" : "OS Arch",

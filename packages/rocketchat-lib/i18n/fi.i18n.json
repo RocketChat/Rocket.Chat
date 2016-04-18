@@ -648,7 +648,7 @@
   "Open" : "Avata",
   "Opened" : "Avattu",
   "Opt_out_statistics" : "Älä lähetä anonyymejä tilastoja Rocket.Chatille",
-  "Opt_out_statistics_warning" : "Lähettämällä anonyymit tilastot, autat meitä selvittämään, kuinka monta Rocket.Chat -ympäristöä on käynnistetty, kuten myös sen, miten hyvin järjestelmä toimii. Tätä tietoa käytetään Rocket.Chatin parantamiseen.\nJos haluat jatkaa anonyymien tilastojen lähettämistä, poista ylläoleva ruksi. Kiitos.",
+  "Opt_out_statistics_Description" : "Lähettämällä anonyymit tilastot, autat meitä selvittämään, kuinka monta Rocket.Chat -ympäristöä on käynnistetty, kuten myös sen, miten hyvin järjestelmä toimii. Tätä tietoa käytetään Rocket.Chatin parantamiseen.\nJos haluat jatkaa anonyymien tilastojen lähettämistä, poista ylläoleva ruksi. Kiitos.",
   "optional" : "valinnainen",
   "Order" : "Järjestys",
   "OS_Arch" : "OS Arkkitehtuuri",

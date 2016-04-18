@@ -648,7 +648,7 @@
   "Open" : "Open",
   "Opened" : "Geopend",
   "Opt_out_statistics" : "Stuur mijn statistieken niet naar Rocket.Chat",
-  "Opt_out_statistics_warning" : "Door het verzenden van uw statistieken, zult u ons helpen om te bepalen hoe veel gevallen van Rocket.Chat worden ingezet, evenals hoe goed het systeem zich gedraagd, zodat we verder kunnen verbeteren. Maak je geen zorgen, omdat er geen informatie over de gebruiker wordt gestuurd en alle informatie die wij ontvangen wordt vertrouwelijk behandeld. Als u wilt doorgaan met het sturen van uw statistieken, schakelt de bovenstaande checkbox. Dank je.",
+  "Opt_out_statistics_Description" : "Door het verzenden van uw statistieken, zult u ons helpen om te bepalen hoe veel gevallen van Rocket.Chat worden ingezet, evenals hoe goed het systeem zich gedraagd, zodat we verder kunnen verbeteren. Maak je geen zorgen, omdat er geen informatie over de gebruiker wordt gestuurd en alle informatie die wij ontvangen wordt vertrouwelijk behandeld. Als u wilt doorgaan met het sturen van uw statistieken, schakelt de bovenstaande checkbox. Dank je.",
   "optional" : "optioneel",
   "Order" : "Bestelling",
   "OS_Arch" : "OS Arch",
