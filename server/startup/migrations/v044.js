@@ -22,5 +22,19 @@ RocketChat.Migrations.add({
 				RocketChat.models.Settings.insert(optOut);
 			}
 		}
+
+		if (RocketChat && RocketChat.models && RocketChat.models.Settings) {
+			var favoriteRooms = RocketChat.models.Settings.findOne({ _id: 'Disable_Favorite_Rooms' });
+			if (favoriteRooms) {
+				favoriteRooms._id = 'Favorite_Rooms';
+				favoriteRooms.value = !favoriteRooms.value ? true : false;
+				favoriteRooms.i18nDescription = 'Favorite_Rooms_Description';
+				favoriteRooms.packageValue = true;
+				favoriteRooms.i18nLabel = 'Favorite_Rooms';
+
+				RocketChat.models.Settings.remove({ _id: 'Disable_Favorite_Rooms' });
+				RocketChat.models.Settings.insert(favoriteRooms);
+			}
+		}
 	}
 });

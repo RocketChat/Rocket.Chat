@@ -245,7 +245,7 @@
   "Direct_message_someone" : "Direct message someone",
   "Direct_Messages" : "Direct Messages",
   "Direct_Messages_list" : "Direct Messages",
-  "Disable_Favorite_Rooms" : "Disable Favorites",
+  "Favorite_Rooms" : "Enable Favorite Rooms",
   "Displays_action_text" : "Displays action text",
   "Do_you_want_to_change_to_s_question" : "Do you want to change to <strong>%s</strong>?",
   "Drop_to_upload_file" : "Drop to upload file",
