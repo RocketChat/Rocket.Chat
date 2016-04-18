@@ -645,8 +645,6 @@
   "Oops!" : "Oho",
   "Open" : "Avata",
   "Opened" : "Avattu",
-  "Statistics_opt_out" : "Älä lähetä anonyymejä tilastoja Rocket.Chatille",
-  "Statistics_opt_out_Description" : "Lähettämällä anonyymit tilastot, autat meitä selvittämään, kuinka monta Rocket.Chat -ympäristöä on käynnistetty, kuten myös sen, miten hyvin järjestelmä toimii. Tätä tietoa käytetään Rocket.Chatin parantamiseen.\nJos haluat jatkaa anonyymien tilastojen lähettämistä, poista ylläoleva ruksi. Kiitos.",
   "optional" : "valinnainen",
   "Order" : "Järjestys",
   "OS_Arch" : "OS Arkkitehtuuri",

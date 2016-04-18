@@ -8,5 +8,19 @@ RocketChat.Migrations.add({
 				RocketChat.models.Users.update({ _id: user._id }, { $unset: { 'settings.preferences.disableNewRoomNotification': 1, 'settings.preferences.disableNewMessageNotification': 1 }, $set: { 'settings.preferences.newRoomNotification': newRoomNotification, 'settings.preferences.newMessageNotification': newMessageNotification } } );
 			});
 		}
+
+		if (RocketChat && RocketChat.models && RocketChat.models.Settings) {
+			var optOut = RocketChat.models.Settings.findOne({ _id: 'Statistics_opt_out' });
+			if (optOut) {
+				optOut._id = 'Statistics_reporting';
+				optOut.value = !optOut.value ? true : false;
+				optOut.i18nDescription = 'Statistics_reporting_Description';
+				optOut.packageValue = true;
+				optOut.i18nLabel = 'Statistics_reporting';
+
+				RocketChat.models.Settings.remove({ _id: 'Statistics_opt_out' });
+				RocketChat.models.Settings.insert(optOut);
+			}
+		}
 	}
 });

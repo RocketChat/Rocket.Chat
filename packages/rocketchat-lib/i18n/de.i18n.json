@@ -645,8 +645,6 @@
   "Oops!" : "Hoppla",
   "Open" : "Öffnen",
   "Opened" : "Geöffnet",
-  "Statistics_opt_out" : "Meine anonymisierten Statistiken nicht an Rocket.Chat senden",
-  "Statistics_opt_out_Description" : "Indem Sie uns Ihre anonymisierten Statistiken zur Verfügung stellen, können wir feststellen, wie viele Personen Rocket.Chat installiert haben und wie gut Rocket.Chat funktioniert. Das hilft uns dabei, Rocket.Chat weiterzuentwickeln. Es werden keine Benutzerinformationen gesendet und die erhaltenen Daten werden vertraulich behandelt. Wenn Sie weiterhin Statistiken anonymisiert an uns senden möchten, deaktivieren Sie bitte das Kontrollkästchen oben. Vielen Dank.",
   "optional" : "optional",
   "Order" : "Auftrag",
   "OS_Arch" : "Architektur",

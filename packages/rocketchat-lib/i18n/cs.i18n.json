@@ -645,8 +645,6 @@
   "Oops!" : "Oops",
   "Open" : "Otevřít",
   "Opened" : "Otevřený",
-  "Statistics_opt_out" : "Neposílejte své statistiky Rocket.Chat",
-  "Statistics_opt_out_Description" : "Zasláním své statistiky, budete nám pomáhá určit, jak jsou nasazeny mnoho příkladů Rocket.Chat, a jak dobře se systém chová, takže můžeme dále vylepšit. Nebojte se, protože žádné informace o uživateli je odeslána a všechny informace dostáváme se udržuje v tajnosti. Chcete-li pokračovat v odesílání nám své statistiky, zrušte zaškrtnutí políčka výše. Děkuji.",
   "optional" : "volitelný",
   "Order" : "Objednat",
   "OS_Arch" : "OS Arch",

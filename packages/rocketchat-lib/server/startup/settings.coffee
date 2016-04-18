@@ -98,7 +98,7 @@ RocketChat.settings.addGroup 'General', ->
 		@add 'UTF8_Names_Slugify', true, { type: 'boolean', public: true }
 
 	@section 'Reporting', ->
-		@add 'Statistics_opt_out', false, { type: 'boolean' }
+		@add 'Statistics_reporting', false, { type: 'boolean' }
 
 
 RocketChat.settings.addGroup 'SMTP', ->

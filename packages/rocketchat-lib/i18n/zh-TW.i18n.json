@@ -645,8 +645,6 @@
   "Oops!" : "哎呀",
   "Open" : "打開",
   "Opened" : "開業",
-  "Statistics_opt_out" : "不要傳送統計資料到Rocket.Chat",
-  "Statistics_opt_out_Description" : "通過發送您的統計，你會幫助我們確定如何Rocket.Chat許多實例部署，以及系統是如何表現不錯，所以我們可以進一步改進。不要擔心，因為沒有用戶信息的發送和收到的所有信息都是保密的。如果你想繼續發送您的統計，取消上述複選框。謝謝。",
   "optional" : "自選",
   "Order" : "訂購",
   "OS_Arch" : "OS拱",

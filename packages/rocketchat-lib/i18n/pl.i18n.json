@@ -645,8 +645,6 @@
   "Oops!" : "Ups",
   "Open" : "otwarty",
   "Opened" : "Otwierany",
-  "Statistics_opt_out" : "Nie wysyłaj statystyk do autorów Rocket.Chat",
-  "Statistics_opt_out_Description" : "Przesyłając swoje statystyki pomagasz nam określić jak instalacji Rocket.Chat jest w użyciu i jak dobrze sprawuje się nasza aplikacja, co pozwala nam ją wciąż ulepszać. Nie przesyłamy żadnych informacji o użytkownikach, a wszystkie otrzymane informacje są traktowane jako poufne. Jeśli chcesz nadal przesyłać nam statystyki, odznacz powyższe pole. Dziękujemy.",
   "optional" : "opcjonalne",
   "Order" : "Zamówienie",
   "OS_Arch" : "Architektura systemu",

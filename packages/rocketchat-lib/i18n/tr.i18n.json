@@ -644,8 +644,6 @@
   "Oops!" : "Hata",
   "Open" : "Açık",
   "Opened" : "Açıldı",
-  "Statistics_opt_out" : "Rocket.Chat benim istatistiklerini göndermeyin",
-  "Statistics_opt_out_Description" : "istatistiklerinizi göndererek, Rocket.Chat birçok örnekleri konuşlandırıldığı nasıl bize sistemin nasıl davrandığını iyi yanı sıra, tanımlamaya yardımcı olacak, bu yüzden daha da artırabilir. hiçbir kullanıcı bilgisi gönderilir ve aldığımız tüm bilgiler gizli tutulur olarak, endişe etmeyin. Bize istatistiklerini göndermeye devam etmek istiyorsanız, yukarıdaki onay kutusunun işaretini kaldırın. Teşekkür ederim.",
   "optional" : "isteğe bağlı",
   "Order" : "Sipariş",
   "OS_Arch" : "İşletim Arch",
