@@ -15,6 +15,15 @@ Meteor.methods
 		unless hasPermission or (deleteAllowed and deleteOwn)
 			throw new Meteor.Error 'message-deleting-not-allowed', "[methods] deleteMessage -> Message deleting not allowed"
 
+		blockDeleteInMinutes = RocketChat.settings.get 'Message_AllowDeleting_BlockDeleteInMinutes'
+		if blockDeleteInMinutes? and blockDeleteInMinutes isnt 0
+			msgTs = moment(originalMessage.ts) if originalMessage.ts?
+			currentTsDiff = moment().diff(msgTs, 'minutes') if msgTs?
+			if currentTsDiff > blockDeleteInMinutes
+				toastr.error t('Message_deleting_blocked')
+				throw new Meteor.Error 'message-deleting-blocked'
+
+
 		keepHistory = RocketChat.settings.get 'Message_KeepHistory'
 		showDeletedStatus = RocketChat.settings.get 'Message_ShowDeletedStatus'
 
