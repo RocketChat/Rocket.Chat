@@ -64,4 +64,4 @@ Template.adminUserEdit.onCreated ->
 					@cancel(userData.username)
 
 				if error
-					toastr.error error.reason
+					handleError(error);

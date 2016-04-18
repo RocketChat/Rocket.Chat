@@ -8,7 +8,7 @@
 				</header>
 				{{#if username.error}}
 					<div class="alert alert-danger">
-						{{{_ "Username_unavaliable" username.username}}}
+						{{{_ "error-field-unavailable" field=username.username}}}
 					</div>
 				{{/if}}
 				{{#if username.invalid}}
