@@ -1,7 +1,7 @@
 var async = require('async');
 var fs = require('fs');
 var _ = require('underscore');
-var googleTranslate = require('google-translate')('AIzaSyD4igBTmV0VzF7VibGtfqC1dT_30e6zpwg');
+var googleTranslate = require('google-translate')('insert google api key here');
 
 var path = '../../packages/rocketchat-lib/i18n/';
 var enContents = fs.readFileSync(path + 'en.i18n.json', 'utf-8');
@@ -12,9 +12,9 @@ googleTranslate.getSupportedLanguages(function(err, langs) {
 		console.log(err);
 		return;
 	}
-	files = fs.readdirSync(path);
+	var files = fs.readdirSync(path);
 	async.eachSeries(files, function(file, callback) {
-		if (file === 'en.i18n.json') return callback();
+		if (file === 'en.i18n.json') { return callback(); }
 
 		var lang = file.replace('.i18n.json', '');
 		var destContents = fs.readFileSync(path + file, 'utf-8');
@@ -22,12 +22,14 @@ googleTranslate.getSupportedLanguages(function(err, langs) {
 		var toTranslate = {};
 		var newContent = {};
 
-		for (key in en) {
-			if (destJson[key]) {
-				newContent[key] = destJson[key];
-			} else {
-				newContent[key] = '';
-				toTranslate[key] = en[key];
+		for (var key in en) {
+			if (en.hasOwnProperty(key)) {
+				if (destJson[key]) {
+					newContent[key] = destJson[key];
+				} else {
+					newContent[key] = '';
+					toTranslate[key] = en[key];
+				}
 			}
 		}
 
@@ -52,12 +54,14 @@ googleTranslate.getSupportedLanguages(function(err, langs) {
 				if (err) {
 					console.log(lang, err);
 				} else {
-					for (key in translations) {
-						newContent[invertToTranslate[translations[key].originalText]] = translations[key].translatedText;
+					for (var key in translations) {
+						if (translations.hasOwnProperty(key)) {
+							newContent[invertToTranslate[translations[key].originalText]] = translations[key].translatedText;
+						}
 					}
 					var newJsonString = JSON.stringify(newContent, null, '  ').replace(/": "/g, '" : "');
 					fs.writeFileSync(path + file, newJsonString, 'utf8');
-					setTimeout(function() { return callback() }, 1000);
+					setTimeout(function() { return callback(); }, 1000);
 				}
 			});
 		} else {
