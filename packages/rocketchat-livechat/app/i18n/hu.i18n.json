@@ -1,3 +1,18 @@
 {
-  "Start_Chat" : "Start Chat"
+  "Additional_Feedback" : "további Visszajelzés",
+  "Appearance" : "Kinézet",
+  "How_friendly_was_the_chat_agent" : "Hogyan barátságos volt a chat ügynök?",
+  "How_knowledgeable_was_the_chat_agent" : "Mennyire értett a chat ügynök?",
+  "How_responsive_was_the_chat_agent" : "Hogyan reagálnak volt a chat ügynök?",
+  "How_satisfied_were_you_with_this_chat" : "Mennyire volt elégedett ezzel a beszélgetés?",
+  "Installation" : "Telepítés",
+  "Please_answer_survey" : "Kérjük, szánjon egy kis választ egy gyors felmérést erről csevegés",
+  "Please_fill_name_and_email" : "Kérjük, töltse ki a nevét és e-mail",
+  "Select_a_department" : "Válasszon egy osztály",
+  "Skip" : "Skip",
+  "Start_Chat" : "Start Chat",
+  "Survey" : "Felmérés",
+  "Survey_instructions" : "Szavazz minden kérdésre az Ön elégedettsége, 1 ami azt jelenti, teljesen elégedetlen, és 5 ami azt jelenti, hogy teljesen elégedett.",
+  "Thank_you_for_your_feedback" : "Köszönjük a visszajelzést",
+  "We_are_offline_Sorry_for_the_inconvenience" : "Mi vagyunk az offline. Elnézést a kellemetlenségért."
 }

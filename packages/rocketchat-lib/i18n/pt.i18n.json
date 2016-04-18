@@ -292,7 +292,7 @@
   "error-invalid-custom-field-name" : "Nome inválido para o campo personalizado. Use apenas letras, números, hífens e underscores.",
   "error-invalid-password" : "Senha inválida",
   "error-invalid-room" : "Sala inválida",
-  "error-invalid-room-name" : "<strong>% s</strong> não é um nome de sala válido, <br/> utilizar apenas letras, números, hífens e underscores",
+  "error-invalid-room-name" : "<strong> %s</strong> não é um nome de sala válido, <br/> utilizar apenas letras, números, hífens e underscores",
   "error-invalid-user" : "Usuário inválido",
   "error-invalid-username" : "Nome de usuário Inválido",
   "error-not-allowed" : "Não permitido",

@@ -1,5 +1,9 @@
 {
   "Additional_Feedback" : "Ytterligare feedback",
+  "Appearance" : "Utseende",
+  "How_friendly_was_the_chat_agent" : "Hur vänligt var chatten agent?",
+  "How_knowledgeable_was_the_chat_agent" : "Hur kunnig var chatten agent?",
+  "How_responsive_was_the_chat_agent" : "Hur reagerar var chatten agent?",
   "How_satisfied_were_you_with_this_chat" : "Hur nöjd var du med chatten?",
   "Installation" : "Installation",
   "Please_answer_survey" : "Vänligen ta en stund för att svara på en snabb enkät om chatten.",
