@@ -10,6 +10,13 @@ Meteor.methods
 		unless hasPermission or (deleteAllowed and deleteOwn)
 			throw new Meteor.Error 'message-deleting-not-allowed', t('Message_deleting_not_allowed')
 
+		blockDeleteInMinutes = RocketChat.settings.get 'Message_AllowDeleting_BlockDeleteInMinutes'
+		if blockDeleteInMinutes? and blockDeleteInMinutes isnt 0
+			msgTs = moment(message.ts) if message.ts?
+			currentTsDiff = moment().diff(msgTs, 'minutes') if msgTs?
+			if currentTsDiff > blockDeleteInMinutes
+				toastr.error t('Message_deleting_blocked')
+				throw new Meteor.Error 'message-deleting-blocked'
 
 		Tracker.nonreactive ->
 			ChatMessage.remove
