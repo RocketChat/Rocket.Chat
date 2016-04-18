@@ -1,8 +1,8 @@
 {
-  "500" : "内部服务器错误",
   "0_Errors_Only" : "0 - 仅错误 ",
   "1_Errors_and_Information" : "1 - 错误和信息",
   "2_Erros_Information_and_Debug" : "2 - 错误、信息和调试信息",
+  "500" : "内部服务器错误",
   "__username__was_set__role__by__user_by_" : "__username__设置__role__由__user_by__",
   "__username__is_no_longer__role__defined_by__user_by_" : "__username__不再__role__，由__user_by__",
   "Access_not_authorized" : "未活得访问授权",
@@ -554,7 +554,6 @@
   "Message_AudioRecorderEnabled" : "启用音频录制",
   "Message_AudioRecorderEnabledDescription" : "需要在“文件上传”中设置“audio/wav”为可接受媒体类型。",
   "Message_DateFormat" : "日期格式",
-  "Message_DateFormat_Description" : "",
   "Message_deleting_not_allowed" : "不允许删除消息",
   "Message_editing_blocked" : "该信息已不允许再被编辑",
   "Message_editing_not_allowed" : "不允许编辑消息",

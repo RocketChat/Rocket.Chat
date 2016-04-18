@@ -1,8 +1,8 @@
 {
-  "500" : "Εσωτερικό Σφάλμα Διακομιστή",
   "0_Errors_Only" : "0 - Λάθη Μόνο",
   "1_Errors_and_Information" : "1 - Λάθη και Πληροφοριών",
   "2_Erros_Information_and_Debug" : "2 - erros, πληροφοριών και τον εντοπισμό σφαλμάτων",
+  "500" : "Εσωτερικό Σφάλμα Διακομιστή",
   "__username__was_set__role__by__user_by_" : "χρήστη __username__ ορίστηκε __role__ από __user_by__",
   "__username__is_no_longer__role__defined_by__user_by_" : "χρήστη __username__ δεν είναι πλέον __role__, από __user_by__",
   "Access_not_authorized" : "Πρόσβαση δεν επιτρέπονται",

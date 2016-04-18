@@ -1,8 +1,8 @@
 {
-  "500" : "خطای داخلی سرور",
   "0_Errors_Only" : "0 - خطاها فقط",
   "1_Errors_and_Information" : "1 - خطاها و اطلاعات",
   "2_Erros_Information_and_Debug" : "2 - Erros، اطلاعات و اشکال زدایی",
+  "500" : "خطای داخلی سرور",
   "__username__was_set__role__by__user_by_" : "_نام کاربری_ __role__ توسط __user_by__ تعیین شد",
   "__username__is_no_longer__role__defined_by__user_by_" : "_نام کاربری_ است که دیگر __role__، توسط __user_by__",
   "Access_not_authorized" : "دسترسی مجاز",

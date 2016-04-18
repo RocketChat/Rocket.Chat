@@ -1,8 +1,8 @@
 {
-  "500" : "Внутренняя ошибка сервера",
   "0_Errors_Only" : "0 - Только ошибки",
   "1_Errors_and_Information" : "1 - Ошибки и информация",
   "2_Erros_Information_and_Debug" : "2 - Ошибки, информация и отладка",
+  "500" : "Внутренняя ошибка сервера",
   "__username__was_set__role__by__user_by_" : "__username__ был установлен __role__ по __user_by__",
   "__username__is_no_longer__role__defined_by__user_by_" : "__username__ больше не __role__, по __user_by__",
   "Access_not_authorized" : "Доступ запрещён",
@@ -554,7 +554,6 @@
   "Message_AudioRecorderEnabled" : "Запись аудио включена",
   "Message_AudioRecorderEnabledDescription" : "Необходимо подтвердить принятие  'audio/wav' файлов в настройках \"Загрузка файла\".",
   "Message_DateFormat" : "Формат даты",
-  "Message_DateFormat_Description" : "",
   "Message_deleting_not_allowed" : "Удаление сообщений запрещено",
   "Message_editing_blocked" : "Это сообщение больше не может быть отредактировано",
   "Message_editing_not_allowed" : "Редактирование сообщений запрещено",
