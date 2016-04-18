@@ -1,4 +1,4 @@
-msgStream = new Meteor.Streamer 'messages'
+msgStream = new Meteor.Streamer 'room-messages'
 Tracker.autorun ->
 	if visitor.getRoom()?
 		msgStream.on visitor.getRoom(), (msg) ->
