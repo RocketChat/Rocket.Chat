@@ -648,7 +648,7 @@
   "Open" : "Aberto",
   "Opened" : "Aberto",
   "Opt_out_statistics" : "Não envie as minhas estatísticas anonimamente para Rocket.Chat",
-  "Opt_out_statistics_warning" : "Enviando suas estatísticas anonimamente você nos ajudará a identificar quantas instâncias do Rocket.Chat são implantadas, bem como o quão bom o sistema está se comportando, para que nós possamos melhorar ainda mais. Se você quiser continuar nos enviando suas estatísticas anonimamente, desmarque a caixa de seleção acima. Obrigado",
+  "Opt_out_statistics_Description" : "Enviando suas estatísticas anonimamente você nos ajudará a identificar quantas instâncias do Rocket.Chat são implantadas, bem como o quão bom o sistema está se comportando, para que nós possamos melhorar ainda mais. Se você quiser continuar nos enviando suas estatísticas anonimamente, desmarque a caixa de seleção acima. Obrigado",
   "optional" : "opcional",
   "Order" : "Ordem",
   "OS_Arch" : "Arquitetura",
