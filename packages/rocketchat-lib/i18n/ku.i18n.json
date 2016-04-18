@@ -1,8 +1,8 @@
 {
-  "500" : "Xeletiya Pêşkêşkara Herêmî",
   "0_Errors_Only" : "0 - Errors Tenê",
   "1_Errors_and_Information" : "1 - Errors û Information",
   "2_Erros_Information_and_Debug" : "2 - Erros, Information û Debug",
+  "500" : "Xeletiya Pêşkêşkara Herêmî",
   "__username__was_set__role__by__user_by_" : "__username__ __role__ destê __user_by__ hat avakirin",
   "__username__is_no_longer__role__defined_by__user_by_" : "__username__ e êdî __role__, ji aliyê __user_by__",
   "Access_not_authorized" : "Têketinê destûr ne",

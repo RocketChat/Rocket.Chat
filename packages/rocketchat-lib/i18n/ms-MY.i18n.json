@@ -1,8 +1,8 @@
 {
-  "500" : "Ralat Pelayan Dalaman",
   "0_Errors_Only" : "0 - Kesilapan Hanya",
   "1_Errors_and_Information" : "1 - Kesilapan dan Maklumat",
   "2_Erros_Information_and_Debug" : "2 - Erros, Maklumat dan Debug",
+  "500" : "Ralat Pelayan Dalaman",
   "__username__was_set__role__by__user_by_" : "__nama pengguna__ ditubuhkan __role__ oleh __user_by__",
   "__username__is_no_longer__role__defined_by__user_by_" : "__nama pengguna__ tidak lagi __role__, dengan __user_by__",
   "Access_not_authorized" : "Akses tidak dibenarkan",
@@ -56,7 +56,6 @@
   "Accounts_OAuth_GitHub_Enterprise" : "OAuth Didayakan",
   "Accounts_OAuth_GitHub_Enterprise_callback_url" : "URL GitHub Enterprise Callback",
   "Accounts_OAuth_GitHub_Enterprise_id" : "Id Pelanggan",
-  "Accounts_OAuth_GitHub_Enterprise_secret" : "",
   "Accounts_OAuth_Github_id" : "ID Klien",
   "Accounts_OAuth_Github_secret" : "Rahsia Klien",
   "Accounts_OAuth_Gitlab" : "OAuth Didayakan",

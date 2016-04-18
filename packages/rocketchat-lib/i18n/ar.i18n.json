@@ -1,8 +1,8 @@
 {
-  "500" : "خطأ في الخادم الداخلي",
   "0_Errors_Only" : "0 - أخطاء فقط",
   "1_Errors_and_Information" : "1 - أخطاء ومعلومات",
   "2_Erros_Information_and_Debug" : "2 - Erros والمعلومات وتصحيح",
+  "500" : "خطأ في الخادم الداخلي",
   "__username__was_set__role__by__user_by_" : "تم تعيين __username__ __role__ التي كتبها __user_by__",
   "__username__is_no_longer__role__defined_by__user_by_" : "__username__ لم يعد __role__، من خلال __user_by__",
   "Access_not_authorized" : "وصول غير مخول",
@@ -56,7 +56,6 @@
   "Accounts_OAuth_GitHub_Enterprise" : "أوث ممكن",
   "Accounts_OAuth_GitHub_Enterprise_callback_url" : "URL جيثب المؤسسة الاستدعاء",
   "Accounts_OAuth_GitHub_Enterprise_id" : "رقم العميل",
-  "Accounts_OAuth_GitHub_Enterprise_secret" : "",
   "Accounts_OAuth_Github_id" : "رقم العميل",
   "Accounts_OAuth_Github_secret" : "سر العميل",
   "Accounts_OAuth_Gitlab" : "أوث ممكن",

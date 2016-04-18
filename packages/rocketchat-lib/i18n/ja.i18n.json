@@ -1,8 +1,8 @@
 {
-  "500" : "内部サーバーエラー",
   "0_Errors_Only" : "0 - エラーのみ",
   "1_Errors_and_Information" : "1 - エラーと情報",
   "2_Erros_Information_and_Debug" : "2 - エラー, 情報とデバッグ",
+  "500" : "内部サーバーエラー",
   "__username__was_set__role__by__user_by_" : "__username__は__user_by__によって__role__設定されました",
   "__username__is_no_longer__role__defined_by__user_by_" : "__username__は__user_by__により、__role__はなくなりました",
   "Access_not_authorized" : "アクセスする権限がありません",

@@ -1,8 +1,8 @@
 {
-  "500" : "인터넷 서버 오류",
   "0_Errors_Only" : "0 - 오류 만",
   "1_Errors_and_Information" : "1 - 오류 및 정보",
   "2_Erros_Information_and_Debug" : "2 - Erros, 정보 및 디버그",
+  "500" : "인터넷 서버 오류",
   "__username__was_set__role__by__user_by_" : "__ 사용자 이름 __은 __user_by__에 의해 __role__ 설정했다",
   "__username__is_no_longer__role__defined_by__user_by_" : "__ 사용자 이름 __는 __user_by__에 의해, __role__ 더 이상 없다",
   "Access_not_authorized" : "액세스 권한이 없습니다",
