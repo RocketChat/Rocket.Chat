@@ -61,10 +61,20 @@ Template.message.helpers
 			return true
 
 	canDelete: ->
-		if RocketChat.authz.hasAtLeastOnePermission('delete-message', this.rid )
+		hasPermission = RocketChat.authz.hasAtLeastOnePermission('delete-message', this.rid )
+		isDeleteAllowed = RocketChat.settings.get('Message_AllowDeleting')
+		deleteOwn = this.u?._id is Meteor.userId()
+
+		return unless hasPermission or (isDeleteAllowed and deleteOwn)
+
+		blockDeleteInMinutes = RocketChat.settings.get 'Message_AllowDeleting_BlockDeleteInMinutes'
+		if blockDeleteInMinutes? and blockDeleteInMinutes isnt 0
+			msgTs = moment(this.ts) if this.ts?
+			currentTsDiff = moment().diff(msgTs, 'minutes') if msgTs?
+			return currentTsDiff < blockDeleteInMinutes
+		else
 			return true
 
-		return RocketChat.settings.get('Message_AllowDeleting') and this.u?._id is Meteor.userId()
 	showEditedStatus: ->
 		return RocketChat.settings.get 'Message_ShowEditedStatus'
 	label: ->
