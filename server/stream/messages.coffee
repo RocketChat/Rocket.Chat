@@ -7,8 +7,12 @@ oldMsgStream.permissions.write (eventName) ->
 oldMsgStream.permissions.read (eventName) ->
 	try
 		canAccess = Meteor.call 'canAccessRoom', eventName, this.userId
-		console.log 'canAccess', canAccess?, eventName, this.userId
-		return false if not canAccess?
+
+		return false if not canAccess
+
+		return true
+	catch e
+		return false
 # COMPATIBILITY
 
 
@@ -38,9 +42,9 @@ Meteor.startup ->
 
 	RocketChat.models.Messages.findVisibleCreatedOrEditedAfterTimestamp(new Date(), options).observe
 		added: (record) ->
-			msgStream.emitWithoutBroadcast record.rid, record
 			oldMsgStream.emit record.rid, record
+			msgStream.emitWithoutBroadcast record.rid, record
 
 		changed: (record) ->
-			msgStream.emitWithoutBroadcast record.rid, record
 			oldMsgStream.emit record.rid, record
+			msgStream.emitWithoutBroadcast record.rid, record
