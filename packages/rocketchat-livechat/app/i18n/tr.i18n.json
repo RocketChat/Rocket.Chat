@@ -1,3 +1,18 @@
 {
-  "Start_Chat" : "Sohbete Başla"
+  "Additional_Feedback" : "Ek geri bildirim",
+  "Appearance" : "Görünüm",
+  "How_friendly_was_the_chat_agent" : "Sohbet ajanı nasıl dost oldu?",
+  "How_knowledgeable_was_the_chat_agent" : "Sohbet ajanı nasıl bilgili?",
+  "How_responsive_was_the_chat_agent" : "Sohbet ajanı nasıl cevap veriyordu?",
+  "How_satisfied_were_you_with_this_chat" : "Bu sohbet ile ne kadar memnun kaldınız?",
+  "Installation" : "montaj",
+  "Please_answer_survey" : "Bu sohbet hakkında hızlı bir anketi yanıtlamak için bir dakikanızı ayırın",
+  "Please_fill_name_and_email" : "isim ve e-posta doldurunuz",
+  "Select_a_department" : "Bir bölümü seçmek",
+  "Skip" : "atlamak",
+  "Start_Chat" : "Sohbete Başla",
+  "Survey" : "anket",
+  "Survey_instructions" : "Tamamen memnun anlam tamamen tatminsiz olan, yani sizi tatmin göre 1 her soruyu oranı ve 5.",
+  "Thank_you_for_your_feedback" : "Görüşleriniz için teşekkür ederiz",
+  "We_are_offline_Sorry_for_the_inconvenience" : "Biz çevrimdışı. Rahatsızlıktan dolayı özür dileriz."
 }

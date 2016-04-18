@@ -1,6 +1,18 @@
 {
+  "Additional_Feedback" : "其他反饋",
+  "Appearance" : "出現",
+  "How_friendly_was_the_chat_agent" : "如何友好是聊天劑？",
+  "How_knowledgeable_was_the_chat_agent" : "如何懂行是聊天劑？",
+  "How_responsive_was_the_chat_agent" : "如何響應是聊天劑？",
+  "How_satisfied_were_you_with_this_chat" : "如何滿足於此聊天是你？",
+  "Installation" : "安裝",
+  "Please_answer_survey" : "請花一點時間來回答這個聊天快速調查",
   "Please_fill_name_and_email" : "請輸入名字或電子郵件",
+  "Select_a_department" : "選擇一個部門",
+  "Skip" : "跳躍",
   "Start_Chat" : "开始聊天",
+  "Survey" : "調查",
+  "Survey_instructions" : "根據您的滿意率每一個問題，1這意味著你完全不滿意和5這意味著你完全滿意。",
   "Thank_you_for_your_feedback" : "感謝您寶貴的意見",
   "We_are_offline_Sorry_for_the_inconvenience" : "離線中，造成您的不便"
 }
