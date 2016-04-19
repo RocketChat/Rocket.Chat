@@ -7,7 +7,7 @@ Accounts._unstoreLoginToken = function() {
 };
 
 class IframeLogin {
-	constructor () {
+	constructor() {
 		this.enabled = false;
 		this.reactiveIframeUrl = new ReactiveVar();
 		this.reactiveEnabled = new ReactiveVar();
@@ -36,7 +36,7 @@ class IframeLogin {
 		});
 	}
 
-	tryLogin (callback) {
+	tryLogin(callback) {
 		if (!this.enabled) {
 			return;
 		}
@@ -84,7 +84,7 @@ class IframeLogin {
 		});
 	}
 
-	loginWithToken (token, callback) {
+	loginWithToken(token, callback) {
 		if (!this.enabled) {
 			return;
 		}
@@ -235,5 +235,5 @@ window.addEventListener('message', (e) => {
 
 			window.plugins.googleplus.login(options, googleLoginSuccess, googleLoginFailure);
 			break;
-		}
+	}
 });

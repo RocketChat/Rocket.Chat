@@ -151,7 +151,7 @@ LDAP = class LDAP {
 			let custom_domain_search;
 			try {
 				custom_domain_search = JSON.parse(self.options.custom_domain_search);
-			} catch(error) {
+			} catch (error) {
 				throw new Error('Invalid Custom Domain Search JSON');
 			}
 
@@ -349,7 +349,7 @@ LDAP = class LDAP {
 			self.bindSync(dn, password);
 			logger.auth.info('Authenticated', dn);
 			return true;
-		} catch(error) {
+		} catch (error) {
 			logger.auth.info('Not authenticated', dn);
 			logger.auth.debug('error', error);
 			return false;

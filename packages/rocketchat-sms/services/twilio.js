@@ -28,7 +28,7 @@ class Twilio {
 		client.messages.create({
 			to: toNumber,
 			from: fromNumber,
-			body: message,
+			body: message
 		});
 	}
 	response(/* message */) {

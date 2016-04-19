@@ -24,7 +24,7 @@ Package.onUse(function(api) {
 		'client/tabBar.coffee',
 		'client/views/starredMessages.html',
 		'client/views/starredMessages.coffee',
-		'client/views/stylesheets/messagestar.less',
+		'client/views/stylesheets/messagestar.less'
 	], 'client');
 
 	api.addFiles([

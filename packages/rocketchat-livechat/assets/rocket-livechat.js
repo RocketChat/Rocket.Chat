@@ -122,7 +122,7 @@
 			}
 		}, false);
 
-		var mediaqueryresponse = function (mql) {
+		var mediaqueryresponse = function(mql) {
 			if (mql.matches) {
 				chatWidget.style.left = '0';
 				chatWidget.style.right = '0';

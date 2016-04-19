@@ -5,23 +5,23 @@ RocketChat.Migrations.add({
 			var parts = customOauth._id.split('_');
 			var name = parts[3];
 			var id = 'Accounts_OAuth_Custom_' + name + '_token_sent_via';
-			if (!RocketChat.models.Settings.findOne( { _id: id } )) {
+			if (!RocketChat.models.Settings.findOne({ _id: id })) {
 				RocketChat.models.Settings.insert({
 					'_id': id,
 					'type': 'select',
 					'group': 'OAuth',
-					'section': 'Custom OAuth: ' +  name,
+					'section': 'Custom OAuth: ' + name,
 					'i18nLabel': 'Accounts_OAuth_Custom_Token_Sent_Via',
 					'persistent': true,
 					'values': [
-					{
-						'key': 'header',
-						'i18nLabel': 'Header'
-					},
-					{
-						'key': 'payload',
-						'i18nLabel': 'Payload'
-					}
+						{
+							'key': 'header',
+							'i18nLabel': 'Header'
+						},
+						{
+							'key': 'payload',
+							'i18nLabel': 'Payload'
+						}
 					],
 					'packageValue': 'payload',
 					'valueSource': 'packageValue',

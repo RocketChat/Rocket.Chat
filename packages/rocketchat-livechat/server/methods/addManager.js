@@ -1,5 +1,5 @@
 Meteor.methods({
-	'livechat:addManager' (username) {
+	'livechat:addManager'(username) {
 		if (!Meteor.userId() || !RocketChat.authz.hasPermission(Meteor.userId(), 'view-livechat-manager')) {
 			throw new Meteor.Error('not-authorized');
 		}
