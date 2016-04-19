@@ -164,7 +164,7 @@ module.exports = {
 		'comma-dangle': [2, 'never'],   // disallow or enforce trailing commas
 		'keyword-spacing': 2,
 		'block-spacing': 2,
-		'brace-style': [2, "1tbs", { "allowSingleLine": true }],
+		'brace-style': [2, '1tbs', { 'allowSingleLine': true }],
 		'computed-property-spacing': 2,
 		'comma-spacing': 2,
 		'comma-style': 2,
