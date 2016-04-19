@@ -188,11 +188,7 @@ Template.integrationsIncoming.events
 		if params?.id?
 			Meteor.call "updateIncomingIntegration", params.id, integration, (err, data) ->
 				if err?
-					console.log err.error
-					if err.message
-						console.log '\n'+err.message
-						return toastr.error 'See browsers\'s console for more information', TAPi18n.__(err.error)
-					return toastr.error TAPi18n.__(err.error)
+					return handleError(err)
 
 				toastr.success TAPi18n.__("Integration_updated")
 		else
