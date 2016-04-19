@@ -8,15 +8,15 @@ var readFromGridFS = function(storeName, fileId, file, headers, req, res) {
 	var rs = store.getReadStream(fileId, file);
 	var ws = new stream.PassThrough();
 
-	rs.on('error', function (err) {
+	rs.on('error', function(err) {
 		store.onReadError.call(store, err, fileId, file);
 		res.end();
 	});
-	ws.on('error', function (err) {
+	ws.on('error', function(err) {
 		store.onReadError.call(store, err, fileId, file);
 		res.end();
 	});
-	ws.on('close', function () {
+	ws.on('close', function() {
 		// Close output stream at the end
 		ws.emit('end');
 	});
@@ -32,16 +32,14 @@ var readFromGridFS = function(storeName, fileId, file, headers, req, res) {
 		delete headers['Content-Length'];
 		res.writeHead(200, headers);
 		ws.pipe(zlib.createGzip()).pipe(res);
-	}
-	// Compress data using deflate
-	else if (accept.match(/\bdeflate\b/)) {
+	} else if (accept.match(/\bdeflate\b/)) {
+		// Compress data using deflate
 		headers['Content-Encoding'] = 'deflate';
 		delete headers['Content-Length'];
 		res.writeHead(200, headers);
 		ws.pipe(zlib.createDeflate()).pipe(res);
-	}
-	// Send raw data
-	else {
+	} else {
+		// Send raw data
 		res.writeHead(200, headers);
 		ws.pipe(res);
 	}

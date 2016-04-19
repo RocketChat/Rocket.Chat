@@ -28,7 +28,7 @@ AccountBox.addItem({
 	sideNav: 'livechatFlex',
 	condition: () => {
 		return RocketChat.settings.get('Livechat_enabled') && RocketChat.authz.hasAllPermission('view-livechat-manager');
-	},
+	}
 });
 
 RocketChat.TabBar.addButton({

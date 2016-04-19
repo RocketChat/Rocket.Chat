@@ -14,15 +14,15 @@ var xmlbuilder = Npm.require('xmlbuilder');
 // var prefixMatch = new RegExp(/(?!xmlns)^.*:/);
 
 
-SAML = function (options) {
+SAML = function(options) {
 	this.options = this.initialize(options);
 };
 
-// var stripPrefix = function (str) {
+// var stripPrefix = function(str) {
 // 	return str.replace(prefixMatch, '');
 // };
 
-SAML.prototype.initialize = function (options) {
+SAML.prototype.initialize = function(options) {
 	if (!options) {
 		options = {};
 	}
@@ -50,7 +50,7 @@ SAML.prototype.initialize = function (options) {
 	return options;
 };
 
-SAML.prototype.generateUniqueID = function () {
+SAML.prototype.generateUniqueID = function() {
 	var chars = 'abcdef0123456789';
 	var uniqueID = '';
 	for (var i = 0; i < 20; i++) {
@@ -59,17 +59,17 @@ SAML.prototype.generateUniqueID = function () {
 	return uniqueID;
 };
 
-SAML.prototype.generateInstant = function () {
+SAML.prototype.generateInstant = function() {
 	return new Date().toISOString();
 };
 
-SAML.prototype.signRequest = function (xml) {
+SAML.prototype.signRequest = function(xml) {
 	var signer = crypto.createSign('RSA-SHA1');
 	signer.update(xml);
 	return signer.sign(this.options.privateKey, 'base64');
 };
 
-SAML.prototype.generateAuthorizeRequest = function (req) {
+SAML.prototype.generateAuthorizeRequest = function(req) {
 	var id = '_' + this.generateUniqueID();
 	var instant = this.generateInstant();
 
@@ -104,7 +104,7 @@ SAML.prototype.generateAuthorizeRequest = function (req) {
 	return request;
 };
 
-SAML.prototype.generateLogoutRequest = function (options) {
+SAML.prototype.generateLogoutRequest = function(options) {
 	// options should be of the form
 	// nameId: <nameId as submitted during SAML SSO>
 	// sessionIndex: sessionIndex
@@ -144,9 +144,9 @@ SAML.prototype.generateLogoutRequest = function (options) {
 	};
 };
 
-SAML.prototype.requestToUrl = function (request, operation, callback) {
+SAML.prototype.requestToUrl = function(request, operation, callback) {
 	var self = this;
-	zlib.deflateRaw(request, function (err, buffer) {
+	zlib.deflateRaw(request, function(err, buffer) {
 		if (err) {
 			return callback(err);
 		}
@@ -198,26 +198,26 @@ SAML.prototype.requestToUrl = function (request, operation, callback) {
 	});
 };
 
-SAML.prototype.getAuthorizeUrl = function (req, callback) {
+SAML.prototype.getAuthorizeUrl = function(req, callback) {
 	var request = this.generateAuthorizeRequest(req);
 
 	this.requestToUrl(request, 'authorize', callback);
 };
 
-SAML.prototype.getLogoutUrl = function (req, callback) {
+SAML.prototype.getLogoutUrl = function(req, callback) {
 	var request = this.generateLogoutRequest(req);
 
 	this.requestToUrl(request, 'logout', callback);
 };
 
-SAML.prototype.certToPEM = function (cert) {
+SAML.prototype.certToPEM = function(cert) {
 	cert = cert.match(/.{1,64}/g).join('\n');
 	cert = '-----BEGIN CERTIFICATE-----\n' + cert;
 	cert = cert + '\n-----END CERTIFICATE-----\n';
 	return cert;
 };
 
-// function findChilds(node, localName, namespace) {
+// functionfindChilds(node, localName, namespace) {
 // 	var res = [];
 // 	for (var i = 0; i < node.childNodes.length; i++) {
 // 		var child = node.childNodes[i];
@@ -228,7 +228,7 @@ SAML.prototype.certToPEM = function (cert) {
 // 	return res;
 // }
 
-SAML.prototype.validateSignature = function (xml, cert) {
+SAML.prototype.validateSignature = function(xml, cert) {
 	var self = this;
 
 	var doc = new xmldom.DOMParser().parseFromString(xml);
@@ -237,10 +237,10 @@ SAML.prototype.validateSignature = function (xml, cert) {
 	var sig = new xmlCrypto.SignedXml();
 
 	sig.keyInfoProvider = {
-		getKeyInfo: function (/*key*/) {
+		getKeyInfo: function(/*key*/) {
 			return '<X509Data></X509Data>';
 		},
-		getKey: function (/*keyInfo*/) {
+		getKey: function(/*keyInfo*/) {
 			return self.certToPEM(cert);
 		}
 	};
@@ -250,7 +250,7 @@ SAML.prototype.validateSignature = function (xml, cert) {
 	return sig.checkSignature(xml);
 };
 
-SAML.prototype.getElement = function (parentElement, elementName) {
+SAML.prototype.getElement = function(parentElement, elementName) {
 	if (parentElement['saml:' + elementName]) {
 		return parentElement['saml:' + elementName];
 	} else if (parentElement['samlp:' + elementName]) {
@@ -263,11 +263,11 @@ SAML.prototype.getElement = function (parentElement, elementName) {
 	return parentElement[elementName];
 };
 
-SAML.prototype.validateLogoutResponse = function (samlResponse, callback) {
+SAML.prototype.validateLogoutResponse = function(samlResponse, callback) {
 	var self = this;
 
 	var compressedSAMLResponse = new Buffer(samlResponse, 'base64');
-	zlib.inflateRaw(compressedSAMLResponse, function (err, decoded) {
+	zlib.inflateRaw(compressedSAMLResponse, function(err, decoded) {
 
 		if (err) {
 			if (Meteor.settings.debug) {
@@ -277,7 +277,7 @@ SAML.prototype.validateLogoutResponse = function (samlResponse, callback) {
 			var parser = new xml2js.Parser({
 				explicitRoot: true
 			});
-			parser.parseString(decoded, function (err, doc) {
+			parser.parseString(decoded, function(err, doc) {
 				var response = self.getElement(doc, 'LogoutResponse');
 
 				if (response) {
@@ -307,7 +307,7 @@ SAML.prototype.validateLogoutResponse = function (samlResponse, callback) {
 	});
 };
 
-SAML.prototype.validateResponse = function (samlResponse, relayState, callback) {
+SAML.prototype.validateResponse = function(samlResponse, relayState, callback) {
 	var self = this;
 	var xml = new Buffer(samlResponse, 'base64').toString('ascii');
 	// We currently use RelayState to save SAML provider
@@ -318,7 +318,7 @@ SAML.prototype.validateResponse = function (samlResponse, relayState, callback) 
 		explicitRoot: true
 	});
 
-	parser.parseString(xml, function (err, doc) {
+	parser.parseString(xml, function(err, doc) {
 		// Verify signature
 		if (Meteor.settings.debug) {
 			console.log('Verify signature');
@@ -375,17 +375,13 @@ SAML.prototype.validateResponse = function (samlResponse, relayState, callback) 
 					if (Meteor.settings.debug) {
 						console.log('Session Index: ' + profile.sessionIndex);
 					}
-				} else {
-					if (Meteor.settings.debug) {
-						console.log('No Session Index Found');
-					}
+				} else if (Meteor.settings.debug) {
+					console.log('No Session Index Found');
 				}
 
 
-			} else {
-				if (Meteor.settings.debug) {
-					console.log('No AuthN Statement found');
-				}
+			} else if (Meteor.settings.debug) {
+				console.log('No AuthN Statement found');
 			}
 
 			var attributeStatement = self.getElement(assertion[0], 'AttributeStatement');
@@ -393,7 +389,7 @@ SAML.prototype.validateResponse = function (samlResponse, relayState, callback) 
 				var attributes = self.getElement(attributeStatement[0], 'Attribute');
 
 				if (attributes) {
-					attributes.forEach(function (attribute) {
+					attributes.forEach(function(attribute) {
 						var value = self.getElement(attribute, 'AttributeValue');
 						if (typeof value[0] === 'string') {
 							profile[attribute.$.Name] = value[0];
@@ -435,7 +431,7 @@ SAML.prototype.validateResponse = function (samlResponse, relayState, callback) 
 };
 
 var decryptionCert;
-SAML.prototype.generateServiceProviderMetadata = function (callbackUrl) {
+SAML.prototype.generateServiceProviderMetadata = function(callbackUrl) {
 
 	var keyDescriptor = null;
 
@@ -477,7 +473,7 @@ SAML.prototype.generateServiceProviderMetadata = function (callbackUrl) {
 					'EncryptionMethod': {
 						'@Algorithm': 'http://www.w3.org/2001/04/xmlenc#tripledes-cbc'
 					}
-				},
+				}
 			]
 		};
 	}

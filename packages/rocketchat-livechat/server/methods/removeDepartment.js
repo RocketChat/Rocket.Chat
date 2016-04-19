@@ -1,5 +1,5 @@
 Meteor.methods({
-	'livechat:removeDepartment' (_id) {
+	'livechat:removeDepartment'(_id) {
 		if (!Meteor.userId() || !RocketChat.authz.hasPermission(Meteor.userId(), 'view-livechat-manager')) {
 			throw new Meteor.Error('not-authorized');
 		}

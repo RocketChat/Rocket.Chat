@@ -15,7 +15,7 @@ var closePopup = function(res) {
 	res.end(content, 'utf-8');
 };
 
-var casTicket = function (req, token, callback) {
+var casTicket = function(req, token, callback) {
 
 	// get configuration
 	if (!RocketChat.settings.get('CAS_enabled')) {
@@ -37,13 +37,11 @@ var casTicket = function (req, token, callback) {
 	cas.validate(ticketId, function(err, status, username) {
 		if (err) {
 			logger.error('error when trying to validate ' + err);
+		} else if (status) {
+			logger.info('Validated user: ' + username);
+			_casCredentialTokens[token] = { id: username };
 		} else {
-			if (status) {
-				logger.info('Validated user: ' + username);
-				_casCredentialTokens[token] = { id: username };
-			} else {
-				logger.error('Unable to validate ticket: ' + ticketId);
-			}
+			logger.error('Unable to validate ticket: ' + ticketId);
 		}
 
 		callback();
@@ -52,7 +50,7 @@ var casTicket = function (req, token, callback) {
 	return;
 };
 
-var middleware = function (req, res, next) {
+var middleware = function(req, res, next) {
 	// Make sure to catch any exceptions because otherwise we'd crash
 	// the runner
 	try {
@@ -88,7 +86,7 @@ var middleware = function (req, res, next) {
 WebApp.connectHandlers.use(function(req, res, next) {
 	// Need to create a fiber since we're using synchronous http calls and nothing
 	// else is wrapping this in a fiber automatically
-	fiber(function () {
+	fiber(function() {
 		middleware(req, res, next);
 	}).run();
 });
@@ -111,7 +109,7 @@ var _retrieveCredential = function(credentialToken) {
  * It is call after Accounts.callLoginMethod() is call from client.
  *
  */
-Accounts.registerLoginHandler(function (options) {
+Accounts.registerLoginHandler(function(options) {
 
 	if (!options.cas) {
 		return undefined;
@@ -126,7 +124,7 @@ Accounts.registerLoginHandler(function (options) {
 	options = { profile: { name: result.id } };
 
 	// Search existing user by its external service id
-	logger.debug('Looking up user with username: ' + result.id );
+	logger.debug('Looking up user with username: ' + result.id);
 	var user = Meteor.users.findOne({ 'services.cas.external_id': result.id });
 
 	if (user) {

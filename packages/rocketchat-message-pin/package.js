@@ -24,7 +24,7 @@ Package.onUse(function(api) {
 		'client/tabBar.coffee',
 		'client/views/pinnedMessages.html',
 		'client/views/pinnedMessages.coffee',
-		'client/views/stylesheets/messagepin.less',
+		'client/views/stylesheets/messagepin.less'
 	], 'client');
 
 	api.addFiles([
