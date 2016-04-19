@@ -197,7 +197,7 @@ Template.integrationsIncoming.events
 
 			Meteor.call "addIncomingIntegration", integration, (err, data) ->
 				if err?
-					return toastr.error TAPi18n.__(err.error)
+					return handleError(err)
 
 				toastr.success TAPi18n.__("Integration_added")
 				FlowRouter.go "admin-integrations-incoming", {id: data._id}
