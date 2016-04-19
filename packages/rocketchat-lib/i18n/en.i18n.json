@@ -306,6 +306,7 @@
   "error-invalid-room-name" : "<strong>%s</strong> is not a valid room name,<br/> use only letters, numbers, hyphens and underscores",
   "error-invalid-user" : "Invalid user",
   "error-invalid-username" : "Invalid username",
+  "error-message-deleting-blocked" : "Message deleting is blocked",
   "error-message-editing-blocked" : "Message editing is blocked",
   "error-not-allowed" : "Not allowed",
   "error-not-authorized" : "Not authorized",

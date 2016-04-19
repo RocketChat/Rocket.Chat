@@ -15,8 +15,8 @@ Meteor.methods
 			msgTs = moment(message.ts) if message.ts?
 			currentTsDiff = moment().diff(msgTs, 'minutes') if msgTs?
 			if currentTsDiff > blockDeleteInMinutes
-				toastr.error t('Message_deleting_blocked')
-				throw new Meteor.Error 'message-deleting-blocked'
+				toastr.error t('error-message-deleting-blocked')
+				return false
 
 		Tracker.nonreactive ->
 			ChatMessage.remove

@@ -20,8 +20,7 @@ Meteor.methods
 			msgTs = moment(originalMessage.ts) if originalMessage.ts?
 			currentTsDiff = moment().diff(msgTs, 'minutes') if msgTs?
 			if currentTsDiff > blockDeleteInMinutes
-				toastr.error t('Message_deleting_blocked')
-				throw new Meteor.Error 'message-deleting-blocked'
+				throw new Meteor.Error 'error-message-deleting-blocked', 'Message deleting is blocked', { method: 'deleteMessage' }
 
 
 		keepHistory = RocketChat.settings.get 'Message_KeepHistory'
