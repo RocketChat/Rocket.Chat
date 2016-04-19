@@ -25,8 +25,8 @@ Meteor.startup(function() {
 		this.add('LDAP_CA_Cert', '', { type: 'string', multiline: true, enableQuery: enableTLSQuery });
 		this.add('LDAP_Reject_Unauthorized', true, { type: 'boolean', enableQuery: enableTLSQuery });
 		this.add('LDAP_Domain_Base', '', { type: 'string', enableQuery: enableQuery });
-		this.add('LDAP_Use_Custom_Domain_Search', false, { type: 'boolean' , enableQuery: enableQuery });
-		this.add('LDAP_Custom_Domain_Search', '', { type: 'string' , enableQuery: customBindSearchEnabledQuery });
+		this.add('LDAP_Use_Custom_Domain_Search', false, { type: 'boolean', enableQuery: enableQuery });
+		this.add('LDAP_Custom_Domain_Search', '', { type: 'string', enableQuery: customBindSearchEnabledQuery });
 		this.add('LDAP_Domain_Search_User', '', { type: 'string', enableQuery: customBindSearchDisabledQuery });
 		this.add('LDAP_Domain_Search_Password', '', { type: 'password', enableQuery: customBindSearchDisabledQuery });
 		this.add('LDAP_Domain_Search_Filter', '', { type: 'string', enableQuery: customBindSearchDisabledQuery });
@@ -35,10 +35,10 @@ Meteor.startup(function() {
 		this.add('LDAP_Domain_Search_Object_Category', 'person', { type: 'string', enableQuery: customBindSearchDisabledQuery });
 		this.add('LDAP_Username_Field', 'sAMAccountName', { type: 'string', enableQuery: enableQuery });
 		this.add('LDAP_Unique_Identifier_Field', 'objectGUID,ibm-entryUUID,GUID,dominoUNID,nsuniqueId,uidNumber', { type: 'string', enableQuery: enableQuery });
-		this.add('LDAP_Sync_User_Data', false, { type: 'boolean' , enableQuery: enableQuery });
-		this.add('LDAP_Sync_User_Avatar', true, { type: 'boolean' , enableQuery: syncDataQuery });
+		this.add('LDAP_Sync_User_Data', false, { type: 'boolean', enableQuery: enableQuery });
+		this.add('LDAP_Sync_User_Avatar', true, { type: 'boolean', enableQuery: syncDataQuery });
 		this.add('LDAP_Sync_User_Data_FieldMap', '{"cn":"name", "mail":"email"}', { type: 'string', enableQuery: syncDataQuery });
-		this.add('LDAP_Default_Domain', '', { type: 'string' , enableQuery: enableQuery });
+		this.add('LDAP_Default_Domain', '', { type: 'string', enableQuery: enableQuery });
 		this.add('LDAP_Test_Connection', 'ldap_test_connection', { type: 'action', actionText: 'Test_Connection' });
 		this.add('LDAP_Sync_Users', 'ldap_sync_users', { type: 'action', actionText: 'Sync_Users' });
 	});

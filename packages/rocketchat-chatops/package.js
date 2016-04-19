@@ -26,7 +26,7 @@ Package.onUse(function(api) {
 		'client/views/droneflight.html',
 		'client/views/droneflight.coffee',
 		'client/views/dynamicUI.html',
-		'client/views/stylesheets/chatops.css',
+		'client/views/stylesheets/chatops.css'
 	], 'client');
 
 	api.addFiles([

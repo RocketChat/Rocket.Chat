@@ -18,7 +18,7 @@ Package.onUse(function(api) {
 
 	api.addFiles([
 		'hubot.coffee',
-		'settings.coffee',
+		'settings.coffee'
 	], ['server']);
 
 	api.export('Hubot', ['server']);
@@ -39,5 +39,5 @@ Npm.depends({
 	'hubot-maps': '0.0.2',
 	'hubot-help': '0.1.1',
 	'hubot-scripts': '2.16.1',
-	'hubot-youtube': '1.0.0',
+	'hubot-youtube': '1.0.0'
 });

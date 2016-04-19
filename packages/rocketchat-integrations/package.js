@@ -23,7 +23,7 @@ Package.onUse(function(api) {
 	api.use('kadira:flow-router', 'client');
 	api.use('templating', 'client');
 
-	api.addFiles('lib/rocketchat.coffee', ['server','client']);
+	api.addFiles('lib/rocketchat.coffee', ['server', 'client']);
 	api.addFiles('client/collection.coffee', ['client']);
 	api.addFiles('client/startup.coffee', 'client');
 	api.addFiles('client/route.coffee', 'client');

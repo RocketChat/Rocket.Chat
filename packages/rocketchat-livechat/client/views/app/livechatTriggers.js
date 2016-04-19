@@ -18,7 +18,7 @@ Template.livechatTriggers.helpers({
 });
 
 Template.livechatTriggers.events({
-	'submit #trigger-form' (e, instance) {
+	'submit #trigger-form'(e, instance) {
 		e.preventDefault();
 		var $btn = instance.$('button.save');
 
@@ -64,7 +64,7 @@ Template.livechatTriggers.events({
 		});
 	},
 
-	'click .delete-trigger' (e/*, instance*/) {
+	'click .delete-trigger'(e/*, instance*/) {
 		e.preventDefault();
 
 		swal({
@@ -75,7 +75,7 @@ Template.livechatTriggers.events({
 			confirmButtonText: t('Yes'),
 			cancelButtonText: t('Cancel'),
 			closeOnConfirm: false,
-			html: false,
+			html: false
 		}, () => {
 			Meteor.call('livechat:removeTrigger', function(error/*, result*/) {
 				if (error) {
@@ -87,7 +87,7 @@ Template.livechatTriggers.events({
 					text: t('Trigger_removed'),
 					type: 'success',
 					timer: 1000,
-					showConfirmButton: false,
+					showConfirmButton: false
 				});
 			});
 		});
