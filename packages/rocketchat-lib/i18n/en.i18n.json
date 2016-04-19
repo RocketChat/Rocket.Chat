@@ -308,6 +308,7 @@
   "error-invalid-file-height" : "Invalid file height",
   "error-invalid-file-type" : "Invalid file type",
   "error-invalid-file-width" : "Invalid file width",
+  "error-invalid-integration" : "Invalid integration",
   "error-invalid-password" : "Invalid password",
   "error-invalid-role" : "Invalid role",
   "error-invalid-room" : "Invalid room",
