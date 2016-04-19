@@ -19,6 +19,11 @@
 					body: _.stripTags(message.msg)
 					silent: true
 
+				# close notification after 5 sec
+				# this could be configurable in the admin panel
+				# currently, chrome waits 20 sec. that's just too long!
+				setTimeout ( -> n.close() ), 5000
+
 				if notification.payload?.rid?
 					n.onclick = ->
 						window.focus()
@@ -31,7 +36,7 @@
 								FlowRouter.go 'group', {name: notification.payload.name}
 
 	showDesktop: (notification) ->
-		if not window.document.hasFocus?() and Meteor.user().status isnt 'busy'
+		if not window.document.hasFocus?() and Meteor.user().status isnt 'busy'	
 			if Meteor.settings.public.sandstorm
 				KonchatNotification.notify(notification)
 			else
