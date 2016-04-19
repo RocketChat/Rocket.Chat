@@ -51,8 +51,8 @@ RocketChat.callbacks.add('afterSaveMessage', function(message, room) {
 		if (! highlights || highlights.length === 0) { return false; }
 
 		var has = false;
-		highlights.some(function (highlight) {
-			var regexp = new RegExp(s.escapeRegExp(highlight),'i');
+		highlights.some(function(highlight) {
+			var regexp = new RegExp(s.escapeRegExp(highlight), 'i');
 			if (regexp.test(message.msg)) {
 				has = true;
 				return true;
@@ -85,7 +85,7 @@ RocketChat.callbacks.add('afterSaveMessage', function(message, room) {
 	usersWithHighlights = [];
 	highlights = RocketChat.models.Users.findUsersByUsernamesWithHighlights(room.usernames, { fields: { '_id': 1, 'settings.preferences.highlights': 1 }}).fetch();
 
-	highlights.forEach(function (user) {
+	highlights.forEach(function(user) {
 		if (user && user.settings && user.settings.preferences && messageContainsHighlight(message, user.settings.preferences.highlights)) {
 			usersWithHighlights.push(user);
 		}

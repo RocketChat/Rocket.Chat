@@ -56,7 +56,7 @@ Accounts.registerLoginHandler('ldap', function(loginRequest) {
 		} else {
 			logger.info('Wrong password for', loginRequest.username);
 		}
-	} catch(error) {
+	} catch (error) {
 		logger.error(error);
 	}
 
@@ -152,7 +152,7 @@ Accounts.registerLoginHandler('ldap', function(loginRequest) {
 
 	try {
 		userObject._id = Accounts.createUser(userObject);
-	} catch(error) {
+	} catch (error) {
 		logger.error('Error creating user', error);
 		throw error;
 	}

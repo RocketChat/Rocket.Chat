@@ -5,7 +5,7 @@ Template.livechatCustomFieldForm.helpers({
 });
 
 Template.livechatCustomFieldForm.events({
-	'submit #customField-form' (e, instance) {
+	'submit #customField-form'(e, instance) {
 		e.preventDefault();
 		var $btn = instance.$('button.save');
 
@@ -33,7 +33,7 @@ Template.livechatCustomFieldForm.events({
 			visibility: visibility.trim()
 		};
 
-	Meteor.call('livechat:saveCustomField', _id, customFieldData, function(error) {
+		Meteor.call('livechat:saveCustomField', _id, customFieldData, function(error) {
 			$btn.html(oldBtnValue);
 			if (error) {
 				return toastr.error(t(error.error));
@@ -44,7 +44,7 @@ Template.livechatCustomFieldForm.events({
 		});
 	},
 
-	'click button.back' (e/*, instance*/) {
+	'click button.back'(e/*, instance*/) {
 		e.preventDefault();
 		FlowRouter.go('livechat-customfields');
 	}
