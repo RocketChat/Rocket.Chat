@@ -113,7 +113,7 @@ Template.permissionsRole.events
 		Meteor.call 'authorization:addUserToRole', FlowRouter.getParam('name'), e.currentTarget.elements['username'].value, instance.searchRoom.get(), (error, result) =>
 			e.currentTarget.elements['add'].value = oldBtnValue
 			if error
-				return toastr.error t(error.reason || error.error)
+				return handleError(error)
 
 			instance.subscribe 'usersInRole', FlowRouter.getParam('name'), instance.searchRoom.get()
 			toastr.success t('User_added')
