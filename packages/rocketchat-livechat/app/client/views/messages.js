@@ -46,7 +46,7 @@ Template.messages.onCreated(function() {
 			var room;
 			room = ChatRoom.findOne();
 			if (room != null) {
-				visitor.setRoom(room._id);
+				visitor.setRoomToSubscribe(room._id);
 				RoomHistoryManager.getMoreIfIsEmpty(room._id);
 			}
 		});

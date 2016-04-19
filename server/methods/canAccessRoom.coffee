@@ -8,7 +8,7 @@ Meteor.methods
 		unless rid
 			throw new Meteor.Error 'invalid-room', '[methods] canAccessRoom -> Cannot access empty room'
 
-		room = RocketChat.models.Rooms.findOneById rid, { fields: { usernames: 1, t: 1, name: 1, muted: 1 } }
+		room = RocketChat.models.Rooms.findOneById rid, { fields: { usernames: 1, t: 1, name: 1, muted: 1, sms: 1, v: 1 } }
 
 		if room
 			if room.usernames.indexOf(user.username) isnt -1
@@ -19,6 +19,6 @@ Meteor.methods
 			if canAccess isnt true
 				return false
 			else
-				return _.pick room, ['_id', 't', 'name', 'usernames', 'muted']
+				return _.pick room, ['_id', 't', 'name', 'usernames', 'muted', 'sms', 'v']
 		else
 			throw new Meteor.Error 'invalid-room', '[methods] canAccessRoom -> Room ID is invalid'
