@@ -32,6 +32,14 @@ class Twilio {
 			body: message,
 		});
 	}
+	response(/* message */) {
+		return {
+			headers: {
+				'Content-Type': 'text/xml'
+			},
+			body: '<?xml version="1.0" encoding="UTF-8" ?>'
+		};
+	}
 }
 
 RocketChat.SMS.registerService('twilio', Twilio);

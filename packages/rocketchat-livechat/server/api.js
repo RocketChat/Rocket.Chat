@@ -49,6 +49,6 @@ Api.addRoute('sms-incoming/:service', {
 
 		sendMessage.guest = visitor;
 
-		return RocketChat.Livechat.sendMessage(sendMessage);
+		return SMSService.response.call(this, RocketChat.Livechat.sendMessage(sendMessage));
 	}
 });
