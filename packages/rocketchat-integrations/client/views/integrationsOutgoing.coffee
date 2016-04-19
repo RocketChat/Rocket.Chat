@@ -190,7 +190,7 @@ Template.integrationsOutgoing.events
 		if params?.id?
 			Meteor.call "updateOutgoingIntegration", params.id, integration, (err, data) ->
 				if err?
-					return toastr.error TAPi18n.__(err.error)
+					return handleError err
 
 				toastr.success TAPi18n.__("Integration_updated")
 		else

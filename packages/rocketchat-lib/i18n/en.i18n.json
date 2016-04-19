@@ -315,6 +315,7 @@
   "error-invalid-room-name" : "<strong>__room_name__</strong> is not a valid room name,<br/> use only letters, numbers, hyphens and underscores",
   "error-invalid-room-type" : "<strong>__type__</strong> is not a valid room type.",
   "error-invalid-settings" : "Invalid settings provided",
+  "error-invalid-token" : "Invalid token",
   "error-invalid-triggerWords" : "Invalid triggerWords",
   "error-invalid-urls" : "Invalid URLs",
   "error-invalid-user" : "Invalid user",
