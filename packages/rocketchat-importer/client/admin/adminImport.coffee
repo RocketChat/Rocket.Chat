@@ -19,6 +19,6 @@ Template.adminImport.events
 		Meteor.call 'setupImporter', importer.key, (error, data) ->
 			if error
 				console.log t('importer_setup_error'), importer.key, error
-				toastr.error t('importer_setup_error')
+				return handleError(error)
 			else
 				FlowRouter.go '/admin/import/prepare/' + importer.key

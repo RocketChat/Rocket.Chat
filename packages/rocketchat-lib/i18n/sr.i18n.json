@@ -375,7 +375,7 @@
   "Importer_importing_messages" : "Увоз поруке.",
   "Importer_importing_started" : "Покретање увоз.",
   "Importer_importing_users" : "Увоз кориснике.",
-  "Importer_not_defined_properly" : "Увозник није правилно дефинисана, она недостаје за увоз класу.",
+  "error-importer-not-defined" : "Увозник није правилно дефинисана, она недостаје за увоз класу.",
   "Importer_not_in_progress" : "Увозник је тренутно није покренут.",
   "Importer_Prepare_Restart_Import" : "рестарт Увоз",
   "Importer_Prepare_Start_Import" : "Старт Увоз",

@@ -377,7 +377,7 @@
   "Importer_importing_messages" : "Importerar meddelandena.",
   "Importer_importing_started" : "Startar importen.",
   "Importer_importing_users" : "Importerar användarna.",
-  "Importer_not_defined_properly" : "Importören var inte korrekt definierade, det saknas Importera klassen.",
+  "error-importer-not-defined" : "Importören var inte korrekt definierade, det saknas Importera klassen.",
   "Importer_not_in_progress" : "Importören närvarande inte är igång.",
   "Importer_Prepare_Restart_Import" : "Starta om import",
   "Importer_Prepare_Start_Import" : "Börja importera",

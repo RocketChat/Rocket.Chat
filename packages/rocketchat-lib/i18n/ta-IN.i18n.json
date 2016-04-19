@@ -376,7 +376,7 @@
   "Importer_importing_messages" : "செய்திகளை இறக்குமதி செய்கிறது.",
   "Importer_importing_started" : "இறக்குமதி தொடங்கி.",
   "Importer_importing_users" : "பயனர்கள் இறக்குமதி.",
-  "Importer_not_defined_properly" : "இறக்குமதியாளர் அது இறக்குமதி வர்க்கம் காணவில்லை, சரியாக வரையறுக்கப்படவில்லை.",
+  "error-importer-not-defined" : "இறக்குமதியாளர் அது இறக்குமதி வர்க்கம் காணவில்லை, சரியாக வரையறுக்கப்படவில்லை.",
   "Importer_not_in_progress" : "இறக்குமதியாளர் தற்போது இயங்கவில்லை.",
   "Importer_Prepare_Restart_Import" : "மறுதொடக்கம் இறக்குமதி",
   "Importer_Prepare_Start_Import" : "இறக்குமதியைத் தொடங்கு",

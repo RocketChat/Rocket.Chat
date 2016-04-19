@@ -376,7 +376,7 @@
   "Importer_importing_messages" : "استيراد الرسائل",
   "Importer_importing_started" : "بدء عملية الاستيراد.",
   "Importer_importing_users" : "استيراد المستخدمين.",
-  "Importer_not_defined_properly" : "لم يتم تعريف المستورد بشكل صحيح، أنه يفتقد الطبقة استيراد.",
+  "error-importer-not-defined" : "لم يتم تعريف المستورد بشكل صحيح، أنه يفتقد الطبقة استيراد.",
   "Importer_not_in_progress" : "المستورد لا يعمل حاليا.",
   "Importer_Prepare_Restart_Import" : "استئناف استيراد",
   "Importer_Prepare_Start_Import" : "بدء استيراد",

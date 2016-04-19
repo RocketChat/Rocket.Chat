@@ -378,7 +378,7 @@
   "Importer_importing_messages" : "導入的消息。",
   "Importer_importing_started" : "開始導入。",
   "Importer_importing_users" : "導入用戶。",
-  "Importer_not_defined_properly" : "進口商沒有正確定義，它缺少導入類。",
+  "error-importer-not-defined" : "進口商沒有正確定義，它缺少導入類。",
   "Importer_not_in_progress" : "進口商目前沒有運行。",
   "Importer_Prepare_Restart_Import" : "重啟進口",
   "Importer_Prepare_Start_Import" : "開始導入",

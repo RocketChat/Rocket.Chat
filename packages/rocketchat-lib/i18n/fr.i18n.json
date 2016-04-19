@@ -381,7 +381,7 @@
   "Importer_importing_messages" : "Importation des messages.",
   "Importer_importing_started" : "Début de l'importation.",
   "Importer_importing_users" : "Importation des utilisateurs.",
-  "Importer_not_defined_properly" : "L'importateur n'a pas été défini correctement, il manque la classe Import.",
+  "error-importer-not-defined" : "L'importateur n'a pas été défini correctement, il manque la classe Import.",
   "Importer_not_in_progress" : "L'importateur n'est pas en cours d'exécution.",
   "Importer_Prepare_Restart_Import" : "Recommencer l’Importation",
   "Importer_Prepare_Start_Import" : "Commencer l'Importation",

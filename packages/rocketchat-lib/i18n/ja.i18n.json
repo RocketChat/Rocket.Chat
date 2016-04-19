@@ -383,7 +383,7 @@
   "Importer_importing_messages" : "メッセージをインポートしています",
   "Importer_importing_started" : "インポートを開始しています",
   "Importer_importing_users" : "ユーザーをインポートしています",
-  "Importer_not_defined_properly" : "インポート処理が正しく定義されていません。Import クラスが見つかりません。",
+  "error-importer-not-defined" : "インポート処理が正しく定義されていません。Import クラスが見つかりません。",
   "Importer_not_in_progress" : "インポート処理は、現在停止しています",
   "Importer_Prepare_Restart_Import" : "インポートを再実行する",
   "Importer_Prepare_Start_Import" : "インポートを開始",

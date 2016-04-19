@@ -379,7 +379,7 @@
   "Importer_importing_messages" : "ייבוא ​​הודעות.",
   "Importer_importing_started" : "תחילת הייבוא.",
   "Importer_importing_users" : "יבוא המשתמשים.",
-  "Importer_not_defined_properly" : "היבואן לא הוגדר כהלכה, הוא חסר מעמד היבוא.",
+  "error-importer-not-defined" : "היבואן לא הוגדר כהלכה, הוא חסר מעמד היבוא.",
   "Importer_not_in_progress" : "היבואן כרגע לא פועל.",
   "Importer_Prepare_Restart_Import" : "הפעל מחדש את יבוא",
   "Importer_Prepare_Start_Import" : "התחל יבוא",

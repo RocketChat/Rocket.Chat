@@ -374,7 +374,7 @@
   "Importer_importing_messages" : "ការនាំចូលសារ។",
   "Importer_importing_started" : "ការចាប់ផ្តើមនាំចូល។",
   "Importer_importing_users" : "ការនាំចូលអ្នកប្រើ។",
-  "Importer_not_defined_properly" : "ការនាំចូលមិនត្រូវបានកំណត់ត្រឹមត្រូវ, វាត្រូវបានបាត់ខ្លួនថ្នាក់នាំចូល។",
+  "error-importer-not-defined" : "ការនាំចូលមិនត្រូវបានកំណត់ត្រឹមត្រូវ, វាត្រូវបានបាត់ខ្លួនថ្នាក់នាំចូល។",
   "Importer_not_in_progress" : "សំខាន់គឺបច្ចុប្បន្នមិនកំពុងរត់ទេ។",
   "Importer_Prepare_Restart_Import" : "ចាប់ផ្ដើមនាំចូល",
   "Importer_Prepare_Start_Import" : "ចាប់ផ្តើមនាំចូល",

@@ -378,7 +378,7 @@
   "Importer_importing_messages" : "Importowanie wiadomości.",
   "Importer_importing_started" : "Począwszy od importu.",
   "Importer_importing_users" : "Importowanie użytkowników.",
-  "Importer_not_defined_properly" : "Importer nie została określona prawidłowo, to brakuje klasy Import.",
+  "error-importer-not-defined" : "Importer nie została określona prawidłowo, to brakuje klasy Import.",
   "Importer_not_in_progress" : "Importer nie jest obecnie uruchomiony.",
   "Importer_Prepare_Restart_Import" : "restart importu",
   "Importer_Prepare_Start_Import" : "Zacznij Importowanie",

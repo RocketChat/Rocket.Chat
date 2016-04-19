@@ -374,7 +374,7 @@
   "Importer_importing_messages" : "واردات پیام است.",
   "Importer_importing_started" : "شروع واردات.",
   "Importer_importing_users" : "واردات از کاربران است.",
-  "Importer_not_defined_properly" : "وارد کننده درست تعریف نشده بود، آن را از دست رفته کلاس واردات.",
+  "error-importer-not-defined" : "وارد کننده درست تعریف نشده بود، آن را از دست رفته کلاس واردات.",
   "Importer_not_in_progress" : "وارد کننده در حال حاضر در حال اجرا نیست.",
   "Importer_Prepare_Restart_Import" : "راه اندازی مجدد واردات",
   "Importer_Prepare_Start_Import" : "شروع وارد",

@@ -374,7 +374,7 @@
   "Importer_importing_messages" : "Mengimport mesej.",
   "Importer_importing_started" : "Bermula import.",
   "Importer_importing_users" : "Mengimport pengguna.",
-  "Importer_not_defined_properly" : "pengimport tidak ditakrifkan dengan betul, ia hilang kelas Import.",
+  "error-importer-not-defined" : "pengimport tidak ditakrifkan dengan betul, ia hilang kelas Import.",
   "Importer_not_in_progress" : "pengimport itu kini tidak berjalan.",
   "Importer_Prepare_Restart_Import" : "Mulakan semula Import",
   "Importer_Prepare_Start_Import" : "mula Mengimport",

@@ -377,7 +377,7 @@
   "Importer_importing_messages" : "Імпорт повідомлень.",
   "Importer_importing_started" : "Запуск імпорту.",
   "Importer_importing_users" : "Імпорт користувачів.",
-  "Importer_not_defined_properly" : "Імпортер не було визначено правильно, він відсутній клас імпорту.",
+  "error-importer-not-defined" : "Імпортер не було визначено правильно, він відсутній клас імпорту.",
   "Importer_not_in_progress" : "Імпортер в даний момент не працює.",
   "Importer_Prepare_Restart_Import" : "перезапуск Імпорт",
   "Importer_Prepare_Start_Import" : "почати імпорт",

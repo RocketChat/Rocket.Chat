@@ -374,7 +374,7 @@
   "Importer_importing_messages" : "Importing ji mesajên.",
   "Importer_importing_started" : "Dest bi import.",
   "Importer_importing_users" : "Importing bikarhêneran.",
-  "Importer_not_defined_properly" : "The împort kardike danasîn ne bû, ku wenda çîna Import.",
+  "error-importer-not-defined" : "The împort kardike danasîn ne bû, ku wenda çîna Import.",
   "Importer_not_in_progress" : "The împort niha dixebite ne.",
   "Importer_Prepare_Restart_Import" : "Restart Import",
   "Importer_Prepare_Start_Import" : "Destpêk Importing",

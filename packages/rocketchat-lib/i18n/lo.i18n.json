@@ -374,7 +374,7 @@
   "Importer_importing_messages" : "ການນໍາເຂົ້າຂໍ້ຄວາມໄດ້.",
   "Importer_importing_started" : "ເລີ່ມຕົ້ນການນໍາເຂົ້າ.",
   "Importer_importing_users" : "ການນໍາເຂົ້າຜູ້ຊົມໃຊ້.",
-  "Importer_not_defined_properly" : "ການນໍາເຂົ້າບໍ່ໄດ້ກໍານົດຢ່າງຖືກຕ້ອງ, ມັນກໍຫາຍໄປລະດັບທີ່ສໍາຄັນ.",
+  "error-importer-not-defined" : "ການນໍາເຂົ້າບໍ່ໄດ້ກໍານົດຢ່າງຖືກຕ້ອງ, ມັນກໍຫາຍໄປລະດັບທີ່ສໍາຄັນ.",
   "Importer_not_in_progress" : "ທີ່ສໍາຄັນແມ່ນປັດຈຸບັນບໍ່ໄດ້ເຮັດວຽກ.",
   "Importer_Prepare_Restart_Import" : "Restart ນໍາເຂົ້າ",
   "Importer_Prepare_Start_Import" : "ເລີ່ມຕົ້ນການນໍາເຂົ້າ",

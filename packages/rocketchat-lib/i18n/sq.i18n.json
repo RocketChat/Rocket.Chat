@@ -374,7 +374,7 @@
   "Importer_importing_messages" : "Importimi mesazhet.",
   "Importer_importing_started" : "Duke filluar importin.",
   "Importer_importing_users" : "Importimin e përdoruesit.",
-  "Importer_not_defined_properly" : "Importuesi nuk është përcaktuar në mënyrë korrekte, ajo i mungon klasës Import.",
+  "error-importer-not-defined" : "Importuesi nuk është përcaktuar në mënyrë korrekte, ajo i mungon klasës Import.",
   "Importer_not_in_progress" : "Importuesi aktualisht nuk kandidon.",
   "Importer_Prepare_Restart_Import" : "Restart Import",
   "Importer_Prepare_Start_Import" : "Filloni Importimi",

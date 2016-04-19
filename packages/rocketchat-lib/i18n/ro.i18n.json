@@ -380,7 +380,7 @@
   "Importer_importing_messages" : "Se imoprtă mesajele.",
   "Importer_importing_started" : "Începe importarea.",
   "Importer_importing_users" : "Importarea utilizatorilor.",
-  "Importer_not_defined_properly" : "Importatorul nu a fost definit corect, acesta lipseste din clasa de import.",
+  "error-importer-not-defined" : "Importatorul nu a fost definit corect, acesta lipseste din clasa de import.",
   "Importer_not_in_progress" : "Importatorul este în prezent nu rulează.",
   "Importer_Prepare_Restart_Import" : "Reîncepe import",
   "Importer_Prepare_Start_Import" : "Începe import",

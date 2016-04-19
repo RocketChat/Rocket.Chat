@@ -380,7 +380,7 @@
   "Importer_importing_messages" : "Importiere die Nachrichten.",
   "Importer_importing_started" : "Starte den Importer.",
   "Importer_importing_users" : "Importiere die Benutzer.",
-  "Importer_not_defined_properly" : "Der Importer wurde nicht richtig definiert, eine Importklasse fehlt.",
+  "error-importer-not-defined" : "Der Importer wurde nicht richtig definiert, eine Importklasse fehlt.",
   "Importer_not_in_progress" : "Der Importer läuft derzeit nicht.",
   "Importer_Prepare_Restart_Import" : "Import neu starten",
   "Importer_Prepare_Start_Import" : "Import starten",

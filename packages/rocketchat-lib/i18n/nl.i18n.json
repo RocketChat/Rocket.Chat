@@ -379,7 +379,7 @@
   "Importer_importing_messages" : "Het importeren van de berichten.",
   "Importer_importing_started" : "Starten van de import.",
   "Importer_importing_users" : "Het importeren van de gebruikers.",
-  "Importer_not_defined_properly" : "De importeur is niet goed gedefinieerd, is het missen van de klasse importeren.",
+  "error-importer-not-defined" : "De importeur is niet goed gedefinieerd, is het missen van de klasse importeren.",
   "Importer_not_in_progress" : "De importeur is momenteel niet actief.",
   "Importer_Prepare_Restart_Import" : "Restart Import",
   "Importer_Prepare_Start_Import" : "start importeren",

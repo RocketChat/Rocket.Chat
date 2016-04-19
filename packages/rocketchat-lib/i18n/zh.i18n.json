@@ -380,7 +380,7 @@
   "Importer_importing_messages" : "倒入信息。",
   "Importer_importing_started" : "开始导入。",
   "Importer_importing_users" : "导入用户。",
-  "Importer_not_defined_properly" : "导入所用帐号错误，未指定导入class。",
+  "error-importer-not-defined" : "导入所用帐号错误，未指定导入class。",
   "Importer_not_in_progress" : "导入工具没有正常运行。",
   "Importer_Prepare_Restart_Import" : "重新导入",
   "Importer_Prepare_Start_Import" : "开始导入",

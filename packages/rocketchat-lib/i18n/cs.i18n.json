@@ -374,7 +374,7 @@
   "Importer_importing_messages" : "Import zpráv.",
   "Importer_importing_started" : "Spuštění importu.",
   "Importer_importing_users" : "Import uživatelů.",
-  "Importer_not_defined_properly" : "Dovozce nebyla definována správně, chybí třídu Import.",
+  "error-importer-not-defined" : "Dovozce nebyla definována správně, chybí třídu Import.",
   "Importer_not_in_progress" : "Dovozce je v současné době neběží.",
   "Importer_Prepare_Restart_Import" : "restart import",
   "Importer_Prepare_Start_Import" : "začít Import",

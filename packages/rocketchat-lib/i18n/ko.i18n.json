@@ -377,7 +377,7 @@
   "Importer_importing_messages" : "메시지를 가져 오기.",
   "Importer_importing_started" : "가져 오기를 시작.",
   "Importer_importing_users" : "사용자를 가져 오기.",
-  "Importer_not_defined_properly" : "수입업자는 가져 오기 클래스를 누락 올바르게 정의되지 않았습니다.",
+  "error-importer-not-defined" : "수입업자는 가져 오기 클래스를 누락 올바르게 정의되지 않았습니다.",
   "Importer_not_in_progress" : "수입은 현재 실행되고 있지 않습니다.",
   "Importer_Prepare_Restart_Import" : "다시 가져 오기",
   "Importer_Prepare_Start_Import" : "가져 오기 시작",

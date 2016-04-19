@@ -379,7 +379,7 @@
   "Importer_importing_messages" : "La importación de los mensajes.",
   "Importer_importing_started" : "A partir de la importación.",
   "Importer_importing_users" : "La importación de los usuarios.",
-  "Importer_not_defined_properly" : "El importador no se definió correctamente, no se encuentra la clase de importación.",
+  "error-importer-not-defined" : "El importador no se definió correctamente, no se encuentra la clase de importación.",
   "Importer_not_in_progress" : "El importador actualmente no se está ejecutando.",
   "Importer_Prepare_Restart_Import" : "reinicio de importación",
   "Importer_Prepare_Start_Import" : "comenzar a importar",

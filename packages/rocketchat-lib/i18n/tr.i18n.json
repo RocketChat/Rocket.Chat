@@ -374,7 +374,7 @@
   "Importer_importing_messages" : "mesajlar içe.",
   "Importer_importing_started" : "ithalat başlatılıyor.",
   "Importer_importing_users" : "kullanıcıları içe.",
-  "Importer_not_defined_properly" : "ithalatçı o İthalat sınıfı eksik, doğru tanımlanmış değildi.",
+  "error-importer-not-defined" : "ithalatçı o İthalat sınıfı eksik, doğru tanımlanmış değildi.",
   "Importer_not_in_progress" : "ithalatçı şu anda çalışmıyor.",
   "Importer_Prepare_Restart_Import" : "Yeniden İthalat",
   "Importer_Prepare_Start_Import" : "İthalat başla",

@@ -375,7 +375,7 @@
   "Importer_importing_messages" : "Εισάγει τα μηνύματα.",
   "Importer_importing_started" : "Ξεκινώντας την εισαγωγή.",
   "Importer_importing_users" : "Εισαγωγή των χρηστών.",
-  "Importer_not_defined_properly" : "Ο εισαγωγέας δεν ορίστηκε σωστά, λείπει η κατηγορία Import.",
+  "error-importer-not-defined" : "Ο εισαγωγέας δεν ορίστηκε σωστά, λείπει η κατηγορία Import.",
   "Importer_not_in_progress" : "Ο εισαγωγέας αυτή τη στιγμή δεν λειτουργεί.",
   "Importer_Prepare_Restart_Import" : "επανεκκίνηση Εισαγωγή",
   "Importer_Prepare_Start_Import" : "Ξεκινήστε Εισαγωγή",

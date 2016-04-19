@@ -381,7 +381,7 @@
   "Importer_importing_messages" : "Импортировать сообщения.",
   "Importer_importing_started" : "Начать импорт данных.",
   "Importer_importing_users" : "Импортировать пользователей.",
-  "Importer_not_defined_properly" : "Импортер не был определен правильно, не хватает классификации импорта.",
+  "error-importer-not-defined" : "Импортер не был определен правильно, не хватает классификации импорта.",
   "Importer_not_in_progress" : "Импортер на данный момент не в сети.",
   "Importer_Prepare_Restart_Import" : "Перезапустить импорт данных.",
   "Importer_Prepare_Start_Import" : "Начать импорт данных.",

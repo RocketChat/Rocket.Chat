@@ -374,7 +374,7 @@
   "Importer_importing_messages" : "Uvoz poruka.",
   "Importer_importing_started" : "Pokretanje uvoz.",
   "Importer_importing_users" : "Uvoz korisnicima.",
-  "Importer_not_defined_properly" : "Uvoznik nije ispravno definirani, to je nestalo Import klase.",
+  "error-importer-not-defined" : "Uvoznik nije ispravno definirani, to je nestalo Import klase.",
   "Importer_not_in_progress" : "Uvoznik trenutno ne radi.",
   "Importer_Prepare_Restart_Import" : "Restart uvoz",
   "Importer_Prepare_Start_Import" : "Započnite uvoz",

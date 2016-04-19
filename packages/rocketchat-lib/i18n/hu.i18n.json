@@ -375,7 +375,7 @@
   "Importer_importing_messages" : "Importálása az üzeneteket.",
   "Importer_importing_started" : "Kezdve az import.",
   "Importer_importing_users" : "Importálása a felhasználók számára.",
-  "Importer_not_defined_properly" : "Az importőr nem helyesen meghatározva, ez hiányzik az Import osztály.",
+  "error-importer-not-defined" : "Az importőr nem helyesen meghatározva, ez hiányzik az Import osztály.",
   "Importer_not_in_progress" : "Az importőr jelenleg nem aktív.",
   "Importer_Prepare_Restart_Import" : "Újraindítás Import",
   "Importer_Prepare_Start_Import" : "Kezdés importálása",
