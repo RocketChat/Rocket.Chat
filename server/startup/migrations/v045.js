@@ -8,7 +8,7 @@ RocketChat.Migrations.add({
 		if (lastVisitor && lastVisitor.length > 0) {
 			var lastNumber = lastVisitor[0].username.replace(/^guest\-/, '');
 
-			RocketChat.settings.add('Livechat_guest_count' , (parseInt(lastNumber) + 1), { type: 'int', group: 'Livechat' });
+			RocketChat.settings.add('Livechat_guest_count', (parseInt(lastNumber) + 1), { type: 'int', group: 'Livechat' });
 		}
 	}
 });

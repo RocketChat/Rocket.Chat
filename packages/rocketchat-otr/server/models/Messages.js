@@ -1,4 +1,4 @@
-RocketChat.models.Messages.deleteOldOTRMessages = function (roomId, ts) {
+RocketChat.models.Messages.deleteOldOTRMessages = function(roomId, ts) {
 	var query = { rid: roomId, t: 'otr', ts: { $lte: ts } };
 	return this.remove(query);
 };

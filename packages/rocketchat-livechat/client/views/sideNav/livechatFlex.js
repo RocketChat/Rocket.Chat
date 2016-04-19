@@ -1,5 +1,5 @@
 Template.livechatFlex.helpers({
-	active (...routes) {
+	active(...routes) {
 		FlowRouter.watchPathChange();
 		if (routes.indexOf(FlowRouter.current().route.name) !== -1) {
 			return 'active';
@@ -8,15 +8,15 @@ Template.livechatFlex.helpers({
 });
 
 Template.livechatFlex.events({
-	'mouseenter header' () {
+	'mouseenter header'() {
 		SideNav.overArrow();
 	},
 
-	'mouseleave header' () {
+	'mouseleave header'() {
 		SideNav.leaveArrow();
 	},
 
-	'click header' () {
+	'click header'() {
 		SideNav.closeFlex();
 	}
 });

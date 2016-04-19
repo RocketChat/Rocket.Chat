@@ -25,10 +25,8 @@ module.exports = {
 		// 'no-label-var': 0,
 		// 'no-labels': 0,
 		// 'no-lone-blocks': 0,
-		// 'no-lonely-if': 0,
 		// 'no-loop-func': 0,
 		// 'no-mixed-requires': [0, false],
-		// 'no-multi-spaces': 0,
 		// 'no-multiple-empty-lines': [0, {'max': 2}],
 		// 'no-native-reassign': 0,
 		// 'no-nested-ternary': 0,
@@ -69,6 +67,8 @@ module.exports = {
 		// 'no-warning-comments': [0, { 'terms': ['todo', 'fixme', 'xxx'], 'location': 'start' }],
 		// 'no-with': 0,
 		// 'no-console': 0, // disallow use of console
+
+		'no-multi-spaces': 2,
 		'no-eval': 2,                              // disallow use of eval()
 		'no-extend-native': 2,                     // disallow adding to native types
 		'no-multi-str': 2,                         // disallow use of multiline strings
@@ -92,7 +92,7 @@ module.exports = {
 		'no-inner-declarations': [2, 'functions'], // disallow function or variable declarations in nested blocks
 		'no-invalid-regexp': 2,                    // disallow invalid regular expression strings in the RegExp constructor
 		'no-irregular-whitespace': 2,              // disallow irregular whitespace outside of strings and comments
-		'no-mixed-spaces-and-tabs': [2, false],    // disallow mixed spaces and tabs for indentation
+		'no-mixed-spaces-and-tabs': 2,             // disallow mixed spaces and tabs for indentation
 		'no-sparse-arrays': 2,                     // disallow sparse arrays
 		'no-negated-in-lhs': 2,                    // disallow negation of the left operand of an in expression
 		'no-obj-calls': 2,                         // disallow the use of object properties of the global object (Math and JSON) as functions
@@ -105,18 +105,15 @@ module.exports = {
 			'vars': 'all',
 			'args': 'after-used'
 		}],
+		'no-lonely-if': 2,
+		'no-trailing-spaces': 2,
 
 		// 'array-bracket-spacing': [0, 'never'],
 		// 'arrow-parens': 0,
 		// 'arrow-spacing': 0,
 		// 'accessor-pairs': 0,
-		// 'brace-style': [0, '1tbs'],
 		// 'callback-return': 0,
 		// 'camelcase': 0,
-		// 'comma-spacing': 0,
-		// 'comma-style': 0,
-		// 'complexity': [0, 11],
-		// 'computed-property-spacing': [0, 'never'],
 		// 'consistent-return': 0,
 		// 'consistent-this': [0, 'that'],
 		// 'constructor-super': 0,
@@ -128,9 +125,7 @@ module.exports = {
 		// 'func-style': [0, 'declaration'],
 		// 'generator-star-spacing': 0,
 		// 'handle-callback-err': 0,
-		// 'indent': 0,
 		// 'init-declarations': 0,
-		// 'key-spacing': [0, { 'beforeColon': false, 'afterColon': true }],
 		// 'lines-around-comment': 0,
 		// 'max-depth': [0, 4],
 		// 'max-nested-callbacks': [0, 2],
@@ -151,9 +146,6 @@ module.exports = {
 		// 'require-yield': 0,
 		// 'semi-spacing': [0, {'before': false, 'after': true}],
 		// 'sort-vars': 0,
-		// 'space-before-blocks': [0, 'always'],
-		// 'space-before-function-paren': [0, 'always'],
-		// 'space-in-parens': [0, 'never'],
 		// 'space-infix-ops': 0,
 		// 'space-unary-ops': [0, { 'words': true, 'nonwords': false }],
 		// 'spaced-comment': 0,
@@ -163,8 +155,19 @@ module.exports = {
 		// 'wrap-regex': 0,
 		// 'yoda': [0, 'never'],
 		// 'max-len': [0, 80, 4],
-		// 'indent': [2, 'tab', {'SwitchCase': 1}], //specify tab or space width for your code
-		// 'comma-dangle': [2, 'never'],   // disallow or enforce trailing commas
+
+		'complexity': [1, 11],
+		'space-in-parens': [2, 'never'],
+		'space-before-function-paren': [2, 'never'],
+		'space-before-blocks': [2, 'always'],
+		'indent': [2, 'tab', {'SwitchCase': 1}], //specify tab or space width for your code
+		'comma-dangle': [2, 'never'],   // disallow or enforce trailing commas
+		'keyword-spacing': 2,
+		'block-spacing': 2,
+		'brace-style': [2, "1tbs", { "allowSingleLine": true }],
+		'computed-property-spacing': 2,
+		'comma-spacing': 2,
+		'comma-style': 2,
 		'guard-for-in': 2,
 		'wrap-iife': 2,                 // wrap-iife
 		'block-scoped-var': 2,          // treat var statements as if they were block scoped

@@ -1,5 +1,5 @@
 Template.livechatInstallation.helpers({
-	script () {
+	script() {
 		let siteUrl = s.rtrim(RocketChat.settings.get('Site_Url'), '/');
 
 		return `<!-- Start of Rocket.Chat Livechat Script -->

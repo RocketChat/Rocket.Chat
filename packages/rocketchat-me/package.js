@@ -13,5 +13,5 @@ Package.onUse(function(api) {
 		'rocketchat:lib'
 	]);
 
-	api.addFiles('me.coffee', ['server','client']);
+	api.addFiles('me.coffee', ['server', 'client']);
 });

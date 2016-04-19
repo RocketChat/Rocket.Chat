@@ -12,7 +12,7 @@ let createFileSystemStore = _.debounce(function() {
 	FileSystemStore = new UploadFS.store.Local({
 		collection: RocketChat.models.Uploads.model,
 		name: storeName,
-		path: RocketChat.settings.get('FileUpload_FileSystemPath'),//'/tmp/uploads/photos',
+		path: RocketChat.settings.get('FileUpload_FileSystemPath'), //'/tmp/uploads/photos',
 		filter: new UploadFS.Filter({
 			onCheck: FileUpload.validateFileUpload
 		}),

@@ -1,7 +1,7 @@
 /* eslint new-cap: [2, {"capIsNewExceptions": ["Match.ObjectIncluding", "Match.Optional"]}] */
 
 Meteor.methods({
-	'livechat:saveDepartment' (_id, departmentData, departmentAgents) {
+	'livechat:saveDepartment'(_id, departmentData, departmentAgents) {
 		if (!Meteor.userId() || !RocketChat.authz.hasPermission(Meteor.userId(), 'view-livechat-manager')) {
 			throw new Meteor.Error('not-authorized');
 		}

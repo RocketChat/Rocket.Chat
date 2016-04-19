@@ -73,7 +73,7 @@ Template.pushNotificationsFlexTab.helpers({
 		return Template.instance().editing.get() === field;
 	},
 	emailVerified() {
-		return  Meteor.user().emails && Meteor.user().emails[0] && Meteor.user().emails[0].verified;
+		return Meteor.user().emails && Meteor.user().emails[0] && Meteor.user().emails[0].verified;
 	}
 });
 
