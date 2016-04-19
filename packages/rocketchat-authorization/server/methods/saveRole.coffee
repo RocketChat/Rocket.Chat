@@ -1,7 +1,7 @@
 Meteor.methods
 	'authorization:saveRole': (roleData) ->
 		if not Meteor.userId() or not RocketChat.authz.hasPermission Meteor.userId(), 'access-permissions'
-			throw new Meteor.Error "error-not-authorized", 'Not authorized', { method: 'authorization:saveRole' }
+			throw new Meteor.Error "error-action-not-allowed", 'Accessing permissions is not allowed', { method: 'authorization:saveRole', action: 'Accessing_permissions' }
 
 		if not roleData.name?
 			throw new Meteor.Error 'error-role-name-required', 'Role name is required', { method: 'authorization:saveRole' }

@@ -92,7 +92,7 @@ Template.permissionsRole.events
 		Meteor.call 'authorization:saveRole', roleData, (error, result) =>
 			e.currentTarget.elements['save'].value = oldBtnValue
 			if error
-				return toastr.error t(error.reason || error.error)
+				return handleError(error)
 
 			toastr.success t('Saved')
 
