@@ -1,4 +1,4 @@
-/* globals Accounts, Tracker, ReactiveVar, FlowRouter, Accounts, HTTP, facebookConnectPlugin */
+/* globals Accounts, Tracker, ReactiveVar, FlowRouter, Accounts, HTTP, facebookConnectPlugin, TwitterConnect */
 
 const _unstoreLoginToken = Accounts._unstoreLoginToken;
 Accounts._unstoreLoginToken = function() {
@@ -167,6 +167,73 @@ window.addEventListener('message', (e) => {
 			}, (error) => {
 				return fbLoginError('get-status-error', error);
 			});
+			break;
+
+		case 'call-twitter-login':
+			const twitterLoginSuccess = (response) => {
+				e.source.postMessage({
+					event: 'twitter-login-success',
+					response: response
+					// {
+					// 	"userName": "orodrigok",
+					// 	"userId": 293123,
+					// 	"secret": "asdua09sud",
+					// 	"token": "2jh3k1j2h3"
+					// }
+				}, e.origin);
+			};
+
+			const twitterLoginFailure = (error) => {
+				e.source.postMessage({
+					event: 'twitter-login-error',
+					error: error
+				}, e.origin);
+			};
+
+			if (typeof TwitterConnect === 'undefined') {
+				return twitterLoginFailure('no-native-plugin');
+			}
+
+			TwitterConnect.login(twitterLoginSuccess, twitterLoginFailure);
+			break;
+
+		case 'call-google-login':
+			const googleLoginSuccess = (response) => {
+				e.source.postMessage({
+					event: 'google-login-success',
+					response: response
+					// {
+					// 	"email": "rodrigoknascimento@gmail.com",
+					// 	"userId": "1082039180239",
+					// 	"displayName": "Rodrigo Nascimento",
+					// 	"gender": "male",
+					// 	"imageUrl": "https://lh5.googleusercontent.com/-shUpniJA480/AAAAAAAAAAI/AAAAAAAAAqY/_B8oyS8yBw0/photo.jpg?sz=50",
+					// 	"givenName": "Rodrigo",
+					// 	"familyName": "Nascimento",
+					// 	"ageRangeMin": 21,
+					// 	"oauthToken": "123198273kajhsdh1892h"
+					// }
+				}, e.origin);
+			};
+
+			const googleLoginFailure = (error) => {
+				e.source.postMessage({
+					event: 'google-login-error',
+					error: error
+				}, e.origin);
+			};
+
+			if (typeof window.plugins.googleplus === 'undefined') {
+				return googleLoginFailure('no-native-plugin');
+			}
+
+			const options = {
+				scopes: e.data.scopes,
+				webClientId: e.data.webClientId,
+				offline: true
+			};
+
+			window.plugins.googleplus.login(options, googleLoginSuccess, googleLoginFailure);
 			break;
 		}
 });
