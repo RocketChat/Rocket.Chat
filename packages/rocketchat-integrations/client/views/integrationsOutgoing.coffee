@@ -118,14 +118,17 @@ Template.integrationsOutgoing.events
 			html: false
 		, ->
 			Meteor.call "deleteOutgoingIntegration", params.id, (err, data) ->
-				swal
-					title: t('Deleted')
-					text: t('Your_entry_has_been_deleted')
-					type: 'success'
-					timer: 1000
-					showConfirmButton: false
+				if err
+					handleError(err)
+				else
+					swal
+						title: t('Deleted')
+						text: t('Your_entry_has_been_deleted')
+						type: 'success'
+						timer: 1000
+						showConfirmButton: false
 
-				FlowRouter.go "admin-integrations"
+					FlowRouter.go "admin-integrations"
 
 	"click .button-fullscreen": ->
 		$('.code-mirror-box').addClass('code-mirror-box-fullscreen');
