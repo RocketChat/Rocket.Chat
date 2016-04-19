@@ -129,6 +129,8 @@
   "API_Embed" : "Embed",
   "API_EmbedDisabledFor" : "Disable Embed for Users",
   "API_EmbedDisabledFor_Description" : "Comma-separated list of usernames",
+  "API_EmbedIgnoredHosts": "Embed Ignored Hosts",
+  "API_EmbedIgnoredHostnames_Description": "Comma-separated list of hosts or CIDR addresses, eg. localhost, 127.0.0.1, 10.0.0.0/8, 172.16.0.0/12, 192.168.0.0/16",
   "API_GitHub_Enterprise_URL" : "Server URL",
   "API_GitHub_Enterprise_URL_Description" : "Example: http://domain.com (excluding trailing slash)",
   "API_Gitlab_URL" : "GitLab URL",
