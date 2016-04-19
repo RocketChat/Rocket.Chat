@@ -12,28 +12,30 @@ RocketChat.Migrations.add({
 		if (RocketChat && RocketChat.models && RocketChat.models.Settings) {
 			var optOut = RocketChat.models.Settings.findOne({ _id: 'Statistics_opt_out' });
 			if (optOut) {
-				optOut._id = 'Statistics_reporting';
-				optOut.value = !optOut.value ? true : false;
-				optOut.i18nDescription = 'Statistics_reporting_Description';
-				optOut.packageValue = true;
-				optOut.i18nLabel = 'Statistics_reporting';
-
 				RocketChat.models.Settings.remove({ _id: 'Statistics_opt_out' });
-				RocketChat.models.Settings.insert(optOut);
+				RocketChat.models.Settings.upsert({ _id: 'Statistics_reporting' }, {
+					$set: {
+						value: !optOut.value ? true : false,
+						i18nDescription: 'Statistics_reporting_Description',
+						packageValue: true,
+						i18nLabel: 'Statistics_reporting'
+					}
+				});
 			}
 		}
 
 		if (RocketChat && RocketChat.models && RocketChat.models.Settings) {
 			var favoriteRooms = RocketChat.models.Settings.findOne({ _id: 'Disable_Favorite_Rooms' });
 			if (favoriteRooms) {
-				favoriteRooms._id = 'Favorite_Rooms';
-				favoriteRooms.value = !favoriteRooms.value ? true : false;
-				favoriteRooms.i18nDescription = 'Favorite_Rooms_Description';
-				favoriteRooms.packageValue = true;
-				favoriteRooms.i18nLabel = 'Favorite_Rooms';
-
 				RocketChat.models.Settings.remove({ _id: 'Disable_Favorite_Rooms' });
-				RocketChat.models.Settings.insert(favoriteRooms);
+				RocketChat.models.Settings.upsert({ _id: 'Favorite_Rooms' }, {
+					$set: {
+						value: !favoriteRooms.value ? true : false,
+						i18nDescription: 'Favorite_Rooms_Description',
+						packageValue: true,
+						i18nLabel: 'Favorite_Rooms'
+					}
+				});
 			}
 		}
 	}
