@@ -408,7 +408,7 @@
   "Invalid_notification_setting_s" : "vendosjen e pavlefshme njoftimit: %s",
   "Invalid_pass" : "Fjalëkalimi nuk duhet të jetë bosh",
   "Invalid_room_name" : "<strong> %s</strong> nuk është një emër i vlefshëm dhomë, <br/> përdorin shkronja, numra, vetëm hyphens dhe nënvizon",
-  "Invalid_room_type" : "<strong> %s</strong> nuk është një lloj i vlefshëm dhomë.",
+  "error-invalid-room-type" : "<strong>__type__</strong> nuk është një lloj i vlefshëm dhomë.",
   "Invalid_Secret_URL" : "Invalid URL Secret",
   "Invalid_secret_URL_message" : "URL dhënë është e pavlefshme.",
   "invisible" : "i padukshëm",

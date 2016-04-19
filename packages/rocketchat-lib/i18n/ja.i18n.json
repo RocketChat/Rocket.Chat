@@ -416,7 +416,7 @@
   "Invalid_notification_setting_s" : "無効な通知設定: %s",
   "Invalid_pass" : "パスワードは空にすることはできません",
   "Invalid_room_name" : "<strong>%s</strong> は有効なルーム名ではありません。<br/> 利用できるのは、半角文字(英数字・マイナス)だけです。",
-  "Invalid_room_type" : "<strong>%s</strong> は有効なルーム種類ではありません。",
+  "error-invalid-room-type" : "<strong>__type__</strong> は有効なルーム種類ではありません。",
   "Invalid_Secret_URL" : "非公開 URL は、有効ではありません",
   "Invalid_secret_URL_message" : "入力された URL は、有効ではありません。",
   "invisible" : "状態を隠す",

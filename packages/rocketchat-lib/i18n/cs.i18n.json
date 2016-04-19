@@ -408,7 +408,7 @@
   "Invalid_notification_setting_s" : "Neplatné nastavení upozornění: %s",
   "Invalid_pass" : "Heslo nesmí být prázdné",
   "Invalid_room_name" : "<strong>%s</strong> není platné jméno místnosti,<br/> použijte pouze písmena, číslice a pomlčky",
-  "Invalid_room_type" : "<strong> %s</strong> není platný typ pokoje.",
+  "error-invalid-room-type" : "<strong>__type__</strong> není platný typ pokoje.",
   "Invalid_Secret_URL" : "Neplatná Secret URL",
   "Invalid_secret_URL_message" : "Adresa URL je neplatná.",
   "invisible" : "neviditelný",

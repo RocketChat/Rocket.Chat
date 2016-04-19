@@ -411,7 +411,7 @@
   "Invalid_notification_setting_s" : "Неприпустима настройка сповіщення: %s",
   "Invalid_pass" : "Пароль не має бути пустим",
   "Invalid_room_name" : "<strong> %s</strong>не є допустимим ім'ям кімнати, <br / >використовувати тільки букви, цифри та тире",
-  "Invalid_room_type" : "<strong> %s</strong> не є допустимим типом номера.",
+  "error-invalid-room-type" : "<strong>__type__</strong> не є допустимим типом номера.",
   "Invalid_Secret_URL" : "Невірний Секретний URL",
   "Invalid_secret_URL_message" : "URL є недійсною.",
   "invisible" : "невидимий",

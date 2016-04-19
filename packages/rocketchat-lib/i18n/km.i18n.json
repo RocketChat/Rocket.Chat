@@ -408,7 +408,7 @@
   "Invalid_notification_setting_s" : "ការកំណត់ការជូនដំណឹងមិនត្រឹមត្រូវ: %s",
   "Invalid_pass" : "ពាក្យ​សម្ងាត់​មិន​ត្រូវ​ទំនេរ",
   "Invalid_room_name" : "<strong>%s</strong> គឺ​ជា​ឈ្មោះ​បន្ទប់​មិន​ត្រឹម​ត្រូវ,<br/> ត្រូវ​ប្រើប្រាស់​​ត្រឹម​តែ​តួរ​អក្សរ, លេខ និង​ សញ្ញាចុច",
-  "Invalid_room_type" : "<strong> %s</strong> គឺមិនមែនជាប្រភេទបន្ទប់ត្រឹមត្រូវ។",
+  "error-invalid-room-type" : "<strong>__type__</strong> គឺមិនមែនជាប្រភេទបន្ទប់ត្រឹមត្រូវ។",
   "Invalid_Secret_URL" : "URL ដែលសម្ងាត់មិនត្រឹមត្រូវ",
   "Invalid_secret_URL_message" : "URL ដែលបានផ្ដល់គឺមិនត្រឹមត្រូវ។",
   "invisible" : "មិន​បង្ហាញ",

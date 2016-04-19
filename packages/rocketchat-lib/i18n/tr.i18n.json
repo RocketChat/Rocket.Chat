@@ -408,7 +408,7 @@
   "Invalid_notification_setting_s" : "Geçersiz bildirim ayarı: %s",
   "Invalid_pass" : "Parola boş bırakılamaz",
   "Invalid_room_name" : "<strong>%s</strong> geçersiz kanal adı,<br/> Lütfen sadece harfler, sayılar ve tireler kullanın",
-  "Invalid_room_type" : "<strong> %s</strong> geçerli <strong>bir</strong> oda tipi değil.",
+  "error-invalid-room-type" : "<strong>__type__</strong> geçerli <strong>bir</strong> oda tipi değil.",
   "Invalid_Secret_URL" : "Geçersiz Gizli URL",
   "Invalid_secret_URL_message" : "sağlanan URL geçersiz.",
   "invisible" : "görünmez",

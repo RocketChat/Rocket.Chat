@@ -409,7 +409,7 @@
   "Invalid_notification_setting_s" : "Érvénytelen bejelentés beállítás: %s",
   "Invalid_pass" : "A jelszó nem lehet üres",
   "Invalid_room_name" : "<strong>%s</strong> szobanév nem érvényes,<br/> kérlek csak betűket, számokat és kötőjeleket használj",
-  "Invalid_room_type" : "<strong> %s</strong> nem érvényes szobatípusban.",
+  "error-invalid-room-type" : "<strong>__type__</strong> nem érvényes szobatípusban.",
   "Invalid_Secret_URL" : "Érvénytelen a titkos URL",
   "Invalid_secret_URL_message" : "A megadott URL érvénytelen.",
   "invisible" : "láthatatlan",

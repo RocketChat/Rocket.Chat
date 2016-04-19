@@ -412,7 +412,7 @@
   "Invalid_notification_setting_s" : "Ongeldige melding-instelling: %s",
   "Invalid_pass" : "Het wachtwoord mag niet leeg zijn",
   "Invalid_room_name" : "<strong>%s</strong> is geen geldige naam,<br/> gebruik alleen letters, cijfers en streepjes",
-  "Invalid_room_type" : "<strong>%s</strong> is geen geldig kamer type",
+  "error-invalid-room-type" : "<strong>__type__</strong> is geen geldig kamer type",
   "Invalid_Secret_URL" : "Ongeldige geheime URL",
   "Invalid_secret_URL_message" : "De gegeven URL is ongeldig.",
   "invisible" : "onzichtbaar",

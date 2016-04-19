@@ -415,7 +415,7 @@
   "Invalid_notification_setting_s" : "הגדרת התראה לא חוקית: %s",
   "Invalid_pass" : "יש להזין ססמה",
   "Invalid_room_name" : "השם <strong>%s</strong> הוא לא שם תקין לחדר,<br/> יש להשתמש רק באותיות, מספרים ומקפים.",
-  "Invalid_room_type" : "<strong> %s</strong> אינו סוג חדר חוקי.",
+  "error-invalid-room-type" : "<strong>__type__</strong> אינו סוג חדר חוקי.",
   "Invalid_Secret_URL" : "סיסמת URL לא תקינה",
   "Invalid_secret_URL_message" : "הכתובת שסופקה לא תקינה",
   "invisible" : "בלתי נראה",

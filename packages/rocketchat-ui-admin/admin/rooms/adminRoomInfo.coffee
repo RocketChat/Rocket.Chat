@@ -84,7 +84,7 @@ Template.adminRoomInfo.onCreated ->
 	@validateRoomType = (rid) =>
 		type = @$('input[name=roomType]:checked').val()
 		if type not in ['c', 'p']
-			toastr.error t('Invalid_room_type', type)
+			toastr.error t('error-invalid-room-type', type)
 		return true
 
 	@validateRoomName = (rid) =>

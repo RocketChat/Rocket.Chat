@@ -409,7 +409,7 @@
   "Invalid_notification_setting_s" : "impostazione di notifica non valida: %s",
   "Invalid_pass" : "La password non deve essere vuoto",
   "Invalid_room_name" : "<strong>%s</strong il nome della stanza nnon è corretto,<br/> usare solo lettere, numeri o linee",
-  "Invalid_room_type" : "<strong> %s</strong> non è un tipo di camera valida.",
+  "error-invalid-room-type" : "<strong>__type__</strong> non è un tipo di camera valida.",
   "Invalid_Secret_URL" : "URL non valido Segreto",
   "Invalid_secret_URL_message" : "L'URL fornito non è valido.",
   "invisible" : "invisibile",

@@ -412,7 +412,7 @@
   "Invalid_notification_setting_s" : "無效的通知設置：％s的",
   "Invalid_pass" : "密碼不能為空",
   "Invalid_room_name" : "<strong>%s</strong>不是一個合法的聊天室名稱， <br/>只能使用字母，數字，.和_",
-  "Invalid_room_type" : "<strong>％s</strong>不是一個有效的房型。",
+  "error-invalid-room-type" : "<strong>__type__</strong>不是一個有效的房型。",
   "Invalid_Secret_URL" : "無效的秘密網址",
   "Invalid_secret_URL_message" : "提供的網址無效。",
   "invisible" : "隱藏",

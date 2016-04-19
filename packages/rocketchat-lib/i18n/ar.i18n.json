@@ -410,7 +410,7 @@
   "Invalid_notification_setting_s" : "وضع إشعار صالح:٪ ق",
   "Invalid_pass" : "لا يجب أن تكون كلمة السر فارغة",
   "Invalid_room_name" : "<strong>%s</strong> لا يصلح كاسم،<br/>استخدم حروفا و أرقاما وشرطات فقط",
-  "Invalid_room_type" : "<strong>٪ ق</strong> ليس نوع الغرفة صالح.",
+  "error-invalid-room-type" : "<strong>__type__</strong> ليس نوع الغرفة صالح.",
   "Invalid_Secret_URL" : "URL السري غير صالح",
   "Invalid_secret_URL_message" : "عنوان URL المقدمة غير صالح.",
   "invisible" : "خفي",

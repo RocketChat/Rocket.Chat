@@ -408,7 +408,7 @@
   "Invalid_notification_setting_s" : "mîhengê notification nederbasdar: %s",
   "Invalid_pass" : "تێپەڕەوشە نابێ بەتاڵ بێت",
   "Invalid_room_name" : "<strong>%s</strong> ناوێکی دروست نیە بۆ ژوور، <br/> تەنها پیت، ژمارە و داش بەکاربهێنە",
-  "Invalid_room_type" : "<strong> %s</strong> e a type odeya ne derbasdar e.",
+  "error-invalid-room-type" : "<strong>__type__</strong> e a type odeya ne derbasdar e.",
   "Invalid_Secret_URL" : "URL Secret Invalid",
   "Invalid_secret_URL_message" : "The URL provided ne derbasdar e.",
   "invisible" : "nedît",

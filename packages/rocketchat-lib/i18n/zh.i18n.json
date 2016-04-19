@@ -410,7 +410,7 @@
   "Invalid_notification_setting_s" : "无效的通知设置：%s",
   "Invalid_pass" : "密码不能为空",
   "Invalid_room_name" : "<strong>%s</strong>不是一个有效的聊天室名称， <br/>只能使用字母，数字，.和_",
-  "Invalid_room_type" : "<strong>%s</strong>不是一个有效的房间名。",
+  "error-invalid-room-type" : "<strong>__type__</strong>不是一个有效的房间名。",
   "Invalid_Secret_URL" : "无效的密钥 URL",
   "Invalid_secret_URL_message" : "URL 无效。",
   "invisible" : "隐身",

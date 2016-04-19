@@ -416,7 +416,7 @@
   "Invalid_notification_setting_s" : "Configuração de notificação inválida: %s",
   "Invalid_pass" : "A senha não pode ser vazia",
   "Invalid_room_name" : "<strong>%s</strong> não é um nome válido,<br/> utilizar apenas letras, números e hífens",
-  "Invalid_room_type" : "<strong>%s</strong> não é um tipo de sala válido.",
+  "error-invalid-room-type" : "<strong>__type__</strong> não é um tipo de sala válido.",
   "Invalid_Secret_URL" : "URL Secreta inválida",
   "Invalid_secret_URL_message" : "A URL fornecida é inválida.",
   "invisible" : "invisível",

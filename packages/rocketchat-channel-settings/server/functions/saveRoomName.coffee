@@ -16,7 +16,8 @@ RocketChat.saveRoomName = (rid, name) ->
 		nameValidation = new RegExp '^[0-9a-zA-Z-_.]+$'
 
 	if not nameValidation.test name
-		throw new Meteor.Error 'error-invalid-room-name', 'Invalid room name', { function: 'RocketChat.saveRoomName', channelName: name }
+		throw new Meteor.Error 'error-invalid-room-name', name + ' is not a valid room name. Use only letters, numbers, hyphens and underscores', { function: 'RocketChat.saveRoomName', room_name: name }
+
 
 	# name = _.slugify name
 
@@ -25,7 +26,7 @@ RocketChat.saveRoomName = (rid, name) ->
 
 	# avoid duplicate names
 	if RocketChat.models.Rooms.findOneByName name
-		throw new Meteor.Error 'error-duplicate-channel-name', 'Duplicate channel name', { function: 'RocketChat.saveRoomName', channelName: name }
+		throw new Meteor.Error 'error-duplicate-channel-name', 'A channel with name \'' + name + '\' exists', { function: 'RocketChat.saveRoomName', channel_name: name }
 
 	RocketChat.models.Rooms.setNameById rid, name
 	RocketChat.models.Subscriptions.updateNameByRoomId rid, name

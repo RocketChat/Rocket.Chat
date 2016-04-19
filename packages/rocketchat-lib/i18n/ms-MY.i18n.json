@@ -408,7 +408,7 @@
   "Invalid_notification_setting_s" : "tetapan pemberitahuan tidak sah: %s",
   "Invalid_pass" : "Kata Laluan mesti tidak dikosongkan",
   "Invalid_room_name" : "<strong> %s</strong> bukan nama bilik yang sah, <br/> menggunakan hanya huruf, nombor, sengkang dan garis bawah",
-  "Invalid_room_type" : "<strong> %s</strong> bukan jenis bilik yang sah.",
+  "error-invalid-room-type" : "<strong>__type__</strong> bukan jenis bilik yang sah.",
   "Invalid_Secret_URL" : "URL Secret sah",
   "Invalid_secret_URL_message" : "URL yang diberikan adalah tidak sah.",
   "invisible" : "tidak dalam dilihat",

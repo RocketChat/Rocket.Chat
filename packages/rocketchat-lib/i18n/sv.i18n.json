@@ -411,7 +411,7 @@
   "Invalid_notification_setting_s" : "Felaktiga notifierings inställningar: %s",
   "Invalid_pass" : "Lösenordet får inte vara tomt",
   "Invalid_room_name" : "<strong>%s</strong> är inte ett giltigt rumsnamn,<br/> använd bara siffror, nummer och bindestreck",
-  "Invalid_room_type" : "<strong> %s</strong> är inte en giltig rumstyp.",
+  "error-invalid-room-type" : "<strong>__type__</strong> är inte en giltig rumstyp.",
   "Invalid_Secret_URL" : "Ogiltig Secret URL",
   "Invalid_secret_URL_message" : "Den angivna webbadressen är felaktig.",
   "invisible" : "osynlig",

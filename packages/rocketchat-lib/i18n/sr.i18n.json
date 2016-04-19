@@ -409,7 +409,7 @@
   "Invalid_notification_setting_s" : "Инвалид подешавање обавештење% с",
   "Invalid_pass" : "Лозинка не сме бити празна",
   "Invalid_room_name" : "<strong>%s</strong> није исправно име канала,<br/> користите само слова, бројеве и цртице",
-  "Invalid_room_type" : "<strong>% с</strong> није исправан тип соба.",
+  "error-invalid-room-type" : "<strong>__type__</strong> није исправан тип соба.",
   "Invalid_Secret_URL" : "Неважећи тајни УРЛ адреса",
   "Invalid_secret_URL_message" : "УРЛ адреса обезбеђен је неважећи.",
   "invisible" : "невидљив(а)",

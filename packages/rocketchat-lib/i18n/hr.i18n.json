@@ -408,7 +408,7 @@
   "Invalid_notification_setting_s" : "Pogrešna postavka Obavijest: %s",
   "Invalid_pass" : "Lozinka ne smije biti prazna",
   "Invalid_room_name" : "<strong>%s</strong> nije valjano ime sobe,<br/> koristi samo slova, brojeve i crtice",
-  "Invalid_room_type" : "<strong> %s</strong> nije valjani tip sobe.",
+  "error-invalid-room-type" : "<strong>__type__</strong> nije valjani tip sobe.",
   "Invalid_Secret_URL" : "Pogrešna Tajna URL",
   "Invalid_secret_URL_message" : "Navedeni URL nije valjan.",
   "invisible" : "nevidljiv",

@@ -408,7 +408,7 @@
   "Invalid_notification_setting_s" : "ການຕັ້ງຄ່າການແຈ້ງການບໍ່ຖືກຕ້ອງ: %s",
   "Invalid_pass" : "ລະຫັດຜ່ານຈະຕ້ອງບໍ່ເປົ່າຫວ່າງ",
   "Invalid_room_name" : "<strong> %s</strong> ບໍ່ແມ່ນຊື່ຫ້ອງທີ່ຖືກຕ້ອງ, <br/> ການນໍາໃຊ້ຕົວອັກສອນເທົ່ານັ້ນ, ຈໍານວນ, hyphens ແລະຂີດ",
-  "Invalid_room_type" : "<strong> %s</strong> ບໍ່ແມ່ນປະເພດຫ້ອງພັກທີ່ຖືກຕ້ອງ.",
+  "error-invalid-room-type" : "<strong>__type__</strong> ບໍ່ແມ່ນປະເພດຫ້ອງພັກທີ່ຖືກຕ້ອງ.",
   "Invalid_Secret_URL" : "URL ລັບທີ່ບໍ່ຖືກຕ້ອງ",
   "Invalid_secret_URL_message" : "URL ທີ່ໃຫ້ບໍ່ຖືກຕ້ອງ.",
   "invisible" : "ທີ່ເບິ່ງບໍ່ເຫັນ",

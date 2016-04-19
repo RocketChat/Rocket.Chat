@@ -410,7 +410,7 @@
   "Invalid_notification_setting_s" : "தவறான அறிவிப்பு அமைப்பைப் %s:",
   "Invalid_pass" : "கடவுச்சொல் காலியாக இருக்கக் கூடாது",
   "Invalid_room_name" : "<strong> %s</strong>தவறான அறை பெயர், <br / > எழுத்துகள், எண்கள் மற்றும் கோடுகளை பயன்படுத்துக",
-  "Invalid_room_type" : "<strong> %s</strong> செல்லுபடியாகும் அறையில் வகை அல்ல.",
+  "error-invalid-room-type" : "<strong>__type__</strong> செல்லுபடியாகும் அறையில் வகை அல்ல.",
   "Invalid_Secret_URL" : "தவறான ரகசிய URL ஐ",
   "Invalid_secret_URL_message" : "வழங்கிய URL செல்லுபடியாகாது.",
   "invisible" : "கண்ணுக்கு தெரியாத",

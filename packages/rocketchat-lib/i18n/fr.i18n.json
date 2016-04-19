@@ -411,7 +411,7 @@
   "Invalid_notification_setting_s" : "Paramètre de notification invalide : %s",
   "Invalid_pass" : "Le mot de passe doit être renseigné",
   "Invalid_room_name" : "<strong>%s</strong> n'est pas un nom de canal valide.<br/>Utilisez uniquement des lettres, des chiffres et des tirets",
-  "Invalid_room_type" : "<strong>%s</strong> n'est pas un type de salon valide.",
+  "error-invalid-room-type" : "<strong>__type__</strong> n'est pas un type de salon valide.",
   "Invalid_Secret_URL" : "URL secrète invalide",
   "Invalid_secret_URL_message" : "L'URL fournie est invalide.",
   "invisible" : "invisible",

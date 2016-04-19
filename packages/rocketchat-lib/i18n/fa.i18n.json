@@ -408,7 +408,7 @@
   "Invalid_notification_setting_s" : "تنظیمات اطلاع رسانی نامعتبر: %s",
   "Invalid_pass" : "رمز عبور نباید خالی باشد",
   "Invalid_room_name" : "<strong> %s</strong> از نام اتاق معتبر نیست، <br/> استفاده از حروف تنها، اعداد، خط فاصله و زیرین",
-  "Invalid_room_type" : "<strong> %s</strong> از نوع اتاق معتبر نیست.",
+  "error-invalid-room-type" : "<strong>__type__</strong> از نوع اتاق معتبر نیست.",
   "Invalid_Secret_URL" : "URL راز نامعتبر",
   "Invalid_secret_URL_message" : "URL ارائه نامعتبر است.",
   "invisible" : "نامرئی",

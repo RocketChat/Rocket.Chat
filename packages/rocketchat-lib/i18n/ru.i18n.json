@@ -411,7 +411,7 @@
   "Invalid_notification_setting_s" : "Неверная настройка уведомлений: %s",
   "Invalid_pass" : "Пароль не может быть пустым",
   "Invalid_room_name" : "<strong>%s</strong> недопустимое имя чата, <br/> допустимые символы: цифры, подчеркивание и буквы.",
-  "Invalid_room_type" : "<strong>%s</strong> недопустимый тип чата.",
+  "error-invalid-room-type" : "<strong>__type__</strong> недопустимый тип чата.",
   "Invalid_Secret_URL" : "Недействительный Secret URL",
   "Invalid_secret_URL_message" : "Предоставленный URL-адрес недействителен.",
   "invisible" : "невидимый",

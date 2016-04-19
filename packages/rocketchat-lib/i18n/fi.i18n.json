@@ -412,7 +412,7 @@
   "Invalid_notification_setting_s" : "Virheellinen ilmoitusasetus: %s",
   "Invalid_pass" : "Salasana ei voi olla tyhjä",
   "Invalid_room_name" : "<strong>%s</strong> ei ole hyväksyttävä kanavan nimi,<br/> käytä vain kirjaimia, numeroita ja viivaa",
-  "Invalid_room_type" : "<strong>%s</strong> ei ole sallittu huoneen tyyppi.",
+  "error-invalid-room-type" : "<strong>__type__</strong> ei ole sallittu huoneen tyyppi.",
   "Invalid_Secret_URL" : "Virheellinen salainen URL",
   "Invalid_secret_URL_message" : "URL on virheellinen.",
   "invisible" : "näkymätön",

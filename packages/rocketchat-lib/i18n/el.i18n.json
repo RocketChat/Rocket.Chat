@@ -409,7 +409,7 @@
   "Invalid_notification_setting_s" : "Μη έγκυρη ρύθμιση ειδοποίησης: %s",
   "Invalid_pass" : "Ο κωδικός δεν πρέπει να έιναι κενός",
   "Invalid_room_name" : "<strong>%s</strong> δεν είναι έγκυρο όνομα δωματίου,<br/> χρησιμοποιείστε μόνο γράμματα, αριθμούς και παύλες",
-  "Invalid_room_type" : "<strong> %s</strong> δεν είναι έγκυρο τύπο δωματίου.",
+  "error-invalid-room-type" : "<strong>__type__</strong> δεν είναι έγκυρο τύπο δωματίου.",
   "Invalid_Secret_URL" : "Μη έγκυρη διεύθυνση URL Secret",
   "Invalid_secret_URL_message" : "Η διεύθυνση URL δεν είναι έγκυρη.",
   "invisible" : "αόρατος",

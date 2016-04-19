@@ -55,7 +55,7 @@ Template.channelSettings.onCreated ->
 	@validateRoomType = =>
 		type = @$('input[name=roomType]:checked').val()
 		if type not in ['c', 'p']
-			toastr.error t('Invalid_room_type', type)
+			toastr.error t('error-invalid-room-type', type)
 		return true
 
 	@validateRoomName = =>
@@ -92,23 +92,19 @@ Template.channelSettings.onCreated ->
 					if @validateRoomName()
 						Meteor.call 'saveRoomSettings', @data?.rid, 'roomName', @$('input[name=roomName]').val(), (err, result) ->
 							if err
-								if err.error in [ 'duplicate-name', 'name-invalid' ]
-									return toastr.error TAPi18n.__(err.reason, err.details.channelName)
-								return toastr.error TAPi18n.__(err.reason)
+								return handleError(err)
 							toastr.success TAPi18n.__ 'Room_name_changed_successfully'
 			when 'roomTopic'
 				if @validateRoomTopic()
 					Meteor.call 'saveRoomSettings', @data?.rid, 'roomTopic', @$('input[name=roomTopic]').val(), (err, result) ->
 						if err
-							return toastr.error TAPi18n.__(err.reason)
+							return handleError(err)
 						toastr.success TAPi18n.__ 'Room_topic_changed_successfully'
 			when 'roomType'
 				if @validateRoomType()
 					Meteor.call 'saveRoomSettings', @data?.rid, 'roomType', @$('input[name=roomType]:checked').val(), (err, result) ->
 						if err
-							if err.error is 'invalid-room-type'
-								return toastr.error TAPi18n.__(err.reason, err.details.roomType)
-							return toastr.error TAPi18n.__(err.reason)
+							return handleError(err)
 						toastr.success TAPi18n.__ 'Room_type_changed_successfully'
 			when 'archivationState'
 				if @$('input[name=archivationState]:checked').val() is 'true'

@@ -410,7 +410,7 @@
   "Invalid_notification_setting_s" : "Ungültige Benachrichtigungseinstellung: %s",
   "Invalid_pass" : "Es muss ein Passwort angegeben werden.",
   "Invalid_room_name" : "<strong>%s</strong> ist kein zulässiger Raumname.<br/> Benutze nur Buchstaben, Nummern, Binde- und Unterstriche.",
-  "Invalid_room_type" : "<strong>%s</strong> ist kein gültiger Raumtyp.",
+  "error-invalid-room-type" : "<strong>__type__</strong> ist kein gültiger Raumtyp.",
   "Invalid_Secret_URL" : "Ungültige geheime URL",
   "Invalid_secret_URL_message" : "Die angegebene URL ist ungültig.",
   "invisible" : "unsichtbar",

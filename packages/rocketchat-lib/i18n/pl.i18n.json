@@ -412,7 +412,7 @@
   "Invalid_notification_setting_s" : "Nieprawidłowe ustawienie powiadamiania: %s",
   "Invalid_pass" : "Hasło nie może być puste",
   "Invalid_room_name" : "<strong>%s</strong> nie jest poprawną nazwą pokoju, <br / >użyj tylko liter, cyfr i myślników",
-  "Invalid_room_type" : "<strong> %s</strong> nie jest prawidłowy typ pokoju.",
+  "error-invalid-room-type" : "<strong>__type__</strong> nie jest prawidłowy typ pokoju.",
   "Invalid_Secret_URL" : "Nieprawidłowy Tajny URL",
   "Invalid_secret_URL_message" : "Podany adres URL jest nieprawidłowy.",
   "invisible" : "niewidoczny",
