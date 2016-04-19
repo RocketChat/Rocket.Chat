@@ -63,7 +63,7 @@ Template.permissionsRole.events
 		, =>
 			Meteor.call 'authorization:removeUserFromRole', FlowRouter.getParam('name'), @username, instance.searchRoom.get(), (error, result) ->
 				if error
-					return toastr.error t(error.reason or error.error)
+					return handleError(error)
 
 				swal
 					title: t('Removed')
