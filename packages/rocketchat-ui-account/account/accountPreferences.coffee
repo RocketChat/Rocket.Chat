@@ -62,8 +62,8 @@ Template.accountPreferences.onCreated ->
 			data.language = selectedLanguage
 			reload = true
 
-		data.disableNewRoomNotification = $('input[name=disableNewRoomNotification]:checked').val()
-		data.disableNewMessageNotification = $('input[name=disableNewMessageNotification]:checked').val()
+		data.newRoomNotification = $('input[name=newRoomNotification]:checked').val()
+		data.newMessageNotification = $('input[name=newMessageNotification]:checked').val()
 		data.useEmojis = $('input[name=useEmojis]:checked').val()
 		data.convertAsciiEmoji = $('input[name=convertAsciiEmoji]:checked').val()
 		data.saveMobileBandwidth = $('input[name=saveMobileBandwidth]:checked').val()

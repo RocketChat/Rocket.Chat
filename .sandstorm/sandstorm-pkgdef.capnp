@@ -96,7 +96,7 @@ const myCommand :Spk.Manifest.Command = (
 		# Note that this defines the *entire* environment seen by your app.
 		(key = "PATH", value = "/usr/local/bin:/usr/bin:/bin"),
 		(key = "SANDSTORM", value = "1"),
-		(key = "Statistics_opt_out", value = "true"),
+		(key = "Statistics_reporting", value = "false"),
 		(key = "Accounts_AllowUserAvatarChange", value = "false"),
 		(key = "Accounts_AllowUserProfileChange", value = "false")
 	]
