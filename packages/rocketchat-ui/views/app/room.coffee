@@ -5,7 +5,7 @@ isSubscribed = (_id) ->
 	return ChatSubscription.find({ rid: _id }).count() > 0
 
 favoritesEnabled = ->
-	return !RocketChat.settings.get 'Disable_Favorite_Rooms'
+	return RocketChat.settings.get 'Favorite_Rooms'
 
 Template.room.helpers
 	# showFormattingTips: ->

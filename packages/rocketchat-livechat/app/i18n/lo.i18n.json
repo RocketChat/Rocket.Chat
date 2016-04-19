@@ -1,3 +1,18 @@
 {
-  "Start_Chat" : "ການ​ເລີ່ມ​ຕົ້ນ​ສົນ​ທະ​ນາ"
+  "Additional_Feedback" : "ຜົນຕອບຮັບເພີ່ມເຕີມ",
+  "Appearance" : "ຮູບລັກສະນະ",
+  "How_friendly_was_the_chat_agent" : "ວິທີການທີ່ເປັນຕົວແທນການສົນທະນາ?",
+  "How_knowledgeable_was_the_chat_agent" : "ວິທີການມີຄວາມຮູ້ນີ້ແມ່ນຕົວແທນການສົນທະນາ?",
+  "How_responsive_was_the_chat_agent" : "ວິທີການຕອບສະຫນອງນີ້ແມ່ນຕົວແທນການສົນທະນາ?",
+  "How_satisfied_were_you_with_this_chat" : "ວິທີການພໍໃຈທີ່ທ່ານໄດ້ມີການສົນທະນານີ້?",
+  "Installation" : "ການຕິດຕັ້ງ",
+  "Please_answer_survey" : "ກະລຸນາໃຊ້ເວລາປັດຈຸບັນເປັນທີ່ຈະຕອບການສໍາຫຼວດໄວກ່ຽວກັບການສົນທະນານີ້",
+  "Please_fill_name_and_email" : "ກະລຸນາຕື່ມຂໍ້ມູນໃສ່ຊື່ແລະອີເມລ",
+  "Select_a_department" : "ເລືອກຂອງພະແນກ",
+  "Skip" : "ຂ້າມ",
+  "Start_Chat" : "ການ​ເລີ່ມ​ຕົ້ນ​ສົນ​ທະ​ນາ",
+  "Survey" : "ການສໍາຫຼວດ",
+  "Survey_instructions" : "ອັດຕາຄໍາຖາມແຕ່ລະຄົນຕາມຄວາມເພິ່ງພໍໃຈຂອງທ່ານ, 1 ຊຶ່ງຫມາຍຄວາມວ່າທ່ານບໍ່ພໍໃຈຢ່າງສົມບູນແລະ 5 ຊຶ່ງຫມາຍຄວາມວ່າທ່ານພໍໃຈຫມົດ.",
+  "Thank_you_for_your_feedback" : "ຂໍ​ຂອບ​ໃຈ​ທ່ານ​ສໍາ​ລັບ​ການ​ຕໍາ​ນິ​ຕິ​ຊົມ​ຂອງ​ທ່ານ​",
+  "We_are_offline_Sorry_for_the_inconvenience" : "ພວກເຮົາມີຄວາມອອຟໄລ. ຂໍ​ອະ​ໄພ​ໃນ​ຄວາມ​ບໍ່​ສະ​ດວກ."
 }

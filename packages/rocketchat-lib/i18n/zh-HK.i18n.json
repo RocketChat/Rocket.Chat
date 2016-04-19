@@ -57,8 +57,6 @@
   "Delete_User_Warning" : "删除用户将删除该用户的所有消息。这不能被撤消。",
   "Deleted" : "已删除！",
   "Direct_Messages" : "直接发送消息",
-  "Disable_New_Message_Notification" : "禁用新消息通知",
-  "Disable_New_Room_Notification" : "禁用新房间通知",
   "Drop_to_upload_file" : "拖放上传",
   "Duplicate_private_group_name" : "私有组 '%s' 已存在",
   "E-mail" : "电子邮件",

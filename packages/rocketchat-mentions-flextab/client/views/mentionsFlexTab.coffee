@@ -15,8 +15,7 @@ Template.mentionsFlexTab.onCreated ->
 	@hasMore = new ReactiveVar true
 	@limit = new ReactiveVar 50
 	@autorun =>
-		sub = @subscribe 'mentionedMessages', @data.rid, @limit.get()
-		if sub.ready()
+		@subscribe 'mentionedMessages', @data.rid, @limit.get(), =>
 			if MentionedMessage.find({ rid: @data.rid }).count() < @limit.get()
 				@hasMore.set false
 
@@ -35,6 +34,6 @@ Template.mentionsFlexTab.events
 		dropDown.show()
 
 	'scroll .content': _.throttle (e, instance) ->
-		if e.target.scrollTop >= e.target.scrollHeight - e.target.clientHeight
+		if e.target.scrollTop >= e.target.scrollHeight - e.target.clientHeight && instance.hasMore.get()
 			instance.limit.set(instance.limit.get() + 50)
 	, 200

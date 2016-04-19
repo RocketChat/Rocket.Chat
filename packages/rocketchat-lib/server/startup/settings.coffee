@@ -87,7 +87,7 @@ RocketChat.settings.addGroup 'General', ->
 	@add 'Site_Name', 'Rocket.Chat', { type: 'string', public: true }
 	@add 'Language', '', { type: 'language', public: true }
 	@add 'Allow_Invalid_SelfSigned_Certs', false, { type: 'boolean' }
-	@add 'Disable_Favorite_Rooms', false, { type: 'boolean' }
+	@add 'Favorite_Rooms', true, { type: 'boolean' }
 	@add 'CDN_PREFIX', '', { type: 'string' }
 	@add 'Force_SSL', false, { type: 'boolean', public: true }
 	@add 'GoogleTagManager_id', '', { type: 'string', public: true }
@@ -98,7 +98,7 @@ RocketChat.settings.addGroup 'General', ->
 		@add 'UTF8_Names_Slugify', true, { type: 'boolean', public: true }
 
 	@section 'Reporting', ->
-		@add 'Statistics_opt_out', false, { type: 'boolean', i18nLabel: "Opt_out_statistics" }
+		@add 'Statistics_reporting', false, { type: 'boolean' }
 
 
 RocketChat.settings.addGroup 'SMTP', ->
@@ -119,6 +119,7 @@ RocketChat.settings.addGroup 'Message', ->
 	@add 'Message_AllowEditing', true, { type: 'boolean', public: true }
 	@add 'Message_AllowEditing_BlockEditInMinutes', 0, { type: 'int', public: true, i18nDescription: 'Message_AllowEditing_BlockEditInMinutesDescription' }
 	@add 'Message_AllowDeleting', true, { type: 'boolean', public: true }
+	@add 'Message_AllowDeleting_BlockDeleteInMinutes', 0, { type: 'int', public: true, i18nDescription: 'Message_AllowDeleting_BlockDeleteInMinutes' }
 	@add 'Message_AllowPinning', true, { type: 'boolean', public: true }
 	@add 'Message_ShowEditedStatus', true, { type: 'boolean', public: true }
 	@add 'Message_ShowDeletedStatus', false, { type: 'boolean', public: true }

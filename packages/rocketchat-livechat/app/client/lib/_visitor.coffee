@@ -1,6 +1,7 @@
 @visitor = new class
 	token = new ReactiveVar null
 	room = new ReactiveVar null
+	roomToSubscribe = new ReactiveVar null
 
 	register = ->
 		if not localStorage.getItem 'visitorToken'
@@ -22,7 +23,16 @@
 
 		return roomId
 
+	getRoomToSubscribe = ->
+		return roomToSubscribe.get()
+
+	setRoomToSubscribe = (rid) ->
+		room.set(rid)
+		return roomToSubscribe.set(rid)
+
 	register: register
 	getToken: getToken
 	setRoom: setRoom
 	getRoom: getRoom
+	setRoomToSubscribe: setRoomToSubscribe
+	getRoomToSubscribe: getRoomToSubscribe
