@@ -1,11 +1,11 @@
 RocketChat._setEmail = function(userId, email) {
 	email = s.trim(email);
 	if (!userId) {
-		throw new Meteor.Error('invalid-user', '[methods] setEmail -> Invalid user');
+		throw new Meteor.Error('error-invalid-user', 'Invalid user', { function: '_setEmail' });
 	}
 
 	if (!email) {
-		throw new Meteor.Error('invalid-email', '[methods] setEmail -> Invalid email');
+		throw new Meteor.Error('error-invalid-email', 'Invalid email', { function: '_setEmail' });
 	}
 
 	RocketChat.validateEmailDomain(email);
@@ -19,7 +19,7 @@ RocketChat._setEmail = function(userId, email) {
 
 	// Check e-mail availability
 	if (!RocketChat.checkEmailAvailability(email)) {
-		throw new Meteor.Error('email-unavailable', email + ' is already in use :(');
+		throw new Meteor.Error('error-field-unavailable', email + ' is already in use :(', { function: '_setEmail', field: email });
 	}
 
 	// Set new email

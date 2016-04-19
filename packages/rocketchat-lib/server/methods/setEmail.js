@@ -1,13 +1,13 @@
 Meteor.methods({
 	setEmail: function(email) {
 		if (!Meteor.userId()) {
-			throw new Meteor.Error('invalid-user', '[methods] setEmail -> Invalid user');
+			throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'setEmail' });
 		}
 
 		const user = Meteor.user();
 
 		if (!RocketChat.settings.get('Accounts_AllowEmailChange')) {
-			throw new Meteor.Error(403, '[methods] setEmail -> E-mail change not allowed');
+			throw new Meteor.Error('error-action-not-allowed', 'Changing email is not allowed', { method: 'setEmail', action: 'Changing_email' });
 		}
 
 		if (user.emails && user.emails[0] && user.emails[0].address === email) {
@@ -15,7 +15,7 @@ Meteor.methods({
 		}
 
 		if (!RocketChat.setEmail(user._id, email)) {
-			throw new Meteor.Error('could-not-change-email', 'Could not change email');
+			throw new Meteor.Error('error-could-not-change-email', 'Could not change email', { method: 'setEmail' });
 		}
 
 		return email;

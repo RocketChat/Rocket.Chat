@@ -19,7 +19,7 @@ RocketChat.slashCommands.run = (command, params, item) ->
 Meteor.methods
 	slashCommand: (command) ->
 		if not Meteor.userId()
-			throw new Meteor.Error 203, t('User_logged_out')
+			throw new Meteor.Error 'error-invalid-user', 'Invalid user', { method: 'slashCommand' }
 
 		RocketChat.slashCommands.run command.cmd, command.params, command.msg
 
