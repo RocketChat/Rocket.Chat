@@ -2,6 +2,7 @@ URL = Npm.require('url')
 querystring = Npm.require('querystring')
 request = HTTPInternals.NpmModules.request.module
 iconv = Npm.require('iconv-lite')
+ipRangeCheck = Npm.require('ip-range-check')
 
 OEmbed = {}
 
@@ -20,7 +21,11 @@ getUrlContent = (urlObj, redirectCount = 5, callback) ->
 	if _.isString(urlObj)
 		urlObj = URL.parse urlObj
 
-	parsedUrl = _.pick urlObj, ['host', 'hash', 'pathname', 'protocol', 'port', 'query', 'search']
+	parsedUrl = _.pick urlObj, ['host', 'hash', 'pathname', 'protocol', 'port', 'query', 'search', 'hostname']
+
+	ignoredHosts = RocketChat.settings.get('API_EmbedIgnoredHosts').split(',') or []
+	if parsedUrl.hostname in ignoredHosts or ipRangeCheck(parsedUrl.hostname, ignoredHosts)
+		return callback()
 
 	data = RocketChat.callbacks.run 'oembed:beforeGetUrlContent',
 		urlObj: urlObj
@@ -86,6 +91,8 @@ OEmbed.getUrlMeta = (url, withFragment) ->
 		urlObj.path = path
 
 	content = getUrlContentSync urlObj, 5
+	if !content
+		return
 
 	if content.attachments?
 		return content

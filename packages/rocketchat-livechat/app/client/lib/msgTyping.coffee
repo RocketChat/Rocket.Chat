@@ -1,5 +1,4 @@
 @MsgTyping = do ->
-	stream = new Meteor.Streamer 'typing'
 	timeout = 15000
 	timeouts = {}
 	renew = true
@@ -11,20 +10,20 @@
 	addStream = (room) ->
 		if _.isEmpty usersTyping[room]?.users
 			usersTyping[room] = { users: {} }
-			stream.on room, (typing) ->
-				unless typing?.username is Meteor.user()?.username
-					if typing.start
+			Notifications.onRoom room, 'typing', (username, typing) ->
+				unless username is Meteor.user()?.username
+					if typing is true
 						users = usersTyping[room].users
-						users[typing.username] = Meteor.setTimeout ->
-							delete users[typing.username]
+						users[username] = Meteor.setTimeout ->
+							delete users[username]
 							usersTyping[room].users = users
 							dep.changed()
 						, timeout
 						usersTyping[room].users = users
 						dep.changed()
-					else if typing.stop
+					else
 						users = usersTyping[room].users
-						delete users[typing.username]
+						delete users[username]
 						usersTyping[room].users = users
 						dep.changed()
 
@@ -41,7 +40,7 @@
 
 		renew = false
 		selfTyping.set true
-		stream.emit 'typing', { room: room, username: Meteor.user()?.username, start: true }
+		Notifications.notifyRoom room, 'typing', Meteor.user()?.username, true
 		clearTimeout timeouts[room]
 		timeouts[room] = Meteor.setTimeout ->
 			stop(room)
@@ -53,7 +52,7 @@
 		if timeouts?[room]?
 			clearTimeout(timeouts[room])
 			timeouts[room] = null
-		stream.emit 'typing', { room: room, username: Meteor.user()?.username, stop: true }
+		Notifications.notifyRoom room, 'typing', Meteor.user()?.username, false
 
 	get = (room) ->
 		dep.depend()
