@@ -193,7 +193,7 @@ Template.integrationsOutgoing.events
 		else
 			Meteor.call "addOutgoingIntegration", integration, (err, data) ->
 				if err?
-					return toastr.error TAPi18n.__(err.error)
+					return handleError(err)
 
 				toastr.success TAPi18n.__("Integration_added")
 				FlowRouter.go "admin-integrations-outgoing", {id: data._id}
