@@ -168,6 +168,15 @@ RocketChat.callbacks.add('afterSaveMessage', function(message, room) {
 		if (mentionIds.length > 0 || settings.alwaysNotifyDesktopUsers.length > 0) {
 			desktopMentionIds = _.union(mentionIds, settings.alwaysNotifyDesktopUsers);
 			desktopMentionIds = _.difference(desktopMentionIds, settings.dontNotifyDesktopUsers);
+
+			if (room.t === 'p') {
+				desktopMentionIds.forEach(function(userId) {
+					if (!RocketChat.models.Subscriptions.findOneByRoomIdAndUserId(room._id, userId)) {
+						desktopMentionIds = _.without(desktopMentionIds, userId);
+					}
+				});
+			}
+
 			usersOfDesktopMentions = RocketChat.models.Users.find({
 				_id: {
 					$in: desktopMentionIds
@@ -191,12 +200,22 @@ RocketChat.callbacks.add('afterSaveMessage', function(message, room) {
 					}
 				}
 			}
+
 			userIdsToNotify = _.pluck(usersOfDesktopMentions, '_id');
 		}
 
 		if (mentionIds.length > 0 || settings.alwaysNotifyMobileUsers.length > 0) {
 			mobileMentionIds = _.union(mentionIds, settings.alwaysNotifyMobileUsers);
 			mobileMentionIds = _.difference(mobileMentionIds, settings.dontNotifyMobileUsers);
+
+			if (room.t === 'p') {
+				mobileMentionIds.forEach(function(userId) {
+					if (!RocketChat.models.Subscriptions.findOneByRoomIdAndUserId(room._id, userId)) {
+						mobileMentionIds = _.without(mobileMentionIds, userId);
+					}
+				});
+			}
+
 			usersOfMobileMentions = RocketChat.models.Users.find({
 				_id: {
 					$in: mobileMentionIds
