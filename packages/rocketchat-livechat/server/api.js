@@ -42,7 +42,9 @@ Api.addRoute('sms-incoming/:service', {
 			visitor = RocketChat.models.Users.findOneById(userId);
 
 			sendMessage.roomInfo = {
-				sms: true
+				sms: {
+					from: sms.to
+				}
 			};
 		}
 		sendMessage.message.msg = sms.body;

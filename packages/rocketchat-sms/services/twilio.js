@@ -3,7 +3,6 @@ class Twilio {
 	constructor() {
 		this.accountSid = RocketChat.settings.get('SMS_Twilio_Account_SID');
 		this.authToken = RocketChat.settings.get('SMS_Twilio_authToken');
-		this.fromNumber = RocketChat.settings.get('SMS_Twilio_fromNumber');
 	}
 	parse(data) {
 		return {
@@ -23,12 +22,12 @@ class Twilio {
 			}
 		};
 	}
-	send(to, message) {
+	send(fromNumber, toNumber, message) {
 		var client = Npm.require('twilio')(this.accountSid, this.authToken);
 
 		client.messages.create({
-			to: to,
-			from: this.fromNumber,
+			to: toNumber,
+			from: fromNumber,
 			body: message,
 		});
 	}

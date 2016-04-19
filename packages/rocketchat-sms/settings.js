@@ -14,14 +14,6 @@ Meteor.startup(function() {
 		});
 
 		this.section('Twilio', function() {
-			this.add('SMS_Twilio_fromNumber', '', {
-				type: 'string',
-				enableQuery: {
-					_id: 'SMS_Service',
-					value: 'twilio'
-				},
-				i18nLabel: 'From_Number'
-			});
 			this.add('SMS_Twilio_Account_SID', '', {
 				type: 'string',
 				enableQuery: {
