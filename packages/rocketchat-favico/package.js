@@ -10,6 +10,6 @@ Package.onUse(function(api) {
 		'coffeescript'
 	], 'client');
 	api.addFiles([
-		'favico.js',
+		'favico.js'
 	], 'client');
 });

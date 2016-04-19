@@ -70,5 +70,5 @@ RocketChat.tooltip = {
 				top: top + 'px',
 				left: left + 'px'
 			});
-	},
+	}
 };

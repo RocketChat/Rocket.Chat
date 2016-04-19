@@ -1,14 +1,14 @@
 Template.livechatAppearance.helpers({
-	previewState () {
+	previewState() {
 		return Template.instance().previewState.get();
 	},
-	color () {
+	color() {
 		return Template.instance().color.get();
 	},
-	title () {
+	title() {
 		return Template.instance().title.get();
 	},
-	sampleData () {
+	sampleData() {
 		return {
 			color: RocketChat.settings.get('Livechat_title_color'),
 			title: RocketChat.settings.get('Livechat_title'),
@@ -93,13 +93,13 @@ Template.livechatAppearance.onCreated(function() {
 });
 
 Template.livechatAppearance.events({
-	'change .preview-mode' (e, instance) {
+	'change .preview-mode'(e, instance) {
 		instance.previewState.set(e.currentTarget.value);
 	},
-	'change .preview-settings, keyup .preview-settings' (e, instance) {
+	'change .preview-settings, keyup .preview-settings'(e, instance) {
 		instance[e.currentTarget.name].set(e.currentTarget.value);
 	},
-	'click .reset-settings' (e, instance) {
+	'click .reset-settings'(e, instance) {
 		e.preventDefault();
 
 		instance.title.set(RocketChat.settings.get('Livechat_title'));
@@ -107,7 +107,7 @@ Template.livechatAppearance.events({
 
 		instance.$('input.preview-settings[name=color]').minicolors('value', instance.color.get());
 	},
-	'submit .rocket-form' (e, instance) {
+	'submit .rocket-form'(e, instance) {
 		e.preventDefault();
 
 		var settings = [
