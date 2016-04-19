@@ -241,6 +241,7 @@
   "Desktop_Notification_Test" : "Desktop Notification Test",
   "Desktop_Notifications" : "Desktop Notifications",
   "Desktop_Notifications_Disabled" : "Desktop Notifications are Disabled. Change your browser preferences if you need Notifications enabled.",
+  "Desktop_Notifications_Duration_Description" : "Seconds to display desktop notification.",
   "Desktop_Notifications_Enabled" : "Desktop Notifications are Enabled",
   "Direct_message_someone" : "Direct message someone",
   "Direct_Messages" : "Direct Messages",
