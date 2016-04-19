@@ -1,5 +1,5 @@
 RocketChat.Migrations.add({
-	version: 44,
+	version: 45,
 	up: function() {
 
 		// finds the latest created visitor
