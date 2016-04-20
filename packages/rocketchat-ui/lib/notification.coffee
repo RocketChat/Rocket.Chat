@@ -19,10 +19,9 @@
 					body: _.stripTags(message.msg)
 					silent: true
 
-				# close notification after 5 sec
-				# this could be configurable in the admin panel
-				# currently, chrome waits 20 sec. that's just too long!
-				setTimeout ( -> n.close() ), RocketChat.settings.get('Desktop_Notifications_Duration') * 1000
+				notificationDuration = RocketChat.settings.get('Desktop_Notifications_Duration') * 1000
+				if notificationDuration > 0
+					setTimeout ( -> n.close() ), notificationDuration
 
 				if notification.payload?.rid?
 					n.onclick = ->

@@ -101,7 +101,7 @@ RocketChat.settings.addGroup 'General', ->
 		@add 'Statistics_reporting', false, { type: 'boolean' }
 
 	@section 'Notifications', ->
-		@add 'Desktop_Notifications_Duration', 5, { type: 'int', public: true, i18nDescription: 'Desktop_Notification_Durations_Description' }
+		@add 'Desktop_Notifications_Duration', 0, { type: 'int', public: true, i18nDescription: 'Desktop_Notification_Durations_Description' }
 
 
 RocketChat.settings.addGroup 'SMTP', ->
