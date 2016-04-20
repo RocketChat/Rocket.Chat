@@ -1,8 +1,8 @@
 {
-  "500" : "internt serverfel",
   "0_Errors_Only" : "Endast fel - 0",
   "1_Errors_and_Information" : "1 - Fel och information",
   "2_Erros_Information_and_Debug" : "2 - erros, information och felsöknings",
+  "500" : "internt serverfel",
   "__username__is_no_longer__role__defined_by__user_by_" : "__username__ är inte längre __role__, genom __user_by__",
   "__username__was_set__role__by__user_by_" : "__username__ sattes __role__ genom __user_by__",
   "Access_not_authorized" : "Tillgång som inte godkänts",

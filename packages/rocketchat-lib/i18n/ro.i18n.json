@@ -1,8 +1,8 @@
 {
-  "500" : "eroare interna a serverului",
   "0_Errors_Only" : "0 - Doar erori.",
   "1_Errors_and_Information" : "1 - Erori și informații",
   "2_Erros_Information_and_Debug" : "2- Erori, informații și debug",
+  "500" : "eroare interna a serverului",
   "__username__is_no_longer__role__defined_by__user_by_" : "__username__ nu mai este __role__, prin __user_by__",
   "__username__was_set__role__by__user_by_" : "__username__ a fost stabilită __role__ de __user_by__",
   "Access_not_authorized" : "Acces neautorizat",

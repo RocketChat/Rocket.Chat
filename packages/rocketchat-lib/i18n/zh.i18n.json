@@ -1,8 +1,8 @@
 {
-  "500" : "内部服务器错误",
   "0_Errors_Only" : "0 - 仅错误 ",
   "1_Errors_and_Information" : "1 - 错误和信息",
   "2_Erros_Information_and_Debug" : "2 - 错误、信息和调试信息",
+  "500" : "内部服务器错误",
   "__username__is_no_longer__role__defined_by__user_by_" : "__username__不再__role__，由__user_by__",
   "__username__was_set__role__by__user_by_" : "__username__设置__role__由__user_by__",
   "Access_not_authorized" : "未活得访问授权",

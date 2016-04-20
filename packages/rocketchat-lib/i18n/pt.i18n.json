@@ -1,8 +1,8 @@
 {
-  "500" : "Erro Interno do Servidor",
   "0_Errors_Only" : "0 - Apenas erros",
   "1_Errors_and_Information" : "1 - Erros e Informações",
   "2_Erros_Information_and_Debug" : "2 - Erros, Informação e Debug",
+  "500" : "Erro Interno do Servidor",
   "__username__is_no_longer__role__defined_by__user_by_" : "__username__ não é mais __role__, por __user_by__",
   "__username__was_set__role__by__user_by_" : "__username__ foi definido como __role__ por __user_by__",
   "Access_not_authorized" : "Acesso não autorizado",
