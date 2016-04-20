@@ -57,7 +57,7 @@ Template.livechatTriggers.events({
 		Meteor.call('livechat:saveTrigger', data, function(error/*, result*/) {
 			$btn.html(oldBtnValue);
 			if (error) {
-				return toastr.error(t(error.reason || error.error));
+				return handleError(error);
 			}
 
 			toastr.success(t('Saved'));
@@ -79,7 +79,7 @@ Template.livechatTriggers.events({
 		}, () => {
 			Meteor.call('livechat:removeTrigger', function(error/*, result*/) {
 				if (error) {
-					return toastr.error(t(error.reason || error.error));
+					return handleError(error);
 				}
 
 				swal({

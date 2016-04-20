@@ -12,7 +12,7 @@ RocketChat.MessageAction = new class
 	###
 	addButton = (config) ->
 		unless config?.id
-			throw new Meteor.Error "MessageAction-addButton-error", "Button id was not informed."
+			return false
 
 		Tracker.nonreactive ->
 			btns = buttons.get()

@@ -3,7 +3,7 @@
 Meteor.methods({
 	'livechat:saveDepartment'(_id, departmentData, departmentAgents) {
 		if (!Meteor.userId() || !RocketChat.authz.hasPermission(Meteor.userId(), 'view-livechat-manager')) {
-			throw new Meteor.Error('not-authorized');
+			throw new Meteor.Error('error-not-allowed', 'Not allowed', { method: 'livechat:saveDepartment' });
 		}
 
 		if (_id) {
@@ -15,7 +15,7 @@ Meteor.methods({
 		if (_id) {
 			const department = RocketChat.models.LivechatDepartment.findOneById(_id);
 			if (!department) {
-				throw new Meteor.Error('department-not-found', 'Department_not_found');
+				throw new Meteor.Error('error-department-not-found', 'Department not found', { method: 'livechat:saveDepartment' });
 			}
 		}
 

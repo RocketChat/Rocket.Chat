@@ -36,7 +36,7 @@ Template.livechatCustomFieldForm.events({
 		Meteor.call('livechat:saveCustomField', _id, customFieldData, function(error) {
 			$btn.html(oldBtnValue);
 			if (error) {
-				return toastr.error(t(error.error));
+				return handleError(error);
 			}
 
 			toastr.success(t('Saved'));

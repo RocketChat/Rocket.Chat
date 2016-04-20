@@ -15,7 +15,7 @@ Template.adminImportProgress.onCreated ->
 		Meteor.call 'getImportProgress', FlowRouter.getParam('importer'), (error, progress) ->
 			if error
 				console.warn 'Error on getting the import progress:', error
-				toastr.error t('importer_progress_error')
+				handleError error
 				return
 
 			if progress

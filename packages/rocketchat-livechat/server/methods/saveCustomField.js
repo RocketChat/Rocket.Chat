@@ -3,7 +3,7 @@
 Meteor.methods({
 	'livechat:saveCustomField'(_id, customFieldData) {
 		if (!Meteor.userId() || !RocketChat.authz.hasPermission(Meteor.userId(), 'view-livechat-manager')) {
-			throw new Meteor.Error('not-authorized');
+			throw new Meteor.Error('error-not-allowed', 'Not allowed', { method: 'livechat:saveCustomField' });
 		}
 
 		if (_id) {

@@ -122,7 +122,7 @@ Template.livechatAppearance.events({
 		];
 		RocketChat.settings.batchSet(settings, (err/*, success*/) => {
 			if (err) {
-				return toastr.error(t('Error_updating_settings'));
+				return handleError(err);
 			}
 			toastr.success(t('Settings_updated'));
 		});

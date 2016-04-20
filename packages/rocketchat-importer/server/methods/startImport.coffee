@@ -2,7 +2,7 @@ Meteor.methods
 	startImport: (name, input) ->
 		# Takes name and object with users / channels selected to import
 		if not Meteor.userId()
-			throw new Meteor.Error 203, 'User_logged_out' #TODO: Update this to the new way of doing things
+			throw new Meteor.Error 'error-invalid-user', 'Invalid user', { method: 'startImport' }
 
 		if Importer.Importers[name]?.importerInstance?
 			usersSelection = input.users.map (user) ->
@@ -13,4 +13,4 @@ Meteor.methods
 			selection = new Importer.Selection name, usersSelection, channelsSelection
 			Importer.Importers[name].importerInstance.startImport selection
 		else
-			throw new Meteor.Error 'importer-not-defined', 'importer_not_defined_properly', { importerName: name }
+			throw new Meteor.Error 'error-importer-not-defined', 'The importer was not defined correctly, it is missing the Import class.', { method: 'startImport' }

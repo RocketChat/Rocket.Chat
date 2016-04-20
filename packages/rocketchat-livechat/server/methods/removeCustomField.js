@@ -1,7 +1,7 @@
 Meteor.methods({
 	'livechat:removeCustomField'(_id) {
 		if (!Meteor.userId() || !RocketChat.authz.hasPermission(Meteor.userId(), 'view-livechat-manager')) {
-			throw new Meteor.Error('not-authorized');
+			throw new Meteor.Error('error-not-allowed', 'Not allowed', { method: 'livechat:removeCustomField' });
 		}
 
 		check(_id, String);
