@@ -67,6 +67,12 @@ RocketChat.callbacks.add('afterSaveMessage', function(message, room) {
 				if (user.settings && user.settings.preferences && user.settings.preferences.emailNotificationMode && user.settings.preferences.emailNotificationMode === 'disabled' && usersToSendEmail[user._id] !== 'force') {
 					return;
 				}
+
+				// Checks if user is in the room he/she is mentioned (unless it's public channel)
+				if (room.t !== 'c' && room.usernames.indexOf(user.username) === -1) {
+					return;
+				}
+
 				user.emails.some((email) => {
 					if (email.verified) {
 						email = {
