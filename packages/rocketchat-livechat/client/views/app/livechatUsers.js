@@ -19,7 +19,7 @@ Template.livechatUsers.helpers({
 });
 
 Template.livechatUsers.events({
-	'click .remove-manager' (e/*, instance*/) {
+	'click .remove-manager'(e/*, instance*/) {
 		e.preventDefault();
 
 		swal({
@@ -41,12 +41,12 @@ Template.livechatUsers.events({
 					text: t('Manager_removed'),
 					type: 'success',
 					timer: 1000,
-					showConfirmButton: false,
+					showConfirmButton: false
 				});
 			});
 		});
 	},
-	'click .remove-agent' (e/*, instance*/) {
+	'click .remove-agent'(e/*, instance*/) {
 		e.preventDefault();
 
 		swal({
@@ -68,12 +68,12 @@ Template.livechatUsers.events({
 					text: t('Agent_removed'),
 					type: 'success',
 					timer: 1000,
-					showConfirmButton: false,
+					showConfirmButton: false
 				});
 			});
 		});
 	},
-	'submit #form-manager' (e/*, instance*/) {
+	'submit #form-manager'(e/*, instance*/) {
 		e.preventDefault();
 
 		if (e.currentTarget.elements.username.value.trim() === '') {
@@ -94,7 +94,7 @@ Template.livechatUsers.events({
 			e.currentTarget.reset();
 		});
 	},
-	'submit #form-agent' (e/*, instance*/) {
+	'submit #form-agent'(e/*, instance*/) {
 		e.preventDefault();
 
 		if (e.currentTarget.elements.username.value.trim() === '') {

@@ -24,7 +24,7 @@ RocketChat.EmojiPicker = {
 			if (!this.opened) {
 				return;
 			}
-			if(!$(event.target).closest('.emoji-picker').length && !$(event.target).is('.emoji-picker')) {
+			if (!$(event.target).closest('.emoji-picker').length && !$(event.target).is('.emoji-picker')) {
 				if (this.opened) {
 					this.close();
 				}

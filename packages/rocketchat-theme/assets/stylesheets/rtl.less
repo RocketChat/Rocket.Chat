@@ -32,6 +32,10 @@
 		padding-right: 0px;
 	}
 
+	.text-right {
+		text-align: left;
+	}
+
 	.side-nav {
 		.right(0px);
 		.header {
@@ -182,6 +186,25 @@
 		}
 	}
 
+	.page-settings {
+		.content {
+			> .info {
+				padding-left: 20px;
+			}
+		}
+		.section {
+			border-right: none;
+			border-left: 1px solid #ddd;
+			.section-content {
+				.input-line {
+					> label {
+						text-align: right;
+					}
+				}
+			}
+		}
+	}
+
 	.messages-box {
 		margin: 60px 0px 0px 20px;
 		.new-message {
@@ -244,6 +267,7 @@
 			> .formatting-tips {
 				float: left;
 				position: relative;
+				right: auto;
 				q {
 					padding: 0 3px 0 0;
 					border-right: 3px solid;
@@ -578,7 +602,7 @@
 	}
 
 	.list-view {
-		> .status {
+		> .title {
 			.see-all {
 				float: left;
 			}
@@ -621,6 +645,53 @@
 		th,
 		td {
 			text-align: right;
+		}
+	}
+
+	.minicolors-theme-rocketchat {
+		.minicolors-swatch {
+			.right(1px);
+			border-radius: 0 5px 5px 0;
+			border-width: 0 0 0 1px;
+		}
+	}
+
+	.code-mirror-box {
+		direction: ltr;
+		.buttons {
+			text-align: left;
+		}
+		&.code-mirror-box-fullscreen {
+			left: 40px;
+			right: 260px;
+			.title {
+				padding-right: 10px;
+				padding-left: unset;
+				direction: rtl;
+				
+			}
+		}
+	}
+
+	@media all and (max-width: 780px) {
+		.code-mirror-box {
+			&.code-mirror-box-fullscreen {
+				right: 0;
+			}
+		}
+	}
+
+	.rocket-form {
+		legend {
+			&:after {
+				right: 0;
+			}
+		}
+		.logoutOthers {
+			text-align: left;
+		}
+		.submit {
+			text-align: left;
 		}
 	}
 

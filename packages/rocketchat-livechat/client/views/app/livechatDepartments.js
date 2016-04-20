@@ -5,7 +5,7 @@ Template.livechatDepartments.helpers({
 });
 
 Template.livechatDepartments.events({
-	'click .remove-department' (e/*, instance*/) {
+	'click .remove-department'(e/*, instance*/) {
 		e.preventDefault();
 		e.stopPropagation();
 
@@ -28,13 +28,13 @@ Template.livechatDepartments.events({
 					text: t('Department_removed'),
 					type: 'success',
 					timer: 1000,
-					showConfirmButton: false,
+					showConfirmButton: false
 				});
 			});
 		});
 	},
 
-	'click .department-info' (e/*, instance*/) {
+	'click .department-info'(e/*, instance*/) {
 		e.preventDefault();
 		FlowRouter.go('livechat-department-edit', { _id: this._id });
 	}

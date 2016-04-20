@@ -1,7 +1,7 @@
 msgStream = new Meteor.Streamer 'room-messages'
 Tracker.autorun ->
-	if visitor.getRoom()?
-		msgStream.on visitor.getRoom(), (msg) ->
+	if visitor.getRoomToSubscribe()?
+		msgStream.on visitor.getRoomToSubscribe(), (msg) ->
 			if msg.t is 'command'
 				if msg.msg is 'survey'
 					unless $('body #survey').length
