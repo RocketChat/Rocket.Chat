@@ -1,20 +1,18 @@
 Template.livechatTriggerCondition.helpers({
-	hiddenValue (current) {
+	hiddenValue(current) {
 		if (this.name === undefined && Template.instance().firstCondition) {
 			Template.instance().firstCondition = false;
 			return '';
-		} else {
-			if (this.name !== current) {
-				return 'hidden';
-			}
+		} else if (this.name !== current) {
+			return 'hidden';
 		}
 	},
-	conditionSelected (current) {
+	conditionSelected(current) {
 		if (this.name === current) {
 			return 'selected';
 		}
 	},
-	valueFor (condition) {
+	valueFor(condition) {
 		if (this.name === condition) {
 			return this.value;
 		}
@@ -22,7 +20,7 @@ Template.livechatTriggerCondition.helpers({
 });
 
 Template.livechatTriggerCondition.events({
-	'change .trigger-condition' (e, instance) {
+	'change .trigger-condition'(e, instance) {
 		instance.$('.trigger-condition-value ').addClass('hidden');
 		instance.$('.' + e.currentTarget.value).removeClass('hidden');
 	}

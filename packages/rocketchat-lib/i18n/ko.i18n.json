@@ -179,6 +179,7 @@
   "busy_male" : "바쁨",
   "Busy_male" : "바쁨",
   "Cancel" : "취소",
+  "Cancel_message_input" : "취소",
   "Cannot_delete_a_protected_role" : "보호 역할을 삭제할 수 없습니다",
   "Cannot_delete_role_because_its_in_use" : "그것이 사용 때문에 역할을 삭제할 수 없습니다",
   "Cannot_invite_users_to_direct_rooms" : "객실을 지시하는 사용자를 초대 할 수 없습니다",

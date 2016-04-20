@@ -10,7 +10,7 @@ Template.messages.helpers({
 				ts: 1
 			}
 		});
-	},
+	}
 });
 
 Template.messages.events({
@@ -35,7 +35,7 @@ Template.messages.events({
 	},
 	'click .error': function(event) {
 		return $(event.currentTarget).removeClass('show');
-	},
+	}
 });
 
 Template.messages.onCreated(function() {

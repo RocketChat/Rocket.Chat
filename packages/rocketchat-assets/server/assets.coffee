@@ -103,7 +103,7 @@ RocketChat.Assets = new class
 		ws.on 'end', Meteor.bindEnvironment ->
 			Meteor.setTimeout ->
 				RocketChat.settings.updateById "Assets_#{asset}", {
-					url: "/assets/#{asset}.#{extension}"
+					url: "assets/#{asset}.#{extension}"
 					defaultUrl: assets[asset].defaultUrl
 				}
 			, 200

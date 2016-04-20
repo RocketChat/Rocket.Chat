@@ -20,7 +20,7 @@ RocketChat.settings.get('Site_Url', function() {
 		} else {
 			baseUrl = '/';
 		}
-		if(/\/$/.test(baseUrl) === false) {
+		if (/\/$/.test(baseUrl) === false) {
 			baseUrl += '/';
 		}
 		Inject.rawHead('base', `<base href="${baseUrl}">`);

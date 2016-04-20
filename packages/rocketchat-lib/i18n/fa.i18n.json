@@ -179,6 +179,7 @@
   "busy_male" : "مشغول",
   "Busy_male" : "مشغول",
   "Cancel" : "لغو کردن",
+  "Cancel_message_input" : "لغو کردن",
   "Cannot_delete_a_protected_role" : "می تواند نقش محافظت شده را حذف",
   "Cannot_delete_role_because_its_in_use" : "می توانید نقش را حذف کنید زیرا در حال استفاده است",
   "Cannot_invite_users_to_direct_rooms" : "می تواند کاربران را به طور مستقیم اتاق دعوت",

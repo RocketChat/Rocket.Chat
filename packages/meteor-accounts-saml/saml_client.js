@@ -2,7 +2,7 @@ if (!Accounts.saml) {
 	Accounts.saml = {};
 }
 
-var openCenteredPopup = function (url, width, height) {
+var openCenteredPopup = function(url, width, height) {
 	var screenX = typeof window.screenX !== 'undefined' ? window.screenX : window.screenLeft;
 	var screenY = typeof window.screenY !== 'undefined' ? window.screenY : window.screenTop;
 	var outerWidth = typeof window.outerWidth !== 'undefined' ? window.outerWidth : document.body.clientWidth;
@@ -23,12 +23,12 @@ var openCenteredPopup = function (url, width, height) {
 	return newwindow;
 };
 
-Accounts.saml.initiateLogin = function (options, callback, dimensions) {
+Accounts.saml.initiateLogin = function(options, callback, dimensions) {
 	// default dimensions that worked well for facebook and google
 	var popup = openCenteredPopup(
 		Meteor.absoluteUrl('_saml/authorize/' + options.provider + '/' + options.credentialToken), (dimensions && dimensions.width) || 650, (dimensions && dimensions.height) || 500);
 
-	var checkPopupOpen = setInterval(function () {
+	var checkPopupOpen = setInterval(function() {
 		var popupClosed;
 		try {
 			// Fix for #328 - added a second test criteria (popup.closed === undefined)
@@ -50,12 +50,12 @@ Accounts.saml.initiateLogin = function (options, callback, dimensions) {
 	}, 100);
 };
 
-Meteor.loginWithSaml = function (options, callback) {
+Meteor.loginWithSaml = function(options, callback) {
 	options = options || {};
 	var credentialToken = Random.id();
 	options.credentialToken = credentialToken;
 
-	Accounts.saml.initiateLogin(options, function (/*error, result*/) {
+	Accounts.saml.initiateLogin(options, function(/*error, result*/) {
 		Accounts.callLoginMethod({
 			methodArguments: [{
 				saml: true,
@@ -66,9 +66,9 @@ Meteor.loginWithSaml = function (options, callback) {
 	});
 };
 
-Meteor.logoutWithSaml = function (options/*, callback*/) {
+Meteor.logoutWithSaml = function(options/*, callback*/) {
 	//Accounts.saml.idpInitiatedSLO(options, callback);
-	Meteor.call('samlLogout', options.provider, function (err, result) {
+	Meteor.call('samlLogout', options.provider, function(err, result) {
 		console.log('LOC ' + result);
 		// A nasty bounce: 'result' has the SAML LogoutRequest but we need a proper 302 to redirected from the server.
 		//window.location.replace(Meteor.absoluteUrl('_saml/sloRedirect/' + options.provider + '/?redirect='+result));

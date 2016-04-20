@@ -6,7 +6,8 @@ Package.describe({
 });
 
 Npm.depends({
-	'iconv-lite': '0.4.13'
+	'iconv-lite': '0.4.13',
+	'ip-range-check': '0.0.1'
 });
 
 Package.onUse(function(api) {

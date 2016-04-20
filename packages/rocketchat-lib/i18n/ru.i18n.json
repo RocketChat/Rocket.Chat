@@ -179,6 +179,7 @@
   "busy_male" : "занят",
   "Busy_male" : "Занят",
   "Cancel" : "Отмена",
+  "Cancel_message_input" : "Отмена",
   "Cannot_delete_a_protected_role" : "Нельзя удалить защищённую позицию",
   "Cannot_delete_role_because_its_in_use" : "Нельзя удалить позицию, потому что она используется",
   "Cannot_invite_users_to_direct_rooms" : "Нельзя приглашать пользователей в приватные чаты",

@@ -15,7 +15,7 @@ Template.livechatDepartmentForm.helpers({
 });
 
 Template.livechatDepartmentForm.events({
-	'submit #department-form' (e, instance) {
+	'submit #department-form'(e, instance) {
 		e.preventDefault();
 		var $btn = instance.$('button.save');
 
@@ -61,12 +61,12 @@ Template.livechatDepartmentForm.events({
 		});
 	},
 
-	'click button.back' (e/*, instance*/) {
+	'click button.back'(e/*, instance*/) {
 		e.preventDefault();
 		FlowRouter.go('livechat-departments');
 	},
 
-	'click .remove-agent' (e, instance) {
+	'click .remove-agent'(e, instance) {
 		e.preventDefault();
 
 		var selectedAgents = instance.selectedAgents.get();
@@ -74,7 +74,7 @@ Template.livechatDepartmentForm.events({
 		instance.selectedAgents.set(selectedAgents);
 	},
 
-	'click .available-agents li' (e, instance) {
+	'click .available-agents li'(e, instance) {
 		var selectedAgents = instance.selectedAgents.get();
 		var agent = _.clone(this);
 		agent.agentId = this._id;

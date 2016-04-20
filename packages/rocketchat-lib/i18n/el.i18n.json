@@ -179,6 +179,7 @@
   "busy_male" : "απασχολημένος",
   "Busy_male" : "Απασχολημένος",
   "Cancel" : "Ακύρωση",
+  "Cancel_message_input" : "Ακύρωση",
   "Cannot_delete_a_protected_role" : "Δεν μπορείτε να διαγράψετε μια προστατευμένη ρόλο",
   "Cannot_delete_role_because_its_in_use" : "Δεν μπορείτε να διαγράψετε ρόλο επειδή είναι σε χρήση",
   "Cannot_invite_users_to_direct_rooms" : "Δεν μπορείτε να προσκαλέσετε τους χρήστες να κατευθύνουν δωμάτια",

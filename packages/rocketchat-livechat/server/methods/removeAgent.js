@@ -1,5 +1,5 @@
 Meteor.methods({
-	'livechat:removeAgent' (username) {
+	'livechat:removeAgent'(username) {
 		if (!Meteor.userId() || !RocketChat.authz.hasPermission(Meteor.userId(), 'view-livechat-manager')) {
 			throw new Meteor.Error('not-authorized');
 		}

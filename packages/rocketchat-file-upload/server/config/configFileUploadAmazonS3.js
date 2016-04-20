@@ -59,7 +59,7 @@ var createS3Directive = _.debounce(() => {
 			bucket: bucket,
 			AWSAccessKeyId: accessKey,
 			AWSSecretAccessKey: secretKey,
-			key: function (file, metaContext) {
+			key: function(file, metaContext) {
 				var path = RocketChat.hostname + '/' + metaContext.rid + '/' + this.userId + '/';
 
 				let upload = {
@@ -94,12 +94,10 @@ var createS3Directive = _.debounce(() => {
 		try {
 			Slingshot.createDirective(directiveName, Slingshot.S3Storage, config);
 		} catch (e) {
-			SystemLogger.error('Error configuring S3 ->',e.message);
+			SystemLogger.error('Error configuring S3 ->', e.message);
 		}
-	} else {
-		if (Slingshot._directives[directiveName]) {
-			delete Slingshot._directives[directiveName];
-		}
+	} else if (Slingshot._directives[directiveName]) {
+		delete Slingshot._directives[directiveName];
 	}
 }, 500);
 

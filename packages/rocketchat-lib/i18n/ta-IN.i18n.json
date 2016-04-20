@@ -179,6 +179,7 @@
   "busy_male" : "பிஸியாக",
   "Busy_male" : "பிஸி",
   "Cancel" : "வேண்டாம்",
+  "Cancel_message_input" : "வேண்டாம்",
   "Cannot_delete_a_protected_role" : "பாதுகாக்கப்பட்ட பங்கு நீக்க முடியவில்லை",
   "Cannot_delete_role_because_its_in_use" : "இது பயன்பாட்டில் ஏனெனில் பங்கு நீக்க முடியவில்லை",
   "Cannot_invite_users_to_direct_rooms" : "அறைகள் இயக்கும் பயனர்களை அழைக்க முடியாது",

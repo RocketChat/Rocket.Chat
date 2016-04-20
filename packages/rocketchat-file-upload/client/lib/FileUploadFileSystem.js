@@ -5,7 +5,7 @@ FileSystemStore = new UploadFS.store.Local({
 	name: 'fileSystem',
 	filter: new UploadFS.Filter({
 		onCheck: FileUpload.validateFileUpload
-	}),
+	})
 });
 
 FileUpload.FileSystem = class FileUploadFileSystem extends FileUploadBase {

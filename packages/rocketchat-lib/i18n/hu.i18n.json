@@ -179,6 +179,7 @@
   "busy_male" : "elfoglalt",
   "Busy_male" : "Elfoglalt",
   "Cancel" : "Mégse",
+  "Cancel_message_input" : "Mégse",
   "Cannot_delete_a_protected_role" : "Nem lehet törölni a védett szerepe",
   "Cannot_delete_role_because_its_in_use" : "Nem lehet törölni a szerepet, mert használatban van",
   "Cannot_invite_users_to_direct_rooms" : "Nem lehet meghívni a felhasználók közvetlen szobák",
