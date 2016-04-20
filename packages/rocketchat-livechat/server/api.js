@@ -47,10 +47,27 @@ Api.addRoute('sms-incoming/:service', {
 				}
 			};
 		}
+
 		sendMessage.message.msg = sms.body;
 
 		sendMessage.guest = visitor;
 
-		return SMSService.response.call(this, RocketChat.Livechat.sendMessage(sendMessage));
+		const message = SMSService.response.call(this, RocketChat.Livechat.sendMessage(sendMessage));
+
+		Meteor.defer(() => {
+			if (sms.extra) {
+				if (sms.extra.fromCountry) {
+					Meteor.call('livechat:setCustomField', sendMessage.message.token, 'country', sms.extra.fromCountry);
+				}
+				if (sms.extra.fromState) {
+					Meteor.call('livechat:setCustomField', sendMessage.message.token, 'state', sms.extra.fromState);
+				}
+				if (sms.extra.fromCity) {
+					Meteor.call('livechat:setCustomField', sendMessage.message.token, 'city', sms.extra.fromCity);
+				}
+			}
+		});
+
+		return message;
 	}
 });
