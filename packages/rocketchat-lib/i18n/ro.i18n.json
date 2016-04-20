@@ -179,6 +179,7 @@
   "busy_male" : "ocupat",
   "Busy_male" : "Ocupat",
   "Cancel" : "Anulează",
+  "Cancel_message_input" : "Anulează",
   "Cannot_delete_a_protected_role" : "Nu se poate șterge un rol protejat",
   "Cannot_delete_role_because_its_in_use" : "Nu se poate șterge rol, deoarece este în uz",
   "Cannot_invite_users_to_direct_rooms" : "Nu pot invita utilizatorii să direcționeze camere",

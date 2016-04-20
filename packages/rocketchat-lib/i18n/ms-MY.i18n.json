@@ -178,6 +178,7 @@
   "busy_male" : "sibuk",
   "Busy_male" : "Sibuk",
   "Cancel" : "Batal",
+  "Cancel_message_input" : "Batal",
   "Cannot_delete_a_protected_role" : "Tidak dapat memadam peranan yang dilindungi",
   "Cannot_delete_role_because_its_in_use" : "Tidak dapat memadam peranan kerana ia digunakan",
   "Cannot_invite_users_to_direct_rooms" : "Tidak boleh menjemput pengguna ke bilik mengarahkan",

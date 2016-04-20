@@ -179,6 +179,7 @@
   "busy_male" : "bikar",
   "Busy_male" : "Bikar",
   "Cancel" : "پوچکردنەوە",
+  "Cancel_message_input" : "پوچکردنەوە",
   "Cannot_delete_a_protected_role" : "Dikarin roleke parastî jêbirin ne",
   "Cannot_delete_role_because_its_in_use" : "Dikarin roleke jêbirin, ji ber ku ew di bikaranîna ye",
   "Cannot_invite_users_to_direct_rooms" : "Dikarin bikarhêneran ji bo derhênana odeyên gazî ne",

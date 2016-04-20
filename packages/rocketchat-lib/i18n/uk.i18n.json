@@ -179,6 +179,7 @@
   "busy_male" : "зайнятий",
   "Busy_male" : "Зайнятий",
   "Cancel" : "Відміна",
+  "Cancel_message_input" : "Відміна",
   "Cannot_delete_a_protected_role" : "Неможливо видалити захищену роль",
   "Cannot_delete_role_because_its_in_use" : "Неможливо видалити роль, тому що це в використанні",
   "Cannot_invite_users_to_direct_rooms" : "Чи не можете запрошувати користувачів на прямі номери",

@@ -178,6 +178,7 @@
   "busy_male" : "meşgul",
   "Busy_male" : "Meşgul",
   "Cancel" : "Vazgeç",
+  "Cancel_message_input" : "Vazgeç",
   "Cannot_delete_a_protected_role" : "Korunan rol silinemiyor",
   "Cannot_delete_role_because_its_in_use" : "kullanımda olduğundan rol silinemiyor",
   "Cannot_invite_users_to_direct_rooms" : "Odalar doğrudan kullanıcıları davet edemezsiniz",

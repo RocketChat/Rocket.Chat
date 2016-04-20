@@ -183,6 +183,7 @@
   "busy_male" : "busy",
   "Busy_male" : "Busy",
   "Cancel" : "Cancel",
+  "Cancel_message_input" : "Cancel",
   "Cannot_delete_a_protected_role" : "Cannot delete a protected role",
   "Cannot_delete_role_because_its_in_use" : "Cannot delete role because it's in use",
   "Cannot_invite_users_to_direct_rooms" : "Cannot invite users to direct rooms",

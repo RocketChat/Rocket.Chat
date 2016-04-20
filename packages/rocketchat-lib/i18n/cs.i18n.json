@@ -179,6 +179,7 @@
   "busy_male" : "zaneprázdněný",
   "Busy_male" : "Zaneprázdněný",
   "Cancel" : "Zrušit",
+  "Cancel_message_input" : "Zrušit",
   "Cannot_delete_a_protected_role" : "Nelze odstranit chráněné roli",
   "Cannot_delete_role_because_its_in_use" : "Nelze smazat roli, protože to je v provozu",
   "Cannot_invite_users_to_direct_rooms" : "Nelze pozvat uživatele, aby směrují pokoje",

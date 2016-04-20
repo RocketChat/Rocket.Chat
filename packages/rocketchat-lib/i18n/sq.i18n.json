@@ -179,6 +179,7 @@
   "busy_male" : "i zënë",
   "Busy_male" : "I zënë",
   "Cancel" : "Anuloj",
+  "Cancel_message_input" : "Anuloj",
   "Cannot_delete_a_protected_role" : "nuk mund të fshini një rol të mbrojtur",
   "Cannot_delete_role_because_its_in_use" : "nuk mund të fshini rol, sepse kjo është në përdorim",
   "Cannot_invite_users_to_direct_rooms" : "Nuk mund të ftojë përdoruesit për të drejtuar dhoma",

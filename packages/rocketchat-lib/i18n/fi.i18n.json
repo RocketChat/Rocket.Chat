@@ -179,6 +179,7 @@
   "busy_male" : "varattu",
   "Busy_male" : "Varattu",
   "Cancel" : "Peruuta",
+  "Cancel_message_input" : "Peruuta",
   "Cannot_delete_a_protected_role" : "Et voi poistaa suojattua roolia",
   "Cannot_delete_role_because_its_in_use" : "Et voi poistaa roolia, koska se on käytössä",
   "Cannot_invite_users_to_direct_rooms" : "Ei voi kutsua käyttäjiä suoralle huonetta",

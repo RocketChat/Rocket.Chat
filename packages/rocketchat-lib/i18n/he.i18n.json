@@ -179,6 +179,7 @@
   "busy_male" : "עסוק",
   "Busy_male" : "עסוק",
   "Cancel" : "ביטול",
+  "Cancel_message_input" : "ביטול",
   "Cannot_delete_a_protected_role" : "לא ניתן למחוק תפקיד מוגן.",
   "Cannot_delete_role_because_its_in_use" : "לא ניתן למחוק תפקיד כי הוא בשימוש",
   "Cannot_invite_users_to_direct_rooms" : "אין אפשרות להזמין משתמשים לכוון חדרים",
