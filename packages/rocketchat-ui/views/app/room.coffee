@@ -501,7 +501,7 @@ Template.room.onCreated ->
 
 	Meteor.call 'getRoomRoles', @data._id, (error, results) ->
 		if error
-			return toastr.error error.reason
+			return handleError(error)
 
 		for record in results
 			delete record._id
