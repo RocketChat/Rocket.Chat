@@ -773,7 +773,7 @@ label.required:after {
 	}
 	&:before {
 		.transform(rotate(135deg) translateX(-4px));
-		.transition(transform .185s ease-out .085s, background .15s ease-out);
+		.transition(transform .185s ease-out, background .15s ease-out);
 	}
 	&:after {
 		.transform(rotate(-135deg) translateX(-4px));
@@ -789,10 +789,10 @@ label.required:after {
 	}
 	&.top {
 		&:before {
-			.transform(rotate(45deg) translateX(-2px) translateY(2px));
+			.transform(rotate(-135deg) translateX(2px) translateY(-2px));
 		}
 		&:after {
-			.transform(rotate(-45deg) translateX(2px) translateY(2px));
+			.transform(rotate(135deg) translateX(-2px) translateY(-2px));
 		}
 	}
 	&.bottom {
@@ -805,10 +805,10 @@ label.required:after {
 	}
 	&.close {
 		&:before {
-			.transform(rotate(-45deg));
+			.transform(rotate(-135deg) translateX(0) translateY(0));
 		}
 		&:after {
-			.transform(rotate(45deg));
+			.transform(rotate(135deg) translateX(0) translateY(0));
 		}
 	}
 }
@@ -1996,10 +1996,14 @@ a.github-fork {
 			tbody {
 				td {
 					vertical-align: middle;
-					padding: 2px 2px;
-				}
-				tr {
-					cursor: pointer;
+					padding: 4px 2px;
+
+					a {
+						padding: inherit;
+						margin-bottom: inherit;
+						display: inline;
+						border: none;
+					}
 				}
 			}
 		}
@@ -2393,15 +2397,6 @@ a.github-fork {
 	ul {
 		padding: 21px 0 10px;
 	}
-	.load-more {
-		text-transform: lowercase;
-		text-align: center;
-		line-height: 40px;
-		font-style: italic;
-		.load-more-loading {
-			color: #aaa;
-		}
-	}
 	.start {
 		text-align: center;
 		margin-top: 12px;
@@ -2499,8 +2494,6 @@ a.github-fork {
 	}
 	&.new-day {
 		margin-top: 60px;
-	}
-	&.new-day {
 		&:before {
 			content: attr(data-date);
 			display: block;
@@ -2522,8 +2515,7 @@ a.github-fork {
 			top: -20px;
 			left: 0;
 			border-top: 1px solid;
-			width: 96%;
-			margin-left: 2%;
+			width: 100%;
 		}
 	}
 	.message-action {
@@ -2612,9 +2604,6 @@ a.github-fork {
 			height: 20px;
 			display: inline-block;
 			vertical-align: bottom;
-			.avatar {
-				border-radius: 50%;
-			}
 		}
 	}
 	.info {
@@ -2823,15 +2812,6 @@ body:not(.is-cordova) {
 	.transform(translateX(100%));
 	.transition(transform .25s cubic-bezier(.5, 0, .1, 1));
 	.control {
-		height: 60px;
-		position: relative;
-		text-align: left;
-		z-index: 100;
-		padding: 12px 30px 12px;
-		> a,
-		> form {
-			float: left;
-		}
 		.header {
 			text-align: center;
 			padding: 5px 30px 20px;
@@ -2888,11 +2868,7 @@ body:not(.is-cordova) {
 			}
 		}
 		.search-form {
-			padding: 0 4px 0 0;
 			width: 100%;
-			> div {
-				position: relative;
-			}
 			.icon-plus {
 				position: absolute;
 				top: 11px;
@@ -2977,16 +2953,19 @@ body:not(.is-cordova) {
 }
 
 .list-view {
-	padding: 5px 30px 20px;
+	z-index: 10;
+	padding: 20px;
 	.list {
 		display: flex;
 		flex-flow: column nowrap;
 		position: relative;
 		width: 100%;
-		height: 100%;
+		.message {
+			padding: 8px 0px 4px 50px;
+		}
 	}
-	> .status {
-		margin: 5px 0 15px;
+	> .title {
+		margin: 0 0 20px;
 		h2 {
 			font-size: 20px;
 			line-height: 25px;
@@ -3051,33 +3030,55 @@ body:not(.is-cordova) {
 }
 
 .user-view {
-	padding: 20px;
+	z-index: 15;
+	overflow-y: auto;
+	overflow-x: hidden;
 	.about {
 		width: 100%;
 		margin-bottom: 20px;
 	}
 	.thumb {
-		float: left;
-		width: 100px;
-		height: 100px;
+		width: 100%;
+		height: 200px;
+
+		.transition(height .4s ease);
+
+		cursor: zoom-in;
+		cursor: -moz-zoom-in;
+		cursor: -webkit-zoom-in;
+
+		&.bigger {
+			height: 350px;
+			cursor: zoom-out;
+			cursor: -moz-zoom-out;
+			cursor: -webkit-zoom-out;
+		}
+
+		.avatar {
+			border-radius: 0;
+
+			.avatar-image {
+				border-radius: 0;
+			}
+		}
 	}
 	nav {
 		margin-left: -4px;
+		padding: 0 20px;
 		.back {
 			float: right;
 		}
 	}
 	.info {
-		margin-left: 120px;
 		white-space: normal;
-		.calc(width, ~'100% - 120px');
+		padding: 0 20px;
 		h3 {
 			-webkit-user-select: text;
 			-moz-user-select: text;
 			-ms-user-select: text;
 			user-select: text;
 			font-size: 24px;
-			margin-bottom: 8px;
+			margin: 8px 0;
 			line-height: 27px;
 			text-overflow: ellipsis;
 			width: 100%;
@@ -3223,6 +3224,7 @@ body:not(.is-cordova) {
 		}
 	}
 	.edit-form {
+		padding: 20px 20px 0 20px;
 		white-space: normal;
 		h3 {
 			font-size: 24px;
@@ -3236,6 +3238,9 @@ body:not(.is-cordova) {
 		}
 		> .input-line {
 			margin-top: 20px;
+		}
+		nav {
+			padding: 0;
 		}
 	}
 	.room-info-content > div {
@@ -4007,19 +4012,6 @@ body:not(.is-cordova) {
 }
 
 @media all and(max-width: 500px) {
-	.user-view {
-		.thumb {
-			width: 60px;
-			height: 60px;
-		}
-		.info {
-			margin-left: 75px;
-			.calc(width, ~'100% - 120px');
-			h3 {
-				font-size: 20px;
-			}
-		}
-	}
 	.messages-container {
 		.message-form {
 			> .formatting-tips {
@@ -4263,6 +4255,16 @@ body:not(.is-cordova) {
 	}
 }
 
+.load-more {
+	text-transform: lowercase;
+	text-align: center;
+	line-height: 40px;
+	font-style: italic;
+	.load-more-loading {
+		color: #aaa;
+	}
+}
+
 .search-messages-list {
 	.message-cog-container {
 		.message-action {
@@ -4272,30 +4274,12 @@ body:not(.is-cordova) {
 			}
 		}
 	}
-	.load-more {
-		text-transform: lowercase;
-		text-align: center;
-		line-height: 40px;
-		font-style: italic;
-		.load-more-loading {
-			color: #aaa;
-		}
-	}
 	.no-results {
 		text-align: center;
 	}
 }
 
 .uploaded-files-list {
-	.load-more {
-		text-transform: lowercase;
-		text-align: center;
-		line-height: 40px;
-		font-style: italic;
-		.load-more-loading {
-			color: #aaa;
-		}
-	}
 }
 
 .messages-box {
@@ -4515,8 +4499,8 @@ body:not(.is-cordova) {
 }
 
 @media all and(max-width: 780px) {
-	.code-mirror-box-fullscreen {
-		.CodeMirror {
+	.code-mirror-box {
+		&.code-mirror-box-fullscreen {
 			left: 0;
 		}
 	}

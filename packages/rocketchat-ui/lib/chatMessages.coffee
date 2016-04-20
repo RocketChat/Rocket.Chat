@@ -119,6 +119,14 @@ class @ChatMessages
 				Meteor.call 'sendMessage', msgObject
 
 	deleteMsg: (message) ->
+		blockDeleteInMinutes = RocketChat.settings.get 'Message_AllowDeleting_BlockDeleteInMinutes'
+		if blockDeleteInMinutes? and blockDeleteInMinutes isnt 0
+			msgTs = moment(message.ts) if message.ts?
+			currentTsDiff = moment().diff(msgTs, 'minutes') if msgTs?
+			if currentTsDiff > blockDeleteInMinutes
+				toastr.error(t('Message_deleting_blocked'))
+				return
+
 		Meteor.call 'deleteMessage', message, (error, result) ->
 			if error
 				return toastr.error error.reason

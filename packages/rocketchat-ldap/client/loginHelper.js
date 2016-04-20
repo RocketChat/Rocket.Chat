@@ -43,10 +43,8 @@ Meteor.loginWithLDAP = function(username, password, customLdapOptions, callback)
 				if (callback) {
 					callback(error);
 				}
-			} else {
-				if (callback) {
-					callback();
-				}
+			} else if (callback) {
+				callback();
 			}
 		}
 	});

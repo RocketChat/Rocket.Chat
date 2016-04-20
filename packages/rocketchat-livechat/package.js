@@ -5,7 +5,7 @@ Package.describe({
 });
 
 Package.registerBuildPlugin({
-	name: 'builLivechat',
+	name: 'Livechat',
 	use: [],
 	sources: [
 		'plugin/build-livechat.js'
@@ -26,6 +26,7 @@ Package.onUse(function(api) {
 	api.use('kadira:flow-router', 'client');
 	api.use('templating', 'client');
 	api.use('mongo');
+	api.use('rocketchat:sms');
 	api.use('less@2.5.1');
 
 	api.addFiles('livechat.js', 'server');
@@ -54,6 +55,8 @@ Package.onUse(function(api) {
 	// client views
 	api.addFiles('client/views/app/livechatAppearance.html', 'client');
 	api.addFiles('client/views/app/livechatAppearance.js', 'client');
+	api.addFiles('client/views/app/livechatCurrentChats.html', 'client');
+	api.addFiles('client/views/app/livechatCurrentChats.js', 'client');
 	api.addFiles('client/views/app/livechatCustomFields.html', 'client');
 	api.addFiles('client/views/app/livechatCustomFields.js', 'client');
 	api.addFiles('client/views/app/livechatCustomFieldForm.html', 'client');
@@ -113,7 +116,8 @@ Package.onUse(function(api) {
 	api.addFiles('server/models/LivechatTrigger.js', 'server');
 
 	// server lib
-	api.addFiles('server/lib/getNextAgent.js', 'server');
+	api.addFiles('server/lib/Livechat.js', 'server');
+	api.addFiles('server/sendMessageBySMS.js', 'server');
 
 	// publications
 	api.addFiles('server/publications/availableDepartments.js', 'server');
@@ -122,10 +126,14 @@ Package.onUse(function(api) {
 	api.addFiles('server/publications/livechatAgents.js', 'server');
 	api.addFiles('server/publications/livechatDepartments.js', 'server');
 	api.addFiles('server/publications/livechatManagers.js', 'server');
+	api.addFiles('server/publications/livechatRooms.js', 'server');
 	api.addFiles('server/publications/trigger.js', 'server');
 	api.addFiles('server/publications/visitorInfo.js', 'server');
 	api.addFiles('server/publications/visitorPageVisited.js', 'server');
 	api.addFiles('server/publications/visitorRoom.js', 'server');
+
+	// api
+	api.addFiles('server/api.js', 'server');
 
 	// livechat app
 	api.addAssets('assets/demo.html', 'client');

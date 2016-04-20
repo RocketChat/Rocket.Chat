@@ -1,6 +1,9 @@
 <template name="messageSearch">
 	<div class="content">
 		<div class="list-view search-messages-list">
+			<div class="title">
+				<h2>{{_ "Search_Messages"}}</h2>
+			</div>
 			<div class="control">
 				<form class="search-form" role="form">
 					<div class="input-line search">
@@ -9,26 +12,29 @@
 					</div>
 				</form>
 			</div>
-			<ul class="list clearfix">
-				{{#if currentSearchTerm}}
-					{{#if searchResultMessages}}
-						{{#each searchResultMessages}}
-							{{#nrr nrrargs 'message' .}}{{/nrr}}
-						{{/each}}
-						{{#if hasMore}}
-							<li class="load-more">
-								{{#if ready}}
-									<a>{{_ "Has_more"}}...</a>
-								{{else}}
-									<div class="load-more-loading">{{_ "Loading..."}}</div>
-								{{/if}}
-							</li>
-						{{/if}}
-					{{else}}
-						<h2 class="no-results">{{_ "No_results_found"}}</h2>
+			{{#if currentSearchTerm}}
+				{{#unless searchResultMessages}}
+					<h2>{{_ "No_results_found"}}</h2>
+				{{/unless}}
+			{{/if}}
+		</div>
+		<ul class="list clearfix">
+			{{#if currentSearchTerm}}
+				{{#if searchResultMessages}}
+					{{#each searchResultMessages}}
+						{{#nrr nrrargs 'message' .}}{{/nrr}}
+					{{/each}}
+					{{#if hasMore}}
+						<li class="load-more">
+							{{#if ready}}
+								<a>{{_ "Has_more"}}...</a>
+							{{else}}
+								<div class="load-more-loading">{{_ "Loading..."}}</div>
+							{{/if}}
+						</li>
 					{{/if}}
 				{{/if}}
-			</ul>
-		</div>
+			{{/if}}
+		</ul>
 	</div>
 </template>

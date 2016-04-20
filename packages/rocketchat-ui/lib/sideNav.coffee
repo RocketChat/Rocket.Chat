@@ -7,10 +7,16 @@
 	openQueue = []
 
 	toggleArrow = (status = null) ->
-		if status is -1 or (status isnt 1 and arrow.hasClass "top")
+		if status is 0
+			arrow.addClass "close"
+			arrow.removeClass "top"
+			arrow.removeClass "bottom"
+		else if status is -1 or (status isnt 1 and arrow.hasClass "top")
+			arrow.removeClass "close"
 			arrow.removeClass "top"
 			arrow.addClass "bottom"
 		else
+			arrow.removeClass "close"
 			arrow.addClass "top"
 			arrow.removeClass "bottom"
 
@@ -66,7 +72,8 @@
 			return openQueue.push { config: getFlex(), callback: callback }
 
 		return if animating == true
-		toggleArrow 1
+		AccountBox.close()
+		toggleArrow 0
 		toggleFlex 1, callback
 		focusInput()
 

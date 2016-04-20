@@ -5,10 +5,8 @@ isSubscribed = (_id) ->
 	return ChatSubscription.find({ rid: _id }).count() > 0
 
 favoritesEnabled = ->
-	return !RocketChat.settings.get 'Disable_Favorite_Rooms'
+	return RocketChat.settings.get 'Favorite_Rooms'
 
-
-# @TODO bug com o botão para "rolar até o fim" (novas mensagens) quando há uma mensagem com texto que gere rolagem horizontal
 Template.room.helpers
 	# showFormattingTips: ->
 	# 	return RocketChat.settings.get('Message_ShowFormattingTips') and (RocketChat.Markdown or RocketChat.Highlight)
@@ -107,65 +105,11 @@ Template.room.helpers
 		else
 			return 'offline'
 
-	isChannel: ->
-		roomData = Session.get('roomData' + this._id)
-		return '' unless roomData
-		return roomData.t is 'c'
-
-	canDirectMessage: ->
-		return Meteor.user()?.username isnt this.username
-
 	flexOpened: ->
 		return 'opened' if RocketChat.TabBar.isFlexOpen()
 
-	arrowPosition: ->
-		return 'left' unless RocketChat.TabBar.isFlexOpen()
-
-	phoneNumber: ->
-		return '' unless this.phoneNumber
-		if this.phoneNumber.length > 10
-			return "(#{this.phoneNumber.substr(0,2)}) #{this.phoneNumber.substr(2,5)}-#{this.phoneNumber.substr(7)}"
-		else
-			return "(#{this.phoneNumber.substr(0,2)}) #{this.phoneNumber.substr(2,4)}-#{this.phoneNumber.substr(6)}"
-
-	userActiveByUsername: (username) ->
-		status = Session.get 'user_' + username + '_status'
-		if status in ['online', 'away', 'busy']
-			return {username: username, status: status}
-		return
-
-	getPopupConfig: ->
-		template = Template.instance()
-		return {
-			getInput: ->
-				return template.find('.input-message')
-		}
-
 	maxMessageLength: ->
 		return RocketChat.settings.get('Message_MaxAllowedSize')
-
-	utc: ->
-		if @utcOffset?
-			return "UTC #{@utcOffset}"
-
-	phoneNumber: ->
-		return '' unless @phoneNumber
-		if @phoneNumber.length > 10
-			return "(#{@phoneNumber.substr(0,2)}) #{@phoneNumber.substr(2,5)}-#{@phoneNumber.substr(7)}"
-		else
-			return "(#{@phoneNumber.substr(0,2)}) #{@phoneNumber.substr(2,4)}-#{@phoneNumber.substr(6)}"
-
-	lastLogin: ->
-		if @lastLogin
-			return moment(@lastLogin).format('LLL')
-
-	canJoin: ->
-		return !! ChatRoom.findOne { _id: @_id, t: 'c' }
-
-	canRecordAudio: ->
-		wavRegex = /audio\/wav|audio\/\*/i
-		wavEnabled = !RocketChat.settings.get("FileUpload_MediaTypeWhiteList") || RocketChat.settings.get("FileUpload_MediaTypeWhiteList").match(wavRegex)
-		return RocketChat.settings.get('Message_AudioRecorderEnabled') and (navigator.getUserMedia? or navigator.webkitGetUserMedia?) and wavEnabled and RocketChat.settings.get('FileUpload_Enabled')
 
 	unreadData: ->
 		data =
@@ -186,7 +130,11 @@ Template.room.helpers
 		return RocketChat.TabBar.getTemplate()
 
 	flexData: ->
-		return _.extend { rid: this._id }, RocketChat.TabBar.getData()
+		return _.extend {
+			rid: this._id
+			userDetail: Template.instance().userDetail.get(),
+			clearUserDetail: Template.instance().clearUserDetail
+		}, RocketChat.TabBar.getData()
 
 	adminClass: ->
 		return 'admin' if RocketChat.authz.hasRole(Meteor.userId(), 'admin')
@@ -354,17 +302,14 @@ Template.room.events
 			$('#room-title-field').focus().select()
 		, 10
 
-	"click .flex-tab .user-image > a" : (e) ->
+	"click .flex-tab .user-image > a" : (e, instance) ->
 		RocketChat.TabBar.openFlex()
-		Session.set('showUserInfo', @username)
+		instance.setUserDetail @username
 
-	'click .user-card-message': (e) ->
+	'click .user-card-message': (e, instance) ->
 		roomData = Session.get('roomData' + this._arguments[1].rid)
 		if roomData.t in ['c', 'p']
-			# Session.set('flexOpened', true)
-			Session.set('showUserInfo', $(e.currentTarget).data('username'))
-		# else
-			# Session.set('flexOpened', true)
+			instance.setUserDetail this._arguments[1].u.username
 		RocketChat.TabBar.setTemplate 'membersList'
 
 	'scroll .wrapper': _.throttle (e, instance) ->
@@ -410,14 +355,15 @@ Template.room.events
 	'click .message-dropdown-close': ->
 		$('.message-dropdown:visible').hide()
 
-	"click .mention-link": (e) ->
+	"click .mention-link": (e, instance) ->
 		channel = $(e.currentTarget).data('channel')
 		if channel?
 			FlowRouter.go 'channel', {name: channel}
 			return
 
 		RocketChat.TabBar.setTemplate 'membersList'
-		Session.set('showUserInfo', $(e.currentTarget).data('username'))
+		instance.setUserDetail $(e.currentTarget).data('username')
+
 		RocketChat.TabBar.openFlex()
 
 	'click .image-to-download': (event) ->
@@ -464,24 +410,6 @@ Template.room.events
 
 		fileUpload filesToUpload
 
-	'click .deactivate': ->
-		username = Session.get('showUserInfo')
-		user = Meteor.users.findOne { username: String(username) }
-		Meteor.call 'setUserActiveStatus', user?._id, false, (error, result) ->
-			if result
-				toastr.success t('User_has_been_deactivated')
-			if error
-				toastr.error error.reason
-
-	'click .activate': ->
-		username = Session.get('showUserInfo')
-		user = Meteor.users.findOne { username: String(username) }
-		Meteor.call 'setUserActiveStatus', user?._id, true, (error, result) ->
-			if result
-				toastr.success t('User_has_been_activated')
-			if error
-				toastr.error error.reason
-
 	'load img': (e, template) ->
 		template.sendToBottomIfNecessary?()
 
@@ -527,6 +455,8 @@ Template.room.onCreated ->
 	this.selectedRange = []
 	this.selectablePointer = null
 
+	this.userDetail = new ReactiveVar FlowRouter.getParam('username')
+
 	this.resetSelection = (enabled) =>
 		this.selectable.set(enabled)
 		$('.messages-box .message.selected').removeClass 'selected'
@@ -561,8 +491,11 @@ Template.room.onCreated ->
 
 		return previewMessages
 
-	@autorun =>
-		@subscribe 'fullUserData', Session.get('showUserInfo'), 1
+	this.setUserDetail = (username) =>
+		this.userDetail.set username
+
+	this.clearUserDetail = =>
+		this.userDetail.set null
 
 	Meteor.call 'getRoomRoles', @data._id, (error, results) ->
 		if error

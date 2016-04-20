@@ -1,5 +1,5 @@
 Meteor.methods({
-	'livechat:setCustomField' (token, key, value) {
+	'livechat:setCustomField'(token, key, value) {
 		const customField = RocketChat.models.LivechatCustomField.findOneById(key);
 		if (customField) {
 			if (customField.scope === 'room') {

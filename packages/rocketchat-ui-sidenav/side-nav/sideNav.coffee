@@ -9,7 +9,7 @@ Template.sideNav.helpers
 		return RocketChat.settings.get 'Layout_Sidenav_Footer'
 
 	showStarredRooms: ->
-		favoritesEnabled = !RocketChat.settings.get 'Disable_Favorite_Rooms'
+		favoritesEnabled = RocketChat.settings.get 'Favorite_Rooms'
 		hasFavoriteRoomOpened = ChatSubscription.findOne({ f: true, open: true })
 
 		return true if favoritesEnabled and hasFavoriteRoomOpened

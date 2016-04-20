@@ -15,7 +15,7 @@ Package.onUse(function(api) {
 
 	api.addFiles([
 		'autolinker.coffee',
-		'lib/Autolinker.min.js',
+		'lib/Autolinker.min.js'
 	], ['client']);
 
 	api.addFiles('settings.coffee', ['server']);

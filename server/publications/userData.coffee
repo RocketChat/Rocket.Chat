@@ -14,8 +14,8 @@ Meteor.publish 'userData', ->
 			language: 1
 			settings: 1
 			defaultRoom: 1
-			'services.github.id': 1
-			'services.gitlab.id': 1
+			'services.github': 1
+			'services.gitlab': 1
 			requirePasswordChange: 1
 			requirePasswordChangeReason: 1
 			'services.password.bcrypt': 1

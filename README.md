@@ -103,12 +103,12 @@ Install Rocket.Chat on [Cloudron](https://cloudron.io) Smartserver:
 ## Heroku
 Host your own Rocket.Chat server for **FREE** with [One-Click Deploy](https://heroku.com/deploy)
 
-[![Deploy](https://www.herokucdn.com/deploy/button.png)](https://heroku.com/deploy?template=https://github.com/RocketChat/Rocket.Chat/tree/develop)
+[![Deploy](https://www.herokucdn.com/deploy/button.png)](https://heroku.com/deploy?template=https://github.com/RocketChat/Rocket.Chat/tree/master)
 
 ## Scalingo
 Deploy your own Rocket.Chat server instantly on [Scalingo](https://scalingo.com)
 
-[![Deploy on Scalingo](https://cdn.scalingo.com/deploy/button.svg)](https://my.scalingo.com/deploy?source=https://github.com/RocketChat/Rocket.Chat#develop)
+[![Deploy on Scalingo](https://cdn.scalingo.com/deploy/button.svg)](https://my.scalingo.com/deploy?source=https://github.com/RocketChat/Rocket.Chat#master)
 
 
 ## Sloppy.io
@@ -142,12 +142,18 @@ docker pull rocket.chat
 ## FreeBSD
 Run solid five-nines deployment on industry workhorse FreeBSD server:
 
-[![FreeBSD Daemon](https://raw.githubusercontent.com/Sing-Li/bbug/master/images/freebsd.png)](https://github.com/RocketChat/Rocket.Chat/wiki/FreeBSD)
+[![FreeBSD Daemon](https://raw.githubusercontent.com/Sing-Li/bbug/master/images/freebsd.png)](https://rocket.chat/docs/master/installing-and-updating/deployment-options/freebsd)
+
+## Windows Server
+
+Deploy on your own enterprise server, or with Microsoft Azur:
+
+[![Windows 2012 or 2016 Server](https://github.com/Sing-Li/bbug/blob/master/images/windows.png)](https://rocket.chat/docs/master/installing-and-updating/deployment-options/freebsd)
 
 ## Ansible
 Automated production-grade deployment in minutes, for RHEL / CentOS 7 or Ubuntu 14.04 LTS / 15.04:
 
-[![Ansible deployment](https://raw.githubusercontent.com/Sing-Li/bbug/master/images/ansible.png)](https://github.com/RocketChat/Rocket.Chat/wiki/Easy,-hands-off-deployment-with-Ansible)
+[![Ansible deployment](https://raw.githubusercontent.com/Sing-Li/bbug/master/images/ansible.png)](https://rocket.chat/docs/master/installing-and-updating/deployment-options/ansible)
 
 ## Raspberry Pi 2
 Run Rocket.Chat on this world famous $30 quad core server:
@@ -155,7 +161,7 @@ Run Rocket.Chat on this world famous $30 quad core server:
 [![Raspberry Pi 2](https://raw.githubusercontent.com/Sing-Li/bbug/master/images/pitiny.png)](https://github.com/RocketChat/Rocket.Chat.RaspberryPi)
 
 ## Ubuntu VPS
-Follow these [deployment instructions](https://github.com/RocketChat/Rocket.Chat/wiki/Deploy-Rocket.Chat-without-docker)
+Follow these [deployment instructions](https://rocket.chat/docs/master/installing-and-updating/deployment-options/ubuntu)
 
 ## Ubuntu Software Center
 Easy one click install right from your Ubuntu Desktop (coming soon)
@@ -353,6 +359,7 @@ Thanks to
 [Bradley Hilton](https://github.com/Graywolf336),
 [Diego Sampaio](https://github.com/sampaiodiego),
 [Gabriel Engel](https://github.com/engelgabriel),
+[George Secrieru](https://github.com/gmsecrieru),
 [Marcelo Schmidt](https://github.com/marceloschmidt),
 [Rafael Caferati](https://github.com/rcaferati),
 [Rodrigo Nascimento](https://github.com/rodrigok),

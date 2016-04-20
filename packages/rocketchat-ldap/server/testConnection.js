@@ -19,7 +19,7 @@ Meteor.methods({
 		try {
 			ldap = new LDAP();
 			ldap.connectSync();
-		} catch(error) {
+		} catch (error) {
 			console.log(error);
 			throw new Meteor.Error(error.message);
 		}
@@ -27,7 +27,7 @@ Meteor.methods({
 		try {
 			ldap.bindIfNecessary();
 			ldap.disconnect();
-		} catch(error) {
+		} catch (error) {
 			throw new Meteor.Error(error.name || error.message);
 		}
 

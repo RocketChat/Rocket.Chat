@@ -12,13 +12,10 @@ Template.pinnedMessages.onCreated ->
 	@hasMore = new ReactiveVar true
 	@limit = new ReactiveVar 50
 	@autorun =>
-		sub = @subscribe 'pinnedMessages', @data.rid, @limit.get()
-		if sub.ready()
-			if PinnedMessage.find({ rid: @data.rid }).count() < @limit.get()
+		data = Template.currentData()
+		@subscribe 'pinnedMessages', data.rid, @limit.get(), =>
+			if PinnedMessage.find({ rid: data.rid }).count() < @limit.get()
 				@hasMore.set false
-
-	@autorun =>
-		@subscribe 'pinnedMessages', Template.currentData().rid
 
 Template.pinnedMessages.events
 	'click .message-cog': (e) ->
@@ -35,6 +32,6 @@ Template.pinnedMessages.events
 		dropDown.show()
 
 	'scroll .content': _.throttle (e, instance) ->
-		if e.target.scrollTop >= e.target.scrollHeight - e.target.clientHeight
+		if e.target.scrollTop >= e.target.scrollHeight - e.target.clientHeight && instance.hasMore.get()
 			instance.limit.set(instance.limit.get() + 50)
 	, 200

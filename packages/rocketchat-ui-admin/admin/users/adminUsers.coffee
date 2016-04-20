@@ -11,8 +11,6 @@ Template.adminUsers.helpers
 		return RocketChat.TabBar.getTemplate()
 	flexData: ->
 		return RocketChat.TabBar.getData()
-	username: ->
-		return '@' + @username if @username?
 	emailAddress: ->
 		return _.map(@emails, (e) -> e.address).join(', ')
 
@@ -95,7 +93,6 @@ Template.adminUsers.events
 
 	'click .user-info': (e) ->
 		e.preventDefault()
-		Session.set 'showUserInfo', @_id
 		RocketChat.TabBar.setTemplate 'adminUserInfo'
 		RocketChat.TabBar.setData Meteor.users.findOne @_id
 		RocketChat.TabBar.openFlex()
