@@ -249,6 +249,7 @@
   "Desktop_Notification_Test" : "Desktop Notification Test",
   "Desktop_Notifications" : "Desktop Notifications",
   "Desktop_Notifications_Disabled" : "Desktop Notifications are Disabled. Change your browser preferences if you need Notifications enabled.",
+  "Desktop_Notifications_Duration" : "Notifications Duration",
   "Desktop_Notifications_Duration_Description" : "Seconds to display desktop notification. This may affect OS X Notification Center. Enter 0 to use default browser settings and not affect OS X Notification Center.",
   "Desktop_Notifications_Enabled" : "Desktop Notifications are Enabled",
   "Direct_message_someone" : "Direct message someone",
