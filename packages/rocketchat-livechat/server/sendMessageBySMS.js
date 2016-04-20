@@ -30,7 +30,7 @@ RocketChat.callbacks.add('afterSaveMessage', function(message, room) {
 		return message;
 	}
 
-	SMSService.send(visitor.profile.phones[0].number, message.msg);
+	SMSService.send(room.sms.from, visitor.profile.phones[0].number, message.msg);
 
 	return message;
 

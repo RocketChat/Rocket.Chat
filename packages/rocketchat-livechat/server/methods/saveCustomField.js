@@ -1,7 +1,7 @@
 /* eslint new-cap: [2, {"capIsNewExceptions": ["Match.ObjectIncluding", "Match.Optional"]}] */
 
 Meteor.methods({
-	'livechat:saveCustomField' (_id, customFieldData) {
+	'livechat:saveCustomField'(_id, customFieldData) {
 		if (!Meteor.userId() || !RocketChat.authz.hasPermission(Meteor.userId(), 'view-livechat-manager')) {
 			throw new Meteor.Error('not-authorized');
 		}

@@ -13,7 +13,7 @@ Template.messageBox.events({
 				var caretPos = input.prop('selectionStart');
 				var textAreaTxt = input.val();
 
-				input.val(textAreaTxt.substring(0, caretPos) + emojiValue + textAreaTxt.substring(caretPos) );
+				input.val(textAreaTxt.substring(0, caretPos) + emojiValue + textAreaTxt.substring(caretPos));
 
 				input.focus();
 
