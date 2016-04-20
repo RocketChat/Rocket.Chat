@@ -179,6 +179,7 @@
   "busy_male" : "occupato",
   "Busy_male" : "Occupato",
   "Cancel" : "Cancellare",
+  "Cancel_message_input" : "Cancellare",
   "Cannot_delete_a_protected_role" : "Non è possibile eliminare un ruolo protetta",
   "Cannot_delete_role_because_its_in_use" : "Impossibile eliminare il ruolo, perché è in uso",
   "Cannot_invite_users_to_direct_rooms" : "Non è possibile invitare gli utenti a dirigere camere",

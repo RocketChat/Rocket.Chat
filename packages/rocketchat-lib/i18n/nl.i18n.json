@@ -179,6 +179,7 @@
   "busy_male" : "bezet",
   "Busy_male" : "Bezet",
   "Cancel" : "Annuleren",
+  "Cancel_message_input" : "Annuleren",
   "Cannot_delete_a_protected_role" : "Kan een beschermde rol niet verwijderen",
   "Cannot_delete_role_because_its_in_use" : "Kan rol niet verwijderen omdat het in gebruik is",
   "Cannot_invite_users_to_direct_rooms" : "Kan niet-gebruikers aan direct kamers nodigen",

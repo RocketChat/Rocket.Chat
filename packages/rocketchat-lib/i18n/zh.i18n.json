@@ -179,6 +179,7 @@
   "busy_male" : "忙碌",
   "Busy_male" : "忙碌",
   "Cancel" : "取消",
+  "Cancel_message_input" : "取消",
   "Cannot_delete_a_protected_role" : "禁止删除受保护的角色",
   "Cannot_delete_role_because_its_in_use" : "禁止删除该角色，因为它正在使用中",
   "Cannot_invite_users_to_direct_rooms" : "不能邀请用户加入私聊房间",

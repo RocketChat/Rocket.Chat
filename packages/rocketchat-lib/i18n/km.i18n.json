@@ -179,6 +179,7 @@
   "busy_male" : "រវល់",
   "Busy_male" : "រវល់",
   "Cancel" : "បញ្ឈប់",
+  "Cancel_message_input" : "បញ្ឈប់",
   "Cannot_delete_a_protected_role" : "មិនអាចលុបតួនាទីការពារ",
   "Cannot_delete_role_because_its_in_use" : "មិនអាចលុបតួនាទីពីព្រោះវាជានៅក្នុងការប្រើប្រាស់",
   "Cannot_invite_users_to_direct_rooms" : "មិនអាចអញ្ជើញអ្នកប្រើប្រាស់ដើម្បីដឹកនាំបន្ទប់",

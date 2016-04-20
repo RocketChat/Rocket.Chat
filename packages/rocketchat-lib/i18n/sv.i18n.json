@@ -178,6 +178,7 @@
   "busy_male" : "upptagen",
   "Busy_male" : "Upptagen",
   "Cancel" : "Avbryt",
+  "Cancel_message_input" : "Avbryt",
   "Cannot_delete_a_protected_role" : "Det går inte att radera en skyddad roll",
   "Cannot_delete_role_because_its_in_use" : "Det går inte att radera rollen eftersom den används",
   "Cannot_invite_users_to_direct_rooms" : "Det går inte att bjuda in användare att styra rum",

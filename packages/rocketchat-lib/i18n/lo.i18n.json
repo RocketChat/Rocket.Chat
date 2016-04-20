@@ -179,6 +179,7 @@
   "busy_male" : "ຄາ​ວຽກ",
   "Busy_male" : "ຄາ​ວຽກ",
   "Cancel" : "ຍົກເລີກການ",
+  "Cancel_message_input" : "ຍົກເລີກການ",
   "Cannot_delete_a_protected_role" : "ບໍ່ສາມາດລຶບພາລະບົດບາດປ້ອງກັນ",
   "Cannot_delete_role_because_its_in_use" : "ບໍ່ສາມາດລຶບພາລະບົດບາດເນື່ອງຈາກວ່າມັນເປັນໃນການນໍາໃຊ້",
   "Cannot_invite_users_to_direct_rooms" : "ບໍ່ສາມາດເຊີນຜູ້ໃຊ້ຫ້ອງພັກ",
