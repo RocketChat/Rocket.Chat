@@ -87,7 +87,7 @@ Template.accountProfile.onCreated ->
 
 			if error
 				toastr.remove();
-				toastr.error error.reason
+				handleError(error)
 
 Template.accountProfile.onRendered ->
 	Tracker.afterFlush ->
