@@ -452,29 +452,33 @@
 	color: @status-away;
 }
 
-.visitor-navigation {
-	height: 130px;
-	overflow-y: auto;
-	border: 1px solid #E7E7E7;
-	border-radius: 4px;
-	padding: 4px;
-	margin-top: 4px;
-	margin-bottom: 20px;
+.visitor-navigation, .visitor-custom-fields {
+	padding: 0 20px;
 
-	ul {
-		li {
-			white-space: nowrap;
+	.visitor-scroll {
+		height: 130px;
+		overflow-y: auto;
+		border: 1px solid #E7E7E7;
+		border-radius: 4px;
+		padding: 4px;
+		margin-top: 4px;
+		margin-bottom: 20px;
 
-			a {
-				text-overflow: ellipsis;
-				display: block;
-				overflow: hidden;
+		ul {
+			li {
+				white-space: nowrap;
 
-				color: @secondary-font-color;
-				text-decoration: underline;
+				a {
+					text-overflow: ellipsis;
+					display: block;
+					overflow: hidden;
 
-				&:hover {
-					text-decoration: none;
+					color: @secondary-font-color;
+					text-decoration: underline;
+
+					&:hover {
+						text-decoration: none;
+					}
 				}
 			}
 		}
