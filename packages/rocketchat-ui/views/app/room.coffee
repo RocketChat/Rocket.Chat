@@ -105,65 +105,11 @@ Template.room.helpers
 		else
 			return 'offline'
 
-	isChannel: ->
-		roomData = Session.get('roomData' + this._id)
-		return '' unless roomData
-		return roomData.t is 'c'
-
-	canDirectMessage: ->
-		return Meteor.user()?.username isnt this.username
-
 	flexOpened: ->
 		return 'opened' if RocketChat.TabBar.isFlexOpen()
 
-	arrowPosition: ->
-		return 'left' unless RocketChat.TabBar.isFlexOpen()
-
-	phoneNumber: ->
-		return '' unless this.phoneNumber
-		if this.phoneNumber.length > 10
-			return "(#{this.phoneNumber.substr(0,2)}) #{this.phoneNumber.substr(2,5)}-#{this.phoneNumber.substr(7)}"
-		else
-			return "(#{this.phoneNumber.substr(0,2)}) #{this.phoneNumber.substr(2,4)}-#{this.phoneNumber.substr(6)}"
-
-	userActiveByUsername: (username) ->
-		status = Session.get 'user_' + username + '_status'
-		if status in ['online', 'away', 'busy']
-			return {username: username, status: status}
-		return
-
-	getPopupConfig: ->
-		template = Template.instance()
-		return {
-			getInput: ->
-				return template.find('.input-message')
-		}
-
 	maxMessageLength: ->
 		return RocketChat.settings.get('Message_MaxAllowedSize')
-
-	utc: ->
-		if @utcOffset?
-			return "UTC #{@utcOffset}"
-
-	phoneNumber: ->
-		return '' unless @phoneNumber
-		if @phoneNumber.length > 10
-			return "(#{@phoneNumber.substr(0,2)}) #{@phoneNumber.substr(2,5)}-#{@phoneNumber.substr(7)}"
-		else
-			return "(#{@phoneNumber.substr(0,2)}) #{@phoneNumber.substr(2,4)}-#{@phoneNumber.substr(6)}"
-
-	lastLogin: ->
-		if @lastLogin
-			return moment(@lastLogin).format('LLL')
-
-	canJoin: ->
-		return !! ChatRoom.findOne { _id: @_id, t: 'c' }
-
-	canRecordAudio: ->
-		wavRegex = /audio\/wav|audio\/\*/i
-		wavEnabled = !RocketChat.settings.get("FileUpload_MediaTypeWhiteList") || RocketChat.settings.get("FileUpload_MediaTypeWhiteList").match(wavRegex)
-		return RocketChat.settings.get('Message_AudioRecorderEnabled') and (navigator.getUserMedia? or navigator.webkitGetUserMedia?) and wavEnabled and RocketChat.settings.get('FileUpload_Enabled')
 
 	unreadData: ->
 		data =

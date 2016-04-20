@@ -18,4 +18,5 @@ packages/rocketchat-ui/lib/customEventPolyfill.js
 packages/rocketchat-ui/lib/constallation.js
 packages/rocketchat-livechat/client/lib/ua-parser.js
 packages/rocketchat-livechat/public/livechat.js
+packages/rocketchat-livechat/public/external.js
 packages/rocketchat-autolinker/lib/Autolinker.min.js
