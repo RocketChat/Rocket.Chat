@@ -1,20 +1,20 @@
 Meteor.methods
 	createDirectMessage: (username) ->
 		if not Meteor.userId()
-			throw new Meteor.Error 'invalid-user', "[methods] createDirectMessage -> Invalid user"
+			throw new Meteor.Error 'error-invalid-user', "Invalid user", { method: 'createDirectMessage' }
 
 		me = Meteor.user()
 
 		unless me.username
-			throw new Meteor.Error('invalid-user', '[methods] createDirectMessage -> Invalid user')
+			throw new Meteor.Error 'error-invalid-user', "Invalid user", { method: 'createDirectMessage' }
 
 		if me.username is username
-			throw new Meteor.Error('invalid-user', "[methods] createDirectMessage -> Invalid target user")
+			throw new Meteor.Error 'error-invalid-user', "Invalid user", { method: 'createDirectMessage' }
 
 		to = RocketChat.models.Users.findOneByUsername username
 
 		if not to
-			throw new Meteor.Error('invalid-user', "[methods] createDirectMessage -> Invalid target user")
+			throw new Meteor.Error 'error-invalid-user', "Invalid user", { method: 'createDirectMessage' }
 
 		rid = [me._id, to._id].sort().join('')
 
