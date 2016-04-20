@@ -63,7 +63,7 @@ Template.permissionsRole.events
 		, =>
 			Meteor.call 'authorization:removeUserFromRole', FlowRouter.getParam('name'), @username, instance.searchRoom.get(), (error, result) ->
 				if error
-					return toastr.error t(error.reason or error.error)
+					return handleError(error)
 
 				swal
 					title: t('Removed')
@@ -92,7 +92,7 @@ Template.permissionsRole.events
 		Meteor.call 'authorization:saveRole', roleData, (error, result) =>
 			e.currentTarget.elements['save'].value = oldBtnValue
 			if error
-				return toastr.error t(error.reason || error.error)
+				return handleError(error)
 
 			toastr.success t('Saved')
 
@@ -113,7 +113,7 @@ Template.permissionsRole.events
 		Meteor.call 'authorization:addUserToRole', FlowRouter.getParam('name'), e.currentTarget.elements['username'].value, instance.searchRoom.get(), (error, result) =>
 			e.currentTarget.elements['add'].value = oldBtnValue
 			if error
-				return toastr.error t(error.reason || error.error)
+				return handleError(error)
 
 			instance.subscribe 'usersInRole', FlowRouter.getParam('name'), instance.searchRoom.get()
 			toastr.success t('User_added')
@@ -126,11 +126,11 @@ Template.permissionsRole.events
 		e.preventDefault()
 
 		if @protected
-			return toastr.error t('Cannot_delete_a_protected_role')
+			return toastr.error t('error-delete-protected-role')
 
 		Meteor.call 'authorization:deleteRole', @_id, (error, result) ->
 			if error
-				return toastr.error t(error.reason || error.error)
+				return handleError(error)
 
 			toastr.success t('Role_removed')
 

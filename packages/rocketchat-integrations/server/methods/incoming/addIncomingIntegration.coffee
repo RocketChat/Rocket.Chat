@@ -1,22 +1,22 @@
 Meteor.methods
 	addIncomingIntegration: (integration) ->
 		if not RocketChat.authz.hasPermission @userId, 'manage-integrations'
-			throw new Meteor.Error 'not_authorized'
+			throw new Meteor.Error 'error-action-not-allowed', 'Managing integrations is not allowed', { method: 'addIncomingIntegration', action: 'Managing_integrations' }
 
 		if not _.isString(integration.channel)
-			throw new Meteor.Error 'invalid_channel', '[methods] addIncomingIntegration -> channel must be string'
+			throw new Meteor.Error 'error-invalid-channel', 'Invalid channel', { method: 'addIncomingIntegration' }
 
 		if integration.channel.trim() is ''
-			throw new Meteor.Error 'invalid_channel', '[methods] addIncomingIntegration -> channel can\'t be empty'
+			throw new Meteor.Error 'error-invalid-channel', 'Invalid channel', { method: 'addIncomingIntegration' }
 
 		if integration.channel[0] not in ['@', '#']
-			throw new Meteor.Error 'invalid_channel', '[methods] addIncomingIntegration -> channel should start with # or @'
+			throw new Meteor.Error 'error-invalid-channel-start-with-chars', 'Invalid channel. Start with @ or #', { method: 'addIncomingIntegration' }
 
 		if not _.isString(integration.username)
-			throw new Meteor.Error 'invalid_username', '[methods] addIncomingIntegration -> username must be string'
+			throw new Meteor.Error 'error-invalid-username', 'Invalid username', { method: 'addIncomingIntegration' }
 
 		if integration.username.trim() is ''
-			throw new Meteor.Error 'invalid_username', '[methods] addIncomingIntegration -> username can\'t be empty'
+			throw new Meteor.Error 'error-invalid-username', 'Invalid username', { method: 'addIncomingIntegration' }
 
 		if integration.scriptEnabled is true and integration.script? and integration.script.trim() isnt ''
 			try
@@ -48,12 +48,12 @@ Meteor.methods
 					]
 
 		if record is undefined
-			throw new Meteor.Error 'channel_does_not_exists', "[methods] addIncomingIntegration -> The channel does not exists"
+			throw new Meteor.Error 'error-invalid-room', 'Invalid room', { method: 'addIncomingIntegration' }
 
 		user = RocketChat.models.Users.findOne({username: integration.username})
 
 		if not user?
-			throw new Meteor.Error 'user_does_not_exists', "[methods] addIncomingIntegration -> The username does not exists"
+			throw new Meteor.Error 'error-invalid-user', 'Invalid user', { method: 'addIncomingIntegration' }
 
 		token = Random.id(48)
 

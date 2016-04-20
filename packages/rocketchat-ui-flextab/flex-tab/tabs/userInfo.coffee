@@ -112,7 +112,7 @@ Template.userInfo.events
 	'click .pvt-msg': (e) ->
 		Meteor.call 'createDirectMessage', @username, (error, result) =>
 			if error
-				return toastr.error error.reason
+				return handleError(error)
 
 			if result?.rid?
 				FlowRouter.go('direct', { username: @username })

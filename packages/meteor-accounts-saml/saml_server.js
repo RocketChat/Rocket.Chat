@@ -19,7 +19,7 @@ Meteor.methods({
 	samlLogout: function(provider) {
 		// Make sure the user is logged in before initiate SAML SLO
 		if (!Meteor.userId()) {
-			throw new Meteor.Error('not-authorized');
+			throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'samlLogout' });
 		}
 		var samlProvider = function(element) {
 			return (element.provider === provider);

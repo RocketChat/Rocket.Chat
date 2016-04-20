@@ -113,7 +113,7 @@ class @ChatMessages
 	deleteMsg: (message) ->
 		Meteor.call 'deleteMessage', message, (error, result) ->
 			if error
-				return toastr.error error.reason
+				return handleError(error)
 
 	update: (id, rid, input) ->
 		if s.trim(input.value) isnt ''

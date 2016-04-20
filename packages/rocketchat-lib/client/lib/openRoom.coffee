@@ -67,7 +67,9 @@ currentTracker = undefined
 			# update user's room subscription
 			sub = ChatSubscription.findOne({rid: room._id})
 			if sub?.open is false
-				Meteor.call 'openRoom', room._id
+				Meteor.call 'openRoom', room._id, (err) ->
+					if err
+						return handleError(err)
 
 			if FlowRouter.getQueryParam('j')
 				msg = { _id: FlowRouter.getQueryParam('j'), rid: room._id }

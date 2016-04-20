@@ -95,7 +95,7 @@ Template.pushNotificationsFlexTab.onCreated(function() {
 		if (this.validateSetting(field)) {
 			Meteor.call('saveNotificationSettings', Session.get('openedRoom'), field, value, (err/*, result*/) => {
 				if (err) {
-					return toastr.error(t(err.reason || err.message));
+					return handleError(err);
 				}
 				this.editing.set();
 			});

@@ -13,7 +13,7 @@ Meteor.startup ->
 			message.starred = Meteor.userId()
 			Meteor.call 'starMessage', message, (error, result) ->
 				if error
-					return toastr.error error.reason
+					return handleError(error)
 		validation: (message) ->
 			return RocketChat.settings.get('Message_AllowStarring') and not message.starred
 		order: 10
@@ -32,7 +32,7 @@ Meteor.startup ->
 			message.starred = false
 			Meteor.call 'starMessage', message, (error, result) ->
 				if error
-					return toastr.error error.reason
+					return handleError(error)
 		validation: (message) ->
 			return RocketChat.settings.get('Message_AllowStarring') and message.starred
 		order: 10

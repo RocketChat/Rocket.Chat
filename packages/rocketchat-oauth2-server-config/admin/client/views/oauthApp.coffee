@@ -67,13 +67,13 @@ Template.oauthApp.events
 		if params?.id?
 			Meteor.call "updateOAuthApp", params.id, app, (err, data) ->
 				if err?
-					return toastr.error TAPi18n.__(err.error)
+					return handleError(err)
 
 				toastr.success TAPi18n.__("Application_updated")
 		else
 			Meteor.call "addOAuthApp", app, (err, data) ->
 				if err?
-					return toastr.error TAPi18n.__(err.error)
+					return handleError(err)
 
 				toastr.success TAPi18n.__("Application_added")
 				FlowRouter.go "admin-oauth-app", {id: data._id}

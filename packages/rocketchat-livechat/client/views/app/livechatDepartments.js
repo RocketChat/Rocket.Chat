@@ -21,7 +21,7 @@ Template.livechatDepartments.events({
 		}, () => {
 			Meteor.call('livechat:removeDepartment', this._id, function(error/*, result*/) {
 				if (error) {
-					return toastr.error(t(error.reason || error.error));
+					return handleError(error);
 				}
 				swal({
 					title: t('Removed'),

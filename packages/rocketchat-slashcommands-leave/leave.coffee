@@ -22,7 +22,7 @@ else
 						_id: Random.id()
 						rid: item.rid
 						ts: new Date
-						msg: TAPi18n.__(err.reason, null, Meteor.user().language)
+						msg: TAPi18n.__(err.error, null, Meteor.user().language)
 					}
 
 	RocketChat.slashCommands.add 'leave', Leave

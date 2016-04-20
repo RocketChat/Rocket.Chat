@@ -84,7 +84,7 @@ Template.accountPreferences.onCreated ->
 					, 1000
 
 			if error
-				toastr.error error.reason
+				handleError(error)
 
 Template.accountPreferences.onRendered ->
 	Tracker.afterFlush ->

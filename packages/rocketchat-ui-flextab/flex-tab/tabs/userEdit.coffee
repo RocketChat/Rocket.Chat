@@ -65,4 +65,4 @@ Template.userEdit.onCreated ->
 					@cancel(form, userData.username)
 
 				if error
-					toastr.error error.reason
+					handleError(error);
