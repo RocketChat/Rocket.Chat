@@ -135,13 +135,13 @@ class @ChatMessages
 		message.pinned = true
 		Meteor.call 'pinMessage', message, (error, result) ->
 			if error
-				return toastr.error error.reason
+				return handleError(error)
 
 	unpinMsg: (message) ->
 		message.pinned = false
 		Meteor.call 'unpinMessage', message, (error, result) ->
 			if error
-				return toastr.error error.reason
+				return handleError(error)
 
 	update: (id, rid, msg) ->
 		if _.trim(msg) isnt ''
