@@ -133,7 +133,7 @@
   "API_Embed" : "Вставить",
   "API_EmbedDisabledFor" : "Запретить доступ для пользователей",
   "API_EmbedDisabledFor_Description" : "Разделенный запятыми список имен пользователей",
-  "API_EmbedIgnoredHostnames_Description" : "Разделенных запятыми список хостов или CIDR адресов, например. локальный, 127.0.0.1, 10.0.0.0/8, 172.16.0.0/12, 192.168.0.0/16",
+  "API_EmbedIgnoredHosts_Description" : "Разделенных запятыми список хостов или CIDR адресов, например. локальный, 127.0.0.1, 10.0.0.0/8, 172.16.0.0/12, 192.168.0.0/16",
   "API_EmbedIgnoredHosts" : "Код для вставки Проигнорированные хосты",
   "API_GitHub_Enterprise_URL" : "URL-адрес сервера",
   "API_GitHub_Enterprise_URL_Description" : "Пример: http://domain.com (без завершающего слеша)",

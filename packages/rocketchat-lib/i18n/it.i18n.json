@@ -133,7 +133,7 @@
   "API_Embed" : "Incorporare",
   "API_EmbedDisabledFor" : "Incorpora Disabilita per gli utenti",
   "API_EmbedDisabledFor_Description" : "elenco separato da virgole di nomi utente",
-  "API_EmbedIgnoredHostnames_Description" : "elenco di host o indirizzi CIDR, ad esempio, separato da virgole. localhost, 127.0.0.1, 10.0.0.0/8, 172.16.0.0/12, 192.168.0.0/16",
+  "API_EmbedIgnoredHosts_Description" : "elenco di host o indirizzi CIDR, ad esempio, separato da virgole. localhost, 127.0.0.1, 10.0.0.0/8, 172.16.0.0/12, 192.168.0.0/16",
   "API_EmbedIgnoredHosts" : "Host ignorati Incorpora",
   "API_GitHub_Enterprise_URL" : "URL del server",
   "API_GitHub_Enterprise_URL_Description" : "Esempio: http://domain.com (escluso slash)",

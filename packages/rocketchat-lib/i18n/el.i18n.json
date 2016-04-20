@@ -133,7 +133,7 @@
   "API_Embed" : "Embed",
   "API_EmbedDisabledFor" : "Απενεργοποίηση Ενσωματώστε για τους χρήστες",
   "API_EmbedDisabledFor_Description" : "Διαχωρισμένες με κόμμα λίστα ονομάτων χρήστη",
-  "API_EmbedIgnoredHostnames_Description" : "Διαχωρισμένες με κόμμα λίστα των hosts ή διευθύνσεις CIDR, π.χ.. localhost, 127.0.0.1, 10.0.0.0/8, 172.16.0.0/12, 192.168.0.0/16",
+  "API_EmbedIgnoredHosts_Description" : "Διαχωρισμένες με κόμμα λίστα των hosts ή διευθύνσεις CIDR, π.χ.. localhost, 127.0.0.1, 10.0.0.0/8, 172.16.0.0/12, 192.168.0.0/16",
   "API_EmbedIgnoredHosts" : "Ενσωμάτωση αγνοηθεί οικοδεσπότες",
   "API_GitHub_Enterprise_URL" : "URL διακομιστή",
   "API_GitHub_Enterprise_URL_Description" : "Παράδειγμα: http://domain.com (εξαιρουμένων κάθετος)",

@@ -133,7 +133,7 @@
   "API_Embed" : "Upota",
   "API_EmbedDisabledFor" : "Poista upotustoiminto käyttäjiltä",
   "API_EmbedDisabledFor_Description" : "Pilkkueroteltu lista käyttäjätunnuksista",
-  "API_EmbedIgnoredHostnames_Description" : "Pilkuilla erotettu luettelo isäntien tai CIDR osoitteita, esim. localhost, 127.0.0.1, 10.0.0.0/8, 172.16.0.0/12, 192.168.0.0/16",
+  "API_EmbedIgnoredHosts_Description" : "Pilkuilla erotettu luettelo isäntien tai CIDR osoitteita, esim. localhost, 127.0.0.1, 10.0.0.0/8, 172.16.0.0/12, 192.168.0.0/16",
   "API_EmbedIgnoredHosts" : "Upota Ohitetut palvelimet",
   "API_GitHub_Enterprise_URL" : "Server URL",
   "API_GitHub_Enterprise_URL_Description" : "Esim: http://example.com (ei kauttaviivaa loppuun)",

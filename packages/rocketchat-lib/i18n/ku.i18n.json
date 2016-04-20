@@ -133,7 +133,7 @@
   "API_Embed" : "Embed",
   "API_EmbedDisabledFor" : "Embed Disable bo Users",
   "API_EmbedDisabledFor_Description" : "lîsteya-bêhnok ji hev cuda yên bikarhêneran",
-  "API_EmbedIgnoredHostnames_Description" : "De bêhnok-cuda lîsteya ordiyan an navnîşanên CIDR, wek nimûne. localhost, 127.0.0.1, 10.0.0.0/8, 172.16.0.0/12, 192.168.0.0/16",
+  "API_EmbedIgnoredHosts_Description" : "De bêhnok-cuda lîsteya ordiyan an navnîşanên CIDR, wek nimûne. localhost, 127.0.0.1, 10.0.0.0/8, 172.16.0.0/12, 192.168.0.0/16",
   "API_EmbedIgnoredHosts" : "Hosts Ignored Torên",
   "API_GitHub_Enterprise_URL" : "URL Server",
   "API_GitHub_Enterprise_URL_Description" : "Mînak: http://domain.com (ji bîlî slash qaşo)",

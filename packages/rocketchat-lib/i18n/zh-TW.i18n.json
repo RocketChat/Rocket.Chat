@@ -133,7 +133,7 @@
   "API_Embed" : "嵌入",
   "API_EmbedDisabledFor" : "禁用對嵌入用戶",
   "API_EmbedDisabledFor_Description" : "用戶名的逗號分隔列表",
-  "API_EmbedIgnoredHostnames_Description" : "以逗號分隔的主機或CIDR地址，例如列表。本地主機，127.0.0.1，10.0.0.0/8，172.16.0.0/12，192.168.0.0/16",
+  "API_EmbedIgnoredHosts_Description" : "以逗號分隔的主機或CIDR地址，例如列表。本地主機，127.0.0.1，10.0.0.0/8，172.16.0.0/12，192.168.0.0/16",
   "API_EmbedIgnoredHosts" : "嵌入忽略的主機",
   "API_GitHub_Enterprise_URL" : "伺服器網址",
   "API_GitHub_Enterprise_URL_Description" : "例如：http://domain.com（不包括最後的斜線）",

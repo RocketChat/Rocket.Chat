@@ -133,7 +133,7 @@
   "API_Embed" : "قراردادن",
   "API_EmbedDisabledFor" : "قراردادن غیر فعال کردن برای کاربران",
   "API_EmbedDisabledFor_Description" : "فهرست کاما جدا از نام های کاربری",
-  "API_EmbedIgnoredHostnames_Description" : "کاما از هم جدا لیستی از میزبان و یا آدرس CIDR، به عنوان مثال. localhost را، 127.0.0.1، 10.0.0.0/8، 172.16.0.0/12، 192.168.0.0/16",
+  "API_EmbedIgnoredHosts_Description" : "کاما از هم جدا لیستی از میزبان و یا آدرس CIDR، به عنوان مثال. localhost را، 127.0.0.1، 10.0.0.0/8، 172.16.0.0/12، 192.168.0.0/16",
   "API_EmbedIgnoredHosts" : "میزبان نادیده جاسازی",
   "API_GitHub_Enterprise_URL" : "URL سرور",
   "API_GitHub_Enterprise_URL_Description" : "به عنوان مثال: http://domain.com (به جز علامت)",

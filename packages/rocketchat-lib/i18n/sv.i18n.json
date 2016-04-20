@@ -133,7 +133,7 @@
   "API_Embed" : "Inbäddad",
   "API_EmbedDisabledFor" : "Inaktivera Bädda för användare",
   "API_EmbedDisabledFor_Description" : "Kommaseparerad lista över användarnamn",
-  "API_EmbedIgnoredHostnames_Description" : "Kommaseparerad lista av värdar eller CIDR-adresser, t.ex.. localhost, 127.0.0.1, 10.0.0.0/8, 172.16.0.0/12, 192.168.0.0/16",
+  "API_EmbedIgnoredHosts_Description" : "Kommaseparerad lista av värdar eller CIDR-adresser, t.ex.. localhost, 127.0.0.1, 10.0.0.0/8, 172.16.0.0/12, 192.168.0.0/16",
   "API_EmbedIgnoredHosts" : "Bädda Ignorerade Värdar",
   "API_GitHub_Enterprise_URL" : "serveradress",
   "API_GitHub_Enterprise_URL_Description" : "Exempel: http://domain.com (exklusive snedstreck)",

@@ -133,7 +133,7 @@
   "API_Embed" : "ембед",
   "API_EmbedDisabledFor" : "Онемогући Додајте за кориснике",
   "API_EmbedDisabledFor_Description" : "Зарезом одвојена листа корисничких имена",
-  "API_EmbedIgnoredHostnames_Description" : "Зарезом одвојена листа хостова или цидр адресе, нпр. лоцалхост 127.0.0.1, 10.0.0.0/8, 172.16.0.0/12, 192.168.0.0/16",
+  "API_EmbedIgnoredHosts_Description" : "Зарезом одвојена листа хостова или цидр адресе, нпр. лоцалхост 127.0.0.1, 10.0.0.0/8, 172.16.0.0/12, 192.168.0.0/16",
   "API_EmbedIgnoredHosts" : "Ембед Занемарени Домаћини",
   "API_GitHub_Enterprise_URL" : "УРЛ сервер",
   "API_GitHub_Enterprise_URL_Description" : "Пример: хттп://домаин.цом (без косом цртом)",

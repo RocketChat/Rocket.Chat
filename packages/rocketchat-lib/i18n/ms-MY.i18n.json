@@ -133,7 +133,7 @@
   "API_Embed" : "Benam",
   "API_EmbedDisabledFor" : "Disable Benamkan untuk Pengguna",
   "API_EmbedDisabledFor_Description" : "senarai-dipisah-koma nama pengguna",
-  "API_EmbedIgnoredHostnames_Description" : "senarai tuan rumah atau alamat CIDR, contohnya dipisahkan koma. localhost, 127.0.0.1, 10.0.0.0/8, 172.16.0.0/12, 192.168.0.0/16",
+  "API_EmbedIgnoredHosts_Description" : "senarai tuan rumah atau alamat CIDR, contohnya dipisahkan koma. localhost, 127.0.0.1, 10.0.0.0/8, 172.16.0.0/12, 192.168.0.0/16",
   "API_EmbedIgnoredHosts" : "Hos Diabaikan menanamkan",
   "API_GitHub_Enterprise_URL" : "URL Server",
   "API_GitHub_Enterprise_URL_Description" : "Contoh: http://domain.com (tidak termasuk trailing slash)",

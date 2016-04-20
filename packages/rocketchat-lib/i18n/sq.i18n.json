@@ -133,7 +133,7 @@
   "API_Embed" : "Mbjell",
   "API_EmbedDisabledFor" : "Mbjell Disable për Përdoruesit",
   "API_EmbedDisabledFor_Description" : "Të ndara me presje lista e përdoruesve",
-  "API_EmbedIgnoredHostnames_Description" : "listën e ushtrive ose adresat CIDR, p.sh. ndara me presje. localhost, 127.0.0.1, 10.0.0.0/8, 172.16.0.0/12, 192.168.0.0/16",
+  "API_EmbedIgnoredHosts_Description" : "listën e ushtrive ose adresat CIDR, p.sh. ndara me presje. localhost, 127.0.0.1, 10.0.0.0/8, 172.16.0.0/12, 192.168.0.0/16",
   "API_EmbedIgnoredHosts" : "Mbjell pret shpërfillura",
   "API_GitHub_Enterprise_URL" : "server URL",
   "API_GitHub_Enterprise_URL_Description" : "Shembull: http://domain.com (përjashtuar zvarritës slash)",

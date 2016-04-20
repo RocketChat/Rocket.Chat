@@ -133,7 +133,7 @@
   "API_Embed" : "הטמעה",
   "API_EmbedDisabledFor" : "בטל הטמעה עבור משתמשים",
   "API_EmbedDisabledFor_Description" : "רשימת משתמשים מופרדים בפסיק",
-  "API_EmbedIgnoredHostnames_Description" : "רשימה מופרדת בפסיקים של מארחים או כתובות CIDR, למשל. localhost, 127.0.0.1, 10.0.0.0/8, 172.16.0.0/12, 192.168.0.0/16",
+  "API_EmbedIgnoredHosts_Description" : "רשימה מופרדת בפסיקים של מארחים או כתובות CIDR, למשל. localhost, 127.0.0.1, 10.0.0.0/8, 172.16.0.0/12, 192.168.0.0/16",
   "API_EmbedIgnoredHosts" : "מארחי שבץ שהתעלמו מהן",
   "API_GitHub_Enterprise_URL" : "כתובת שרת",
   "API_GitHub_Enterprise_URL_Description" : "דוגמה: http://domain.com (ללא \"/\" בסוף הכתובת)",
