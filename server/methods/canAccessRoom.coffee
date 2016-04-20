@@ -11,14 +11,9 @@ Meteor.methods
 		room = RocketChat.models.Rooms.findOneById rid, { fields: { usernames: 1, t: 1, name: 1, muted: 1, sms: 1, v: 1 } }
 
 		if room
-			if room.usernames.indexOf(user.username) isnt -1
-				canAccess = true
-			else if room.t is 'c'
-				canAccess = RocketChat.authz.hasPermission(userId, 'view-c-room')
-
-			if canAccess isnt true
-				return false
-			else
+			if RocketChat.authz.canAccessRoom.call(this, room, user)
 				return _.pick room, ['_id', 't', 'name', 'usernames', 'muted', 'sms', 'v']
+			else
+				return false
 		else
 			throw new Meteor.Error 'invalid-room', '[methods] canAccessRoom -> Room ID is invalid'
