@@ -207,7 +207,7 @@ Template.admin.events
 
 		if not _.isEmpty settings
 			RocketChat.settings.batchSet settings, (err, success) ->
-				return toastr.error TAPi18n.__ 'Error_updating_settings' if err
+				return handleError(err) if err
 				toastr.success TAPi18n.__ 'Settings_updated'
 
 	"click .submit .refresh-clients": (e, t) ->

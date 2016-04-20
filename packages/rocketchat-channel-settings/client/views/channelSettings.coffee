@@ -63,7 +63,7 @@ Template.channelSettings.onCreated ->
 		room = ChatRoom.findOne rid
 
 		if not RocketChat.authz.hasAllPermission('edit-room', @rid) or room.t not in ['c', 'p']
-			toastr.error t('Not_allowed')
+			toastr.error t('error-not-allowed')
 			return false
 
 		name = $('input[name=roomName]').val()
@@ -74,7 +74,7 @@ Template.channelSettings.onCreated ->
 			nameValidation = new RegExp '^[0-9a-zA-Z-_.]+$'
 
 		if not nameValidation.test name
-			toastr.error t('Invalid_room_name', name)
+			toastr.error t('error-invalid-room-name', { room_name: name: name })
 			return false
 
 		return true
@@ -110,11 +110,11 @@ Template.channelSettings.onCreated ->
 				if @$('input[name=archivationState]:checked').val() is 'true'
 					if ChatRoom.findOne(@data.rid)?.archived isnt true
 						Meteor.call 'archiveRoom', @data?.rid, (err, results) ->
-							return toastr.error TAPi18n.__ err.error if err
+							return handleError err if err
 							toastr.success TAPi18n.__ 'Room_archived'
 				else
 					if ChatRoom.findOne(@data.rid)?.archived is true
 						Meteor.call 'unarchiveRoom', @data?.rid, (err, results) ->
-							return toastr.error TAPi18n.__ err.error if err
+							return handleError err if err
 							toastr.success TAPi18n.__ 'Room_unarchived'
 		@editing.set()
