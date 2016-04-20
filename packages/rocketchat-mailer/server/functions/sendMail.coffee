@@ -4,10 +4,10 @@ Mailer.sendMail = (from, subject, body, dryrun, query) ->
 	# rfcMailPattern = /^[a-zA-Z0-9.!#$%&'*+\/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/
 
 	unless rfcMailPatternWithName.test from
-		throw new Meteor.Error 'invalid-from-address', TAPi18n.__('You_informed_an_invalid_FROM_address')
+		throw new Meteor.Error 'error-invalid-from-address', 'Invalid from address', { function: 'Mailer.sendMail' }
 
 	if body.indexOf('[unsubscribe]') is -1
-		throw new Meteor.Error 'missing-unsubscribe-link', TAPi18n.__('You_must_provide_the_unsubscribe_link')
+		throw new Meteor.Error 'error-missing-unsubscribe-link', 'You must provide the [unsubscribe] link.', { function: 'Mailer.sendMail' }
 
 	userQuery = { "mailer.unsubscribed": { $exists: 0 } }
 	if query
