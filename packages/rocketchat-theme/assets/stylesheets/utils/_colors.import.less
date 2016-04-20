@@ -617,18 +617,32 @@ a.github-fork {
 				color: @primary-font-color;
 			}
 		}
-		.room-info {
-			&:hover {
-				background-color: @secondary-background-color;
-			}
-		}
 		.status {
 			color: @secondary-font-color;
 		}
 		table {
 			tbody {
-				tr:nth-child(odd) {
-					background-color: @secondary-background-color;
+				tr {
+					&:nth-child(odd) {
+						background-color: @secondary-background-color;
+					}
+
+					&.row-link {
+						cursor: pointer;
+						&:hover {
+							background-color: darken(@secondary-background-color, 3%);
+						}
+					}
+				}
+
+				td {
+					a {
+						color: @link-font-color;
+						&:hover {
+							color: darken(@link-font-color, 10%);
+							background-color: transparent;
+						}
+					}
 				}
 			}
 		}

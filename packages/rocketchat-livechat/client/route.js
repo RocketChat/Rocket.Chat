@@ -12,6 +12,14 @@ AccountBox.addRoute({
 }, livechatManagerRoutes);
 
 AccountBox.addRoute({
+	name: 'livechat-current-chats',
+	path: '/current',
+	sideNav: 'livechatFlex',
+	i18nPageTitle: 'Current_Chats',
+	pageTemplate: 'livechatCurrentChats'
+}, livechatManagerRoutes);
+
+AccountBox.addRoute({
 	name: 'livechat-users',
 	path: '/users',
 	sideNav: 'livechatFlex',
