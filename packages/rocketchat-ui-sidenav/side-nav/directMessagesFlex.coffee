@@ -56,7 +56,7 @@ Template.directMessagesFlex.events
 
 			Meteor.call 'createDirectMessage', username, (err, result) ->
 				if err
-					return toastr.error err.reason
+					return handleError(err)
 				SideNav.closeFlex()
 				instance.clearForm()
 				FlowRouter.go 'direct', { username: username }

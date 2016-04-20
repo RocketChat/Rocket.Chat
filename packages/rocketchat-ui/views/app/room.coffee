@@ -292,7 +292,9 @@ Template.room.events
 	'click .toggle-favorite': (event) ->
 		event.stopPropagation()
 		event.preventDefault()
-		Meteor.call 'toggleFavorite', @_id, !$('i', event.currentTarget).hasClass('favorite-room')
+		Meteor.call 'toggleFavorite', @_id, !$('i', event.currentTarget).hasClass('favorite-room'), (err) ->
+			if err
+				return handleError(err)
 
 	'click .edit-room-title': (event) ->
 		event.preventDefault()
@@ -499,7 +501,7 @@ Template.room.onCreated ->
 
 	Meteor.call 'getRoomRoles', @data._id, (error, results) ->
 		if error
-			return toastr.error error.reason
+			return handleError(error)
 
 		for record in results
 			delete record._id

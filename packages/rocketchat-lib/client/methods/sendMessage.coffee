@@ -1,7 +1,7 @@
 Meteor.methods
 	sendMessage: (message) ->
 		if not Meteor.userId()
-			throw new Meteor.Error 203, t('User_logged_out')
+			return false
 
 		if _.trim(message.msg) isnt ''
 

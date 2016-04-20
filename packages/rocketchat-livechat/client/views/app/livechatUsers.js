@@ -34,7 +34,7 @@ Template.livechatUsers.events({
 		}, () => {
 			Meteor.call('livechat:removeManager', this.username, function(error/*, result*/) {
 				if (error) {
-					return toastr.error(t(error.reason || error.error));
+					return handleError(error);
 				}
 				swal({
 					title: t('Removed'),
@@ -61,7 +61,7 @@ Template.livechatUsers.events({
 		}, () => {
 			Meteor.call('livechat:removeAgent', this.username, function(error/*, result*/) {
 				if (error) {
-					return toastr.error(t(error.reason || error.error));
+					return handleError(error);
 				}
 				swal({
 					title: t('Removed'),
@@ -87,7 +87,7 @@ Template.livechatUsers.events({
 		Meteor.call('livechat:addManager', e.currentTarget.elements.username.value, function(error/*, result*/) {
 			e.currentTarget.elements.add.value = oldBtnValue;
 			if (error) {
-				return toastr.error(t(error.reason || error.error));
+				return handleError(error);
 			}
 
 			toastr.success(t('Manager_added'));
@@ -108,7 +108,7 @@ Template.livechatUsers.events({
 		Meteor.call('livechat:addAgent', e.currentTarget.elements.username.value, function(error/*, result*/) {
 			e.currentTarget.elements.add.value = oldBtnValue;
 			if (error) {
-				return toastr.error(t(error.reason || error.error));
+				return handleError(error);
 			}
 
 			toastr.success(t('Agent_added'));

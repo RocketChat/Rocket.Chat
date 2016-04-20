@@ -18,7 +18,7 @@ RocketChat.roomTypes = new class
 			identifier = Random.id()
 
 		if roomTypes[identifier]?
-			throw new Meteor.Error 'identifier-already-set', t('Room_type_identifier_already_set')
+			return false
 
 		if not order?
 			order = mainOrder + 10
@@ -42,7 +42,7 @@ RocketChat.roomTypes = new class
 	###
 	getRouteLink = (roomType, subData) ->
 		unless roomTypes[roomType]?
-			throw new Meteor.Error 'route-doesnt-exists', 'There is no route for the type: ' + roomType
+			return false
 
 		return FlowRouter.path roomTypes[roomType].route.name, roomTypes[roomType].route.link(subData)
 
