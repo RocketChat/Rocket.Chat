@@ -179,6 +179,7 @@
   "busy_male" : "beschäftigt",
   "Busy_male" : "Beschäftigt",
   "Cancel" : "Abbrechen",
+  "Cancel_message_input" : "Abbrechen",
   "Cannot_delete_a_protected_role" : "Eine geschützte Rolle kann nicht gelöscht werden.",
   "Cannot_delete_role_because_its_in_use" : "Die Rolle kann nicht gelöscht werden, da sie gerade verwendet wird.",
   "Cannot_invite_users_to_direct_rooms" : "Benutzer können nicht in private Nachrichtenräume eingeladen werden",

@@ -179,6 +179,7 @@
   "busy_male" : "取り込み中",
   "Busy_male" : "取り込み中",
   "Cancel" : "キャンセル",
+  "Cancel_message_input" : "キャンセル",
   "Cannot_delete_a_protected_role" : "保護されているロールは、削除できません",
   "Cannot_delete_role_because_its_in_use" : "ロールを使用中のため、削除できません",
   "Cannot_invite_users_to_direct_rooms" : "ダイレクトメッセージにユーザーを招待できません",

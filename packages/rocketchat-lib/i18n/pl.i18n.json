@@ -179,6 +179,7 @@
   "busy_male" : "zajęty",
   "Busy_male" : "Zajęty",
   "Cancel" : "Anuluj",
+  "Cancel_message_input" : "Anuluj",
   "Cannot_delete_a_protected_role" : "Nie można usunąć zabezpieczonego rolę",
   "Cannot_delete_role_because_its_in_use" : "Nie można usunąć rolę, ponieważ jest w użyciu",
   "Cannot_invite_users_to_direct_rooms" : "Nie można zaprosić użytkowników do kierujących pokoje",

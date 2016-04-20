@@ -179,6 +179,7 @@
   "busy_male" : "Заузет",
   "Busy_male" : "Заузет",
   "Cancel" : "Откажи",
+  "Cancel_message_input" : "Откажи",
   "Cannot_delete_a_protected_role" : "Не можете брисати заштићену улогу",
   "Cannot_delete_role_because_its_in_use" : "Не можете брисати улогу јер је у употреби",
   "Cannot_invite_users_to_direct_rooms" : "Не могу да позову друге кориснике да усмеравају собе",

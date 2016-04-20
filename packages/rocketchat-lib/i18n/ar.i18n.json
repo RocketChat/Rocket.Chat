@@ -178,6 +178,7 @@
   "busy_male" : "مشغول",
   "Busy_male" : "مشغول",
   "Cancel" : "إلغاء",
+  "Cancel_message_input" : "إلغاء",
   "Cannot_delete_a_protected_role" : "لا يمكنك حذف دور محمية",
   "Cannot_delete_role_because_its_in_use" : "لا يمكن حذف دور لأنه في استخدام",
   "Cannot_invite_users_to_direct_rooms" : "لا يمكن دعوة المستخدمين إلى غرف توجيه",
