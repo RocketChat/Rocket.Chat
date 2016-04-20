@@ -133,7 +133,7 @@
   "API_Embed" : "Einbetten",
   "API_EmbedDisabledFor" : "Einbettungen für Benutzer deaktivieren",
   "API_EmbedDisabledFor_Description" : "Durch Kommata getrennte Liste von Benutzernamen",
-  "API_EmbedIgnoredHostnames_Description" : "Kommagetrennte Liste von Hosts oder CIDR-Adressen, z. B. localhost, 127.0.0.1, 10.0.0.0/8, 172.16.0.0/12, 192.168.0.0/16",
+  "API_EmbedIgnoredHosts_Description" : "Kommagetrennte Liste von Hosts oder CIDR-Adressen, z. B. localhost, 127.0.0.1, 10.0.0.0/8, 172.16.0.0/12, 192.168.0.0/16",
   "API_EmbedIgnoredHosts" : "Embed Ignoriert Hosts",
   "API_GitHub_Enterprise_URL" : "Server-URL",
   "API_GitHub_Enterprise_URL_Description" : "Beispiel: http://domain.com (ohne Schrägstrich am Ende)",

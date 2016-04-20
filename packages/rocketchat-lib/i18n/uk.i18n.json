@@ -133,7 +133,7 @@
   "API_Embed" : "вбудовувати",
   "API_EmbedDisabledFor" : "Відключити Код для користувачів",
   "API_EmbedDisabledFor_Description" : "Розділених комами список імен користувачів",
-  "API_EmbedIgnoredHostnames_Description" : "Розділених комами список хостів або CIDR адрес, наприклад. локальний, 127.0.0.1, 10.0.0.0/8, 172.16.0.0/12, 192.168.0.0/16",
+  "API_EmbedIgnoredHosts_Description" : "Розділених комами список хостів або CIDR адрес, наприклад. локальний, 127.0.0.1, 10.0.0.0/8, 172.16.0.0/12, 192.168.0.0/16",
   "API_EmbedIgnoredHosts" : "Код для вставки Зігноровані хости",
   "API_GitHub_Enterprise_URL" : "URL-адресу сервера",
   "API_GitHub_Enterprise_URL_Description" : "Приклад: http://domain.com (за винятком косу риску)",

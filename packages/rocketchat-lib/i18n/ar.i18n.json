@@ -133,7 +133,7 @@
   "API_Embed" : "تضمين",
   "API_EmbedDisabledFor" : "تضمين تعطيل للمستخدمين",
   "API_EmbedDisabledFor_Description" : "قائمة مفصولة بفواصل من أسماء المستخدمين",
-  "API_EmbedIgnoredHostnames_Description" : "قائمة المضيفين أو عناوين CIDR، على سبيل المثال مفصولة بفواصل. المضيف المحلي، 127.0.0.1، 10.0.0.0/8، 172.16.0.0/12، 192.168.0.0/16",
+  "API_EmbedIgnoredHosts_Description" : "قائمة المضيفين أو عناوين CIDR، على سبيل المثال مفصولة بفواصل. المضيف المحلي، 127.0.0.1، 10.0.0.0/8، 172.16.0.0/12، 192.168.0.0/16",
   "API_EmbedIgnoredHosts" : "تضمين تستضيف تجاهل",
   "API_GitHub_Enterprise_URL" : "URL الخادم",
   "API_GitHub_Enterprise_URL_Description" : "مثال: http://domain.com (بدون الشرطة المائلة في الأخير)",

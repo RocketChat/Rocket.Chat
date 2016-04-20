@@ -133,7 +133,7 @@
   "API_Embed" : "பதித்துள்ளது",
   "API_EmbedDisabledFor" : "பயனர்கள் பதித்துள்ளது முடக்கு",
   "API_EmbedDisabledFor_Description" : "பயனர்பெயர்களுக்குப் கமாவால் பிரிக்கப்பட்ட பட்டியல்",
-  "API_EmbedIgnoredHostnames_Description" : "காற்புள்ளியால் பிரிக்கப்பட்ட சேனைகளின் அல்லது CIDR முகவரிகள், எ.கா. பட்டியலில். லோக்கல் ஹோஸ்ட், 127.0.0.1, 10.0.0.0/8, 172.16.0.0/12, 192.168.0.0/16",
+  "API_EmbedIgnoredHosts_Description" : "காற்புள்ளியால் பிரிக்கப்பட்ட சேனைகளின் அல்லது CIDR முகவரிகள், எ.கா. பட்டியலில். லோக்கல் ஹோஸ்ட், 127.0.0.1, 10.0.0.0/8, 172.16.0.0/12, 192.168.0.0/16",
   "API_EmbedIgnoredHosts" : "பதித்துள்ளது புறக்கணிக்கப்பட்ட சேனைகளின்",
   "API_GitHub_Enterprise_URL" : "சேவையக URL",
   "API_GitHub_Enterprise_URL_Description" : "உதாரணம்: http://domain.com (தவிர்த்து பின் சாய்வு)",

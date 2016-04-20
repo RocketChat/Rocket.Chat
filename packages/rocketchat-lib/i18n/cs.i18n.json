@@ -133,7 +133,7 @@
   "API_Embed" : "Vložit",
   "API_EmbedDisabledFor" : "Zakázat Vložit pro uživatele",
   "API_EmbedDisabledFor_Description" : "Čárkami oddělený seznam jmen uživatelů",
-  "API_EmbedIgnoredHostnames_Description" : "Čárkami oddělený seznam hostitelů nebo adres CIDR, např. localhost, 127.0.0.1, 10.0.0.0/8, 172.16.0.0/12, 192.168.0.0/16",
+  "API_EmbedIgnoredHosts_Description" : "Čárkami oddělený seznam hostitelů nebo adres CIDR, např. localhost, 127.0.0.1, 10.0.0.0/8, 172.16.0.0/12, 192.168.0.0/16",
   "API_EmbedIgnoredHosts" : "Vložit Ignorovaná Hostitelé",
   "API_GitHub_Enterprise_URL" : "Adresa URL serveru",
   "API_GitHub_Enterprise_URL_Description" : "Příklad: http://domain.com (bez lomítka)",

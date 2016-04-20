@@ -133,7 +133,7 @@
   "API_Embed" : "포함",
   "API_EmbedDisabledFor" : "사용자에대한 Embed 비활성화",
   "API_EmbedDisabledFor_Description" : "쉼표로 구분된 사용자 이름 목록",
-  "API_EmbedIgnoredHostnames_Description" : "예를 들어, 호스트 또는 CIDR 주소의 목록을 쉼표로 구분. 로컬 호스트, 127.0.0.1, 10.0.0.0/8, 172.16.0.0/12, 192.168.0.0/16",
+  "API_EmbedIgnoredHosts_Description" : "예를 들어, 호스트 또는 CIDR 주소의 목록을 쉼표로 구분. 로컬 호스트, 127.0.0.1, 10.0.0.0/8, 172.16.0.0/12, 192.168.0.0/16",
   "API_EmbedIgnoredHosts" : "포함 무시 호스트",
   "API_GitHub_Enterprise_URL" : "Server URL",
   "API_GitHub_Enterprise_URL_Description" : "예: http://domain.com (마지막 슬래시 제외)",

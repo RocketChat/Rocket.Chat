@@ -133,7 +133,7 @@
   "API_Embed" : "Embed",
   "API_EmbedDisabledFor" : "Désactiver l'intégration externe pour les utilisateurs",
   "API_EmbedDisabledFor_Description" : "Liste de noms d'utilisateurs séparés par des virgules",
-  "API_EmbedIgnoredHostnames_Description" : "liste des hôtes ou des adresses CIDR, par exemple séparés par des virgules. localhost, 127.0.0.1, 10.0.0.0/8, 172.16.0.0/12, 192.168.0.0/16",
+  "API_EmbedIgnoredHosts_Description" : "liste des hôtes ou des adresses CIDR, par exemple séparés par des virgules. localhost, 127.0.0.1, 10.0.0.0/8, 172.16.0.0/12, 192.168.0.0/16",
   "API_EmbedIgnoredHosts" : "Hôtes Ignoré Intégrer",
   "API_GitHub_Enterprise_URL" : "URL du serveur",
   "API_GitHub_Enterprise_URL_Description" : "Exemple: http://domain.com (sans slash final)",
