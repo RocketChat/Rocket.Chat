@@ -133,7 +133,7 @@
   "API_Embed" : "Embed",
   "API_EmbedDisabledFor" : "Kullanıcılar için devre dışı bırak Sitene",
   "API_EmbedDisabledFor_Description" : "adlarının virgülle ayrılmış listesi",
-  "API_EmbedIgnoredHostnames_Description" : "örneğin ana bilgisayarlar veya CIDR adreslerinin virgülle ayrılmış listesi. localhost, 127.0.0.1, 10.0.0.0/8, 172.16.0.0/12, 192.168.0.0/16",
+  "API_EmbedIgnoredHosts_Description" : "örneğin ana bilgisayarlar veya CIDR adreslerinin virgülle ayrılmış listesi. localhost, 127.0.0.1, 10.0.0.0/8, 172.16.0.0/12, 192.168.0.0/16",
   "API_EmbedIgnoredHosts" : "Göm Yok Sayılan Sunucular",
   "API_GitHub_Enterprise_URL" : "sunucu URL'si",
   "API_GitHub_Enterprise_URL_Description" : "Örnek: http://domain.com (hariç eğik çizgi)",

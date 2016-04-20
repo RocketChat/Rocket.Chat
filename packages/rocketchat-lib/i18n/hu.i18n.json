@@ -133,7 +133,7 @@
   "API_Embed" : "Beágyaz",
   "API_EmbedDisabledFor" : "Letiltása beágyazása felhasználóknak",
   "API_EmbedDisabledFor_Description" : "Vesszővel elválasztott listája felhasználónevek",
-  "API_EmbedIgnoredHostnames_Description" : "Vesszővel elválasztott listája hosts vagy CIDR címeket, pl. localhost, 127.0.0.1, 10.0.0.0/8, 172.16.0.0/12, 192.168.0.0/16",
+  "API_EmbedIgnoredHosts_Description" : "Vesszővel elválasztott listája hosts vagy CIDR címeket, pl. localhost, 127.0.0.1, 10.0.0.0/8, 172.16.0.0/12, 192.168.0.0/16",
   "API_EmbedIgnoredHosts" : "Beágyazás Figyelmen kívül hagyva Host",
   "API_GitHub_Enterprise_URL" : "szerver URL",
   "API_GitHub_Enterprise_URL_Description" : "Példa: http://domain.com (kivéve záró perjel)",

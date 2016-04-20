@@ -133,7 +133,7 @@
   "API_Embed" : "Embed",
   "API_EmbedDisabledFor" : "Embed voor gebruikers uitschakelen",
   "API_EmbedDisabledFor_Description" : "Komma's gescheiden lijst van gebruikersnamen",
-  "API_EmbedIgnoredHostnames_Description" : "Komma's gescheiden lijst met hosts of CIDR adressen, bijv. localhost, 127.0.0.1, 10.0.0.0/8, 172.16.0.0/12, 192.168.0.0/16",
+  "API_EmbedIgnoredHosts_Description" : "Komma's gescheiden lijst met hosts of CIDR adressen, bijv. localhost, 127.0.0.1, 10.0.0.0/8, 172.16.0.0/12, 192.168.0.0/16",
   "API_EmbedIgnoredHosts" : "Insluiten Genegeerd Hosts",
   "API_GitHub_Enterprise_URL" : "Server URL",
   "API_GitHub_Enterprise_URL_Description" : "Voorbeeld: http://domain.com (exclusief slash)",

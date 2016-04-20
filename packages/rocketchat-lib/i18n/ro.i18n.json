@@ -133,7 +133,7 @@
   "API_Embed" : "Embed",
   "API_EmbedDisabledFor" : "Dezactivați Embed pentru utilizatori",
   "API_EmbedDisabledFor_Description" : "Lista separată cu virgule a numelor de utilizator",
-  "API_EmbedIgnoredHostnames_Description" : "Lista de gazde sau adrese CIDR, de exemplu, separate prin virgulă. localhost, 127.0.0.1, 10.0.0.0/8, 172.16.0.0/12, 192.168.0.0/16",
+  "API_EmbedIgnoredHosts_Description" : "Lista de gazde sau adrese CIDR, de exemplu, separate prin virgulă. localhost, 127.0.0.1, 10.0.0.0/8, 172.16.0.0/12, 192.168.0.0/16",
   "API_EmbedIgnoredHosts" : "Încorporați Gazde ignorate",
   "API_GitHub_Enterprise_URL" : "URL-ul serverului",
   "API_GitHub_Enterprise_URL_Description" : "Exemplu: http://domain.com (fără '/' la final)",

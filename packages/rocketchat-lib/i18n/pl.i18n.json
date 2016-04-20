@@ -133,7 +133,7 @@
   "API_Embed" : "Osadź",
   "API_EmbedDisabledFor" : "Wyłącz osadzanie dla użytkowników",
   "API_EmbedDisabledFor_Description" : "Lista użytkowników oddzielonych przecinkami",
-  "API_EmbedIgnoredHostnames_Description" : "listę hostów lub adresów CIDR, np oddzielonych przecinkami. localhost, 127.0.0.1, 10.0.0.0/8, 172.16.0.0/12, 192.168.0.0/16",
+  "API_EmbedIgnoredHosts_Description" : "listę hostów lub adresów CIDR, np oddzielonych przecinkami. localhost, 127.0.0.1, 10.0.0.0/8, 172.16.0.0/12, 192.168.0.0/16",
   "API_EmbedIgnoredHosts" : "Osadzanie Ignorowani Gospodarze",
   "API_GitHub_Enterprise_URL" : "Adres serwera",
   "API_GitHub_Enterprise_URL_Description" : "Przykład: http://domain.com (bez końcowego ukośnika)",

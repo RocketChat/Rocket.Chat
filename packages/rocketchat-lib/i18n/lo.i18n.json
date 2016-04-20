@@ -133,7 +133,7 @@
   "API_Embed" : "Embed",
   "API_EmbedDisabledFor" : "Embed ປິດການໃຊ້ງານສໍາລັບຜູ້ໃຊ້",
   "API_EmbedDisabledFor_Description" : "ບັນຊີລາຍຊື່ຈຸດ, ແຍກຊື່ຜູ້ໃຊ້",
-  "API_EmbedIgnoredHostnames_Description" : "ບັນຊີລາຍຊື່ຂອງການເປັນເຈົ້າພາບສະຖານທີ່ຢູ່ CIDR ເຊັ່ນຈຸດ, ແຍກອອກ. localhost, 127001, 10.0.0.0/8, 172.16.0.0/12, 192.168.0.0/16",
+  "API_EmbedIgnoredHosts_Description" : "ບັນຊີລາຍຊື່ຂອງການເປັນເຈົ້າພາບສະຖານທີ່ຢູ່ CIDR ເຊັ່ນຈຸດ, ແຍກອອກ. localhost, 127001, 10.0.0.0/8, 172.16.0.0/12, 192.168.0.0/16",
   "API_EmbedIgnoredHosts" : "ຕິດ Hosts ເວັ້ນ",
   "API_GitHub_Enterprise_URL" : "URL Server",
   "API_GitHub_Enterprise_URL_Description" : "ຍົກຕົວຢ່າງ: http://domain.com (ບໍ່ລວມ trailing slash)",

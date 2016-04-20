@@ -133,7 +133,7 @@
   "API_Embed" : "Ugraditi",
   "API_EmbedDisabledFor" : "Onemogući Postavi za korisnike",
   "API_EmbedDisabledFor_Description" : "Odvojenih zarezom popis korisničkih imena",
-  "API_EmbedIgnoredHostnames_Description" : "Odvojenih zarezom popis domaćini ili CIDR adresa, npr. localhost, 127.0.0.1, 10.0.0.0/8, 172.16.0.0/12, 192.168.0.0/16",
+  "API_EmbedIgnoredHosts_Description" : "Odvojenih zarezom popis domaćini ili CIDR adresa, npr. localhost, 127.0.0.1, 10.0.0.0/8, 172.16.0.0/12, 192.168.0.0/16",
   "API_EmbedIgnoredHosts" : "Ugradili Zanemarene Domaćini",
   "API_GitHub_Enterprise_URL" : "GitHub Enterprise",
   "API_GitHub_Enterprise_URL_Description" : "Primjer: http://domain.com (isključujući kosu crticu na kraju)",

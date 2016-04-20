@@ -133,7 +133,7 @@
   "API_Embed" : "Incrustar",
   "API_EmbedDisabledFor" : "Deshabilitar el insertar vinculos para los Usuarios",
   "API_EmbedDisabledFor_Description" : "Lista separados por comas de nombres de usuarios ",
-  "API_EmbedIgnoredHostnames_Description" : "lista de equipos o direcciones CIDR, por ejemplo, separada por comas. localhost, 127.0.0.1, 10.0.0.0/8, 172.16.0.0/12, 192.168.0.0/16",
+  "API_EmbedIgnoredHosts_Description" : "lista de equipos o direcciones CIDR, por ejemplo, separada por comas. localhost, 127.0.0.1, 10.0.0.0/8, 172.16.0.0/12, 192.168.0.0/16",
   "API_EmbedIgnoredHosts" : "Los anfitriones ignorados incrustar",
   "API_GitHub_Enterprise_URL" : "URL del Servidor",
   "API_GitHub_Enterprise_URL_Description" : "Ejemplo: http://domain.com (sin incluir la diagonal final)",

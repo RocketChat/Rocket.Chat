@@ -133,7 +133,7 @@
   "API_Embed" : "埋め込み機能を有効にする",
   "API_EmbedDisabledFor" : "埋め込み機能を無効にするユーザー",
   "API_EmbedDisabledFor_Description" : "カンマ区切りのユーザー名一覧",
-  "API_EmbedIgnoredHostnames_Description" : "ホストまたはCIDRアドレスのカンマ区切りリスト、例えば。 localhostを、127.0.0.1、10.0.0.0/8、172.16.0.0/12、192.168.0.0/16",
+  "API_EmbedIgnoredHosts_Description" : "ホストまたはCIDRアドレスのカンマ区切りリスト、例えば。 localhostを、127.0.0.1、10.0.0.0/8、172.16.0.0/12、192.168.0.0/16",
   "API_EmbedIgnoredHosts" : "埋め込み無視されたホスト",
   "API_GitHub_Enterprise_URL" : "サーバー URL",
   "API_GitHub_Enterprise_URL_Description" : "例: http://domain.com (末尾のスラッシュを除く)",

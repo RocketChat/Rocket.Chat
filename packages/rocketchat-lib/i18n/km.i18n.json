@@ -133,7 +133,7 @@
   "API_Embed" : "បញ្ចូល",
   "API_EmbedDisabledFor" : "មិនអនុញ្ញាតិ Embed សម្រាប់អ្នកប្រើប្រាស់",
   "API_EmbedDisabledFor_Description" : "ប្រើសញ្ញា ក្បៀស(,) ដើម្បីបែងចែងអ្នកប្រើប្រាស់ក្នុងបញ្ជី",
-  "API_EmbedIgnoredHostnames_Description" : "បញ្ជីនៃម៉ាស៊ីនឬអាសយដ្ឋាន CIDR ឧបំបែកដោយសញ្ញាក្បៀស។ ម៉ាស៊ីនមូលដ្ឋាន, 127.0.0.1, 10.0.0.0/8, 172.16.0.0/12, 192.168.0.0/16",
+  "API_EmbedIgnoredHosts_Description" : "បញ្ជីនៃម៉ាស៊ីនឬអាសយដ្ឋាន CIDR ឧបំបែកដោយសញ្ញាក្បៀស។ ម៉ាស៊ីនមូលដ្ឋាន, 127.0.0.1, 10.0.0.0/8, 172.16.0.0/12, 192.168.0.0/16",
   "API_EmbedIgnoredHosts" : "បង្កប់ម៉ាស៊ីនមិនអើពើ",
   "API_GitHub_Enterprise_URL" : "GitHub Enterprise",
   "API_GitHub_Enterprise_URL_Description" : "ចំណាំ: សូមដកចេញនូវ trailing slash",
