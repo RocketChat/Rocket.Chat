@@ -246,7 +246,7 @@
   "Delete_Room_Warning" : "A exclusão de uma sala irá apagar todas as mensagens postadas na sala. Isso não pode ser desfeito.",
   "Delete_User_Warning" : "Excluir um usuário irá apagar todas as mensagens desse usuário também. Isso não poderá ser desfeito.",
   "Deleted" : "Deletado!",
-  "Department_not_found" : "Departamento não encontrado",
+  "error-department-not-found" : "Departamento não encontrado",
   "Department_removed" : "Departamento removido",
   "Departments" : "Departamentos",
   "Description" : "Descrição",

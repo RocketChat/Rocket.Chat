@@ -246,7 +246,7 @@
   "Delete_Room_Warning" : "Odstranění místnost smaže všechny zprávy poslané v rámci místnosti. To nelze vrátit zpět.",
   "Delete_User_Warning" : "Odstranění uživatele smaže všechny zprávy od daného uživatele stejně. To nelze vrátit zpět.",
   "Deleted" : "Smazán!",
-  "Department_not_found" : "Oddělení nebyl nalezen",
+  "error-department-not-found" : "Oddělení nebyl nalezen",
   "Department_removed" : "Oddělení odstraněno",
   "Departments" : "Pracoviště",
   "Description" : "Popis",

@@ -246,7 +246,7 @@
   "Delete_Room_Warning" : "Supprimer un salon supprimera également tous les messages postés dans le salon. Cela ne peut pas être annulé.",
   "Delete_User_Warning" : "Supprimer un utilisateur va également supprimer tous les messages de celui-ci. Cette action ne peut être annulée.",
   "Deleted" : "Supprimé !",
-  "Department_not_found" : "Département introuvable",
+  "error-department-not-found" : "Département introuvable",
   "Department_removed" : "Département supprimé",
   "Departments" : "Départements",
   "Description" : "Description",

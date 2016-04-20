@@ -246,7 +246,7 @@
   "Delete_Room_Warning" : "Om man raderar ett rum, raderas alla postade meddelanden i det rummet. Denna åtgärd kan inte ångras.",
   "Delete_User_Warning" : "Radering av en användare kommer att radera alla meddelanden från den användaren. Detta kan inte göras ogjort.",
   "Deleted" : "Borttaget!",
-  "Department_not_found" : "Avdelning inte hittad",
+  "error-department-not-found" : "Avdelning inte hittad",
   "Department_removed" : "Avdelning borttagen",
   "Departments" : "Avdelningar",
   "Description" : "Beskrivning",

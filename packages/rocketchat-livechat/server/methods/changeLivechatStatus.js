@@ -1,7 +1,7 @@
 Meteor.methods({
 	'livechat:changeLivechatStatus'() {
 		if (!Meteor.userId()) {
-			throw new Meteor.Error('error-not-authorized', 'Not authorized');
+			throw new Meteor.Error('error-not-allowed', 'Not allowed', { method: 'livechat:changeLivechatStatus' });
 		}
 
 		const user = Meteor.user();

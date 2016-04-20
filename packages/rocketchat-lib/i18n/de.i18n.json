@@ -246,7 +246,7 @@
   "Delete_Room_Warning" : "Beim Löschen eines Raums werden alle Nachrichten in diesem Raum unwiderruflich gelöscht.",
   "Delete_User_Warning" : "Beim Löschen eines Benutzers werden alle Nachrichten des Benutzers unwiderruflich gelöscht.",
   "Deleted" : "Gelöscht!",
-  "Department_not_found" : "Abteilung konnte nicht gefunden werden.",
+  "error-department-not-found" : "Abteilung konnte nicht gefunden werden.",
   "Department_removed" : "Die Abteilung wurde gelöscht.",
   "Departments" : "Abteilungen",
   "Description" : "Beschreibung",

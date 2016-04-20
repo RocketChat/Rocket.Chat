@@ -246,7 +246,7 @@
   "Delete_Room_Warning" : "Usunięcie pokoju wiąże się z usunięciem wszystkich wiadomości wysłanych do niego. Tej operacji nie można cofnąć.",
   "Delete_User_Warning" : "Usunięcie użytkownika wiąże się z usunięciem wszystkich jego wiadomości. Tej czynności nie można cofnąć.",
   "Deleted" : "Usunięte!",
-  "Department_not_found" : "Zakład nie został znaleziony",
+  "error-department-not-found" : "Zakład nie został znaleziony",
   "Department_removed" : "Departament usunięta",
   "Departments" : "wydziały",
   "Description" : "Opis",

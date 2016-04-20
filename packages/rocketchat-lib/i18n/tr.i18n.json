@@ -246,7 +246,7 @@
   "Delete_Room_Warning" : "Bir oda silme oda içinde gönderilen tüm mesajları silmek olacaktır. Bu geri alınamaz.",
   "Delete_User_Warning" : "Bu kullanıcıyı silerseniz tüm mesajları da beraberinde silinecektir! Bu işlemi bir daha geri alamazsınız.",
   "Deleted" : "Silinmiş!",
-  "Department_not_found" : "Bölümü bulunamadı",
+  "error-department-not-found" : "Bölümü bulunamadı",
   "Department_removed" : "Bölüm kaldırıldı",
   "Departments" : "Bölümler",
   "Description" : "tanım",

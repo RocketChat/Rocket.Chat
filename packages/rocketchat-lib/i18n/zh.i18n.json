@@ -246,7 +246,7 @@
   "Delete_Room_Warning" : "删除房间会同时删除房间内的所有信息并不可恢复。",
   "Delete_User_Warning" : "删除用户将删除该用户的所有消息。这不能被撤消。",
   "Deleted" : "已删除！",
-  "Department_not_found" : "不存在该部门",
+  "error-department-not-found" : "不存在该部门",
   "Department_removed" : "部门已删除",
   "Departments" : "部门",
   "Description" : "描述",

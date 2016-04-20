@@ -246,7 +246,7 @@
   "Delete_Room_Warning" : "Huomeen poistaminen poistaa kaikki huoneessa olevat viestit.\nToimintoa ei voi perua.",
   "Delete_User_Warning" : "Käyttäjän poistaminen poistaa myös käyttäjän kaikki viestit. Toimintoa ei voi perua.",
   "Deleted" : "Poistettu!",
-  "Department_not_found" : "Osastoa ei löytynyt",
+  "error-department-not-found" : "Osastoa ei löytynyt",
   "Department_removed" : "Osasto poistettu",
   "Departments" : "Osastot",
   "Description" : "Kuvaus",

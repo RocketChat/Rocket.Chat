@@ -246,7 +246,7 @@
   "Delete_Room_Warning" : "Ștergerea unei camere va șterge toate mesajele postate în cameră. Acest lucru nu poate fi anulat.",
   "Delete_User_Warning" : "Ștergerea unui utilizator va șterge și toate mesajele acelui utilizator. Acest lucru nu poate fi anulat.",
   "Deleted" : "Șters!",
-  "Department_not_found" : "Departamentul nu a fost găsit",
+  "error-department-not-found" : "Departamentul nu a fost găsit",
   "Department_removed" : "Departament eliminat",
   "Departments" : "Departamente",
   "Description" : "Descriere",

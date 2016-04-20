@@ -246,7 +246,7 @@
   "Delete_Room_Warning" : "Het verwijderen van een kamer verwijdert ook alle in deze kamer geplaatste berichten. Dat kan niet ongedaan gemaakt worden!",
   "Delete_User_Warning" : "Een gebruiker verwijderen betekent dat alle berichten van die gebruiker ook verwijderd worden. Dit kan niet ongedaan gemaakt worden.",
   "Deleted" : "Verwijderd!",
-  "Department_not_found" : "Afdeling niet gevonden",
+  "error-department-not-found" : "Afdeling niet gevonden",
   "Department_removed" : "Afdeling verwijderd",
   "Departments" : "Afdelingen",
   "Description" : "Beschrijving",

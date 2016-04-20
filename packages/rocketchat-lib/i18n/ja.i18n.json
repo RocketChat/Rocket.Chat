@@ -246,7 +246,7 @@
   "Delete_Room_Warning" : "ルームを削除すると、このルームで投稿されたすべてのメッセージは削除されます。削除すると、元に戻せません。",
   "Delete_User_Warning" : "ユーザーを削除すると、このユーザーのすべてのメッセージは削除されます。削除すると、元に戻せません。",
   "Deleted" : "削除しました!",
-  "Department_not_found" : "部門が見つかりませんでした",
+  "error-department-not-found" : "部門が見つかりませんでした",
   "Department_removed" : "部門を削除しました",
   "Departments" : "部門",
   "Description" : "概要",

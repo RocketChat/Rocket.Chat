@@ -246,7 +246,7 @@
   "Delete_Room_Warning" : "Törlése szoba törli az összes üzenetet küldte a szobában. Ezt nem lehet visszacsinálni.",
   "Delete_User_Warning" : "Törlése felhasználó összes üzenetet törölni, hogy a felhasználó is. Ezt nem lehet visszacsinálni.",
   "Deleted" : "Törölve!",
-  "Department_not_found" : "Osztály nem talált",
+  "error-department-not-found" : "Osztály nem talált",
   "Department_removed" : "Department eltávolított",
   "Departments" : "Osztályok",
   "Description" : "Leírás",

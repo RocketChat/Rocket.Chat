@@ -246,7 +246,7 @@
   "Delete_Room_Warning" : "מחיקת חדר יגרום למחיקת כל ההודעות שפורסמו בחדר. פעולה זו מוחלטת.",
   "Delete_User_Warning" : "מחיקת משתמש תמחק את כל הודעותיו, פעולה זו בלתי הפיכה.",
   "Deleted" : "נמחק!",
-  "Department_not_found" : "המחלקה לא נמצאה",
+  "error-department-not-found" : "המחלקה לא נמצאה",
   "Department_removed" : "מחלקת הוסר",
   "Departments" : "מחלקות",
   "Description" : "תיאור",

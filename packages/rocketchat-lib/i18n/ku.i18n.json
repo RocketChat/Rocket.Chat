@@ -246,7 +246,7 @@
   "Delete_Room_Warning" : "Jêbirina odeyeke dê hemû mesaj nivîsandin di nava odeya jêbirin. Ev nayê vegerandin.",
   "Delete_User_Warning" : "Jêbirina user dê hemû peyamên ji ku user wek baş bibe. Ev nayê vegerandin.",
   "Deleted" : "Deleted!",
-  "Department_not_found" : "Wezareta dîtin ne",
+  "error-department-not-found" : "Wezareta dîtin ne",
   "Department_removed" : "Wezareta rakirin",
   "Departments" : "Bingeha Zanist",
   "Description" : "Terîf",

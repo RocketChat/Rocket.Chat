@@ -246,7 +246,7 @@
   "Delete_Room_Warning" : "حذف یک اتاق تمام پیغام های ارسال شده در داخل اتاق را حذف کنید. این قابل بازگشت نیست.",
   "Delete_User_Warning" : "حذف یک کاربر تمام پیام ها از آن کاربران نیز حذف کنید. این قابل بازگشت نیست.",
   "Deleted" : "حذف شده!",
-  "Department_not_found" : "وزارت یافت نشد",
+  "error-department-not-found" : "وزارت یافت نشد",
   "Department_removed" : "وزارت حذف",
   "Departments" : "گروه ها",
   "Description" : "شرح",

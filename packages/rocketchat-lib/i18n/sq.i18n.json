@@ -246,7 +246,7 @@
   "Delete_Room_Warning" : "Fshirja e një dhomë të fshirë të gjitha mesazhet e postuara në dhomë. Kjo nuk mund të zhbëhet.",
   "Delete_User_Warning" : "Fshirja e një përdorues do të fshirë të gjitha mesazhet nga këtë përdorues, si dhe. Kjo nuk mund të zhbëhet.",
   "Deleted" : "Fshihet!",
-  "Department_not_found" : "Departamenti nuk u gjet",
+  "error-department-not-found" : "Departamenti nuk u gjet",
   "Department_removed" : "Departamenti hequr",
   "Departments" : "departamentet",
   "Description" : "Përshkrim",

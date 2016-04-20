@@ -246,7 +246,7 @@
   "Delete_Room_Warning" : "Brisanje sobe će obrisati sve poruke u toj sobi. Ovo se ne može poništiti.",
   "Delete_User_Warning" : "Brisanje korisnika će izbrisati i sve poruke od tog korisnika. Ovo se ne može poništiti.",
   "Deleted" : "Obrisano!",
-  "Department_not_found" : "Odjel nije pronađen",
+  "error-department-not-found" : "Odjel nije pronađen",
   "Department_removed" : "Odjel uklonjen",
   "Departments" : "Odjeli",
   "Description" : "Opis",

@@ -247,7 +247,7 @@
   "Delete_Room_Warning" : "Deleting a room will delete all messages posted within the room. This cannot be undone.",
   "Delete_User_Warning" : "Deleting a user will delete all messages from that user as well. This cannot be undone.",
   "Deleted" : "Deleted!",
-  "Department_not_found" : "Department not found",
+  "error-department-not-found" : "Department not found",
   "Department_removed" : "Department removed",
   "Departments" : "Departments",
   "Description" : "Description",

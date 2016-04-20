@@ -246,7 +246,7 @@
   "Delete_Room_Warning" : "حذف الغرفة، يحذف جميع الرسائل المرسلة داخل الغرفة.، هذا لا يمكن التراجع عنه.",
   "Delete_User_Warning" : "سوف حذف مستخدم حذف كل الرسائل من هذا المستخدم أيضا. هذا لا يمكن التراجع عنها.",
   "Deleted" : "تم الحذف!",
-  "Department_not_found" : "قسم غير موجود",
+  "error-department-not-found" : "قسم غير موجود",
   "Department_removed" : "قسم إزالة",
   "Departments" : "الأقسام",
   "Description" : "الوصف",

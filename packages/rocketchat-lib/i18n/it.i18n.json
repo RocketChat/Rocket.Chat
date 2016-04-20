@@ -246,7 +246,7 @@
   "Delete_Room_Warning" : "L'eliminazione di una stanza cancellerà tutti i messaggi inseriti all'interno della stanza. Questo non può essere annullata.",
   "Delete_User_Warning" : "L'eliminazione di un utente verranno eliminati tutti i messaggi da quell'utente pure. Questo non può essere annullata.",
   "Deleted" : "Eliminata!",
-  "Department_not_found" : "Dipartimento non trovato",
+  "error-department-not-found" : "Dipartimento non trovato",
   "Department_removed" : "Dipartimento rimosso",
   "Departments" : "dipartimenti",
   "Description" : "Descrizione",

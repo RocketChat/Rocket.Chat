@@ -246,7 +246,7 @@
   "Delete_Room_Warning" : "방을 삭제하면 모든 메시지가 삭제됩니다. 이 작업은 취소할 수 없습니다.",
   "Delete_User_Warning" : "사용자 삭제시 사용자의 모든 메시지를 삭제합니다. 취소할 수 없습니다.",
   "Deleted" : "삭제!",
-  "Department_not_found" : "부서를 찾을 수 없습니다",
+  "error-department-not-found" : "부서를 찾을 수 없습니다",
   "Department_removed" : "학과 제거",
   "Departments" : "부서",
   "Description" : "설명",

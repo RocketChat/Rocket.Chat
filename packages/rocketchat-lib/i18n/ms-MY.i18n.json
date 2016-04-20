@@ -246,7 +246,7 @@
   "Delete_Room_Warning" : "Memadam bilik akan memadam semua mesej yang dihantar di dalam bilik. Perkara ini tidak boleh diubah.",
   "Delete_User_Warning" : "Memadam pengguna akan memadam semua mesej dari pengguna itu juga. Ini tidak boleh kembalikan asal.",
   "Deleted" : "Dipadamkan!",
-  "Department_not_found" : "Jabatan tidak dijumpai",
+  "error-department-not-found" : "Jabatan tidak dijumpai",
   "Department_removed" : "Jabatan dikeluarkan",
   "Departments" : "Jabatan",
   "Description" : "Penerangan",

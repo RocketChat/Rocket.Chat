@@ -246,7 +246,7 @@
   "Delete_Room_Warning" : "Eliminar un sala de chat eliminara todos los mensajes de la sala. Esto no se puede deshacer",
   "Delete_User_Warning" : "Eliminar a un usuario causara la eliminación de todos los mensajes creados por dicho usuario. Esta acción no se puede deshacer.",
   "Deleted" : "¡Eliminado!",
-  "Department_not_found" : "Departamento no encontrado",
+  "error-department-not-found" : "Departamento no encontrado",
   "Department_removed" : "Departamento eliminado",
   "Departments" : "Departamentos",
   "Description" : "Descripción ",

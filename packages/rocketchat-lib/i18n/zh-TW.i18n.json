@@ -246,7 +246,7 @@
   "Delete_Room_Warning" : "刪除房間會刪除該房間內發布的所有消息。這不能被撤消。",
   "Delete_User_Warning" : "刪除用戶將刪除該用戶所有訊息。這不能復原。",
   "Deleted" : "已刪除！",
-  "Department_not_found" : "部未找到",
+  "error-department-not-found" : "部未找到",
   "Department_removed" : "除去部",
   "Departments" : "部門",
   "Description" : "描述",
