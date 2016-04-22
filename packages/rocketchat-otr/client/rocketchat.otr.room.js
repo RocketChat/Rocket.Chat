@@ -133,7 +133,20 @@ RocketChat.OTR.Room = class {
 	}
 
 	encrypt(message) {
-		var data = new TextEncoder('UTF-8').encode(EJSON.stringify({ _id: message._id, text: message.msg, userId: this.userId, ack: Random.id((Random.fraction()+1)*20), ts: new Date(Date.now() + TimeSync.serverOffset()) }));
+		let ts;
+		if (isNaN(TimeSync.serverOffset())) {
+			ts = new Date();
+		} else {
+			ts = new Date(Date.now() + TimeSync.serverOffset());
+		}
+
+		var data = new TextEncoder('UTF-8').encode(EJSON.stringify({
+			_id: message._id,
+			text: message.msg,
+			userId: this.userId,
+			ack: Random.id((Random.fraction()+1)*20),
+			ts: ts
+		}));
 		var enc = this.encryptText(data);
 		return enc;
 	}
