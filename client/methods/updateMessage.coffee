@@ -25,7 +25,11 @@ Meteor.methods
 
 		Tracker.nonreactive ->
 
-			message.editedAt = new Date(Date.now() + TimeSync.serverOffset())
+			if isNaN(TimeSync.serverOffset())
+				message.editedAt = new Date()
+			else
+				message.editedAt = new Date(Date.now() + TimeSync.serverOffset())
+
 			message.editedBy =
 				_id: Meteor.userId()
 				username: me.username
