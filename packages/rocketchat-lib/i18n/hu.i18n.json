@@ -1027,7 +1027,7 @@
   "User_has_disconnected" : "Felhasználói lekapcsolódott",
   "User_Info" : "User Info",
   "User_is_no_longer_an_admin" : "A felhasználó már nem egy admin",
-  "User_is_not_activated" : "Felhasználó nem aktív",
+  "error-user-is-not-activated" : "Felhasználó nem aktív",
   "User_is_now_an_admin" : "Felhasználó most egy admin",
   "User_joined_channel" : "Csatlakozott a csatorna.",
   "User_joined_channel_female" : "Csatlakozott a csatorna.",

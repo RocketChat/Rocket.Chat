@@ -1027,7 +1027,7 @@
   "User_has_disconnected" : "Корисник је искључен",
   "User_Info" : "podaci о кориснику",
   "User_is_no_longer_an_admin" : "Корисник више није админ",
-  "User_is_not_activated" : "Корисник није активиран",
+  "error-user-is-not-activated" : "Корисник није активиран",
   "User_is_now_an_admin" : "Корисник је сада Администратор",
   "User_joined_channel" : "Се придружио канал.",
   "User_joined_channel_female" : "Се придружио канал.",

@@ -1027,7 +1027,7 @@
   "User_has_disconnected" : "کاربر قطع شده است",
   "User_Info" : "اطلاعات کاربر",
   "User_is_no_longer_an_admin" : "کاربر دیگر یک مدیر",
-  "User_is_not_activated" : "کاربر فعال نیست",
+  "error-user-is-not-activated" : "کاربر فعال نیست",
   "User_is_now_an_admin" : "کاربر در حال حاضر به یک مدیر",
   "User_joined_channel" : "کانال پیوسته است.",
   "User_joined_channel_female" : "کانال پیوسته است.",

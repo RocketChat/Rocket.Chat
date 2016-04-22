@@ -1027,7 +1027,7 @@
   "User_has_disconnected" : "وقد قطع العضو",
   "User_Info" : "معلومات المستخدم",
   "User_is_no_longer_an_admin" : "المستخدم لم يعد مديرا",
-  "User_is_not_activated" : "العضو غير مفعل",
+  "error-user-is-not-activated" : "العضو غير مفعل",
   "User_is_now_an_admin" : "المستخدم الآن مدير",
   "User_joined_channel" : "انضم للقناة.",
   "User_joined_channel_female" : "انضمت للقناة",

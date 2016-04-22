@@ -1027,7 +1027,7 @@
   "User_has_disconnected" : "Bikarhêner negirêdayî",
   "User_Info" : "User Info",
   "User_is_no_longer_an_admin" : "Bikarhêner e êdî ji admin",
-  "User_is_not_activated" : "User is çalak ne",
+  "error-user-is-not-activated" : "User is çalak ne",
   "User_is_now_an_admin" : "User is now an admin",
   "User_joined_channel" : "kanala bûye.",
   "User_joined_channel_female" : "kanala bûye.",

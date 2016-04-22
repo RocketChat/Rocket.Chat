@@ -1027,7 +1027,7 @@
   "User_has_disconnected" : "Пользователь отключился",
   "User_Info" : "Информация о пользователе",
   "User_is_no_longer_an_admin" : "Пользователь больше не администратор",
-  "User_is_not_activated" : "Пользователь не активирован",
+  "error-user-is-not-activated" : "Пользователь не активирован",
   "User_is_now_an_admin" : "Пользователь теперь администратор",
   "User_joined_channel" : "Присоединился к чату.",
   "User_joined_channel_female" : "Присоединилась к чату.",

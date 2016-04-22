@@ -1027,7 +1027,7 @@
   "User_has_disconnected" : "பயனர் துண்டித்துள்ளது",
   "User_Info" : "பயனர் தகவல்",
   "User_is_no_longer_an_admin" : "பயனர் இனி ஒரு நிர்வாகம் உள்ளது",
-  "User_is_not_activated" : "பயனர் செயல்படுத்தப்படுகிறது",
+  "error-user-is-not-activated" : "பயனர் செயல்படுத்தப்படுகிறது",
   "User_is_now_an_admin" : "பயனர் இப்போது ஒரு நிர்வாகம் உள்ளது",
   "User_joined_channel" : "சேனல் சேர்ந்துள்ளார்.",
   "User_joined_channel_female" : "சேனல் சேர்ந்துள்ளார்.",

@@ -1027,7 +1027,7 @@
   "User_has_disconnected" : "Ο χρήστης έχει αποσυνδεθεί",
   "User_Info" : "Πληροφορίες για το χρήστη",
   "User_is_no_longer_an_admin" : "Ο χρήστης δεν είναι πλέον διαχειριστής",
-  "User_is_not_activated" : "Ο χρήστης δεν έχει ενεργοποιηθεί",
+  "error-user-is-not-activated" : "Ο χρήστης δεν έχει ενεργοποιηθεί",
   "User_is_now_an_admin" : "Ο χρήστης είναι πλέον διαχειριστής",
   "User_joined_channel" : "Μπήκε στο κανάλι.",
   "User_joined_channel_female" : "Μπήκε στο κανάλι.",

@@ -1027,7 +1027,7 @@
   "User_has_disconnected" : "Kullanıcı bağlantısı kesildi",
   "User_Info" : "kullanıcı bilgisi",
   "User_is_no_longer_an_admin" : "Kullanıcı artık bir yönetici",
-  "User_is_not_activated" : "Kullanıcı etkinleştirilmedi",
+  "error-user-is-not-activated" : "Kullanıcı etkinleştirilmedi",
   "User_is_now_an_admin" : "Kullanıcı şimdi bir yönetici",
   "User_joined_channel" : "Kanala katıldı.",
   "User_joined_channel_female" : "Kanala katıldı.",

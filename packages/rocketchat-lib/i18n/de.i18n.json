@@ -1027,7 +1027,7 @@
   "User_has_disconnected" : "Der Benutzer hat die Verbindung getrennt.",
   "User_Info" : "Benutzerinformationen",
   "User_is_no_longer_an_admin" : "Der Benutzer ist kein Admin mehr.",
-  "User_is_not_activated" : "Der Benutzer ist nicht aktiviert.",
+  "error-user-is-not-activated" : "Der Benutzer ist nicht aktiviert.",
   "User_is_now_an_admin" : "Der Benutzer ist jetzt ein Admin.",
   "User_joined_channel" : "Ist dem Kanal beigetreten.",
   "User_joined_channel_female" : "Ist dem Kanal beigetreten.",

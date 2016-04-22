@@ -1027,7 +1027,7 @@
   "User_has_disconnected" : "Uživatel se odpojil",
   "User_Info" : "Informace o uživateli",
   "User_is_no_longer_an_admin" : "Uživatel je už ne admin",
-  "User_is_not_activated" : "Uživatel není aktivován",
+  "error-user-is-not-activated" : "Uživatel není aktivován",
   "User_is_now_an_admin" : "Uživatel je nyní admin",
   "User_joined_channel" : "Se připojil ke kanálu.",
   "User_joined_channel_female" : "Se připojil ke kanálu.",

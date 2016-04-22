@@ -1027,7 +1027,7 @@
   "User_has_disconnected" : "사용자의 연결이 끊어있다",
   "User_Info" : "사용자 정보",
   "User_is_no_longer_an_admin" : "사용자는 더 이상 관리자가 아닙니다",
-  "User_is_not_activated" : "사용자는 더 이상 활동하지 않습니다.",
+  "error-user-is-not-activated" : "사용자는 더 이상 활동하지 않습니다.",
   "User_is_now_an_admin" : "사용자는 관리자입니다.",
   "User_joined_channel" : "채널에 참여했습니다.",
   "User_joined_channel_female" : "채널에 참여했습니다.",

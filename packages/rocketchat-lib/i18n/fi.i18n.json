@@ -1027,7 +1027,7 @@
   "User_has_disconnected" : "Käyttäjä on katkaistu",
   "User_Info" : "Käyttäjän tiedot",
   "User_is_no_longer_an_admin" : "Käyttäjä ei ole enää ylläpitäjä",
-  "User_is_not_activated" : "Käyttäjää ei ole aktivoitu",
+  "error-user-is-not-activated" : "Käyttäjää ei ole aktivoitu",
   "User_is_now_an_admin" : "Käyttäjä on nyt ylläpitäjä",
   "User_joined_channel" : "Liittyi kanavalle.",
   "User_joined_channel_female" : "Liittyi kanavalle.",

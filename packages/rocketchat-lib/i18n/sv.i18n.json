@@ -1027,7 +1027,7 @@
   "User_has_disconnected" : "Användaren har kopplats bort",
   "User_Info" : "Användarinfo",
   "User_is_no_longer_an_admin" : "Användaren är inte längre administratör",
-  "User_is_not_activated" : "Användaren är inte aktiverad",
+  "error-user-is-not-activated" : "Användaren är inte aktiverad",
   "User_is_now_an_admin" : "Användaren är nu administratör",
   "User_joined_channel" : "Har anslutit sig till kanalen.",
   "User_joined_channel_female" : "Har anslutit sig till kanalen.",

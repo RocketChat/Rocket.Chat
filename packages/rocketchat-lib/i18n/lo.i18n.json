@@ -1027,7 +1027,7 @@
   "User_has_disconnected" : "ຜູ້ໃຊ້ທີ່ມີການເຊື່ອມຕໍ່",
   "User_Info" : "ຂໍ້ມູນຜູ້ໃຊ້",
   "User_is_no_longer_an_admin" : "ຜູ້ໃຊ້ທີ່ບໍ່ມີຕໍ່ໄປອ​​ີກແລ້ວການ admin",
-  "User_is_not_activated" : "ຜູ້ໃຊ້ບໍ່ໄດ້ເປີດໃຊ້",
+  "error-user-is-not-activated" : "ຜູ້ໃຊ້ບໍ່ໄດ້ເປີດໃຊ້",
   "User_is_now_an_admin" : "ຜູ້ໃຊ້ໃນປັດຈຸບັນເປັນ admin",
   "User_joined_channel" : "ໄດ້ເຂົ້າຮ່ວມຊ່ອງທາງການ.",
   "User_joined_channel_female" : "ໄດ້ເຂົ້າຮ່ວມຊ່ອງທາງການ.",

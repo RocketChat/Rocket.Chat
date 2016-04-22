@@ -1027,7 +1027,7 @@
   "User_has_disconnected" : "ユーザーは切断されました",
   "User_Info" : "ユーザー情報",
   "User_is_no_longer_an_admin" : "ユーザーはもう管理者ではありません",
-  "User_is_not_activated" : "ユーザーは有効ではありません",
+  "error-user-is-not-activated" : "ユーザーは有効ではありません",
   "User_is_now_an_admin" : "ユーザーはこれより管理者です",
   "User_joined_channel" : "チャンネルへ参加しました。",
   "User_joined_channel_female" : "チャンネルへ参加しました。",
