@@ -5,15 +5,15 @@ Meteor.methods
 
 		user = Meteor.user()
 		unless user.emails?[0]?.address
-			throw new Meteor.Error 'invalid-email', "[methods] sendSMTPTestEmail -> Invalid e-mail"
+			throw new Meteor.Error 'invalid-email', "[methods] sendSMTPTestEmail -> Invalid email"
 
 		this.unblock()
 
 		Email.send
 			to: user.emails[0].address
 			from: RocketChat.settings.get('From_Email')
-			subject: "SMTP Test E-mail"
-			html: "You have successfully sent an e-mail"
+			subject: "SMTP Test Email"
+			html: "You have successfully sent an email"
 
 		console.log 'Sending email to ' + user.emails[0].address
 

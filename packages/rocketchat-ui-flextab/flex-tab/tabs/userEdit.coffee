@@ -57,7 +57,7 @@ Template.userEdit.onCreated ->
 		unless userData.username
 			errors.push 'Username'
 		unless userData.email
-			errors.push 'E-mail'
+			errors.push 'Email'
 
 		for error in errors
 			toastr.error(TAPi18n.__('The_field_is_required', TAPi18n.__(error)))
