@@ -104,22 +104,26 @@ RocketChat.settings.addGroup 'General', ->
 		@add 'Desktop_Notifications_Duration', 0, { type: 'int', public: true, i18nDescription: 'Desktop_Notification_Durations_Description' }
 
 
-RocketChat.settings.addGroup 'SMTP', ->
-	@add 'SMTP_Host', '', { type: 'string', env: true }
-	@add 'SMTP_Port', '', { type: 'string', env: true }
-	@add 'SMTP_Username', '', { type: 'string', env: true }
-	@add 'SMTP_Password', '', { type: 'password', env: true }
-	@add 'From_Email', '', { type: 'string', placeholder: 'email@domain' }
-	@add 'SMTP_Test_Button', 'sendSMTPTestEmail', { type: 'action', actionText: 'Send_a_test_mail_to_my_user' }
+RocketChat.settings.addGroup 'Email', ->
+	@section 'SMTP', ->
+		@add 'SMTP_Host', '', { type: 'string', env: true, i18nLabel: 'Host' }
+		@add 'SMTP_Port', '', { type: 'string', env: true, i18nLabel: 'Port' }
+		@add 'SMTP_Username', '', { type: 'string', env: true, i18nLabel: 'Username' }
+		@add 'SMTP_Password', '', { type: 'password', env: true, i18nLabel: 'Password' }
+		@add 'From_Email', '', { type: 'string', placeholder: 'email@domain' }
+		@add 'SMTP_Test_Button', 'sendSMTPTestEmail', { type: 'action', actionText: 'Send_a_test_mail_to_my_user' }
 
 	@section 'Invitation', ->
-		@add 'Invitation_Subject', 'You have been invited to Rocket.Chat', { type: 'string' }
-		@add 'Invitation_HTML', '<h2>You have been invited to <h1>Rocket.Chat</h1></h2><p>Go to ' + __meteor_runtime_config__?.ROOT_URL + ' and try the best open source chat solution available today!</p>', { type: 'string', multiline: true }
-		@add 'Accounts_Enrollment_Email',  '', { type: 'string', multiline: true }
+		@add 'Invitation_Subject', 'You have been invited to Rocket.Chat', { type: 'string', i18nLabel: 'Subject' }
+		@add 'Invitation_HTML', '', { type: 'code', code: 'text/html', multiline: true, i18nLabel: 'Body', i18nDescription: 'Invitation_HTML_Description' }
+
+	@section 'Registration', ->
+		@add 'Accounts_Enrollment_Email_Subject', '', { type: 'string', i18nLabel: 'Subject' }
+		@add 'Accounts_Enrollment_Email', '', { type: 'code', code: 'text/html', multiline: true, i18nLabel: 'Body', i18nDescription: 'Accounts_Enrollment_Email_Description' }
 
 	@section 'Registration via Admin', ->
-		@add 'Accounts_UserAddedEmail', '', { type: 'string', multiline: true, i18nLabel: 'Email', i18nDescription: 'Accounts_UserAddedEmail_Description' }
 		@add 'Accounts_UserAddedEmailSubject', '', { type: 'string', i18nLabel: "Subject" }
+		@add 'Accounts_UserAddedEmail', '', { type: 'code', code: 'text/html', multiline: true, i18nLabel: 'Body', i18nDescription: 'Accounts_UserAddedEmail_Description' }
 
 
 RocketChat.settings.addGroup 'Message', ->
