@@ -30,15 +30,19 @@ Accounts.emailTemplates.resetPassword.text = (user, url) ->
 	url = url.replace /\/#\//, '/'
 	resetPasswordText user, url
 
+if RocketChat.settings.get 'Accounts_Enrollment_Email_Subject'
+	Accounts.emailTemplates.enrollAccount.subject = (user) ->
+		return RocketChat.settings.get 'Accounts_Enrollment_Email_Subject'
+
 if RocketChat.settings.get 'Accounts_Enrollment_Email'
 	Accounts.emailTemplates.enrollAccount.text = (user, url) ->
 		text = RocketChat.settings.get 'Accounts_Enrollment_Email'
-
 		text = text.replace /\[name\]/g, user.name or ''
 		text = text.replace /\[fname\]/g, _.strLeft(user.name, ' ') or  ''
 		text = text.replace /\[lname\]/g, _.strRightBack(user.name, ' ') or  ''
 		text = text.replace /\[email\]/g, user.emails?[0]?.address or ''
-
+		text = text.replace /\[Site_Name\]/g, RocketChat.settings.get("Site_Name") or ''
+		text = text.replace /\[Site_URL\]/g, RocketChat.settings.get("Site_Url") or ''
 		return text
 
 Accounts.onCreateUser (options, user) ->
