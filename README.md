@@ -146,9 +146,9 @@ Run solid five-nines deployment on industry workhorse FreeBSD server:
 
 ## Windows Server
 
-Deploy on your own enterprise server, or with Microsoft Azur:
+Deploy on your own enterprise server, or with Microsoft Azure:
 
-[![Windows 2012 or 2016 Server](https://github.com/Sing-Li/bbug/blob/master/images/windows.png)](https://rocket.chat/docs/master/installing-and-updating/deployment-options/freebsd)
+[![Windows 2012 or 2016 Server](https://github.com/Sing-Li/bbug/blob/master/images/windows.png)](https://rocket.chat/docs/master/installing-and-updating/deployment-options/windows-server-2012-r2)
 
 ## Ansible
 Automated production-grade deployment in minutes, for RHEL / CentOS 7 or Ubuntu 14.04 LTS / 15.04:
@@ -232,7 +232,7 @@ It is a great solution for communities and companies wanting to privately host t
 - I18n - Supports 22 Languages
 - Hubot Friendly
 - Face to Face Video Conferencing (aka WebRTC)
-- Multi-users Video Group Chat
+- Multi-users Video Group Chat (experimental)
 - Audio calls
 - Multi-users Audio Conference
 - Screensharing
