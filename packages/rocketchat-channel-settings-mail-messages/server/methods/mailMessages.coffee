@@ -26,7 +26,7 @@ Meteor.methods
 		console.log emails
 		for email in emails
 			unless rfcMailPatternWithName.test email.trim()
-				throw new Meteor.Error('error-invalid-email', "Invalid e-mail #{email}", { method: 'mailMessages', email: email })
+				throw new Meteor.Error('error-invalid-email', "Invalid email #{email}", { method: 'mailMessages', email: email })
 
 		user = Meteor.user()
 		name = user.name
