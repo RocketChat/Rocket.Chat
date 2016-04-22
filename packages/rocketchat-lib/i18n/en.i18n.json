@@ -351,6 +351,8 @@
   "error-the-field-is-required" : "The field __field__ is required.",
   "error-too-many-requests" : "Error, too many requests. Please slow down. You must wait __seconds__ seconds before trying again.",
   "error-user-not-in-room" : "User is not in this room",
+  "error-user-registration-disabled" : "User registration is disabled",
+  "error-user-registration-secret" : "User registration is only allowed via Secret URL",
   "error-you-are-last-owner" : "You are the last owner. Please set new owner before leaving the room.",
   "Error_changing_password" : "Error changing password",
   "Error_sending_confirmation_email" : "Error sending confirmation email",
