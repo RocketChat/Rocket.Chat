@@ -118,7 +118,7 @@ RocketChat.settings.addGroup 'SMTP', ->
 		@add 'Accounts_Enrollment_Email',  '', { type: 'string', multiline: true }
 
 	@section 'Registration via Admin', ->
-		@add 'Accounts_UserAddedEmail', '', { type: 'string', multiline: true, i18nLabel: 'E-mail', i18nDescription: 'Accounts_UserAddedEmail_Description' }
+		@add 'Accounts_UserAddedEmail', '', { type: 'string', multiline: true, i18nLabel: 'Email', i18nDescription: 'Accounts_UserAddedEmail_Description' }
 		@add 'Accounts_UserAddedEmailSubject', '', { type: 'string', i18nLabel: "Subject" }
 
 
