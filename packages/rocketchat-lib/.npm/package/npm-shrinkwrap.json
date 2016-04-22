@@ -1,0 +1,12 @@
+{
+  "dependencies": {
+    "bad-words": {
+      "version": "1.3.1",
+      "dependencies": {
+        "badwords-list": {
+          "version": "1.0.0"
+        }
+      }
+    }
+  }
+}
