@@ -8,7 +8,8 @@ RocketChat.callbacks.add('beforeSaveMessage', function(message) {
 		var badWordsList = RocketChat.settings.get('Message_BadWordsFilterList');
 
 		var options;
-        // Add words to the blacklist
+
+		// Add words to the blacklist
 		if (!!badWordsList && badWordsList.length) {
 			options = {
 				list: badWordsList.split(',')
