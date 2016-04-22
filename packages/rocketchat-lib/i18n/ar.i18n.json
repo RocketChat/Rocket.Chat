@@ -666,7 +666,7 @@
   "No_pinned_messages" : "لا توجد رسائل مثبتة",
   "No_results_found" : "لا توجد نتائج",
   "No_starred_messages" : "لا توجد رسائل مميزة",
-  "no_tokens_for_this_user" : "لا توجد الرموز لهذا المستخدم",
+  "error-no-tokens-for-this-user" : "لا توجد الرموز لهذا المستخدم",
   "No_user_with_username_%s_was_found" : "لا يوجد مستخدم باسم <strong>\"%s\"</strong>",
   "Not_allowed" : "غير مسموح",
   "Not_authorized" : "غير مصرح",

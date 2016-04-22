@@ -666,7 +666,7 @@
   "No_pinned_messages" : "Nem rögzített üzenetek",
   "No_results_found" : "Nincs találat",
   "No_starred_messages" : "Nincsenek csillagozott üzenetek",
-  "no_tokens_for_this_user" : "Nincsenek zsetonok felhasználó",
+  "error-no-tokens-for-this-user" : "Nincsenek zsetonok felhasználó",
   "No_user_with_username_%s_was_found" : "Nincs felhasználó <strong>felhasználónév: \" %s\"</strong> találtak!",
   "Not_allowed" : "Nem megengedett",
   "Not_authorized" : "nem engedélyezett",

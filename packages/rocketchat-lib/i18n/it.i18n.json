@@ -666,7 +666,7 @@
   "No_pinned_messages" : "Nessun messaggio appuntato",
   "No_results_found" : "nessun risultato trovato",
   "No_starred_messages" : "Nessun messaggio stellati",
-  "no_tokens_for_this_user" : "Non ci sono gettoni per questo utente",
+  "error-no-tokens-for-this-user" : "Non ci sono gettoni per questo utente",
   "No_user_with_username_%s_was_found" : "Nessun utente con nome utente <strong>\" %s\"</strong> è stato trovato!",
   "Not_allowed" : "Non autorizzato",
   "Not_authorized" : "Non autorizzato",

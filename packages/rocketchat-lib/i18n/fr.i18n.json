@@ -666,7 +666,7 @@
   "No_pinned_messages" : "Aucun message épinglé",
   "No_results_found" : "Aucun résultat trouvé",
   "No_starred_messages" : "Aucun message en favoris",
-  "no_tokens_for_this_user" : "Il n'y a aucun jeton pour cet utilisateur",
+  "error-no-tokens-for-this-user" : "Il n'y a aucun jeton pour cet utilisateur",
   "No_user_with_username_%s_was_found" : "Aucun utilisateur nommé <strong>\"%s\"</strong> n'a été trouvé !",
   "Not_allowed" : "Non autorisé",
   "Not_authorized" : "Non autorisé",

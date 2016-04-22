@@ -666,7 +666,7 @@
   "No_pinned_messages" : "មិនមានសារបានខ្ទាស់",
   "No_results_found" : "គ្មានរកឃើញលទ្ធផល",
   "No_starred_messages" : "សារមិនមានផ្កាយ",
-  "no_tokens_for_this_user" : "មានថូខឹនសម្រាប់អ្នកប្រើនេះទេ",
+  "error-no-tokens-for-this-user" : "មានថូខឹនសម្រាប់អ្នកប្រើនេះទេ",
   "No_user_with_username_%s_was_found" : "មិន​មាន​អ្នក​ប្រើប្រាស់​ឈ្មោះ <strong>\"%s\"</strong> ឡើយ",
   "Not_allowed" : "មិន​បាន​អនុញ្ញាត្តិ",
   "Not_authorized" : "មិនត្រូវបានអនុញ្ញាត",

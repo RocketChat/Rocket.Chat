@@ -666,7 +666,7 @@
   "No_pinned_messages" : "ບໍ່ມີຂໍ້ຄວາມຕຶງ",
   "No_results_found" : "ບໍ່ມີຂໍ້ມູນທີ່ພົບ",
   "No_starred_messages" : "ບໍ່ມີຂໍ້ຄວາມທີ່ຕິດດາວ",
-  "no_tokens_for_this_user" : "ມີ tokens ສໍາລັບຜູ້ໃຊ້ນີ້ບໍ່ມີ",
+  "error-no-tokens-for-this-user" : "ມີ tokens ສໍາລັບຜູ້ໃຊ້ນີ້ບໍ່ມີ",
   "No_user_with_username_%s_was_found" : "ຜູ້ໃຊ້ທີ່ມີຊື່ຜູ້ໃຊ້ <strong>\" %s\"</strong> ບໍ່ໄດ້ພົບເຫັນ!",
   "Not_allowed" : "ບໍ່​ອະ​ນຸ​ຍາດ",
   "Not_authorized" : "ບໍ່ອະນຸຍາດ",

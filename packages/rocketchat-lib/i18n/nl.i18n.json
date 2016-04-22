@@ -666,7 +666,7 @@
   "No_pinned_messages" : "Geen vastgezette berichten",
   "No_results_found" : "Geen resultaten gevonden",
   "No_starred_messages" : "Geen gemarkeerde berichten",
-  "no_tokens_for_this_user" : "Er zijn geen tokens voor deze gebruiker",
+  "error-no-tokens-for-this-user" : "Er zijn geen tokens voor deze gebruiker",
   "No_user_with_username_%s_was_found" : "Geen gebruiker met de naam  <strong>\"%s\"</strong> gevonden",
   "Not_allowed" : "Niet toegestaan",
   "Not_authorized" : "Geen bevoegdheid",

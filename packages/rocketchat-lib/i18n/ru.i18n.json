@@ -666,7 +666,7 @@
   "No_pinned_messages" : "Нет прикрепленных сообщений",
   "No_results_found" : "Результатов не найдено",
   "No_starred_messages" : "Сообщения без оценки",
-  "no_tokens_for_this_user" : "Для этого пользователя нет символов",
+  "error-no-tokens-for-this-user" : "Для этого пользователя нет символов",
   "No_user_with_username_%s_was_found" : "Пользователь с логином  <strong>\"%s\"</strong> не найден!",
   "Not_allowed" : "Не допускается",
   "Not_authorized" : "Запрещено",

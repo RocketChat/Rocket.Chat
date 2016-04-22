@@ -666,7 +666,7 @@
   "No_pinned_messages" : "Hayır sabitlenmiş mesajlar",
   "No_results_found" : "Sonuç bulunamadı",
   "No_starred_messages" : "Favori iletin yok",
-  "no_tokens_for_this_user" : "Bu kullanıcı için belirteçleri vardır",
+  "error-no-tokens-for-this-user" : "Bu kullanıcı için belirteçleri vardır",
   "No_user_with_username_%s_was_found" : "Kullanıcı adı <strong>\" %s\"</strong> ile hiçbir kullanıcı bulundu!",
   "Not_allowed" : "Izin verilmedi",
   "Not_authorized" : "Yetkili değil",

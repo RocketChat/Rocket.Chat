@@ -666,7 +666,7 @@
   "No_pinned_messages" : "Δεν καρφώθηκε μηνύματα",
   "No_results_found" : "Δεν βρέθηκαν αποτελέσματα",
   "No_starred_messages" : "Δεν αστέρι μηνύματα",
-  "no_tokens_for_this_user" : "Δεν υπάρχουν κουπόνια για αυτόν τον χρήστη",
+  "error-no-tokens-for-this-user" : "Δεν υπάρχουν κουπόνια για αυτόν τον χρήστη",
   "No_user_with_username_%s_was_found" : "Κανένας χρήστης δεν με όνομα <strong>\" %s\"</strong> βρέθηκε!",
   "Not_allowed" : "Δεν επιτρέπεται",
   "Not_authorized" : "δεν επιτρέπεται",

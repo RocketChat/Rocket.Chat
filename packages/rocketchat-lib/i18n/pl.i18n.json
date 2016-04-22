@@ -666,7 +666,7 @@
   "No_pinned_messages" : "Brak przypiętych wiadomości",
   "No_results_found" : "Nie znaleziono wyników",
   "No_starred_messages" : "Brak ulubionych wiadomości",
-  "no_tokens_for_this_user" : "Brak tokeny dla tego użytkownika",
+  "error-no-tokens-for-this-user" : "Brak tokeny dla tego użytkownika",
   "No_user_with_username_%s_was_found" : "Nie odnaleziono użytkownika o nazwie <strong>\"%s\"</strong>!",
   "Not_allowed" : "Niedozwolone",
   "Not_authorized" : "Brak autoryzacji",

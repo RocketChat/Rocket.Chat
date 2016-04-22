@@ -666,7 +666,7 @@
   "No_pinned_messages" : "보관된 메시지가 없습니다",
   "No_results_found" : "검색 결과가 없습니다",
   "No_starred_messages" : "별표된 메시지가 없습니다",
-  "no_tokens_for_this_user" : "이 사용자에 대한 토큰이 없습니다",
+  "error-no-tokens-for-this-user" : "이 사용자에 대한 토큰이 없습니다",
   "No_user_with_username_%s_was_found" : "<strong>\"%s\"</strong> 사용자 이름을 가진 사용자를 찾을 수 없습니다!",
   "Not_allowed" : "허용되지 않음",
   "Not_authorized" : "권한이 없습니다",

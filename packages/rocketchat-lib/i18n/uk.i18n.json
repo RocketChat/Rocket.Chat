@@ -666,7 +666,7 @@
   "No_pinned_messages" : "Ні покладали повідомлень",
   "No_results_found" : "Нічого не знайдено",
   "No_starred_messages" : "Немає позначених повідомлень",
-  "no_tokens_for_this_user" : "Там немає лексеми для цього користувача",
+  "error-no-tokens-for-this-user" : "Там немає лексеми для цього користувача",
   "No_user_with_username_%s_was_found" : "Ні один користувач з ім'ям користувача <strong>\" %s\"</strong> не було знайдено!",
   "Not_allowed" : "Не дозволено",
   "Not_authorized" : "заборонено",

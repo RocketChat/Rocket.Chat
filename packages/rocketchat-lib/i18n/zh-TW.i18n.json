@@ -666,7 +666,7 @@
   "No_pinned_messages" : "尚未釘選訊息",
   "No_results_found" : "未找到結果",
   "No_starred_messages" : "不加星標的郵件",
-  "no_tokens_for_this_user" : "有該用戶沒有令牌",
+  "error-no-tokens-for-this-user" : "有該用戶沒有令牌",
   "No_user_with_username_%s_was_found" : "沒有此用戶 <strong>\"%s\"</strong> !",
   "Not_allowed" : "不允許",
   "Not_authorized" : "未經授權",

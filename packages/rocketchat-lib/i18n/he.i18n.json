@@ -666,7 +666,7 @@
   "No_pinned_messages" : "אין הודעות מוצמדות",
   "No_results_found" : "לא נמצאו תוצאות",
   "No_starred_messages" : "אין הודעות מועדפות",
-  "no_tokens_for_this_user" : "אין אסימונים למשתמש זה",
+  "error-no-tokens-for-this-user" : "אין אסימונים למשתמש זה",
   "No_user_with_username_%s_was_found" : "לא נמצא המשתמש <strong>\"%s\"</strong>!",
   "Not_allowed" : "לא מורשה",
   "Not_authorized" : "לא מאומת",

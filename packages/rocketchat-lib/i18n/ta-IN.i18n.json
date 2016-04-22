@@ -666,7 +666,7 @@
   "No_pinned_messages" : "பொருத்தப்பட்டன செய்திகளை இல்லை",
   "No_results_found" : "முடிவுகள் எதுவும் இல்லை",
   "No_starred_messages" : "குறியிடப்பட்ட மின்னஞ்சலும் இல்லை",
-  "no_tokens_for_this_user" : "இந்தப் பயனருக்கு டோக்கன்கள் உள்ளன",
+  "error-no-tokens-for-this-user" : "இந்தப் பயனருக்கு டோக்கன்கள் உள்ளன",
   "No_user_with_username_%s_was_found" : "பயனர் பெயர் <strong>\" %s\" பதில்</strong> பயனர் எவரையும் கண்டுபிடிக்கப்பட்டது!",
   "Not_allowed" : "அனுமதி இல்லை",
   "Not_authorized" : "அங்கீகாரம் இல்லை",

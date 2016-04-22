@@ -666,7 +666,7 @@
   "No_pinned_messages" : "未固定的信息",
   "No_results_found" : "无结果",
   "No_starred_messages" : "未标记的信息",
-  "no_tokens_for_this_user" : "该用户没有相应 token",
+  "error-no-tokens-for-this-user" : "该用户没有相应 token",
   "No_user_with_username_%s_was_found" : "未找到用户 <strong>\"%s\"</strong> !",
   "Not_allowed" : "不允许",
   "Not_authorized" : "为认证",

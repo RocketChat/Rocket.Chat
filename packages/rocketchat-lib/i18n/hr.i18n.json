@@ -665,7 +665,7 @@
   "No_pinned_messages" : "Nema zabodena poruka",
   "No_results_found" : "Rezultati nisu nađeni",
   "No_starred_messages" : "Nema poruka sa zvjezdicom",
-  "no_tokens_for_this_user" : "Nema tokena za ovog korisnika",
+  "error-no-tokens-for-this-user" : "Nema tokena za ovog korisnika",
   "No_user_with_username_%s_was_found" : "Korisnik sa korisničkim imenom <strong>\"%s\"</strong> nije nađen!",
   "Not_allowed" : "Nije dozvoljeno",
   "Not_authorized" : "Niste ovlašteni",

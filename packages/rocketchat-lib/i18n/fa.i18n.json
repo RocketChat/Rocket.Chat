@@ -666,7 +666,7 @@
   "No_pinned_messages" : "هیچ پیام دوخته",
   "No_results_found" : "نتیجه ای پیدا نشد",
   "No_starred_messages" : "بدون پیام های ستاره دار",
-  "no_tokens_for_this_user" : "هیچ نشانه برای این کاربر وجود دارد",
+  "error-no-tokens-for-this-user" : "هیچ نشانه برای این کاربر وجود دارد",
   "No_user_with_username_%s_was_found" : "هیچ کاربر با نام کاربری <strong>\" %s\" را</strong> پیدا نشد!",
   "Not_allowed" : "ممنوع",
   "Not_authorized" : "غیر مجاز",
