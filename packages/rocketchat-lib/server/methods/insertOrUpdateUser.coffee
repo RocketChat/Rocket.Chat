@@ -26,7 +26,7 @@ Meteor.methods
 			nameValidation = new RegExp '^[0-9a-zA-Z-_.]+$'
 
 		if not nameValidation.test userData.username
-			throw new Meteor.Error 'error-input-is-not-a-valid-field', "#{username} is not a valid username", { method: 'insertOrUpdateUser', input: username, field: 'Username' }
+			throw new Meteor.Error 'error-input-is-not-a-valid-field', "#{userData.username} is not a valid username", { method: 'insertOrUpdateUser', input: userData.username, field: 'Username' }
 
 		if not userData._id and not userData.password
 			throw new Meteor.Error 'error-the-field-is-required', 'The field Password is required', { method: 'insertOrUpdateUser', field: 'Password' }
@@ -54,12 +54,49 @@ Meteor.methods
 			if userData.requirePasswordChange
 				updateUser.$set.requirePasswordChange = userData.requirePasswordChange
 
+			if userData.verified
+				updateUser.$set['emails.0.verified'] = true
+
 			Meteor.users.update { _id: _id }, updateUser
+
+			if userData.joinDefaultChannels
+				Meteor.runAsUser _id, ->
+					Meteor.call('joinDefaultChannels');
+
+			if userData.sendWelcomeEmail
+				html = RocketChat.settings.get('Accounts_UserAddedEmail');
+				html = html.replace /\[name\]/g, userData.name or ''
+				html = html.replace /\[fname\]/g, _.strLeft(userData.name, ' ') or  ''
+				html = html.replace /\[lname\]/g, _.strRightBack(userData.name, ' ') or  ''
+				html = html.replace /\[email\]/g, userData.email or ''
+				html = html.replace /\[password\]/g, userData.password or ''
+				html = html.replace /\[Site_Name\]/g, RocketChat.settings.get("Site_Name") or ''
+				html = html.replace /\[Site_URL\]/g, RocketChat.settings.get("Site_Url") or ''
+
+				email = {
+					to: userData.email
+					from: RocketChat.settings.get('From_Email'),
+					subject: RocketChat.settings.get('Accounts_UserAddedEmail_Subject') || TAPi18n.__("Welcome_to_the", { lng: RocketChat.settings.get('Language') || "en" }) + (RocketChat.settings.get('Site_Name') || ""),
+					html: html
+				};
+
+				Email.send(email);
 
 			return _id
 		else
 			#update user
-			Meteor.users.update { _id: userData._id }, { $set: { name: userData.name, requirePasswordChange: userData.requirePasswordChange } }
+			updateUser = {
+				$set: {
+					name: userData.name,
+					requirePasswordChange: userData.requirePasswordChange
+				}
+			}
+			if userData.verified
+				updateUser.$set['emails.0.verified'] = true
+			else
+				updateUser.$set['emails.0.verified'] = false
+
+			Meteor.users.update { _id: userData._id }, updateUser
 			RocketChat.setUsername userData._id, userData.username
 			RocketChat.setEmail userData._id, userData.email
 

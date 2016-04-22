@@ -117,6 +117,10 @@ RocketChat.settings.addGroup 'SMTP', ->
 		@add 'Invitation_HTML', '<h2>You have been invited to <h1>Rocket.Chat</h1></h2><p>Go to ' + __meteor_runtime_config__?.ROOT_URL + ' and try the best open source chat solution available today!</p>', { type: 'string', multiline: true }
 		@add 'Accounts_Enrollment_Email',  '', { type: 'string', multiline: true }
 
+	@section 'Registration via Admin', ->
+		@add 'Accounts_UserAddedEmail', '', { type: 'string', multiline: true, i18nLabel: 'E-mail', i18nDescription: 'Accounts_UserAddedEmail_Description' }
+		@add 'Accounts_UserAddedEmailSubject', '', { type: 'string', i18nLabel: "Subject" }
+
 
 RocketChat.settings.addGroup 'Message', ->
 	@add 'Message_AllowEditing', true, { type: 'boolean', public: true }
