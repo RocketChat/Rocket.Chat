@@ -229,7 +229,7 @@
   "Create" : "Créer",
   "Create_new" : "Créer nouveau",
   "Created_at" : "Créé le",
-  "Created_at_s_by_s" : "Créé sur <strong>%s</strong> par <strong>%s>/strong>",
+  "Created_at_s_by_s" : "Créé sur <strong>%s</strong> par <strong>%s</strong>",
   "Custom_Fields" : "Champs Personnalisés",
   "Custom_oauth_helper" : "Lorsque vous configurez votre service OAuth, vous devez indiquer une URL pour le Callback. Utilisez <pre>%s</pre>",
   "Custom_oauth_unique_name" : "Nom unique OAuth personnalisé",
