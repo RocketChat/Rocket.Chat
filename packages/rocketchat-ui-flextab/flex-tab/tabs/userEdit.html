@@ -3,7 +3,7 @@
 		<p>{{_ "You_are_not_authorized_to_view_this_page"}}</p>
 	{{else}}
 		<div class="about clearfix">
-			<form class="edit-form">
+			<form class="edit-form" autocomplete="off">
 				{{#if user}}
 					<h3>{{user.name}}</h3>
 				{{else}}
@@ -21,18 +21,39 @@
 					<label for="email">{{_ "E-mail"}}</label>
 					<input type="email" id="email" autocomplete="off" value="{{user.emails.[0].address}}">
 				</div>
-				{{#if hasPermission 'edit-other-user-password'}}
 				<div class="input-line">
-					<label for="password">{{_ "Password"}}</label>
-					<input type="password" id="password" autocomplete="off" value="">
-				</div>
-				<div class="input-line">
-					<label for="changePassword">
-						<input type="checkbox" id="changePassword" value="1" checked="{{user.requirePasswordChange}}">
-						{{_ "Require_password_change"}}
+					<label for="verified">
+						<input type="checkbox" id="verified" value="1" checked="{{user.emails.[0].verified}}">
+						{{_ "Verified"}}
 					</label>
 				</div>
+				{{#if hasPermission 'edit-other-user-password'}}
+					<div class="input-line">
+						<label for="password">{{_ "Password"}}</label>
+						<input type="password" id="password" autocomplete="off" value="">
+						<input type="button" id="randomPassword" class="button" value="{{_ "Random"}}">
+					</div>
+					<div class="input-line">
+						<label for="changePassword">
+							<input type="checkbox" id="changePassword" value="1" checked="{{requirePasswordChange}}">
+							{{_ "Require_password_change"}}
+						</label>
+					</div>
 				{{/if}}
+				{{#unless user}}
+					<div class="input-line">
+						<label for="joinDefaultChannels">
+							<input type="checkbox" id="joinDefaultChannels" value="1" checked="true">
+							{{_ "Join_default_channels"}}
+						</label>
+					</div>
+					<div class="input-line">
+						<label for="sendWelcomeEmail">
+							<input type="checkbox" id="sendWelcomeEmail" value="1" checked="true">
+							{{_ "Send_welcome_email"}}
+						</label>
+					</div>
+				{{/unless}}
 				<nav>
 					<button class='button button-block blue save'><span>{{_ "Save"}}</span></button>
 					<button class='button button-block cancel secondary' type="button"><span>{{_ "Cancel"}}</span></button>
