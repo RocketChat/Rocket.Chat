@@ -71,8 +71,8 @@ currentTracker = undefined
 					if err
 						return handleError(err)
 
-			if FlowRouter.getQueryParam('j')
-				msg = { _id: FlowRouter.getQueryParam('j'), rid: room._id }
+			if FlowRouter.getQueryParam('msg')
+				msg = { _id: FlowRouter.getQueryParam('msg'), rid: room._id }
 				RoomHistoryManager.getSurroundingMessages(msg);
 
 			RocketChat.callbacks.run 'enter-room', sub
