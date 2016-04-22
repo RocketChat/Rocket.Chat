@@ -28,15 +28,11 @@ Template.body.onRendered ->
 						Meteor.call 'readMessages', subscription.rid
 
 	$(document.body).on 'click', 'a', (e) ->
-		href = $(e.currentTarget).attr('href')
-		pattern = /msg=([a-zA-Z0-9]+)/
-		if href.indexOf(Meteor.absoluteUrl()) is 0 and pattern.test(href)
+		link = e.currentTarget
+		if link.origin is s.rtrim(Meteor.absoluteUrl(), '/') and /msg=([a-zA-Z0-9]+)/.test(link.search)
 			e.preventDefault()
 			e.stopPropagation()
-			msgId = href.match(pattern)[1]
-			console.log(msgId);
-			# msg = { _id: msgId, rid: room._id }
-			# RoomHistoryManager.getSurroundingMessages(msg);
+			FlowRouter.go(link.pathname + link.search)
 
 	Tracker.autorun (c) ->
 		w = window
