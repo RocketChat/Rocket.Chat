@@ -38,7 +38,7 @@ Template.adminInfo.events
 		Meteor.call 'getStatistics', true, (error, statistics) ->
 			instance.ready.set true
 			if error
-				toastr.error error.reason
+				handleError(error)
 			else
 				instance.statistics.set statistics
 
@@ -56,7 +56,7 @@ Template.adminInfo.onCreated ->
 		Meteor.call 'getStatistics', (error, statistics) ->
 			instance.ready.set true
 			if error
-				toastr.error error.reason
+				handleError(error)
 			else
 				instance.statistics.set statistics
 
