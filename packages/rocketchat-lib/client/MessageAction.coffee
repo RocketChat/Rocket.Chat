@@ -134,7 +134,19 @@ Meteor.startup ->
 					chatMessages[Session.get('openedRoom')].clearEditing(message)
 				chatMessages[Session.get('openedRoom')].deleteMsg(message)
 		validation: (message) ->
-			return RocketChat.authz.hasAtLeastOnePermission('delete-message', message.rid ) or RocketChat.settings.get('Message_AllowDeleting') and message.u?._id is Meteor.userId()
+			hasPermission = RocketChat.authz.hasAtLeastOnePermission('delete-message', message.rid)
+			isDeleteAllowed = RocketChat.settings.get 'Message_AllowDeleting'
+			deleteOwn = message.u?._id is Meteor.userId()
+
+			return unless hasPermission or (isDeleteAllowed and deleteOwn)
+
+			blockDeleteInMinutes = RocketChat.settings.get 'Message_AllowDeleting_BlockDeleteInMinutes'
+			if blockDeleteInMinutes? and blockDeleteInMinutes isnt 0
+				msgTs = moment(message.ts) if message.ts?
+				currentTsDiff = moment().diff(msgTs, 'minutes') if msgTs?
+				return currentTsDiff < blockDeleteInMinutes
+			else
+				return true
 		order: 2
 
 	RocketChat.MessageAction.addButton
