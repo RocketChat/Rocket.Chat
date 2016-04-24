@@ -60,12 +60,10 @@ RocketChat.OTR.Room = class {
 					$('.input-message-container').addClass('otr');
 					$('.inner-right-toolbar').prepend('<i class=\'otr-icon icon-key\'></i>');
 				}
-			} else {
-				if ($title.length) {
-					$('.otr-icon', $title).remove();
-					$('.input-message-container').removeClass('otr');
-					$('.inner-right-toolbar .otr-icon').remove();
-				}
+			} else if ($title.length) {
+				$('.otr-icon', $title).remove();
+				$('.input-message-container').removeClass('otr');
+				$('.inner-right-toolbar .otr-icon').remove();
 			}
 		});
 
@@ -135,7 +133,20 @@ RocketChat.OTR.Room = class {
 	}
 
 	encrypt(message) {
-		var data = new TextEncoder('UTF-8').encode(EJSON.stringify({ _id: message._id, text: message.msg, userId: this.userId, ack: Random.id((Random.fraction()+1)*20), ts: new Date(Date.now() + TimeSync.serverOffset()) }));
+		let ts;
+		if (isNaN(TimeSync.serverOffset())) {
+			ts = new Date();
+		} else {
+			ts = new Date(Date.now() + TimeSync.serverOffset());
+		}
+
+		var data = new TextEncoder('UTF-8').encode(EJSON.stringify({
+			_id: message._id,
+			text: message.msg,
+			userId: this.userId,
+			ack: Random.id((Random.fraction()+1)*20),
+			ts: ts
+		}));
 		var enc = this.encryptText(data);
 		return enc;
 	}
@@ -160,7 +171,7 @@ RocketChat.OTR.Room = class {
 
 	onUserStream(type, data) {
 		const user = Meteor.users.findOne(data.userId);
-		switch(type) {
+		switch (type) {
 			case 'handshake':
 				let timeout = null;
 

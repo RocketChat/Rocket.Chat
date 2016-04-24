@@ -24,11 +24,11 @@ RocketChat.roomTypes.add('l', 5, {
 AccountBox.addItem({
 	name: 'Livechat',
 	icon: 'icon-chat-empty',
-	href: 'livechat-users',
+	href: 'livechat-current-chats',
 	sideNav: 'livechatFlex',
 	condition: () => {
 		return RocketChat.settings.get('Livechat_enabled') && RocketChat.authz.hasAllPermission('view-livechat-manager');
-	},
+	}
 });
 
 RocketChat.TabBar.addButton({

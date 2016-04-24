@@ -17,7 +17,7 @@ Template.livechatWindow.helpers({
 		return FlowRouter.getQueryParam('mode') === 'popout';
 	},
 	showRegisterForm() {
-		if (Session.get('triggered')  || Meteor.userId()) {
+		if (Session.get('triggered') || Meteor.userId()) {
 			return false;
 		}
 		var form = Settings.findOne('Livechat_registration_form');

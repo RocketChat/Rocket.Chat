@@ -207,7 +207,7 @@ Template.admin.events
 
 		if not _.isEmpty settings
 			RocketChat.settings.batchSet settings, (err, success) ->
-				return toastr.error TAPi18n.__ 'Error_updating_settings' if err
+				return handleError(err) if err
 				toastr.success TAPi18n.__ 'Settings_updated'
 
 	"click .submit .refresh-clients": (e, t) ->
@@ -231,7 +231,9 @@ Template.admin.events
 				swal.showInputError TAPi18n.__ 'Name_cant_be_empty'
 				return false
 
-			Meteor.call 'addOAuthService', inputValue
+			Meteor.call 'addOAuthService', inputValue, (err) ->
+				if err
+					handleError(err)
 
 	"click .submit .remove-custom-oauth": (e, t) ->
 		name = this.section.replace('Custom OAuth: ', '')
@@ -269,7 +271,8 @@ Template.admin.events
 			reader.onloadend = =>
 				Meteor.call 'setAsset', reader.result, blob.type, @asset, (err, data) ->
 					if err?
-						toastr.error err.reason, TAPi18n.__ err.error
+						handleError(err)
+						# toastr.error err.reason, TAPi18n.__ err.error
 						console.log err
 						return
 
@@ -291,7 +294,8 @@ Template.admin.events
 
 		Meteor.call @value, (err, data) ->
 			if err?
-				toastr.error TAPi18n.__(err.error), TAPi18n.__('Error')
+				err.details = _.extend(error.details || {}, errorTitle: 'Error')
+				handleError(err)
 				return
 
 			args = [data.message].concat data.params

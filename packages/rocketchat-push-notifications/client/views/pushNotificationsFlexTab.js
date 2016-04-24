@@ -73,7 +73,7 @@ Template.pushNotificationsFlexTab.helpers({
 		return Template.instance().editing.get() === field;
 	},
 	emailVerified() {
-		return  Meteor.user().emails && Meteor.user().emails[0] && Meteor.user().emails[0].verified;
+		return Meteor.user().emails && Meteor.user().emails[0] && Meteor.user().emails[0].verified;
 	}
 });
 
@@ -95,7 +95,7 @@ Template.pushNotificationsFlexTab.onCreated(function() {
 		if (this.validateSetting(field)) {
 			Meteor.call('saveNotificationSettings', Session.get('openedRoom'), field, value, (err/*, result*/) => {
 				if (err) {
-					return toastr.error(t(err.reason || err.message));
+					return handleError(err);
 				}
 				this.editing.set();
 			});

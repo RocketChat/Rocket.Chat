@@ -87,7 +87,7 @@ Template.accountProfile.onCreated ->
 
 			if error
 				toastr.remove();
-				toastr.error error.reason
+				handleError(error)
 
 Template.accountProfile.onRendered ->
 	Tracker.afterFlush ->
@@ -121,7 +121,7 @@ Template.accountProfile.events
 		Meteor.logoutOtherClients (error) ->
 			if error
 				toastr.remove();
-				toastr.error error.reason
+				handleError(error)
 			else
 				toastr.remove();
 				toastr.success t('Logged_out_of_other_clients_successfully')
@@ -180,10 +180,8 @@ Template.accountProfile.events
 		Meteor.call 'sendConfirmationEmail', Meteor.user().emails?[0]?.address, (error, results) =>
 			if results
 				toastr.success t('Verification_email_sent')
-			else if error?.reason?
-				toastr.error error.reason
-			else
-				toastr.error t('Error_sending_confirmation_email')
+			else if error
+				handleError(error)
 
 			e.currentTarget.innerHTML = e.currentTarget.innerHTML.replace(' ...', '')
 			e.currentTarget.disabled = false

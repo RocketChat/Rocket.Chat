@@ -78,7 +78,7 @@ Template.mailMessagesInstructions.events
 			Meteor.call 'mailMessages', data, (err, result) ->
 				$btn.html(oldBtnValue)
 				if err?
-					return toastr.error(err.reason or err.message)
+					return handleError(err)
 
 				console.log(result)
 				toastr.success(TAPi18n.__('Your_email_has_been_queued_for_sending'))

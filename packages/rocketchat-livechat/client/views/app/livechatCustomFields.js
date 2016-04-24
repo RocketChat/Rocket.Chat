@@ -5,7 +5,7 @@ Template.livechatCustomFields.helpers({
 });
 
 Template.livechatCustomFields.events({
-	'click .remove-custom-field' (e) {
+	'click .remove-custom-field'(e) {
 		e.preventDefault();
 		e.stopPropagation();
 
@@ -21,20 +21,20 @@ Template.livechatCustomFields.events({
 		}, () => {
 			Meteor.call('livechat:removeCustomField', this._id, function(error/*, result*/) {
 				if (error) {
-					return toastr.error(t(error.reason || error.error));
+					return handleError(error);
 				}
 				swal({
 					title: t('Removed'),
 					text: t('Field_removed'),
 					type: 'success',
 					timer: 1000,
-					showConfirmButton: false,
+					showConfirmButton: false
 				});
 			});
 		});
 	},
 
-	'click .custom-field-info' (e/*, instance*/) {
+	'click .custom-field-info'(e/*, instance*/) {
 		e.preventDefault();
 		FlowRouter.go('livechat-customfield-edit', { _id: this._id });
 	}

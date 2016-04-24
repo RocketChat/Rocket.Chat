@@ -74,7 +74,7 @@ class @ChatMessages
 			input.value = ''
 			rid ?= visitor.getRoom(true)
 
-			sendMessage = ->
+			sendMessage = (callback) ->
 				msgObject = { _id: Random.id(), rid: rid, msg: msg, token: visitor.getToken() }
 				MsgTyping.stop(rid)
 				#Check if message starts with /command
@@ -91,6 +91,8 @@ class @ChatMessages
 						if error
 							ChatMessage.update msgObject._id, { $set: { error: true } }
 							showError error.reason
+						else
+							callback?(result)
 
 			if not Meteor.userId()
 				Meteor.call 'livechat:registerGuest', { token: visitor.getToken() }, (error, result) ->
@@ -101,14 +103,17 @@ class @ChatMessages
 						if error
 							return showError error.reason
 
-						sendMessage()
+						sendMessage (message) ->
+							ChatMessage.update message._id, _.omit(message, '_id')
+							if message.rid?
+								visitor.setRoomToSubscribe(message.rid)
 			else
 				sendMessage()
 
 	deleteMsg: (message) ->
 		Meteor.call 'deleteMessage', message, (error, result) ->
 			if error
-				return toastr.error error.reason
+				return handleError(error)
 
 	update: (id, rid, input) ->
 		if s.trim(input.value) isnt ''

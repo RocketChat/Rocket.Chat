@@ -12,4 +12,8 @@ Meteor.startup(() => {
 			}
 		});
 	});
+
+	RocketChat.authz.addRoomAccessValidator(function(room, user) {
+		return room.t === 'l' && RocketChat.authz.hasPermission(user._id, 'view-livechat-rooms');
+	});
 });

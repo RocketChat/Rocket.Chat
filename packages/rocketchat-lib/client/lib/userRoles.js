@@ -5,7 +5,7 @@ Meteor.startup(function() {
 		if (Meteor.userId()) {
 			Meteor.call('getUserRoles', (error, results) => {
 				if (error) {
-					return toastr.error(TAPi18n.__(error.error));
+					return handleError(error);
 				}
 
 				for (let record of results) {

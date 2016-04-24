@@ -1,7 +1,7 @@
 Meteor.methods({
 	saveNotificationSettings: function(rid, field, value) {
 		if (!Meteor.userId()) {
-			throw new Meteor.Error('invalid-user', 'Invalid user');
+			throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'saveNotificationSettings' });
 		}
 
 		check(rid, String);
