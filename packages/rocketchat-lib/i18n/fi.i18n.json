@@ -266,7 +266,6 @@
   "Duplicate_archived_channel_name" : "Arkistoitu kanava nimellä '%s' on olemassa",
   "Duplicate_archived_private_group_name" : "Arkistoitu privaattiryhmä '%s%' on olemassa",
   "Duplicate_private_group_name" : "Privaattiryhmä '%s' on olemassa jo",
-  "E-mail" : "Sähköpostiosoite",
   "Edit" : "Muokkaa",
   "Edit_Custom_Field" : "Muokkaa omaa Field",
   "Edit_Department" : "Muokkaa osastoa",

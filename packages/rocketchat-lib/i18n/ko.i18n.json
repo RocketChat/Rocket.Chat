@@ -266,7 +266,6 @@
   "Duplicate_archived_channel_name" : "보관 된 채널 이름 ' %s'이 (가) 존재",
   "Duplicate_archived_private_group_name" : "이름 ' %s는'존재로 보관 된 개인 그룹",
   "Duplicate_private_group_name" : "'%s'는 이미 존재하는 비밀 그룹입니다.",
-  "E-mail" : "이메일",
   "Edit" : "수정",
   "Edit_Custom_Field" : "편집 사용자 정의 필드",
   "Edit_Department" : "편집 부서",
