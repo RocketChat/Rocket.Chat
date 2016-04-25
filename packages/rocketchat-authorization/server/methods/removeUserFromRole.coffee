@@ -11,6 +11,7 @@ Meteor.methods
 		if not user?._id?
 			throw new Meteor.Error 'error-invalid-user', 'Invalid user', { method: 'authorization:removeUserFromRole' }
 
-		RocketChat.Notifications.notifyAll('roles-change', { type: 'removed', _id: roleName, u: { _id: user._id, username: username }, scope: scope });
+		if RocketChat.settings.get('UI_DisplayRoles')
+			RocketChat.Notifications.notifyAll('roles-change', { type: 'removed', _id: roleName, u: { _id: user._id, username: username }, scope: scope });
 
 		return RocketChat.models.Roles.removeUserRoles user._id, roleName, scope
