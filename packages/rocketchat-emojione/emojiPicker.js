@@ -3,6 +3,34 @@
 var emojisByCategory;
 var toneList;
 
+/*
+ * Mapping category hashes into human readable and translated names
+ */
+var emojiCategories = {
+	recent: TAPi18n.__('Frequently_Used'),
+	people: TAPi18n.__('Smileys_and_People'),
+	nature: TAPi18n.__('Animals_and_Nature'),
+	food: TAPi18n.__('Food_and_Drink'),
+	activity: TAPi18n.__('Activity'),
+	travel: TAPi18n.__('Travel_and_Places'),
+	objects: TAPi18n.__('Objects'),
+	symbols: TAPi18n.__('Symbols'),
+	flags: TAPi18n.__('Flags')
+};
+
+/**
+ * Turns category hash to a nice readable translated name
+ * @param {string} category hash
+ * @return {string} readable and translated
+ */
+function categoryName(category) {
+	if (emojiCategories[category]) {
+		return emojiCategories[category];
+	}
+	// unknown category; better hash than nothing
+	return category;
+}
+
 Template.emojiPicker.helpers({
 	category() {
 		return Object.keys(emojisByCategory);
@@ -35,8 +63,24 @@ Template.emojiPicker.helpers({
 	currentTone() {
 		return 'tone-' + Template.instance().tone;
 	},
+	/**
+	 * Returns true if a given emoji category is active
+	 *
+	 * @param {string} category hash
+	 * @return {boolean} true if active, false otherwise
+	 */
 	activeCategory(category) {
 		return Template.instance().currentCategory.get() === category ? 'active' : '';
+	},
+	categoryName: categoryName,
+	/**
+	 * Returns currently active emoji category hash
+	 *
+	 * @return {string} category hash
+	 */
+	currentCategory() {
+		var hash = Template.instance().currentCategory.get();
+		return categoryName(hash);
 	}
 });
 
