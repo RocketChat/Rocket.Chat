@@ -9,7 +9,9 @@ Meteor.methods
 		if roleData.scope not in ['Users', 'Subscriptions']
 			roleData.scope = 'Users'
 
+		update = RocketChat.models.Roles.createOrUpdate roleData.name, roleData.scope, roleData.description
+
 		if RocketChat.settings.get('UI_DisplayRoles')
 			RocketChat.Notifications.notifyAll('roles-change', { type: 'changed', _id: roleData.name });
 
-		return RocketChat.models.Roles.createOrUpdate roleData.name, roleData.scope, roleData.description
+		return update
