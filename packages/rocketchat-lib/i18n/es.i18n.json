@@ -266,7 +266,6 @@
   "Duplicate_archived_channel_name" : "Existe un canal archivada con el nombre ' %s'",
   "Duplicate_archived_private_group_name" : "Un grupo privado comprimidos con el nombre existe ' %s'",
   "Duplicate_private_group_name" : "Un Grupo Privado con el nombre  '%s' ya existe",
-  "E-mail" : "Correo Electronico",
   "Edit" : "Editar",
   "Edit_Custom_Field" : "Editar campo personalizado",
   "Edit_Department" : "Editar Departamento",
