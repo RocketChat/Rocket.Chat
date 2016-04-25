@@ -20,17 +20,17 @@ Template.mentionsFlexTab.onCreated ->
 				@hasMore.set false
 
 Template.mentionsFlexTab.events
-	'click .message-cog': (e) ->
+	'click .message-cog': (e, t) ->
 		e.stopPropagation()
 		e.preventDefault()
 		message_id = $(e.currentTarget).closest('.message').attr('id')
 		$('.message-dropdown:visible').hide()
-		$(".mentioned-messages-list \##{message_id} .message-dropdown").remove()
+		t.$("\##{message_id} .message-dropdown").remove()
 		message = MentionedMessage.findOne message_id
 		actions = RocketChat.MessageAction.getButtons message, 'mentions'
 		el = Blaze.toHTMLWithData Template.messageDropdown, { actions: actions }
-		$(".mentioned-messages-list \##{message_id} .message-cog-container").append el
-		dropDown = $(".mentioned-messages-list \##{message_id} .message-dropdown")
+		t.$("\##{message_id} .message-cog-container").append el
+		dropDown = t.$("\##{message_id} .message-dropdown")
 		dropDown.show()
 
 	'scroll .content': _.throttle (e, instance) ->
