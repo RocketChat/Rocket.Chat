@@ -68,7 +68,7 @@ class IframeLogin {
 			console.log(error, result);
 			if (result && result.data && result.data.token) {
 				// TODO get from api
-				result.data.token = 'yaMadZ1RMBdMzs6kGycKybrHVptoDl7nokxtorz1me0';
+				// result.data.token = 'yaMadZ1RMBdMzs6kGycKybrHVptoDl7nokxtorz1me0';
 				this.loginWithToken(result.data.token, (error, result) => {
 					if (error) {
 						this.reactiveIframeUrl.set(iframeUrl);
