@@ -11,7 +11,9 @@ Meteor.methods
 		if not user?._id?
 			throw new Meteor.Error 'error-invalid-user', 'Invalid user', { method: 'authorization:addUserToRole' }
 
+		add = RocketChat.models.Roles.addUserRoles user._id, roleName, scope
+
 		if RocketChat.settings.get('UI_DisplayRoles')
 			RocketChat.Notifications.notifyAll('roles-change', { type: 'added', _id: roleName, u: { _id: user._id, username: username }, scope: scope });
 
-		return RocketChat.models.Roles.addUserRoles user._id, roleName, scope
+		return add
