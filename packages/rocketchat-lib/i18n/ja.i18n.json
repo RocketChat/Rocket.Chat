@@ -266,7 +266,6 @@
   "Duplicate_archived_channel_name" : "'%s' は、すでにアーカイブされたチャンネルで登録されています",
   "Duplicate_archived_private_group_name" : "'%s' は、すでにアーカイブされたプライベートグループで登録されています",
   "Duplicate_private_group_name" : "'%s' は、すでにチャンネル/プライベートグループで登録されています",
-  "E-mail" : "メール",
   "Edit" : "編集",
   "Edit_Custom_Field" : "編集カスタムフィールド",
   "Edit_Department" : "部門を編集",

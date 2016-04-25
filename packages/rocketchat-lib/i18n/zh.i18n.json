@@ -266,7 +266,6 @@
   "Duplicate_archived_channel_name" : "已存在名为“%s”的归档频道",
   "Duplicate_archived_private_group_name" : "已存在名为“%s”的私有组",
   "Duplicate_private_group_name" : "私有组 '%s' 已存在",
-  "E-mail" : "电子邮件",
   "Edit" : "编辑",
   "Edit_Custom_Field" : "编辑自定义字段",
   "Edit_Department" : "编辑部门信息",
