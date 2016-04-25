@@ -1,4 +1,4 @@
-/* globals Accounts */
+/* globals Accounts, OAuth */
 
 Accounts.registerLoginHandler('iframe', function(result) {
 	if (!result.iframe) {
@@ -15,5 +15,12 @@ Accounts.registerLoginHandler('iframe', function(result) {
 		return {
 			userId: user._id
 		};
+	}
+});
+
+
+Meteor.methods({
+	'OAuth.retrieveCredential'(credentialToken, credentialSecret) {
+		return OAuth.retrieveCredential(credentialToken, credentialSecret);
 	}
 });
