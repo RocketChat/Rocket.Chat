@@ -36,6 +36,11 @@ googleTranslate.getSupportedLanguages(function(err, langs) {
 			if (file === 'en.i18n.json') { return callback(); }
 
 			var lang = file.replace('.i18n.json', '');
+
+			if (lang === 'ug' || lang === 'zh-HK') {
+				return callback();
+			}
+
 			var destContents = fs.readFileSync(path + file, 'utf-8');
 			var destJson = JSON.parse(destContents);
 			var toTranslate = {};
