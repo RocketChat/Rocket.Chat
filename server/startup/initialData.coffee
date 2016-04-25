@@ -69,6 +69,8 @@ Meteor.startup ->
 						console.log 'Username provided is invalid; Ignoring environment variables ADMIN_USERNAME'.red
 				console.log "Username: #{adminUser.username}".green
 
+				adminUser.type = 'user'
+
 				id = RocketChat.models.Users.create adminUser
 
 				Accounts.setPassword id, process.env.ADMIN_PASS
