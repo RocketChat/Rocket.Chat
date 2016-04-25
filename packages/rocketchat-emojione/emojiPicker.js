@@ -3,6 +3,14 @@
 var emojisByCategory;
 var toneList;
 
+/**
+ * @param {string} string
+ * @return {string} Firstletterisnowcapital
+ */
+function capitalizeFirstLetter(string) {
+	return string.charAt(0).toUpperCase() + string.substring(1);
+}
+
 Template.emojiPicker.helpers({
 	category() {
 		return Object.keys(emojisByCategory);
@@ -35,8 +43,22 @@ Template.emojiPicker.helpers({
 	currentTone() {
 		return 'tone-' + Template.instance().tone;
 	},
+	/**
+	 * Returns true if a given emoji category is active
+	 *
+	 * @param {string} category
+	 * @return {boolean} true if active, false otherwise
+	 */
 	activeCategory(category) {
 		return Template.instance().currentCategory.get() === category ? 'active' : '';
+	},
+	/**
+	 * Returns currently active emoji category
+	 *
+	 * @return {string}
+	 */
+	currentCategory() {
+		return capitalizeFirstLetter(Template.instance().currentCategory.get());
 	}
 });
 
