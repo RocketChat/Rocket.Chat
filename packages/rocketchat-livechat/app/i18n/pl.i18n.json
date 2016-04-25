@@ -3,16 +3,16 @@
   "Appearance" : "Wygląd",
   "How_friendly_was_the_chat_agent" : "Jak przyjazny był nasz agent?",
   "How_knowledgeable_was_the_chat_agent" : "Jaką wiedzę miał nasz agent?",
-  "How_responsive_was_the_chat_agent" : "Jak reaguje był agentem czat?",
-  "How_satisfied_were_you_with_this_chat" : "Jak byłeś zadowolony z tej rozmowy?",
+  "How_responsive_was_the_chat_agent" : "Jak szybko reagował nasz agent?",
+  "How_satisfied_were_you_with_this_chat" : "Jak bardzo byłeś/aś zadowolony/a z tej rozmowy?",
   "Installation" : "Instalacja",
   "Please_answer_survey" : "Proszę poświęć chwilę, aby odpowiedzieć na krótką ankietę na temat tej rozmowy",
   "Please_fill_name_and_email" : "Proszę wypełnić nazwisko i adres e-mail",
-  "Select_a_department" : "Wybierz dział",
+  "Select_a_department" : "Wybierz oddział",
   "Skip" : "Pomiń",
   "Start_Chat" : "Rozpocznij czat",
   "Survey" : "Ankieta",
-  "Survey_instructions" : "Oceń każde pytanie zgodnie z zadowolenia, 1 co oznacza, że ​​są całkowicie niedosyt i 5 co oznacza, że ​​są w pełni zadowoleni.",
+  "Survey_instructions" : "Oceń każde pytanie zgodnie z zadowolenia, 1 co oznacza, że są całkowicie niedosyt i 5 co oznacza, że są w pełni zadowoleni.",
   "Thank_you_for_your_feedback" : "Dziękujemy za twoją opinię",
-  "We_are_offline_Sorry_for_the_inconvenience" : "Jesteśmy offline. Przepraszam za niedogodności."
+  "We_are_offline_Sorry_for_the_inconvenience" : "Jesteśmy offline. Przepraszamy za niedogodności."
 }
