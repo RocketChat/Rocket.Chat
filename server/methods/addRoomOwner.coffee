@@ -23,6 +23,7 @@ Meteor.methods
 				username: fromUser.username
 			role: 'owner'
 
-		RocketChat.Notifications.notifyAll('roles-change', { type: 'added', _id: 'owner', u: { _id: user._id, username: user.username }, scope: rid });
+		if RocketChat.settings.get('UI_DisplayRoles')
+			RocketChat.Notifications.notifyAll('roles-change', { type: 'added', _id: 'owner', u: { _id: user._id, username: user.username }, scope: rid });
 
 		return true
