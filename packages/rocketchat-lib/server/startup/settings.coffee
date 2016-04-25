@@ -192,6 +192,9 @@ RocketChat.settings.addGroup 'Layout', ->
 		@add 'Custom_Script_Logged_Out', '//Add your script', { type: 'code', multiline: true, public: true }
 		@add 'Custom_Script_Logged_In', '//Add your script', { type: 'code', multiline: true, public: true }
 
+	@section 'User Interface', ->
+		@add 'UI_DisplayRoles', true, { type: 'boolean', public: true }
+
 
 RocketChat.settings.addGroup 'Logs', ->
 	@add 'Debug_Level', 'error', { type: 'select', values: [ { key: 'error', i18nLabel: 'Only_errors' }, { key: 'debug', i18nLabel: 'All_logs' } ] }
