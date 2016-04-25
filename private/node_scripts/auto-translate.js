@@ -85,6 +85,8 @@ googleTranslate.getSupportedLanguages(function(err, langs) {
 					}
 				});
 			} else {
+				var newJsonString = JSON.stringify(newContent, null, '  ').replace(/": "/g, '" : "');
+				fs.writeFileSync(path + file, newJsonString, 'utf8');
 				return callback();
 			}
 		}, function() {
