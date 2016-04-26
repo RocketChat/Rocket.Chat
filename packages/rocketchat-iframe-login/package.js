@@ -21,6 +21,11 @@ Package.onUse(function(api) {
 	api.use('http');
 	api.use('tracker');
 
+	api.imply('facebook');
+	api.imply('twitter');
+	api.imply('google');
+	api.imply('oauth');
+
 	// Server files
 	api.addFiles('iframe_rocketchat.js', 'server');
 	api.addFiles('iframe_server.js', 'server');
