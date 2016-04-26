@@ -20,6 +20,7 @@
   "Accounts_AllowUserAvatarChange" : "Allow User Avatar Change",
   "Accounts_AllowUsernameChange" : "Allow Username Change",
   "Accounts_AllowUserProfileChange" : "Allow User Profile Change",
+  "Accounts_AvatarSelectionOnRegistration" : "Avatar Selection on Registration",
   "Accounts_AvatarResize" : "Resize Avatars",
   "Accounts_AvatarSize" : "Avatar Size",
   "Accounts_AvatarStorePath" : "Avatar Storage Path",

@@ -158,6 +158,9 @@ Template.main.helpers
 	requirePasswordChange: ->
 		return Meteor.user()?.requirePasswordChange is true
 
+	requireAvatar: ->
+		return RocketChat.settings.get('Accounts_AvatarSelectionOnRegistration') and !Meteor.user()?.avatarOrigin
+
 	CustomScriptLoggedOut: ->
 		RocketChat.settings.get 'Custom_Script_Logged_Out'
 

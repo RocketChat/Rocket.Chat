@@ -10,7 +10,7 @@ Meteor.methods
 
 		RocketChatFileAvatarInstance.deleteFile "#{user.username}.jpg"
 
-		RocketChat.models.Users.unsetAvatarOrigin user._id
+		RocketChat.models.Users.setAvatarOrigin user._id, 'initials'
 
 		RocketChat.Notifications.notifyAll 'updateAvatar', {username: user.username}
 		return
