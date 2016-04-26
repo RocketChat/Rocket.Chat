@@ -1,5 +1,5 @@
 Meteor.methods
-	sendMessage: (message, options) ->
+	sendMessage: (message) ->
 		if message.msg?.length > RocketChat.settings.get('Message_MaxAllowedSize')
 			throw new Meteor.Error('error-message-size-exceeded', 'Message size exceeds Message_MaxAllowedSize', { method: 'sendMessage' })
 
@@ -22,7 +22,7 @@ Meteor.methods
 			}
 			return false
 
-		RocketChat.sendMessage user, message, room, options
+		RocketChat.sendMessage user, message, room
 
 # Limit a user to sending 5 msgs/second
 # DDPRateLimiter.addRule
