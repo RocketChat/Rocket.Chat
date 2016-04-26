@@ -1,6 +1,6 @@
 Meteor.methods
-  getTotalChannels: ->
-    if not Meteor.userId()
-      throw new Meteor.Error 'invalid-user', '[methods] getTotalChannels -> Invalid user'
+	getTotalChannels: ->
+		if not Meteor.userId()
+			throw new Meteor.Error 'error-invalid-user', 'Invalid user', { method: 'getTotalChannels' }
 
-    return RocketChat.models.Rooms.find({ t: 'c' }).count()
+		return RocketChat.models.Rooms.find({ t: 'c' }).count()

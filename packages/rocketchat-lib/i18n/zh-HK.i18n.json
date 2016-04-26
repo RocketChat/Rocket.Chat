@@ -282,7 +282,7 @@
   "User_has_been_deleted" : "用户已被删除",
   "User_Info" : "用户信息",
   "User_is_no_longer_an_admin" : "用户已不再是管理员",
-  "User_is_not_activated" : "用户未激活",
+  "error-user-is-not-activated" : "用户未激活",
   "User_is_now_an_admin" : "用户已成为管理员",
   "User_joined_channel" : "加入了频道。",
   "User_joined_channel_female" : "加入了频道。",

@@ -12,4 +12,4 @@ Meteor.methods
 			RocketChat.models.Rooms.removeById rid
 			# @TODO remove das mensagens lidas do usuário
 		else
-			throw new Meteor.Error 'unauthorized'
+			throw new Meteor.Error 'error-not-allowed', 'Not allowed', { method: 'eraseRoom' }

@@ -42,10 +42,7 @@ Template.channelSettingsDefault.events({
 
 		Meteor.call('saveRoomSettings', this.rid, 'default', $('input[name=default]:checked').val(), (err/*, result*/) => {
 			if (err) {
-				if (err.error === 'invalid-room-type') {
-					return toastr.error(TAPi18n.__(err.reason, err.details.roomType));
-				}
-				return toastr.error(TAPi18n.__(err.reason));
+				return handleError(err);
 			}
 			toastr.success(TAPi18n.__('Room_type_changed_successfully'));
 		});
