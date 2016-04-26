@@ -107,7 +107,7 @@ Accounts.validateLoginAttempt (login) ->
 		return login.allowed
 
 	if !!login.user?.active isnt true
-		throw new Meteor.Error 'inactive-user', TAPi18n.__ 'User_is_not_activated'
+		throw new Meteor.Error 'error-user-is-not-activated', 'User is not activated', { function: 'Accounts.validateLoginAttempt' }
 		return false
 
 	# If user is admin, no need to check if email is verified
@@ -116,7 +116,7 @@ Accounts.validateLoginAttempt (login) ->
 			return email.verified is true
 
 		if validEmail.length is 0
-			throw new Meteor.Error 'no-valid-email'
+			throw new Meteor.Error 'error-invalid-email', 'Invalid email __email__'
 			return false
 
 	RocketChat.models.Users.updateLastLoginById login.user._id

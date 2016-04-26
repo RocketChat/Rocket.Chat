@@ -102,7 +102,7 @@ Template.loginForm.events
 						if error.error is 'Email already exists.'
 							toastr.error t 'Email_already_exists'
 						else
-							toastr.error error.reason
+							handleError(error)
 						return
 
 					Meteor.loginWithPassword s.trim(formData.email), formData.pass, (error) ->

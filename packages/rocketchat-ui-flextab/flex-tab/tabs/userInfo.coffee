@@ -164,7 +164,7 @@ Template.userInfo.events
 			}, =>
 				Meteor.call 'removeUserFromRoom', { rid: rid, username: instance.user.get()?.username }, (err, result) =>
 					if err
-						return toastr.error(err.reason or err.message)
+						return handleError(err)
 					swal
 						title: t('Removed')
 						text: t('User_has_been_removed_from_s', room.name)
@@ -174,7 +174,7 @@ Template.userInfo.events
 
 					instance.clear()
 		else
-			toastr.error(TAPi18n.__ 'Not_allowed')
+			toastr.error(TAPi18n.__ 'error-not-allowed')
 
 	'click .mute-user': (e, instance) ->
 		e.preventDefault()
@@ -194,7 +194,7 @@ Template.userInfo.events
 			}, =>
 				Meteor.call 'muteUserInRoom', { rid: rid, username: instance.user.get()?.username }, (err, result) ->
 					if err
-						return toastr.error(err.reason or err.message)
+						return handleError(err)
 					swal
 						title: t('Muted')
 						text: t('User_has_been_muted_in_s', room.name)
@@ -209,10 +209,10 @@ Template.userInfo.events
 		if RocketChat.authz.hasAllPermission('mute-user', rid)
 			Meteor.call 'unmuteUserInRoom', { rid: rid, username: t.user.get()?.username }, (err, result) ->
 				if err
-					return toastr.error(err.reason or err.message)
+					return handleError(err)
 				toastr.success TAPi18n.__ 'User_unmuted_in_room'
 		else
-			toastr.error(TAPi18n.__ 'Not_allowed')
+			toastr.error(TAPi18n.__ 'error-not-allowed')
 
 	'click .set-moderator': (e, t) ->
 		e.preventDefault()
@@ -221,7 +221,7 @@ Template.userInfo.events
 		unless userModerator?
 			Meteor.call 'addRoomModerator', Session.get('openedRoom'), t.user.get()?._id, (err, results) =>
 				if err
-					return toastr.error(err.reason or err.message)
+					return handleError(err)
 
 				room = ChatRoom.findOne(Session.get('openedRoom'))
 				toastr.success TAPi18n.__ 'User__username__is_now_a_moderator_of__room_name_', { username: @username, room_name: room.name }
@@ -233,7 +233,7 @@ Template.userInfo.events
 		if userModerator?
 			Meteor.call 'removeRoomModerator', Session.get('openedRoom'), t.user.get()?._id, (err, results) =>
 				if err
-					return toastr.error(err.reason or err.message)
+					return handleError(err)
 
 				room = ChatRoom.findOne(Session.get('openedRoom'))
 				toastr.success TAPi18n.__ 'User__username__removed_from__room_name__moderators', { username: @username, room_name: room.name }
@@ -245,7 +245,7 @@ Template.userInfo.events
 		unless userOwner?
 			Meteor.call 'addRoomOwner', Session.get('openedRoom'), t.user.get()?._id, (err, results) =>
 				if err
-					return toastr.error(err.reason or err.message)
+					return handleError(err)
 
 				room = ChatRoom.findOne(Session.get('openedRoom'))
 				toastr.success TAPi18n.__ 'User__username__is_now_a_owner_of__room_name_', { username: @username, room_name: room.name }
@@ -257,7 +257,7 @@ Template.userInfo.events
 		if userOwner?
 			Meteor.call 'removeRoomOwner', Session.get('openedRoom'), t.user.get()?._id, (err, results) =>
 				if err
-					return toastr.error(TAPi18n.__(err.error))
+					return handleError(err)
 
 				room = ChatRoom.findOne(Session.get('openedRoom'))
 				toastr.success TAPi18n.__ 'User__username__removed_from__room_name__owners', { username: @username, room_name: room.name }
@@ -269,7 +269,7 @@ Template.userInfo.events
 			if result
 				toastr.success t('User_has_been_deactivated')
 			if error
-				toastr.error error.reason
+				handleError(error)
 
 	'click .activate': (e, instance) ->
 		e.stopPropagation()
@@ -278,7 +278,7 @@ Template.userInfo.events
 			if result
 				toastr.success t('User_has_been_activated')
 			if error
-				toastr.error error.reason
+				handleError(error)
 
 	'click .make-admin': (e, instance) ->
 		e.stopPropagation()
@@ -287,7 +287,7 @@ Template.userInfo.events
 			if result
 				toastr.success t('User_is_now_an_admin')
 			if error
-				toastr.error error.reason
+				handleError(error)
 
 	'click .remove-admin': (e, instance) ->
 		e.stopPropagation()
@@ -296,7 +296,7 @@ Template.userInfo.events
 			if result
 				toastr.success t('User_is_no_longer_an_admin')
 			if error
-				toastr.error error.reason
+				handleError(error)
 
 	'click .delete': (e, instance) ->
 		e.stopPropagation()
@@ -317,7 +317,7 @@ Template.userInfo.events
 
 			Meteor.call 'deleteUser', _id, (error, result) ->
 				if error
-					toastr.error error.reason
+					handleError(error)
 					swal.enableButtons()
 				else
 					swal

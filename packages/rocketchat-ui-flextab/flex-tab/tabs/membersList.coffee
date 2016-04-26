@@ -107,17 +107,10 @@ Template.membersList.events
 
 		roomData = Session.get('roomData' + template.data.rid)
 
-		if roomData.t is 'd'
-			Meteor.call 'createGroupRoom', roomData.usernames, doc.username, (error, result) ->
-				if error
-					return toastr.error error.reason
-
-				if result?.rid?
-					$('#user-add-search').val('')
-		else if roomData.t in ['c', 'p']
+		if roomData.t in ['c', 'p']
 			Meteor.call 'addUserToRoom', { rid: roomData._id, username: doc.username }, (error, result) ->
 				if error
-					return toastr.error error.reason
+					return handleError(error)
 
 				$('#user-add-search').val('')
 

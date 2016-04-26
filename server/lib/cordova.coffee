@@ -5,13 +5,13 @@ Meteor.methods
 	push_test: ->
 		user = Meteor.user()
 		if not user?
-			throw new Meteor.Error 'unauthorized', '[methods] push_test -> Unauthorized'
+			throw new Meteor.Error 'error-not-allowed', 'Not allowed', { method: 'push_test' }
 
 		if not RocketChat.authz.hasRole(user._id, 'admin')
-			throw new Meteor.Error 'unauthorized', '[methods] push_test -> Unauthorized'
+			throw new Meteor.Error 'error-not-allowed', 'Not allowed', { method: 'push_test' }
 
 		if Push.enabled isnt true
-			throw new Meteor.Error 'push_disabled'
+			throw new Meteor.Error 'error-push-disabled', 'Push is disabled', { method: 'push_test' }
 
 		query =
 			$and: [
@@ -27,7 +27,7 @@ Meteor.methods
 		tokens = Push.appCollection.find(query).count()
 
 		if tokens is 0
-			throw new Meteor.Error 'no_tokens_for_this_user'
+			throw new Meteor.Error 'error-no-tokens-for-this-user', "There are no tokens for this user", { method: 'push_test' }
 
 		Push.send
 			from: 'push'

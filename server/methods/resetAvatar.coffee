@@ -1,10 +1,10 @@
 Meteor.methods
 	resetAvatar: (image, service) ->
 		unless Meteor.userId()
-			throw new Meteor.Error(403, "[methods] resetAvatar -> Invalid user")
+			throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'resetAvatar' });
 
 		unless RocketChat.settings.get("Accounts_AllowUserAvatarChange")
-			throw new Meteor.Error(403, "[methods] resetAvatar -> Invalid access")
+			throw new Meteor.Error('error-not-allowed', 'Not allowed', { method: 'resetAvatar' });
 
 		user = Meteor.user()
 
