@@ -10,7 +10,10 @@ class AutoLinker
 
 			autolinker = new Autolinker
 				stripPrefix: RocketChat.settings.get 'AutoLinker_StripPrefix'
-				urls: RocketChat.settings.get 'AutoLinker_Urls'
+				urls:
+					schemeMatches: RocketChat.settings.get 'AutoLinker_Urls_Scheme'
+					wwwMatches: RocketChat.settings.get 'AutoLinker_Urls_www'
+					tldMatches: RocketChat.settings.get 'AutoLinker_Urls_TLD'
 				email: RocketChat.settings.get 'AutoLinker_Email'
 				phone: RocketChat.settings.get 'AutoLinker_Phone'
 				twitter: false
