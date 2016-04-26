@@ -1,10 +1,10 @@
 Meteor.methods
 	sendMessage: (message, options) ->
 		if message.msg?.length > RocketChat.settings.get('Message_MaxAllowedSize')
-			throw new Meteor.Error 400, '[methods] sendMessage -> Message size exceed Message_MaxAllowedSize'
+			throw new Meteor.Error('error-message-size-exceeded', 'Message size exceeds Message_MaxAllowedSize', { method: 'sendMessage' })
 
 		if not Meteor.userId()
-			throw new Meteor.Error('invalid-user', "[methods] sendMessage -> Invalid user")
+			throw new Meteor.Error('error-invalid-user', "Invalid user", { method: 'sendMessage' })
 
 		user = RocketChat.models.Users.findOneById Meteor.userId(), fields: username: 1
 

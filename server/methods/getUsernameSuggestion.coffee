@@ -82,7 +82,7 @@ RocketChat.generateUsernameSuggestion = generateSuggestion
 Meteor.methods
 	getUsernameSuggestion: ->
 		unless Meteor.userId()
-			throw new Meteor.Error(403, "[methods] getUsernameSuggestion -> Invalid user")
+			throw new Meteor.Error 'error-invalid-user', 'Invalid user', { method: 'getUsernameSuggestion' }
 
 		user = Meteor.user()
 		return generateSuggestion(user)

@@ -84,16 +84,16 @@ Template.privateGroupsFlex.events
 		if not err
 			Meteor.call 'createPrivateGroup', name, instance.selectedUsers.get(), (err, result) ->
 				if err
-					if err.error is 'name-invalid'
+					if err.error is 'error-invalid-name'
 						instance.error.set({ invalid: true })
 						return
-					if err.error is 'duplicate-name'
+					if err.error is 'error-duplicate-channel-name'
 						instance.error.set({ duplicate: true })
 						return
-					if err.error is 'archived-duplicate-name'
+					if err.error is 'error-archived-duplicate-name'
 						instance.error.set({ archivedduplicate: true })
 						return
-					return toastr.error err.reason
+					return handleError(err)
 				SideNav.closeFlex()
 				instance.clearForm()
 				FlowRouter.go 'group', { name: name }
