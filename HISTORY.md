@@ -1,5 +1,7 @@
 ## NEXT
 
+- Remove unused options parameter from sendMessage
+
 ## 0.28.0, 2016-Apr-25
 
  - Add "by" and "at" to language files
