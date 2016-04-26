@@ -468,6 +468,8 @@
   "Integration_Outgoing_WebHook" : "Integrasi WebHook keluar",
   "Integration_updated" : "Integrasi telah dikemaskini",
   "Integrations" : "Integrations",
+  "InternalHubot" : "Hubot dalaman",
+  "InternalHubot_Username_Description" : "Ini mesti nama pengguna yang sah daripada bot yang berdaftar pada pelayan anda.",
   "Invalid_confirm_pass" : "Pengesahan kata laluan tidak sepadan dengan kata laluan",
   "Invalid_email" : "E-mel yang dimasukkan tidak sah",
   "Invalid_Export_File" : "Fail yang dimuat naik tidak %s yang sah fail eksport.",

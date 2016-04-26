@@ -468,6 +468,8 @@
   "Integration_Outgoing_WebHook" : "Εξερχόμενες Ενσωμάτωση WebHook",
   "Integration_updated" : "Ενσωμάτωση έχει ενημερωθεί",
   "Integrations" : "ολοκληρώσεις",
+  "InternalHubot" : "εσωτερική Hubot",
+  "InternalHubot_Username_Description" : "Αυτό πρέπει να είναι ένα έγκυρο όνομα χρήστη ενός bot καταχωρηθεί στο διακομιστή σας.",
   "Invalid_confirm_pass" : "Η επιβεβαίωση κωδικού δεν ταιριάζει με τον αρχικό κωδικό",
   "Invalid_email" : "Το e-mail που δώσατε δεν είναι έγκυρο",
   "Invalid_Export_File" : "Το αρχείο δεν είναι έγκυρο %s αρχείο εξαγωγής.",

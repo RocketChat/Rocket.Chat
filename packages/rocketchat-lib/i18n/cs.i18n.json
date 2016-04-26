@@ -468,6 +468,8 @@
   "Integration_Outgoing_WebHook" : "Odchozí WebHook Integrace",
   "Integration_updated" : "Integrace byla aktualizována",
   "Integrations" : "integrace",
+  "InternalHubot" : "vnitřní Hubot",
+  "InternalHubot_Username_Description" : "To musí být platné uživatelské jméno z bot registrovaných na serveru.",
   "Invalid_confirm_pass" : "Potvrzení heslo neodpovídá heslo",
   "Invalid_email" : "E-mailová zadali, je neplatný",
   "Invalid_Export_File" : "Soubor nahrál není platný %s soubor exportu.",

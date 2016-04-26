@@ -468,6 +468,8 @@
   "Integration_Outgoing_WebHook" : "Giden WebHook Entegrasyonu",
   "Integration_updated" : "Entegrasyon güncellendi",
   "Integrations" : "Entegrasyonlar",
+  "InternalHubot" : "İç Hubot",
+  "InternalHubot_Username_Description" : "Bu sunucuda kayıtlı bir bot geçerli bir kullanıcı adı olmalıdır.",
   "Invalid_confirm_pass" : "Şifreler eşleşmiyor",
   "Invalid_email" : "Girilen e-posta geçersiz",
   "Invalid_Export_File" : "Yüklenen dosya geçerli bir %s ihracat dosyası değil.",
