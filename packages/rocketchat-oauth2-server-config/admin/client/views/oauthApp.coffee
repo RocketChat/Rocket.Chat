@@ -1,4 +1,5 @@
 Template.oauthApp.onCreated ->
+	@subscribe 'oauthApps'
 	@record = new ReactiveVar
 		active: true
 
