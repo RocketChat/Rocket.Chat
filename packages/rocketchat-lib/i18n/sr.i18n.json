@@ -468,6 +468,8 @@
   "Integration_Outgoing_WebHook" : "Одлазећи ВебХоок Интеграција",
   "Integration_updated" : "Интеграција је ажуриран",
   "Integrations" : "интеграције",
+  "InternalHubot" : "Интерна Хубот",
+  "InternalHubot_Username_Description" : "Ово мора бити валидна корисничко име бот регистрована на серверу.",
   "Invalid_confirm_pass" : "Лозинка из поља за потврду се не поклапа са првом лозинком",
   "Invalid_email" : "Унета е-адреса не неисправна",
   "Invalid_Export_File" : "Фајл уплоадед није исправан% с извоз датотека.",

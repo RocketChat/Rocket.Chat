@@ -468,6 +468,8 @@
   "Integration_Outgoing_WebHook" : "Lähtevä WebHook Integration",
   "Integration_updated" : "Integraatio päivitetty",
   "Integrations" : "Integraatiot",
+  "InternalHubot" : "sisäinen Hubot",
+  "InternalHubot_Username_Description" : "Tämän on oltava voimassa oleva käyttäjätunnus ja botti rekisteröidyn palvelimella.",
   "Invalid_confirm_pass" : "Salasanat eivät täsmää",
   "Invalid_email" : "Annettu sähköpostiosoite ei ole oikea",
   "Invalid_Export_File" : "Tiedosto ladattu ei ole kelvollinen %s vienti tiedosto.",

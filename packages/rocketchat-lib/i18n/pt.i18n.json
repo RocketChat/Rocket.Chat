@@ -468,6 +468,8 @@
   "Integration_Outgoing_WebHook" : "Integração de WebHook de Saída",
   "Integration_updated" : "A integração foi atualizada",
   "Integrations" : "Integrações",
+  "InternalHubot" : "Hubot interna",
+  "InternalHubot_Username_Description" : "Este deve ser um nome de usuário válido de um bot registrado em seu servidor.",
   "Invalid_confirm_pass" : "A confirmação de senha não é igual à senha",
   "Invalid_email" : "O e-mail informado é inválido",
   "Invalid_Export_File" : "O arquivo enviado não é um arquivo de exportação %s válido.",

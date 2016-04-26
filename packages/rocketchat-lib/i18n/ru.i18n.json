@@ -468,6 +468,8 @@
   "Integration_Outgoing_WebHook" : "Исходящая интеграция WebHook",
   "Integration_updated" : "Интеграция была загружена",
   "Integrations" : "Интеграции",
+  "InternalHubot" : "Внутренний Hubot",
+  "InternalHubot_Username_Description" : "Это должно быть действительным именем пользователя бота, зарегистрированный на сервере.",
   "Invalid_confirm_pass" : "Пароли не совпадают",
   "Invalid_email" : "Неверный e-mail",
   "Invalid_Export_File" : "Загруженный файл не является действительным экспортным файлом %s.",

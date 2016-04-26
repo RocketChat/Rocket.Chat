@@ -468,6 +468,8 @@
   "Integration_Outgoing_WebHook" : "발신은 webhook 통합",
   "Integration_updated" : "통합이 업데이트되었습니다",
   "Integrations" : "통합",
+  "InternalHubot" : "내부 Hubot",
+  "InternalHubot_Username_Description" : "이 서버에 등록 된 로봇의 유효한 사용자 이름이어야합니다.",
   "Invalid_confirm_pass" : "암호가 일치하지 않습니다",
   "Invalid_email" : "입력한 이메일이 잘못되었습니다",
   "Invalid_Export_File" : "업로드 한 파일은 유효한 %의 수출 파일이 아닙니다.",

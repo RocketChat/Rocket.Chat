@@ -468,6 +468,8 @@
   "Integration_Outgoing_WebHook" : "المنتهية ولايته التكامل WebHook",
   "Integration_updated" : "تم تحديث التكامل",
   "Integrations" : "التكامل",
+  "InternalHubot" : "Hubot الداخلية",
+  "InternalHubot_Username_Description" : "هذا يجب أن يكون اسم مستخدم صالح من بوت مسجلة على الخادم الخاص بك.",
   "Invalid_confirm_pass" : "تأكيد كلمة السر لا تطابق كلمة السر",
   "Invalid_email" : "البريد الإلكتروني المدخل غير صحيح",
   "Invalid_Export_File" : "الملف الذي تم تحميله ليس ملف التصدير٪ صالحة الصورة.",
