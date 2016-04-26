@@ -1,7 +1,7 @@
 Package.describe({
 	name: 'rocketchat:internal-hubot',
 	version: '0.0.1',
-	summary: 'Package hubot for Meteor server',
+	summary: 'Internal Hubot for Rocket.Chat',
 	git: ''
 });
 
