@@ -3,10 +3,10 @@ Meteor.methods
 		user = RocketChat.models.Users.findOneById userId, fields: username: 1
 
 		unless user?.username
-			throw new Meteor.Error 'not-logged-user', "[methods] canAccessRoom -> User doesn't have enough permissions"
+			throw new Meteor.Error 'error-invalid-user', 'Invalid user', { method: 'canAccessRoom' }
 
 		unless rid
-			throw new Meteor.Error 'invalid-room', '[methods] canAccessRoom -> Cannot access empty room'
+			throw new Meteor.Error 'error-invalid-room', 'Invalid room', { method: 'canAccessRoom' }
 
 		room = RocketChat.models.Rooms.findOneById rid, { fields: { usernames: 1, t: 1, name: 1, muted: 1, sms: 1, v: 1 } }
 
@@ -16,4 +16,4 @@ Meteor.methods
 			else
 				return false
 		else
-			throw new Meteor.Error 'invalid-room', '[methods] canAccessRoom -> Room ID is invalid'
+			throw new Meteor.Error 'error-invalid-room', 'Invalid room', { method: 'canAccessRoom' }

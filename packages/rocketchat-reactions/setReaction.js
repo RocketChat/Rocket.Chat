@@ -2,13 +2,13 @@
 Meteor.methods({
 	setReaction(reaction, messageId) {
 		if (!Meteor.userId()) {
-			throw new Meteor.Error(203, 'User_logged_out');
+			throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'setReaction' });
 		}
 
 		let message = RocketChat.models.Messages.findOneById(messageId);
 
 		if (!Meteor.call('canAccessRoom', message.rid, Meteor.userId())) {
-			throw new Meteor.Error(203, '[methods] Not authorized');
+			throw new Meteor.Error('error-not-allowed', 'Not allowed', { method: 'setReaction' });
 		}
 
 		const user = Meteor.user();
