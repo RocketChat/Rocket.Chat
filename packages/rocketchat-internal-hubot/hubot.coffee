@@ -289,9 +289,9 @@ init = =>
 	#	res.send "Test? TESTING? WE DON'T NEED NO TEST, EVERYTHING WORKS!"
 
 	if RocketChat.settings.get 'InternalHubot_Enabled'
-		RocketChat.callbacks.add 'afterSaveMessage', InternalHubotReceiver, RocketChat.callbacks.priority.LOW, 'rocketbot-parser'
+		RocketChat.callbacks.add 'afterSaveMessage', InternalHubotReceiver, RocketChat.callbacks.priority.LOW, 'InternalHubot'
 	else
-		RocketChat.callbacks.remove 'afterSaveMessage', 'rocketbot-parser'
+		RocketChat.callbacks.remove 'afterSaveMessage', 'InternalHubot'
 
 	# Meteor.startup ->
 		# console.log InternalHubot;
