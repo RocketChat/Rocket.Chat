@@ -1,7 +1,7 @@
 Package.describe({
-	name: 'rocketchat:hubot',
+	name: 'rocketchat:internal-hubot',
 	version: '0.0.1',
-	summary: 'Package hubot for Meteor server',
+	summary: 'Internal Hubot for Rocket.Chat',
 	git: ''
 });
 
@@ -23,8 +23,8 @@ Package.onUse(function(api) {
 
 	api.export('Hubot', ['server']);
 	api.export('HubotScripts', ['server']);
-	api.export('RocketBot', ['server']);
-	api.export('RocketBotReceiver', ['server']);
+	api.export('InternalHubot', ['server']);
+	api.export('InternalHubotReceiver', ['server']);
 	api.export('RocketChatAdapter', ['server']);
 
 });

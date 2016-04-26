@@ -29,5 +29,5 @@ Meteor.methods
 # 	type: 'method'
 # 	name: 'sendMessage'
 # 	userId: (userId) ->
-# 		return RocketChat.models.Users.findOneById(userId)?.username isnt RocketChat.settings.get('RocketBot_Name')
+# 		return RocketChat.models.Users.findOneById(userId)?.username isnt RocketChat.settings.get('InternalHubot_Username')
 # , 5, 1000
