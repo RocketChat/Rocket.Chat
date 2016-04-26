@@ -56,7 +56,7 @@ class RocketChatAdapter extends Hubot.Adapter
 		# console.log envelope, strings
 		sendHelper @robot, envelope, strings, (string) =>
 			console.log "send #{envelope.room}: #{string} (#{envelope.user.id})" if DEBUG
-			RocketChat.sendMessage RocketBot.user, { msg: string }, { _id: envelope.room }
+			RocketChat.sendMessage InternalHubot.user, { msg: string }, { _id: envelope.room }
 
 	# Public: Raw method for sending emote data back to the chat source.
 	#
@@ -133,17 +133,17 @@ class RocketChatAdapter extends Hubot.Adapter
 	close: ->
 		console.log 'ROCKETCHATADAPTER -> close'.blue
 
-class RocketBotReceiver
+class InternalHubotReceiver
 	constructor: (message) ->
 		#console.log message
-		if message.u.username isnt RocketBot.name
+		if message.u.username isnt InternalHubot.name
 			room = RocketChat.models.Rooms.findOneById message.rid
 
 			if room.t is 'c'
 				console.log message
-				RocketBotUser = new Hubot.User(message.u.username, room: message.rid)
-				RocketBotTextMessage = new Hubot.TextMessage(RocketBotUser, message.msg, message._id)
-				RocketBot.adapter.receive RocketBotTextMessage
+				InternalHubotUser = new Hubot.User(message.u.username, room: message.rid)
+				InternalHubotTextMessage = new Hubot.TextMessage(InternalHubotUser, message.msg, message._id)
+				InternalHubot.adapter.receive InternalHubotTextMessage
 		return message
 
 class HubotScripts
@@ -276,25 +276,25 @@ sendHelper = Meteor.bindEnvironment (robot, envelope, strings, map) ->
 				console.error "Hubot error: #{err}" if DEBUG
 				robot.logger.error "RocketChat send error: #{err}"
 
-RocketBot = {}
+InternalHubot = {}
 
 init = =>
-	RocketBot = new Robot null, null, false, RocketChat.settings.get 'RocketBot_Name'
-	RocketBot.alias = 'bot'
-	RocketBot.adapter = new RocketChatAdapter RocketBot
-	HubotScripts(RocketBot)
-	RocketBot.run()
+	InternalHubot = new Robot null, null, false, RocketChat.settings.get 'InternalHubot_Username'
+	InternalHubot.alias = 'bot'
+	InternalHubot.adapter = new RocketChatAdapter InternalHubot
+	HubotScripts(InternalHubot)
+	InternalHubot.run()
 
-	# RocketBot.hear /^test/i, (res) ->
+	# InternalHubot.hear /^test/i, (res) ->
 	#	res.send "Test? TESTING? WE DON'T NEED NO TEST, EVERYTHING WORKS!"
 
-	if RocketChat.settings.get 'RocketBot_Enabled'
-		RocketChat.callbacks.add 'afterSaveMessage', RocketBotReceiver, RocketChat.callbacks.priority.LOW, 'rocketbot-parser'
+	if RocketChat.settings.get 'InternalHubot_Enabled'
+		RocketChat.callbacks.add 'afterSaveMessage', InternalHubotReceiver, RocketChat.callbacks.priority.LOW, 'rocketbot-parser'
 	else
 		RocketChat.callbacks.remove 'afterSaveMessage', 'rocketbot-parser'
 
 	# Meteor.startup ->
-		# console.log RocketBot;
+		# console.log InternalHubot;
 		# # what's (the regexp for) my name?
 		# robot.respond /(?:)/, -> false
 		# mynameRE = robot.listeners.pop().regex
@@ -339,7 +339,7 @@ init = =>
 		# 		username: "rocketbot"
 		# 	action: true
 
-RocketChat.models.Settings.findByIds([ 'RocketBot_Name', 'RocketBot_Enabled']).observe
+RocketChat.models.Settings.findByIds([ 'InternalHubot_Username', 'InternalHubot_Enabled']).observe
 	added: ->
 		init()
 	changed: ->
