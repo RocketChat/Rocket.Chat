@@ -54,7 +54,7 @@ class Invite
 					_id: Random.id()
 					rid: item.rid
 					ts: new Date
-					msg: e.error
+					msg: TAPi18n.__(e.error, null, currentUser.language)
 				}
 			return
 
