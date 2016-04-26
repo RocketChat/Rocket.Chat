@@ -469,6 +469,8 @@
   "Integration_updated" : "La Integración a sido actualizada",
   "Integrations" : "Integraciones",
   "InternalHubot" : "hubot interna",
+  "InternalHubot_ScriptsToLoad" : "Secuencias de comandos para cargar",
+  "InternalHubot_ScriptsToLoad_Description" : "Por favor, introduzca una lista separada por comas de secuencias de comandos para cargar desde https://github.com/github/hubot-scripts/tree/master/src/scripts",
   "InternalHubot_Username_Description" : "Este debe ser un nombre de usuario válido de un bot registrada en su servidor.",
   "Invalid_confirm_pass" : "La confirmación de la contraseña no coincide con la contraseña",
   "Invalid_email" : "El e-mail ingresado es invalido",

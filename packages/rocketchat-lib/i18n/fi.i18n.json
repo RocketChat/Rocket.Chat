@@ -469,6 +469,8 @@
   "Integration_updated" : "Integraatio päivitetty",
   "Integrations" : "Integraatiot",
   "InternalHubot" : "sisäinen Hubot",
+  "InternalHubot_ScriptsToLoad" : "Skriptejä ladata",
+  "InternalHubot_ScriptsToLoad_Description" : "Anna pilkuilla erotettu lista skriptejä ladata mistä https://github.com/github/hubot-scripts/tree/master/src/scripts",
   "InternalHubot_Username_Description" : "Tämän on oltava voimassa oleva käyttäjätunnus ja botti rekisteröidyn palvelimella.",
   "Invalid_confirm_pass" : "Salasanat eivät täsmää",
   "Invalid_email" : "Annettu sähköpostiosoite ei ole oikea",

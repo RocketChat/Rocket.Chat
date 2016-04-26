@@ -469,6 +469,8 @@
   "Integration_updated" : "Ενσωμάτωση έχει ενημερωθεί",
   "Integrations" : "ολοκληρώσεις",
   "InternalHubot" : "εσωτερική Hubot",
+  "InternalHubot_ScriptsToLoad" : "Σενάρια για να φορτώσει",
+  "InternalHubot_ScriptsToLoad_Description" : "Παρακαλώ εισάγετε μια λίστα χωρισμένη με κόμμα των σεναρίων για να φορτώσει από https://github.com/github/hubot-scripts/tree/master/src/scripts",
   "InternalHubot_Username_Description" : "Αυτό πρέπει να είναι ένα έγκυρο όνομα χρήστη ενός bot καταχωρηθεί στο διακομιστή σας.",
   "Invalid_confirm_pass" : "Η επιβεβαίωση κωδικού δεν ταιριάζει με τον αρχικό κωδικό",
   "Invalid_email" : "Το e-mail που δώσατε δεν είναι έγκυρο",

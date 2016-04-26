@@ -469,6 +469,8 @@
   "Integration_updated" : "Integrarea a fost actualizată",
   "Integrations" : "Integrări",
   "InternalHubot" : "Hubot internă",
+  "InternalHubot_ScriptsToLoad" : "Script-uri pentru a încărca",
+  "InternalHubot_ScriptsToLoad_Description" : "Vă rugăm să introduceți o listă separată prin virgulă de script-uri pentru a încărca de la https://github.com/github/hubot-scripts/tree/master/src/scripts",
   "InternalHubot_Username_Description" : "Acest lucru trebuie să fie un nume de utilizator valid al unui bot înregistrat pe server.",
   "Invalid_confirm_pass" : "Confirmarea parolei nu se potrivește cu parola introdusă",
   "Invalid_email" : "Adresa de email folosită este invalidă",

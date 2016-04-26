@@ -469,6 +469,8 @@
   "Integration_updated" : "Integrace byla aktualizována",
   "Integrations" : "integrace",
   "InternalHubot" : "vnitřní Hubot",
+  "InternalHubot_ScriptsToLoad" : "Skripty načíst",
+  "InternalHubot_ScriptsToLoad_Description" : "Prosím, zadejte čárkami oddělený seznam skriptů načíst z https://github.com/github/hubot-scripts/tree/master/src/scripts",
   "InternalHubot_Username_Description" : "To musí být platné uživatelské jméno z bot registrovaných na serveru.",
   "Invalid_confirm_pass" : "Potvrzení heslo neodpovídá heslo",
   "Invalid_email" : "E-mailová zadali, je neplatný",

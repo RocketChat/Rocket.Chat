@@ -469,6 +469,8 @@
   "Integration_updated" : "サービス連携を更新しました",
   "Integrations" : "サービス連携",
   "InternalHubot" : "Internal Hubot",
+  "InternalHubot_ScriptsToLoad" : "ロードするスクリプト",
+  "InternalHubot_ScriptsToLoad_Description" : "https://github.com/github/hubot-scripts/tree/master/src/scriptsからロードするためのスクリプトのカンマ区切りリストを入力してください。",
   "InternalHubot_Username_Description" : "これは、サーバーに登録されたボットの有効なユーザ名でなければなりません。",
   "Invalid_confirm_pass" : "入力されたパスワードとパスワードの確認が一致していません",
   "Invalid_email" : "入力されたメールアドレスが無効です",

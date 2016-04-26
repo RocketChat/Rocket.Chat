@@ -469,6 +469,8 @@
   "Integration_updated" : "Integracija je ažuriran",
   "Integrations" : "integracije",
   "InternalHubot" : "Unutarnja Hubot",
+  "InternalHubot_ScriptsToLoad" : "Skripte za učitavanje",
+  "InternalHubot_ScriptsToLoad_Description" : "Unesite zarezom odvojen popis skripte za učitavanje iz https://github.com/github/hubot-scripts/tree/master/src/scripts",
   "InternalHubot_Username_Description" : "Ovo mora biti valjana korisničko ime bot registrirane na vašem poslužitelju.",
   "Invalid_confirm_pass" : "Potvrda lozinke se ne slaže sa lozinkom",
   "Invalid_email" : "Uneseni e-mail nije valjan",

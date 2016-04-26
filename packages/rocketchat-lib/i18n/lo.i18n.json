@@ -469,6 +469,8 @@
   "Integration_updated" : "ການເຊື່ອມໂຍງໄດ້ຮັບການປັບປຸງ",
   "Integrations" : "Integrations",
   "InternalHubot" : "Hubot ພາຍໃນ",
+  "InternalHubot_ScriptsToLoad" : "ອັກສອນເພື່ອການໂຫຼດ",
+  "InternalHubot_ScriptsToLoad_Description" : "ກະລຸນາໃສ່ບັນຊີລາຍຊື່ຈຸດແຍກຂອງອັກ​​ສອນເພື່ອການໂຫຼດຈາກ https://github.com/github/hubot-scripts/tree/master/src/scripts",
   "InternalHubot_Username_Description" : "ນີ້ຈະຕ້ອງເປັນຊື່ຜູ້ໃຊ້ທີ່ຖືກຕ້ອງຂອງນາມທີ່ຈົດທະບຽນກ່ຽວກັບເຄື່ອງແມ່ຂ່າຍຂອງທ່ານ.",
   "Invalid_confirm_pass" : "ການຢືນຢັນລະຫັດຜ່ານບໍ່ກົງກັບລະຫັດຜ່ານ",
   "Invalid_email" : "ອີເມວນັ້ນບໍ່ຖືກຕ້ອງ",

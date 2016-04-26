@@ -469,6 +469,8 @@
   "Integration_updated" : "Integracja została zaktualizowana",
   "Integrations" : "Integracje",
   "InternalHubot" : "Hubot Wewnętrzne",
+  "InternalHubot_ScriptsToLoad" : "Skrypty do załadowania",
+  "InternalHubot_ScriptsToLoad_Description" : "Wpisz oddzielone przecinkami listę skryptów załadować z https://github.com/github/hubot-scripts/tree/master/src/scripts",
   "InternalHubot_Username_Description" : "To musi być prawidłowa nazwa użytkownika z botem zarejestrowany na serwerze.",
   "Invalid_confirm_pass" : "Podane hasła nie są jednakowe",
   "Invalid_email" : "E-mail jest nieprawidłowy",
