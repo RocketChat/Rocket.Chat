@@ -356,7 +356,7 @@
   "error-message-editing-blocked" : "edytowanie wiadomości jest zablokowane",
   "error-message-size-exceeded" : "Rozmiar wiadomości przekracza Message_MaxAllowedSize",
   "error-missing-unsubscribe-link" : "Musisz wstawić w treści znacznik [unsubscribe].",
-  "error-no-tokens-for-this-user" : "Brak tokeny dla tego użytkownika",
+  "error-no-tokens-for-this-user" : "Brak tokenu dla tego użytkownika",
   "error-not-allowed" : "Niedozwolone",
   "error-not-authorized" : "Nieautoryzowany",
   "error-push-disabled" : "Push jest wyłączona",
@@ -829,9 +829,6 @@
   "Reset_password" : "Zresetuj hasło",
   "Restart" : "Uruchom ponownie",
   "Restart_the_server" : "Uruchom serwer ponownie",
-  "RocketBot_Enabled" : "Włącz RocketBot",
-  "RocketBot_Name" : "Nazwa RocketBota",
-  "RocketBot_Name_Description" : "Nazwa RocketBota musi być poprawną nazwą zarejestrowanego użytkownika.",
   "Role" : "Rola",
   "Role_Editing" : "Edycja ról",
   "Role_removed" : "Rola usunięta",
@@ -1161,5 +1158,5 @@
   "Your_mail_was_sent_to_s" : "Twoja wiadomość została wysłana do użytkownika %s",
   "Your_Open_Source_solution" : "Twój własny czat Open Source",
   "Your_password_is_wrong" : "To nie jest poprawne hasło!",
-  "Your_push_was_sent_to_s_devices" : "Twój Push została wysłana do urządzeń %s"
+  "Your_push_was_sent_to_s_devices" : "Twój push została wysłany do urządzeń: %s"
 }
