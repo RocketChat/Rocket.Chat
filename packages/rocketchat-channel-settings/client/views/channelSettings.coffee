@@ -62,7 +62,7 @@ Template.channelSettings.onCreated ->
 		rid = Template.currentData()?.rid
 		room = ChatRoom.findOne rid
 
-		if not RocketChat.authz.hasAllPermission('edit-room', @rid) or room.t not in ['c', 'p']
+		if not RocketChat.authz.hasAllPermission('edit-room', rid) or room.t not in ['c', 'p']
 			toastr.error t('error-not-allowed')
 			return false
 

@@ -162,6 +162,6 @@ Meteor.startup ->
 			message = @_arguments[1]
 			msg = $(event.currentTarget).closest('.message')[0]
 			$("\##{msg.id} .message-dropdown").hide()
-			$(event.currentTarget).attr('data-clipboard-text', document.location.origin + document.location.pathname + '?j=' + msg.id);
+			$(event.currentTarget).attr('data-clipboard-text', document.location.origin + document.location.pathname + '?msg=' + msg.id);
 			toastr.success(TAPi18n.__('Copied'))
 		order: 3

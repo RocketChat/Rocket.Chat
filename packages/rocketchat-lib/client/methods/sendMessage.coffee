@@ -5,7 +5,10 @@ Meteor.methods
 
 		if _.trim(message.msg) isnt ''
 
-			message.ts = new Date(Date.now() + TimeSync.serverOffset())
+			if isNaN(TimeSync.serverOffset())
+				message.ts = new Date()
+			else
+				message.ts = new Date(Date.now() + TimeSync.serverOffset())
 
 			message.u =
 				_id: Meteor.userId()

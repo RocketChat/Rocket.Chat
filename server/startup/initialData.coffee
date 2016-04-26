@@ -51,9 +51,9 @@ Meteor.startup ->
 							]
 							console.log "Email: #{process.env.ADMIN_EMAIL}".green
 						else
-							console.log 'E-mail provided already exists; Ignoring environment variables ADMIN_EMAIL'.red
+							console.log 'Email provided already exists; Ignoring environment variables ADMIN_EMAIL'.red
 					else
-						console.log 'E-mail provided is invalid; Ignoring environment variables ADMIN_EMAIL'.red
+						console.log 'Email provided is invalid; Ignoring environment variables ADMIN_EMAIL'.red
 
 				if process.env.ADMIN_USERNAME?
 					try
@@ -68,6 +68,8 @@ Meteor.startup ->
 					else
 						console.log 'Username provided is invalid; Ignoring environment variables ADMIN_USERNAME'.red
 				console.log "Username: #{adminUser.username}".green
+
+				adminUser.type = 'user'
 
 				id = RocketChat.models.Users.create adminUser
 

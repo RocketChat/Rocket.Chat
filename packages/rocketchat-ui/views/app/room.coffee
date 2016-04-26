@@ -449,7 +449,7 @@ Template.room.onCreated ->
 	# this.scrollOnBottom = true
 	# this.typing = new msgTyping this.data._id
 	this.showUsersOffline = new ReactiveVar false
-	this.atBottom = if FlowRouter.getQueryParam('j') then false else true
+	this.atBottom = if FlowRouter.getQueryParam('msg') then false else true
 	this.unreadCount = new ReactiveVar 0
 
 	this.selectable = new ReactiveVar false
