@@ -60,7 +60,7 @@ Template.userEdit.onCreated ->
 			errors.push 'Email'
 
 		for error in errors
-			toastr.error(TAPi18n.__('The_field_is_required', TAPi18n.__(error)))
+			toastr.error(TAPi18n.__('error-the-field-is-required', { field: TAPi18n.__(error) }))
 
 		return errors.length is 0
 

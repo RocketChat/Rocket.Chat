@@ -1,11 +1,11 @@
 Meteor.methods
 	sendSMTPTestEmail: ->
 		if not Meteor.userId()
-			throw new Meteor.Error 'invalid-user', "[methods] sendSMTPTestEmail -> Invalid user"
+			throw new Meteor.Error 'error-invalid-user', "Invalid user", { method: 'sendSMTPTestEmail' }
 
 		user = Meteor.user()
 		unless user.emails?[0]?.address
-			throw new Meteor.Error 'invalid-email', "[methods] sendSMTPTestEmail -> Invalid email"
+			throw new Meteor.Error 'error-invalid-email', "Invalid email", { method: 'sendSMTPTestEmail' }
 
 		this.unblock()
 

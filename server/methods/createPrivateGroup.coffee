@@ -1,10 +1,10 @@
 Meteor.methods
 	createPrivateGroup: (name, members) ->
 		if not Meteor.userId()
-			throw new Meteor.Error 'invalid-user', "[methods] createPrivateGroup -> Invalid user"
+			throw new Meteor.Error 'error-invalid-user', "Invalid user", { method: 'createPrivateGroup' }
 
 		unless RocketChat.authz.hasPermission(Meteor.userId(), 'create-p')
-			throw new Meteor.Error 'not-authorized', '[methods] createPrivateGroup -> Not authorized'
+			throw new Meteor.Error 'error-not-allowed', "Not allowed", { method: 'createPrivateGroup' }
 
 		try
 			nameValidation = new RegExp '^' + RocketChat.settings.get('UTF8_Names_Validation') + '$'
@@ -12,7 +12,7 @@ Meteor.methods
 			nameValidation = new RegExp '^[0-9a-zA-Z-_.]+$'
 
 		if not nameValidation.test name
-			throw new Meteor.Error 'name-invalid'
+			throw new Meteor.Error 'error-invalid-name', "Invalid name", { method: 'createPrivateGroup' }
 
 		now = new Date()
 
@@ -25,9 +25,9 @@ Meteor.methods
 		# avoid duplicate names
 		if RocketChat.models.Rooms.findOneByName name
 			if RocketChat.models.Rooms.findOneByName(name).archived
-				throw new Meteor.Error 'archived-duplicate-name'
+				throw new Meteor.Error 'error-archived-duplicate-name', "There's an archived channel with name " + name, { method: 'createPrivateGroup', room_name: name }
 			else
-				throw new Meteor.Error 'duplicate-name'
+				throw new Meteor.Error 'error-duplicate-channel-name', "A channel with name '" + name + "' exists", { method: 'createPrivateGroup', room_name: name }
 
 		# create new room
 		room = RocketChat.models.Rooms.createWithTypeNameUserAndUsernames 'p', name, me, members,

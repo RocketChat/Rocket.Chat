@@ -62,7 +62,7 @@ Template.uploadedFilesList.events
 				else
 					Meteor.call 'deleteFileMessage', self._id, (error, result) ->
 						if error
-							return toastr.error error.reason
+							return handleError(error)
 
 	'scroll .content': _.throttle (e, t) ->
 		if e.target.scrollTop >= e.target.scrollHeight - e.target.clientHeight
