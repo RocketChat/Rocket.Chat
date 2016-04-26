@@ -469,6 +469,8 @@
   "Integration_updated" : "Integrationen har uppdaterats",
   "Integrations" : "Integreringar",
   "InternalHubot" : "intern Hubot",
+  "InternalHubot_ScriptsToLoad" : "Skript för att ladda",
+  "InternalHubot_ScriptsToLoad_Description" : "Ange en kommaseparerad lista med skript för att ladda från https://github.com/github/hubot-scripts/tree/master/src/scripts",
   "InternalHubot_Username_Description" : "Detta måste vara ett giltigt användarnamn av en bot är registrerad på din server.",
   "Invalid_confirm_pass" : "Bekräftelsen matchar inte lösenordet",
   "Invalid_email" : "Den angivna epostadressen är ogiltig",

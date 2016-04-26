@@ -469,6 +469,8 @@
   "Integration_updated" : "已更新该集成功能",
   "Integrations" : "集成功能",
   "InternalHubot" : "内部Hubot",
+  "InternalHubot_ScriptsToLoad" : "脚本加载",
+  "InternalHubot_ScriptsToLoad_Description" : "请输入一个逗号分隔的脚本列表从https://github.com/github/hubot-scripts/tree/master/src/scripts加载",
   "InternalHubot_Username_Description" : "这必须是您的服务器上注册的bot的一个有效的用户名。",
   "Invalid_confirm_pass" : "第二次密码输入与第一次不匹配",
   "Invalid_email" : "无效的电子邮件",

@@ -469,6 +469,8 @@
   "Integration_updated" : "Integrasi telah dikemaskini",
   "Integrations" : "Integrations",
   "InternalHubot" : "Hubot dalaman",
+  "InternalHubot_ScriptsToLoad" : "Skrip untuk memuatkan",
+  "InternalHubot_ScriptsToLoad_Description" : "Sila masukkan senarai dipisah koma skrip untuk memuatkan dari https://github.com/github/hubot-scripts/tree/master/src/scripts",
   "InternalHubot_Username_Description" : "Ini mesti nama pengguna yang sah daripada bot yang berdaftar pada pelayan anda.",
   "Invalid_confirm_pass" : "Pengesahan kata laluan tidak sepadan dengan kata laluan",
   "Invalid_email" : "E-mel yang dimasukkan tidak sah",

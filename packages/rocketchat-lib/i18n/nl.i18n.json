@@ -469,6 +469,8 @@
   "Integration_updated" : "Integratie is bijgewerkt",
   "Integrations" : "Integraties",
   "InternalHubot" : "interne Hubot",
+  "InternalHubot_ScriptsToLoad" : "Scripts om te laden",
+  "InternalHubot_ScriptsToLoad_Description" : "Geef een door komma's gescheiden lijst met scripts te laden uit https://github.com/github/hubot-scripts/tree/master/src/scripts",
   "InternalHubot_Username_Description" : "Dit moet een geldige gebruikersnaam van een bot geregistreerd op uw server.",
   "Invalid_confirm_pass" : "De wachtwoorden zijn verschillend",
   "Invalid_email" : "Ongeldig e-mail adres",

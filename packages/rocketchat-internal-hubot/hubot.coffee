@@ -160,65 +160,19 @@ class HubotScripts
 		for modulePath in modulesToLoad
 			try
 				Npm.require(modulePath)(robot)
-				robot.parseHelp __meteor_bootstrap__.serverDir+'/npm/rocketchat_hubot/node_modules/'+modulePath
+				robot.parseHelp __meteor_bootstrap__.serverDir+'/npm/rocketchat_internal-hubot/node_modules/'+modulePath
 				console.log "Loaded #{modulePath}".green
 			catch e
 				console.log "can't load #{modulePath}".red
 				console.log e
 
-		# scriptFiles = fs.readdirSync(__meteor_bootstrap__.serverDir+'/npm/rocketchat_hubot/node_modules/hubot-scripts/src/scripts')
-
-		scriptsToLoad = [
-			'alot.coffee'
-			'applause.coffee'
-			'beerme.coffee'
-			'botsnack.coffee'
-			'carlton.coffee'
-			'chuck-norris.coffee'
-			'commandlinefu.coffee'
-			'commitmessage.coffee'
-			'dealwithit.coffee'
-			'decide.coffee'
-			'dice.coffee'
-			'do-it.coffee'
-			'dribbble.coffee'
-			'encourage.coffee'
-			'excuse.coffee'
-			'factoid.coffee'
-			'futurama.coffee'
-			'go-for-it.coffee'
-			'gob.coffee'
-			'google.coffee'
-			'gorbypuff.coffee'
-			'hangout.coffee'
-			'hashing.coffee'
-			'hello.coffee'
-			'httpcat.coffee'
-			'karma.coffee'
-			'megusta.coffee'
-			'nice.coffee'
-			'play.coffee'
-			'plus_one.coffee'
-			'polite.coffee'
-			'reddit-jokes.coffee'
-			'reload.coffee'
-			'sealab.coffee'
-			'sheits.coffee'
-			'shipit.coffee'
-			'url.coffee'
-			'wits.coffee'
-			'wordnik.coffee'
-			'yoda-pictures.coffee'
-			'yoda-quotes.coffee'
-			'zen.coffee'
-			'zombies.coffee'
-		]
+		scriptsToLoad = (RocketChat.settings.get('InternalHubot_ScriptsToLoad') + '').split(',')
 
 		for scriptFile in scriptsToLoad
 			try
 				Npm.require('hubot-scripts/src/scripts/'+scriptFile)(robot)
-				# robot.loadFile __meteor_bootstrap__.serverDir+'/npm/rocketchat_hubot/node_modules/hubot-scripts/src/scripts', scriptFile
-				robot.parseHelp __meteor_bootstrap__.serverDir+'/npm/rocketchat_hubot/node_modules/hubot-scripts/src/scripts/'+scriptFile
+				# robot.loadFile __meteor_bootstrap__.serverDir+'/npm/rocketchat_internal-hubot/node_modules/hubot-scripts/src/scripts', scriptFile
+				robot.parseHelp __meteor_bootstrap__.serverDir+'/npm/rocketchat_internal-hubot/node_modules/hubot-scripts/src/scripts/'+scriptFile
 				console.log "Loaded #{scriptFile}".green
 			catch e
 				console.log "can't load #{scriptFile}".red
@@ -226,8 +180,8 @@ class HubotScripts
 
 		# console.log __meteor_bootstrap__.serverDir
 
-		# npm/rocketchat_hubot/node_modules
-		# packages/rocketchat_hubot.js
+		# npm/rocketchat_internal-hubot/node_modules
+		# packages/rocketchat_internal-hubot.js
 
 		# # load all scripts in scripts/
 		# console.log path.resolve '.'
@@ -339,7 +293,7 @@ init = =>
 		# 		username: "rocketbot"
 		# 	action: true
 
-RocketChat.models.Settings.findByIds([ 'InternalHubot_Username', 'InternalHubot_Enabled']).observe
+RocketChat.models.Settings.findByIds([ 'InternalHubot_Username', 'InternalHubot_Enabled', 'InternalHubot_ScriptsToLoad']).observe
 	added: ->
 		init()
 	changed: ->

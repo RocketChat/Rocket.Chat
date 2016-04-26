@@ -469,6 +469,8 @@
   "Integration_updated" : "ادغام به روز شده است",
   "Integrations" : "یکپارچگی",
   "InternalHubot" : "Hubot داخلی",
+  "InternalHubot_ScriptsToLoad" : "اسکریپت برای بارگذاری",
+  "InternalHubot_ScriptsToLoad_Description" : "لطفا یک لیست کاما از هم جدا از اسکریپت برای بارگذاری از https://github.com/github/hubot-scripts/tree/master/src/scripts وارد کنید",
   "InternalHubot_Username_Description" : "این باید یک نام کاربری معتبر از یک ربات ثبت نام بر روی سرور خود باشد.",
   "Invalid_confirm_pass" : "تایید رمز عبور رمز عبور مطابقت ندارد",
   "Invalid_email" : "ایمیل وارد شده نامعتبر است",

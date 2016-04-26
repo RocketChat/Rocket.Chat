@@ -469,6 +469,8 @@
   "Integration_updated" : "통합이 업데이트되었습니다",
   "Integrations" : "통합",
   "InternalHubot" : "내부 Hubot",
+  "InternalHubot_ScriptsToLoad" : "스크립트로드",
+  "InternalHubot_ScriptsToLoad_Description" : "https://github.com/github/hubot-scripts/tree/master/src/scripts에서로드 스크립트의 쉼표로 구분 된 목록을 입력하세요",
   "InternalHubot_Username_Description" : "이 서버에 등록 된 로봇의 유효한 사용자 이름이어야합니다.",
   "Invalid_confirm_pass" : "암호가 일치하지 않습니다",
   "Invalid_email" : "입력한 이메일이 잘못되었습니다",

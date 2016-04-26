@@ -469,6 +469,8 @@
   "Integration_updated" : "ஒருங்கிணைப்பு மேம்படுத்தப்பட்டது",
   "Integrations" : "ஒருங்கிணைவுகளையும்-",
   "InternalHubot" : "உள்நாட்டு Hubot",
+  "InternalHubot_ScriptsToLoad" : "ஸ்கிரிப்டை ஏற்ற",
+  "InternalHubot_ScriptsToLoad_Description" : "https://github.com/github/hubot-scripts/tree/master/src/scripts இருந்து ஏற்ற தயவு செய்து திரைக்கதை ஒரு கமா பிரிக்கப்பட்ட பட்டியலில் நுழைய",
   "InternalHubot_Username_Description" : "இந்த உங்கள் சர்வரில் பதிவு ஒரு பொட் சரியான பயனர் பெயர் இருக்க வேண்டும்.",
   "Invalid_confirm_pass" : "கடவுச்சொல்லை உறுதிப்படுத்தும் கடவுச்சொல் பொருந்தவில்லை",
   "Invalid_email" : "உள்ளிட்ட மின்னஞ்சல் தவறானது",
