@@ -469,6 +469,8 @@
   "Integration_updated" : "تم تحديث التكامل",
   "Integrations" : "التكامل",
   "InternalHubot" : "Hubot الداخلية",
+  "InternalHubot_ScriptsToLoad" : "مخطوطات لتحميل",
+  "InternalHubot_ScriptsToLoad_Description" : "الرجاء إدخال قائمة مفصولة بفواصل من مخطوطات لتحميل من https://github.com/github/hubot-scripts/tree/master/src/scripts",
   "InternalHubot_Username_Description" : "هذا يجب أن يكون اسم مستخدم صالح من بوت مسجلة على الخادم الخاص بك.",
   "Invalid_confirm_pass" : "تأكيد كلمة السر لا تطابق كلمة السر",
   "Invalid_email" : "البريد الإلكتروني المدخل غير صحيح",

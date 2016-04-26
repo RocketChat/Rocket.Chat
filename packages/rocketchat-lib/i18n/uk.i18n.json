@@ -469,6 +469,8 @@
   "Integration_updated" : "Інтеграція була оновлена",
   "Integrations" : "інтеграції",
   "InternalHubot" : "внутрішній Hubot",
+  "InternalHubot_ScriptsToLoad" : "Сценарії для завантаження",
+  "InternalHubot_ScriptsToLoad_Description" : "Будь ласка, введіть розділений комами список скриптів для завантаження з https://github.com/github/hubot-scripts/tree/master/src/scripts",
   "InternalHubot_Username_Description" : "Це повинно бути дійсним ім'ям користувача бота, зареєстрований на сервері.",
   "Invalid_confirm_pass" : "Підтвердження пароля не збігаються пароль",
   "Invalid_email" : "Невірний e-mail",

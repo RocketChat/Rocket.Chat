@@ -469,6 +469,8 @@
   "Integration_updated" : "Интеграција је ажуриран",
   "Integrations" : "интеграције",
   "InternalHubot" : "Интерна Хубот",
+  "InternalHubot_ScriptsToLoad" : "Скрипте за учитавање",
+  "InternalHubot_ScriptsToLoad_Description" : "Унесите зарезом одвојена листа сценарија за учитавање од хттпс://гитхуб.цом/гитхуб/хубот-сцриптс/трее/мастер/срц/сцриптс",
   "InternalHubot_Username_Description" : "Ово мора бити валидна корисничко име бот регистрована на серверу.",
   "Invalid_confirm_pass" : "Лозинка из поља за потврду се не поклапа са првом лозинком",
   "Invalid_email" : "Унета е-адреса не неисправна",

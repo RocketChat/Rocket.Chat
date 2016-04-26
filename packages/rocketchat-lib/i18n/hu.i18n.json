@@ -469,6 +469,8 @@
   "Integration_updated" : "Integration frissült",
   "Integrations" : "Integráció",
   "InternalHubot" : "Internal Hubot",
+  "InternalHubot_ScriptsToLoad" : "Scripts betölteni",
+  "InternalHubot_ScriptsToLoad_Description" : "Kérjük, vesszővel elválasztott listáját szkriptek betölteni https://github.com/github/hubot-scripts/tree/master/src/scripts",
   "InternalHubot_Username_Description" : "Ez kell, hogy legyen egy érvényes felhasználónevet egy bot van regisztrálva a szerveren.",
   "Invalid_confirm_pass" : "A két jelszó nem eggyezik",
   "Invalid_email" : "Érvénytelen email cím",

@@ -469,6 +469,8 @@
   "Integration_updated" : "Entegrasyon güncellendi",
   "Integrations" : "Entegrasyonlar",
   "InternalHubot" : "İç Hubot",
+  "InternalHubot_ScriptsToLoad" : "Scripts yüklemek için",
+  "InternalHubot_ScriptsToLoad_Description" : "https://github.com/github/hubot-scripts/tree/master/src/scripts yüklemek için komut bir virgülle ayrılmış listesini girin",
   "InternalHubot_Username_Description" : "Bu sunucuda kayıtlı bir bot geçerli bir kullanıcı adı olmalıdır.",
   "Invalid_confirm_pass" : "Şifreler eşleşmiyor",
   "Invalid_email" : "Girilen e-posta geçersiz",
