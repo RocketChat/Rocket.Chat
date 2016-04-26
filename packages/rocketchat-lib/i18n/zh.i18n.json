@@ -468,6 +468,8 @@
   "Integration_Outgoing_WebHook" : "即将离任的网络挂接整合",
   "Integration_updated" : "已更新该集成功能",
   "Integrations" : "集成功能",
+  "InternalHubot" : "内部Hubot",
+  "InternalHubot_Username_Description" : "这必须是您的服务器上注册的bot的一个有效的用户名。",
   "Invalid_confirm_pass" : "第二次密码输入与第一次不匹配",
   "Invalid_email" : "无效的电子邮件",
   "Invalid_Export_File" : "上传的文件不是有效的导出文件。",

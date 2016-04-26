@@ -468,6 +468,8 @@
   "Integration_Outgoing_WebHook" : "Utgående WebHook Integration",
   "Integration_updated" : "Integrationen har uppdaterats",
   "Integrations" : "Integreringar",
+  "InternalHubot" : "intern Hubot",
+  "InternalHubot_Username_Description" : "Detta måste vara ett giltigt användarnamn av en bot är registrerad på din server.",
   "Invalid_confirm_pass" : "Bekräftelsen matchar inte lösenordet",
   "Invalid_email" : "Den angivna epostadressen är ogiltig",
   "Invalid_Export_File" : "Filen laddas upp är inte en giltig %s exportfilen.",

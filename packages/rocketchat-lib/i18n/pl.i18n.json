@@ -468,6 +468,8 @@
   "Integration_Outgoing_WebHook" : "Integracja: Wychodzący WebHook",
   "Integration_updated" : "Integracja została zaktualizowana",
   "Integrations" : "Integracje",
+  "InternalHubot" : "Hubot Wewnętrzne",
+  "InternalHubot_Username_Description" : "To musi być prawidłowa nazwa użytkownika z botem zarejestrowany na serwerze.",
   "Invalid_confirm_pass" : "Podane hasła nie są jednakowe",
   "Invalid_email" : "E-mail jest nieprawidłowy",
   "Invalid_Export_File" : "Przesłany plik nie jest prawidłowym %s plik eksportu.",

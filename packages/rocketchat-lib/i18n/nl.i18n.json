@@ -468,6 +468,8 @@
   "Integration_Outgoing_WebHook" : "Uitgaande webhook Integration",
   "Integration_updated" : "Integratie is bijgewerkt",
   "Integrations" : "Integraties",
+  "InternalHubot" : "interne Hubot",
+  "InternalHubot_Username_Description" : "Dit moet een geldige gebruikersnaam van een bot geregistreerd op uw server.",
   "Invalid_confirm_pass" : "De wachtwoorden zijn verschillend",
   "Invalid_email" : "Ongeldig e-mail adres",
   "Invalid_Export_File" : "Het bestand geüpload is geen geldig %s exportbestand.",
