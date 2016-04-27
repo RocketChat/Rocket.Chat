@@ -12,7 +12,7 @@ getDescription = (self) ->
 	if not description?
 		return
 
-	return description.replace /(^“)|(”$)/g, ''
+	return _.unescape description.replace /(^[“\s]*)|([”\s]*$)/g, ''
 
 
 Template.oembedUrlWidget.helpers
@@ -24,6 +24,10 @@ Template.oembedUrlWidget.helpers
 		title = getTitle this
 		return new Handlebars.SafeString title if _.isString title
 
+	target: ->
+		if not this.parsedUrl?.host || !document?.location?.host || this.parsedUrl.host isnt document.location.host
+			return '_blank'
+
 	image: ->
 		if not this.meta?
 			return
@@ -34,3 +38,9 @@ Template.oembedUrlWidget.helpers
 
 	show: ->
 		return getDescription(this)? or getTitle(this)?
+
+	collapsed: ->
+		if this.collapsed?
+			return this.collapsed
+		else
+			return Meteor.user()?.settings?.preferences?.collapseMediaByDefault is true

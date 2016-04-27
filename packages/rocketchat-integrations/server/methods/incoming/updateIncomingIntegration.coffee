@@ -1,20 +1,20 @@
 Meteor.methods
 	updateIncomingIntegration: (integrationId, integration) ->
 		if not RocketChat.authz.hasPermission @userId, 'manage-integrations'
-			throw new Meteor.Error 'not_authorized'
+			throw new Meteor.Error 'error-action-not-allowed', 'Managing integrations is not allowed', { method: 'updateIncomingIntegration', action: 'Managing_integrations' }
 
 		if not _.isString(integration.channel)
-			throw new Meteor.Error 'invalid_channel', '[methods] updateIncomingIntegration -> channel must be string'
+			throw new Meteor.Error 'error-invalid-channel', 'Invalid channel', { method: 'updateIncomingIntegration' }
 
 		if integration.channel.trim() is ''
-			throw new Meteor.Error 'invalid_channel', '[methods] updateIncomingIntegration -> channel can\'t be empty'
+			throw new Meteor.Error 'error-invalid-channel', 'Invalid channel', { method: 'updateIncomingIntegration' }
 
 		if integration.channel[0] not in ['@', '#']
-			throw new Meteor.Error 'invalid_channel', '[methods] updateIncomingIntegration -> channel should start with # or @'
+			throw new Meteor.Error 'error-invalid-channel-start-with-chars', 'Invalid channel. Start with @ or #', { method: 'updateIncomingIntegration' }
 
 		currentIntegration = RocketChat.models.Integrations.findOne(integrationId)
 		if not currentIntegration?
-			throw new Meteor.Error 'invalid_integration', '[methods] updateIncomingIntegration -> integration not found'
+			throw new Meteor.Error 'error-invalid-integration', 'Invalid integration', { method: 'updateIncomingIntegration' }
 
 		if integration.scriptEnabled is true and integration.script? and integration.script.trim() isnt ''
 			try
@@ -46,7 +46,7 @@ Meteor.methods
 					]
 
 		if record is undefined
-			throw new Meteor.Error 'channel_does_not_exists', "[methods] updateIncomingIntegration -> The channel does not exists"
+			throw new Meteor.Error 'error-invalid-room', 'Invalid room', { method: 'updateIncomingIntegration' }
 
 		user = RocketChat.models.Users.findOne({username: currentIntegration.username})
 		RocketChat.models.Roles.addUserRoles user._id, 'bot'

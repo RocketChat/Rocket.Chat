@@ -1,9 +1,9 @@
-Meteor.publish 'usersInRole', (roleName, page = 1) ->
+Meteor.publish 'usersInRole', (roleName, scope, page = 1) ->
 	unless @userId
 		return @ready()
 
 	if not RocketChat.authz.hasPermission @userId, 'access-permissions'
-		throw new Meteor.Error "not-authorized"
+		return @error new Meteor.Error "error-not-allowed", 'Not allowed', { publish: 'usersInRole' }
 
 	itemsPerPage = 20
 	pagination =
@@ -12,4 +12,4 @@ Meteor.publish 'usersInRole', (roleName, page = 1) ->
 		limit: itemsPerPage
 		offset: itemsPerPage * (page - 1)
 
-	return RocketChat.authz.getUsersInRole roleName, null, pagination
+	return RocketChat.authz.getUsersInRole roleName, scope, pagination

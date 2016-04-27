@@ -13,15 +13,15 @@
 			</div>
 			<nav class="options animated-hidden">
 				<div class="wrapper">
-					<a href="" data-status="online" class="status online"><span>{{_ "Online"}}</span></a>
-					<a href="" data-status="away" class="status away"><span>{{_ "Away" context="male"}}</span></a>
-					<a href="" data-status="busy" class="status busy"><span>{{_ "Busy" context="male"}}</span></a>
-					<a href="" data-status="offline" class="status offline"><span>{{_ "Invisible"}}</span></a>
-					<a href="" id="account" class='account-link'><i class="icon-sliders"></i><span>{{_ "My_Account"}}</span></a>
+					<a data-status="online" class="status online"><span>{{_ "Online"}}</span></a>
+					<a data-status="away" class="status away"><span>{{_ "Away" context="male"}}</span></a>
+					<a data-status="busy" class="status busy"><span>{{_ "Busy" context="male"}}</span></a>
+					<a data-status="offline" class="status offline"><span>{{_ "Invisible"}}</span></a>
+					<a id="account" class='account-link'><i class="icon-sliders"></i><span>{{_ "My_Account"}}</span></a>
 					{{#if showAdminOption }}
-						<a href="" id="admin" class='account-link'><i class="icon-wrench"></i><span>{{_ "Administration"}}</span></a>
+						<a id="admin" class='account-link'><i class="icon-wrench"></i><span>{{_ "Administration"}}</span></a>
 					{{/if}}
-					<a href="" id="logout"><i class="icon-logout"></i><span>{{_ "Logout"}}</span></a>
+					<a id="logout"><i class="icon-logout"></i><span>{{_ "Logout"}}</span></a>
 				</div>
 			</nav>
 		{{/with}}

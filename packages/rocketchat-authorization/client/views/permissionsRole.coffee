@@ -63,7 +63,7 @@ Template.permissionsRole.events
 		, =>
 			Meteor.call 'authorization:removeUserFromRole', FlowRouter.getParam('name'), @username, instance.searchRoom.get(), (error, result) ->
 				if error
-					return toastr.error t(error.reason or error.error)
+					return handleError(error)
 
 				swal
 					title: t('Removed')
@@ -83,15 +83,17 @@ Template.permissionsRole.events
 			description: e.currentTarget.elements['description'].value
 			scope: e.currentTarget.elements['scope'].value
 
-		if not @_id?
+		if @_id
+			roleData.name = @_id
+		else
 			roleData.name = e.currentTarget.elements['name'].value
 
-		Meteor.call 'authorization:saveRole', @_id, roleData, (error, result) =>
+
+		Meteor.call 'authorization:saveRole', roleData, (error, result) =>
 			e.currentTarget.elements['save'].value = oldBtnValue
 			if error
-				return toastr.error t(error.reason || error.error)
+				return handleError(error)
 
-			e.currentTarget.reset()
 			toastr.success t('Saved')
 
 			if not @_id?
@@ -108,11 +110,12 @@ Template.permissionsRole.events
 
 		e.currentTarget.elements['add'].value = t('Saving')
 
-		Meteor.call 'authorization:addUserToRole', FlowRouter.getParam('name'), e.currentTarget.elements['username'].value, instance.searchRoom.get(), (error, result) ->
+		Meteor.call 'authorization:addUserToRole', FlowRouter.getParam('name'), e.currentTarget.elements['username'].value, instance.searchRoom.get(), (error, result) =>
 			e.currentTarget.elements['add'].value = oldBtnValue
 			if error
-				return toastr.error t(error.reason || error.error)
+				return handleError(error)
 
+			instance.subscribe 'usersInRole', FlowRouter.getParam('name'), instance.searchRoom.get()
 			toastr.success t('User_added')
 			e.currentTarget.reset()
 
@@ -123,11 +126,11 @@ Template.permissionsRole.events
 		e.preventDefault()
 
 		if @protected
-			return toastr.error t('Cannot_delete_a_protected_role')
+			return toastr.error t('error-delete-protected-role')
 
 		Meteor.call 'authorization:deleteRole', @_id, (error, result) ->
 			if error
-				return toastr.error t(error.reason || error.error)
+				return handleError(error)
 
 			toastr.success t('Role_removed')
 
@@ -141,9 +144,10 @@ Template.permissionsRole.onCreated ->
 	@usersInRole = new ReactiveVar
 
 	@subscribe 'roles', FlowRouter.getParam('name')
-	@subscribe 'usersInRole', FlowRouter.getParam('name')
 
 	@autorun =>
 		if @searchRoom.get()
 			@subscribe 'roomSubscriptionsByRole', @searchRoom.get(), FlowRouter.getParam('name')
+
+		@subscribe 'usersInRole', FlowRouter.getParam('name'), @searchRoom.get()
 		@usersInRole.set(RocketChat.models.Roles.findUsersInRole(FlowRouter.getParam('name'), @searchRoom.get(), { sort: { username: 1 } }))

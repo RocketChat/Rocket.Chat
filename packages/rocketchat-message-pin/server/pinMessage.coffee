@@ -1,10 +1,10 @@
 Meteor.methods
 	pinMessage: (message) ->
 		if not Meteor.userId()
-			throw new Meteor.Error('invalid-user', "[methods] pinMessage -> Invalid user")
+			throw new Meteor.Error('error-invalid-user', "Invalid user", { method: 'pinMessage' })
 
 		if not RocketChat.settings.get 'Message_AllowPinning'
-			throw new Meteor.Error 'message-pinning-not-allowed', '[methods] pinMessage -> Message pinning not allowed'
+			throw new Meteor.Error 'error-action-not-allowed', 'Message pinning not allowed', { method: 'pinMessage', action: 'Message_pinning' }
 
 		# If we keep history of edits, insert a new message to store history information
 		if RocketChat.settings.get 'Message_KeepHistory'
@@ -31,10 +31,10 @@ Meteor.methods
 
 	unpinMessage: (message) ->
 		if not Meteor.userId()
-			throw new Meteor.Error('invalid-user', "[methods] unpinMessage -> Invalid user")
+			throw new Meteor.Error('error-invalid-user', "Invalid user", { method: 'unpinMessage' })
 
 		if not RocketChat.settings.get 'Message_AllowPinning'
-			throw new Meteor.Error 'message-pinning-not-allowed', '[methods] pinMessage -> Message pinning not allowed'
+			throw new Meteor.Error 'error-action-not-allowed', 'Message pinning not allowed', { method: 'unpinMessage', action: 'Message_pinning' }
 
 		# If we keep history of edits, insert a new message to store history information
 		if RocketChat.settings.get 'Message_KeepHistory'

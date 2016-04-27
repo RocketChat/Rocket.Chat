@@ -1,8 +1,8 @@
 Template.body.onRendered ->
-	new Clipboard('.clipboard')
+	clipboard = new Clipboard('.clipboard')
 
 	$(document.body).on 'keydown', (e) ->
-		if e.keyCode is 80 and (e.ctrlKey is true or e.metaKey is true)
+		if e.keyCode is 80 and (e.ctrlKey is true or e.metaKey is true) and e.shiftKey is false
 			e.preventDefault()
 			e.stopPropagation()
 			spotlight.show()
@@ -27,6 +27,12 @@ Template.body.onRendered ->
 					if subscription.alert or subscription.unread > 0
 						Meteor.call 'readMessages', subscription.rid
 
+	$(document.body).on 'click', 'a', (e) ->
+		link = e.currentTarget
+		if link.origin is s.rtrim(Meteor.absoluteUrl(), '/') and /msg=([a-zA-Z0-9]+)/.test(link.search)
+			e.preventDefault()
+			e.stopPropagation()
+			FlowRouter.go(link.pathname + link.search)
 
 	Tracker.autorun (c) ->
 		w = window

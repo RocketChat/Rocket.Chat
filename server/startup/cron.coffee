@@ -1,11 +1,15 @@
 # Config and Start SyncedCron
+logger = new Logger 'SyncedCron'
+
 SyncedCron.config
+	logger: (opts) ->
+		logger[opts.level].call(logger, opts.message)
 	collectionName: 'rocketchat_cron_history'
 
 generateStatistics = ->
 	statistics = RocketChat.statistics.save()
 	statistics.host = Meteor.absoluteUrl()
-	unless RocketChat.settings.get 'Statistics_opt_out'
+	if RocketChat.settings.get 'Statistics_reporting'
 		HTTP.post 'https://rocket.chat/stats',
 			data: statistics
 	return

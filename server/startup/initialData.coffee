@@ -14,7 +14,7 @@ Meteor.startup ->
 				statusDefault: "online"
 				utcOffset: 0
 				active: true
-				bot: true
+				type: 'bot'
 
 			rs = RocketChatFile.bufferToStream new Buffer(Assets.getBinary('avatars/rocketcat.png'), 'utf8')
 			RocketChatFileAvatarInstance.deleteFile "rocket.cat.jpg"
@@ -42,7 +42,7 @@ Meteor.startup ->
 				console.log "Name: #{adminUser.name}".green
 
 				if process.env.ADMIN_EMAIL?
-					re = /^([\w-]+(?:\.[\w-]+)*)@((?:[\w-]+\.)*\w[\w-]{0,66})\.([a-z]{2,6}(?:\.[a-z]{2})?)$/i
+					re = /^[^@].*@[^@]+$/i
 					if re.test process.env.ADMIN_EMAIL
 						if not RocketChat.models.Users.findOneByEmailAddress process.env.ADMIN_EMAIL
 							adminUser.emails = [
@@ -51,9 +51,9 @@ Meteor.startup ->
 							]
 							console.log "Email: #{process.env.ADMIN_EMAIL}".green
 						else
-							console.log 'E-mail provided already exists; Ignoring environment variables ADMIN_EMAIL'.red
+							console.log 'Email provided already exists; Ignoring environment variables ADMIN_EMAIL'.red
 					else
-						console.log 'E-mail provided is invalid; Ignoring environment variables ADMIN_EMAIL'.red
+						console.log 'Email provided is invalid; Ignoring environment variables ADMIN_EMAIL'.red
 
 				if process.env.ADMIN_USERNAME?
 					try
@@ -68,6 +68,8 @@ Meteor.startup ->
 					else
 						console.log 'Username provided is invalid; Ignoring environment variables ADMIN_USERNAME'.red
 				console.log "Username: #{adminUser.username}".green
+
+				adminUser.type = 'user'
 
 				id = RocketChat.models.Users.create adminUser
 

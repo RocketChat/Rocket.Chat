@@ -21,9 +21,13 @@ Meteor.methods
 
 		user = RocketChat.models.Users.findOneById userId
 		fromUser = RocketChat.models.Users.findOneById Meteor.userId()
-		RocketChat.models.Messages.createOwnerRemovedWithRoomIdAndUser rid, user,
+		RocketChat.models.Messages.createSubscriptionRoleRemovedWithRoomIdAndUser rid, user,
 			u:
 				_id: fromUser._id
 				username: fromUser.username
+			role: 'owner'
+
+		if RocketChat.settings.get('UI_DisplayRoles')
+			RocketChat.Notifications.notifyAll('roles-change', { type: 'removed', _id: 'owner', u: { _id: user._id, username: user.username }, scope: rid });
 
 		return true

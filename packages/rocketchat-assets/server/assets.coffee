@@ -17,7 +17,7 @@ assets =
 			extensions: ['svg', 'png', 'jpg', 'jpeg']
 			width: undefined
 			height: undefined
-	'favicon':
+	'favicon_ico':
 		label: 'favicon.ico'
 		defaultUrl: 'favicon.ico'
 		constraints:
@@ -76,23 +76,26 @@ assets =
 
 
 RocketChat.Assets = new class
+	mime: mime
+	assets: assets
+
 	setAsset: (binaryContent, contentType, asset) ->
 		if not assets[asset]?
-			throw new Meteor.Error "Invalid_asset"
+			throw new Meteor.Error "error-invalid-asset", 'Invalid asset', { function: 'RocketChat.Assets.setAsset' }
 
 		extension = mime.extension(contentType)
 		if extension not in assets[asset].constraints.extensions
-			throw new Meteor.Error "Invalid_file_type", contentType
+			throw new Meteor.Error contentType, 'Invalid file type: ' + contentType, { function: 'RocketChat.Assets.setAsset', errorTitle: 'error-invalid-file-type' }
 
 		file = new Buffer(binaryContent, 'binary')
 		if assets[asset].constraints.width? or assets[asset].constraints.height?
 			dimensions = sizeOf file
 
 			if assets[asset].constraints.width? and assets[asset].constraints.width isnt dimensions.width
-				throw new Meteor.Error "Invalid_file_width"
+				throw new Meteor.Error "error-invalid-file-width", "Invalid file width", { function: 'Invalid file width' }
 
 			if assets[asset].constraints.height? and assets[asset].constraints.height isnt dimensions.height
-				throw new Meteor.Error "Invalid_file_height"
+				throw new Meteor.Error "error-invalid-file-height"
 
 		rs = RocketChatFile.bufferToStream file
 		RocketChatAssetsInstance.deleteFile asset
@@ -100,7 +103,7 @@ RocketChat.Assets = new class
 		ws.on 'end', Meteor.bindEnvironment ->
 			Meteor.setTimeout ->
 				RocketChat.settings.updateById "Assets_#{asset}", {
-					url: "/assets/#{asset}.#{extension}"
+					url: "assets/#{asset}.#{extension}"
 					defaultUrl: assets[asset].defaultUrl
 				}
 			, 200
@@ -110,7 +113,7 @@ RocketChat.Assets = new class
 
 	unsetAsset: (asset) ->
 		if not assets[asset]?
-			throw new Meteor.Error "Invalid_asset"
+			throw new Meteor.Error "error-invalid-asset", 'Invalid asset', { function: 'RocketChat.Assets.unsetAsset' }
 
 		RocketChatAssetsInstance.deleteFile asset
 
@@ -129,7 +132,7 @@ for key, value of assets
 Meteor.startup ->
 	forEachAsset = (key, value) ->
 		RocketChat.settings.get "Assets_#{key}", (settingKey, settingValue) ->
-			if settingValue is undefined
+			if not settingValue?.url?
 				value.cache = undefined
 				return
 
@@ -215,33 +218,33 @@ WebAppHashing.calculateClientHash = (manifest, includeFilter, runtimeConfigOverr
 Meteor.methods
 	refreshClients: ->
 		unless Meteor.userId()
-			throw new Meteor.Error 'invalid-user', "[methods] unsetAsset -> Invalid user"
+			throw new Meteor.Error 'error-invalid-user', "Invalid user", { method: 'refreshClients' }
 
 		hasPermission = RocketChat.authz.hasPermission Meteor.userId(), 'manage-assets'
 		unless hasPermission
-			throw new Meteor.Error 'manage-assets-not-allowed', "[methods] unsetAsset -> Manage assets not allowed"
+			throw new Meteor.Error 'error-action-now-allowed', 'Managing assets not allowed', { method: 'refreshClients', action: 'Managing_assets' }
 
 		RocketChat.Assets.refreshClients
 
 
 	unsetAsset: (asset) ->
 		unless Meteor.userId()
-			throw new Meteor.Error 'invalid-user', "[methods] unsetAsset -> Invalid user"
+			throw new Meteor.Error 'error-invalid-user', "Invalid user", { method: 'unsetAsset' }
 
 		hasPermission = RocketChat.authz.hasPermission Meteor.userId(), 'manage-assets'
 		unless hasPermission
-			throw new Meteor.Error 'manage-assets-not-allowed', "[methods] unsetAsset -> Manage assets not allowed"
+			throw new Meteor.Error 'error-action-now-allowed', 'Managing assets not allowed', { method: 'unsetAsset', action: 'Managing_assets' }
 
 		RocketChat.Assets.unsetAsset asset
 
 
 	setAsset: (binaryContent, contentType, asset) ->
 		unless Meteor.userId()
-			throw new Meteor.Error 'invalid-user', "[methods] setAsset -> Invalid user"
+			throw new Meteor.Error 'error-invalid-user', "Invalid user", { method: 'setAsset' }
 
 		hasPermission = RocketChat.authz.hasPermission Meteor.userId(), 'manage-assets'
 		unless hasPermission
-			throw new Meteor.Error 'manage-assets-not-allowed', "[methods] unsetAsset -> Manage assets not allowed"
+			throw new Meteor.Error 'error-action-now-allowed', 'Managing assets not allowed', { method: 'setAsset', action: 'Managing_assets' }
 
 		RocketChat.Assets.setAsset binaryContent, contentType, asset
 		return

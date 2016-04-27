@@ -1,7 +1,7 @@
 Meteor.methods
 	setupImporter: (name) ->
 		if not Meteor.userId()
-			throw new Meteor.Error 203, 'User_logged_out' #TODO: Update this to the new way of doing things
+			throw new Meteor.Error 'error-invalid-user', 'Invalid user', { method: 'setupImporter' }
 
 		if Importer.Importers[name]?.importer?
 			importer = Importer.Importers[name]
@@ -13,4 +13,4 @@ Meteor.methods
 				return importer.importerInstance.getProgress()
 		else
 			console.warn "Tried to setup #{name} as an importer."
-			throw new Meteor.Error 'importer-not-defined', 'importer_not_defined_properly', { importerName: name }
+			throw new Meteor.Error 'error-importer-not-defined', 'The importer was not defined correctly, it is missing the Import class.', { method: 'setupImporter' }

@@ -119,21 +119,29 @@ class @ChatMessages
 				Meteor.call 'sendMessage', msgObject
 
 	deleteMsg: (message) ->
+		blockDeleteInMinutes = RocketChat.settings.get 'Message_AllowDeleting_BlockDeleteInMinutes'
+		if blockDeleteInMinutes? and blockDeleteInMinutes isnt 0
+			msgTs = moment(message.ts) if message.ts?
+			currentTsDiff = moment().diff(msgTs, 'minutes') if msgTs?
+			if currentTsDiff > blockDeleteInMinutes
+				toastr.error(t('Message_deleting_blocked'))
+				return
+
 		Meteor.call 'deleteMessage', message, (error, result) ->
 			if error
-				return toastr.error error.reason
+				return handleError(error);
 
 	pinMsg: (message) ->
 		message.pinned = true
 		Meteor.call 'pinMessage', message, (error, result) ->
 			if error
-				return toastr.error error.reason
+				return handleError(error)
 
 	unpinMsg: (message) ->
 		message.pinned = false
 		Meteor.call 'unpinMessage', message, (error, result) ->
 			if error
-				return toastr.error error.reason
+				return handleError(error)
 
 	update: (id, rid, msg) ->
 		if _.trim(msg) isnt ''

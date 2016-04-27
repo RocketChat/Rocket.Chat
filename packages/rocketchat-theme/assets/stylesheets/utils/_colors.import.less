@@ -56,7 +56,6 @@ blockquote {
 			&::before {
 				background-color: lighten(@info-font-color, 25%);
 			}
-
 			&::after {
 				color: @info-font-color;
 			}
@@ -66,7 +65,6 @@ blockquote {
 		&::before {
 			background-color: lighten(@info-active-font-color, 25%);
 		}
-
 		&::after {
 			background-color: @content-background-color;
 			color: @info-active-font-color;
@@ -271,7 +269,6 @@ label.required:after {
 	i {
 		background-color: #333;
 	}
-
 	.unread-burger-alert {
 		background-color: #F95555;
 		color: @content-background-color;
@@ -281,7 +278,7 @@ label.required:after {
 .arrow {
 	&:before,
 	&:after {
-		background-color: #aaa;
+		background-color: mix(@quaternary-font-color, @primary-background-color, 65%);
 	}
 }
 
@@ -328,9 +325,9 @@ a.github-fork {
 
 .account-box {
 	.info {
-		background-color:@primary-background-color;
+		background-color: @primary-background-color;
 		h4 {
-			color: fade( @quaternary-font-color, 65% );
+			color: mix(@quaternary-font-color, @primary-background-color, 65%);
 		}
 		&.status-offline {
 			.thumb:after {
@@ -392,23 +389,23 @@ a.github-fork {
 			color: #aaa;
 		}
 		a {
-			color: fade( @quaternary-font-color, 50% );
+			color: fade( @quaternary-font-color, 50%);
 			border-bottom-color: darken(@primary-background-color, 2%);
 			&:hover {
 				background-color: darken(@primary-background-color, 2%);
-				color: fade( @quaternary-font-color, 75% );
+				color: fade( @quaternary-font-color, 75%);
 			}
 		}
 	}
 	&.active .info,
 	.info:hover {
 		h4 {
-			color: fade(@quaternary-font-color, 85% );
+			color: fade(@quaternary-font-color, 85%);
 		}
 	}
 	.hover & {
 		.info h4 {
-			color: fade(@quaternary-font-color, 85% );
+			color: fade(@quaternary-font-color, 85%);
 		}
 	}
 }
@@ -437,9 +434,8 @@ a.github-fork {
 			background-color: @primary-background-color;
 			color: @input-font-color;
 		}
-
 		& label {
-			color:@input-font-color;
+			color: @input-font-color;
 		}
 	}
 	.selected-users {
@@ -450,8 +446,6 @@ a.github-fork {
 }
 
 .side-nav {
-	background-color: #F4F4F4;
-	color: #000;
 	&:before {
 		background-color: #dfdfdf;
 	}
@@ -480,7 +474,7 @@ a.github-fork {
 		&:hover {
 			&:before,
 			&:after {
-				background-color: fade( @quaternary-font-color, 85% );
+				background-color: mix(@quaternary-font-color, @primary-background-color, 85%);
 			}
 		}
 	}
@@ -544,14 +538,14 @@ a.github-fork {
 		.opt {
 			background-color: transparent;
 			i {
-				color: fade(@quaternary-font-color, 50% );
+				color: fade(@quaternary-font-color, 50%);
 				&:hover {
-					color: fade(@quaternary-font-color, 75% );
+					color: fade(@quaternary-font-color, 75%);
 				}
 			}
 		}
 		i {
-			color: fade(@quaternary-font-color, 35% );
+			color: fade(@quaternary-font-color, 35%);
 		}
 		input[type=text] {
 			color: #000;
@@ -576,7 +570,7 @@ a.github-fork {
 }
 
 .spotlight {
-	background-color: rgba(0,0,0,.3);
+	background-color: rgba(0, 0, 0, .3);
 	> .spotlight-input {
 		color: #444;
 		> i {
@@ -586,7 +580,7 @@ a.github-fork {
 }
 
 .mobile-message-menu {
-	background-color: rgba(0,0,0,.3);
+	background-color: rgba(0, 0, 0, .3);
 }
 
 .page-static {
@@ -623,19 +617,32 @@ a.github-fork {
 				color: @primary-font-color;
 			}
 		}
-		.room-info {
-			&:hover {
-				background-color: @secondary-background-color;
-			}
-		}
 		.status {
 			color: @secondary-font-color;
 		}
-
 		table {
 			tbody {
-				tr:nth-child(odd) {
-					background-color: @secondary-background-color;
+				tr {
+					&:nth-child(odd) {
+						background-color: @secondary-background-color;
+					}
+
+					&.row-link {
+						cursor: pointer;
+						&:hover {
+							background-color: darken(@secondary-background-color, 3%);
+						}
+					}
+				}
+
+				td {
+					a {
+						color: @link-font-color;
+						&:hover {
+							color: darken(@link-font-color, 10%);
+							background-color: transparent;
+						}
+					}
 				}
 			}
 		}
@@ -656,11 +663,9 @@ a.github-fork {
 	>div {
 		border-color: #ffffff;
 	}
-
 	.upload-progress {
 		background-color: #b2d5c9;
 		color: @content-background-color;
-
 		&.upload-error {
 			background-color: #FF6161;
 			border-color: #863737;
@@ -674,7 +679,6 @@ a.github-fork {
 			}
 		}
 	}
-
 	.unread-bar {
 		background-color: #E6F4FD;
 		color: #068FE4;
@@ -690,28 +694,28 @@ a.github-fork {
 		}
 	}
 	.wrapper {
-		.custom-scroll(transparent, rgba(180,180,180,.75));
+		.custom-scroll(transparent, rgba(180, 180, 180, .75));
 	}
 	.footer {
 		background: #FCFCFC;
 		border-top-color: @tertiary-background-color;
 	}
 	.message-popup {
-		background: #FAFAFA;
+		background: #FFF;
 	}
 	.message-popup-title {
 		background-color: @secondary-background-color;
-		border-bottom-color: #EEE;
+		border-bottom-color: #E7E7E7;
 	}
 	.popup-item {
 		color: @secondary-font-color;
 		&.selected {
-			background-color: @tertiary-background-color;
-			color: @primary-font-color;
+			background-color: #4CAEEB;
+			color: #FFF;
 		}
 	}
 	.popup-user-status {
-		border-color: rgba(0,0,0,.2);
+		border-color: rgba(0, 0, 0, .2);
 	}
 	.popup-user-status-system {
 		border-color: transparent;
@@ -729,27 +733,10 @@ a.github-fork {
 		background-color: @status-busy;
 	}
 	.message-form {
-		> div {
-			> .file {
-				border-color: #E7E7E7;
-				color: #888;
-				background-color: #FCFCFC;
-				&:hover {
-					background-color: #F1F1F1;
-					color: #666;
-				}
-			}
-		}
-		.message-buttons {
-			.mic, .stop-mic {
-				color: #888;
-				background-color: #FCFCFC;
-				&:hover {
-					background-color: #F1F1F1;
-					color: #666;
-				}
-			}
-			.send-button {
+		> .message-input {
+			border-color: #E7E7E7;
+			> .file,
+			.message-buttons {
 				color: #888;
 				background-color: #FCFCFC;
 				&:hover {
@@ -827,7 +814,6 @@ a.github-fork {
 	&.system {
 		.body {
 			color: @info-font-color;
-
 			.attachment {
 				color: @primary-font-color;
 			}
@@ -902,10 +888,27 @@ a.github-fork {
 	}
 	.content {
 		.custom-scroll(transparent, #DADADA);
+		> div {
+			background-color: @secondary-background-color;
+		}
+	}
+	.message {
+		&.new-day {
+			&:before {
+				background-color: @secondary-background-color;
+			}
+			&:after {
+				border-top-color: @tertiary-background-color;
+			}
+		}
 	}
 }
 
 .list-view {
+	-webkit-overflow-scrolling: touch;
+	overflow-y: auto;
+	overflow-x: hidden;
+	.custom-scroll(transparent, #DADADA);
 	> .status {
 		p {
 			color: @secondary-font-color;
@@ -918,6 +921,8 @@ a.github-fork {
 }
 
 .user-view {
+	-webkit-overflow-scrolling: touch;
+	.custom-scroll(transparent, #DADADA);
 	.info {
 		h3 {
 			i.status-offline {
@@ -955,8 +960,7 @@ a.github-fork {
 		}
 	}
 	.box {
-		h4 {
-		}
+		h4 {}
 		&:after {
 			background-color: #CDCDCD;
 		}
@@ -1003,8 +1007,7 @@ a.github-fork {
 	&:hover,
 	&.selected {
 		.avatar {
-			&:after {
-			}
+			&:after {}
 			.status-offline {
 				&:after {
 					background-color: @status-offline;
@@ -1158,7 +1161,7 @@ a.github-fork {
 
 .full-page {
 	background-color: darken(@primary-background-color, 10%);
-	.background-image(linear-gradient(darken(@primary-background-color,10%),@primary-background-color));
+	.background-image(linear-gradient(darken(@primary-background-color, 10%), @primary-background-color));
 	.text {
 		color: #FFF;
 		.button {

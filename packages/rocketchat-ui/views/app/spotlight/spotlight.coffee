@@ -29,7 +29,7 @@ Template.spotlight.events
 		if doc.type is 'u'
 			Meteor.call 'createDirectMessage', doc.username, (error, result) ->
 				if error
-					return toastr.error error.reason
+					return handleError(error)
 
 				if result?.rid?
 					FlowRouter.go('direct', { username: doc.username })

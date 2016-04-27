@@ -6,6 +6,7 @@ loadMissedMessages = (rid) ->
 	Meteor.call 'loadMissedMessages', rid, lastMessage.ts, (err, result) ->
 		for item in result
 			RocketChat.promises.run('onClientMessageReceived', item).then (item) ->
+				item.roles = _.union(UserRoles.findOne(item.u?._id)?.roles, RoomRoles.findOne({rid: item.rid, 'u._id': item.u?._id})?.roles)
 				ChatMessage.upsert {_id: item._id}, item
 
 connectionWasOnline = true
@@ -48,7 +49,7 @@ RocketChat.Notifications.onUser 'message', (msg) ->
 @RoomManager = new class
 	openedRooms = {}
 	subscription = null
-	msgStream = new Meteor.Stream 'messages'
+	msgStream = new Meteor.Streamer 'room-messages'
 	onlineUsers = new ReactiveVar {}
 
 	Dep = new Tracker.Dependency
@@ -133,6 +134,7 @@ RocketChat.Notifications.onUser 'message', (msg) ->
 
 										# Do not load command messages into channel
 										if msg.t isnt 'command'
+											msg.roles = _.union(UserRoles.findOne(msg.u?._id)?.roles, RoomRoles.findOne({rid: msg.rid, 'u._id': msg.u?._id})?.roles)
 											ChatMessage.upsert { _id: msg._id }, msg
 
 										Meteor.defer ->
@@ -238,8 +240,10 @@ RocketChat.Notifications.onUser 'message', (msg) ->
 		$('.messages-box .mention-link-me').each (index, item) ->
 			topOffset = $(item).offset().top + scrollTop
 			percent = 100 / totalHeight * topOffset
-			ticksBar.append('<div class="tick" style="top: '+percent+'%;"></div>')
-
+			if $(item).hasClass('mention-link-all')
+				ticksBar.append('<div class="tick tick-all" style="top: '+percent+'%;"></div>')
+			else
+				ticksBar.append('<div class="tick" style="top: '+percent+'%;"></div>')
 
 	open: open
 	close: close

@@ -1,7 +1,7 @@
 Meteor.methods
 	createChannel: (name, members) ->
 		if not Meteor.userId()
-			throw new Meteor.Error 'invalid-user', "[methods] createChannel -> Invalid user"
+			throw new Meteor.Error 'error-invalid-user', "Invalid user", { method: 'createChannel' }
 
 		try
 			nameValidation = new RegExp '^' + RocketChat.settings.get('UTF8_Names_Validation') + '$'
@@ -9,10 +9,10 @@ Meteor.methods
 			nameValidation = new RegExp '^[0-9a-zA-Z-_.]+$'
 
 		if not nameValidation.test name
-			throw new Meteor.Error 'name-invalid'
+			throw new Meteor.Error 'error-invalid-name', "Invalid name", { method: 'createChannel' }
 
 		if RocketChat.authz.hasPermission(Meteor.userId(), 'create-c') isnt true
-			throw new Meteor.Error 'not-authorized', '[methods] createChannel -> Not authorized'
+			throw new Meteor.Error 'error-not-allowed', "Not allowed", { method: 'createChannel' }
 
 		now = new Date()
 		user = Meteor.user()
@@ -22,9 +22,9 @@ Meteor.methods
 		# avoid duplicate names
 		if RocketChat.models.Rooms.findOneByName name
 			if RocketChat.models.Rooms.findOneByName(name).archived
-				throw new Meteor.Error 'archived-duplicate-name'
+				throw new Meteor.Error 'error-archived-duplicate-name', "There's an archived channel with name " + name, { method: 'createChannel', room_name: name }
 			else
-				throw new Meteor.Error 'duplicate-name'
+				throw new Meteor.Error 'error-duplicate-channel-name', "A channel with name '" + name + "' exists", { method: 'createChannel', room_name: name }
 
 		# name = s.slugify name
 

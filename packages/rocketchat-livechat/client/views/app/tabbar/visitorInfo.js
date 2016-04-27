@@ -9,7 +9,7 @@ Template.visitorInfo.helpers({
 			if (['Mac OS', 'iOS'].indexOf(ua.getOS().name) !== -1) {
 				user.osIcon = 'icon-apple';
 			} else {
-				user.osIcon = 'icon-' +  ua.getOS().name.toLowerCase();
+				user.osIcon = 'icon-' + ua.getOS().name.toLowerCase();
 			}
 			user.browser = ua.getBrowser().name + ' ' + ua.getBrowser().version;
 			user.browserIcon = 'icon-' + ua.getBrowser().name.toLowerCase();
@@ -20,6 +20,38 @@ Template.visitorInfo.helpers({
 
 	loadingNavigation() {
 		return !Template.instance().pageVisited.ready();
+	},
+
+	customFields() {
+		let fields = [];
+		let livechatData = {};
+		let user = Meteor.users.findOne({ 'profile.token': Template.instance().visitorToken.get() });
+		if (user) {
+			livechatData = _.extend(livechatData, user.livechatData);
+		}
+
+		let data = Template.currentData();
+		if (data && data.rid) {
+			let room = RocketChat.models.Rooms.findOne(data.rid);
+			if (room) {
+				livechatData = _.extend(livechatData, room.livechatData);
+			}
+		}
+
+		if (!_.isEmpty(livechatData)) {
+			for (let _id in livechatData) {
+				if (livechatData.hasOwnProperty(_id)) {
+					let customFields = Template.instance().customFields.get();
+					if (customFields) {
+						let field = _.findWhere(customFields, { _id: _id });
+						if (field && field.visibility !== 'hidden') {
+							fields.push({ label: field.label, value: livechatData[_id] });
+						}
+					}
+				}
+			}
+			return fields;
+		}
 	},
 
 	pageVisited() {
@@ -51,6 +83,13 @@ Template.visitorInfo.helpers({
 
 Template.visitorInfo.onCreated(function() {
 	this.visitorToken = new ReactiveVar(null);
+	this.customFields = new ReactiveVar([]);
+
+	Meteor.call('livechat:getCustomFields', (err, customFields) => {
+		if (customFields) {
+			this.customFields.set(customFields);
+		}
+	});
 
 	var currentData = Template.currentData();
 

@@ -3,6 +3,7 @@ Meteor.publish 'integrations', ->
 		return @ready()
 
 	if not RocketChat.authz.hasPermission @userId, 'manage-integrations'
-		throw new Meteor.Error "not-authorized"
+		return @error new Meteor.Error "error-not-allowed", "Not allowed", { publish: 'integrations' }
+		return @ready()
 
 	return RocketChat.models.Integrations.find()

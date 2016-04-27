@@ -87,7 +87,7 @@ RocketChat.settings.addGroup 'General', ->
 	@add 'Site_Name', 'Rocket.Chat', { type: 'string', public: true }
 	@add 'Language', '', { type: 'language', public: true }
 	@add 'Allow_Invalid_SelfSigned_Certs', false, { type: 'boolean' }
-	@add 'Disable_Favorite_Rooms', false, { type: 'boolean' }
+	@add 'Favorite_Rooms', true, { type: 'boolean' }
 	@add 'CDN_PREFIX', '', { type: 'string' }
 	@add 'Force_SSL', false, { type: 'boolean', public: true }
 	@add 'GoogleTagManager_id', '', { type: 'string', public: true }
@@ -98,37 +98,53 @@ RocketChat.settings.addGroup 'General', ->
 		@add 'UTF8_Names_Slugify', true, { type: 'boolean', public: true }
 
 	@section 'Reporting', ->
-		@add 'Statistics_opt_out', false, { type: 'boolean', i18nLabel: "Opt_out_statistics" }
+		@add 'Statistics_reporting', false, { type: 'boolean' }
+
+	@section 'Notifications', ->
+		@add 'Desktop_Notifications_Duration', 0, { type: 'int', public: true, i18nDescription: 'Desktop_Notification_Durations_Description' }
 
 
-RocketChat.settings.addGroup 'SMTP', ->
-	@add 'SMTP_Host', '', { type: 'string', env: true }
-	@add 'SMTP_Port', '', { type: 'string', env: true }
-	@add 'SMTP_Username', '', { type: 'string', env: true }
-	@add 'SMTP_Password', '', { type: 'password', env: true }
-	@add 'From_Email', '', { type: 'string', placeholder: 'email@domain' }
-	@add 'SMTP_Test_Button', 'sendSMTPTestEmail', { type: 'action', actionText: 'Send_a_test_mail_to_my_user' }
+RocketChat.settings.addGroup 'Email', ->
+	@section 'SMTP', ->
+		@add 'SMTP_Host', '', { type: 'string', env: true, i18nLabel: 'Host' }
+		@add 'SMTP_Port', '', { type: 'string', env: true, i18nLabel: 'Port' }
+		@add 'SMTP_Username', '', { type: 'string', env: true, i18nLabel: 'Username' }
+		@add 'SMTP_Password', '', { type: 'password', env: true, i18nLabel: 'Password' }
+		@add 'From_Email', '', { type: 'string', placeholder: 'email@domain' }
+		@add 'SMTP_Test_Button', 'sendSMTPTestEmail', { type: 'action', actionText: 'Send_a_test_mail_to_my_user' }
 
 	@section 'Invitation', ->
-		@add 'Invitation_Subject', 'You have been invited to Rocket.Chat', { type: 'string' }
-		@add 'Invitation_HTML', '<h2>You have been invited to <h1>Rocket.Chat</h1></h2><p>Go to ' + __meteor_runtime_config__?.ROOT_URL + ' and try the best open source chat solution available today!</p>', { type: 'string', multiline: true }
-		@add 'Accounts_Enrollment_Email',  '', { type: 'string', multiline: true }
+		@add 'Invitation_Subject', 'You have been invited to Rocket.Chat', { type: 'string', i18nLabel: 'Subject' }
+		@add 'Invitation_HTML', '', { type: 'code', code: 'text/html', multiline: true, i18nLabel: 'Body', i18nDescription: 'Invitation_HTML_Description' }
+
+	@section 'Registration', ->
+		@add 'Accounts_Enrollment_Email_Subject', '', { type: 'string', i18nLabel: 'Subject' }
+		@add 'Accounts_Enrollment_Email', '', { type: 'code', code: 'text/html', multiline: true, i18nLabel: 'Body', i18nDescription: 'Accounts_Enrollment_Email_Description' }
+
+	@section 'Registration via Admin', ->
+		@add 'Accounts_UserAddedEmailSubject', '', { type: 'string', i18nLabel: "Subject" }
+		@add 'Accounts_UserAddedEmail', '', { type: 'code', code: 'text/html', multiline: true, i18nLabel: 'Body', i18nDescription: 'Accounts_UserAddedEmail_Description' }
 
 
 RocketChat.settings.addGroup 'Message', ->
 	@add 'Message_AllowEditing', true, { type: 'boolean', public: true }
 	@add 'Message_AllowEditing_BlockEditInMinutes', 0, { type: 'int', public: true, i18nDescription: 'Message_AllowEditing_BlockEditInMinutesDescription' }
 	@add 'Message_AllowDeleting', true, { type: 'boolean', public: true }
+	@add 'Message_AllowDeleting_BlockDeleteInMinutes', 0, { type: 'int', public: true, i18nDescription: 'Message_AllowDeleting_BlockDeleteInMinutes' }
 	@add 'Message_AllowPinning', true, { type: 'boolean', public: true }
 	@add 'Message_ShowEditedStatus', true, { type: 'boolean', public: true }
 	@add 'Message_ShowDeletedStatus', false, { type: 'boolean', public: true }
 	@add 'Message_KeepHistory', false, { type: 'boolean', public: true }
+	@add 'Message_MaxAll', 0, { type: 'int', public: true }
 	@add 'Message_MaxAllowedSize', 5000, { type: 'int', public: true }
 	@add 'Message_ShowFormattingTips', true, { type: 'boolean', public: true }
 	@add 'Message_AudioRecorderEnabled', true, { type: 'boolean', public: true, i18nDescription: 'Message_AudioRecorderEnabledDescription' }
 	@add 'Message_GroupingPeriod', 300, { type: 'int', public: true, i18nDescription: 'Message_GroupingPeriodDescription' }
 	@add 'API_Embed', true, { type: 'boolean', public: true }
 	@add 'API_EmbedDisabledFor', '', { type: 'string', public: true, i18nDescription: 'API_EmbedDisabledFor_Description' }
+	@add 'API_EmbedIgnoredHosts', 'localhost, 127.0.0.1, 10.0.0.0/8, 172.16.0.0/12, 192.168.0.0/16', { type: 'string', i18nDescription: 'API_EmbedIgnoredHosts_Description' }
+	@add 'Message_TimeFormat', 'LT', { type: 'string', public: true, i18nDescription: 'Message_TimeFormat_Description' }
+	@add 'Message_DateFormat', 'LL', { type: 'string', public: true, i18nDescription: 'Message_DateFormat_Description' }
 
 
 RocketChat.settings.addGroup 'Meta', ->
@@ -168,15 +184,16 @@ RocketChat.settings.addGroup 'Layout', ->
 		@add 'Layout_Home_Title', 'Home', { type: 'string', public: true }
 		@add 'Layout_Home_Body', 'Welcome to Rocket.Chat <br> Go to APP SETTINGS -> Layout to customize this intro.', { type: 'code', code: 'text/html', multiline: true, public: true }
 		@add 'Layout_Terms_of_Service', 'Terms of Service <br> Go to APP SETTINGS -> Layout to customize this page.', { type: 'code', code: 'text/html', multiline: true, public: true }
+		@add 'Layout_Login_Terms', 'By proceeding you are agreeing to our <a href="/terms-of-service">Terms of Service</a> and <a href="/privacy-policy">Privacy Policy</a>.', { type: 'string', multiline: true, public: true }
 		@add 'Layout_Privacy_Policy', 'Privacy Policy <br> Go to APP SETTINGS -> Layout to customize this page.', { type: 'code', code: 'text/html', multiline: true, public: true }
-		@add 'Layout_Sidenav_Footer', '<div><a href="https://github.com/RocketChat/Rocket.Chat" class="logo" target="_blank"> <img src="images/logo/logo.svg?v=3" /></a><div class="github-tagline"><span class="icon-pencil" style="color: #994C00"></span> with <span class="icon-heart" style="color: red"></span> on <span class="icon-github-circled"></span></div></div>', { type: 'code', code: 'text/html', public: true, i18nDescription: 'Layout_Sidenav_Footer_description' }
+		@add 'Layout_Sidenav_Footer', '<img style="left: 10px; position: absolute;" src="/assets/logo.png" />', { type: 'code', code: 'text/html', public: true, i18nDescription: 'Layout_Sidenav_Footer_description' }
 
 	@section 'Custom Scripts', ->
 		@add 'Custom_Script_Logged_Out', '//Add your script', { type: 'code', multiline: true, public: true }
 		@add 'Custom_Script_Logged_In', '//Add your script', { type: 'code', multiline: true, public: true }
 
-	@section 'Login', ->
-		@add 'Layout_Login_Terms', 'By proceeding to create your account and use Rocket.Chat, you are agreeing to our <a href="/terms-of-service">Terms of Service</a> and <a href="/privacy-policy">Privacy Policy</a>. If you do not agree, you cannot use Rocket.Chat.', { type: 'string', multiline: true, public: true }
+	@section 'User Interface', ->
+		@add 'UI_DisplayRoles', true, { type: 'boolean', public: true }
 
 
 RocketChat.settings.addGroup 'Logs', ->

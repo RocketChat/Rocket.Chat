@@ -59,6 +59,8 @@ RocketChat.callbacks.add 'oembed:beforeGetUrlContent', (data) ->
 			data.urlObj.query = consumerUrl.query
 			delete data.urlObj.search
 
+	return data
+
 RocketChat.callbacks.add 'oembed:afterParseContent', (data) ->
 	if data.parsedUrl?.query?
 		queryString = data.parsedUrl.query
@@ -74,3 +76,5 @@ RocketChat.callbacks.add 'oembed:afterParseContent', (data) ->
 						if _.isString value
 							data.meta[changeCase.camelCase('oembed_' + key)] = value
 					data.meta['oembedUrl'] = url
+
+	return data

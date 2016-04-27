@@ -28,17 +28,32 @@
 				<!-- <button class="button pvt-msg"><span><i class="icon-forward"></i> {{_ "Forward"}}</span></button> -->
 			</nav>
 
-			<h4>{{_ "Navigation_History_20_last_pages"}}</h4>
+			{{#if customFields}}
+				<div class="visitor-custom-fields">
+					<h4>{{_ "Custom_Fields"}}</h4>
+
+					<div class="visitor-scroll">
+						<ul>
+							{{#each customFields}}
+								<li>{{label}}: {{value}}</li>
+							{{/each}}
+						</ul>
+					</div>
+				</div>
+			{{/if}}
 
 			<div class="visitor-navigation">
+				<h4>{{_ "Navigation_History_20_last_pages"}}</h4>
 				{{#if loadingNavigation}}
 					{{_ "Loading..."}}
 				{{else}}
-					<ul>
-						{{#each pageVisited}}
-							<li><a href="{{page.location.href}}" target="_blank" title="{{accessDateTime}}">{{pageTitle}}</a></li>
-						{{/each}}
-					</ul>
+					<div class="visitor-scroll">
+						<ul>
+							{{#each pageVisited}}
+								<li><a href="{{page.location.href}}" target="_blank" title="{{accessDateTime}}">{{pageTitle}}</a></li>
+							{{/each}}
+						</ul>
+					</div>
 				{{/if}}
 			</div>
 		</div>

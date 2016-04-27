@@ -14,6 +14,7 @@ blaze-html-templates
 check
 coffeescript
 ddp-rate-limiter
+ecmascript
 ejson
 email
 fastclick
@@ -106,6 +107,7 @@ konecty:multiple-instances-status
 konecty:nrr
 konecty:user-presence
 
+rocketchat:streamer
 arunoda:streams
 chrismbeckett:toastr
 dispatch:run-as-user

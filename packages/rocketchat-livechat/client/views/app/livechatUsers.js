@@ -19,7 +19,7 @@ Template.livechatUsers.helpers({
 });
 
 Template.livechatUsers.events({
-	'click .remove-manager' (e/*, instance*/) {
+	'click .remove-manager'(e/*, instance*/) {
 		e.preventDefault();
 
 		swal({
@@ -34,19 +34,19 @@ Template.livechatUsers.events({
 		}, () => {
 			Meteor.call('livechat:removeManager', this.username, function(error/*, result*/) {
 				if (error) {
-					return toastr.error(t(error.reason || error.error));
+					return handleError(error);
 				}
 				swal({
 					title: t('Removed'),
 					text: t('Manager_removed'),
 					type: 'success',
 					timer: 1000,
-					showConfirmButton: false,
+					showConfirmButton: false
 				});
 			});
 		});
 	},
-	'click .remove-agent' (e/*, instance*/) {
+	'click .remove-agent'(e/*, instance*/) {
 		e.preventDefault();
 
 		swal({
@@ -61,19 +61,19 @@ Template.livechatUsers.events({
 		}, () => {
 			Meteor.call('livechat:removeAgent', this.username, function(error/*, result*/) {
 				if (error) {
-					return toastr.error(t(error.reason || error.error));
+					return handleError(error);
 				}
 				swal({
 					title: t('Removed'),
 					text: t('Agent_removed'),
 					type: 'success',
 					timer: 1000,
-					showConfirmButton: false,
+					showConfirmButton: false
 				});
 			});
 		});
 	},
-	'submit #form-manager' (e/*, instance*/) {
+	'submit #form-manager'(e/*, instance*/) {
 		e.preventDefault();
 
 		if (e.currentTarget.elements.username.value.trim() === '') {
@@ -87,14 +87,14 @@ Template.livechatUsers.events({
 		Meteor.call('livechat:addManager', e.currentTarget.elements.username.value, function(error/*, result*/) {
 			e.currentTarget.elements.add.value = oldBtnValue;
 			if (error) {
-				return toastr.error(t(error.reason || error.error));
+				return handleError(error);
 			}
 
 			toastr.success(t('Manager_added'));
 			e.currentTarget.reset();
 		});
 	},
-	'submit #form-agent' (e/*, instance*/) {
+	'submit #form-agent'(e/*, instance*/) {
 		e.preventDefault();
 
 		if (e.currentTarget.elements.username.value.trim() === '') {
@@ -108,7 +108,7 @@ Template.livechatUsers.events({
 		Meteor.call('livechat:addAgent', e.currentTarget.elements.username.value, function(error/*, result*/) {
 			e.currentTarget.elements.add.value = oldBtnValue;
 			if (error) {
-				return toastr.error(t(error.reason || error.error));
+				return handleError(error);
 			}
 
 			toastr.success(t('Agent_added'));

@@ -62,11 +62,12 @@ Template.accountPreferences.onCreated ->
 			data.language = selectedLanguage
 			reload = true
 
-		data.disableNewRoomNotification = $('input[name=disableNewRoomNotification]:checked').val()
-		data.disableNewMessageNotification = $('input[name=disableNewMessageNotification]:checked').val()
+		data.newRoomNotification = $('input[name=newRoomNotification]:checked').val()
+		data.newMessageNotification = $('input[name=newMessageNotification]:checked').val()
 		data.useEmojis = $('input[name=useEmojis]:checked').val()
 		data.convertAsciiEmoji = $('input[name=convertAsciiEmoji]:checked').val()
 		data.saveMobileBandwidth = $('input[name=saveMobileBandwidth]:checked').val()
+		data.collapseMediaByDefault = $('input[name=collapseMediaByDefault]:checked').val()
 		data.compactView = $('input[name=compactView]:checked').val()
 		data.unreadRoomsMode = $('input[name=unreadRoomsMode]:checked').val()
 		data.autoImageLoad = $('input[name=autoImageLoad]:checked').val()
@@ -83,7 +84,7 @@ Template.accountPreferences.onCreated ->
 					, 1000
 
 			if error
-				toastr.error error.reason
+				handleError(error)
 
 Template.accountPreferences.onRendered ->
 	Tracker.afterFlush ->

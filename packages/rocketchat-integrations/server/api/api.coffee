@@ -154,7 +154,7 @@ executeIntegrationRest = ->
 		try
 			result = script.process_incoming_request({ request: request })
 
-			if result.error?
+			if result?.error?
 				return RocketChat.API.v1.failure result.error
 
 			@bodyParams = result?.content
@@ -246,8 +246,8 @@ RocketChat.API.v1.addRoute 'integrations.remove', authRequired: true,
 		return removeIntegration @bodyParams, @user
 
 
-Api.addRoute ':integrationId/:userId/:token', authRequired: true, {post: executeIntegrationRest}
-Api.addRoute ':integrationId/:token', authRequired: true, {post: executeIntegrationRest}
+Api.addRoute ':integrationId/:userId/:token', authRequired: true, {post: executeIntegrationRest, get: executeIntegrationRest}
+Api.addRoute ':integrationId/:token', authRequired: true, {post: executeIntegrationRest, get: executeIntegrationRest}
 
 Api.addRoute 'sample/:integrationId/:userId/:token', authRequired: true, {get: integrationSampleRest}
 Api.addRoute 'sample/:integrationId/:token', authRequired: true, {get: integrationSampleRest}

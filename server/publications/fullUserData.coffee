@@ -7,6 +7,7 @@ Meteor.publish 'fullUserData', (filter, limit) ->
 		username: 1
 		status: 1
 		utcOffset: 1
+		type: 1
 
 	if RocketChat.authz.hasPermission( @userId, 'view-full-other-user-info') is true
 		fields = _.extend fields,
@@ -17,9 +18,9 @@ Meteor.publish 'fullUserData', (filter, limit) ->
 			lastLogin: 1
 			active: 1
 			services: 1
-			roles : 1
-			requirePasswordChange : 1
-			requirePasswordChangeReason : 1
+			requirePasswordChange: 1
+			requirePasswordChangeReason: 1
+			roles: 1
 	else
 		limit = 1
 

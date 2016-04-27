@@ -80,16 +80,14 @@ Meteor.startup(function() {
 							}
 							return message;
 						});
-					} else {
-						if (data.userId !== Meteor.userId()) {
-							return otrRoom.encryptText(ack)
-							.then((ack) => {
-								Meteor.call('updateOTRAck', message._id, ack);
-								return message;
-							});
-						} else {
+					} else if (data.userId !== Meteor.userId()) {
+						return otrRoom.encryptText(ack)
+						.then((ack) => {
+							Meteor.call('updateOTRAck', message._id, ack);
 							return message;
-						}
+						});
+					} else {
+						return message;
 					}
 				});
 			}

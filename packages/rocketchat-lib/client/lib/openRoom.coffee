@@ -67,6 +67,12 @@ currentTracker = undefined
 			# update user's room subscription
 			sub = ChatSubscription.findOne({rid: room._id})
 			if sub?.open is false
-				Meteor.call 'openRoom', room._id
+				Meteor.call 'openRoom', room._id, (err) ->
+					if err
+						return handleError(err)
+
+			if FlowRouter.getQueryParam('msg')
+				msg = { _id: FlowRouter.getQueryParam('msg'), rid: room._id }
+				RoomHistoryManager.getSurroundingMessages(msg);
 
 			RocketChat.callbacks.run 'enter-room', sub

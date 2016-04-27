@@ -21,7 +21,7 @@ Package.onUse(function(api) {
 	api.use('ecmascript');
 	api.use('less@2.5.1');
 
-	api.addFiles('emojione.coffee', ['server','client']);
+	api.addFiles('emojione.coffee', ['server', 'client']);
 	api.addFiles('rocketchat.coffee', 'client');
 
 	api.addFiles('emojiPicker.html', 'client');

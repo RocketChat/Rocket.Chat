@@ -7,8 +7,13 @@ Meteor.startup(() => {
 				cl: 1,
 				u: 1,
 				usernames: 1,
-				v: 1
+				v: 1,
+				livechatData: 1
 			}
 		});
+	});
+
+	RocketChat.authz.addRoomAccessValidator(function(room, user) {
+		return room.t === 'l' && RocketChat.authz.hasPermission(user._id, 'view-livechat-rooms');
 	});
 });

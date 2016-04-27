@@ -40,7 +40,7 @@ Template.adminImportPrepare.events
 				Meteor.call 'prepareImport', importer.key, reader.result, blob.type, blob.name, (error, data) ->
 					if error
 						console.warn 'Errored out preparing the import:', error
-						toastr.error error.reason
+						handleError(error)
 						return
 
 					if data.step
@@ -67,8 +67,7 @@ Template.adminImportPrepare.events
 		Meteor.call 'startImport', FlowRouter.getParam('importer'), { users: template.users.get(), channels: template.channels.get() }, (error, data) ->
 			if error
 				console.warn 'Error on starting the import:', error
-				toastr.error error.reason
-				return
+				return handleError(error)
 			else
 				FlowRouter.go '/admin/import/progress/' + FlowRouter.getParam('importer')
 
@@ -76,7 +75,7 @@ Template.adminImportPrepare.events
 		Meteor.call 'restartImport', FlowRouter.getParam('importer'), (error, data) ->
 			if error
 				console.warn 'Error while restarting the import:', error
-				toastr.error error.reason
+				handleError(error)
 				return
 
 			template.users.set []
@@ -108,6 +107,8 @@ Template.adminImportPrepare.onCreated ->
 				# when the import is done, restart it (new instance)
 				when 'importer_user_selection'
 					Meteor.call 'getSelectionData', FlowRouter.getParam('importer'), (error, data) ->
+						if error
+							handleError error
 						instance.users.set data.users
 						instance.channels.set data.channels
 						instance.loaded.set true
@@ -116,6 +117,8 @@ Template.adminImportPrepare.onCreated ->
 					instance.preparing.set false
 				else
 					Meteor.call 'restartImport', FlowRouter.getParam('importer'), (error, progress) ->
+						if error
+							handleError(error)
 						loadSelection(progress)
 		else
 			console.warn 'Invalid progress information.', progress
@@ -124,13 +127,15 @@ Template.adminImportPrepare.onCreated ->
 	Meteor.call 'getImportProgress', FlowRouter.getParam('importer'), (error, progress) ->
 		if error
 			console.warn 'Error while getting the import progress:', error
-			toastr.error error.reason
+			handleError error
 			return
 
 		# if the progress isnt defined, that means there currently isn't an instance
 		# of the importer, so we need to create it
 		if progress is undefined
 			Meteor.call 'setupImporter', FlowRouter.getParam('importer'), (err, data) ->
+				if err
+					handleError(err)
 				instance.preparing.set false
 				loadSelection(data)
 		else
