@@ -79,6 +79,12 @@ Template.userInfo.helpers
 	user: ->
 		return Template.instance().user.get()
 
+	hasEmails: ->
+		return _.isArray(this.emails)
+
+	hasPhone: ->
+		return _.isArray(this.phone)
+
 	isLoading: ->
 		return Template.instance().loadingUserInfo.get()
 
