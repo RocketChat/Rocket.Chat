@@ -193,7 +193,6 @@ Template.message.onViewRendered = (context) ->
 
 		if not nextNode?
 			templateInstance = if $('#chat-window-' + context.rid)[0] then Blaze.getView($('#chat-window-' + context.rid)[0])?.templateInstance() else null
-			# templateInstance = view.parentView.parentView.parentView.parentView.parentView.templateInstance?()
 
 			if currentNode.classList.contains('own') is true
 				templateInstance?.atBottom = true
