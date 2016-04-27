@@ -30,6 +30,9 @@ RocketChat.settings.add = (_id, value, options = {}) ->
 	if options.enableQuery?
 		options.enableQuery = JSON.stringify options.enableQuery
 
+	if options.i18nDefaultQuery?
+		options.i18nDefaultQuery = JSON.stringify options.i18nDefaultQuery
+
 	if process?.env?[_id]?
 		value = process.env[_id]
 		if value.toLowerCase() is "true"
