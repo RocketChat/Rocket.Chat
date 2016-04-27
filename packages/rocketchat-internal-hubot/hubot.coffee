@@ -166,10 +166,12 @@ class HubotScripts
 				console.log "can't load #{modulePath}".red
 				console.log e
 
-		scriptsToLoad = RocketChat.settings.get('InternalHubot_ScriptsToLoad').replace(' ', '').split(',') or []
+		scriptsToLoad = RocketChat.settings.get('InternalHubot_ScriptsToLoad').split(',') or []
 
 		for scriptFile in scriptsToLoad
 			try
+				scriptFile = s.trim(scriptFile)
+
 				Npm.require('hubot-scripts/src/scripts/'+scriptFile)(robot)
 				# robot.loadFile __meteor_bootstrap__.serverDir+'/npm/rocketchat_internal-hubot/node_modules/hubot-scripts/src/scripts', scriptFile
 				robot.parseHelp __meteor_bootstrap__.serverDir+'/npm/rocketchat_internal-hubot/node_modules/hubot-scripts/src/scripts/'+scriptFile
