@@ -114,8 +114,9 @@ RocketChat.settings.addGroup 'Email', ->
 		@add 'SMTP_Test_Button', 'sendSMTPTestEmail', { type: 'action', actionText: 'Send_a_test_mail_to_my_user' }
 
 	@section 'Invitation', ->
-		@add 'Invitation_Subject', 'You have been invited to Rocket.Chat', { type: 'string', i18nLabel: 'Subject' }
-		@add 'Invitation_HTML', '', { type: 'code', code: 'text/html', multiline: true, i18nLabel: 'Body', i18nDescription: 'Invitation_HTML_Description' }
+		@add 'Invitation_Customized', false, { type: 'boolean', i18nLabel: 'Custom' }
+		@add 'Invitation_Subject', '', { type: 'string', i18nLabel: 'Subject', enableQuery: { _id: 'Invitation_Customized', value: true }, i18nDefaultQuery: { _id: 'Invitation_Customized', value: false } }
+		@add 'Invitation_HTML', '', { type: 'code', code: 'text/html', multiline: true, i18nLabel: 'Body', i18nDescription: 'Invitation_HTML_Description', enableQuery: { _id: 'Invitation_Customized', value: true }, i18nDefaultQuery: { _id: 'Invitation_Customized', value: false } }
 
 	@section 'Registration', ->
 		@add 'Accounts_Enrollment_Email_Subject', '', { type: 'string', i18nLabel: 'Subject' }
