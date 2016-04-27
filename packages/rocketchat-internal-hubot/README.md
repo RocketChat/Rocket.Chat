@@ -1,5 +1,3 @@
-# codex-blackboard-hubot-scripts
-
 Meteor doesn't interact really well with NPM and the NPM module
 loading mechanism which hubot uses for its scripts.  So we've
 split out most of hubot's scripts into this separate module.
@@ -14,9 +12,9 @@ $ npm install --save hubot-pugme
 ```
 
 * **If it is included in the old [hubot-scripts repository](https://github.com/github/hubot-scripts/tree/master/src/scripts)**,
-just add it to the `hubot-scripts.json` file.  For example:
+just add it to the admin settings:
 ```
-["redis-brain.coffee", "shipit.coffee", "whatis.coffee", "<new-script-name>.coffee"]
+redis-brain.coffee,shipit.coffee,whatis.coffee,<new-script-name>.coffee
 ```
 
 * **If it is a custom script**, or a forked/tweaked version of a

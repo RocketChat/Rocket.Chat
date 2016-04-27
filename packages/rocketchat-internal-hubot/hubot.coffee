@@ -10,7 +10,7 @@ path = Npm.require('path')
 # 'use strict'
 
 # Log messages?
-DEBUG = true
+DEBUG = false
 
 # Monkey-patch Hubot to support private messages
 Hubot.Response::priv = (strings...) ->
@@ -166,7 +166,7 @@ class HubotScripts
 				console.log "can't load #{modulePath}".red
 				console.log e
 
-		scriptsToLoad = (RocketChat.settings.get('InternalHubot_ScriptsToLoad') + '').split(',')
+		scriptsToLoad = RocketChat.settings.get('InternalHubot_ScriptsToLoad').replace(' ', '').split(',') or []
 
 		for scriptFile in scriptsToLoad
 			try
@@ -293,10 +293,8 @@ init = =>
 		# 		username: "rocketbot"
 		# 	action: true
 
-RocketChat.models.Settings.findByIds([ 'InternalHubot_Username', 'InternalHubot_Enabled', 'InternalHubot_ScriptsToLoad']).observe
-	added: ->
-		init()
-	changed: ->
-		init()
-	removed: ->
-		init()
+Meteor.startup ->
+	init()
+	RocketChat.models.Settings.findByIds([ 'InternalHubot_Username', 'InternalHubot_Enabled', 'InternalHubot_ScriptsToLoad']).observe
+		changed: ->
+			init()
