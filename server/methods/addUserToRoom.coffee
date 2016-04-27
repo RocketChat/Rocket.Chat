@@ -13,7 +13,7 @@ Meteor.methods
 			throw new Meteor.Error 'error-not-allowed', 'Not allowed', { method: 'addUserToRoom' }
 
 		# if room.username isnt Meteor.user().username and room.t is 'c'
-		if RocketChat.authz.hasPermission(fromId, 'add-user-to-room', room._id)
+		if not RocketChat.authz.hasPermission(fromId, 'add-user-to-room', room._id)
 			throw new Meteor.Error 'error-not-allowed', 'Not allowed', { method: 'addUserToRoom' }
 
 		if room.t is 'd'
