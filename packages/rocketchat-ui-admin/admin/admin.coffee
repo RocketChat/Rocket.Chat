@@ -40,6 +40,27 @@ Template.admin.helpers
 
 		sections = {}
 		for setting in settings
+			if setting.i18nDefaultQuery?
+				if _.isString(setting.i18nDefaultQuery)
+					i18nDefaultQuery = JSON.parse(setting.i18nDefaultQuery)
+				else
+					i18nDefaultQuery = setting.i18nDefaultQuery
+
+				if not _.isArray(i18nDefaultQuery)
+					i18nDefaultQuery = [i18nDefaultQuery]
+
+				found = 0
+				for item in i18nDefaultQuery
+					if TempSettings.findOne(item)?
+						if setting.type is 'code'
+							codeMirrorBox = $('.code-mirror-box[data-editor-id="'+setting._id+'"]')
+							codeMirrorBox.find('.CodeMirror')[0].CodeMirror.doc.setValue(TAPi18n.__(setting._id + '_Default'))
+						else
+							setting.value = TAPi18n.__(setting._id + '_Default')
+					# else if setting.type is 'code'
+					# 	codeMirrorBox = $('.code-mirror-box[data-editor-id="'+setting._id+'"]')
+					# 	codeMirrorBox.find('.CodeMirror')[0].CodeMirror.doc.setValue(setting.value)
+
 			sections[setting.section or ''] ?= []
 			sections[setting.section or ''].push setting
 
