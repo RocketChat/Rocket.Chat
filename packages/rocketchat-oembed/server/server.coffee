@@ -23,7 +23,7 @@ getUrlContent = (urlObj, redirectCount = 5, callback) ->
 
 	parsedUrl = _.pick urlObj, ['host', 'hash', 'pathname', 'protocol', 'port', 'query', 'search', 'hostname']
 
-	ignoredHosts = RocketChat.settings.get('API_EmbedIgnoredHosts').split(',') or []
+	ignoredHosts = RocketChat.settings.get('API_EmbedIgnoredHosts').replace(' ', '').split(',') or []
 	if parsedUrl.hostname in ignoredHosts or ipRangeCheck(parsedUrl.hostname, ignoredHosts)
 		return callback()
 
