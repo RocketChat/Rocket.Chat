@@ -231,8 +231,8 @@ It is a great solution for communities and companies wanting to privately host t
 - Support for Okta SSO through SAML v2
 - I18n - Supports 22 Languages
 - Hubot Friendly
-- Face to Face Video Conferencing (aka WebRTC)
-- Multi-users Video Group Chat (experimental)
+- (Beta) Face to Face Video Conferencing (aka WebRTC )
+- (Beta) Multi-users Video Group Chat
 - Audio calls
 - Multi-users Audio Conference
 - Screensharing
