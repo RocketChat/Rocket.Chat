@@ -13,6 +13,7 @@ Package.onUse(function(api) {
 		'tracker',
 		'rocketchat:lib'
 	]);
+	api.use('underscorestring:underscore.string');
 
 	api.use('templating', 'client');
 
