@@ -10,8 +10,8 @@ RocketChat.callbacks.add('beforeSaveMessage', (msg) => {
 				const urlObj = URL.parse(item.url);
 				if (urlObj.query) {
 					const queryString = QueryString.parse(urlObj.query);
-					if (_.isString(queryString.j)) { // Jump-to query param
-						let jumpToMessage = RocketChat.models.Messages.findOneById(queryString.j);
+					if (_.isString(queryString.msg)) { // Jump-to query param
+						let jumpToMessage = RocketChat.models.Messages.findOneById(queryString.msg);
 						if (jumpToMessage) {
 							msg.attachments = msg.attachments || [];
 							msg.attachments.push({
