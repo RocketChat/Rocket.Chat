@@ -15,8 +15,12 @@
 					<p>{{name}}</p>
 					{{#if utc}}<p><i class="icon-clock"></i>{{userTime}} (UTC {{utc}})</p>{{/if}}
 					{{#if hasPermission 'view-full-other-user-info'}}
-						{{#each emails}} <p><i class="icon-mail"></i> {{address}}{{#if verified}}&nbsp;<i class="icon-ok"></i>{{/if}}</p> {{/each}}
-						{{#each phone}} <p><i class="icon-phone"></i> {{phoneNumber}}</p> {{/each}}
+						{{#if hasEmails}}
+							{{#each emails}} <p><i class="icon-mail"></i> {{address}}{{#if verified}}&nbsp;<i class="icon-ok"></i>{{/if}}</p> {{/each}}
+						{{/if}}
+						{{#if hasPhone}}
+							{{#each phone}} <p><i class="icon-phone"></i> {{phoneNumber}}</p> {{/each}}
+						{{/if}}
 						{{#if lastLogin}} <p><i class="icon-calendar"></i> {{_ "Created_at"}}: {{createdAt}}</p> {{/if}}
 						{{#if lastLogin}} <p><i class="icon-calendar"></i> {{_ "Last_login"}}: {{lastLogin}}</p> {{/if}}
 						{{#if services.facebook.id}} <p><i class="icon-facebook"></i><a href="{{services.facebook.link}}" target="_blank">{{services.facebook.name}}</a></p> {{/if}}
