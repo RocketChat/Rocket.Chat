@@ -452,9 +452,11 @@
 	color: @status-away;
 }
 
-.visitor-navigation, .visitor-custom-fields {
+.visitor-custom-fields {
 	padding: 0 20px;
+}
 
+.visitor-navigation, .visitor-custom-fields {
 	.visitor-scroll {
 		height: 130px;
 		overflow-y: auto;
@@ -517,5 +519,16 @@
 		left: 10px;
 		right: 10px;
 		bottom: 0;
+	}
+}
+
+.user-view {
+	nav.centered-buttons {
+		text-align: center;
+		margin-bottom: 1em;
+		button {
+			display: inline-block;
+			width: auto;
+		}
 	}
 }

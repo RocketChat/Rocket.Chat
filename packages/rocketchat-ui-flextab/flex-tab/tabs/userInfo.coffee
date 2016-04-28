@@ -11,14 +11,6 @@ Template.userInfo.helpers
 		user = Template.instance().user.get()
 		return user.emails?[0]?.address
 
-	phoneNumber: ->
-		user = Template.instance().user.get()
-		return '' unless user.phoneNumber
-		if user.phoneNumber.length > 10
-			return "(#{user.phoneNumber.substr(0,2)}) #{user.phoneNumber.substr(2,5)}-#{user.phoneNumber.substr(7)}"
-		else
-			return "(#{user.phoneNumber.substr(0,2)}) #{user.phoneNumber.substr(2,4)}-#{user.phoneNumber.substr(6)}"
-
 	utc: ->
 		user = Template.instance().user.get()
 		if user.utcOffset?
