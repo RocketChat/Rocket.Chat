@@ -1,6 +1,6 @@
 Template.visitorInfo.helpers({
 	user() {
-		var user = Meteor.users.findOne({ 'profile.token': Template.instance().visitorToken.get() });
+		const user = Template.instance().user.get();
 		if (user && user.userAgent) {
 			var ua = new UAParser();
 			ua.setUA(user.userAgent);
@@ -18,6 +18,14 @@ Template.visitorInfo.helpers({
 		return user;
 	},
 
+	room() {
+		return ChatRoom.findOne({ _id: this.rid });
+	},
+
+	joinTags() {
+		return this.tags.join(', ');
+	},
+
 	loadingNavigation() {
 		return !Template.instance().pageVisited.ready();
 	},
@@ -25,7 +33,7 @@ Template.visitorInfo.helpers({
 	customFields() {
 		let fields = [];
 		let livechatData = {};
-		let user = Meteor.users.findOne({ 'profile.token': Template.instance().visitorToken.get() });
+		const user = Template.instance().user.get();
 		if (user) {
 			livechatData = _.extend(livechatData, user.livechatData);
 		}
@@ -78,12 +86,75 @@ Template.visitorInfo.helpers({
 			return '';
 		}
 		return moment(this.lastLogin).format('L LTS');
+	},
+
+	editing() {
+		return Template.instance().editing.get();
+	},
+
+	editDetails() {
+		const instance = Template.instance();
+		const user = instance.user.get();
+		return {
+			visitorId: user ? user._id : null,
+			roomId: this.rid,
+			save() {
+				instance.editing.set(false);
+			},
+			cancel() {
+				instance.editing.set(false);
+			}
+		};
+	}
+});
+
+Template.visitorInfo.events({
+	'click .edit-livechat'(event, instance) {
+		event.preventDefault();
+
+		instance.editing.set(true);
+	},
+	'click .close-livechat'(event) {
+		event.preventDefault();
+
+		swal({
+			title: t('Closing_chat'),
+			type: 'input',
+			inputPlaceholder: t('Please_add_a_comment'),
+			showCancelButton: true,
+			// confirmButtonColor: '#DD6B55',
+			// confirmButtonText: t('Yes'),
+			// cancelButtonText: t('Cancel'),
+			closeOnConfirm: false
+		}, () => {
+			swal({
+				title: t('Chat_closed'),
+				text: t('Chat_closed_successfully'),
+				type: 'success',
+				timer: 1000,
+				showConfirmButton: false
+			});
+			// Meteor.call('livechat:removeDepartment', this._id, function(error/*, result*/) {
+			// 	if (error) {
+			// 		return handleError(error);
+			// 	}
+			// 	swal({
+			// 		title: t('Removed'),
+			// 		text: t('Department_removed'),
+			// 		type: 'success',
+			// 		timer: 1000,
+			// 		showConfirmButton: false
+			// 	});
+			// });
+		});
 	}
 });
 
 Template.visitorInfo.onCreated(function() {
 	this.visitorToken = new ReactiveVar(null);
 	this.customFields = new ReactiveVar([]);
+	this.editing = new ReactiveVar(false);
+	this.user = new ReactiveVar();
 
 	Meteor.call('livechat:getCustomFields', (err, customFields) => {
 		if (customFields) {
@@ -106,4 +177,8 @@ Template.visitorInfo.onCreated(function() {
 		this.subscribe('livechat:visitorInfo', currentData.rid);
 		this.pageVisited = this.subscribe('livechat:visitorPageVisited', currentData.rid);
 	}
+
+	this.autorun(() => {
+		this.user.set(Meteor.users.findOne({ 'profile.token': this.visitorToken.get() }));
+	});
 });

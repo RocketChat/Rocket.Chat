@@ -291,6 +291,41 @@ RocketChat.models.Users = new class extends RocketChat.models._Base
 
 		return @update query, update
 
+	saveUserById: (_id, data) ->
+		setData = {}
+		unsetData = {}
+
+		if data.name?
+			if not _.isEmpty(s.trim(data.name))
+				setData.name = s.trim(data.name)
+			else
+				unsetData.name = 1
+
+		if data.email?
+			if not _.isEmpty(s.trim(data.email))
+				setData.emails = [
+					address: s.trim(data.email)
+				]
+			else
+				unsetData.name = 1
+
+		if data.phone?
+			if not _.isEmpty(s.trim(data.phone))
+				setData.phone = [
+					phoneNumber: s.trim(data.phone)
+				]
+			else
+				unsetData.phone = 1
+
+		update = {}
+
+		if not _.isEmpty setData
+			update.$set = setData
+
+		if not _.isEmpty unsetData
+			update.$unset = unsetData
+
+		return @update { _id: _id }, update
 
 	# INSERT
 	create: (data) ->
