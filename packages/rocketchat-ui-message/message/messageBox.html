@@ -48,6 +48,9 @@
 
 			{{#if showFormattingTips}}
 			<div class="formatting-tips" aria-hidden="true" dir="auto">
+				{{#if showKatex}}
+				<span>\[katex\]</span>
+				{{/if}}
 				{{#if showMarkdown}}
 				<b>*{{_ "bold"}}*</b>
 				<i>_{{_ "italics"}}_</i>
