@@ -9,7 +9,7 @@ RocketChat.callbacks.add('afterSaveMessage', function(message, room) {
 	}
 
 	// only send the sms by SMS if it is a livechat room with SMS set to true
-	if (typeof room.t === 'undefined' || room.t !== 'l' || !room.sms || !room.v || !room.v.token) {
+	if (!(typeof room.t !== 'undefined' && room.t === 'l' && room.sms && room.v && room.v.token)) {
 		return message;
 	}
 
