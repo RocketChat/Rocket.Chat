@@ -143,7 +143,7 @@ RocketChat.models.Users.updateLivechatDataByToken = function(token, key, value) 
  */
 RocketChat.models.Users.findOneVisitorByPhone = function(phone) {
 	const query = {
-		'profile.phones.number': phone
+		'phone.phoneNumber': phone
 	};
 
 	return this.findOne(query);

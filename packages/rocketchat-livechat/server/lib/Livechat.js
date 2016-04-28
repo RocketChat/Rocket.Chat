@@ -62,7 +62,7 @@ RocketChat.Livechat = {
 		}
 		return RocketChat.sendMessage(guest, message, room);
 	},
-	registerGuest({ token, name, email, department, phone, loginToken } = {}) {
+	registerGuest({ token, name, email, department, phone, loginToken, username } = {}) {
 		check(token, String);
 
 		const user = RocketChat.models.Users.getVisitorByToken(token, { fields: { _id: 1 } });
@@ -71,7 +71,15 @@ RocketChat.Livechat = {
 			throw new Meteor.Error('token-already-exists', 'Token already exists');
 		}
 
-		const username = RocketChat.models.Users.getNextVisitorUsername();
+		if (!username) {
+			username = RocketChat.models.Users.getNextVisitorUsername();
+		} else {
+			// const existingUser = RocketChat.models.Users.findOneByUsername(username);
+
+			// if (existingUser) {
+			// 	throw new Meteor.Error
+			// }
+		}
 
 		var userData = {
 			username: username,
@@ -89,7 +97,7 @@ RocketChat.Livechat = {
 		const userId = Accounts.insertUserDoc({}, userData);
 
 		let updateUser = {
-			name: name || username,
+			name: name,
 			profile: {
 				guest: true,
 				token: token
@@ -97,7 +105,9 @@ RocketChat.Livechat = {
 		};
 
 		if (phone) {
-			updateUser.profile.phones = [ phone ];
+			updateUser.phone = [
+				{ phoneNumber: phone.number }
+			];
 		}
 
 		if (email && email.trim() !== '') {
@@ -117,5 +127,20 @@ RocketChat.Livechat = {
 		});
 
 		return userId;
+	},
+
+	saveGuest({ _id, name, email, phone }) {
+		let updateData = {};
+
+		if (name) {
+			updateData.name = name;
+		}
+		if (email) {
+			updateData.email = email;
+		}
+		if (phone) {
+			updateData.phone = phone;
+		}
+		return RocketChat.models.Users.saveUserById(_id, updateData);
 	}
 };

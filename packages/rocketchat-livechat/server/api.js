@@ -33,6 +33,7 @@ Api.addRoute('sms-incoming/:service', {
 			sendMessage.message.token = Random.id();
 
 			let userId = RocketChat.Livechat.registerGuest({
+				username: sms.from.replace(/[^0-9]/g, ''),
 				token: sendMessage.message.token,
 				phone: {
 					number: sms.from
