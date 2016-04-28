@@ -1,0 +1,15 @@
+<template name="externalSearch">
+	<div class="content">
+		<div class="title">
+			<h2>{{_ "Knowledge_Base"}}</h2>
+		</div>
+		<div class="external-messages">
+			{{#each messages}}
+				<div class="external-message">
+					<a class="pick-message"><i class="icon-edit"></i></a>
+					{{msg}}
+				</div>
+			{{/each}}
+		</div>
+	</div>
+</template>
