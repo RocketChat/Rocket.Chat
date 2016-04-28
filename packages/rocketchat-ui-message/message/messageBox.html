@@ -57,10 +57,12 @@
 				{{#if showHighlight}}
 				<code class="inline"><span class="hidden-br"><br></span>```<span class="hidden-br"><br></span><i class="icon-level-down"></i>{{_ "multi"}}<span class="hidden-br"><br></span><i class="icon-level-down"></i>{{_ "line"}}<span class="hidden-br"><br></span><i class="icon-level-down"></i>```</code>
 				{{/if}}
+				{{#if showKatex}}
+				<span><a href="https://github.com/Khan/KaTeX/wiki/Function-Support-in-KaTeX" target="_blank">\[KaTeX\]</a></span>
+				{{/if}}
 				{{#if showMarkdown}}
 				<q><span class="hidden-br"><br></span>&gt;{{_ "quote"}}</q>
 				{{/if}}
-
 			</div>
 			{{/if}}
 			<div class="editing-commands" aria-hidden="true" dir="auto">
