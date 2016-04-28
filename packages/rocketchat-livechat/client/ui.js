@@ -40,6 +40,24 @@ RocketChat.TabBar.addButton({
 	order: 0
 });
 
+RocketChat.TabBar.addButton({
+	groups: ['livechat'],
+	id: 'visitor-navigation',
+	i18nTitle: 'Visitor_Navigation',
+	icon: 'icon-history',
+	template: 'visitorNavigation',
+	order: 10
+});
+
+RocketChat.TabBar.addButton({
+	groups: ['livechat'],
+	id: 'visitor-history',
+	i18nTitle: 'Past_Chats',
+	icon: 'icon-chat',
+	template: 'visitorHistory',
+	order: 11
+});
+
 RocketChat.TabBar.addGroup('message-search', ['livechat']);
 RocketChat.TabBar.addGroup('starred-messages', ['livechat']);
 RocketChat.TabBar.addGroup('uploaded-files-list', ['livechat']);

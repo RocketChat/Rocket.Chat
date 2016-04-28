@@ -73,6 +73,9 @@ Package.onUse(function(api) {
 	api.addFiles('client/views/app/livechatUsers.html', 'client');
 	api.addFiles('client/views/app/livechatUsers.js', 'client');
 
+	api.addFiles('client/views/app/tabbar/visitorHistory.html', 'client');
+	api.addFiles('client/views/app/tabbar/visitorNavigation.html', 'client');
+	api.addFiles('client/views/app/tabbar/visitorNavigation.js', 'client');
 	api.addFiles('client/views/app/tabbar/visitorEdit.html', 'client');
 	api.addFiles('client/views/app/tabbar/visitorEdit.js', 'client');
 	api.addFiles('client/views/app/tabbar/visitorInfo.html', 'client');

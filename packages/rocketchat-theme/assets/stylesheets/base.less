@@ -2784,6 +2784,7 @@ body:not(.is-cordova) {
 	border-left: 1px solid #eaeaea;
 	z-index: 130;
 	.tab-button {
+		position: relative;1
 		cursor: pointer;
 		padding: 10px;
 		background: #FCFCFC;
@@ -2792,11 +2793,31 @@ body:not(.is-cordova) {
 		&:hover {
 			background: #EAEAEA;
 		}
+
+		.counter {
+			position: absolute;
+			background: #999;
+			font-size: 9px;
+			color: white;
+			width: 13px;
+			height: 13px;
+			border-radius: 50%;
+			line-height: 13px;
+			font-weight: bold;
+			right: 4px;
+			top: 4px;
+			text-align: center;
+		}
+
 		&.active {
 			background-color: #F4F4F4;
 			margin-left: -1px;
 			padding-left: 11px;
 			border-right: 3px solid #ff0000;
+
+			.counter {
+				margin-right: -3px;
+			}
 		}
 	}
 }
