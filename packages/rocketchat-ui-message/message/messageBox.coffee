@@ -13,7 +13,7 @@ Template.messageBox.helpers
 	showMarkdown: ->
 		return RocketChat.Markdown
 	showKatex: ->
-		return RocketChat.Katex
+		return RocketChat.katex
 	showFormattingTips: ->
 		return RocketChat.settings.get('Message_ShowFormattingTips') and (RocketChat.Markdown or RocketChat.Highlight or RocketChat.Katex)
 	canJoin: ->
