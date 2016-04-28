@@ -6,7 +6,7 @@ var api = {
 	},
 
 	setCustomField: function(key, value) {
-		Meteor.call('livechat:setCustomField', visitor.getToken(), key, value);
+		CustomFields.setCustomField(visitor.getToken(), key, value);
 	}
 };
 
