@@ -3,8 +3,11 @@ Meteor.methods
 		if integration.channel?.trim? and integration.channel.trim() is ''
 			delete integration.channel
 
-		if not RocketChat.authz.hasPermission(@userId, 'manage-integrations') and not RocketChat.authz.hasPermission(@userId, 'manage-integrations', 'bot')
-			throw new Meteor.Error 'error-action-not-allowed', 'Managing integrations is not allowed', { method: 'addOutgoingIntegration', action: 'Managing_integrations' }
+		if (not RocketChat.authz.hasPermission @userId, 'manage-integrations') and 
+		not (RocketChat.authz.hasPermission @userId, 'manage-own-integrations') and
+		not (RocketChat.authz.hasPermission @userId, 'manage-integrations', 'bot') and
+		not (RocketChat.authz.hasPermission @userId, 'manage-own-integrations', 'bot')
+			throw new Meteor.Error 'not_authorized'
 
 		if integration.username.trim() is ''
 			throw new Meteor.Error 'error-invalid-username', 'Invalid username', { method: 'addOutgoingIntegration' }
@@ -65,6 +68,12 @@ Meteor.methods
 
 			if record is undefined
 				throw new Meteor.Error 'error-invalid-room', 'Invalid room', { method: 'addOutgoingIntegration' }
+
+			if record.usernames? and
+			(not RocketChat.authz.hasPermission @userId, 'manage-integrations') and
+			(RocketChat.authz.hasPermission @userId, 'manage-own-integrations') and
+			Meteor.user()?.username not in record.usernames
+				throw new Meteor.Error 'error-invalid-channel', 'Invalid Channel', { method: 'addOutgoingIntegration' }
 
 		user = RocketChat.models.Users.findOne({username: integration.username})
 
