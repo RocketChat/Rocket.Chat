@@ -26,10 +26,6 @@ Template.visitorInfo.helpers({
 		return this.tags.join(', ');
 	},
 
-	loadingNavigation() {
-		return !Template.instance().pageVisited.ready();
-	},
-
 	customFields() {
 		let fields = [];
 		let livechatData = {};
@@ -60,18 +56,6 @@ Template.visitorInfo.helpers({
 			}
 			return fields;
 		}
-	},
-
-	pageVisited() {
-		return LivechatPageVisited.find({ token: Template.instance().visitorToken.get() }, { sort: { ts: -1 } });
-	},
-
-	pageTitle() {
-		return this.page.title || t('Empty_title');
-	},
-
-	accessDateTime() {
-		return moment(this.ts).format('L LTS');
 	},
 
 	createdAt() {
@@ -175,7 +159,6 @@ Template.visitorInfo.onCreated(function() {
 		});
 
 		this.subscribe('livechat:visitorInfo', currentData.rid);
-		this.pageVisited = this.subscribe('livechat:visitorPageVisited', currentData.rid);
 	}
 
 	this.autorun(() => {
