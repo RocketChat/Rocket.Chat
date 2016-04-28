@@ -76,6 +76,11 @@ Package.onUse(function(api) {
 
 	api.addFiles('client/views/app/tabbar/externalSearch.html', 'client');
 	api.addFiles('client/views/app/tabbar/externalSearch.js', 'client');
+	api.addFiles('client/views/app/tabbar/visitorHistory.html', 'client');
+	api.addFiles('client/views/app/tabbar/visitorNavigation.html', 'client');
+	api.addFiles('client/views/app/tabbar/visitorNavigation.js', 'client');
+	api.addFiles('client/views/app/tabbar/visitorEdit.html', 'client');
+	api.addFiles('client/views/app/tabbar/visitorEdit.js', 'client');
 	api.addFiles('client/views/app/tabbar/visitorInfo.html', 'client');
 	api.addFiles('client/views/app/tabbar/visitorInfo.js', 'client');
 
@@ -103,6 +108,7 @@ Package.onUse(function(api) {
 	api.addFiles('server/methods/removeTrigger.js', 'server');
 	api.addFiles('server/methods/saveCustomField.js', 'server');
 	api.addFiles('server/methods/saveDepartment.js', 'server');
+	api.addFiles('server/methods/saveLivechatInfo.js', 'server');
 	api.addFiles('server/methods/saveSurveyFeedback.js', 'server');
 	api.addFiles('server/methods/saveTrigger.js', 'server');
 	api.addFiles('server/methods/searchAgent.js', 'server');
