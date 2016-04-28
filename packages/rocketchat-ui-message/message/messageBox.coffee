@@ -12,8 +12,10 @@ Template.messageBox.helpers
 			return roomData.name
 	showMarkdown: ->
 		return RocketChat.Markdown
+	showKatex: ->
+		return RocketChat.katex
 	showFormattingTips: ->
-		return RocketChat.settings.get('Message_ShowFormattingTips') and (RocketChat.Markdown or RocketChat.Highlight)
+		return RocketChat.settings.get('Message_ShowFormattingTips') and (RocketChat.Markdown or RocketChat.Highlight or RocketChat.Katex)
 	canJoin: ->
 		return !! ChatRoom.findOne { _id: @_id, t: 'c' }
 	subscribed: ->
