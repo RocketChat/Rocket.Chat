@@ -134,7 +134,7 @@ RocketChat.models.Users.updateLivechatDataByToken = function(token, key, value) 
 		}
 	};
 
-	return this.upsert(query, update);
+	return this.update(query, update);
 };
 
 /**
