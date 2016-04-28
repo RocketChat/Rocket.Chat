@@ -9,7 +9,7 @@ Meteor.methods
 
 			message.u =
 				_id: Meteor.userId()
-				username: 'visitor'
+				username: Meteor.user()?.username || 'visitor'
 
 			message.temp = true
 
