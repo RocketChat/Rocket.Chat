@@ -1,7 +1,5 @@
 Meteor.methods
 	updateOutgoingIntegration: (integrationId, integration) ->
-		if not RocketChat.authz.hasPermission @userId, 'manage-integrations'
-			throw new Meteor.Error 'error-action-not-allowed', 'Managing integrations is not allowed', { method: 'updateOutgoingIntegration', action: 'Managing_integrations' }
 
 		if integration.username.trim() is ''
 			throw new Meteor.Error 'error-invalid-username', 'Invalid username', { method: 'updateOutgoingIntegration' }
@@ -37,8 +35,17 @@ Meteor.methods
 
 			integration.triggerWords = _.without integration.triggerWords, [undefined]
 
-		if not RocketChat.models.Integrations.findOne(integrationId)?
-			throw new Meteor.Error 'error-invalid-integration', 'Invalid integration', { method: 'updateOutgoingIntegration' }
+		currentIntegration = null
+
+		if RocketChat.authz.hasPermission @userId, 'manage-integrations'
+			currentIntegration = RocketChat.models.Integrations.findOne(integrationId)
+		else if RocketChat.authz.hasPermission @userId, 'manage-own-integrations'
+			currentIntegration = RocketChat.models.Integrations.findOne({"_id": integrationId, "_createdBy._id": @userId})
+		else
+			throw new Meteor.Error 'not_authorized'
+
+		if not currentIntegration?
+			throw new Meteor.Error 'invalid_integration', '[methods] updateOutgoingIntegration -> integration not found'
 
 		if integration.scriptEnabled is true and integration.script? and integration.script.trim() isnt ''
 			try
@@ -73,6 +80,12 @@ Meteor.methods
 
 			if record is undefined
 				throw new Meteor.Error 'error-invalid-room', 'Invalid room', { method: 'updateOutgoingIntegration' }
+
+			if record.usernames? and
+			(not RocketChat.authz.hasPermission @userId, 'manage-integrations') and
+			(RocketChat.authz.hasPermission @userId, 'manage-own-integrations') and
+			Meteor.user()?.username not in record.usernames
+				throw new Meteor.Error 'error-invalid-channel', 'Invalid Channel', { method: 'updateOutgoingIntegration' }
 
 		user = RocketChat.models.Users.findOne({username: integration.username})
 

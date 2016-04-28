@@ -1,9 +1,13 @@
 Meteor.methods
 	deleteIncomingIntegration: (integrationId) ->
-		if not RocketChat.authz.hasPermission @userId, 'manage-integrations'
-			throw new Meteor.Error 'error-action-not-allowed', 'Managing integrations is not allowed', { method: 'deleteIncomingIntegration', action: 'Managing_integrations' }
+		integration = null
 
-		integration = RocketChat.models.Integrations.findOne(integrationId)
+		if RocketChat.authz.hasPermission @userId, 'manage-integrations'
+			integration = RocketChat.models.Integrations.findOne(integrationId)
+		else if RocketChat.authz.hasPermission @userId, 'manage-own-integrations'
+			integration = RocketChat.models.Integrations.findOne(integrationId, { fields : {"_createdBy._id": @userId} })
+		else
+			throw new Meteor.Error 'not_authorized'
 
 		if not integration?
 			throw new Meteor.Error 'error-invalid-integration', 'Invalid integration', { method: 'deleteIncomingIntegration' }
