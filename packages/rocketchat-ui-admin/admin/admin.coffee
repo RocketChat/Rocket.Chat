@@ -52,14 +52,7 @@ Template.admin.helpers
 				found = 0
 				for item in i18nDefaultQuery
 					if TempSettings.findOne(item)?
-						if setting.type is 'code'
-							codeMirrorBox = $('.code-mirror-box[data-editor-id="'+setting._id+'"]')
-							codeMirrorBox.find('.CodeMirror')[0].CodeMirror.doc.setValue(TAPi18n.__(setting._id + '_Default'))
-						else
-							setting.value = TAPi18n.__(setting._id + '_Default')
-					# else if setting.type is 'code'
-					# 	codeMirrorBox = $('.code-mirror-box[data-editor-id="'+setting._id+'"]')
-					# 	codeMirrorBox.find('.CodeMirror')[0].CodeMirror.doc.setValue(setting.value)
+						setting.value = TAPi18n.__(setting._id + '_Default')
 
 			sections[setting.section or ''] ?= []
 			sections[setting.section or ''].push setting
@@ -71,6 +64,9 @@ Template.admin.helpers
 				settings: value
 
 		return sectionsArray
+
+	i18nDefaultValue: ->
+		return TAPi18n.__(@_id + '_Default')
 
 	isDisabled: ->
 		if @blocked
@@ -154,7 +150,7 @@ Template.admin.helpers
 	random: ->
 		return Random.id()
 
-	getEditorOptions: ->
+	getEditorOptions: (readOnly = false) ->
 		return {} =
 			lineNumbers: true
 			mode: this.code or "javascript"
@@ -168,6 +164,7 @@ Template.admin.helpers
 			matchTags: true,
 			showTrailingSpace: true
 			highlightSelectionMatches: true
+			readOnly: readOnly
 
 	setEditorOnBlur: (_id) ->
 		Meteor.defer ->
@@ -302,7 +299,7 @@ Template.admin.events
 	"click .expand": (e) ->
 		$(e.currentTarget).closest('.section').removeClass('section-collapsed')
 		$(e.currentTarget).closest('button').removeClass('expand').addClass('collapse').find('span').text(TAPi18n.__ "Collapse")
-		$('.code-mirror-box .CodeMirror').each (index, codeMirror) ->
+		$('.CodeMirror').each (index, codeMirror) ->
 			codeMirror.CodeMirror.refresh()
 
 	"click .collapse": (e) ->
