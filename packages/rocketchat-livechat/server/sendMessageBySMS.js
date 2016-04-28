@@ -26,11 +26,11 @@ RocketChat.callbacks.add('afterSaveMessage', function(message, room) {
 
 	const visitor = RocketChat.models.Users.getVisitorByToken(room.v.token);
 
-	if (!visitor || !visitor.profile || !visitor.profile.phones || visitor.profile.phones.length === 0) {
+	if (!visitor || !visitor.profile || !visitor.phone || visitor.phone.length === 0) {
 		return message;
 	}
 
-	SMSService.send(room.sms.from, visitor.profile.phones[0].number, message.msg);
+	SMSService.send(room.sms.from, visitor.phone[0].phoneNumber, message.msg);
 
 	return message;
 

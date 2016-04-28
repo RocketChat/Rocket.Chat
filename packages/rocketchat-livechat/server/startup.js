@@ -8,7 +8,10 @@ Meteor.startup(() => {
 				u: 1,
 				usernames: 1,
 				v: 1,
-				livechatData: 1
+				livechatData: 1,
+				topic: 1,
+				tags: 1,
+				sms: 1
 			}
 		});
 	});

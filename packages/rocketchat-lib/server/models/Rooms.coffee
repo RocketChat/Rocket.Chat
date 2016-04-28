@@ -389,6 +389,32 @@ RocketChat.models.Rooms = new class extends RocketChat.models._Base
 
 		return @update query, update
 
+	saveRoomById: (_id, data) ->
+		setData = {}
+		unsetData = {}
+
+		if data.topic?
+			if not _.isEmpty(s.trim(data.topic))
+				setData.topic = s.trim(data.topic)
+			else
+				unsetData.topic = 1
+
+		if data.tags?
+			if not _.isEmpty(s.trim(data.tags))
+				setData.tags = s.trim(data.tags).split(',').map((tag) => return s.trim(tag))
+			else
+				unsetData.tags = 1
+
+		update = {}
+
+		if not _.isEmpty setData
+			update.$set = setData
+
+		if not _.isEmpty unsetData
+			update.$unset = unsetData
+
+		return @update { _id: _id }, update
+
 	# INSERT
 	createWithTypeNameUserAndUsernames: (type, name, user, usernames, extraData) ->
 		room =
