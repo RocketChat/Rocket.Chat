@@ -147,7 +147,7 @@ window.addEventListener('message', (e) => {
 			});
 			break;
 
-		case 'loggin-with-token':
+		case 'login-with-token':
 			RocketChat.iframeLogin.loginWithToken(e.data.token, (error) => {
 				if (error) {
 					e.source.postMessage({
