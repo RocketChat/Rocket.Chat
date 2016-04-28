@@ -64,20 +64,30 @@ Meteor.methods
 					Meteor.call('joinDefaultChannels');
 
 			if userData.sendWelcomeEmail
-				html = RocketChat.settings.get('Accounts_UserAddedEmail');
-				html = html.replace /\[name\]/g, userData.name or ''
-				html = html.replace /\[fname\]/g, _.strLeft(userData.name, ' ') or  ''
-				html = html.replace /\[lname\]/g, _.strRightBack(userData.name, ' ') or  ''
-				html = html.replace /\[email\]/g, userData.email or ''
-				html = html.replace /\[password\]/g, userData.password or ''
-				html = html.replace /\[Site_Name\]/g, RocketChat.settings.get("Site_Name") or ''
-				html = html.replace /\[Site_URL\]/g, RocketChat.settings.get("Site_Url") or ''
+
+				header = RocketChat.placeholders.replace(RocketChat.settings.get('Email_Header') || "")
+				footer = RocketChat.placeholders.replace(RocketChat.settings.get('Email_Footer') || "")
+
+
+				if RocketChat.settings.get('Accounts_UserAddedEmail_Customized')
+					subject = RocketChat.settings.get('Accounts_UserAddedEmailSubject')
+					html = RocketChat.settings.get('Accounts_UserAddedEmail')
+				else
+					subject = TAPi18n.__('Accounts_UserAddedEmailSubject_Default', { lng: Meteor.user()?.language || RocketChat.settings.get('language') || 'en' })
+					html = TAPi18n.__('Accounts_UserAddedEmail_Default', { lng: Meteor.user()?.language || RocketChat.settings.get('language') || 'en' })
+
+				subject = RocketChat.placeholders.replace(subject);
+				html = RocketChat.placeholders.replace(html, {
+					name: userData.name,
+					email: userData.email,
+					password: userData.password
+				});
 
 				email = {
 					to: userData.email
 					from: RocketChat.settings.get('From_Email'),
-					subject: RocketChat.settings.get('Accounts_UserAddedEmail_Subject') || TAPi18n.__("Welcome_to_the", { lng: RocketChat.settings.get('Language') || "en" }) + (RocketChat.settings.get('Site_Name') || ""),
-					html: html
+					subject: subject,
+					html: header + html + footer
 				};
 
 				Email.send(email);
