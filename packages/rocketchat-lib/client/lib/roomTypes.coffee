@@ -60,17 +60,26 @@ RocketChat.roomTypes = new class
 	getIcon = (roomType) ->
 		return roomTypes[roomType]?.icon
 
+	getRoomName = (roomType, roomData) ->
+		return roomTypes[roomType]?.roomName roomData
+
 	getIdentifiers = (except) ->
 		except = [].concat except
 		list = _.reject roomTypesOrder, (t) -> return except.indexOf(t.identifier) isnt -1
 		return _.map list, (t) -> return t.identifier
 
+	findRoom = (roomType, identifier, user) ->
+		return roomTypes[roomType]?.findRoom identifier, user
+
 	# addType: addType
 	getTypes: getAllTypes
 	getIdentifiers: getIdentifiers
 
+	findRoom: findRoom
+
 	# setIcon: setIcon
 	getIcon: getIcon
+	getRoomName: getRoomName
 
 	# setRoute: setRoute
 	getRouteLink: getRouteLink

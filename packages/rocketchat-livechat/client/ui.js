@@ -16,6 +16,15 @@ RocketChat.roomTypes.add('l', 5, {
 			};
 		}
 	},
+
+	findRoom(identifier) {
+		return ChatRoom.findOne({ code: parseInt(identifier) });
+	},
+
+	roomName(roomData) {
+		return roomData.name;
+	},
+
 	condition: () => {
 		return RocketChat.settings.get('Livechat_enabled') && RocketChat.authz.hasAllPermission('view-l-room');
 	}

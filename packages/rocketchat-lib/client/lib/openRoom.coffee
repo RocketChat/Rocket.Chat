@@ -9,23 +9,14 @@ currentTracker = undefined
 				BlazeLayout.render 'main', {center: 'loading'}
 				return
 
-			username = Meteor.user()?.username
-			unless username
+			user = Meteor.user()
+			unless user?.username
 				return
 
 			currentTracker = undefined
 			c.stop()
 
-			query =
-				t: type
-				name: name
-
-			if type is 'd'
-				delete query.name
-				query.usernames =
-					$all: [name, username]
-
-			room = ChatRoom.findOne(query)
+			room = RocketChat.roomTypes.findRoom(type, name, user)
 			if not room?
 				if type is 'd'
 					Meteor.call 'createDirectMessage', name, (err) ->
