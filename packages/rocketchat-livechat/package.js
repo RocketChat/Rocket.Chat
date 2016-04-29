@@ -124,6 +124,7 @@ Package.onUse(function(api) {
 	api.addFiles('server/models/LivechatDepartmentAgents.js', 'server');
 	api.addFiles('server/models/LivechatPageVisited.js', 'server');
 	api.addFiles('server/models/LivechatTrigger.js', 'server');
+	api.addFiles('server/models/indexes.js', 'server');
 
 	// server lib
 	api.addFiles('server/lib/Livechat.js', 'server');
