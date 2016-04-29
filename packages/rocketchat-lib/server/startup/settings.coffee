@@ -105,6 +105,10 @@ RocketChat.settings.addGroup 'General', ->
 
 
 RocketChat.settings.addGroup 'Email', ->
+	@section 'Header and Footer', ->
+		@add 'Email_Header', '', { type: 'code', code: 'text/html', multiline: true, i18nLabel: 'Header' }
+		@add 'Email_Footer', '', { type: 'code', code: 'text/html', multiline: true, i18nLabel: 'Footer' }
+
 	@section 'SMTP', ->
 		@add 'SMTP_Host', '', { type: 'string', env: true, i18nLabel: 'Host' }
 		@add 'SMTP_Port', '', { type: 'string', env: true, i18nLabel: 'Port' }
@@ -114,16 +118,19 @@ RocketChat.settings.addGroup 'Email', ->
 		@add 'SMTP_Test_Button', 'sendSMTPTestEmail', { type: 'action', actionText: 'Send_a_test_mail_to_my_user' }
 
 	@section 'Invitation', ->
-		@add 'Invitation_Subject', 'You have been invited to Rocket.Chat', { type: 'string', i18nLabel: 'Subject' }
-		@add 'Invitation_HTML', '', { type: 'code', code: 'text/html', multiline: true, i18nLabel: 'Body', i18nDescription: 'Invitation_HTML_Description' }
+		@add 'Invitation_Customized', false, { type: 'boolean', i18nLabel: 'Custom' }
+		@add 'Invitation_Subject', '', { type: 'string', i18nLabel: 'Subject', enableQuery: { _id: 'Invitation_Customized', value: true }, i18nDefaultQuery: { _id: 'Invitation_Customized', value: false } }
+		@add 'Invitation_HTML', '', { type: 'code', code: 'text/html', multiline: true, i18nLabel: 'Body', i18nDescription: 'Invitation_HTML_Description', enableQuery: { _id: 'Invitation_Customized', value: true }, i18nDefaultQuery: { _id: 'Invitation_Customized', value: false } }
 
 	@section 'Registration', ->
-		@add 'Accounts_Enrollment_Email_Subject', '', { type: 'string', i18nLabel: 'Subject' }
-		@add 'Accounts_Enrollment_Email', '', { type: 'code', code: 'text/html', multiline: true, i18nLabel: 'Body', i18nDescription: 'Accounts_Enrollment_Email_Description' }
+		@add 'Accounts_Enrollment_Customized', false, { type: 'boolean', i18nLabel: 'Custom' }
+		@add 'Accounts_Enrollment_Email_Subject', '', { type: 'string', i18nLabel: 'Subject', enableQuery: { _id: 'Accounts_Enrollment_Customized', value: true }, i18nDefaultQuery: { _id: 'Accounts_Enrollment_Customized', value: false } }
+		@add 'Accounts_Enrollment_Email', '', { type: 'code', code: 'text/html', multiline: true, i18nLabel: 'Body', enableQuery: { _id: 'Accounts_Enrollment_Customized', value: true }, i18nDefaultQuery: { _id: 'Accounts_Enrollment_Customized', value: false } }
 
 	@section 'Registration via Admin', ->
-		@add 'Accounts_UserAddedEmailSubject', '', { type: 'string', i18nLabel: "Subject" }
-		@add 'Accounts_UserAddedEmail', '', { type: 'code', code: 'text/html', multiline: true, i18nLabel: 'Body', i18nDescription: 'Accounts_UserAddedEmail_Description' }
+		@add 'Accounts_UserAddedEmail_Customized', false, { type: 'boolean', i18nLabel: 'Custom' }
+		@add 'Accounts_UserAddedEmailSubject', '', { type: 'string', i18nLabel: "Subject", enableQuery: { _id: 'Accounts_UserAddedEmail_Customized', value: true }, i18nDefaultQuery: { _id: 'Accounts_UserAddedEmail_Customized', value: false } }
+		@add 'Accounts_UserAddedEmail', '', { type: 'code', code: 'text/html', multiline: true, i18nLabel: 'Body', i18nDescription: 'Accounts_UserAddedEmail_Description', enableQuery: { _id: 'Accounts_UserAddedEmail_Customized', value: true }, i18nDefaultQuery: { _id: 'Accounts_UserAddedEmail_Customized', value: false } }
 
 
 RocketChat.settings.addGroup 'Message', ->
