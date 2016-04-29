@@ -5,14 +5,14 @@ RocketChat.roomTypes.add('l', 5, {
 	icon: 'icon-chat-empty',
 	route: {
 		name: 'live',
-		path: '/live/:name',
-		action: (params/*, queryParams*/) => {
-			openRoom('l', params.name);
+		path: '/live/:code(\\d+)',
+		action(params/*, queryParams*/) {
+			openRoom('l', params.code);
 			RocketChat.TabBar.showGroup('livechat', 'search');
 		},
-		link: (sub) => {
+		link(sub) {
 			return {
-				name: sub.name
+				code: sub.code
 			};
 		}
 	},

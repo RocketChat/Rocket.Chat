@@ -24,11 +24,15 @@ RocketChat.Livechat = {
 			if (!agent) {
 				throw new Meteor.Error('no-agent-online', 'Sorry, no online agents');
 			}
-			let roomData = _.extend({
+
+			const roomCode = RocketChat.models.Rooms.getNextLivechatRoomCode();
+
+			room = _.extend({
 				_id: message.rid,
 				name: guest.username,
 				msgs: 1,
 				lm: new Date(),
+				code: roomCode,
 				usernames: [agent.username, guest.username],
 				t: 'l',
 				ts: new Date(),
@@ -43,6 +47,7 @@ RocketChat.Livechat = {
 				open: true,
 				unread: 1,
 				answered: false,
+				code: roomCode,
 				u: {
 					_id: agent.agentId,
 					username: agent.username
@@ -53,10 +58,11 @@ RocketChat.Livechat = {
 				emailNotifications: 'all'
 			};
 
-			RocketChat.models.Rooms.insert(roomData);
+			RocketChat.models.Rooms.insert(room);
 			RocketChat.models.Subscriptions.insert(subscriptionData);
+		} else {
+			room = Meteor.call('canAccessRoom', message.rid, guest._id);
 		}
-		room = Meteor.call('canAccessRoom', message.rid, guest._id);
 		if (!room) {
 			throw new Meteor.Error('cannot-acess-room');
 		}
