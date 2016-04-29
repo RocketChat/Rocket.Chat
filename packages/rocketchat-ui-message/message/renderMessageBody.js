@@ -32,7 +32,8 @@ renderMessageBody = function(msg) {
 /**
  *Checks to see if a message contains only an emoji span
  *@para {msg} some html message
- *@return {false} the html message either doesn't contain an emoji span, or contains other characters
+ *@return {false} the html message either doesn't 
+ *contain an emoji span, or contains other characters
  */
 singleEmojiCheck = function(msg) {
 	var str = msg.html;
@@ -57,7 +58,7 @@ singleEmojiCheck = function(msg) {
 		return false;
 	}
 
-	if (str.indexOf('<') < str.lastIndexOf('>')){
+	if (str.indexOf('<') < str.lastIndexOf('>')) {
 		return false;
 	}
 
