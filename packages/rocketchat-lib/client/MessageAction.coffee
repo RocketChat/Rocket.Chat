@@ -165,3 +165,20 @@ Meteor.startup ->
 			$(event.currentTarget).attr('data-clipboard-text', document.location.origin + document.location.pathname + '?msg=' + msg.id);
 			toastr.success(TAPi18n.__('Copied'))
 		order: 3
+
+	RocketChat.MessageAction.addButton
+		id: 'copy'
+		icon: 'icon-paste'
+		i18nLabel: 'Copy'
+		classes: 'clipboard'
+		context: [
+			'message'
+			'message-mobile'
+		]
+		action: (event, instance) ->
+			message = @_arguments[1].msg
+			msg = $(event.currentTarget).closest('.message')[0]
+			$("\##{msg.id} .message-dropdown").hide()
+			$(event.currentTarget).attr('data-clipboard-text', message)
+			toastr.success(TAPi18n.__('Copied'))
+		order: 4
