@@ -16,6 +16,24 @@
   overflow: hidden;
 }
 
+.big_emojione {
+  image-rendering: optimizeQuality;
+  font-size: inherit;
+  height: 66px;
+  width: 66px;
+  position: relative;
+  display: inline-block;
+  margin: 0 .15em;
+  line-height: normal;
+  vertical-align: middle;
+  background-image: url("../../packages/emojione_emojione/assets/sprites/emojione.sprites.png");
+  background-size: 4100% 4000%;
+  background-repeat: no-repeat;
+  text-indent: 100%;
+  white-space: nowrap;
+  overflow: hidden;
+}
+
 .emojione-0023-20e3 {
   background-position: 2.5% 0%; }
 
