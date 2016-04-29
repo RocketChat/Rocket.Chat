@@ -106,7 +106,8 @@ class @ChatMessages
 						sendMessage (message) ->
 							ChatMessage.update message._id, _.omit(message, '_id')
 							if message.rid?
-								visitor.setRoomToSubscribe(message.rid)
+								visitor.subscribeToRoom(message.rid)
+								visitor.setRoom(message.rid)
 			else
 				sendMessage()
 
