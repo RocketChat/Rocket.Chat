@@ -54,8 +54,6 @@ Template.register.events({
 });
 
 Template.register.onCreated(function() {
-	this.subscribe('livechat:availableDepartments');
-
 	this.error = new ReactiveVar();
 	this.showError = (msg) => {
 		$('.error').addClass('show');
