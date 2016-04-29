@@ -1,17 +1,10 @@
+/* globals Department */
 Template.livechatWindow.helpers({
 	title() {
-		var ref;
-		if (!Template.instance().subscriptionsReady()) {
-			return '';
-		}
-		return ((ref = Settings.findOne('Livechat_title')) != null ? ref.value : void 0) || 'Rocket.Chat';
+		return Template.instance().title.get();
 	},
 	color() {
-		var ref;
-		if (!Template.instance().subscriptionsReady()) {
-			return 'transparent';
-		}
-		return ((ref = Settings.findOne('Livechat_title_color')) != null ? ref.value : void 0) || '#C1272D';
+		return Template.instance().color.get();
 	},
 	popoutActive() {
 		return FlowRouter.getQueryParam('mode') === 'popout';
@@ -20,14 +13,13 @@ Template.livechatWindow.helpers({
 		if (Session.get('triggered') || Meteor.userId()) {
 			return false;
 		}
-		var form = Settings.findOne('Livechat_registration_form');
-		return form.value;
+		return Template.instance().registrationForm.get();
 	},
 	livechatStartedEnabled() {
-		return Template.instance().startedEnabled.get() !== null;
+		return Template.instance().enabled.get() !== null;
 	},
 	livechatEnabled() {
-		return Template.instance().startedEnabled.get();
+		return Template.instance().enabled.get();
 	}
 });
 
@@ -42,22 +34,37 @@ Template.livechatWindow.events({
 });
 
 Template.livechatWindow.onCreated(function() {
-	this.startedEnabled = new ReactiveVar(null);
+	this.enabled = new ReactiveVar(null);
 
-	this.subscribe('settings', ['Livechat_title', 'Livechat_title_color', 'Livechat_enabled', 'Livechat_registration_form']);
+	this.title = new ReactiveVar('Rocket.Chat');
+	this.color = new ReactiveVar('#C1272D');
+	this.registrationForm = new ReactiveVar(true);
 
-	var initialCheck = true;
-
-	this.autorun(() => {
-		if (this.subscriptionsReady()) {
-			var enabled = Settings.findOne('Livechat_enabled');
-			if (enabled !== undefined) {
-				if (!enabled.value && initialCheck) {
-					parentCall('removeWidget');
-				}
-				initialCheck = false;
-				this.startedEnabled.set(enabled.value);
+	// get all needed live chat info for the user
+	Meteor.call('livechat:getInitialData', visitor.getToken(), (err, result) => {
+		if (err) {
+			console.error(err);
+		} else {
+			if (!result.enabled) {
+				return parentCall('removeWidget');
 			}
+			this.enabled.set(result.enabled);
+			this.title.set(result.title);
+			this.color.set(result.color);
+			this.registrationForm.set(result.registrationForm);
+
+			if (result.room) {
+				RoomHistoryManager.getMoreIfIsEmpty(result.room._id);
+				visitor.subscribeToRoom(result.room._id);
+				visitor.setRoom(result.room._id);
+			}
+
+			Triggers.setTriggers(result.triggers);
+			Triggers.init();
+
+			result.departments.forEach((department) => {
+				Department.insert(department);
+			});
 		}
 	});
 });

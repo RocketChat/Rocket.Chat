@@ -99,6 +99,7 @@ Package.onUse(function(api) {
 	api.addFiles('server/methods/addManager.js', 'server');
 	api.addFiles('server/methods/changeLivechatStatus.js', 'server');
 	api.addFiles('server/methods/getCustomFields.js', 'server');
+	api.addFiles('server/methods/getInitialData.js', 'server');
 	api.addFiles('server/methods/pageVisited.js', 'server');
 	api.addFiles('server/methods/registerGuest.js', 'server');
 	api.addFiles('server/methods/removeAgent.js', 'server');
@@ -132,7 +133,6 @@ Package.onUse(function(api) {
 	api.addFiles('server/externalMessageHook.js', 'server');
 
 	// publications
-	api.addFiles('server/publications/availableDepartments.js', 'server');
 	api.addFiles('server/publications/customFields.js', 'server');
 	api.addFiles('server/publications/departmentAgents.js', 'server');
 	api.addFiles('server/publications/externalMessages.js', 'server');
@@ -140,10 +140,8 @@ Package.onUse(function(api) {
 	api.addFiles('server/publications/livechatDepartments.js', 'server');
 	api.addFiles('server/publications/livechatManagers.js', 'server');
 	api.addFiles('server/publications/livechatRooms.js', 'server');
-	api.addFiles('server/publications/trigger.js', 'server');
 	api.addFiles('server/publications/visitorInfo.js', 'server');
 	api.addFiles('server/publications/visitorPageVisited.js', 'server');
-	api.addFiles('server/publications/visitorRoom.js', 'server');
 
 	// api
 	api.addFiles('server/api.js', 'server');
