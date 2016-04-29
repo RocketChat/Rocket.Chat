@@ -91,21 +91,25 @@
 											{{/if}}
 
 											{{#if $eq type 'code'}}
-												<div class="code-mirror-box" data-editor-id="{{_id}}" {{isDisabled}}>
-													<div class="title">
-														{{label}}
+												{{#if isDisabled.disabled}}
+													{{> CodeMirror name=_id options=(getEditorOptions true) code=(i18nDefaultValue) }}
+												{{else}}
+													<div class="code-mirror-box" data-editor-id="{{_id}}">
+														<div class="title">
+															{{label}}
+														</div>
+														{{> CodeMirror name=_id options=getEditorOptions code=value }}
+														{{setEditorOnBlur _id}}
+														<div class="buttons">
+															<button class="button button-primary button-fullscreen">
+																Full Screen
+															</button>
+															<button class="button button-primary button-restore">
+																Exit Full Screen
+															</button>
+														</div>
 													</div>
-													{{> CodeMirror name=_id options=getEditorOptions code=value }}
-													{{setEditorOnBlur _id}}
-													<div class="buttons">
-														<button class="button button-primary button-fullscreen">
-															Full Screen
-														</button>
-														<button class="button button-primary button-restore">
-															Exit Full Screen
-														</button>
-													</div>
-												</div>
+												{{/if}}
 											{{/if}}
 
 											{{#if $eq type 'action'}}
