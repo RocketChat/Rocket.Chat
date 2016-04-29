@@ -26,6 +26,7 @@
   * [FreeBSD](#freebsd)
   * [Ansible](#ansible)
   * [Raspberry Pi 2](#raspberry-pi-2)
+  * [Koozali SME](#koozali-sme)
   * [Ubuntu VPS](#ubuntu-vps)
   * [Ubuntu Software Center](#ubuntu-software-center)
 * [About Rocket.Chat](#about-rocketchat)
@@ -159,6 +160,12 @@ Automated production-grade deployment in minutes, for RHEL / CentOS 7 or Ubuntu 
 Run Rocket.Chat on this world famous $30 quad core server:
 
 [![Raspberry Pi 2](https://raw.githubusercontent.com/Sing-Li/bbug/master/images/pitiny.png)](https://github.com/RocketChat/Rocket.Chat.RaspberryPi)
+
+## Koozali SME
+
+Add Rocket.Chat to this world famous time tested small enterprise server today:
+
+[![Koozali SME](https://raw.githubusercontent.com/Sing-Li/bbug/master/images/koozali.png)](https://wiki.contribs.org/Rocket_Chat)
 
 ## Ubuntu VPS
 Follow these [deployment instructions](https://rocket.chat/docs/master/installing-and-updating/deployment-options/ubuntu)
