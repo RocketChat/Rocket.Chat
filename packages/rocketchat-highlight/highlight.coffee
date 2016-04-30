@@ -38,7 +38,7 @@ class Highlight
 							code = _.unescapeHTML codeMatch[2]
 
 						if lang not in hljs.listLanguages()
-							result = hljs.highlightAuto code
+							result = hljs.highlightAuto (lang + ' ' + code)
 						else
 							result = hljs.highlight lang, code
 
