@@ -15,7 +15,7 @@ RocketChat.settings.addGroup('FileUpload', function() {
 		i18nDescription: 'FileUpload_MediaTypeWhiteListDescription'
 	});
 
-	this.add('FileUpload_ProtectFiles', false, {
+	this.add('FileUpload_ProtectFiles', true, {
 		type: 'boolean',
 		public: true,
 		i18nDescription: 'FileUpload_ProtectFilesDescription'
