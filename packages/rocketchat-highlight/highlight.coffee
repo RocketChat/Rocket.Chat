@@ -21,11 +21,11 @@ class Highlight
 					message.msg = message.msg + "\n```"
 
 				# Separate text in code blocks and non code blocks
-				msgParts = message.html.split(/(```\w*[\n\ ]?[\s\S]*?```+?)/)
+				msgParts = message.html.split(/(```\w*[\n\ ]?[\s\S]*?```+?)$/)
 
 				for part, index in msgParts
 					# Verify if this part is code
-					codeMatch = part.match(/```(\w*)[\n\ ]?([\s\S]*?)```+?/)
+					codeMatch = part.match(/```(\w*)[\n\ ]?([\s\S]*?)```+?$/)
 					if codeMatch?
 						# Process highlight if this part is code
 						singleLine = codeMatch[0].indexOf('\n') is -1
