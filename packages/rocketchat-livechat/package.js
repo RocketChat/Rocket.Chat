@@ -98,6 +98,7 @@ Package.onUse(function(api) {
 	api.addFiles('server/methods/addAgent.js', 'server');
 	api.addFiles('server/methods/addManager.js', 'server');
 	api.addFiles('server/methods/changeLivechatStatus.js', 'server');
+	api.addFiles('server/methods/closeRoom.js', 'server');
 	api.addFiles('server/methods/getCustomFields.js', 'server');
 	api.addFiles('server/methods/getInitialData.js', 'server');
 	api.addFiles('server/methods/pageVisited.js', 'server');
