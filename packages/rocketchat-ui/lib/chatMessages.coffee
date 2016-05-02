@@ -25,7 +25,6 @@ class @ChatMessages
 		return -1
 
 	recordInputAsDraft: () ->
-		console.log(this.editing)
 		id = this.editing.id
 		record = this.records[id] || {}
 		draft = this.input.value
@@ -41,8 +40,12 @@ class @ChatMessages
 		record.original = message.msg
 		this.records[message._id] = record
 
-	getMessageDraft: (id) -> return this.records[id]
-	clearMessageDraft: (id) -> delete this.records[id]
+	getMessageDraft: (id) ->
+		return this.records[id]
+
+	clearMessageDraft: (id) ->
+		delete this.records[id]
+
 	clearCurrentDraft: () ->
 		this.clearMessageDraft this.editing.id
 
