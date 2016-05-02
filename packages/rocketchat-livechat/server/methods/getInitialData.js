@@ -1,6 +1,5 @@
 Meteor.methods({
 	'livechat:getInitialData'(visitorToken) {
-		console.log('userId ->',Meteor.userId());
 		var info = {
 			enabled: null,
 			title: null,
