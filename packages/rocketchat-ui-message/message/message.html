@@ -2,29 +2,29 @@
 	<li id="{{_id}}" class="message {{isSequential}} {{system}} {{t}} {{own}} {{isTemp}} {{chatops}}" data-username="{{u.username}}" data-groupable="{{isGroupable}}" data-date="{{date}}" data-timestamp="{{timestamp}}">
 		{{#if avatar}}
 			{{#if avatarFromUsername}}
-				<a class="thumb user-card-message" data-username="{{u.username}}" tabindex="1">{{> avatar username=avatarFromUsername}}</a>
+				<button class="thumb user-card-message" data-username="{{u.username}}" tabindex="1">{{> avatar username=avatarFromUsername}}</button>
 			{{else}}
-				<a class="thumb user-card-message" data-username="{{u.username}}" tabindex="1">
+				<button class="thumb user-card-message" data-username="{{u.username}}" tabindex="1">
 					<div class="avatar">
 						<div class="avatar-image" style="background-image:url({{avatar}});"></div>
 					</div>
-				</a>
+				</button>
 			{{/if}}
 		{{else}}
 			{{#if emoji}}
-				<a class="thumb user-card-message" data-username="{{u.username}}" tabindex="1">
+				<button class="thumb user-card-message" data-username="{{u.username}}" tabindex="1">
 					<div class="avatar">
 						{{{getEmoji emoji}}}
 					</div>
-				</a>
+				</button>
 			{{else}}
-				<a class="thumb user-card-message" data-username="{{u.username}}" tabindex="1">{{> avatar username=u.username}}</a>
+				<button class="thumb user-card-message" data-username="{{u.username}}" tabindex="1">{{> avatar username=u.username}}</button>
 			{{/if}}
 		{{/if}}
 		{{#if alias}}
-			<a class="user user-card-message" data-username="{{u.username}}" tabindex="1">{{alias}} <span class="message-alias">@{{u.username}}</span></a>
+			<button class="user user-card-message" data-username="{{u.username}}" tabindex="1">{{alias}} <span class="message-alias">@{{u.username}}</span></button>
 		{{else}}
-			<a class="user user-card-message" data-username="{{u.username}}" tabindex="1">{{u.username}}</a>
+			<button class="user user-card-message" data-username="{{u.username}}" tabindex="1">{{u.username}}</button>
 		{{/if}}
 		<span class="info">
 			{{#each roleTags}}
@@ -42,9 +42,9 @@
 				<span class="edited" title='{{_ "edited"}} {{_ "at"}} {{editTime}} {{_ "by"}} {{editedBy}}' >
 					<i class="icon-edit" aria-label="{{_ "Edited"}}"></i>
 					{{_ "by"}}
-					<a class="thumb thumb-small user-card-message" data-username="{{editedBy}}" tabindex="1">
+					<button class="thumb thumb-small user-card-message" data-username="{{editedBy}}" tabindex="1">
 						{{> avatar username=editedBy}}
-					</a>
+					</button>
 				</span>
 			{{else}}
 				<span class="time">{{time}}</span>
