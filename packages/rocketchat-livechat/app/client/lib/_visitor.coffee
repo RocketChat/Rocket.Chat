@@ -1,3 +1,5 @@
+msgStream = new Meteor.Streamer 'room-messages'
+
 @visitor = new class
 	token = new ReactiveVar null
 	room = new ReactiveVar null
@@ -30,9 +32,20 @@
 		room.set(rid)
 		return roomToSubscribe.set(rid)
 
+	subscribeToRoom = (roomId) ->
+		msgStream.on roomId, (msg) ->
+			if msg.t is 'command'
+				if msg.msg is 'survey'
+					unless $('body #survey').length
+						Blaze.render(Template.survey, $('body').get(0))
+			else
+				ChatMessage.upsert { _id: msg._id }, msg
+
 	register: register
 	getToken: getToken
 	setRoom: setRoom
 	getRoom: getRoom
 	setRoomToSubscribe: setRoomToSubscribe
 	getRoomToSubscribe: getRoomToSubscribe
+
+	subscribeToRoom: subscribeToRoom
