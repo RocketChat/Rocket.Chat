@@ -74,10 +74,7 @@ Template.room.helpers
 		roomData = Session.get('roomData' + this._id)
 		return '' unless roomData
 
-		if roomData.t is 'd'
-			return ChatSubscription.findOne({ rid: this._id }, { fields: { name: 1 } })?.name
-		else
-			return roomData.name
+		return RocketChat.roomTypes.getRoomName roomData?.t, roomData
 
 	roomTopic: ->
 		roomData = Session.get('roomData' + this._id)
@@ -88,10 +85,7 @@ Template.room.helpers
 		roomData = Session.get('roomData' + this._id)
 		return '' unless roomData?.t
 
-		switch roomData.t
-			when 'd' then return 'icon-at'
-			when 'c' then return 'icon-hash'
-			when 'p' then return 'icon-lock'
+		return RocketChat.roomTypes.getIcon roomData?.t
 
 	userStatus: ->
 		roomData = Session.get('roomData' + this._id)
