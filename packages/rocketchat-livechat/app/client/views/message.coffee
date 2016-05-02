@@ -25,6 +25,7 @@ Template.message.helpers
 			when 'ul' then tr('User_left', { context: this.u.gender }, { user_left: this.u.username })
 			when 'uj' then tr('User_joined_channel', { context: this.u.gender }, { user: this.u.username })
 			when 'wm' then t('Welcome', { user: this.u.username })
+			when 'livechat-close' then t('Conversation_finished')
 			# when 'rtc' then RocketChat.callbacks.run 'renderRtcMessage', this
 			else
 				this.html = this.msg
@@ -36,7 +37,7 @@ Template.message.helpers
 				return this.html
 
 	system: ->
-		return 'system' if this.t in ['s', 'p', 'f', 'r', 'au', 'ru', 'ul', 'wm', 'uj']
+		return 'system' if this.t in ['s', 'p', 'f', 'r', 'au', 'ru', 'ul', 'wm', 'uj', 'livechat-close']
 
 
 Template.message.onViewRendered = (context) ->

@@ -89,6 +89,12 @@ Template.visitorInfo.helpers({
 				instance.editing.set(false);
 			}
 		};
+	},
+
+	roomOpen() {
+		const room = ChatRoom.findOne({ _id: this.rid });
+
+		return room.open;
 	}
 });
 
@@ -106,30 +112,30 @@ Template.visitorInfo.events({
 			type: 'input',
 			inputPlaceholder: t('Please_add_a_comment'),
 			showCancelButton: true,
-			// confirmButtonColor: '#DD6B55',
-			// confirmButtonText: t('Yes'),
-			// cancelButtonText: t('Cancel'),
 			closeOnConfirm: false
-		}, () => {
-			swal({
-				title: t('Chat_closed'),
-				text: t('Chat_closed_successfully'),
-				type: 'success',
-				timer: 1000,
-				showConfirmButton: false
+		}, (inputValue) => {
+			if (!inputValue) {
+				swal.showInputError(t('Please_add_a_comment_to_close_the_room'));
+				return false;
+			}
+
+			if (s.trim(inputValue) === '') {
+				swal.showInputError(t('Please_add_a_comment_to_close_the_room'));
+				return false;
+			}
+
+			Meteor.call('livechat:closeRoom', this.rid, inputValue, function(error/*, result*/) {
+				if (error) {
+					return handleError(error);
+				}
+				swal({
+					title: t('Chat_closed'),
+					text: t('Chat_closed_successfully'),
+					type: 'success',
+					timer: 1000,
+					showConfirmButton: false
+				});
 			});
-			// Meteor.call('livechat:removeDepartment', this._id, function(error/*, result*/) {
-			// 	if (error) {
-			// 		return handleError(error);
-			// 	}
-			// 	swal({
-			// 		title: t('Removed'),
-			// 		text: t('Department_removed'),
-			// 		type: 'success',
-			// 		timer: 1000,
-			// 		showConfirmButton: false
-			// 	});
-			// });
 		});
 	}
 });
