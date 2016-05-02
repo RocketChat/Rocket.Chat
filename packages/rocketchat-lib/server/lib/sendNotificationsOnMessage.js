@@ -271,8 +271,12 @@ RocketChat.callbacks.add('afterSaveMessage', function(message, room) {
 		if (userIdsToNotify.length > 0) {
 			for (j = 0, len1 = userIdsToNotify.length; j < len1; j++) {
 				usersOfMentionId = userIdsToNotify[j];
+				let title = '@' + user.username;
+				if (room.name) {
+					title += ' @ #' + room.name;
+				}
 				RocketChat.Notifications.notifyUser(usersOfMentionId, 'notification', {
-					title: '@' + user.username + ' @ #' + room.name,
+					title: title,
 					text: message.msg,
 					payload: {
 						rid: message.rid,

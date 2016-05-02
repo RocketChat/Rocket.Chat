@@ -10,7 +10,7 @@ Meteor.methods({
 			departments: []
 		};
 
-		const room = RocketChat.models.Rooms.findByVisitorToken(visitorToken, {
+		const room = RocketChat.models.Rooms.findOpenByVisitorToken(visitorToken, {
 			fields: {
 				name: 1,
 				t: 1,

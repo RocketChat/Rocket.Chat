@@ -176,12 +176,6 @@ RocketChat.models.Rooms = new class extends RocketChat.models._Base
 
 		return @find query, options
 
-	findByVisitorToken: (visitorToken, options) ->
-		query =
-			"v.token": visitorToken
-
-		return @find query, options
-
 
 	# UPDATE
 	archiveById: (_id) ->
