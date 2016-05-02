@@ -102,7 +102,7 @@
   "Accounts_UseDNSDomainCheck" : "Use DNS Domain Check",
   "Accounts_UserAddedEmail_Default" : "<h2>Welcome to <h1>[Site_Name]</h1></h2><p>Go to [Site_URL] and try the best open source chat solution available today!</p><p>You may login using your email: [email] and password: [password]. You may be required to change it after your first login.",
   "Accounts_UserAddedEmail_Description" : "You may use the following placeholders: <br /><ul><li>[name], [fname], [lname] for the user's full name, first name or last name, respectively.</li><li>[email] for the user's email.</li><li>[password] for the user's password.</li><li>[Site_Name] and [Site_URL] for the Application Name and URL respectively.</li></ul>",
-  "Accounts_UserAddedEmailSubject_Default" : "Welcome to [Site_Name]",
+  "Accounts_UserAddedEmailSubject_Default" : "You have been added to [Site_Name]\n",
   "Activate" : "Activate",
   "Activity" : "Activity",
   "Add" : "Add",
