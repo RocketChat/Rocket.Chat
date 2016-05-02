@@ -16,7 +16,7 @@ Meteor.startup(function() {
 		group: 'Livechat',
 		section: 'Knowledge Base',
 		public: true,
-		i18nLabel: 'Knowledge_Enabled'
+		i18nLabel: 'Enabled'
 	});
 
 	RocketChat.settings.add('Livechat_Knowledge_Apiai_Key', '', {
