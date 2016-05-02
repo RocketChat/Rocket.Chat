@@ -87,7 +87,7 @@ RocketChat.settings.addGroup 'General', ->
 	@add 'Site_Name', 'Rocket.Chat', { type: 'string', public: true }
 	@add 'Language', '', { type: 'language', public: true }
 	@add 'Allow_Invalid_SelfSigned_Certs', false, { type: 'boolean' }
-	@add 'Favorite_Rooms', true, { type: 'boolean' }
+	@add 'Favorite_Rooms', true, { type: 'boolean', public: true }
 	@add 'CDN_PREFIX', '', { type: 'string' }
 	@add 'Force_SSL', false, { type: 'boolean', public: true }
 	@add 'GoogleTagManager_id', '', { type: 'string', public: true }
