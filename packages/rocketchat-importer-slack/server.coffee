@@ -17,7 +17,10 @@ Importer.Slack = class Importer.Slack extends Importer.Base
 		tempMessages = {}
 		for entry in zipEntries
 			do (entry) =>
-				if entry.entryName == 'channels.json'
+				if entry.entryName.indexOf('__MACOSX') > -1
+					#ignore all of the files inside of __MACOSX
+					console.log("Ignoring the file: #{entry.entryName}")
+				else if entry.entryName == 'channels.json'
 					@updateProgress Importer.ProgressStep.PREPARING_CHANNELS
 					tempChannels = JSON.parse entry.getData().toString()
 				else if entry.entryName == 'users.json'
@@ -75,6 +78,7 @@ Importer.Slack = class Importer.Slack extends Importer.Base
 		@addCountToTotal messagesCount
 
 		if tempUsers.length is 0 or tempChannels.length is 0 or messagesCount is 0
+			console.log "The loaded users count #{tempUsers.length}, the loaded channels #{tempChannels.length}, and the loaded messages #{messagesCount}"
 			@updateProgress Importer.ProgressStep.ERROR
 			return @getProgress()
 
@@ -234,13 +238,17 @@ Importer.Slack = class Importer.Slack extends Importer.Base
 											else if message.subtype is 'channel_topic'
 												RocketChat.models.Messages.createRoomSettingsChangedWithTypeRoomIdMessageAndUser 'room_changed_topic', room._id, message.topic, @getRocketUser(message.user), { ts: new Date(parseInt(message.ts.split('.')[0]) * 1000) }
 											else if message.subtype is 'pinned_item'
-												RocketChat.models.Messages.createWithTypeRoomIdMessageAndUser 'message_pinned', room._id, '', @getRocketUser(message.user),
-													ts: new Date(parseInt(message.ts.split('.')[0]) * 1000)
-													attachments: [
-														"text" : @convertSlackMessageToRocketChat message.attachments[0].text
-														"author_name" : message.attachments[0].author_subname
-														"author_icon" : getAvatarUrlFromUsername(message.attachments[0].author_subname)
-													]
+												if message.attachments
+													RocketChat.models.Messages.createWithTypeRoomIdMessageAndUser 'message_pinned', room._id, '', @getRocketUser(message.user),
+														ts: new Date(parseInt(message.ts.split('.')[0]) * 1000)
+														attachments: [
+															"text" : @convertSlackMessageToRocketChat message.attachments[0].text
+															"author_name" : message.attachments[0].author_subname
+															"author_icon" : getAvatarUrlFromUsername(message.attachments[0].author_subname)
+														]
+												else
+													RocketChat.models.Messages.createWithTypeRoomIdMessageAndUser 'message_pinned', room._id, '', @getRocketUser(message.user),
+														ts: new Date(parseInt(message.ts.split('.')[0]) * 1000)
 											else if message.subtype is 'file_share'
 												if message.file?.url_private_download isnt undefined
 													details =
