@@ -5,6 +5,9 @@ Template.pinnedMessages.helpers
 	messages: ->
 		return PinnedMessage.find { rid: @rid }, { sort: { ts: -1 } }
 
+	message: ->
+		return _.extend(this, { customClass: 'pinned' })
+
 	hasMore: ->
 		return Template.instance().hasMore.get()
 
