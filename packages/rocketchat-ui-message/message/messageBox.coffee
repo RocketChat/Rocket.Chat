@@ -103,10 +103,10 @@ Template.messageBox.events
 	'keydown .input-message': (event) ->
 		chatMessages[@_id].keydown(@_id, event, Template.instance())
 
-	"click .editing-commands-cancel > a": (e) ->
+	"click .editing-commands-cancel > button": (e) ->
 		chatMessages[@_id].clearEditing()
 
-	"click .editing-commands-save > a": (e) ->
+	"click .editing-commands-save > button": (e) ->
 		chatMessages[@_id].send(@_id, chatMessages.input)
 
 	'change .message-form input[type=file]': (event, template) ->

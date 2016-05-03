@@ -44,7 +44,7 @@
 				</div>
 				{{#if registrationAllowed}}
 				<div class="register {{showRegisterLink}}">
-					<button>{{_ 'Register'}}</button>
+					<button type="button">{{_ 'Register'}}</button>
 				</div>
 				{{else}}
 					{{#if linkReplacementText}}
@@ -53,13 +53,13 @@
 				{{/if}}
 				{{#if passwordresetAllowed}}
 				<div class="forgot-password {{showForgotPasswordLink}}">
-					<button>{{_ 'Forgot_password'}}</button>
+					<button type="button">{{_ 'Forgot_password'}}</button>
 				</div>
 				{{/if}}
 			{{/if}}
 		{{/if}}
 		<div class="back-to-login {{showBackToLoginLink}}">
-			<button>{{_ 'Back_to_login'}}</button>
+			<button type="button">{{_ 'Back_to_login'}}</button>
 		</div>
 	</form>
 	<div class='login-terms'>

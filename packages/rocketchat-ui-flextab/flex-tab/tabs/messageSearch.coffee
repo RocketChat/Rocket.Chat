@@ -63,7 +63,7 @@ Template.messageSearch.events
 		dropDown = t.$("\##{message_id} .message-dropdown")
 		dropDown.show()
 
-	'click .load-more a': (e, t) ->
+	'click .load-more button': (e, t) ->
 		t.limit.set(t.limit.get() + 20)
 		t.search()
 

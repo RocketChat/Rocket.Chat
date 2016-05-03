@@ -98,9 +98,9 @@ Template.adminUsers.events
 		RocketChat.TabBar.openFlex()
 		RocketChat.TabBar.showGroup 'adminusers-selected'
 
-	'click .info-tabs a': (e) ->
+	'click .info-tabs button': (e) ->
 		e.preventDefault()
-		$('.info-tabs a').removeClass 'active'
+		$('.info-tabs button').removeClass 'active'
 		$(e.currentTarget).addClass 'active'
 
 		$('.user-info-content').hide()
