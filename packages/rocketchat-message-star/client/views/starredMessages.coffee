@@ -5,6 +5,9 @@ Template.starredMessages.helpers
 	messages: ->
 		return StarredMessage.find { rid: @rid }, { sort: { ts: -1 } }
 
+	message: ->
+		return _.extend(this, { customClass: 'starred' })
+
 	hasMore: ->
 		return Template.instance().hasMore.get()
 
