@@ -8,11 +8,7 @@
   "env": {
     "BUILDPACK_URL": "https://github.com/RocketChat/heroku-buildpack-meteor.git",
     "HEROKU_APP_NAME": {
-      "description": "This will become your Rocket.Chat app URL: https://<HEROKU_APP_NAME>.herokuapp.com",
-      "required": true
-    },
-    "HEROKU_PARENT_APP_NAME": {
-      "description": "This will become your Rocket.Chat app URL: https://<HEROKU_APP_NAME>.herokuapp.com",
+      "description": "Please re-enter your App Name from the top.",
       "required": true
     }
   },
