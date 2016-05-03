@@ -22,7 +22,15 @@ RocketChat.roomTypes.add('l', 5, {
 	},
 
 	roomName(roomData) {
-		return roomData.name;
+		console.log('roomName.roomData ->', roomData);
+		if (!roomData.name) {
+			const sub = ChatSubscription.findOne({ rid: roomData._id }, { fields: { name: 1 } });
+			if (sub) {
+				return sub.name;
+			}
+		} else {
+			return roomData.name;
+		}
 	},
 
 	condition: () => {
@@ -79,4 +87,15 @@ RocketChat.TabBar.addButton({
 	icon: 'icon-lightbulb',
 	template: 'externalSearch',
 	order: 10
+});
+
+RocketChat.MessageTypes.registerType({
+	id: 'livechat-close',
+	system: true,
+	message: 'Conversation_closed',
+	data(message) {
+		return {
+			comment: message.msg
+		};
+	}
 });
