@@ -5,6 +5,7 @@ Meteor.startup(() => {
 			t: 1,
 			cl: 1,
 			u: 1,
+			label: 1,
 			usernames: 1,
 			v: 1,
 			livechatData: 1,
