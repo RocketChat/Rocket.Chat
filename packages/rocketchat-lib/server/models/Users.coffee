@@ -54,6 +54,12 @@ RocketChat.models.Users = new class extends RocketChat.models._Base
 
 
 	# FIND
+	findById: (userId) ->
+		query =
+			_id: userId
+
+		return @find query
+
 	findUsersNotOffline: (options) ->
 		query =
 			username:
