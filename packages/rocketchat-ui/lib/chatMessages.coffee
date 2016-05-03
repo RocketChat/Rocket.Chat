@@ -114,14 +114,12 @@ class @ChatMessages
 		this.input.classList.add("editing")
 		this.$input.closest('.message-form').addClass('editing')
 
-		setTimeout =>
-			this.input.focus()
+		this.input.focus()
 
-			this.input.value = msg
+		this.input.value = msg
 
-			cursor_pos = if editingNext then 0 else -1
-			this.$input.setCursorPosition(cursor_pos)
-		, 5
+		cursor_pos = if editingNext then 0 else -1
+		this.$input.setCursorPosition(cursor_pos)
 
 	clearEditing: ->
 		if this.editing.element
@@ -336,18 +334,18 @@ class @ChatMessages
 			if k is 38 # Arrow Up
 				if cursor_pos is 0
 					this.toPrevMessage()
-				else if event.altKey
-					this.$input.setCursorPosition(0)
-				else
+				else if not event.altKey
 					return true
+
+				this.$input.setCursorPosition(0) if event.altKey
 
 			else # Arrow Down
 				if cursor_pos is input.value.length
 					this.toNextMessage()
-				else if event.altKey
-					this.$input.setCursorPosition(-1)
-				else
+				else if not event.altKey
 					return true
+
+				this.$input.setCursorPosition(-1) if event.altKey
 
 			return false
 
