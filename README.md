@@ -1,4 +1,4 @@
-This is a Fork of Rocket.Chat by Learners Guild. See the [LG-README.md][LG-README.md] for more details and installation instructions.
+This is a Fork of Rocket.Chat by Learners Guild. See the [LG-README.md](learners-guild/README.md) for more details and installation instructions.
 
 ----------------
 
