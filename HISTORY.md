@@ -1,6 +1,55 @@
 ## NEXT
 
+## 0.29.0, 2016-May-02
+
+- Add a i18nDefaultQuery option to settings
+- Add a sequential code for livechat rooms
+- Add ability to close livechat rooms
+- Add APIs to display room name and find the room object
+- Add Beta indicators to video calling
+- Add livechat custom fields queue
+- Add customization options for enrollment and invitation e-mails
+- Add support for RegExp in the message search
+- Added settings.json example for Galaxy
+- Adding draft auto translations script
+- Adding CODE OF CONDUCT
+- Adding copy to mesage clipboard button
+- Automatic language detect on code blocks
+- Change Users.setEmail to overwrite emails field
+- Close #2727 Change meteor error (#3040)
+- Close #3049 Fix permalink preview
+- Create settings to select internal hubot scripts to load
+- Emoji's by themselves appear 2x as large. (#3072)
+- Feature to add permission for user to manage their own integrations only. (#2901)
+- Fix #3094 Enables favorite rooms to non-admins
+- Fix #782 Swipe with flex panel breaks
+- Fix code highlight on code that contains delimiter
+- Fix for markdown heading of non Latin characters
+- Fix getRoomIdByNameOrId to allow getting id from joined room
+- Fix iframe_client.js "loggin-with-token" typo
+- Fix livechat not saving OS, browser and IP
+- Fix missing parameters in loginWithCas. (#3051)
+- Fix new-message notification when on a different room
+- Fix permalink query in oembed (#3046)
+- Fix OTR settings labels
+- Internal Hubot naming clarification rocketchat:hubot -> rocketchat:internal-hubot RocketBot -> InternalHubot RocketBot_Name -> InternalHubot_Username
+- Add Katex formatting tip (#3066)
+- Limit calling addUserToRoom to users in room and with permission.
+- Make livechat client app use less CPU
+- Move livechat navigation history to another tab bar panel
+- Move subscription from all clients to template creation
+- Remove all spaces from ignored hosts setting
+- Remove scripts from internal-bot and set defaults to hello and zen
 - Remove unused options parameter from sendMessage
+- Remove unused translations
+- Restrict calling getRoomIdByNameOrId to channels and allowed users
+- Save extra info to livechat rooms and guests
+- Show previous livechats for each guest
+- Split Autolinker URLs settings
+- Update to kenton:accounts-sandstorm@0.3.0
+- Use guest user name if already registered
+- Use new placholders.js for sending mail through Mailer
+- Verify if user's emails and phone are arrays before showing them
 
 ## 0.28.0, 2016-Apr-25
 
