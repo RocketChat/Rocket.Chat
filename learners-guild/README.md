@@ -31,7 +31,7 @@ This is Learners Guild's custom fork of Rocket.Chat. The primary difference is t
 
 7. Run the server:
 
-        $ meteor
+        $ learners-guild/start.sh
 
 [mehserve]: https://github.com/timecounts/mehserve
 [meteor]: https://www.meteor.com/
