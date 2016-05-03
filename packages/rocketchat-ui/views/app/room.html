@@ -22,19 +22,19 @@
 					{{#if since}}
 						{{#if count}}
 							<div class="unread-bar">
-								<a class="jump-to">
+								<button class="jump-to">
 									<span class="jump-to-large">{{_ "Jump_to_first_unread"}}</span>
 									<span class="jump-to-small">{{_ "Jump"}}</span>
-								</a>
+								</button>
 								<span class="unread-count-since">
 									{{_ "S_new_messages_since_s" count formatUnreadSince}}
 								</span>
 								<span class="unread-count">
 									{{_ "N_new_messages" count}}
 								</span>
-								<a class="mark-read">
+								<button class="mark-read">
 									{{_ "Mark_as_read"}}
-								</a>
+								</button>
 							</div>
 						{{/if}}
 					{{/if}}
@@ -44,17 +44,17 @@
 						{{#if error}}
 							<div class="upload-progress-text">
 								{{error}}
-								<a>
+								<button>
 									{{_ "close"}}
-								</a>
+								</button>
 							</div>
 						{{else}}
 							<div class="upload-progress-progress" style="width: {{percentage}}%;"></div>
 							<div class="upload-progress-text">
 								{{name}}... {{percentage}}%
-								<a>
+								<button>
 									{{_ "cancel"}}
-								</a>
+								</button>
 							</div>
 						{{/if}}
 					</div>
@@ -69,7 +69,7 @@
 								{{#if isLoading}}
 									<div class="load-more-loading">{{_ "Loading_more_from_history"}}...</div>
 								{{else}}
-									<a>{{_ "Has_more"}}...</a>
+									<button>{{_ "Has_more"}}...</button>
 								{{/if}}
 							</li>
 						{{else}}
@@ -85,19 +85,19 @@
 								{{#if isLoading}}
 									<div class="load-more-loading">{{_ "Loading_more_from_history"}}...</div>
 								{{else}}
-									<a>{{_ "Has_more"}}...</a>
+									<button>{{_ "Has_more"}}...</button>
 								{{/if}}
 							</li>
 						{{/if}}
 					</ul>
 				</div>
-				<div class="new-message not">
+				<button class="new-message not">
 					<i class="icon-down-big"></i>
 					<span>{{_ "New_messages"}}</span>
-				</div>
-				<div class="jump-recent {{#unless hasMoreNext}}not{{/unless}}">
+				</button>
+				<button class="jump-recent {{#unless hasMoreNext}}not{{/unless}}">
 					<span class="jump-link">{{_ "Jump_to_recent_messages"}} <i class="icon-level-down"></i></span>
-				</div>
+				</button>
 			</div>
 			<footer class="footer">
 				{{> messageBox}}
