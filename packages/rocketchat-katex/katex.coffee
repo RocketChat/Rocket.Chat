@@ -9,8 +9,8 @@ class Katex
 		'\\(': { closer: '\\)', displayMode: false },
 
 		# Conflicts with message tokens syntax: $token$
-		#'$$' : { closer: '$$' , displayMode: true  },
-		#'$'  : { closer: '$'  , displayMode: false },
+		'$$' : { closer: '$$' , displayMode: true  },
+		'$'  : { closer: '$'  , displayMode: false },
 	}
 
 	# Searches for the first opening delimiter in the string
@@ -80,7 +80,7 @@ class Katex
 		latex = str.substr match.inner.start, match.inner.length()
 		latex = s.unescapeHTML latex
 
-		return { before: before, latex : latex, after : after } 
+		return { before: before, latex : latex, after : after }
 
 	# Takes a latex math string and the desired display mode and renders it
 	# to HTML using the KaTeX library
