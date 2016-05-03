@@ -218,4 +218,4 @@ Meteor.startup ->
 			input.value = text
 			input.focus()
 			$(input).keyup()
-    order: 5
+		order: 5
