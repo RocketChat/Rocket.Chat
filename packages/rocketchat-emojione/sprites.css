@@ -19,8 +19,8 @@
 .big_emojione {
   image-rendering: optimizeQuality;
   font-size: inherit;
-  height: 66px;
-  width: 66px;
+  height: 44px;
+  width: 44px;
   position: relative;
   display: inline-block;
   margin: 0 .15em;
