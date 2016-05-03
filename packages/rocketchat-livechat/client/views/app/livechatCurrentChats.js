@@ -7,12 +7,15 @@ Template.livechatCurrentChats.helpers({
 	},
 	lastMessage() {
 		return moment(this.lm).format('L LTS');
+	},
+	name() {
+		return 'Livechat ' + this.code;
 	}
 });
 
 Template.livechatCurrentChats.events({
 	'click .row-link'() {
-		FlowRouter.go('live', { name: this.name });
+		FlowRouter.go('live', { code: this.code });
 	}
 });
 
