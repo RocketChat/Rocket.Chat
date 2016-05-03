@@ -200,7 +200,7 @@ Template.room.events
 	"touchcancel .message": (e, t) ->
 		Meteor.clearTimeout t.touchtime
 
-	"click .upload-progress-text > a": (e) ->
+	"click .upload-progress-text > button": (e) ->
 		e.preventDefault();
 		Session.set "uploading-cancel-#{this.id}", true
 
@@ -267,7 +267,7 @@ Template.room.events
 			$('#room-title-field').focus().select()
 		, 10
 
-	"click .flex-tab .user-image > a" : (e, instance) ->
+	"click .flex-tab .user-image > button" : (e, instance) ->
 		RocketChat.TabBar.openFlex()
 		instance.setUserDetail @username
 
@@ -285,7 +285,7 @@ Template.room.events
 				RoomHistoryManager.getMoreNext(@_id)
 	, 200
 
-	'click .load-more > a': ->
+	'click .load-more > button': ->
 		RoomHistoryManager.getMore(@_id)
 
 	'click .new-message': (e) ->
