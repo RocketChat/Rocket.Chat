@@ -22,6 +22,17 @@
 	user-select: none;
 }
 
+button {
+	background: none;
+	border: none;
+	padding: 0px;
+	text-align: left;
+	cursor: pointer;
+	text-transform: inherit;
+	color: inherit;
+	font-style: inherit;
+}
+
 .allow-text-selection {
 	-webkit-user-select: text;
 	-moz-user-select: text;
@@ -644,14 +655,13 @@ label.required:after {
 	padding: 9px 12px;
 	font-weight: 500;
 	font-size: 13px;
+	text-align: center;
 	margin: 4px;
 	text-transform: uppercase;
 	word-spacing: 0;
 	box-shadow: 1px 1px 0 rgba(0, 0, 0, 0.125);
-	border: none;
 	line-height: 16px;
 	position: relative;
-	cursor: pointer;
 	span {
 		position: relative;
 		z-index: 2;
@@ -1074,11 +1084,10 @@ a.github-fork {
 			text-align: center;
 			margin-left: 0 -1px 0 1px;
 		}
-		a {
+		button, a {
 			position: relative;
 			display: table;
 			width: 100%;
-			height: 20px;
 			padding: 15px 12px;
 			line-height: 1;
 			text-decoration: none;
@@ -2690,7 +2699,7 @@ a.github-fork {
 	.avatar-initials {
 		line-height: 40px;
 	}
-	a {
+	button {
 		font-weight: 400;
 		&:hover {
 			text-decoration: underline;
@@ -3350,7 +3359,7 @@ body:not(.is-cordova) {
 		&:after {
 			display: none;
 		}
-		a {
+		button {
 			.clearfix;
 			padding: 5px 0;
 			height: 30px;
@@ -3374,7 +3383,7 @@ body:not(.is-cordova) {
 			.calc(width, ~"100% - 45px");
 		}
 	}
-	a {
+	button {
 		display: block;
 		width: 100%;
 		height: 100%;
