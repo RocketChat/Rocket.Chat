@@ -7,11 +7,9 @@
 			<div class="visitor-navigation">
 				<div class="visitor-scroll">
 					<ul>
-						<li><a href="#past" target="_blank">2016-04-01 - Chat Title</a></li>
-						<li><a href="#past" target="_blank">2016-04-01 - Chat Title</a></li>
-						<li><a href="#past" target="_blank">2016-04-01 - Chat Title</a></li>
-						<li><a href="#past" target="_blank">2016-04-01 - Chat Title</a></li>
-						<li><a href="#past" target="_blank">2016-04-01 - Chat Title</a></li>
+						{{#each previousChats}}
+							<li><a href="{{pathFor "live" code=code}}">{{date}}</a></li>
+						{{/each}}
 					</ul>
 				</div>
 			</div>

@@ -77,6 +77,7 @@ Package.onUse(function(api) {
 	api.addFiles('client/views/app/tabbar/externalSearch.html', 'client');
 	api.addFiles('client/views/app/tabbar/externalSearch.js', 'client');
 	api.addFiles('client/views/app/tabbar/visitorHistory.html', 'client');
+	api.addFiles('client/views/app/tabbar/visitorHistory.js', 'client');
 	api.addFiles('client/views/app/tabbar/visitorNavigation.html', 'client');
 	api.addFiles('client/views/app/tabbar/visitorNavigation.js', 'client');
 	api.addFiles('client/views/app/tabbar/visitorEdit.html', 'client');
@@ -141,6 +142,7 @@ Package.onUse(function(api) {
 	api.addFiles('server/publications/livechatDepartments.js', 'server');
 	api.addFiles('server/publications/livechatManagers.js', 'server');
 	api.addFiles('server/publications/livechatRooms.js', 'server');
+	api.addFiles('server/publications/visitorHistory.js', 'server');
 	api.addFiles('server/publications/visitorInfo.js', 'server');
 	api.addFiles('server/publications/visitorPageVisited.js', 'server');
 
