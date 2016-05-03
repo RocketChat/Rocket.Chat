@@ -6,8 +6,7 @@
 		options =
 			'androidTheme': window.plugins.actionsheet.ANDROID_THEMES.THEME_HOLO_LIGHT
 			'buttonLabels': [
-				'Report Abuse'
-				'Copy Message'
+				TAPi18n.__('Report Abuse')
 			]
 			androidEnableCancelButton: true
 			addCancelButtonWithLabel: TAPi18n.__('Cancel')
@@ -15,10 +14,19 @@
 
 		buttonActions = [
 			mobileMessageMenu.reportAbuse
-			mobileMessageMenu.copyMessage
 		]
 
-		buttons = RocketChat.MessageAction.getButtons message, 'message-mobile'
+		context = 'message-mobile'
+		if $(e.currentTarget).hasClass('pinned')
+			context = 'pinned'
+		if $(e.currentTarget).hasClass('starred')
+			context = 'starred'
+		if $(e.currentTarget).hasClass('mentions')
+			context = 'mentions'
+		if $(e.currentTarget).hasClass('search')
+			context = 'search'
+
+		buttons = RocketChat.MessageAction.getButtons message, context
 		for button in buttons
 			if button.id is 'delete-message'
 				options.addDestructiveButtonWithLabel = TAPi18n.__(button.i18nLabel)
@@ -31,19 +39,15 @@
 			if buttonActions[buttonIndex-1]?
 				buttonActions[buttonIndex-1].call scope, e, template, message
 
-	copyMessage: (e, t, message) ->
-		cordova.plugins.clipboard.copy(message.msg)
-		console.log 'copyMessage', message.msg
-
 	reportAbuse: (e, t, message) ->
 		swal {
-			title: 'Report this message?'
-			text: message.html
-			inputPlaceholder: 'Why do you want to report?'
+			title: TAPi18n.__('Report_this_message_question_mark')
+			text: message.msg
+			inputPlaceholder: TAPi18n.__('Why_do_you_want_to_report_question_mark')
 			type: 'input'
 			showCancelButton: true
 			confirmButtonColor: '#DD6B55'
-			confirmButtonText: "Report!"
+			confirmButtonText: TAPi18n.__("Report_exclamation_mark")
 			cancelButtonText: TAPi18n.__('Cancel')
 			closeOnConfirm: false
 			html: false
@@ -52,14 +56,14 @@
 				return false
 
 			if inputValue is ""
-				swal.showInputError("You need to write something!")
+				swal.showInputError(TAPi18n.__("You_need_to_write_something"))
 				return false
 
 			Meteor.call 'reportMessage', message, inputValue
 
 			swal
-				title: "Report sent"
-				text: "Thank you!"
+				title: TAPi18n.__("Report_sent")
+				text: TAPi18n("Thank_you_exclamation_mark")
 				type: 'success'
 				timer: 1000
 				showConfirmButton: false
