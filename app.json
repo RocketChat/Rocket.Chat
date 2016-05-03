@@ -1,6 +1,6 @@
 {
   "name": "Rocket.Chat",
-  "description": "Have your own open-source Slack-like online chat, built with Meteor.",
+  "description": "Have your own open-source Slack-like online chat platform.",
   "repository": "https://github.com/RocketChat/Rocket.Chat",
   "logo": "https://raw.githubusercontent.com/RocketChat/Rocket.Chat/master/public/images/logo/512x512.png?v=3",
   "keywords": ["meteor", "social", "community", "chat"],
@@ -8,6 +8,11 @@
   "env": {
     "BUILDPACK_URL": "https://github.com/RocketChat/heroku-buildpack-meteor.git",
     "HEROKU_APP_NAME": {
+      "description": "This will become your Rocket.Chat app URL: https://<HEROKU_APP_NAME>.herokuapp.com",
+      "required": true
+    },
+    "HEROKU_PARENT_APP_NAME": {
+      "description": "This will become your Rocket.Chat app URL: https://<HEROKU_APP_NAME>.herokuapp.com",
       "required": true
     }
   },
