@@ -1,7 +1,8 @@
 Meteor.startup(function() {
 	RocketChat.settings.addGroup('SMS', function() {
 		this.add('SMS_Enabled', false, {
-			type: 'boolean'
+			type: 'boolean',
+			i18nLabel: 'Enabled'
 		});
 
 		this.add('SMS_Service', 'twilio', {
