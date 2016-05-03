@@ -14,7 +14,7 @@ WebApp.connectHandlers.use('/file-upload/', function(req, res, next) {
 		file = RocketChat.models.Uploads.findOneById(match[1]);
 
 		if (file) {
-			if (protectedFiles) {
+			if (!Meteor.settings.public.sandstorm && protectedFiles) {
 				var cookie, rawCookies, ref, token, uid;
 				cookie = new Cookies();
 
