@@ -41,7 +41,7 @@ Template.avatarPrompt.events
 		if @service is 'initials'
 			Meteor.call 'resetAvatar', (err) ->
 				if err?.details?.timeToReset?
-					toastr.error t('Error_too_many_requests', parseInt(err.details.timeToReset / 1000))
+					toastr.error t('error-too-many-requests', { seconds: parseInt(err.details.timeToReset / 1000) })
 				else
 					toastr.success t('Avatar_changed_successfully')
 		else if @service is 'url'
@@ -49,7 +49,7 @@ Template.avatarPrompt.events
 				Meteor.call 'setAvatarFromService', $('#avatarurl').val(), '', @service, (err) ->
 					if err
 						if err.details?.timeToReset?
-							toastr.error t('Error_too_many_requests', parseInt(err.details.timeToReset / 1000))
+							toastr.error t('error-too-many-requests', { seconds: parseInt(err.details.timeToReset / 1000) })
 						else
 							toastr.error t('Avatar_url_invalid_or_error')
 					else
@@ -59,7 +59,7 @@ Template.avatarPrompt.events
 		else
 			Meteor.call 'setAvatarFromService', @blob, @contentType, @service, (err) ->
 				if err?.details?.timeToReset?
-					toastr.error t('Error_too_many_requests', parseInt(err.details.timeToReset / 1000))
+					toastr.error t('error-too-many-requests', { seconds: parseInt(err.details.timeToReset / 1000) })
 				else
 					toastr.success t('Avatar_changed_successfully')
 

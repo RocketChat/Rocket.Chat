@@ -39,7 +39,7 @@ Template.messagePopupConfig.helpers
 				# Get online users
 				if items.length < 5 and filter?.trim() isnt ''
 					messageUsers = _.pluck(items, 'username')
-					Meteor.users.find({$and: [{username: exp}, {username: {$nin: [Meteor.user().username].concat(messageUsers)}}]}, {limit: 5 - messageUsers.length}).fetch().forEach (item) ->
+					Meteor.users.find({$and: [{username: exp}, {username: {$nin: [Meteor.user()?.username].concat(messageUsers)}}]}, {limit: 5 - messageUsers.length}).fetch().forEach (item) ->
 						items.push
 							_id: item.username
 							username: item.username

@@ -1,7 +1,7 @@
 Package.describe({
-	name: 'rocketchat:hubot',
+	name: 'rocketchat:internal-hubot',
 	version: '0.0.1',
-	summary: 'Package hubot for Meteor server',
+	summary: 'Internal Hubot for Rocket.Chat',
 	git: ''
 });
 
@@ -13,6 +13,7 @@ Package.onUse(function(api) {
 		'tracker',
 		'rocketchat:lib'
 	]);
+	api.use('underscorestring:underscore.string');
 
 	api.use('templating', 'client');
 
@@ -23,8 +24,8 @@ Package.onUse(function(api) {
 
 	api.export('Hubot', ['server']);
 	api.export('HubotScripts', ['server']);
-	api.export('RocketBot', ['server']);
-	api.export('RocketBotReceiver', ['server']);
+	api.export('InternalHubot', ['server']);
+	api.export('InternalHubotReceiver', ['server']);
 	api.export('RocketChatAdapter', ['server']);
 
 });
@@ -32,12 +33,6 @@ Package.onUse(function(api) {
 Npm.depends({
 	'coffee-script': '1.9.3',
 	'hubot': '2.13.1',
-	'hubot-calculator': '0.4.0',
-	'hubot-google-hangouts': '0.7.1',
-	'hubot-google-images': '0.1.5',
-	'hubot-google-translate': '0.2.0',
-	'hubot-maps': '0.0.2',
-	'hubot-help': '0.1.1',
-	'hubot-scripts': '2.16.1',
-	'hubot-youtube': '1.0.0'
+	'hubot-scripts': '2.16.2',
+	'hubot-help': '0.1.2'
 });

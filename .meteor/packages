@@ -97,7 +97,7 @@ rocketchat:version
 rocketchat:webrtc
 rocketchat:wordpress
 #rocketchat:chatops
-#rocketchat:hubot
+#rocketchat:internal-hubot
 #rocketchat:irc
 
 konecty:change-case

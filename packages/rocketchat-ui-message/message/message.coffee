@@ -2,6 +2,8 @@ Template.message.helpers
 	isBot: ->
 		return 'bot' if this.bot?
 	roleTags: ->
+		unless RocketChat.settings.get('UI_DisplayRoles')
+			return []
 		roles = _.union(UserRoles.findOne(this.u?._id)?.roles, RoomRoles.findOne({'u._id': this.u?._id, rid: this.rid })?.roles)
 		return _.compact(_.map(roles, (role) -> return RocketChat.models.Roles.findOne({ _id: role, description: { $exists: 1 } })?.description));
 	isGroupable: ->
@@ -190,7 +192,7 @@ Template.message.onViewRendered = (context) ->
 					$nextNode.addClass('sequential')
 
 		if not nextNode?
-			templateInstance = if $('.messages-container')[0] then Blaze.getView($('.messages-container')[0])?.templateInstance() else null
+			templateInstance = if $('#chat-window-' + context.rid)[0] then Blaze.getView($('#chat-window-' + context.rid)[0])?.templateInstance() else null
 
 			if currentNode.classList.contains('own') is true
 				templateInstance?.atBottom = true

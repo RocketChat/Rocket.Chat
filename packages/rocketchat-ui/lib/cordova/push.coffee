@@ -1,26 +1,29 @@
 if Meteor.isCordova
-	Push.addListener 'token', (token) ->
-		Meteor.call 'log', 'CLIENT', 'token', arguments
+	# Push.addListener 'token', (token) ->
+	# 	Meteor.call 'log', 'CLIENT', 'token', arguments
 
-	Push.addListener 'error', (err) ->
-		Meteor.call 'log', 'CLIENT', 'error', arguments
-		if err.type == 'apn.cordova'
-			Meteor.call 'log', 'CLIENT', err.error
+	# Push.addListener 'error', (err) ->
+	# 	Meteor.call 'log', 'CLIENT', 'error', arguments
+	# 	if err.type == 'apn.cordova'
+	# 		Meteor.call 'log', 'CLIENT', err.error
 
-	Push.addListener 'register', (evt) ->
-		Meteor.call 'log', 'CLIENT', 'register', arguments
+	# Push.addListener 'register', (evt) ->
+	# 	Meteor.call 'log', 'CLIENT', 'register', arguments
 
-	Push.addListener 'alert', (notification) ->
-		Meteor.call 'log', 'CLIENT', 'alert', arguments
+	# Push.addListener 'alert', (notification) ->
+	# 	Meteor.call 'log', 'CLIENT', 'alert', arguments
 
-	Push.addListener 'sound', (notification) ->
-		Meteor.call 'log', 'CLIENT', 'sound', arguments
+	# Push.addListener 'sound', (notification) ->
+	# 	Meteor.call 'log', 'CLIENT', 'sound', arguments
 
-	Push.addListener 'badge', (notification) ->
-		Meteor.call 'log', 'CLIENT', 'badge', arguments
+	# Push.addListener 'badge', (notification) ->
+	# 	Meteor.call 'log', 'CLIENT', 'badge', arguments
+
+	# Push.addListener 'message', (notification) ->
+	# 	Meteor.call 'log', 'CLIENT', 'message', arguments
 
 	Push.addListener 'startup', (notification) ->
-		Meteor.call 'log', 'CLIENT', 'startup', arguments
+		# Meteor.call 'log', 'CLIENT', 'startup', arguments
 
 		if notification.payload?.rid?
 			if notification.payload.host is Meteor.absoluteUrl()
@@ -50,9 +53,6 @@ if Meteor.isCordova
 						# TODO err
 						return console.log err
 
-
-	Push.addListener 'message', (notification) ->
-		Meteor.call 'log', 'CLIENT', 'message', arguments
 
 	Meteor.startup ->
 		Tracker.autorun ->

@@ -13,13 +13,17 @@ Template.integrationsOutgoing.helpers
 		return arr.join sep
 
 	hasPermission: ->
-		return RocketChat.authz.hasAllPermission 'manage-integrations'
+		return RocketChat.authz.hasAtLeastOnePermission(['manage-integrations', 'manage-own-integrations'])
 
 	data: ->
 		params = Template.instance().data.params?()
 
 		if params?.id?
-			data = ChatIntegrations.findOne({_id: params.id})
+			data = null
+			if RocketChat.authz.hasAllPermission 'manage-integrations'
+				data = ChatIntegrations.findOne({_id: params.id})
+			else if RocketChat.authz.hasAllPermission 'manage-own-integrations'
+				data = ChatIntegrations.findOne({_id: params.id, "_createdBy._id": Meteor.userId()})
 			if data?
 				if not data.token?
 					data.token = Random.id(24)

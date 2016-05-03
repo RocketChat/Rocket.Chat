@@ -20,7 +20,7 @@ Api.addRoute('sms-incoming/:service', {
 		};
 
 		if (visitor) {
-			const rooms = RocketChat.models.Rooms.findByVisitorToken(visitor.profile.token).fetch();
+			const rooms = RocketChat.models.Rooms.findOpenByVisitorToken(visitor.profile.token).fetch();
 
 			if (rooms && rooms.length > 0) {
 				sendMessage.message.rid = rooms[0]._id;
@@ -33,6 +33,7 @@ Api.addRoute('sms-incoming/:service', {
 			sendMessage.message.token = Random.id();
 
 			let userId = RocketChat.Livechat.registerGuest({
+				username: sms.from.replace(/[^0-9]/g, ''),
 				token: sendMessage.message.token,
 				phone: {
 					number: sms.from

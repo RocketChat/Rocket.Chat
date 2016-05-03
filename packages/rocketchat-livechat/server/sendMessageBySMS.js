@@ -9,7 +9,7 @@ RocketChat.callbacks.add('afterSaveMessage', function(message, room) {
 	}
 
 	// only send the sms by SMS if it is a livechat room with SMS set to true
-	if (typeof room.t === 'undefined' || room.t !== 'l' || !room.sms || !room.v || !room.v.token) {
+	if (!(typeof room.t !== 'undefined' && room.t === 'l' && room.sms && room.v && room.v.token)) {
 		return message;
 	}
 
@@ -26,11 +26,11 @@ RocketChat.callbacks.add('afterSaveMessage', function(message, room) {
 
 	const visitor = RocketChat.models.Users.getVisitorByToken(room.v.token);
 
-	if (!visitor || !visitor.profile || !visitor.profile.phones || visitor.profile.phones.length === 0) {
+	if (!visitor || !visitor.profile || !visitor.phone || visitor.phone.length === 0) {
 		return message;
 	}
 
-	SMSService.send(room.sms.from, visitor.profile.phones[0].number, message.msg);
+	SMSService.send(room.sms.from, visitor.phone[0].phoneNumber, message.msg);
 
 	return message;
 

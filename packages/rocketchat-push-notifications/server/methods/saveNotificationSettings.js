@@ -9,16 +9,16 @@ Meteor.methods({
 		check(value, String);
 
 		if (['desktopNotifications', 'mobilePushNotifications', 'emailNotifications'].indexOf(field) === -1) {
-			throw new Meteor.Error('invalid-settings', 'Invalid settings field');
+			throw new Meteor.Error('error-invalid-settings', 'Invalid settings field', { method: 'saveNotificationSettings' });
 		}
 
 		if (['all', 'mentions', 'nothing', 'default'].indexOf(value) === -1) {
-			throw new Meteor.Error('invalid-settings', 'Invalid settings value');
+			throw new Meteor.Error('error-invalid-settings', 'Invalid settings value', { method: 'saveNotificationSettings' });
 		}
 
 		const subscription = RocketChat.models.Subscriptions.findOneByRoomIdAndUserId(rid, Meteor.userId());
 		if (!subscription) {
-			throw new Meteor.Error('invalid-subscription', 'Invalid subscription');
+			throw new Meteor.Error('error-invalid-subscription', 'Invalid subscription', { method: 'saveNotificationSettings' });
 		}
 
 		if (field === 'desktopNotifications') {

@@ -20,7 +20,7 @@ Template.loginServices.helpers
 					serviceName = 'GitHub'
 					icon = 'github-circled'
 				when 'gitlab'
-					serviceName = 'Gitlab'
+					serviceName = 'GitLab'
 					icon = service.service
 				when 'wordpress'
 					serviceName = 'WordPress'

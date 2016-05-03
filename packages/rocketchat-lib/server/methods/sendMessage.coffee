@@ -1,10 +1,10 @@
 Meteor.methods
-	sendMessage: (message, options) ->
+	sendMessage: (message) ->
 		if message.msg?.length > RocketChat.settings.get('Message_MaxAllowedSize')
-			throw new Meteor.Error 400, '[methods] sendMessage -> Message size exceed Message_MaxAllowedSize'
+			throw new Meteor.Error('error-message-size-exceeded', 'Message size exceeds Message_MaxAllowedSize', { method: 'sendMessage' })
 
 		if not Meteor.userId()
-			throw new Meteor.Error('invalid-user', "[methods] sendMessage -> Invalid user")
+			throw new Meteor.Error('error-invalid-user', "Invalid user", { method: 'sendMessage' })
 
 		user = RocketChat.models.Users.findOneById Meteor.userId(), fields: username: 1
 
@@ -22,12 +22,12 @@ Meteor.methods
 			}
 			return false
 
-		RocketChat.sendMessage user, message, room, options
+		RocketChat.sendMessage user, message, room
 
 # Limit a user to sending 5 msgs/second
 # DDPRateLimiter.addRule
 # 	type: 'method'
 # 	name: 'sendMessage'
 # 	userId: (userId) ->
-# 		return RocketChat.models.Users.findOneById(userId)?.username isnt RocketChat.settings.get('RocketBot_Name')
+# 		return RocketChat.models.Users.findOneById(userId)?.username isnt RocketChat.settings.get('InternalHubot_Username')
 # , 5, 1000
