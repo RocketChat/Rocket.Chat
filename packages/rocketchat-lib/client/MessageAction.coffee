@@ -214,7 +214,7 @@ Meteor.startup ->
 				text += '\n'
 			text += '@' + m.u.username + ' said (' + ts + '):\n'
 			for line in message.split(/\r\n|\r|\n/)
-				text += '> ' + line
+				text += '> ' + line + '\n'
 			input.value = text
 			input.focus()
 			$(input).keyup()
