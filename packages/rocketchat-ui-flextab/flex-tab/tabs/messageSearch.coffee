@@ -30,6 +30,9 @@ Template.messageSearch.helpers
 	ready: ->
 		return Template.instance().ready.get()
 
+	message: ->
+		return _.extend(this, { customClass: 'search' })
+
 Template.messageSearch.events
 	"keydown #message-search": (e) ->
 		if e.keyCode is 13
