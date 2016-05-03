@@ -38,12 +38,14 @@ onDeleteMessageStream = (msg) ->
 	ChatMessage.remove _id: msg._id
 
 
-RocketChat.Notifications.onUser 'message', (msg) ->
-	msg.u =
-		username: 'rocketbot'
-	msg.private = true
+Tracker.autorun ->
+	if Meteor.userId()
+		RocketChat.Notifications.onUser 'message', (msg) ->
+			msg.u =
+				username: 'rocketbot'
+			msg.private = true
 
-	ChatMessage.upsert { _id: msg._id }, msg
+			ChatMessage.upsert { _id: msg._id }, msg
 
 
 @RoomManager = new class

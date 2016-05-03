@@ -1,5 +1,5 @@
 <template name="message">
-	<li id="{{_id}}" class="message {{isSequential}} {{system}} {{t}} {{own}} {{isTemp}} {{chatops}}" data-username="{{u.username}}" data-groupable="{{isGroupable}}" data-date="{{date}}" data-timestamp="{{timestamp}}">
+	<li id="{{_id}}" class="message {{isSequential}} {{system}} {{t}} {{own}} {{isTemp}} {{chatops}} {{customClass}}" data-username="{{u.username}}" data-groupable="{{isGroupable}}" data-date="{{date}}" data-timestamp="{{timestamp}}">
 		{{#if avatar}}
 			{{#if avatarFromUsername}}
 				<button class="thumb user-card-message" data-username="{{u.username}}" tabindex="1">{{> avatar username=avatarFromUsername}}</button>
