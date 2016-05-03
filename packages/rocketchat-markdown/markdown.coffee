@@ -19,7 +19,7 @@ class Markdown
 		else
 			message.tokens ?= []
 			msg = msg.replace /(^|&gt;|[ >_*~])\`([^`\r\n]+)\`([<_*~]|\B|\b|$)/gm, (match, p1, p2, p3, offset, text) ->
-				token = "$#{Random.id()}$"
+				token = "=&=#{Random.id()}=&="
 
 				message.tokens.push
 					token: token
