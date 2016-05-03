@@ -42,7 +42,7 @@ class Highlight
 						else
 							result = hljs.highlight lang, code
 
-						token = "$#{Random.id()}$"
+						token = "=&=#{Random.id()}=&="
 
 						message.tokens.push
 							highlight: true
