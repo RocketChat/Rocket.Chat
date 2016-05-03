@@ -77,22 +77,15 @@ class @ChatMessages
 			sendMessage = (callback) ->
 				msgObject = { _id: Random.id(), rid: rid, msg: msg, token: visitor.getToken() }
 				MsgTyping.stop(rid)
-				#Check if message starts with /command
-				if msg[0] is '/'
-					match = msg.match(/^\/([^\s]+)(?:\s+(.*))?$/m)
-					if(match?)
-						command = match[1]
-						param = match[2]
-						Meteor.call 'slashCommand', {cmd: command, params: param, msg: msgObject }
-				else
-					#Run to allow local encryption
-					# Meteor.call 'onClientBeforeSendMessage', {}
-					Meteor.call 'sendMessageLivechat', msgObject, (error, result) ->
-						if error
-							ChatMessage.update msgObject._id, { $set: { error: true } }
-							showError error.reason
-						else
-							callback?(result)
+
+				Meteor.call 'sendMessageLivechat', msgObject, (error, result) ->
+					if error
+						ChatMessage.update msgObject._id, { $set: { error: true } }
+						showError error.reason
+					else if result.newRoom and result.rid?
+						ChatMessage.update result._id, _.omit(result, '_id')
+						visitor.subscribeToRoom(result.rid)
+						visitor.setRoom(result.rid)
 
 			if not Meteor.userId()
 				Meteor.call 'livechat:registerGuest', { token: visitor.getToken() }, (error, result) ->
@@ -103,11 +96,7 @@ class @ChatMessages
 						if error
 							return showError error.reason
 
-						sendMessage (message) ->
-							ChatMessage.update message._id, _.omit(message, '_id')
-							if message.rid?
-								visitor.subscribeToRoom(message.rid)
-								visitor.setRoom(message.rid)
+						sendMessage()
 			else
 				sendMessage()
 

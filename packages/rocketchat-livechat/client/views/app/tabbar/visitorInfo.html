@@ -42,7 +42,9 @@
 
 				<nav class="centered-buttons">
 					<button class='button lightblue edit-livechat button-block'><span><i class='icon-edit'></i> {{_ "Edit"}}</span></button>
-					<button class='button close-livechat button-block'><span><i class='icon-download'></i> {{_ "Close"}}</span></button>
+					{{#if roomOpen}}
+						<button class='button close-livechat button-block'><span><i class='icon-download'></i> {{_ "Close"}}</span></button>
+					{{/if}}
 					<!-- <button class="button pvt-msg"><span><i class="icon-forward"></i> {{_ "Forward"}}</span></button> -->
 				</nav>
 
