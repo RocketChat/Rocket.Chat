@@ -11,10 +11,9 @@ class Katex
 		{ opener: '$'  , closer: '$'  , displayMode: false },
 	]
 
-	# Searches for the first opening delimiter in the string
-	find_opening_delimiter: (str) ->
-		# Search the string for each opening delimiter
-		matches = ({options: o, pos: str.indexOf(o.opener)} for o in @delimiters_map)
+	# Searches for the first opening delimiter in the string from a given position
+	find_opening_delimiter: (str, start) -> # Search the string for each opening delimiter
+		matches = ({options: o, pos: str.indexOf(o.opener, start)} for o in @delimiters_map)
 		positions = (m.pos for m in matches when m.pos >= 0)
 
 		# No opening delimiters were found
@@ -32,6 +31,9 @@ class Katex
 	class Boundary
 		length: () ->
 			return @end - @start
+
+		extract: (str) ->
+			return str.substr @start, @length()
 
 	# Returns the outer and inner boundaries of the latex block starting
 	# at the given opening delimiter
@@ -60,14 +62,16 @@ class Katex
 
 	# Searches for the first latex block in the given string
 	find_latex: (str) ->
-		unless str.length and (opening_delimiter_match = @find_opening_delimiter str)?
-			return null
-		
-		match = @get_latex_boundaries str, opening_delimiter_match
+		start = 0
+		while (opening_delimiter_match = @find_opening_delimiter str, start++)?
 
-		match?.options = opening_delimiter_match.options
+			match = @get_latex_boundaries str, opening_delimiter_match
 
-		return match
+			if match?.inner.extract(str).trim().length
+				match.options = opening_delimiter_match.options
+				return match
+
+		return null
 
 	# Breaks a message to what comes before, after and to the content of a
 	# matched latex block
@@ -75,7 +79,7 @@ class Katex
 		before = str.substr 0, match.outer.start
 		after  = str.substr match.outer.end
 
-		latex = str.substr match.inner.start, match.inner.length()
+		latex = match.inner.extract str
 		latex = s.unescapeHTML latex
 
 		return { before: before, latex : latex, after : after }
@@ -90,17 +94,18 @@ class Katex
 			rendered =  "<div class=\"katex-error katex-#{display_mode}-error\">"
 			rendered += 	"#{e.message}"
 			rendered += "</div>"
-		
+
 		return rendered
 
 	# Takes a string and renders all latex blocks inside it
 	render: (str) ->
 		result = ''
 
-		while true
+		loop
 
 			# Find the first latex block in the string
 			match = @find_latex str
+
 			unless match?
 				result += str
 				break
@@ -111,7 +116,7 @@ class Katex
 			# the rendered latex content
 			rendered = @render_latex parts.latex, match.options.displayMode
 			result += parts.before + rendered
-			
+
 			# Set what comes after the latex block to be examined next
 			str = parts.after
 
