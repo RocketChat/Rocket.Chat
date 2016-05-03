@@ -18,12 +18,13 @@ This is Learners Guild's custom fork of Rocket.Chat. The primary difference is t
 
 5. Create your `.env` file for your environment. Example:
 
-        export APP_BASEURL=http://chat.learnersguild.dev
-        export ROOT_URL=http://chat.learnersguild.dev/
-        export JWT_PUBLIC_KEY="<IDM PUBLIC KEY (let it
+        APP_BASEURL=http://chat.learnersguild.dev
+        ROOT_URL=http://chat.learnersguild.dev/
+        JWT_PUBLIC_KEY="<IDM PUBLIC KEY (let it
         span
         multiple
-        lines)>"
+        lines)>
+        "
 
 6. Install [Meteor][meteor]
 
