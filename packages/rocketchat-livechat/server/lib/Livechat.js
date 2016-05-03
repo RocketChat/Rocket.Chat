@@ -37,17 +37,19 @@ RocketChat.Livechat = {
 				msgs: 1,
 				lm: new Date(),
 				code: roomCode,
+				label: guest.name || guest.username,
 				usernames: [agent.username, guest.username],
 				t: 'l',
 				ts: new Date(),
 				v: {
+					_id: guest._id,
 					token: message.token
 				},
 				open: true
 			}, roomInfo);
 			let subscriptionData = {
 				rid: message.rid,
-				name: guest.username,
+				name: guest.name || guest.username,
 				alert: true,
 				open: true,
 				unread: 1,
