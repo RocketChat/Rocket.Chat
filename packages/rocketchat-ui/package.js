@@ -72,6 +72,9 @@ Package.onUse(function(api) {
 	// LIB CLIPBOARDJS
 	api.addFiles('lib/clipboardjs/clipboard.js', 'client');
 
+	// TEXTAREA CURSOR MANAGEMENT
+	api.addFiles('lib/textarea-cursor/set-cursor-position.js', 'client');
+
 	// TEMPLATE FILES
 	api.addFiles('views/cmsPage.html', 'client');
 	api.addFiles('views/fxos.html', 'client');
