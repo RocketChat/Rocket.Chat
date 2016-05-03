@@ -4,20 +4,18 @@
 ###
 
 class Katex
-	delimiters_map: {
-		'\\[': { closer: '\\]', displayMode: true  },
-		'\\(': { closer: '\\)', displayMode: false },
-
-		# Conflicts with message tokens syntax: $token$
-		'$$' : { closer: '$$' , displayMode: true  },
-		'$'  : { closer: '$'  , displayMode: false },
-	}
+	delimiters_map: [
+		{ opener: '\\[', closer: '\\]', displayMode: true  },
+		{ opener: '\\(', closer: '\\)', displayMode: false },
+		{ opener: '$$' , closer: '$$' , displayMode: true  },
+		{ opener: '$'  , closer: '$'  , displayMode: false },
+	]
 
 	# Searches for the first opening delimiter in the string
 	find_opening_delimiter: (str) ->
 		# Search the string for each opening delimiter
-		matches = ({options: o, pos: str.indexOf(b)} for b,o of @delimiters_map)
-		positions = (b.pos for b in matches when b.pos >= 0)
+		matches = ({options: o, pos: str.indexOf(o.opener)} for o in @delimiters_map)
+		positions = (m.pos for m in matches when m.pos >= 0)
 
 		# No opening delimiters were found
 		if positions.length == 0
@@ -26,7 +24,7 @@ class Katex
 		# Take the first delimiter found
 		pos = Math.min.apply Math, positions
 
-		match_index = (b.pos for b in matches).indexOf(pos)
+		match_index = (m.pos for m in matches).indexOf(pos)
 		match = matches[match_index]
 
 		return match
