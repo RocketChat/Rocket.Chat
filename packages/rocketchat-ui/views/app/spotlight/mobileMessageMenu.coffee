@@ -16,17 +16,7 @@
 			mobileMessageMenu.reportAbuse
 		]
 
-		context = 'message-mobile'
-		if $(e.currentTarget).hasClass('pinned')
-			context = 'pinned'
-		if $(e.currentTarget).hasClass('starred')
-			context = 'starred'
-		if $(e.currentTarget).hasClass('mentions')
-			context = 'mentions'
-		if $(e.currentTarget).hasClass('search')
-			context = 'search'
-
-		buttons = RocketChat.MessageAction.getButtons message, context
+		buttons = RocketChat.MessageAction.getButtons message, (message.customClass or 'message-mobile')
 		for button in buttons
 			if button.id is 'delete-message'
 				options.addDestructiveButtonWithLabel = TAPi18n.__(button.i18nLabel)
