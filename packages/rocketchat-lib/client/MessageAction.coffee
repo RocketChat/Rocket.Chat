@@ -111,28 +111,8 @@ Meteor.startup ->
 			message = @_arguments[1]
 			msg = $(event.currentTarget).closest('.message')[0]
 			$("\##{msg.id} .message-dropdown").hide()
-			return if msg.classList.contains("system")
-			swal {
-				title: t('Are_you_sure')
-				text: t('You_will_not_be_able_to_recover')
-				type: 'warning'
-				showCancelButton: true
-				confirmButtonColor: '#DD6B55'
-				confirmButtonText: t('Yes_delete_it')
-				cancelButtonText: t('Cancel')
-				closeOnConfirm: false
-				html: false
-			}, ->
-				swal
-					title: t('Deleted')
-					text: t('Your_entry_has_been_deleted')
-					type: 'success'
-					timer: 1000
-					showConfirmButton: false
 
-				if chatMessages[Session.get('openedRoom')].editing.id is message._id
-					chatMessages[Session.get('openedRoom')].clearEditing(message)
-				chatMessages[Session.get('openedRoom')].deleteMsg(message)
+			chatMessages[Session.get('openedRoom')].confirmDeleteMsg(message)
 		validation: (message) ->
 			hasPermission = RocketChat.authz.hasAtLeastOnePermission('delete-message', message.rid)
 			isDeleteAllowed = RocketChat.settings.get 'Message_AllowDeleting'
