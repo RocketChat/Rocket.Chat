@@ -26,7 +26,8 @@ Meteor.methods
 			attachments: [
 				"text" : message.msg
 				"author_name" : message.u.username,
-				"author_icon" : getAvatarUrlFromUsername(message.u.username)
+				"author_icon" : getAvatarUrlFromUsername(message.u.username),
+				"ts" : new Date()
 			]
 
 	unpinMessage: (message) ->
