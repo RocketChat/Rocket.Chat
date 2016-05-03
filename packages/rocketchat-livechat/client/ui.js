@@ -22,7 +22,6 @@ RocketChat.roomTypes.add('l', 5, {
 	},
 
 	roomName(roomData) {
-		console.log('roomName.roomData ->', roomData);
 		if (!roomData.name) {
 			const sub = ChatSubscription.findOne({ rid: roomData._id }, { fields: { name: 1 } });
 			if (sub) {
@@ -57,14 +56,14 @@ RocketChat.TabBar.addButton({
 	order: 0
 });
 
-RocketChat.TabBar.addButton({
-	groups: ['livechat'],
-	id: 'visitor-navigation',
-	i18nTitle: 'Visitor_Navigation',
-	icon: 'icon-history',
-	template: 'visitorNavigation',
-	order: 10
-});
+// RocketChat.TabBar.addButton({
+// 	groups: ['livechat'],
+// 	id: 'visitor-navigation',
+// 	i18nTitle: 'Visitor_Navigation',
+// 	icon: 'icon-history',
+// 	template: 'visitorNavigation',
+// 	order: 10
+// });
 
 RocketChat.TabBar.addButton({
 	groups: ['livechat'],
@@ -83,7 +82,7 @@ RocketChat.TabBar.addGroup('push-notifications', ['livechat']);
 RocketChat.TabBar.addButton({
 	groups: ['livechat'],
 	id: 'external-search',
-	i18nTitle: 'External_Search',
+	i18nTitle: 'Knowledge_Base',
 	icon: 'icon-lightbulb',
 	template: 'externalSearch',
 	order: 10

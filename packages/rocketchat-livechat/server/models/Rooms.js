@@ -85,6 +85,14 @@ RocketChat.models.Rooms.findOpenByVisitorToken = function(visitorToken, options)
 	return this.find(query, options);
 };
 
+RocketChat.models.Rooms.findByVisitorToken = function(visitorToken) {
+	const query = {
+		'v.token': visitorToken
+	};
+
+	return this.find(query);
+};
+
 RocketChat.models.Rooms.closeByRoomId = function(roomId) {
 	return this.update({ _id: roomId }, { $unset: { open: 1 } });
 };
