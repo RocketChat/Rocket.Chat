@@ -10,7 +10,7 @@ path = Npm.require('path')
 # 'use strict'
 
 # Log messages?
-DEBUG = true
+DEBUG = false
 
 # Monkey-patch Hubot to support private messages
 Hubot.Response::priv = (strings...) ->
@@ -56,7 +56,7 @@ class RocketChatAdapter extends Hubot.Adapter
 		# console.log envelope, strings
 		sendHelper @robot, envelope, strings, (string) =>
 			console.log "send #{envelope.room}: #{string} (#{envelope.user.id})" if DEBUG
-			RocketChat.sendMessage RocketBot.user, { msg: string }, { _id: envelope.room }
+			RocketChat.sendMessage InternalHubot.user, { msg: string }, { _id: envelope.room }
 
 	# Public: Raw method for sending emote data back to the chat source.
 	#
@@ -133,92 +133,43 @@ class RocketChatAdapter extends Hubot.Adapter
 	close: ->
 		console.log 'ROCKETCHATADAPTER -> close'.blue
 
-class RocketBotReceiver
+class InternalHubotReceiver
 	constructor: (message) ->
 		#console.log message
-		if message.u.username isnt RocketBot.name
+		if message.u.username isnt InternalHubot.name
 			room = RocketChat.models.Rooms.findOneById message.rid
 
 			if room.t is 'c'
 				console.log message
-				RocketBotUser = new Hubot.User(message.u.username, room: message.rid)
-				RocketBotTextMessage = new Hubot.TextMessage(RocketBotUser, message.msg, message._id)
-				RocketBot.adapter.receive RocketBotTextMessage
+				InternalHubotUser = new Hubot.User(message.u.username, room: message.rid)
+				InternalHubotTextMessage = new Hubot.TextMessage(InternalHubotUser, message.msg, message._id)
+				InternalHubot.adapter.receive InternalHubotTextMessage
 		return message
 
 class HubotScripts
 	constructor: (robot) ->
 		modulesToLoad = [
-			'hubot-youtube/src/youtube.coffee'
-			'hubot-maps/src/maps.coffee'
-			'hubot-google-translate/src/google-translate.coffee'
-			'hubot-google-images/src/google-images.coffee'
-			'hubot-calculator/src/calculator.coffee'
 			'hubot-help/src/help.coffee'
 		]
 
 		for modulePath in modulesToLoad
 			try
 				Npm.require(modulePath)(robot)
-				robot.parseHelp __meteor_bootstrap__.serverDir+'/npm/rocketchat_hubot/node_modules/'+modulePath
+				robot.parseHelp __meteor_bootstrap__.serverDir+'/npm/rocketchat_internal-hubot/node_modules/'+modulePath
 				console.log "Loaded #{modulePath}".green
 			catch e
 				console.log "can't load #{modulePath}".red
 				console.log e
 
-		# scriptFiles = fs.readdirSync(__meteor_bootstrap__.serverDir+'/npm/rocketchat_hubot/node_modules/hubot-scripts/src/scripts')
-
-		scriptsToLoad = [
-			'alot.coffee'
-			'applause.coffee'
-			'beerme.coffee'
-			'botsnack.coffee'
-			'carlton.coffee'
-			'chuck-norris.coffee'
-			'commandlinefu.coffee'
-			'commitmessage.coffee'
-			'dealwithit.coffee'
-			'decide.coffee'
-			'dice.coffee'
-			'do-it.coffee'
-			'dribbble.coffee'
-			'encourage.coffee'
-			'excuse.coffee'
-			'factoid.coffee'
-			'futurama.coffee'
-			'go-for-it.coffee'
-			'gob.coffee'
-			'google.coffee'
-			'gorbypuff.coffee'
-			'hangout.coffee'
-			'hashing.coffee'
-			'hello.coffee'
-			'httpcat.coffee'
-			'karma.coffee'
-			'megusta.coffee'
-			'nice.coffee'
-			'play.coffee'
-			'plus_one.coffee'
-			'polite.coffee'
-			'reddit-jokes.coffee'
-			'reload.coffee'
-			'sealab.coffee'
-			'sheits.coffee'
-			'shipit.coffee'
-			'url.coffee'
-			'wits.coffee'
-			'wordnik.coffee'
-			'yoda-pictures.coffee'
-			'yoda-quotes.coffee'
-			'zen.coffee'
-			'zombies.coffee'
-		]
+		scriptsToLoad = RocketChat.settings.get('InternalHubot_ScriptsToLoad').split(',') or []
 
 		for scriptFile in scriptsToLoad
 			try
+				scriptFile = s.trim(scriptFile)
+
 				Npm.require('hubot-scripts/src/scripts/'+scriptFile)(robot)
-				# robot.loadFile __meteor_bootstrap__.serverDir+'/npm/rocketchat_hubot/node_modules/hubot-scripts/src/scripts', scriptFile
-				robot.parseHelp __meteor_bootstrap__.serverDir+'/npm/rocketchat_hubot/node_modules/hubot-scripts/src/scripts/'+scriptFile
+				# robot.loadFile __meteor_bootstrap__.serverDir+'/npm/rocketchat_internal-hubot/node_modules/hubot-scripts/src/scripts', scriptFile
+				robot.parseHelp __meteor_bootstrap__.serverDir+'/npm/rocketchat_internal-hubot/node_modules/hubot-scripts/src/scripts/'+scriptFile
 				console.log "Loaded #{scriptFile}".green
 			catch e
 				console.log "can't load #{scriptFile}".red
@@ -226,8 +177,8 @@ class HubotScripts
 
 		# console.log __meteor_bootstrap__.serverDir
 
-		# npm/rocketchat_hubot/node_modules
-		# packages/rocketchat_hubot.js
+		# npm/rocketchat_internal-hubot/node_modules
+		# packages/rocketchat_internal-hubot.js
 
 		# # load all scripts in scripts/
 		# console.log path.resolve '.'
@@ -276,25 +227,25 @@ sendHelper = Meteor.bindEnvironment (robot, envelope, strings, map) ->
 				console.error "Hubot error: #{err}" if DEBUG
 				robot.logger.error "RocketChat send error: #{err}"
 
-RocketBot = {}
+InternalHubot = {}
 
 init = =>
-	RocketBot = new Robot null, null, false, RocketChat.settings.get 'RocketBot_Name'
-	RocketBot.alias = 'bot'
-	RocketBot.adapter = new RocketChatAdapter RocketBot
-	HubotScripts(RocketBot)
-	RocketBot.run()
+	InternalHubot = new Robot null, null, false, RocketChat.settings.get 'InternalHubot_Username'
+	InternalHubot.alias = 'bot'
+	InternalHubot.adapter = new RocketChatAdapter InternalHubot
+	HubotScripts(InternalHubot)
+	InternalHubot.run()
 
-	# RocketBot.hear /^test/i, (res) ->
+	# InternalHubot.hear /^test/i, (res) ->
 	#	res.send "Test? TESTING? WE DON'T NEED NO TEST, EVERYTHING WORKS!"
 
-	if RocketChat.settings.get 'RocketBot_Enabled'
-		RocketChat.callbacks.add 'afterSaveMessage', RocketBotReceiver, RocketChat.callbacks.priority.LOW, 'rocketbot-parser'
+	if RocketChat.settings.get 'InternalHubot_Enabled'
+		RocketChat.callbacks.add 'afterSaveMessage', InternalHubotReceiver, RocketChat.callbacks.priority.LOW, 'InternalHubot'
 	else
-		RocketChat.callbacks.remove 'afterSaveMessage', 'rocketbot-parser'
+		RocketChat.callbacks.remove 'afterSaveMessage', 'InternalHubot'
 
 	# Meteor.startup ->
-		# console.log RocketBot;
+		# console.log InternalHubot;
 		# # what's (the regexp for) my name?
 		# robot.respond /(?:)/, -> false
 		# mynameRE = robot.listeners.pop().regex
@@ -339,10 +290,8 @@ init = =>
 		# 		username: "rocketbot"
 		# 	action: true
 
-RocketChat.models.Settings.findByIds([ 'RocketBot_Name', 'RocketBot_Enabled']).observe
-	added: ->
-		init()
-	changed: ->
-		init()
-	removed: ->
-		init()
+Meteor.startup ->
+	init()
+	RocketChat.models.Settings.findByIds([ 'InternalHubot_Username', 'InternalHubot_Enabled', 'InternalHubot_ScriptsToLoad']).observe
+		changed: ->
+			init()

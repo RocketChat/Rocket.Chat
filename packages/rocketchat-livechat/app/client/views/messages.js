@@ -41,16 +41,7 @@ Template.messages.events({
 Template.messages.onCreated(function() {
 	var self;
 	self = this;
-	self.autorun(function() {
-		self.subscribe('livechat:visitorRoom', visitor.getToken(), function() {
-			var room;
-			room = ChatRoom.findOne();
-			if (room != null) {
-				visitor.setRoomToSubscribe(room._id);
-				RoomHistoryManager.getMoreIfIsEmpty(room._id);
-			}
-		});
-	});
+
 	self.atBottom = true;
 
 	self.updateMessageInputHeight = function(input) {

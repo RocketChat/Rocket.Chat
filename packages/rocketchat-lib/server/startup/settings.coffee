@@ -87,7 +87,7 @@ RocketChat.settings.addGroup 'General', ->
 	@add 'Site_Name', 'Rocket.Chat', { type: 'string', public: true }
 	@add 'Language', '', { type: 'language', public: true }
 	@add 'Allow_Invalid_SelfSigned_Certs', false, { type: 'boolean' }
-	@add 'Favorite_Rooms', true, { type: 'boolean' }
+	@add 'Favorite_Rooms', true, { type: 'boolean', public: true }
 	@add 'CDN_PREFIX', '', { type: 'string' }
 	@add 'Force_SSL', false, { type: 'boolean', public: true }
 	@add 'GoogleTagManager_id', '', { type: 'string', public: true }
@@ -105,6 +105,10 @@ RocketChat.settings.addGroup 'General', ->
 
 
 RocketChat.settings.addGroup 'Email', ->
+	@section 'Header and Footer', ->
+		@add 'Email_Header', '', { type: 'code', code: 'text/html', multiline: true, i18nLabel: 'Header' }
+		@add 'Email_Footer', '', { type: 'code', code: 'text/html', multiline: true, i18nLabel: 'Footer' }
+
 	@section 'SMTP', ->
 		@add 'SMTP_Host', '', { type: 'string', env: true, i18nLabel: 'Host' }
 		@add 'SMTP_Port', '', { type: 'string', env: true, i18nLabel: 'Port' }
@@ -114,16 +118,19 @@ RocketChat.settings.addGroup 'Email', ->
 		@add 'SMTP_Test_Button', 'sendSMTPTestEmail', { type: 'action', actionText: 'Send_a_test_mail_to_my_user' }
 
 	@section 'Invitation', ->
-		@add 'Invitation_Subject', 'You have been invited to Rocket.Chat', { type: 'string', i18nLabel: 'Subject' }
-		@add 'Invitation_HTML', '', { type: 'code', code: 'text/html', multiline: true, i18nLabel: 'Body', i18nDescription: 'Invitation_HTML_Description' }
+		@add 'Invitation_Customized', false, { type: 'boolean', i18nLabel: 'Custom' }
+		@add 'Invitation_Subject', '', { type: 'string', i18nLabel: 'Subject', enableQuery: { _id: 'Invitation_Customized', value: true }, i18nDefaultQuery: { _id: 'Invitation_Customized', value: false } }
+		@add 'Invitation_HTML', '', { type: 'code', code: 'text/html', multiline: true, i18nLabel: 'Body', i18nDescription: 'Invitation_HTML_Description', enableQuery: { _id: 'Invitation_Customized', value: true }, i18nDefaultQuery: { _id: 'Invitation_Customized', value: false } }
 
 	@section 'Registration', ->
-		@add 'Accounts_Enrollment_Email_Subject', '', { type: 'string', i18nLabel: 'Subject' }
-		@add 'Accounts_Enrollment_Email', '', { type: 'code', code: 'text/html', multiline: true, i18nLabel: 'Body', i18nDescription: 'Accounts_Enrollment_Email_Description' }
+		@add 'Accounts_Enrollment_Customized', false, { type: 'boolean', i18nLabel: 'Custom' }
+		@add 'Accounts_Enrollment_Email_Subject', '', { type: 'string', i18nLabel: 'Subject', enableQuery: { _id: 'Accounts_Enrollment_Customized', value: true }, i18nDefaultQuery: { _id: 'Accounts_Enrollment_Customized', value: false } }
+		@add 'Accounts_Enrollment_Email', '', { type: 'code', code: 'text/html', multiline: true, i18nLabel: 'Body', enableQuery: { _id: 'Accounts_Enrollment_Customized', value: true }, i18nDefaultQuery: { _id: 'Accounts_Enrollment_Customized', value: false } }
 
 	@section 'Registration via Admin', ->
-		@add 'Accounts_UserAddedEmailSubject', '', { type: 'string', i18nLabel: "Subject" }
-		@add 'Accounts_UserAddedEmail', '', { type: 'code', code: 'text/html', multiline: true, i18nLabel: 'Body', i18nDescription: 'Accounts_UserAddedEmail_Description' }
+		@add 'Accounts_UserAddedEmail_Customized', false, { type: 'boolean', i18nLabel: 'Custom' }
+		@add 'Accounts_UserAddedEmailSubject', '', { type: 'string', i18nLabel: "Subject", enableQuery: { _id: 'Accounts_UserAddedEmail_Customized', value: true }, i18nDefaultQuery: { _id: 'Accounts_UserAddedEmail_Customized', value: false } }
+		@add 'Accounts_UserAddedEmail', '', { type: 'code', code: 'text/html', multiline: true, i18nLabel: 'Body', i18nDescription: 'Accounts_UserAddedEmail_Description', enableQuery: { _id: 'Accounts_UserAddedEmail_Customized', value: true }, i18nDefaultQuery: { _id: 'Accounts_UserAddedEmail_Customized', value: false } }
 
 
 RocketChat.settings.addGroup 'Message', ->
@@ -132,6 +139,7 @@ RocketChat.settings.addGroup 'Message', ->
 	@add 'Message_AllowDeleting', true, { type: 'boolean', public: true }
 	@add 'Message_AllowDeleting_BlockDeleteInMinutes', 0, { type: 'int', public: true, i18nDescription: 'Message_AllowDeleting_BlockDeleteInMinutes' }
 	@add 'Message_AllowPinning', true, { type: 'boolean', public: true }
+	@add 'Message_AlwaysSearchRegExp', false, { type: 'boolean' }
 	@add 'Message_ShowEditedStatus', true, { type: 'boolean', public: true }
 	@add 'Message_ShowDeletedStatus', false, { type: 'boolean', public: true }
 	@add 'Message_KeepHistory', false, { type: 'boolean', public: true }
@@ -191,6 +199,9 @@ RocketChat.settings.addGroup 'Layout', ->
 	@section 'Custom Scripts', ->
 		@add 'Custom_Script_Logged_Out', '//Add your script', { type: 'code', multiline: true, public: true }
 		@add 'Custom_Script_Logged_In', '//Add your script', { type: 'code', multiline: true, public: true }
+
+	@section 'User Interface', ->
+		@add 'UI_DisplayRoles', true, { type: 'boolean', public: true }
 
 
 RocketChat.settings.addGroup 'Logs', ->

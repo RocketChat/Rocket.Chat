@@ -1,10 +1,10 @@
 Meteor.methods
 	setAvatarFromService: (dataURI, contentType, service) ->
 		unless Meteor.userId()
-			throw new Meteor.Error('invalid-user', "[methods] setAvatarFromService -> Invalid user")
+			throw new Meteor.Error('error-invalid-user', "Invalid user", { method: 'setAvatarFromService' })
 
 		unless RocketChat.settings.get("Accounts_AllowUserAvatarChange")
-			throw new Meteor.Error(403, "[methods] resetAvatar -> Invalid access")
+			throw new Meteor.Error('error-not-allowed', 'Not allowed', { method: 'setAvatarFromService' });
 
 		user = Meteor.user()
 
@@ -19,15 +19,15 @@ Meteor.methods
 				result = HTTP.get dataURI, npmRequestOptions: {encoding: 'binary'}
 			catch e
 				console.log "Error while handling the setting of the avatar from a url (#{dataURI}) for #{user.username}:", e
-				throw new Meteor.Error('avatar-url-http-error', '[methods] setAvatarFromService -> http.get result -> error')
+				throw new Meteor.Error('error-avatar-url-handling', 'Error while handling avatar setting from a URL ('+ dataURI +') for ' + user.username, { method: 'setAvatarFromService', url: dataURI, username: user.username });
 
 			if result.statusCode isnt 200
 				console.log "Not a valid response, #{result.statusCode}, from the avatar url: #{dataURI}"
-				throw new Meteor.Error('invalid-avatar-url', '[methods] setAvatarFromService -> url service -> error on getting the avatar from url')
+				throw new Meteor.Error('error-avatar-invalid-url', 'Invalid avatar URL: ' +  dataURI, { method: 'setAvatarFromService', url: dataURI })
 
 			if not /image\/.+/.test result.headers['content-type']
 				console.log "Not a valid content-type from the provided url, #{result.headers['content-type']}, from the avatar url: #{dataURI}"
-				throw new Meteor.Error('invalid-avatar-url', '[methods] setAvatarFromService -> url service -> invalid content-type')
+				throw new Meteor.Error('error-avatar-invalid-url', 'Invalid avatar URL: ' +  dataURI, { method: 'setAvatarFromService', url: dataURI })
 
 			ars = RocketChatFile.bufferToStream new Buffer(result.content, 'binary')
 			RocketChatFileAvatarInstance.deleteFile encodeURIComponent("#{user.username}.jpg")

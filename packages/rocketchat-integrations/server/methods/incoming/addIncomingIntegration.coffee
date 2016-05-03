@@ -1,7 +1,7 @@
 Meteor.methods
 	addIncomingIntegration: (integration) ->
-		if not RocketChat.authz.hasPermission @userId, 'manage-integrations'
-			throw new Meteor.Error 'error-action-not-allowed', 'Managing integrations is not allowed', { method: 'addIncomingIntegration', action: 'Managing_integrations' }
+		if (not RocketChat.authz.hasPermission @userId, 'manage-integrations') and (not RocketChat.authz.hasPermission @userId, 'manage-own-integrations')
+			throw new Meteor.Error 'not_authorized'
 
 		if not _.isString(integration.channel)
 			throw new Meteor.Error 'error-invalid-channel', 'Invalid channel', { method: 'addIncomingIntegration' }
@@ -49,6 +49,12 @@ Meteor.methods
 
 		if record is undefined
 			throw new Meteor.Error 'error-invalid-room', 'Invalid room', { method: 'addIncomingIntegration' }
+
+		if record.usernames? and
+		(not RocketChat.authz.hasPermission @userId, 'manage-integrations') and
+		(RocketChat.authz.hasPermission @userId, 'manage-own-integrations') and
+		Meteor.user()?.username not in record.usernames
+			throw new Meteor.Error 'error-invalid-channel', 'Invalid Channel', { method: 'addIncomingIntegration' }
 
 		user = RocketChat.models.Users.findOne({username: integration.username})
 

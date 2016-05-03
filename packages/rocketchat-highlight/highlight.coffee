@@ -21,28 +21,31 @@ class Highlight
 					message.msg = message.msg + "\n```"
 
 				# Separate text in code blocks and non code blocks
-				msgParts = message.html.split(/(```\w*[\n\ ]?[\s\S]*?```+?)/)
+				msgParts = message.html.split(/(```\w*[\n\ ]?[\s\S]*?```+?)$/)
 
 				for part, index in msgParts
 					# Verify if this part is code
-					codeMatch = part.match(/```(\w*)[\n\ ]?([\s\S]*?)```+?/)
+					codeMatch = part.match(/```(\w*[\n\ ]?)([\s\S]*?)```+?$/)
 					if codeMatch?
 						# Process highlight if this part is code
 						singleLine = codeMatch[0].indexOf('\n') is -1
 
 						if singleLine
 							lang = ''
-							code = _.unescapeHTML codeMatch[1] + ' ' + codeMatch[2]
+							code = _.unescapeHTML codeMatch[1] + codeMatch[2]
 						else
 							lang = codeMatch[1]
 							code = _.unescapeHTML codeMatch[2]
 
-						if lang not in hljs.listLanguages()
-							result = hljs.highlightAuto code
-						else
-							result = hljs.highlight lang, code
+						if s.trim(lang) is ''
+							lang = ''
 
-						token = "$#{Random.id()}$"
+						if s.trim(lang) not in hljs.listLanguages()
+							result = hljs.highlightAuto (lang + code)
+						else
+							result = hljs.highlight s.trim(lang), code
+
+						token = "=&=#{Random.id()}=&="
 
 						message.tokens.push
 							highlight: true

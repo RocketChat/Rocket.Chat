@@ -18,14 +18,11 @@ Mailer.sendMail = (from, subject, body, dryrun, query) ->
 		# Meteor.users.find({ "username": /\.rocket\.team/ }).forEach (user) ->
 			email = user.emails?[0]?.address
 
-			html = body.replace /\[unsubscribe\]/g, Meteor.absoluteUrl(FlowRouter.path('mailer/unsubscribe/:_id/:createdAt', { _id: user._id, createdAt: user.createdAt.getTime() }))
-			html = html.replace /\[name\]/g, user.name
-			fname = _.strLeft user.name, ' '
-			lname = _.strRightBack user.name, ' '
-			html = html.replace /\[fname\]/g, fname
-			html = html.replace /\[lname\]/g, lname
-			html = html.replace /\[email\]/g, email
-			html = html.replace(/([^>\r\n]?)(\r\n|\n\r|\r|\n)/g, '$1' + '<br>' + '$2')
+			html = RocketChat.placeholders.replace(body, {
+				unsubscribe: Meteor.absoluteUrl(FlowRouter.path('mailer/unsubscribe/:_id/:createdAt', { _id: user._id, createdAt: user.createdAt.getTime() })),
+				name: user.name,
+				email: email
+			});
 
 			email = "#{user.name} <#{email}>"
 
@@ -44,14 +41,11 @@ Mailer.sendMail = (from, subject, body, dryrun, query) ->
 		# Meteor.users.find({ "username": /\.rocket\.team/ }).forEach (user) ->
 			email = user.emails?[0]?.address
 
-			html = body.replace /\[unsubscribe\]/g, Meteor.absoluteUrl(FlowRouter.path('mailer/unsubscribe/:_id/:createdAt', { _id: user._id, createdAt: user.createdAt.getTime() }))
-			html = html.replace /\[name\]/g, user.name
-			fname = _.strLeft user.name, ' '
-			lname = _.strRightBack user.name, ' '
-			html = html.replace /\[fname\]/g, fname
-			html = html.replace /\[lname\]/g, lname
-			html = html.replace /\[email\]/g, email
-			html = html.replace(/([^>\r\n]?)(\r\n|\n\r|\r|\n)/g, '$1' + '<br>' + '$2')
+			html = RocketChat.placeholders.replace(body, {
+				unsubscribe: Meteor.absoluteUrl(FlowRouter.path('mailer/unsubscribe/:_id/:createdAt', { _id: user._id, createdAt: user.createdAt.getTime() })),
+				name: user.name,
+				email: email
+			});
 
 			email = "#{user.name} <#{email}>"
 
