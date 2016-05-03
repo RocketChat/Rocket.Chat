@@ -149,11 +149,6 @@ class InternalHubotReceiver
 class HubotScripts
 	constructor: (robot) ->
 		modulesToLoad = [
-			'hubot-youtube/src/youtube.coffee'
-			'hubot-maps/src/maps.coffee'
-			'hubot-google-translate/src/google-translate.coffee'
-			'hubot-google-images/src/google-images.coffee'
-			'hubot-calculator/src/calculator.coffee'
 			'hubot-help/src/help.coffee'
 		]
 
