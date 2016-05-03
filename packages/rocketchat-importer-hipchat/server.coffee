@@ -19,6 +19,9 @@ Importer.HipChat = class Importer.HipChat extends Importer.Base
 		tempMessages = {}
 		for entry in zipEntries
 			do (entry) =>
+				if entry.entryName.indexOf('__MACOSX') > -1
+					#ignore all of the files inside of __MACOSX
+					console.log("Ignoring the file: #{entry.entryName}")
 				if not entry.isDirectory
 					if entry.entryName.indexOf(Importer.HipChat.RoomPrefix) > -1
 						roomName = entry.entryName.split(Importer.HipChat.RoomPrefix)[1]
