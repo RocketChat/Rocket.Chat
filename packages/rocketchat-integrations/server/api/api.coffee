@@ -176,7 +176,7 @@ executeIntegrationRest = ->
 	try
 		message = processWebhookMessage @bodyParams, @user, defaultValues
 
-		if not message?
+		if _.isEmpty message
 			return RocketChat.API.v1.failure 'unknown-error'
 
 		return RocketChat.API.v1.success()
