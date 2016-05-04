@@ -6,8 +6,11 @@ Meteor.methods
 		if integration.channel.trim() is ''
 			throw new Meteor.Error 'error-invalid-channel', 'Invalid channel', { method: 'updateIncomingIntegration' }
 
-		if integration.channel[0] not in ['@', '#']
-			throw new Meteor.Error 'error-invalid-channel-start-with-chars', 'Invalid channel. Start with @ or #', { method: 'updateIncomingIntegration' }
+		channels = _.map(integration.channel.split(','), (channel) -> s.trim(channel))
+
+		for channel in channels
+			if channel[0] not in ['@', '#']
+				throw new Meteor.Error 'error-invalid-channel-start-with-chars', 'Invalid channel. Start with @ or #', { method: 'updateIncomingIntegration' }
 
 		currentIntegration = null
 
@@ -32,32 +35,33 @@ Meteor.methods
 				integration.scriptCompiled = undefined
 				integration.scriptError = _.pick e, 'name', 'message', 'pos', 'loc', 'codeFrame'
 
-		record = undefined
-		channelType = integration.channel[0]
-		channel = integration.channel.substr(1)
+		for channel in channels
+			record = undefined
+			channelType = channel[0]
+			channel = channel.substr(1)
 
-		switch channelType
-			when '#'
-				record = RocketChat.models.Rooms.findOne
-					$or: [
-						{_id: channel}
-						{name: channel}
-					]
-			when '@'
-				record = RocketChat.models.Users.findOne
-					$or: [
-						{_id: channel}
-						{username: channel}
-					]
+			switch channelType
+				when '#'
+					record = RocketChat.models.Rooms.findOne
+						$or: [
+							{_id: channel}
+							{name: channel}
+						]
+				when '@'
+					record = RocketChat.models.Users.findOne
+						$or: [
+							{_id: channel}
+							{username: channel}
+						]
 
-		if record is undefined
-			throw new Meteor.Error 'error-invalid-room', 'Invalid room', { method: 'updateIncomingIntegration' }
+			if record is undefined
+				throw new Meteor.Error 'error-invalid-room', 'Invalid room', { method: 'updateIncomingIntegration' }
 
-		if record.usernames? and
-		(not RocketChat.authz.hasPermission @userId, 'manage-integrations') and
-		(RocketChat.authz.hasPermission @userId, 'manage-own-integrations') and
-		Meteor.user()?.username not in record.usernames
-			throw new Meteor.Error 'error-invalid-channel', 'Invalid Channel', { method: 'updateIncomingIntegration' }
+			if record.usernames? and
+			(not RocketChat.authz.hasPermission @userId, 'manage-integrations') and
+			(RocketChat.authz.hasPermission @userId, 'manage-own-integrations') and
+			Meteor.user()?.username not in record.usernames
+				throw new Meteor.Error 'error-invalid-channel', 'Invalid Channel', { method: 'updateIncomingIntegration' }
 
 		user = RocketChat.models.Users.findOne({username: currentIntegration.username})
 		RocketChat.models.Roles.addUserRoles user._id, 'bot'
@@ -69,7 +73,7 @@ Meteor.methods
 				avatar: integration.avatar
 				emoji: integration.emoji
 				alias: integration.alias
-				channel: integration.channel
+				channel: channels
 				script: integration.script
 				scriptEnabled: integration.scriptEnabled
 				scriptCompiled: integration.scriptCompiled
