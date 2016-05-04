@@ -39,6 +39,10 @@ Template.listDirectMessagesFlex.events({
 		SideNav.leaveArrow();
 	},
 
+	'submit .search-form': function(e) {
+		e.preventDefault();
+	},
+
 	'keyup #channel-search': _.debounce((e, instance) => {
 		instance.nameFilter.set($(e.currentTarget).val());
 	}, 300),
