@@ -6,7 +6,7 @@ Template.visitorHistory.helpers({
 	previousChats() {
 		return ChatRoom.find({
 			_id: { $ne: this.rid },
-			'v.token': Template.instance().visitorToken.get()
+			'v._id': Template.instance().visitorId.get()
 		}, {
 			sort: {
 				ts: -1
@@ -21,14 +21,14 @@ Template.visitorHistory.helpers({
 
 Template.visitorHistory.onCreated(function() {
 	var currentData = Template.currentData();
-	this.visitorToken = new ReactiveVar();
+	this.visitorId = new ReactiveVar();
 
 	this.autorun(() => {
 		const room = ChatRoom.findOne({ _id: Template.currentData().rid });
-		this.visitorToken.set(room.v.token);
+		this.visitorId.set(room.v._id);
 	});
 
 	if (currentData && currentData.rid) {
-		this.loadHistory = this.subscribe('livechat:visitorHistory', currentData.rid);
+		this.loadHistory = this.subscribe('livechat:visitorHistory', { rid: currentData.rid });
 	}
 });

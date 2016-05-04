@@ -172,29 +172,10 @@ Meteor.startup ->
 			'message-mobile'
 		]
 		action: (event, instance) ->
-			m = @_arguments[1]
-			message = m.msg
-			msg = $(event.currentTarget).closest('.message')[0]
-			$("\##{msg.id} .message-dropdown").hide()
-			zpad = (n) ->
-				result = n.toString()
-				if result.length > 1
-					return result
-				else
-					return '0' + result
-			ts = zpad(m.ts.getUTCHours()) + ':' + zpad(m.ts.getUTCMinutes()) + ' UTC'
-			now = new Date
-			if (now.getUTCFullYear() isnt m.ts.getUTCFullYear() or
-			    now.getUTCMonth() isnt m.ts.getUTCMonth() or
-			    now.getUTCDate() isnt m.ts.getUTCDate())
-				ts = m.ts.getUTCFullYear() + '-' + zpad(m.ts.getUTCMonth()) + '-' + zpad(m.ts.getUTCDate()) + ' ' + ts
+			message = @_arguments[1]
 			input = instance.find('.input-message')
-			text = input.value
-			if text
-				text += '\n'
-			text += '@' + m.u.username + ' said (' + ts + '):\n'
-			for line in message.split(/\r\n|\r|\n/)
-				text += '> ' + line + '\n'
+			url = document.location.origin + document.location.pathname + '?msg=' + message._id
+			text = '[ ](' + url + ') '
 			input.value = text
 			input.focus()
 			$(input).keyup()
