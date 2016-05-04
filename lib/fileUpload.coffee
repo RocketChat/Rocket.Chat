@@ -12,9 +12,8 @@ if UploadFS?
 	initFileStore = ->
 		cookie = new Cookies()
 		if Meteor.isClient
-			cookie.set 'rc_uid', Meteor.userId();
-			cookie.set 'rc_token', Meteor._localStorage.getItem('Meteor.loginToken')
-			cookie.send()
+			document.cookie = 'rc_uid=' + escape(Meteor.userId()) + '; path=/'
+			document.cookie = 'rc_token=' + escape(Meteor._localStorage.getItem('Meteor.loginToken')) + '; path=/'
 
 		Meteor.fileStore = new UploadFS.store.GridFS
 			collection: RocketChat.models.Uploads.model
