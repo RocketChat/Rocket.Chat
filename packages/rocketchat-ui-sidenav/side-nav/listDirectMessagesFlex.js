@@ -40,7 +40,7 @@ Template.listDirectMessagesFlex.events({
 	},
 
 	'keydown #channel-search': function(e, t) {
-		if (e.keyCode == 13) {
+		if (e.keyCode === 13) {
 			e.preventDefault();
 		}
 	},
