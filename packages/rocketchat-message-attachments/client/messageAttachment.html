@@ -12,6 +12,9 @@
 							<img src="{{fixCordova author_icon}}">
 						{{/if}}
 						<a href="{{fixCordova author_link}}" target="_blank">{{author_name}}</a>
+						{{#if ts}}
+							<span class="time">{{time}}</span>
+						{{/if}}
 					</div>
 				{{else}}
 					<div class="attachment-author">
@@ -19,6 +22,9 @@
 							<img src="{{fixCordova author_icon}}">
 						{{/if}}
 						{{author_name}}
+					{{#if ts}}
+						<span class="time">{{time}}</span>
+					{{/if}}
 					</div>
 				{{/if}}
 			{{/if}}

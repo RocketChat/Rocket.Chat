@@ -141,7 +141,7 @@ Template.visitorInfo.events({
 });
 
 Template.visitorInfo.onCreated(function() {
-	this.visitorToken = new ReactiveVar(null);
+	this.visitorId = new ReactiveVar(null);
 	this.customFields = new ReactiveVar([]);
 	this.editing = new ReactiveVar(false);
 	this.user = new ReactiveVar();
@@ -156,18 +156,18 @@ Template.visitorInfo.onCreated(function() {
 
 	if (currentData && currentData.rid) {
 		this.autorun(() => {
-			var room = ChatRoom.findOne(currentData.rid);
-			if (room && room.v && room.v.token) {
-				this.visitorToken.set(room.v.token);
+			let room = ChatRoom.findOne(currentData.rid);
+			if (room && room.v && room.v._id) {
+				this.visitorId.set(room.v._id);
 			} else {
-				this.visitorToken.set();
+				this.visitorId.set();
 			}
 		});
 
-		this.subscribe('livechat:visitorInfo', currentData.rid);
+		this.subscribe('livechat:visitorInfo', { rid: currentData.rid });
 	}
 
 	this.autorun(() => {
-		this.user.set(Meteor.users.findOne({ 'profile.token': this.visitorToken.get() }));
+		this.user.set(Meteor.users.findOne({ '_id': this.visitorId.get() }));
 	});
 });
