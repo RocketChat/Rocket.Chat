@@ -36,7 +36,7 @@ Template.listChannelsFlex.events
 			t.limit.set(t.limit.get() + 50)
 	, 200
 
-	'keydown #channel-search': (e, t) ->
+	'keydown #channel-search': (e) ->
 		if e.keyCode is 13
 			e.preventDefault()
 

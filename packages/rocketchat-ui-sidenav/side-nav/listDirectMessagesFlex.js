@@ -39,7 +39,7 @@ Template.listDirectMessagesFlex.events({
 		SideNav.leaveArrow();
 	},
 
-	'keydown #channel-search': function(e, t) {
+	'keydown #channel-search': function(e) {
 		if (e.keyCode === 13) {
 			e.preventDefault();
 		}
