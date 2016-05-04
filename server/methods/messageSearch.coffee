@@ -72,6 +72,8 @@ Meteor.methods
 				query.rid = rid
 				try
 					if Meteor.call('canAccessRoom', rid, this.userId) isnt false
+						if not RocketChat.settings.get 'Message_ShowEditedStatus'
+							options.fields = { 'editedAt': 0 }
 						result.messages = RocketChat.models.Messages.find(query, options).fetch()
 
 
