@@ -159,9 +159,9 @@ ExecuteTriggerUrl = (url, trigger, message, room, tries=0) ->
 			emoji: trigger.emoji
 
 		if room.t is 'd'
-			defaultValues.channel = '@'+room._id
+			message.channel = '@'+room._id
 		else
-			defaultValues.channel = '#'+room._id
+			message.channel = '#'+room._id
 
 		message = processWebhookMessage message, user, defaultValues
 
