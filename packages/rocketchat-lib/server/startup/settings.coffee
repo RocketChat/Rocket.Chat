@@ -98,7 +98,7 @@ RocketChat.settings.addGroup 'General', ->
 		@add 'UTF8_Names_Slugify', true, { type: 'boolean', public: true }
 
 	@section 'Reporting', ->
-		@add 'Statistics_reporting', false, { type: 'boolean' }
+		@add 'Statistics_reporting', true, { type: 'boolean' }
 
 	@section 'Notifications', ->
 		@add 'Desktop_Notifications_Duration', 0, { type: 'int', public: true, i18nDescription: 'Desktop_Notification_Durations_Description' }
