@@ -15,11 +15,14 @@ Template.livechatWindow.helpers({
 		}
 		return Template.instance().registrationForm.get();
 	},
-	livechatStartedEnabled() {
-		return Template.instance().enabled.get() !== null;
+	livechatStarted() {
+		return Template.instance().online.get() !== null;
 	},
-	livechatEnabled() {
-		return Template.instance().enabled.get();
+	livechatOnline() {
+		return Template.instance().online.get();
+	},
+	offlineMessage() {
+		return Template.instance().offlineMessage.get();
 	}
 });
 
@@ -34,11 +37,12 @@ Template.livechatWindow.events({
 });
 
 Template.livechatWindow.onCreated(function() {
-	this.enabled = new ReactiveVar(null);
+	this.online = new ReactiveVar(null);
 
 	this.title = new ReactiveVar('Rocket.Chat');
 	this.color = new ReactiveVar('#C1272D');
 	this.registrationForm = new ReactiveVar(true);
+	this.offlineMessage = new ReactiveVar('');
 
 	// get all needed live chat info for the user
 	Meteor.call('livechat:getInitialData', visitor.getToken(), (err, result) => {
@@ -48,9 +52,17 @@ Template.livechatWindow.onCreated(function() {
 			if (!result.enabled) {
 				return parentCall('removeWidget');
 			}
-			this.enabled.set(result.enabled);
-			this.title.set(result.title);
-			this.color.set(result.color);
+
+			if (!result.online) {
+				this.title.set(result.offlineTitle);
+				this.color.set(result.offlineColor);
+				this.offlineMessage.set(result.offlineMessage);
+				this.online.set(false);
+			} else {
+				this.title.set(result.title);
+				this.color.set(result.color);
+				this.online.set(true);
+			}
 			this.registrationForm.set(result.registrationForm);
 
 			if (result.room) {
