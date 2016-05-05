@@ -34,7 +34,7 @@ textarea {
 	font-size: inherit;
 	line-height: inherit;
 	padding: 5px;
-	margin: 5px;
+	margin: 5px 0;
 	border: 1px solid #E7E7E7;
 	border-radius: 5px;
 	outline: none;
@@ -103,6 +103,10 @@ input:focus {
 		display: block;
 		width: 100%;
 	}
+}
+
+.field-error {
+	border: 1px solid red;
 }
 
 .livechat-room {
@@ -397,10 +401,37 @@ input:focus {
 	}
 	.offline {
 		flex: 1 1 100%;
-		font-weight: bold;
 		background-color: white;
-		padding: 2em 0;
-		text-align: center;
+		padding: 1em 10px;
+
+		.offline-message {
+			padding: 1em 0;
+		}
+
+		.message-sent {
+			text-align: center;
+		}
+
+		form {
+			input, textarea {
+				display: block;
+				width: 100%;
+			}
+
+			.buttons {
+				text-align: center;
+			}
+
+			.error {
+				display: none;
+				background-color: #F7D799;
+				padding: 5px;
+
+				&.show {
+					display: block;
+				}
+			}
+		}
 	}
 }
 
