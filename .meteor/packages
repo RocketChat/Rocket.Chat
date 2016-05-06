@@ -75,6 +75,7 @@ rocketchat:oembed
 rocketchat:otr
 rocketchat:push-notifications
 rocketchat:reactions
+rocketchat:slackbridge
 rocketchat:slashcommands-invite
 rocketchat:slashcommands-join
 rocketchat:slashcommands-kick
