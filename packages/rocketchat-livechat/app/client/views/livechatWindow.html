@@ -1,5 +1,5 @@
 <template name="livechatWindow">
-	{{#if livechatStartedEnabled}}
+	{{#if livechatStarted}}
 		<div class="livechat-room">
 			<div class="title" style="background-color:{{color}}">
 				<div class="toolbar">
@@ -11,14 +11,16 @@
 				<h1>{{title}}</h1>
 			</div>
 
-			{{#if livechatEnabled}}
+			{{#if livechatOnline}}
 				{{#if showRegisterForm}}
 					{{> register}}
 				{{else}}
 					{{> messages}}
 				{{/if}}
 			{{else}}
-				<div class="offline">{{_ "We_are_offline_Sorry_for_the_inconvenience"}}</div>
+				<div class="offline">
+					{{> offlineForm offlineMessage=offlineMessage}}
+				</div>
 			{{/if}}
 		</div>
 	{{/if}}
