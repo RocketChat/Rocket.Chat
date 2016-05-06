@@ -1308,6 +1308,7 @@ a.github-fork {
 	}
 	.more {
 		display: block;
+		width: 100%;
 		font-size: 11px;
 		padding: 4px 0 4px 10px;
 		margin-top: 2px;
@@ -2329,6 +2330,7 @@ a.github-fork {
 			position: absolute;
 			right: 20px;
 			opacity: .5;
+			white-space: nowrap;
 			.transition(opacity .2 linear);
 			> * {
 				margin: 0 3px;
@@ -2348,6 +2350,7 @@ a.github-fork {
 				overflow: hidden;
 				vertical-align: top;
 				font-size: 10px;
+				white-space: nowrap;
 			}
 			.hidden-br {
 				display: inline-block;
@@ -2424,6 +2427,7 @@ a.github-fork {
 		cursor: pointer;
 		bottom: 8px;
 		left: 50%;
+		z-index: 15;
 		.transition(transform 0.3s ease-out);
 		.transform(translateY(0));
 		&.not {
@@ -2444,7 +2448,7 @@ a.github-fork {
 		right: 20px;
 		border-top-left-radius: 4px;
 		border-top-right-radius: 4px;
-		span {
+		button {
 			cursor: pointer;
 		}
 		.transition(transform 0.3s ease-out);
@@ -3969,7 +3973,7 @@ body:not(.is-cordova) {
 @media all and(max-width: 1100px) {
 	#rocket-chat {
 		.flex-opened {
-			right: 0;
+			right: 40px;
 		}
 	}
 }

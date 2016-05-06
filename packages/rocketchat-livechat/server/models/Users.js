@@ -19,7 +19,8 @@ RocketChat.models.Users.setOperator = function(_id, operator) {
  */
 RocketChat.models.Users.findOnlineAgents = function() {
 	var query = {
-		status: 'online',
+		statusConnection: { $ne: 'offline' },
+		statusLivechat: 'available',
 		roles: 'livechat-agent'
 	};
 
@@ -35,6 +36,7 @@ RocketChat.models.Users.findOnlineUserFromList = function(userList) {
 	var query = {
 		statusConnection: { $ne: 'offline' },
 		statusLivechat: 'available',
+		roles: 'livechat-agent',
 		username: {
 			$in: [].concat(userList)
 		}
