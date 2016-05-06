@@ -1308,6 +1308,7 @@ a.github-fork {
 	}
 	.more {
 		display: block;
+		width: 100%;
 		font-size: 11px;
 		padding: 4px 0 4px 10px;
 		margin-top: 2px;
@@ -2424,6 +2425,7 @@ a.github-fork {
 		cursor: pointer;
 		bottom: 8px;
 		left: 50%;
+		z-index: 15;
 		.transition(transform 0.3s ease-out);
 		.transform(translateY(0));
 		&.not {
@@ -2444,7 +2446,7 @@ a.github-fork {
 		right: 20px;
 		border-top-left-radius: 4px;
 		border-top-right-radius: 4px;
-		span {
+		button {
 			cursor: pointer;
 		}
 		.transition(transform 0.3s ease-out);

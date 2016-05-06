@@ -107,7 +107,7 @@ Template.messageBox.events
 		chatMessages[@_id].clearEditing()
 
 	"click .editing-commands-save > button": (e) ->
-		chatMessages[@_id].send(@_id, chatMessages.input)
+		chatMessages[@_id].send(@_id, chatMessages[@_id].input)
 
 	'change .message-form input[type=file]': (event, template) ->
 		e = event.originalEvent or event
