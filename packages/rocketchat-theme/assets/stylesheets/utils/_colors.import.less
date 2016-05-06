@@ -1230,3 +1230,56 @@ a.github-fork {
 .green {
 	color: green;
 }
+
+.wizard-panel {
+	background-color: #FAFAFA;
+	h2 {
+		color: @primary-font-color;
+		&.error {
+			color: #b40202;
+		}
+	}
+	h3 {
+		&.error {
+			color: #b40202;
+		}
+	}
+	a {
+		color: @primary-background-color;
+		&:active {
+			color: @primary-background-color;
+		}
+		&:hover {
+			color: darken(@primary-background-color, 10%);
+		}
+	}
+	.input-text {
+		input {
+			background-color: transparent;
+			border-bottom-color: #DFDFDF;
+			&.error {
+				border-bottom-color: #b40202;
+				&::-webkit-input-placeholder {
+					color: #b40202;
+				}
+				&:-moz-placeholder {
+					color: #b40202;
+				}
+				/* Firefox 18- */
+				&::-moz-placeholder {
+					color: #b40202;
+				}
+				/* Firefox 19+ */
+				&:-ms-input-placeholder {
+					color: #b40202;
+				}
+			}
+		}
+		input:-webkit-autofill {
+			color: @content-background-color !important;
+		}
+		input:-webkit-autofill {
+			background-color: transparent !important;
+		}
+	}
+}

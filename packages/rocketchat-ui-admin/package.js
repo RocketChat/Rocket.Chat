@@ -51,5 +51,10 @@ Package.onUse(function(api) {
 
 	api.addFiles('publications/adminRooms.js', 'server');
 
+	// setup wizard
+	api.addFiles('setup/setupWizard.html', 'client');
+	api.addFiles('setup/setupWizard.js', 'client');
+
+
 	// api.addAssets('styles/side-nav.less', 'client');
 });

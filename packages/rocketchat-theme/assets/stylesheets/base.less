@@ -4600,3 +4600,102 @@ br.only-after-a {
 a + br.only-after-a {
 	display: block;
 }
+
+.wizard-panel {
+	width: 100%;
+	max-width: 520px;
+	padding: 20px;
+	margin: 20px auto;
+	box-shadow: 0 0 6px 10px rgba(0, 0, 0, 0.1);
+	border-radius: 2px;
+	position: relative;
+	z-index: 1;
+	header {
+		padding: 18px 0 23px;
+		p {
+			//font-family: "Muli";
+			margin: 8px 0 0;
+			font-size: 14px;
+			line-height: 22px;
+			font-weight: 300;
+		}
+	}
+	h2 {
+		&:extend(.rocket-h2);
+		line-height: 24px;
+		margin: 0;
+		&.error {}
+	}
+	h3 {
+		&:extend(.rocket-h3);
+		&.error {}
+	}
+	img {
+		width: 200px;
+	}
+	a {
+		margin: 4px 0;
+		display: inline-block;
+		&:active {}
+		&:hover {}
+	}
+	.options {
+		display: none;
+		width: 100%;
+		font-size: 10px;
+	}
+	.submit {
+		margin: 12px 0;
+	}
+	.remember {
+		float: left;
+	}
+	.remember input {
+		margin-right: 4px;
+	}
+	.forgot {
+		float: right;
+		line-height: 20px;
+	}
+	.input-text {
+		margin: 0 0 14px 0;
+		position: relative;
+		&:before {
+			content: " ";
+			width: 100%;
+			height: 40px;
+			position: absolute;
+			top: 7px;
+			left: 0;
+			cursor: text;
+		}
+		&.active {
+			&:before {
+				visibility: hidden;
+			}
+		}
+		input {
+			box-shadow: 0 0 0;
+			border-width: 0;
+			position: relative;
+			padding: 4px 8px;
+			font-size: 18px;
+			border-bottom: 1px solid;
+			font-weight: 400;
+			border-radius: 0px;
+			&.error {
+				border-bottom: 1px solid;
+				&::-webkit-input-placeholder {}
+				&:-moz-placeholder {}
+				/* Firefox 18- */
+				&::-moz-placeholder {}
+				/* Firefox 19+ */
+				&:-ms-input-placeholder {}
+			}
+		}
+		input:-webkit-autofill {}
+		input:-webkit-autofill {
+			-webkit-box-shadow: 0 0 0px 1000px #f4f4f4 inset;
+		}
+	}
+}
