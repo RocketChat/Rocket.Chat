@@ -1,5 +1,8 @@
 Meteor.methods
 	channelsList: (filter, limit, sort) ->
+		if not Meteor.userId()
+			throw new Meteor.Error 'error-invalid-user', 'Invalid user', { method: 'channelsList' }
+
 		options =  { fields: { name: 1 }, sort: { msgs:-1 } }
 		if _.isNumber limit
 			options.limit = limit

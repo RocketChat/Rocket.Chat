@@ -1,5 +1,8 @@
 Meteor.methods
 	eraseRoom: (rid) ->
+		if not Meteor.userId()
+			throw new Meteor.Error 'error-invalid-user', 'Invalid user', { method: 'eraseRoom' }
+
 		fromId = Meteor.userId()
 
 		roomType = RocketChat.models.Rooms.findOneById(rid)?.t

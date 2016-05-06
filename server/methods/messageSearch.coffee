@@ -1,5 +1,8 @@
 Meteor.methods
 	messageSearch: (text, rid, limit) ->
+		if not Meteor.userId()
+			throw new Meteor.Error 'error-invalid-user', 'Invalid user', { method: 'messageSearch' }
+
 		###
 			text = 'from:rodrigo mention:gabriel chat'
 		###

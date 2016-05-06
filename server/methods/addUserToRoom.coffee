@@ -1,5 +1,8 @@
 Meteor.methods
 	addUserToRoom: (data) ->
+		if not Meteor.userId()
+			throw new Meteor.Error 'error-invalid-user', 'Invalid user', { method: 'addUserToRoom' }
+
 		fromId = Meteor.userId()
 		unless Match.test data?.rid, String
 			throw new Meteor.Error 'error-invalid-room', 'Invalid room', { method: 'addUserToRoom' }
