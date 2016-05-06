@@ -23,6 +23,7 @@ Importer.Slack = class Importer.Slack extends Importer.Base
 				else if entry.entryName == 'channels.json'
 					@updateProgress Importer.ProgressStep.PREPARING_CHANNELS
 					tempChannels = JSON.parse entry.getData().toString()
+					tempChannels = tempChannels.filter (channel) -> channel.creator?
 				else if entry.entryName == 'users.json'
 					@updateProgress Importer.ProgressStep.PREPARING_USERS
 					tempUsers = JSON.parse entry.getData().toString()
