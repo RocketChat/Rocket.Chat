@@ -30,7 +30,7 @@ providers.registerProvider
 	urls: [new RegExp('https?://vimeo.com/[^/]+'), new RegExp('https?://vimeo.com/channels/[^/]+/[^/]+'), new RegExp('https://vimeo.com/groups/[^/]+/videos/[^/]+')]
 	endPoint: 'https://vimeo.com/api/oembed.json?maxheight=200'
 providers.registerProvider
-	urls: [new RegExp('https?://www.youtube.com/\\S+'), new RegExp('https?://www.youtu.be/\\S+')]
+	urls: [new RegExp('https?://www.youtube.com/\\S+'), new RegExp('https?://youtu.be/\\S+')]
 	endPoint: 'https://www.youtube.com/oembed?maxheight=200'
 providers.registerProvider
 	urls: [new RegExp('https?://www.rdio.com/\\S+'), new RegExp('https?://rd.io/\\S+')]
