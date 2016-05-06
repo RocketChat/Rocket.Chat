@@ -26,19 +26,16 @@ class @ChatMessages
 
 	recordInputAsDraft: () ->
 		id = this.editing.id
+
+		message = this.getMessageById id
 		record = this.records[id] || {}
 		draft = this.input.value
 
-		if(draft is record.original)
+		if(draft is message.msg)
 			this.clearCurrentDraft()
 		else
 			record.draft = draft
 			this.records[id] = record
-
-	recordOriginalMessage: (message) ->
-		record = this.records[message._id] || {}
-		record.original = message.msg
-		this.records[message._id] = record
 
 	getMessageDraft: (id) ->
 		return this.records[id]
@@ -50,11 +47,15 @@ class @ChatMessages
 		this.clearMessageDraft this.editing.id
 
 	resetToDraft: (id) ->
-		this.input.value = this.records[id].original
+		message = this.getMessageById id
 
+		old_value = this.input.value
+		this.input.value = message.msg
 
-	getMessageOfElement: (element) -> return ChatMessage.findOne( { _id: element.getAttribute("id") } )
+		return old_value isnt message.msg
 
+	getMessageById: (id) ->
+		return ChatMessage.findOne(id)
 
 	toPrevMessage: ->
 		index = this.editing.index
@@ -80,7 +81,8 @@ class @ChatMessages
 	edit: (element, index) ->
 		index = this.getEditingIndex(element) if not index?
 
-		message = this.getMessageOfElement(element)
+		message = this.getMessageById element.getAttribute("id")
+
 		hasPermission = RocketChat.authz.hasAtLeastOnePermission('edit-message', message.rid)
 		editAllowed = RocketChat.settings.get 'Message_AllowEditing'
 		editOwn = message?.u?._id is Meteor.userId()
@@ -97,8 +99,6 @@ class @ChatMessages
 
 		msg = this.getMessageDraft(message._id)?.draft
 		msg = message.msg unless msg?
-
-		this.recordOriginalMessage message
 
 		editingNext = this.editing.index < index
 
@@ -178,10 +178,13 @@ class @ChatMessages
 
 				Meteor.call 'sendMessage', msgObject
 				
+		# If edited message was emptied we ask for deletion
 		else if this.editing.element
-			element = this.editing.element
-			message = this.getMessageOfElement(element)
+			message = this.getMessageById this.editing.id
+
+			# Restore original message in textbox in case delete is canceled
 			this.resetToDraft this.editing.id
+
 			this.confirmDeleteMsg message
 
 	confirmDeleteMsg: (message) ->
@@ -317,11 +320,11 @@ class @ChatMessages
 		if k is 27 # Escape
 			if this.editing.index?
 				record = this.getMessageDraft(this.editing.id)
-				if this.input.value is record?.original
+
+				# If resetting did nothing then edited message is same as original
+				unless this.resetToDraft this.editing.id
 					this.clearCurrentDraft()
 					this.clearEditing()
-				else
-					this.resetToDraft this.editing.id
 
 				event.preventDefault()
 				event.stopPropagation()
