@@ -1,5 +1,8 @@
 Meteor.methods
 	loadNextMessages: (rid, end, limit=20) ->
+		if not Meteor.userId()
+			throw new Meteor.Error 'error-invalid-user', 'Invalid user', { method: 'loadNextMessages' }
+
 		fromId = Meteor.userId()
 
 		unless Meteor.call 'canAccessRoom', rid, fromId
