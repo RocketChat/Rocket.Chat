@@ -20,8 +20,11 @@ Meteor.methods
 		else
 			integration.channel = undefined
 
-		if integration.channel? and integration.channel[0] not in ['@', '#']
-			throw new Meteor.Error 'error-invalid-channel-start-with-chars', 'Invalid channel. Start with @ or #', { method: 'updateOutgoingIntegration' }
+		channels = _.map(integration.channel.split(','), (channel) -> s.trim(channel))
+
+		for channel in channels
+			if channel[0] not in ['@', '#']
+				throw new Meteor.Error 'error-invalid-channel-start-with-chars', 'Invalid channel. Start with @ or #', { method: 'updateIncomingIntegration' }
 
 		if not integration.token? or integration.token?.trim() is ''
 			throw new Meteor.Error 'error-invalid-token', 'Invalid token', { method: 'updateOutgoingIntegration' }
@@ -59,10 +62,10 @@ Meteor.methods
 				integration.scriptError = _.pick e, 'name', 'message', 'pos', 'loc', 'codeFrame'
 
 
-		if integration.channel?
+		for channel in channels
 			record = undefined
-			channelType = integration.channel[0]
-			channel = integration.channel.substr(1)
+			channelType = channel[0]
+			channel = channel.substr(1)
 
 			switch channelType
 				when '#'
@@ -99,7 +102,7 @@ Meteor.methods
 				avatar: integration.avatar
 				emoji: integration.emoji
 				alias: integration.alias
-				channel: integration.channel
+				channel: channels
 				username: integration.username
 				userId: user._id
 				urls: integration.urls

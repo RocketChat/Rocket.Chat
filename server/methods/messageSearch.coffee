@@ -1,5 +1,8 @@
 Meteor.methods
 	messageSearch: (text, rid, limit) ->
+		if not Meteor.userId()
+			throw new Meteor.Error 'error-invalid-user', 'Invalid user', { method: 'messageSearch' }
+
 		###
 			text = 'from:rodrigo mention:gabriel chat'
 		###
@@ -72,6 +75,8 @@ Meteor.methods
 				query.rid = rid
 				try
 					if Meteor.call('canAccessRoom', rid, this.userId) isnt false
+						if not RocketChat.settings.get 'Message_ShowEditedStatus'
+							options.fields = { 'editedAt': 0 }
 						result.messages = RocketChat.models.Messages.find(query, options).fetch()
 
 

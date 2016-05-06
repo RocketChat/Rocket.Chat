@@ -3,7 +3,7 @@ Meteor.methods
 		if integration.channel?.trim? and integration.channel.trim() is ''
 			delete integration.channel
 
-		if (not RocketChat.authz.hasPermission @userId, 'manage-integrations') and 
+		if (not RocketChat.authz.hasPermission @userId, 'manage-integrations') and
 		not (RocketChat.authz.hasPermission @userId, 'manage-own-integrations') and
 		not (RocketChat.authz.hasPermission @userId, 'manage-integrations', 'bot') and
 		not (RocketChat.authz.hasPermission @userId, 'manage-own-integrations', 'bot')
@@ -23,8 +23,11 @@ Meteor.methods
 		if integration.urls.length is 0
 			throw new Meteor.Error 'error-invalid-urls', 'Invalid URLs', { method: 'addOutgoingIntegration' }
 
-		if integration.channel? and integration.channel[0] not in ['@', '#']
-			throw new Meteor.Error 'error-invalid-channel-start-with-chars', 'Invalid channel. Start with @ or #', { method: 'addOutgoingIntegration' }
+		channels = _.map(integration.channel.split(','), (channel) -> s.trim(channel))
+
+		for channel in channels
+			if channel[0] not in ['@', '#']
+				throw new Meteor.Error 'error-invalid-channel-start-with-chars', 'Invalid channel. Start with @ or #', { method: 'updateIncomingIntegration' }
 
 		if integration.triggerWords?
 			if not Match.test integration.triggerWords, [String]
@@ -47,10 +50,10 @@ Meteor.methods
 				integration.scriptError = _.pick e, 'name', 'message', 'pos', 'loc', 'codeFrame'
 
 
-		if integration.channel?
+		for channel in channels
 			record = undefined
-			channelType = integration.channel[0]
-			channel = integration.channel.substr(1)
+			channelType = channel[0]
+			channel = channel.substr(1)
 
 			switch channelType
 				when '#'

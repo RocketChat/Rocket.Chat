@@ -13,6 +13,14 @@
 			bottom: 0;
 			background-color: #ccc;
 		}
+		html.rtl & {
+			padding-left: 0;
+			padding-right: 15px;
+			.attachment-block-border {
+				left: auto;
+				right: 0;
+			}
+		}
 	}
 
 	.attachment-author {
@@ -80,6 +88,10 @@
 		padding-right: 10px;
 		padding-top: 5px;
 		line-height: 0px;
+		html.rtl & {
+			padding-right: 5px;
+			padding-top: 10px;
+		}
 
 		img {
 			max-width: 100px;
@@ -105,5 +117,9 @@
 		border-radius: 5px;
 		margin-left: 5px;
 		color: #666;
+		html.rtl & {
+			margin-right: 5px;
+			margin-left: auto;
+		}
 	}
 }

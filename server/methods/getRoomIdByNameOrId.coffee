@@ -1,5 +1,7 @@
 Meteor.methods
 	getRoomIdByNameOrId: (rid) ->
+		if not Meteor.userId()
+			throw new Meteor.Error 'error-invalid-user', 'Invalid user', { method: 'getRoomIdByNameOrId' }
 
 		room = RocketChat.models.Rooms.findOneById(rid) or RocketChat.models.Rooms.findOneByName(rid)
 

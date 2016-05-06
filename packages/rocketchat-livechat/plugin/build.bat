@@ -6,14 +6,17 @@ call meteor build .meteor/build/ --directory
 cd ..
 mkdir public
 
-rm -f public/livechat.css
-rm -f public/livechat.js
-rm -f public/head.html
+del /q "public/livechat.css"
+del /q "public/livechat.js"
+del /q "public/head.html"
 
-cp app/.meteor/build/bundle/programs/web.browser/*.css public/livechat.css
-cp app/.meteor/build/bundle/programs/web.browser/*.js public/livechat.js
-cp app/.meteor/build/bundle/programs/web.browser/head.html public/head.html
+cd "app/.meteor/build/bundle/programs/web.browser/"
+xcopy /y "*.css" "../../../../../../public/livechat.css*"
+xcopy /y "*.js" "../../../../../../public/livechat.js*"
+xcopy /y "head.html" "../../../../../../public/head.html*"
 
 ::echo "body {background-color: red;}" > livechat.css
 
-rm -rf app/.meteor/build/
+cd "../../../../../.."
+
+rmdir /s /q "app/.meteor/build/"
