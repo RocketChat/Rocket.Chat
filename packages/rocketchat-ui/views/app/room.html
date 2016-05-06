@@ -95,9 +95,9 @@
 					<i class="icon-down-big"></i>
 					<span>{{_ "New_messages"}}</span>
 				</button>
-				<button class="jump-recent {{#unless hasMoreNext}}not{{/unless}}">
-					<span class="jump-link">{{_ "Jump_to_recent_messages"}} <i class="icon-level-down"></i></span>
-				</button>
+				<div class="jump-recent {{#unless hasMoreNext}}not{{/unless}}">
+					<button>{{_ "Jump_to_recent_messages"}} <i class="icon-level-down"></i></button>
+				</div>
 			</div>
 			<footer class="footer">
 				{{> messageBox}}

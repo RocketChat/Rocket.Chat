@@ -378,7 +378,7 @@ Template.room.events
 	'load img': (e, template) ->
 		template.sendToBottomIfNecessary?()
 
-	'click .jump-recent .jump-link': (e, template) ->
+	'click .jump-recent button': (e, template) ->
 		e.preventDefault()
 		template.atBottom = true
 		RoomHistoryManager.clear(template?.data?._id)
