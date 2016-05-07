@@ -3,13 +3,15 @@
 * @param {Object} message - The message object
 */
 
-function Topic (command, params, item) {
-	if (RocketChat.authz.hasPermission(Meteor.userId(), 'edit-room', item.rid)) {
-		Meteor.call('saveRoomSettings', item.rid, 'roomTopic', params, (err, result) => {
-			if (err) {
-				return handleError(err)
-			}
-		})
+function Topic(command, params, item) {
+	if (command === 'topic') {
+		if (RocketChat.authz.hasPermission(Meteor.userId(), 'edit-room', item.rid)) {
+			Meteor.call('saveRoomSettings', item.rid, 'roomTopic', params, (err) => {
+				if (err) {
+					return handleError(err);
+				}
+			});
+		}
 	}
 }
 
