@@ -4,8 +4,8 @@
 */
 
 
-function Shrug (command, params, item) {
-	if (command === "shrug") {
+function Shrug(command, params, item) {
+	if (command === 'shrug') {
 		var msg;
 
 		msg = item;
