@@ -51,7 +51,6 @@ rocketchat:file
 rocketchat:file-upload
 rocketchat:github-enterprise
 rocketchat:gitlab
-rocketchat:highlight
 rocketchat:highlight-words
 rocketchat:iframe-login
 rocketchat:importer
