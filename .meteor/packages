@@ -80,6 +80,7 @@ rocketchat:slashcommands-join
 rocketchat:slashcommands-kick
 rocketchat:slashcommands-leave
 rocketchat:slashcommands-mute
+rocketchat:slashcommands-shrug
 rocketchat:spotify
 rocketchat:statistics
 rocketchat:theme
