@@ -75,10 +75,13 @@ Template.messageBox.events
 
 	'click .send-button': (event, instance) ->
 		input = instance.find('.input-message')
-		chatMessages[@_id].send(@_id, input)
+		chatMessages[@_id].send(@_id, input, =>
+			# fixes https://github.com/RocketChat/Rocket.Chat/issues/3037
+			# at this point, the input is cleared and ready for autogrow
+			input.updateAutogrow()
+			instance.isMessageFieldEmpty.set(chatMessages[@_id].isEmpty())
+		)
 		input.focus()
-		input.updateAutogrow()
-		instance.isMessageFieldEmpty.set(chatMessages[@_id].isEmpty())
 
 	'keyup .input-message': (event, instance) ->
 		chatMessages[@_id].keyup(@_id, event, instance)
