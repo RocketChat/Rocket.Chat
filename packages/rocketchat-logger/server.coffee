@@ -108,7 +108,7 @@
 						self.warn "Method", method, "already exists"
 
 					if not self.defaultTypes[typeConfig.type]?
-						self.warn "Method type", typeConfig.type, "doest not exists"
+						self.warn "Method type", typeConfig.type, "does not exist"
 
 					self[method] = (args...) ->
 						self._log.call self,
