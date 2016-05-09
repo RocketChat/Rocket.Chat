@@ -16,6 +16,11 @@ Api.addRoute('sms-incoming/:service', {
 		let sendMessage = {
 			message: {
 				_id: Random.id()
+			},
+			roomInfo: {
+				sms: {
+					from: sms.to
+				}
 			}
 		};
 
@@ -41,12 +46,6 @@ Api.addRoute('sms-incoming/:service', {
 			});
 
 			visitor = RocketChat.models.Users.findOneById(userId);
-
-			sendMessage.roomInfo = {
-				sms: {
-					from: sms.to
-				}
-			};
 		}
 
 		sendMessage.message.msg = sms.body;
