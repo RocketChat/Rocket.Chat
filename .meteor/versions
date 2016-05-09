@@ -160,7 +160,6 @@ rocketchat:livechat@0.0.1
 rocketchat:logger@0.0.1
 rocketchat:mailer@0.0.1
 rocketchat:markdown@0.0.1
-rocketchat:me@0.0.1
 rocketchat:mentions@0.0.1
 rocketchat:mentions-flextab@0.0.1
 rocketchat:message-attachments@0.0.1
@@ -177,6 +176,7 @@ rocketchat:slashcommands-invite@0.0.1
 rocketchat:slashcommands-join@0.0.1
 rocketchat:slashcommands-kick@0.0.1
 rocketchat:slashcommands-leave@0.0.1
+rocketchat:slashcommands-me@0.0.1
 rocketchat:slashcommands-mute@0.0.1
 rocketchat:slashcommands-topic@0.0.1
 rocketchat:sms@0.0.1
