@@ -312,7 +312,7 @@ Template.admin.events
 
 		Meteor.call @value, (err, data) ->
 			if err?
-				err.details = _.extend(error.details || {}, errorTitle: 'Error')
+				err.details = _.extend(err.details || {}, errorTitle: 'Error')
 				handleError(err)
 				return
 
