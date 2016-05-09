@@ -63,7 +63,6 @@ rocketchat:livechat
 rocketchat:logger
 rocketchat:mailer
 rocketchat:markdown
-rocketchat:me
 rocketchat:mentions
 rocketchat:mentions-flextab
 rocketchat:message-attachments
@@ -79,6 +78,7 @@ rocketchat:slashcommands-invite
 rocketchat:slashcommands-join
 rocketchat:slashcommands-kick
 rocketchat:slashcommands-leave
+rocketchat:slashcommands-me
 rocketchat:slashcommands-mute
 rocketchat:slashcommands-topic
 rocketchat:spotify
