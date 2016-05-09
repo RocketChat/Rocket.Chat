@@ -918,6 +918,8 @@
   "Site_Url" : "Site URL",
   "Site_Url_Description" : "Example: https://chat.domain.com/",
   "Skip" : "Skip",
+  "Slash_Topic_Description" : "Set topic",
+  "Slash_Topic_Params" : "Topic message",
   "Smileys_and_People" : "Smileys & People",
   "SMS_Enabled" : "SMS Enabled",
   "SMTP" : "SMTP",
