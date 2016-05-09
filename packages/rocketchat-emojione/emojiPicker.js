@@ -45,13 +45,17 @@ Template.emojiPicker.helpers({
 		return Template.instance().currentCategory.get() === category ? 'visible' : '';
 	},
 	emojisByCategory(category) {
-		let total = emojisByCategory[category].length;
+		const t = Template.instance();
+		const total = emojisByCategory[category].length;
 		var html = '';
-		let actualTone = Template.instance().tone;
-
+		const actualTone = t.tone;
+		const searchTerm = t.currentSearchTerm.get();
 		for (var i = 0; i < total; i++) {
 			let emoji = emojisByCategory[category][i];
 			let tone = '';
+			if (searchTerm && emoji.indexOf(searchTerm) === -1) {
+				continue;
+			}
 
 			if (actualTone > 0 && toneList.hasOwnProperty(emoji)) {
 				tone = '_tone' + actualTone;
@@ -128,18 +132,37 @@ Template.emojiPicker.events({
 
 		$('.tone-selector').toggleClass('show');
 	},
-	'click .emoji-list li'(event) {
+	'click .emoji-list li'(event, instance) {
 		event.stopPropagation();
 
 		let emoji = event.currentTarget.dataset.emoji;
-		let actualTone = Template.instance().tone;
+		let actualTone = instance.tone;
 		let tone = '';
 
 		if (actualTone > 0 && toneList.hasOwnProperty(emoji)) {
 			tone = '_tone' + actualTone;
 		}
 
+		const input = $('.emoji-filter input.search');
+		if (input) {
+			input.val('');
+		}
+		instance.currentSearchTerm.set('');
+
 		RocketChat.EmojiPicker.pickEmoji(emoji + tone);
+	},
+	'keydown .emoji-filter .search'(event) {
+		if (event.keyCode === 13) {
+			event.preventDefault();
+		}
+	},
+	'keyup .emoji-filter .search'(event, instance) {
+		const value = event.target.value.trim();
+		const cst = instance.currentSearchTerm;
+		if (value === cst.get()) {
+			return;
+		}
+		cst.set(value);
 	}
 });
 
@@ -148,6 +171,7 @@ Template.emojiPicker.onCreated(function() {
 	let recent = RocketChat.EmojiPicker.getRecent();
 
 	this.currentCategory = new ReactiveVar(recent.length > 0 ? 'recent' : 'people');
+	this.currentSearchTerm = new ReactiveVar('');
 
 	recent.forEach((emoji) => {
 		emojisByCategory.recent.push(emoji);
