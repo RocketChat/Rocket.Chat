@@ -22,12 +22,12 @@ class SlackBridge {
 
 	connect() {
 		if (!this.connected) {
+			this.connected = true;
 			logger.connection.info('Connecting via token: ', this.apiToken);
 			var RtmClient = this.slackClient.RtmClient;
 			this.rtm = new RtmClient(this.apiToken);
 			this.rtm.start();
 			this.setEvents();
-			this.connected = true;
 		}
 	}
 
@@ -39,8 +39,16 @@ class SlackBridge {
 
 	setEvents() {
 		var CLIENT_EVENTS = this.slackClient.CLIENT_EVENTS;
-		this.rtm.on(CLIENT_EVENTS.RTM.AUTHENTICATED, function() {
+		this.rtm.on(CLIENT_EVENTS.RTM.AUTHENTICATED, () => {
 			logger.connection.info('Connected');
+		});
+
+		this.rtm.on(CLIENT_EVENTS.RTM.UNABLE_TO_RTM_START, () => {
+			this.disconnect();
+		});
+
+		this.rtm.on(CLIENT_EVENTS.RTM.DISCONNECT, () => {
+			this.disconnect();
 		});
 
 		var RTM_EVENTS = this.slackClient.RTM_EVENTS;
@@ -82,23 +90,23 @@ class SlackBridge {
 		});
 
 		this.rtm.on(RTM_EVENTS.GROUP_JOINED, (message) => {
-			logger.events.info('GRUPO JOINED: ', message);
+			logger.events.info('GROUP JOINED: ', message);
 		});
 
 		this.rtm.on(RTM_EVENTS.GROUP_LEFT, (message) => {
-			logger.events.info('GRUPO LEFT: ', message);
+			logger.events.info('GROUP LEFT: ', message);
 		});
 
 		this.rtm.on(RTM_EVENTS.GROUP_OPEN, (message) => {
-			logger.events.info('GRUPO OPEN: ', message);
+			logger.events.info('GROUP OPEN: ', message);
 		});
 
 		this.rtm.on(RTM_EVENTS.GROUP_CLOSE, (message) => {
-			logger.events.info('GRUPO CLOSE: ', message);
+			logger.events.info('GROUP CLOSE: ', message);
 		});
 
 		this.rtm.on(RTM_EVENTS.GROUP_RENAME, (message) => {
-			logger.events.info('GRUPO RENAME: ', message);
+			logger.events.info('GROUP RENAME: ', message);
 		});
 
 		this.rtm.on(RTM_EVENTS.TEAM_JOIN, (message) => {
