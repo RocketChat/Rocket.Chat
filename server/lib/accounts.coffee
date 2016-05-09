@@ -32,9 +32,11 @@ Accounts.emailTemplates.resetPassword.text = (user, url) ->
 
 Accounts.emailTemplates.enrollAccount.subject = (user) ->
 	if RocketChat.settings.get 'Accounts_Enrollment_Customized'
-		return RocketChat.settings.get 'Accounts_Enrollment_Email_Subject'
+		subject = RocketChat.settings.get 'Accounts_Enrollment_Email_Subject'
 	else
-		return TAPi18n.__('Accounts_Enrollment_Email_Subject_Default', { lng: user?.language || RocketChat.settings.get('language') || 'en' })
+		subject = TAPi18n.__('Accounts_Enrollment_Email_Subject_Default', { lng: user?.language || RocketChat.settings.get('language') || 'en' })
+
+	return RocketChat.placeholders.replace(subject);
 
 Accounts.emailTemplates.enrollAccount.text = (user, url) ->
 
