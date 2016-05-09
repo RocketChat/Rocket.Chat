@@ -1,7 +1,11 @@
 class SlackBridge {
 	constructor() {
 		this.slackClient = Npm.require('slack-client');
-		this.APIToken = RocketChat.settings.get('SlackBridge_APIToken'); //xoxb-40888909941-BEK8FIePuAvYkcTj5iIKXGw7
+		this.apiToken = RocketChat.settings.get('SlackBridge_APIToken');
+	}
+
+	setApiToken(apiToken) {
+		this.apiToken = apiToken;
 	}
 
 	connect() {
