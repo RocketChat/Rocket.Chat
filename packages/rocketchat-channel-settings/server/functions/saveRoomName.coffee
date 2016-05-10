@@ -29,6 +29,6 @@ RocketChat.saveRoomName = (rid, name) ->
 		throw new Meteor.Error 'error-duplicate-channel-name', 'A channel with name \'' + name + '\' exists', { function: 'RocketChat.saveRoomName', channel_name: name }
 
 	RocketChat.models.Rooms.setNameById rid, name
-	RocketChat.models.Subscriptions.updateNameByRoomId rid, name
+	RocketChat.models.Subscriptions.updateNameAndAlertByRoomId rid, name
 
 	return name
