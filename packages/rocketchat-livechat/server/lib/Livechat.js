@@ -208,5 +208,15 @@ RocketChat.Livechat = {
 		});
 
 		return settings;
+	},
+
+	saveRoomInfo(roomData, guestData) {
+		if (!RocketChat.models.Rooms.saveRoomById(roomData._id, roomData)) {
+			return false;
+		}
+
+		if (!_.isEmpty(guestData.name)) {
+			return RocketChat.models.Rooms.setLabelByRoomId(roomData._id, guestData.name) && RocketChat.models.Subscriptions.updateNameByRoomId(roomData._id, guestData.name);
+		}
 	}
 };
