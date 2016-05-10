@@ -115,7 +115,7 @@ pauli:linkedin@1.3.1
 peerlibrary:aws-sdk@2.2.42_1
 peerlibrary:blocking@0.5.2
 perak:codemirror@1.3.0
-percolate:synced-cron@1.3.1
+percolate:synced-cron@1.3.0
 pntbr:js-yaml-client@0.0.1
 promise@0.5.1
 raix:eventemitter@0.1.3
