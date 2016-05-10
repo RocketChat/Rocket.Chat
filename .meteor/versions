@@ -115,7 +115,7 @@ pauli:linkedin@1.3.1
 peerlibrary:aws-sdk@2.2.42_1
 peerlibrary:blocking@0.5.2
 perak:codemirror@1.3.0
-percolate:synced-cron@1.3.0
+percolate:synced-cron@1.3.1
 pntbr:js-yaml-client@0.0.1
 promise@0.5.1
 raix:eventemitter@0.1.3
@@ -178,12 +178,12 @@ rocketchat:slashcommands-kick@0.0.1
 rocketchat:slashcommands-leave@0.0.1
 rocketchat:slashcommands-me@0.0.1
 rocketchat:slashcommands-mute@0.0.1
-rocketchat:slashcommands-topic@0.0.1
 rocketchat:slashcommands-shrug@0.0.1
+rocketchat:slashcommands-topic@0.0.1
 rocketchat:sms@0.0.1
 rocketchat:spotify@0.0.1
 rocketchat:statistics@0.0.1
-rocketchat:streamer@0.3.3
+rocketchat:streamer@0.3.5
 rocketchat:theme@0.0.1
 rocketchat:tooltip@0.0.1
 rocketchat:tutum@0.0.1
