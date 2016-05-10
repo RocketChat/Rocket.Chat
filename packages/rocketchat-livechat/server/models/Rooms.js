@@ -104,3 +104,7 @@ RocketChat.models.Rooms.findByVisitorId = function(visitorId) {
 RocketChat.models.Rooms.closeByRoomId = function(roomId) {
 	return this.update({ _id: roomId }, { $unset: { open: 1 } });
 };
+
+RocketChat.models.Rooms.setLabelByRoomId = function(roomId, label) {
+	return this.update({ _id: roomId }, { $set: { label: label } });
+};
