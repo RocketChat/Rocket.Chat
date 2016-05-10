@@ -1,6 +1,7 @@
 {
   "Additional_Feedback" : "Дополнительная обратная связь",
   "Appearance" : "Внешний вид",
+  "Conversation_finished" : "Разговор закончен",
   "How_friendly_was_the_chat_agent" : "Насколько дружелюбен был сотрудник чата?",
   "How_knowledgeable_was_the_chat_agent" : "Насколько информирован был сотрудник чата?",
   "How_responsive_was_the_chat_agent" : "Насколько отзывчив был сотрудник чата?",
@@ -9,10 +10,16 @@
   "Please_answer_survey" : "Пожалуйста, уделите минуту для того, чтобы ответить на несколько вопросов об этом чате",
   "Please_fill_name_and_email" : "Введите имя и электронный адрес",
   "Select_a_department" : "Выберите раздел",
+  "Send" : "послать",
   "Skip" : "Пропустить",
   "Start_Chat" : "Начать чат",
   "Survey" : "Опрос",
   "Survey_instructions" : "Оценивайте каждый вопрос по 5-балльной шкале, где 1 означает, что Вы совсем недовольны, и 5 - полностью довольны.",
   "Thank_you_for_your_feedback" : "Спасибо за Ваш отзыв",
-  "We_are_offline_Sorry_for_the_inconvenience" : "Мы не в сети. Извините за доставленные неудобства."
+  "Thanks_We_ll_get_back_to_you_soon" : "Благодаря! Мы свяжемся с вами в ближайшее время.",
+  "Type_your_email" : "Введите адрес электронной почты",
+  "Type_your_message" : "Текст сообщения",
+  "Type_your_name" : "Введите свое имя",
+  "We_are_offline_Sorry_for_the_inconvenience" : "Мы не в сети. Извините за доставленные неудобства.",
+  "You_must_complete_all_fields" : "Вы должны заполнить все поля"
 }
