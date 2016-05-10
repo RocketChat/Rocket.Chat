@@ -1,6 +1,7 @@
 {
   "Additional_Feedback" : "Extra feedback",
   "Appearance" : "Uiterlijk",
+  "Conversation_finished" : "Conversation klaar",
   "How_friendly_was_the_chat_agent" : "Hoe vriendelijk was de chat-agent?",
   "How_knowledgeable_was_the_chat_agent" : "Hoe deskundig was de chat-agent?",
   "How_responsive_was_the_chat_agent" : "Hoe goed reageert de chat-agent?",
@@ -9,10 +10,16 @@
   "Please_answer_survey" : "Heeft u een moment om een korte enquête over deze chat te beantwoorden",
   "Please_fill_name_and_email" : "Vul naam en e-mail in",
   "Select_a_department" : "Selecteer een afdeling",
+  "Send" : "sturen",
   "Skip" : "Overslaan",
   "Start_Chat" : "Start Chat",
   "Survey" : "Enquête",
   "Survey_instructions" : "Beoordeel elke vraag naar mate uw tevredenheid, 1 betekent dat u helemaal ontevreden  bent en 5 betekent volledig tevreden.",
   "Thank_you_for_your_feedback" : "Hartelijk dank voor uw feedback",
-  "We_are_offline_Sorry_for_the_inconvenience" : "We zijn offline. Excuses voor het ongemak."
+  "Thanks_We_ll_get_back_to_you_soon" : "Bedankt! We zullen contact met u binnenkort.",
+  "Type_your_email" : "Typ uw e-mail",
+  "Type_your_message" : "Typ uw bericht",
+  "Type_your_name" : "Type je naam",
+  "We_are_offline_Sorry_for_the_inconvenience" : "We zijn offline. Excuses voor het ongemak.",
+  "You_must_complete_all_fields" : "U moet alle velden invullen"
 }

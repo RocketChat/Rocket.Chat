@@ -1,6 +1,7 @@
 {
   "Additional_Feedback" : "πρόσθετες Σχόλια",
   "Appearance" : "Εμφάνιση",
+  "Conversation_finished" : "συνομιλία τελείωσε",
   "How_friendly_was_the_chat_agent" : "Πόσο φιλικό ήταν ο πράκτορας συνομιλία;",
   "How_knowledgeable_was_the_chat_agent" : "Πώς γνώστες ήταν ο πράκτορας συνομιλία;",
   "How_responsive_was_the_chat_agent" : "Πώς ανταποκρίνεται ήταν ο πράκτορας συνομιλία;",
@@ -9,10 +10,16 @@
   "Please_answer_survey" : "Αφιερώστε λίγο χρόνο για να απαντήσετε σε μια σύντομη έρευνα σχετικά με αυτήν την κουβέντα",
   "Please_fill_name_and_email" : "Παρακαλούμε συμπληρώστε το όνομα και το e-mail",
   "Select_a_department" : "Επιλέξτε ένα τμήμα",
+  "Send" : "Στέλνω",
   "Skip" : "Παραλείπω",
   "Start_Chat" : "Έναρξη συνομιλίας",
   "Survey" : "Έρευνα",
   "Survey_instructions" : "Βαθμολογήστε κάθε ερώτηση, σύμφωνα με την ικανοποίησή σας, 1 που σημαίνει ότι θα είναι εντελώς ανικανοποίητοι και 5 σημαίνει ότι είστε απόλυτα ικανοποιημένοι.",
   "Thank_you_for_your_feedback" : "Ευχαριστούμε για την ανταπόκρισή σας",
-  "We_are_offline_Sorry_for_the_inconvenience" : "Είμαστε εκτός σύνδεσης. Συγγνώμη για την ταλαιπωρία."
+  "Thanks_We_ll_get_back_to_you_soon" : "Ευχαριστώ! Θα επικοινωνήσουμε μαζί σας σύντομα.",
+  "Type_your_email" : "Πληκτρολογήστε το email σας",
+  "Type_your_message" : "Πληκτρολογήστε το μήνυμά σας",
+  "Type_your_name" : "Πληκτρολογήστε το όνομά σας",
+  "We_are_offline_Sorry_for_the_inconvenience" : "Είμαστε εκτός σύνδεσης. Συγγνώμη για την ταλαιπωρία.",
+  "You_must_complete_all_fields" : "Πρέπει να συμπληρώσετε όλα τα πεδία"
 }

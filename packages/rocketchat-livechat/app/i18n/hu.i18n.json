@@ -1,6 +1,7 @@
 {
   "Additional_Feedback" : "további Visszajelzés",
   "Appearance" : "Kinézet",
+  "Conversation_finished" : "beszélgetés befejezése",
   "How_friendly_was_the_chat_agent" : "Hogyan barátságos volt a chat ügynök?",
   "How_knowledgeable_was_the_chat_agent" : "Mennyire értett a chat ügynök?",
   "How_responsive_was_the_chat_agent" : "Hogyan reagálnak volt a chat ügynök?",
@@ -9,10 +10,16 @@
   "Please_answer_survey" : "Kérjük, szánjon egy kis választ egy gyors felmérést erről csevegés",
   "Please_fill_name_and_email" : "Kérjük, töltse ki a nevét és e-mail",
   "Select_a_department" : "Válasszon egy osztály",
+  "Send" : "Elküld",
   "Skip" : "Skip",
   "Start_Chat" : "Start Chat",
   "Survey" : "Felmérés",
   "Survey_instructions" : "Szavazz minden kérdésre az Ön elégedettsége, 1 ami azt jelenti, teljesen elégedetlen, és 5 ami azt jelenti, hogy teljesen elégedett.",
   "Thank_you_for_your_feedback" : "Köszönjük a visszajelzést",
-  "We_are_offline_Sorry_for_the_inconvenience" : "Mi vagyunk az offline. Elnézést a kellemetlenségért."
+  "Thanks_We_ll_get_back_to_you_soon" : "Kösz! Majd menj vissza hamarosan.",
+  "Type_your_email" : "Írja be az e-mail",
+  "Type_your_message" : "Írja be az üzenetet",
+  "Type_your_name" : "Írja be a nevét",
+  "We_are_offline_Sorry_for_the_inconvenience" : "Mi vagyunk az offline. Elnézést a kellemetlenségért.",
+  "You_must_complete_all_fields" : "Meg kell adnia az összes mezőt"
 }

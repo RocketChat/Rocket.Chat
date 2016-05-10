@@ -1,6 +1,7 @@
 {
   "Additional_Feedback" : "其它反馈",
   "Appearance" : "外观",
+  "Conversation_finished" : "对话结束",
   "How_friendly_was_the_chat_agent" : "在线客服的友善度如何？",
   "How_knowledgeable_was_the_chat_agent" : "在线客服的知识储备如何",
   "How_responsive_was_the_chat_agent" : "在线客服的反应速度如何？",
@@ -9,10 +10,16 @@
   "Please_answer_survey" : "请花费几分钟来反馈这次交谈的体验",
   "Please_fill_name_and_email" : "请填写姓名和 E-mail",
   "Select_a_department" : "请选择部门",
+  "Send" : "发送",
   "Skip" : "跳过",
   "Start_Chat" : "开始聊天",
   "Survey" : "进行评价",
   "Survey_instructions" : "根据问题填写您的满意度，1 代表完全不满意，5 代表非常满意。",
   "Thank_you_for_your_feedback" : "非常感谢您的反馈",
-  "We_are_offline_Sorry_for_the_inconvenience" : "现在没有人在线，带来不便请您谅解。"
+  "Thanks_We_ll_get_back_to_you_soon" : "谢谢！我们会尽快回复您。",
+  "Type_your_email" : "键入您的电子邮件",
+  "Type_your_message" : "输入您的留言",
+  "Type_your_name" : "键入您的姓名",
+  "We_are_offline_Sorry_for_the_inconvenience" : "现在没有人在线，带来不便请您谅解。",
+  "You_must_complete_all_fields" : "你必须填写所有字段"
 }
