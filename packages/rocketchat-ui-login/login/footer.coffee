@@ -3,8 +3,8 @@ Template.loginFooter.helpers
 		if Template.instance().languageVersion.get()
 			return TAPi18n.__('Language_Version', { lng: Template.instance().languageVersion.get() })
 
-Template.loginFooter.events 
-	'click a.switch-language': (e, t) ->
+Template.loginFooter.events
+	'click button.switch-language': (e, t) ->
 		userLanguage = t.languageVersion.get()
 		localStorage.setItem("userLanguage", userLanguage)
 		TAPi18n.setLanguage(userLanguage)
