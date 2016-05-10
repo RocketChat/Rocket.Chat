@@ -662,9 +662,13 @@ label.required:after {
 	box-shadow: 1px 1px 0 rgba(0, 0, 0, 0.125);
 	line-height: 16px;
 	position: relative;
+	cursor: pointer;
 	span {
 		position: relative;
 		z-index: 2;
+	}
+	* {
+		cursor: pointer;
 	}
 	&:before {
 		content: " ";
@@ -1850,19 +1854,6 @@ a.github-fork {
 	.settings-file-preview {
 		display: flex;
 		align-items: center;
-		input[type=file] {
-			position: absolute !important;
-			width: 100%;
-			top: 0;
-			left: 0;
-			height: 100%;
-			opacity: 0;
-			z-index: 10000;
-			cursor: pointer;
-			* {
-				cursor: pointer;
-			}
-		}
 		.preview {
 			height: 50px;
 			width: 100px;
@@ -1881,6 +1872,19 @@ a.github-fork {
 				font-size: 24px;
 			}
 		}
+	}
+}
+
+.button {
+	> input[type=file] {
+		position: absolute !important;
+		width: 100%;
+		top: 0;
+		left: 0;
+		height: 100%;
+		opacity: 0;
+		z-index: 10000;
+		cursor: pointer;
 	}
 }
 

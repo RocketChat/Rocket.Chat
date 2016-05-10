@@ -1,0 +1,23 @@
+{
+  "dependencies": {
+    "ajv": {
+      "version": "4.0.5",
+      "dependencies": {
+        "co": {
+          "version": "4.6.0"
+        },
+        "json-stable-stringify": {
+          "version": "1.0.1",
+          "dependencies": {
+            "jsonify": {
+              "version": "0.0.0"
+            }
+          }
+        }
+      }
+    },
+    "semver": {
+      "version": "5.1.0"
+    }
+  }
+}

@@ -1,7 +1,11 @@
 <template name="integrations">
 	<div class="permissions-manager">
 		{{#if hasPermission}}
-			<a href="{{pathFor "admin-integrations-new"}}" class="button primary new-role">{{_ "New_integration"}}</a>
+			<a href="{{pathFor "admin-integrations-new"}}" class="button primary">{{_ "New_integration"}}</a>
+			<!-- <button class="button primary upload-integration">{{_ "Upload_integration"}}</button> -->
+			<div class="button primary">{{_ 'Upload_integration'}}
+				<input type="file" class="upload-integration" accept="application/json" />
+			</div>
 
 			<div class="rocket-form">
 				<div class="section">
@@ -37,6 +41,25 @@
 										<div class="admin-integrations-new-item-body">
 											<div class="admin-integrations-new-item-title">
 												Outgoing WebHook {{#if name}}- {{name}}{{/if}}
+											</div>
+											<div class="admin-integrations-new-item-description">
+												{{{_ "Created_at_s_by_s" (dateFormated _createdAt) _createdBy.username}}}
+											</div>
+										</div>
+										<i class="icon-angle-right"></i>
+									</div>
+								</a>
+							{{/if}}
+						{{/each}}
+
+						{{#each integrations}}
+							{{#if $eq type 'application'}}
+								<a href="{{pathFor "admin-integrations-outgoing" id=_id}}">
+									<div class="admin-integrations-new-item">
+										<i class="icon-login"></i>
+										<div class="admin-integrations-new-item-body">
+											<div class="admin-integrations-new-item-title">
+												Application {{name}}
 											</div>
 											<div class="admin-integrations-new-item-description">
 												{{{_ "Created_at_s_by_s" (dateFormated _createdAt) _createdBy.username}}}
