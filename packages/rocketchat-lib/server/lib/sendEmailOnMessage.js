@@ -37,7 +37,11 @@ RocketChat.callbacks.add('afterSaveMessage', function(message, room) {
 			message.html = message.html.replace(token.token, token.text);
 		});
 	}
-	message.html = message.html.replace(/\n/gm, '<br/>');
+
+
+	var header = RocketChat.placeholders.replace(RocketChat.settings.get('Email_Header') || '');
+	var footer = RocketChat.placeholders.replace(RocketChat.settings.get('Email_Footer') || '');
+	message.html = header + message.html.replace(/\n/gm, '<br/>') + footer;
 
 	RocketChat.models.Subscriptions.findWithSendEmailByRoomId(room._id).forEach((sub) => {
 		switch (sub.emailNotifications) {

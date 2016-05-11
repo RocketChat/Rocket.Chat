@@ -7,6 +7,7 @@ Meteor.methods({
 
 		guest = Meteor.users.findOne(Meteor.userId(), {
 			fields: {
+				name: 1,
 				username: 1,
 				department: 1
 			}

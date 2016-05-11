@@ -112,6 +112,9 @@ Importer.Slack = class Importer.Slack extends Importer.Base
 				do (user) =>
 					Meteor.runAsUser startedByUserId, () =>
 						existantUser = RocketChat.models.Users.findOneByEmailAddress user.profile.email
+						if not existantUser
+							existantUser = RocketChat.models.Users.findOneByUsername user.name
+
 						if existantUser
 							user.rocketId = existantUser._id
 							@userTags.push
@@ -204,7 +207,7 @@ Importer.Slack = class Importer.Slack extends Importer.Base
 								@updateRecord { 'messagesstatus': "#{channel}/#{date}.#{msgs.messages.length}" }
 								for message in msgs.messages
 									msgDataDefaults =
-										_id: "S#{message.ts}"
+										_id: "#{slackChannel.id}.S#{message.ts}"
 										ts: new Date(parseInt(message.ts.split('.')[0]) * 1000)
 
 									if message.type is 'message'
