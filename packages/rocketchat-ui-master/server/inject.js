@@ -26,3 +26,11 @@ RocketChat.settings.get('Site_Url', function() {
 		Inject.rawHead('base', `<base href="${baseUrl}">`);
 	});
 });
+
+RocketChat.settings.get('GoogleSiteVerification_id', function(key, value) {
+	if (value) {
+		Inject.rawHead('google-site-verification', `<meta name="google-site-verification" content="${value}" />`);
+	} else {
+		Inject.rawHead('google-site-verification', '');
+	}
+});
