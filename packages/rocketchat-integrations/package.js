@@ -38,6 +38,8 @@ Package.onUse(function(api) {
 	api.addFiles('client/views/integrationsIncoming.coffee', 'client');
 	api.addFiles('client/views/integrationsOutgoing.html', 'client');
 	api.addFiles('client/views/integrationsOutgoing.coffee', 'client');
+	api.addFiles('client/views/integrationsApplication.html', 'client');
+	api.addFiles('client/views/integrationsApplication.coffee', 'client');
 
 	// stylesheets
 	api.addAssets('client/stylesheets/integrations.less', 'server');

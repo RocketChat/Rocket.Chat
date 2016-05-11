@@ -35,3 +35,13 @@ FlowRouter.route '/admin/integrations/outgoing/:id?',
 			pageTitle: t('Integration_Outgoing_WebHook')
 			pageTemplate: 'integrationsOutgoing'
 			params: params
+
+FlowRouter.route '/admin/integrations/application/:id?',
+	name: 'admin-integrations-application'
+	action: (params) ->
+		RocketChat.TabBar.showGroup 'admin-integrations'
+		BlazeLayout.render 'main',
+			center: 'pageSettingsContainer'
+			pageTitle: t('Application')
+			pageTemplate: 'integrationsApplication'
+			params: params

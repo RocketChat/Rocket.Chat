@@ -1,0 +1,90 @@
+<template name="integrationsApplicationSetting">
+	<div class="input-line double-col">
+		<label>{{config.name}}</label>
+		<div>
+			{{#if $eq config.type 'string'}}
+				<input class="input-monitor" type="text" name="{{name}}" value="{{config.value}}" placeholder="{{placeholder}}" {{isDisabled}}/>
+			{{/if}}
+
+			{{#if $eq config.type 'text'}}
+				<textarea class="input-monitor" name="{{name}}" rows="4" style="height: auto" {{isDisabled}}>{{config.value}}</textarea>
+			{{/if}}
+
+			{{#if $eq config.type 'password'}}
+				<input class="input-monitor" type="password" name="{{name}}" value="{{config.value}}" placeholder="{{placeholder}}" {{isDisabled}}/>
+			{{/if}}
+
+			{{#if $eq config.type 'int'}}
+				<input class="input-monitor" type="number" name="{{name}}" value="{{config.value}}" placeholder="{{placeholder}}" {{isDisabled}}/>
+			{{/if}}
+
+			{{#if $eq config.type 'boolean'}}
+				<label><input class="input-monitor" type="radio" name="{{name}}" value="1" checked="{{$eq config.value true}}" {{isDisabled}}/> {{_ "True"}}</label>
+				<label><input class="input-monitor" type="radio" name="{{name}}" value="0" checked="{{$eq config.value false}}" {{isDisabled}}/> {{_ "False"}}</label>
+			{{/if}}
+
+			<div class="settings-description">{{config.description}}</div>
+		</div>
+	</div>
+</template>
+
+<template name="integrationsApplication">
+	<div class="permissions-manager">
+		{{#if hasPermission}}
+			<a href="{{pathFor "admin-integrations"}}"><i class="icon-angle-left"></i> {{_ "Back_to_integrations"}}</a><br><br>
+			<div class="rocket-form">
+				<div class="section">
+					<div class="section-content">
+						<div class="input-line double-col">
+							<label>{{_ "Enabled"}}</label>
+							<div>
+								<label><input type="radio" name="enabled" value="1" checked="{{$eq data.enabled true}}" /> {{_ "True"}}</label>
+								<label><input type="radio" name="enabled" value="0" checked="{{$neq data.enabled true}}" /> {{_ "False"}}</label>
+							</div>
+						</div>
+						{{#each toArray data.permissions}}
+							<div class="input-line double-col">
+								<label>{{key}}</label>
+								<div>
+									<label><input type="radio" name="{{key}}" value="1" checked="{{$eq value.enabled true}}" /> {{_ "True"}}</label>
+									<label><input type="radio" name="{{key}}" value="0" checked="{{$neq value.enabled true}}" /> {{_ "False"}}</label>
+									<!-- <div class="settings-description">{{_ "You_should_name_it_to_easily_manage_your_integrations"}}</div> -->
+								</div>
+							</div>
+						{{/each}}
+					</div>
+				</div>
+
+				{{#each data.incoming_webhook}}
+					<div class="section">
+						<div class="section-title">
+							<div class="section-title-text">
+								{{name}}
+							</div>
+						</div>
+						<div class="section-content">
+							<div class="input-line double-col">
+								<label>{{_ "Enabled"}}</label>
+								<div>
+									<label><input type="radio" name="enabled" value="1" checked="{{$eq enabled true}}" /> {{_ "True"}}</label>
+									<label><input type="radio" name="enabled" value="0" checked="{{$neq enabled true}}" /> {{_ "False"}}</label>
+								</div>
+							</div>
+							{{#each toArray settings}}
+								{{> integrationsApplicationSetting name=key config=value}}
+							{{/each}}
+						</div>
+					</div>
+				{{/each}}
+				<div class="submit">
+					{{#if data.token}}
+						<button class="button red delete"><i class="icon-trash"></i><span>{{_ "Delete"}}</span></button>
+					{{/if}}
+					<button class="button save"><i class="icon-send"></i><span>{{_ "Save_changes"}}</span></button>
+				</div>
+			</div>
+		{{else}}
+			{{_ "Not_authorized"}}
+		{{/if}}
+	</div>
+</template>
