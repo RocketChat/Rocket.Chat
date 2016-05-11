@@ -20,15 +20,15 @@ RocketChat.settings.get 'Accounts_AllowedDomainsList', (_id, value) ->
 Accounts.emailTemplates.siteName = RocketChat.settings.get 'Site_Name';
 Accounts.emailTemplates.from = "#{RocketChat.settings.get 'Site_Name'} <#{RocketChat.settings.get 'From_Email'}>";
 
-verifyEmailText = Accounts.emailTemplates.verifyEmail.text
-Accounts.emailTemplates.verifyEmail.text = (user, url) ->
+verifyEmailHtml = Accounts.emailTemplates.verifyEmail.html
+Accounts.emailTemplates.verifyEmail.html = (user, url) ->
 	url = url.replace Meteor.absoluteUrl(), Meteor.absoluteUrl() + 'login/'
-	verifyEmailText user, url
+	verifyEmailHtml user, url
 
-resetPasswordText = Accounts.emailTemplates.resetPassword.text
-Accounts.emailTemplates.resetPassword.text = (user, url) ->
+resetPasswordHtml = Accounts.emailTemplates.resetPassword.html
+Accounts.emailTemplates.resetPassword.html = (user, url) ->
 	url = url.replace /\/#\//, '/'
-	resetPasswordText user, url
+	resetPasswordHtml user, url
 
 Accounts.emailTemplates.enrollAccount.subject = (user) ->
 	if RocketChat.settings.get 'Accounts_Enrollment_Customized'
@@ -38,7 +38,7 @@ Accounts.emailTemplates.enrollAccount.subject = (user) ->
 
 	return RocketChat.placeholders.replace(subject);
 
-Accounts.emailTemplates.enrollAccount.text = (user, url) ->
+Accounts.emailTemplates.enrollAccount.html = (user, url) ->
 
 	if RocketChat.settings.get 'Accounts_Enrollment_Customized'
 		html = RocketChat.settings.get 'Accounts_Enrollment_Email'
