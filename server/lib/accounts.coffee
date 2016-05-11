@@ -20,12 +20,12 @@ RocketChat.settings.get 'Accounts_AllowedDomainsList', (_id, value) ->
 Accounts.emailTemplates.siteName = RocketChat.settings.get 'Site_Name';
 Accounts.emailTemplates.from = "#{RocketChat.settings.get 'Site_Name'} <#{RocketChat.settings.get 'From_Email'}>";
 
-verifyEmailHtml = Accounts.emailTemplates.verifyEmail.html
+verifyEmailHtml = Accounts.emailTemplates.verifyEmail.text
 Accounts.emailTemplates.verifyEmail.html = (user, url) ->
 	url = url.replace Meteor.absoluteUrl(), Meteor.absoluteUrl() + 'login/'
 	verifyEmailHtml user, url
 
-resetPasswordHtml = Accounts.emailTemplates.resetPassword.html
+resetPasswordHtml = Accounts.emailTemplates.resetPassword.text
 Accounts.emailTemplates.resetPassword.html = (user, url) ->
 	url = url.replace /\/#\//, '/'
 	resetPasswordHtml user, url
