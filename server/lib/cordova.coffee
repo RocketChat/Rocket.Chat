@@ -130,13 +130,26 @@ configurePush = ->
 		Push.enabled = true
 
 sendPush = (service, token, options, tries=0) ->
-	try
-		HTTP.post RocketChat.settings.get('Push_gateway') + "/push/#{service}/send",
-			data:
-				token: token
-				options: options
-	catch e
-		SystemLogger.error 'Error sending push to gateway ('+tries+' try) ->', e
+	data =
+		data:
+			token: token
+			options: options
+
+	HTTP.post RocketChat.settings.get('Push_gateway') + "/push/#{service}/send", data, (error, response) ->
+		if response?.statusCode is 406
+			console.log('removing push token', token)
+			Push.appCollection.remove({
+				$or: [
+						{ 'token.apn': token }
+						{ 'token.gcm': token }
+					]
+			})
+			return
+
+		if not error?
+			return
+
+		SystemLogger.error 'Error sending push to gateway ('+tries+' try) ->', error
 		if tries <= 6
 			milli = Math.pow(10, tries+2)
 
