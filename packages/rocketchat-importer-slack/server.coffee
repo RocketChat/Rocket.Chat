@@ -112,6 +112,9 @@ Importer.Slack = class Importer.Slack extends Importer.Base
 				do (user) =>
 					Meteor.runAsUser startedByUserId, () =>
 						existantUser = RocketChat.models.Users.findOneByEmailAddress user.profile.email
+						if not existantUser
+							existantUser = RocketChat.models.Users.findOneByUsername user.name
+
 						if existantUser
 							user.rocketId = existantUser._id
 							@userTags.push
