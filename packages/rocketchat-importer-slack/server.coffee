@@ -204,7 +204,7 @@ Importer.Slack = class Importer.Slack extends Importer.Base
 								@updateRecord { 'messagesstatus': "#{channel}/#{date}.#{msgs.messages.length}" }
 								for message in msgs.messages
 									msgDataDefaults =
-										_id: "S#{message.ts}"
+										_id: "#{slackChannel.id}.S#{message.ts}"
 										ts: new Date(parseInt(message.ts.split('.')[0]) * 1000)
 
 									if message.type is 'message'
