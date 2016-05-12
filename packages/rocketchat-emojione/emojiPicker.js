@@ -53,26 +53,23 @@ function getEmojisByCategory(category) {
 
 function getEmojisBySearchTerm(searchTerm) {
 	let html = '';
-	let emojis = [];
 	const actualTone = t.tone;
 
 	for (let category of Object.keys(emojisByCategory)) {
-		for (let emoji of emojisByCategory[category]) {
-			if (emoji.indexOf(searchTerm) > -1) {
-				let tone = '';
+		if (category !== 'recent') {
+			for (let emoji of emojisByCategory[category]) {
+				if (emoji.indexOf(searchTerm) > -1) {
+					let tone = '';
 
-				if (actualTone > 0 && toneList.hasOwnProperty(emoji)) {
-					tone = '_tone' + actualTone;
-				}
+					if (actualTone > 0 && toneList.hasOwnProperty(emoji)) {
+						tone = '_tone' + actualTone;
+					}
 
-				const image = emojione.toImage(':' + emoji + tone + ':');
+					const image = emojione.toImage(':' + emoji + tone + ':');
 
-				// Prevent duplicates from recents
-				if (emojis.indexOf(emoji) === -1) {
 					html += `<li class="emoji-${emoji}" data-emoji="${emoji}" title="${emoji}">${image}</li>`;
-					emojis.push(emoji);
-				}
 
+				}
 			}
 		}
 	}
