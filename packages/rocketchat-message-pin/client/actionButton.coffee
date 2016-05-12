@@ -58,3 +58,18 @@ Meteor.startup ->
 			RoomHistoryManager.getSurroundingMessages(message, 50)
 		order: 100
 
+	RocketChat.MessageAction.addButton
+		id: 'permalink-pinned'
+		icon: 'icon-link'
+		i18nLabel: 'Permalink'
+		classes: 'clipboard'
+		context: [
+			'pinned'
+		]
+		action: (event, instance) ->
+			message = @_arguments[1]
+			msg = $(event.currentTarget).closest('.message')[0]
+			$("\##{msg.id} .message-dropdown").hide()
+			$(event.currentTarget).attr('data-clipboard-text', document.location.origin + document.location.pathname + '?msg=' + msg.id);
+			toastr.success(TAPi18n.__('Copied'))
+		order: 101
