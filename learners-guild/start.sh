@@ -1,6 +1,10 @@
 #!/bin/sh
 echo "Loading Learners Guild Environment"
-export APP_BASEURL ROOT_URL JWT_PUBLIC_KEY
 source .env
+for var in `cat .env | grep = | cut -f1 -d=`
+do
+  export "$var"
+done
 echo "Starting Meteor"
+
 meteor
