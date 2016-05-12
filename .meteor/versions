@@ -32,6 +32,7 @@ ddp-client@1.2.1
 ddp-common@1.2.2
 ddp-rate-limiter@1.0.0
 ddp-server@1.2.2
+deepwell:raven@0.3.0
 deps@1.0.9
 diff-sequence@1.0.1
 dispatch:run-as-user@1.1.1
@@ -70,8 +71,8 @@ konecty:multiple-instances-status@1.0.6
 konecty:nrr@2.0.2
 konecty:user-presence@1.2.6
 launch-screen@1.0.4
-learnersguild:rocketchat-lg-slash-commands@0.3.1
-learnersguild:rocketchat-lg-sso@0.4.1
+learnersguild:rocketchat-lg-slash-commands@0.3.3
+learnersguild:rocketchat-lg-sso@0.4.2
 less@2.5.1
 livedata@1.0.15
 localstorage@1.0.5
