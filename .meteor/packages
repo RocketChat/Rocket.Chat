@@ -53,10 +53,12 @@ rocketchat:github-enterprise
 rocketchat:gitlab
 rocketchat:highlight
 rocketchat:highlight-words
+rocketchat:iframe-login
 rocketchat:importer
 rocketchat:importer-hipchat
 rocketchat:importer-slack
 rocketchat:integrations
+rocketchat:katex
 rocketchat:ldap
 rocketchat:lib
 rocketchat:livechat
@@ -84,6 +86,7 @@ rocketchat:slashcommands-shrug
 rocketchat:slashcommands-topic
 rocketchat:spotify
 rocketchat:statistics
+rocketchat:streamer
 rocketchat:theme
 rocketchat:tooltip
 rocketchat:tutum
@@ -109,7 +112,6 @@ konecty:multiple-instances-status
 konecty:nrr
 konecty:user-presence
 
-rocketchat:streamer
 arunoda:streams
 chrismbeckett:toastr
 dispatch:run-as-user
@@ -135,14 +137,10 @@ percolate:synced-cron
 raix:handlebar-helpers
 raix:push
 raix:ui-dropped-event
+smoral:sweetalert
 steffo:meteor-accounts-saml
 tmeasday:crypto-md5
 todda00:friendly-slugs
 underscorestring:underscore.string
 yasaricli:slugify
 yasinuslu:blaze-meta
-# sanjo:jasmine
-# velocity:html-reporter
-smoral:sweetalert
-rocketchat:iframe-login
-rocketchat:katex
