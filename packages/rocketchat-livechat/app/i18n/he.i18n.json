@@ -1,6 +1,7 @@
 {
   "Additional_Feedback" : "משוב נוסף",
   "Appearance" : "מראה",
+  "Conversation_finished" : "שיחת סיים",
   "How_friendly_was_the_chat_agent" : "איך ידידותי היה סוכן הצ'אט?",
   "How_knowledgeable_was_the_chat_agent" : "איך ידע היה סוכן הצ'אט?",
   "How_responsive_was_the_chat_agent" : "מידת ההיענות היה סוכן צ'אט?",
@@ -9,10 +10,16 @@
   "Please_answer_survey" : "קדש דק כדי לענות על סקר קצר על הצ'אט הזה",
   "Please_fill_name_and_email" : "נא למלא את שם ואת כתובת דואר אלקטרונית",
   "Select_a_department" : "בחר מחלקה",
+  "Send" : "לִשְׁלוֹחַ",
   "Skip" : "לדלג",
   "Start_Chat" : "התחל צ'אט",
   "Survey" : "סקר",
   "Survey_instructions" : "דרג כל שאלה על פי לשביעות רצונך, כש -1 פירושו אתה לא מרוצה לחלוטין ו -5 כלומר אתה מרוצה לגמרי.",
   "Thank_you_for_your_feedback" : "תודה לך על המשוב",
-  "We_are_offline_Sorry_for_the_inconvenience" : "אנחנו במצב לא מקוון. מצטער על אי הנוחות."
+  "Thanks_We_ll_get_back_to_you_soon" : "תודה! אנחנו נחזור אליך בהקדם.",
+  "Type_your_email" : "הקלד את הדוא\"ל שלך",
+  "Type_your_message" : "הקלד את הודעתך",
+  "Type_your_name" : "הקלד את שמך",
+  "We_are_offline_Sorry_for_the_inconvenience" : "אנחנו במצב לא מקוון. מצטער על אי הנוחות.",
+  "You_must_complete_all_fields" : "עליך למלא את כל השדות"
 }

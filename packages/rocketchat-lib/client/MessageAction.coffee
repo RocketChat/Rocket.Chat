@@ -82,6 +82,7 @@ Meteor.startup ->
 			input = instance.find('.input-message')
 			Meteor.setTimeout ->
 				input.focus()
+				input.updateAutogrow()
 			, 200
 		validation: (message) ->
 			hasPermission = RocketChat.authz.hasAtLeastOnePermission('edit-message', message.rid)

@@ -9,6 +9,9 @@ Mailer.sendMail = (from, subject, body, dryrun, query) ->
 	if body.indexOf('[unsubscribe]') is -1
 		throw new Meteor.Error 'error-missing-unsubscribe-link', 'You must provide the [unsubscribe] link.', { function: 'Mailer.sendMail' }
 
+	header = RocketChat.placeholders.replace(RocketChat.settings.get('Email_Header') || '');
+	footer = RocketChat.placeholders.replace(RocketChat.settings.get('Email_Footer') || '');
+
 	userQuery = { "mailer.unsubscribed": { $exists: 0 } }
 	if query
 		userQuery = { $and: [ userQuery, EJSON.parse(query) ] }
@@ -32,7 +35,7 @@ Mailer.sendMail = (from, subject, body, dryrun, query) ->
 						to: email
 						from: from
 						subject: subject
-						html: html
+						html: header + html + footer
 
 				console.log 'Sending email to ' + email
 
@@ -55,6 +58,6 @@ Mailer.sendMail = (from, subject, body, dryrun, query) ->
 						to: email
 						from: from
 						subject: subject
-						html: html
+						html: header + html + footer
 
 				console.log 'Sending email to ' + email

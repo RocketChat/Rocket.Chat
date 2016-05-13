@@ -1,6 +1,7 @@
 {
   "Additional_Feedback" : "Ek geri bildirim",
   "Appearance" : "Görünüm",
+  "Conversation_finished" : "Konuşma bittikten",
   "How_friendly_was_the_chat_agent" : "Sohbet ajanı nasıl dost oldu?",
   "How_knowledgeable_was_the_chat_agent" : "Sohbet ajanı nasıl bilgili?",
   "How_responsive_was_the_chat_agent" : "Sohbet ajanı nasıl cevap veriyordu?",
@@ -9,10 +10,16 @@
   "Please_answer_survey" : "Bu sohbet hakkında hızlı bir anketi yanıtlamak için bir dakikanızı ayırın",
   "Please_fill_name_and_email" : "isim ve e-posta doldurunuz",
   "Select_a_department" : "Bir bölümü seçmek",
+  "Send" : "göndermek",
   "Skip" : "atlamak",
   "Start_Chat" : "Sohbete Başla",
   "Survey" : "anket",
   "Survey_instructions" : "Tamamen memnun anlam tamamen tatminsiz olan, yani sizi tatmin göre 1 her soruyu oranı ve 5.",
   "Thank_you_for_your_feedback" : "Görüşleriniz için teşekkür ederiz",
-  "We_are_offline_Sorry_for_the_inconvenience" : "Biz çevrimdışı. Rahatsızlıktan dolayı özür dileriz."
+  "Thanks_We_ll_get_back_to_you_soon" : "Teşekkürler! Biz yakında size geri alırsınız.",
+  "Type_your_email" : "E-postanızı yazın",
+  "Type_your_message" : "Mesajınızı yazın",
+  "Type_your_name" : "Adınızı yazın",
+  "We_are_offline_Sorry_for_the_inconvenience" : "Biz çevrimdışı. Rahatsızlıktan dolayı özür dileriz.",
+  "You_must_complete_all_fields" : "Tüm alanları doldurmalısınız"
 }

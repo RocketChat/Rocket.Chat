@@ -141,7 +141,12 @@ class @ChatMessages
 			this.editing.saved = this.input.value
 			this.editing.savedCursor = this.input.selectionEnd
 
-	send: (rid, input) ->
+	###*
+	# * @param {string} rim room ID
+	# * @param {Element} input DOM element
+	# * @param {function?} done callback
+	###
+	send: (rid, input, done = ->) ->
 		if _.trim(input.value) isnt ''
 			readMessage.enable()
 			readMessage.readNow()
@@ -177,7 +182,8 @@ class @ChatMessages
 						return
 
 				Meteor.call 'sendMessage', msgObject
-				
+				done()
+
 		# If edited message was emptied we ask for deletion
 		else if this.editing.element
 			message = this.getMessageById this.editing.id
@@ -185,9 +191,9 @@ class @ChatMessages
 			# Restore original message in textbox in case delete is canceled
 			this.resetToDraft this.editing.id
 
-			this.confirmDeleteMsg message
+			this.confirmDeleteMsg message, done
 
-	confirmDeleteMsg: (message) ->
+	confirmDeleteMsg: (message, done = ->) ->
 		return if RocketChat.MessageTypes.isSystemMessage(message)
 		swal {
 			title: t('Are_you_sure')
@@ -212,6 +218,7 @@ class @ChatMessages
 			this.deleteMsg message
 
 			this.$input.focus()
+			done()
 
 		# In order to avoid issue "[Callback not called when still animating](https://github.com/t4t5/sweetalert/issues/528)"
 		$('.sweet-alert').addClass 'visible'

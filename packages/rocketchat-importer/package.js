@@ -15,6 +15,7 @@ Package.onUse(function(api) {
 		'rocketchat:lib@0.0.1'
 	]);
 
+	api.use('rocketchat:logger', 'server');
 	api.use('templating', 'client');
 
 	//Import Framework
