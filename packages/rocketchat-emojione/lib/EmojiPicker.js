@@ -52,6 +52,9 @@ RocketChat.EmojiPicker = {
 		return this.recent;
 	},
 	setPosition() {
+		if (window.matchMedia('all and (min-width: 360px)').matches)
+			return $('.emoji-picker')
+
 		let sourcePos = $(this.source).offset();
 		let left = (sourcePos.left - this.width + 65);
 		let top = (sourcePos.top - this.height - 5);
@@ -88,6 +91,9 @@ RocketChat.EmojiPicker = {
 		this.opened = true;
 	},
 	close() {
+		const mainContent = $('.main-content');
+		mainContent.removeClass('emoji-picking');
+
 		$('.emoji-picker').removeClass('show');
 		this.opened = false;
 	},

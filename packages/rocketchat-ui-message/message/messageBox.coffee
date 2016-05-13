@@ -80,12 +80,22 @@ Template.messageBox.events
 			# at this point, the input is cleared and ready for autogrow
 			input.updateAutogrow()
 			instance.isMessageFieldEmpty.set(chatMessages[@_id].isEmpty())
+
+			if window.matchMedia('all and (min-width: 360px)').matches
+				instance.$('.message-buttons.file').removeClass('hidden')
 		)
 		input.focus()
 
 	'keyup .input-message': (event, instance) ->
 		chatMessages[@_id].keyup(@_id, event, instance)
 		instance.isMessageFieldEmpty.set(chatMessages[@_id].isEmpty())
+
+		if window.matchMedia('all and (min-width: 360px)').matches
+			input = event.currentTarget
+			if input.value.length is 0
+				instance.$('.message-buttons.file').removeClass('hidden')
+			else
+				instance.$('.message-buttons.file').addClass('hidden')
 
 	'paste .input-message': (e) ->
 		if not e.originalEvent.clipboardData?
