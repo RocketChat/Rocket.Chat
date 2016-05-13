@@ -1,6 +1,7 @@
 {
   "Additional_Feedback" : "Додаткова зв'язок",
   "Appearance" : "зовнішній вигляд",
+  "Conversation_finished" : "розмова закінчена",
   "How_friendly_was_the_chat_agent" : "Як дружній був чат агент?",
   "How_knowledgeable_was_the_chat_agent" : "Наскільки добре був чат агент?",
   "How_responsive_was_the_chat_agent" : "Як реагувати був чат агент?",
@@ -9,10 +10,16 @@
   "Please_answer_survey" : "Будь ласка, знайдіть час, щоб відповісти на швидкий огляд про це чаті",
   "Please_fill_name_and_email" : "Заповніть, будь ласка, ім'я та адресу електронної пошти",
   "Select_a_department" : "Виберіть відділ",
+  "Send" : "послати",
   "Skip" : "скакати",
   "Start_Chat" : "Почати Чат",
   "Survey" : "обстеження",
   "Survey_instructions" : "Оцінити кожне питання відповідно до ваших задоволення, 1 означає, що ви повністю незадоволеним і 5 означає, що ви повністю задоволені.",
   "Thank_you_for_your_feedback" : "Спасибі за ваш відгук",
-  "We_are_offline_Sorry_for_the_inconvenience" : "Ми в автономному режимі. Вибачте за незручності."
+  "Thanks_We_ll_get_back_to_you_soon" : "Дякую! Ми зв'яжемося з вами найближчим часом.",
+  "Type_your_email" : "Введіть адресу електронної пошти",
+  "Type_your_message" : "текст повідомлення",
+  "Type_your_name" : "Введіть ваше ім'я",
+  "We_are_offline_Sorry_for_the_inconvenience" : "Ми в автономному режимі. Вибачте за незручності.",
+  "You_must_complete_all_fields" : "Ви повинні заповнити всі поля"
 }

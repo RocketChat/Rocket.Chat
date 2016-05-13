@@ -1,6 +1,7 @@
 {
   "Additional_Feedback" : "Feedback Additional",
   "Appearance" : "Xuyabûnî",
+  "Conversation_finished" : "conversation qedand",
   "How_friendly_was_the_chat_agent" : "agent chat çawa dostane bû?",
   "How_knowledgeable_was_the_chat_agent" : "agent chat çawa zana bû?",
   "How_responsive_was_the_chat_agent" : "agent chat çawa bersîva bû?",
@@ -9,10 +10,16 @@
   "Please_answer_survey" : "Ji kerema xwe, niha bigire ku tu bersiva anketê bi lez li ser vê chat",
   "Please_fill_name_and_email" : "Ji kerema xwe ve name û e-mail tijî",
   "Select_a_department" : "Select a beşa",
+  "Send" : "Şandin",
   "Skip" : "Hilperkîn",
   "Start_Chat" : "Start Chat",
   "Survey" : "Lêkolîn",
   "Survey_instructions" : "Pûan hev pirs li gor dilê we, 1 wateya we ne razî ne bi temamî û 5 wateya ku tu bi temamî razî ne.",
   "Thank_you_for_your_feedback" : "Spas ji bo we Deng xwe",
-  "We_are_offline_Sorry_for_the_inconvenience" : "Em ne offline. Mixabin ji ber nerihetîya."
+  "Thanks_We_ll_get_back_to_you_soon" : "Spas! Em ê dîsa ji te re şîfayê.",
+  "Type_your_email" : "Type email te",
+  "Type_your_message" : "Mesaja we",
+  "Type_your_name" : "navê te Type",
+  "We_are_offline_Sorry_for_the_inconvenience" : "Em ne offline. Mixabin ji ber nerihetîya.",
+  "You_must_complete_all_fields" : "Divê hûn hemû waran de temam"
 }

@@ -1,5 +1,54 @@
 ## NEXT
 
+## 0.30.0, 2016-May-09
+
+- Ability to run imports several times without duplicate messages (#3123)
+- Add /shrug command
+- Add /topic
+- Add back the role bot to rocket.cat - closes #3098
+- Add default email header and footer
+- Add some basic validation to if user is logged in
+- Add timestamp to quoted messages
+- Added quote button to messages
+- Allow inputing multiple channels/users in integrations; comma-separated
+- Allow katex to work with $...$ and $$...$$
+- Always set SMS info on incoming SMS messages
+- Close #3103 Show correct menus on mobile
+- Do not allow user leave the room ONLY if it is a livechat room
+- Do not protect upload files on Sandstorm environment
+- Don't render empty katex
+- Don't show emoji list on ':' or ascii
+- Easier whole message navigation
+- Feature: search input field in emoji picker
+- Fix #2941 Pressing enter in Search Channels leaves search (#3128)
+- Fix #3103 Show correct menus on mobile
+- Fix #3130 Hide "edited by" status in search results
+- Fix #3138 Embedding youtu.be shortened links did not have a video preview
+- Fix #3148 Also adds missing translation keys
+- Fix #3182 Replace placeholder in enrollment email subject
+- Fix current livechats page
+- Fix livechat build script for Windows
+- Fix read messages from livechat rooms
+- Fix unread bar links
+- Fix: discarding draft gets up to date content of message
+- Force outgoing webhooks to post only on the allowed room
+- Ignore the __MACOSX folders in the importers
+- Improves message quoting
+- Make message box resize when editing message using popup menu
+- Message box resizes properly if sent via click event
+- Move /me into directory structure like the other slashcommands
+- New livechat page to send an email when no agent online
+- New message editing features
+- New permission to allow others to close livechat rooms
+- Prevent unnecessary UI resize on medium screens
+- Removed unused hubot scripts
+- Replace bunches of inaccessible <a> elements with empty hrefs, and clickable divs, with <button/>.
+- RTL fixes (#3135)
+- Update katex to version 0.6.0
+- Use customClass instead of looking for a class
+- Use native code to set file upload cookies
+- Wait until user is logged-in to add message listener
+
 ## 0.29.0, 2016-May-02
 
 - Add a i18nDefaultQuery option to settings

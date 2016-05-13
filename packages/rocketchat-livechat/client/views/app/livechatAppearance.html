@@ -5,11 +5,27 @@
 		<form class="rocket-form">
 			<div class="input-line">
 				<label for="title">{{_ "Title"}}</label>
-				<input type="text" class="preview-settings" name="title" value="{{title}}">
+				<input type="text" class="preview-settings" name="title" id="title" value="{{title}}">
 			</div>
 			<div class="input-line">
 				<label for="color">{{_ "Title_bar_color"}}</label>
-				<input type="text" class="preview-settings minicolors" name="color" value="{{color}}">
+				<input type="text" class="preview-settings minicolors" name="color" id="color" value="{{color}}">
+			</div>
+			<div class="input-line">
+				<label for="offlineMessage">{{_ "Offline_message"}}</label>
+				<input type="text" class="preview-settings" name="offlineMessage" id="offlineMessage" value="{{offlineMessage}}">
+			</div>
+			<div class="input-line">
+				<label for="titleOffline">{{_ "Title_offline"}}</label>
+				<input type="text" class="preview-settings" name="titleOffline" id="titleOffline" value="{{titleOffline}}">
+			</div>
+			<div class="input-line">
+				<label for="colorOffline">{{_ "Title_bar_color_offline"}}</label>
+				<input type="text" class="preview-settings minicolors" name="colorOffline" id="colorOffline" value="{{colorOffline}}">
+			</div>
+			<div class="input-line">
+				<label for="emailOffline">{{_ "Email_address_to_send_offline_messages"}}</label>
+				<input type="text" class="preview-settings" name="emailOffline" id="emailOffline" value="{{emailOffline}}">
 			</div>
 			<div class="submit">
 				<button class="button secondary reset-settings"><i class="icon-ccw"></i>{{_ "Reset"}}</button>
@@ -22,45 +38,69 @@
 		<h2>{{_ "Preview"}}</h2>
 
 		<select class="preview-mode">
-			<option value="opened">{{_ "Opened"}}</option>
-			<option value="closed">{{_ "Closed"}}</option>
+			<optgroup label="{{_ "Online"}}">
+				<option value="opened">{{_ "Chat_window"}}</option>
+				<option value="closed">{{_ "Chat_button"}}</option>
+			</optgroup>
+			<optgroup label="{{_ "Offline"}}">
+				<option value="opened-offline">{{_ "Offline_form"}}</option>
+				<option value="closed-offline">{{_ "Chat_button"}}</option>
+			</optgroup>
 		</select>
 
 		<div class="livechat-preview {{previewState}}">
 			<div class="preview-wrapper">
 				{{#with sampleData}}
 					<div class="livechat-room">
-						<div class="title" style="background-color:{{color}}">
+						<div class="title" style="background-color:{{sampleColor}}">
 							<div class="toolbar">
 								&nbsp;
 								<i class="popout icon-link-ext" title="Open in a new window"></i>
 							</div>
-							<h1>{{title}}</h1>
+							<h1>{{sampleTitle}}</h1>
 						</div>
-						<div class="messages">
-							<div class="wrapper">
-								<ul>
-									{{#each messages}}
-										<li id="{{_id}}" class="message {{sequential}}" data-username="{{u.username}}" data-date="{{date}}">
-											<span class="thumb thumb-small" data-username="{{u.username}}" tabindex="1">{{> avatar username=u.username}}</span>
-											<span class="user" data-username="{{u.username}}" tabindex="1">{{u.username}}</span>
-											<span class="info">
-												<span class="time">{{time}}</span>
-											</span>
-											<div class="body" dir="auto">
-												{{{body}}}
-											</div>
-										</li>
-									{{/each}}
-								</ul>
+						{{#if showOnline}}
+							<div class="messages">
+								<div class="wrapper">
+									<ul>
+										{{#each messages}}
+											<li id="{{_id}}" class="message {{sequential}}" data-username="{{u.username}}" data-date="{{date}}">
+												<span class="thumb thumb-small" data-username="{{u.username}}" tabindex="1">{{> avatar username=u.username}}</span>
+												<span class="user" data-username="{{u.username}}" tabindex="1">{{u.username}}</span>
+												<span class="info">
+													<span class="time">{{time}}</span>
+												</span>
+												<div class="body" dir="auto">
+													{{{body}}}
+												</div>
+											</li>
+										{{/each}}
+									</ul>
+								</div>
 							</div>
-						</div>
-						<div class="footer">
-							<div class="input-wrapper">
-								<textarea class="input-message" placeholder="Type your message"></textarea>
+							<div class="footer">
+								<div class="input-wrapper">
+									<textarea class="input-message" placeholder="Type your message"></textarea>
+								</div>
+								<i class="send-button icon-paper-plane" aria-label="{{_ "Send"}}"></i>
 							</div>
-							<i class="send-button icon-paper-plane" aria-label="{{_ "Send"}}"></i>
-						</div>
+						{{else}}
+							<div class="offline">
+								<p class="offline-message">{{{offlineMessage}}}</p>
+
+								<form>
+									<input type="text" id="name" name="name" placeholder="{{_ "Type_your_name"}}">
+
+									<input type="email" id="email" name="email" placeholder="{{_ "Type_your_email"}}">
+
+									<textarea id="message" name="message" placeholder="{{_"Type_your_message"}}" rows="2"></textarea>
+
+									<div class="buttons">
+										<button class="button send">{{_ "Send"}}</button>
+									</div>
+								</form>
+							</div>
+						{{/if}}
 					</div>
 				{{/with}}
 			</div>

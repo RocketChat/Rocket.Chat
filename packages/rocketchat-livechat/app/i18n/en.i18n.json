@@ -17,9 +17,9 @@
   "Survey_instructions" : "Rate each question according to your satisfaction, 1 meaning you are completely unsatisfied and 5 meaning you are completely satisfied.",
   "Thank_you_for_your_feedback" : "Thank you for your feedback",
   "Thanks_We_ll_get_back_to_you_soon" : "Thanks! We'll get back to you soon.",
-  "Type_your_name" : "Type your name",
   "Type_your_email" : "Type your email",
   "Type_your_message" : "Type your message",
+  "Type_your_name" : "Type your name",
   "We_are_offline_Sorry_for_the_inconvenience" : "We are offline. Sorry for the inconvenience.",
   "You_must_complete_all_fields" : "You must complete all fields"
 }

@@ -1,6 +1,7 @@
 {
   "Additional_Feedback" : "Dodatečný Feedback",
   "Appearance" : "Vzhled",
+  "Conversation_finished" : "rozhovor skončil",
   "How_friendly_was_the_chat_agent" : "Byl operátor příjemný?",
   "How_knowledgeable_was_the_chat_agent" : "Věděl operátor jak vám pomoci?",
   "How_responsive_was_the_chat_agent" : "Odpovídal operátor rychle?",
@@ -9,10 +10,16 @@
   "Please_answer_survey" : "Věnujte prosím chvilku času ohodnocení chatu.",
   "Please_fill_name_and_email" : "Prosím vyplňte jméno a e-mail",
   "Select_a_department" : "Vyberte oddělení",
+  "Send" : "Poslat",
   "Skip" : "Přeskočit",
   "Start_Chat" : "Spustit chat",
   "Survey" : "Průzkum",
   "Survey_instructions" : "Hodnoťte každou otázku dle vaší spokojenosti, 1 - zcela nespokojeni a 5 - zcela spokojeni.",
   "Thank_you_for_your_feedback" : "Děkujeme vám za vaše hodnocení",
-  "We_are_offline_Sorry_for_the_inconvenience" : "Jsme offline. Omluváme se za nepříjemnosti."
+  "Thanks_We_ll_get_back_to_you_soon" : "Díky! Dostaneme zpátky k vám brzy.",
+  "Type_your_email" : "Zadejte svůj e-mail",
+  "Type_your_message" : "Napište zprávu",
+  "Type_your_name" : "Zadejte své jméno",
+  "We_are_offline_Sorry_for_the_inconvenience" : "Jsme offline. Omluváme se za nepříjemnosti.",
+  "You_must_complete_all_fields" : "Je nutné vyplnit všechna pole"
 }

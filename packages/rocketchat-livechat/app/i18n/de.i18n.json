@@ -1,6 +1,7 @@
 {
   "Additional_Feedback" : "Zusätzliches Feedback",
   "Appearance" : "Erscheinungsbild",
+  "Conversation_finished" : "Gespräch beendet",
   "How_friendly_was_the_chat_agent" : "Wie freundlich war der Chat-Agent?",
   "How_knowledgeable_was_the_chat_agent" : "Wie sachkundig war der Chat-Agent?",
   "How_responsive_was_the_chat_agent" : "Wie reaktionsschnell war der Chat-Agent?",
@@ -9,10 +10,16 @@
   "Please_answer_survey" : "Bitte nehmen Sie sich einen Moment Zeit, um kurz einige Fragen zu dem Gespräch zu beantworten.",
   "Please_fill_name_and_email" : "Bitte geben Sie einen Namen und eine E-Mail-Adresse ein.",
   "Select_a_department" : "Abteilung auswählen",
+  "Send" : "Senden",
   "Skip" : "Überspringen",
   "Start_Chat" : "Chat beginnen",
   "Survey" : "Umfrage",
   "Survey_instructions" : "Bewerten Sie jede Frage nach Ihrer Zufriedenheit. 1 bedeutet, dass Sie völlig unzufrieden sind und 5 bedeutet, dass Sie vollständig zufrieden sind.",
   "Thank_you_for_your_feedback" : "Vielen Dank für Ihre Rückmeldung.",
-  "We_are_offline_Sorry_for_the_inconvenience" : "Wir sind offline. Entschuldigen Sie die Unannehmlichkeiten."
+  "Thanks_We_ll_get_back_to_you_soon" : "",
+  "Type_your_email" : "Geben Sie Ihre E-Mail-Adresse an",
+  "Type_your_message" : "Geben Sie die Nachricht ein",
+  "Type_your_name" : "Geben Sie Ihren Namen ein",
+  "We_are_offline_Sorry_for_the_inconvenience" : "Wir sind offline. Entschuldigen Sie die Unannehmlichkeiten.",
+  "You_must_complete_all_fields" : "Sie müssen alle Felder ausfüllen"
 }

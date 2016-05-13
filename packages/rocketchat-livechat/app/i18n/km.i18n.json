@@ -1,6 +1,7 @@
 {
   "Additional_Feedback" : "មតិបន្ថែម",
   "Appearance" : "រូបរាង",
+  "Conversation_finished" : "សន្ទនាបានបញ្ចប់",
   "How_friendly_was_the_chat_agent" : "តើធ្វើដូចម្តេចមិត្តភាពភ្នាក់ងារជជែកកំសាន្តនោះ?",
   "How_knowledgeable_was_the_chat_agent" : "តើចំណេះភ្នាក់ងារជជែកកំសាន្តនោះ?",
   "How_responsive_was_the_chat_agent" : "តើធ្វើដូចម្តេចឆ្លើយតបភ្នាក់ងារជជែកកំសាន្តនោះ?",
@@ -9,10 +10,16 @@
   "Please_answer_survey" : "សូមចំណាយពេលបន្តិចដើម្បីឆ្លើយតបការស្ទង់មតិរហ័សអំពីការជជែកនេះ",
   "Please_fill_name_and_email" : "សូមបំពេញឈ្មោះនិងអ៊ីម៉ែល",
   "Select_a_department" : "ជ្រើសផ្នែកណាមួយ",
+  "Send" : "ផ្ញើ",
   "Skip" : "រំលង",
   "Start_Chat" : "ចាប់ផ្ដើម​ជជែក​កំសាន្ត",
   "Survey" : "ការស្ទង់មតិ",
   "Survey_instructions" : "អត្រាសំណួរគ្នាយោងទៅតាមការពេញចិត្តរបស់អ្នក, 1 មានន័យថាអ្នកគឺជាអ្នកមិនទាន់បានដោះស្រាយទាំងស្រុងនិង 5 មានន័យថាអ្នកគឺជាអ្នកពេញចិត្តទាំងស្រុង។",
   "Thank_you_for_your_feedback" : "សូមអរគុណសម្រាប់មតិរបស់អ្នក",
-  "We_are_offline_Sorry_for_the_inconvenience" : "យើងមាននៅក្រៅបណ្ដាញ។ សូមអភ័យទោសចំពោះការរំខាននេះ។"
+  "Thanks_We_ll_get_back_to_you_soon" : "សូមអរគុណ! យើងនឹងទទួលបានមកវិញដើម្បីឱ្យអ្នកឆាប់។",
+  "Type_your_email" : "វាយបញ្ចូលអ៊ីមែលរបស់លោកអ្នក",
+  "Type_your_message" : "វាយសាររបស់អ្នក",
+  "Type_your_name" : "វាយបញ្ចូលឈ្មោះរបស់អ្នក",
+  "We_are_offline_Sorry_for_the_inconvenience" : "យើងមាននៅក្រៅបណ្ដាញ។ សូមអភ័យទោសចំពោះការរំខាននេះ។",
+  "You_must_complete_all_fields" : "អ្នកត្រូវតែបំពេញវាលទាំងអស់"
 }

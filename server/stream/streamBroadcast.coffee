@@ -64,7 +64,7 @@ authorizeConnection = (connection) ->
 								authorizeConnection(connection);
 
 							when 'stream-not-exists'
-								logger.stream.error "Stream broadcast from:#{process.env.PORT} to:#{connection._stream.endpoint} with name #{streamName} does not exists".red
+								logger.stream.error "Stream broadcast from:#{process.env.PORT} to:#{connection._stream.endpoint} with name #{streamName} does not exist".red
 								logger.stream.debug "    -> connection authorized".red, connection.broadcastAuth
 								logger.stream.debug "    -> connection status".red, connection.status()
 								logger.stream.debug "    -> arguments".red, eventName, args

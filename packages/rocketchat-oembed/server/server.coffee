@@ -143,7 +143,10 @@ OEmbed.getUrlMetaWithCache = (url, withFragment) ->
 	data = OEmbed.getUrlMeta url, withFragment
 
 	if data?
-		RocketChat.models.OEmbedCache.createWithIdAndData url, data
+		try
+			RocketChat.models.OEmbedCache.createWithIdAndData url, data
+		catch e
+			console.error 'OEmbed duplicated record', url
 
 		return data
 

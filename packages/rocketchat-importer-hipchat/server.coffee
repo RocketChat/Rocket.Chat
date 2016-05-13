@@ -4,12 +4,12 @@ Importer.HipChat = class Importer.HipChat extends Importer.Base
 
 	constructor: (name, descriptionI18N, fileTypeRegex) ->
 		super(name, descriptionI18N, fileTypeRegex)
+		@logger.debug('Constructed a new Slack Importer.')
 		@userTags = []
 
 	prepare: (dataURI, sentContentType, fileName) =>
 		super(dataURI, sentContentType, fileName)
 
-		# try
 		{image, contentType} = RocketChatFile.dataURIParse dataURI
 		zip = new @AdmZip(new Buffer(image, 'base64'))
 		zipEntries = zip.getEntries()
@@ -21,7 +21,7 @@ Importer.HipChat = class Importer.HipChat extends Importer.Base
 			do (entry) =>
 				if entry.entryName.indexOf('__MACOSX') > -1
 					#ignore all of the files inside of __MACOSX
-					console.log("Ignoring the file: #{entry.entryName}")
+					@logger.debug("Ignoring the file: #{entry.entryName}")
 				if not entry.isDirectory
 					if entry.entryName.indexOf(Importer.HipChat.RoomPrefix) > -1
 						roomName = entry.entryName.split(Importer.HipChat.RoomPrefix)[1]
@@ -41,14 +41,14 @@ Importer.HipChat = class Importer.HipChat extends Importer.Base
 							try
 								tempMessages[roomName][msgGroupData] = JSON.parse entry.getData().toString()
 							catch
-								console.warn "#{entry.entryName} is not a valid JSON file! Unable to import it."
+								@logger.warn "#{entry.entryName} is not a valid JSON file! Unable to import it."
 					else if entry.entryName.indexOf(Importer.HipChat.UsersPrefix) > -1
 						usersName = entry.entryName.split(Importer.HipChat.UsersPrefix)[1]
 						if usersName is 'list.json'
 							@updateProgress Importer.ProgressStep.PREPARING_USERS
 							tempUsers = JSON.parse(entry.getData().toString()).users
 						else
-							console.warn "Unexpected file in the #{@name} import: #{entry.entryName}"
+							@logger.warn "Unexpected file in the #{@name} import: #{entry.entryName}"
 
 		# Insert the users record, eventually this might have to be split into several ones as well
 		# if someone tries to import a several thousands users instance
@@ -86,6 +86,7 @@ Importer.HipChat = class Importer.HipChat extends Importer.Base
 		@addCountToTotal messagesCount
 
 		if tempUsers.length is 0 or tempRooms.length is 0 or messagesCount is 0
+			@logger.warn "The loaded users count #{tempUsers.length}, the loaded channels #{tempChannels.length}, and the loaded messages #{messagesCount}"
 			@updateProgress Importer.ProgressStep.ERROR
 			return @getProgress()
 
@@ -97,10 +98,6 @@ Importer.HipChat = class Importer.HipChat extends Importer.Base
 
 		@updateProgress Importer.ProgressStep.USER_SELECTION
 		return new Importer.Selection @name, selectionUsers, selectionChannels
-		# catch error
-		# 	@updateRecord { 'failed': true, 'error': error }
-		# 	console.error Importer.ProgressStep.ERROR
-		# 	throw new Error 'import-hipchat-error', error
 
 	startImport: (importSelection) =>
 		super(importSelection)
@@ -118,7 +115,6 @@ Importer.HipChat = class Importer.HipChat extends Importer.Base
 
 		startedByUserId = Meteor.userId()
 		Meteor.defer =>
-			# try
 			@updateProgress Importer.ProgressStep.IMPORTING_USERS
 			for user in @users.users when user.do_import
 				do (user) =>
@@ -163,13 +159,14 @@ Importer.HipChat = class Importer.HipChat extends Importer.Base
 							for user in @users.users when user.user_id is channel.owner_user_id
 								userId = user.rocketId
 
-							if userId isnt ''
-								Meteor.runAsUser userId, () =>
-									returned = Meteor.call 'createChannel', channel.name, []
-									channel.rocketId = returned.rid
-								RocketChat.models.Rooms.update { _id: channel.rocketId }, { $set: { 'ts': new Date(channel.created * 1000) }}
-							else
-								console.warn "Failed to find the channel creator for #{channel.name}."
+							if userId is ''
+								@logger.warn "Failed to find the channel creator for #{channel.name}, setting it to the current running user."
+								userId = startedByUserId
+
+							Meteor.runAsUser userId, () =>
+								returned = Meteor.call 'createChannel', channel.name, []
+								channel.rocketId = returned.rid
+							RocketChat.models.Rooms.update { _id: channel.rocketId }, { $set: { 'ts': new Date(channel.created * 1000) }}
 						@addCountCompleted 1
 			@collection.update { _id: @channels._id }, { $set: { 'channels': @channels.channels }}
 
@@ -202,7 +199,7 @@ Importer.HipChat = class Importer.HipChat extends Importer.Base
 										if not _.isArray message
 											console.warn 'Please report the following:', message
 									@addCountCompleted 1
-			console.warn 'The following did not have users:', nousers
+			@logger.warn 'The following did not have users:', nousers
 
 			@updateProgress Importer.ProgressStep.FINISHING
 			for channel in @channels.channels when channel.do_import and channel.is_archived
@@ -212,11 +209,7 @@ Importer.HipChat = class Importer.HipChat extends Importer.Base
 
 			@updateProgress Importer.ProgressStep.DONE
 			timeTook = Date.now() - start
-			console.log "Import took #{timeTook} milliseconds."
-			# catch error
-			# 	@updateRecord { 'failed': true, 'error': error }
-			# 	console.error Importer.ProgressStep.ERROR
-			# 	throw new Error 'import-hipchat-error', error
+			@logger.log "Import took #{timeTook} milliseconds."
 
 		return @getProgress()
 
@@ -232,7 +225,9 @@ Importer.HipChat = class Importer.HipChat extends Importer.Base
 		if message?
 			for userReplace in @userTags
 				message = message.replace userReplace.hipchat, userReplace.rocket
-			return message
+		else
+			message = ''
+		return message
 
 	getSelection: () =>
 		selectionUsers = @users.users.map (user) ->
