@@ -52,8 +52,9 @@ RocketChat.EmojiPicker = {
 		return this.recent;
 	},
 	setPosition() {
-		if (window.matchMedia('all and (min-width: 360px)').matches)
-			return $('.emoji-picker')
+		if (window.matchMedia('all and (min-width: 360px)').matches) {
+			return $('.emoji-picker');
+		}
 
 		let sourcePos = $(this.source).offset();
 		let left = (sourcePos.left - this.width + 65);
