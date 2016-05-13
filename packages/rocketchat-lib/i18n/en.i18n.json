@@ -1,7 +1,7 @@
 {
   "403" : "Forbidden",
   "500" : "Internal Server Error",
-  "__username__is_no_longer__role__defined_by__user_by_" : "__username__ is no longer __role__, by __user_by__",
+  "__username__is_no_longer__role__defined_by__user_by_" : "__username__ is no longer __role__ by __user_by__",
   "__username__was_set__role__by__user_by_" : "__username__ was set __role__ by __user_by__",
   "0_Errors_Only" : "0 - Errors Only",
   "1_Errors_and_Information" : "1 - Errors and Information",
