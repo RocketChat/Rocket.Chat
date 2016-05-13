@@ -175,7 +175,7 @@ Meteor.startup ->
 		action: (event, instance) ->
 			message = @_arguments[1]
 			input = instance.find('.input-message')
-			url = document.location.origin + document.location.pathname + '?msg=' + message._id
+			url = Meteor.absoluteUrl().replace(/\/$/, '') + document.location.pathname + '?msg=' + message._id
 			text = '[ ](' + url + ') '
 			input.value = text
 			input.focus()
