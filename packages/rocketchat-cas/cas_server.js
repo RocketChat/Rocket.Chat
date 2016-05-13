@@ -36,7 +36,7 @@ var casTicket = function(req, token, callback) {
 
 	cas.validate(ticketId, function(err, status, username) {
 		if (err) {
-			logger.error('error when trying to validate ' + err);
+			logger.error('error when trying to validate ' + err.message);
 		} else if (status) {
 			logger.info('Validated user: ' + username);
 			_casCredentialTokens[token] = { id: username };
