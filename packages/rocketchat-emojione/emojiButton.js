@@ -2,9 +2,11 @@
 Template.messageBox.events({
 	'click .emoji-picker-icon'(event) {
 		event.stopPropagation();
+		const mainContent = $('.main-content');
 		if (RocketChat.EmojiPicker.isOpened()) {
 			RocketChat.EmojiPicker.close();
 		} else {
+			mainContent.addClass('emoji-picking');
 			RocketChat.EmojiPicker.open(event.currentTarget, (emoji) => {
 				const input = $(event.currentTarget).parent().parent().find('.input-message');
 
@@ -15,7 +17,8 @@ Template.messageBox.events({
 
 				input.val(textAreaTxt.substring(0, caretPos) + emojiValue + textAreaTxt.substring(caretPos));
 
-				input.focus();
+				if ( !window.matchMedia('all and (min-width: 360px)').matches )
+					input.focus();
 
 				input.prop('selectionStart', caretPos + emojiValue.length);
 				input.prop('selectionEnd', caretPos + emojiValue.length);

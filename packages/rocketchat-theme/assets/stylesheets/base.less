@@ -4602,3 +4602,174 @@ br.only-after-a {
 a + br.only-after-a {
 	display: block;
 }
+
+@media all and (max-width: 360px) {
+	#rocket-chat {
+		.fixed-title h2 {
+			font-size: 19px;
+			height: 38px;
+			margin-left: 22px;
+			margin-top: -3px;
+		}
+		.flex-tab {
+			.transform(translateY(-100%));
+			.transition(height .50s cubic-bezier(ease-in-out));
+			border-top: 1px solid #eaeaea;
+			right: 0px;
+			top: 76px;
+			width: 100%;
+		}
+		.flex-opened .flex-tab {
+			.transform(translateY(0px));
+		}
+		.flex-tab-bar {
+			align-items: center;
+			border-bottom: 1px solid #eaeaea;
+			border-left: none;
+			display: flex;
+			height: 37px;
+			left: 0;
+			padding: 0px;
+			top: 40px;
+			width: 100%;
+		}
+		.main-content {
+			right: 0px;
+			&.emoji-picking {
+				bottom: 219px;
+			}
+		}
+
+		.messages-box {
+			bottom: 18px;
+			height: calc(100% - 124px);
+			margin-top: 77px;
+		}
+		.toggle-favorite {
+			border-bottom: 1px solid #eaeaea;
+			font-size: 24px;
+			padding: 7px 8px 3px 1px;
+			position: absolute;
+			right: 0px;
+			top: 0px;
+		}
+	}
+
+	.account-box .options,
+	.flex-nav .content {
+		height: calc(100%);
+	}
+
+	.burger {
+		left: -5px;
+		top: -5px;
+	}
+
+	.emoji-picker {
+		bottom: 0px;
+		left: initial;
+		position: absolute;
+		top: initial;
+		form {
+			display: none;
+		}
+	}
+
+	.fixed-title {
+		height: 40px;
+		z-index: 200;
+		h2 {
+			margin-right: 26px;
+			.icon-lock, .icon-hash, .icon-at {
+				font-size: 14px;
+			}
+			.room-title {
+				font-size: 14px;
+				font-weight: bold;
+			}
+			.room-topic {
+				display: block;
+				font-size: 12px;
+				font-style: italic;
+				line-height: 100%;
+				margin-left: 5px;
+				margin-top: -6px;
+				overflow: hidden;
+				padding-top: 0;
+				text-overflow: ellipsis;
+			}
+		}
+	}
+
+	.flex-tab-bar .tab-button.active {
+		border-right: none;
+		border-top: 3px solid #f00;
+		margin-left: 0px;
+		margin-top: -3px;
+		padding-left: 10px;
+	}
+
+	.message {
+		padding-left: 63px;
+		.thumb {
+			left: 13px;
+		}
+	}
+
+	.messages-container {
+		.footer {
+			min-height: 37px;
+			padding: 0px;
+		}
+		.message-form {
+			.message-input {
+				display: flex;
+				.file {
+					order: 2;
+					position: relative;
+				}
+				.input-message-container {
+					align-items: center;
+					background-color: #fff;
+					display: flex;
+					.inner-right-toolbar {
+						left: 0px;
+						order: 1;
+						padding: 0px 6px 0px 4px;
+						position: relative;
+						top: 0px;
+					}
+				}
+				.message-buttons {
+					order: 3;
+					input {
+						float: left;
+						width: 34px;
+					}
+				}
+			}
+			.formatting-tips {
+				display: none;
+			}
+			.users-typing {
+				display: none;
+			}
+			textarea {
+				border: 0;
+				height: 35px;
+				order: 2;
+				padding-left: 0px;
+				padding-right: 0px;
+			}
+		}
+	}
+
+	.side-nav {
+		.footer {
+			display: none;
+		}
+		.rooms-list {
+			height: calc(100%);
+		}
+	}
+}
