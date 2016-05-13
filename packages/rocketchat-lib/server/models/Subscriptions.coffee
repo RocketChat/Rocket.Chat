@@ -140,7 +140,7 @@ RocketChat.models.Subscriptions = new class extends RocketChat.models._Base
 
 		return @update query, update
 
-	updateNameByRoomId: (roomId, name) ->
+	updateNameAndAlertByRoomId: (roomId, name) ->
 		query =
 			rid: roomId
 
@@ -148,6 +148,16 @@ RocketChat.models.Subscriptions = new class extends RocketChat.models._Base
 			$set:
 				name: name
 				alert: true
+
+		return @update query, update, { multi: true }
+
+	updateNameByRoomId: (roomId, name) ->
+		query =
+			rid: roomId
+
+		update =
+			$set:
+				name: name
 
 		return @update query, update, { multi: true }
 

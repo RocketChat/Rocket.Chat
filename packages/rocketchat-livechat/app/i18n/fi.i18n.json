@@ -1,6 +1,7 @@
 {
   "Additional_Feedback" : "Lisäpalaute",
   "Appearance" : "Ulkoasu",
+  "Conversation_finished" : "Conversation päättynyt",
   "How_friendly_was_the_chat_agent" : "Kuinka ystävällinen chat agentti oli?",
   "How_knowledgeable_was_the_chat_agent" : "Miten osaava chat agentti oli?",
   "How_responsive_was_the_chat_agent" : "Miten reagoiva chat agentti oli?",
@@ -9,10 +10,16 @@
   "Please_answer_survey" : "Käytä hetki vastataksesi pikakyselyyn tästä chatista",
   "Please_fill_name_and_email" : "Täytä nimi ja sähköpostiosoite",
   "Select_a_department" : "Valitse osasto",
+  "Send" : "Lähettää",
   "Skip" : "Ohita",
   "Start_Chat" : "Aloita chat",
   "Survey" : "Tutkimus",
   "Survey_instructions" : "Arvioi jokainen kysymys sen mukaan miten tyytyväinen olet, 1 tarkoittaa että olet täysin tyytymätön ja 5 tarkoittaa että olet täysin tyytyväinen.",
   "Thank_you_for_your_feedback" : "Kiitos palautteestasi",
-  "We_are_offline_Sorry_for_the_inconvenience" : "Palvelu on offline-tilassa. Pahoittelut häiriöstä."
+  "Thanks_We_ll_get_back_to_you_soon" : "Kiitos! Palaamme sinulle pian.",
+  "Type_your_email" : "Kirjoita sähköpostiviesti",
+  "Type_your_message" : "Kirjoita viesti",
+  "Type_your_name" : "Kirjoita nimesi",
+  "We_are_offline_Sorry_for_the_inconvenience" : "Palvelu on offline-tilassa. Pahoittelut häiriöstä.",
+  "You_must_complete_all_fields" : "Määritä kaikki kentät"
 }

@@ -52,7 +52,7 @@
 			console.log 'readMessage -> readNow canceled, alert', subscription.alert, 'and unread', subscription.unread if @debug
 			return
 
-		room = RoomManager.openedRooms[subscription.t + subscription.name]
+		room = RoomManager.getOpenedRoomByRid rid
 		if not room?
 			console.log 'readMessage -> readNow canceled, no room found for typeName:', subscription.t + subscription.name if @debug
 			return

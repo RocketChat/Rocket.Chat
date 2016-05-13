@@ -9,11 +9,14 @@ Meteor.methods
 
 		this.unblock()
 
+		header = RocketChat.placeholders.replace(RocketChat.settings.get('Email_Header') || '');
+		footer = RocketChat.placeholders.replace(RocketChat.settings.get('Email_Footer') || '');
+
 		Email.send
 			to: user.emails[0].address
 			from: RocketChat.settings.get('From_Email')
 			subject: "SMTP Test Email"
-			html: "You have successfully sent an email"
+			html: header + "<p>You have successfully sent an email</p>" + footer
 
 		console.log 'Sending email to ' + user.emails[0].address
 
