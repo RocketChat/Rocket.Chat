@@ -6,7 +6,6 @@ RocketChat.TabBar = new class
 
 	extraGroups = {}
 
-	animating = false
 	open = new ReactiveVar false
 	template = new ReactiveVar ''
 	data = new ReactiveVar {}
@@ -14,7 +13,6 @@ RocketChat.TabBar = new class
 	visibleGroup = new ReactiveVar ''
 
 	setTemplate = (t, callback) ->
-		return if animating is true
 		template.set t
 		openFlex(callback)
 
@@ -28,17 +26,12 @@ RocketChat.TabBar = new class
 		return data.get()
 
 	openFlex = (callback) ->
-		return if animating is true
 		toggleFlex 1, callback
 
 	closeFlex = (callback) ->
-		return if animating is true
 		toggleFlex -1, callback
 
 	toggleFlex = (status, callback) ->
-		return if animating is true
-		animating = true
-
 		if status is -1 or (status isnt 1 and open.get())
 			open.set false
 		else
@@ -48,9 +41,8 @@ RocketChat.TabBar = new class
 				open.set true
 			, 50
 		setTimeout ->
-			animating = false
 			callback?()
-		, 500
+		, if open.get() then 0 else 500
 
 	show = ->
 		$('.flex-tab-bar').show()
@@ -94,7 +86,6 @@ RocketChat.TabBar = new class
 		return _.sortBy (_.toArray buttons.get()), 'order'
 
 	reset = ->
-		animating = false
 		resetButtons()
 		closeFlex()
 		template.set ''
