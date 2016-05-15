@@ -58,7 +58,7 @@ function getEmojisBySearchTerm(searchTerm) {
 	for (let category of Object.keys(emojisByCategory)) {
 		if (category !== 'recent') {
 			for (let emoji of emojisByCategory[category]) {
-				if (emoji.indexOf(searchTerm) > -1) {
+				if (emoji.indexOf(searchTerm.toLowerCase()) > -1) {
 					let tone = '';
 
 					if (actualTone > 0 && toneList.hasOwnProperty(emoji)) {
