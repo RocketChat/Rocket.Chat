@@ -247,3 +247,19 @@ Template.main.onRendered ->
 			if not $(':focus').is('INPUT,TEXTAREA')
 				$('.input-message').focus()
 		, 100
+
+	$(window).on('mouseleave', (e) ->
+		elem = $(e.fromElement)
+		avatarElem = elem.find('a.thumb')
+		if avatarElem.attr('data-username')
+			RocketChat.tooltip.hide();
+	)
+
+	$(window).on('mouseenter', (e) ->
+		elem = $(e.fromElement)
+		avatarElem = elem.find('a.thumb')
+		username = avatarElem.attr('data-username')
+		if username
+			e.stopPropagation()
+			RocketChat.tooltip.showElement($('<span>').text(username), avatarElem)
+	)

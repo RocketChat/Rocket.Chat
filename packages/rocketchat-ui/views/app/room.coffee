@@ -105,8 +105,13 @@ Template.room.helpers
 	showToggleFavorite: ->
 		return true if isSubscribed(this._id) and favoritesEnabled()
 
-	compactView: ->
-		return 'compact' if Meteor.user()?.settings?.preferences?.compactView
+	viewMode: ->
+		viewMode = Meteor.user()?.settings?.preferences?.viewMode
+		switch viewMode
+			when 1 then cssClass = 'cozy'
+			when 2 then cssClass = 'compact'
+			else cssClass = ''
+		return cssClass
 
 	selectable: ->
 		return Template.instance().selectable.get()
