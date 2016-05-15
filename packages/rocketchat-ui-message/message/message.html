@@ -21,10 +21,12 @@
 				<button class="thumb user-card-message" data-username="{{u.username}}" tabindex="1">{{> avatar username=u.username}}</button>
 			{{/if}}
 		{{/if}}
-		{{#if alias}}
-			<button class="user user-card-message" data-username="{{u.username}}" tabindex="1">{{alias}} <span class="message-alias">@{{u.username}}</span></button>
-		{{else}}
-			<button class="user user-card-message" data-username="{{u.username}}" tabindex="1">{{u.username}}</button>
+		{{#if showUserNames}}
+			{{#if alias}}
+				<button type="button" class="user user-card-message" data-username="{{u.username}}" tabindex="1">{{alias}} <span class="message-alias">@{{u.username}}</span></button>
+			{{else}}
+				<button type="button" class="user user-card-message" data-username="{{u.username}}" tabindex="1">{{u.username}}</button>
+			{{/if}}
 		{{/if}}
 		<span class="info">
 			{{#each roleTags}}
