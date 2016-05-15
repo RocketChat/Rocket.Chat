@@ -2778,12 +2778,68 @@ body:not(.is-cordova) {
 	}
 }
 
-.compact {
+.cozy {
 	.message {
 		padding: 4px 20px 4px 70px;
 		.body {
-			margin-top: 0px;
+			margin-top: 0;
 		}
+	}
+}
+.compact{
+	.message{
+		min-height: 26px;
+		padding: 5px 15px 0 37px;
+		.body{
+			display: inline;
+			.inline-image img{
+				max-height: 100px;
+			}
+			.inline-video{
+				max-height: 150px;
+			}
+			.attachment {
+				.attachment-title > a {
+					font-size: 0.9em;
+				}
+				.attachment-author img{
+					border-radius: 2px;
+				}
+			}
+			blockquote iframe{
+				height: 150px;
+				width: 266px;
+			}
+		}
+		.info{
+			.avatar-image{
+				border-radius: 2px;
+			}
+			.role-tag{
+				display: none;
+			}
+		}
+		.thumb{
+			height: 20px;
+			width: 20px;
+			left: 10px;
+		}
+		&.sequential{
+			 .thumb:not(.thumb-small), .user {
+				 display: inline-block;
+			 }
+			.info{
+				position: relative;
+				text-align: right;
+				left: 0;
+				.time, .edited{
+					display: inline-block;
+				}
+			}
+		}
+	}
+	.message-cog-container .message-cog{
+		visibility: visible;
 	}
 }
 
@@ -2832,6 +2888,62 @@ body:not(.is-cordova) {
 				margin-right: -3px;
 			}
 		}
+	}
+}
+.compact{
+	.message{
+		min-height: 26px;
+		padding: 5px 15px 0 37px;
+		.body{
+			display: inline;
+			.inline-image img{
+				max-height: 100px;
+			}
+			.inline-video{
+				max-height: 150px;
+			}
+			.attachment {
+				.attachment-title > a {
+					font-size: 0.9em;
+				}
+				.attachment-author img{
+					border-radius: 2px;
+				}
+			}
+			blockquote iframe{
+				height: 150px;
+				width: 266px;
+			}
+		}
+		.info{
+			.avatar-image{
+				border-radius: 2px;
+			}
+			.role-tag{
+				display: none;
+			}
+		}
+		.thumb{
+			height: 20px;
+			width: 20px;
+			left: 10px;
+		}
+		&.sequential{
+			 .thumb:not(.thumb-small), .user {
+				 display: inline-block;
+			 }
+			.info{
+				position: relative;
+				text-align: right;
+				left: 0;
+				.time, .edited{
+					display: inline-block;
+				}
+			}
+		}
+	}
+	.message-cog-container .message-cog{
+		visibility: visible;
 	}
 }
 

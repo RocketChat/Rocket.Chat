@@ -116,6 +116,10 @@ Template.message.helpers
 		data.index = index
 		return
 
+	showUserNames: ->
+		prefs = Meteor.user()?.settings?.preferences
+		return if prefs?.showUsernames? then prefs.showUsernames else true
+
 Template.message.onCreated ->
 	msg = Template.currentData()
 
