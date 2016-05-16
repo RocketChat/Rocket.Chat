@@ -128,7 +128,7 @@
   "Allow_Invalid_SelfSigned_Certs" : "ອະນຸຍາດໃຫ້ຖືກຕ້ອງດ້ວຍຕົນເອງໄດ້ເຊັນໃບຮັບຮອງ",
   "Allow_Invalid_SelfSigned_Certs_Description" : "ອະນຸຍາດໃຫ້ບໍ່ຖືກຕ້ອງແລະຕົນເອງລົງນາມຂອງໃບຢັ້ງຢືນການ SSL ສໍາລັບການກວດສອບການເຊື່ອມຕໍ່ແລະຕົວຢ່າງ.",
   "and" : "ແລະ",
-  "And_more" : "ແລະ __length ຫຼາຍ __...",
+  "And_more" : "ແລະ __length ຫຼາຍ __",
   "Animals_and_Nature" : "ສັດແລະທໍາມະຊາດ",
   "API" : "API",
   "API_Analytics" : "ການວິເຄາະ",

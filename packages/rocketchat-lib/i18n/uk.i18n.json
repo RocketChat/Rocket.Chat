@@ -128,7 +128,7 @@
   "Allow_Invalid_SelfSigned_Certs" : "Дозволити Invalid Самоподпісним Certs",
   "Allow_Invalid_SelfSigned_Certs_Description" : "Дозволити недійсні і самозаверенние SSL свідоцтво, для перевірки посилань і попередніх переглядів.",
   "and" : "і",
-  "And_more" : "І ще __length __...",
+  "And_more" : "І ще __length __",
   "Animals_and_Nature" : "Тварини і Природа",
   "API" : "API",
   "API_Analytics" : "аналітика",

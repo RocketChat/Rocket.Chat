@@ -128,7 +128,7 @@
   "Allow_Invalid_SelfSigned_Certs" : "Разрешить недействительные самоподписанные сертификаты",
   "Allow_Invalid_SelfSigned_Certs_Description" : "Разрешить некорректные и самоподписанные SSL сертификаты.",
   "and" : "и",
-  "And_more" : "И еще __length__...",
+  "And_more" : "И еще __length__",
   "Animals_and_Nature" : "Животные и природа",
   "API" : "Интерфейс приложения",
   "API_Analytics" : "Аналитика",

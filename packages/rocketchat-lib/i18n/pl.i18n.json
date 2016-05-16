@@ -128,7 +128,7 @@
   "Allow_Invalid_SelfSigned_Certs" : "Pozwól na nieprawidłowe certyfikaty",
   "Allow_Invalid_SelfSigned_Certs_Description" : "Pozwól na nieprawidłowe i samodzielnie podpisane certyfikaty SSL podczas walidacji linków i podglądów",
   "and" : "i",
-  "And_more" : "I więcej __length __...",
+  "And_more" : "I więcej __length __",
   "Animals_and_Nature" : "Fauna & Flora",
   "API" : "API",
   "API_Analytics" : "Analytics",
