@@ -47,8 +47,11 @@ RocketChat.models.Rooms = new class extends RocketChat.models._Base
 
 
 	# FIND
-	findById: (roomId) ->
+	findById: (roomId, options) ->
 		return @find { _id: roomId }, options
+
+	findByIds: (roomIds, options) ->
+		return @find { _id: $in: [].concat roomIds }, options
 
 	findByType: (type, options) ->
 		query =
