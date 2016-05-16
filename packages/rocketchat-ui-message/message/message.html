@@ -72,7 +72,7 @@
 		</div>
 		<ul class="reactions {{hideReactions}}">
 			{{#each reaction in reactions}}
-				<li data-emoji="{{reaction.emoji}}">
+				<li data-emoji="{{reaction.emoji}}" {{markUserReaction reaction}}>
 					<span class="reaction-emoji">{{> emojione reaction.emoji}}</span>
 					<span class="reaction-count">{{reaction.count}}</span>
 					<ul class="people">
