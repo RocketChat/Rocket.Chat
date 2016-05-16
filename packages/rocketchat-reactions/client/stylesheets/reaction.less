@@ -12,6 +12,7 @@
 			border: 1px solid #E7E7E7;
 			background-color: #FCFCFC;
 			padding: 0 4px 0 2px;
+			color: #aaa;
 
 			.reaction-emoji {
 				.emojione {
@@ -30,7 +31,6 @@
 			.reaction-count {
 				font-size: 0.65rem;
 				margin-left: -3px;
-				color: #888;
 				top: -1px;
 				position: relative;
 
@@ -58,11 +58,12 @@
 			&:hover {
 				border-color: #4fb0fc;
 			}
-		}
 
-		.selected {
-			border-color: #bde1fe;
-			background-color: #f3f9ff;
+			&.selected {
+				border-color: #bde1fe;
+				background-color: #f3f9ff;
+				color: #4fb0fc;
+			}
 		}
 
 		&:hover {
