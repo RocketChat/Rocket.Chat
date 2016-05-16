@@ -5,27 +5,21 @@
 		> li {
 			cursor: pointer;
 			position: relative;
-			height: 24px;
-			line-height: 22px;
+			height: 22px;
+			line-height: 20px;
 			display: inline-block;
 			border-radius: 5px;
-			border: 1px solid #06F;
-			background-color: #0AF;
 			border: 1px solid #E7E7E7;
 			background-color: #FCFCFC;
-			padding-right: 2px;
-			
-			html.rtl & {
-				padding-left: 2px;
-				padding-right: 0;
-			}
+			padding: 0 4px 0 2px;
 
 			.reaction-emoji {
 				.emojione {
-					min-width: 15px;
-					min-height: 15px;
-					width: 15px;
-					height: 15px;
+					min-width: 16px;
+					min-height: 16px;
+					width: 16px;
+					height: 16px;
+					margin: -.2ex .15em .2ex;
 				}
 			}
 
@@ -35,31 +29,40 @@
 
 			.reaction-count {
 				font-size: 0.65rem;
-				margin-left: -5px;
+				margin-left: -3px;
 				color: #888;
-				
+				top: -1px;
+				position: relative;
+
 				html.rtl & {
-					margin-right: -5px;
+					margin-right: -3px;
 					margin-left: auto;
 				}
 			}
 
 			&.add-reaction {
 				visibility: hidden;
-				padding-left: 2px;
-				margin-left: 4px;
+				margin-left: 10px;
 				color: #888;
 				opacity: 0;
+				padding: 0 2px;
 
 				.transition(opacity 0.2s ease);
-				
+
 				html.rtl & {
-					padding-right: 2px;
-					padding-left: 0px;
-					margin-right: 4px;
+					margin-right: 10px;
 					margin-left: 0px;
 				}
 			}
+
+			&:hover {
+				border-color: #4fb0fc;
+			}
+		}
+
+		.selected {
+			border-color: #bde1fe;
+			background-color: #f3f9ff;
 		}
 
 		&:hover {
