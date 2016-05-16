@@ -104,7 +104,7 @@ class CustomOAuth
 		self = @
 		OAuth.registerService @name, 2, null, (query) ->
 			accessToken = self.getAccessToken query
-			console.log 'at:', accessToken
+			# console.log 'at:', accessToken
 
 			identity = self.getIdentity accessToken
 
@@ -120,7 +120,7 @@ class CustomOAuth
 			if identity?.user_id and not identity.id
 				identity.id = identity.user_id
 
-			console.log 'id:', JSON.stringify identity, null, '  '
+			# console.log 'id:', JSON.stringify identity, null, '  '
 
 			serviceData =
 				_OAuthCustom: true
@@ -134,7 +134,7 @@ class CustomOAuth
 					profile:
 						name: identity.name or identity.username or identity.nickname
 
-			console.log data
+			# console.log data
 
 			return data
 
