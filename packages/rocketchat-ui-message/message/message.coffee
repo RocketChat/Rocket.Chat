@@ -106,8 +106,15 @@ Template.message.helpers
 				emoji: emoji
 				count: reaction.usernames.length
 				usernames: usernames
+				userReacted: reaction.usernames.indexOf(Meteor.user().username) > -1
 
 		return msgReactions
+
+	markUserReaction: (reaction) ->
+		if reaction.userReacted
+			return {
+				class: 'selected'
+			}
 
 	hideReactions: ->
 		return 'hidden' if _.isEmpty(@reactions)
