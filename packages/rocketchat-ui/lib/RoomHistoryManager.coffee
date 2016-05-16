@@ -127,7 +127,7 @@
 
 			setTimeout ->
 				msgElement.removeClass('highlight')
-			, 3000
+			, 500
 		else
 			room = getRoom message.rid
 			room.isLoading.set true
