@@ -1,3 +1,4 @@
+/* globals DDPRateLimiter */
 Meteor.methods({
 	'livechat:sendOfflineMessage'(data) {
 		const header = RocketChat.placeholders.replace(RocketChat.settings.get('Email_Header') || '');
@@ -24,7 +25,7 @@ Meteor.methods({
 				to: RocketChat.settings.get('Livechat_offline_email'),
 				from: `${data.name} - ${data.email} <${fromEmail}>`,
 				replyTo: `${data.name} <${data.email}>`,
-				subject: 'New livechat offline message',
+				subject: `Livechat offline message from ${data.name}: ${message.substring(0, 20)}`,
 				html: header + html + footer
 			});
 		});
@@ -32,3 +33,11 @@ Meteor.methods({
 		return true;
 	}
 });
+
+DDPRateLimiter.addRule({
+	type: 'method',
+	name: 'livechat:sendOfflineMessage',
+	connectionId() {
+		return true;
+	}
+}, 1, 5000);
