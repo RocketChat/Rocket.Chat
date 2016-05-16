@@ -61,17 +61,16 @@
 
 	removeRoomNotification: (rid) ->
 		Tracker.nonreactive ->
-			newRoomSound = Session.get('newRoomSound')
-			newRoomSound = _.without newRoomSound, rid
-			Session.set('newRoomSound', newRoomSound)
+			Session.set('newRoomSound', [])
 
 		$('.link-room-' + rid).removeClass('new-room-highlight')
 
 Tracker.autorun ->
 	if Session.get('newRoomSound')?.length > 0
-		if not Session.equals('user_' + Meteor.userId() + '_status', 'busy') and Meteor.user()?.settings?.preferences?.newRoomNotification isnt false
-			$('#chatNewRoomNotification').each ->
-				this.play()
+		Tracker.nonreactive ->
+			if not Session.equals('user_' + Meteor.userId() + '_status', 'busy') and Meteor.user()?.settings?.preferences?.newRoomNotification isnt false
+				$('#chatNewRoomNotification').each ->
+					this.play()
 	else
 		$('#chatNewRoomNotification').each ->
 			this.pause()
