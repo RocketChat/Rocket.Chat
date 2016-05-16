@@ -4,9 +4,14 @@ Meteor.methods({
 			throw new Meteor.Error(203, 'User_logged_out');
 		}
 
-		let message = RocketChat.models.Messages.findOne({ _id: messageId });
-
 		const user = Meteor.user();
+
+		let message = RocketChat.models.Messages.findOne({ _id: messageId });
+		let room = RocketChat.models.Rooms.findOne({ _id: message.rid });
+
+		if (Array.isArray(room.muted) && room.muted.indexOf(user.username) !== -1) {
+			return false;
+		}
 
 		if (message.reactions && message.reactions[reaction] && message.reactions[reaction].usernames.indexOf(user.username) !== -1) {
 			message.reactions[reaction].usernames.splice(message.reactions[reaction].usernames.indexOf(user.username), 1);
