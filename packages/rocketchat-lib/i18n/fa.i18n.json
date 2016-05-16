@@ -128,7 +128,7 @@
   "Allow_Invalid_SelfSigned_Certs" : "اجازه می دهد نامعتبر خود امضا Certs ارسل",
   "Allow_Invalid_SelfSigned_Certs_Description" : "اجازه می دهد به گواهینامه SSL نامعتبر و خود امضا برای اعتبار سنجی لینک و پیش نمایش.",
   "and" : "و",
-  "And_more" : "و __length بیشتر __...",
+  "And_more" : "و __length بیشتر __",
   "Animals_and_Nature" : "حیوانات و طبیعت",
   "API" : "API",
   "API_Analytics" : "تجزیه و تحلیل ترافیک",
