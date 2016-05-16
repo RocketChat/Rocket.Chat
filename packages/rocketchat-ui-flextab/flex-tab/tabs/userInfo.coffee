@@ -29,7 +29,7 @@ Template.userInfo.helpers
 			return moment(user.createdAt).format('LLL')
 
 	canDirectMessage: (username) ->
-		return Meteor.user()?.username isnt username
+		return RocketChat.authz.hasAllPermission('create-d') and Meteor.user()?.username isnt username
 
 	linkedinUsername: ->
 		user = Template.instance().user.get()
