@@ -128,7 +128,7 @@
   "Allow_Invalid_SelfSigned_Certs" : "Dopusti Pogrešna samopotpisan Certifikati",
   "Allow_Invalid_SelfSigned_Certs_Description" : "Dopusti nevažeće i samopotpisane SSL certifikata za vezu validaciju i pregledima.",
   "and" : "i",
-  "And_more" : "I više __length __...",
+  "And_more" : "I više __length __",
   "Animals_and_Nature" : "Životinje i priroda",
   "API" : "API",
   "API_Analytics" : "Analitika",

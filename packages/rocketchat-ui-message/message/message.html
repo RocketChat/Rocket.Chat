@@ -76,9 +76,9 @@
 					<span class="reaction-emoji">{{> emojione reaction.emoji}}</span>
 					<span class="reaction-count">{{reaction.count}}</span>
 					<ul class="people">
-						{{#each reaction.usernames}}
-							<li>{{.}}</li>
-						{{/each}}
+						<span style="font-weight: bold;">
+							{{reaction.usernames}} <span style="color: #aaa;">{{reaction.reaction}}</span>
+						</span>
 					</ul>
 				</li>
 			{{/each}}

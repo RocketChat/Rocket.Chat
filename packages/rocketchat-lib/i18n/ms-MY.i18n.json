@@ -128,7 +128,7 @@
   "Allow_Invalid_SelfSigned_Certs" : "Benarkan sah sendiri Ditandatangani CERT",
   "Allow_Invalid_SelfSigned_Certs_Description" : "Benarkan sijil SSL tidak sah dan ditandatangani sendiri untuk pengesahan link dan tinjauan.",
   "and" : "dan",
-  "And_more" : "Dan lebih __length __...",
+  "And_more" : "Dan lebih __length __",
   "Animals_and_Nature" : "Animals & Nature",
   "API" : "API",
   "API_Analytics" : "Analisis",

@@ -128,7 +128,7 @@
   "Allow_Invalid_SelfSigned_Certs" : "Επιτρέψτε Άκυρη Self-Υπεγράφη Certs",
   "Allow_Invalid_SelfSigned_Certs_Description" : "Επιτρέψτε άκυρη και αυτο-υπογεγραμμένο το πιστοποιητικό SSL για την επικύρωση σύνδεσμο και προεπισκοπήσεις.",
   "and" : "και",
-  "And_more" : "Και πιο __length __...",
+  "And_more" : "Και πιο __length __",
   "Animals_and_Nature" : "Ζώα και Φύση",
   "API" : "API",
   "API_Analytics" : "Analytics",

@@ -128,7 +128,7 @@
   "Allow_Invalid_SelfSigned_Certs" : "잘못된 Self-Signed Certs 허용",
   "Allow_Invalid_SelfSigned_Certs_Description" : "링크 확인 및 미리보기 무효 및 자체 서명 된 SSL 인증서의 허용.",
   "and" : "그리고",
-  "And_more" : "그리고 더 __length __...",
+  "And_more" : "그리고 더 __length __",
   "Animals_and_Nature" : "동물과 자연",
   "API" : "API",
   "API_Analytics" : "분석",

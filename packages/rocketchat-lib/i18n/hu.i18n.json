@@ -128,7 +128,7 @@
   "Allow_Invalid_SelfSigned_Certs" : "Az érvénytelen Önaláíró Certs",
   "Allow_Invalid_SelfSigned_Certs_Description" : "Az érvénytelen és önaláíró SSL tanúsítvány a kapcsolatot a hitelesítésre és előzetesek.",
   "and" : "és",
-  "And_more" : "És még __length __...",
+  "And_more" : "És még __length __",
   "Animals_and_Nature" : "Állatok és Természet",
   "API" : "API",
   "API_Analytics" : "Analitika",

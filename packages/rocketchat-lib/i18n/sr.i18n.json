@@ -128,7 +128,7 @@
   "Allow_Invalid_SelfSigned_Certs" : "Дозволите Погрешна селф-сигнед Цертс",
   "Allow_Invalid_SelfSigned_Certs_Description" : "Дозволите неважеће и само-потписан ССЛ сертификата за линк валидацију и прегледима.",
   "and" : "и",
-  "And_more" : "И још __ленгтх __...",
+  "And_more" : "И још __ленгтх __",
   "Animals_and_Nature" : "Животиње и Природа",
   "API" : "АПИ за",
   "API_Analytics" : "аналитика",

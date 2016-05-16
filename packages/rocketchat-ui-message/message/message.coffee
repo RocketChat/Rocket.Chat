@@ -94,19 +94,28 @@ Template.message.helpers
 
 	reactions: ->
 		msgReactions = []
+		userUsername = Meteor.user().username
 
 		for emoji, reaction of @reactions
 			total = reaction.usernames.length
-			usernames = reaction.usernames.sort().slice(0, 15)
+			usernames = '@' + reaction.usernames.slice(0, 15).join(', @')
+
+			usernames = usernames.replace('@'+userUsername, t('You').toLowerCase())
 
 			if total > 15
-				usernames.push t('And_more', { length: total - 15 })
+				usernames = usernames + ' ' + t('And_more', { length: total - 15 }).toLowerCase()
+			else
+				usernames = usernames.replace(/,([^,]+)$/, ' '+t('and')+'$1')
+
+			if usernames[0] isnt '@'
+				usernames = usernames[0].toUpperCase() + usernames.substr(1)
 
 			msgReactions.push
 				emoji: emoji
 				count: reaction.usernames.length
 				usernames: usernames
-				userReacted: reaction.usernames.indexOf(Meteor.user().username) > -1
+				reaction: ' ' + t('Reacted_with').toLowerCase() + ' ' + emoji
+				userReacted: reaction.usernames.indexOf(userUsername) > -1
 
 		return msgReactions
 
