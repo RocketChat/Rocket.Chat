@@ -128,7 +128,7 @@
   "Allow_Invalid_SelfSigned_Certs" : "Lejo Invalid Self-Signed Certs",
   "Allow_Invalid_SelfSigned_Certs_Description" : "Lejo të pavlefshme dhe të vetë-nënshkruar-së certifikatë SSL për vlefshmërinë Lidhje dhe previews.",
   "and" : "dhe",
-  "And_more" : "Dhe më shumë __length __...",
+  "And_more" : "Dhe më shumë __length __",
   "Animals_and_Nature" : "Animals & Natyra",
   "API" : "API",
   "API_Analytics" : "Analitikë",

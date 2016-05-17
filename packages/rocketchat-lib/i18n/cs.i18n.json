@@ -128,7 +128,7 @@
   "Allow_Invalid_SelfSigned_Certs" : "Umožnit nevalidní či self-signed certifikáty",
   "Allow_Invalid_SelfSigned_Certs_Description" : "Umožňují použít neplatné/vlastní podepsané SSL certifikáty pro ověření spojení a náhledy.",
   "and" : "a",
-  "And_more" : "A další __length __...",
+  "And_more" : "A další __length __",
   "Animals_and_Nature" : "Zvířata & Příroda",
   "API" : "API",
   "API_Analytics" : "Analytika",

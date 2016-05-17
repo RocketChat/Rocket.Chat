@@ -128,7 +128,7 @@
   "Allow_Invalid_SelfSigned_Certs" : "அனுமதி தவறான சுய கையொப்பம் சான்றிதழ்களையும்",
   "Allow_Invalid_SelfSigned_Certs_Description" : "இணைப்பு சரிபார்த்தல் மற்றும் முன்னோட்டங்கள் தவறான மற்றும் சுய கையொப்பம் SSL சான்றிதழ் தான் அனுமதி.",
   "and" : "மற்றும்",
-  "And_more" : "மேலும் __length __...",
+  "And_more" : "மேலும் __length __",
   "Animals_and_Nature" : "விலங்குகள் மற்றும் இயற்கை",
   "API" : "ஏபிஐ",
   "API_Analytics" : "அனலிட்டிக்ஸ்",

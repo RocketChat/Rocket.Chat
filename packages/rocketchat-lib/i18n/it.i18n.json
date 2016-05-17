@@ -128,7 +128,7 @@
   "Allow_Invalid_SelfSigned_Certs" : "Consentire valido autofirmato Certs",
   "Allow_Invalid_SelfSigned_Certs_Description" : "Consentire di certificati SSL non validi e auto-firmato per la validazione di collegamento e anteprime.",
   "and" : "e",
-  "And_more" : "E più __length __...",
+  "And_more" : "E più __length __",
   "Animals_and_Nature" : "Animali & Natura",
   "API" : "API",
   "API_Analytics" : "analitica",

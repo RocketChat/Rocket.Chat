@@ -128,7 +128,7 @@
   "Allow_Invalid_SelfSigned_Certs" : "İzin geçersiz Sertifikaları Kendinden İmzalı",
   "Allow_Invalid_SelfSigned_Certs_Description" : "bağlantı doğrulama ve önizleme için geçersiz ve kendinden imzalı SSL sertifikası 's izin verin.",
   "and" : "ve",
-  "And_more" : "Ve daha __length __...",
+  "And_more" : "Ve daha __length __",
   "Animals_and_Nature" : "Hayvanlar ve Doğa",
   "API" : "API",
   "API_Analytics" : "Analiz",

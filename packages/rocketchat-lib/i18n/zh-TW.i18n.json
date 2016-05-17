@@ -128,7 +128,7 @@
   "Allow_Invalid_SelfSigned_Certs" : "允许无效，自签名的SSL证书进行链路验证和预览",
   "Allow_Invalid_SelfSigned_Certs_Description" : "允許使用無效的和自簽署的SSL證書的鏈路驗證和預覽。",
   "and" : "和",
-  "And_more" : "而更多的__length __...",
+  "And_more" : "而更多的__length __",
   "Animals_and_Nature" : "動物與自然",
   "API" : "API",
   "API_Analytics" : "分析",
