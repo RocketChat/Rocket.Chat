@@ -128,7 +128,7 @@
   "Allow_Invalid_SelfSigned_Certs" : "Tillåt Ogiltig självsignerat Cert",
   "Allow_Invalid_SelfSigned_Certs_Description" : "Tillåt ogiltiga och självsignerade SSL-certifikat är för länk validering och förhandsvisningar.",
   "and" : "och",
-  "And_more" : "Och mer __length __...",
+  "And_more" : "Och mer __length __",
   "Animals_and_Nature" : "Djur & natur",
   "API" : "API",
   "API_Analytics" : "Analytics",

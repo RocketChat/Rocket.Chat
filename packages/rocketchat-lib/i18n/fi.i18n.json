@@ -128,7 +128,7 @@
   "Allow_Invalid_SelfSigned_Certs" : "Salli virheelliset ja itse allekirjoitetut SSL varmenteet linkin validointiin ja esikatseluihin",
   "Allow_Invalid_SelfSigned_Certs_Description" : "Hyväksy virheelliset ja itse allekirjoitetut SSL-varmenteet linkkien validoinnissa ja esikatselussa.",
   "and" : "ja",
-  "And_more" : "Ja lisää __length __...",
+  "And_more" : "Ja lisää __length __",
   "Animals_and_Nature" : "Kasvit ja eläimet",
   "API" : "API",
   "API_Analytics" : "Analytics",

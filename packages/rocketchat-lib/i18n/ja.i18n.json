@@ -128,7 +128,7 @@
   "Allow_Invalid_SelfSigned_Certs" : "無効な自己署名証明書を許可する",
   "Allow_Invalid_SelfSigned_Certs_Description" : "リンク検証とプレビューに不正な自己署名証明書を許可する。",
   "and" : "と",
-  "And_more" : "さらに __length__...",
+  "And_more" : "さらに __length__",
   "Animals_and_Nature" : "動物と自然",
   "API" : "API",
   "API_Analytics" : "アナリティクス",

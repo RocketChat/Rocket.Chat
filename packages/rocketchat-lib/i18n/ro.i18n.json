@@ -128,7 +128,7 @@
   "Allow_Invalid_SelfSigned_Certs" : "Permiteți Certificate Self-Signed Certs",
   "Allow_Invalid_SelfSigned_Certs_Description" : "Permiteți certificat SSL invalid și auto-semnat pentru validarea link-urilor și previzualizări.",
   "and" : "și",
-  "And_more" : "Și mai mult __length __...",
+  "And_more" : "Și mai mult __length __",
   "Animals_and_Nature" : "Animale și natură",
   "API" : "API",
   "API_Analytics" : "Analytics",
