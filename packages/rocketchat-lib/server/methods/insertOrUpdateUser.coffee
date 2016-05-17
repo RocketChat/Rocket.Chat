@@ -50,6 +50,7 @@ Meteor.methods
 			updateUser =
 				$set:
 					name: userData.name
+					roles: [ userData.role ]
 
 			if userData.requirePasswordChange
 				updateUser.$set.requirePasswordChange = userData.requirePasswordChange
