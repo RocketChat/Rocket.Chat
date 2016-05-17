@@ -383,6 +383,6 @@ Hosting powered by [Rackspace](https://rackspace.com)
 
 Rocket.Chat will be free forever, but you can help us speed-up the development!
 
-[![Donate](https://www.paypalobjects.com/en_US/i/btn/btn_donateCC_LG.gif)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=49QX7TYCVZK8L)
+[![Donate](https://www.paypalobjects.com/en_US/i/btn/btn_donateCC_LG.gif)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=ZL94ZE6LGVUSN)
 
 [BountySource](https://www.bountysource.com/teams/rocketchat)
