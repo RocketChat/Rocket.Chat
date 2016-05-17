@@ -128,7 +128,7 @@
   "Allow_Invalid_SelfSigned_Certs" : "Sta Ongeldige Self-Signed Certs toe",
   "Allow_Invalid_SelfSigned_Certs_Description" : "Allow invalid and self-signed SSL certificate's for link validation and previews.",
   "and" : "en",
-  "And_more" : "En meer __length __...",
+  "And_more" : "En meer __length __",
   "Animals_and_Nature" : "Planten en dieren",
   "API" : "API",
   "API_Analytics" : "Analytics",

@@ -128,7 +128,7 @@
   "Allow_Invalid_SelfSigned_Certs" : "السماح بالشهادات غير الصالحة الموقعة ذاتيا",
   "Allow_Invalid_SelfSigned_Certs_Description" : "السماح لشهادة SSL غير صحيحة وموقعة ذاتيا للتأكد من صحة الرابط ومعاينات.",
   "and" : "و",
-  "And_more" : "وأكثر من ذلك __length __...",
+  "And_more" : "وأكثر من ذلك __length __",
   "Animals_and_Nature" : "حيوانات و طبيعة",
   "API" : "API",
   "API_Analytics" : "التحليلات",

@@ -5,9 +5,11 @@
 	border-radius: 5px;
 	z-index: 300;
 	color: white;
-	padding: 4px;
+	padding: 8px 10px;
 	font-size: 0.8rem;
 	opacity: 0;
+	max-width: 400px;
+	text-align: center;
 
 	.transition(opacity 0.3s ease);
 
@@ -16,8 +18,7 @@
 		opacity: 0.9;
 	}
 
-	&:after {
-		content: '';
+	.tooltip-arrow {
 		position: absolute;
 		top: 100%;
 		left: 50%;
@@ -30,7 +31,7 @@
 	}
 
 	&.bellow {
-		&:after {
+		.tooltip-arrow {
 			top: -5px;
 			border-top: none;
 			border-bottom: 5px solid #000;

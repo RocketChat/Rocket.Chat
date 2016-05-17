@@ -128,7 +128,7 @@
   "Allow_Invalid_SelfSigned_Certs" : "Permitir Certificados Auto-Firmados Invalidos",
   "Allow_Invalid_SelfSigned_Certs_Description" : "Permitir certificados SSL autofirmados e invalidos para validacion de enlaces y vistas previas.",
   "and" : "y",
-  "And_more" : "Y más __length __...",
+  "And_more" : "Y más __length __",
   "Animals_and_Nature" : "Animales y Naturaleza",
   "API" : "API",
   "API_Analytics" : "Datos Analiticos",

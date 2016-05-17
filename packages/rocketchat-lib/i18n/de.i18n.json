@@ -128,7 +128,7 @@
   "Allow_Invalid_SelfSigned_Certs" : "Ungültige und selbstsignierte SSL-Zertifikate erlauben",
   "Allow_Invalid_SelfSigned_Certs_Description" : "Ungültige und selbstsignierte SSL-Zertifikate für die Link-Validierung und die Vorschau zulassen",
   "and" : "und",
-  "And_more" : "Und mehr __length__...",
+  "And_more" : "Und mehr __length__",
   "Animals_and_Nature" : "Tiere & Natur",
   "API" : "API",
   "API_Analytics" : "Analytics",

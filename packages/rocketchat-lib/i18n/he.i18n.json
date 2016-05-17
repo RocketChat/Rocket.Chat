@@ -128,7 +128,7 @@
   "Allow_Invalid_SelfSigned_Certs" : "אפשר תעודות לא תקינות בחתימה עצמית",
   "Allow_Invalid_SelfSigned_Certs_Description" : "אפשר תעודות SSL שנחתמו לא ע\"י CA תקין עבור אימות לינקים ותצוגות מקדימות.",
   "and" : "ו",
-  "And_more" : "ועוד __length __...",
+  "And_more" : "ועוד __length __",
   "Animals_and_Nature" : "בעלי חיים וטבע",
   "API" : "API",
   "API_Analytics" : "סטטיסטיקה",
