@@ -1163,6 +1163,7 @@
   "You_need_to_type_in_your_username_in_order_to_do_this" : "Sie müssen Ihren Benutzernamen angeben, um diese Aktion durchzuführen!",
   "You_need_to_verifiy_your_email_address_to_get_notications" : "Sie müssen Ihre E-Mail-Adresse bestätigen, um Benachrichtigungen zu erhalten",
   "You_need_to_write_something" : "Sie müssen etwas dazu schreiben!",
+  "You_should_inform_one_url_at_least": "Sie müssen mindestens eine URL definieren.",
   "You_should_name_it_to_easily_manage_your_integrations" : "Zur einfachen Verwaltung der Integrationen empfehlen wir, der Integration einen Namen zuzuordnen.",
   "You_will_not_be_able_to_recover" : "Die Nachricht kann anschließend nicht wiederhergestellt werden.",
   "You_will_not_be_able_to_recover_file" : "Das Wiederherstellen dieser Datei wird nicht möglich sein.",
