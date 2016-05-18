@@ -1,5 +1,36 @@
 ## NEXT
 
+## 0.31.0, 2016-May-16
+
+- Add header and footer to e-mails
+- Add new livechat settings to livechat manager
+- Add replyTo and more descriptive 'from' to livechat offline email
+- Add role field to user creation form
+- Add setting to set Google Site Verification id
+- Add the channel id to the _id property of the messages on import
+- Added permalink button to pinned & starred messages
+- Better look to big emojis on webkit browsers
+- Created guest user permission
+- Emoji search is performed across all categories
+- Fix an error on importing if there was a user by the same username on the server but different email
+- Fix error message when CAS validation fail
+- Fix multiline code when there is text after closing ```
+- Fix some broken link -> button events
+- Fix text clipping in spotlight input
+- Fix the message requesting the password when saving profile
+- Fix URL for cordova  when quoting a message
+- Lower highlight timeout
+- Make "new message" and "jump to recent" buttons unselectable
+- Make the sidebar movement transition faster
+- New subject for livechat offline messages
+- Prevent someone from reacting if they are muted
+- Remove invalid push tokens from gateway if status code 406
+- Remove stale debug logs
+- Removing presence status computation from new room sound tracker
+- Right sidebar animation cancelled on tab button clicked
+- Save room's name as the livechat visitor name
+- Use HTML emails instead of Text- 
+
 ## 0.30.0, 2016-May-09
 
 - Ability to run imports several times without duplicate messages (#3123)

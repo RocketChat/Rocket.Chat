@@ -1,7 +1,7 @@
 {
   "Additional_Feedback" : "dodatkowy komentarz",
   "Appearance" : "Wygląd",
-  "Conversation_finished" : "rozmowa zakończona",
+  "Conversation_finished" : "Rozmowa zakończona",
   "How_friendly_was_the_chat_agent" : "Jak przyjazny był nasz agent?",
   "How_knowledgeable_was_the_chat_agent" : "Jaką wiedzę miał nasz agent?",
   "How_responsive_was_the_chat_agent" : "Jak szybko reagował nasz agent?",
@@ -10,7 +10,7 @@
   "Please_answer_survey" : "Proszę poświęć chwilę, aby odpowiedzieć na krótką ankietę na temat tej rozmowy",
   "Please_fill_name_and_email" : "Proszę wypełnić nazwisko i adres e-mail",
   "Select_a_department" : "Wybierz oddział",
-  "Send" : "Wysłać",
+  "Send" : "Wyślij",
   "Skip" : "Pomiń",
   "Start_Chat" : "Rozpocznij czat",
   "Survey" : "Ankieta",
