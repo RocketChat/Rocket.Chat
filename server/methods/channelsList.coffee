@@ -13,7 +13,13 @@ Meteor.methods
 				when 'msgs'
 					options.sort = { msgs: -1 }
 
-		if filter
-			return { channels: RocketChat.models.Rooms.findByNameContainingAndTypes(filter, ['c'], options).fetch() }
+		if RocketChat.authz.hasPermission Meteor.userId(), 'view-c-room'
+			if filter
+				return { channels: RocketChat.models.Rooms.findByNameContainingAndTypes(filter, ['c'], options).fetch() }
+			else
+				return { channels: RocketChat.models.Rooms.findByTypeAndArchivationState('c', false, options).fetch() }
+		else if RocketChat.authz.hasPermission Meteor.userId(), 'view-joined-room'
+			roomIds = _.pluck RocketChat.models.Subscriptions.findByTypeAndUserId('c', Meteor.userId()).fetch(), 'rid'
+			return { channels: RocketChat.models.Rooms.findByIds(roomIds, options).fetch() }
 		else
-			return { channels: RocketChat.models.Rooms.findByTypeAndArchivationState('c', false, options).fetch() }
+			return { channels: [] }

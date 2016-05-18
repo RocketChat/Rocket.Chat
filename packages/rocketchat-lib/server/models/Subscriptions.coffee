@@ -48,13 +48,18 @@ RocketChat.models.Subscriptions = new class extends RocketChat.models._Base
 
 		return @find query, options
 
-	findByNameContainingAndTypes: (name, types, options) ->
-		nameRegex = new RegExp s.trim(s.escapeRegExp(name)), "i"
-
+	findByTypeAndUserId: (type, userId, options) ->
 		query =
-			t:
-				$in: types
-				name: nameRegex
+			t: type
+			'u._id': userId
+
+		return @find query, options
+
+	findByTypeNameAndUserId: (type, name, userId, options) ->
+		query =
+			t: type
+			name: name
+			'u._id': userId
 
 		return @find query, options
 
