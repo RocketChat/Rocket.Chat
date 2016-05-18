@@ -71,7 +71,7 @@ konecty:multiple-instances-status@1.0.6
 konecty:nrr@2.0.2
 konecty:user-presence@1.2.6
 launch-screen@1.0.4
-learnersguild:rocketchat-lg-slash-commands@0.3.5
+learnersguild:rocketchat-lg-slash-commands@0.4.1
 learnersguild:rocketchat-lg-sso@0.4.2
 less@2.5.1
 livedata@1.0.15
