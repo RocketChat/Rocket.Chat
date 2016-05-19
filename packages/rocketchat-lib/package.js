@@ -114,6 +114,7 @@ Package.onUse(function(api) {
 	api.addFiles('lib/startup/settingsOnLoadSiteUrl.coffee');
 
 	// CLIENT LIB
+	api.addFiles('client/lib/localforage.min.js', 'client');
 	api.addFiles('client/lib/openRoom.coffee', 'client');
 	api.addFiles('client/lib/roomExit.coffee', 'client');
 	api.addFiles('client/lib/settings.coffee', 'client');
