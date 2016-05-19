@@ -1,6 +1,6 @@
 @ChatMessage = new Meteor.Collection null
 @ChatRoom = new Meteor.Collection 'rocketchat_room'
-@ChatSubscription = new Meteor.Collection 'rocketchat_subscription'
+@ChatSubscription = new Meteor.Collection null
 @UserRoles = new Mongo.Collection null
 @RoomRoles = new Mongo.Collection null
 @UserAndRoom = new Meteor.Collection null
