@@ -85,6 +85,11 @@ Meteor.startup ->
 				input.updateAutogrow()
 			, 200
 		validation: (message) ->
+			room = RocketChat.models.Rooms.findOne({ _id: message.rid })
+
+			if Array.isArray(room.usernames) && room.usernames.indexOf(Meteor.user().username) is -1
+				return false
+
 			hasPermission = RocketChat.authz.hasAtLeastOnePermission('edit-message', message.rid)
 			isEditAllowed = RocketChat.settings.get 'Message_AllowEditing'
 			editOwn = message.u?._id is Meteor.userId()
@@ -115,6 +120,11 @@ Meteor.startup ->
 
 			chatMessages[Session.get('openedRoom')].confirmDeleteMsg(message)
 		validation: (message) ->
+			room = RocketChat.models.Rooms.findOne({ _id: message.rid })
+
+			if Array.isArray(room.usernames) && room.usernames.indexOf(Meteor.user().username) is -1
+				return false
+
 			hasPermission = RocketChat.authz.hasAtLeastOnePermission('delete-message', message.rid)
 			isDeleteAllowed = RocketChat.settings.get 'Message_AllowDeleting'
 			deleteOwn = message.u?._id is Meteor.userId()
@@ -145,6 +155,11 @@ Meteor.startup ->
 			$("\##{msg.id} .message-dropdown").hide()
 			$(event.currentTarget).attr('data-clipboard-text', document.location.origin + document.location.pathname + '?msg=' + msg.id);
 			toastr.success(TAPi18n.__('Copied'))
+		validation: (message) ->
+			room = RocketChat.models.Rooms.findOne({ _id: message.rid })
+
+			if Array.isArray(room.usernames) && room.usernames.indexOf(Meteor.user().username) is -1
+				return false
 		order: 3
 
 	RocketChat.MessageAction.addButton
@@ -162,6 +177,11 @@ Meteor.startup ->
 			$("\##{msg.id} .message-dropdown").hide()
 			$(event.currentTarget).attr('data-clipboard-text', message)
 			toastr.success(TAPi18n.__('Copied'))
+		validation: (message) ->
+			room = RocketChat.models.Rooms.findOne({ _id: message.rid })
+
+			if Array.isArray(room.usernames) && room.usernames.indexOf(Meteor.user().username) is -1
+				return false
 		order: 4
 
 	RocketChat.MessageAction.addButton
@@ -180,4 +200,9 @@ Meteor.startup ->
 			input.value = text
 			input.focus()
 			$(input).keyup()
+		validation: (message) ->
+			room = RocketChat.models.Rooms.findOne({ _id: message.rid })
+
+			if Array.isArray(room.usernames) && room.usernames.indexOf(Meteor.user().username) is -1
+				return false
 		order: 5
