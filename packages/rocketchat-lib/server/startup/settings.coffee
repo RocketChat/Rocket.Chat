@@ -92,6 +92,9 @@ RocketChat.settings.addGroup 'General', ->
 	@add 'Force_SSL', false, { type: 'boolean', public: true }
 	@add 'GoogleTagManager_id', '', { type: 'string', public: true }
 	@add 'GoogleSiteVerification_id', '', { type: 'string', public: false }
+	@add 'PiwikAnalytics_url', '', { type: 'string', public: false, i18nDescription: 'PiwikAnalytics_url_Description' }
+	@add 'PiwikAnalytics_siteId', '', { type: 'string', public: false, i18nDescription: 'PiwikAnalytics_siteId_Description' }
+	@add 'PiwikAnalytics_domains', '', { type: 'string', public: false, i18nDescription: 'PiwikAnalytics_domains_Description' }
 	@add 'Restart', 'restart_server', { type: 'action', actionText: 'Restart_the_server' }
 
 	@section 'UTF8', ->
