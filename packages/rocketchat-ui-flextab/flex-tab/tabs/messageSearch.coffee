@@ -10,7 +10,6 @@ Meteor.startup ->
 			message = @_arguments[1]
 			$('.message-dropdown:visible').hide()
 			RoomHistoryManager.getSurroundingMessages(message, 50)
-
 		order: 100
 
 
