@@ -66,7 +66,6 @@ Tracker.autorun ->
 				ChatSubscription.insert(item)
 
 		RocketChat.Notifications.onUser 'subscription-change', (type, record) ->
-			console.log(type, record)
 			if type is 'removed'
 				ChatSubscription.remove(record._id)
 			else

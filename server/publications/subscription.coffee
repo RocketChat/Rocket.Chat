@@ -27,17 +27,14 @@ subscriptionsReady = false
 RocketChat.models.Subscriptions.find().observe
 	added: (record) ->
 		if subscriptionsReady
-			console.log('added', record)
 			RocketChat.Notifications.notifyUser record.u._id, 'subscription-change', 'added', record
 
 	changed: (record) ->
 		if subscriptionsReady
-			console.log('changed', record)
 			RocketChat.Notifications.notifyUser record.u._id, 'subscription-change', 'changed', record
 
 	removed: (record) ->
 		if subscriptionsReady
-			console.log('removed', record)
 			RocketChat.Notifications.notifyUser record.u._id, 'subscription-change', 'removed', {_id: record._id}
 
 subscriptionsReady = true
