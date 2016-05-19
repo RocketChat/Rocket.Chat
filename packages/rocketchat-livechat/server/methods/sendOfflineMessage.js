@@ -25,7 +25,7 @@ Meteor.methods({
 				to: RocketChat.settings.get('Livechat_offline_email'),
 				from: `${data.name} - ${data.email} <${fromEmail}>`,
 				replyTo: `${data.name} <${data.email}>`,
-				subject: `Livechat offline message from ${data.name}: ${message.substring(0, 20)}`,
+				subject: `Livechat offline message from ${data.name}: ${(data.message + '').substring(0, 20)}`,
 				html: header + html + footer
 			});
 		});
