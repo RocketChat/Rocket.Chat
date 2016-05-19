@@ -60,18 +60,31 @@ Tracker.autorun ->
 		if subscriptionReady.get()
 			return
 
-		Meteor.call 'subscriptions', (error, data) ->
-			subscriptionReady.set true
-			for item in data
-				ChatSubscription.insert(item)
+		localforage.getItem 'subscription', (error, data) ->
+			if data?.records?
+				subscriptionReady.set true
+				for item in data.records
+					ChatSubscription.insert(item)
 
-		RocketChat.Notifications.onUser 'subscription-change', (type, record) ->
-			if type is 'removed'
-				ChatSubscription.remove(record._id)
-			else
-				_id = record._id
-				delete record._id
-				ChatSubscription.upsert({_id: _id}, record)
+			Meteor.call 'subscriptions', (error, data) ->
+				subscriptionReady.set true
+				for item in data
+					_id = item._id
+					delete item._id
+					ChatSubscription.upsert({_id: _id}, item)
+
+				localforage.setItem('subscription', {
+					updatedAt: new Date
+					records: ChatSubscription.find().fetch()
+				})
+
+			RocketChat.Notifications.onUser 'subscription-change', (type, record) ->
+				if type is 'removed'
+					ChatSubscription.remove(record._id)
+				else
+					_id = record._id
+					delete record._id
+					ChatSubscription.upsert({_id: _id}, record)
 
 		return
 
