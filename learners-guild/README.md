@@ -25,6 +25,7 @@ This is Learners Guild's custom fork of Rocket.Chat. The primary difference is t
         multiple
         lines)>
         "
+        CHAT_API_USER_SECRET='s3cr3t-p@ssw0rd'
 
 6. Install [Meteor][meteor]
 
