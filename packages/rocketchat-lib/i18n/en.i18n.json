@@ -1171,6 +1171,7 @@
   "You_need_to_type_in_your_username_in_order_to_do_this" : "You need to type in your username in order to do this!",
   "You_need_to_verifiy_your_email_address_to_get_notications" : "You need to verifiy your email address to get notifications",
   "You_need_to_write_something" : "You need to write something!",
+  "You_should_inform_one_url_at_least": "You should define at least one URL.",
   "You_should_name_it_to_easily_manage_your_integrations" : "You should name it to easily manage your integrations.",
   "You_will_not_be_able_to_recover" : "You will not be able to recover this message!",
   "You_will_not_be_able_to_recover_file" : "You will not be able to recover this file!",

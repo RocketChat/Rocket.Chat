@@ -132,6 +132,10 @@ Template.message.helpers
 		data.index = index
 		return
 
+	hideCog: ->
+		room = RocketChat.models.Rooms.findOne({ _id: this.rid });
+		return 'hidden' if room.usernames.indexOf(Meteor.user().username) == -1
+
 Template.message.onCreated ->
 	msg = Template.currentData()
 
