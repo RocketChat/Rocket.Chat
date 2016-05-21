@@ -11,6 +11,7 @@
 *.log
 *.pydevproject
 *.sublime-project
+*.sublime-workspace
 *.swp
 *.tmp
 *.tokens
