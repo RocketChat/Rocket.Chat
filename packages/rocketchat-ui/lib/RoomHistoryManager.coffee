@@ -169,7 +169,7 @@
 
 					setTimeout ->
 						msgElement.removeClass('highlight')
-					, 3000
+					, 500
 				room.loaded += result.messages.length
 				room.hasMore.set result.moreBefore
 				room.hasMoreNext.set result.moreAfter
