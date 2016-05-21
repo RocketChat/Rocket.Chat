@@ -27,7 +27,7 @@ Template.privateGroupsFlex.helpers
 					filter:
 						exceptions: [Meteor.user().username].concat(Template.instance().selectedUsers.get())
 					selector: (match) ->
-						return { username: match }
+						return { term: match }
 					sort: 'username'
 				}
 			]
