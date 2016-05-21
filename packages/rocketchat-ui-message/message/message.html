@@ -4,7 +4,7 @@
 			{{#if avatarFromUsername}}
 				<button class="thumb user-card-message" data-username="{{u.username}}" tabindex="1">{{> avatar username=avatarFromUsername}}</button>
 			{{else}}
-				<button class="thumb user-card-message" data-username="{{u.username}}" tabindex="1">
+				<button class="thumb user-card-message" data-username="{{u.username}} {{u.name}}" tabindex="1">
 					<div class="avatar">
 						<div class="avatar-image" style="background-image:url({{avatar}});"></div>
 					</div>
