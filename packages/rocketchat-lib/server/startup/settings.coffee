@@ -2,6 +2,8 @@
 if not RocketChat.models.Settings.findOneById 'uniqueID'
 	RocketChat.models.Settings.createWithIdAndValue 'uniqueID', process.env.DEPLOYMENT_ID or Random.id()
 
+# When you define a setting and want to add a description, you don't need to automatically define the i18nDescription
+# if you add a node to the i18n.json with the same setting name but with `_Description` it will automatically work.
 RocketChat.settings.addGroup 'Accounts', ->
 	@add 'Accounts_AllowDeleteOwnAccount', false, { type: 'boolean', public: true, enableQuery: { _id: 'Accounts_AllowUserProfileChange', value: true } }
 	@add 'Accounts_AllowUserProfileChange', true, { type: 'boolean', public: true }
@@ -92,9 +94,9 @@ RocketChat.settings.addGroup 'General', ->
 	@add 'Force_SSL', false, { type: 'boolean', public: true }
 	@add 'GoogleTagManager_id', '', { type: 'string', public: true }
 	@add 'GoogleSiteVerification_id', '', { type: 'string', public: false }
-	@add 'PiwikAnalytics_url', '', { type: 'string', public: false, i18nDescription: 'PiwikAnalytics_url_Description' }
-	@add 'PiwikAnalytics_siteId', '', { type: 'string', public: false, i18nDescription: 'PiwikAnalytics_siteId_Description' }
-	@add 'PiwikAnalytics_domains', '', { type: 'string', public: false, i18nDescription: 'PiwikAnalytics_domains_Description' }
+	@add 'PiwikAnalytics_url', '', { type: 'string', public: false }
+	@add 'PiwikAnalytics_siteId', '', { type: 'string', public: false }
+	@add 'PiwikAnalytics_domains', '', { type: 'string', public: false }
 	@add 'Restart', 'restart_server', { type: 'action', actionText: 'Restart_the_server' }
 
 	@section 'UTF8', ->
