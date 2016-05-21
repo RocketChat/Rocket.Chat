@@ -35,7 +35,6 @@
 				{{#if $eq role.scope 'Subscriptions'}}
 				<form id="form-search-room" class="inline">
 					<label>{{_ "Choose_a_room"}}</label>
-					{{!-- <input type="text" name="room" placeholder="{{_ "Enter_a_room_name"}}"> --}}
 					{{> inputAutocomplete settings=autocompleteChannelSettings name="room" class="search" placeholder=(_ "Enter_a_room_name") autocomplete="off"}}
 				</form>
 				{{/if}}
@@ -43,7 +42,7 @@
 					{{#if Template.subscriptionsReady}}
 						<form id="form-users" class="inline">
 							<label>{{_ "Add_user"}}</label>
-							<input type="text" name="username" placeholder="{{_ "Enter_a_username"}}">
+							{{> inputAutocomplete settings=autocompleteUsernameSettings name="username" class="search" placeholder=(_ "Enter_a_username") autocomplete="off"}}
 							<button name="add" class="button primary">{{_ "Add"}}</button>
 						</form>
 						<div class="list">
