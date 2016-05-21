@@ -1,0 +1,98 @@
+<template name="userInfo">
+	{{#if isLoading}}
+		{{> loading}}
+	{{else}}
+		{{#if editingUser}}
+			{{> userEdit (userToEdit)}}
+		{{else}}
+			{{#with user}}
+			<div class="about clearfix">
+				<div class="thumb">
+					{{> avatar username=username}}
+				</div>
+				<div class="info">
+					<h3 title="{{username}}"><i class="status-{{status}}"></i> {{username}}</h3>
+					<p>{{name}}</p>
+					{{#if utc}}<p><i class="icon-clock"></i>{{userTime}} (UTC {{utc}})</p>{{/if}}
+					{{#if hasPermission 'view-full-other-user-info'}}
+						{{#if hasEmails}}
+							{{#each emails}} <p><i class="icon-mail"></i> {{address}}{{#if verified}}&nbsp;<i class="icon-ok"></i>{{/if}}</p> {{/each}}
+						{{/if}}
+						{{#if hasPhone}}
+							{{#each phone}} <p><i class="icon-phone"></i> {{phoneNumber}}</p> {{/each}}
+						{{/if}}
+						{{#if lastLogin}} <p><i class="icon-calendar"></i> {{_ "Created_at"}}: {{createdAt}}</p> {{/if}}
+						{{#if lastLogin}} <p><i class="icon-calendar"></i> {{_ "Last_login"}}: {{lastLogin}}</p> {{/if}}
+						{{#if services.facebook.id}} <p><i class="icon-facebook"></i><a href="{{services.facebook.link}}" target="_blank">{{services.facebook.name}}</a></p> {{/if}}
+						{{#if services.github.id}} <p><i class="icon-github-circled"></i><a href="https://www.github.com/{{services.github.username}}" target="_blank">{{services.github.username}}</a></p> {{/if}}
+						{{#if services.gitlab.id}} <p><i class="icon-gitlab"></i>{{services.gitlab.username}}</p> {{/if}}
+						{{#if services.google.id}} <p><i class="icon-gplus"></i><a href="https://plus.google.com/{{services.google.id}}" target="_blank">{{services.google.name}}</a></p> {{/if}}
+						{{#if services.linkedin.id}} <p><i class="icon-linkedin"></i><a href="{{services.linkedin.publicProfileUrl}}" target="_blank">{{linkedinUsername}}</a></p> {{/if}}
+						{{#if servicesMeteor.id}} <p><i class="icon-meteor"></i>{{servicesMeteor.username}}</p> {{/if}}
+						{{#if services.twitter.id}} <p><i class="icon-twitter"></i><a href="https://twitter.com/{{services.twitter.screenName}}" target="_blank">{{services.twitter.screenName}}</a></p> {{/if}}
+						{{#if services.wordpress.id}} <p><i class="icon-wordpress"></i>{{services.wordpress.user_login}}</p> {{/if}}
+					{{/if}}
+				</div>
+			</div>
+			{{/with}}
+			<nav>
+				{{> videoButtons}}
+
+				{{#if showAll}}
+					{{#if canDirectMessage user.username}}
+						<button class='button button-block pvt-msg'><span><i class='icon-chat'></i> {{_ "Conversation"}}</span></button>
+					{{/if}}
+					{{#if canSetOwner}}
+						{{#if isOwner}}
+							<button class="button button-block unset-owner lightblue"><span>{{_ "Remove_as_owner"}}</span></button>
+						{{else}}
+							<button class="button button-block set-owner lightblue"><span>{{_ "Set_as_owner"}}</span></button>
+						{{/if}}
+					{{/if}}
+					{{#if canSetModerator}}
+						{{#if isModerator}}
+							<button class="button button-block unset-moderator lightblue"><span>{{_ "Remove_as_moderator"}}</span></button>
+						{{else}}
+							<button class="button button-block set-moderator lightblue"><span>{{_ "Set_as_moderator"}}</span></button>
+						{{/if}}
+					{{/if}}
+					{{#if canRemoveUser}}
+						<button class="button button-block remove-user red"><span>{{_ "Remove_from_room"}}</span></button>
+					{{/if}}
+					{{#if canMuteUser}}
+						{{#if userMuted}}
+							<button class="button button-block unmute-user primary"><span>{{_ "Unmute_user"}}</span></button>
+						{{else}}
+							<button class="button button-block mute-user red"><span>{{_ "Mute_user"}}</span></button>
+						{{/if}}
+					{{/if}}
+				{{/if}}
+
+				{{#if hasPermission 'edit-other-user-info'}}
+				<button class='button lightblue edit-user button-block'><span><i class='icon-edit'></i> {{_ "Edit"}}</span></button>
+				{{/if}}
+				{{#if hasPermission 'assign-admin-role'}}
+					{{#if hasAdminRole}}
+					<button class='button lightblue remove-admin button-block'><span><i class='icon-shield'></i> {{_ "Remove_Admin"}}</span></button>
+					{{else}}
+					<button class='button lightblue make-admin button-block'><span><i class='icon-shield'></i> {{_ "Make_Admin"}}</span></button>
+					{{/if}}
+				{{/if}}
+				{{#if hasPermission 'edit-other-user-active-status'}}
+					{{#if active}}
+					<button class='button deactivate button-block'><span><i class='icon-block'></i> {{_ "Deactivate"}}</span></button>
+					{{else}}
+					<button class='button activate button-block'><span><i class='icon-ok-circled'></i> {{_ "Activate"}}</span></button>
+					{{/if}}
+				{{/if}}
+				{{#if hasPermission 'delete-user'}}
+				<button class='button delete red button-block'><span><i class='icon-trash'></i> {{_ "Delete"}}</span></button>
+				{{/if}}
+
+				{{#if showAll}}
+					<button class='button secondary back'><span>{{_ "View_All"}} <i class='icon-angle-right'></i></span></button>
+				{{/if}}
+			</nav>
+		{{/if}}
+	{{/if}}
+</template>

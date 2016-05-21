@@ -1,0 +1,374 @@
+<html itemscope itemtype="http://schema.org/Product" prefix="og: http://ogp.me/ns#" xmlns="http://www.w3.org/1999/html">
+  <head>
+    <!--#include virtual="title.html" -->
+    <script>
+var config = {
+    hosts: {
+        domain: 'meet.jit.si',
+        //anonymousdomain: 'guest.example.com',
+        //authdomain: 'jitsi-meet.example.com',  // defaults to <domain>
+        muc: 'conference.meet.jit.si', // FIXME: use XEP-0030
+        //bridge: 'jitsi-videobridge.jitsi-meet.example.com', // FIXME: use XEP-0030
+        //jirecon: 'jirecon.jitsi-meet.example.com',
+        //call_control: 'callcontrol.jitsi-meet.example.com',
+        focus: 'focus.meet.jit.si', // defaults to 'focus.jitsi-meet.example.com'
+    },
+//  getroomnode: function (path) { return 'someprefixpossiblybasedonpath'; },
+//  useStunTurn: true, // use XEP-0215 to fetch STUN and TURN server
+//  useIPv6: true, // ipv6 support. use at your own risk
+    useNicks: false,
+    externalConnectUrl: '//meet.jit.si/http-pre-bind',
+    bosh: '//meet.jit.si/http-bind', // FIXME: use xep-0156 for that
+    clientNode: 'http://jitsi.org/jitsimeet', // The name of client node advertised in XEP-0115 'c' stanza
+    //focusUserJid: 'focus@auth.jitsi-meet.example.com', // The real JID of focus participant - can be overridden here
+    //defaultSipNumber: '', // Default SIP number
+
+    // Desktop sharing method. Can be set to 'ext', 'webrtc' or false to disable.
+    desktopSharingChromeMethod: 'ext',
+    // The ID of the jidesha extension for Chrome.
+    desktopSharingChromeExtId: 'diibjkoicjeejcmhdnailmkgecihlobk',
+    // The media sources to use when using screen sharing with the Chrome
+    // extension.
+    desktopSharingChromeSources: ['screen', 'window'],
+    // Required version of Chrome extension
+    desktopSharingChromeMinExtVersion: '0.1',
+
+    // The ID of the jidesha extension for Firefox. If null, we assume that no
+    // extension is required.
+    desktopSharingFirefoxExtId: null,
+    // Whether desktop sharing should be disabled on Firefox.
+    desktopSharingFirefoxDisabled: true,
+    // The maximum version of Firefox which requires a jidesha extension.
+    // Example: if set to 41, we will require the extension for Firefox versions
+    // up to and including 41. On Firefox 42 and higher, we will run without the
+    // extension.
+    // If set to -1, an extension will be required for all versions of Firefox.
+    desktopSharingFirefoxMaxVersionExtRequired: -1,
+    // The URL to the Firefox extension for desktop sharing.
+    desktopSharingFirefoxExtensionURL: null,
+
+    // Disables ICE/UDP by filtering out local and remote UDP candidates in signalling.
+    webrtcIceUdpDisable: false,
+    // Disables ICE/TCP by filtering out local and remote TCP candidates in signalling.
+    webrtcIceTcpDisable: false,
+
+    openSctp: true, // Toggle to enable/disable SCTP channels
+    disableStats: false,
+    disableAudioLevels: false,
+    channelLastN: -1, // The default value of the channel attribute last-n.
+    adaptiveLastN: false,
+    //disableAdaptiveSimulcast: false,
+    enableRecording: false,
+    enableWelcomePage: true,
+    disableSimulcast: false,
+    logStats: false, // Enable logging of PeerConnection stats via the focus
+//    requireDisplayName: true, // Forces the participants that doesn't have display name to enter it when they enter the room.
+//    startAudioMuted: 10, // every participant after the Nth will start audio muted
+//    startVideoMuted: 10, // every participant after the Nth will start video muted
+//    defaultLanguage: "en",
+// To enable sending statistics to callstats.io you should provide Applicaiton ID and Secret.
+//    callStatsID: "", // Application ID for callstats.io API
+//    callStatsSecret: "", // Secret for callstats.io API
+    /*noticeMessage: 'Service update is scheduled for 16th March 2015. ' +
+    'During that time service will not be available. ' +
+    'Apologise for inconvenience.',*/
+    disableThirdPartyRequests: false,
+    minHDHeight: 540
+};
+</script>
+    <script src="utils.js?v=1"></script>
+    <!--#include virtual="connection_optimization/connection_optimization.html" -->
+    <script src="connection_optimization/do_external_connect.js?v=1"></script>
+    <script>
+var interfaceConfig = {
+    CANVAS_EXTRA: 104,
+    CANVAS_RADIUS: 0,
+    SHADOW_COLOR: '#ffffff',
+    INITIAL_TOOLBAR_TIMEOUT: 20000,
+    TOOLBAR_TIMEOUT: 4000,
+    DEFAULT_REMOTE_DISPLAY_NAME: "Fellow User",
+    DEFAULT_LOCAL_DISPLAY_NAME: "me",
+    SHOW_JITSI_WATERMARK: false,
+    JITSI_WATERMARK_LINK: "https://jitsi.org",
+    SHOW_BRAND_WATERMARK: false,
+    BRAND_WATERMARK_LINK: "",
+    SHOW_POWERED_BY: false,
+    GENERATE_ROOMNAMES_ON_WELCOME_PAGE: true,
+    APP_NAME: "Rocket.Chat Jitsi Meet",
+    INVITATION_POWERED_BY: false,
+    TOOLBAR_BUTTONS: ['microphone', 'camera', 'desktop', 'recording', 'sharedvideo', 'fullscreen', 'sip', 'dialpad', 'settings', 'hangup', 'filmstrip'],
+    // Determines how the video would fit the screen. 'both' would fit the whole
+    // screen, 'height' would fit the original video height to the height of the
+    // screen, 'width' would fit the original video width to the width of the
+    // screen respecting ratio.
+    VIDEO_LAYOUT_FIT: 'both',
+    /**
+     * Whether to only show the filmstrip (and hide the toolbar).
+     */
+    filmStripOnly: false,
+    RANDOM_AVATAR_URL_PREFIX: false,
+    RANDOM_AVATAR_URL_SUFFIX: false,
+    FILM_STRIP_MAX_HEIGHT: 120
+};
+</script>
+    <script src="libs/lib-jitsi-meet.min.js?v=139"></script>
+    <script src="libs/app.bundle.min.js?v=139"></script>
+    <link rel="icon" type="image/png" href="/images/favicon.ico?v=1"/>
+    <meta property="og:title" content="Jitsi Meet"/>
+    <meta property="og:image" content="/images/jitsilogo.png?v=1"/>
+    <meta property="og:description" content="Join a WebRTC video conference powered by the Jitsi Videobridge"/>
+    <meta description="Join a WebRTC video conference powered by the Jitsi Videobridge"/>
+    <meta itemprop="name" content="Jitsi Meet"/>
+    <meta itemprop="description" content="Join a WebRTC video conference powered by the Jitsi Videobridge"/>
+    <meta itemprop="image" content="/images/jitsilogo.png?v=1"/>
+    <link rel="stylesheet" href="css/all.css"/>
+    <!--#include virtual="plugin.head.html" -->
+  </head>
+  <body>
+    <div id="welcome_page">
+        <div id="welcome_page_header">
+            <a target="_new">
+                <div class="watermark leftwatermark"></div>
+            </a>
+            <a target="_new">
+                <div class="watermark rightwatermark"></div>
+            </a>
+            <a class="poweredby" href="http://jitsi.org" target="_new" ><span data-i18n="poweredby"></span> jitsi.org</a>
+
+            <div id="enter_room_container">
+                    <div id="enter_room_form" >
+                        <div id="domain_name"></div>
+                        <div id="enter_room">
+                            <input id="enter_room_field" type="text" autofocus/>
+                            <div class="icon-reload" id="reload_roomname"></div>
+                            <input id="enter_room_button" type="button" data-i18n="[value]welcomepage.go" value="GO" />
+
+                        </div>
+                    </div>
+            </div>
+            <div id="brand_header"></div>
+            <input type='checkbox' name='checkbox' id="disable_welcome"/>
+            <label for="disable_welcome" class="disable_welcome_position" data-i18n="welcomepage.disable"></label>
+            <div id="header_text">
+                <!--#include virtual="plugin.header.text.html" -->
+            </div>
+        </div>
+        <div id="welcome_page_main">
+            <div id="features">
+                <div class="feature_row">
+                    <div class="feature_holder">
+                        <div class="feature_icon" data-i18n="welcomepage.feature1.title" ></div>
+                        <div class="feature_description" data-i18n="welcomepage.feature1.content" data-i18n-options='{ "postProcess": "resolveAppName" }'>
+                        </div>
+                    </div>
+                    <div class="feature_holder">
+                        <div class="feature_icon" data-i18n="welcomepage.feature2.title" ></div>
+                        <div class="feature_description" data-i18n="welcomepage.feature2.content">
+                        </div>
+                    </div>
+                    <div class="feature_holder">
+                        <div class="feature_icon" data-i18n="welcomepage.feature3.title" ></div>
+                        <div class="feature_description" data-i18n="welcomepage.feature3.content" data-i18n-options='{ "postProcess": "resolveAppName" }'>
+                        </div>
+                    </div>
+                    <div class="feature_holder">
+                        <div class="feature_icon" data-i18n="welcomepage.feature4.title" ></div>
+                        <div class="feature_description" data-i18n="welcomepage.feature4.content">
+                        </div>
+                    </div>
+                </div>
+                <div class="feature_row">
+                    <div class="feature_holder">
+                            <div class="feature_icon" data-i18n="welcomepage.feature5.title" ></div>
+                            <div class="feature_description" data-i18n="welcomepage.feature5.content" data-i18n-options='{ "postProcess": "resolveAppName" }'>
+                            </div>
+                    </div>
+                    <div class="feature_holder">
+                            <div class="feature_icon" data-i18n="welcomepage.feature6.title" ></div>
+                            <div class="feature_description" data-i18n="welcomepage.feature6.content" data-i18n-options='{ "postProcess": "resolveAppName" }'>
+                            </div>
+                    </div>
+                    <div class="feature_holder">
+                            <div class="feature_icon" data-i18n="welcomepage.feature7.title" ></div>
+                            <div class="feature_description" data-i18n="welcomepage.feature7.content" data-i18n-options='{ "postProcess": "resolveAppName" }'></div>
+                    </div>
+                    <div class="feature_holder">
+                            <div class="feature_icon" data-i18n="welcomepage.feature8.title" ></div>
+                            <div class="feature_description" data-i18n="welcomepage.feature8.content"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!--#include virtual="plugin.welcomepage.footer.html" -->
+    </div>
+    <div id="videoconference_page">
+        <div style="position: relative;" id="header_container">
+            <div id="header">
+                <div id="notice" class="notice" style="display: none">
+                    <span id="noticeText" class="noticeText"></span>
+                </div>
+                <span id="toolbar">
+                    <span id="authentication" class="authentication" style="display: none">
+                        <a class="button icon-avatar" id="toolbar_button_authentication" data-i18n="[content]toolbar.authenticate"></a>
+                        <ul class="loginmenu">
+                            <span class="loginmenuPadding"></span>
+                            <li id="toolbar_auth_identity"></li>
+                            <li id="toolbar_button_login">
+                                <a class="authButton" data-i18n="toolbar.login"></a>
+                            </li>
+                            <li id="toolbar_button_logout">
+                                <a class="authButton" data-i18n="toolbar.logout"></a>
+                            </li>
+                        </ul>
+                    </span>
+                    <a class="button icon-microphone" id="toolbar_button_mute" data-container="body" data-toggle="popover" data-placement="bottom" shortcut="mutePopover" data-i18n="[content]toolbar.mute" content="Mute / Unmute">
+                        <ul id="micMutedPopup" class="loginmenu">
+                            <li data-i18n="[html]toolbar.micMutedPopup"></li>
+                        </ul>
+                        <ul id="unableToUnmutePopup" class="loginmenu">
+                            <li data-i18n="[html]toolbar.unableToUnmutePopup"></li>
+                        </ul>
+                    </a>
+                    <a class="button icon-camera" id="toolbar_button_camera" data-container="body" data-toggle="popover" data-placement="bottom" shortcut="toggleVideoPopover" data-i18n="[content]toolbar.videomute" content="Start / stop camera"></a>
+                    <a class="button" id="toolbar_button_record" data-container="body" data-toggle="popover" data-placement="bottom" style="display: none"></a>
+                    <a class="button icon-security" id="toolbar_button_security" data-container="body" data-toggle="popover" data-placement="bottom" data-i18n="[content]toolbar.lock" content="Lock / unlock room"></a>
+                    <a class="button icon-link" id="toolbar_button_link" data-container="body" data-toggle="popover" data-placement="bottom" data-i18n="[content]toolbar.invite" content="Invite others"></a>
+                    <a class="button icon-chat" id="toolbar_button_chat" data-container="body" data-toggle="popover" shortcut="toggleChatPopover" data-placement="bottom" data-i18n="[content]toolbar.chat" content="Open / close chat">
+                        <span id="unreadMessages"></span>
+                    </a>
+                    <a class="button icon-share-doc" id="toolbar_button_etherpad" data-container="body" data-toggle="popover" data-placement="bottom" content="Shared document" data-i18n="[content]toolbar.etherpad"></a>
+                    <a class="button fa fa-share-alt-square" id="toolbar_button_sharedvideo" data-container="body" data-toggle="popover" data-placement="bottom" content="Share a YouTube video" data-i18n="[content]toolbar.sharedvideo" style="display: none">
+                        <ul id="sharedVideoMutedPopup" class="loginmenu">
+                            <li data-i18n="[html]toolbar.sharedVideoMutedPopup"></li>
+                        </ul>
+                    </a>
+                    <a class="button icon-share-desktop" id="toolbar_button_desktopsharing" data-container="body" data-toggle="popover" data-placement="bottom" shortcut="toggleDesktopSharingPopover" content="Share screen" data-i18n="[content]toolbar.sharescreen" style="display: none"></a>
+                    <a class="button icon-full-screen" id="toolbar_button_fullScreen" data-container="body" data-toggle="popover" data-placement="bottom" content="Enter / Exit Full Screen" data-i18n="[content]toolbar.fullscreen"></a>
+                    <a class="button icon-telephone" id="toolbar_button_sip" data-container="body" data-toggle="popover" data-placement="bottom" content="Call SIP number" data-i18n="[content]toolbar.sip" style="display: none"></a>
+                    <a class="button icon-dialpad" id="toolbar_button_dialpad" data-container="body" data-toggle="popover" data-placement="bottom" content="Open dialpad" data-i18n="[content]toolbar.dialpad" style="display: none"></a>
+                    <a class="button icon-settings" id="toolbar_button_settings" data-container="body" data-toggle="popover" data-placement="bottom" content="Settings" data-i18n="[content]toolbar.Settings"></a>
+                    <a class="button icon-hangup" id="toolbar_button_hangup" data-container="body" data-toggle="popover" data-placement="bottom" content="Hang Up" data-i18n="[content]toolbar.hangup"></a>
+                </span>
+            </div>
+            <div id="subject"></div>
+        </div>
+        <div id="videospace">
+
+            <div id="largeVideoContainer" class="videocontainer">
+                <div id="presentation"></div>
+                <div id="sharedVideo"><div id="sharedVideoIFrame"></div></div>
+                <div id="etherpad"></div>
+                <a target="_new"><div class="watermark leftwatermark"></div></a>
+                <a target="_new"><div class="watermark rightwatermark"></div></a>
+                <a class="poweredby" href="http://jitsi.org" target="_new">
+                    <span data-i18n="poweredby"></span> jitsi.org
+                </a>
+                <div id="dominantSpeaker">
+                    <img id="dominantSpeakerAvatar" src=""/>
+                    <canvas id="dominantSpeakerAudioLevel"></canvas>
+                </div>
+                <div id="largeVideoWrapper">
+                    <video id="largeVideo" muted="true" autoplay></video>
+                </div>
+                <span id="videoConnectionMessage"></span>
+                <span id="videoResolutionLabel">HD</span>
+                <span id="recordingLabel" class="centeredVideoLabel"></span>
+            </div>
+
+            <div id="remoteVideos">
+                <span id="localVideoContainer" class="videocontainer">
+                    <span id="localVideoWrapper">
+                        <!--<video id="localVideo" autoplay muted></video> - is now per stream generated -->
+                    </span>
+                    <audio id="localAudio" autoplay muted></audio>
+                    <span class="focusindicator"></span>
+                </span>
+                <audio id="userJoined" src="sounds/joined.wav" preload="auto"></audio>
+                <audio id="userLeft" src="sounds/left.wav" preload="auto"></audio>
+            </div>
+            <span id="bottomToolbar">
+                <span class="bottomToolbar_span">
+                    <a class="bottomToolbarButton" id="bottom_toolbar_chat" data-container="body" data-toggle="popover" shortcut="toggleChatPopover" data-placement="top" data-i18n="[content]bottomtoolbar.chat" content="Open / close chat">
+                        <i id="chatBottomButton" class="icon-chat-simple">
+                            <span id="bottomUnreadMessages"></span>
+                        </i>
+                    </a>
+                </span>
+                <div class="bottom_button_separator"></div>
+                <span class="bottomToolbar_span">
+                    <a class="bottomToolbarButton" id="bottom_toolbar_contact_list" data-container="body" data-toggle="popover" data-placement="top" id="contactlistpopover"  data-i18n="[content]bottomtoolbar.contactlist" content="Open / close contact list">
+                        <i id="contactListButton" class="icon-contactList">
+                            <span id="numberOfParticipants"></span>
+                        </i>
+                    </a>
+                </span>
+                <div class="bottom_button_separator"></div>
+                <span class="bottomToolbar_span">
+                    <a class="bottomToolbarButton" id="bottom_toolbar_film_strip" data-container="body" data-toggle="popover" shortcut="filmstripPopover" data-placement="top" data-i18n="[content]bottomtoolbar.filmstrip" content="Show / hide film strip">
+                        <i id="filmStripButton" class="icon-filmstrip"></i>
+                    </a>
+                </span>
+            </span>
+        </div>
+        <div id="chatspace" class="right-panel" style="display:none;">
+            <div id="nickname">
+                <span data-i18n="chat.nickname.title"></span>
+                <form>
+                    <input type='text' id="nickinput" data-i18n="[placeholder]chat.nickname.popover" autofocus>
+                </form>
+            </div>
+
+            <div id="chatconversation"></div>
+            <audio id="chatNotification" src="sounds/incomingMessage.wav" preload="auto"></audio>
+                <textarea id="usermsg" data-i18n="[placeholder]chat.messagebox" autofocus></textarea>
+            <div id="smileysarea">
+                <div id="smileys" id="toggle_smileys">
+                    <img src="images/smile.svg"/>
+                </div>
+            </div>
+        </div>
+        <div id="contactlist" class="right-panel" style="display:none;">
+            <div class="title">
+                <i class="icon-contactList"><span data-i18n="contactlist"></span></i>
+            </div>
+            <ul id="contacts"></ul>
+        </div>
+        <div id="settingsmenu" class="right-panel" style="display:none;">
+            <div id = "startMutedOptions">
+                <label class = "startMutedLabel">
+                    <input type="checkbox" id="startAudioMuted">
+                    <span  data-i18n="settings.startAudioMuted"></span>
+                </label>
+                <label class = "startMutedLabel">
+                    <input type="checkbox" id="startVideoMuted">
+                    <span data-i18n="settings.startVideoMuted"></span>
+                </label>
+            </div>
+            <div id="devicesOptions">
+                <label className="devicesOptionsLabel">
+                    <span data-i18n="settings.selectCamera"></span>
+                    <select id="selectCamera"></select>
+                </label>
+                <label className="devicesOptionsLabel">
+                    <span data-i18n="settings.selectMic"></span>
+                    <select id="selectMic"></select>
+                </label>
+                <label className="devicesOptionsLabel">
+                    <span data-i18n="settings.selectAudioOutput"></span>
+                    <select id="selectAudioOutput"></select>
+                </label>
+            </div>
+            <div id="followMeOptions">
+                <label class = "followMeLabel">
+                    <input type="checkbox" id="followMeCheckBox">
+                    <span  data-i18n="settings.followMe"></span>
+                </label>
+            </div>
+            <a id="downloadlog" data-container="body" data-toggle="popover" data-placement="right" data-i18n="[data-content]downloadlogs" ><i class="fa fa-cloud-download"></i></a>
+        </div>
+        <div id="feedbackButtonDiv">
+            <a id="feedbackButton" data-container="body" data-toggle="popover" data-placement="right" data-i18n="[data-content]feedback"><i class="fa fa-heart"></i></a>
+        </div>
+    </div>
+  </body>
+</html>
