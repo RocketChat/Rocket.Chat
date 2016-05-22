@@ -106,7 +106,7 @@ Template.userInfo.helpers
 	roleTags: ->
 		uid = Template.instance().user.get()?._id
 		roles = _.union(UserRoles.findOne(uid)?.roles, RoomRoles.findOne({'u._id': uid, rid: Session.get('openedRoom') })?.roles)
-		return _.compact(_.map(roles, (role) -> return RocketChat.models.Roles.findOne({ _id: role, description: { $exists: 1 } })?.description));
+		return RocketChat.models.Roles.find({ _id: { $in: roles }, description: { $exists: 1 } }, { description: 1, _id: 0 })
 
 Template.userInfo.events
 	'click .thumb': (e) ->

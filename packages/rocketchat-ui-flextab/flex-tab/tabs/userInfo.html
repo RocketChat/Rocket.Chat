@@ -15,7 +15,7 @@
 					<p>{{name}}</p>
 					<p>
 						{{#each roleTags}}
-							<span class="role-tag" data-role="{{.}}">{{.}}</span>
+							<span class="role-tag" data-role="{{description}}">{{description}}</span>
 						{{/each}}
 					</p>
 					{{#if utc}}<p><i class="icon-clock"></i>{{userTime}} (UTC {{utc}})</p>{{/if}}
