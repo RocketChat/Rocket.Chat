@@ -103,6 +103,11 @@ Template.userInfo.helpers
 						instance.loadedUsername.set username
 		}
 
+	roleTags: ->
+		uid = Template.instance().user.get()?._id
+		roles = _.union(UserRoles.findOne(uid)?.roles, RoomRoles.findOne({'u._id': uid, rid: Session.get('openedRoom') })?.roles)
+		return _.compact(_.map(roles, (role) -> return RocketChat.models.Roles.findOne({ _id: role, description: { $exists: 1 } })?.description));
+
 Template.userInfo.events
 	'click .thumb': (e) ->
 		$(e.currentTarget).toggleClass('bigger')
@@ -380,4 +385,3 @@ Template.userInfo.onCreated ->
 		user = Meteor.users.findOne(filter)
 
 		@user.set user
-
