@@ -1,12 +1,12 @@
 # Learners Guild Rocket.Chat
 
-This is Learners Guild's custom fork of Rocket.Chat. The primary difference is the precense of a few custom plugins, a small startup script, and this readme.
+This is Learners Guild's custom fork of Rocket.Chat. The primary difference is the presence of a few custom plugins, a small startup script, and this readme.
 
 ## Getting Started
 
 1. Clone the repository.
 
-2. Checkout the `lg-master` branch.
+2. Checkout the `lg-master` branch (if not checked out by default).
 
 3. Setup and run [mehserve][mehserve]. Then figure out which port you intend to use and create the mehserve config file:
 
@@ -20,12 +20,12 @@ This is Learners Guild's custom fork of Rocket.Chat. The primary difference is t
 
         APP_BASEURL=http://chat.learnersguild.dev
         ROOT_URL=http://chat.learnersguild.dev/
+        CHAT_API_USER_SECRET='s3cr3t-p@ssw0rd'
         JWT_PUBLIC_KEY="<IDM PUBLIC KEY (let it
         span
         multiple
         lines)>
         "
-        CHAT_API_USER_SECRET='s3cr3t-p@ssw0rd'
 
 6. Install [Meteor][meteor]
 
