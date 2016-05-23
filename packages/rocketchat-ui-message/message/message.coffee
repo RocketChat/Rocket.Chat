@@ -5,7 +5,7 @@ Template.message.helpers
 		unless RocketChat.settings.get('UI_DisplayRoles')
 			return []
 		roles = _.union(UserRoles.findOne(this.u?._id)?.roles, RoomRoles.findOne({'u._id': this.u?._id, rid: this.rid })?.roles)
-		return _.compact(_.map(roles, (role) -> return RocketChat.models.Roles.findOne({ _id: role, description: { $exists: 1 } })?.description));
+		return RocketChat.models.Roles.find({_id: {$in: roles}, description: {$exists: true, $ne: ''}})
 	isGroupable: ->
 		return 'false' if this.groupable is false
 	isSequential: ->
@@ -175,7 +175,6 @@ Template.message.onViewRendered = (context) ->
 		previousNode = currentNode.previousElementSibling
 		nextNode = currentNode.nextElementSibling
 		$currentNode = $(currentNode)
-		$previousNode = $(previousNode)
 		$nextNode = $(nextNode)
 
 		unless previousNode?

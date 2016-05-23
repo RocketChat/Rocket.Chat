@@ -294,7 +294,7 @@ Template.room.events
 
 	'click .message-cog': (e) ->
 		message = @_arguments[1]
-		$('.message-dropdown:visible').hide()
+		RocketChat.MessageAction.hideDropDown()
 
 		dropDown = $(".messages-box \##{message._id} .message-dropdown")
 
@@ -318,7 +318,7 @@ Template.room.events
 			button.action.call @, e, t
 
 	'click .message-dropdown-close': ->
-		$('.message-dropdown:visible').hide()
+		RocketChat.MessageAction.hideDropDown()
 
 	"click .mention-link": (e, instance) ->
 		channel = $(e.currentTarget).data('channel')
