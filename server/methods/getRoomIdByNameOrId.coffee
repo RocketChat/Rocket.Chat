@@ -5,10 +5,12 @@ Meteor.methods
 
 		room = RocketChat.models.Rooms.findOneById(rid) or RocketChat.models.Rooms.findOneByName(rid)
 
+		return null unless room?
+
 		if room.usernames.indexOf(Meteor.user()?.username) isnt -1
 			return room._id
 
-		if room?.t isnt 'c' or RocketChat.authz.hasPermission(Meteor.userId(), 'view-c-room') isnt true
+		if room.t isnt 'c' or RocketChat.authz.hasPermission(Meteor.userId(), 'view-c-room') isnt true
 			throw new Meteor.Error 'error-not-allowed', 'Not allowed', { method: 'getRoomIdByNameOrId' }
 
 		return room._id
