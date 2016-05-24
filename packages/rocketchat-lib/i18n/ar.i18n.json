@@ -49,7 +49,7 @@
   "Accounts_OAuth_Custom_Secret" : "سر",
   "Accounts_OAuth_Custom_Token_Path" : "مسار رمزي",
   "Accounts_OAuth_Custom_Token_Sent_Via" : "رمزي المرسلة عن طريق",
-  "Accounts_OAuth_Custom_URL" : "الرابط",
+  "URL" : "الرابط",
   "Accounts_OAuth_Facebook" : "تسجيل الدخول الى الفيسبوك",
   "Accounts_OAuth_Facebook_callback_url" : "URL الفيسبوك الاستدعاء",
   "Accounts_OAuth_Facebook_id" : "الفيسبوك معرف التطبيق",

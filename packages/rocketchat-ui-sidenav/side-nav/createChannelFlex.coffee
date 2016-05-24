@@ -104,6 +104,7 @@ Template.createChannelFlex.events
 				SideNav.closeFlex ->
 					instance.clearForm()
 
+				RocketChat.callbacks.run 'afterCreateChannel', { _id: result.rid, name: name }
 				FlowRouter.go 'channel', { name: name }
 		else
 			console.log err

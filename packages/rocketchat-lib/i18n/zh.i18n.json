@@ -49,7 +49,7 @@
   "Accounts_OAuth_Custom_Secret" : "自定义 OAuth 帐号密钥",
   "Accounts_OAuth_Custom_Token_Path" : "自定义 OAuth token 地址",
   "Accounts_OAuth_Custom_Token_Sent_Via" : "令牌通过发送",
-  "Accounts_OAuth_Custom_URL" : "自定义 OAuth 帐号 URL",
+  "URL" : "自定义 OAuth 帐号 URL",
   "Accounts_OAuth_Facebook" : "Facebook OAuth 登录",
   "Accounts_OAuth_Facebook_callback_url" : "Facebook 回调 URL",
   "Accounts_OAuth_Facebook_id" : "Facebook 应用程序 ID",

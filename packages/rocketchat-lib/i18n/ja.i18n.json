@@ -49,7 +49,7 @@
   "Accounts_OAuth_Custom_Secret" : "シークレットキー",
   "Accounts_OAuth_Custom_Token_Path" : "トークンパス",
   "Accounts_OAuth_Custom_Token_Sent_Via" : "介して送信されるトークン",
-  "Accounts_OAuth_Custom_URL" : "URL",
+  "URL" : "URL",
   "Accounts_OAuth_Facebook" : "Facebook によるログインを有効にする",
   "Accounts_OAuth_Facebook_callback_url" : "Facebook コールバック URL",
   "Accounts_OAuth_Facebook_id" : "Facebook アプリケーション ID",

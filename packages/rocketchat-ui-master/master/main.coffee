@@ -53,30 +53,6 @@ Template.body.onRendered ->
 				f.parentNode.insertBefore j, f
 
 	Tracker.autorun (c) ->
-		w = window
-		p = '_paq'
-		url = RocketChat.settings.get 'PiwikAnalytics_url'
-		siteId = RocketChat.settings.get 'PiwikAnalytics_siteId'
-		domains = RocketChat.settings.get 'PiwikAnalytics_domains'
-		if Match.test(url, String) and url.trim() isnt '' and Match.test(siteId, String) and siteId.trim() isnt '' and Match.test(domains, String) and domains.trim() isnt ''
-			c.stop()
-			do (w, p, url, siteId, domains) ->
-				w[p] = w[p] || []
-				w[p].push(['setDomains', [domains.split(' ')]])
-				w[p].push(['trackPageView'])
-				w[p].push(['enableLinkTracking'])
-				w[p].push(['setTrackerUrl', url + 'piwik.php'])
-				w[p].push(['setSiteId', Number.parseInt(siteId)])
-				d = document
-				g = d.createElement('script')
-				s = d.getElementsByTagName('script')[0]
-				g.type = 'text/javascript'
-				g.async = true
-				g.defer = true
-				g.src = url + 'piwik.js'
-				s.parentNode.insertBefore(g, s)
-
-	Tracker.autorun (c) ->
 		if RocketChat.settings.get 'Meta_language'
 			c.stop()
 

@@ -49,7 +49,7 @@
   "Accounts_OAuth_Custom_Secret" : "ការ​សម្ងាត់",
   "Accounts_OAuth_Custom_Token_Path" : "ទីទាំង Token",
   "Accounts_OAuth_Custom_Token_Sent_Via" : "សញ្ញាសម្ងាត់បានផ្ញើតាមរយៈ",
-  "Accounts_OAuth_Custom_URL" : "URL",
+  "URL" : "URL",
   "Accounts_OAuth_Facebook" : "ចូល​តាម​ហ្វេសប៊ូក",
   "Accounts_OAuth_Facebook_callback_url" : "URL របស់ហ្វេសប៊ុកហៅទៅវិញ",
   "Accounts_OAuth_Facebook_id" : "លេខ​សម្គាល់​កម្មវិធី​ហ្វេសប៊ូក",
