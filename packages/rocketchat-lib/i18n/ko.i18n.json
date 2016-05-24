@@ -49,7 +49,7 @@
   "Accounts_OAuth_Custom_Secret" : "비밀",
   "Accounts_OAuth_Custom_Token_Path" : "Token 경로",
   "Accounts_OAuth_Custom_Token_Sent_Via" : "토큰 보낸 비아",
-  "Accounts_OAuth_Custom_URL" : "URL",
+  "URL" : "URL",
   "Accounts_OAuth_Facebook" : "Facebook 로그인",
   "Accounts_OAuth_Facebook_callback_url" : "페이스 북 콜백 URL",
   "Accounts_OAuth_Facebook_id" : "Facebook 앱 ID",

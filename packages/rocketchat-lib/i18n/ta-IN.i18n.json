@@ -49,7 +49,7 @@
   "Accounts_OAuth_Custom_Secret" : "இரகசிய",
   "Accounts_OAuth_Custom_Token_Path" : "டோக்கன் பாதை",
   "Accounts_OAuth_Custom_Token_Sent_Via" : "டோக்கன் அனுப்பப்பட்டது வழியாக",
-  "Accounts_OAuth_Custom_URL" : "URL ஐ",
+  "URL" : "URL ஐ",
   "Accounts_OAuth_Facebook" : "facebook தேதி",
   "Accounts_OAuth_Facebook_callback_url" : "பேஸ்புக் திரும்ப அழைப்பு URL",
   "Accounts_OAuth_Facebook_id" : "Facebook ஆப் ஐடி",

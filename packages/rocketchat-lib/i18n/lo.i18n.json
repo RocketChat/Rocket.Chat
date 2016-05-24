@@ -49,7 +49,7 @@
   "Accounts_OAuth_Custom_Secret" : "Secret",
   "Accounts_OAuth_Custom_Token_Path" : "ເສັ້ນທາງກ້າວສູ່ token",
   "Accounts_OAuth_Custom_Token_Sent_Via" : "Token ສົ່ງຜ່ານ",
-  "Accounts_OAuth_Custom_URL" : "URL",
+  "URL" : "URL",
   "Accounts_OAuth_Facebook" : "ເຟສບຸກເຂົ້າສູ່ລະບົບ",
   "Accounts_OAuth_Facebook_callback_url" : "URL ເຟສບຸກຕິດຕໍ່ກັບ",
   "Accounts_OAuth_Facebook_id" : "Id App ເຟສບຸກ",

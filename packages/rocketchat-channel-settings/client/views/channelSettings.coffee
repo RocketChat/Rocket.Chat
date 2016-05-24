@@ -112,9 +112,11 @@ Template.channelSettings.onCreated ->
 						Meteor.call 'archiveRoom', @data?.rid, (err, results) ->
 							return handleError err if err
 							toastr.success TAPi18n.__ 'Room_archived'
+							#TODO: callback channel archived
 				else
 					if ChatRoom.findOne(@data.rid)?.archived is true
 						Meteor.call 'unarchiveRoom', @data?.rid, (err, results) ->
 							return handleError err if err
 							toastr.success TAPi18n.__ 'Room_unarchived'
+							#TODO: callback channel unarchived
 		@editing.set()

@@ -49,7 +49,7 @@
   "Accounts_OAuth_Custom_Secret" : "Secret",
   "Accounts_OAuth_Custom_Token_Path" : "Token Path",
   "Accounts_OAuth_Custom_Token_Sent_Via" : "Token Dihantar Via",
-  "Accounts_OAuth_Custom_URL" : "URL",
+  "URL" : "URL",
   "Accounts_OAuth_Facebook" : "Daftar masuk Facebook",
   "Accounts_OAuth_Facebook_callback_url" : "URL Facebook Callback",
   "Accounts_OAuth_Facebook_id" : "Facebook App Id",
