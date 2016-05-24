@@ -49,7 +49,7 @@
   "Accounts_OAuth_Custom_Secret" : "секрет",
   "Accounts_OAuth_Custom_Token_Path" : "токен Шлях",
   "Accounts_OAuth_Custom_Token_Sent_Via" : "Токен посланими через",
-  "Accounts_OAuth_Custom_URL" : "URL",
+  "URL" : "URL",
   "Accounts_OAuth_Facebook" : "Facebook Ввійти",
   "Accounts_OAuth_Facebook_callback_url" : "URL facebook Зворотній дзвінок",
   "Accounts_OAuth_Facebook_id" : "Facebook App Id",

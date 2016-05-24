@@ -49,7 +49,7 @@
   "Accounts_OAuth_Custom_Secret" : "sekret",
   "Accounts_OAuth_Custom_Token_Path" : "Path Token",
   "Accounts_OAuth_Custom_Token_Sent_Via" : "Token Sent Via",
-  "Accounts_OAuth_Custom_URL" : "URL",
+  "URL" : "URL",
   "Accounts_OAuth_Facebook" : "Hyni me Facebook",
   "Accounts_OAuth_Facebook_callback_url" : "Facebook Callback URL",
   "Accounts_OAuth_Facebook_id" : "Facebook App Id",

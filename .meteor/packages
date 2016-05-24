@@ -74,6 +74,7 @@ rocketchat:migrations
 rocketchat:oauth2-server-config
 rocketchat:oembed
 rocketchat:otr
+rocketchat:piwik
 rocketchat:push-notifications
 rocketchat:reactions
 rocketchat:slashcommands-invite

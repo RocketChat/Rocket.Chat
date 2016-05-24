@@ -49,7 +49,7 @@
   "Accounts_OAuth_Custom_Secret" : "راز",
   "Accounts_OAuth_Custom_Token_Path" : "مسیر نشانه رمز",
   "Accounts_OAuth_Custom_Token_Sent_Via" : "رمز ارسال شده از طریق",
-  "Accounts_OAuth_Custom_URL" : "URL",
+  "URL" : "URL",
   "Accounts_OAuth_Facebook" : "ورود به فیس بوک",
   "Accounts_OAuth_Facebook_callback_url" : "URL فیس بوک مخاطبین",
   "Accounts_OAuth_Facebook_id" : "شناسه فیس بوک نرم افزار",

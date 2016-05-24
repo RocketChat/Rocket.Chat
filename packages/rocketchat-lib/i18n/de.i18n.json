@@ -49,7 +49,7 @@
   "Accounts_OAuth_Custom_Secret" : "Secret",
   "Accounts_OAuth_Custom_Token_Path" : "Pfad des Token",
   "Accounts_OAuth_Custom_Token_Sent_Via" : "Token gesendet über",
-  "Accounts_OAuth_Custom_URL" : "URL",
+  "URL" : "URL",
   "Accounts_OAuth_Facebook" : "Anmeldung über Facebook erlauben",
   "Accounts_OAuth_Facebook_callback_url" : "Facebook-Callback-URL",
   "Accounts_OAuth_Facebook_id" : "Facebook-App-ID",
