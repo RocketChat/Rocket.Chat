@@ -160,6 +160,8 @@ Meteor.startup ->
 
 			if Array.isArray(room.usernames) && room.usernames.indexOf(Meteor.user().username) is -1
 				return false
+			
+			return true
 		order: 3
 
 	RocketChat.MessageAction.addButton
@@ -182,6 +184,8 @@ Meteor.startup ->
 
 			if Array.isArray(room.usernames) && room.usernames.indexOf(Meteor.user().username) is -1
 				return false
+				
+			return true
 		order: 4
 
 	RocketChat.MessageAction.addButton
@@ -205,4 +209,6 @@ Meteor.startup ->
 
 			if Array.isArray(room.usernames) && room.usernames.indexOf(Meteor.user().username) is -1
 				return false
+			
+			return true
 		order: 5
