@@ -33,4 +33,7 @@ RocketChat.sendMessage = (user, message, room) ->
 		# Execute all callbacks
 		RocketChat.callbacks.run 'afterSaveMessage', message, room
 
+	oldMsgStream.emit message.rid, message
+	msgStream.emit message.rid, message
+
 	return message

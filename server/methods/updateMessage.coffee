@@ -48,5 +48,18 @@ Meteor.methods
 
 		room = RocketChat.models.Rooms.findOneById message.rid
 
+		sentMessage = RocketChat.models.Messages.findOneById tempid
+
 		Meteor.defer ->
-			RocketChat.callbacks.run 'afterSaveMessage', RocketChat.models.Messages.findOneById(tempid), room
+			RocketChat.callbacks.run 'afterSaveMessage', sentMessage, room
+
+		if not showEditedStatus
+			delete sentMessage.editedAt
+
+		oldMsgStream.emit sentMessage.rid, sentMessage
+		msgStream.emit sentMessage.rid, sentMessage
+
+showEditedStatus = true
+RocketChat.settings.get 'Message_ShowEditedStatus', (key, value) ->
+	showEditedStatus = value
+
