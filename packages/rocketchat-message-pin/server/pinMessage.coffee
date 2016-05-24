@@ -27,6 +27,7 @@ Meteor.methods
 
 		RocketChat.models.Messages.setPinnedByIdAndUserId message._id, message.pinnedBy, message.pinned
 
+		# @TODO sent through stream
 		RocketChat.models.Messages.createWithTypeRoomIdMessageAndUser 'message_pinned', message.rid, '', me,
 			attachments: [
 				"text" : message.msg
@@ -60,6 +61,7 @@ Meteor.methods
 
 		message = RocketChat.callbacks.run 'beforeSaveMessage', message
 
+		# @TODO sent through stream
 		RocketChat.models.Messages.setPinnedByIdAndUserId message._id, message.pinnedBy, message.pinned
 
 

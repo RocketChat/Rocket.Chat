@@ -197,9 +197,11 @@ OEmbed.RocketUrlParser = (message) ->
 
 		if attachments.length
 			RocketChat.models.Messages.setMessageAttachments message._id, attachments
+			# @TODO sent through stream
 
 		if changed is true
 			RocketChat.models.Messages.setUrlsById message._id, message.urls
+			# @TODO sent through stream
 
 	return message
 

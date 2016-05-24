@@ -28,5 +28,6 @@ Meteor.methods
 			u:
 				_id: fromUser._id
 				username: fromUser.username
+		# @TODO sent through stream
 
 		return true

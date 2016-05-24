@@ -22,9 +22,11 @@ Meteor.methods
 		if room.usernames.indexOf(user.username) isnt -1
 			removedUser = user
 			RocketChat.models.Messages.createUserLeaveWithRoomIdAndUser rid, removedUser
+			# @TODO sent through stream
 
 		if room.t is 'l'
 			RocketChat.models.Messages.createCommandWithRoomIdAndUser 'survey', rid, user
+			# @TODO sent through stream
 
 		RocketChat.models.Subscriptions.removeByRoomIdAndUserId rid, Meteor.userId()
 
