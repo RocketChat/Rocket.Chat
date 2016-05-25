@@ -157,6 +157,7 @@ RocketChat.settings.addGroup 'Message', ->
 	@add 'Message_MaxAll', 0, { type: 'int', public: true }
 	@add 'Message_MaxAllowedSize', 5000, { type: 'int', public: true }
 	@add 'Message_ShowFormattingTips', true, { type: 'boolean', public: true }
+	@add 'Message_SetNameToAliasEnabled', false, { type: 'boolean', public: false, i18nDescription: 'Message_SetNameToAliasEnabled_Description' }
 	@add 'Message_AudioRecorderEnabled', true, { type: 'boolean', public: true, i18nDescription: 'Message_AudioRecorderEnabledDescription' }
 	@add 'Message_GroupingPeriod', 300, { type: 'int', public: true, i18nDescription: 'Message_GroupingPeriodDescription' }
 	@add 'API_Embed', true, { type: 'boolean', public: true }

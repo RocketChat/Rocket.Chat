@@ -650,6 +650,8 @@
   "Message_MaxAllowedSize" : "メッセージの最大文字数",
   "Message_pinning" : "ピニングメッセージ",
   "Message_removed" : "メッセージを削除しました",
+  "Message_SetNameToAliasEnabled" : "ユーザの名前をメッセージのエイリアスにセット",
+  "Message_SetNameToAliasEnabled_Description" : "エイリアスが既にセットされていない場合のみ。古いメッセージのエイリアスは、ユーザが名前を変えたとしても変更されません。",
   "Message_ShowDeletedStatus" : "削除した状態を表示する",
   "Message_ShowEditedStatus" : "編集した状態を表示する",
   "Message_ShowFormattingTips" : "書式のヒントを表示する",
