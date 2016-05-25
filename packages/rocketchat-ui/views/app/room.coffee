@@ -565,7 +565,7 @@ Template.room.onRendered ->
 	$('.flex-tab-bar').on 'click', (e, t) ->
 		Meteor.setTimeout ->
 			template.sendToBottomIfNecessaryDebounced()
-		, 100
+		, 50
 
 	updateUnreadCount = _.throttle ->
 		firstMessageOnScreen = document.elementFromPoint(containerBarsOffset.left+1, containerBarsOffset.top+containerBars.height()+1)
