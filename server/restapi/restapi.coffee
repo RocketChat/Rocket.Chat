@@ -18,6 +18,14 @@ Api.addRoute 'publicRooms', authRequired: true,
 		rooms = RocketChat.models.Rooms.findByType('c', { sort: { msgs:-1 } }).fetch()
 		status: 'success', rooms: rooms
 
+###
+@api {get} /joinedRooms Get joined rooms.
+###
+Api.addRoute 'joinedRooms', authRequired: true,
+	get: ->
+		rooms = RocketChat.models.Rooms.findByContainigUsername(@user.username).fetch()
+		status: 'success', rooms: rooms
+
 # join a room
 Api.addRoute 'rooms/:id/join', authRequired: true,
 	post: ->
@@ -33,12 +41,27 @@ Api.addRoute 'rooms/:id/leave', authRequired: true,
 		status: 'success'   # need to handle error
 
 
-# get messages in a room
+###
+@api {get} /rooms/:id/messages?skip=:skip&limit=:limit Get messages in a room.
+@apiParam {Number} id         Room ID
+@apiParam {Number} [skip=0]   Number of results to skip at the beginning
+@apiParam {Number} [limit=50] Maximum number of results to return
+###
 Api.addRoute 'rooms/:id/messages', authRequired: true,
 	get: ->
 		try
-			if Meteor.call('canAccessRoom', @urlParams.id, this.userId)
-				msgs = RocketChat.models.Messages.findVisibleByRoomId(@urlParams.id, {sort: {ts: -1}, limit: 50}).fetch()
+			rid = @urlParams.id
+			# `variable | 0` means converting to int
+			skip = @queryParams.skip | 0 or 0
+			limit = @queryParams.limit | 0 or 50
+			limit = 50 if limit > 50
+			if Meteor.call('canAccessRoom', rid, this.userId)
+				msgs = RocketChat.models.Messages.findVisibleByRoomId(rid,
+					sort:
+						ts: -1
+					skip: skip
+					limit: limit
+				).fetch()
 				status: 'success', messages: msgs
 			else
 				statusCode: 403   # forbidden
@@ -131,10 +154,10 @@ Api.addRoute 'bulk/register', authRequired: true,
 					ids = []
 					endCount = @bodyParams.users.length - 1
 					for incoming, i in @bodyParams.users
-					 	ids[i] = {uid: Meteor.call 'registerUser', incoming}
-					 	Meteor.runAsUser ids[i].uid, () =>
-					 		Meteor.call 'setUsername', incoming.name
-					 		Meteor.call 'joinDefaultChannels'
+						ids[i] = {uid: Meteor.call 'registerUser', incoming}
+						Meteor.runAsUser ids[i].uid, () =>
+							Meteor.call 'setUsername', incoming.name
+							Meteor.call 'joinDefaultChannels'
 
 					status: 'success', ids: ids
 				catch e
@@ -175,8 +198,8 @@ Api.testapiValidateRooms =  (rooms) ->
   {
     'rooms':[ {'name': 'room1',
                'members': ['user1', 'user2']
-  	      },
-  	      {'name': 'room2',
+              },
+              {'name': 'room2',
                'members': ['user1', 'user2', 'user3']
               }
               ...
@@ -217,6 +240,3 @@ Api.addRoute 'bulk/createRoom', authRequired: true,
 				console.log '[restapi] bulk/createRoom -> '.red, "User does not have 'bulk-create-c' permission"
 				statusCode: 403
 				body: status: 'error', message: 'You do not have permission to do this'
-
-
-
