@@ -27,7 +27,7 @@ Template.mentionsFlexTab.events
 		e.stopPropagation()
 		e.preventDefault()
 		message_id = $(e.currentTarget).closest('.message').attr('id')
-		$('.message-dropdown:visible').hide()
+		RocketChat.MessageAction.hideDropDown()
 		t.$("\##{message_id} .message-dropdown").remove()
 		message = MentionedMessage.findOne message_id
 		actions = RocketChat.MessageAction.getButtons message, 'mentions'
