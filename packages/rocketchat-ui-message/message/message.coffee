@@ -5,7 +5,7 @@ Template.message.helpers
 		unless RocketChat.settings.get('UI_DisplayRoles')
 			return []
 		roles = _.union(UserRoles.findOne(this.u?._id)?.roles, RoomRoles.findOne({'u._id': this.u?._id, rid: this.rid })?.roles)
-		return _.compact(_.map(roles, (role) -> return RocketChat.models.Roles.findOne({ _id: role, description: { $exists: 1 } })?.description));
+		return RocketChat.models.Roles.find({ _id: { $in: roles }, description: { $exists: 1 } }, { fields: { description: 1 } })
 	isGroupable: ->
 		return 'false' if this.groupable is false
 	isSequential: ->
