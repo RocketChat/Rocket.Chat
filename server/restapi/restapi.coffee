@@ -17,6 +17,11 @@ Api.addRoute 'publicRooms', authRequired: true,
 	get: ->
 		rooms = RocketChat.models.Rooms.findByType('c', { sort: { msgs:-1 } }).fetch()
 		status: 'success', rooms: rooms
+		
+Api.addRoute 'privateRooms', authRequired: true,
+	get: ->
+		rooms = RocketChat.models.Rooms.findByType('p', { sort: { msgs:-1 } }).fetch()
+		status: 'success', rooms: rooms
 
 # join a room
 Api.addRoute 'rooms/:id/join', authRequired: true,
@@ -218,5 +223,106 @@ Api.addRoute 'bulk/createRoom', authRequired: true,
 				statusCode: 403
 				body: status: 'error', message: 'You do not have permission to do this'
 
+###
+@api {post} /bulk/createPrivateGroups  Create multiple private groups based on an input array.
+@apiName createPrivateGroups
+@apiGroup TestAndAdminAutomation
+@apiVersion 0.0.1
+@apiParam {json} rooms An array of groups in the body of the POST. 'name' is group name, 'members' is array of usernames
+@apiParamExample {json} POST Request Body example:
+  {
+    'rooms':[ {'name': 'room1',
+               'members': ['user1', 'user2']
+  	      },
+  	      {'name': 'room2',
+               'members': ['user1', 'user2', 'user3']
+              }
+              ...
+            ]
+  }
+@apiDescription  Caller must have 'testagent' or 'adminautomation' role.
+NOTE:   remove room is NOT recommended; use Meteor.reset() to clear db and re-seed instead
 
-
+@apiSuccess {json} ids An array of ids of the groups created.
+@apiSuccessExample {json} Success-Response:
+  HTTP/1.1 200 OK
+  {
+    'ids':[ {'rid': 'rid_1'},
+            {'rid': 'rid_2'},
+            ...
+    ]
+  }
+###
+Api.addRoute 'bulk/createPrivateGroups', authRequired: true,
+	post:
+		# restivus 0.8.4 does not support alanning:roles using groups
+		#roleRequired: ['testagent', 'adminautomation']
+		action: ->
+			# user must also have create-c permission because
+			# createChannel method requires it
+			if RocketChat.authz.hasPermission(@userId, 'bulk-create-c')
+				try
+					this.response.setTimeout (1000 * @bodyParams.rooms.length)
+					Api.testapiValidateRooms @bodyParams.rooms
+					ids = []
+					Meteor.runAsUser this.userId, () =>
+						(ids[i] = Meteor.call 'createPrivateGroup', incoming.name, incoming.members) for incoming,i in @bodyParams.rooms
+					status: 'success', ids: ids   # need to handle error
+				catch e
+					statusCode: 400    # bad request or other errors
+					body: status: 'fail', message: e.name + ' :: ' + e.message
+			else
+				console.log '[restapi] bulk/createPrivateGroups -> '.red, "User does not have 'bulk-create-c' permission"
+				statusCode: 403
+				body: status: 'error', message: 'You do not have permission to do this'
+				
+Api.addRoute 'bulk/removePrivateGroups', authRequired: true,
+	post:
+		# restivus 0.8.4 does not support alanning:roles using groups
+		#roleRequired: ['testagent', 'adminautomation']
+		action: ->
+			# user must also have create-c permission because
+			# createChannel method requires it
+			if RocketChat.authz.hasPermission(@userId, 'bulk-create-c')
+				try
+					
+					this.response.setTimeout (1000 * @bodyParams.name.length)
+					#Api.testapiValidateRooms @bodyParams.rooms
+					ids = []
+					Meteor.runAsUser this.userId, () =>
+						(ids[i] = Meteor.call 'eraseRoom', incoming.name) for incoming,i in @bodyParams.name
+					status: 'success', ids: ids  # need to handle error
+				catch e
+					statusCode: 400    # bad request or other errors
+					body: status: 'fail', message: e.name + ' :: ' + e.message
+			else
+				console.log '[restapi] bulk/removePrivateGroups -> '.red, "User does not have 'bulk-create-c' permission"
+				statusCode: 403
+				body: status: 'error', message: 'You do not have permission to do this'
+				
+		
+Api.addRoute 'bulk/outgoingWebhooks', authRequired: true,
+	post:
+		#roleRequired: ['testagent', 'adminautomation']
+		action: ->
+			# user must also have create-c permission because
+			# createChannel method requires it
+			if RocketChat.authz.hasPermission(@userId, 'bulk-create-c')
+				try
+					
+					this.response.setTimeout (1000 * @bodyParams.name.length)
+					integration ={ userid:@userId, auth:@authToken, enabled:@enabled, name:@roomName, channel:@channel, triggerWords:@triggerWords,\
+					urls:@urls, username:@username, alias:@alias, avatar:@avatar, emoji:@emoji, token:@token,\
+					scriptEnable:@scriptEnabled, script:@script }
+					
+					ids = []
+					Meteor.runAsUser this.userId, () =>
+						(ids[i] = Meteor.call 'addOutgoingIntegration', integration) for incoming,i in @bodyParams.name
+					status: 'success', ids: ids  # need to handle error
+				catch e
+					statusCode: 400    # bad request or other errors
+					body: status: 'yep failled again', message: e.name + ' :: ' + e.message
+			else
+				console.log '[restapi] api/outgoingWebhooks -> '.red, "User does not have 'bulk-create-c' permission"
+				statusCode: 403
+				body: status: 'error', message: 'You do not have permission to do this'
