@@ -70,6 +70,15 @@
 				{{> messageAttachment}}
 			{{/each}}
 		</div>
+		<ul class="actionLinks {{hideActionLinks}}">
+			{{#each actionLink in actionLinks}}
+				<li>
+					<span class="action-link">{{actionLink.label}}
+						<meta name="{{actionLink.id}}"/>
+					</span>
+				</li>
+			{{/each}}
+		</ul>
 		<ul class="reactions {{hideReactions}}">
 			{{#each reaction in reactions}}
 				<li data-emoji="{{reaction.emoji}}" {{markUserReaction reaction}}>
