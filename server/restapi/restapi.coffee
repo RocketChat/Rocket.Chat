@@ -18,6 +18,14 @@ Api.addRoute 'publicRooms', authRequired: true,
 		rooms = RocketChat.models.Rooms.findByType('c', { sort: { msgs:-1 } }).fetch()
 		status: 'success', rooms: rooms
 
+###
+@api {get} /joinedRooms Get joined rooms.
+###
+Api.addRoute 'joinedRooms', authRequired: true,
+	get: ->
+		rooms = RocketChat.models.Rooms.findByContainigUsername(@user.username).fetch()
+		status: 'success', rooms: rooms
+
 # join a room
 Api.addRoute 'rooms/:id/join', authRequired: true,
 	post: ->
