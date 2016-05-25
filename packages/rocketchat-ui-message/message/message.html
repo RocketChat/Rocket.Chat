@@ -1,30 +1,30 @@
 <template name="message">
-	<li id="{{_id}}" class="message {{isSequential}} {{system}} {{t}} {{own}} {{isTemp}} {{chatops}} {{customClass}}" data-username="{{u.username}}" data-groupable="{{isGroupable}}" data-date="{{date}}" data-timestamp="{{timestamp}}">
+	<li id="{{_id}}" class="message {{isSequential}} {{system}} {{t}} {{own}} {{isTemp}} {{chatops}}" data-username="{{u.username}}" data-groupable="{{isGroupable}}" data-date="{{date}}" data-timestamp="{{timestamp}}">
 		{{#if avatar}}
 			{{#if avatarFromUsername}}
-				<button class="thumb user-card-message" data-username="{{u.username}}" tabindex="1">{{> avatar username=avatarFromUsername}}</button>
+				<a class="thumb user-card-message" data-username="{{u.username}}" tabindex="1">{{> avatar username=avatarFromUsername}}</a>
 			{{else}}
-				<button class="thumb user-card-message" data-username="{{u.username}}" tabindex="1">
+				<a class="thumb user-card-message" data-username="{{u.username}}" tabindex="1">
 					<div class="avatar">
 						<div class="avatar-image" style="background-image:url({{avatar}});"></div>
 					</div>
-				</button>
+				</a>
 			{{/if}}
 		{{else}}
 			{{#if emoji}}
-				<button class="thumb user-card-message" data-username="{{u.username}}" tabindex="1">
+				<a class="thumb user-card-message" data-username="{{u.username}}" tabindex="1">
 					<div class="avatar">
 						{{{getEmoji emoji}}}
 					</div>
-				</button>
+				</a>
 			{{else}}
-				<button class="thumb user-card-message" data-username="{{u.username}}" tabindex="1">{{> avatar username=u.username}}</button>
+				<a class="thumb user-card-message" data-username="{{u.username}}" tabindex="1">{{> avatar username=u.username}}</a>
 			{{/if}}
 		{{/if}}
 		{{#if alias}}
-			<button class="user user-card-message" data-username="{{u.username}}" tabindex="1">{{alias}} <span class="message-alias">@{{u.username}}</span></button>
+			<a class="user user-card-message" data-username="{{u.username}}" tabindex="1">{{alias}} <span class="message-alias">@{{u.username}}</span></a>
 		{{else}}
-			<button class="user user-card-message" data-username="{{u.username}}" tabindex="1">{{u.username}}</button>
+			<a class="user user-card-message" data-username="{{u.username}}" tabindex="1">{{u.username}}</a>
 		{{/if}}
 		<span class="info">
 			{{#each roleTags}}
@@ -42,9 +42,9 @@
 				<span class="edited" title='{{_ "edited"}} {{_ "at"}} {{editTime}} {{_ "by"}} {{editedBy}}' >
 					<i class="icon-edit" aria-label="{{_ "Edited"}}"></i>
 					{{_ "by"}}
-					<button class="thumb thumb-small user-card-message" data-username="{{editedBy}}" tabindex="1">
+					<a class="thumb thumb-small user-card-message" data-username="{{editedBy}}" tabindex="1">
 						{{> avatar username=editedBy}}
-					</button>
+					</a>
 				</span>
 			{{else}}
 				<span class="time">{{time}}</span>
@@ -53,7 +53,7 @@
 				<span class="private">{{_ "Only_you_can_see_this_message"}}</span>
 			{{/if}}
 
-			<div class="message-cog-container {{hideCog}}">
+			<div class="message-cog-container">
 				<i class="icon-cog message-cog" aria-label="{{_ "Actions"}}"></i>
 			</div>
 		</span>
@@ -70,15 +70,24 @@
 				{{> messageAttachment}}
 			{{/each}}
 		</div>
+		<ul class="actionLinks {{hideActionLinks}}">
+			{{#each actionLink in actionLinks}}
+				<li>
+					<span class="action-link">{{actionLink.label}}
+						<meta name="{{actionLink.id}}"/>
+					</span>
+				</li>
+			{{/each}}
+		</ul>
 		<ul class="reactions {{hideReactions}}">
 			{{#each reaction in reactions}}
-				<li data-emoji="{{reaction.emoji}}" {{markUserReaction reaction}}>
+				<li data-emoji="{{reaction.emoji}}">
 					<span class="reaction-emoji">{{> emojione reaction.emoji}}</span>
 					<span class="reaction-count">{{reaction.count}}</span>
 					<ul class="people">
-						<span style="font-weight: bold;">
-							{{reaction.usernames}} <span style="color: #aaa;">{{reaction.reaction}}</span>
-						</span>
+						{{#each reaction.usernames}}
+							<li>{{.}}</li>
+						{{/each}}
 					</ul>
 				</li>
 			{{/each}}
