@@ -22,7 +22,7 @@ Meteor.methods
 			}
 			return false
 
-		message.alias = message.alias or user.name
+		message.alias = user.name if not message.alias? and RocketChat.settings.get 'Message_SetNameToAliasEnabled'
 
 		RocketChat.sendMessage user, message, room
 

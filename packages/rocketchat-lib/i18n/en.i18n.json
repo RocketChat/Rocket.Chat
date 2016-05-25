@@ -653,6 +653,8 @@
   "Message_MaxAllowedSize" : "Maximum Allowed Message Size",
   "Message_pinning" : "Message pinning",
   "Message_removed" : "Message removed",
+  "Message_SetNameToAliasEnabled" : "Set a user name to alias in message",
+  "Message_SetNameToAliasEnabled_Description" : "Only if not already set alias. The old messages alias not changed if user has changed the name.",
   "Message_ShowDeletedStatus" : "Show Deleted Status",
   "Message_ShowEditedStatus" : "Show Edited Status",
   "Message_ShowFormattingTips" : "Show Formatting Tips",
