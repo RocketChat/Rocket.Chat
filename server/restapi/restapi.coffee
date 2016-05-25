@@ -51,7 +51,7 @@ Api.addRoute 'rooms/:id/messages', authRequired: true,
 	get: ->
 		try
 			rid = @urlParams.id
-			# `variavle | 0` means converting to int
+			# `variable | 0` means converting to int
 			skip = @queryParams.skip | 0 or 0
 			limit = @queryParams.limit | 0 or 50
 			limit = 50 if limit > 50
