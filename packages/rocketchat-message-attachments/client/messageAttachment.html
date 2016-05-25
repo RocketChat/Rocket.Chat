@@ -13,7 +13,7 @@
 						{{/if}}
 						<a href="{{fixCordova author_link}}" target="_blank">{{author_name}}</a>
 						{{#if ts}}
-							<span class="time">{{time}}</span>
+                            <span class="time">{{#if message_link}}<a href="{{message_link}}">{{time}}</a>{{else}}{{time}}{{/if}}</span>
 						{{/if}}
 					</div>
 				{{else}}
@@ -23,7 +23,7 @@
 						{{/if}}
 						{{author_name}}
 					{{#if ts}}
-						<span class="time">{{time}}</span>
+						<span class="time">{{#if message_link}}<a href="{{message_link}}">{{time}}</a>{{else}}{{time}}{{/if}}</span>
 					{{/if}}
 					</div>
 				{{/if}}
