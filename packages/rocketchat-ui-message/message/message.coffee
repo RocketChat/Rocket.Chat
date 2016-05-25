@@ -94,42 +94,47 @@ Template.message.helpers
 
 	reactions: ->
 		msgReactions = []
+		userUsername = Meteor.user().username
 
 		for emoji, reaction of @reactions
 			total = reaction.usernames.length
-			usernames = reaction.usernames.sort().slice(0, 15)
+			usernames = '@' + reaction.usernames.slice(0, 15).join(', @')
+
+			usernames = usernames.replace('@'+userUsername, t('You').toLowerCase())
 
 			if total > 15
-				usernames.push t('And_more', { length: total - 15 })
+				usernames = usernames + ' ' + t('And_more', { length: total - 15 }).toLowerCase()
+			else
+				usernames = usernames.replace(/,([^,]+)$/, ' '+t('and')+'$1')
+
+			if usernames[0] isnt '@'
+				usernames = usernames[0].toUpperCase() + usernames.substr(1)
 
 			msgReactions.push
 				emoji: emoji
 				count: reaction.usernames.length
 				usernames: usernames
+				reaction: ' ' + t('Reacted_with').toLowerCase() + ' ' + emoji
+				userReacted: reaction.usernames.indexOf(userUsername) > -1
 
 		return msgReactions
+
+	markUserReaction: (reaction) ->
+		if reaction.userReacted
+			return {
+				class: 'selected'
+			}
 
 	hideReactions: ->
 		return 'hidden' if _.isEmpty(@reactions)
 
-	actionLinks: ->
-		msgActionLinks = []
-
-		for key, actionLink of @actionLinks
-			
-			#make this more generic? i.e. label is the first arg...etc?
-			msgActionLinks.push
-				label: actionLink.label
-				id: key
-
-		return msgActionLinks
-
-	hideActionLinks: ->
-		return 'hidden' if _.isEmpty(@actionLinks)
-
 	injectIndex: (data, index) ->
 		data.index = index
 		return
+
+	hideCog: ->
+		room = RocketChat.models.Rooms.findOne({ _id: this.rid });
+		return 'hidden' if room.usernames.indexOf(Meteor.user().username) == -1
 
 Template.message.onCreated ->
 	msg = Template.currentData()
