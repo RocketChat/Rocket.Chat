@@ -13,6 +13,11 @@
 				<div class="info">
 					<h3 title="{{username}}"><i class="status-{{status}}"></i> {{username}}</h3>
 					<p>{{name}}</p>
+					<p>
+						{{#each roleTags}}
+							<span class="role-tag" data-role="{{description}}">{{description}}</span>
+						{{/each}}
+					</p>
 					{{#if utc}}<p><i class="icon-clock"></i>{{userTime}} (UTC {{utc}})</p>{{/if}}
 					{{#if hasPermission 'view-full-other-user-info'}}
 						{{#if hasEmails}}
