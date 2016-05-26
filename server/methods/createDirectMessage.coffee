@@ -48,6 +48,8 @@ Meteor.methods
 				t: 'd'
 				alert: false
 				unread: 0
+                                desktopNotifications: 'all'
+                                mobilePushNotifications: 'all'
 				u:
 					_id: me._id
 					username: me.username
@@ -63,6 +65,8 @@ Meteor.methods
 				open: false
 				alert: false
 				unread: 0
+                                desktopNotifications: 'all'
+                                mobilePushNotifications: 'all'
 				u:
 					_id: to._id
 					username: to.username
