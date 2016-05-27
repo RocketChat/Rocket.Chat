@@ -32,7 +32,7 @@ Meteor.methods
 				"text" : message.msg
 				"author_name" : message.u.username,
 				"author_icon" : getAvatarUrlFromUsername(message.u.username),
-				"ts" : new Date()
+				"ts" : message.ts
 			]
 
 	unpinMessage: (message) ->
