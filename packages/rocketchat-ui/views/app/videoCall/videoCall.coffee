@@ -64,7 +64,24 @@ Template.videoCall.helpers
 	mainVideoFlip: ->
 		template = Template.instance()
 		webrtc = WebRTC.getInstanceByRoomId(Session.get('openedRoom'))
-		return template.mainVideo.get() is '$self' && webrtc.screenShareEnabled.get()
+		myself = false;
+		localUrl = WebRTC.getInstanceByRoomId(Session.get('openedRoom')).localUrl.get()
+
+		if template.mainVideo.get() is '$self'
+			myself = true
+
+		if !myself && template.mainVideo.get() is '$auto'
+			remoteItems = webrtc.remoteItems.get()
+			if remoteItems?.length > 0
+				myself = remoteItems[0].url == localUrl
+
+			if !myself
+				myself = webrtc.localUrl.get() == localUrl
+
+		if !myself && webrtc.remoteItemsById.get()[template.mainVideo.get()]?
+			myself = webrtc.remoteItemsById.get()[template.mainVideo.get()].url == localUrl
+
+		return myself && !WebRTC.getInstanceByRoomId(Session.get('openedRoom')).screenShareEnabled.get()
 
 	mainVideoUsername: ->
 		template = Template.instance()
