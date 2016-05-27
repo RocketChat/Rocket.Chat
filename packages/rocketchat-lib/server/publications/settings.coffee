@@ -1,12 +1,42 @@
-Meteor.publish 'settings', (ids = []) ->
-	return RocketChat.models.Settings.findNotHiddenPublic(ids)
+Meteor.methods
+	getPublicSettings: ->
+		this.unblock()
 
-Meteor.publish 'admin-settings', ->
-	unless @userId
-		return @ready()
+		return RocketChat.models.Settings.findNotHiddenPublic().fetch()
 
-	if RocketChat.authz.hasPermission( @userId, 'view-privileged-setting')
-		return RocketChat.models.Settings.findNotHidden()
-	else
-		return @ready()
+	getPrivateSettings: ->
+		unless Meteor.userId()
+			return []
 
+		this.unblock()
+
+		if not RocketChat.authz.hasPermission Meteor.userId(), 'view-privileged-setting'
+			return []
+
+		return RocketChat.models.Settings.findNotHiddenPrivate().fetch()
+
+
+subscriptionsReady = false
+RocketChat.models.Settings.findNotHidden().observe
+	added: (record) ->
+		if subscriptionsReady
+			e = if record.public is true then 'public-settings-changed' else 'private-settings-changed'
+			RocketChat.Notifications.notifyAll e, 'added', record
+
+	changed: (record) ->
+		if subscriptionsReady
+			e = if record.public is true then 'public-settings-changed' else 'private-settings-changed'
+			RocketChat.Notifications.notifyAll e, 'changed', record
+
+	removed: (record) ->
+		if subscriptionsReady
+			e = if record.public is true then 'public-settings-changed' else 'private-settings-changed'
+			RocketChat.Notifications.notifyAll e, 'removed', { _id: record._id }
+
+subscriptionsReady = true
+
+
+RocketChat.Notifications.streamAll.allowRead 'private-settings-changed', ->
+	if not @userId? then return false
+
+	return RocketChat.authz.hasPermission @userId, 'view-privileged-setting'
