@@ -248,16 +248,12 @@ Template.main.onRendered ->
 				$('.input-message').focus()
 		, 100
 
-	$(window).on('mouseleave', (e) ->
-		elem = $(e.fromElement)
-		avatarElem = elem.find('button.thumb')
-		if avatarElem.attr('data-username')
-			RocketChat.tooltip.hide();
+	$(document.body).on('mouseleave', 'button.thumb', (e) ->
+		RocketChat.tooltip.hide();
 	)
 
-	$(window).on('mouseenter', (e) ->
-		elem = $(e.fromElement)
-		avatarElem = elem.find('button.thumb')
+	$(document.body).on('mouseenter', 'button.thumb', (e) ->
+		avatarElem = $(e.currentTarget)
 		username = avatarElem.attr('data-username')
 		if username
 			e.stopPropagation()
