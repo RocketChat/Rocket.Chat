@@ -116,6 +116,9 @@ Template.room.helpers
 	selectable: ->
 		return Template.instance().selectable.get()
 
+	hideUsername: ->
+		return if Meteor.user()?.settings?.preferences?.hideUsernames then 'hide-usernames'
+
 isSocialSharingOpen = false
 touchMoved = false
 
