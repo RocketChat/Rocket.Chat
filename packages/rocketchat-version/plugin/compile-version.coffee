@@ -16,8 +16,8 @@ class VersionCompiler
 				arch: process.arch
 				platform: process.platform
 				osRelease: os.release()
-				totalMemmory: os.totalmem()
-				freeMemmory: os.freemem()
+				totalMemory: os.totalmem()
+				freeMemory: os.freemem()
 				cpus: os.cpus().length
 
 			if process.env.TRAVIS_BUILD_NUMBER
