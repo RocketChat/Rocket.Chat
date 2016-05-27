@@ -61,6 +61,11 @@ Template.videoCall.helpers
 			template.mainVideo.set '$auto'
 			return
 
+	mainVideoFlip: ->
+		template = Template.instance()
+		webrtc = WebRTC.getInstanceByRoomId(Session.get('openedRoom'))
+		return template.mainVideo.get() is '$self' && webrtc.screenShareEnabled.get()
+
 	mainVideoUsername: ->
 		template = Template.instance()
 		webrtc = WebRTC.getInstanceByRoomId(Session.get('openedRoom'))
