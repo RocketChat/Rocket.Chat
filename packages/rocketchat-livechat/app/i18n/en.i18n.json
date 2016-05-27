@@ -20,6 +20,8 @@
   "Type_your_email" : "Type your email",
   "Type_your_message" : "Type your message",
   "Type_your_name" : "Type your name",
+  "User_left" : "User left",
+  "User_joined" : "User joined",
   "We_are_offline_Sorry_for_the_inconvenience" : "We are offline. Sorry for the inconvenience.",
   "You_must_complete_all_fields" : "You must complete all fields"
 }
