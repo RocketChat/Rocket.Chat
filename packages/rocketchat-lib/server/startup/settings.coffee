@@ -162,6 +162,7 @@ RocketChat.settings.addGroup 'Message', ->
 	@add 'API_Embed', true, { type: 'boolean', public: true }
 	@add 'API_EmbedDisabledFor', '', { type: 'string', public: true, i18nDescription: 'API_EmbedDisabledFor_Description' }
 	@add 'API_EmbedIgnoredHosts', 'localhost, 127.0.0.1, 10.0.0.0/8, 172.16.0.0/12, 192.168.0.0/16', { type: 'string', i18nDescription: 'API_EmbedIgnoredHosts_Description' }
+	@add 'API_EmbedSafePorts', '80, 443', { type: 'string' }
 	@add 'Message_TimeFormat', 'LT', { type: 'string', public: true, i18nDescription: 'Message_TimeFormat_Description' }
 	@add 'Message_DateFormat', 'LL', { type: 'string', public: true, i18nDescription: 'Message_DateFormat_Description' }
 
