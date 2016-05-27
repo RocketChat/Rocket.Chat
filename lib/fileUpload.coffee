@@ -64,6 +64,6 @@ if UploadFS?
 			initFileStore()
 		else
 			Tracker.autorun (c) ->
-				if Meteor.userId() and RocketChat.settings.subscription.ready()
+				if Meteor.userId() and RocketChat.settings.cachedCollection.ready.get()
 					initFileStore()
 					c.stop()
