@@ -5,6 +5,8 @@ Package.describe({
 	git: ''
 });
 
+//Note: Piwik respects Google Chrome's No Track: http://piwik.org/docs/privacy/#step-4-respect-donottrack-preference
+
 Package.onUse(function(api) {
 	api.versionsFrom('1.0');
 
