@@ -51,6 +51,12 @@ RocketChat.models.Settings = new class extends RocketChat.models._Base
 
 		return @find filter, { fields: _id: 1, value: 1 }
 
+	findNotHiddenPrivate: ->
+		return @find {
+			hidden: { $ne: true }
+			public: { $ne: true }
+		}
+
 	findNotHidden: ->
 		return @find { hidden: { $ne: true } }
 

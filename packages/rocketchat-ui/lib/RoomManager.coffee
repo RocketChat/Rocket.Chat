@@ -50,41 +50,16 @@ Tracker.autorun ->
 
 @RoomManager = new class
 	openedRooms = {}
-	subscriptionReady = new ReactiveVar
 	msgStream = new Meteor.Streamer 'room-messages'
 	onlineUsers = new ReactiveVar {}
 
 	Dep = new Tracker.Dependency
 
 	init = ->
-		if subscriptionReady.get()
+		if CachedChatSubscription.ready.get()
 			return
 
-		localforage.getItem 'subscription', (error, data) ->
-			if data?.records?
-				subscriptionReady.set true
-				for item in data.records
-					ChatSubscription.insert(item)
-
-			Meteor.call 'subscriptions', (error, data) ->
-				subscriptionReady.set true
-				for item in data
-					_id = item._id
-					delete item._id
-					ChatSubscription.upsert({_id: _id}, item)
-
-				localforage.setItem('subscription', {
-					updatedAt: new Date
-					records: ChatSubscription.find().fetch()
-				})
-
-			RocketChat.Notifications.onUser 'subscription-change', (type, record) ->
-				if type is 'removed'
-					ChatSubscription.remove(record._id)
-				else
-					_id = record._id
-					delete record._id
-					ChatSubscription.upsert({_id: _id}, record)
+		CachedChatSubscription.init()
 
 		return
 
@@ -127,7 +102,7 @@ Tracker.autorun ->
 				if record.ready is true
 					return
 
-				ready = record.sub[0].ready() and subscriptionReady.get()
+				ready = record.sub[0].ready() and CachedChatSubscription.ready.get() is true
 
 				if ready is true
 					type = typeName.substr(0, 1)
@@ -197,7 +172,7 @@ Tracker.autorun ->
 		if openedRooms[typeName].ready
 			closeOlderRooms()
 
-		if subscriptionReady.get() && Meteor.userId()
+		if CachedChatSubscription.ready.get() is true && Meteor.userId()
 
 			if openedRooms[typeName].active isnt true
 				openedRooms[typeName].active = true

@@ -3,6 +3,8 @@ Meteor.methods
 		unless Meteor.userId()
 			return []
 
+		this.unblock()
+
 		options =
 			fields:
 				t: 1

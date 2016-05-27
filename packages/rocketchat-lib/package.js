@@ -51,10 +51,21 @@ Package.onUse(function(api) {
 	api.addFiles('lib/Message.coffee');
 	api.addFiles('lib/MessageTypes.coffee');
 
+	api.addFiles('server/lib/RateLimiter.coffee', 'server');
+
+	// SERVER FUNCTIONS
+	api.addFiles('server/functions/checkUsernameAvailability.coffee', 'server');
+	api.addFiles('server/functions/checkEmailAvailability.js', 'server');
+	api.addFiles('server/functions/deleteUser.js', 'server');
+	api.addFiles('server/functions/sendMessage.coffee', 'server');
+	api.addFiles('server/functions/settings.coffee', 'server');
+	api.addFiles('server/functions/setUsername.coffee', 'server');
+	api.addFiles('server/functions/setEmail.js', 'server');
+	api.addFiles('server/functions/Notifications.coffee', 'server');
+
 	// SERVER LIB
 	api.addFiles('server/lib/defaultBlockedDomainsList.js', 'server');
 	api.addFiles('server/lib/notifyUsersOnMessage.js', 'server');
-	api.addFiles('server/lib/RateLimiter.coffee', 'server');
 	api.addFiles('server/lib/roomTypes.coffee', 'server');
 	api.addFiles('server/lib/sendEmailOnMessage.js', 'server');
 	api.addFiles('server/lib/sendNotificationsOnMessage.js', 'server');
@@ -72,16 +83,6 @@ Package.onUse(function(api) {
 
 	// SERVER PUBLICATIONS
 	api.addFiles('server/publications/settings.coffee', 'server');
-
-	// SERVER FUNCTIONS
-	api.addFiles('server/functions/checkUsernameAvailability.coffee', 'server');
-	api.addFiles('server/functions/checkEmailAvailability.js', 'server');
-	api.addFiles('server/functions/deleteUser.js', 'server');
-	api.addFiles('server/functions/sendMessage.coffee', 'server');
-	api.addFiles('server/functions/settings.coffee', 'server');
-	api.addFiles('server/functions/setUsername.coffee', 'server');
-	api.addFiles('server/functions/setEmail.js', 'server');
-	api.addFiles('server/functions/Notifications.coffee', 'server');
 
 	// SERVER METHODS
 	api.addFiles('server/methods/addOAuthService.coffee', 'server');
@@ -115,6 +116,7 @@ Package.onUse(function(api) {
 
 	// CLIENT LIB
 	api.addFiles('client/lib/localforage.min.js', 'client');
+	api.addFiles('client/lib/cachedCollection.js', 'client');
 	api.addFiles('client/lib/openRoom.coffee', 'client');
 	api.addFiles('client/lib/roomExit.coffee', 'client');
 	api.addFiles('client/lib/settings.coffee', 'client');

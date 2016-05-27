@@ -3,9 +3,22 @@
 # @namespace RocketChat.settings
 ###
 
-@Settings = new Meteor.Collection 'rocketchat_settings'
+RocketChat.settings.cachedCollection = new RocketChat.CachedCollection({ name: 'public-settings', methodName: 'getPublicSettings', eventName: 'public-settings-changed', eventType: 'onAll' })
+@Settings = RocketChat.settings.cachedCollection.collection
 
-RocketChat.settings.subscription = Meteor.subscribe 'settings'
+RocketChat.settings.cachedCollection.init()
+
+Tracker.autorun (c) ->
+	if Meteor.userId()?
+		c.stop()
+		RocketChat.settings.cachedCollectionPrivate = new RocketChat.CachedCollection({
+			collection: RocketChat.settings.cachedCollection.collection,
+			name: 'private-settings',
+			methodName: 'getPrivateSettings',
+			eventName: 'private-settings-changed',
+			eventType: 'onAll'
+		})
+		RocketChat.settings.cachedCollectionPrivate.init()
 
 RocketChat.settings.dict = new ReactiveDict 'settings'
 
