@@ -69,7 +69,7 @@ Template.accountPreferences.onCreated ->
 		data.saveMobileBandwidth = $('input[name=saveMobileBandwidth]:checked').val()
 		data.collapseMediaByDefault = $('input[name=collapseMediaByDefault]:checked').val()
 		data.viewMode = parseInt($('#viewMode').find('select').val())
-		data.showUsernames = $('#showUsernames').find('input:checked').val()
+		data.hideUsernames = $('#hideUsernames').find('input:checked').val()
 		data.unreadRoomsMode = $('input[name=unreadRoomsMode]:checked').val()
 		data.autoImageLoad = $('input[name=autoImageLoad]:checked').val()
 		data.emailNotificationMode = $('select[name=emailNotificationMode]').val()
