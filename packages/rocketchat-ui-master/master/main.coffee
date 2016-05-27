@@ -250,14 +250,14 @@ Template.main.onRendered ->
 
 	$(window).on('mouseleave', (e) ->
 		elem = $(e.fromElement)
-		avatarElem = elem.find('a.thumb')
+		avatarElem = elem.find('button.thumb')
 		if avatarElem.attr('data-username')
 			RocketChat.tooltip.hide();
 	)
 
 	$(window).on('mouseenter', (e) ->
 		elem = $(e.fromElement)
-		avatarElem = elem.find('a.thumb')
+		avatarElem = elem.find('button.thumb')
 		username = avatarElem.attr('data-username')
 		if username
 			e.stopPropagation()
