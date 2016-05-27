@@ -136,9 +136,9 @@ Template.message.helpers
 		room = RocketChat.models.Rooms.findOne({ _id: this.rid });
 		return 'hidden' if room.usernames.indexOf(Meteor.user().username) == -1
 
-	showUserNames: ->
+	hideUsernames: ->
 		prefs = Meteor.user()?.settings?.preferences
-		return if prefs?.showUsernames? then prefs.showUsernames else true
+		return if prefs?.hideUsernames
 
 Template.message.onCreated ->
 	msg = Template.currentData()

@@ -34,7 +34,7 @@ Meteor.methods
 				preferences.emailNotificationMode = settings.emailNotificationMode
 
 			preferences.viewMode = settings.viewMode || 0
-			preferences.showUsernames = settings.showUsernames is "1"
+			preferences.hideUsernames = settings.hideUsernames is "1"
 			preferences.highlights = settings.highlights
 
 			RocketChat.models.Users.setPreferences Meteor.userId(), preferences
