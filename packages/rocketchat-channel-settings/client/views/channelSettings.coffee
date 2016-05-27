@@ -83,40 +83,41 @@ Template.channelSettings.onCreated ->
 		return true
 
 	@saveSetting = =>
+		room = ChatRoom.findOne @data?.rid
 		switch @editing.get()
 			when 'roomName'
-				room = ChatRoom.findOne @data?.rid
 				if $('input[name=roomName]').val() is room.name
 					toastr.success TAPi18n.__ 'Room_name_changed_successfully'
+					RocketChat.callbacks.run 'roomNameChanged', ChatRoom.findOne(room._id)
 				else
 					if @validateRoomName()
-						Meteor.call 'saveRoomSettings', @data?.rid, 'roomName', @$('input[name=roomName]').val(), (err, result) ->
-							if err
-								return handleError(err)
+						Meteor.call 'saveRoomSettings', room._id, 'roomName', @$('input[name=roomName]').val(), (err, result) ->
+							return handleError err if err
 							toastr.success TAPi18n.__ 'Room_name_changed_successfully'
+							#RocketChat.callbacks.run 'roomNameChanged', ChatRoom.findOne(result.rid)
 			when 'roomTopic'
 				if @validateRoomTopic()
-					Meteor.call 'saveRoomSettings', @data?.rid, 'roomTopic', @$('input[name=roomTopic]').val(), (err, result) ->
-						if err
-							return handleError(err)
+					Meteor.call 'saveRoomSettings', room._id, 'roomTopic', @$('input[name=roomTopic]').val(), (err, result) ->
+						return handleError err if err
 						toastr.success TAPi18n.__ 'Room_topic_changed_successfully'
+						RocketChat.callbacks.run 'roomTopicChanged', ChatRoom.findOne(result.rid)
 			when 'roomType'
 				if @validateRoomType()
-					Meteor.call 'saveRoomSettings', @data?.rid, 'roomType', @$('input[name=roomType]:checked').val(), (err, result) ->
-						if err
-							return handleError(err)
+					Meteor.call 'saveRoomSettings', room._id, 'roomType', @$('input[name=roomType]:checked').val(), (err, result) ->
+						return handleError err if err
 						toastr.success TAPi18n.__ 'Room_type_changed_successfully'
+						#RocketChat.callbacks.run 'roomTypeChanged', ChatRoom.findOne(result.rid)
 			when 'archivationState'
 				if @$('input[name=archivationState]:checked').val() is 'true'
-					if ChatRoom.findOne(@data.rid)?.archived isnt true
-						Meteor.call 'archiveRoom', @data?.rid, (err, results) ->
+					if room.archived isnt true
+						Meteor.call 'archiveRoom', room._id, (err, results) ->
 							return handleError err if err
 							toastr.success TAPi18n.__ 'Room_archived'
-							#TODO: callback channel archived
+							RocketChat.callbacks.run 'archiveRoom', ChatRoom.findOne(room._id)
 				else
-					if ChatRoom.findOne(@data.rid)?.archived is true
-						Meteor.call 'unarchiveRoom', @data?.rid, (err, results) ->
+					if room.archived is true
+						Meteor.call 'unarchiveRoom', room._id, (err, results) ->
 							return handleError err if err
 							toastr.success TAPi18n.__ 'Room_unarchived'
-							#TODO: callback channel unarchived
+							RocketChat.callbacks.run 'unarchiveRoom', ChatRoom.findOne(room._id)
 		@editing.set()

@@ -13,12 +13,43 @@ FlowRouter.triggers.enter([function updatePiwik(route) {
 //Custom events
 RocketChat.callbacks.add('afterSaveMessage', (message) => {
 	if (window._paq && RocketChat.settings.get('PiwikAnalytics_features_messages')) {
-		window._paq.push(['trackEvent', 'Message', 'Send', ChatRoom.findOne({ _id: message.rid }).name ]);
+		let room = ChatRoom.findOne({ _id: message.rid });
+		window._paq.push(['trackEvent', 'Message', 'Send', room.name + ' (' + room._id + ')' ]);
 	}
 }, 2000);
 
-RocketChat.callbacks.add('afterCreateChannel', (channel) => {
+RocketChat.callbacks.add('afterCreateChannel', (room) => {
 	if (window._paq && RocketChat.settings.get('PiwikAnalytics_features_rooms')) {
-		window._paq.push(['trackEvent', 'Room', 'Create', channel.name]);
+		window._paq.push(['trackEvent', 'Room', 'Create', room.name + ' (' + room._id + ')' ]);
+	}
+});
+
+RocketChat.callbacks.add('roomNameChanged', (room) => {
+	if (window._paq && RocketChat.settings.get('PiwikAnalytics_features_rooms')) {
+		window._paq.push(['trackEvent', 'Room', 'Changed Name', room.name + ' (' + room._id + ')' ]);
+	}
+});
+
+RocketChat.callbacks.add('roomTopicChanged', (room) => {
+	if (window._paq && RocketChat.settings.get('PiwikAnalytics_features_rooms')) {
+		window._paq.push(['trackEvent', 'Room', 'Changed Topic', room.name + ' (' + room._id + ')' ]);
+	}
+});
+
+RocketChat.callbacks.add('roomTypeChanged', (room) => {
+	if (window._paq && RocketChat.settings.get('PiwikAnalytics_features_rooms')) {
+		window._paq.push(['trackEvent', 'Room', 'Changed Room Type', room.name + ' (' + room._id + ')' ]);
+	}
+});
+
+RocketChat.callbacks.add('archiveRoom', (room) => {
+	if (window._paq && RocketChat.settings.get('PiwikAnalytics_features_rooms')) {
+		window._paq.push(['trackEvent', 'Room', 'Archived', room.name + ' (' + room._id + ')' ]);
+	}
+});
+
+RocketChat.callbacks.add('unarchiveRoom', (room) => {
+	if (window._paq && RocketChat.settings.get('PiwikAnalytics_features_rooms')) {
+		window._paq.push(['trackEvent', 'Room', 'Unarchived', room.name + ' (' + room._id + ')' ]);
 	}
 });
