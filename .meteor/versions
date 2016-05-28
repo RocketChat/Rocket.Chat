@@ -145,7 +145,6 @@ rocketchat:file@0.0.1
 rocketchat:file-upload@0.0.1
 rocketchat:github-enterprise@0.0.1
 rocketchat:gitlab@0.0.1
-rocketchat:highlight@0.0.1
 rocketchat:highlight-words@0.0.1
 rocketchat:iframe-login@1.0.0
 rocketchat:importer@0.0.1
