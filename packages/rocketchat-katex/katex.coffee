@@ -7,8 +7,6 @@ class Katex
 	delimiters_map: [
 		{ opener: '\\[', closer: '\\]', displayMode: true  },
 		{ opener: '\\(', closer: '\\)', displayMode: false },
-		{ opener: '$$' , closer: '$$' , displayMode: true  },
-		{ opener: '$'  , closer: '$'  , displayMode: false },
 	]
 
 	# Searches for the first opening delimiter in the string from a given position
