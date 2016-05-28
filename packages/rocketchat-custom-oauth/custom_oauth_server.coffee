@@ -120,8 +120,8 @@ class CustomOAuth
 			if identity?.user_id and not identity.id
 				identity.id = identity.user_id
 
-                       if identity?.CharacterID and not identity.id
-                               identity.id = identity.CharacterID
+                        if identity?.CharacterID and not identity.id
+                                identity.id = identity.CharacterID
 
 			# console.log 'id:', JSON.stringify identity, null, '  '
 
