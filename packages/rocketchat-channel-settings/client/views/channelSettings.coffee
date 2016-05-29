@@ -91,10 +91,10 @@ Template.channelSettings.onCreated ->
 					RocketChat.callbacks.run 'roomNameChanged', ChatRoom.findOne(room._id)
 				else
 					if @validateRoomName()
+						RocketChat.callbacks.run 'roomNameChanged', { _id: room._id, name: @$('input[name=roomName]').val() }
 						Meteor.call 'saveRoomSettings', room._id, 'roomName', @$('input[name=roomName]').val(), (err, result) ->
 							return handleError err if err
 							toastr.success TAPi18n.__ 'Room_name_changed_successfully'
-							#RocketChat.callbacks.run 'roomNameChanged', ChatRoom.findOne(result.rid)
 			when 'roomTopic'
 				if @validateRoomTopic()
 					Meteor.call 'saveRoomSettings', room._id, 'roomTopic', @$('input[name=roomTopic]').val(), (err, result) ->
@@ -103,10 +103,10 @@ Template.channelSettings.onCreated ->
 						RocketChat.callbacks.run 'roomTopicChanged', ChatRoom.findOne(result.rid)
 			when 'roomType'
 				if @validateRoomType()
+					RocketChat.callbacks.run 'roomTypeChanged', room
 					Meteor.call 'saveRoomSettings', room._id, 'roomType', @$('input[name=roomType]:checked').val(), (err, result) ->
 						return handleError err if err
 						toastr.success TAPi18n.__ 'Room_type_changed_successfully'
-						#RocketChat.callbacks.run 'roomTypeChanged', ChatRoom.findOne(result.rid)
 			when 'archivationState'
 				if @$('input[name=archivationState]:checked').val() is 'true'
 					if room.archived isnt true

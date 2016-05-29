@@ -27,23 +27,3 @@ Template.body.onRendered(() => {
 		}
 	});
 });
-
-//Track logins and associate user ids with piwik
-(() => {
-	let oldUserId = null;
-
-	Meteor.autorun(() => {
-		let newUserId = Meteor.userId();
-		if (oldUserId === null && newUserId) {
-			if (window._paq) {
-				window._paq.push(['trackEvent', 'User', 'Login', newUserId ]);
-				window._paq.push(['setUserId', newUserId]);
-			}
-		} else if (newUserId === null && oldUserId) {
-			if (window._paq) {
-				window._paq.push(['trackEvent', 'User', 'Logout', oldUserId ]);
-			}
-		}
-		oldUserId = Meteor.userId();
-	});
-})();

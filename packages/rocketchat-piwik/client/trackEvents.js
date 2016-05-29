@@ -10,7 +10,14 @@ FlowRouter.triggers.enter([function updatePiwik(route) {
 	}
 }]);
 
-//Custom events
+//Login page has manual switches
+RocketChat.callbacks.add('loginPageStateChange', (state) => {
+	if (window._paq) {
+		window._paq.push(['trackEvent', 'Navigation', 'Login Page State Change', state]);
+	}
+});
+
+//Messsages
 RocketChat.callbacks.add('afterSaveMessage', (message) => {
 	if (window._paq && RocketChat.settings.get('PiwikAnalytics_features_messages')) {
 		let room = ChatRoom.findOne({ _id: message.rid });
@@ -18,6 +25,7 @@ RocketChat.callbacks.add('afterSaveMessage', (message) => {
 	}
 }, 2000);
 
+//Rooms
 RocketChat.callbacks.add('afterCreateChannel', (room) => {
 	if (window._paq && RocketChat.settings.get('PiwikAnalytics_features_rooms')) {
 		window._paq.push(['trackEvent', 'Room', 'Create', room.name + ' (' + room._id + ')' ]);
@@ -51,5 +59,68 @@ RocketChat.callbacks.add('archiveRoom', (room) => {
 RocketChat.callbacks.add('unarchiveRoom', (room) => {
 	if (window._paq && RocketChat.settings.get('PiwikAnalytics_features_rooms')) {
 		window._paq.push(['trackEvent', 'Room', 'Unarchived', room.name + ' (' + room._id + ')' ]);
+	}
+});
+
+//Users
+//Track logins and associate user ids with piwik
+(() => {
+	let oldUserId = null;
+
+	Meteor.autorun(() => {
+		let newUserId = Meteor.userId();
+		if (oldUserId === null && newUserId) {
+			if (window._paq && RocketChat.settings.get('PiwikAnalytics_features_users')) {
+				window._paq.push(['trackEvent', 'User', 'Login', newUserId ]);
+				window._paq.push(['setUserId', newUserId]);
+			}
+		} else if (newUserId === null && oldUserId) {
+			if (window._paq && RocketChat.settings.get('PiwikAnalytics_features_users')) {
+				window._paq.push(['trackEvent', 'User', 'Logout', oldUserId ]);
+			}
+		}
+		oldUserId = Meteor.userId();
+	});
+})();
+
+RocketChat.callbacks.add('userRegistered', () => {
+	if (window._paq && RocketChat.settings.get('PiwikAnalytics_features_users')) {
+		window._paq.push(['trackEvent', 'User', 'Registered']);
+	}
+});
+
+RocketChat.callbacks.add('usernameSet', () => {
+	if (window._paq && RocketChat.settings.get('PiwikAnalytics_features_users')) {
+		window._paq.push(['trackEvent', 'User', 'Username Set']);
+	}
+});
+
+RocketChat.callbacks.add('userPasswordReset', () => {
+	if (window._paq && RocketChat.settings.get('PiwikAnalytics_features_users')) {
+		window._paq.push(['trackEvent', 'User', 'Reset Password']);
+	}
+});
+
+RocketChat.callbacks.add('userConfirmationEmailRequested', () => {
+	if (window._paq && RocketChat.settings.get('PiwikAnalytics_features_users')) {
+		window._paq.push(['trackEvent', 'User', 'Confirmation Email Requested']);
+	}
+});
+
+RocketChat.callbacks.add('userForgotPasswordEmailRequested', () => {
+	if (window._paq && RocketChat.settings.get('PiwikAnalytics_features_users')) {
+		window._paq.push(['trackEvent', 'User', 'Forgot Password Email Requested']);
+	}
+});
+
+RocketChat.callbacks.add('userStatusManuallySet', (status) => {
+	if (window._paq && RocketChat.settings.get('PiwikAnalytics_features_users')) {
+		window._paq.push(['trackEvent', 'User', 'Status Manually Changed', status]);
+	}
+});
+
+RocketChat.callbacks.add('userAvatarSet', (service) => {
+	if (window._paq && RocketChat.settings.get('PiwikAnalytics_features_users')) {
+		window._paq.push(['trackEvent', 'User', 'Avatar Changed', service]);
 	}
 });

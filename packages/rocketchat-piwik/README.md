@@ -20,3 +20,4 @@ Settings -> Piwik
 ### Features Enabled
 * **Messages**: `true/false` determines whether to use custom events to track how many times a user does something with a message. This ranges from sending messages, editing messages, reacting to messages, pinning, starring, and etc.
 * **Rooms**: `true/false` determines whether to use custom events to track how many times a user does actions related to a room (channel, direct message, group). This ranges from creating, leaving, archiving, renaming, and etc.
+* **Users**: `true/false` determines whether to use custom events to track how many times a user does actions related to users. This ranges from resetting passwords, creating new users, updating profile pictures, etc.

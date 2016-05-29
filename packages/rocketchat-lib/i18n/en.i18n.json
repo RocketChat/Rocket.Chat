@@ -129,6 +129,7 @@
   "Analytics_features_enabled" : "Features Enabled",
   "Analytics_features_messages_Description" : "Tracks custom events related to actions a user does on messages.",
   "Analytics_features_rooms_Description" : "Tracks custom events related to actions on a channel or group (create, leave, delete).",
+  "Analytics_features_users_Description": "Tracks custom events related to actions related to users (password reset times, profile picture change, etc).",
   "and" : "and",
   "And_more" : "And more __length__",
   "Animals_and_Nature" : "Animals & Nature",
