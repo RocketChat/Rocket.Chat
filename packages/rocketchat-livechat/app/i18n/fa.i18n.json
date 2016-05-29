@@ -20,6 +20,8 @@
   "Type_your_email" : "نوع ایمیل خود را",
   "Type_your_message" : "نوع پیام خود را",
   "Type_your_name" : "نامتان را بنویسید",
+  "User_joined" : "کاربر تاریخ عضویت",
+  "User_left" : "سمت چپ کاربر",
   "We_are_offline_Sorry_for_the_inconvenience" : "ما آنلاین نیست. با عرض پوزش برای ناراحتی.",
   "You_must_complete_all_fields" : "شما باید تمام زمینه ها کامل"
 }
