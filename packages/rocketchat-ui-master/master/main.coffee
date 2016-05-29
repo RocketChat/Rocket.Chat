@@ -247,3 +247,21 @@ Template.main.onRendered ->
 			if not $(':focus').is('INPUT,TEXTAREA')
 				$('.input-message').focus()
 		, 100
+
+	Tracker.autorun ->
+		prefs = Meteor.user()?.settings?.preferences
+		if prefs?.hideUsernames
+			$(document.body).on('mouseleave', 'button.thumb', (e) ->
+				RocketChat.tooltip.hide();
+			)
+
+			$(document.body).on('mouseenter', 'button.thumb', (e) ->
+				avatarElem = $(e.currentTarget)
+				username = avatarElem.attr('data-username')
+				if username
+					e.stopPropagation()
+					RocketChat.tooltip.showElement($('<span>').text(username), avatarElem)
+			)
+		else
+			$(document.body).off('mouseenter', 'button.thumb')
+			$(document.body).off('mouseleave', 'button.thumb')
