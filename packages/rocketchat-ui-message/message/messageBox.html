@@ -52,9 +52,9 @@
 				<b>*{{_ "bold"}}*</b>
 				<i>_{{_ "italics"}}_</i>
 				<span>~<strike>{{_ "strike"}}</strike>~</span>
-				<code class="inline">`{{_ "inline_code"}}`</code>
 				{{/if}}
-				{{#if showHighlight}}
+				{{#if showMarkdownCode}}
+				<code class="inline">`{{_ "inline_code"}}`</code>
 				<code class="inline"><span class="hidden-br"><br></span>```<span class="hidden-br"><br></span><i class="icon-level-down"></i>{{_ "multi"}}<span class="hidden-br"><br></span><i class="icon-level-down"></i>{{_ "line"}}<span class="hidden-br"><br></span><i class="icon-level-down"></i>```</code>
 				{{/if}}
 				{{#if showKatex}}
