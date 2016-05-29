@@ -23,5 +23,11 @@ RocketChat.settings.addGroup('Piwik', function addSettings() {
 			i18nLabel: 'Rooms',
 			i18nDescription: 'Analytics_features_rooms_Description'
 		});
+		this.add('PiwikAnalytics_features_users', true, {
+			type: 'boolean',
+			public: true,
+			i18nLabel: 'Users',
+			i18nDescription: 'Analytics_features_users_Description'
+		});
 	});
 });
