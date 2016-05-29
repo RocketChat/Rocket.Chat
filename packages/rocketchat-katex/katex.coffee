@@ -98,7 +98,7 @@ class Katex
 		return rendered
 
 	# Takes a string and renders all latex blocks inside it
-	render: (str) ->
+	render: (str, render_func) ->
 		result = ''
 
 		loop
@@ -114,7 +114,7 @@ class Katex
 
 			# Add to the reuslt what comes before the latex block as well as
 			# the rendered latex content
-			rendered = @render_latex parts.latex, match.options.displayMode
+			rendered = render_func parts.latex, match.options.displayMode
 			result += parts.before + rendered
 
 			# Set what comes after the latex block to be examined next
@@ -134,7 +134,22 @@ class Katex
 				else
 					return message
 
-			msg = @render msg
+			if _.isString message
+				render_func = (latex, displayMode) =>
+					return @render_latex latex, displayMode
+			else
+				message.tokens ?= []
+
+				render_func = (latex, displayMode) =>
+					token = "=&=#{Random.id()}=&="
+
+					message.tokens.push
+						token: token
+						text: @render_latex latex, displayMode
+
+					return token
+
+			msg = @render msg, render_func
 
 			if not _.isString message
 				message.html = msg
@@ -146,7 +161,7 @@ class Katex
 RocketChat.katex = new Katex
 
 cb = RocketChat.katex.render_message.bind(RocketChat.katex)
-RocketChat.callbacks.add 'renderMessage', cb
+RocketChat.callbacks.add 'renderMessage', cb, RocketChat.callbacks.priority.HIGH - 1
 
 if Meteor.isClient
 	Blaze.registerHelper 'RocketChatKatex', (text) ->
