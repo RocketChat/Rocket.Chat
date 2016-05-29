@@ -1,5 +1,5 @@
 //Trigger the trackPageView manually as the page views don't seem to be tracked
-FlowRouter.triggers.enter([function updatePiwik(route) {
+FlowRouter.triggers.enter([(route) => {
 	if (window._paq) {
 		let http = location.protocol;
 		let slashes = http.concat('//');
