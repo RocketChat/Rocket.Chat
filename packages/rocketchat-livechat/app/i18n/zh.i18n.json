@@ -20,6 +20,8 @@
   "Type_your_email" : "键入您的电子邮件",
   "Type_your_message" : "输入您的留言",
   "Type_your_name" : "键入您的姓名",
+  "User_joined" : "用户加入",
+  "User_left" : "用户离开",
   "We_are_offline_Sorry_for_the_inconvenience" : "现在没有人在线，带来不便请您谅解。",
   "You_must_complete_all_fields" : "你必须填写所有字段"
 }

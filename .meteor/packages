@@ -51,7 +51,6 @@ rocketchat:file
 rocketchat:file-upload
 rocketchat:github-enterprise
 rocketchat:gitlab
-rocketchat:highlight
 rocketchat:highlight-words
 rocketchat:iframe-login
 rocketchat:importer
@@ -74,6 +73,7 @@ rocketchat:migrations
 rocketchat:oauth2-server-config
 rocketchat:oembed
 rocketchat:otr
+rocketchat:piwik
 rocketchat:push-notifications
 rocketchat:reactions
 rocketchat:slashcommands-invite
