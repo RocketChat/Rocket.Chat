@@ -20,6 +20,8 @@
   "Type_your_email" : "Πληκτρολογήστε το email σας",
   "Type_your_message" : "Πληκτρολογήστε το μήνυμά σας",
   "Type_your_name" : "Πληκτρολογήστε το όνομά σας",
+  "User_joined" : "εντάχθηκε χρήστη",
+  "User_left" : "αριστερή χρήστη",
   "We_are_offline_Sorry_for_the_inconvenience" : "Είμαστε εκτός σύνδεσης. Συγγνώμη για την ταλαιπωρία.",
   "You_must_complete_all_fields" : "Πρέπει να συμπληρώσετε όλα τα πεδία"
 }
