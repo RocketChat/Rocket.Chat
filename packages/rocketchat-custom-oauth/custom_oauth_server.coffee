@@ -120,6 +120,9 @@ class CustomOAuth
 			if identity?.user_id and not identity.id
 				identity.id = identity.user_id
 
+			if identity?.CharacterID and not identity.id
+				identity.id = identity.CharacterID
+
 			# console.log 'id:', JSON.stringify identity, null, '  '
 
 			serviceData =
@@ -132,7 +135,7 @@ class CustomOAuth
 				serviceData: serviceData
 				options:
 					profile:
-						name: identity.name or identity.username or identity.nickname
+						name: identity.name or identity.username or identity.nickname or identity.CharacterName
 
 			# console.log data
 
