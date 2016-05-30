@@ -2,6 +2,8 @@
 if not RocketChat.models.Settings.findOneById 'uniqueID'
 	RocketChat.models.Settings.createWithIdAndValue 'uniqueID', process.env.DEPLOYMENT_ID or Random.id()
 
+# When you define a setting and want to add a description, you don't need to automatically define the i18nDescription
+# if you add a node to the i18n.json with the same setting name but with `_Description` it will automatically work.
 RocketChat.settings.addGroup 'Accounts', ->
 	@add 'Accounts_AllowDeleteOwnAccount', false, { type: 'boolean', public: true, enableQuery: { _id: 'Accounts_AllowUserProfileChange', value: true } }
 	@add 'Accounts_AllowUserProfileChange', true, { type: 'boolean', public: true }
@@ -162,6 +164,7 @@ RocketChat.settings.addGroup 'Message', ->
 	@add 'API_Embed', true, { type: 'boolean', public: true }
 	@add 'API_EmbedDisabledFor', '', { type: 'string', public: true, i18nDescription: 'API_EmbedDisabledFor_Description' }
 	@add 'API_EmbedIgnoredHosts', 'localhost, 127.0.0.1, 10.0.0.0/8, 172.16.0.0/12, 192.168.0.0/16', { type: 'string', i18nDescription: 'API_EmbedIgnoredHosts_Description' }
+	@add 'API_EmbedSafePorts', '80, 443', { type: 'string' }
 	@add 'Message_TimeFormat', 'LT', { type: 'string', public: true, i18nDescription: 'Message_TimeFormat_Description' }
 	@add 'Message_DateFormat', 'LL', { type: 'string', public: true, i18nDescription: 'Message_DateFormat_Description' }
 

@@ -20,6 +20,8 @@
   "Type_your_email" : "Escriba su correo electrónico",
   "Type_your_message" : "Escribe tu mensaje",
   "Type_your_name" : "Escriba su nombre",
+  "User_joined" : "usuario unido",
+  "User_left" : "izquierda de usuario",
   "We_are_offline_Sorry_for_the_inconvenience" : "Fuera de Linea. Disculpe las molestias.",
   "You_must_complete_all_fields" : "Debe completar todos los campos"
 }
