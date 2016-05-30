@@ -20,6 +20,8 @@
   "Type_your_email" : "Введите адрес электронной почты",
   "Type_your_message" : "Текст сообщения",
   "Type_your_name" : "Введите свое имя",
+  "User_joined" : "Пользователь присоединился",
+  "User_left" : "слева Пользователь",
   "We_are_offline_Sorry_for_the_inconvenience" : "Мы не в сети. Извините за доставленные неудобства.",
   "You_must_complete_all_fields" : "Вы должны заполнить все поля"
 }

@@ -145,7 +145,6 @@ rocketchat:file@0.0.1
 rocketchat:file-upload@0.0.1
 rocketchat:github-enterprise@0.0.1
 rocketchat:gitlab@0.0.1
-rocketchat:highlight@0.0.1
 rocketchat:highlight-words@0.0.1
 rocketchat:iframe-login@1.0.0
 rocketchat:importer@0.0.1
@@ -170,6 +169,7 @@ rocketchat:oauth2-server@1.4.0
 rocketchat:oauth2-server-config@1.0.0
 rocketchat:oembed@0.0.1
 rocketchat:otr@0.0.1
+rocketchat:piwik@0.0.1
 rocketchat:push-notifications@0.0.1
 rocketchat:reactions@0.0.1
 rocketchat:slashcommands-invite@0.0.1

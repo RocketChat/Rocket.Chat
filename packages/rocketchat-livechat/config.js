@@ -44,6 +44,17 @@ Meteor.startup(function() {
 		i18nLabel: 'Livechat_room_count'
 	});
 
+	RocketChat.settings.add('Livechat_forward_open_chats', false, {
+		type: 'boolean',
+		group: 'Livechat'
+	});
+
+	RocketChat.settings.add('Livechat_forward_open_chats_timeout', 60, {
+		type: 'int',
+		group: 'Livechat',
+		enableQuery: { _id: 'Livechat_forward_open_chats', value: true }
+	});
+
 	RocketChat.settings.add('Livechat_Knowledge_Enabled', false, {
 		type: 'boolean',
 		group: 'Livechat',

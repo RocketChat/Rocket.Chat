@@ -44,6 +44,7 @@ Template.avatarPrompt.events
 					toastr.error t('error-too-many-requests', { seconds: parseInt(err.details.timeToReset / 1000) })
 				else
 					toastr.success t('Avatar_changed_successfully')
+					RocketChat.callbacks.run('userAvatarSet', 'initials')
 		else if @service is 'url'
 			if _.trim $('#avatarurl').val()
 				Meteor.call 'setAvatarFromService', $('#avatarurl').val(), '', @service, (err) ->
@@ -54,14 +55,17 @@ Template.avatarPrompt.events
 							toastr.error t('Avatar_url_invalid_or_error')
 					else
 						toastr.success t('Avatar_changed_successfully')
+						RocketChat.callbacks.run('userAvatarSet', 'url')
 			else
 				toastr.error t('Please_enter_value_for_url')
 		else
+			tmpService = @service
 			Meteor.call 'setAvatarFromService', @blob, @contentType, @service, (err) ->
 				if err?.details?.timeToReset?
 					toastr.error t('error-too-many-requests', { seconds: parseInt(err.details.timeToReset / 1000) })
 				else
 					toastr.success t('Avatar_changed_successfully')
+					RocketChat.callbacks.run('userAvatarSet', tmpService)
 
 	'click .login-with-service': (event, template) ->
 		loginWithService = "loginWith#{_.capitalize(this)}"
@@ -97,3 +101,4 @@ Template.avatarPrompt.events
 					service: 'upload'
 					contentType: blob.type
 					blob: reader.result
+				RocketChat.callbacks.run('userAvatarSet', 'upload')
