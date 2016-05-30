@@ -1,5 +1,5 @@
 <template name="userSearch">
-	<i class="icon-at status-{{status}}"></i> {{username}}
+	<i class="icon-at status-{{status}}"></i>{{#if name}} <strong>{{name}}</strong>{{/if}} {{username}}
 </template>
 <template name="userSearchEmpty">
 	<p>{{_ "Nothing_found"}}.</p>
