@@ -13,7 +13,7 @@ Meteor.methods
 		if not RocketChat.authz.hasPermission Meteor.userId(), 'view-privileged-setting'
 			return []
 
-		return RocketChat.models.Settings.findNotHiddenPrivate().fetch()
+		return RocketChat.models.Settings.findNotHidden().fetch()
 
 
 subscriptionsReady = false

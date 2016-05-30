@@ -115,6 +115,7 @@ Package.onUse(function(api) {
 	api.addFiles('lib/startup/settingsOnLoadSiteUrl.coffee');
 
 	// CLIENT LIB
+	api.addFiles('client/Notifications.coffee', 'client');
 	api.addFiles('client/lib/localforage.min.js', 'client');
 	api.addFiles('client/lib/cachedCollection.js', 'client');
 	api.addFiles('client/lib/openRoom.coffee', 'client');
@@ -126,7 +127,6 @@ Package.onUse(function(api) {
 	// CLIENT METHODS
 	api.addFiles('client/methods/sendMessage.coffee', 'client');
 	api.addFiles('client/AdminBox.coffee', 'client');
-	api.addFiles('client/Notifications.coffee', 'client');
 	api.addFiles('client/TabBar.coffee', 'client');
 	api.addFiles('client/MessageAction.coffee', 'client');
 

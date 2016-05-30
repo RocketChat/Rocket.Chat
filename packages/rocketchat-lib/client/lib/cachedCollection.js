@@ -8,6 +8,7 @@ class CachedCollection {
 		eventName,
 		eventType = 'onUser',
 		sync = true,
+		useCache = false,
 		debug = true
 	}) {
 		this.collection = collection || new Meteor.Collection(null);
@@ -18,6 +19,7 @@ class CachedCollection {
 		this.eventName = eventName || name;
 		this.eventType = eventType;
 		this.sync = sync;
+		this.useCache = useCache;
 		this.debug = debug;
 	}
 
@@ -28,6 +30,10 @@ class CachedCollection {
 	}
 
 	loadFromCache(callback = () => {}) {
+		if (this.useCache === false) {
+			return callback(false);
+		}
+
 		localforage.getItem(this.name, (error, data) => {
 			if (data && data.records) {
 				this.log(`CachedCollection ${this.name} => ${data.records.length} records loaded from cache`);
