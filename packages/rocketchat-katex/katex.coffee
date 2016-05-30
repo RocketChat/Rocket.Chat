@@ -2,18 +2,18 @@
 # KaTeX is a fast, easy-to-use JavaScript library for TeX math rendering on the web.
 # https://github.com/Khan/KaTeX
 ###
-
 class Katex
-	delimiters_map: [
-		{ opener: '\\[', closer: '\\]', displayMode: true  },
-		{ opener: '\\(', closer: '\\)', displayMode: false },
-		{ opener: '$$' , closer: '$$' , displayMode: true  },
-		{ opener: '$'  , closer: '$'  , displayMode: false },
-	]
+	constructor: ->
+		@delimiters_map = [
+			{ opener: '\\[', closer: '\\]', displayMode: true , enabled: () => @parenthesis_syntax_enabled() },
+			{ opener: '\\(', closer: '\\)', displayMode: false, enabled: () => @parenthesis_syntax_enabled() },
+			{ opener: '$$' , closer: '$$' , displayMode: true , enabled: () => @dollar_syntax_enabled() },
+			{ opener: '$'  , closer: '$'  , displayMode: false, enabled: () => @dollar_syntax_enabled() },
+		]
 
 	# Searches for the first opening delimiter in the string from a given position
 	find_opening_delimiter: (str, start) -> # Search the string for each opening delimiter
-		matches = ({options: o, pos: str.indexOf(o.opener, start)} for o in @delimiters_map)
+		matches = ({options: o, pos: str.indexOf(o.opener, start)} for o in @delimiters_map when o.enabled())
 		positions = (m.pos for m in matches when m.pos >= 0)
 
 		# No opening delimiters were found
@@ -29,7 +29,7 @@ class Katex
 		return match
 
 	class Boundary
-		length: () ->
+		length: ->
 			return @end - @start
 
 		extract: (str) ->
@@ -125,7 +125,7 @@ class Katex
 	# Takes a rocketchat message and renders latex in its content
 	render_message: (message) ->
 		# Render only if enabled in admin panel
-		if RocketChat.settings.get('Katex_Enabled')
+		if @katex_enabled()
 			msg = message
 
 			if not _.isString message
@@ -157,6 +157,16 @@ class Katex
 				message = msg
 
 		return message
+
+	katex_enabled: ->
+		return RocketChat.settings.get('Katex_Enabled')
+
+	dollar_syntax_enabled: ->
+		return RocketChat.settings.get('Katex_Dollar_Syntax')
+
+	parenthesis_syntax_enabled: ->
+		return RocketChat.settings.get('Katex_Parenthesis_Syntax')
+
 
 RocketChat.katex = new Katex
 
