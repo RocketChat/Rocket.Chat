@@ -4,7 +4,6 @@ Meteor.methods
 			return false
 
 		if _.trim(message.msg) isnt ''
-
 			if isNaN(TimeSync.serverOffset())
 				message.ts = new Date()
 			else
@@ -19,5 +18,5 @@ Meteor.methods
 			message = RocketChat.callbacks.run 'beforeSaveMessage', message
 
 			RocketChat.promises.run('onClientMessageReceived', message).then (message) ->
-
 				ChatMessage.insert message
+				RocketChat.callbacks.run 'afterSaveMessage', message
