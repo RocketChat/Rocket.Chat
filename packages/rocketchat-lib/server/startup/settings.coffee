@@ -2,6 +2,8 @@
 if not RocketChat.models.Settings.findOneById 'uniqueID'
 	RocketChat.models.Settings.createWithIdAndValue 'uniqueID', process.env.DEPLOYMENT_ID or Random.id()
 
+# When you define a setting and want to add a description, you don't need to automatically define the i18nDescription
+# if you add a node to the i18n.json with the same setting name but with `_Description` it will automatically work.
 RocketChat.settings.addGroup 'Accounts', ->
 	@add 'Accounts_AllowDeleteOwnAccount', false, { type: 'boolean', public: true, enableQuery: { _id: 'Accounts_AllowUserProfileChange', value: true } }
 	@add 'Accounts_AllowUserProfileChange', true, { type: 'boolean', public: true }
