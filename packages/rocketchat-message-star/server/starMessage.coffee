@@ -11,4 +11,5 @@ Meteor.methods
 		if Array.isArray(room.usernames) && room.usernames.indexOf(Meteor.user().username) is -1
 			return false
 
+		# @TODO sent through stream
 		RocketChat.models.Messages.updateUserStarById(message._id, Meteor.userId(), message.starred)

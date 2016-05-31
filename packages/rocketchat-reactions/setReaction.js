@@ -37,8 +37,10 @@ Meteor.methods({
 			if (_.isEmpty(message.reactions)) {
 				delete message.reactions;
 				RocketChat.models.Messages.unsetReactions(messageId);
+				// # @TODO sent through stream
 			} else {
 				RocketChat.models.Messages.setReactions(messageId, message.reactions);
+				// # @TODO sent through stream
 			}
 		} else {
 			if (!message.reactions) {
@@ -52,6 +54,7 @@ Meteor.methods({
 			message.reactions[reaction].usernames.push(user.username);
 
 			RocketChat.models.Messages.setReactions(messageId, message.reactions);
+			// # @TODO sent through stream
 		}
 
 		msgStream.emit(message.rid, message);

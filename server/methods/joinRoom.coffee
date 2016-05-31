@@ -32,6 +32,7 @@ Meteor.methods
 
 		RocketChat.models.Messages.createUserJoinWithRoomIdAndUser rid, user,
 			ts: now
+		# @TODO sent through stream
 
 		Meteor.defer ->
 			RocketChat.callbacks.run 'afterJoinRoom', user, room

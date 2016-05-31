@@ -32,6 +32,7 @@ RocketChat._setUsername = (userId, username) ->
 
 	# Username is available; if coming from old username, update all references
 	if previousUsername
+		# @TODO sent through stream
 		RocketChat.models.Messages.updateAllUsernamesByUserId user._id, username
 		RocketChat.models.Messages.updateUsernameOfEditByUserId user._id, username
 

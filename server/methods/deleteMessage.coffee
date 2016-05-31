@@ -46,3 +46,5 @@ Meteor.methods
 			RocketChat.models.Messages.setAsDeletedById originalMessage._id
 		else
 			RocketChat.Notifications.notifyRoom originalMessage.rid, 'deleteMessage', {_id: originalMessage._id}
+
+		# @TODO sent through stream

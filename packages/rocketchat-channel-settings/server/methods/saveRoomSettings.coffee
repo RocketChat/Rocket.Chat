@@ -18,10 +18,12 @@ Meteor.methods
 				when 'roomName'
 					name = RocketChat.saveRoomName rid, value
 					RocketChat.models.Messages.createRoomRenamedWithRoomIdRoomNameAndUser rid, name, Meteor.user()
+					# @TODO sent through stream
 				when 'roomTopic'
 					if value isnt room.topic
 						RocketChat.saveRoomTopic(rid, value)
 						RocketChat.models.Messages.createRoomSettingsChangedWithTypeRoomIdMessageAndUser 'room_changed_topic', rid, value, Meteor.user()
+						# @TODO sent through stream
 				when 'roomType'
 					if value isnt room.t
 						RocketChat.saveRoomType(rid, value)
@@ -30,6 +32,7 @@ Meteor.methods
 						else
 							message = TAPi18n.__('Private_Group')
 						RocketChat.models.Messages.createRoomSettingsChangedWithTypeRoomIdMessageAndUser 'room_changed_privacy', rid, message, Meteor.user()
+						# @TODO sent through stream
 				when 'default'
 					RocketChat.models.Rooms.saveDefaultById rid, value
 
