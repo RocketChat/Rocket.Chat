@@ -82,7 +82,7 @@ class CachedCollection {
 
 	setupListener(eventType, eventName) {
 		RocketChat.Notifications[eventType || this.eventType](eventName || this.eventName, (t, record) => {
-			if (t === 'removed') {
+			if (t === 'remove') {
 				this.collection.remove(record._id);
 			} else {
 				const _id = record._id;
