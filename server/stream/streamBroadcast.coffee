@@ -4,46 +4,48 @@ logger = new Logger 'StreamBroadcast',
 		auth: 'Auth'
 		stream: 'Stream'
 
-authorizeConnection = (connection) ->
-	logger.auth.info "Authorizing with localhost:#{connection.instanceRecord.extraInformation.port}"
-	connection.call 'broadcastAuth', connection.instanceRecord._id, InstanceStatus.id(), (err, ok) ->
-		connection.broadcastAuth = ok
-		logger.auth.info "broadcastAuth with localhost:#{connection.instanceRecord.extraInformation.port}", ok
+authorizeConnection = (instance) ->
+	logger.auth.info "Authorizing with #{instance}"
+	connections[instance].call 'broadcastAuth', connections[instance].instanceRecord._id, InstanceStatus.id(), (err, ok) ->
+		connections[instance].broadcastAuth = ok
+		logger.auth.info "broadcastAuth with #{instance}", ok
 
 @connections = {}
 @startStreamBroadcast = () ->
 	logger.info 'startStreamBroadcast'
 
-	# connections = {}
-
 	InstanceStatus.getCollection().find({'extraInformation.port': {$exists: true}}, {sort: {_createdAt: -1}}).observe
 		added: (record) ->
-			if record.extraInformation.port is process.env.PORT
+			if record.extraInformation.port is process.env.PORT and (record.extraInformation.host is 'localhost' or record.extraInformation.host is process.env.INSTANCE_IP)
 				return
 
-			if connections[record.extraInformation.port]?.instanceRecord?
-				if connections[record.extraInformation.port].instanceRecord._createdAt < record._createdAt
-					connections[record.extraInformation.port].disconnect()
-					delete connections[record.extraInformation.port]
+			instance = record.extraInformation.host + ':' + record.extraInformation.port
+
+			if connections[instance]?.instanceRecord?
+				if connections[instance].instanceRecord._createdAt < record._createdAt
+					connections[instance].disconnect()
+					delete connections[instance]
 				else
 					return
 
-			logger.connection.info 'connecting in', "localhost:#{record.extraInformation.port}"
-			connections[record.extraInformation.port] = DDP.connect("localhost:#{record.extraInformation.port}", {_dontPrintErrors: true})
-			connections[record.extraInformation.port].instanceRecord = record;
-			authorizeConnection(connections[record.extraInformation.port]);
-			connections[record.extraInformation.port].onReconnect = ->
-				authorizeConnection(connections[record.extraInformation.port]);
+			logger.connection.info 'connecting in', instance
+			connections[instance] = DDP.connect(instance, {_dontPrintErrors: true})
+			connections[instance].instanceRecord = record;
+			authorizeConnection(instance);
+			connections[instance].onReconnect = ->
+				authorizeConnection(instance);
 
 		removed: (record) ->
-			if connections[record.extraInformation.port]? and not InstanceStatus.getCollection().findOne({'extraInformation.port': record.extraInformation.port})?
-				logger.connection.info 'disconnecting from', "localhost:#{record.extraInformation.port}"
-				connections[record.extraInformation.port].disconnect()
-				delete connections[record.extraInformation.port]
+			instance = record.extraInformation.host + ':' + record.extraInformation.port
+			if connections[instance]? and not InstanceStatus.getCollection().findOne({'extraInformation.host': record.extraInformation.host, 'extraInformation.port': record.extraInformation.port})?
+				logger.connection.info 'disconnecting from', instance
+				connections[instance].disconnect()
+				delete connections[instance]
 
 	broadcast = (streamName, eventName, args, userId) ->
-		for port, connection of connections
-			do (port, connection) ->
+		fromInstance = (process.env.INSTANCE_IP or 'localhost') + ':' + process.env.PORT
+		for instance, connection of connections
+			do (instance, connection) ->
 				if connection.status().connected is true
 					connection.call 'stream', streamName, eventName, args, (error, response) ->
 						if error?
@@ -51,33 +53,23 @@ authorizeConnection = (connection) ->
 
 						switch response
 							when 'self-not-authorized'
-								logger.stream.error "Stream broadcast from:#{process.env.PORT} to:#{connection._stream.endpoint} with name #{streamName} to self is not authorized".red
+								logger.stream.error "Stream broadcast from '#{fromInstance}' to '#{connection._stream.endpoint}' with name #{streamName} to self is not authorized".red
 								logger.stream.debug "    -> connection authorized".red, connection.broadcastAuth
 								logger.stream.debug "    -> connection status".red, connection.status()
 								logger.stream.debug "    -> arguments".red, eventName, args
 
 							when 'not-authorized'
-								logger.stream.error "Stream broadcast from:#{process.env.PORT} to:#{connection._stream.endpoint} with name #{streamName} not authorized".red
+								logger.stream.error "Stream broadcast from '#{fromInstance}' to '#{connection._stream.endpoint}' with name #{streamName} not authorized".red
 								logger.stream.debug "    -> connection authorized".red, connection.broadcastAuth
 								logger.stream.debug "    -> connection status".red, connection.status()
 								logger.stream.debug "    -> arguments".red, eventName, args
-								authorizeConnection(connection);
+								authorizeConnection(instance);
 
 							when 'stream-not-exists'
-								logger.stream.error "Stream broadcast from:#{process.env.PORT} to:#{connection._stream.endpoint} with name #{streamName} does not exists".red
+								logger.stream.error "Stream broadcast from '#{fromInstance}' to '#{connection._stream.endpoint}' with name #{streamName} does not exist".red
 								logger.stream.debug "    -> connection authorized".red, connection.broadcastAuth
 								logger.stream.debug "    -> connection status".red, connection.status()
 								logger.stream.debug "    -> arguments".red, eventName, args
-
-
-	Meteor.methods
-		showConnections: ->
-			data = {}
-			for port, connection of connections
-				data[port] =
-					status: connection.status()
-					broadcastAuth: connection.broadcastAuth
-			return data
 
 	Meteor.StreamerCentral.on 'broadcast', (streamName, eventName, args) ->
 		broadcast streamName, eventName, args
@@ -108,7 +100,6 @@ authorizeConnection = (connection) ->
 			Meteor.StreamerCentral.instances[streamName]._emit(eventName, args)
 
 			return undefined
-
 
 Meteor.startup ->
 	startStreamBroadcast()

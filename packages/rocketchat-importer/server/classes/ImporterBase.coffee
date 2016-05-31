@@ -39,6 +39,7 @@ Importer.Base = class Importer.Base
 	# @param [RegExp] fileTypeRegex the regexp to validate the uploaded file type against
 	#
 	constructor: (@name, @description, @fileTypeRegex) ->
+		@logger = new Logger("#{@name} Importer", {});
 		@progress = new Importer.Progress @name
 		@collection = Importer.RawImports
 		@AdmZip = Npm.require 'adm-zip'
@@ -100,7 +101,7 @@ Importer.Base = class Importer.Base
 	updateProgress: (step) =>
 		@progress.step = step
 
-		console.log "#{@name} is now at #{step}."
+		@logger.debug "#{@name} is now at #{step}."
 		@updateRecord { 'status': @progress.step }
 
 		return @progress
@@ -148,7 +149,7 @@ Importer.Base = class Importer.Base
 	# @param [Date] timeStamp the timestamp the file was uploaded
 	#
 	uploadFile: (details, fileUrl, user, room, timeStamp) =>
-		console.log "Uploading the file #{details.name} from #{fileUrl}."
+		@logger.debug "Uploading the file #{details.name} from #{fileUrl}."
 		requestModule = if /https/i.test(fileUrl) then Importer.Base.https else Importer.Base.http
 
 		requestModule.get fileUrl, Meteor.bindEnvironment((stream) ->
@@ -189,7 +190,10 @@ Importer.Base = class Importer.Base
 							groupable: false
 							attachments: [attachment]
 
+						if details.message_id? and (typeof details.message_id is 'string')
+							msg['_id'] = details.message_id
+
 						RocketChat.sendMessage user, msg, room
 			else
-				console.error "Failed to create the store for #{fileUrl}!!!"
+				@logger.error "Failed to create the store for #{fileUrl}!!!"
 		)

@@ -18,7 +18,13 @@ RocketChat.sendMessage = (user, message, room) ->
 
 	message = RocketChat.callbacks.run 'beforeSaveMessage', message
 
-	message._id = RocketChat.models.Messages.insert message
+	if message._id?
+		_id = message._id
+		delete message._id
+		RocketChat.models.Messages.upsert {_id: _id, 'u._id': message.u._id}, message
+		message._id = _id
+	else
+		message._id = RocketChat.models.Messages.insert message
 
 	###
 	Defer other updates as their return is not interesting to the user

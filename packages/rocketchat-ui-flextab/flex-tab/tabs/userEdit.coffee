@@ -8,6 +8,16 @@ Template.userEdit.helpers
 	requirePasswordChange: ->
 		return !Template.instance().user || Template.instance().user.requirePasswordChange
 
+	role: ->
+		return RocketChat.models.Roles.find({}, { sort: { description: 1, _id: 1 } })
+
+	selectUserRole: ->
+		if @_id is 'user'
+			return 'selected'
+
+	name: ->
+		return @description or @_id
+
 Template.userEdit.events
 	'click .cancel': (e, t) ->
 		e.stopPropagation()
@@ -46,6 +56,7 @@ Template.userEdit.onCreated ->
 		userData.requirePasswordChange = this.$("#changePassword:checked").length > 0
 		userData.joinDefaultChannels = this.$("#joinDefaultChannels:checked").length > 0
 		userData.sendWelcomeEmail = this.$("#sendWelcomeEmail:checked").length > 0
+		userData.role = this.$("#role").val()
 		return userData
 
 	@validate = =>

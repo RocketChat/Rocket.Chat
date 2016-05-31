@@ -48,7 +48,7 @@ Template.room.helpers
 	roomTopic: ->
 		roomData = Session.get('roomData' + this._id)
 		return '' unless roomData
-		return roomData.topic
+		return s.escapeHTML roomData.topic
 
 	roomIcon: ->
 		roomData = Session.get('roomData' + this._id)
@@ -105,11 +105,19 @@ Template.room.helpers
 	showToggleFavorite: ->
 		return true if isSubscribed(this._id) and favoritesEnabled()
 
-	compactView: ->
-		return 'compact' if Meteor.user()?.settings?.preferences?.compactView
+	viewMode: ->
+		viewMode = Meteor.user()?.settings?.preferences?.viewMode
+		switch viewMode
+			when 1 then cssClass = 'cozy'
+			when 2 then cssClass = 'compact'
+			else cssClass = ''
+		return cssClass
 
 	selectable: ->
 		return Template.instance().selectable.get()
+
+	hideUsername: ->
+		return if Meteor.user()?.settings?.preferences?.hideUsernames then 'hide-usernames'
 
 isSocialSharingOpen = false
 touchMoved = false
@@ -294,7 +302,7 @@ Template.room.events
 
 	'click .message-cog': (e) ->
 		message = @_arguments[1]
-		$('.message-dropdown:visible').hide()
+		RocketChat.MessageAction.hideDropDown()
 
 		dropDown = $(".messages-box \##{message._id} .message-dropdown")
 
@@ -318,7 +326,7 @@ Template.room.events
 			button.action.call @, e, t
 
 	'click .message-dropdown-close': ->
-		$('.message-dropdown:visible').hide()
+		RocketChat.MessageAction.hideDropDown()
 
 	"click .mention-link": (e, instance) ->
 		channel = $(e.currentTarget).data('channel')
@@ -565,7 +573,7 @@ Template.room.onRendered ->
 	$('.flex-tab-bar').on 'click', (e, t) ->
 		Meteor.setTimeout ->
 			template.sendToBottomIfNecessaryDebounced()
-		, 100
+		, 50
 
 	updateUnreadCount = _.throttle ->
 		firstMessageOnScreen = document.elementFromPoint(containerBarsOffset.left+1, containerBarsOffset.top+containerBars.height()+1)

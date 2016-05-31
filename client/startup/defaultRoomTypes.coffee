@@ -21,7 +21,7 @@ RocketChat.roomTypes.add 'c', 10,
 	roomName: (roomData) ->
 		return roomData.name
 	condition: ->
-		return RocketChat.authz.hasAllPermission 'view-c-room'
+		return RocketChat.authz.hasAtLeastOnePermission ['view-c-room', 'view-joined-room']
 
 RocketChat.roomTypes.add 'd', 20,
 	template: 'directMessages'

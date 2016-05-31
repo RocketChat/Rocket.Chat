@@ -1,6 +1,7 @@
 {
   "Additional_Feedback" : "추가 의견",
   "Appearance" : "외관",
+  "Conversation_finished" : "대화 종료",
   "How_friendly_was_the_chat_agent" : "채팅 에이전트는 어떻게 친했다?",
   "How_knowledgeable_was_the_chat_agent" : "채팅 에이전트는 어떻게 지식인가?",
   "How_responsive_was_the_chat_agent" : "채팅 에이전트는 어떻게 반응이었다?",
@@ -9,10 +10,18 @@
   "Please_answer_survey" : "이 채팅에 대한 간단한 설문 조사에 응답하기 위해 잠시 시간을내어 주시기 바랍니다",
   "Please_fill_name_and_email" : "이름과 이메일을 입력하세요",
   "Select_a_department" : "부서를 선택",
+  "Send" : "보내다",
   "Skip" : "버킷",
   "Start_Chat" : "채팅 시작",
   "Survey" : "측량",
   "Survey_instructions" : "당신이 완전히 만족하는 의미를 완전히 만족하지 의미에 대한 만족도에 따라 1 각 질문에 평가 5.",
   "Thank_you_for_your_feedback" : "의견을 보내 주셔서 감사합니다",
-  "We_are_offline_Sorry_for_the_inconvenience" : "우리는 오프라인 상태입니다. 불편을 드려 죄송합니다."
+  "Thanks_We_ll_get_back_to_you_soon" : "감사! 우리는 곧 다시 연락하겠습니다.",
+  "Type_your_email" : "이메일을 입력",
+  "Type_your_message" : "메시지를 입력",
+  "Type_your_name" : "당신의 이름을 입력",
+  "User_joined" : "사용자 가입",
+  "User_left" : "사용자 왼쪽",
+  "We_are_offline_Sorry_for_the_inconvenience" : "우리는 오프라인 상태입니다. 불편을 드려 죄송합니다.",
+  "You_must_complete_all_fields" : "당신은 모든 필드를 완료해야합니다"
 }

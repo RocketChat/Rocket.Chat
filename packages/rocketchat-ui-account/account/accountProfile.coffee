@@ -102,8 +102,8 @@ Template.accountProfile.events
 			return instance.save()
 
 		swal
-			title: t("Please_re_enter_your_password"),
-			text: t("For_your_security_you_must_re_enter_your_password_to_continue"),
+			title: t("Please_enter_your_password"),
+			text: t("For_your_security_you_must_enter_your_current_password_to_continue"),
 			type: "input",
 			inputType: "password",
 			showCancelButton: true,

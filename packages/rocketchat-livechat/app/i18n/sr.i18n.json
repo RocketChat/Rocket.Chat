@@ -1,6 +1,7 @@
 {
   "Additional_Feedback" : "Додатне Контакт",
   "Appearance" : "изглед",
+  "Conversation_finished" : "разговор завршио",
   "How_friendly_was_the_chat_agent" : "Како пријатељски је био агент ћаскање?",
   "How_knowledgeable_was_the_chat_agent" : "Како знања је агент ћаскање?",
   "How_responsive_was_the_chat_agent" : "Како реагују био агент ћаскање?",
@@ -9,10 +10,18 @@
   "Please_answer_survey" : "Одвојите мало времена да одговори брзо анкету о овом разговору",
   "Please_fill_name_and_email" : "Молимо вас да попуните име и е-маил",
   "Select_a_department" : "Изаберите одељење",
+  "Send" : "послати",
   "Skip" : "прескочити",
   "Start_Chat" : "Почетак Чат",
   "Survey" : "Анкета",
   "Survey_instructions" : "Рате свако питање по својој задовољство, 1 значи да су потпуно незадовољни и 5 значи да сте потпуно задовољни.",
   "Thank_you_for_your_feedback" : "Хвала на повратним информацијама",
-  "We_are_offline_Sorry_for_the_inconvenience" : "Ми смо онлине. Жао због непријатности."
+  "Thanks_We_ll_get_back_to_you_soon" : "Хвала! Ми ћемо вам се јавити ускоро.",
+  "Type_your_email" : "Унесите вашу емаил",
+  "Type_your_message" : "Унесите поруку",
+  "Type_your_name" : "Типе иоур наме",
+  "User_joined" : "Корисник се придружио",
+  "User_left" : "Корисник лево",
+  "We_are_offline_Sorry_for_the_inconvenience" : "Ми смо онлине. Жао због непријатности.",
+  "You_must_complete_all_fields" : "Морате да попуните сва поља"
 }

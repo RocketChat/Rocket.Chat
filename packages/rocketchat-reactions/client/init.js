@@ -4,6 +4,13 @@ Template.room.events({
 		event.stopPropagation();
 		const data = Blaze.getData(event.currentTarget);
 
+		let user = Meteor.user();
+		let room = RocketChat.models.Rooms.findOne({ _id: data._arguments[1].rid });
+
+		if (Array.isArray(room.muted) && room.muted.indexOf(user.username) !== -1) {
+			return false;
+		}
+
 		RocketChat.EmojiPicker.open(event.currentTarget, (emoji) => {
 			Meteor.call('setReaction', ':' + emoji + ':', data._arguments[1]._id);
 		});
@@ -46,7 +53,16 @@ Meteor.startup(function() {
 				Meteor.call('setReaction', ':' + emoji + ':', data._arguments[1]._id);
 			});
 		},
-		validation() {
+		validation(message) {
+			let room = RocketChat.models.Rooms.findOne({ _id: message.rid });
+			let user = Meteor.user();
+
+			if (Array.isArray(room.muted) && room.muted.indexOf(user.username) !== -1) {
+				return false;
+			} else if (Array.isArray(room.usernames) && room.usernames.indexOf(user.username) === -1) {
+				return false;
+			}
+
 			return true;
 		},
 		order: 22

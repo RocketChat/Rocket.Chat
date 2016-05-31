@@ -31,6 +31,52 @@ function categoryName(category) {
 	return category;
 }
 
+function getEmojisByCategory(category) {
+	const t = Template.instance();
+	const total = emojisByCategory[category].length;
+	let html = '';
+	const actualTone = t.tone;
+	for (var i = 0; i < total; i++) {
+		let emoji = emojisByCategory[category][i];
+		let tone = '';
+
+		if (actualTone > 0 && toneList.hasOwnProperty(emoji)) {
+			tone = '_tone' + actualTone;
+		}
+
+		const image = emojione.toImage(':' + emoji + tone + ':');
+
+		html += `<li class="emoji-${emoji}" data-emoji="${emoji}" title="${emoji}">${image}</li>`;
+	}
+	return html;
+}
+
+function getEmojisBySearchTerm(searchTerm) {
+	let html = '';
+	const actualTone = t.tone;
+
+	for (let category of Object.keys(emojisByCategory)) {
+		if (category !== 'recent') {
+			for (let emoji of emojisByCategory[category]) {
+				if (emoji.indexOf(searchTerm.toLowerCase()) > -1) {
+					let tone = '';
+
+					if (actualTone > 0 && toneList.hasOwnProperty(emoji)) {
+						tone = '_tone' + actualTone;
+					}
+
+					const image = emojione.toImage(':' + emoji + tone + ':');
+
+					html += `<li class="emoji-${emoji}" data-emoji="${emoji}" title="${emoji}">${image}</li>`;
+
+				}
+			}
+		}
+	}
+
+	return html;
+}
+
 Template.emojiPicker.helpers({
 	category() {
 		return Object.keys(emojisByCategory);
@@ -44,21 +90,16 @@ Template.emojiPicker.helpers({
 	isVisible(category) {
 		return Template.instance().currentCategory.get() === category ? 'visible' : '';
 	},
-	emojisByCategory(category) {
-		let total = emojisByCategory[category].length;
-		var html = '';
-		let actualTone = Template.instance().tone;
+	emojiList(category) {
+		const t = Template.instance();
+		const searchTerm = t.currentSearchTerm.get();
 
-		for (var i = 0; i < total; i++) {
-			let emoji = emojisByCategory[category][i];
-			let tone = '';
-
-			if (actualTone > 0 && toneList.hasOwnProperty(emoji)) {
-				tone = '_tone' + actualTone;
-			}
-			html += '<li class="emoji-' + emoji + '" data-emoji="' + emoji + '" title="' + emoji + '">' + emojione.toImage(':' + emoji + tone + ':') + '</li>';
+		if (searchTerm.length > 0) {
+			return getEmojisBySearchTerm(searchTerm);
+		} else {
+			return getEmojisByCategory(category);
 		}
-		return html;
+
 	},
 	currentTone() {
 		return 'tone-' + Template.instance().tone;
@@ -79,8 +120,15 @@ Template.emojiPicker.helpers({
 	 * @return {string} category hash
 	 */
 	currentCategory() {
-		var hash = Template.instance().currentCategory.get();
-		return categoryName(hash);
+		const t = Template.instance();
+		const hash = t.currentCategory.get();
+		const searchTerm = t.currentSearchTerm.get();
+
+		if (searchTerm.length > 0) {
+			return TAPi18n.__('Search');
+		} else {
+			return categoryName(hash);
+		}
 	}
 });
 
@@ -128,18 +176,37 @@ Template.emojiPicker.events({
 
 		$('.tone-selector').toggleClass('show');
 	},
-	'click .emoji-list li'(event) {
+	'click .emoji-list li'(event, instance) {
 		event.stopPropagation();
 
 		let emoji = event.currentTarget.dataset.emoji;
-		let actualTone = Template.instance().tone;
+		let actualTone = instance.tone;
 		let tone = '';
 
 		if (actualTone > 0 && toneList.hasOwnProperty(emoji)) {
 			tone = '_tone' + actualTone;
 		}
 
+		const input = $('.emoji-filter input.search');
+		if (input) {
+			input.val('');
+		}
+		instance.currentSearchTerm.set('');
+
 		RocketChat.EmojiPicker.pickEmoji(emoji + tone);
+	},
+	'keydown .emoji-filter .search'(event) {
+		if (event.keyCode === 13) {
+			event.preventDefault();
+		}
+	},
+	'keyup .emoji-filter .search'(event, instance) {
+		const value = event.target.value.trim();
+		const cst = instance.currentSearchTerm;
+		if (value === cst.get()) {
+			return;
+		}
+		cst.set(value);
 	}
 });
 
@@ -148,6 +215,7 @@ Template.emojiPicker.onCreated(function() {
 	let recent = RocketChat.EmojiPicker.getRecent();
 
 	this.currentCategory = new ReactiveVar(recent.length > 0 ? 'recent' : 'people');
+	this.currentSearchTerm = new ReactiveVar('');
 
 	recent.forEach((emoji) => {
 		emojisByCategory.recent.push(emoji);
@@ -230,277 +298,6 @@ toneList = {
 
 emojisByCategory = {
 	'recent': [],
-	'symbols': [
-		'100',
-		'1234',
-		'heart',
-		'yellow_heart',
-		'green_heart',
-		'blue_heart',
-		'purple_heart',
-		'broken_heart',
-		'heart_exclamation',
-		'two_hearts',
-		'revolving_hearts',
-		'heartbeat',
-		'heartpulse',
-		'sparkling_heart',
-		'cupid',
-		'gift_heart',
-		'heart_decoration',
-		'peace',
-		'cross',
-		'star_and_crescent',
-		'om_symbol',
-		'wheel_of_dharma',
-		'star_of_david',
-		'six_pointed_star',
-		'menorah',
-		'yin_yang',
-		'orthodox_cross',
-		'place_of_worship',
-		'ophiuchus',
-		'aries',
-		'taurus',
-		'gemini',
-		'cancer',
-		'leo',
-		'virgo',
-		'libra',
-		'scorpius',
-		'sagittarius',
-		'capricorn',
-		'aquarius',
-		'pisces',
-		'id',
-		'atom',
-		'u7a7a',
-		'u5272',
-		'radioactive',
-		'biohazard',
-		'mobile_phone_off',
-		'vibration_mode',
-		'u6709',
-		'u7121',
-		'u7533',
-		'u55b6',
-		'u6708',
-		'eight_pointed_black_star',
-		'vs',
-		'accept',
-		'white_flower',
-		'ideograph_advantage',
-		'secret',
-		'congratulations',
-		'u5408',
-		'u6e80',
-		'u7981',
-		'a',
-		'b',
-		'ab',
-		'cl',
-		'o2',
-		'sos',
-		'no_entry',
-		'name_badge',
-		'no_entry_sign',
-		'x',
-		'o',
-		'anger',
-		'hotsprings',
-		'no_pedestrians',
-		'do_not_litter',
-		'no_bicycles',
-		'non-potable_water',
-		'underage',
-		'no_mobile_phones',
-		'exclamation',
-		'grey_exclamation',
-		'question',
-		'grey_question',
-		'bangbang',
-		'interrobang',
-		'low_brightness',
-		'high_brightness',
-		'trident',
-		'fleur-de-lis',
-		'part_alternation_mark',
-		'warning',
-		'children_crossing',
-		'beginner',
-		'recycle',
-		'u6307',
-		'chart',
-		'sparkle',
-		'eight_spoked_asterisk',
-		'negative_squared_cross_mark',
-		'white_check_mark',
-		'diamond_shape_with_a_dot_inside',
-		'cyclone',
-		'loop',
-		'globe_with_meridians',
-		'm',
-		'atm',
-		'sa',
-		'passport_control',
-		'customs',
-		'baggage_claim',
-		'left_luggage',
-		'wheelchair',
-		'no_smoking',
-		'wc',
-		'parking',
-		'potable_water',
-		'mens',
-		'womens',
-		'baby_symbol',
-		'restroom',
-		'put_litter_in_its_place',
-		'cinema',
-		'signal_strength',
-		'koko',
-		'ng',
-		'ok',
-		'up',
-		'cool',
-		'new',
-		'free',
-		'zero',
-		'one',
-		'two',
-		'three',
-		'four',
-		'five',
-		'six',
-		'seven',
-		'eight',
-		'nine',
-		'ten',
-		'arrow_forward',
-		'pause_button',
-		'play_pause',
-		'stop_button',
-		'record_button',
-		'track_next',
-		'track_previous',
-		'fast_forward',
-		'rewind',
-		'twisted_rightwards_arrows',
-		'repeat',
-		'repeat_one',
-		'arrow_backward',
-		'arrow_up_small',
-		'arrow_down_small',
-		'arrow_double_up',
-		'arrow_double_down',
-		'arrow_right',
-		'arrow_left',
-		'arrow_up',
-		'arrow_down',
-		'arrow_upper_right',
-		'arrow_lower_right',
-		'arrow_lower_left',
-		'arrow_upper_left',
-		'arrow_up_down',
-		'left_right_arrow',
-		'arrows_counterclockwise',
-		'arrow_right_hook',
-		'leftwards_arrow_with_hook',
-		'arrow_heading_up',
-		'arrow_heading_down',
-		'hash',
-		'asterisk',
-		'information_source',
-		'abc',
-		'abcd',
-		'capital_abcd',
-		'symbols',
-		'musical_note',
-		'notes',
-		'wavy_dash',
-		'curly_loop',
-		'heavy_check_mark',
-		'arrows_clockwise',
-		'heavy_plus_sign',
-		'heavy_minus_sign',
-		'heavy_division_sign',
-		'heavy_multiplication_x',
-		'heavy_dollar_sign',
-		'currency_exchange',
-		'copyright',
-		'registered',
-		'tm',
-		'end',
-		'back',
-		'on',
-		'top',
-		'soon',
-		'ballot_box_with_check',
-		'radio_button',
-		'white_circle',
-		'black_circle',
-		'red_circle',
-		'large_blue_circle',
-		'small_orange_diamond',
-		'small_blue_diamond',
-		'large_orange_diamond',
-		'large_blue_diamond',
-		'small_red_triangle',
-		'black_small_square',
-		'white_small_square',
-		'black_large_square',
-		'white_large_square',
-		'small_red_triangle_down',
-		'black_medium_square',
-		'white_medium_square',
-		'black_medium_small_square',
-		'white_medium_small_square',
-		'black_square_button',
-		'white_square_button',
-		'speaker',
-		'sound',
-		'loud_sound',
-		'mute',
-		'mega',
-		'loudspeaker',
-		'bell',
-		'no_bell',
-		'black_joker',
-		'mahjong',
-		'spades',
-		'clubs',
-		'hearts',
-		'diamonds',
-		'flower_playing_cards',
-		'thought_balloon',
-		'anger_right',
-		'speech_balloon',
-		'clock1',
-		'clock2',
-		'clock3',
-		'clock4',
-		'clock5',
-		'clock6',
-		'clock7',
-		'clock8',
-		'clock9',
-		'clock10',
-		'clock11',
-		'clock12',
-		'clock130',
-		'clock230',
-		'clock330',
-		'clock430',
-		'clock530',
-		'clock630',
-		'clock730',
-		'clock830',
-		'clock930',
-		'clock1030',
-		'clock1130',
-		'clock1230',
-		'eye_in_speech_bubble'
-	],
 	'people': [
 		'grinning',
 		'grimacing',
@@ -707,6 +504,7 @@ emojisByCategory = {
 		'ring',
 		'closed_umbrella'
 	],
+
 	'nature': [
 		'dog',
 		'cat',
@@ -1280,6 +1078,277 @@ emojisByCategory = {
 		'paintbrush',
 		'mag',
 		'mag_right'
+	],
+	'symbols': [
+		'100',
+		'1234',
+		'heart',
+		'yellow_heart',
+		'green_heart',
+		'blue_heart',
+		'purple_heart',
+		'broken_heart',
+		'heart_exclamation',
+		'two_hearts',
+		'revolving_hearts',
+		'heartbeat',
+		'heartpulse',
+		'sparkling_heart',
+		'cupid',
+		'gift_heart',
+		'heart_decoration',
+		'peace',
+		'cross',
+		'star_and_crescent',
+		'om_symbol',
+		'wheel_of_dharma',
+		'star_of_david',
+		'six_pointed_star',
+		'menorah',
+		'yin_yang',
+		'orthodox_cross',
+		'place_of_worship',
+		'ophiuchus',
+		'aries',
+		'taurus',
+		'gemini',
+		'cancer',
+		'leo',
+		'virgo',
+		'libra',
+		'scorpius',
+		'sagittarius',
+		'capricorn',
+		'aquarius',
+		'pisces',
+		'id',
+		'atom',
+		'u7a7a',
+		'u5272',
+		'radioactive',
+		'biohazard',
+		'mobile_phone_off',
+		'vibration_mode',
+		'u6709',
+		'u7121',
+		'u7533',
+		'u55b6',
+		'u6708',
+		'eight_pointed_black_star',
+		'vs',
+		'accept',
+		'white_flower',
+		'ideograph_advantage',
+		'secret',
+		'congratulations',
+		'u5408',
+		'u6e80',
+		'u7981',
+		'a',
+		'b',
+		'ab',
+		'cl',
+		'o2',
+		'sos',
+		'no_entry',
+		'name_badge',
+		'no_entry_sign',
+		'x',
+		'o',
+		'anger',
+		'hotsprings',
+		'no_pedestrians',
+		'do_not_litter',
+		'no_bicycles',
+		'non-potable_water',
+		'underage',
+		'no_mobile_phones',
+		'exclamation',
+		'grey_exclamation',
+		'question',
+		'grey_question',
+		'bangbang',
+		'interrobang',
+		'low_brightness',
+		'high_brightness',
+		'trident',
+		'fleur-de-lis',
+		'part_alternation_mark',
+		'warning',
+		'children_crossing',
+		'beginner',
+		'recycle',
+		'u6307',
+		'chart',
+		'sparkle',
+		'eight_spoked_asterisk',
+		'negative_squared_cross_mark',
+		'white_check_mark',
+		'diamond_shape_with_a_dot_inside',
+		'cyclone',
+		'loop',
+		'globe_with_meridians',
+		'm',
+		'atm',
+		'sa',
+		'passport_control',
+		'customs',
+		'baggage_claim',
+		'left_luggage',
+		'wheelchair',
+		'no_smoking',
+		'wc',
+		'parking',
+		'potable_water',
+		'mens',
+		'womens',
+		'baby_symbol',
+		'restroom',
+		'put_litter_in_its_place',
+		'cinema',
+		'signal_strength',
+		'koko',
+		'ng',
+		'ok',
+		'up',
+		'cool',
+		'new',
+		'free',
+		'zero',
+		'one',
+		'two',
+		'three',
+		'four',
+		'five',
+		'six',
+		'seven',
+		'eight',
+		'nine',
+		'ten',
+		'arrow_forward',
+		'pause_button',
+		'play_pause',
+		'stop_button',
+		'record_button',
+		'track_next',
+		'track_previous',
+		'fast_forward',
+		'rewind',
+		'twisted_rightwards_arrows',
+		'repeat',
+		'repeat_one',
+		'arrow_backward',
+		'arrow_up_small',
+		'arrow_down_small',
+		'arrow_double_up',
+		'arrow_double_down',
+		'arrow_right',
+		'arrow_left',
+		'arrow_up',
+		'arrow_down',
+		'arrow_upper_right',
+		'arrow_lower_right',
+		'arrow_lower_left',
+		'arrow_upper_left',
+		'arrow_up_down',
+		'left_right_arrow',
+		'arrows_counterclockwise',
+		'arrow_right_hook',
+		'leftwards_arrow_with_hook',
+		'arrow_heading_up',
+		'arrow_heading_down',
+		'hash',
+		'asterisk',
+		'information_source',
+		'abc',
+		'abcd',
+		'capital_abcd',
+		'symbols',
+		'musical_note',
+		'notes',
+		'wavy_dash',
+		'curly_loop',
+		'heavy_check_mark',
+		'arrows_clockwise',
+		'heavy_plus_sign',
+		'heavy_minus_sign',
+		'heavy_division_sign',
+		'heavy_multiplication_x',
+		'heavy_dollar_sign',
+		'currency_exchange',
+		'copyright',
+		'registered',
+		'tm',
+		'end',
+		'back',
+		'on',
+		'top',
+		'soon',
+		'ballot_box_with_check',
+		'radio_button',
+		'white_circle',
+		'black_circle',
+		'red_circle',
+		'large_blue_circle',
+		'small_orange_diamond',
+		'small_blue_diamond',
+		'large_orange_diamond',
+		'large_blue_diamond',
+		'small_red_triangle',
+		'black_small_square',
+		'white_small_square',
+		'black_large_square',
+		'white_large_square',
+		'small_red_triangle_down',
+		'black_medium_square',
+		'white_medium_square',
+		'black_medium_small_square',
+		'white_medium_small_square',
+		'black_square_button',
+		'white_square_button',
+		'speaker',
+		'sound',
+		'loud_sound',
+		'mute',
+		'mega',
+		'loudspeaker',
+		'bell',
+		'no_bell',
+		'black_joker',
+		'mahjong',
+		'spades',
+		'clubs',
+		'hearts',
+		'diamonds',
+		'flower_playing_cards',
+		'thought_balloon',
+		'anger_right',
+		'speech_balloon',
+		'clock1',
+		'clock2',
+		'clock3',
+		'clock4',
+		'clock5',
+		'clock6',
+		'clock7',
+		'clock8',
+		'clock9',
+		'clock10',
+		'clock11',
+		'clock12',
+		'clock130',
+		'clock230',
+		'clock330',
+		'clock430',
+		'clock530',
+		'clock630',
+		'clock730',
+		'clock830',
+		'clock930',
+		'clock1030',
+		'clock1130',
+		'clock1230',
+		'eye_in_speech_bubble'
 	],
 	'flags': [
 		'flag_ac',

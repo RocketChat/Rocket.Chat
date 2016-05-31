@@ -22,7 +22,7 @@ class Join
 				_id: Random.id()
 				rid: item.rid
 				ts: new Date
-				msg: TAPi18n.__('Channel_doesnt_exist', { postProcess: 'sprintf', sprintf: [ channel ] }, user.language);
+				msg: TAPi18n.__('Channel_doesnt_exist', { postProcess: 'sprintf', sprintf: [ channel ] }, user.language)
 			}
 			return
 

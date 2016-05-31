@@ -1,6 +1,13 @@
 isSubscribed = (_id) ->
 	return ChatSubscription.find({ rid: _id }).count() > 0
 
+katexSyntax = ->
+	if RocketChat.katex.katex_enabled()
+		return "$$KaTeX$$"   if RocketChat.katex.dollar_syntax_enabled()
+		return "\\[KaTeX\\]" if RocketChat.katex.parenthesis_syntax_enabled()
+
+	return false
+
 Template.messageBox.helpers
 	roomName: ->
 		roomData = Session.get('roomData' + this._id)
@@ -12,12 +19,14 @@ Template.messageBox.helpers
 			return roomData.name
 	showMarkdown: ->
 		return RocketChat.Markdown
-	showHighlight: ->
-		return RocketChat.Highlight
+	showMarkdownCode: ->
+		return RocketChat.MarkdownCode
 	showKatex: ->
 		return RocketChat.katex
+	katexSyntax: ->
+		return katexSyntax()
 	showFormattingTips: ->
-		return RocketChat.settings.get('Message_ShowFormattingTips') and (RocketChat.Markdown or RocketChat.Highlight or RocketChat.katex)
+		return RocketChat.settings.get('Message_ShowFormattingTips') and (RocketChat.Markdown or RocketChat.MarkdownCode or katexSyntax())
 	canJoin: ->
 		return !! ChatRoom.findOne { _id: @_id, t: 'c' }
 	subscribed: ->
@@ -75,10 +84,13 @@ Template.messageBox.events
 
 	'click .send-button': (event, instance) ->
 		input = instance.find('.input-message')
-		chatMessages[@_id].send(@_id, input)
+		chatMessages[@_id].send(@_id, input, =>
+			# fixes https://github.com/RocketChat/Rocket.Chat/issues/3037
+			# at this point, the input is cleared and ready for autogrow
+			input.updateAutogrow()
+			instance.isMessageFieldEmpty.set(chatMessages[@_id].isEmpty())
+		)
 		input.focus()
-		input.updateAutogrow()
-		instance.isMessageFieldEmpty.set(chatMessages[@_id].isEmpty())
 
 	'keyup .input-message': (event, instance) ->
 		chatMessages[@_id].keyup(@_id, event, instance)

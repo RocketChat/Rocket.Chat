@@ -1,6 +1,4 @@
 {
-  "Access_online_demo" : "访问在线演示版本",
-  "Access_Online_Demo" : "访问在线演示版本",
   "Accounts" : "帐户",
   "Accounts_denyUnverifiedEmail" : "拒绝未经验证的电子邮件",
   "Accounts_EmailVerification" : "邮件验证",
@@ -74,7 +72,6 @@
   "General" : "通用",
   "github_no_public_email" : "在您的GitHub上帐户中，您没有设置任何电子邮件作为公共电子邮件地址。",
   "Has_more" : "有更多",
-  "Have_your_own_chat" : "拥有自己的网络聊天。对于希望建立和发展自己的聊天平台的开发者而言，使用Meteor开发的Rocket.Chat是优秀的解决方案。",
   "Hide_room" : "隐藏聊天室",
   "History" : "历史",
   "hours" : "小时",
@@ -278,6 +275,5 @@
   "you_are_in_preview_mode_of" : "您正在预览频道 #<strong>__room_name__</strong>",
   "You_need_confirm_email" : "登录前请验证您的电子邮件！",
   "You_will_not_be_able_to_recover" : "您将无法恢复！",
-  "Your_entry_has_been_deleted" : "您的项目已被删除。",
-  "Your_Open_Source_solution" : "您自己的开源聊天解决方案"
+  "Your_entry_has_been_deleted" : "您的项目已被删除。"
 }

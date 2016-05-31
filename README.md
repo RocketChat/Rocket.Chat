@@ -62,10 +62,10 @@ Download the Native Cross-Platform Desktop Application at [Rocket.Chat.Electron]
 ### Available from Google Play
 [![Rocket.Chat on Google Play](https://upload.wikimedia.org/wikipedia/commons/thumb/5/58/Google_Play_logo_2015.PNG/220px-Google_Play_logo_2015.PNG)](https://play.google.com/store/apps/details?id=com.konecty.rocket.chat)
 
-Now compatible with all Android devices as old as version 4.0.x - [download here](https://github.com/RocketChat/Rocket.Chat/wiki/Build-the-Android-Cordova-Web-App-and-connect-to-your-own-Rocket.Chat-Server), even on BlackBerry Passport!
+Now compatible with all Android devices as old as version 4.0.x - [download here](https://rocket.chat/docs/developer-guides/mobile-apps/), even on BlackBerry Passport!
 
 ### Also available as FirefoxOS app
-[![Firefox OS app now available](https://raw.githubusercontent.com/Sing-Li/bbug/master/images/firefoxos.png)](https://github.com/RocketChat/Rocket.Chat/wiki/Native-Firefox-OS-app-%28hosted-webapp%29)
+[![Firefox OS app now available](https://raw.githubusercontent.com/Sing-Li/bbug/master/images/firefoxos.png)](https://rocket.chat/docs/installation/mobile-and-desktop-apps/#native-firefox-os-app)
 
 
 # Deployment
@@ -75,13 +75,12 @@ Host your own Rocket.Chat server in four seconds flat:
 
 [![Rocket.Chat on Sandstorm.io](https://raw.githubusercontent.com/Sing-Li/bbug/master/images/sandstorm.jpg)](https://apps.sandstorm.io/app/vfnwptfn02ty21w715snyyczw0nqxkv3jvawcah10c6z7hj1hnu0)
 
-_*Grab*_ the [Sandstorm SPK for the latest Rocket.Chat release](https://rocket.chat/releases/latest/spk) for testing on your own server.
 
 ## DPlatform
 
 Easiest way to install a ready-to-run Rocket.Chat server on a Linux machine, VM, or VPS - [@j8r's   DPlatform](https://github.com/j8r/DPlatform), now in Alpha! 
 
-[![deploy](https://raw.githubusercontent.com/j8r/DPlatform/gh-pages/img/deploy.png)](https://j8r.github.io/DPlatform/)
+[![DP deploy](https://raw.githubusercontent.com/DFabric/DPlatform-ShellCore/gh-pages/img/deploy.png)](https://dfabric.github.io/DPlatform-ShellCore)
 
 ## IndieHosters
 Get your Rocket.Chat instance hosted in a "as a Service" style. You register and we manage it for you! (updates, backup...)
@@ -253,7 +252,7 @@ It is a great solution for communities and companies wanting to privately host t
 - Native Cross-Platform Desktop Application [Windows, Mac OSX, or Linux](https://rocket.chat/)
 - Mobile app for iPhone, iPad, and iPod touch [Download on AppStore!](https://geo.itunes.apple.com/us/app/rocket.chat/id1028869439?mt=8)
 - Mobile app for Android phone, tablet, and TV stick [Available now on Google Play!](https://play.google.com/store/apps/details?id=com.konecty.rocket.chat)
-- Native Firefox OS Application (also for Desktop Firefox and Firefox for Android!) - [Check the wiki page for install instructions](https://github.com/RocketChat/Rocket.Chat/wiki/Native-Firefox-OS-app-%28hosted-webapp%29)
+- Native Firefox OS Application (also for Desktop Firefox and Firefox for Android!) - [Check the docs page for install instructions](https://rocket.chat/docs/installation/mobile-and-desktop-apps/#native-firefox-os-app)
 - Sandstorm.io instant Rocket.Chat server [Now on Sandstorm App Store](https://apps.sandstorm.io/app/vfnwptfn02ty21w715snyyczw0nqxkv3jvawcah10c6z7hj1hnu0)
 - Available on [Cloudron Store](https://cloudron.io/appstore.html#chat.rocket.cloudronapp)
 
@@ -384,6 +383,6 @@ Hosting powered by [Rackspace](https://rackspace.com)
 
 Rocket.Chat will be free forever, but you can help us speed-up the development!
 
-[![Donate](https://www.paypalobjects.com/en_US/i/btn/btn_donateCC_LG.gif)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=49QX7TYCVZK8L)
+[![Donate](https://www.paypalobjects.com/en_US/i/btn/btn_donateCC_LG.gif)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=ZL94ZE6LGVUSN)
 
 [BountySource](https://www.bountysource.com/teams/rocketchat)
