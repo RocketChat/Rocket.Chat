@@ -13,20 +13,6 @@ class Markdown
 			else
 				return message
 
-		# Support `text`
-		if _.isString message
-			msg = msg.replace(/(^|&gt;|[ >_*~])\`([^`\r\n]+)\`([<_*~]|\B|\b|$)/gm, '$1<span class="copyonly">`</span><span><code class="inline">$2</code></span><span class="copyonly">`</span>$3')
-		else
-			message.tokens ?= []
-			msg = msg.replace /(^|&gt;|[ >_*~])\`([^`\r\n]+)\`([<_*~]|\B|\b|$)/gm, (match, p1, p2, p3, offset, text) ->
-				token = "=&=#{Random.id()}=&="
-
-				message.tokens.push
-					token: token
-					text: "#{p1}<span class=\"copyonly\">`</span><span><code class=\"inline\">#{p2}</code></span><span class=\"copyonly\">`</span>#{p3}"
-
-				return token
-
 		schemes = RocketChat.settings.get('Markdown_SupportSchemesForLink').split(',').join('|')
 
 		# Support ![alt text](http://image url)
@@ -85,8 +71,9 @@ class Markdown
 
 		return message
 
-RocketChat.callbacks.add 'renderMessage', Markdown, RocketChat.callbacks.priority.HIGH
+
 RocketChat.Markdown = Markdown
+RocketChat.callbacks.add 'renderMessage', Markdown    , RocketChat.callbacks.priority.HIGH
 
 if Meteor.isClient
 	Blaze.registerHelper 'RocketChatMarkdown', (text) ->

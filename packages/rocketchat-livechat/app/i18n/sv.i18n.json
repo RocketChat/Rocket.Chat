@@ -1,6 +1,7 @@
 {
   "Additional_Feedback" : "Ytterligare feedback",
   "Appearance" : "Utseende",
+  "Conversation_finished" : "konversation klar",
   "How_friendly_was_the_chat_agent" : "Hur vänligt var chatten agent?",
   "How_knowledgeable_was_the_chat_agent" : "Hur kunnig var chatten agent?",
   "How_responsive_was_the_chat_agent" : "Hur reagerar var chatten agent?",
@@ -9,10 +10,18 @@
   "Please_answer_survey" : "Vänligen ta en stund för att svara på en snabb enkät om chatten.",
   "Please_fill_name_and_email" : "Vänligen fyll i namn och e-postadress",
   "Select_a_department" : "Välj en avdelning",
+  "Send" : "Skicka",
   "Skip" : "Hoppa över",
   "Start_Chat" : "Starta chatt",
   "Survey" : "Enkät",
   "Survey_instructions" : "Betygsätt varje fråga efter hur nöjd du är, 1 betyder att du inte alls är nöjd och 5 betyder att du är helt nöjd.\n",
   "Thank_you_for_your_feedback" : "Tack för din feedback",
-  "We_are_offline_Sorry_for_the_inconvenience" : "Vi är offline. Vi beklagar olägenheten. "
+  "Thanks_We_ll_get_back_to_you_soon" : "Tack! Vi återkommer till dig snart.",
+  "Type_your_email" : "Skriv din e-post",
+  "Type_your_message" : "Skriv in ditt meddelande",
+  "Type_your_name" : "Skriv in ditt namn",
+  "User_joined" : "user gick",
+  "User_left" : "användaren vänster",
+  "We_are_offline_Sorry_for_the_inconvenience" : "Vi är offline. Vi beklagar olägenheten. ",
+  "You_must_complete_all_fields" : "Du måste fylla i alla fält"
 }

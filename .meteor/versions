@@ -53,7 +53,7 @@ htmljs@1.0.5
 http@1.1.1
 id-map@1.0.4
 idorecall:email-normalize@1.0.0
-jalik:ufs@0.5.4
+jalik:ufs@0.5.5
 jalik:ufs-gridfs@0.1.1
 jalik:ufs-local@0.2.5
 jparker:crypto-core@0.1.0
@@ -68,7 +68,7 @@ konecty:delayed-task@1.0.0
 konecty:mongo-counter@0.0.3
 konecty:multiple-instances-status@1.0.6
 konecty:nrr@2.0.2
-konecty:user-presence@1.2.6
+konecty:user-presence@1.2.8
 launch-screen@1.0.4
 less@2.5.1
 livedata@1.0.15
@@ -114,7 +114,7 @@ pauli:accounts-linkedin@1.3.1
 pauli:linkedin@1.3.1
 peerlibrary:aws-sdk@2.2.42_1
 peerlibrary:blocking@0.5.2
-perak:codemirror@1.3.0
+perak:codemirror@1.3.1
 percolate:synced-cron@1.3.0
 pntbr:js-yaml-client@0.0.1
 promise@0.5.1
@@ -145,7 +145,6 @@ rocketchat:file@0.0.1
 rocketchat:file-upload@0.0.1
 rocketchat:github-enterprise@0.0.1
 rocketchat:gitlab@0.0.1
-rocketchat:highlight@0.0.1
 rocketchat:highlight-words@0.0.1
 rocketchat:iframe-login@1.0.0
 rocketchat:importer@0.0.1
@@ -160,7 +159,6 @@ rocketchat:livechat@0.0.1
 rocketchat:logger@0.0.1
 rocketchat:mailer@0.0.1
 rocketchat:markdown@0.0.1
-rocketchat:me@0.0.1
 rocketchat:mentions@0.0.1
 rocketchat:mentions-flextab@0.0.1
 rocketchat:message-attachments@0.0.1
@@ -171,6 +169,7 @@ rocketchat:oauth2-server@1.4.0
 rocketchat:oauth2-server-config@1.0.0
 rocketchat:oembed@0.0.1
 rocketchat:otr@0.0.1
+rocketchat:piwik@0.0.1
 rocketchat:push-notifications@0.0.1
 rocketchat:reactions@0.0.1
 rocketchat:slackbridge@0.0.1
@@ -178,11 +177,14 @@ rocketchat:slashcommands-invite@0.0.1
 rocketchat:slashcommands-join@0.0.1
 rocketchat:slashcommands-kick@0.0.1
 rocketchat:slashcommands-leave@0.0.1
+rocketchat:slashcommands-me@0.0.1
 rocketchat:slashcommands-mute@0.0.1
+rocketchat:slashcommands-shrug@0.0.1
+rocketchat:slashcommands-topic@0.0.1
 rocketchat:sms@0.0.1
 rocketchat:spotify@0.0.1
 rocketchat:statistics@0.0.1
-rocketchat:streamer@0.3.3
+rocketchat:streamer@0.4.0
 rocketchat:theme@0.0.1
 rocketchat:tooltip@0.0.1
 rocketchat:tutum@0.0.1
@@ -209,7 +211,7 @@ spacebars-compiler@1.0.7
 srp@1.0.4
 standard-minifiers@1.0.2
 steffo:meteor-accounts-saml@0.0.1
-tap:i18n@1.8.0
+tap:i18n@1.8.2
 templating@1.1.5
 templating-tools@1.0.0
 tmeasday:crypto-base@3.1.2

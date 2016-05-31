@@ -5,7 +5,7 @@ Template.message.helpers
 		unless RocketChat.settings.get('UI_DisplayRoles')
 			return []
 		roles = _.union(UserRoles.findOne(this.u?._id)?.roles, RoomRoles.findOne({'u._id': this.u?._id, rid: this.rid })?.roles)
-		return _.compact(_.map(roles, (role) -> return RocketChat.models.Roles.findOne({ _id: role, description: { $exists: 1 } })?.description));
+		return RocketChat.models.Roles.find({ _id: { $in: roles }, description: { $exists: 1, $ne: '' } }, { fields: { description: 1 } })
 	isGroupable: ->
 		return 'false' if this.groupable is false
 	isSequential: ->
@@ -94,20 +94,36 @@ Template.message.helpers
 
 	reactions: ->
 		msgReactions = []
+		userUsername = Meteor.user().username
 
 		for emoji, reaction of @reactions
 			total = reaction.usernames.length
-			usernames = reaction.usernames.sort().slice(0, 15)
+			usernames = '@' + reaction.usernames.slice(0, 15).join(', @')
+
+			usernames = usernames.replace('@'+userUsername, t('You').toLowerCase())
 
 			if total > 15
-				usernames.push t('And_more', { length: total - 15 })
+				usernames = usernames + ' ' + t('And_more', { length: total - 15 }).toLowerCase()
+			else
+				usernames = usernames.replace(/,([^,]+)$/, ' '+t('and')+'$1')
+
+			if usernames[0] isnt '@'
+				usernames = usernames[0].toUpperCase() + usernames.substr(1)
 
 			msgReactions.push
 				emoji: emoji
 				count: reaction.usernames.length
 				usernames: usernames
+				reaction: ' ' + t('Reacted_with').toLowerCase() + ' ' + emoji
+				userReacted: reaction.usernames.indexOf(userUsername) > -1
 
 		return msgReactions
+
+	markUserReaction: (reaction) ->
+		if reaction.userReacted
+			return {
+				class: 'selected'
+			}
 
 	hideReactions: ->
 		return 'hidden' if _.isEmpty(@reactions)
@@ -115,6 +131,14 @@ Template.message.helpers
 	injectIndex: (data, index) ->
 		data.index = index
 		return
+
+	hideCog: ->
+		room = RocketChat.models.Rooms.findOne({ _id: this.rid });
+		return 'hidden' if room.usernames.indexOf(Meteor.user().username) == -1
+
+	hideUsernames: ->
+		prefs = Meteor.user()?.settings?.preferences
+		return if prefs?.hideUsernames
 
 Template.message.onCreated ->
 	msg = Template.currentData()
@@ -155,7 +179,6 @@ Template.message.onViewRendered = (context) ->
 		previousNode = currentNode.previousElementSibling
 		nextNode = currentNode.nextElementSibling
 		$currentNode = $(currentNode)
-		$previousNode = $(previousNode)
 		$nextNode = $(nextNode)
 
 		unless previousNode?

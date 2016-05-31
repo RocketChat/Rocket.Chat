@@ -1,5 +1,117 @@
 ## NEXT
 
+## 0.32.0, 2016-May-30
+
+- Add autocomplete for adding users to roles
+- Add bad word filter to settings UI
+- Add Catalan language (#3394)
+- Add compacter message view mode
+- Add EVE online sso support (#3389)
+- Add Piwik Analytics (#233)
+- Add role tags to user info in flex tab (#3326)
+- Add room label to livechat history list
+- Add safe ports settings for embed
+- Add settings for Piwik Analytics (#233)
+- Add support to broadcast stream to different hosts
+- Fix exception if room not found
+- Change "Show Usernames" for "Hide Usernames"
+- Change text of "and more __" for reactions
+- Combined Hightlight & Markdown packages. Fixed Katex & markdown collision
+- Add Deeper analytics for Piwik
+- Escape room topic html
+- Fix SAML SSO redirect issue with iOS native client (#2028)
+- Fix action button validation (#3306)
+- Fix CAS in Android Cordova
+- Fix outgoing integrations erroring out when a channel isn't provided
+- Forward open livechat rooms from agent when he goes offline
+- Hide the cog when a user is not in the room.
+- Improve REST API (#3346)
+- Improvements to message quoting (#3278)
+- KaTeX: Allow enabling \[KaTeX\] and $$KaTeX$$ syntaxes separately
+- Prevent HTML tags in livechat offline email subject
+- Remove resize animation preventing scroll stay at bottom
+- Update user-presence package
+
+## 0.31.0, 2016-May-16
+
+- Add header and footer to e-mails
+- Add new livechat settings to livechat manager
+- Add replyTo and more descriptive 'from' to livechat offline email
+- Add role field to user creation form
+- Add setting to set Google Site Verification id
+- Add the channel id to the _id property of the messages on import
+- Added permalink button to pinned & starred messages
+- Better look to big emojis on webkit browsers
+- Created guest user permission
+- Emoji search is performed across all categories
+- Fix an error on importing if there was a user by the same username on the server but different email
+- Fix error message when CAS validation fail
+- Fix multiline code when there is text after closing ```
+- Fix some broken link -> button events
+- Fix text clipping in spotlight input
+- Fix the message requesting the password when saving profile
+- Fix URL for cordova  when quoting a message
+- Lower highlight timeout
+- Make "new message" and "jump to recent" buttons unselectable
+- Make the sidebar movement transition faster
+- New subject for livechat offline messages
+- Prevent someone from reacting if they are muted
+- Remove invalid push tokens from gateway if status code 406
+- Remove stale debug logs
+- Removing presence status computation from new room sound tracker
+- Right sidebar animation cancelled on tab button clicked
+- Save room's name as the livechat visitor name
+- Use HTML emails instead of Text- 
+
+## 0.30.0, 2016-May-09
+
+- Ability to run imports several times without duplicate messages (#3123)
+- Add /shrug command
+- Add /topic
+- Add back the role bot to rocket.cat - closes #3098
+- Add default email header and footer
+- Add some basic validation to if user is logged in
+- Add timestamp to quoted messages
+- Added quote button to messages
+- Allow inputing multiple channels/users in integrations; comma-separated
+- Allow katex to work with $...$ and $$...$$
+- Always set SMS info on incoming SMS messages
+- Close #3103 Show correct menus on mobile
+- Do not allow user leave the room ONLY if it is a livechat room
+- Do not protect upload files on Sandstorm environment
+- Don't render empty katex
+- Don't show emoji list on ':' or ascii
+- Easier whole message navigation
+- Feature: search input field in emoji picker
+- Fix #2941 Pressing enter in Search Channels leaves search (#3128)
+- Fix #3103 Show correct menus on mobile
+- Fix #3130 Hide "edited by" status in search results
+- Fix #3138 Embedding youtu.be shortened links did not have a video preview
+- Fix #3148 Also adds missing translation keys
+- Fix #3182 Replace placeholder in enrollment email subject
+- Fix current livechats page
+- Fix livechat build script for Windows
+- Fix read messages from livechat rooms
+- Fix unread bar links
+- Fix: discarding draft gets up to date content of message
+- Force outgoing webhooks to post only on the allowed room
+- Ignore the __MACOSX folders in the importers
+- Improves message quoting
+- Make message box resize when editing message using popup menu
+- Message box resizes properly if sent via click event
+- Move /me into directory structure like the other slashcommands
+- New livechat page to send an email when no agent online
+- New message editing features
+- New permission to allow others to close livechat rooms
+- Prevent unnecessary UI resize on medium screens
+- Removed unused hubot scripts
+- Replace bunches of inaccessible <a> elements with empty hrefs, and clickable divs, with <button/>.
+- RTL fixes (#3135)
+- Update katex to version 0.6.0
+- Use customClass instead of looking for a class
+- Use native code to set file upload cookies
+- Wait until user is logged-in to add message listener
+
 ## 0.29.0, 2016-May-02
 
 - Add a i18nDefaultQuery option to settings

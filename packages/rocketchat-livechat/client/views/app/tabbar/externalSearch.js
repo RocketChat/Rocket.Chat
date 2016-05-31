@@ -5,7 +5,7 @@ Template.externalSearch.helpers({
 });
 
 Template.externalSearch.events({
-	'click a.pick-message'(event, instance) {
+	'click button.pick-message'(event, instance) {
 		event.preventDefault();
 
 		$('#chat-window-' + instance.roomId + ' .input-message').val(this.msg).focus();
