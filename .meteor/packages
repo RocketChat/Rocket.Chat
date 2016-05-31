@@ -76,6 +76,7 @@ rocketchat:otr
 rocketchat:piwik
 rocketchat:push-notifications
 rocketchat:reactions
+rocketchat:slashcommands-tableflip
 rocketchat:slashcommands-invite
 rocketchat:slashcommands-join
 rocketchat:slashcommands-kick
@@ -84,6 +85,7 @@ rocketchat:slashcommands-me
 rocketchat:slashcommands-mute
 rocketchat:slashcommands-shrug
 rocketchat:slashcommands-topic
+rocketchat:slashcommands-unflip
 rocketchat:spotify
 rocketchat:statistics
 rocketchat:streamer
