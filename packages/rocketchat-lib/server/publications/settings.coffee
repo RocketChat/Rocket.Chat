@@ -16,24 +16,12 @@ Meteor.methods
 		return RocketChat.models.Settings.findNotHidden().fetch()
 
 
-subscriptionsReady = false
-RocketChat.models.Settings.findNotHidden().observe
-	added: (record) ->
-		if subscriptionsReady
-			e = if record.public is true then 'public-settings-changed' else 'private-settings-changed'
-			RocketChat.Notifications.notifyAll e, 'added', record
+RocketChat.models.Settings.on 'change', (type, args...) ->
+	records = RocketChat.models.Settings.getChangedRecords type, args[0]
 
-	changed: (record) ->
-		if subscriptionsReady
-			e = if record.public is true then 'public-settings-changed' else 'private-settings-changed'
-			RocketChat.Notifications.notifyAll e, 'changed', record
-
-	removed: (record) ->
-		if subscriptionsReady
-			e = if record.public is true then 'public-settings-changed' else 'private-settings-changed'
-			RocketChat.Notifications.notifyAll e, 'removed', { _id: record._id }
-
-subscriptionsReady = true
+	for record in records
+		e = if record.public is true then 'public-settings-changed' else 'private-settings-changed'
+		RocketChat.Notifications.notifyAll e, type, record
 
 
 RocketChat.Notifications.streamAll.allowRead 'private-settings-changed', ->
