@@ -6,7 +6,7 @@ Meteor.methods({
 
 		let options = {
 			fields: { name: 1 },
-			sort: { msgs: -1 }
+			sort: { name: 1 }
 		};
 
 		//Verify the limit param is a number
