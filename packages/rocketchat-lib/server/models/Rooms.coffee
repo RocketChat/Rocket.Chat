@@ -160,7 +160,7 @@ RocketChat.models.Rooms = new class extends RocketChat.models._Base
 
 		return @find query, options
 
-	findByTypeAndNameContainigUsername: (type, name, username, options) ->
+	findByTypeAndNameContainingUsername: (type, name, username, options) ->
 		query =
 			name: name
 			t: type
