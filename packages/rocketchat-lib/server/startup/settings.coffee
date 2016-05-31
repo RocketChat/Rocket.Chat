@@ -155,6 +155,8 @@ RocketChat.settings.addGroup 'Message', ->
 	@add 'Message_AlwaysSearchRegExp', false, { type: 'boolean' }
 	@add 'Message_ShowEditedStatus', true, { type: 'boolean', public: true }
 	@add 'Message_ShowDeletedStatus', false, { type: 'boolean', public: true }
+	@add 'Message_AllowBadWordsFilter', false, { type: 'boolean', public: true}
+	@add 'Message_BadWordsFilterList', '', {type: 'string', public: true}
 	@add 'Message_KeepHistory', false, { type: 'boolean', public: true }
 	@add 'Message_MaxAll', 0, { type: 'int', public: true }
 	@add 'Message_MaxAllowedSize', 5000, { type: 'int', public: true }
