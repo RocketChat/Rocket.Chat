@@ -72,7 +72,7 @@ Package.onUse(function(api) {
 	api.addFiles('server/lib/validateEmailDomain.js', 'server');
 
 	// SERVER MODELS
-	api.addFiles('server/models/_Base.coffee', 'server');
+	api.addFiles('server/models/_Base.js', 'server');
 	api.addFiles('server/models/Messages.coffee', 'server');
 	api.addFiles('server/models/Reports.coffee', 'server');
 	api.addFiles('server/models/Rooms.coffee', 'server');
