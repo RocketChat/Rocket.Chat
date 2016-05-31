@@ -20,9 +20,11 @@ class ModelsBase extends EventEmitter {
 	}
 
 	insert() {
-		this.emit('insert', ...arguments);
-		this.emit('change', 'insert', ...arguments);
-		return this.model.insert(...arguments);
+		const result = this.model.insert(...arguments);
+		const record = _.extend({ _id: result }, arguments[0]);
+		this.emit('insert', record);
+		this.emit('change', 'insert', record);
+		return result;
 	}
 
 	update() {
@@ -36,7 +38,7 @@ class ModelsBase extends EventEmitter {
 		const result = this.model.upsert(...arguments);
 
 		if (result.insertedId) {
-			const record = _.extend({ _id: result.insertedId }, arguments[0], arguments[1]);
+			const record = { _id: result.insertedId };
 			this.emit('insert', record);
 			this.emit('change', 'insert', record);
 		} else {
