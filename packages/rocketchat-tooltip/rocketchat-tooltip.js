@@ -64,6 +64,10 @@ RocketChat.tooltip = {
 				'margin-left': (left - 5) + 'px'
 			});
 			left = 0;
+		} else {
+			$('.tooltip .tooltip-arrow').css({
+				'margin-left': ''
+			});
 		}
 
 		if (top < 0) {
