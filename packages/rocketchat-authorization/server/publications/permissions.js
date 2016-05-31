@@ -7,25 +7,10 @@ Meteor.methods({
 });
 
 
-let subscriptionsReady = false;
-RocketChat.models.Settings.findNotHidden().observe({
-	added(record) {
-		if (subscriptionsReady) {
-			RocketChat.Notifications.notifyAll('permissions-changed', 'added', record);
-		}
-	},
+RocketChat.models.Permissions.on('change', (type, ...args) => {
+	const records = RocketChat.models.Permissions.getChangedRecords(type, args[0]);
 
-	changed(record) {
-		if (subscriptionsReady) {
-			RocketChat.Notifications.notifyAll('permissions-changed', 'changed', record);
-		}
-	},
-
-	removed(record) {
-		if (subscriptionsReady) {
-			RocketChat.Notifications.notifyAll('permissions-changed', 'removed', { _id: record._id });
-		}
+	for (const record of records) {
+		RocketChat.Notifications.notifyAll('permissions-changed', type, record);
 	}
 });
-
-subscriptionsReady = true;
