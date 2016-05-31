@@ -79,6 +79,95 @@
 		@secondary-font-color: #7f7f7f;
 		@info-font-color: #AAAAAA;
 
+		font-family: 'Helvetica Neue', Helvetica, Roboto, Arial, sans-serif, "Meiryo UI";
+		font-size: 0.8rem;
+		color: @primary-font-color;
+		-webkit-font-smoothing: antialiased;
+		line-height: 1rem;
+
+		input,
+		button,
+		select,
+		textarea {
+			font-family: inherit;
+			font-size: inherit;
+			line-height: inherit;
+			padding: 5px;
+			margin: 5px 0;
+			border: 1px solid #E7E7E7;
+			border-radius: 5px;
+			outline: none;
+		}
+
+		input {
+			height: 28px;
+		}
+
+		input:focus {
+			outline: none;
+			box-shadow: 0 0 0;
+		}
+
+		.button {
+			&:extend(.unselectable);
+			display: inline-block;
+			padding: 9px 12px;
+			font-weight: 500;
+			font-size: 13px;
+			margin: 4px;
+			text-transform: uppercase;
+			word-spacing: 0;
+			box-shadow: 1px 1px 0 rgba(0, 0, 0, 0.125);
+			border: none;
+			border-radius: 0;
+			line-height: 16px;
+			position: relative;
+			cursor: pointer;background-color: #FFF;
+			color: rgba(255, 255, 255, 0.85);
+			background-color: lighten(desaturate(@primary-background-color, 15%), 12.5%);
+			span {
+				position: relative;
+				z-index: 2;
+			}
+			&:before {
+				background-color: rgba(0, 0, 0, 0.1);
+				content: " ";
+				position: absolute;
+				top: 0;
+				left: 0;
+				width: 100%;
+				height: 100%;
+				opacity: 0;
+				z-index: 1;
+				.transition(opacity .1s ease-out);
+			}
+			&:hover {
+				text-decoration: none;
+				color: #FFF;
+				&:before {
+					opacity: 1;
+				}
+			}
+			&.secondary {
+				background-color: @tertiary-background-color;
+				color: @primary-font-color;
+				&:before {
+					background-color: rgba(0, 0, 0, 0.045);
+				}
+			}
+			&.clean {
+				font-size: 14px;
+				box-shadow: 0 0 3px rgba(0, 0, 0, 0.08);
+				&.primary {
+					font-weight: 600;
+				}
+			}
+			&.button-block {
+				display: block;
+				width: 100%;
+			}
+		}
+
 		.livechat-room {
 			display: flex;
 			flex-direction: column;
@@ -375,17 +464,51 @@
 					}
 				}
 			}
+
 			.offline {
 				flex: 1 1 100%;
-				font-weight: bold;
 				background-color: white;
-				padding: 2em 0;
-				text-align: center;
+				padding: 1em 10px;
+				border-left: 1px solid #E7E7E7;
+				border-right: 1px solid #E7E7E7;
+
+				.offline-message {
+					padding: 1em 0;
+				}
+
+				.message-sent {
+					text-align: center;
+				}
+
+				form {
+					input, textarea {
+						display: block;
+						width: 100%;
+					}
+
+					textarea {
+						height: 3.5em;
+					}
+
+					.buttons {
+						text-align: center;
+					}
+
+					.error {
+						display: none;
+						background-color: #F7D799;
+						padding: 5px;
+
+						&.show {
+							display: block;
+						}
+					}
+				}
 			}
 		}
 	}
 
-	&.closed {
+	&.closed, &.closed-offline {
 		.preview-wrapper {
 			height: 32px;
 			.livechat-room .title .toolbar {
@@ -395,6 +518,9 @@
 				display: none;
 			}
 			.footer {
+				display: none;
+			}
+			.offline {
 				display: none;
 			}
 		}

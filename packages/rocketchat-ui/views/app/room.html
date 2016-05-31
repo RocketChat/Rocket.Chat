@@ -60,9 +60,16 @@
 					</div>
 				{{/each}}
 			</div>
-			<div class="messages-box {{#if selectable}}selectable{{/if}} {{compactView}}">
+			<div class="messages-box {{#if selectable}}selectable{{/if}} {{viewMode}}">
 				<div class="ticks-bar"></div>
-				<div class="wrapper {{#if hasMoreNext}}has-more-next{{/if}}">
+				<button class="new-message not">
+					<i class="icon-down-big"></i>
+					{{_ "New_messages"}}
+				</button>
+				<div class="jump-recent {{#unless hasMoreNext}}not{{/unless}}">
+					<button>{{_ "Jump_to_recent_messages"}} <i class="icon-level-down"></i></button>
+				</div>
+				<div class="wrapper {{#if hasMoreNext}}has-more-next{{/if}} {{hideUsername}}">
 					<ul aria-live="polite">
 						{{#if hasMore}}
 							<li class="load-more">
@@ -90,13 +97,6 @@
 							</li>
 						{{/if}}
 					</ul>
-				</div>
-				<button class="new-message not">
-					<i class="icon-down-big"></i>
-					<span>{{_ "New_messages"}}</span>
-				</button>
-				<div class="jump-recent {{#unless hasMoreNext}}not{{/unless}}">
-					<button>{{_ "Jump_to_recent_messages"}} <i class="icon-level-down"></i></button>
 				</div>
 			</div>
 			<footer class="footer">

@@ -11,6 +11,9 @@ Meteor.methods
 		if me.username is username
 			throw new Meteor.Error 'error-invalid-user', "Invalid user", { method: 'createDirectMessage' }
 
+		if !RocketChat.authz.hasPermission Meteor.userId(), 'create-d'
+			throw new Meteor.Error 'error-not-allowed', 'Not allowed', { method: 'createDirectMessage' }
+
 		to = RocketChat.models.Users.findOneByUsername username
 
 		if not to

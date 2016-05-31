@@ -40,6 +40,10 @@ Meteor.methods
 				Function(localeFn)()
 
 		html = ""
+
+		header = RocketChat.placeholders.replace(RocketChat.settings.get('Email_Header') || "")
+		footer = RocketChat.placeholders.replace(RocketChat.settings.get('Email_Footer') || "")
+
 		RocketChat.models.Messages.findByRoomIdAndMessageIds(data.rid, data.messages, { sort: { ts: 1 } }).forEach (message) ->
 			dateTime = moment(message.ts).locale(data.language).format('L LT')
 			html += "<p style='margin-bottom: 5px'><b>#{message.u.username}</b> <span style='color: #aaa; font-size: 12px'>#{dateTime}</span><br />" + RocketChat.Message.parse(message, data.language) + "</p>"
@@ -50,7 +54,7 @@ Meteor.methods
 				from: RocketChat.settings.get('From_Email')
 				replyTo: email
 				subject: data.subject
-				html: html
+				html: header + html + footer
 
 			console.log 'Sending email to ' + emails.join(', ')
 

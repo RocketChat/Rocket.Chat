@@ -22,13 +22,13 @@
 			{{/if}}
 		{{/if}}
 		{{#if alias}}
-			<button class="user user-card-message" data-username="{{u.username}}" tabindex="1">{{alias}} <span class="message-alias">@{{u.username}}</span></button>
+			<button type="button" class="user user-card-message" data-username="{{u.username}}" tabindex="1">{{alias}} <span class="message-alias">@{{u.username}}</span></button>
 		{{else}}
-			<button class="user user-card-message" data-username="{{u.username}}" tabindex="1">{{u.username}}</button>
+			<button type="button" class="user user-card-message" data-username="{{u.username}}" tabindex="1">{{u.username}}</button>
 		{{/if}}
 		<span class="info">
 			{{#each roleTags}}
-				<span class="role-tag" data-role="{{.}}">{{.}}</span>
+				<span class="role-tag" data-role="{{description}}">{{description}}</span>
 			{{/each}}
 			{{#if isBot}}
 				<span class="is-bot">BOT</span>
@@ -53,7 +53,7 @@
 				<span class="private">{{_ "Only_you_can_see_this_message"}}</span>
 			{{/if}}
 
-			<div class="message-cog-container">
+			<div class="message-cog-container {{hideCog}}">
 				<i class="icon-cog message-cog" aria-label="{{_ "Actions"}}"></i>
 			</div>
 		</span>
@@ -72,13 +72,13 @@
 		</div>
 		<ul class="reactions {{hideReactions}}">
 			{{#each reaction in reactions}}
-				<li data-emoji="{{reaction.emoji}}">
+				<li data-emoji="{{reaction.emoji}}" {{markUserReaction reaction}}>
 					<span class="reaction-emoji">{{> emojione reaction.emoji}}</span>
 					<span class="reaction-count">{{reaction.count}}</span>
 					<ul class="people">
-						{{#each reaction.usernames}}
-							<li>{{.}}</li>
-						{{/each}}
+						<span style="font-weight: bold;">
+							{{reaction.usernames}} <span style="color: #aaa;">{{reaction.reaction}}</span>
+						</span>
 					</ul>
 				</li>
 			{{/each}}

@@ -8,9 +8,8 @@ Meteor.startup ->
 		]
 		action: (event, instance) ->
 			message = @_arguments[1]
-			$('.message-dropdown:visible').hide()
+			RocketChat.MessageAction.hideDropDown()
 			RoomHistoryManager.getSurroundingMessages(message, 50)
-
 		order: 100
 
 
@@ -57,7 +56,7 @@ Template.messageSearch.events
 		e.stopPropagation()
 		e.preventDefault()
 		message_id = $(e.currentTarget).closest('.message').attr('id')
-		$('.message-dropdown:visible').hide()
+		RocketChat.MessageAction.hideDropDown()
 		t.$("\##{message_id} .message-dropdown").remove()
 		message = _.findWhere(t.searchResult.get()?.messages, { _id: message_id })
 		actions = RocketChat.MessageAction.getButtons message, 'search'

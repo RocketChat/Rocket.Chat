@@ -203,6 +203,7 @@ RocketChat.OTR.Room = class {
 						text: TAPi18n.__('Username_wants_to_start_otr_Do_you_want_to_accept', { username: user.username }),
 						html: true,
 						showCancelButton: true,
+						allowOutsideClick: false,
 						confirmButtonText: TAPi18n.__('Yes'),
 						cancelButtonText: TAPi18n.__('No')
 					}, (isConfirm) => {

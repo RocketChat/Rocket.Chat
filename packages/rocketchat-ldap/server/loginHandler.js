@@ -126,7 +126,7 @@ Accounts.registerLoginHandler('ldap', function(loginRequest) {
 		};
 	}
 
-	logger.info('User does not exists, creating', username);
+	logger.info('User does not exist, creating', username);
 	// Create new user
 	var userObject = {
 		username: username
