@@ -35,16 +35,15 @@ msgStream.allowRead (eventName) ->
 
 
 Meteor.startup ->
-	options = {}
+	fields = undefined
 
 	if not RocketChat.settings.get 'Message_ShowEditedStatus'
-		options.fields = { 'editedAt': 0 }
+		fields = { 'editedAt': 0 }
 
-	RocketChat.models.Messages.findVisibleCreatedOrEditedAfterTimestamp(new Date(), options).observe
-		added: (record) ->
-			oldMsgStream.emit record.rid, record
-			msgStream.emitWithoutBroadcast record.rid, record
+	RocketChat.models.Messages.on 'change', (type, args...) ->
+		records = RocketChat.models.Messages.getChangedRecords type, args[0], fields
 
-		changed: (record) ->
-			oldMsgStream.emit record.rid, record
-			msgStream.emitWithoutBroadcast record.rid, record
+		for record in records
+			if record._hidden isnt true
+				oldMsgStream.emit record.rid, record
+				msgStream.emit record.rid, record
