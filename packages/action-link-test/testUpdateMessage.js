@@ -7,4 +7,4 @@ RocketChat.callbacks.add('afterSaveMessage', function(message, room) {
 	delete message._id;
 	RocketChat.models.Messages.update({ _id: tempid }, { $set: message });
 
-}, RocketChat.callbacks.priority.LOW)
+}, RocketChat.callbacks.priority.LOW);
