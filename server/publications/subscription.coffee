@@ -31,9 +31,6 @@ Meteor.methods
 
 
 RocketChat.models.Subscriptions.on 'change', (type, args...) ->
-	if type is 'update' and args[0]?.alert?.$ne?
-		delete args[0].alert
-
 	records = RocketChat.models.Subscriptions.getChangedRecords type, args[0], fields
 
 	for record in records
