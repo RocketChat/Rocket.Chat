@@ -11,7 +11,7 @@ Package.onUse(function(api) {
 	api.use('ecmascript');
 	api.use('templating');
 	api.use('rocketchat:lib');
-	
+
 	api.addFiles('testActionLinks.js', 'server');
 	api.addFiles('testUpdateMessage.js', 'server');
 
