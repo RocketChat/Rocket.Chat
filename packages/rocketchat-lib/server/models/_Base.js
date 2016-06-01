@@ -1,14 +1,37 @@
 const {EventEmitter} = Npm.require('events');
 
+const baseName = 'rocketchat_';
+
+const trash = new Mongo.Collection(baseName + '_trash');
+try {
+	trash._ensureIndex({ collection: 1 });
+	trash._ensureIndex({ _updatedAt: 1}, {expireAfterSeconds: 60 * 60 * 24 * 1 });
+} catch (e) {
+	console.log(e);
+}
+
 class ModelsBase extends EventEmitter {
 	_baseName() {
-		return 'rocketchat_';
+		return baseName;
 	}
 
 	_initModel(name) {
 		check(name, String);
 
+		this.name = name;
+
 		this.model = new Mongo.Collection(this._baseName() + name);
+	}
+
+	setUpdatedAt(record = {}) {
+		if (/(^|,)\$/.test(Object.keys(record).join(','))) {
+			record.$set = record.$set || {};
+			record.$set._updatedAt = new Date;
+		} else {
+			record._updatedAt = new Date;
+		}
+
+		return record;
 	}
 
 	find() {
@@ -19,15 +42,23 @@ class ModelsBase extends EventEmitter {
 		return this.model.findOne(...arguments);
 	}
 
-	insert() {
+	insert(record) {
+		this.setUpdatedAt(record);
+
+		console.log('insert', JSON.stringify(arguments));
+
 		const result = this.model.insert(...arguments);
-		const record = _.extend({ _id: result }, arguments[0]);
+		record._id = result;
 		this.emit('insert', record);
 		this.emit('change', 'insert', record);
 		return result;
 	}
 
 	update(query, update, options = {}) {
+		this.setUpdatedAt(update);
+
+		console.log('update', JSON.stringify(arguments));
+
 		if (options.upsert) {
 			return this.upsert(query, update);
 		}
@@ -46,7 +77,11 @@ class ModelsBase extends EventEmitter {
 		return result;
 	}
 
-	upsert(query) {
+	upsert(query, update) {
+		this.setUpdatedAt(update);
+
+		console.log('upsert', JSON.stringify(arguments));
+
 		const id = this.model.findOne(query, { fields: { _id: 1 } });
 		const result = this.model.upsert(...arguments);
 
@@ -60,10 +95,24 @@ class ModelsBase extends EventEmitter {
 		return result;
 	}
 
-	remove() {
-		this.emit('remove', ...arguments);
-		this.emit('change', 'remove', ...arguments);
-		return this.model.remove(...arguments);
+	remove(query) {
+		const records = this.model.find(query).fetch();
+
+		const ids = [];
+		for (const record of records) {
+			ids.push(record._id);
+
+			record._deletedAt = new Date;
+			record.__collection__ = this.name;
+
+			trash.insert(record);
+		}
+
+		query = { _id: { $in: ids } };
+
+		this.emit('remove', records);
+		this.emit('change', 'remove', records);
+		return this.model.remove(query);
 	}
 
 	insertOrUpsert(...args) {
@@ -118,14 +167,32 @@ class ModelsBase extends EventEmitter {
 			return [recordOrQuery];
 		}
 
-		const options = {};
-		if (fields) {
-			options.fields = fields;
+		if (type === 'remove') {
+			return recordOrQuery;
 		}
 
-		if (type === 'update' || type === 'remove') {
+		if (type === 'update') {
+			const options = {};
+			if (fields) {
+				options.fields = fields;
+			}
 			return this.find(recordOrQuery, options).fetch();
 		}
+	}
+
+	trashFind(query, options) {
+		query.__collection__ = this.name;
+
+		return trash.find(query, options);
+	}
+
+	trashFindDeletedAfter(deletedAt, query = {}, options) {
+		query.__collection__ = this.name;
+		query._deletedAt = {
+			$gt: deletedAt
+		};
+
+		return trash.find(query, options);
 	}
 }
 
