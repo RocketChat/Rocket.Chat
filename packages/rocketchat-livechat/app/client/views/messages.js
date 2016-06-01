@@ -56,6 +56,7 @@ Template.messages.onCreated(function() {
 	self.atBottom = true;
 
 	self.messagesCount = new ReactiveVar(0);
+	
 
 	self.updateMessageInputHeight = function(input) {
 		// Inital height is 28. If the scrollHeight is greater than that( we have more text than area ),
