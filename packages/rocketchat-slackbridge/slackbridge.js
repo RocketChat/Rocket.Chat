@@ -10,10 +10,16 @@ class SlackBridge {
 
 		RocketChat.settings.onload('SlackBridge_APIToken', (key, value) => {
 			this.apiToken = value;
+			if (this.connected) {
+				this.disconnect();
+				this.connect();
+			} else if (RocketChat.settings.get('SlackBridge_Enabled')) {
+				this.connect();
+			}
 		});
 
 		RocketChat.settings.onload('SlackBridge_Enabled', (key, value) => {
-			if (value) {
+			if (value && this.apiToken) {
 				this.connect();
 			} else {
 				this.disconnect();
@@ -22,7 +28,7 @@ class SlackBridge {
 	}
 
 	connect() {
-		if (!this.connected) {
+		if (this.connected === false) {
 			this.connected = true;
 			logger.connection.info('Connecting via token: ', this.apiToken);
 			var RtmClient = this.slackClient.RtmClient;
@@ -33,9 +39,11 @@ class SlackBridge {
 	}
 
 	disconnect() {
-		this.rtm.disconnect && this.rtm.disconnect();
-		this.connected = false;
-		logger.connection.info('Disconnected');
+		if (this.connected === true) {
+			this.rtm.disconnect && this.rtm.disconnect();
+			this.connected = false;
+			logger.connection.info('Disconnected');
+		}
 	}
 
 	convertSlackMessageToRocketChat(message) {
@@ -51,7 +59,7 @@ class SlackBridge {
 			message = message.replace(/:uk:/g, ':gb:');
 			message = message.replace(/<(http[s]?:[^>]*)>/g, '$1');
 
-			message.replace(/(?:<@)([a-zA-Z0-9]+)(?:>)/g, (match, userId) => {
+			message.replace(/(?:<@)([a-zA-Z0-9]+)(?:\|.+)?(?:>)/g, (match, userId) => {
 				if (!this.userTags[userId]) {
 					this.findUser(userId) || this.addUser(userId); // This adds userTags for the userId
 				}
@@ -70,10 +78,17 @@ class SlackBridge {
 		return RocketChat.models.Rooms.findOneByImportId(channelId);
 	}
 
-	addChannel(channelId) {
-		let data = HTTP.get('https://slack.com/api/channels.info', { params: { token: this.apiToken, channel: channelId } });
+	addChannel(channelId, hasRetried = false) {
+		let data = null;
+		let isGroup = false;
+		if (channelId.charAt(0) === 'C') {
+			data = HTTP.get('https://slack.com/api/channels.info', { params: { token: this.apiToken, channel: channelId } });
+		} else if (channelId.charAt(0) === 'G') {
+			data = HTTP.get('https://slack.com/api/groups.info', { params: { token: this.apiToken, channel: channelId } });
+			isGroup = true;
+		}
 		if (data && data.data && data.data.ok === true) {
-			let channelData = data.data.channel;
+			let channelData = isGroup ? data.data.group : data.data.channel;
 			let existingRoom = RocketChat.models.Rooms.findOneByName(channelData.name);
 			if (existingRoom || channelData.is_general) {
 				if (channelData.is_general && channelData.name !== (existingRoom && existingRoom.name)) {
@@ -97,10 +112,23 @@ class SlackBridge {
 					return;
 				}
 
-				Meteor.runAsUser(creator._id, () => {
-					let channel = Meteor.call('createChannel', channelData.name, users);
-					channelData.rocketId = channel._id;
-				});
+				try {
+					Meteor.runAsUser(creator._id, () => {
+						if (isGroup) {
+							let channel = Meteor.call('createPrivateGroup', channelData.name, users);
+							channelData.rocketId = channel._id;
+						} else {
+							let channel = Meteor.call('createChannel', channelData.name, users);
+							channelData.rocketId = channel._id;
+						}
+					});
+				} catch (e) {
+					if (!hasRetried) {
+						// If first time trying to create channel fails, could be because of multiple messages received at the same time. Try again once after 1s.
+						Meteor._sleepForMs(1000);
+						return this.findChannel(channelId) || this.addChannel(channelId, true);
+					}
+				}
 
 				let roomUpdate = {
 					ts: new Date(channelData.created * 1000)
@@ -172,59 +200,13 @@ class SlackBridge {
 		return;
 	}
 
-	saveMessage(room, user, message) {
-		let msgDataDefaults = {
-			_id: `${message.channel}S${message.ts}`,
-			ts: new Date(parseInt(message.ts.split('.')[0]) * 1000)
-		};
+	saveMessage(room, user, message, msgDataDefaults) {
 		if (message.type === 'message') {
 			let msgObj = {};
 			if (!_.isEmpty(message.subtype)) {
-				switch (message.subtype) {
-					case 'channel_join':
-						return this.joinRoom(room, user);
-					case 'channel_leave':
-						return this.leaveRoom(room, user);
-					case 'me_message':
-						msgObj = {
-							msg: `_${this.convertSlackMessageToRocketChat(message.text)}_`
-						};
-						break;
-					case 'bot_message':
-						break;
-					case 'channel_purpose':
-						return RocketChat.models.Messages.createRoomSettingsChangedWithTypeRoomIdMessageAndUser('room_changed_topic', room._id, message.purpose, user, msgDataDefaults);
-					case 'channel_topic':
-						return RocketChat.models.Messages.createRoomSettingsChangedWithTypeRoomIdMessageAndUser('room_changed_topic', room._id, message.topic, user, msgDataDefaults);
-					case 'pinned_item':
-						if (message.attachments) {
-							msgObj = {
-								attachments: [
-									{
-										'text' : this.convertSlackMessageToRocketChat(message.attachments[0].text),
-										'author_name' : message.attachments[0].author_subname,
-										'author_icon' : getAvatarUrlFromUsername(message.attachments[0].author_subname)
-									}
-								]
-							};
-							_.extend(msgObj, msgDataDefaults);
-							return RocketChat.models.Messages.createWithTypeRoomIdMessageAndUser('message_pinned', room._id, '', user, msgObj);
-						} else {
-							logger.event.error('Pinned item with no attachment');
-							return;
-						}
-					case 'file_share':
-						if (message.file && message.file.url_private_download !== undefined) {
-							let details = {
-								message_id: `S${message.ts}`,
-								name: message.file.name,
-								size: message.file.size,
-								type: message.file.mimetype,
-								rid: room._id
-							};
-							return this.uploadFile(details, message.file.url_private_download, user, room, new Date(parseInt(message.ts.split('.')[0]) * 1000));
-						}
-						break;
+				msgObj = this.processSubtypedMessage(room, user, message, msgDataDefaults);
+				if (!msgObj) {
+					return;
 				}
 			} else {
 				msgObj = {
@@ -244,15 +226,154 @@ class SlackBridge {
 		}
 	}
 
+	processSubtypedMessage(room, user, message, msgDataDefaults) {
+		switch (message.subtype) {
+			case 'bot_message':
+				logger.events.error('Bot message not implemented');
+				break;
+			case 'me_message':
+				return {
+					msg: `_${this.convertSlackMessageToRocketChat(message.text)}_`
+				};
+			case 'message_changed':
+				logger.events.error('Message changed not implemented');
+				break;
+			case 'message_deleted':
+				logger.events.error('Message deleted not implemented');
+				break;
+			case 'channel_join':
+				return this.joinRoom(room, user);
+			case 'group_join':
+				let inviter = this.findUser(message.inviter) || this.addUser(message.inviter);
+				if (inviter) {
+					return this.joinPrivateGroup(inviter, room, user);
+				}
+				break;
+			case 'channel_leave':
+			case 'group_leave':
+				return this.leaveRoom(room, user);
+			case 'channel_topic':
+			case 'group_topic':
+				this.setRoomTopic(room, user, message.topic);
+				return;
+			case 'channel_purpose':
+			case 'group_purpose':
+				this.setRoomTopic(room, user, message.purpose);
+				return;
+			case 'channel_name':
+			case 'group_name':
+				this.setRoomName(room, user, message.name);
+				return;
+			case 'channel_archive':
+			case 'group_archive':
+				this.archiveRoom(room, user);
+				return;
+			case 'channel_unarchive':
+			case 'group_unarchive':
+				this.unarchiveRoom(room, user);
+				return;
+			case 'file_share':
+				if (message.file && message.file.url_private_download !== undefined) {
+					let details = {
+						message_id: `S${message.ts}`,
+						name: message.file.name,
+						size: message.file.size,
+						type: message.file.mimetype,
+						rid: room._id
+					};
+					return this.uploadFile(details, message.file.url_private_download, user, room, new Date(parseInt(message.ts.split('.')[0]) * 1000));
+				}
+				break;
+			case 'file_comment':
+				logger.events.error('File comment not implemented');
+				return;
+			case 'file_mention':
+				logger.events.error('File mentioned not implemented');
+				return;
+			case 'pinned_item':
+				if (message.attachments) {
+					let msgObj = {
+						attachments: [
+							{
+								'text' : this.convertSlackMessageToRocketChat(message.attachments[0].text),
+								'author_name' : message.attachments[0].author_subname,
+								'author_icon' : getAvatarUrlFromUsername(message.attachments[0].author_subname)
+							}
+						]
+					};
+					_.extend(msgObj, msgDataDefaults);
+					RocketChat.models.Messages.createWithTypeRoomIdMessageAndUser('message_pinned', room._id, '', user, msgObj);
+					return;
+				} else {
+					logger.events.error('Pinned item with no attachment');
+					return;
+				}
+			case 'unpinned_item':
+				logger.events.error('Unpinned item not implemented');
+				return;
+		}
+	}
+
+	/**
+	* Archives a room
+	**/
+	archiveRoom(room, user) {
+		Meteor.runAsUser(user._id, () => {
+			return Meteor.call('archiveRoom', room._id);
+		});
+	}
+
+	/**
+	* Unarchives a room
+	**/
+	unarchiveRoom(room, user) {
+		Meteor.runAsUser(user._id, () => {
+			return Meteor.call('unarchiveRoom', room._id);
+		});
+	}
+
+	/**
+	* Adds user to room and sends a message
+	**/
 	joinRoom(room, user) {
 		Meteor.runAsUser(user._id, () => {
 			return Meteor.call('joinRoom', room._id);
 		});
 	}
 
+	/**
+	* Adds user to room and sends a message
+	**/
+	joinPrivateGroup(inviter, room, user) {
+		Meteor.runAsUser(inviter._id, () => {
+			return Meteor.call('addUserToRoom', { rid: room._id, username: user.username });
+		});
+	}
+
+	/**
+	* Removes user from room and sends a message
+	**/
 	leaveRoom(room, user) {
 		Meteor.runAsUser(user._id, () => {
 			return Meteor.call('leaveRoom', room._id);
+		});
+	}
+
+	/**
+	* Sets room topic
+	**/
+	setRoomTopic(room, user, topic) {
+		Meteor.runAsUser(user._id, () => {
+			return Meteor.call('saveRoomSettings', room._id, 'roomTopic', topic);
+		});
+	}
+
+	/**
+	* Sets room name
+	**/
+	setRoomName(room, user, name) {
+		Meteor.runAsUser(user._id, () => {
+			return Meteor.call('saveRoomSettings', room._id, 'roomName', name);
 		});
 	}
 
@@ -333,72 +454,218 @@ class SlackBridge {
 
 		var RTM_EVENTS = this.slackClient.RTM_EVENTS;
 
+		/**
+		* Event fired when someone messages a channel the bot is in
+		* {
+		*	type: 'message',
+		* 	channel: [channel_id],
+		* 	user: [user_id],
+		* 	text: [message],
+		* 	ts: [ts.milli],
+		* 	team: [team_id],
+		* 	subtype: [message_subtype],
+		* 	inviter: [message_subtype = 'group_join|channel_join' -> user_id]
+		* }
+		**/
 		this.rtm.on(RTM_EVENTS.MESSAGE, Meteor.bindEnvironment((message) => {
-			logger.events.info('MESSAGE: ', message);
+			logger.events.debug('MESSAGE: ', message);
 			if (message && message.channel && message.user) {
 				let channel = this.findChannel(message.channel) || this.addChannel(message.channel);
 				let user = this.findUser(message.user) || this.addUser(message.user);
 				if (channel && user) {
-					this.saveMessage(channel, user, message);
+					let msgDataDefaults = {
+						_id: `${message.channel}S${message.ts}`,
+						ts: new Date(parseInt(message.ts.split('.')[0]) * 1000)
+					};
+					this.saveMessage(channel, user, message, msgDataDefaults);
 				}
 			}
 		}));
 
-		this.rtm.on(RTM_EVENTS.CHANNEL_CREATED, Meteor.bindEnvironment((message) => {
-			logger.events.info('CHANNEL CREATED: ', message);
-		}));
+		/**
+		* Event fired when someone creates a public channel
+		* {
+		*	type: 'channel_created',
+		*	channel: {
+		*		id: [channel_id],
+		*		is_channel: true,
+		*		name: [channel_name],
+		*		created: [ts],
+		*		creator: [user_id],
+		*		is_shared: false,
+		*		is_org_shared: false
+		*	},
+		*	event_ts: [ts.milli]
+		* }
+		**/
+		this.rtm.on(RTM_EVENTS.CHANNEL_CREATED, Meteor.bindEnvironment(() => {}));
 
-		this.rtm.on(RTM_EVENTS.CHANNEL_JOINED, Meteor.bindEnvironment((message) => {
-			logger.events.info('CHANNEL JOINED: ', message);
-		}));
+		/**
+		* Event fired when the bot joins a public channel
+		* {
+		* 	type: 'channel_joined',
+		* 	channel: {
+		* 		id: [channel_id],
+		* 		name: [channel_name],
+		* 		is_channel: true,
+		* 		created: [ts],
+		* 		creator: [user_id],
+		* 		is_archived: false,
+		* 		is_general: false,
+		* 		is_member: true,
+		* 		last_read: [ts.milli],
+		* 		latest: [message_obj],
+		* 		unread_count: 0,
+		* 		unread_count_display: 0,
+		* 		members: [ user_ids ],
+		* 		topic: {
+		* 			value: [channel_topic],
+		* 			creator: [user_id],
+		* 			last_set: 0
+		* 		},
+		* 		purpose: {
+		* 			value: [channel_purpose],
+		* 			creator: [user_id],
+		* 			last_set: 0
+		* 		}
+		* 	}
+		* }
+		**/
+		this.rtm.on(RTM_EVENTS.CHANNEL_JOINED, Meteor.bindEnvironment(() => {}));
 
-		this.rtm.on(RTM_EVENTS.CHANNEL_LEFT, Meteor.bindEnvironment((message) => {
-			logger.events.info('CHANNEL LEFT: ', message);
-		}));
+		/**
+		* Event fired when the bot leaves (or is removed from) a public channel
+		* {
+		* 	type: 'channel_left',
+		* 	channel: [channel_id]
+		* }
+		**/
+		this.rtm.on(RTM_EVENTS.CHANNEL_LEFT, Meteor.bindEnvironment(() => {}));
 
-		this.rtm.on(RTM_EVENTS.CHANNEL_DELETED, Meteor.bindEnvironment((message) => {
-			logger.events.info('CHANNEL DELETED: ', message);
-		}));
+		/**
+		* Event fired when an archived channel is deleted by an admin
+		* {
+		* 	type: 'channel_deleted',
+		* 	channel: [channel_id],
+		*	event_ts: [ts.milli]
+		* }
+		**/
+		this.rtm.on(RTM_EVENTS.CHANNEL_DELETED, Meteor.bindEnvironment(() => {}));
 
-		this.rtm.on(RTM_EVENTS.CHANNEL_RENAME, Meteor.bindEnvironment((message) => {
-			logger.events.info('CHANNEL RENAME: ', message);
-		}));
+		/**
+		* Event fired when the channel has its name changed
+		* {
+		* 	type: 'channel_rename',
+		* 	channel: {
+		* 		id: [channel_id],
+		* 		name: [channel_name],
+		* 		is_channel: true,
+		* 		created: [ts]
+		* 	},
+		*	event_ts: [ts.milli]
+		* }
+		**/
+		this.rtm.on(RTM_EVENTS.CHANNEL_RENAME, Meteor.bindEnvironment(() => {}));
 
-		this.rtm.on(RTM_EVENTS.IM_CREATED, Meteor.bindEnvironment((message) => {
-			logger.events.info('IM CREATED: ', message);
-		}));
+		/**
+		* Event fired when the bot joins a private channel
+		* {
+		* 	type: 'group_joined',
+		* 	channel: {
+		* 		id: [channel_id],
+		* 		name: [channel_name],
+		* 		is_group: true,
+		* 		created: [ts],
+		* 		creator: [user_id],
+		* 		is_archived: false,
+		* 		is_mpim: false,
+		* 		is_open: true,
+		* 		last_read: [ts.milli],
+		* 		latest: [message_obj],
+		* 		unread_count: 0,
+		* 		unread_count_display: 0,
+		* 		members: [ user_ids ],
+		* 		topic: {
+		* 			value: [channel_topic],
+		* 			creator: [user_id],
+		* 			last_set: 0
+		* 		},
+		* 		purpose: {
+		* 			value: [channel_purpose],
+		* 			creator: [user_id],
+		* 			last_set: 0
+		* 		}
+		* 	}
+		* }
+		**/
+		this.rtm.on(RTM_EVENTS.GROUP_JOINED, Meteor.bindEnvironment(() => {}));
 
-		this.rtm.on(RTM_EVENTS.IM_OPEN, Meteor.bindEnvironment((message) => {
-			logger.events.info('IM OPEN: ', message);
-		}));
+		/**
+		* Event fired when the bot leaves (or is removed from) a private channel
+		* {
+		* 	type: 'group_left',
+		* 	channel: [channel_id]
+		* }
+		**/
+		this.rtm.on(RTM_EVENTS.GROUP_LEFT, Meteor.bindEnvironment(() => {}));
 
-		this.rtm.on(RTM_EVENTS.IM_CLOSE, Meteor.bindEnvironment((message) => {
-			logger.events.info('IM CLOSE: ', message);
-		}));
+		/**
+		* Event fired when the private channel has its name changed
+		* {
+		* 	type: 'group_rename',
+		* 	channel: {
+		* 		id: [channel_id],
+		* 		name: [channel_name],
+		* 		is_group: true,
+		* 		created: [ts]
+		* 	},
+		*	event_ts: [ts.milli]
+		* }
+		**/
+		this.rtm.on(RTM_EVENTS.GROUP_RENAME, Meteor.bindEnvironment(() => {}));
 
-		this.rtm.on(RTM_EVENTS.GROUP_JOINED, Meteor.bindEnvironment((message) => {
-			logger.events.info('GROUP JOINED: ', message);
-		}));
-
-		this.rtm.on(RTM_EVENTS.GROUP_LEFT, Meteor.bindEnvironment((message) => {
-			logger.events.info('GROUP LEFT: ', message);
-		}));
-
-		this.rtm.on(RTM_EVENTS.GROUP_OPEN, Meteor.bindEnvironment((message) => {
-			logger.events.info('GROUP OPEN: ', message);
-		}));
-
-		this.rtm.on(RTM_EVENTS.GROUP_CLOSE, Meteor.bindEnvironment((message) => {
-			logger.events.info('GROUP CLOSE: ', message);
-		}));
-
-		this.rtm.on(RTM_EVENTS.GROUP_RENAME, Meteor.bindEnvironment((message) => {
-			logger.events.info('GROUP RENAME: ', message);
-		}));
-
-		this.rtm.on(RTM_EVENTS.TEAM_JOIN, Meteor.bindEnvironment((message) => {
-			logger.events.info('TEAM JOIN: ', message);
-		}));
+		/**
+		* Event fired when a new user joins the team
+		* {
+		* 	type: 'team_join',
+		* 	user:
+		* 	{
+		* 		id: [user_id],
+		* 		team_id: [team_id],
+		* 		name: [user_name],
+		* 		deleted: false,
+		* 		status: null,
+		* 		color: [color_code],
+		* 		real_name: '',
+		* 		tz: [timezone],
+		* 		tz_label: [timezone_label],
+		* 		tz_offset: [timezone_offset],
+		* 		profile:
+		* 		{
+		* 			avatar_hash: '',
+		* 			real_name: '',
+		* 			real_name_normalized: '',
+		* 			email: '',
+		* 			image_24: '',
+		* 			image_32: '',
+		* 			image_48: '',
+		* 			image_72: '',
+		* 			image_192: '',
+		* 			image_512: '',
+		* 			fields: null
+		* 		},
+		* 		is_admin: false,
+		* 		is_owner: false,
+		* 		is_primary_owner: false,
+		* 		is_restricted: false,
+		* 		is_ultra_restricted: false,
+		* 		is_bot: false,
+		* 		presence: [user_presence]
+		* 	},
+		* 	cache_ts: [ts]
+		* }
+		**/
+		this.rtm.on(RTM_EVENTS.TEAM_JOIN, Meteor.bindEnvironment(() => {}));
 	}
 }
 
