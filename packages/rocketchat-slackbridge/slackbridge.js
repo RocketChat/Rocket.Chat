@@ -226,7 +226,7 @@ class SlackBridge {
 		}
 	}
 
-	processSubtypedMessage(room, user, message, msgDataDefaults) {
+	processSubtypedMessage(room, user, message) {
 		switch (message.subtype) {
 			case 'bot_message':
 				logger.events.error('Bot message not implemented');
@@ -236,11 +236,16 @@ class SlackBridge {
 					msg: `_${this.convertSlackMessageToRocketChat(message.text)}_`
 				};
 			case 'message_changed':
-				logger.events.error('Message changed not implemented');
-				break;
+				this.editMessage(room, user, message);
+				return;
 			case 'message_deleted':
-				logger.events.error('Message deleted not implemented');
-				break;
+				let msgObj = RocketChat.models.Messages.findOneById(`${message.channel}S${message.deleted_ts}`);
+				if (msgObj) {
+					Meteor.runAsUser(user._id, () => {
+						Meteor.call('deleteMessage', msgObj);
+					});
+				}
+				return;
 			case 'channel_join':
 				return this.joinRoom(room, user);
 			case 'group_join':
@@ -291,18 +296,20 @@ class SlackBridge {
 				logger.events.error('File mentioned not implemented');
 				return;
 			case 'pinned_item':
-				if (message.attachments) {
+				if (message.attachments && message.attachments[0] && message.attachments[0].text) {
 					let msgObj = {
-						attachments: [
-							{
-								'text' : this.convertSlackMessageToRocketChat(message.attachments[0].text),
-								'author_name' : message.attachments[0].author_subname,
-								'author_icon' : getAvatarUrlFromUsername(message.attachments[0].author_subname)
-							}
-						]
+						_id: `${message.attachments[0].channel_id}S${message.attachments[0].ts}`,
+						ts: new Date(parseInt(message.attachments[0].ts.split('.')[0]) * 1000),
+						rid: room._id,
+						msg: this.convertSlackMessageToRocketChat(message.attachments[0].text),
+						u: {
+							_id: user._id,
+							username: user.username
+						}
 					};
-					_.extend(msgObj, msgDataDefaults);
-					RocketChat.models.Messages.createWithTypeRoomIdMessageAndUser('message_pinned', room._id, '', user, msgObj);
+					Meteor.runAsUser(user._id, () => {
+						Meteor.call('pinMessage', msgObj);
+					});
 					return;
 				} else {
 					logger.events.error('Pinned item with no attachment');
@@ -374,6 +381,20 @@ class SlackBridge {
 	setRoomName(room, user, name) {
 		Meteor.runAsUser(user._id, () => {
 			return Meteor.call('saveRoomSettings', room._id, 'roomName', name);
+		});
+	}
+
+	/**
+	* Edits a message
+	**/
+	editMessage(room, user, message) {
+		let msgObj = {
+			_id: `${message.channel}S${message.message.ts}`,
+			rid: room._id,
+			msg: this.convertSlackMessageToRocketChat(message.message.text)
+		};
+		Meteor.runAsUser(user._id, () => {
+			return Meteor.call('updateMessage', msgObj);
 		});
 	}
 
@@ -469,9 +490,15 @@ class SlackBridge {
 		**/
 		this.rtm.on(RTM_EVENTS.MESSAGE, Meteor.bindEnvironment((message) => {
 			logger.events.debug('MESSAGE: ', message);
-			if (message && message.channel && message.user) {
+			if (message) {
 				let channel = this.findChannel(message.channel) || this.addChannel(message.channel);
-				let user = this.findUser(message.user) || this.addUser(message.user);
+				let user = null;
+				if (message.subtype === 'message_deleted' || message.subtype === 'message_changed') {
+					user = this.findUser(message.previous_message.user) || this.addUser(message.previous_message.user);
+					console.log(user);
+				} else {
+					user = this.findUser(message.user) || this.addUser(message.user);
+				}
 				if (channel && user) {
 					let msgDataDefaults = {
 						_id: `${message.channel}S${message.ts}`,
