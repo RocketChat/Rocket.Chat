@@ -1,6 +1,6 @@
 Template.messages.helpers({
 	messages: function() {
-		return ChatMessage.find({
+		var messages = ChatMessage.find({
 			rid: visitor.getRoom(),
 			t: {
 				'$ne': 't'
@@ -10,6 +10,17 @@ Template.messages.helpers({
 				ts: 1
 			}
 		});
+
+		// client notification sound of agent message 
+		if (Session.equals('sound', true) &&  messages.fetch().length > Template.instance().messagesCount.get()) {
+			var newestMessage = messages.fetch()[messages.fetch().length-1];
+			if (newestMessage.u._id != Meteor.user()._id) {
+				$('#chatAudioNotification')[0].play();
+			}
+		}
+		Template.instance().messagesCount.set(messages.fetch().length);
+
+		return messages;
 	}
 });
 
@@ -43,6 +54,8 @@ Template.messages.onCreated(function() {
 	self = this;
 
 	self.atBottom = true;
+
+	self.messagesCount = new ReactiveVar(0);
 
 	self.updateMessageInputHeight = function(input) {
 		// Inital height is 28. If the scrollHeight is greater than that( we have more text than area ),
