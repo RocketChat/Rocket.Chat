@@ -88,11 +88,17 @@ class CachedCollection {
 				const _id = record._id;
 				delete record._id;
 				this.collection.upsert({ _id: _id }, record);
+				record._id = _id;
 			}
 		});
 	}
 
 	init() {
+		if (this.initiated === true) {
+			return;
+		}
+
+		this.initiated = true;
 		this.loadFromCache((cacheLoaded) => {
 			this.ready.set(cacheLoaded);
 
