@@ -27,24 +27,36 @@ class ModelsBase extends EventEmitter {
 		return result;
 	}
 
-	update() {
-		const result = this.model.update(...arguments);
-		this.emit('update', ...arguments);
-		this.emit('change', 'update', ...arguments);
+	update(query, update, options = {}) {
+		if (options.upsert) {
+			return this.upsert(query, update);
+		}
+
+		let ids = [];
+		if (options.multi === true) {
+			ids = ids.concat(this.model.find(query, { fields: { _id: 1 } }).fetch());
+		} else {
+			ids.push(this.model.findOne(query, { fields: { _id: 1 } }));
+		}
+
+		query = { _id: { $in: _.pluck(ids, '_id') } };
+		const result = this.model.update(query, update, options);
+		this.emit('update', query, update);
+		this.emit('change', 'update', query, update);
 		return result;
 	}
 
-	upsert() {
+	upsert(query) {
+		const id = this.model.findOne(query, { fields: { _id: 1 } });
 		const result = this.model.upsert(...arguments);
 
+		let record = id;
 		if (result.insertedId) {
-			const record = { _id: result.insertedId };
-			this.emit('insert', record);
-			this.emit('change', 'insert', record);
-		} else {
-			this.emit('update', arguments[0]);
-			this.emit('change', 'update', arguments[0]);
+			record = { _id: result.insertedId };
 		}
+
+		this.emit('update', record);
+		this.emit('change', 'update', record);
 		return result;
 	}
 
