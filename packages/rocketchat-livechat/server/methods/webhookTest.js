@@ -13,8 +13,6 @@ Meteor.methods({
 	'livechat:webhookTest'() {
 		this.unblock();
 
-		const url = RocketChat.settings.get('Livechat_webhookUrl');
-
 		const sampleData = {
 			data: {
 				type: 'LivechatSession',
@@ -65,7 +63,14 @@ Meteor.methods({
 			}
 		};
 
-		let response = postCatchError(url, { data: sampleData });
+		let options = {
+			headers: {
+				'X-RocketChat-Livechat-Token': RocketChat.settings.get('Livechat_secret_token')
+			},
+			data: sampleData
+		};
+
+		let response = postCatchError(RocketChat.settings.get('Livechat_webhookUrl'), options);
 
 		console.log('response ->', response);
 
