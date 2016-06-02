@@ -92,7 +92,7 @@ class Katex
 		catch e
 			display_mode = if displayMode then "block" else "inline"
 			rendered =  "<div class=\"katex-error katex-#{display_mode}-error\">"
-			rendered += 	"#{e.message}"
+			rendered += 	"#{s.escapeHTML e.message}"
 			rendered += "</div>"
 
 		return rendered
