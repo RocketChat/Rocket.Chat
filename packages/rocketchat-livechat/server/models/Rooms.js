@@ -27,7 +27,7 @@ RocketChat.models.Rooms.updateLivechatDataByToken = function(token, key, value) 
 		}
 	};
 
-	return this.upsert(query, update);
+	return this.update(query, update);
 };
 
 RocketChat.models.Rooms.findLivechat = function(offset = 0, limit = 20) {
