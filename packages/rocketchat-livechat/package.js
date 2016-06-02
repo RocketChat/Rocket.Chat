@@ -22,11 +22,13 @@ Package.onUse(function(api) {
 	api.use('ecmascript');
 	api.use('rocketchat:lib');
 	api.use('rocketchat:authorization');
+	api.use('rocketchat:logger');
 	api.use('konecty:user-presence');
 	api.use('rocketchat:ui');
 	api.use('kadira:flow-router', 'client');
 	api.use('templating', 'client');
 	api.use('http');
+	api.use('check');
 	api.use('mongo');
 	api.use('ddp-rate-limiter');
 	api.use('rocketchat:sms');
@@ -40,6 +42,9 @@ Package.onUse(function(api) {
 
 	api.addFiles('client/ui.js', 'client');
 	api.addFiles('client/route.js', 'client');
+
+	// generic libs
+	api.addFiles('lib/ua-parser.js');
 
 	// add stylesheets to theme compiler
 	api.addAssets('client/stylesheets/livechat.less', 'server');
@@ -140,6 +145,7 @@ Package.onUse(function(api) {
 	api.addFiles('server/sendMessageBySMS.js', 'server');
 	api.addFiles('server/externalMessageHook.js', 'server');
 	api.addFiles('server/forwardUnclosedLivechats.js', 'server');
+	api.addFiles('server/setupWebhook.js', 'server');
 
 	// publications
 	api.addFiles('server/publications/customFields.js', 'server');

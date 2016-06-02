@@ -46,20 +46,20 @@ Meteor.methods({
 						customerId: '123456'
 					}
 				},
-				operator: {
+				agent: {
 					_id: 'asdf89as6df8',
-					username: 'operator.username',
-					name: 'Operator Name',
-					email: 'operator@email.com'
+					username: 'agent.username',
+					name: 'Agent Name',
+					email: 'agent@email.com'
 				},
 				messages: [{
 					username: 'visitor-username',
 					msg: 'message content',
 					ts: new Date()
 				}, {
-					username: 'operator.username',
-					operatorId: 'asdf89as6df8',
-					msg: 'message content from operator',
+					username: 'agent.username',
+					agentId: 'asdf89as6df8',
+					msg: 'message content from agent',
 					ts: new Date()
 				}]
 			}
