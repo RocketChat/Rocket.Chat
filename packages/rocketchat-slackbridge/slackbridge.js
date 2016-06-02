@@ -328,6 +328,7 @@ class SlackBridge {
 					logger.events.error('Pinned item with no attachment');
 					return;
 				}
+				break;
 			case 'unpinned_item':
 				logger.events.error('Unpinned item not implemented');
 				return;
