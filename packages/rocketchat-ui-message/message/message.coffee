@@ -128,6 +128,22 @@ Template.message.helpers
 	hideReactions: ->
 		return 'hidden' if _.isEmpty(@reactions)
 
+
+	actionLinks: ->
+		msgActionLinks = []
+
+		for key, actionLink of @actionLinks
+			
+			#make this more generic? i.e. label is the first arg...etc?
+			msgActionLinks.push
+				label: actionLink.label
+				id: key
+
+		return msgActionLinks
+
+	hideActionLinks: ->
+		return 'hidden' if _.isEmpty(@actionLinks)
+
 	injectIndex: (data, index) ->
 		data.index = index
 		return
