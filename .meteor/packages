@@ -36,6 +36,7 @@ spacebars
 standard-minifiers
 tracker
 
+rocketchat:action-links
 rocketchat:api
 rocketchat:assets
 rocketchat:authorization
@@ -146,4 +147,3 @@ underscorestring:underscore.string
 yasaricli:slugify
 yasinuslu:blaze-meta
 
-rocketchat:action-links
