@@ -2,6 +2,9 @@ Template.livechatIntegrations.helpers({
 	webhookUrl() {
 		return Template.instance().settingValue.get();
 	},
+	secretToken() {
+		return Template.instance().secretToken.get();
+	},
 	disableTest() {
 		return Template.instance().disableTest.get();
 	},
@@ -16,12 +19,17 @@ Template.livechatIntegrations.helpers({
 Template.livechatIntegrations.onCreated(function() {
 	this.disableTest = new ReactiveVar(true);
 	this.settingValue = new ReactiveVar();
+	this.secretToken = new ReactiveVar();
 	this.sendOnClose = new ReactiveVar();
 	this.sendOnOffline = new ReactiveVar();
 
 	this.autorun(() => {
 		this.disableTest.set(_.isEmpty(RocketChat.settings.get('Livechat_webhookUrl')));
 		this.settingValue.set(RocketChat.settings.get('Livechat_webhookUrl'));
+	});
+
+	this.autorun(() => {
+		this.secretToken.set(RocketChat.settings.get('Livechat_secret_token'));
 	});
 
 	this.autorun(() => {
@@ -61,6 +69,10 @@ Template.livechatIntegrations.events({
 			{
 				_id: 'Livechat_webhookUrl',
 				value: s.trim(instance.$('#webhookUrl').val())
+			},
+			{
+				_id: 'Livechat_secret_token',
+				value: s.trim(instance.$('#secretToken').val())
 			},
 			{
 				_id: 'Livechat_webhook_on_close',

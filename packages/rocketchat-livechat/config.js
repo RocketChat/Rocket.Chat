@@ -62,6 +62,13 @@ Meteor.startup(function() {
 		i18nLabel: 'Webhook_URL'
 	});
 
+	RocketChat.settings.add('Livechat_secret_token', false, {
+		type: 'string',
+		group: 'Livechat',
+		section: 'CRM Integration',
+		i18nLabel: 'Secret_token'
+	});
+
 	RocketChat.settings.add('Livechat_webhook_on_close', false, {
 		type: 'boolean',
 		group: 'Livechat',
