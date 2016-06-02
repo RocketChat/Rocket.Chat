@@ -5,7 +5,7 @@ const baseName = 'rocketchat_';
 const trash = new Mongo.Collection(baseName + '_trash');
 try {
 	trash._ensureIndex({ collection: 1 });
-	trash._ensureIndex({ _updatedAt: 1}, {expireAfterSeconds: 60 * 60 * 24 * 1 });
+	trash._ensureIndex({ _updatedAt: 1 }, { expireAfterSeconds: 60 * 60 * 24 * 30 });
 } catch (e) {
 	console.log(e);
 }
