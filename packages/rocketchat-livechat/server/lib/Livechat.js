@@ -1,4 +1,10 @@
 RocketChat.Livechat = {
+	logger: new Logger('Livechat', {
+		sections: {
+			webhook: 'Webhook'
+		}
+	}),
+
 	getNextAgent(department) {
 		if (department) {
 			return RocketChat.models.LivechatDepartmentAgents.getNextAgentForDepartment(department);
@@ -192,6 +198,10 @@ RocketChat.Livechat = {
 		RocketChat.sendMessage(user, message, room);
 
 		RocketChat.models.Subscriptions.hideByRoomIdAndUserId(room._id, user._id);
+
+		Meteor.defer(() => {
+			RocketChat.callbacks.run('closeLivechat', room);
+		});
 
 		return true;
 	},
