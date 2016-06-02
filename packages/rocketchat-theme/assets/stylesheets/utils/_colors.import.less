@@ -235,6 +235,9 @@ label.required:after {
 	}
 	&.lightblue {
 		background-color: #02acec;
+		&:disabled {
+			background-color: desaturate(#02acec, 20%);
+		}
 	}
 	&.clean {
 		background-color: @clean-buttons-color;
