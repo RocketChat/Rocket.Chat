@@ -62,7 +62,7 @@ jparker:gravatar@0.4.1
 jquery@1.11.4
 kadira:blaze-layout@2.3.0
 kadira:flow-router@2.10.1
-kenton:accounts-sandstorm@0.3.0
+kenton:accounts-sandstorm@0.4.0
 konecty:change-case@2.3.0
 konecty:delayed-task@1.0.0
 konecty:mongo-counter@0.0.3
