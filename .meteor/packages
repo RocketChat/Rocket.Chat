@@ -145,3 +145,5 @@ todda00:friendly-slugs
 underscorestring:underscore.string
 yasaricli:slugify
 yasinuslu:blaze-meta
+
+rocketchat:action-links

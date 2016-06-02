@@ -1,0 +1,24 @@
+.message {
+	.actionLinks {
+		padding: 0;
+		margin-top: 4px;
+		text-align: center;
+		li {
+			cursor: pointer;
+			position: relative;
+			padding-right: 2px;
+			color: #036;
+
+			list-style: none;
+			display: inline;
+
+
+			&:hover {
+				color: #369;
+			}
+		}
+
+		li:after { content: " \25CF"; }
+		li:last-child:after { content: none; }
+	}
+}
