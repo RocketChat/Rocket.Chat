@@ -1,7 +1,7 @@
 //Action Links namespace creation.
 
 RocketChat.actionLinks = {
-	register : function(functName, funct) {
-		RocketChat.actionLinks[functName] = funct;
+	register : function(name, funct) {
+		RocketChat.actionLinks[name] = funct;
 	}
 };
