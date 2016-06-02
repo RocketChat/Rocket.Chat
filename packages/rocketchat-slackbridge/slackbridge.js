@@ -222,14 +222,27 @@ class SlackBridge {
 			if (message.edited) {
 				msgObj.ets = new Date(parseInt(message.edited.ts.split('.')[0]) * 1000);
 			}
+			if (message.subtype === 'bot_message') {
+				user = RocketChat.models.Users.findOneById('rocket.cat', { fields: { username: 1 } });
+			}
 			RocketChat.sendMessage(user, msgObj, room, { upsert: true });
 		}
 	}
 
 	processSubtypedMessage(room, user, message) {
+		let msgObj = null;
 		switch (message.subtype) {
 			case 'bot_message':
-				logger.events.error('Bot message not implemented');
+				msgObj = {
+					msg: this.convertSlackMessageToRocketChat(message.text),
+					rid: room._id,
+					bot: true,
+					attachments: message.attachments,
+					username: message.username
+				};
+				if (message.icons) {
+					msgObj.emoji = message.icons.emoji;
+				}
 				break;
 			case 'me_message':
 				return {
@@ -239,7 +252,7 @@ class SlackBridge {
 				this.editMessage(room, user, message);
 				return;
 			case 'message_deleted':
-				let msgObj = RocketChat.models.Messages.findOneById(`${message.channel}S${message.deleted_ts}`);
+				msgObj = RocketChat.models.Messages.findOneById(`${message.channel}S${message.deleted_ts}`);
 				if (msgObj) {
 					Meteor.runAsUser(user._id, () => {
 						Meteor.call('deleteMessage', msgObj);
@@ -297,7 +310,7 @@ class SlackBridge {
 				return;
 			case 'pinned_item':
 				if (message.attachments && message.attachments[0] && message.attachments[0].text) {
-					let msgObj = {
+					msgObj = {
 						_id: `${message.attachments[0].channel_id}S${message.attachments[0].ts}`,
 						ts: new Date(parseInt(message.attachments[0].ts.split('.')[0]) * 1000),
 						rid: room._id,
@@ -495,7 +508,6 @@ class SlackBridge {
 				let user = null;
 				if (message.subtype === 'message_deleted' || message.subtype === 'message_changed') {
 					user = this.findUser(message.previous_message.user) || this.addUser(message.previous_message.user);
-					console.log(user);
 				} else {
 					user = this.findUser(message.user) || this.addUser(message.user);
 				}
