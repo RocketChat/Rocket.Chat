@@ -22,11 +22,13 @@ Package.onUse(function(api) {
 	api.use('ecmascript');
 	api.use('rocketchat:lib');
 	api.use('rocketchat:authorization');
+	api.use('rocketchat:logger');
 	api.use('konecty:user-presence');
 	api.use('rocketchat:ui');
 	api.use('kadira:flow-router', 'client');
 	api.use('templating', 'client');
 	api.use('http');
+	api.use('check');
 	api.use('mongo');
 	api.use('ddp-rate-limiter');
 	api.use('rocketchat:sms');
@@ -40,6 +42,9 @@ Package.onUse(function(api) {
 
 	api.addFiles('client/ui.js', 'client');
 	api.addFiles('client/route.js', 'client');
+
+	// generic libs
+	api.addFiles('lib/ua-parser.js');
 
 	// add stylesheets to theme compiler
 	api.addAssets('client/stylesheets/livechat.less', 'server');
@@ -71,6 +76,8 @@ Package.onUse(function(api) {
 	api.addFiles('client/views/app/livechatDepartments.js', 'client');
 	api.addFiles('client/views/app/livechatInstallation.html', 'client');
 	api.addFiles('client/views/app/livechatInstallation.js', 'client');
+	api.addFiles('client/views/app/livechatIntegrations.html', 'client');
+	api.addFiles('client/views/app/livechatIntegrations.js', 'client');
 	api.addFiles('client/views/app/livechatTriggers.html', 'client');
 	api.addFiles('client/views/app/livechatTriggers.js', 'client');
 	api.addFiles('client/views/app/livechatUsers.html', 'client');
@@ -120,6 +127,7 @@ Package.onUse(function(api) {
 	api.addFiles('server/methods/sendMessageLivechat.js', 'server');
 	api.addFiles('server/methods/sendOfflineMessage.js', 'server');
 	api.addFiles('server/methods/setCustomField.js', 'server');
+	api.addFiles('server/methods/webhookTest.js', 'server');
 
 	// models
 	api.addFiles('server/models/Users.js', 'server');
@@ -137,6 +145,7 @@ Package.onUse(function(api) {
 	api.addFiles('server/sendMessageBySMS.js', 'server');
 	api.addFiles('server/externalMessageHook.js', 'server');
 	api.addFiles('server/forwardUnclosedLivechats.js', 'server');
+	api.addFiles('server/setupWebhook.js', 'server');
 
 	// publications
 	api.addFiles('server/publications/customFields.js', 'server');
