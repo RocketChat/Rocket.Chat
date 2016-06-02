@@ -41,6 +41,11 @@ msgStream = new Meteor.Streamer 'room-messages'
 			else
 				ChatMessage.upsert { _id: msg._id }, msg
 
+				# notification sound 
+				if Session.equals('sound', true) 
+					if msg.u._id isnt Meteor.user()._id
+						$('#chatAudioNotification')[0].play();
+
 	register: register
 	getToken: getToken
 	setRoom: setRoom
