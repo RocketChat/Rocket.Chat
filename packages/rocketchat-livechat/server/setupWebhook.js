@@ -2,6 +2,7 @@
 let sendOnCloseLivechat = false;
 let sendOnOfflineMessage = false;
 let webhookURL = '';
+let secretToken = '';
 
 RocketChat.settings.get('Livechat_webhook_on_close', function(key, value) {
 	sendOnCloseLivechat = value;
@@ -15,14 +16,24 @@ RocketChat.settings.get('Livechat_webhookUrl', function(key, value) {
 	webhookURL = value;
 });
 
+RocketChat.settings.get('Livechat_secret_token', function(key, value) {
+	secretToken = value;
+});
+
 const sendRequest = (postData, trying = 1) => {
 	try {
-		HTTP.post(webhookURL, { data: postData });
+		let options = {
+			headers: {
+				'X-RocketChat-Livechat-Token': secretToken
+			},
+			data: postData
+		};
+		HTTP.post(webhookURL, options);
 	} catch (e) {
 		RocketChat.Livechat.logger.webhook.error('Response error on ' + trying + ' try ->', e);
 		// try 10 times after 10 seconds each
 		if (trying < 10) {
-			RocketChat.Livechat.logger.webhook.info('Try again in 10 seconds.');
+			RocketChat.Livechat.logger.webhook.warn('Will try again in 10 seconds ...');
 			trying++;
 			setTimeout(Meteor.bindEnvironment(() => {
 				sendRequest(postData, trying);
