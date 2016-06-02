@@ -98,3 +98,11 @@ AccountBox.addRoute({
 	i18nPageTitle: 'New_Custom_Field',
 	pageTemplate: 'livechatCustomFieldForm'
 }, livechatManagerRoutes);
+
+AccountBox.addRoute({
+	name: 'livechat-integrations',
+	path: '/integrations',
+	sideNav: 'livechatFlex',
+	i18nPageTitle: 'Integrations',
+	pageTemplate: 'livechatIntegrations'
+}, livechatManagerRoutes);
