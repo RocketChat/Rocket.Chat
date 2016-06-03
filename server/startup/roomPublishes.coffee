@@ -32,7 +32,7 @@ Meteor.startup ->
 				archived: 1
 
 		user = RocketChat.models.Users.findOneById this.userId, fields: username: 1
-		return RocketChat.models.Rooms.findByTypeAndNameContainigUsername 'p', identifier, user.username, options
+		return RocketChat.models.Rooms.findByTypeAndNameContainingUsername 'p', identifier, user.username, options
 
 	RocketChat.roomTypes.setPublish 'd', (identifier) ->
 		options =
