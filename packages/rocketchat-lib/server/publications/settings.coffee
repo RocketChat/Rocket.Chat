@@ -1,10 +1,19 @@
 Meteor.methods
-	getPublicSettings: ->
+	'public-settings/get': ->
 		this.unblock()
 
 		return RocketChat.models.Settings.findNotHiddenPublic().fetch()
 
-	getPrivateSettings: ->
+	'public-settings/sync': (updatedAt) ->
+		this.unblock()
+
+		result =
+			update: RocketChat.models.Settings.findNotHiddenPublicUpdatedAfter(updatedAt).fetch()
+			remove: RocketChat.models.Settings.trashFindDeletedAfter(updatedAt, {hidden: { $ne: true }, public: true}, {fields: {_id: 1, _deletedAt: 1}}).fetch()
+
+		return result
+
+	'private-settings/get': ->
 		unless Meteor.userId()
 			return []
 
@@ -14,6 +23,14 @@ Meteor.methods
 			return []
 
 		return RocketChat.models.Settings.findNotHidden().fetch()
+
+	'private-settings/sync': (updatedAt) ->
+		unless Meteor.userId()
+			return {}
+
+		this.unblock()
+
+		return RocketChat.models.Settings.dinamicFindChangesAfter('findNotHidden', updatedAt);
 
 
 RocketChat.models.Settings.on 'change', (type, args...) ->

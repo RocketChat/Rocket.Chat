@@ -1,8 +1,14 @@
 Meteor.methods({
-	getPermissions() {
+	'permissions/get'() {
 		this.unblock();
 
 		return RocketChat.models.Permissions.find().fetch();
+	},
+
+	'permissions/sync'(updatedAt) {
+		this.unblock();
+
+		return RocketChat.models.Permissions.dinamicFindChangesAfter('find', updatedAt);
 	}
 });
 
