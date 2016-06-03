@@ -285,7 +285,7 @@ window.addEventListener('message', (e) => {
 				}, e.origin);
 			};
 
-			if (typeof window.plugins.googleplus === 'undefined') {
+			if (typeof window.plugins === 'undefined' || typeof window.plugins.googleplus === 'undefined') {
 				requestCredential('Google', {}, (serviceData) => {
 					if (serviceData && serviceData instanceof Error) {
 						return googleLoginFailure('poup-login-error', serviceData);
