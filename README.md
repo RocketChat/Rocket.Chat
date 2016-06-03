@@ -290,6 +290,10 @@ It is a great solution for communities and companies wanting to privately host t
 
 [Github Issues](https://github.com/RocketChat/Rocket.Chat/issues) are used to track todos, bugs, feature requests, and more.
 
+### Stack Overflow
+
+Please use the [Stack Overflow TAG](http://stackoverflow.com/questions/tagged/rocket.chat)
+
 ## Integrations
 
 #### Hubot
@@ -316,7 +320,6 @@ Checkout [Rocket.Chat documentation](https://rocket.chat/docs/)
 ## License
 
 Note that Rocket.Chat is distributed under the [MIT License](http://opensource.org/licenses/MIT).
-
 
 # Development
 
