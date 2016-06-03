@@ -39,11 +39,7 @@ Meteor.methods
 		options =
 			fields: fields
 
-		result =
-			update: RocketChat.models.Subscriptions.findByUserIdUpdatedAfter(Meteor.userId(), updatedAt, options).fetch()
-			remove: RocketChat.models.Subscriptions.trashFindDeletedAfter(updatedAt, {'u._id': Meteor.userId()}, {fields: {_id: 1, _deletedAt: 1}}).fetch()
-
-		return result
+		return RocketChat.models.Subscriptions.dinamicFindChangesAfter('findByUserId', updatedAt, Meteor.userId(), options);
 
 
 RocketChat.models.Subscriptions.on 'change', (type, args...) ->
