@@ -45,8 +45,6 @@ class ModelsBase extends EventEmitter {
 	insert(record) {
 		this.setUpdatedAt(record);
 
-		console.log('insert', JSON.stringify(arguments));
-
 		const result = this.model.insert(...arguments);
 		record._id = result;
 		this.emit('insert', record);
@@ -56,8 +54,6 @@ class ModelsBase extends EventEmitter {
 
 	update(query, update, options = {}) {
 		this.setUpdatedAt(update);
-
-		console.log('update', JSON.stringify(arguments));
 
 		if (options.upsert) {
 			return this.upsert(query, update);
@@ -79,8 +75,6 @@ class ModelsBase extends EventEmitter {
 
 	upsert(query, update) {
 		this.setUpdatedAt(update);
-
-		console.log('upsert', JSON.stringify(arguments));
 
 		const id = this.model.findOne(query, { fields: { _id: 1 } });
 		const result = this.model.upsert(...arguments);
@@ -194,6 +188,46 @@ class ModelsBase extends EventEmitter {
 
 		return trash.find(query, options);
 	}
+
+	dinamicTrashFindAfter(method, deletedAt, ...args) {
+		const scope = {
+			find: (query={}) => {
+				return this.trashFindDeletedAfter(deletedAt, query, { fields: {_id: 1, _deletedAt: 1} });
+			}
+		};
+
+		scope.model = {
+			find: scope.find
+		};
+
+		return this[method].apply(scope, args);
+	}
+
+	dinamicFindAfter(method, updatedAt, ...args) {
+		const scope = {
+			find: (query={}, options) => {
+				query._updatedAt = {
+					$gt: updatedAt
+				};
+
+				return this.find(query, options);
+			}
+		};
+
+		scope.model = {
+			find: scope.find
+		};
+
+		return this[method].apply(scope, args);
+	}
+
+	dinamicFindChangesAfter(method, updatedAt, ...args) {
+		return {
+			update: this.dinamicFindAfter(method, updatedAt, ...args).fetch(),
+			remove: this.dinamicTrashFindAfter(method, updatedAt, ...args).fetch()
+		};
+	}
+
 }
 
 RocketChat.models._Base = ModelsBase;

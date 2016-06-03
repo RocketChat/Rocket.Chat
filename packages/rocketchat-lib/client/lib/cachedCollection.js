@@ -27,7 +27,7 @@ class CachedCollection {
 		syncMethodName,
 		eventName,
 		eventType = 'onUser',
-		useSync = false,
+		useSync = true,
 		useCache = true,
 		debug = true,
 		version = 0
