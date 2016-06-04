@@ -14,8 +14,6 @@ Tracker.autorun (c) ->
 		RocketChat.settings.cachedCollectionPrivate = new RocketChat.CachedCollection({
 			collection: RocketChat.settings.cachedCollection.collection,
 			name: 'private-settings',
-			methodName: 'getPrivateSettings',
-			eventName: 'private-settings-changed',
 			eventType: 'onAll'
 		})
 		RocketChat.settings.cachedCollectionPrivate.init()
