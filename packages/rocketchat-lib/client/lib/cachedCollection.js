@@ -3,6 +3,12 @@
 class CachedCollectionManager {
 	constructor() {
 		this.items = [];
+
+		const _unstoreLoginToken = Accounts._unstoreLoginToken;
+		Accounts._unstoreLoginToken = (...args) => {
+			_unstoreLoginToken.apply(Accounts, args);
+			this.clearAllCache();
+		};
 	}
 
 	register(cachedCollection) {
@@ -30,7 +36,8 @@ class CachedCollection {
 		useSync = true,
 		useCache = true,
 		debug = true,
-		version = 0
+		version = 0,
+		maxCacheTime = 60*60*24*30
 	}) {
 		this.collection = collection || new Meteor.Collection(null);
 
@@ -45,6 +52,7 @@ class CachedCollection {
 		this.debug = debug;
 		this.version = version;
 		this.updatedAt = new Date(2000, 1, 1);
+		this.maxCacheTime = maxCacheTime;
 
 		RocketChat.CachedCollectionManager.register(this);
 	}
@@ -62,6 +70,13 @@ class CachedCollection {
 
 		localforage.getItem(this.name, (error, data) => {
 			if (data && data.version < this.version) {
+				this.clearCache();
+				callback(false);
+				return;
+			}
+
+			const now = new Date();
+			if (data && now - data.updatedAt >= 1000*this.maxCacheTime) {
 				this.clearCache();
 				callback(false);
 				return;
