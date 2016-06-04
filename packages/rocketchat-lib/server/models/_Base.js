@@ -61,9 +61,15 @@ class ModelsBase extends EventEmitter {
 
 		let ids = [];
 		if (options.multi === true) {
-			ids = ids.concat(this.model.find(query, { fields: { _id: 1 } }).fetch());
+			const updated = this.model.find(query, { fields: { _id: 1 } }).fetch();
+			if (updated) {
+				ids = ids.concat(updated);
+			}
 		} else {
-			ids.push(this.model.findOne(query, { fields: { _id: 1 } }));
+			const updated = this.model.findOne(query, { fields: { _id: 1 } });
+			if (updated) {
+				ids.push(updated);
+			}
 		}
 
 		query = { _id: { $in: _.pluck(ids, '_id') } };
