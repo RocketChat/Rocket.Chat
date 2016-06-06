@@ -588,7 +588,7 @@
   "LDAP_Use_Custom_Domain_Search" : "השתמש חיפוש דומיין מותאם אישית",
   "LDAP_Use_Custom_Domain_Search_Description" : "כתוב מסנן משלך לחפש משתמשים בשרת LDAP.",
   "LDAP_Username_Field" : "שדה שם המשתמש",
-  "LDAP_Username_Field_Description" : "איזה שדה ישמש * שם משתמש * עבור משתמשים חדשים. השאר ריק להשתמש בשם המשתמש הודיע ​​על דף הכניסה. <br/> אתה יכול להשתמש בתגי תבנית מדי, כמו '# {givenName}. # {SN} `. <br/> ערך ברירת המחדל הוא `sAMAccountName`.",
+  "LDAP_Username_Field_Description" : "איזה שדה ישמש * שם משתמש * עבור משתמשים חדשים. השאר ריק להשתמש בשם המשתמש הודיע ​​על דף הכניסה. <br/> אתה יכול להשתמש בתגי תבנית מדי, כמו `#{givenName}.#{sn}`. <br/> ערך ברירת המחדל הוא `sAMAccountName`.",
   "Leave_Group_Warning" : "האם אתה בטוח שאתה רוצה לעזוב את הקבוצה \" %s\"?",
   "Leave_Private_Warning" : "האם אתה בטוח שאתה רוצה לעזוב את הדיון עם \" %s\"?",
   "Leave_room" : "לעזוב את החדר",

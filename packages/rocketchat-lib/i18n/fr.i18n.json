@@ -588,7 +588,6 @@
   "LDAP_Use_Custom_Domain_Search" : "Utiliser la recherche personnalisée dans le domaine",
   "LDAP_Use_Custom_Domain_Search_Description" : "Écrivez vos propres filtres pour rechercher les utilisateurs dans le serveur LDAP.",
   "LDAP_Username_Field" : "Champs du nom d'utilisateur",
-  "LDAP_Username_Field_Description" : "Le champ qui sera utilisé en tant que *nom d'utilisateur* pour les nouveaux utilisateurs. Laisser vide pour utiliser le nom d'utilisateur renseigné sur la page de connexion.<br/>La valeur par défaut est `sAMAccountName`.",
   "Leave_Group_Warning" : "Êtes-vous sûr(e) de vouloir quitter le groupe \"%s\" ?",
   "Leave_Private_Warning" : "Êtes-vous sûr(e) de vouloir quitter la discussion avec \"%s\" ?",
   "Leave_room" : "Quitter le salon",

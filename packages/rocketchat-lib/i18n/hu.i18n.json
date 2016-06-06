@@ -588,7 +588,7 @@
   "LDAP_Use_Custom_Domain_Search" : "Használja Egyéni Domain Search",
   "LDAP_Use_Custom_Domain_Search_Description" : "Írja meg saját szűrő keresni a felhasználókat az LDAP kiszolgálón.",
   "LDAP_Username_Field" : "felhasználónév mező",
-  "LDAP_Username_Field_Description" : "Mely területen kerül felhasználásra * felhasználónév * az új felhasználók számára. Hagyja üresen használni a felhasználónevét tájékoztatni bejelentkezési oldalon. <br/> Használhatja sablon címkéket is, mint a `# {} givenName. # {Sn}`. <br/> Az alapértelmezett érték `sAMAccountName`.",
+  "LDAP_Username_Field_Description" : "Mely területen kerül felhasználásra * felhasználónév * az új felhasználók számára. Hagyja üresen használni a felhasználónevét tájékoztatni bejelentkezési oldalon. <br/> Használhatja sablon címkéket is, mint a `#{givenName}.#{sn}`. <br/> Az alapértelmezett érték `sAMAccountName`.",
   "Leave_Group_Warning" : "Biztos benne, hogy szeretné elhagyni a csoportot \" %s\"?",
   "Leave_Private_Warning" : "Biztosan el szeretné hagyni a beszélgetést: \" %s\"?",
   "Leave_room" : "Szoba elhagyása",

@@ -588,7 +588,7 @@
   "LDAP_Use_Custom_Domain_Search" : "Gunakan Custom Domain Search",
   "LDAP_Use_Custom_Domain_Search_Description" : "Tulis penapis anda sendiri untuk mencari pengguna dalam pelayan LDAP.",
   "LDAP_Username_Field" : "Nama pengguna Field",
-  "LDAP_Username_Field_Description" : "Yang bidang akan digunakan sebagai * nama pengguna * bagi pengguna baru. Biarkan kosong untuk menggunakan nama pengguna yang dimaklumkan pada halaman login. <br/> Anda boleh menggunakan tag template juga, seperti `# {givenName}. {# Sn}`. <br/> Nilai lalai adalah `sAMAccountName`.",
+  "LDAP_Username_Field_Description" : "Yang bidang akan digunakan sebagai * nama pengguna * bagi pengguna baru. Biarkan kosong untuk menggunakan nama pengguna yang dimaklumkan pada halaman login. <br/> Anda boleh menggunakan tag template juga, seperti `#{givenName}.#{sn}`. <br/> Nilai lalai adalah `sAMAccountName`.",
   "Leave_Group_Warning" : "Adakah anda pasti anda mahu meninggalkan kumpulan \" %s\"?",
   "Leave_Private_Warning" : "Adakah anda pasti anda mahu meninggalkan perbincangan dengan \" %s\"?",
   "Leave_room" : "Meninggalkan bilik",

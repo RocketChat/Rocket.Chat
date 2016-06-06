@@ -588,7 +588,7 @@
   "LDAP_Use_Custom_Domain_Search" : "Gebruik Custom Domain Search",
   "LDAP_Use_Custom_Domain_Search_Description" : "Schrijf uw eigen filter te zoeken gebruikers in de LDAP-server.",
   "LDAP_Username_Field" : "gebruikersnaam Field",
-  "LDAP_Username_Field_Description" : "Welk veld zal gebruikt worden als gebruikersnaam * * voor nieuwe gebruikers. Laat leeg om de gebruikersnaam op de hoogte inlogpagina te gebruiken. <br/> U kunt template-tags te gebruiken, zoals `# {} givenName. # {Sn}`. <br/> Standaard waarde is `sAMAccountName`.",
+  "LDAP_Username_Field_Description" : "Welk veld zal gebruikt worden als gebruikersnaam * * voor nieuwe gebruikers. Laat leeg om de gebruikersnaam op de hoogte inlogpagina te gebruiken. <br/> U kunt template-tags te gebruiken, zoals `#{givenName}.#{sn}`. <br/> Standaard waarde is `sAMAccountName`.",
   "Leave_Group_Warning" : "Weet je zeker dat je groep \"%s\" wil verlaten?",
   "Leave_Private_Warning" : "Weet je zeker dat je de discussie met \"%s\" wil verlaten?",
   "Leave_room" : "Kamer verlaten",

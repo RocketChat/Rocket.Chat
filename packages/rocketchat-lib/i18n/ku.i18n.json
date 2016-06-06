@@ -588,7 +588,7 @@
   "LDAP_Use_Custom_Domain_Search" : "Bi kar tînin Custom Search Domain",
   "LDAP_Use_Custom_Domain_Search_Description" : "Hewe Parzûna xwe bi xwe ji bo bikarhênerên lêgerîn li server LDAP de.",
   "LDAP_Username_Field" : "Username Field",
-  "LDAP_Username_Field_Description" : "Ku qada wê bên * username * ji bo bikarhênerên nû de tê bikaranîn. Dev ji vala bi kar username agahdar li ser rûpela têketinê. <br/> Tu dikarî tags şablonê pêk hatiye jî bi kar tînin, wek `# {givenName}. # {Sn}`. <br/> nirxa standard e `sAMAccountName`.",
+  "LDAP_Username_Field_Description" : "Ku qada wê bên * username * ji bo bikarhênerên nû de tê bikaranîn. Dev ji vala bi kar username agahdar li ser rûpela têketinê. <br/> Tu dikarî tags şablonê pêk hatiye jî bi kar tînin, wek `#{givenName}.#{sn}`. <br/> nirxa standard e `sAMAccountName`.",
   "Leave_Group_Warning" : "Ma tu dizanî, tu dixwazî ​​ji koma \" %s\" ku herin?",
   "Leave_Private_Warning" : "Ma tu dizanî, tu dixwazî ​​li gotûbêjeke bi \" %s\" ku herin?",
   "Leave_room" : "جێهێشتنی ژوور",
