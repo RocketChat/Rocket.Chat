@@ -588,7 +588,7 @@
   "LDAP_Use_Custom_Domain_Search" : "Użyj wyszukiwarki Domena niestandardowa",
   "LDAP_Use_Custom_Domain_Search_Description" : "Wpisz swój własny filtr do wyszukiwania użytkowników na serwerze LDAP.",
   "LDAP_Username_Field" : "Nazwa pola",
-  "LDAP_Username_Field_Description" : "Które pole będzie używany jako nazwa użytkownika * * Dla nowych użytkowników. Zostaw puste, aby użyć nazwy użytkownika informować na stronie logowania. <br/> Można używać znaczników szablonów też, podobnie jak `# {givenName}. # {sn}`. <br/> Domyślną wartością jest `sAMAccountName`.",
+  "LDAP_Username_Field_Description" : "Które pole będzie używany jako nazwa użytkownika * * Dla nowych użytkowników. Zostaw puste, aby użyć nazwy użytkownika informować na stronie logowania. <br/> Można używać znaczników szablonów też, podobnie jak `#{givenName}.#{sn}`. <br/> Domyślną wartością jest `sAMAccountName`.",
   "Leave_Group_Warning" : "Czy na pewno chcesz opuścić grupę \"%s\"?",
   "Leave_Private_Warning" : "Czy na pewno chcesz opuścić dyskusję z \"%s\"?",
   "Leave_room" : "Opuść pokój",

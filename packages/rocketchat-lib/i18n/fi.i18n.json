@@ -588,7 +588,7 @@
   "LDAP_Use_Custom_Domain_Search" : "Käytä Custom Domain Search",
   "LDAP_Use_Custom_Domain_Search_Description" : "Kirjoita oma suodatin etsiä käyttäjien LDAP-palvelimelle.",
   "LDAP_Username_Field" : "Käyttäjätunnus Field",
-  "LDAP_Username_Field_Description" : "Joka kenttä tullaan käyttämään * käyttäjätunnus * uusille käyttäjille. Jätä tyhjäksi käyttää käyttäjätunnusta tasalla kirjautumissivulla. <br/> Voit käyttää mallia tageja minäkin `# {givenName}. # {Sn}`. <br/> Oletusarvo on `sAMAccountName`.",
+  "LDAP_Username_Field_Description" : "Joka kenttä tullaan käyttämään * käyttäjätunnus * uusille käyttäjille. Jätä tyhjäksi käyttää käyttäjätunnusta tasalla kirjautumissivulla. <br/> Voit käyttää mallia tageja minäkin `#{givenName}.#{sn}`. <br/> Oletusarvo on `sAMAccountName`.",
   "Leave_Group_Warning" : "Oletko varma, että haluat jättää ryhmän \" %s\"?",
   "Leave_Private_Warning" : "Oletko varma, että haluat lähteä keskustelua \" %s\"?",
   "Leave_room" : "Poistu kanavalta",

@@ -588,7 +588,6 @@
   "LDAP_Use_Custom_Domain_Search" : "맞춤 도메인 검색을 사용하여",
   "LDAP_Use_Custom_Domain_Search_Description" : "LDAP 서버에서 사용자를 검색 할 자신의 필터를 작성합니다.",
   "LDAP_Username_Field" : "사용자 이름 필드",
-  "LDAP_Username_Field_Description" : "어떤 분야는 새로운 사용자를위한 * 사용자 이름 *으로 사용됩니다. 로그인 페이지에서 정보를 사용자 이름을 사용하는 빈 둡니다. <br/> 당신은 # {givenName으로}`처럼, 너무 템플릿 태그를 사용할 수 있습니다. # {SN}`. <br/> 기본값은`sAMAccountName`입니다.",
   "Leave_Group_Warning" : "당신은 당신이 그룹 \" %s을 (를)\"에서 탈퇴 하시겠습니까?",
   "Leave_Private_Warning" : "당신은 ' %s'에 함께 토론을 남겨 하시겠습니까?",
   "Leave_room" : "방 나가기",

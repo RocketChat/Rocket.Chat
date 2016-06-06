@@ -588,7 +588,7 @@
   "LDAP_Use_Custom_Domain_Search" : "Përdorni Custom Domain Kërko",
   "LDAP_Use_Custom_Domain_Search_Description" : "Shkruar vetë filtrin tuaj për të kërkuar përdoruesit në server LDAP.",
   "LDAP_Username_Field" : "Username Field",
-  "LDAP_Username_Field_Description" : "Cilën fushë do të përdoret si * emrin e përdoruesit * për përdoruesit e rinj. Lini bosh për të përdorur emrin e përdoruesit të informuar në faqen e identifikimit. <br/> Ju mund të përdorni tags template shumë, si `# {givenName}. {# Sn}`. <br/> Vlera e parazgjedhur është `sAMAccountName`.",
+  "LDAP_Username_Field_Description" : "Cilën fushë do të përdoret si * emrin e përdoruesit * për përdoruesit e rinj. Lini bosh për të përdorur emrin e përdoruesit të informuar në faqen e identifikimit. <br/> Ju mund të përdorni tags template shumë, si `#{givenName}.#{sn}`. <br/> Vlera e parazgjedhur është `sAMAccountName`.",
   "Leave_Group_Warning" : "Jeni te sigurte qe doni te largohet nga grupi \" %s\"?",
   "Leave_Private_Warning" : "Jeni te sigurte qe doni te largohet diskutimin me \" %s\"?",
   "Leave_room" : "Largohu nga dhoma",
