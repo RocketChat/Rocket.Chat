@@ -588,7 +588,7 @@
   "LDAP_Use_Custom_Domain_Search" : "Utilizzare Ricerca dominio personalizzato",
   "LDAP_Use_Custom_Domain_Search_Description" : "Scrivere il proprio filtro per cercare gli utenti nel server LDAP.",
   "LDAP_Username_Field" : "Nome utente campo",
-  "LDAP_Username_Field_Description" : "Quale campo verrà utilizzato come nome utente * * per i nuovi utenti. Lasciare vuoto per usare il nome utente informato sulla pagina di login. <br/> È possibile utilizzare i tag modello di troppo, come `# {} givenName. # {Sn}`. <br/> Il valore predefinito è `sAMAccountName`.",
+  "LDAP_Username_Field_Description" : "Quale campo verrà utilizzato come nome utente * * per i nuovi utenti. Lasciare vuoto per usare il nome utente informato sulla pagina di login. <br/> È possibile utilizzare i tag modello di troppo, come `#{givenName}.#{sn}`. <br/> Il valore predefinito è `sAMAccountName`.",
   "Leave_Group_Warning" : "Sei sicuro di voler lasciare il gruppo \" %s\"?",
   "Leave_Private_Warning" : "Sei sicuro di volere lasciare la discussione con \" %s\"?",
   "Leave_room" : "Lasciare la stanza",
