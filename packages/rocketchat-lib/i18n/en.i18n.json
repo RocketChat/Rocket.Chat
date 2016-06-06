@@ -953,7 +953,7 @@
   "Site_Url" : "Site URL",
   "Site_Url_Description" : "Example: https://chat.domain.com/",
   "Skip" : "Skip",
-  "Slash_Gimme_Description" : "Displays ¯༼ つ ◕_◕ ༽つ¯ after your message",
+  "Slash_Gimme_Description" : "Displays ¯༼ つ ◕_◕ ༽つ¯ before your message",
   "Slash_LennyFace_Description" : "Displays ¯( ͡° ͜ʖ ͡°)¯ after your message",
   "Slash_Shrug_Description" : "Displays ¯\\_(ツ)_/¯ after your message",
   "Slash_Tableflip_Description" : "Displays ¯(╯°□°）╯︵ ┻━┻",

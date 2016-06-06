@@ -9,7 +9,7 @@ function Gimme(command, params, item) {
 		var msg;
 
 		msg = item;
-		msg.msg = params + ' ༼ つ ◕_◕ ༽つ';
+		msg.msg = '༼ つ ◕_◕ ༽つ ' + params;
 		Meteor.call('sendMessage', msg);
 	}
 }
