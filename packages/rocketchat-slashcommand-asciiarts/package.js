@@ -1,7 +1,7 @@
 Package.describe({
-	name: 'rocketchat:slashcommands-tableflip',
+	name: 'rocketchat:slashcommands-asciiarts',
 	version: '0.0.1',
-	summary: 'Message pre-processor that will translate /tableflip and /unflip commands',
+	summary: 'Message pre-processor that will add ascii arts to messages',
 	git: ''
 });
 
@@ -14,6 +14,7 @@ Package.onUse(function(api) {
 
 	api.use('ecmascript');
 
+	api.addFiles('shrug.js', ['server', 'client']);
 	api.addFiles('tableflip.js', ['server', 'client']);
 	api.addFiles('unflip.js', ['server', 'client']);
 });
