@@ -588,7 +588,7 @@
   "LDAP_Use_Custom_Domain_Search" : "Koristite Search Custom Domain",
   "LDAP_Use_Custom_Domain_Search_Description" : "Napišite vlastiti filtar za pretraživanje korisnika u LDAP poslužitelju.",
   "LDAP_Username_Field" : "Korisničko ime polje",
-  "LDAP_Username_Field_Description" : "Koji polje će se koristiti kao * korisničko ime * za nove korisnike. Ostavite prazno za korištenje korisničko ime informirani na naslovnici. <br/> Možete koristiti predložak oznake previše, poput '# {GivenName}. # {Sn} `. <br/> Zadana vrijednost je `sAMAccountName`.",
+  "LDAP_Username_Field_Description" : "Koji polje će se koristiti kao * korisničko ime * za nove korisnike. Ostavite prazno za korištenje korisničko ime informirani na naslovnici. <br/> Možete koristiti predložak oznake previše, poput `#{givenName}.#{sn}`. <br/> Zadana vrijednost je `sAMAccountName`.",
   "Leave_Group_Warning" : "Jeste li sigurni da želite napustiti grupu \" %s\"?",
   "Leave_Private_Warning" : "Jeste li sigurni da želite napustiti razgovor s \" %s\"?",
   "Leave_room" : "Izađi iz sobe",

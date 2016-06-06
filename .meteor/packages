@@ -78,13 +78,13 @@ rocketchat:piwik
 rocketchat:push-notifications
 rocketchat:reactions
 rocketchat:slackbridge
+rocketchat:slashcommands-asciiarts
 rocketchat:slashcommands-invite
 rocketchat:slashcommands-join
 rocketchat:slashcommands-kick
 rocketchat:slashcommands-leave
 rocketchat:slashcommands-me
 rocketchat:slashcommands-mute
-rocketchat:slashcommands-shrug
 rocketchat:slashcommands-topic
 rocketchat:spotify
 rocketchat:statistics
@@ -146,4 +146,3 @@ todda00:friendly-slugs
 underscorestring:underscore.string
 yasaricli:slugify
 yasinuslu:blaze-meta
-
