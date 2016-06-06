@@ -14,6 +14,7 @@ Package.onUse(function(api) {
 
 	api.use('ecmascript');
 
+	api.addFiles('gimme.js', ['server', 'client']);
 	api.addFiles('shrug.js', ['server', 'client']);
 	api.addFiles('tableflip.js', ['server', 'client']);
 	api.addFiles('unflip.js', ['server', 'client']);
