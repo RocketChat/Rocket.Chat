@@ -588,7 +588,7 @@
   "LDAP_Use_Custom_Domain_Search" : "Folosește Căutare Domeniu Specific",
   "LDAP_Use_Custom_Domain_Search_Description" : "Scrie propriul filtru pentru utilizatorii caută în serverul LDAP.",
   "LDAP_Username_Field" : "Câmp utilizator",
-  "LDAP_Username_Field_Description" : "Care câmp va fi folosit ca nume de utilizator * * pentru noii utilizatori. Lasă un gol pentru a utiliza numele de utilizator informat pe pagina de conectare. <br/> Aveți posibilitatea să utilizați etichete șablon prea, cum ar fi `# {} givenName. # {Sn}`. <br/> Valoarea implicită este `sAMAccountName`.",
+  "LDAP_Username_Field_Description" : "Care câmp va fi folosit ca nume de utilizator * * pentru noii utilizatori. Lasă un gol pentru a utiliza numele de utilizator informat pe pagina de conectare. <br/> Aveți posibilitatea să utilizați etichete șablon prea, cum ar fi `#{givenName}.#{sn}`. <br/> Valoarea implicită este `sAMAccountName`.",
   "Leave_Group_Warning" : "Sunteți sigur că vreți să părăsiți grupul?",
   "Leave_Private_Warning" : "Sunteți sigur că vreți să părăsiți discuția?",
   "Leave_room" : "Părăsește camera",

@@ -588,7 +588,7 @@
   "LDAP_Use_Custom_Domain_Search" : "Använd egen domän Sök",
   "LDAP_Use_Custom_Domain_Search_Description" : "Skriv ditt eget filter för att söka användare i LDAP-servern.",
   "LDAP_Username_Field" : "Användarnamn Field",
-  "LDAP_Username_Field_Description" : "Vilket fält kommer att användas som * användarnamn * för nya användare. Lämna tomt för att använda användarnamn informerad om inloggningssidan. <br/> Du kan använda malltaggar också, som `# {givenname}. # {Sn}`. <br/> Standardvärdet är 'sAMAccountName`.",
+  "LDAP_Username_Field_Description" : "Vilket fält kommer att användas som * användarnamn * för nya användare. Lämna tomt för att använda användarnamn informerad om inloggningssidan. <br/> Du kan använda malltaggar också, som `#{givenName}.#{sn}`. <br/> Standardvärdet är 'sAMAccountName`.",
   "Leave_Group_Warning" : "Är du säker att du vill lämna gruppen \"%s\"?",
   "Leave_Private_Warning" : "Är du säker att du vill lämna diskussionen med \"%s\"?",
   "Leave_room" : "Lämna rum",

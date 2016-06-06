@@ -588,7 +588,7 @@
   "LDAP_Use_Custom_Domain_Search" : "使用自定義域名查詢",
   "LDAP_Use_Custom_Domain_Search_Description" : "寫自己的過濾器來搜索用戶在LDAP服務器中。",
   "LDAP_Username_Field" : "用戶名現場",
-  "LDAP_Username_Field_Description" : "這將被用於為*用戶名*為新用戶。留空使用的用戶名告知登錄頁面上。 <br/>您可以使用模板標籤太像`＃{}給定名稱＃{SN}`。 <br/>默認值是`sAMAccountName`。",
+  "LDAP_Username_Field_Description" : "這將被用於為*用戶名*為新用戶。留空使用的用戶名告知登錄頁面上。 <br/>您可以使用模板標籤太像`#{givenName}.#{sn}`。 <br/>默認值是`sAMAccountName`。",
   "Leave_Group_Warning" : "你確定你要離開組“％s”嗎？",
   "Leave_Private_Warning" : "你確定要留下“％S”的討論？",
   "Leave_room" : "離開聊天室",

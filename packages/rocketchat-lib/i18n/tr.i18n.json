@@ -588,7 +588,6 @@
   "LDAP_Use_Custom_Domain_Search" : "Özel Alan Arama kullanın",
   "LDAP_Use_Custom_Domain_Search_Description" : "LDAP sunucusunda kullanıcıları aramak için kendi filtresini yazın.",
   "LDAP_Username_Field" : "Adı Alan",
-  "LDAP_Username_Field_Description" : "Hangi alan yeni kullanıcılar için * kullanıcı adı * olarak kullanılacaktır. giriş sayfasında haberdar adını kullanmak için boş bırakın. <br/> Sen # {givenName} `gibi, çok şablon etiketlerini kullanabilirsiniz. # {Sn}`. <br/> Varsayılan değer `sAMAccountName` olduğunu.",
   "Leave_Group_Warning" : "Eğer grup \" %s\" ayrılmak istediğinize emin misiniz?",
   "Leave_Private_Warning" : "Eğer \" %s\" ile tartışma ayrılmak istiyorum emin misiniz?",
   "Leave_room" : "Odayı terket",
