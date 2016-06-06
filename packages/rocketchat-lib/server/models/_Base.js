@@ -123,10 +123,10 @@ class ModelsBase extends EventEmitter {
 				_id: _id
 			});
 
-			this.model.upsert(...args);
+			this.upsert(...args);
 			return _id;
 		} else {
-			return this.model.insert(...args);
+			return this.insert(...args);
 		}
 	}
 
