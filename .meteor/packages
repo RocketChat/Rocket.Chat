@@ -36,6 +36,7 @@ spacebars
 standard-minifiers
 tracker
 
+rocketchat:action-links
 rocketchat:api
 rocketchat:assets
 rocketchat:authorization
@@ -51,7 +52,6 @@ rocketchat:file
 rocketchat:file-upload
 rocketchat:github-enterprise
 rocketchat:gitlab
-rocketchat:highlight
 rocketchat:highlight-words
 rocketchat:iframe-login
 rocketchat:importer
@@ -74,15 +74,17 @@ rocketchat:migrations
 rocketchat:oauth2-server-config
 rocketchat:oembed
 rocketchat:otr
+rocketchat:piwik
 rocketchat:push-notifications
 rocketchat:reactions
+rocketchat:slackbridge
+rocketchat:slashcommands-asciiarts
 rocketchat:slashcommands-invite
 rocketchat:slashcommands-join
 rocketchat:slashcommands-kick
 rocketchat:slashcommands-leave
 rocketchat:slashcommands-me
 rocketchat:slashcommands-mute
-rocketchat:slashcommands-shrug
 rocketchat:slashcommands-topic
 rocketchat:spotify
 rocketchat:statistics
