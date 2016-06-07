@@ -1,11 +1,27 @@
 <template name="videoFlexTab">
+	<!-- Opening a PR so we can do this via the https://meet.jit.si/external_api.js -->
+	<script src="https://cdn.rawgit.com/geekgonecrazy/jitsi-meet/master/external_api.js"></script>
+
     <div class="content">
         <div class="video-chat">
             <div class="title">
                 <h2>{{_ "Video_Chat_Window"}}</h2>
             </div>
             <div class="main-video">
-				<iframe src="{{videoUrl}}"></iframe>
+				<div id="videoContainer"></div>
+				<div class="group-call-buttons">
+					{{#if videoAvaliable}}
+						{{#unless videoActive}}
+							{{#if callInProgress}}
+								<button class="join-video-call button secondary" aria-label="{{_ "Join_video_call"}}"><i class="icon-videocam"></i></button>
+								<button class="join-audio-call button secondary" aria-label="{{_ "Join_audio_call"}}"><i class="icon-phone"></i></button>
+							{{else}}
+								<button class="start-video-call button" aria-label="{{_ "Start_video_call"}}"><i class="icon-videocam"></i></button>
+								<button class="start-audio-call button" aria-label="{{_ "Start_audio_call"}}"><i class="icon-phone"></i></button>
+							{{/if}}
+						{{/unless}}
+					{{/if}}
+				</div>
             </div>
         </div>
     </div>
