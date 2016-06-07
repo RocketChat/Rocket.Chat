@@ -152,7 +152,6 @@ rocketchat:importer@0.0.1
 rocketchat:importer-hipchat@0.0.1
 rocketchat:importer-slack@0.0.1
 rocketchat:integrations@0.0.1
-rocketchat:jitsi@0.0.1
 rocketchat:katex@0.0.1
 rocketchat:ldap@0.0.1
 rocketchat:ldapjs@1.0.0
