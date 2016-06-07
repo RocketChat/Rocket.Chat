@@ -1,5 +1,60 @@
 ## NEXT
 
+## 0.33.0, 2016-Jun-07
+
+- Add a method and api way to get a user's private groups, for external usage
+- Add ASCII art commands /tableflip /unflip /lennyface /gimme
+- Add correct rocketchat-ui-message files
+- Add LiveChat CRM integration
+- Add Slack Bridge
+- Add Stack Overflow TAG
+- Add the packages
+- Escape KaTeX error messages
+- Events for connecting and disconnecting
+- Fix Google Plus login via Iframe on web
+- Fix Notifications to users despite not being in private group (#3273)
+- Fix some translations for LDAP_Username_Field_Description
+- Fix spotify rendering
+- Fix tooltip arrow position
+- Livechat client app sound notification option
+- Remove data field from webhook test data
+- Remove redundant Debug_level settings
+- Remove the smicolon on end of 25 line (#3419)
+- Send livechat webhooks
+- Use <button/> rather than <i/> for tab buttons.
+
+## 0.32.0, 2016-May-30
+
+- Add autocomplete for adding users to roles
+- Add bad word filter to settings UI
+- Add Catalan language (#3394)
+- Add compacter message view mode
+- Add EVE online sso support (#3389)
+- Add Piwik Analytics (#233)
+- Add role tags to user info in flex tab (#3326)
+- Add room label to livechat history list
+- Add safe ports settings for embed
+- Add settings for Piwik Analytics (#233)
+- Add support to broadcast stream to different hosts
+- Fix exception if room not found
+- Change "Show Usernames" for "Hide Usernames"
+- Change text of "and more __" for reactions
+- Combined Hightlight & Markdown packages. Fixed Katex & markdown collision
+- Add Deeper analytics for Piwik
+- Escape room topic html
+- Fix SAML SSO redirect issue with iOS native client (#2028)
+- Fix action button validation (#3306)
+- Fix CAS in Android Cordova
+- Fix outgoing integrations erroring out when a channel isn't provided
+- Forward open livechat rooms from agent when he goes offline
+- Hide the cog when a user is not in the room.
+- Improve REST API (#3346)
+- Improvements to message quoting (#3278)
+- KaTeX: Allow enabling \[KaTeX\] and $$KaTeX$$ syntaxes separately
+- Prevent HTML tags in livechat offline email subject
+- Remove resize animation preventing scroll stay at bottom
+- Update user-presence package
+
 ## 0.31.0, 2016-May-16
 
 - Add header and footer to e-mails

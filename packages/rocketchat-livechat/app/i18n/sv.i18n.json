@@ -20,6 +20,8 @@
   "Type_your_email" : "Skriv din e-post",
   "Type_your_message" : "Skriv in ditt meddelande",
   "Type_your_name" : "Skriv in ditt namn",
+  "User_joined" : "user gick",
+  "User_left" : "användaren vänster",
   "We_are_offline_Sorry_for_the_inconvenience" : "Vi är offline. Vi beklagar olägenheten. ",
   "You_must_complete_all_fields" : "Du måste fylla i alla fält"
 }

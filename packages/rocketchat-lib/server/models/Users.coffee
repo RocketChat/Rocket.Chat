@@ -15,6 +15,9 @@ RocketChat.models.Users = new class extends RocketChat.models._Base
 	findOneById: (_id, options) ->
 		return @findOne _id, options
 
+	findOneByImportId: (_id, options) ->
+		return @findOne { importIds: _id }, options
+
 	findOneByUsername: (username, options) ->
 		query =
 			username: username

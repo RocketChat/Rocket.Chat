@@ -104,3 +104,9 @@ RocketChat.API.v1.addRoute 'channels.create', authRequired: true,
 
 		return RocketChat.API.v1.success
 			channel: RocketChat.models.Rooms.findOne({_id: id.rid})
+
+# List Private Groups a user has access to
+RocketChat.API.v1.addRoute 'groups.list', authRequired: true,
+	get: ->
+		roomIds = _.pluck RocketChat.models.Subscriptions.findByTypeAndUserId('p', @userId).fetch(), 'rid'
+		return { groups: RocketChat.models.Rooms.findByIds(roomIds).fetch() }
