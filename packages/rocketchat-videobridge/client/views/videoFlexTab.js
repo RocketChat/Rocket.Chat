@@ -33,8 +33,8 @@ Template.videoFlexTab.events({
 		var interfaceConfigOverwrite = {
 
 		};
-		var api = new JitsiMeetExternalAPI(domain, room, width, height, document.getElementById('videoContainer'), configOverwrite, interfaceConfigOverwrite);
-
+		var api = new JitsiMeetExternalAPI(domain, room, width, height, document.getElementById('videoContainer'), configOverwrite, interfaceConfigOverwrite, true);
+		
 		api.executeCommand('displayName', [Meteor.user().name]);
 	},
 
@@ -48,7 +48,7 @@ Template.videoFlexTab.events({
 		var interfaceConfigOverwrite = {
 
 		};
-		var api = new JitsiMeetExternalAPI(domain, room, width, height, document.getElementById('videoContainer'), configOverwrite, interfaceConfigOverwrite);
+		var api = new JitsiMeetExternalAPI(domain, room, width, height, document.getElementById('videoContainer'), configOverwrite, interfaceConfigOverwrite, true);
 
 		api.executeCommand('displayName', [Meteor.user().name]);
 	},
