@@ -6,6 +6,7 @@ Meteor.startup(function() {
 				i18nTitle: 'Video Chat',
 				icon: 'icon-videocam',
 				template: 'videoFlexTab',
+				width: 790,
 				order: 12
 			});
 	});
