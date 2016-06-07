@@ -22,13 +22,13 @@
 			{{/if}}
 		{{/if}}
 		{{#if alias}}
-			<button class="user user-card-message" data-username="{{u.username}}" tabindex="1">{{alias}} <span class="message-alias">@{{u.username}}</span></button>
+			<button type="button" class="user user-card-message" data-username="{{u.username}}" tabindex="1">{{alias}} <span class="message-alias">@{{u.username}}</span></button>
 		{{else}}
-			<button class="user user-card-message" data-username="{{u.username}}" tabindex="1">{{u.username}}</button>
+			<button type="button" class="user user-card-message" data-username="{{u.username}}" tabindex="1">{{u.username}}</button>
 		{{/if}}
 		<span class="info">
 			{{#each roleTags}}
-				<span class="role-tag" data-role="{{.}}">{{.}}</span>
+				<span class="role-tag" data-role="{{description}}">{{description}}</span>
 			{{/each}}
 			{{#if isBot}}
 				<span class="is-bot">BOT</span>
@@ -70,6 +70,15 @@
 				{{> messageAttachment}}
 			{{/each}}
 		</div>
+		<ul class="actionLinks {{hideActionLinks}}">
+			{{#each actionLink in actionLinks}}
+				<li>
+					<span class="action-link">{{actionLink.label}}
+						<meta name="{{actionLink.id}}"/>
+					</span>
+				</li>
+			{{/each}}
+		</ul>
 		<ul class="reactions {{hideReactions}}">
 			{{#each reaction in reactions}}
 				<li data-emoji="{{reaction.emoji}}" {{markUserReaction reaction}}>

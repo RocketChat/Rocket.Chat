@@ -20,6 +20,8 @@
   "Type_your_email" : "Írja be az e-mail",
   "Type_your_message" : "Írja be az üzenetet",
   "Type_your_name" : "Írja be a nevét",
+  "User_joined" : "User csatlakozott",
+  "User_left" : "felhasználói bal",
   "We_are_offline_Sorry_for_the_inconvenience" : "Mi vagyunk az offline. Elnézést a kellemetlenségért.",
   "You_must_complete_all_fields" : "Meg kell adnia az összes mezőt"
 }

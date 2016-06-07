@@ -1,0 +1,41 @@
+<template name="livechatIntegrations">
+	<div class="rocket-form">
+		<h2>{{_ "Webhooks"}}</h2>
+		<p>
+			{{_ "You_can_use_webhooks_to_easily_integrate_livechat_with_your_CRM"}}
+			<a href="https://rocket.chat/docs/administrator-guides/livechat/#integrations">{{_ "Click_here"}}</a> {{_ "to_see_more_details_on_how_to_integrate"}}
+		</p>
+
+		<form id="integration-form">
+			<div class="input-line">
+				<label for="webhookUrl">{{_ "Webhook_URL"}}</label>
+				<div>
+					<input type="url" name="webhookUrl" id="webhookUrl" value="{{webhookUrl}}" placeholder="https://yourdomain.com/webhook/entrypoint">
+				</div>
+			</div>
+			<div class="input-line">
+				<label for="secretToken">{{_ "Secret_token"}}</label>
+				<div>
+					<input type="text" name="secretToken" id="secretToken" value="{{secretToken}}">
+				</div>
+			</div>
+			<div class="input-line">
+				<label for="sendOnClose">
+					<input type="checkbox" name="sendOnClose" id="sendOnClose" value="1" checked="{{sendOnCloseChecked}}">
+					{{_ "Send_request_on_chat_close"}}
+				</label>
+			</div>
+			<div class="input-line">
+				<label for="sendOnOffline">
+					<input type="checkbox" name="sendOnOffline" id="sendOnOffline" value="1" checked="{{sendOnOfflineChecked}}">
+					{{_ "Send_request_on_offline_messages"}}
+				</label>
+			</div>
+			<div class="submit">
+				<button type="button" class="button secondary reset-settings"><i class="icon-ccw"></i>{{_ "Reset"}}</button>
+				<button class="button save"><i class="icon-floppy"></i>{{_ "Save"}}</button>
+				<button type="button" class="button lightblue test" disabled="{{disableTest}}">{{_ "Send_Test"}}</button>
+			</div>
+		</form>
+	</div>
+</template>
