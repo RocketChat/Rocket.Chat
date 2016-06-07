@@ -33,4 +33,4 @@ Meteor.methods
 				when 'default'
 					RocketChat.models.Rooms.saveDefaultById rid, value
 
-		return true
+		return { result: true, rid: room._id }

@@ -114,6 +114,7 @@ Template.adminRoomInfo.onCreated ->
 		switch @editing.get()
 			when 'roomName'
 				if @validateRoomName(rid)
+					RocketChat.callbacks.run 'roomNameChanged', ChatRoom.findOne(rid)
 					Meteor.call 'saveRoomSettings', rid, 'roomName', @$('input[name=roomName]').val(), (err, result) ->
 						if err
 							return handleError(err)
@@ -124,8 +125,10 @@ Template.adminRoomInfo.onCreated ->
 						if err
 							return handleError(err)
 						toastr.success TAPi18n.__ 'Room_topic_changed_successfully'
+						RocketChat.callbacks.run 'roomTopicChanged', ChatRoom.findOne(rid)
 			when 'roomType'
 				if @validateRoomType(rid)
+					RocketChat.callbacks.run 'roomTypeChanged', ChatRoom.findOne(rid)
 					Meteor.call 'saveRoomSettings', rid, 'roomType', @$('input[name=roomType]:checked').val(), (err, result) ->
 						if err
 							return handleError(err)
@@ -136,9 +139,11 @@ Template.adminRoomInfo.onCreated ->
 						Meteor.call 'archiveRoom', rid, (err, results) ->
 							return handleError(err) if err
 							toastr.success TAPi18n.__ 'Room_archived'
+							RocketChat.callbacks.run 'archiveRoom', ChatRoom.findOne(rid)
 				else
 					if ChatRoom.findOne(rid)?.archived is true
 						Meteor.call 'unarchiveRoom', rid, (err, results) ->
 							return handleError(err) if err
 							toastr.success TAPi18n.__ 'Room_unarchived'
+							RocketChat.callbacks.run 'unarchiveRoom', ChatRoom.findOne(rid)
 		@editing.set()

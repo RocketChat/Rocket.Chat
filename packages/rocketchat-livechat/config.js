@@ -44,6 +44,45 @@ Meteor.startup(function() {
 		i18nLabel: 'Livechat_room_count'
 	});
 
+	RocketChat.settings.add('Livechat_forward_open_chats', false, {
+		type: 'boolean',
+		group: 'Livechat'
+	});
+
+	RocketChat.settings.add('Livechat_forward_open_chats_timeout', 60, {
+		type: 'int',
+		group: 'Livechat',
+		enableQuery: { _id: 'Livechat_forward_open_chats', value: true }
+	});
+
+	RocketChat.settings.add('Livechat_webhookUrl', false, {
+		type: 'string',
+		group: 'Livechat',
+		section: 'CRM Integration',
+		i18nLabel: 'Webhook_URL'
+	});
+
+	RocketChat.settings.add('Livechat_secret_token', false, {
+		type: 'string',
+		group: 'Livechat',
+		section: 'CRM Integration',
+		i18nLabel: 'Secret_token'
+	});
+
+	RocketChat.settings.add('Livechat_webhook_on_close', false, {
+		type: 'boolean',
+		group: 'Livechat',
+		section: 'CRM Integration',
+		i18nLabel: 'Send_request_on_chat_close'
+	});
+
+	RocketChat.settings.add('Livechat_webhook_on_offline_msg', false, {
+		type: 'boolean',
+		group: 'Livechat',
+		section: 'CRM Integration',
+		i18nLabel: 'Send_request_on_offline_messages'
+	});
+
 	RocketChat.settings.add('Livechat_Knowledge_Enabled', false, {
 		type: 'boolean',
 		group: 'Livechat',
