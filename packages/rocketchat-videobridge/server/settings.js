@@ -14,7 +14,7 @@ Meteor.startup(function() {
 			i18nLabel: 'Domain'
 		});
 
-		this.add('Jitsi_SSL', false, {
+		this.add('Jitsi_SSL', true, {
 			type: 'boolean',
 			enableQuery: {
 				_id: 'Jitsi_Enabled',
