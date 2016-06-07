@@ -80,7 +80,7 @@ Host your own Rocket.Chat server in four seconds flat:
 
 Easiest way to install a ready-to-run Rocket.Chat server on a Linux machine, VM, or VPS - [@j8r's   DPlatform](https://github.com/j8r/DPlatform), now in Alpha! 
 
-[![deploy](https://raw.githubusercontent.com/j8r/DPlatform/gh-pages/img/deploy.png)](https://j8r.github.io/DPlatform/)
+[![DP deploy](https://raw.githubusercontent.com/DFabric/DPlatform-ShellCore/gh-pages/img/deploy.png)](https://dfabric.github.io/DPlatform-ShellCore)
 
 ## IndieHosters
 Get your Rocket.Chat instance hosted in a "as a Service" style. You register and we manage it for you! (updates, backup...)
@@ -290,6 +290,10 @@ It is a great solution for communities and companies wanting to privately host t
 
 [Github Issues](https://github.com/RocketChat/Rocket.Chat/issues) are used to track todos, bugs, feature requests, and more.
 
+### Stack Overflow
+
+Please use the [Stack Overflow TAG](http://stackoverflow.com/questions/tagged/rocket.chat)
+
 ## Integrations
 
 #### Hubot
@@ -316,7 +320,6 @@ Checkout [Rocket.Chat documentation](https://rocket.chat/docs/)
 ## License
 
 Note that Rocket.Chat is distributed under the [MIT License](http://opensource.org/licenses/MIT).
-
 
 # Development
 
