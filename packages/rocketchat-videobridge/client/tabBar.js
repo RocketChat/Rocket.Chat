@@ -1,5 +1,6 @@
 Meteor.startup(function() {
 	Tracker.autorun(function() {
+		if (RocketChat.settings.get('Jitsi_Enabled')) {
 			RocketChat.TabBar.addButton({
 				groups: ['directmessage','privategroup'],
 				id: 'video',
@@ -9,5 +10,6 @@ Meteor.startup(function() {
 				width: 790,
 				order: 12
 			});
+		}
 	});
 });
