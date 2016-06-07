@@ -25,5 +25,9 @@ Package.onUse(function(api) {
 	api.addFiles('client/views/videoFlexTab.js', 'client');
 	api.addFiles('client/tabBar.js', 'client');
 
+	api.addFiles('server/settings.js', 'server');
+	api.addFiles('server/models/Rooms.js', 'server');
+	api.addFiles('server/methods/jitsiConnect.js', 'server');
+	api.addFiles('server/methods/jitsiDisconnect.js', 'server');
 
 });
