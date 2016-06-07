@@ -970,6 +970,7 @@
   "SMTP_Test_Button" : "Test SMTP Settings",
   "SMTP_Username" : "SMTP Username",
   "Sound" : "Sound",
+  "SSL" : "SSL",
   "Star_Message" : "Star Message",
   "Starred_Messages" : "Starred Messages",
   "Start_audio_call" : "Start audio call",

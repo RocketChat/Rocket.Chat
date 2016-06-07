@@ -21,7 +21,7 @@ Template.videoFlexTab.onCreated(function() {
 
 	// Opening a PR so we can do this via the https://meet.jit.si/external_api.js
 	$.getScript('https://cdn.rawgit.com/geekgonecrazy/jitsi-meet/master/external_api.js')
-		.done(function(script, textStatus) {
+		.done(function() {
 			var domain = RocketChat.settings.get('Jitsi_Domain') || 'meet.jit.si'; // Check if default should be set or not
 			var room = CryptoJS.MD5(RocketChat.settings.get('uniqueID') + rid).toString();
 			console.log(room);
@@ -32,7 +32,7 @@ Template.videoFlexTab.onCreated(function() {
 			var configOverwrite = {};
 			var interfaceConfigOverwrite = {};
 
-			var api = new JitsiMeetExternalAPI(domain, room, width, height, document.getElementById('videoContainer'), configOverwrite, interfaceConfigOverwrite, false);
+			var api = new JitsiMeetExternalAPI(domain, room, width, height, document.getElementById('videoContainer'), configOverwrite, interfaceConfigOverwrite, RocketChat.settings.get('Jitsi_SSL') ? false : true);
 
 			// This for sure needs to be an onReady of some sort instead
 			setTimeout(() => {
@@ -40,7 +40,7 @@ Template.videoFlexTab.onCreated(function() {
 			}, 3000);
 
 		})
-		.fail(function(jqxhr, settings, exception) {
+		.fail(function() {
 			// Show an error
 		});
 });
