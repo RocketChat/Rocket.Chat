@@ -221,7 +221,6 @@ RocketChat.settings.addGroup 'Layout', ->
 
 
 RocketChat.settings.addGroup 'Logs', ->
-	@add 'Debug_Level', 'error', { type: 'select', values: [ { key: 'error', i18nLabel: 'Only_errors' }, { key: 'debug', i18nLabel: 'All_logs' } ] }
 	@add 'Log_Level', '0', { type: 'select', values: [ { key: '0', i18nLabel: '0_Errors_Only' }, { key: '1', i18nLabel: '1_Errors_and_Information' }, { key: '2', i18nLabel: '2_Erros_Information_and_Debug' } ] , public: true }
 	@add 'Log_Package', false, { type: 'boolean', public: true }
 	@add 'Log_File', false, { type: 'boolean', public: true }
