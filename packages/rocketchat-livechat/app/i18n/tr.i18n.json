@@ -20,6 +20,8 @@
   "Type_your_email" : "E-postanızı yazın",
   "Type_your_message" : "Mesajınızı yazın",
   "Type_your_name" : "Adınızı yazın",
+  "User_joined" : "kullanıcı katıldı",
+  "User_left" : "kullanıcı sol",
   "We_are_offline_Sorry_for_the_inconvenience" : "Biz çevrimdışı. Rahatsızlıktan dolayı özür dileriz.",
   "You_must_complete_all_fields" : "Tüm alanları doldurmalısınız"
 }

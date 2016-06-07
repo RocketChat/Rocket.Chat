@@ -60,7 +60,7 @@ Meteor.startup ->
 		]
 		action: (event, instance) ->
 			message = @_arguments[1]
-			$('.message-dropdown:visible').hide()
+			RocketChat.MessageAction.hideDropDown()
 			RoomHistoryManager.getSurroundingMessages(message, 50)
 		validation: (message) ->
 			room = RocketChat.models.Rooms.findOne({ _id: message.rid })
@@ -81,9 +81,8 @@ Meteor.startup ->
 		]
 		action: (event, instance) ->
 			message = @_arguments[1]
-			msg = $(event.currentTarget).closest('.message')[0]
-			$("\##{msg.id} .message-dropdown").hide()
-			$(event.currentTarget).attr('data-clipboard-text', document.location.origin + document.location.pathname + '?msg=' + msg.id);
+			RocketChat.MessageAction.hideDropDown()
+			$(event.currentTarget).attr('data-clipboard-text', RocketChat.MessageAction.getPermaLink(message._id));
 			toastr.success(TAPi18n.__('Copied'))
 		validation: (message) ->
 			room = RocketChat.models.Rooms.findOne({ _id: message.rid })

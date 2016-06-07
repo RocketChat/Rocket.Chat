@@ -20,6 +20,8 @@
   "Type_your_email" : "Kirjoita sähköpostiviesti",
   "Type_your_message" : "Kirjoita viesti",
   "Type_your_name" : "Kirjoita nimesi",
+  "User_joined" : "Käyttäjä liittyi",
+  "User_left" : "Käyttäjä vasen",
   "We_are_offline_Sorry_for_the_inconvenience" : "Palvelu on offline-tilassa. Pahoittelut häiriöstä.",
   "You_must_complete_all_fields" : "Määritä kaikki kentät"
 }
