@@ -7,7 +7,6 @@ accounts-oauth@1.1.8
 accounts-password@1.1.4
 accounts-twitter@1.0.6
 aldeed:simple-schema@1.5.3
-arunoda:streams@0.1.17
 autoupdate@1.2.4
 babel-compiler@5.8.24_1
 babel-runtime@0.1.4
