@@ -13,5 +13,14 @@ Meteor.startup(function() {
 			},
 			i18nLabel: 'Domain'
 		});
+
+		this.add('Jitsi_SSL', false, {
+			type: 'boolean',
+			enableQuery: {
+				_id: 'Jitsi_Enabled',
+				value: true
+			},
+			i18nLabel: 'SSL'
+		});
 	});
 });

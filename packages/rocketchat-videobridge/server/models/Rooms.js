@@ -12,7 +12,7 @@ RocketChat.models.Rooms.addJitsiConnected = function(_id, userId) {
 		$addToSet: {
 			jitsiConnected: userId
 		}
-	}
+	};
 
 	return this.update(query, update);
 };
@@ -31,7 +31,7 @@ RocketChat.models.Rooms.removeJitsiConnected = function(_id, userId) {
 		$pull: {
 			jitsiConnected: userId
 		}
-	}
+	};
 
 	return this.update(query, update);
 };
