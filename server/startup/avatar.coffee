@@ -31,6 +31,12 @@ Meteor.startup ->
 		transformWrite: transformWrite
 
 	WebApp.connectHandlers.use '/avatar/', Meteor.bindEnvironment (req, res, next) ->
+		if not Meteor.user()?
+			res.setHeader 'Location', '/login'
+			res.writeHead 302
+			res.end()
+			return
+			
 		params =
 			username: decodeURIComponent(req.url.replace(/^\//, '').replace(/\?.*$/, ''))
 
