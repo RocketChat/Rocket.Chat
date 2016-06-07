@@ -782,7 +782,7 @@
   "Pinned_a_message" : "Pinned a message:",
   "Pinned_Messages" : "Pinned Messages",
   "PiwikAnalytics_siteId_Description" : "The site id to use for identifying this site. Example: 17",
-  "PiwikAnalytics_url_Description" : "The url where the Piwik resides, be sure to include the trialing slash. Example: //piwik.rocket.chat/",
+  "PiwikAnalytics_url_Description" : "The url where the Piwik resides, be sure to include the trailing slash. Example: //piwik.rocket.chat/",
   "Placeholder_for_email_or_username_login_field" : "Placeholder for email or username login field",
   "Placeholder_for_password_login_field" : "Placeholder for password login field",
   "Please_add_a_comment" : "Please add a comment",
