@@ -2,7 +2,8 @@ Meteor.startup(function() {
 	RocketChat.settings.addGroup('Jitsi', function() {
 		this.add('Jitsi_Enabled', false, {
 			type: 'boolean',
-			i18nLabel: 'Enabled'
+			i18nLabel: 'Enabled',
+			public: true
 		});
 
 		this.add('Jitsi_Domain', '', {
@@ -11,7 +12,8 @@ Meteor.startup(function() {
 				_id: 'Jitsi_Enabled',
 				value: true
 			},
-			i18nLabel: 'Domain'
+			i18nLabel: 'Domain',
+			public: true
 		});
 
 		this.add('Jitsi_SSL', true, {
@@ -20,7 +22,8 @@ Meteor.startup(function() {
 				_id: 'Jitsi_Enabled',
 				value: true
 			},
-			i18nLabel: 'SSL'
+			i18nLabel: 'SSL',
+			public: true
 		});
 	});
 });
