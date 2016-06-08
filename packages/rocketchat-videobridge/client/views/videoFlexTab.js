@@ -39,13 +39,13 @@ Template.videoFlexTab.onCreated(function() {
 							* postMessage converts to events in the jitsi meet iframe.
 							* For some reason those aren't working right.
 							*/
-							setTimeout(() => {
+							Meteor.setTimeout(() => {
 								api.executeCommand('displayName', [Meteor.user().name]);
 							}, 3000);
 
 							Meteor.call('jitsi:updateTimeout', rid);
 
-							timeOut = setInterval(() => Meteor.call('jitsi:updateTimeout', rid), 10*1000);
+							timeOut = Meteor.setInterval(() => Meteor.call('jitsi:updateTimeout', rid), 10*1000);
 						}
 
 						// Execute any commands that might be reactive.  Like name changing.
