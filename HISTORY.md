@@ -1,5 +1,28 @@
 ## NEXT
 
+## 0.33.0, 2016-Jun-07
+
+- Add a method and api way to get a user's private groups, for external usage
+- Add ASCII art commands /tableflip /unflip /lennyface /gimme
+- Add correct rocketchat-ui-message files
+- Add LiveChat CRM integration
+- Add Slack Bridge
+- Add Stack Overflow TAG
+- Add the packages
+- Escape KaTeX error messages
+- Events for connecting and disconnecting
+- Fix Google Plus login via Iframe on web
+- Fix Notifications to users despite not being in private group (#3273)
+- Fix some translations for LDAP_Username_Field_Description
+- Fix spotify rendering
+- Fix tooltip arrow position
+- Livechat client app sound notification option
+- Remove data field from webhook test data
+- Remove redundant Debug_level settings
+- Remove the smicolon on end of 25 line (#3419)
+- Send livechat webhooks
+- Use <button/> rather than <i/> for tab buttons.
+
 ## 0.32.0, 2016-May-30
 
 - Add autocomplete for adding users to roles
