@@ -64,6 +64,17 @@ Template.livechatWindow.onCreated(function() {
 
 	Session.set({sound: true});
 
+	const defaultAppLanguage = () => {
+		let lng = window.navigator.userLanguage || window.navigator.language || 'en';
+		let regexp = /([a-z]{2}-)([a-z]{2})/;
+		if (regexp.test(lng)) {
+			lng = lng.replace(regexp, function(match, ...parts) {
+				return parts[0] + parts[1].toUpperCase();
+			});
+		}
+		return lng;
+	};
+
 	// get all needed live chat info for the user
 	Meteor.call('livechat:getInitialData', visitor.getToken(), (err, result) => {
 		if (err) {
@@ -93,6 +104,8 @@ Template.livechatWindow.onCreated(function() {
 				visitor.subscribeToRoom(result.room._id);
 				visitor.setRoom(result.room._id);
 			}
+
+			TAPi18n.setLanguage((result.language || defaultAppLanguage()).split('-').shift());
 
 			Triggers.setTriggers(result.triggers);
 			Triggers.init();

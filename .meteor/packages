@@ -103,6 +103,7 @@ rocketchat:ui-sidenav
 rocketchat:version
 rocketchat:webrtc
 rocketchat:wordpress
+rocketchat:videobridge
 #rocketchat:chatops
 #rocketchat:internal-hubot
 #rocketchat:irc
