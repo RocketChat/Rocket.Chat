@@ -13,13 +13,18 @@ Meteor.startup(function() {
 			});
 
 			if (Session.get('openedRoom')) {
-				Meteor.call('jitsi:isActive', Session.get('openedRoom'), (err, value) => {
-					if (value) {
-						RocketChat.TabBar.updateButton('video', { class: 'attention' }); // or attention for blinking
-					} else {
-						RocketChat.TabBar.updateButton('video', { class: '' });
-					}
-				});
+				let rid = Session.get('openedRoom');
+				console.log('Checking if active', rid);
+				let room = RocketChat.models.Rooms.findOne({_id: rid});
+				let currentTime = new Date().getTime();
+				let jitsiTimeout = new Date(room.jitsiTimeout).getTime() || currentTime;
+
+				if (jitsiTimeout > currentTime) {
+					RocketChat.TabBar.updateButton('video', { class: 'attention' });
+				} else {
+					RocketChat.TabBar.updateButton('video', { class: '' });
+				}
+
 			}
 		}
 	});

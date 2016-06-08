@@ -6,6 +6,10 @@ Template.videoFlexTab.helpers({
 
 Template.videoFlexTab.onCreated(function() {
 	let rid = this.data && this.data.rid;
+	let api;
+
+	let timeOut = null;
+
 	this.timeout = null;
 	this.autorun(() => {
 		if (RocketChat.settings.get('Jitsi_Enabled')) {
@@ -15,7 +19,11 @@ Template.videoFlexTab.onCreated(function() {
 				} else {
 					RocketChat.TabBar.updateButton('video', { class: '' });
 
-					if (this.timeout) this.timeout();
+					if (timeOut) {
+						console.log(timeOut);
+						api.dispose();
+						clearInterval(timeOut);
+					}
 				}
 			}
 		}
@@ -24,7 +32,7 @@ Template.videoFlexTab.onCreated(function() {
 	// Opening a PR so we can do this via the https://meet.jit.si/external_api.js
 	$.getScript('https://cdn.rawgit.com/geekgonecrazy/jitsi-meet/master/external_api.js')
 		.done(function() {
-			var domain = RocketChat.settings.get('Jitsi_Domain') || 'meet.jit.si'; // Check if default should be set or not
+			var domain = RocketChat.settings.get('Jitsi_Domain');
 			var room = CryptoJS.MD5(RocketChat.settings.get('uniqueID') + rid).toString();
 			console.log(room);
 
@@ -34,7 +42,7 @@ Template.videoFlexTab.onCreated(function() {
 			var configOverwrite = {};
 			var interfaceConfigOverwrite = {};
 
-			var api = new JitsiMeetExternalAPI(domain, room, width, height, document.getElementById('videoContainer'), configOverwrite, interfaceConfigOverwrite, RocketChat.settings.get('Jitsi_SSL') ? false : true);
+			api = new JitsiMeetExternalAPI(domain, room, width, height, document.getElementById('videoContainer'), configOverwrite, interfaceConfigOverwrite, RocketChat.settings.get('Jitsi_SSL') ? false : true);
 
 			// This for sure needs to be an onReady of some sort instead
 			setTimeout(() => {
@@ -43,7 +51,7 @@ Template.videoFlexTab.onCreated(function() {
 
 			Meteor.call('jitsi:updateTimeout', rid);
 
-			this.timeout = setInterval(() => Meteor.call('jitsi:updateTimeout', rid), 10*1000)
+			timeOut = setInterval(() => Meteor.call('jitsi:updateTimeout', rid), 10*1000)
 
 		})
 		.fail(function() {
