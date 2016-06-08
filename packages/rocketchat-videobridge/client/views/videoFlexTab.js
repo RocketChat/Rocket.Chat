@@ -12,7 +12,7 @@ Template.videoFlexTab.onCreated(function() {
 			if (RocketChat.TabBar.getTemplate() === 'videoFlexTab') {
 				if (RocketChat.TabBar.isFlexOpen()) {
 					Meteor.call('jitsi:connect', rid);
-					RocketChat.TabBar.updateButton('video', { class: 'red' });
+					RocketChat.TabBar.updateButton('video', { class: 'red' }); // or attention for blinking
 				} else {
 					Meteor.call('jitsi:disconnect', rid);
 					RocketChat.TabBar.updateButton('video', { class: '' });
