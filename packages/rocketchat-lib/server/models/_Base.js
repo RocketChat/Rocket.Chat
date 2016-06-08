@@ -5,7 +5,7 @@ const baseName = 'rocketchat_';
 const trash = new Mongo.Collection(baseName + '_trash');
 try {
 	trash._ensureIndex({ collection: 1 });
-	trash._ensureIndex({ _updatedAt: 1 }, { expireAfterSeconds: 60 * 60 * 24 * 30 });
+	trash._ensureIndex({ _deletedAt: 1 }, { expireAfterSeconds: 60 * 60 * 24 * 30 });
 } catch (e) {
 	console.log(e);
 }
@@ -21,6 +21,8 @@ class ModelsBase extends EventEmitter {
 		this.name = name;
 
 		this.model = new Mongo.Collection(this._baseName() + name);
+
+		this.tryEnsureIndex({ '_updatedAt': 1 });
 	}
 
 	setUpdatedAt(record = {}) {
