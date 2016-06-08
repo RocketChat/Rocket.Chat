@@ -61,7 +61,7 @@ class CachedCollection {
 		this.useCache = useCache;
 		this.debug = debug;
 		this.version = version;
-		this.updatedAt = new Date(2000, 1, 1);
+		this.updatedAt = new Date(0);
 		this.maxCacheTime = maxCacheTime;
 
 		RocketChat.CachedCollectionManager.register(this);
@@ -69,7 +69,7 @@ class CachedCollection {
 
 	log(...args) {
 		if (this.debug === true) {
-			console.log(new Date().toISOString(), ...args);
+			console.log(`CachedCollection ${this.name} =>`, ...args);
 		}
 	}
 
@@ -93,16 +93,16 @@ class CachedCollection {
 			}
 
 			if (data && data.records && data.records.length > 0) {
-				this.log(`CachedCollection ${this.name} => ${data.records.length} records loaded from cache`);
-				data.records.forEach((item) => {
-					item.__cache__ = true;
-					const _id = item._id;
-					delete item._id;
-					this.collection.upsert({ _id: _id }, item);
-					item._id = _id;
+				this.log(`${data.records.length} records loaded from cache`);
+				data.records.forEach((record) => {
+					record.__cache__ = true;
+					this.collection.upsert({ _id: record._id }, _.omit(record, '_id'));
 
-					if (item._updatedAt && item._updatedAt > this.updatedAt) {
-						this.updatedAt = item._updatedAt;
+					if (record._updatedAt) {
+						const _updatedAt = new Date(record._updatedAt);
+						if (_updatedAt > this.updatedAt) {
+							this.updatedAt = _updatedAt;
+						}
 					}
 				});
 
@@ -115,15 +115,12 @@ class CachedCollection {
 
 	loadFromServer(callback = () => {}) {
 		Meteor.call(this.methodName, (error, data) => {
-			this.log(`CachedCollection ${this.name} => ${data.length} records loaded from server`);
-			data.forEach((item) => {
-				const _id = item._id;
-				delete item._id;
-				this.collection.upsert({ _id: _id }, item);
-				item._id = _id;
+			this.log(`${data.length} records loaded from server`);
+			data.forEach((record) => {
+				this.collection.upsert({ _id: record._id }, _.omit(record, '_id'));
 
-				if (item._updatedAt && item._updatedAt > this.updatedAt) {
-					this.updatedAt = item._updatedAt;
+				if (record._updatedAt && record._updatedAt > this.updatedAt) {
+					this.updatedAt = record._updatedAt;
 				}
 			});
 
@@ -143,17 +140,18 @@ class CachedCollection {
 	}
 
 	sync() {
-		this.log(`CachedCollection ${this.name} => syncing from ${this.updatedAt}`);
+		if (RocketChat.CachedCollectionManager.syncEnabled === false || Meteor.connection._outstandingMethodBlocks.length !== 0) {
+			return false;
+		}
+
+		this.log(`syncing from ${this.updatedAt}`);
 
 		Meteor.call(this.syncMethodName, this.updatedAt, (error, data) => {
 			if (data.update && data.update.length > 0) {
-				this.log(`CachedCollection ${this.name} => ${data.update.length} records updated in sync`);
+				this.log(`${data.update.length} records updated in sync`);
 
 				for (const record of data.update) {
-					const _id = record._id;
-					delete record._id;
-					this.collection.upsert({ _id: _id }, record);
-					record._id = _id;
+					this.collection.upsert({ _id: record._id }, _.omit(record, '_id'));
 
 					if (record._updatedAt && record._updatedAt > this.updatedAt) {
 						this.updatedAt = record._updatedAt;
@@ -162,7 +160,7 @@ class CachedCollection {
 			}
 
 			if (data.remove && data.remove.length > 0) {
-				this.log(`CachedCollection ${this.name} => ${data.remove.length} records removed in sync`);
+				this.log(`${data.remove.length} records removed in sync`);
 
 				for (const record of data.remove) {
 					this.collection.remove({ _id: record._id });
@@ -173,35 +171,51 @@ class CachedCollection {
 				}
 			}
 
-			this.saveCache(this.collection.find().fetch());
+			this.saveCache();
 		});
+
+		return true;
 	}
 
 	saveCache(data) {
+		this.log('saving cache');
+		if (!data) {
+			data = this.collection.find().fetch();
+		}
+
 		localforage.setItem(this.name, {
 			updatedAt: new Date,
 			version: this.version,
 			records: data
 		});
+		this.log('saving cache (done)');
 	}
 
 	clearCache() {
+		this.log('clearing cache');
 		localforage.removeItem(this.name);
 	}
 
 	setupListener(eventType, eventName) {
 		RocketChat.Notifications[eventType || this.eventType](eventName || this.eventName, (t, record) => {
+			this.log('record received', t, record);
 			if (t === 'remove') {
 				this.collection.remove(record._id);
 			} else {
-				const _id = record._id;
-				delete record._id;
-				this.collection.upsert({ _id: _id }, record);
-				record._id = _id;
+				this.collection.upsert({ _id: record._id }, _.omit(record, '_id'));
 			}
 
-			this.saveCache(this.collection.find().fetch());
+			this.saveCache();
 		});
+	}
+
+	trySync() {
+		// Wait for an empty queue to load data again and sync
+		const interval = Meteor.setInterval(() => {
+			if (this.sync()) {
+				Meteor.clearInterval(interval);
+			}
+		}, 200);
 	}
 
 	init() {
@@ -217,13 +231,7 @@ class CachedCollection {
 				// If there is no cache load data immediately
 				this.loadFromServerAndPopulate();
 			} else if (this.useSync === true) {
-				// If there is cache wait for an empty queue to load data again and sync
-				const interval = Meteor.setInterval(() => {
-					if (RocketChat.CachedCollectionManager.syncEnabled && Meteor.connection._outstandingMethodBlocks.length === 0) {
-						Meteor.clearInterval(interval);
-						this.sync();
-					}
-				}, 200);
+				this.trySync();
 			}
 
 			if (this.useSync === true) {
@@ -232,12 +240,7 @@ class CachedCollection {
 					const connected = Meteor.connection.status().connected;
 
 					if (connected === true && connectionWasOnline === false) {
-						const interval = Meteor.setInterval(() => {
-							if (RocketChat.CachedCollectionManager.syncEnabled && Meteor.connection._outstandingMethodBlocks.length === 0) {
-								Meteor.clearInterval(interval);
-								this.sync();
-							}
-						}, 200);
+						this.trySync();
 					}
 
 					connectionWasOnline = connected;
