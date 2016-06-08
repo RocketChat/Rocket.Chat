@@ -22,6 +22,12 @@ class CachedCollectionManager {
 		}
 	}
 
+	countQueries() {
+		for (const item of this.items) {
+			item.countQueries();
+		}
+	}
+
 	set syncEnabled(value) {
 		check(value, Boolean);
 		this._syncEnabled = value;
@@ -73,6 +79,17 @@ class CachedCollection {
 		}
 	}
 
+	countQueries() {
+		this.log(`${Object.keys(this.collection._collection.queries).length} queries`);
+	}
+
+	recomputeCollectionQueries() {
+		this.log(`recomputing ${Object.keys(this.collection._collection.queries).length} queries`);
+		_.each(this.collection._collection.queries, (query) => {
+			this.collection._collection._recomputeResults(query);
+		});
+	}
+
 	loadFromCache(callback = () => {}) {
 		if (this.useCache === false) {
 			return callback(false);
@@ -96,7 +113,7 @@ class CachedCollection {
 				this.log(`${data.records.length} records loaded from cache`);
 				data.records.forEach((record) => {
 					record.__cache__ = true;
-					this.collection.upsert({ _id: record._id }, _.omit(record, '_id'));
+					this.collection._collection._docs.set(record._id, record);
 
 					if (record._updatedAt) {
 						const _updatedAt = new Date(record._updatedAt);
@@ -105,6 +122,7 @@ class CachedCollection {
 						}
 					}
 				});
+				this.recomputeCollectionQueries();
 
 				callback(true);
 			} else {
@@ -117,12 +135,13 @@ class CachedCollection {
 		Meteor.call(this.methodName, (error, data) => {
 			this.log(`${data.length} records loaded from server`);
 			data.forEach((record) => {
-				this.collection.upsert({ _id: record._id }, _.omit(record, '_id'));
+				this.collection._collection._docs.set(record._id, record);
 
 				if (record._updatedAt && record._updatedAt > this.updatedAt) {
 					this.updatedAt = record._updatedAt;
 				}
 			});
+			this.recomputeCollectionQueries();
 
 			if (this.updatedAt < new Date) {
 				this.updatedAt = new Date;
