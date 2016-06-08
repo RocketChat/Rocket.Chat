@@ -31,7 +31,7 @@ Meteor.methods({
 			},
 			visitor: {
 				_id: '',
-				name: 'viistor name',
+				name: 'visitor name',
 				username: 'visitor-username',
 				department: 'department',
 				email: 'email@address.com',
