@@ -219,7 +219,8 @@ RocketChat.Livechat = {
 			'Livechat_offline_message',
 			'Livechat_offline_success_message',
 			'Livechat_offline_form_unavailable',
-			'Livechat_display_offline_form'
+			'Livechat_display_offline_form',
+			'Language'
 		]).forEach((setting) => {
 			settings[setting._id] = setting.value;
 		});
