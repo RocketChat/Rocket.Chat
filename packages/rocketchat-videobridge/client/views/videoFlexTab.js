@@ -11,11 +11,11 @@ Template.videoFlexTab.onCreated(function() {
 		if (RocketChat.settings.get('Jitsi_Enabled')) {
 			if (RocketChat.TabBar.getTemplate() === 'videoFlexTab') {
 				if (RocketChat.TabBar.isFlexOpen()) {
-					Meteor.call('jitsi:connect', rid);
-					RocketChat.TabBar.updateButton('video', { class: 'red' }); // or attention for blinking
+					RocketChat.TabBar.updateButton('video', { class: 'red' });
 				} else {
-					Meteor.call('jitsi:disconnect', rid);
 					RocketChat.TabBar.updateButton('video', { class: '' });
+
+					if (this.timeout) this.timeout();
 				}
 			}
 		}
@@ -40,6 +40,10 @@ Template.videoFlexTab.onCreated(function() {
 			setTimeout(() => {
 				api.executeCommand('displayName', [Meteor.user().name]);
 			}, 3000);
+
+			Meteor.call('jitsi:updateTimeout', rid);
+
+			this.timeout = setInterval(() => Meteor.call('jitsi:updateTimeout', rid), 10*1000)
 
 		})
 		.fail(function() {

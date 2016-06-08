@@ -18,8 +18,6 @@ Package.onUse(function(api) {
 
 	api.use('templating', 'client');
 
-
-
 	api.addFiles('client/stylesheets/video.less', 'client');
 	api.addFiles('client/views/videoFlexTab.html', 'client');
 	api.addFiles('client/views/videoFlexTab.js', 'client');
@@ -27,7 +25,7 @@ Package.onUse(function(api) {
 
 	api.addFiles('server/settings.js', 'server');
 	api.addFiles('server/models/Rooms.js', 'server');
-	api.addFiles('server/methods/jitsiConnect.js', 'server');
-	api.addFiles('server/methods/jitsiDisconnect.js', 'server');
+	api.addFiles('server/methods/jitsiSetTimeout.js', 'server');
+	api.addFiles('server/methods/jitsiIsActive.js', 'server');
 
 });
