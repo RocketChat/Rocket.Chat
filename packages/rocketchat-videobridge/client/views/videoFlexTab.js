@@ -41,7 +41,7 @@ Template.videoFlexTab.onCreated(function() {
 							*/
 							Meteor.setTimeout(() => {
 								api.executeCommand('displayName', [Meteor.user().name]);
-							}, 3000);
+							}, 5000);
 
 							Meteor.call('jitsi:updateTimeout', rid);
 
@@ -58,7 +58,7 @@ Template.videoFlexTab.onCreated(function() {
 
 					// Clean up and stop updating timeout.
 					if (timeOut) {
-						api.dispose();
+						Meteor.defer(api.dispose());
 						clearInterval(timeOut);
 					}
 				}

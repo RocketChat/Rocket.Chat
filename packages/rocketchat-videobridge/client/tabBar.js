@@ -9,7 +9,7 @@ Meteor.startup(function() {
 
 				// Swap below url tomorrow after PR goes live on meet.jit.si
 				// '//' + domain + 'external_api.js'
-				$.getScript('https://cdn.rawgit.com/geekgonecrazy/jitsi-meet/test/external_api.js');
+				$.getScript('https://cdn.rawgit.com/geekgonecrazy/jitsi-meet/master/external_api.js');
 			}
 
 			RocketChat.TabBar.addButton({
