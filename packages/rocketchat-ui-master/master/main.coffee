@@ -138,7 +138,9 @@ Template.main.helpers
 		return RocketChat.iframeLogin.reactiveIframeUrl.get()
 
 	subsReady: ->
-		return not Meteor.userId()? or (FlowRouter.subsReady('userData', 'activeUsers') and CachedChatSubscription.ready.get())
+		ready = not Meteor.userId()? or (FlowRouter.subsReady('userData', 'activeUsers') and CachedChatSubscription.ready.get())
+		RocketChat.CachedCollectionManager.syncEnabled = ready
+		return ready
 
 	hasUsername: ->
 		return Meteor.userId()? and Meteor.user().username?
