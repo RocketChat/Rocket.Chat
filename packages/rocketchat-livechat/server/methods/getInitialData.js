@@ -10,7 +10,10 @@ Meteor.methods({
 			departments: [],
 			online: true,
 			offlineColor: null,
-			offlineMessage: null
+			offlineMessage: null,
+			offlineSuccessMessage: null,
+			offlineUnavailableMessage: null,
+			displayOfflineForm: null
 		};
 
 		const room = RocketChat.models.Rooms.findOpenByVisitorToken(visitorToken, {
@@ -37,6 +40,9 @@ Meteor.methods({
 		info.offlineTitle = initSettings.Livechat_offline_title;
 		info.offlineColor = initSettings.Livechat_offline_title_color;
 		info.offlineMessage = initSettings.Livechat_offline_message;
+		info.offlineSuccessMessage = initSettings.Livechat_offline_success_message;
+		info.offlineUnavailableMessage = initSettings.Livechat_offline_form_unavailable;
+		info.displayOfflineForm = initSettings.Livechat_display_offline_form;
 
 		RocketChat.models.LivechatTrigger.find().forEach((trigger) => {
 			info.triggers.push(trigger);
