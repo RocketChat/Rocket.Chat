@@ -3,6 +3,7 @@
 class CachedCollectionManager {
 	constructor() {
 		this.items = [];
+		this._syncEnabled = false;
 
 		const _unstoreLoginToken = Accounts._unstoreLoginToken;
 		Accounts._unstoreLoginToken = (...args) => {
@@ -19,6 +20,15 @@ class CachedCollectionManager {
 		for (const item of this.items) {
 			item.clearCache();
 		}
+	}
+
+	set syncEnabled(value) {
+		check(value, Boolean);
+		this._syncEnabled = value;
+	}
+
+	get syncEnabled() {
+		return this._syncEnabled;
 	}
 }
 
@@ -59,7 +69,7 @@ class CachedCollection {
 
 	log(...args) {
 		if (this.debug === true) {
-			console.log(...args);
+			console.log(new Date().toISOString(), ...args);
 		}
 	}
 
@@ -209,11 +219,11 @@ class CachedCollection {
 			} else if (this.useSync === true) {
 				// If there is cache wait for an empty queue to load data again and sync
 				const interval = Meteor.setInterval(() => {
-					if (Meteor.connection._outstandingMethodBlocks.length === 0) {
+					if (RocketChat.CachedCollectionManager.syncEnabled && Meteor.connection._outstandingMethodBlocks.length === 0) {
 						Meteor.clearInterval(interval);
 						this.sync();
 					}
-				}, 500);
+				}, 200);
 			}
 
 			if (this.useSync === true) {
@@ -222,7 +232,12 @@ class CachedCollection {
 					const connected = Meteor.connection.status().connected;
 
 					if (connected === true && connectionWasOnline === false) {
-						this.sync();
+						const interval = Meteor.setInterval(() => {
+							if (RocketChat.CachedCollectionManager.syncEnabled && Meteor.connection._outstandingMethodBlocks.length === 0) {
+								Meteor.clearInterval(interval);
+								this.sync();
+							}
+						}, 200);
 					}
 
 					connectionWasOnline = connected;
