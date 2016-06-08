@@ -12,9 +12,14 @@ msgStream.allowRead (eventName) ->
 
 msgStream.allowRead('__my_messages__', 'all')
 
-msgStream.allowEmit '__my_messages__', (eventName, msg) ->
+msgStream.allowEmit '__my_messages__', (eventName, msg, options) ->
 	try
-		return false if not Meteor.call 'canAccessRoom', msg.rid, this.userId
+		room = Meteor.call 'canAccessRoom', msg.rid, this.userId
+		if not room
+			return false
+
+		options.roomParticipant = room.usernames.indexOf(room.username) > -1
+		options.roomType = room.t
 
 		return true
 	catch e
@@ -32,5 +37,5 @@ Meteor.startup ->
 
 		for record in records
 			if record._hidden isnt true
-				msgStream.emit '__my_messages__', record
+				msgStream.emit '__my_messages__', record, {}
 				msgStream.emit record.rid, record
