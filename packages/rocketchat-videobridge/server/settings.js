@@ -6,7 +6,7 @@ Meteor.startup(function() {
 			public: true
 		});
 
-		this.add('Jitsi_Domain', '', {
+		this.add('Jitsi_Domain', 'meet.jit.si', {
 			type: 'string',
 			enableQuery: {
 				_id: 'Jitsi_Enabled',

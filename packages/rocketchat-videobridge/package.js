@@ -26,6 +26,6 @@ Package.onUse(function(api) {
 	api.addFiles('server/settings.js', 'server');
 	api.addFiles('server/models/Rooms.js', 'server');
 	api.addFiles('server/methods/jitsiSetTimeout.js', 'server');
-	api.addFiles('server/methods/jitsiIsActive.js', 'server');
+
 
 });
