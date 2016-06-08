@@ -43,6 +43,7 @@ Meteor.methods({
 		info.offlineSuccessMessage = initSettings.Livechat_offline_success_message;
 		info.offlineUnavailableMessage = initSettings.Livechat_offline_form_unavailable;
 		info.displayOfflineForm = initSettings.Livechat_display_offline_form;
+		info.language = initSettings.Language;
 
 		RocketChat.models.LivechatTrigger.find().forEach((trigger) => {
 			info.triggers.push(trigger);
