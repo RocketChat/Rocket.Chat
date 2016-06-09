@@ -42,8 +42,6 @@ Template.livechatInquiryItem.events({
 
         var inquiry = this;
 
-        console.log(inquiry.message);
-
         swal({
             title: 'Do you want to take this client?',
             text: 'message: ' + inquiry.message,
@@ -53,8 +51,7 @@ Template.livechatInquiryItem.events({
             confirmButtonText: 'Take it!'
         }, function (isConfirm) {
             if (isConfirm) {
-                // make server call 
-                console.log(inquiry);
+                // make server method call 
                 Meteor.call('livechat:takeInquiry', inquiry, Meteor.user());
             }
         });

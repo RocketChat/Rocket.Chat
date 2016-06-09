@@ -81,8 +81,6 @@ RocketChat.QueueMethods = {
 			}
 		});
 
-		console.log(agentIds);
-
 		var inquiry = {
 			rid: message.rid,
 			message: message.msg,

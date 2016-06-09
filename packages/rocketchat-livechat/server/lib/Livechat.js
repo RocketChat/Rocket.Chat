@@ -14,10 +14,8 @@ RocketChat.Livechat = {
 	},
 	getAgents(department) {
 		if (department) {
-			console.log('getForDepartment');
 			return RocketChat.models.LivechatDepartmentAgents.getForDepartment(department);
 		} else {
-			console.log('no departments');
 			return RocketChat.models.Users.findOnlineAgents();
 		}
 	},
