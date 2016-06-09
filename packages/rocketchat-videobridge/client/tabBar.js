@@ -7,9 +7,7 @@ Meteor.startup(function() {
 				let domain = RocketChat.settings.get('Jitsi_Domain');
 				let ssl = RocketChat.settings.get('Jitsi_SSL');
 
-				// Swap below url tomorrow after PR goes live on meet.jit.si
-				// '//' + domain + 'external_api.js'
-				$.getScript('https://cdn.rawgit.com/geekgonecrazy/jitsi-meet/master/external_api.js');
+				$.getScript('/packages/rocketchat_videobridge/client/public/external_api.js');
 			}
 
 			RocketChat.TabBar.addButton({
