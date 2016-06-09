@@ -46,7 +46,7 @@ Template.livechatInquiryItem.events({
             confirmButtonColor: '#3085d6',
             cancelButtonColor: '#d33',
             confirmButtonText: 'Take it!'
-        }, function (isConfirm) {
+        }, function(isConfirm) {
             if (isConfirm) {
                 // make server method call
                 Meteor.call('livechat:takeInquiry', inquiry, Meteor.user());

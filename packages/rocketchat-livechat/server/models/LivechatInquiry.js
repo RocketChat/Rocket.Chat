@@ -42,7 +42,7 @@ class LivechatInquiry extends RocketChat.models._Base {
 		RocketChat.models.Rooms.addUsernameById(inquiry.rid, agent.username);
 
 		// mark inquiry as taken
-		this.update({},{
+		this.update({}, {
 			$set: { status: 'taken' }
 		});
 	}

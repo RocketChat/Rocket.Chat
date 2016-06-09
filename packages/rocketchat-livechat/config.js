@@ -130,14 +130,14 @@ Meteor.startup(function() {
 		i18nLabel: 'Apiai_Language'
 	});
 
-	RocketChat.settings.add('Livechat_Routing_Method', 'Least_Amount', { 
-		type: 'select', 
+	RocketChat.settings.add('Livechat_Routing_Method', 'Least_Amount', {
+		type: 'select',
 		group: 'Livechat',
 		public: true,
 		values: [
 			{key: 'Least_Amount', i18nLabel: 'Least_Amount'},
 			// {key: 'Random', i18nLabel: 'Random'},
 			{key: 'Guest_Pool', i18nLabel: 'Guest_Pool'},
-		], 
+		],
 	});
 });

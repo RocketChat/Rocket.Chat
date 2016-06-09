@@ -39,7 +39,7 @@ Template.livechat.helpers({
 	inquiries() {
 		var user = Meteor.user();
 
-		// get all inquiries of the department 
+		// get all inquiries of the department
 		var inqs = LivechatInquiry.find({
 			agents: user._id,
 			status: 'open'
@@ -49,15 +49,15 @@ Template.livechat.helpers({
 			}
 		});
 
-		// for notification sound 
-		inqs.forEach(function (inq) {
+		// for notification sound
+		inqs.forEach(function(inq) {
 			KonchatNotification.newRoom(inq.rid);
 		});
 
 		return inqs;
 	},
 	guestPool() {
-		return RocketChat.settings.get('Livechat_Routing_Method') == 'Guest_Pool';
+		return RocketChat.settings.get('Livechat_Routing_Method') === 'Guest_Pool';
 	},
 	available() {
 		const user = Meteor.user();
@@ -87,5 +87,5 @@ Template.livechat.events({
 });
 
 Template.livechat.onCreated(function() {
- 	this.subscribe('livechat:inquiry');
+	this.subscribe('livechat:inquiry');
 });
