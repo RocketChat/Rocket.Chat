@@ -113,7 +113,7 @@ class CachedCollection {
 				this.log(`${data.records.length} records loaded from cache`);
 				data.records.forEach((record) => {
 					record.__cache__ = true;
-					this.collection._collection._docs.set(record._id, record);
+					this.collection.upsert({ _id: record._id }, _.omit(record, '_id'));
 
 					if (record._updatedAt) {
 						const _updatedAt = new Date(record._updatedAt);
@@ -122,7 +122,6 @@ class CachedCollection {
 						}
 					}
 				});
-				this.recomputeCollectionQueries();
 
 				callback(true);
 			} else {
@@ -135,7 +134,7 @@ class CachedCollection {
 		Meteor.call(this.methodName, (error, data) => {
 			this.log(`${data.length} records loaded from server`);
 			data.forEach((record) => {
-				this.collection._collection._docs.set(record._id, record);
+				this.collection.upsert({ _id: record._id }, _.omit(record, '_id'));
 
 				if (record._updatedAt && record._updatedAt > this.updatedAt) {
 					this.updatedAt = record._updatedAt;
