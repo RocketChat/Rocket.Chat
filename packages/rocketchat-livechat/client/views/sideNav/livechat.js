@@ -36,6 +36,29 @@ Template.livechat.helpers({
 			}
 		});
 	},
+	inquiries() {
+		var user = Meteor.user();
+
+		// get all inquiries of the department 
+		var inqs = LivechatInquiry.find({
+			agents: user._id,
+			status: 'open'
+		}, {
+			sort: {
+				'ts' : 1
+			}
+		});
+
+		// for notification sound 
+		inqs.forEach(function (inq) {
+			KonchatNotification.newRoom(inq.rid);
+		});
+
+		return inqs;
+	},
+	guestPool() {
+		return RocketChat.settings.get('Livechat_Routing_Method') == 'Guest_Pool';
+	},
 	available() {
 		const user = Meteor.user();
 		return {
@@ -61,4 +84,8 @@ Template.livechat.events({
 			}
 		});
 	}
+});
+
+Template.livechat.onCreated(function() {
+ 	this.subscribe('livechat:inquiry');
 });
