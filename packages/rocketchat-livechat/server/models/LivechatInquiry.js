@@ -13,36 +13,12 @@ class LivechatInquiry extends RocketChat.models._Base {
 	}
 
 	/*
-	 * User with uid takes the inquiry
-	 * subsribe user to room, remove inquiry from collection
+	 * mark the inquiry as taken
 	 */
-	takeInquiry(inquiry, agent) {
-
-		// add subscription
-		var subscriptionData = {
-			rid: inquiry.rid,
-			name: inquiry.name,
-			alert: true,
-			open: true,
-			unread: 1,
-			code: inquiry.code,
-			u: {
-				_id: agent._id,
-				username: agent.username
-			},
-			t: 'l',
-			desktopNotifications: 'all',
-			mobilePushNotifications: 'all',
-			emailNotifications: 'all',
-			answered: 'false',
-		};
-		RocketChat.models.Subscriptions.insert(subscriptionData);
-
-		// add user to room
-		RocketChat.models.Rooms.addUsernameById(inquiry.rid, agent.username);
-
-		// mark inquiry as taken
-		this.update({}, {
+	takeInquiry(inquiryId) {
+		this.update({
+			"_id": inquiryId
+		}, {
 			$set: { status: 'taken' }
 		});
 	}

@@ -111,4 +111,4 @@ RocketChat.QueueMethods = {
 
 		return room;
 	}
-}
+};
