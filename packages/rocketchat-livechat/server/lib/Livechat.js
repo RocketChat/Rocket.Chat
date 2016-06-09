@@ -14,6 +14,13 @@ RocketChat.Livechat = {
 			return RocketChat.models.Users.getNextAgent();
 		}
 	},
+	getAgents(department) {
+		if (department) {
+			return RocketChat.models.LivechatDepartmentAgents.getForDepartment(department);
+		} else {
+			return RocketChat.models.Users.findOnlineAgents();
+		}
+	},
 	sendMessage({ guest, message, roomInfo }) {
 		var room = RocketChat.models.Rooms.findOneById(message.rid);
 		var newRoom = false;
@@ -24,7 +31,6 @@ RocketChat.Livechat = {
 		}
 
 		if (room == null) {
-
 			// if no department selected verify if there is only one active and use it
 			if (!guest.department) {
 				var departments = RocketChat.models.LivechatDepartment.findEnabledWithAgents();
@@ -33,52 +39,9 @@ RocketChat.Livechat = {
 				}
 			}
 
-			const agent = RocketChat.Livechat.getNextAgent(guest.department);
-			if (!agent) {
-				throw new Meteor.Error('no-agent-online', 'Sorry, no online agents');
-			}
-
-			const roomCode = RocketChat.models.Rooms.getNextLivechatRoomCode();
-
-			room = _.extend({
-				_id: message.rid,
-				msgs: 1,
-				lm: new Date(),
-				code: roomCode,
-				label: guest.name || guest.username,
-				usernames: [agent.username, guest.username],
-				t: 'l',
-				ts: new Date(),
-				v: {
-					_id: guest._id,
-					token: message.token
-				},
-				servedBy: {
-					_id: agent.agentId,
-					username: agent.username
-				},
-				open: true
-			}, roomInfo);
-			let subscriptionData = {
-				rid: message.rid,
-				name: guest.name || guest.username,
-				alert: true,
-				open: true,
-				unread: 1,
-				answered: false,
-				code: roomCode,
-				u: {
-					_id: agent.agentId,
-					username: agent.username
-				},
-				t: 'l',
-				desktopNotifications: 'all',
-				mobilePushNotifications: 'all',
-				emailNotifications: 'all'
-			};
-
-			RocketChat.models.Rooms.insert(room);
-			RocketChat.models.Subscriptions.insert(subscriptionData);
+			// delegate room creation to QueueMethods
+			const routingMethod = RocketChat.settings.get('Livechat_Routing_Method');
+			room = RocketChat.QueueMethods[routingMethod](guest, message, roomInfo);
 
 			newRoom = true;
 		} else {
