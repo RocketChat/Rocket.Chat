@@ -52,22 +52,22 @@ class LivechatInquiry extends RocketChat.models._Base {
 
 	}
 
-	returnAsInquiry(roomId, agentId) {
-		// find out corresponding inquiry from room, 
+	// returnAsInquiry(roomId, agentId) {
+	// 	// find out corresponding inquiry from room, 
 
-		//get agent username 
+	// 	//get agent username 
 
-		// remove agent subscription 
-		RocketChat.models.Subscriptions.removeByRoomIdAndUserId(roomId, agentId);
+	// 	// remove agent subscription 
+	// 	RocketChat.models.Subscriptions.removeByRoomIdAndUserId(roomId, agentId);
 
-		// remove agent username from room 
-		RocketChat.models.Rooms.removeUsernameById(roomId, username);
+	// 	// remove agent username from room 
+	// 	RocketChat.models.Rooms.removeUsernameById(roomId, username);
 
-		// mark inquiry as open 
-		this.update({},{ 
-			$set: { status: 'open' } 
-		});
-	}
+	// 	// mark inquiry as open 
+	// 	this.update({},{ 
+	// 		$set: { status: 'open' } 
+	// 	});
+	// }
 }
 
 RocketChat.models.LivechatInquiry = new LivechatInquiry();
