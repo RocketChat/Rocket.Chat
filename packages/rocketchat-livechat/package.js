@@ -146,7 +146,7 @@ Package.onUse(function(api) {
 	// server lib
 	api.addFiles('server/lib/Livechat.js', 'server');
 	api.addFiles('server/lib/QueueMethods.js', 'server');
-	
+
 	api.addFiles('server/sendMessageBySMS.js', 'server');
 	api.addFiles('server/externalMessageHook.js', 'server');
 	api.addFiles('server/forwardUnclosedLivechats.js', 'server');

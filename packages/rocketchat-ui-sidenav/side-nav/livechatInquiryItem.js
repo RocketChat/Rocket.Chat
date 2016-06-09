@@ -6,9 +6,6 @@ Template.livechatInquiryItem.helpers({
     },
     unread: function() {
         return 1;
-        if ((FlowRouter.getParam('_id') !== this.rid || !document.hasFocus()) && this.unread > 0) {
-            return this.unread;
-        }
     },
     userStatus: function() {
         return 'status-' + (Session.get('user_' + this.name + '_status') || 'offline');
@@ -51,7 +48,7 @@ Template.livechatInquiryItem.events({
             confirmButtonText: 'Take it!'
         }, function (isConfirm) {
             if (isConfirm) {
-                // make server method call 
+                // make server method call
                 Meteor.call('livechat:takeInquiry', inquiry, Meteor.user());
             }
         });

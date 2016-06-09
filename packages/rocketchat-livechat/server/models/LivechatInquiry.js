@@ -3,9 +3,9 @@ class LivechatInquiry extends RocketChat.models._Base {
 		super();
 		this._initModel('livechat_inquiry');
 
-		this.tryEnsureIndex({ 'rid': 1 }); // room id corresponding to this inquiry 
+		this.tryEnsureIndex({ 'rid': 1 }); // room id corresponding to this inquiry
 		this.tryEnsureIndex({ 'name': 1 }); // name of the inquiry (client name for now)
-		this.tryEnsureIndex({ 'message': 1 }); // message sent by the client 
+		this.tryEnsureIndex({ 'message': 1 }); // message sent by the client
 		this.tryEnsureIndex({ 'ts': 1 }); // timestamp
 		this.tryEnsureIndex({ 'code': 1 }); // (for routing)
 		this.tryEnsureIndex({ 'agents': 1}); // Id's of the agents who can see the inquiry (handle departments)
@@ -14,7 +14,7 @@ class LivechatInquiry extends RocketChat.models._Base {
 
 	/*
 	 * User with uid takes the inquiry
-	 * subsribe user to room, remove inquiry from collection 
+	 * subsribe user to room, remove inquiry from collection
 	 */
 	takeInquiry(inquiry, agent) {
 
@@ -35,37 +35,32 @@ class LivechatInquiry extends RocketChat.models._Base {
 			mobilePushNotifications: 'all',
 			emailNotifications: 'all',
 			answered: 'false',
-			// assignment: 'view'
 		};
 		RocketChat.models.Subscriptions.insert(subscriptionData);
 
-		// add user to room 
+		// add user to room
 		RocketChat.models.Rooms.addUsernameById(inquiry.rid, agent.username);
 
-		// TODO: mark inquiry as taken 
-		this.update({},{ 
-			$set: { status: 'taken' } 
+		// mark inquiry as taken
+		this.update({},{
+			$set: { status: 'taken' }
 		});
-
-		// add status field 
-		// this.remove({_id: inquiry._id});	
-
 	}
 
 	// returnAsInquiry(roomId, agentId) {
-	// 	// find out corresponding inquiry from room, 
+	// 	// find out corresponding inquiry from room,
 
-	// 	//get agent username 
+	// 	//get agent username
 
-	// 	// remove agent subscription 
+	// 	// remove agent subscription
 	// 	RocketChat.models.Subscriptions.removeByRoomIdAndUserId(roomId, agentId);
 
-	// 	// remove agent username from room 
+	// 	// remove agent username from room
 	// 	RocketChat.models.Rooms.removeUsernameById(roomId, username);
 
-	// 	// mark inquiry as open 
-	// 	this.update({},{ 
-	// 		$set: { status: 'open' } 
+	// 	// mark inquiry as open
+	// 	this.update({},{
+	// 		$set: { status: 'open' }
 	// 	});
 	// }
 }
