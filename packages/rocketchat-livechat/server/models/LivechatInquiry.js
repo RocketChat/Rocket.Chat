@@ -17,7 +17,7 @@ class LivechatInquiry extends RocketChat.models._Base {
 	 */
 	takeInquiry(inquiryId) {
 		this.update({
-			"_id": inquiryId
+			'_id': inquiryId
 		}, {
 			$set: { status: 'taken' }
 		});
