@@ -9,7 +9,6 @@ Package.onUse(function(api) {
 	api.versionsFrom('1.0');
 
 	api.use([
-		'coffeescript',
 		'ecmascript',
 		'underscore',
 		'less@2.5.0',
@@ -17,6 +16,8 @@ Package.onUse(function(api) {
 	]);
 
 	api.use('templating', 'client');
+
+	api.addAssets('client/public/external_api.js', 'client');
 
 	api.addFiles('client/stylesheets/video.less', 'client');
 	api.addFiles('client/views/videoFlexTab.html', 'client');
