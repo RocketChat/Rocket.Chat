@@ -37,7 +37,7 @@ RocketChat.Livechat = {
 				}
 			}
 
-			// delegate room creation to QueueMethods 
+			// delegate room creation to QueueMethods
 			const routingMethod = RocketChat.settings.get('Livechat_Routing_Method');
 			room = RocketChat.QueueMethods[routingMethod](guest, message, roomInfo);
 

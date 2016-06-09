@@ -2,9 +2,9 @@ RocketChat.QueueMethods = {
 	/* Least Amount Queuing method:
 	 *
 	 * default method where the agent with the least number
-	 * of open chats is paired with the incoming livechat 
+	 * of open chats is paired with the incoming livechat
 	 */
-	'Least_Amount' : function (guest, message, roomInfo) {
+	'Least_Amount' : function(guest, message, roomInfo) {
 		const agent = RocketChat.Livechat.getNextAgent(guest.department);
 		if (!agent) {
 			throw new Meteor.Error('no-agent-online', 'Sorry, no online agents');
@@ -56,14 +56,14 @@ RocketChat.QueueMethods = {
 	},
 	/* Guest Pool Queuing Method:
 	 *
-	 * An incomming livechat is created as an Inquiry 
-	 * which is picked up from an agent. 
+	 * An incomming livechat is created as an Inquiry
+	 * which is picked up from an agent.
 	 * An Inquiry is visible to all agents (TODO: in the correct department)
-     * 
-	 * A room is still created with the initial message, but it is occupied by 
-	 * only the client until paired with an agent 
+     *
+	 * A room is still created with the initial message, but it is occupied by
+	 * only the client until paired with an agent
 	 */
-	'Guest_Pool' : function (guest, message, roomInfo) {
+	'Guest_Pool' : function(guest, message, roomInfo) {
 		const agents = RocketChat.Livechat.getAgents(guest.department);
 		if (!agents) {
 			throw new Meteor.Error('no-agent-online', 'Sorry, no online agents');
@@ -90,7 +90,7 @@ RocketChat.QueueMethods = {
 			department: guest.department,
 			agents: agentIds,
 			status: 'open'
-		}
+		};
 		room = _.extend({
 			_id: message.rid,
 			msgs: 1,
@@ -108,7 +108,7 @@ RocketChat.QueueMethods = {
 		}, roomInfo);
 		RocketChat.models.LivechatInquiry.insert(inquiry);
 		RocketChat.models.Rooms.insert(room);
-		
+
 		return room;
 	}
 }

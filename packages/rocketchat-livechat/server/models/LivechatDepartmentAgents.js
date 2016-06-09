@@ -90,7 +90,7 @@ class LivechatDepartmentAgents extends RocketChat.models._Base {
 		};
 
 		var agents = this.find(query);
-		
+
 		if (agents) {
 			return agents;
 		}
