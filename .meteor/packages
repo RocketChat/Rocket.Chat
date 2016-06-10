@@ -36,6 +36,7 @@ spacebars
 standard-minifiers
 tracker
 
+rocketchat:action-links
 rocketchat:api
 rocketchat:assets
 rocketchat:authorization
@@ -51,19 +52,19 @@ rocketchat:file
 rocketchat:file-upload
 rocketchat:github-enterprise
 rocketchat:gitlab
-rocketchat:highlight
 rocketchat:highlight-words
+rocketchat:iframe-login
 rocketchat:importer
 rocketchat:importer-hipchat
 rocketchat:importer-slack
 rocketchat:integrations
+rocketchat:katex
 rocketchat:ldap
 rocketchat:lib
 rocketchat:livechat
 rocketchat:logger
 rocketchat:mailer
 rocketchat:markdown
-rocketchat:me
 rocketchat:mentions
 rocketchat:mentions-flextab
 rocketchat:message-attachments
@@ -73,15 +74,21 @@ rocketchat:migrations
 rocketchat:oauth2-server-config
 rocketchat:oembed
 rocketchat:otr
+rocketchat:piwik
 rocketchat:push-notifications
 rocketchat:reactions
+rocketchat:slackbridge
+rocketchat:slashcommands-asciiarts
 rocketchat:slashcommands-invite
 rocketchat:slashcommands-join
 rocketchat:slashcommands-kick
 rocketchat:slashcommands-leave
+rocketchat:slashcommands-me
 rocketchat:slashcommands-mute
+rocketchat:slashcommands-topic
 rocketchat:spotify
 rocketchat:statistics
+rocketchat:streamer
 rocketchat:theme
 rocketchat:tooltip
 rocketchat:tutum
@@ -107,7 +114,6 @@ konecty:multiple-instances-status
 konecty:nrr
 konecty:user-presence
 
-rocketchat:streamer
 arunoda:streams
 chrismbeckett:toastr
 dispatch:run-as-user
@@ -133,17 +139,13 @@ percolate:synced-cron
 raix:handlebar-helpers
 raix:push
 raix:ui-dropped-event
+smoral:sweetalert
 steffo:meteor-accounts-saml
 tmeasday:crypto-md5
 todda00:friendly-slugs
 underscorestring:underscore.string
 yasaricli:slugify
 yasinuslu:blaze-meta
-# sanjo:jasmine
-# velocity:html-reporter
-smoral:sweetalert
-rocketchat:iframe-login
-rocketchat:katex
 learnersguild:rocketchat-lg-sso
 learnersguild:rocketchat-lg-slash-commands
 learnersguild:rocketchat-lg-api-extensions

@@ -29,7 +29,7 @@ Template.userInfo.helpers
 			return moment(user.createdAt).format('LLL')
 
 	canDirectMessage: (username) ->
-		return Meteor.user()?.username isnt username
+		return RocketChat.authz.hasAllPermission('create-d') and Meteor.user()?.username isnt username
 
 	linkedinUsername: ->
 		user = Template.instance().user.get()
@@ -102,6 +102,11 @@ Template.userInfo.helpers
 					if user?.username isnt username
 						instance.loadedUsername.set username
 		}
+
+	roleTags: ->
+		uid = Template.instance().user.get()?._id
+		roles = _.union(UserRoles.findOne(uid)?.roles, RoomRoles.findOne({'u._id': uid, rid: Session.get('openedRoom') })?.roles)
+		return RocketChat.models.Roles.find({ _id: { $in: roles }, description: { $exists: 1 } }, { fields: { description: 1 } })
 
 Template.userInfo.events
 	'click .thumb': (e) ->
@@ -380,4 +385,3 @@ Template.userInfo.onCreated ->
 		user = Meteor.users.findOne(filter)
 
 		@user.set user
-

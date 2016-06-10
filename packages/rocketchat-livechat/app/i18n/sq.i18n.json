@@ -1,6 +1,7 @@
 {
   "Additional_Feedback" : "Feedback shtesë",
   "Appearance" : "shfaqje",
+  "Conversation_finished" : "biseda përfunduar",
   "How_friendly_was_the_chat_agent" : "Si friendly ishte agjenti chat?",
   "How_knowledgeable_was_the_chat_agent" : "Si i ditur ishte agjenti chat?",
   "How_responsive_was_the_chat_agent" : "Si përgjegjshme ishte agjenti chat?",
@@ -9,10 +10,18 @@
   "Please_answer_survey" : "Ju lutem, ndalo një moment për t'iu përgjigjur një anketë të shpejtë në lidhje me këtë bisedë",
   "Please_fill_name_and_email" : "Ju lutemi plotësoni emrin dhe e-mail",
   "Select_a_department" : "Zgjidh një departament",
+  "Send" : "dërgoj",
   "Skip" : "Kalo",
   "Start_Chat" : "Fillo bisedën",
   "Survey" : "studim",
   "Survey_instructions" : "Vlerësoni çdo pyetje në përputhje me kënaqësinë tuaj, 1 të thotë që ju jeni plotësisht të pakënaqur dhe 5 të thotë që ju jeni të kënaqur plotësisht.",
   "Thank_you_for_your_feedback" : "Faleminderit për komentin tuaj",
-  "We_are_offline_Sorry_for_the_inconvenience" : "Ne jemi offline. Na vjen keq për bezdisjen."
+  "Thanks_We_ll_get_back_to_you_soon" : "Faleminderit! Ne do të kthehemi tek ju së shpejti.",
+  "Type_your_email" : "Lloji email-it tuaj",
+  "Type_your_message" : "Shkruani mesazhin tuaj",
+  "Type_your_name" : "Shkruani emrin tuaj",
+  "User_joined" : "User bashkua",
+  "User_left" : "majtë User",
+  "We_are_offline_Sorry_for_the_inconvenience" : "Ne jemi offline. Na vjen keq për bezdisjen.",
+  "You_must_complete_all_fields" : "Ju duhet të plotësoni të gjitha fushat"
 }

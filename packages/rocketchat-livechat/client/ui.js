@@ -23,10 +23,7 @@ RocketChat.roomTypes.add('l', 5, {
 
 	roomName(roomData) {
 		if (!roomData.name) {
-			const sub = ChatSubscription.findOne({ rid: roomData._id }, { fields: { name: 1 } });
-			if (sub) {
-				return sub.name;
-			}
+			return roomData.label;
 		} else {
 			return roomData.name;
 		}

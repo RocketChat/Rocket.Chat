@@ -3,8 +3,9 @@ lib/ua-parser.min.js
 private/moment-locales/
 packages/autoupdate/
 packages/meteor-streams/
+packages/meteor-timesync/
 packages/rocketchat-migrations/
-packages/rocketchat-katex/client/lib/katex.min.js
+packages/rocketchat-katex/client/katex/katex.min.js
 packages/rocketchat-favico/favico.js
 packages/rocketchat-theme/client/minicolors/jquery.minicolors.js
 packages/rocketchat-emojione/generateEmojiIndex.js

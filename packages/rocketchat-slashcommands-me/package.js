@@ -1,5 +1,5 @@
 Package.describe({
-	name: 'rocketchat:me',
+	name: 'rocketchat:slashcommands-me',
 	version: '0.0.1',
 	summary: 'Message pre-processor that will translate /me commands',
 	git: ''

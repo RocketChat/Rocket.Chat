@@ -5,6 +5,9 @@ Template.mentionsFlexTab.helpers
 	messages: ->
 		return MentionedMessage.find { rid: @rid }, { sort: { ts: -1 } }
 
+	message: ->
+		return _.extend(this, { customClass: 'mentions' })
+
 	notReadySubscription: ->
 		return 'notready' unless Template.instance().subscriptionsReady()
 
@@ -24,7 +27,7 @@ Template.mentionsFlexTab.events
 		e.stopPropagation()
 		e.preventDefault()
 		message_id = $(e.currentTarget).closest('.message').attr('id')
-		$('.message-dropdown:visible').hide()
+		RocketChat.MessageAction.hideDropDown()
 		t.$("\##{message_id} .message-dropdown").remove()
 		message = MentionedMessage.findOne message_id
 		actions = RocketChat.MessageAction.getButtons message, 'mentions'

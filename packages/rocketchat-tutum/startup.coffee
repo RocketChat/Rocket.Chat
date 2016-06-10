@@ -9,14 +9,16 @@ if process.env.DOCKERCLOUD_REDIS_HOST?
 	redis = Npm.require 'redis'
 
 	client = redis.createClient(process.env.DOCKERCLOUD_REDIS_HOST)
-
 	client.del("frontend:#{process.env.DOCKERCLOUD_CLIENT_HOST}")
 	client.rpush("frontend:#{process.env.DOCKERCLOUD_CLIENT_HOST}", process.env.DOCKERCLOUD_CLIENT_NAME)
 	client.rpush("frontend:#{process.env.DOCKERCLOUD_CLIENT_HOST}", "http://#{process.env.DOCKERCLOUD_IP_ADDRESS.split('/')[0]}:3000")
+	client.quit()
 
 	# removes the redis entry in 90 seconds on a SIGTERM
 	process.on 'SIGTERM', ->
+		client = redis.createClient(process.env.DOCKERCLOUD_REDIS_HOST)
 		client.expire("frontend:#{process.env.DOCKERCLOUD_CLIENT_HOST}", 90)
+		client.quit()
 
 	day = 86400000
 
@@ -29,7 +31,9 @@ if process.env.DOCKERCLOUD_REDIS_HOST?
 		subscription = RocketChat.models.Subscriptions.findOne({ls: {$exists: true}}, {sort: {ls: -1}, fields: {ls: 1}})
 
 		if not subscription? or Date.now() - subscription.ls > inactiveDays * day
+			client = redis.createClient(process.env.DOCKERCLOUD_REDIS_HOST)
 			client.del("frontend:#{process.env.DOCKERCLOUD_CLIENT_HOST}")
+			client.quit()
 			process.exit 0
 
 	Meteor.setInterval ->

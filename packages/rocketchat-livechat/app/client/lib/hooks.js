@@ -1,3 +1,5 @@
+/* globals CustomFields */
+
 var api = {
 	pageVisited: function(info) {
 		Triggers.processRequest(info);

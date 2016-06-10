@@ -36,6 +36,9 @@ Template.listChannelsFlex.events
 			t.limit.set(t.limit.get() + 50)
 	, 200
 
+	'submit .search-form': (e) ->
+		e.preventDefault()
+
 	'keyup #channel-search': _.debounce (e, instance) ->
 		instance.nameFilter.set($(e.currentTarget).val())
 	, 300

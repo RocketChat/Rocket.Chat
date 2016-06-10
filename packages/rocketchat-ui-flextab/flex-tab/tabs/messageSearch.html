@@ -23,7 +23,7 @@
 			{{#if currentSearchTerm}}
 				{{#if searchResultMessages}}
 					{{#each searchResultMessages}}
-						{{#nrr nrrargs 'message' .}}{{/nrr}}
+						{{#nrr nrrargs 'message' message}}{{/nrr}}
 					{{/each}}
 					{{#if hasMore}}
 						<li class="load-more">

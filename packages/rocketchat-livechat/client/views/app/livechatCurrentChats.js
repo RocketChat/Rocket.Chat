@@ -7,9 +7,6 @@ Template.livechatCurrentChats.helpers({
 	},
 	lastMessage() {
 		return moment(this.lm).format('L LTS');
-	},
-	name() {
-		return 'Livechat ' + this.code;
 	}
 });
 

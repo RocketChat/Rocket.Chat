@@ -1,5 +1,7 @@
 Meteor.methods
 	joinRoom: (rid) ->
+		if not Meteor.userId()
+			throw new Meteor.Error 'error-invalid-user', 'Invalid user', { method: 'joinRoom' }
 
 		room = RocketChat.models.Rooms.findOneById rid
 

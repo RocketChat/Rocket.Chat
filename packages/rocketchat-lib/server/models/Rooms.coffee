@@ -16,6 +16,12 @@ RocketChat.models.Rooms = new class extends RocketChat.models._Base
 
 		return @findOne query, options
 
+	findOneByImportId: (_id, options) ->
+		query =
+			importIds: _id
+
+		return @findOne query, options
+
 	findOneByName: (name, options) ->
 		query =
 			name: name
@@ -47,8 +53,11 @@ RocketChat.models.Rooms = new class extends RocketChat.models._Base
 
 
 	# FIND
-	findById: (roomId) ->
+	findById: (roomId, options) ->
 		return @find { _id: roomId }, options
+
+	findByIds: (roomIds, options) ->
+		return @find { _id: $in: [].concat roomIds }, options
 
 	findByType: (type, options) ->
 		query =
@@ -157,7 +166,7 @@ RocketChat.models.Rooms = new class extends RocketChat.models._Base
 
 		return @find query, options
 
-	findByTypeAndNameContainigUsername: (type, name, username, options) ->
+	findByTypeAndNameContainingUsername: (type, name, username, options) ->
 		query =
 			name: name
 			t: type

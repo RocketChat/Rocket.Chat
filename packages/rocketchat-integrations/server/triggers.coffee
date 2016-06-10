@@ -94,18 +94,33 @@ executeScript = (integration, method, params) ->
 
 RocketChat.models.Integrations.find({type: 'webhook-outgoing'}).observe
 	added: (record) ->
-		channel = record.channel or '__any'
-		triggers[channel] ?= {}
-		triggers[channel][record._id] = record
+		if _.isEmpty(record.channel)
+			channels = [ '__any' ]
+		else
+			channels = [].concat(record.channel)
+
+		for channel in channels
+			triggers[channel] ?= {}
+			triggers[channel][record._id] = record
 
 	changed: (record) ->
-		channel = record.channel or '__any'
-		triggers[channel] ?= {}
-		triggers[channel][record._id] = record
+		if _.isEmpty(record.channel)
+			channels = [ '__any' ]
+		else
+			channels = [].concat(record.channel)
+
+		for channel in channels
+			triggers[channel] ?= {}
+			triggers[channel][record._id] = record
 
 	removed: (record) ->
-		channel = record.channel or '__any'
-		delete triggers[channel][record._id]
+		if _.isEmpty(record.channel)
+			channels = [ '__any' ]
+		else
+			channels = [].concat(record.channel)
+
+		for channel in channels
+			delete triggers[channel][record._id]
 
 
 ExecuteTriggerUrl = (url, trigger, message, room, tries=0) ->
@@ -144,9 +159,9 @@ ExecuteTriggerUrl = (url, trigger, message, room, tries=0) ->
 			emoji: trigger.emoji
 
 		if room.t is 'd'
-			defaultValues.channel = '@'+room._id
+			message.channel = '@'+room._id
 		else
-			defaultValues.channel = '#'+room._id
+			message.channel = '#'+room._id
 
 		message = processWebhookMessage message, user, defaultValues
 

@@ -37,3 +37,6 @@ Template.messageAttachment.helpers
 			return this.collapsed
 		else
 			return Meteor.user()?.settings?.preferences?.collapseMediaByDefault is true
+
+	time: ->
+		return moment(@ts).format(RocketChat.settings.get('Message_TimeFormat'))

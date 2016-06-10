@@ -15,6 +15,11 @@ Meteor.startup ->
 				if error
 					return handleError(error)
 		validation: (message) ->
+			room = RocketChat.models.Rooms.findOne({ _id: message.rid })
+
+			if Array.isArray(room.usernames) && room.usernames.indexOf(Meteor.user().username) is -1
+				return false
+
 			return RocketChat.settings.get('Message_AllowStarring') and not message.starred
 		order: 10
 
@@ -34,6 +39,11 @@ Meteor.startup ->
 				if error
 					return handleError(error)
 		validation: (message) ->
+			room = RocketChat.models.Rooms.findOne({ _id: message.rid })
+
+			if Array.isArray(room.usernames) && room.usernames.indexOf(Meteor.user().username) is -1
+				return false
+
 			return RocketChat.settings.get('Message_AllowStarring') and message.starred
 		order: 10
 
@@ -46,6 +56,35 @@ Meteor.startup ->
 		]
 		action: (event, instance) ->
 			message = @_arguments[1]
-			$('.message-dropdown:visible').hide()
+			RocketChat.MessageAction.hideDropDown()
 			RoomHistoryManager.getSurroundingMessages(message, 50)
+		validation: (message) ->
+			room = RocketChat.models.Rooms.findOne({ _id: message.rid })
+
+			if Array.isArray(room.usernames) && room.usernames.indexOf(Meteor.user().username) is -1
+				return false
+				
+			return true
 		order: 100
+
+	RocketChat.MessageAction.addButton
+		id: 'permalink-star'
+		icon: 'icon-link'
+		i18nLabel: 'Permalink'
+		classes: 'clipboard'
+		context: [
+			'starred'
+		]
+		action: (event, instance) ->
+			message = @_arguments[1]
+			RocketChat.MessageAction.hideDropDown()
+			$(event.currentTarget).attr('data-clipboard-text', RocketChat.MessageAction.getPermaLink(message._id));
+			toastr.success(TAPi18n.__('Copied'))
+		validation: (message) ->
+			room = RocketChat.models.Rooms.findOne({ _id: message.rid })
+
+			if Array.isArray(room.usernames) && room.usernames.indexOf(Meteor.user().username) is -1
+				return false
+				
+			return true
+		order: 101

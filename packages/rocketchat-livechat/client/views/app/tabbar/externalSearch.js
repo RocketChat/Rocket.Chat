@@ -1,12 +1,11 @@
 Template.externalSearch.helpers({
 	messages() {
-		console.log('messages helper');
 		return RocketChat.models.LivechatExternalMessage.findByRoomId(this.rid, { ts: 1 });
 	}
 });
 
 Template.externalSearch.events({
-	'click a.pick-message'(event, instance) {
+	'click button.pick-message'(event, instance) {
 		event.preventDefault();
 
 		$('#chat-window-' + instance.roomId + ' .input-message').val(this.msg).focus();

@@ -5,6 +5,9 @@ Template.starredMessages.helpers
 	messages: ->
 		return StarredMessage.find { rid: @rid }, { sort: { ts: -1 } }
 
+	message: ->
+		return _.extend(this, { customClass: 'starred' })
+
 	hasMore: ->
 		return Template.instance().hasMore.get()
 
@@ -22,7 +25,7 @@ Template.starredMessages.events
 		e.stopPropagation()
 		e.preventDefault()
 		message_id = $(e.currentTarget).closest('.message').attr('id')
-		$('.message-dropdown:visible').hide()
+		RocketChat.MessageAction.hideDropDown()
 		t.$("\##{message_id} .message-dropdown").remove()
 		message = StarredMessage.findOne message_id
 		actions = RocketChat.MessageAction.getButtons message, 'starred'

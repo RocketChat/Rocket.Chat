@@ -1,5 +1,8 @@
 Meteor.methods
 	muteUserInRoom: (data) ->
+		if not Meteor.userId()
+			throw new Meteor.Error 'error-invalid-user', 'Invalid user', { method: 'muteUserInRoom' }
+
 		fromId = Meteor.userId()
 		check(data, Match.ObjectIncluding({ rid: String, username: String }))
 

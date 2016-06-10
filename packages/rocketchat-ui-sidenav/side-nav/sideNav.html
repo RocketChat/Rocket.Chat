@@ -17,9 +17,11 @@
 						{{/if}}
 					{{/each}}
 
-					<h3 class="history-div">
-						<a href="{{pathFor 'privateHistory'}}">{{_ "History"}}</a>
-					</h3>
+					{{#if canViewHistory}}
+						<h3 class="history-div">
+							<a href="{{pathFor 'privateHistory'}}">{{_ "History"}}</a>
+						</h3>
+					{{/if}}
 				</div>
 			</div>
 			<div class="unread-rooms bottom-unread-rooms hidden">
