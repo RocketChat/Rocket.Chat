@@ -10,7 +10,7 @@ This is Learners Guild's custom fork of Rocket.Chat. The primary difference is t
 
 3. Setup and run [mehserve][mehserve]. Then figure out which port you intend to use and create the mehserve config file:
 
-        $ echo 3000 > ~/.mehserve/chat.learnersguild
+        $ echo 3000 > ~/.mehserve/echo.learnersguild
 
 4. Set your `NODE_ENV` environment variable:
 
@@ -18,8 +18,7 @@ This is Learners Guild's custom fork of Rocket.Chat. The primary difference is t
 
 5. Create your `.env` file for your environment. Example:
 
-        APP_BASEURL=http://chat.learnersguild.dev
-        ROOT_URL=http://chat.learnersguild.dev/
+        ROOT_URL=http://echo.learnersguild.dev/
         CHAT_API_USER_SECRET='s3cr3t-p@ssw0rd'
         JWT_PUBLIC_KEY="<IDM PUBLIC KEY (let it
         span

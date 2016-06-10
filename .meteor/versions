@@ -42,6 +42,7 @@ edgee:slingshot@0.7.1
 ejson@1.0.7
 email@1.0.8
 emojione:emojione@2.1.4
+evaisse:http-query-string@0.0.1
 facebook@1.2.2
 fastclick@1.0.7
 francocatena:status@1.5.1
@@ -72,8 +73,8 @@ konecty:nrr@2.0.2
 konecty:user-presence@1.2.8
 launch-screen@1.0.4
 learnersguild:rocketchat-lg-api-extensions@0.2.4
-learnersguild:rocketchat-lg-slash-commands@0.7.0
-learnersguild:rocketchat-lg-sso@0.5.1
+learnersguild:rocketchat-lg-slash-commands@0.7.1
+learnersguild:rocketchat-lg-sso@0.5.2
 less@2.5.1
 livedata@1.0.15
 localstorage@1.0.5
