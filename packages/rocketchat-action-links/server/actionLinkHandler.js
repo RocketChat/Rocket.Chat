@@ -6,7 +6,7 @@ Meteor.methods({
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'actionLinkHandler' });
 		}
 
-		var message = RocketChat.models.Messages.findOneById(messageId);
+		var message = RocketChat.models.Messages.findOne({ _id: messageId });
 		if (!message) {
 			throw new Meteor.Error('error-invalid-message', 'Invalid message', { method: 'actionLinkHandler' });
 		}
@@ -16,7 +16,8 @@ Meteor.methods({
 			throw new Meteor.Error('error-invalid-actionlink', 'Invalid action link', { method: 'actionLinkHandler' });
 		}
 
-		if (!Meteor.call('canAccessRoom', message.rid, Meteor.userId())) {
+		var room = RocketChat.models.Rooms.findOne({ _id: message.rid });
+		if (Array.isArray(room.usernames) && room.usernames.indexOf(Meteor.user().username) === -1) {
 			throw new Meteor.Error('error-not-allowed', 'Not allowed', { method: 'actionLinkHandler' });
 		}
 
