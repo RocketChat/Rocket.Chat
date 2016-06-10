@@ -25,5 +25,15 @@ Meteor.startup(function() {
 			i18nLabel: 'SSL',
 			public: true
 		});
+
+		this.add('Jitsi_Enable_Channels', false, {
+			type: 'boolean',
+			enableQuery: {
+				_id: 'Jitsi_Enabled',
+				value: true
+			},
+			i18nLabel: 'Jitsi_Enable_Channels',
+			public: true
+		});
 	});
 });

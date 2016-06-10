@@ -10,8 +10,14 @@ Meteor.startup(function() {
 				$.getScript('/packages/rocketchat_videobridge/client/public/external_api.js');
 			}
 
+			let tabGroups = ['directmessage', 'privategroup'];
+
+			if (RocketChat.settings.get('Jitsi_Enable_Channels')) {
+				tabGroups.push('channel');
+			}
+
 			RocketChat.TabBar.addButton({
-				groups: ['directmessage', 'privategroup'],
+				groups: tabGroups,
 				id: 'video',
 				i18nTitle: 'Video Chat',
 				icon: 'icon-videocam',
