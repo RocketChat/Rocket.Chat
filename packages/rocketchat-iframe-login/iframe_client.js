@@ -272,7 +272,7 @@ window.addEventListener('message', (e) => {
 					// 	"givenName": "Rodrigo",
 					// 	"familyName": "Nascimento",
 					// 	"ageRangeMin": 21,
-					// 	"oauthToken": "123198273kajhsdh1892h"
+					// 	"accessToken": "123198273kajhsdh1892h"
 					// }
 				}, e.origin);
 			};
@@ -298,7 +298,7 @@ window.addEventListener('message', (e) => {
 							imageUrl: serviceData.picture,
 							givenName: serviceData.given_name,
 							familyName: serviceData.family_name,
-							oauthToken: serviceData.accessToken
+							accessToken: serviceData.accessToken
 						});
 					}
 				});
