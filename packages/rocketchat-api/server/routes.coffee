@@ -110,3 +110,26 @@ RocketChat.API.v1.addRoute 'groups.list', authRequired: true,
 	get: ->
 		roomIds = _.pluck RocketChat.models.Subscriptions.findByTypeAndUserId('p', @userId).fetch(), 'rid'
 		return { groups: RocketChat.models.Rooms.findByIds(roomIds).fetch() }
+
+# List all users
+RocketChat.API.v1.addRoute 'users.list', authRequired: true,
+	get: ->
+		return { users: RocketChat.models.Users.find().fetch() }
+
+# Delete User
+RocketChat.API.v1.addRoute 'users.delete', authRequired: true,
+	post: ->
+		if not @bodyParams.userId?
+			return RocketChat.API.v1.failure 'Body param "userId" is required'
+
+		if not RocketChat.authz.hasPermission(@userId, 'delete-user')
+			return RocketChat.API.v1.unauthorized()
+
+		id = undefined
+		try
+			Meteor.runAsUser this.userId, =>
+				id = Meteor.call 'deleteUser', @bodyParams.userId, []
+		catch e
+			return RocketChat.API.v1.failure e.name + ': ' + e.message
+
+		return RocketChat.API.v1.success
