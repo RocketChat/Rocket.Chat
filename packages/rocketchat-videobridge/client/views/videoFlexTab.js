@@ -18,7 +18,9 @@ Template.videoFlexTab.onCreated(function() {
 	let height = 500;
 
 	let configOverwrite = {};
-	let interfaceConfigOverwrite = {};
+	let interfaceConfigOverwrite = {'SHOW_JITSI_WATERMARK': false
+		};
+	
 
 	this.timeout = null;
 	this.autorun(() => {
