@@ -18,10 +18,16 @@ Template.sideNav.helpers
 		return RocketChat.roomTypes.getTypes()
 
 	canShowRoomType: ->
-		return RocketChat.roomTypes.checkCondition(@) and @template isnt 'privateGroups'
+		if RocketChat.settings.get('UI_Merge_Channels_Groups')
+			return RocketChat.roomTypes.checkCondition(@) and @template isnt 'privateGroups'
+		else
+			return RocketChat.roomTypes.checkCondition(@)
 
 	templateName: ->
-		return if @template is 'channels' then 'combined' else @template
+		if RocketChat.settings.get('UI_Merge_Channels_Groups')
+			return if @template is 'channels' then 'combined' else @template
+		else
+			return @template
 
 Template.sideNav.events
 	'click .close-flex': ->
