@@ -133,3 +133,26 @@ RocketChat.API.v1.addRoute 'users.delete', authRequired: true,
 			return RocketChat.API.v1.failure e.name + ': ' + e.message
 
 		return RocketChat.API.v1.success
+
+# Create Private Group
+RocketChat.API.v1.addRoute 'privategroup.create', authRequired: true,
+	post: ->
+		if not @bodyParams.name?
+			return RocketChat.API.v1.failure 'Body param "name" is required'
+
+		if not RocketChat.authz.hasPermission(@userId, 'create-p')
+			return RocketChat.API.v1.unauthorized()
+
+		id = undefined
+		try
+			if not @bodyParams.members?
+				Meteor.runAsUser this.userId, =>
+					id = Meteor.call 'createPrivateGroup', @bodyParams.name, []
+			else
+			  Meteor.runAsUser this.userId, =>
+				  id = Meteor.call 'createPrivateGroup', @bodyParams.name, @bodyParams.members, []
+		catch e
+			return RocketChat.API.v1.failure e.name + ': ' + e.message
+
+		return RocketChat.API.v1.success
+			channel: RocketChat.models.Rooms.findOne({_id: id.rid})
