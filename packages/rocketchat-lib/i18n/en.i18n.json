@@ -1082,6 +1082,7 @@
   "Type_your_name" : "Type your name",
   "Type_your_new_password" : "Type your new password",
   "UI_DisplayRoles" : "Display Roles",
+  "UI_Merge_Channels_Groups" : "Merge private groups with channels",
   "Unarchive" : "Unarchive",
   "Unmute_someone_in_room" : "Unmute someone in the room",
   "Unmute_user" : "Unmute user",
