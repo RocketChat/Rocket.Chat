@@ -1,0 +1,74 @@
+<template name="listCombinedFlex">
+	<header>
+		<div>
+			<h4>{{_ "Channels"}}</h4>
+		</div>
+	</header>
+	<div class="content">
+		<div class="wrapper">
+			<div class="flex-control">
+				<div class="search">
+					<form class="search-form" role="form">
+						<div class="input-line search">
+							<select class="c-select" id="show">
+								<option value="joined" selected="{{showSelected 'joined'}}">{{_ "Joined"}}</option>
+								<option value="all" selected="{{showSelected 'all'}}">{{_ "All"}}</option>
+							</select>
+							<i class="icon-comment"></i>
+						</div>
+						<div class="input-line search">
+							<select class="c-select" id="sort-channels">
+								<option value="name" selected="{{sortChannelsSelected 'name'}}">{{_ "Name"}}</option>
+								<option value="msgs" selected="{{sortChannelsSelected 'msgs'}}">{{_ "Number_of_messages"}}</option>
+							</select>
+							<select class="c-select" id="sort-subscriptions" style="display: none">
+								<option value="name" selected="{{sortSubscriptionsSelected 'name'}}">{{_ "Name"}}</option>
+								<option value="ls" selected="{{sortSubscriptionsSelected 'ls'}}">{{_ "Last_seen"}}</option>
+							</select>
+							<i class="icon-sort-alt-up"></i>
+						</div>
+						<div class="input-line search">
+							<input type="text" id="channel-search" class="search" placeholder="{{_ "Search_Channels"}}" autocomplete="off" />
+							<i class="icon-right-open-small"></i>
+						</div>
+					</form>
+				</div>
+			</div>
+			<h4>{{_ "Channels_list"}}</h4>
+			<ul>
+			{{#each channel}}
+				<li>
+					<a href="{{pathFor url name=name}}" class="channel-link">
+						<i class="{{roomIcon}}"></i>
+						{{name}}
+						<span class='opt fixed'>
+							{{#if member}}
+							<i class="icon-eye" title="{{_ "Open"}}" aria-label="{{_ "Open"}}"></i>
+							{{/if}}
+							{{#if hidden}}
+							<i class="icon-eye-off" title="{{_ "Hidden"}}" aria-label="{{_ "Hidden"}}"></i>
+							{{/if}}
+						</span>
+					</a>
+				</li>
+			{{/each}}
+			{{#if hasMore}}
+				<li class="load-more">
+					{{#if Template.subscriptionsReady}}
+						<button>{{_ "Has_more"}}...</button>
+					{{else}}
+						<div class="load-more-loading">{{_ "Loading..."}}</div>
+					{{/if}}
+				</li>
+			{{/if}}
+			</ul>
+		</div>
+	</div>
+	<footer>
+		<div>
+		{{#if canCreate}}
+			<button class="button clean create">{{_ "Create_new"}}</button>
+		{{/if}}
+		</div>
+	</footer>
+</template>
