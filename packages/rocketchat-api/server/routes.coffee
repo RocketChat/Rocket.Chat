@@ -114,6 +114,9 @@ RocketChat.API.v1.addRoute 'groups.list', authRequired: true,
 # List all users
 RocketChat.API.v1.addRoute 'users.list', authRequired: true,
 	get: ->
+		if RocketChat.authz.hasRole(@userId, 'admin') is false
+						return RocketChat.API.v1.unauthorized()
+
 		return { users: RocketChat.models.Users.find().fetch() }
 
 # Delete User
