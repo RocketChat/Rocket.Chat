@@ -73,7 +73,7 @@ konecty:nrr@2.0.2
 konecty:user-presence@1.2.8
 launch-screen@1.0.4
 learnersguild:rocketchat-lg-api-extensions@0.2.4
-learnersguild:rocketchat-lg-slash-commands@0.7.1
+learnersguild:rocketchat-lg-slash-commands@0.8.0
 learnersguild:rocketchat-lg-sso@0.5.3
 less@2.5.1
 livedata@1.0.15
