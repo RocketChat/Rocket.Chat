@@ -138,7 +138,7 @@ RocketChat.API.v1.addRoute 'users.delete', authRequired: true,
 		return RocketChat.API.v1.success
 
 # Create Private Group
-RocketChat.API.v1.addRoute 'privategroup.create', authRequired: true,
+RocketChat.API.v1.addRoute 'groups.create', authRequired: true,
 	post: ->
 		if not @bodyParams.name?
 			return RocketChat.API.v1.failure 'Body param "name" is required'
@@ -158,4 +158,4 @@ RocketChat.API.v1.addRoute 'privategroup.create', authRequired: true,
 			return RocketChat.API.v1.failure e.name + ': ' + e.message
 
 		return RocketChat.API.v1.success
-			channel: RocketChat.models.Rooms.findOne({_id: id.rid})
+			groups: RocketChat.models.Rooms.findOne({_id: id.rid})
