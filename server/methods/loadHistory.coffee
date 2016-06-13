@@ -1,5 +1,5 @@
 Meteor.methods
-	loadHistory: (rid, end, limit=20, ls) ->
+	loadHistory: (rid, end, limit=20, ls, extraData) ->
 		if not Meteor.userId()
 			throw new Meteor.Error 'error-invalid-user', 'Invalid user', { method: 'loadHistory' }
 
@@ -16,9 +16,9 @@ Meteor.methods
 			options.fields = { 'editedAt': 0 }
 
 		if end?
-			records = RocketChat.models.Messages.findVisibleByRoomIdBeforeTimestamp(rid, end, options).fetch()
+			records = RocketChat.models.Messages.findVisibleByRoomIdBeforeTimestamp(rid, end, options, extraData).fetch()
 		else
-			records = RocketChat.models.Messages.findVisibleByRoomId(rid, options).fetch()
+			records = RocketChat.models.Messages.findVisibleByRoomId(rid, options, extraData).fetch()
 
 		messages = _.map records, (message) ->
 			message.starred = _.findWhere message.starred, { _id: fromId }

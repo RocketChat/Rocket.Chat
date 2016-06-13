@@ -42,7 +42,7 @@
 			curRoomDoc = ChatRoom.findOne(_id: rid)
 			typeName = curRoomDoc?.t + curRoomDoc?.name
 
-		Meteor.call 'loadHistory', rid, ts, limit, ls, (err, result) ->
+		Meteor.call 'loadHistory', rid, ts, limit, ls, Session.get('loadHistoryExtraData'), (err, result) ->
 			room.unreadNotLoaded.set result?.unreadNotLoaded
 			room.firstUnread.set result?.firstUnread
 
