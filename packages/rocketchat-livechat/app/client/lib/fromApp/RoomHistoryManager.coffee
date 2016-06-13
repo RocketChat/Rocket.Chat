@@ -29,7 +29,7 @@
 		else
 			ts = new Date
 
-		Meteor.call 'loadHistory', rid, ts, limit, undefined, (err, result) ->
+		Meteor.call 'loadHistory', rid, ts, limit, undefined, Session.get('loadHistoryExtraData'), (err, result) ->
 			return if err?
 
 			for item in result?.messages or []

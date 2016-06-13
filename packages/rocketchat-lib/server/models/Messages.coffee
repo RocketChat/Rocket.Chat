@@ -37,12 +37,12 @@ RocketChat.models.Messages = new class extends RocketChat.models._Base
 
 		return @find query, options
 
-	findVisibleByRoomId: (roomId, options) ->
+	findVisibleByRoomId: (roomId, options, extraData) ->
 		query =
 			_hidden:
 				$ne: true
 			rid: roomId
-
+		_.extend query, extraData
 		return @find query, options
 
 	findInvisibleByRoomId: (roomId, options) ->
@@ -62,14 +62,14 @@ RocketChat.models.Messages = new class extends RocketChat.models._Base
 
 		return @find query, options
 
-	findVisibleByRoomIdBeforeTimestamp: (roomId, timestamp, options) ->
+	findVisibleByRoomIdBeforeTimestamp: (roomId, timestamp, options, extraData) ->
 		query =
 			_hidden:
 				$ne: true
 			rid: roomId
 			ts:
 				$lt: timestamp
-
+		_.extend query, extraData
 		return @find query, options
 
 	findVisibleByRoomIdBetweenTimestamps: (roomId, afterTimestamp, beforeTimestamp, options) ->
