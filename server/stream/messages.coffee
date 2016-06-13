@@ -42,9 +42,11 @@ Meteor.startup ->
 
 	RocketChat.models.Messages.findVisibleCreatedOrEditedAfterTimestamp(new Date(), options).observe
 		added: (record) ->
+			RocketChat.callbacks.run 'beforeEmitMessage', record
 			oldMsgStream.emit record.rid, record
 			msgStream.emitWithoutBroadcast record.rid, record
 
 		changed: (record) ->
+			RocketChat.callbacks.run 'beforeEmitMessage', record
 			oldMsgStream.emit record.rid, record
 			msgStream.emitWithoutBroadcast record.rid, record

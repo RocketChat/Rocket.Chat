@@ -24,6 +24,8 @@ Meteor.methods
 			message.starred = _.findWhere message.starred, { _id: fromId }
 			return message
 
+		messages = RocketChat.callbacks.run 'beforeLoadHistoryMessages', messages ? messages
+		
 		unreadNotLoaded = 0
 
 		if ls?
