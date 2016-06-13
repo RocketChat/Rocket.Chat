@@ -1,0 +1,8 @@
+test:
+  override:
+    - echo 'noop'
+deployment:
+  production:
+    branch: lg-master
+    heroku:
+      appname: lg-echo

@@ -1,3 +1,9 @@
+# NOTE: THIS IS A FORK
+
+This is a fork of Rocket.Chat by Learners Guild. See the [**Learners Guild README**](learners-guild/README.md) for more details and installation instructions.
+
+----------------
+
 ![Rocket.Chat logo](https://rocket.chat/images/logo/logo-dark.svg?v3)
 
 # The Ultimate Open Source WebChat Platform

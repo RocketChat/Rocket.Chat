@@ -182,14 +182,14 @@
             "hawk": {
               "version": "3.1.3",
               "dependencies": {
-                "hoek": {
-                  "version": "2.16.3"
-                },
                 "boom": {
                   "version": "2.10.1"
                 },
                 "cryptiles": {
                   "version": "2.0.5"
+                },
+                "hoek": {
+                  "version": "2.16.3"
                 },
                 "sntp": {
                   "version": "1.0.9"
@@ -228,20 +228,20 @@
                     "dashdash": {
                       "version": "1.13.1"
                     },
+                    "ecc-jsbn": {
+                      "version": "0.1.1"
+                    },
                     "getpass": {
                       "version": "0.1.6"
+                    },
+                    "jodid25519": {
+                      "version": "1.0.2"
                     },
                     "jsbn": {
                       "version": "0.1.0"
                     },
                     "tweetnacl": {
                       "version": "0.13.3"
-                    },
-                    "jodid25519": {
-                      "version": "1.0.2"
-                    },
-                    "ecc-jsbn": {
-                      "version": "0.1.1"
                     }
                   }
                 }
