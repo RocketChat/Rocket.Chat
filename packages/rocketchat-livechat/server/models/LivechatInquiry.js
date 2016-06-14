@@ -23,22 +23,23 @@ class LivechatInquiry extends RocketChat.models._Base {
 		});
 	}
 
-	// returnAsInquiry(roomId, agentId) {
-	// 	// find out corresponding inquiry from room,
+	/*
+	 * mark inquiry as open
+	 */
+	openInquiry(inquiryId) {
+		this.update({
+			'_id': inquiryId
+		}, {
+			$set: { status: 'open' }
+		});
+	}
 
-	// 	//get agent username
-
-	// 	// remove agent subscription
-	// 	RocketChat.models.Subscriptions.removeByRoomIdAndUserId(roomId, agentId);
-
-	// 	// remove agent username from room
-	// 	RocketChat.models.Rooms.removeUsernameById(roomId, username);
-
-	// 	// mark inquiry as open
-	// 	this.update({},{
-	// 		$set: { status: 'open' }
-	// 	});
-	// }
+	/*
+	 * return the status of the inquiry (open or taken)
+	 */
+	getStatus(inquiryId) {
+		return this.findOne({'_id': inquiryId}).status;
+	}
 }
 
 RocketChat.models.LivechatInquiry = new LivechatInquiry();

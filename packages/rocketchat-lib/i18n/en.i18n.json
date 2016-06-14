@@ -615,6 +615,8 @@
   "Livechat_title_color" : "Livechat Title Background Color",
   "Livechat_Users" : "Livechat Users",
   "Livechat_Routing_Method" : "Livechat Routing Method",
+  "Livechat_Take_Confirm" : "Do you want to take this client?",
+  "Livechat_Inquiry_Already_Taken" : "Livechat inquiry already taken",
   "Least_Amount" : "Least Amount",
   "Guest_Pool" : "Guest Pool",
   "Load_more" : "Load more",

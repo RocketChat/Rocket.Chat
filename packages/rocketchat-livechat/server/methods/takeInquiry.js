@@ -1,7 +1,14 @@
 Meteor.methods({
 	'livechat:takeInquiry'(inquiry, agent) {
+
+		console.log("this");
+
 		if (!Meteor.userId() || !RocketChat.authz.hasPermission(Meteor.userId(), 'view-l-room')) {
-			throw new Meteor.Error('error-not-allowed', 'Not allowed', { method: 'livechat:saveDepartment' });
+			throw new Meteor.Error('error-not-allowed', 'Not allowed', { method: 'livechat:takeInquiry' });
+		}
+
+		if (RocketChat.models.LivechatInquiry.getStatus(inquiry._id) === 'taken') {
+			throw new Meteor.Error('error-not-allowed', 'Inquiry already taken', { method: 'livechat:takeInquiry' });
 		}
 
 		// add subscription
@@ -27,6 +34,10 @@ Meteor.methods({
 		// add user to room
 		RocketChat.models.Rooms.addUsernameById(inquiry.rid, agent.username);
 
-		return RocketChat.models.LivechatInquiry.takeInquiry(inquiry._id);
+		// mark inquiry as taken
+		RocketChat.models.LivechatInquiry.takeInquiry(inquiry._id);
+
+		// return room corresponding to inquiry (for redirecting agent to the room route)
+		return RocketChat.models.Rooms.findOneById(inquiry.rid);
 	}
 });

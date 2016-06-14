@@ -40,8 +40,8 @@ Template.livechatInquiryItem.events({
         var inquiry = this;
 
         swal({
-            title: 'Do you want to take this client?',
-            text: 'message: ' + inquiry.message,
+            title: t('Livechat_Take_Confirm'),
+            text: t('Message') + ": " + inquiry.message,
             showCancelButton: true,
             confirmButtonColor: '#3085d6',
             cancelButtonColor: '#d33',
@@ -49,9 +49,34 @@ Template.livechatInquiryItem.events({
         }, function(isConfirm) {
             if (isConfirm) {
                 // make server method call
-                Meteor.call('livechat:takeInquiry', inquiry, Meteor.user());
+                Meteor.call('livechat:takeInquiry', inquiry, Meteor.user(), function(error, result) {
+                    if (!error) {
+                        swal("success!")
+                        FlowRouter.go(RocketChat.roomTypes.getRouteLink(result.t, result));
+                    }
+                });
             }
         });
-    }
+    },
 });
 
+Template.livechatInquiryItem.onDestroyed(function() {
+    swal.close();
+})
+
+// Template.livechatInquiryItem.onCreated(function() {
+//     // this.subscribe('livechat:inquiry');
+
+//     LivechatInquiry.observeChanges({
+//         added: function (id, fields) {
+//            // runFunction();
+//            console.log("inquiry added");
+//         },
+//         changed: function (id, fields) {
+//            // runFunction();
+//         },
+//         removed: function (id) {
+//            console.log("inquiry removed");
+//         }
+//     });
+// });
