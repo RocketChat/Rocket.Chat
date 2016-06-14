@@ -51,7 +51,6 @@ Template.livechatInquiryItem.events({
                 // make server method call
                 Meteor.call('livechat:takeInquiry', inquiry, Meteor.user(), function(error, result) {
                     if (!error) {
-                        swal("success!")
                         FlowRouter.go(RocketChat.roomTypes.getRouteLink(result.t, result));
                     }
                 });
@@ -62,4 +61,4 @@ Template.livechatInquiryItem.events({
 
 Template.livechatInquiryItem.onDestroyed(function() {
     swal.close();
-})
+});

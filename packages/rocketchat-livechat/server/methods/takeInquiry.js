@@ -1,8 +1,5 @@
 Meteor.methods({
 	'livechat:takeInquiry'(inquiry, agent) {
-
-		console.log("this");
-
 		if (!Meteor.userId() || !RocketChat.authz.hasPermission(Meteor.userId(), 'view-l-room')) {
 			throw new Meteor.Error('error-not-allowed', 'Not allowed', { method: 'livechat:takeInquiry' });
 		}
