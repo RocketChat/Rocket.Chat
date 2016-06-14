@@ -7,6 +7,7 @@
   "How_responsive_was_the_chat_agent" : "Wie reaktionsschnell war der Chat-Agent?",
   "How_satisfied_were_you_with_this_chat" : "Wie zufrieden sind Sie mit diesem Gespräch?",
   "Installation" : "Installation",
+  "New_messages" : "Neue Nachrichten",
   "Please_answer_survey" : "Bitte nehmen Sie sich einen Moment Zeit, um kurz einige Fragen zu dem Gespräch zu beantworten.",
   "Please_fill_name_and_email" : "Bitte geben Sie einen Namen und eine E-Mail-Adresse ein.",
   "Select_a_department" : "Abteilung auswählen",
@@ -20,8 +21,8 @@
   "Type_your_email" : "Geben Sie Ihre E-Mail-Adresse an",
   "Type_your_message" : "Geben Sie Ihre Nachricht ein.",
   "Type_your_name" : "Geben Sie Ihren Namen ein",
-  "User_joined" : "Benutzer verbunden",
-  "User_left" : "Benutzer links",
+  "User_joined" : "Benutzer.in wurde Mitglied",
+  "User_left" : "Benutzer.in abgemeldet",
   "We_are_offline_Sorry_for_the_inconvenience" : "Wir sind offline. Entschuldigen Sie die Unannehmlichkeiten.",
   "You_must_complete_all_fields" : "Sie müssen alle Felder ausfüllen"
 }
