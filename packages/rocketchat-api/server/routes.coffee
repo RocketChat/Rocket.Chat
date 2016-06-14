@@ -119,6 +119,22 @@ RocketChat.API.v1.addRoute 'users.list', authRequired: true,
 
 		return { users: RocketChat.models.Users.find().fetch() }
 
+# Get User Information
+RocketChat.API.v1.addRoute 'user.info', authRequired: true,
+	post: ->
+		if RocketChat.authz.hasRole(@userId, 'admin') is false
+						return RocketChat.API.v1.unauthorized()
+
+		return { user: RocketChat.models.Users.findOneByUsername @bodyParams.name }
+
+# Get User Status
+RocketChat.API.v1.addRoute 'user.getstatus', authRequired: true,
+	post: ->
+		if RocketChat.authz.hasRole(@userId, 'admin') is false
+						return RocketChat.API.v1.unauthorized()
+
+		return { user: RocketChat.models.Users.findOne( { username: @bodyParams.name} , {fields: {status: 1}} ) }
+
 # Delete User
 RocketChat.API.v1.addRoute 'users.delete', authRequired: true,
 	post: ->
