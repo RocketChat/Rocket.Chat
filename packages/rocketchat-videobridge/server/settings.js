@@ -3,6 +3,7 @@ Meteor.startup(function() {
 		this.add('Jitsi_Enabled', false, {
 			type: 'boolean',
 			i18nLabel: 'Enabled',
+			alert: 'This Feature is currently in beta! Please report bugs to github.com/RocketChat/Rocket.Chat/issues',
 			public: true
 		});
 
@@ -23,6 +24,16 @@ Meteor.startup(function() {
 				value: true
 			},
 			i18nLabel: 'SSL',
+			public: true
+		});
+
+		this.add('Jitsi_Enable_Channels', false, {
+			type: 'boolean',
+			enableQuery: {
+				_id: 'Jitsi_Enabled',
+				value: true
+			},
+			i18nLabel: 'Jitsi_Enable_Channels',
 			public: true
 		});
 	});
