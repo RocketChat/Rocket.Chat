@@ -63,20 +63,3 @@ Template.livechatInquiryItem.events({
 Template.livechatInquiryItem.onDestroyed(function() {
     swal.close();
 })
-
-// Template.livechatInquiryItem.onCreated(function() {
-//     // this.subscribe('livechat:inquiry');
-
-//     LivechatInquiry.observeChanges({
-//         added: function (id, fields) {
-//            // runFunction();
-//            console.log("inquiry added");
-//         },
-//         changed: function (id, fields) {
-//            // runFunction();
-//         },
-//         removed: function (id) {
-//            console.log("inquiry removed");
-//         }
-//     });
-// });

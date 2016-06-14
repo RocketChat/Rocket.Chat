@@ -37,8 +37,6 @@ Template.livechat.helpers({
 		});
 	},
 	inquiries() {
-		// var user = Meteor.user();
-
 		// get all inquiries of the department
 		var inqs = LivechatInquiry.find({
 			agents: Meteor.userId(),
