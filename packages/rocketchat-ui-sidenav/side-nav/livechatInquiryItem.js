@@ -41,7 +41,7 @@ Template.livechatInquiryItem.events({
 
         swal({
             title: t('Livechat_Take_Confirm'),
-            text: t('Message') + ": " + inquiry.message,
+            text: t('Message') + ': ' + inquiry.message,
             showCancelButton: true,
             confirmButtonColor: '#3085d6',
             cancelButtonColor: '#d33',
