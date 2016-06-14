@@ -50,6 +50,16 @@ readAsArrayBuffer = (file, callback) ->
 					</div>
 					<div class='upload-preview-title'>#{Handlebars._escape(file.name)}</div>
 				"""
+			else if file.type is 'video'
+				text = """
+					<div class='upload-preview'>
+						<video  style="width: 100%;" controls="controls">
+							<source src="#{fileContent}" type="video/webm">
+							Your browser does not support the video element.
+						</video>
+					</div>
+					<div class='upload-preview-title'>#{Handlebars._escape(file.name)}</div>
+				"""
 			else
 				text = """
 					<div class='upload-preview'>
