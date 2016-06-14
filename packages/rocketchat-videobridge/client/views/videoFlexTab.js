@@ -14,9 +14,7 @@ Template.videoFlexTab.onCreated(function() {
 	let height = 500;
 
 	let configOverwrite = {};
-	let interfaceConfigOverwrite = {'SHOW_JITSI_WATERMARK': false
-		};
-	
+	let interfaceConfigOverwrite = {'SHOW_JITSI_WATERMARK': false};
 
 	let jitsiRoomActive = null;
 
@@ -35,7 +33,7 @@ Template.videoFlexTab.onCreated(function() {
 					if (jitsiRoomActive !== null && jitsiRoomActive !== jitsiRoom) {
 						jitsiRoomActive = null;
 
-						console.log('Room Changed... Close panel!')
+						console.log('Room Changed... Close panel!');
 						// Reset things.  Should probably be handled better in closeFlex()
 						$('.flex-tab').css('max-width', '');
 						$('.main-content').css('right', '');
@@ -58,7 +56,7 @@ Template.videoFlexTab.onCreated(function() {
 						if (typeof JitsiMeetExternalAPI !== undefined) {
 
 							// Keep it from showing duplicates when re-evaluated on variable change.
-							if (!$("[id^=jitsiConference]").length) {
+							if (!$('[id^=jitsiConference]').length) {
 								api = new JitsiMeetExternalAPI(domain, jitsiRoom, width, height, document.getElementById('videoContainer'), configOverwrite, interfaceConfigOverwrite, noSsl);
 
 								/*
