@@ -70,8 +70,8 @@ Tracker.autorun ->
 		Tracker.nonreactive ->
 			if not Session.equals('user_' + Meteor.userId() + '_status', 'busy') and Meteor.user()?.settings?.preferences?.newRoomNotification isnt false
 				$('#chatNewRoomNotification').each ->
-					this.play()
+					this.play?()
 	else
 		$('#chatNewRoomNotification').each ->
-			this.pause()
+			this.pause?()
 			this.currentTime = 0
