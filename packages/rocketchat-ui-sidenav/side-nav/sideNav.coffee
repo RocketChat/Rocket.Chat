@@ -18,13 +18,19 @@ Template.sideNav.helpers
 		return RocketChat.roomTypes.getTypes()
 
 	canShowRoomType: ->
-		if RocketChat.settings.get('UI_Merge_Channels_Groups')
+		userPref = Meteor.user()?.settings?.preferences?.mergeChannels
+		globalPref = RocketChat.settings.get('UI_Merge_Channels_Groups')
+		mergeChannels = if userPref? then userPref else globalPref
+		if mergeChannels
 			return RocketChat.roomTypes.checkCondition(@) and @template isnt 'privateGroups'
 		else
 			return RocketChat.roomTypes.checkCondition(@)
 
 	templateName: ->
-		if RocketChat.settings.get('UI_Merge_Channels_Groups')
+		userPref = Meteor.user()?.settings?.preferences?.mergeChannels
+		globalPref = RocketChat.settings.get('UI_Merge_Channels_Groups')
+		mergeChannels = if userPref? then userPref else globalPref
+		if mergeChannels
 			return if @template is 'channels' then 'combined' else @template
 		else
 			return @template

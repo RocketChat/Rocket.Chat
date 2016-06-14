@@ -19,8 +19,12 @@ Meteor.methods
 		else if RocketChat.authz.hasPermission Meteor.userId(), 'view-joined-room'
 			roomIds = _.pluck RocketChat.models.Subscriptions.findByTypeAndUserId('c', Meteor.userId()).fetch(), 'rid'
 			roomTypes.push {type: 'c', ids: roomIds}
-		if (RocketChat.authz.hasPermission Meteor.userId(), 'view-p-room') and
-			RocketChat.settings.get('UI_Merge_Channels_Groups')
+
+		if (RocketChat.authz.hasPermission Meteor.userId(), 'view-p-room')
+			userPref = Meteor.user()?.settings?.preferences?.mergeChannels
+			globalPref = RocketChat.settings.get('UI_Merge_Channels_Groups')
+			mergeChannels = if userPref? then userPref else globalPref
+			if mergeChannels
 				roomTypes.push {type: 'p', username: Meteor.user().username}
 
 		if roomTypes.length
