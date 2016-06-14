@@ -135,6 +135,21 @@ RocketChat.API.v1.addRoute 'user.getstatus', authRequired: true,
 
 		return { user: RocketChat.models.Users.findOne( { username: @bodyParams.name} , {fields: {status: 1}} ) }
 
+# Add all users to a Channel
+RocketChat.API.v1.addRoute 'channel.addall', authRequired: true,
+	post: ->
+		if RocketChat.authz.hasRole(@userId, 'admin') is false
+						return RocketChat.API.v1.unauthorized()
+
+		id = undefined
+		try
+			Meteor.runAsUser this.userId, =>
+				id = Meteor.call 'addAllUserToRoom', @bodyParams.roomId, []
+		catch e
+			return RocketChat.API.v1.failure e.name + ': ' + e.message
+
+		return RocketChat.API.v1.success
+
 # Delete User
 RocketChat.API.v1.addRoute 'users.delete', authRequired: true,
 	post: ->
