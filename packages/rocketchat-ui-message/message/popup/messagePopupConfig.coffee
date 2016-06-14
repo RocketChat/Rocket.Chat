@@ -8,7 +8,7 @@ Meteor.startup ->
 			return
 
 		filteredUsersMemory.remove({})
-		messageUsers = RocketChat.models.Messages.find({rid: Session.get('openedRoom'), 'u.username': {$ne: Meteor.user().username}}, {fields: {'u.username': 1, ts: 1}, sort: {ts: -1}}).fetch()
+		messageUsers = RocketChat.models.Messages.find({rid: Session.get('openedRoom'), 'u.username': {$ne: Meteor.user().username}}, {fields: {'u.username': 1, 'u.name': 1, ts: 1}, sort: {ts: -1}}).fetch()
 		uniqueMessageUsersControl = {}
 		messageUsers.forEach (messageUser) ->
 			if not uniqueMessageUsersControl[messageUser.u.username]?
@@ -16,6 +16,7 @@ Meteor.startup ->
 				filteredUsersMemory.upsert messageUser.u.username,
 					_id: messageUser.u.username
 					username: messageUser.u.username
+					name: messageUser.u.name
 					status: Session.get('user_' + messageUser.u.username + '_status') or 'offline'
 					ts: messageUser.ts
 
@@ -43,6 +44,7 @@ Template.messagePopupConfig.helpers
 						items.push
 							_id: item.username
 							username: item.username
+							name: item.name
 							status: item.status
 
 				# Get users of room

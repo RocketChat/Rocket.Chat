@@ -14,6 +14,9 @@
 					{{/if}}
 					<i class="{{roomIcon}} status-{{userStatus}}"></i>
 					<span class="room-title">{{roomName}}</span>
+					{{#if secondaryName}}
+						<span style="color: grey;font-size: 15px;">@{{secondaryName}}</span>
+					{{/if}}
 					<span class="room-topic">{{{RocketChatMarkdown roomTopic}}}</span>
 				</h2>
 			</header>
