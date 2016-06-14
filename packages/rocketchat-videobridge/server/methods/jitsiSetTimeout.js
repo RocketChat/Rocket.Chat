@@ -7,9 +7,14 @@ Meteor.methods({
 		let jitsiTimeout = new Date(room.jitsiTimeout || currentTime).getTime();
 
 		if (jitsiTimeout <= currentTime) {
-			RocketChat.models.Rooms.setJitsiTimeout(rid, new Date(currentTime + 30*1000));
-		} else if ((jitsiTimeout - currentTime) < 10) {
-			RocketChat.models.Rooms.setJitsiTimeout(rid, new Date(currentTime + 20*1000));
+			RocketChat.models.Rooms.setJitsiTimeout(rid, new Date(currentTime + 35*1000));
+			RocketChat.models.Messages.createWithTypeRoomIdMessageAndUser('jitsi_call_started', rid, '', Meteor.user(), {
+				actionLinks : [
+					{ icon: 'icon-videocam', label: 'Click To Join!', method_id: 'joinJitsiCall', params: ''}
+				]
+			});
+		} else if ((jitsiTimeout - currentTime) / 1000 <= 15) {
+			RocketChat.models.Rooms.setJitsiTimeout(rid, new Date(jitsiTimeout + 25*1000));
 		}
 	}
 });
