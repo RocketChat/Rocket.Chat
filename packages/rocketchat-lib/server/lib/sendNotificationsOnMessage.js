@@ -315,4 +315,4 @@ RocketChat.callbacks.add('afterSaveMessage', function(message, room) {
 
 	return message;
 
-}, RocketChat.callbacks.priority.LOW);
+}, RocketChat.callbacks.priority.LOW, 'sendNotificationOnMessage');
