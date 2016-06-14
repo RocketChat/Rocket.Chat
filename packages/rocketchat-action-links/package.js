@@ -18,7 +18,7 @@ Package.onUse(function(api) {
 	api.addAssets('client/stylesheets/actionLinks.less', 'server');
 	api.addFiles('loadStylesheets.js', 'server');
 
-	api.addFiles('server/registerActionLinkFuncts.js', 'server');
-	api.addFiles('server/actionLinkHandler.js', 'server');
+	api.addFiles('server/registerActionLinkFuncts.js', ['server', 'client']);
+	api.addFiles('server/actionLinkHandler.js', ['server', 'client']);
 
 });
