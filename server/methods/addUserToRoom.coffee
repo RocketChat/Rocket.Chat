@@ -44,5 +44,6 @@ Meteor.methods
 			u:
 				_id: fromUser._id
 				username: fromUser.username
+				name: fromUser.name
 
 		return true

@@ -8,6 +8,7 @@ Meteor.publish 'subscription', ->
 			ts: 1
 			ls: 1
 			name: 1
+			fname: 1
 			rid: 1
 			code: 1
 			f: 1

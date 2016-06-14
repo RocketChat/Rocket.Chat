@@ -276,6 +276,7 @@ RocketChat.models.Messages = new class extends RocketChat.models._Base
 			u:
 				_id: user._id
 				username: user.username
+				name: user.name
 			groupable: false
 
 		_.extend record, extraData
@@ -284,6 +285,8 @@ RocketChat.models.Messages = new class extends RocketChat.models._Base
 		return record
 
 	createUserJoinWithRoomIdAndUser: (roomId, user, extraData) ->
+		console.log('user join')
+		console.log(user)
 		message = user.username
 		return @createWithTypeRoomIdMessageAndUser 'uj', roomId, message, user, extraData
 
