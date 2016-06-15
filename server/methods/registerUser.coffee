@@ -9,7 +9,7 @@ Meteor.methods
 		RocketChat.validateEmailDomain(formData.email);
 
 		userData =
-			email: s.trim(formData.email)
+			email: s.trim(formData.email.toLowerCase())
 			password: formData.pass
 
 		userId = Accounts.createUser userData
