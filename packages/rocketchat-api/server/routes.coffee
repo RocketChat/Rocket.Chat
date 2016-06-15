@@ -111,7 +111,7 @@ RocketChat.API.v1.addRoute 'groups.list', authRequired: true,
 		roomIds = _.pluck RocketChat.models.Subscriptions.findByTypeAndUserId('p', @userId).fetch(), 'rid'
 		return { groups: RocketChat.models.Rooms.findByIds(roomIds).fetch() }
 
-# Add all users to a Channel
+# Add all users to a particular Channel
 RocketChat.API.v1.addRoute 'channel.addall', authRequired: true,
 	post: ->
 		if RocketChat.authz.hasRole(@userId, 'admin') is false
