@@ -194,6 +194,7 @@ module.exports = {
 		'ChatRoom'                    : false,
 		'ChatSubscription'            : false,
 		'check'                       : false,
+		'CryptoJS'                    : false,
 		'Department'                  : false,
 		'EJSON'                       : false,
 		'Email'                       : false,

@@ -1233,3 +1233,33 @@ a.github-fork {
 .green {
 	color: green;
 }
+
+.flex-tab-bar {
+	.tab-button {
+		&.red {
+			color: red;
+		}
+		&.attention {
+			animation-duration: 1000ms;
+			animation-name: blink;
+			animation-iteration-count: infinite;
+			animation-direction: alternate;
+		}
+		@keyframes blink {
+			from {
+				color: red;
+			}
+			to {
+				opacity: inherit;
+			}
+		}
+		@-webkit-keyframes blink {
+			from {
+				color: red;
+			}
+			to {
+				color: inherit;
+			}
+		}
+	}
+}
