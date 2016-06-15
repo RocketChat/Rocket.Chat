@@ -5,7 +5,6 @@ Template.videoFlexTab.helpers({
 });
 
 Template.videoFlexTab.onCreated(function() {
-	let rid = this.data && this.data.rid;
 	let api;
 
 	let timeOut = null;
@@ -68,9 +67,9 @@ Template.videoFlexTab.onCreated(function() {
 									api.executeCommand('displayName', [Meteor.user().name]);
 								}, 5000);
 
-								Meteor.call('jitsi:updateTimeout', rid);
+								Meteor.call('jitsi:updateTimeout', roomId);
 
-								timeOut = Meteor.setInterval(() => Meteor.call('jitsi:updateTimeout', rid), 10*1000);
+								timeOut = Meteor.setInterval(() => Meteor.call('jitsi:updateTimeout', roomId), 10*1000);
 							}
 
 							// Execute any commands that might be reactive.  Like name changing.
