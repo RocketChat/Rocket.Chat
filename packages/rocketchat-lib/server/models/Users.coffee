@@ -26,19 +26,7 @@ RocketChat.models.Users = new class extends RocketChat.models._Base
 
 	findOneByEmailAddress: (emailAddress, options) ->
 		query =
-			'emails.address': new RegExp(s.escapeRegExp(emailAddress), 'i')
-
-		return @findOne query, options
-
-	findOneVerifiedFromSameDomain: (email, options) ->
-		domain = s.strRight(email, '@')
-		query =
-			emails:
-				$elemMatch:
-					address:
-						$regex: new RegExp "@" + domain + "$", "i"
-						$ne: email
-					verified: true
+			'emails.address': new RegExp("^" + s.escapeRegExp(emailAddress) + "$", 'i')
 
 		return @findOne query, options
 
