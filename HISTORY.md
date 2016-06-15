@@ -1,5 +1,10 @@
 ## NEXT
 
+## 0.34.0, 2016-Jun-14
+
+- BETA JITSI INTEGRATION (#3476)
+- Add more config options to livechat (#3497)
+
 ## 0.33.0, 2016-Jun-07
 
 - Add a method and api way to get a user's private groups, for external usage
