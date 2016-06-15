@@ -113,15 +113,15 @@ RocketChat.API.v1.addRoute 'groups.list', authRequired: true,
 
 # Add all users to a particular Channel
 RocketChat.API.v1.addRoute 'channel.addall', authRequired: true,
-	post: ->
-		if RocketChat.authz.hasRole(@userId, 'admin') is false
-						return RocketChat.API.v1.unauthorized()
+  post: ->
+    if RocketChat.authz.hasRole(@userId, 'admin') is false
+      return RocketChat.API.v1.unauthorized()
 
-		id = undefined
-		try
-			Meteor.runAsUser this.userId, =>
-				id = Meteor.call 'addAllUserToRoom', @bodyParams.roomId, []
-		catch e
-			return RocketChat.API.v1.failure e.name + ': ' + e.message
+    id = undefined
+    try
+      Meteor.runAsUser this.userId, =>
+        id = Meteor.call 'addAllUserToRoom', @bodyParams.roomId, []
+    catch e
+      return RocketChat.API.v1.failure e.name + ': ' + e.message
 
-		return RocketChat.API.v1.success
+    return RocketChat.API.v1.success
