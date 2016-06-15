@@ -82,7 +82,7 @@ RocketChat.models.Users = new class extends RocketChat.models._Base
 	findUsersByUsernamesWithHighlights: (usernames, options) ->
 		query =
 			username: { $in: usernames }
-			'settings.preferences.highlights':
+			'settings.preferences.highlights.0':
 				$exists: true
 
 		return @find query, options
