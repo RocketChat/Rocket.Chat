@@ -1,5 +1,5 @@
 Meteor.startup(function() {
-	RocketChat.settings.addGroup('Jitsi', function() {
+	RocketChat.settings.addGroup('Group VideoChat', function() {
 		this.add('Jitsi_Enabled', false, {
 			type: 'boolean',
 			i18nLabel: 'Enabled',
