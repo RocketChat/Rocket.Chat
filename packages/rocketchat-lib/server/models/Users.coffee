@@ -26,7 +26,7 @@ RocketChat.models.Users = new class extends RocketChat.models._Base
 
 	findOneByEmailAddress: (emailAddress, options) ->
 		query =
-			'emails.address': emailAddress
+			'emails.address': new RegExp(s.escapeRegExp(emailAddress), 'i')
 
 		return @findOne query, options
 
