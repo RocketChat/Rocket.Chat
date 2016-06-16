@@ -119,7 +119,7 @@ Host your docker container at [sloppy.io](http://sloppy.io). Get an account and 
 
 
 ## Docker
-[Deploy with docker compose](https://rocket.chat/docs/master/installing-and-updating/using-docker/docker-compose)
+[Deploy with docker compose](https://rocket.chat/docs/installation/docker-containers/docker-compose)
 
 or
 
@@ -151,12 +151,12 @@ Run solid five-nines deployment on industry workhorse FreeBSD server:
 
 Deploy on your own enterprise server, or with Microsoft Azure:
 
-[![Windows 2012 or 2016 Server](https://github.com/Sing-Li/bbug/blob/master/images/windows.png)](https://rocket.chat/docs/master/installing-and-updating/deployment-options/windows-server-2012-r2)
+[![Windows 2012 or 2016 Server](https://github.com/Sing-Li/bbug/blob/master/images/windows.png)](https://rocket.chat/docs/installation/manual-installation/windows-server/)
 
 ## Ansible
 Automated production-grade deployment in minutes, for RHEL / CentOS 7 or Ubuntu 14.04 LTS / 15.04:
 
-[![Ansible deployment](https://raw.githubusercontent.com/Sing-Li/bbug/master/images/ansible.png)](https://rocket.chat/docs/master/installing-and-updating/deployment-options/ansible)
+[![Ansible deployment](https://raw.githubusercontent.com/Sing-Li/bbug/master/images/ansible.png)](https://rocket.chat/docs/installation/automation-tools/ansible/)
 
 ## Raspberry Pi 2
 Run Rocket.Chat on this world famous $30 quad core server:
@@ -242,6 +242,7 @@ It is a great solution for communities and companies wanting to privately host t
 - Hubot Friendly
 - (Beta) Face to Face Video Conferencing (aka WebRTC )
 - (Beta) Multi-users Video Group Chat
+- (Beta) Jitsi integration
 - Audio calls
 - Multi-users Audio Conference
 - Screensharing
