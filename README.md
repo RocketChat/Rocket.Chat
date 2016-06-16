@@ -33,7 +33,10 @@
   * [On the News](#on-the-news)
   * [Features](#features)
   * [Roadmap](#roadmap)
+  * [How it all started](#how-it-all-started)
+  * [Awards](#awards)
   * [Issues](#issues)
+  * [Stack Overflow](#stack-overflow)
   * [Integrations](#integrations)
   * [Documentation](#documentation)
   * [License](#license)
@@ -167,7 +170,7 @@ Add Rocket.Chat to this world famous time tested small enterprise server today:
 [![Koozali SME](https://raw.githubusercontent.com/Sing-Li/bbug/master/images/koozali.png)](https://wiki.contribs.org/Rocket_Chat)
 
 ## Ubuntu VPS
-Follow these [deployment instructions](https://rocket.chat/docs/master/installing-and-updating/deployment-options/ubuntu)
+Follow these [deployment instructions](https://rocket.chat/docs/installation/manual-installation/ubuntu/)
 
 ## Ubuntu Software Center
 Easy one click install right from your Ubuntu Desktop (coming soon)
@@ -281,6 +284,10 @@ It is a great solution for communities and companies wanting to privately host t
 - Anonymous use of Rocket.Chat: [Issue #604](https://github.com/RocketChat/Rocket.Chat/issues/604)
 - File Sharing via P2P: [Issue #369](https://github.com/RocketChat/Rocket.Chat/issues/369), [Issue #370](https://github.com/RocketChat/Rocket.Chat/issues/370)
 - Anti-virus checking on file uploads: [Issue #757](https://github.com/RocketChat/Rocket.Chat/issues/757)
+
+## How it all started
+
+Read about [how it all started](http://osdelivers.blackducksoftware.com/2016/06/10/rocket-chat-hosted-chat-services/).
 
 ## Awards
 
