@@ -28,13 +28,21 @@
 							<i class="icon-sort-alt-up"></i>
 						</div>
 						<div class="input-line search">
+							<select class="c-select" id="channel-type">
+								<option value="all" selected="{{channelTypeSelected 'all'}}">{{_ "All"}}</option>
+								<option value="public" selected="{{channelTypeSelected 'public'}}">{{_ "Public"}}</option>
+								<option value="private" selected="{{channelTypeSelected 'private'}}">{{_ "Private"}}</option>
+							</select>
+							<i class="icon-lock"></i>
+						</div>
+						<div class="input-line search">
 							<input type="text" id="channel-search" class="search" placeholder="{{_ "Search_Channels"}}" autocomplete="off" />
 							<i class="icon-right-open-small"></i>
 						</div>
 					</form>
 				</div>
 			</div>
-			<h4>{{_ "Channels_list"}}</h4>
+			<h4>{{_ "List_of_Channels"}}</h4>
 			<ul>
 			{{#each channel}}
 				<li>
