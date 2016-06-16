@@ -145,6 +145,7 @@
   "API_GitHub_Enterprise_URL" : "Server URL",
   "API_GitHub_Enterprise_URL_Description" : "Example: http://domain.com (excluding trailing slash)",
   "API_Gitlab_URL" : "GitLab URL",
+  "API_User_Limit" : "User Limit for adding all Users to Channel",
   "API_Token" : "API Token",
   "API_Wordpress_URL" : "WordPress URL",
   "Apiai_Key" : "Api.ai Key",

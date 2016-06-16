@@ -2,7 +2,7 @@ Meteor.methods({
   addAllUserToRoom: function(rid) {
     var now, room, users;
     var userCount = RocketChat.models.Users.find().count();
-    if (userCount > 500) {
+    if (userCount > RocketChat.settings.get('API_User_Limit')) {
       throw new Meteor.Error('error-user-limit-exceeded', 'User Limit Exceeded', {
         method: 'addAllToRoom'
       });
