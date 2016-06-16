@@ -1,4 +1,5 @@
 /* globals JitsiMeetExternalAPI */
+/* eslint new-cap: [2, {"capIsNewExceptions": ["MD5"]}] */
 
 Template.videoFlexTab.helpers({
 
