@@ -1,5 +1,5 @@
 Meteor.methods
-	channelsList: (filter, limit, sort) ->
+	channelsList: (filter, channelType, limit, sort) ->
 		if not Meteor.userId()
 			throw new Meteor.Error 'error-invalid-user', 'Invalid user', { method: 'channelsList' }
 
@@ -14,13 +14,14 @@ Meteor.methods
 					options.sort = { msgs: -1 }
 
 		roomTypes = []
-		if RocketChat.authz.hasPermission Meteor.userId(), 'view-c-room'
-			roomTypes.push {type: 'c'}
-		else if RocketChat.authz.hasPermission Meteor.userId(), 'view-joined-room'
-			roomIds = _.pluck RocketChat.models.Subscriptions.findByTypeAndUserId('c', Meteor.userId()).fetch(), 'rid'
-			roomTypes.push {type: 'c', ids: roomIds}
+		if channelType isnt 'private'
+			if RocketChat.authz.hasPermission Meteor.userId(), 'view-c-room'
+				roomTypes.push {type: 'c'}
+			else if RocketChat.authz.hasPermission Meteor.userId(), 'view-joined-room'
+				roomIds = _.pluck RocketChat.models.Subscriptions.findByTypeAndUserId('c', Meteor.userId()).fetch(), 'rid'
+				roomTypes.push {type: 'c', ids: roomIds}
 
-		if (RocketChat.authz.hasPermission Meteor.userId(), 'view-p-room')
+		if channelType isnt 'public' and RocketChat.authz.hasPermission Meteor.userId(), 'view-p-room'
 			userPref = Meteor.user()?.settings?.preferences?.mergeChannels
 			globalPref = RocketChat.settings.get('UI_Merge_Channels_Groups')
 			mergeChannels = if userPref? then userPref else globalPref
