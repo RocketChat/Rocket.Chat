@@ -105,6 +105,9 @@ RocketChat.settings.addGroup 'General', ->
 	@section 'Notifications', ->
 		@add 'Desktop_Notifications_Duration', 0, { type: 'int', public: true, i18nDescription: 'Desktop_Notification_Durations_Description' }
 
+	@section 'REST API', ->
+		@add 'API_User_Limit', 500, { type: 'int', public: true, i18nDescription: 'API_User_Limit' }
+
 
 RocketChat.settings.addGroup 'Email', ->
 	@section 'Header and Footer', ->
