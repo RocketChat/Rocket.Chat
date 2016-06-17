@@ -20,7 +20,9 @@ Template.channelSettings.helpers
 	roomName: ->
 		return ChatRoom.findOne(@rid, { fields: { name: 1 }})?.name
 	roomTopic: ->
-		return s.escapeHTML ChatRoom.findOne(@rid, { fields: { topic: 1 }})?.topic
+		return ChatRoom.findOne(@rid, { fields: { topic: 1 }})?.topic
+	roomTopicUnescaped: ->
+		return s.unescapeHTML ChatRoom.findOne(@rid, { fields: { topic: 1 }})?.topic
 	archivationState: ->
 		return ChatRoom.findOne(@rid, { fields: { archived: 1 }})?.archived
 	archivationStateDescription: ->
