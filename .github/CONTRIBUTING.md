@@ -6,9 +6,9 @@ The following is a set of guidelines for contributing to Rocket.Chat and its pac
 
 __Note:__ If there's a feature you'd like, there's a bug you'd like to fix, or you'd just like to get involved please raise an issue and start a conversation. We'll help as much as we can so you can get contributing - although we may not always be able to respond right away :)
 
-## ES2016 vs CoffeeScript
+## ECMAScript 2015 vs CoffeeScript
 
-While we still have a lot of CoffeeScript files you should not create new ones.  New code contributions should be in **ES2016**.
+While we still have a lot of CoffeeScript files you should not create new ones. New code contributions should be in **ECMAScript 2015**.
 
 ## Coding standards
 
