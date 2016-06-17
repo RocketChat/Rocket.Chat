@@ -79,7 +79,7 @@ RocketChat.API.v1.addRoute 'channels.setTopic', authRequired: true,
 		unless RocketChat.authz.hasPermission(@userId, 'edit-room', @bodyParams.channel)
 			return RocketChat.API.v1.unauthorized()
 
-		if not RocketChat.saveRoomTopic(@bodyParams.channel, @bodyParams.topic)
+		if not RocketChat.saveRoomTopic(@bodyParams.channel, @bodyParams.topic, @user)
 			return RocketChat.API.v1.failure 'invalid_channel'
 
 		return RocketChat.API.v1.success
