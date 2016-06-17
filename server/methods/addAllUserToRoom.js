@@ -1,6 +1,6 @@
 Meteor.methods({
 	addAllUserToRoom: function(rid) {
-		if (this.connection === null) {
+		if (RocketChat.authz.hasRole(this.userId, 'admin') === true) {
 			var now, room, users;
 			var userCount = RocketChat.models.Users.find().count();
 			if (userCount > RocketChat.settings.get('API_User_Limit')) {

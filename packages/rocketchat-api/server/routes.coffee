@@ -114,8 +114,6 @@ RocketChat.API.v1.addRoute 'groups.list', authRequired: true,
 # Add All Users to Channel
 RocketChat.API.v1.addRoute 'channel.addall', authRequired: true,
 	post: ->
-		if RocketChat.authz.hasRole(@userId, 'admin') is false
-			return RocketChat.API.v1.unauthorized()
 
 		id = undefined
 		try
