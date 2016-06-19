@@ -148,3 +148,4 @@ underscorestring:underscore.string
 yasaricli:slugify
 yasinuslu:blaze-meta
 rocketchat:slashcommands-archive
+rocketchat:slashcommands-unarchive
