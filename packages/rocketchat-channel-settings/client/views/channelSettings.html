@@ -22,7 +22,7 @@
 						<label>{{_ "Topic"}}</label>
 						<div>
 							{{#if editing 'roomTopic'}}
-								<input type="text" name="roomTopic" value="{{roomTopic}}" class="editing" /> <button type="button" class="button secondary cancel">{{_ "Cancel"}}</button> <button type="button" class="button primary save">{{_ "Save"}}</button>
+								<input type="text" name="roomTopic" value="{{roomTopicUnescaped}}" class="editing" /> <button type="button" class="button secondary cancel">{{_ "Cancel"}}</button> <button type="button" class="button primary save">{{_ "Save"}}</button>
 							{{else}}
 								<span>{{{RocketChatMarkdown roomTopic}}}{{#if canEdit}} <i class="icon-pencil" data-edit="roomTopic"></i>{{/if}}</span>
 							{{/if}}
