@@ -2,7 +2,7 @@ Package.describe({
 	name: 'rocketchat:action-links',
 	version: '0.0.1',
 	summary: 'Add custom actions that call functions',
-	git: '',
+	git: ''
 });
 
 Package.onUse(function(api) {
