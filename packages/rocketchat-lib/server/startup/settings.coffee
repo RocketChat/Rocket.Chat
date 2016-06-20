@@ -22,6 +22,7 @@ RocketChat.settings.addGroup 'Accounts', ->
 		@add 'Accounts_AllowedDomainsList', '', { type: 'string', public: true }
 
 		@add 'Accounts_BlockedDomainsList', '', { type: 'string' }
+		@add 'Accounts_BlockedUsernameList', '', { type: 'string' }
 		@add 'Accounts_UseDefaultBlockedDomainsList', true, { type: 'boolean' }
 		@add 'Accounts_UseDNSDomainCheck', true, { type: 'boolean' }
 
