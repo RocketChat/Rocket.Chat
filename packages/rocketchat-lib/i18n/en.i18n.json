@@ -25,6 +25,8 @@
   "Accounts_AvatarStoreType" : "Avatar Storage Type",
   "Accounts_BlockedDomainsList" : "Blocked Domains List",
   "Accounts_BlockedDomainsList_Description" : "Comma-separated list of blocked domains",
+  "Accounts_BlockedUsernameList" : "Blocked Username List",
+  "Accounts_BlockedUsernameList_Description" : "Comma-separated list of blocked usernames (case-insensitive)",
   "Accounts_denyUnverifiedEmail" : "Deny unverified email",
   "Accounts_EmailVerification" : "Email Verification",
   "Accounts_EmailVerification_Description" : "Make sure you have correct SMTP settings to use this feature",
