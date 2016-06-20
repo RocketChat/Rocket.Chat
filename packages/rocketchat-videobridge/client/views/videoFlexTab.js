@@ -1,4 +1,5 @@
 /* globals JitsiMeetExternalAPI */
+/* eslint new-cap: [2, {"capIsNewExceptions": ["MD5"]}] */
 
 Template.videoFlexTab.helpers({
 
@@ -13,7 +14,7 @@ Template.videoFlexTab.onCreated(function() {
 	let height = 500;
 
 	let configOverwrite = {};
-	let interfaceConfigOverwrite = {'SHOW_JITSI_WATERMARK': false};
+	let interfaceConfigOverwrite = {};
 
 	let jitsiRoomActive = null;
 

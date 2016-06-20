@@ -1,4 +1,4 @@
-RocketChat.actionLinks.register('joinJitsiCall', function(message, params) {
+RocketChat.actionLinks.register('joinJitsiCall', function(/*message, params*/) {
 	if (Session.get('openedRoom')) {
 		let rid = Session.get('openedRoom');
 
@@ -16,9 +16,5 @@ RocketChat.actionLinks.register('joinJitsiCall', function(message, params) {
 		} else {
 			toastr.info(TAPi18n.__('Call Already Ended', ''));
 		}
-
 	}
-
-
-
 });

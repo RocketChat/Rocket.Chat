@@ -48,7 +48,7 @@ Template.room.helpers
 	roomTopic: ->
 		roomData = Session.get('roomData' + this._id)
 		return '' unless roomData
-		return s.escapeHTML roomData.topic
+		return roomData.topic
 
 	roomIcon: ->
 		roomData = Session.get('roomData' + this._id)
