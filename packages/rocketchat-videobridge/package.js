@@ -2,7 +2,7 @@ Package.describe({
 	name: 'rocketchat:videobridge',
 	version: '0.2.0',
 	summary: 'jitsi integration',
-	git: '',
+	git: ''
 });
 
 Package.onUse(function(api) {
@@ -30,5 +30,4 @@ Package.onUse(function(api) {
 	api.addFiles('server/models/Rooms.js', 'server');
 	api.addFiles('server/methods/jitsiSetTimeout.js', 'server');
 	api.addFiles('server/actionLink.js', 'server');
-
 });
