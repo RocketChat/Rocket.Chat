@@ -4,9 +4,6 @@ Meteor.startup(function() {
 
 			// Load from the jitsi meet instance.
 			if (typeof JitsiMeetExternalAPI !== undefined) {
-				let domain = RocketChat.settings.get('Jitsi_Domain');
-				let ssl = RocketChat.settings.get('Jitsi_SSL');
-
 				$.getScript('/packages/rocketchat_videobridge/client/public/external_api.js');
 			}
 
