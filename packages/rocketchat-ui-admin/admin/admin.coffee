@@ -1,11 +1,17 @@
-@TempSettings = new Meteor.Collection null
-@Settings.find().observe
-	added: (data) ->
-		TempSettings.insert data
-	changed: (data) ->
-		TempSettings.update data._id, data
-	removed: (data) ->
-		TempSettings.remove data._id
+TempSettings = new Meteor.Collection null
+Template.admin.onCreated ->
+	if not RocketChat.settings.cachedCollectionPrivate?
+		RocketChat.settings.cachedCollectionPrivate = new RocketChat.CachedCollection({ name: 'private-settings', eventType: 'onAll' })
+		RocketChat.settings.collectionPrivate = RocketChat.settings.cachedCollectionPrivate.collection
+		RocketChat.settings.cachedCollectionPrivate.init()
+
+	RocketChat.settings.collectionPrivate.find().observe
+		added: (data) ->
+			TempSettings.insert data
+		changed: (data) ->
+			TempSettings.update data._id, data
+		removed: (data) ->
+			TempSettings.remove data._id
 
 
 Template.admin.helpers

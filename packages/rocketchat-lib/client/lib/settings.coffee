@@ -4,19 +4,8 @@
 ###
 
 RocketChat.settings.cachedCollection = new RocketChat.CachedCollection({ name: 'public-settings', eventType: 'onAll' })
-@Settings = RocketChat.settings.cachedCollection.collection
-
+RocketChat.settings.collection = RocketChat.settings.cachedCollection.collection
 RocketChat.settings.cachedCollection.init()
-
-Tracker.autorun (c) ->
-	if Meteor.userId()?
-		c.stop()
-		RocketChat.settings.cachedCollectionPrivate = new RocketChat.CachedCollection({
-			collection: RocketChat.settings.cachedCollection.collection,
-			name: 'private-settings',
-			eventType: 'onAll'
-		})
-		RocketChat.settings.cachedCollectionPrivate.init()
 
 RocketChat.settings.dict = new ReactiveDict 'settings'
 
@@ -25,7 +14,7 @@ RocketChat.settings.get = (_id) ->
 
 RocketChat.settings.init = ->
 	initialLoad = true
-	Settings.find().observe
+	RocketChat.settings.collection.find().observe
 		added: (record) ->
 			Meteor.settings[record._id] = record.value
 			RocketChat.settings.dict.set record._id, record.value
