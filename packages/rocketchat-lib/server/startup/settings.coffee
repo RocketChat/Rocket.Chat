@@ -221,6 +221,7 @@ RocketChat.settings.addGroup 'Layout', ->
 
 	@section 'User Interface', ->
 		@add 'UI_DisplayRoles', true, { type: 'boolean', public: true }
+		@add 'UI_Merge_Channels_Groups', true, { type: 'boolean', public: true }
 
 
 RocketChat.settings.addGroup 'Logs', ->
