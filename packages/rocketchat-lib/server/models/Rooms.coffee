@@ -91,6 +91,39 @@ RocketChat.models.Rooms = new class extends RocketChat.models._Base
 
 		return @find query, options
 
+	findByNameContainingTypesWithUsername: (name, types, options) ->
+		nameRegex = new RegExp s.trim(s.escapeRegExp(name)), "i"
+
+		$or = []
+		for type in types
+			obj = {name: nameRegex, t: type.type}
+			if type.username?
+				obj.usernames = type.username
+			if type.ids?
+				obj._id = $in: type.ids
+			$or.push obj
+
+		query =
+			$or: $or
+
+		return @find query, options
+
+	findContainingTypesWithUsername: (types, options) ->
+
+		$or = []
+		for type in types
+			obj = {t: type.type}
+			if type.username?
+				obj.usernames = type.username
+			if type.ids?
+				obj._id = $in: type.ids
+			$or.push obj
+
+		query =
+			$or: $or
+
+		return @find query, options
+
 	findByNameContainingAndTypes: (name, types, options) ->
 		nameRegex = new RegExp s.trim(s.escapeRegExp(name)), "i"
 
