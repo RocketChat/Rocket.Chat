@@ -130,6 +130,7 @@ Package.onUse(function(api) {
 	api.addFiles('server/methods/setCustomField.js', 'server');
 	api.addFiles('server/methods/webhookTest.js', 'server');
 	api.addFiles('server/methods/takeInquiry.js', 'server');
+	api.addFiles('server/methods/returnAsInquiry.js', 'server');
 
 	// models
 	api.addFiles('server/models/Users.js', 'server');
