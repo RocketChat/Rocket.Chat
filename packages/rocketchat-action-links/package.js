@@ -2,7 +2,7 @@ Package.describe({
 	name: 'rocketchat:action-links',
 	version: '0.0.1',
 	summary: 'Add custom actions that call functions',
-	git: '',
+	git: ''
 });
 
 Package.onUse(function(api) {
@@ -18,7 +18,7 @@ Package.onUse(function(api) {
 	api.addAssets('client/stylesheets/actionLinks.less', 'server');
 	api.addFiles('loadStylesheets.js', 'server');
 
-	api.addFiles('server/registerActionLinkFuncts.js', 'server');
-	api.addFiles('server/actionLinkHandler.js', 'server');
+	api.addFiles('server/registerActionLinkFuncts.js', ['server', 'client']);
+	api.addFiles('server/actionLinkHandler.js', ['server', 'client']);
 
 });
