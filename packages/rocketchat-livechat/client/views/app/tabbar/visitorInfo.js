@@ -98,7 +98,7 @@ Template.visitorInfo.helpers({
 	},
 
 	guestPool() {
-		return RocketChat.settings.get('Livechat_Routing_Method') == 'Guest_Pool';
+		return RocketChat.settings.get('Livechat_Routing_Method') === 'Guest_Pool';
 	},
 });
 
@@ -152,12 +152,13 @@ Template.visitorInfo.events({
 			confirmButtonColor: '#3085d6',
 			cancelButtonColor: '#d33',
 			confirmButtonText: t('yes'),
-		}, (inputValue) => {
-			console.log('returning room as inquiry');
-
+		}, () => {
 			Meteor.call('livechat:returnAsInquiry', this.rid, function(error/*, result*/) {
 				if (error) {
 					console.log(error);
+				}
+				else {
+					FlowRouter.go('/home');
 				}
 			});
 		});
