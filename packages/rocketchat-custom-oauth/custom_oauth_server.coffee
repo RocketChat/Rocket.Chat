@@ -123,10 +123,14 @@ class CustomOAuth
 			if identity?.CharacterID and not identity.id
 				identity.id = identity.CharacterID
 			
-			# Fix Dataporten having 'userid' instead of 'id'
+			# Fix Dataporten having 'user.userid' instead of 'id'
 			if identity?.user.userid and not identity.id
 				identity.id = identity.user.userid
 				identity.email = identity.user.email
+			
+			# Fix general 'userid' instead of 'id' from provider
+			if identity?.userid and not identityid
+				identity.id = identity.userid
 				
 			# console.log 'id:', JSON.stringify identity, null, '  '
 
