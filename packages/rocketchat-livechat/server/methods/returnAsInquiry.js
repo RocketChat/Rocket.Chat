@@ -13,7 +13,7 @@ Meteor.methods({
 
 		// find inquiry corresponding to room
 		var inquiry = RocketChat.models.LivechatInquiry.findOne({rid: rid});
-		
+
 		// mark inquiry as open
 		return RocketChat.models.LivechatInquiry.openInquiry(inquiry._id);
 	}
