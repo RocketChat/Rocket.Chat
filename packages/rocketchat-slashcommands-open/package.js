@@ -1,7 +1,7 @@
 Package.describe({
-	name: 'rocketchat:slashcommands-open',
+	name: 'rocketchat:slashcommands-create',
 	version: '0.0.1',
-	summary: 'Command handler for the /open command',
+	summary: 'Command handler for the /create command',
 	git: ''
 });
 

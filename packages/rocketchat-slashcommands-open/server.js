@@ -1,4 +1,4 @@
-function Open(command, params, item) {
+function Create(command, params, item) {
 	var channel, room, user;
 	if (command !== 'open' || !Match.test(params, String)) {
 		return;
@@ -14,7 +14,7 @@ function Open(command, params, item) {
 		RocketChat.Notifications.notifyUser(Meteor.userId(), 'message', {
 			_id: Random.id(),
 			rid: item.rid,
-			ts: new Date,
+			ts: new Date(),
 			msg: TAPi18n.__('Channel_already_exist', {
 				postProcess: 'sprintf',
 				sprintf: [channel]
@@ -23,7 +23,6 @@ function Open(command, params, item) {
 		return;
 	}
 	Meteor.call('createChannel', channel, []);
-	return Open;
 }
 
-RocketChat.slashCommands.add('open', Open);
+RocketChat.slashCommands.add('create', Create);
