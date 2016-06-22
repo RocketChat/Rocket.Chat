@@ -124,3 +124,66 @@ RocketChat.API.v1.addRoute 'channel.addall', authRequired: true,
 
 		return RocketChat.API.v1.success
 			channel: RocketChat.models.Rooms.findOne({_id: @bodyParams.roomId})
+
+# List all users
+RocketChat.API.v1.addRoute 'users.list', authRequired: true,
+	get: ->
+		if RocketChat.authz.hasRole(@userId, 'admin') is false
+			return RocketChat.API.v1.unauthorized()
+
+		return { users: RocketChat.models.Users.find().fetch() }
+
+# Get User Information
+RocketChat.API.v1.addRoute 'user.info', authRequired: true,
+	post: ->
+		if RocketChat.authz.hasRole(@userId, 'admin') is false
+			return RocketChat.API.v1.unauthorized()
+
+		return { user: RocketChat.models.Users.findOneByUsername @bodyParams.name }
+
+# Get User Presence
+RocketChat.API.v1.addRoute 'user.getpresence', authRequired: true,
+	post: ->
+		return { user: RocketChat.models.Users.findOne( { username: @bodyParams.name} , {fields: {status: 1}} ) }
+
+# Delete User
+RocketChat.API.v1.addRoute 'users.delete', authRequired: true,
+	post: ->
+		if not @bodyParams.userId?
+			return RocketChat.API.v1.failure 'Body param "userId" is required'
+
+		if not RocketChat.authz.hasPermission(@userId, 'delete-user')
+			return RocketChat.API.v1.unauthorized()
+
+		id = undefined
+		try
+			Meteor.runAsUser this.userId, =>
+				id = Meteor.call 'deleteUser', @bodyParams.userId, []
+		catch e
+			return RocketChat.API.v1.failure e.name + ': ' + e.message
+
+		return RocketChat.API.v1.success
+
+# Create Private Group
+RocketChat.API.v1.addRoute 'groups.create', authRequired: true,
+	post: ->
+		if not @bodyParams.name?
+			return RocketChat.API.v1.failure 'Body param "name" is required'
+
+		if not RocketChat.authz.hasPermission(@userId, 'create-p')
+			return RocketChat.API.v1.unauthorized()
+
+		id = undefined
+		try
+			if not @bodyParams.members?
+				Meteor.runAsUser this.userId, =>
+					id = Meteor.call 'createPrivateGroup', @bodyParams.name, []
+			else
+			  Meteor.runAsUser this.userId, =>
+				  id = Meteor.call 'createPrivateGroup', @bodyParams.name, @bodyParams.members, []
+		catch e
+			return RocketChat.API.v1.failure e.name + ': ' + e.message
+
+		return RocketChat.API.v1.success
+			group: RocketChat.models.Rooms.findOne({_id: id.rid})
+
