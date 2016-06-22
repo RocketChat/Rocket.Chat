@@ -122,7 +122,11 @@ class CustomOAuth
 
 			if identity?.CharacterID and not identity.id
 				identity.id = identity.CharacterID
-
+			
+			# Fix Dataporten having 'userid' instead of 'id'
+			if identity?.userid and not identity.id
+				identity.id = identity.userid
+				
 			# console.log 'id:', JSON.stringify identity, null, '  '
 
 			serviceData =
