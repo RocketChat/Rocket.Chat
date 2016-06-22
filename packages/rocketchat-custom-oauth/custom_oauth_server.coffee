@@ -126,6 +126,7 @@ class CustomOAuth
 			# Fix Dataporten having 'userid' instead of 'id'
 			if identity?.user.userid and not identity.id
 				identity.id = identity.user.userid
+				identity.email = identity.user.email
 				
 			# console.log 'id:', JSON.stringify identity, null, '  '
 
