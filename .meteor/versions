@@ -175,6 +175,7 @@ rocketchat:push-notifications@0.0.1
 rocketchat:reactions@0.0.1
 rocketchat:slackbridge@0.0.1
 rocketchat:slashcommands-asciiarts@0.0.1
+rocketchat:slashcommands-create@0.0.1
 rocketchat:slashcommands-invite@0.0.1
 rocketchat:slashcommands-join@0.0.1
 rocketchat:slashcommands-kick@0.0.1
@@ -198,6 +199,7 @@ rocketchat:ui-master@0.1.0
 rocketchat:ui-message@0.1.0
 rocketchat:ui-sidenav@0.1.0
 rocketchat:version@1.0.0
+rocketchat:videobridge@0.2.0
 rocketchat:webrtc@0.0.1
 rocketchat:wordpress@0.0.1
 routepolicy@1.0.6

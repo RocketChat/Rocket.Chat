@@ -4,7 +4,7 @@ let agentsHandler;
 let monitorAgents = false;
 let forwardChatTimeout = 60000;
 
-RocketChat.onlineAgents = onlineAgents = {
+let onlineAgents = {
 	users: {},
 	queue: {},
 
