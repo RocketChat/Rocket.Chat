@@ -1,6 +1,6 @@
 function Create(command, params, item) {
 	var channel, room, user;
-	if (command !== 'open' || !Match.test(params, String)) {
+	if (command !== 'create' || !Match.test(params, String)) {
 		return;
 	}
 	channel = params.trim();
