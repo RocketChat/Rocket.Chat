@@ -22,6 +22,7 @@ RocketChat.settings.addGroup 'Accounts', ->
 		@add 'Accounts_AllowedDomainsList', '', { type: 'string', public: true }
 
 		@add 'Accounts_BlockedDomainsList', '', { type: 'string' }
+		@add 'Accounts_BlockedUsernameList', '', { type: 'string' }
 		@add 'Accounts_UseDefaultBlockedDomainsList', true, { type: 'boolean' }
 		@add 'Accounts_UseDNSDomainCheck', true, { type: 'boolean' }
 
@@ -104,6 +105,9 @@ RocketChat.settings.addGroup 'General', ->
 
 	@section 'Notifications', ->
 		@add 'Desktop_Notifications_Duration', 0, { type: 'int', public: true, i18nDescription: 'Desktop_Notification_Durations_Description' }
+
+	@section 'REST API', ->
+		@add 'API_User_Limit', 500, { type: 'int', public: true, i18nDescription: 'API_User_Limit' }
 
 
 RocketChat.settings.addGroup 'Email', ->
@@ -217,6 +221,7 @@ RocketChat.settings.addGroup 'Layout', ->
 
 	@section 'User Interface', ->
 		@add 'UI_DisplayRoles', true, { type: 'boolean', public: true }
+		@add 'UI_Merge_Channels_Groups', true, { type: 'boolean', public: true }
 
 
 RocketChat.settings.addGroup 'Logs', ->
