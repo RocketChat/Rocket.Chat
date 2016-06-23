@@ -226,7 +226,7 @@ Importer.Slack = class Importer.Slack extends Importer.Base
 												msgObj =
 													msg: "_#{@convertSlackMessageToRocketChat(message.text)}_"
 												_.extend msgObj, msgDataDefaults
-												RocketChat.sendMessage @getRocketUser(message.user), msgObj, room
+												RocketChat.sendMessage @getRocketUser(message.user), msgObj, room, true
 											else if message.subtype is 'bot_message'
 												botUser = RocketChat.models.Users.findOneById 'rocket.cat', { fields: { username: 1 }}
 												botUsername = if @bots[message.bot_id] then @bots[message.bot_id]?.name else message.username
@@ -245,7 +245,7 @@ Importer.Slack = class Importer.Slack extends Importer.Base
 												if message.icons?
 													msgObj.emoji = message.icons.emoji
 
-												RocketChat.sendMessage botUser, msgObj, room, upsert: true
+												RocketChat.sendMessage botUser, msgObj, room, true
 											else if message.subtype is 'channel_purpose'
 												RocketChat.models.Messages.createRoomSettingsChangedWithTypeRoomIdMessageAndUser 'room_changed_topic', room._id, message.purpose, @getRocketUser(message.user), msgDataDefaults
 											else if message.subtype is 'channel_topic'
@@ -291,7 +291,7 @@ Importer.Slack = class Importer.Slack extends Importer.Base
 												if message.edited?
 													msgObj.ets = new Date(parseInt(message.edited.ts.split('.')[0]) * 1000)
 
-												RocketChat.sendMessage @getRocketUser(message.user), msgObj, room, upsert: true
+												RocketChat.sendMessage @getRocketUser(message.user), msgObj, room, true
 									@addCountCompleted 1
 			console.log missedTypes
 			@updateProgress Importer.ProgressStep.FINISHING

@@ -225,7 +225,7 @@ class SlackBridge {
 			if (message.subtype === 'bot_message') {
 				user = RocketChat.models.Users.findOneById('rocket.cat', { fields: { username: 1 } });
 			}
-			RocketChat.sendMessage(user, msgObj, room, { upsert: true });
+			RocketChat.sendMessage(user, msgObj, room);
 		}
 	}
 
