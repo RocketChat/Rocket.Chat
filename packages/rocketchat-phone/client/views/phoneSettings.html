@@ -1,0 +1,34 @@
+<template name="phoneSettings">
+	<div class="phone-settings-content">
+		<div class="input-line double-col">
+			<label>{{_ "Mic"}}</label>
+			<div>
+				<select id="audioInDevice" class="input-monitor phone-devices-select" name="{{audio_in}}">
+					{{#each audioInDevice in audioInDevices}}
+					<option value="{{audioInDevice.id}}" selected="{{activeAudioInDevice audioInDevice.id}}">{{audioInDevice.label}}</option>
+					{{/each}}
+				</select>
+			</div>
+		</div>
+		<div class="input-line double-col">
+			<label>{{_ "Speaker"}}</label>
+			<div>
+				<select id="audioOutDevice" class="input-monitor phone-devices-select" name="{{audio_in}}">
+					{{#each audioOutDevice in audioOutDevices}}
+					<option value="{{audioOutDevice.id}}" selected="{{activeAudioOutDevice audioOutDevice.id}}">{{audioOutDevice.label}}</option>
+					{{/each}}
+				</select>
+			</div>
+		</div>
+		<div class="input-line double-col">
+			<label>{{_ "Video"}}</label>
+			<div>
+				<select id="videoDevice" class="input-monitor phone-devices-select" name="{{audio_in}}">
+					{{#each videoDevice in videoDevices}}
+					<option value="{{videoDevice.id}}" selected="{{activeVideoDevice videoDevice.id}}">{{videoDevice.label}}</option>
+					{{/each}}
+				</select>
+			</div>
+		</div>
+	</div>
+</template>

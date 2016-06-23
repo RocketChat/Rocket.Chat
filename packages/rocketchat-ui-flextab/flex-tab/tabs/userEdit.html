@@ -62,6 +62,14 @@
 						</label>
 					</div>
 				{{/unless}}
+				<div class="input-line">
+					<label for="phonelogin">{{_ "Phone login"}}</label>
+					<input type="email" id="phonelogin" autocomplete="off" value="{{user.phonelogin}}">
+				</div>
+                <div class="input-line">
+                    <label for="phonepassword">{{_ "Phone Password"}}</label>
+                    <input type="password" id="phonepassword" autocomplete="off" value="{{user.phonepassword}}">
+                </div>
 				<nav>
 					<button class='button button-block blue save'><span>{{_ "Save"}}</span></button>
 					<button class='button button-block cancel secondary' type="button"><span>{{_ "Cancel"}}</span></button>
