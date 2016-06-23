@@ -1,0 +1,51 @@
+<template name="phone">
+    <div class="content">
+        <div class="title">
+            <h2>NG Communicator</h2>
+        </div>
+		<div class="phone-video" id="phone-video">
+			<nav>
+				<div class="phone-call-buttons">
+					<button class='button fullscreen'><i class="icon-resize-full"></i></button>
+					<button class='button dialkey' id="phone_settings"><i class="icon-wrench"></i></button>
+				</div>
+			</nav>
+		</div>
+		<div class="phone-notifications">
+		</div>
+		<div class="phone-display">
+			<input type="text" class="phone-display" id="phone-display" autocomplete="off" value={{phoneDisplay}}>
+		</div>
+        <nav>
+            <div class="phone-call-buttons">
+				<button class='button green-hook' id="phone-dial"><i class="icon-phone"></i></button>
+                <button class='button red-hook' id="phone-hangup"><i class="icon-phone"></i></button>
+            </div>
+            <div class="phone-call-buttons">
+                <button class='button dialkey' value="1"><span>1</span></button>
+                <button class='button dialkey' value="2"><span>2</span></button>
+                <button class='button dialkey' value="3"><span>3</span></button>
+            </div>
+            <div class="phone-call-buttons">
+                <button class='button dialkey' value="4"><span>4</span></button>
+                <button class='button dialkey' value="5"><span>5</span></button>
+                <button class='button dialkey' value="6"><span>6</span></button>
+            </div>
+            <div class="phone-call-buttons">
+                <button class='button dialkey' value="7"><span>7</span></button>
+                <button class='button dialkey' value="8"><span>8</span></button>
+                <button class='button dialkey' value="9"><span>9</span></button>
+            </div>
+            <div class="phone-call-buttons">
+                <button class='button dialkey' value="*"><span><i class="icon-asterisk"></i></span></button>
+                <button class='button dialkey' value="0"><span>0</span></button>
+                <button class='button dialkey' value="#"><span><i class="icon-hash"></i></span></button>
+            </div>
+        </nav>
+		<div>
+			{{#if showSettings}}
+				{{> phoneSettings ""}}
+			{{/if}}
+		</div>
+    </div>
+</template>

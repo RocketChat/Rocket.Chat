@@ -58,6 +58,11 @@ Meteor.methods
 			if userData.verified
 				updateUser.$set['emails.0.verified'] = true
 
+			if userData.phonelogin
+				updateUser.$set.phonelogin = userData.phonelogin
+			if userData.phonepassword
+			    updateUser.$set.phonepassword = userData.phonepassword
+
 			Meteor.users.update { _id: _id }, updateUser
 
 			if userData.joinDefaultChannels
@@ -106,6 +111,11 @@ Meteor.methods
 				updateUser.$set['emails.0.verified'] = true
 			else
 				updateUser.$set['emails.0.verified'] = false
+
+			if userData.phonelogin
+				updateUser.$set.phonelogin = userData.phonelogin
+			if userData.phonepassword
+				updateUser.$set.phonepassword = userData.phonepassword
 
 			Meteor.users.update { _id: userData._id }, updateUser
 			RocketChat.setUsername userData._id, userData.username

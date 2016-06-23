@@ -57,6 +57,8 @@ Template.userEdit.onCreated ->
 		userData.joinDefaultChannels = this.$("#joinDefaultChannels:checked").length > 0
 		userData.sendWelcomeEmail = this.$("#sendWelcomeEmail:checked").length > 0
 		userData.role = this.$("#role").val()
+		userData.phonelogin = s.trim(this.$("#phonelogin").val())
+		userData.phonepassword = s.trim(this.$("#phonepassword").val())
 		return userData
 
 	@validate = =>
