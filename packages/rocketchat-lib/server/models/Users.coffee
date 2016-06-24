@@ -322,6 +322,9 @@ RocketChat.models.Users = new class extends RocketChat.models._Base
 		if not _.isEmpty unsetData
 			update.$unset = unsetData
 
+		if _.isEmpty update
+			return true
+
 		return @update { _id: _id }, update
 
 	# INSERT
