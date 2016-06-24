@@ -46,10 +46,12 @@ Template.phone.events
 		console.log "will dial"
 		number = instance.phoneDisplay.get()
 		RocketChat.Phone.dialKey(number)
+		instance.phoneDisplay.set('')
 
 	'click #phone-hangup': (e, instance)->
 		console.log "hangup"
 		RocketChat.Phone.hangup()
+		instance.phoneDisplay.set('')
 
 	'click #phone-hold': (e, instance)->
 		console.log "toggle hold"
@@ -66,6 +68,12 @@ Template.phone.events
 			$('#phone-mute').addClass('phone-active-key')
 		else
 			$('#phone-mute').removeClass('phone-active-key')
+
+	'click #phone-redial': (e, instance)->
+		console.log "redialing...."
+		lastCalled = RocketChat.Phone.getLastCalled()
+		instance.phoneDisplay.set(lastCalled)
+		RocketChat.Phone.redial()
 
 	'click .button.fullscreen': (e, instance) ->
 		i = document.getElementById("phonestream")
@@ -108,6 +116,8 @@ RocketChat.Phone = new class
 	_password = undefined
 	_vertoHandle = undefined
 	_server = undefined
+
+	_lastCalled = ''
 
 	_onHold = false
 	_isMute = false
@@ -255,6 +265,13 @@ RocketChat.Phone = new class
 		if _videoDevice
 			$.FSRTC.getValidRes(_videoDevice, refreshVideoResolution)
 
+	getLastCalled: ->
+		return _lastCalled
+
+	redial: () ->
+		if !_curCall? and _callState is null
+			@newCall(_lastCalled)
+
 	toggleMute: () ->
 		if !_curCall?
 			return
@@ -297,6 +314,9 @@ RocketChat.Phone = new class
 		console.log('What Im doing here: ', _callState, ' ', _curCall)
 
 	newCall: (destination) ->
+		if !destination or destination is ''
+			return
+
 		has_mic = RocketChat.Phone.getAudioInDevice()
 		has_speak = RocketChat.Phone.getAudioOutDevice()
 		if !has_mic? or !has_speak? or has_mic is "none" or has_speak is "none"
@@ -319,6 +339,7 @@ RocketChat.Phone = new class
 		}, {
 			onDialogState: onDialogState
 		})
+		_lastCalled = destination
 
 	setVideoResolution: (idx) ->
 		if idx is "0"
