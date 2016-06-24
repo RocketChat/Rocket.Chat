@@ -44,6 +44,14 @@ Template.phoneSettings.helpers
 		active = RocketChat.Phone.getVideoDevice() is id
 		return active
 
+	resolutions: ->
+		def = [[0, 'unset']]
+		res = RocketChat.Phone.getResolutions()
+		console.log ">>>>>>>>>> CUR RES >>>>>>>>>>>"
+		console.log res
+		console.log ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>"
+		return def.concat res
+
 
 Template.phoneSettings.events
 	'change #audioInDevice': (e, t) ->
@@ -66,3 +74,9 @@ Template.phoneSettings.events
 
 		console.log value
 		console.log RocketChat.Phone.getVideoDevice()
+
+	'change #videoResolution': (e, t) ->
+		value = _.trim $(e.target).val()
+		RocketChat.Phone.setVideoResolution(value)
+
+		console.log value

@@ -132,8 +132,13 @@
             }
         });
 
+        var tag = verto.options.tag;
+        if (typeof(tag) === "function") {
+          tag = tag();
+        }
+
         if (verto.options.ringFile && verto.options.tag) {
-            verto.ringer = $("#" + verto.options.tag);
+            verto.ringer = $("#" + tag);
         }
 
         verto.rpcClient.call('login', {});
@@ -1885,6 +1890,11 @@
     $.verto.dialog = function(direction, verto, params) {
         var dialog = this;
 
+        var tag = verto.options.tag;
+        if (typeof(tag) === "function") {
+            tag = tag();
+        }
+
         dialog.params = $.extend({
             useVideo: verto.options.useVideo,
             useStereo: verto.options.useStereo,
@@ -1892,7 +1902,7 @@
 	    useCamera: verto.options.deviceParams.useCamera,
 	    useMic: verto.options.deviceParams.useMic,
 	    useSpeak: verto.options.deviceParams.useSpeak,
-            tag: verto.options.tag,
+            tag: tag,
             localTag: verto.options.localTag,
             login: verto.options.login,
 	    videoParams: verto.options.videoParams
@@ -2185,6 +2195,11 @@
             dialog.setState($.verto.enum.state.destroy);
             break;
         case $.verto.enum.state.destroy:
+
+            if (typeof(dialog.verto.options.tag) === "function") {
+              $('#' + dialog.params.tag).remove();
+            }
+
             delete dialog.verto.dialogs[dialog.callID];
 	    if (dialog.params.screenShare) {
 		dialog.rtc.stopPeer();
