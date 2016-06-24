@@ -75,6 +75,15 @@ Template.phone.events
 		instance.phoneDisplay.set(lastCalled)
 		RocketChat.Phone.redial()
 
+	'click #phone-clear': (e, instance)->
+		console.log "clearing display"
+		instance.phoneDisplay.set('')
+
+	'click #phone-transfer': (e, instance)->
+		console.log "transferring call..."
+		number = instance.phoneDisplay.get()
+		RocketChat.Phone.transfer(number)
+
 	'click .button.fullscreen': (e, instance) ->
 		i = document.getElementById("phonestream")
 		if i.requestFullscreen
@@ -183,12 +192,18 @@ RocketChat.Phone = new class
 			when 'active'
 				_callState = 'active'
 			when 'hangup'
-				_curCall.hangup()
+				if _callState != 'transfer'
+					console.log("hangup call")
+					_curCall.hangup()
+
 				_callState = 'hangup'
 				_curCall = null
 				clearNotification()
 			when 'destroy'
-				_curCall.hangup()
+				if _callState != 'transfer' and _callState != 'hangup'
+					console.log("hangup call")
+					_curCall.hangup()
+
 				_callState = null
 				_curCall = null
 				clearNotification()
@@ -264,6 +279,11 @@ RocketChat.Phone = new class
 		console.log ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>"
 		if _videoDevice
 			$.FSRTC.getValidRes(_videoDevice, refreshVideoResolution)
+
+	transfer: (number) ->
+		if _curCall and _callState is 'active'
+			_callState = 'transfer'
+			_curCall.transfer(number)
 
 	getLastCalled: ->
 		return _lastCalled
