@@ -175,6 +175,7 @@ rocketchat:push-notifications@0.0.1
 rocketchat:reactions@0.0.1
 rocketchat:slackbridge@0.0.1
 rocketchat:slashcommands-asciiarts@0.0.1
+rocketchat:slashcommands-create@0.0.1
 rocketchat:slashcommands-invite@0.0.1
 rocketchat:slashcommands-join@0.0.1
 rocketchat:slashcommands-kick@0.0.1

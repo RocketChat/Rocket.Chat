@@ -93,7 +93,7 @@
   "Accounts_RegistrationForm_Public" : "Öffentlich",
   "Accounts_RegistrationForm_Secret_URL" : "Geheime URL",
   "Accounts_RegistrationForm_SecretURL" : "Geheime URL für die Registrierungsseite",
-  "Accounts_RegistrationForm_SecretURL_Description" : "Sie müssen eine zufällige Zeichenfolge, die der Registrierungs-URL hinzugefügt wird, verwenden. Beispiel: https://demo.rocket.chat/registrieren/[geheimer_schluessel]",
+  "Accounts_RegistrationForm_SecretURL_Description" : "Sie müssen eine zufällige Zeichenfolge, die der Registrierungs-URL hinzugefügt wird, verwenden. Beispiel: https://demo.rocket.chat/register/[geheimer_schluessel]",
   "Accounts_RequireNameForSignUp" : "Namen für die Anmeldung verlangen",
   "Accounts_ShowFormLogin" : "Anmeldeformular zeigen",
   "Accounts_UseDefaultBlockedDomainsList" : "Standardliste für blockierte Domains verwenden",
