@@ -151,3 +151,5 @@ rocketchat:slashcommands-create
 rocketchat:phone
 voismart:webc
 voismart:ngapi
+voismart:ngpresence
+voismart:nglogin
