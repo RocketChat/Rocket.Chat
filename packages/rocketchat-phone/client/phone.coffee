@@ -53,11 +53,19 @@ Template.phone.events
 
 	'click #phone-hold': (e, instance)->
 		console.log "toggle hold"
-		onHold = RocketChat.Phone.toggleHold()
-		if onHold
-			$('#phone-hold').addClass('on-hold')
+		status = RocketChat.Phone.toggleHold()
+		if status
+			$('#phone-hold').addClass('phone-active-key')
 		else
-			$('#phone-hold').removeClass('on-hold')
+			$('#phone-hold').removeClass('phone-active-key')
+
+	'click #phone-mute': (e, instance)->
+		console.log "toggle mute"
+		status = RocketChat.Phone.toggleMute()
+		if status
+			$('#phone-mute').addClass('phone-active-key')
+		else
+			$('#phone-mute').removeClass('phone-active-key')
 
 	'click .button.fullscreen': (e, instance) ->
 		i = document.getElementById("phonestream")
@@ -102,6 +110,7 @@ RocketChat.Phone = new class
 	_server = undefined
 
 	_onHold = false
+	_isMute = false
 
 	_curCall = null
 
@@ -245,6 +254,14 @@ RocketChat.Phone = new class
 		console.log ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>"
 		if _videoDevice
 			$.FSRTC.getValidRes(_videoDevice, refreshVideoResolution)
+
+	toggleMute: () ->
+		if !_curCall?
+			return
+
+		_isMute = !_isMute
+		_curCall.setMute('toggle')
+		return _isMute
 
 	toggleHold: () ->
 		if !_curCall?
