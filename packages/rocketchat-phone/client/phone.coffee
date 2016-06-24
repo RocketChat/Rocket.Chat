@@ -46,10 +46,43 @@ Template.phone.events
 		console.log "will dial"
 		number = instance.phoneDisplay.get()
 		RocketChat.Phone.dialKey(number)
+		instance.phoneDisplay.set('')
 
 	'click #phone-hangup': (e, instance)->
 		console.log "hangup"
 		RocketChat.Phone.hangup()
+		instance.phoneDisplay.set('')
+
+	'click #phone-hold': (e, instance)->
+		console.log "toggle hold"
+		status = RocketChat.Phone.toggleHold()
+		if status
+			$('#phone-hold').addClass('phone-active-key')
+		else
+			$('#phone-hold').removeClass('phone-active-key')
+
+	'click #phone-mute': (e, instance)->
+		console.log "toggle mute"
+		status = RocketChat.Phone.toggleMute()
+		if status
+			$('#phone-mute').addClass('phone-active-key')
+		else
+			$('#phone-mute').removeClass('phone-active-key')
+
+	'click #phone-redial': (e, instance)->
+		console.log "redialing...."
+		lastCalled = RocketChat.Phone.getLastCalled()
+		instance.phoneDisplay.set(lastCalled)
+		RocketChat.Phone.redial()
+
+	'click #phone-clear': (e, instance)->
+		console.log "clearing display"
+		instance.phoneDisplay.set('')
+
+	'click #phone-transfer': (e, instance)->
+		console.log "transferring call..."
+		number = instance.phoneDisplay.get()
+		RocketChat.Phone.transfer(number)
 
 	'click .button.fullscreen': (e, instance) ->
 		i = document.getElementById("phonestream")
@@ -92,6 +125,11 @@ RocketChat.Phone = new class
 	_password = undefined
 	_vertoHandle = undefined
 	_server = undefined
+
+	_lastCalled = ''
+
+	_onHold = false
+	_isMute = false
 
 	_curCall = null
 
@@ -154,12 +192,18 @@ RocketChat.Phone = new class
 			when 'active'
 				_callState = 'active'
 			when 'hangup'
-				_curCall.hangup()
+				if _callState != 'transfer'
+					console.log("hangup call")
+					_curCall.hangup()
+
 				_callState = 'hangup'
 				_curCall = null
 				clearNotification()
 			when 'destroy'
-				_curCall.hangup()
+				if _callState != 'transfer' and _callState != 'hangup'
+					console.log("hangup call")
+					_curCall.hangup()
+
 				_callState = null
 				_curCall = null
 				clearNotification()
@@ -236,6 +280,34 @@ RocketChat.Phone = new class
 		if _videoDevice
 			$.FSRTC.getValidRes(_videoDevice, refreshVideoResolution)
 
+	transfer: (number) ->
+		if _curCall and _callState is 'active'
+			_callState = 'transfer'
+			_curCall.transfer(number)
+
+	getLastCalled: ->
+		return _lastCalled
+
+	redial: () ->
+		if !_curCall? and _callState is null
+			@newCall(_lastCalled)
+
+	toggleMute: () ->
+		if !_curCall?
+			return
+
+		_isMute = !_isMute
+		_curCall.setMute('toggle')
+		return _isMute
+
+	toggleHold: () ->
+		if !_curCall?
+			return
+
+		_onHold = !_onHold
+		_curCall.toggleHold()
+		return _onHold
+
 	dtmf: (key) ->
 		if !_curCall?
 			return
@@ -262,6 +334,9 @@ RocketChat.Phone = new class
 		console.log('What Im doing here: ', _callState, ' ', _curCall)
 
 	newCall: (destination) ->
+		if !destination or destination is ''
+			return
+
 		has_mic = RocketChat.Phone.getAudioInDevice()
 		has_speak = RocketChat.Phone.getAudioOutDevice()
 		if !has_mic? or !has_speak? or has_mic is "none" or has_speak is "none"
@@ -284,6 +359,7 @@ RocketChat.Phone = new class
 		}, {
 			onDialogState: onDialogState
 		})
+		_lastCalled = destination
 
 	setVideoResolution: (idx) ->
 		if idx is "0"

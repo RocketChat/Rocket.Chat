@@ -3,9 +3,7 @@
      display: -moz-flex;
      display: flex;
      button {
-         -webkit-flex-grow: 1;
-         -moz-flex-grow: 1;
-         flex-grow: 1;
+         width: 100%;
      }
  }
 
@@ -17,12 +15,36 @@
      background-color: red !important;
  }
 
+.phone-active-key {background-color: red !important;
+     -webkit-animation-duration: 1000ms;
+     animation-duration: 1000ms;
+     -webkit-animation-name: blink;
+     animation-name: blink;
+     -webkit-animation-iteration-count: infinite;
+     animation-iteration-count: infinite;
+     -webkit-animation-direction: alternate;
+     animation-direction: alternate;
+ }
+
  .dialkey {
      width: 33%;
  }
 
+ .phone-display-container {
+     margin-top: 10px;
+     margin-bottom: 10px;
+     height: 50px;
+ }
+
  .phone-display {
      text-align: right;
+     border: none !important;
+     width: 90% !important;
+     margin-left: auto;
+     margin-right: auto;
+     display: block;
+     height: 50px !important;
+     font-size: 2.5em;
  }
 
  .phonestream {
@@ -33,4 +55,8 @@
  .phone-notifications {
      display: none;
      text-align: center;
+ }
+
+ .phone-redial {
+     width: 20% !important;
  }

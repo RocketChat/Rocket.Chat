@@ -509,7 +509,9 @@
 	    console.error("SCREEN SHARE");
 	    audio = false;
 	} else {
-	    audio = {};
+	    audio = {
+			optional: []
+		};
 
 	    if (obj.options.useMic !== "any") {
 		audio.optional = [{sourceId: obj.options.useMic}]
