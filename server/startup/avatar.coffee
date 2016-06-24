@@ -34,6 +34,12 @@ Meteor.startup ->
 		params =
 			username: decodeURIComponent(req.url.replace(/^\//, '').replace(/\?.*$/, ''))
 
+		if _.isEmpty params.username
+			res.writeHead 403
+			res.write 'Forbidden'
+			res.end()
+			return
+
 		if params.username[0] isnt '@'
 			if Meteor.settings?.public?.sandstorm
 				user = RocketChat.models.Users.findOneByUsername(params.username.replace('.jpg', ''))
