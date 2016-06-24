@@ -51,6 +51,14 @@ Template.phone.events
 		console.log "hangup"
 		RocketChat.Phone.hangup()
 
+	'click #phone-hold': (e, instance)->
+		console.log "toggle hold"
+		onHold = RocketChat.Phone.toggleHold()
+		if onHold
+			$('#phone-hold').addClass('on-hold')
+		else
+			$('#phone-hold').removeClass('on-hold')
+
 	'click .button.fullscreen': (e, instance) ->
 		i = document.getElementById("phonestream")
 		if i.requestFullscreen
@@ -92,6 +100,8 @@ RocketChat.Phone = new class
 	_password = undefined
 	_vertoHandle = undefined
 	_server = undefined
+
+	_onHold = false
 
 	_curCall = null
 
@@ -235,6 +245,14 @@ RocketChat.Phone = new class
 		console.log ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>"
 		if _videoDevice
 			$.FSRTC.getValidRes(_videoDevice, refreshVideoResolution)
+
+	toggleHold: () ->
+		if !_curCall?
+			return
+
+		_onHold = !_onHold
+		_curCall.toggleHold()
+		return _onHold
 
 	dtmf: (key) ->
 		if !_curCall?

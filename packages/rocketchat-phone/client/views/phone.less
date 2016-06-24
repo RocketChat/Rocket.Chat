@@ -3,9 +3,7 @@
      display: -moz-flex;
      display: flex;
      button {
-         -webkit-flex-grow: 1;
-         -moz-flex-grow: 1;
-         flex-grow: 1;
+         width: 100%;
      }
  }
 
@@ -15,6 +13,17 @@
 
  .red-hook {
      background-color: red !important;
+ }
+
+ .on-hold {background-color: red !important;
+     -webkit-animation-duration: 1000ms;
+     animation-duration: 1000ms;
+     -webkit-animation-name: blink;
+     animation-name: blink;
+     -webkit-animation-iteration-count: infinite;
+     animation-iteration-count: infinite;
+     -webkit-animation-direction: alternate;
+     animation-direction: alternate;
  }
 
  .dialkey {
