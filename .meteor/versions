@@ -174,6 +174,7 @@ rocketchat:piwik@0.0.1
 rocketchat:push-notifications@0.0.1
 rocketchat:reactions@0.0.1
 rocketchat:slackbridge@0.0.1
+rocketchat:slashcommands-archive@0.0.1
 rocketchat:slashcommands-asciiarts@0.0.1
 rocketchat:slashcommands-create@0.0.1
 rocketchat:slashcommands-invite@0.0.1
@@ -183,6 +184,7 @@ rocketchat:slashcommands-leave@0.0.1
 rocketchat:slashcommands-me@0.0.1
 rocketchat:slashcommands-mute@0.0.1
 rocketchat:slashcommands-topic@0.0.1
+rocketchat:slashcommands-unarchive@0.0.1
 rocketchat:sms@0.0.1
 rocketchat:spotify@0.0.1
 rocketchat:statistics@0.0.1
