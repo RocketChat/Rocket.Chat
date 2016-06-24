@@ -97,9 +97,13 @@ RocketChat.Phone = new class
 
 	_audioInDevice = undefined
 	_audioOutDevice = undefined
-	_videoDevice = undefined
+	_videoDevice = null
 
 	_callState = null
+
+	_curResolutions = null
+	_curVideoW = null
+	_curVideoH = null
 
 	constructor: ->
 		console.log("Starting a new Phone Handler")
@@ -117,7 +121,7 @@ RocketChat.Phone = new class
 			caller_id_number: 1234,
 			useVideo: has_video,
 			useStereo: true,
-			useCamera: _videoDevice || "none",
+			useCamera: _videoDevice,
 			useSpeak: _audioOutDevice || "none",
 			useMic: _audioInDevice || "none",
 		}, {})
@@ -168,6 +172,12 @@ RocketChat.Phone = new class
 		$(".phone-notifications").text(msg)
 		$(".phone-notifications").css('display', 'block')
 
+	refreshVideoResolution = (resolutions) ->
+		console.log ">>>>>>>>>< RESOLUTIONS >>>>>>>>>>>>>>>>>>"
+		console.log resolutions
+		_curResolutions = resolutions.validRes
+		console.log ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>"
+
 	bootstrap = (status) =>
 		console.log _started
 		console.log _vertoHandle
@@ -187,7 +197,11 @@ RocketChat.Phone = new class
 				googNoiseSuppression: true,
 				googHighpassFilter: true
 			},
-			sessid: $.verto.genUUID()
+			sessid: $.verto.genUUID(),
+			deviceParams: {
+				useCamera: _videoDevice,
+				onResCheck: refreshVideoResolution
+			}
 		}, {
 			onWSLogin: onWSLogin,
 			onWSClose: onWSClose,
@@ -196,6 +210,7 @@ RocketChat.Phone = new class
 		_started = true
 
 	setConfig = ->
+		$.verto.refreshDevices(refreshDevices)
 		conf = {
 			audioInDevice: _audioInDevice
 			audioOutDevice: _audioOutDevice
@@ -213,6 +228,13 @@ RocketChat.Phone = new class
 		_audioInDevice = conf.audioInDevice
 		_audioOutDevice = conf.audioOutDevice
 		_videoDevice = conf.videoDevice
+
+	refreshDevices = (what) ->
+		console.log ">>>>>>>>>> REFRESH DEVICES <<<<<<<<<<<<"
+		console.log what
+		console.log ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>"
+		if _videoDevice
+			$.FSRTC.getValidRes(_videoDevice, refreshVideoResolution)
 
 	dtmf: (key) ->
 		if !_curCall?
@@ -244,7 +266,7 @@ RocketChat.Phone = new class
 		has_speak = RocketChat.Phone.getAudioOutDevice()
 		if !has_mic? or !has_speak? or has_mic is "none" or has_speak is "none"
 			console.log "not mic and speaker defined, refusing call"
-			return
+			#return
 
 		has_video = false
 		if _videoDevice and (_videoDevice != "none")
@@ -256,12 +278,43 @@ RocketChat.Phone = new class
 			caller_id_number: 1234,
 			useVideo: has_video,
 			useStereo: true,
-			useCamera: _videoDevice || "none",
+			useCamera: _videoDevice,
 			useSpeak: _audioOutDevice || "none",
 			useMic: _audioInDevice || "none",
 		}, {
 			onDialogState: onDialogState
 		})
+
+	setVideoResolution: (idx) ->
+		if idx is "0"
+			_curVideoW = null
+			_curVideoH = null
+			delete _vertoHandle.videoParams.minWidth
+			delete _vertoHandle.videoParams.maxWidth
+			delete _vertoHandle.videoParams.minHeight
+			delete _vertoHandle.videoParams.maxHeight
+		else
+			idx = idx - 1
+			wxh = _curResolutions[idx]
+			console.log wxh
+			_curVideoW = wxh[0]
+			_curVideoH = wxh[1]
+			_vertoHandle.videoParams({
+				#width: _curVideoW,
+				#height: _curVideoH
+				minWidth: _curVideoW,
+				minHeight: _curVideoH,
+				maxWidth: _curVideoW,
+				maxHeight: _curVideoH
+			})
+
+		_vertoHandle.videoParams({
+			minFrameRate: 5,
+			vertoBestFrameRate: 30
+		})
+
+	getResolutions: ->
+		return _curResolutions
 
 	setAudioInDevice: (id) ->
 		_audioInDevice = id
@@ -278,6 +331,8 @@ RocketChat.Phone = new class
 		return _audioOutDevice
 
 	setVideoDevice: (id) ->
+		if id is 'none'
+			id = null
 		_videoDevice = id
 		setConfig()
 

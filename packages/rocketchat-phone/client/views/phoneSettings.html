@@ -13,7 +13,7 @@
 		<div class="input-line double-col">
 			<label>{{_ "Speaker"}}</label>
 			<div>
-				<select id="audioOutDevice" class="input-monitor phone-devices-select" name="{{audio_in}}">
+				<select id="audioOutDevice" class="input-monitor phone-devices-select" name="{{audio_out}}">
 					{{#each audioOutDevice in audioOutDevices}}
 					<option value="{{audioOutDevice.id}}" selected="{{activeAudioOutDevice audioOutDevice.id}}">{{audioOutDevice.label}}</option>
 					{{/each}}
@@ -23,9 +23,19 @@
 		<div class="input-line double-col">
 			<label>{{_ "Video"}}</label>
 			<div>
-				<select id="videoDevice" class="input-monitor phone-devices-select" name="{{audio_in}}">
+				<select id="videoDevice" class="input-monitor phone-devices-select" name="{{video_in}}">
 					{{#each videoDevice in videoDevices}}
 					<option value="{{videoDevice.id}}" selected="{{activeVideoDevice videoDevice.id}}">{{videoDevice.label}}</option>
+					{{/each}}
+				</select>
+			</div>
+		</div>
+		<div class="input-line double-col">
+			<label>{{_ "Video Res"}}</label>
+			<div>
+				<select id="videoResolution" class="input-monitor phone-devices-select" name="{{video_res}}">
+					{{#each res in resolutions}}
+					<option value="{{ @index }}">{{ res }}</option>
 					{{/each}}
 				</select>
 			</div>
