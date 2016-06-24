@@ -1076,6 +1076,8 @@
   "This_email_has_already_been_used_and_has_not_been_verified__Please_change_your_password" : "This email has already been used and has not been verified. Please change your password.",
   "This_is_a_desktop_notification" : "This is a desktop notification",
   "This_is_a_push_test_messsage" : "This is a push test messsage",
+  "This_room_has_been_archived_by__username_" : "This room has been archived by __username__",
+  "This_room_has_been_unarchived_by__username_" : "This room has been unarchived by __username__",
   "Time_in_seconds" : "Time in seconds",
   "Title" : "Title",
   "Title_bar_color" : "Title bar color",
