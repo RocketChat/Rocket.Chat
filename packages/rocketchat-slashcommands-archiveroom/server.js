@@ -5,12 +5,14 @@ function Archive(command, params, item) {
 	}
 	channel = params.trim();
 	if (channel === '') {
-		return;
+		room = RocketChat.models.Rooms.findOneById(item.rid)
+		channel = room.name;
+	} else {
+		channel = channel.replace('#', '');
+		room = RocketChat.models.Rooms.findOneByName(channel);
 	}
-	channel = channel.replace('#', '');
-
 	user = Meteor.users.findOne(Meteor.userId());
-	room = RocketChat.models.Rooms.findOneByName(channel);
+
 	if (room.archived) {
 		RocketChat.Notifications.notifyUser(Meteor.userId(), 'message', {
 			_id: Random.id(),
@@ -25,6 +27,7 @@ function Archive(command, params, item) {
 	}
 	Meteor.call('archiveRoom', room._id);
 
+	RocketChat.models.Messages.createRoomArchivedByRoomIdAndUser(room._id, Meteor.user());
 	RocketChat.Notifications.notifyUser(Meteor.userId(), 'message', {
 		_id: Random.id(),
 		rid: item.rid,
