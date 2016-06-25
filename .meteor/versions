@@ -163,6 +163,7 @@ rocketchat:markdown@0.0.1
 rocketchat:mentions@0.0.1
 rocketchat:mentions-flextab@0.0.1
 rocketchat:message-attachments@0.0.1
+rocketchat:message-mark-as-unread@0.0.1
 rocketchat:message-pin@0.0.1
 rocketchat:message-star@0.0.1
 rocketchat:migrations@0.0.1

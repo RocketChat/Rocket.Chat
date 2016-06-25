@@ -68,6 +68,7 @@ rocketchat:markdown
 rocketchat:mentions
 rocketchat:mentions-flextab
 rocketchat:message-attachments
+rocketchat:message-mark-as-unread
 rocketchat:message-pin
 rocketchat:message-star
 rocketchat:migrations
