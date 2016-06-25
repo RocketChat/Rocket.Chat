@@ -654,6 +654,7 @@
   "Managing_assets" : "Managing assets",
   "Managing_integrations" : "Managing integrations",
   "Mark_as_read" : "Mark as read",
+  "Mark_as_unread" : "Mark as unread",
   "Markdown_Headers" : "Markdown Headers",
   "Markdown_SupportSchemesForLink" : "Markdown Support Schemes for Link",
   "Markdown_SupportSchemesForLink_Description" : "Comma-separated list of allowed schemes",
