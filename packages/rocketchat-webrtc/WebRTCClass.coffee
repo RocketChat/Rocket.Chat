@@ -1,6 +1,59 @@
 emptyFn = ->
 	# empty
 
+AudioClipper = new class
+
+	createAudioMeter:(audioContext,callback, clipLevel,averaging,clipLag) ->
+
+		processor = audioContext.createScriptProcessor(512)
+
+		volumeAudioProcess = (event) ->
+			buf = event.inputBuffer.getChannelData(0);
+			bufLength = buf.length;
+			x = 0;
+			clippedBefore = processor.clipping
+
+			# Do a root-mean-square on the samples: sum up the squares...
+			for c in [0..event.inputBuffer.numberOfChannels-1]
+				buf = event.inputBuffer.getChannelData(c);
+				bufLength = buf.length;
+				for i in [0...bufLength-1]
+					x = buf[i];
+					if (Math.abs(x)>=processor.clipLevel)
+						processor.clipping = true;
+						processor.lastClip = window.performance.now()
+
+			if (processor.lastClip + processor.clipLag) < window.performance.now()
+				processor.clipping = false
+				processor.lastNotClip = window.performance.now()
+
+			if (clippedBefore!=processor.clipping)
+				callback(processor.clipping)
+
+		processor.onaudioprocess = volumeAudioProcess
+		processor.clipping = false;
+		processor.lastClip = 0;
+		processor.volume = 0;
+		processor.clipLevel = clipLevel || 0.98;
+		processor.averaging = averaging || 0.95;
+		processor.clipLag = clipLag || 500;
+
+		# this will have no effect, since we don't copy the input to the output,
+		# but works around a current Chrome bug.
+		processor.connect(audioContext.destination)
+
+		processor.checkClipping = ->
+			return @clipping
+
+		processor.shutdown = ->
+			@disconnect()
+			@onaudioprocess = null
+
+
+
+		return processor
+
+
 class WebRTCTransportClass
 	debug: false
 
@@ -143,6 +196,15 @@ class WebRTCClass
 		@overlayEnabled = new ReactiveVar false
 		@screenShareEnabled = new ReactiveVar false
 		@localUrl = new ReactiveVar
+		@availableDevices = new ReactiveVar []
+
+		# todo: is there a nicer way to initialize a ReactiveVar with a promise?
+		ad = @availableDevices
+		this._enumerateDevices().then((devices)-> ad.set(devices))
+
+		@videoInputDevice = new ReactiveVar localStorage.getItem('videoInputDevice')
+		@audioInputDevice = new ReactiveVar localStorage.getItem('audioInputDevice')
+		@audioOutputDevice = new ReactiveVar localStorage.getItem('audioOutputDevice')
 
 		@active = false
 		@remoteMonitoring = false
@@ -307,6 +369,13 @@ class WebRTCClass
 					sdpMid: e.candidate.sdpMid
 
 		peerConnection.addEventListener 'addstream', (e) =>
+			stream = e.stream;
+			audioTracks = stream.getAudioTracks();
+			if audioTracks[0]
+				audioContext = new AudioContext
+				mediaStreamSource = audioContext.createMediaStreamSource(stream)
+				audioMeter = AudioClipper.createAudioMeter(audioContext)
+				mediaStreamSource.connect(audioMeter)
 			@updateRemoteItems()
 
 		peerConnection.addEventListener 'removestream', (e) =>
@@ -323,6 +392,17 @@ class WebRTCClass
 			@updateRemoteItems()
 
 		return peerConnection
+
+	_enumerateDevices: ->
+		return navigator.mediaDevices.enumerateDevices()
+
+	_createMediaConstraints: (media, videoInputDevice, audioInputDevice) ->
+		mediaConstraints = { video: media.video, audio: media.audio }
+		if media.video && videoInputDevice
+			mediaConstraints.video = { deviceId: { exact: videoInputDevice } }
+		if media.audio && audioInputDevice
+			mediaConstraints.audio = { deviceId: { exact: audioInputDevice } }
+		return mediaConstraints
 
 	_getUserMedia: (media, onSuccess, onError) ->
 		onSuccessLocal = (stream) ->
@@ -341,8 +421,14 @@ class WebRTCClass
 				stream.volume = volume
 
 			onSuccess(stream)
-
-		navigator.getUserMedia media, onSuccessLocal, onError
+		mediaConstraints = @_createMediaConstraints(media, @videoInputDevice.get(), @audioInputDevice.get())
+		navigator.mediaDevices.getUserMedia(mediaConstraints).catch((e) ->
+			# fall back to default devices if selected devices are not available (anymore)
+			if (e.name == 'DevicesNotFoundError')
+				console.warn 'At least one input device could not be found. Falling back to default devices.', mediaConstraints
+				return navigator.mediaDevices.getUserMedia(media)
+			else return Promise.reject(e)
+		).then(onSuccessLocal, onError)
 
 
 	getUserMedia: (media, onSuccess, onError=@onError) ->
@@ -591,6 +677,7 @@ class WebRTCClass
 				icon = 'phone'
 				title = "Group audio call from #{subscription.name}"
 
+		KonchatNotification.webrtcCall()
 		swal
 			title: "<i class='icon-#{icon} alert-icon'></i>#{title}"
 			text: "Do you want to accept?"
@@ -778,6 +865,10 @@ class WebRTCClass
 WebRTC = new class
 	constructor: ->
 		@instancesByRoomId = {}
+
+	# if the browser supports setting the output device id for a media element.
+	setSinkIdSupported: ->
+		return 'function' == typeof HTMLMediaElement.prototype.setSinkId
 
 	getInstanceByRoomId: (roomId) ->
 		subscription = ChatSubscription.findOne({rid: roomId})

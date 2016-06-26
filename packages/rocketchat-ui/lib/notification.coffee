@@ -43,6 +43,10 @@
 					notification.icon = avatarAsPng
 					KonchatNotification.notify(notification)
 
+	webrtcCall: ->
+		if not Session.equals('user_' + Meteor.userId() + '_status', 'busy') and Meteor.user()?.settings?.preferences?.webrtcCallNotification isnt false
+			$('#webrtcCallNotification')[0].play()
+
 	newMessage: ->
 		if not Session.equals('user_' + Meteor.userId() + '_status', 'busy') and Meteor.user()?.settings?.preferences?.newMessageNotification isnt false
 			$('#chatAudioNotification')[0].play()

@@ -9,7 +9,54 @@
 					<button class="start-video-call button" aria-label="{{_ "Start_video_call"}}"><i class="icon-videocam"></i></button>
 					<button class="start-audio-call button" aria-label="{{_ "Start_audio_call"}}"><i class="icon-phone"></i></button>
 				{{/if}}
-			{{/unless}}
+				<button class="show-settings button"><i class="icon-cog"></i></button>
+		{{/unless}}
 		{{/if}}
 	</div>
+	{{#if videoAvaliable}}
+	{{#if showSettings}}
+	<div class="about clearfix">
+		<form class="edit-form" autocomplete="off">
+
+			<div class="input-line">
+				<label for="videoInputDevice">{{_ "Camera"}}</label>
+				<div>
+					<select id="videoInputDevice" class="required">
+						{{#each videoInputDevices}}
+						<option value="{{deviceId}}" selected="{{selectedVideoInputDevice deviceId}}" dir="auto">{{label}}</option>
+						{{/each}}
+					</select>
+				</div>
+			</div>
+
+			<div class="input-line">
+				<label for="audioInputDevice">{{_ "Microphone"}}</label>
+				<div>
+					<select id="audioInputDevice" name="audioInputDevice" class="required">
+						{{#each audioInputDevices}}
+						<option value="{{deviceId}}" selected="{{selectedAudioInputDevice deviceId}}" dir="auto">{{label}}</option>
+						{{/each}}
+					</select>
+				</div>
+			</div>
+			{{#if setSinkIdSupported}}
+			<div class="input-line">
+				<label for="audioOutputDevice">{{_ "Speaker"}}</label>
+				<div>
+					<select id="audioOutputDevice" name="audioOutputDevice" class="required">
+						{{#each audioOutputDevices}}
+						<option value="{{deviceId}}" selected="{{selectedAudioOutputDevice deviceId}}" dir="auto">{{label}}</option>
+						{{/each}}
+					</select>
+				</div>
+			</div>
+			{{/if}}
+			<nav>
+				<button class='button button-block blue save'><span>{{_ "Save"}}</span></button>
+			</nav>
+		</form>
+	</div>
+	{{/if}}
+	{{/if}}
+
 </template>
