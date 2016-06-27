@@ -29,11 +29,13 @@ Package.onUse(function(api) {
             'client/views/phone.less',
             'client/views/phoneSettings.less',
             'client/phone.coffee',
-            'client/phoneSettings.coffee'
+            'client/phoneSettings.coffee',
+			'client/actionLink.coffee'
     ], 'client');
 
     api.addFiles([
             'server/settings.coffee',
+			'server/actionLink.coffee'
     ], 'server');
 
 	api.addFiles([], 'server');

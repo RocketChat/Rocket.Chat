@@ -335,6 +335,11 @@ RocketChat.Phone = new class
 
 	newCall: (destination) ->
 		if !destination or destination is ''
+			console.log("No number provided")
+			return
+
+		if _curCall?
+			console.log("Cannot call while in call")
 			return
 
 		has_mic = RocketChat.Phone.getAudioInDevice()
