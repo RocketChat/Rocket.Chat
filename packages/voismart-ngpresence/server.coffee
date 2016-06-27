@@ -16,13 +16,13 @@ class AmqpConnection
 	connect: ->
 		@currentTry += 1
 		@stopTrying = false
-		logger.info('connecting to', "amqp://#{@host}/#{@vhost}")
+		logger.info("connecting to amqp://#{@host}/#{@vhost}")
 		amqpClient.connect(@url).then(@onConnected, @onError)
 
 	onConnected: (conn) =>
 		@currentTry = 0
 		@conn = conn
-		conn.on('error', @reconnect)
+		conn.on 'error', @reconnect
 		conn.createChannel().then(@onChannelCreated, @onError)
 
 	reconnect: =>
@@ -30,8 +30,8 @@ class AmqpConnection
 		random_delay = Math.floor(Math.random() * (30 - 1)) + 1
 		max_delay = 120
 		delay = Math.min(random_delay + Math.pow(2, attempt-1), max_delay)
-		logger.warn('disconnected. Attempt', attempt, 'Trying reconnect in ', delay, 'seconds')
-		setTimeout((=> @connect(@url)), delay * 1000)
+		logger.warn "disconnected. Attempt #{attempt}. Trying reconnect in #{delay}s"
+		setTimeout (=> @connect(@url)), delay * 1000
 
 	onError: (e) =>
 		logger.error('error', e)
@@ -45,7 +45,7 @@ class AmqpConnection
 	disconnect: =>
 		@stopTrying = true
 		if @conn
-			logger.info("disconnecting from amqp host #{@host}")
+			logger.info "disconnecting from amqp host #{@host}"
 			@conn.close()
 			@conn = null
 			@chan = null
@@ -53,7 +53,7 @@ class AmqpConnection
 
 	onChannelCreated: (chan) =>
 		@chan = chan
-		chan.assertExchange(@exchange, 'topic', {durable: false}).then(@declareQueue)
+		chan.assertExchange(@exchange, 'topic', durable: false).then(@declareQueue)
 
 	declareQueue: =>
 		queueopts =
@@ -65,7 +65,7 @@ class AmqpConnection
 			qid = Random.id(32)
 		else
 			queueopts['exclusive'] = false
-			qid = crypto.hex_md5(@queuePrefix + @routingKey)
+			qid = CryptoJS.MD5(@queuePrefix + @routingKey).toString()
 		@qid = qid
 		ok = @chan.assertQueue(qid, queueopts)
 		ok = ok.then(=> @chan.bindQueue(@qid, @exchange, @routingKey))
@@ -73,4 +73,4 @@ class AmqpConnection
 
 	onMessage: (msg) =>
 		payload = JSON.parse(msg.content.toString('utf8'))['payload']
-		logger.debug('received', payload)
+		logger.debug "received", payload
