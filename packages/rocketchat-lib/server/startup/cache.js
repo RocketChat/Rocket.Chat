@@ -37,7 +37,7 @@ class Cache {
 	}
 
 	processOplogRecordForCollection(collection, action) {
-		console.log(collection, JSON.stringify(action, null, 2));
+		// console.log(collection, JSON.stringify(action, null, 2));
 		if (action.op.op === 'i') {
 			this[collection].insert(action.op.o);
 			return;
