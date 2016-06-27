@@ -42,6 +42,7 @@ Package.onUse(function(api) {
 	api.addFiles('server/lib/debug.js', 'server');
 
 	// COMMON LIB
+	api.addFiles('lib/loki.js');
 	api.addFiles('lib/settings.coffee');
 	api.addFiles('lib/configLogger.coffee');
 	api.addFiles('lib/callbacks.coffee');
