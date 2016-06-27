@@ -9,8 +9,8 @@ RocketChat.sendMessage = (user, message, room) ->
 
 	message.rid = room._id
 
-	if not room.usernames?
-		room = RocketChat.models.Rooms.findOneById(room._id)
+	if not room.usernames? || room.usernames.length is 0
+		room = RocketChat.cache.Rooms.findOne({_id: room._id})
 
 	if message.parseUrls isnt false
 		if urls = message.msg.match /([A-Za-z]{3,9}):\/\/([-;:&=\+\$,\w]+@{1})?([-A-Za-z0-9\.]+)+:?(\d+)?((\/[-\+=!:~%\/\.@\,\w]*)?\??([-\+=&!:;%@\/\.\,\w]+)?(?:#([^\s\)]+))?)?/g

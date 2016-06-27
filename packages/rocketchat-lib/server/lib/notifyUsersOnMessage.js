@@ -36,7 +36,10 @@ RocketChat.callbacks.add('afterSaveMessage', function(message, room) {
 		mentionIds = [];
 		highlightsIds = [];
 		toAll = false;
-		highlights = RocketChat.models.Users.findUsersByUsernamesWithHighlights(room.usernames, { fields: { '_id': 1, 'settings.preferences.highlights': 1 }}).fetch();
+		// highlights = RocketChat.models.Users.findUsersByUsernamesWithHighlights(room.usernames, { fields: { '_id': 1, 'settings.preferences.highlights': 1 }}).fetch();
+		highlights = RocketChat.cache.Users.getDynamicView('highlights').data().filter(function(record) {
+			return room.usernames.indexOf(record.username) > -1;
+		});
 
 		if (message.mentions != null) {
 			message.mentions.forEach(function(mention) {
