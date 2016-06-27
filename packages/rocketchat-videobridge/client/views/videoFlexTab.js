@@ -13,7 +13,9 @@ Template.videoFlexTab.onCreated(function() {
 	let width = 500;
 	let height = 500;
 
-	let configOverwrite = {};
+	let configOverwrite = {
+		desktopSharingChromeExtId: RocketChat.settings.get('Jitsi_Chrome_Extension')
+	};
 	let interfaceConfigOverwrite = {};
 
 	let jitsiRoomActive = null;

@@ -531,6 +531,8 @@
   "is_typing_male" : "is typing",
   "italics" : "italics",
   "It_works" : "It works",
+  "Jitsi_Enable_Channels": "Enable in Channels",
+  "Jitsi_Chrome_Extension": "Chrome Extension Id",
   "join" : "Join",
   "Join_audio_call" : "Join audio call",
   "Join_default_channels" : "Join default channels",
