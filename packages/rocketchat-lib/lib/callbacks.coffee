@@ -6,7 +6,7 @@
 ###
 RocketChat.callbacks = {}
 
-RocketChat.callbacks.showTime = false
+RocketChat.callbacks.showTime = true
 
 ###
 # Callback priorities
