@@ -1,5 +1,8 @@
 crypto = Npm.require 'crypto'
 
+logger = new Logger 'NGPresence'
+
+
 class AmqpConnection
 	currentTry: 0
 	stopTrying: false
@@ -13,7 +16,7 @@ class AmqpConnection
 	connect: ->
 		@currentTry += 1
 		@stopTrying = false
-		console.log('connecting to', "amqp://#{@host}/#{@vhost}")
+		logger.info('connecting to', "amqp://#{@host}/#{@vhost}")
 		amqpClient.connect(@url).then(@onConnected, @onError)
 
 	onConnected: (conn) =>
@@ -27,11 +30,11 @@ class AmqpConnection
 		random_delay = Math.floor(Math.random() * (30 - 1)) + 1
 		max_delay = 120
 		delay = Math.min(random_delay + Math.pow(2, attempt-1), max_delay)
-		console.log('disconnected. Attempt', attempt, 'Trying reconnect in ', delay, 'seconds')
+		logger.warn('disconnected. Attempt', attempt, 'Trying reconnect in ', delay, 'seconds')
 		setTimeout((=> @connect(@url)), delay * 1000)
 
 	onError: (e) =>
-		console.log('error', e)
+		logger.error('error', e)
 		if @conn
 			@conn.close()
 			@conn = null
@@ -42,7 +45,7 @@ class AmqpConnection
 	disconnect: =>
 		@stopTrying = true
 		if @conn
-			console.log("disconnecting from amqp host #{@host}")
+			logger.info("disconnecting from amqp host #{@host}")
 			@conn.close()
 			@conn = null
 			@chan = null
@@ -70,4 +73,4 @@ class AmqpConnection
 
 	onMessage: (msg) =>
 		payload = JSON.parse(msg.content.toString('utf8'))['payload']
-		console.log('received', payload)
+		logger.debug('received', payload)
