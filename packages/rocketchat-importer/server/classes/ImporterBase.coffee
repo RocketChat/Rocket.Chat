@@ -193,7 +193,7 @@ Importer.Base = class Importer.Base
 						if details.message_id? and (typeof details.message_id is 'string')
 							msg['_id'] = details.message_id
 
-						RocketChat.sendMessage user, msg, room
+						RocketChat.sendMessage user, msg, room, true
 			else
 				@logger.error "Failed to create the store for #{fileUrl}!!!"
 		)
