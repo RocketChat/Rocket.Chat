@@ -6,7 +6,8 @@ Package.describe({
 });
 
 Npm.depends({
-	'bad-words': '1.3.1'
+	'bad-words': '1.3.1',
+	'object-path': '0.9.2'
 });
 
 Package.onUse(function(api) {
@@ -108,6 +109,7 @@ Package.onUse(function(api) {
 	api.addFiles('server/methods/filterBadWords.js', ['server']);
 
 	// SERVER STARTUP
+	api.addFiles('server/startup/cache.js', 'server');
 	api.addFiles('server/startup/settingsOnLoadCdnPrefix.coffee', 'server');
 	api.addFiles('server/startup/settingsOnLoadSMTP.coffee', 'server');
 	api.addFiles('server/startup/oAuthServicesUpdate.coffee', 'server');
@@ -157,8 +159,6 @@ Package.onUse(function(api) {
 	api.use('tap:i18n');
 	api.imply('tap:i18n');
 });
-
-
 
 Package.onTest(function(api) {
 	api.use('coffeescript');
