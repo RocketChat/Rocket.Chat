@@ -25,7 +25,8 @@ Template.webCollaboration.events
 		if enabled is false
 			return
 
-		nr = "*100"
+		rnd = Math.floor((Math.random() * 10000) + 10000)
+		nr = "*73*#{rnd}"
 		rid = Session.get('openedRoom')
 		msg = "AudioConference request " + nr
 		Meteor.call 'phoneNumberOffer', rid, nr, msg, (error, result) ->
