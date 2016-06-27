@@ -6,7 +6,8 @@
 ###
 RocketChat.callbacks = {}
 
-RocketChat.callbacks.showTime = true
+RocketChat.callbacks.showTime = false
+RocketChat.callbacks.showTotalTime = true
 
 ###
 # Callback priorities
@@ -64,22 +65,33 @@ RocketChat.callbacks.remove = (hookName, id) ->
 RocketChat.callbacks.run = (hook, item, constant) ->
 	callbacks = RocketChat.callbacks[hook]
 	if !!callbacks?.length
+		if RocketChat.callbacks.showTotalTime is true
+			totalTime = 0
+
 		# if the hook exists, and contains callbacks to run
-		_.sortBy(callbacks, (callback) -> return callback.priority or RocketChat.callbacks.priority.MEDIUM).reduce (result, callback) ->
+		result = _.sortBy(callbacks, (callback) -> return callback.priority or RocketChat.callbacks.priority.MEDIUM).reduce (result, callback) ->
 			# console.log(callback.name);
-			if RocketChat.callbacks.showTime is true
+			if RocketChat.callbacks.showTime is true or RocketChat.callbacks.showTotalTime is true
 				time = Date.now()
 
 			callbackResult = callback result, constant
 
-			if RocketChat.callbacks.showTime is true
-				console.log Date.now() - time, hook, callback.id, callback.stack.split('\n')[2]?.match(/\(.+\)/)?[0]
+			if RocketChat.callbacks.showTime is true or RocketChat.callbacks.showTotalTime is true
+				currentTime = Date.now() - time
+				totalTime += currentTime
+				if RocketChat.callbacks.showTime is true
+					console.log String(currentTime), hook, callback.id, callback.stack.split('\n')[2]?.match(/\(.+\)/)?[0]
 
 			return callbackResult
 		, item
+
+		if RocketChat.callbacks.showTotalTime is true
+			console.log hook+':', totalTime
+
+		return result
 	else
 		# else, just return the item unchanged
-		item
+		return item
 
 ###
 # Successively run all of a hook's callbacks on an item, in async mode (only works on server)
