@@ -73,8 +73,7 @@ RocketChat.callbacks.run = (hook, item, constant) ->
 			callbackResult = callback result, constant
 
 			if RocketChat.callbacks.showTime is true
-				console.log hook, Date.now() - time
-				console.log callback.stack.split('\n')[2]
+				console.log Date.now() - time, hook, callback.id, callback.stack.split('\n')[2]?.match(/\(.+\)/)?[0]
 
 			return callbackResult
 		, item
