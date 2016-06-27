@@ -20,7 +20,7 @@ Meteor.methods
 
         loginUrl = server + "/trustedauth/login"
         apiUrl = server + "/jsondata/extjs/bbbHandler/create_live_bbb_json"
-   
+
         data =
             username: user.username + "@" + domain,
             domain: domain

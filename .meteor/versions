@@ -60,6 +60,7 @@ jparker:crypto-core@0.1.0
 jparker:crypto-md5@0.1.1
 jparker:gravatar@0.4.1
 jquery@1.11.4
+jzwzz:amqplib@0.0.2
 kadira:blaze-layout@2.3.0
 kadira:flow-router@2.10.1
 kenton:accounts-sandstorm@0.4.0
@@ -229,10 +230,10 @@ ui@1.0.8
 underscore@1.0.4
 underscorestring:underscore.string@3.3.4
 url@1.0.5
-voismart:webc@0.0.1
 voismart:ngapi@0.0.1
-voismart:ngpresence@0.0.1
 voismart:nglogin@0.0.1
+voismart:ngpresence@0.0.1
+voismart:webc@0.0.1
 webapp@1.2.3
 webapp-hashing@1.0.5
 yasaricli:slugify@0.0.7

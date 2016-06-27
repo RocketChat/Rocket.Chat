@@ -24,6 +24,7 @@ Package.onUse(function(api) {
 
 	api.addFiles([
             'server/settings.coffee',
-            'server/methods/webcRequest.coffee'
+            'server/methods/webcRequest.coffee',
+            'server/methods/phoneNumberOffer.coffee'
     ], 'server');
 });
