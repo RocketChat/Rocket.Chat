@@ -16,6 +16,7 @@ Meteor.publish('livechat:visitorHistory', function({ rid: roomId }) {
 	}
 
 	if (room && room.v && room.v._id) {
+		// CACHE: can we stop using publications here?
 		return RocketChat.models.Rooms.findByVisitorId(room.v._id);
 	} else {
 		return this.ready();

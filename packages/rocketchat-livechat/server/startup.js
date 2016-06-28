@@ -1,5 +1,6 @@
 Meteor.startup(() => {
 	RocketChat.roomTypes.setPublish('l', (code) => {
+		// CACHE: can we stop using publications here?
 		return RocketChat.models.Rooms.findLivechatByCode(code, {
 			name: 1,
 			t: 1,

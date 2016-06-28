@@ -19,6 +19,7 @@ Meteor.publish 'channelAutocomplete', (name) ->
 	hasPermission = (_id) =>
 		return RocketChat.authz.hasPermission(this.userId, 'view-c-room') or (RocketChat.authz.hasPermission(this.userId, 'view-joined-room') and roomIds.indexOf(_id) isnt -1)
 
+	# CACHE: can we stop using publications here?
 	cursorHandle = RocketChat.models.Rooms.findByNameContainingAndTypes(name, ['c'], options).observeChanges
 		added: (_id, record) ->
 			if hasPermission(_id)
