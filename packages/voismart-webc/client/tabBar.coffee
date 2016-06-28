@@ -1,5 +1,5 @@
 Meteor.startup ->
-    Tracker.autorun ->
+	Tracker.autorun ->
 		enabled = RocketChat.settings.get('Webc_Enabled')
 		if enabled is true
 			RocketChat.TabBar.addButton({
