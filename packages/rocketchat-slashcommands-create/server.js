@@ -9,7 +9,7 @@ function Create(command, params, item) {
 	}
 
 	user = Meteor.users.findOne(Meteor.userId());
-	room = RocketChat.models.Rooms.findOneByName(channel);
+	room = RocketChat.cache.Rooms.findOneByName(channel);
 	if (room != null) {
 		RocketChat.Notifications.notifyUser(Meteor.userId(), 'message', {
 			_id: Random.id(),

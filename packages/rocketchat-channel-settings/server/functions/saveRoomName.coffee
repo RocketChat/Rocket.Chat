@@ -2,7 +2,7 @@ RocketChat.saveRoomName = (rid, name) ->
 	if not Meteor.userId()
 		throw new Meteor.Error('error-invalid-user', "Invalid user", { function: 'RocketChat.saveRoomName' })
 
-	room = RocketChat.models.Rooms.findOneById rid
+	room = RocketChat.cache.Rooms.findOneById rid
 
 	if room.t not in ['c', 'p']
 		throw new Meteor.Error 'error-not-allowed', 'Not allowed', { function: 'RocketChat.saveRoomName' }
@@ -25,7 +25,7 @@ RocketChat.saveRoomName = (rid, name) ->
 		return
 
 	# avoid duplicate names
-	if RocketChat.models.Rooms.findOneByName name
+	if RocketChat.cache.Rooms.findOneByName name
 		throw new Meteor.Error 'error-duplicate-channel-name', 'A channel with name \'' + name + '\' exists', { function: 'RocketChat.saveRoomName', channel_name: name }
 
 	RocketChat.models.Rooms.setNameById rid, name

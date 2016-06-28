@@ -13,8 +13,8 @@ RocketChat.settings.addGroup('Settings_Group', function() {
 
     this.section('Group_Section', function() {
         this.add('Setting_Inside_Section', 'default_value', {
-            type: 'boolean', 
-            public: true, 
+            type: 'boolean',
+            public: true,
             enableQuery: { 
                 _id: 'SettingInGroup', 
                 value: true 

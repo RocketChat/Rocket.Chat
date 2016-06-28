@@ -137,7 +137,7 @@ class InternalHubotReceiver
 	constructor: (message) ->
 		#console.log message
 		if message.u.username isnt InternalHubot.name
-			room = RocketChat.models.Rooms.findOneById message.rid
+			room = RocketChat.cache.Rooms.findOneById message.rid
 
 			if room.t is 'c'
 				console.log message

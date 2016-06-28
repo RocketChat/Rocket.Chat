@@ -151,7 +151,7 @@ Importer.HipChat = class Importer.HipChat extends Importer.Base
 				do (channel) =>
 					Meteor.runAsUser startedByUserId, () =>
 						channel.name = channel.name.replace(/ /g, '')
-						existantRoom = RocketChat.models.Rooms.findOneByName channel.name
+						existantRoom = RocketChat.cache.Rooms.findOneByName channel.name
 						if existantRoom
 							channel.rocketId = existantRoom._id
 						else
@@ -177,7 +177,7 @@ Importer.HipChat = class Importer.HipChat extends Importer.Base
 					Meteor.runAsUser startedByUserId, () =>
 						hipchatChannel = @getHipChatChannelFromName channel
 						if hipchatChannel?.do_import
-							room = RocketChat.models.Rooms.findOneById hipchatChannel.rocketId, { fields: { usernames: 1, t: 1, name: 1 } }
+							room = RocketChat.cache.Rooms.findOneById hipchatChannel.rocketId, { fields: { usernames: 1, t: 1, name: 1 } }
 							for date, msgs of messagesObj
 								@updateRecord { 'messagesstatus': "#{channel}/#{date}.#{msgs.messages.length}" }
 								for message in msgs.messages
