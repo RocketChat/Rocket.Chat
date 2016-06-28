@@ -6,7 +6,7 @@ Meteor.methods
 		this.unblock()
 
 		fromId = Meteor.userId()
-		room = RocketChat.models.Rooms.findOneById rid
+		room = RocketChat.cache.Rooms.findOneById rid
 		user = Meteor.user()
 
 		# If user is room owner, check if there are other owners. If there isn't anyone else, warn user to set a new owner.

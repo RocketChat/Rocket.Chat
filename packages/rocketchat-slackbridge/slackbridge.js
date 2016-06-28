@@ -75,7 +75,7 @@ class SlackBridge {
 	}
 
 	findChannel(channelId) {
-		return RocketChat.models.Rooms.findOneByImportId(channelId);
+		return RocketChat.cache.Rooms.findOneByImportId(channelId);
 	}
 
 	addChannel(channelId, hasRetried = false) {
@@ -89,7 +89,7 @@ class SlackBridge {
 		}
 		if (data && data.data && data.data.ok === true) {
 			let channelData = isGroup ? data.data.group : data.data.channel;
-			let existingRoom = RocketChat.models.Rooms.findOneByName(channelData.name);
+			let existingRoom = RocketChat.cache.Rooms.findOneByName(channelData.name);
 			if (existingRoom || channelData.is_general) {
 				if (channelData.is_general && channelData.name !== (existingRoom && existingRoom.name)) {
 					Meteor.call('saveRoomSettings', 'GENERAL', 'roomName', channelData.name);
@@ -143,7 +143,7 @@ class SlackBridge {
 				}
 				RocketChat.models.Rooms.update({ _id: channelData.rocketId }, { $set: roomUpdate, $addToSet: { importIds: channelData.id } });
 			}
-			return RocketChat.models.Rooms.findOneById(channelData.rocketId);
+			return RocketChat.cache.Rooms.findOneById(channelData.rocketId);
 		}
 
 		return;

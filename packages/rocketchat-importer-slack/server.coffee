@@ -157,7 +157,7 @@ Importer.Slack = class Importer.Slack extends Importer.Base
 			for channel in @channels.channels when channel.do_import
 				do (channel) =>
 					Meteor.runAsUser startedByUserId, () =>
-						existantRoom = RocketChat.models.Rooms.findOneByName channel.name
+						existantRoom = RocketChat.cache.Rooms.findOneByName channel.name
 						if existantRoom or channel.is_general
 							if channel.is_general and channel.name isnt existantRoom?.name
 								Meteor.call 'saveRoomSettings', 'GENERAL', 'roomName', channel.name
@@ -206,7 +206,7 @@ Importer.Slack = class Importer.Slack extends Importer.Base
 					Meteor.runAsUser startedByUserId, () =>
 						slackChannel = @getSlackChannelFromName channel
 						if slackChannel?.do_import
-							room = RocketChat.models.Rooms.findOneById slackChannel.rocketId, { fields: { usernames: 1, t: 1, name: 1 } }
+							room = RocketChat.cache.Rooms.findOneById slackChannel.rocketId, { fields: { usernames: 1, t: 1, name: 1 } }
 							for date, msgs of messagesObj
 								@updateRecord { 'messagesstatus': "#{channel}/#{date}.#{msgs.messages.length}" }
 								for message in msgs.messages

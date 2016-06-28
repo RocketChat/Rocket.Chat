@@ -10,7 +10,7 @@ Meteor.methods
 		unless Match.test data?.username, String
 			throw new Meteor.Error 'error-invalid-username', 'Invalid username', { method: 'addUserToRoom' }
 
-		room = RocketChat.models.Rooms.findOneById data.rid
+		room = RocketChat.cache.Rooms.findOneById data.rid
 
 		if room.usernames.indexOf(Meteor.user().username) is -1
 			throw new Meteor.Error 'error-not-allowed', 'Not allowed', { method: 'addUserToRoom' }

@@ -16,7 +16,7 @@ Meteor.methods({
 			throw new Meteor.Error('error-invalid-actionlink', 'Invalid action link', { method: 'actionLinkHandler' });
 		}
 
-		var room = RocketChat.models.Rooms.findOneById(message.rid);
+		var room = RocketChat.cache.Rooms.findOneById(message.rid);
 		if (Array.isArray(room.usernames) && room.usernames.indexOf(Meteor.user().username) === -1) {
 			throw new Meteor.Error('error-not-allowed', 'Not allowed', { method: 'actionLinkHandler' });
 		}

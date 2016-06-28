@@ -28,7 +28,7 @@ class Invite
 			return
 
 		# cancel if the user is already in this room
-		if RocketChat.models.Rooms.findOneByIdContainigUsername(item.rid, user.username)?
+		if RocketChat.cache.Rooms.findOneByIdContainigUsername(item.rid, user.username)?
 			RocketChat.Notifications.notifyUser Meteor.userId(), 'message', {
 				_id: Random.id()
 				rid: item.rid
