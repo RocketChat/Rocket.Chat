@@ -9,7 +9,7 @@ Meteor.methods
 
 		RocketChat.callbacks.run 'beforeJoinDefaultChannels', user
 
-		defaultRooms = RocketChat.models.Rooms.findByDefaultAndTypes(true, ['c', 'p'], {fields: {usernames: 0}}).fetch()
+		defaultRooms = RocketChat.cache.Rooms.findByDefaultAndTypes(true, ['c', 'p'], {fields: {usernames: 0}}).fetch()
 
 		defaultRooms.forEach (room) ->
 

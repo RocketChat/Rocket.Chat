@@ -15,7 +15,7 @@ class Kick
 
 		user = Meteor.users.findOne Meteor.userId()
 		kickedUser = RocketChat.models.Users.findOneByUsername username
-		room = RocketChat.models.Rooms.findOneById item.rid
+		room = RocketChat.cache.Rooms.findOneById item.rid
 
 		if not kickedUser?
 			RocketChat.Notifications.notifyUser Meteor.userId(), 'message', {

@@ -23,8 +23,8 @@ Meteor.methods
 		# name = s.slugify name
 
 		# avoid duplicate names
-		if RocketChat.models.Rooms.findOneByName name
-			if RocketChat.models.Rooms.findOneByName(name).archived
+		if RocketChat.cache.Rooms.findOneByName name
+			if RocketChat.cache.Rooms.findOneByName(name).archived
 				throw new Meteor.Error 'error-archived-duplicate-name', "There's an archived channel with name " + name, { method: 'createPrivateGroup', room_name: name }
 			else
 				throw new Meteor.Error 'error-duplicate-channel-name', "A channel with name '" + name + "' exists", { method: 'createPrivateGroup', room_name: name }

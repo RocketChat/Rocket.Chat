@@ -12,7 +12,7 @@ Meteor.methods
 		if setting is 'default' and not RocketChat.authz.hasPermission(@userId, 'view-room-administration')
 			throw new Meteor.Error 'error-action-not-allowed', 'Viewing room administration is not allowed', { method: 'saveRoomSettings', action: 'Viewing_room_administration' }
 
-		room = RocketChat.models.Rooms.findOneById rid
+		room = RocketChat.cache.Rooms.findOneById rid
 		if room?
 			switch setting
 				when 'roomName'

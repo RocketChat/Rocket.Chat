@@ -103,13 +103,13 @@ RocketChat.API.v1.addRoute 'channels.create', authRequired: true,
 			return RocketChat.API.v1.failure e.name + ': ' + e.message
 
 		return RocketChat.API.v1.success
-			channel: RocketChat.models.Rooms.findOneById(id.rid)
+			channel: RocketChat.cache.Rooms.findOneById(id.rid)
 
 # List Private Groups a user has access to
 RocketChat.API.v1.addRoute 'groups.list', authRequired: true,
 	get: ->
 		roomIds = _.pluck RocketChat.models.Subscriptions.findByTypeAndUserId('p', @userId).fetch(), 'rid'
-		return { groups: RocketChat.models.Rooms.findByIds(roomIds).fetch() }
+		return { groups: RocketChat.cache.Rooms.findByIds(roomIds).fetch() }
 
 # Add All Users to Channel
 RocketChat.API.v1.addRoute 'channel.addall', authRequired: true,
@@ -123,7 +123,7 @@ RocketChat.API.v1.addRoute 'channel.addall', authRequired: true,
 			return RocketChat.API.v1.failure e.name + ': ' + e.message
 
 		return RocketChat.API.v1.success
-			channel: RocketChat.models.Rooms.findOneById(@bodyParams.roomId)
+			channel: RocketChat.cache.Rooms.findOneById(@bodyParams.roomId)
 
 # List all users
 RocketChat.API.v1.addRoute 'users.list', authRequired: true,
@@ -185,5 +185,5 @@ RocketChat.API.v1.addRoute 'groups.create', authRequired: true,
 			return RocketChat.API.v1.failure e.name + ': ' + e.message
 
 		return RocketChat.API.v1.success
-			group: RocketChat.models.Rooms.findOneById(id.rid)
+			group: RocketChat.cache.Rooms.findOneById(id.rid)
 

@@ -20,8 +20,8 @@ Meteor.methods
 		members.push user.username if user.username not in members
 
 		# avoid duplicate names
-		if RocketChat.models.Rooms.findOneByName name
-			if RocketChat.models.Rooms.findOneByName(name).archived
+		if RocketChat.cache.Rooms.findOneByName name
+			if RocketChat.cache.Rooms.findOneByName(name).archived
 				throw new Meteor.Error 'error-archived-duplicate-name', "There's an archived channel with name " + name, { method: 'createChannel', room_name: name }
 			else
 				throw new Meteor.Error 'error-duplicate-channel-name', "A channel with name '" + name + "' exists", { method: 'createChannel', room_name: name }
