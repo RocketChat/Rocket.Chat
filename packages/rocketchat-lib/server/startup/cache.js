@@ -79,8 +79,20 @@ RocketChat.cache._Base = (class CacheBase {
 		}
 	}
 
-	find() {
-		return this.collection.find(...arguments);
+	find(...findArguments) {
+		return {
+			fetch() {
+				return this.collection.find(...findArguments);
+			},
+
+			count() {
+				return this.collection.find(...findArguments).length;
+			},
+
+			forEach(fn) {
+				return this.collection.find(...findArguments).forEach(fn);
+			}
+		};
 	}
 
 	findOne() {
