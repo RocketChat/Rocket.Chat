@@ -29,7 +29,8 @@ Template.webCollaboration.events
 		nr = "*73*#{rnd}"
 		rid = Session.get('openedRoom')
 		msg = "AudioConference request " + nr
-		Meteor.call 'phoneNumberOffer', rid, nr, msg, (error, result) ->
+		isCordova = Meteor.isCordova
+		Meteor.call 'phoneNumberOffer', rid, nr, msg, isCordova, (error, result) ->
 			if !error
 				RocketChat.TabBar.closeFlex()
 

@@ -1,12 +1,18 @@
 Meteor.methods
-	phoneNumberOffer: (rid, number, message) ->
-		RocketChat.models.Messages.createWithTypeRoomIdMessageAndUser('phone_dial_a_number', rid, '', Meteor.user(), {
+	phoneNumberOffer: (rid, number, message, isCordova) ->
+		url = null
+		if isCordova
+			url: "voismart:" + number
+
+		RocketChat.models.Messages.createWithTypeRoomIdMessageAndUser('webc_audioconf', rid, '', Meteor.user(), {
 			actionLinks : [
 				{
 					icon: 'icon-phone',
 					label: message,
-					method_id: 'phoneDoCall',
-					params: number
+					method_id: 'webcAudioConf',
+					params:
+						number: number
+						url: url
 				}
 			]
 		})
