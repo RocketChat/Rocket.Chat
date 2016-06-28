@@ -16,6 +16,16 @@ RocketChat.models.Rooms = new class extends RocketChat.models._Base
 
 		return @findOne query, options
 
+	findOneByIdOrName: (_idOrName, options) ->
+		query =
+			$or: [{
+				_id: _idOrName
+			}, {
+				name: _idOrName
+			}]
+
+		return @findOne query, options
+
 	findOneByImportId: (_id, options) ->
 		query =
 			importIds: _id
