@@ -145,7 +145,7 @@ docker pull rocket.chat
 ## FreeBSD
 Run solid five-nines deployment on industry workhorse FreeBSD server:
 
-[![FreeBSD Daemon](https://raw.githubusercontent.com/Sing-Li/bbug/master/images/freebsd.png)](https://rocket.chat/docs/master/installing-and-updating/deployment-options/freebsd)
+[![FreeBSD Daemon](https://raw.githubusercontent.com/Sing-Li/bbug/master/images/freebsd.png)](https://rocket.chat/docs/installing-and-updating/deployment-options/freebsd)
 
 ## Windows Server
 
@@ -345,11 +345,11 @@ cd Rocket.Chat
 meteor
 ```
 
-If you are not a developer and just want to run the server - see [deployment methods](https://rocket.chat/docs/master/installing-and-updating/deployment-options).
+If you are not a developer and just want to run the server - see [deployment methods](https://rocket.chat/docs/installation/paas-deployments/).
 
 ## Branching Model
 
-See [Branches and Releases](https://rocket.chat/docs/master/developer-guides/branches-and-releases).
+See [Branches and Releases](https://rocket.chat/docs/developer-guides/branches-and-releases).
 
 It is based on [Gitflow Workflow](http://nvie.com/posts/a-successful-git-branching-model/), reference section below is derived from Vincent Driessen at nvie.
 
