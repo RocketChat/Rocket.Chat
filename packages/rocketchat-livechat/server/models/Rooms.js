@@ -30,7 +30,7 @@ RocketChat.models.Rooms.updateLivechatDataByToken = function(token, key, value) 
 	return this.update(query, update);
 };
 
-RocketChat.cache.Rooms.findLivechat = function(offset = 0, limit = 20) {
+RocketChat.models.Rooms.findLivechat = function(offset = 0, limit = 20) {
 	const query = {
 		t: 'l'
 	};
@@ -38,7 +38,7 @@ RocketChat.cache.Rooms.findLivechat = function(offset = 0, limit = 20) {
 	return this.find(query, { sort: { ts: - 1 }, offset: offset, limit: limit });
 };
 
-RocketChat.cache.Rooms.findLivechatByCode = function(code, fields) {
+RocketChat.models.Rooms.findLivechatByCode = function(code, fields) {
 	const query = {
 		t: 'l',
 		code: parseInt(code)
@@ -93,7 +93,7 @@ RocketChat.cache.Rooms.findByVisitorToken = function(visitorToken) {
 	return this.find(query);
 };
 
-RocketChat.cache.Rooms.findByVisitorId = function(visitorId) {
+RocketChat.models.Rooms.findByVisitorId = function(visitorId) {
 	const query = {
 		'v._id': visitorId
 	};
