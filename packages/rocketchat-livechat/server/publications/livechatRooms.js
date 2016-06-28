@@ -7,5 +7,6 @@ Meteor.publish('livechat:rooms', function(offset = 0, limit = 20) {
 		return this.error(new Meteor.Error('error-not-authorized', 'Not authorized', { publish: 'livechat:rooms' }));
 	}
 
+	// CACHE: can we stop using publications here?
 	return RocketChat.models.Rooms.findLivechat(offset, limit);
 });

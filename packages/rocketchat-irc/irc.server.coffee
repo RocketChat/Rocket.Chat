@@ -224,7 +224,7 @@ class IrcClient
 		@sendRawMessage msg
 
 	initRoomList: ->
-		roomsCursor = RocketChat.models.Rooms.findByTypeContainigUsername 'c', @user.username,
+		roomsCursor = RocketChat.cache.Rooms.findByTypeContainigUsername 'c', @user.username,
 			fields:
 				name: 1
 				t: 1
