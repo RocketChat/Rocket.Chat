@@ -143,7 +143,7 @@ class SlackBridge {
 				}
 				RocketChat.models.Rooms.update({ _id: channelData.rocketId }, { $set: roomUpdate, $addToSet: { importIds: channelData.id } });
 			}
-			return RocketChat.models.Rooms.findOne(channelData.rocketId);
+			return RocketChat.models.Rooms.findOneById(channelData.rocketId);
 		}
 
 		return;
