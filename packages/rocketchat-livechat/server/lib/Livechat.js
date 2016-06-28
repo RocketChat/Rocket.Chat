@@ -13,7 +13,7 @@ RocketChat.Livechat = {
 		}
 	},
 	sendMessage({ guest, message, roomInfo }) {
-		var room = RocketChat.models.Rooms.findOneById(message.rid);
+		var room = RocketChat.cache.Rooms.findOneById(message.rid);
 		var newRoom = false;
 
 		if (room && !room.open) {
