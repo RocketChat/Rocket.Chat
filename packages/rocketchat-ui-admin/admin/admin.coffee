@@ -13,6 +13,8 @@ Template.admin.onCreated ->
 		removed: (data) ->
 			TempSettings.remove data._id
 
+Template.admin.onDestroyed ->
+	TempSettings.remove {}
 
 Template.admin.helpers
 	languages: ->
