@@ -1,5 +1,24 @@
 ## NEXT
 
+## 0.35.0, 2016-Jun-28
+
+- Add a list of reserved usernames
+- Add admin setting to disable merged groups and channels
+- Add Chrome Extension setting for jitsi integration
+- Add new REST API Add all users to room (#3569)
+- Add new REST API endpoints (#3525)
+- Add slash command for archiving and unarchiving a room
+- Add the slash command /create - to create a new channel (#3585)
+- Add user setting to disable merged channels
+- Blocking access to /avatar/ without an username
+- Fix for select file button #3256
+- Fix livechat agents bot being able to see visitor info
+- Fix saving room topic escaped
+- Fix searching for public/private channel
+- Fix sort slash commands before filtering (#3571)
+- Preventing message update on multiple sendMessage calls
+- Update for Dataporten closing #3580 (#3608)
+
 ## 0.34.0, 2016-Jun-14
 
 - BETA JITSI INTEGRATION (#3476)
@@ -68,7 +87,7 @@
 - Add role field to user creation form
 - Add setting to set Google Site Verification id
 - Add the channel id to the _id property of the messages on import
-- Added permalink button to pinned & starred messages
+- Add permalink button to pinned & starred messages
 - Better look to big emojis on webkit browsers
 - Created guest user permission
 - Emoji search is performed across all categories
@@ -100,7 +119,7 @@
 - Add default email header and footer
 - Add some basic validation to if user is logged in
 - Add timestamp to quoted messages
-- Added quote button to messages
+- Add quote button to messages
 - Allow inputing multiple channels/users in integrations; comma-separated
 - Allow katex to work with $...$ and $$...$$
 - Always set SMS info on incoming SMS messages
@@ -150,7 +169,7 @@
 - Add livechat custom fields queue
 - Add customization options for enrollment and invitation e-mails
 - Add support for RegExp in the message search
-- Added settings.json example for Galaxy
+- Add settings.json example for Galaxy
 - Adding draft auto translations script
 - Adding CODE OF CONDUCT
 - Adding copy to mesage clipboard button
@@ -199,8 +218,8 @@
  - Add more eslint validations
  - Add new translation key for cancelling message input Closes #2956
  - Add twitter and google login eventos for iframe login
- - Added bad-words npm package and callback file
- - Added emoji category header in emoji picker
+ - Add bad-words npm package and callback file
+ - Add emoji category header in emoji picker
  - Changed arrow keybinding in message popups
  - Changes to Email settings (#3007)
  - Close #1990 Add setting to ignore hosts or CIDR addresses in Embed. (#2953)
@@ -535,10 +554,10 @@
 ## 0.20.0, 2016-Feb-29
 
 - Ability to disable sending nickname and message via push notification
-- Added back 'delete room' button - closes #2351
-- Added block and hidden options that can be set by env vars
-- Added description and protected flag to default roles
-- Added zh-TW and zh-HK
+- Add back 'delete room' button - closes #2351
+- Add block and hidden options that can be set by env vars
+- Add description and protected flag to default roles
+- Add zh-TW and zh-HK
 - Allow markdown in attachment fields
 - Avoid using SVG for Sandstorm
 - CAS Plugin: refactored logging
@@ -555,7 +574,7 @@
 - Fix publish user_data  under "spotlight"
 - Fix root url on server side
 - Fix show more users button
-- Fixed errors saving room info in admin
+- Fix errors saving room info in admin
 - Improve WebRTC audio quality
 - Improved sidebar overlay - should fix RocketChat/Rocket.Chat.Cordova#15
 - Improved system messages style
@@ -614,15 +633,15 @@
 - Add .jshintrc to project
 - Add button to test desktop notifications
 - Add email notification preference
-- Added HIGH priority to mentions message callback
-- Added working CAS 1.0 login module based on meteor-account-cas and meteor-account-saml
+- Add HIGH priority to mentions message callback
+- Add working CAS 1.0 login module based on meteor-account-cas and meteor-account-saml
 - Allow deleting of files whose corresponding message is not currently loaded in the client
 - Allow settings descriptions to use markdown
 - Allow text selection in settings area
 - Change from LDAP_Restricted_User_Groups to LDAP_Domain_Search_Filter
 - Email all offline users
-- Fixed: if mobile app was open and in background, it would still read ... ...messages in the active room.
-- Fixed: user received mobile notification even when browser was open.
+- Fix: if mobile app was open and in background, it would still read ... ...messages in the active room.
+- Fix: user received mobile notification even when browser was open.
 - Improve delete message by file
 - Push Notifications settings
 - Replace current LDAP with new LDAP system
@@ -641,7 +660,7 @@
 - Messages from REST APIs are not from bot by default
 - Show that server is running on logs
 - Add permission 'view-c-room' to bots
-- Fixed checking username availability
+- Fix checking username availability
 - Show startup message
 - Created a global Logger called "SystemLogger"
 - Allow pass title for logs of type box as seconde parameter
@@ -649,11 +668,11 @@
 - Use the RocketChat.Info.version on headers
 - Parse URLs on messages from REST
 - Do not process all messages from REST as bot
-- Fixed name not being required for registration with settings requiring it.
+- Fix name not being required for registration with settings requiring it.
 - Remove the LDAP string form login form as it is irrelevant to end users.
 - Changed settings.get to automatically setup and call a specifed callback
 - Remove the need for server restart after changing registration domain whitelist
-- Fixed trying to read build from RocketChat.Info when it is not available.
+- Fix trying to read build from RocketChat.Info when it is not available.
 - Add an example of how to send logs from server to client
 - Fix problem removing file via side bar
 - Require 'view-c-room' permission for accessing channels
@@ -671,8 +690,8 @@
 
 ## 0.16.0, 2016-Feb-01
 
-- Added option for admins to manually add new users
-- Added option for admin to require user to change password
+- Add option for admins to manually add new users
+- Add option for admin to require user to change password
 - Changed admin statistics with admin info
 - Show "Room not Found" correctly
 - Update konecty:multiple-instances-status to 1.0.5
@@ -688,7 +707,7 @@
 
 - Ability to change email on account
 - Temporary fix for AM/PM timestamp breaking cog
-- Fixed typo in oembed widget
+- Fix typo in oembed widget
 - Change to process.exit(1) to restart server
 - Add "Default Domain" to LDAP config
 - Fix boolean environment variables
@@ -707,12 +726,12 @@
 
 ## 0.14.0, 2016-Jan-18
 
-- Added admin setting to Force SSL
-- Added connections status bar to login page
-- Added options to enable TLS on LDAP
-- Added package dependecy because of RoomModerators collection
-- Added Raspberry Pi support announcement
-- Added UI to Add/Remove Room Moderators and Owners
+- Add admin setting to Force SSL
+- Add connections status bar to login page
+- Add options to enable TLS on LDAP
+- Add package dependecy because of RoomModerators collection
+- Add Raspberry Pi support announcement
+- Add UI to Add/Remove Room Moderators and Owners
 - Adds aria-label to button with icons only
 - Allow multi-line title on oembed
 - Allow SMTP server with no login
@@ -721,11 +740,11 @@
 - Do not close Desktop Notifications to keep them in notification center
 - Escape dollar before message token replacement
 - Fallback LDAP login to local account if LDAP fails
-- Fixed audio-recorder not stoping
-- Fixed confusing text labels on video/audio call buttons
-- Fixed overlapping windows
-- Fixed unset moderator test
-- Fixed Warning: Site URL configuration for Sandstorm.io
+- Fix audio-recorder not stoping
+- Fix confusing text labels on video/audio call buttons
+- Fix overlapping windows
+- Fix unset moderator test
+- Fix Warning: Site URL configuration for Sandstorm.io
 - Fixes a bug with search results, where sometimes cog wasn't displayed.
 - Fixes adding/removing owners and moderators
 - Fixes Domain whitelist not restricting
@@ -922,8 +941,8 @@
 - Fix some ldap problems and set reconnect to true
 - Fix sort of settings
 - Fix URL
-- Fixed pin and star
-- Fixed several english issues.
+- Fix pin and star
+- Fix several english issues.
 - Get next agent on queue
 - Group message by time, default 5min
 - Improve avatar resize function to use GM detection and allow change s…
@@ -1008,12 +1027,12 @@
 - Prevent parse message urls if option parseUrls is false in message
 - Prompt users to install extentions to enable screen sharing
 - Shos if message is from bot and never render compact message version
-- Fixed blockquote non-continous border
+- Fix blockquote non-continous border
 - Moved accountBox HTML to new separated template
 
 ## 0.8.0, 2015-Dec-8
 
-- Fixed error: when allow change username was set to false, registration
+- Fix error: when allow change username was set to false, registration
 - Improve message rendering removing MessageAction from render time
 - Textarea theme fix for RTL
 - Update the flex-nav hidden element for RTL
