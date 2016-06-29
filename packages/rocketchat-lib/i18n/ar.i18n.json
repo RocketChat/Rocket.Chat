@@ -594,6 +594,7 @@
   "Leave_Room_Warning" : "هل أنت متأكد من أنك تريد مغادرة الغرفة \"%s\"؟",
   "line" : "الأسطر",
   "List_of_Direct_Messages" : "قائمة الرسائل الخاصة",
+  "List_of_Channels" : "قائمة القنوات",
   "Livechat_agents" : "وكلاء المحادثات الحية",
   "Livechat_Dashboard" : "لوحة المحادثات الحية",
   "Livechat_enabled" : "تفعيل المحادثات الحية",
