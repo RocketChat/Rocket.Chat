@@ -36,5 +36,15 @@ Meteor.startup(function() {
 			i18nLabel: 'Jitsi_Enable_Channels',
 			public: true
 		});
+
+		this.add('Jitsi_Chrome_Extension', 'nocfbnnmjnndkbipkabodnheejiegccf', {
+			type: 'string',
+			enableQuery: {
+				_id: 'Jitsi_Enabled',
+				value: true
+			},
+			i18nLabel: 'Jitsi_Chrome_Extension',
+			public: true
+		});
 	});
 });
