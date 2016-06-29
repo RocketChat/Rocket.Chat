@@ -53,6 +53,7 @@
 - Add bad word filter to settings UI
 - Add Catalan language (#3394)
 - Add compacter message view mode
+- Add Deeper analytics for Piwik
 - Add EVE online sso support (#3389)
 - Add Piwik Analytics (#233)
 - Add role tags to user info in flex tab (#3326)
@@ -60,16 +61,15 @@
 - Add safe ports settings for embed
 - Add settings for Piwik Analytics (#233)
 - Add support to broadcast stream to different hosts
-- Fix exception if room not found
 - Change "Show Usernames" for "Hide Usernames"
 - Change text of "and more __" for reactions
 - Combined Hightlight & Markdown packages. Fixed Katex & markdown collision
-- Add Deeper analytics for Piwik
 - Escape room topic html
-- Fix SAML SSO redirect issue with iOS native client (#2028)
 - Fix action button validation (#3306)
 - Fix CAS in Android Cordova
+- Fix exception if room not found
 - Fix outgoing integrations erroring out when a channel isn't provided
+- Fix SAML SSO redirect issue with iOS native client (#2028)
 - Forward open livechat rooms from agent when he goes offline
 - Hide the cog when a user is not in the room.
 - Improve REST API (#3346)
@@ -83,11 +83,11 @@
 
 - Add header and footer to e-mails
 - Add new livechat settings to livechat manager
+- Add permalink button to pinned & starred messages
 - Add replyTo and more descriptive 'from' to livechat offline email
 - Add role field to user creation form
 - Add setting to set Google Site Verification id
 - Add the channel id to the _id property of the messages on import
-- Add permalink button to pinned & starred messages
 - Better look to big emojis on webkit browsers
 - Created guest user permission
 - Emoji search is performed across all categories
@@ -117,9 +117,9 @@
 - Add /topic
 - Add back the role bot to rocket.cat - closes #3098
 - Add default email header and footer
+- Add quote button to messages
 - Add some basic validation to if user is logged in
 - Add timestamp to quoted messages
-- Add quote button to messages
 - Allow inputing multiple channels/users in integrations; comma-separated
 - Allow katex to work with $...$ and $$...$$
 - Always set SMS info on incoming SMS messages
@@ -166,13 +166,14 @@
 - Add ability to close livechat rooms
 - Add APIs to display room name and find the room object
 - Add Beta indicators to video calling
-- Add livechat custom fields queue
 - Add customization options for enrollment and invitation e-mails
-- Add support for RegExp in the message search
+- Add Katex formatting tip (#3066)
+- Add livechat custom fields queue
 - Add settings.json example for Galaxy
-- Adding draft auto translations script
+- Add support for RegExp in the message search
 - Adding CODE OF CONDUCT
 - Adding copy to mesage clipboard button
+- Adding draft auto translations script
 - Automatic language detect on code blocks
 - Change Users.setEmail to overwrite emails field
 - Close #2727 Change meteor error (#3040)
@@ -189,10 +190,9 @@
 - Fix livechat not saving OS, browser and IP
 - Fix missing parameters in loginWithCas. (#3051)
 - Fix new-message notification when on a different room
-- Fix permalink query in oembed (#3046)
 - Fix OTR settings labels
+- Fix permalink query in oembed (#3046)
 - Internal Hubot naming clarification rocketchat:hubot -> rocketchat:internal-hubot RocketBot -> InternalHubot RocketBot_Name -> InternalHubot_Username
-- Add Katex formatting tip (#3066)
 - Limit calling addUserToRoom to users in room and with permission.
 - Make livechat client app use less CPU
 - Move livechat navigation history to another tab bar panel
@@ -214,22 +214,22 @@
 
  - Add "by" and "at" to language files
  - Add API method to list online users in a room
+ - Add bad-words npm package and callback file
+ - Add emoji category header in emoji picker
  - Add frequently requested nginx example
  - Add more eslint validations
  - Add new translation key for cancelling message input Closes #2956
  - Add twitter and google login eventos for iframe login
- - Add bad-words npm package and callback file
- - Add emoji category header in emoji picker
  - Changed arrow keybinding in message popups
  - Changes to Email settings (#3007)
  - Close #1990 Add setting to ignore hosts or CIDR addresses in Embed. (#2953)
  - Close #2165 Do not notify mentions to people outside of a private group. (#2954)
  - Close #2675 Changed arrow keybinding in message popups
  - Close #2726 #2385 Remove double negatives (#2937)
+ - Close #2940 Fixed formatting
  - Close #2950 Add setting to disable displaying role tags
  - Close #3001 Improve user add from admin Set autocomplete off in form tag http://stackoverflow.com/questions/12374442/chrome-browser-ignoring-autocomplete-off
  - Close #3019 Add data-role attribute to role tags, allowing custom CSS
- - Close #2940 Fixed formatting
  - Creat settings to disable displaying role tags
  - Don't send an email notification to mentioned users not in private group
  - Faster desktop notifications (#2955)
@@ -317,9 +317,9 @@
 - Hide livechat users and rooms from the admin pages (#2820)
 - Replace Autolinker.js and add AutoLinker settings
 - Update archive and unarchive room permissions
+- Update bash shebang on shell scripts for portability
 - Update emojione to 2.1.4
 - Update fontello from livechat app
-- Update bash shebang on shell scripts for portability
 - Use insertOrUpsert for new messages in Messages model
 - Use new error format
 - Use RocketChat Logger as SyncedCron logger
@@ -478,8 +478,8 @@
 - Add AES encryption routines
 - Add CDN config option for file upload
 - Add icon to show OTR status in channel title
-- Add option to disable integration and scripts
 - Add Off-The-Record funtionallity
+- Add option to disable integration and scripts
 - Add RocketChat.promises API
 - Allow outgoing scripts to call HTTP
 - Allow processOutgoingResponseScript to process erros
@@ -492,14 +492,13 @@
 - Enables notification by displaying "Encrypted message" instead of the hash or the actual message
 - Fix bug when changing room name to same value
 - Fix code indentation - closes #2454
-- Moves change of language to preferences
-- Requires current password to change profile settings
 - Fixes #691; Adds sorting to channels list.
 - Fixes S3 config without acl
 - Improve UI of new messages bar
 - Improved send button
 - Move custom OAuth to OAuth section of admin panel
 - Moved all fileupload settings to package
+- Moves change of language to preferences
 - Moving files to expose functions
 - Pass request as object to process_incoming_request
 - Protect file uploads on S3
@@ -508,6 +507,7 @@
 - Refactor for file upload response handlers API
 - Removed Meteor Error copy-pasted problem
 - Renaming files to match the storage config
+- Requires current password to change profile settings
 - Shows a send button if there is a message in the text box
 - Stops using tmeasday:errors and use toastr instead
 - Support for delete uploaded files
@@ -571,10 +571,10 @@
 - Enable username as template from LDAP and enable username sync
 - Expose getAvatarUrlFromUsername function to server side
 - Fix 'render' callback of MessageTypes
+- Fix errors saving room info in admin
 - Fix publish user_data  under "spotlight"
 - Fix root url on server side
 - Fix show more users button
-- Fix errors saving room info in admin
 - Improve WebRTC audio quality
 - Improved sidebar overlay - should fix RocketChat/Rocket.Chat.Cordova#15
 - Improved system messages style
@@ -591,8 +591,6 @@
 
 ## 0.19.0, 2016-Feb-22
 
-- Re authorize streams on reconnect
-- Don't automatically parse URLs in incoming webhooks message body if an attachment is also present
 - Add alerts for highlight words
 - Add button to show offline users in a room
 - Add Import framework
@@ -609,6 +607,7 @@
 - Closes #2221; LDAP Custom Domain Search gives "TypeError"
 - Closes #2262; Implement LDAP user sync
 - Do not notify edited messages again
+- Don't automatically parse URLs in incoming webhooks message body if an attachment is also present
 - Don't try to parse an upload if it doesn't contain a file.
 - Fix "topic changed" messages with incorrect timestamp
 - Fix and improve webrtc settings
@@ -619,6 +618,7 @@
 - Fix starttls issue by setting tls.connect hostname parameter.
 - Fix the sendMessage with nothing after it being left in
 - Fix upload previews
+- Re authorize streams on reconnect
 - Really respect the limit of the mongo database.
 - Reduce the size of the max records we input to half of what it was, to reduce the stress on mongo
 - Remove unused files: splash
@@ -640,8 +640,8 @@
 - Allow text selection in settings area
 - Change from LDAP_Restricted_User_Groups to LDAP_Domain_Search_Filter
 - Email all offline users
-- Fix: if mobile app was open and in background, it would still read ... ...messages in the active room.
-- Fix: user received mobile notification even when browser was open.
+- Fix if mobile app was open and in background, it would still read ... ...messages in the active room.
+- Fix user received mobile notification even when browser was open.
 - Improve delete message by file
 - Push Notifications settings
 - Replace current LDAP with new LDAP system
@@ -655,74 +655,74 @@
 
 ## 0.17.0, 2016-Feb-09
 
-- Closes #1367; Add ability to delete files
-- Parse URLs by default on messages from REST APIs/webhooks/integrations - #1362
-- Messages from REST APIs are not from bot by default
-- Show that server is running on logs
-- Add permission 'view-c-room' to bots
-- Fix checking username availability
-- Show startup message
-- Created a global Logger called "SystemLogger"
-- Allow pass title for logs of type box as seconde parameter
-- Hablity to view server longs on the administration interface
-- Use the RocketChat.Info.version on headers
-- Parse URLs on messages from REST
-- Do not process all messages from REST as bot
-- Fix name not being required for registration with settings requiring it.
-- Remove the LDAP string form login form as it is irrelevant to end users.
-- Changed settings.get to automatically setup and call a specifed callback
-- Remove the need for server restart after changing registration domain whitelist
-- Fix trying to read build from RocketChat.Info when it is not available.
-- Add an example of how to send logs from server to client
-- Fix problem removing file via side bar
-- Require 'view-c-room' permission for accessing channels
-- Add new logger types; Implement LoggerManager as an EventEmmiter; Filter logs by level; Improve log layout
-- Allow send hooks from a specific public channel
-- Add Uploads model at client side too
-- Convert file uploads to model style
-- Show confirmation dialog on leave/hide room
-- Hide "leave/hide room" buttons when showing unread message counter
-- Add i18n to rocketchat-ui-flextab package, with default strings for file deletion dialogue
-- Move delete button style to base.less in theme package
 - Add a button to allow deleting an uploaded file
+- Add an example of how to send logs from server to client
+- Add i18n to rocketchat-ui-flextab package, with default strings for file deletion dialogue
 - Add logger as dependencies for theme and lib packages
+- Add new logger types; Implement LoggerManager as an EventEmmiter; Filter logs by level; Improve log layout
+- Add permission 'view-c-room' to bots
 - Add some options to logger and use it in some places
+- Add Uploads model at client side too
+- Allow pass title for logs of type box as seconde parameter
+- Allow send hooks from a specific public channel
+- Changed settings.get to automatically setup and call a specifed callback
+- Closes #1367; Add ability to delete files
+- Convert file uploads to model style
+- Created a global Logger called "SystemLogger"
+- Do not process all messages from REST as bot
+- Fix checking username availability
+- Fix name not being required for registration with settings requiring it.
+- Fix problem removing file via side bar
+- Fix trying to read build from RocketChat.Info when it is not available.
+- Hablity to view server longs on the administration interface
+- Hide "leave/hide room" buttons when showing unread message counter
+- Messages from REST APIs are not from bot by default
+- Move delete button style to base.less in theme package
+- Parse URLs by default on messages from REST APIs/webhooks/integrations - #1362
+- Parse URLs on messages from REST
+- Remove the LDAP string form login form as it is irrelevant to end users.
+- Remove the need for server restart after changing registration domain whitelist
+- Require 'view-c-room' permission for accessing channels
+- Show confirmation dialog on leave/hide room
+- Show startup message
+- Show that server is running on logs
+- Use the RocketChat.Info.version on headers
 
 ## 0.16.0, 2016-Feb-01
 
-- Add option for admins to manually add new users
 - Add option for admin to require user to change password
-- Changed admin statistics with admin info
-- Show "Room not Found" correctly
-- Update konecty:multiple-instances-status to 1.0.5
-- Closes #1888; Add mimetye image/vnd.microsoft.icon to mimtype list
-- Disable WebRTC broadcastStatus
-- Closes #2078; ObserveChanges on rocketchat_room Not Using Oplog
+- Add option for admins to manually add new users
 - Add sort for all queries with limit
+- Changed admin statistics with admin info
+- Closes #1888; Add mimetye image/vnd.microsoft.icon to mimtype list
+- Closes #2078; ObserveChanges on rocketchat_room Not Using Oplog
+- Create script to build livechat on windows
+- Disable WebRTC broadcastStatus
 - Do not get field `usernames` with room on joinDefaultChannel
 - Improve logs of stream broadcast
-- Create script to build livechat on windows
+- Show "Room not Found" correctly
+- Update konecty:multiple-instances-status to 1.0.5
 
 ## 0.15.0, 2016-Jan-25
 
 - Ability to change email on account
-- Temporary fix for AM/PM timestamp breaking cog
-- Fix typo in oembed widget
-- Change to process.exit(1) to restart server
 - Add "Default Domain" to LDAP config
-- Fix boolean environment variables
-- Include a fallback click event for loading more messages
-- Fix html h3 tag was closed with h4
 - Allow changing e-mail; invalidates verification on e-mail change
-- Enable editing via admin / users
-- Log error when trigger url returns 500
-- Bind starttls correctly for LDAP
-- Custom OAuth supporting json or plain content_types responses of the identity
 - Allow pass room id to direct rooms
-- Outgoing: Get the room from posted message to reply
+- Bind starttls correctly for LDAP
 - Change Meteor.absoluteUrl to force SSL if Force_SSL is true
+- Change to process.exit(1) to restart server
+- Custom OAuth supporting json or plain content_types responses of the identity
+- Enable editing via admin / users
 - Escape regexp on checking email availability; change type of input to email
+- Fix boolean environment variables
 - Fix check for MAIL_URL when it's server side only
+- Fix html h3 tag was closed with h4
+- Fix typo in oembed widget
+- Include a fallback click event for loading more messages
+- Log error when trigger url returns 500
+- Outgoing: Get the room from posted message to reply
+- Temporary fix for AM/PM timestamp breaking cog
 
 ## 0.14.0, 2016-Jan-18
 
@@ -839,12 +839,12 @@
 
 ## 0.11.0, 2015-Dec-28
 
-- Add role bot to users of integrations in scope bot
-- Add route to cadastre new integrations via API
 - Add "Jump to" and infinite scroll to message search results
 - Add infinite scroll to files list
 - Add livechat branding
 - Add new color variables to the theme editor
+- Add role bot to users of integrations in scope bot
+- Add route to cadastre new integrations via API
 - Adjust tgz filename in Dockerfile
 - Allow bot call deleteOutgoingIntegration
 - Allow creation of outgoing integrations from bots
@@ -853,8 +853,6 @@
 - Better message positioning
 - Change /invite to use addUserToRoom instead joinRoom
 - Create direct rooms correctly in incoming hook
-- Only join user in public channels via integrations
-- Fix ungroup of messages after join message
 - Do not load all settings to process.env
 - Enable triggers in messages to users
 - Enable/disable livechat pre registration form pick a department at livechat pre registration
@@ -865,11 +863,13 @@
 - Fix livechat triggers not triggering
 - Fix preview of images in mobile
 - Fix triggers with defined channels
+- Fix ungroup of messages after join message
 - Fix update of permissions
 - Get integration name from body
 - If no channel in trigger listen all public channels
 - Make sample data into array
 - Move set of integration type to server side
+- Only join user in public channels via integrations
 - Re order settings
 - Remove integration if trigger response is 410
 - Remove unecessary logs
@@ -938,11 +938,11 @@
 - Fix merge mess =P
 - Fix mute by setting mute on room instead of subscription
 - Fix pin and star
+- Fix pin and star
+- Fix several english issues.
 - Fix some ldap problems and set reconnect to true
 - Fix sort of settings
 - Fix URL
-- Fix pin and star
-- Fix several english issues.
 - Get next agent on queue
 - Group message by time, default 5min
 - Improve avatar resize function to use GM detection and allow change s…
@@ -990,76 +990,76 @@
 
 ## 0.9.0, 2015-Dec-14
 
-- Fix broken image-link when og:image contains "&amp;" (e.g. Google Maps)
-- Error message when file upload media type it not accepted
-- Add setting Accounts_LoginExpiration
-- Fix 'create new' in private group list opening 'create channel' flex
-- Moved RocketMailer to Mailer
-- Move avatars on username change
-- Livechat Survey
-- Livechat popout support
-- New integrations panel on the admin
-- Many fixes on rtl.less
-- Avatars for Unicode usernames
-- Fix for mentioning RTL names
-- Force file names to always be in LTR
-- Add query operator for mailer
-- Departments support
-- Fixes issue #1619 persistent custom oauth.
 - Add a new setting type "action" to call server methods
 - Add lib clipboard.js
 - Add new page container type, settings
 - Add new role, manage-integrations
+- Add query operator for mailer
+- Add setting Accounts_LoginExpiration
 - Add settings/action to allow admins restart the server
 - Allow arrays of keys in RocketChat.settings.onload
 - Allow avatar and alias customization
 - Allow packages to register files for theming
 - Allow use Markdown to render a single stringn and register a helper
+- Avatars for Unicode usernames
 - Change layout of attachments
 - Create a setting/action to test push notifications
 - Create a user rocket.cat and set avatar on system initialization
+- Departments support
 - Do not alert admins about wrong url if accessing from cordova
 - Encode url and token
+- Error message when file upload media type it not accepted
+- Fix 'create new' in private group list opening 'create channel' flex
+- Fix blockquote non-continous border
+- Fix broken image-link when og:image contains "&amp;" (e.g. Google Maps)
+- Fix for mentioning RTL names
+- Fixes issue #1619 persistent custom oauth.
+- Force file names to always be in LTR
 - Implement package for message attachments
 - Inform user to refresh page after extension install
+- Livechat popout support
+- Livechat Survey
+- Many fixes on rtl.less
+- Move avatars on username change
+- Moved accountBox HTML to new separated template
+- Moved RocketMailer to Mailer
+- New integrations panel on the admin
 - Pass success message to settings/actions
 - Prepare code to reconfigure push plugin in runtime
 - Prevent parse message urls if option parseUrls is false in message
 - Prompt users to install extentions to enable screen sharing
 - Shos if message is from bot and never render compact message version
-- Fix blockquote non-continous border
-- Moved accountBox HTML to new separated template
 
 ## 0.8.0, 2015-Dec-8
 
-- Fix error: when allow change username was set to false, registration
-- Improve message rendering removing MessageAction from render time
-- Textarea theme fix for RTL
-- Update the flex-nav hidden element for RTL
-- Refresh the count of unread messages on scroll
-- Reset correctly all counters of unread marks
-- Force deletion and stop computations of templates when closing room
-- Close rooms when more than 10 is open instead of closing rooms
-- Reset avatar before uploading to prevent caching
-- Create page to manage assets and change favicons
-- Add option to disable "Forgot Password" link on login page
-- New RocketChat.RateLimiter
-- Favico.js update
-- Better RTL support
-- Remove custom OAuth record when removed from settings
-- Improve Settings layout
-- Collapse sub groups of settings
-- Change translations in PT for False and True
-- Add Secret URL
-- Fix push notification for android
-- Enable push bay default and improve settings organization
-- Alert admin if configured url is different from current
-- Translate section of settings
 - Add "Meiryo UI" to font-family
-- Fix livechat visitor can't chat after refresh
-- Fix can't send msgs to new livechat rooms
+- Add option to disable "Forgot Password" link on login page
+- Add Secret URL
+- Alert admin if configured url is different from current
+- Better RTL support
+- Change translations in PT for False and True
 - Clear iOS app badge on app startup
+- Close rooms when more than 10 is open instead of closing rooms
+- Collapse sub groups of settings
+- Create page to manage assets and change favicons
+- Enable push bay default and improve settings organization
+- Favico.js update
+- Fix can't send msgs to new livechat rooms
+- Fix error: when allow change username was set to false, registration
 - Fix for image swipebox to show in RTL interface
+- Fix livechat visitor can't chat after refresh
+- Fix push notification for android
+- Force deletion and stop computations of templates when closing room
+- Improve message rendering removing MessageAction from render time
+- Improve Settings layout
+- New RocketChat.RateLimiter
+- Refresh the count of unread messages on scroll
+- Remove custom OAuth record when removed from settings
+- Reset avatar before uploading to prevent caching
+- Reset correctly all counters of unread marks
+- Textarea theme fix for RTL
+- Translate section of settings
+- Update the flex-nav hidden element for RTL
 
 ## 0.1.0, 2015-May-19
 
