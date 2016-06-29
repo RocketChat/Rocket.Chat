@@ -37,8 +37,10 @@ RocketChat.models.Settings.on 'change', (type, args...) ->
 	records = RocketChat.models.Settings.getChangedRecords type, args[0]
 
 	for record in records
-		e = if record.public is true then 'public-settings-changed' else 'private-settings-changed'
-		RocketChat.Notifications.notifyAll e, type, record
+		if record.public is true
+			RocketChat.Notifications.notifyAll 'public-settings-changed', type, _.pick(record, '_id', 'value')
+
+		RocketChat.Notifications.notifyAll 'private-settings-changed', type, record
 
 
 RocketChat.Notifications.streamAll.allowRead 'private-settings-changed', ->
