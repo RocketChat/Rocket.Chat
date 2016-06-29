@@ -183,7 +183,7 @@ Template.admin.helpers
 				TempSettings.update {_id: _id},
 					$set:
 						value: value
-						changed: Settings.findOne(_id).value isnt value
+						changed: RocketChat.settings.collectionPrivate.findOne(_id).value isnt value
 
 			onChangeDelayed = _.debounce onChange, 500
 
@@ -210,7 +210,7 @@ Template.admin.events
 		TempSettings.update {_id: @_id},
 			$set:
 				value: value
-				changed: Settings.findOne(@_id).value isnt value
+				changed: RocketChat.settings.collectionPrivate.findOne(@_id).value isnt value
 
 	"click .submit .save": (e, t) ->
 		group = FlowRouter.getParam('group')
@@ -232,6 +232,7 @@ Template.admin.events
 		if not _.isEmpty settings
 			RocketChat.settings.batchSet settings, (err, success) ->
 				return handleError(err) if err
+				TempSettings.update({changed: true}, {$unset: {changed: 1}})
 				toastr.success TAPi18n.__ 'Settings_updated'
 
 	"click .submit .refresh-clients": (e, t) ->
