@@ -52,6 +52,9 @@ Template.loginForm.helpers
 	loginTerms: ->
 		return RocketChat.settings.get 'Layout_Login_Terms'
 
+	poweredBy: ->
+		return RocketChat.settings.get 'Layout_Powered_By'
+
 	registrationAllowed: ->
 		return RocketChat.settings.get('Accounts_RegistrationForm') is 'Public' or Template.instance().validSecretURL?.get()
 
