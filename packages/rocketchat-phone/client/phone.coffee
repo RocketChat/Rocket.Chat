@@ -1,5 +1,8 @@
 Meteor.startup ->
 
+	if Meteor.isCordova
+		return
+
 	Tracker.autorun ->
 		user  = Meteor.user()
 		if not user

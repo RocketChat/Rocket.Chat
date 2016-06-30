@@ -1,6 +1,6 @@
 Meteor.startup ->
     enabled = RocketChat.settings.get('Phone_Enabled')
-    if enabled is true
+    if enabled is true and !Meteor.isCordova
         RocketChat.TabBar.addButton({
             groups: ['channel', 'privategroup', 'directmessage'],
             id: 'phone',
