@@ -259,6 +259,10 @@ window.addEventListener('message', (e) => {
 
 		case 'call-google-login':
 			const googleLoginSuccess = (response) => {
+				if (typeof response.oauthToken === 'string' && typeof response.accessToken !== 'string') {
+					response.accessToken = response.oauthToken;
+				}
+
 				console.log('google-login-success', response);
 				e.source.postMessage({
 					event: 'google-login-success',
