@@ -117,9 +117,7 @@ Template.phone.onCreated ->
 
 Template.phone.onRendered ->
 	console.log("Moving video tag to its containter")
-	$("#phonestream").appendTo($("#phone-video"))
-	$("#phonestream").css('visibility', 'visible')
-	$("#phonestream").css('display', 'none')
+	RocketChat.Phone.placeVideo()
 
 
 RocketChat.Phone = new class
@@ -128,6 +126,7 @@ RocketChat.Phone = new class
 	_password = undefined
 	_vertoHandle = undefined
 	_server = undefined
+	_videoTag = undefined
 
 	_lastCalled = ''
 
@@ -282,6 +281,11 @@ RocketChat.Phone = new class
 		console.log ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>"
 		if _videoDevice
 			$.FSRTC.getValidRes(_videoDevice, refreshVideoResolution)
+
+	placeVideo: ->
+		_videoTag.appendTo($("#phone-video"))
+		_videoTag.css('visibility', 'visible')
+		_videoTag.css('display', 'none')
 
 	transfer: (number) ->
 		if _curCall and _callState is 'active'
@@ -439,6 +443,8 @@ RocketChat.Phone = new class
 		if _started and _vertoHandle
 			console.log("Client already started, ignoring")
 			return
+
+		_videoTag = $("#phonestream")
 
 		_login = login
 		_password = password
