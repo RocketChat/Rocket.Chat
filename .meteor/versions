@@ -230,11 +230,11 @@ ui@1.0.8
 underscore@1.0.4
 underscorestring:underscore.string@3.3.4
 url@1.0.5
-voismart:ngapi@0.0.1
-voismart:nglogin@0.0.1
-voismart:ngpresence@0.0.1
-voismart:webc@0.0.1
 webapp@1.2.3
 webapp-hashing@1.0.5
 yasaricli:slugify@0.0.7
 yasinuslu:blaze-meta@0.3.3
+voismart:ngapi@0.0.1
+voismart:nglogin@0.0.1
+voismart:ngpresence@0.0.1
+voismart:webc@0.0.1

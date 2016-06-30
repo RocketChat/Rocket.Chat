@@ -421,15 +421,21 @@ RocketChat.Phone = new class
 		return _videoDevice
 
 	start: (login, password, server) ->
+		console.log("Starting verto....")
 
 		if _started and (login != _login or _password != password or _server != server)
 			_vertoHandle.logout()
 			_vertoHandle = undefined
+			_started = false
 			console.log("Restarting an already started client")
 
 		if !_started
 			console.log("Activating video element")
 			Blaze.render(Template.phonevideo, document.body)
+
+		if _started and _vertoHandle
+			console.log("Client already started, ignoring")
+			return
 
 		_login = login
 		_password = password
