@@ -157,8 +157,6 @@ RocketChat.Phone = new class
 			has_video = true
 
 		_curCall.answer({
-			caller_id_name: "canemorto",
-			caller_id_number: 1234,
 			useVideo: has_video,
 			useStereo: true,
 			useCamera: _videoDevice,
@@ -361,8 +359,6 @@ RocketChat.Phone = new class
 
 		_curCall = _vertoHandle.newCall({
 			destination_number: destination,
-			caller_id_name: "canemorto",
-			caller_id_number: 1234,
 			useVideo: has_video,
 			useStereo: true,
 			useCamera: _videoDevice,
