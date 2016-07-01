@@ -128,6 +128,10 @@ Template.phone.onCreated ->
 	@phoneDisplay = new ReactiveVar ""
 
 
+Template.phone.onDestroyed ->
+	RocketChat.Phone.removeVideo()
+
+
 Template.phone.onRendered ->
 	if window.rocketDebug
 		console.log("Moving video tag to its containter")
@@ -168,7 +172,7 @@ RocketChat.Phone = new class
 		if window.rocketDebug
 			console.log "Will answer call"
 
-		$("#phonestream").css('display', 'block')
+		_videoTag.css('display', 'block')
 
 		has_video = false
 		if _videoDevice and (_videoDevice != "none")
@@ -308,10 +312,21 @@ RocketChat.Phone = new class
 		if _videoDevice
 			$.FSRTC.getValidRes(_videoDevice, refreshVideoResolution)
 
+	removeVideo: ->
+		_videoTag.appendTo($("body"))
+		_videoTag.css('display', 'none')
+		_videoTag.css('visibility', 'hidden')
+		if _curCall and _callState is 'active'
+			_videoTag[0].play()
+
 	placeVideo: ->
 		_videoTag.appendTo($("#phone-video"))
 		_videoTag.css('visibility', 'visible')
-		_videoTag.css('display', 'none')
+		if _curCall and _callState is 'active'
+			_videoTag.css('display', 'block')
+			_videoTag[0].play()
+		else
+			_videoTag.css('display', 'none')
 
 	transfer: (number) ->
 		if _curCall and _callState is 'active'
