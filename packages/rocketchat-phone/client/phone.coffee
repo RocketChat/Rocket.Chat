@@ -201,11 +201,11 @@ RocketChat.Phone = new class
 			when 'ringing'
 				_callState = 'ringing'
 				RocketChat.TabBar.setTemplate "phone", ->
-					msg = "Incoming call from " + d.params.caller_id_number
+					msg = TAPi18n.__("Incoming_call_from") + d.params.caller_id_number
 					putNotification(msg)
 					notification =
-						title: "Phone Call"
-						text: "Incoming call from " + d.params.caller_id_number
+						title: TAPi18n.__ "Phone_Call"
+						text: TAPi18n.__("Incoming_call_from") + d.params.caller_id_number
 						payload:
 							rid: Session.get('openedRoom')
 							sender: Meteor.user()
