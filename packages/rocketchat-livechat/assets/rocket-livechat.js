@@ -59,8 +59,9 @@
 		}
 	};
 
-	var pageVisited = function() {
+	var pageVisited = function(change) {
 		callHook('pageVisited', {
+			change: change,
 			location: JSON.parse(JSON.stringify(document.location)),
 			title: document.title
 		});
@@ -77,9 +78,11 @@
 	var trackNavigation = function() {
 		setInterval(function() {
 			if (document.location.href !== currentPage.href) {
-				pageVisited();
-
+				pageVisited('url');
 				currentPage.href = document.location.href;
+			}
+			if (document.title !== currentPage.title) {
+				pageVisited('title');
 				currentPage.title = document.title;
 			}
 		}, 800);
