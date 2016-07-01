@@ -1239,5 +1239,8 @@
   "Your_file_has_been_deleted" : "Il file è stato eliminato.",
   "Your_mail_was_sent_to_s" : "La tua mail è stata inviata a %s",
   "Your_password_is_wrong" : "La password è sbagliata!",
-  "Your_push_was_sent_to_s_devices" : "La vostra notifica push è stata inviata ai dispositivi %s"
+  "Your_push_was_sent_to_s_devices" : "La vostra notifica push è stata inviata ai dispositivi %s",
+  "Phone_Call" : "Chiamata",
+  "Incoming_call_from": "Chiamata in arrivo da ",
+  "webRTC_Phone": "webRTC Communicator"
 }

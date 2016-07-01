@@ -63,9 +63,9 @@ Meteor.methods
                             continue
 
                         if recipient._id == Meteor.userId()
-                            body = "You requested collaboration session " + v
+                            body = "Hai richiesto una sessione di collaboration " + v
                         else
-                            body = user.username + " requested collaboration session " + v
+                            body = user.username + " ha richiesto una sessione di collaboration " + v
 
                         msg = {
                             _id: Random.id()

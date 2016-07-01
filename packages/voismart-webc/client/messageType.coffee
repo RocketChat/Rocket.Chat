@@ -2,5 +2,5 @@ Meteor.startup ->
 	RocketChat.MessageTypes.registerType({
 		id: 'webc_audioconf',
 		system: true,
-		message: 'Sent an audioconference request'
+		message: TAPi18n.__ 'Ha mandato una richiesta di Audio Conferenza'
 	})
