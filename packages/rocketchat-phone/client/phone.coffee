@@ -12,14 +12,14 @@ Meteor.startup ->
 		wss = RocketChat.settings.get('Phone_WSS')
 
 		if not enabled or not wss
-			console.log("Phone not enabled or missing server url")
+			console.log("Phone not enabled or missing server url") if window.rocketDebug
 			return
 
 		plogin = user.phonelogin
 		ppass = user.phonepassword
 
 		if not plogin or not ppass
-			console.log("Phone account data not set (yet)")
+			console.log("Phone account data not set (yet)") if window.rocketDebug
 			return
 
 		RocketChat.Phone.start(plogin, ppass, wss)
@@ -46,18 +46,24 @@ Template.phone.events
 			RocketChat.Phone.newCall(number)
 
 	'click #phone-dial': (e, instance)->
-		console.log "will dial"
+		if window.rocketDebug
+			console.log "will dial"
+
 		number = instance.phoneDisplay.get()
 		RocketChat.Phone.dialKey(number)
 		instance.phoneDisplay.set('')
 
 	'click #phone-hangup': (e, instance)->
-		console.log "hangup"
+		if window.rocketDebug
+			console.log "hangup"
+
 		RocketChat.Phone.hangup()
 		instance.phoneDisplay.set('')
 
 	'click #phone-hold': (e, instance)->
-		console.log "toggle hold"
+		if window.rocketDebug
+			console.log "toggle hold"
+
 		status = RocketChat.Phone.toggleHold()
 		if status
 			$('#phone-hold').addClass('phone-active-key')
@@ -65,7 +71,8 @@ Template.phone.events
 			$('#phone-hold').removeClass('phone-active-key')
 
 	'click #phone-mute': (e, instance)->
-		console.log "toggle mute"
+		if window.rocketDebug
+			console.log "toggle mute"
 		status = RocketChat.Phone.toggleMute()
 		if status
 			$('#phone-mute').addClass('phone-active-key')
@@ -73,17 +80,23 @@ Template.phone.events
 			$('#phone-mute').removeClass('phone-active-key')
 
 	'click #phone-redial': (e, instance)->
-		console.log "redialing...."
+		if window.rocketDebug
+			console.log "redialing...."
+
 		lastCalled = RocketChat.Phone.getLastCalled()
 		instance.phoneDisplay.set(lastCalled)
 		RocketChat.Phone.redial()
 
 	'click #phone-clear': (e, instance)->
-		console.log "clearing display"
+		if window.rocketDebug
+			console.log "clearing display"
+
 		instance.phoneDisplay.set('')
 
 	'click #phone-transfer': (e, instance)->
-		console.log "transferring call..."
+		if window.rocketDebug
+			console.log "transferring call..."
+
 		number = instance.phoneDisplay.get()
 		RocketChat.Phone.transfer(number)
 
@@ -115,8 +128,14 @@ Template.phone.onCreated ->
 	@phoneDisplay = new ReactiveVar ""
 
 
+Template.phone.onDestroyed ->
+	RocketChat.Phone.removeVideo()
+
+
 Template.phone.onRendered ->
-	console.log("Moving video tag to its containter")
+	if window.rocketDebug
+		console.log("Moving video tag to its containter")
+
 	RocketChat.Phone.placeVideo()
 
 
@@ -146,11 +165,14 @@ RocketChat.Phone = new class
 	_curVideoH = null
 
 	constructor: ->
-		console.log("Starting a new Phone Handler")
+		if window.rocketDebug
+			console.log("Starting a new Phone Handler")
 
 	answer = ->
-		console.log "Will answer call"
-		$("#phonestream").css('display', 'block')
+		if window.rocketDebug
+			console.log "Will answer call"
+
+		_videoTag.css('display', 'block')
 
 		has_video = false
 		if _videoDevice and (_videoDevice != "none")
@@ -165,13 +187,17 @@ RocketChat.Phone = new class
 		}, {})
 
 	onWSLogin = (verto, success) ->
-		console.log('onWSLogin', success)
+		if window.rocketDebug
+			console.log('onWSLogin', success)
 
 	onWSClose = (verto, success) ->
-		console.log('onWSClose', success)
+		if window.rocketDebug
+			console.log('onWSClose', success)
 
 	onDialogState = (d) ->
-		console.log('on rocket dialog ', d)
+		if window.rocketDebug
+			console.log('on rocket dialog ', d)
+
 		if !_curCall?
 			_curCall = d
 
@@ -179,11 +205,11 @@ RocketChat.Phone = new class
 			when 'ringing'
 				_callState = 'ringing'
 				RocketChat.TabBar.setTemplate "phone", ->
-					msg = "Incoming call from " + d.params.caller_id_number
+					msg = TAPi18n.__("Incoming_call_from") + d.params.caller_id_number
 					putNotification(msg)
 					notification =
-						title: "Phone Call"
-						text: "Incoming call from " + d.params.caller_id_number
+						title: TAPi18n.__ "Phone_Call"
+						text: TAPi18n.__("Incoming_call_from") + d.params.caller_id_number
 						payload:
 							rid: Session.get('openedRoom')
 							sender: Meteor.user()
@@ -193,7 +219,8 @@ RocketChat.Phone = new class
 				_callState = 'active'
 			when 'hangup'
 				if _callState != 'transfer'
-					console.log("hangup call")
+					if window.rocketDebug
+						console.log("hangup call")
 					_curCall.hangup()
 
 				_callState = 'hangup'
@@ -201,7 +228,8 @@ RocketChat.Phone = new class
 				clearNotification()
 			when 'destroy'
 				if _callState != 'transfer' and _callState != 'hangup'
-					console.log("hangup call")
+					if window.rocketDebug
+						console.log("hangup call")
 					_curCall.hangup()
 
 				_callState = null
@@ -217,17 +245,19 @@ RocketChat.Phone = new class
 		$(".phone-notifications").css('display', 'block')
 
 	refreshVideoResolution = (resolutions) ->
-		console.log ">>>>>>>>>< RESOLUTIONS >>>>>>>>>>>>>>>>>>"
-		console.log resolutions
 		_curResolutions = resolutions.validRes
-		console.log ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>"
+		if window.rocketDebug
+			console.log ">>>>>>>>>< RESOLUTIONS >>>>>>>>>>>>>>>>>>"
+			console.log resolutions
+			console.log ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>"
 
 	bootstrap = (status) =>
-		console.log _started
-		console.log _vertoHandle
-		console.log _login
-		console.log _password
-		console.log _server
+		if window.rocketDebug
+			console.log _started
+			console.log _vertoHandle
+			console.log _login
+			console.log _password
+			console.log _server
 
 		_vertoHandle = new jQuery.verto({
 			login: _login,
@@ -274,16 +304,29 @@ RocketChat.Phone = new class
 		_videoDevice = conf.videoDevice
 
 	refreshDevices = (what) ->
-		console.log ">>>>>>>>>> REFRESH DEVICES <<<<<<<<<<<<"
-		console.log what
-		console.log ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>"
+		if window.rocketDebug
+			console.log ">>>>>>>>>> REFRESH DEVICES <<<<<<<<<<<<"
+			console.log what
+			console.log ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>"
+
 		if _videoDevice
 			$.FSRTC.getValidRes(_videoDevice, refreshVideoResolution)
+
+	removeVideo: ->
+		_videoTag.appendTo($("body"))
+		_videoTag.css('display', 'none')
+		_videoTag.css('visibility', 'hidden')
+		if _curCall and _callState is 'active'
+			_videoTag[0].play()
 
 	placeVideo: ->
 		_videoTag.appendTo($("#phone-video"))
 		_videoTag.css('visibility', 'visible')
-		_videoTag.css('display', 'none')
+		if _curCall and _callState is 'active'
+			_videoTag.css('display', 'block')
+			_videoTag[0].play()
+		else
+			_videoTag.css('display', 'none')
 
 	transfer: (number) ->
 		if _curCall and _callState is 'active'
@@ -321,7 +364,8 @@ RocketChat.Phone = new class
 
 	hangup: ->
 		if !_curCall?
-			console.log "No call to hangup"
+			if window.rocketDebug
+				console.log "No call to hangup"
 			return
 
 		_curCall.hangup()
@@ -340,18 +384,18 @@ RocketChat.Phone = new class
 
 	newCall: (destination) ->
 		if !destination or destination is ''
-			console.log("No number provided")
+			console.log("No number provided") if window.rocketDebug
 			return
 
 		if _curCall?
-			console.log("Cannot call while in call")
+			console.log("Cannot call while in call") if window.rocketDebug
 			return
 
 		has_mic = RocketChat.Phone.getAudioInDevice()
 		has_speak = RocketChat.Phone.getAudioOutDevice()
 		if !has_mic? or !has_speak? or has_mic is "none" or has_speak is "none"
-			console.log "not mic and speaker defined, refusing call"
-			#return
+			console.log("not mic and speaker defined, should refuse call?") if window.rocketDebug
+			#return # firefox still has issues in device selection
 
 		has_video = false
 		if _videoDevice and (_videoDevice != "none")
@@ -380,7 +424,7 @@ RocketChat.Phone = new class
 		else
 			idx = idx - 1
 			wxh = _curResolutions[idx]
-			console.log wxh
+			console.log(wxh) if window.rocketDebug
 			_curVideoW = wxh[0]
 			_curVideoH = wxh[1]
 			_vertoHandle.videoParams({
@@ -424,20 +468,20 @@ RocketChat.Phone = new class
 		return _videoDevice
 
 	start: (login, password, server) ->
-		console.log("Starting verto....")
+		console.log("Starting verto....") if window.rocketDebug
 
 		if _started and (login != _login or _password != password or _server != server)
 			_vertoHandle.logout()
 			_vertoHandle = undefined
 			_started = false
-			console.log("Restarting an already started client")
+			console.log("Restarting an already started client") if window.rocketDebug
 
 		if !_started
-			console.log("Activating video element")
+			console.log("Activating video element") if window.rocketDebug
 			Blaze.render(Template.phonevideo, document.body)
 
 		if _started and _vertoHandle
-			console.log("Client already started, ignoring")
+			console.log("Client already started, ignoring") if window.rocketDebug
 			return
 
 		_videoTag = $("#phonestream")
