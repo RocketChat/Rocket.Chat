@@ -8,7 +8,7 @@ Template.messageAttachment.helpers
 			else
 				url = url + '&' + query
 
-		return url
+		return RocketChat.settings.get('Site_Url').replace(/\/$/, '') + url
 
 	parsedText: ->
 		renderMessageBody { msg: this.text }
