@@ -18,6 +18,9 @@ Template.videoCall.helpers
 	mutedById: (id) ->
 		return Template.instance().mutedById.get()[id] == true
 
+	speakingById: (id) ->
+		return WebRTC.getInstanceByRoomId(Session.get('openedRoom')).speakingById.get()[id] == true
+
 	callInProgress: ->
 		return WebRTC.getInstanceByRoomId(Session.get('openedRoom')).callInProgress.get()
 

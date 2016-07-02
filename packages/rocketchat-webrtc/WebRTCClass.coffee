@@ -1,17 +1,20 @@
 emptyFn = ->
 	# empty
 
-AudioClipper = new class
+LevelDetector = new class
 
 	createAudioMeter:(audioContext,callback, clipLevel,averaging,clipLag) ->
 
 		processor = audioContext.createScriptProcessor(512)
+
+		performance = window.performance;
 
 		volumeAudioProcess = (event) ->
 			buf = event.inputBuffer.getChannelData(0);
 			bufLength = buf.length;
 			x = 0;
 			clippedBefore = processor.clipping
+			now = performance.now()
 
 			# Do a root-mean-square on the samples: sum up the squares...
 			for c in [0..event.inputBuffer.numberOfChannels-1]
@@ -20,12 +23,12 @@ AudioClipper = new class
 				for i in [0...bufLength-1]
 					x = buf[i];
 					if (Math.abs(x)>=processor.clipLevel)
-						processor.clipping = true;
-						processor.lastClip = window.performance.now()
+						processor.clipping = true
+						processor.lastClip = now
 
-			if (processor.lastClip + processor.clipLag) < window.performance.now()
+			if (processor.lastClip + processor.clipLag) < now
 				processor.clipping = false
-				processor.lastNotClip = window.performance.now()
+				processor.lastNotClip = now
 
 			if (clippedBefore!=processor.clipping)
 				callback(processor.clipping)
@@ -196,6 +199,8 @@ class WebRTCClass
 		@overlayEnabled = new ReactiveVar false
 		@screenShareEnabled = new ReactiveVar false
 		@localUrl = new ReactiveVar
+		@localSpeaking = new ReactiveVar false
+		@speakingById = new ReactiveVar {}
 		@availableDevices = new ReactiveVar []
 
 		# todo: is there a nicer way to initialize a ReactiveVar with a promise?
@@ -368,14 +373,21 @@ class WebRTCClass
 					sdpMLineIndex: e.candidate.sdpMLineIndex
 					sdpMid: e.candidate.sdpMid
 
+		speakingById = @speakingById
+
 		peerConnection.addEventListener 'addstream', (e) =>
 			stream = e.stream;
-			audioTracks = stream.getAudioTracks();
-			if audioTracks[0]
+			if AudioContext? and stream.getAudioTracks().length > 0
 				audioContext = new AudioContext
-				mediaStreamSource = audioContext.createMediaStreamSource(stream)
-				audioMeter = AudioClipper.createAudioMeter(audioContext)
-				mediaStreamSource.connect(audioMeter)
+				source = audioContext.createMediaStreamSource(stream)
+				audioMeter = LevelDetector.createAudioMeter(audioContext, ((level)->
+					currentSpeakingById = speakingById.get
+					currentSpeakingById[id] = level
+					speakingById.set(currentSpeakingById);
+					console.info("remoteSpeaking "+id,level)
+				),0.2, 0, 750)
+
+				source.connect(audioMeter)
 			@updateRemoteItems()
 
 		peerConnection.addEventListener 'removestream', (e) =>
@@ -405,6 +417,7 @@ class WebRTCClass
 		return mediaConstraints
 
 	_getUserMedia: (media, onSuccess, onError) ->
+		localSpeaking = @localSpeaking
 		onSuccessLocal = (stream) ->
 			if AudioContext? and stream.getAudioTracks().length > 0
 				audioContext = new AudioContext

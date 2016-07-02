@@ -27,7 +27,7 @@
 						<div class="video-item {{#unless connected}}state-overlay{{/unless}} remote-video-item" data-state-text="{{stateText}}" data-username="{{id}}">
 							<video src="{{url}}" muted="{{mutedById id}}" autoplay></video>
 							<div class="{{#if audioInput}}talking{{/if}}">{{usernameByUserId id}}
-								<button class="remote-toggle-mute" data-username="{{id}}"><i class="{{#if (mutedById id)}}icon-mute{{else}}icon-mic{{/if}}"></i></button>
+								<button class="remote-toggle-mute" data-username="{{id}}"><i class="{{#if (mutedById id)}}icon-volume-off{{else}}{{#if (speakingById id)}}icon-volume-up{{else}}icon-volume-down{{/if}}{{/if}}"></i></button>
 							</div>
 						</div>
 					{{/each}}
