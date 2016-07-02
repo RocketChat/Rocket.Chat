@@ -19,7 +19,7 @@
 		<form class="edit-form" autocomplete="off">
 
 			<div class="input-line">
-				<label for="videoInputDevice">{{_ "Camera"}}</label>
+				<label for="videoInputDevice">{{_ "WebRTC_Input_Camera"}}</label>
 				<div>
 					<select id="videoInputDevice" class="required">
 						{{#each videoInputDevices}}
@@ -30,7 +30,7 @@
 			</div>
 
 			<div class="input-line">
-				<label for="audioInputDevice">{{_ "Microphone"}}</label>
+				<label for="audioInputDevice">{{_ "WebRTC_Input_Microphone"}}</label>
 				<div>
 					<select id="audioInputDevice" name="audioInputDevice" class="required">
 						{{#each audioInputDevices}}
@@ -41,7 +41,7 @@
 			</div>
 			{{#if setSinkIdSupported}}
 			<div class="input-line">
-				<label for="audioOutputDevice">{{_ "Speaker"}}</label>
+				<label for="audioOutputDevice">{{_ "WebRTC_Input_Speaker"}}</label>
 				<div>
 					<select id="audioOutputDevice" name="audioOutputDevice" class="required">
 						{{#each audioOutputDevices}}
