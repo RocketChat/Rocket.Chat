@@ -69,6 +69,22 @@ Template.pushNotificationsFlexTab.helpers({
 			}
 		}
 	},
+	desktopNotificationDuration() {
+		const sub = ChatSubscription.findOne({
+			rid: Session.get('openedRoom')
+		}, {
+			fields: {
+				desktopNotificationDuration: 1
+			}
+		});
+		if (sub == null) {
+			return false;
+		}
+		if (sub.desktopNotificationDuration == null || sub.desktopNotificationDuration == 0) {
+			return false;
+		}
+		return sub.desktopNotificationDuration;
+	},
 	editing(field) {
 		return Template.instance().editing.get() === field;
 	},
@@ -109,6 +125,15 @@ Template.pushNotificationsFlexTab.events({
 			e.preventDefault();
 			instance.saveSetting();
 		}
+	},
+
+	'change input[name=duration]'(e, instance) {
+		const value = instance.$('input[name=duration]').val();
+		Meteor.call('saveDesktopNotificationDuration', Session.get('openedRoom'), value, (err) => {
+			if (err) {
+				return handleError(err);
+			}
+		});
 	},
 
 	'click [data-edit]'(e, instance) {

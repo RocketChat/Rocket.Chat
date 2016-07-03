@@ -19,7 +19,7 @@
 					body: _.stripTags(message.msg)
 					silent: true
 
-				notificationDuration = RocketChat.settings.get('Desktop_Notifications_Duration') * 1000
+				notificationDuration = (notification.duration or RocketChat.settings.get('Desktop_Notifications_Duration')) * 1000
 				if notificationDuration > 0
 					setTimeout ( -> n.close() ), notificationDuration
 
