@@ -18,6 +18,11 @@
 							{{else}}
 								<span>{{subValue 'desktopNotifications'}} <i class="icon-pencil" data-edit="desktopNotifications"></i></span>
 							{{/if}}
+							{{#if desktopNotificationDuration}}
+								<label>{{_ "Duration"}} ({{_ "seconds"}}) <input type="number" name="duration" min="0" value="{{desktopNotificationDuration}}"></label>
+							{{else}}
+								<label>{{_ "Duration"}} ({{_ "seconds"}}) <input type="number" name="duration" min="0" value="" placeholder="{{_ "Use_User_Preferences_or_Global_Settings"}}"></label>
+							{{/if}}
 						</div>
 					</li>
 					<li>

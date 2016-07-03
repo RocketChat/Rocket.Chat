@@ -12,6 +12,20 @@ RocketChat.models.Subscriptions.updateDesktopNotificationsById = function(_id, d
 	return this.update(query, update);
 };
 
+RocketChat.models.Subscriptions.updateDesktopNotificationDurationById = function(_id, desktopNotificationDuration) {
+	const query = {
+		_id: _id
+	};
+
+	const update = {
+		$set: {
+			desktopNotificationDuration,
+		}
+	};
+
+	return this.update(query, update);
+};
+
 RocketChat.models.Subscriptions.updateMobilePushNotificationsById = function(_id, mobilePushNotifications) {
 	const query = {
 		_id: _id
