@@ -297,6 +297,7 @@
   "Drop_to_upload_file" : "Drop to upload file",
   "Dry_run" : "Dry run",
   "Dry_run_description" : "Will only send one email, to the same address as in From. The email must belong to a valid user.",
+  "Duration": "Duration",
   "Duplicate_archived_channel_name" : "An archived Channel with name `#%s` exists",
   "Duplicate_archived_private_group_name" : "An archived Private Group with name '%s' exists",
   "Duplicate_channel_name" : "A Channel with name '%s' exists",
@@ -751,6 +752,7 @@
   "Not_authorized" : "Not authorized",
   "Not_Available" : "Not Available",
   "Not_found_or_not_allowed" : "Not Found or Not Allowed",
+  "Normal": "Normal",
   "Nothing" : "Nothing",
   "Nothing_found" : "Nothing found",
   "Notifications" : "Notifications",
@@ -1242,5 +1244,8 @@
   "Your_file_has_been_deleted" : "Your file has been deleted.",
   "Your_mail_was_sent_to_s" : "Your mail was sent to %s",
   "Your_password_is_wrong" : "Your password is wrong!",
-  "Your_push_was_sent_to_s_devices" : "Your push was sent to %s devices"
+  "Your_push_was_sent_to_s_devices" : "Your push was sent to %s devices",
+  "Notification_Duration": "Notification Duration",
+  "Use_Global_Settings": "Use Global Settings",
+  "Use_User_Preferences_or_Global_Settings": "Use User Preferences or Global Settings"
 }
