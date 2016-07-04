@@ -19,7 +19,7 @@
 					body: _.stripTags(message.msg)
 					silent: true
 
-				notificationDuration = (notification.duration or RocketChat.settings.get('Desktop_Notifications_Duration')) * 1000
+				notificationDuration = (notification.duration | 0 or Meteor.user()?.settings?.preferences?.desktopNotificationDuration | 0 or RocketChat.settings.get('Desktop_Notifications_Duration')) * 1000
 				if notificationDuration > 0
 					setTimeout ( -> n.close() ), notificationDuration
 
