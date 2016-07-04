@@ -7,7 +7,7 @@ RocketChat.actionLinks.register 'webcAudioConf', (message, params) ->
 		enabled = RocketChat.settings.get('Phone_Enabled')
 		if enabled and !Meteor.isCordova
 			RocketChat.TabBar.setTemplate "phone", ->
-				RocketChat.Phone.newCall(params)
+				RocketChat.Phone.newCall(params.number)
 
 	if params.url
 		window.open params.url, "_blank"
