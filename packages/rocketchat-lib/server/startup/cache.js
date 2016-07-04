@@ -1,6 +1,8 @@
 /* globals loki, MongoInternals */
 /* eslint new-cap: 0 */
 
+const {EventEmitter} = Npm.require('events');
+
 RocketChat.cache = {};
 
 const objectPath = Npm.require('object-path');
@@ -13,24 +15,84 @@ class Adapter {
 
 const db = new loki('rocket.chat.json', {adapter: Adapter});
 
-RocketChat.cache._Base = (class CacheBase {
+RocketChat.cache._Base = (class CacheBase extends EventEmitter {
 	constructor(collectionName) {
+		super();
+
+		// this.recordsById = {};
+
+		this.indexes = {
+			_id: {type: 'unique'}
+		};
+
 		this.db = db;
 		this.collectionName = collectionName;
 		this.register();
 	}
 
+	addToAllIndexes(record) {
+		for (const index in this.indexes) {
+			this.addToIndex(index, record);
+		}
+	}
+
+	addToIndex(index, record) {
+		if (!this.indexes[index]) {
+			console.error(`Index not defined ${index}`);
+			return;
+		}
+
+		if (!this.indexes[index].data) {
+			this.indexes[index].data = {};
+		}
+
+		if (this.indexes[index].type === 'unique') {
+			this.indexes[index].data[record[index]] = record;
+			return;
+		}
+
+		if (this.indexes[index].type === 'array') {
+			if (!this.indexes[index].data[record[index]]) {
+				this.indexes[index].data[record[index]] = [];
+			}
+			this.indexes[index].data[record[index]].push(record);
+			return;
+		}
+	}
+
+	findByIndex(index, key) {
+		if (!this.indexes[index]) {
+			return;
+		}
+
+		if (this.indexes[index].data) {
+			const result = this.indexes[index].data[key];
+			if (result) {
+				return result;
+			}
+		}
+
+		if (this.indexes[index].type === 'array') {
+			return [];
+		}
+	}
+
 	register() {
 		this.model = RocketChat.models[this.collectionName];
 		this.collection = this.db.addCollection(this.collectionName);
-		this.load();
-		this.startOplog();
+		// this.load();
 	}
 
 	load() {
 		console.time(`Load ${this.collectionName}`);
-		this.collection.insert(this.model.find().fetch());
+		const data = this.model.find().fetch();
+		for (let i=0; i < data.length; i++) {
+			this.addToAllIndexes(data[i]);
+			// this.recordsById[data[i]._id] = data[i];
+			this.insert(data[i]);
+		}
 		console.timeEnd(`Load ${this.collectionName}`);
+		this.startOplog();
 	}
 
 	startOplog() {
@@ -109,6 +171,18 @@ RocketChat.cache._Base = (class CacheBase {
 
 	getDynamicView() {
 		return this.collection.getDynamicView(...arguments);
+	}
+
+	insert(record) {
+		if (Array.isArray(record)) {
+			for (let i=0; i < record.length; i++) {
+				this.collection.insert(record[i]);
+				this.emit('inserted', record[i]);
+			}
+		} else {
+			this.collection.insert(record);
+			this.emit('inserted', record);
+		}
 	}
 });
 
@@ -419,28 +493,49 @@ RocketChat.cache.Rooms = new (class CacheUser extends RocketChat.cache._Base {
 RocketChat.cache.Subscriptions = new (class CacheUser extends RocketChat.cache._Base {
 	constructor() {
 		super('Subscriptions');
+
+		this.indexes['rid'] = {type: 'array'};
 	}
 });
-// RocketChat.cache = new Cache;
 
-// RocketChat.cache.registerCollection('Users');
-// RocketChat.cache.registerCollection('Rooms');
-// RocketChat.cache.registerCollection('Subscriptions');
-
-console.time('Join');
-RocketChat.cache.Rooms.find().forEach((room) => {
-	room.usernames = [];
-});
-
-RocketChat.cache.Subscriptions.find().forEach((subscription) => {
-	const room = RocketChat.cache.Rooms.findOne({_id: subscription.rid});
+RocketChat.cache.Subscriptions.on('inserted', (subscription) => {
+	const room = RocketChat.cache.Rooms.findByIndex('_id', subscription.rid);
 	if (!room) {
-		console.log('No room for', subscription.rid);
+		// console.log('No room for', subscription.rid);
 		return;
+	}
+	if (!room.usernames) {
+		room.usernames = [];
 	}
 	room.usernames.push(subscription.u.username);
 });
-console.timeEnd('Join');
+
+RocketChat.cache.Rooms.on('inserted', (room) => {
+	const subscriptions = RocketChat.cache.Subscriptions.findByIndex('rid', room._id);
+	for (let i = 0; i < subscriptions.length; i++) {
+		const subscription = subscriptions[i];
+		room.usernames.push(subscription.u.username);
+	}
+});
+
+RocketChat.cache.Users.load();
+RocketChat.cache.Rooms.load();
+RocketChat.cache.Subscriptions.load();
+
+// console.time('Join');
+// RocketChat.cache.Rooms.find().forEach((room) => {
+// 	room.usernames = [];
+// });
+
+// RocketChat.cache.Subscriptions.find().forEach((subscription) => {
+// 	const room = RocketChat.cache.Rooms.recordsById[subscription.rid];
+// 	if (!room) {
+// 		// console.log('No room for', subscription.rid);
+// 		return;
+// 	}
+// 	room.usernames.push(subscription.u.username);
+// });
+// console.timeEnd('Join');
 
 RocketChat.cache.Users.addDynamicView('highlights').applyFind({
 	'settings.preferences.highlights': {$size: {$gt: 0}}
