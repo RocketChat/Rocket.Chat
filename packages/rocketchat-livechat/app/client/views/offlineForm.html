@@ -1,23 +1,27 @@
 <template name="offlineForm">
-	{{#if messageSent}}
-		<p class="message-sent">{{_ "Thanks_We_ll_get_back_to_you_soon"}}</p>
+	{{#if displayOfflineForm}}
+		{{#if messageSent}}
+			<p class="message-sent">{{{offlineSuccessMessage}}}</p>
+		{{else}}
+			<p class="offline-message">{{{offlineMessage}}}</p>
+
+			<form>
+				<div class="error">
+					<span>{{{error}}}</span>
+				</div>
+
+				<input type="text" id="name" name="name" placeholder="{{_ "Type_your_name"}}">
+
+				<input type="email" id="email" name="email" placeholder="{{_ "Type_your_email"}}">
+
+				<textarea id="message" name="message" placeholder="{{_"Type_your_message"}}"></textarea>
+
+				<div class="buttons">
+					<button class="button send">{{_ "Send"}}</button>
+				</div>
+			</form>
+		{{/if}}
 	{{else}}
-		<p class="offline-message">{{{offlineMessage}}}</p>
-
-		<form>
-			<div class="error">
-				<span>{{{error}}}</span>
-			</div>
-
-			<input type="text" id="name" name="name" placeholder="{{_ "Type_your_name"}}">
-
-			<input type="email" id="email" name="email" placeholder="{{_ "Type_your_email"}}">
-
-			<textarea id="message" name="message" placeholder="{{_"Type_your_message"}}"></textarea>
-
-			<div class="buttons">
-				<button class="button send">{{_ "Send"}}</button>
-			</div>
-		</form>
+		<p class="offline-message">{{{offlineUnavailableMessage}}}</p>
 	{{/if}}
 </template>

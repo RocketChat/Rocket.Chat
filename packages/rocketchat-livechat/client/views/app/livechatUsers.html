@@ -2,7 +2,7 @@
 	<h2>{{_ "Livechat_managers"}}</h2>
 	<form id="form-manager" class="inline">
 		<label>{{_ "Add_manager"}}</label>
-		<input type="text" name="username" placeholder="{{_ "Enter_a_username"}}">
+		{{> inputAutocomplete settings=managerAutocompleteSettings name="username" class="search" placeholder=(_ "Search_by_username") autocomplete="off"}}
 		<button name="add" class="button primary">{{_ "Add"}}</button>
 	</form>
 	<div class="list">
@@ -36,7 +36,7 @@
 	<h2>{{_ "Livechat_agents"}}</h2>
 	<form id="form-agent" class="inline">
 		<label>{{_ "Add_agent"}}</label>
-		<input type="text" name="username" placeholder="{{_ "Enter_a_username"}}">
+		{{> inputAutocomplete settings=agentAutocompleteSettings name="username" class="search" placeholder=(_ "Search_by_username") autocomplete="off"}}
 		<button name="add" class="button primary">{{_ "Add"}}</button>
 	</form>
 	<div class="list">

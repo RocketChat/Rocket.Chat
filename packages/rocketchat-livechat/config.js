@@ -6,6 +6,22 @@ Meteor.startup(function() {
 	RocketChat.settings.add('Livechat_title', 'Rocket.Chat', { type: 'string', group: 'Livechat', public: true });
 	RocketChat.settings.add('Livechat_title_color', '#C1272D', { type: 'color', group: 'Livechat', public: true });
 
+	RocketChat.settings.add('Livechat_display_offline_form', true, {
+		type: 'boolean',
+		group: 'Livechat',
+		public: true,
+		section: 'Offline',
+		i18nLabel: 'Display_offline_form'
+	});
+
+	RocketChat.settings.add('Livechat_offline_form_unavailable', '', {
+		type: 'string',
+		group: 'Livechat',
+		public: true,
+		section: 'Offline',
+		i18nLabel: 'Offline_form_unavailable_message'
+	});
+
 	RocketChat.settings.add('Livechat_offline_title', 'Leave a message', {
 		type: 'string',
 		group: 'Livechat',
@@ -33,6 +49,13 @@ Meteor.startup(function() {
 		group: 'Livechat',
 		i18nLabel: 'Email_address_to_send_offline_messages',
 		section: 'Offline'
+	});
+	RocketChat.settings.add('Livechat_offline_success_message', '', {
+		type: 'string',
+		group: 'Livechat',
+		public: true,
+		section: 'Offline',
+		i18nLabel: 'Offline_success_message'
 	});
 
 	RocketChat.settings.add('Livechat_registration_form', true, { type: 'boolean', group: 'Livechat', public: true, i18nLabel: 'Show_preregistration_form' });
@@ -105,5 +128,15 @@ Meteor.startup(function() {
 		section: 'Knowledge Base',
 		public: true,
 		i18nLabel: 'Apiai_Language'
+	});
+
+	RocketChat.settings.add('Livechat_history_monitor_type', 'url', {
+		type: 'select',
+		group: 'Livechat',
+		i18nLabel: 'Monitor_history_for_changes_on',
+		values: [
+			{ key: 'url', i18nLabel: 'Page_URL' },
+			{ key: 'title', i18nLabel: 'Page_title' }
+		]
 	});
 });
