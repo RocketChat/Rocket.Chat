@@ -191,7 +191,7 @@ Importer.HipChat = class Importer.HipChat extends Importer.Base
 													_id: user._id
 													username: user.username
 
-											RocketChat.sendMessage user, msgObj, room
+											RocketChat.sendMessage user, msgObj, room, true
 										else
 											if not nousers[message.from.user_id]
 												nousers[message.from.user_id] = message.from

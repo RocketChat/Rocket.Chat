@@ -33,6 +33,11 @@ Meteor.methods
 			if settings.emailNotificationMode?
 				preferences.emailNotificationMode = settings.emailNotificationMode
 
+			if settings.mergeChannels isnt "-1"
+				preferences.mergeChannels = settings.mergeChannels is "1"
+			else
+				delete preferences.mergeChannels
+
 			preferences.viewMode = settings.viewMode || 0
 			preferences.hideUsernames = settings.hideUsernames is "1"
 			preferences.highlights = settings.highlights

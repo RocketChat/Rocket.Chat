@@ -1,4 +1,6 @@
 RocketChat.Livechat = {
+	historyMonitorType: 'url',
+
 	logger: new Logger('Livechat', {
 		sections: {
 			webhook: 'Webhook'
@@ -216,7 +218,11 @@ RocketChat.Livechat = {
 			'Livechat_registration_form',
 			'Livechat_offline_title',
 			'Livechat_offline_title_color',
-			'Livechat_offline_message'
+			'Livechat_offline_message',
+			'Livechat_offline_success_message',
+			'Livechat_offline_form_unavailable',
+			'Livechat_display_offline_form',
+			'Language'
 		]).forEach((setting) => {
 			settings[setting._id] = setting.value;
 		});
@@ -269,5 +275,17 @@ RocketChat.Livechat = {
 				RocketChat.models.Messages.createUserJoinWithRoomIdAndUser(room._id, { _id: agent.agentId, username: agent.username });
 			}
 		});
+	},
+
+	savePageHistory(token, pageInfo) {
+		if (pageInfo.change === RocketChat.Livechat.historyMonitorType) {
+			return RocketChat.models.LivechatPageVisited.saveByToken(token, pageInfo);
+		}
+
+		return;
 	}
 };
+
+RocketChat.settings.get('Livechat_history_monitor_type', (key, value) => {
+	RocketChat.Livechat.historyMonitorType = value;
+});
