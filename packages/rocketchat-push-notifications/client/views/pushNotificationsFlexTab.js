@@ -80,7 +80,8 @@ Template.pushNotificationsFlexTab.helpers({
 		if (!sub) {
 			return false;
 		}
-		return sub.desktopNotificationDuration | 0;
+		// Convert to Number
+		return sub.desktopNotificationDuration - 0;
 	},
 	editing(field) {
 		return Template.instance().editing.get() === field;
