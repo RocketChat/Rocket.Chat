@@ -77,13 +77,10 @@ Template.pushNotificationsFlexTab.helpers({
 				desktopNotificationDuration: 1
 			}
 		});
-		if (sub == null) {
+		if (!sub) {
 			return false;
 		}
-		if (sub.desktopNotificationDuration == null || sub.desktopNotificationDuration == 0) {
-			return false;
-		}
-		return sub.desktopNotificationDuration;
+		return sub.desktopNotificationDuration | 0;
 	},
 	editing(field) {
 		return Template.instance().editing.get() === field;
