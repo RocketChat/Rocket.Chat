@@ -32,3 +32,9 @@ logger = new Logger 'NGApi'
 			logger.error "error in POST request to #{url}: #{e}"
 			logger.debug e.stack
 			throw e
+
+	getPhones: (token) ->
+		url = @server + '/jsondata/extjs/userHandler/read_myextensions'
+		@_doPost url,
+			token: token
+			limit: 1

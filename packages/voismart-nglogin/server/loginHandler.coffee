@@ -61,6 +61,17 @@ Accounts.registerLoginHandler 'orchestraNG', (loginRequest) ->
 		logger.error "error in getUser in for user \"#{loginRequest.username}\": #{e}"
 		return
 
+	try
+		phones = ng.getPhones(token)
+		logger.info(phones)
+		if phones.data and phones.data[0]
+			phone = phones.data[0]
+			ngUser.phonelogin = "#{phone.username}@#{domain}"
+			ngUser.phonepassword = phone.password
+	catch e
+		# ignore errors getting user's phones
+		logger.error "error in getPhones in for user \"#{loginRequest.username}\": #{e}"
+
 	user = Meteor.users.findOne username: loginRequest.username
 	if user
 		ngUser.emails = [address: ngUser.email, "verified": true]
