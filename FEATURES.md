@@ -1,7 +1,8 @@
 - Self Host
   - Docker  
   - Multiple Deployment Options (Heroku, Digital Ocean, Sandstorm, etc.)  
-- OAuth
+- Authentication Options
+  - OAuth 
   - SAML
   - LDAP
   - CAS
