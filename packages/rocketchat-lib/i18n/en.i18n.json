@@ -1246,5 +1246,7 @@
   "Your_push_was_sent_to_s_devices" : "Your push was sent to %s devices",
   "Phone_Call" : "Phone call",
   "Incoming_call_from": "Incoming call from ",
-  "webRTC_Phone": "webRTC Phone"
+  "webRTC_Phone": "webRTC Phone",
+  "Message_VideoRecorderEnabled" : "Video Recorder Enabled",
+  "Message_VideoRecorderEnabledDescription" : "Requires 'video/webm' files to be an accepted media type within 'File Upload' settings."
 }
