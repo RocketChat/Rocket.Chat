@@ -335,6 +335,7 @@ blockquote {
 		.icon-search,
 		.icon-right-open-small,
 		.icon-sort-alt-up,
+		.icon-lock,
 		.icon-comment {
 			position: absolute;
 			left: 2px;
@@ -1250,6 +1251,12 @@ a.github-fork {
 			-webkit-border-radius: 0px;
 			-moz-border-radius: 0px;
 			border-radius: 0px;
+		}
+
+		.inline-fields {
+			input, label, select {
+				display: inline-block;
+			}
 		}
 	}
 	.input-submit {
@@ -4037,6 +4044,9 @@ body:not(.is-cordova) {
 		* {
 			cursor: pointer;
 		}
+	}
+	.avatar-file-input::-webkit-file-upload-button {
+	   visibility: hidden;
 	}
 }
 

@@ -225,7 +225,7 @@ class SlackBridge {
 			if (message.subtype === 'bot_message') {
 				user = RocketChat.models.Users.findOneById('rocket.cat', { fields: { username: 1 } });
 			}
-			RocketChat.sendMessage(user, msgObj, room, { upsert: true });
+			RocketChat.sendMessage(user, msgObj, room);
 		}
 	}
 
@@ -323,12 +323,10 @@ class SlackBridge {
 					Meteor.runAsUser(user._id, () => {
 						Meteor.call('pinMessage', msgObj);
 					});
-					return;
 				} else {
 					logger.events.error('Pinned item with no attachment');
-					return;
 				}
-				break;
+				return;
 			case 'unpinned_item':
 				logger.events.error('Unpinned item not implemented');
 				return;
