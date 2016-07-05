@@ -18,9 +18,9 @@ if UploadFS?
 
 			# account for if being run in subdirectory
 			if pathPrefix
-				document.cookie = 'rc_token=' + escape(Meteor._localStorage.getItem(key + ':/:' + pathPrefix)) + '; path=/'
+				document.cookie = 'rc_token=' + escape(Meteor._localStorage.getItem(loginTokenKey + ':/:' + pathPrefix)) + '; path=/'
 			else
-				document.cookie = 'rc_token=' + escape(Meteor._localStorage.getItem(key)) + '; path=/'
+				document.cookie = 'rc_token=' + escape(Meteor._localStorage.getItem(loginTokenKey)) + '; path=/'
 
 		Meteor.fileStore = new UploadFS.store.GridFS
 			collection: RocketChat.models.Uploads.model
