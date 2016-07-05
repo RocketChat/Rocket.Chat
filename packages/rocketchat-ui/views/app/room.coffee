@@ -119,6 +119,9 @@ Template.room.helpers
 	hideUsername: ->
 		return if Meteor.user()?.settings?.preferences?.hideUsernames then 'hide-usernames'
 
+	hideAvatar: ->
+		return if Meteor.user()?.settings?.preferences?.hideAvatars then 'hide-avatars'
+
 isSocialSharingOpen = false
 touchMoved = false
 
