@@ -93,6 +93,9 @@ Accounts.registerLoginHandler 'orchestraNG', (loginRequest) ->
 			logger.error "Error creating user: #{e}"
 			throw e
 
+		# Accounts.createUser do not add extra fields, so update it now
+		Meteor.users.update user._id, $set: ngUser
+
 		Meteor.runAsUser ngUser._id,
 			-> Meteor.call 'joinDefaultChannels'
 
