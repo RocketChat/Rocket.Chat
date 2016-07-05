@@ -1243,5 +1243,6 @@
   "Your_file_has_been_deleted" : "Your file has been deleted.",
   "Your_mail_was_sent_to_s" : "Your mail was sent to %s",
   "Your_password_is_wrong" : "Your password is wrong!",
-  "Your_push_was_sent_to_s_devices" : "Your push was sent to %s devices"
+  "Your_push_was_sent_to_s_devices" : "Your push was sent to %s devices",
+  "Hide_Avatars": "Hide Avatars"
 }
