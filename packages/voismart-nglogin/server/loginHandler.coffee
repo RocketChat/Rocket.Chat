@@ -46,6 +46,8 @@ Accounts.registerLoginHandler 'orchestraNG', (loginRequest) ->
 	try
 		ngUser = ng.getUser(token)
 		logger.info(ngUser)
+		if ngUser.success is false
+			throw new Error("getUser failed: #{ngUser.msg} (#{ngUser.errcode})")
 		fieldsToKeep = [ 'username', 'language', 'firstname',
 						  'middlename', 'lastname', 'email', 'timezone' ]
 		for k of ngUser
@@ -89,7 +91,7 @@ Accounts.registerLoginHandler 'orchestraNG', (loginRequest) ->
 			ngUser._id = Accounts.createUser ngUser
 		catch e
 			logger.error "Error creating user: #{e}"
-			throw error
+			throw e
 
 		Meteor.runAsUser ngUser._id,
 			-> Meteor.call 'joinDefaultChannels'
