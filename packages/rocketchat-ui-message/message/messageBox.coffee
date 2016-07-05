@@ -124,6 +124,13 @@ Template.messageBox.events
 	'keydown .input-message': (event) ->
 		chatMessages[@_id].keydown(@_id, event, Template.instance())
 
+	'input .input-message': (event) ->
+		chatMessages[@_id].valueChanged(@_id, event, Template.instance())
+
+	'propertychange .input-message': (event) ->
+		if event.originalEvent.propertyName is 'value'
+			chatMessages[@_id].valueChanged(@_id, event, Template.instance())
+
 	"click .editing-commands-cancel > button": (e) ->
 		chatMessages[@_id].clearEditing()
 
