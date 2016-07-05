@@ -80,7 +80,7 @@ Accounts.registerLoginHandler 'orchestraNG', (loginRequest) ->
 		Meteor.users.update user._id, $set: ngUser
 		Accounts.setPassword user._id, loginRequest.ngPassword, logout: false
 		logger.info "\"#{loginRequest.username}\" authenticated successfully"
-		return userId: user._id#, token: stampedToken.token
+		return userId: user._id
 	else
 		logger.info "\"#{loginRequest.username}\" not found, creating it"
 		ngUser.password = loginRequest.ngPassword
