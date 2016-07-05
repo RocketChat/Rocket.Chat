@@ -109,6 +109,7 @@ Template.accountPreferences.events
 
 	'click .test-notifications': ->
 		KonchatNotification.notify
+			duration: $('input[name=desktopNotificationDuration]').val()
 			payload:
 				sender:
 					username: 'rocket.cat'
