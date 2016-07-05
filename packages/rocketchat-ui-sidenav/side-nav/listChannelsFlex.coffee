@@ -87,7 +87,7 @@ Template.listChannelsFlex.onCreated ->
 			if @channelsList.get().length < @limit.get()
 				@hasMore.set false
 		else
-			Meteor.call 'channelsList', @nameFilter.get(), @limit.get(), @sortChannels.get(), (err, result) =>
+			Meteor.call 'channelsList', @nameFilter.get(), 'public', @limit.get(), @sortChannels.get(), (err, result) =>
 				if result
 					@hasMore.set true
 					@channelsList.set result.channels
