@@ -62,6 +62,9 @@ Meteor.methods
 				updateUser.$set.phonelogin = userData.phonelogin
 			if userData.phonepassword
 			    updateUser.$set.phonepassword = userData.phonepassword
+			if userData.phoneextension
+			    updateUser.$set.phoneextension = userData.phoneextension
+
 
 			Meteor.users.update { _id: _id }, updateUser
 

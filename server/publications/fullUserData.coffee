@@ -23,6 +23,7 @@ Meteor.publish 'fullUserData', (filter, limit) ->
 			roles: 1
 			phonelogin: 1
 			phonepassword: 1
+			phoneextension: 1
 	else
 		limit = 1
 

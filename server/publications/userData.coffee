@@ -22,3 +22,4 @@ Meteor.publish 'userData', ->
 			statusLivechat: 1 # @TODO create an API so a package could add fields here
 			phonelogin: 1
 			phonepassword: 1
+			phoneextension: 1
