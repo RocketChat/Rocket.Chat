@@ -129,14 +129,18 @@ Template.phone.onCreated ->
 
 
 Template.phone.onDestroyed ->
+	if window.rocketDebug
+		console.log("Moving video tag out from containter")
+
 	RocketChat.Phone.removeVideo()
 
 
 Template.phone.onRendered ->
-	if window.rocketDebug
-		console.log("Moving video tag to its containter")
-
-	RocketChat.Phone.placeVideo()
+	@autorun ->
+		if window.rocketDebug
+			console.log("Moving video tag to its containter")
+		Session.get('openedRoom')
+		RocketChat.Phone.placeVideo()
 
 
 RocketChat.Phone = new class
@@ -221,6 +225,7 @@ RocketChat.Phone = new class
 					KonchatNotification.showDesktop notification
 			when 'active'
 				_callState = 'active'
+				RocketChat.TabBar.updateButton('phone', { class: 'red' })
 			when 'hangup'
 				if _callState != 'transfer'
 					if window.rocketDebug
@@ -230,6 +235,7 @@ RocketChat.Phone = new class
 				_callState = 'hangup'
 				_curCall = null
 				clearNotification()
+				RocketChat.TabBar.updateButton('phone', { class: '' })
 				if d.answered or d.gotAnswer
 					toastr.success TAPi18n.__('Phone_end_call')
 				else
