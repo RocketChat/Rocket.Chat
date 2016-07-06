@@ -230,6 +230,11 @@ RocketChat.Phone = new class
 				_callState = 'hangup'
 				_curCall = null
 				clearNotification()
+				if d.answered or d.gotAnswer
+					toastr.success TAPi18n.__('Phone_end_call')
+				else
+					msg = TAPi18n.__('Phone_failed_call')
+					toastr.error(msg + ": " + d.cause)
 			when 'destroy'
 				if _callState != 'transfer' and _callState != 'hangup'
 					if window.rocketDebug
@@ -400,6 +405,11 @@ RocketChat.Phone = new class
 		if !has_mic? or !has_speak? or has_mic is "none" or has_speak is "none"
 			console.log("not mic and speaker defined, should refuse call?") if window.rocketDebug
 			#return # firefox still has issues in device selection
+
+		if !has_mic? or has_mic is "none"
+			# all browsers have a mic, so bail out if none
+			toastr.error TAPi18n.__('Phone_invalid_devices')
+			return
 
 		has_video = false
 		if _videoDevice and (_videoDevice != "none")

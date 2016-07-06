@@ -1242,5 +1242,8 @@
   "Your_push_was_sent_to_s_devices" : "Your push was sent to %s devices",
   "Phone_Call" : "Phone call",
   "Incoming_call_from": "Incoming call from ",
-  "webRTC_Phone": "webRTC Phone"
+  "webRTC_Phone": "webRTC Phone",
+  "Phone_invalid_devices": "Invalid media devices settings",
+  "Phone_end_call": "Call terminated",
+  "Phone_failed_call": "Call failed"
 }
