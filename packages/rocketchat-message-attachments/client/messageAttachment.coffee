@@ -8,7 +8,7 @@ Template.messageAttachment.helpers
 			else
 				url = url + '&' + query
 
-		return url
+		return Meteor.absoluteUrl().replace(/\/$/, '') + __meteor_runtime_config__.ROOT_URL_PATH_PREFIX + url
 
 	parsedText: ->
 		renderMessageBody { msg: this.text }
