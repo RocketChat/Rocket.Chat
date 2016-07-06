@@ -18,6 +18,7 @@ Template.userEdit.helpers
 	name: ->
 		return @description or @_id
 
+
 Template.userEdit.events
 	'click .cancel': (e, t) ->
 		e.stopPropagation()
@@ -35,12 +36,19 @@ Template.userEdit.events
 
 		t.save(e.currentTarget)
 
+Template.userEdit.onRendered ->
+	this.setUserRoleOnSelect()
+
 Template.userEdit.onCreated ->
 	@user = this.data?.user
 
+	@setUserRoleOnSelect = =>
+		if @user
+		 $("#role").val(@user.roles[0])
+
 	@cancel = (form, username) =>
 		form.reset()
-		this.$('input[type=checkbox]').prop('checked', true);
+		this.$('input[type=checkbox]').prop('checked', true)
 		if @user
 			@data.back(username)
 		else
@@ -88,4 +96,4 @@ Template.userEdit.onCreated ->
 					@cancel(form, userData.username)
 
 				if error
-					handleError(error);
+					handleError(error)
