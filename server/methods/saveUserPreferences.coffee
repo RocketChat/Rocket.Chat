@@ -40,6 +40,7 @@ Meteor.methods
 
 			preferences.viewMode = settings.viewMode || 0
 			preferences.hideUsernames = settings.hideUsernames is "1"
+			preferences.hideAvatars = settings.hideAvatars is "1"
 			preferences.highlights = settings.highlights
 
 			RocketChat.models.Users.setPreferences Meteor.userId(), preferences
