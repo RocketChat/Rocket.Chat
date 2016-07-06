@@ -9,7 +9,7 @@ RocketChat.actionLinks.register 'webcAudioConf', (message, params) ->
 			RocketChat.TabBar.setTemplate "phone", ->
 				RocketChat.Phone.newCall(params.number)
 
-	if params.url
+	if params.url and Meteor.isCordova
 		window.open params.url, "_blank"
 
 
