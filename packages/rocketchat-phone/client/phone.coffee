@@ -129,14 +129,18 @@ Template.phone.onCreated ->
 
 
 Template.phone.onDestroyed ->
+	if window.rocketDebug
+		console.log("Moving video tag out from containter")
+
 	RocketChat.Phone.removeVideo()
 
 
 Template.phone.onRendered ->
-	if window.rocketDebug
-		console.log("Moving video tag to its containter")
-
-	RocketChat.Phone.placeVideo()
+	@autorun ->
+		if window.rocketDebug
+			console.log("Moving video tag to its containter")
+		Session.get('openedRoom')
+		RocketChat.Phone.placeVideo()
 
 
 RocketChat.Phone = new class
