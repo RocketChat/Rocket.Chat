@@ -105,6 +105,7 @@ Package.onUse(function(api) {
 	api.addFiles('server/methods/setEmail.js', 'server');
 	api.addFiles('server/methods/restartServer.coffee', 'server');
 	api.addFiles('server/methods/filterBadWords.js', ['server']);
+	api.addFiles('server/methods/filterATAllTag.js', 'server');
 
 	// SERVER STARTUP
 	api.addFiles('server/startup/settingsOnLoadCdnPrefix.coffee', 'server');
