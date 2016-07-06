@@ -456,7 +456,7 @@
   "Hide_Private_Warning" : "本当に \"%s\" との会話を隠しますか?",
   "Hide_room" : "ルームを隠す",
   "Hide_Room_Warning" : "本当にルーム \"%s\" を隠しますか?",
-  "Hide_usernames" : "ユーザー名を非表示にします",
+  "Hide_usernames" : "ユーザー名を非表示",
   "Highlights" : "ハイライト",
   "Highlights_How_To" : "こちらに入力した単語や連語を誰かがコメントした時に、通知されます。単語や連語は、カンマで区切ってください。ハイライトする言葉は、大文字と小文字を区別されません。",
   "Highlights_List" : "ハイライトする言葉",
@@ -1241,5 +1241,6 @@
   "Your_file_has_been_deleted" : "ファイルは削除されました。",
   "Your_mail_was_sent_to_s" : "メールは %s へを送信されました",
   "Your_password_is_wrong" : "パスワードが間違っています!",
-  "Your_push_was_sent_to_s_devices" : "プッシュ通知が %s 台のデバイスへ送信されました"
+  "Your_push_was_sent_to_s_devices" : "プッシュ通知が %s 台のデバイスへ送信されました",
+  "Hide_Avatars": "アバターを非表示"
 }
