@@ -10,8 +10,8 @@ RocketChat.callbacks.add('beforeSaveMessage', function(message) {
 					['admin', 'owner', 'moderator'], message.rid) === false) {
 
 				// Get the language of the user for the error notification.
-				language = Meteor.user().language;
-				action = TAPi18n.__('Notify_all_in_this_room', {}, language);
+				let language = Meteor.user().language;
+				let action = TAPi18n.__('Notify_all_in_this_room', {}, language);
 
 				// Add a notification to the chat, informing the user that this
 				// action is not allowed.
