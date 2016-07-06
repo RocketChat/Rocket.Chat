@@ -3,7 +3,7 @@ RocketChat.callbacks.add('beforeSaveMessage', function(message) {
 	if (!RocketChat.settings.get('Message_AllowNotifyAllFilter')) {
 		// Test if the message mentions includes a notification to @all.
 		if (message.mentions != null &&
-			_.pluck(message.mentions, '_id').some((item) => item === 'all' )) {
+			_.pluck(message.mentions, '_id').some((item) => item === 'all')) {
 
 			// Check if the user has permissions to notify @all.
 			if (RocketChat.authz.hasRole(Meteor.userId(),
