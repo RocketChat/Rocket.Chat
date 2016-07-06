@@ -747,6 +747,7 @@
   "No_pinned_messages" : "No pinned messages",
   "No_results_found" : "No results found",
   "No_starred_messages" : "No starred messages",
+  "No_such_command" : "No such command: `/__command__`",
   "No_user_with_username_%s_was_found" : "No user with username <strong>\"%s\"</strong> was found!",
   "Node_version" : "Node version",
   "Not_authorized" : "Not authorized",
