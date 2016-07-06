@@ -96,9 +96,7 @@ class IframeLogin {
 				token: token
 			}],
 			userCallback: (err) => {
-				if (err) {
-					callback(err);
-				}
+				callback(err);
 			}
 		});
 	}
