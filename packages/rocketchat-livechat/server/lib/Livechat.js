@@ -1,4 +1,6 @@
 RocketChat.Livechat = {
+	historyMonitorType: 'url',
+
 	logger: new Logger('Livechat', {
 		sections: {
 			webhook: 'Webhook'
@@ -273,5 +275,17 @@ RocketChat.Livechat = {
 				RocketChat.models.Messages.createUserJoinWithRoomIdAndUser(room._id, { _id: agent.agentId, username: agent.username });
 			}
 		});
+	},
+
+	savePageHistory(token, pageInfo) {
+		if (pageInfo.change === RocketChat.Livechat.historyMonitorType) {
+			return RocketChat.models.LivechatPageVisited.saveByToken(token, pageInfo);
+		}
+
+		return;
 	}
 };
+
+RocketChat.settings.get('Livechat_history_monitor_type', (key, value) => {
+	RocketChat.Livechat.historyMonitorType = value;
+});
