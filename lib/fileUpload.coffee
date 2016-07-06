@@ -13,15 +13,8 @@ if UploadFS?
 		cookie = new Cookies()
 		if Meteor.isClient
 			document.cookie = 'rc_uid=' + escape(Meteor.userId()) + '; path=/'
-			pathPrefix = __meteor_runtime_config__.ROOT_URL_PATH_PREFIX
-			loginTokenKey = 'Meteor.loginToken'
-
-			# account for if being run in subdirectory
-			if pathPrefix
-				document.cookie = 'rc_token=' + escape(Meteor._localStorage.getItem(loginTokenKey + ':/:' + pathPrefix)) + '; path=/'
-			else
-				document.cookie = 'rc_token=' + escape(Meteor._localStorage.getItem(loginTokenKey)) + '; path=/'
-
+			document.cookie = 'rc_token=' + Accounts._storedLoginToken()
+			
 		Meteor.fileStore = new UploadFS.store.GridFS
 			collection: RocketChat.models.Uploads.model
 			name: 'rocketchat_uploads'
