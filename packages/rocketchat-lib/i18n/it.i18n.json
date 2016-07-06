@@ -1242,5 +1242,9 @@
   "Your_push_was_sent_to_s_devices" : "La vostra notifica push è stata inviata ai dispositivi %s",
   "Phone_Call" : "Chiamata",
   "Incoming_call_from": "Chiamata in arrivo da ",
-  "webRTC_Phone": "webRTC Communicator"
+  "webRTC_Phone": "webRTC Communicator",
+  "Your_push_was_sent_to_s_devices" : "La vostra notifica push è stata inviata ai dispositivi %s",
+  "Phone_invalid_devices": "Impostazioni dispositivi audio errate",
+  "Phone_end_call": "Chiamata terminata",
+  "Phone_failed_call": "Chiamata fallita"
 }
