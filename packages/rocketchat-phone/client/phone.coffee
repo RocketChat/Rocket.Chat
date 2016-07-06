@@ -225,6 +225,7 @@ RocketChat.Phone = new class
 					KonchatNotification.showDesktop notification
 			when 'active'
 				_callState = 'active'
+				RocketChat.TabBar.updateButton('phone', { class: 'red' })
 			when 'hangup'
 				if _callState != 'transfer'
 					if window.rocketDebug
@@ -234,6 +235,7 @@ RocketChat.Phone = new class
 				_callState = 'hangup'
 				_curCall = null
 				clearNotification()
+				RocketChat.TabBar.updateButton('phone', { class: '' })
 				if d.answered or d.gotAnswer
 					toastr.success TAPi18n.__('Phone_end_call')
 				else
