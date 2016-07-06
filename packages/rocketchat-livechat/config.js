@@ -129,4 +129,14 @@ Meteor.startup(function() {
 		public: true,
 		i18nLabel: 'Apiai_Language'
 	});
+
+	RocketChat.settings.add('Livechat_history_monitor_type', 'url', {
+		type: 'select',
+		group: 'Livechat',
+		i18nLabel: 'Monitor_history_for_changes_on',
+		values: [
+			{ key: 'url', i18nLabel: 'Page_URL' },
+			{ key: 'title', i18nLabel: 'Page_title' }
+		]
+	});
 });
