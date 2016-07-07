@@ -700,7 +700,7 @@
   "Message_TimeFormat_Description" : "See also: <a href=\"http://momentjs.com/docs/#/displaying/format/\" target=\"momemt\">Moment.js</a>",
   "Message_too_long" : "Message too long",
   "Message_VideoRecorderEnabled" : "Video Recorder Enabled",
-  "Message_VideoRecorderEnabledDescription" : "Requires 'video/webm' files to be an accepted media type within 'File Upload' settings."
+  "Message_VideoRecorderEnabledDescription" : "Requires 'video/webm' files to be an accepted media type within 'File Upload' settings.",
   "Messages" : "Messages",
   "Messages_that_are_sent_to_the_Incoming_WebHook_will_be_posted_here" : "Messages that are sent to the Incoming WebHook will be posted here.",
   "Meta" : "Meta",
@@ -1249,5 +1249,5 @@
   "Your_file_has_been_deleted" : "Your file has been deleted.",
   "Your_mail_was_sent_to_s" : "Your mail was sent to %s",
   "Your_password_is_wrong" : "Your password is wrong!",
-  "Your_push_was_sent_to_s_devices" : "Your push was sent to %s devices",
+  "Your_push_was_sent_to_s_devices" : "Your push was sent to %s devices"
 }
