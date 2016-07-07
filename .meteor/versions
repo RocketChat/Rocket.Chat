@@ -7,7 +7,6 @@ accounts-oauth@1.1.8
 accounts-password@1.1.4
 accounts-twitter@1.0.6
 aldeed:simple-schema@1.5.3
-arunoda:streams@0.1.17
 autoupdate@1.2.4
 babel-compiler@5.8.24_1
 babel-runtime@0.1.4
@@ -189,13 +188,14 @@ rocketchat:slashcommands-unarchive@0.0.1
 rocketchat:sms@0.0.1
 rocketchat:spotify@0.0.1
 rocketchat:statistics@0.0.1
-rocketchat:streamer@0.4.0
+rocketchat:streamer@0.5.0
 rocketchat:theme@0.0.1
 rocketchat:tooltip@0.0.1
 rocketchat:tutum@0.0.1
 rocketchat:ui@0.1.0
 rocketchat:ui-account@0.1.0
 rocketchat:ui-admin@0.1.0
+rocketchat:ui-vrecord@0.0.1
 rocketchat:ui-flextab@0.1.0
 rocketchat:ui-login@0.1.0
 rocketchat:ui-master@0.1.0
