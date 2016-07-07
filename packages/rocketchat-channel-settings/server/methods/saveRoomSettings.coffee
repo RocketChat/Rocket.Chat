@@ -23,8 +23,7 @@ Meteor.methods
 						RocketChat.saveRoomTopic(rid, value, Meteor.user())
 				when 'roomDescription'
 					if value isnt room.description
-						RocketChat.saveRoomDescription rid, value
-						RocketChat.models.Messages.createRoomSettingsChangedWithTypeRoomIdMessageAndUser 'room_changed_description', rid, value, Meteor.user()
+						RocketChat.saveRoomDescription rid, value, Meteor.user()
 				when 'roomType'
 					if value isnt room.t
 						RocketChat.saveRoomType(rid, value, Meteor.user())
