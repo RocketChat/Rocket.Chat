@@ -1,25 +1,33 @@
 function Open(command, params, item) {
-	var channel, room, subscription;
+	var room, subscription, type;
 	if (command !== 'open' || !Match.test(params, String)) {
 		return;
 	}
-	channel = params.trim();
-	if (channel === '') {
-		room = RocketChat.models.Rooms.findOneById(item.rid);
-		channel = room.name;
-	} else {
-		channel = channel.replace('#', '');
+	room = params.trim();
+	if (room.indexOf('#') !== -1) {
+		type = 'c';
 	}
-	subscription = ChatSubscription.findOne({
-		name: channel
-	});
+	if (room.indexOf('@') !== -1) {
+		type = 'd';
+	}
+	room = room.replace('#', '');
+	room = room.replace('@', '');
+
+	var query = {
+		name: room
+	};
+	if (type) {
+		query['t'] = type;
+	}
+	subscription = ChatSubscription.findOne(query);
 
 	if (subscription !== null) {
-		Meteor.call('openRoom', subscription.rid);
+		FlowRouter.go(RocketChat.roomTypes.getRouteLink(subscription.t, subscription));
 	}
 }
 
 RocketChat.slashCommands.add('open', Open, {
-	description: TAPi18n.__('Open_A_Channel'),
-	params: '#channel'
+	description: TAPi18n.__('Opens_a_channel_group_or_direct_message'),
+	params: 'room name',
+	clientOnly: true
 });
