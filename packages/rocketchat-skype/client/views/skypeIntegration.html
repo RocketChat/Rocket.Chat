@@ -1,0 +1,52 @@
+<template name="skypeIntegration">
+	<div class="content">
+		{{#with users}}
+		<div class="list-view skypeIntegration">
+			<div class="title">
+				<h2>{{_ "Skype Integration"}}</h2>
+			</div>
+			<form>
+				<ul class="list clearfix lines">
+					<li>
+						<label>{{_ "Skype Login"}}</label>
+						<div>
+							{{#if editing 'skypeLogin'}}
+							<input type="text" name="skypeLogin" value="{{skypeLogin}}" class="editing" /> <button type="button" class="button secondary cancel">{{_ "Cancel"}}</button> <button type="button" class="button primary save">{{_ "Save"}}</button>
+							{{else}}
+							<span>{{skypeLogin}} <i class="icon-pencil" data-edit="skypeLogin"></i></span>
+							{{/if}}
+						</div>
+					</li>
+				</ul>
+			</form>
+				<div>
+					<a href="skype:{{skypeCall}}" > <span class="icon-skype"></span> {{_ "Call"}}</a>
+				</div>
+		</div>
+		<div class = "list-view skypeLists">
+			<h2>{{_ "Users without Skype Login"}}</h2>
+			<ul class='list clearfix lines'>
+			{{#each usersWithoutSkype}}
+				<li class='user-image user-card-room status-{{status}} margin_botton_0px'>
+					<button data-username="{{username}}" tabindex="0" title="{{username}}">
+						{{> avatar username=username}}
+						<p>{{username}} {{utcOffset}}</p>
+					</button>
+				</li>
+			{{/each}}
+			</ul>
+			<h2>{{_ "Users with Skype Login"}}</h2>
+			<ul class='list clearfix lines'>
+				{{#each usersWithSkype}}
+					<li class='user-image user-card-room status-{{status}} margin_botton_0px'>
+						<button data-username="{{username}}" tabindex="0" title="{{username}}">
+							{{> avatar username=username}}
+							<p>{{username}} {{utcOffset}}</p>
+						</button>
+					</li>
+				{{/each}}
+			</ul>
+		</div>
+		{{/with}}
+	</div>
+</template>
