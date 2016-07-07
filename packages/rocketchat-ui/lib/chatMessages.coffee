@@ -177,9 +177,13 @@ class @ChatMessages
 					match = msg.match(/^\/([^\s]+)(?:\s+(.*))?$/m)
 					if match?
 						if RocketChat.slashCommands.commands[match[1]]
+							commandOptions = RocketChat.slashCommands.commands[match[1]]
 							command = match[1]
 							param = match[2]
-							Meteor.call 'slashCommand', {cmd: command, params: param, msg: msgObject }
+							if commandOptions.clientOnly
+								commandOptions.callback(command, param, msgObject)
+							else
+								Meteor.call 'slashCommand', {cmd: command, params: param, msg: msgObject }
 							return
 						invalidCommandMsg =
 							_id: Random.id()
