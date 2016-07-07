@@ -1,5 +1,6 @@
 Template.videoCall.onCreated ->
 	@mainVideo = new ReactiveVar '$auto'
+	@mutedById = new ReactiveVar {}
 
 
 Template.videoCall.helpers
@@ -13,6 +14,12 @@ Template.videoCall.helpers
 			return false
 
 		return webrtc.localUrl.get()? or webrtc.remoteItems.get()?.length > 0
+
+	mutedById: (id) ->
+		return Template.instance().mutedById.get()[id] == true
+
+	speakingById: (id) ->
+		return WebRTC.getInstanceByRoomId(Session.get('openedRoom')).speakingById.get()[id] == true
 
 	callInProgress: ->
 		return WebRTC.getInstanceByRoomId(Session.get('openedRoom')).callInProgress.get()
@@ -92,6 +99,16 @@ Template.videoCall.events
 	'click .video-item': (e, t) ->
 		t.mainVideo.set $(e.currentTarget).data('username')
 
+	'click .remote-toggle-mute': (e, t) ->
+		id = $(e.currentTarget).data('username')
+		mutedById = t.mutedById.get()
+		mutedById[id] = !mutedById[id]
+		t.mutedById.set(mutedById)
+		Meteor.defer( ->
+			$(e.currentTarget).closest('.remote-video-item').find('video')[0].muted = mutedById[id]
+			$(e.currentTarget).closest('.remote-video-item').find('video')[0].volume = if mutedById[id] then 0 else 1
+		);
+
 	'click .disable-audio': (e, t) ->
 		WebRTC.getInstanceByRoomId(Session.get('openedRoom')).disableAudio()
 
@@ -119,3 +136,7 @@ Template.videoCall.events
 	'loadstart video[muted]': (e) ->
 		e.currentTarget.muted = true
 		e.currentTarget.volume = 0
+
+	'loadstart video': (e) ->
+		if (WebRTC.setSinkIdSupported() and WebRTC.getInstanceByRoomId(Session.get('openedRoom')).audioOutputDevice.get())
+			e.currentTarget.setSinkId(WebRTC.getInstanceByRoomId(Session.get('openedRoom')).audioOutputDevice.get())
