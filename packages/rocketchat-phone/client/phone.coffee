@@ -140,6 +140,7 @@ Template.phone.onRendered ->
 		if window.rocketDebug
 			console.log("Moving video tag to its containter")
 		Session.get('openedRoom')
+		FlowRouter.watchPathChange()
 		RocketChat.Phone.placeVideo()
 
 
