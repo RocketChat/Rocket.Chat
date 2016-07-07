@@ -32,6 +32,14 @@ RocketChat.models.Subscriptions = new class extends RocketChat.models._Base
 
 		return @find query, options
 
+	findByUserIdUpdatedAfter: (userId, updatedAt, options) ->
+		query =
+			"u._id": userId
+			_updatedAt:
+				$gt: updatedAt
+
+		return @find query, options
+
 	# FIND
 	findByRoomIdAndRoles: (roomId, roles, options) ->
 		roles = [].concat roles

@@ -12,8 +12,11 @@ Template.directMessages.helpers
 
 Template.directMessages.events
 	'click .add-room': (e, instance) ->
-		SideNav.setFlex "directMessagesFlex"
-		SideNav.openFlex()
+		if RocketChat.authz.hasAtLeastOnePermission('create-d')
+			SideNav.setFlex "directMessagesFlex"
+			SideNav.openFlex()
+		else
+			e.preventDefault()
 
 	'click .more-direct-messages': ->
 		SideNav.setFlex "listDirectMessagesFlex"
