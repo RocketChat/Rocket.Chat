@@ -284,7 +284,7 @@ Template.room.events
 
 	'click .user-card-message': (e, instance) ->
 		roomData = Session.get('roomData' + this._arguments[1].rid)
-		if roomData.t in ['c', 'p']
+		if roomData.t in ['c', 'p', 'd']
 			instance.setUserDetail this._arguments[1].u.username
 		RocketChat.TabBar.setTemplate 'membersList'
 
