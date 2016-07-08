@@ -39,5 +39,5 @@ Meteor.methods({
 		}
 		RocketChat.models.Subscriptions.updateDesktopNotificationDurationById(subscription._id, value);
 		return true;
-	},
+	}
 });
