@@ -69,6 +69,15 @@ Template.messageBox.helpers
 		if Template.instance().showMicButton.get()
 			return 'show-mic'
 
+	showVRec: ->
+		if not Template.instance().isMessageFieldEmpty.get()
+			return
+
+		if Template.instance().showVideoRec.get()
+			return ''
+		else
+			return 'hide-vrec'
+
 	showSend: ->
 		if not Template.instance().isMessageFieldEmpty.get() or not Template.instance().showMicButton.get()
 			return 'show-send'
@@ -140,6 +149,12 @@ Template.messageBox.events
 			t.$('.stop-mic').removeClass('hidden')
 			t.$('.mic').addClass('hidden')
 
+	'click .message-form .video-button': (e, t) ->
+		if VRecDialog.opened
+			VRecDialog.close()
+		else
+			VRecDialog.open(e.currentTarget)
+
 	'click .message-form .stop-mic': (e, t) ->
 		AudioRecorder.stop (blob) ->
 			fileUpload [{
@@ -154,8 +169,16 @@ Template.messageBox.events
 Template.messageBox.onCreated ->
 	@isMessageFieldEmpty = new ReactiveVar true
 	@showMicButton = new ReactiveVar false
+	@showVideoRec = new ReactiveVar false
 
 	@autorun =>
+		videoRegex = /video\/webm/i
+		videoEnabled = !RocketChat.settings.get("FileUpload_MediaTypeWhiteList") || RocketChat.settings.get("FileUpload_MediaTypeWhiteList").match(wavRegex)
+		if RocketChat.settings.get('Message_VideoRecorderEnabled') and (navigator.getUserMedia? or navigator.webkitGetUserMedia?) and videoEnabled and RocketChat.settings.get('FileUpload_Enabled')
+			@showVideoRec.set true
+		else
+			@showVideoRec.set false
+
 		wavRegex = /audio\/wav|audio\/\*/i
 		wavEnabled = !RocketChat.settings.get("FileUpload_MediaTypeWhiteList") || RocketChat.settings.get("FileUpload_MediaTypeWhiteList").match(wavRegex)
 		if RocketChat.settings.get('Message_AudioRecorderEnabled') and (navigator.getUserMedia? or navigator.webkitGetUserMedia?) and wavEnabled and RocketChat.settings.get('FileUpload_Enabled')

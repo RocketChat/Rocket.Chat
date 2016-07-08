@@ -73,6 +73,7 @@ Template.accountPreferences.onCreated ->
 		data.collapseMediaByDefault = $('input[name=collapseMediaByDefault]:checked').val()
 		data.viewMode = parseInt($('#viewMode').find('select').val())
 		data.hideUsernames = $('#hideUsernames').find('input:checked').val()
+		data.hideAvatars = $('#hideAvatars').find('input:checked').val()
 		data.mergeChannels = $('#mergeChannels').find('input:checked').val()
 		data.unreadRoomsMode = $('input[name=unreadRoomsMode]:checked').val()
 		data.autoImageLoad = $('input[name=autoImageLoad]:checked').val()

@@ -67,6 +67,7 @@ Package.onUse(function(api) {
 
 	// LIB RECORDERJS
 	api.addFiles('lib/recorderjs/audioRecorder.coffee', 'client');
+	api.addFiles('lib/recorderjs/videoRecorder.coffee', 'client');
 	api.addFiles('lib/recorderjs/recorder.js', 'client');
 
 	// LIB CLIPBOARDJS
