@@ -14,6 +14,12 @@ Template.chatRoomItem.helpers
 	name: ->
 		return this.name
 
+	roomName: ->
+		if this.roomName
+			return this.roomName
+
+		return this.name
+
 	roomIcon: ->
 		return RocketChat.roomTypes.getIcon this.t
 
