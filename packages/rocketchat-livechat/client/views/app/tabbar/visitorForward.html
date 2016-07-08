@@ -1,0 +1,45 @@
+<template name="visitorForward">
+	<div class="user-view">
+		<div class="edit-form">
+			<h3>{{_ "Forward_chat"}}</h3>
+			{{#with visitor}}
+				<div class="input-line">
+					<label for="name">{{_ "Name"}}</label>
+					<span>{{username}}</span>
+				</div>
+			{{/with}}
+			<form>
+				{{#if hasDepartments}}
+					<div class="input-line">
+						<label for="forwardDepartment">{{_ "Forward_to_department"}}</label>
+						<select name="forwardDepartment" id="forwardDepartment">
+							<option value="">{{_ "Select_a_department"}}</option>
+							{{#each departments}}
+								<option value="{{_id}}">{{name}}</option>
+							{{/each}}
+						</select>
+					</div>
+
+					<div class="form-divisor">
+						<span>{{_ "or"}}</span>
+					</div>
+				{{/if}}
+
+				<div class="input-line">
+					<label for="forwardUser">{{_ "Forward_to_user"}}</label>
+					<select name="forwardUser" id="forwardUser">
+						<option value="">{{_ "Select_a_user"}}</option>
+						{{#each agents}}
+							<option value="{{_id}}">{{agentName}}</option>
+						{{/each}}
+					</select>
+				</div>
+
+				<nav class="buttons">
+					<button class="button button-block blue save"><span>{{_ "Forward"}}</span></button>
+					<button class="button button-block cancel secondary" type="button"><span>{{_ "Cancel"}}</span></button>
+				</nav>
+			</form>
+		</div>
+	</div>
+</template>
