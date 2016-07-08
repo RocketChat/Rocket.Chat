@@ -456,6 +456,7 @@
   "Hide_Private_Warning" : "Êtes-vous sûr(e) de vouloir cacher la discussion avec \"%s\" ?",
   "Hide_room" : "Cacher le salon",
   "Hide_Room_Warning" : "Êtes-vous sûr(e) de vouloir cacher le salon \"%s\" ?",
+  "Hide_flextab" : "Cacher le volet de réglages du canal par un clique",
   "Hide_usernames" : "Cacher les noms d'utilisateur",
   "Highlights" : "Mises en avant",
   "Highlights_How_To" : "Pour être notifié(e) lorsque quelqu'un écrit un mot ou une phrase spécifique, ajoutez le/la ici. Vous pouvez les séparer par une virgule. Les termes surveillés ne sont pas sensibles à la casse.",
