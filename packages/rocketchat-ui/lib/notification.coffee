@@ -19,9 +19,9 @@
 					body: _.stripTags(message.msg)
 					silent: true
 
-				notificationDuration = (notification.duration | 0 or Meteor.user()?.settings?.preferences?.desktopNotificationDuration | 0 or RocketChat.settings.get('Desktop_Notifications_Duration')) * 1000
+				notificationDuration = (notification.duration - 0) or (Meteor.user()?.settings?.preferences?.desktopNotificationDuration - 0) or RocketChat.settings.get('Desktop_Notifications_Duration')
 				if notificationDuration > 0
-					setTimeout ( -> n.close() ), notificationDuration
+					setTimeout ( -> n.close() ), notificationDuration * 1000
 
 				if notification.payload?.rid?
 					n.onclick = ->

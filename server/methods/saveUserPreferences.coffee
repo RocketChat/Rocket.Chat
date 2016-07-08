@@ -38,7 +38,7 @@ Meteor.methods
 			else
 				delete preferences.mergeChannels
 
-			preferences.desktopNotificationDuration = (settings.desktopNotificationDuration | 0) || 0
+			preferences.desktopNotificationDuration = settings.desktopNotificationDuration - 0
 			preferences.viewMode = settings.viewMode || 0
 			preferences.hideUsernames = settings.hideUsernames is "1"
 			preferences.hideAvatars = settings.hideAvatars is "1"

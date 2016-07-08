@@ -125,7 +125,7 @@ RocketChat.callbacks.add('afterSaveMessage', function(message, room) {
 			RocketChat.Notifications.notifyUser(userOfMention._id, 'notification', {
 				title: '@' + user.username,
 				text: message.msg,
-				duration: settings.desktopNotificationDurations[message.u._id],
+				duration: settings.desktopNotificationDurations[userOfMention._id],
 				payload: {
 					rid: message.rid,
 					sender: message.u,
@@ -277,7 +277,7 @@ RocketChat.callbacks.add('afterSaveMessage', function(message, room) {
 				RocketChat.Notifications.notifyUser(usersOfMentionId, 'notification', {
 					title: title,
 					text: message.msg,
-					duration: settings.desktopNotificationDurations[message.u._id],
+					duration: settings.desktopNotificationDurations[usersOfMentionId],
 					payload: {
 						rid: message.rid,
 						sender: message.u,
