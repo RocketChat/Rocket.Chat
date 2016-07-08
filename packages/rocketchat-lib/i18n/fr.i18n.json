@@ -963,7 +963,7 @@
   "Should_exists_a_user_with_this_username" : "L'utilisateur doit déjà exister",
   "Show_all" : "Afficher tout",
   "Show_more" : "Afficher plus",
-  "Show_only_online" : "Ne montrer que les utilisateurs connectés",
+  "Show_only_online" : "Seulement les connectés",
   "Show_preregistration_form" : "Afficher le formulaire de pré-inscription",
   "Showing_archived_results" : "<p>Affichage de <b>%s</b> résultats archivés</p>",
   "Showing_online_users" : "<b>__total_showing__</b> utilisateur(s) affichés sur un total de __total__",
