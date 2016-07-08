@@ -1,0 +1,11 @@
+<template name="livechatInquiryItem">
+	<li class="link-room-{{rid}} {{active}} {{#if unread}}has-unread{{/if}} {{#if alert}}has-alert{{/if}}">
+		<a class="open-room" href="{{route}}" title="{{name}}">
+			<!-- {{#if unread}} -->
+				<!-- <span class="unread">{{unread}}</span> -->
+			<!-- {{/if}} -->
+			<i class="{{roomIcon}} {{userStatus}}" aria-label=""></i>
+			<span class='name'>{{name}}</span>
+		</a>
+	</li>
+</template>
