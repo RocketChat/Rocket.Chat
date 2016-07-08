@@ -12,7 +12,8 @@ Meteor.methods
 
 		if room
 			if RocketChat.authz.canAccessRoom.call(this, room, user)
-				return _.pick room, ['_id', 't', 'name', 'usernames', 'muted', 'sms', 'v']
+				room.username = user.username
+				return _.pick room, ['_id', 't', 'name', 'usernames', 'username', 'muted', 'sms', 'v']
 			else
 				return false
 		else

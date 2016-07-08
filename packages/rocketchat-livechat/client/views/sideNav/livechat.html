@@ -2,11 +2,29 @@
 	<div class="livechat-section {{livechatAvailable}}">
 		<h3 class="{{isActive}}">
 			{{_ "Livechat"}}
-
 			{{#with available}}
 				<i class="livechat-status {{status}} {{icon}}" title="{{hint}}"></i>
 			{{/with}}
 		</h3>
+
+		{{#if guestPool}}
+			<h3 class="{{isActive}}">
+			{{_ "Incoming Livechats"}}
+			</h3>
+			<ul>
+				{{#each inquiries}}
+					{{> livechatInquiryItem }}
+				{{else}}
+					<p class="empty">{{_ "No_livechats" }}</p>
+				{{/each}}
+			</ul>
+
+			<h3 class="{{isActive}}">
+			{{_ "Open Livechats"}}
+			</h3>
+		{{/if}}
+
+
 		<ul>
 			{{#each rooms}}
 				{{> chatRoomItem }}
