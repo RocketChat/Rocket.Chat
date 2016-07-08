@@ -459,6 +459,7 @@
   "Hide_Private_Warning" : "Are you sure you want to hide the discussion with \"%s\"?",
   "Hide_room" : "Hide room",
   "Hide_Room_Warning" : "Are you sure you want to hide the room \"%s\"?",
+  "Hide_flextab" : "Hide right side bar with click",
   "Hide_usernames" : "Hide usernames",
   "Highlights" : "Highlights",
   "Highlights_How_To" : "To be notified when someone mentions a word or phrase, add it here. You can separate words or phrases with commas. Highlight Words are not case sensitive.",
