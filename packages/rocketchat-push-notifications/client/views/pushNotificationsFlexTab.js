@@ -106,12 +106,22 @@ Template.pushNotificationsFlexTab.onCreated(function() {
 	this.saveSetting = () => {
 		const field = this.editing.get();
 		const value = this.$('input[name='+ field +']:checked').val();
+		const duration = $('input[name=duration]').val();
 		if (this.validateSetting(field)) {
 			Meteor.call('saveNotificationSettings', Session.get('openedRoom'), field, value, (err/*, result*/) => {
 				if (err) {
 					return handleError(err);
 				}
-				this.editing.set();
+				if (duration !== undefined) {
+					Meteor.call('saveDesktopNotificationDuration', Session.get('openedRoom'), duration, (err) => {
+						if (err) {
+							return handleError(err);
+						}
+						this.editing.set();
+					});
+				} else {
+					this.editing.set();
+				}
 			});
 		}
 	};
@@ -123,15 +133,6 @@ Template.pushNotificationsFlexTab.events({
 			e.preventDefault();
 			instance.saveSetting();
 		}
-	},
-
-	'change input[name=duration]'(e, instance) {
-		const value = instance.$('input[name=duration]').val();
-		Meteor.call('saveDesktopNotificationDuration', Session.get('openedRoom'), value, (err) => {
-			if (err) {
-				return handleError(err);
-			}
-		});
 	},
 
 	'click [data-edit]'(e, instance) {
