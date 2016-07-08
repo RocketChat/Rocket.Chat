@@ -30,5 +30,14 @@ Meteor.methods({
 		}
 
 		return true;
+	},
+
+	saveDesktopNotificationDuration: function(rid, value) {
+		const subscription = RocketChat.models.Subscriptions.findOneByRoomIdAndUserId(rid, Meteor.userId());
+		if (!subscription) {
+			throw new Meteor.Error('error-invalid-subscription', 'Invalid subscription', { method: 'saveDesktopNotificationDuration' });
+		}
+		RocketChat.models.Subscriptions.updateDesktopNotificationDurationById(subscription._id, value);
+		return true;
 	}
 });

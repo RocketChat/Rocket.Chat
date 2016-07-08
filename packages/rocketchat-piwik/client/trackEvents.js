@@ -23,7 +23,7 @@ RocketChat.callbacks.add('afterSaveMessage', (message) => {
 		let room = ChatRoom.findOne({ _id: message.rid });
 		window._paq.push(['trackEvent', 'Message', 'Send', room.name + ' (' + room._id + ')' ]);
 	}
-}, 2000);
+}, 2000, 'trackEvents');
 
 //Rooms
 RocketChat.callbacks.add('afterCreateChannel', (room) => {
