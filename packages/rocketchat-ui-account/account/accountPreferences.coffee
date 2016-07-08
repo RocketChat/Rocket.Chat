@@ -33,7 +33,7 @@ Template.accountPreferences.helpers
 		return (KonchatNotification.notificationStatus.get() is 'denied') or (window.Notification && Notification.permission is "denied")
 
 	desktopNotificationDuration: ->
-		return Meteor.user()?.settings?.preferences?.desktopNotificationDuration || 0;
+		return Meteor.user()?.settings?.preferences?.desktopNotificationDuration - 0
 
 Template.accountPreferences.onCreated ->
 	settingsTemplate = this.parentTemplate(3)
