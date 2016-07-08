@@ -175,10 +175,25 @@ class @ChatMessages
 				#Check if message starts with /command
 				if msg[0] is '/'
 					match = msg.match(/^\/([^\s]+)(?:\s+(.*))?$/m)
-					if match? and RocketChat.slashCommands.commands[match[1]]
-						command = match[1]
-						param = match[2]
-						Meteor.call 'slashCommand', {cmd: command, params: param, msg: msgObject }
+					if match?
+						if RocketChat.slashCommands.commands[match[1]]
+							commandOptions = RocketChat.slashCommands.commands[match[1]]
+							command = match[1]
+							param = match[2]
+							if commandOptions.clientOnly
+								commandOptions.callback(command, param, msgObject)
+							else
+								Meteor.call 'slashCommand', {cmd: command, params: param, msg: msgObject }
+							return
+						invalidCommandMsg =
+							_id: Random.id()
+							rid: rid
+							ts: new Date
+							msg: TAPi18n.__('No_such_command', { command: match[1] })
+							u:
+								username: "rocketbot"
+							private: true
+						ChatMessage.upsert { _id: invalidCommandMsg._id }, invalidCommandMsg
 						return
 
 				Meteor.call 'sendMessage', msgObject

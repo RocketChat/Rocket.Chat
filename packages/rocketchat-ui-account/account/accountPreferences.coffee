@@ -32,6 +32,9 @@ Template.accountPreferences.helpers
 	desktopNotificationDisabled: ->
 		return (KonchatNotification.notificationStatus.get() is 'denied') or (window.Notification && Notification.permission is "denied")
 
+	desktopNotificationDuration: ->
+		return Meteor.user()?.settings?.preferences?.desktopNotificationDuration - 0
+
 Template.accountPreferences.onCreated ->
 	settingsTemplate = this.parentTemplate(3)
 	settingsTemplate.child ?= []
@@ -70,11 +73,13 @@ Template.accountPreferences.onCreated ->
 		data.collapseMediaByDefault = $('input[name=collapseMediaByDefault]:checked').val()
 		data.viewMode = parseInt($('#viewMode').find('select').val())
 		data.hideUsernames = $('#hideUsernames').find('input:checked').val()
+		data.hideAvatars = $('#hideAvatars').find('input:checked').val()
 		data.mergeChannels = $('#mergeChannels').find('input:checked').val()
 		data.unreadRoomsMode = $('input[name=unreadRoomsMode]:checked').val()
 		data.autoImageLoad = $('input[name=autoImageLoad]:checked').val()
 		data.emailNotificationMode = $('select[name=emailNotificationMode]').val()
 		data.highlights = _.compact(_.map($('[name=highlights]').val().split(','), (e) -> return _.trim(e)))
+		data.desktopNotificationDuration = $('input[name=desktopNotificationDuration]').val()
 
 		Meteor.call 'saveUserPreferences', data, (error, results) ->
 			if results
@@ -105,6 +110,7 @@ Template.accountPreferences.events
 
 	'click .test-notifications': ->
 		KonchatNotification.notify
+			duration: $('input[name=desktopNotificationDuration]').val()
 			payload:
 				sender:
 					username: 'rocket.cat'

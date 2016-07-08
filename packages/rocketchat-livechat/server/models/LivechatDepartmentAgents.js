@@ -70,6 +70,33 @@ class LivechatDepartmentAgents extends RocketChat.models._Base {
 			return null;
 		}
 	}
+
+	getForDepartment(departmentId) {
+		var agents = this.findByDepartmentId(departmentId).fetch();
+
+		if (agents.length === 0) {
+			return;
+		}
+
+		var onlineUsers = RocketChat.models.Users.findOnlineUserFromList(_.pluck(agents, 'username'));
+
+		var onlineUsernames = _.pluck(onlineUsers.fetch(), 'username');
+
+		var query = {
+			departmentId: departmentId,
+			username: {
+				$in: onlineUsernames
+			}
+		};
+
+		var depAgents = this.find(query);
+
+		if (depAgents) {
+			return depAgents;
+		} else {
+			return null;
+		}
+	}
 }
 
 RocketChat.models.LivechatDepartmentAgents = new LivechatDepartmentAgents();
