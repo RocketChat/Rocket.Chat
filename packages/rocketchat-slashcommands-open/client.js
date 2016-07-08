@@ -1,4 +1,4 @@
-function Open(command, params, item) {
+function Open(command, params/*, item*/) {
 	var room, subscription, type;
 	if (command !== 'open' || !Match.test(params, String)) {
 		return;
