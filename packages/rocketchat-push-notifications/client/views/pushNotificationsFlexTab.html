@@ -13,18 +13,28 @@
 								<label><input type="radio" name="desktopNotifications" value="all" checked="{{$eq desktopNotifications 'all'}}" /> {{_ "All_messages"}}</label>
 								<label><input type="radio" name="desktopNotifications" value="mentions" checked="{{$eq desktopNotifications 'mentions'}}" /> {{_ "Mentions_default"}}</label>
 								<label><input type="radio" name="desktopNotifications" value="nothing" checked="{{$eq desktopNotifications 'nothing'}}" /> {{_ "Nothing"}}</label>
+								<br />
+								{{#if desktopNotificationDuration}}
+									<label>{{_ "Duration"}} ({{_ "seconds"}}) <input type="number" name="duration" min="0" value="{{desktopNotificationDuration}}"></label>
+								{{else}}
+									<label>{{_ "Duration"}} ({{_ "seconds"}}) <input type="number" name="duration" min="0" value="" placeholder="{{_ "Use_User_Preferences_or_Global_Settings"}}"></label>
+								{{/if}}
+
 								<button type="button" class="button secondary cancel">{{_ "Cancel"}}</button>
 								<button type="button" class="button primary save">{{_ "Save"}}</button>
 							{{else}}
 								<span>{{subValue 'desktopNotifications'}} <i class="icon-pencil" data-edit="desktopNotifications"></i></span>
 							{{/if}}
-							{{#if desktopNotificationDuration}}
-								<label>{{_ "Duration"}} ({{_ "seconds"}}) <input type="number" name="duration" min="0" value="{{desktopNotificationDuration}}"></label>
-							{{else}}
-								<label>{{_ "Duration"}} ({{_ "seconds"}}) <input type="number" name="duration" min="0" value="" placeholder="{{_ "Use_User_Preferences_or_Global_Settings"}}"></label>
-							{{/if}}
 						</div>
 					</li>
+					{{#unless editing 'desktopNotifications'}}
+					<li>
+						<label>{{_ "Desktop_Notifications_Duration"}}</label>
+						<div>
+							<span>{{#if desktopNotificationDuration}}{{desktopNotificationDuration}} {{_"seconds"}}{{else}}{{_ "Use_User_Preferences_or_Global_Settings"}}{{/if}}</span>
+						</div>
+					</li>
+					{{/unless}}
 					<li>
 						<label>{{_ "Mobile_push"}}</label>
 						<div>
