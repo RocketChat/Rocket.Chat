@@ -139,4 +139,14 @@ Meteor.startup(function() {
 			{ key: 'title', i18nLabel: 'Page_title' }
 		]
 	});
+
+	RocketChat.settings.add('Livechat_Routing_Method', 'Least_Amount', {
+		type: 'select',
+		group: 'Livechat',
+		public: true,
+		values: [
+			{key: 'Least_Amount', i18nLabel: 'Least_Amount'},
+			{key: 'Guest_Pool', i18nLabel: 'Guest_Pool'}
+		]
+	});
 });
