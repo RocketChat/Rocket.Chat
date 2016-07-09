@@ -7,7 +7,8 @@ Package.describe({
 
 Npm.depends({
 	'bad-words': '1.3.1',
-	'object-path': '0.9.2'
+	'object-path': '0.9.2',
+	'node-dogstatsd': '0.0.6'
 });
 
 Package.onUse(function(api) {
