@@ -358,6 +358,9 @@ blockquote {
 			z-index: 10;
 		}
 	}
+	> div.-autocomplete-container {
+		position: absolute;
+	}
 	input[type='text'] {
 		display: block;
 	}
@@ -2267,6 +2270,12 @@ a.github-fork {
 				&.show-mic .stop-mic {
 					display: inline-block;
 				}
+				&.hide-vrec {
+					display: none;
+				}
+				&.show-vrec .video-button {
+					display: inline-block;
+				}
 				&.show-send .send-button {
 					display: inline-block;
 				}
@@ -2620,12 +2629,25 @@ a.github-fork {
 		display: block;
 		width: 40px;
 		height: 40px;
+
+		&:not(.thumb-small) {
+			.avatar {
+				width: 40px;
+				height: 40px;
+			}
+		}
+
 		&.thumb-small {
 			position: initial;
 			width: 20px;
 			height: 20px;
 			display: inline-block;
 			vertical-align: bottom;
+
+			.avatar {
+				width: 20px;
+				height: 20px;
+			}
 		}
 	}
 	.info {
@@ -2829,6 +2851,11 @@ body:not(.is-cordova) {
 			height: 20px;
 			width: 20px;
 			left: 10px;
+
+			.avatar {
+				width: 20px;
+				height: 20px;
+			}
 		}
 		&.sequential{
 			 .thumb:not(.thumb-small), .user {
@@ -4730,7 +4757,48 @@ a + br.only-after-a {
 }
 
 .hide-usernames {
-	.user.user-card-message {
-		display: none;
+	.message {
+		.user.user-card-message {
+			display: none;
+		}
+	}
+}
+
+.hide-avatars {
+	.message {
+		padding-left: 20px;
+		.thumb.user-card-message:not(.thumb-small) {
+			display: none;
+		}
+		.user.user-card-message {
+			margin-left: -5px;
+		}
+	}
+}
+
+.messages-box:not(.compact) {
+	.hide-avatars {
+		.message {
+			&.sequential {
+				.info {
+					position: static;
+					width: auto;
+					float: right;
+					.message-cog-container {
+						float: left;
+					}
+					.message-dropdown {
+						left: auto;
+						right: -2px;
+						ul {
+							flex-direction: row-reverse;
+							li:first-child i:before {
+								content: "\d7";
+							}
+						}
+					}
+				}
+			}
+		}
 	}
 }

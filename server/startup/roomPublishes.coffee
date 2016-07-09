@@ -11,6 +11,7 @@ Meteor.startup ->
 				muted: 1
 				archived: 1
 				jitsiTimeout: 1
+				description: 1
 
 		if RocketChat.authz.hasPermission(this.userId, 'view-c-room')
 			# CACHE: can we stop using publications here?
@@ -34,6 +35,7 @@ Meteor.startup ->
 				muted: 1
 				archived: 1
 				jitsiTimeout: 1
+				description: 1
 
 		user = RocketChat.models.Users.findOneById this.userId, fields: username: 1
 		# CACHE: can we stop using publications here?
