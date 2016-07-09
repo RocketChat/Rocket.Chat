@@ -95,6 +95,10 @@ Template.visitorInfo.helpers({
 		const room = ChatRoom.findOne({ _id: this.rid });
 
 		return room.open;
+	},
+
+	guestPool() {
+		return RocketChat.settings.get('Livechat_Routing_Method') === 'Guest_Pool';
 	}
 });
 
@@ -135,6 +139,26 @@ Template.visitorInfo.events({
 					timer: 1000,
 					showConfirmButton: false
 				});
+			});
+		});
+	},
+	'click .return-inquiry'(event) {
+		event.preventDefault();
+
+		swal({
+			title: t('Would_you_like_to_return_the_inquiry'),
+			type: 'warning',
+			showCancelButton: true,
+			confirmButtonColor: '#3085d6',
+			cancelButtonColor: '#d33',
+			confirmButtonText: t('yes')
+		}, () => {
+			Meteor.call('livechat:returnAsInquiry', this.rid, function(error/*, result*/) {
+				if (error) {
+					console.log(error);
+				} else {
+					FlowRouter.go('/home');
+				}
 			});
 		});
 	}

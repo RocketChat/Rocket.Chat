@@ -3,7 +3,7 @@ Meteor.methods
 		unless Match.test rid, String
 			throw new Meteor.Error 'error-invalid-room', 'Invalid room', { method: 'saveRoomSettings' }
 
-		if setting not in ['roomName', 'roomTopic', 'roomType', 'default']
+		if setting not in ['roomName', 'roomTopic', 'roomDescription', 'roomType', 'default']
 			throw new Meteor.Error 'error-invalid-settings', 'Invalid settings provided', { method: 'saveRoomSettings' }
 
 		unless RocketChat.authz.hasPermission(Meteor.userId(), 'edit-room', rid)
@@ -21,6 +21,9 @@ Meteor.methods
 				when 'roomTopic'
 					if value isnt room.topic
 						RocketChat.saveRoomTopic(rid, value, Meteor.user())
+				when 'roomDescription'
+					if value isnt room.description
+						RocketChat.saveRoomDescription rid, value, Meteor.user()
 				when 'roomType'
 					if value isnt room.t
 						RocketChat.saveRoomType(rid, value, Meteor.user())
