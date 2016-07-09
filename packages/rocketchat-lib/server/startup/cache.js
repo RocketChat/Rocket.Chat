@@ -1,6 +1,76 @@
 /* globals loki, MongoInternals */
 /* eslint new-cap: 0 */
 
+var StatsD = Npm.require('node-dogstatsd').StatsD;
+var dogstatsd = new StatsD();
+
+function getTimeMSFloat() {
+	var hrtime = process.hrtime();
+	return (hrtime[0] * 1000000 + hrtime[1] / 1000);
+}
+
+const ignore = [
+	'emit',
+	// 'insert',
+	'on',
+	// 'processRemoteJoinInserted',
+	// 'addToIndex',
+	'addToAllIndexes'
+	// 'processLocalJoinInserted',
+	// 'findByIndex'
+];
+
+function traceMethodCalls(target) {
+	target._stats = {};
+
+	for (const property in target) {
+		if (typeof target[property] === 'function' && ignore.indexOf(property) === -1) {
+			target._stats[property] = {
+				calls: 0,
+				time: 0,
+				avg: 0
+			};
+			const origMethod = target[property];
+			target[property] = function(...args) {
+
+				const startTime = getTimeMSFloat();
+				const result = origMethod.apply(target, args);
+				const time = Math.round(getTimeMSFloat() - startTime) / 1000;
+				target._stats[property].time += time;
+				target._stats[property].calls++;
+				target._stats[property].avg = target._stats[property].time / target._stats[property].calls;
+
+				return result;
+			};
+		}
+	}
+
+	setInterval(function() {
+		for (const property in target._stats) {
+			if (target._stats.hasOwnProperty(property) && target._stats[property].time > 0) {
+				dogstatsd.timing('cache.methods.time', target._stats[property].avg, [`property:${property}`, `collection:${target.collectionName}`]);
+				dogstatsd.increment('cache.methods.totalTime', target._stats[property].time, [`property:${property}`, `collection:${target.collectionName}`]);
+				dogstatsd.increment('cache.methods.count', target._stats[property].calls, [`property:${property}`, `collection:${target.collectionName}`]);
+				target._stats[property].avg = 0;
+				target._stats[property].time = 0;
+				target._stats[property].calls = 0;
+			}
+		}
+	}, 10000);
+
+	target._getStatsAvg = function() {
+		const stats = [];
+		for (const property in target._stats) {
+			if (target._stats.hasOwnProperty(property)) {
+				stats.push([Math.round(target._stats[property].avg*100)/100, property]);
+			}
+		}
+		return _.sortBy(stats, function(record) {
+			return record[0];
+		});
+	};
+}
+
 const {EventEmitter} = Npm.require('events');
 
 RocketChat.cache = {};
@@ -25,14 +95,102 @@ RocketChat.cache._Base = (class CacheBase extends EventEmitter {
 			_id: {type: 'unique'}
 		};
 
+		this.joins = {};
+
 		this.db = db;
 		this.collectionName = collectionName;
 		this.register();
 	}
 
+	initJoins() {
+		for (const field in this.joins) {
+			if (this.joins.hasOwnProperty(field)) {
+				const join = this.joins[field];
+
+				if (!RocketChat.cache[join.join]) {
+					console.log(`Invalid cache model ${join.join}`);
+					continue;
+				}
+
+				RocketChat.cache[join.join].on('inserted', (record) => {
+					this.processRemoteJoinInserted(field, join, record);
+				});
+
+				// RocketChat.cache[join.join].on('updated', (record) => {
+
+				// });
+
+				// RocketChat.cache[join.join].on('removed', (record) => {
+
+				// });
+
+				this.on('inserted', (record) => {
+					this.processLocalJoinInserted(field, join, record);
+				});
+			}
+		}
+	}
+
+	processRemoteJoinInserted(field, join, record) {
+		let localRecords = this.findByIndex(join.field, record[join.joinField]);
+
+		if (!localRecords) {
+			return;
+		}
+
+		if (!Array.isArray(localRecords)) {
+			localRecords = [localRecords];
+		}
+
+		for (var i = 0; i < localRecords.length; i++) {
+			const localRecord = localRecords[i];
+			if (join.multi === true && !localRecord[field]) {
+				localRecord[field] = [];
+			}
+
+			if (typeof join.transform === 'function') {
+				record = join.transform(localRecord, record);
+			}
+
+			if (join.multi === true) {
+				localRecord[field].push(record);
+			} else {
+				localRecord[field] = record;
+			}
+
+			this.emit(`join:${field}:${localRecord._id}:inserted`, record);
+		}
+	}
+
+	processLocalJoinInserted(field, join, localRecord) {
+		let records = RocketChat.cache[join.join].findByIndex(join.joinField, localRecord[join.field]);
+
+		if (!Array.isArray(records)) {
+			records = [records];
+		}
+
+		for (let i = 0; i < records.length; i++) {
+			let record = records[i];
+
+			if (typeof join.transform === 'function') {
+				record = join.transform(localRecord, record);
+			}
+
+			if (join.multi === true) {
+				localRecord[field].push(record);
+			} else {
+				localRecord[field] = record;
+			}
+
+			this.emit(`join:${field}:${localRecord._id}:inserted`, record);
+		}
+	}
+
 	addToAllIndexes(record) {
 		for (const index in this.indexes) {
-			this.addToIndex(index, record);
+			if (this.indexes.hasOwnProperty(index)) {
+				this.addToIndex(index, record);
+			}
 		}
 	}
 
@@ -84,6 +242,8 @@ RocketChat.cache._Base = (class CacheBase extends EventEmitter {
 	}
 
 	load() {
+		// this.initJoins();
+
 		console.time(`Load ${this.collectionName}`);
 		const data = this.model.find().fetch();
 		for (let i=0; i < data.length; i++) {
@@ -93,6 +253,7 @@ RocketChat.cache._Base = (class CacheBase extends EventEmitter {
 		}
 		console.timeEnd(`Load ${this.collectionName}`);
 		this.startOplog();
+		traceMethodCalls(this);
 	}
 
 	startOplog() {
@@ -195,15 +356,21 @@ RocketChat.cache.Users = new (class CacheUser extends RocketChat.cache._Base {
 RocketChat.cache.Rooms = new (class CacheUser extends RocketChat.cache._Base {
 	constructor() {
 		super('Rooms');
+
+		this.joins['usernames'] = {
+			multi: true,
+			join: 'Subscriptions',
+			joinField: 'rid',
+			field: '_id',
+			transform(room, subscription) {
+				return subscription.u.username;
+			}
+		};
 	}
 
 	// FIND ONE
-	findOneById(_id, options) {
-		const query = {
-			_id: _id
-		};
-
-		return this.findOne(query, options);
+	findOneById(_id/*, options*/) {
+		return this.findByIndex('_id', _id);
 	}
 
 	findOneByIdOrName(_idOrName, options) {
@@ -243,13 +410,11 @@ RocketChat.cache.Rooms = new (class CacheUser extends RocketChat.cache._Base {
 		return this.findOne(query, options);
 	}
 
-	findOneByIdContainigUsername(_id, username, options) {
-		const query = {
-			_id: _id,
-			usernames: username
-		};
-
-		return this.findOne(query, options);
+	findOneByIdContainigUsername(_id, username/*, options*/) {
+		const record = this.findOneById(_id);
+		if (record && record.usernames.indexOf(username) > -1) {
+			return record;
+		}
 	}
 
 	findOneByNameAndTypeNotContainigUsername(name, type, username, options) {
@@ -495,51 +660,30 @@ RocketChat.cache.Subscriptions = new (class CacheUser extends RocketChat.cache._
 		super('Subscriptions');
 
 		this.indexes['rid'] = {type: 'array'};
+
+		this.joins['_room'] = {
+			multi: false,
+			join: 'Rooms',
+			joinField: '_id',
+			field: 'rid'
+		};
 	}
 });
 
-RocketChat.cache.Subscriptions.on('inserted', (subscription) => {
-	const room = RocketChat.cache.Rooms.findByIndex('_id', subscription.rid);
-	if (!room) {
-		// console.log('No room for', subscription.rid);
-		return;
-	}
-	if (!room.usernames) {
-		room.usernames = [];
-	}
-	room.usernames.push(subscription.u.username);
-});
 
-RocketChat.cache.Rooms.on('inserted', (room) => {
-	const subscriptions = RocketChat.cache.Subscriptions.findByIndex('rid', room._id);
-	for (let i = 0; i < subscriptions.length; i++) {
-		const subscription = subscriptions[i];
-		room.usernames.push(subscription.u.username);
-	}
-});
+RocketChat.cache.Users.initJoins();
+RocketChat.cache.Rooms.initJoins();
+RocketChat.cache.Subscriptions.initJoins();
 
 RocketChat.cache.Users.load();
 RocketChat.cache.Rooms.load();
 RocketChat.cache.Subscriptions.load();
 
-// console.time('Join');
-// RocketChat.cache.Rooms.find().forEach((room) => {
-// 	room.usernames = [];
-// });
-
-// RocketChat.cache.Subscriptions.find().forEach((subscription) => {
-// 	const room = RocketChat.cache.Rooms.recordsById[subscription.rid];
-// 	if (!room) {
-// 		// console.log('No room for', subscription.rid);
-// 		return;
-// 	}
-// 	room.usernames.push(subscription.u.username);
-// });
-// console.timeEnd('Join');
 
 RocketChat.cache.Users.addDynamicView('highlights').applyFind({
 	'settings.preferences.highlights': {$size: {$gt: 0}}
 });
+
 RocketChat.cache.Subscriptions.addDynamicView('notifications').applyFind({
 	$or: [
 		{desktopNotifications: {$in: ['all', 'nothing']}},
