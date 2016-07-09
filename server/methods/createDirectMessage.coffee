@@ -23,12 +23,12 @@ Meteor.methods
 
 		now = new Date()
 
-		if to.name
+		if to.name and to.name != to.username
 			toRoomName = to.username + ' (' + to.name + ')'
 		else
 			toRoomName = to.username
 
-		if me.name
+		if me.name and me.name != me.username
 			meRoomName = me.username + ' (' + me.name + ')'
 		else
 			meRoomName = me.username
