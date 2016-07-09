@@ -16,9 +16,9 @@ Template.directMessagesFlex.helpers
 					noMatchTemplate: Template.userSearchEmpty
 					matchAll: true
 					filter:
-						exceptions: [Meteor.user().username]
+						exceptions: [Meteor.user().username, Meteor.user().name]
 					selector: (match) ->
-						return { username: match }
+						return { term: match }
 					sort: 'username'
 				}
 			]
