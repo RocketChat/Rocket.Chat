@@ -5,13 +5,31 @@ RocketChat.cache.Subscriptions = new (class CacheUser extends RocketChat.cache._
 		super('Subscriptions');
 
 		this.indexes['rid'] = {type: 'array'};
+	}
+});
 
-		this.joins['_room'] = {
-			multi: false,
-			join: 'Rooms',
-			joinField: '_id',
-			field: 'rid'
-		};
+RocketChat.cache.Rooms.hasMany('Subscriptions', {
+	field: 'usernames',
+	link: {
+		local: '_id',
+		remote: 'rid',
+		transform(room, subscription) {
+			return subscription.u.username;
+		},
+		remove(arr, subscription) {
+			if (arr.indexOf(subscription.u.username) > -1) {
+				arr.splice(arr.indexOf(subscription.u.username), 1);
+			}
+		}
+	}
+});
+
+
+RocketChat.cache.Subscriptions.hasOne('Rooms', {
+	field: '_room',
+	link: {
+		local: 'rid',
+		remote: '_id'
 	}
 });
 
