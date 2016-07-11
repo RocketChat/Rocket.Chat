@@ -28,8 +28,10 @@ Package.onUse(function(api) {
             'client/views/phoneSettings.html',
             'client/views/phone.less',
             'client/views/phoneSettings.less',
+            'client/views/phoneButtons.html',
             'client/phone.coffee',
-            'client/phoneSettings.coffee'
+            'client/phoneSettings.coffee',
+            'client/phoneButtons.coffee'
     ], 'client');
 
     api.addFiles([
