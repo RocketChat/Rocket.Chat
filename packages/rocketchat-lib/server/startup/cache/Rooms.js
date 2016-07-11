@@ -3,16 +3,6 @@
 RocketChat.cache.Rooms = new (class CacheUser extends RocketChat.cache._Base {
 	constructor() {
 		super('Rooms');
-
-		this.joins['usernames'] = {
-			multi: true,
-			join: 'Subscriptions',
-			joinField: 'rid',
-			field: '_id',
-			transform(room, subscription) {
-				return subscription.u.username;
-			}
-		};
 	}
 
 	// FIND ONE
