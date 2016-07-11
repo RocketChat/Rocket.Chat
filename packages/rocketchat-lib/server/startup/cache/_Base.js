@@ -1,6 +1,9 @@
 /* globals loki, MongoInternals */
 /* eslint new-cap: 0 */
 
+const {EventEmitter} = Npm.require('events');
+const objectPath = Npm.require('object-path');
+
 const ignore = [
 	'emit',
 	'load',
@@ -64,11 +67,7 @@ function traceMethodCalls(target) {
 	};
 }
 
-const {EventEmitter} = Npm.require('events');
-
 RocketChat.cache = {};
-
-const objectPath = Npm.require('object-path');
 
 class Adapter {
 	loadDatabase(/*dbname, callback*/) {}
@@ -93,40 +92,45 @@ RocketChat.cache._Base = (class CacheBase extends EventEmitter {
 		this.db = db;
 		this.collectionName = collectionName;
 		this.register();
-		this.initJoins();
 	}
 
-	initJoins() {
-		for (const field in this.joins) {
-			if (this.joins.hasOwnProperty(field)) {
-				const join = this.joins[field];
+	hasOne(join, {field, link}) {
+		this.join({join, field, link, multi: false});
+	}
 
-				if (!RocketChat.cache[join.join]) {
-					console.log(`Invalid cache model ${join.join}`);
-					continue;
-				}
+	hasMany(join, {field, link}) {
+		this.join({join, field, link, multi: true});
+	}
 
-				RocketChat.cache[join.join].on('inserted', (record) => {
-					this.processRemoteJoinInserted(field, join, record);
-				});
-
-				// RocketChat.cache[join.join].on('updated', (record) => {
-
-				// });
-
-				// RocketChat.cache[join.join].on('removed', (record) => {
-
-				// });
-
-				this.on('inserted', (record) => {
-					this.processLocalJoinInserted(field, join, record);
-				});
-			}
+	join({join, field, link, multi}) {
+		if (!RocketChat.cache[join]) {
+			console.log(`Invalid cache model ${join}`);
+			return;
 		}
+
+		RocketChat.cache[join].on('inserted', (record) => {
+			this.processRemoteJoinInserted({join, field, link, multi, record: record});
+		});
+
+		// RocketChat.cache[join].on('updated', (record) => {
+
+		// });
+
+		RocketChat.cache[join].on('removed', (record) => {
+			this.processRemoteJoinRemoved({join, field, link, multi, record: record});
+		});
+
+		this.on('inserted', (localRecord) => {
+			this.processLocalJoinInserted({join, field, link, multi, localRecord: localRecord});
+		});
+
+		// this.on('updated', (record) => {
+
+		// });
 	}
 
-	processRemoteJoinInserted(field, join, record) {
-		let localRecords = this.findByIndex(join.field, record[join.joinField]);
+	processRemoteJoinInserted({field, link, multi, record}) {
+		let localRecords = this.findByIndex(link.local, record[link.remote]);
 
 		if (!localRecords) {
 			return;
@@ -138,15 +142,15 @@ RocketChat.cache._Base = (class CacheBase extends EventEmitter {
 
 		for (var i = 0; i < localRecords.length; i++) {
 			const localRecord = localRecords[i];
-			if (join.multi === true && !localRecord[field]) {
+			if (multi === true && !localRecord[field]) {
 				localRecord[field] = [];
 			}
 
-			if (typeof join.transform === 'function') {
-				record = join.transform(localRecord, record);
+			if (typeof link.transform === 'function') {
+				record = link.transform(localRecord, record);
 			}
 
-			if (join.multi === true) {
+			if (multi === true) {
 				localRecord[field].push(record);
 			} else {
 				localRecord[field] = record;
@@ -156,8 +160,8 @@ RocketChat.cache._Base = (class CacheBase extends EventEmitter {
 		}
 	}
 
-	processLocalJoinInserted(field, join, localRecord) {
-		let records = RocketChat.cache[join.join].findByIndex(join.joinField, localRecord[join.field]);
+	processLocalJoinInserted({join, field, link, multi, localRecord}) {
+		let records = RocketChat.cache[join].findByIndex(link.remote, localRecord[link.local]);
 
 		if (!Array.isArray(records)) {
 			records = [records];
@@ -166,17 +170,47 @@ RocketChat.cache._Base = (class CacheBase extends EventEmitter {
 		for (let i = 0; i < records.length; i++) {
 			let record = records[i];
 
-			if (typeof join.transform === 'function') {
-				record = join.transform(localRecord, record);
+			if (typeof link.transform === 'function') {
+				record = link.transform(localRecord, record);
 			}
 
-			if (join.multi === true) {
+			if (multi === true) {
 				localRecord[field].push(record);
 			} else {
 				localRecord[field] = record;
 			}
 
 			this.emit(`join:${field}:${localRecord._id}:inserted`, record);
+		}
+	}
+
+	processRemoteJoinRemoved({field, link, multi, record}) {
+		let localRecords = this.findByIndex(link.local, record[link.remote]);
+
+		if (!localRecords) {
+			return;
+		}
+
+		if (!Array.isArray(localRecords)) {
+			localRecords = [localRecords];
+		}
+
+		for (var i = 0; i < localRecords.length; i++) {
+			const localRecord = localRecords[i];
+
+			if (multi === true) {
+				if (Array.isArray(localRecord[field])) {
+					if (typeof link.remove === 'function') {
+						link.remove(localRecord[field], record);
+					} else if (localRecord[field].indexOf(record) > -1) {
+						localRecord[field].splice(localRecord[field].indexOf(record), 1);
+					}
+				}
+			} else {
+				localRecord[field] = undefined;
+			}
+
+			this.emit(`join:${field}:${localRecord._id}:removed`, record);
 		}
 	}
 
@@ -212,6 +246,41 @@ RocketChat.cache._Base = (class CacheBase extends EventEmitter {
 		}
 	}
 
+	removeFromAllIndexes(record) {
+		for (const index in this.indexes) {
+			if (this.indexes.hasOwnProperty(index)) {
+				this.removeFromIndex(index, record);
+			}
+		}
+	}
+
+	removeFromIndex(index, record) {
+		if (!this.indexes[index]) {
+			console.error(`Index not defined ${index}`);
+			return;
+		}
+
+		if (!this.indexes[index].data) {
+			return;
+		}
+
+		if (this.indexes[index].type === 'unique') {
+			this.indexes[index].data[record[index]] = undefined;
+			return;
+		}
+
+		if (this.indexes[index].type === 'array') {
+			if (!this.indexes[index].data[record[index]]) {
+				return;
+			}
+			const i = this.indexes[index].data[record[index]].indexOf(record);
+			if (i > -1) {
+				this.indexes[index].data[record[index]].splice(i, 1);
+			}
+			return;
+		}
+	}
+
 	findByIndex(index, key) {
 		if (!this.indexes[index]) {
 			return;
@@ -232,18 +301,14 @@ RocketChat.cache._Base = (class CacheBase extends EventEmitter {
 	register() {
 		this.model = RocketChat.models[this.collectionName];
 		this.collection = this.db.addCollection(this.collectionName);
-		// this.load();
 	}
 
 	load() {
-		// this.initJoins();
 		this.emit('beforeload');
 		this.loaded = false;
 		const time = RocketChat.statsTracker.now();
 		const data = this.model.find().fetch();
 		for (let i=0; i < data.length; i++) {
-			this.addToAllIndexes(data[i]);
-			// this.recordsById[data[i]._id] = data[i];
 			this.insert(data[i]);
 		}
 		RocketChat.statsTracker.timing('cache.load', RocketChat.statsTracker.now() - time, [`collection:${this.collectionName}`]);
@@ -263,9 +328,9 @@ RocketChat.cache._Base = (class CacheBase extends EventEmitter {
 	}
 
 	processOplogRecord(action) {
-		// console.log(this.collectionName, JSON.stringify(action, null, 2));
+		console.log(this.collectionName, JSON.stringify(action, null, 2));
 		if (action.op.op === 'i') {
-			this.collection.insert(action.op.o);
+			this.insert(action.op.o);
 			return;
 		}
 
@@ -293,7 +358,7 @@ RocketChat.cache._Base = (class CacheBase extends EventEmitter {
 		}
 
 		if (action.op.op === 'd') {
-			this.collection.removeWhere({_id: action.id});
+			this.removeById(action.id);
 			return;
 		}
 	}
@@ -333,12 +398,23 @@ RocketChat.cache._Base = (class CacheBase extends EventEmitter {
 	insert(record) {
 		if (Array.isArray(record)) {
 			for (let i=0; i < record.length; i++) {
+				this.addToAllIndexes(record[i]);
 				this.collection.insert(record[i]);
 				this.emit('inserted', record[i]);
 			}
 		} else {
+			this.addToAllIndexes(record);
 			this.collection.insert(record);
 			this.emit('inserted', record);
+		}
+	}
+
+	removeById(id) {
+		const record = this.findByIndex('_id', id);
+		if (record) {
+			this.collection.removeWhere({_id: id});
+			this.removeFromAllIndexes(record);
+			this.emit('removed', record);
 		}
 	}
 });
