@@ -12,4 +12,4 @@ Template.room.events
 				return
 
 			RocketChat.TabBar.setTemplate "phone", ->
-				RocketChat.Phone.newCall(user.phoneextension)
+				RocketChat.Phone.newCall(user.phoneextension, true)
