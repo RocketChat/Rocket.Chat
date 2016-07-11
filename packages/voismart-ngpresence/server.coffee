@@ -74,3 +74,55 @@ class AmqpConnection
 	onMessage: (msg) =>
 		payload = JSON.parse(msg.content.toString('utf8'))['payload']
 		logger.debug "received", payload
+
+
+Meteor.startup ->
+	if not RocketChat.settings.get('OrchestraIntegration_PresenceEnabled')
+		return
+
+	broker_host = RocketChat.settings.get('OrchestraIntegration_BrokerHost')
+	broker_user = RocketChat.settings.get('OrchestraIntegration_BrokerUser')
+	broker_password = RocketChat.settings.get('OrchestraIntegration_BrokerPassword')
+	if not (broker_host and broker_user and broker_password)
+		logger.error('no broker credentials supplied')
+		return
+
+	ng_host = RocketChat.settings.get('OrchestraIntegration_Server')
+	ng_user = RocketChat.settings.get('OrchestraIntegration_APIUser')
+	ng_passwd = RocketChat.settings.get('OrchestraIntegration_APIPassword')
+	ng_domain = RocketChat.settings.get('OrchestraIntegration_Domain')
+	ng = new NGApi(ng_host)
+	try
+		if ng_user and ng_passwd
+			# use username/password login
+			res = ng.login ng_user, ng_passwd
+		else if ng_user
+			# use trusted auth
+			res = ng.trustedLogin "#{ng_user}@#{ng_domain}"
+		else
+			logger.error('no credentials supplied')
+			return
+
+		token = res.token
+		if not (res and res.token)
+			logger.error "invalid response from server: #{res}"
+			return
+
+		user = ng.getUser token
+		if user.success is false
+			logger.error "invalid user"
+			return
+		domain_id = user.domain_id
+	catch e
+		logger.error "error getting domain: \"#{e}\""
+		return
+
+	host = ng_host.replace /^https{0,1}:\/\//i, ''
+	c = new AmqpConnection
+		host: broker_host
+		vhost: '/ydin_evb'
+		user: broker_user
+		password: broker_password
+		exclusiveQueue: false
+		routingKey: "ydin.presence.event.#{domain_id}"
+	c.connect()

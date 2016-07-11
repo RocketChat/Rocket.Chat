@@ -17,7 +17,8 @@ Package.onUse(function(api) {
 	]);
 
 	api.addFiles([
-		'server.coffee'
+		'server.coffee',
+		'settings.coffee'
 	], ['server']);
 
 });
