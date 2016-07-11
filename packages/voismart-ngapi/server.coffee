@@ -19,9 +19,28 @@ logger = new Logger 'NGApi'
 		data = params: [token], method: 'logout', id: 0
 		@_doJsonRpcPost url, data
 
+	trustedLogin: (username) ->
+		domain = username.split('@')[1]
+		if not domain
+			throw Error 'username must include the domain'
+		url = @server + '/trustedauth/login'
+		@_doFormPost url,
+			username: username
+			domain: domain
+
+	trustedLogout: (token) ->
+		url = @server + '/trustedauth/logout'
+		@_doFormPost url, token: token
+
 	getUser: (token) ->
 		url = @server + '/jsondata/extjs/userHandler/read_own'
 		@_doFormPost url, token: token
+
+	getPhones: (token) ->
+		url = @server + '/jsondata/extjs/userHandler/read_myextensions'
+		@_doFormPost url,
+			token: token
+			limit: 1
 
 	_doPost: (url, data) ->
 		try
@@ -45,9 +64,3 @@ logger = new Logger 'NGApi'
 		@_doPost url,
 			params: data
 			headers: headers
-
-	getPhones: (token) ->
-		url = @server + '/jsondata/extjs/userHandler/read_myextensions'
-		@_doFormPost url,
-			token: token
-			limit: 1
