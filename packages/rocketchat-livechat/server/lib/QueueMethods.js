@@ -89,7 +89,8 @@ RocketChat.QueueMethods = {
 			code: roomCode,
 			department: guest.department,
 			agents: agentIds,
-			status: 'open'
+			status: 'open',
+			t: 'l'
 		};
 		const room = _.extend({
 			_id: message.rid,
