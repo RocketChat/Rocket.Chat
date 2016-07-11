@@ -1,23 +1,56 @@
 /* globals loki, MongoInternals */
 /* eslint new-cap: 0 */
 
-var StatsD = Npm.require('node-dogstatsd').StatsD;
-var dogstatsd = new StatsD();
 
-function getTimeMSFloat() {
-	var hrtime = process.hrtime();
-	return (hrtime[0] * 1000000 + hrtime[1] / 1000);
-}
+RocketChat.statsTracker = new (class StatsTracker {
+	constructor() {
+		this.StatsD = Npm.require('node-dogstatsd').StatsD;
+		this.dogstatsd = new this.StatsD();
+	}
+
+	track(type, stats, ...args) {
+		this.dogstatsd[type](`RocketChat.${stats}`, ...args);
+	}
+
+	now() {
+		const hrtime = process.hrtime();
+		return (hrtime[0] * 1000000 + hrtime[1] / 1000);
+	}
+
+	timing(stats, time, tags) {
+		this.track('timing', stats, time, tags);
+	}
+
+	increment(stats, time, tags) {
+		this.track('increment', stats, time, tags);
+	}
+
+	decrement(stats, time, tags) {
+		this.track('decrement', stats, time, tags);
+	}
+
+	histogram(stats, time, tags) {
+		this.track('histogram', stats, time, tags);
+	}
+
+	gauge(stats, time, tags) {
+		this.track('gauge', stats, time, tags);
+	}
+
+	unique(stats, time, tags) {
+		this.track('unique', stats, time, tags);
+	}
+
+	set(stats, time, tags) {
+		this.track('set', stats, time, tags);
+	}
+});
 
 const ignore = [
 	'emit',
-	// 'insert',
+	'load',
 	'on',
-	// 'processRemoteJoinInserted',
-	// 'addToIndex',
 	'addToAllIndexes'
-	// 'processLocalJoinInserted',
-	// 'findByIndex'
 ];
 
 function traceMethodCalls(target) {
@@ -33,9 +66,13 @@ function traceMethodCalls(target) {
 			const origMethod = target[property];
 			target[property] = function(...args) {
 
-				const startTime = getTimeMSFloat();
+				if (target.loaded !== true) {
+					return origMethod.apply(target, args);
+				}
+
+				const startTime = RocketChat.statsTracker.now();
 				const result = origMethod.apply(target, args);
-				const time = Math.round(getTimeMSFloat() - startTime) / 1000;
+				const time = Math.round(RocketChat.statsTracker.now() - startTime) / 1000;
 				target._stats[property].time += time;
 				target._stats[property].calls++;
 				target._stats[property].avg = target._stats[property].time / target._stats[property].calls;
@@ -48,9 +85,10 @@ function traceMethodCalls(target) {
 	setInterval(function() {
 		for (const property in target._stats) {
 			if (target._stats.hasOwnProperty(property) && target._stats[property].time > 0) {
-				dogstatsd.timing('cache.methods.time', target._stats[property].avg, [`property:${property}`, `collection:${target.collectionName}`]);
-				dogstatsd.increment('cache.methods.totalTime', target._stats[property].time, [`property:${property}`, `collection:${target.collectionName}`]);
-				dogstatsd.increment('cache.methods.count', target._stats[property].calls, [`property:${property}`, `collection:${target.collectionName}`]);
+				const tags = [`property:${property}`, `collection:${target.collectionName}`];
+				RocketChat.statsTracker.timing('cache.methods.time', target._stats[property].avg, tags);
+				RocketChat.statsTracker.increment('cache.methods.totalTime', target._stats[property].time, tags);
+				RocketChat.statsTracker.increment('cache.methods.count', target._stats[property].calls, tags);
 				target._stats[property].avg = 0;
 				target._stats[property].time = 0;
 				target._stats[property].calls = 0;
@@ -89,7 +127,7 @@ RocketChat.cache._Base = (class CacheBase extends EventEmitter {
 	constructor(collectionName) {
 		super();
 
-		// this.recordsById = {};
+		traceMethodCalls(this);
 
 		this.indexes = {
 			_id: {type: 'unique'}
@@ -100,6 +138,7 @@ RocketChat.cache._Base = (class CacheBase extends EventEmitter {
 		this.db = db;
 		this.collectionName = collectionName;
 		this.register();
+		this.initJoins();
 	}
 
 	initJoins() {
@@ -243,17 +282,19 @@ RocketChat.cache._Base = (class CacheBase extends EventEmitter {
 
 	load() {
 		// this.initJoins();
-
-		console.time(`Load ${this.collectionName}`);
+		this.emit('beforeload');
+		this.loaded = false;
+		const time = RocketChat.statsTracker.now();
 		const data = this.model.find().fetch();
 		for (let i=0; i < data.length; i++) {
 			this.addToAllIndexes(data[i]);
 			// this.recordsById[data[i]._id] = data[i];
 			this.insert(data[i]);
 		}
-		console.timeEnd(`Load ${this.collectionName}`);
+		RocketChat.statsTracker.timing('cache.load', RocketChat.statsTracker.now() - time, [`collection:${this.collectionName}`]);
 		this.startOplog();
-		traceMethodCalls(this);
+		this.loaded = true;
+		this.emit('afterload');
 	}
 
 	startOplog() {
@@ -670,10 +711,6 @@ RocketChat.cache.Subscriptions = new (class CacheUser extends RocketChat.cache._
 	}
 });
 
-
-RocketChat.cache.Users.initJoins();
-RocketChat.cache.Rooms.initJoins();
-RocketChat.cache.Subscriptions.initJoins();
 
 RocketChat.cache.Users.load();
 RocketChat.cache.Rooms.load();

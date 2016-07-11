@@ -35,6 +35,9 @@ RocketChat.callbacks.add = (hook, callback, priority, id) ->
 		err = new Error
 		callback.stack = err.stack
 
+		if not id?
+			console.log('Callback without id', callback.stack)
+
 	# Avoid adding the same callback twice
 	for cb in RocketChat.callbacks[hook]
 		if cb.id is callback.id
@@ -80,13 +83,19 @@ RocketChat.callbacks.run = (hook, item, constant) ->
 				currentTime = Date.now() - time
 				totalTime += currentTime
 				if RocketChat.callbacks.showTime is true
-					console.log String(currentTime), hook, callback.id, callback.stack?.split?('\n')[2]?.match(/\(.+\)/)?[0]
+					if Meteor.isServer
+						RocketChat.statsTracker.timing('callbacks.time', currentTime, ["hook:#{hook}", "callback:#{callback.id}"]);
+					else
+						console.log String(currentTime), hook, callback.id, callback.stack?.split?('\n')[2]?.match(/\(.+\)/)?[0]
 
 			return callbackResult
 		, item
 
 		if RocketChat.callbacks.showTotalTime is true
-			console.log hook+':', totalTime
+			if Meteor.isServer
+				RocketChat.statsTracker.timing('callbacks.totalTime', totalTime, ["hook:#{hook}"]);
+			else
+				console.log hook+':', totalTime
 
 		return result
 	else
