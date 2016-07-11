@@ -46,11 +46,13 @@ Template.phone.events
 			RocketChat.Phone.newCall(number)
 
 	'click #phone-dial': (e, instance)->
-		if window.rocketDebug
-			console.log "will dial"
-
 		number = instance.phoneDisplay.get()
 		RocketChat.Phone.dialKey(number)
+		instance.phoneDisplay.set('')
+
+	'click #phone-video-dial': (e, instance)->
+		number = instance.phoneDisplay.get()
+		RocketChat.Phone.dialKey(number, true)
 		instance.phoneDisplay.set('')
 
 	'click #phone-hangup': (e, instance)->
@@ -153,6 +155,7 @@ RocketChat.Phone = new class
 	_videoTag = undefined
 
 	_lastCalled = ''
+	_lastUseVideo = false
 
 	_onHold = false
 	_isMute = false
@@ -173,14 +176,19 @@ RocketChat.Phone = new class
 		if window.rocketDebug
 			console.log("Starting a new Phone Handler")
 
-	answer = ->
+	answer = (useVideo) ->
 		if window.rocketDebug
 			console.log "Will answer call"
 
-		_videoTag.css('display', 'block')
+		if useVideo
+			useVideo = true
+			_videoTag.css('display', 'block')
+		else
+			useVideo = false
+			_videoTag.css('display', 'none')
 
 		has_video = false
-		if _videoDevice and (_videoDevice != "none")
+		if _videoDevice and (_videoDevice != "none") and useVideo
 			has_video = true
 
 		_curCall.answer({
@@ -354,7 +362,7 @@ RocketChat.Phone = new class
 
 	redial: () ->
 		if !_curCall? and _callState is null
-			@newCall(_lastCalled)
+			@newCall(_lastCalled, _lastUseVideo)
 
 	toggleMute: () ->
 		if !_curCall?
@@ -387,18 +395,24 @@ RocketChat.Phone = new class
 		_curCall.hangup()
 		_curCall = null
 
-	dialKey: (number) ->
+	dialKey: (number, useVideo) ->
 		if !_curCall? and _callState is null
-			@newCall(number)
+			@newCall(number, useVideo)
 			return
 
 		if _callState is 'ringing'
-			answer()
+			answer(useVideo)
 			return
 
 		console.log('What Im doing here: ', _callState, ' ', _curCall)
 
-	newCall: (destination) ->
+	newCall: (destination, useVideo) ->
+		if useVideo
+			useVideo = true
+		else
+			useVideo = false
+		_lastUseVideo = useVideo
+
 		if !destination or destination is ''
 			console.log("No number provided") if window.rocketDebug
 			return
@@ -419,7 +433,7 @@ RocketChat.Phone = new class
 			return
 
 		has_video = false
-		if _videoDevice and (_videoDevice != "none")
+		if _videoDevice and (_videoDevice != "none") and useVideo
 			has_video = true
 
 		_curCall = _vertoHandle.newCall({
