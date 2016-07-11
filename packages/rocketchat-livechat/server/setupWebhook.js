@@ -112,7 +112,7 @@ RocketChat.callbacks.add('closeLivechat', (room) => {
 	});
 
 	sendRequest(postData);
-});
+}, RocketChat.callbacks.priority.MEDIUM, 'setupWebhook');
 
 RocketChat.callbacks.add('sendOfflineLivechatMessage', (data) => {
 	if (!sendOnOfflineMessage) {
@@ -130,4 +130,4 @@ RocketChat.callbacks.add('sendOfflineLivechatMessage', (data) => {
 	};
 
 	sendRequest(postData);
-});
+}, RocketChat.callbacks.priority.MEDIUM, 'setupWebhook');

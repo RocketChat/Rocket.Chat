@@ -29,4 +29,4 @@ RocketChat.callbacks.add('beforeSaveMessage', (msg) => {
 		});
 	}
 	return msg;
-}, RocketChat.callbacks.priority.LOW);
+}, RocketChat.callbacks.priority.LOW, 'jumpToMessage');

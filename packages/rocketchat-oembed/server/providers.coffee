@@ -60,6 +60,7 @@ RocketChat.callbacks.add 'oembed:beforeGetUrlContent', (data) ->
 			delete data.urlObj.search
 
 	return data
+, RocketChat.callbacks.priority.MEDIUM, 'oembed-providers'
 
 RocketChat.callbacks.add 'oembed:afterParseContent', (data) ->
 	if data.parsedUrl?.query?
@@ -78,3 +79,4 @@ RocketChat.callbacks.add 'oembed:afterParseContent', (data) ->
 					data.meta['oembedUrl'] = url
 
 	return data
+, RocketChat.callbacks.priority.MEDIUM, 'oembed-providers'
