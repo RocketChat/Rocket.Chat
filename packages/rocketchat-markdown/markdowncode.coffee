@@ -82,4 +82,4 @@ class MarkdownCode
 RocketChat.MarkdownCode = MarkdownCode
 
 # MarkdownCode gets higher priority over Markdown so it's possible place a callback in between (katex for exmaple)
-RocketChat.callbacks.add 'renderMessage', MarkdownCode, RocketChat.callbacks.priority.HIGH - 2
+RocketChat.callbacks.add 'renderMessage', MarkdownCode, RocketChat.callbacks.priority.HIGH - 2, 'markdowncode'
