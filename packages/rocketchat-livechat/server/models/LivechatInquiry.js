@@ -12,6 +12,10 @@ class LivechatInquiry extends RocketChat.models._Base {
 		this.tryEnsureIndex({ 'status': 1}); // 'open', 'taken'
 	}
 
+	findOneById(inquiryId) {
+		return this.findOne({ _id: inquiryId });
+	}
+
 	/*
 	 * mark the inquiry as taken
 	 */

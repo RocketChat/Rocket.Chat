@@ -151,12 +151,13 @@ Template.visitorInfo.events({
 			showCancelButton: true,
 			confirmButtonColor: '#3085d6',
 			cancelButtonColor: '#d33',
-			confirmButtonText: t('yes')
+			confirmButtonText: t('Yes')
 		}, () => {
 			Meteor.call('livechat:returnAsInquiry', this.rid, function(error/*, result*/) {
 				if (error) {
 					console.log(error);
 				} else {
+					Session.set('openedRoom');
 					FlowRouter.go('/home');
 				}
 			});
