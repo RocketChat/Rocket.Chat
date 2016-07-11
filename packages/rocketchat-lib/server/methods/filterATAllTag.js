@@ -34,5 +34,4 @@ RocketChat.callbacks.add('beforeSaveMessage', function(message) {
 
 	return message;
 
-}, 1);
-
+}, 1, 'filterATAllTag');
