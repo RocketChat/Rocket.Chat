@@ -81,10 +81,12 @@ Template.livechatWindow.onCreated(function() {
 			console.error(err);
 		} else {
 			if (!result.enabled) {
+				Triggers.setDisabled();
 				return parentCall('removeWidget');
 			}
 
 			if (!result.online) {
+				Triggers.setDisabled();
 				this.title.set(result.offlineTitle);
 				this.color.set(result.offlineColor);
 				this.offlineMessage.set(result.offlineMessage);

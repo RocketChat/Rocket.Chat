@@ -1,24 +1,25 @@
 <template name="register">
-	<form id="livechat-registration" class="livechat-form">
+	<div class="livechat-form">
 		<div class="error">
 			<span>{{{error}}}</span>
 		</div>
 
-		<label>
+		<p class="welcome">
 			{{{welcomeMessage}}}
-		</label>
-		<input type="text" name="name" id="guestName" placeholder="{{_ "Name"}}">
-		<input type="email" name="email" id="guestEmail" placeholder="{{_ "Email"}}">
+		</p>
+		<form id="livechat-registration">
+			<input type="text" name="name" id="guestName" placeholder="{{_ "Name"}}">
+			<input type="email" name="email" id="guestEmail" placeholder="{{_ "Email"}}">
 
-		{{#if hasDepartments}}
-			<select name="department">
-				<option value="">{{_ "Select_a_department"}}</option>
-				{{#each departments}}
-					<option value="{{_id}}">{{name}}</option>
-				{{/each}}
-			</select>
-		{{/if}}
-		<button type="submit" id="btnEntrar" class="button"> {{_ "Start_Chat"}} </button>
-
-	</form>
+			{{#if hasDepartments}}
+				<select name="department">
+					<option value="">{{_ "Select_a_department"}}</option>
+					{{#each departments}}
+						<option value="{{_id}}">{{name}}</option>
+					{{/each}}
+				</select>
+			{{/if}}
+			<button type="submit" id="btnEntrar" class="button"> {{_ "Start_Chat"}} </button>
+		</form>
+	</div>
 </template>
