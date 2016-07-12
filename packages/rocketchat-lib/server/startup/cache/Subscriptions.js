@@ -6,6 +6,10 @@ RocketChat.cache.Subscriptions = new (class CacheUser extends RocketChat.cache._
 
 		this.indexes['rid'] = {type: 'array'};
 	}
+
+	findByUserId(userId, options) {
+		return this.find({'u._id': userId}, options);
+	}
 });
 
 RocketChat.cache.Rooms.hasMany('Subscriptions', {
