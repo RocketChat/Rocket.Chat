@@ -22,7 +22,7 @@ Template.visitorEdit.helpers({
 	},
 
 	joinTags() {
-		return this.tags.join(', ');
+		return this.tags && this.tags.join(', ');
 	}
 });
 
