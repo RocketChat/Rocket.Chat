@@ -1,5 +1,5 @@
-/* globals livechatAutolinker, Autolinker */
-var livechatAutolinker = new Autolinker({
+/* globals Autolinker */
+this.livechatAutolinker = new Autolinker({
 	twitter: false,
 	phone: false
 });
