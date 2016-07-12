@@ -97,7 +97,7 @@
   "Accounts_RegistrationForm_SecretURL" : "URL Secreto del Fomulario de Registro",
   "Accounts_RegistrationForm_SecretURL_Description" : "Debe proporcionar una cadena de texto aleatorio que se añadirá al URL de registro. Ejemplo: https://demo.rocket.chat/register/[secret_hash]",
   "Accounts_RequireNameForSignUp" : "Requerir un Nombre para el Registro",
-  "Accounts_ShowFormLogin" : "Mostrart Inicio de sesión basado en formulario",
+  "Accounts_ShowFormLogin" : "Mostrar Inicio de sesión basado en formulario",
   "Accounts_UseDefaultBlockedDomainsList" : "Usar lista predeterminada de dominios bloqueados",
   "Accounts_UseDNSDomainCheck" : "Utilizar la comprobación de dominio DNS",
   "Accounts_UserAddedEmail_Default" : "<h2> Bienvenido a </h2><h1> [Site_Name] </h1><p> Ir a [Site_URL] y probar la mejor solución de chat de código abierto disponibles en la actualidad! </p><p> Usted puede iniciar sesión utilizando su correo electrónico: [email] y contraseña: [password]. Usted puede ser requerido para cambiarlo después de su primera entrada.</p>",
