@@ -414,6 +414,10 @@ RocketChat.cache._Base = (class CacheBase extends EventEmitter {
 					fieldsToRemove.splice(0, fieldsToRemove.length);
 				}
 
+				if (fieldsToGet.length > 0 && fieldsToGet.indexOf('_id') === -1) {
+					fieldsToGet.push('_id');
+				}
+
 				const result = this.collection.find(query).map((record) => {
 					if (fieldsToRemove.length > 0) {
 						return _.omit(record, ...fieldsToRemove);
