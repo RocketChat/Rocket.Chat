@@ -31,10 +31,10 @@ RocketChat.Livechat = {
 		}
 
 		if (room == null) {
-			// if no department selected verify if there is only one active and use it
+			// if no department selected verify if there is at least one active and choose one randomly
 			if (!guest.department) {
 				var departments = RocketChat.models.LivechatDepartment.findEnabledWithAgents();
-				if (departments.count() === 1) {
+				if (departments.count() > 0) {
 					guest.department = departments.fetch()[0]._id;
 				}
 			}
