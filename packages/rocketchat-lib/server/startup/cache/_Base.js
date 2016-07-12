@@ -112,9 +112,17 @@ RocketChat.cache._Base = (class CacheBase extends EventEmitter {
 			this.processRemoteJoinInserted({join, field, link, multi, record: record});
 		});
 
-		// RocketChat.cache[join].on('updated', (record) => {
+		RocketChat.cache[join].on('beforeupdate', (record, diff) => {
+			if (diff[link.remote]) {
+				this.processRemoteJoinRemoved({join, field, link, multi, record: record});
+			}
+		});
 
-		// });
+		RocketChat.cache[join].on('updated', (record, diff) => {
+			if (diff[link.remote]) {
+				this.processRemoteJoinInserted({join, field, link, multi, record: record});
+			}
+		});
 
 		RocketChat.cache[join].on('removed', (record) => {
 			this.processRemoteJoinRemoved({join, field, link, multi, record: record});
@@ -124,9 +132,21 @@ RocketChat.cache._Base = (class CacheBase extends EventEmitter {
 			this.processLocalJoinInserted({join, field, link, multi, localRecord: localRecord});
 		});
 
-		// this.on('updated', (record) => {
+		this.on('beforeupdate', (localRecord, diff) => {
+			if (diff[link.local]) {
+				if (multi === true) {
+					localRecord[field] = [];
+				} else {
+					localRecord[field] = undefined;
+				}
+			}
+		});
 
-		// });
+		this.on('updated', (localRecord, diff) => {
+			if (diff[link.local]) {
+				this.processLocalJoinInserted({join, field, link, multi, localRecord: localRecord});
+			}
+		});
 	}
 
 	processRemoteJoinInserted({field, link, multi, record}) {
@@ -328,32 +348,36 @@ RocketChat.cache._Base = (class CacheBase extends EventEmitter {
 	}
 
 	processOplogRecord(action) {
-		console.log(this.collectionName, JSON.stringify(action, null, 2));
+		// console.log(this.collectionName, JSON.stringify(action, null, 2));
 		if (action.op.op === 'i') {
 			this.insert(action.op.o);
 			return;
 		}
 
 		if (action.op.op === 'u') {
-			const record = this.collection.findOne({_id: action.id});
+			let diff = {};
 
-			if (action.op.o.$set) {
-				for (let key in action.op.o.$set) {
-					if (action.op.o.$set.hasOwnProperty(key)) {
-						objectPath.set(record, key, action.op.o.$set[key]);
+			if (!action.op.o.$set && !action.op.o.$set) {
+				diff = action.op.o;
+			} else {
+				if (action.op.o.$set) {
+					for (let key in action.op.o.$set) {
+						if (action.op.o.$set.hasOwnProperty(key)) {
+							diff[key] = action.op.o.$set[key];
+						}
+					}
+				}
+
+				if (action.op.o.$unset) {
+					for (let key in action.op.o.$unset) {
+						if (action.op.o.$set.hasOwnProperty(key)) {
+							diff[key] = undefined;
+						}
 					}
 				}
 			}
 
-			if (action.op.o.$unset) {
-				for (let key in action.op.o.$unset) {
-					if (action.op.o.$set.hasOwnProperty(key)) {
-						objectPath.set(record, key, null);
-					}
-				}
-			}
-
-			this.collection.update(record);
+			this.updateDiffById(action.id, diff);
 			return;
 		}
 
@@ -407,6 +431,21 @@ RocketChat.cache._Base = (class CacheBase extends EventEmitter {
 			this.collection.insert(record);
 			this.emit('inserted', record);
 		}
+	}
+
+	updateDiffById(id, diff) {
+		const record = this.collection.findOne({_id: id});
+		this.emit('beforeupdate', record, diff);
+
+		for (let key in diff) {
+			if (diff.hasOwnProperty(key)) {
+				objectPath.set(record, key, diff[key]);
+			}
+		}
+
+		this.collection.update(record);
+
+		this.emit('updated', record, diff);
 	}
 
 	removeById(id) {
