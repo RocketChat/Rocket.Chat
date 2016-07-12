@@ -387,18 +387,52 @@ RocketChat.cache._Base = (class CacheBase extends EventEmitter {
 		}
 	}
 
-	find(...findArguments) {
+	find(query, options={}) {
 		return {
 			fetch: () => {
-				return this.collection.find(...findArguments);
+				if (!options.fields) {
+					options.fields = {
+						$loki: 0
+					};
+				}
+
+				const fieldsToRemove = [];
+				const fieldsToGet = [];
+
+				for (const field in options.fields) {
+					if (options.fields.hasOwnProperty(field)) {
+						if (options.fields[field] === 0) {
+							fieldsToRemove.push(field);
+						} else if (options.fields[field] === 1) {
+							fieldsToGet.push(field);
+						}
+					}
+				}
+
+				if (fieldsToRemove.length > 0 && fieldsToGet.length > 0) {
+					console.error('Can\'t mix remove and get fields');
+					fieldsToRemove.splice(0, fieldsToRemove.length);
+				}
+
+				const result = this.collection.find(query).map((record) => {
+					if (fieldsToRemove.length > 0) {
+						return _.omit(record, ...fieldsToRemove);
+					}
+
+					if (fieldsToGet.length > 0) {
+						return _.pick(record, ...fieldsToGet);
+					}
+				});
+
+				return result;
 			},
 
 			count: () => {
-				return this.collection.find(...findArguments).length;
+				return this.collection.find(query).length;
 			},
 
 			forEach: (fn) => {
-				return this.collection.find(...findArguments).forEach(fn);
+				return this.find(query, options).fetch().forEach(fn);
 			}
 		};
 	}
