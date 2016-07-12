@@ -37,9 +37,8 @@ RocketChat.roomTypes.add 'd', 20,
 	findRoom: (identifier, user) ->
 		query =
 			t: 'd'
-			usernames:
-				$all: [identifier, user.username]
-		return ChatRoom.findOne(query)
+			name: identifier
+		return ChatRoom.findOne(ChatSubscription.findOne(query).rid)
 	roomName: (roomData) ->
 		return ChatSubscription.findOne({ rid: roomData._id }, { fields: { name: 1 } })?.name
 	condition: ->

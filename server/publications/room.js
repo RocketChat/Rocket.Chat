@@ -1,5 +1,6 @@
 const options = {
-	fields: {
+	fields: Object.keys({
+		_id: 1,
 		name: 1,
 		t: 1,
 		cl: 1,
@@ -10,7 +11,7 @@ const options = {
 		archived: 1,
 		jitsiTimeout: 1,
 		description: 1
-	}
+	})
 };
 
 
@@ -22,8 +23,12 @@ Meteor.methods({
 
 		this.unblock();
 
-		return _.pluck(RocketChat.cache.Subscriptions.findByUserId(Meteor.userId(), options).fetch(), '_room').map((record) => {
-			return _.omit(record, '$loki');
+		return RocketChat.cache.Subscriptions.findByUserId(Meteor.userId()).fetch().map((record) => {
+			if (record._room) {
+				return _.pick(record._room, ...options.fields);
+			}
+			console.log('empty', record);
+			return {};
 		});
 	},
 
@@ -36,8 +41,12 @@ Meteor.methods({
 
 		//return RocketChat.models.Subscriptions.dinamicFindChangesAfter('findByUserId', updatedAt, Meteor.userId(), options);
 		// TODO: Change
-		return _.pluck(RocketChat.cache.Subscriptions.findByUserId(Meteor.userId(), options).fetch(), '_room').map((record) => {
-			return _.omit(record, '$loki');
+		return RocketChat.cache.Subscriptions.findByUserId(Meteor.userId()).fetch().map((record) => {
+			if (record._room) {
+				return _.pick(record._room, ...options.fields);
+			}
+			console.log('empty', record);
+			return {};
 		});
 	}
 });
