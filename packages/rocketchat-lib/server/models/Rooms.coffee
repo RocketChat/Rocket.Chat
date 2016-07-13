@@ -16,6 +16,12 @@ RocketChat.models.Rooms = new class extends RocketChat.models._Base
 
 		return @findOne query, options
 
+	findOneByImportId: (_id, options) ->
+		query =
+			importIds: _id
+
+		return @findOne query, options
+
 	findOneByName: (name, options) ->
 		query =
 			name: name
@@ -82,6 +88,39 @@ RocketChat.models.Rooms = new class extends RocketChat.models._Base
 				t: 'd'
 				usernames: nameRegex
 			]
+
+		return @find query, options
+
+	findByNameContainingTypesWithUsername: (name, types, options) ->
+		nameRegex = new RegExp s.trim(s.escapeRegExp(name)), "i"
+
+		$or = []
+		for type in types
+			obj = {name: nameRegex, t: type.type}
+			if type.username?
+				obj.usernames = type.username
+			if type.ids?
+				obj._id = $in: type.ids
+			$or.push obj
+
+		query =
+			$or: $or
+
+		return @find query, options
+
+	findContainingTypesWithUsername: (types, options) ->
+
+		$or = []
+		for type in types
+			obj = {t: type.type}
+			if type.username?
+				obj.usernames = type.username
+			if type.ids?
+				obj._id = $in: type.ids
+			$or.push obj
+
+		query =
+			$or: $or
 
 		return @find query, options
 
@@ -160,7 +199,7 @@ RocketChat.models.Rooms = new class extends RocketChat.models._Base
 
 		return @find query, options
 
-	findByTypeAndNameContainigUsername: (type, name, username, options) ->
+	findByTypeAndNameContainingUsername: (type, name, username, options) ->
 		query =
 			name: name
 			t: type

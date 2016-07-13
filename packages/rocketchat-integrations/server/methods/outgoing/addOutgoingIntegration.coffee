@@ -23,7 +23,7 @@ Meteor.methods
 		if integration.urls.length is 0
 			throw new Meteor.Error 'error-invalid-urls', 'Invalid URLs', { method: 'addOutgoingIntegration' }
 
-		channels = _.map(integration.channel.split(','), (channel) -> s.trim(channel))
+		channels = if integration.channel then _.map(integration.channel.split(','), (channel) -> s.trim(channel)) else []
 
 		for channel in channels
 			if channel[0] not in ['@', '#']

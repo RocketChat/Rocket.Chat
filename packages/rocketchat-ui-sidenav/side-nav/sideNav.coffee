@@ -18,10 +18,22 @@ Template.sideNav.helpers
 		return RocketChat.roomTypes.getTypes()
 
 	canShowRoomType: ->
-		return RocketChat.roomTypes.checkCondition(@)
+		userPref = Meteor.user()?.settings?.preferences?.mergeChannels
+		globalPref = RocketChat.settings.get('UI_Merge_Channels_Groups')
+		mergeChannels = if userPref? then userPref else globalPref
+		if mergeChannels
+			return RocketChat.roomTypes.checkCondition(@) and @template isnt 'privateGroups'
+		else
+			return RocketChat.roomTypes.checkCondition(@)
 
 	templateName: ->
-		return @template
+		userPref = Meteor.user()?.settings?.preferences?.mergeChannels
+		globalPref = RocketChat.settings.get('UI_Merge_Channels_Groups')
+		mergeChannels = if userPref? then userPref else globalPref
+		if mergeChannels
+			return if @template is 'channels' then 'combined' else @template
+		else
+			return @template
 
 Template.sideNav.events
 	'click .close-flex': ->
