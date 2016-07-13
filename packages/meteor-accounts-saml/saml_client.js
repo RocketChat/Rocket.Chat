@@ -1,24 +1,48 @@
+/* globals cordova */
+
 if (!Accounts.saml) {
 	Accounts.saml = {};
 }
 
 var openCenteredPopup = function(url, width, height) {
-	var screenX = typeof window.screenX !== 'undefined' ? window.screenX : window.screenLeft;
-	var screenY = typeof window.screenY !== 'undefined' ? window.screenY : window.screenTop;
-	var outerWidth = typeof window.outerWidth !== 'undefined' ? window.outerWidth : document.body.clientWidth;
-	var outerHeight = typeof window.outerHeight !== 'undefined' ? window.outerHeight : (document.body.clientHeight - 22);
-	// XXX what is the 22?
+	var newwindow;
 
-	// Use `outerWidth - width` and `outerHeight - height` for help in
-	// positioning the popup centered relative to the current window
-	var left = screenX + (outerWidth - width) / 2;
-	var top = screenY + (outerHeight - height) / 2;
-	var features = ('width=' + width + ',height=' + height +
-		',left=' + left + ',top=' + top + ',scrollbars=yes');
+	if (typeof cordova !== 'undefined' && typeof cordova.InAppBrowser !== 'undefined') {
+		newwindow = cordova.InAppBrowser.open(url, '_blank');
+		newwindow.closed = false;
 
-	var newwindow = window.open(url, 'Login', features);
-	if (newwindow.focus) {
-		newwindow.focus();
+		var intervalId = setInterval(function() {
+			newwindow.executeScript({
+				'code': 'document.getElementsByTagName("script")[0].textContent'
+			}, function(data) {
+				if (data && data.length > 0 && data[0] === 'window.close()') {
+					newwindow.close();
+					newwindow.closed = true;
+				}
+			});
+		}, 100);
+
+		newwindow.addEventListener('exit', function() {
+			clearInterval(intervalId);
+		});
+	} else {
+		var screenX = typeof window.screenX !== 'undefined' ? window.screenX : window.screenLeft;
+		var screenY = typeof window.screenY !== 'undefined' ? window.screenY : window.screenTop;
+		var outerWidth = typeof window.outerWidth !== 'undefined' ? window.outerWidth : document.body.clientWidth;
+		var outerHeight = typeof window.outerHeight !== 'undefined' ? window.outerHeight : (document.body.clientHeight - 22);
+		// XXX what is the 22?
+
+		// Use `outerWidth - width` and `outerHeight - height` for help in
+		// positioning the popup centered relative to the current window
+		var left = screenX + (outerWidth - width) / 2;
+		var top = screenY + (outerHeight - height) / 2;
+		var features = ('width=' + width + ',height=' + height +
+			',left=' + left + ',top=' + top + ',scrollbars=yes');
+
+		newwindow = window.open(url, 'Login', features);
+		if (newwindow.focus) {
+			newwindow.focus();
+		}
 	}
 	return newwindow;
 };
@@ -72,6 +96,6 @@ Meteor.logoutWithSaml = function(options/*, callback*/) {
 		console.log('LOC ' + result);
 		// A nasty bounce: 'result' has the SAML LogoutRequest but we need a proper 302 to redirected from the server.
 		//window.location.replace(Meteor.absoluteUrl('_saml/sloRedirect/' + options.provider + '/?redirect='+result));
-		window.location.replace(Meteor.absoluteUrl('_saml/sloRedirect/' + options.provider + '/?redirect='+encodeURIComponent(result)));
+		window.location.replace(Meteor.absoluteUrl('_saml/sloRedirect/' + options.provider + '/?redirect=' + encodeURIComponent(result)));
 	});
 };

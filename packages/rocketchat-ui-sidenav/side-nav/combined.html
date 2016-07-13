@@ -1,0 +1,16 @@
+<template name="combined">
+	<h3 class="add-room {{isActive}}">
+		{{_ "Channels"}}
+		{{#if canCreate}}
+			<i class="icon-plus" aria-label="{{_ "Create channel"}}" role="button"></i>
+		{{/if}}
+	</h3>
+	<ul>
+		{{#each rooms}}
+			{{> chatRoomItem }}
+		{{else}}
+			<p class="empty">{{_ "No_channels_yet" }}</p>
+		{{/each}}
+	</ul>
+	<button class="more more-channels">{{_ "More_channels"}}...</button>
+</template>

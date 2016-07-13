@@ -20,6 +20,8 @@
   "Type_your_email" : "あなたのメールアドレスを入力し",
   "Type_your_message" : "メッセージを入力",
   "Type_your_name" : "あなたの名前を入力します",
+  "User_joined" : "ユーザー参加",
+  "User_left" : "ユーザー左",
   "We_are_offline_Sorry_for_the_inconvenience" : "ただいまオフラインです。ご不便をお掛けし、申し訳ありません。",
   "You_must_complete_all_fields" : "あなたはすべてのフィールドを完了する必要があります"
 }
