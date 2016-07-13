@@ -9,6 +9,7 @@
   "Installation" : "Instalacja",
   "Please_answer_survey" : "Proszę poświęć chwilę, aby odpowiedzieć na krótką ankietę na temat tej rozmowy",
   "Please_fill_name_and_email" : "Proszę wypełnić nazwisko i adres e-mail",
+  "Powered_by" : "Dostarczane przez",
   "Select_a_department" : "Wybierz oddział",
   "Send" : "Wyślij",
   "Skip" : "Pomiń",
@@ -20,6 +21,8 @@
   "Type_your_email" : "Wpisz swój e-mail",
   "Type_your_message" : "Wpisz wiadomość",
   "Type_your_name" : "Wpisz swoje imię i nazwisko",
+  "User_joined" : "użytkownik dołączył",
+  "User_left" : "lewa użytkownika",
   "We_are_offline_Sorry_for_the_inconvenience" : "Jesteśmy offline. Przepraszamy za niedogodności.",
   "You_must_complete_all_fields" : "Musisz wypełnić wszystkie pola"
 }

@@ -15,6 +15,9 @@ RocketChat.models.Users = new class extends RocketChat.models._Base
 	findOneById: (_id, options) ->
 		return @findOne _id, options
 
+	findOneByImportId: (_id, options) ->
+		return @findOne { importIds: _id }, options
+
 	findOneByUsername: (username, options) ->
 		query =
 			username: username
@@ -23,19 +26,7 @@ RocketChat.models.Users = new class extends RocketChat.models._Base
 
 	findOneByEmailAddress: (emailAddress, options) ->
 		query =
-			'emails.address': emailAddress
-
-		return @findOne query, options
-
-	findOneVerifiedFromSameDomain: (email, options) ->
-		domain = s.strRight(email, '@')
-		query =
-			emails:
-				$elemMatch:
-					address:
-						$regex: new RegExp "@" + domain + "$", "i"
-						$ne: email
-					verified: true
+			'emails.address': new RegExp("^" + s.escapeRegExp(emailAddress) + "$", 'i')
 
 		return @findOne query, options
 
@@ -330,6 +321,9 @@ RocketChat.models.Users = new class extends RocketChat.models._Base
 
 		if not _.isEmpty unsetData
 			update.$unset = unsetData
+
+		if _.isEmpty update
+			return true
 
 		return @update { _id: _id }, update
 

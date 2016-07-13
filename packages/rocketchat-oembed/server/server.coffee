@@ -27,6 +27,10 @@ getUrlContent = (urlObj, redirectCount = 5, callback) ->
 	if parsedUrl.hostname in ignoredHosts or ipRangeCheck(parsedUrl.hostname, ignoredHosts)
 		return callback()
 
+	safePorts = RocketChat.settings.get('API_EmbedSafePorts').replace(/\s/g, '').split(',') or []
+	if parsedUrl.port and safePorts.length > 0 and parsedUrl.port not in safePorts
+		return callback()
+
 	data = RocketChat.callbacks.run 'oembed:beforeGetUrlContent',
 		urlObj: urlObj
 		parsedUrl: parsedUrl

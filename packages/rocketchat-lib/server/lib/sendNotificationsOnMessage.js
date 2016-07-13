@@ -194,10 +194,8 @@ RocketChat.callbacks.add('afterSaveMessage', function(message, room) {
 			}
 
 			if (room.t !== 'c') {
-				usersOfDesktopMentions.forEach(function(usersOfMentionItem, indexOfUser) {
-					if (room.usernames.indexOf(usersOfMentionItem.username) === -1) {
-						usersOfDesktopMentions.splice(indexOfUser, 1);
-					}
+				usersOfDesktopMentions = _.reject(usersOfDesktopMentions, (usersOfMentionItem) => {
+					return room.usernames.indexOf(usersOfMentionItem.username) === -1;
 				});
 			}
 
@@ -221,10 +219,8 @@ RocketChat.callbacks.add('afterSaveMessage', function(message, room) {
 			}).fetch();
 
 			if (room.t !== 'c') {
-				usersOfMobileMentions.forEach(function(usersOfMentionItem, indexOfUser) {
-					if (room.usernames.indexOf(usersOfMentionItem.username) === -1) {
-						usersOfMobileMentions.splice(indexOfUser, 1);
-					}
+				usersOfMobileMentions = _.reject(usersOfMobileMentions, (usersOfMentionItem) => {
+					return room.usernames.indexOf(usersOfMentionItem.username) === -1;
 				});
 			}
 

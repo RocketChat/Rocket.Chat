@@ -7,8 +7,10 @@
   "How_responsive_was_the_chat_agent" : "How responsive was the chat agent?",
   "How_satisfied_were_you_with_this_chat" : "How satisfied were you with this chat?",
   "Installation" : "Installation",
+  "New_messages" : "New messages",
   "Please_answer_survey" : "Please take a moment to answer a quick survey about this chat",
   "Please_fill_name_and_email" : "Please fill name and email",
+  "Powered_by" : "Powered by",
   "Select_a_department" : "Select a department",
   "Send" : "Send",
   "Skip" : "Skip",
@@ -20,6 +22,8 @@
   "Type_your_email" : "Type your email",
   "Type_your_message" : "Type your message",
   "Type_your_name" : "Type your name",
+  "User_joined" : "User joined",
+  "User_left" : "User left",
   "We_are_offline_Sorry_for_the_inconvenience" : "We are offline. Sorry for the inconvenience.",
   "You_must_complete_all_fields" : "You must complete all fields"
 }

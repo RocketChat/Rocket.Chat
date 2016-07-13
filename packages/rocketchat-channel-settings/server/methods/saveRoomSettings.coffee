@@ -20,11 +20,10 @@ Meteor.methods
 					RocketChat.models.Messages.createRoomRenamedWithRoomIdRoomNameAndUser rid, name, Meteor.user()
 				when 'roomTopic'
 					if value isnt room.topic
-						RocketChat.saveRoomTopic(rid, value)
-						RocketChat.models.Messages.createRoomSettingsChangedWithTypeRoomIdMessageAndUser 'room_changed_topic', rid, value, Meteor.user()
+						RocketChat.saveRoomTopic(rid, value, Meteor.user())
 				when 'roomType'
 					if value isnt room.t
-						RocketChat.saveRoomType(rid, value)
+						RocketChat.saveRoomType(rid, value, Meteor.user())
 						if value is 'c'
 							message = TAPi18n.__('Channel')
 						else
@@ -33,4 +32,4 @@ Meteor.methods
 				when 'default'
 					RocketChat.models.Rooms.saveDefaultById rid, value
 
-		return true
+		return { result: true, rid: room._id }
