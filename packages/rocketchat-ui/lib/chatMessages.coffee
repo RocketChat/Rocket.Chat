@@ -177,9 +177,13 @@ class @ChatMessages
 					match = msg.match(/^\/([^\s]+)(?:\s+(.*))?$/m)
 					if match?
 						if RocketChat.slashCommands.commands[match[1]]
+							commandOptions = RocketChat.slashCommands.commands[match[1]]
 							command = match[1]
 							param = match[2]
-							Meteor.call 'slashCommand', {cmd: command, params: param, msg: msgObject }
+							if commandOptions.clientOnly
+								commandOptions.callback(command, param, msgObject)
+							else
+								Meteor.call 'slashCommand', {cmd: command, params: param, msg: msgObject }
 							return
 						invalidCommandMsg =
 							_id: Random.id()
@@ -324,7 +328,7 @@ class @ChatMessages
 		$input = $(input)
 		k = event.which
 		this.resize(input)
-		if k is 13 and not event.shiftKey # Enter without shift
+		if k is 13 and not event.shiftKey and not event.ctrlKey and not event.altKey # Enter without shift/ctrl/alt
 			event.preventDefault()
 			event.stopPropagation()
 			this.send(rid, input)

@@ -57,6 +57,7 @@ Package.onUse(function(api) {
 	api.addFiles('client/collections/LivechatDepartmentAgents.js', 'client');
 	api.addFiles('client/collections/LivechatPageVisited.js', 'client');
 	api.addFiles('client/collections/LivechatTrigger.js', 'client');
+	api.addFiles('client/collections/LivechatInquiry.js', 'client');
 
 	api.addFiles('client/methods/changeLivechatStatus.js', 'client');
 
@@ -91,6 +92,8 @@ Package.onUse(function(api) {
 	api.addFiles('client/views/app/tabbar/visitorNavigation.js', 'client');
 	api.addFiles('client/views/app/tabbar/visitorEdit.html', 'client');
 	api.addFiles('client/views/app/tabbar/visitorEdit.js', 'client');
+	api.addFiles('client/views/app/tabbar/visitorForward.html', 'client');
+	api.addFiles('client/views/app/tabbar/visitorForward.js', 'client');
 	api.addFiles('client/views/app/tabbar/visitorInfo.html', 'client');
 	api.addFiles('client/views/app/tabbar/visitorInfo.js', 'client');
 
@@ -127,7 +130,10 @@ Package.onUse(function(api) {
 	api.addFiles('server/methods/sendMessageLivechat.js', 'server');
 	api.addFiles('server/methods/sendOfflineMessage.js', 'server');
 	api.addFiles('server/methods/setCustomField.js', 'server');
+	api.addFiles('server/methods/transfer.js', 'server');
 	api.addFiles('server/methods/webhookTest.js', 'server');
+	api.addFiles('server/methods/takeInquiry.js', 'server');
+	api.addFiles('server/methods/returnAsInquiry.js', 'server');
 
 	// models
 	api.addFiles('server/models/Users.js', 'server');
@@ -139,13 +145,17 @@ Package.onUse(function(api) {
 	api.addFiles('server/models/LivechatPageVisited.js', 'server');
 	api.addFiles('server/models/LivechatTrigger.js', 'server');
 	api.addFiles('server/models/indexes.js', 'server');
+	api.addFiles('server/models/LivechatInquiry.js', 'server');
 
 	// server lib
 	api.addFiles('server/lib/Livechat.js', 'server');
+	api.addFiles('server/lib/QueueMethods.js', 'server');
+
 	api.addFiles('server/sendMessageBySMS.js', 'server');
 	api.addFiles('server/externalMessageHook.js', 'server');
 	api.addFiles('server/forwardUnclosedLivechats.js', 'server');
 	api.addFiles('server/setupWebhook.js', 'server');
+
 
 	// publications
 	api.addFiles('server/publications/customFields.js', 'server');
@@ -158,6 +168,7 @@ Package.onUse(function(api) {
 	api.addFiles('server/publications/visitorHistory.js', 'server');
 	api.addFiles('server/publications/visitorInfo.js', 'server');
 	api.addFiles('server/publications/visitorPageVisited.js', 'server');
+	api.addFiles('server/publications/livechatInquiries.js', 'server');
 
 	// api
 	api.addFiles('server/api.js', 'server');
