@@ -1,7 +1,7 @@
 {
   "Additional_Feedback" : "Lisäpalaute",
   "Appearance" : "Ulkoasu",
-  "Conversation_finished" : "Conversation päättynyt",
+  "Conversation_finished" : "Keskustelu päättynyt",
   "How_friendly_was_the_chat_agent" : "Kuinka ystävällinen asiakaspalvelija oli?",
   "How_knowledgeable_was_the_chat_agent" : "Miten osaava asiakaspalvelija oli?",
   "How_responsive_was_the_chat_agent" : "Miten reagoiva asiakaspalvelija oli?",
@@ -16,7 +16,7 @@
   "Skip" : "Ohita",
   "Start_Chat" : "Aloita Chat",
   "Survey" : "Kysely",
-  "Survey_instructions" : "Arvioi jokainen kysymys sen mukaan miten tyytyväinen olet. 1 tarkoittaa että olet täysin tyytymätön ja 5 tarkoittaa että olet täysin tyytyväinen.",
+  "Survey_instructions" : "Arvioi jokainen kysymys sen mukaan miten tyytyväinen olet niin, että 1 tarkoittaa että olet täysin tyytymätön ja 5 tarkoittaa että olet täysin tyytyväinen.",
   "Thank_you_for_your_feedback" : "Kiitos palautteestasi",
   "Thanks_We_ll_get_back_to_you_soon" : "Kiitos! Palaamme asiaan pian.",
   "Type_your_email" : "Kirjoita sähköpostiosoitteesi",

@@ -131,6 +131,9 @@ Template.room.events
 			t.sendToBottomIfNecessaryDebounced()
 		, 100
 
+	"click .messages-container": (e) ->
+		if RocketChat.TabBar.isFlexOpen() and Meteor.user()?.settings?.preferences?.hideFlexTab then RocketChat.TabBar.closeFlex()
+
 	"touchstart .message": (e, t) ->
 		touchMoved = false
 		isSocialSharingOpen = false
@@ -235,7 +238,6 @@ Template.room.events
 			t.searchResult.set undefined
 		else
 			RocketChat.TabBar.openFlex()
-
 
 	"click .flex-tab  .video-remote" : (e) ->
 		if RocketChat.TabBar.isFlexOpen()

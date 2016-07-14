@@ -1,35 +1,37 @@
 <template name="visitorEdit">
-	<form class="edit-form" autocomplete="off">
-		{{#with visitor}}
-			<h3>{{username}}</h3>
-			<div class="input-line">
-				<label for="name">{{_ "Name"}}</label>
-				<input type="text" name="name" autocomplete="off" value="{{name}}">
-			</div>
-			<div class="input-line">
-				<label for="email">{{_ "Email"}}</label>
-				<input type="email" name="email" autocomplete="off" value="{{email}}">
-			</div>
-			<div class="input-line">
-				<label for="phone">{{_ "Phone"}}</label>
-				<input type="text" name="phone" autocomplete="off" value="{{phone}}">
-			</div>
-		{{/with}}
+	<div class="visitor-edit">
+		<form class="edit-form" autocomplete="off">
+			{{#with visitor}}
+				<h3>{{username}}</h3>
+				<div class="input-line">
+					<label for="name">{{_ "Name"}}</label>
+					<input type="text" name="name" autocomplete="off" value="{{name}}">
+				</div>
+				<div class="input-line">
+					<label for="email">{{_ "Email"}}</label>
+					<input type="email" name="email" autocomplete="off" value="{{email}}">
+				</div>
+				<div class="input-line">
+					<label for="phone">{{_ "Phone"}}</label>
+					<input type="text" name="phone" autocomplete="off" value="{{phone}}">
+				</div>
+			{{/with}}
 
-		{{#with room}}
-			<h3>{{_ "Conversation" }}</h3>
-			<div class="input-line">
-				<label for="topic">{{_ "Topic"}}</label>
-				<input type="text" name="topic" autocomplete="off" value="{{topic}}">
-			</div>
-			<div class="input-line">
-				<label for="tags">{{_ "Tags"}}</label>
-				<input type="text" name="tags" autocomplete="off" value="{{joinTags}}">
-			</div>
-		{{/with}}
-		<nav>
-			<button class='button button-block blue save'><span>{{_ "Save"}}</span></button>
-			<button class='button button-block cancel secondary' type="button"><span>{{_ "Cancel"}}</span></button>
-		</nav>
-	</form>
+			{{#with room}}
+				<h3>{{_ "Conversation" }}</h3>
+				<div class="input-line">
+					<label for="topic">{{_ "Topic"}}</label>
+					<input type="text" name="topic" autocomplete="off" value="{{topic}}">
+				</div>
+				<div class="input-line">
+					<label for="tags">{{_ "Tags"}}</label>
+					<input type="text" name="tags" autocomplete="off" value="{{joinTags}}">
+				</div>
+			{{/with}}
+			<nav>
+				<button class='button button-block blue save'><span>{{_ "Save"}}</span></button>
+				<button class='button button-block cancel secondary' type="button"><span>{{_ "Cancel"}}</span></button>
+			</nav>
+		</form>
+	</div>
 </template>
