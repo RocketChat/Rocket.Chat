@@ -328,7 +328,7 @@ class @ChatMessages
 		$input = $(input)
 		k = event.which
 		this.resize(input)
-		if k is 13 and not event.shiftKey # Enter without shift
+		if k is 13 and not event.shiftKey and not event.ctrlKey and not event.altKey # Enter without shift/ctrl/alt
 			event.preventDefault()
 			event.stopPropagation()
 			this.send(rid, input)
