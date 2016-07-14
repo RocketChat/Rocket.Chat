@@ -9,21 +9,21 @@
 		<div class="content">
 			<div class="rocket-form">
 				<fieldset>
-                    <div class="section">
-                        <h1>{{_ "Localization"}}</h1>
-                        <div class="section-content">
+					<div class="section">
+						<h1>{{_ "Localization"}}</h1>
+						<div class="section-content">
 							<div class="input-line">
 								<label for="language">{{_ "Language"}}</label>
 								<div>
 									<select id="language" class="required">
 										{{#each languages}}
-										<option value="{{key}}" selected="{{userLanguage key}}" dir="auto">{{name}}</option>
+											<option value="{{key}}" selected="{{userLanguage key}}" dir="auto">{{name}}</option>
 										{{/each}}
 									</select>
 								</div>
 							</div>
-                        </div>
-                    </div>
+						</div>
+					</div>
 					<div class="section">
 						<h1>{{_ "Messages"}}</h1>
 						<div class="section-content">
@@ -39,6 +39,16 @@
 										{{else}}
 											<label><button class="button enable-notifications"><i class="icon-comment-empty"></i> <span>{{_ "Enable_Desktop_Notifications"}}</span></button></label>
 										{{/if}}
+									{{/if}}
+								</div>
+							</div>
+							<div class="input-line double-col">
+								<label>{{_ "Notification_Duration"}}</label>
+								<div>
+									{{#if desktopNotificationDuration}}
+										<input type="number" name="desktopNotificationDuration" min="0" value="{{desktopNotificationDuration}}">
+									{{else}}
+										<input type="number" name="desktopNotificationDuration" min="0" value="" placeholder="{{_ "Use_Global_Settings"}}">
 									{{/if}}
 								</div>
 							</div>
@@ -91,6 +101,13 @@
 									<label><input type="radio" name="hideUsernames" value="0" checked="{{checked 'hideUsernames' false true}}" /> {{_ "False"}}</label>
 								</div>
 							</div>
+							<div class="input-line double-col" id="hideFlexTab">
+								<label>{{_ "Hide_flextab"}}</label>
+								<div>
+									<label><input type="radio" name="hideFlexTab" value="1" checked="{{checked 'hideFlexTab' true}}" /> {{_ "True"}}</label>
+									<label><input type="radio" name="hideFlexTab" value="0" checked="{{checked 'hideFlexTab' false true}}" /> {{_ "False"}}</label>
+								</div>
+							</div>
 							<div class="input-line double-col" id="hideAvatars">
 								<label>{{_ "Hide_Avatars"}}</label>
 								<div>
@@ -129,18 +146,18 @@
 							</div>
 						</div>
 					</div>
-                    <div class="section">
-                        <h1>{{_ "Highlights"}}</h1>
-                        <div class="section-content">
-                            <div class="input-line double-col">
-                                <label>{{_ "Highlights_List"}}</label>
-                                <div>
-                                    <label>{{_ "Highlights_How_To"}}</label>
-                                    <textarea name="highlights" id="highlights" cols="30" rows="10">{{highlights}}</textarea>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+					<div class="section">
+						<h1>{{_ "Highlights"}}</h1>
+						<div class="section-content">
+							<div class="input-line double-col">
+								<label>{{_ "Highlights_List"}}</label>
+								<div>
+									<label>{{_ "Highlights_How_To"}}</label>
+									<textarea name="highlights" id="highlights" cols="30" rows="10">{{highlights}}</textarea>
+								</div>
+							</div>
+						</div>
+					</div>
 					<div class="section">
 						<h1>{{_ "Sound"}}</h1>
 						<div class="section-content">
