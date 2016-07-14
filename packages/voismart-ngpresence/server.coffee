@@ -117,7 +117,6 @@ Meteor.startup ->
 		logger.error "error getting domain: \"#{e}\""
 		return
 
-	host = ng_host.replace /^https{0,1}:\/\//i, ''
 	c = new AmqpConnection
 		host: broker_host
 		vhost: '/ydin_evb'
