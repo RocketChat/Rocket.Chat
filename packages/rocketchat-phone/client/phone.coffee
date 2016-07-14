@@ -215,8 +215,12 @@ RocketChat.Phone = new class
 			_curCall = d
 
 		switch d.state.name
+			when 'trying', 'early'
+				_callState = 'active'
+				RocketChat.TabBar.updateButton('phone', { class: 'phone-blinking' })
 			when 'ringing'
 				_callState = 'ringing'
+				RocketChat.TabBar.updateButton('phone', { class: 'phone-blinking' })
 				RocketChat.TabBar.setTemplate "phone", ->
 					if d.params.caller_id_name
 						cid = d.params.caller_id_name
@@ -245,7 +249,7 @@ RocketChat.Phone = new class
 				_curCall = null
 				clearNotification()
 				RocketChat.TabBar.updateButton('phone', { class: '' })
-				if d.answered or d.gotAnswer
+				if d.answered or d.gotAnswer or d.cause == 'ORIGINATOR_CANCEL' or d.cause == 'NORMAL CLEARING'
 					toastr.success TAPi18n.__('Phone_end_call')
 				else
 					msg = TAPi18n.__('Phone_failed_call')

@@ -23,15 +23,24 @@
      background-color: red !important;
  }
 
-.phone-active-key {background-color: red !important;
-     -webkit-animation-duration: 1000ms;
-     animation-duration: 1000ms;
-     -webkit-animation-name: blink;
-     animation-name: blink;
-     -webkit-animation-iteration-count: infinite;
-     animation-iteration-count: infinite;
-     -webkit-animation-direction: alternate;
-     animation-direction: alternate;
+.phone-active-key {
+    background-color: red !important;
+    animation-duration: 1000ms;
+    animation-name: blink;
+    animation-iteration-count: infinite;
+    animation-direction: alternate;
+ }
+
+ @keyframes color_blink {
+    from { color: red; }
+    to { color: #444; }
+ }
+
+.phone-blinking {
+    animation-duration: 500ms;
+    animation-name: color_blink;
+    animation-iteration-count: infinite;
+    animation-direction: alternate;
  }
 
  .dialkey {
