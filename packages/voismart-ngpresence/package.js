@@ -22,3 +22,7 @@ Package.onUse(function(api) {
 	], ['server']);
 
 });
+
+Npm.depends({
+	"lycam-thrift-amqp": "0.1.1"
+});

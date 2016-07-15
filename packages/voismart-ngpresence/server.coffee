@@ -76,6 +76,18 @@ class AmqpConnection
 		logger.debug "received", payload
 
 
+presenceClient = (host, user, password, vhost) ->
+	ThriftAmqp = Npm.require 'lycam-thrift-amqp'
+	url = "amqp://#{user}:#{password}@#{host}/#{vhost}?heartbeat=30"
+	connection = ThriftAmqp.createConnection
+		connectUrl: url
+		queueName: 'my-service'
+	presenceService = Npm.require('presence_service').presenceService
+	connection.connect ->
+		client = ThriftAmqp.createClient presenceService, connection
+		console.log(client.request_initial_status)
+
+
 Meteor.startup ->
 	if not RocketChat.settings.get('OrchestraIntegration_PresenceEnabled')
 		return
@@ -116,6 +128,8 @@ Meteor.startup ->
 	catch e
 		logger.error "error getting domain: \"#{e}\""
 		return
+
+	pclient = presenceClient broker_host, broker_user, broker_password, '/ydin'
 
 	c = new AmqpConnection
 		host: broker_host
