@@ -71,7 +71,7 @@ Template.messageBox.helpers
 
 	showVRec: ->
 		if not Template.instance().isMessageFieldEmpty.get()
-			return
+			return 'hide-vrec'
 
 		if Template.instance().showVideoRec.get()
 			return ''
