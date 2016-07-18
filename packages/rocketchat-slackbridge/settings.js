@@ -13,5 +13,11 @@ Meteor.startup(function() {
 			},
 			i18nLabel: 'API_Token'
 		});
+
+		this.add('SlackBridge_AliasFormat', '', {
+			type: 'string',
+			i18nLabel: 'Alias_Format',
+			i18nDescription: 'Alias_Format_Description'
+		});
 	});
 });

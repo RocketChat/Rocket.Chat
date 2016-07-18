@@ -2,8 +2,10 @@
 
 class SlackBridge {
 	constructor() {
+		this.util = Npm.require('util');
 		this.slackClient = Npm.require('slack-client');
 		this.apiToken = RocketChat.settings.get('SlackBridge_APIToken');
+		this.aliasFormat = RocketChat.settings.get('SlackBridge_AliasFormat');
 		this.rtm = {};
 		this.connected = false;
 		this.userTags = {};
@@ -24,6 +26,10 @@ class SlackBridge {
 			} else {
 				this.disconnect();
 			}
+		});
+
+		RocketChat.settings.onload('SlackBridge_AliasFormat', (key, value) => {
+			this.aliasFormat = value;
 		});
 	}
 
@@ -200,6 +206,18 @@ class SlackBridge {
 		return;
 	}
 
+	addAlias(user, msgObj) {
+		if (this.aliasFormat) {
+			var alias = this.util.format(this.aliasFormat, user.username);
+
+			if (alias !== user.username) {
+				msgObj.alias = alias;
+			}
+		}
+
+		return msgObj;
+	}
+
 	saveMessage(room, user, message, msgDataDefaults) {
 		if (message.type === 'message') {
 			let msgObj = {};
@@ -217,6 +235,8 @@ class SlackBridge {
 						username: user.username
 					}
 				};
+
+				this.addAlias(user, msgObj);
 			}
 			_.extend(msgObj, msgDataDefaults);
 			if (message.edited) {
@@ -245,9 +265,9 @@ class SlackBridge {
 				}
 				break;
 			case 'me_message':
-				return {
+				return this.addAlias(user, {
 					msg: `_${this.convertSlackMessageToRocketChat(message.text)}_`
-				};
+				});
 			case 'message_changed':
 				this.editMessage(room, user, message);
 				return;
