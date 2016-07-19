@@ -132,7 +132,6 @@ Template.room.events
 		, 100
 
 	"click .messages-container": (e) ->
-		e.preventDefault()
 		if RocketChat.TabBar.isFlexOpen() and Meteor.user()?.settings?.preferences?.hideFlexTab then RocketChat.TabBar.closeFlex()
 
 	"touchstart .message": (e, t) ->
