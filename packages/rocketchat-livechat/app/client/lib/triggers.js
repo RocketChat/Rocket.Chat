@@ -2,10 +2,10 @@ this.Triggers = (function() {
 	var triggers = [];
 	var initiated = false;
 	var requests = [];
+	var enabled = true;
 
 	var fire = function(actions) {
-		if (Meteor.userId()) {
-			// console.log('already logged user - does nothing');
+		if (!enabled || Meteor.userId()) {
 			return;
 		}
 		actions.forEach(function(action) {
@@ -73,9 +73,19 @@ this.Triggers = (function() {
 		}
 	};
 
+	var setDisabled = function() {
+		enabled = false;
+	};
+
+	var setEnabled = function() {
+		enabled = true;
+	};
+
 	return {
 		init: init,
 		processRequest: processRequest,
-		setTriggers: setTriggers
+		setTriggers: setTriggers,
+		setDisabled: setDisabled,
+		setEnabled: setEnabled
 	};
 }());

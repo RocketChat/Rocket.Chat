@@ -2888,7 +2888,7 @@ body:not(.is-cordova) {
 	.tab-button {
 		position: relative;
 		cursor: pointer;
-		padding: 10px;
+		padding: 10px 0;
 		background: #FCFCFC;
 		border-bottom: 1px solid #eaeaea;
 		text-align: center;
@@ -2914,8 +2914,11 @@ body:not(.is-cordova) {
 		&.active {
 			background-color: #F4F4F4;
 			margin-left: -1px;
-			padding-left: 11px;
 			border-right: 3px solid #ff0000;
+
+			button {
+				margin-left: 4px;
+			}
 
 			.counter {
 				margin-right: -3px;
@@ -3442,6 +3445,20 @@ body:not(.is-cordova) {
 		}
 		nav {
 			padding: 0;
+
+			&.buttons {
+				margin-top: 2em;
+			}
+		}
+
+		.form-divisor {
+			text-align: center;
+			margin: 2em 0;
+			height: 9px;
+
+			> span {
+				padding: 0 1em;
+			}
 		}
 	}
 	.room-info-content > div {
