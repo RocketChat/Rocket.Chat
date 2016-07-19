@@ -8,7 +8,8 @@ Meteor.methods({
 		RocketChat.models.Subscriptions.removeByRoomId(rid);
 
 		// remove user from room
-		var username = Meteor.user().name;
+		var username = Meteor.user().username;
+
 		RocketChat.models.Rooms.removeUsernameById(rid, username);
 
 		// find inquiry corresponding to room

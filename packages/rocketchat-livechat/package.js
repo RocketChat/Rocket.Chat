@@ -92,6 +92,8 @@ Package.onUse(function(api) {
 	api.addFiles('client/views/app/tabbar/visitorNavigation.js', 'client');
 	api.addFiles('client/views/app/tabbar/visitorEdit.html', 'client');
 	api.addFiles('client/views/app/tabbar/visitorEdit.js', 'client');
+	api.addFiles('client/views/app/tabbar/visitorForward.html', 'client');
+	api.addFiles('client/views/app/tabbar/visitorForward.js', 'client');
 	api.addFiles('client/views/app/tabbar/visitorInfo.html', 'client');
 	api.addFiles('client/views/app/tabbar/visitorInfo.js', 'client');
 
@@ -128,6 +130,7 @@ Package.onUse(function(api) {
 	api.addFiles('server/methods/sendMessageLivechat.js', 'server');
 	api.addFiles('server/methods/sendOfflineMessage.js', 'server');
 	api.addFiles('server/methods/setCustomField.js', 'server');
+	api.addFiles('server/methods/transfer.js', 'server');
 	api.addFiles('server/methods/webhookTest.js', 'server');
 	api.addFiles('server/methods/takeInquiry.js', 'server');
 	api.addFiles('server/methods/returnAsInquiry.js', 'server');
