@@ -206,11 +206,11 @@ class SlackBridge {
 		return;
 	}
 
-	addAlias(user, msgObj) {
+	addAlias(username, msgObj) {
 		if (this.aliasFormat) {
-			var alias = this.util.format(this.aliasFormat, user.username);
+			var alias = this.util.format(this.aliasFormat, username);
 
-			if (alias !== user.username) {
+			if (alias !== username) {
 				msgObj.alias = alias;
 			}
 		}
@@ -236,7 +236,7 @@ class SlackBridge {
 					}
 				};
 
-				this.addAlias(user, msgObj);
+				this.addAlias(user.username, msgObj);
 			}
 			_.extend(msgObj, msgDataDefaults);
 			if (message.edited) {
@@ -260,12 +260,13 @@ class SlackBridge {
 					attachments: message.attachments,
 					username: message.username
 				};
+				this.addAlias(message.username, msgObj);
 				if (message.icons) {
 					msgObj.emoji = message.icons.emoji;
 				}
 				break;
 			case 'me_message':
-				return this.addAlias(user, {
+				return this.addAlias(user.username, {
 					msg: `_${this.convertSlackMessageToRocketChat(message.text)}_`
 				});
 			case 'message_changed':
