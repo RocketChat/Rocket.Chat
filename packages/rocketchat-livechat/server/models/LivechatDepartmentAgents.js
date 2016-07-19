@@ -48,7 +48,7 @@ class LivechatDepartmentAgents extends RocketChat.models._Base {
 
 		var sort = {
 			count: 1,
-			sort: 1,
+			order: 1,
 			username: 1
 		};
 		var update = {
@@ -96,6 +96,27 @@ class LivechatDepartmentAgents extends RocketChat.models._Base {
 		} else {
 			return null;
 		}
+	}
+
+	findUsersInQueue(usersList) {
+		let query = {};
+
+		if (!_.isEmpty(usersList)) {
+			query.username = {
+				$in: usersList
+			};
+		}
+
+		let options = {
+			sort: {
+				departmentId: 1,
+				count: 1,
+				order: 1,
+				username: 1
+			}
+		};
+
+		return this.find(query, options);
 	}
 }
 
