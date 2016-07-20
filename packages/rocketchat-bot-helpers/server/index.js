@@ -45,24 +45,24 @@ class BotHelper {
 		return this._onlineUsers.fetch();
 	}
 	get allUsernames() {
-		return this._allUsers.fetch().map(user => user.username);
+		return this._allUsers.fetch().map((user) => user.username);
 	}
 	get onlineUsernames() {
-		return this._onlineUsers.fetch().map(user => user.username);
+		return this._onlineUsers.fetch().map((user) => user.username);
 	}
 	get allNames() {
-		return this._allUsers.fetch().map(user => user.name);
+		return this._allUsers.fetch().map((user) => user.name);
 	}
 	get onlineNames() {
-		return this._onlineUsers.fetch().map(user => user.name);
+		return this._onlineUsers.fetch().map((user) => user.name);
 	}
 	get allIDs() {
-		return this._allUsers.fetch().map(user => {
+		return this._allUsers.fetch().map((user) => {
 			return { 'id': user._id, 'name': user.username };
 		});
 	}
 	get onlineIDs() {
-		return this._onlineUsers.fetch().map(user => {
+		return this._onlineUsers.fetch().map((user) => {
 			return { 'id': user._id, 'name': user.username };
 		});
 	}
