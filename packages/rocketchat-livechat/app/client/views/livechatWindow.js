@@ -1,10 +1,10 @@
-/* globals Department */
+/* globals Department, Livechat */
 Template.livechatWindow.helpers({
 	title() {
-		return Template.instance().title.get();
+		return Livechat.title;
 	},
 	color() {
-		return Template.instance().color.get();
+		return Livechat.color;
 	},
 	popoutActive() {
 		return FlowRouter.getQueryParam('mode') === 'popout';
@@ -16,23 +16,23 @@ Template.livechatWindow.helpers({
 		if (Session.get('triggered') || Meteor.userId()) {
 			return false;
 		}
-		return Template.instance().registrationForm.get();
+		return Livechat.registrationForm;
 	},
 	livechatStarted() {
-		return Template.instance().online.get() !== null;
+		return Livechat.online !== null;
 	},
 	livechatOnline() {
-		return Template.instance().online.get();
+		return Livechat.online;
 	},
 	offlineMessage() {
-		return Template.instance().offlineMessage.get();
+		return Livechat.offlineMessage;
 	},
 	offlineData() {
 		return {
-			offlineMessage: Template.instance().offlineMessage.get().replace(/([^>\r\n]?)(\r\n|\n\r|\r|\n)/g, '$1<br>$2'),
-			offlineSuccessMessage: Template.instance().offlineSuccessMessage.get(),
-			offlineUnavailableMessage: Template.instance().offlineUnavailableMessage.get().replace(/([^>\r\n]?)(\r\n|\n\r|\r|\n)/g, '$1<br>$2'),
-			displayOfflineForm: Template.instance().displayOfflineForm.get()
+			offlineMessage: Livechat.offlineMessage.replace(/([^>\r\n]?)(\r\n|\n\r|\r|\n)/g, '$1<br>$2'),
+			offlineSuccessMessage: Livechat.offlineSuccessMessage,
+			offlineUnavailableMessage: Livechat.offlineUnavailableMessage.replace(/([^>\r\n]?)(\r\n|\n\r|\r|\n)/g, '$1<br>$2'),
+			displayOfflineForm: Livechat.displayOfflineForm
 		};
 	}
 });
@@ -52,16 +52,6 @@ Template.livechatWindow.events({
 });
 
 Template.livechatWindow.onCreated(function() {
-	this.online = new ReactiveVar(null);
-
-	this.title = new ReactiveVar('Rocket.Chat');
-	this.color = new ReactiveVar('#C1272D');
-	this.registrationForm = new ReactiveVar(true);
-	this.offlineMessage = new ReactiveVar('');
-	this.offlineUnavailableMessage = new ReactiveVar('');
-	this.displayOfflineForm = new ReactiveVar(true);
-	this.offlineSuccessMessage = new ReactiveVar(t('Thanks_We_ll_get_back_to_you_soon'));
-
 	Session.set({sound: true});
 
 	const defaultAppLanguage = () => {
@@ -87,19 +77,19 @@ Template.livechatWindow.onCreated(function() {
 
 			if (!result.online) {
 				Triggers.setDisabled();
-				this.title.set(result.offlineTitle);
-				this.color.set(result.offlineColor);
-				this.offlineMessage.set(result.offlineMessage);
-				this.displayOfflineForm.set(result.displayOfflineForm);
-				this.offlineUnavailableMessage.set(result.offlineUnavailableMessage);
-				this.offlineSuccessMessage.set(result.offlineSuccessMessage);
-				this.online.set(false);
+				Livechat.title = result.offlineTitle;
+				Livechat.offlineColor = result.offlineColor;
+				Livechat.offlineMessage = result.offlineMessage;
+				Livechat.displayOfflineForm = result.displayOfflineForm;
+				Livechat.offlineUnavailableMessage = result.offlineUnavailableMessage;
+				Livechat.offlineSuccessMessage = result.offlineSuccessMessage;
+				Livechat.online = false;
 			} else {
-				this.title.set(result.title);
-				this.color.set(result.color);
-				this.online.set(true);
+				Livechat.title = result.title;
+				Livechat.onlineColor = result.color;
+				Livechat.online = true;
 			}
-			this.registrationForm.set(result.registrationForm);
+			Livechat.registrationForm = result.registrationForm;
 
 			if (result.room) {
 				RoomHistoryManager.getMoreIfIsEmpty(result.room._id);
