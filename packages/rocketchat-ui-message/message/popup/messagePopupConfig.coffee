@@ -45,20 +45,20 @@ Template.messagePopupConfig.helpers
 							username: item.username
 							status: item.status
 
-				# Get users of room
-				if items.length < 5 and filter?.trim() isnt ''
-					messageUsers = _.pluck(items, 'username')
-					Tracker.nonreactive ->
-						roomUsernames = RocketChat.models.Rooms.findOne(Session.get('openedRoom')).usernames
-						for roomUsername in roomUsernames
-							if messageUsers.indexOf(roomUsername) is -1 and exp.test(roomUsername)
-								items.push
-									_id: roomUsername
-									username: roomUsername
-									status: Session.get('user_' + roomUsername + '_status') or 'offline'
+				# # Get users of room
+				# if items.length < 5 and filter?.trim() isnt ''
+				# 	messageUsers = _.pluck(items, 'username')
+				# 	Tracker.nonreactive ->
+				# 		roomUsernames = RocketChat.models.Rooms.findOne(Session.get('openedRoom')).usernames
+				# 		for roomUsername in roomUsernames
+				# 			if messageUsers.indexOf(roomUsername) is -1 and exp.test(roomUsername)
+				# 				items.push
+				# 					_id: roomUsername
+				# 					username: roomUsername
+				# 					status: Session.get('user_' + roomUsername + '_status') or 'offline'
 
-								if items.length >= 5
-									break
+				# 				if items.length >= 5
+				# 					break
 
 				# Get users from db
 				if items.length < 5 and filter?.trim() isnt ''
