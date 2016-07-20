@@ -17,7 +17,7 @@ Template.membersList.helpers
 	roomUsers: ->
 		users = []
 		onlineUsers = RoomManager.onlineUsers.get()
-		roomUsernames = ChatRoom.findOne(this.rid)?.usernames or []
+		roomUsernames = Template.instance().users.get()
 
 		for username in roomUsernames
 			if Template.instance().showAllUsers.get() or onlineUsers[username]?
@@ -122,6 +122,11 @@ Template.membersList.onCreated ->
 	@usersLimit = new ReactiveVar 100
 	@userDetail = new ReactiveVar
 	@showDetail = new ReactiveVar false
+
+	@users = new ReactiveVar [];
+
+	Meteor.call 'getUsersOfRoom', this.data.rid, (error, users) =>
+		@users.set users
 
 	@clearUserDetail = =>
 		@showDetail.set(false)
