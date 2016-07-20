@@ -90,7 +90,10 @@ Template.room.helpers
 		return moment(this.since).calendar(null, {sameDay: 'LT'})
 
 	flexTemplate: ->
-		return RocketChat.TabBar.getTemplate()
+		if Session.get('openedRoom') is this._id
+			return RocketChat.TabBar.getTemplate()
+
+		return ''
 
 	flexData: ->
 		return _.extend {
