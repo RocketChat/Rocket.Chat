@@ -1,5 +1,4 @@
-/* globals CustomFields */
-
+/* globals CustomFields, Livechat */
 var api = {
 	pageVisited: function(info) {
 		if (info.change === 'url') {
@@ -11,6 +10,12 @@ var api = {
 
 	setCustomField: function(key, value) {
 		CustomFields.setCustomField(visitor.getToken(), key, value);
+	},
+
+	setTheme: function(theme) {
+		if (theme.color) {
+			Livechat.customColor = theme.color;
+		}
 	}
 };
 
