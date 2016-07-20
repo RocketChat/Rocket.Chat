@@ -23,7 +23,7 @@ Meteor.methods({
 				msg: TAPi18n.__('You_have_been_muted', {}, user.language)
 			});
 			return false;
-		} else if (Array.isArray(room.usernames) && room.usernames.indexOf(user.username) === -1) {
+		} else if (!RocketChat.models.Subscriptions.findOne({ rid: message.rid })) {
 			return false;
 		}
 
