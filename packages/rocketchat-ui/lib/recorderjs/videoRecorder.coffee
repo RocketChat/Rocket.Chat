@@ -47,7 +47,9 @@
 			@stopRecording()
 
 			if @stream?
-				@stream.getVideoTracks()[0].stop()
+				vtracks = @stream.getVideoTracks()[0]
+				if vtracks
+					vtracks.stop()
 
 			if @videoel?
 				@videoel.pause
