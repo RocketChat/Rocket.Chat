@@ -4,7 +4,8 @@ RocketChat.cache.Subscriptions = new (class CacheUser extends RocketChat.cache._
 	constructor() {
 		super('Subscriptions');
 
-		this.indexes['rid'] = {type: 'array'};
+		this.ensureIndex('rid', 'array');
+		this.ensureIndex(['rid', 'u._id'], 'unique');
 	}
 
 	findByUserId(userId, options) {
