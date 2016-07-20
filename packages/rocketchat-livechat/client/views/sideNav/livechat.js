@@ -83,6 +83,7 @@ Template.livechat.helpers({
 	},
 
 	activeLivechatQueue() {
+		FlowRouter.watchPathChange();
 		if (FlowRouter.current().route.name === 'livechat-queue') {
 			return 'active';
 		}
