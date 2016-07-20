@@ -83,9 +83,9 @@ RocketChat.cache._Base = (class CacheBase extends EventEmitter {
 
 		traceMethodCalls(this);
 
-		this.indexes = {
-			_id: {type: 'unique'}
-		};
+		this.indexes = {};
+
+		this.ensureIndex('_id', 'unique');
 
 		this.joins = {};
 
@@ -234,74 +234,97 @@ RocketChat.cache._Base = (class CacheBase extends EventEmitter {
 		}
 	}
 
+	ensureIndex(fields, type='array') {
+		if (!Array.isArray(fields)) {
+			fields = [fields];
+		}
+
+		this.indexes[fields.join(',')] = {
+			type: type,
+			fields: fields,
+			data: {}
+		};
+	}
+
 	addToAllIndexes(record) {
-		for (const index in this.indexes) {
-			if (this.indexes.hasOwnProperty(index)) {
-				this.addToIndex(index, record);
+		for (const indexName in this.indexes) {
+			if (this.indexes.hasOwnProperty(indexName)) {
+				this.addToIndex(indexName, record);
 			}
 		}
 	}
 
-	addToIndex(index, record) {
-		if (!this.indexes[index]) {
-			console.error(`Index not defined ${index}`);
+	addToIndex(indexName, record) {
+		const index = this.indexes[indexName];
+		if (!index) {
+			console.error(`Index not defined ${indexName}`);
 			return;
 		}
 
-		if (!this.indexes[index].data) {
-			this.indexes[index].data = {};
+		let key = [];
+		for (const field of index.fields) {
+			key.push(objectPath.get(record, field));
 		}
+		key = key.join('|');
 
-		if (this.indexes[index].type === 'unique') {
-			this.indexes[index].data[record[index]] = record;
+		if (index.type === 'unique') {
+			index.data[key] = record;
 			return;
 		}
 
-		if (this.indexes[index].type === 'array') {
-			if (!this.indexes[index].data[record[index]]) {
-				this.indexes[index].data[record[index]] = [];
+		if (index.type === 'array') {
+			if (!index.data[key]) {
+				index.data[key] = [];
 			}
-			this.indexes[index].data[record[index]].push(record);
+			index.data[key].push(record);
 			return;
 		}
 	}
 
 	removeFromAllIndexes(record) {
-		for (const index in this.indexes) {
-			if (this.indexes.hasOwnProperty(index)) {
-				this.removeFromIndex(index, record);
+		for (const indexName in this.indexes) {
+			if (this.indexes.hasOwnProperty(indexName)) {
+				this.removeFromIndex(indexName, record);
 			}
 		}
 	}
 
-	removeFromIndex(index, record) {
-		if (!this.indexes[index]) {
-			console.error(`Index not defined ${index}`);
+	removeFromIndex(indexName, record) {
+		const index = this.indexes[indexName];
+		if (!this.indexes[indexName]) {
+			console.error(`Index not defined ${indexName}`);
 			return;
 		}
 
-		if (!this.indexes[index].data) {
+		if (!index.data) {
 			return;
 		}
 
-		if (this.indexes[index].type === 'unique') {
-			this.indexes[index].data[record[index]] = undefined;
+		let key = [];
+		for (const field of index.fields) {
+			key.push(objectPath.get(record, field));
+		}
+		key = key.join('|');
+
+		if (index.type === 'unique') {
+			index.data[key] = undefined;
 			return;
 		}
 
-		if (this.indexes[index].type === 'array') {
-			if (!this.indexes[index].data[record[index]]) {
+		if (index.type === 'array') {
+			if (!index.data[key]) {
 				return;
 			}
-			const i = this.indexes[index].data[record[index]].indexOf(record);
+			const i = index.data[key].indexOf(record);
 			if (i > -1) {
-				this.indexes[index].data[record[index]].splice(i, 1);
+				index.data[key].splice(i, 1);
 			}
 			return;
 		}
 	}
 
-	findByIndex(index, key) {
+	findByIndex(index, ...keys) {
+		const key = keys.join('|');
 		if (!this.indexes[index]) {
 			return;
 		}
