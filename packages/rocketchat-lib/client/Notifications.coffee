@@ -3,6 +3,7 @@ RocketChat.Notifications = new class
 		@debug = false
 		@streamAll = new Meteor.Streamer 'notify-all'
 		@streamRoom = new Meteor.Streamer 'notify-room'
+		@streamRoomUsers = new Meteor.Streamer 'notify-room-users'
 		@streamUser = new Meteor.Streamer 'notify-user'
 
 		if @debug is true
@@ -25,13 +26,8 @@ RocketChat.Notifications = new class
 	notifyUsersOfRoom: (room, eventName, args...) ->
 		console.log "RocketChat.Notifications: notifyUsersOfRoom", arguments if @debug is true
 
-		onlineUsers = RoomManager.onlineUsers.get()
-		room = ChatRoom.findOne(room)
-		for username in room?.usernames or []
-			if onlineUsers[username]?
-				argsToSend = ["#{onlineUsers[username]._id}/#{eventName}"].concat args
-				@streamUser.emit.apply @streamUser, argsToSend
-
+		args.unshift "#{room}/#{eventName}"
+		@streamRoomUsers.emit.apply @streamRoomUsers, args
 
 	onAll: (eventName, callback) ->
 		@streamAll.on eventName, callback
