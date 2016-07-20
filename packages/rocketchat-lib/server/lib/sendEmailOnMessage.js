@@ -28,7 +28,7 @@ RocketChat.callbacks.add('afterSaveMessage', function(message, room) {
 		});
 	}
 
-	var channelRoom = `${process.env.ROOT_URL}channel/${room.name}`
+	var channelRoom = `${process.env.ROOT_URL}channel/${room.name}`;
 	var linkChannelRoom = `<a style="color: #008ce3;" href="${channelRoom}">#${room.name}</a>`;
 	var messageUrl = `<span style="margin-top: 10px; display: block;">${ emailSubject.replace(`#${room.name}`, linkChannelRoom) }</span>`;
 	var divisorMessage = '<hr style="margin: 20px auto; border: none; border-bottom: 1px solid #dddddd;">';
