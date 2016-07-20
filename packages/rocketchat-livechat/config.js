@@ -149,4 +149,11 @@ Meteor.startup(function() {
 			{key: 'Guest_Pool', i18nLabel: 'Guest_Pool'}
 		]
 	});
+
+	RocketChat.settings.add('Livechat_show_queue_list_link', false, {
+		type: 'boolean',
+		group: 'Livechat',
+		public: true,
+		i18nLabel: 'Show_queue_list_to_all_agents'
+	});
 });
