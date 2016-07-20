@@ -1,9 +1,15 @@
 this.Livechat = new (class Livechat {
 	constructor() {
 		this._online = new ReactiveVar(null);
+
 		this._customColor = new ReactiveVar();
 		this._onlineColor = new ReactiveVar('#C1272D');
 		this._offlineColor = new ReactiveVar('#666666');
+
+		this._customFontColor = new ReactiveVar();
+		this._onlineFontColor = new ReactiveVar('#FFFFFF');
+		this._offlineFontColor = new ReactiveVar('#FFFFFF');
+
 		this._title = new ReactiveVar('Rocket.Chat');
 		this._registrationForm = new ReactiveVar(true);
 		this._offlineMessage = new ReactiveVar('');
@@ -20,6 +26,12 @@ this.Livechat = new (class Livechat {
 			return this._offlineColor.get();
 		}
 		return this._customColor.get() || this._onlineColor.get();
+	}
+	get fontColor() {
+		if (!this._online.get()) {
+			return this._offlineFontColor.get();
+		}
+		return this._customFontColor.get() || this._onlineFontColor.get();
 	}
 	get title() {
 		return this._title.get();
@@ -61,6 +73,7 @@ this.Livechat = new (class Livechat {
 	set offlineSuccessMessage(value) {
 		this._offlineSuccessMessage.set(value);
 	}
+
 	set customColor(value) {
 		this._customColor.set(value);
 	}
@@ -69,5 +82,15 @@ this.Livechat = new (class Livechat {
 	}
 	set offlineColor(value) {
 		this._offlineColor.set(value);
+	}
+
+	set customFontColor(value) {
+		this._customFontColor.set(value);
+	}
+	set onlineFontColor(value) {
+		this._onlineFontColor.set(value);
+	}
+	set offlineFontColor(value) {
+		this._offlineFontColor.set(value);
 	}
 })();

@@ -6,6 +6,9 @@ Template.livechatWindow.helpers({
 	color() {
 		return Livechat.color;
 	},
+	fontColor() {
+		return Livechat.fontColor;
+	},
 	popoutActive() {
 		return FlowRouter.getQueryParam('mode') === 'popout';
 	},

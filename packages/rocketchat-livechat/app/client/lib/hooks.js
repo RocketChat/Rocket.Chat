@@ -16,6 +16,9 @@ var api = {
 		if (theme.color) {
 			Livechat.customColor = theme.color;
 		}
+		if (theme.fontColor) {
+			Livechat.customFontColor = theme.fontColor;
+		}
 	}
 };
 
