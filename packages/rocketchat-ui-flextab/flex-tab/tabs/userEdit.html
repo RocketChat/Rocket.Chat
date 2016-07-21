@@ -42,7 +42,7 @@
 				{{/if}}
 				<div class="input-line">
 					<label for="role">{{_ "Role"}}</label>
-					<select id="role">
+					<select id="role" disabled={{isDisabled}}>
 						{{#each role}}
 							<option value="{{_id}}" selected="{{selectUserRole}}">{{name}}</option>
 						{{/each}}
