@@ -49,8 +49,8 @@ class ModelsBase extends EventEmitter {
 
 		const result = this.model.insert(...arguments);
 		record._id = result;
-		this.emit('insert', record);
-		this.emit('change', 'insert', record);
+		this.emit('inserted', record);
+		this.emit('change', 'inserted', record);
 		return result;
 	}
 
@@ -76,8 +76,8 @@ class ModelsBase extends EventEmitter {
 
 		query = { _id: { $in: _.pluck(ids, '_id') } };
 		const result = this.model.update(query, update, options);
-		this.emit('update', query, update);
-		this.emit('change', 'update', query, update);
+		this.emit('updated', query, update);
+		this.emit('change', 'updated', query, update);
 		return result;
 	}
 
@@ -92,8 +92,8 @@ class ModelsBase extends EventEmitter {
 			record = { _id: result.insertedId };
 		}
 
-		this.emit('update', record);
-		this.emit('change', 'update', record);
+		this.emit('updated', record);
+		this.emit('change', 'updated', record);
 		return result;
 	}
 
@@ -112,8 +112,8 @@ class ModelsBase extends EventEmitter {
 
 		query = { _id: { $in: ids } };
 
-		this.emit('remove', records);
-		this.emit('change', 'remove', records);
+		this.emit('removed', records);
+		this.emit('change', 'removed', records);
 		return this.model.remove(query);
 	}
 
