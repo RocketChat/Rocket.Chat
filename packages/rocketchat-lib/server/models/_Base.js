@@ -165,15 +165,15 @@ class ModelsBase extends EventEmitter {
 	}
 
 	getChangedRecords(type, recordOrQuery, fields) {
-		if (type === 'insert') {
+		if (type === 'inserted') {
 			return [recordOrQuery];
 		}
 
-		if (type === 'remove') {
+		if (type === 'removed') {
 			return recordOrQuery;
 		}
 
-		if (type === 'update') {
+		if (type === 'updated') {
 			const options = {};
 			if (fields) {
 				options.fields = fields;
