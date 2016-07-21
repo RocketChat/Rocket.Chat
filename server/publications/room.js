@@ -15,45 +15,38 @@ const options = {
 };
 
 
+const roomMap = (record) => {
+	if (record._room) {
+		return _.pick(record._room, ...options.fields);
+	}
+	console.log('Empty Room for Subscription', record);
+	return {};
+};
+
+
 Meteor.methods({
-	'rooms/get'() {
+	'rooms/get'(updatedAt) {
 		if (!Meteor.userId()) {
 			return [];
 		}
 
 		this.unblock();
 
-		return RocketChat.cache.Subscriptions.findByUserId(Meteor.userId()).fetch().map((record) => {
-			if (record._room) {
-				return _.pick(record._room, ...options.fields);
-			}
-			console.log('empty', record);
-			return {};
-		});
-	},
+		const data = RocketChat.cache.Subscriptions.findByUserId(Meteor.userId()).fetch();
 
-	'rooms/sync'(/*updatedAt*/) {
-		if (!Meteor.userId()) {
-			return {};
+		if (updatedAt instanceof Date) {
+			return data
+				.filter(record => { return record._room && record._room._updatedAt > updatedAt; })
+				.map(roomMap);
 		}
 
-		this.unblock();
-
-		//return RocketChat.models.Subscriptions.dinamicFindChangesAfter('findByUserId', updatedAt, Meteor.userId(), options);
-		// TODO: Change
-		return RocketChat.cache.Subscriptions.findByUserId(Meteor.userId()).fetch().map((record) => {
-			if (record._room) {
-				return _.pick(record._room, ...options.fields);
-			}
-			console.log('empty', record);
-			return {};
-		});
+		return data.map(roomMap);
 	}
 });
 
-// TODO: Enable
-// # RocketChat.models.Subscriptions.on 'change', (type, args...) ->
-// # 	records = RocketChat.models.Subscriptions.getChangedRecords type, args[0], fields
-
-// # 	for record in records
-// # 		RocketChat.Notifications.notifyUser record.u._id, 'rooms-changed', type, record
+RocketChat.cache.Rooms.on('sync', (type, room/*, diff*/) => {
+	const records = RocketChat.cache.Subscriptions.findByIndex('rid', room._id);
+	for (const record of records) {
+		RocketChat.Notifications.notifyUser(record.u._id, 'rooms-changed', type, roomMap({_room: room}));
+	}
+});
