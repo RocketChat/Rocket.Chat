@@ -6,6 +6,8 @@
   "500" : "Erro Interno do Servidor",
   "__username__is_no_longer__role__defined_by__user_by_" : "__username__ não pertence mais à __role__, por __user_by__",
   "__username__was_set__role__by__user_by_" : "__username__ foi definido como __role__ por __user_by__",
+  "Accept_with_no_online_agents" : "Aceitar sem agentes online",
+  "Accept_incoming_livechat_requests_even_if_there_are_no_online_agents" : "Aceitar requisições de livechat mesmo se não houverem agentes online",
   "Access_not_authorized" : "Acesso não autorizado",
   "Access_Token_URL" : "URL do Token de Acesso",
   "Accessing_permissions" : "Acessando permissões",
