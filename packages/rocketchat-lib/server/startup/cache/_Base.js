@@ -84,10 +84,23 @@ RocketChat.cache._Base = (class CacheBase extends EventEmitter {
 		traceMethodCalls(this);
 
 		this.indexes = {};
+		this.ignoeUpdatedFields = ['_updatedAt'];
 
 		this.ensureIndex('_id', 'unique');
 
 		this.joins = {};
+
+		this.on('inserted', (...args) => { this.emit('changed', 'inserted', ...args); });
+		this.on('removed', (...args) => { this.emit('changed', 'removed', ...args); });
+		this.on('updated', (...args) => { this.emit('changed', 'updated', ...args); });
+
+		this.on('beforeinsert', (...args) => { this.emit('beforechange', 'inserted', ...args); });
+		this.on('beforeremove', (...args) => { this.emit('beforechange', 'removed', ...args); });
+		this.on('beforeupdate', (...args) => { this.emit('beforechange', 'updated', ...args); });
+
+		this.on('inserted', (...args) => { this.emit('sync', 'inserted', ...args); });
+		this.on('updated', (...args) => { this.emit('sync', 'removed', ...args); });
+		this.on('beforeremove', (...args) => { this.emit('sync', 'updated', ...args); });
 
 		this.db = db;
 		this.collectionName = collectionName;
@@ -176,7 +189,8 @@ RocketChat.cache._Base = (class CacheBase extends EventEmitter {
 				localRecord[field] = record;
 			}
 
-			this.emit(`join:${field}:${localRecord._id}:inserted`, record);
+			this.emit(`join:${field}:inserted`, localRecord, record);
+			this.emit(`join:${field}:changed`, 'inserted', localRecord, record);
 		}
 	}
 
@@ -200,7 +214,8 @@ RocketChat.cache._Base = (class CacheBase extends EventEmitter {
 				localRecord[field] = record;
 			}
 
-			this.emit(`join:${field}:${localRecord._id}:inserted`, record);
+			this.emit(`join:${field}:inserted`, localRecord, record);
+			this.emit(`join:${field}:changed`, 'inserted', localRecord, record);
 		}
 	}
 
@@ -230,7 +245,8 @@ RocketChat.cache._Base = (class CacheBase extends EventEmitter {
 				localRecord[field] = undefined;
 			}
 
-			this.emit(`join:${field}:${localRecord._id}:removed`, record);
+			this.emit(`join:${field}:removed`, localRecord, record);
+			this.emit(`join:${field}:changed`, 'removed', localRecord, record);
 		}
 	}
 
@@ -483,11 +499,13 @@ RocketChat.cache._Base = (class CacheBase extends EventEmitter {
 	insert(record) {
 		if (Array.isArray(record)) {
 			for (let i=0; i < record.length; i++) {
+				this.emit('beforeinsert', record[i]);
 				this.addToAllIndexes(record[i]);
 				this.collection.insert(record[i]);
 				this.emit('inserted', record[i]);
 			}
 		} else {
+			this.emit('beforeinsert', record);
 			this.addToAllIndexes(record);
 			this.collection.insert(record);
 			this.emit('inserted', record);
@@ -496,7 +514,11 @@ RocketChat.cache._Base = (class CacheBase extends EventEmitter {
 
 	updateDiffById(id, diff) {
 		const record = this.collection.findOne({_id: id});
-		this.emit('beforeupdate', record, diff);
+		const updatedFields = _.without(Object.keys(diff), ...this.ignoeUpdatedFields);
+
+		if (updatedFields.length > 0) {
+			this.emit('beforeupdate', record, diff);
+		}
 
 		for (let key in diff) {
 			if (diff.hasOwnProperty(key)) {
@@ -506,12 +528,15 @@ RocketChat.cache._Base = (class CacheBase extends EventEmitter {
 
 		this.collection.update(record);
 
-		this.emit('updated', record, diff);
+		if (updatedFields.length > 0) {
+			this.emit('updated', record, diff);
+		}
 	}
 
 	removeById(id) {
 		const record = this.findByIndex('_id', id);
 		if (record) {
+			this.emit('beforeremove', record);
 			this.collection.removeWhere({_id: id});
 			this.removeFromAllIndexes(record);
 			this.emit('removed', record);
