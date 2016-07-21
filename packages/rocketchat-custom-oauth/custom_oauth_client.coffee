@@ -1,4 +1,4 @@
-# Request GitLab credentials for the user
+# Request custom OAuth credentials for the user
 # @param options {optional}
 # @param credentialRequestCompleteCallback {Function} Callback function to call on
 #   completion. Takes one argument, credentialToken on success, or Error on
