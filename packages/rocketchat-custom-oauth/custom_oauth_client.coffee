@@ -24,8 +24,12 @@ class CustomOAuth
 		if not Match.test options.authorizePath, String
 			options.authorizePath = '/oauth/authorize'
 
+		if not Match.test options.scope, String
+			options.scope = 'openid'
+
 		@serverURL = options.serverURL
 		@authorizePath = options.authorizePath
+		@scope = options.scope
 
 		if not /^https?:\/\/.+/.test @authorizePath
 			@authorizePath = @serverURL + @authorizePath
@@ -61,7 +65,8 @@ class CustomOAuth
 			'?client_id=' + config.clientId +
 			'&redirect_uri=' + OAuth._redirectUri(@name, config) +
 			'&response_type=code' +
-			'&state=' + OAuth._stateParam(loginStyle, credentialToken, options.redirectUrl)
+			'&state=' + OAuth._stateParam(loginStyle, credentialToken, options.redirectUrl) +
+			'&scope=' + @scope
 
 		OAuth.launchLogin
 			loginService: @name
