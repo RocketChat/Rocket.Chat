@@ -6,8 +6,12 @@
 ###
 RocketChat.callbacks = {}
 
-RocketChat.callbacks.showTime = true
-RocketChat.callbacks.showTotalTime = true
+if Meteor.isServer
+	RocketChat.callbacks.showTime = true
+	RocketChat.callbacks.showTotalTime = true
+else
+	RocketChat.callbacks.showTime = false
+	RocketChat.callbacks.showTotalTime = false
 
 ###
 # Callback priorities
@@ -35,8 +39,8 @@ RocketChat.callbacks.add = (hook, callback, priority, id) ->
 		err = new Error
 		callback.stack = err.stack
 
-		if not id?
-			console.log('Callback without id', callback.stack)
+		# if not id?
+		# 	console.log('Callback without id', callback.stack)
 
 	# Avoid adding the same callback twice
 	for cb in RocketChat.callbacks[hook]
