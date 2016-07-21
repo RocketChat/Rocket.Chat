@@ -60,7 +60,7 @@ class CachedCollection {
 		this.ready = new ReactiveVar(false);
 		this.name = name;
 		this.methodName = methodName || `${name}/get`;
-		this.syncMethodName = syncMethodName || `${name}/sync`;
+		this.syncMethodName = syncMethodName || `${name}/get`;
 		this.eventName = eventName || `${name}-changed`;
 		this.eventType = eventType;
 		this.useSync = useSync;
