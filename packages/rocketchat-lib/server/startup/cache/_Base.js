@@ -86,6 +86,9 @@ RocketChat.cache._Base = (class CacheBase extends EventEmitter {
 		this.indexes = {};
 		this.ignoeUpdatedFields = ['_updatedAt'];
 
+		this.query = {};
+		this.options = {};
+
 		this.ensureIndex('_id', 'unique');
 
 		this.joins = {};
@@ -366,7 +369,7 @@ RocketChat.cache._Base = (class CacheBase extends EventEmitter {
 		this.emit('beforeload');
 		this.loaded = false;
 		const time = RocketChat.statsTracker.now();
-		const data = this.model.find().fetch();
+		const data = this.model.find(this.query, this.options).fetch();
 		for (let i=0; i < data.length; i++) {
 			this.insert(data[i]);
 		}

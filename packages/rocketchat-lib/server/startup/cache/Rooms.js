@@ -5,6 +5,8 @@ RocketChat.cache.Rooms = new (class CacheUser extends RocketChat.cache._Base {
 		super('Rooms');
 
 		this.ignoeUpdatedFields.push('msgs', 'lm');
+
+		this.options = {fields: {usernames: 0}};
 	}
 
 	// FIND ONE
