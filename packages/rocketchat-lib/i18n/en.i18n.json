@@ -463,6 +463,7 @@
   "Header" : "Header",
   "Hidden" : "Hidden",
   "Hide_Avatars" : "Hide Avatars",
+  "Hide_flextab" : "Hide right side bar with click",
   "Hide_Group_Warning" : "Are you sure you want to hide the group \"%s\"?",
   "Hide_Private_Warning" : "Are you sure you want to hide the discussion with \"%s\"?",
   "Hide_room" : "Hide room",
