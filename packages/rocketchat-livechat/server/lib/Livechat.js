@@ -16,7 +16,14 @@ RocketChat.Livechat = {
 	},
 	getAgents(department) {
 		if (department) {
-			return RocketChat.models.LivechatDepartmentAgents.getForDepartment(department);
+			return RocketChat.models.LivechatDepartmentAgents.findByDepartmentId(department);
+		} else {
+			return RocketChat.models.Users.findAgents();
+		}
+	},
+	getOnlineAgents(department) {
+		if (department) {
+			return RocketChat.models.LivechatDepartmentAgents.getOnlineForDepartment(department);
 		} else {
 			return RocketChat.models.Users.findOnlineAgents();
 		}
