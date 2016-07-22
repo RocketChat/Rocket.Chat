@@ -452,6 +452,7 @@
   "Hash" : "Hachage",
   "Header" : "En-tête",
   "Hidden" : "Caché",
+  "Hide_flextab" : "Cacher le volet de réglages du canal par un clique",
   "Hide_Group_Warning" : "Êtes-vous sûr(e) de vouloir cacher le groupe \"%s\" ?",
   "Hide_Private_Warning" : "Êtes-vous sûr(e) de vouloir cacher la discussion avec \"%s\" ?",
   "Hide_room" : "Cacher le salon",
