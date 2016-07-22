@@ -33,7 +33,7 @@ Template.userEdit.events
 	'change #role': (e) ->
 		isBot = $(e.target).val() is 'bot'
 		$ '#verified'
-		  .prop 'disabled', isBot
+			.prop 'disabled', isBot
 			.prop 'checked', !isBot
 		$ '#changePassword'
 			.prop 'disabled', isBot
