@@ -455,6 +455,7 @@
   "Header" : "ヘッダ",
   "Hidden" : "非表示中",
   "Hide_Avatars" : "アバターを非表示",
+  "Hide_flextab" : "クリックと同時に右サイドバーを閉じる",
   "Hide_Group_Warning" : "本当にグループ \"%s\" を隠しますか?",
   "Hide_Private_Warning" : "本当に \"%s\" との会話を隠しますか?",
   "Hide_room" : "ルームを隠す",
