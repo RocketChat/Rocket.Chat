@@ -15,6 +15,7 @@ Package.onUse(function(api) {
 	api.use('rate-limit');
 	api.use('reactive-var');
 	api.use('reactive-dict');
+	api.use('accounts-base');
 	api.use('coffeescript');
 	api.use('ecmascript');
 	api.use('random');
@@ -51,27 +52,7 @@ Package.onUse(function(api) {
 	api.addFiles('lib/Message.coffee');
 	api.addFiles('lib/MessageTypes.coffee');
 
-	// SERVER LIB
-	api.addFiles('server/lib/defaultBlockedDomainsList.js', 'server');
-	api.addFiles('server/lib/notifyUsersOnMessage.js', 'server');
 	api.addFiles('server/lib/RateLimiter.coffee', 'server');
-	api.addFiles('server/lib/roomTypes.coffee', 'server');
-	api.addFiles('server/lib/sendEmailOnMessage.js', 'server');
-	api.addFiles('server/lib/sendNotificationsOnMessage.js', 'server');
-	api.addFiles('server/lib/validateEmailDomain.js', 'server');
-
-	// SERVER MODELS
-	api.addFiles('server/models/_Base.coffee', 'server');
-	api.addFiles('server/models/Messages.coffee', 'server');
-	api.addFiles('server/models/Reports.coffee', 'server');
-	api.addFiles('server/models/Rooms.coffee', 'server');
-	api.addFiles('server/models/Settings.coffee', 'server');
-	api.addFiles('server/models/Subscriptions.coffee', 'server');
-	api.addFiles('server/models/Uploads.coffee', 'server');
-	api.addFiles('server/models/Users.coffee', 'server');
-
-	// SERVER PUBLICATIONS
-	api.addFiles('server/publications/settings.coffee', 'server');
 
 	// SERVER FUNCTIONS
 	api.addFiles('server/functions/checkUsernameAvailability.coffee', 'server');
@@ -82,6 +63,27 @@ Package.onUse(function(api) {
 	api.addFiles('server/functions/setUsername.coffee', 'server');
 	api.addFiles('server/functions/setEmail.js', 'server');
 	api.addFiles('server/functions/Notifications.coffee', 'server');
+
+	// SERVER LIB
+	api.addFiles('server/lib/defaultBlockedDomainsList.js', 'server');
+	api.addFiles('server/lib/notifyUsersOnMessage.js', 'server');
+	api.addFiles('server/lib/roomTypes.coffee', 'server');
+	api.addFiles('server/lib/sendEmailOnMessage.js', 'server');
+	api.addFiles('server/lib/sendNotificationsOnMessage.js', 'server');
+	api.addFiles('server/lib/validateEmailDomain.js', 'server');
+
+	// SERVER MODELS
+	api.addFiles('server/models/_Base.js', 'server');
+	api.addFiles('server/models/Messages.coffee', 'server');
+	api.addFiles('server/models/Reports.coffee', 'server');
+	api.addFiles('server/models/Rooms.coffee', 'server');
+	api.addFiles('server/models/Settings.coffee', 'server');
+	api.addFiles('server/models/Subscriptions.coffee', 'server');
+	api.addFiles('server/models/Uploads.coffee', 'server');
+	api.addFiles('server/models/Users.coffee', 'server');
+
+	// SERVER PUBLICATIONS
+	api.addFiles('server/publications/settings.coffee', 'server');
 
 	// SERVER METHODS
 	api.addFiles('server/methods/addOAuthService.coffee', 'server');
@@ -103,6 +105,7 @@ Package.onUse(function(api) {
 	api.addFiles('server/methods/setEmail.js', 'server');
 	api.addFiles('server/methods/restartServer.coffee', 'server');
 	api.addFiles('server/methods/filterBadWords.js', ['server']);
+	api.addFiles('server/methods/filterATAllTag.js', 'server');
 
 	// SERVER STARTUP
 	api.addFiles('server/startup/settingsOnLoadCdnPrefix.coffee', 'server');
@@ -114,6 +117,9 @@ Package.onUse(function(api) {
 	api.addFiles('lib/startup/settingsOnLoadSiteUrl.coffee');
 
 	// CLIENT LIB
+	api.addFiles('client/Notifications.coffee', 'client');
+	api.addFiles('client/lib/localforage.min.js', 'client');
+	api.addFiles('client/lib/cachedCollection.js', 'client');
 	api.addFiles('client/lib/openRoom.coffee', 'client');
 	api.addFiles('client/lib/roomExit.coffee', 'client');
 	api.addFiles('client/lib/settings.coffee', 'client');
@@ -123,7 +129,6 @@ Package.onUse(function(api) {
 	// CLIENT METHODS
 	api.addFiles('client/methods/sendMessage.coffee', 'client');
 	api.addFiles('client/AdminBox.coffee', 'client');
-	api.addFiles('client/Notifications.coffee', 'client');
 	api.addFiles('client/TabBar.coffee', 'client');
 	api.addFiles('client/MessageAction.coffee', 'client');
 

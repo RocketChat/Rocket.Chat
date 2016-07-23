@@ -34,11 +34,15 @@ class OTR {
 RocketChat.OTR = new OTR();
 
 Meteor.startup(function() {
-	RocketChat.Notifications.onUser('otr', (type, data) => {
-		if (!data.roomId || !data.userId || data.userId === Meteor.userId()) {
-			return;
-		} else {
-			RocketChat.OTR.getInstanceByRoomId(data.roomId).onUserStream(type, data);
+	Tracker.autorun(function() {
+		if (Meteor.userId()) {
+			RocketChat.Notifications.onUser('otr', (type, data) => {
+				if (!data.roomId || !data.userId || data.userId === Meteor.userId()) {
+					return;
+				} else {
+					RocketChat.OTR.getInstanceByRoomId(data.roomId).onUserStream(type, data);
+				}
+			});
 		}
 	});
 
