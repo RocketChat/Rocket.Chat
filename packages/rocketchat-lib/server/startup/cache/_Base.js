@@ -390,7 +390,14 @@ RocketChat.cache._Base = (class CacheBase extends EventEmitter {
 	}
 
 	processOplogRecord(action) {
-		// console.log(this.collectionName, JSON.stringify(action, null, 2));
+		// TODO remove - ignore updates in room.usernames
+		if (this.collectionName === 'Rooms' && action.op.o.usernames) {
+			delete action.op.o.usernames;
+		}
+		if (this.collectionName === 'Rooms' && action.op.o.$set && action.op.o.$set.usernames) {
+			delete action.op.o.$set.usernames;
+		}
+
 		if (action.op.op === 'i') {
 			this.insert(action.op.o);
 			return;
