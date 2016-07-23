@@ -18,7 +18,7 @@ Template.privateHistory.helpers
 
 	type: ->
 		switch this.t
-			when 'd' then 'icon-at'
+			when 'd' then 'icon-circle'
 			when 'c' then 'icon-hash'
 			when 'p' then 'icon-lock'
 

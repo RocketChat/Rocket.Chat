@@ -67,7 +67,7 @@ Template.listDirectMessagesFlex.onCreated(function() {
 	this.roomsList = new ReactiveVar([]);
 	this.autorun(() => {
 		this.hasMore.set(true);
-		let options = { fields: { name: 1 } };
+		let options = { fields: { name: 1, fname: 1 } };
 		if (_.isNumber(this.limit.get())) {
 			options.limit = this.limit.get();
 		}
@@ -83,7 +83,11 @@ Template.listDirectMessagesFlex.onCreated(function() {
 		}
 		let query = { t: 'd' };
 		if (s.trim(this.nameFilter.get())) {
-			query.name = new RegExp(s.trim(s.escapeRegExp(this.nameFilter.get())), 'i');
+			filter = new RegExp(s.trim(s.escapeRegExp(this.nameFilter.get())), 'i');
+			query.$or = [
+				{ name: filter },
+				{ fname: filter }
+			];
 		}
 
 		this.roomsList.set(RocketChat.models.Subscriptions.find(query, options).fetch());
