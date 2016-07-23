@@ -83,7 +83,7 @@ Template.listDirectMessagesFlex.onCreated(function() {
 		}
 		let query = { t: 'd' };
 		if (s.trim(this.nameFilter.get())) {
-			filter = new RegExp(s.trim(s.escapeRegExp(this.nameFilter.get())), 'i');
+			let filter = new RegExp(s.trim(s.escapeRegExp(this.nameFilter.get())), 'i');
 			query.$or = [
 				{ name: filter },
 				{ fname: filter }
