@@ -1,5 +1,7 @@
 FlowRouter.route '/admin/integrations',
 	name: 'admin-integrations'
+	subscriptions: (params, queryParams) ->
+		this.register 'integrations', Meteor.subscribe('integrations')
 	action: (params) ->
 		RocketChat.TabBar.showGroup 'admin-integrations'
 		BlazeLayout.render 'main',
@@ -9,6 +11,8 @@ FlowRouter.route '/admin/integrations',
 
 FlowRouter.route '/admin/integrations/new',
 	name: 'admin-integrations-new'
+	subscriptions: (params, queryParams) ->
+		this.register 'integrations', Meteor.subscribe('integrations')
 	action: (params) ->
 		RocketChat.TabBar.showGroup 'admin-integrations'
 		BlazeLayout.render 'main',
@@ -18,6 +22,8 @@ FlowRouter.route '/admin/integrations/new',
 
 FlowRouter.route '/admin/integrations/incoming/:id?',
 	name: 'admin-integrations-incoming'
+	subscriptions: (params, queryParams) ->
+		this.register 'integrations', Meteor.subscribe('integrations')
 	action: (params) ->
 		RocketChat.TabBar.showGroup 'admin-integrations'
 		BlazeLayout.render 'main',
@@ -28,6 +34,8 @@ FlowRouter.route '/admin/integrations/incoming/:id?',
 
 FlowRouter.route '/admin/integrations/outgoing/:id?',
 	name: 'admin-integrations-outgoing'
+	subscriptions: (params, queryParams) ->
+		this.register 'integrations', Meteor.subscribe('integrations')
 	action: (params) ->
 		RocketChat.TabBar.showGroup 'admin-integrations'
 		BlazeLayout.render 'main',

@@ -78,7 +78,9 @@ rocketchat:piwik
 rocketchat:push-notifications
 rocketchat:reactions
 rocketchat:slackbridge
+rocketchat:slashcommands-archive
 rocketchat:slashcommands-asciiarts
+rocketchat:slashcommands-create
 rocketchat:slashcommands-invite
 rocketchat:slashcommands-join
 rocketchat:slashcommands-kick
@@ -86,6 +88,7 @@ rocketchat:slashcommands-leave
 rocketchat:slashcommands-me
 rocketchat:slashcommands-mute
 rocketchat:slashcommands-topic
+rocketchat:slashcommands-unarchive
 rocketchat:spotify
 rocketchat:statistics
 rocketchat:streamer
@@ -100,6 +103,7 @@ rocketchat:ui-login
 rocketchat:ui-master
 rocketchat:ui-message
 rocketchat:ui-sidenav
+rocketchat:ui-vrecord
 rocketchat:version
 rocketchat:webrtc
 rocketchat:wordpress
@@ -115,7 +119,6 @@ konecty:multiple-instances-status
 konecty:nrr
 konecty:user-presence
 
-arunoda:streams
 chrismbeckett:toastr
 dispatch:run-as-user
 francocatena:status
@@ -147,4 +150,4 @@ todda00:friendly-slugs
 underscorestring:underscore.string
 yasaricli:slugify
 yasinuslu:blaze-meta
-rocketchat:slashcommands-create
+rocketchat:slashcommands-open
