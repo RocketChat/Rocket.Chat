@@ -49,8 +49,8 @@ class CachedCollection {
 		syncMethodName,
 		eventName,
 		eventType = 'onUser',
-		useSync = true,
-		useCache = true,
+		useSync = false,
+		useCache = false,
 		debug = true,
 		version = 1,
 		maxCacheTime = 60*60*24*30
