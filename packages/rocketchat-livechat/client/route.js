@@ -106,3 +106,10 @@ AccountBox.addRoute({
 	i18nPageTitle: 'Integrations',
 	pageTemplate: 'livechatIntegrations'
 }, livechatManagerRoutes);
+
+AccountBox.addRoute({
+	name: 'livechat-queue',
+	path: '/livechat-queue',
+	i18nPageTitle: 'Livechat_Queue',
+	pageTemplate: 'livechatQueue'
+});

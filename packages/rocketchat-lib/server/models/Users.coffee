@@ -70,21 +70,29 @@ RocketChat.models.Users = new class extends RocketChat.models._Base
 	findUsersByUsernamesWithHighlights: (usernames, options) ->
 		query =
 			username: { $in: usernames }
-			'settings.preferences.highlights':
+			'settings.preferences.highlights.0':
 				$exists: true
 
 		return @find query, options
 
-	findActiveByUsernameRegexWithExceptions: (username, exceptions = [], options = {}) ->
+	findActiveByUsernameOrNameRegexWithExceptions: (searchTerm, exceptions = [], options = {}) ->
 		if not _.isArray exceptions
 			exceptions = [ exceptions ]
 
-		usernameRegex = new RegExp username, "i"
+		termRegex = new RegExp searchTerm, "i"
 		query =
 			$and: [
 				{ active: true }
-				{ username: { $nin: exceptions } }
-				{ username: usernameRegex }
+				{'$or': [
+					{'$and': [
+						{ username: { $nin: exceptions } }
+						{ username: termRegex }
+					]}
+					{'$and': [
+						{ name: { $nin: exceptions } }
+						{ name: termRegex }
+					]}
+				]}
 			]
 			type:
 				$in: ['user', 'bot']
@@ -321,6 +329,9 @@ RocketChat.models.Users = new class extends RocketChat.models._Base
 
 		if not _.isEmpty unsetData
 			update.$unset = unsetData
+
+		if _.isEmpty update
+			return true
 
 		return @update { _id: _id }, update
 

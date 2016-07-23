@@ -1,14 +1,24 @@
-/* globals CustomFields */
-
+/* globals CustomFields, Livechat */
 var api = {
 	pageVisited: function(info) {
-		Triggers.processRequest(info);
+		if (info.change === 'url') {
+			Triggers.processRequest(info);
+		}
 
 		Meteor.call('livechat:pageVisited', visitor.getToken(), info);
 	},
 
 	setCustomField: function(key, value) {
 		CustomFields.setCustomField(visitor.getToken(), key, value);
+	},
+
+	setTheme: function(theme) {
+		if (theme.color) {
+			Livechat.customColor = theme.color;
+		}
+		if (theme.fontColor) {
+			Livechat.customFontColor = theme.fontColor;
+		}
 	}
 };
 

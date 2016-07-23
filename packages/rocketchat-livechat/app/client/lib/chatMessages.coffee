@@ -165,7 +165,7 @@ class @ChatMessages
 		input = event.currentTarget
 		k = event.which
 		this.resize(input)
-		if k is 13 and not event.shiftKey
+		if k is 13 and not event.shiftKey and not event.ctrlKey and not event.altKey # Enter without shift/ctrl/alt
 			event.preventDefault()
 			event.stopPropagation()
 			if this.editing.id
