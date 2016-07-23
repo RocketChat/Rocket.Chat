@@ -25,7 +25,7 @@ RocketChat.roomTypes.add 'c', 10,
 
 RocketChat.roomTypes.add 'd', 20,
 	template: 'directMessages'
-	icon: 'icon-at'
+	icon: 'icon-circle'
 	route:
 		name: 'direct'
 		path: '/direct/:username'
@@ -41,9 +41,7 @@ RocketChat.roomTypes.add 'd', 20,
 				$all: [identifier, user.username]
 		return ChatRoom.findOne(query)
 	roomName: (roomData) ->
-		room = ChatSubscription.findOne({ rid: roomData._id }, { fields: { name: 1, fname: 1 } })
-		console.log(room)
-		return room
+		return ChatSubscription.findOne({ rid: roomData._id }, { fields: { name: 1, fname: 1 } })
 	condition: ->
 		return RocketChat.authz.hasAllPermission 'view-d-room'
 
