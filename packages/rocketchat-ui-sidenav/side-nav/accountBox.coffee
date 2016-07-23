@@ -2,6 +2,7 @@ Template.accountBox.helpers
 	myUserInfo: ->
 		visualStatus = "online"
 		username = Meteor.user()?.username
+		name = Meteor.user()?.name
 		switch Session.get('user_' + username + '_status')
 			when "away"
 				visualStatus = t("away")
@@ -15,6 +16,7 @@ Template.accountBox.helpers
 			visualStatus: visualStatus
 			_id: Meteor.userId()
 			username: username
+			fname: name
 		}
 
 	showAdminOption: ->

@@ -28,8 +28,8 @@
 			{{#each rooms}}
 				<li>
 					<a href="{{pathFor 'direct' username=name}}" class="channel-link">
-						<i class="icon-at {{userStatus}}"></i>
-						{{name}}
+						<i class="icon-circle {{userStatus}}"></i>
+						{{fname}}
 						<span class='opt fixed'>
 							{{#if hidden}}
 							<i class="icon-eye-off" title="{{_ "Hidden"}}" aria-label="{{_ "Hidden"}}"></i>
