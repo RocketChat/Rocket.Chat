@@ -115,6 +115,11 @@ executeIntegrationRest = ->
 	logger.incoming.debug '@urlParams', @urlParams
 	logger.incoming.debug '@bodyParams', @bodyParams
 
+	if not @bodyParams?
+		console.error 'invalid-body - bodyParams', @bodyParams
+		console.error 'invalid-body - request', @request
+		return RocketChat.API.v1.failure 'invalid-body'
+
 	if @integration.enabled isnt true
 		return {} =
 			statusCode: 503
