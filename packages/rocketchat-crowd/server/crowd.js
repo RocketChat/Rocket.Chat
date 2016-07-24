@@ -1,4 +1,5 @@
 /* globals:CROWD:true */
+/* eslint new-cap: [2, {"capIsNewExceptions": ["SHA256"]}] */
 const logger = new Logger('CROWD', {});
 
 function fallbackDefaultAccountSystem(bind, username, password) {
@@ -23,177 +24,180 @@ function fallbackDefaultAccountSystem(bind, username, password) {
 	return Accounts._runLoginHandlers(bind, loginRequest);
 }
 
-CROWD = class CROWD {
-    constructor() {
-        const AtlassianCrowd = Npm.require('atlassian-crowd');
-        const self = this;
+const CROWD = class CROWD {
+	constructor() {
+		const AtlassianCrowd = Npm.require('atlassian-crowd');
+		const self = this;
 
-        self.options = {
-            crowd: {
-                base: RocketChat.settings.get('CROWD_URL')
-            },
-            application: {
-                name: RocketChat.settings.get('CROWD_APP_USERNAME'),
-                password: RocketChat.settings.get('CROWD_APP_PASSWORD')
-            }
-        };
+		self.options = {
+			crowd: {
+				base: RocketChat.settings.get('CROWD_URL')
+			},
+			application: {
+				name: RocketChat.settings.get('CROWD_APP_USERNAME'),
+				password: RocketChat.settings.get('CROWD_APP_PASSWORD')
+			}
+		};
 
-        self.crowdClient = new AtlassianCrowd(self.options);
+		self.crowdClient = new AtlassianCrowd(self.options);
 
-        self.crowdClient.user.authenticateSync = Meteor.wrapAsync(self.crowdClient.user.authenticate, self);
-        self.crowdClient.user.findSync = Meteor.wrapAsync(self.crowdClient.user.find, self);
-    }
+		self.crowdClient.user.authenticateSync = Meteor.wrapAsync(self.crowdClient.user.authenticate, self);
+		self.crowdClient.user.findSync = Meteor.wrapAsync(self.crowdClient.user.find, self);
+	}
 
-    authenticate(username, password) {
-        const self = this;
+	authenticate(username, password) {
+		const self = this;
 
-        if (!username || !password) {
-            logger.error('No username or password');
-            return;
-        }
+		if (!username || !password) {
+			logger.error('No username or password');
+			return;
+		}
 
-        try {
-            logger.info('Going to crowd:', username);
-            const auth = self.crowdClient.user.authenticateSync(username, password);
-            
-            if (!auth) {
-                return;
-            }
+		try {
+			logger.info('Going to crowd:', username);
+			const auth = self.crowdClient.user.authenticateSync(username, password);
 
-            const userResponse = self.crowdClient.user.findSync(username);
+			if (!auth) {
+				return;
+			}
 
-            const user = {
-                displayname: userResponse['display-name'],
-                username: userResponse.name,
-                email: userResponse.email,
-                password: password,
-                active: userResponse.active
-            };
+			const userResponse = self.crowdClient.user.findSync(username);
 
-            return user;
-        } catch (error) {
-            logger.info('Crowd had an issue or the user didnt authenticate');
-        }
-    }
+			const user = {
+				displayname: userResponse['display-name'],
+				username: userResponse.name,
+				email: userResponse.email,
+				password: password,
+				active: userResponse.active
+			};
 
-    syncDataToUser(crowdUser, id) {
-        const user = {
-            name: crowdUser.displayname,
-            username: crowdUser.username,
-            emails: [{
-                address : crowdUser.email,
-                verified: true
-            }],
-            password: crowdUser.password,
-            active: crowdUser.active
-        };
+			return user;
+		} catch (error) {
+			logger.info('Crowd had an issue or the user didnt authenticate');
+		}
+	}
 
-        Meteor.users.update(id, {
-		    $set: user
-        });
-    }
+	syncDataToUser(crowdUser, id) {
+		const user = {
+			name: crowdUser.displayname,
+			username: crowdUser.username,
+			emails: [{
+				address : crowdUser.email,
+				verified: true
+			}],
+			password: crowdUser.password,
+			active: crowdUser.active
+		};
 
-    sync() {
-        if (RocketChat.settings.get('CROWD_Enable') !== true) {
-            return;
-        }
+		Meteor.users.update(id, {
+			$set: user
+		});
+	}
 
-        var self = this;
-        logger.info('Sync started');
+	sync() {
+		if (RocketChat.settings.get('CROWD_Enable') !== true) {
+			return;
+		}
 
-        const users = RocketChat.models.Users.findCrowdUsers();
-        users.forEach(function(user) {
-            logger.info('Syncing user', user.username);
-            const userResponse = self.crowdClient.user.findSync(user.username);
-            if (userResponse) {
-                const crowdUser = {
-                    displayname: userResponse['display-name'],
-                    username: userResponse.name,
-                    email: userResponse.email,
-                    password: userResponse.password,
-                    active: userResponse.active
-                };
+		var self = this;
+		logger.info('Sync started');
 
-                self.syncDataToUser(crowdUser, user._id);
-            }
-        });
-    }
+		const users = RocketChat.models.Users.findCrowdUsers();
+		users.forEach(function(user) {
+			logger.info('Syncing user', user.username);
+			const userResponse = self.crowdClient.user.findSync(user.username);
+			if (userResponse) {
+				const crowdUser = {
+					displayname: userResponse['display-name'],
+					username: userResponse.name,
+					email: userResponse.email,
+					password: userResponse.password,
+					active: userResponse.active
+				};
 
-    addNewUser(crowdUser) {
-        var self = this;
+				self.syncDataToUser(crowdUser, user._id);
+			}
+		});
+	}
 
-        var userQuery = {
-            crowd: true,
-            username: crowdUser.username
-        };
+	addNewUser(crowdUser) {
+		var self = this;
 
-        // find our existinmg user if they exist
-        const user = Meteor.users.findOne(userQuery);
+		var userQuery = {
+			crowd: true,
+			username: crowdUser.username
+		};
 
-        if (user) {
-            const stampedToken = Accounts._generateStampedLoginToken();
+		// find our existinmg user if they exist
+		const user = Meteor.users.findOne(userQuery);
 
-            Meteor.users.update(user._id, {
-                $push: {
-                    'services.resume.loginTokens': Accounts._hashStampedToken(stampedToken)
-                }
-            });
+		if (user) {
+			const stampedToken = Accounts._generateStampedLoginToken();
 
-            self.syncDataToUser(crowdUser, user._id);
+			Meteor.users.update(user._id, {
+				$push: {
+					'services.resume.loginTokens': Accounts._hashStampedToken(stampedToken)
+				}
+			});
 
-            return {
-                userId: user._id,
-                token: stampedToken.token
-            };
-        } else {
-            try {
-                crowdUser._id = Accounts.createUser(crowdUser);
-            } catch (error) {
-                logger.info('Error creating new user for crowd user', error);
-            }
+			self.syncDataToUser(crowdUser, user._id);
 
-            const updateUser = {
-                name: crowdUser.displayname,
-                crowd: true,
-                active: crowdUser.active
-            };
+			return {
+				userId: user._id,
+				token: stampedToken.token
+			};
+		} else {
+			try {
+				crowdUser._id = Accounts.createUser(crowdUser);
+			} catch (error) {
+				logger.info('Error creating new user for crowd user', error);
+			}
 
-            Meteor.users.update(crowdUser._id, {
-                $set: updateUser
-            });
-        }
+			const updateUser = {
+				name: crowdUser.displayname,
+				crowd: true,
+				active: crowdUser.active
+			};
 
-        Meteor.runAsUser(crowdUser._id, function() {
-            Meteor.call('joinDefaultChannels');
-        });
+			Meteor.users.update(crowdUser._id, {
+				$set: updateUser
+			});
+		}
 
-        return {
-            userId: crowdUser._id
-        };
-    }
+		Meteor.runAsUser(crowdUser._id, function() {
+			Meteor.call('joinDefaultChannels');
+		});
+
+		return {
+			userId: crowdUser._id
+		};
+	}
 };
 
 Accounts.registerLoginHandler('crowd', function(loginRequest) {
-    const crowd = new CROWD();
-    let user = crowd.authenticate(loginRequest.username, loginRequest.crowdPassword);
+	const crowd = new CROWD();
+	let user = crowd.authenticate(loginRequest.username, loginRequest.crowdPassword);
 
-    if(!user) {
-        return fallbackDefaultAccountSystem(this, loginRequest.username, loginRequest.crowdPassword);
-    }
+	if (!user) {
+		return fallbackDefaultAccountSystem(this, loginRequest.username, loginRequest.crowdPassword);
+	}
 
-    return crowd.addNewUser(user);
+	return crowd.addNewUser(user);
 });
+
+let interval;
+let timeout;
 
 RocketChat.settings.get('CROWD_Sync_User_Data', function(key, value) {
 	Meteor.clearInterval(interval);
 	Meteor.clearTimeout(timeout);
 
 	if (value === true) {
-        const crowd = new CROWD();
+		const crowd = new CROWD();
 		logger.info('Enabling CROWD user sync');
-		interval = Meteor.setInterval(crowd.sync, 1000 * 60 * 60);
-		timeout = Meteor.setTimeout(function() {
-            crowd.sync();
+		Meteor.setInterval(crowd.sync, 1000 * 60 * 60);
+		Meteor.setTimeout(function() {
+			crowd.sync();
 		}, 1000 * 30);
 	} else {
 		logger.info('Disabling CROWD user sync');
