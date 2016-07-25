@@ -71,7 +71,7 @@ class LivechatDepartmentAgents extends RocketChat.models._Base {
 		}
 	}
 
-	getForDepartment(departmentId) {
+	getOnlineForDepartment(departmentId) {
 		var agents = this.findByDepartmentId(departmentId).fetch();
 
 		if (agents.length === 0) {
