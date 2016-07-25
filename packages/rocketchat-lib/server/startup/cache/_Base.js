@@ -516,7 +516,33 @@ RocketChat.cache._Base = (class CacheBase extends EventEmitter {
 		return result;
 	}
 
+	processQuery(query) {
+		if (!query) {
+			return query;
+		}
+
+		for (const field in query) {
+			if (query.hasOwnProperty(field)) {
+				const value = query[field];
+				if (value instanceof RegExp) {
+					query[field] = {
+						$regex: value
+					};
+				}
+
+				if (field === '$and' || field === '$or') {
+					query[field] = value.map((subValue) => {
+						return this.processQuery(subValue);
+					});
+				}
+			}
+		}
+
+		return query;
+	}
+
 	find(query, options={}) {
+		query = this.processQuery(query);
 		return {
 			fetch: () => {
 				return this.processQueryOptionsOnResult(this.collection.find(query), options);
@@ -533,10 +559,12 @@ RocketChat.cache._Base = (class CacheBase extends EventEmitter {
 	}
 
 	findOne(query, options) {
+		query = this.processQuery(query);
 		return this.processQueryOptionsOnResult(this.collection.findOne(query), options);
 	}
 
 	findWhere(query, options) {
+		query = this.processQuery(query);
 		return this.processQueryOptionsOnResult(this.collection.findWhere(query), options);
 	}
 
