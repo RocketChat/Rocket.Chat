@@ -28,20 +28,23 @@ RocketChat.callbacks.add('afterSaveMessage', function(message, room) {
 	}
 
 	var getMessageLink = () => {
-		var path, label;
-		if (directMessage) {
-			path = `direct/${ room.username }`;
-			label = room.username;
-		} else {
-			path = `channel/${ room.name }`;
-			label = `#${ room.name }`;
-		}
-		var link = `<a style="color: #008ce3;" href="${ process.env.ROOT_URL }${ path }">${ label }</a>`;
-		return `<span style="margin-top: 10px; display: block;">${ emailSubject.replace(label, link) }</span>`;
+		var path = directMessage ? `direct/${ room.username }` : `channel/${ room.name }`;
+		var style = [
+			'color: #fff;',
+			'padding: .5em;',
+			'background-color: #04436a;',
+			'display: block;',
+			'width: 10em;',
+			'text-align: center;',
+			'text-decoration: none;',
+			'margin: auto;',
+			'margin-bottom: 8px;'
+		].join(' ');
+		return `<a style="${ style }" href="${ process.env.ROOT_URL }${ path }">GO TO MESSAGE</a>`;
 	};
 
 	var divisorMessage = '<hr style="margin: 20px auto; border: none; border-bottom: 1px solid #dddddd;">';
-	message.html = getMessageLink() + divisorMessage + s.escapeHTML(message.msg);
+	message.html = s.escapeHTML(message.msg) + divisorMessage + getMessageLink();
 
 	message = RocketChat.callbacks.run('renderMessage', message);
 	if (message.tokens && message.tokens.length > 0) {
@@ -98,7 +101,7 @@ RocketChat.callbacks.add('afterSaveMessage', function(message, room) {
 							to: email.address,
 							from: RocketChat.settings.get('From_Email'),
 							subject: `[${ siteName }] ${ emailSubject }`,
-							html: '&gt; ' + message.html
+							html: message.html
 						};
 
 						Email.send(email);
