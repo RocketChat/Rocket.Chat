@@ -1,0 +1,40 @@
+<template name="livechatQueue">
+	{{#if hasPermission}}
+		{{#each departments}}
+			<p class="queue-department">
+				{{_ "Department"}}: <strong>{{name}}</strong>
+				( <label for="show-offline-{{_id}}">{{_ "show_offline_users"}}</label>
+				<input type="checkbox" class="show-offline" id="show-offline-{{_id}}">)
+			</p>
+
+			<div class="rocket-form">
+				<div class="list">
+					<table>
+						<thead>
+							<tr>
+								<th width="70%">{{_ "Agent"}}</th>
+								<th width="15%" class="text-right">{{_ "Count"}}</th>
+								<th width="15%" class="text-right">{{_ "Order"}}</th>
+							</tr>
+						</thead>
+						<tbody>
+							{{#each users}}
+								<tr>
+									<td>{{username}}</td>
+									<td class="text-right">{{count}}</td>
+									<td class="text-right">{{order}}</td>
+								</tr>
+							{{else}}
+							<tr>
+								<td colspan="3">{{_ "Nobody_available"}}</td>
+							</tr>
+							{{/each}}
+						</tbody>
+					</table>
+				</div>
+			</div>
+		{{/each}}
+	{{else}}
+		<p>{{_ "You_are_not_authorized_to_view_this_page"}}</p>
+	{{/if}}
+</template>
