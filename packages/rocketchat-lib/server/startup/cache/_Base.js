@@ -437,6 +437,34 @@ RocketChat.cache._Base = (class CacheBase extends EventEmitter {
 	}
 
 	processQueryOptionsOnResult(result, options={}) {
+		if (Array.isArray(result)) {
+			if (options.sort) {
+				result = result.sort((a, b) => {
+					let r = 0;
+					for (const field in options.sort) {
+						if (options.sort.hasOwnProperty(field)) {
+							const direction = options.sort[field];
+							const valueA = objectPath.get(a, field);
+							const valueB = objectPath.get(b, field);
+							if (valueA > valueB) {
+								r = direction;
+								break;
+							}
+							if (valueA < valueB) {
+								r = -direction;
+								break;
+							}
+						}
+					}
+					return r;
+				});
+			}
+
+			if (typeof options.limit === 'number') {
+				result.splice(options.limit);
+			}
+		}
+
 		if (!options.fields) {
 			options.fields = {
 				$loki: 0
