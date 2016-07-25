@@ -119,6 +119,7 @@
   "Additional_Feedback" : "Дополнительная обратная связь",
   "Administration" : "Администрирование",
   "After_OAuth2_authentication_users_will_be_redirected_to_this_URL" : "После аутентификации OAuth2, пользователи будут перенаправляться на этот URL-адрес",
+  "Agent" : "Агент",
   "Agent_added" : "Сотрудник добавлен",
   "Agent_removed" : "Сотрудник удален",
   "Alias" : "Алиас",
