@@ -1,6 +1,6 @@
 {
-  "0_Errors_Only" : "僅錯誤 -  0",
-  "1_Errors_and_Information" : "1  - 錯誤信息",
+  "0_Errors_Only" : "0 - 僅錯誤 ",
+  "1_Errors_and_Information" : "1  - 錯誤及資訊",
   "2_Erros_Information_and_Debug" : "2  - 誤差修改，信息和調試",
   "403" : "被禁止",
   "500" : "內部服務器錯誤",
