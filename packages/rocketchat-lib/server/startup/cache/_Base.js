@@ -466,7 +466,7 @@ RocketChat.cache._Base = (class CacheBase extends EventEmitter {
 		}
 
 		if (Array.isArray(result)) {
-			result.map((record) => {
+			result = result.map((record) => {
 				if (fieldsToRemove.length > 0) {
 					return _.omit(record, ...fieldsToRemove);
 				}
