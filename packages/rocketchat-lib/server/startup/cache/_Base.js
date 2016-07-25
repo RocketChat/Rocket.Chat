@@ -437,6 +437,10 @@ RocketChat.cache._Base = (class CacheBase extends EventEmitter {
 	}
 
 	processQueryOptionsOnResult(result, options={}) {
+		if (result === undefined || result === null) {
+			return result;
+		}
+
 		if (Array.isArray(result)) {
 			if (options.sort) {
 				result = result.sort((a, b) => {
