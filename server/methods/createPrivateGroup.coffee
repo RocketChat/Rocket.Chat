@@ -1,5 +1,5 @@
 Meteor.methods
-	createPrivateGroup: (name, members) ->
+	createPrivateGroup: (name, members, readOnly) ->
 		if not Meteor.userId()
 			throw new Meteor.Error 'error-invalid-user', "Invalid user", { method: 'createPrivateGroup' }
 
@@ -32,6 +32,8 @@ Meteor.methods
 		# create new room
 		room = RocketChat.models.Rooms.createWithTypeNameUserAndUsernames 'p', name, me, members,
 			ts: now
+			ro: readOnly is true
+			muted: if readOnly is true then members else []
 
 		for username in members
 			member = RocketChat.models.Users.findOneByUsername(username, { fields: { username: 1 }})

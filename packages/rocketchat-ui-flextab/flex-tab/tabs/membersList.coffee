@@ -17,7 +17,9 @@ Template.membersList.helpers
 	roomUsers: ->
 		users = []
 		onlineUsers = RoomManager.onlineUsers.get()
-		roomUsernames = ChatRoom.findOne(this.rid)?.usernames or []
+		room = ChatRoom.findOne(this.rid)
+		roomUsernames = room?.usernames or []
+		roomMuted = room?.muted or []
 
 		for username in roomUsernames
 			if Template.instance().showAllUsers.get() or onlineUsers[username]?
@@ -31,6 +33,7 @@ Template.membersList.helpers
 				users.push
 					username: username
 					status: onlineUsers[username]?.status
+					muted: username in roomMuted
 					utcOffset: utcOffset
 
 		users = _.sortBy users, 'username'

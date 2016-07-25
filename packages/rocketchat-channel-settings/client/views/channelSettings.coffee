@@ -33,6 +33,8 @@ Template.channelSettings.helpers
 			return t('Room_archivation_state_true')
 		else
 			return t('Room_archivation_state_false')
+	readOnly: ->
+		return ChatRoom.findOne(@rid, { fields: { ro: 1 }})?.ro
 
 Template.channelSettings.events
 	'keydown input[type=text]': (e, t) ->
@@ -129,4 +131,8 @@ Template.channelSettings.onCreated ->
 							return handleError err if err
 							toastr.success TAPi18n.__ 'Room_unarchived'
 							RocketChat.callbacks.run 'unarchiveRoom', ChatRoom.findOne(room._id)
+			when 'readOnly'
+				Meteor.call 'saveRoomSettings', room._id, 'readOnly', @$('input[name=readOnly]:checked').val() is 'true', (err, result) ->
+						return handleError err if err
+						toastr.success 'Read Only changed successfully'
 		@editing.set()
