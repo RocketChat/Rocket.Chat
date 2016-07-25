@@ -436,48 +436,62 @@ RocketChat.cache._Base = (class CacheBase extends EventEmitter {
 		}
 	}
 
+	processQueryOptionsOnResult(result, options={}) {
+		if (!options.fields) {
+			options.fields = {
+				$loki: 0
+			};
+		}
+
+		const fieldsToRemove = [];
+		const fieldsToGet = [];
+
+		for (const field in options.fields) {
+			if (options.fields.hasOwnProperty(field)) {
+				if (options.fields[field] === 0) {
+					fieldsToRemove.push(field);
+				} else if (options.fields[field] === 1) {
+					fieldsToGet.push(field);
+				}
+			}
+		}
+
+		if (fieldsToRemove.length > 0 && fieldsToGet.length > 0) {
+			console.error('Can\'t mix remove and get fields');
+			fieldsToRemove.splice(0, fieldsToRemove.length);
+		}
+
+		if (fieldsToGet.length > 0 && fieldsToGet.indexOf('_id') === -1) {
+			fieldsToGet.push('_id');
+		}
+
+		if (Array.isArray(result)) {
+			result.map((record) => {
+				if (fieldsToRemove.length > 0) {
+					return _.omit(record, ...fieldsToRemove);
+				}
+
+				if (fieldsToGet.length > 0) {
+					return _.pick(record, ...fieldsToGet);
+				}
+			});
+		} else {
+			if (fieldsToRemove.length > 0) {
+				return _.omit(result, ...fieldsToRemove);
+			}
+
+			if (fieldsToGet.length > 0) {
+				return _.pick(result, ...fieldsToGet);
+			}
+		}
+
+		return result;
+	}
+
 	find(query, options={}) {
 		return {
 			fetch: () => {
-				if (!options.fields) {
-					options.fields = {
-						$loki: 0
-					};
-				}
-
-				const fieldsToRemove = [];
-				const fieldsToGet = [];
-
-				for (const field in options.fields) {
-					if (options.fields.hasOwnProperty(field)) {
-						if (options.fields[field] === 0) {
-							fieldsToRemove.push(field);
-						} else if (options.fields[field] === 1) {
-							fieldsToGet.push(field);
-						}
-					}
-				}
-
-				if (fieldsToRemove.length > 0 && fieldsToGet.length > 0) {
-					console.error('Can\'t mix remove and get fields');
-					fieldsToRemove.splice(0, fieldsToRemove.length);
-				}
-
-				if (fieldsToGet.length > 0 && fieldsToGet.indexOf('_id') === -1) {
-					fieldsToGet.push('_id');
-				}
-
-				const result = this.collection.find(query).map((record) => {
-					if (fieldsToRemove.length > 0) {
-						return _.omit(record, ...fieldsToRemove);
-					}
-
-					if (fieldsToGet.length > 0) {
-						return _.pick(record, ...fieldsToGet);
-					}
-				});
-
-				return result;
+				return this.processQueryOptionsOnResult(this.collection.find(query), options);
 			},
 
 			count: () => {
@@ -490,12 +504,12 @@ RocketChat.cache._Base = (class CacheBase extends EventEmitter {
 		};
 	}
 
-	findOne() {
-		return this.collection.findOne(...arguments);
+	findOne(query, options) {
+		return this.processQueryOptionsOnResult(this.collection.findOne(query), options);
 	}
 
-	findWhere() {
-		return this.collection.findWhere(...arguments);
+	findWhere(query, options) {
+		return this.processQueryOptionsOnResult(this.collection.findWhere(query), options);
 	}
 
 	addDynamicView() {
