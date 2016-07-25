@@ -134,5 +134,5 @@ Template.channelSettings.onCreated ->
 			when 'readOnly'
 				Meteor.call 'saveRoomSettings', room._id, 'readOnly', @$('input[name=readOnly]:checked').val() is 'true', (err, result) ->
 						return handleError err if err
-						toastr.success 'Read Only changed successfully'
+						toastr.success TAPi18n.__ 'Read_only_changed_successfully'
 		@editing.set()

@@ -28,7 +28,10 @@ Meteor.methods
 
 		newUser = RocketChat.models.Users.findOneByUsername data.username
 
-		RocketChat.models.Rooms.addUsernameById data.rid, data.username
+		if room.ro
+			RocketChat.models.Rooms.addUsernameByIdAndMute data.rid, data.username
+		else
+			RocketChat.models.Rooms.addUsernameById data.rid, data.username
 
 		now = new Date()
 
@@ -38,11 +41,12 @@ Meteor.methods
 			alert: true
 			unread: 1
 
-		fromUser = RocketChat.models.Users.findOneById fromId
-		RocketChat.models.Messages.createUserAddedWithRoomIdAndUser data.rid, newUser,
-			ts: now
-			u:
-				_id: fromUser._id
-				username: fromUser.username
+		if not room.ro
+			fromUser = RocketChat.models.Users.findOneById fromId
+			RocketChat.models.Messages.createUserAddedWithRoomIdAndUser data.rid, newUser,
+				ts: now
+				u:
+					_id: fromUser._id
+					username: fromUser.username
 
 		return true
