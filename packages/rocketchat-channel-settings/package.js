@@ -31,6 +31,7 @@ Package.onUse(function(api) {
 		'server/functions/saveRoomType.coffee',
 		'server/functions/saveRoomTopic.coffee',
 		'server/functions/saveRoomName.coffee',
+		'server/functions/saveRoomReadOnly.coffee',
 		'server/functions/saveRoomDescription.coffee',
 		'server/methods/saveRoomSettings.coffee',
 		'server/models/Messages.coffee',

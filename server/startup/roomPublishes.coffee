@@ -10,6 +10,7 @@ Meteor.startup ->
 				topic: 1
 				muted: 1
 				archived: 1
+				ro: 1
 				jitsiTimeout: 1
 				description: 1
 
@@ -32,6 +33,7 @@ Meteor.startup ->
 				topic: 1
 				muted: 1
 				archived: 1
+				ro: 1
 				jitsiTimeout: 1
 				description: 1
 

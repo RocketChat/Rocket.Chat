@@ -22,7 +22,11 @@ Meteor.methods
 
 		RocketChat.callbacks.run 'beforeJoinRoom', user, room
 
-		RocketChat.models.Rooms.addUsernameById rid, user.username
+		# Automatically mute users in read only rooms
+		if room.ro
+			RocketChat.models.Rooms.addUsernameByIdAndMute rid, user.username
+		else
+			RocketChat.models.Rooms.addUsernameById rid, user.username
 
 		RocketChat.models.Subscriptions.createWithRoomAndUser room, user,
 			ts: now
@@ -30,8 +34,10 @@ Meteor.methods
 			alert: true
 			unread: 1
 
-		RocketChat.models.Messages.createUserJoinWithRoomIdAndUser rid, user,
-			ts: now
+		# Don't post message in read only rooms
+		if not room.ro
+			RocketChat.models.Messages.createUserJoinWithRoomIdAndUser rid, user,
+				ts: now
 
 		Meteor.defer ->
 			RocketChat.callbacks.run 'afterJoinRoom', user, room
