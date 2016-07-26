@@ -166,7 +166,7 @@ RocketChat.cache._Base = (class CacheBase extends EventEmitter {
 	}
 
 	processRemoteJoinInserted({field, link, multi, record}) {
-		let localRecords = this.findByIndex(link.local, record[link.remote]);
+		let localRecords = this._findByIndex(link.local, record[link.remote]);
 
 		if (!localRecords) {
 			return;
@@ -198,7 +198,7 @@ RocketChat.cache._Base = (class CacheBase extends EventEmitter {
 	}
 
 	processLocalJoinInserted({join, field, link, multi, localRecord}) {
-		let records = RocketChat.cache[join].findByIndex(link.remote, localRecord[link.local]);
+		let records = RocketChat.cache[join]._findByIndex(link.remote, localRecord[link.local]);
 
 		if (!Array.isArray(records)) {
 			records = [records];
@@ -223,7 +223,7 @@ RocketChat.cache._Base = (class CacheBase extends EventEmitter {
 	}
 
 	processRemoteJoinRemoved({field, link, multi, record}) {
-		let localRecords = this.findByIndex(link.local, record[link.remote]);
+		let localRecords = this._findByIndex(link.local, record[link.remote]);
 
 		if (!localRecords) {
 			return;
@@ -342,8 +342,8 @@ RocketChat.cache._Base = (class CacheBase extends EventEmitter {
 		}
 	}
 
-	findByIndex(index, ...keys) {
-		const key = keys.join('|');
+	_findByIndex(index, keys) {
+		const key = [].concat(keys).join('|');
 		if (!this.indexes[index]) {
 			return;
 		}
@@ -358,6 +358,32 @@ RocketChat.cache._Base = (class CacheBase extends EventEmitter {
 		if (this.indexes[index].type === 'array') {
 			return [];
 		}
+	}
+
+	findByIndex(index, keys, options={}) {
+		return {
+			fetch: () => {
+				return this.processQueryOptionsOnResult(this._findByIndex(index, keys, options));
+			},
+
+			count: () => {
+				const records = this.findByIndex(index, keys, options).fetch();
+				if (Array.isArray(records)) {
+					return records.length;
+				}
+				return !records ? 0 : 1;
+			},
+
+			forEach: (fn) => {
+				const records = this.findByIndex(index, keys, options).fetch();
+				if (Array.isArray(records)) {
+					return records.forEach(fn);
+				}
+				if (records) {
+					return fn(records);
+				}
+			}
+		};
 	}
 
 	register() {
@@ -623,7 +649,7 @@ RocketChat.cache._Base = (class CacheBase extends EventEmitter {
 	}
 
 	removeById(id) {
-		const record = this.findByIndex('_id', id);
+		const record = this._findByIndex('_id', id);
 		if (record) {
 			this.emit('beforeremove', record);
 			this.collection.removeWhere({_id: id});

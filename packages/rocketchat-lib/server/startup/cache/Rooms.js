@@ -11,7 +11,7 @@ RocketChat.cache.Rooms = new (class CacheUser extends RocketChat.cache._Base {
 
 	// FIND ONE
 	findOneById(_id/*, options*/) {
-		return this.findByIndex('_id', _id);
+		return this.findByIndex('_id', _id).fetch();
 	}
 
 	findOneByIdOrName(_idOrName, options) {

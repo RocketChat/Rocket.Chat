@@ -9,6 +9,6 @@ Meteor.methods({
 			throw new Meteor.Error('error-invalid-room', 'Invalid room', { method: 'getUsersOfRoom' });
 		}
 
-		return RocketChat.cache.Rooms.findByIndex('_id', roomId).usernames;
+		return RocketChat.cache.Rooms.findByIndex('_id', roomId).fetch().usernames;
 	}
 });
