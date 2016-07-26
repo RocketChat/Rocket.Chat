@@ -1,6 +1,6 @@
 /* eslint new-cap: 0 */
 
-RocketChat.cache.Subscriptions = new (class CacheUser extends RocketChat.cache._Base {
+RocketChat.cache.Subscriptions = new (class CacheSubscription extends RocketChat.cache._Base {
 	constructor() {
 		super('Subscriptions');
 
