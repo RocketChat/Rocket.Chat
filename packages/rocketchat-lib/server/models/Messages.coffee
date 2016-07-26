@@ -62,6 +62,15 @@ RocketChat.models.Messages = new class extends RocketChat.models._Base
 
 		return @find query, options
 
+	findByRoomIdAfterTimestampExcludingUserId: (roomId, timestamp, userId, options) ->
+		query =
+			'u._id':
+				$ne: userId
+			rid: roomId
+			ts:
+				$gt: timestamp
+		return @find query, options
+
 	findVisibleByRoomIdBeforeTimestamp: (roomId, timestamp, options) ->
 		query =
 			_hidden:
