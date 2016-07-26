@@ -142,7 +142,7 @@ RocketChat.models.Subscriptions = new class extends RocketChat.models._Base
 
 		return @update query, update
 
-	setAsUnreadByRoomIdAndUserId: (roomId, userId, unreadMessageCount, firstMessageUnreadTimestamp) ->
+	setAsUnreadByRoomIdAndUserId: (roomId, userId, firstMessageUnreadTimestamp) ->
 		query =
 			rid: roomId
 			'u._id': userId
@@ -151,7 +151,6 @@ RocketChat.models.Subscriptions = new class extends RocketChat.models._Base
 			$set:
 				open: true
 				alert: true
-				unread: unreadMessageCount
 				ls: firstMessageUnreadTimestamp
 
 		return @update query, update
