@@ -598,6 +598,11 @@ RocketChat.cache._Base = (class CacheBase extends EventEmitter {
 
 	updateDiffById(id, diff) {
 		const record = this.collection.findOne({_id: id});
+		if (!record) {
+			console.error('Cache.updateDiffById: No record', this.collectionName, id, diff);
+			return;
+		}
+
 		const updatedFields = _.without(Object.keys(diff), ...this.ignoeUpdatedFields);
 
 		if (updatedFields.length > 0) {
