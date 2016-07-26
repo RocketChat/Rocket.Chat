@@ -126,7 +126,11 @@ Template.visitorInfo.helpers({
 		}
 	},
 
-	agentIsServing() {
+	canSeeButtons() {
+		if (RocketChat.authz.hasRole(Meteor.userId(), 'livechat-manager')) {
+			return true;
+		}
+
 		const data = Template.currentData();
 		if (data && data.rid) {
 			const room = RocketChat.models.Rooms.findOne(data.rid);
