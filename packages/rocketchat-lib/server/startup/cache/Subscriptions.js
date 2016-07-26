@@ -9,7 +9,7 @@ RocketChat.cache.Subscriptions = new (class CacheUser extends RocketChat.cache._
 	}
 
 	findByUserId(userId, options) {
-		return this.find({'u._id': userId}, options);
+		return this.findByIndex('u._id', userId, options);
 	}
 });
 
