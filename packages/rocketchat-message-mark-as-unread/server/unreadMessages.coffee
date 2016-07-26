@@ -15,6 +15,5 @@ Meteor.methods
 			logger.connection.debug('Provided message is already marked as unread')
 			return
 
-		newUnreadCount = RocketChat.models.Messages.findByRoomIdAfterTimestampExcludingUserId(originalMessage.rid, originalMessage.ts, Meteor.userId()).count()
-		logger.connection.debug('Updating unread counter to ' + newUnreadCount + ' and message of ' + originalMessage.ts + ' as the first unread')
-		RocketChat.models.Subscriptions.setAsUnreadByRoomIdAndUserId(originalMessage.rid, Meteor.userId(), newUnreadCount, originalMessage.ts)
+		logger.connection.debug('Updating unread  message of ' + originalMessage.ts + ' as the first unread')
+		RocketChat.models.Subscriptions.setAsUnreadByRoomIdAndUserId(originalMessage.rid, Meteor.userId(), originalMessage.ts)
