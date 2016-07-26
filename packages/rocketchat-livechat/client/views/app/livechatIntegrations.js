@@ -1,49 +1,41 @@
+/* globals LivechatIntegration */
 Template.livechatIntegrations.helpers({
 	webhookUrl() {
-		return Template.instance().settingValue.get();
+		let setting = LivechatIntegration.findOne('Livechat_webhookUrl');
+		return setting && setting.value;
 	},
 	secretToken() {
-		return Template.instance().secretToken.get();
+		let setting = LivechatIntegration.findOne('Livechat_secret_token');
+		return setting && setting.value;
 	},
 	disableTest() {
 		return Template.instance().disableTest.get();
 	},
 	sendOnCloseChecked() {
-		return Template.instance().sendOnClose.get();
+		let setting = LivechatIntegration.findOne('Livechat_webhook_on_close');
+		return setting && setting.value;
 	},
 	sendOnOfflineChecked() {
-		return Template.instance().sendOnOffline.get();
+		let setting = LivechatIntegration.findOne('Livechat_webhook_on_offline_msg');
+		return setting && setting.value;
 	}
 });
 
 Template.livechatIntegrations.onCreated(function() {
 	this.disableTest = new ReactiveVar(true);
-	this.settingValue = new ReactiveVar();
-	this.secretToken = new ReactiveVar();
-	this.sendOnClose = new ReactiveVar();
-	this.sendOnOffline = new ReactiveVar();
 
 	this.autorun(() => {
-		this.disableTest.set(_.isEmpty(RocketChat.settings.get('Livechat_webhookUrl')));
-		this.settingValue.set(RocketChat.settings.get('Livechat_webhookUrl'));
+		let webhook = LivechatIntegration.findOne('Livechat_webhookUrl');
+		this.disableTest.set(!webhook || _.isEmpty(webhook.value));
 	});
 
-	this.autorun(() => {
-		this.secretToken.set(RocketChat.settings.get('Livechat_secret_token'));
-	});
-
-	this.autorun(() => {
-		this.sendOnClose.set(RocketChat.settings.get('Livechat_webhook_on_close'));
-	});
-
-	this.autorun(() => {
-		this.sendOnOffline.set(RocketChat.settings.get('Livechat_webhook_on_offline_msg'));
-	});
+	this.subscribe('livechat:integration');
 });
 
 Template.livechatIntegrations.events({
 	'change #webhookUrl, blur #webhookUrl'(e, instance) {
-		instance.disableTest.set(e.currentTarget.value !== instance.settingValue.get());
+		let setting = LivechatIntegration.findOne('Livechat_webhookUrl');
+		instance.disableTest.set(!setting || e.currentTarget.value !== setting.value);
 	},
 	'click .test'(e, instance) {
 		if (!instance.disableTest.get()) {
@@ -58,32 +50,28 @@ Template.livechatIntegrations.events({
 	'click .reset-settings'(e, instance) {
 		e.preventDefault();
 
-		instance.$('#webhookUrl').val(instance.settingValue.get());
+		let webhookUrl = LivechatIntegration.findOne('Livechat_webhookUrl');
+		let secretToken = LivechatIntegration.findOne('Livechat_secret_token');
+		let webhookOnClose = LivechatIntegration.findOne('Livechat_webhook_on_close');
+		let webhookOnOfflineMsg = LivechatIntegration.findOne('Livechat_webhook_on_offline_msg');
 
-		instance.disableTest.set(false);
+		instance.$('#webhookUrl').val(webhookUrl && webhookUrl.value);
+		instance.$('#secretToken').val(secretToken && secretToken.value);
+		instance.$('#sendOnClose').get(0).checked = webhookOnClose && webhookOnClose.value;
+		instance.$('#sendOnOffline').get(0).checked = webhookOnOfflineMsg && webhookOnOfflineMsg.value;
+
+		instance.disableTest.set(!webhookUrl || _.isEmpty(webhookUrl.value));
 	},
 	'submit .rocket-form'(e, instance) {
 		e.preventDefault();
 
-		var settings = [
-			{
-				_id: 'Livechat_webhookUrl',
-				value: s.trim(instance.$('#webhookUrl').val())
-			},
-			{
-				_id: 'Livechat_secret_token',
-				value: s.trim(instance.$('#secretToken').val())
-			},
-			{
-				_id: 'Livechat_webhook_on_close',
-				value: instance.$('#sendOnClose').get(0).checked
-			},
-			{
-				_id: 'Livechat_webhook_on_offline_msg',
-				value: instance.$('#sendOnOffline').get(0).checked
-			}
-		];
-		RocketChat.settings.batchSet(settings, (err/*, success*/) => {
+		var settings = {
+			'Livechat_webhookUrl': s.trim(instance.$('#webhookUrl').val()),
+			'Livechat_secret_token': s.trim(instance.$('#secretToken').val()),
+			'Livechat_webhook_on_close': instance.$('#sendOnClose').get(0).checked,
+			'Livechat_webhook_on_offline_msg': instance.$('#sendOnOffline').get(0).checked
+		};
+		Meteor.call('livechat:saveIntegration', settings, (err) => {
 			if (err) {
 				return handleError(err);
 			}
