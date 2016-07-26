@@ -40,7 +40,7 @@ readAsArrayBuffer = (file, callback) ->
 
 			text = ''
 
-			if file.type is 'audio'
+			if file.type?.startsWith('audio')
 				text = """
 					<div class='upload-preview'>
 						<audio  style="width: 100%;" controls="controls">
@@ -50,7 +50,7 @@ readAsArrayBuffer = (file, callback) ->
 					</div>
 					<div class='upload-preview-title'>#{Handlebars._escape(file.name)}</div>
 				"""
-			else if file.type is 'video'
+			else if file.type?.startsWith('video')
 				text = """
 					<div class='upload-preview'>
 						<video  style="width: 100%;" controls="controls">

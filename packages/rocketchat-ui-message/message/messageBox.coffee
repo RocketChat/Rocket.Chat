@@ -117,6 +117,7 @@ Template.messageBox.events
 				files.push
 					file: item.getAsFile()
 					name: 'Clipboard'
+					type: file.type
 
 		if files.length > 0
 			fileUpload files
@@ -141,6 +142,7 @@ Template.messageBox.events
 			filesToUpload.push
 				file: file
 				name: file.name
+				type: file.type
 
 		fileUpload filesToUpload
 
