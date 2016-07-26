@@ -50,3 +50,12 @@ RocketChat.cache.Rooms.on('sync', (type, room/*, diff*/) => {
 		RocketChat.Notifications.notifyUser(record.u._id, 'rooms-changed', type, roomMap({_room: room}));
 	}
 });
+
+RocketChat.cache.Subscriptions.on('changed', (type, subscription/*, diff*/) => {
+	if (type === 'inserted') {
+		const room = RocketChat.cache.Rooms.findByIndex('_id', subscription.rid);
+		if (room) {
+			RocketChat.Notifications.notifyUser(subscription.u._id, 'rooms-changed', type, roomMap({_room: room}));
+		}
+	}
+});
