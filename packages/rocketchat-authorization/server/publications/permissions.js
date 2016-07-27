@@ -2,19 +2,21 @@ Meteor.methods({
 	'permissions/get'(updatedAt) {
 		this.unblock();
 
+		const records = RocketChat.cache.Permissions.find().fetch();
+
 		if (updatedAt instanceof Date) {
-			return RocketChat.models.Permissions.dinamicFindChangesAfter('find', updatedAt);
+			return records.filter((record) => {
+				return record._updatedAt > updatedAt;
+			});
 		}
 
-		return RocketChat.models.Permissions.find().fetch();
+		return records;
 	}
 });
 
 
-RocketChat.models.Permissions.on('change', (type, ...args) => {
-	const records = RocketChat.models.Permissions.getChangedRecords(type, args[0]);
+RocketChat.cache.Permissions.on('changed', (type, permission) => {
+	permission = RocketChat.cache.Subscriptions.processQueryOptionsOnResult(permission);
 
-	for (const record of records) {
-		RocketChat.Notifications.notifyAll('permissions-changed', type, record);
-	}
+	RocketChat.Notifications.notifyAll('permissions-changed', type, permission);
 });
