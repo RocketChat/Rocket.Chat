@@ -4,7 +4,6 @@
 		{{pretext}}
 		<div class="attachment-block">
 			<div class="attachment-block-border" style="background-color: {{color}}"></div>
-
 			{{#if author_name}}
 				{{#if author_link}}
 					<div class="attachment-author">
@@ -13,7 +12,7 @@
 						{{/if}}
 						<a href="{{fixCordova author_link}}" target="_blank">{{author_name}}</a>
 						{{#if ts}}
-							<span class="time">{{time}}</span>
+							<span class="time">{{#if message_link}}<a href="{{message_link}}">{{time}}</a>{{else}}{{time}}{{/if}}</span>
 						{{/if}}
 					</div>
 				{{else}}
@@ -23,7 +22,7 @@
 						{{/if}}
 						{{author_name}}
 					{{#if ts}}
-						<span class="time">{{time}}</span>
+						<span class="time">{{#if message_link}}<a href="{{message_link}}">{{time}}</a>{{else}}{{time}}{{/if}}</span>
 					{{/if}}
 					</div>
 				{{/if}}
@@ -35,14 +34,14 @@
 						{{#if title_link_download}}
 							<a class="icon-download attachment-download-icon" href="{{fixCordova title_link}}" target="_blank" download=""></a>
 						{{/if}}
-				{{else}}
-					{{title}}
-				{{/if}}
-				{{#if collapsed}}
-					<span class="collapse-switch icon-right-dir" data-index="{{index}}" data-collapsed="{{collapsed}}"></span>
-				{{else}}
-					<span class="collapse-switch icon-down-dir" data-index="{{index}}" data-collapsed="{{collapsed}}"></span>
-				{{/if}}
+					{{else}}
+						{{title}}
+					{{/if}}
+					{{#if collapsed}}
+						<span class="collapse-switch icon-right-dir" data-index="{{index}}" data-collapsed="{{collapsed}}"></span>
+					{{else}}
+						<span class="collapse-switch icon-down-dir" data-index="{{index}}" data-collapsed="{{collapsed}}"></span>
+					{{/if}}
 				</div>
 			{{/if}}
 			<div class="attachment-flex">
@@ -101,24 +100,26 @@
 			{{/if}}
 
 			{{#if fields}}
-				<div class="attachment-fields">
-					{{#each fields}}
-						{{#unless short}}
-							<div class="attachment-field">
-								<div class="attachment-field-title">{{title}}</div>
-								{{{RocketChatMarkdown value}}}
-							</div>
-						{{/unless}}
-					{{/each}}
-					{{#each fields}}
-						{{#if short}}
-							<div class="attachment-field attachment-field-short">
-								<div class="attachment-field-title">{{title}}</div>
-								{{{RocketChatMarkdown value}}}
-							</div>
-						{{/if}}
-					{{/each}}
-				</div>
+				{{#unless collapsed}}
+					<div class="attachment-fields">
+						{{#each fields}}
+							{{#unless short}}
+								<div class="attachment-field">
+									<div class="attachment-field-title">{{title}}</div>
+									{{{RocketChatMarkdown value}}}
+								</div>
+							{{/unless}}
+						{{/each}}
+						{{#each fields}}
+							{{#if short}}
+								<div class="attachment-field attachment-field-short">
+									<div class="attachment-field-title">{{title}}</div>
+									{{{RocketChatMarkdown value}}}
+								</div>
+							{{/if}}
+						{{/each}}
+					</div>
+				{{/unless}}
 			{{/if}}
 		</div>
 	</div>

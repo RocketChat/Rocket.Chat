@@ -235,6 +235,9 @@ label.required:after {
 	}
 	&.lightblue {
 		background-color: #02acec;
+		&:disabled {
+			background-color: desaturate(#02acec, 20%);
+		}
 	}
 	&.clean {
 		background-color: @clean-buttons-color;
@@ -991,6 +994,13 @@ a.github-fork {
 		p {
 			color: @secondary-font-color;
 		}
+		.form-divisor {
+			border-bottom: 1px solid #ddd;
+
+			> span {
+				background-color: @secondary-background-color;
+			}
+		}
 	}
 }
 
@@ -1229,4 +1239,34 @@ a.github-fork {
 
 .green {
 	color: green;
+}
+
+.flex-tab-bar {
+	.tab-button {
+		&.red {
+			color: red;
+		}
+		&.attention {
+			animation-duration: 1000ms;
+			animation-name: blink;
+			animation-iteration-count: infinite;
+			animation-direction: alternate;
+		}
+		@keyframes blink {
+			from {
+				color: red;
+			}
+			to {
+				opacity: inherit;
+			}
+		}
+		@-webkit-keyframes blink {
+			from {
+				color: red;
+			}
+			to {
+				color: inherit;
+			}
+		}
+	}
 }

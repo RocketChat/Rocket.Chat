@@ -7,8 +7,10 @@
   "How_responsive_was_the_chat_agent" : "ວິທີການຕອບສະຫນອງນີ້ແມ່ນຕົວແທນການສົນທະນາ?",
   "How_satisfied_were_you_with_this_chat" : "ວິທີການພໍໃຈທີ່ທ່ານໄດ້ມີການສົນທະນານີ້?",
   "Installation" : "ການຕິດຕັ້ງ",
+  "New_messages" : "ຂໍ້ຄວາມໃຫມ່",
   "Please_answer_survey" : "ກະລຸນາໃຊ້ເວລາປັດຈຸບັນເປັນທີ່ຈະຕອບການສໍາຫຼວດໄວກ່ຽວກັບການສົນທະນານີ້",
   "Please_fill_name_and_email" : "ກະລຸນາຕື່ມຂໍ້ມູນໃສ່ຊື່ແລະອີເມລ",
+  "Powered_by" : "ສະ​ຫນັບ​ສະ​ຫນູນ​ໂດຍ",
   "Select_a_department" : "ເລືອກຂອງພະແນກ",
   "Send" : "ສົ່ງ",
   "Skip" : "ຂ້າມ",
@@ -20,6 +22,8 @@
   "Type_your_email" : "ພິມອີເມວຂອງທ່ານ",
   "Type_your_message" : "ພິມຂໍ້ຄວາມຂອງທ່ານ",
   "Type_your_name" : "ພິມຊື່ຂອງທ່ານ",
+  "User_joined" : "ຜູ້ໃຊ້ເຂົ້າຮ່ວມ",
+  "User_left" : "ຊ້າຍ User",
   "We_are_offline_Sorry_for_the_inconvenience" : "ພວກເຮົາມີຄວາມອອຟໄລ. ຂໍ​ອະ​ໄພ​ໃນ​ຄວາມ​ບໍ່​ສະ​ດວກ.",
   "You_must_complete_all_fields" : "ທ່ານຕ້ອງເຮັດສໍາເລັດທົ່ງນາທັງຫມົດ"
 }

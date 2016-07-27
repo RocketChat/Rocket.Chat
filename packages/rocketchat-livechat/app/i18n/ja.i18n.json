@@ -1,5 +1,5 @@
 {
-  "Additional_Feedback" : "さらにご意見などございましたら、お願いたします。",
+  "Additional_Feedback" : "さらにご意見などございましたら、お願いいたします。",
   "Appearance" : "表示設定",
   "Conversation_finished" : "会話終了",
   "How_friendly_was_the_chat_agent" : "チャット担当者の親しみやすさは、いかがでしたか?",
@@ -7,8 +7,10 @@
   "How_responsive_was_the_chat_agent" : "チャット担当者の対応は、いかがでしたか?",
   "How_satisfied_were_you_with_this_chat" : "このチャットのご満足度は、いかがでしたか?",
   "Installation" : "インストール方法",
+  "New_messages" : "新しいメッセージ",
   "Please_answer_survey" : "このチャットに関する簡単なアンケートに、少々お時間を頂けますでしょうか?",
   "Please_fill_name_and_email" : "名前とメールアドレスを入力してください",
+  "Powered_by" : "搭載",
   "Select_a_department" : "部門を選択",
   "Send" : "送信",
   "Skip" : "スキップ",
@@ -20,6 +22,8 @@
   "Type_your_email" : "あなたのメールアドレスを入力し",
   "Type_your_message" : "メッセージを入力",
   "Type_your_name" : "あなたの名前を入力します",
+  "User_joined" : "ユーザー参加",
+  "User_left" : "ユーザー左",
   "We_are_offline_Sorry_for_the_inconvenience" : "ただいまオフラインです。ご不便をお掛けし、申し訳ありません。",
   "You_must_complete_all_fields" : "あなたはすべてのフィールドを完了する必要があります"
 }

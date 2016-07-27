@@ -11,6 +11,8 @@ Meteor.methods({
 
 		if (Array.isArray(room.muted) && room.muted.indexOf(user.username) !== -1) {
 			return false;
+		} else if (Array.isArray(room.usernames) && room.usernames.indexOf(user.username) === -1) {
+			return false;
 		}
 
 		if (message.reactions && message.reactions[reaction] && message.reactions[reaction].usernames.indexOf(user.username) !== -1) {
