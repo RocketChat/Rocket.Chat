@@ -32,10 +32,23 @@ Meteor.startup ->
 	if not RocketChat.settings.get 'Message_ShowEditedStatus'
 		fields = { 'editedAt': 0 }
 
-	RocketChat.models.Messages.on 'change', (type, args...) ->
-		records = RocketChat.models.Messages.getChangedRecords type, args[0], fields
+	publishMessage = (type, record) ->
+		if record._hidden isnt true
+			msgStream.emit '__my_messages__', record, {}
+			msgStream.emit record.rid, record
 
-		for record in records
-			if record._hidden isnt true
-				msgStream.emit '__my_messages__', record, {}
-				msgStream.emit record.rid, record
+	query =
+		collection: RocketChat.models.Messages.model._name
+
+	MongoInternals.defaultRemoteCollectionDriver().mongo._oplogHandle.onOplogEntry query, (action) ->
+		if action.op.op is 'i'
+			publishMessage 'inserted', action.op.o
+			return
+
+		if action.op.op is 'u'
+			publishMessage 'updated', RocketChat.models.Messages.findOne({_id: action.id})
+			return
+
+		# if action.op.op is 'd'
+		# 	publishMessage 'deleted', {_id: action.id}
+		# 	return
