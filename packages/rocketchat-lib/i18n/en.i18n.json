@@ -450,6 +450,7 @@
   "GoogleSiteVerification_id" : "Google Site Verification Id",
   "GoogleTagManager_id" : "Google Tag Manager Id",
   "Has_more" : "Has more",
+  "Has_sent_AudioConf_request" : "Has sent an Audio Conference request",
   "Hash" : "Hash",
   "Header" : "Header",
   "Hidden" : "Hidden",
