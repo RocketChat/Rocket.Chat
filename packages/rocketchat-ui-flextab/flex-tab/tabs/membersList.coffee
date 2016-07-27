@@ -42,13 +42,13 @@ Template.membersList.helpers
 
 		users = _.first(users, Template.instance().usersLimit.get())
 
-		totalUsers = roomUsernames.length
 		totalShowing = users.length
 
 		ret =
 			_id: this.rid
-			total: totalUsers
+			total: Template.instance().total.get()
 			totalShowing: totalShowing
+			loading: Template.instance().loading.get()
 			users: users
 			hasMore: hasMore
 
@@ -123,10 +123,16 @@ Template.membersList.onCreated ->
 	@userDetail = new ReactiveVar
 	@showDetail = new ReactiveVar false
 
-	@users = new ReactiveVar [];
+	@users = new ReactiveVar []
+	@total = new ReactiveVar
+	@loading = new ReactiveVar true
 
-	Meteor.call 'getUsersOfRoom', this.data.rid, (error, users) =>
-		@users.set users
+	Tracker.autorun =>
+		@loading.set true
+		Meteor.call 'getUsersOfRoom', this.data.rid, this.showAllUsers.get(), (error, users) =>
+			@users.set users.records
+			@total.set users.total
+			@loading.set false
 
 	@clearUserDetail = =>
 		@showDetail.set(false)
