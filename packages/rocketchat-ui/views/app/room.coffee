@@ -105,11 +105,22 @@ Template.room.helpers
 	showToggleFavorite: ->
 		return true if isSubscribed(this._id) and favoritesEnabled()
 
-	compactView: ->
-		return 'compact' if Meteor.user()?.settings?.preferences?.compactView
+	viewMode: ->
+		viewMode = Meteor.user()?.settings?.preferences?.viewMode
+		switch viewMode
+			when 1 then cssClass = 'cozy'
+			when 2 then cssClass = 'compact'
+			else cssClass = ''
+		return cssClass
 
 	selectable: ->
 		return Template.instance().selectable.get()
+
+	hideUsername: ->
+		return if Meteor.user()?.settings?.preferences?.hideUsernames then 'hide-usernames'
+
+	hideAvatar: ->
+		return if Meteor.user()?.settings?.preferences?.hideAvatars then 'hide-avatars'
 
 isSocialSharingOpen = false
 touchMoved = false
@@ -119,6 +130,9 @@ Template.room.events
 		Meteor.setTimeout ->
 			t.sendToBottomIfNecessaryDebounced()
 		, 100
+
+	"click .messages-container": (e) ->
+		if RocketChat.TabBar.isFlexOpen() and Meteor.user()?.settings?.preferences?.hideFlexTab then RocketChat.TabBar.closeFlex()
 
 	"touchstart .message": (e, t) ->
 		touchMoved = false
@@ -225,7 +239,6 @@ Template.room.events
 		else
 			RocketChat.TabBar.openFlex()
 
-
 	"click .flex-tab  .video-remote" : (e) ->
 		if RocketChat.TabBar.isFlexOpen()
 			if (!Session.get('rtcLayoutmode'))
@@ -273,7 +286,7 @@ Template.room.events
 
 	'click .user-card-message': (e, instance) ->
 		roomData = Session.get('roomData' + this._arguments[1].rid)
-		if roomData.t in ['c', 'p']
+		if roomData.t in ['c', 'p', 'd']
 			instance.setUserDetail this._arguments[1].u.username
 		RocketChat.TabBar.setTemplate 'membersList'
 
@@ -294,7 +307,7 @@ Template.room.events
 
 	'click .message-cog': (e) ->
 		message = @_arguments[1]
-		$('.message-dropdown:visible').hide()
+		RocketChat.MessageAction.hideDropDown()
 
 		dropDown = $(".messages-box \##{message._id} .message-dropdown")
 
@@ -318,7 +331,7 @@ Template.room.events
 			button.action.call @, e, t
 
 	'click .message-dropdown-close': ->
-		$('.message-dropdown:visible').hide()
+		RocketChat.MessageAction.hideDropDown()
 
 	"click .mention-link": (e, instance) ->
 		channel = $(e.currentTarget).data('channel')
@@ -565,7 +578,7 @@ Template.room.onRendered ->
 	$('.flex-tab-bar').on 'click', (e, t) ->
 		Meteor.setTimeout ->
 			template.sendToBottomIfNecessaryDebounced()
-		, 100
+		, 50
 
 	updateUnreadCount = _.throttle ->
 		firstMessageOnScreen = document.elementFromPoint(containerBarsOffset.left+1, containerBarsOffset.top+containerBars.height()+1)

@@ -7,8 +7,10 @@
   "How_responsive_was_the_chat_agent" : "agent chat çawa bersîva bû?",
   "How_satisfied_were_you_with_this_chat" : "Çiqas memnûn we bi vê axaftinê de bûn?",
   "Installation" : "Lêkirinî",
+  "New_messages" : "mesajên nû",
   "Please_answer_survey" : "Ji kerema xwe, niha bigire ku tu bersiva anketê bi lez li ser vê chat",
   "Please_fill_name_and_email" : "Ji kerema xwe ve name û e-mail tijî",
+  "Powered_by" : "Powered by",
   "Select_a_department" : "Select a beşa",
   "Send" : "Şandin",
   "Skip" : "Hilperkîn",
@@ -20,6 +22,8 @@
   "Type_your_email" : "Type email te",
   "Type_your_message" : "Mesaja we",
   "Type_your_name" : "navê te Type",
+  "User_joined" : "Bikarhêner bûn",
+  "User_left" : "çepê Bikarhêner",
   "We_are_offline_Sorry_for_the_inconvenience" : "Em ne offline. Mixabin ji ber nerihetîya.",
   "You_must_complete_all_fields" : "Divê hûn hemû waran de temam"
 }

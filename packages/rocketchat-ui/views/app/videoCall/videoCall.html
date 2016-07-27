@@ -13,10 +13,10 @@
 							{{#unless audioAndVideoEnabled}}
 								<div class="video-muted-overlay">
 									{{#unless audioEnabled}}
-										<i class="icon-mute"></i>
+										<button><i class="icon-mute"></i></button>
 									{{/unless}}
 									{{#unless videoEnabled}}
-										<i class="icon-eye-off"></i>
+										<button><i class="icon-eye-off"></i></button>
 									{{/unless}}
 								</div>
 							{{/unless}}
@@ -34,9 +34,9 @@
 					{{#if videoActive}}
 						<button class="stop-call button red"><i class="icon-stop"></i>{{_ "Stop"}}</button>
 						{{#if audioEnabled}}
-							<button class="disable-audio button red" title="{{_ 'Mute'}}"><i class="icon-mute"></i></button>
+							<button class="disable-audio button red" title="{{_ 'Mute'}}" aria-label="{{_ 'Mute'}}"><i class="icon-mute"></i></button>
 						{{else}}
-							<button class="enable-audio button" title="{{_ 'Unmute'}}"><i class="icon-mic"></i></button>
+							<button class="enable-audio button" title="{{_ 'Unmute'}}" aria-label="{{_ 'Unmute'}}"><i class="icon-mic"></i></button>
 						{{/if}}
 						{{#if videoEnabled}}
 							<button class="disable-video button red"><i class="icon-eye-off"></i></button>

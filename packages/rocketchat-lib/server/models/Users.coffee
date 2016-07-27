@@ -15,6 +15,9 @@ RocketChat.models.Users = new class extends RocketChat.models._Base
 	findOneById: (_id, options) ->
 		return @findOne _id, options
 
+	findOneByImportId: (_id, options) ->
+		return @findOne { importIds: _id }, options
+
 	findOneByUsername: (username, options) ->
 		query =
 			username: username
@@ -23,19 +26,7 @@ RocketChat.models.Users = new class extends RocketChat.models._Base
 
 	findOneByEmailAddress: (emailAddress, options) ->
 		query =
-			'emails.address': emailAddress
-
-		return @findOne query, options
-
-	findOneVerifiedFromSameDomain: (email, options) ->
-		domain = s.strRight(email, '@')
-		query =
-			emails:
-				$elemMatch:
-					address:
-						$regex: new RegExp "@" + domain + "$", "i"
-						$ne: email
-					verified: true
+			'emails.address': new RegExp("^" + s.escapeRegExp(emailAddress) + "$", 'i')
 
 		return @findOne query, options
 
@@ -79,21 +70,29 @@ RocketChat.models.Users = new class extends RocketChat.models._Base
 	findUsersByUsernamesWithHighlights: (usernames, options) ->
 		query =
 			username: { $in: usernames }
-			'settings.preferences.highlights':
+			'settings.preferences.highlights.0':
 				$exists: true
 
 		return @find query, options
 
-	findActiveByUsernameRegexWithExceptions: (username, exceptions = [], options = {}) ->
+	findActiveByUsernameOrNameRegexWithExceptions: (searchTerm, exceptions = [], options = {}) ->
 		if not _.isArray exceptions
 			exceptions = [ exceptions ]
 
-		usernameRegex = new RegExp username, "i"
+		termRegex = new RegExp searchTerm, "i"
 		query =
 			$and: [
 				{ active: true }
-				{ username: { $nin: exceptions } }
-				{ username: usernameRegex }
+				{'$or': [
+					{'$and': [
+						{ username: { $nin: exceptions } }
+						{ username: termRegex }
+					]}
+					{'$and': [
+						{ name: { $nin: exceptions } }
+						{ name: termRegex }
+					]}
+				]}
 			]
 			type:
 				$in: ['user', 'bot']
@@ -330,6 +329,9 @@ RocketChat.models.Users = new class extends RocketChat.models._Base
 
 		if not _.isEmpty unsetData
 			update.$unset = unsetData
+
+		if _.isEmpty update
+			return true
 
 		return @update { _id: _id }, update
 

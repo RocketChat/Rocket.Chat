@@ -335,6 +335,7 @@ blockquote {
 		.icon-search,
 		.icon-right-open-small,
 		.icon-sort-alt-up,
+		.icon-lock,
 		.icon-comment {
 			position: absolute;
 			left: 2px;
@@ -356,6 +357,9 @@ blockquote {
 			top: 10px;
 			z-index: 10;
 		}
+	}
+	> div.-autocomplete-container {
+		position: absolute;
 	}
 	input[type='text'] {
 		display: block;
@@ -1251,6 +1255,12 @@ a.github-fork {
 			-moz-border-radius: 0px;
 			border-radius: 0px;
 		}
+
+		.inline-fields {
+			input, label, select {
+				display: inline-block;
+			}
+		}
 	}
 	.input-submit {
 		margin: 35px 0 0 -4px;
@@ -1405,10 +1415,6 @@ a.github-fork {
 		margin: 25px 0 0 0;
 		line-height: 28px;
 		padding-left: 10px;
-		a {
-			display: block;
-		}
-		&:hover {}
 		&.add-room {
 			i {
 				position: absolute;
@@ -1717,7 +1723,6 @@ a.github-fork {
 	right: 40px;
 	width: auto;
 	height: auto;
-	.transition(right .25s cubic-bezier(.5, 0, .1, 1));
 	&.flex-opened {
 		right: @flex-tab-width + 40px;
 		.flex-tab {
@@ -2002,6 +2007,10 @@ a.github-fork {
 			thead {
 				th {
 					text-align: left;
+
+					&.text-right {
+						text-align: right;
+					}
 				}
 			}
 			tbody {
@@ -2259,6 +2268,12 @@ a.github-fork {
 				}
 				&.show-mic .mic,
 				&.show-mic .stop-mic {
+					display: inline-block;
+				}
+				&.hide-vrec {
+					display: none;
+				}
+				&.show-vrec .video-button {
 					display: inline-block;
 				}
 				&.show-send .send-button {
@@ -2614,12 +2629,25 @@ a.github-fork {
 		display: block;
 		width: 40px;
 		height: 40px;
+
+		&:not(.thumb-small) {
+			.avatar {
+				width: 40px;
+				height: 40px;
+			}
+		}
+
 		&.thumb-small {
 			position: initial;
 			width: 20px;
 			height: 20px;
 			display: inline-block;
 			vertical-align: bottom;
+
+			.avatar {
+				width: 20px;
+				height: 20px;
+			}
 		}
 	}
 	.info {
@@ -2778,12 +2806,73 @@ body:not(.is-cordova) {
 	}
 }
 
-.compact {
+.cozy {
 	.message {
 		padding: 4px 20px 4px 70px;
 		.body {
-			margin-top: 0px;
+			margin-top: 0;
 		}
+	}
+}
+.compact{
+	.message{
+		min-height: 26px;
+		padding: 5px 15px 0 37px;
+		.body{
+			display: inline;
+			.inline-image img{
+				max-height: 100px;
+			}
+			.inline-video{
+				max-height: 150px;
+			}
+			.attachment {
+				.attachment-title > a {
+					font-size: 0.9em;
+				}
+				.attachment-author img{
+					border-radius: 2px;
+				}
+			}
+			blockquote iframe{
+				height: 150px;
+				width: 266px;
+			}
+		}
+		.info{
+			.avatar-image{
+				border-radius: 2px;
+			}
+			.role-tag{
+				display: none;
+			}
+		}
+		.thumb{
+			height: 20px;
+			width: 20px;
+			left: 10px;
+
+			.avatar {
+				width: 20px;
+				height: 20px;
+			}
+		}
+		&.sequential{
+			 .thumb:not(.thumb-small), .user {
+				 display: inline-block;
+			 }
+			.info{
+				position: relative;
+				text-align: right;
+				left: 0;
+				.time, .edited{
+					display: inline-block;
+				}
+			}
+		}
+	}
+	.message-cog-container .message-cog{
+		visibility: visible;
 	}
 }
 
@@ -2799,7 +2888,7 @@ body:not(.is-cordova) {
 	.tab-button {
 		position: relative;
 		cursor: pointer;
-		padding: 10px;
+		padding: 10px 0;
 		background: #FCFCFC;
 		border-bottom: 1px solid #eaeaea;
 		text-align: center;
@@ -2825,13 +2914,72 @@ body:not(.is-cordova) {
 		&.active {
 			background-color: #F4F4F4;
 			margin-left: -1px;
-			padding-left: 11px;
 			border-right: 3px solid #ff0000;
+
+			button {
+				margin-left: 4px;
+			}
 
 			.counter {
 				margin-right: -3px;
 			}
 		}
+	}
+}
+.compact{
+	.message{
+		min-height: 26px;
+		padding: 5px 15px 0 37px;
+		.body{
+			display: inline;
+			.inline-image img{
+				max-height: 100px;
+			}
+			.inline-video{
+				max-height: 150px;
+			}
+			.attachment {
+				.attachment-title > a {
+					font-size: 0.9em;
+				}
+				.attachment-author img{
+					border-radius: 2px;
+				}
+			}
+			blockquote iframe{
+				height: 150px;
+				width: 266px;
+			}
+		}
+		.info{
+			.avatar-image{
+				border-radius: 2px;
+			}
+			.role-tag{
+				display: none;
+			}
+		}
+		.thumb{
+			height: 20px;
+			width: 20px;
+			left: 10px;
+		}
+		&.sequential{
+			 .thumb:not(.thumb-small), .user {
+				 display: inline-block;
+			 }
+			.info{
+				position: relative;
+				text-align: right;
+				left: 0;
+				.time, .edited{
+					display: inline-block;
+				}
+			}
+		}
+	}
+	.message-cog-container .message-cog{
+		visibility: visible;
 	}
 }
 
@@ -3160,6 +3308,12 @@ body:not(.is-cordova) {
 			font-size: 12px;
 			font-weight: 300;
 		}
+		.role-tag {
+			background-color: #ccc;
+			padding: 1px 4px;
+			border-radius: 2px;
+			color: white;
+		}
 	}
 	.stats {
 		li {
@@ -3291,6 +3445,20 @@ body:not(.is-cordova) {
 		}
 		nav {
 			padding: 0;
+
+			&.buttons {
+				margin-top: 2em;
+			}
+		}
+
+		.form-divisor {
+			text-align: center;
+			margin: 2em 0;
+			height: 9px;
+
+			> span {
+				padding: 0 1em;
+			}
 		}
 	}
 	.room-info-content > div {
@@ -3920,6 +4088,9 @@ body:not(.is-cordova) {
 		* {
 			cursor: pointer;
 		}
+	}
+	.avatar-file-input::-webkit-file-upload-button {
+	   visibility: hidden;
 	}
 }
 
@@ -4600,4 +4771,51 @@ br.only-after-a {
 
 a + br.only-after-a {
 	display: block;
+}
+
+.hide-usernames {
+	.message {
+		.user.user-card-message {
+			display: none;
+		}
+	}
+}
+
+.hide-avatars {
+	.message {
+		padding-left: 20px;
+		.thumb.user-card-message:not(.thumb-small) {
+			display: none;
+		}
+		.user.user-card-message {
+			margin-left: -5px;
+		}
+	}
+}
+
+.messages-box:not(.compact) {
+	.hide-avatars {
+		.message {
+			&.sequential {
+				.info {
+					position: static;
+					width: auto;
+					float: right;
+					.message-cog-container {
+						float: left;
+					}
+					.message-dropdown {
+						left: auto;
+						right: -2px;
+						ul {
+							flex-direction: row-reverse;
+							li:first-child i:before {
+								content: "\d7";
+							}
+						}
+					}
+				}
+			}
+		}
+	}
 }

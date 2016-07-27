@@ -96,9 +96,7 @@ class IframeLogin {
 				token: token
 			}],
 			userCallback: (err) => {
-				if (err) {
-					callback(err);
-				}
+				callback(err);
 			}
 		});
 	}
@@ -259,6 +257,10 @@ window.addEventListener('message', (e) => {
 
 		case 'call-google-login':
 			const googleLoginSuccess = (response) => {
+				if (typeof response.oauthToken === 'string' && typeof response.accessToken !== 'string') {
+					response.accessToken = response.oauthToken;
+				}
+
 				console.log('google-login-success', response);
 				e.source.postMessage({
 					event: 'google-login-success',
@@ -272,7 +274,7 @@ window.addEventListener('message', (e) => {
 					// 	"givenName": "Rodrigo",
 					// 	"familyName": "Nascimento",
 					// 	"ageRangeMin": 21,
-					// 	"oauthToken": "123198273kajhsdh1892h"
+					// 	"accessToken": "123198273kajhsdh1892h"
 					// }
 				}, e.origin);
 			};
@@ -285,7 +287,7 @@ window.addEventListener('message', (e) => {
 				}, e.origin);
 			};
 
-			if (typeof window.plugins.googleplus === 'undefined') {
+			if (typeof window.plugins === 'undefined' || typeof window.plugins.googleplus === 'undefined') {
 				requestCredential('Google', {}, (serviceData) => {
 					if (serviceData && serviceData instanceof Error) {
 						return googleLoginFailure('poup-login-error', serviceData);
@@ -298,7 +300,7 @@ window.addEventListener('message', (e) => {
 							imageUrl: serviceData.picture,
 							givenName: serviceData.given_name,
 							familyName: serviceData.family_name,
-							oauthToken: serviceData.accessToken
+							accessToken: serviceData.accessToken
 						});
 					}
 				});

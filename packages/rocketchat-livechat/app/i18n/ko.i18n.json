@@ -7,8 +7,10 @@
   "How_responsive_was_the_chat_agent" : "채팅 에이전트는 어떻게 반응이었다?",
   "How_satisfied_were_you_with_this_chat" : "이 채팅에 당신을 어떻게 만족?",
   "Installation" : "설치",
+  "New_messages" : "새 메시지",
   "Please_answer_survey" : "이 채팅에 대한 간단한 설문 조사에 응답하기 위해 잠시 시간을내어 주시기 바랍니다",
   "Please_fill_name_and_email" : "이름과 이메일을 입력하세요",
+  "Powered_by" : "에 의해 구동",
   "Select_a_department" : "부서를 선택",
   "Send" : "보내다",
   "Skip" : "버킷",
@@ -20,6 +22,8 @@
   "Type_your_email" : "이메일을 입력",
   "Type_your_message" : "메시지를 입력",
   "Type_your_name" : "당신의 이름을 입력",
+  "User_joined" : "사용자 가입",
+  "User_left" : "사용자 왼쪽",
   "We_are_offline_Sorry_for_the_inconvenience" : "우리는 오프라인 상태입니다. 불편을 드려 죄송합니다.",
   "You_must_complete_all_fields" : "당신은 모든 필드를 완료해야합니다"
 }

@@ -1,12 +1,20 @@
-@TempSettings = new Meteor.Collection null
-@Settings.find().observe
-	added: (data) ->
-		TempSettings.insert data
-	changed: (data) ->
-		TempSettings.update data._id, data
-	removed: (data) ->
-		TempSettings.remove data._id
+TempSettings = new Meteor.Collection null
+Template.admin.onCreated ->
+	if not RocketChat.settings.cachedCollectionPrivate?
+		RocketChat.settings.cachedCollectionPrivate = new RocketChat.CachedCollection({ name: 'private-settings', eventType: 'onAll' })
+		RocketChat.settings.collectionPrivate = RocketChat.settings.cachedCollectionPrivate.collection
+		RocketChat.settings.cachedCollectionPrivate.init()
 
+	RocketChat.settings.collectionPrivate.find().observe
+		added: (data) ->
+			TempSettings.insert data
+		changed: (data) ->
+			TempSettings.update data._id, data
+		removed: (data) ->
+			TempSettings.remove data._id
+
+Template.admin.onDestroyed ->
+	TempSettings.remove {}
 
 Template.admin.helpers
 	languages: ->
@@ -177,7 +185,7 @@ Template.admin.helpers
 				TempSettings.update {_id: _id},
 					$set:
 						value: value
-						changed: Settings.findOne(_id).value isnt value
+						changed: RocketChat.settings.collectionPrivate.findOne(_id).value isnt value
 
 			onChangeDelayed = _.debounce onChange, 500
 
@@ -204,7 +212,7 @@ Template.admin.events
 		TempSettings.update {_id: @_id},
 			$set:
 				value: value
-				changed: Settings.findOne(@_id).value isnt value
+				changed: RocketChat.settings.collectionPrivate.findOne(@_id).value isnt value
 
 	"click .submit .save": (e, t) ->
 		group = FlowRouter.getParam('group')
@@ -226,6 +234,7 @@ Template.admin.events
 		if not _.isEmpty settings
 			RocketChat.settings.batchSet settings, (err, success) ->
 				return handleError(err) if err
+				TempSettings.update({changed: true}, {$unset: {changed: 1}})
 				toastr.success TAPi18n.__ 'Settings_updated'
 
 	"click .submit .refresh-clients": (e, t) ->

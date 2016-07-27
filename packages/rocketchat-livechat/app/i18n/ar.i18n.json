@@ -7,8 +7,10 @@
   "How_responsive_was_the_chat_agent" : "كيف تستجيب كان وكيل الدردشة؟",
   "How_satisfied_were_you_with_this_chat" : "ما مدى رضاك ​​مع هذه الدردشة؟",
   "Installation" : "تركيب",
+  "New_messages" : "رسائل جديدة",
   "Please_answer_survey" : "يرجى ان نتوقف لحظة للرد على مسح سريع حول هذه الدردشة",
   "Please_fill_name_and_email" : "الرجاء تعبئة اسم والبريد الإلكتروني",
+  "Powered_by" : "مشغل بواسطة",
   "Select_a_department" : "حدد القسم",
   "Send" : "إرسال",
   "Skip" : "تخطي",
@@ -20,6 +22,8 @@
   "Type_your_email" : "اكتب بريدك الالكتروني",
   "Type_your_message" : "اكتب رسالتك",
   "Type_your_name" : "اكتب اسمك",
+  "User_joined" : "العضو انضم",
+  "User_left" : "اليسار المستخدم",
   "We_are_offline_Sorry_for_the_inconvenience" : "نحن حاليا. آسف للإزعاج.",
   "You_must_complete_all_fields" : "يجب عليك إكمال جميع الحقول"
 }

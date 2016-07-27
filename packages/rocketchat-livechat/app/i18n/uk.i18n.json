@@ -7,8 +7,10 @@
   "How_responsive_was_the_chat_agent" : "Як реагувати був чат агент?",
   "How_satisfied_were_you_with_this_chat" : "Як ви задоволені цей чат?",
   "Installation" : "установка",
+  "New_messages" : "нові повідомлення",
   "Please_answer_survey" : "Будь ласка, знайдіть час, щоб відповісти на швидкий огляд про це чаті",
   "Please_fill_name_and_email" : "Заповніть, будь ласка, ім'я та адресу електронної пошти",
+  "Powered_by" : "працює на",
   "Select_a_department" : "Виберіть відділ",
   "Send" : "послати",
   "Skip" : "скакати",
@@ -20,6 +22,8 @@
   "Type_your_email" : "Введіть адресу електронної пошти",
   "Type_your_message" : "текст повідомлення",
   "Type_your_name" : "Введіть ваше ім'я",
+  "User_joined" : "Користувач приєднався",
+  "User_left" : "зліва Користувач",
   "We_are_offline_Sorry_for_the_inconvenience" : "Ми в автономному режимі. Вибачте за незручності.",
   "You_must_complete_all_fields" : "Ви повинні заповнити всі поля"
 }

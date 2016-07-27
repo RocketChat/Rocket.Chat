@@ -21,3 +21,7 @@ packages/rocketchat-livechat/client/lib/ua-parser.js
 packages/rocketchat-livechat/public/livechat.js
 packages/rocketchat-livechat/public/external.js
 packages/rocketchat-autolinker/lib/Autolinker.min.js
+packages/rocketchat-livechat/lib/ua-parser.js
+packages/rocketchat-videobridge/client/public/external_api.js
+packages/rocketchat-lib/client/lib/localforage.min.js
+packages/rocketchat-livechat/app/client/lib/Autolinker.min.js

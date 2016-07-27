@@ -36,6 +36,7 @@ spacebars
 standard-minifiers
 tracker
 
+rocketchat:action-links
 rocketchat:api
 rocketchat:assets
 rocketchat:authorization
@@ -51,7 +52,6 @@ rocketchat:file
 rocketchat:file-upload
 rocketchat:github-enterprise
 rocketchat:gitlab
-rocketchat:highlight
 rocketchat:highlight-words
 rocketchat:iframe-login
 rocketchat:importer
@@ -68,22 +68,28 @@ rocketchat:markdown
 rocketchat:mentions
 rocketchat:mentions-flextab
 rocketchat:message-attachments
+rocketchat:message-mark-as-unread
 rocketchat:message-pin
 rocketchat:message-star
 rocketchat:migrations
 rocketchat:oauth2-server-config
 rocketchat:oembed
 rocketchat:otr
+rocketchat:piwik
 rocketchat:push-notifications
 rocketchat:reactions
+rocketchat:slackbridge
+rocketchat:slashcommands-archive
+rocketchat:slashcommands-asciiarts
+rocketchat:slashcommands-create
 rocketchat:slashcommands-invite
 rocketchat:slashcommands-join
 rocketchat:slashcommands-kick
 rocketchat:slashcommands-leave
 rocketchat:slashcommands-me
 rocketchat:slashcommands-mute
-rocketchat:slashcommands-shrug
 rocketchat:slashcommands-topic
+rocketchat:slashcommands-unarchive
 rocketchat:spotify
 rocketchat:statistics
 rocketchat:streamer
@@ -98,9 +104,11 @@ rocketchat:ui-login
 rocketchat:ui-master
 rocketchat:ui-message
 rocketchat:ui-sidenav
+rocketchat:ui-vrecord
 rocketchat:version
 rocketchat:webrtc
 rocketchat:wordpress
+rocketchat:videobridge
 #rocketchat:chatops
 #rocketchat:internal-hubot
 #rocketchat:irc
@@ -112,7 +120,6 @@ konecty:multiple-instances-status
 konecty:nrr
 konecty:user-presence
 
-arunoda:streams
 chrismbeckett:toastr
 dispatch:run-as-user
 francocatena:status
@@ -144,3 +151,4 @@ todda00:friendly-slugs
 underscorestring:underscore.string
 yasaricli:slugify
 yasinuslu:blaze-meta
+rocketchat:slashcommands-open
