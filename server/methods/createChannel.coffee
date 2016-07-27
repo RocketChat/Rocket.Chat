@@ -34,7 +34,6 @@ Meteor.methods
 			ts: now
 			ro: readOnly is true
 			usernames: members
-			muted: if readOnly is true then members else []
 			u:
 				_id: user._id
 				username: user.username
@@ -43,7 +42,6 @@ Meteor.methods
 		room = RocketChat.models.Rooms.createWithTypeNameUserAndUsernames 'c', name, user, members,
 			ts: now
 			ro: readOnly is true
-			muted: if readOnly is true then members else []
 
 		for username in members
 			member = RocketChat.models.Users.findOneByUsername username
