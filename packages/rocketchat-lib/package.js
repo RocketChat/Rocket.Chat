@@ -85,6 +85,15 @@ Package.onUse(function(api) {
 	api.addFiles('server/models/Uploads.coffee', 'server');
 	api.addFiles('server/models/Users.coffee', 'server');
 
+	// CACHE
+	api.addFiles('server/startup/statsTracker.js', 'server');
+	api.addFiles('server/startup/cache/_Base.js', 'server');
+	api.addFiles('server/startup/cache/Users.js', 'server');
+	api.addFiles('server/startup/cache/Rooms.js', 'server');
+	api.addFiles('server/startup/cache/Subscriptions.js', 'server');
+	api.addFiles('server/startup/cache/Settings.js', 'server');
+	api.addFiles('server/startup/cache/CacheLoad.js', 'server');
+
 	// SERVER PUBLICATIONS
 	api.addFiles('server/publications/settings.coffee', 'server');
 
@@ -111,11 +120,6 @@ Package.onUse(function(api) {
 	api.addFiles('server/methods/filterATAllTag.js', 'server');
 
 	// SERVER STARTUP
-	api.addFiles('server/startup/statsTracker.js', 'server');
-	api.addFiles('server/startup/cache/_Base.js', 'server');
-	api.addFiles('server/startup/cache/Users.js', 'server');
-	api.addFiles('server/startup/cache/Rooms.js', 'server');
-	api.addFiles('server/startup/cache/Subscriptions.js', 'server');
 	api.addFiles('server/startup/settingsOnLoadCdnPrefix.coffee', 'server');
 	api.addFiles('server/startup/settingsOnLoadSMTP.coffee', 'server');
 	api.addFiles('server/startup/oAuthServicesUpdate.coffee', 'server');
