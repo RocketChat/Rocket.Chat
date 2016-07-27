@@ -28,7 +28,7 @@ Template.webCollaboration.events
 		rnd = Math.floor((Math.random() * 10000) + 10000)
 		nr = "*73*#{rnd}"
 		rid = Session.get('openedRoom')
-		msg = TAPi18n.__("Nuova Audio Conferenza ") + nr
+		msg = TAPi18n.__("New_AudioConference") + " " + nr
 		isCordova = Meteor.isCordova
 		Meteor.call 'phoneNumberOffer', rid, nr, msg, isCordova, (error, result) ->
 			if !error
