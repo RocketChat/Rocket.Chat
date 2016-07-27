@@ -7,8 +7,10 @@
   "How_responsive_was_the_chat_agent" : "Hogyan reagálnak volt a chat ügynök?",
   "How_satisfied_were_you_with_this_chat" : "Mennyire volt elégedett ezzel a beszélgetés?",
   "Installation" : "Telepítés",
+  "New_messages" : "új üzenetek",
   "Please_answer_survey" : "Kérjük, szánjon egy kis választ egy gyors felmérést erről csevegés",
   "Please_fill_name_and_email" : "Kérjük, töltse ki a nevét és e-mail",
+  "Powered_by" : "powered by",
   "Select_a_department" : "Válasszon egy osztály",
   "Send" : "Elküld",
   "Skip" : "Skip",
@@ -20,6 +22,8 @@
   "Type_your_email" : "Írja be az e-mail",
   "Type_your_message" : "Írja be az üzenetet",
   "Type_your_name" : "Írja be a nevét",
+  "User_joined" : "User csatlakozott",
+  "User_left" : "felhasználói bal",
   "We_are_offline_Sorry_for_the_inconvenience" : "Mi vagyunk az offline. Elnézést a kellemetlenségért.",
   "You_must_complete_all_fields" : "Meg kell adnia az összes mezőt"
 }

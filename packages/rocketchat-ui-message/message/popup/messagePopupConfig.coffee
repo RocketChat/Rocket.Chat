@@ -148,11 +148,10 @@ Template.messagePopupConfig.helpers
 							params: item.params
 							description: TAPi18n.__ item.description
 
-					if commands.length > 10
-						break
-
 				commands = commands.sort (a, b) ->
 					return a._id > b._id
+
+				commands = commands[0..10]
 
 				template.resultsLength.set commands.length
 				return commands

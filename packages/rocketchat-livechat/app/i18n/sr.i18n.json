@@ -7,8 +7,10 @@
   "How_responsive_was_the_chat_agent" : "Како реагују био агент ћаскање?",
   "How_satisfied_were_you_with_this_chat" : "Колико сте задовољни су са овом разговору?",
   "Installation" : "инсталација",
+  "New_messages" : "Нове поруке",
   "Please_answer_survey" : "Одвојите мало времена да одговори брзо анкету о овом разговору",
   "Please_fill_name_and_email" : "Молимо вас да попуните име и е-маил",
+  "Powered_by" : "Покреће га",
   "Select_a_department" : "Изаберите одељење",
   "Send" : "послати",
   "Skip" : "прескочити",
@@ -20,6 +22,8 @@
   "Type_your_email" : "Унесите вашу емаил",
   "Type_your_message" : "Унесите поруку",
   "Type_your_name" : "Типе иоур наме",
+  "User_joined" : "Корисник се придружио",
+  "User_left" : "Корисник лево",
   "We_are_offline_Sorry_for_the_inconvenience" : "Ми смо онлине. Жао због непријатности.",
   "You_must_complete_all_fields" : "Морате да попуните сва поља"
 }

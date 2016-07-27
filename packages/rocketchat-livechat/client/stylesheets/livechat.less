@@ -69,11 +69,11 @@
 		position: absolute;
 		width: 100%;
 		padding: 0 20px;
-		height: 350px;
+		height: 300px;
 		bottom: 0;
 
 		@header-min-height: 30px;
-		@footer-min-height: 42px;
+		@footer-min-height: 55px;
 		@link-font-color: #008CE3;
 		@primary-font-color: #444444;
 		@secondary-font-color: #7f7f7f;
@@ -427,7 +427,7 @@
 				border-right: 1px solid #E7E7E7;
 
 				.input-wrapper {
-					padding: 6px;
+					padding: 6px 6px 0 6px;
 					padding-right: 30px;
 					textarea {
 						display: block;
@@ -656,5 +656,28 @@
 			display: inline-block;
 			width: auto;
 		}
+	}
+}
+
+.rooms-list {
+	.inquiries {
+		.opt {
+			display: none;
+		}
+	}
+}
+
+.visitor-edit {
+	padding: 20px;
+	h3 {
+		font-size: 24px;
+		margin-bottom: 8px;
+		line-height: 22px;
+	}
+}
+
+.queue-department {
+	.show-offline {
+		vertical-align: middle;
 	}
 }

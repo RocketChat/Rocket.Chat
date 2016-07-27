@@ -12,8 +12,7 @@
 		j.async = true;
 		j.src = '/packages/rocketchat_livechat/assets/rocket-livechat.js';
 		h.parentNode.insertBefore(j, h);
-	})(window, document, 'script', 'http://localhost:5000/livechat');
-	// })(window, document, 'script', '/livechat');
+	})(window, document, 'script', '/livechat');
 	</script>
 </head>
 
@@ -23,13 +22,17 @@
 	<h1 style="color:#000">test</h1>
 	<p style="color:#000">Talk to us.</p>
 
+	<h2>changing page title</h2>
 	<a href="#page-0" onclick="document.title='page-0'">page 0</a><br>
 	<a href="#page-1" onclick="document.title='page-1'">page 1</a><br>
 	<a href="#page-2" onclick="document.title='page-2'">page 2</a><br>
 	<a href="#page-3" onclick="document.title='page-3'">page 3</a><br>
-	<a href="#page-4" onclick="document.title='page-4'">page 4</a><br>
-	<a href="#page-5" onclick="document.title='page-5'">page 5</a><br>
-	<a href="#page-6" onclick="document.title='page-6'">page 6</a><br>
+
+	<h2>without changing page title</h2>
+	<a href="#page-4">page 4</a><br>
+	<a href="#page-5">page 5</a><br>
+	<a href="#page-6">page 6</a><br>
+	<a href="#page-7">page 7</a><br>
 
 	<script type="text/javascript">
 		RocketChat(function() {

@@ -7,8 +7,10 @@
   "How_responsive_was_the_chat_agent" : "عامل چت چگونه پاسخگو بود؟",
   "How_satisfied_were_you_with_this_chat" : "چگونه رضایت شما را با این چت بود؟",
   "Installation" : "نصب و راه اندازی",
+  "New_messages" : "پیام های جدید",
   "Please_answer_survey" : "لطفا یک لحظه به پاسخ به یک نظرسنجی در مورد این چت",
   "Please_fill_name_and_email" : "لطفا نام و ایمیل را پر کنید",
+  "Powered_by" : "طراحی شده توسط",
   "Select_a_department" : "انتخاب بخش",
   "Send" : "ارسال",
   "Skip" : "رفتن",
@@ -20,6 +22,8 @@
   "Type_your_email" : "نوع ایمیل خود را",
   "Type_your_message" : "نوع پیام خود را",
   "Type_your_name" : "نامتان را بنویسید",
+  "User_joined" : "کاربر تاریخ عضویت",
+  "User_left" : "سمت چپ کاربر",
   "We_are_offline_Sorry_for_the_inconvenience" : "ما آنلاین نیست. با عرض پوزش برای ناراحتی.",
   "You_must_complete_all_fields" : "شما باید تمام زمینه ها کامل"
 }

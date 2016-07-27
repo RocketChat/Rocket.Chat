@@ -3,7 +3,7 @@ Meteor.methods
 		unless Match.test rid, String
 			throw new Meteor.Error 'error-invalid-room', 'Invalid room', { method: 'saveRoomSettings' }
 
-		if setting not in ['roomName', 'roomTopic', 'roomType', 'default']
+		if setting not in ['roomName', 'roomTopic', 'roomDescription', 'roomType', 'default']
 			throw new Meteor.Error 'error-invalid-settings', 'Invalid settings provided', { method: 'saveRoomSettings' }
 
 		unless RocketChat.authz.hasPermission(Meteor.userId(), 'edit-room', rid)
@@ -20,11 +20,13 @@ Meteor.methods
 					RocketChat.models.Messages.createRoomRenamedWithRoomIdRoomNameAndUser rid, name, Meteor.user()
 				when 'roomTopic'
 					if value isnt room.topic
-						RocketChat.saveRoomTopic(rid, value)
-						RocketChat.models.Messages.createRoomSettingsChangedWithTypeRoomIdMessageAndUser 'room_changed_topic', rid, value, Meteor.user()
+						RocketChat.saveRoomTopic(rid, value, Meteor.user())
+				when 'roomDescription'
+					if value isnt room.description
+						RocketChat.saveRoomDescription rid, value, Meteor.user()
 				when 'roomType'
 					if value isnt room.t
-						RocketChat.saveRoomType(rid, value)
+						RocketChat.saveRoomType(rid, value, Meteor.user())
 						if value is 'c'
 							message = TAPi18n.__('Channel')
 						else
@@ -33,4 +35,4 @@ Meteor.methods
 				when 'default'
 					RocketChat.models.Rooms.saveDefaultById rid, value
 
-		return true
+		return { result: true, rid: room._id }

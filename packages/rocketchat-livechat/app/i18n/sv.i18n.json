@@ -7,8 +7,10 @@
   "How_responsive_was_the_chat_agent" : "Hur reagerar var chatten agent?",
   "How_satisfied_were_you_with_this_chat" : "Hur nöjd var du med chatten?",
   "Installation" : "Installation",
+  "New_messages" : "nya meddelanden",
   "Please_answer_survey" : "Vänligen ta en stund för att svara på en snabb enkät om chatten.",
   "Please_fill_name_and_email" : "Vänligen fyll i namn och e-postadress",
+  "Powered_by" : "powered by",
   "Select_a_department" : "Välj en avdelning",
   "Send" : "Skicka",
   "Skip" : "Hoppa över",
@@ -20,6 +22,8 @@
   "Type_your_email" : "Skriv din e-post",
   "Type_your_message" : "Skriv in ditt meddelande",
   "Type_your_name" : "Skriv in ditt namn",
+  "User_joined" : "user gick",
+  "User_left" : "användaren vänster",
   "We_are_offline_Sorry_for_the_inconvenience" : "Vi är offline. Vi beklagar olägenheten. ",
   "You_must_complete_all_fields" : "Du måste fylla i alla fält"
 }

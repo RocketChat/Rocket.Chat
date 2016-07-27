@@ -19,9 +19,9 @@
 					body: _.stripTags(message.msg)
 					silent: true
 
-				notificationDuration = RocketChat.settings.get('Desktop_Notifications_Duration') * 1000
+				notificationDuration = (notification.duration - 0) or (Meteor.user()?.settings?.preferences?.desktopNotificationDuration - 0) or RocketChat.settings.get('Desktop_Notifications_Duration')
 				if notificationDuration > 0
-					setTimeout ( -> n.close() ), notificationDuration
+					setTimeout ( -> n.close() ), notificationDuration * 1000
 
 				if notification.payload?.rid?
 					n.onclick = ->
@@ -70,8 +70,8 @@ Tracker.autorun ->
 		Tracker.nonreactive ->
 			if not Session.equals('user_' + Meteor.userId() + '_status', 'busy') and Meteor.user()?.settings?.preferences?.newRoomNotification isnt false
 				$('#chatNewRoomNotification').each ->
-					this.play()
+					this.play?()
 	else
 		$('#chatNewRoomNotification').each ->
-			this.pause()
+			this.pause?()
 			this.currentTime = 0

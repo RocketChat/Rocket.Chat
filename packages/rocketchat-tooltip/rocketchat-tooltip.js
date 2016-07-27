@@ -3,6 +3,7 @@ RocketChat.tooltip = {
 	source: null,
 	initiated: false,
 	opened: false,
+
 	init() {
 		if (this.initiated) {
 			return;
@@ -11,6 +12,7 @@ RocketChat.tooltip = {
 
 		Blaze.render(Template.rocketchatTooltip, document.body);
 	},
+
 	showElement(element, source) {
 		if (this.opened) {
 			return;
@@ -24,7 +26,7 @@ RocketChat.tooltip = {
 			this.timeout = null;
 			this.source = source;
 
-			$('.tooltip').empty().append($(element).clone().show());
+			$('.tooltip .content').empty().append($(element).clone().show());
 
 			this.setPosition().addClass('show');
 
@@ -32,16 +34,19 @@ RocketChat.tooltip = {
 		}, 300);
 
 	},
+
 	hide() {
 		if (this.timeout) {
 			clearTimeout(this.timeout);
 		}
 
 		if (this.opened) {
-			$('.tooltip').removeClass('show').empty();
+			$('.tooltip').removeClass('show');
+			$('.tooltip .content').empty();
 			this.opened = false;
 		}
 	},
+
 	setPosition() {
 		let sourcePos = $(this.source).offset();
 
@@ -55,7 +60,14 @@ RocketChat.tooltip = {
 		left = left + (sourceWidth / 2) - (tip.outerWidth() / 2);
 
 		if (left < 0) {
+			$('.tooltip .tooltip-arrow').css({
+				'margin-left': (left - 5) + 'px'
+			});
 			left = 0;
+		} else {
+			$('.tooltip .tooltip-arrow').css({
+				'margin-left': ''
+			});
 		}
 
 		if (top < 0) {
