@@ -166,7 +166,7 @@ RocketChat.cache._Base = (class CacheBase extends EventEmitter {
 	}
 
 	processRemoteJoinInserted({field, link, multi, record}) {
-		let localRecords = this._findByIndex(link.local, record[link.remote]);
+		let localRecords = this._findByIndex(link.local, objectPath.get(record, link.remote));
 
 		if (!localRecords) {
 			return;
@@ -198,7 +198,7 @@ RocketChat.cache._Base = (class CacheBase extends EventEmitter {
 	}
 
 	processLocalJoinInserted({join, field, link, multi, localRecord}) {
-		let records = RocketChat.cache[join]._findByIndex(link.remote, localRecord[link.local]);
+		let records = RocketChat.cache[join]._findByIndex(link.remote, objectPath.get(localRecord, link.local));
 
 		if (!Array.isArray(records)) {
 			records = [records];
@@ -223,7 +223,7 @@ RocketChat.cache._Base = (class CacheBase extends EventEmitter {
 	}
 
 	processRemoteJoinRemoved({field, link, multi, record}) {
-		let localRecords = this._findByIndex(link.local, record[link.remote]);
+		let localRecords = this._findByIndex(link.local, objectPath.get(record, link.remote));
 
 		if (!localRecords) {
 			return;
