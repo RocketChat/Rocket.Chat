@@ -2,14 +2,18 @@ Meteor.methods
 	'public-settings/get': (updatedAt) ->
 		this.unblock()
 
+		records = RocketChat.cache.Settings.find().fetch().filter (record) ->
+			return record.hidden isnt true and record.public is true
+
 		if updatedAt instanceof Date
 			result =
-				update: RocketChat.models.Settings.findNotHiddenPublicUpdatedAfter(updatedAt).fetch()
+				update: records.filter (record) ->
+					return record._updatedAt > updatedAt
 				remove: RocketChat.models.Settings.trashFindDeletedAfter(updatedAt, {hidden: { $ne: true }, public: true}, {fields: {_id: 1, _deletedAt: 1}}).fetch()
 
 			return result
 
-		return RocketChat.models.Settings.findNotHiddenPublic().fetch()
+		return records
 
 	'private-settings/get': (updatedAt) ->
 		unless Meteor.userId()
@@ -20,20 +24,23 @@ Meteor.methods
 		if not RocketChat.authz.hasPermission Meteor.userId(), 'view-privileged-setting'
 			return []
 
+		records = RocketChat.cache.Settings.find().fetch().filter (record) ->
+			return record.hidden isnt true
+
 		if updatedAt instanceof Date
-			return RocketChat.models.Settings.dinamicFindChangesAfter('findNotHidden', updatedAt)
+			return records.filter (record) ->
+				return record._updatedAt > updatedAt
 
-		return RocketChat.models.Settings.findNotHidden().fetch()
+		return records
 
 
-RocketChat.models.Settings.on 'change', (type, args...) ->
-	records = RocketChat.models.Settings.getChangedRecords type, args[0]
+RocketChat.cache.Settings.on 'changed', (type, setting) ->
+	setting = RocketChat.cache.Subscriptions.processQueryOptionsOnResult(setting)
 
-	for record in records
-		if record.public is true
-			RocketChat.Notifications.notifyAll 'public-settings-changed', type, _.pick(record, '_id', 'value')
+	if setting.public is true
+		RocketChat.Notifications.notifyAll 'public-settings-changed', type, _.pick(setting, '_id', 'value')
 
-		RocketChat.Notifications.notifyAll 'private-settings-changed', type, record
+	RocketChat.Notifications.notifyAll 'private-settings-changed', type, setting
 
 
 RocketChat.Notifications.streamAll.allowRead 'private-settings-changed', ->
