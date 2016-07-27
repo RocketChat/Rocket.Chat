@@ -34,6 +34,7 @@ Meteor.startup ->
 		{ _id: 'manage-oauth-apps', roles : ['admin'] }
 		{ _id: 'mention-all', roles : ['admin', 'moderator', 'owner', 'user'] }
 		{ _id: 'mute-user', roles : ['admin', 'moderator', 'owner'] }
+		{ _id: 'post-read-only', roles : ['admin', 'moderator', 'owner'] }
 		{ _id: 'remove-user', roles : ['admin', 'moderator', 'owner'] }
 		{ _id: 'run-import', roles : ['admin'] }
 		{ _id: 'run-migration', roles : ['admin'] }
