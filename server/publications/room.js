@@ -35,9 +35,11 @@ Meteor.methods({
 		const data = RocketChat.cache.Subscriptions.findByUserId(Meteor.userId()).fetch();
 
 		if (updatedAt instanceof Date) {
-			return data
-				.filter(record => { return record._room && record._room._updatedAt > updatedAt; })
-				.map(roomMap);
+			return {
+				update: data
+					.filter(record => { return record._room && record._room._updatedAt > updatedAt; })
+					.map(roomMap)
+				};
 		}
 
 		return data.map(roomMap);

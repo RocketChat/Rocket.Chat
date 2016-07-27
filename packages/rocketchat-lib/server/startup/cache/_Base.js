@@ -496,9 +496,7 @@ RocketChat.cache._Base = (class CacheBase extends EventEmitter {
 		}
 
 		if (!options.fields) {
-			options.fields = {
-				$loki: 0
-			};
+			options.fields = {};
 		}
 
 		const fieldsToRemove = [];
@@ -523,23 +521,25 @@ RocketChat.cache._Base = (class CacheBase extends EventEmitter {
 			fieldsToGet.push('_id');
 		}
 
-		if (Array.isArray(result)) {
-			result = result.map((record) => {
+		if (fieldsToRemove.length > 0 || fieldsToGet.length > 0) {
+			if (Array.isArray(result)) {
+				result = result.map((record) => {
+					if (fieldsToRemove.length > 0) {
+						return _.omit(record, ...fieldsToRemove);
+					}
+
+					if (fieldsToGet.length > 0) {
+						return _.pick(record, ...fieldsToGet);
+					}
+				});
+			} else {
 				if (fieldsToRemove.length > 0) {
-					return _.omit(record, ...fieldsToRemove);
+					return _.omit(result, ...fieldsToRemove);
 				}
 
 				if (fieldsToGet.length > 0) {
-					return _.pick(record, ...fieldsToGet);
+					return _.pick(result, ...fieldsToGet);
 				}
-			});
-		} else {
-			if (fieldsToRemove.length > 0) {
-				return _.omit(result, ...fieldsToRemove);
-			}
-
-			if (fieldsToGet.length > 0) {
-				return _.pick(result, ...fieldsToGet);
 			}
 		}
 
