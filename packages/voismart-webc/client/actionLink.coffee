@@ -11,5 +11,3 @@ RocketChat.actionLinks.register 'webcAudioConf', (message, params) ->
 
 	if params.url and Meteor.isCordova
 		window.open params.url, "_blank"
-
-

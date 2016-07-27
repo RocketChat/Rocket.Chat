@@ -1,8 +1,6 @@
 Meteor.methods
-	phoneNumberOffer: (rid, number, message, isCordova) ->
-		url = null
-		if isCordova
-			url = "voismart://call/" + number
+	phoneNumberOffer: (rid, number, message) ->
+		url = "voismart://call/" + number
 
 		RocketChat.models.Messages.createWithTypeRoomIdMessageAndUser('webc_audioconf', rid, '', Meteor.user(), {
 			actionLinks : [
@@ -16,4 +14,3 @@ Meteor.methods
 				}
 			]
 		})
-
