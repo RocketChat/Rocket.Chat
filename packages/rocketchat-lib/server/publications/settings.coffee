@@ -28,8 +28,10 @@ Meteor.methods
 			return record.hidden isnt true
 
 		if updatedAt instanceof Date
-			return records.filter (record) ->
-				return record._updatedAt > updatedAt
+			return {
+				update: records.filter (record) ->
+					return record._updatedAt > updatedAt
+			}
 
 		return records
 

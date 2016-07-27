@@ -32,8 +32,10 @@ Meteor.methods
 		records = RocketChat.cache.Subscriptions.findByUserId(Meteor.userId(), options).fetch()
 
 		if updatedAt instanceof Date
-			return records.filter (record) ->
-				return record._updatedAt > updatedAt
+			return {
+				update: records.filter (record) ->
+					return record._updatedAt > updatedAt
+			}
 
 		return records
 
