@@ -102,8 +102,8 @@ RocketChat.cache._Base = (class CacheBase extends EventEmitter {
 		this.on('beforeupdate', (...args) => { this.emit('beforechange', 'updated', ...args); });
 
 		this.on('inserted', (...args) => { this.emit('sync', 'inserted', ...args); });
-		this.on('updated', (...args) => { this.emit('sync', 'removed', ...args); });
-		this.on('beforeremove', (...args) => { this.emit('sync', 'updated', ...args); });
+		this.on('updated', (...args) => { this.emit('sync', 'updated', ...args); });
+		this.on('beforeremove', (...args) => { this.emit('sync', 'removed', ...args); });
 
 		this.db = db;
 		this.collectionName = collectionName;
