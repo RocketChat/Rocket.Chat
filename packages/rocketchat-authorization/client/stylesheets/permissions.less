@@ -4,7 +4,7 @@
 		font-size: 16px;
 		margin-top: 1em !important;
 		margin-bottom: 1em !important;
-		border-bottom: 1px solid #EEE;
+		border-bottom: 1px solid @tertiary-background-color;
 	}
 
 	.permission-grid {
@@ -15,7 +15,7 @@
 		td {
 			position: relative;
 			* {
-				color: #000;
+				color: @primary-font-color;
 			}
 		}
 
@@ -31,13 +31,13 @@
 
 		td {
 			padding: 5px;
-			border: 1px solid #F0F0F0;
+			border: 1px solid @secondary-background-color;
 		}
 
 		td:hover::after {
 			content: "";
 			position: absolute;
-			background-color: rgba(4,73,116,0.04);
+			background-color: @tertiary-font-color;
 			left: 0;
 			top: -5000px;
 			height: 10000px;
@@ -49,7 +49,7 @@
 			tr:nth-child(even) td:first-child::before {
 				content: "";
 				position: absolute;
-				background-color: #FAFAFA;
+				background-color: @secondary-background-color;
 				top: 0;
 				left: -5000px;
 				width: 10000px;
@@ -58,14 +58,14 @@
 			}
 
 			tr:hover {
-				background-color: rgba(4,73,116,0.04);
+				background-color: @tertiary-font-color;
 			}
 
 		}
 
 		thead {
 			tr {
-				background-color: #F0F0F0;
+				background-color: @secondary-background-color;
 			}
 			td {
 				font-weight: bold;
