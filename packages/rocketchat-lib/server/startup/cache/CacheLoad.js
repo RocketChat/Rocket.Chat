@@ -24,6 +24,15 @@ RocketChat.cache.Subscriptions.hasOne('Rooms', {
 });
 
 
+RocketChat.cache.Subscriptions.hasOne('Users', {
+	field: '_user',
+	link: {
+		local: 'u._id',
+		remote: '_id'
+	}
+});
+
+
 RocketChat.cache.Users.load();
 RocketChat.cache.Rooms.load();
 RocketChat.cache.Subscriptions.load();
