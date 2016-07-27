@@ -1,5 +1,3 @@
-const {EventEmitter} = Npm.require('events');
-
 const baseName = 'rocketchat_';
 
 const trash = new Mongo.Collection(baseName + '_trash');
@@ -10,7 +8,7 @@ try {
 	console.log(e);
 }
 
-class ModelsBase extends EventEmitter {
+class ModelsBase {
 	_baseName() {
 		return baseName;
 	}
@@ -49,8 +47,6 @@ class ModelsBase extends EventEmitter {
 
 		const result = this.model.insert(...arguments);
 		record._id = result;
-		this.emit('inserted', record);
-		this.emit('change', 'inserted', record);
 		return result;
 	}
 
@@ -61,40 +57,13 @@ class ModelsBase extends EventEmitter {
 			return this.upsert(query, update);
 		}
 
-		let ids = [];
-		if (options.multi === true) {
-			const updated = this.model.find(query, { fields: { _id: 1 } }).fetch();
-			if (updated) {
-				ids = ids.concat(updated);
-			}
-		} else {
-			const updated = this.model.findOne(query, { fields: { _id: 1 } });
-			if (updated) {
-				ids.push(updated);
-			}
-		}
-
-		query = { _id: { $in: _.pluck(ids, '_id') } };
-		const result = this.model.update(query, update, options);
-		this.emit('updated', query, update);
-		this.emit('change', 'updated', query, update);
-		return result;
+		return this.model.update(query, update, options);
 	}
 
 	upsert(query, update) {
 		this.setUpdatedAt(update);
 
-		const id = this.model.findOne(query, { fields: { _id: 1 } });
-		const result = this.model.upsert(...arguments);
-
-		let record = id;
-		if (result.insertedId) {
-			record = { _id: result.insertedId };
-		}
-
-		this.emit('updated', record);
-		this.emit('change', 'updated', record);
-		return result;
+		return this.model.upsert(...arguments);
 	}
 
 	remove(query) {
@@ -112,8 +81,6 @@ class ModelsBase extends EventEmitter {
 
 		query = { _id: { $in: ids } };
 
-		this.emit('removed', records);
-		this.emit('change', 'removed', records);
 		return this.model.remove(query);
 	}
 
@@ -164,24 +131,6 @@ class ModelsBase extends EventEmitter {
 		}
 	}
 
-	getChangedRecords(type, recordOrQuery, fields) {
-		if (type === 'inserted') {
-			return [recordOrQuery];
-		}
-
-		if (type === 'removed') {
-			return recordOrQuery;
-		}
-
-		if (type === 'updated') {
-			const options = {};
-			if (fields) {
-				options.fields = fields;
-			}
-			return this.find(recordOrQuery, options).fetch();
-		}
-	}
-
 	trashFind(query, options) {
 		query.__collection__ = this.name;
 
@@ -197,44 +146,44 @@ class ModelsBase extends EventEmitter {
 		return trash.find(query, options);
 	}
 
-	dinamicTrashFindAfter(method, deletedAt, ...args) {
-		const scope = {
-			find: (query={}) => {
-				return this.trashFindDeletedAfter(deletedAt, query, { fields: {_id: 1, _deletedAt: 1} });
-			}
-		};
+	// dinamicTrashFindAfter(method, deletedAt, ...args) {
+	// 	const scope = {
+	// 		find: (query={}) => {
+	// 			return this.trashFindDeletedAfter(deletedAt, query, { fields: {_id: 1, _deletedAt: 1} });
+	// 		}
+	// 	};
 
-		scope.model = {
-			find: scope.find
-		};
+	// 	scope.model = {
+	// 		find: scope.find
+	// 	};
 
-		return this[method].apply(scope, args);
-	}
+	// 	return this[method].apply(scope, args);
+	// }
 
-	dinamicFindAfter(method, updatedAt, ...args) {
-		const scope = {
-			find: (query={}, options) => {
-				query._updatedAt = {
-					$gt: updatedAt
-				};
+	// dinamicFindAfter(method, updatedAt, ...args) {
+	// 	const scope = {
+	// 		find: (query={}, options) => {
+	// 			query._updatedAt = {
+	// 				$gt: updatedAt
+	// 			};
 
-				return this.find(query, options);
-			}
-		};
+	// 			return this.find(query, options);
+	// 		}
+	// 	};
 
-		scope.model = {
-			find: scope.find
-		};
+	// 	scope.model = {
+	// 		find: scope.find
+	// 	};
 
-		return this[method].apply(scope, args);
-	}
+	// 	return this[method].apply(scope, args);
+	// }
 
-	dinamicFindChangesAfter(method, updatedAt, ...args) {
-		return {
-			update: this.dinamicFindAfter(method, updatedAt, ...args).fetch(),
-			remove: this.dinamicTrashFindAfter(method, updatedAt, ...args).fetch()
-		};
-	}
+	// dinamicFindChangesAfter(method, updatedAt, ...args) {
+	// 	return {
+	// 		update: this.dinamicFindAfter(method, updatedAt, ...args).fetch(),
+	// 		remove: this.dinamicTrashFindAfter(method, updatedAt, ...args).fetch()
+	// 	};
+	// }
 
 }
 
