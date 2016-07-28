@@ -1,33 +1,25 @@
-# COMPATIBILITY
-oldMsgStream = new Meteor.Stream 'messages'
-
-oldMsgStream.permissions.write (eventName) ->
-	return false
-
-oldMsgStream.permissions.read (eventName) ->
-	try
-		canAccess = Meteor.call 'canAccessRoom', eventName, this.userId
-
-		return false if not canAccess
-
-		return true
-	catch e
-		return false
-# COMPATIBILITY
-
-
 @msgStream = new Meteor.Streamer 'room-messages'
 
 msgStream.allowWrite('none')
 
 msgStream.allowRead (eventName) ->
-	# console.log('stream.permissions.read', this.userId, eventName);
-	# return this.userId == eventName;
-
 	try
-		canAccess = Meteor.call 'canAccessRoom', eventName, this.userId
+		return false if not Meteor.call 'canAccessRoom', eventName, this.userId
 
-		return false if not canAccess
+		return true
+	catch e
+		return false
+
+msgStream.allowRead('__my_messages__', 'all')
+
+msgStream.allowEmit '__my_messages__', (eventName, msg, options) ->
+	try
+		room = Meteor.call 'canAccessRoom', msg.rid, this.userId
+		if not room
+			return false
+
+		options.roomParticipant = room.usernames.indexOf(room.username) > -1
+		options.roomType = room.t
 
 		return true
 	catch e
@@ -35,16 +27,15 @@ msgStream.allowRead (eventName) ->
 
 
 Meteor.startup ->
-	options = {}
+	fields = undefined
 
 	if not RocketChat.settings.get 'Message_ShowEditedStatus'
-		options.fields = { 'editedAt': 0 }
+		fields = { 'editedAt': 0 }
 
-	RocketChat.models.Messages.findVisibleCreatedOrEditedAfterTimestamp(new Date(), options).observe
-		added: (record) ->
-			oldMsgStream.emit record.rid, record
-			msgStream.emitWithoutBroadcast record.rid, record
+	RocketChat.models.Messages.on 'change', (type, args...) ->
+		records = RocketChat.models.Messages.getChangedRecords type, args[0], fields
 
-		changed: (record) ->
-			oldMsgStream.emit record.rid, record
-			msgStream.emitWithoutBroadcast record.rid, record
+		for record in records
+			if record._hidden isnt true
+				msgStream.emit '__my_messages__', record, {}
+				msgStream.emit record.rid, record

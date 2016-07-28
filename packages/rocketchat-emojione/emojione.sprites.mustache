@@ -1,0 +1,48 @@
+{
+  // Default options
+  'functions': true
+}
+
+.emojione {
+  image-rendering: -webkit-optimize-contrast;
+  image-rendering: optimizeQuality;
+  font-size: inherit;
+  height: 22px;
+  width: 22px;
+  position: relative;
+  display: inline-block;
+  margin: 0 .15em;
+  line-height: normal;
+  vertical-align: middle;
+  background-image: url("../../packages/emojione_emojione/assets/sprites/emojione.sprites.png");
+  background-size: unquote('#{ {{spritesheet.width}} / {{items.0.width}} * 100}% #{ {{spritesheet.height}} / {{items.0.height}} * 100}%');
+  background-repeat: no-repeat;
+  text-indent: 100%;
+  white-space: nowrap;
+  overflow: hidden;
+}
+
+.big_emojione {
+  image-rendering: -webkit-optimize-contrast;
+  image-rendering: optimizeQuality;
+  font-size: inherit;
+  height: 44px;
+  width: 44px;
+  position: relative;
+  display: inline-block;
+  margin: 0 .15em;
+  line-height: normal;
+  vertical-align: middle;
+  background-image: url("../../packages/emojione_emojione/assets/sprites/emojione.sprites.png");
+  background-size: unquote('#{ {{spritesheet.width}} / {{items.0.width}} * 100}% #{ {{spritesheet.height}} / {{items.0.height}} * 100}%');
+  background-repeat: no-repeat;
+  text-indent: 100%;
+  white-space: nowrap;
+  overflow: hidden;
+}
+
+{{#items}}
+.{{name}} {
+  background-position: unquote('#{({{px.x}} * 100 / ({{px.total_width}} - {{px.width}}))}% #{({{px.y}} * 100 / ({{px.total_height}} - {{px.height}}))}%');
+}
+{{/items}}

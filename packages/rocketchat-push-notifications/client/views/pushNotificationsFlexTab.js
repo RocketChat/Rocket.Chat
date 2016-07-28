@@ -69,6 +69,20 @@ Template.pushNotificationsFlexTab.helpers({
 			}
 		}
 	},
+	desktopNotificationDuration() {
+		const sub = ChatSubscription.findOne({
+			rid: Session.get('openedRoom')
+		}, {
+			fields: {
+				desktopNotificationDuration: 1
+			}
+		});
+		if (!sub) {
+			return false;
+		}
+		// Convert to Number
+		return sub.desktopNotificationDuration - 0;
+	},
 	editing(field) {
 		return Template.instance().editing.get() === field;
 	},
@@ -92,12 +106,22 @@ Template.pushNotificationsFlexTab.onCreated(function() {
 	this.saveSetting = () => {
 		const field = this.editing.get();
 		const value = this.$('input[name='+ field +']:checked').val();
+		const duration = $('input[name=duration]').val();
 		if (this.validateSetting(field)) {
 			Meteor.call('saveNotificationSettings', Session.get('openedRoom'), field, value, (err/*, result*/) => {
 				if (err) {
 					return handleError(err);
 				}
-				this.editing.set();
+				if (duration !== undefined) {
+					Meteor.call('saveDesktopNotificationDuration', Session.get('openedRoom'), duration, (err) => {
+						if (err) {
+							return handleError(err);
+						}
+						this.editing.set();
+					});
+				} else {
+					this.editing.set();
+				}
 			});
 		}
 	};

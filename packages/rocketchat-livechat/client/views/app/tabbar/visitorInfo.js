@@ -23,7 +23,7 @@ Template.visitorInfo.helpers({
 	},
 
 	joinTags() {
-		return this.tags.join(', ');
+		return this.tags && this.tags.join(', ');
 	},
 
 	customFields() {
@@ -73,7 +73,11 @@ Template.visitorInfo.helpers({
 	},
 
 	editing() {
-		return Template.instance().editing.get();
+		return Template.instance().action.get() === 'edit';
+	},
+
+	forwarding() {
+		return Template.instance().action.get() === 'forward';
 	},
 
 	editDetails() {
@@ -83,10 +87,25 @@ Template.visitorInfo.helpers({
 			visitorId: user ? user._id : null,
 			roomId: this.rid,
 			save() {
-				instance.editing.set(false);
+				instance.action.set();
 			},
 			cancel() {
-				instance.editing.set(false);
+				instance.action.set();
+			}
+		};
+	},
+
+	forwardDetails() {
+		const instance = Template.instance();
+		const user = instance.user.get();
+		return {
+			visitorId: user ? user._id : null,
+			roomId: this.rid,
+			save() {
+				instance.action.set();
+			},
+			cancel() {
+				instance.action.set();
 			}
 		};
 	},
@@ -95,6 +114,30 @@ Template.visitorInfo.helpers({
 		const room = ChatRoom.findOne({ _id: this.rid });
 
 		return room.open;
+	},
+
+	guestPool() {
+		return RocketChat.settings.get('Livechat_Routing_Method') === 'Guest_Pool';
+	},
+
+	showDetail() {
+		if (Template.instance().action.get()) {
+			return 'hidden';
+		}
+	},
+
+	canSeeButtons() {
+		if (RocketChat.authz.hasRole(Meteor.userId(), 'livechat-manager')) {
+			return true;
+		}
+
+		const data = Template.currentData();
+		if (data && data.rid) {
+			const room = RocketChat.models.Rooms.findOne(data.rid);
+			const user = Meteor.user();
+			return room.usernames.indexOf(user && user.username) !== -1;
+		}
+		return false;
 	}
 });
 
@@ -102,7 +145,7 @@ Template.visitorInfo.events({
 	'click .edit-livechat'(event, instance) {
 		event.preventDefault();
 
-		instance.editing.set(true);
+		instance.action.set('edit');
 	},
 	'click .close-livechat'(event) {
 		event.preventDefault();
@@ -137,13 +180,41 @@ Template.visitorInfo.events({
 				});
 			});
 		});
+	},
+
+	'click .return-inquiry'(event) {
+		event.preventDefault();
+
+		swal({
+			title: t('Would_you_like_to_return_the_inquiry'),
+			type: 'warning',
+			showCancelButton: true,
+			confirmButtonColor: '#3085d6',
+			cancelButtonColor: '#d33',
+			confirmButtonText: t('Yes')
+		}, () => {
+			Meteor.call('livechat:returnAsInquiry', this.rid, function(error/*, result*/) {
+				if (error) {
+					console.log(error);
+				} else {
+					Session.set('openedRoom');
+					FlowRouter.go('/home');
+				}
+			});
+		});
+	},
+
+	'click .forward-livechat'(event, instance) {
+		event.preventDefault();
+
+		instance.action.set('forward');
 	}
 });
 
 Template.visitorInfo.onCreated(function() {
 	this.visitorId = new ReactiveVar(null);
 	this.customFields = new ReactiveVar([]);
-	this.editing = new ReactiveVar(false);
+	this.action = new ReactiveVar();
 	this.user = new ReactiveVar();
 
 	Meteor.call('livechat:getCustomFields', (err, customFields) => {

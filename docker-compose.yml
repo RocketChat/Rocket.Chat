@@ -20,7 +20,7 @@ rocketchat:
 
 # hubot, the popular chatbot (add the bot user first and change the password before starting this image)
 hubot:
-  image: rocketchat/hubot-rocketchat
+  image: rocketchat/hubot-rocketchat:v0.1.4
   environment:
     - ROCKETCHAT_URL=rocketchat:3000
     - ROCKETCHAT_ROOM=GENERAL
