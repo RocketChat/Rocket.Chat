@@ -68,6 +68,7 @@ RocketChat.callbacks.add('afterSaveMessage', function(message, room) {
 	settings.dontNotifyDesktopUsers = [];
 	settings.alwaysNotifyMobileUsers = [];
 	settings.dontNotifyMobileUsers = [];
+	settings.desktopNotificationDurations = {};
 	RocketChat.models.Subscriptions.findNotificationPreferencesByRoom(room._id).forEach(function(subscription) {
 		if (subscription.desktopNotifications === 'all') {
 			settings.alwaysNotifyDesktopUsers.push(subscription.u._id);
@@ -78,6 +79,7 @@ RocketChat.callbacks.add('afterSaveMessage', function(message, room) {
 		} else if (subscription.mobilePushNotifications === 'nothing') {
 			settings.dontNotifyMobileUsers.push(subscription.u._id);
 		}
+		settings.desktopNotificationDurations[subscription.u._id] = subscription.desktopNotificationDuration;
 	});
 
 	userIdsToNotify = [];
@@ -123,6 +125,7 @@ RocketChat.callbacks.add('afterSaveMessage', function(message, room) {
 			RocketChat.Notifications.notifyUser(userOfMention._id, 'notification', {
 				title: '@' + user.username,
 				text: message.msg,
+				duration: settings.desktopNotificationDurations[userOfMention._id],
 				payload: {
 					rid: message.rid,
 					sender: message.u,
@@ -274,6 +277,7 @@ RocketChat.callbacks.add('afterSaveMessage', function(message, room) {
 				RocketChat.Notifications.notifyUser(usersOfMentionId, 'notification', {
 					title: title,
 					text: message.msg,
+					duration: settings.desktopNotificationDurations[usersOfMentionId],
 					payload: {
 						rid: message.rid,
 						sender: message.u,
@@ -315,4 +319,4 @@ RocketChat.callbacks.add('afterSaveMessage', function(message, room) {
 
 	return message;
 
-}, RocketChat.callbacks.priority.LOW);
+}, RocketChat.callbacks.priority.LOW, 'sendNotificationOnMessage');

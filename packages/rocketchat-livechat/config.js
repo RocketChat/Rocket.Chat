@@ -129,4 +129,39 @@ Meteor.startup(function() {
 		public: true,
 		i18nLabel: 'Apiai_Language'
 	});
+
+	RocketChat.settings.add('Livechat_history_monitor_type', 'url', {
+		type: 'select',
+		group: 'Livechat',
+		i18nLabel: 'Monitor_history_for_changes_on',
+		values: [
+			{ key: 'url', i18nLabel: 'Page_URL' },
+			{ key: 'title', i18nLabel: 'Page_title' }
+		]
+	});
+
+	RocketChat.settings.add('Livechat_Routing_Method', 'Least_Amount', {
+		type: 'select',
+		group: 'Livechat',
+		public: true,
+		values: [
+			{key: 'Least_Amount', i18nLabel: 'Least_Amount'},
+			{key: 'Guest_Pool', i18nLabel: 'Guest_Pool'}
+		]
+	});
+
+	RocketChat.settings.add('Livechat_guest_pool_with_no_agents', false, {
+		type: 'boolean',
+		group: 'Livechat',
+		i18nLabel: 'Accept_with_no_online_agents',
+		i18nDescription: 'Accept_incoming_livechat_requests_even_if_there_are_no_online_agents',
+		enableQuery: { _id: 'Livechat_Routing_Method', value: 'Guest_Pool' }
+	});
+
+	RocketChat.settings.add('Livechat_show_queue_list_link', false, {
+		type: 'boolean',
+		group: 'Livechat',
+		public: true,
+		i18nLabel: 'Show_queue_list_to_all_agents'
+	});
 });

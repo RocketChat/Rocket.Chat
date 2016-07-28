@@ -1,7 +1,9 @@
 <template name="directMessages">
 	<h3 class="add-room {{isActive}}">
 		{{_ "Direct_Messages"}}
-		<i class="icon-plus"></i>
+		{{#if hasPermission 'create-d'}}
+			<i class="icon-plus"></i>
+		{{/if}}
 	</h3>
 	<ul>
 		{{#each rooms}}

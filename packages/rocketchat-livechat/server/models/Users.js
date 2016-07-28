@@ -28,6 +28,18 @@ RocketChat.models.Users.findOnlineAgents = function() {
 };
 
 /**
+ * Gets all agents
+ * @return
+ */
+RocketChat.models.Users.findAgents = function() {
+	var query = {
+		roles: 'livechat-agent'
+	};
+
+	return this.find(query);
+};
+
+/**
  * Find online users from a list
  * @param {array} userList - array of usernames
  * @return
