@@ -6,11 +6,11 @@ class CachedCollectionManager {
 		this.items = [];
 		this._syncEnabled = false;
 		this.commonData = localforage.createInstance({
-			name: "commonData"
+			name: 'commonData'
 		});
 
 		this.personalData = localforage.createInstance({
-			name: "personalData"
+			name: 'personalData'
 		});
 
 		const _unstoreLoginToken = Accounts._unstoreLoginToken;
@@ -33,7 +33,7 @@ class CachedCollectionManager {
 	commonSubReady(){
 		let subsReady = true;
 		for (const item of this.items) {
-			if (item.dataType === "common") {
+			if (item.dataType === 'common') {
 				if (!item.ready.get()) {
 					subsReady = false;
 				}
@@ -74,7 +74,7 @@ class CachedCollection {
 		debug = true,
 		version = 1,
 		maxCacheTime = 60*60*24*30,
-		dataType = "common"
+		dataType = 'common'
 	}) {
 		this.collection = collection || new Meteor.Collection(null);
 
@@ -93,7 +93,7 @@ class CachedCollection {
 		this.dataType = dataType;
 		RocketChat.CachedCollectionManager.register(this);
 		// define collection save at which database
-		if (this.dataType === "common") {
+		if (this.dataType === 'common') {
 			this.storeDatabase = RocketChat.CachedCollectionManager.commonData;
 		}else {
 			this.storeDatabase = RocketChat.CachedCollectionManager.personalData;
@@ -236,7 +236,7 @@ class CachedCollection {
 	}
 
 	clearCache() {
-		if (this.dataType !== "common") {
+		if (this.dataType !== 'common') {
 			this.log(this.name + ' is clearing cache');
 			this.storeDatabase.removeItem(this.name);
 
