@@ -1,7 +1,7 @@
 {
   "dependencies": {
     "adm-zip": {
-      "version": "0.4.7"
+      "version": "https://registry.npm.taobao.org/adm-zip/download/adm-zip-0.4.7.tgz"
     }
   }
 }

@@ -1,52 +1,52 @@
 {
   "dependencies": {
     "twilio": {
-      "version": "2.9.1",
+      "version": "https://registry.npm.taobao.org/twilio/download/twilio-2.9.1.tgz",
       "dependencies": {
         "request": {
-          "version": "2.55.0",
+          "version": "https://registry.npm.taobao.org/request/download/request-2.55.0.tgz",
           "dependencies": {
             "bl": {
-              "version": "0.9.5",
+              "version": "https://registry.npm.taobao.org/bl/download/bl-0.9.5.tgz",
               "dependencies": {
                 "readable-stream": {
-                  "version": "1.0.34",
+                  "version": "https://registry.npm.taobao.org/readable-stream/download/readable-stream-1.0.34.tgz",
                   "dependencies": {
                     "core-util-is": {
                       "version": "1.0.2"
                     },
                     "isarray": {
-                      "version": "0.0.1"
+                      "version": "https://registry.npm.taobao.org/isarray/download/isarray-0.0.1.tgz"
                     },
                     "string_decoder": {
-                      "version": "0.10.31"
+                      "version": "https://registry.npm.taobao.org/string_decoder/download/string_decoder-0.10.31.tgz"
                     },
                     "inherits": {
-                      "version": "2.0.1"
+                      "version": "https://registry.npm.taobao.org/inherits/download/inherits-2.0.1.tgz"
                     }
                   }
                 }
               }
             },
             "caseless": {
-              "version": "0.9.0"
+              "version": "https://registry.npm.taobao.org/caseless/download/caseless-0.9.0.tgz"
             },
             "forever-agent": {
-              "version": "0.6.1"
+              "version": "https://registry.npm.taobao.org/forever-agent/download/forever-agent-0.6.1.tgz"
             },
             "form-data": {
-              "version": "0.2.0",
+              "version": "https://registry.npm.taobao.org/form-data/download/form-data-0.2.0.tgz",
               "dependencies": {
                 "async": {
-                  "version": "0.9.2"
+                  "version": "https://registry.npm.taobao.org/async/download/async-0.9.2.tgz"
                 }
               }
             },
             "json-stringify-safe": {
-              "version": "5.0.1"
+              "version": "https://registry.npm.taobao.org/json-stringify-safe/download/json-stringify-safe-5.0.1.tgz"
             },
             "mime-types": {
-              "version": "2.0.14",
+              "version": "https://registry.npm.taobao.org/mime-types/download/mime-types-2.0.14.tgz",
               "dependencies": {
                 "mime-db": {
                   "version": "1.12.0"
@@ -54,131 +54,131 @@
               }
             },
             "node-uuid": {
-              "version": "1.4.7"
+              "version": "https://registry.npm.taobao.org/node-uuid/download/node-uuid-1.4.7.tgz"
             },
             "qs": {
-              "version": "2.4.2"
+              "version": "https://registry.npm.taobao.org/qs/download/qs-2.4.2.tgz"
             },
             "tunnel-agent": {
-              "version": "0.4.2"
+              "version": "https://registry.npm.taobao.org/tunnel-agent/download/tunnel-agent-0.4.2.tgz"
             },
             "tough-cookie": {
-              "version": "2.2.2"
+              "version": "https://registry.npm.taobao.org/tough-cookie/download/tough-cookie-2.2.2.tgz"
             },
             "http-signature": {
-              "version": "0.10.1",
+              "version": "https://registry.npm.taobao.org/http-signature/download/http-signature-0.10.1.tgz",
               "dependencies": {
                 "assert-plus": {
-                  "version": "0.1.5"
+                  "version": "https://registry.npm.taobao.org/assert-plus/download/assert-plus-0.1.5.tgz"
                 },
                 "asn1": {
-                  "version": "0.1.11"
+                  "version": "https://registry.npm.taobao.org/asn1/download/asn1-0.1.11.tgz"
                 },
                 "ctype": {
-                  "version": "0.5.3"
+                  "version": "https://registry.npm.taobao.org/ctype/download/ctype-0.5.3.tgz"
                 }
               }
             },
             "oauth-sign": {
-              "version": "0.6.0"
+              "version": "https://registry.npm.taobao.org/oauth-sign/download/oauth-sign-0.6.0.tgz"
             },
             "hawk": {
-              "version": "2.3.1",
+              "version": "https://registry.npm.taobao.org/hawk/download/hawk-2.3.1.tgz",
               "dependencies": {
                 "hoek": {
-                  "version": "2.16.3"
+                  "version": "https://registry.npm.taobao.org/hoek/download/hoek-2.16.3.tgz"
                 },
                 "boom": {
-                  "version": "2.10.1"
+                  "version": "https://registry.npm.taobao.org/boom/download/boom-2.10.1.tgz"
                 },
                 "cryptiles": {
-                  "version": "2.0.5"
+                  "version": "https://registry.npm.taobao.org/cryptiles/download/cryptiles-2.0.5.tgz"
                 },
                 "sntp": {
-                  "version": "1.0.9"
+                  "version": "https://registry.npm.taobao.org/sntp/download/sntp-1.0.9.tgz"
                 }
               }
             },
             "aws-sign2": {
-              "version": "0.5.0"
+              "version": "https://registry.npm.taobao.org/aws-sign2/download/aws-sign2-0.5.0.tgz"
             },
             "stringstream": {
-              "version": "0.0.5"
+              "version": "https://registry.npm.taobao.org/stringstream/download/stringstream-0.0.5.tgz"
             },
             "combined-stream": {
-              "version": "0.0.7",
+              "version": "https://registry.npm.taobao.org/combined-stream/download/combined-stream-0.0.7.tgz",
               "dependencies": {
                 "delayed-stream": {
-                  "version": "0.0.5"
+                  "version": "https://registry.npm.taobao.org/delayed-stream/download/delayed-stream-0.0.5.tgz"
                 }
               }
             },
             "isstream": {
-              "version": "0.1.2"
+              "version": "https://registry.npm.taobao.org/isstream/download/isstream-0.1.2.tgz"
             },
             "har-validator": {
-              "version": "1.8.0",
+              "version": "https://registry.npm.taobao.org/har-validator/download/har-validator-1.8.0.tgz",
               "dependencies": {
                 "bluebird": {
-                  "version": "2.10.2"
+                  "version": "https://registry.npm.taobao.org/bluebird/download/bluebird-2.10.2.tgz"
                 },
                 "chalk": {
-                  "version": "1.1.3",
+                  "version": "https://registry.npm.taobao.org/chalk/download/chalk-1.1.3.tgz",
                   "dependencies": {
                     "ansi-styles": {
-                      "version": "2.2.1"
+                      "version": "https://registry.npm.taobao.org/ansi-styles/download/ansi-styles-2.2.1.tgz"
                     },
                     "escape-string-regexp": {
-                      "version": "1.0.5"
+                      "version": "https://registry.npm.taobao.org/escape-string-regexp/download/escape-string-regexp-1.0.5.tgz"
                     },
                     "has-ansi": {
-                      "version": "2.0.0",
+                      "version": "https://registry.npm.taobao.org/has-ansi/download/has-ansi-2.0.0.tgz",
                       "dependencies": {
                         "ansi-regex": {
-                          "version": "2.0.0"
+                          "version": "https://registry.npm.taobao.org/ansi-regex/download/ansi-regex-2.0.0.tgz"
                         }
                       }
                     },
                     "strip-ansi": {
-                      "version": "3.0.1",
+                      "version": "https://registry.npm.taobao.org/strip-ansi/download/strip-ansi-3.0.1.tgz",
                       "dependencies": {
                         "ansi-regex": {
-                          "version": "2.0.0"
+                          "version": "https://registry.npm.taobao.org/ansi-regex/download/ansi-regex-2.0.0.tgz"
                         }
                       }
                     },
                     "supports-color": {
-                      "version": "2.0.0"
+                      "version": "https://registry.npm.taobao.org/supports-color/download/supports-color-2.0.0.tgz"
                     }
                   }
                 },
                 "commander": {
-                  "version": "2.9.0",
+                  "version": "https://registry.npm.taobao.org/commander/download/commander-2.9.0.tgz",
                   "dependencies": {
                     "graceful-readlink": {
-                      "version": "1.0.1"
+                      "version": "https://registry.npm.taobao.org/graceful-readlink/download/graceful-readlink-1.0.1.tgz"
                     }
                   }
                 },
                 "is-my-json-valid": {
-                  "version": "2.13.1",
+                  "version": "https://registry.npm.taobao.org/is-my-json-valid/download/is-my-json-valid-2.13.1.tgz",
                   "dependencies": {
                     "generate-function": {
-                      "version": "2.0.0"
+                      "version": "https://registry.npm.taobao.org/generate-function/download/generate-function-2.0.0.tgz"
                     },
                     "generate-object-property": {
-                      "version": "1.2.0",
+                      "version": "https://registry.npm.taobao.org/generate-object-property/download/generate-object-property-1.2.0.tgz",
                       "dependencies": {
                         "is-property": {
-                          "version": "1.0.2"
+                          "version": "https://registry.npm.taobao.org/is-property/download/is-property-1.0.2.tgz"
                         }
                       }
                     },
                     "jsonpointer": {
-                      "version": "2.0.0"
+                      "version": "https://registry.npm.taobao.org/jsonpointer/download/jsonpointer-2.0.0.tgz"
                     },
                     "xtend": {
-                      "version": "4.0.1"
+                      "version": "https://registry.npm.taobao.org/xtend/download/xtend-4.0.1.tgz"
                     }
                   }
                 }
@@ -187,70 +187,70 @@
           }
         },
         "underscore": {
-          "version": "1.8.3"
+          "version": "https://registry.npm.taobao.org/underscore/download/underscore-1.8.3.tgz"
         },
         "jsonwebtoken": {
-          "version": "5.4.1",
+          "version": "https://registry.npm.taobao.org/jsonwebtoken/download/jsonwebtoken-5.4.1.tgz",
           "dependencies": {
             "jws": {
-              "version": "3.1.3",
+              "version": "https://registry.npm.taobao.org/jws/download/jws-3.1.3.tgz",
               "dependencies": {
                 "base64url": {
-                  "version": "1.0.6",
+                  "version": "https://registry.npm.taobao.org/base64url/download/base64url-1.0.6.tgz",
                   "dependencies": {
                     "concat-stream": {
-                      "version": "1.4.10",
+                      "version": "https://registry.npm.taobao.org/concat-stream/download/concat-stream-1.4.10.tgz",
                       "dependencies": {
                         "inherits": {
-                          "version": "2.0.1"
+                          "version": "https://registry.npm.taobao.org/inherits/download/inherits-2.0.1.tgz"
                         },
                         "typedarray": {
-                          "version": "0.0.6"
+                          "version": "https://registry.npm.taobao.org/typedarray/download/typedarray-0.0.6.tgz"
                         },
                         "readable-stream": {
-                          "version": "1.1.14",
+                          "version": "https://registry.npm.taobao.org/readable-stream/download/readable-stream-1.1.14.tgz",
                           "dependencies": {
                             "core-util-is": {
                               "version": "1.0.2"
                             },
                             "isarray": {
-                              "version": "0.0.1"
+                              "version": "https://registry.npm.taobao.org/isarray/download/isarray-0.0.1.tgz"
                             },
                             "string_decoder": {
-                              "version": "0.10.31"
+                              "version": "https://registry.npm.taobao.org/string_decoder/download/string_decoder-0.10.31.tgz"
                             }
                           }
                         }
                       }
                     },
                     "meow": {
-                      "version": "2.0.0",
+                      "version": "https://registry.npm.taobao.org/meow/download/meow-2.0.0.tgz",
                       "dependencies": {
                         "camelcase-keys": {
-                          "version": "1.0.0",
+                          "version": "https://registry.npm.taobao.org/camelcase-keys/download/camelcase-keys-1.0.0.tgz",
                           "dependencies": {
                             "camelcase": {
-                              "version": "1.2.1"
+                              "version": "https://registry.npm.taobao.org/camelcase/download/camelcase-1.2.1.tgz"
                             },
                             "map-obj": {
-                              "version": "1.0.1"
+                              "version": "https://registry.npm.taobao.org/map-obj/download/map-obj-1.0.1.tgz"
                             }
                           }
                         },
                         "indent-string": {
-                          "version": "1.2.2",
+                          "version": "https://registry.npm.taobao.org/indent-string/download/indent-string-1.2.2.tgz",
                           "dependencies": {
                             "get-stdin": {
-                              "version": "4.0.1"
+                              "version": "https://registry.npm.taobao.org/get-stdin/download/get-stdin-4.0.1.tgz"
                             },
                             "repeating": {
-                              "version": "1.1.3",
+                              "version": "https://registry.npm.taobao.org/repeating/download/repeating-1.1.3.tgz",
                               "dependencies": {
                                 "is-finite": {
-                                  "version": "1.0.1",
+                                  "version": "https://registry.npm.taobao.org/is-finite/download/is-finite-1.0.1.tgz",
                                   "dependencies": {
                                     "number-is-nan": {
-                                      "version": "1.0.0"
+                                      "version": "https://registry.npm.taobao.org/number-is-nan/download/number-is-nan-1.0.0.tgz"
                                     }
                                   }
                                 }
@@ -259,26 +259,26 @@
                           }
                         },
                         "minimist": {
-                          "version": "1.2.0"
+                          "version": "https://registry.npm.taobao.org/minimist/download/minimist-1.2.0.tgz"
                         },
                         "object-assign": {
-                          "version": "1.0.0"
+                          "version": "https://registry.npm.taobao.org/object-assign/download/object-assign-1.0.0.tgz"
                         }
                       }
                     }
                   }
                 },
                 "jwa": {
-                  "version": "1.1.3",
+                  "version": "https://registry.npm.taobao.org/jwa/download/jwa-1.1.3.tgz",
                   "dependencies": {
                     "buffer-equal-constant-time": {
-                      "version": "1.0.1"
+                      "version": "https://registry.npm.taobao.org/buffer-equal-constant-time/download/buffer-equal-constant-time-1.0.1.tgz"
                     },
                     "ecdsa-sig-formatter": {
-                      "version": "1.0.5",
+                      "version": "https://registry.npm.taobao.org/ecdsa-sig-formatter/download/ecdsa-sig-formatter-1.0.5.tgz",
                       "dependencies": {
                         "base64-url": {
-                          "version": "1.2.2"
+                          "version": "https://registry.npm.taobao.org/base64-url/download/base64-url-1.2.2.tgz"
                         }
                       }
                     }
@@ -287,24 +287,24 @@
               }
             },
             "ms": {
-              "version": "0.7.1"
+              "version": "https://registry.npm.taobao.org/ms/download/ms-0.7.1.tgz"
             }
           }
         },
         "jwt-simple": {
-          "version": "0.1.0"
+          "version": "https://registry.npm.taobao.org/jwt-simple/download/jwt-simple-0.1.0.tgz"
         },
         "q": {
-          "version": "0.9.7"
+          "version": "https://registry.npm.taobao.org/q/download/q-0.9.7.tgz"
         },
         "scmp": {
-          "version": "0.0.3"
+          "version": "https://registry.npm.taobao.org/scmp/download/scmp-0.0.3.tgz"
         },
         "deprecate": {
-          "version": "0.1.0"
+          "version": "https://registry.npm.taobao.org/deprecate/download/deprecate-0.1.0.tgz"
         },
         "string.prototype.startswith": {
-          "version": "0.2.0"
+          "version": "https://registry.npm.taobao.org/string.prototype.startswith/download/string.prototype.startswith-0.2.0.tgz"
         }
       }
     }

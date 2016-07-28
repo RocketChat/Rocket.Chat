@@ -1,13 +1,13 @@
 {
   "dependencies": {
     "iconv-lite": {
-      "version": "0.4.13"
+      "version": "https://registry.npm.taobao.org/iconv-lite/download/iconv-lite-0.4.13.tgz"
     },
     "ip-range-check": {
-      "version": "0.0.1",
+      "version": "https://registry.npm.taobao.org/ip-range-check/download/ip-range-check-0.0.1.tgz",
       "dependencies": {
         "ipaddr.js": {
-          "version": "1.1.0"
+          "version": "https://registry.npm.taobao.org/ipaddr.js/download/ipaddr.js-1.1.0.tgz"
         }
       }
     }
