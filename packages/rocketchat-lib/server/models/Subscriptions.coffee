@@ -32,6 +32,14 @@ RocketChat.models.Subscriptions = new class extends RocketChat.models._Base
 
 		return @find query, options
 
+	findByUserIdUpdatedAfter: (userId, updatedAt, options) ->
+		query =
+			"u._id": userId
+			_updatedAt:
+				$gt: updatedAt
+
+		return @find query, options
+
 	# FIND
 	findByRoomIdAndRoles: (roomId, roles, options) ->
 		roles = [].concat roles
@@ -131,6 +139,19 @@ RocketChat.models.Subscriptions = new class extends RocketChat.models._Base
 				alert: false
 				unread: 0
 				ls: new Date
+
+		return @update query, update
+
+	setAsUnreadByRoomIdAndUserId: (roomId, userId, firstMessageUnreadTimestamp) ->
+		query =
+			rid: roomId
+			'u._id': userId
+
+		update =
+			$set:
+				open: true
+				alert: true
+				ls: firstMessageUnreadTimestamp
 
 		return @update query, update
 
