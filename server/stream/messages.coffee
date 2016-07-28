@@ -34,8 +34,8 @@ Meteor.startup ->
 
 	publishMessage = (type, record) ->
 		if record._hidden isnt true
-			msgStream.emit '__my_messages__', record, {}
-			msgStream.emit record.rid, record
+			msgStream.emitWithoutBroadcast '__my_messages__', record, {}
+			msgStream.emitWithoutBroadcast record.rid, record
 
 	query =
 		collection: RocketChat.models.Messages.model._name
