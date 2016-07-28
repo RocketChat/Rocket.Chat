@@ -141,8 +141,8 @@ input:focus {
 		flex: 1 1 100%;
 
 		background-color: #FFF;
-		border-left: 1px solid #E7E7E7;
-		border-right: 1px solid #E7E7E7;
+		border-left: 1px solid @window-border-color;
+		border-right: 1px solid @window-border-color;
 		overflow-y: auto;
 		.wrapper {
 			padding-bottom: 6px;
@@ -362,8 +362,8 @@ input:focus {
 
 		background-color: #FCFCFC;
 		border-top: 1px solid #E7E7E7;
-		border-left: 1px solid #E7E7E7;
-		border-right: 1px solid #E7E7E7;
+		border-left: 1px solid @window-border-color;
+		border-right: 1px solid @window-border-color;
 
 		.input-wrapper {
 			padding: 6px 6px 0 6px;
@@ -403,6 +403,8 @@ input:focus {
 		flex: 1 1 100%;
 		background-color: white;
 		padding: 1em 10px;
+		border-left: 1px solid @window-border-color;
+		border-right: 1px solid @window-border-color;
 
 		.offline-message {
 			padding: 1em 0;
@@ -439,12 +441,13 @@ input:focus {
 	flex: 1 1 100%;
 	display: block;
 	background-color: #FFF;
-	border-left: 1px solid #E7E7E7;
-	border-right: 1px solid #E7E7E7;
+	border-left: 1px solid @window-border-color;
+	border-right: 1px solid @window-border-color;
 	padding: 5px;
 
-	input, button, select {
+	input, select {
 		display: block;
+		background-color: #FFF;
 	}
 
 	.error {
@@ -459,6 +462,15 @@ input:focus {
 		&.show {
 			display: block;
 			// .transform(translateY(0px));
+		}
+	}
+
+	form {
+		padding: 0 1em;
+		text-align: center;
+
+		input, select {
+			width: 100%;
 		}
 	}
 }
@@ -532,10 +544,14 @@ input:focus {
 }
 
 .powered-by {
+	position: absolute;
+	margin-top: -20px;
+	line-height: 20px;
+	right: 0;
+	z-index: 10;
 	text-align: right;
 	font-size: 0.65rem;
 	height: 20px;
-	line-height: 20px;
 	color: #666;
 	padding: 0 1em;
 	opacity: 0.5;
@@ -565,6 +581,9 @@ input:focus {
 			display: none;
 		}
 		.messages {
+			display: none;
+		}
+		.powered-by {
 			display: none;
 		}
 	}

@@ -15,6 +15,50 @@ Template.livechatUsers.helpers({
 		if (this.emails && this.emails.length > 0) {
 			return this.emails[0].address;
 		}
+	},
+	agentAutocompleteSettings() {
+		return {
+			limit: 10,
+			// inputDelay: 300
+			rules: [{
+				// @TODO maybe change this 'collection' and/or template
+				collection: 'UserAndRoom',
+				subscription: 'userAutocomplete',
+				field: 'username',
+				template: Template.userSearch,
+				noMatchTemplate: Template.userSearchEmpty,
+				matchAll: true,
+				filter: {
+					exceptions: _.map(AgentUsers.find({}, { fields: { username: 1 } }).fetch(), user => { return user.username; })
+				},
+				selector(match) {
+					return { username: match };
+				},
+				sort: 'username'
+			}]
+		};
+	},
+	managerAutocompleteSettings() {
+		return {
+			limit: 10,
+			// inputDelay: 300
+			rules: [{
+				// @TODO maybe change this 'collection' and/or template
+				collection: 'UserAndRoom',
+				subscription: 'userAutocomplete',
+				field: 'username',
+				template: Template.userSearch,
+				noMatchTemplate: Template.userSearchEmpty,
+				matchAll: true,
+				filter: {
+					exceptions: _.map(ManagerUsers.find({}, { fields: { username: 1 } }).fetch(), user => { return user.username; })
+				},
+				selector(match) {
+					return { username: match };
+				},
+				sort: 'username'
+			}]
+		};
 	}
 });
 

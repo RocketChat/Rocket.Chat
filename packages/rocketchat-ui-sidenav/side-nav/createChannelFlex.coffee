@@ -25,9 +25,9 @@ Template.createChannelFlex.helpers
 					noMatchTemplate: Template.userSearchEmpty
 					matchAll: true
 					filter:
-						exceptions: [Meteor.user().username].concat(Template.instance().selectedUsers.get())
+						exceptions: [Meteor.user().username, Meteor.user().name].concat(Template.instance().selectedUsers.get())
 					selector: (match) ->
-						return { username: match }
+						return { term: match }
 					sort: 'username'
 				}
 			]
