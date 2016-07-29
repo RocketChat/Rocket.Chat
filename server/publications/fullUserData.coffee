@@ -38,7 +38,7 @@ Meteor.publish 'fullUserData', (filter, limit) ->
 		if limit is 1
 			return RocketChat.models.Users.findByUsername filter, options
 		else
-			filterReg = new RegExp filter, "i"
+			filterReg = new RegExp s.escapeRegExp(filter), "i"
 			return RocketChat.models.Users.findByUsernameNameOrEmailAddress filterReg, options
 
 	return RocketChat.models.Users.find {}, options
