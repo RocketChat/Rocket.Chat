@@ -29,6 +29,19 @@ Template.userEdit.events
 		e.preventDefault()
 		$('#password').val(Random.id())
 
+	# set and disable password change, welcome and verified fields when bot
+	'change #role': (e) ->
+		isBot = $(e.target).val() is 'bot'
+		$ '#verified'
+			.prop 'disabled', isBot
+			.prop 'checked', !isBot
+		$ '#changePassword'
+			.prop 'disabled', isBot
+			.prop 'checked', !isBot
+		$ '#sendWelcomeEmail'
+			.prop 'disabled', isBot
+			.prop 'checked', !isBot
+
 	'submit form': (e, t) ->
 		e.stopPropagation()
 		e.preventDefault()
@@ -67,7 +80,7 @@ Template.userEdit.onCreated ->
 			errors.push 'Name'
 		unless userData.username
 			errors.push 'Username'
-		unless userData.email
+		if userData.role isnt 'bot' and !userData.email #bots don't need email
 			errors.push 'Email'
 
 		for error in errors
