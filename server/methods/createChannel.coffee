@@ -33,6 +33,7 @@ Meteor.methods
 			name: name
 			ts: now
 			ro: readOnly is true
+			sysMes: readOnly isnt true
 			usernames: members
 			u:
 				_id: user._id
@@ -42,6 +43,7 @@ Meteor.methods
 		room = RocketChat.models.Rooms.createWithTypeNameUserAndUsernames 'c', name, user, members,
 			ts: now
 			ro: readOnly is true
+			sysMes: readOnly isnt true
 
 		for username in members
 			member = RocketChat.models.Users.findOneByUsername username
