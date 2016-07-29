@@ -28,7 +28,7 @@ Meteor.methods
 
 		newUser = RocketChat.models.Users.findOneByUsername data.username
 
-		if room.ro and not RocketChat.authz.hasPermission(Meteor.userId(), 'post-read-only')
+		if room.ro and not RocketChat.authz.hasPermission(newUser._id, 'post-read-only')
 			RocketChat.models.Rooms.addUsernameByIdAndMute data.rid, data.username
 		else
 			RocketChat.models.Rooms.addUsernameById data.rid, data.username
@@ -41,12 +41,11 @@ Meteor.methods
 			alert: true
 			unread: 1
 
-		if not room.ro
-			fromUser = RocketChat.models.Users.findOneById fromId
-			RocketChat.models.Messages.createUserAddedWithRoomIdAndUser data.rid, newUser,
-				ts: now
-				u:
-					_id: fromUser._id
-					username: fromUser.username
+		fromUser = RocketChat.models.Users.findOneById fromId
+		RocketChat.models.Messages.createUserAddedWithRoomIdAndUser data.rid, newUser,
+			ts: now
+			u:
+				_id: fromUser._id
+				username: fromUser.username
 
 		return true

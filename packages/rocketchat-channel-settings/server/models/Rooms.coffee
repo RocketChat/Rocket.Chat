@@ -14,13 +14,21 @@ RocketChat.models.Rooms.setReadOnlyById = (_id, readOnly) ->
 
 	update =
 		$set:
-			ro: readOnly is true
+			ro: readOnly
 
-	if readOnly is true
+	if readOnly
 		users = @findOne(query, { fields: { usernames: 1 }})?.usernames
-		if users
-			update.$set.muted = users
 	else
 		update.$set.muted = []
+
+	return @update query, update
+
+RocketChat.models.Rooms.setSystemMessagesById = (_id, systemMessages) ->
+	query =
+		_id: _id
+
+	update =
+		$set:
+			sysMes: systemMessages
 
 	return @update query, update
