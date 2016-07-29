@@ -33,6 +33,7 @@ Meteor.methods
 		room = RocketChat.models.Rooms.createWithTypeNameUserAndUsernames 'p', name, me, members,
 			ts: now
 			ro: readOnly is true
+			sysMes: readOnly isnt true
 
 		for username in members
 			member = RocketChat.models.Users.findOneByUsername(username, { fields: { username: 1 }})

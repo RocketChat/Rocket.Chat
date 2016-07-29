@@ -34,10 +34,8 @@ Meteor.methods
 			alert: true
 			unread: 1
 
-		# Don't post message in read only rooms
-		if not room.ro
-			RocketChat.models.Messages.createUserJoinWithRoomIdAndUser rid, user,
-				ts: now
+		RocketChat.models.Messages.createUserJoinWithRoomIdAndUser rid, user,
+			ts: now
 
 		Meteor.defer ->
 			RocketChat.callbacks.run 'afterJoinRoom', user, room

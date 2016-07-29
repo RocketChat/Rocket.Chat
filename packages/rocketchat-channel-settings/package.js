@@ -33,6 +33,7 @@ Package.onUse(function(api) {
 		'server/functions/saveRoomName.coffee',
 		'server/functions/saveRoomReadOnly.coffee',
 		'server/functions/saveRoomDescription.coffee',
+		'server/functions/saveRoomSystemMessages.coffee',
 		'server/methods/saveRoomSettings.coffee',
 		'server/models/Messages.coffee',
 		'server/models/Rooms.coffee'

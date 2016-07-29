@@ -35,6 +35,8 @@ Template.channelSettings.helpers
 			return t('Room_archivation_state_false')
 	readOnly: ->
 		return ChatRoom.findOne(@rid, { fields: { ro: 1 }})?.ro
+	systemMessages: ->
+		return ChatRoom.findOne(@rid, { fields: { sysMes: 1 }})?.sysMes isnt false
 
 Template.channelSettings.events
 	'keydown input[type=text]': (e, t) ->
@@ -133,6 +135,10 @@ Template.channelSettings.onCreated ->
 							RocketChat.callbacks.run 'unarchiveRoom', ChatRoom.findOne(room._id)
 			when 'readOnly'
 				Meteor.call 'saveRoomSettings', room._id, 'readOnly', @$('input[name=readOnly]:checked').val() is 'true', (err, result) ->
-						return handleError err if err
-						toastr.success TAPi18n.__ 'Read_only_changed_successfully'
+					return handleError err if err
+					toastr.success TAPi18n.__ 'Read_only_changed_successfully'
+			when 'systemMessages'
+				Meteor.call 'saveRoomSettings', room._id, 'systemMessages', @$('input[name=systemMessages]:checked').val() is 'true', (err, result) ->
+					return handleError err if err
+					toastr.success TAPi18n.__ 'System_messages_setting_changed_successfully'
 		@editing.set()
