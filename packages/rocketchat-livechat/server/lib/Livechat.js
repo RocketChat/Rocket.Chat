@@ -159,7 +159,15 @@ RocketChat.Livechat = {
 	},
 
 	closeRoom({ user, room, comment }) {
-		RocketChat.models.Rooms.closeByRoomId(room._id);
+		let now = new Date();
+		RocketChat.models.Rooms.closeByRoomId(room._id, {
+			user: {
+				_id: user._id,
+				username: user.username
+			},
+			closedAt: now,
+			chatDuration: (now.getTime() - room.ts) / 1000
+		});
 
 		const message = {
 			t: 'livechat-close',
@@ -249,7 +257,6 @@ RocketChat.Livechat = {
 				alert: true,
 				open: true,
 				unread: 1,
-				answered: false,
 				code: room.code,
 				u: {
 					_id: agent.agentId,
