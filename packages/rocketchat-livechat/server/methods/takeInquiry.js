@@ -32,8 +32,7 @@ Meteor.methods({
 			t: 'l',
 			desktopNotifications: 'all',
 			mobilePushNotifications: 'all',
-			emailNotifications: 'all',
-			answered: 'false'
+			emailNotifications: 'all'
 		};
 		RocketChat.models.Subscriptions.insert(subscriptionData);
 

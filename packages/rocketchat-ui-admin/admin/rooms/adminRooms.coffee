@@ -83,7 +83,7 @@ Template.adminRooms.onCreated ->
 
 		filter = _.trim filter
 		if filter
-			filterReg = new RegExp filter, "i"
+			filterReg = new RegExp s.escapeRegExp(filter), "i"
 			query = { $or: [ { name: filterReg }, { t: 'd', usernames: filterReg } ] }
 
 		if types.length
