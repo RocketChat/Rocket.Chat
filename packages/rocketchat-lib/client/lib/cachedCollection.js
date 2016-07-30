@@ -2,7 +2,6 @@
 
 class CachedCollectionManager {
 	constructor() {
-		const self  = this;
 		this.items = [];
 		this._syncEnabled = false;
 		this.commonData = localforage.createInstance({
@@ -30,7 +29,7 @@ class CachedCollectionManager {
 		}
 	}
 
-	commonSubReady(){
+	commonSubReady() {
 		let subsReady = true;
 		for (const item of this.items) {
 			if (item.dataType === 'common') {
