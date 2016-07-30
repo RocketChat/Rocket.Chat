@@ -8,7 +8,8 @@ Meteor.methods({
 			return {
 				update: records.filter((record) => {
 					return record._updatedAt > updatedAt;
-				})
+				}),
+				remove: RocketChat.models.Permissions.trashFindDeletedAfter(updatedAt, {}, {fields: {_id: 1, _deletedAt: 1}}).fetch()
 			};
 		}
 
