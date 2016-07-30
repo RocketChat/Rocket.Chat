@@ -38,8 +38,9 @@ Meteor.methods({
 			return {
 				update: data
 					.filter(record => { return record._room && record._room._updatedAt > updatedAt; })
-					.map(roomMap)
-				};
+					.map(roomMap),
+				remove: RocketChat.models.Subscriptions.trashFindDeletedAfter(updatedAt, {'u._id': Meteor.userId()}, {fields: {_id: 1, _deletedAt: 1}}).fetch()
+			};
 		}
 
 		return data.map(roomMap);

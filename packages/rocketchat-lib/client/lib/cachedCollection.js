@@ -4,12 +4,26 @@ class CachedCollectionManager {
 	constructor() {
 		this.items = [];
 		this._syncEnabled = false;
+		this.reconnectCb = [];
 
 		const _unstoreLoginToken = Accounts._unstoreLoginToken;
 		Accounts._unstoreLoginToken = (...args) => {
 			_unstoreLoginToken.apply(Accounts, args);
 			this.clearAllCache();
 		};
+
+		let connectionWasOnline = true;
+		Tracker.autorun(() => {
+			const connected = Meteor.connection.status().connected;
+
+			if (connected === true && connectionWasOnline === false) {
+				for (const cb of this.reconnectCb) {
+					cb();
+				}
+			}
+
+			connectionWasOnline = connected;
+		});
 	}
 
 	register(cachedCollection) {
@@ -36,6 +50,10 @@ class CachedCollectionManager {
 	get syncEnabled() {
 		return this._syncEnabled;
 	}
+
+	onReconnect(cb) {
+		this.reconnectCb.push(cb);
+	}
 }
 
 RocketChat.CachedCollectionManager = new CachedCollectionManager;
@@ -49,7 +67,7 @@ class CachedCollection {
 		syncMethodName,
 		eventName,
 		eventType = 'onUser',
-		useSync = false,
+		useSync = true,
 		useCache = false,
 		debug = true,
 		version = 1,
@@ -69,6 +87,10 @@ class CachedCollection {
 		this.version = version;
 		this.updatedAt = new Date(0);
 		this.maxCacheTime = maxCacheTime;
+
+		if (this.useCache === false) {
+			return this.clearCache();
+		}
 
 		RocketChat.CachedCollectionManager.register(this);
 	}
@@ -166,27 +188,47 @@ class CachedCollection {
 		this.log(`syncing from ${this.updatedAt}`);
 
 		Meteor.call(this.syncMethodName, this.updatedAt, (error, data) => {
+			let changes = [];
+
 			if (data.update && data.update.length > 0) {
 				this.log(`${data.update.length} records updated in sync`);
-
-				for (const record of data.update) {
-					delete record.$loki;
-					this.collection.upsert({ _id: record._id }, _.omit(record, '_id'));
-
-					if (record._updatedAt && record._updatedAt > this.updatedAt) {
-						this.updatedAt = record._updatedAt;
-					}
-				}
+				changes.push(...data.update);
 			}
 
 			if (data.remove && data.remove.length > 0) {
 				this.log(`${data.remove.length} records removed in sync`);
+				changes.push(...data.remove);
+			}
 
-				for (const record of data.remove) {
+			changes = changes.sort((a, b) => {
+				const valueA = a._updatedAt || a._deletedAt;
+				const valueB = b._updatedAt || b._deletedAt;
+
+				if (valueA < valueB) {
+					return -1;
+				}
+
+				if (valueA > valueB) {
+					return 1;
+				}
+
+				return 0;
+			});
+
+			for (const record of changes) {
+				delete record.$loki;
+
+				if (record._deletedAt) {
 					this.collection.remove({ _id: record._id });
 
 					if (record._deletedAt && record._deletedAt > this.updatedAt) {
 						this.updatedAt = record._deletedAt;
+					}
+				} else {
+					this.collection.upsert({ _id: record._id }, _.omit(record, '_id'));
+
+					if (record._updatedAt && record._updatedAt > this.updatedAt) {
+						this.updatedAt = record._updatedAt;
 					}
 				}
 			}
@@ -198,6 +240,10 @@ class CachedCollection {
 	}
 
 	saveCache(data) {
+		if (this.useCache === false) {
+			return;
+		}
+
 		this.log('saving cache');
 		if (!data) {
 			data = this.collection.find().fetch();
@@ -256,15 +302,8 @@ class CachedCollection {
 			}
 
 			if (this.useSync === true) {
-				let connectionWasOnline = true;
-				Tracker.autorun(() => {
-					const connected = Meteor.connection.status().connected;
-
-					if (connected === true && connectionWasOnline === false) {
-						this.trySync();
-					}
-
-					connectionWasOnline = connected;
+				RocketChat.CachedCollectionManager.onReconnect(() => {
+					this.trySync();
 				});
 			}
 
