@@ -35,6 +35,7 @@ Meteor.methods
 			return {
 				update: records.filter (record) ->
 					return record._updatedAt > updatedAt
+				remove: RocketChat.models.Subscriptions.trashFindDeletedAfter(updatedAt, {'u._id': Meteor.userId()}, {fields: {_id: 1, _deletedAt: 1}}).fetch()
 			}
 
 		return records
