@@ -27,8 +27,17 @@ currentTracker = undefined
 							BlazeLayout.render 'main', {center: 'roomNotFound'}
 							return
 				else
-					Session.set 'roomNotFound', {type: type, name: name}
-					BlazeLayout.render 'main', {center: 'roomNotFound'}
+					Meteor.call 'getRoomByTypeAndName', type, name, (err, record) ->
+						console.log 'getRoomByTypeAndName', err, record
+						if err?
+							Session.set 'roomNotFound', {type: type, name: name}
+							BlazeLayout.render 'main', {center: 'roomNotFound'}
+						else
+							delete record.$loki
+							RocketChat.models.Rooms.upsert({ _id: record._id }, _.omit(record, '_id'))
+							RoomManager.close(type + name)
+							openRoom(type, name)
+
 				return
 
 			$('.rocket-loader').remove();
