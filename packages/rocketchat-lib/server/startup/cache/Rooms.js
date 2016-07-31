@@ -6,6 +6,8 @@ RocketChat.cache.Rooms = new (class CacheRoom extends RocketChat.cache._Base {
 
 		this.ignoeUpdatedFields.push('msgs', 'lm');
 
+		this.ensureIndex(['t', 'name'], 'unique');
+
 		this.options = {fields: {usernames: 0}};
 	}
 
