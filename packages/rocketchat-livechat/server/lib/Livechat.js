@@ -16,7 +16,14 @@ RocketChat.Livechat = {
 	},
 	getAgents(department) {
 		if (department) {
-			return RocketChat.models.LivechatDepartmentAgents.getForDepartment(department);
+			return RocketChat.models.LivechatDepartmentAgents.findByDepartmentId(department);
+		} else {
+			return RocketChat.models.Users.findAgents();
+		}
+	},
+	getOnlineAgents(department) {
+		if (department) {
+			return RocketChat.models.LivechatDepartmentAgents.getOnlineForDepartment(department);
 		} else {
 			return RocketChat.models.Users.findOnlineAgents();
 		}
@@ -152,7 +159,15 @@ RocketChat.Livechat = {
 	},
 
 	closeRoom({ user, room, comment }) {
-		RocketChat.models.Rooms.closeByRoomId(room._id);
+		let now = new Date();
+		RocketChat.models.Rooms.closeByRoomId(room._id, {
+			user: {
+				_id: user._id,
+				username: user.username
+			},
+			closedAt: now,
+			chatDuration: (now.getTime() - room.ts) / 1000
+		});
 
 		const message = {
 			t: 'livechat-close',
@@ -242,7 +257,6 @@ RocketChat.Livechat = {
 				alert: true,
 				open: true,
 				unread: 1,
-				answered: false,
 				code: room.code,
 				u: {
 					_id: agent.agentId,
