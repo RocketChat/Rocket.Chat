@@ -1415,10 +1415,6 @@ a.github-fork {
 		margin: 25px 0 0 0;
 		line-height: 28px;
 		padding-left: 10px;
-		a {
-			display: block;
-		}
-		&:hover {}
 		&.add-room {
 			i {
 				position: absolute;
@@ -2011,6 +2007,10 @@ a.github-fork {
 			thead {
 				th {
 					text-align: left;
+
+					&.text-right {
+						text-align: right;
+					}
 				}
 			}
 			tbody {
@@ -2888,7 +2888,7 @@ body:not(.is-cordova) {
 	.tab-button {
 		position: relative;
 		cursor: pointer;
-		padding: 10px;
+		padding: 10px 0;
 		background: #FCFCFC;
 		border-bottom: 1px solid #eaeaea;
 		text-align: center;
@@ -2914,8 +2914,11 @@ body:not(.is-cordova) {
 		&.active {
 			background-color: #F4F4F4;
 			margin-left: -1px;
-			padding-left: 11px;
 			border-right: 3px solid #ff0000;
+
+			button {
+				margin-left: 4px;
+			}
 
 			.counter {
 				margin-right: -3px;

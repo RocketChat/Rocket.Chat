@@ -149,4 +149,19 @@ Meteor.startup(function() {
 			{key: 'Guest_Pool', i18nLabel: 'Guest_Pool'}
 		]
 	});
+
+	RocketChat.settings.add('Livechat_guest_pool_with_no_agents', false, {
+		type: 'boolean',
+		group: 'Livechat',
+		i18nLabel: 'Accept_with_no_online_agents',
+		i18nDescription: 'Accept_incoming_livechat_requests_even_if_there_are_no_online_agents',
+		enableQuery: { _id: 'Livechat_Routing_Method', value: 'Guest_Pool' }
+	});
+
+	RocketChat.settings.add('Livechat_show_queue_list_link', false, {
+		type: 'boolean',
+		group: 'Livechat',
+		public: true,
+		i18nLabel: 'Show_queue_list_to_all_agents'
+	});
 });
