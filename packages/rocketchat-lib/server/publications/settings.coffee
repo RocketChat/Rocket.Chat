@@ -41,9 +41,9 @@ RocketChat.cache.Settings.on 'changed', (type, setting) ->
 	setting = RocketChat.cache.Subscriptions.processQueryOptionsOnResult(setting)
 
 	if setting.public is true
-		RocketChat.Notifications.notifyAll 'public-settings-changed', type, _.pick(setting, '_id', 'value')
+		RocketChat.Notifications.notifyAllInThisInstance 'public-settings-changed', type, _.pick(setting, '_id', 'value')
 
-	RocketChat.Notifications.notifyAll 'private-settings-changed', type, setting
+	RocketChat.Notifications.notifyAllInThisInstance 'private-settings-changed', type, setting
 
 
 RocketChat.Notifications.streamAll.allowRead 'private-settings-changed', ->

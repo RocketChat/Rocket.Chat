@@ -42,4 +42,4 @@ Meteor.methods
 
 
 RocketChat.cache.Subscriptions.on 'changed', (type, subscription) ->
-	RocketChat.Notifications.notifyUser subscription.u._id, 'subscriptions-changed', type, RocketChat.cache.Subscriptions.processQueryOptionsOnResult(subscription, {fields: fields})
+	RocketChat.Notifications.notifyUserInThisInstance subscription.u._id, 'subscriptions-changed', type, RocketChat.cache.Subscriptions.processQueryOptionsOnResult(subscription, {fields: fields})
