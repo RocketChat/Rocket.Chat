@@ -142,7 +142,6 @@ Template.messageBox.events
 			filesToUpload.push
 				file: file
 				name: file.name
-				type: file.type
 
 		fileUpload filesToUpload
 
