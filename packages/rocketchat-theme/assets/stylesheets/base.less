@@ -1671,8 +1671,15 @@ a.github-fork {
 		max-width: 600px;
 		font-size: 24px;
 		margin-top: 6%;
+		margin-bottom: auto;
+		border: 1px solid #e7e7e7;
+		border-radius: 8px;
+		background-color: #fff;
+		overflow: hidden;
+		box-shadow: 0px 10px 20px rgba(0, 0, 0, .5);
+
 		> input {
-			box-shadow: 0px 10px 20px rgba(0, 0, 0, .5);
+			box-shadow: none;
 			border-width: 0px;
 			line-height: 46px;
 			height: 46px;
@@ -1685,6 +1692,27 @@ a.github-fork {
 			width: 46px;
 			text-align: center;
 			font-weight: 100;
+		}
+		.message-popup {
+			position: relative;
+			box-shadow: none;
+			border-radius: 0;
+
+			.popup-item {
+				border-top: 1px solid #eaeaea;
+				line-height: 34px;
+				font-size: 20px;
+				padding: 0 10px;
+
+				i {
+					margin-right: 4px;
+					background: #fff;
+					line-height: 28px;
+					display: inline-block;
+					border-radius: 20px;
+					width: 28px;
+				}
+			}
 		}
 	}
 }
@@ -2181,69 +2209,6 @@ a.github-fork {
 		width: 100%;
 		min-height: @footer-min-height;
 	}
-	.message-popup-results {
-		&.notready {
-			.message-popup-items {
-				background-image: url(images/logo/loading.gif);
-				background-repeat: no-repeat;
-				background-position: 50% 50%;
-				height: 100px;
-			}
-			.popup-item {
-				display: none;
-			}
-		}
-	}
-	.message-popup-position {
-		position: relative;
-	}
-	.message-popup {
-		position: absolute;
-		z-index: 101;
-		bottom: 0px;
-		left: 0px;
-		right: 0px;
-		overflow: hidden;
-		box-shadow: 0 -1px 10px 0 rgba(0,0,0,0.2),0 1px 1px rgba(0,0,0,0.16);
-		border-radius: 5px;
-	}
-	.message-popup-title {
-		border-bottom: 1px solid;
-		padding: 0 20px;
-		line-height: 32px;
-		font-size: 14px;
-		font-weight: 300;
-	}
-	.popup-item {
-		padding: 0 20px;
-		line-height: 32px;
-		cursor: pointer;
-		user-select: none;
-		&.selected {}
-	}
-	.popup-user-avatar {
-		width: 24px;
-		display: inline-block;
-		height: 24px;
-		background-size: contain;
-		border-radius: 3px;
-		margin: -7px 4px;
-	}
-	.popup-user-status {
-		border: 1px solid;
-		width: 10px;
-		height: 10px;
-		display: inline-block;
-		border-radius: 10px;
-	}
-	.popup-user-status-system {}
-	.popup-user-status-offline {}
-	.popup-user-status-online {}
-	.popup-user-status-away {}
-	.popup-user-status-busy {}
-	.popup-slash-command-description {
-		float: right;
-	}
 	.message-form {
 		> .message-input {
 			border: 1px solid;
@@ -2411,6 +2376,74 @@ a.github-fork {
 			display: inline-block;
 		}
 	}
+}
+
+.message-popup-results {
+	&.notready {
+		.message-popup-items {
+			background-image: url(images/logo/loading.gif);
+			background-repeat: no-repeat;
+			background-position: 50% 50%;
+			height: 100px;
+		}
+		.popup-item {
+			display: none;
+		}
+	}
+}
+.message-popup-position {
+	position: relative;
+}
+.message-popup {
+	position: absolute;
+	z-index: 101;
+	bottom: 0px;
+	left: 0px;
+	right: 0px;
+	overflow: hidden;
+	box-shadow: 0 -1px 10px 0 rgba(0,0,0,0.2),0 1px 1px rgba(0,0,0,0.16);
+	border-radius: 5px;
+}
+.message-popup.popup-down {
+	bottom: auto;
+	top: 0px;
+}
+.message-popup-title {
+	border-bottom: 1px solid;
+	padding: 0 20px;
+	line-height: 32px;
+	font-size: 14px;
+	font-weight: 300;
+}
+.popup-item {
+	padding: 0 20px;
+	line-height: 32px;
+	cursor: pointer;
+	user-select: none;
+	&.selected {}
+}
+.popup-user-avatar {
+	width: 24px;
+	display: inline-block;
+	height: 24px;
+	background-size: contain;
+	border-radius: 3px;
+	margin: -7px 4px;
+}
+.popup-user-status {
+	border: 1px solid;
+	width: 10px;
+	height: 10px;
+	display: inline-block;
+	border-radius: 10px;
+}
+.popup-user-status-system {}
+.popup-user-status-offline {}
+.popup-user-status-online {}
+.popup-user-status-away {}
+.popup-user-status-busy {}
+.popup-slash-command-description {
+	float: right;
 }
 
 .messages-box {
