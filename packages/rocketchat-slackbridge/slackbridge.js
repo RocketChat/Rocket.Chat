@@ -253,7 +253,7 @@ class SlackBridge {
 				if (message.icons) {
 					msgObj.emoji = message.icons.emoji;
 				}
-				break;
+				return msgObj;
 			case 'me_message':
 				return {
 					msg: `_${this.convertSlackMessageToRocketChat(message.text)}_`
