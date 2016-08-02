@@ -22,7 +22,7 @@ Template.spotlight.helpers
 			getFilter: (collection, filter) ->
 				exp = new RegExp("#{RegExp.escape filter}", 'i')
 
-				return collection.find({name: exp}, {limit: 10, sort: {ls: -1}}).fetch()
+				return collection.find({name: exp}, {limit: 10, sort: {unread: -1, ls: -1}}).fetch()
 
 			getValue: (_id, collection, firstPartValue) ->
 				doc = collection.findOne(_id)
