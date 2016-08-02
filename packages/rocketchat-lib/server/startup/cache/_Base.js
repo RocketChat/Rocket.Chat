@@ -551,6 +551,18 @@ RocketChat.cache._Base = (class CacheBase extends EventEmitter {
 			return query;
 		}
 
+		if (Object.keys(query).length > 1) {
+			const and = [];
+			for (const field in query) {
+				if (query.hasOwnProperty(field)) {
+					and.push({
+						[field]: query[field]
+					});
+				}
+			}
+			query = {$and: and};
+		}
+
 		for (const field in query) {
 			if (query.hasOwnProperty(field)) {
 				const value = query[field];
