@@ -13,5 +13,11 @@ Meteor.startup(function() {
 			},
 			i18nLabel: 'API_Token'
 		});
+
+		this.add('SlackBridge_ExcludeBotnames', '', {
+			type: 'string',
+			i18nLabel: 'Exclude_Botnames',
+			i18nDescription: 'Exclude_Botnames_Description'
+		});
 	});
 });
