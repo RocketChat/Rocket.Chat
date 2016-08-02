@@ -1,0 +1,32 @@
+{
+    "kind": "ImageStream",
+    "apiVersion": "v1",
+    "metadata": {
+        "name": "rocket.chat",
+        "namespace": "openshift",
+        "selfLink": "/oapi/v1/namespaces/openshift/imagestreams/rocket.chat",
+        "uid": "23473932-4a11-11e6-b769-525400e44abe",
+        "resourceVersion": "59693",
+        "creationTimestamp": "2016-07-14T22:20:14Z",
+        "annotations": {
+            "openshift.io/image.dockerRepositoryCheck": "2016-07-14T22:20:14Z"
+        }
+    },
+    "spec": {},
+    "status": {
+        "dockerImageRepository": "hub.openshift.rhel-cdk.10.1.2.2.xip.io/openshift/rocket-chat",
+        "tags": [
+            {
+                "tag": "latest",
+                "items": [
+                    {
+                        "created": "2016-07-14T22:20:14Z",
+                        "dockerImageReference": "172.30.19.110:5000/openshift/rocket.chat@sha256:0cb778a504334142a411ecf6ea6ab23ba02e64eb2591a5833e4b1745361645ca",
+                        "image": "sha256:0cb778a504334142a411ecf6ea6ab23ba02e64eb2591a5833e4b1745361645ca",
+                        "generation": 0
+                    }
+                ]
+            }
+        ]
+    }
+}

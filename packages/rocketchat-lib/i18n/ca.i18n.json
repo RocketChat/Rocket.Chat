@@ -675,6 +675,7 @@
   "Managing_assets" : "Gestió de recursos",
   "Managing_integrations" : "Gestió d'integracions",
   "Mark_as_read" : "Marcar com a llegit",
+  "Mark_as_unread" : "Marca com a no llegit",
   "Markdown_Headers" : "Encapçalaments Markdown",
   "Markdown_SupportSchemesForLink" : "Markdown detecta scheme:// com a enllaç",
   "Markdown_SupportSchemesForLink_Description" : "Llista dels scheme:// permesos separats per comes",
