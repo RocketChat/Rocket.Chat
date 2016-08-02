@@ -434,6 +434,8 @@
   "FileUpload_S3_BucketURL" : "Bucket URL",
   "FileUpload_S3_CDN" : "CDN domain for downloads",
   "FileUpload_S3_Region" : "Region",
+  "FileUpload_S3_URLExpiryTimeSpan" : "URLs expiration timespan",
+  "FileUpload_S3_URLExpiryTimeSpan_Description" : "Time after which Amazon S3 generated URLs will no longer be valid (in seconds). If set to less than 5 seconds, this field will be ignored.",
   "FileUpload_Storage_Type" : "Storage Type",
   "Flags" : "Flags",
   "Follow_social_profiles" : "Follow our social profiles, fork us on github and share your thoughts about the rocket.chat app on our trello board.",

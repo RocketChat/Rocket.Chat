@@ -434,6 +434,8 @@
   "FileUpload_S3_BucketURL" : "Bucket URL",
   "FileUpload_S3_CDN" : "Domini CDN per descàrregues",
   "FileUpload_S3_Region" : "Regió S3",
+  "FileUpload_S3_URLExpiryTimeSpan" : "Caducitat de les URL",
+  "FileUpload_S3_URLExpiryTimeSpan_Description" : "Temps després el qual les adreces d'Amazon S3 generades deixaran de ser vàlides (en segons). Si s'estableix a menys de 5 segons, aquest camp serà ignorat.",
   "FileUpload_Storage_Type" : "Tipus d'emmagatzematge",
   "Flags" : "Indicadors",
   "Follow_social_profiles" : "Segueix els nostres perfils, fes-nos un fork a GitHub i comparteix la teva opinió sobre Rocket.Chat al nostre tauler de Trello.",
