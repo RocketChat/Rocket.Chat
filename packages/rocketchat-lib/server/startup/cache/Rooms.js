@@ -65,7 +65,7 @@ RocketChat.cache.Rooms = new (class CacheRoom extends RocketChat.cache._Base {
 			name: name,
 			t: type,
 			usernames: {
-				$ne: username
+				$containsNone: username
 			}
 		};
 
@@ -115,7 +115,9 @@ RocketChat.cache.Rooms = new (class CacheRoom extends RocketChat.cache._Base {
 				name: nameRegex
 			}, {
 				t: 'd',
-				usernames: nameRegex
+				usernames: {
+					$contains: nameRegex
+				}
 			}]
 		};
 
@@ -129,7 +131,9 @@ RocketChat.cache.Rooms = new (class CacheRoom extends RocketChat.cache._Base {
 		types.forEach((type) => {
 			const obj = {name: nameRegex, t: type.type};
 			if (type.username) {
-				obj.usernames = type.username;
+				obj.usernames = {
+					$contains: type.username
+				}
 			}
 
 			if (type.ids) {
@@ -153,7 +157,9 @@ RocketChat.cache.Rooms = new (class CacheRoom extends RocketChat.cache._Base {
 		types.forEach((type) => {
 			const obj = {t: type.type};
 			if (type.username) {
-				obj.usernames = type.username;
+				obj.usernames = {
+					$contains: type.username
+				};
 			}
 
 			if (type.ids) {
@@ -183,7 +189,9 @@ RocketChat.cache.Rooms = new (class CacheRoom extends RocketChat.cache._Base {
 				name: nameRegex
 			}, {
 				t: 'd',
-				usernames: nameRegex
+				usernames: {
+					$contains: nameRegex
+				}
 			}]
 		};
 
@@ -201,7 +209,9 @@ RocketChat.cache.Rooms = new (class CacheRoom extends RocketChat.cache._Base {
 				name: nameRegex
 			}, {
 				t: 'd',
-				usernames: nameRegex
+				usernames: {
+					$contains: nameRegex
+				}
 			}]
 		};
 
@@ -222,7 +232,9 @@ RocketChat.cache.Rooms = new (class CacheRoom extends RocketChat.cache._Base {
 	findByTypeContainigUsername(type, username, options) {
 		const query = {
 			t: type,
-			usernames: username
+			usernames: {
+				$contains: username
+			}
 		};
 
 		return this.find(query, options);
@@ -232,7 +244,7 @@ RocketChat.cache.Rooms = new (class CacheRoom extends RocketChat.cache._Base {
 		const query = {
 			t: type,
 			usernames: {
-				$all: [].concat(username)
+				$contains: [].concat(username)
 			}
 		};
 
@@ -247,7 +259,9 @@ RocketChat.cache.Rooms = new (class CacheRoom extends RocketChat.cache._Base {
 			uid: {
 				$ne: userId
 			},
-			usernames: username
+			usernames: {
+				$contains:username
+			}
 		};
 
 		return this.find(query, options);
@@ -255,7 +269,9 @@ RocketChat.cache.Rooms = new (class CacheRoom extends RocketChat.cache._Base {
 
 	findByContainigUsername(username, options) {
 		const query = {
-			usernames: username
+			usernames: {
+				$contains:username
+			}
 		};
 
 		return this.find(query, options);
@@ -274,7 +290,9 @@ RocketChat.cache.Rooms = new (class CacheRoom extends RocketChat.cache._Base {
 		const query = {
 			name: name,
 			t: type,
-			usernames: username
+			usernames: {
+				$contains:username
+			}
 		};
 
 		return this.find(query, options);
