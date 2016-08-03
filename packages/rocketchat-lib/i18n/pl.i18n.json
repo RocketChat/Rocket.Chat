@@ -774,7 +774,7 @@
   "Off_the_record_conversation" : "Konwersacja \"Off-the-record\"",
   "Off_the_record_conversation_is_not_available_for_your_browser_or_device" : "Konwersacja \"Off-the-record\" nie jest dostępna dla przeglądarki lub urządzenia.",
   "Offline" : "Offline",
-  "Offline_DM_Email" : "[__site__] Dostałeś nową wiadomość bezpośrednią od __user__",
+  "Offline_DM_Email" : "Dostałeś nową wiadomość bezpośrednią od __user__",
   "Offline_form" : "Formularz nieaktywny",
   "Offline_form_unavailable_message" : "Formularz niedostępny niedostępny wiadomość",
   "Offline_Mention_Email" : "[__site__] Zostałeś wspomniany przez __user__ w #__room__",
