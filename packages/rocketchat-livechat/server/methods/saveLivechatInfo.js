@@ -19,6 +19,12 @@ Meteor.methods({
 			tags: Match.Optional(String)
 		}));
 
-		return RocketChat.Livechat.saveGuest(guestData) && RocketChat.Livechat.saveRoomInfo(roomData, guestData);
+		const ret = RocketChat.Livechat.saveGuest(guestData) && RocketChat.Livechat.saveRoomInfo(roomData, guestData);
+
+		Meteor.defer(() => {
+			RocketChat.callbacks.run('livechat.saveLivechatInfo', RocketChat.models.Rooms.findOneById(roomData._id));
+		});
+
+		return ret;
 	}
 });

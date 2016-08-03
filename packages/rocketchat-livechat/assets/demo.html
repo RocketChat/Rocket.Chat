@@ -12,7 +12,7 @@
 		j.async = true;
 		j.src = '/packages/rocketchat_livechat/assets/rocket-livechat.js';
 		h.parentNode.insertBefore(j, h);
-	})(window, document, 'script', '/livechat');
+	})(window, document, 'script', 'http://localhost:5000/livechat');
 	</script>
 </head>
 
@@ -37,6 +37,10 @@
 	<script type="text/javascript">
 		RocketChat(function() {
 			this.setCustomField('key-test', 'value test');
+			this.setTheme({
+				color: 'green',
+				fontColor: 'blue'
+			});
 		});
 	</script>
 </body>

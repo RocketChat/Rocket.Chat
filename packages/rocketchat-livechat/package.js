@@ -82,6 +82,7 @@ Package.onUse(function(api) {
 	api.addFiles('client/views/app/livechatInstallation.js', 'client');
 	api.addFiles('client/views/app/livechatIntegrations.html', 'client');
 	api.addFiles('client/views/app/livechatIntegrations.js', 'client');
+	api.addFiles('client/views/app/livechatNotSubscribed.html', 'client');
 	api.addFiles('client/views/app/livechatQueue.html', 'client');
 	api.addFiles('client/views/app/livechatQueue.js', 'client');
 	api.addFiles('client/views/app/livechatTriggers.html', 'client');
@@ -113,12 +114,17 @@ Package.onUse(function(api) {
 	api.addFiles('client/views/app/triggers/livechatTriggerCondition.js', 'client');
 
 	// hooks
+	api.addFiles('server/hooks/closeRoom.js', 'server');
+	api.addFiles('server/hooks/externalMessage.js', 'server');
 	api.addFiles('server/hooks/markRoomResponded.js', 'server');
+	api.addFiles('server/hooks/offlineMessage.js', 'server');
+	api.addFiles('server/hooks/saveLivechatInfo.js', 'server');
 
 	// methods
 	api.addFiles('server/methods/addAgent.js', 'server');
 	api.addFiles('server/methods/addManager.js', 'server');
 	api.addFiles('server/methods/changeLivechatStatus.js', 'server');
+	api.addFiles('server/methods/closeByVisitor.js', 'server');
 	api.addFiles('server/methods/closeRoom.js', 'server');
 	api.addFiles('server/methods/getCustomFields.js', 'server');
 	api.addFiles('server/methods/getInitialData.js', 'server');
@@ -161,10 +167,7 @@ Package.onUse(function(api) {
 	api.addFiles('server/lib/QueueMethods.js', 'server');
 
 	api.addFiles('server/sendMessageBySMS.js', 'server');
-	api.addFiles('server/externalMessageHook.js', 'server');
 	api.addFiles('server/forwardUnclosedLivechats.js', 'server');
-	api.addFiles('server/setupWebhook.js', 'server');
-
 
 	// publications
 	api.addFiles('server/publications/customFields.js', 'server');
