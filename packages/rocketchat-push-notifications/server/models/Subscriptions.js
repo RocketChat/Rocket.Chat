@@ -61,7 +61,7 @@ RocketChat.models.Subscriptions.updateUnreadAlertById = function(_id, unreadAler
 
 	const update = {
 		$set: {
-			unreadAlert,
+			unreadAlert
 		}
 	};
 
