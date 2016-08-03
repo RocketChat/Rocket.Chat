@@ -91,7 +91,6 @@ code {
 		padding: 0 0.5em;
 		margin: 0 0.1em;
 		line-height: 16px;
-		font-family: Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
 	}
 }
 
@@ -460,7 +459,7 @@ html {
 }
 
 body {
-	font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif, "Meiryo UI";
+	font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Meiryo UI";
 	font-size: 0.875rem;
 	height: 100%;
 	width: 100%;
@@ -830,74 +829,6 @@ label.required:after {
 	}
 }
 
-a.github-fork {
-	position: fixed;
-	display: block;
-	width: 260px;
-	z-index: 901;
-	right: -62px;
-	top: 50px;
-	background-size: 100% auto;
-	cursor: pointer;
-	padding: 1em 0 0.95em;
-	line-height: 1.04em;
-	text-decoration: none;
-	font-size: 1.04em;
-	box-shadow: -2px 3px 1px rgba(0, 0, 0, 0.23);
-	opacity: 1;
-	text-transform: uppercase;
-	font-weight: 400 !important;
-	.transform(rotate(45deg) translateY(0));
-	.transition(background-color .2s ease-out, transform .45s cubic-bezier(.15, 0, 0, 1) 2.15s, opacity .2s ease-out 2.15);
-	&:hover {}
-	&:before {
-		content: " ";
-		border-top: 1px dashed;
-		position: absolute;
-		top: 3px;
-		width: 100%;
-		left: 0;
-		height: 1px;
-		z-index: 1;
-	}
-	&:after {
-		content: " ";
-		border-top: 1px dashed;
-		position: absolute;
-		bottom: 2px;
-		z-index: 1;
-		left: 0;
-		width: 100%;
-		height: 1px;
-	}
-	@media all and (max-width: 600px) {
-		display: none;
-	}
-}
-
-.mac-bar {
-	display: block;
-	position: relative;
-	height: 24px;
-	width: 100%;
-	z-index: 10;
-	i {
-		height: 12px;
-		width: 12px;
-		display: inline-block;
-		border-radius: 50%;
-		position: absolute;
-		top: 6px;
-		left: 10px;
-		&:nth-child(2) {
-			left: 26px;
-		}
-		&:nth-child(3) {
-			left: 42px;
-		}
-	}
-}
-
 .avatar {
 	height: 100%;
 	width: 100%;
@@ -931,7 +862,6 @@ a.github-fork {
 		height: 100%;
 		.flex-center;
 		justify-content: center;
-		font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif, "Meiryo UI";
 		text-transform: uppercase;
 		font-weight: bold;
 	}
@@ -3774,7 +3704,6 @@ body:not(.is-cordova) {
 	header {
 		padding: 18px 0 23px;
 		p {
-			//font-family: "Muli";
 			margin: 8px 0 0;
 			font-size: 14px;
 			line-height: 22px;
@@ -4526,7 +4455,7 @@ body:not(.is-cordova) {
 	overflow-y: scroll;
 	border: none !important;
 	padding: 8px 10px !important;
-	font-family: "Source Code Pro", Monaco, monospace, Courier, "Lucida Console";
+	font-family: Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
 	font-weight: 500;
 	-webkit-user-select: text;
 	-moz-user-select: text;
