@@ -23,6 +23,8 @@ Meteor.methods
 			return false
 
 		message.alias = user.name if not message.alias? and RocketChat.settings.get 'Message_SetNameToAliasEnabled'
+		if Meteor.settings.public.sandstorm
+			message.sandstormSessionId = this.connection.sandstormSessionId()
 
 		RocketChat.sendMessage user, message, room
 
