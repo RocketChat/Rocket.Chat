@@ -171,6 +171,8 @@ RocketChat.callbacks.add('afterSaveMessage', function(message, room) {
 				});
 				return message;
 			}
+			RocketChat.Sandstorm.notify(message, [userOfMention._id],
+				'@' + user.username + ': ' + message.msg, 'privateMessage');
 		}
 
 	} else {
@@ -327,6 +329,15 @@ RocketChat.callbacks.add('afterSaveMessage', function(message, room) {
 					}
 				});
 			}
+		}
+
+		const allUserIdsToNotify = _.unique(userIdsToNotify.concat(userIdsToPushNotify));
+		if (room.t === 'p') {
+			RocketChat.Sandstorm.notify(message, allUserIdsToNotify,
+				'@' + user.username + ': ' + message.msg, 'privateMessage');
+		} else {
+			RocketChat.Sandstorm.notify(message, allUserIdsToNotify,
+				'@' + user.username + ': ' + message.msg, 'message');
 		}
 	}
 
