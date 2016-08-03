@@ -12,7 +12,6 @@ Template.messages.helpers({
 		});
 	},
 	showOptions() {
-		console.log('show ->', Template.instance().showOptions.get());
 		if (Template.instance().showOptions.get()) {
 			return 'show';
 		} else {
@@ -52,7 +51,6 @@ Template.messages.events({
 		return $(event.currentTarget).removeClass('show');
 	},
 	'click .toggle-options': function(event, instance) {
-		// Blaze.render(Template.options, $('.livechat-room').get(0));
 		instance.showOptions.set(!instance.showOptions.get());
 	}
 });
@@ -76,8 +74,6 @@ Template.messages.onCreated(function() {
 	};
 
 	$(document).click((/*event*/) => {
-		console.log('showOptions.get() ->', this.showOptions.get());
-
 		if (!this.showOptions.get()) {
 			return;
 		}

@@ -41,6 +41,6 @@ RocketChat.callbacks.add('livechat.closeRoom', (room) => {
 	return sendToCRM('closeRoom', room);
 });
 
-RocketChat.callbacks.add('livechat.saveLivechatInfo', (room) => {
+RocketChat.callbacks.add('livechat.saveInfo', (room) => {
 	return sendToCRM('saveLivechatInfo', room);
 });

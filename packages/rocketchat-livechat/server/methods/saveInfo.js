@@ -1,9 +1,9 @@
 /* eslint new-cap: [2, {"capIsNewExceptions": ["Match.ObjectIncluding", "Match.Optional"]}] */
 
 Meteor.methods({
-	'livechat:saveLivechatInfo': function(guestData, roomData) {
+	'livechat:saveInfo': function(guestData, roomData) {
 		if (!Meteor.userId() || !RocketChat.authz.hasPermission(Meteor.userId(), 'view-l-room')) {
-			throw new Meteor.Error('error-not-allowed', 'Not allowed', { method: 'livechat:saveLivechatInfo' });
+			throw new Meteor.Error('error-not-allowed', 'Not allowed', { method: 'livechat:saveInfo' });
 		}
 
 		check(guestData, Match.ObjectIncluding({
@@ -22,7 +22,7 @@ Meteor.methods({
 		const ret = RocketChat.Livechat.saveGuest(guestData) && RocketChat.Livechat.saveRoomInfo(roomData, guestData);
 
 		Meteor.defer(() => {
-			RocketChat.callbacks.run('livechat.saveLivechatInfo', RocketChat.models.Rooms.findOneById(roomData._id));
+			RocketChat.callbacks.run('livechat.saveInfo', RocketChat.models.Rooms.findOneById(roomData._id));
 		});
 
 		return ret;

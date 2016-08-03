@@ -136,8 +136,8 @@ Package.onUse(function(api) {
 	api.addFiles('server/methods/removeTrigger.js', 'server');
 	api.addFiles('server/methods/saveCustomField.js', 'server');
 	api.addFiles('server/methods/saveDepartment.js', 'server');
+	api.addFiles('server/methods/saveInfo.js', 'server');
 	api.addFiles('server/methods/saveIntegration.js', 'server');
-	api.addFiles('server/methods/saveLivechatInfo.js', 'server');
 	api.addFiles('server/methods/saveSurveyFeedback.js', 'server');
 	api.addFiles('server/methods/saveTrigger.js', 'server');
 	api.addFiles('server/methods/searchAgent.js', 'server');
