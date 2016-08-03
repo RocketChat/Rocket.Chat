@@ -114,11 +114,10 @@ Package.onUse(function(api) {
 	api.addFiles('client/views/app/triggers/livechatTriggerCondition.js', 'client');
 
 	// hooks
-	api.addFiles('server/hooks/closeRoom.js', 'server');
 	api.addFiles('server/hooks/externalMessage.js', 'server');
 	api.addFiles('server/hooks/markRoomResponded.js', 'server');
 	api.addFiles('server/hooks/offlineMessage.js', 'server');
-	api.addFiles('server/hooks/saveLivechatInfo.js', 'server');
+	api.addFiles('server/hooks/sendToCRM.js', 'server');
 
 	// methods
 	api.addFiles('server/methods/addAgent.js', 'server');
