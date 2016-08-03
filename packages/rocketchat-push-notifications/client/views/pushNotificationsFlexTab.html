@@ -73,6 +73,20 @@
 						</div>
 					</li>
 					{{/unless}}
+					<li>
+						<label>{{_ "Unread_Alert"}}</label>
+						<div>
+							{{#if editing 'unreadAlert'}}
+								<label><input type="radio" name="unreadAlert" value="all" checked="{{$eq unreadAlert 'all'}}" /> {{_ "On"}}</label>
+								<label><input type="radio" name="unreadAlert" value="nothing" checked="{{$eq unreadAlert 'nothing'}}" /> {{_ "Off"}}</label>
+								<label><input type="radio" name="unreadAlert" value="default" checked="{{$eq unreadAlert 'default'}}" /> {{_ "Use_account_preference"}}</label>
+								<button type="button" class="button secondary cancel">{{_ "Cancel"}}</button>
+								<button type="button" class="button primary save">{{_ "Save"}}</button>
+							{{else}}
+								<span>{{unreadAlertText}} <i class="icon-pencil" data-edit="unreadAlert"></i></span>
+							{{/if}}
+						</div>
+					</li>
 				</ul>
 			</form>
 		</div>
