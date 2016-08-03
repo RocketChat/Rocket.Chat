@@ -92,6 +92,7 @@ Template.membersList.helpers
 			username: Template.instance().userDetail.get()
 			clear: Template.instance().clearUserDetail
 			showAll: room?.t in ['c', 'p']
+			hideAdminControls: room?.t in ['c', 'p', 'd']
 			video: room?.t in ['d']
 		}
 
