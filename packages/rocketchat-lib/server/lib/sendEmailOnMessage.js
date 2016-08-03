@@ -5,12 +5,12 @@ RocketChat.callbacks.add('afterSaveMessage', function(message, room) {
 	}
 
 	var emailSubject, usersToSendEmail = {};
+	var directMessage = room.t === 'd';
 
-	if (room.t === 'd') {
+	if (directMessage) {
 		usersToSendEmail[message.rid.replace(message.u._id, '')] = 1;
 
 		emailSubject = TAPi18n.__('Offline_DM_Email', {
-			site: RocketChat.settings.get('Site_Name'),
 			user: message.u.username
 		});
 
@@ -22,14 +22,31 @@ RocketChat.callbacks.add('afterSaveMessage', function(message, room) {
 		}
 
 		emailSubject = TAPi18n.__('Offline_Mention_Email', {
-			site: RocketChat.settings.get('Site_Name'),
 			user: message.u.username,
 			room: room.name
 		});
 	}
 
-	// code duplicate of packages/rocketchat-ui-message/message/message.coffee
-	message.html = s.escapeHTML(message.msg);
+	var getMessageLink = () => {
+		var path = directMessage ? `direct/${ room.username }` : `channel/${ room.name }`;
+		var style = [
+			'color: #fff;',
+			'padding: .5em;',
+			'background-color: #04436a;',
+			'display: block;',
+			'width: 10em;',
+			'text-align: center;',
+			'text-decoration: none;',
+			'margin: auto;',
+			'margin-bottom: 8px;'
+		].join(' ');
+		var message = TAPi18n.__('Offline_Link_Message');
+		return `<a style="${ style }" href="${ process.env.ROOT_URL }${ path }">${ message }</a>`;
+	};
+
+	var divisorMessage = '<hr style="margin: 20px auto; border: none; border-bottom: 1px solid #dddddd;">';
+	message.html = s.escapeHTML(message.msg) + divisorMessage + getMessageLink();
+
 	message = RocketChat.callbacks.run('renderMessage', message);
 	if (message.tokens && message.tokens.length > 0) {
 		message.tokens.forEach((token) => {
@@ -67,6 +84,8 @@ RocketChat.callbacks.add('afterSaveMessage', function(message, room) {
 		var usersOfMention = RocketChat.models.Users.getUsersToSendOfflineEmail(userIdsToSendEmail).fetch();
 
 		if (usersOfMention && usersOfMention.length > 0) {
+			var siteName = RocketChat.settings.get('Site_Name');
+
 			usersOfMention.forEach((user) => {
 				if (user.settings && user.settings.preferences && user.settings.preferences.emailNotificationMode && user.settings.preferences.emailNotificationMode === 'disabled' && usersToSendEmail[user._id] !== 'force') {
 					return;
@@ -82,8 +101,8 @@ RocketChat.callbacks.add('afterSaveMessage', function(message, room) {
 						email = {
 							to: email.address,
 							from: RocketChat.settings.get('From_Email'),
-							subject: emailSubject,
-							html: '&gt; ' + message.html
+							subject: `[${ siteName }] ${ emailSubject }`,
+							html: message.html
 						};
 
 						Email.send(email);
