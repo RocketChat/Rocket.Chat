@@ -27,11 +27,17 @@ function fallbackDefaultAccountSystem(bind, username, password) {
 const CROWD = class CROWD {
 	constructor() {
 		const AtlassianCrowd = Npm.require('atlassian-crowd');
-		const self = this;
 
-		self.options = {
+		let url = RocketChat.settings.get('CROWD_URL');
+		let urlLastChar = url.slice(-1);
+
+		if (urlLastChar !== '/') {
+			url += '/';
+		}
+
+		this.options = {
 			crowd: {
-				base: RocketChat.settings.get('CROWD_URL')
+				base: url
 			},
 			application: {
 				name: RocketChat.settings.get('CROWD_APP_USERNAME'),
@@ -39,42 +45,41 @@ const CROWD = class CROWD {
 			}
 		};
 
-		self.crowdClient = new AtlassianCrowd(self.options);
+		this.crowdClient = new AtlassianCrowd(this.options);
 
-		self.crowdClient.user.authenticateSync = Meteor.wrapAsync(self.crowdClient.user.authenticate, self);
-		self.crowdClient.user.findSync = Meteor.wrapAsync(self.crowdClient.user.find, self);
+		this.crowdClient.user.authenticateSync = Meteor.wrapAsync(this.crowdClient.user.authenticate, this);
+		this.crowdClient.user.findSync = Meteor.wrapAsync(this.crowdClient.user.find, this);
+		this.crowdClient.pingSync = Meteor.wrapAsync(this.crowdClient.ping, this);
+	}
+
+	checkConnection() {
+		this.crowdClient.pingSync();
 	}
 
 	authenticate(username, password) {
-		const self = this;
-
 		if (!username || !password) {
 			logger.error('No username or password');
 			return;
 		}
 
-		try {
-			logger.info('Going to crowd:', username);
-			const auth = self.crowdClient.user.authenticateSync(username, password);
+		logger.info('Going to crowd:', username);
+		const auth = this.crowdClient.user.authenticateSync(username, password);
 
-			if (!auth) {
-				return;
-			}
-
-			const userResponse = self.crowdClient.user.findSync(username);
-
-			const user = {
-				displayname: userResponse['display-name'],
-				username: userResponse.name,
-				email: userResponse.email,
-				password: password,
-				active: userResponse.active
-			};
-
-			return user;
-		} catch (error) {
-			logger.info('Crowd had an issue or the user didnt authenticate');
+		if (!auth) {
+			return;
 		}
+
+		const userResponse = this.crowdClient.user.findSync(username);
+
+		const user = {
+			displayname: userResponse['display-name'],
+			username: userResponse.name,
+			email: userResponse.email,
+			password: password,
+			active: userResponse.active
+		};
+
+		return user;
 	}
 
 	syncDataToUser(crowdUser, id) {
@@ -103,26 +108,26 @@ const CROWD = class CROWD {
 		logger.info('Sync started');
 
 		const users = RocketChat.models.Users.findCrowdUsers();
-		users.forEach(function(user) {
-			logger.info('Syncing user', user.username);
-			const userResponse = self.crowdClient.user.findSync(user.username);
-			if (userResponse) {
-				const crowdUser = {
-					displayname: userResponse['display-name'],
-					username: userResponse.name,
-					email: userResponse.email,
-					password: userResponse.password,
-					active: userResponse.active
-				};
+		if (users) {
+			users.forEach(function(user) {
+				logger.info('Syncing user', user.username);
+				const userResponse = self.crowdClient.user.findSync(user.username);
+				if (userResponse) {
+					const crowdUser = {
+						displayname: userResponse['display-name'],
+						username: userResponse.name,
+						email: userResponse.email,
+						password: userResponse.password,
+						active: userResponse.active
+					};
 
-				self.syncDataToUser(crowdUser, user._id);
-			}
-		});
+					self.syncDataToUser(crowdUser, user._id);
+				}
+			});
+		}
 	}
 
 	addNewUser(crowdUser) {
-		var self = this;
-
 		var userQuery = {
 			crowd: true,
 			username: crowdUser.username
@@ -140,7 +145,7 @@ const CROWD = class CROWD {
 				}
 			});
 
-			self.syncDataToUser(crowdUser, user._id);
+			this.syncDataToUser(crowdUser, user._id);
 
 			return {
 				userId: user._id,
@@ -176,7 +181,12 @@ const CROWD = class CROWD {
 
 Accounts.registerLoginHandler('crowd', function(loginRequest) {
 	const crowd = new CROWD();
-	let user = crowd.authenticate(loginRequest.username, loginRequest.crowdPassword);
+	let user;
+	try {
+		user = crowd.authenticate(loginRequest.username, loginRequest.crowdPassword);
+	} catch (error) {
+		logger.error('Crowd user not authenticated due to an error, falling back');
+	}
 
 	if (!user) {
 		return fallbackDefaultAccountSystem(this, loginRequest.username, loginRequest.crowdPassword);
@@ -201,5 +211,36 @@ RocketChat.settings.get('CROWD_Sync_User_Data', function(key, value) {
 		}, 1000 * 30);
 	} else {
 		logger.info('Disabling CROWD user sync');
+	}
+});
+
+Meteor.methods({
+	crowd_test_connection:function() {
+		const user = Meteor.user();
+		if (!user) {
+			throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'crowd_test_connection' });
+		}
+
+		if (!RocketChat.authz.hasRole(user._id, 'admin')) {
+			throw new Meteor.Error('error-not-authorized', 'Not authorized', { method: 'crowd_test_connection' });
+		}
+
+		if (RocketChat.settings.get('CROWD_Enable') !== true) {
+			throw new Meteor.Error('crowd_disabled');
+		}
+
+		let crowd = new CROWD();
+
+		try {
+			crowd.checkConnection();
+		} catch (error) {
+			logger.error('Invalid crowd connection details, check the url and application username/password and make sure this server is allowed to speak to crowd');
+			throw new Meteor.Error('Invalid connection details', '', { method: 'crowd_test_connection' });
+		}
+
+		return {
+			message: 'Connection success',
+			params: []
+		};
 	}
 });
