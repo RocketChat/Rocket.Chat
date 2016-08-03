@@ -54,6 +54,20 @@ RocketChat.models.Subscriptions.updateEmailNotificationsById = function(_id, ema
 	return this.update(query, update);
 };
 
+RocketChat.models.Subscriptions.updateUnreadAlertById = function(_id, unreadAlert) {
+	const query = {
+		_id: _id
+	};
+
+	const update = {
+		$set: {
+			unreadAlert,
+		}
+	};
+
+	return this.update(query, update);
+};
+
 RocketChat.models.Subscriptions.findAlwaysNotifyDesktopUsersByRoomId = function(roomId) {
 	const query = {
 		rid: roomId,
