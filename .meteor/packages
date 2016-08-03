@@ -69,6 +69,7 @@ rocketchat:markdown
 rocketchat:mentions
 rocketchat:mentions-flextab
 rocketchat:message-attachments
+rocketchat:message-mark-as-unread
 rocketchat:message-pin
 rocketchat:message-star
 rocketchat:migrations
@@ -78,6 +79,7 @@ rocketchat:otr
 rocketchat:piwik
 rocketchat:push-notifications
 rocketchat:reactions
+rocketchat:sandstorm
 rocketchat:slackbridge
 rocketchat:slashcommands-archive
 rocketchat:slashcommands-asciiarts

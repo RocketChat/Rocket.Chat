@@ -1,5 +1,81 @@
 ## NEXT
 
+## 0.36.0, 2016-Ago-02
+
+### Core updates
+
+* Add ids for all afterSaveMessage callbacks
+* Clear cache on logout and after 30 days out of date
+* Remove observe for messages
+* Use events insted of observers for streams
+
+### Livechat
+
+* Add autocomplete feature to livechat user management
+* Add livechat Guest Pool queue method (#3507)
+* Add option to accept livechats even if no agents online
+* Add option to choose what to monitor for livechat history tracking
+* Add room label to livechat history list
+* Allow livechat managers to manage a livechat session
+* Fix livechat trigger being triggered multiple times
+* Forward livechat rooms
+* Forward open livechat rooms from agent when he goes offline
+* New livechat API setTheme
+* New page to see the current livechat queue
+* Show user status for livechat rooms
+
+### Translation updates
+
+* Fix "Show_only_online" link bug in french (#3725)
+* Fix some japanese translations (#3873)
+* Fix translation placeholders (#3650)
+
+### General updates
+
+* Add "mark as unread" feature
+* Add auto-closing right sidebar #3713 (#3720)
+* Add ctrl key and alt key to ignoring keys which send/update message
+* Add editable channel descriptions (#3705)
+* Add EVE online sso support (#3389)
+* Add filter to allow/deny @all (#3703)
+* Add hide avatars setting to user preferences
+* Add missing roles verification to direct messages (#3672)
+* Add on the fly video recording and uploading
+* Add safe ports settings for embed
+* Add settings for desktop notification durations for each rooms
+* Add slash command for open rooms
+* Add SSL option for Jitsi
+* Add the ability to add an icon with the actionLink
+* Add user preference for desktop notification duration
+* Added messageType and actionLink to join call. Fixed timeout issues
+* Adding Rocket.Chat templates to deploy on OpenShift
+* Adds option of colors into tabbar
+* Allow actionLinks server side as well as client side
+* Allow Jitsi for Channels
+* Allow multiple attachment fields which wrap round
+* Allow slashcommands to be created client-side.
+* Calls callback also on success (#3690)
+* Clicking own avatar in a private meeesage shows the other person's profile
+* Collapse attachment fields
+* Deeper analytics for Piwik
+* Don't consider invalid commands as messages (#3698)
+* Fix attachment absolute URL
+* Fix invalid role error msg when removing user from room (#3878)
+* Fix multiple issues when searching for users and rooms (#3850)
+* Fix params to call channelsList (#3687)
+* Fix sandstorm WebRTC (#3675)
+* Fix tableflip emoji
+* Fix to subdir images (#3695)
+* Include alias and bot values in outgoing webhook. (#3805)
+* KaTeX: Allow enabling \[KaTeX\] and $$KaTeX$$ syntaxes separately
+* Only re-enter a password if change a email or password (#3710)
+* Require admin role to send emails to users.
+* Show name and username in results (name if available)
+* Test notification use User preferences duration
+* Update accounts-sandstorm to 0.4.1 (#3716)
+* Update emojione to 2.2.5 (#3736)
+* Update hubot version to v.0.1.4
+
 ## 0.35.0, 2016-Jun-28
 
 - Add a list of reserved usernames
