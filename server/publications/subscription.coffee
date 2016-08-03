@@ -16,6 +16,7 @@ fields =
 	desktopNotificationDuration: 1
 	mobilePushNotifications: 1
 	emailNotifications: 1
+	unreadAlert: 1
 	_updatedAt: 1
 
 
