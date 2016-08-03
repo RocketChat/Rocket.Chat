@@ -3,6 +3,7 @@
 		$('.spotlight').addClass('hidden')
 
 	show: ->
+		$('.spotlight input').val('')
 		$('.spotlight').removeClass('hidden')
 		$('.spotlight input').focus()
 
@@ -22,7 +23,7 @@ Template.spotlight.helpers
 			getFilter: (collection, filter) ->
 				exp = new RegExp("#{RegExp.escape filter}", 'i')
 
-				return collection.find({name: exp}, {limit: 10, sort: {unread: -1, ls: -1}}).fetch()
+				return collection.find({name: exp, rid: {$ne: Session.get('openedRoom')}}, {limit: 10, sort: {unread: -1, ls: -1}}).fetch()
 
 			getValue: (_id, collection, firstPartValue) ->
 				doc = collection.findOne(_id)
