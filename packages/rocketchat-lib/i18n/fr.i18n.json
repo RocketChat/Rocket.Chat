@@ -767,7 +767,7 @@
   "Offline_DM_Email" : "|__site__] Vous avez reçu des messages privés de __user__",
   "Offline_form" : "forme Hors ligne",
   "Offline_form_unavailable_message" : "forme Offline Message indisponible",
-  "Offline_Mention_Email" : "[__site__] Vous avez été mentionné par __user__ dans le salon #__room__",
+  "Offline_Mention_Email" : "Vous avez été mentionné par __user__ dans le salon #__room__",
   "Offline_message" : "un message Hors ligne",
   "Offline_success_message" : "message de succès hors ligne",
   "Offline_unavailable" : "Offline indisponible",
