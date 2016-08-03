@@ -8,7 +8,7 @@ RocketChat.authz.removeUserFromRoles = (userId, roleNames, scope) ->
 
 	roleNames = [].concat roleNames
 
-	existingRoleNames = _.pluck(RocketChat.authz.getRoles(), 'name')
+	existingRoleNames = _.pluck(RocketChat.authz.getRoles(), '_id')
 	invalidRoleNames = _.difference(roleNames, existingRoleNames)
 	unless _.isEmpty(invalidRoleNames)
 		throw new Meteor.Error 'error-invalid-role', 'Invalid role', { function: 'RocketChat.authz.removeUserFromRoles' }
