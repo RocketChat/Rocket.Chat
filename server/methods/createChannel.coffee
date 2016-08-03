@@ -1,5 +1,5 @@
 Meteor.methods
-	createChannel: (name, members) ->
+	createChannel: (name, members, readOnly) ->
 		if not Meteor.userId()
 			throw new Meteor.Error 'error-invalid-user', "Invalid user", { method: 'createChannel' }
 
@@ -32,6 +32,8 @@ Meteor.methods
 			t: 'c'
 			name: name
 			ts: now
+			ro: readOnly is true
+			sysMes: readOnly isnt true
 			usernames: members
 			u:
 				_id: user._id
@@ -40,6 +42,8 @@ Meteor.methods
 		# create new room
 		room = RocketChat.models.Rooms.createWithTypeNameUserAndUsernames 'c', name, user, members,
 			ts: now
+			ro: readOnly is true
+			sysMes: readOnly isnt true
 
 		for username in members
 			member = RocketChat.models.Users.findOneByUsername username

@@ -28,7 +28,10 @@ Meteor.methods
 
 		newUser = RocketChat.models.Users.findOneByUsername data.username
 
-		RocketChat.models.Rooms.addUsernameById data.rid, data.username
+		if room.ro and not RocketChat.authz.hasPermission(newUser._id, 'post-read-only')
+			RocketChat.models.Rooms.addUsernameByIdAndMute data.rid, data.username
+		else
+			RocketChat.models.Rooms.addUsernameById data.rid, data.username
 
 		now = new Date()
 
