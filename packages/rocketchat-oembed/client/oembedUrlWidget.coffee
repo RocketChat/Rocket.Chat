@@ -18,11 +18,11 @@ getDescription = (self) ->
 Template.oembedUrlWidget.helpers
 	description: ->
 		description = getDescription this
-		return new Handlebars.SafeString description if _.isString description
+		return Blaze._escape(description) if _.isString description
 
 	title: ->
 		title = getTitle this
-		return new Handlebars.SafeString title if _.isString title
+		return Blaze._escape(title) if _.isString title
 
 	target: ->
 		if not this.parsedUrl?.host || !document?.location?.host || this.parsedUrl.host isnt document.location.host

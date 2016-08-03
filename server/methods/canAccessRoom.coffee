@@ -8,12 +8,12 @@ Meteor.methods
 		unless rid
 			throw new Meteor.Error 'error-invalid-room', 'Invalid room', { method: 'canAccessRoom' }
 
-		room = RocketChat.models.Rooms.findOneById rid, { fields: { usernames: 1, t: 1, name: 1, muted: 1, sms: 1, v: 1 } }
+		room = RocketChat.models.Rooms.findOneById rid
 
 		if room
 			if RocketChat.authz.canAccessRoom.call(this, room, user)
 				room.username = user.username
-				return _.pick room, ['_id', 't', 'name', 'usernames', 'username', 'muted', 'sms', 'v']
+				return room
 			else
 				return false
 		else

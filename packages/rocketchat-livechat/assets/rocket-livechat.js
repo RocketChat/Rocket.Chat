@@ -71,6 +71,10 @@
 		callHook('setCustomField', [ key, value ]);
 	};
 
+	var setTheme = function(theme) {
+		callHook('setTheme', theme);
+	};
+
 	var currentPage = {
 		href: null,
 		title: null
@@ -163,7 +167,8 @@
 	// exports
 	w.RocketChat.livechat = {
 		pageVisited: pageVisited,
-		setCustomField: setCustomField
+		setCustomField: setCustomField,
+		setTheme: setTheme
 	};
 
 	// proccess queue

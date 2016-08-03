@@ -7,6 +7,7 @@
   "How_responsive_was_the_chat_agent" : "Jak szybko reagował nasz agent?",
   "How_satisfied_were_you_with_this_chat" : "Jak bardzo byłeś/aś zadowolony/a z tej rozmowy?",
   "Installation" : "Instalacja",
+  "New_messages" : "Nowe wiadomości",
   "Please_answer_survey" : "Proszę poświęć chwilę, aby odpowiedzieć na krótką ankietę na temat tej rozmowy",
   "Please_fill_name_and_email" : "Proszę wypełnić nazwisko i adres e-mail",
   "Powered_by" : "Dostarczane przez",
@@ -17,12 +18,12 @@
   "Survey" : "Ankieta",
   "Survey_instructions" : "Oceń każde pytanie zgodnie z zadowolenia, 1 co oznacza, że są całkowicie niedosyt i 5 co oznacza, że są w pełni zadowoleni.",
   "Thank_you_for_your_feedback" : "Dziękujemy za twoją opinię",
-  "Thanks_We_ll_get_back_to_you_soon" : "Dzięki! Będziemy wracać do ciebie szybko.",
+  "Thanks_We_ll_get_back_to_you_soon" : "Dziękujemy! Odezwiemy się do Ciebie wkrótce.",
   "Type_your_email" : "Wpisz swój e-mail",
   "Type_your_message" : "Wpisz wiadomość",
   "Type_your_name" : "Wpisz swoje imię i nazwisko",
-  "User_joined" : "użytkownik dołączył",
-  "User_left" : "lewa użytkownika",
+  "User_joined" : "Użytkownik dołączył",
+  "User_left" : "Użytkownik wyszedł",
   "We_are_offline_Sorry_for_the_inconvenience" : "Jesteśmy offline. Przepraszamy za niedogodności.",
   "You_must_complete_all_fields" : "Musisz wypełnić wszystkie pola"
 }
