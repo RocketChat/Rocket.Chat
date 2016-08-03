@@ -126,6 +126,8 @@
   "Agent_added" : "Agent added",
   "Agent_removed" : "Agent removed",
   "Alias" : "Alias",
+  "Alias_Format": "Alias format",
+  "Alias_Format_Description": "Import messages from Slack with an alias; %s is replaced by the username of the user. If empty, no alias will be used.",
   "All" : "All",
   "All_channels" : "All channels",
   "All_logs" : "All logs",
