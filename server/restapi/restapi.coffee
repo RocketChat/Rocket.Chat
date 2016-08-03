@@ -420,3 +420,26 @@ Api.addRoute 'removeOutgoingWebhook', authRequired: true,
 				console.log '[restapi] api/outgoingWebhooks -> '.red, "User does not have 'bulk-create-c' permission"
 				statusCode: 403
 				body: status: 'error', message: 'You do not have permission to do this'
+				
+Api.addRoute 'createDirectMessage', authRequired: true,
+	post:
+		#roleRequired: ['testagent', 'adminautomation']
+		action: ->
+			a=@bodyParams.username
+			# user must also have create-c permission 
+			if RocketChat.authz.hasPermission(@userId, 'bulk-create-c')
+				try
+					this.response.setTimeout (1000)
+					Meteor.runAsUser this.userId, () =>
+						Meteor.call 'createDirectMessage', @bodyParams.username
+					status: 'success', created : @bodyParams.username
+				catch e
+					statusCode:400 # bad request
+					body: status: 'bad request missing pramas ' + @bodyParams.username, message: e.name + ':: ' + e.message
+			else 
+				console.log '[restapi] api/createDirectMessage -> '.red, "User does not have 'bulk-create-c' permission"
+				statusCode: 403
+				body: status: 'error', message: 'You do not have permission to do this'
+					
+					
+		
