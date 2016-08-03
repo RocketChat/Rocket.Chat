@@ -40,7 +40,8 @@ RocketChat.callbacks.add('afterSaveMessage', function(message, room) {
 			'margin: auto;',
 			'margin-bottom: 8px;'
 		].join(' ');
-		return `<a style="${ style }" href="${ process.env.ROOT_URL }${ path }">GO TO MESSAGE</a>`;
+		var message = TAPi18n.__('Offline_Link_Message');
+		return `<a style="${ style }" href="${ process.env.ROOT_URL }${ path }">${ message }</a>`;
 	};
 
 	var divisorMessage = '<hr style="margin: 20px auto; border: none; border-bottom: 1px solid #dddddd;">';
