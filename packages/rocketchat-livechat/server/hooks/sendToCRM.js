@@ -1,10 +1,15 @@
-RocketChat.callbacks.add('livechat.closeRoom', (room) => {
+function sendToCRM(hook, room) {
 	if (!RocketChat.settings.get('Livechat_webhook_on_close')) {
 		return room;
 	}
 
 	let postData = RocketChat.Livechat.getLivechatRoomGuestInfo(room);
-	postData.type = 'LivechatSession';
+	if (hook === 'closeRoom') {
+		postData.type = 'LivechatSession';
+	} else if (hook === 'saveLivechatInfo') {
+		postData.type = 'LivechatEdit';
+	}
+
 	postData.messages = [];
 
 	RocketChat.models.Messages.findVisibleByRoomId(room._id, { sort: { ts: 1 } }).forEach((message) => {
@@ -30,4 +35,12 @@ RocketChat.callbacks.add('livechat.closeRoom', (room) => {
 	}
 
 	return room;
+}
+
+RocketChat.callbacks.add('livechat.closeRoom', (room) => {
+	return sendToCRM('closeRoom', room);
+});
+
+RocketChat.callbacks.add('livechat.saveLivechatInfo', (room) => {
+	return sendToCRM('saveLivechatInfo', room);
 });
