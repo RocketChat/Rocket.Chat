@@ -4,6 +4,7 @@ class SlackBridge {
 	constructor() {
 		this.slackClient = Npm.require('slack-client');
 		this.apiToken = RocketChat.settings.get('SlackBridge_APIToken');
+		this.excludeBotnames = RocketChat.settings.get('SlackBridge_Botnames');
 		this.rtm = {};
 		this.connected = false;
 		this.userTags = {};
@@ -24,6 +25,10 @@ class SlackBridge {
 			} else {
 				this.disconnect();
 			}
+		});
+
+		RocketChat.settings.onload('SlackBridge_ExcludeBotnames', (key, value) => {
+			this.excludeBotnames = value;
 		});
 	}
 
@@ -234,6 +239,10 @@ class SlackBridge {
 		let msgObj = null;
 		switch (message.subtype) {
 			case 'bot_message':
+				if (message.username !== undefined && this.excludeBotnames && message.username.match(this.excludeBotnames)) {
+					return;
+				}
+
 				msgObj = {
 					msg: this.convertSlackMessageToRocketChat(message.text),
 					rid: room._id,
@@ -244,7 +253,7 @@ class SlackBridge {
 				if (message.icons) {
 					msgObj.emoji = message.icons.emoji;
 				}
-				break;
+				return msgObj;
 			case 'me_message':
 				return {
 					msg: `_${this.convertSlackMessageToRocketChat(message.text)}_`
