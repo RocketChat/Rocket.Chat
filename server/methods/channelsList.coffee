@@ -1,5 +1,7 @@
 Meteor.methods
 	channelsList: (filter, channelType, limit, sort) ->
+		this.unblock()
+
 		if not Meteor.userId()
 			throw new Meteor.Error 'error-invalid-user', 'Invalid user', { method: 'channelsList' }
 
