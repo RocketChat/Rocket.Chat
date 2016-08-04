@@ -25,7 +25,7 @@ RocketChat.roomTypes.add 'c', 10,
 
 RocketChat.roomTypes.add 'd', 20,
 	template: 'directMessages'
-	icon: 'icon-circle'
+	icon: 'icon-at'
 	route:
 		name: 'direct'
 		path: '/direct/:username'
