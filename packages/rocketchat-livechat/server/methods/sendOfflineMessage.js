@@ -37,7 +37,7 @@ Meteor.methods({
 		});
 
 		Meteor.defer(() => {
-			RocketChat.callbacks.run('sendOfflineLivechatMessage', data);
+			RocketChat.callbacks.run('livechat.offlineMessage', data);
 		});
 
 		return true;

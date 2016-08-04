@@ -101,6 +101,15 @@ RocketChat.models.Rooms.findByVisitorId = function(visitorId) {
 	return this.find(query);
 };
 
+RocketChat.models.Rooms.findOneOpenByVisitorId = function(visitorId) {
+	const query = {
+		open: true,
+		'v._id': visitorId
+	};
+
+	return this.findOne(query);
+};
+
 RocketChat.models.Rooms.setResponseByRoomId = function(roomId, response) {
 	return this.update({
 		_id: roomId
@@ -165,4 +174,17 @@ RocketChat.models.Rooms.changeAgentByRoomId = function(roomId, newUsernames, new
 	};
 
 	this.update(query, update);
+};
+
+RocketChat.models.Rooms.saveCRMDataByRoomId = function(roomId, crmData) {
+	const query = {
+		_id: roomId
+	};
+	const update = {
+		$set: {
+			crmData
+		}
+	};
+
+	return this.update(query, update);
 };
