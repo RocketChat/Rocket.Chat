@@ -1,8 +1,7 @@
 Package.describe({
 	name: 'rocketchat:mapview',
 	version: '0.0.1',
-	summary: 'Message pre-processor that will translate geolocation to maps on messages',
-	git: ''
+	summary: 'Message pre-processor that will translate geolocation to maps on messages'
 });
 
 Package.onUse(function(api) {
@@ -12,7 +11,9 @@ Package.onUse(function(api) {
 		'coffeescript',
 		'rocketchat:lib'
 	]);
-
+	
+	api.use('templating', 'client');
+	
 	api.addFiles([
 		'mapview.coffee'
 	], ['client']);

@@ -159,6 +159,7 @@ rocketchat:lib@0.0.1
 rocketchat:livechat@0.0.1
 rocketchat:logger@0.0.1
 rocketchat:mailer@0.0.1
+rocketchat:mapview@0.0.1
 rocketchat:markdown@0.0.1
 rocketchat:mentions@0.0.1
 rocketchat:mentions-flextab@0.0.1
