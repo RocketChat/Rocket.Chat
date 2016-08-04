@@ -71,6 +71,41 @@ RocketChat.roomTypes = new class
 	findRoom = (roomType, identifier, user) ->
 		return roomTypes[roomType]?.findRoom identifier, user
 
+	canSendMessage = (roomId) ->
+		return ChatSubscription.find({ rid: roomId }).count() > 0
+
+	verifyCanSendMessage = (roomId) ->
+		room = ChatRoom.findOne({ _id: roomId }, { fields: { t: 1 } })
+		return if not room?.t?
+
+		roomType = room.t
+
+		return roomTypes[roomType]?.canSendMessage roomId if roomTypes[roomType]?.canSendMessage?
+
+		return canSendMessage roomId
+
+	verifyShowJoinLink = (roomId) ->
+		room = ChatRoom.findOne({ _id: roomId }, { fields: { t: 1 } })
+		return if not room?.t?
+
+		roomType = room.t
+
+		if not roomTypes[roomType]?.showJoinLink?
+			return false
+
+		return roomTypes[roomType].showJoinLink roomId
+
+	getNotSubscribedTpl = (roomId) ->
+		room = ChatRoom.findOne({ _id: roomId }, { fields: { t: 1 } })
+		return if not room?.t?
+
+		roomType = room.t
+
+		if not roomTypes[roomType]?.notSubscribedTpl?
+			return false
+
+		return roomTypes[roomType].notSubscribedTpl
+
 	# addType: addType
 	getTypes: getAllTypes
 	getIdentifiers: getIdentifiers
@@ -85,5 +120,9 @@ RocketChat.roomTypes = new class
 	getRouteLink: getRouteLink
 
 	checkCondition: checkCondition
+
+	verifyCanSendMessage: verifyCanSendMessage
+	verifyShowJoinLink: verifyShowJoinLink
+	getNotSubscribedTpl: getNotSubscribedTpl
 
 	add: add
