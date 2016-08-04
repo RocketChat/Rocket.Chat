@@ -14,4 +14,4 @@ class ColorsClient
 			message.html = msg
 		return message
 
-RocketChat.callbacks.add 'renderMessage', ColorsClient, RocketChat.callbacks.priority.MEDIUM
+RocketChat.callbacks.add 'renderMessage', ColorsClient, RocketChat.callbacks.priority.MEDIUM, 'colors'

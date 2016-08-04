@@ -39,8 +39,8 @@ function sendToCRM(hook, room) {
 
 RocketChat.callbacks.add('livechat.closeRoom', (room) => {
 	return sendToCRM('closeRoom', room);
-});
+}, RocketChat.callbacks.priority.MEDIUM, 'livechat-send-crm-close-room');
 
 RocketChat.callbacks.add('livechat.saveInfo', (room) => {
 	return sendToCRM('saveLivechatInfo', room);
-});
+}, RocketChat.callbacks.priority.MEDIUM, 'livechat-send-crm-save-info');

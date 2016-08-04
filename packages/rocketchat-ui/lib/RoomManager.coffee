@@ -251,3 +251,4 @@ Tracker.autorun ->
 
 RocketChat.callbacks.add 'afterLogoutCleanUp', ->
 	RoomManager.closeAllRooms()
+, RocketChat.callbacks.priority.MEDIUM, 'roommanager-after-logout-cleanup'
