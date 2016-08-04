@@ -55,7 +55,12 @@ FileUpload.addHandler(storeName, {
 			let stat = Meteor.wrapAsync(fs.stat)(filePath);
 
 			if (stat && stat.isFile()) {
-				res.setHeader('Content-Disposition', 'attachment; filename="' + encodeURIComponent(file.name) + '"');
+				let filename = file.name;
+				const ext = FileUpload.mime2ext(file.type);
+				if (-1 === filename.lastIndexOf(ext)) {
+					filename += ext;
+				}
+				res.setHeader('Content-Disposition', 'attachment; filename="' + encodeURIComponent(filename) + '"');
 				res.setHeader('Last-Modified', file.uploadedAt.toUTCString());
 				res.setHeader('Content-Type', file.type);
 				res.setHeader('Content-Length', file.size);

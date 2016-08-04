@@ -26,3 +26,17 @@ FileUpload.get = function(file, req, res, next) {
 		return;
 	}
 };
+
+FileUpload.mime2ext = function(mimetype) {
+	const m2e = {
+		'audio/wav': '.wav',
+		'image/bmp': '.bmp',
+		'image/gif': '.gif',
+		'image/jpeg': '.jpg',
+		'image/png': '.png',
+		'text/css': '.css',
+		'text/html': '.html',
+		'text/plain': '.txt'
+	};
+	return m2e[mimetype] || '';
+};

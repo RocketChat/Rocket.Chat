@@ -47,8 +47,13 @@ var readFromGridFS = function(storeName, fileId, file, headers, req, res) {
 
 FileUpload.addHandler('rocketchat_uploads', {
 	get(file, req, res) {
+		let filename = file.name;
+		const ext = FileUpload.mime2ext(file.type);
+		if (-1 === filename.lastIndexOf(ext)) {
+			filename += ext;
+		}
 		let headers = {
-			'Content-Disposition': 'attachment; filename="' + encodeURIComponent(file.name) + '"',
+			'Content-Disposition': 'attachment; filename="' + encodeURIComponent(filename) + '"',
 			'Last-Modified': file.uploadedAt.toUTCString(),
 			'Content-Type': file.type,
 			'Content-Length': file.size
