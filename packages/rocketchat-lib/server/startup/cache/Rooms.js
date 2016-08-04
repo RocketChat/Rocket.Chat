@@ -133,7 +133,7 @@ RocketChat.cache.Rooms = new (class CacheRoom extends RocketChat.cache._Base {
 			if (type.username) {
 				obj.usernames = {
 					$contains: type.username
-				}
+				};
 			}
 
 			if (type.ids) {
