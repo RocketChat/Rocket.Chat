@@ -46,4 +46,4 @@ class AutoLinker
 
 		return message
 
-RocketChat.callbacks.add 'renderMessage', AutoLinker
+RocketChat.callbacks.add 'renderMessage', AutoLinker, RocketChat.callbacks.priority.MEDIUM, 'autolinker'
