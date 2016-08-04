@@ -38,6 +38,9 @@ Meteor.methods
 			else
 				delete preferences.mergeChannels
 
+			if settings.unreadAlert?
+				preferences.unreadAlert = if settings.unreadAlert is "1" then true else false
+
 			preferences.desktopNotificationDuration = settings.desktopNotificationDuration - 0
 			preferences.viewMode = settings.viewMode || 0
 			preferences.hideUsernames = settings.hideUsernames is "1"
