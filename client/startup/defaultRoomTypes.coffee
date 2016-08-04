@@ -22,6 +22,8 @@ RocketChat.roomTypes.add 'c', 10,
 		return roomData.name
 	condition: ->
 		return RocketChat.authz.hasAtLeastOnePermission ['view-c-room', 'view-joined-room']
+	showJoinLink: (roomId) ->
+		return !! ChatRoom.findOne { _id: roomId, t: 'c' }
 
 RocketChat.roomTypes.add 'd', 20,
 	template: 'directMessages'

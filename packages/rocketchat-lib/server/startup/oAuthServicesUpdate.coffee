@@ -31,6 +31,7 @@ OAuthServicesUpdate = ->
 					data.tokenPath = RocketChat.models.Settings.findOneById("#{service._id}_token_path")?.value
 					data.identityPath = RocketChat.models.Settings.findOneById("#{service._id}_identity_path")?.value
 					data.authorizePath = RocketChat.models.Settings.findOneById("#{service._id}_authorize_path")?.value
+					data.scope = RocketChat.models.Settings.findOneById("#{service._id}_scope")?.value
 					data.buttonLabelText = RocketChat.models.Settings.findOneById("#{service._id}_button_label_text")?.value
 					data.buttonLabelColor = RocketChat.models.Settings.findOneById("#{service._id}_button_label_color")?.value
 					data.loginStyle = RocketChat.models.Settings.findOneById("#{service._id}_login_style")?.value
@@ -41,6 +42,7 @@ OAuthServicesUpdate = ->
 						tokenPath: data.tokenPath
 						identityPath: data.identityPath
 						authorizePath: data.authorizePath
+						scope: data.scope
 						loginStyle: data.loginStyle
 						tokenSentVia: data.tokenSentVia
 

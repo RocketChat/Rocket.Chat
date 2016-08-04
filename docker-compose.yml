@@ -13,6 +13,9 @@ rocketchat:
     - PORT=3000
     - ROOT_URL=http://yourhost:3000
     - MONGO_URL=mongodb://mongo:27017/rocketchat
+    - MAIL_URL=smtp://smtp.email
+    - HTTP_PROXY=http://proxy.domain.com
+    - HTTPS_PROXY=http://proxy.domain.com
   links:
     - mongo:mongo
   ports:
