@@ -20,11 +20,11 @@ Meteor.methods({
 			}
 
 			return record._user.status !== 'offline';
-		}
+		};
 
 		const map = (record) => {
 			return record._user.username;
-		}
+		};
 
 		const records = RocketChat.cache.Subscriptions.findByIndex('rid', roomId).fetch();
 

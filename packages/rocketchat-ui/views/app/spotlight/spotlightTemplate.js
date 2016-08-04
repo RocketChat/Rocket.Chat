@@ -9,4 +9,4 @@ Template.spotlightTemplate.helpers({
 		}
 		return 'status-offline';
 	}
-})
+});
