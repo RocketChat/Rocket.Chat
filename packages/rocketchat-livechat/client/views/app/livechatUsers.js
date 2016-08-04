@@ -32,7 +32,7 @@ Template.livechatUsers.helpers({
 					exceptions: _.map(AgentUsers.find({}, { fields: { username: 1 } }).fetch(), user => { return user.username; })
 				},
 				selector(match) {
-					return { username: match };
+					return { term: match };
 				},
 				sort: 'username'
 			}]
@@ -54,7 +54,7 @@ Template.livechatUsers.helpers({
 					exceptions: _.map(ManagerUsers.find({}, { fields: { username: 1 } }).fetch(), user => { return user.username; })
 				},
 				selector(match) {
-					return { username: match };
+					return { term: match };
 				},
 				sort: 'username'
 			}]
