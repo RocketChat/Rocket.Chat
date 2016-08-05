@@ -98,7 +98,6 @@ Meteor.methods
 			#update user
 			updateUser = {
 				$set: {
-					name: userData.name,
 					requirePasswordChange: userData.requirePasswordChange
 				}
 			}
@@ -108,6 +107,7 @@ Meteor.methods
 				updateUser.$set['emails.0.verified'] = false
 
 			Meteor.users.update { _id: userData._id }, updateUser
+			RocketChat.setName userData._id, userData.name
 			RocketChat.setUsername userData._id, userData.username
 			RocketChat.setEmail userData._id, userData.email
 
