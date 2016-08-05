@@ -18,8 +18,11 @@ Meteor.methods
 
 		if not to
 			throw new Meteor.Error 'error-invalid-user', "Invalid user", { method: 'createDirectMessage' }
-
-		rid = [me._id, to._id].sort().join('')
+			
+		# add time stamp to create unquie RID if DM room is ever deleted and recreated
+		timeStamp = new Date().getTime()
+		
+		rid = [me._id, to._id].sort().join('')+timeStamp
 
 		now = new Date()
 
