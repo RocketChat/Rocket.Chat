@@ -962,6 +962,7 @@
   "SAML_Custom_Generate_Username" : "Generate Username",
   "SAML_Custom_Issuer" : "Custom Issuer",
   "SAML_Custom_Provider" : "Custom Provider",
+  "Sandstorm_Powerbox_Share" : "Share a Sandstorm grain",
   "Save" : "Save",
   "Save_changes" : "Save changes",
   "Save_Mobile_Bandwidth" : "Save Mobile Bandwidth",
