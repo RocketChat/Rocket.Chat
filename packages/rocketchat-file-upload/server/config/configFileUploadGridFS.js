@@ -1,7 +1,6 @@
 /* globals FileUpload, UploadFS */
 var stream = Npm.require('stream');
 var zlib = Npm.require('zlib');
-const mime = Npm.require('mime-types');
 
 // code from: https://github.com/jalik/jalik-ufs/blob/master/ufs-server.js#L91
 var readFromGridFS = function(storeName, fileId, file, headers, req, res) {
@@ -48,13 +47,9 @@ var readFromGridFS = function(storeName, fileId, file, headers, req, res) {
 
 FileUpload.addHandler('rocketchat_uploads', {
 	get(file, req, res) {
-		let filename = file.name;
-		const ext = mime.extension(file.type);
-		if (false === new RegExp(`\.${ext}$`, 'i').test(filename)) {
-			filename += `.${ext}`;
-		}
+		file = FileUpload.addExtensionTo(file);
 		let headers = {
-			'Content-Disposition': 'attachment; filename="' + encodeURIComponent(filename) + '"',
+			'Content-Disposition': `attachment; filename*=UTF-8''${encodeURIComponent(file.name)}`,
 			'Last-Modified': file.uploadedAt.toUTCString(),
 			'Content-Type': file.type,
 			'Content-Length': file.size
