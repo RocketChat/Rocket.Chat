@@ -1,3 +1,6 @@
+/* globals getHttpBridge, waitPromise */
+/* exported getHttpBridge, waitPromise */
+
 RocketChat.Sandstorm = {};
 
 if (process.env.SANDSTORM === '1') {
@@ -16,7 +19,7 @@ if (process.env.SANDSTORM === '1') {
 		return httpBridge;
 	};
 
-	promiseToFuture = function(promise) {
+	const promiseToFuture = function(promise) {
 		const result = new Future();
 		promise.then(result.return.bind(result), result.throw.bind(result));
 		return result;

@@ -1,3 +1,5 @@
+/* globals getHttpBridge, waitPromise */
+
 RocketChat.Sandstorm.offerUiView = function() {};
 
 if (process.env.SANDSTORM === '1') {
@@ -10,12 +12,12 @@ if (process.env.SANDSTORM === '1') {
 		var session = httpBridge.getSessionContext(sessionId).context;
 		var api = httpBridge.getSandstormApi(sessionId).api;
 		var cap = waitPromise(api.restore(new Buffer(token, 'base64'))).cap;
-		return waitPromise(session.offer(cap, undefined, {tags: [{id: "15831515641881813735"}]}));
+		return waitPromise(session.offer(cap, undefined, {tags: [{id: '15831515641881813735'}]}));
 	};
 
 	Meteor.methods({
 		sandstormClaimRequest: function(token, seriliazedDescriptor) {
-			var descriptor = Capnp.parsePacked(Powerbox.PowerboxDescriptor, new Buffer(seriliazedDescriptor, "base64"));
+			var descriptor = Capnp.parsePacked(Powerbox.PowerboxDescriptor, new Buffer(seriliazedDescriptor, 'base64'));
 			var grainTitle = Capnp.parse(Grain.UiView.PowerboxTag, descriptor.tags[0].value).title;
 			var sessionId = this.connection.sandstormSessionId();
 			var httpBridge = getHttpBridge();
@@ -31,7 +33,7 @@ if (process.env.SANDSTORM === '1') {
 				token: newToken,
 				appTitle: appTitle,
 				appIconUrl: appIconUrl,
-				grainTitle: grainTitle,
+				grainTitle: grainTitle
 			};
 		},
 		sandstormOffer: function(token) {
