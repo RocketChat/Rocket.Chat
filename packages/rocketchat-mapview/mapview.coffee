@@ -30,7 +30,7 @@ class MapView
 				
 				# confirm we have an api key set, and generate the html required for the mapview
 				if gMapsAPIKey != ''
-					message.html  = '<a href="https://www.google.com/maps/preview/@'+match_loc_string[1]+','+match_loc_string[2]+',14z" target="_blank"><img src="https://maps.googleapis.com/maps/api/staticmap?zoom=14&size=250x250&markers=color:gray%7Clabel:%7C'+match_loc_string[1]+','+match_loc_string[2]+'&key='+gMapsAPIKey+'" /></a>'
+					message.html  = '<a href="https://maps.google.com/maps?daddr='+match_loc_string[1]+','+match_loc_string[2]+'" target="_blank"><img src="https://maps.googleapis.com/maps/api/staticmap?zoom=14&size=250x250&markers=color:gray%7Clabel:%7C'+match_loc_string[1]+','+match_loc_string[2]+'&key='+gMapsAPIKey+'" /></a>'
 					
 		return message
 
