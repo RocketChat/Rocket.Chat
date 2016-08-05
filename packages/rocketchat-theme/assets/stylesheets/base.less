@@ -4184,15 +4184,24 @@ body:not(.is-cordova) {
 		right: 0;
 		z-index: 1000000;
 		display: block;
-		font-size: 50px;
+		font-size: 42px;
 		display: flex;
 		align-items: center;
 		justify-content: center;
+		margin: 0 51px 0 12px;
 		> div {
 			padding: 40px;
 			border-radius: 10px;
 			pointer-events: none;
+			line-height: 1.3em;
+			text-align: center;
 		}
+	}
+}
+
+@media (min-width: 780px) {
+	.dropzone.over .dropzone-overlay {
+		margin: 0 51px 0 270px;
 	}
 }
 

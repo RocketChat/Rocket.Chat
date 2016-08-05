@@ -29,8 +29,17 @@ RocketChat.roomTypes.add('l', 5, {
 		}
 	},
 
-	condition: () => {
+	condition() {
 		return RocketChat.settings.get('Livechat_enabled') && RocketChat.authz.hasAllPermission('view-l-room');
+	},
+
+	canSendMessage(roomId) {
+		let room = ChatRoom.findOne({ _id: roomId }, { fields: { open: 1 } });
+		return room && room.open === true;
+	},
+
+	notSubscribedTpl: {
+		template: 'livechatNotSubscribed'
 	}
 });
 
