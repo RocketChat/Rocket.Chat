@@ -16,9 +16,9 @@
 						<i class="icon-search"></i>
 						{{#unless isReady}}<i class="icon-spin"></i>{{/unless}}
 					</div>
-					<input type="checkbox" name="room-type" value="c"> {{_ "Channels"}}
-					<input type="checkbox" name="room-type" value="d"> {{_ "Direct_Messages"}}
-					<input type="checkbox" name="room-type" value="p"> {{_ "Private_Groups"}}
+					<label><input type="checkbox" name="room-type" value="c"> {{_ "Channels"}}</label>
+					<label><input type="checkbox" name="room-type" value="d"> {{_ "Direct_Messages"}}</label>
+					<label><input type="checkbox" name="room-type" value="p"> {{_ "Private_Groups"}}</label>
 				</form>
 				<div class="results">
 					{{{_ "Showing_results" roomCount}}}
