@@ -13,16 +13,24 @@ Api.addRoute 'version', authRequired: false,
 		version = {api: '0.1', rocketchat: '0.5'}
 		status: 'success', versions: version
 
+#list public rooms 
 Api.addRoute 'publicRooms', authRequired: true,
 	get: ->
 		rooms = RocketChat.models.Rooms.findByType('c', { sort: { msgs:-1 } }).fetch()
 		status: 'success', rooms: rooms
-		
+
+#list private rooms		
 Api.addRoute 'privateRooms', authRequired: true,
 	get: ->
 		rooms = RocketChat.models.Rooms.findByType('p', { sort: { msgs:-1 } }).fetch()
 		status: 'success', rooms: rooms
 
+#list direct message room
+Api.addRoute 'directMessageRooms', authRequired: true,
+	get: ->
+		rooms = RocketChat.models.Rooms.findByType('d', { sort: { msgs:-1 } }).fetch()
+		status: 'success', rooms: rooms
+		
 ###
 @api {get} /joinedRooms Get joined rooms.
 ###
@@ -298,7 +306,11 @@ Api.addRoute 'bulk/createPrivateGroup', authRequired: true,
 				console.log '[restapi] bulk/createPrivateGroups -> '.red, "User does not have 'bulk-create-c' permission"
 				statusCode: 403
 				body: status: 'error', message: 'You do not have permission to do this'
-				
+
+###
+remove rooms any type i.e. channels/private/direct message room
+pass room _id in body of data (  data='{"name":[" room _id"]}'  )				
+###
 Api.addRoute 'bulk/removeGroup', authRequired: true,
 	delete:
 		# restivus 0.8.4 does not support alanning:roles using groups
@@ -308,9 +320,8 @@ Api.addRoute 'bulk/removeGroup', authRequired: true,
 			# createChannel method requires it
 			if RocketChat.authz.hasPermission(@userId, 'bulk-create-c')
 				try
-					
 					this.response.setTimeout (1000 * @bodyParams.name.length)
-					#Api.testapiValidateRooms @bodyParams.rooms
+					#Api.testapiValidateRooms @bodyParams.name
 					ids = []
 					Meteor.runAsUser this.userId, () =>
 						(ids[i] = Meteor.call 'eraseRoom', incoming) for incoming,i in @bodyParams.name
@@ -323,6 +334,7 @@ Api.addRoute 'bulk/removeGroup', authRequired: true,
 				statusCode: 403
 				body: status: 'error', message: 'You do not have permission to do this'
 
+# addUser to a channel/private group
 Api.addRoute 'addUser', authRequired: true,
 	post:
 		# restivus 0.8.4 does not support alanning:roles using groups
@@ -345,6 +357,7 @@ Api.addRoute 'addUser', authRequired: true,
 				console.log '[restapi] addUserToRoom -> '.red, "User does not have 'bulk-create-c' permission"
 				statusCode: 403
 				body: status: 'error', message: 'You do not have permission to do this'	
+
 ###
 retrieve a list of integrations
 **Note make sure you encode all channel/private rooms  because they start with '#' === '%23' 
@@ -364,7 +377,11 @@ Api.addRoute 'roomIntegrations', authRequired: true,
 	get: ->
 		id = RocketChat.models.Integrations.find().fetch()
 		status: 'success', Integrations: id				
-		
+
+###
+create outgoig webhooks,
+creating a push point for messages to be push to from Rocket Chat.
+###		
 Api.addRoute 'outgoingWebhook', authRequired: true,
 	post:
 		#roleRequired: ['testagent', 'adminautomation']
@@ -420,26 +437,26 @@ Api.addRoute 'removeOutgoingWebhook', authRequired: true,
 				console.log '[restapi] api/outgoingWebhooks -> '.red, "User does not have 'bulk-create-c' permission"
 				statusCode: 403
 				body: status: 'error', message: 'You do not have permission to do this'
-				
+
+###
+Create a direct message room with another user.
+pass in the data the user to connect to. (  data='{"username":"Joe"}'    )  connects the user who's header auth creditials are be used.
+to connect two users you must issue command as that user. 
+###  				
 Api.addRoute 'createDirectMessage', authRequired: true,
 	post:
 		#roleRequired: ['testagent', 'adminautomation']
 		action: ->
-			a=@bodyParams.username
 			# user must also have create-c permission 
-			if RocketChat.authz.hasPermission(@userId, 'bulk-create-c')
-				try
-					this.response.setTimeout (1000)
-					Meteor.runAsUser this.userId, () =>
-						Meteor.call 'createDirectMessage', @bodyParams.username
-					status: 'success', created : @bodyParams.username
-				catch e
-					statusCode:400 # bad request
-					body: status: 'bad request missing pramas ' + @bodyParams.username, message: e.name + ':: ' + e.message
-			else 
-				console.log '[restapi] api/createDirectMessage -> '.red, "User does not have 'bulk-create-c' permission"
-				statusCode: 403
-				body: status: 'error', message: 'You do not have permission to do this'
+			try
+				this.response.setTimeout (1000)
+				Meteor.runAsUser this.userId, () =>
+					Meteor.call 'createDirectMessage', @bodyParams.username
+				status: 'success', created : @bodyParams.username
+			catch e
+				statusCode:400 # bad request
+				body: status: 'bad request missing pramas ' + @bodyParams.username, message: e.name + ':: ' + e.message
+			
 					
 					
 		
