@@ -81,10 +81,10 @@ Template.messageBox.helpers
 	showSend: ->
 		if not Template.instance().isMessageFieldEmpty.get() or not Template.instance().showMicButton.get()
 			return 'show-send'
-			
+
 	showLocation: ->
 		return Template.instance().showLocationButton.get()
-	
+
 Template.messageBox.events
 	'click .join': (event) ->
 		event.stopPropagation()
@@ -146,24 +146,24 @@ Template.messageBox.events
 				name: file.name
 
 		fileUpload filesToUpload
-		
+
 	'click .message-form .icon-location.location': (event, instance) ->
-		
+
 		if instance.showLocationButton
-			
+
 			userGeoLocation = new ReactiveVar null
-			
+
 			Tracker.autorun (computation) ->
-				
+
 				userGeoLocation.set(Geolocation.latLng())
-				
+
 				if userGeoLocation.get()
 					computation.stop()
-					
+
 					input = instance.find('.input-message')
 					input.value = "(maps:" + userGeoLocation.get().lat + "," + userGeoLocation.get().lng + ")"
-				
-		
+
+
 	'click .message-form .mic': (e, t) ->
 		AudioRecorder.start ->
 			t.$('.stop-mic').removeClass('hidden')
@@ -206,9 +206,8 @@ Template.messageBox.onCreated ->
 			@showMicButton.set true
 		else
 			@showMicButton.set false
-		
+
 		if RocketChat.settings.get('MapView_Enabled')
 			@showLocationButton.set true
 		else
 			@showLocationButton.set false
-			
