@@ -21,16 +21,16 @@ class MapView
 				$ ///i             # EOL
 			
 			# test html for a match
-			match = latLngPattern.exec message.html
+			match_loc_string = latLngPattern.exec message.html
 				
-			if match
+			if match_loc_string
 				
 				# retrieve google maps api key from settings
 				gMapsAPIKey = RocketChat.settings.get 'MapView_GMapsAPIKey'
 				
 				# confirm we have an api key set, and generate the html required for the mapview
 				if gMapsAPIKey != ''
-					message.html  = '<a href="https://www.google.com/maps/preview/@'+match[1]+','+match[2]+',14z" target="_blank"><img src="https://maps.googleapis.com/maps/api/staticmap?zoom=14&size=450x180&markers=color:gray%7Clabel:%7C'+match[1]+','+match[2]+'&key='+gMapsAPIKey+'" /></a>'
+					message.html  = '<a href="https://www.google.com/maps/preview/@'+match_loc_string[1]+','+match_loc_string[2]+',14z" target="_blank"><img src="https://maps.googleapis.com/maps/api/staticmap?zoom=14&size=450x180&markers=color:gray%7Clabel:%7C'+match_loc_string[1]+','+match_loc_string[2]+'&key='+gMapsAPIKey+'" /></a>'
 					
 		return message
 
