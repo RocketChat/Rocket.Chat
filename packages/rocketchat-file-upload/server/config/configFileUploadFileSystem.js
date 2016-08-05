@@ -1,6 +1,7 @@
 /* globals FileSystemStore:true, FileUpload, UploadFS, RocketChatFile */
 
 let storeName = 'fileSystem';
+const mime = Npm.require('mime-types');
 
 FileSystemStore = null;
 
@@ -56,9 +57,9 @@ FileUpload.addHandler(storeName, {
 
 			if (stat && stat.isFile()) {
 				let filename = file.name;
-				const ext = FileUpload.mime2ext(file.type);
-				if (-1 === filename.lastIndexOf(ext)) {
-					filename += ext;
+				const ext = mime.extension(file.type);
+				if (false === new RegExp(`\.${ext}$`, 'i').test(filename)) {
+					filename += `.${ext}`;
 				}
 				res.setHeader('Content-Disposition', 'attachment; filename="' + encodeURIComponent(filename) + '"');
 				res.setHeader('Last-Modified', file.uploadedAt.toUTCString());
