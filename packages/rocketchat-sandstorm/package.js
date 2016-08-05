@@ -10,6 +10,6 @@ Package.onUse(function(api) {
 
 	api.use([ 'ecmascript', 'rocketchat:lib' ]);
 
-	api.addFiles([ 'server/lib.js', 'server/events.js' ], 'server');
+	api.addFiles([ 'server/lib.js', 'server/events.js', 'server/powerbox.js' ], 'server');
 	api.addFiles([ 'client/powerboxListener.js' ], 'client');
 });
