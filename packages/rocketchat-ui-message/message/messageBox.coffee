@@ -1,6 +1,3 @@
-isSubscribed = (_id) ->
-	return ChatSubscription.find({ rid: _id }).count() > 0
-
 katexSyntax = ->
 	if RocketChat.katex.katex_enabled()
 		return "$$KaTeX$$"   if RocketChat.katex.dollar_syntax_enabled()
@@ -28,9 +25,9 @@ Template.messageBox.helpers
 	showFormattingTips: ->
 		return RocketChat.settings.get('Message_ShowFormattingTips') and (RocketChat.Markdown or RocketChat.MarkdownCode or katexSyntax())
 	canJoin: ->
-		return !! ChatRoom.findOne { _id: @_id, t: 'c' }
+		return RocketChat.roomTypes.verifyShowJoinLink @_id
 	subscribed: ->
-		return isSubscribed(this._id)
+		return RocketChat.roomTypes.verifyCanSendMessage @_id
 	getPopupConfig: ->
 		template = Template.instance()
 		return {
@@ -69,9 +66,21 @@ Template.messageBox.helpers
 		if Template.instance().showMicButton.get()
 			return 'show-mic'
 
+	showVRec: ->
+		if not Template.instance().isMessageFieldEmpty.get()
+			return 'hide-vrec'
+
+		if Template.instance().showVideoRec.get()
+			return ''
+		else
+			return 'hide-vrec'
+
 	showSend: ->
 		if not Template.instance().isMessageFieldEmpty.get() or not Template.instance().showMicButton.get()
 			return 'show-send'
+
+	notSubscribedTpl: ->
+		return RocketChat.roomTypes.getNotSubscribedTpl @_id
 
 Template.messageBox.events
 	'click .join': (event) ->
@@ -115,6 +124,13 @@ Template.messageBox.events
 	'keydown .input-message': (event) ->
 		chatMessages[@_id].keydown(@_id, event, Template.instance())
 
+	'input .input-message': (event) ->
+		chatMessages[@_id].valueChanged(@_id, event, Template.instance())
+
+	'propertychange .input-message': (event) ->
+		if event.originalEvent.propertyName is 'value'
+			chatMessages[@_id].valueChanged(@_id, event, Template.instance())
+
 	"click .editing-commands-cancel > button": (e) ->
 		chatMessages[@_id].clearEditing()
 
@@ -140,6 +156,12 @@ Template.messageBox.events
 			t.$('.stop-mic').removeClass('hidden')
 			t.$('.mic').addClass('hidden')
 
+	'click .message-form .video-button': (e, t) ->
+		if VRecDialog.opened
+			VRecDialog.close()
+		else
+			VRecDialog.open(e.currentTarget)
+
 	'click .message-form .stop-mic': (e, t) ->
 		AudioRecorder.stop (blob) ->
 			fileUpload [{
@@ -154,8 +176,16 @@ Template.messageBox.events
 Template.messageBox.onCreated ->
 	@isMessageFieldEmpty = new ReactiveVar true
 	@showMicButton = new ReactiveVar false
+	@showVideoRec = new ReactiveVar false
 
 	@autorun =>
+		videoRegex = /video\/webm/i
+		videoEnabled = !RocketChat.settings.get("FileUpload_MediaTypeWhiteList") || RocketChat.settings.get("FileUpload_MediaTypeWhiteList").match(videoRegex)
+		if RocketChat.settings.get('Message_VideoRecorderEnabled') and (navigator.getUserMedia? or navigator.webkitGetUserMedia?) and videoEnabled and RocketChat.settings.get('FileUpload_Enabled')
+			@showVideoRec.set true
+		else
+			@showVideoRec.set false
+
 		wavRegex = /audio\/wav|audio\/\*/i
 		wavEnabled = !RocketChat.settings.get("FileUpload_MediaTypeWhiteList") || RocketChat.settings.get("FileUpload_MediaTypeWhiteList").match(wavRegex)
 		if RocketChat.settings.get('Message_AudioRecorderEnabled') and (navigator.getUserMedia? or navigator.webkitGetUserMedia?) and wavEnabled and RocketChat.settings.get('FileUpload_Enabled')

@@ -6,7 +6,7 @@ Meteor.methods
 		if not Meteor.userId()
 			throw new Meteor.Error('error-invalid-user', "Invalid user", { method: 'sendMessage' })
 
-		user = RocketChat.models.Users.findOneById Meteor.userId(), fields: username: 1
+		user = RocketChat.models.Users.findOneById Meteor.userId(), fields: username: 1, name: 1
 
 		room = Meteor.call 'canAccessRoom', message.rid, user._id
 
@@ -18,9 +18,13 @@ Meteor.methods
 				_id: Random.id()
 				rid: room._id
 				ts: new Date
-				msg: TAPi18n.__('You_have_been_muted', {}, user.language);
+				msg: TAPi18n.__('You_have_been_muted', {}, user.language)
 			}
 			return false
+
+		message.alias = user.name if not message.alias? and RocketChat.settings.get 'Message_SetNameToAliasEnabled'
+		if Meteor.settings.public.sandstorm
+			message.sandstormSessionId = this.connection.sandstormSessionId()
 
 		RocketChat.sendMessage user, message, room
 

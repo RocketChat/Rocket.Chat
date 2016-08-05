@@ -23,6 +23,8 @@ Template.channelSettings.helpers
 		return ChatRoom.findOne(@rid, { fields: { topic: 1 }})?.topic
 	roomTopicUnescaped: ->
 		return s.unescapeHTML ChatRoom.findOne(@rid, { fields: { topic: 1 }})?.topic
+	roomDescription: ->
+		return ChatRoom.findOne(@rid, { fields: { description: 1 }})?.description
 	archivationState: ->
 		return ChatRoom.findOne(@rid, { fields: { archived: 1 }})?.archived
 	archivationStateDescription: ->
@@ -31,8 +33,37 @@ Template.channelSettings.helpers
 			return t('Room_archivation_state_true')
 		else
 			return t('Room_archivation_state_false')
+	canDeleteRoom: ->
+		roomType = ChatRoom.findOne(@rid, { fields: { t: 1 }})?.t
+		return roomType? and RocketChat.authz.hasAtLeastOnePermission("delete-#{roomType}", @rid)
 
 Template.channelSettings.events
+	'click .delete': ->
+		swal {
+			title: t('Are_you_sure')
+			text: t('Delete_Room_Warning')
+			type: 'warning'
+			showCancelButton: true
+			confirmButtonColor: '#DD6B55'
+			confirmButtonText: t('Yes_delete_it')
+			cancelButtonText: t('Cancel')
+			closeOnConfirm: false
+			html: false
+		}, =>
+			swal.disableButtons()
+
+			Meteor.call 'eraseRoom', @rid, (error, result) ->
+				if error
+					handleError(error)
+					swal.enableButtons()
+				else
+					swal
+						title: t('Deleted')
+						text: t('Room_has_been_deleted')
+						type: 'success'
+						timer: 2000
+						showConfirmButton: false
+
 	'keydown input[type=text]': (e, t) ->
 		if e.keyCode is 13
 			e.preventDefault()
@@ -109,6 +140,11 @@ Template.channelSettings.onCreated ->
 					Meteor.call 'saveRoomSettings', room._id, 'roomType', @$('input[name=roomType]:checked').val(), (err, result) ->
 						return handleError err if err
 						toastr.success TAPi18n.__ 'Room_type_changed_successfully'
+			when 'roomDescription'
+				if @validateRoomTopic()
+					Meteor.call 'saveRoomSettings', room._id, 'roomDescription', @$('input[name=roomDescription]').val(), (err, result) ->
+						return handleError err if err
+						toastr.success TAPi18n.__ 'Room_description_changed_successfully'
 			when 'archivationState'
 				if @$('input[name=archivationState]:checked').val() is 'true'
 					if room.archived isnt true

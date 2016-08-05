@@ -1,0 +1,65 @@
+- Self Host
+  - Docker  
+  - Multiple Deployment Options (Heroku, Digital Ocean, Sandstorm, etc.)  
+- Authentication Options
+  - OAuth 
+  - SAML
+  - LDAP
+  - CAS
+  - Facebook, Github, Google, etc.
+- I18N: More than 30 languages so far
+- File Uploading
+  - Drag-and-drop
+  - Upload to file system
+  - AWS + CDN
+- Live chat
+  - SMS Integration
+- Rich Media
+  - Audio Calls
+  - Video Conferencing
+  - Screensharing
+- Notifications
+  - Desktop and Mobile
+  - Use your own gateway
+  - Use @all to notify everyone in the room (configurable to max. users)
+  - Receive missed messages in your e-mail
+- Apps
+  - Mobile
+  - Native
+- Integrations
+  - Hubot
+  - Incoming / Outgoing Webhooks
+  - Data Importer
+    - Import from Slack
+    - Import from Hipchat
+  - Slack Bridge
+- Profiles
+  - Custom avatars
+- Text Decorations
+  - Mentions
+  - Link Preview
+  - Embedded videos
+  - Markdown
+  - Code, single or multi-line
+  - TexMath
+  - Emojis
+    - Reactions
+- Message editing
+  - Editing is as simple as using your arrow keys for picking the right message to edit
+  - Setup to keep history of edits or discard the previous text
+  - Show or hide edited/deleted status
+- History
+  - Search
+    - Full-text search
+    - Regex search
+- Add stars to rooms and mark them as favorites
+- Add stars and pins to messages
+  - Star messages that are important to you. Only you have access to your stars.
+  - Pin messages that are important to everyone.
+  - Access your starred/pinned and messages you were mentioned on quickly through side bar buttons
+- REST Api
+- Roles and Permissions
+- Public and Private multi-user rooms
+- One-on-one conversations
+  - Off-the-record messaging (messages are encrypted and transiently saved on database)
+- Slashcommands

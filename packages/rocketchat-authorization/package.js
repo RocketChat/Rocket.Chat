@@ -61,7 +61,6 @@ Package.onUse(function(api) {
 	// publications
 	api.addFiles('server/publications/permissions.js', 'server');
 	api.addFiles('server/publications/roles.coffee', 'server');
-	api.addFiles('server/publications/scopedRoles.js', 'server');
 	api.addFiles('server/publications/usersInRole.coffee', 'server');
 
 	// methods

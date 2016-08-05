@@ -5,7 +5,7 @@ Meteor.startup ->
 		unreadCount = 0
 		unreadAlert = false
 
-		subscriptions = ChatSubscription.find({open: true}, { fields: { unread: 1, alert: 1, rid: 1, t: 1, name: 1, ls: 1 } })
+		subscriptions = ChatSubscription.find({open: true}, { fields: { unread: 1, alert: 1, rid: 1, t: 1, name: 1, ls: 1, unreadAlert: 1 } })
 
 		openedRoomId = undefined
 		Tracker.nonreactive ->
@@ -27,10 +27,12 @@ Meteor.startup ->
 
 				# Increment the total unread count.
 				unreadCount += subscription.unread
-				if subscription.alert is true
-					unreadAlert = '•'
+				if subscription.alert is true and subscription.unreadAlert isnt 'nothing'
+					if subscription.unreadAlert == 'all' or Meteor.user()?.settings?.preferences?.unreadAlert isnt false
+						unreadAlert = '•'
 
-			readMessage.refreshUnreadMark(subscription.rid)
+			if RoomManager.openedRooms[subscription.t + subscription.name]
+				readMessage.refreshUnreadMark(subscription.rid)
 
 		menu.updateUnreadBars()
 

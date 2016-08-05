@@ -2,8 +2,11 @@
 
 class SlackBridge {
 	constructor() {
+		this.util = Npm.require('util');
 		this.slackClient = Npm.require('slack-client');
 		this.apiToken = RocketChat.settings.get('SlackBridge_APIToken');
+		this.aliasFormat = RocketChat.settings.get('SlackBridge_AliasFormat');
+		this.excludeBotnames = RocketChat.settings.get('SlackBridge_Botnames');
 		this.rtm = {};
 		this.connected = false;
 		this.userTags = {};
@@ -24,6 +27,14 @@ class SlackBridge {
 			} else {
 				this.disconnect();
 			}
+		});
+
+		RocketChat.settings.onload('SlackBridge_AliasFormat', (key, value) => {
+			this.aliasFormat = value;
+		});
+
+		RocketChat.settings.onload('SlackBridge_ExcludeBotnames', (key, value) => {
+			this.excludeBotnames = value;
 		});
 	}
 
@@ -183,12 +194,13 @@ class SlackBridge {
 					}
 					if (userData.profile.real_name) {
 						RocketChat.models.Users.setName(userData.rocketId, userData.profile.real_name);
-						// Deleted users are 'inactive' users in Rocket.Chat
-						if (userData.deleted) {
-							Meteor.call('setUserActiveStatus', userData.rocketId, false);
-						}
 					}
 				});
+				// Deleted users are 'inactive' users in Rocket.Chat
+				if (userData.deleted) {
+					RocketChat.models.Users.setUserActive(userData.rocketId, false);
+					RocketChat.models.Users.unsetLoginTokens(userData.rocketId);
+				}
 			}
 			RocketChat.models.Users.update({ _id: userData.rocketId }, { $addToSet: { importIds: userData.id } });
 			if (!this.userTags[userId]) {
@@ -198,6 +210,18 @@ class SlackBridge {
 		}
 
 		return;
+	}
+
+	addAlias(username, msgObj) {
+		if (this.aliasFormat) {
+			var alias = this.util.format(this.aliasFormat, username);
+
+			if (alias !== username) {
+				msgObj.alias = alias;
+			}
+		}
+
+		return msgObj;
 	}
 
 	saveMessage(room, user, message, msgDataDefaults) {
@@ -217,6 +241,8 @@ class SlackBridge {
 						username: user.username
 					}
 				};
+
+				this.addAlias(user.username, msgObj);
 			}
 			_.extend(msgObj, msgDataDefaults);
 			if (message.edited) {
@@ -233,6 +259,10 @@ class SlackBridge {
 		let msgObj = null;
 		switch (message.subtype) {
 			case 'bot_message':
+				if (message.username !== undefined && this.excludeBotnames && message.username.match(this.excludeBotnames)) {
+					return;
+				}
+
 				msgObj = {
 					msg: this.convertSlackMessageToRocketChat(message.text),
 					rid: room._id,
@@ -240,14 +270,15 @@ class SlackBridge {
 					attachments: message.attachments,
 					username: message.username
 				};
+				this.addAlias(message.username, msgObj);
 				if (message.icons) {
 					msgObj.emoji = message.icons.emoji;
 				}
-				break;
+				return msgObj;
 			case 'me_message':
-				return {
+				return this.addAlias(user.username, {
 					msg: `_${this.convertSlackMessageToRocketChat(message.text)}_`
-				};
+				});
 			case 'message_changed':
 				this.editMessage(room, user, message);
 				return;
@@ -512,7 +543,7 @@ class SlackBridge {
 				}
 				if (channel && user) {
 					let msgDataDefaults = {
-						_id: `${message.channel}S${message.ts}`,
+						_id: `slack-${message.channel}-${message.ts}`,
 						ts: new Date(parseInt(message.ts.split('.')[0]) * 1000)
 					};
 					this.saveMessage(channel, user, message, msgDataDefaults);
