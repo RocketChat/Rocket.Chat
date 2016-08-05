@@ -146,17 +146,19 @@ Template.messageBox.events
 		
 	'click .message-form .icon-location.location': (event, instance) ->
 		
-		userGeoLocation = new ReactiveVar null
-		
-		Tracker.autorun (computation) ->
+		if @showLocationButton
 			
-			userGeoLocation.set(Geolocation.latLng())
+			userGeoLocation = new ReactiveVar null
 			
-			if userGeoLocation.get()
-				computation.stop()
+			Tracker.autorun (computation) ->
 				
-				input = instance.find('.input-message')
-				input.value = "(maps:" + userGeoLocation.get().lat + "," + userGeoLocation.get().lng + ")"
+				userGeoLocation.set(Geolocation.latLng())
+				
+				if userGeoLocation.get()
+					computation.stop()
+					
+					input = instance.find('.input-message')
+					input.value = "(maps:" + userGeoLocation.get().lat + "," + userGeoLocation.get().lng + ")"
 				
 		
 	'click .message-form .mic': (e, t) ->
@@ -185,6 +187,7 @@ Template.messageBox.onCreated ->
 	@isMessageFieldEmpty = new ReactiveVar true
 	@showMicButton = new ReactiveVar false
 	@showVideoRec = new ReactiveVar false
+	@showLocationButton = new ReactiveVar false
 
 	@autorun =>
 		videoRegex = /video\/webm/i
@@ -200,3 +203,9 @@ Template.messageBox.onCreated ->
 			@showMicButton.set true
 		else
 			@showMicButton.set false
+		
+		if RocketChat.settings.get('MapView_Enabled')
+			@showLocationButton.set true
+		else
+			@showLocationButton.set false
+			
