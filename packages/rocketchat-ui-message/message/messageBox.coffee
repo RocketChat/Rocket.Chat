@@ -169,6 +169,8 @@ Template.messageBox.events
 
 					input = instance.find('.input-message')
 					input.value = "(maps:" + userGeoLocation.get().lat + "," + userGeoLocation.get().lng + ")"
+					
+					input.focus()
 
 
 	'click .message-form .mic': (e, t) ->
