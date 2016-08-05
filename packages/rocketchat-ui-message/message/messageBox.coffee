@@ -81,6 +81,9 @@ Template.messageBox.helpers
 	showSend: ->
 		if not Template.instance().isMessageFieldEmpty.get() or not Template.instance().showMicButton.get()
 			return 'show-send'
+			
+	showLocation: ->
+		return Template.instance().showLocationButton.get()
 	
 Template.messageBox.events
 	'click .join': (event) ->
@@ -146,7 +149,7 @@ Template.messageBox.events
 		
 	'click .message-form .icon-location.location': (event, instance) ->
 		
-		if @showLocationButton
+		if instance.showLocationButton
 			
 			userGeoLocation = new ReactiveVar null
 			
