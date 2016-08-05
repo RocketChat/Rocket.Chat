@@ -25,7 +25,7 @@ class MapView
 				gMapsAPIKey = RocketChat.settings.get 'MapView_GMapsAPIKey'
 				
 				if match
-					message.html  = '<a href="https://www.google.com/maps/preview/@'+match[1]+','+match[2]+',14z"><img src="https://maps.googleapis.com/maps/api/staticmap?zoom=14&size=450x200&markers=color:gray%7Clabel:%7C'+match[1]+','+match[2]+'&key='+gMapsAPIKey+'" /></a>'
+					message.html  = '<a href="https://www.google.com/maps/preview/@'+match[1]+','+match[2]+',14z" target="_blank"><img src="https://maps.googleapis.com/maps/api/staticmap?zoom=14&size=450x200&markers=color:gray%7Clabel:%7C'+match[1]+','+match[2]+'&key='+gMapsAPIKey+'" /></a>'
 					
 		return message
 
