@@ -9,7 +9,7 @@ class MapView
 		# get enable setting
 		mv_enabled = RocketChat.settings.get 'MapView_Enabled'
 
-		if _.trim message.html and mv_enabled == true
+		if _.trim message.html and mv_enabled
 
 			# regex to match mapview string
 			latLngPattern = /// ^  # begin of line

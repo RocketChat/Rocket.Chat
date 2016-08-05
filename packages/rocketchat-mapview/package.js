@@ -12,10 +12,8 @@ Package.onUse(function(api) {
 		'rocketchat:lib'
 	]);
 
-	api.addFiles([
-		'mapview.coffee'
-	], ['client']);
+	api.addFiles('server/settings.coffee', 'server');
 
-	api.addFiles('settings.coffee', 'server');
+	api.addFiles('client/mapview.coffee', 'client');
 
 });
