@@ -159,6 +159,7 @@ Template.messageBox.events
 		fileUpload filesToUpload
 
 	'click .message-form .icon-location.location': (event, instance) ->
+		roomId = @_id
 
 		if instance.showLocationButton
 
@@ -171,10 +172,29 @@ Template.messageBox.events
 				if userGeoLocation.get()
 					computation.stop()
 
-					input = instance.find('.input-message')
-					input.value = "(maps:" + userGeoLocation.get().lat + "," + userGeoLocation.get().lng + ")"
-					
-					input.focus()
+					latitude = userGeoLocation.get().lat
+					longitude = userGeoLocation.get().lng
+
+					text = '<div class="location-preview"><img src="https://maps.googleapis.com/maps/api/staticmap?zoom=14&size=250x250&markers=color:gray%7Clabel:%7C'+latitude+','+longitude+'&key='+instance.googleMapsKey.get()+'" /></div>'
+
+					swal
+						title: t('Share_Location_Title')
+						text: text
+						showCancelButton: true
+						closeOnConfirm: true
+						closeOnCancel: true
+						html: true
+					, (isConfirm) ->
+
+						if isConfirm isnt true
+							return
+
+						Meteor.call "sendMessage", {
+							_id: Random.id()
+							rid: roomId
+							msg: ""
+							location: { 'type': 'Point', 'coordinates': [ longitude, latitude ]}
+						}
 
 
 	'click .message-form .mic': (e, t) ->
@@ -222,6 +242,7 @@ Template.messageBox.onCreated ->
 	@showMicButton = new ReactiveVar false
 	@showVideoRec = new ReactiveVar false
 	@showLocationButton = new ReactiveVar false
+	@googleMapsKey = new ReactiveVar false
 
 	@autorun =>
 		videoRegex = /video\/webm/i
@@ -238,7 +259,8 @@ Template.messageBox.onCreated ->
 		else
 			@showMicButton.set false
 
-		if RocketChat.settings.get('MapView_Enabled')
+		if RocketChat.settings.get('MapView_Enabled') and RocketChat.settings.get('MapView_GMapsAPIKey')?.length
 			@showLocationButton.set true
+			@googleMapsKey.set RocketChat.settings.get('MapView_GMapsAPIKey')
 		else
 			@showLocationButton.set false

@@ -6,31 +6,19 @@
 class MapView
 	constructor: (message) ->
 
-		# get enable setting
+		# get MapView settings
 		mv_enabled = RocketChat.settings.get 'MapView_Enabled'
+		mv_googlekey = RocketChat.settings.get 'MapView_GMapsAPIKey'
 
-		if _.trim message.html and mv_enabled
+		if message.location and mv_enabled
 
-			# regex to match mapview string
-			latLngPattern = /// ^  # begin of line
-				\(maps:      	   # define hardcoded maps tag
-				(-*[0-9]+.[0-9]+)  # match latitude
-				,                  # literal comma
-				(-*[0-9]+.[0-9]+)  # match longitude
-				\)			       # end maps tag
-				$ ///i             # EOL
+			# GeoJSON is reversed - ie. [lng, lat]
+			longitude = message.location.coordinates[0]
+			latitude = message.location.coordinates[1]
 
-			# test html for a match
-			match_loc_string = latLngPattern.exec message.html
-
-			if match_loc_string
-
-				# retrieve google maps api key from settings
-				gMapsAPIKey = RocketChat.settings.get 'MapView_GMapsAPIKey'
-
-				# confirm we have an api key set, and generate the html required for the mapview
-				if gMapsAPIKey != ''
-					message.html  = '<a href="https://maps.google.com/maps?daddr='+match_loc_string[1]+','+match_loc_string[2]+'" target="_blank"><img src="https://maps.googleapis.com/maps/api/staticmap?zoom=14&size=250x250&markers=color:gray%7Clabel:%7C'+match_loc_string[1]+','+match_loc_string[2]+'&key='+gMapsAPIKey+'" /></a>'
+			# confirm we have an api key set, and generate the html required for the mapview
+			if mv_googlekey?.length
+				message.html  = '<a href="https://maps.google.com/maps?daddr='+latitude+','+longitude+'" target="_blank"><img src="https://maps.googleapis.com/maps/api/staticmap?zoom=14&size=250x250&markers=color:gray%7Clabel:%7C'+latitude+','+longitude+'&key='+mv_googlekey+'" /></a>'
 
 		return message
 
