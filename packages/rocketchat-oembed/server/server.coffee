@@ -182,6 +182,13 @@ OEmbed.RocketUrlParser = (message) ->
 		changed = false
 		message.urls.forEach (item) ->
 			if item.ignoreParse is true then return
+			if item.url.startsWith "grain://"
+				changed = true
+				item.meta =
+					sandstorm:
+						grain: item.sandstormViewInfo
+				return
+
 			if not /^https?:\/\//i.test item.url then return
 
 			data = OEmbed.getUrlMetaWithCache item.url
