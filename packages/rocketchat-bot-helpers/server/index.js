@@ -1,29 +1,26 @@
-
-// config to extend query / return attributes
-const defaults = {
-	userFields: {
-		_id: 1,
-		name: 1,
-		username: 1,
-		status: 1,
-		emails: 1,
-		language: 1
-	},
-	onlineQuery: { 'status': { $ne: 'offline' } },
-	userQuery: { 'roles': { $not: { $all: ['bot'] } } }
-};
-
 /**
- * BotHelper helps bots
- * keeping Rocket.chat stuff in meteor package allows clean logic separation in bot scripts
+ * BotHelpers helps bots
  * "private" properties use meteor collection cursors, so they stay reactive
- * "public" "properties" use getters to fetch and filter collections as array
+ * "public" properties use getters to fetch and filter collections as array
  */
-class BotHelper {
-	constructor(options = {}) {
-		this.config = _.extend({}, defaults, options);
-		this._allUsers = Meteor.users.find(this.config.userQuery, { fields: this.config.userFields });
-		this._onlineUsers = Meteor.users.find({ $and: [this.config.userQuery, this.config.onlineQuery] }, { fields: this.config.userFields });
+class BotHelpers {
+	constructor() {
+		this.queries = {
+			online: { 'status': { $ne: 'offline' } },
+			users: { 'roles': { $not: { $all: ['bot'] } } }
+		};
+		this.setupCursors();
+	}
+
+	// Setup collection cursors in method to be reset when settings change
+	setupCursors() {
+		let csv = String(RocketChat.settings.get('BotHelpers_userFields'));
+		this.userFields = {};
+		String(csv).split(',').forEach((n) => {
+			this.userFields[n.trim()] = 1;
+		});
+		this._allUsers = Meteor.users.find(this.queries.users, { fields: this.userFields });
+		this._onlineUsers = Meteor.users.find({ $and: [this.queries.users, this.queries.online] }, { fields: this.userFields });
 	}
 
 	// request methods or props as arguments to Meteor.call
@@ -66,12 +63,17 @@ class BotHelper {
 			return { 'id': user._id, 'name': user.username };
 		});
 	}
-
 }
 
-// add class to meteor methods (BotHelper accepts options)
-// TODO: Let constructor options be passed in through another method (to override defaults)
-const botHelper = new BotHelper();
+// add class to meteor methods
+const botHelpers = new BotHelpers();
 Meteor.methods({
-	botRequest: (...args) => botHelper.request(...args)
+	botRequest: (...args) => {
+		let userID = Meteor.userId();
+		if (userID && RocketChat.authz.hasRole(userID, 'bot')) {
+			return botHelpers.request(...args);
+		} else {
+			throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'botHelpers' });
+		}
+	}
 });
