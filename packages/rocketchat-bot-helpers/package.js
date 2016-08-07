@@ -14,5 +14,8 @@ Package.onUse(function(api) {
 	api.use('accounts-base');
 	// api.mainModule('server/index.js', 'server'); // when 1.3
 	// api.mainModule('client/index.js', 'client'); // when 1.3
-	api.addFiles('server/index.js', 'server');
+	api.addFiles([
+		'server/index.js',
+		'server/settings.js'
+	], ['server']);
 });

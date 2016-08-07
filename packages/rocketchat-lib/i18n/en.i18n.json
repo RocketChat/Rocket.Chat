@@ -202,6 +202,8 @@
   "Back_to_permissions" : "Back to permissions",
   "Body" : "Body",
   "bold" : "bold",
+  "BotHelpers_userFields" : "User Fields",
+  "BotHelpers_userFields_Description" : "CSV of user fields that can be accessed by bots helper methods.",
   "Branch" : "Branch",
   "busy" : "busy",
   "Busy" : "Busy",
