@@ -14,6 +14,21 @@ RocketChat.roomTypes = new class
 
 		roomTypes[roomType].publish = callback
 
+
+	setRoomFind = (roomType, callback) ->
+		if roomTypes[roomType]?.roomFind?
+			throw new Meteor.Error 'room-find-exists', 'Room find for the given type already exists'
+
+		unless roomTypes[roomType]?
+			roomTypes[roomType] = {}
+
+		roomTypes[roomType].roomFind = callback
+
+	getRoomFind = (roomType) ->
+		return unless roomTypes[roomType]?.roomFind?
+		return roomTypes[roomType].roomFind
+
+
 	### run the publish for a room type
 	@param roomType: room type (e.g.: c (for channels), d (for direct channels))
 	@param identifier: identifier of the room
@@ -24,3 +39,6 @@ RocketChat.roomTypes = new class
 
 	setPublish: setPublish
 	runPublish: runPublish
+
+	setRoomFind: setRoomFind
+	getRoomFind: getRoomFind

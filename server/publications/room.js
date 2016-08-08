@@ -10,7 +10,13 @@ const options = {
 		muted: 1,
 		archived: 1,
 		jitsiTimeout: 1,
-		description: 1
+		description: 1,
+
+		livechatData: 1,
+		tags: 1,
+		sms: 1,
+		code: 1,
+		open: 1
 	})
 };
 
@@ -51,7 +57,18 @@ Meteor.methods({
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'getRoomByTypeAndName' });
 		}
 
-		const room = RocketChat.cache.Rooms.findByIndex('t,name', [type, name]).fetch();
+		const roomFind = RocketChat.roomTypes.getRoomFind(type);
+
+		let room;
+
+		if (roomFind) {
+			room = roomFind.call(this, name);
+
+			console.log('room ->', room);
+		} else {
+			room = RocketChat.cache.Rooms.findByIndex('t,name', [type, name]).fetch();
+			console.log('room 2 ->', room);
+		}
 
 		if (!room) {
 			throw new Meteor.Error('error-invalid-room', 'Invalid room', { method: 'getRoomByTypeAndName' });
