@@ -164,7 +164,10 @@ RocketChat.API.v1.addRoute 'users.delete', authRequired: true,
 
 		return RocketChat.API.v1.success
 
-# Create Private Group
+### Create Private Group
+ example data:
+  {"name":"room5","members":["Jeff","Larry","Stephen"]}
+###
 RocketChat.API.v1.addRoute 'groups.create', authRequired: true,
 	post: ->
 		if not @bodyParams.name?
@@ -176,6 +179,7 @@ RocketChat.API.v1.addRoute 'groups.create', authRequired: true,
 		id = undefined
 		try
 			if not @bodyParams.members?
+			
 				Meteor.runAsUser this.userId, =>
 					id = Meteor.call 'createPrivateGroup', @bodyParams.name, []
 			else
@@ -187,3 +191,118 @@ RocketChat.API.v1.addRoute 'groups.create', authRequired: true,
 		return RocketChat.API.v1.success
 			group: RocketChat.models.Rooms.findOne({_id: id.rid})
 
+### Remove rooms
+any type i.e. channels/private/direct message room
+user must also have create-c permission
+pass room _id in body of data (  data='{"name":[" room _id"]}'  )				
+###
+RocketChat.API.v1.addRoute 'bulk/removeGroup', authRequired: true,
+	delete: ->
+			if RocketChat.authz.hasPermission(@userId, 'bulk-create-c')
+				try
+					this.response.setTimeout (1000 * @bodyParams.name.length)
+					ids = []
+					Meteor.runAsUser this.userId, () =>
+						(ids[i] = Meteor.call 'eraseRoom', incoming) for incoming,i in @bodyParams.name
+					status: 'success', ids: ids  # need to handle error
+				catch e
+					statusCode: 400    # bad request or other errors
+					body: status: 'fail', message: e.name + ' :: ' + e.message
+			else
+				console.log '[API.v1.] bulk/removePrivateGroups -> '.red, "User does not have 'bulk-create-c' permission"
+				statusCode: 403
+				body: status: 'error', message: 'You do not have permission to do this'
+				
+### Retrieve integrations 
+**Note make sure you encode all channel/private rooms  because they start with '#' === '%23' 
+Example string ('http://your url here : 3000/api/%23testRoom/roomIntegrations',headers={'X-User-Id':'user_token','X-Auth-Token':'user_token'})
+###
+RocketChat.API.v1.addRoute ':channel/roomIntgrations', authRequired: true,
+	get: ->
+		try
+			if not channel?
+				id = RocketChat.models.Integrations.find().fetch()
+				status: 'success', Integrations: id					
+			else 
+				id = RocketChat.models.Integrations.find({"channel":decodeURIComponent(@urlParams.channel)}).fetch()
+				status: 'success', Integrations: id
+		catch e 
+			statusCode: 400    # bad request or other errors
+			body: status: 'Epic fail', message: e.name + ' :: ' + e.message
+
+### retrieve a complete list of all integrations
+Api.addRoute 'roomIntegrations', authRequired: true,
+	get: ->
+		id = RocketChat.models.Integrations.find().fetch()
+		status: 'success', Integrations: id				
+###
+
+
+### Create outgoing webhooks,
+user must also have create-c permission because
+creating a push point for messages to be push to from Rocket Chat.
+###		
+RocketChat.API.v1.addRoute 'outgoingWebhook', authRequired: true,
+	post: ->
+			if RocketChat.authz.hasPermission(@userId, 'bulk-create-c')
+				try
+					this.response.setTimeout (1000 * @bodyParams.name.length)
+					integration ={ userid:@bodyParams.userid, auth:@bodyParams.authToken, name:@bodyParams.name, enabled:@bodyParams.enabled, name:@bodyParams.roomName, channel:@bodyParams.channel,
+					triggerWords:@bodyParams.triggerWords, urls:@bodyParams.urls, username:@bodyParams.username, alias:@bodyParams.alias, avatar:@bodyParams.avatar, emoji:@bodyParams.emoji, token:@bodyParams.token, 
+					scriptEnable:@bodyParams.scriptEnabled, script:@bodyParams.script }
+					
+					Meteor.runAsUser this.userId, () =>
+						Meteor.call 'addOutgoingIntegration', integration
+					status: 'success' # need to handle error
+				catch e
+					statusCode: 400    # bad request or other errors
+					body: status: 'yep failled again', message: e.name + ' :: ' + e.message
+			else
+				console.log '[restapi] api/outgoingWebhook -> '.red, "User does not have 'bulk-create-c' permission"
+				statusCode: 403
+				body: status: 'error', message: 'You do not have permission to do this'
+
+### Remove Outgoing Webhook
+user must also have create-c permission
+@apiParam {json} An array of intergration webhooks in the body of the POST. 'integration' is integrations name
+use API 'roomIntegrations' method to aquire a list of all webhooks to capture webhook _ids or use ':channel/roomIntgrations' to aquire 
+a list from a specfic channel or private room.
+
+@apiParamExample {json} POST Request Body example:
+  {
+    'integrationId':[ 'integrations_id1','integrations_id2']
+  }	
+###			
+RocketChat.API.v1.addRoute 'removeOutgoingWebhook', authRequired: true,
+	delete: ->
+			if RocketChat.authz.hasPermission(@userId, 'bulk-create-c')
+				try
+					this.response.setTimeout (1000)
+					ids=[]
+					Meteor.runAsUser this.userId, () =>
+						(ids[i]=Meteor.call 'deleteOutgoingIntegration', incoming) for incoming, i in @bodyParams.integrationId
+					status: 'success', deleted : @bodyParams.integrationId # need to handle error
+				catch e
+					statusCode: 400  # bad request or other errors
+					body: status: 'yep failled again bad request '+ @bodyParams.integrationId, message: e.name + ' :: ' + e.message
+			else
+				console.log '[restapi] api/outgoingWebhooks -> '.red, "User does not have 'bulk-create-c' permission"
+				statusCode: 403
+				body: status: 'error', message: 'You do not have permission to do this'
+
+### Create a direct message
+user must also have create-c permission
+pass in the data the user to connect to. (  data='{"username":"Joe"}'    )  connects the user who's header auth creditials are be used.
+to connect two users you must issue command as that user. 
+###  				
+RocketChat.API.v1.addRoute 'createDirectMessage', authRequired: true,
+	post: ->
+			try
+				this.response.setTimeout (1000)
+				Meteor.runAsUser this.userId, () =>
+					Meteor.call 'createDirectMessage', @bodyParams.username
+				status: 'success', created : @bodyParams.username
+			catch e
+				statusCode:400 # bad request
+				body: status: 'bad request missing pramas ' + @bodyParams.username, message: e.name + ':: ' + e.message
+				
