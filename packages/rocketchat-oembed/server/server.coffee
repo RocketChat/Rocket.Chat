@@ -3,6 +3,7 @@ querystring = Npm.require('querystring')
 request = HTTPInternals.NpmModules.request.module
 iconv = Npm.require('iconv-lite')
 ipRangeCheck = Npm.require('ip-range-check')
+he = Npm.require('he')
 
 OEmbed = {}
 
@@ -106,19 +107,19 @@ OEmbed.getUrlMeta = (url, withFragment) ->
 	if content?.body?
 		metas = {}
 		content.body.replace /<title>((.|\n)+?)<\/title>/gmi, (meta, title) ->
-			metas.pageTitle = title
+			metas.pageTitle = he.unescape title
 
 		content.body.replace /<meta[^>]*(?:name|property)=[']([^']*)['][^>]*content=[']([^']*)['][^>]*>/gmi, (meta, name, value) ->
-			metas[changeCase.camelCase(name)] = value
+			metas[changeCase.camelCase(name)] = he.unescape value
 
 		content.body.replace /<meta[^>]*(?:name|property)=["]([^"]*)["][^>]*content=["]([^"]*)["][^>]*>/gmi, (meta, name, value) ->
-			metas[changeCase.camelCase(name)] = value
+			metas[changeCase.camelCase(name)] = he.unescape value
 
 		content.body.replace /<meta[^>]*content=[']([^']*)['][^>]*(?:name|property)=[']([^']*)['][^>]*>/gmi, (meta, value, name) ->
-			metas[changeCase.camelCase(name)] = value
+			metas[changeCase.camelCase(name)] = he.unescape value
 
 		content.body.replace /<meta[^>]*content=["]([^"]*)["][^>]*(?:name|property)=["]([^"]*)["][^>]*>/gmi, (meta, value, name) ->
-			metas[changeCase.camelCase(name)] = value
+			metas[changeCase.camelCase(name)] = he.unescape value
 
 
 		if metas.fragment is '!' and not withFragment?
