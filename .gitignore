@@ -2,6 +2,7 @@
 **/build/*
 **/node_modules/*
 **/tmp/*
+**/.meteor/dev_bundle
 /private/certs/*
 *.bak
 *.iml
