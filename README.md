@@ -1,5 +1,8 @@
 ![Rocket.Chat logo](https://rocket.chat/images/logo/logo-dark.svg?v3)
 
+# Deployment
+1. sudo meteor --port 80 & disown
+
 # The Ultimate Open Source WebChat Platform
 
 [![Rocket.Chat](https://demo.rocket.chat/images/join-chat.svg)](https://demo.rocket.chat/)
