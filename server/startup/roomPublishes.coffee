@@ -53,7 +53,7 @@ Meteor.startup ->
 				jitsiTimeout: 1
 
 		user = RocketChat.models.Users.findOneById this.userId, fields: username: 1
-		if RocketChat.authz.hasPermission(this.userId, 'view-d-room')
+		if RocketChat.authz.hasAtLeastOnePermission(this.userId, ['view-d-room', 'view-joined-room'])
 			# CACHE: can we stop using publications here?
 			return RocketChat.models.Rooms.findByTypeContainigUsernames 'd', [user.username, identifier], options
 		return this.ready()

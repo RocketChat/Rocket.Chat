@@ -35,10 +35,15 @@
 								FlowRouter.go 'group', {name: notification.payload.name}
 
 	showDesktop: (notification) ->
-		if not window.document.hasFocus?() and Meteor.user().status isnt 'busy' and !Meteor.settings.public.sandstorm
-			getAvatarAsPng notification.payload.sender.username, (avatarAsPng) ->
-				notification.icon = avatarAsPng
-				KonchatNotification.notify(notification)
+		if notification.payload.rid is Session.get('openedRoom') and window.document.hasFocus?()
+			return
+
+		if Meteor.user().status is 'busy' or Meteor.settings.public.sandstorm?
+			return
+
+		getAvatarAsPng notification.payload.sender.username, (avatarAsPng) ->
+			notification.icon = avatarAsPng
+			KonchatNotification.notify(notification)
 
 	newMessage: ->
 		if not Session.equals('user_' + Meteor.userId() + '_status', 'busy') and Meteor.user()?.settings?.preferences?.newMessageNotification isnt false
