@@ -82,6 +82,9 @@ Template.messageBox.helpers
 	notSubscribedTpl: ->
 		return RocketChat.roomTypes.getNotSubscribedTpl @_id
 
+	showSandstorm: ->
+		return Meteor.settings.public.sandstorm
+
 Template.messageBox.events
 	'click .join': (event) ->
 		event.stopPropagation()
@@ -172,6 +175,24 @@ Template.messageBox.events
 
 		t.$('.stop-mic').addClass('hidden')
 		t.$('.mic').removeClass('hidden')
+
+	'click .sandstorm-offer': (e, t) ->
+		roomId = @_id
+		RocketChat.Sandstorm.request "uiView", (err, data) =>
+			if err or !data.token
+				console.error err
+				return
+			Meteor.call "sandstormClaimRequest", data.token, data.descriptor, (err, viewInfo) =>
+				if err
+					console.error err
+					return
+
+				Meteor.call "sendMessage", {
+					_id: Random.id()
+					rid: roomId
+					msg: ""
+					urls: [{ url: "grain://sandstorm", sandstormViewInfo: viewInfo }]
+				}
 
 Template.messageBox.onCreated ->
 	@isMessageFieldEmpty = new ReactiveVar true
