@@ -2,7 +2,8 @@ Meteor.startup(function() {
 	RocketChat.settings.addGroup('SlackBridge', function() {
 		this.add('SlackBridge_Enabled', false, {
 			type: 'boolean',
-			i18nLabel: 'Enabled'
+			i18nLabel: 'Enabled',
+			public: true
 		});
 
 		this.add('SlackBridge_APIToken', '', {
