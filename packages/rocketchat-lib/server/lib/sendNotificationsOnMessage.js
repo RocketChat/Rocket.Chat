@@ -279,8 +279,8 @@ RocketChat.callbacks.add('afterSaveMessage', function(message, room) {
 			userIdsToPushNotify = userIdsToPushNotify.concat(highlightsIds);
 		}
 
-		userIdsToNotify = _.compact(_.unique(userIdsToNotify));
-		userIdsToPushNotify = _.compact(_.unique(userIdsToPushNotify));
+		userIdsToNotify = _.without(_.compact(_.unique(userIdsToNotify)), message.u._id);
+		userIdsToPushNotify = _.without(_.compact(_.unique(userIdsToPushNotify)), message.u._id);
 
 		if (userIdsToNotify.length > 0) {
 			for (j = 0, len1 = userIdsToNotify.length; j < len1; j++) {
