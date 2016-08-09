@@ -118,7 +118,7 @@ class SlackBridge {
 						}
 					}
 				}
-				let creator = this.findUser(channelData.creator) || this.addUser(channelData.creator);
+				let creator = channelData.creator ? this.findUser(channelData.creator) || this.addUser(channelData.creator) : null;
 				if (!creator) {
 					logger.events.error('Could not fetch room creator information', channelData.creator);
 					return;
@@ -261,12 +261,12 @@ class SlackBridge {
 
 	saveMessage(message) {
 		logger.class.debug('Save message', message);
-		let channel = this.findChannel(message.channel) || this.addChannel(message.channel);
+		let channel = message.channel ? this.findChannel(message.channel) || this.addChannel(message.channel) : null;
 		let user = null;
 		if (message.subtype === 'message_deleted' || message.subtype === 'message_changed') {
-			user = this.findUser(message.previous_message.user) || this.addUser(message.previous_message.user);
+			user = message.previous_message.user ? this.findUser(message.previous_message.user) || this.addUser(message.previous_message.user) : null;
 		} else {
-			user = this.findUser(message.user) || this.addUser(message.user);
+			user = message.user ? this.findUser(message.user) || this.addUser(message.user) : null;
 		}
 		if (channel && user) {
 			let msgDataDefaults = {
@@ -315,9 +315,11 @@ class SlackBridge {
 			case 'channel_join':
 				return this.joinRoom(room, user);
 			case 'group_join':
-				let inviter = this.findUser(message.inviter) || this.addUser(message.inviter);
-				if (inviter) {
-					return this.joinPrivateGroup(inviter, room, user);
+				if (message.inviter) {
+					let inviter = message.inviter ? this.findUser(message.inviter) || this.addUser(message.inviter) : null;
+					if (inviter) {
+						return this.joinPrivateGroup(inviter, room, user);
+					}
 				}
 				break;
 			case 'channel_leave':
@@ -472,10 +474,15 @@ class SlackBridge {
 	@param [Date] timeStamp the timestamp the file was uploaded
 	**/
 	uploadFile(details, fileUrl, user, room, timeStamp) {
-		HTTP.get(fileUrl, Meteor.bindEnvironment((stream) => {
+		let url = Npm.require('url');
+		let requestModule = /https/i.test(fileUrl) ? Npm.require('https') : Npm.require('http');
+		var parsedUrl = url.parse(fileUrl, true);
+		parsedUrl.headers = { 'Authorization': 'Bearer ' + this.apiToken };
+		requestModule.get(parsedUrl, Meteor.bindEnvironment((stream) => {
 			let fileId = Meteor.fileStore.create(details);
 			if (fileId) {
 				Meteor.fileStore.write(stream, fileId, (err, file) => {
+					console.log('fileStore.write', file);
 					if (err) {
 						throw new Error(err);
 					} else {
