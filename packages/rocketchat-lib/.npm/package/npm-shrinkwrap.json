@@ -7,6 +7,12 @@
           "version": "1.0.0"
         }
       }
+    },
+    "node-dogstatsd": {
+      "version": "0.0.6"
+    },
+    "object-path": {
+      "version": "0.9.2"
     }
   }
 }
