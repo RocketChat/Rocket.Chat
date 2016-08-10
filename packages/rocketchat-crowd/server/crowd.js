@@ -180,6 +180,16 @@ const CROWD = class CROWD {
 };
 
 Accounts.registerLoginHandler('crowd', function(loginRequest) {
+	if (!loginRequest.crowd) {
+		return undefined;
+	}
+
+	logger.info('Init CROWD login', loginRequest.username);
+
+	if (RocketChat.settings.get('CROWD_Enable') !== true) {
+		return fallbackDefaultAccountSystem(this, loginRequest.username, loginRequest.crowdPassword);
+	}
+
 	const crowd = new CROWD();
 	let user;
 	try {

@@ -16,10 +16,10 @@ class Markdown
 		schemes = RocketChat.settings.get('Markdown_SupportSchemesForLink').split(',').join('|')
 
 		# Support ![alt text](http://image url)
-		msg = msg.replace(new RegExp("!\\[([^\\]]+)\\]\\(((?:#{schemes}):\\/\\/.*(?=\\)))\\)", 'gm'), '<a href="$2" title="$1" class="swipebox" target="_blank"><div class="inline-image" style="background-image: url($2);"></div></a>')
+		msg = msg.replace(new RegExp("!\\[([^\\]]+)\\]\\(((?:#{schemes}):\\/\\/[^\\)]+)\\)", 'gm'), '<a href="$2" title="$1" class="swipebox" target="_blank"><div class="inline-image" style="background-image: url($2);"></div></a>')
 
 		# Support [Text](http://link)
-		msg = msg.replace(new RegExp("\\[([^\\]]+)\\]\\(((?:#{schemes}):\\/\\/.*(?=\\)))\\)", 'gm'), '<a href="$2" target="_blank">$1</a>')
+		msg = msg.replace(new RegExp("\\[([^\\]]+)\\]\\(((?:#{schemes}):\\/\\/[^\\)]+)\\)", 'gm'), '<a href="$2" target="_blank">$1</a>')
 
 		# Support <http://link|Text>
 		msg = msg.replace(new RegExp("(?:<|&lt;)((?:#{schemes}):\\/\\/[^\\|]+)\\|(.+?)(?=>|&gt;)(?:>|&gt;)", 'gm'), '<a href="$1" target="_blank">$2</a>')
