@@ -6,6 +6,7 @@ Package.describe({
 });
 
 Npm.depends({
+	'he': '1.1.0',
 	'iconv-lite': '0.4.13',
 	'ip-range-check': '0.0.1'
 });

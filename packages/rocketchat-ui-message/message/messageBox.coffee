@@ -79,11 +79,19 @@ Template.messageBox.helpers
 		if not Template.instance().isMessageFieldEmpty.get() or not Template.instance().showMicButton.get()
 			return 'show-send'
 
+	showLocation: ->
+		if Geolocation.error()
+        	console.log("Geolocation is not supported by this browser.");
+        	return false
+		
+		return Template.instance().showLocationButton.get()
+
 	notSubscribedTpl: ->
 		return RocketChat.roomTypes.getNotSubscribedTpl @_id
 
 	showSandstorm: ->
 		return Meteor.settings.public.sandstorm
+
 
 Template.messageBox.events
 	'click .join': (event) ->
@@ -154,6 +162,45 @@ Template.messageBox.events
 
 		fileUpload filesToUpload
 
+	'click .message-form .icon-location.location': (event, instance) ->
+		roomId = @_id
+
+		if instance.showLocationButton
+
+			userGeoLocation = new ReactiveVar null
+
+			Tracker.autorun (computation) ->
+
+				userGeoLocation.set(Geolocation.latLng())
+
+				if userGeoLocation.get()
+					computation.stop()
+
+					latitude = userGeoLocation.get().lat
+					longitude = userGeoLocation.get().lng
+
+					text = '<div class="location-preview"><img src="https://maps.googleapis.com/maps/api/staticmap?zoom=14&size=250x250&markers=color:gray%7Clabel:%7C'+latitude+','+longitude+'&key='+instance.googleMapsKey.get()+'" /></div>'
+
+					swal
+						title: t('Share_Location_Title')
+						text: text
+						showCancelButton: true
+						closeOnConfirm: true
+						closeOnCancel: true
+						html: true
+					, (isConfirm) ->
+
+						if isConfirm isnt true
+							return
+
+						Meteor.call "sendMessage", {
+							_id: Random.id()
+							rid: roomId
+							msg: ""
+							location: { 'type': 'Point', 'coordinates': [ longitude, latitude ]}
+						}
+
+
 	'click .message-form .mic': (e, t) ->
 		AudioRecorder.start ->
 			t.$('.stop-mic').removeClass('hidden')
@@ -198,6 +245,8 @@ Template.messageBox.onCreated ->
 	@isMessageFieldEmpty = new ReactiveVar true
 	@showMicButton = new ReactiveVar false
 	@showVideoRec = new ReactiveVar false
+	@showLocationButton = new ReactiveVar false
+	@googleMapsKey = new ReactiveVar false
 
 	@autorun =>
 		videoRegex = /video\/webm/i
@@ -213,3 +262,9 @@ Template.messageBox.onCreated ->
 			@showMicButton.set true
 		else
 			@showMicButton.set false
+
+		if RocketChat.settings.get('MapView_Enabled') and RocketChat.settings.get('MapView_GMapsAPIKey')?.length
+			@showLocationButton.set true
+			@googleMapsKey.set RocketChat.settings.get('MapView_GMapsAPIKey')
+		else
+			@showLocationButton.set false
