@@ -80,11 +80,7 @@ Template.messageBox.helpers
 			return 'show-send'
 
 	showLocation: ->
-		if Geolocation.error()
-        	console.log("Geolocation is not supported by this browser.");
-        	return false
-		
-		return Template.instance().showLocationButton.get()
+		return Template.instance().location.get() isnt false
 
 	notSubscribedTpl: ->
 		return RocketChat.roomTypes.getNotSubscribedTpl @_id
@@ -165,40 +161,35 @@ Template.messageBox.events
 	'click .message-form .icon-location.location': (event, instance) ->
 		roomId = @_id
 
-		if instance.showLocationButton
+		position = instance.location.get()
 
-			userGeoLocation = new ReactiveVar null
+		latitude = position.coords.latitude
+		longitude = position.coords.longitude
 
-			Tracker.autorun (computation) ->
+		text = """
+			<div class="location-preview">
+				<img style="height: 250px; width: 250px;" src="https://maps.googleapis.com/maps/api/staticmap?zoom=14&size=250x250&markers=color:gray%7Clabel:%7C#{latitude},#{longitude}&key=#{RocketChat.settings.get('MapView_GMapsAPIKey')}" />
+			</div>
+		"""
 
-				userGeoLocation.set(Geolocation.latLng())
+		swal
+			title: t('Share_Location_Title')
+			text: text
+			showCancelButton: true
+			closeOnConfirm: true
+			closeOnCancel: true
+			html: true
+		, (isConfirm) ->
+			if isConfirm isnt true
+				return
 
-				if userGeoLocation.get()
-					computation.stop()
-
-					latitude = userGeoLocation.get().lat
-					longitude = userGeoLocation.get().lng
-
-					text = '<div class="location-preview"><img src="https://maps.googleapis.com/maps/api/staticmap?zoom=14&size=250x250&markers=color:gray%7Clabel:%7C'+latitude+','+longitude+'&key='+instance.googleMapsKey.get()+'" /></div>'
-
-					swal
-						title: t('Share_Location_Title')
-						text: text
-						showCancelButton: true
-						closeOnConfirm: true
-						closeOnCancel: true
-						html: true
-					, (isConfirm) ->
-
-						if isConfirm isnt true
-							return
-
-						Meteor.call "sendMessage", {
-							_id: Random.id()
-							rid: roomId
-							msg: ""
-							location: { 'type': 'Point', 'coordinates': [ longitude, latitude ]}
-						}
+			Meteor.call "sendMessage",
+				_id: Random.id()
+				rid: roomId
+				msg: ""
+				location:
+					type: 'Point'
+					coordinates: [ longitude, latitude ]
 
 
 	'click .message-form .mic': (e, t) ->
@@ -245,8 +236,7 @@ Template.messageBox.onCreated ->
 	@isMessageFieldEmpty = new ReactiveVar true
 	@showMicButton = new ReactiveVar false
 	@showVideoRec = new ReactiveVar false
-	@showLocationButton = new ReactiveVar false
-	@googleMapsKey = new ReactiveVar false
+	@location = new ReactiveVar false
 
 	@autorun =>
 		videoRegex = /video\/webm/i
@@ -263,8 +253,19 @@ Template.messageBox.onCreated ->
 		else
 			@showMicButton.set false
 
-		if RocketChat.settings.get('MapView_Enabled') and RocketChat.settings.get('MapView_GMapsAPIKey')?.length
-			@showLocationButton.set true
-			@googleMapsKey.set RocketChat.settings.get('MapView_GMapsAPIKey')
+		if RocketChat.settings.get('MapView_Enabled') and RocketChat.settings.get('MapView_GMapsAPIKey')?.length and navigator.geolocation?.getCurrentPosition?
+			success = (position) =>
+				@location.set position
+
+			error = (error) =>
+				console.log 'Error getting your geolocation', error
+				@location.set false
+
+			options =
+				enableHighAccuracy: true
+				maximumAge: 0
+				timeout: 10000
+
+			navigator.geolocation.watchPosition success, error
 		else
-			@showLocationButton.set false
+			@location.set false
