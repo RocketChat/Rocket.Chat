@@ -25,6 +25,7 @@ RocketChat.statistics.get = ->
 	# Message statistics
 	statistics.totalMessages = RocketChat.models.Messages.find().count()
 
+	# @TODO need to count above differently since the usernames fields will not exist
 	m = ->
 		emit 1,
 			sum: this.usernames.length or 0

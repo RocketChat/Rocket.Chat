@@ -10,7 +10,6 @@ RocketChat.models.Roles = new class extends RocketChat.models._Base
 		RocketChat.models[roleScope]?.findUsersInRoles?(name, scope, options)
 
 	isUserInRoles: (userId, roles, scope) ->
-		console.log 'isUserInRoles ->', userId, roles
 		roles = [].concat roles
 		_.some roles, (roleName) =>
 			role = @findOne roleName
