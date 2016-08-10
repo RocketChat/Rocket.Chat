@@ -27,18 +27,17 @@ function fallbackDefaultAccountSystem(bind, username, password) {
 
 
 Accounts.registerLoginHandler('ldap', function(loginRequest) {
-	const self = this;
-
-	if (!loginRequest.ldapOptions) {
+	if (!loginRequest.ldap || !loginRequest.ldapOptions) {
 		return undefined;
 	}
 
-	logger.info('Init login', loginRequest.username);
+	logger.info('Init LDAP login', loginRequest.username);
 
 	if (RocketChat.settings.get('LDAP_Enable') !== true) {
-		return fallbackDefaultAccountSystem(self, loginRequest.username, loginRequest.ldapPass);
+		return fallbackDefaultAccountSystem(this, loginRequest.username, loginRequest.ldapPass);
 	}
 
+	const self = this;
 	const ldap = new LDAP();
 	let ldapUser;
 

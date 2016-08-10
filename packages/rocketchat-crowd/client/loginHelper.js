@@ -8,6 +8,7 @@ Meteor.loginWithCrowd = function(username, password, callback) {
 	username = args.shift();
 	password = args.shift();
 	var loginRequest = {
+		crowd: true,
 		username: username,
 		crowdPassword: password
 	};
