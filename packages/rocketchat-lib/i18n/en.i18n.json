@@ -1301,5 +1301,10 @@
   "Your_file_has_been_deleted" : "Your file has been deleted.",
   "Your_mail_was_sent_to_s" : "Your mail was sent to %s",
   "Your_password_is_wrong" : "Your password is wrong!",
-  "Your_push_was_sent_to_s_devices" : "Your push was sent to %s devices"
+  "Your_push_was_sent_to_s_devices" : "Your push was sent to %s devices",
+  "MapView_Enabled" : "Enable Mapview",
+  "MapView_Enabled_Description" : "Enabling mapview will display a location share button on the left of the chat input field.",
+  "MapView_GMapsAPIKey" : "Google Static Maps API Key",
+  "MapView_GMapsAPIKey_Description" : "This can be obtained from the Google Developers Console for free.",
+  "Share_Location_Title" : "Share Location?"
 }

@@ -74,6 +74,7 @@ livedata@1.0.15
 localstorage@1.0.5
 logging@1.0.8
 matb33:collection-hooks@0.8.1
+mdg:geolocation@1.3.0
 mdg:validation-error@0.5.1
 meteor@1.1.10
 meteor-base@1.0.1
@@ -138,6 +139,7 @@ rocketchat:channel-settings@0.0.1
 rocketchat:channel-settings-mail-messages@0.0.1
 rocketchat:colors@0.0.1
 rocketchat:cors@0.0.1
+rocketchat:crowd@1.0.0
 rocketchat:custom-oauth@1.0.0
 rocketchat:emojione@0.0.1
 rocketchat:favico@0.0.1
@@ -158,6 +160,7 @@ rocketchat:lib@0.0.1
 rocketchat:livechat@0.0.1
 rocketchat:logger@0.0.1
 rocketchat:mailer@0.0.1
+rocketchat:mapview@0.0.1
 rocketchat:markdown@0.0.1
 rocketchat:mentions@0.0.1
 rocketchat:mentions-flextab@0.0.1
