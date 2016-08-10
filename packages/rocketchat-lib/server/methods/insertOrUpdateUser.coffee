@@ -7,7 +7,6 @@ Meteor.methods
 
 		canEditUser = RocketChat.authz.hasPermission( user._id, 'edit-other-user-info')
 		canAddUser = RocketChat.authz.hasPermission( user._id, 'create-user')
-		existingsAdmins = Meteor.users.find( { roles: { $in: ['admin'] } } ).fetch();
 		canAssignAdminRole = RocketChat.authz.hasPermission( user._id, 'assign-admin-role')
 
 		if userData._id and user._id isnt userData._id and canEditUser isnt true
@@ -100,9 +99,10 @@ Meteor.methods
 
 			return _id
 		else
-
-			if existingsAdmins and _.isEqual(existingsAdmins.length, 1) and !_.isEqual(userData.role, 'admin')
-				throw new Meteor.Error 'error-action-not-allowed', 'Leaving the app with not admins is not allowed', { method: 'insertOrUpdateUser', action: 'Leaving the app with not admins' }
+			# prevent removing admin role of last admin
+			adminCount = Meteor.users.find({ roles: { $in: ['admin'] } }).count()
+			if adminCount is 1 and userData.role isnt 'admin'
+				throw new Meteor.Error 'error-action-not-allowed', 'Leaving the app without admins is not allowed', { method: 'insertOrUpdateUser', action: 'Removing admin role of last admin' }
 
 			#update user
 			updateUser = {
