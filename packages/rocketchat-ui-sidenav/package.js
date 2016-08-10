@@ -58,8 +58,6 @@ Package.onUse(function(api) {
 	api.addFiles('side-nav/sideNav.coffee', 'client');
 	api.addFiles('side-nav/starredRooms.coffee', 'client');
 	api.addFiles('side-nav/unreadRooms.coffee', 'client');
-	
-	api.addAssets('styles/side-nav.less', 'server');
 });
 
 Npm.depends({
