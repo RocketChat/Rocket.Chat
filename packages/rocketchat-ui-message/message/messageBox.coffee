@@ -80,6 +80,10 @@ Template.messageBox.helpers
 			return 'show-send'
 
 	showLocation: ->
+		if Geolocation.error()
+        	console.log("Geolocation is not supported by this browser.");
+        	return false
+		
 		return Template.instance().showLocationButton.get()
 
 	notSubscribedTpl: ->
