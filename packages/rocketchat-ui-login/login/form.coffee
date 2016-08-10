@@ -120,7 +120,8 @@ Template.loginForm.events
 				loginMethod = 'loginWithPassword'
 				if RocketChat.settings.get('LDAP_Enable')
 					loginMethod = 'loginWithLDAP'
-
+				if RocketChat.settings.get('CROWD_Enable')
+					loginMethod = 'loginWithCrowd'
 				Meteor[loginMethod] s.trim(formData.emailOrUsername), formData.pass, (error) ->
 					RocketChat.Button.reset(button)
 					if error?

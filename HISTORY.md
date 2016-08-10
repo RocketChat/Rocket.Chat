@@ -1,7 +1,7 @@
 ## NEXT
 * Spotlight (CMD/CTRL + P) now helps to quick search among your channels
 
-## 0.36.0, 2016-Ago-02
+## 0.36.0, 2016-Aug-02
 
 ### Core updates
 

@@ -78,6 +78,14 @@ RocketChat.models.Subscriptions = new class extends RocketChat.models._Base
 
 		return @find(query, options)?.fetch?()?[0]?.ls
 
+	findByRoomIdAndUserIds: (roomId, userIds) ->
+		query =
+			rid: roomId
+			'u._id':
+				$in: userIds
+
+		return @find query
+
 	# UPDATE
 	archiveByRoomIdAndUserId: (roomId, userId) ->
 		query =
