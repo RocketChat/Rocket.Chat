@@ -16,7 +16,7 @@ Meteor.methods
 			adminCount = Meteor.users.find({ roles: { $in: ['admin'] } }).count()
 			userIsAdmin = user.roles.indexOf('admin') > -1
 			if adminCount is 1 and userIsAdmin
-				throw new Meteor.Error 'error-action-not-allowed', 'Leaving the app without admins is not allowed', { method: 'removeUserFromRole', action: 'Removing last user from admin role' }
+				throw new Meteor.Error 'error-action-not-allowed', 'Leaving the app without admins is not allowed', { method: 'removeUserFromRole', action: 'Remove_last_admin' }
 
 		remove = RocketChat.models.Roles.removeUserRoles user._id, roleName, scope
 
