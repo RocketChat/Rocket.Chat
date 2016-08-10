@@ -11,11 +11,6 @@ RocketChat.cache.Rooms = new (class CacheRoom extends RocketChat.cache._Base {
 		this.options = {fields: {usernames: 0}};
 	}
 
-	// FIND ONE
-	findOneById(_id/*, options*/) {
-		return this.findByIndex('_id', _id).fetch();
-	}
-
 	findOneByIdOrName(_idOrName, options) {
 		const query = {
 			$or: [{

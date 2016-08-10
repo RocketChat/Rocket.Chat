@@ -363,7 +363,7 @@ RocketChat.cache._Base = (class CacheBase extends EventEmitter {
 	findByIndex(index, keys, options={}) {
 		return {
 			fetch: () => {
-				return this.processQueryOptionsOnResult(this._findByIndex(index, keys, options));
+				return this.processQueryOptionsOnResult(this._findByIndex(index, keys), options);
 			},
 
 			count: () => {
@@ -432,7 +432,7 @@ RocketChat.cache._Base = (class CacheBase extends EventEmitter {
 		if (action.op.op === 'u') {
 			let diff = {};
 
-			if (!action.op.o.$set && !action.op.o.$set) {
+			if (!action.op.o.$set && !action.op.o.$unset) {
 				diff = action.op.o;
 			} else {
 				if (action.op.o.$set) {
@@ -445,7 +445,7 @@ RocketChat.cache._Base = (class CacheBase extends EventEmitter {
 
 				if (action.op.o.$unset) {
 					for (let key in action.op.o.$unset) {
-						if (action.op.o.$set.hasOwnProperty(key)) {
+						if (action.op.o.$unset.hasOwnProperty(key)) {
 							diff[key] = undefined;
 						}
 					}
@@ -603,6 +603,10 @@ RocketChat.cache._Base = (class CacheBase extends EventEmitter {
 	findOne(query, options) {
 		query = this.processQuery(query);
 		return this.processQueryOptionsOnResult(this.collection.findOne(query), options);
+	}
+
+	findOneById(_id, options) {
+		return this.findByIndex('_id', _id, options).fetch();
 	}
 
 	findWhere(query, options) {
