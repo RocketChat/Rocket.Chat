@@ -18,7 +18,7 @@ RocketChat.QueueMethods = {
 			lm: new Date(),
 			code: roomCode,
 			label: guest.name || guest.username,
-			usernames: [agent.username, guest.username],
+			// usernames: [agent.username, guest.username],
 			t: 'l',
 			ts: new Date(),
 			v: {
@@ -104,7 +104,7 @@ RocketChat.QueueMethods = {
 			lm: new Date(),
 			code: roomCode,
 			label: guest.name || guest.username,
-			usernames: [guest.username],
+			// usernames: [guest.username],
 			t: 'l',
 			ts: new Date(),
 			v: {

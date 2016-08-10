@@ -12,11 +12,14 @@ const options = {
 		jitsiTimeout: 1,
 		description: 1,
 
+		// @TODO create an API to register this fields based on room type
 		livechatData: 1,
 		tags: 1,
 		sms: 1,
 		code: 1,
-		open: 1
+		open: 1,
+		v: 1,
+		label: 1
 	})
 };
 
@@ -63,11 +66,8 @@ Meteor.methods({
 
 		if (roomFind) {
 			room = roomFind.call(this, name);
-
-			console.log('room ->', room);
 		} else {
 			room = RocketChat.cache.Rooms.findByIndex('t,name', [type, name]).fetch();
-			console.log('room 2 ->', room);
 		}
 
 		if (!room) {

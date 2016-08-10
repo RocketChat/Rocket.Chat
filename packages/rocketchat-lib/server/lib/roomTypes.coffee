@@ -12,20 +12,18 @@ RocketChat.roomTypes = new class roomTypesServer extends roomTypesCommon
 
 		@roomTypes[roomType].publish = callback
 
-
-	setRoomFind = (roomType, callback) ->
-		if roomTypes[roomType]?.roomFind?
+	setRoomFind: (roomType, callback) ->
+		if @roomTypes[roomType]?.roomFind?
 			throw new Meteor.Error 'room-find-exists', 'Room find for the given type already exists'
 
-		unless roomTypes[roomType]?
-			roomTypes[roomType] = {}
+		unless @roomTypes[roomType]?
+			@roomTypes[roomType] = {}
 
-		roomTypes[roomType].roomFind = callback
+		@roomTypes[roomType].roomFind = callback
 
-	getRoomFind = (roomType) ->
-		return unless roomTypes[roomType]?.roomFind?
-		return roomTypes[roomType].roomFind
-
+	getRoomFind: (roomType) ->
+		return unless @roomTypes[roomType]?.roomFind?
+		return @roomTypes[roomType].roomFind
 
 	### run the publish for a room type
 	@param scope: Meteor publish scope
