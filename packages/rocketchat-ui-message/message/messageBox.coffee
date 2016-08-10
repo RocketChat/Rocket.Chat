@@ -239,7 +239,7 @@ Template.messageBox.onCreated ->
 	@location = new ReactiveVar false
 
 	@autorun =>
-		videoRegex = /video\/webm/i
+		videoRegex = /video\/webm|video\/\*/i
 		videoEnabled = !RocketChat.settings.get("FileUpload_MediaTypeWhiteList") || RocketChat.settings.get("FileUpload_MediaTypeWhiteList").match(videoRegex)
 		if RocketChat.settings.get('Message_VideoRecorderEnabled') and (navigator.getUserMedia? or navigator.webkitGetUserMedia?) and videoEnabled and RocketChat.settings.get('FileUpload_Enabled')
 			@showVideoRec.set true
