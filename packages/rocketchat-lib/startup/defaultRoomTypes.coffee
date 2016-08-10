@@ -11,8 +11,6 @@ RocketChat.roomTypes.add 'c', 10,
 		action: (params, queryParams) ->
 			openRoom 'c', params.name
 			RocketChat.TabBar.showGroup 'channel'
-		link: (sub) ->
-			return { name: sub.name }
 	findRoom: (identifier) ->
 		query =
 			t: 'c'
@@ -55,8 +53,6 @@ RocketChat.roomTypes.add 'p', 30,
 		action: (params, queryParams) ->
 			openRoom 'p', params.name
 			RocketChat.TabBar.showGroup 'privategroup'
-		link: (sub) ->
-			return { name: sub.name }
 	findRoom: (identifier) ->
 		query =
 			t: 'p'
