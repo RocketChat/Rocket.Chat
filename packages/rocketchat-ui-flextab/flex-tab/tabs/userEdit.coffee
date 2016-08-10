@@ -9,7 +9,17 @@ Template.userEdit.helpers
 		return !Template.instance().user || Template.instance().user.requirePasswordChange
 
 	role: ->
-		return RocketChat.models.Roles.find({}, { sort: { description: 1, _id: 1 } })
+		query = {"scope": "Users"} # query placeholder
+
+		return RocketChat.models.Roles.find(query, { sort: { description: 1, _id: 1 } })
+
+	isDisabled: ->
+		existingAdmins = Meteor.users.find( { roles: { $in: ['admin'] } } ).fetch() # query over existing admins
+		hasPermission = RocketChat.authz.hasAtLeastOnePermission('assign-admin-role') # boolean to check if the user can edit admin roles
+		isEdit = !!Template.instance().user # if the current felxbox is beign showed on edit case.
+		user = Template.instance().user
+
+		return existingAdmins and _.isEqual(existingAdmins.length, 1) and isEdit and user.roles and _.isArray(user.roles) and _.isEqual(user.roles[0], 'admin')
 
 	selectUserRole: ->
 		if @_id is 'user'
@@ -17,6 +27,7 @@ Template.userEdit.helpers
 
 	name: ->
 		return @description or @_id
+
 
 Template.userEdit.events
 	'click .cancel': (e, t) ->
@@ -35,12 +46,19 @@ Template.userEdit.events
 
 		t.save(e.currentTarget)
 
+Template.userEdit.onRendered ->
+	this.setUserRoleOnSelect()
+
 Template.userEdit.onCreated ->
 	@user = this.data?.user
 
+	@setUserRoleOnSelect = =>
+		if @user
+		 $("#role").val(@user.roles[0])
+
 	@cancel = (form, username) =>
 		form.reset()
-		this.$('input[type=checkbox]').prop('checked', true);
+		this.$('input[type=checkbox]').prop('checked', true)
 		if @user
 			@data.back(username)
 		else
@@ -88,4 +106,4 @@ Template.userEdit.onCreated ->
 					@cancel(form, userData.username)
 
 				if error
-					handleError(error);
+					handleError(error)

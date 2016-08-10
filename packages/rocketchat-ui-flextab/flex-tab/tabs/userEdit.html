@@ -40,15 +40,15 @@
 						</label>
 					</div>
 				{{/if}}
+				<div class="input-line">
+					<label for="role">{{_ "Role"}}</label>
+					<select id="role" disabled={{isDisabled}}>
+						{{#each role}}
+							<option value="{{_id}}" selected="{{selectUserRole}}">{{name}}</option>
+						{{/each}}
+					</select>
+				</div>
 				{{#unless user}}
-					<div class="input-line">
-						<label for="role">{{_ "Role"}}</label>
-						<select id="role">
-							{{#each role}}
-								<option value="{{_id}}" selected="{{selectUserRole}}">{{name}}</option>
-							{{/each}}
-						</select>
-					</div>
 					<div class="input-line">
 						<label for="joinDefaultChannels">
 							<input type="checkbox" id="joinDefaultChannels" value="1" checked="true">

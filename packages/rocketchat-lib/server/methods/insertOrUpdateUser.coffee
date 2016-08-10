@@ -7,12 +7,17 @@ Meteor.methods
 
 		canEditUser = RocketChat.authz.hasPermission( user._id, 'edit-other-user-info')
 		canAddUser = RocketChat.authz.hasPermission( user._id, 'create-user')
+		existingsAdmins = Meteor.users.find( { roles: { $in: ['admin'] } } ).fetch();
+		canAssignAdminRole = RocketChat.authz.hasPermission( user._id, 'assign-admin-role')
 
 		if userData._id and user._id isnt userData._id and canEditUser isnt true
 			throw new Meteor.Error 'error-action-not-allowed', 'Editing user is not allowed', { method: 'insertOrUpdateUser', action: 'Editing_user' }
 
 		if not userData._id and canAddUser isnt true
 			throw new Meteor.Error 'error-action-not-allowed', 'Adding user is not allowd', { method: 'insertOrUpdateUser', action: 'Adding_user' }
+
+		if canAssignAdminRole isnt true
+			throw new Meteor.Error 'error-action-not-allowed', 'You cant assign admin role', { method: 'insertOrUpdateUser', action: 'Editing_user' }
 
 		unless s.trim(userData.name)
 			throw new Meteor.Error 'error-the-field-is-required', 'The field Name is required', { method: 'insertOrUpdateUser', field: 'Name' }
@@ -95,10 +100,15 @@ Meteor.methods
 
 			return _id
 		else
+
+			if existingsAdmins and _.isEqual(existingsAdmins.length, 1) and !_.isEqual(userData.role, 'admin')
+				throw new Meteor.Error 'error-action-not-allowed', 'Leaving the app with not admins is not allowed', { method: 'insertOrUpdateUser', action: 'Leaving the app with not admins' }
+
 			#update user
 			updateUser = {
 				$set: {
 					name: userData.name,
+					roles: [ userData.role ],
 					requirePasswordChange: userData.requirePasswordChange
 				}
 			}
