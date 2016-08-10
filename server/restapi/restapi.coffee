@@ -349,7 +349,7 @@ Api.addRoute 'addUser', authRequired: true,
 					
 					Meteor.runAsUser this.userId, () =>
 						(Meteor.call 'addUserToRoom', rid:@bodyParams.room, username:@bodyParams.username)
-					status: 'success', rid:@bodyParams.room, username:@bodyParams.username # need to handle error
+					status: 'success', rid:@bodyParams.room, username:@bodyParams.username
 				catch e
 					statusCode: 400    # bad request or other errors
 					body: status: 'fail', message: e.name + ' :: ' + e.message

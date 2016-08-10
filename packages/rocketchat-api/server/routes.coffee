@@ -164,6 +164,23 @@ RocketChat.API.v1.addRoute 'users.delete', authRequired: true,
 
 		return RocketChat.API.v1.success
 
+# addUser to a channel/private group
+RocketChat.API.v1.addRoute 'addUser', authRequired: true,
+	post: ->
+			if RocketChat.authz.hasPermission(@userId, 'bulk-create-c')
+				try
+					this.response.setTimeout (1000 * @userId.length)
+					Meteor.runAsUser this.userId, () =>
+						(Meteor.call 'addUserToRoom', rid:@bodyParams.room, username:@bodyParams.username)
+					status: 'success', rid:@bodyParams.room, username:@bodyParams.username
+				catch e
+					statusCode: 400    # bad request or other errors
+					body: status: 'fail', message: e.name + ' :: ' + e.message
+			else
+				console.log '[restapi] addUserToRoom -> '.red, "User does not have 'bulk-create-c' permission"
+				statusCode: 403
+				body: status: 'error', message: 'You do not have permission to do this'	
+				
 ### Create Private Group
  example data:
   {"name":"room5","members":["Jeff","Larry","Stephen"]}
@@ -217,7 +234,7 @@ RocketChat.API.v1.addRoute 'bulk/removeGroup', authRequired: true,
 **Note make sure you encode all channel/private rooms  because they start with '#' === '%23' 
 Example string ('http://your url here : 3000/api/%23testRoom/roomIntegrations',headers={'X-User-Id':'user_token','X-Auth-Token':'user_token'})
 ###
-RocketChat.API.v1.addRoute ':channel/roomIntgrations', authRequired: true,
+RocketChat.API.v1.addRoute ':channel/roomIntgrations.list', authRequired: true,
 	get: ->
 		try
 			if not channel?
@@ -231,7 +248,7 @@ RocketChat.API.v1.addRoute ':channel/roomIntgrations', authRequired: true,
 			body: status: 'Epic fail', message: e.name + ' :: ' + e.message
 
 ### retrieve a complete list of all integrations
-Api.addRoute 'roomIntegrations', authRequired: true,
+Api.addRoute 'roomIntegrations.list', authRequired: true,
 	get: ->
 		id = RocketChat.models.Integrations.find().fetch()
 		status: 'success', Integrations: id				
