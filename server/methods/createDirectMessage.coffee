@@ -23,6 +23,16 @@ Meteor.methods
 
 		now = new Date()
 
+		if to.name and to.name != to.username
+			toRoomName = to.username + ' (' + to.name + ')'
+		else
+			toRoomName = to.username
+
+		if me.name and me.name != me.username
+			meRoomName = me.username + ' (' + me.name + ')'
+		else
+			meRoomName = me.username
+
 		# Make sure we have a room
 		RocketChat.models.Rooms.upsert
 			_id: rid
@@ -45,6 +55,7 @@ Meteor.methods
 				open: true
 			$setOnInsert:
 				name: to.username
+				roomName: toRoomName
 				t: 'd'
 				alert: false
 				unread: 0
@@ -59,6 +70,7 @@ Meteor.methods
 		,
 			$setOnInsert:
 				name: me.username
+				roomName: meRoomName
 				t: 'd'
 				open: false
 				alert: false
