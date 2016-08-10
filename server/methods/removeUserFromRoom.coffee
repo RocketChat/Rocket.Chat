@@ -5,7 +5,6 @@ Meteor.methods
 
 		fromId = Meteor.userId()
 		check(data, Match.ObjectIncluding({ rid: String, username: String }))
-		existingsAdmins = Meteor.users.find( { roles: { $in: ['admin'] } } ).fetch();
 
 		unless RocketChat.authz.hasPermission(fromId, 'remove-user', data.rid)
 			throw new Meteor.Error 'error-not-allowed', 'Not allowed', { method: 'removeUserFromRoom' }
@@ -14,9 +13,6 @@ Meteor.methods
 
 		if data.username not in (room?.usernames or [])
 			throw new Meteor.Error 'error-user-not-in-room', 'User is not in this room', { method: 'removeUserFromRoom' }
-
-		if existingsAdmins and _.isEqual(existingsAdmins.length, 1)
-			throw new Meteor.Error 'error-action-not-allowed', 'Leaving the app with not admins is not allowed', { method: 'removeUserFromRoom', action: 'Leaving the app with not admins' }
 
 		removedUser = RocketChat.models.Users.findOneByUsername data.username
 
