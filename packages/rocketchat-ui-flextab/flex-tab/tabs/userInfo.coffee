@@ -42,7 +42,7 @@ Template.userInfo.helpers
 	userTime: ->
 		user = Template.instance().user.get()
 		if user.utcOffset?
-			return Template.instance().now.get().utcOffset(user.utcOffset).format('LT')
+			return Template.instance().now.get().utcOffset(user.utcOffset).format(RocketChat.settings.get('Message_TimeFormat'))
 
 	canRemoveUser: ->
 		return RocketChat.authz.hasAllPermission('remove-user', Session.get('openedRoom'))
