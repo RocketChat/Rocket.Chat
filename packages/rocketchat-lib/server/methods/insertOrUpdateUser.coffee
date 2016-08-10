@@ -7,7 +7,6 @@ Meteor.methods
 
 		canEditUser = RocketChat.authz.hasPermission( user._id, 'edit-other-user-info')
 		canAddUser = RocketChat.authz.hasPermission( user._id, 'create-user')
-		canAssignAdminRole = RocketChat.authz.hasPermission( user._id, 'assign-admin-role')
 
 		if userData._id and user._id isnt userData._id and canEditUser isnt true
 			throw new Meteor.Error 'error-action-not-allowed', 'Editing user is not allowed', { method: 'insertOrUpdateUser', action: 'Editing_user' }
@@ -15,8 +14,8 @@ Meteor.methods
 		if not userData._id and canAddUser isnt true
 			throw new Meteor.Error 'error-action-not-allowed', 'Adding user is not allowd', { method: 'insertOrUpdateUser', action: 'Adding_user' }
 
-		if canAssignAdminRole isnt true
-			throw new Meteor.Error 'error-action-not-allowed', 'You cant assign admin role', { method: 'insertOrUpdateUser', action: 'Editing_user' }
+		if userData.role is 'admin' and not RocketChat.authz.hasPermission Meteor.userId(), 'assign-admin-role'
+			throw new Meteor.Error 'error-action-not-allowed', 'Assigning admin is not allowed', { method: 'insertOrUpdateUser', action: 'Assign_admin' }
 
 		unless s.trim(userData.name)
 			throw new Meteor.Error 'error-the-field-is-required', 'The field Name is required', { method: 'insertOrUpdateUser', field: 'Name' }
@@ -72,7 +71,6 @@ Meteor.methods
 
 				header = RocketChat.placeholders.replace(RocketChat.settings.get('Email_Header') || "")
 				footer = RocketChat.placeholders.replace(RocketChat.settings.get('Email_Footer') || "")
-
 
 				if RocketChat.settings.get('Accounts_UserAddedEmail_Customized')
 					subject = RocketChat.settings.get('Accounts_UserAddedEmailSubject')
