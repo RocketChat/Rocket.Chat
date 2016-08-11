@@ -29,9 +29,10 @@ var casTicket = function(req, token, callback) {
 	var baseUrl = RocketChat.settings.get('CAS_base_url');
 	logger.debug('Using CAS_base_url: ' + baseUrl);
 
+	var appUrl = Meteor.absoluteUrl().replace(/\/$/, '') + __meteor_runtime_config__.ROOT_URL_PATH_PREFIX;
 	var cas = new CAS({
 		base_url: baseUrl,
-		service: Meteor.absoluteUrl() + '_cas/' + token
+		service: appUrl + '/_cas/' + token
 	});
 
 	cas.validate(ticketId, function(err, status, username) {
