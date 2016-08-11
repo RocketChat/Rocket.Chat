@@ -168,6 +168,7 @@
   "are_typing" : "are typing",
   "Are_you_sure" : "Are you sure?",
   "Are_you_sure_you_want_to_delete_your_account" : "Are you sure you want to delete your account?",
+  "Assign_admin" : "Assigning admin",
   "at" : "at",
   "Auth_Token" : "Auth Token",
   "Author" : "Author",
@@ -920,6 +921,7 @@
   "Remove_as_owner" : "Remove as owner",
   "Remove_custom_oauth" : "Remove custom oauth",
   "Remove_from_room" : "Remove from room",
+  "Remove_last_admin" : "Removing last admin",
   "Remove_someone_from_room" : "Remove someone from the room",
   "Removed" : "Removed",
   "Report_Abuse" : "Report Abuse",
@@ -1028,6 +1030,9 @@
   "Site_Url" : "Site URL",
   "Site_Url_Description" : "Example: https://chat.domain.com/",
   "Skip" : "Skip",
+  "SlackBridge_got_an_error_while_importing_your_messages_at_s__s_" : "SlackBridge got an error while importing your messages at %s: %s",
+  "SlackBridge_has_finished_importing_your_messages_at_s_" : "SlackBridge has finished importing your messages at %s",
+  "SlackBridge_is_importing_your_messages_at_s_" : "SlackBridge is importing your messages at %s",
   "Slash_Gimme_Description" : "Displays ༼ つ ◕_◕ ༽つ before your message",
   "Slash_LennyFace_Description" : "Displays ( ͡° ͜ʖ ͡°) after your message",
   "Slash_Shrug_Description" : "Displays ¯\\_(ツ)_/¯ after your message",
@@ -1300,5 +1305,10 @@
   "Your_file_has_been_deleted" : "Your file has been deleted.",
   "Your_mail_was_sent_to_s" : "Your mail was sent to %s",
   "Your_password_is_wrong" : "Your password is wrong!",
-  "Your_push_was_sent_to_s_devices" : "Your push was sent to %s devices"
+  "Your_push_was_sent_to_s_devices" : "Your push was sent to %s devices",
+  "MapView_Enabled" : "Enable Mapview",
+  "MapView_Enabled_Description" : "Enabling mapview will display a location share button on the left of the chat input field.",
+  "MapView_GMapsAPIKey" : "Google Static Maps API Key",
+  "MapView_GMapsAPIKey_Description" : "This can be obtained from the Google Developers Console for free.",
+  "Share_Location_Title" : "Share Location?"
 }
