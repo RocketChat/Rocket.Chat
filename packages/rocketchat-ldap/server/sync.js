@@ -105,7 +105,7 @@ getDataToSyncUserData = function getDataToSyncUserData(ldapUser, user) {
 		}
 
 		if (user.ldap !== true) {
-			userData = true;
+			userData.ldap = true;
 		}
 
 		if (_.size(userData)) {
