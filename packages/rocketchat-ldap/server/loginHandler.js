@@ -25,7 +25,6 @@ function fallbackDefaultAccountSystem(bind, username, password) {
 	return Accounts._runLoginHandlers(bind, loginRequest);
 }
 
-
 Accounts.registerLoginHandler('ldap', function(loginRequest) {
 	if (!loginRequest.ldap || !loginRequest.ldapOptions) {
 		return undefined;
@@ -102,7 +101,7 @@ Accounts.registerLoginHandler('ldap', function(loginRequest) {
 
 	// Login user if they exist
 	if (user) {
-		if (user.ldap !== true) {
+		if (user.ldap !== true && RocketChat.settings.get('LDAP_Merge_Existing_Users') !== true) {
 			logger.info('User exists without "ldap: true"');
 			throw new Meteor.Error('LDAP-login-error', 'LDAP Authentication succeded, but there\'s already an existing user with provided username ['+username+'] in Mongo.');
 		}
@@ -157,19 +156,6 @@ Accounts.registerLoginHandler('ldap', function(loginRequest) {
 	}
 
 	syncUserData(userObject, ldapUser);
-
-	let ldapUserService = {
-		ldap: true
-	};
-
-	if (Unique_Identifier_Field) {
-		ldapUserService['services.ldap.idAttribute'] = Unique_Identifier_Field.attribute;
-		ldapUserService['services.ldap.id'] = Unique_Identifier_Field.value;
-	}
-
-	Meteor.users.update(userObject._id, {
-		$set: ldapUserService
-	});
 
 	logger.info('Joining user to default channels');
 	Meteor.runAsUser(userObject._id, function() {
