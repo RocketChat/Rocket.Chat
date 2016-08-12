@@ -9,14 +9,18 @@ class BotHelpers {
 			online: { 'status': { $ne: 'offline' } },
 			users: { 'roles': { $not: { $all: ['bot'] } } }
 		};
-		this.setupCursors();
+		// init cursors with fields setting and update on setting change
+		RocketChat.settings.get('BotHelpers_userFields', this.setupCursors);
 	}
 
-	// Setup collection cursors in method to be reset when settings change
-	setupCursors() {
-		let csv = String(RocketChat.settings.get('BotHelpers_userFields'));
+	// setup collection cursors with array of fields from setting
+	setupCursors(fieldsSetting) {
+		console.log(typeof fieldsSetting, fieldsSetting);
 		this.userFields = {};
-		String(csv).split(',').forEach((n) => {
+		if (typeof fieldsSetting === 'string') {
+			fieldsSetting = fieldsSetting.split(',');
+		}
+		fieldsSetting.forEach((n) => {
 			this.userFields[n.trim()] = 1;
 		});
 		this._allUsers = Meteor.users.find(this.queries.users, { fields: this.userFields });
@@ -34,34 +38,80 @@ class BotHelpers {
 		}
 	}
 
+	// generic error whenever property access insufficient to fill request
+	requestError() {
+		throw new Meteor.Error('error-not-allowed', 'Bot request not allowed', { method: 'botRequest', action: 'bot_request' });
+	}
+
 	// "public" properties accessed by getters
+	// allUsers / onlineUsers return whichever properties are enabled by settings
 	get allUsers() {
-		return this._allUsers.fetch();
+		if (!this.userFields.length) {
+			this.requestError();
+			return false;
+		} else {
+			return this._allUsers.fetch();
+		}
 	}
 	get onlineUsers() {
-		return this._onlineUsers.fetch();
+		if (!this.userFields.length) {
+			this.requestError();
+			return false;
+		} else {
+			return this._onlineUsers.fetch();
+		}
 	}
 	get allUsernames() {
-		return this._allUsers.fetch().map((user) => user.username);
+		if (!this.userFields.hasOwnProperty('username')) {
+			this.requestError();
+			return false;
+		} else {
+			return this._allUsers.fetch().map((user) => user.username);
+		}
 	}
 	get onlineUsernames() {
-		return this._onlineUsers.fetch().map((user) => user.username);
+		if (!this.userFields.hasOwnProperty('username')) {
+			this.requestError();
+			return false;
+		} else {
+			return this._onlineUsers.fetch().map((user) => user.username);
+		}
 	}
 	get allNames() {
-		return this._allUsers.fetch().map((user) => user.name);
+		if (!this.userFields.hasOwnProperty('name')) {
+			this.requestError();
+			return false;
+		} else {
+			return this._allUsers.fetch().map((user) => user.name);
+		}
 	}
 	get onlineNames() {
-		return this._onlineUsers.fetch().map((user) => user.name);
+		if (!this.userFields.hasOwnProperty('name')) {
+			this.requestError();
+			return false;
+		} else {
+			return this._onlineUsers.fetch().map((user) => user.name);
+		}
 	}
 	get allIDs() {
-		return this._allUsers.fetch().map((user) => {
-			return { 'id': user._id, 'name': user.username };
-		});
+		if (!this.userFields.hasOwnProperty('_id') || !this.userFields.hasOwnProperty('username')) {
+			this.requestError();
+			return false;
+		} else {
+			return this._allUsers.fetch().map((user) => {
+				return { 'id': user._id, 'name': user.username };
+			});
+		}
 	}
 	get onlineIDs() {
-		return this._onlineUsers.fetch().map((user) => {
-			return { 'id': user._id, 'name': user.username };
-		});
+		if (!this.userFields.hasOwnProperty('_id') || !this.userFields.hasOwnProperty('username')) {
+			this.requestError();
+			return false;
+		} else {
+			return this._onlineUsers.fetch().map((user) => {
+				return { 'id': user._id, 'name': user.username };
+			});
+		}
 	}
 }
 
@@ -73,7 +123,7 @@ Meteor.methods({
 		if (userID && RocketChat.authz.hasRole(userID, 'bot')) {
 			return botHelpers.request(...args);
 		} else {
-			throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'botHelpers' });
+			throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'botRequest' });
 		}
 	}
 });
