@@ -13,6 +13,9 @@ Template.directMessages.helpers
 
 	canCreate: ->
 		return RocketChat.authz.hasAtLeastOnePermission ['create-d']
+		
+	showCount: ->
+		return RocketChat.settings.get 'SideNav_Show_Count'
 
 Template.directMessages.events
 	'click .add-room': (e, instance) ->

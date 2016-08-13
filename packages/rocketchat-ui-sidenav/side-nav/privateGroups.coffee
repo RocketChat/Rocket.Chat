@@ -20,6 +20,9 @@ Template.privateGroups.helpers
 	canCreate: ->
 		return RocketChat.authz.hasAtLeastOnePermission ['create-p']
 		
+	showCount: ->
+		return RocketChat.settings.get 'SideNav_Show_Count'
+		
 Template.privateGroups.events
 	'click .add-room': (e, instance) ->
 		if RocketChat.authz.hasAtLeastOnePermission('create-p')

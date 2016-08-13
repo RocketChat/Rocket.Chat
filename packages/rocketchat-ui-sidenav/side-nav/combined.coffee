@@ -18,6 +18,9 @@ Template.combined.helpers
 
 	canCreate: ->
 		return RocketChat.authz.hasAtLeastOnePermission ['create-c', 'create-p']
+		
+	showCount: ->
+		return RocketChat.settings.get 'SideNav_Show_Count'
 
 Template.combined.events
 	'click .add-room': (e, instance) ->

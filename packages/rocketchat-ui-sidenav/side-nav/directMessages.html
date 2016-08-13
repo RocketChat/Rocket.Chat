@@ -1,6 +1,6 @@
 <template name="directMessages">
 	<h3 class="add-room {{isActive}}">
-		{{_ "Direct_Messages"}} <span class="room-count-small">({{rooms.count}})</span>
+		{{_ "Direct_Messages"}} {{#if showCount}}<span class="room-count-small">({{rooms.count}})</span>{{/if}}
 		{{#if canCreate}}
 			<i class="icon-plus"></i>
 		{{/if}}
