@@ -1023,7 +1023,7 @@
   "Show_preregistration_form" : "Show pre-registration form",
   "Show_queue_list_to_all_agents" : "Show queue list to all agents",
   "Showing_archived_results" : "<p>Showing <b>%s</b> archived results</p>",
-  "Showing_online_users" : "Showing <b>__total_showing__</b> of __total__ users",
+  "Showing_online_users" : "Showing: <b>__total_showing__</b>, Online: __online__, Total: __total__ users",
   "Showing_results" : "<p>Showing <b>%s</b> results</p>",
   "since_creation" : "since %s",
   "Site_Name" : "Site Name",
