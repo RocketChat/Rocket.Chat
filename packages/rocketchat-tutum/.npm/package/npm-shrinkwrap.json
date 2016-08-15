@@ -1,10 +1,10 @@
 {
   "dependencies": {
     "redis": {
-      "version": "2.2.5",
+      "version": "https://registry.npm.taobao.org/redis/download/redis-2.2.5.tgz",
       "dependencies": {
         "double-ended-queue": {
-          "version": "2.1.0-0"
+          "version": "https://registry.npm.taobao.org/double-ended-queue/download/double-ended-queue-2.1.0-0.tgz"
         }
       }
     }

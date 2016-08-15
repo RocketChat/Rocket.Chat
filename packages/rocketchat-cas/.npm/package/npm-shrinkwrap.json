@@ -1,7 +1,7 @@
 {
   "dependencies": {
     "cas": {
-      "version": "0.0.3"
+      "version": "https://registry.npm.taobao.org/cas/download/cas-0.0.3.tgz"
     }
   }
 }

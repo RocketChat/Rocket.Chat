@@ -1,13 +1,13 @@
 {
   "dependencies": {
     "image-size": {
-      "version": "0.4.0"
+      "version": "https://registry.npm.taobao.org/image-size/download/image-size-0.4.0.tgz"
     },
     "mime-types": {
-      "version": "2.1.9",
+      "version": "https://registry.npm.taobao.org/mime-types/download/mime-types-2.1.9.tgz",
       "dependencies": {
         "mime-db": {
-          "version": "1.21.0"
+          "version": "https://registry.npm.taobao.org/mime-db/download/mime-db-1.21.0.tgz"
         }
       }
     }

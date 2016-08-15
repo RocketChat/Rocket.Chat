@@ -4,6 +4,13 @@ class CachedCollectionManager {
 	constructor() {
 		this.items = [];
 		this._syncEnabled = false;
+		this.commonData = localforage.createInstance({
+			name: 'commonData'
+		});
+
+		this.personalData = localforage.createInstance({
+			name: 'personalData'
+		});
 
 		const _unstoreLoginToken = Accounts._unstoreLoginToken;
 		Accounts._unstoreLoginToken = (...args) => {
@@ -20,6 +27,18 @@ class CachedCollectionManager {
 		for (const item of this.items) {
 			item.clearCache();
 		}
+	}
+
+	commonSubReady() {
+		let subsReady = true;
+		for (const item of this.items) {
+			if (item.dataType === 'common') {
+				if (!item.ready.get()) {
+					subsReady = false;
+				}
+			}
+		}
+		return subsReady;
 	}
 
 	countQueries() {
@@ -53,7 +72,8 @@ class CachedCollection {
 		useCache = true,
 		debug = true,
 		version = 1,
-		maxCacheTime = 60*60*24*30
+		maxCacheTime = 60*60*24*30,
+		dataType = 'common'
 	}) {
 		this.collection = collection || new Meteor.Collection(null);
 
@@ -69,8 +89,14 @@ class CachedCollection {
 		this.version = version;
 		this.updatedAt = new Date(0);
 		this.maxCacheTime = maxCacheTime;
-
+		this.dataType = dataType;
 		RocketChat.CachedCollectionManager.register(this);
+		// define collection save at which database
+		if (this.dataType === 'common') {
+			this.storeDatabase = RocketChat.CachedCollectionManager.commonData;
+		}else {
+			this.storeDatabase = RocketChat.CachedCollectionManager.personalData;
+		}
 	}
 
 	log(...args) {
@@ -94,8 +120,7 @@ class CachedCollection {
 		if (this.useCache === false) {
 			return callback(false);
 		}
-
-		localforage.getItem(this.name, (error, data) => {
+		this.storeDatabase.getItem(this.name, (error, data) => {
 			if (data && data.version < this.version) {
 				this.clearCache();
 				callback(false);
@@ -201,7 +226,7 @@ class CachedCollection {
 			data = this.collection.find().fetch();
 		}
 
-		localforage.setItem(this.name, {
+		this.storeDatabase.setItem(this.name, {
 			updatedAt: new Date,
 			version: this.version,
 			records: data
@@ -210,8 +235,18 @@ class CachedCollection {
 	}
 
 	clearCache() {
-		this.log('clearing cache');
-		localforage.removeItem(this.name);
+		if (this.dataType !== 'common') {
+			this.log(this.name + ' is clearing cache');
+			this.storeDatabase.removeItem(this.name);
+
+			this.log(this.name + 'clearing collection records from memory');
+			this.collection.remove({});
+
+			// reset uninit
+			this.updatedAt = new Date(0);
+			this.initiated = false;
+			this.ready.set(false);
+		}
 	}
 
 	setupListener(eventType, eventName) {
