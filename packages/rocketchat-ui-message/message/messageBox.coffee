@@ -56,24 +56,15 @@ Template.messageBox.helpers
 			selfTyping: MsgTyping.selfTyping.get()
 			users: usernames.join " #{t 'and'} "
 		}
+
 	fileUploadAllowedMediaTypes: ->
 		return RocketChat.settings.get('FileUpload_MediaTypeWhiteList')
 
 	showMic: ->
-		if not Template.instance().isMessageFieldEmpty.get()
-			return
-
-		if Template.instance().showMicButton.get()
-			return 'show-mic'
+		return Template.instance().showMicButton.get()
 
 	showVRec: ->
-		if not Template.instance().isMessageFieldEmpty.get()
-			return 'hide-vrec'
-
-		if Template.instance().showVideoRec.get()
-			return ''
-		else
-			return 'hide-vrec'
+		return Template.instance().showVideoRec.get()
 
 	showSend: ->
 		if not Template.instance().isMessageFieldEmpty.get() or not Template.instance().showMicButton.get()
