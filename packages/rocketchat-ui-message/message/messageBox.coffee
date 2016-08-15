@@ -80,7 +80,7 @@ Template.messageBox.helpers
 			return 'show-send'
 
 	showLocation: ->
-		return Template.instance().location.get() isnt false
+		return RocketChat.Geolocation.get() isnt false
 
 	notSubscribedTpl: ->
 		return RocketChat.roomTypes.getNotSubscribedTpl @_id
@@ -161,7 +161,7 @@ Template.messageBox.events
 	'click .message-form .icon-location.location': (event, instance) ->
 		roomId = @_id
 
-		position = instance.location.get()
+		position = RocketChat.Geolocation.get()
 
 		latitude = position.coords.latitude
 		longitude = position.coords.longitude
@@ -236,7 +236,6 @@ Template.messageBox.onCreated ->
 	@isMessageFieldEmpty = new ReactiveVar true
 	@showMicButton = new ReactiveVar false
 	@showVideoRec = new ReactiveVar false
-	@location = new ReactiveVar false
 
 	@autorun =>
 		videoRegex = /video\/webm|video\/\*/i
@@ -253,13 +252,18 @@ Template.messageBox.onCreated ->
 		else
 			@showMicButton.set false
 
-		if RocketChat.settings.get('MapView_Enabled') and RocketChat.settings.get('MapView_GMapsAPIKey')?.length and navigator.geolocation?.getCurrentPosition?
+
+Meteor.startup ->
+	RocketChat.Geolocation = new ReactiveVar false
+
+	Tracker.autorun ->
+		if RocketChat.settings.get('MapView_Enabled') is true and RocketChat.settings.get('MapView_GMapsAPIKey')?.length and navigator.geolocation?.getCurrentPosition?
 			success = (position) =>
-				@location.set position
+				RocketChat.Geolocation.set position
 
 			error = (error) =>
 				console.log 'Error getting your geolocation', error
-				@location.set false
+				RocketChat.Geolocation.set false
 
 			options =
 				enableHighAccuracy: true
@@ -268,4 +272,4 @@ Template.messageBox.onCreated ->
 
 			navigator.geolocation.watchPosition success, error
 		else
-			@location.set false
+			RocketChat.Geolocation.set false
