@@ -13,6 +13,7 @@ RocketChat.models.Messages = new class extends RocketChat.models._Base
 		@tryEnsureIndex { 'file._id': 1 }, { sparse: 1 }
 		@tryEnsureIndex { 'mentions.username': 1 }, { sparse: 1 }
 		@tryEnsureIndex { 'pinned': 1 }, { sparse: 1 }
+		@tryEnsureIndex { 'location': '2dsphere' }
 
 
 	# FIND ONE

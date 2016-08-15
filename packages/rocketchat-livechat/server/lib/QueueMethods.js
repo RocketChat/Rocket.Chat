@@ -29,7 +29,9 @@ RocketChat.QueueMethods = {
 				_id: agent.agentId,
 				username: agent.username
 			},
-			open: true
+			cl: false,
+			open: true,
+			waitingResponse: true
 		}, roomInfo);
 		let subscriptionData = {
 			rid: message.rid,
@@ -37,7 +39,6 @@ RocketChat.QueueMethods = {
 			alert: true,
 			open: true,
 			unread: 1,
-			answered: false,
 			code: roomCode,
 			u: {
 				_id: agent.agentId,
@@ -110,7 +111,9 @@ RocketChat.QueueMethods = {
 				_id: guest._id,
 				token: message.token
 			},
-			open: true
+			cl: false,
+			open: true,
+			waitingResponse: true
 		}, roomInfo);
 		RocketChat.models.LivechatInquiry.insert(inquiry);
 		RocketChat.models.Rooms.insert(room);
