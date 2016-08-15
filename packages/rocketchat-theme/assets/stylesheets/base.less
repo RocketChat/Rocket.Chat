@@ -2184,31 +2184,13 @@ label.required:after {
 			.input-message-container {
 				position: relative;
 				width: 100%;
-				.inner-right-toolbar {
+				.inner-left-toolbar {
 					position: absolute;
-					right: 10px;
-					top: 10px;
+					left: 13px;
+					top: 9px;
 				}
 			}
 			> .message-buttons {
-				.mic,
-				.stop-mic,
-				.send-button {
-					display: none;
-				}
-				&.show-mic .mic,
-				&.show-mic .stop-mic {
-					display: inline-block;
-				}
-				&.hide-vrec {
-					display: none;
-				}
-				&.show-vrec .video-button {
-					display: inline-block;
-				}
-				&.show-send .send-button {
-					display: inline-block;
-				}
 				flex: 0 0 35px;
 				text-align: center;
 				border: 0;
@@ -2216,6 +2198,7 @@ label.required:after {
 				display: flex;
 				align-items: center;
 				justify-content: center;
+				position: relative;
 				.transition(background-color 0.1s linear, color 0.1s linear);
 				i {
 					font-size: 18px;
@@ -2240,13 +2223,14 @@ label.required:after {
 			margin: 0px;
 			padding-top: 9px;
 			padding-bottom: 9px;
-			padding-right: 38px;
+			padding-left: 49px;
 			border-radius: 0;
 			overflow-y: hidden;
 			resize: none;
 			line-height: 16px;
-			border-top: 0;
-			border-bottom: 0;
+			border-top-width: 0;
+			border-bottom-width: 0;
+			border-left-width: 0;
 			&.editing {}
 		}
 		.users-typing {
