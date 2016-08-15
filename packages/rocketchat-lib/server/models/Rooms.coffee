@@ -240,7 +240,7 @@ RocketChat.models.Rooms = new class extends RocketChat.models._Base
 
 		return @update query, update
 
-	addUsernameById: (_id, username) ->
+	addUsernameById: (_id, username, muted) ->
 		query =
 			_id: _id
 
@@ -248,16 +248,8 @@ RocketChat.models.Rooms = new class extends RocketChat.models._Base
 			$addToSet:
 				usernames: username
 
-		return @update query, update
-
-	addUsernameByIdAndMute: (_id, username) ->
-		query =
-			_id: _id
-
-		update =
-			$addToSet:
-				usernames: username
-				muted: username
+		if muted
+			update.$addToSet.muted = username
 
 		return @update query, update
 
