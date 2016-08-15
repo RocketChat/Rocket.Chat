@@ -13,7 +13,6 @@ class BotHelpers {
 
 	// setup collection cursors with array of fields from setting
 	setupCursors(fieldsSetting) {
-		console.log(typeof fieldsSetting, fieldsSetting);
 		this.userFields = {};
 		if (typeof fieldsSetting === 'string') {
 			fieldsSetting = fieldsSetting.split(',');
