@@ -33,16 +33,9 @@ Template.channelSettings.helpers
 			return t('Room_archivation_state_true')
 		else
 			return t('Room_archivation_state_false')
-<<<<<<< HEAD
-	readOnly: ->
-		return ChatRoom.findOne(@rid, { fields: { ro: 1 }})?.ro
-	systemMessages: ->
-		return ChatRoom.findOne(@rid, { fields: { sysMes: 1 }})?.sysMes isnt false
-=======
 	canDeleteRoom: ->
 		roomType = ChatRoom.findOne(@rid, { fields: { t: 1 }})?.t
 		return roomType? and RocketChat.authz.hasAtLeastOnePermission("delete-#{roomType}", @rid)
->>>>>>> develop
 
 Template.channelSettings.events
 	'click .delete': ->

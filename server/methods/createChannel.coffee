@@ -50,6 +50,10 @@ Meteor.methods
 			if not member?
 				continue
 
+			# make all room members muted by default, unless they have the post-read-only permission
+			if readOnly is true and RocketChat.authz.hasPermission(member._id, 'post-read-only') is false
+				RocketChat.models.Rooms.muteUsernameByRoomId room._id, username
+
 			extra = {}
 
 			if username is user.username
