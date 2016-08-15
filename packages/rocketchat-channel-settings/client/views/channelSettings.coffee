@@ -33,12 +33,44 @@ Template.channelSettings.helpers
 			return t('Room_archivation_state_true')
 		else
 			return t('Room_archivation_state_false')
+<<<<<<< HEAD
 	readOnly: ->
 		return ChatRoom.findOne(@rid, { fields: { ro: 1 }})?.ro
 	systemMessages: ->
 		return ChatRoom.findOne(@rid, { fields: { sysMes: 1 }})?.sysMes isnt false
+=======
+	canDeleteRoom: ->
+		roomType = ChatRoom.findOne(@rid, { fields: { t: 1 }})?.t
+		return roomType? and RocketChat.authz.hasAtLeastOnePermission("delete-#{roomType}", @rid)
+>>>>>>> develop
 
 Template.channelSettings.events
+	'click .delete': ->
+		swal {
+			title: t('Are_you_sure')
+			text: t('Delete_Room_Warning')
+			type: 'warning'
+			showCancelButton: true
+			confirmButtonColor: '#DD6B55'
+			confirmButtonText: t('Yes_delete_it')
+			cancelButtonText: t('Cancel')
+			closeOnConfirm: false
+			html: false
+		}, =>
+			swal.disableButtons()
+
+			Meteor.call 'eraseRoom', @rid, (error, result) ->
+				if error
+					handleError(error)
+					swal.enableButtons()
+				else
+					swal
+						title: t('Deleted')
+						text: t('Room_has_been_deleted')
+						type: 'success'
+						timer: 2000
+						showConfirmButton: false
+
 	'keydown input[type=text]': (e, t) ->
 		if e.keyCode is 13
 			e.preventDefault()

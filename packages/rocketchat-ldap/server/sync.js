@@ -104,6 +104,10 @@ getDataToSyncUserData = function getDataToSyncUserData(ldapUser, user) {
 			userData['services.ldap.idAttribute'] = uniqueId.attribute;
 		}
 
+		if (user.ldap !== true) {
+			userData.ldap = true;
+		}
+
 		if (_.size(userData)) {
 			return userData;
 		}

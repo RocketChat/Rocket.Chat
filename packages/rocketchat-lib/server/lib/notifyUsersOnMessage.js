@@ -43,13 +43,17 @@ RocketChat.callbacks.add('afterSaveMessage', function(message, room) {
 				if (!toAll && mention._id === 'all') {
 					toAll = true;
 				}
-				mentionIds.push(mention._id);
+				if (mention._id !== message.u._id) {
+					mentionIds.push(mention._id);
+				}
 			});
 		}
 
 		highlights.forEach(function(user) {
 			if (user && user.settings && user.settings.preferences && messageContainsHighlight(message, user.settings.preferences.highlights)) {
-				highlightsIds.push(user._id);
+				if (user._id !== message.u._id) {
+					highlightsIds.push(user._id);
+				}
 			}
 		});
 
