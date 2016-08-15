@@ -36,6 +36,16 @@ Template.channelSettings.helpers
 	canDeleteRoom: ->
 		roomType = ChatRoom.findOne(@rid, { fields: { t: 1 }})?.t
 		return roomType? and RocketChat.authz.hasAtLeastOnePermission("delete-#{roomType}", @rid)
+	readOnly: ->
+		return  ChatRoom.findOne(@rid, { fields: { ro: 1 }})?.ro
+	readOnlyDescription: ->
+		readOnly = ChatRoom.findOne(@rid, { fields: { ro: 1 }})?.ro
+		if readOnly is true
+			return t('True')
+		else
+			return t('False')
+		
+		
 
 Template.channelSettings.events
 	'click .delete': ->
