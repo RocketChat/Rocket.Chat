@@ -5,11 +5,13 @@ class CachedCollectionManager {
 		this.items = [];
 		this._syncEnabled = false;
 		this.reconnectCb = [];
+		this.loginCb = [];
+		this.logged = false;
 
 		const _unstoreLoginToken = Accounts._unstoreLoginToken;
 		Accounts._unstoreLoginToken = (...args) => {
 			_unstoreLoginToken.apply(Accounts, args);
-			this.clearAllCache();
+			this.clearAllCacheOnLogout();
 		};
 
 		let connectionWasOnline = true;
@@ -24,6 +26,18 @@ class CachedCollectionManager {
 
 			connectionWasOnline = connected;
 		});
+
+		Tracker.autorun(() => {
+			if (Meteor.userId() !== null) {
+				if (this.logged === false) {
+					for (const cb of this.loginCb) {
+						cb();
+					}
+				}
+			}
+
+			this.logged = Meteor.userId() !== null;
+		});
 	}
 
 	register(cachedCollection) {
@@ -33,6 +47,12 @@ class CachedCollectionManager {
 	clearAllCache() {
 		for (const item of this.items) {
 			item.clearCache();
+		}
+	}
+
+	clearAllCacheOnLogout() {
+		for (const item of this.items) {
+			item.clearCacheOnLogout();
 		}
 	}
 
@@ -54,6 +74,13 @@ class CachedCollectionManager {
 	onReconnect(cb) {
 		this.reconnectCb.push(cb);
 	}
+
+	onLogin(cb) {
+		this.loginCb.push(cb);
+		if (this.logged) {
+			cb();
+		}
+	}
 }
 
 RocketChat.CachedCollectionManager = new CachedCollectionManager;
@@ -67,6 +94,7 @@ class CachedCollection {
 		syncMethodName,
 		eventName,
 		eventType = 'onUser',
+		initOnLogin = false,
 		useSync = true,
 		useCache = false,
 		debug = true,
@@ -85,6 +113,7 @@ class CachedCollection {
 		this.useCache = useCache;
 		this.debug = debug;
 		this.version = version;
+		this.initOnLogin = initOnLogin;
 		this.updatedAt = new Date(0);
 		this.maxCacheTime = maxCacheTime;
 
@@ -93,6 +122,16 @@ class CachedCollection {
 		}
 
 		RocketChat.CachedCollectionManager.register(this);
+
+		if (initOnLogin === true) {
+			RocketChat.CachedCollectionManager.onLogin(() => {
+				this.log('Init on login');
+				this.ready.set(false);
+				this.updatedAt = new Date(0);
+				this.initiated = false;
+				this.init();
+			});
+		}
 	}
 
 	log(...args) {
@@ -257,9 +296,16 @@ class CachedCollection {
 		this.log('saving cache (done)');
 	}
 
+	clearCacheOnLogout() {
+		if (this.initOnLogin === true) {
+			this.clearCache();
+		}
+	}
+
 	clearCache() {
 		this.log('clearing cache');
 		localforage.removeItem(this.name);
+		this.collection.remove({});
 	}
 
 	setupListener(eventType, eventName) {
