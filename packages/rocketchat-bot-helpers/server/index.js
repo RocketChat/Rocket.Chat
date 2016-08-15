@@ -9,8 +9,6 @@ class BotHelpers {
 			online: { 'status': { $ne: 'offline' } },
 			users: { 'roles': { $not: { $all: ['bot'] } } }
 		};
-		// init cursors with fields setting and update on setting change
-		RocketChat.settings.get('BotHelpers_userFields', this.setupCursors);
 	}
 
 	// setup collection cursors with array of fields from setting
@@ -117,6 +115,12 @@ class BotHelpers {
 
 // add class to meteor methods
 const botHelpers = new BotHelpers();
+
+// init cursors with fields setting and update on setting change
+RocketChat.settings.get('BotHelpers_userFields', function(settingKey, settingValue) {
+	botHelpers.setupCursors(settingValue);
+});
+
 Meteor.methods({
 	botRequest: (...args) => {
 		let userID = Meteor.userId();
