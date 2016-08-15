@@ -1138,7 +1138,6 @@ label.required:after {
 		overflow-y: auto;
 		display: block;
 		-webkit-overflow-scrolling: touch;
-		box-shadow: 0 0 5px rgba(0, 0, 0, 0.4) inset;
 		padding: 20px 10px;
 		.transition-delay(.135s);
 		&.no-shadow {
@@ -1233,13 +1232,12 @@ label.required:after {
 		direction: rtl;
 		position: absolute;
 		top: @header-min-height;
-		.calc(height, ~"100% - " @header-min-height + @footer-min-height);
+		bottom: @footer-min-height;
 		width: 100%;
 		overflow-x: hidden;
 		overflow-y: auto;
 		display: block;
 		-webkit-overflow-scrolling: touch;
-		box-shadow: 0 0 5px rgba(0, 0, 0, 0.4) inset;
 		> .wrapper {
 			direction: ltr;
 			padding-left: 8px;
