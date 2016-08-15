@@ -90,6 +90,10 @@
 												<input class="input-monitor minicolors" type="text" name="{{_id}}" value="{{value}}" {{isDisabled}}/>
 											{{/if}}
 
+											{{#if $eq type 'font'}}
+												<input class="input-monitor" type="text" name="{{_id}}" value="{{value}}" {{isDisabled}}/>
+											{{/if}}
+
 											{{#if $eq type 'code'}}
 												{{#if isDisabled.disabled}}
 													{{> CodeMirror name=_id options=(getEditorOptions true) code=(i18nDefaultValue) }}
