@@ -55,14 +55,6 @@ Tracker.autorun ->
 
 	Dep = new Tracker.Dependency
 
-	init = ->
-		if CachedChatSubscription.ready.get()
-			return
-
-		CachedChatSubscription.init()
-
-		return
-
 	close = (typeName) ->
 		if openedRooms[typeName]
 			if openedRooms[typeName].sub?
@@ -245,7 +237,6 @@ Tracker.autorun ->
 	open: open
 	close: close
 	closeAllRooms: closeAllRooms
-	init: init
 	getDomOfRoom: getDomOfRoom
 	existsDomOfRoom: existsDomOfRoom
 	msgStream: msgStream
