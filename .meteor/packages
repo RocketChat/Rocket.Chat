@@ -45,6 +45,7 @@ rocketchat:cas
 rocketchat:channel-settings
 rocketchat:channel-settings-mail-messages
 rocketchat:colors
+rocketchat:crowd
 rocketchat:custom-oauth
 rocketchat:emojione
 rocketchat:favico
@@ -68,6 +69,7 @@ rocketchat:markdown
 rocketchat:mentions
 rocketchat:mentions-flextab
 rocketchat:message-attachments
+rocketchat:message-mark-as-unread
 rocketchat:message-pin
 rocketchat:message-star
 rocketchat:migrations
@@ -77,6 +79,7 @@ rocketchat:otr
 rocketchat:piwik
 rocketchat:push-notifications
 rocketchat:reactions
+rocketchat:sandstorm
 rocketchat:slackbridge
 rocketchat:slashcommands-archive
 rocketchat:slashcommands-asciiarts
@@ -151,3 +154,4 @@ underscorestring:underscore.string
 yasaricli:slugify
 yasinuslu:blaze-meta
 rocketchat:slashcommands-open
+rocketchat:mapview
