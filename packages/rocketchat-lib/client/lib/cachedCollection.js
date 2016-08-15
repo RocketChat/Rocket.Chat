@@ -103,7 +103,7 @@ class CachedCollection {
 
 		if (initOnLogin === true) {
 			RocketChat.CachedCollectionManager.onLogin(() => {
-				this.log(`Init on login`);
+				this.log('Init on login');
 				this.ready.set(false);
 				this.updatedAt = new Date(0);
 				this.initiated = false;
