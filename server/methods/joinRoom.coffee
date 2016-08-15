@@ -23,10 +23,10 @@ Meteor.methods
 		RocketChat.callbacks.run 'beforeJoinRoom', user, room
 
 		# Automatically mute users in read only rooms
-		if room.ro and not RocketChat.authz.hasPermission(Meteor.userId(), 'post-read-only')
-			RocketChat.models.Rooms.addUsernameByIdAndMute rid, user.username
-		else
-			RocketChat.models.Rooms.addUsernameById rid, user.username
+		
+		muted = room.ro and not RocketChat.authz.hasPermission(Meteor.userId(), 'post-read-only')
+
+		RocketChat.models.Rooms.addUsernameById rid, user.username, muted
 
 		RocketChat.models.Subscriptions.createWithRoomAndUser room, user,
 			ts: now
