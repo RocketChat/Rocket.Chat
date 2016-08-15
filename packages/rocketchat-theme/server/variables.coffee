@@ -29,7 +29,7 @@ RocketChat.theme.addPublicColor "status-offline", "rgba(150, 150, 150, 0.50)"
 RocketChat.theme.addPublicColor "status-online", "#35ac19"
 RocketChat.theme.addPublicColor "unread-notification-color", "#1dce73"
 
-RocketChat.theme.addPublicFont "body-font-family", '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Meiryo UI"'
+RocketChat.theme.addPublicFont "body-font-family", '-apple-system, BlinkMacSystemFont, Roboto, "Helvetica Neue", Arial, sans-serif, "Apple Color Emoji", "Segoe UI", "Segoe UI Emoji", "Segoe UI Symbol", "Meiryo UI"'
 
 
 RocketChat.settings.add "theme-custom-css", '',
