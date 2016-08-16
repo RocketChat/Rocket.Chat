@@ -6,6 +6,9 @@ Meteor.methods
 		if not roleName or not _.isString(roleName) or not username or not _.isString(username)
 			throw new Meteor.Error 'error-invalid-arguments', 'Invalid arguments', { method: 'authorization:addUserToRole' }
 
+		if roleName is 'admin' and not RocketChat.authz.hasPermission Meteor.userId(), 'assign-admin-role'
+			throw new Meteor.Error 'error-action-not-allowed', 'Assigning admin is not allowed', { method: 'insertOrUpdateUser', action: 'Assign_admin' }
+
 		user = RocketChat.models.Users.findOneByUsername username, { fields: { _id: 1 } }
 
 		if not user?._id?
