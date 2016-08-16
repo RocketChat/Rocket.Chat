@@ -8,4 +8,4 @@ Meteor.setInterval(function() {
 			RocketChat.models.Users.closeOffice();
 		}
 	}
-}, 1000);
+}, 60000);
