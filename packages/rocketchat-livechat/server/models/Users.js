@@ -145,7 +145,7 @@ RocketChat.models.Users.closeOffice = function() {
 	self.findAgents().forEach(function(agent) {
 		self.setLivechatStatus(agent._id, 'not-available');
 	});
-}
+};
 
 /**
  * change all livechat agents livechat status to "available"
