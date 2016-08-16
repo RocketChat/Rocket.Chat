@@ -41,10 +41,12 @@ rocketchat:api
 rocketchat:assets
 rocketchat:authorization
 rocketchat:autolinker
+#rocketchat:bot-helpers
 rocketchat:cas
 rocketchat:channel-settings
 rocketchat:channel-settings-mail-messages
 rocketchat:colors
+rocketchat:crowd
 rocketchat:custom-oauth
 rocketchat:emojione
 rocketchat:favico
@@ -153,3 +155,4 @@ underscorestring:underscore.string
 yasaricli:slugify
 yasinuslu:blaze-meta
 rocketchat:slashcommands-open
+rocketchat:mapview
