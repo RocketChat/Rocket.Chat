@@ -46,17 +46,13 @@ Template.livechatOfficeHours.events({
 		if (temp[1] === 'start') {
 			if (newTime.isSameOrBefore(moment(instance.dayVars[temp[0]].finish.get(), 'HH:mm'))) {
 				instance.dayVars[temp[0]].start.set(e.currentTarget.value);
-			}
-			else {
-
+			} else {
 				e.currentTarget.value = instance.dayVars[temp[0]].start.get();
 			}
-		}
-		else if (temp[1] === 'finish') {
-			if(newTime.isSameOrAfter(moment(instance.dayVars[temp[0]].start.get(), 'HH:mm'))) {
+		} else if (temp[1] === 'finish') {
+			if (newTime.isSameOrAfter(moment(instance.dayVars[temp[0]].start.get(), 'HH:mm'))) {
 				instance.dayVars[temp[0]].finish.set(e.currentTarget.value);
-			}
-			else {
+			} else {
 				e.currentTarget.value = instance.dayVars[temp[0]].finish.get();
 			}
 		}
