@@ -62,6 +62,7 @@ Package.onUse(function(api) {
 	api.addFiles('client/collections/LivechatQueueUser.js', 'client');
 	api.addFiles('client/collections/LivechatTrigger.js', 'client');
 	api.addFiles('client/collections/LivechatInquiry.js', 'client');
+	api.addFiles('client/collections/livechatOfficeHour.js', 'client');
 
 	api.addFiles('client/methods/changeLivechatStatus.js', 'client');
 
@@ -90,6 +91,8 @@ Package.onUse(function(api) {
 	api.addFiles('client/views/app/livechatTriggers.js', 'client');
 	api.addFiles('client/views/app/livechatUsers.html', 'client');
 	api.addFiles('client/views/app/livechatUsers.js', 'client');
+	api.addFiles('client/views/app/livechatOfficeHours.html', 'client');
+	api.addFiles('client/views/app/livechatOfficeHours.js', 'client');
 
 	api.addFiles('client/views/app/tabbar/externalSearch.html', 'client');
 	api.addFiles('client/views/app/tabbar/externalSearch.js', 'client');
@@ -149,7 +152,8 @@ Package.onUse(function(api) {
 	api.addFiles('server/methods/webhookTest.js', 'server');
 	api.addFiles('server/methods/takeInquiry.js', 'server');
 	api.addFiles('server/methods/returnAsInquiry.js', 'server');
-
+	api.addFiles('server/methods/saveOfficeHours.js', 'server');
+	
 	// models
 	api.addFiles('server/models/Users.js', 'server');
 	api.addFiles('server/models/Rooms.js', 'server');
@@ -161,10 +165,12 @@ Package.onUse(function(api) {
 	api.addFiles('server/models/LivechatTrigger.js', 'server');
 	api.addFiles('server/models/indexes.js', 'server');
 	api.addFiles('server/models/LivechatInquiry.js', 'server');
-
+	api.addFiles('server/models/livechatOfficeHour.js', 'server');
+	
 	// server lib
 	api.addFiles('server/lib/Livechat.js', 'server');
 	api.addFiles('server/lib/QueueMethods.js', 'server');
+	api.addFiles('server/lib/OfficeClock.js', 'server');
 
 	api.addFiles('server/sendMessageBySMS.js', 'server');
 	api.addFiles('server/forwardUnclosedLivechats.js', 'server');
@@ -183,7 +189,8 @@ Package.onUse(function(api) {
 	api.addFiles('server/publications/visitorInfo.js', 'server');
 	api.addFiles('server/publications/visitorPageVisited.js', 'server');
 	api.addFiles('server/publications/livechatInquiries.js', 'server');
-
+	api.addFiles('server/publications/livechatOfficeHours.js', 'server');
+	
 	// api
 	api.addFiles('server/api.js', 'server');
 
