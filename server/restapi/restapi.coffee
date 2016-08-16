@@ -18,23 +18,11 @@ Api.addRoute 'publicRooms', authRequired: true,
 	get: ->
 		rooms = RocketChat.models.Rooms.findByType('c', { sort: { msgs:-1 } }).fetch()
 		status: 'success', rooms: rooms
-
-#list private rooms		
-Api.addRoute 'privateRooms', authRequired: true,
-	get: ->
-		rooms = RocketChat.models.Rooms.findByType('p', { sort: { msgs:-1 } }).fetch()
-		status: 'success', rooms: rooms
-
-#list direct message room
-Api.addRoute 'directMessageRooms', authRequired: true,
-	get: ->
-		rooms = RocketChat.models.Rooms.findByType('d', { sort: { msgs:-1 } }).fetch()
-		status: 'success', rooms: rooms
 		
 ###
 @api {get} /joinedRooms Get joined rooms.
 ###
-Api.addRoute 'joinedRooms', authRequired: true,
+Api.addRoute 'joinedRooms.list', authRequired: true,
 	get: ->
 		rooms = RocketChat.models.Rooms.findByContainigUsername(@user.username).fetch()
 		status: 'success', rooms: rooms
@@ -52,7 +40,6 @@ Api.addRoute 'rooms/:id/leave', authRequired: true,
 		Meteor.runAsUser this.userId, () =>
 			Meteor.call('leaveRoom', @urlParams.id)
 		status: 'success'   # need to handle error
-
 
 ###
 @api {get} /rooms/:id/messages?skip=:skip&limit=:limit Get messages in a room.
@@ -82,8 +69,6 @@ Api.addRoute 'rooms/:id/messages', authRequired: true,
 		catch e
 			statusCode: 400    # bad request or other errors
 			body: status: 'fail', message: e.name + ' :: ' + e.message
-
-
 
 # send a message in a room -  POST body should be { "msg" : "this is my message"}
 Api.addRoute 'rooms/:id/send', authRequired: true,
@@ -254,209 +239,7 @@ Api.addRoute 'bulk/createRoom', authRequired: true,
 				statusCode: 403
 				body: status: 'error', message: 'You do not have permission to do this'
 
-###
-@api {post} /bulk/createPrivateGroup  Create multiple private groups based on an input array.
-@apiName createPrivateGroups
-@apiGroup TestAndAdminAutomation
-@apiVersion 0.0.1
-@apiParam {json} rooms An array of groups in the body of the POST. 'name' is group name, 'members' is array of usernames
-@apiParamExample {json} POST Request Body example:
-  {
-    'rooms':[ {'name': 'room1',
-               'members': ['user1', 'user2']
-  	      },
-  	      {'name': 'room2',
-               'members': ['user1', 'user2', 'user3']
-              }
-              ...
-            ]
-  }
-@apiDescription  Caller must have 'testagent' or 'adminautomation' role.
-NOTE:   remove room is NOT recommended; use Meteor.reset() to clear db and re-seed instead
 
-@apiSuccess {json} ids An array of ids of the groups created.
-@apiSuccessExample {json} Success-Response:
-  HTTP/1.1 200 OK
-  {
-    'ids':[ {'rid': 'rid_1'},
-            {'rid': 'rid_2'},
-            ...
-    ]
-  }
-###
-Api.addRoute 'bulk/createPrivateGroup', authRequired: true,
-	post:
-		# restivus 0.8.4 does not support alanning:roles using groups
-		#roleRequired: ['testagent', 'adminautomation']
-		action: ->
-			# user must also have create-c permission because
-			# createChannel method requires it
-			if RocketChat.authz.hasPermission(@userId, 'bulk-create-c')
-				try
-					this.response.setTimeout (1000 * @bodyParams.rooms.length)
-					Api.testapiValidateRooms @bodyParams.rooms
-					ids = []
-					Meteor.runAsUser this.userId, () =>
-						(ids[i] = Meteor.call 'createPrivateGroup', incoming.name, incoming.members) for incoming,i in @bodyParams.rooms
-					status: 'success', ids: ids   # need to handle error
-				catch e
-					statusCode: 400    # bad request or other errors
-					body: status: 'fail', message: e.name + ' :: ' + e.message
-			else
-				console.log '[restapi] bulk/createPrivateGroups -> '.red, "User does not have 'bulk-create-c' permission"
-				statusCode: 403
-				body: status: 'error', message: 'You do not have permission to do this'
-
-###
-remove rooms any type i.e. channels/private/direct message room
-pass room _id in body of data (  data='{"name":[" room _id"]}'  )				
-###
-Api.addRoute 'bulk/removeGroup', authRequired: true,
-	delete:
-		# restivus 0.8.4 does not support alanning:roles using groups
-		#roleRequired: ['testagent', 'adminautomation']
-		action: ->
-			# user must also have create-c permission because
-			# createChannel method requires it
-			if RocketChat.authz.hasPermission(@userId, 'bulk-create-c')
-				try
-					this.response.setTimeout (1000 * @bodyParams.name.length)
-					#Api.testapiValidateRooms @bodyParams.name
-					ids = []
-					Meteor.runAsUser this.userId, () =>
-						(ids[i] = Meteor.call 'eraseRoom', incoming) for incoming,i in @bodyParams.name
-					status: 'success', ids: ids  # need to handle error
-				catch e
-					statusCode: 400    # bad request or other errors
-					body: status: 'fail', message: e.name + ' :: ' + e.message
-			else
-				console.log '[restapi] bulk/removePrivateGroups -> '.red, "User does not have 'bulk-create-c' permission"
-				statusCode: 403
-				body: status: 'error', message: 'You do not have permission to do this'
-
-# addUser to a channel/private group
-Api.addRoute 'addUser', authRequired: true,
-	post:
-		# restivus 0.8.4 does not support alanning:roles using groups
-		#roleRequired: ['testagent', 'adminautomation']
-		action: ->
-			# user must also have create-c permission because
-			# createChannel method requires it
-			if RocketChat.authz.hasPermission(@userId, 'bulk-create-c')
-				try
-					
-					this.response.setTimeout (1000 * @userId.length)
-					
-					Meteor.runAsUser this.userId, () =>
-						(Meteor.call 'addUserToRoom', rid:@bodyParams.room, username:@bodyParams.username)
-					status: 'success', rid:@bodyParams.room, username:@bodyParams.username
-				catch e
-					statusCode: 400    # bad request or other errors
-					body: status: 'fail', message: e.name + ' :: ' + e.message
-			else
-				console.log '[restapi] addUserToRoom -> '.red, "User does not have 'bulk-create-c' permission"
-				statusCode: 403
-				body: status: 'error', message: 'You do not have permission to do this'	
-
-###
-retrieve a list of integrations
-**Note make sure you encode all channel/private rooms  because they start with '#' === '%23' 
-Example string ('http://your url here : 3000/api/%23testRoom/roomIntegrations',headers={'X-User-Id':'user_token','X-Auth-Token':'user_token'})
-###
-Api.addRoute ':channel/roomIntgrations', authRequired: true,
-	get: ->
-		try
-			id = RocketChat.models.Integrations.find({"channel":decodeURIComponent(@urlParams.channel)}).fetch()
-			status: 'success', Integrations: id
-		catch e 
-			statusCode: 400    # bad request or other errors
-			body: status: 'Epic fail', message: e.name + ' :: ' + e.message
-
-# retrieve a complete list of all integrations
-Api.addRoute 'roomIntegrations', authRequired: true,
-	get: ->
-		id = RocketChat.models.Integrations.find().fetch()
-		status: 'success', Integrations: id				
-
-###
-create outgoig webhooks,
-creating a push point for messages to be push to from Rocket Chat.
-###		
-Api.addRoute 'outgoingWebhook', authRequired: true,
-	post:
-		#roleRequired: ['testagent', 'adminautomation']
-		action: ->
-			# user must also have create-c permission because
-			# createChannel method requires it
-			if RocketChat.authz.hasPermission(@userId, 'bulk-create-c')
-				try
-					
-					this.response.setTimeout (1000 * @bodyParams.name.length)
-					integration ={ userid:@bodyParams.userid, auth:@bodyParams.authToken, name:@bodyParams.name, enabled:@bodyParams.enabled, name:@bodyParams.roomName, channel:@bodyParams.channel,
-					triggerWords:@bodyParams.triggerWords, urls:@bodyParams.urls, username:@bodyParams.username, alias:@bodyParams.alias, avatar:@bodyParams.avatar, emoji:@bodyParams.emoji, token:@bodyParams.token, 
-					scriptEnable:@bodyParams.scriptEnabled, script:@bodyParams.script }
-					
-					Meteor.runAsUser this.userId, () =>
-						Meteor.call 'addOutgoingIntegration', integration
-					status: 'success' # need to handle error
-				catch e
-					statusCode: 400    # bad request or other errors
-					body: status: 'yep failled again', message: e.name + ' :: ' + e.message
-			else
-				console.log '[restapi] api/outgoingWebhook -> '.red, "User does not have 'bulk-create-c' permission"
-				statusCode: 403
-				body: status: 'error', message: 'You do not have permission to do this'
-
-###
-API  '/api/removeOutgoingWebhook'
-@apiParam {json} An array of intergration webhooks in the body of the POST. 'integration' is integrations name
-use API 'roomIntegrations' method to aquire a list of all webhooks to capture webhook _ids or use ':channel/roomIntgrations' to aquire 
-a list from a specfic channel or private room.
-
-@apiParamExample {json} POST Request Body example:
-  {
-    'integrationId':[ 'integrations_id1','integrations_id2']
-  }	
-###			
-Api.addRoute 'removeOutgoingWebhook', authRequired: true,
-	delete:
-		#roleRequired: ['testagent', 'adminautomation']
-		action: ->
-			# user must also have create-c permission 
-			if RocketChat.authz.hasPermission(@userId, 'bulk-create-c')
-				try
-					this.response.setTimeout (1000)
-					ids=[]
-					Meteor.runAsUser this.userId, () =>
-						(ids[i]=Meteor.call 'deleteOutgoingIntegration', incoming) for incoming, i in @bodyParams.integrationId
-					status: 'success', deleted : @bodyParams.integrationId # need to handle error
-				catch e
-					statusCode: 400  # bad request or other errors
-					body: status: 'yep failled again bad request '+ @bodyParams.integrationId, message: e.name + ' :: ' + e.message
-			else
-				console.log '[restapi] api/outgoingWebhooks -> '.red, "User does not have 'bulk-create-c' permission"
-				statusCode: 403
-				body: status: 'error', message: 'You do not have permission to do this'
-
-###
-Create a direct message room with another user.
-pass in the data the user to connect to. (  data='{"username":"Joe"}'    )  connects the user who's header auth creditials are be used.
-to connect two users you must issue command as that user. 
-###  				
-Api.addRoute 'createDirectMessage', authRequired: true,
-	post:
-		#roleRequired: ['testagent', 'adminautomation']
-		action: ->
-			# user must also have create-c permission 
-			try
-				this.response.setTimeout (1000)
-				Meteor.runAsUser this.userId, () =>
-					Meteor.call 'createDirectMessage', @bodyParams.username
-				status: 'success', created : @bodyParams.username
-			catch e
-				statusCode:400 # bad request
-				body: status: 'bad request missing pramas ' + @bodyParams.username, message: e.name + ':: ' + e.message
-			
 					
 					
 		
