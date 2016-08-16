@@ -138,13 +138,7 @@ RocketChat.models.Messages = new class extends RocketChat.models._Base
 		record.editedBy =
 			_id: Meteor.userId()
 			username: me.username
-		record.pinned = record.pinned
-		record.pinnedAt = record.pinnedAt
-		record.pinnedBy =
-			_id: record.pinnedBy?._id
-			username: record.pinnedBy?.username
 		delete record._id
-
 		return @insert record
 
 	# UPDATE
