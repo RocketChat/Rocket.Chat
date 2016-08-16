@@ -590,6 +590,11 @@
   "Layout_Sidenav_Footer_description" : "Footer size is 260 x 70px",
   "Layout_Terms_of_Service" : "Terms of Service",
   "SideNav_Show_Count" : "Show Channel Counts",
+  
+  "SideNav_Show_More_C" : "Show 'More Channels' Link under Channels",
+  "SideNav_Show_More_D" : "Show 'More DMs' Link under DMs",
+  
+  
   "LDAP" : "LDAP",
   "LDAP_CA_Cert" : "CA Cert",
   "LDAP_Custom_Domain_Search" : "Custom Domain Search",

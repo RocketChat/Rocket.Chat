@@ -21,6 +21,9 @@ Template.channels.helpers
 		
 	showCount: ->
 		return RocketChat.settings.get 'SideNav_Show_Count'
+		
+	showMoreLink: ->
+		return RocketChat.settings.get 'SideNav_Show_More_C'
 
 Template.channels.events
 	'click .add-room': (e, instance) ->

@@ -16,6 +16,9 @@ Template.directMessages.helpers
 		
 	showCount: ->
 		return RocketChat.settings.get 'SideNav_Show_Count'
+		
+	showMoreLink: ->
+		return RocketChat.settings.get 'SideNav_Show_More_D'
 
 Template.directMessages.events
 	'click .add-room': (e, instance) ->
