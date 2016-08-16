@@ -83,7 +83,7 @@ Template.livechatOfficeHours.events({
         var start_utc = moment(day.start.get(), 'HH:mm').utc().format('HH:mm');
         var finish_utc = moment(day.finish.get(), 'HH:mm').utc().format('HH:mm');
 
-        Meteor.call('livechat:saveOfficeHours', d, start_utc, finish_utc, day.open.get(), function(err, /*result*/) {
+        Meteor.call('livechat:saveOfficeHours', d, start_utc, finish_utc, day.open.get(), function(err /*,result*/) {
           if (err) {
             return handleError(err);
           }
