@@ -67,7 +67,7 @@ Template.messageBox.helpers
 		return Template.instance().showVideoRec.get()
 
 	showSend: ->
-		if not Template.instance().isMessageFieldEmpty.get() or not Template.instance().showMicButton.get()
+		if not Template.instance().isMessageFieldEmpty.get()
 			return 'show-send'
 
 	showLocation: ->
