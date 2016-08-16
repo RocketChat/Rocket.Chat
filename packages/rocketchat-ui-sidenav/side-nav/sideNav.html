@@ -34,8 +34,10 @@
 			</div>
 			<span class="arrow bottom"></span>
 		{{/if}}
-		<footer class="footer">
-			{{{footer}}}
-		</footer>
+		{{#if showFooter}}
+			<footer class="footer">
+				{{{footer}}}
+			</footer>
+		{{/if}}
 	</aside>
 </template>
