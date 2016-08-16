@@ -3,8 +3,7 @@ Meteor.setInterval(function() {
 	if (RocketChat.settings.get('Livechat_enable_office_hours')) {
 		if (RocketChat.models.LivechatOfficeHour.isOpeningTime()) {
 			RocketChat.models.Users.openOffice();
-		}
-		else if (RocketChat.models.LivechatOfficeHour.isClosingTime()) {
+		} else if (RocketChat.models.LivechatOfficeHour.isClosingTime()) {
 			RocketChat.models.Users.closeOffice();
 		}
 	}
