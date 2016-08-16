@@ -155,7 +155,7 @@ RocketChat.models.Users.openOffice = function() {
 	self.findAgents().forEach(function(agent) {
 		self.setLivechatStatus(agent._id, 'available');
 	});
-}
+};
 
 RocketChat.models.Users.updateLivechatDataByToken = function(token, key, value) {
 	const query = {
