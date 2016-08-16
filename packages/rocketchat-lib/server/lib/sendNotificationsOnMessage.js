@@ -159,6 +159,8 @@ RocketChat.callbacks.add('afterSaveMessage', function(message, room) {
 				});
 				return message;
 			}
+			RocketChat.Sandstorm.notify(message, [userOfMention._id],
+				'@' + user.username + ': ' + message.msg, 'privateMessage');
 		}
 	} else {
 		mentionIds = [];
@@ -264,8 +266,8 @@ RocketChat.callbacks.add('afterSaveMessage', function(message, room) {
 			userIdsToPushNotify = userIdsToPushNotify.concat(highlightsIds);
 		}
 
-		userIdsToNotify = _.compact(_.unique(userIdsToNotify));
-		userIdsToPushNotify = _.compact(_.unique(userIdsToPushNotify));
+		userIdsToNotify = _.without(_.compact(_.unique(userIdsToNotify)), message.u._id);
+		userIdsToPushNotify = _.without(_.compact(_.unique(userIdsToPushNotify)), message.u._id);
 
 		if (userIdsToNotify.length > 0) {
 			for (j = 0, len1 = userIdsToNotify.length; j < len1; j++) {
@@ -314,6 +316,15 @@ RocketChat.callbacks.add('afterSaveMessage', function(message, room) {
 					}
 				});
 			}
+		}
+
+		const allUserIdsToNotify = _.unique(userIdsToNotify.concat(userIdsToPushNotify));
+		if (room.t === 'p') {
+			RocketChat.Sandstorm.notify(message, allUserIdsToNotify,
+				'@' + user.username + ': ' + message.msg, 'privateMessage');
+		} else {
+			RocketChat.Sandstorm.notify(message, allUserIdsToNotify,
+				'@' + user.username + ': ' + message.msg, 'message');
 		}
 	}
 
