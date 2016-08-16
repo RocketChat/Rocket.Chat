@@ -227,17 +227,17 @@ RocketChat.API.v1.addRoute 'directRoom.list', authRequired: true,
 # addUser to a channel/private group
 RocketChat.API.v1.addRoute 'addUser', authRequired: true,
 	post: ->
-			if RocketChat.authz.hasPermission(@userId, 'bulk-create-c')
-				try
-					this.response.setTimeout (1000 * @userId.length)
-					Meteor.runAsUser this.userId, () =>
-						(Meteor.call 'addUserToRoom', rid:@bodyParams.room, username:@bodyParams.username)
-					status: 'success', rid:@bodyParams.room, username:@bodyParams.username
-				catch e
-					return RocketChat.API.v1.failure e.name + ': ' + e.message
-			else
-				console.log '[restapi] addUserToRoom -> '.red, "User does not have 'bulk-create-c' permission"
-				return RocketChat.API.v1.unauthorized e.name + ': ' + e.message
+		if RocketChat.authz.hasPermission(@userId, 'bulk-create-c')
+			try
+				this.response.setTimeout (1000 * @userId.length)
+				Meteor.runAsUser this.userId, () =>
+					(Meteor.call 'addUserToRoom', rid:@bodyParams.room, username:@bodyParams.username)
+				status: 'success', rid:@bodyParams.room, username:@bodyParams.username
+			catch e
+				return RocketChat.API.v1.failure e.name + ': ' + e.message
+		else
+			console.log '[restapi] addUserToRoom -> '.red, "User does not have 'bulk-create-c' permission"
+			return RocketChat.API.v1.unauthorized e.name + ': ' + e.message
 
 		
 ### Remove rooms
@@ -247,18 +247,18 @@ pass room _id in body of data (  data='{"name":[" room _id"]}'  )
 ###
 RocketChat.API.v1.addRoute 'bulk/removeGroup', authRequired: true,
 	delete: ->
-			if RocketChat.authz.hasPermission(@userId, 'bulk-create-c')
-				try
-					this.response.setTimeout (1000 * @bodyParams.name.length)
-					ids = []
-					Meteor.runAsUser this.userId, () =>
-						(ids[i] = Meteor.call 'eraseRoom', incoming) for incoming,i in @bodyParams.name
-					status: 'success', ids: ids  # need to handle error
-				catch e
-					return RocketChat.API.v1.failure e.name + ': ' + e.message
-			else
-				console.log '[API.v1.] bulk/removePrivateGroups -> '.red, "User does not have 'bulk-create-c' permission"
-				return RocketChat.API.v1.unauthorized e.name + ': ' + e.message
+		if RocketChat.authz.hasPermission(@userId, 'bulk-create-c')
+			try
+				this.response.setTimeout (1000 * @bodyParams.name.length)
+				ids = []
+				Meteor.runAsUser this.userId, () =>
+					(ids[i] = Meteor.call 'eraseRoom', incoming) for incoming,i in @bodyParams.name
+				status: 'success', ids: ids  # need to handle error
+			catch e
+				return RocketChat.API.v1.failure e.name + ': ' + e.message
+		else
+			console.log '[API.v1.] bulk/removePrivateGroups -> '.red, "User does not have 'bulk-create-c' permission"
+			return RocketChat.API.v1.unauthorized e.name + ': ' + e.message
 				
 				
 ### Retrieve integrations  
@@ -322,7 +322,8 @@ RocketChat.API.v1.addRoute 'outgoingWebhook', authRequired: true,
 					
 				Meteor.runAsUser this.userId, () =>
 					Meteor.call 'addOutgoingIntegration', integration
-				status: 'success' # need to handle error
+				return RocketChat.API.v1.success
+					list:integration
 			catch e
 				return RocketChat.API.v1.failure e.name + ': ' + e.message
 		else

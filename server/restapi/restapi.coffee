@@ -167,8 +167,6 @@ Api.addRoute 'bulk/register', authRequired: true,
 				body: status: 'error', message: 'You do not have permission to do this'
 
 
-
-
 # validate an array of rooms
 Api.testapiValidateRooms =  (rooms) ->
 	for room, i in rooms
@@ -238,8 +236,3 @@ Api.addRoute 'bulk/createRoom', authRequired: true,
 				console.log '[restapi] bulk/createRoom -> '.red, "User does not have 'bulk-create-c' permission"
 				statusCode: 403
 				body: status: 'error', message: 'You do not have permission to do this'
-
-
-					
-					
-		
