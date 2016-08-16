@@ -7,9 +7,6 @@ Template.sideNav.helpers
 
 	footer: ->
 		return RocketChat.settings.get 'Layout_Sidenav_Footer'
-	
-	showFooter: ->
-		return RocketChat.settings.get 'SideNav_Show_Footer'
 
 	showStarredRooms: ->
 		favoritesEnabled = RocketChat.settings.get 'Favorite_Rooms'
