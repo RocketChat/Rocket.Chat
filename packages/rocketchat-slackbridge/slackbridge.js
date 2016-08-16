@@ -270,7 +270,7 @@ class SlackBridge {
 		}
 		if (channel && user) {
 			let msgDataDefaults = {
-				_id: `${message.channel}S${message.ts}`,
+				_id: `slack-${message.channel}-${message.ts.replace(/\./g, '-')}`,
 				ts: new Date(parseInt(message.ts.split('.')[0]) * 1000)
 			};
 			this.sendMessage(channel, user, message, msgDataDefaults);
