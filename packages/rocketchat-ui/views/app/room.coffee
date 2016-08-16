@@ -61,10 +61,9 @@ Template.room.helpers
 
 		return {} unless roomData
 
-		if roomData.t is 'd'
+		if roomData.t in ['d', 'l']
 			username = _.without roomData.usernames, Meteor.user().username
 			return Session.get('user_' + username + '_status') || 'offline'
-
 		else
 			return 'offline'
 

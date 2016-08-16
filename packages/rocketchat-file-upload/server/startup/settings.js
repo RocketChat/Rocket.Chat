@@ -9,7 +9,7 @@ RocketChat.settings.addGroup('FileUpload', function() {
 		public: true
 	});
 
-	this.add('FileUpload_MediaTypeWhiteList', 'image/*,audio/*,application/pdf,text/plain,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document', {
+	this.add('FileUpload_MediaTypeWhiteList', 'image/*,audio/*,video/*,application/zip,application/x-rar-compressed,application/pdf,text/plain,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document', {
 		type: 'string',
 		public: true,
 		i18nDescription: 'FileUpload_MediaTypeWhiteListDescription'
@@ -86,6 +86,14 @@ RocketChat.settings.addGroup('FileUpload', function() {
 				value: 'AmazonS3'
 			},
 			i18nDescription: 'Override_URL_to_which_files_are_uploaded_This_url_also_used_for_downloads_unless_a_CDN_is_given.'
+		});
+		this.add('FileUpload_S3_URLExpiryTimeSpan', 120, {
+			type: 'int',
+			enableQuery: {
+				_id: 'FileUpload_Storage_Type',
+				value: 'AmazonS3'
+			},
+			i18nDescription: 'FileUpload_S3_URLExpiryTimeSpan_Description'
 		});
 	});
 
