@@ -14,6 +14,9 @@ Meteor.methods
 		if not userData._id and canAddUser isnt true
 			throw new Meteor.Error 'error-action-not-allowed', 'Adding user is not allowd', { method: 'insertOrUpdateUser', action: 'Adding_user' }
 
+		if userData.role is 'admin' and not RocketChat.authz.hasPermission Meteor.userId(), 'assign-admin-role'
+			throw new Meteor.Error 'error-action-not-allowed', 'Assigning admin is not allowed', { method: 'insertOrUpdateUser', action: 'Assign_admin' }
+
 		unless s.trim(userData.name)
 			throw new Meteor.Error 'error-the-field-is-required', 'The field Name is required', { method: 'insertOrUpdateUser', field: 'Name' }
 
@@ -69,7 +72,6 @@ Meteor.methods
 				header = RocketChat.placeholders.replace(RocketChat.settings.get('Email_Header') || "")
 				footer = RocketChat.placeholders.replace(RocketChat.settings.get('Email_Footer') || "")
 
-
 				if RocketChat.settings.get('Accounts_UserAddedEmail_Customized')
 					subject = RocketChat.settings.get('Accounts_UserAddedEmailSubject')
 					html = RocketChat.settings.get('Accounts_UserAddedEmail')
@@ -95,10 +97,16 @@ Meteor.methods
 
 			return _id
 		else
+			# prevent removing admin role of last admin
+			adminCount = Meteor.users.find({ roles: { $in: ['admin'] } }).count()
+			if adminCount is 1 and userData.role isnt 'admin'
+				throw new Meteor.Error 'error-action-not-allowed', 'Leaving the app without admins is not allowed', { method: 'insertOrUpdateUser', action: 'Remove_last_admin' }
+
 			#update user
 			updateUser = {
 				$set: {
 					name: userData.name,
+					roles: [ userData.role ],
 					requirePasswordChange: userData.requirePasswordChange
 				}
 			}

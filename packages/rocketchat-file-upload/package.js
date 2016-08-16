@@ -46,3 +46,7 @@ Package.onUse(function(api) {
 	api.export('fileUploadHandler');
 	api.export('FileUpload');
 });
+
+Npm.depends({
+	'mime-types': '2.1.11'
+});

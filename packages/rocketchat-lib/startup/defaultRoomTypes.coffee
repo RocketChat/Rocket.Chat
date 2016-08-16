@@ -11,8 +11,6 @@ RocketChat.roomTypes.add 'c', 10,
 		action: (params, queryParams) ->
 			openRoom 'c', params.name
 			RocketChat.TabBar.showGroup 'channel'
-		link: (sub) ->
-			return { name: sub.name }
 	findRoom: (identifier) ->
 		query =
 			t: 'c'
@@ -22,6 +20,8 @@ RocketChat.roomTypes.add 'c', 10,
 		return roomData.name
 	condition: ->
 		return RocketChat.authz.hasAtLeastOnePermission ['view-c-room', 'view-joined-room']
+	showJoinLink: (roomId) ->
+		return !! ChatRoom.findOne { _id: roomId, t: 'c' }
 
 RocketChat.roomTypes.add 'd', 20,
 	template: 'directMessages'
@@ -43,7 +43,7 @@ RocketChat.roomTypes.add 'd', 20,
 	roomName: (roomData) ->
 		return ChatSubscription.findOne({ rid: roomData._id }, { fields: { name: 1 } })?.name
 	condition: ->
-		return RocketChat.authz.hasAllPermission 'view-d-room'
+		return RocketChat.authz.hasAtLeastOnePermission ['view-d-room', 'view-joined-room']
 
 RocketChat.roomTypes.add 'p', 30,
 	template: 'privateGroups'
@@ -54,8 +54,6 @@ RocketChat.roomTypes.add 'p', 30,
 		action: (params, queryParams) ->
 			openRoom 'p', params.name
 			RocketChat.TabBar.showGroup 'privategroup'
-		link: (sub) ->
-			return { name: sub.name }
 	findRoom: (identifier) ->
 		query =
 			t: 'p'

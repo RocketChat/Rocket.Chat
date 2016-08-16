@@ -85,13 +85,12 @@ code {
 	white-space: pre-wrap;
 	unicode-bidi: embed;
 	direction: ltr;
-	font-family: "Source Code Pro", Monaco, monospace, Courier, "Lucida Console";
+	font-family: Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
 	&.inline {
 		display: inline;
 		padding: 0 0.5em;
 		margin: 0 0.1em;
 		line-height: 16px;
-		font-family: "Source Code Pro", Monaco, monospace, Courier, "Lucida Console";
 	}
 }
 
@@ -460,7 +459,7 @@ html {
 }
 
 body {
-	font-family: 'Helvetica Neue', Helvetica, Roboto, Arial, sans-serif, "Meiryo UI";
+	font-family: @body-font-family;
 	font-size: 0.875rem;
 	height: 100%;
 	width: 100%;
@@ -830,74 +829,6 @@ label.required:after {
 	}
 }
 
-a.github-fork {
-	position: fixed;
-	display: block;
-	width: 260px;
-	z-index: 901;
-	right: -62px;
-	top: 50px;
-	background-size: 100% auto;
-	cursor: pointer;
-	padding: 1em 0 0.95em;
-	line-height: 1.04em;
-	text-decoration: none;
-	font-size: 1.04em;
-	box-shadow: -2px 3px 1px rgba(0, 0, 0, 0.23);
-	opacity: 1;
-	text-transform: uppercase;
-	font-weight: 400 !important;
-	.transform(rotate(45deg) translateY(0));
-	.transition(background-color .2s ease-out, transform .45s cubic-bezier(.15, 0, 0, 1) 2.15s, opacity .2s ease-out 2.15);
-	&:hover {}
-	&:before {
-		content: " ";
-		border-top: 1px dashed;
-		position: absolute;
-		top: 3px;
-		width: 100%;
-		left: 0;
-		height: 1px;
-		z-index: 1;
-	}
-	&:after {
-		content: " ";
-		border-top: 1px dashed;
-		position: absolute;
-		bottom: 2px;
-		z-index: 1;
-		left: 0;
-		width: 100%;
-		height: 1px;
-	}
-	@media all and (max-width: 600px) {
-		display: none;
-	}
-}
-
-.mac-bar {
-	display: block;
-	position: relative;
-	height: 24px;
-	width: 100%;
-	z-index: 10;
-	i {
-		height: 12px;
-		width: 12px;
-		display: inline-block;
-		border-radius: 50%;
-		position: absolute;
-		top: 6px;
-		left: 10px;
-		&:nth-child(2) {
-			left: 26px;
-		}
-		&:nth-child(3) {
-			left: 42px;
-		}
-	}
-}
-
 .avatar {
 	height: 100%;
 	width: 100%;
@@ -931,7 +862,6 @@ a.github-fork {
 		height: 100%;
 		.flex-center;
 		justify-content: center;
-		font-family: Helvetica;
 		text-transform: uppercase;
 		font-weight: bold;
 	}
@@ -1208,7 +1138,6 @@ a.github-fork {
 		overflow-y: auto;
 		display: block;
 		-webkit-overflow-scrolling: touch;
-		box-shadow: 0 0 5px rgba(0, 0, 0, 0.4) inset;
 		padding: 20px 10px;
 		.transition-delay(.135s);
 		&.no-shadow {
@@ -1303,13 +1232,12 @@ a.github-fork {
 		direction: rtl;
 		position: absolute;
 		top: @header-min-height;
-		.calc(height, ~"100% - " @header-min-height + @footer-min-height);
+		bottom: @footer-min-height;
 		width: 100%;
 		overflow-x: hidden;
 		overflow-y: auto;
 		display: block;
 		-webkit-overflow-scrolling: touch;
-		box-shadow: 0 0 5px rgba(0, 0, 0, 0.4) inset;
 		> .wrapper {
 			direction: ltr;
 			padding-left: 8px;
@@ -1491,7 +1419,6 @@ a.github-fork {
 			text-overflow: ellipsis;
 			vertical-align: middle;
 			text-decoration: none;
-			text-shadow: 0 1px 1px rgba(0, 0, 0, 0.25);
 			&:hover {
 				text-decoration: none;
 			}
@@ -2093,7 +2020,6 @@ a.github-fork {
 	.upload-progress {
 		height: 24px;
 		position: relative;
-		text-shadow: 1px 1px 0px rgba(0, 0, 0, .2);
 		.upload-progress-progress {
 			position: absolute;
 			left: 0px;
@@ -2112,7 +2038,6 @@ a.github-fork {
 			> a {
 				float: right;
 				text-transform: uppercase;
-				text-shadow: none;
 				cursor: pointer;
 			}
 		}
@@ -2254,38 +2179,21 @@ a.github-fork {
 			.input-message-container {
 				position: relative;
 				width: 100%;
-				.inner-right-toolbar {
+				.inner-left-toolbar {
 					position: absolute;
-					right: 10px;
-					top: 10px;
+					left: 13px;
+					top: 9px;
 				}
 			}
 			> .message-buttons {
-				.mic,
-				.stop-mic,
-				.send-button {
-					display: none;
-				}
-				&.show-mic .mic,
-				&.show-mic .stop-mic {
-					display: inline-block;
-				}
-				&.hide-vrec {
-					display: none;
-				}
-				&.show-vrec .video-button {
-					display: inline-block;
-				}
-				&.show-send .send-button {
-					display: inline-block;
-				}
-				width: 44px;
+				flex: 0 0 35px;
 				text-align: center;
 				border: 0;
 				cursor: pointer;
 				display: flex;
 				align-items: center;
 				justify-content: center;
+				position: relative;
 				.transition(background-color 0.1s linear, color 0.1s linear);
 				i {
 					font-size: 18px;
@@ -2297,7 +2205,6 @@ a.github-fork {
 					right: 0;
 					bottom: 0;
 					overflow: hidden;
-					width: 44px;
 					opacity: 0;
 					cursor: pointer;
 				}
@@ -2311,13 +2218,14 @@ a.github-fork {
 			margin: 0px;
 			padding-top: 9px;
 			padding-bottom: 9px;
-			padding-right: 38px;
+			padding-left: 49px;
 			border-radius: 0;
 			overflow-y: hidden;
 			resize: none;
 			line-height: 16px;
-			border-top: 0;
-			border-bottom: 0;
+			border-top-width: 0;
+			border-bottom-width: 0;
+			border-left-width: 0;
 			&.editing {}
 		}
 		.users-typing {
@@ -2772,6 +2680,17 @@ a.github-fork {
 		> h4 {
 			font-size: 1.5em;
 			line-height: 1em;
+		}
+		blockquote.sandstorm-grain {
+			img {
+				width: 50px;
+			}
+			label {
+				cursor: pointer;
+			}
+			button {
+				display: block;
+			}
 		}
 	}
 	&.temp .body {
@@ -3774,7 +3693,6 @@ body:not(.is-cordova) {
 	header {
 		padding: 18px 0 23px;
 		p {
-			//font-family: "Muli";
 			margin: 8px 0 0;
 			font-size: 14px;
 			line-height: 22px;
@@ -4255,15 +4173,24 @@ body:not(.is-cordova) {
 		right: 0;
 		z-index: 1000000;
 		display: block;
-		font-size: 50px;
+		font-size: 42px;
 		display: flex;
 		align-items: center;
 		justify-content: center;
+		margin: 0 51px 0 12px;
 		> div {
 			padding: 40px;
 			border-radius: 10px;
 			pointer-events: none;
+			line-height: 1.3em;
+			text-align: center;
 		}
+	}
+}
+
+@media (min-width: 780px) {
+	.dropzone.over .dropzone-overlay {
+		margin: 0 51px 0 270px;
 	}
 }
 
@@ -4526,7 +4453,7 @@ body:not(.is-cordova) {
 	overflow-y: scroll;
 	border: none !important;
 	padding: 8px 10px !important;
-	font-family: "Source Code Pro", Monaco, monospace, Courier, "Lucida Console";
+	font-family: Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
 	font-weight: 500;
 	-webkit-user-select: text;
 	-moz-user-select: text;
