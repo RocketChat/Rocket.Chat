@@ -296,7 +296,7 @@ RocketChat.API.v1.addRoute 'outgoingWebhook', authRequired: true,
 			return RocketChat.API.v1.failure 'Body param "name" is required'
 			
 		if not @bodyParams.userid?
-				return RocketChat.API.v1.failure 'Body param "userid" is required'
+			return RocketChat.API.v1.failure 'Body param "userid" is required'
 			
 		if not @bodyParams.authToken?
 			return RocketChat.API.v1.failure 'Body param "authToken" is required'
