@@ -459,7 +459,7 @@ html {
 }
 
 body {
-	font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Meiryo UI";
+	font-family: @body-font-family;
 	font-size: 0.875rem;
 	height: 100%;
 	width: 100%;
@@ -1138,7 +1138,6 @@ label.required:after {
 		overflow-y: auto;
 		display: block;
 		-webkit-overflow-scrolling: touch;
-		box-shadow: 0 0 5px rgba(0, 0, 0, 0.4) inset;
 		padding: 20px 10px;
 		.transition-delay(.135s);
 		&.no-shadow {
@@ -1233,13 +1232,12 @@ label.required:after {
 		direction: rtl;
 		position: absolute;
 		top: @header-min-height;
-		.calc(height, ~"100% - " @header-min-height + @footer-min-height);
+		bottom: @footer-min-height;
 		width: 100%;
 		overflow-x: hidden;
 		overflow-y: auto;
 		display: block;
 		-webkit-overflow-scrolling: touch;
-		box-shadow: 0 0 5px rgba(0, 0, 0, 0.4) inset;
 		> .wrapper {
 			direction: ltr;
 			padding-left: 8px;
@@ -1421,7 +1419,6 @@ label.required:after {
 			text-overflow: ellipsis;
 			vertical-align: middle;
 			text-decoration: none;
-			text-shadow: 0 1px 1px rgba(0, 0, 0, 0.25);
 			&:hover {
 				text-decoration: none;
 			}
@@ -2023,7 +2020,6 @@ label.required:after {
 	.upload-progress {
 		height: 24px;
 		position: relative;
-		text-shadow: 1px 1px 0px rgba(0, 0, 0, .2);
 		.upload-progress-progress {
 			position: absolute;
 			left: 0px;
@@ -2042,7 +2038,6 @@ label.required:after {
 			> a {
 				float: right;
 				text-transform: uppercase;
-				text-shadow: none;
 				cursor: pointer;
 			}
 		}
@@ -2184,38 +2179,21 @@ label.required:after {
 			.input-message-container {
 				position: relative;
 				width: 100%;
-				.inner-right-toolbar {
+				.inner-left-toolbar {
 					position: absolute;
-					right: 10px;
-					top: 10px;
+					left: 13px;
+					top: 9px;
 				}
 			}
 			> .message-buttons {
-				.mic,
-				.stop-mic,
-				.send-button {
-					display: none;
-				}
-				&.show-mic .mic,
-				&.show-mic .stop-mic {
-					display: inline-block;
-				}
-				&.hide-vrec {
-					display: none;
-				}
-				&.show-vrec .video-button {
-					display: inline-block;
-				}
-				&.show-send .send-button {
-					display: inline-block;
-				}
-				width: 44px;
+				flex: 0 0 35px;
 				text-align: center;
 				border: 0;
 				cursor: pointer;
 				display: flex;
 				align-items: center;
 				justify-content: center;
+				position: relative;
 				.transition(background-color 0.1s linear, color 0.1s linear);
 				i {
 					font-size: 18px;
@@ -2227,7 +2205,6 @@ label.required:after {
 					right: 0;
 					bottom: 0;
 					overflow: hidden;
-					width: 44px;
 					opacity: 0;
 					cursor: pointer;
 				}
@@ -2241,13 +2218,14 @@ label.required:after {
 			margin: 0px;
 			padding-top: 9px;
 			padding-bottom: 9px;
-			padding-right: 38px;
+			padding-left: 49px;
 			border-radius: 0;
 			overflow-y: hidden;
 			resize: none;
 			line-height: 16px;
-			border-top: 0;
-			border-bottom: 0;
+			border-top-width: 0;
+			border-bottom-width: 0;
+			border-left-width: 0;
 			&.editing {}
 		}
 		.users-typing {
