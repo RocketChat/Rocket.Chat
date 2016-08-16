@@ -38,7 +38,7 @@ Template.livechatOfficeHours.helpers({
 
 Template.livechatOfficeHours.events({
   'change .preview-settings, keydown .preview-settings'(e, instance) {
-    var temp = e.currentTarget.name.split("_");
+    var temp = e.currentTarget.name.split('_');
 
     var newTime = moment(e.currentTarget.value, 'HH:mm');
 
@@ -48,7 +48,7 @@ Template.livechatOfficeHours.events({
         instance.dayVars[temp[0]].start.set(e.currentTarget.value);
       }
       else {
-        
+
         e.currentTarget.value = instance.dayVars[temp[0]].start.get();
       }
     }
@@ -56,13 +56,13 @@ Template.livechatOfficeHours.events({
       if(newTime.isSameOrAfter(moment(instance.dayVars[temp[0]].start.get(), 'HH:mm'))) {
         instance.dayVars[temp[0]].finish.set(e.currentTarget.value);
       }
-      else { 
+      else {
         e.currentTarget.value = instance.dayVars[temp[0]].finish.get();
       }
     }
   },
   'change .dayOpenCheck input'(e, instance) {
-    var temp = e.currentTarget.name.split("_");
+    var temp = e.currentTarget.name.split('_');
     instance.dayVars[temp[0]][temp[1]].set(e.target.checked);
   },
   'change .preview-settings, keyup .preview-settings'(e, instance) {
@@ -76,8 +76,6 @@ Template.livechatOfficeHours.events({
   'submit .rocket-form'(e, instance) {
     e.preventDefault();
 
-    var noError = true;
-
     // convert all times to utc then update them in db
     for (var d in instance.dayVars) {
       if (instance.dayVars.hasOwnProperty(d)) {
@@ -88,13 +86,12 @@ Template.livechatOfficeHours.events({
         Meteor.call('livechat:saveOfficeHours', d, start_utc, finish_utc, day.open.get(), function(error, result) {
           if(error) {
             return handleError(err);
-            noError = false;
-          }    
+          }
         });
       }
     }
 
-    RocketChat.settings.set('Livechat_enable_office_hours', instance.enableOfficeHours.get() , (err/*, success*/) => {
+    RocketChat.settings.set('Livechat_enable_office_hours', instance.enableOfficeHours.get(), (err/*, success*/) => {
       if (err) {
         return handleError(err);
       }
@@ -106,38 +103,38 @@ Template.livechatOfficeHours.events({
 Template.livechatOfficeHours.onCreated(function() {
   this.dayVars = {
     Monday: {
-      start: new ReactiveVar("08:00"),
-      finish: new ReactiveVar("20:00"),
+      start: new ReactiveVar('08:00'),
+      finish: new ReactiveVar('20:00'),
       open: new ReactiveVar(true)
     },
     Tuesday: {
-      start: new ReactiveVar("00:00"),
-      finish: new ReactiveVar("00:00"),
+      start: new ReactiveVar('00:00'),
+      finish: new ReactiveVar('00:00'),
       open: new ReactiveVar(true)
     },
     Wednesday: {
-      start: new ReactiveVar("00:00"),
-      finish: new ReactiveVar("00:00"),
+      start: new ReactiveVar('00:00'),
+      finish: new ReactiveVar('00:00'),
       open: new ReactiveVar(true)
     },
     Thursday: {
-      start: new ReactiveVar("00:00"),
-      finish: new ReactiveVar("00:00"),
+      start: new ReactiveVar('00:00'),
+      finish: new ReactiveVar('00:00'),
       open: new ReactiveVar(true)
     },
     Friday: {
-      start: new ReactiveVar("00:00"),
-      finish: new ReactiveVar("00:00"),
+      start: new ReactiveVar('00:00'),
+      finish: new ReactiveVar('00:00'),
       open: new ReactiveVar(true)
     },
     Saturday: {
-      start: new ReactiveVar("00:00"),
-      finish: new ReactiveVar("00:00"),
+      start: new ReactiveVar('00:00'),
+      finish: new ReactiveVar('00:00'),
       open: new ReactiveVar(false)
     },
     Sunday: {
-      start: new ReactiveVar("00:00"),
-      finish: new ReactiveVar("00:00"),
+      start: new ReactiveVar('00:00'),
+      finish: new ReactiveVar('00:00'),
       open: new ReactiveVar(false)
     }
   };

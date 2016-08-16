@@ -8,17 +8,17 @@ class LivechatOfficeHour extends RocketChat.models._Base {
 		this.tryEnsureIndex({ 'finish': 1 }); // the closing hours of the office
 		this.tryEnsureIndex({ 'open': 1 }); // whether or not the offices are open on this day
 
-		// if there is nothing in the collection, add defaults 
-		if (this.find().count() == 0) {
-			this.insert({"day" : "Monday", "start" : "08:00", "finish" : "20:00", "code" : 1, "open" : true });
-			this.insert({"day" : "Tuesday", "start" : "08:00", "finish" : "20:00", "code" : 2, "open" : true });
-			this.insert({"day" : "Wednesday", "start" : "08:00", "finish" : "20:00", "code" : 3, "open" : true });
-			this.insert({"day" : "Thursday", "start" : "08:00", "finish" : "20:00", "code" : 4, "open" : true });
-			this.insert({"day" : "Friday", "start" : "08:00", "finish" : "20:00", "code" : 5, "open" : true });
-			this.insert({"day" : "Saturday", "start" : "08:00", "finish" : "20:00", "code" : 6, "open" : false });
-			this.insert({"day" : "Sunday", "start" : "08:00", "finish" : "20:00", "code" : 0, "open" : false });
-			
-		}	
+		// if there is nothing in the collection, add defaults
+		if (this.find().count() === 0) {
+			this.insert({'day' : 'Monday', 'start' : '08:00', 'finish' : '20:00', 'code' : 1, 'open' : true });
+			this.insert({'day' : 'Tuesday', 'start' : '08:00', 'finish' : '20:00', 'code' : 2, 'open' : true });
+			this.insert({'day' : 'Wednesday', 'start' : '08:00', 'finish' : '20:00', 'code' : 3, 'open' : true });
+			this.insert({'day' : 'Thursday', 'start' : '08:00', 'finish' : '20:00', 'code' : 4, 'open' : true });
+			this.insert({'day' : 'Friday', 'start' : '08:00', 'finish' : '20:00', 'code' : 5, 'open' : true });
+			this.insert({'day' : 'Saturday', 'start' : '08:00', 'finish' : '20:00', 'code' : 6, 'open' : false });
+			this.insert({'day' : 'Sunday', 'start' : '08:00', 'finish' : '20:00', 'code' : 0, 'open' : false });
+
+		}
 	}
 
 	updateHours(day, newStart, newFinish, newOpen) {
@@ -45,13 +45,13 @@ class LivechatOfficeHour extends RocketChat.models._Base {
 		}
 
 		// check if offices are open today
-		if (todaysOfficeHours.open == false) {
+		if (todaysOfficeHours.open === false) {
 			return false;
 		}
 
 		var start = moment.utc(todaysOfficeHours.day + ':' + todaysOfficeHours.start, 'dddd:HH:mm');
 		var finish = moment.utc(todaysOfficeHours.day + ':' + todaysOfficeHours.finish, 'dddd:HH:mm');
-		
+
 		// console.log(finish.isBefore(start));
 		if (finish.isBefore(start)) {
 			// finish.day(finish.day()+1);
@@ -60,7 +60,7 @@ class LivechatOfficeHour extends RocketChat.models._Base {
 
 		var result = currentTime.isBetween(start, finish);
 
-		// inBetween  check 
+		// inBetween  check
 		return result;
 	}
 
