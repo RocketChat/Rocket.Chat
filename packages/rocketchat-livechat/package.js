@@ -38,6 +38,7 @@ Package.onUse(function(api) {
 	api.addFiles('livechat.js', 'server');
 	api.addFiles('server/startup.js', 'server');
 	api.addFiles('permissions.js', 'server');
+	api.addFiles('roomType.js');
 
 	api.addFiles('config.js', 'server');
 
