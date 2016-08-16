@@ -49,11 +49,11 @@ Meteor.startup(function() {
 	RocketChat.promises.add('onClientBeforeSendMessage', function(message) {
 		if (message.rid && RocketChat.OTR.getInstanceByRoomId(message.rid) && RocketChat.OTR.getInstanceByRoomId(message.rid).established.get()) {
 			return RocketChat.OTR.getInstanceByRoomId(message.rid).encrypt(message)
-			.then((msg) => {
-				message.msg = msg;
-				message.t = 'otr';
-				return message;
-			});
+				.then((msg) => {
+					message.msg = msg;
+					message.t = 'otr';
+					return message;
+				});
 		} else {
 			return Promise.resolve(message);
 		}
@@ -67,33 +67,33 @@ Meteor.startup(function() {
 			} else {
 				const otrRoom = RocketChat.OTR.getInstanceByRoomId(message.rid);
 				return otrRoom.decrypt(message.msg)
-				.then((data) => {
-					const {_id, text, ack} = data;
-					message._id = _id;
-					message.msg = text;
+					.then((data) => {
+						const {_id, text, ack} = data;
+						message._id = _id;
+						message.msg = text;
 
-					if (data.ts) {
-						message.ts = data.ts;
-					}
+						if (data.ts) {
+							message.ts = data.ts;
+						}
 
-					if (message.otrAck) {
-						return otrRoom.decrypt(message.otrAck)
-						.then((data) => {
-							if (ack === data.text) {
-								message.t = 'otr-ack';
-							}
+						if (message.otrAck) {
+							return otrRoom.decrypt(message.otrAck)
+								.then((data) => {
+									if (ack === data.text) {
+										message.t = 'otr-ack';
+									}
+									return message;
+								});
+						} else if (data.userId !== Meteor.userId()) {
+							return otrRoom.encryptText(ack)
+								.then((ack) => {
+									Meteor.call('updateOTRAck', message._id, ack);
+									return message;
+								});
+						} else {
 							return message;
-						});
-					} else if (data.userId !== Meteor.userId()) {
-						return otrRoom.encryptText(ack)
-						.then((ack) => {
-							Meteor.call('updateOTRAck', message._id, ack);
-							return message;
-						});
-					} else {
-						return message;
-					}
-				});
+						}
+					});
 			}
 		} else {
 			if (message.t === 'otr') {

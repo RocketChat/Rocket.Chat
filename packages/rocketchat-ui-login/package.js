@@ -17,7 +17,8 @@ Package.onUse(function(api) {
 		'templating',
 		'coffeescript',
 		'underscore',
-		'rocketchat:lib'
+		'rocketchat:lib',
+		'rocketchat:assets'
 	]);
 
 	api.use('kadira:flow-router', 'client');

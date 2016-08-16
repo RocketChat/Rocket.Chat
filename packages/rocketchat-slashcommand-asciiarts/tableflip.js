@@ -9,7 +9,7 @@ function Tableflip(command, params, item) {
 		var msg;
 
 		msg = item;
-		msg.msg = params + ' ¯(╯°□°）╯︵ ┻━┻';
+		msg.msg = params + ' (╯°□°）╯︵ ┻━┻';
 		Meteor.call('sendMessage', msg);
 	}
 }
