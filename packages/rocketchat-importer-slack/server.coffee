@@ -267,7 +267,7 @@ Importer.Slack = class Importer.Slack extends Importer.Base
 											else if message.subtype is 'file_share'
 												if message.file?.url_private_download isnt undefined
 													details =
-														message_id: "slack-S#{message.ts.replace(/\./g, '-')}"
+														message_id: "slack-#{message.ts.replace(/\./g, '-')}"
 														name: message.file.name
 														size: message.file.size
 														type: message.file.mimetype
