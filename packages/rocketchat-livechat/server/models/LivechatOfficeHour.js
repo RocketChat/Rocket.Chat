@@ -55,7 +55,7 @@ class LivechatOfficeHour extends RocketChat.models._Base {
 		// console.log(finish.isBefore(start));
 		if (finish.isBefore(start)) {
 			// finish.day(finish.day()+1);
-			finish.add(1,'days');
+			finish.add(1, 'days');
 		}
 
 		var result = currentTime.isBetween(start, finish);
@@ -75,7 +75,7 @@ class LivechatOfficeHour extends RocketChat.models._Base {
 		}
 
 		// check if offices are open today
-		if (todaysOfficeHours.open == false) {
+		if (todaysOfficeHours.open === false) {
 			return false;
 		}
 
