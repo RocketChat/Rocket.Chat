@@ -117,10 +117,6 @@ class CachedCollection {
 		this.updatedAt = new Date(0);
 		this.maxCacheTime = maxCacheTime;
 
-		if (this.useCache === false) {
-			return this.clearCache();
-		}
-
 		RocketChat.CachedCollectionManager.register(this);
 
 		if (initOnLogin === true) {
@@ -131,6 +127,10 @@ class CachedCollection {
 				this.initiated = false;
 				this.init();
 			});
+		}
+
+		if (this.useCache === false) {
+			return this.clearCache();
 		}
 	}
 
