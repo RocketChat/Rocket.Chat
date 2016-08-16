@@ -221,8 +221,6 @@ RocketChat.settings.addGroup 'Layout', ->
 	
 	@section 'Side Navigation', ->
 		@add 'SideNav_Show_Count', true, { type: 'boolean', public: true }
-		@add 'SideNav_Show_More_C', true, { type: 'boolean', public: true }
-		@add 'SideNav_Show_More_D', true, { type: 'boolean', public: true }
 		@add 'UI_Merge_Channels_Groups', true, { type: 'boolean', public: true }
 		@add 'Layout_Sidenav_Footer', '<img style="left: 10px; position: absolute;" src="/assets/logo.png" />', { type: 'code', code: 'text/html', public: true, i18nDescription: 'Layout_Sidenav_Footer_description' }
 	

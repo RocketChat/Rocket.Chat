@@ -22,8 +22,8 @@ Template.combined.helpers
 	showCount: ->
 		return RocketChat.settings.get 'SideNav_Show_Count'
 
-	showMoreLink: ->
-		return RocketChat.settings.get 'SideNav_Show_More_C'
+	enableMoreLink: ->
+		return RocketChat.authz.hasAtLeastOnePermission ['view-more-c-rooms']
 
 Template.combined.events
 	'click .add-room': (e, instance) ->
