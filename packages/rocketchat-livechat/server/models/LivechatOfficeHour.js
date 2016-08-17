@@ -36,9 +36,9 @@ class LivechatOfficeHour extends RocketChat.models._Base {
 		});
 	}
 
-	/* 
-	 * Check if the current server time (utc) is within the office hours of that day 
-	 * returns true or false 
+	/*
+	 * Check if the current server time (utc) is within the office hours of that day
+	 * returns true or false
 	 */
 	isNowWithinHours() {
 		// get current time on server in utc
