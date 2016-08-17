@@ -15,46 +15,49 @@ Template.membersList.helpers
 			return t('Show_all')
 
 	roomUsers: ->
-		users = []
 		onlineUsers = RoomManager.onlineUsers.get()
-		room = ChatRoom.findOne(this.rid)
-		roomUsernames = room?.usernames or []
-		roomMuted = room?.muted or []
+		roomUsernames = ChatRoom.findOne(this.rid)?.usernames or []
+		roomOnlineUsernames = roomUsernames.filter((username) -> onlineUsers[username])
 
-		for username in roomUsernames
-			if Template.instance().showAllUsers.get() or onlineUsers[username]?
-				utcOffset = onlineUsers[username]?.utcOffset
-				if utcOffset?
-					if utcOffset > 0
-						utcOffset = "+#{utcOffset}"
+		if Template.instance().showAllUsers.get()
+			usernames = roomUsernames
+		else
+			usernames = roomOnlineUsernames
 
-					utcOffset = "(UTC #{utcOffset})"
+		users = usernames.map (username) ->
+			utcOffset = onlineUsers[username]?.utcOffset
 
-				users.push
-					username: username
-					status: onlineUsers[username]?.status
-					muted: username in roomMuted
-					utcOffset: utcOffset
+			if utcOffset?
+				if utcOffset > 0
+					utcOffset = "+#{utcOffset}"
+				utcOffset = "(UTC #{utcOffset})"
+
+			return {
+				username: username
+				status: onlineUsers[username]?.status
+				utcOffset: utcOffset
+			}
 
 		users = _.sortBy users, 'username'
 		# show online users first.
 		# sortBy is stable, so we can do this
 		users = _.sortBy users, (u) -> !u.status?
 
-		hasMore = users.length > Template.instance().usersLimit.get()
-
-		users = _.first(users, Template.instance().usersLimit.get())
+		usersLimit = Template.instance().usersLimit.get()
+		hasMore = users.length > usersLimit
+		users = _.first(users, usersLimit)
 
 		totalUsers = roomUsernames.length
 		totalShowing = users.length
+		totalOnline = roomOnlineUsernames.length
 
 		ret =
 			_id: this.rid
 			total: totalUsers
 			totalShowing: totalShowing
+			totalOnline: totalOnline
 			users: users
 			hasMore: hasMore
-
 		return ret
 
 	canAddUser: ->

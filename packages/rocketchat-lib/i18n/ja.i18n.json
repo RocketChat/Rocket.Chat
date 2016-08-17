@@ -979,7 +979,7 @@
   "Show_only_online" : "オンラインのみ表示",
   "Show_preregistration_form" : "事前登録フォームを表示する",
   "Showing_archived_results" : "<p><b>%s</b> 件のアーカイブされた結果を表示</p>",
-  "Showing_online_users" : "__total__ ユーザー中 <b>__total_showing__</b> ユーザーが見ています",
+  "Showing_online_users" : "表示中: <b>__total_showing__</b> オンライン: __online__ 合計: __total__ 人",
   "Showing_results" : "<p><b>%s</b> 件の結果を表示</p>",
   "since_creation" : "%s から",
   "Site_Name" : "サイト名",
