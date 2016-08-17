@@ -2176,13 +2176,66 @@ label.required:after {
 			border-radius: 5px;
 			position: relative;
 			display: flex;
+			> .share-items {
+				display: flex;
+				position: relative;
+				padding-right: 40px;
+				.transform(translateX(0%));
+    			.transition(transform 0.3s ease-out);
+    			&.hidden {
+    				.transform(translateX(150%));
+    			}
+				input {
+					position: absolute;
+					top: 0;
+					left: 0;
+					right: 0;
+					bottom: 0;
+					overflow: hidden;
+					opacity: 0;
+					cursor: pointer;
+				}
+				input::-webkit-file-upload-button {
+					cursor: pointer;
+				}
+				i {
+					font-size: 18px;
+				}
+				> .message-buttons {
+					flex: 0 0 35px;
+					text-align: center;
+					border: 0;
+					cursor: pointer;
+					display: flex;
+					align-items: center;
+					justify-content: center;
+					position: relative;
+					input {
+						position: absolute;
+						top: 0;
+						left: 0;
+						right: 0;
+						bottom: 0;
+						overflow: hidden;
+						opacity: 0;
+						cursor: pointer;
+					}
+					input::-webkit-file-upload-button {
+						cursor: pointer;
+					}
+					i {
+						font-size: 18px;
+					}
+				}
+			}
+			
 			.input-message-container {
 				position: relative;
 				width: 100%;
-				.inner-left-toolbar {
+				.inner-right-toolbar {
 					position: absolute;
-					left: 13px;
-					top: 9px;
+					right: 10px;
+					top: 10px;
 				}
 			}
 			> .message-buttons {
@@ -2197,19 +2250,14 @@ label.required:after {
 				.transition(background-color 0.1s linear, color 0.1s linear);
 				i {
 					font-size: 18px;
+					.transform(rotate(0deg));
+    				.transition(transform 0.3s ease-out);
 				}
-				input {
-					position: absolute;
-					top: 0;
-					left: 0;
-					right: 0;
-					bottom: 0;
-					overflow: hidden;
-					opacity: 0;
-					cursor: pointer;
-				}
-				input::-webkit-file-upload-button {
-					cursor: pointer;
+				&.active {
+					background-color: rgb(241, 241, 241);
+					i {
+    					.transform(rotate(90deg));
+    				}
 				}
 			}
 		}
@@ -2218,7 +2266,7 @@ label.required:after {
 			margin: 0px;
 			padding-top: 9px;
 			padding-bottom: 9px;
-			padding-left: 49px;
+			padding-right: 38px;
 			border-radius: 0;
 			overflow-y: hidden;
 			resize: none;
