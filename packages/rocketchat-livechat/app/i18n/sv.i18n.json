@@ -1,7 +1,10 @@
 {
   "Additional_Feedback" : "Ytterligare feedback",
   "Appearance" : "Utseende",
+  "Cancel" : "Avbryt",
+  "Close_menu" : "Stäng meny",
   "Conversation_finished" : "konversation klar",
+  "End_chat" : "Avsluta chatt",
   "How_friendly_was_the_chat_agent" : "Hur vänligt var chatten agent?",
   "How_knowledgeable_was_the_chat_agent" : "Hur kunnig var chatten agent?",
   "How_responsive_was_the_chat_agent" : "Hur reagerar var chatten agent?",
