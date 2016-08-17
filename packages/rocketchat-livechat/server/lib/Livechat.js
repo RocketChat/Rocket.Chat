@@ -58,6 +58,9 @@ RocketChat.Livechat = {
 		if (!room) {
 			throw new Meteor.Error('cannot-acess-room');
 		}
+		if (guest.name) {
+			message.alias = guest.name;
+		}
 		return _.extend(RocketChat.sendMessage(guest, message, room), { newRoom: newRoom });
 	},
 	registerGuest({ token, name, email, department, phone, loginToken, username } = {}) {
