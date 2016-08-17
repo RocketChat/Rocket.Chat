@@ -109,6 +109,13 @@ RocketChat.settings.addGroup 'General', ->
 	@section 'REST API', ->
 		@add 'API_User_Limit', 500, { type: 'int', public: true, i18nDescription: 'API_User_Limit' }
 
+	@section 'Iframe Integration', ->
+		@add 'Iframe_Integration_send_enable', false, { type: 'boolean', public: true }
+		@add 'Iframe_Integration_send_target_origin', '*', { type: 'string', public: true, enableQuery: { _id: 'Iframe_Integration_send_enable', value: true } }
+
+		@add 'Iframe_Integration_receive_enable', false, { type: 'boolean', public: true }
+		@add 'Iframe_Integration_receive_origin', '*', { type: 'string', public: true, enableQuery: { _id: 'Iframe_Integration_receive_enable', value: true } }
+
 
 RocketChat.settings.addGroup 'Email', ->
 	@section 'Header and Footer', ->
