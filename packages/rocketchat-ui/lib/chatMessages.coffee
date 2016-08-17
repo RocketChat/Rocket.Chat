@@ -378,8 +378,9 @@ class @ChatMessages
 		else if k is 75 and ((navigator?.platform?.indexOf('Mac') isnt -1 and event.metaKey and event.shiftKey) or (navigator?.platform?.indexOf('Mac') is -1 and event.ctrlKey and event.shiftKey))
 			RoomHistoryManager.clear rid
 
-	valueChanged: (rid, event) ->
-		this.determineInputDirection()
+	valueChanged: (rid, event, input) ->
+		if input.lenght is 1
+			this.determineInputDirection()
 
 	determineInputDirection: () ->
 		this.input.dir = if this.isMessageRtl(this.input.value) then 'rtl' else 'ltr'
