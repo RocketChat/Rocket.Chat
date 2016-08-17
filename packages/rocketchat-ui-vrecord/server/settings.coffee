@@ -1,2 +1,3 @@
 RocketChat.settings.addGroup 'Message', ->
-	@add 'Message_VideoRecorderEnabled', true, { type: 'boolean', public: true, i18nDescription: 'Message_VideoRecorderEnabledDescription' }
+	@section 'Message_Attachments', ->
+	    @add 'Message_VideoRecorderEnabled', true, { type: 'boolean', public: true, i18nDescription: 'Message_VideoRecorderEnabledDescription' }
