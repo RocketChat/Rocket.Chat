@@ -166,6 +166,7 @@
   "Archive" : "Archive",
   "are_also_typing" : "are also typing",
   "are_typing" : "are typing",
+  "room_is_read_only" : "This room is read only",
   "Are_you_sure" : "Are you sure?",
   "Are_you_sure_you_want_to_delete_your_account" : "Are you sure you want to delete your account?",
   "Assign_admin" : "Assigning admin",
