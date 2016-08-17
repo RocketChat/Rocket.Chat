@@ -16,51 +16,55 @@
 				</div>
 
 				{{#unless showSend}}
-					
+
 					<div class="share-items {{groupAttachHidden}}">
-						
-						<div class="message-buttons file">
-							<i class="icon-attach file"></i>
-							<input type="file" accept="{{fileUploadAllowedMediaTypes}}">
-						</div>
-	
+
+						{{#if fileUploadEnabled}}
+
+							<div class="message-buttons file">
+								<i class="icon-attach file"></i>
+								<input type="file" accept="{{fileUploadAllowedMediaTypes}}">
+							</div>
+
+							{{#if showMic}}
+								<div class="message-buttons mic-button">
+									<div class="mic">
+										<i class="icon-mic" aria-label="{{_ "Record"}}"></i>
+									</div>
+									<div class="stop-mic hidden">
+										<i class="icon-stop" aria-label="{{_ "Stop_Recording"}}"></i>
+									</div>
+								</div>
+							{{/if}}
+
+							{{#if showVRec}}
+								<div class="message-buttons video-button">
+									<i class="icon-videocam" aria-label="{{_ "Record"}}"></i>
+								</div>
+							{{/if}}
+
+						{{/if}}
+
 						{{#if showLocation}}
 							<div class="message-buttons location-button">
 								<i class="icon-location"></i>
 							</div>
 						{{/if}}
-	
+
 						{{#if showSandstorm}}
 							<div class="message-buttons sandstorm-offer">
 								<i class="icon-plus" title="{{_ "Sandstorm_Powerbox_Share"}}"></i>
 							</div>
 						{{/if}}
-	
-						{{#if showMic}}
-							<div class="message-buttons mic-button">
-								<div class="mic">
-									<i class="icon-mic" aria-label="{{_ "Record"}}"></i>
-								</div>
-								<div class="stop-mic hidden">
-									<i class="icon-stop" aria-label="{{_ "Stop_Recording"}}"></i>
-								</div>
-							</div>
-						{{/if}}
-	
-						{{#if showVRec}}
-							<div class="message-buttons video-button">
-								<i class="icon-videocam" aria-label="{{_ "Record"}}"></i>
-							</div>
-						{{/if}}
 
 					</div>
-						
+
 					{{#if groupAttachHidden}}
 						<div class="message-buttons share">
 							<i class="icon-plus"></i>
 						</div>
 					{{/if}}
-					
+
 				{{/unless}}
 
 				{{#if showSend}}

@@ -159,7 +159,7 @@ RocketChat.settings.addGroup 'Email', ->
 RocketChat.settings.addGroup 'Message', ->
 	
 	@section 'Message_Attachments', ->
-		@add 'Message_Attachments_GroupAttach', false, { type: 'boolean', public: true, i18nDescription: 'Message_AudioRecorderEnabledDescription' }
+		@add 'Message_Attachments_GroupAttach', false, { type: 'boolean', public: true, i18nDescription: 'Message_Attachments_GroupAttachDescription' }
 		@add 'Message_AudioRecorderEnabled', true, { type: 'boolean', public: true, i18nDescription: 'Message_AudioRecorderEnabledDescription' }
 	
 	@add 'Message_AllowEditing', true, { type: 'boolean', public: true }
