@@ -1,5 +1,5 @@
 Meteor.methods
-	pinMessage: (message) ->
+	pinMessage: (message, createMessagePinnedMessage = true) ->
 		if not Meteor.userId()
 			throw new Meteor.Error('error-invalid-user', "Invalid user", { method: 'pinMessage' })
 
@@ -27,13 +27,14 @@ Meteor.methods
 
 		RocketChat.models.Messages.setPinnedByIdAndUserId message._id, message.pinnedBy, message.pinned
 
-		RocketChat.models.Messages.createWithTypeRoomIdMessageAndUser 'message_pinned', message.rid, '', me,
-			attachments: [
-				"text" : message.msg
-				"author_name" : message.u.username,
-				"author_icon" : getAvatarUrlFromUsername(message.u.username),
-				"ts" : message.ts
-			]
+		if createMessagePinnedMessage
+			RocketChat.models.Messages.createWithTypeRoomIdMessageAndUser 'message_pinned', message.rid, '', me,
+				attachments: [
+					"text" : message.msg
+					"author_name" : message.u.username,
+					"author_icon" : getAvatarUrlFromUsername(message.u.username),
+					"ts" : message.ts
+				]
 
 	unpinMessage: (message) ->
 		if not Meteor.userId()
