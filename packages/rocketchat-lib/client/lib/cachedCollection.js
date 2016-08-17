@@ -96,9 +96,9 @@ class CachedCollection {
 		eventType = 'onUser',
 		initOnLogin = false,
 		useSync = true,
-		useCache = false,
+		useCache = true,
 		debug = true,
-		version = 1,
+		version = 2,
 		maxCacheTime = 60*60*24*30
 	}) {
 		this.collection = collection || new Meteor.Collection(null);
