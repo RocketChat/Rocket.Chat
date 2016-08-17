@@ -28,6 +28,8 @@ Template.messageBox.helpers
 		return RocketChat.roomTypes.verifyShowJoinLink @_id
 	subscribed: ->
 		return RocketChat.roomTypes.verifyCanSendMessage @_id
+	allowedToSend: ->
+		return !RocketChat.roomTypes.readOnly @_id, Meteor.user()
 	getPopupConfig: ->
 		template = Template.instance()
 		return {
