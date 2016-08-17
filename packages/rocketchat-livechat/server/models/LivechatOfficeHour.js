@@ -21,6 +21,9 @@ class LivechatOfficeHour extends RocketChat.models._Base {
 		}
 	}
 
+	/*
+	 * update the given days start and finish times and whether the office is open on that day
+	 */
 	updateHours(day, newStart, newFinish, newOpen) {
 		this.update({
 			'day': day
@@ -33,6 +36,10 @@ class LivechatOfficeHour extends RocketChat.models._Base {
 		});
 	}
 
+	/* 
+	 * Check if the current server time (utc) is within the office hours of that day 
+	 * returns true or false 
+	 */
 	isNowWithinHours() {
 		// get current time on server in utc
 		// var ct = moment().utc();
