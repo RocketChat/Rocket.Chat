@@ -114,6 +114,11 @@ Accounts.registerLoginHandler(function(loginRequest) {
 
 			var userId = Accounts.insertUserDoc({}, newUser);
 			user = Meteor.users.findOne(userId);
+			
+			console.log('Joining user to default channels');
+		        Meteor.runAsUser(user._id, function() {
+		            Meteor.call('joinDefaultChannels');
+		        });
 		}
 
 		//creating the token and adding to the user
