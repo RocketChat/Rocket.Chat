@@ -270,7 +270,7 @@ class SlackBridge {
 		}
 		if (channel && user) {
 			let msgDataDefaults = {
-				_id: `${message.channel}S${message.ts}`,
+				_id: `slack-${message.channel}-${message.ts.replace(/\./g, '-')}`,
 				ts: new Date(parseInt(message.ts.split('.')[0]) * 1000)
 			};
 			this.sendMessage(channel, user, message, msgDataDefaults);
@@ -348,7 +348,7 @@ class SlackBridge {
 			case 'file_share':
 				if (message.file && message.file.url_private_download !== undefined) {
 					let details = {
-						message_id: `S${message.ts}`,
+						message_id: `slack-${message.ts.replace(/\./g, '-')}`,
 						name: message.file.name,
 						size: message.file.size,
 						type: message.file.mimetype,
@@ -366,7 +366,7 @@ class SlackBridge {
 			case 'pinned_item':
 				if (message.attachments && message.attachments[0] && message.attachments[0].text) {
 					msgObj = {
-						_id: `${message.attachments[0].channel_id}S${message.attachments[0].ts}`,
+						_id: `slack-${message.attachments[0].channel_id}-${message.attachments[0].ts.replace(/\./g, '-')}`,
 						ts: new Date(parseInt(message.attachments[0].ts.split('.')[0]) * 1000),
 						rid: room._id,
 						msg: this.convertSlackMessageToRocketChat(message.attachments[0].text),
@@ -376,7 +376,7 @@ class SlackBridge {
 						}
 					};
 					Meteor.runAsUser(user._id, () => {
-						Meteor.call('pinMessage', msgObj);
+						Meteor.call('pinMessage', msgObj, false);
 					});
 				} else {
 					logger.events.error('Pinned item with no attachment');
@@ -776,15 +776,15 @@ class SlackBridge {
 	importFromHistory(family, options) {
 		let response = HTTP.get('https://slack.com/api/' + family + '.history', { params: _.extend({ token: this.apiToken }, options) });
 		if (response && response.data && _.isArray(response.data.messages) && response.data.messages.length > 0) {
-			let oldest = 0;
-			for (let message of response.data.messages) {
-				if (!oldest || message.ts < oldest) {
-					oldest = message.ts;
+			let latest = 0;
+			for (let message of response.data.messages.reverse()) {
+				if (!latest || message.ts > latest) {
+					latest = message.ts;
 				}
 				message.channel = options.channel;
 				this.saveMessage(message);
 			}
-			return { has_more: response.data.has_more, ts: oldest };
+			return { has_more: response.data.has_more, ts: latest };
 		}
 	}
 
@@ -794,9 +794,9 @@ class SlackBridge {
 		if (rocketchat_room) {
 			if (this.channelMap[rid]) {
 				logger.class.debug('Importing messages from Slack to Rocket.Chat', this.channelMap[rid], rid);
-				let results = this.importFromHistory(this.channelMap[rid].family, { channel: this.channelMap[rid].id });
+				let results = this.importFromHistory(this.channelMap[rid].family, { channel: this.channelMap[rid].id, oldest: 1 });
 				while (results && results.has_more) {
-					results = this.importFromHistory(this.channelMap[rid].family, { channel: this.channelMap[rid].id, latest: results.ts });
+					results = this.importFromHistory(this.channelMap[rid].family, { channel: this.channelMap[rid].id, oldest: results.ts });
 				}
 				return callback();
 			} else {
