@@ -254,13 +254,17 @@ class SlackBridge {
 			if (message.subtype === 'bot_message') {
 				user = RocketChat.models.Users.findOneById('rocket.cat', { fields: { username: 1 } });
 			}
-			logger.class.debug('Send RocketChat message', msgObj);
+
+			if (message.pinned_to && message.pinned_to.indexOf(message.channel) !== -1) {
+				msgObj.pinned = true;
+				msgObj.pinnedAt = Date.now;
+				msgObj.pinnedBy = _.pick(user, '_id', 'username');
+			}
 			RocketChat.sendMessage(user, msgObj, room, true);
 		}
 	}
 
 	saveMessage(message) {
-		logger.class.debug('Save message', message);
 		let channel = message.channel ? this.findChannel(message.channel) || this.addChannel(message.channel) : null;
 		let user = null;
 		if (message.subtype === 'message_deleted' || message.subtype === 'message_changed') {
@@ -366,18 +370,24 @@ class SlackBridge {
 			case 'pinned_item':
 				if (message.attachments && message.attachments[0] && message.attachments[0].text) {
 					msgObj = {
-						_id: `slack-${message.attachments[0].channel_id}-${message.attachments[0].ts.replace(/\./g, '-')}`,
-						ts: new Date(parseInt(message.attachments[0].ts.split('.')[0]) * 1000),
 						rid: room._id,
-						msg: this.convertSlackMessageToRocketChat(message.attachments[0].text),
+						t: 'message_pinned',
+						msg: '',
 						u: {
 							_id: user._id,
 							username: user.username
-						}
+						},
+						attachments: [{
+							'text' : this.convertSlackMessageToRocketChat(message.attachments[0].text),
+							'author_name' : message.attachments[0].author_subname,
+							'author_icon' : getAvatarUrlFromUsername(message.attachments[0].author_subname),
+							'ts' : new Date(parseInt(message.attachments[0].ts.split('.')[0]) * 1000)
+						}]
 					};
-					Meteor.runAsUser(user._id, () => {
-						Meteor.call('pinMessage', msgObj, false);
-					});
+
+					RocketChat.models.Messages.setPinnedByIdAndUserId(`slack-${message.attachments[0].channel_id}-${message.attachments[0].ts.replace(/\./g, '-')}`, msgObj.u, true, new Date(parseInt(message.ts.split('.')[0]) * 1000));
+
+					return msgObj;
 				} else {
 					logger.events.error('Pinned item with no attachment');
 				}
@@ -778,6 +788,7 @@ class SlackBridge {
 		if (response && response.data && _.isArray(response.data.messages) && response.data.messages.length > 0) {
 			let latest = 0;
 			for (let message of response.data.messages.reverse()) {
+				logger.class.debug('MESSAGE: ', message);
 				if (!latest || message.ts > latest) {
 					latest = message.ts;
 				}
