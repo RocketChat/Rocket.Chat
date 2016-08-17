@@ -171,14 +171,14 @@ RocketChat.models.Messages = new class extends RocketChat.models._Base
 
 		return @update query, update
 
-	setPinnedByIdAndUserId: (_id, pinnedBy, pinned=true) ->
+	setPinnedByIdAndUserId: (_id, pinnedBy, pinned=true, pinnedAt=0) ->
 		query =
 			_id: _id
 
 		update =
 			$set:
 				pinned: pinned
-				pinnedAt: new Date
+				pinnedAt: pinnedAt || new Date
 				pinnedBy: pinnedBy
 
 		return @update query, update
