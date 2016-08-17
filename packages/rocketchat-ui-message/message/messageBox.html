@@ -2,49 +2,62 @@
 	{{#if subscribed}}
 		<form class="message-form" method="post" action="/">
 			{{> messagePopupConfig getPopupConfig}}
+			
 			<div class="message-input">
+				
 				<div class="input-message-container">
+					
 					<textarea dir="auto" name="msg" maxlength="{{maxMessageLength}}" class="input-message autogrow-short" placeholder="{{_ 'Message'}}"></textarea>
 
-					<div class="inner-left-toolbar">
+					<div class="inner-right-toolbar">
 						<i class="emoji-picker-icon icon-people"></i>
 					</div>
+					
 				</div>
 
 				{{#unless showSend}}
-					<div class="message-buttons file">
-						<i class="icon-attach file"></i>
-						<input type="file" accept="{{fileUploadAllowedMediaTypes}}">
+					
+					<div class="share-items hidden">
+						
+						<div class="message-buttons file">
+							<i class="icon-attach file"></i>
+							<input type="file" accept="{{fileUploadAllowedMediaTypes}}">
+						</div>
+						
+						{{#if showLocation}}
+							<div class="message-buttons location-button">
+								<i class="icon-location"></i>
+							</div>
+						{{/if}}
+							
+						{{#if showSandstorm}}
+							<div class="message-buttons sandstorm-offer">
+								<i class="icon-plus" title="{{_ "Sandstorm_Powerbox_Share"}}"></i>
+							</div>
+						{{/if}}
+						
+						{{#if showMic}}
+							<div class="message-buttons mic-button">
+								<div class="mic">
+									<i class="icon-mic" aria-label="{{_ "Record"}}"></i>
+								</div>
+								<div class="stop-mic hidden">
+									<i class="icon-stop" aria-label="{{_ "Stop_Recording"}}"></i>
+								</div>
+							</div>
+						{{/if}}
+				
+						{{#if showVRec}}
+							<div class="message-buttons video-button">
+								<i class="icon-videocam" aria-label="{{_ "Record"}}"></i>
+							</div>
+						{{/if}}
+						
 					</div>
-
-					{{#if showSandstorm}}
-						<div class="message-buttons sandstorm-offer">
-							<i class="icon-plus" title="{{_ "Sandstorm_Powerbox_Share"}}"></i>
-						</div>
-					{{/if}}
-
-					{{#if showLocation}}
-						<div class="message-buttons location">
-							<i class="icon-location location"></i>
-						</div>
-					{{/if}}
-
-					{{#if showMic}}
-						<div class="message-buttons">
-							<div class="mic">
-								<i class="icon-mic" aria-label="{{_ "Record"}}"></i>
-							</div>
-							<div class="stop-mic hidden">
-								<i class="icon-stop" aria-label="{{_ "Stop_Recording"}}"></i>
-							</div>
-						</div>
-					{{/if}}
-
-					{{#if showVRec}}
-						<div class="message-buttons video-button">
-							<i class="icon-videocam" aria-label="{{_ "Record"}}"></i>
-						</div>
-					{{/if}}
+					
+					<div class="message-buttons share">
+						<i class="icon-plus"></i>
+					</div>
 				{{/unless}}
 
 				{{#if showSend}}
