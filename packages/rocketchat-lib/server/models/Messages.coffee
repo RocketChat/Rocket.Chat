@@ -260,6 +260,14 @@ RocketChat.models.Messages = new class extends RocketChat.models._Base
 		console.log(query, update);
 		return @update query, update
 
+	setMessageReader: (_id, readers, callback) ->
+		query =
+			_id: _id
+
+		update =
+			$set:
+				reader: readers
+		return @update query, update, {}, callback
 
 	# INSERT
 	createWithTypeRoomIdMessageAndUser: (type, roomId, message, user, extraData) ->
