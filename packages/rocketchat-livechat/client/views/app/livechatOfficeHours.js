@@ -1,3 +1,5 @@
+/* globals LivechatOfficeHour */
+
 Template.livechatOfficeHours.helpers({
 	days() {
 		return LivechatOfficeHour.find();
