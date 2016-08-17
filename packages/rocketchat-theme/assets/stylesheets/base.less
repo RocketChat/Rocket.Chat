@@ -2179,12 +2179,11 @@ label.required:after {
 			> .share-items {
 				display: flex;
 				position: relative;
-				padding-right: 50px;
 				.transform(translateX(0%));
-    			.transition(transform 0.3s ease-out);
-    			overflow: hidden;
+    			.transition(transform 0.3s ease-in);
+    			padding-right: 40px;
     			&.hidden {
-    				.transform(translateX(150%));
+    				.transform(translateX(100%));
     			}
 				input {
 					position: absolute;
@@ -2211,6 +2210,7 @@ label.required:after {
 					align-items: center;
 					justify-content: center;
 					position: relative;
+					overflow: hidden;
 					input {
 						position: absolute;
 						top: 0;
