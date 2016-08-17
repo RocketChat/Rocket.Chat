@@ -18,6 +18,11 @@ Meteor.startup ->
 				hasFocus = readMessage.isEnable()
 				messageIsInOpenedRoom = openedRoomId is notification.payload.rid
 
+				fireGlobalEvent 'notification',
+					notification: notification
+					fromOpenedRoom: messageIsInOpenedRoom
+					hasFocus: hasFocus
+
 				if !(hasFocus and messageIsInOpenedRoom)
 					# Play a sound.
 					KonchatNotification.newMessage()
