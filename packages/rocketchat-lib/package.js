@@ -34,7 +34,7 @@ Package.onUse(function(api) {
 	api.use('rocketchat:logger');
 
 	api.use('templating', 'client');
-	api.use('kadira:flow-router', 'client');
+	api.use('kadira:flow-router');
 
 	api.addFiles('lib/core.coffee');
 
@@ -48,6 +48,7 @@ Package.onUse(function(api) {
 	api.addFiles('lib/fileUploadRestrictions.js');
 	api.addFiles('lib/placeholders.js');
 	api.addFiles('lib/promises.coffee');
+	api.addFiles('lib/roomTypesCommon.coffee');
 	api.addFiles('lib/slashCommand.coffee');
 	api.addFiles('lib/Message.coffee');
 	api.addFiles('lib/MessageTypes.coffee');
@@ -137,6 +138,8 @@ Package.onUse(function(api) {
 	// CLIENT MODELS
 	api.addFiles('client/models/_Base.coffee', 'client');
 	api.addFiles('client/models/Uploads.coffee', 'client');
+
+	api.addFiles('startup/defaultRoomTypes.coffee');
 
 	// VERSION
 	api.addFiles('rocketchat.info');
