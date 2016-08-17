@@ -41,9 +41,9 @@ Meteor.startup ->
 		{ _id: 'set-owner', roles : ['admin', 'owner'] }
 		{ _id: 'unarchive-room', roles : ['admin'] }
 		{ _id: 'view-c-room', roles : ['admin', 'user', 'bot'] }
-		{ _id: 'view-d-room', roles : ['admin', 'user', 'guest'] }
+		{ _id: 'view-d-room', roles : ['admin', 'user', 'bot'] }
 		{ _id: 'view-full-other-user-info', roles : ['admin'] }
-		{ _id: 'view-history', roles : ['admin', 'user', 'guest'] }
+		{ _id: 'view-history', roles : ['admin', 'user', 'bot'] }
 		{ _id: 'view-joined-room', roles: ['guest'] }
 		{ _id: 'view-logs', roles : ['admin'] }
 		{ _id: 'view-other-user-channels', roles : ['admin'] }
