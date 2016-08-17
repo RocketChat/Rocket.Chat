@@ -66,6 +66,9 @@ Template.messageBox.helpers
 	
 	
 	
+	groupAttachHidden: ->
+		return 'hidden' if RocketChat.settings.get('Message_Attachments_GroupAttach')
+
 	fileUploadAllowedMediaTypes: ->
 		return RocketChat.settings.get('FileUpload_MediaTypeWhiteList')
 
