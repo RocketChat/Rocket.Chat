@@ -64,10 +64,12 @@
 	</form>
 	<div class='login-terms'>
 		{{{loginTerms}}}
-
-		<div class="powered-by">
-			Powered by <a href="https://rocket.chat">Open Source Chat Platform Rocket.Chat</a>.
-		</div>
+		
+		{{#if showPoweredBy}}
+			<div class="powered-by">
+				Powered by <a href="https://rocket.chat">Open Source Chat Platform Rocket.Chat</a>.
+			</div>
+		{{/if}}
 	</div>
 	{{/if}}
 </template>

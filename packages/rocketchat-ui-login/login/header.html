@@ -1,5 +1,7 @@
 <template name="loginHeader">
 	<header>
-		<a class="logo" href="/"><img src="{{logoUrl}}" /></a>
+		{{#if showLogo}}
+			<a class="logo" href="/"><img src="{{logoUrl}}" /></a>
+		{{/if}}
 	</header>
 </template>

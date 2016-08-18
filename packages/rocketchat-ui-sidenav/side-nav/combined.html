@@ -1,6 +1,6 @@
 <template name="combined">
 	<h3 class="add-room {{isActive}}">
-		{{_ "Channels"}} <span class="room-count-small">({{rooms.count}})</span>
+		{{_ "Channels"}} {{#if showCount}}<span class="room-count-small">({{rooms.count}})</span>{{/if}}
 		{{#if canCreate}}
 			<i class="icon-plus" aria-label="{{_ "Create channel"}}" role="button"></i>
 		{{/if}}
@@ -12,5 +12,5 @@
 			<p class="empty">{{_ "No_channels_yet" }}</p>
 		{{/each}}
 	</ul>
-	<button class="more more-channels">{{_ "More_channels"}}...</button>
+	{{#if enableMoreLink}}<button class="more more-channels">{{_ "More_channels"}}...</button>{{/if}}
 </template>

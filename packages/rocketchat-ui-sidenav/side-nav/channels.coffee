@@ -18,6 +18,12 @@ Template.channels.helpers
 
 	canCreate: ->
 		return RocketChat.authz.hasAtLeastOnePermission ['create-c']
+		
+	showCount: ->
+		return RocketChat.settings.get 'SideNav_Show_Count'
+		
+	enableMoreLink: ->
+		return RocketChat.authz.hasAtLeastOnePermission ['view-more-c-rooms']
 
 Template.channels.events
 	'click .add-room': (e, instance) ->

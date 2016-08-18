@@ -69,6 +69,9 @@ Template.loginForm.helpers
 
 	hasOnePassword: ->
 		return OnePassword?.findLoginForUrl? && device?.platform?.toLocaleLowerCase() is 'ios'
+		
+	showPoweredBy: ->
+		return RocketChat.settings.get 'Login_Show_PoweredBy'
 
 Template.loginForm.events
 	'submit #login-card': (event, instance) ->

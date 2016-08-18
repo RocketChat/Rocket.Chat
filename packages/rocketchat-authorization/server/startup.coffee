@@ -42,6 +42,11 @@ Meteor.startup ->
 		{ _id: 'unarchive-room', roles : ['admin'] }
 		{ _id: 'view-c-room', roles : ['admin', 'user', 'bot'] }
 		{ _id: 'view-d-room', roles : ['admin', 'user'] }
+		
+		{ _id: 'view-more-c-rooms', roles : ['admin', 'user'] }
+		{ _id: 'view-more-d-rooms', roles : ['admin', 'user'] }
+		
+		
 		{ _id: 'view-full-other-user-info', roles : ['admin'] }
 		{ _id: 'view-history', roles : ['user'] }
 		{ _id: 'view-joined-room', roles: ['guest'] }
