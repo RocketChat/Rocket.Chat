@@ -124,7 +124,7 @@ Template.channelSettings.onCreated ->
 					RocketChat.callbacks.run 'roomNameChanged', ChatRoom.findOne(room._id)
 				else
 					if @validateRoomName()
-						RocketChat.callbacks.run 'roomNameChanged', { _id: room._id, name: @$('input[name=roomName]').val() }
+						RocketChat.callbacks.run 'roomNameChanged', { _id: room._id, name: @$('input[name=roomName]').val().toLowerCase().trim() }
 						Meteor.call 'saveRoomSettings', room._id, 'roomName', @$('input[name=roomName]').val(), (err, result) ->
 							return handleError err if err
 							toastr.success TAPi18n.__ 'Room_name_changed_successfully'
