@@ -1,6 +1,17 @@
 ## NEXT
 
-## 0.37.0, 2016-Aug-02
+## 0.37.1, 2016-Aug-17
+
+- Allow deletion of records with same id on settings
+- Created inital Iframe integration
+- Fixed admin option of type select
+- Fixed livechat branding over options button
+- Fixed Not showing upload button on safari
+- Fixed SlackBridge import and slack importer ids conflict
+- Changed SlackBridge to import from begin to end
+- Suppress message-pinned notification from import
+
+## 0.37.0, 2016-Aug-15
 
 - Added an option to SlackBridge to exclude some bots messages from propagating. (#3813)
 - Added bot-helpers package (#3799)
