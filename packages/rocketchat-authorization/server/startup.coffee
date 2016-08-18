@@ -43,7 +43,7 @@ Meteor.startup ->
 		{ _id: 'view-c-room', roles : ['admin', 'user', 'bot'] }
 		{ _id: 'view-d-room', roles : ['admin', 'user', 'bot'] }
 		{ _id: 'view-full-other-user-info', roles : ['admin'] }
-		{ _id: 'view-history', roles : ['admin', 'user', 'bot'] }
+		{ _id: 'view-history', roles : ['user', 'bot'] }
 		{ _id: 'view-joined-room', roles: ['guest'] }
 		{ _id: 'view-logs', roles : ['admin'] }
 		{ _id: 'view-other-user-channels', roles : ['admin'] }
