@@ -50,7 +50,7 @@ LDAP = class LDAP {
 
 		const connectionOptions = {
 			url: `${self.options.host}:${self.options.port}`,
-			timeout: 1000 * 5,
+			timeout: 1000 * 60 * 10,
 			connectTimeout: 1000 * 10,
 			idleTimeout: 1000 * 10,
 			reconnect: false

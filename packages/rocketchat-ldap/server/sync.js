@@ -221,7 +221,7 @@ RocketChat.settings.get('LDAP_Sync_User_Data', function(key, value) {
 		interval = Meteor.setInterval(sync, 1000 * 60 * 60);
 		timeout = Meteor.setTimeout(function() {
 			sync();
-		}, 1000 * 30);
+		}, 1000 * 60 * 10);
 	} else {
 		logger.info('Disabling LDAP user sync');
 	}
