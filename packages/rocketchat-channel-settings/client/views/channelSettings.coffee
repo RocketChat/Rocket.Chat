@@ -99,7 +99,7 @@ Template.channelSettings.onCreated ->
 			toastr.error t('error-not-allowed')
 			return false
 
-		name = $('input[name=roomName]').val().toLowerCase().trim()
+		name = $('input[name=roomName]').val().trim()
 
 		try
 			nameValidation = new RegExp '^' + RocketChat.settings.get('UTF8_Names_Validation') + '$'
@@ -119,13 +119,13 @@ Template.channelSettings.onCreated ->
 		room = ChatRoom.findOne @data?.rid
 		switch @editing.get()
 			when 'roomName'
-				if $('input[name=roomName]').val().toLowerCase().trim() is room.name
+				if $('input[name=roomName]').val().trim() is room.name
 					toastr.success TAPi18n.__ 'Room_name_changed_successfully'
 					RocketChat.callbacks.run 'roomNameChanged', ChatRoom.findOne(room._id)
 				else
 					if @validateRoomName()
-						RocketChat.callbacks.run 'roomNameChanged', { _id: room._id, name: @$('input[name=roomName]').val().toLowerCase().trim() }
-						Meteor.call 'saveRoomSettings', room._id, 'roomName', @$('input[name=roomName]').val().toLowerCase().trim(), (err, result) ->
+						RocketChat.callbacks.run 'roomNameChanged', { _id: room._id, name: @$('input[name=roomName]').val().trim() }
+						Meteor.call 'saveRoomSettings', room._id, 'roomName', @$('input[name=roomName]').val().trim(), (err, result) ->
 							return handleError err if err
 							toastr.success TAPi18n.__ 'Room_name_changed_successfully'
 			when 'roomTopic'
