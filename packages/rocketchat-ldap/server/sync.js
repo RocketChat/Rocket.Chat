@@ -164,6 +164,27 @@ sync = function sync() {
 
 		const users = RocketChat.models.Users.findLDAPUsers();
 
+		if (RocketChat.settings.get('LDAP_Import_Users') == true) {
+			const ldapUsers = ldap.searchUsersSync('*');
+			ldapUsers.forEach(function(ldapUser) {
+				const username = slug(getLdapUsername(ldapUser));
+				// Look to see if user already exists
+				let userQuery;
+				let user;
+				userQuery = {
+					username: username
+				};
+
+				logger.debug('userQuery', userQuery);
+
+				user = Meteor.users.findOne(userQuery);
+
+				if (!user) {
+					ldap.addNewUser(ldapUser);
+				}
+			});
+		}
+
 		users.forEach(function(user) {
 			let ldapUser;
 
