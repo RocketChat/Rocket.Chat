@@ -378,7 +378,7 @@ class @ChatMessages
 		else if k is 75 and ((navigator?.platform?.indexOf('Mac') isnt -1 and event.metaKey and event.shiftKey) or (navigator?.platform?.indexOf('Mac') is -1 and event.ctrlKey and event.shiftKey))
 			RoomHistoryManager.clear rid
 
-	valueChanged: (rid, event, input) ->
+	valueChanged: (rid, event) ->
 		if this.input.value.length is 1
 			this.determineInputDirection()
 
