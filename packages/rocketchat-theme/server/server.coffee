@@ -36,7 +36,7 @@ WebAppHashing.calculateClientHash = (manifest, includeFilter, runtimeConfigOverr
 	calculateClientHash.call this, manifest, includeFilter, runtimeConfigOverride
 
 
-setctionPerType =
+sectionPerType =
 	'color': 'Colors'
 	'font': 'Fonts'
 
@@ -56,6 +56,7 @@ RocketChat.theme = new class
 		'assets/stylesheets/fontello.css'
 		'assets/stylesheets/rtl.less'
 		'assets/stylesheets/swipebox.min.css'
+		'assets/stylesheets/utils/_mixins.import.less'
 		'assets/stylesheets/utils/_colors.import.less'
 	]
 
@@ -121,7 +122,7 @@ RocketChat.theme = new class
 			config =
 				group: 'Layout'
 				type: type
-				section: setctionPerType[type]
+				section: sectionPerType[type]
 				public: false
 
 			RocketChat.settings.add "theme-#{type}-#{name}", value, config
