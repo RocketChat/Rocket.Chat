@@ -99,7 +99,7 @@ Template.channelSettings.onCreated ->
 			toastr.error t('error-not-allowed')
 			return false
 
-		name = $('input[name=roomName]').val()
+		name = $('input[name=roomName]').val().toLowerCase().trim()
 
 		try
 			nameValidation = new RegExp '^' + RocketChat.settings.get('UTF8_Names_Validation') + '$'
