@@ -152,44 +152,44 @@ syncUserData = function syncUserData(user, ldapUser) {
 };
 
 addLdapUser = function addLdapUser(ldapUser) {
-		const username = slug(getLdapUsername(ldapUser));
-		var userObject = {
-			username: username
-		};
+	const username = slug(getLdapUsername(ldapUser));
+	var userObject = {
+		username: username
+	};
 
-		let userData = getDataToSyncUserData(ldapUser, {});
+	let userData = getDataToSyncUserData(ldapUser, {});
 
-		if (userData && userData.emails) {
-			userObject.email = userData.emails[0].address;
-		} else if (ldapUser.object.mail && ldapUser.object.mail.indexOf('@') > -1) {
-			userObject.email = ldapUser.object.mail;
-		} else if (RocketChat.settings.get('LDAP_Default_Domain') !== '') {
-			userObject.email = username + '@' + RocketChat.settings.get('LDAP_Default_Domain');
-		} else {
-			const error = new Meteor.Error('LDAP-login-error', 'LDAP Authentication succeded, there is no email to create an account. Have you tried setting your Default Domain in LDAP Settings?');
-			logger.error(error);
-			throw error;
-		}
+	if (userData && userData.emails) {
+		userObject.email = userData.emails[0].address;
+	} else if (ldapUser.object.mail && ldapUser.object.mail.indexOf('@') > -1) {
+		userObject.email = ldapUser.object.mail;
+	} else if (RocketChat.settings.get('LDAP_Default_Domain') !== '') {
+		userObject.email = username + '@' + RocketChat.settings.get('LDAP_Default_Domain');
+	} else {
+		const error = new Meteor.Error('LDAP-login-error', 'LDAP Authentication succeded, there is no email to create an account. Have you tried setting your Default Domain in LDAP Settings?');
+		logger.error(error);
+		throw error;
+	}
 
-		logger.debug('New user data', userObject);
+	logger.debug('New user data', userObject);
 
-		try {
-			userObject._id = Accounts.createUser(userObject);
-		} catch (error) {
-			logger.error('Error creating user', error);
-			throw error;
-		}
+	try {
+		userObject._id = Accounts.createUser(userObject);
+	} catch (error) {
+		logger.error('Error creating user', error);
+		throw error;
+	}
 
-		syncUserData(userObject, ldapUser);
+	syncUserData(userObject, ldapUser);
 
-		logger.info('Joining user to default channels');
-		Meteor.runAsUser(userObject._id, function() {
-			Meteor.call('joinDefaultChannels');
-		});
+	logger.info('Joining user to default channels');
+	Meteor.runAsUser(userObject._id, function() {
+		Meteor.call('joinDefaultChannels');
+	});
 
-		return {
-			userId: userObject._id
-		};
+	return {
+		userId: userObject._id
+	};
 };
 
 sync = function sync() {
