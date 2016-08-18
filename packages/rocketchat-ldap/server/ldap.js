@@ -50,7 +50,7 @@ LDAP = class LDAP {
 
 		const connectionOptions = {
 			url: `${self.options.host}:${self.options.port}`,
-			timeout: 1000 * 5,
+			timeout: 1000 * 60 * 10,
 			connectTimeout: 1000 * 10,
 			idleTimeout: 1000 * 10,
 			reconnect: false
@@ -354,6 +354,47 @@ LDAP = class LDAP {
 			logger.auth.debug('error', error);
 			return false;
 		}
+	}
+
+	addNewUser(ldapUser){
+		var userObject = {
+			username: slug(getLdapUsername(ldapUser))
+		};
+
+		let userData = getDataToSyncUserData(ldapUser, {});
+
+		if (userData && userData.emails) {
+			userObject.email = userData.emails[0].address;
+		} else if (ldapUser.object.mail && ldapUser.object.mail.indexOf('@') > -1) {
+			userObject.email = ldapUser.object.mail;
+		} else if (RocketChat.settings.get('LDAP_Default_Domain') !== '') {
+			userObject.email = username + '@' + RocketChat.settings.get('LDAP_Default_Domain');
+		} else {
+			const error = new Meteor.Error('LDAP-login-error', 'LDAP Authentication succeded, there is no email to create an account. Have you tried setting your Default Domain in LDAP Settings?');
+			logger.error(error);
+			throw error;
+		}
+
+		logger.debug('New user data', userObject);
+
+		try {
+			userObject._id = Accounts.createUser(userObject);
+		} catch (error) {
+			logger.error('Error creating user', error);
+			throw error;
+		}
+
+		syncUserData(userObject, ldapUser);
+
+		logger.info('Joining user to default channels');
+		Meteor.runAsUser(userObject._id, function() {
+			Meteor.call('joinDefaultChannels');
+		});
+
+		return {
+			userId: userObject._id
+		};
+
 	}
 
 	disconnect() {

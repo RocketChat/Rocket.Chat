@@ -164,6 +164,27 @@ sync = function sync() {
 
 		const users = RocketChat.models.Users.findLDAPUsers();
 
+		if (RocketChat.settings.get('LDAP_Import_Users') == true) {
+			const ldapUsers = ldap.searchUsersSync('*');
+			ldapUsers.forEach(function(ldapUser) {
+				const username = slug(getLdapUsername(ldapUser));
+				// Look to see if user already exists
+				let userQuery;
+				let user;
+				userQuery = {
+					username: username
+				};
+
+				logger.debug('userQuery', userQuery);
+
+				user = Meteor.users.findOne(userQuery);
+
+				if (!user) {
+					ldap.addNewUser(ldapUser);
+				}
+			});
+		}
+
 		users.forEach(function(user) {
 			let ldapUser;
 
@@ -200,7 +221,7 @@ RocketChat.settings.get('LDAP_Sync_User_Data', function(key, value) {
 		interval = Meteor.setInterval(sync, 1000 * 60 * 60);
 		timeout = Meteor.setTimeout(function() {
 			sync();
-		}, 1000 * 30);
+		}, 1000 * 60 * 10);
 	} else {
 		logger.info('Disabling LDAP user sync');
 	}
