@@ -379,7 +379,7 @@ class @ChatMessages
 			RoomHistoryManager.clear rid
 
 	valueChanged: (rid, event, input) ->
-		if input.lenght is 1
+		if this.input.value.length is 1
 			this.determineInputDirection()
 
 	determineInputDirection: () ->
