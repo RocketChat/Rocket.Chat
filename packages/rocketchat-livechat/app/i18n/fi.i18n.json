@@ -1,13 +1,19 @@
 {
   "Additional_Feedback" : "Lisäpalaute",
   "Appearance" : "Ulkoasu",
+  "Are_you_sure_do_you_want_end_this_chat" : "Haluatko lopettaa tämän keskustelun?",
+  "Cancel" : "Peruuta",
+  "Chat_ended" : "Keskustelu lopetettu!",
+  "Close_menu" : "Sulje valikko",
   "Conversation_finished" : "Keskustelu päättynyt",
+  "End_chat" : "Lopeta keskustelu",
   "How_friendly_was_the_chat_agent" : "Kuinka ystävällinen asiakaspalvelija oli?",
   "How_knowledgeable_was_the_chat_agent" : "Miten osaava asiakaspalvelija oli?",
   "How_responsive_was_the_chat_agent" : "Miten palvelualtis asiakaspalvelija oli?",
   "How_satisfied_were_you_with_this_chat" : "Kuinka tyytyväinen olit tähän chattiin?",
   "Installation" : "Asennus",
   "New_messages" : "Uudet viestit",
+  "No" : "Ei",
   "Please_answer_survey" : "Käytä hetki vastataksesi pikakyselyyn tästä chatista",
   "Please_fill_name_and_email" : "Täytä nimi ja sähköpostiosoite",
   "Powered_by" : "Palvelun tarjoaa",
@@ -25,5 +31,6 @@
   "User_joined" : "Käyttäjä liittyi",
   "User_left" : "Käyttäjä poistui",
   "We_are_offline_Sorry_for_the_inconvenience" : "Palvelu on offline-tilassa. Pahoittelut häiriöstä.",
+  "Yes" : "Kyllä",
   "You_must_complete_all_fields" : "Täytä kaikki kentät"
 }
