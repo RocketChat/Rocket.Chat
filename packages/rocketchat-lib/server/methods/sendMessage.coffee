@@ -7,6 +7,8 @@ Meteor.methods
 				throw new Meteor.Error('error-message-ts-out-of-sync', 'Message timestamp is out of sync', { method: 'sendMessage', message_ts: message.ts, server_ts: new Date().getTime() })
 			else if tsDiff > 10000
 				message.ts = new Date()
+		else
+			message.ts = new Date()
 
 		if message.msg?.length > RocketChat.settings.get('Message_MaxAllowedSize')
 			throw new Meteor.Error('error-message-size-exceeded', 'Message size exceeds Message_MaxAllowedSize', { method: 'sendMessage' })
