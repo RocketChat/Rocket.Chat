@@ -8,32 +8,8 @@ Template.loginForm.helpers
 	showFormLogin: ->
 		return RocketChat.settings.get 'Accounts_ShowFormLogin'
 
-	showName: ->
-		return 'hidden' unless Template.instance().state.get() is 'register'
-
-	showPassword: ->
-		return 'hidden' unless Template.instance().state.get() in ['login', 'register']
-
-	showConfirmPassword: ->
-		return 'hidden' unless Template.instance().state.get() is 'register'
-
-	showEmailOrUsername: ->
-		return 'hidden' unless Template.instance().state.get() is 'login'
-
-	showEmail: ->
-		return 'hidden' unless Template.instance().state.get() in ['register', 'forgot-password', 'email-verification']
-
-	showRegisterLink: ->
-		return 'hidden' unless Template.instance().state.get() is 'login'
-
-	showForgotPasswordLink: ->
-		return 'hidden' unless Template.instance().state.get() is 'login'
-
-	showBackToLoginLink: ->
-		return 'hidden' unless Template.instance().state.get() in ['register', 'forgot-password', 'email-verification', 'wait-activation']
-
-	showSandstorm: ->
-		return Template.instance().state.get() is 'sandstorm'
+	state: (state..., data) ->
+		return state.indexOf(Template.instance().state.get()) > -1
 
 	btnLoginSave: ->
 		switch Template.instance().state.get()
@@ -46,9 +22,6 @@ Template.loginForm.helpers
 			when 'forgot-password'
 				return t('Reset_password')
 
-	waitActivation: ->
-		return Template.instance().state.get() is 'wait-activation'
-
 	loginTerms: ->
 		return RocketChat.settings.get 'Layout_Login_Terms'
 
@@ -58,7 +31,7 @@ Template.loginForm.helpers
 	linkReplacementText: ->
 		return RocketChat.settings.get('Accounts_RegistrationForm_LinkReplacementText')
 
-	passwordresetAllowed: ->
+	passwordResetAllowed: ->
 		return RocketChat.settings.get 'Accounts_PasswordReset'
 
 	emailOrUsernamePlaceholder: ->
@@ -212,7 +185,7 @@ Template.loginForm.onCreated ->
 Template.loginForm.onRendered ->
 	Session.set 'loginDefaultState'
 	Tracker.autorun =>
-		RocketChat.callbacks.run('loginPageStateChange', Template.instance().state.get());
+		RocketChat.callbacks.run('loginPageStateChange', this.state.get())
 		switch this.state.get()
 			when 'login', 'forgot-password', 'email-verification'
 				Meteor.defer ->
