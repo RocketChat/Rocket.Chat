@@ -276,6 +276,8 @@
   "Custom_oauth_unique_name" : "Custom oauth unique name",
   "Custom_Script_Logged_In" : "Custom Script for logged in users",
   "Custom_Script_Logged_Out" : "Custom Script for logged out users",
+  "Custom_Translations" : "Custom Translations",
+  "Custom_Translations_Description" : "Should be a valid JSON where keys are languages containing a dictinary of key and translations. Example:</br><code>{\n\t\"en\": {\n\t\t\"key\": \"translation\"\n\t},\n\t\"pt\": {\n\t\t\"key\": \"tradução\"\n\t}\n}</code> ",
   "Dashboard" : "Dashboard",
   "Date" : "Date",
   "days" : "days",

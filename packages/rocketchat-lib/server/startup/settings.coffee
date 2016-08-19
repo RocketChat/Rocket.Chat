@@ -116,6 +116,8 @@ RocketChat.settings.addGroup 'General', ->
 		@add 'Iframe_Integration_receive_enable', false, { type: 'boolean', public: true }
 		@add 'Iframe_Integration_receive_origin', '*', { type: 'string', public: true, enableQuery: { _id: 'Iframe_Integration_receive_enable', value: true } }
 
+	@section 'Translations', ->
+		@add 'Custom_Translations', '', { type: 'code', public: true }
 
 RocketChat.settings.addGroup 'Email', ->
 	@section 'Header and Footer', ->
