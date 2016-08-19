@@ -10,13 +10,14 @@ RocketChat.settings.addGroup 'Accounts', ->
 	@add 'Accounts_AllowUsernameChange', true, { type: 'boolean', public: true }
 	@add 'Accounts_AllowEmailChange', true, { type: 'boolean', public: true }
 	@add 'Accounts_AllowPasswordChange', true, { type: 'boolean', public: true }
-	@add 'Accounts_RequireNameForSignUp', true, { type: 'boolean', public: true }
 	@add 'Accounts_LoginExpiration', 90, { type: 'int', public: true }
 	@add 'Accounts_ShowFormLogin', true, { type: 'boolean', public: true }
 	@add 'Accounts_EmailOrUsernamePlaceholder', '', { type: 'string', public: true, i18nLabel: 'Placeholder_for_email_or_username_login_field' }
 	@add 'Accounts_PasswordPlaceholder', '', { type: 'string', public: true, i18nLabel: 'Placeholder_for_password_login_field' }
 
 	@section 'Registration', ->
+		@add 'Accounts_RequireNameForSignUp', true, { type: 'boolean', public: true }
+		@add 'Accounts_RequirePasswordConfirmation', true, { type: 'boolean', public: true }
 		@add 'Accounts_EmailVerification', false, { type: 'boolean', public: true, enableQuery: {_id: 'SMTP_Host', value: { $exists: 1, $ne: "" } } }
 		@add 'Accounts_ManuallyApproveNewUsers', false, { type: 'boolean' }
 		@add 'Accounts_AllowedDomainsList', '', { type: 'string', public: true }
@@ -37,6 +38,7 @@ RocketChat.settings.addGroup 'Accounts', ->
 		@add 'Accounts_AvatarSize', 200, { type: 'int', enableQuery: {_id: 'Accounts_AvatarResize', value: true} }
 		@add 'Accounts_AvatarStoreType', 'GridFS', { type: 'select', values: [ { key: 'GridFS', i18nLabel: 'GridFS' }, { key: 'FileSystem', i18nLabel: 'FileSystem' } ] }
 		@add 'Accounts_AvatarStorePath', '', { type: 'string', enableQuery: {_id: 'Accounts_AvatarStoreType', value: 'FileSystem'} }
+
 
 RocketChat.settings.addGroup 'OAuth', ->
 

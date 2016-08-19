@@ -44,9 +44,12 @@
 							<div class='input-text active'>
 								<input type="password" name='pass' placeholder='{{passwordPlaceholder}}' />
 							</div>
-							<div class='input-text active'>
-								<input type="password" name='confirm-pass' placeholder='{{_ "Confirm_password"}}' />
-							</div>
+
+							{{#if requirePasswordConfirmation}}
+								<div class='input-text active'>
+									<input type="password" name='confirm-pass' placeholder='{{_ "Confirm_password"}}' />
+								</div>
+							{{/if}}
 						{{/if}}
 
 						{{#if state 'forgot-password' 'email-verification'}}

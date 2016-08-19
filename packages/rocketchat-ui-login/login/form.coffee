@@ -34,6 +34,9 @@ Template.loginForm.helpers
 	passwordResetAllowed: ->
 		return RocketChat.settings.get 'Accounts_PasswordReset'
 
+	requirePasswordConfirmation: ->
+		return RocketChat.settings.get 'Accounts_RequirePasswordConfirmation'
+
 	emailOrUsernamePlaceholder: ->
 		return RocketChat.settings.get('Accounts_EmailOrUsernamePlaceholder') or t("Email_or_username")
 
@@ -162,7 +165,8 @@ Template.loginForm.onCreated ->
 		if instance.state.get() is 'register'
 			if RocketChat.settings.get('Accounts_RequireNameForSignUp') and not formObj['name']
 				validationObj['name'] = t('Invalid_name')
-			if formObj['confirm-pass'] isnt formObj['pass']
+
+			if RocketChat.settings.get('Accounts_RequirePasswordConfirmation') and formObj['confirm-pass'] isnt formObj['pass']
 				validationObj['confirm-pass'] = t('Invalid_confirm_pass')
 
 		$("#login-card input").removeClass "error"
