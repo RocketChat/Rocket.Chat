@@ -38,7 +38,7 @@ Template.loginForm.helpers
 	btnLoginSave: ->
 		switch Template.instance().state.get()
 			when 'register'
-				return t('Submit')
+				return t('Register')
 			when 'login'
 				return t('Login')
 			when 'email-verification'
@@ -157,6 +157,13 @@ Template.loginForm.events
 			console.log 'OnePassword errorCallback', arguments
 
 		OnePassword.findLoginForUrl(succesCallback, errorCallback, Meteor.absoluteUrl())
+
+	'focus .input-text input': (event) ->
+		$(event.currentTarget).parents('.input-text').addClass('focus')
+
+	'blur .input-text input': (event) ->
+		if event.currentTarget.value is ''
+			$(event.currentTarget).parents('.input-text').removeClass('focus')
 
 
 Template.loginForm.onCreated ->
