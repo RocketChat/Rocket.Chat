@@ -46,6 +46,19 @@ Template.loginForm.helpers
 	hasOnePassword: ->
 		return OnePassword?.findLoginForUrl? && device?.platform?.toLocaleLowerCase() is 'ios'
 
+	customFields: ->
+		if not Template.instance().customFields
+			return []
+
+		customFieldsArray = []
+		for key, value of Template.instance().customFields
+			customFieldsArray.push
+				fieldName: key,
+				field: value
+
+		return customFieldsArray
+
+
 Template.loginForm.events
 	'submit #login-card': (event, instance) ->
 		event.preventDefault()
@@ -137,6 +150,13 @@ Template.loginForm.events
 
 Template.loginForm.onCreated ->
 	instance = @
+
+	if RocketChat.settings.get('Accounts_CustomFields') isnt ''
+		try
+			@customFields = JSON.parse RocketChat.settings.get('Accounts_CustomFields')
+		catch e
+			console.error('Invalid JSON for Accounts_CustomFields')
+
 	if Meteor.settings.public.sandstorm
 		@state = new ReactiveVar('sandstorm')
 	else if Session.get 'loginDefaultState'
@@ -145,6 +165,23 @@ Template.loginForm.onCreated ->
 		@state = new ReactiveVar('login')
 
 	@validSecretURL = new ReactiveVar(false)
+
+	validateCustomFields = (formObj, validationObj) ->
+		if not instance.customFields
+			return
+
+		for field, value of formObj when instance.customFields[field]?
+			customField = instance.customFields[field]
+
+			if customField.required is true and not value
+				return validationObj[field] = t('Field_required')
+
+			if customField.maxLength? and value.length > customField.maxLength
+				return validationObj[field] = t('Max_length_is', customField.maxLength)
+
+			if customField.minLength? and value.length < customField.minLength
+				return validationObj[field] = t('Min_length_is', customField.minLength)
+
 
 	@validate = ->
 		formData = $("#login-card").serializeArray()
@@ -169,17 +206,21 @@ Template.loginForm.onCreated ->
 			if RocketChat.settings.get('Accounts_RequirePasswordConfirmation') and formObj['confirm-pass'] isnt formObj['pass']
 				validationObj['confirm-pass'] = t('Invalid_confirm_pass')
 
-		$("#login-card input").removeClass "error"
+			validateCustomFields(formObj, validationObj)
+
+		$("#login-card h2").removeClass "error"
+		$("#login-card input.error, #login-card select.error").removeClass "error"
+		$("#login-card .input-error").text ''
+
 		unless _.isEmpty validationObj
 			button = $('#login-card').find('button.login')
 			RocketChat.Button.reset(button)
 			$("#login-card h2").addClass "error"
-			for key of validationObj
-				$("#login-card input[name=#{key}]").addClass "error"
+			for key, value of validationObj
+				$("#login-card input[name=#{key}], #login-card select[name=#{key}]").addClass "error"
+				$("#login-card input[name=#{key}]~.input-error, #login-card select[name=#{key}]~.input-error").text value
 			return false
 
-		$("#login-card h2").removeClass "error"
-		$("#login-card input.error").removeClass "error"
 		return formObj
 
 	if FlowRouter.getParam('hash')

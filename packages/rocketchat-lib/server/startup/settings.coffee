@@ -33,12 +33,13 @@ RocketChat.settings.addGroup 'Accounts', ->
 		@add 'Accounts_Registration_AuthenticationServices_Enabled', true, { type: 'boolean', public: true }
 		@add 'Accounts_PasswordReset', true, { type: 'boolean', public: true }
 
+		@add 'Accounts_CustomFields', '', { type: 'code', public: true }
+
 	@section 'Avatar', ->
 		@add 'Accounts_AvatarResize', true, { type: 'boolean' }
 		@add 'Accounts_AvatarSize', 200, { type: 'int', enableQuery: {_id: 'Accounts_AvatarResize', value: true} }
 		@add 'Accounts_AvatarStoreType', 'GridFS', { type: 'select', values: [ { key: 'GridFS', i18nLabel: 'GridFS' }, { key: 'FileSystem', i18nLabel: 'FileSystem' } ] }
 		@add 'Accounts_AvatarStorePath', '', { type: 'string', enableQuery: {_id: 'Accounts_AvatarStoreType', value: 'FileSystem'} }
-
 
 RocketChat.settings.addGroup 'OAuth', ->
 
