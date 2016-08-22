@@ -1,11 +1,11 @@
 <template name="adminRooms">
 	<section class="page-container page-list">
-		<head class="fixed-title">
+		<header class="fixed-title">
 			{{> burger}}
 			<h2>
 				<span class="room-title">{{_ "Rooms"}}</span>
 			</h2>
-		</head>
+		</header>
 		<div class="content">
 			{{#unless hasPermission 'view-room-administration'}}
 				<p>{{_ "You_are_not_authorized_to_view_this_page"}}</p>
