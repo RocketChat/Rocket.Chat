@@ -17,10 +17,14 @@ menu, nav, output, ruby, section, summary,
 time, mark, audio, video {
 	margin: 0;
 	padding: 0;
-	border: 0;
 	font-size: 100%;
 	// font: inherit;
 	vertical-align: baseline;
+	border: 0 solid; // set default border style
+	&::after,
+	&::before {
+		border: 0 solid;
+	}
 }
 /* HTML5 display-role reset for older browsers */
 article, aside, details, figcaption, figure,

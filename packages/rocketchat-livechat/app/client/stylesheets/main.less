@@ -37,14 +37,13 @@ textarea {
 	line-height: inherit;
 	padding: 5px;
 	margin: 5px 0;
-	border: 1px solid #E7E7E7;
+	border-width: 1px;
 	border-radius: 5px;
 	outline: none;
 }
 
 button {
 	background: none;
-	border: none;
 	padding: 0px;
 	text-align: left;
 	cursor: pointer;
@@ -68,7 +67,6 @@ input:focus {
 	text-transform: uppercase;
 	word-spacing: 0;
 	box-shadow: 1px 1px 0 rgba(0, 0, 0, 0.125);
-	border: none;
 	border-radius: 0;
 	line-height: 16px;
 	position: relative;
@@ -143,8 +141,7 @@ input:focus {
 		flex: 1 1 100%;
 
 		background-color: #FFF;
-		border-left: 1px solid @window-border-color;
-		border-right: 1px solid @window-border-color;
+		border-width: 0 1px 0 1px;
 		overflow-y: auto;
 		.wrapper {
 			padding-bottom: 6px;
@@ -194,7 +191,7 @@ input:focus {
 						top: -20px;
 						left: 0;
 						width: 100%;
-						border-top: 1px solid #ddd;
+						border-width: 1px 0 0 0;
 					}
 				}
 				.edit-message {
@@ -363,9 +360,7 @@ input:focus {
 		z-index: 10;
 
 		background-color: #FCFCFC;
-		border-top: 1px solid #E7E7E7;
-		border-left: 1px solid @window-border-color;
-		border-right: 1px solid @window-border-color;
+		border-width: 1px 1px 0 1px;
 
 		.input-wrapper {
 			padding: 6px 6px 0 6px;
@@ -455,8 +450,7 @@ input:focus {
 		flex: 1 1 100%;
 		background-color: white;
 		padding: 1em 10px;
-		border-left: 1px solid @window-border-color;
-		border-right: 1px solid @window-border-color;
+		border-width: 0 1px 0 1px;
 
 		.offline-message {
 			padding: 1em 0;
@@ -493,8 +487,7 @@ input:focus {
 	flex: 1 1 100%;
 	display: block;
 	background-color: #FFF;
-	border-left: 1px solid @window-border-color;
-	border-right: 1px solid @window-border-color;
+	border-width: 0 1px 0 1px;
 	padding: 5px;
 
 	input, select {

@@ -24,7 +24,7 @@
 
 button {
 	background: none;
-	border: none;
+	border-width: 0;
 	padding: 0px;
 	text-align: left;
 	cursor: pointer;
@@ -73,7 +73,7 @@ a {
 
 code {
 	border-radius: 4px;
-	border: 1px solid;
+	border-width: 1px;
 	display: block;
 	font-size: 13px;
 	font-weight: 600;
@@ -213,7 +213,7 @@ blockquote {
 .alert {
 	padding: 15px;
 	margin-bottom: 20px;
-	border: 1px solid;
+	border-width: 1px;
 	border-radius: 4px;
 }
 
@@ -497,7 +497,7 @@ input[type='password'] {
 	appearance: none;
 	height: 35px;
 	line-height: normal;
-	border: 1px solid;
+	border-width: 1px;
 	border-radius: 5px;
 	padding: 2px 8px;
 	position: relative;
@@ -654,6 +654,7 @@ label.required:after {
 // new layout buttons
 .button {
 	&:extend(.unselectable);
+	border-width: 0;
 	display: inline-block;
 	padding: 9px 12px;
 	font-weight: 500;
@@ -974,7 +975,7 @@ label.required:after {
 				display: block;
 				width: 13px;
 				height: 13px;
-				border: 1px solid;
+				border-width: 1px;
 				border-radius: 50%;
 				z-index: 5;
 				position: absolute;
@@ -1015,7 +1016,7 @@ label.required:after {
 			padding: 15px 12px;
 			line-height: 1;
 			text-decoration: none;
-			border-bottom: 1px solid;
+			border-width: 0 0 1px 0;
 			&:nth-child(even) {}
 			&:hover {
 				text-decoration: none;
@@ -1512,7 +1513,7 @@ label.required:after {
 	.flex-center;
 	flex-flow: row nowrap;
 	padding: 0 10px 0 20px;
-	border-bottom: 1px solid;
+	border-width: 0 0 1px 0;
 	z-index: 100;
 	top: 0;
 	left: 0;
@@ -1687,7 +1688,7 @@ label.required:after {
 		}
 	}
 	.section {
-		border: 1px solid #ddd;
+		border-width: 1px;
 		border-left: none;
 		background-color: #fff;
 		padding: 20px;
@@ -1752,8 +1753,8 @@ label.required:after {
 				}
 				.settings-alert {
 					background-color: rgb(255, 255, 230);
-					border: 1px solid rgb(255, 242, 196);
 					color: orange;
+					border-width: 1px;
 					font-weight: bold;
 					padding: 5px;
 				}
@@ -1830,7 +1831,7 @@ label.required:after {
 				margin-top: 0px;
 			}
 			.section-content {
-				border: 1px solid;
+				border-width: 1px;
 				padding: 20px;
 				border-radius: 5px;
 				.section-helper {
@@ -1885,7 +1886,7 @@ label.required:after {
 	}
 	.results {
 		padding: 10px 0;
-		border-bottom: 1px solid;
+		border-width: 0 0 1px 0;
 		margin-bottom: 10px;
 		font-weight: 300;
 		p {
@@ -2001,7 +2002,7 @@ label.required:after {
 	> div {
 		line-height: 24px;
 		padding: 0 10px;
-		border-top: 1px solid;
+		border-width: 1px 0 0 0;
 		&:last-child {
 			box-shadow: 0px 1px 2px rgba(0, 0, 0, .2);
 		}
@@ -2089,7 +2090,7 @@ label.required:after {
 	.footer {
 		position: absolute;
 		padding: 8px 20px 0px 20px;
-		border-top: 1px solid;
+		border-width: 1px 0 0 0;
 		z-index: 100;
 		bottom: 0;
 		left: 0;
@@ -2123,7 +2124,7 @@ label.required:after {
 		border-radius: 5px;
 	}
 	.message-popup-title {
-		border-bottom: 1px solid;
+		border-width: 0 0 1px 0;
 		padding: 0 20px;
 		line-height: 32px;
 		font-size: 14px;
@@ -2145,7 +2146,7 @@ label.required:after {
 		margin: -7px 4px;
 	}
 	.popup-user-status {
-		border: 1px solid;
+		border-width: 1px;
 		width: 10px;
 		height: 10px;
 		display: inline-block;
@@ -2161,7 +2162,7 @@ label.required:after {
 	}
 	.message-form {
 		> .message-input {
-			border: 1px solid;
+			border-width: 1px;
 			overflow: hidden;
 			border-radius: 5px;
 			position: relative;
@@ -2213,9 +2214,7 @@ label.required:after {
 			overflow-y: hidden;
 			resize: none;
 			line-height: 16px;
-			border-top-width: 0;
-			border-bottom-width: 0;
-			border-left-width: 0;
+			border-width: 0 1px 0 0;
 			&.editing {}
 		}
 		.users-typing {
@@ -2252,7 +2251,7 @@ label.required:after {
 			}
 			q {
 				padding: 0 0 0 3px;
-				border-left: 3px solid;
+				border-width: 0 0 0 3px;
 				&:before {
 					content: none !important;
 				}
@@ -2443,7 +2442,7 @@ label.required:after {
 			position: absolute;
 			top: -20px;
 			left: 0;
-			border-top: 1px solid;
+			border-width: 1px 0 0 0;
 			width: 100%;
 		}
 	}
@@ -2504,7 +2503,7 @@ label.required:after {
 				&:first-child {
 					padding-left: 6px;
 					background-color: #f8f8f8;
-					border-right: 1px solid #eee;
+					border-width: 0 1px 0 0;
 				}
 				&:last-child {
 					padding-right: 13px;
@@ -2551,7 +2550,7 @@ label.required:after {
 	.info {
 		font-size: 12px;
 		.edited {
-			border-left: 1px dotted #BAB8B8;
+			border-left: 1px dotted;
 			padding-left: 3px;
 			margin-left: 3px;
 		}
@@ -2792,14 +2791,14 @@ body:not(.is-cordova) {
 	top: 0;
 	right: 0;
 	background: #FCFCFC;
-	border-left: 1px solid #eaeaea;
+	border-width: 0 0 0 1px;
 	z-index: 130;
 	.tab-button {
 		position: relative;
 		cursor: pointer;
 		padding: 10px 0;
 		background: #FCFCFC;
-		border-bottom: 1px solid #eaeaea;
+		border-width: 0 0 1px 0;
 		text-align: center;
 		&:hover {
 			background: #EAEAEA;
@@ -2823,8 +2822,7 @@ body:not(.is-cordova) {
 		&.active {
 			background-color: #F4F4F4;
 			margin-left: -1px;
-			border-right: 3px solid #ff0000;
-
+			border-right: 3px solid;
 			button {
 				margin-left: 4px;
 			}
@@ -2894,7 +2892,7 @@ body:not(.is-cordova) {
 
 // FLEX-TAB and FLEX-TAB views
 .flex-tab {
-	border-left: 1px solid;
+	border-width: 0 0 0 1px;
 	overflow-x: visible;
 	position: fixed;
 	z-index: 110;
@@ -2924,10 +2922,9 @@ body:not(.is-cordova) {
 			position: absolute;
 			left: 0;
 			top: 0px;
-			border: none;
 			height: 60px;
 			width: 30px;
-			border-bottom: 1px solid;
+			border-width: 0 0 1px 0;
 			cursor: pointer;
 			.transform(translateX(-27px));
 			.transition(transform .25s ease-out .475s, background .075s ease-out .5s);
@@ -2983,10 +2980,10 @@ body:not(.is-cordova) {
 				height: 60px;
 				line-height: 60px;
 				vertical-align: middle;
-				border-left: 1px solid;
+				border-width: 0 0 0 1px;
 				&.active {}
 				&:last-child {
-					border-right: 1px solid;
+					border-width: 0 1px 0 0;
 				}
 			}
 		}
@@ -3745,15 +3742,13 @@ body:not(.is-cordova) {
 		}
 		input {
 			box-shadow: 0 0 0;
-			border-width: 0;
 			position: relative;
 			padding: 4px 8px;
 			font-size: 18px;
-			border-bottom: 1px solid;
+			border-width: 0 0 1px 0;
 			font-weight: 400;
 			border-radius: 0px;
 			&.error {
-				border-bottom: 1px solid;
 				&::-webkit-input-placeholder {}
 				&:-moz-placeholder {}
 				/* Firefox 18- */
@@ -3947,7 +3942,7 @@ body:not(.is-cordova) {
 	flex-flow: row nowrap;
 	width: 100%;
 	padding: 12px;
-	border: 1px solid;
+	border-width: 1px;
 	.transition(background-color .15s ease-out, border-color .15s ease-out);
 	&:first-child {
 		margin-top: 10px;
@@ -4367,7 +4362,6 @@ body:not(.is-cordova) {
 		border-radius: 5px 0 0 5px;
 		overflow: hidden;
 		border-width: 0 1px 0 0;
-		border-color: #e7e7e7;
 	}
 	input {
 		text-indent: 34px;
