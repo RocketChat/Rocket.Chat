@@ -11,11 +11,11 @@
 		</div>
 		<nav>
 			<button class='button button-block cancel secondary'><span>{{_ "Cancel"}}</span></button>
-			<button class='button button-block blue send' data-loading-text="{{_ "Please_wait"}}"><span>{{_ "Send"}}</span></button>
+			<button class='button button-block send primary' data-loading-text="{{_ "Please_wait"}}"><span>{{_ "Send"}}</span></button>
 		</nav>
 		{{#if inviteEmails.length}}
 		<div class="about clearfix" style="margin-top: 30px">
-			<p style="color: #51a351"> {{_ "Send_invitation_email_success"}} </p>
+			<p class="feedback-success"> {{_ "Send_invitation_email_success"}} </p>
 			<ul style="margin: 5px 10px">
 				{{#each inviteEmails}}
 				<li style="margin-top: 5px">{{.}}</li>

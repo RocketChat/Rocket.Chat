@@ -32,26 +32,26 @@
 				</div>
 				<div class="group-call-buttons">
 					{{#if videoActive}}
-						<button class="stop-call button red"><i class="icon-stop"></i>{{_ "Stop"}}</button>
+						<button class="stop-call button"><i class="icon-stop"></i>{{_ "Stop"}}</button>
 						{{#if audioEnabled}}
-							<button class="disable-audio button red" title="{{_ 'Mute'}}" aria-label="{{_ 'Mute'}}"><i class="icon-mute"></i></button>
+							<button class="disable-audio button" title="{{_ 'Mute'}}" aria-label="{{_ 'Mute'}}"><i class="icon-mute"></i></button>
 						{{else}}
 							<button class="enable-audio button" title="{{_ 'Unmute'}}" aria-label="{{_ 'Unmute'}}"><i class="icon-mic"></i></button>
 						{{/if}}
 						{{#if videoEnabled}}
-							<button class="disable-video button red"><i class="icon-eye-off"></i></button>
+							<button class="disable-video button"><i class="icon-eye-off"></i></button>
 						{{else}}
 							<button class="enable-video button"><i class="icon-eye"></i></button>
 						{{/if}}
 						{{#if screenShareAvailable}}
 							{{#if screenShareEnabled}}
-								<button class="disable-screen-share button red"><i class="icon-desktop"></i></button>
+								<button class="disable-screen-share button"><i class="icon-desktop"></i></button>
 							{{else}}
 								<button class="enable-screen-share button"><i class="icon-desktop"></i></button>
 							{{/if}}
 						{{/if}}
 						{{#if overlayEnabled}}
-							<button class="disable-overlay button red"><i class="icon-resize-small"></i></button>
+							<button class="disable-overlay button"><i class="icon-resize-small"></i></button>
 						{{else}}
 							<button class="enable-overlay button"><i class="icon-resize-full-alt"></i></button>
 						{{/if}}
