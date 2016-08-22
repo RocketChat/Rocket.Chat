@@ -30,7 +30,7 @@
 						<div>
 						{{#if emailVerified}}
 							<div class="right">
-								<i class="icon-ok green" title="{{_ "Email_verified" }}"></i>
+								<i class="icon-ok" title="{{_ "Email_verified" }}"></i>
 							</div>
 						{{/if}}
 						{{#if allowEmailChange}}
@@ -60,11 +60,11 @@
 					<button class="button"><i class="icon-send"></i><span>{{_ "Save_changes"}}</span></button>
 				</div>
 				<div class="logoutOthers">
-					<button class="button red">{{_ "Logout_Others"}}</button>
+					<button class="button logout">{{_ "Logout_Others"}}</button>
 				</div>
 				{{#if allowDeleteOwnAccount}}
 				<div class="delete-account text-right">
-					<button class="button red"><i class="icon-trash"></i><span>{{_ "Delete_my_account"}}</span></button>
+					<button class="button delete"><i class="icon-trash"></i><span>{{_ "Delete_my_account"}}</span></button>
 				</div>
 				{{/if}}
 			</div>
