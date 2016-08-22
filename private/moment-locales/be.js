@@ -1,12 +1,13 @@
 //! moment.js locale configuration
-//! locale : belarusian (be)
+//! locale : Belarusian [be]
 //! author : Dmitry Demidov : https://github.com/demidov91
 //! author: Praleska: http://praleska.pro/
 //! Author : Menelion Elensúle : https://github.com/Oire
 
-(function (global, factory) {
-   typeof exports === 'object' && typeof module !== 'undefined' ? factory(require('../moment')) :
-   typeof define === 'function' && define.amd ? define(['moment'], factory) :
+;(function (global, factory) {
+   typeof exports === 'object' && typeof module !== 'undefined'
+       && typeof require === 'function' ? factory(require('../moment')) :
+   typeof define === 'function' && define.amd ? define(['../moment'], factory) :
    factory(global.moment)
 }(this, function (moment) { 'use strict';
 
@@ -33,40 +34,27 @@
             return number + ' ' + plural(format[key], +number);
         }
     }
-    function monthsCaseReplace(m, format) {
-        var months = {
-            'nominative': 'студзень_люты_сакавік_красавік_травень_чэрвень_ліпень_жнівень_верасень_кастрычнік_лістапад_снежань'.split('_'),
-            'accusative': 'студзеня_лютага_сакавіка_красавіка_траўня_чэрвеня_ліпеня_жніўня_верасня_кастрычніка_лістапада_снежня'.split('_')
-        },
-        nounCase = (/D[oD]?(\[[^\[\]]*\]|\s+)+MMMM?/).test(format) ?
-            'accusative' :
-            'nominative';
-        return months[nounCase][m.month()];
-    }
-    function weekdaysCaseReplace(m, format) {
-        var weekdays = {
-            'nominative': 'нядзеля_панядзелак_аўторак_серада_чацвер_пятніца_субота'.split('_'),
-            'accusative': 'нядзелю_панядзелак_аўторак_сераду_чацвер_пятніцу_суботу'.split('_')
-        },
-        nounCase = (/\[ ?[Вв] ?(?:мінулую|наступную)? ?\] ?dddd/).test(format) ?
-            'accusative' :
-            'nominative';
-        return weekdays[nounCase][m.day()];
-    }
 
     var be = moment.defineLocale('be', {
-        months : monthsCaseReplace,
+        months : {
+            format: 'студзеня_лютага_сакавіка_красавіка_траўня_чэрвеня_ліпеня_жніўня_верасня_кастрычніка_лістапада_снежня'.split('_'),
+            standalone: 'студзень_люты_сакавік_красавік_травень_чэрвень_ліпень_жнівень_верасень_кастрычнік_лістапад_снежань'.split('_')
+        },
         monthsShort : 'студ_лют_сак_крас_трав_чэрв_ліп_жнів_вер_каст_ліст_снеж'.split('_'),
-        weekdays : weekdaysCaseReplace,
+        weekdays : {
+            format: 'нядзелю_панядзелак_аўторак_сераду_чацвер_пятніцу_суботу'.split('_'),
+            standalone: 'нядзеля_панядзелак_аўторак_серада_чацвер_пятніца_субота'.split('_'),
+            isFormat: /\[ ?[Вв] ?(?:мінулую|наступную)? ?\] ?dddd/
+        },
         weekdaysShort : 'нд_пн_ат_ср_чц_пт_сб'.split('_'),
         weekdaysMin : 'нд_пн_ат_ср_чц_пт_сб'.split('_'),
         longDateFormat : {
             LT : 'HH:mm',
-            LTS : 'LT:ss',
+            LTS : 'HH:mm:ss',
             L : 'DD.MM.YYYY',
             LL : 'D MMMM YYYY г.',
-            LLL : 'D MMMM YYYY г., LT',
-            LLLL : 'dddd, D MMMM YYYY г., LT'
+            LLL : 'D MMMM YYYY г., HH:mm',
+            LLLL : 'dddd, D MMMM YYYY г., HH:mm'
         },
         calendar : {
             sameDay: '[Сёння ў] LT',
@@ -77,15 +65,15 @@
             },
             lastWeek: function () {
                 switch (this.day()) {
-                case 0:
-                case 3:
-                case 5:
-                case 6:
-                    return '[У мінулую] dddd [ў] LT';
-                case 1:
-                case 2:
-                case 4:
-                    return '[У мінулы] dddd [ў] LT';
+                    case 0:
+                    case 3:
+                    case 5:
+                    case 6:
+                        return '[У мінулую] dddd [ў] LT';
+                    case 1:
+                    case 2:
+                    case 4:
+                        return '[У мінулы] dddd [ў] LT';
                 }
             },
             sameElse: 'L'
@@ -123,16 +111,16 @@
         ordinalParse: /\d{1,2}-(і|ы|га)/,
         ordinal: function (number, period) {
             switch (period) {
-            case 'M':
-            case 'd':
-            case 'DDD':
-            case 'w':
-            case 'W':
-                return (number % 10 === 2 || number % 10 === 3) && (number % 100 !== 12 && number % 100 !== 13) ? number + '-і' : number + '-ы';
-            case 'D':
-                return number + '-га';
-            default:
-                return number;
+                case 'M':
+                case 'd':
+                case 'DDD':
+                case 'w':
+                case 'W':
+                    return (number % 10 === 2 || number % 10 === 3) && (number % 100 !== 12 && number % 100 !== 13) ? number + '-і' : number + '-ы';
+                case 'D':
+                    return number + '-га';
+                default:
+                    return number;
             }
         },
         week : {

@@ -4,6 +4,10 @@ RocketChat.callbacks.add('afterSaveMessage', function(message, room) {
 		return message;
 	}
 
+	if (message.ts && Math.abs(moment(message.ts).diff()) > 60000) {
+		return message;
+	}
+
 	/**
 	 * Chechs if a messages contains a user highlight
 	 *
