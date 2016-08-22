@@ -3753,7 +3753,7 @@ body:not(.is-cordova) {
 				visibility: hidden;
 			}
 		}
-		input {
+		input, select {
 			box-shadow: 0 0 0;
 			border-width: 0;
 			position: relative;
@@ -3771,10 +3771,27 @@ body:not(.is-cordova) {
 				/* Firefox 19+ */
 				&:-ms-input-placeholder {}
 			}
+			&:focus {
+				border-color: #13679a !important;
+			}
+		}
+		.select-arrow {
+			position: absolute;
+			top: 10px;
+			right: 0px;
+			color: #a9a9a9;
 		}
 		input:-webkit-autofill {}
 		input:-webkit-autofill {
 			-webkit-box-shadow: 0 0 0px 1000px #f4f4f4 inset;
+		}
+
+		.input-error {
+			text-align: left;
+			color: #b40202;
+			padding-left: 4px;
+			font-weight: bold;
+			font-size: 14px;
 		}
 	}
 }
