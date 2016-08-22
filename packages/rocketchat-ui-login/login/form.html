@@ -49,6 +49,9 @@
 							{{#each customFields}}
 								{{#if $eq field.type 'select'}}
 									<div class='input-text active'>
+										<div class="select-arrow">
+											<i class="icon-down-open"></i>
+										</div>
 										<select name="{{fieldName}}" data-customfield="true">
 											{{#each field.options}}
 												{{#if $eq . ../field.defaultValue}}
