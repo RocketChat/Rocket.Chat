@@ -47,11 +47,11 @@ Template.loginForm.helpers
 		return OnePassword?.findLoginForUrl? && device?.platform?.toLocaleLowerCase() is 'ios'
 
 	customFields: ->
-		if not Template.instance().customFields
+		if not Template.instance().customFields.get()
 			return []
 
 		customFieldsArray = []
-		for key, value of Template.instance().customFields
+		for key, value of Template.instance().customFields.get()
 			customFieldsArray.push
 				fieldName: key,
 				field: value
@@ -150,12 +150,17 @@ Template.loginForm.events
 
 Template.loginForm.onCreated ->
 	instance = @
+	@customFields = new ReactiveVar
 
-	if RocketChat.settings.get('Accounts_CustomFields') isnt ''
-		try
-			@customFields = JSON.parse RocketChat.settings.get('Accounts_CustomFields')
-		catch e
-			console.error('Invalid JSON for Accounts_CustomFields')
+	Tracker.autorun =>
+		Accounts_CustomFields = RocketChat.settings.get('Accounts_CustomFields')
+		if typeof Accounts_CustomFields is 'string' and Accounts_CustomFields.trim() isnt ''
+			try
+				@customFields.set JSON.parse RocketChat.settings.get('Accounts_CustomFields')
+			catch e
+				console.error('Invalid JSON for Accounts_CustomFields')
+		else
+			@customFields.set undefined
 
 	if Meteor.settings.public.sandstorm
 		@state = new ReactiveVar('sandstorm')
@@ -167,11 +172,12 @@ Template.loginForm.onCreated ->
 	@validSecretURL = new ReactiveVar(false)
 
 	validateCustomFields = (formObj, validationObj) ->
-		if not instance.customFields
+		customFields = instance.customFields.get()
+		if not customFields
 			return
 
-		for field, value of formObj when instance.customFields[field]?
-			customField = instance.customFields[field]
+		for field, value of formObj when customFields[field]?
+			customField = customFields[field]
 
 			if customField.required is true and not value
 				return validationObj[field] = t('Field_required')
