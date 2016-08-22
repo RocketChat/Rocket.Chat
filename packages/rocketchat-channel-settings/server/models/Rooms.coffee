@@ -19,18 +19,13 @@ RocketChat.models.Rooms.setReadOnlyById = (_id, readOnly) ->
 	if readOnly
 		# we want to mute all users without the post-read-only permission
 
-		# get all usernames for this room
-		users = @findOne(query, { fields: { usernames: 1 }})
-
-		users.usernames.forEach (userName) ->
-
-			# lookup the user
-			user = RocketChat.models.Users.findOneByUsername userName
-
-			if user != null and RocketChat.authz.hasPermission(user._id, 'post-read-only') is false
+		usernames = @findOne(query, { fields: { usernames: 1 }})
+		users = RocketChat.models.Users.findUsersByUsernames usernames?.usernames, {fields: {username: 1}}
+		users.forEach (user) ->
+			if RocketChat.authz.hasPermission(user._id, 'post-read-only') is false
 				# create a new array if necessary
 				update.$set.muted = [] if !update.$set.muted 
-				update.$set.muted.push userName
+				update.$set.muted.push user.username
 	else
 		# remove the muted user array
 		update.$unset = {muted: ""}
