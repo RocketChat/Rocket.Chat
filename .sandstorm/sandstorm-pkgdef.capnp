@@ -91,8 +91,8 @@ const pkgdef :Spk.PackageDefinition = (
   bridgeConfig = (
     viewInfo = (
       eventTypes = [
-				(name = "message", verbPhrase = (defaultText = "message sent")),
-				(name = "privateMessage", verbPhrase = (defaultText = "private message sent"), requiredPermission = (explicitList = void)),
+				(name = "message", verbPhrase = (defaultText = "sent message")),
+				(name = "privateMessage", verbPhrase = (defaultText = "sent private message"), requiredPermission = (explicitList = void)),
 			]
     ),
 
