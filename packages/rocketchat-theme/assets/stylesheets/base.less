@@ -1675,6 +1675,12 @@ label.required:after {
 }
 
 .page-settings {
+	h2 {
+		margin-bottom: 2rem;
+	}
+	h3 {
+		margin-bottom: 1rem;
+	}
 	.content {
 		padding: 20px 0;
 		background-color: #f8f8f8;
@@ -1919,31 +1925,6 @@ label.required:after {
 		.user-image {
 			float: right;
 			margin-left: 12px;
-		}
-		table {
-			width: 100%;
-			thead {
-				th {
-					text-align: left;
-
-					&.text-right {
-						text-align: right;
-					}
-				}
-			}
-			tbody {
-				td {
-					vertical-align: middle;
-					padding: 4px 2px;
-
-					a {
-						padding: inherit;
-						margin-bottom: inherit;
-						display: inline;
-						border: none;
-					}
-				}
-			}
 		}
 	}
 }
@@ -3997,27 +3978,18 @@ body:not(.is-cordova) {
 	}
 }
 
-.statistics-table {
+.page-container table {
 	margin-bottom: 30px;
-	border: 2px solid #F5F5F5;
 	width: 100%;
-	tr {
-		background-color: #FFFFFF;
-		&:nth-of-type(even) {
-			background-color: #F5F5F5;
-		}
-	}
 	th,
 	td {
-		text-align: left;
-		padding: 6px 8px;
+		vertical-align: middle;
+	  padding: .6rem .7rem;
+	  text-align: left;
+	  border-width: 0 0 1px 0;
 	}
 	th {
-		text-align: right;
-		width: 30%;
-	}
-	td {
-		width: 70%;
+		white-space: nowrap;
 	}
 }
 
