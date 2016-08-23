@@ -9,9 +9,9 @@
 # New colors, used for shades on solid backgrounds
 # Defined range of transparencies reduces random colour variances
 alphaColors=
-	'transparent-darkest': 'rgba(0,0,0,.17)'
+	'transparent-darkest': 'rgba(0,0,0,.20)'
 	'transparent-darker': 'rgba(0,0,0,.1)'
-	'transparent-dark': 'rgba(0,0,0,.03)'
+	'transparent-dark': 'rgba(0,0,0,.02)'
 	'transparent-light': 'rgba(255,255,255,0.6)'
 	'transparent-lighter': 'rgba(255,255,255,0.26)'
 	'transparent-lightest': 'rgba(255,255,255,0.08)'
@@ -24,8 +24,8 @@ majorColors=
 	'primary-font-color': '#444444'
 	'primary-action-color': '#13679A' # was action-buttons-color
 	'secondary-background-color': '#F4F4F4'
-	'secondary-font-color': '#7F7F7F'
-	'secondary-action-color': '#AAAAAA'
+	'secondary-font-color': '#A0A0A0'
+	'secondary-action-color': '#E5E5E5'
 	'component-color': '#EAEAEA'
 	'success-color': '#1DCE73'
 	'pending-color': '#FCB316'
@@ -38,7 +38,7 @@ minorColors=
 	'tertiary-font-color': alphaColors['transparent-light']
 	'link-font-color': majorColors['primary-action-color']
 	'info-font-color': majorColors['secondary-font-color']
-	'custom-scrollbar-color': alphaColors['transparent-lightest']
+	'custom-scrollbar-color': alphaColors['transparent-dark']
 	'status-online': majorColors['success-color']
 	'status-away': majorColors['pending-color']
 	'status-busy': majorColors['error-color']
