@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="module_rocket.chat" default="compile.module.rocket.chat">
+  <dirname property="module.rocket.chat.basedir" file="${ant.file.module_rocket.chat}"/>
+  
+  <property name="module.jdk.home.rocket.chat" value="${project.jdk.home}"/>
+  <property name="module.jdk.bin.rocket.chat" value="${project.jdk.bin}"/>
+  <property name="module.jdk.classpath.rocket.chat" value="${project.jdk.classpath}"/>
+  
+  <property name="compiler.args.rocket.chat" value="-encoding UTF-8 -source 1.3 -target 1.3 ${compiler.args}"/>
+  
+  <property name="rocket.chat.output.dir" value="${module.rocket.chat.basedir}/out/production/Rocket.Chat"/>
+  <property name="rocket.chat.testoutput.dir" value="${module.rocket.chat.basedir}/out/test/Rocket.Chat"/>
+  
+  <path id="rocket.chat.module.bootclasspath">
+    <!-- Paths to be included in compilation bootclasspath -->
+  </path>
+  
+  <path id="rocket.chat.module.production.classpath"/>
+  
+  <path id="rocket.chat.runtime.production.module.classpath">
+    <pathelement location="${rocket.chat.output.dir}"/>
+  </path>
+  
+  <path id="rocket.chat.module.classpath">
+    <pathelement location="${rocket.chat.output.dir}"/>
+  </path>
+  
+  <path id="rocket.chat.runtime.module.classpath">
+    <pathelement location="${rocket.chat.testoutput.dir}"/>
+    <pathelement location="${rocket.chat.output.dir}"/>
+  </path>
+  
+  
+  <patternset id="excluded.from.module.rocket.chat">
+    <patternset refid="ignored.files"/>
+  </patternset>
+  
+  <patternset id="excluded.from.compilation.rocket.chat">
+    <patternset refid="excluded.from.module.rocket.chat"/>
+  </patternset>
+  
+  
+  <target name="compile.module.rocket.chat" depends="compile.module.rocket.chat.production,compile.module.rocket.chat.tests" description="Compile module Rocket.Chat"/>
+  
+  <target name="compile.module.rocket.chat.production" depends="register.custom.compilers" description="Compile module Rocket.Chat; production classes"/>
+  
+  <target name="compile.module.rocket.chat.tests" depends="register.custom.compilers,compile.module.rocket.chat.production" description="compile module Rocket.Chat; test classes" unless="skip.tests"/>
+  
+  <target name="clean.module.rocket.chat" description="cleanup module">
+    <delete dir="${rocket.chat.output.dir}"/>
+    <delete dir="${rocket.chat.testoutput.dir}"/>
+  </target>
+</project>
