@@ -40,7 +40,7 @@ RocketChat.callbacks.add('afterSaveMessage', function(message, room) {
 	}
 
 	/**
-	 * Chechs if a messages contains a user highlight
+	 * Checks if a message contains a user highlight
 	 *
 	 * @param {string} message
 	 * @param {array|undefined} highlights
@@ -127,6 +127,7 @@ RocketChat.callbacks.add('afterSaveMessage', function(message, room) {
 				text: message.msg,
 				duration: settings.desktopNotificationDurations[userOfMention._id],
 				payload: {
+					_id: message._id,
 					rid: message.rid,
 					sender: message.u,
 					type: room.t,
@@ -281,6 +282,7 @@ RocketChat.callbacks.add('afterSaveMessage', function(message, room) {
 					text: message.msg,
 					duration: settings.desktopNotificationDurations[usersOfMentionId],
 					payload: {
+						_id: message._id,
 						rid: message.rid,
 						sender: message.u,
 						type: room.t,
