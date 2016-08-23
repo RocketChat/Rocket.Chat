@@ -11,7 +11,6 @@
 			left: 0;
 			top: 0;
 			bottom: 0;
-			background-color: #ccc;
 		}
 		html.rtl & {
 			padding-left: 0;
@@ -30,7 +29,6 @@
 
 		> a {
 			font-weight: 600;
-			color: #444;
 		}
 
 		img {
@@ -42,13 +40,6 @@
 		.time {
 			font-weight: normal;
 			font-size: .8em;
-			color: #aaa;
-			a{
-				&:hover{
-					text-decoration: underline;
-				}
-				color: #aaa;
-			}
 		}
 	}
 
@@ -69,6 +60,7 @@
 
 	.attachment-image {
 		margin-top: 4px;
+		line-height: 0;
 	}
 
 	.attachment-fields {
@@ -120,10 +112,9 @@
 
 	.attachment-download-icon {
 		padding: 2px 5px;
-		border: 1px solid #ccc;
+		border-width: 1px;
 		border-radius: 5px;
 		margin-left: 5px;
-		color: #666;
 		html.rtl & {
 			margin-right: 5px;
 			margin-left: auto;

@@ -118,7 +118,7 @@
 
 											{{#if $eq type 'action'}}
 												{{#if hasChanges section}}
-													<span style="line-height: 40px; color: #888;">{{_ "Save_to_enable_this_action"}}</span>
+													<span style="line-height: 40px" class="secondary-text">{{_ "Save_to_enable_this_action"}}</span>
 												{{else}}
 													<button type="button" class="button primary action" data-setting="{{_id}}" data-action="{{value}}" {{isDisabled}}>{{_ actionText}}</button>
 												{{/if}}

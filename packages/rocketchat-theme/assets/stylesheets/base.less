@@ -131,6 +131,7 @@ blockquote {
 }
 
 .upload-preview {
+	padding: 1rem;
 	.upload-preview-file {
 		height: 200px;
 		background-size: contain;
@@ -537,13 +538,6 @@ form.inline {
 	select {
 		width: auto;
 	}
-}
-
-input[readonly],
-input[disabled],
-textarea[readonly],
-textarea[disabled] {
-	background-color: #f4f4f4 !important;
 }
 
 .search-form {
@@ -1450,13 +1444,11 @@ label.required:after {
 		}
 	}
 	.unread-rooms {
-		background-color: #068FE4;
 		position: absolute;
 		z-index: 1000;
 		width: 100%;
 		text-align: center;
 		line-height: 24px;
-		color: white;
 		text-transform: uppercase;
 		font-weight: bold;
 		display: -webkit-flex;
@@ -1675,16 +1667,14 @@ label.required:after {
 }
 
 .page-settings {
-	h2 {
-		margin-bottom: 2rem;
-	}
-	h3 {
-		margin-bottom: 1rem;
-	}
 	.content {
+		h2 {
+			margin-bottom: 2rem;
+		}
+		h3 {
+			margin-bottom: 1rem;
+		}
 		padding: 20px 0;
-		background-color: #f8f8f8;
-		color: #444;
 		> .info {
 			max-width: auto;
 			line-height: 24px;
@@ -1696,7 +1686,6 @@ label.required:after {
 	.section {
 		border-width: 1px;
 		border-left: none;
-		background-color: #fff;
 		padding: 20px;
 		margin-bottom: 20px;
 		&.section-collapsed {
@@ -1708,7 +1697,6 @@ label.required:after {
 			display: flex;
 			font-size: 24px;
 			font-weight: 600;
-			color: #444;
 			line-height: 40px;
 			.section-title-text {
 				flex-grow: 1;
@@ -1732,34 +1720,17 @@ label.required:after {
 				&:first-child {
 					padding-top: 0;
 				}
-				&.setting-changed {
-					> label {
-						color: #627CFF
-					}
-				}
-				&[disabled] {
-					label {
-						color: #888;
-					}
-				}
-				input {
-					color: #444;
-				}
 				> label {
 					text-align: left;
 					font-weight: 500;
 					font-size: 16px;
 					line-height: 20px;
-					color: #444;
 				}
 				.settings-description {
-					color: #888;
 					padding: 5px;
 					line-height: 20px;
 				}
 				.settings-alert {
-					background-color: rgb(255, 255, 230);
-					color: orange;
 					border-width: 1px;
 					font-weight: bold;
 					padding: 5px;
@@ -1801,11 +1772,9 @@ label.required:after {
 			background-position: center center;
 			background-repeat: no-repeat;
 			&.no-file {
-				background-color: #fafafa;
 				display: flex;
 				align-items: center;
 				justify-content: center;
-				color: #ccc;
 				font-size: 24px;
 			}
 		}
@@ -1844,7 +1813,6 @@ label.required:after {
 					padding: 20px 20px 40px;
 					pre {
 						display: inline;
-						background-color: #eee;
 					}
 				}
 			}
@@ -1874,7 +1842,6 @@ label.required:after {
 	.info {
 		max-width: 680px;
 		line-height: 20px;
-		p {}
 	}
 	.social {
 		h4 {
@@ -2015,8 +1982,6 @@ label.required:after {
 		}
 	}
 	.unread-bar {
-		background-color: #E6F4FD;
-		color: #068FE4;
 		text-transform: uppercase;
 		text-align: center;
 		> button.mark-read {
@@ -2329,7 +2294,6 @@ label.required:after {
 	}
 	.jump-recent {
 		z-index: 15;
-		background-color: #E7E7E7;
 		position: absolute;
 		text-align: right;
 		height: 24px;
@@ -2358,9 +2322,6 @@ label.required:after {
 	}
 	&.selectable .message {
 		cursor: pointer;
-		&.selected {
-			background-color: #FFD;
-		}
 	}
 }
 
@@ -2372,15 +2333,11 @@ label.required:after {
 	z-index: 10;
 	pointer-events: none;
 	.tick {
-		background-color: #008ce3;
 		height: 2px;
 		width: 100%;
 		top: 50%;
 		position: absolute;
 		border-radius: 2px;
-	}
-	.tick-all {
-		background-color: #9C27B0;
 	}
 }
 
@@ -2397,9 +2354,6 @@ label.required:after {
 	}
 	&:nth-child(1) {
 		margin-top: 0;
-	}
-	&:hover {
-		background-color: @message-hover-background-color;
 	}
 	&.new-day {
 		margin-top: 60px;
@@ -2463,7 +2417,6 @@ label.required:after {
 		left: -2px;
 		z-index: 1000;
 		display: none;
-		background-color: #fff;
 		border-radius: 4px;
 		overflow: hidden;
 		box-shadow: 0px 1px 1px 0 rgba(0, 0, 0, 0.2), 0 2px 10px 0 rgba(0, 0, 0, .16);
@@ -2480,17 +2433,12 @@ label.required:after {
 				font-weight: 400;
 				line-height: 26px;
 				cursor: pointer;
-				color: #666;
 				&:first-child {
 					padding-left: 6px;
-					background-color: #f8f8f8;
 					border-width: 0 1px 0 0;
 				}
 				&:last-child {
 					padding-right: 13px;
-				}
-				&:hover {
-					background-color: #eee;
 				}
 			}
 		}
@@ -2537,10 +2485,8 @@ label.required:after {
 		}
 		.is-bot,
 		.role-tag {
-			background-color: #ccc;
 			padding: 1px 4px;
 			border-radius: 2px;
-			color: white;
 		}
 	}
 	.private {
@@ -2667,7 +2613,6 @@ label.required:after {
 		opacity: .5;
 	}
 	.message-alias {
-		color: #aaa;
 		font-weight: 400;
 		padding-left: 2px;
 	}
@@ -2771,25 +2716,18 @@ body:not(.is-cordova) {
 	height: 100%;
 	top: 0;
 	right: 0;
-	background: #FCFCFC;
 	border-width: 0 0 0 1px;
 	z-index: 130;
 	.tab-button {
 		position: relative;
 		cursor: pointer;
 		padding: 10px 0;
-		background: #FCFCFC;
 		border-width: 0 0 1px 0;
 		text-align: center;
-		&:hover {
-			background: #EAEAEA;
-		}
 
 		.counter {
 			position: absolute;
-			background: #999;
 			font-size: 9px;
-			color: white;
 			width: 13px;
 			height: 13px;
 			border-radius: 50%;
@@ -2799,15 +2737,12 @@ body:not(.is-cordova) {
 			top: 4px;
 			text-align: center;
 		}
-
 		&.active {
-			background-color: #F4F4F4;
 			margin-left: -1px;
 			border-right: 3px solid;
 			button {
 				margin-left: 4px;
 			}
-
 			.counter {
 				margin-right: -3px;
 			}
@@ -3034,6 +2969,9 @@ body:not(.is-cordova) {
 }
 
 .list-view {
+	-webkit-overflow-scrolling: touch;
+	overflow-y: auto;
+	overflow-x: hidden;
 	z-index: 10;
 	padding: 20px;
 	.list {
@@ -3074,37 +3012,27 @@ body:not(.is-cordova) {
 		display: block;
 	}
 	&.uploaded-files-list {
-		a {
-			&.file-name {
-				color: #008ce3;
-				padding: 10px 5px;
-				border-bottom: 1px solid #eaeaea;
-				display: block;
-				&:hover {
-					color: #006db0;
-					text-decoration: underline;
-				}
+		li:hover {
+			cursor: pointer;
+			.file-name {
+				text-decoration: underline;
 			}
+		}
+		a.file-name {
+			padding: 10px 5px;
+			border-width: 0 0 1px 0;
+			display: block;
 		}
 		i {
 			float: left;
-			color: #444;
 			margin-right: 10px;
 			&.file-delete {
 				float: right;
 				padding-top: 10px;
-				&:hover {
-					color: red;
-					cursor: pointer;
-				}
 			}
 			&.file-download {
 				float: right;
 				padding-top: 11px;
-				&:hover {
-					color: #006db0;
-					cursor: pointer;
-				}
 			}
 		}
 	}
@@ -3196,10 +3124,8 @@ body:not(.is-cordova) {
 			font-weight: 300;
 		}
 		.role-tag {
-			background-color: #ccc;
 			padding: 1px 4px;
 			border-radius: 2px;
-			color: white;
 		}
 	}
 	.stats {
@@ -3889,24 +3815,12 @@ body:not(.is-cordova) {
 }
 
 .mention-link {
-	&.mention-link-me, &.mention-link-all {
-		background-color: #008ce3;
-		border-radius: 4px;
-		padding: 0px 4px 2px 4px;
-		font-weight: bold;
-		color: white;
-		&:hover {
-			color: white;
-		}
-
-		&.mention-link-all {
-			background-color: #9C27B0;
-		}
-	}
+	border-radius: 4px;
+	padding: 0px 4px 2px 4px;
+	font-weight: bold;
 }
 
 .highlight-text {
-	background: #ADD6FF;
 	border-radius: 4px;
 	padding: 2px;
 }
@@ -4206,7 +4120,6 @@ body:not(.is-cordova) {
 		display: flex;
 		flex-direction: column;
 		justify-content: center;
-		background-color: black;
 		.main-video {
 			video {
 				max-width: 100%;
@@ -4215,20 +4128,17 @@ body:not(.is-cordova) {
 		}
 	}
 	.main-video {
-		background-color: black;
 		text-align: center;
 		video {
 			width: 100%;
 			min-height: 299px;
 		}
 		>div {
-			background-color: rgba(0, 0, 0, .5);
 			margin-top: -28px;
 			position: relative;
 			line-height: 25px;
 			margin-bottom: 2px;
 			text-align: center;
-			color: white;
 			font-weight: bold;
 		}
 	}
@@ -4249,7 +4159,6 @@ body:not(.is-cordova) {
 			width: 93px;
 			overflow: hidden;
 			text-align: center;
-			background-color: black;
 			&.state-overlay::before {
 				content: attr(data-state-text);
 				position: absolute;
@@ -4262,13 +4171,10 @@ body:not(.is-cordova) {
 				align-items: center;
 				font-size: 12px;
 				font-weight: bold;
-				background-color: black;
-				color: white;
 			}
 			video {
 				height: 70px;
 				max-width: 100px;
-				background-color: black;
 			}
 			>div {
 				line-height: 16px;
@@ -4278,13 +4184,10 @@ body:not(.is-cordova) {
 				overflow: hidden;
 				padding: 0px 2px;
 				margin-top: -16px;
-				background-color: rgba(0, 0, 0, .5);
 				position: relative;
-				color: white;
 				font-weight: bold;
 			}
 			.video-muted-overlay {
-				background-color: rgba(0, 0, 0, .5);
 				position: absolute;
 				bottom: 16px;
 				left: 0;
@@ -4292,7 +4195,6 @@ body:not(.is-cordova) {
 				right: 0;
 				text-align: center;
 				font-size: 24px;
-				color: white;
 				display: flex;
 				display: -webkit-flex;
 				display: -moz-flex;
@@ -4322,7 +4224,6 @@ body:not(.is-cordova) {
 	font-size: 80px;
 	display: block;
 	margin-bottom: 20px;
-	color: lightgreen;
 }
 
 .minicolors-theme-rocketchat {
@@ -4365,9 +4266,6 @@ body:not(.is-cordova) {
 	text-align: center;
 	line-height: 40px;
 	font-style: italic;
-	.load-more-loading {
-		color: #aaa;
-	}
 }
 
 .search-messages-list {
@@ -4398,8 +4296,6 @@ body:not(.is-cordova) {
 }
 
 .terminal {
-	background-color: #000 !important;
-	color: #fff;
 	position: absolute;
 	top: 0px;
 	bottom: 0px;
@@ -4424,9 +4320,6 @@ body:not(.is-cordova) {
 	}
 	> div {
 		word-break: break-all;
-		.time {
-			color: #666;
-		}
 	}
 }
 
@@ -4442,8 +4335,6 @@ body:not(.is-cordova) {
 	cursor: pointer;
 	bottom: 8px;
 	left: 50%;
-	background: #FFF;
-	color: #428bca;
 	.transition(transform 0.3s ease-out);
 	.transform(translateY(0));
 	&.not {
@@ -4461,7 +4352,6 @@ body:not(.is-cordova) {
 	left: 0;
 	right: 0;
 	bottom: 0;
-	background-color: rgba(0, 0, 0, .5);
 	z-index: 1000;
 	display: flex;
 	align-items: center;
@@ -4474,7 +4364,6 @@ body:not(.is-cordova) {
 		font-size: 10px;
 	}
 	.spinner > div {
-		background-color: #fff;
 		height: 100%;
 		width: 6px;
 		display: inline-block;
@@ -4523,8 +4412,6 @@ body:not(.is-cordova) {
 
 .code-error-box {
 	.title {
-		background: red;
-		color: white;
 		padding: 5px;
 		font-size: 16px;
 		font-weight: bold;
@@ -4534,9 +4421,7 @@ body:not(.is-cordova) {
 		font-size: 12px;
 		font-weight: bold;
 		padding: 6px;
-		background: rgb(255, 243, 243);
-		color: red;
-		border-left: 3px solid red;
+		border-left: 3px solid;
 	}
 }
 
@@ -4552,12 +4437,7 @@ body:not(.is-cordova) {
 	}
 	.buttons {
 		text-align: right;
-		background-color: #F7F7F7;
-		border: 1px solid #ddd;
 		border-width: 0px 1px 1px 1px;
-	}
-	.CodeMirror {
-		border: 1px solid #ddd;
 	}
 	&.code-mirror-box-fullscreen {
 		height: auto;
@@ -4571,7 +4451,6 @@ body:not(.is-cordova) {
 		display: flex;
 		flex-direction: column;
 		align-items: stretch;
-		background-color: white;
 		.buttons {
 			border: none;
 		}
@@ -4579,7 +4458,6 @@ body:not(.is-cordova) {
 			display: initial;
 			padding-left: 10px;
 			font-size: 16px;
-			background-color: #F7F7F7;
 			line-height: 30px;
 		}
 		.button-fullscreen {
