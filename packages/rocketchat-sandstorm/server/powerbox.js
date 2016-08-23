@@ -7,12 +7,15 @@ if (process.env.SANDSTORM === '1') {
 	var Powerbox = Npm.require('sandstorm/powerbox.capnp');
 	var Grain = Npm.require('sandstorm/grain.capnp');
 
-	RocketChat.Sandstorm.offerUiView = function(token, sessionId) {
+	RocketChat.Sandstorm.offerUiView = function(token, seriliazedDescriptor, sessionId) {
 		var httpBridge = getHttpBridge();
 		var session = httpBridge.getSessionContext(sessionId).context;
 		var api = httpBridge.getSandstormApi(sessionId).api;
 		var cap = waitPromise(api.restore(new Buffer(token, 'base64'))).cap;
-		return waitPromise(session.offer(cap, undefined, {tags: [{id: '15831515641881813735'}]}));
+		return waitPromise(session.offer(cap, undefined, {tags: [{
+			id: '15831515641881813735',
+			value: new Buffer(seriliazedDescriptor, 'base64'),
+		}]}));
 	};
 
 	Meteor.methods({
@@ -33,11 +36,13 @@ if (process.env.SANDSTORM === '1') {
 				token: newToken,
 				appTitle: appTitle,
 				appIconUrl: appIconUrl,
-				grainTitle: grainTitle
+				grainTitle: grainTitle,
+				descriptor: descriptor.tags[0].value.toString('base64'),
 			};
 		},
-		sandstormOffer: function(token) {
-			RocketChat.Sandstorm.offerUiView(token, this.connection.sandstormSessionId());
+		sandstormOffer: function(token, seriliazedDescriptor) {
+			RocketChat.Sandstorm.offerUiView(token, seriliazedDescriptor,
+				this.connection.sandstormSessionId());
 		}
 	});
 }
