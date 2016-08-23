@@ -130,17 +130,8 @@ Template.message.helpers
 
 
 	actionLinks: ->
-		msgActionLinks = []
-
-		for key, actionLink of @actionLinks
-
-			#make this more generic? i.e. label is the first arg...etc?
-			msgActionLinks.push
-				label: actionLink.label
-				id: key
-				icon: actionLink.icon
-
-		return msgActionLinks
+		# remove 'method_id' and 'params' properties
+		return _.map(@actionLinks, (actionLink, key) -> _.extend({ id: key }, _.omit(actionLink, 'method_id', 'params')))
 
 	hideActionLinks: ->
 		return 'hidden' if _.isEmpty(@actionLinks)
