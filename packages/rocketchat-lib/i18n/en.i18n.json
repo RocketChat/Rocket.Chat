@@ -634,6 +634,8 @@
   "LDAP_Host_Description" : "The LDAP host, e.g. `ldap.example.com` or `10.0.0.30`.",
   "LDAP_Merge_Existing_Users" : "Merge existing users",
   "LDAP_Merge_Existing_Users_Description" : "*Caution!* When importing an user from LDAP and an user with same username already exists the LDAP info and password will be set into the existing user.",
+  "LDAP_Import_Users" : "Import LDAP users",
+  "LDAP_Import_Users_Description" : "It True sync process will be import all LDAP users <br/> *Caution!* Specify search filter to not import excess users.",
   "LDAP_Port" : "Port",
   "LDAP_Port_Description" : "Port to access LDAP. eg: `389` or `636` for LDAPS",
   "LDAP_Reject_Unauthorized" : "Reject Unauthorized",
