@@ -1,232 +1,629 @@
-
-a {
-	&:hover,
-	&:active {
-		color: @primary-font-color;
+/** ----------------------------------------------------------------------------
+ * Default colours (for reference, inherited settings may differ)
+ */
+// @transparent-darkest: rgba(0,0,0,.20);
+// @transparent-darker: rgba(0,0,0,.1);
+// @transparent-dark: rgba(0,0,0,.02);
+// @transparent-light: rgba(255,255,255,0.6);
+// @transparent-lighter: rgba(255,255,255,0.26);
+// @transparent-lightest: rgba(255,255,255,0.08);
+// @content-background-color: #FFFFFF;
+// @primary-background-color: #04436A;
+// @primary-font-color: #444444;
+// @primary-action-color: #13679A;
+// @secondary-background-color: #F4F4F4;
+// @secondary-font-color: #A0A0A0;
+// @secondary-action-color: #E5E5E5;
+// @component-color: #EAEAEA;
+// @success-color: #1DCE73;
+// @pending-color: #FCB316;
+// @error-color: #BC2031;
+// @selection-color: #FF5678;
+// @tertiary-font-color: @transparent-light;
+// @link-font-color: @primary-action-color;
+// @info-font-color: @secondary-font-color;
+// @custom-scrollbar-color: @transparent-dark;
+// @status-online: @success-color;
+// @status-away: @pending-color;
+// @status-busy: @error-color;
+// @status-offline: @transparent-darkest;
+/** ----------------------------------------------------------------------------
+ * Derivative colours (fixed variants of inherited variables)
+ */
+@primary-background-contrast: contrast(@primary-background-color, #444);
+@primary-action-contrast: contrast(@primary-action-color, #444);
+@secondary-action-contrast: contrast(@secondary-action-color, #444);
+@selection-background: lighten(@selection-color, 30%);
+@success-background: lighten(@success-color, 40%);
+@success-border: lighten(@success-color, 30%);
+@error-background: lighten(@error-color, 40%);
+@error-border: lighten(@error-color, 30%);
+@error-contrast: contrast(@error-color);
+@pending-background: lighten(@pending-color, 40%);
+@pending-border: lighten(@pending-color, 30%);
+@window-border-color: @component-color;
+/** ----------------------------------------------------------------------------
+ * Document components
+ */
+html {
+	.custom-scroll(transparent, @custom-scrollbar-color, 0);
+}
+.flex-nav,
+.flex-tab .content,
+.messages-container .wrapper,
+.list-view,
+.page-container .content,
+.rocket-modal.fluid .modal main,
+.rooms-list,
+.scrollable,
+.user-view {
+	.custom-scroll(transparent, @custom-scrollbar-color);
+}
+body {
+	color: @primary-font-color;
+	background-color: @content-background-color;
+	* {
+		border-color: @component-color;
 	}
 }
-
 code {
-	background-color: @code-background;
-	border-color: @code-border;
-	color: @code-color;
+	background-color: @transparent-dark;
+	border-color: @component-color;
+	color: @secondary-font-color;
 }
-
-blockquote {
-	&:before {
-		background-color: @blockquote-background;
+blockquote:before {
+	background-color: @transparent-dark;
+}
+.main-content,
+.cms-page,
+.page-container {
+	background-color: @content-background-color;
+	header {
+		background-color: @content-background-color;
+		border-color: @component-color;
 	}
 }
-
-.login-terms {
-	color: @smallprint-font-color;
-	a {
-		color: @smallprint-font-color;
-		&:hover {
-			color: @smallprint-hover-color;
-		}
-	}
-}
-
-.upload-preview {
+.page-container table {
+	overflow: hidden;
 	background-color: @secondary-background-color;
-}
-
-.upload-preview-title {
-	background-color: @tertiary-background-color;
-}
-
-.first-unread {
-	&.first-unread-opaque {
-		.body {
-			&::before {
-				background-color: lighten(@info-font-color, 25%);
-			}
-			&::after {
-				color: @info-font-color;
-			}
+	th,
+	td {
+		border-color: @component-color;
+	}
+	th {
+		background-color: @content-background-color;
+	}
+	tr {
+		background-color: @transparent-light;
+		&:nth-of-type(even) {
+			background-color: @transparent-lighter;
 		}
 	}
-	.body {
-		&::before {
-			background-color: lighten(@info-active-font-color, 25%);
-		}
-		&::after {
-			background-color: @content-background-color;
-			color: @info-active-font-color;
-		}
+	tr:hover td {
+		background-color: @content-background-color;
 	}
 }
-
-.alert {
-	border-color: rgba(0, 0, 0, 0);
+.burger i {
+	background-color: @primary-font-color;
 }
-
-.alert-warning {
-	color: #8A6D3B;
-	background-color: #FCF8E3;
-	border-color: #FAEBCC;
-}
-
-.alert-danger {
-	color: #A94442;
-	background-color: #F2DEDE;
-	border-color: #EBCCD1;
-}
-
-.scrollable {
-	.custom-scroll(transparent, #BFBFBF);
-}
-
-.rocket-form {
-	legend {
-		&:after {
-			background-color: #DFDFDF;
-		}
+/** ----------------------------------------------------------------------------
+ * Admin and settings styles
+ */
+.page-settings {
+	.content {
+		background-color: @transparent-dark;
 	}
-	&.request-password {
+	.section {
+		background-color: @content-background-color;
+	}
+	.terminal {
+		background-color: #444;
 		color: white;
-	}
-}
-
-.input-line {
-	.clearfix;
-	&.search {
-		.icon-search {
+		.time {
 			color: @secondary-font-color;
 		}
 	}
-	> label {
+}
+.page-list,
+.page-settings {
+	a {
 		color: @primary-font-color;
+		&:hover {
+			color: @primary-action-color;
+		}
 	}
 }
-
-.rocket-h2 {
-	color: #EFEFEF;
+.settings-file-preview .preview.no-file {
+	background-color: @transparent-light;
+	color: @secondary-font-color;
 }
-
-.rocket-h3 {
-	color: #EAEAEA;
+.new-logs {
+	background: @primary-action-contrast;
+	color: @primary-action-color;
 }
-
-html {
-	.custom-scroll(transparent, @custom-scrollbar-color, 3px);
-}
-
-body {
-	color: @primary-font-color;
-	background-color: @primary-background-color;
-}
-
-textarea,
-select,
-input[type='text'],
-input[type='number'],
-input[type='email'],
-input[type='url'],
-input[type='password'] {
-	border-color: #E7E7E7;
-	background-color: #fff;
-}
-
-input.search {
-	&:before {
-		background-color: #000;
+.code-error-box {
+	.title {
+		background-color: @error-color;
+		color: white;
+	}
+	pre {
+		color: @error-color;
+		border-color: @error-border;
+		background-color: @transparent-lightest;
 	}
 }
-
-.form-horizontal .control-label {
-	color: @primary-font-color;
+.code-mirror-box {
+	.buttons {
+		background-color: @secondary-action-color;
+	}
+	&.code-mirror-box-fullscreen {
+		background-color: @content-background-color;
+	}
 }
-
-.-autocomplete-container {
-	p {
+.avatar-suggestion-item {
+	background-color: @tertiary-background-color;
+	.avatar {
+		background-size: cover;
+		background-color: @tertiary-background-color;
+	}
+	.question-mark::before {
 		color: @secondary-font-color;
 	}
 }
-
-.-autocomplete-item {
-	color: @secondary-font-color;
+/** ----------------------------------------------------------------------------
+ * Asides (external to main application views)
+ */
+.spotlight {
+	background-color: @transparent-dark;
 	i {
 		color: @secondary-font-color;
 	}
-	&.selected {
-		background-color: @tertiary-background-color;
-		color: @primary-font-color;
+}
+.mobile-message-menu {
+	background-color: @transparent-dark;
+}
+.full-page,
+.page-loading {
+	.gradient(shade(@primary-background-color), @primary-background-color);
+	color: @tertiary-font-color;
+	a {
+		color: @tertiary-font-color;
+	}
+	a:hover {
+		color: @primary-background-contrast;
+	}
+	.spinner > div {
+		background-color: @primary-background-contrast;
+	}
+}
+#login-card {
+	color: @primary-font-color;
+	background-color: @content-background-color;
+	.input-shade(@primary-font-color, @content-background-color);
+}
+.dropzone.over .dropzone-overlay {
+	background-color: @transparent-darkest;
+	color: @content-background-color;
+	> div {
+		background-color: @transparent-darkest;
+	}
+}
+.rocket-modal {
+	background-color: @transparent-darkest;
+	legend {
+		color: @secondary-font-color;
+		&:before {
+			background-color: @tertiary-background-color;
+		}
+	}
+	.modal {
+		background-color: @content-background-color;
+		header {
+			background-color: @secondary-background-color;
+			.close {
+				i {
+					color: @secondary-font-color;
+				}
+				&:hover i {
+					color: @primary-font-color;
+				}
+			}
+		}
+		main {
+			background-color: @content-background-color;
+		}
+		footer {
+			background-color: @component-color;
+		}
+	}
+}
+/** ----------------------------------------------------------------------------
+ * Room components
+ */
+.new-message {
+	color: @primary-action-contrast;
+	background-color: @primary-action-color;
+}
+.ticks-bar {
+	.tick {
+		background-color: @primary-action-color;
+	}
+	.tick-all {
+		background-color: @selection-color;
+	}
+}
+.room-not-found {
+	color: @error-color;
+}
+.favorite-room {
+	color: @pending-color;
+}
+.toggle-favorite {
+	color: @component-color;
+}
+.container-bars {
+	.upload-progress {
+		background-color: @success-background;
+		color: @success-color;
+		&.upload-error {
+			background-color: @error-background;
+			border-color: @error-border;
+		}
+		.upload-progress-progress {
+			background-color: @success-background;
+		}
+	}
+	.unread-bar {
+		background-color: @component-color;
+		color: @primary-action-color;
+	}
+}
+.messages-container {
+	.footer {
+		background: @content-background-color;
+	}
+	.message-form {
+		color: @secondary-font-color;
+		.input-message-container {
+			background-color: @content-background-color;
+		}
+		.message-buttons {
+			.buttonColors(@primary-font-color, @transparent-dark);
+		}
+	}
+	.new-message,
+	.popup-item.selected {
+		color: @primary-action-contrast;
+		background-color: @primary-action-color;
+	}
+	.message-popup {
+		background: @content-background-color;
+	}
+	.message-popup-title {
+		background-color: @secondary-background-color;
+	}
+	.messages-box {
+		.jump-recent {
+			background-color: @component-color;
+		}
+		&.selectable .selected {
+			background-color: @selection-background;
+		}
+		.load-more span {
+			background-color: @secondary-background-color;
+		}
+	}
+}
+.messages-box {
+	.start {
+		color: @info-font-color;
+	}
+	.editing .body,
+	textarea.editing {
+		background-color: @selection-background;
 	}
 }
 
-label.required:after {
-	color: red;
+/** ----------------------------------------------------------------------------
+ * Message content
+ */
+.message {
+	.body {
+		color: @primary-font-color;
+	}
+	&.system body {
+		color: @info-font-color;
+	}
+	&:hover {
+		background-color: @transparent-dark;
+	}
+	.toggle-options {
+		color: @secondary-font-color;
+	}
+	.message-dropdown,
+	.options-menu {
+		color: @info-font-color;
+		background-color: @content-background-color;
+		ul li {
+			&:first-child {
+				background-color: @component-color;
+			}
+			&:hover {
+				background-color: @content-background-color;
+			}
+		}
+	}
+	&.new-day::before {
+		background-color: @content-background-color;
+	}
+	&.new-day::after,
+	.info,
+	.user-view,
+	.message-alias {
+		color: @info-font-color;
+		border-color: @component-color;
+	}
+	.user {
+		color: @primary-font-color;
+	}
+	.is-bot,
+	.role-tag {
+		background-color: @info-font-color;
+		color: contrast(@info-font-color);
+	}
+	a {
+		.linkColors(@link-font-color, darken(@link-font-color, 10%));
+	}
+	a.mention-link {
+		background-color: @secondary-action-color;
+		color: @secondary-action-contrast;
+		&.mention-link-all,
+		&.mention-link-me {
+			color: @primary-action-contrast;
+			background-color: @primary-action-color;
+		}
+		&.mention-link-all {
+			color: contrast(@selection-color);
+			background-color: @selection-color;
+		}
+	}
+	.highlight-text {
+		background-color: @selection-background;
+	}
+	.attachment {
+		.attachment-block-border {
+			background-color: @info-font-color;
+		}
+	}
 }
-
-.status-offline,
-.icon-at.status-offline {
-	color: @status-offline;
+/** ----------------------------------------------------------------------------
+ * Misc typography variants
+ */
+a {
+	color: @primary-font-color;
 }
-
-.status-online,
-.icon-at.status-online {
-	color: @status-online;
+a:active,
+a:hover {
+	color: @primary-action-color;
 }
-
-.status-busy,
-.icon-at.status-busy {
-	color: @status-busy;
+.message,
+.flex-tab {
+	a i,
+	a[class^="icon-"] {
+		color: @primary-font-color;
+		&:hover {
+			color: darken(@primary-font-color, 10%);
+		}
+	}
 }
-
-.status-away,
-.icon-at.status-away {
+.load-more .load-more-loading,
+.secondary-text {
+	color: @secondary-font-color;
+}
+.alert-icon {
+	color: @success-color;
+}
+.error {
+	background-color: @error-background;
+	border-color: @error-color;
+	color: @error-color;
+}
+/** ----------------------------------------------------------------------------
+ * Side nav
+ */
+.side-nav {
+	color: @tertiary-font-color;
+	background-color: @primary-background-color;
+	* {
+		border-color: @transparent-darker;
+	}
+	a,
+	.info {
+		.linkColors(@tertiary-font-color, @tertiary-font-color);
+	}
+	.arrow:before,
+	.arrow:after {
+		background-color: @tertiary-font-color;
+	}
+	.info,
+	.options,
+	.content,
+	footer,
+	header {
+		background-color: @primary-background-color;
+	}
+	.rooms-list {
+		background-color: lighten(@primary-background-color, 2.5%);
+	}
+	.more:hover,
+	h3:hover,
+	.selected-users li {
+		background-color: @transparent-darker;
+	}
+	li.active .opt {
+		color: @tertiary-font-color;
+	}
+	.active a {
+		color: @primary-background-contrast;
+		background-color: @transparent-lightest;
+	}
+	.has-alert a {
+		color: @primary-background-contrast;
+	}
+	.unread {
+		background-color: @success-color;
+	}
+	.unread-rooms {
+		background-color: @primary-action-color;
+		color: @primary-action-contrast;
+	}
+}
+/** ----------------------------------------------------------------------------
+ * Flex tabs / admin fly-out panels
+ */
+.flex-tab {
+	background-color: @secondary-background-color;
+	.message {
+		background-color: @transparent-lighter;
+		&.new-day::before {
+			background-color: @secondary-background-color;
+		}
+	}
+}
+.flex-tab-bar {
+	background-color: @content-background-color;
+	border-color: @component-color;
+	.tab-button {
+		&:hover {
+			background-color: @secondary-background-color;
+		}
+		&.active {
+			background-color: @secondary-background-color;
+			border-right-color: @selection-color;
+		}
+		&.attention {
+			.blink(@selection-color);
+		}
+	}
+	.counter {
+		background: @secondary-font-color;
+		color: white;
+	}
+}
+.webrtc-video {
+	&.webrtc-video-overlay,
+	.main-video,
+	.state-overlay::before,
+	.videos .video-item {
+		background-color: @transparent-darkest;
+		color: white;
+	}
+	.main-video > div,
+	.video-muted-overlay,
+	.videos .video-item > div {
+		background-color: @transparent-darker;
+	}
+	video {
+		background-color: black;
+	}
+}
+/** ----------------------------------------------------------------------------
+ * User status / user meta
+ */
+ i.status-online {
+ 	color: @status-online;
+ }
+.account-box .status-online .thumb:after,
+.account-box .status.online:after,
+.options .status .online:after,
+.popup-user-status-online,
+.status-online:after,
+.user-image.status-online .avatar:after {
+	background-color: @status-online;
+	border-color: darken(@status-online,10%);
+}
+i.status-away {
 	color: @status-away;
 }
-
-// TODO -- Refactor favorite styles and logic;
-.favorite-room {
-	color: #FECF09;
+.account-box .status-away .thumb:after,
+.account-box .status.away:after,
+.options .status .online:after,
+.popup-user-status-away,
+.status-pending:after,
+.user-image.status-away .avatar:after {
+	background-color: @status-away;
+	border-color: darken(@status-away,10%);
 }
-
-.toggle-favorite {
-	color: #AAA;
+i.status-busy {
+	color: @status-busy;
 }
-
-.btn-loading {
-	color: #444 !important;
-	background-color: transparent !important;
-	&:hover {
-		background-color: transparent !important;
+.account-box .status-busy .thumb:after,
+.account-box .status.busy:after,
+.options .status .online:after,
+.popup-user-status-busy,
+.status-busy:after,
+.user-image.status-busy .avatar:after {
+	background-color: @status-busy;
+	border-color: darken(@status-busy,10%);
+}
+i.status-offline {
+	color: @status-offline;
+}
+.account-box .status-offline .thumb:after,
+.account-box .status.offline:after,
+.options .status .online:after,
+.popup-user-status-offline,
+.status-offline:after,
+.user-image.status-offline .avatar:after {
+	background-color: @status-offline;
+	border-color: darken(@status-offline,10%);
+}
+.popup-user-status {
+	border-color: @transparent-dark;
+}
+.popup-user-status-system {
+	border-color: transparent;
+}
+.user-view {
+	p {
+		color: @secondary-font-color;
+	}
+	.box:after,
+	.stats li,
+	.tags li {
+		background-color: @component-color;
 	}
 }
-
-// new layout buttons
+/** ----------------------------------------------------------------------------
+ * Buttons!
+ */
+.actionLinks li {
+	.buttonColors(@secondary-action-contrast,@secondary-action-color);
+}
 .button {
-	color: rgba(255, 255, 255, 0.85);
-	background-color: @action-buttons-color;
-	&:before {
-		background-color: rgba(0, 0, 0, 0.1);
+	.buttonColors(@secondary-action-contrast,@secondary-action-color);
+	&.button-primary,
+	&.primary,
+	&.save,
+	&.send,
+	&.start {
+		.buttonColors(@primary-action-contrast,@primary-action-color);
 	}
-	&:hover {
-		color: #FFF;
-	}
-	&.secondary {
-		background-color: @tertiary-background-color;
-		color: @primary-font-color;
-		&:before {
-			background-color: rgba(0, 0, 0, 0.045);
-		}
-	}
+	// TODO: Secondary button usage needs refactor and guidelines to be consistent
+	// &.back,
+	// &.cancel,
+	// &.secondary {
+	// 	.buttonColors(@secondary-action-contrast,@secondary-action-color);
+	// }
 	&.delete,
+	&.delete-role,
+	&.end,
+	&.logout,
+	&.mute-user,
 	&.remove,
-	&.red {
-		background-color: #bc2031;
-	}
-	&.lightblue {
-		background-color: #02acec;
-		&:disabled {
-			background-color: desaturate(#02acec, 20%);
-		}
-	}
-	&.clean {
-		background-color: @clean-buttons-color;
+	&.remove-user,
+	&.stop-call {
+		.buttonColors(@error-contrast,@error-color);
 	}
 	&.facebook {
 		background-color: #325c99;
@@ -253,1005 +650,84 @@ label.required:after {
 		background-color: #1e8cbe;
 	}
 }
-
-.burger {
-	i {
-		background-color: #333;
-	}
-	.unread-burger-alert {
-		background-color: #F95555;
-		color: @content-background-color;
-	}
-}
-
-.arrow {
-	&:before,
-	&:after {
-		background-color: mix(@quaternary-font-color, @primary-background-color, 65%);
-	}
-}
-
-a.github-fork {
-	background-color: #5c5c5c;
-	color: #f0f0f0;
-	&:hover {
-		background-color: #4b4b4b;
-		color: #FFF;
-	}
-	&:before {
-		border-top-color: #f0f0f0;
-	}
-	&:after {
-		border-top-color: #f0f0f0;
-	}
-}
-
-.mac-bar {
-	background-color: #ddd;
-	i {
-		background-color: #ff5f57;
-		&:nth-child(2) {
-			background-color: #ffbd2e;
-		}
-		&:nth-child(3) {
-			background-color: #28ca41;
-		}
-	}
-}
-
-.avatar {
-	.avatar-image {
-		background-color: transparent;
-	}
-	&[initials]:before {
-		color: #FFF;
-	}
-}
-
-#rocket-chat {
-	background-color: @content-background-color;
-}
-
-.account-box {
-	.info {
-		background-color: @primary-background-color;
-		h4 {
-			color: mix(@quaternary-font-color, @primary-background-color, 65%);
-		}
-		&.status-offline {
-			.thumb:after {
-				border-color: darken(@status-offline, 5%);
-				background-color: @status-offline;
-			}
-		}
-		&.status-online {
-			.thumb:after {
-				border-color: darken(@status-online, 5%);
-				background-color: @status-online;
-			}
-		}
-		&.status-away {
-			.thumb:after {
-				border-color: darken(@status-away, 5%);
-				background-color: @status-away;
-			}
-		}
-		&.status-busy {
-			.thumb:after {
-				border-color: darken(@status-busy, 5%);
-				background-color: @status-busy;
-			}
-		}
-	}
-	.options {
-		background-color: @primary-background-color;
-		.status {
-			&:after {
-				border-color: #6f6f6f;
-			}
-			&.offline {
-				&:after {
-					border-color: #666666;
-					background-color: #7b7b7b;
-				}
-			}
-			&.online {
-				&:after {
-					border-color: #2c9210;
-					background-color: #35AC19;
-				}
-			}
-			&.away {
-				&:after {
-					border-color: #e69200;
-					background-color: #fcb316;
-				}
-			}
-			&.busy {
-				&:after {
-					border-color: #9f0030;
-					background-color: #D30230;
-				}
-			}
-		}
-		span.soon {
-			color: #aaa;
-		}
-		button, a {
-			color: fade( @quaternary-font-color, 50%);
-			border-bottom-color: darken(@primary-background-color, 2%);
-			&:hover {
-				background-color: darken(@primary-background-color, 2%);
-				color: fade( @quaternary-font-color, 75%);
-			}
-		}
-	}
-	&.active .info,
-	.info:hover {
-		h4 {
-			color: fade(@quaternary-font-color, 85%);
-		}
-	}
-	.hover & {
-		.info h4 {
-			color: fade(@quaternary-font-color, 85%);
-		}
-	}
-}
-
-// rooms-box
-.flex-nav {
-	//background-color: @primary-background-color;
-	background-color: transparent;
-	color: @tertiary-font-color;
-	.custom-scroll(transparent, @custom-scrollbar-color);
-	header {
-		background-color: @primary-background-color;
-	}
-	footer {
-		background-color: @primary-background-color;
-	}
-	.content {
-		.custom-scroll(transparent, @custom-scrollbar-color);
-		background-color: @primary-background-color;
-	}
-	.input-line {
-		input[type='text'],
-		input[type='password'],
-		select {
-			border-color: @tertiary-font-color;
-			background-color: @primary-background-color;
-			color: @input-font-color;
-		}
-		& label {
-			color: @input-font-color;
-		}
-	}
-	.selected-users {
-		li {
-			background-color: rgba(0, 0, 0, 0.1);
-		}
-	}
-}
-
 .side-nav {
-	&:before {
-		background-color: #dfdfdf;
+	.button {
+		.buttonColors(@tertiary-font-color, mix(@primary-action-color,@primary-background-color));
 	}
-	.rooms-list {
-		background-color: lighten(@primary-background-color, 2%);
-		.custom-scroll(transparent, @custom-scrollbar-color);
-	}
-	.more {
-		color: @tertiary-font-color;
-		&:hover {
-			background-color: rgba(0, 0, 0, 0.1);
-		}
-	}
-	.input-error {
-		color: #f09286;
-	}
-	.empty {
-		color: @tertiary-font-color;
-	}
-	.header {
-		color: #fff;
-		background-color: @primary-background-color;
-	}
-	> .arrow {
-		&.hover,
-		&:hover {
-			&:before,
-			&:after {
-				background-color: mix(@quaternary-font-color, @primary-background-color, 85%);
-			}
-		}
-	}
-	.footer {
-		background: #fff;
-		background-color: @primary-background-color;
-		small {
-			color: @tertiary-font-color;
-		}
-	}
-	h3 {
-		color: @tertiary-font-color;
-		a {
-			color: inherit;
-		}
-		&:hover {
-			background-color: rgba(0, 0, 0, 0.1);
-		}
-	}
-	.unread {
-		background-color: @unread-notification-color;
-		color: #FFF;
-	}
-	ul {
-		li {
-			.remove,
-			.erase {
-				color: #666;
-			}
-			&:hover {
-				.opt {
-					background-color: transparent;
-				}
-			}
-			&.active {
-				a {
-					background-color: @active-channel-background-color;
-					color: @active-channel-font-color;
-				}
-				.opt {
-					background-color: transparent;
-				}
-			}
-			&.has-alert {
-				.name {
-					color: @quaternary-font-color;
-				}
-			}
-			&.away {
-				a {
-					color: #666;
-				}
-			}
-		}
-		a {
-			color: @tertiary-font-color;
-			&:hover {
-				background-color: rgba(255, 255, 255, 0.05);
-			}
-		}
-		.opt {
-			background-color: transparent;
-			i {
-				color: fade(@quaternary-font-color, 50%);
-				&:hover {
-					color: fade(@quaternary-font-color, 75%);
-				}
-			}
-		}
-		i {
-			color: fade(@quaternary-font-color, 35%);
-		}
-		input[type=text] {
-			color: #000;
-		}
+	.options button {
+		.buttonColors(@tertiary-font-color, @primary-background-color);
 	}
 }
-
-.page-container {
-	.content {
-		.custom-scroll(transparent, #EAEAEA);
-	}
+/** ----------------------------------------------------------------------------
+ * Feedback and overlay content
+ */
+.icon-ok,
+.feedback-success {
+	color: @success-color;
 }
-
-.fixed-title {
-	background-color: @content-background-color;
-	border-bottom-color: @tertiary-background-color;
+.feedback-warning {
+	color: @pending-color;
 }
-
-.cms-page {
-	background-color: @content-background-color;
+.feedback-error {
+	color: @error-color;
 }
-
-.spotlight {
-	background-color: rgba(0, 0, 0, .3);
-	> .spotlight-input {
-		color: #444;
-		> i {
-			color: #aaa;
-		}
-	}
+.livechat-form .error,
+.offline .error {
+	background-color: @error-background;
 }
-
-.mobile-message-menu {
-	background-color: rgba(0, 0, 0, .3);
+.alert-warning {
+	color: @pending-color;
+	background-color: @pending-background;
+	border-color: @pending-border;
 }
-
-.page-static {
-	.content {
-		.section {
-			.section-content {
-				border-color: #ddd;
-			}
-		}
-	}
+.alert-danger {
+	color: @error-color;
+	background-color: @error-background;
+	border-color: @error-border;
 }
-
-.page-list {
-	.results {
-		border-bottom-color: #DFDFDF;
-		color: @secondary-font-color;
-	}
-	.list {
-		a {
-			color: @primary-font-color;
-			border-bottom-color: @secondary-background-color;
-			&:hover {
-				background-color: @secondary-background-color;
-			}
-		}
-		li {
-			color: @secondary-font-color;
-			&:after {
-				background-color: @secondary-font-color;
-			}
-		}
-		.info {
-			a {
-				color: @primary-font-color;
-			}
-		}
-		.status {
-			color: @secondary-font-color;
-		}
-		table {
-			tbody {
-				tr {
-					&:nth-child(odd) {
-						background-color: @secondary-background-color;
-					}
-
-					&.row-link {
-						cursor: pointer;
-						&:hover {
-							background-color: darken(@secondary-background-color, 3%);
-						}
-					}
-				}
-
-				td {
-					a {
-						color: @link-font-color;
-						&:hover {
-							color: darken(@link-font-color, 10%);
-							background-color: transparent;
-						}
-					}
-				}
-			}
-		}
-	}
+.side-nav .input-error,
+label.required:after {
+	color: @error-color;
 }
-
-.image-to-download {
-	background-color: #fafafa;
-	border-color: #ddd;
-	color: #aaa;
+.burger .unread-burger-alert {
+	background-color: @error-color;
+	color: @error-contrast;
 }
-
-.room-not-found {
-	color: orange;
-}
-
-.container-bars {
-	>div {
-		border-color: #ffffff;
-	}
-	.upload-progress {
-		background-color: #b2d5c9;
-		color: @content-background-color;
-		&.upload-error {
-			background-color: #FF6161;
-			border-color: #863737;
-		}
-		.upload-progress-progress {
-			background-color: #4c9789;
-		}
-		> a {
-			&:hover {
-				color: #eee;
-			}
-		}
-	}
-	.unread-bar {
-		background-color: #E6F4FD;
-		color: #068FE4;
-	}
-}
-
-// change to page-messages
-.messages-container {
-	.edit-room-title {
-		color: @secondary-font-color;
-		&:hover {
-			color: @primary-font-color;
-		}
-	}
-	.wrapper {
-		.custom-scroll(transparent, rgba(180, 180, 180, .75));
-	}
-	.footer {
-		background: #FCFCFC;
-		border-top-color: @tertiary-background-color;
-	}
-	.message-popup {
-		background: #FFF;
-	}
-	.message-popup-title {
-		background-color: @secondary-background-color;
-		border-bottom-color: #E7E7E7;
-	}
-	.popup-item {
-		color: @secondary-font-color;
-		&.selected {
-			background-color: #4CAEEB;
-			color: #FFF;
-		}
-	}
-	.popup-user-status {
-		border-color: rgba(0, 0, 0, .2);
-	}
-	.popup-user-status-system {
-		border-color: transparent;
-	}
-	.popup-user-status-offline {
-		background-color: @status-offline;
-	}
-	.popup-user-status-online {
-		background-color: @status-online;
-	}
-	.popup-user-status-away {
-		background-color: @status-away;
-	}
-	.popup-user-status-busy {
-		background-color: @status-busy;
-	}
-	.message-form {
-		> .message-input {
-			border-color: #E7E7E7;
-			> .file,
-			.message-buttons {
-				color: #888;
-				background-color: #FCFCFC;
-				&:hover {
-					background-color: #F1F1F1;
-					color: #666;
-				}
-			}
-		}
-		textarea {
-			&.editing {
-				background-color: #fff7d8;
-			}
-		}
-		.users-typing {
-			color: #888888;
-			background: #FCFCFC;
-		}
-		.formatting-tips {
-			color: #444444;
-			q {
-				border-left-color: #ccc;
-			}
-		}
-		.editing-commands {
-			.editing-commands-cancel {
-				color: #888888;
-			}
-			.editing-commands-save {
-				color: #888888;
-			}
-		}
-	}
-}
-
-.messages-box {
-	.load-more {
-		span {
-			border-color: #CCC;
-			background-color: #EEE;
-		}
-	}
-	.start {
-		color: @secondary-font-color;
-	}
-	.new-message {
-		background: #428bca;
-		color: #FFF;
-	}
-	.editing {
-		.body {
-			background-color: #fff7d8;
-		}
-	}
-}
-
-.message {
-	&.new-day {
-		&:before {
-			color: @secondary-font-color;
-			background-color: @content-background-color;
-		}
-		&:after {
-			border-top-color: #ddd;
-		}
-	}
-	.user {
-		color: #444444;
-		&:hover {
-			color: #333;
-		}
-	}
-	.info {
-		color: @info-font-color;
-	}
-	&.system {
-		.body {
-			color: @info-font-color;
-			.attachment {
-				color: @primary-font-color;
-			}
-		}
-	}
-	a {
-		color: @link-font-color;
-		&:hover {
-			color: darken(@link-font-color, 10%);
-		}
-	}
-}
-
-// FLEX-TAB and FLEX-TAB views
-.flex-tab {
-	background-color: @secondary-background-color;
-	border-left-color: @tertiary-background-color;
-	.control {
-		background-color: @secondary-background-color;
-		&:before {
-			background-color: @tertiary-background-color;
-		}
-		.more {
-			background-color: @tertiary-background-color;
-			border-bottom-color: @tertiary-background-color;
-			color: @secondary-font-color;
-			&:hover {
-				.arrow {
-					.arrow {
-						&:before,
-						&:after {
-							background-color: #4a4a4a;
-						}
-					}
-				}
-			}
-			.arrow {
-				&:before,
-				&:after {
-					background-color: #7a7a7a;
-				}
-			}
-			.flex-opened & {
-				background-color: @secondary-background-color;
-				&:hover {
-					.arrow {
-						&:before,
-						&:after {
-							background-color: #7a7a7a;
-						}
-					}
-				}
-			}
-		}
-		.search-form {
-			.icon-plus {
-				color: @secondary-font-color;
-			}
-		}
-		.info-tabs {
-			a {
-				color: inherit;
-				border-left-color: rgb(234, 234, 234);
-				&.active {
-					background-color: #F4F4F4;
-				}
-				&:last-child {
-					border-right-color: rgb(234, 234, 234);
-				}
-			}
-		}
-	}
-	.content {
-		.custom-scroll(transparent, #DADADA);
-		> div {
-			background-color: @secondary-background-color;
-		}
-	}
-	.message {
-		&.new-day {
-			&:before {
-				background-color: @secondary-background-color;
-			}
-			&:after {
-				border-top-color: @tertiary-background-color;
-			}
-		}
-	}
-}
-
-.list-view {
-	-webkit-overflow-scrolling: touch;
-	overflow-y: auto;
-	overflow-x: hidden;
-	.custom-scroll(transparent, #DADADA);
-	> .status {
-		p {
-			color: @secondary-font-color;
-		}
-		.see-all {
-			color: @secondary-font-color;
-			background-color: transparent;
-		}
-	}
-}
-
-.user-view {
-	-webkit-overflow-scrolling: touch;
-	.custom-scroll(transparent, #DADADA);
-	.info {
-		h3 {
-			i.status-offline {
-				&:after {
-					border-color: darken(@status-offline, 5%);
-					background-color: @status-offline;
-				}
-			}
-			i.status-online {
-				&:after {
-					border-color: darken(@status-online, 5%);
-					background-color: @status-online;
-				}
-			}
-			i.status-away {
-				&:after {
-					border-color: darken(@status-away, 5%);
-					background-color: @status-away;
-				}
-			}
-			i.status-busy {
-				&:after {
-					border-color: darken(@status-busy, 5%);
-					background-color: @status-busy;
-				}
-			}
-		}
-		p {
-			color: @secondary-font-color;
-		}
-	}
-	.stats {
-		li {
-			background-color: #e9e9e9;
-		}
-	}
-	.box {
-		h4 {}
-		&:after {
-			background-color: #CDCDCD;
-		}
-	}
-	.tags {
-		li {
-			background-color: #CDCDCD;
-		}
-	}
-	.links {
-		a {
-			color: #6f6f6f;
-			&:hover {
-				background-color: #e9e9e9;
-				color: #333;
-			}
-		}
-	}
-	.channels {
-		p {
-			color: @secondary-font-color;
-		}
-		a {
-			color: #6f6f6f;
-		}
-	}
-	.edit-form {
-		p {
-			color: @secondary-font-color;
-		}
-		.form-divisor {
-			border-bottom: 1px solid #ddd;
-
-			> span {
-				background-color: @secondary-background-color;
-			}
-		}
-	}
-}
-
-.user-image-status(@color) {
-	.avatar {
-		&:after {
-			background-color: darken(@color, 5%);
-		}
-	}
-}
-
-.user-image {
-	background-color: @tertiary-background-color;
-	&:hover,
-	&.selected {
-		.avatar {
-			&:after {}
-			.status-offline {
-				&:after {
-					background-color: @status-offline;
-				}
-			}
-			.status-online {
-				&:after {
-					background-color: @status-online;
-				}
-			}
-			.status-away {
-				&:after {
-					background-color: @status-away;
-				}
-			}
-			.status-busy {
-				&:after {
-					background-color: @status-busy;
-				}
-			}
-			p {
-				color: @primary-font-color;
-			}
-		}
-	}
-	.lines & {
-		background-color: transparent;
-		a {
-			background-color: transparent;
-		}
-		p {
-			color: @secondary-font-color;
-		}
-	}
-	&.status-offline {
-		.user-image-status(@status-offline);
-	}
-	&.status-online {
-		.user-image-status(@status-online);
-	}
-	&.status-away {
-		.user-image-status(@status-away);
-	}
-	&.status-busy {
-		.user-image-status(@status-busy);
-	}
-}
-
-.user-profile {
-	.info {
-		a {
-			color: @primary-font-color;
-			&:hover {
-				color: @secondary-font-color;
-			}
-		}
-	}
-}
-
-.rocket-modal {
-	background-color: rgba(0, 0, 0, 0.5);
-	&.fluid {
-		.modal {
-			main {
-				.custom-scroll(transparent, #CFCFCF);
-			}
-		}
-	}
+/** ----------------------------------------------------------------------------
+ * Forms
+ */
+.input-shade(@primary-font-color, @content-background-color);
+.flex-nav {
+	.input-shade(@primary-background-contrast, @primary-background-color);
+	label,
 	legend {
-		color: @secondary-font-color;
-		&:before {
-			background-color: #dfdfdf;
-		}
+		color: @tertiary-font-color;
 	}
-	.modal {
+}
+.flex-tab {
+	input,
+	select,
+	textarea {
 		background-color: @content-background-color;
-		header {
-			background-color: #DADADA;
-			.close {
-				i {
-					color: @secondary-font-color;
-				}
-				&:hover {
-					i {
-						color: @primary-font-color;
-					}
-				}
-			}
-		}
-		main {
-			background-color: @content-background-color;
-		}
-		footer {
-			background-color: #eaeaea;
-		}
 	}
 }
-
-#login-card {
-	background-color: #FAFAFA;
-	h2 {
-		color: @primary-font-color;
-		&.error {
-			color: #b40202;
-		}
+.input-line {
+	&.setting-changed > label {
+		color: @selection-color;
 	}
-	h3 {
-		&.error {
-			color: #b40202;
-		}
+	i,
+	.settings-description {
+		color: @secondary-font-color;
 	}
-	a {
-		color: @primary-background-color;
-		&:active {
-			color: @primary-background-color;
-		}
-		&:hover {
-			color: darken(@primary-background-color, 10%);
-		}
-	}
-	.input-text {
-		input {
-			background-color: transparent;
-			border-bottom-color: #DFDFDF;
-			&.error {
-				border-bottom-color: #b40202;
-				&::-webkit-input-placeholder {
-					color: #b40202;
-				}
-				&:-moz-placeholder {
-					color: #b40202;
-				}
-				/* Firefox 18- */
-				&::-moz-placeholder {
-					color: #b40202;
-				}
-				/* Firefox 19+ */
-				&:-ms-input-placeholder {
-					color: #b40202;
-				}
-			}
-		}
-		input:-webkit-autofill {
-			color: @content-background-color !important;
-		}
-		input:-webkit-autofill {
-			background-color: transparent !important;
-		}
+	.settings-alert {
+		background-color: @pending-background;
+		border-color: @pending-border;
+		color: @pending-color;
 	}
 }
-
-.full-page {
-	background-color: darken(@primary-background-color, 10%);
-	.background-image(linear-gradient(darken(@primary-background-color, 10%), @primary-background-color));
-	.text {
-		color: #FFF;
-		.button {
-			background-color: #bc2031;
-			color: #FFF;
-		}
-	}
-	footer {
-		color: #fff;
-		div.switch-language {
-			a {
-				color: @secondary-font-color;
-			}
-		}
-	}
+input:-webkit-autofill {
+	color: @primary-font-color !important;
 }
-
-.avatar-suggestion-item {
-	background-color: @secondary-background-color;
-	border-color: darken(@secondary-background-color, 10%);
-	.avatar {
-		background-size: cover;
-		background-color: @tertiary-background-color;
-	}
-	.question-mark {
-		&::before {
-			color: darken(@tertiary-background-color, 10%);
-		}
-	}
-}
-
-.statistics-table {
-	border-color: #eee;
-}
-
-@media all and(max-width: 780px) {
-	#rocket-chat {
-		.main-content {
-			background-color: @content-background-color;
-		}
-	}
-}
-
-.dropzone {
-	&.over .dropzone-overlay {
-		background-color: rgba(0, 0, 0, 0.5);
-		color: @content-background-color;
-		> div {
-			background-color: rgba(0, 0, 0, 0.6);
-		}
-	}
-}
-
-.is-cordova {
-	.flex-tab {
-		button.more {
-			background-color: #fff;
-		}
-	}
-}
-
-.attention-message {
-	color: white;
-}
-
-.green {
-	color: green;
-}
-
-.flex-tab-bar {
-	.tab-button {
-		&.red {
-			color: red;
-		}
-		&.attention {
-			animation-duration: 1000ms;
-			animation-name: blink;
-			animation-iteration-count: infinite;
-			animation-direction: alternate;
-		}
-		@keyframes blink {
-			from {
-				color: red;
-			}
-			to {
-				opacity: inherit;
-			}
-		}
-		@-webkit-keyframes blink {
-			from {
-				color: red;
-			}
-			to {
-				color: inherit;
-			}
-		}
-	}
+input:-webkit-autofill {
+	background-color: transparent !important;
 }
