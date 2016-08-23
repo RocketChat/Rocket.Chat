@@ -7,20 +7,20 @@ if (process.env.SANDSTORM === '1') {
 	var Powerbox = Npm.require('sandstorm/powerbox.capnp');
 	var Grain = Npm.require('sandstorm/grain.capnp');
 
-	RocketChat.Sandstorm.offerUiView = function(token, seriliazedDescriptor, sessionId) {
+	RocketChat.Sandstorm.offerUiView = function(token, serializedDescriptor, sessionId) {
 		var httpBridge = getHttpBridge();
 		var session = httpBridge.getSessionContext(sessionId).context;
 		var api = httpBridge.getSandstormApi(sessionId).api;
 		var cap = waitPromise(api.restore(new Buffer(token, 'base64'))).cap;
 		return waitPromise(session.offer(cap, undefined, {tags: [{
 			id: '15831515641881813735',
-			value: new Buffer(seriliazedDescriptor, 'base64')
+			value: new Buffer(serializedDescriptor, 'base64')
 		}]}));
 	};
 
 	Meteor.methods({
-		sandstormClaimRequest: function(token, seriliazedDescriptor) {
-			var descriptor = Capnp.parsePacked(Powerbox.PowerboxDescriptor, new Buffer(seriliazedDescriptor, 'base64'));
+		sandstormClaimRequest: function(token, serializedDescriptor) {
+			var descriptor = Capnp.parsePacked(Powerbox.PowerboxDescriptor, new Buffer(serializedDescriptor, 'base64'));
 			var grainTitle = Capnp.parse(Grain.UiView.PowerboxTag, descriptor.tags[0].value).title;
 			var sessionId = this.connection.sandstormSessionId();
 			var httpBridge = getHttpBridge();
@@ -40,8 +40,8 @@ if (process.env.SANDSTORM === '1') {
 				descriptor: descriptor.tags[0].value.toString('base64')
 			};
 		},
-		sandstormOffer: function(token, seriliazedDescriptor) {
-			RocketChat.Sandstorm.offerUiView(token, seriliazedDescriptor,
+		sandstormOffer: function(token, serializedDescriptor) {
+			RocketChat.Sandstorm.offerUiView(token, serializedDescriptor,
 				this.connection.sandstormSessionId());
 		}
 	});
