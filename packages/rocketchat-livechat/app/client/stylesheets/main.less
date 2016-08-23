@@ -15,7 +15,6 @@ body {
 	margin: 0;
 	font-family: 'Helvetica Neue', Helvetica, Roboto, Arial, sans-serif, "Meiryo UI";
 	font-size: 0.8rem;
-	color: @primary-font-color;
 	height: 100%;
 	width: 100%;
 	-webkit-font-smoothing: antialiased;
@@ -23,7 +22,6 @@ body {
 	padding: 0;
 	overflow: hidden;
 	position: relative;
-	// background-color: @primary-background-color;
 
 	border-top-right-radius: 5px;
 	border-top-left-radius: 5px;
@@ -70,15 +68,12 @@ input:focus {
 	border-radius: 0;
 	line-height: 16px;
 	position: relative;
-	cursor: pointer;background-color: #FFF;
-	color: rgba(255, 255, 255, 0.85);
-	background-color: lighten(desaturate(@primary-background-color, 15%), 12.5%);
+	cursor: pointer;
 	span {
 		position: relative;
 		z-index: 2;
 	}
 	&:before {
-		background-color: rgba(0, 0, 0, 0.1);
 		content: " ";
 		position: absolute;
 		top: 0;
@@ -91,7 +86,6 @@ input:focus {
 	}
 	&:hover {
 		text-decoration: none;
-		color: #FFF;
 		&:before {
 			opacity: 1;
 		}
@@ -116,12 +110,9 @@ input:focus {
 
 	.title {
 		flex: 1 0 @header-min-height;
-
 		line-height: @header-min-height;
-
 		border-top-right-radius: inherit;
 		border-top-left-radius: inherit;
-		color: #FFF;
 		z-index: 10;
 		cursor: pointer;
 		h1 {
@@ -139,8 +130,6 @@ input:focus {
 	}
 	.messages {
 		flex: 1 1 100%;
-
-		background-color: #FFF;
 		border-width: 0 1px 0 1px;
 		overflow-y: auto;
 		.wrapper {
@@ -178,10 +167,8 @@ input:focus {
 						font-weight: 600;
 						text-align: center;
 						.calc(left, ~'50% - 70px');
-						color: @secondary-font-color;
 						z-index: 10;
 						padding: 0 10px;
-						background-color: #FFF;
 						min-width: 120px;
 					}
 					&:after {
@@ -211,12 +198,8 @@ input:focus {
 				.user {
 					display: inline-block;
 					font-weight: 600;
-					color: #444444;
 					margin-right: 5px;
 					outline: none;
-					&:hover {
-						color: #333;
-					}
 				}
 				.thumb {
 					position: absolute;
@@ -228,7 +211,6 @@ input:focus {
 				}
 				.info {
 					font-size: 10px;
-					color: @info-font-color;
 				}
 				&.sequential {
 					// margin-top: 5px;
@@ -272,7 +254,6 @@ input:focus {
 				}
 				&.system {
 					.body {
-						color: @info-font-color;
 						font-style: italic;
 						em {
 							font-weight: 600;
@@ -281,14 +262,6 @@ input:focus {
 				}
 				.avatar-initials {
 					line-height: 40px;
-				}
-				a {
-					color: @link-font-color;
-					font-weight: 400;
-					&:hover {
-						color: darken(@link-font-color, 10%);
-						text-decoration: underline;
-					}
 				}
 				.body {
 					opacity: 1;
@@ -319,12 +292,10 @@ input:focus {
 		.new-message {
 			margin: 0 -65px;
 			position: absolute;
-			background: #428bca;
 			border-radius: 20px;
 			width: 130px;
 			height: 30px;
 			text-align: center;
-			color: #FFF;
 			line-height: 30px;
 			font-size: 0.8em;
 			cursor: pointer;
@@ -342,7 +313,6 @@ input:focus {
 			bottom: @footer-min-height;
 			position: fixed;
 			width: 100%;
-			background-color: #F7D799;
 			padding: 5px;
 			z-index: 8;
 
@@ -356,10 +326,7 @@ input:focus {
 	}
 	.footer {
 		flex: 1 0 @footer-min-height;
-
 		z-index: 10;
-
-		background-color: #FCFCFC;
 		border-width: 1px 1px 0 1px;
 
 		.input-wrapper {
@@ -378,7 +345,6 @@ input:focus {
 				-webkit-appearance: none;
 				height: 28px;
 				line-height: normal;
-				background-color: #fff;
 				position: relative;
 			}
 		}
@@ -387,17 +353,11 @@ input:focus {
 			position: relative;
 			right: 7px;
 			top: -20px;
-			color: @secondary-font-color;
 			cursor: pointer;
 			.transition(color .15s ease-out);
-
-			&:hover {
-				color: @primary-font-color;
-			}
 		}
 		.toggle-options {
 			clear: both;
-			color: @secondary-font-color;
 			margin-left: 6px;
 			outline: none;
 			margin-top: 5px;
@@ -411,15 +371,11 @@ input:focus {
 			left: 6px;
 			border-radius: 2px;
 			padding: 6px 0;
-			background-color: #fff;
-			color: @secondary-font-color;
-
 			box-shadow: 0px 1px 1px 0 rgba(0,0,0,0.2), 0 2px 10px 0 rgba(0,0,0,.16);
 			position: absolute;
 			z-index: 200;
 
 			.transition(transform 0.15s ease, visibility 0.15s ease, opacity 0.15s ease);
-
 			.transform(translateY(30px));
 			opacity: 0;
 			visibility: hidden;
@@ -434,9 +390,6 @@ input:focus {
 			ul {
 				li {
 					padding: 0 13px 0 8px;
-					&:hover {
-						background-color: #EEE;
-					}
 					button {
 						display: block;
 						padding: 4px 2px;
@@ -448,7 +401,6 @@ input:focus {
 	}
 	.offline {
 		flex: 1 1 100%;
-		background-color: white;
 		padding: 1em 10px;
 		border-width: 0 1px 0 1px;
 
@@ -472,7 +424,6 @@ input:focus {
 
 			.error {
 				display: none;
-				background-color: #F7D799;
 				padding: 5px;
 
 				&.show {
@@ -486,19 +437,16 @@ input:focus {
 .livechat-form {
 	flex: 1 1 100%;
 	display: block;
-	background-color: #FFF;
 	border-width: 0 1px 0 1px;
 	padding: 5px;
 
 	input, select {
 		display: block;
-		background-color: #FFF;
 	}
 
 	.error {
 		display: none;
 		// width: 100%;
-		background-color: #F7D799;
 		padding: 5px;
 
 		// .transition(transform 0.3s ease-out);
@@ -601,7 +549,6 @@ input:focus {
 	text-align: right;
 	font-size: 0.65rem;
 	height: 20px;
-	color: #666;
 	padding: 0 1em;
 	opacity: 0.5;
 
