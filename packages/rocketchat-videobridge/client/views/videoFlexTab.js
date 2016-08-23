@@ -6,7 +6,7 @@ Template.videoFlexTab.helpers({
 });
 
 Template.videoFlexTab.onCreated(function() {
-	let api;
+	this.api = null;
 
 	let timeOut = null;
 
@@ -46,7 +46,9 @@ Template.videoFlexTab.onCreated(function() {
 
 						// Clean up and stop updating timeout.
 						if (timeOut) {
-							api.dispose();
+							Meteor.defer(() => {
+								this.api.dispose();
+							});
 							clearInterval(timeOut);
 						}
 					} else {
@@ -55,11 +57,11 @@ Template.videoFlexTab.onCreated(function() {
 						RocketChat.TabBar.updateButton('video', { class: 'red' });
 
 						// Lets make sure its loaded before we try to show it.
-						if (typeof JitsiMeetExternalAPI !== undefined) {
+						if (typeof JitsiMeetExternalAPI !== 'undefined') {
 
 							// Keep it from showing duplicates when re-evaluated on variable change.
 							if (!$('[id^=jitsiConference]').length) {
-								api = new JitsiMeetExternalAPI(domain, jitsiRoom, width, height, document.getElementById('videoContainer'), configOverwrite, interfaceConfigOverwrite, noSsl);
+								this.api = new JitsiMeetExternalAPI(domain, jitsiRoom, width, height, document.getElementById('videoContainer'), configOverwrite, interfaceConfigOverwrite, noSsl);
 
 								/*
 								* Hack to send after frame is loaded.
@@ -67,7 +69,7 @@ Template.videoFlexTab.onCreated(function() {
 								* For some reason those aren't working right.
 								*/
 								Meteor.setTimeout(() => {
-									api.executeCommand('displayName', [Meteor.user().name]);
+									this.api.executeCommand('displayName', [Meteor.user().name]);
 								}, 5000);
 
 								Meteor.call('jitsi:updateTimeout', roomId);
@@ -76,8 +78,9 @@ Template.videoFlexTab.onCreated(function() {
 							}
 
 							// Execute any commands that might be reactive.  Like name changing.
-							api.executeCommand('displayName', [Meteor.user().name]);
-
+							if (this.api) {
+								this.api.executeCommand('displayName', [Meteor.user().name]);
+							}
 						}
 					}
 
@@ -86,16 +89,14 @@ Template.videoFlexTab.onCreated(function() {
 
 					// Clean up and stop updating timeout.
 					if (timeOut) {
-						Meteor.defer(api.dispose());
+						Meteor.defer(() => {
+							this.api.dispose();
+						});
 						clearInterval(timeOut);
 					}
 				}
 			}
 		}
 	});
-
-});
-
-Template.videoFlexTab.events({
 
 });

@@ -78,7 +78,11 @@
 						{{#if actionLink.icon}}
 							<i class="{{actionLink.icon}}"></i>
 						{{/if}}
-						{{actionLink.label}}		
+						{{#if actionLink.i18nLabel}}
+							{{_ actionLink.i18nLabel}}
+						{{else}}
+							{{actionLink.label}}
+						{{/if}}
 					</span>
 				</li>
 			{{/each}}
