@@ -40,7 +40,7 @@ RocketChat.callbacks.add('afterSaveMessage', function(message, room) {
 	}
 
 	/**
-	 * Chechs if a messages contains a user highlight
+	 * Checks if a message contains a user highlight
 	 *
 	 * @param {string} message
 	 * @param {array|undefined} highlights
@@ -121,12 +121,20 @@ RocketChat.callbacks.add('afterSaveMessage', function(message, room) {
 				statusConnection: 1
 			}
 		});
+
+		// Always notify Sandstorm
+		if (userOfMention != null) {
+			RocketChat.Sandstorm.notify(message, [userOfMention._id],
+				'@' + user.username + ': ' + message.msg, 'privateMessage');
+
+		}
 		if ((userOfMention != null) && canBeNotified(userOfMentionId, 'mobile')) {
 			RocketChat.Notifications.notifyUser(userOfMention._id, 'notification', {
 				title: '@' + user.username,
 				text: message.msg,
 				duration: settings.desktopNotificationDurations[userOfMention._id],
 				payload: {
+					_id: message._id,
 					rid: message.rid,
 					sender: message.u,
 					type: room.t,
@@ -264,8 +272,8 @@ RocketChat.callbacks.add('afterSaveMessage', function(message, room) {
 			userIdsToPushNotify = userIdsToPushNotify.concat(highlightsIds);
 		}
 
-		userIdsToNotify = _.compact(_.unique(userIdsToNotify));
-		userIdsToPushNotify = _.compact(_.unique(userIdsToPushNotify));
+		userIdsToNotify = _.without(_.compact(_.unique(userIdsToNotify)), message.u._id);
+		userIdsToPushNotify = _.without(_.compact(_.unique(userIdsToPushNotify)), message.u._id);
 
 		if (userIdsToNotify.length > 0) {
 			for (j = 0, len1 = userIdsToNotify.length; j < len1; j++) {
@@ -279,6 +287,7 @@ RocketChat.callbacks.add('afterSaveMessage', function(message, room) {
 					text: message.msg,
 					duration: settings.desktopNotificationDurations[usersOfMentionId],
 					payload: {
+						_id: message._id,
 						rid: message.rid,
 						sender: message.u,
 						type: room.t,
@@ -314,6 +323,15 @@ RocketChat.callbacks.add('afterSaveMessage', function(message, room) {
 					}
 				});
 			}
+		}
+
+		const allUserIdsToNotify = _.unique(userIdsToNotify.concat(userIdsToPushNotify));
+		if (room.t === 'p') {
+			RocketChat.Sandstorm.notify(message, allUserIdsToNotify,
+				'@' + user.username + ': ' + message.msg, 'privateMessage');
+		} else {
+			RocketChat.Sandstorm.notify(message, allUserIdsToNotify,
+				'@' + user.username + ': ' + message.msg, 'message');
 		}
 	}
 

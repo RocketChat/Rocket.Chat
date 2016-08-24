@@ -13,6 +13,7 @@ RocketChat.models.Messages = new class extends RocketChat.models._Base
 		@tryEnsureIndex { 'file._id': 1 }, { sparse: 1 }
 		@tryEnsureIndex { 'mentions.username': 1 }, { sparse: 1 }
 		@tryEnsureIndex { 'pinned': 1 }, { sparse: 1 }
+		@tryEnsureIndex { 'location': '2dsphere' }
 
 
 	# FIND ONE
@@ -137,13 +138,7 @@ RocketChat.models.Messages = new class extends RocketChat.models._Base
 		record.editedBy =
 			_id: Meteor.userId()
 			username: me.username
-		record.pinned = record.pinned
-		record.pinnedAt = record.pinnedAt
-		record.pinnedBy =
-			_id: record.pinnedBy?._id
-			username: record.pinnedBy?.username
 		delete record._id
-
 		return @insert record
 
 	# UPDATE
@@ -176,14 +171,14 @@ RocketChat.models.Messages = new class extends RocketChat.models._Base
 
 		return @update query, update
 
-	setPinnedByIdAndUserId: (_id, pinnedBy, pinned=true) ->
+	setPinnedByIdAndUserId: (_id, pinnedBy, pinned=true, pinnedAt=0) ->
 		query =
 			_id: _id
 
 		update =
 			$set:
 				pinned: pinned
-				pinnedAt: new Date
+				pinnedAt: pinnedAt || new Date
 				pinnedBy: pinnedBy
 
 		return @update query, update

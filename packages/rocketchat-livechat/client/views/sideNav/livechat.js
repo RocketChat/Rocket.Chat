@@ -73,6 +73,20 @@ Template.livechat.helpers({
 
 	isLivechatAvailable() {
 		return Template.instance().statusLivechat.get() === 'available';
+	},
+
+	showQueueLink() {
+		if (RocketChat.settings.get('Livechat_Routing_Method') !== 'Least_Amount') {
+			return false;
+		}
+		return RocketChat.authz.hasRole(Meteor.userId(), 'livechat-manager') || (Template.instance().statusLivechat.get() === 'available' && RocketChat.settings.get('Livechat_show_queue_list_link'));
+	},
+
+	activeLivechatQueue() {
+		FlowRouter.watchPathChange();
+		if (FlowRouter.current().route.name === 'livechat-queue') {
+			return 'active';
+		}
 	}
 });
 

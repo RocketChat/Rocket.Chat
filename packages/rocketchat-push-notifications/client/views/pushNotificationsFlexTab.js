@@ -41,6 +41,34 @@ Template.pushNotificationsFlexTab.helpers({
 		});
 		return sub && sub.t !== 'd';
 	},
+	unreadAlert() {
+		var sub = ChatSubscription.findOne({
+			rid: Session.get('openedRoom')
+		}, {
+			fields: {
+				unreadAlert: 1
+			}
+		});
+		return sub ? sub.unreadAlert : 'default';
+	},
+	unreadAlertText() {
+		var sub = ChatSubscription.findOne({
+			rid: Session.get('openedRoom')
+		}, {
+			fields: {
+				unreadAlert: 1
+			}
+		});
+		if (sub) {
+			switch (sub.unreadAlert) {
+				case 'all':
+					return t('On');
+				case 'nothing':
+					return t('Off');
+			}
+		}
+		return t('Use_account_preference');
+	},
 	subValue(field) {
 		var sub = ChatSubscription.findOne({
 			rid: Session.get('openedRoom')
