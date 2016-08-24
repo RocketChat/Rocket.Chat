@@ -1025,7 +1025,6 @@ label.required:after {
 			padding: 15px 12px;
 			line-height: 1;
 			text-decoration: none;
-			border-bottom: 1px solid;
 			&:nth-child(even) {}
 			&:hover {
 				text-decoration: none;
@@ -1574,7 +1573,7 @@ label.required:after {
 	max-width: 800px;
 	margin: 40px auto;
 	padding: 20px;
-	border-radius: 5px;
+	border-radius: 4px;
 	box-shadow: 1px 1px 4px rgba(0, 0, 0, .3);
 	.cms-page-close {
 		margin-bottom: 10px;
@@ -1842,7 +1841,7 @@ label.required:after {
 			.section-content {
 				border: 1px solid;
 				padding: 20px;
-				border-radius: 5px;
+				border-radius: 4px;
 				.section-helper {
 					padding: 20px 20px 40px;
 					pre {
@@ -2807,14 +2806,14 @@ body:not(.is-cordova) {
 	.tab-button {
 		position: relative;
 		cursor: pointer;
-		padding: 10px 0;
 		background: #FCFCFC;
-		border-bottom: 1px solid #eaeaea;
 		text-align: center;
+		button {
+			height: 38px;
+		}
 		&:hover {
 			background: #EAEAEA;
 		}
-
 		.counter {
 			position: absolute;
 			background: #999;
@@ -2829,16 +2828,12 @@ body:not(.is-cordova) {
 			top: 4px;
 			text-align: center;
 		}
-
 		&.active {
 			background-color: #F4F4F4;
-			margin-left: -1px;
 			border-right: 3px solid #ff0000;
-
 			button {
-				margin-left: 4px;
+				margin-left: 3px;
 			}
-
 			.counter {
 				margin-right: -3px;
 			}
@@ -3152,28 +3147,8 @@ body:not(.is-cordova) {
 	}
 	.thumb {
 		width: 100%;
-		height: 200px;
-
-		.transition(height .4s ease);
-
-		cursor: zoom-in;
-		cursor: -moz-zoom-in;
-		cursor: -webkit-zoom-in;
-
-		&.bigger {
-			height: 350px;
-			cursor: zoom-out;
-			cursor: -moz-zoom-out;
-			cursor: -webkit-zoom-out;
-		}
-
-		.avatar {
-			border-radius: 0;
-
-			.avatar-image {
-				border-radius: 0;
-			}
-		}
+		height: 350px;
+		padding: 20px;
 	}
 	nav {
 		margin-left: -4px;
