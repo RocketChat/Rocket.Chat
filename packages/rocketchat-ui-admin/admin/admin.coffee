@@ -153,7 +153,7 @@ Template.admin.helpers
 		return Meteor.absoluteUrl(url)
 
 	selectedOption: (_id, val) ->
-		return RocketChat.settings.get(_id) is val
+		return RocketChat.settings.collectionPrivate.findOne({_id: _id})?.value is val
 
 	random: ->
 		return Random.id()

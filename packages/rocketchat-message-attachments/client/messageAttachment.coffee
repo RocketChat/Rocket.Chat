@@ -8,7 +8,7 @@ Template.messageAttachment.helpers
 			else
 				url = url + '&' + query
 
-		if url.match /^(https?:)?\/\//i
+		if Meteor.settings.public.sandstorm or url.match /^(https?:)?\/\//i
 			return url
 		else
 			return Meteor.absoluteUrl().replace(/\/$/, '') + __meteor_runtime_config__.ROOT_URL_PATH_PREFIX + url

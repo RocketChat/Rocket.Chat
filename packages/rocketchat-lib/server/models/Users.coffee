@@ -79,7 +79,7 @@ RocketChat.models.Users = new class extends RocketChat.models._Base
 		if not _.isArray exceptions
 			exceptions = [ exceptions ]
 
-		termRegex = new RegExp searchTerm, "i"
+		termRegex = new RegExp s.escapeRegExp(searchTerm), "i"
 		query =
 			$and: [
 				{ active: true }
@@ -139,6 +139,12 @@ RocketChat.models.Users = new class extends RocketChat.models._Base
 	findLDAPUsers: (options) ->
 		query =
 			ldap: true
+
+		return @find query, options
+
+	findCrowdUsers: (options) ->
+		query =
+			crowd: true
 
 		return @find query, options
 
@@ -207,6 +213,16 @@ RocketChat.models.Users = new class extends RocketChat.models._Base
 		update =
 			$set:
 				name: name
+
+		return @update _id, update
+
+	setCustomFields: (_id, fields) ->
+		values = {}
+		for key, value of fields
+			values["customFields.#{key}"] = value
+
+		update =
+			$set: values
 
 		return @update _id, update
 
