@@ -1,6 +1,10 @@
 {
   "Additional_Feedback" : "さらにご意見などございましたら、お願いいたします。",
   "Appearance" : "表示設定",
+  "Are_you_sure_do_you_want_end_this_chat" : "チャットを終了してもよろしいですか？",
+  "Cancel" : "キャンセル",
+  "Chat_ended" : "チャットを終了しました",
+  "Close_menu" : "メニューを閉じる",
   "Conversation_finished" : "会話終了",
   "How_friendly_was_the_chat_agent" : "チャット担当者の親しみやすさは、いかがでしたか?",
   "How_knowledgeable_was_the_chat_agent" : "チャット担当者の知識は、いかがでしたか?",

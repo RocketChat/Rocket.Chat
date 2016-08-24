@@ -107,7 +107,7 @@ class ModelsBase extends EventEmitter {
 			record._deletedAt = new Date;
 			record.__collection__ = this.name;
 
-			trash.insert(record);
+			trash.upsert({_id: record._id}, _.omit(record, '_id'));
 		}
 
 		query = { _id: { $in: ids } };
