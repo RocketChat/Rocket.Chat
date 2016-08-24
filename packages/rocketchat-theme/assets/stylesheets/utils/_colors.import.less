@@ -53,7 +53,6 @@ html {
 .messages-container .wrapper,
 .list-view,
 .page-container .content,
-.rocket-modal.fluid .modal main,
 .rooms-list,
 .scrollable,
 .user-view {
@@ -206,35 +205,6 @@ blockquote:before {
 	color: @content-background-color;
 	> div {
 		background-color: @transparent-darkest;
-	}
-}
-.rocket-modal {
-	background-color: @transparent-darkest;
-	legend {
-		color: @secondary-font-color;
-		&:before {
-			background-color: @tertiary-background-color;
-		}
-	}
-	.modal {
-		background-color: @content-background-color;
-		header {
-			background-color: @secondary-background-color;
-			.close {
-				i {
-					color: @secondary-font-color;
-				}
-				&:hover i {
-					color: @primary-font-color;
-				}
-			}
-		}
-		main {
-			background-color: @content-background-color;
-		}
-		footer {
-			background-color: @component-color;
-		}
 	}
 }
 /** ----------------------------------------------------------------------------
