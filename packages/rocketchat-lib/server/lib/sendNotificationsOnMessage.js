@@ -121,6 +121,13 @@ RocketChat.callbacks.add('afterSaveMessage', function(message, room) {
 				statusConnection: 1
 			}
 		});
+
+		// Always notify Sandstorm
+		if (userOfMention != null) {
+			RocketChat.Sandstorm.notify(message, [userOfMention._id],
+				'@' + user.username + ': ' + message.msg, 'privateMessage');
+
+		}
 		if ((userOfMention != null) && canBeNotified(userOfMentionId, 'mobile')) {
 			RocketChat.Notifications.notifyUser(userOfMention._id, 'notification', {
 				title: '@' + user.username,
@@ -160,8 +167,6 @@ RocketChat.callbacks.add('afterSaveMessage', function(message, room) {
 				});
 				return message;
 			}
-			RocketChat.Sandstorm.notify(message, [userOfMention._id],
-				'@' + user.username + ': ' + message.msg, 'privateMessage');
 		}
 	} else {
 		mentionIds = [];
