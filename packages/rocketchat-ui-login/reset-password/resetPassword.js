@@ -14,6 +14,14 @@ Template.resetPassword.helpers({
 });
 
 Template.resetPassword.events({
+	'focus .input-text input': function(event) {
+		$(event.currentTarget).parents('.input-text').addClass('focus');
+	},
+	'blur .input-text input': function(event) {
+		if (event.currentTarget.value === '') {
+			$(event.currentTarget).parents('.input-text').removeClass('focus');
+		}
+	},
 	'submit #login-card': function(event, instance) {
 		event.preventDefault();
 
