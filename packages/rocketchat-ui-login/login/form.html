@@ -52,16 +52,17 @@
 
 							{{#each customFields}}
 								{{#if $eq field.type 'select'}}
-									<div class='input-text active'>
+									<div class='input-text active focus'>
+										<label for="{{fieldName}}">{{_ fieldName}}</label>
 										<div class="select-arrow">
 											<i class="icon-down-open"></i>
 										</div>
 										<select name="{{fieldName}}" data-customfield="true">
 											{{#each field.options}}
 												{{#if $eq . ../field.defaultValue}}
-													<option value="{{.}}" selected>{{_ ../fieldName}}: {{_ .}}</option>
+													<option value="{{.}}" selected>{{_ .}}</option>
 												{{else}}
-													<option value="{{.}}">{{_ ../fieldName}}: {{_ .}}</option>
+													<option value="{{.}}">{{_ .}}</option>
 												{{/if}}
 											{{/each}}
 										</select>
