@@ -3757,6 +3757,7 @@ body:not(.is-cordova) {
 			box-shadow: 0 0 0;
 			border-width: 0;
 			position: relative;
+			margin-top: 10px;
 			padding: 4px 8px;
 			font-size: 18px;
 			border-bottom: 1px solid;
@@ -3777,9 +3778,23 @@ body:not(.is-cordova) {
 		}
 		.select-arrow {
 			position: absolute;
-			top: 10px;
+			bottom: 11px;
 			right: 0px;
 			color: #a9a9a9;
+		}
+		label {
+			position: absolute;
+			top: 20px;
+			left: 8px;
+			display: block;
+			font-size: 18px;
+			text-align: left;
+			color: #a9a9a9;
+			transition: all 0.3s;
+		}
+		&.focus label {
+			top: 0;
+			font-size: 12px;
 		}
 		input:-webkit-autofill {}
 		input:-webkit-autofill {
