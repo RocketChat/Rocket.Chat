@@ -379,7 +379,8 @@ class @ChatMessages
 			RoomHistoryManager.clear rid
 
 	valueChanged: (rid, event) ->
-		this.determineInputDirection()
+		if this.input.value.length is 1
+			this.determineInputDirection()
 
 	determineInputDirection: () ->
 		this.input.dir = if this.isMessageRtl(this.input.value) then 'rtl' else 'ltr'
