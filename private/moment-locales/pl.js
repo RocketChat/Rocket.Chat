@@ -1,10 +1,11 @@
 //! moment.js locale configuration
-//! locale : polish (pl)
+//! locale : Polish [pl]
 //! author : Rafal Hirsz : https://github.com/evoL
 
-(function (global, factory) {
-   typeof exports === 'object' && typeof module !== 'undefined' ? factory(require('../moment')) :
-   typeof define === 'function' && define.amd ? define(['moment'], factory) :
+;(function (global, factory) {
+   typeof exports === 'object' && typeof module !== 'undefined'
+       && typeof require === 'function' ? factory(require('../moment')) :
+   typeof define === 'function' && define.amd ? define(['../moment'], factory) :
    factory(global.moment)
 }(this, function (moment) { 'use strict';
 
@@ -17,18 +18,18 @@
     function translate(number, withoutSuffix, key) {
         var result = number + ' ';
         switch (key) {
-        case 'm':
-            return withoutSuffix ? 'minuta' : 'minutę';
-        case 'mm':
-            return result + (plural(number) ? 'minuty' : 'minut');
-        case 'h':
-            return withoutSuffix  ? 'godzina'  : 'godzinę';
-        case 'hh':
-            return result + (plural(number) ? 'godziny' : 'godzin');
-        case 'MM':
-            return result + (plural(number) ? 'miesiące' : 'miesięcy');
-        case 'yy':
-            return result + (plural(number) ? 'lata' : 'lat');
+            case 'm':
+                return withoutSuffix ? 'minuta' : 'minutę';
+            case 'mm':
+                return result + (plural(number) ? 'minuty' : 'minut');
+            case 'h':
+                return withoutSuffix  ? 'godzina'  : 'godzinę';
+            case 'hh':
+                return result + (plural(number) ? 'godziny' : 'godzin');
+            case 'MM':
+                return result + (plural(number) ? 'miesiące' : 'miesięcy');
+            case 'yy':
+                return result + (plural(number) ? 'lata' : 'lat');
         }
     }
 
@@ -48,14 +49,14 @@
         monthsShort : 'sty_lut_mar_kwi_maj_cze_lip_sie_wrz_paź_lis_gru'.split('_'),
         weekdays : 'niedziela_poniedziałek_wtorek_środa_czwartek_piątek_sobota'.split('_'),
         weekdaysShort : 'nie_pon_wt_śr_czw_pt_sb'.split('_'),
-        weekdaysMin : 'N_Pn_Wt_Śr_Cz_Pt_So'.split('_'),
+        weekdaysMin : 'Nd_Pn_Wt_Śr_Cz_Pt_So'.split('_'),
         longDateFormat : {
             LT : 'HH:mm',
-            LTS : 'LT:ss',
+            LTS : 'HH:mm:ss',
             L : 'DD.MM.YYYY',
             LL : 'D MMMM YYYY',
-            LLL : 'D MMMM YYYY LT',
-            LLLL : 'dddd, D MMMM YYYY LT'
+            LLL : 'D MMMM YYYY HH:mm',
+            LLLL : 'dddd, D MMMM YYYY HH:mm'
         },
         calendar : {
             sameDay: '[Dziś o] LT',
@@ -64,14 +65,14 @@
             lastDay: '[Wczoraj o] LT',
             lastWeek: function () {
                 switch (this.day()) {
-                case 0:
-                    return '[W zeszłą niedzielę o] LT';
-                case 3:
-                    return '[W zeszłą środę o] LT';
-                case 6:
-                    return '[W zeszłą sobotę o] LT';
-                default:
-                    return '[W zeszły] dddd [o] LT';
+                    case 0:
+                        return '[W zeszłą niedzielę o] LT';
+                    case 3:
+                        return '[W zeszłą środę o] LT';
+                    case 6:
+                        return '[W zeszłą sobotę o] LT';
+                    default:
+                        return '[W zeszły] dddd [o] LT';
                 }
             },
             sameElse: 'L'
