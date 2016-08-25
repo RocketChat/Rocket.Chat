@@ -216,6 +216,16 @@ RocketChat.models.Users = new class extends RocketChat.models._Base
 
 		return @update _id, update
 
+	setCustomFields: (_id, fields) ->
+		values = {}
+		for key, value of fields
+			values["customFields.#{key}"] = value
+
+		update =
+			$set: values
+
+		return @update _id, update
+
 	setAvatarOrigin: (_id, origin) ->
 		update =
 			$set:

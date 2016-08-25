@@ -38,12 +38,11 @@ Meteor.methods
 			if not member?
 				continue
 
-			extra = {}
+			extra =
+				open: true
 
 			if username is me.username
 				extra.ls = now
-			else
-				extra.alert = true
 
 			RocketChat.models.Subscriptions.createWithRoomAndUser room, member, extra
 
