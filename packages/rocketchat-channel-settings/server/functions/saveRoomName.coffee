@@ -18,7 +18,7 @@ RocketChat.saveRoomName = (rid, name) ->
 	if not nameValidation.test name
 		throw new Meteor.Error 'error-invalid-room-name', name + ' is not a valid room name. Use only letters, numbers, hyphens and underscores', { function: 'RocketChat.saveRoomName', room_name: name }
 
-
+	# Should this depend on UTF8_Names_Slugify ?
 	# name = _.slugify name
 
 	if name is room.name
