@@ -2800,7 +2800,6 @@ body:not(.is-cordova) {
 	height: 100%;
 	top: 0;
 	right: 0;
-	background: #FCFCFC;
 	z-index: 130;
 	.tab-button {
 		position: relative;
@@ -2808,9 +2807,6 @@ body:not(.is-cordova) {
 		text-align: center;
 		button {
 			height: 38px;
-		}
-		&:hover {
-			background: #EAEAEA;
 		}
 		.counter {
 			position: absolute;
@@ -2827,6 +2823,7 @@ body:not(.is-cordova) {
 			text-align: center;
 		}
 		&.active {
+			border-right: 3px solid;
 			button {
 				margin-left: 3px;
 			}
@@ -2895,7 +2892,6 @@ body:not(.is-cordova) {
 
 // FLEX-TAB and FLEX-TAB views
 .flex-tab {
-	border-left: 1px solid;
 	overflow-x: visible;
 	position: fixed;
 	z-index: 110;
