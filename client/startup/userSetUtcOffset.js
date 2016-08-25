@@ -5,7 +5,7 @@ Meteor.startup(function() {
 		if (user && user.statusConnection === 'online') {
 			utcOffset = moment().utcOffset() / 60;
 			if (user.utcOffset !== utcOffset) {
-				Meteor.call('updateUserUtcOffset', utcOffset);
+				Meteor.call('userSetUtcOffset', utcOffset);
 			}
 		}
 	});
