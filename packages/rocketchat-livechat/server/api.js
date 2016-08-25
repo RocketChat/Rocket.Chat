@@ -74,3 +74,102 @@ Api.addRoute('sms-incoming/:service', {
 		}
 	}
 });
+
+Api.addRoute('users/:type', { authRequired: true }, {
+	get() {
+		if (!RocketChat.authz.hasPermission(this.userId, 'view-livechat-manager')) {
+			return { statusCode: 403, body: { status: 'error' } };
+		}
+
+		try {
+			let users;
+			if (this.urlParams.type === 'agent') {
+				users = RocketChat.authz.getUsersInRole('livechat-agent');
+			} else if (this.urlParams.type === 'manager') {
+				users = RocketChat.authz.getUsersInRole('livechat-manager');
+			} else {
+				throw 'Invalid type';
+			}
+
+			return {
+				success: true,
+				data: users.fetch().map(user => ({ _id: user._id, username: user.username }))
+			};
+		} catch (e) {
+			return {
+				success: false,
+				error: e
+			};
+		}
+	},
+	post() {
+		if (this.urlParams._id) {
+			return { statusCode: 400, body: { status: 'error' } };
+		}
+		if (!RocketChat.authz.hasPermission(this.userId, 'view-livechat-manager')) {
+			return { statusCode: 403, body: { status: 'error' } };
+		}
+
+		// @TODO creates a new agent manager
+	}
+});
+
+Api.addRoute('users/:type/:_id', { authRequired: true }, {
+	get() {
+		if (!RocketChat.authz.hasPermission(this.userId, 'view-livechat-manager')) {
+			return { statusCode: 403, body: { status: 'error' } };
+		}
+
+		// @TODO gets a list (if _id not present) of agents or managers or (if _id present) the agent or manager data
+	},
+	delete() {
+		if (!this.urlParams._id) {
+			return { statusCode: 400, body: { status: 'error' } };
+		}
+		if (!RocketChat.authz.hasPermission(this.userId, 'view-livechat-manager')) {
+			return { statusCode: 403, body: { status: 'error' } };
+		}
+
+		// @TODO removes a user from agent or manager
+	}
+});
+
+Api.addRoute('departments/:_id?', { authRequired: true }, {
+	get() {
+		if (!RocketChat.authz.hasPermission(this.userId, 'view-livechat-manager')) {
+			return { statusCode: 403, body: { status: 'error' } };
+		}
+
+		// @TODO gets a list of departments or department data (if _id present)
+	},
+	post() {
+		if (this.urlParams._id) {
+			return { statusCode: 400, body: { status: 'error' } };
+		}
+		if (!RocketChat.authz.hasPermission(this.userId, 'view-livechat-manager')) {
+			return { statusCode: 403, body: { status: 'error' } };
+		}
+
+		// @TODO creates a new department
+	},
+	put() {
+		if (!this.urlParams._id) {
+			return { statusCode: 400, body: { status: 'error' } };
+		}
+		if (!RocketChat.authz.hasPermission(this.userId, 'view-livechat-manager')) {
+			return { statusCode: 403, body: { status: 'error' } };
+		}
+
+		// @TODO update a department
+	},
+	delete() {
+		if (!this.urlParams._id) {
+			return { statusCode: 400, body: { status: 'error' } };
+		}
+		if (!RocketChat.authz.hasPermission(this.userId, 'view-livechat-manager')) {
+			return { statusCode: 403, body: { status: 'error' } };
+		}
+
+		// @TODO removes a department
+	}
+});
