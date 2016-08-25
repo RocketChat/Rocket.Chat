@@ -17,6 +17,7 @@
 				n = new Notification notification.title,
 					icon: notification.icon or getAvatarUrlFromUsername notification.payload.sender.username
 					body: _.stripTags(message.msg)
+					tag: notification.payload._id,
 					silent: true
 
 				notificationDuration = (notification.duration - 0) or (Meteor.user()?.settings?.preferences?.desktopNotificationDuration - 0) or RocketChat.settings.get('Desktop_Notifications_Duration')
@@ -25,6 +26,7 @@
 
 				if notification.payload?.rid?
 					n.onclick = ->
+						this.close()
 						window.focus()
 						switch notification.payload.type
 							when 'd'

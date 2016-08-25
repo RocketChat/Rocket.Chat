@@ -131,8 +131,6 @@ window.addEventListener('message', (e) => {
 		return;
 	}
 
-	console.log(e);
-
 	switch (e.data.event) {
 		case 'try-iframe-login':
 			RocketChat.iframeLogin.tryLogin((error) => {
