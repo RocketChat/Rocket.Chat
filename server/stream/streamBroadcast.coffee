@@ -4,22 +4,40 @@ logger = new Logger 'StreamBroadcast',
 		auth: 'Auth'
 		stream: 'Stream'
 
-authorizeConnection = (instance) ->
+_authorizeConnection = (instance) ->
 	logger.auth.info "Authorizing with #{instance}"
+
 	connections[instance].call 'broadcastAuth', connections[instance].instanceRecord._id, InstanceStatus.id(), (err, ok) ->
+		if err?
+			return logger.auth.error "broadcastAuth error #{instance} #{connections[instance].instanceRecord._id} #{InstanceStatus.id()}", err
+
 		connections[instance].broadcastAuth = ok
 		logger.auth.info "broadcastAuth with #{instance}", ok
 
+authorizeConnection = (instance) ->
+	if not InstanceStatus.getCollection().findOne({_id: InstanceStatus.id()})?
+		return Meteor.setTimeout ->
+			authorizeConnection(instance)
+		, 500
+
+	_authorizeConnection(instance)
+
 @connections = {}
 @startStreamBroadcast = () ->
+	process.env.INSTANCE_IP ?= 'localhost'
+
 	logger.info 'startStreamBroadcast'
 
 	InstanceStatus.getCollection().find({'extraInformation.port': {$exists: true}}, {sort: {_createdAt: -1}}).observe
 		added: (record) ->
-			if record.extraInformation.port is process.env.PORT and (record.extraInformation.host is 'localhost' or record.extraInformation.host is process.env.INSTANCE_IP)
+			instance = "#{record.extraInformation.host}:#{record.extraInformation.port}"
+
+			if record.extraInformation.port is process.env.PORT and record.extraInformation.host is process.env.INSTANCE_IP
+				logger.auth.info "prevent self connect", instance
 				return
 
-			instance = record.extraInformation.host + ':' + record.extraInformation.port
+			if record.extraInformation.host is process.env.INSTANCE_IP
+				instance = "localhost:#{record.extraInformation.port}"
 
 			if connections[instance]?.instanceRecord?
 				if connections[instance].instanceRecord._createdAt < record._createdAt
@@ -31,19 +49,22 @@ authorizeConnection = (instance) ->
 			logger.connection.info 'connecting in', instance
 			connections[instance] = DDP.connect(instance, {_dontPrintErrors: true})
 			connections[instance].instanceRecord = record;
-			authorizeConnection(instance);
 			connections[instance].onReconnect = ->
-				authorizeConnection(instance);
+				authorizeConnection(instance)
 
 		removed: (record) ->
-			instance = record.extraInformation.host + ':' + record.extraInformation.port
+			instance = "#{record.extraInformation.host}:#{record.extraInformation.port}"
+
+			if record.extraInformation.host is process.env.INSTANCE_IP
+				instance = "localhost:#{record.extraInformation.port}"
+
 			if connections[instance]? and not InstanceStatus.getCollection().findOne({'extraInformation.host': record.extraInformation.host, 'extraInformation.port': record.extraInformation.port})?
 				logger.connection.info 'disconnecting from', instance
 				connections[instance].disconnect()
 				delete connections[instance]
 
 	broadcast = (streamName, eventName, args, userId) ->
-		fromInstance = (process.env.INSTANCE_IP or 'localhost') + ':' + process.env.PORT
+		fromInstance = process.env.INSTANCE_IP + ':' + process.env.PORT
 		for instance, connection of connections
 			do (instance, connection) ->
 				if connection.status().connected is true
