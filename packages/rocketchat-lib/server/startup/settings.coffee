@@ -199,7 +199,7 @@ RocketChat.settings.addGroup 'Push', ->
 	@add 'Push_debug', false, { type: 'boolean', public: true }
 	@add 'Push_enable', true, { type: 'boolean', public: true }
 	@add 'Push_enable_gateway', true, { type: 'boolean' }
-	@add 'Push_gateway', 'https://rocket.chat', { type: 'string' }
+	@add 'Push_gateway', 'https://gateway.rocket.chat', { type: 'string' }
 	@add 'Push_production', true, { type: 'boolean', public: true }
 	@add 'Push_test_push', 'push_test', { type: 'action', actionText: 'Send_a_test_push_to_my_user' }
 
