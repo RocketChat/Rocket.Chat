@@ -262,17 +262,19 @@ RocketChat.models.Subscriptions = new class extends RocketChat.models._Base
 
 		return @update query, update, { multi: true }
 
-	setAlertForRoomIdExcludingUserId: (roomId, userId, alert=true) ->
+	setAlertForRoomIdExcludingUserId: (roomId, userId) ->
 		query =
 			rid: roomId
-			alert:
-				$ne: alert
 			'u._id':
 				$ne: userId
+			$or: [
+				{ alert: { $ne: true } }
+				{ open: { $ne: true } }
+			]
 
 		update =
 			$set:
-				alert: alert
+				alert: true
 				open: true
 
 		return @update query, update, { multi: true }
