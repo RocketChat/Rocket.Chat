@@ -33,10 +33,6 @@ button {
 	font-style: inherit;
 }
 
-button:not(.button-block)~button:not(.button-block) {
-	margin-left: 4px;
-}
-
 .allow-text-selection {
 	-webkit-user-select: text;
 	-moz-user-select: text;
@@ -663,7 +659,6 @@ label.required:after {
 	font-weight: 500;
 	font-size: 13px;
 	text-align: center;
-	margin: 4px 0;
 	text-transform: uppercase;
 	word-spacing: 0;
 	line-height: 16px;
@@ -707,16 +702,16 @@ label.required:after {
 			font-weight: 600;
 		}
 	}
-	&.facebook {}
-	&.twitter {}
-	&.google {}
-	&.github {}
-	&.gitlab {}
-	&.trello {}
-	&.meteor-developer {}
 	&.button-block {
 		display: block;
+		margin-bottom: 4px;
 		width: 100%;
+	}
+}
+
+.buttons-group {
+	.button~.button {
+		margin-left: 4px;
 	}
 }
 
@@ -4409,7 +4404,7 @@ body:not(.is-cordova) {
 	}
 }
 
-.group-call-buttons {
+.buttons-group {
 	display: -webkit-flex;
 	display: -moz-flex;
 	display: flex;
