@@ -162,6 +162,16 @@ Template.channelSettings.onCreated ->
 						toastr.success TAPi18n.__ 'Room_unarchived'
 						RocketChat.callbacks.run 'unarchiveRoom', room
 
+		joinCode:
+			type: 'text'
+			label: 'Code'
+			canView: (room) => room.t is 'c' and RocketChat.authz.hasAllPermission('edit-room', room._id)
+			canEdit: (room) => RocketChat.authz.hasAllPermission('edit-room', room._id)
+			save: (value, room) ->
+				Meteor.call 'saveRoomSettings', room._id, 'joinCode', value, (err, result) ->
+					return handleError err if err
+					toastr.success TAPi18n.__ 'Room_code_changed_successfully'
+					RocketChat.callbacks.run 'roomCodeChanged', room
 
 
 	@saveSetting = =>
