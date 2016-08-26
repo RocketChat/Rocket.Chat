@@ -17,6 +17,7 @@
    * [Sandstorm.io](#sandstormio) 
    * [DPlatform](#dplatform) 
    * [IndieHosters](#indiehosters)
+   * [Ubuntu 16.04](#ubuntu1604)
    * [Cloudron.io](#cloudronio) 
    * [Nitrous.io](#nitrousio)
    * [Heroku](#heroku)
@@ -28,7 +29,6 @@
   * [Raspberry Pi 2](#raspberry-pi-2)
   * [Koozali SME](#koozali-sme)
   * [Ubuntu VPS](#ubuntu-vps)
-  * [Ubuntu Software Center](#ubuntu-software-center)
 * [About Rocket.Chat](#about-rocketchat)
   * [On the News](#on-the-news)
   * [Features](#features)
@@ -89,6 +89,12 @@ Easiest way to install a ready-to-run Rocket.Chat server on a Linux machine, VM,
 Get your Rocket.Chat instance hosted in a "as a Service" style. You register and we manage it for you! (updates, backup...)
 
 [![Rocket.Chat on IndieHosters](https://indie.host/signup.png)](https://indiehosters.net/shop/product/rocket-chat-21)
+
+## Ubuntu 16.04
+
+`snap install rocketchat-server`
+
+In under 30 seconds, your Rocket.Chat server will be up and running at `http://host-ip:3000`
 
 ## Cloudron.io
 
@@ -171,11 +177,6 @@ Add Rocket.Chat to this world famous time tested small enterprise server today:
 
 ## Ubuntu VPS
 Follow these [deployment instructions](https://rocket.chat/docs/installation/manual-installation/ubuntu/)
-
-## Ubuntu Software Center
-Easy one click install right from your Ubuntu Desktop (coming soon)
-
-[![Ubuntu Software Center](https://raw.githubusercontent.com/Sing-Li/bbug/master/images/ubuntusoft.png)]()
 
 # About Rocket.Chat
 
