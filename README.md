@@ -17,7 +17,7 @@
    * [Sandstorm.io](#sandstormio) 
    * [DPlatform](#dplatform) 
    * [IndieHosters](#indiehosters)
-   * [Ubuntu 16.04](#ubuntu1604)
+   * [Ubuntu 16.04](#ubuntu-1604)
    * [Cloudron.io](#cloudronio) 
    * [Nitrous.io](#nitrousio)
    * [Heroku](#heroku)
@@ -91,6 +91,9 @@ Get your Rocket.Chat instance hosted in a "as a Service" style. You register and
 [![Rocket.Chat on IndieHosters](https://indie.host/signup.png)](https://indiehosters.net/shop/product/rocket-chat-21)
 
 ## Ubuntu 16.04
+[![Ubuntu Apps Explorer](https://raw.githubusercontent.com/Sing-Li/bbug/master/images/uappexplorer.png)](https://uappexplorer.com/app/rocketchat-server.rocketchat)
+
+Deploy from shell:
 
 `snap install rocketchat-server`
 
@@ -247,7 +250,7 @@ It is a great solution for communities and companies wanting to privately host t
 - Audio calls
 - Multi-users Audio Conference
 - Screensharing
-- XMPP bridge ([try it](https://demo.rocket.chat/channel/xmppbridge))
+- XMPP bridge ([try it](https://demo.rocket.chat/channel/general))
 - REST APIs
 - Remote Locations Video Monitoring
 - Native real-time APIs for Microsoft C#, Visual Basic, F# and other .NET supported languages ([Get it!](https://www.nuget.org/packages/Rocket.Chat.Net/0.0.12-pre))
