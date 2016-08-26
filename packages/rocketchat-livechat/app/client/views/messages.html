@@ -19,7 +19,9 @@
 		<div class="input-wrapper">
 			<textarea class="input-message" placeholder="{{_ "Type_your_message"}}"></textarea>
 		</div>
+		<i class="attach-button icon-attach" aria-label="{{_ "Attach"}}"></i> <input type="file" id="theFile" hidden/>
 		<i class="send-button icon-paper-plane" aria-label="{{_ "Send"}}"></i>
+
 
 		{{> options show=showOptions}}
 		<button class="toggle-options">{{optionsLink}}</button>

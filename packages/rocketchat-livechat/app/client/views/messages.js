@@ -52,6 +52,23 @@ Template.messages.events({
 	},
 	'click .toggle-options': function(event, instance) {
 		instance.showOptions.set(!instance.showOptions.get());
+	},	
+	'change #theFile': function(event, instance) {
+		var file;
+		if (event.target && event.target.files[0]) {
+			file = event.target.files[0];
+		}
+		var sent; 
+
+		instance.uploader.send(file, function (error, downloadUrl) {
+		  if (error) {
+		    console.log(error)
+		  } else {
+			sent = instance.chatMessages.sendAttachment(visitor.getRoom(), file, downloadUrl);
+			// return sent;	
+		  }
+		});
+		return sent;
 	}
 });
 
@@ -123,4 +140,6 @@ Template.messages.onRendered(function() {
 			onscroll();
 		});
 	}
+
+	template.uploader = new Slingshot.Upload("rocketchat-uploads", { rid: visitor.getRoom() });
 });
