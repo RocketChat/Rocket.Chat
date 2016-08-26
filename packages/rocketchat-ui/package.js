@@ -41,7 +41,7 @@ Package.onUse(function(api) {
 	api.addFiles('lib/constallation.js', 'client');
 	api.addFiles('lib/customEventPolyfill.js', 'client');
 	api.addFiles('lib/fileUpload.coffee', 'client');
-	api.addFiles('lib/fireEvent.coffee', 'client');
+	api.addFiles('lib/fireEvent.js', 'client');
 	api.addFiles('lib/jquery.swipebox.min.js', 'client');
 	api.addFiles('lib/menu.coffee', 'client');
 	api.addFiles('lib/modal.coffee', 'client');
@@ -63,7 +63,7 @@ Package.onUse(function(api) {
 	api.addFiles('lib/cordova/keyboard-fix.coffee', 'client');
 	api.addFiles('lib/cordova/push.coffee', 'client');
 	api.addFiles('lib/cordova/urls.coffee', 'client');
-	api.addFiles('lib/cordova/user-state.coffee', 'client');
+	api.addFiles('lib/cordova/user-state.js', 'client');
 
 	// LIB RECORDERJS
 	api.addFiles('lib/recorderjs/audioRecorder.coffee', 'client');
