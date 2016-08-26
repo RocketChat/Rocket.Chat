@@ -78,6 +78,14 @@ RocketChat.models.Subscriptions = new class extends RocketChat.models._Base
 
 		return @find(query, options)?.fetch?()?[0]?.ls
 
+	findByRoomIdAndUserIds: (roomId, userIds) ->
+		query =
+			rid: roomId
+			'u._id':
+				$in: userIds
+
+		return @find query
+
 	# UPDATE
 	archiveByRoomIdAndUserId: (roomId, userId) ->
 		query =
@@ -139,6 +147,19 @@ RocketChat.models.Subscriptions = new class extends RocketChat.models._Base
 				alert: false
 				unread: 0
 				ls: new Date
+
+		return @update query, update
+
+	setAsUnreadByRoomIdAndUserId: (roomId, userId, firstMessageUnreadTimestamp) ->
+		query =
+			rid: roomId
+			'u._id': userId
+
+		update =
+			$set:
+				open: true
+				alert: true
+				ls: firstMessageUnreadTimestamp
 
 		return @update query, update
 
@@ -241,17 +262,19 @@ RocketChat.models.Subscriptions = new class extends RocketChat.models._Base
 
 		return @update query, update, { multi: true }
 
-	setAlertForRoomIdExcludingUserId: (roomId, userId, alert=true) ->
+	setAlertForRoomIdExcludingUserId: (roomId, userId) ->
 		query =
 			rid: roomId
-			alert:
-				$ne: alert
 			'u._id':
 				$ne: userId
+			$or: [
+				{ alert: { $ne: true } }
+				{ open: { $ne: true } }
+			]
 
 		update =
 			$set:
-				alert: alert
+				alert: true
 				open: true
 
 		return @update query, update, { multi: true }

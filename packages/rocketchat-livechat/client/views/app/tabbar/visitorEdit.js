@@ -53,7 +53,7 @@ Template.visitorEdit.events({
 		roomData.topic = event.currentTarget.elements['topic'].value;
 		roomData.tags = event.currentTarget.elements['tags'].value;
 
-		Meteor.call('livechat:saveLivechatInfo', userData, roomData, (err) => {
+		Meteor.call('livechat:saveInfo', userData, roomData, (err) => {
 			if (err) {
 				toastr.error(t(err.error));
 			} else {

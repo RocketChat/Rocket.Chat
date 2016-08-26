@@ -1,13 +1,20 @@
 {
   "Additional_Feedback" : "Dodatečný Feedback",
   "Appearance" : "Vzhled",
+  "Are_you_sure_do_you_want_end_this_chat" : "Opravdu chcete ukončit tuto konverzaci?",
+  "Cancel" : "Storno",
+  "Chat_ended" : "Konverzace ukončena",
+  "Close_menu" : "Zavřít menu",
   "Conversation_finished" : "Rozhovor skončil",
+  "End_chat" : "Ukončit konverzaci",
   "How_friendly_was_the_chat_agent" : "Byl operátor příjemný?",
   "How_knowledgeable_was_the_chat_agent" : "Věděl operátor jak vám pomoci?",
   "How_responsive_was_the_chat_agent" : "Odpovídal operátor rychle?",
   "How_satisfied_were_you_with_this_chat" : "Jak jste byli celkově spokojeni?",
   "Installation" : "Instalace",
   "New_messages" : "Nové zprávy",
+  "No" : "Ne",
+  "Options" : "Volby",
   "Please_answer_survey" : "Věnujte prosím chvilku času ohodnocení chatu.",
   "Please_fill_name_and_email" : "Prosím vyplňte jméno a e-mail",
   "Powered_by" : "Používá technologii",
@@ -25,5 +32,6 @@
   "User_joined" : "Uživatel se připojil",
   "User_left" : "Uživatel odešel",
   "We_are_offline_Sorry_for_the_inconvenience" : "Jsme offline. Omluváme se za nepříjemnosti.",
+  "Yes" : "Ano",
   "You_must_complete_all_fields" : "Je potřeba vyplnit všechna pole"
 }
