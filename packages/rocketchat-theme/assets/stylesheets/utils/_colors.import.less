@@ -393,7 +393,6 @@ a.github-fork {
 		}
 		button, a {
 			color: fade( @quaternary-font-color, 50%);
-			border-bottom-color: darken(@primary-background-color, 2%);
 			&:hover {
 				background-color: darken(@primary-background-color, 2%);
 				color: fade( @quaternary-font-color, 75%);
@@ -689,6 +688,7 @@ a.github-fork {
 
 // change to page-messages
 .messages-container {
+	border-right-color: @tertiary-background-color;
 	.edit-room-title {
 		color: @secondary-font-color;
 		&:hover {
@@ -832,7 +832,6 @@ a.github-fork {
 // FLEX-TAB and FLEX-TAB views
 .flex-tab {
 	background-color: @secondary-background-color;
-	border-left-color: @tertiary-background-color;
 	.control {
 		background-color: @secondary-background-color;
 		&:before {
@@ -1138,7 +1137,7 @@ a.github-fork {
 		}
 	}
 	.input-text {
-		input {
+		input, select {
 			background-color: transparent;
 			border-bottom-color: #DFDFDF;
 			&.error {
@@ -1241,9 +1240,17 @@ a.github-fork {
 }
 
 .flex-tab-bar {
+	background: #FCFCFC;
 	.tab-button {
+		&:hover {
+			background: #EAEAEA;
+		}
 		&.red {
 			color: red;
+		}
+		&.active {
+			background-color: @secondary-background-color;
+			border-color: #ff0000;
 		}
 		&.attention {
 			animation-duration: 1000ms;

@@ -40,7 +40,7 @@ RocketChat.callbacks.add('afterSaveMessage', function(message, room) {
 	}
 
 	/**
-	 * Chechs if a messages contains a user highlight
+	 * Checks if a message contains a user highlight
 	 *
 	 * @param {string} message
 	 * @param {array|undefined} highlights
@@ -121,12 +121,20 @@ RocketChat.callbacks.add('afterSaveMessage', function(message, room) {
 				statusConnection: 1
 			}
 		});
+
+		// Always notify Sandstorm
+		if (userOfMention != null) {
+			RocketChat.Sandstorm.notify(message, [userOfMention._id],
+				'@' + user.username + ': ' + message.msg, 'privateMessage');
+
+		}
 		if ((userOfMention != null) && canBeNotified(userOfMentionId, 'mobile')) {
 			RocketChat.Notifications.notifyUser(userOfMention._id, 'notification', {
 				title: '@' + user.username,
 				text: message.msg,
 				duration: settings.desktopNotificationDurations[userOfMention._id],
 				payload: {
+					_id: message._id,
 					rid: message.rid,
 					sender: message.u,
 					type: room.t,
@@ -159,8 +167,6 @@ RocketChat.callbacks.add('afterSaveMessage', function(message, room) {
 				});
 				return message;
 			}
-			RocketChat.Sandstorm.notify(message, [userOfMention._id],
-				'@' + user.username + ': ' + message.msg, 'privateMessage');
 		}
 	} else {
 		mentionIds = [];
@@ -281,6 +287,7 @@ RocketChat.callbacks.add('afterSaveMessage', function(message, room) {
 					text: message.msg,
 					duration: settings.desktopNotificationDurations[usersOfMentionId],
 					payload: {
+						_id: message._id,
 						rid: message.rid,
 						sender: message.u,
 						type: room.t,
