@@ -102,10 +102,9 @@ class SlackBridge {
 		if (data && data.data && data.data.ok === true) {
 			let channelData = isGroup ? data.data.group : data.data.channel;
 			let existingRoom = RocketChat.models.Rooms.findOneByName(channelData.name);
+
+			// If the room exists, make sure we have its id in importIds
 			if (existingRoom || channelData.is_general) {
-				if (channelData.is_general && channelData.name !== (existingRoom && existingRoom.name)) {
-					Meteor.call('saveRoomSettings', 'GENERAL', 'roomName', channelData.name);
-				}
 				channelData.rocketId = channelData.is_general ? 'GENERAL' : existingRoom._id;
 				RocketChat.models.Rooms.update({ _id: channelData.rocketId }, { $addToSet: { importIds: channelData.id } });
 			} else {
@@ -125,15 +124,13 @@ class SlackBridge {
 				}
 
 				try {
-					Meteor.runAsUser(creator._id, () => {
-						if (isGroup) {
-							let channel = Meteor.call('createPrivateGroup', channelData.name, users);
-							channelData.rocketId = channel._id;
-						} else {
-							let channel = Meteor.call('createChannel', channelData.name, users);
-							channelData.rocketId = channel._id;
-						}
-					});
+					if (isGroup) {
+						let channel = RocketChat.createPrivateGroup(channelData, users);
+						channelData.rocketId = channel._id;
+					} else {
+						let channel = Meteor.call('createChannel', channelData.name, users);
+						channelData.rocketId = channel._id;
+					}
 				} catch (e) {
 					if (!hasRetried) {
 						// If first time trying to create channel fails, could be because of multiple messages received at the same time. Try again once after 1s.
