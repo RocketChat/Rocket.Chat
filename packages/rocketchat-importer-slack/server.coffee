@@ -135,7 +135,7 @@ Importer.Slack = class Importer.Slack extends Importer.Base
 								Meteor.call 'setAvatarFromService', url, null, 'url'
 								# Slack's is -18000 which translates to Rocket.Chat's after dividing by 3600
 								if user.tz_offset
-									Meteor.call 'updateUserUtcOffset', user.tz_offset / 3600
+									Meteor.call 'userSetUtcOffset', user.tz_offset / 3600
 
 							RocketChat.models.Users.update { _id: userId }, { $addToSet: { importIds: user.id } }
 
@@ -211,7 +211,7 @@ Importer.Slack = class Importer.Slack extends Importer.Base
 								@updateRecord { 'messagesstatus': "#{channel}/#{date}.#{msgs.messages.length}" }
 								for message in msgs.messages
 									msgDataDefaults =
-										_id: "#{slackChannel.id}.S#{message.ts}"
+										_id: "slack-#{slackChannel.id}-#{message.ts.replace(/\./g, '-')}"
 										ts: new Date(parseInt(message.ts.split('.')[0]) * 1000)
 
 									if message.type is 'message'
@@ -267,7 +267,7 @@ Importer.Slack = class Importer.Slack extends Importer.Base
 											else if message.subtype is 'file_share'
 												if message.file?.url_private_download isnt undefined
 													details =
-														message_id: "S#{message.ts}"
+														message_id: "slack-#{message.ts.replace(/\./g, '-')}"
 														name: message.file.name
 														size: message.file.size
 														type: message.file.mimetype

@@ -85,13 +85,12 @@ code {
 	white-space: pre-wrap;
 	unicode-bidi: embed;
 	direction: ltr;
-	font-family: "Source Code Pro", Monaco, monospace, Courier, "Lucida Console";
+	font-family: Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
 	&.inline {
 		display: inline;
 		padding: 0 0.5em;
 		margin: 0 0.1em;
 		line-height: 16px;
-		font-family: "Source Code Pro", Monaco, monospace, Courier, "Lucida Console";
 	}
 }
 
@@ -460,7 +459,7 @@ html {
 }
 
 body {
-	font-family: 'Helvetica Neue', Helvetica, Roboto, Arial, sans-serif, "Meiryo UI";
+	font-family: @body-font-family;
 	font-size: 0.875rem;
 	height: 100%;
 	width: 100%;
@@ -660,12 +659,12 @@ label.required:after {
 	font-weight: 500;
 	font-size: 13px;
 	text-align: center;
-	margin: 4px;
+	margin: 4px 0;
 	text-transform: uppercase;
 	word-spacing: 0;
-	box-shadow: 1px 1px 0 rgba(0, 0, 0, 0.125);
 	line-height: 16px;
 	position: relative;
+	border-radius: 4px;
 	span {
 		position: relative;
 		z-index: 2;
@@ -679,7 +678,6 @@ label.required:after {
 		height: 100%;
 		opacity: 0;
 		z-index: 1;
-		.transition(opacity .1s ease-out);
 	}
 	&:hover {
 		text-decoration: none;
@@ -830,74 +828,6 @@ label.required:after {
 	}
 }
 
-a.github-fork {
-	position: fixed;
-	display: block;
-	width: 260px;
-	z-index: 901;
-	right: -62px;
-	top: 50px;
-	background-size: 100% auto;
-	cursor: pointer;
-	padding: 1em 0 0.95em;
-	line-height: 1.04em;
-	text-decoration: none;
-	font-size: 1.04em;
-	box-shadow: -2px 3px 1px rgba(0, 0, 0, 0.23);
-	opacity: 1;
-	text-transform: uppercase;
-	font-weight: 400 !important;
-	.transform(rotate(45deg) translateY(0));
-	.transition(background-color .2s ease-out, transform .45s cubic-bezier(.15, 0, 0, 1) 2.15s, opacity .2s ease-out 2.15);
-	&:hover {}
-	&:before {
-		content: " ";
-		border-top: 1px dashed;
-		position: absolute;
-		top: 3px;
-		width: 100%;
-		left: 0;
-		height: 1px;
-		z-index: 1;
-	}
-	&:after {
-		content: " ";
-		border-top: 1px dashed;
-		position: absolute;
-		bottom: 2px;
-		z-index: 1;
-		left: 0;
-		width: 100%;
-		height: 1px;
-	}
-	@media all and (max-width: 600px) {
-		display: none;
-	}
-}
-
-.mac-bar {
-	display: block;
-	position: relative;
-	height: 24px;
-	width: 100%;
-	z-index: 10;
-	i {
-		height: 12px;
-		width: 12px;
-		display: inline-block;
-		border-radius: 50%;
-		position: absolute;
-		top: 6px;
-		left: 10px;
-		&:nth-child(2) {
-			left: 26px;
-		}
-		&:nth-child(3) {
-			left: 42px;
-		}
-	}
-}
-
 .avatar {
 	height: 100%;
 	width: 100%;
@@ -931,7 +861,6 @@ a.github-fork {
 		height: 100%;
 		.flex-center;
 		justify-content: center;
-		font-family: Helvetica;
 		text-transform: uppercase;
 		font-weight: bold;
 	}
@@ -1095,7 +1024,6 @@ a.github-fork {
 			padding: 15px 12px;
 			line-height: 1;
 			text-decoration: none;
-			border-bottom: 1px solid;
 			&:nth-child(even) {}
 			&:hover {
 				text-decoration: none;
@@ -1208,7 +1136,6 @@ a.github-fork {
 		overflow-y: auto;
 		display: block;
 		-webkit-overflow-scrolling: touch;
-		box-shadow: 0 0 5px rgba(0, 0, 0, 0.4) inset;
 		padding: 20px 10px;
 		.transition-delay(.135s);
 		&.no-shadow {
@@ -1303,13 +1230,12 @@ a.github-fork {
 		direction: rtl;
 		position: absolute;
 		top: @header-min-height;
-		.calc(height, ~"100% - " @header-min-height + @footer-min-height);
+		bottom: @footer-min-height;
 		width: 100%;
 		overflow-x: hidden;
 		overflow-y: auto;
 		display: block;
 		-webkit-overflow-scrolling: touch;
-		box-shadow: 0 0 5px rgba(0, 0, 0, 0.4) inset;
 		> .wrapper {
 			direction: ltr;
 			padding-left: 8px;
@@ -1491,7 +1417,6 @@ a.github-fork {
 			text-overflow: ellipsis;
 			vertical-align: middle;
 			text-decoration: none;
-			text-shadow: 0 1px 1px rgba(0, 0, 0, 0.25);
 			&:hover {
 				text-decoration: none;
 			}
@@ -1647,7 +1572,7 @@ a.github-fork {
 	max-width: 800px;
 	margin: 40px auto;
 	padding: 20px;
-	border-radius: 5px;
+	border-radius: 4px;
 	box-shadow: 1px 1px 4px rgba(0, 0, 0, .3);
 	.cms-page-close {
 		margin-bottom: 10px;
@@ -1771,10 +1696,10 @@ a.github-fork {
 	}
 	.section {
 		border: 1px solid #ddd;
-		border-left: none;
+		border-radius: 4px;
 		background-color: #fff;
 		padding: 20px;
-		margin-bottom: 20px;
+		margin: 20px;
 		&.section-collapsed {
 			.section-content {
 				display: none;
@@ -1915,7 +1840,7 @@ a.github-fork {
 			.section-content {
 				border: 1px solid;
 				padding: 20px;
-				border-radius: 5px;
+				border-radius: 4px;
 				.section-helper {
 					padding: 20px 20px 40px;
 					pre {
@@ -2093,7 +2018,6 @@ a.github-fork {
 	.upload-progress {
 		height: 24px;
 		position: relative;
-		text-shadow: 1px 1px 0px rgba(0, 0, 0, .2);
 		.upload-progress-progress {
 			position: absolute;
 			left: 0px;
@@ -2112,7 +2036,6 @@ a.github-fork {
 			> a {
 				float: right;
 				text-transform: uppercase;
-				text-shadow: none;
 				cursor: pointer;
 			}
 		}
@@ -2150,6 +2073,7 @@ a.github-fork {
 	height: 100%;
 	top: 0;
 	left: 0;
+	border-right: 1px solid;
 	.room-topic {
 		font-size: 14px;
 		opacity: 0.4;
@@ -2254,38 +2178,21 @@ a.github-fork {
 			.input-message-container {
 				position: relative;
 				width: 100%;
-				.inner-right-toolbar {
+				.inner-left-toolbar {
 					position: absolute;
-					right: 10px;
-					top: 10px;
+					left: 13px;
+					top: 9px;
 				}
 			}
 			> .message-buttons {
-				.mic,
-				.stop-mic,
-				.send-button {
-					display: none;
-				}
-				&.show-mic .mic,
-				&.show-mic .stop-mic {
-					display: inline-block;
-				}
-				&.hide-vrec {
-					display: none;
-				}
-				&.show-vrec .video-button {
-					display: inline-block;
-				}
-				&.show-send .send-button {
-					display: inline-block;
-				}
-				width: 44px;
+				flex: 0 0 35px;
 				text-align: center;
 				border: 0;
 				cursor: pointer;
 				display: flex;
 				align-items: center;
 				justify-content: center;
+				position: relative;
 				.transition(background-color 0.1s linear, color 0.1s linear);
 				i {
 					font-size: 18px;
@@ -2297,7 +2204,6 @@ a.github-fork {
 					right: 0;
 					bottom: 0;
 					overflow: hidden;
-					width: 44px;
 					opacity: 0;
 					cursor: pointer;
 				}
@@ -2311,13 +2217,14 @@ a.github-fork {
 			margin: 0px;
 			padding-top: 9px;
 			padding-bottom: 9px;
-			padding-right: 38px;
+			padding-left: 49px;
 			border-radius: 0;
 			overflow-y: hidden;
 			resize: none;
 			line-height: 16px;
-			border-top: 0;
-			border-bottom: 0;
+			border-top-width: 0;
+			border-bottom-width: 0;
+			border-left-width: 0;
 			&.editing {}
 		}
 		.users-typing {
@@ -2773,6 +2680,17 @@ a.github-fork {
 			font-size: 1.5em;
 			line-height: 1em;
 		}
+		blockquote.sandstorm-grain {
+			img {
+				width: 50px;
+			}
+			label {
+				cursor: pointer;
+			}
+			button {
+				display: block;
+			}
+		}
 	}
 	&.temp .body {
 		opacity: .5;
@@ -2882,20 +2800,14 @@ body:not(.is-cordova) {
 	height: 100%;
 	top: 0;
 	right: 0;
-	background: #FCFCFC;
-	border-left: 1px solid #eaeaea;
 	z-index: 130;
 	.tab-button {
 		position: relative;
 		cursor: pointer;
-		padding: 10px 0;
-		background: #FCFCFC;
-		border-bottom: 1px solid #eaeaea;
 		text-align: center;
-		&:hover {
-			background: #EAEAEA;
+		button {
+			height: 38px;
 		}
-
 		.counter {
 			position: absolute;
 			background: #999;
@@ -2910,16 +2822,11 @@ body:not(.is-cordova) {
 			top: 4px;
 			text-align: center;
 		}
-
 		&.active {
-			background-color: #F4F4F4;
-			margin-left: -1px;
-			border-right: 3px solid #ff0000;
-
+			border-right: 3px solid;
 			button {
-				margin-left: 4px;
+				margin-left: 3px;
 			}
-
 			.counter {
 				margin-right: -3px;
 			}
@@ -2985,7 +2892,6 @@ body:not(.is-cordova) {
 
 // FLEX-TAB and FLEX-TAB views
 .flex-tab {
-	border-left: 1px solid;
 	overflow-x: visible;
 	position: fixed;
 	z-index: 110;
@@ -3233,31 +3139,10 @@ body:not(.is-cordova) {
 	}
 	.thumb {
 		width: 100%;
-		height: 200px;
-
-		.transition(height .4s ease);
-
-		cursor: zoom-in;
-		cursor: -moz-zoom-in;
-		cursor: -webkit-zoom-in;
-
-		&.bigger {
-			height: 350px;
-			cursor: zoom-out;
-			cursor: -moz-zoom-out;
-			cursor: -webkit-zoom-out;
-		}
-
-		.avatar {
-			border-radius: 0;
-
-			.avatar-image {
-				border-radius: 0;
-			}
-		}
+		height: 350px;
+		padding: 20px;
 	}
 	nav {
-		margin-left: -4px;
 		padding: 0 20px;
 		.back {
 			float: right;
@@ -3774,7 +3659,6 @@ body:not(.is-cordova) {
 	header {
 		padding: 18px 0 23px;
 		p {
-			//font-family: "Muli";
 			margin: 8px 0 0;
 			font-size: 14px;
 			line-height: 22px;
@@ -3835,10 +3719,11 @@ body:not(.is-cordova) {
 				visibility: hidden;
 			}
 		}
-		input {
+		input, select {
 			box-shadow: 0 0 0;
 			border-width: 0;
 			position: relative;
+			margin-top: 10px;
 			padding: 4px 8px;
 			font-size: 18px;
 			border-bottom: 1px solid;
@@ -3853,10 +3738,41 @@ body:not(.is-cordova) {
 				/* Firefox 19+ */
 				&:-ms-input-placeholder {}
 			}
+			&:focus {
+				border-color: #13679a !important;
+			}
+		}
+		.select-arrow {
+			position: absolute;
+			bottom: 11px;
+			right: 0px;
+			color: #a9a9a9;
+		}
+		label {
+			position: absolute;
+			top: 20px;
+			left: 8px;
+			display: block;
+			font-size: 18px;
+			text-align: left;
+			color: #a9a9a9;
+			transition: all 0.3s;
+		}
+		&.focus label {
+			top: 0;
+			font-size: 12px;
 		}
 		input:-webkit-autofill {}
 		input:-webkit-autofill {
 			-webkit-box-shadow: 0 0 0px 1000px #f4f4f4 inset;
+		}
+
+		.input-error {
+			text-align: left;
+			color: #b40202;
+			padding-left: 4px;
+			font-weight: bold;
+			font-size: 14px;
 		}
 	}
 }
@@ -4255,15 +4171,24 @@ body:not(.is-cordova) {
 		right: 0;
 		z-index: 1000000;
 		display: block;
-		font-size: 50px;
+		font-size: 42px;
 		display: flex;
 		align-items: center;
 		justify-content: center;
+		margin: 0 51px 0 12px;
 		> div {
 			padding: 40px;
 			border-radius: 10px;
 			pointer-events: none;
+			line-height: 1.3em;
+			text-align: center;
 		}
+	}
+}
+
+@media (min-width: 780px) {
+	.dropzone.over .dropzone-overlay {
+		margin: 0 51px 0 270px;
 	}
 }
 
@@ -4526,7 +4451,7 @@ body:not(.is-cordova) {
 	overflow-y: scroll;
 	border: none !important;
 	padding: 8px 10px !important;
-	font-family: "Source Code Pro", Monaco, monospace, Courier, "Lucida Console";
+	font-family: Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
 	font-weight: 500;
 	-webkit-user-select: text;
 	-moz-user-select: text;
