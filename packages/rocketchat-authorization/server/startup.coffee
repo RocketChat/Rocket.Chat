@@ -52,6 +52,7 @@ Meteor.startup ->
 		{ _id: 'view-room-administration',      roles : ['admin'] }
 		{ _id: 'view-statistics',               roles : ['admin'] }
 		{ _id: 'view-user-administration',      roles : ['admin'] }
+		{ _id: 'preview-c-room',                roles : ['admin', 'user'] }
 	]
 
 	for permission in permissions
