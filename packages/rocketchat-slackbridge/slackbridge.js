@@ -193,7 +193,7 @@ class SlackBridge {
 					Meteor.call('setAvatarFromService', url, null, 'url');
 					// Slack's is -18000 which translates to Rocket.Chat's after dividing by 3600
 					if (userData.tz_offset) {
-						Meteor.call('updateUserUtcOffset', userData.tz_offset / 3600);
+						Meteor.call('userSetUtcOffset', userData.tz_offset / 3600);
 					}
 					if (userData.profile.real_name) {
 						RocketChat.models.Users.setName(userData.rocketId, userData.profile.real_name);
