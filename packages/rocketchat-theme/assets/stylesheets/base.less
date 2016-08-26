@@ -710,8 +710,18 @@ label.required:after {
 }
 
 .buttons-group {
-	.button~.button {
+	display: -webkit-flex;
+	display: -moz-flex;
+	display: flex;
+	margin-bottom: 4px;
+	.button {
 		margin-left: 4px;
+	}
+	.button:first-child {
+		margin-left: 0px;
+		-webkit-flex-grow: 1;
+		-moz-flex-grow: 1;
+		flex-grow: 1;
 	}
 }
 
@@ -4349,17 +4359,6 @@ body:not(.is-cordova) {
 				-moz-justify-content: center;
 			}
 		}
-	}
-}
-
-.buttons-group {
-	display: -webkit-flex;
-	display: -moz-flex;
-	display: flex;
-	button:first-child {
-		-webkit-flex-grow: 1;
-		-moz-flex-grow: 1;
-		flex-grow: 1;
 	}
 }
 
