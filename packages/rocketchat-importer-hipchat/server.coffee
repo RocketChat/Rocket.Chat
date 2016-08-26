@@ -135,7 +135,7 @@ Importer.HipChat = class Importer.HipChat extends Importer.Base
 								Meteor.call 'setUsername', user.mention_name
 								Meteor.call 'joinDefaultChannels', true
 								Meteor.call 'setAvatarFromService', user.photo_url, null, 'url'
-								Meteor.call 'updateUserUtcOffset', parseInt moment().tz(user.timezone).format('Z').toString().split(':')[0]
+								Meteor.call 'userSetUtcOffset', parseInt moment().tz(user.timezone).format('Z').toString().split(':')[0]
 
 							if user.name?
 								RocketChat.models.Users.setName userId, user.name

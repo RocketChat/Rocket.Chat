@@ -33,6 +33,10 @@ button {
 	font-style: inherit;
 }
 
+button:not(.button-block)~button:not(.button-block) {
+	margin-left: 4px;
+}
+
 .allow-text-selection {
 	-webkit-user-select: text;
 	-moz-user-select: text;
@@ -3154,6 +3158,11 @@ body:not(.is-cordova) {
 				&:hover {
 					color: #006db0;
 					text-decoration: underline;
+				}
+				p {
+					overflow: hidden;
+					text-overflow: ellipsis;
+					white-space: nowrap;
 				}
 			}
 		}
