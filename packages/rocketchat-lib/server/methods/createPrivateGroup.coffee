@@ -6,4 +6,4 @@ Meteor.methods
 		unless RocketChat.authz.hasPermission(Meteor.userId(), 'create-p')
 			throw new Meteor.Error 'error-not-allowed', "Not allowed", { method: 'createPrivateGroup' }
 
-		return RocketChat.createPrivateGroup(name, Meteor.user()?.username, members);
+		return RocketChat.createRoom('p', name, Meteor.user()?.username, members);
