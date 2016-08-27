@@ -90,6 +90,12 @@ Template.messageBox.events
 			if err?
 				toastr.error t(err.reason)
 
+			if RocketChat.authz.hasAllPermission('preview-c-room') is false and RoomHistoryManager.getRoom(@_id).loaded is 0
+				RoomManager.getOpenedRoomByRid(@_id).streamActive = false
+				RoomManager.getOpenedRoomByRid(@_id).ready = false
+				RoomHistoryManager.getRoom(@_id).loaded = undefined
+				RoomManager.computation.invalidate()
+
 	'focus .input-message': (event) ->
 		KonchatNotification.removeRoomNotification @_id
 
