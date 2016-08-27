@@ -45,6 +45,7 @@ Meteor.startup ->
 		{ _id: 'view-full-other-user-info',     roles : ['admin'] }
 		{ _id: 'view-history',                  roles : ['admin', 'user'] }
 		{ _id: 'view-joined-room',              roles : ['guest', 'bot'] }
+		{ _id: 'view-join-code',                roles : ['admin'] }
 		{ _id: 'view-logs',                     roles : ['admin'] }
 		{ _id: 'view-other-user-channels',      roles : ['admin'] }
 		{ _id: 'view-p-room',                   roles : ['admin', 'user'] }
