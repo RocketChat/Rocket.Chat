@@ -4,7 +4,12 @@ msgStream.allowWrite('none')
 
 msgStream.allowRead (eventName) ->
 	try
-		return false if not Meteor.call 'canAccessRoom', eventName, this.userId
+		room = Meteor.call 'canAccessRoom', eventName, this.userId
+		if not room
+			return false
+
+		if room.t is 'c' and not RocketChat.authz.hasPermission(this.userId, 'preview-c-room') and room.usernames.indexOf(room.username) is -1
+			return false
 
 		return true
 	catch e

@@ -237,6 +237,7 @@ Tracker.autorun ->
 	onlineUsers: onlineUsers
 	updateMentionsMarksOfRoom: updateMentionsMarksOfRoom
 	getOpenedRoomByRid: getOpenedRoomByRid
+	computation: computation
 
 
 RocketChat.callbacks.add 'afterLogoutCleanUp', ->
