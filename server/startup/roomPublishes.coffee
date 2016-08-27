@@ -12,6 +12,10 @@ Meteor.startup ->
 				archived: 1
 				jitsiTimeout: 1
 				description: 1
+				joinCodeRequired: 1
+
+		if RocketChat.authz.hasPermission(this.userId, 'view-join-code')
+			options.fields.joinCode = 1
 
 		if RocketChat.authz.hasPermission(this.userId, 'view-c-room')
 			# CACHE: can we stop using publications here?
@@ -21,6 +25,7 @@ Meteor.startup ->
 			if roomId.length > 0
 				# CACHE: can we stop using publications here?
 				return RocketChat.models.Rooms.findById(roomId[0]?.rid, options)
+
 		return this.ready()
 
 	RocketChat.roomTypes.setPublish 'p', (identifier) ->
