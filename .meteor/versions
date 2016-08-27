@@ -156,7 +156,6 @@ rocketchat:katex@0.0.1
 rocketchat:ldap@0.0.1
 rocketchat:ldapjs@1.0.0
 rocketchat:lib@0.0.1
-rocketchat:livechat@0.0.1
 rocketchat:logger@0.0.1
 rocketchat:mailer@0.0.1
 rocketchat:mapview@0.0.1
@@ -189,7 +188,7 @@ rocketchat:slashcommands-mute@0.0.1
 rocketchat:slashcommands-open@0.0.1
 rocketchat:slashcommands-topic@0.0.1
 rocketchat:slashcommands-unarchive@0.0.1
-rocketchat:sms@0.0.1
+rocketchat:smarsh-connector@0.0.1
 rocketchat:spotify@0.0.1
 rocketchat:statistics@0.0.1
 rocketchat:streamer@0.5.0
