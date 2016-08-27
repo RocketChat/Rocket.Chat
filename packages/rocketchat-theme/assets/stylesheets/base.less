@@ -577,18 +577,9 @@ textarea[disabled] {
 		font-size: 14px;
 		padding: 8px 8px;
 	}
-	> i {
-		visibility: hidden;
-		&:after {
-			content: " ";
-			visibility: visible;
-			background-image: url('images/logo/loading.gif');
-			background-position: center;
-			background-repeat: no-repeat;
-			display: block;
-			height: 40px;
-			margin-bottom: 12px;
-		}
+	.loading {
+		position: relative;
+		min-height: 60px;
 	}
 }
 
