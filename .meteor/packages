@@ -63,7 +63,7 @@ rocketchat:integrations
 rocketchat:katex
 rocketchat:ldap
 rocketchat:lib
-#rocketchat:livechat
+rocketchat:livechat
 rocketchat:logger
 rocketchat:mailer
 rocketchat:markdown
