@@ -10,13 +10,16 @@ Package.onUse(function(api) {
 
 	api.use([
 		'ecmascript',
-		'rocketchat:lib'
+		'rocketchat:lib',
+		'underscore',
+		'momentjs:moment'
 	]);
 
 	api.addFiles('lib/rocketchat.js', [ 'client', 'server' ]);
 	api.addFiles([
 		'server/settings.js',
 		'server/models/SmarshHistory.js',
+		'server/functions/sendEmail.js',
 		'server/functions/generateEml.js',
 		'server/startup.js'
 	], 'server');
