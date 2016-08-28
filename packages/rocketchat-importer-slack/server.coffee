@@ -135,7 +135,7 @@ Importer.Slack = class Importer.Slack extends Importer.Base
 								Meteor.call 'setAvatarFromService', url, null, 'url'
 								# Slack's is -18000 which translates to Rocket.Chat's after dividing by 3600
 								if user.tz_offset
-									Meteor.call 'updateUserUtcOffset', user.tz_offset / 3600
+									Meteor.call 'userSetUtcOffset', user.tz_offset / 3600
 
 							RocketChat.models.Users.update { _id: userId }, { $addToSet: { importIds: user.id } }
 
