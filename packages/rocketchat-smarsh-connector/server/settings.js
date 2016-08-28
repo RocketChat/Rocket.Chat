@@ -1,15 +1,21 @@
 RocketChat.settings.addGroup('Smarsh', function addSettings() {
 	this.add('Smarsh_Enabled', false, {
 		type: 'boolean',
-		public: true,
-		i18nLabel: 'Smarsh_Enabled'
+		i18nLabel: 'Smarsh_Enabled',
+		enableQuery: {
+			_id: 'From_Email',
+			value: {
+				$exists: 1,
+				$ne: ''
+			}
+		}
 	});
 	this.add('Smarsh_Email', '', {
 		type: 'string',
-		public: true,
-		i18nLabel: 'Smarsh_Email'
+		i18nLabel: 'Smarsh_Email',
+		placeholder: 'email@domain.com'
 	});
-	this.add('Smarsh_Interval', 'every_30_seconds', {
+	this.add('Smarsh_Interval', 'every_30_minutes', {
 		type: 'select',
 		values: [{
 			key: 'every_30_seconds',
@@ -18,9 +24,18 @@ RocketChat.settings.addGroup('Smarsh', function addSettings() {
 			key: 'every_30_minutes',
 			i18nLabel: 'every_30_minutes'
 		}, {
-			key: 'every_60_minutes',
+			key: 'every_1_hours',
 			i18nLabel: 'every_hour'
+		}, {
+			key: 'every_6_hours',
+			i18nLabel: 'every_six_hours'
 		}],
-		public: true
+		enableQuery: {
+			_id: 'From_Email',
+			value: {
+				$exists: 1,
+				$ne: ''
+			}
+		}
 	});
 });
