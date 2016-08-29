@@ -8,6 +8,7 @@
 					</div>
 				{{/if}}
 				<div class="message-popup-items">
+					{{> loading}}
 					{{#each data}}
 						<div class="popup-item" data-id="{{_id}}">
 							{{> Template.dynamic template=../template}}
