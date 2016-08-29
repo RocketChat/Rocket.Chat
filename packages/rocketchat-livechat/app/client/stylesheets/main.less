@@ -384,10 +384,11 @@ input:focus {
 		.input-wrapper {
 			padding: 6px 6px 0 6px;
 			padding-right: 30px;
+			
 			textarea {
 				display: block;
 				padding: 6px 8px;
-				padding-right: 76; //38px;
+				padding-right: 38px;
 				overflow-y: auto;
 				resize: none;
 				margin: 0;
@@ -400,8 +401,12 @@ input:focus {
 				background-color: #fff;
 				position: relative;
 			}
+		}	
+	
+		.attachments {
+			padding-right: 50px;
 		}
-		.send-button, .attach-button  {
+		.send-button  {
 			float: right;
 			position: relative;
 			right: 7px;
@@ -414,6 +419,22 @@ input:focus {
 				color: @primary-font-color;
 			}
 		}
+
+		.attach-button {
+		    padding-left: 3px;
+			float: right;
+			position: relative;
+			right: 7px;
+			top: -20px;
+			color: @secondary-font-color;
+			cursor: pointer;
+			.transition(color .15s ease-out);
+
+			&:hover {
+				color: @primary-font-color;
+			}
+		}
+
 		.toggle-options {
 			clear: both;
 			color: @secondary-font-color;
@@ -667,7 +688,7 @@ input:focus {
 
 .upload-preview {
 	.upload-preview-file {
-		height: 150px;
+		height: 110px;
 		background-size: contain;
 		background-repeat: no-repeat;
 		background-position: center center;

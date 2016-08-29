@@ -213,7 +213,8 @@ RocketChat.Livechat = {
 			'Language',
 			'FileUpload_MediaTypeWhiteList',
 			'FileUpload_MaxFileSize',
-			'FileUpload_Storage_Type'
+			'FileUpload_Storage_Type',
+			'FileUpload_Livechat_Enabled'
 		]).forEach((setting) => {
 			settings[setting._id] = setting.value;
 		});

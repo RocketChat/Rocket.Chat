@@ -46,7 +46,7 @@ Meteor.methods({
 		info.language = initSettings.Language;
 
 		// Attachments info
-		info.allowAttachments = true; // need to set as setting
+		info.allowAttachments = initSettings.FileUpload_Livechat_Enabled; // need to set as setting
 		info.storageType = initSettings.FileUpload_Storage_Type;
 		info.maxFileSize = initSettings.FileUpload_MaxFileSize;
 		info.mediaTypeWhiteList = initSettings.FileUpload_MediaTypeWhiteList;

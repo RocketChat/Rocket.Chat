@@ -24,6 +24,9 @@ Template.messages.helpers({
 		} else {
 			return t('Options');
 		}
+	},
+	allowAttachments() {
+		return Session.get('allowAttachments');	
 	}
 });
 

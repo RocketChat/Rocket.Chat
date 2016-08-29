@@ -43,10 +43,13 @@ readAsArrayBuffer = (file, callback) ->
 					timer: 1000
 				return
 
-			text = ''
+			console.log file
+
+			text = """<p>Upload #{file.name}?</p> <br/>"""
+			# text = ''
 
 			if file.type is 'audio'
-				text = """
+				text += """
 					<div class='upload-preview'>
 						<audio  style="width: 100%;" controls="controls">
 							<source src="#{fileContent}" type="audio/wav">
@@ -56,7 +59,7 @@ readAsArrayBuffer = (file, callback) ->
 					<div class='upload-preview-title'>#{Handlebars._escape(file.name)}</div>
 				"""
 			else if file.type is 'video'
-				text = """
+				text += """
 					<div class='upload-preview'>
 						<video  style="width: 100%;" controls="controls">
 							<source src="#{fileContent}" type="video/webm">
@@ -67,14 +70,14 @@ readAsArrayBuffer = (file, callback) ->
 				"""
 			else
 				# <div class='upload-preview-title'>Would you like to send #{Handlebars._escape(file.name)}?</div>
-				text = """
+				text += """
 					<div class='upload-preview'>
 						<div class='upload-preview-file' style='background-image: url(#{fileContent})'></div>
 					</div>
 				"""
 
 			swal
-				title: 'send?'
+				title: ''
 				text: text
 				showCancelButton: true
 				closeOnConfirm: false
