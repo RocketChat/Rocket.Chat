@@ -1,8 +1,5 @@
 Meteor.methods({
 	'sendFileMessage'(roomId, store, file) {
-		console.log("sendFileMessage");
-		console.log(file);
-		console.log(roomId);
 		if (!Meteor.userId()) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'sendFileMessage' });
 		}

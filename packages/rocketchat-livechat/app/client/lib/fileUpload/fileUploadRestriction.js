@@ -1,5 +1,5 @@
-this.fileUploadMediaWhiteList = function() {
-	var mediaTypeWhiteList = RocketChat.settings.get('FileUpload_MediaTypeWhiteList');
+FileUpload.fileUploadMediaWhiteList = function() {
+	var mediaTypeWhiteList = FileUpload.mediaTypeWhiteList;
 
 	if (!mediaTypeWhiteList || mediaTypeWhiteList === '*') {
 		return;
@@ -9,9 +9,9 @@ this.fileUploadMediaWhiteList = function() {
 	});
 };
 
-this.fileUploadIsValidContentType = function(type) {
+FileUpload.fileUploadIsValidContentType = function(type) {
 	var list, wildCardGlob, wildcards;
-	list = RocketChat.fileUploadMediaWhiteList();
+	list = FileUpload.fileUploadMediaWhiteList();
 	if (!list || _.contains(list, type)) {
 		return true;
 	} else {

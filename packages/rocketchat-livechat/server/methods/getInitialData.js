@@ -45,6 +45,12 @@ Meteor.methods({
 		info.displayOfflineForm = initSettings.Livechat_display_offline_form;
 		info.language = initSettings.Language;
 
+		// Attachments info
+		info.allowAttachments = true; // need to set as setting
+		info.storageType = initSettings.FileUpload_Storage_Type;
+		info.maxFileSize = initSettings.FileUpload_MaxFileSize;
+		info.mediaTypeWhiteList = initSettings.FileUpload_MediaTypeWhiteList;
+
 		RocketChat.models.LivechatTrigger.find().forEach((trigger) => {
 			info.triggers.push(trigger);
 		});

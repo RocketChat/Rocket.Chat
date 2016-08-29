@@ -108,6 +108,15 @@ Template.livechatWindow.onCreated(function() {
 			result.departments.forEach((department) => {
 				Department.insert(department);
 			});
+
+			// Attachments information 
+			Session.set({'allowAttachments': result.allowAttachments});
+			FileUpload.mediaTypeWhiteList = result.mediaTypeWhiteList;
+			FileUpload.maxFileSize = result.maxFileSize;	
+			FileUpload.storageType = result.storageType;
+
+			console.log("fileUpload data");
+			console.log(FileUpload);
 		}
 	});
 });

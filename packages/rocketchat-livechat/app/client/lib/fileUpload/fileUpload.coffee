@@ -13,6 +13,9 @@ readAsArrayBuffer = (file, callback) ->
 
 	reader.readAsArrayBuffer file
 
+
+
+
 @fileUpload = (files) ->
 	roomId = visitor.getRoom()
 	files = [].concat files
@@ -26,7 +29,7 @@ readAsArrayBuffer = (file, callback) ->
 			return
 
 		readAsDataURL file.file, (fileContent) ->
-			if not fileUploadIsValidContentType file.file.type
+			if not FileUpload.fileUploadIsValidContentType file.file.type
 				swal
 					title: t('FileUpload_MediaType_NotAccepted')
 					type: 'error'
@@ -92,9 +95,6 @@ readAsArrayBuffer = (file, callback) ->
 
 					upload = fileUploadHandler record, file.file, data
 
-					console.log 'upload'
-					console.log upload
-
 					# Reactive method to get upload progress
 					Tracker.autorun (c) ->
 						uploading = undefined
@@ -119,8 +119,6 @@ readAsArrayBuffer = (file, callback) ->
 							uploading.push item
 
 						item.percentage = Math.round(upload.getProgress() * 100) or 0
-						console.log 'item'
-						console.log item
 
 						Session.set 'uploading', uploading
 
