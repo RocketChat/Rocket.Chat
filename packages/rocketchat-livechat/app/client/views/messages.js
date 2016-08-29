@@ -53,22 +53,51 @@ Template.messages.events({
 	'click .toggle-options': function(event, instance) {
 		instance.showOptions.set(!instance.showOptions.get());
 	},	
-	'change #theFile': function(event, instance) {
-		var file;
-		if (event.target && event.target.files[0]) {
-			file = event.target.files[0];
+	'click .attach-button': function(event) {
+		var elem = document.getElementById('theFile');
+		if(elem && document.createEvent) {
+			var evt = document.createEvent("MouseEvents");
+			evt.initEvent("click", true, false);
+			elem.dispatchEvent(evt);
 		}
-		var sent; 
+	},
+	'change #theFile': function(event, instance) {
+		console.log("file changed");
 
-		instance.uploader.send(file, function (error, downloadUrl) {
-		  if (error) {
-		    console.log(error)
-		  } else {
-			sent = instance.chatMessages.sendAttachment(visitor.getRoom(), file, downloadUrl);
-			// return sent;	
-		  }
-		});
-		return sent;
+		var files = event.target.files
+		if (!files || files.length === 0) {
+			files = []
+		}
+
+		// console.log(files);
+
+		console.log('length: ' + files.length);
+
+		var filesToUpload = []
+
+		for (var i = 0; i < files.length; i++) {
+			var file = files[i];
+			console.log("file");
+			console.log(file);
+  			filesToUpload.push({
+    			file: file,
+    			name: file.name
+  			});
+  		}
+  		console.log("filesToUpload");
+		console.log(filesToUpload);
+
+		fileUpload(filesToUpload);
+
+		// instance.uploader.send(file, function (error, downloadUrl) {
+		//   if (error) {
+		//     console.log(error)
+		//   } else {
+		// 	// sent = instance.chatMessages.sendAttachment(visitor.getRoom(), file, downloadUrl);
+		// 	// return sent;	
+		//   }
+		// });
+		return true;
 	}
 });
 
