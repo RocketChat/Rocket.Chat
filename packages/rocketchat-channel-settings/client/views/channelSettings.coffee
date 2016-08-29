@@ -1,38 +1,35 @@
 Template.channelSettings.helpers
-	canEdit: ->
-		return RocketChat.authz.hasAllPermission('edit-room', @rid)
-	canArchiveOrUnarchive: ->
-		return RocketChat.authz.hasAtLeastOnePermission(['archive-room', 'unarchive-room'], @rid)
+	toArray: (obj) ->
+		arr = []
+		for key, value of obj
+			arr.push
+				$key: key
+				$value: value
+		return arr
+
+	valueOf: (obj, key) ->
+		return obj?[key]
+
+	showSetting: (setting, room) ->
+		if setting.showInDirect is false
+			return room.t isnt 'd'
+		return true
+
+	settings: ->
+		return Template.instance().settings
+
+	getRoom: ->
+		return ChatRoom.findOne(@rid)
+
 	editing: (field) ->
 		return Template.instance().editing.get() is field
-	notDirect: ->
-		return ChatRoom.findOne(@rid, { fields: { t: 1 }})?.t isnt 'd'
-	roomType: ->
-		return ChatRoom.findOne(@rid, { fields: { t: 1 }})?.t
+
 	channelSettings: ->
 		return RocketChat.ChannelSettings.getOptions()
-	roomTypeDescription: ->
-		roomType = ChatRoom.findOne(@rid, { fields: { t: 1 }})?.t
-		if roomType is 'c'
-			return t('Channel')
-		else if roomType is 'p'
-			return t('Private_Group')
-	roomName: ->
-		return ChatRoom.findOne(@rid, { fields: { name: 1 }})?.name
-	roomTopic: ->
-		return ChatRoom.findOne(@rid, { fields: { topic: 1 }})?.topic
-	roomTopicUnescaped: ->
-		return s.unescapeHTML ChatRoom.findOne(@rid, { fields: { topic: 1 }})?.topic
-	roomDescription: ->
-		return ChatRoom.findOne(@rid, { fields: { description: 1 }})?.description
-	archivationState: ->
-		return ChatRoom.findOne(@rid, { fields: { archived: 1 }})?.archived
-	archivationStateDescription: ->
-		archivationState = ChatRoom.findOne(@rid, { fields: { archived: 1 }})?.archived
-		if archivationState is true
-			return t('Room_archivation_state_true')
-		else
-			return t('Room_archivation_state_false')
+
+	unscape: (value) ->
+		return s.unescapeHTML value
+
 	canDeleteRoom: ->
 		roomType = ChatRoom.findOne(@rid, { fields: { t: 1 }})?.t
 		return roomType? and RocketChat.authz.hasAtLeastOnePermission("delete-#{roomType}", @rid)
@@ -85,77 +82,110 @@ Template.channelSettings.events
 Template.channelSettings.onCreated ->
 	@editing = new ReactiveVar
 
-	@validateRoomType = =>
-		type = @$('input[name=roomType]:checked').val()
-		if type not in ['c', 'p']
-			toastr.error t('error-invalid-room-type', type)
-		return true
+	@settings =
+		name:
+			type: 'text'
+			label: 'Name'
+			canView: (room) => room.t isnt 'd'
+			canEdit: (room) => RocketChat.authz.hasAllPermission('edit-room', room._id)
+			save: (value, room) ->
+				if not RocketChat.authz.hasAllPermission('edit-room', room._id) or room.t not in ['c', 'p']
+					return toastr.error t('error-not-allowed')
 
-	@validateRoomName = =>
-		rid = Template.currentData()?.rid
-		room = ChatRoom.findOne rid
+				try
+					nameValidation = new RegExp '^' + RocketChat.settings.get('UTF8_Names_Validation') + '$'
+				catch
+					nameValidation = new RegExp '^[0-9a-zA-Z-_.]+$'
 
-		if not RocketChat.authz.hasAllPermission('edit-room', rid) or room.t not in ['c', 'p']
-			toastr.error t('error-not-allowed')
-			return false
+				if not nameValidation.test value
+					return toastr.error t('error-invalid-room-name', { room_name: name: value })
 
-		name = $('input[name=roomName]').val()
+				if @validateRoomName()
+					RocketChat.callbacks.run 'roomNameChanged', { _id: room._id, name: value }
+					Meteor.call 'saveRoomSettings', room._id, 'roomName', value, (err, result) ->
+						return handleError err if err
+						toastr.success TAPi18n.__ 'Room_name_changed_successfully'
 
-		try
-			nameValidation = new RegExp '^' + RocketChat.settings.get('UTF8_Names_Validation') + '$'
-		catch
-			nameValidation = new RegExp '^[0-9a-zA-Z-_.]+$'
+		topic:
+			type: 'markdown'
+			label: 'Topic'
+			canView: (room) => true
+			canEdit: (room) => RocketChat.authz.hasAllPermission('edit-room', room._id)
+			save: (value, room) ->
+				Meteor.call 'saveRoomSettings', room._id, 'roomTopic', value, (err, result) ->
+					return handleError err if err
+					toastr.success TAPi18n.__ 'Room_topic_changed_successfully'
+					RocketChat.callbacks.run 'roomTopicChanged', room
 
-		if not nameValidation.test name
-			toastr.error t('error-invalid-room-name', { room_name: name: name })
-			return false
+		description:
+			type: 'text'
+			label: 'Description'
+			canView: (room) => room.t isnt 'd'
+			canEdit: (room) => RocketChat.authz.hasAllPermission('edit-room', room._id)
+			save: (value, room) ->
+				Meteor.call 'saveRoomSettings', room._id, 'roomDescription', value, (err, result) ->
+					return handleError err if err
+					toastr.success TAPi18n.__ 'Room_description_changed_successfully'
 
-		return true
+		t:
+			type: 'select'
+			label: 'Type'
+			options:
+				c: 'Channel'
+				p: 'Private_Group'
+			canView: (room) => room.t in ['c', 'p']
+			canEdit: (room) => RocketChat.authz.hasAllPermission('edit-room', room._id)
+			save: (value, room) ->
+				console.log value
+				if value not in ['c', 'p']
+					return toastr.error t('error-invalid-room-type', value)
 
-	@validateRoomTopic = =>
-		return true
+				RocketChat.callbacks.run 'roomTypeChanged', room
+				Meteor.call 'saveRoomSettings', room._id, 'roomType', value, (err, result) ->
+					return handleError err if err
+					toastr.success TAPi18n.__ 'Room_type_changed_successfully'
+
+		archived:
+			type: 'boolean'
+			label: 'Room_archivation_state_true'
+			canView: (room) => room.t isnt 'd'
+			canEdit: (room) => RocketChat.authz.hasAtLeastOnePermission(['archive-room', 'unarchive-room'], room._id)
+			save: (value, room) ->
+				if value is true
+					Meteor.call 'archiveRoom', room._id, (err, results) ->
+						return handleError err if err
+						toastr.success TAPi18n.__ 'Room_archived'
+						RocketChat.callbacks.run 'archiveRoom', room
+				else
+					Meteor.call 'unarchiveRoom', room._id, (err, results) ->
+						return handleError err if err
+						toastr.success TAPi18n.__ 'Room_unarchived'
+						RocketChat.callbacks.run 'unarchiveRoom', room
+
+		joinCode:
+			type: 'text'
+			label: 'Code'
+			canView: (room) => room.t is 'c' and RocketChat.authz.hasAllPermission('edit-room', room._id)
+			canEdit: (room) => RocketChat.authz.hasAllPermission('edit-room', room._id)
+			save: (value, room) ->
+				Meteor.call 'saveRoomSettings', room._id, 'joinCode', value, (err, result) ->
+					return handleError err if err
+					toastr.success TAPi18n.__ 'Room_code_changed_successfully'
+					RocketChat.callbacks.run 'roomCodeChanged', room
+
 
 	@saveSetting = =>
 		room = ChatRoom.findOne @data?.rid
-		switch @editing.get()
-			when 'roomName'
-				if $('input[name=roomName]').val() is room.name
-					toastr.success TAPi18n.__ 'Room_name_changed_successfully'
-					RocketChat.callbacks.run 'roomNameChanged', ChatRoom.findOne(room._id)
-				else
-					if @validateRoomName()
-						RocketChat.callbacks.run 'roomNameChanged', { _id: room._id, name: @$('input[name=roomName]').val() }
-						Meteor.call 'saveRoomSettings', room._id, 'roomName', @$('input[name=roomName]').val(), (err, result) ->
-							return handleError err if err
-							toastr.success TAPi18n.__ 'Room_name_changed_successfully'
-			when 'roomTopic'
-				if @validateRoomTopic()
-					Meteor.call 'saveRoomSettings', room._id, 'roomTopic', @$('input[name=roomTopic]').val(), (err, result) ->
-						return handleError err if err
-						toastr.success TAPi18n.__ 'Room_topic_changed_successfully'
-						RocketChat.callbacks.run 'roomTopicChanged', ChatRoom.findOne(result.rid)
-			when 'roomType'
-				if @validateRoomType()
-					RocketChat.callbacks.run 'roomTypeChanged', room
-					Meteor.call 'saveRoomSettings', room._id, 'roomType', @$('input[name=roomType]:checked').val(), (err, result) ->
-						return handleError err if err
-						toastr.success TAPi18n.__ 'Room_type_changed_successfully'
-			when 'roomDescription'
-				if @validateRoomTopic()
-					Meteor.call 'saveRoomSettings', room._id, 'roomDescription', @$('input[name=roomDescription]').val(), (err, result) ->
-						return handleError err if err
-						toastr.success TAPi18n.__ 'Room_description_changed_successfully'
-			when 'archivationState'
-				if @$('input[name=archivationState]:checked').val() is 'true'
-					if room.archived isnt true
-						Meteor.call 'archiveRoom', room._id, (err, results) ->
-							return handleError err if err
-							toastr.success TAPi18n.__ 'Room_archived'
-							RocketChat.callbacks.run 'archiveRoom', ChatRoom.findOne(room._id)
-				else
-					if room.archived is true
-						Meteor.call 'unarchiveRoom', room._id, (err, results) ->
-							return handleError err if err
-							toastr.success TAPi18n.__ 'Room_unarchived'
-							RocketChat.callbacks.run 'unarchiveRoom', ChatRoom.findOne(room._id)
+		field = @editing.get()
+
+		if @settings[field].type is 'select'
+			value = @$(".channel-settings form [name=#{field}]:checked").val()
+		else if @settings[field].type is 'boolean'
+			value = @$(".channel-settings form [name=#{field}]:checked").val() is 'true'
+		else
+			value = @$(".channel-settings form [name=#{field}]").val()
+
+		if value isnt room[field]
+			@settings[field].save(value, room)
+
 		@editing.set()
