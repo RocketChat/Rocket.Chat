@@ -17,72 +17,74 @@ function _getLink(attachment) {
 }
 
 RocketChat.smarsh.generateEml = () => {
-	RocketChat.models.Rooms.find().forEach((room) => {
-		const smarshHistory = RocketChat.smarsh.History.findOne({ _id: room._id });
-		const query = { rid: room._id };
+	Meteor.defer(() => {
+		RocketChat.models.Rooms.find().forEach((room) => {
+			const smarshHistory = RocketChat.smarsh.History.findOne({ _id: room._id });
+			const query = { rid: room._id };
 
-		if (smarshHistory) {
-			query.ts = { $gt: smarshHistory.lastRan };
-		}
-
-		const date = new Date();
-		const rows = [];
-		const data = {
-			users: [],
-			msgs: 0,
-			files: [],
-			time: smarshHistory ? moment(date).diff(moment(smarshHistory.lastRan), 'minutes') : moment(date).diff(moment(room.ts), 'minutes'),
-			room: room.name ? `#${room.name}` : `Direct Message Between: ${room.usernames.join(' & ')}`
-		};
-
-		RocketChat.models.Messages.find(query).forEach((message) => {
-			rows.push(opentr);
-
-			//The timestamp
-			rows.push(open20td);
-			rows.push(message.ts.toISOString());
-			rows.push(closetd);
-
-			//The sender
-			rows.push(open20td);
-			const sender = RocketChat.models.Users.findOne({ _id: message.u._id });
-			if (data.users.indexOf(sender._id) === -1) {
-				data.users.push(sender._id);
+			if (smarshHistory) {
+				query.ts = { $gt: smarshHistory.lastRan };
 			}
-			rows.push(`${sender.name} &lt;${sender.emails[0].address}&gt;`);
-			rows.push(closetd);
 
-			//The message
-			rows.push(open60td);
-			data.msgs++;
-			if (message.t) {
-				const messageType = RocketChat.MessageTypes.getType(message);
-				rows.push(TAPi18n.__(messageType.message, messageType.data(message), 'en'));
-			} else if (message.file) {
-				data.files.push(message.file._id);
-				rows.push(`${message.attachments[0].title} (${_getLink(message.attachments[0])})`);
-			} else {
-				rows.push(message.msg);
+			const date = new Date();
+			const rows = [];
+			const data = {
+				users: [],
+				msgs: 0,
+				files: [],
+				time: smarshHistory ? moment(date).diff(moment(smarshHistory.lastRan), 'minutes') : moment(date).diff(moment(room.ts), 'minutes'),
+				room: room.name ? `#${room.name}` : `Direct Message Between: ${room.usernames.join(' & ')}`
+			};
+
+			RocketChat.models.Messages.find(query).forEach((message) => {
+				rows.push(opentr);
+
+				//The timestamp
+				rows.push(open20td);
+				rows.push(message.ts.toISOString());
+				rows.push(closetd);
+
+				//The sender
+				rows.push(open20td);
+				const sender = RocketChat.models.Users.findOne({ _id: message.u._id });
+				if (data.users.indexOf(sender._id) === -1) {
+					data.users.push(sender._id);
+				}
+				rows.push(`${sender.name} &lt;${sender.emails[0].address}&gt;`);
+				rows.push(closetd);
+
+				//The message
+				rows.push(open60td);
+				data.msgs++;
+				if (message.t) {
+					const messageType = RocketChat.MessageTypes.getType(message);
+					rows.push(TAPi18n.__(messageType.message, messageType.data(message), 'en'));
+				} else if (message.file) {
+					data.files.push(message.file._id);
+					rows.push(`${message.attachments[0].title} (${_getLink(message.attachments[0])})`);
+				} else {
+					rows.push(message.msg);
+				}
+				rows.push(closetd);
+
+				rows.push(closetr);
+			});
+
+			if (rows.length !== 0) {
+				const result = start + rows.join('') + end;
+
+				RocketChat.smarsh.History.upsert({ _id: room._id }, {
+					_id: room._id,
+					lastRan: date,
+					lastResult: result
+				});
+
+				RocketChat.smarsh.sendEmail({
+					body: result,
+					subject: `Rocket.Chat, ${data.users.length} Users, ${data.msgs} Messages, ${data.files.length} Files, ${data.time} Minutes, in ${data.room}`,
+					files: data.files
+				});
 			}
-			rows.push(closetd);
-
-			rows.push(closetr);
 		});
-
-		if (rows.length !== 0) {
-			const result = start + rows.join('') + end;
-
-			RocketChat.smarsh.History.upsert({ _id: room._id }, {
-				_id: room._id,
-				lastRan: date,
-				lastResult: result
-			});
-
-			RocketChat.smarsh.sendEmail({
-				body: result,
-				subject: `Rocket.Chat, ${data.users.length} Users, ${data.msgs} Messages, ${data.files.length} Files, ${data.time} Minutes, in ${data.room}`,
-				files: data.files
-			});
-		}
 	});
 };
