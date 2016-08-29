@@ -577,18 +577,9 @@ textarea[disabled] {
 		font-size: 14px;
 		padding: 8px 8px;
 	}
-	> i {
-		visibility: hidden;
-		&:after {
-			content: " ";
-			visibility: visible;
-			background-image: url('images/logo/loading.gif');
-			background-position: center;
-			background-repeat: no-repeat;
-			display: block;
-			height: 40px;
-			margin-bottom: 12px;
-		}
+	.loading {
+		position: relative;
+		min-height: 60px;
 	}
 }
 
@@ -622,19 +613,16 @@ label.required:after {
 .toggle-favorite {}
 
 .loading {
-	background-image: url('images/loading.gif');
-	background-repeat: no-repeat;
-	background-position: 50%;
-	width: 100%;
-	height: 100%;
-	position: fixed;
 	top: 0;
+	right: 0;
+	bottom: 0;
 	left: 0;
-	&.inline {
-		position: relative;
-		min-height: 40px;
-		background-size: 24px 24px;
-	}
+	display: flex;
+	align-items: center;
+	position: absolute;
+	justify-content: center;
+	font-size: 2em;
+	color: #ccc;
 }
 
 .btn-loading {
@@ -2316,10 +2304,11 @@ label.required:after {
 .message-popup-results {
 	&.notready {
 		.message-popup-items {
-			background-image: url(images/logo/loading.gif);
-			background-repeat: no-repeat;
-			background-position: 50% 50%;
+			position: relative;
 			height: 100px;
+			.loading {
+				display: flex;
+			}
 		}
 		.popup-item {
 			display: none;
@@ -4550,72 +4539,6 @@ body:not(.is-cordova) {
 
 .powered-by {
 	margin-top: 1em;
-}
-
-.page-loading {
-	position: absolute;
-	top: 0;
-	left: 0;
-	right: 0;
-	bottom: 0;
-	background-color: rgba(0, 0, 0, .5);
-	z-index: 1000;
-	display: flex;
-	align-items: center;
-	justify-content: center;
-	.spinner {
-		margin: 10px auto;
-		width: 50px;
-		height: 40px;
-		text-align: center;
-		font-size: 10px;
-	}
-	.spinner > div {
-		background-color: #fff;
-		height: 100%;
-		width: 6px;
-		display: inline-block;
-		-webkit-animation: sk-stretchdelay 1.2s infinite ease-in-out;
-		animation: sk-stretchdelay 1.2s infinite ease-in-out;
-	}
-	.spinner .rect2 {
-		-webkit-animation-delay: -1.1s;
-		animation-delay: -1.1s;
-	}
-	.spinner .rect3 {
-		-webkit-animation-delay: -1.0s;
-		animation-delay: -1.0s;
-	}
-	.spinner .rect4 {
-		-webkit-animation-delay: -0.9s;
-		animation-delay: -0.9s;
-	}
-	.spinner .rect5 {
-		-webkit-animation-delay: -0.8s;
-		animation-delay: -0.8s;
-	}
-	@-webkit-keyframes sk-stretchdelay {
-		0%,
-		40%,
-		100% {
-			-webkit-transform: scaleY(0.4)
-		}
-		20% {
-			-webkit-transform: scaleY(1.0)
-		}
-	}
-	@keyframes sk-stretchdelay {
-		0%,
-		40%,
-		100% {
-			transform: scaleY(0.4);
-			-webkit-transform: scaleY(0.4);
-		}
-		20% {
-			transform: scaleY(1.0);
-			-webkit-transform: scaleY(1.0);
-		}
-	}
 }
 
 .code-error-box {
