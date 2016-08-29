@@ -6,7 +6,7 @@ Meteor.methods
 		unless Match.test rid, String
 			throw new Meteor.Error 'error-invalid-room', 'Invalid room', { method: 'saveRoomSettings' }
 
-		if setting not in ['roomName', 'roomTopic', 'roomDescription', 'roomType', 'default']
+		if setting not in ['roomName', 'roomTopic', 'roomDescription', 'roomType', 'default', 'joinCode']
 			throw new Meteor.Error 'error-invalid-settings', 'Invalid settings provided', { method: 'saveRoomSettings' }
 
 		unless RocketChat.authz.hasPermission(Meteor.userId(), 'edit-room', rid)
@@ -36,6 +36,8 @@ Meteor.methods
 						else
 							message = TAPi18n.__('Private_Group')
 						RocketChat.models.Messages.createRoomSettingsChangedWithTypeRoomIdMessageAndUser 'room_changed_privacy', rid, message, Meteor.user()
+				when 'joinCode'
+					RocketChat.models.Rooms.setJoinCodeById rid, String(value)
 				when 'default'
 					RocketChat.models.Rooms.saveDefaultById rid, value
 

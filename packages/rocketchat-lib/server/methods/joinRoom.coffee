@@ -1,5 +1,5 @@
 Meteor.methods
-	joinRoom: (rid) ->
+	joinRoom: (rid, code) ->
 		if not Meteor.userId()
 			throw new Meteor.Error 'error-invalid-user', 'Invalid user', { method: 'joinRoom' }
 
@@ -10,5 +10,8 @@ Meteor.methods
 
 		if room.t isnt 'c' or RocketChat.authz.hasPermission(Meteor.userId(), 'view-c-room') isnt true
 			throw new Meteor.Error 'error-not-allowed', 'Not allowed', { method: 'joinRoom' }
+
+		if room.joinCodeRequired is true and code isnt room.joinCode
+			throw new Meteor.Error 'error-code-invalid', 'Invalid Code', { method: 'joinRoom' }
 
 		RocketChat.addUserToRoom(rid, Meteor.user())

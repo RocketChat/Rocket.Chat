@@ -1,0 +1,27 @@
+.-autocomplete-container {
+    position: absolute;
+    background: white;
+    border: 1px solid #DDD;
+    border-radius: 3px;
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+    min-width: 180px;
+    z-index: 1000;
+}
+
+.-autocomplete-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.-autocomplete-item {
+    display: block;
+    padding: 5px 10px;
+    border-bottom: 1px solid #DDD;
+}
+
+.-autocomplete-item.selected {
+    color: white;
+    background: #4183C4;
+    text-decoration: none;
+}
