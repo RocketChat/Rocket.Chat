@@ -1,4 +1,4 @@
-/* globals Department, Livechat */
+/* globals Department, Livechat, FileUpload */
 Template.livechatWindow.helpers({
 	title() {
 		return Livechat.title;
@@ -109,14 +109,11 @@ Template.livechatWindow.onCreated(function() {
 				Department.insert(department);
 			});
 
-			// Attachments information 
+			// Attachments information
 			Session.set({'allowAttachments': result.allowAttachments});
 			FileUpload.mediaTypeWhiteList = result.mediaTypeWhiteList;
-			FileUpload.maxFileSize = result.maxFileSize;	
+			FileUpload.maxFileSize = result.maxFileSize;
 			FileUpload.storageType = result.storageType;
-
-			console.log("fileUpload data");
-			console.log(FileUpload);
 		}
 	});
 });

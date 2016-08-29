@@ -10,6 +10,34 @@ this.FileUpload = {
 		}
 
 		return true;
+	},
+
+	fileUploadMediaWhiteList() {
+		var mediaTypeWhiteList = FileUpload.mediaTypeWhiteList;
+
+		if (!mediaTypeWhiteList || mediaTypeWhiteList === '*') {
+			return;
+		}
+		return _.map(mediaTypeWhiteList.split(','), function(item) {
+			return item.trim();
+		});
+	},
+
+	fileUploadIsValidContentType(type) {
+		var list, wildCardGlob, wildcards;
+		list = FileUpload.fileUploadMediaWhiteList();
+		if (!list || _.contains(list, type)) {
+			return true;
+		} else {
+			wildCardGlob = '/*';
+			wildcards = _.filter(list, function(item) {
+				return item.indexOf(wildCardGlob) > 0;
+			});
+			if (_.contains(wildcards, type.replace(/(\/.*)$/, wildCardGlob))) {
+				return true;
+			}
+		}
+		return false;
 	}
 };
 
@@ -41,7 +69,7 @@ FileUploadBase = class FileUploadBase {
 	}
 };
 
-/* Amazon S3*/ 
+/* Amazon S3*/
 this.FileUpload.AmazonS3 = class FileUploadAmazonS3 extends FileUploadBase {
 	constructor(meta, file, data) {
 		super(meta, file, data);
@@ -155,56 +183,56 @@ this.FileUpload.AmazonS3 = class FileUploadAmazonS3 extends FileUploadBase {
 // 	}
 // };
 
-/* GridFs */
-FileUpload.GridFS = class FileUploadGridFS extends FileUploadBase {
-	constructor(meta, file, data) {
-		super(meta, file, data);
-		this.handler = new UploadFS.Uploader({
-			store: Meteor.fileStore,
-			data: data,
-			file: meta,
-			onError: (err) => {
-				var uploading = Session.get('uploading');
-				if (uploading != null) {
-					let item = _.findWhere(uploading, {
-						id: this.id
-					});
-					if (item != null) {
-						item.error = err.reason;
-						item.percentage = 0;
-					}
-					return Session.set('uploading', uploading);
-				}
-			},
-			onComplete: (fileData) => {
-				var file = _.pick(fileData, '_id', 'type', 'size', 'name', 'identify');
+// /* GridFs */
+// FileUpload.GridFS = class FileUploadGridFS extends FileUploadBase {
+// 	constructor(meta, file, data) {
+// 		super(meta, file, data);
+// 		this.handler = new UploadFS.Uploader({
+// 			store: Meteor.fileStore,
+// 			data: data,
+// 			file: meta,
+// 			onError: (err) => {
+// 				var uploading = Session.get('uploading');
+// 				if (uploading != null) {
+// 					let item = _.findWhere(uploading, {
+// 						id: this.id
+// 					});
+// 					if (item != null) {
+// 						item.error = err.reason;
+// 						item.percentage = 0;
+// 					}
+// 					return Session.set('uploading', uploading);
+// 				}
+// 			},
+// 			onComplete: (fileData) => {
+// 				var file = _.pick(fileData, '_id', 'type', 'size', 'name', 'identify');
 
-				file.url = fileData.url.replace(Meteor.absoluteUrl(), '/');
+// 				file.url = fileData.url.replace(Meteor.absoluteUrl(), '/');
 
-				Meteor.call('sendFileMessage', this.meta.rid, null, file, () => {
-					Meteor.setTimeout(() => {
-						var uploading = Session.get('uploading');
-						if (uploading != null) {
-							let item = _.findWhere(uploading, {
-								id: this.id
-							});
-							return Session.set('uploading', _.without(uploading, item));
-						}
-					}, 2000);
-				});
-			}
-		});
-	}
-	start() {
-		return this.handler.start();
-	}
+// 				Meteor.call('sendFileMessage', this.meta.rid, null, file, () => {
+// 					Meteor.setTimeout(() => {
+// 						var uploading = Session.get('uploading');
+// 						if (uploading != null) {
+// 							let item = _.findWhere(uploading, {
+// 								id: this.id
+// 							});
+// 							return Session.set('uploading', _.without(uploading, item));
+// 						}
+// 					}, 2000);
+// 				});
+// 			}
+// 		});
+// 	}
+// 	start() {
+// 		return this.handler.start();
+// 	}
 
-	getProgress() {
-		return this.handler.getProgress();
-	}
+// 	getProgress() {
+// 		return this.handler.getProgress();
+// 	}
 
-	stop() {
-		return this.handler.stop();
-	}
-};
+// 	stop() {
+// 		return this.handler.stop();
+// 	}
+// };
 

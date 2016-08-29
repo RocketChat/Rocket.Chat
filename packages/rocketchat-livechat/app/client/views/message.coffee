@@ -28,10 +28,10 @@ Template.message.helpers
 			when 'livechat-close' then t('Conversation_finished')
 			# when 'rtc' then RocketChat.callbacks.run 'renderRtcMessage', this
 			else
-				if this.attachments					
+				if this.attachments
 					document.cookie = 'rc_uid=' + escape(Meteor.userId()) + '; path=/'
-					document.cookie = 'rc_token=' + escape(Accounts._storedLoginToken()) + '; path=/'		
-					
+					document.cookie = 'rc_token=' + escape(Accounts._storedLoginToken()) + '; path=/'
+
 					html = ''
 
 					for attachment in this.attachments
@@ -57,14 +57,14 @@ Template.message.helpers
 									<source src="#{attachment.video_url}" type="#{attachment.video_type}">
 									Your browser does not support the video element.
 								</video>
-							"""				
-						
+							"""
+
 						html += """
 							</div>
 						"""
 
 					return html;
-				else 
+				else
 					this.html = this.msg
 					if s.trim(this.html) isnt ''
 						this.html = s.escapeHTML this.html

@@ -1,3 +1,5 @@
+/* globals fileUpload, Slingshot */
+
 Template.messages.helpers({
 	messages() {
 		return ChatMessage.find({
@@ -26,7 +28,7 @@ Template.messages.helpers({
 		}
 	},
 	allowAttachments() {
-		return Session.get('allowAttachments');	
+		return Session.get('allowAttachments');
 	}
 });
 
@@ -55,51 +57,31 @@ Template.messages.events({
 	},
 	'click .toggle-options': function(event, instance) {
 		instance.showOptions.set(!instance.showOptions.get());
-	},	
-	'click .attach-button': function(event) {
+	},
+	'click .attach-button': function() {
 		var elem = document.getElementById('theFile');
-		if(elem && document.createEvent) {
-			var evt = document.createEvent("MouseEvents");
-			evt.initEvent("click", true, false);
+		if (elem && document.createEvent) {
+			var evt = document.createEvent('MouseEvents');
+			evt.initEvent('click', true, false);
 			elem.dispatchEvent(evt);
 		}
 	},
-	'change #theFile': function(event, instance) {
-		console.log("file changed");
-
-		var files = event.target.files
+	'change #theFile': function(event) {
+		var files = event.target.files;
 		if (!files || files.length === 0) {
-			files = []
+			files = [];
 		}
 
-		// console.log(files);
-
-		console.log('length: ' + files.length);
-
-		var filesToUpload = []
+		var filesToUpload = [];
 
 		for (var i = 0; i < files.length; i++) {
 			var file = files[i];
-			console.log("file");
-			console.log(file);
-  			filesToUpload.push({
-    			file: file,
-    			name: file.name
-  			});
-  		}
-  		console.log("filesToUpload");
-		console.log(filesToUpload);
-
+			filesToUpload.push({
+				file: file,
+				name: file.name
+			});
+		}
 		fileUpload(filesToUpload);
-
-		// instance.uploader.send(file, function (error, downloadUrl) {
-		//   if (error) {
-		//     console.log(error)
-		//   } else {
-		// 	// sent = instance.chatMessages.sendAttachment(visitor.getRoom(), file, downloadUrl);
-		// 	// return sent;	
-		//   }
-		// });
 		return true;
 	}
 });
@@ -173,5 +155,5 @@ Template.messages.onRendered(function() {
 		});
 	}
 
-	template.uploader = new Slingshot.Upload("rocketchat-uploads", { rid: visitor.getRoom() });
+	template.uploader = new Slingshot.Upload('rocketchat-uploads', { rid: visitor.getRoom() });
 });
