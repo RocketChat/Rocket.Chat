@@ -3,6 +3,8 @@ Meteor.methods
 		if not Meteor.userId()
 			throw new Meteor.Error('error-invalid-user', "Invalid user", { method: 'setUsername' })
 
+		check username, String
+
 		user = Meteor.user()
 
 		if user.username? and not RocketChat.settings.get("Accounts_AllowUsernameChange")

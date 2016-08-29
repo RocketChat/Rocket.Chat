@@ -2,6 +2,8 @@ var Filter = Npm.require('bad-words');
 
 RocketChat.callbacks.add('beforeSaveMessage', function(message) {
 
+	check(message, Object);
+
 	if (RocketChat.settings.get('Message_AllowBadWordsFilter')) {
 		var badWordsList = RocketChat.settings.get('Message_BadWordsFilterList');
 		var options;
