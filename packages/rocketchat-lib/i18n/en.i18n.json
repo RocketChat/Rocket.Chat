@@ -1074,7 +1074,7 @@
   "Smarsh_Enabled_Description": "Whether the Smarsh eml connector is enabled or not (needs 'From Email' filled in under Email -> SMTP).",
   "Smarsh_Email": "Smarsh Email",
   "Smarsh_Email_Description": "Smarsh Email Address to send the .eml file to.",
-  "Smarsh_Interval": "Smarsh Internval",
+  "Smarsh_Interval": "Smarsh Interval",
   "Smarsh_Interval_Description": "The amount of time to wait before sending the chats (needs 'From Email' filled in under Email -> SMTP).",
   "Smileys_and_People" : "Smileys & People",
   "SMS_Enabled" : "SMS Enabled",
