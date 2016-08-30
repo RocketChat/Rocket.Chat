@@ -166,6 +166,9 @@ Template.main.helpers
 	CustomScriptLoggedIn: ->
 		RocketChat.settings.get 'Custom_Script_Logged_In'
 
+	miniVersion: ->
+		return 'mini-view' if FlowRouter.getQueryParam('mini')
+
 
 Template.main.events
 
