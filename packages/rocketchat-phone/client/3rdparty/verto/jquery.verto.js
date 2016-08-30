@@ -478,7 +478,7 @@
 
         if (data.params.callID) {
             var dialog = verto.dialogs[data.params.callID];
-	    
+
 	    if (data.method === "verto.attach" && dialog) {
 		delete dialog.verto.dialogs[dialog.callID];
 		dialog.rtc.stop();
@@ -1391,7 +1391,7 @@
                 }
             });
         };
-            
+
     }
 
     $.verto.modfuncs = {};
@@ -1414,7 +1414,7 @@
         confMan.verto = verto;
         confMan.serno = CONFMAN_SERNO++;
 	confMan.canvasCount = confMan.params.laData.canvasCount;
-	
+
         function genMainMod(jq) {
             var play_id = "play_" + confMan.serno;
             var stop_id = "stop_" + confMan.serno;
@@ -1433,7 +1433,7 @@
 
             jq.html(html);
 
-	    $.verto.modfuncs.change_video_layout = function(id, canvas_id) {	    
+	    $.verto.modfuncs.change_video_layout = function(id, canvas_id) {
 		var val = $("#" + id + " option:selected").text();
 		if (val !== "none") {
                     confMan.modCommand("vid-layout", null, [val, canvas_id]);
@@ -1444,10 +1444,10 @@
 		for (var j = 0; j < confMan.canvasCount; j++) {
 		    var vlayout_id = "confman_vid_layout_" + j + "_" + confMan.serno;
 		    var vlselect_id = "confman_vl_select_" + j + "_" + confMan.serno;
-		
+
 
 		    var vlhtml =  "<div id='" + vlayout_id + "'><br>" +
-			"<b>Video Layout Canvas " + (j+1) + 
+			"<b>Video Layout Canvas " + (j+1) +
 			"</b> <select onChange='$.verto.modfuncs.change_video_layout(\"" + vlayout_id + "\", \"" + (j+1) + "\")' id='" + vlselect_id + "'></select> " +
 			"<br><br></div>";
 		    jq.append(vlhtml);
@@ -1499,7 +1499,7 @@
             var layer_set_id = "layer_set_" + x;
             var layer_next_id = "layer_next_" + x;
             var layer_prev_id = "layer_prev_" + x;
-	    
+
             var tmute_id = "tmute_" + x;
             var tvmute_id = "tvmute_" + x;
             var vbanner_id = "vbanner_" + x;
@@ -1511,7 +1511,7 @@
             var volup_id = "vol_in_up" + x;
             var voldn_id = "vol_in_dn" + x;
             var transfer_id = "transfer" + x;
-	    
+
 
             var html = "<div id='" + box_id + "'>";
 
@@ -1524,7 +1524,7 @@
                 "<button class='ctlbtn' id='" + voldn_id + "'>Vol -</button>" +
                 "<button class='ctlbtn' id='" + volup_id + "'>Vol +</button>" +
                 "<button class='ctlbtn' id='" + transfer_id + "'>Transfer</button>";
-		
+
 	    if (confMan.params.hasVid) {
 		html += "<br><br><b>Video Controls</b><hr noshade>";
 
@@ -1539,14 +1539,14 @@
 			"<button class='ctlbtn' id='" + canvas_in_set_id + "'>Set Input Canvas</button>" +
 			"<button class='ctlbtn' id='" + canvas_in_prev_id + "'>Prev Input Canvas</button>" +
 			"<button class='ctlbtn' id='" + canvas_in_next_id + "'>Next Input Canvas</button>" +
-			
+
 		    "<br>" +
-			
+
 		    "<button class='ctlbtn' id='" + canvas_out_set_id + "'>Set Watching Canvas</button>" +
 			"<button class='ctlbtn' id='" + canvas_out_prev_id + "'>Prev Watching Canvas</button>" +
 			"<button class='ctlbtn' id='" + canvas_out_next_id + "'>Next Watching Canvas</button>";
 		}
-		
+
 		html += "<br>" +
 
                 "<button class='ctlbtn' id='" + layer_set_id + "'>Set Layer</button>" +
@@ -1629,7 +1629,7 @@
             $("#" + canvas_out_prev_id).click(function() {
                 confMan.modCommand("vid-watching-canvas", x, "prev");
             });
-	    
+
             $("#" + tmute_id).click(function() {
                 confMan.modCommand("tmute", x);
             });
@@ -1706,14 +1706,14 @@
 			for (var j = 0; j < confMan.canvasCount; j++) {
 			    var vlselect_id = "#confman_vl_select_" + j + "_" + confMan.serno;
 			    var vlayout_id = "#confman_vid_layout_" + j + "_" + confMan.serno;
-			    
+
 			    var x = 0;
 			    var options;
-			    
+
 			    $(vlselect_id).selectmenu({});
 			    $(vlselect_id).selectmenu("enable");
 			    $(vlselect_id).empty();
-			    
+
 			    $(vlselect_id).append(new Option("Choose a Layout", "none"));
 
 			    if (e.data.responseData) {
@@ -1722,15 +1722,15 @@
 				for (var i in e.data.responseData) {
 				    rdata.push(e.data.responseData[i].name);
 				}
-				
+
 				options = rdata.sort(function(a, b) {
 				    var ga = a.substring(0, 6) == "group:" ? true : false;
 				    var gb = b.substring(0, 6) == "group:" ? true : false;
-				    
+
 				    if ((ga || gb) && ga != gb) {
 					return ga ? -1 : 1;
 				    }
-				    
+
 				    return ( ( a == b ) ? 0 : ( ( a > b ) ? 1 : -1 ) );
 				});
 
@@ -1907,7 +1907,7 @@
             login: verto.options.login,
 	    videoParams: verto.options.videoParams
         }, params);
-	
+
         dialog.verto = verto;
         dialog.direction = direction;
         dialog.lastState = null;
@@ -1919,13 +1919,13 @@
 	dialog.useCamera = dialog.params.useCamera;
 	dialog.useMic = dialog.params.useMic;
 	dialog.useSpeak = dialog.params.useSpeak;
-	
+
         if (dialog.params.callID) {
             dialog.callID = dialog.params.callID;
         } else {
             dialog.callID = dialog.params.callID = generateGUID();
         }
-	
+
         if (dialog.params.tag) {
             dialog.audioStream = document.getElementById(dialog.params.tag);
 
@@ -1987,7 +1987,7 @@
                     });
 		} else {
                     dialog.setState($.verto.enum.state.requesting);
-		    
+
                     dialog.sendMethod("verto.invite", {
 			sdp: rtc.mediaData.SDP
                     });
@@ -2084,7 +2084,7 @@
     }
 
 
-    // Attach audio output device to video element using device/sink ID.                                                                                           
+    // Attach audio output device to video element using device/sink ID.
     function find_name(id) {
 	for (var i in $.verto.audioOutDevices) {
 	    var source = $.verto.audioOutDevices[i];
@@ -2189,7 +2189,7 @@
         case $.verto.enum.state.hangup:
 
             if (dialog.lastState.val > $.verto.enum.state.requesting.val && dialog.lastState.val < $.verto.enum.state.hangup.val) {
-                dialog.sendMethod("verto.bye", {});
+                dialog.sendMethod("verto.bye", {cause: dialog.cause, causeCode: dialog.causeCode});
             }
 
             dialog.setState($.verto.enum.state.destroy);
@@ -2333,7 +2333,7 @@
     };
 
     $.verto.dialog.prototype.getMute = function() {
-	var dialog = this; 
+	var dialog = this;
 	return dialog.rtc.getMute();
     };
 
@@ -2343,7 +2343,7 @@
     };
 
     $.verto.dialog.prototype.getVideoMute = function() {
-	var dialog = this; 
+	var dialog = this;
 	return dialog.rtc.getVideoMute();
     };
 
@@ -2430,7 +2430,7 @@
 
     $.verto.dialog.prototype.answer = function(params) {
         var dialog = this;
-	
+
         if (!dialog.answered) {
 	    if (!params) {
 		params = {};
@@ -2457,7 +2457,7 @@
 		    dialog.useSpeak = params.useSpeak;
 		}
             }
-	    
+
             dialog.rtc.createAnswer(params);
             dialog.answered = true;
         }
@@ -2624,7 +2624,7 @@
     $.verto.enum = Object.freeze($.verto.enum);
 
     $.verto.saved = [];
-    
+
     $.verto.unloadJobs = [];
 
     $(window).bind('beforeunload', function() {
@@ -2649,7 +2649,7 @@
 
     var checkDevices = function(runtime) {
 	console.info("enumerating devices");
-	var aud_in = [], aud_out = [], vid = [];	
+	var aud_in = [], aud_out = [], vid = [];
 
 	if ((!navigator.mediaDevices || !navigator.mediaDevices.enumerateDevices) && MediaStreamTrack.getSources) {
 	    MediaStreamTrack.getSources(function (media_sources) {
@@ -2661,17 +2661,17 @@
 			aud_in.push(media_sources[i]);
 		    }
 		}
-		
+
 		$.verto.videoDevices = vid;
 		$.verto.audioInDevices = aud_in;
-		
+
 		console.info("Audio Devices", $.verto.audioInDevices);
 		console.info("Video Devices", $.verto.videoDevices);
 		runtime(true);
 	    });
 	} else {
 	    /* of course it's a totally different API CALL with different element names for the same exact thing */
-	    
+
 	    if (!navigator.mediaDevices || !navigator.mediaDevices.enumerateDevices) {
 		console.log("enumerateDevices() not supported.");
 		return;
@@ -2686,7 +2686,7 @@
 
 			console.log(device.kind + ": " + device.label +
 				    " id = " + device.deviceId);
-			
+
 			if (device.kind === "videoinput") {
 			    vid.push({id: device.deviceId, kind: "video", label: device.label});
 			} else if (device.kind === "audioinput") {
@@ -2695,17 +2695,17 @@
 			    aud_out.push({id: device.deviceId, kind: "audio_out", label: device.label});
 			}
 		    });
-		    
+
 
 		    $.verto.videoDevices = vid;
 		    $.verto.audioInDevices = aud_in;
 		    $.verto.audioOutDevices = aud_out;
-		    
+
 		    console.info("Audio IN Devices", $.verto.audioInDevices);
 		    console.info("Audio Out Devices", $.verto.audioOutDevices);
 		    console.info("Video Devices", $.verto.videoDevices);
 		    runtime(true);
-		    
+
 		})
 		.catch(function(err) {
 		    console.log(" Device Enumeration ERROR: " + err.name + ": " + err.message);
