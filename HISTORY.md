@@ -1,6 +1,41 @@
 ## NEXT
 * Spotlight (CMD/CTRL + P) now helps to quick search among your channels
 
+## 0.38.0, 2016-Aug-30
+
+- Action links improvements
+- Add global event unread-changed-by-subscription
+- Add role to disable/enable channel preview (#4127)
+- Add room setting to require code to join Room (#4126)
+- Add the timer for disconnecting, one minute after going in the background it'll disconnect
+- Add Ubuntu 16.04-under 30 seconds snap deployment using SNAPS
+- Added File Uploaded text on attachments to i18n
+- Added option to populate Rocket Chat with LDAP users (import them) (#4054)
+- Changes rtl check in ChatMessages class (#4049)
+- Check message timestamp before notifying users
+- Do not check for last admin while updating a user
+- Don't send offline emails to users who aren't active
+- Fix mispelling for seriliazedDescriptor
+- Fix multiple notifications (closes #3517) (#4074)
+- Fix offering Sandstorm grains without a title
+- Fix the verbs in Sandstorm activity events
+- Fix user update check for last admin
+- Fixed buttons margins and upload file list
+- Formatting and adding some missing permissions to standard roles
+- Handle locations when disabled
+- Improve lazy loading of custom fields and translations
+- Improve stream broadcast connection (#4119)
+- Improvements/login and registration (#4073)
+- Less borders (#4101)
+- Make sure Sandstorm.notify is always called for DMs
+- Open room correctly after creation and new messages
+- Set gitlabs scope to 'api', the only support scope.
+- Set message.ts if empty on sendMessage method
+- Update moment locales
+- Update to Autolinker.js 0.28.0
+- Update to depend only on the gMaps API key, add i18n strings for geolocaiotn sharing
+- Updated loginform a11y and UX - labels instead of placeholders (#4075)
+
 ## 0.37.1, 2016-Aug-17
 
 - Allow deletion of records with same id on settings
