@@ -3,9 +3,9 @@
 # @namespace RocketChat.settings
 ###
 
-@Settings = new Meteor.Collection 'rocketchat_settings'
-
-RocketChat.settings.subscription = Meteor.subscribe 'settings'
+RocketChat.settings.cachedCollection = new RocketChat.CachedCollection({ name: 'public-settings', eventType: 'onAll' })
+RocketChat.settings.collection = RocketChat.settings.cachedCollection.collection
+RocketChat.settings.cachedCollection.init()
 
 RocketChat.settings.dict = new ReactiveDict 'settings'
 
@@ -14,7 +14,7 @@ RocketChat.settings.get = (_id) ->
 
 RocketChat.settings.init = ->
 	initialLoad = true
-	Settings.find().observe
+	RocketChat.settings.collection.find().observe
 		added: (record) ->
 			Meteor.settings[record._id] = record.value
 			RocketChat.settings.dict.set record._id, record.value

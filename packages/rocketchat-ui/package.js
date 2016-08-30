@@ -41,7 +41,7 @@ Package.onUse(function(api) {
 	api.addFiles('lib/constallation.js', 'client');
 	api.addFiles('lib/customEventPolyfill.js', 'client');
 	api.addFiles('lib/fileUpload.coffee', 'client');
-	api.addFiles('lib/fireEvent.coffee', 'client');
+	api.addFiles('lib/fireEvent.js', 'client');
 	api.addFiles('lib/jquery.swipebox.min.js', 'client');
 	api.addFiles('lib/menu.coffee', 'client');
 	api.addFiles('lib/modal.coffee', 'client');
@@ -67,6 +67,7 @@ Package.onUse(function(api) {
 
 	// LIB RECORDERJS
 	api.addFiles('lib/recorderjs/audioRecorder.coffee', 'client');
+	api.addFiles('lib/recorderjs/videoRecorder.coffee', 'client');
 	api.addFiles('lib/recorderjs/recorder.js', 'client');
 
 	// LIB CLIPBOARDJS

@@ -60,7 +60,7 @@ Template.permissionsRole.helpers
 					filter:
 						exceptions: Template.instance().usersInRole.get()?.fetch()
 					selector: (match) ->
-						return { username: match }
+						return { term: match }
 					sort: 'username'
 				}
 			]

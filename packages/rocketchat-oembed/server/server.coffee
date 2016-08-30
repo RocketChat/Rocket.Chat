@@ -3,6 +3,7 @@ querystring = Npm.require('querystring')
 request = HTTPInternals.NpmModules.request.module
 iconv = Npm.require('iconv-lite')
 ipRangeCheck = Npm.require('ip-range-check')
+he = Npm.require('he')
 
 OEmbed = {}
 
@@ -105,20 +106,20 @@ OEmbed.getUrlMeta = (url, withFragment) ->
 
 	if content?.body?
 		metas = {}
-		content.body.replace /<title>((.|\n)+?)<\/title>/gmi, (meta, title) ->
-			metas.pageTitle = title
+		content.body.replace /<title[^>]*>([^<]*)<\/title>/gmi, (meta, title) ->
+			metas.pageTitle ?= he.unescape title
 
-		content.body.replace /<meta[^>]*(?:name|property)=[']([^']*)['][^>]*content=[']([^']*)['][^>]*>/gmi, (meta, name, value) ->
-			metas[changeCase.camelCase(name)] = value
+		content.body.replace /<meta[^>]*(?:name|property)=[']([^']*)['][^>]*\scontent=[']([^']*)['][^>]*>/gmi, (meta, name, value) ->
+			metas[changeCase.camelCase(name)] ?= he.unescape value
 
-		content.body.replace /<meta[^>]*(?:name|property)=["]([^"]*)["][^>]*content=["]([^"]*)["][^>]*>/gmi, (meta, name, value) ->
-			metas[changeCase.camelCase(name)] = value
+		content.body.replace /<meta[^>]*(?:name|property)=["]([^"]*)["][^>]*\scontent=["]([^"]*)["][^>]*>/gmi, (meta, name, value) ->
+			metas[changeCase.camelCase(name)] ?= he.unescape value
 
-		content.body.replace /<meta[^>]*content=[']([^']*)['][^>]*(?:name|property)=[']([^']*)['][^>]*>/gmi, (meta, value, name) ->
-			metas[changeCase.camelCase(name)] = value
+		content.body.replace /<meta[^>]*\scontent=[']([^']*)['][^>]*(?:name|property)=[']([^']*)['][^>]*>/gmi, (meta, value, name) ->
+			metas[changeCase.camelCase(name)] ?= he.unescape value
 
-		content.body.replace /<meta[^>]*content=["]([^"]*)["][^>]*(?:name|property)=["]([^"]*)["][^>]*>/gmi, (meta, value, name) ->
-			metas[changeCase.camelCase(name)] = value
+		content.body.replace /<meta[^>]*\scontent=["]([^"]*)["][^>]*(?:name|property)=["]([^"]*)["][^>]*>/gmi, (meta, value, name) ->
+			metas[changeCase.camelCase(name)] ?= he.unescape value
 
 
 		if metas.fragment is '!' and not withFragment?
@@ -182,6 +183,13 @@ OEmbed.RocketUrlParser = (message) ->
 		changed = false
 		message.urls.forEach (item) ->
 			if item.ignoreParse is true then return
+			if item.url.startsWith "grain://"
+				changed = true
+				item.meta =
+					sandstorm:
+						grain: item.sandstormViewInfo
+				return
+
 			if not /^https?:\/\//i.test item.url then return
 
 			data = OEmbed.getUrlMetaWithCache item.url
