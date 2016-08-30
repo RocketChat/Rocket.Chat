@@ -1,9 +1,10 @@
 Meteor.methods
 	addOAuthService: (name) ->
-		if not Meteor.userId()
-			throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'addOAuthService' })
 
 		check name, String
+
+		if not Meteor.userId()
+			throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'addOAuthService' })
 
 		unless RocketChat.authz.hasPermission( Meteor.userId(), 'add-oauth-service') is true
 			throw new Meteor.Error 'error-action-not-allowed', 'Adding OAuth Services is not allowed', { method: 'addOAuthService', action: 'Adding_OAuth_Services' }
