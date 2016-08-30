@@ -1,9 +1,10 @@
 Meteor.methods
 	removeOAuthService: (name) ->
-		if not Meteor.userId()
-			throw new Meteor.Error('error-invalid-user', "Invalid user", { method: 'removeOAuthService' })
 
 		check name, String
+
+		if not Meteor.userId()
+			throw new Meteor.Error('error-invalid-user', "Invalid user", { method: 'removeOAuthService' })
 
 		unless RocketChat.authz.hasPermission( Meteor.userId(), 'add-oauth-service') is true
 			throw new Meteor.Error 'error-not-allowed', 'Not allowed', { method: 'removeOAuthService' }

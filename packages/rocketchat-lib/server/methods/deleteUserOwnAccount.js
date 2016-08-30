@@ -1,10 +1,11 @@
 Meteor.methods({
 	deleteUserOwnAccount: function(password) {
+		
+		check(password, String);
+
 		if (!Meteor.userId()) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'deleteUserOwnAccount' });
 		}
-
-		check(password, String);
 
 		if (!RocketChat.settings.get('Accounts_AllowDeleteOwnAccount')) {
 			throw new Meteor.Error('error-not-allowed', 'Not allowed', { method: 'deleteUserOwnAccount' });

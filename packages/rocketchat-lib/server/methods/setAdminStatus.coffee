@@ -1,11 +1,11 @@
 Meteor.methods
 	setAdminStatus: (userId, admin) ->
+
+		check userId, String
+		check admin, Boolean
+
 		if not Meteor.userId()
 			throw new Meteor.Error 'error-invalid-user', "Invalid user", { method: 'setAdminStatus' }
-
-			check userId, String
-			check admin, Boolean
-
 
 		unless RocketChat.authz.hasPermission( Meteor.userId(), 'assign-admin-role') is true
 			throw new Meteor.Error 'error-not-allowed', "Not allowed", { method: 'setAdminStatus' }

@@ -1,9 +1,10 @@
 Meteor.methods
 	insertOrUpdateUser: (userData) ->
-		if not Meteor.userId()
-			throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'insertOrUpdateUser' })
 
 		check userData, Match.ObjectIncluding({_id:String})
+
+		if not Meteor.userId()
+			throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'insertOrUpdateUser' })
 
 		user = Meteor.user()
 

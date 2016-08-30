@@ -1,10 +1,11 @@
 Meteor.methods
 	joinDefaultChannels: (silenced) ->
+
+		check silenced, Boolean
+
 		if not Meteor.userId()
 			throw new Meteor.Error('error-invalid-user', "Invalid user", { method: 'joinDefaultChannels' })
-
-			check silenced, Boolean
-
+	
 		this.unblock()
 
 		user = Meteor.user()
