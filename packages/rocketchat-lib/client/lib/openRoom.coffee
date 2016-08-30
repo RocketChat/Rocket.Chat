@@ -6,7 +6,7 @@ currentTracker = undefined
 	Meteor.defer ->
 		currentTracker = Tracker.autorun (c) ->
 			if RoomManager.open(type + name).ready() isnt true
-				BlazeLayout.render 'main', {center: 'loading'}
+				BlazeLayout.render 'main', { modal: !!FlowRouter.getQueryParam('mini'), center: 'loading' }
 				return
 
 			user = Meteor.user()

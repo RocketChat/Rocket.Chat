@@ -8,6 +8,9 @@ favoritesEnabled = ->
 	return RocketChat.settings.get 'Favorite_Rooms'
 
 Template.room.helpers
+	miniVersion: ->
+		return FlowRouter.getQueryParam('mini')
+
 	favorite: ->
 		sub = ChatSubscription.findOne { rid: this._id }, { fields: { f: 1 } }
 		return 'icon-star favorite-room' if sub?.f? and sub.f and favoritesEnabled
