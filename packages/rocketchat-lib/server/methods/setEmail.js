@@ -6,7 +6,7 @@ Meteor.methods({
 		if (!Meteor.userId()) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'setEmail' });
 		}
-		
+
 		const user = Meteor.user();
 
 		if (!RocketChat.settings.get('Accounts_AllowEmailChange')) {

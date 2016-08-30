@@ -1,6 +1,6 @@
 Meteor.methods({
 	deleteUserOwnAccount: function(password) {
-		
+
 		check(password, String);
 
 		if (!Meteor.userId()) {

@@ -1,6 +1,6 @@
 Meteor.methods
 	sendInvitationEmail: (emails) ->
-		
+
 		check emails, [String]
 
 		if not Meteor.userId()

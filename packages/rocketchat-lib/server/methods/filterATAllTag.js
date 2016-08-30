@@ -1,6 +1,6 @@
 RocketChat.callbacks.add('beforeSaveMessage', function(message) {
 
-	
+
 	// Test if the message mentions include @all.
 	if (message.mentions != null &&
 		_.pluck(message.mentions, '_id').some((item) => item === 'all')) {
