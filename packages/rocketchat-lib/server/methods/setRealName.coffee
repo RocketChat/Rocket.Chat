@@ -3,6 +3,8 @@ Meteor.methods
 		if not Meteor.userId()
 			throw new Meteor.Error('error-invalid-user', "Invalid user", { method: 'setRealName' })
 
+		check name, String
+
 		user = Meteor.user()
 
 		if user.name is name
