@@ -6,6 +6,7 @@
 			</div>
 		</div>
 		<section class="messages-container {{adminClass}}" id="{{windowId}}" aria-label="{{_ "Channel"}}">
+			{{#unless miniVersion}}
 			<header class="fixed-title">
 				{{> burger}}
 				<h2>
@@ -17,6 +18,7 @@
 					<span class="room-topic">{{{RocketChatMarkdown roomTopic}}}</span>
 				</h2>
 			</header>
+			{{/unless}}
 			<div class="container-bars">
 				{{#with unreadData}}
 					{{#if since}}
