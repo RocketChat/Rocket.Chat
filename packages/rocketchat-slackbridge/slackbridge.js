@@ -285,7 +285,17 @@ class SlackBridge {
 				_id: `slack-${message.channel}-${message.ts.replace(/\./g, '-')}`,
 				ts: new Date(parseInt(message.ts.split('.')[0]) * 1000)
 			};
-			this.sendMessage(channel, user, message, msgDataDefaults, importing);
+			try {
+				this.sendMessage(channel, user, message, msgDataDefaults, importing);
+			} catch (e) {
+				// http://www.mongodb.org/about/contributors/error-codes/
+				// 11000 == duplicate key error
+				if (e.name === 'MongoError' && e.code === 11000) {
+					return;
+				}
+
+				throw e;
+			}
 		}
 	}
 
