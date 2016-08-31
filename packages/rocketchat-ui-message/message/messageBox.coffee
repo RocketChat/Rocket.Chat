@@ -66,15 +66,6 @@ Template.messageBox.helpers
 	showVRec: ->
 		return Template.instance().showVideoRec.get()
 
-	showVRec: ->
-		if not Template.instance().isMessageFieldEmpty.get()
-			return 'hide-vrec'
-
-		if Template.instance().showVideoRec.get()
-			return ''
-		else
-			return 'hide-vrec'
-
 	showSend: ->
 		if not Template.instance().isMessageFieldEmpty.get()
 			return 'show-send'
@@ -241,7 +232,7 @@ Template.messageBox.onCreated ->
 	@autorun =>
 		videoRegex = /video\/webm|video\/\*/i
 		videoEnabled = !RocketChat.settings.get("FileUpload_MediaTypeWhiteList") || RocketChat.settings.get("FileUpload_MediaTypeWhiteList").match(videoRegex)
-		if RocketChat.settings.get('Message_VideoRecorderEnabled') and (navigator.getUserMedia? or navigator.webkitGetUserMedia?) and videoEnabled and RocketChat.settings.get('FileUpload_Enabled') and (n        ot Meteor.isCordova)
+		if RocketChat.settings.get('Message_VideoRecorderEnabled') and (navigator.getUserMedia? or navigator.webkitGetUserMedia?) and videoEnabled and RocketChat.settings.get('FileUpload_Enabled') and (not Meteor.isCordova)
 			@showVideoRec.set true
 		else
 			@showVideoRec.set false

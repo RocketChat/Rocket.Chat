@@ -40,7 +40,7 @@ readAsArrayBuffer = (file, callback) ->
 
 			text = ''
 
-			if file.type?.startsWith('audio')
+			if file.type is 'audio'
 				text = """
 					<div class='upload-preview'>
 						<audio  style="width: 100%;" controls="controls">

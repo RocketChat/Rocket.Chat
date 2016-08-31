@@ -82,32 +82,6 @@ Template.channelSettings.events
 		e.preventDefault()
 		t.saveSetting()
 
-	'click .delete': ->
-		swal {
-			title: t('Are_you_sure')
-			text: t('Delete_Room_Warning')
-			type: 'warning'
-			showCancelButton: true
-			confirmButtonColor: '#DD6B55'
-			confirmButtonText: t('Yes_delete_it')
-			cancelButtonText: t('Cancel')
-			closeOnConfirm: false
-			html: false
-		}, =>
-			swal.disableButtons()
-
-			Meteor.call 'eraseRoom', @rid, (error, result) ->
-				if error
-					handleError(error)
-					swal.enableButtons()
-				else
-					swal
-						title: t('Deleted')
-						text: t('Room_has_been_deleted')
-						type: 'success'
-						timer: 2000
-						showConfirmButton: false
-
 Template.channelSettings.onCreated ->
 	@editing = new ReactiveVar
 
