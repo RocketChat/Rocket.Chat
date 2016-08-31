@@ -209,7 +209,7 @@ class SlackBridge {
 				} catch (error) {
 					logger.class.debug('Error setting user avatar', error.message);
 				}
-				RocketChat.addUserToDefaultChannels(user);
+				RocketChat.addUserToDefaultChannels(user, true);
 			}
 
 			RocketChat.models.Users.update({ _id: userData.rocketId }, { $addToSet: { importIds: userData.id } });
@@ -361,7 +361,7 @@ class SlackBridge {
 			case 'channel_topic':
 			case 'group_topic':
 				if (importing) {
-					RocketChat.models.Messages.createRoomSettingsChangedWithTypeRoomIdMessageAndUser('room_changed_topic', room._id, message.topic, user);
+					RocketChat.models.Messages.createRoomSettingsChangedWithTypeRoomIdMessageAndUser('room_changed_topic', room._id, message.topic, user, { ts: new Date(parseInt(message.ts.split('.')[0]) * 1000) });
 				} else {
 					RocketChat.saveRoomTopic(room._id, message.topic, user);
 				}
@@ -369,7 +369,7 @@ class SlackBridge {
 			case 'channel_purpose':
 			case 'group_purpose':
 				if (importing) {
-					RocketChat.models.Messages.createRoomSettingsChangedWithTypeRoomIdMessageAndUser('room_changed_topic', room._id, message.purpose, user);
+					RocketChat.models.Messages.createRoomSettingsChangedWithTypeRoomIdMessageAndUser('room_changed_topic', room._id, message.purpose, user, { ts: new Date(parseInt(message.ts.split('.')[0]) * 1000) });
 				} else {
 					RocketChat.saveRoomTopic(room._id, message.purpose, user);
 				}
