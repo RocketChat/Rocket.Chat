@@ -121,7 +121,7 @@ class SlackBridge {
 				}
 				let creator = channelData.creator ? this.findUser(channelData.creator) || this.addUser(channelData.creator) : null;
 				if (!creator) {
-					logger.events.error('Could not fetch room creator information', channelData.creator);
+					logger.class.error('Could not fetch room creator information', channelData.creator);
 					return;
 				}
 
@@ -204,17 +204,22 @@ class SlackBridge {
 				} else if (userData.profile.image_512) {
 					url = userData.profile.image_512;
 				}
-				RocketChat.setUserAvatar(user, url, null, 'url');
-				RocketChat.addUserToDefaultChannels(user);
+				try {
+					RocketChat.setUserAvatar(user, url, null, 'url');
+				} catch (error) {
+					logger.class.debug('Error setting user avatar', error.message);
+				}
+				RocketChat.addUserToDefaultChannels(user, true);
 			}
 
 			RocketChat.models.Users.update({ _id: userData.rocketId }, { $addToSet: { importIds: userData.id } });
 			if (!this.userTags[userId]) {
 				this.userTags[userId] = { slack: `<@${userId}>`, rocket: `@${userData.name}` };
 			}
+			logger.class.debug('User: ', userData.rocketId);
 			return RocketChat.models.Users.findOneById(userData.rocketId);
 		}
-
+		logger.class.debug('User not added');
 		return;
 	}
 
@@ -231,7 +236,6 @@ class SlackBridge {
 	}
 
 	sendMessage(room, user, message, msgDataDefaults, importing) {
-		logger.events.debug('sendMessage', room, user, message, msgDataDefaults);
 		if (message.type === 'message') {
 			let msgObj = {};
 			if (!_.isEmpty(message.subtype)) {
@@ -269,7 +273,6 @@ class SlackBridge {
 	}
 
 	saveMessage(message, importing) {
-		logger.events.debug('saveMessage', message, importing);
 		let channel = message.channel ? this.findChannel(message.channel) || this.addChannel(message.channel) : null;
 		let user = null;
 		if (message.subtype === 'message_deleted' || message.subtype === 'message_changed') {
@@ -277,7 +280,6 @@ class SlackBridge {
 		} else {
 			user = message.user ? this.findUser(message.user) || this.addUser(message.user) : null;
 		}
-		logger.events.debug('saveMessage channel, user', channel, user);
 		if (channel && user) {
 			let msgDataDefaults = {
 				_id: `slack-${message.channel}-${message.ts.replace(/\./g, '-')}`,
@@ -359,7 +361,7 @@ class SlackBridge {
 			case 'channel_topic':
 			case 'group_topic':
 				if (importing) {
-					RocketChat.models.Messages.createRoomSettingsChangedWithTypeRoomIdMessageAndUser('room_changed_topic', room._id, message.topic, user);
+					RocketChat.models.Messages.createRoomSettingsChangedWithTypeRoomIdMessageAndUser('room_changed_topic', room._id, message.topic, user, { ts: new Date(parseInt(message.ts.split('.')[0]) * 1000) });
 				} else {
 					RocketChat.saveRoomTopic(room._id, message.topic, user);
 				}
@@ -367,7 +369,7 @@ class SlackBridge {
 			case 'channel_purpose':
 			case 'group_purpose':
 				if (importing) {
-					RocketChat.models.Messages.createRoomSettingsChangedWithTypeRoomIdMessageAndUser('room_changed_topic', room._id, message.purpose, user);
+					RocketChat.models.Messages.createRoomSettingsChangedWithTypeRoomIdMessageAndUser('room_changed_topic', room._id, message.purpose, user, { ts: new Date(parseInt(message.ts.split('.')[0]) * 1000) });
 				} else {
 					RocketChat.saveRoomTopic(room._id, message.purpose, user);
 				}
@@ -375,7 +377,7 @@ class SlackBridge {
 			case 'channel_name':
 			case 'group_name':
 				if (importing) {
-					RocketChat.models.Messages.createRoomRenamedWithRoomIdRoomNameAndUser(room._id, name, user);
+					RocketChat.models.Messages.createRoomRenamedWithRoomIdRoomNameAndUser(room._id, message.name, user);
 				} else {
 					RocketChat.saveRoomName(room._id, message.name, user);
 				}
@@ -405,10 +407,10 @@ class SlackBridge {
 				}
 				break;
 			case 'file_comment':
-				logger.events.error('File comment not implemented');
+				logger.class.error('File comment not implemented');
 				return;
 			case 'file_mention':
-				logger.events.error('File mentioned not implemented');
+				logger.class.error('File mentioned not implemented');
 				return;
 			case 'pinned_item':
 				if (message.attachments && message.attachments[0] && message.attachments[0].text) {
@@ -434,11 +436,11 @@ class SlackBridge {
 
 					return msgObj;
 				} else {
-					logger.events.error('Pinned item with no attachment');
+					logger.class.error('Pinned item with no attachment');
 				}
 				return;
 			case 'unpinned_item':
-				logger.events.error('Unpinned item not implemented');
+				logger.class.error('Unpinned item not implemented');
 				return;
 		}
 	}
@@ -766,6 +768,7 @@ class SlackBridge {
 	}
 
 	importFromHistory(family, options) {
+		logger.class.debug('Importing messages history');
 		let response = HTTP.get('https://slack.com/api/' + family + '.history', { params: _.extend({ token: this.apiToken }, options) });
 		if (response && response.data && _.isArray(response.data.messages) && response.data.messages.length > 0) {
 			let latest = 0;
@@ -790,7 +793,8 @@ class SlackBridge {
 				for (let member of data.members) {
 					let user = this.findUser(member) || this.addUser(member);
 					if (user) {
-						RocketChat.addUserToRoom(rid, user);
+						logger.class.debug('Adding user to room', user.username, rid);
+						RocketChat.addUserToRoom(rid, user, null, true);
 					}
 				}
 			}
@@ -818,6 +822,7 @@ class SlackBridge {
 
 			if (topic) {
 				let creator = this.findUser(topic_creator) || this.addUser(topic_creator);
+				logger.class.debug('Setting room topic', rid, topic, creator.username);
 				RocketChat.saveRoomTopic(rid, topic, creator);
 			}
 		}
