@@ -41,10 +41,12 @@ rocketchat:api
 rocketchat:assets
 rocketchat:authorization
 rocketchat:autolinker
+#rocketchat:bot-helpers
 rocketchat:cas
 rocketchat:channel-settings
 rocketchat:channel-settings-mail-messages
 rocketchat:colors
+rocketchat:crowd
 rocketchat:custom-oauth
 rocketchat:emojione
 rocketchat:favico
@@ -68,6 +70,7 @@ rocketchat:markdown
 rocketchat:mentions
 rocketchat:mentions-flextab
 rocketchat:message-attachments
+rocketchat:message-mark-as-unread
 rocketchat:message-pin
 rocketchat:message-star
 rocketchat:migrations
@@ -77,6 +80,7 @@ rocketchat:otr
 rocketchat:piwik
 rocketchat:push-notifications
 rocketchat:reactions
+rocketchat:sandstorm
 rocketchat:slackbridge
 rocketchat:slashcommands-archive
 rocketchat:slashcommands-asciiarts
@@ -119,7 +123,6 @@ konecty:multiple-instances-status
 konecty:nrr
 konecty:user-presence
 
-arunoda:streams
 chrismbeckett:toastr
 dispatch:run-as-user
 francocatena:status
@@ -157,3 +160,5 @@ voismart:ngapi
 voismart:ngpresence
 voismart:nglogin
 voismart:user-call
+rocketchat:slashcommands-open
+rocketchat:mapview

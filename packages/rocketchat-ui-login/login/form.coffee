@@ -123,7 +123,11 @@ Template.loginForm.events
 				loginMethod = 'loginWithPassword'
 				if RocketChat.settings.get('LDAP_Enable')
 					loginMethod = 'loginWithLDAP'
-				else if RocketChat.settings.get('OrchestraIntegration_Enabled')
+
+				if RocketChat.settings.get('CROWD_Enable')
+					loginMethod = 'loginWithCrowd'
+
+				if RocketChat.settings.get('OrchestraIntegration_Enabled')
 					loginMethod = 'loginWithOrchestra'
 
 				Meteor[loginMethod] s.trim(formData.emailOrUsername), formData.pass, (error) ->

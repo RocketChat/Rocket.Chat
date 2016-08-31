@@ -50,15 +50,10 @@ Tracker.autorun ->
 
 @RoomManager = new class
 	openedRooms = {}
-	subscription = null
 	msgStream = new Meteor.Streamer 'room-messages'
 	onlineUsers = new ReactiveVar {}
 
 	Dep = new Tracker.Dependency
-
-	init = ->
-		subscription = Meteor.subscribe('subscription')
-		return subscription
 
 	close = (typeName) ->
 		if openedRooms[typeName]
@@ -99,7 +94,7 @@ Tracker.autorun ->
 				if record.ready is true
 					return
 
-				ready = record.sub[0].ready() and subscription.ready()
+				ready = record.sub[0].ready() and CachedChatSubscription.ready.get() is true
 
 				if ready is true
 					type = typeName.substr(0, 1)
@@ -169,7 +164,7 @@ Tracker.autorun ->
 		if openedRooms[typeName].ready
 			closeOlderRooms()
 
-		if subscription.ready() && Meteor.userId()
+		if CachedChatSubscription.ready.get() is true && Meteor.userId()
 
 			if openedRooms[typeName].active isnt true
 				openedRooms[typeName].active = true
@@ -242,7 +237,6 @@ Tracker.autorun ->
 	open: open
 	close: close
 	closeAllRooms: closeAllRooms
-	init: init
 	getDomOfRoom: getDomOfRoom
 	existsDomOfRoom: existsDomOfRoom
 	msgStream: msgStream

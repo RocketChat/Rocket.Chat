@@ -27,7 +27,7 @@ class IframeLogin {
 				return c.stop();
 			}
 
-			if (this.enabled === true && this.iframeUrl && this.apiUrl && this.apiMethod && FlowRouter.subsReady('userData', 'activeUsers')) {
+			if (this.enabled === true && this.iframeUrl && this.apiUrl && this.apiMethod) {
 				c.stop();
 				if (!Accounts._storedLoginToken()) {
 					this.tryLogin(() => {});
@@ -96,9 +96,7 @@ class IframeLogin {
 				token: token
 			}],
 			userCallback: (err) => {
-				if (err) {
-					callback(err);
-				}
+				callback(err);
 			}
 		});
 	}

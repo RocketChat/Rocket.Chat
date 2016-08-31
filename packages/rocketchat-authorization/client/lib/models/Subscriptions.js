@@ -1,5 +1,3 @@
-Meteor.subscribe('scopedRoles', 'Subscriptions');
-
 if (_.isUndefined(RocketChat.models.Subscriptions)) {
 	RocketChat.models.Subscriptions = {};
 }

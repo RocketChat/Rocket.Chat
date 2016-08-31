@@ -11,6 +11,7 @@ Meteor.startup ->
 				muted: 1
 				archived: 1
 				jitsiTimeout: 1
+				description: 1
 
 		if RocketChat.authz.hasPermission(this.userId, 'view-c-room')
 			return RocketChat.models.Rooms.findByTypeAndName 'c', identifier, options
@@ -32,6 +33,7 @@ Meteor.startup ->
 				muted: 1
 				archived: 1
 				jitsiTimeout: 1
+				description: 1
 
 		user = RocketChat.models.Users.findOneById this.userId, fields: username: 1
 		return RocketChat.models.Rooms.findByTypeAndNameContainingUsername 'p', identifier, user.username, options
@@ -48,6 +50,6 @@ Meteor.startup ->
 				jitsiTimeout: 1
 
 		user = RocketChat.models.Users.findOneById this.userId, fields: username: 1
-		if RocketChat.authz.hasPermission(this.userId, 'view-d-room')
+		if RocketChat.authz.hasAtLeastOnePermission(this.userId, ['view-d-room', 'view-joined-room'])
 			return RocketChat.models.Rooms.findByTypeContainigUsernames 'd', [user.username, identifier], options
 		return this.ready()

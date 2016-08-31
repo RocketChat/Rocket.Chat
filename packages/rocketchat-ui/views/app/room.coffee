@@ -61,10 +61,9 @@ Template.room.helpers
 
 		return {} unless roomData
 
-		if roomData.t is 'd'
+		if roomData.t in ['d', 'l']
 			username = _.without roomData.usernames, Meteor.user().username
 			return Session.get('user_' + username + '_status') || 'offline'
-
 		else
 			return 'offline'
 
@@ -119,6 +118,9 @@ Template.room.helpers
 	hideUsername: ->
 		return if Meteor.user()?.settings?.preferences?.hideUsernames then 'hide-usernames'
 
+	hideAvatar: ->
+		return if Meteor.user()?.settings?.preferences?.hideAvatars then 'hide-avatars'
+
 isSocialSharingOpen = false
 touchMoved = false
 
@@ -127,6 +129,9 @@ Template.room.events
 		Meteor.setTimeout ->
 			t.sendToBottomIfNecessaryDebounced()
 		, 100
+
+	"click .messages-container": (e) ->
+		if RocketChat.TabBar.isFlexOpen() and Meteor.user()?.settings?.preferences?.hideFlexTab then RocketChat.TabBar.closeFlex()
 
 	"touchstart .message": (e, t) ->
 		touchMoved = false
@@ -233,7 +238,6 @@ Template.room.events
 		else
 			RocketChat.TabBar.openFlex()
 
-
 	"click .flex-tab  .video-remote" : (e) ->
 		if RocketChat.TabBar.isFlexOpen()
 			if (!Session.get('rtcLayoutmode'))
@@ -281,7 +285,7 @@ Template.room.events
 
 	'click .user-card-message': (e, instance) ->
 		roomData = Session.get('roomData' + this._arguments[1].rid)
-		if roomData.t in ['c', 'p']
+		if roomData.t in ['c', 'p', 'd']
 			instance.setUserDetail this._arguments[1].u.username
 		RocketChat.TabBar.setTemplate 'membersList'
 
