@@ -160,12 +160,12 @@ RocketChat.Phone = new class
 	_onHold = false
 	_isMute = false
 
-	_curCall = null
-
 	_audioInDevice = undefined
 	_audioOutDevice = undefined
 	_videoDevice = null
 
+	_curCall = null
+	_dialogs = {}
 	_callState = null
 
 	_curResolutions = null
@@ -210,13 +210,34 @@ RocketChat.Phone = new class
 	onDialogState = (d) ->
 		if window.rocketDebug
 			console.log('on rocket dialog ', d)
+			console.log('current dialogs ', _dialogs)
+
+		_dialogs[d.callID] = d
 
 		if !_curCall?
 			_curCall = d
 
+		if d.callID != _curCall.callID
+			switch d.state.name
+				when 'ringing'
+					console.log("refusing call")
+					d.stopRinging()
+					d.hangup({cause: "USER_BUSY", causeCode: 17})
+				when 'hangup', 'destroy'
+					delete _dialogs[d.callID]
+			return
+
+		if window.rocketDebug
+			console.log "Processing state RQ:" + d.state.name
+
 		switch d.state.name
+			when 'trying', 'early'
+				_callState = 'active'
+				RocketChat.TabBar.updateButton('phone', { class: 'phone-blinking' })
+
 			when 'ringing'
 				_callState = 'ringing'
+				RocketChat.TabBar.updateButton('phone', { class: 'phone-blinking' })
 				RocketChat.TabBar.setTemplate "phone", ->
 					if d.params.caller_id_name
 						cid = d.params.caller_id_name
@@ -232,33 +253,37 @@ RocketChat.Phone = new class
 							sender: Meteor.user()
 
 					KonchatNotification.showDesktop notification
+
 			when 'active'
 				_callState = 'active'
 				RocketChat.TabBar.updateButton('phone', { class: 'red' })
+
 			when 'hangup'
 				if _callState != 'transfer'
 					if window.rocketDebug
-						console.log("hangup call")
+						console.log("hangup call rq")
 					_curCall.hangup()
 
 				_callState = 'hangup'
 				_curCall = null
 				clearNotification()
 				RocketChat.TabBar.updateButton('phone', { class: '' })
-				if d.answered or d.gotAnswer
+				if d.answered or d.gotAnswer or d.cause == 'ORIGINATOR_CANCEL' or d.cause == 'NORMAL CLEARING'
 					toastr.success TAPi18n.__('Phone_end_call')
 				else
 					msg = TAPi18n.__('Phone_failed_call')
 					toastr.error(msg + ": " + d.cause)
+
 			when 'destroy'
 				if _callState != 'transfer' and _callState != 'hangup'
 					if window.rocketDebug
-						console.log("hangup call")
+						console.log("destroy call rq")
 					_curCall.hangup()
 
 				_callState = null
 				_curCall = null
 				clearNotification()
+				delete _dialogs[d.callID]
 
 	clearNotification = ->
 		$(".phone-notifications").text('')
