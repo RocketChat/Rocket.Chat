@@ -169,6 +169,7 @@ class @ChatMessages
 
 				KonchatNotification.removeRoomNotification(rid)
 				input.value = ''
+				input.updateAutogrow?()
 				this.hasValue.set false
 				this.stopTyping(rid)
 
