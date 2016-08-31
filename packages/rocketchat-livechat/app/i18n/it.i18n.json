@@ -1,12 +1,20 @@
 {
+  "Additional_Feedback" : "Feedback aggiuntivi",
   "Appearance" : "Aspetto",
+  "Are_you_sure_do_you_want_end_this_chat" : "Sei sicuro di voler chiudere questa chat?",
+  "Cancel" : "Cancella",
+  "Chat_ended" : "Chat chiusa!",
+  "Close_menu" : "Chiudi menu",
   "Conversation_finished" : "conversazione finito",
+  "End_chat" : "Chiusura chat",
   "How_friendly_was_the_chat_agent" : "Il servizio chat é stato funzionale?",
   "How_knowledgeable_was_the_chat_agent" : "Quanto é stato semplice il servizio chat?",
   "How_responsive_was_the_chat_agent" : "Quanto é stato reattivo il servizio chat?",
   "How_satisfied_were_you_with_this_chat" : "Quanto sei soddisfatto con questa chat?",
   "Installation" : "Installazione",
   "New_messages" : "Nuovi messaggi",
+  "No" : "No",
+  "Options" : "Opzioni",
   "Please_answer_survey" : "Hai un momento per rispondere a un rapido sondaggio su questa chat?",
   "Please_fill_name_and_email" : "Compila nome e indirizzo e-mail",
   "Powered_by" : "Powered by",
@@ -24,5 +32,7 @@
   "User_joined" : "é entrato",
   "User_left" : "Utente ha lasciato",
   "We_are_offline_Sorry_for_the_inconvenience" : "Non siamo in linea. Ci dispiace per l'inconveniente.",
+  "Yes" : "Si",
+  "You" : "Tu",
   "You_must_complete_all_fields" : "È necessario completare tutti i campi"
 }

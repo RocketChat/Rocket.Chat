@@ -1,5 +1,5 @@
 Meteor.methods
-	pinMessage: (message) ->
+	pinMessage: (message, pinnedAt) ->
 		if not Meteor.userId()
 			throw new Meteor.Error('error-invalid-user', "Invalid user", { method: 'pinMessage' })
 
@@ -18,7 +18,7 @@ Meteor.methods
 		me = RocketChat.models.Users.findOneById Meteor.userId()
 
 		message.pinned = true
-		message.pinnedAt = Date.now
+		message.pinnedAt = pinnedAt || Date.now
 		message.pinnedBy =
 			_id: Meteor.userId()
 			username: me.username
