@@ -239,7 +239,7 @@ class SlackBridge {
 		if (message.type === 'message') {
 			let msgObj = {};
 			if (!_.isEmpty(message.subtype)) {
-				msgObj = this.processSubtypedMessage(room, user, message, msgDataDefaults, importing);
+				msgObj = this.processSubtypedMessage(room, user, message, importing);
 				if (!msgObj) {
 					return;
 				}
