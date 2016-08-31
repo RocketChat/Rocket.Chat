@@ -5,7 +5,7 @@ Meteor.methods
 		user = RocketChat.models.Users.findOneByEmailAddress(email)
 		regex = new RegExp("^" + s.escapeRegExp(email) + "$", 'i')
 
-		email = _.find(_.pluck(user.emails || [], 'address'), (userEmail) ->
+		email = _.find _.pluck(user.emails || [], 'address'), (userEmail) ->
 			return regex.test(userEmail)
 
 		if user?
