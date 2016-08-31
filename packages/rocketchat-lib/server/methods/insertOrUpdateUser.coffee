@@ -17,10 +17,10 @@ Meteor.methods
 		if userData.role is 'admin' and not RocketChat.authz.hasPermission Meteor.userId(), 'assign-admin-role'
 			throw new Meteor.Error 'error-action-not-allowed', 'Assigning admin is not allowed', { method: 'insertOrUpdateUser', action: 'Assign_admin' }
 
-		unless s.trim(userData.name)
+		if not userData._id? and not s.trim(userData.name)
 			throw new Meteor.Error 'error-the-field-is-required', 'The field Name is required', { method: 'insertOrUpdateUser', field: 'Name' }
 
-		unless s.trim(userData.username)
+		if not userData._id? and not s.trim(userData.username)
 			throw new Meteor.Error 'error-the-field-is-required', 'The field Username is required', { method: 'insertOrUpdateUser', field: 'Username' }
 
 		try
@@ -28,7 +28,7 @@ Meteor.methods
 		catch
 			nameValidation = new RegExp '^[0-9a-zA-Z-_.]+$'
 
-		if not nameValidation.test userData.username
+		if userData.username? and not nameValidation.test userData.username
 			throw new Meteor.Error 'error-input-is-not-a-valid-field', "#{userData.username} is not a valid username", { method: 'insertOrUpdateUser', input: userData.username, field: 'Username' }
 
 		if not userData._id and not userData.password
@@ -97,27 +97,27 @@ Meteor.methods
 
 			return _id
 		else
-			# prevent removing admin role of last admin
-			adminCount = Meteor.users.find({ roles: { $in: ['admin'] } }).count()
-			if adminCount is 1 and userData.role isnt 'admin'
-				throw new Meteor.Error 'error-action-not-allowed', 'Leaving the app without admins is not allowed', { method: 'insertOrUpdateUser', action: 'Remove_last_admin' }
-
 			#update user
-			updateUser = {
-				$set: {
-					name: userData.name,
-					roles: [ userData.role ],
-					requirePasswordChange: userData.requirePasswordChange
-				}
-			}
+			updateUser = $set: {}
+
+			if userData.name?
+				updateUser.$set.name = userData.name
+
+			if userData.requirePasswordChange?
+				updateUser.$set.requirePasswordChange = userData.requirePasswordChange
+
 			if userData.verified
 				updateUser.$set['emails.0.verified'] = true
 			else
 				updateUser.$set['emails.0.verified'] = false
 
 			Meteor.users.update { _id: userData._id }, updateUser
-			RocketChat.setUsername userData._id, userData.username
-			RocketChat.setEmail userData._id, userData.email
+
+			if userData.username?
+				RocketChat.setUsername userData._id, userData.username
+
+			if userData.email?
+				RocketChat.setEmail userData._id, userData.email
 
 			canEditUserPassword = RocketChat.authz.hasPermission( user._id, 'edit-other-user-password')
 			if canEditUserPassword and userData.password.trim()
