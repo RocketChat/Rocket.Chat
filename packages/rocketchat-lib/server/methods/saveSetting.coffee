@@ -1,5 +1,9 @@
 Meteor.methods
 	saveSetting: (_id, value) ->
+
+		check _id, String
+		check value, String
+
 		if Meteor.userId()?
 			user = Meteor.users.findOne Meteor.userId()
 
