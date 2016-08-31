@@ -14,6 +14,13 @@ Template.username.helpers
 		return Template.instance().username.get()
 
 Template.username.events
+	'focus .input-text input': (event) ->
+		$(event.currentTarget).parents('.input-text').addClass('focus')
+
+	'blur .input-text input': (event) ->
+		if event.currentTarget.value is ''
+			$(event.currentTarget).parents('.input-text').removeClass('focus')
+
 	'submit #login-card': (event, instance) ->
 		event.preventDefault()
 

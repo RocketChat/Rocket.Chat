@@ -134,6 +134,7 @@ Package.onUse(function(api) {
 	api.addFiles('client/MessageAction.coffee', 'client');
 
 	api.addFiles('client/defaultTabBars.js', 'client');
+	api.addFiles('client/CustomTranslations.js', 'client');
 
 	// CLIENT MODELS
 	api.addFiles('client/models/_Base.coffee', 'client');

@@ -123,6 +123,7 @@
 		"swal"                        : false,
 		"t"                           : false,
 		"TAPi18n"                     : false,
+		"TAPi18next"                  : false,
 		"Template"                    : false,
 		"TimeSync"                    : false,
 		"toastr"                      : false,
