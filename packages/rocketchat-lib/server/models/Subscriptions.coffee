@@ -87,10 +87,9 @@ RocketChat.models.Subscriptions = new class extends RocketChat.models._Base
 		return @find query
 
 	# UPDATE
-	archiveByRoomIdAndUserId: (roomId, userId) ->
+	archiveByRoomId: (roomId) ->
 		query =
 			rid: roomId
-			'u._id': userId
 
 		update =
 			$set:
@@ -100,10 +99,9 @@ RocketChat.models.Subscriptions = new class extends RocketChat.models._Base
 
 		return @update query, update
 
-	unarchiveByRoomIdAndUserId: (roomId, userId) ->
+	unarchiveByRoomId: (roomId) ->
 		query =
 			rid: roomId
-			'u._id': userId
 
 		update =
 			$set:

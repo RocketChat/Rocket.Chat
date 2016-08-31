@@ -1,6 +1,8 @@
 Meteor.methods
 	sendMessage: (message) ->
 
+		check message, Object
+
 		if message.ts
 			tsDiff = Math.abs(moment(message.ts).diff())
 			if tsDiff > 60000

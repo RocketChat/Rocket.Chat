@@ -1,5 +1,8 @@
 Meteor.methods
 	insertOrUpdateUser: (userData) ->
+
+		check userData, Object
+
 		if not Meteor.userId()
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'insertOrUpdateUser' })
 
@@ -97,11 +100,6 @@ Meteor.methods
 
 			return _id
 		else
-			# prevent removing admin role of last admin
-			adminCount = Meteor.users.find({ roles: { $in: ['admin'] } }).count()
-			if adminCount is 1 and userData.role isnt 'admin'
-				throw new Meteor.Error 'error-action-not-allowed', 'Leaving the app without admins is not allowed', { method: 'insertOrUpdateUser', action: 'Remove_last_admin' }
-
 			#update user
 			updateUser = $set: {}
 
