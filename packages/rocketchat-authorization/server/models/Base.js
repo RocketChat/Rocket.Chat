@@ -1,5 +1,5 @@
 RocketChat.models._Base.prototype.roleBaseQuery = function(/*userId, scope*/) {
-	return {};
+	return;
 };
 
 RocketChat.models._Base.prototype.findRolesByUserId = function(userId/*, options*/) {
@@ -9,6 +9,11 @@ RocketChat.models._Base.prototype.findRolesByUserId = function(userId/*, options
 
 RocketChat.models._Base.prototype.isUserInRole = function(userId, roleName, scope) {
 	var query = this.roleBaseQuery(userId, scope);
+
+	if (query == null) {
+		return false;
+	}
+
 	query.roles = roleName;
 	return !_.isUndefined(this.findOne(query));
 };

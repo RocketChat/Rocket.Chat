@@ -22,27 +22,4 @@ Meteor.methods
 			if currentTsDiff > blockDeleteInMinutes
 				throw new Meteor.Error 'error-message-deleting-blocked', 'Message deleting is blocked', { method: 'deleteMessage' }
 
-
-		keepHistory = RocketChat.settings.get 'Message_KeepHistory'
-		showDeletedStatus = RocketChat.settings.get 'Message_ShowDeletedStatus'
-
-		if keepHistory
-			if showDeletedStatus
-				RocketChat.models.Messages.cloneAndSaveAsHistoryById originalMessage._id
-			else
-				RocketChat.models.Messages.setHiddenById originalMessage._id, true
-
-			if originalMessage.file?._id?
-				RocketChat.models.Uploads.update originalMessage.file._id, {$set: {_hidden: true}}
-
-		else
-			if not showDeletedStatus
-				RocketChat.models.Messages.removeById originalMessage._id
-
-			if originalMessage.file?._id?
-				FileUpload.delete(originalMessage.file._id)
-
-		if showDeletedStatus
-			RocketChat.models.Messages.setAsDeletedById originalMessage._id
-		else
-			RocketChat.Notifications.notifyRoom originalMessage.rid, 'deleteMessage', {_id: originalMessage._id}
+		RocketChat.deleteMessage(originalMessage, Meteor.user());

@@ -216,6 +216,16 @@ RocketChat.models.Users = new class extends RocketChat.models._Base
 
 		return @update _id, update
 
+	setCustomFields: (_id, fields) ->
+		values = {}
+		for key, value of fields
+			values["customFields.#{key}"] = value
+
+		update =
+			$set: values
+
+		return @update _id, update
+
 	setAvatarOrigin: (_id, origin) ->
 		update =
 			$set:
@@ -361,15 +371,16 @@ RocketChat.models.Users = new class extends RocketChat.models._Base
 	- he is not online
 	- has a verified email
 	- has not disabled email notifications
+	- `active` is equal to true (false means they were deactivated and can't login)
 	###
 	getUsersToSendOfflineEmail: (usersIds) ->
 		query =
 			_id:
 				$in: usersIds
+			active: true
 			status: 'offline'
 			statusConnection:
 				$ne: 'online'
 			'emails.verified': true
 
 		return @find query, { fields: { name: 1, username: 1, emails: 1, 'settings.preferences.emailNotificationMode': 1 } }
-
