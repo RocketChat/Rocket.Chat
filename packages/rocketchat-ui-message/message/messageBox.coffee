@@ -113,7 +113,12 @@ Template.messageBox.events
 		chatMessages[@_id].keyup(@_id, event, instance)
 		instance.isMessageFieldEmpty.set(chatMessages[@_id].isEmpty())
 
-	'paste .input-message': (e) ->
+	'paste .input-message': (e, instance) ->
+		Meteor.setTimeout ->
+			input = instance.find('.input-message')
+			input.updateAutogrow?()
+		, 50
+
 		if not e.originalEvent.clipboardData?
 			return
 
