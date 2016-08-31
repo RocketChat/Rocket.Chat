@@ -121,7 +121,7 @@ class SlackBridge {
 				}
 				let creator = channelData.creator ? this.findUser(channelData.creator) || this.addUser(channelData.creator) : null;
 				if (!creator) {
-					logger.events.error('Could not fetch room creator information', channelData.creator);
+					logger.class.error('Could not fetch room creator information', channelData.creator);
 					return;
 				}
 
@@ -216,7 +216,7 @@ class SlackBridge {
 			if (!this.userTags[userId]) {
 				this.userTags[userId] = { slack: `<@${userId}>`, rocket: `@${userData.name}` };
 			}
-			logger.class.debug('User added', userData.rocketId);
+			logger.class.debug('User: ', userData.rocketId);
 			return RocketChat.models.Users.findOneById(userData.rocketId);
 		}
 		logger.class.debug('User not added');
@@ -407,10 +407,10 @@ class SlackBridge {
 				}
 				break;
 			case 'file_comment':
-				logger.events.error('File comment not implemented');
+				logger.class.error('File comment not implemented');
 				return;
 			case 'file_mention':
-				logger.events.error('File mentioned not implemented');
+				logger.class.error('File mentioned not implemented');
 				return;
 			case 'pinned_item':
 				if (message.attachments && message.attachments[0] && message.attachments[0].text) {
@@ -436,11 +436,11 @@ class SlackBridge {
 
 					return msgObj;
 				} else {
-					logger.events.error('Pinned item with no attachment');
+					logger.class.error('Pinned item with no attachment');
 				}
 				return;
 			case 'unpinned_item':
-				logger.events.error('Unpinned item not implemented');
+				logger.class.error('Unpinned item not implemented');
 				return;
 		}
 	}
