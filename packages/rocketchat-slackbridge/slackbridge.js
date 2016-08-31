@@ -212,9 +212,10 @@ class SlackBridge {
 			if (!this.userTags[userId]) {
 				this.userTags[userId] = { slack: `<@${userId}>`, rocket: `@${userData.name}` };
 			}
+			logger.class.debug('User added', userData.rocketId);
 			return RocketChat.models.Users.findOneById(userData.rocketId);
 		}
-
+		logger.class.debug('User not added');
 		return;
 	}
 
@@ -231,7 +232,6 @@ class SlackBridge {
 	}
 
 	sendMessage(room, user, message, msgDataDefaults, importing) {
-		logger.events.debug('sendMessage', room, user, message, msgDataDefaults);
 		if (message.type === 'message') {
 			let msgObj = {};
 			if (!_.isEmpty(message.subtype)) {
@@ -269,7 +269,6 @@ class SlackBridge {
 	}
 
 	saveMessage(message, importing) {
-		logger.events.debug('saveMessage', message, importing);
 		let channel = message.channel ? this.findChannel(message.channel) || this.addChannel(message.channel) : null;
 		let user = null;
 		if (message.subtype === 'message_deleted' || message.subtype === 'message_changed') {
@@ -277,7 +276,6 @@ class SlackBridge {
 		} else {
 			user = message.user ? this.findUser(message.user) || this.addUser(message.user) : null;
 		}
-		logger.events.debug('saveMessage channel, user', channel, user);
 		if (channel && user) {
 			let msgDataDefaults = {
 				_id: `slack-${message.channel}-${message.ts.replace(/\./g, '-')}`,
@@ -766,6 +764,7 @@ class SlackBridge {
 	}
 
 	importFromHistory(family, options) {
+		logger.class.debug('Importing messages history');
 		let response = HTTP.get('https://slack.com/api/' + family + '.history', { params: _.extend({ token: this.apiToken }, options) });
 		if (response && response.data && _.isArray(response.data.messages) && response.data.messages.length > 0) {
 			let latest = 0;
@@ -790,7 +789,8 @@ class SlackBridge {
 				for (let member of data.members) {
 					let user = this.findUser(member) || this.addUser(member);
 					if (user) {
-						RocketChat.addUserToRoom(rid, user);
+						logger.class.debug('Adding user to room', user.username, rid);
+						RocketChat.addUserToRoom(rid, user, null, true);
 					}
 				}
 			}
@@ -818,6 +818,7 @@ class SlackBridge {
 
 			if (topic) {
 				let creator = this.findUser(topic_creator) || this.addUser(topic_creator);
+				logger.class.debug('Setting room topic', rid, topic, creator.username);
 				RocketChat.saveRoomTopic(rid, topic, creator);
 			}
 		}
