@@ -1,5 +1,5 @@
 Meteor.methods
-	updateUserUtcOffset: (utcOffset) ->
+	userSetUtcOffset: (utcOffset) ->
 		if not @userId?
 			return
 
@@ -9,6 +9,6 @@ Meteor.methods
 
 DDPRateLimiter.addRule
 	type: 'method'
-	name: 'updateUserUtcOffset'
+	name: 'userSetUtcOffset'
 	userId: -> return true
 , 1, 60000

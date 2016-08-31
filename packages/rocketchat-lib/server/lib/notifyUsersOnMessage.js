@@ -4,6 +4,10 @@ RocketChat.callbacks.add('afterSaveMessage', function(message, room) {
 		return message;
 	}
 
+	if (message.ts && Math.abs(moment(message.ts).diff()) > 60000) {
+		return message;
+	}
+
 	/**
 	 * Chechs if a messages contains a user highlight
 	 *
@@ -69,7 +73,7 @@ RocketChat.callbacks.add('afterSaveMessage', function(message, room) {
 
 	// Update all other subscriptions to alert their owners but witout incrementing
 	// the unread counter, as it is only for mentions and direct messages
-	RocketChat.models.Subscriptions.setAlertForRoomIdExcludingUserId(message.rid, message.u._id, true);
+	RocketChat.models.Subscriptions.setAlertForRoomIdExcludingUserId(message.rid, message.u._id);
 
 	return message;
 
