@@ -1,5 +1,9 @@
 Meteor.methods
 	setAdminStatus: (userId, admin) ->
+
+		check userId, String
+		check admin, Match.Optional(Boolean)
+
 		if not Meteor.userId()
 			throw new Meteor.Error 'error-invalid-user', "Invalid user", { method: 'setAdminStatus' }
 
