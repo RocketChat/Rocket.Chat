@@ -375,7 +375,7 @@ class SlackBridge {
 			case 'channel_name':
 			case 'group_name':
 				if (importing) {
-					RocketChat.models.Messages.createRoomRenamedWithRoomIdRoomNameAndUser(room._id, name, user);
+					RocketChat.models.Messages.createRoomRenamedWithRoomIdRoomNameAndUser(room._id, message.name, user);
 				} else {
 					RocketChat.saveRoomName(room._id, message.name, user);
 				}
