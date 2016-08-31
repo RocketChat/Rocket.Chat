@@ -571,18 +571,9 @@ form.inline {
 		font-size: 14px;
 		padding: 8px 8px;
 	}
-	> i {
-		visibility: hidden;
-		&:after {
-			content: " ";
-			visibility: visible;
-			background-image: url('images/logo/loading.gif');
-			background-position: center;
-			background-repeat: no-repeat;
-			display: block;
-			height: 40px;
-			margin-bottom: 12px;
-		}
+	.loading {
+		position: relative;
+		min-height: 60px;
 	}
 }
 
@@ -616,19 +607,16 @@ label.required:after {
 .toggle-favorite {}
 
 .loading {
-	background-image: url('images/loading.gif');
-	background-repeat: no-repeat;
-	background-position: 50%;
-	width: 100%;
-	height: 100%;
-	position: fixed;
 	top: 0;
+	right: 0;
+	bottom: 0;
 	left: 0;
-	&.inline {
-		position: relative;
-		min-height: 40px;
-		background-size: 24px 24px;
-	}
+	display: flex;
+	align-items: center;
+	position: absolute;
+	justify-content: center;
+	font-size: 2em;
+	color: #ccc;
 }
 
 .btn-loading {
@@ -654,12 +642,11 @@ label.required:after {
 	font-weight: 500;
 	font-size: 13px;
 	text-align: center;
-	margin: 4px;
 	text-transform: uppercase;
 	word-spacing: 0;
-	box-shadow: 1px 1px 0 rgba(0, 0, 0, 0.125);
 	line-height: 16px;
 	position: relative;
+	border-radius: 4px;
 	span {
 		position: relative;
 		z-index: 2;
@@ -673,7 +660,6 @@ label.required:after {
 		height: 100%;
 		opacity: 0;
 		z-index: 1;
-		.transition(opacity .1s ease-out);
 	}
 	&:hover {
 		text-decoration: none;
@@ -689,16 +675,36 @@ label.required:after {
 	&.short {
 		min-width: 100px;
 	}
-	&.facebook {}
-	&.twitter {}
-	&.google {}
-	&.github {}
-	&.gitlab {}
-	&.trello {}
-	&.meteor-developer {}
+	&.lightblue {
+		min-width: 100px;
+	}
+	&.clean {
+		font-size: 14px;
+		box-shadow: 0 0 3px rgba(0, 0, 0, 0.08);
+		&.primary {
+			font-weight: 600;
+		}
+	}
 	&.button-block {
 		display: block;
+		margin-bottom: 4px;
 		width: 100%;
+	}
+}
+
+.buttons-group {
+	display: -webkit-flex;
+	display: -moz-flex;
+	display: flex;
+	margin-bottom: 4px;
+	.button {
+		margin-left: 4px;
+	}
+	.button:first-child {
+		margin-left: 0px;
+		-webkit-flex-grow: 1;
+		-moz-flex-grow: 1;
+		flex-grow: 1;
 	}
 }
 
@@ -1010,7 +1016,6 @@ label.required:after {
 			padding: 15px 12px;
 			line-height: 1;
 			text-decoration: none;
-			border-width: 0 0 1px 0;
 			&:nth-child(even) {}
 			&:hover {
 				text-decoration: none;
@@ -1557,7 +1562,7 @@ label.required:after {
 	max-width: 800px;
 	margin: 40px auto;
 	padding: 20px;
-	border-radius: 5px;
+	border-radius: 4px;
 	box-shadow: 1px 1px 4px rgba(0, 0, 0, .3);
 	.cms-page-close {
 		margin-bottom: 10px;
@@ -1684,10 +1689,11 @@ label.required:after {
 		}
 	}
 	.section {
-		border-width: 1px;
-		border-left: none;
+		border: 1px solid #ddd;
+		border-radius: 4px;
+		background-color: #fff;
 		padding: 20px;
-		margin-bottom: 20px;
+		margin: 20px;
 		&.section-collapsed {
 			.section-content {
 				display: none;
@@ -1808,7 +1814,7 @@ label.required:after {
 			.section-content {
 				border-width: 1px;
 				padding: 20px;
-				border-radius: 5px;
+				border-radius: 4px;
 				.section-helper {
 					padding: 20px 20px 40px;
 					pre {
@@ -2012,6 +2018,7 @@ label.required:after {
 	height: 100%;
 	top: 0;
 	left: 0;
+	border-right: 1px solid;
 	.room-topic {
 		font-size: 14px;
 		opacity: 0.4;
@@ -2044,12 +2051,16 @@ label.required:after {
 		min-height: @footer-min-height;
 	}
 	.message-popup-results {
+		.loading {
+			display: none;
+		}
 		&.notready {
 			.message-popup-items {
-				background-image: url(images/logo/loading.gif);
-				background-repeat: no-repeat;
-				background-position: 50% 50%;
+				position: relative;
 				height: 100px;
+				.loading {
+					display: flex;
+				}
 			}
 			.popup-item {
 				display: none;
@@ -2716,15 +2727,14 @@ body:not(.is-cordova) {
 	height: 100%;
 	top: 0;
 	right: 0;
-	border-width: 0 0 0 1px;
 	z-index: 130;
 	.tab-button {
 		position: relative;
 		cursor: pointer;
-		padding: 10px 0;
-		border-width: 0 0 1px 0;
 		text-align: center;
-
+		button {
+			height: 38px;
+		}
 		.counter {
 			position: absolute;
 			font-size: 9px;
@@ -2738,10 +2748,9 @@ body:not(.is-cordova) {
 			text-align: center;
 		}
 		&.active {
-			margin-left: -1px;
 			border-right: 3px solid;
 			button {
-				margin-left: 4px;
+				margin-left: 3px;
 			}
 			.counter {
 				margin-right: -3px;
@@ -2808,7 +2817,6 @@ body:not(.is-cordova) {
 
 // FLEX-TAB and FLEX-TAB views
 .flex-tab {
-	border-width: 0 0 0 1px;
 	overflow-x: visible;
 	position: fixed;
 	z-index: 110;
@@ -3012,10 +3020,21 @@ body:not(.is-cordova) {
 		display: block;
 	}
 	&.uploaded-files-list {
-		li:hover {
-			cursor: pointer;
-			.file-name {
-				text-decoration: underline;
+		a {
+			&.file-name {
+				color: #008ce3;
+				padding: 10px 5px;
+				border-bottom: 1px solid #eaeaea;
+				display: block;
+				&:hover {
+					color: #006db0;
+					text-decoration: underline;
+				}
+				p {
+					overflow: hidden;
+					text-overflow: ellipsis;
+					white-space: nowrap;
+				}
 			}
 		}
 		a.file-name {
@@ -3048,31 +3067,10 @@ body:not(.is-cordova) {
 	}
 	.thumb {
 		width: 100%;
-		height: 200px;
-
-		.transition(height .4s ease);
-
-		cursor: zoom-in;
-		cursor: -moz-zoom-in;
-		cursor: -webkit-zoom-in;
-
-		&.bigger {
-			height: 350px;
-			cursor: zoom-out;
-			cursor: -moz-zoom-out;
-			cursor: -webkit-zoom-out;
-		}
-
-		.avatar {
-			border-radius: 0;
-
-			.avatar-image {
-				border-radius: 0;
-			}
-		}
+		height: 350px;
+		padding: 20px;
 	}
 	nav {
-		margin-left: -4px;
 		padding: 0 20px;
 		.back {
 			float: right;
@@ -3647,9 +3645,10 @@ body:not(.is-cordova) {
 				visibility: hidden;
 			}
 		}
-		input {
+		input, select {
 			box-shadow: 0 0 0;
 			position: relative;
+			margin-top: 10px;
 			padding: 4px 8px;
 			font-size: 18px;
 			border-width: 0 0 1px 0;
@@ -3663,10 +3662,41 @@ body:not(.is-cordova) {
 				/* Firefox 19+ */
 				&:-ms-input-placeholder {}
 			}
+			&:focus {
+				border-color: #13679a !important;
+			}
+		}
+		.select-arrow {
+			position: absolute;
+			bottom: 11px;
+			right: 0px;
+			color: #a9a9a9;
+		}
+		label {
+			position: absolute;
+			top: 20px;
+			left: 8px;
+			display: block;
+			font-size: 18px;
+			text-align: left;
+			color: #a9a9a9;
+			transition: all 0.3s;
+		}
+		&.focus label {
+			top: 0;
+			font-size: 12px;
 		}
 		input:-webkit-autofill {}
 		input:-webkit-autofill {
 			-webkit-box-shadow: 0 0 0px 1000px #f4f4f4 inset;
+		}
+
+		.input-error {
+			text-align: left;
+			color: #b40202;
+			padding-left: 4px;
+			font-weight: bold;
+			font-size: 14px;
 		}
 	}
 }
@@ -4209,17 +4239,6 @@ body:not(.is-cordova) {
 	}
 }
 
-.group-call-buttons {
-	display: -webkit-flex;
-	display: -moz-flex;
-	display: flex;
-	button:first-child {
-		-webkit-flex-grow: 1;
-		-moz-flex-grow: 1;
-		flex-grow: 1;
-	}
-}
-
 .alert-icon {
 	font-size: 80px;
 	display: block;
@@ -4344,70 +4363,6 @@ body:not(.is-cordova) {
 
 .powered-by {
 	margin-top: 1em;
-}
-
-.page-loading {
-	position: absolute;
-	top: 0;
-	left: 0;
-	right: 0;
-	bottom: 0;
-	z-index: 1000;
-	display: flex;
-	align-items: center;
-	justify-content: center;
-	.spinner {
-		margin: 10px auto;
-		width: 50px;
-		height: 40px;
-		text-align: center;
-		font-size: 10px;
-	}
-	.spinner > div {
-		height: 100%;
-		width: 6px;
-		display: inline-block;
-		-webkit-animation: sk-stretchdelay 1.2s infinite ease-in-out;
-		animation: sk-stretchdelay 1.2s infinite ease-in-out;
-	}
-	.spinner .rect2 {
-		-webkit-animation-delay: -1.1s;
-		animation-delay: -1.1s;
-	}
-	.spinner .rect3 {
-		-webkit-animation-delay: -1.0s;
-		animation-delay: -1.0s;
-	}
-	.spinner .rect4 {
-		-webkit-animation-delay: -0.9s;
-		animation-delay: -0.9s;
-	}
-	.spinner .rect5 {
-		-webkit-animation-delay: -0.8s;
-		animation-delay: -0.8s;
-	}
-	@-webkit-keyframes sk-stretchdelay {
-		0%,
-		40%,
-		100% {
-			-webkit-transform: scaleY(0.4)
-		}
-		20% {
-			-webkit-transform: scaleY(1.0)
-		}
-	}
-	@keyframes sk-stretchdelay {
-		0%,
-		40%,
-		100% {
-			transform: scaleY(0.4);
-			-webkit-transform: scaleY(0.4);
-		}
-		20% {
-			transform: scaleY(1.0);
-			-webkit-transform: scaleY(1.0);
-		}
-	}
 }
 
 .code-error-box {

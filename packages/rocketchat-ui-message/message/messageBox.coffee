@@ -26,6 +26,8 @@ Template.messageBox.helpers
 		return RocketChat.settings.get('Message_ShowFormattingTips') and (RocketChat.Markdown or RocketChat.MarkdownCode or katexSyntax())
 	canJoin: ->
 		return RocketChat.roomTypes.verifyShowJoinLink @_id
+	joinCodeRequired: ->
+		return Session.get('roomData' + this._id)?.joinCodeRequired
 	subscribed: ->
 		return RocketChat.roomTypes.verifyCanSendMessage @_id
 	getPopupConfig: ->
@@ -67,7 +69,7 @@ Template.messageBox.helpers
 		return Template.instance().showVideoRec.get()
 
 	showSend: ->
-		if not Template.instance().isMessageFieldEmpty.get() or not Template.instance().showMicButton.get()
+		if not Template.instance().isMessageFieldEmpty.get()
 			return 'show-send'
 
 	showLocation: ->
@@ -84,7 +86,15 @@ Template.messageBox.events
 	'click .join': (event) ->
 		event.stopPropagation()
 		event.preventDefault()
-		Meteor.call 'joinRoom', @_id
+		Meteor.call 'joinRoom', @_id, Template.instance().$('[name=joinCode]').val(), (err) ->
+			if err?
+				toastr.error t(err.reason)
+
+			if RocketChat.authz.hasAllPermission('preview-c-room') is false and RoomHistoryManager.getRoom(@_id).loaded is 0
+				RoomManager.getOpenedRoomByRid(@_id).streamActive = false
+				RoomManager.getOpenedRoomByRid(@_id).ready = false
+				RoomHistoryManager.getRoom(@_id).loaded = undefined
+				RoomManager.computation.invalidate()
 
 	'focus .input-message': (event) ->
 		KonchatNotification.removeRoomNotification @_id
