@@ -204,7 +204,11 @@ class SlackBridge {
 				} else if (userData.profile.image_512) {
 					url = userData.profile.image_512;
 				}
-				RocketChat.setUserAvatar(user, url, null, 'url');
+				try {
+					RocketChat.setUserAvatar(user, url, null, 'url');
+				} catch (error) {
+					logger.class.debug('Error setting user avatar', error.message);
+				}
 				RocketChat.addUserToDefaultChannels(user);
 			}
 
