@@ -74,10 +74,10 @@ class ModelsBase extends EventEmitter {
 			}
 		}
 
-		query = { _id: { $in: _.pluck(ids, '_id') } };
 		const result = this.model.update(query, update, options);
-		this.emit('update', query, update);
-		this.emit('change', 'update', query, update);
+		const idQuery = { _id: { $in: _.pluck(ids, '_id') } };
+		this.emit('update', idQuery, update);
+		this.emit('change', 'update', idQuery, update);
 		return result;
 	}
 
