@@ -17,6 +17,8 @@ Meteor.startup ->
 						username: 'ConferenceBot'
 					msg.private = true
 					ChatMessage.upsert { _id: msg._id }, msg
+		else
+			RocketChat.TabBar.removeButton 'webcollaboration'
 
 
 Template.webCollaboration.events
