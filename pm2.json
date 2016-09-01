@@ -1,0 +1,18 @@
+{
+	"apps": [{
+		"name": "rocket.chat.0",
+		"max_memory_restart": "1024M",
+		"log_date_format": "YYYY-MM-DD HH:mm:ss SSS",
+		"script": "/app/Rocket.Chat/.meteor/local/build/main.js",
+		"out_file": "/app/logs/app.log",
+		"error_file": "/app/logs/err.log",
+		"port": "80",
+		"env": {
+			"MONGO_URL": "mongodb://localhost:27017/rocketchat",
+			"MONGO_OPLOG_URL": "mongodb://localhost:27017/local",
+			"ROOT_URL": "http://104.155.98.44/",
+			"DDP_DEFAULT_CONNECTION_URL": "http://104.155.98.44/",
+			"PORT": "80"
+		}
+	}]
+}
