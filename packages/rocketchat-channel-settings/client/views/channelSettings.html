@@ -6,70 +6,76 @@
 			</div>
 			<form>
 				<ul class="list clearfix">
-					{{#if notDirect}}
-						<li>
-							<label>{{_ "Name"}}</label>
-							<div>
-								{{#if editing 'roomName'}}
-									<input type="text" name="roomName" value="{{roomName}}" class="editing" /> <button type="button" class="button secondary cancel">{{_ "Cancel"}}</button> <button type="button" class="button primary save">{{_ "Save"}}</button>
-								{{else}}
-									<span>{{roomName}}{{#if canEdit}} <i class="icon-pencil" data-edit="roomName"></i>{{/if}}</span>
-								{{/if}}
-							</div>
-						</li>
-					{{/if}}
-					<li>
-						<label>{{_ "Topic"}}</label>
-						<div>
-							{{#if editing 'roomTopic'}}
-								<input type="text" name="roomTopic" value="{{roomTopicUnescaped}}" class="editing" /> <button type="button" class="button secondary cancel">{{_ "Cancel"}}</button> <button type="button" class="button primary save">{{_ "Save"}}</button>
-							{{else}}
-								<span>{{{RocketChatMarkdown roomTopic}}}{{#if canEdit}} <i class="icon-pencil" data-edit="roomTopic"></i>{{/if}}</span>
+					{{#let room=getRoom}}
+						{{#each toArray settings}}
+
+							{{#if $value.canView room}}
+								{{#let value=(valueOf room $key)}}
+									<li>
+										<label>{{_ $value.label}}</label>
+										<div>
+											{{#if $eq $value.type 'text'}}
+												{{#if editing $key}}
+													<input type="text" name="{{$key}}" value="{{value}}" class="editing" />
+												{{else}}
+													<span>{{value}}</span>
+												{{/if}}
+											{{/if}}
+
+											{{#if $eq $value.type 'markdown'}}
+												{{#if editing $key}}
+													<input type="text" name="{{$key}}" value="{{unscape value}}" class="editing" />
+												{{else}}
+													<span>{{{RocketChatMarkdown value}}}</span>
+												{{/if}}
+											{{/if}}
+
+											{{#if $eq $value.type 'select'}}
+												{{#if editing $key}}
+													{{#each toArray $value.options}}
+														<label>
+															<input type="radio" name="{{../$key}}" value="{{$key}}" checked="{{$eq value $key}}" class="editing" />
+															{{_ $value}}
+														</label>
+													{{/each}}
+												{{else}}
+													<span>{{_ (valueOf $value.options value)}}</span>
+												{{/if}}
+											{{/if}}
+
+											{{#if $eq $value.type 'boolean'}}
+												{{#if editing $key}}
+													<label>
+														<input type="radio" name="{{$key}}" value="true" checked="{{$eq value true}}" class="editing" />
+														{{_ 'True'}}
+													</label>
+													<label>
+														<input type="radio" name="{{$key}}" value="false" checked="{{$neq value true}}" class="editing" />
+														{{_ 'False'}}
+													</label>
+												{{else}}
+													{{#if value}}
+														<span>{{_ 'True'}}</span>
+													{{else}}
+														<span>{{_ 'False'}}</span>
+													{{/if}}
+												{{/if}}
+											{{/if}}
+
+											{{#if editing $key}}
+												<button type="button" class="button secondary cancel">{{_ "Cancel"}}</button>
+												<button type="button" class="button primary save">{{_ "Save"}}</button>
+											{{else}}
+												<span>{{#if $value.canEdit room}} <i class="icon-pencil" data-edit="{{$key}}"></i>{{/if}}</span>
+											{{/if}}
+										</div>
+									</li>
+								{{/let}}
 							{{/if}}
-						</div>
-					</li>
-					{{#if notDirect}}
-						<li>
-							<label>{{_ "Description"}}</label>
-						<div>
-							{{#if editing 'roomDescription'}}
-								<input type="text" name="roomDescription" value="{{roomDescription}}" class="editing" /> <button type="button" class="button secondary cancel">{{_ "Cancel"}}</button><button type="button" class="button primary save">{{_ "Save"}}</button>
-							{{else}}
-								<span>{{roomDescription}}{{#if canEdit}} <i class="icon-pencil" data-edit="roomDescription"></i>{{/if}}</span>
-							{{/if}}
-							</div>
-						</li>
-					{{/if}}
-					{{#if notDirect}}
-						<li>
-							<label>{{_ "Type"}}</label>
-							<div>
-								{{#if editing 'roomType'}}
-									<label><input type="radio" name="roomType" class="editing" value="c" checked="{{$eq roomType 'c'}}" /> {{_ "Channel"}}</label>
-									<label><input type="radio" name="roomType" value="p" checked="{{$eq roomType 'p'}}" /> {{_ "Private_Group"}}</label>
-									<button type="button" class="button secondary cancel">{{_ "Cancel"}}</button>
-									<button type="button" class="button primary save">{{_ "Save"}}</button>
-								{{else}}
-									<span>{{roomTypeDescription}}{{#if canEdit}} <i class="icon-pencil" data-edit="roomType"></i>{{/if}}</span>
-								{{/if}}
-							</div>
-						</li>
-					{{/if}}
-					{{#if notDirect}}
-						<li>
-							<label>{{_ "Room_archivation_state"}}</label>
-							<div>
-								{{#if editing 'archivationState'}}
-									<label><input type="radio" name="archivationState" class="editing" value="true" checked="{{$eq archivationState true}}" /> {{_ "Room_archivation_state_true"}}</label>
-									<label><input type="radio" name="archivationState" value="false" checked="{{$neq archivationState true}}" /> {{_ "Room_archivation_state_false"}}</label>
-									<button type="button" class="button secondary cancel">{{_ "Cancel"}}</button>
-									<button type="button" class="button primary save">{{_ "Save"}}</button>
-								{{else}}
-									<span>{{archivationStateDescription}}{{#if canArchiveOrUnarchive}} <i class="icon-pencil" data-edit="archivationState"></i>{{/if}}</span>
-								{{/if}}
-							</div>
-						</li>
-					{{/if}}
+
+						{{/each}}
+					{{/let}}
+
 					{{#each channelSettings}}
 						{{> Template.dynamic template=template data=data}}
 					{{/each}}

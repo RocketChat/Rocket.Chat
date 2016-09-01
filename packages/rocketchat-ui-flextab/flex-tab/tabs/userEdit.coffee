@@ -78,6 +78,12 @@ Template.userEdit.onCreated ->
 	@save = (form) =>
 		if this.validate()
 			userData = this.getUserData()
+
+			if @user?
+				for key, value of userData when key not in ['_id']
+					if value is @user[key]
+						delete userData[key]
+
 			Meteor.call 'insertOrUpdateUser', userData, (error, result) =>
 				if result
 					if userData._id

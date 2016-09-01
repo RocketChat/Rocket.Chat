@@ -18,7 +18,8 @@ RocketChat.models.Rooms.updateSurveyFeedbackById = function(_id, surveyFeedback)
 
 RocketChat.models.Rooms.updateLivechatDataByToken = function(token, key, value) {
 	const query = {
-		'v.token': token
+		'v.token': token,
+		open: true
 	};
 
 	const update = {
