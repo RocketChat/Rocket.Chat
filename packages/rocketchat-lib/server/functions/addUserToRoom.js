@@ -1,4 +1,4 @@
-RocketChat.addUserToRoom = function(rid, user, inviter) {
+RocketChat.addUserToRoom = function(rid, user, inviter, silenced) {
 	let now = new Date();
 	let room = RocketChat.models.Rooms.findOneById(rid);
 
@@ -20,16 +20,18 @@ RocketChat.addUserToRoom = function(rid, user, inviter) {
 		unread: 1
 	});
 
-	if (inviter) {
-		RocketChat.models.Messages.createUserAddedWithRoomIdAndUser(rid, user, {
-			ts: now,
-			u: {
-				_id: inviter._id,
-				username: inviter.username
-			}
-		});
-	} else {
-		RocketChat.models.Messages.createUserJoinWithRoomIdAndUser(rid, user, { ts: now });
+	if (!silenced) {
+		if (inviter) {
+			RocketChat.models.Messages.createUserAddedWithRoomIdAndUser(rid, user, {
+				ts: now,
+				u: {
+					_id: inviter._id,
+					username: inviter.username
+				}
+			});
+		} else {
+			RocketChat.models.Messages.createUserJoinWithRoomIdAndUser(rid, user, { ts: now });
+		}
 	}
 
 	if (room.t === 'c') {
