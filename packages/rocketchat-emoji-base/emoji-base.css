@@ -1,0 +1,37 @@
+.emoji {
+  image-rendering: -webkit-optimize-contrast;
+  image-rendering: optimizeQuality;
+  font-size: inherit;
+  height: 22px;
+  width: 22px;
+  position: relative;
+  display: inline-block;
+  margin: 0 .15em;
+  line-height: normal;
+  vertical-align: middle;
+  background-position:center;
+  background-repeat: no-repeat;
+  background-size: cover;
+  text-indent: 100%;
+  white-space: nowrap;
+  overflow: hidden;
+}
+
+.big_emoji {
+  image-rendering: -webkit-optimize-contrast;
+  image-rendering: optimizeQuality;
+  font-size: inherit;
+  height: 44px;
+  width: 44px;
+  position: relative;
+  display: inline-block;
+  margin: 0 .15em;
+  line-height: normal;
+  vertical-align: middle;
+  background-position:center;
+  background-repeat: no-repeat;
+  background-size: cover;
+  text-indent: 100%;
+  white-space: nowrap;
+  overflow: hidden;
+}
