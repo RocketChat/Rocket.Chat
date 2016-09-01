@@ -1,5 +1,8 @@
 Meteor.methods
 	sendInvitationEmail: (emails) ->
+
+		check emails, [String]
+
 		if not Meteor.userId()
 			throw new Meteor.Error 'error-invalid-user', "Invalid user", { method: 'sendInvitationEmail' }
 
