@@ -50,7 +50,13 @@ RocketChat.smarsh.generateEml = () => {
 				if (data.users.indexOf(sender._id) === -1) {
 					data.users.push(sender._id);
 				}
-				rows.push(`${sender.name} &lt;${sender.emails[0].address}&gt;`);
+
+				//Get the user's email, can be nothing if it is an unconfigured bot account (like rocket.cat)
+				if (sender.emails && sender.emails[0] && sender.emails[0].address) {
+					rows.push(`${sender.name} &lt;${sender.emails[0].address}&gt;`);
+				} else {
+					rows.push(`${sender.name} &lt;${RocketChat.settings.get('Smarsh_MissingEmail_Email')}&gt;`);
+				}
 				rows.push(closetd);
 
 				//The message
