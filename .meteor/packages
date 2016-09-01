@@ -47,6 +47,7 @@ rocketchat:channel-settings
 rocketchat:channel-settings-mail-messages
 rocketchat:colors
 rocketchat:crowd
+rocketchat:custom-emoji
 rocketchat:custom-oauth
 rocketchat:emoji-base
 rocketchat:emojione
