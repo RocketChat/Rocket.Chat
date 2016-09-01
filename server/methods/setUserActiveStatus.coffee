@@ -1,5 +1,8 @@
 Meteor.methods
 	setUserActiveStatus: (userId, active) ->
+
+		check userId, String
+
 		if not Meteor.userId()
 			throw new Meteor.Error 'error-invalid-user', 'Invalid user', { method: 'setUserActiveStatus' }
 
