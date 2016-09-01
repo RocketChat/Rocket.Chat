@@ -24,7 +24,9 @@ Package.onUse(function(api) {
 	api.addFiles('client/views/videoFlexTab.js', 'client');
 	api.addFiles('client/tabBar.js', 'client');
 	api.addFiles('client/actionLink.js', 'client');
-	api.addFiles('client/messageType.js', 'client');
+
+	//Need to register the messageType with both the server and client
+	api.addFiles('lib/messageType.js', ['client', 'server']);
 
 	api.addFiles('server/settings.js', 'server');
 	api.addFiles('server/models/Rooms.js', 'server');
