@@ -11,11 +11,4 @@ Meteor.methods
 		unless RocketChat.authz.hasPermission(Meteor.userId(), 'archive-room', room._id)
 			throw new Meteor.Error 'error-not-authorized', 'Not authorized', { method: 'archiveRoom' }
 
-		RocketChat.models.Rooms.archiveById rid
-
-		for username in room.usernames
-			member = RocketChat.models.Users.findOneByUsername(username, { fields: { username: 1 }})
-			if not member?
-				continue
-
-			RocketChat.models.Subscriptions.archiveByRoomIdAndUserId rid, member._id
+		RocketChat.archiveRoom(rid)

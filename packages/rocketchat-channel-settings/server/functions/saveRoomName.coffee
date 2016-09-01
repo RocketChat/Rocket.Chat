@@ -1,13 +1,7 @@
 RocketChat.saveRoomName = (rid, name) ->
-	if not Meteor.userId()
-		throw new Meteor.Error('error-invalid-user', "Invalid user", { function: 'RocketChat.saveRoomName' })
-
 	room = RocketChat.cache.Rooms.findOneById rid
 
 	if room.t not in ['c', 'p']
-		throw new Meteor.Error 'error-not-allowed', 'Not allowed', { function: 'RocketChat.saveRoomName' }
-
-	unless RocketChat.authz.hasPermission(Meteor.userId(), 'edit-room', rid)
 		throw new Meteor.Error 'error-not-allowed', 'Not allowed', { function: 'RocketChat.saveRoomName' }
 
 	try
