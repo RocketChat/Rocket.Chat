@@ -59,10 +59,9 @@ RocketChat.smarsh.generateEml = () => {
 				if (message.t) {
 					const messageType = RocketChat.MessageTypes.getType(message);
 					if (messageType) {
-						rows.push(TAPi18n.__(messageType.message, messageType.data(message), 'en'));
+						rows.push(TAPi18n.__(messageType.message, messageType.data ? messageType.data(message) : '', 'en'));
 					} else {
-						console.log(`The message type ${message.t} does not have a MessageType.`);
-						rows.push(message.msg);
+						rows.push(`${message.msg} (${message.t})`);
 					}
 				} else if (message.file) {
 					data.files.push(message.file._id);
