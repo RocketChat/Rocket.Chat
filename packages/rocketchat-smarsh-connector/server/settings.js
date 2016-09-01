@@ -15,6 +15,11 @@ RocketChat.settings.addGroup('Smarsh', function addSettings() {
 		i18nLabel: 'Smarsh_Email',
 		placeholder: 'email@domain.com'
 	});
+	this.add('Smarsh_MissingEmail_Email', 'no-email@example.com', {
+		type: 'string',
+		i18nLabel: 'Smarsh_MissingEmail_Email',
+		placeholder: 'no-email@example.com'
+	});
 	this.add('Smarsh_Interval', 'every_30_minutes', {
 		type: 'select',
 		values: [{
