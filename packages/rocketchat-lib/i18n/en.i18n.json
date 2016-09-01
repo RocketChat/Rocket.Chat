@@ -1084,6 +1084,8 @@
   "Smarsh_Email_Description": "Smarsh Email Address to send the .eml file to.",
   "Smarsh_Interval": "Smarsh Interval",
   "Smarsh_Interval_Description": "The amount of time to wait before sending the chats (needs 'From Email' filled in under Email -> SMTP).",
+  "Smarsh_MissingEmail_Email": "Missing Email",
+  "Smarsh_MissingEmail_Email_Description": "The email to show for a user account when their email address is missing, generally happens with bot accounts.",
   "Smileys_and_People" : "Smileys & People",
   "SMS_Enabled" : "SMS Enabled",
   "SMTP" : "SMTP",
