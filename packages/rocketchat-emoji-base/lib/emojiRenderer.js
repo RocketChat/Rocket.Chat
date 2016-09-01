@@ -1,4 +1,4 @@
-/* globals HTML, isSetNotNull renderEmoji:true */
+/* globals HTML, isSetNotNull, renderEmoji:true */
 renderEmoji = function(emoji) {
 	if (isSetNotNull(() => RocketChat.emoji.list[emoji].emojiPackage)) {
 		let emPackage = RocketChat.emoji.list[emoji].emojiPackage;
@@ -14,7 +14,7 @@ Template.registerHelper('renderEmoji', new Template('renderEmoji', function() {
 
 	if (isSetNotNull(() => RocketChat.emoji.list[emoji].emojiPackage)) {
 		let emPackage = RocketChat.emoji.list[emoji].emojiPackage;
-		return HTML.Raw(RocketChat.emoji.packages[emPackage].render(emoji));
+		return new HTML.Raw(RocketChat.emoji.packages[emPackage].render(emoji));
 	}
 
 	return '';
