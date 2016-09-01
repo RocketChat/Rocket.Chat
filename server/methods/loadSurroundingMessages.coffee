@@ -1,5 +1,9 @@
 Meteor.methods
 	loadSurroundingMessages: (message, limit=50) ->
+
+		check message, Object
+		check limit, Number
+
 		if not Meteor.userId()
 			throw new Meteor.Error 'error-invalid-user', 'Invalid user', { method: 'loadSurroundingMessages' }
 

@@ -1,5 +1,10 @@
 Meteor.methods
 	setAvatarFromService: (dataURI, contentType, service) ->
+
+		check dataURI, String
+		check contentType, String
+		check service, String
+
 		unless Meteor.userId()
 			throw new Meteor.Error('error-invalid-user', "Invalid user", { method: 'setAvatarFromService' })
 
