@@ -1,4 +1,4 @@
-/* globals isSet, RocketChatFileCustomEmojiInstance */
+/* globals RocketChatFileCustomEmojiInstance */
 Meteor.methods({
 	insertOrUpdateEmoji(emojiData) {
 		if (!RocketChat.authz.hasPermission(this.userId, 'manage-assets')) {
@@ -18,8 +18,8 @@ Meteor.methods({
 		let aliasValidation = /[:><&"'\/\\\(\)]/;
 
 		//silently strip colon; this allows for uploading :emojiname: as emojiname
-		emojiData.name = emojiData.name.replace(/:/g, '')
-		emojiData.aliases = emojiData.aliases.replace(/:/g, '')
+		emojiData.name = emojiData.name.replace(/:/g, '');
+		emojiData.aliases = emojiData.aliases.replace(/:/g, '');
 
 		if (nameValidation.test(emojiData.name)) {
 			throw new Meteor.Error('error-input-is-not-a-valid-field', `${emojiData.name} is not a valid name`, { method: 'insertOrUpdateEmoji', input: emojiData.name, field: 'Name' });
