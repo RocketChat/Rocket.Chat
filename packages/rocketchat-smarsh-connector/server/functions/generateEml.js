@@ -41,7 +41,7 @@ RocketChat.smarsh.generateEml = () => {
 
 				//The timestamp
 				rows.push(open20td);
-				rows.push(message.ts.toISOString());
+				rows.push(moment(message.ts).tz('America/Los_Angeles').format('YYYY-MM-DD HH-mm-ss z'));
 				rows.push(closetd);
 
 				//The sender
@@ -50,7 +50,13 @@ RocketChat.smarsh.generateEml = () => {
 				if (data.users.indexOf(sender._id) === -1) {
 					data.users.push(sender._id);
 				}
-				rows.push(`${sender.name} &lt;${sender.emails[0].address}&gt;`);
+
+				//Get the user's email, can be nothing if it is an unconfigured bot account (like rocket.cat)
+				if (sender.emails && sender.emails[0] && sender.emails[0].address) {
+					rows.push(`${sender.name} &lt;${sender.emails[0].address}&gt;`);
+				} else {
+					rows.push(`${sender.name} &lt;${RocketChat.settings.get('Smarsh_MissingEmail_Email')}&gt;`);
+				}
 				rows.push(closetd);
 
 				//The message
@@ -59,14 +65,26 @@ RocketChat.smarsh.generateEml = () => {
 				if (message.t) {
 					const messageType = RocketChat.MessageTypes.getType(message);
 					if (messageType) {
-						rows.push(TAPi18n.__(messageType.message, messageType.data(message), 'en'));
+						rows.push(TAPi18n.__(messageType.message, messageType.data ? messageType.data(message) : '', 'en'));
 					} else {
-						console.log(`The message type ${message.t} does not have a MessageType.`);
-						rows.push(message.msg);
+						rows.push(`${message.msg} (${message.t})`);
 					}
 				} else if (message.file) {
 					data.files.push(message.file._id);
 					rows.push(`${message.attachments[0].title} (${_getLink(message.attachments[0])})`);
+				} else if (message.attachments) {
+					const attaches = [];
+					_.each(message.attachments, function _loopThroughMessageAttachments(a) {
+						if (a.image_url) {
+							attaches.push(a.image_url);
+						}
+						//TODO: Verify other type of attachments which need to be handled that aren't file uploads and image urls
+						// } else {
+						// 	console.log(a);
+						// }
+					});
+
+					rows.push(`${message.msg} (${attaches.join(', ')})`);
 				} else {
 					rows.push(message.msg);
 				}
