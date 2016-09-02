@@ -46,16 +46,23 @@ Meteor.startup ->
 		collection: RocketChat.models.Messages.model._name
 
 	MongoInternals.defaultRemoteCollectionDriver().mongo._oplogHandle.onOplogEntry query, (action) ->
-		if record._hidden is true or record.imported?
-			return
+		record = undefined
+		type = undefined
 
 		if action.op.op is 'i'
-			publishMessage 'inserted', action.op.o
+			record = action.op.o
+			type = 'inserted'
 			return
 
 		if action.op.op is 'u'
-			publishMessage 'updated', RocketChat.models.Messages.findOne({_id: action.id})
+			record = RocketChat.models.Messages.findOne({_id: action.id})
+			type = 'updated'
 			return
+
+		if record._hidden is true or record.imported?
+			return
+
+		publishMessage type, record
 
 		# if action.op.op is 'd'
 		# 	publishMessage 'deleted', {_id: action.id}
