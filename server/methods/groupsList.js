@@ -1,7 +1,7 @@
 Meteor.methods({
 	groupsList: function(nameFilter, limit, sort) {
 
-		check(nameFilter,String);
+		check(nameFilter, String);
 		check(limit, Match.Optional(Number));
 		check(sort, Match.Optional(String));
 
