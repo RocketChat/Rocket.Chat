@@ -128,6 +128,7 @@ class CustomOAuth
 				identity.id = identity.user.userid
 				identity.email = identity.user.email
 
+			# Fix general 'phid' instead of 'id' from phabricator
 			if identity?.phid and not identity.id
 				identity.id = identity.phid
 
