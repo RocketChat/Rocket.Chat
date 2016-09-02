@@ -72,6 +72,19 @@ RocketChat.smarsh.generateEml = () => {
 				} else if (message.file) {
 					data.files.push(message.file._id);
 					rows.push(`${message.attachments[0].title} (${_getLink(message.attachments[0])})`);
+				} else if (message.attachments) {
+					const attaches = [];
+					_.each(message.attachments, function _loopThroughMessageAttachments(a) {
+						if (a.image_url) {
+							attaches.push(a.image_url);
+						}
+						//TODO: Verify other type of attachments which need to be handled that aren't file uploads and image urls
+						// } else {
+						// 	console.log(a);
+						// }
+					});
+
+					rows.push(`${message.msg} (${attaches.join(', ')})`);
 				} else {
 					rows.push(message.msg);
 				}
