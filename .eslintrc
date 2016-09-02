@@ -63,7 +63,9 @@
 		"block-scoped-var": 2,
 		"curly": [2, "all"],
 		"eqeqeq": [2, "allow-null"],
-		"new-cap": 2,
+		"new-cap":  [2, {
+			"capIsNewExceptions": ["Match.Optional"]
+		}],
 		"use-isnan": 2,
 		"valid-typeof": 2,
 		"linebreak-style": [2, "unix"],
