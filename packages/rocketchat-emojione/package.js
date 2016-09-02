@@ -10,7 +10,7 @@ Package.onUse(function(api) {
 
 	api.use([
 		'emojione:emojione',
-		'rocketchat:emoji-base',
+		'rocketchat:emoji',
 		'rocketchat:lib'
 	]);
 	api.use('ecmascript');
