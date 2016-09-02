@@ -1,7 +1,7 @@
-FlowRouter.route('/admin/custom-emoji', {
-	name: 'custom-emoji',
+FlowRouter.route('/admin/emoji-custom', {
+	name: 'emoji-custom',
 	subscriptions(/*params, queryParams*/) {
-		this.register('CustomEmoji', Meteor.subscribe('CustomEmoji'));
+		this.register('EmojiCustom', Meteor.subscribe('EmojiCustom'));
 	},
 	action(/*params*/) {
 		RocketChat.TabBar.showGroup('adminEmoji');

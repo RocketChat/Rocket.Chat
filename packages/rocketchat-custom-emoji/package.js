@@ -1,5 +1,5 @@
 Package.describe({
-	name: 'rocketchat:custom-emoji',
+	name: 'rocketchat:emoji-custom',
 	version: '1.0.0',
 	summary: 'Message pre-processor that will translate custom emoji',
 	git: ''
@@ -23,20 +23,20 @@ Package.onUse(function(api) {
 
 	api.addFiles('function-isSet.js');
 
-	api.addFiles('server/startup/custom-emoji.js', 'server');
+	api.addFiles('server/startup/emoji-custom.js', 'server');
 	api.addFiles('server/startup/settings.js', 'server');
 
-	api.addFiles('server/models/CustomEmoji.js', 'server');
+	api.addFiles('server/models/EmojiCustom.js', 'server');
 	api.addFiles('server/publications/fullEmojiData.js', 'server');
 
 	api.addFiles([
-		'server/methods/listCustomEmoji.js',
-		'server/methods/deleteCustomEmoji.js',
+		'server/methods/listEmojiCustom.js',
+		'server/methods/deleteEmojiCustom.js',
 		'server/methods/insertOrUpdateEmoji.js',
-		'server/methods/uploadCustomEmoji.js'
+		'server/methods/uploadEmojiCustom.js'
 	], 'server');
 
-	api.addFiles('assets/stylesheets/customEmojiAdmin.less', 'client');
+	api.addFiles('assets/stylesheets/emojiCustomAdmin.less', 'client');
 
 	api.addFiles([
 		'admin/startup.js',
@@ -53,9 +53,9 @@ Package.onUse(function(api) {
 	], 'client');
 
 	api.addFiles([
-		'client/lib/customEmoji.js',
-		'client/models/CustomEmoji.js',
-		'client/notifications/updateCustomEmoji.js',
-		'client/notifications/deleteCustomEmoji.js'
+		'client/lib/emojiCustom.js',
+		'client/models/EmojiCustom.js',
+		'client/notifications/updateEmojiCustom.js',
+		'client/notifications/deleteEmojiCustom.js'
 	], 'client');
 });

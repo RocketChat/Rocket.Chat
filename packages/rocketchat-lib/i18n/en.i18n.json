@@ -276,7 +276,7 @@
   "Created_at_s_by_s" : "Created at <strong>%s</strong> by <strong>%s</strong>",
   "Current_Chats" : "Current Chats",
   "Custom" : "Custom",
-  "CustomEmojiFilesystem" : "Custom Emoji Filesystem",
+  "EmojiCustomFilesystem" : "Custom Emoji Filesystem",
   "Custom_Emoji" : "Custom Emoji",
   "Custom_Emoji_Add" : "Add New Emoji",
   "Custom_Emoji_Added_Successfully" : "Custom emoji added successfully",

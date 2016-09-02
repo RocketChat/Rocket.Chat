@@ -1,4 +1,4 @@
-RocketChat.settings.addGroup('CustomEmojiFilesystem', function() {
+RocketChat.settings.addGroup('EmojiCustomFilesystem', function() {
 	this.add('EmojiUpload_Storage_Type', 'GridFS', {
 		type: 'select',
 		values: [{
