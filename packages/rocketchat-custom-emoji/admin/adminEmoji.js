@@ -78,7 +78,7 @@ Template.adminEmoji.onCreated(function() {
 
 		let limit = (isSetNotNull(() => instance.limit))? instance.limit.get() : 0;
 
-		return RocketChat.models.CustomEmoji.find(query, { limit: limit, sort: { name: 1 }}).fetch();
+		return RocketChat.models.EmojiCustom.find(query, { limit: limit, sort: { name: 1 }}).fetch();
 	};
 });
 
@@ -107,7 +107,7 @@ Template.adminEmoji.events({
 	['click .emoji-info'](e) {
 		e.preventDefault();
 		RocketChat.TabBar.setTemplate('adminEmojiInfo');
-		RocketChat.TabBar.setData(RocketChat.models.CustomEmoji.findOne({_id: this._id}));
+		RocketChat.TabBar.setData(RocketChat.models.EmojiCustom.findOne({_id: this._id}));
 		RocketChat.TabBar.openFlex();
 		RocketChat.TabBar.showGroup('adminEmoji-selected');
 	},

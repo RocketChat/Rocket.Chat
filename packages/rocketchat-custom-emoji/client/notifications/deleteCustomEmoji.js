@@ -1,4 +1,4 @@
-/* globals deleteCustomEmoji */
+/* globals deleteEmojiCustom */
 Meteor.startup(() =>
-	RocketChat.Notifications.onAll('deleteCustomEmoji', data => deleteCustomEmoji(data.emojiData))
+	RocketChat.Notifications.onAll('deleteEmojiCustom', data => deleteEmojiCustom(data.emojiData))
 );

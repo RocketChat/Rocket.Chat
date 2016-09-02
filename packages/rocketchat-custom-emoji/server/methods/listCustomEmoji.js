@@ -1,5 +1,5 @@
 Meteor.methods({
-	listCustomEmoji() {
-		return RocketChat.models.CustomEmoji.find({}).fetch();
+	listEmojiCustom() {
+		return RocketChat.models.EmojiCustom.find({}).fetch();
 	}
 });

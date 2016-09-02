@@ -1,4 +1,4 @@
-/* globals RocketChatFileCustomEmojiInstance */
+/* globals RocketChatFileEmojiCustomInstance */
 Meteor.methods({
 	insertOrUpdateEmoji(emojiData) {
 		if (!RocketChat.authz.hasPermission(this.userId, 'manage-assets')) {
@@ -39,14 +39,14 @@ Meteor.methods({
 		let matchingResults = [];
 
 		if (emojiData._id) {
-			matchingResults = RocketChat.models.CustomEmoji.findByNameOrAliasExceptID(emojiData.name, emojiData._id).fetch();
+			matchingResults = RocketChat.models.EmojiCustom.findByNameOrAliasExceptID(emojiData.name, emojiData._id).fetch();
 			for (let alias of emojiData.aliases) {
-				matchingResults = matchingResults.concat(RocketChat.models.CustomEmoji.findByNameOrAliasExceptID(alias, emojiData._id).fetch());
+				matchingResults = matchingResults.concat(RocketChat.models.EmojiCustom.findByNameOrAliasExceptID(alias, emojiData._id).fetch());
 			}
 		} else {
-			matchingResults = RocketChat.models.CustomEmoji.findByNameOrAlias(emojiData.name).fetch();
+			matchingResults = RocketChat.models.EmojiCustom.findByNameOrAlias(emojiData.name).fetch();
 			for (let alias of emojiData.aliases) {
-				matchingResults = matchingResults.concat(RocketChat.models.CustomEmoji.findByNameOrAlias(alias).fetch());
+				matchingResults = matchingResults.concat(RocketChat.models.EmojiCustom.findByNameOrAlias(alias).fetch());
 			}
 		}
 
@@ -62,43 +62,43 @@ Meteor.methods({
 				extension: emojiData.extension
 			};
 
-			let _id = RocketChat.models.CustomEmoji.create(createEmoji);
+			let _id = RocketChat.models.EmojiCustom.create(createEmoji);
 
-			RocketChat.Notifications.notifyAll('updateCustomEmoji', {emojiData: createEmoji});
+			RocketChat.Notifications.notifyAll('updateEmojiCustom', {emojiData: createEmoji});
 
 			return _id;
 		} else {
 			//update emoji
 			if (emojiData.newFile) {
-				RocketChatFileCustomEmojiInstance.deleteFile(encodeURIComponent(`${emojiData.name}.${emojiData.extension}`));
-				RocketChatFileCustomEmojiInstance.deleteFile(encodeURIComponent(`${emojiData.name}.${emojiData.previousExtension}`));
-				RocketChatFileCustomEmojiInstance.deleteFile(encodeURIComponent(`${emojiData.previousName}.${emojiData.extension}`));
-				RocketChatFileCustomEmojiInstance.deleteFile(encodeURIComponent(`${emojiData.previousName}.${emojiData.previousExtension}`));
+				RocketChatFileEmojiCustomInstance.deleteFile(encodeURIComponent(`${emojiData.name}.${emojiData.extension}`));
+				RocketChatFileEmojiCustomInstance.deleteFile(encodeURIComponent(`${emojiData.name}.${emojiData.previousExtension}`));
+				RocketChatFileEmojiCustomInstance.deleteFile(encodeURIComponent(`${emojiData.previousName}.${emojiData.extension}`));
+				RocketChatFileEmojiCustomInstance.deleteFile(encodeURIComponent(`${emojiData.previousName}.${emojiData.previousExtension}`));
 
-				RocketChat.models.CustomEmoji.setExtension(emojiData._id, emojiData.extension);
+				RocketChat.models.EmojiCustom.setExtension(emojiData._id, emojiData.extension);
 			} else if (emojiData.name !== emojiData.previousName) {
-				let rs = RocketChatFileCustomEmojiInstance.getFileWithReadStream(encodeURIComponent(`${emojiData.previousName}.${emojiData.previousExtension}`));
+				let rs = RocketChatFileEmojiCustomInstance.getFileWithReadStream(encodeURIComponent(`${emojiData.previousName}.${emojiData.previousExtension}`));
 				if (rs !== null) {
-					RocketChatFileCustomEmojiInstance.deleteFile(encodeURIComponent(`${emojiData.name}.${emojiData.extension}`));
-					let ws = RocketChatFileCustomEmojiInstance.createWriteStream(encodeURIComponent(`${emojiData.name}.${emojiData.previousExtension}`), rs.contentType);
+					RocketChatFileEmojiCustomInstance.deleteFile(encodeURIComponent(`${emojiData.name}.${emojiData.extension}`));
+					let ws = RocketChatFileEmojiCustomInstance.createWriteStream(encodeURIComponent(`${emojiData.name}.${emojiData.previousExtension}`), rs.contentType);
 					ws.on('end', Meteor.bindEnvironment(() =>
-						RocketChatFileCustomEmojiInstance.deleteFile(encodeURIComponent(`${emojiData.previousName}.${emojiData.previousExtension}`))
+						RocketChatFileEmojiCustomInstance.deleteFile(encodeURIComponent(`${emojiData.previousName}.${emojiData.previousExtension}`))
 						));
 					rs.readStream.pipe(ws);
 				}
 			}
 
 			if (emojiData.name !== emojiData.previousName) {
-				RocketChat.models.CustomEmoji.setName(emojiData._id, emojiData.name);
+				RocketChat.models.EmojiCustom.setName(emojiData._id, emojiData.name);
 			}
 
 			if (emojiData.aliases) {
-				RocketChat.models.CustomEmoji.setAliases(emojiData._id, emojiData.aliases);
+				RocketChat.models.EmojiCustom.setAliases(emojiData._id, emojiData.aliases);
 			} else {
-				RocketChat.models.CustomEmoji.setAliases(emojiData._id, []);
+				RocketChat.models.EmojiCustom.setAliases(emojiData._id, []);
 			}
 
-			RocketChat.Notifications.notifyAll('updateCustomEmoji', {emojiData});
+			RocketChat.Notifications.notifyAll('updateEmojiCustom', {emojiData});
 
 			return true;
 		}

@@ -60,7 +60,7 @@ Template.emojiInfo.events({
 			}, function() {
 				swal.disableButtons();
 
-				Meteor.call('deleteCustomEmoji', _id, (error/*, result*/) => {
+				Meteor.call('deleteEmojiCustom', _id, (error/*, result*/) => {
 					if (error) {
 						handleError(error);
 						swal.enableButtons();

@@ -1,4 +1,4 @@
-/* globals updateCustomEmoji */
+/* globals updateEmojiCustom */
 Meteor.startup(() =>
-	RocketChat.Notifications.onAll('updateCustomEmoji', data => updateCustomEmoji(data.emojiData))
+	RocketChat.Notifications.onAll('updateEmojiCustom', data => updateEmojiCustom(data.emojiData))
 );

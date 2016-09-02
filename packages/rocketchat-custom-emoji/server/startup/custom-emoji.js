@@ -1,4 +1,4 @@
-/* globals isSetNotNull, RocketChatFileCustomEmojiInstance */
+/* globals isSetNotNull, RocketChatFileEmojiCustomInstance */
 Meteor.startup(function() {
 	let storeType = 'GridFS';
 
@@ -21,12 +21,12 @@ Meteor.startup(function() {
 		}
 	}
 
-	this.RocketChatFileCustomEmojiInstance = new RocketChatStore({
+	this.RocketChatFileEmojiCustomInstance = new RocketChatStore({
 		name: 'custom_emoji',
 		absolutePath: path
 	});
 
-	return WebApp.connectHandlers.use('/custom-emoji/', Meteor.bindEnvironment(function(req, res/*, next*/) {
+	return WebApp.connectHandlers.use('/emoji-custom/', Meteor.bindEnvironment(function(req, res/*, next*/) {
 		let params =
 			{emoji: decodeURIComponent(req.url.replace(/^\//, '').replace(/\?.*$/, ''))};
 
@@ -37,7 +37,7 @@ Meteor.startup(function() {
 			return;
 		}
 
-		let file = RocketChatFileCustomEmojiInstance.getFileWithReadStream(encodeURIComponent(params.emoji));
+		let file = RocketChatFileEmojiCustomInstance.getFileWithReadStream(encodeURIComponent(params.emoji));
 
 		res.setHeader('Content-Disposition', 'inline');
 
