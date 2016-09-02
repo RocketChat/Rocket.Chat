@@ -19,8 +19,8 @@ Meteor.publish('fullEmojiData', function(filter, limit) {
 
 	if (filter) {
 		let filterReg = new RegExp(s.escapeRegExp(filter), 'i');
-		return RocketChat.models.CustomEmoji.findByNameOrAlias(filterReg, options);
+		return RocketChat.models.EmojiCustom.findByNameOrAlias(filterReg, options);
 	}
 
-	return RocketChat.models.CustomEmoji.find({}, options);
+	return RocketChat.models.EmojiCustom.find({}, options);
 });

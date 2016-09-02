@@ -1,5 +1,5 @@
 RocketChat.AdminBox.addOption({
-	href: 'custom-emoji',
+	href: 'emoji-custom',
 	i18nLabel: 'Custom_Emoji',
 	permissionGranted() {
 		return RocketChat.authz.hasAtLeastOnePermission(['manage-assets']);

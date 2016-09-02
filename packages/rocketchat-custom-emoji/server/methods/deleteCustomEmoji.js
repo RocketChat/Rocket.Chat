@@ -1,21 +1,21 @@
-/* globals isSetNotNull, RocketChatFileCustomEmojiInstance */
+/* globals isSetNotNull, RocketChatFileEmojiCustomInstance */
 Meteor.methods({
-	deleteCustomEmoji(emojiID) {
+	deleteEmojiCustom(emojiID) {
 		let emoji = null;
 
 		if (RocketChat.authz.hasPermission(this.userId, 'manage-assets')) {
-			emoji = RocketChat.models.CustomEmoji.findOneByID(emojiID);
+			emoji = RocketChat.models.EmojiCustom.findOneByID(emojiID);
 		} else {
 			throw new Meteor.Error('not_authorized');
 		}
 
 		if (!isSetNotNull(() => emoji)) {
-			throw new Meteor.Error('Custom_Emoji_Error_Invalid_Emoji', 'Invalid emoji', { method: 'deleteCustomEmoji' });
+			throw new Meteor.Error('Custom_Emoji_Error_Invalid_Emoji', 'Invalid emoji', { method: 'deleteEmojiCustom' });
 		}
 
-		RocketChatFileCustomEmojiInstance.deleteFile(encodeURIComponent(`${emoji.name}.${emoji.extension}`));
-		RocketChat.models.CustomEmoji.removeByID(emojiID);
-		RocketChat.Notifications.notifyAll('deleteCustomEmoji', {emojiData: emoji});
+		RocketChatFileEmojiCustomInstance.deleteFile(encodeURIComponent(`${emoji.name}.${emoji.extension}`));
+		RocketChat.models.EmojiCustom.removeByID(emojiID);
+		RocketChat.Notifications.notifyAll('deleteEmojiCustom', {emojiData: emoji});
 
 		return true;
 	}

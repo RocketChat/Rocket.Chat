@@ -1,4 +1,4 @@
-class CustomEmoji extends RocketChat.models._Base {
+class EmojiCustom extends RocketChat.models._Base {
 	constructor() {
 		super();
 		this._initModel('custom_emoji');
@@ -81,4 +81,4 @@ class CustomEmoji extends RocketChat.models._Base {
 	}
 }
 
-RocketChat.models.CustomEmoji = new CustomEmoji();
+RocketChat.models.EmojiCustom = new EmojiCustom();

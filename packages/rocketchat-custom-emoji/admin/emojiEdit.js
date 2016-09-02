@@ -118,7 +118,7 @@ Template.emojiEdit.onCreated(function() {
 						let reader = new FileReader();
 						reader.readAsBinaryString(this.emojiFile);
 						reader.onloadend = () => {
-							Meteor.call('uploadCustomEmoji', reader.result, this.emojiFile.type, emojiData, (uploadError/*, data*/) => {
+							Meteor.call('uploadEmojiCustom', reader.result, this.emojiFile.type, emojiData, (uploadError/*, data*/) => {
 								if (uploadError != null) {
 									handleError(uploadError);
 									console.log(uploadError);
