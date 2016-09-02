@@ -110,6 +110,10 @@ Accounts.registerLoginHandler(function(loginRequest) {
 				if (username) {
 					newUser.username = username;
 				}
+			} else {
+				if (loginResult.profile.username) {
+					newUser.username = loginResult.profile.username;	
+				}
 			}
 
 			var userId = Accounts.insertUserDoc({}, newUser);
