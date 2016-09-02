@@ -11,7 +11,7 @@ Package.onUse(function(api) {
 	api.use([
 		'ecmascript',
 		'less@2.5.1',
-		'rocketchat:emoji-base',
+		'rocketchat:emoji',
 		'rocketchat:file',
 		'rocketchat:lib',
 		'templating',

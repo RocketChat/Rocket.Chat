@@ -1,5 +1,5 @@
 Package.describe({
-	name: 'rocketchat:emoji-base',
+	name: 'rocketchat:emoji',
 	version: '1.0.0',
 	summary: 'Package and message pre-processor that supports aggregating multiple emoji packages',
 	git: ''
@@ -27,7 +27,7 @@ Package.onUse(function(api) {
 
 	api.addAssets('emojiPicker.less', 'server');
 	api.addFiles('loadStylesheet.js', 'server');
-	api.addFiles('emoji-base.css', 'client');
+	api.addFiles('emoji.css', 'client');
 
 	api.addFiles('lib/emojiRenderer.js', 'client');
 	api.addFiles('lib/EmojiPicker.js', 'client');
