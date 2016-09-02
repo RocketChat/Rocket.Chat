@@ -38,7 +38,7 @@ Meteor.startup ->
 		fields = { 'editedAt': 0 }
 
 	publishMessage = (type, record) ->
-		if record._hidden isnt true
+		if record._hidden isnt true and not record.imported?
 			msgStream.emitWithoutBroadcast '__my_messages__', record, {}
 			msgStream.emitWithoutBroadcast record.rid, record
 
@@ -46,23 +46,13 @@ Meteor.startup ->
 		collection: RocketChat.models.Messages.model._name
 
 	MongoInternals.defaultRemoteCollectionDriver().mongo._oplogHandle.onOplogEntry query, (action) ->
-		record = undefined
-		type = undefined
-
 		if action.op.op is 'i'
-			record = action.op.o
-			type = 'inserted'
+			publishMessage 'inserted', action.op.o
 			return
 
 		if action.op.op is 'u'
-			record = RocketChat.models.Messages.findOne({_id: action.id})
-			type = 'updated'
+			publishMessage 'updated', RocketChat.models.Messages.findOne({_id: action.id})
 			return
-
-		if record._hidden is true or record.imported?
-			return
-
-		publishMessage type, record
 
 		# if action.op.op is 'd'
 		# 	publishMessage 'deleted', {_id: action.id}
