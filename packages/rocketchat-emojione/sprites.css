@@ -1,6 +1,5 @@
 .emojione {
-  image-rendering: -webkit-optimize-contrast;
-  image-rendering: optimizeQuality;
+  image-rendering: auto;
   font-size: inherit;
   height: 22px;
   width: 22px;
@@ -17,8 +16,7 @@
   overflow: hidden; }
 
 .big_emojione {
-  image-rendering: -webkit-optimize-contrast;
-  image-rendering: optimizeQuality;
+  image-rendering: auto;
   font-size: inherit;
   height: 44px;
   width: 44px;
