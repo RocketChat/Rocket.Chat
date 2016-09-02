@@ -1,7 +1,6 @@
 Meteor.methods({
 	deleteFileMessage: function(fileID) {
-
-		check fileID, String
+		check(fileID, String);
 
 		return Meteor.call('deleteMessage', RocketChat.models.Messages.getMessageByFileId(fileID));
 	}
