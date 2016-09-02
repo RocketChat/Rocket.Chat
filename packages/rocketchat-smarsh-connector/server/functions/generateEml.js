@@ -41,7 +41,7 @@ RocketChat.smarsh.generateEml = () => {
 
 				//The timestamp
 				rows.push(open20td);
-				rows.push(message.ts.toISOString());
+				rows.push(moment(message.ts).tz('America/Los_Angeles').format('YYYY-MM-DD HH-mm-ss z'));
 				rows.push(closetd);
 
 				//The sender
