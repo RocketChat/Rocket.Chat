@@ -3724,8 +3724,8 @@ body:not(.is-cordova) {
 	max-width: 520px;
 	padding: 20px;
 	margin: 20px auto;
-	box-shadow: 0 0 6px 10px rgba(0, 0, 0, 0.1);
-	border-radius: 2px;
+	box-shadow: 0 1px 1px 0 rgba(0,0,0,0.2),0 2px 10px 0 rgba(0,0,0,0.16);
+	border-radius: 4px;
 	position: relative;
 	z-index: 1;
 	header {
@@ -3750,29 +3750,13 @@ body:not(.is-cordova) {
 	img {
 		width: 200px;
 	}
-	a {
-		margin: 4px 0;
-		display: inline-block;
-		&:active {}
-		&:hover {}
-	}
 	.options {
 		display: none;
 		width: 100%;
 		font-size: 10px;
 	}
-	.submit {
-		margin: 12px 0;
-	}
-	.remember {
-		float: left;
-	}
-	.remember input {
-		margin-right: 4px;
-	}
-	.forgot {
-		float: right;
-		line-height: 20px;
+	.submit, .register, .forgot-password, .back-to-login {
+		margin-top: 12px;
 	}
 	.input-text {
 		margin: 0 0 14px 0;
@@ -3838,7 +3822,7 @@ body:not(.is-cordova) {
 		.input-error {
 			text-align: left;
 			color: #b40202;
-			padding-left: 4px;
+			padding-left: 8px;
 			font-weight: bold;
 			font-size: 14px;
 		}
@@ -3846,26 +3830,10 @@ body:not(.is-cordova) {
 }
 
 .social-login {
-	text-align: center;
-	position: relative;
-	z-index: 1;
-	display: -webkit-flex;
-	display: flex;
-	flex-wrap: wrap;
-	-webkit-flex-wrap: wrap;
 	margin-bottom: 20px;
-	h3 {
-		&:extend(.rocket-h3);
-		margin-top: 0;
-		margin-bottom: 12px;
-	}
 	.button {
-		border-radius: 2px;
-		min-height: 40px;
-		line-height: 20px;
+		line-height: 22px;
 		font-size: 18px;
-		margin: 2px;
-		padding: 0;
 		-webkit-flex-grow: 1;
 		flex-grow: 1;
 	}

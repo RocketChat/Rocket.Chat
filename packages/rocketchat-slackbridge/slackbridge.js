@@ -182,7 +182,8 @@ class SlackBridge {
 				userData.rocketId = Accounts.createUser({ email: userData.profile.email, password: Date.now() + userData.name + userData.profile.email.toUpperCase() });
 				let userUpdate = {
 					username: userData.name,
-					utcOffset: userData.tz_offset / 3600 // Slack's is -18000 which translates to Rocket.Chat's after dividing by 3600
+					utcOffset: userData.tz_offset / 3600, // Slack's is -18000 which translates to Rocket.Chat's after dividing by 3600,
+					roles: [ 'user' ]
 				};
 
 				if (userData.profile.real_name) {
@@ -285,6 +286,9 @@ class SlackBridge {
 				_id: `slack-${message.channel}-${message.ts.replace(/\./g, '-')}`,
 				ts: new Date(parseInt(message.ts.split('.')[0]) * 1000)
 			};
+			if (importing) {
+				msgDataDefaults['imported'] = 'slackbridge';
+			}
 			try {
 				this.sendMessage(channel, user, message, msgDataDefaults, importing);
 			} catch (e) {
@@ -337,7 +341,7 @@ class SlackBridge {
 				return;
 			case 'channel_join':
 				if (importing) {
-					RocketChat.models.Messages.createUserJoinWithRoomIdAndUser(room._id, user, { ts: new Date(parseInt(message.ts.split('.')[0]) * 1000) });
+					RocketChat.models.Messages.createUserJoinWithRoomIdAndUser(room._id, user, { ts: new Date(parseInt(message.ts.split('.')[0]) * 1000), imported: 'slackbridge' });
 				} else {
 					RocketChat.addUserToRoom(room._id, user);
 				}
@@ -351,7 +355,8 @@ class SlackBridge {
 							u: {
 								_id: inviter._id,
 								username: inviter.username
-							}
+							},
+							imported: 'slackbridge'
 						});
 					} else {
 						RocketChat.addUserToRoom(room._id, user, inviter);
@@ -362,7 +367,8 @@ class SlackBridge {
 			case 'group_leave':
 				if (importing) {
 					RocketChat.models.Messages.createUserLeaveWithRoomIdAndUser(room._id, user, {
-						ts: new Date(parseInt(message.ts.split('.')[0]) * 1000)
+						ts: new Date(parseInt(message.ts.split('.')[0]) * 1000),
+						imported: 'slackbridge'
 					});
 				} else {
 					RocketChat.removeUserFromRoom(room._id, user);
@@ -371,7 +377,7 @@ class SlackBridge {
 			case 'channel_topic':
 			case 'group_topic':
 				if (importing) {
-					RocketChat.models.Messages.createRoomSettingsChangedWithTypeRoomIdMessageAndUser('room_changed_topic', room._id, message.topic, user, { ts: new Date(parseInt(message.ts.split('.')[0]) * 1000) });
+					RocketChat.models.Messages.createRoomSettingsChangedWithTypeRoomIdMessageAndUser('room_changed_topic', room._id, message.topic, user, { ts: new Date(parseInt(message.ts.split('.')[0]) * 1000), imported: 'slackbridge' });
 				} else {
 					RocketChat.saveRoomTopic(room._id, message.topic, user);
 				}
@@ -379,7 +385,7 @@ class SlackBridge {
 			case 'channel_purpose':
 			case 'group_purpose':
 				if (importing) {
-					RocketChat.models.Messages.createRoomSettingsChangedWithTypeRoomIdMessageAndUser('room_changed_topic', room._id, message.purpose, user, { ts: new Date(parseInt(message.ts.split('.')[0]) * 1000) });
+					RocketChat.models.Messages.createRoomSettingsChangedWithTypeRoomIdMessageAndUser('room_changed_topic', room._id, message.purpose, user, { ts: new Date(parseInt(message.ts.split('.')[0]) * 1000), imported: 'slackbridge' });
 				} else {
 					RocketChat.saveRoomTopic(room._id, message.purpose, user);
 				}
@@ -387,7 +393,7 @@ class SlackBridge {
 			case 'channel_name':
 			case 'group_name':
 				if (importing) {
-					RocketChat.models.Messages.createRoomRenamedWithRoomIdRoomNameAndUser(room._id, message.name, user);
+					RocketChat.models.Messages.createRoomRenamedWithRoomIdRoomNameAndUser(room._id, message.name, user, { ts: new Date(parseInt(message.ts.split('.')[0]) * 1000), imported: 'slackbridge' });
 				} else {
 					RocketChat.saveRoomName(room._id, message.name, user);
 				}
@@ -413,7 +419,7 @@ class SlackBridge {
 						type: message.file.mimetype,
 						rid: room._id
 					};
-					return this.uploadFile(details, message.file.url_private_download, user, room, new Date(parseInt(message.ts.split('.')[0]) * 1000));
+					return this.uploadFile(details, message.file.url_private_download, user, room, new Date(parseInt(message.ts.split('.')[0]) * 1000), importing);
 				}
 				break;
 			case 'file_comment':
@@ -477,7 +483,7 @@ class SlackBridge {
 	@param [Object] room the Rocket.Chat room
 	@param [Date] timeStamp the timestamp the file was uploaded
 	**/
-	uploadFile(details, fileUrl, user, room, timeStamp) {
+	uploadFile(details, fileUrl, user, room, timeStamp, importing) {
 		let url = Npm.require('url');
 		let requestModule = /https/i.test(fileUrl) ? Npm.require('https') : Npm.require('http');
 		var parsedUrl = url.parse(fileUrl, true);
@@ -523,6 +529,10 @@ class SlackBridge {
 							groupable: false,
 							attachments: [attachment]
 						};
+
+						if (importing) {
+							msg.imported = 'slackbridge';
+						}
 
 						if (details.message_id && (typeof details.message_id === 'string')) {
 							msg['_id'] = details.message_id;

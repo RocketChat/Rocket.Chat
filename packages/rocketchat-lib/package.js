@@ -122,7 +122,7 @@ Package.onUse(function(api) {
 	api.addFiles('server/methods/leaveRoom.coffee', 'server');
 	api.addFiles('server/methods/removeOAuthService.coffee', 'server');
 	api.addFiles('server/methods/robotMethods.coffee', 'server');
-	api.addFiles('server/methods/saveSetting.coffee', 'server');
+	api.addFiles('server/methods/saveSetting.js', 'server');
 	api.addFiles('server/methods/sendInvitationEmail.coffee', 'server');
 	api.addFiles('server/methods/sendMessage.coffee', 'server');
 	api.addFiles('server/methods/sendSMTPTestEmail.coffee', 'server');

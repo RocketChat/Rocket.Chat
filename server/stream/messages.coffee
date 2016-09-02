@@ -46,6 +46,9 @@ Meteor.startup ->
 		collection: RocketChat.models.Messages.model._name
 
 	MongoInternals.defaultRemoteCollectionDriver().mongo._oplogHandle.onOplogEntry query, (action) ->
+		if record._hidden is true or record.imported?
+			return
+
 		if action.op.op is 'i'
 			publishMessage 'inserted', action.op.o
 			return
