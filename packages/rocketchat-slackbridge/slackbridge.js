@@ -182,7 +182,7 @@ class SlackBridge {
 				userData.rocketId = Accounts.createUser({ email: userData.profile.email, password: Date.now() + userData.name + userData.profile.email.toUpperCase() });
 				let userUpdate = {
 					username: userData.name,
-					utcOffset: userData.tz_offset / 3600 // Slack's is -18000 which translates to Rocket.Chat's after dividing by 3600,
+					utcOffset: userData.tz_offset / 3600, // Slack's is -18000 which translates to Rocket.Chat's after dividing by 3600,
 					roles: [ 'user' ]
 				};
 
