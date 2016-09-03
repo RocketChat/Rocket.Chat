@@ -1,5 +1,6 @@
 .emojione {
-	image-rendering: auto;
+	image-rendering: -webkit-optimize-contrast;
+	image-rendering: optimizeQuality;
 	font-size: inherit;
 	height: 22px;
 	width: 22px;
