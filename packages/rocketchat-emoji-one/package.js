@@ -1,5 +1,5 @@
 Package.describe({
-	name: 'rocketchat:emojione',
+	name: 'rocketchat:emoji-one',
 	version: '0.0.1',
 	summary: 'Message pre-processor that will translate emojis',
 	git: ''
