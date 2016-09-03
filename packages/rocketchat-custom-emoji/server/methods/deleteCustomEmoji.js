@@ -3,7 +3,7 @@ Meteor.methods({
 	deleteCustomEmoji(emojiID) {
 		let emoji = null;
 
-		if (RocketChat.authz.hasPermission(this.userId, 'manage-assets')) {
+		if (RocketChat.authz.hasPermission(this.userId, 'manage-emoji')) {
 			emoji = RocketChat.models.CustomEmoji.findOneByID(emojiID);
 		} else {
 			throw new Meteor.Error('not_authorized');
