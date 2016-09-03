@@ -1,7 +1,7 @@
 /* globals RocketChatFileCustomEmojiInstance */
 Meteor.methods({
 	insertOrUpdateEmoji(emojiData) {
-		if (!RocketChat.authz.hasPermission(this.userId, 'manage-assets')) {
+		if (!RocketChat.authz.hasPermission(this.userId, 'manage-emoji')) {
 			throw new Meteor.Error('not_authorized');
 		}
 
