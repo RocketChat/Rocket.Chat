@@ -1,7 +1,19 @@
 .emojione {
+	image-rendering: auto;
+	font-size: inherit;
+	height: 22px;
+	width: 22px;
+	position: relative;
+	display: inline-block;
+	margin: 0 .15em;
+	line-height: normal;
+	vertical-align: middle;
 	background-image: url("../../packages/emojione_emojione/assets/sprites/emojione.sprites.png?v=2.2.5") !important;
 	background-size: 4365.625% 4365.625% !important;
 	background-repeat: no-repeat !important;
+	text-indent: 100%;
+	white-space: nowrap;
+	overflow: hidden;
 }
 
 .emojione-0023-20e3 {
