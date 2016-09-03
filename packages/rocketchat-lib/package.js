@@ -32,6 +32,7 @@ Package.onUse(function(api) {
 	api.use('rocketchat:streamer');
 	api.use('rocketchat:version');
 	api.use('rocketchat:logger');
+	api.use('rocketchat:custom-oauth');
 
 	api.use('templating', 'client');
 	api.use('kadira:flow-router');
