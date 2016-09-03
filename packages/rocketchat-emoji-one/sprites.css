@@ -13,24 +13,13 @@
   background-repeat: no-repeat;
   text-indent: 100%;
   white-space: nowrap;
-  overflow: hidden; }
+  overflow: hidden;
+}
 
-.big_emojione {
-  image-rendering: auto;
-  font-size: inherit;
+.emojione.big {
   height: 44px;
   width: 44px;
-  position: relative;
-  display: inline-block;
-  margin: 0 .15em;
-  line-height: normal;
-  vertical-align: middle;
-  background-image: url("../../packages/emojione_emojione/assets/sprites/emojione.sprites.png?v=2.2.5");
-  background-size: 4365.625% 4365.625%;
-  background-repeat: no-repeat;
-  text-indent: 100%;
-  white-space: nowrap;
-  overflow: hidden; }
+}
 
 .emojione-0023-20e3 {
   background-position: 2.38095% 0%; }

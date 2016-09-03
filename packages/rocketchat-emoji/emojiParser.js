@@ -29,12 +29,12 @@ RocketChat.callbacks.add('renderMessage', (message) => {
 			if (checkEmojiOnly[0].childNodes.hasOwnProperty(childNode)) {
 				let child = $(checkEmojiOnly[0].childNodes[childNode]);
 				if (child.hasClass('emoji')) {
-					checkEmojiOnly[0].childNodes[childNode] = child.addClass('big_emoji').removeClass('emoji');
+					checkEmojiOnly[0].childNodes[childNode] = child.addClass('big');
 					continue;
 				}
 
 				if (child.hasClass('emojione')) {
-					checkEmojiOnly[0].childNodes[childNode] = child.addClass('big_emojione').removeClass('emojione');
+					checkEmojiOnly[0].childNodes[childNode] = child.addClass('big');
 					continue;
 				}
 
