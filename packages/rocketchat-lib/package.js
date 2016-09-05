@@ -32,6 +32,7 @@ Package.onUse(function(api) {
 	api.use('rocketchat:streamer');
 	api.use('rocketchat:version');
 	api.use('rocketchat:logger');
+	api.use('rocketchat:custom-oauth');
 
 	api.use('templating', 'client');
 	api.use('kadira:flow-router');
@@ -70,6 +71,7 @@ Package.onUse(function(api) {
 	api.addFiles('server/functions/setUserAvatar.js', 'server');
 	api.addFiles('server/functions/setUsername.coffee', 'server');
 	api.addFiles('server/functions/setEmail.js', 'server');
+	api.addFiles('server/functions/unarchiveRoom.js', 'server');
 	api.addFiles('server/functions/updateMessage.js', 'server');
 	api.addFiles('server/functions/Notifications.coffee', 'server');
 
