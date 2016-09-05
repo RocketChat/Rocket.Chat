@@ -13,7 +13,7 @@ Package.onUse(function(api) {
 		'reactive-var',
 		'tracker',
 		'templating',
-		'less@2.5.0',
+		'less',
 		'rocketchat:lib'
 	]);
 
