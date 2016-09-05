@@ -1042,7 +1042,7 @@
   "The_user_will_be_removed_from_s" : "Корисник ће бити уклоњен из% с",
   "The_user_wont_be_able_to_type_in_s" : "Корисник неће бити у могућности да уносите у% с",
   "Theme" : "тема",
-  "theme-color-action-buttons-color" : "Акције дугмад Боја",
+  "theme-color-primary-action-color" : "Акције дугмад Боја",
   "theme-color-active-channel-background-color" : "Активан канал Боја позадине",
   "theme-color-active-channel-font-color" : "Активан канал Боја фонта",
   "theme-color-blockquote-background" : "Блоцккуоте Боја позадине",

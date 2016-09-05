@@ -1042,7 +1042,7 @@
   "The_user_will_be_removed_from_s" : "Pengguna akan dikeluarkan daripada %s",
   "The_user_wont_be_able_to_type_in_s" : "Pengguna tidak akan dapat untuk menaip dalam %s",
   "Theme" : "tema",
-  "theme-color-action-buttons-color" : "Tindakan Butang Warna",
+  "theme-color-primary-action-color" : "Tindakan Butang Warna",
   "theme-color-active-channel-background-color" : "Active Channel Warna Latar Belakang",
   "theme-color-active-channel-font-color" : "Active Channel Font Warna",
   "theme-color-blockquote-background" : "Warna Latar Belakang Blockquote",
