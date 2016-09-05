@@ -1058,7 +1058,7 @@
   "The_user_will_be_removed_from_s" : "Użytkownik zostanie usunięty z %s",
   "The_user_wont_be_able_to_type_in_s" : "Użytkownik nie będzie mógł wpisać w %s",
   "Theme" : "Motyw",
-  "theme-color-primary-action-color" : "Kolor przycisków akcji",
+  "theme-color-action-buttons-color" : "Kolor przycisków akcji",
   "theme-color-active-channel-background-color" : "Kolor tła aktywnego kanału",
   "theme-color-active-channel-font-color" : "Kolor czcionki aktywnego kanału",
   "theme-color-blockquote-background" : "Kolor tła bloku cytatu",

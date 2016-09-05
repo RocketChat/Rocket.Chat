@@ -1042,7 +1042,7 @@
   "The_user_will_be_removed_from_s" : "سيتم إزالة المستخدم من %s",
   "The_user_wont_be_able_to_type_in_s" : "المستخدم لن يكون قادرا على كتابة في٪ الصورة",
   "Theme" : "موضوع",
-  "theme-color-primary-action-color" : "الإجراءات أزرار اللون",
+  "theme-color-action-buttons-color" : "الإجراءات أزرار اللون",
   "theme-color-active-channel-background-color" : "نشط قناة لون الخلفية",
   "theme-color-active-channel-font-color" : "نشط قناة لون الخط",
   "theme-color-blockquote-background" : "لون خلفية الاقتباس",

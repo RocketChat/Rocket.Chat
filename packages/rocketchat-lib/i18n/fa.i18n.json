@@ -1042,7 +1042,7 @@
   "The_user_will_be_removed_from_s" : "کاربر خواهد شد از %s حذف",
   "The_user_wont_be_able_to_type_in_s" : "کاربر نمی خواهد قادر به تایپ در %s",
   "Theme" : "موضوع",
-  "theme-color-primary-action-color" : "عملیات دکمه های رنگی",
+  "theme-color-action-buttons-color" : "عملیات دکمه های رنگی",
   "theme-color-active-channel-background-color" : "فعال کانال رنگ پس زمینه",
   "theme-color-active-channel-font-color" : "فعال کانال رنگ قلم",
   "theme-color-blockquote-background" : "نقل قول رنگ پس زمینه",

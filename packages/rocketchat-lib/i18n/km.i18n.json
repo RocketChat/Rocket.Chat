@@ -1042,7 +1042,7 @@
   "The_user_will_be_removed_from_s" : "អ្នកប្រើនឹងត្រូវបានយកចេញពី %s",
   "The_user_wont_be_able_to_type_in_s" : "អ្នកប្រើនឹងមិនអាចវាយនៅក្នុង %s",
   "Theme" : "ស្បែក",
-  "theme-color-primary-action-color" : "ប៊ូតុងសកម្មភាពល័រ",
+  "theme-color-action-buttons-color" : "ប៊ូតុងសកម្មភាពល័រ",
   "theme-color-active-channel-background-color" : "ឆានែលសកម្មផ្ទៃខាងក្រោយ",
   "theme-color-active-channel-font-color" : "ឆានែលល័រពុម្ពអក្សរសកម្ម",
   "theme-color-blockquote-background" : "ពណ៌ផ្ទៃខាងក្រោយនៃ Blockquote",
