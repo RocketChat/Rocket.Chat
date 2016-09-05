@@ -641,6 +641,8 @@
   "LDAP_Host_Description" : "The LDAP host, e.g. `ldap.example.com` or `10.0.0.30`.",
   "LDAP_Import_Users" : "Import LDAP users",
   "LDAP_Import_Users_Description" : "It True sync process will be import all LDAP users <br/> *Caution!* Specify search filter to not import excess users.",
+  "LDAP_Login_Fallback" : "Login Fallback",
+  "LDAP_Login_Fallback_Description" : "If the login on LDAP is not successfull try to login in default/local account system. Helps when the LDAP is down for some reason.",
   "LDAP_Merge_Existing_Users" : "Merge existing users",
   "LDAP_Merge_Existing_Users_Description" : "*Caution!* When importing an user from LDAP and an user with same username already exists the LDAP info and password will be set into the existing user.",
   "LDAP_Port" : "Port",
