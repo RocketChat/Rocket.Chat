@@ -10,11 +10,11 @@ Package.onUse(function(api) {
 
 	api.use([
 		'ecmascript',
+		'underscore',
+		'templating',
 		'less@2.5.1',
 		'rocketchat:lib',
-		'rocketchat:ui-message',
-		'underscore',
-		'templating'
+		'rocketchat:ui-message'
 	]);
 
 	api.addFiles('function-isSet.js', 'client');
