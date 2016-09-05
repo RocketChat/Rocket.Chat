@@ -63,7 +63,7 @@ Package.onUse(function(api) {
 	api.addFiles('lib/cordova/keyboard-fix.coffee', 'client');
 	api.addFiles('lib/cordova/push.coffee', 'client');
 	api.addFiles('lib/cordova/urls.coffee', 'client');
-	api.addFiles('lib/cordova/user-state.coffee', 'client');
+	api.addFiles('lib/cordova/user-state.js', 'client');
 
 	// LIB RECORDERJS
 	api.addFiles('lib/recorderjs/audioRecorder.coffee', 'client');
