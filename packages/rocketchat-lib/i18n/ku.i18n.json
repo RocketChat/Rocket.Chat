@@ -1042,7 +1042,7 @@
   "The_user_will_be_removed_from_s" : "The user dê ji %s rakirin",
   "The_user_wont_be_able_to_type_in_s" : "The user bi wê bikaribin kes li %s",
   "Theme" : "Mijad",
-  "theme-color-primary-action-color" : "Actions bişkokan Color",
+  "theme-color-action-buttons-color" : "Actions bişkokan Color",
   "theme-color-active-channel-background-color" : "Active Channel Background Color",
   "theme-color-active-channel-font-color" : "Active Channel Font Color",
   "theme-color-blockquote-background" : "Blockquote Color Background",

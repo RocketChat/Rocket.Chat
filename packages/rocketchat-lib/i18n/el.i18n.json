@@ -1046,7 +1046,7 @@
   "The_user_will_be_removed_from_s" : "Ο χρήστης θα πρέπει να αφαιρεθεί από %s",
   "The_user_wont_be_able_to_type_in_s" : "Ο χρήστης δεν θα είναι σε θέση να πληκτρολογήσετε %s",
   "Theme" : "Θέμα",
-  "theme-color-primary-action-color" : "Δράσεις Κουμπιά Χρώμα",
+  "theme-color-action-buttons-color" : "Δράσεις Κουμπιά Χρώμα",
   "theme-color-active-channel-background-color" : "Ενεργό κανάλι Χρώμα φόντου",
   "theme-color-active-channel-font-color" : "Ενεργό κανάλι Χρώμα γραμματοσειράς",
   "theme-color-blockquote-background" : "Blockquote Χρώμα φόντου",

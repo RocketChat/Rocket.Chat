@@ -1131,7 +1131,7 @@
   "The_user_will_be_removed_from_s" : "Uživatel bude odstraněn z %s",
   "The_user_wont_be_able_to_type_in_s" : "Uživatel nebude moci psát v %s",
   "Theme" : "Barevné nastavení",
-  "theme-color-primary-action-color" : "Barva Tlačítka Akce",
+  "theme-color-action-buttons-color" : "Barva Tlačítka Akce",
   "theme-color-active-channel-background-color" : "Barva pozadí aktivní místnosti",
   "theme-color-active-channel-font-color" : "Barva písma aktivní místnosti",
   "theme-color-blockquote-background" : "Barva pozadí citace",

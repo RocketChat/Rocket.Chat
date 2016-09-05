@@ -1042,7 +1042,7 @@
   "The_user_will_be_removed_from_s" : "用戶將來自%s被刪除",
   "The_user_wont_be_able_to_type_in_s" : "用戶將不能夠鍵入在%s",
   "Theme" : "主題",
-  "theme-color-primary-action-color" : "操作按鈕顏色",
+  "theme-color-action-buttons-color" : "操作按鈕顏色",
   "theme-color-active-channel-background-color" : "活動頻道背景顏色",
   "theme-color-active-channel-font-color" : "活動頻道字體顏色",
   "theme-color-blockquote-background" : "大段引用背景顏色",

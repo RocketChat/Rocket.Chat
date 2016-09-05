@@ -1042,7 +1042,7 @@
   "The_user_will_be_removed_from_s" : "பயனர் %s இலிருந்து நீக்கப்படும்",
   "The_user_wont_be_able_to_type_in_s" : "பயனர் தட்டச்சு %s முடியாது",
   "Theme" : "தீம்",
-  "theme-color-primary-action-color" : "செயல்கள் பொத்தான்கள் நிறம்",
+  "theme-color-action-buttons-color" : "செயல்கள் பொத்தான்கள் நிறம்",
   "theme-color-active-channel-background-color" : "செயலில் சேனல் பின்னணி வண்ணம்",
   "theme-color-active-channel-font-color" : "செயலில் சேனல் எழுத்துரு வண்ணம்",
   "theme-color-blockquote-background" : "தொகுதி ஒதுக்கீடு பின்னணி வண்ணம்",

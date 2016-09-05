@@ -1042,7 +1042,7 @@
   "The_user_will_be_removed_from_s" : "사용자는 %의에서 제거됩니다",
   "The_user_wont_be_able_to_type_in_s" : "사용자는 %s에 입력 할 수 없습니다",
   "Theme" : "테마",
-  "theme-color-primary-action-color" : "액션 버튼 색상",
+  "theme-color-action-buttons-color" : "액션 버튼 색상",
   "theme-color-active-channel-background-color" : "활성 채널 배경 색상",
   "theme-color-active-channel-font-color" : "활성 채널 글꼴 색상",
   "theme-color-blockquote-background" : "인용구 배경색",
