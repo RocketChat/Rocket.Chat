@@ -12,7 +12,7 @@ Package.onUse(function(api) {
 		'coffeescript',
 		'templating',
 		'reactive-var',
-		'less@2.5.0',
+		'less',
 		'rocketchat:lib',
 		'rocketchat:channel-settings',
 		'momentjs:moment'

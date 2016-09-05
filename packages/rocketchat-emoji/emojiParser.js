@@ -16,10 +16,10 @@ RocketChat.callbacks.add('renderMessage', (message) => {
 
 			let regExp = new RegExp(RegExp.escape(emoji), 'g');
 
-			let emPackage = RocketChat.emoji.list[emoji]['emojiPackage'];
+			let emojiPackage = RocketChat.emoji.list[emoji]['emojiPackage'];
 
 			if (regExp.test(message.html)) {
-				message.html = message.html.replace(regExp, RocketChat.emoji.packages[emPackage].render(emoji));
+				message.html = message.html.replace(regExp, RocketChat.emoji.packages[emojiPackage].render(emoji));
 			}
 		}
 

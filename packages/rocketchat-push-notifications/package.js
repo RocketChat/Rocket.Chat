@@ -11,7 +11,7 @@ Package.onUse(function(api) {
 	api.use([
 		'ecmascript',
 		'underscore',
-		'less@2.5.0',
+		'less',
 		'rocketchat:lib'
 	]);
 
