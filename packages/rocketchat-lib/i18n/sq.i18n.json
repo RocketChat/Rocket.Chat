@@ -1042,7 +1042,7 @@
   "The_user_will_be_removed_from_s" : "Përdorues do të hiqet nga %s",
   "The_user_wont_be_able_to_type_in_s" : "Ky përdorues nuk do të jetë në gjendje të shkruani në %s",
   "Theme" : "temë",
-  "theme-color-primary-action-color" : "Veprimet Buttons Color",
+  "theme-color-action-buttons-color" : "Veprimet Buttons Color",
   "theme-color-active-channel-background-color" : "Active Channel Background Color",
   "theme-color-active-channel-font-color" : "Active Channel Font Color",
   "theme-color-blockquote-background" : "Blockquote Background Color",

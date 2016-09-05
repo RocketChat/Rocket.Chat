@@ -1074,7 +1074,7 @@
   "The_user_will_be_removed_from_s" : "该用户将从 %s 中被删除",
   "The_user_wont_be_able_to_type_in_s" : "该用户将被禁止在 %s 房间中发言",
   "Theme" : "主题",
-  "theme-color-primary-action-color" : "操作按钮颜色",
+  "theme-color-action-buttons-color" : "操作按钮颜色",
   "theme-color-active-channel-background-color" : "活跃频道背景颜色",
   "theme-color-active-channel-font-color" : "活跃频道字体颜色",
   "theme-color-blockquote-background" : "引用文本背景颜色",

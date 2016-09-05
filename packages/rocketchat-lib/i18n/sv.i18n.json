@@ -1044,7 +1044,7 @@
   "The_user_will_be_removed_from_s" : "Användaren kommer att tas bort från %s",
   "The_user_wont_be_able_to_type_in_s" : "Användaren kommer inte att kunna skriva i %s",
   "Theme" : "Tema",
-  "theme-color-primary-action-color" : "Aktiviteter Knappar Färg",
+  "theme-color-action-buttons-color" : "Aktiviteter Knappar Färg",
   "theme-color-active-channel-background-color" : "Active Channel bakgrundsfärg",
   "theme-color-active-channel-font-color" : "Active Channel Font Color",
   "theme-color-blockquote-background" : "Blockquote bakgrundsfärg",

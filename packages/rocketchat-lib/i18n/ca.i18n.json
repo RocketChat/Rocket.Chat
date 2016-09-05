@@ -1131,7 +1131,7 @@
   "The_user_will_be_removed_from_s" : "L'usuari s'eliminarà de %s",
   "The_user_wont_be_able_to_type_in_s" : "L'usuari no podrà escriure a %s",
   "Theme" : "Aparença",
-  "theme-color-primary-action-color" : "Color dels botons d'acció",
+  "theme-color-action-buttons-color" : "Color dels botons d'acció",
   "theme-color-active-channel-background-color" : "Color del fons de canal actiu",
   "theme-color-active-channel-font-color" : "Color del text de canal actiu",
   "theme-color-blockquote-background" : "Color del fons de les cites",

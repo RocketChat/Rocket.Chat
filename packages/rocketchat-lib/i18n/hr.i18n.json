@@ -1129,7 +1129,7 @@
   "The_user_will_be_removed_from_s" : "Korisnik će biti uklonjen iz %s",
   "The_user_wont_be_able_to_type_in_s" : "Korisnik neće moći pisati u %s",
   "Theme" : "Tema",
-  "theme-color-primary-action-color" : "Boja akcijskih gumba",
+  "theme-color-action-buttons-color" : "Boja akcijskih gumba",
   "theme-color-active-channel-background-color" : "Boja pozadine aktivnih kanala",
   "theme-color-active-channel-font-color" : "Boja slova aktivnog kanala",
   "theme-color-blockquote-background" : "Boja pozadine citata",

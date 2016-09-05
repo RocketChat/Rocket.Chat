@@ -1042,7 +1042,7 @@
   "The_user_will_be_removed_from_s" : "המשתמש יוסר %s",
   "The_user_wont_be_able_to_type_in_s" : "המשתמש לא יוכל להקליד %s",
   "Theme" : "ערכת עיצוב",
-  "theme-color-primary-action-color" : "לחצני פעולות צבע",
+  "theme-color-action-buttons-color" : "לחצני פעולות צבע",
   "theme-color-active-channel-background-color" : "צבע הרקע של הערוץ Active",
   "theme-color-active-channel-font-color" : "צבע גופן ערוץ Active",
   "theme-color-blockquote-background" : "צבע רקע של ציטוט",

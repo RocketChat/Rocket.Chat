@@ -1082,7 +1082,7 @@
   "The_user_will_be_removed_from_s" : "Käyttäjä poistetaan %s",
   "The_user_wont_be_able_to_type_in_s" : "Käyttäjä ei pysty kirjoittamaan %s",
   "Theme" : "Ulkoasu",
-  "theme-color-primary-action-color" : "Toimintapainikkeiden väri",
+  "theme-color-action-buttons-color" : "Toimintapainikkeiden väri",
   "theme-color-active-channel-background-color" : "Aktiivisen kanavan taustaväri",
   "theme-color-active-channel-font-color" : "Aktiivisen kanavan tekstin väri",
   "theme-color-blockquote-background" : "Lainauksen taustaväri",
