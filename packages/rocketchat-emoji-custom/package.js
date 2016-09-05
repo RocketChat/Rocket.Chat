@@ -6,11 +6,9 @@ Package.describe({
 });
 
 Package.onUse(function(api) {
-	api.versionsFrom('1.0');
-
 	api.use([
 		'ecmascript',
-		'less@2.5.1',
+		'less',
 		'rocketchat:emoji',
 		'rocketchat:file',
 		'rocketchat:lib',
