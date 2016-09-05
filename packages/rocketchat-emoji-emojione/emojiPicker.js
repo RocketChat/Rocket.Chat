@@ -1,13 +1,9 @@
-/* globals Template, emojione */
-
-var emojisByCategory;
-var toneList;
+/* globals emojisByCategory:true, emojiCategories:true, toneList:true */
 
 /*
  * Mapping category hashes into human readable and translated names
  */
-var emojiCategories = {
-	recent: TAPi18n.__('Frequently_Used'),
+emojiCategories = {
 	people: TAPi18n.__('Smileys_and_People'),
 	nature: TAPi18n.__('Animals_and_Nature'),
 	food: TAPi18n.__('Food_and_Drink'),
@@ -17,216 +13,6 @@ var emojiCategories = {
 	symbols: TAPi18n.__('Symbols'),
 	flags: TAPi18n.__('Flags')
 };
-
-/**
- * Turns category hash to a nice readable translated name
- * @param {string} category hash
- * @return {string} readable and translated
- */
-function categoryName(category) {
-	if (emojiCategories[category]) {
-		return emojiCategories[category];
-	}
-	// unknown category; better hash than nothing
-	return category;
-}
-
-function getEmojisByCategory(category) {
-	const t = Template.instance();
-	const total = emojisByCategory[category].length;
-	let html = '';
-	const actualTone = t.tone;
-	for (var i = 0; i < total; i++) {
-		let emoji = emojisByCategory[category][i];
-		let tone = '';
-
-		if (actualTone > 0 && toneList.hasOwnProperty(emoji)) {
-			tone = '_tone' + actualTone;
-		}
-
-		const image = emojione.toImage(':' + emoji + tone + ':');
-
-		html += `<li class="emoji-${emoji}" data-emoji="${emoji}" title="${emoji}">${image}</li>`;
-	}
-	return html;
-}
-
-function getEmojisBySearchTerm(searchTerm) {
-	let html = '';
-	const actualTone = t.tone;
-
-	for (let category of Object.keys(emojisByCategory)) {
-		if (category !== 'recent') {
-			for (let emoji of emojisByCategory[category]) {
-				if (emoji.indexOf(searchTerm.toLowerCase()) > -1) {
-					let tone = '';
-
-					if (actualTone > 0 && toneList.hasOwnProperty(emoji)) {
-						tone = '_tone' + actualTone;
-					}
-
-					const image = emojione.toImage(':' + emoji + tone + ':');
-
-					html += `<li class="emoji-${emoji}" data-emoji="${emoji}" title="${emoji}">${image}</li>`;
-
-				}
-			}
-		}
-	}
-
-	return html;
-}
-
-Template.emojiPicker.helpers({
-	category() {
-		return Object.keys(emojisByCategory);
-	},
-	emojiByCategory(category) {
-		if (!emojisByCategory[category]) {
-			return [];
-		}
-		return emojisByCategory[category];
-	},
-	isVisible(category) {
-		return Template.instance().currentCategory.get() === category ? 'visible' : '';
-	},
-	emojiList(category) {
-		const t = Template.instance();
-		const searchTerm = t.currentSearchTerm.get();
-
-		if (searchTerm.length > 0) {
-			return getEmojisBySearchTerm(searchTerm);
-		} else {
-			return getEmojisByCategory(category);
-		}
-
-	},
-	currentTone() {
-		return 'tone-' + Template.instance().tone;
-	},
-	/**
-	 * Returns true if a given emoji category is active
-	 *
-	 * @param {string} category hash
-	 * @return {boolean} true if active, false otherwise
-	 */
-	activeCategory(category) {
-		return Template.instance().currentCategory.get() === category ? 'active' : '';
-	},
-	categoryName: categoryName,
-	/**
-	 * Returns currently active emoji category hash
-	 *
-	 * @return {string} category hash
-	 */
-	currentCategory() {
-		const t = Template.instance();
-		const hash = t.currentCategory.get();
-		const searchTerm = t.currentSearchTerm.get();
-
-		if (searchTerm.length > 0) {
-			return TAPi18n.__('Search');
-		} else {
-			return categoryName(hash);
-		}
-	}
-});
-
-Template.emojiPicker.events({
-	'click .emoji-picker'(event) {
-		event.stopPropagation();
-		event.preventDefault();
-	},
-	'click .category-link'(event, instance) {
-		event.stopPropagation();
-		event.preventDefault();
-
-		instance.currentCategory.set(event.currentTarget.hash.substr(1));
-
-		return false;
-	},
-	'click .change-tone > a'(event, instance) {
-		event.stopPropagation();
-		event.preventDefault();
-
-		instance.$('.tone-selector').toggleClass('show');
-	},
-	'click .tone-selector .tone'(event, instance) {
-		event.stopPropagation();
-		event.preventDefault();
-
-		let tone = parseInt(event.currentTarget.dataset.tone);
-		let newTone;
-
-		if (tone > 0) {
-			newTone = '_tone' + tone;
-		} else {
-			newTone = '';
-		}
-
-		for (var emoji in toneList) {
-			if (toneList.hasOwnProperty(emoji)) {
-				$('.emoji-'+emoji).html(emojione.toImage(':' + emoji + newTone + ':'));
-			}
-		}
-
-		RocketChat.EmojiPicker.setTone(tone);
-
-		instance.setCurrentTone(tone);
-
-		$('.tone-selector').toggleClass('show');
-	},
-	'click .emoji-list li'(event, instance) {
-		event.stopPropagation();
-
-		let emoji = event.currentTarget.dataset.emoji;
-		let actualTone = instance.tone;
-		let tone = '';
-
-		if (actualTone > 0 && toneList.hasOwnProperty(emoji)) {
-			tone = '_tone' + actualTone;
-		}
-
-		const input = $('.emoji-filter input.search');
-		if (input) {
-			input.val('');
-		}
-		instance.currentSearchTerm.set('');
-
-		RocketChat.EmojiPicker.pickEmoji(emoji + tone);
-	},
-	'keydown .emoji-filter .search'(event) {
-		if (event.keyCode === 13) {
-			event.preventDefault();
-		}
-	},
-	'keyup .emoji-filter .search'(event, instance) {
-		const value = event.target.value.trim();
-		const cst = instance.currentSearchTerm;
-		if (value === cst.get()) {
-			return;
-		}
-		cst.set(value);
-	}
-});
-
-Template.emojiPicker.onCreated(function() {
-	this.tone = RocketChat.EmojiPicker.getTone();
-	let recent = RocketChat.EmojiPicker.getRecent();
-
-	this.currentCategory = new ReactiveVar(recent.length > 0 ? 'recent' : 'people');
-	this.currentSearchTerm = new ReactiveVar('');
-
-	recent.forEach((emoji) => {
-		emojisByCategory.recent.push(emoji);
-	});
-
-	this.setCurrentTone = (newTone) => {
-		$('.current-tone').removeClass('tone-' + this.tone);
-		$('.current-tone').addClass('tone-' + newTone);
-		this.tone = newTone;
-	};
-});
 
 toneList = {
 	'raised_hands': 1,
@@ -315,7 +101,6 @@ toneList = {
 	'juggling': 1
 };
 emojisByCategory = {
-	'recent': [],
 	'people': [
 		'grinning',
 		'grimacing',
@@ -1746,3 +1531,5 @@ emojisByCategory = {
 		'tone5'
 	]
 };
+
+/* exported emojisByCategory, emojiCategories, toneList */
