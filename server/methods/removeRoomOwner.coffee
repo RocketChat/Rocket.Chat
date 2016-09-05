@@ -1,10 +1,11 @@
 Meteor.methods
 	removeRoomOwner: (rid, userId) ->
-		unless Meteor.userId()
-			throw new Meteor.Error 'error-invalid-user', 'Invalid user', { method: 'removeRoomOwner' }
 
 		check rid, String
 		check userId, String
+
+		unless Meteor.userId()
+			throw new Meteor.Error 'error-invalid-user', 'Invalid user', { method: 'removeRoomOwner' }
 
 		unless RocketChat.authz.hasPermission Meteor.userId(), 'set-owner', rid
 			throw new Meteor.Error 'error-not-allowed', 'Not allowed', { method: 'removeRoomOwner' }
