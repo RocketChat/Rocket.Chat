@@ -127,6 +127,16 @@ Template.room.helpers
 	userCanDrop: ->
 		return userCanDrop @_id
 
+	canPreview: ->
+		room = Session.get('roomData' + this._id)
+		if room.t isnt 'c'
+			return true
+
+		if RocketChat.authz.hasAllPermission('preview-c-room')
+			return true
+
+		return RocketChat.models.Subscriptions.findOne({rid: this._id})?
+
 isSocialSharingOpen = false
 touchMoved = false
 
