@@ -69,7 +69,7 @@
 										<button type="button" class="button secondary cancel">{{_ "Cancel"}}</button>
 										<button type="button" class="button primary save">{{_ "Save"}}</button>
 									{{else}}
-										<span>{{#if readOnlyDescription}}{{_ "True"}}{{else}}{{_ "False"}}{{/if}}{{#if canEdit}} <i class="icon-pencil" data-edit="readOnly"></i>{{/if}}</span>
+										<span>{{readOnlyDescription}}{{#if canEdit}} <i class="icon-pencil" data-edit="readOnly"></i>{{/if}}</span>
 									{{/if}}
 								</div>
 							</li>

@@ -46,6 +46,7 @@ Meteor.startup ->
 		{ _id: 'view-full-other-user-info',     roles : ['admin'] }
 		{ _id: 'view-history',                  roles : ['admin', 'user'] }
 		{ _id: 'view-joined-room',              roles : ['guest', 'bot'] }
+		{ _id: 'view-join-code',                roles : ['admin'] }
 		{ _id: 'view-logs',                     roles : ['admin'] }
 		{ _id: 'view-other-user-channels',      roles : ['admin'] }
 		{ _id: 'view-p-room',                   roles : ['admin', 'user'] }
@@ -53,6 +54,7 @@ Meteor.startup ->
 		{ _id: 'view-room-administration',      roles : ['admin'] }
 		{ _id: 'view-statistics',               roles : ['admin'] }
 		{ _id: 'view-user-administration',      roles : ['admin'] }
+		{ _id: 'preview-c-room',                roles : ['admin', 'user'] }
 	]
 
 	for permission in permissions

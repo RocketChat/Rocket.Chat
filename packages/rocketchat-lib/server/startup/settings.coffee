@@ -196,12 +196,12 @@ RocketChat.settings.addGroup 'Meta', ->
 
 
 RocketChat.settings.addGroup 'Push', ->
-	@add 'Push_debug', false, { type: 'boolean', public: true }
 	@add 'Push_enable', true, { type: 'boolean', public: true }
-	@add 'Push_enable_gateway', true, { type: 'boolean' }
-	@add 'Push_gateway', 'https://rocket.chat', { type: 'string' }
-	@add 'Push_production', true, { type: 'boolean', public: true }
-	@add 'Push_test_push', 'push_test', { type: 'action', actionText: 'Send_a_test_push_to_my_user' }
+	@add 'Push_debug', false, { type: 'boolean', public: true, enableQuery: { _id: 'Push_enable', value: true } }
+	@add 'Push_enable_gateway', true, { type: 'boolean', enableQuery: { _id: 'Push_enable', value: true } }
+	@add 'Push_gateway', 'https://gateway.rocket.chat', { type: 'string', enableQuery: [{ _id: 'Push_enable', value: true }, { _id: 'Push_enable_gateway', value: true }] }
+	@add 'Push_production', true, { type: 'boolean', public: true, enableQuery: [{ _id: 'Push_enable', value: true }, { _id: 'Push_enable_gateway', value: false }] }
+	@add 'Push_test_push', 'push_test', { type: 'action', actionText: 'Send_a_test_push_to_my_user', enableQuery: { _id: 'Push_enable', value: true } }
 
 	@section 'Certificates_and_Keys', ->
 		@add 'Push_apn_passphrase', '', { type: 'string' }
