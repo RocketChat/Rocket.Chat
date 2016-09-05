@@ -1132,7 +1132,7 @@
   "The_user_will_be_removed_from_s" : "The user will be removed from %s",
   "The_user_wont_be_able_to_type_in_s" : "The user won't be able to type in %s",
   "Theme" : "Theme",
-  "theme-color-action-buttons-color" : "Actions Buttons Color",
+  "theme-color-primary-action-color" : "Actions Buttons Color",
   "theme-color-active-channel-background-color" : "Active Channel Background Color",
   "theme-color-active-channel-font-color" : "Active Channel Font Color",
   "theme-color-blockquote-background" : "Blockquote Background Color",

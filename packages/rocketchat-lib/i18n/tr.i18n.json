@@ -1079,7 +1079,7 @@
   "The_user_will_be_removed_from_s" : " %s kullanıcısı silinecektir",
   "The_user_wont_be_able_to_type_in_s" : " %s kullanıcısı yazmaya mümkün olmayacaktır",
   "Theme" : "Tema",
-  "theme-color-action-buttons-color" : "Eylemler Düğmeler Renk",
+  "theme-color-primary-action-color" : "Eylemler Düğmeler Renk",
   "theme-color-active-channel-background-color" : "Aktif Kanal Arka Plan Rengi",
   "theme-color-active-channel-font-color" : "Active Channel Yazı Rengi",
   "theme-color-blockquote-background" : "Alıntı Arka Plan Rengi",

@@ -1095,7 +1095,7 @@
   "The_user_will_be_removed_from_s" : "El usuario sera eliminado de %s",
   "The_user_wont_be_able_to_type_in_s" : "El usuario no podra introducir datos en %s",
   "Theme" : "Tema",
-  "theme-color-action-buttons-color" : "Acciones botones de colores",
+  "theme-color-primary-action-color" : "Acciones botones de colores",
   "theme-color-active-channel-background-color" : "Canal activo Color de fondo",
   "theme-color-active-channel-font-color" : "Canal activo Color de fuente",
   "theme-color-blockquote-background" : "Color de fondo del bloque de citas",

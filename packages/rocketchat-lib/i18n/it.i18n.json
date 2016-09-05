@@ -1131,7 +1131,7 @@
   "The_user_will_be_removed_from_s" : "L'utente sarà rimosso da %s",
   "The_user_wont_be_able_to_type_in_s" : "L'utente non potrà più scrivere sul canale %s",
   "Theme" : "Tema",
-  "theme-color-action-buttons-color" : "Colore Pulsante Azione",
+  "theme-color-primary-action-color" : "Colore Pulsante Azione",
   "theme-color-active-channel-background-color" : "Colore di sfondo del canale attivo",
   "theme-color-active-channel-font-color" : "Colore dei caratteri del canale attivo",
   "theme-color-blockquote-background" : "Colore di Sfondo delle Citazioni",
