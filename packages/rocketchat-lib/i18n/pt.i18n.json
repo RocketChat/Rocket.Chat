@@ -1073,7 +1073,7 @@
   "The_user_will_be_removed_from_s" : "O usuário será removido de %s",
   "The_user_wont_be_able_to_type_in_s" : "O usuário não será capaz de escrever em %s",
   "Theme" : "Tema",
-  "theme-color-action-buttons-color" : "Cor dos Botões de Ação",
+  "theme-color-primary-action-color" : "Cor dos Botões de Ação",
   "theme-color-active-channel-background-color" : "Cor do Fundo de Canal Ativo",
   "theme-color-active-channel-font-color" : "Cor de Fonte de Canal Ativo",
   "theme-color-blockquote-background" : "Cor de fundo de bloco de citação",

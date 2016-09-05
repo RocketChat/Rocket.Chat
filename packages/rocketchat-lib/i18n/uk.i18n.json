@@ -1042,7 +1042,7 @@
   "The_user_will_be_removed_from_s" : "Користувач буде видалений з %s",
   "The_user_wont_be_able_to_type_in_s" : "Користувач не зможе ввести в %s",
   "Theme" : "тема",
-  "theme-color-action-buttons-color" : "Дії Кнопки Колір",
+  "theme-color-primary-action-color" : "Дії Кнопки Колір",
   "theme-color-active-channel-background-color" : "Активний канал Колір фону",
   "theme-color-active-channel-font-color" : "Активний канал Колір шрифту",
   "theme-color-blockquote-background" : "Blockquote Колір фону",

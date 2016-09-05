@@ -1131,7 +1131,7 @@
   "The_user_will_be_removed_from_s" : "L'utilisateur sera éjecté de %s",
   "The_user_wont_be_able_to_type_in_s" : "L'utilisateur ne pourra pas écrire dans %s",
   "Theme" : "Thème",
-  "theme-color-action-buttons-color" : "Couleur des boutons d'action",
+  "theme-color-primary-action-color" : "Couleur des boutons d'action",
   "theme-color-active-channel-background-color" : "Couleur d'arrière plan du canal actif",
   "theme-color-active-channel-font-color" : "Couleur de police du canal actif",
   "theme-color-blockquote-background" : "Couleur d'arrière plan des citations",

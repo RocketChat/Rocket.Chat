@@ -1056,7 +1056,7 @@
   "The_user_will_be_removed_from_s" : "そのユーザーは、 %s から削除されます",
   "The_user_wont_be_able_to_type_in_s" : "そのユーザーは、 %s で入力できなくなります",
   "Theme" : "テーマ",
-  "theme-color-action-buttons-color" : "アクション ボタン色",
+  "theme-color-primary-action-color" : "アクション ボタン色",
   "theme-color-active-channel-background-color" : "アクティブなチャンネル 背景色",
   "theme-color-active-channel-font-color" : "アクティブなチャンネル 文字色",
   "theme-color-blockquote-background" : "引用 背景色",
