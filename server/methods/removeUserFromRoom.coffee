@@ -14,6 +14,11 @@ Meteor.methods
 		if data.username not in (room?.usernames or [])
 			throw new Meteor.Error 'error-user-not-in-room', 'User is not in this room', { method: 'removeUserFromRoom' }
 
+		if RocketChat.authz.hasRole(Meteor.user()._id, 'owner', room._id)
+			numOwners = RocketChat.authz.getUsersInRole('owner', room._id).fetch().length
+			if numOwners is 1
+				throw new Meteor.Error 'error-you-are-last-owner', 'You are the last owner. Please set new owner before leaving the room.', { method: 'removeUserFromRoom' }
+
 		removedUser = RocketChat.models.Users.findOneByUsername data.username
 
 		RocketChat.models.Rooms.removeUsernameById data.rid, data.username
