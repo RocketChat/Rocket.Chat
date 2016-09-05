@@ -1,4 +1,4 @@
-/* globals emojione, Blaze, Template */
+/* globals Blaze, isSetNotNull, Template */
 RocketChat.EmojiPicker = {
 	width: 390,
 	height: 238,
@@ -107,18 +107,24 @@ RocketChat.EmojiPicker = {
 		this.recent.unshift(emoji);
 
 		window.localStorage.setItem('emoji.recent', this.recent);
+		RocketChat.emoji.packages.base.emojisByCategory.recent = this.recent;
 
 		this.updateRecent();
 	},
 	updateRecent() {
-		let total = this.recent.length;
-		var html = '';
+		let total = RocketChat.emoji.packages.base.emojisByCategory.recent.length;
+		let html = '';
 		for (var i = 0; i < total; i++) {
-			let emoji = this.recent[i];
-			let tone = '';
+			let emoji = RocketChat.emoji.packages.base.emojisByCategory.recent[i];
 
-			html += '<li class="emoji-' + emoji + '" data-emoji="' + emoji + '">' + emojione.toImage(':' + emoji + tone + ':') + '</li>';
+			if (isSetNotNull(() => RocketChat.emoji.list[`:${emoji}:`])) {
+				let emPackage = RocketChat.emoji.list[`:${emoji}:`].emojiPackage;
+				let renderedEmoji = RocketChat.emoji.packages[emPackage].render(`:${emoji}:`);
+				html += `<li class="emoji-${emoji}" data-emoji="${emoji}">${renderedEmoji}</li>`;
+			} else {
+				this.recent = _.without(this.recent, emoji);
+			}
 		}
-		$('.recent.emoji-list').html(html);
+		$('.recent.emoji-list').empty().append(html);
 	}
 };
