@@ -10,6 +10,7 @@ Package.onUse(function(api) {
 
 	api.use([
 		'coffeescript',
+		'ecmascript',
 		'reactive-var',
 		'tracker',
 		'templating',
@@ -36,6 +37,7 @@ Package.onUse(function(api) {
 		'server/functions/saveRoomSystemMessages.coffee',
 		'server/methods/saveRoomSettings.coffee',
 		'server/models/Messages.coffee',
-		'server/models/Rooms.coffee'
+		'server/models/Rooms.coffee',
+		'server/startup.js'
 	], 'server');
 });
