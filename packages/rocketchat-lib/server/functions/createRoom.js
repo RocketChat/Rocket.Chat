@@ -54,10 +54,10 @@ RocketChat.createRoom = function(type, name, owner, members, readOnly) {
 		});
 	}
 
-	room = RocketChat.models.Rooms.createWithTypeNameUserAndUsernames(type, name, owner.username, members, { 
+	room = RocketChat.models.Rooms.createWithTypeNameUserAndUsernames(type, name, owner.username, members, {
 		ts: now,
 		ro: readOnly === true,
-		sysMes: readOnly !== true,
+		sysMes: readOnly !== true
 	});
 
 	for (let username of members) {
@@ -67,8 +67,7 @@ RocketChat.createRoom = function(type, name, owner, members, readOnly) {
 		}
 
 		// make all room members muted by default, unless they have the post-read-only permission
-		if (readOnly === true && !RocketChat.authz.hasPermission(member._id, 'post-read-only'))
-		{
+		if (readOnly === true && !RocketChat.authz.hasPermission(member._id, 'post-read-only')) {
 			RocketChat.models.Rooms.muteUsernameByRoomId(room._id, username);
 		}
 
