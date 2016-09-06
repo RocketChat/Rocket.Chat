@@ -79,7 +79,7 @@ RocketChat.models.Users = new class extends RocketChat.models._Base
 		if not _.isArray exceptions
 			exceptions = [ exceptions ]
 
-		termRegex = new RegExp s.escapeRegExp(searchTerm), "i"
+		termRegex = new RegExp s.escapeRegExp(searchTerm), 'i'
 		query =
 			$and: [
 				{ active: true }
@@ -99,12 +99,16 @@ RocketChat.models.Users = new class extends RocketChat.models._Base
 
 		return @find query, options
 
-	findByActiveUsersUsernameExcept: (username, except, options) ->
+	findByActiveUsersUsernameExcept: (searchTerm, exceptions = [], options = {}) ->
+		if not _.isArray exceptions
+			exceptions = [ exceptions ]
+
+		termRegex = new RegExp s.escapeRegExp(searchTerm), 'i'
 		query =
 			active: true
 			$and: [
-				{username: {$nin: except}}
-				{username: username}
+				{ username: { $nin: exceptions } }
+				{ username: termRegex }
 			]
 
 		return @find query, options
