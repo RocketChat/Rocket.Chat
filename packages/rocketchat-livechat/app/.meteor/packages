@@ -38,3 +38,6 @@ tap:i18n
 kevohagan:sweetalert
 ecmascript
 es5-shim
+edgee:slingshot
+jalik:ufs
+jalik:ufs-gridfs

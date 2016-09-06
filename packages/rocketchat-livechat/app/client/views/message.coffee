@@ -28,13 +28,50 @@ Template.message.helpers
 			when 'livechat-close' then t('Conversation_finished')
 			# when 'rtc' then RocketChat.callbacks.run 'renderRtcMessage', this
 			else
-				this.html = this.msg
-				if s.trim(this.html) isnt ''
-					this.html = s.escapeHTML this.html
-				# message = RocketChat.callbacks.run 'renderMessage', this
-				message = this
-				this.html = message.html.replace /\n/gm, '<br/>'
-				return livechatAutolinker.link this.html
+				if this.attachments
+					document.cookie = 'rc_uid=' + escape(Meteor.userId()) + '; path=/'
+					document.cookie = 'rc_token=' + escape(Accounts._storedLoginToken()) + '; path=/'
+
+					html = ''
+
+					for attachment in this.attachments
+						html += """
+							<div class="attachment attachment-image">
+								<a href="#{attachment.title_link}" target="_blank">#{attachment.title}</a> <br/>
+						"""
+
+						if attachment.image_url?
+							html += """
+								<img src="#{attachment.image_url}"/> <br/>
+							"""
+						if attachment.audio_url?
+							html += """
+								<audio controls>
+									<source src="#{attachment.audio_url}" type="#{attachment.audio_type}">
+									Your browser does not support the audio element.
+								</audio <br/>
+							"""
+						if attachment.video_url?
+							html += """
+								<video controls class="inline-video">
+									<source src="#{attachment.video_url}" type="#{attachment.video_type}">
+									Your browser does not support the video element.
+								</video>
+							"""
+
+						html += """
+							</div>
+						"""
+
+					return html;
+				else
+					this.html = this.msg
+					if s.trim(this.html) isnt ''
+						this.html = s.escapeHTML this.html
+					# message = RocketChat.callbacks.run 'renderMessage', this
+					message = this
+					this.html = message.html.replace /\n/gm, '<br/>'
+					return livechatAutolinker.link this.html
 
 	system: ->
 		return 'system' if this.t in ['s', 'p', 'f', 'r', 'au', 'ru', 'ul', 'wm', 'uj', 'livechat-close']

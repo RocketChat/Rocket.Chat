@@ -4,6 +4,11 @@ RocketChat.settings.addGroup('FileUpload', function() {
 		public: true
 	});
 
+	this.add('FileUpload_Livechat_Enabled', false, {
+		type: 'boolean',
+		public: true
+	});
+
 	this.add('FileUpload_MaxFileSize', 2097152, {
 		type: 'int',
 		public: true

@@ -1,3 +1,5 @@
+/* globals fileUpload, Slingshot */
+
 Template.messages.helpers({
 	messages() {
 		return ChatMessage.find({
@@ -24,6 +26,9 @@ Template.messages.helpers({
 		} else {
 			return t('Options');
 		}
+	},
+	allowAttachments() {
+		return Session.get('allowAttachments');
 	}
 });
 
@@ -52,6 +57,32 @@ Template.messages.events({
 	},
 	'click .toggle-options': function(event, instance) {
 		instance.showOptions.set(!instance.showOptions.get());
+	},
+	'click .attach-button': function() {
+		var elem = document.getElementById('theFile');
+		if (elem && document.createEvent) {
+			var evt = document.createEvent('MouseEvents');
+			evt.initEvent('click', true, false);
+			elem.dispatchEvent(evt);
+		}
+	},
+	'change #theFile': function(event) {
+		var files = event.target.files;
+		if (!files || files.length === 0) {
+			files = [];
+		}
+
+		var filesToUpload = [];
+
+		for (var i = 0; i < files.length; i++) {
+			var file = files[i];
+			filesToUpload.push({
+				file: file,
+				name: file.name
+			});
+		}
+		fileUpload(filesToUpload);
+		return true;
 	}
 });
 
@@ -123,4 +154,6 @@ Template.messages.onRendered(function() {
 			onscroll();
 		});
 	}
+
+	template.uploader = new Slingshot.Upload('rocketchat-uploads', { rid: visitor.getRoom() });
 });

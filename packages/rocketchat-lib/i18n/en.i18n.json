@@ -453,6 +453,7 @@
   "File_exceeds_allowed_size_of_bytes" : "File exceeds allowed size of __size__ bytes",
   "FileUpload" : "File Upload",
   "FileUpload_Enabled" : "File Uploads Enabled",
+  "FileUpload_Livechat_Enabled": "Livechat File Uploads Enabled",
   "FileUpload_File_Empty" : "File empty",
   "FileUpload_FileSystemPath" : "System Path",
   "FileUpload_MaxFileSize" : "Maximum File Upload Size (in bytes)",
