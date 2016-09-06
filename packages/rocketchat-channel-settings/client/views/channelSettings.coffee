@@ -33,6 +33,16 @@ Template.channelSettings.helpers
 	canDeleteRoom: ->
 		roomType = ChatRoom.findOne(@rid, { fields: { t: 1 }})?.t
 		return roomType? and RocketChat.authz.hasAtLeastOnePermission("delete-#{roomType}", @rid)
+	readOnly: ->
+		return  ChatRoom.findOne(@rid, { fields: { ro: 1 }})?.ro
+	readOnlyDescription: ->
+		readOnly = ChatRoom.findOne(@rid, { fields: { ro: 1 }})?.ro
+		if readOnly is true
+			return t('True')
+		else
+			return t('False')
+		
+		
 
 Template.channelSettings.events
 	'click .delete': ->
@@ -144,6 +154,16 @@ Template.channelSettings.onCreated ->
 				Meteor.call 'saveRoomSettings', room._id, 'roomType', value, (err, result) ->
 					return handleError err if err
 					toastr.success TAPi18n.__ 'Room_type_changed_successfully'
+
+		ro:
+			type: 'boolean'
+			label: 'Read_only'
+			canView: (room) => room.t isnt 'd'
+			canEdit: (room) => RocketChat.authz.hasAllPermission('set-readonly', room._id)
+			save: (value, room) ->
+				Meteor.call 'saveRoomSettings', room._id, 'readOnly', value, (err, result) ->
+					return handleError err if err
+					toastr.success TAPi18n.__ 'Read_only_changed_successfully'					
 
 		archived:
 			type: 'boolean'
