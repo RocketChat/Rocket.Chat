@@ -12,7 +12,8 @@ RocketChat.addUserToRoom = function(rid, user, inviter, silenced) {
 		RocketChat.callbacks.run('beforeJoinRoom', user, room);
 	}
 
-	RocketChat.models.Rooms.addUsernameById(rid, user.username);
+	var muted = room.ro && !RocketChat.authz.hasPermission(user._id, 'post-read-only');
+	RocketChat.models.Rooms.addUsernameById(rid, user.username, muted);
 	RocketChat.models.Subscriptions.createWithRoomAndUser(room, user, {
 		ts: now,
 		open: true,

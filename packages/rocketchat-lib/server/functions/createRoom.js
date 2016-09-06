@@ -1,5 +1,5 @@
 /* globals RocketChat */
-RocketChat.createRoom = function(type, name, owner, members) {
+RocketChat.createRoom = function(type, name, owner, members, readOnly) {
 	name = s.trim(name);
 	owner = s.trim(owner);
 	members = [].concat(members);
@@ -44,6 +44,8 @@ RocketChat.createRoom = function(type, name, owner, members) {
 			t: 'c',
 			name: name,
 			ts: now,
+			ro: readOnly === true,
+			sysMes: readOnly !== true,
 			usernames: members,
 			u: {
 				_id: owner._id,
@@ -52,12 +54,21 @@ RocketChat.createRoom = function(type, name, owner, members) {
 		});
 	}
 
-	room = RocketChat.models.Rooms.createWithTypeNameUserAndUsernames(type, name, owner.username, members, { ts: now });
+	room = RocketChat.models.Rooms.createWithTypeNameUserAndUsernames(type, name, owner.username, members, {
+		ts: now,
+		ro: readOnly === true,
+		sysMes: readOnly !== true
+	});
 
 	for (let username of members) {
 		let member = RocketChat.models.Users.findOneByUsername(username, { fields: { username: 1 }});
 		if (!member) {
 			continue;
+		}
+
+		// make all room members muted by default, unless they have the post-read-only permission
+		if (readOnly === true && !RocketChat.authz.hasPermission(member._id, 'post-read-only')) {
+			RocketChat.models.Rooms.muteUsernameByRoomId(room._id, username);
 		}
 
 		let extra = { open: true };

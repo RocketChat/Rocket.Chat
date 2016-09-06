@@ -30,6 +30,8 @@ Template.messageBox.helpers
 		return Session.get('roomData' + this._id)?.joinCodeRequired
 	subscribed: ->
 		return RocketChat.roomTypes.verifyCanSendMessage @_id
+	allowedToSend: ->
+		return !RocketChat.roomTypes.readOnly @_id, Meteor.user()
 	getPopupConfig: ->
 		template = Template.instance()
 		return {
