@@ -1,4 +1,3 @@
-/* eslint-disable */
 /* globals ansispan:true */
 
 ansispan = function(str) {
@@ -13,10 +12,10 @@ ansispan = function(str) {
 		//
 
 		str = str.replace(
-			new RegExp('\033\\[' + ansi + 'm', 'g'),
+			new RegExp('\0o33\\[' + ansi + 'm', 'g'),
 			span
 		).replace(
-			new RegExp('\033\\[0;' + ansi + 'm', 'g'),
+			new RegExp('\0o33\\[0;' + ansi + 'm', 'g'),
 			span
 		);
 	});
