@@ -11,7 +11,7 @@ Package.onUse(function(api) {
 		'templating',
 		'coffeescript',
 		'check',
-		'rocketchat:lib@0.0.1'
+		'rocketchat:lib'
 	]);
 
 	api.use('rocketchat:logger', 'server');
