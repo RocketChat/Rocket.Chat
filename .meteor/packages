@@ -32,7 +32,10 @@ reactive-var@1.0.10
 reload@1.1.10
 service-configuration@1.0.10
 session@1.1.6
+shell-server
 spacebars@1.0.12
+standard-minifier-css@1.2.0
+standard-minifier-js@1.2.0
 tracker@1.1.0
 
 rocketchat:action-links
@@ -40,7 +43,6 @@ rocketchat:api
 rocketchat:assets
 rocketchat:authorization
 rocketchat:autolinker
-#rocketchat:bot-helpers
 rocketchat:cas
 rocketchat:channel-settings
 rocketchat:channel-settings-mail-messages
@@ -67,6 +69,7 @@ rocketchat:lib
 rocketchat:livechat
 rocketchat:logger
 rocketchat:mailer
+rocketchat:mapview
 rocketchat:markdown
 rocketchat:mentions
 rocketchat:mentions-flextab
@@ -92,6 +95,7 @@ rocketchat:slashcommands-kick
 rocketchat:slashcommands-leave
 rocketchat:slashcommands-me
 rocketchat:slashcommands-mute
+rocketchat:slashcommands-open
 rocketchat:slashcommands-topic
 rocketchat:slashcommands-unarchive
 rocketchat:smarsh-connector
@@ -111,9 +115,10 @@ rocketchat:ui-message
 rocketchat:ui-sidenav
 rocketchat:ui-vrecord
 rocketchat:version
+rocketchat:videobridge
 rocketchat:webrtc
 rocketchat:wordpress
-rocketchat:videobridge
+#rocketchat:bot-helpers
 #rocketchat:chatops
 #rocketchat:internal-hubot
 #rocketchat:irc
@@ -156,8 +161,3 @@ todda00:friendly-slugs
 underscorestring:underscore.string
 yasaricli:slugify
 yasinuslu:blaze-meta
-rocketchat:slashcommands-open
-rocketchat:mapview
-standard-minifier-css@1.2.0
-standard-minifier-js@1.2.0
-shell-server
