@@ -28,6 +28,7 @@ Package.onUse(function(api) {
 	api.use('matb33:collection-hooks');
 	api.use('service-configuration');
 	api.use('check');
+	api.use('rocketchat:i18n');
 	api.use('rocketchat:streamer');
 	api.use('rocketchat:version');
 	api.use('rocketchat:logger');
@@ -165,17 +166,6 @@ Package.onUse(function(api) {
 	// EXPORT
 	api.export('RocketChat');
 
-	// TAPi18n
-	var _ = Npm.require('underscore');
-	var fs = Npm.require('fs');
-	var tapi18nFiles = _.compact(_.map(fs.readdirSync('packages/rocketchat-lib/i18n'), function(filename) {
-		if (filename.indexOf('.json') > -1 && fs.statSync('packages/rocketchat-lib/i18n/' + filename).size > 16) {
-			return 'i18n/' + filename;
-		}
-	}));
-	api.addFiles(tapi18nFiles);
-
-	api.use('tap:i18n');
 	api.imply('tap:i18n');
 });
 
