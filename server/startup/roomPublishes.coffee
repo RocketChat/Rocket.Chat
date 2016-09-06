@@ -10,8 +10,10 @@ Meteor.startup ->
 				topic: 1
 				muted: 1
 				archived: 1
+				ro: 1
 				jitsiTimeout: 1
 				description: 1
+				sysMes: 1
 				joinCodeRequired: 1
 
 		if RocketChat.authz.hasPermission(this.userId, 'view-join-code')
@@ -39,8 +41,10 @@ Meteor.startup ->
 				topic: 1
 				muted: 1
 				archived: 1
+				ro: 1
 				jitsiTimeout: 1
 				description: 1
+				sysMes: 1
 
 		user = RocketChat.models.Users.findOneById this.userId, fields: username: 1
 		# CACHE: can we stop using publications here?
