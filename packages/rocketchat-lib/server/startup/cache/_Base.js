@@ -1,7 +1,7 @@
 /* globals MongoInternals */
 /* eslint new-cap: 0 */
 
-import loki from 'loki';
+import loki from 'lokijs';
 
 const {EventEmitter} = Npm.require('events');
 const objectPath = Npm.require('object-path');
