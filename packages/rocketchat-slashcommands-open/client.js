@@ -21,7 +21,7 @@ function Open(command, params/*, item*/) {
 	}
 	subscription = ChatSubscription.findOne(query);
 
-	if (subscription !== null) {
+	if (subscription) {
 		FlowRouter.go(RocketChat.roomTypes.getRouteLink(subscription.t, subscription));
 	}
 }
