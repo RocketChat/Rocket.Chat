@@ -6,7 +6,8 @@ Package.describe({
 });
 
 Npm.depends({
-	'bad-words': '1.3.1'
+	'bad-words': '1.3.1',
+	'localforage': '1.4.2'
 });
 
 Package.onUse(function(api) {
@@ -136,7 +137,6 @@ Package.onUse(function(api) {
 
 	// CLIENT LIB
 	api.addFiles('client/Notifications.coffee', 'client');
-	api.addFiles('client/lib/localforage.min.js', 'client');
 	api.addFiles('client/lib/cachedCollection.js', 'client');
 	api.addFiles('client/lib/openRoom.coffee', 'client');
 	api.addFiles('client/lib/roomExit.coffee', 'client');
