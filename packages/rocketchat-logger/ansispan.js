@@ -1,3 +1,4 @@
+/* eslint-disable */
 /* globals ansispan:true */
 
 ansispan = function(str) {
