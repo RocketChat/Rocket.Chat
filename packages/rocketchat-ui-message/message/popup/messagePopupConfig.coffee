@@ -145,7 +145,7 @@ Template.messagePopupConfig.helpers
 					if command.indexOf(filter) > -1
 						commands.push
 							_id: command
-							params: item.params
+							params: if item.params then TAPi18n.__ item.params else ''
 							description: TAPi18n.__ item.description
 
 				commands = commands.sort (a, b) ->

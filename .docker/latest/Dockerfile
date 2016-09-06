@@ -1,4 +1,4 @@
-FROM rocketchat/base
+FROM rocketchat/base:0.10
 
 ENV RC_VERSION latest
 
