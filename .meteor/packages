@@ -33,7 +33,6 @@ reload
 service-configuration
 session
 spacebars
-standard-minifiers
 tracker
 
 rocketchat:action-links
@@ -159,3 +158,5 @@ yasaricli:slugify
 yasinuslu:blaze-meta
 rocketchat:slashcommands-open
 rocketchat:mapview
+standard-minifier-css
+standard-minifier-js
