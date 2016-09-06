@@ -27,7 +27,7 @@ function Open(command, params/*, item*/) {
 }
 
 RocketChat.slashCommands.add('open', Open, {
-	description: TAPi18n.__('Opens_a_channel_group_or_direct_message'),
+	description: 'Opens_a_channel_group_or_direct_message',
 	params: 'room name',
 	clientOnly: true
 });
