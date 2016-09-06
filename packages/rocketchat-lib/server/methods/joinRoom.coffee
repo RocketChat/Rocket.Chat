@@ -2,7 +2,7 @@ Meteor.methods
 	joinRoom: (rid, code) ->
 
 		check rid, String
-		check code, Match.Maybe(String)
+		# check code, Match.Maybe(String)
 
 		if not Meteor.userId()
 			throw new Meteor.Error 'error-invalid-user', 'Invalid user', { method: 'joinRoom' }
