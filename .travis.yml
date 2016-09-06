@@ -22,7 +22,6 @@ install:
   - export PATH="$HOME/.meteor:$PATH"
 before_script:
   - mkdir /tmp/build
-  - echo $CXX
   - npm install
   - npm run lint
 script:
