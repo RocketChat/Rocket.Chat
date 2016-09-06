@@ -1055,6 +1055,7 @@
   "Site_Url" : "Link Stranice",
   "Site_Url_Description" : "Na primjer: https://chat.domain.com/",
   "Skip" : "Preskoči",
+  "SlackBridge_error" : "SlackBridge je dobio grešku pri uvozu tvojih poruka s %s: %s",
   "Slash_Gimme_Description" : "Prikazuje  (つ ◕_◕) つ  prije vaše poruke",
   "Slash_LennyFace_Description" : "Prikazuje  (͡ ° ͜ʖ ͡ °)  nakon vaše poruke",
   "Slash_Shrug_Description" : "Prikazuje ¯ \\ _ (ツ) _ / ¯ nakon vaše poruke",
