@@ -3,8 +3,8 @@ Meteor.methods
 
 		check rid, String
 		# check end, Match.Optional(Number)
-		check limit, Number
-		check ls, Match.Optional(Date)
+		# check limit, Number
+		# check ls, Match.Optional(Date)
 
 		if not Meteor.userId()
 			throw new Meteor.Error 'error-invalid-user', 'Invalid user', { method: 'loadHistory' }
