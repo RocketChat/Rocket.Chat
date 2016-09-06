@@ -3,9 +3,7 @@ meteor build .meteor/build/ --directory
 
 mkdir -p ../public
 
-rm -f ../public/livechat.css
-rm -f ../public/livechat.jsi
-rm -f ../public/head.html
+rm -rf ../public/*
 
 cp .meteor/build/bundle/programs/web.browser/*.css ../public/livechat.css
 cp .meteor/build/bundle/programs/web.browser/*.js ../public/livechat.jsi
