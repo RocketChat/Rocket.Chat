@@ -14,7 +14,7 @@ WebApp.connectHandlers.use('/livechat/', (req, res/*, next*/) => {
 			<script type="text/javascript">
 				__meteor_runtime_config__ = ${JSON.stringify(__meteor_runtime_config__)};
 			</script>
-			<script type="text/javascript" src="/packages/rocketchat_livechat/public/livechat.js?_dc=${Autoupdate.autoupdateVersion}"></script>
+			<script type="text/javascript" src="/packages/rocketchat_livechat/public/livechat.jsi?_dc=${Autoupdate.autoupdateVersion}"></script>
 
 			${head}
 		</head>
