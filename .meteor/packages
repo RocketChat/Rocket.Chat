@@ -111,7 +111,6 @@ rocketchat:ui-master
 rocketchat:ui-message
 rocketchat:ui-sidenav
 rocketchat:ui-vrecord
-rocketchat:version
 rocketchat:webrtc
 rocketchat:wordpress
 rocketchat:videobridge

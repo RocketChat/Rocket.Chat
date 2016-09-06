@@ -16,6 +16,7 @@ Npm.depends({
 });
 
 Package.onUse(function(api) {
+	api.use('isobuild:compiler-plugin@1.0.0'),
 	api.use('rate-limit');
 	api.use('reactive-var');
 	api.use('reactive-dict');
@@ -170,9 +171,6 @@ Package.onUse(function(api) {
 	api.addFiles('client/models/Uploads.coffee', 'client');
 
 	api.addFiles('startup/defaultRoomTypes.coffee');
-
-	// VERSION
-	api.addFiles('rocketchat.info');
 
 	// EXPORT
 	api.export('RocketChat');
