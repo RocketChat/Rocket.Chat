@@ -2211,8 +2211,9 @@ label.required:after {
 			border-left-width: 0;
 			&.editing {}
 		}
-		.users-typing {
+		.stream-info {
 			float: left;
+			clear: left;
 			height: 23px;
 			font-size: 12px;
 			padding: 3px;
@@ -2282,7 +2283,7 @@ label.required:after {
 		}
 		&.editing {
 			.formatting-tips,
-			.users-typing {
+			.stream-info {
 				display: none;
 			}
 			.editing-commands {
@@ -3511,6 +3512,11 @@ body:not(.is-cordova) {
 			position: relative;
 			padding-left: 10px;
 			.calc(width, ~"100% - 45px");
+		}
+		.icon-mute {
+			float: left;
+			color: #7f7f7f;
+			line-height: 20px;
 		}
 	}
 	button {
