@@ -16,8 +16,6 @@ Package.registerBuildPlugin({
 });
 
 Package.onUse(function(api) {
-	api.versionsFrom('1.0');
-
 	api.use(['webapp', 'autoupdate'], 'server');
 	api.use('ecmascript');
 	api.use('underscorestring:underscore.string');
@@ -33,7 +31,7 @@ Package.onUse(function(api) {
 	api.use('mongo');
 	api.use('ddp-rate-limiter');
 	api.use('rocketchat:sms');
-	api.use('less@2.5.1');
+	api.use('less');
 
 	api.addFiles('livechat.js', 'server');
 	api.addFiles('server/startup.js', 'server');

@@ -1,5 +1,8 @@
 Meteor.methods
 	leaveRoom: (rid) ->
+
+		check rid, String
+
 		unless Meteor.userId()
 			throw new Meteor.Error('error-invalid-user', "Invalid user", { method: 'leaveRoom' })
 

@@ -6,14 +6,12 @@ Package.describe({
 });
 
 Package.onUse(function(api) {
-	api.versionsFrom('1.0');
-
 	api.use([
+		'ecmascript',
 		'emojione:emojione',
 		'rocketchat:emoji',
 		'rocketchat:lib'
 	]);
-	api.use('ecmascript');
 
 	api.addFiles('emojiPicker.js', 'client');
 

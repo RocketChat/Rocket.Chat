@@ -6,10 +6,10 @@ var emojiCategories = {};
  * @return {string} readable and translated
  */
 function categoryName(category) {
-	for (let emPackage in RocketChat.emoji.packages) {
-		if (RocketChat.emoji.packages.hasOwnProperty(emPackage)) {
-			if (RocketChat.emoji.packages[emPackage].emojiCategories.hasOwnProperty(category)) {
-				return RocketChat.emoji.packages[emPackage].emojiCategories[category];
+	for (let emojiPackage in RocketChat.emoji.packages) {
+		if (RocketChat.emoji.packages.hasOwnProperty(emojiPackage)) {
+			if (RocketChat.emoji.packages[emojiPackage].emojiCategories.hasOwnProperty(category)) {
+				return RocketChat.emoji.packages[emojiPackage].emojiCategories[category];
 			}
 		}
 	}
@@ -24,15 +24,15 @@ function getEmojisByCategory(category) {
 	const t = Template.instance();
 	const actualTone = t.tone;
 	let html = '';
-	for (let emPackage in RocketChat.emoji.packages) {
-		if (RocketChat.emoji.packages.hasOwnProperty(emPackage)) {
-			if (RocketChat.emoji.packages[emPackage].emojisByCategory.hasOwnProperty(category)) {
-				let total = RocketChat.emoji.packages[emPackage].emojisByCategory[category].length;
+	for (let emojiPackage in RocketChat.emoji.packages) {
+		if (RocketChat.emoji.packages.hasOwnProperty(emojiPackage)) {
+			if (RocketChat.emoji.packages[emojiPackage].emojisByCategory.hasOwnProperty(category)) {
+				let total = RocketChat.emoji.packages[emojiPackage].emojisByCategory[category].length;
 				for (let i = 0; i < total; i++) {
-					let emoji = RocketChat.emoji.packages[emPackage].emojisByCategory[category][i];
+					let emoji = RocketChat.emoji.packages[emojiPackage].emojisByCategory[category][i];
 					let tone = '';
 
-					if (actualTone > 0 && RocketChat.emoji.packages[emPackage].toneList.hasOwnProperty(emoji)) {
+					if (actualTone > 0 && RocketChat.emoji.packages[emojiPackage].toneList.hasOwnProperty(emoji)) {
 						tone = '_tone' + actualTone;
 					}
 
@@ -65,19 +65,19 @@ function getEmojisBySearchTerm(searchTerm) {
 
 		if (searchRegExp.test(emoji)) {
 			let emojiObject = RocketChat.emoji.list[emoji];
-			let emPackage = emojiObject.emojiPackage;
+			let emojiPackage = emojiObject.emojiPackage;
 			let tone = '';
 			emoji = emoji.replace(/:/g, '');
 
-			if (actualTone > 0 && RocketChat.emoji.packages[emPackage].toneList.hasOwnProperty(emoji)) {
+			if (actualTone > 0 && RocketChat.emoji.packages[emojiPackage].toneList.hasOwnProperty(emoji)) {
 				tone = '_tone' + actualTone;
 			}
 
 			let emojiFound = false;
 
-			for (let key in RocketChat.emoji.packages[emPackage].emojisByCategory) {
-				if (RocketChat.emoji.packages[emPackage].emojisByCategory.hasOwnProperty(key)) {
-					let contents = RocketChat.emoji.packages[emPackage].emojisByCategory[key];
+			for (let key in RocketChat.emoji.packages[emojiPackage].emojisByCategory) {
+				if (RocketChat.emoji.packages[emojiPackage].emojisByCategory.hasOwnProperty(key)) {
+					let contents = RocketChat.emoji.packages[emojiPackage].emojisByCategory[key];
 					if (contents.indexOf(emoji) !== -1) {
 						emojiFound = true;
 						break;
@@ -86,7 +86,7 @@ function getEmojisBySearchTerm(searchTerm) {
 			}
 
 			if (emojiFound) {
-				let image = RocketChat.emoji.packages[emPackage].render(`:${emoji}${tone}:`);
+				let image = RocketChat.emoji.packages[emojiPackage].render(`:${emoji}${tone}:`);
 				html += `<li class="emoji-${emoji}" data-emoji="${emoji}" title="${emoji}">${image}</li>`;
 			}
 		}
@@ -98,10 +98,10 @@ function getEmojisBySearchTerm(searchTerm) {
 Template.emojiPicker.helpers({
 	category() {
 		let categories = [];
-		for (let emPackage in RocketChat.emoji.packages) {
-			if (RocketChat.emoji.packages.hasOwnProperty(emPackage)) {
-				for (let key in RocketChat.emoji.packages[emPackage].emojisByCategory) {
-					if (RocketChat.emoji.packages[emPackage].emojisByCategory.hasOwnProperty(key)) {
+		for (let emojiPackage in RocketChat.emoji.packages) {
+			if (RocketChat.emoji.packages.hasOwnProperty(emojiPackage)) {
+				for (let key in RocketChat.emoji.packages[emojiPackage].emojisByCategory) {
+					if (RocketChat.emoji.packages[emojiPackage].emojisByCategory.hasOwnProperty(key)) {
 						categories.push(key);
 					}
 				}
@@ -111,10 +111,10 @@ Template.emojiPicker.helpers({
 	},
 	emojiByCategory(category) {
 		let emojisByCategory = [];
-		for (let emPackage in RocketChat.emoji.packages) {
-			if (RocketChat.emoji.packages.hasOwnProperty(emPackage)) {
-				if (RocketChat.emoji.packages[emPackage].emojisByCategory.hasOwnProperty(category)) {
-					emojisByCategory = emojisByCategory.concat(RocketChat.emoji.packages[emPackage].emojisByCategory[category]);
+		for (let emojiPackage in RocketChat.emoji.packages) {
+			if (RocketChat.emoji.packages.hasOwnProperty(emojiPackage)) {
+				if (RocketChat.emoji.packages[emojiPackage].emojisByCategory.hasOwnProperty(category)) {
+					emojisByCategory = emojisByCategory.concat(RocketChat.emoji.packages[emojiPackage].emojisByCategory[category]);
 				}
 			}
 		}
@@ -201,12 +201,12 @@ Template.emojiPicker.events({
 			newTone = '';
 		}
 
-		for (let emPackage in RocketChat.emoji.packages) {
-			if (RocketChat.emoji.packages.hasOwnProperty(emPackage)) {
-				if (RocketChat.emoji.packages[emPackage].hasOwnProperty('toneList')) {
-					for (let emoji in RocketChat.emoji.packages[emPackage].toneList) {
-						if (RocketChat.emoji.packages[emPackage].toneList.hasOwnProperty(emoji)) {
-							$('.emoji-'+emoji).html(RocketChat.emoji.packages[emPackage].render(':' + emoji + newTone + ':'));
+		for (let emojiPackage in RocketChat.emoji.packages) {
+			if (RocketChat.emoji.packages.hasOwnProperty(emojiPackage)) {
+				if (RocketChat.emoji.packages[emojiPackage].hasOwnProperty('toneList')) {
+					for (let emoji in RocketChat.emoji.packages[emojiPackage].toneList) {
+						if (RocketChat.emoji.packages[emojiPackage].toneList.hasOwnProperty(emoji)) {
+							$('.emoji-'+emoji).html(RocketChat.emoji.packages[emojiPackage].render(':' + emoji + newTone + ':'));
 						}
 					}
 				}
@@ -226,9 +226,9 @@ Template.emojiPicker.events({
 		let actualTone = instance.tone;
 		let tone = '';
 
-		for (let emPackage in RocketChat.emoji.packages) {
-			if (RocketChat.emoji.packages.hasOwnProperty(emPackage)) {
-				if (actualTone > 0 && RocketChat.emoji.packages[emPackage].toneList.hasOwnProperty(emoji)) {
+		for (let emojiPackage in RocketChat.emoji.packages) {
+			if (RocketChat.emoji.packages.hasOwnProperty(emojiPackage)) {
+				if (actualTone > 0 && RocketChat.emoji.packages[emojiPackage].toneList.hasOwnProperty(emoji)) {
 					tone = '_tone' + actualTone;
 				}
 			}

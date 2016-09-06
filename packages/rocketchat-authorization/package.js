@@ -7,7 +7,6 @@ Package.describe({
 });
 
 Package.onUse(function(api) {
-	api.versionsFrom('1.0');
 	api.use([
 		'ecmascript',
 		'coffeescript',
@@ -17,7 +16,7 @@ Package.onUse(function(api) {
 
 	api.use('mongo', ['client', 'server']);
 	api.use('kadira:flow-router', 'client');
-	api.use('less@2.5.1', 'client');
+	api.use('less', 'client');
 	api.use('tracker', 'client');
 
 	api.use('templating', 'client');
