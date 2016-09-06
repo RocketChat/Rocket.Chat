@@ -8,8 +8,8 @@ Package.describe({
 Package.onUse(function(api) {
 	api.use([
 		'coffeescript',
-		'rocketchat:lib@0.0.1',
-		'rocketchat:importer@0.0.1'
+		'rocketchat:lib',
+		'rocketchat:importer'
 	]);
 	api.use(['mrt:moment-timezone@0.2.1'], 'server');
 	api.use('rocketchat:logger', 'server');
