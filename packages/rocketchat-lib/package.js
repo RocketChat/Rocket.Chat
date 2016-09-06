@@ -12,8 +12,6 @@ Npm.depends({
 });
 
 Package.onUse(function(api) {
-	api.versionsFrom('1.0');
-
 	api.use('rate-limit');
 	api.use('reactive-var');
 	api.use('reactive-dict');

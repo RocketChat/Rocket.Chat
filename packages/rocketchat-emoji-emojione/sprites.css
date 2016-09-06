@@ -17,6 +17,11 @@
 	overflow: hidden;
 }
 
+.emojione.big {
+	height: 44px !important;
+	width: 44px !important;
+}
+
 .emojione-0023-20e3 {
 	background-position: 2.38095% 0%;
 }
