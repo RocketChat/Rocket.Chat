@@ -29,6 +29,7 @@ Meteor.startup ->
 		{ _id: 'edit-privileged-setting',       roles : ['admin'] }
 		{ _id: 'edit-room',                     roles : ['admin', 'owner', 'moderator'] }
 		{ _id: 'manage-assets',                 roles : ['admin'] }
+		{ _id: 'manage-emoji',                  roles : ['admin'] }
 		{ _id: 'manage-integrations',           roles : ['admin'] }
 		{ _id: 'manage-own-integrations',       roles : ['admin', 'bot'] }
 		{ _id: 'manage-oauth-apps',             roles : ['admin'] }

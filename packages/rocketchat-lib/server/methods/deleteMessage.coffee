@@ -1,5 +1,8 @@
 Meteor.methods
 	deleteMessage: (message) ->
+
+		check message, Match.ObjectIncluding({_id:String})
+
 		if not Meteor.userId()
 			throw new Meteor.Error 'error-invalid-user', 'Invalid user', { method: 'deleteMessage' }
 

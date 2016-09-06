@@ -1,5 +1,34 @@
 ## NEXT
 
+## 0.39.0, 2016-Sep-05
+
+- Accept username from SAML response
+- Add image attachment support when a bot (ex using giffy) posts just an image
+- Add Livechat office hours
+- Add more Parameter checks to methods (#4147)
+- Add roles user to slackbridge imported users
+- Add setting to disable LDAP fallback to default account system
+- Add try/catch for avoiding log of error on duplicate messages on SlackBridge
+- Adds Support for phabricator oauth server
+- Change 'go to message' button style
+- Changed time check from every second to every minute
+- Disable unessary fields on push settings
+- Enable debug of push lib when debug setting is true
+- Fix an exception occuring in the smarsh connector when a user didn't have an email, adds a setting to configure the default email for missing emails
+- Fix E-Mail address in reset password form is case-sensitive (#4158)
+- Fix error with CustomOAuth on startup
+- Fix input label position and background color for autofill fields
+- Fix login font issues
+- Fix resize of message box on mobile when paste and send using `return` on keyboard
+- Fix ModelsBase.update throws error when using array update operators (#4121)
+- Hide messages from stream while importing with SlackBridge
+- Initial work on getting the smarsh connector wired up.
+- Moved createPrivateGroup to rocketchat-lib
+- Support jitsi message types in the smarsh connector
+- Tweak SandstormOembed styling/format
+- UI improvements to login screen
+- Update the opened livechat room by token
+
 ## 0.38.0, 2016-Aug-30
 
 - Action links improvements
