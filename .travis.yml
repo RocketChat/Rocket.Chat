@@ -6,7 +6,7 @@ branches:
 git:
   depth: 1
 node_js:
-- '0.12'
+- '4'
 cache:
   directories:
   - "~/.meteor"
@@ -16,11 +16,9 @@ install:
 - export PATH="$HOME/.meteor:$PATH"
 before_script:
 - mkdir /tmp/build
-- nvm install 4.4
 - npm install
 - npm run lint
 script:
-- nvm use 0.12
 - meteor build /tmp/build
 before_deploy:
 - source ".travis/setartname.sh"
