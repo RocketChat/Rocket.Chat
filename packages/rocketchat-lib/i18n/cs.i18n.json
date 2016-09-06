@@ -1057,6 +1057,7 @@
   "Site_Url" : "URL stránky",
   "Site_Url_Description" : "Například: https://chat.domain.com/",
   "Skip" : "Přeskočit",
+  "SlackBridge_error" : "SlackBridge narazil na chybu při importu zpráv %s:%s",
   "Slash_Gimme_Description" : "Zobrazí ༼ つ ◕_◕ ༽つ před Vaší zprávou",
   "Slash_LennyFace_Description" : "Zobrazí ( ͡° ͜ʖ ͡°) za Vaší zprávou",
   "Slash_Shrug_Description" : "Zobrazuje ¯ \\ _ (ツ) _ / ¯ po vaší zprávy",
