@@ -28,6 +28,6 @@ function Open(command, params/*, item*/) {
 
 RocketChat.slashCommands.add('open', Open, {
 	description: 'Opens_a_channel_group_or_direct_message',
-	params: 'room name',
+	params: 'room_name',
 	clientOnly: true
 });
