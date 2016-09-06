@@ -67,9 +67,6 @@ Package.onUse(function(api) {
 	api.addFiles('lib/recorderjs/videoRecorder.coffee', 'client');
 	api.addFiles('lib/recorderjs/recorder.js', 'client');
 
-	// LIB CLIPBOARDJS
-	api.addFiles('lib/clipboardjs/clipboard.js', 'client');
-
 	// TEXTAREA CURSOR MANAGEMENT
 	api.addFiles('lib/textarea-cursor/set-cursor-position.js', 'client');
 

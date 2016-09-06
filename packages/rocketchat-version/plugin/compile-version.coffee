@@ -1,5 +1,7 @@
 exec = Npm.require('child_process').exec
 os = Npm.require('os')
+Future = Npm.require('fibers/future')
+async = Npm.require('async')
 
 Plugin.registerCompiler
 	extensions: ['info']
@@ -8,7 +10,9 @@ Plugin.registerCompiler
 
 class VersionCompiler
 	processFilesForTarget: (files) ->
-		files.forEach (file) ->
+		future = new Future
+
+		processFile = (file, cb) ->
 			output = JSON.parse file.getContentsAsString()
 			output.build =
 				date: new Date().toISOString()
@@ -48,4 +52,9 @@ class VersionCompiler
 							RocketChat.Info = #{JSON.stringify(output, null, 4)}
 						"""
 
-						file.addJavaScript({ data: output, path: file.getPathInPackage() + '.js' });
+						file.addJavaScript({ data: output, path: file.getPathInPackage() + '.js' })
+						cb()
+
+		async.each files, processFile, future.resolver()
+
+		future.wait()
