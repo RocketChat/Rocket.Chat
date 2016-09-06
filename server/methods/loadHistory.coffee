@@ -2,9 +2,9 @@ Meteor.methods
 	loadHistory: (rid, end, limit=20, ls) ->
 
 		check rid, String
-		check end, Match.Optional(Number)
+		# check end, Match.Optional(Number)
 		check limit, Number
-		check ls, Match.Optional(Number)
+		# check ls, Match.Optional(Number)
 
 		if not Meteor.userId()
 			throw new Meteor.Error 'error-invalid-user', 'Invalid user', { method: 'loadHistory' }
