@@ -2,7 +2,7 @@ Meteor.methods
 	loadNextMessages: (rid, end, limit=20) ->
 
 		check rid, String
-		check end, Match.Optional(Number)
+		# check end, Match.Optional(Number)
 		check limt, Number
 
 		if not Meteor.userId()
