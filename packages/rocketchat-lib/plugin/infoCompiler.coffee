@@ -3,25 +3,28 @@ os = Npm.require('os')
 
 Plugin.registerCompiler
 	extensions: ['info']
-, -> new VersionCompiler()
+, -> new InfoCompiler()
 
 
-class VersionCompiler
+class InfoCompiler
 	processFilesForTarget: (files) ->
 		files.forEach (file) ->
-			output = JSON.parse file.getContentsAsString()
-			output.build =
+			Info = JSON.parse file.getContentsAsString()
+			Info.build =
 				date: new Date().toISOString()
 				nodeVersion: process.version
-				arch: process.arch
-				platform: process.platform
+				osArch: os.arch()
+				osCpusCount: os.cpus().length
+				osCpusModel: os.cpus()[0].model
+				osCpusSpeed: os.cpus()[0].speed
+				osPlatform: os.platform()
 				osRelease: os.release()
-				totalMemory: os.totalmem()
-				freeMemory: os.freemem()
-				cpus: os.cpus().length
+				osTotalmem: os.totalmem()
+				osFreemem: os.freemem()
+				osType: os.type()
 
 			if process.env.TRAVIS_BUILD_NUMBER
-				output.travis =
+				Info.travis =
 					buildNumber: process.env.TRAVIS_BUILD_NUMBER
 					branch: process.env.TRAVIS_BRANCH
 					tag: process.env.TRAVIS_TAG
@@ -30,7 +33,7 @@ class VersionCompiler
 				if not err?
 					result = result.split('\n')
 
-					output.commit =
+					Info.commit =
 						hash: result.shift()
 						date: result.shift()
 						author: result.shift()
@@ -38,14 +41,14 @@ class VersionCompiler
 
 				exec "git describe --abbrev=0 --tags", (err, result) ->
 					if not err?
-						output.commit?.tag = result.replace('\n', '')
+						Info.commit?.tag = result.replace('\n', '')
 
 					exec "git rev-parse --abbrev-ref HEAD", (err, result) ->
 						if not err?
-							output.commit?.branch = result.replace('\n', '')
+							Info.commit?.branch = result.replace('\n', '')
 
-						output = """
-							RocketChat.Info = #{JSON.stringify(output, null, 4)}
+						Info = """
+							_.extend(RocketChat.Info, #{JSON.stringify(Info, null, 4)});
 						"""
 
-						file.addJavaScript({ data: output, path: file.getPathInPackage() + '.js' });
+						file.addJavaScript({ data: Info, path: file.getPathInPackage() + '.js' });

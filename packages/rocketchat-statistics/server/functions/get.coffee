@@ -1,13 +1,6 @@
 RocketChat.statistics.get = ->
 	statistics = {}
 
-	# Version
-	statistics.uniqueId = RocketChat.settings.get("uniqueID")
-	statistics.createdAt = RocketChat.models.Settings.findOne("uniqueID")?._createdAt
-	statistics.version = RocketChat.Info?.version
-	statistics.tag = RocketChat.Info?.tag
-	statistics.branch = RocketChat.Info?.branch
-
 	# User statistics
 	statistics.totalUsers = Meteor.users.find().count()
 	statistics.activeUsers = Meteor.users.find({ active: true }).count()
@@ -70,29 +63,13 @@ RocketChat.statistics.get = ->
 	statistics.lastMessageSentAt = RocketChat.models.Messages.getLastTimestamp()
 	statistics.lastSeenSubscription = RocketChat.models.Subscriptions.getLastSeen()
 
-	migration = Migrations?._getControl()
-	if migration
-		statistics.migration = _.pick(migration, 'version', 'locked')
+	# Load
+	statistics.instanceCount = InstanceStatus.getCollection().find().count()
 
 	os = Npm.require('os')
-	statistics.os =
-		type: os.type()
-		platform: os.platform()
-		arch: os.arch()
-		release: os.release()
-		uptime: os.uptime()
-		loadavg: os.loadavg()
-		totalmem: os.totalmem()
-		freemem: os.freemem()
-		cpus: os.cpus()
-
-	statistics.process =
-		nodeVersion: process.version
-		pid: process.pid
-		uptime: process.uptime()
-
-	statistics.migration = RocketChat.Migrations._getControl()
-
-	statistics.instanceCount = InstanceStatus.getCollection().find().count()
+	statistics.osFreemem = os.freemem()
+	statistics.osLoadavg = os.loadavg()
+	statistics.osUptime = os.uptime()
+	statistics.uptime = process.uptime()
 
 	return statistics

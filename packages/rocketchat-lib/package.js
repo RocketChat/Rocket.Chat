@@ -5,11 +5,18 @@ Package.describe({
 	git: ''
 });
 
+Package.registerBuildPlugin({
+	name: 'compileVersion',
+	use: ['coffeescript'],
+	sources: ['plugin/infoCompiler.coffee']
+});
+
 Npm.depends({
 	'bad-words': '1.3.1'
 });
 
 Package.onUse(function(api) {
+	api.use('isobuild:compiler-plugin@1.0.0'),
 	api.use('rate-limit');
 	api.use('reactive-var');
 	api.use('reactive-dict');
@@ -28,14 +35,17 @@ Package.onUse(function(api) {
 	api.use('service-configuration');
 	api.use('check');
 	api.use('rocketchat:streamer');
-	api.use('rocketchat:version');
 	api.use('rocketchat:logger');
 	api.use('rocketchat:custom-oauth');
 
 	api.use('templating', 'client');
 	api.use('kadira:flow-router');
 
+	// RocketChat
 	api.addFiles('lib/core.coffee');
+
+	// RocketChat.Info Builder
+	api.addFiles('rocketchat.info');
 
 	// DEBUGGER
 	api.addFiles('server/lib/debug.js', 'server');
@@ -153,14 +163,14 @@ Package.onUse(function(api) {
 	api.addFiles('client/defaultTabBars.js', 'client');
 	api.addFiles('client/CustomTranslations.js', 'client');
 
+	// RocketChat.Info Runtime
+	api.addFiles('server/lib/info.coffee', 'server');
+
 	// CLIENT MODELS
 	api.addFiles('client/models/_Base.coffee', 'client');
 	api.addFiles('client/models/Uploads.coffee', 'client');
 
 	api.addFiles('startup/defaultRoomTypes.coffee');
-
-	// VERSION
-	api.addFiles('rocketchat.info');
 
 	// EXPORT
 	api.export('RocketChat');
@@ -178,8 +188,6 @@ Package.onUse(function(api) {
 	api.use('tap:i18n');
 	api.imply('tap:i18n');
 });
-
-
 
 Package.onTest(function(api) {
 	api.use('coffeescript');
