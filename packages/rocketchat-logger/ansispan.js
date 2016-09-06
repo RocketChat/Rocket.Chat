@@ -1,4 +1,5 @@
 /* globals ansispan:true */
+/* eslint-disable no-octal */
 
 ansispan = function(str) {
 	str = str.replace(/>/g, '&gt;');
