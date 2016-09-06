@@ -10,7 +10,7 @@ Package.onUse(function(api) {
 		'ddp-rate-limiter',
 		'kadira:flow-router',
 		'rocketchat:lib',
-		'rocketchat:authorization@0.0.1'
+		'rocketchat:authorization'
 	]);
 
 	api.use('templating', 'client');
