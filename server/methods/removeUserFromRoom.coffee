@@ -1,15 +1,25 @@
 Meteor.methods
 	removeUserFromRoom: (data) ->
-		fromId = Meteor.userId()
+
 		check(data, Match.ObjectIncluding({ rid: String, username: String }))
 
+		if not Meteor.userId()
+			throw new Meteor.Error 'error-invalid-user', 'Invalid user', { method: 'removeUserFromRoom' }
+
+		fromId = Meteor.userId()
+
 		unless RocketChat.authz.hasPermission(fromId, 'remove-user', data.rid)
-			throw new Meteor.Error 'not-allowed', 'Not allowed'
+			throw new Meteor.Error 'error-not-allowed', 'Not allowed', { method: 'removeUserFromRoom' }
 
 		room = RocketChat.models.Rooms.findOneById data.rid
 
 		if data.username not in (room?.usernames or [])
-			throw new Meteor.Error 'not-in-room', 'User is not in this room'
+			throw new Meteor.Error 'error-user-not-in-room', 'User is not in this room', { method: 'removeUserFromRoom' }
+
+		if RocketChat.authz.hasRole(Meteor.user()._id, 'owner', room._id)
+			numOwners = RocketChat.authz.getUsersInRole('owner', room._id).fetch().length
+			if numOwners is 1
+				throw new Meteor.Error 'error-you-are-last-owner', 'You are the last owner. Please set new owner before leaving the room.', { method: 'removeUserFromRoom' }
 
 		removedUser = RocketChat.models.Users.findOneByUsername data.username
 

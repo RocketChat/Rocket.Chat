@@ -3,11 +3,17 @@ RocketChat.models.Messages = new class extends RocketChat.models._Base
 		@_initModel 'message'
 
 		@tryEnsureIndex { 'rid': 1, 'ts': 1 }
+		@tryEnsureIndex { 'ts': 1 }
+		@tryEnsureIndex { 'u._id': 1 }
 		@tryEnsureIndex { 'editedAt': 1 }, { sparse: 1 }
 		@tryEnsureIndex { 'editedBy._id': 1 }, { sparse: 1 }
 		@tryEnsureIndex { 'rid': 1, 't': 1, 'u._id': 1 }
 		@tryEnsureIndex { 'expireAt': 1 }, { expireAfterSeconds: 0 }
 		@tryEnsureIndex { 'msg': 'text' }
+		@tryEnsureIndex { 'file._id': 1 }, { sparse: 1 }
+		@tryEnsureIndex { 'mentions.username': 1 }, { sparse: 1 }
+		@tryEnsureIndex { 'pinned': 1 }, { sparse: 1 }
+		@tryEnsureIndex { 'location': '2dsphere' }
 
 
 	# FIND ONE
@@ -97,12 +103,11 @@ RocketChat.models.Messages = new class extends RocketChat.models._Base
 			'starred._id': userId
 			rid: roomId
 
-		console.log 'findStarredByUserAtRoom', arguments
-
 		return @find query, options
 
 	findPinnedByRoom: (roomId, options) ->
 		query =
+			t: { $ne: 'rm' }
 			_hidden: { $ne: true }
 			pinned: true
 			rid: roomId
@@ -133,13 +138,7 @@ RocketChat.models.Messages = new class extends RocketChat.models._Base
 		record.editedBy =
 			_id: Meteor.userId()
 			username: me.username
-		record.pinned = record.pinned
-		record.pinnedAt = record.pinnedAt
-		record.pinnedBy =
-			_id: record.pinnedBy?._id
-			username: record.pinnedBy?.username
 		delete record._id
-
 		return @insert record
 
 	# UPDATE
@@ -153,8 +152,7 @@ RocketChat.models.Messages = new class extends RocketChat.models._Base
 
 		return @update query, update
 
-	setAsDeletedById: (_id) ->
-		me = RocketChat.models.Users.findOneById Meteor.userId()
+	setAsDeletedByIdAndUser: (_id, user) ->
 		query =
 			_id: _id
 
@@ -167,19 +165,19 @@ RocketChat.models.Messages = new class extends RocketChat.models._Base
 				attachments: []
 				editedAt: new Date()
 				editedBy:
-					_id: Meteor.userId()
-					username: me.username
+					_id: user._id
+					username: user.username
 
 		return @update query, update
 
-	setPinnedByIdAndUserId: (_id, pinnedBy, pinned=true) ->
+	setPinnedByIdAndUserId: (_id, pinnedBy, pinned=true, pinnedAt=0) ->
 		query =
 			_id: _id
 
 		update =
 			$set:
 				pinned: pinned
-				pinnedAt: new Date
+				pinnedAt: pinnedAt || new Date
 				pinnedBy: pinnedBy
 
 		return @update query, update
@@ -251,6 +249,17 @@ RocketChat.models.Messages = new class extends RocketChat.models._Base
 
 		return @update query, update, { multi: true }
 
+	setMessageAttachments: (_id, attachments) ->
+		query =
+			_id: _id
+
+		update =
+			$set:
+				attachments: attachments
+		console.log(query, update);
+		return @update query, update
+
+
 	# INSERT
 	createWithTypeRoomIdMessageAndUser: (type, roomId, message, user, extraData) ->
 		record =
@@ -261,10 +270,11 @@ RocketChat.models.Messages = new class extends RocketChat.models._Base
 			u:
 				_id: user._id
 				username: user.username
+			groupable: false
 
 		_.extend record, extraData
 
-		record._id = @insert record
+		record._id = @insertOrUpsert record
 		return record
 
 	createUserJoinWithRoomIdAndUser: (roomId, user, extraData) ->
@@ -310,6 +320,14 @@ RocketChat.models.Messages = new class extends RocketChat.models._Base
 		message = user.username
 		return @createWithTypeRoomIdMessageAndUser 'owner-removed', roomId, message, user, extraData
 
+	createSubscriptionRoleAddedWithRoomIdAndUser: (roomId, user, extraData) ->
+		message = user.username
+		return @createWithTypeRoomIdMessageAndUser 'subscription-role-added', roomId, message, user, extraData
+
+	createSubscriptionRoleRemovedWithRoomIdAndUser: (roomId, user, extraData) ->
+		message = user.username
+		return @createWithTypeRoomIdMessageAndUser 'subscription-role-removed', roomId, message, user, extraData
+
 	# REMOVE
 	removeById: (_id) ->
 		query =
@@ -328,3 +346,6 @@ RocketChat.models.Messages = new class extends RocketChat.models._Base
 			"u._id": userId
 
 		return @remove query
+
+	getMessageByFileId: (fileID) ->
+		return @findOne { 'file._id': fileID }

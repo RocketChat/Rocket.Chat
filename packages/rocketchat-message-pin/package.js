@@ -5,23 +5,24 @@ Package.describe({
 });
 
 Package.onUse(function(api) {
-	api.versionsFrom('1.0');
-
 	api.use([
 		'coffeescript',
 		'underscore',
-		'less@2.5.0',
+		'less',
 		'rocketchat:lib'
 	]);
+
+	api.use('templating', 'client');
 
 	api.addFiles([
 		'client/lib/PinnedMessage.coffee',
 		'client/actionButton.coffee',
+		'client/messageType.js',
 		'client/pinMessage.coffee',
 		'client/tabBar.coffee',
 		'client/views/pinnedMessages.html',
 		'client/views/pinnedMessages.coffee',
-		'client/views/stylesheets/messagepin.less',
+		'client/views/stylesheets/messagepin.less'
 	], 'client');
 
 	api.addFiles([
@@ -30,20 +31,4 @@ Package.onUse(function(api) {
 		'server/publications/pinnedMessages.coffee',
 		'server/startup/indexes.coffee'
 	], 'server');
-
-	// TAPi18n
-	api.use('templating', 'client');
-	var _ = Npm.require('underscore');
-	var fs = Npm.require('fs');
-	tapi18nFiles = _.compact(_.map(fs.readdirSync('packages/rocketchat-message-pin/i18n'), function(filename) {
-		if (fs.statSync('packages/rocketchat-message-pin/i18n/' + filename).size > 16) {
-			return 'i18n/' + filename;
-		}
-	}));
-	api.use('tap:i18n');
-	api.addFiles(tapi18nFiles);
-});
-
-Package.onTest(function(api) {
-
 });

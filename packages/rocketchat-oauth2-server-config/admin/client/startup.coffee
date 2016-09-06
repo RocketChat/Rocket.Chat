@@ -1,5 +1,3 @@
-Meteor.subscribe 'oauthApps'
-
 RocketChat.AdminBox.addOption
 	href: 'admin-oauth-apps'
 	i18nLabel: 'OAuth Apps'

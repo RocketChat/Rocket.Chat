@@ -10,6 +10,8 @@ Meteor.startup ->
 	window.lastMessageWindow = {}
 	window.lastMessageWindowHistory = {}
 
+	TAPi18n.conf.i18n_files_route = Meteor._relativeToSiteRootUrl('/tap-i18n')
+
 	@defaultAppLanguage = ->
 		lng = window.navigator.userLanguage || window.navigator.language || 'en'
 		# Fix browsers having all-lowercase language settings eg. pt-br, en-us
@@ -21,16 +23,16 @@ Meteor.startup ->
 	@defaultUserLanguage = ->
 		return RocketChat.settings.get('Language') || defaultAppLanguage()
 
-	loadedLaguages = []
+	loadedLanguages = []
 
 	@setLanguage = (language) ->
 		if !language
 			return
 
-		if loadedLaguages.indexOf(language) > -1
+		if loadedLanguages.indexOf(language) > -1
 			return
 
-		loadedLaguages.push language
+		loadedLanguages.push language
 
 		if isRtl language
 			$('html').addClass "rtl"

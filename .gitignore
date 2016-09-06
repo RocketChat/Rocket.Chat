@@ -2,6 +2,7 @@
 **/build/*
 **/node_modules/*
 **/tmp/*
+**/.meteor/dev_bundle
 /private/certs/*
 *.bak
 *.iml
@@ -11,6 +12,7 @@
 *.log
 *.pydevproject
 *.sublime-project
+*.sublime-workspace
 *.swp
 *.tmp
 *.tokens
@@ -35,7 +37,7 @@
 .loadpath
 .map
 .metadata
-.meteor/local
+.meteor/local*
 .meteor/meteorite
 .mule
 .pmd

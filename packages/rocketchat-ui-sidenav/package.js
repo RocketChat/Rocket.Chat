@@ -11,8 +11,6 @@ Package.describe({
 });
 
 Package.onUse(function(api) {
-	api.versionsFrom('1.2.1');
-
 	api.use([
 		'ecmascript',
 		'templating',
@@ -24,11 +22,15 @@ Package.onUse(function(api) {
 
 	api.addFiles('side-nav/accountBox.html', 'client');
 	api.addFiles('side-nav/channels.html', 'client');
+	api.addFiles('side-nav/combined.html', 'client');
 	api.addFiles('side-nav/chatRoomItem.html', 'client');
 	api.addFiles('side-nav/createChannelFlex.html', 'client');
+	api.addFiles('side-nav/createCombinedFlex.html', 'client');
 	api.addFiles('side-nav/directMessages.html', 'client');
 	api.addFiles('side-nav/directMessagesFlex.html', 'client');
 	api.addFiles('side-nav/listChannelsFlex.html', 'client');
+	api.addFiles('side-nav/listCombinedFlex.html', 'client');
+	api.addFiles('side-nav/listDirectMessagesFlex.html', 'client');
 	api.addFiles('side-nav/listPrivateGroupsFlex.html', 'client');
 	api.addFiles('side-nav/privateGroups.html', 'client');
 	api.addFiles('side-nav/privateGroupsFlex.html', 'client');
@@ -39,18 +41,21 @@ Package.onUse(function(api) {
 
 	api.addFiles('side-nav/accountBox.coffee', 'client');
 	api.addFiles('side-nav/channels.coffee', 'client');
+	api.addFiles('side-nav/combined.coffee', 'client');
 	api.addFiles('side-nav/chatRoomItem.coffee', 'client');
 	api.addFiles('side-nav/createChannelFlex.coffee', 'client');
+	api.addFiles('side-nav/createCombinedFlex.coffee', 'client');
 	api.addFiles('side-nav/directMessages.coffee', 'client');
 	api.addFiles('side-nav/directMessagesFlex.coffee', 'client');
 	api.addFiles('side-nav/listChannelsFlex.coffee', 'client');
+	api.addFiles('side-nav/listCombinedFlex.coffee', 'client');
+	api.addFiles('side-nav/listDirectMessagesFlex.js', 'client');
 	api.addFiles('side-nav/listPrivateGroupsFlex.coffee', 'client');
 	api.addFiles('side-nav/privateGroups.coffee', 'client');
 	api.addFiles('side-nav/privateGroupsFlex.coffee', 'client');
 	api.addFiles('side-nav/sideNav.coffee', 'client');
 	api.addFiles('side-nav/starredRooms.coffee', 'client');
 	api.addFiles('side-nav/unreadRooms.coffee', 'client');
-
 });
 
 Npm.depends({

@@ -1,0 +1,7 @@
+{
+  "dependencies": {
+    "cas": {
+      "version": "0.0.3"
+    }
+  }
+}

@@ -6,17 +6,15 @@ Package.describe({
 });
 
 Package.onUse(function(api) {
-	api.versionsFrom('1.0');
-
 	api.use([
 		'coffeescript',
-		'konecty:autolinker',
 		'rocketchat:lib'
 	]);
 
-	api.addFiles('autolinker.coffee', ['server','client']);
-});
+	api.addFiles([
+		'autolinker.coffee',
+		'lib/Autolinker.min.js'
+	], ['client']);
 
-Package.onTest(function(api) {
-
+	api.addFiles('settings.coffee', ['server']);
 });

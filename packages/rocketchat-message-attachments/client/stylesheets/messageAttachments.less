@@ -13,6 +13,14 @@
 			bottom: 0;
 			background-color: #ccc;
 		}
+		html.rtl & {
+			padding-left: 0;
+			padding-right: 15px;
+			.attachment-block-border {
+				left: auto;
+				right: 0;
+			}
+		}
 	}
 
 	.attachment-author {
@@ -27,8 +35,20 @@
 
 		img {
 			max-height: 16px;
+			max-width: 16px;
 			margin-right: 2px;
 			margin-bottom: -2px;
+		}
+		.time {
+			font-weight: normal;
+			font-size: .8em;
+			color: #aaa;
+			a{
+				&:hover{
+					text-decoration: underline;
+				}
+				color: #aaa;
+			}
 		}
 	}
 
@@ -56,7 +76,7 @@
 
 		.attachment-field {
 			&.attachment-field-short {
-				width: 48%;
+				margin-right: 12px;
 				display: inline-block;
 			}
 
@@ -75,6 +95,10 @@
 		padding-right: 10px;
 		padding-top: 5px;
 		line-height: 0px;
+		html.rtl & {
+			padding-right: 5px;
+			padding-top: 10px;
+		}
 
 		img {
 			max-width: 100px;
@@ -92,5 +116,17 @@
 
 	.attachment-small-content {
 		max-width: 700px;
+	}
+
+	.attachment-download-icon {
+		padding: 2px 5px;
+		border: 1px solid #ccc;
+		border-radius: 5px;
+		margin-left: 5px;
+		color: #666;
+		html.rtl & {
+			margin-right: 5px;
+			margin-left: auto;
+		}
 	}
 }

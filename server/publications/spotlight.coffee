@@ -8,7 +8,7 @@ Meteor.publish 'spotlight', (selector, options, collName) ->
 
 	subHandleUsers = RocketChat.models.Users.findUsersByNameOrUsername(new RegExp(selector.name.$regex, 'i'), { limit: 10, fields: { name: 1, username: 1, status: 1 }, sort: { name: 1 } }).observeChanges
 		added: (id, fields) ->
-			data = { type: 'u', uid: id, name: fields.username + ' - ' + fields.name, status: fields.status }
+			data = { type: 'u', uid: id, username: fields.username, name: fields.username + ' - ' + fields.name, status: fields.status }
 			self.added("autocompleteRecords", id, data)
 		removed: (id) ->
 			self.removed("autocompleteRecords", id)

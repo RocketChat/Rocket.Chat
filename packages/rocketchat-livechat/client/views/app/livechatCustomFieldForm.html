@@ -1,0 +1,46 @@
+<template name="livechatCustomFieldForm">
+	<form id="customField-form" data-id="{{customField._id}}">
+		<div class="rocket-form">
+			{{#if Template.subscriptionsReady}}
+				<fieldset>
+					<div class="input-line">
+						<label>{{_ "Field"}}</label>
+						<div>
+							<input type="text" name="field" value="{{customField._id}}" readonly="{{$exists customField._id}}" placeholder="{{_ "Field"}}" />
+						</div>
+					</div>
+					<div class="input-line">
+						<label>{{_ "Label"}}</label>
+						<div>
+							<input type="text" name="label" value="{{customField.label}}" placeholder="{{_ "Label"}}" />
+						</div>
+					</div>
+					<div class="input-line">
+						<label>{{_ "Scope"}}</label>
+						<div>
+							<select name="scope">
+								<option value="visitor" selected="{{$eq customField.scope 'visitor'}}">{{_ "Visitor"}}</option>
+								<option value="room" selected="{{$eq customField.scope 'room'}}">{{_ "Room"}}</option>
+							</select>
+						</div>
+					</div>
+					<div class="input-line">
+						<label>{{_ "Visibility"}}</label>
+						<div>
+							<select name="visibility">
+								<option value="visible" selected="{{$eq customField.visibility 'visible'}}">{{_ "Visible"}}</option>
+								<option value="hidden" selected="{{$eq customField.visibility 'hidden'}}">{{_ "Hidden"}}</option>
+							</select>
+						</div>
+					</div>
+				</fieldset>
+				<div class="submit">
+					<button type="button" class="button secondary back"><i class="icon-left-big"></i><span>{{_ "Back"}}</span></button>
+					<button class="button save"><i class="icon-floppy"></i><span>{{_ "Save"}}</span></button>
+				</div>
+			{{else}}
+				{{> loading}}
+			{{/if}}
+		</div>
+	</form>
+</template>

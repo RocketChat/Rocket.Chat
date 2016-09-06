@@ -42,7 +42,7 @@
 		var _opt, _orig, _h, _w, _canvas, _context, _img, _ready, _lastBadge, _running, _readyCb, _stop, _browser, _animTimeout, _drawTimeout, _doc;
 
 		_browser = {};
-		_browser.ff = typeof InstallTrigger != 'undefined';
+		_browser.ff = typeof InstallTrigger !== 'undefined';
 		_browser.chrome = !!window.chrome;
 		_browser.opera = !!window.opera || navigator.userAgent.indexOf('Opera') >= 0;
 		_browser.ie = /*@cc_on!@*/ false;
@@ -173,8 +173,6 @@
 				if (_queue.length > 0) {
 					_queue.shift();
 					icon.start();
-				} else {
-
 				}
 			};
 			if (_queue.length > 0) {
@@ -210,7 +208,7 @@
 			opt.y = _h * opt.y;
 			opt.w = _w * opt.w;
 			opt.h = _h * opt.h;
-			opt.len = ("" + opt.n).length;
+			opt.len = ('' + opt.n).length;
 			return opt;
 		};
 		/**
@@ -232,7 +230,7 @@
 			_context.clearRect(0, 0, _w, _h);
 			_context.drawImage(_img, 0, 0, _w, _h);
 			_context.beginPath();
-			_context.font = _opt.fontStyle + " " + Math.floor(opt.h * (opt.n > 99 ? 0.85 : 1)) + "px " + _opt.fontFamily;
+			_context.font = _opt.fontStyle + ' ' + Math.floor(opt.h * (opt.n > 99 ? 0.85 : 1)) + 'px ' + _opt.fontFamily;
 			_context.textAlign = 'center';
 			if (more) {
 				_context.moveTo(opt.x + opt.w / 2, opt.y);
@@ -280,7 +278,7 @@
 			_context.clearRect(0, 0, _w, _h);
 			_context.drawImage(_img, 0, 0, _w, _h);
 			_context.beginPath();
-			_context.font = _opt.fontStyle + " " + Math.floor(opt.h * (opt.n > 99 ? 0.9 : 1)) + "px " + _opt.fontFamily;
+			_context.font = _opt.fontStyle + ' ' + Math.floor(opt.h * (opt.n > 99 ? 0.9 : 1)) + 'px ' + _opt.fontFamily;
 			_context.textAlign = 'center';
 			_context.fillStyle = 'rgba(' + _opt.bgColor.r + ',' + _opt.bgColor.g + ',' + _opt.bgColor.b + ',' + opt.o + ')';
 			_context.fillRect(opt.x, opt.y, opt.w, opt.h);

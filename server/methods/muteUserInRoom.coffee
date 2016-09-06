@@ -1,20 +1,25 @@
 Meteor.methods
 	muteUserInRoom: (data) ->
-		fromId = Meteor.userId()
+
 		check(data, Match.ObjectIncluding({ rid: String, username: String }))
 
+		if not Meteor.userId()
+			throw new Meteor.Error 'error-invalid-user', 'Invalid user', { method: 'muteUserInRoom' }
+
+		fromId = Meteor.userId()
+
 		unless RocketChat.authz.hasPermission(fromId, 'mute-user', data.rid)
-			throw new Meteor.Error 'not-allowed', '[methods] muteUserInRoom -> Not allowed'
+			throw new Meteor.Error 'error-not-allowed', 'Not allowed', { method: 'muteUserInRoom' }
 
 		room = RocketChat.models.Rooms.findOneById data.rid
 		if not room
-			throw new Meteor.Error 'invalid-room', '[methods] muteUserInRoom -> Room ID is invalid'
+			throw new Meteor.Error 'error-invalid-room', 'Invalid room', { method: 'muteUserInRoom' }
 
 		if room.t not in ['c', 'p']
-			throw new Meteor.Error 'invalid-room-type', '[methods] muteUserInRoom -> Invalid room type'
+			throw new Meteor.Error 'error-invalid-room-type', room.t + ' is not a valid room type', { method: 'muteUserInRoom', type: room.t }
 
 		if data.username not in (room?.usernames or [])
-			throw new Meteor.Error 'not-in-room', '[methods] muteUserInRoom -> User is not in this room'
+			throw new Meteor.Error 'error-user-not-in-room', 'User is not in this room', { method: 'muteUserInRoom' }
 
 		mutedUser = RocketChat.models.Users.findOneByUsername data.username
 

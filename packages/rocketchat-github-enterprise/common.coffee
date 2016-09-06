@@ -13,7 +13,7 @@ GitHubEnterprise = new CustomOAuth 'github_enterprise', config
 
 if Meteor.isServer
 	Meteor.startup ->
-		RocketChat.models.Settings.find({ _id: 'API_GitHub_Enterprise_URL' }).observe
+		RocketChat.models.Settings.findById('API_GitHub_Enterprise_URL').observe
 			added: (record) ->
 				config.serverURL = RocketChat.settings.get 'API_GitHub_Enterprise_URL'
 				GitHubEnterprise.configure config

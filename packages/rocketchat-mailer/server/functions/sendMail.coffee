@@ -4,10 +4,13 @@ Mailer.sendMail = (from, subject, body, dryrun, query) ->
 	# rfcMailPattern = /^[a-zA-Z0-9.!#$%&'*+\/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/
 
 	unless rfcMailPatternWithName.test from
-		throw new Meteor.Error 'invalid-from-address', TAPi18n.__('You_informed_an_invalid_FROM_address')
+		throw new Meteor.Error 'error-invalid-from-address', 'Invalid from address', { function: 'Mailer.sendMail' }
 
 	if body.indexOf('[unsubscribe]') is -1
-		throw new Meteor.Error 'missing-unsubscribe-link', TAPi18n.__('You_must_provide_the_unsubscribe_link')
+		throw new Meteor.Error 'error-missing-unsubscribe-link', 'You must provide the [unsubscribe] link.', { function: 'Mailer.sendMail' }
+
+	header = RocketChat.placeholders.replace(RocketChat.settings.get('Email_Header') || '');
+	footer = RocketChat.placeholders.replace(RocketChat.settings.get('Email_Footer') || '');
 
 	userQuery = { "mailer.unsubscribed": { $exists: 0 } }
 	if query
@@ -18,14 +21,11 @@ Mailer.sendMail = (from, subject, body, dryrun, query) ->
 		# Meteor.users.find({ "username": /\.rocket\.team/ }).forEach (user) ->
 			email = user.emails?[0]?.address
 
-			html = body.replace /\[unsubscribe\]/g, Meteor.absoluteUrl(FlowRouter.path('mailer/unsubscribe/:_id/:createdAt', { _id: user._id, createdAt: user.createdAt.getTime() }))
-			html = html.replace /\[name\]/g, user.name
-			fname = _.strLeft user.name, ' '
-			lname = _.strRightBack user.name, ' '
-			html = html.replace /\[fname\]/g, fname
-			html = html.replace /\[lname\]/g, lname
-			html = html.replace /\[email\]/g, email
-			html = html.replace(/([^>\r\n]?)(\r\n|\n\r|\r|\n)/g, '$1' + '<br>' + '$2')
+			html = RocketChat.placeholders.replace(body, {
+				unsubscribe: Meteor.absoluteUrl(FlowRouter.path('mailer/unsubscribe/:_id/:createdAt', { _id: user._id, createdAt: user.createdAt.getTime() })),
+				name: user.name,
+				email: email
+			});
 
 			email = "#{user.name} <#{email}>"
 
@@ -35,7 +35,7 @@ Mailer.sendMail = (from, subject, body, dryrun, query) ->
 						to: email
 						from: from
 						subject: subject
-						html: html
+						html: header + html + footer
 
 				console.log 'Sending email to ' + email
 
@@ -44,14 +44,11 @@ Mailer.sendMail = (from, subject, body, dryrun, query) ->
 		# Meteor.users.find({ "username": /\.rocket\.team/ }).forEach (user) ->
 			email = user.emails?[0]?.address
 
-			html = body.replace /\[unsubscribe\]/g, Meteor.absoluteUrl(FlowRouter.path('mailer/unsubscribe/:_id/:createdAt', { _id: user._id, createdAt: user.createdAt.getTime() }))
-			html = html.replace /\[name\]/g, user.name
-			fname = _.strLeft user.name, ' '
-			lname = _.strRightBack user.name, ' '
-			html = html.replace /\[fname\]/g, fname
-			html = html.replace /\[lname\]/g, lname
-			html = html.replace /\[email\]/g, email
-			html = html.replace(/([^>\r\n]?)(\r\n|\n\r|\r|\n)/g, '$1' + '<br>' + '$2')
+			html = RocketChat.placeholders.replace(body, {
+				unsubscribe: Meteor.absoluteUrl(FlowRouter.path('mailer/unsubscribe/:_id/:createdAt', { _id: user._id, createdAt: user.createdAt.getTime() })),
+				name: user.name,
+				email: email
+			});
 
 			email = "#{user.name} <#{email}>"
 
@@ -61,6 +58,6 @@ Mailer.sendMail = (from, subject, body, dryrun, query) ->
 						to: email
 						from: from
 						subject: subject
-						html: html
+						html: header + html + footer
 
 				console.log 'Sending email to ' + email

@@ -1,3 +1,15 @@
+# This is not supposed to be a complete list
+# it is just to improve readability in this file
+keys = {
+	TAB: 9
+	ENTER: 13
+	ESC: 27
+	ARROW_LEFT: 37
+	ARROW_UP: 38
+	ARROW_RIGHT: 39
+	ARROW_DOWN: 40
+}
+
 getCursorPosition = (input) ->
 	if not input? then return
 	if input.selectionStart?
@@ -84,11 +96,11 @@ Template.messagePopup.onCreated ->
 		if template.open.curValue isnt true or template.hasData.curValue isnt true
 			return
 
-		if event.which in [38, 40]
+		if event.which in [keys.ARROW_UP, keys.ARROW_DOWN]
 			event.preventDefault()
 			event.stopPropagation()
 
-		if event.which in [13, 9]
+		if event.which in [keys.ENTER, keys.TAB]
 			template.open.set false
 
 			template.enterValue()
@@ -96,12 +108,17 @@ Template.messagePopup.onCreated ->
 			event.preventDefault()
 			event.stopPropagation()
 
+		if event.which is keys.ARROW_UP
+			template.up()
+		else if event.which is keys.ARROW_DOWN
+			template.down()
+
 	template.setTextFilter = _.debounce (value) ->
 		template.textFilter.set(value)
 	, template.textFilterDelay
 
 	template.onInputKeyup = (event) =>
-		if template.open.curValue is true and event.which is 27
+		if template.open.curValue is true and event.which is keys.ESC
 			template.open.set false
 			event.preventDefault()
 			event.stopPropagation()
@@ -119,11 +136,7 @@ Template.messagePopup.onCreated ->
 		if template.open.curValue isnt true
 			return
 
-		if event.which is 38
-			template.up()
-		else if event.which is 40
-			template.down()
-		else
+		if event.which not in [keys.ARROW_UP, keys.ARROW_DOWN]
 			Meteor.defer =>
 				template.verifySelection()
 

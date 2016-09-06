@@ -20,7 +20,7 @@ RocketChat.theme.addPublicColor "info-active-font-color", "#ff0000"
 RocketChat.theme.addPublicColor "info-font-color", "#aaaaaa"
 RocketChat.theme.addPublicColor "input-font-color", "rgba(255, 255, 255, 0.85)"
 RocketChat.theme.addPublicColor "link-font-color", "#008ce3"
-RocketChat.theme.addPublicColor "message-hover-background-color", "#f9f9f9"
+RocketChat.theme.addPublicColor "message-hover-background-color", "rgba(0, 0, 0, 0.025)"
 RocketChat.theme.addPublicColor "smallprint-font-color", "#c2e7ff"
 RocketChat.theme.addPublicColor "smallprint-hover-color", "#ffffff"
 RocketChat.theme.addPublicColor "status-away", "#fcb316"
@@ -28,3 +28,14 @@ RocketChat.theme.addPublicColor "status-busy", "#d30230"
 RocketChat.theme.addPublicColor "status-offline", "rgba(150, 150, 150, 0.50)"
 RocketChat.theme.addPublicColor "status-online", "#35ac19"
 RocketChat.theme.addPublicColor "unread-notification-color", "#1dce73"
+
+RocketChat.theme.addPublicFont "body-font-family", '-apple-system, BlinkMacSystemFont, Roboto, "Helvetica Neue", Arial, sans-serif, "Apple Color Emoji", "Segoe UI", "Segoe UI Emoji", "Segoe UI Symbol", "Meiryo UI"'
+
+
+RocketChat.settings.add "theme-custom-css", '',
+	group: 'Layout'
+	type: 'code'
+	code: 'text/x-less'
+	multiline: true
+	section: 'Custom CSS'
+	public: false

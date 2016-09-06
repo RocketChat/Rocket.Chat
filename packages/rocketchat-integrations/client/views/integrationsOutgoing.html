@@ -6,6 +6,13 @@
 				<div class="section">
 					<div class="section-content">
 						<div class="input-line double-col">
+							<label>{{_ "Enabled"}}</label>
+							<div>
+								<label><input type="radio" name="enabled" value="1" checked="{{$eq data.enabled true}}" /> {{_ "True"}}</label>
+								<label><input type="radio" name="enabled" value="0" checked="{{$neq data.enabled true}}" /> {{_ "False"}}</label>
+							</div>
+						</div>
+						<div class="input-line double-col">
 							<label>{{_ "Name"}} ({{_ "optional"}})</label>
 							<div>
 								<input type="text" name="name" value="{{data.name}}" placeholder="{{_ 'Optional'}}" />
@@ -74,9 +81,43 @@
 							</div>
 						</div>
 						<div class="input-line double-col">
+							<label>{{_ "Script_Enabled"}}</label>
+							<div>
+								<label><input type="radio" name="scriptEnabled" value="1" checked="{{$eq data.scriptEnabled true}}" /> {{_ "True"}}</label>
+								<label><input type="radio" name="scriptEnabled" value="0" checked="{{$neq data.scriptEnabled true}}" /> {{_ "False"}}</label>
+							</div>
+						</div>
+						<div class="input-line double-col">
+							<label>{{_ "Script"}}</label>
+							<div>
+								<div class="code-mirror-box">
+									<div class="title">
+										{{_ "Script"}}
+									</div>
+									{{> CodeMirror name="script" options=editorOptions code=data.script }}
+									<div class="buttons">
+										<button class="button button-primary button-fullscreen">
+											Full Screen
+										</button>
+										<button class="button button-primary button-restore">
+											Exit Full Screen
+										</button>
+									</div>
+								</div>
+								{{#if data.scriptError}}
+									<div class="code-error-box">
+										<div class="title">
+											{{data.scriptError.name}}
+										</div>
+										<pre>{{data.scriptError.codeFrame}}</pre>
+									</div>
+								{{/if}}
+							</div>
+						</div>
+						<div class="input-line double-col">
 							<label>{{_ "Responding"}}</label>
 							<div>
-								<div class="settings-description">{{{_ "If the handler wishes to post a response back into the Slack channel, the following JSON should be returned as the body of the response:"}}}</div>
+								<div class="settings-description">{{{_ "If the handler wishes to post a response back into the channel, the following JSON should be returned as the body of the response:"}}}</div>
 								<pre><code class="hljs json json-example">{{{exampleJson}}}</code></pre>
 								<div class="settings-description">{{{_ "Empty bodies or bodies with an empty text property will simply be ignored. Non-200 responses will be retried a reasonable number of times. A response will be posted using the alias and avatar specified above. You can override these informations as in the example above."}}}</div>
 							</div>

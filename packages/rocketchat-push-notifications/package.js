@@ -6,14 +6,14 @@ Package.describe({
 });
 
 Package.onUse(function(api) {
-	api.versionsFrom('1.0');
-
 	api.use([
 		'ecmascript',
 		'underscore',
-		'less@2.5.0',
+		'less',
 		'rocketchat:lib'
 	]);
+
+	api.use('templating', 'client');
 
 	api.addFiles([
 		'client/stylesheets/pushNotifications.less',
@@ -26,20 +26,4 @@ Package.onUse(function(api) {
 		'server/methods/saveNotificationSettings.js',
 		'server/models/Subscriptions.js'
 	], 'server');
-
-	// TAPi18n
-	api.use('templating', 'client');
-	var _ = Npm.require('underscore');
-	var fs = Npm.require('fs');
-	tapi18nFiles = _.compact(_.map(fs.readdirSync('packages/rocketchat-push-notifications/i18n'), function(filename) {
-		if (fs.statSync('packages/rocketchat-push-notifications/i18n/' + filename).size > 16) {
-			return 'i18n/' + filename;
-		}
-	}));
-	api.use('tap:i18n');
-	api.addFiles(tapi18nFiles);
-});
-
-Package.onTest(function(api) {
-
 });

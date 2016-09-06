@@ -1,0 +1,7 @@
+{
+  "dependencies": {
+    "adm-zip": {
+      "version": "0.4.7"
+    }
+  }
+}

@@ -1,15 +1,5 @@
-// <script type="text/javascript">
-// 	(function(w, d, s, f, u) {
-// 		w[f] = (w[f] || []).push(u);
-// 		var h = d.getElementsByTagName(s)[0],
-// 			j = d.createElement(s);
-// 		j.async = true;
-// 		j.src = '/packages/rocketchat_livechat/assets/rocket-livechat.js';
-// 		h.parentNode.insertBefore(j, h);
-// 	})(window, document, 'script', 'initRocket', 'http://localhost:5000/livechat');
-// </script>
-
-;var RocketChat = (function(w) {
+(function(w) {
+	w.RocketChat = w.RocketChat || { _: [] };
 	var config = {};
 	var widget;
 	var iframe;
@@ -26,6 +16,19 @@
 		widget.style.height = '300px';
 	};
 
+	// hooks
+	var callHook = function(action, params) {
+		if (!ready) {
+			return hookQueue.push(arguments);
+		}
+		var data = {
+			src: 'rocketchat',
+			fn: action,
+			args: params
+		};
+		iframe.contentWindow.postMessage(data, '*');
+	};
+
 	var api = {
 		ready: function() {
 			ready = true;
@@ -36,7 +39,7 @@
 				hookQueue = [];
 			}
 		},
-		toggleWindow: function(forceClose) {
+		toggleWindow: function(/*forceClose*/) {
 			if (widget.dataset.state === 'closed') {
 				openWidget();
 			} else {
@@ -56,24 +59,20 @@
 		}
 	};
 
-	// hooks
-	var callHook = function(action, params) {
-		if (!ready) {
-			return hookQueue.push(arguments);
-		}
-		var data = {
-			src: 'rocketchat',
-			fn: action,
-			args: params
-		};
-		iframe.contentWindow.postMessage(data, '*');
-	};
-
-	var pageVisited = function() {
+	var pageVisited = function(change) {
 		callHook('pageVisited', {
+			change: change,
 			location: JSON.parse(JSON.stringify(document.location)),
 			title: document.title
 		});
+	};
+
+	var setCustomField = function(key, value) {
+		callHook('setCustomField', [ key, value ]);
+	};
+
+	var setTheme = function(theme) {
+		callHook('setTheme', theme);
 	};
 
 	var currentPage = {
@@ -83,15 +82,17 @@
 	var trackNavigation = function() {
 		setInterval(function() {
 			if (document.location.href !== currentPage.href) {
-				pageVisited();
-
+				pageVisited('url');
 				currentPage.href = document.location.href;
+			}
+			if (document.title !== currentPage.title) {
+				pageVisited('title');
 				currentPage.title = document.title;
 			}
 		}, 800);
 	};
 
-	var initRocket = function(url) {
+	var init = function(url) {
 		if (!url) {
 			return;
 		}
@@ -128,7 +129,7 @@
 			}
 		}, false);
 
-		var mediaqueryresponse = function (mql) {
+		var mediaqueryresponse = function(mql) {
 			if (mql.matches) {
 				chatWidget.style.left = '0';
 				chatWidget.style.right = '0';
@@ -149,19 +150,29 @@
 	};
 
 	if (typeof w.initRocket !== 'undefined') {
-		initRocket.apply(null, w.initRocket);
+		console.warn('initRocket is now deprecated. Please update the livechat code.');
+		init(w.initRocket[0]);
 	}
 
-	w.initRocket = function(url) {
-		initRocket.apply(null, [url]);
-	};
+	if (typeof w.RocketChat.url !== 'undefined') {
+		init(w.RocketChat.url);
+	}
 
-	w.initRocket.push = function(url) {
-		initRocket.apply(null, [url]);
+	var queue = w.RocketChat._;
+
+	w.RocketChat = w.RocketChat._.push = function(c) {
+		c.call(w.RocketChat.livechat);
 	};
 
 	// exports
-	return {
-		pageVisited: pageVisited
+	w.RocketChat.livechat = {
+		pageVisited: pageVisited,
+		setCustomField: setCustomField,
+		setTheme: setTheme
 	};
-})(window);
+
+	// proccess queue
+	queue.forEach(function(c) {
+		c.call(w.RocketChat.livechat);
+	});
+}(window));

@@ -1,5 +1,6 @@
 #!/bin/bash
-set -euo pipefail
+set -x
+set -euvo pipefail
 
 # Make meteor bundle
 

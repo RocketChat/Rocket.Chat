@@ -1,0 +1,34 @@
+<template name="adminImport">
+	<section class="page-container page-home page-static page-settings">
+		<head class="fixed-title">
+			{{> burger}}
+			<h2>
+				<span class="room-title">Import</span>
+			</h2>
+		</head>
+		<div class="content">
+			{{#unless isAdmin}}
+				<p>You are not authorized to view this page.</p>
+			{{else}}
+				{{#if isImporters}}
+				<div class="rocket-form">
+					<fieldset>
+						{{#each importers}}
+							<div class="section">
+								<h1>{{name}}</h1>
+								<div class="section-content">
+									<div>{{getDescription .}}</div>
+									<button class="button start-import">Start</button>
+
+								</div>
+							</div>
+						{{/each}}
+					</fieldset>
+				</div>
+				{{else}}
+					No Importers Available
+				{{/if}}
+			{{/unless}}
+		</div>
+	</section>
+</template>

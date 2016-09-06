@@ -14,58 +14,84 @@
 					{{/if}}
 					<i class="{{roomIcon}} status-{{userStatus}}"></i>
 					<span class="room-title">{{roomName}}</span>
-					<span class="room-topic">{{roomTopic}}</span>
+					<span class="room-topic">{{{RocketChatMarkdown roomTopic}}}</span>
 				</h2>
 			</header>
 			<div class="container-bars">
+				{{#with unreadData}}
+					{{#if since}}
+						{{#if count}}
+							<div class="unread-bar">
+								<button class="jump-to">
+									<span class="jump-to-large">{{_ "Jump_to_first_unread"}}</span>
+									<span class="jump-to-small">{{_ "Jump"}}</span>
+								</button>
+								<span class="unread-count-since">
+									{{_ "S_new_messages_since_s" count formatUnreadSince}}
+								</span>
+								<span class="unread-count">
+									{{_ "N_new_messages" count}}
+								</span>
+								<button class="mark-read">
+									{{_ "Mark_as_read"}}
+								</button>
+							</div>
+						{{/if}}
+					{{/if}}
+				{{/with}}
 				{{#each uploading}}
 					<div class="upload-progress {{#if error}}upload-error{{/if}}">
 						{{#if error}}
-							{{error}}
-							<a href="##">
-								close
-							</a>
+							<div class="upload-progress-text">
+								{{error}}
+								<button>
+									{{_ "close"}}
+								</button>
+							</div>
 						{{else}}
 							<div class="upload-progress-progress" style="width: {{percentage}}%;"></div>
 							<div class="upload-progress-text">
 								{{name}}... {{percentage}}%
-								<a href="#">
-									cancel
-								</a>
+								<button>
+									{{_ "cancel"}}
+								</button>
 							</div>
 						{{/if}}
 					</div>
 				{{/each}}
-				{{#if unreadCount}}
-					{{#if unreadSince}}
-						<div class="unread-bar">
-							<a class="jump-to">
-								{{_ "Jump_to_first_unread"}}
-							</a>
-							{{_ "S_new_messages_since_s" unreadCount formatUnreadSince}}
-							<a class="mark-read">
-								{{_ "Mark_as_read"}}
-							</a>
-						</div>
-					{{/if}}
-				{{/if}}
 			</div>
-			<div class="messages-box {{#if selectable}}selectable{{/if}} {{compactView}}">
+			<div class="messages-box {{#if selectable}}selectable{{/if}} {{viewMode}}">
 				<div class="ticks-bar"></div>
-				<div class="wrapper {{#if hasMoreNext}}has-more-next{{/if}}">
+				<button class="new-message not">
+					<i class="icon-down-big"></i>
+					{{_ "New_messages"}}
+				</button>
+				<div class="jump-recent {{#unless hasMoreNext}}not{{/unless}}">
+					<button>{{_ "Jump_to_recent_messages"}} <i class="icon-level-down"></i></button>
+				</div>
+				{{#unless canPreview}}
+					<div class="content room-not-found">
+						<div>
+							{{_ "You_must_join_to_view_messages_in_this_channel"}}
+						</div>
+					</div>
+				{{/unless}}
+				<div class="wrapper {{#if hasMoreNext}}has-more-next{{/if}} {{hideUsername}} {{hideAvatar}}">
 					<ul aria-live="polite">
-						{{#if hasMore}}
-							<li class="load-more">
-								{{#if isLoading}}
-									<div class="load-more-loading">{{_ "Loading_more_from_history"}}...</div>
-								{{else}}
-									<a href="">{{_ "Has_more"}}...</a>
-								{{/if}}
-							</li>
-						{{else}}
-							<li class="start">
-								{{_ "Start_of_conversation"}}
-							</li>
+						{{#if canPreview}}
+							{{#if hasMore}}
+								<li class="load-more">
+									{{#if isLoading}}
+										<div class="load-more-loading">{{_ "Loading_more_from_history"}}...</div>
+									{{else}}
+										<button>{{_ "Has_more"}}...</button>
+									{{/if}}
+								</li>
+							{{else}}
+								<li class="start">
+									{{_ "Start_of_conversation"}}
+								</li>
+							{{/if}}
 						{{/if}}
 						{{#each messagesHistory}}
 							{{#nrr nrrargs 'message' .}}{{/nrr}}
@@ -75,18 +101,11 @@
 								{{#if isLoading}}
 									<div class="load-more-loading">{{_ "Loading_more_from_history"}}...</div>
 								{{else}}
-									<a href="">{{_ "Has_more"}}...</a>
+									<button>{{_ "Has_more"}}...</button>
 								{{/if}}
 							</li>
 						{{/if}}
 					</ul>
-				</div>
-				<div class="new-message not">
-					<i class="icon-down-big"></i>
-					<span>{{_ "New_messages"}}</span>
-				</div>
-				<div class="jump-recent {{#unless hasMoreNext}}not{{/unless}}">
-					<span class="jump-link">{{_ "Jump_to_recent_messages"}} <i class="icon-level-down"></i></span>
 				</div>
 			</div>
 			<footer class="footer">

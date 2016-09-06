@@ -7,20 +7,16 @@ Package.describe({
 
 Npm.depends({
 	'coffee-script': '1.9.3',
-	'lru-cache': '2.6.5',
+	'lru-cache': '2.6.5'
 });
 
 Package.onUse(function(api) {
-	api.versionsFrom('1.0');
-
 	api.use([
 		'coffeescript',
 		'underscore',
-		'rocketchat:lib',
+		'rocketchat:lib'
 	]);
 
 	api.addFiles('irc.server.coffee', 'server');
 	api.export(['Irc'], ['server']);
 });
-
-Package.onTest(function(api) {});

@@ -9,19 +9,14 @@ currentTracker = undefined
 				BlazeLayout.render 'main', {center: 'loading'}
 				return
 
+			user = Meteor.user()
+			unless user?.username
+				return
+
 			currentTracker = undefined
 			c.stop()
 
-			query =
-				t: type
-				name: name
-
-			if type is 'd'
-				delete query.name
-				query.usernames =
-					$all: [name, Meteor.user()?.username]
-
-			room = ChatRoom.findOne(query)
+			room = RocketChat.roomTypes.findRoom(type, name, user)
 			if not room?
 				if type is 'd'
 					Meteor.call 'createDirectMessage', name, (err) ->
@@ -63,6 +58,12 @@ currentTracker = undefined
 			# update user's room subscription
 			sub = ChatSubscription.findOne({rid: room._id})
 			if sub?.open is false
-				Meteor.call 'openRoom', room._id
+				Meteor.call 'openRoom', room._id, (err) ->
+					if err
+						return handleError(err)
+
+			if FlowRouter.getQueryParam('msg')
+				msg = { _id: FlowRouter.getQueryParam('msg'), rid: room._id }
+				RoomHistoryManager.getSurroundingMessages(msg);
 
 			RocketChat.callbacks.run 'enter-room', sub

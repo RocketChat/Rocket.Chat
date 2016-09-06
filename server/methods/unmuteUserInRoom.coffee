@@ -4,17 +4,17 @@ Meteor.methods
 		check(data, Match.ObjectIncluding({ rid: String, username: String }))
 
 		unless RocketChat.authz.hasPermission(fromId, 'mute-user', data.rid)
-			throw new Meteor.Error 'not-allowed', '[methods] unmuteUserInRoom -> Not allowed'
+			throw new Meteor.Error 'error-not-allowed', 'Not allowed', { method: 'unmuteUserInRoom' }
 
 		room = RocketChat.models.Rooms.findOneById data.rid
 		if not room
-			throw new Meteor.Error 'invalid-room', '[methods] unmuteUserInRoom -> Room ID is invalid'
+			throw new Meteor.Error 'error-invalid-room', 'Invalid room', { method: 'unmuteUserInRoom' }
 
 		if room.t not in ['c', 'p']
-			throw new Meteor.Error 'invalid-room-type', '[methods] unmuteUserInRoom -> Invalid room type'
+			throw new Meteor.Error 'error-invalid-room-type', room.t + ' is not a valid room type', { method: 'unmuteUserInRoom', type: room.t }
 
 		if data.username not in (room?.usernames or [])
-			throw new Meteor.Error 'not-in-room', '[methods] unmuteUserInRoom -> User is not in this room'
+			throw new Meteor.Error 'error-user-not-in-room', 'User is not in this room', { method: 'unmuteUserInRoom' }
 
 		unmutedUser = RocketChat.models.Users.findOneByUsername data.username
 

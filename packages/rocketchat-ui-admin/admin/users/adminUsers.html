@@ -14,7 +14,7 @@
 					<div class="input-line search">
 						<input type="text" id="users-filter" placeholder="{{_ "Search"}}" dir="auto">
 						<i class="icon-search"></i>
-						{{#unless isReady}}<i class="icon-spin4"></i>{{/unless}}
+						{{#unless isReady}}<i class="icon-spin"></i>{{/unless}}
 					</div>
 				</form>
 				<div class="results">
@@ -27,12 +27,12 @@
 								<th>&nbsp;</th>
 								<th width="34%">{{_ "Name"}}</th>
 								<th width="33%">{{_ "Username"}}</th>
-								<th width="33%">{{_ "E-mail"}}</th>
+								<th width="33%">{{_ "Email"}}</th>
 							</tr>
 						</thead>
 						<tbody>
 							{{#each users}}
-							<tr class="user-info">
+							<tr class="user-info row-link">
 								<td>
 									<div class="user-image status-{{status}}">
 										{{> avatar username=username}}
@@ -53,8 +53,6 @@
 		</div>
 	</section>
 	<section class="flex-tab">
-		<div class="user-view">
-			{{> Template.dynamic template=flexTemplate data=flexData}}
-		</div>
+		{{> Template.dynamic template=flexTemplate data=flexData}}
 	</section>
 </template>

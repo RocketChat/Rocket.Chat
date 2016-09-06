@@ -15,7 +15,7 @@ Template.adminInviteUser.events
 					instance.clearForm()
 					instance.inviteEmails.set validEmails
 				if error
-					toastr.error error.reason
+					handleError(error)
 		else
 			toastr.error t('Send_invitation_email_error')
 

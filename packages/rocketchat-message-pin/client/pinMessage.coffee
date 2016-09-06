@@ -1,11 +1,15 @@
 Meteor.methods
 	pinMessage: (message) ->
 		if not Meteor.userId()
-			throw new Meteor.Error('invalid-user', "[methods] pinMessage -> Invalid user")
+			return false
 
 		if not RocketChat.settings.get 'Message_AllowPinning'
-			throw new Meteor.Error 'message-pinning-not-allowed', '[methods] pinMessage -> Message pinning not allowed'
+			return false
 
+		room = RocketChat.models.Rooms.findOne({ _id: message.rid })
+
+		if Array.isArray(room.usernames) && room.usernames.indexOf(Meteor.user().username) is -1
+			return false
 
 		ChatMessage.update
 			_id: message._id
@@ -14,11 +18,15 @@ Meteor.methods
 
 	unpinMessage: (message) ->
 		if not Meteor.userId()
-			throw new Meteor.Error('invalid-user', "[methods] pinMessage -> Invalid user")
+			return false
 
 		if not RocketChat.settings.get 'Message_AllowPinning'
-			throw new Meteor.Error 'message-pinning-not-allowed', '[methods] pinMessage -> Message pinning not allowed'
+			return false
 
+		room = RocketChat.models.Rooms.findOne({ _id: message.rid })
+
+		if Array.isArray(room.usernames) && room.usernames.indexOf(Meteor.user().username) is -1
+			return false
 
 		ChatMessage.update
 			_id: message._id

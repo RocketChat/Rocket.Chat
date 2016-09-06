@@ -1,73 +1,99 @@
-@connections = {}
-@startStreamBroadcast = (streams) ->
-	console.log 'startStreamBroadcast'
+logger = new Logger 'StreamBroadcast',
+	sections:
+		connection: 'Connection'
+		auth: 'Auth'
+		stream: 'Stream'
 
-	# connections = {}
+_authorizeConnection = (instance) ->
+	logger.auth.info "Authorizing with #{instance}"
+
+	connections[instance].call 'broadcastAuth', connections[instance].instanceRecord._id, InstanceStatus.id(), (err, ok) ->
+		if err?
+			return logger.auth.error "broadcastAuth error #{instance} #{connections[instance].instanceRecord._id} #{InstanceStatus.id()}", err
+
+		connections[instance].broadcastAuth = ok
+		logger.auth.info "broadcastAuth with #{instance}", ok
+
+authorizeConnection = (instance) ->
+	if not InstanceStatus.getCollection().findOne({_id: InstanceStatus.id()})?
+		return Meteor.setTimeout ->
+			authorizeConnection(instance)
+		, 500
+
+	_authorizeConnection(instance)
+
+@connections = {}
+@startStreamBroadcast = () ->
+	process.env.INSTANCE_IP ?= 'localhost'
+
+	logger.info 'startStreamBroadcast'
 
 	InstanceStatus.getCollection().find({'extraInformation.port': {$exists: true}}, {sort: {_createdAt: -1}}).observe
 		added: (record) ->
-			if record.extraInformation.port is process.env.PORT or connections[record.extraInformation.port]?
+			instance = "#{record.extraInformation.host}:#{record.extraInformation.port}"
+
+			if record.extraInformation.port is process.env.PORT and record.extraInformation.host is process.env.INSTANCE_IP
+				logger.auth.info "prevent self connect", instance
 				return
 
-			console.log 'connecting in', "localhost:#{record.extraInformation.port}"
-			connections[record.extraInformation.port] = DDP.connect("localhost:#{record.extraInformation.port}", {_dontPrintErrors: true})
-			connections[record.extraInformation.port].call 'broadcastAuth', record._id, InstanceStatus.id(), (err, ok) ->
-				connections[record.extraInformation.port].broadcastAuth = ok
-				console.log "broadcastAuth with localhost:#{record.extraInformation.port}", ok
+			if record.extraInformation.host is process.env.INSTANCE_IP
+				instance = "localhost:#{record.extraInformation.port}"
+
+			if connections[instance]?.instanceRecord?
+				if connections[instance].instanceRecord._createdAt < record._createdAt
+					connections[instance].disconnect()
+					delete connections[instance]
+				else
+					return
+
+			logger.connection.info 'connecting in', instance
+			connections[instance] = DDP.connect(instance, {_dontPrintErrors: true})
+			connections[instance].instanceRecord = record;
+			connections[instance].onReconnect = ->
+				authorizeConnection(instance)
 
 		removed: (record) ->
-			if connections[record.extraInformation.port]? and not InstanceStatus.getCollection().findOne({'extraInformation.port': record.extraInformation.port})?
-				console.log 'disconnecting from', "localhost:#{record.extraInformation.port}"
-				connections[record.extraInformation.port].disconnect()
-				delete connections[record.extraInformation.port]
+			instance = "#{record.extraInformation.host}:#{record.extraInformation.port}"
 
-	broadcast = (streamName, args, userId) ->
-		for port, connection of connections
-			do (port, connection) ->
+			if record.extraInformation.host is process.env.INSTANCE_IP
+				instance = "localhost:#{record.extraInformation.port}"
+
+			if connections[instance]? and not InstanceStatus.getCollection().findOne({'extraInformation.host': record.extraInformation.host, 'extraInformation.port': record.extraInformation.port})?
+				logger.connection.info 'disconnecting from', instance
+				connections[instance].disconnect()
+				delete connections[instance]
+
+	broadcast = (streamName, eventName, args, userId) ->
+		fromInstance = process.env.INSTANCE_IP + ':' + process.env.PORT
+		for instance, connection of connections
+			do (instance, connection) ->
 				if connection.status().connected is true
-					connection.call 'stream', streamName, args, (error, response) ->
+					connection.call 'stream', streamName, eventName, args, (error, response) ->
 						if error?
-							console.log "Stream broadcast error", error
+							logger.error "Stream broadcast error", error
 
 						switch response
 							when 'self-not-authorized'
-								console.log "Stream broadcast from:#{process.env.PORT} to:#{connection._stream.endpoint} with name #{streamName} to self is not authorized".red
-								console.log "    -> connection authorized".red, connection.broadcastAuth
-								console.log "    -> connection status".red, connection.status()
-								console.log "    -> arguments".red, args
+								logger.stream.error "Stream broadcast from '#{fromInstance}' to '#{connection._stream.endpoint}' with name #{streamName} to self is not authorized".red
+								logger.stream.debug "    -> connection authorized".red, connection.broadcastAuth
+								logger.stream.debug "    -> connection status".red, connection.status()
+								logger.stream.debug "    -> arguments".red, eventName, args
 
 							when 'not-authorized'
-								console.log "Stream broadcast from:#{process.env.PORT} to:#{connection._stream.endpoint} with name #{streamName} not authorized".red
-								console.log "    -> connection authorized".red, connection.broadcastAuth
-								console.log "    -> connection status".red, connection.status()
-								console.log "    -> arguments".red, args
+								logger.stream.error "Stream broadcast from '#{fromInstance}' to '#{connection._stream.endpoint}' with name #{streamName} not authorized".red
+								logger.stream.debug "    -> connection authorized".red, connection.broadcastAuth
+								logger.stream.debug "    -> connection status".red, connection.status()
+								logger.stream.debug "    -> arguments".red, eventName, args
+								authorizeConnection(instance);
 
 							when 'stream-not-exists'
-								console.log "Stream broadcast from:#{process.env.PORT} to:#{connection._stream.endpoint} with name #{streamName} does not exists".red
-								console.log "    -> connection authorized".red, connection.broadcastAuth
-								console.log "    -> connection status".red, connection.status()
-								console.log "    -> arguments".red, args
+								logger.stream.error "Stream broadcast from '#{fromInstance}' to '#{connection._stream.endpoint}' with name #{streamName} does not exist".red
+								logger.stream.debug "    -> connection authorized".red, connection.broadcastAuth
+								logger.stream.debug "    -> connection status".red, connection.status()
+								logger.stream.debug "    -> arguments".red, eventName, args
 
-
-	Meteor.methods
-		showConnections: ->
-			data = {}
-			for port, connection of connections
-				data[port] =
-					status: connection.status()
-					broadcastAuth: connection.broadcastAuth
-			return data
-
-	emitters = {}
-
-	for streamName, stream of streams
-		do (streamName, stream) ->
-			emitters[streamName] = stream.emitToSubscriptions
-			stream.emitToSubscriptions = (args, subscriptionId, userId) ->
-				if subscriptionId isnt 'broadcasted'
-					broadcast streamName, args
-
-				emitters[streamName] args, subscriptionId, userId
+	Meteor.StreamerCentral.on 'broadcast', (streamName, eventName, args) ->
+		broadcast streamName, eventName, args
 
 	Meteor.methods
 		broadcastAuth: (selfId, remoteId) ->
@@ -80,7 +106,7 @@
 
 			return @connection.broadcastAuth is true
 
-		stream: (streamName, args) ->
+		stream: (streamName, eventName, args) ->
 			# Prevent call from self and client
 			if not @connection?
 				return 'self-not-authorized'
@@ -89,18 +115,12 @@
 			if @connection.broadcastAuth isnt true
 				return 'not-authorized'
 
-			if not emitters[streamName]?
+			if not Meteor.StreamerCentral.instances[streamName]?
 				return 'stream-not-exists'
 
-			emitters[streamName].call null, args, 'broadcasted'
+			Meteor.StreamerCentral.instances[streamName]._emit(eventName, args)
 
 			return undefined
 
-
 Meteor.startup ->
-	config =
-		'RocketChat.Notifications.streamAll': RocketChat.Notifications.streamAll
-		'RocketChat.Notifications.streamRoom': RocketChat.Notifications.streamRoom
-		'RocketChat.Notifications.streamUser': RocketChat.Notifications.streamUser
-
-	startStreamBroadcast config
+	startStreamBroadcast()

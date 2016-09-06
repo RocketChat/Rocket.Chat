@@ -1,17 +1,22 @@
 Meteor.methods
 	sendSMTPTestEmail: ->
 		if not Meteor.userId()
-			throw new Meteor.Error 'invalid-user', "[methods] sendSMTPTestEmail -> Invalid user"
+			throw new Meteor.Error 'error-invalid-user', "Invalid user", { method: 'sendSMTPTestEmail' }
 
 		user = Meteor.user()
 		unless user.emails?[0]?.address
-			throw new Meteor.Error 'invalid-email', "[methods] sendSMTPTestEmail -> Invalid e-mail"
+			throw new Meteor.Error 'error-invalid-email', "Invalid email", { method: 'sendSMTPTestEmail' }
+
+		this.unblock()
+
+		header = RocketChat.placeholders.replace(RocketChat.settings.get('Email_Header') || '');
+		footer = RocketChat.placeholders.replace(RocketChat.settings.get('Email_Footer') || '');
 
 		Email.send
 			to: user.emails[0].address
 			from: RocketChat.settings.get('From_Email')
-			subject: "SMTP Test E-mail"
-			html: "You have successfully sent an e-mail"
+			subject: "SMTP Test Email"
+			html: header + "<p>You have successfully sent an email</p>" + footer
 
 		console.log 'Sending email to ' + user.emails[0].address
 

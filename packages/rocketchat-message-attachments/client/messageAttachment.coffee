@@ -8,9 +8,15 @@ Template.messageAttachment.helpers
 			else
 				url = url + '&' + query
 
-		return url
+		if Meteor.settings.public.sandstorm or url.match /^(https?:)?\/\//i
+			return url
+		else
+			return Meteor.absoluteUrl().replace(/\/$/, '') + __meteor_runtime_config__.ROOT_URL_PATH_PREFIX + url
 
-	showImage: ->
+	parsedText: ->
+		renderMessageBody { msg: this.text }
+
+	loadImage: ->
 		if Meteor.user()?.settings?.preferences?.autoImageLoad is false and this.downloadImages? is not true
 			return false
 
@@ -28,3 +34,12 @@ Template.messageAttachment.helpers
 			when 'warning' then return '#FCB316'
 			when 'danger' then return '#D30230'
 			else return @color
+
+	collapsed: ->
+		if this.collapsed?
+			return this.collapsed
+		else
+			return Meteor.user()?.settings?.preferences?.collapseMediaByDefault is true
+
+	time: ->
+		return moment(@ts).format(RocketChat.settings.get('Message_TimeFormat'))

@@ -27,30 +27,18 @@ Template.adminInfo.helpers
 			return moment(date).format("LLL")
 	numFormat: (number) ->
 		return _.numberFormat(number, 2)
-	optOut: ->
-		return RocketChat.settings.get 'Statistics_opt_out'
 	info: ->
 		return RocketChat.Info
 	build: ->
 		return RocketChat.Info?.build
 
 Template.adminInfo.events
-	'click input[name=opt-out-statistics]': (e) ->
-		if $(e.currentTarget).prop('checked')
-			$('#opt-out-warning').show()
-			RocketChat.settings.set 'Statistics_opt_out', true, ->
-				toastr.success TAPi18n.__ 'Settings_updated'
-		else
-			$('#opt-out-warning').hide()
-			RocketChat.settings.set 'Statistics_opt_out', false, ->
-				toastr.success TAPi18n.__ 'Settings_updated'
-
 	'click .refresh': (e, instance) ->
 		instance.ready.set false
 		Meteor.call 'getStatistics', true, (error, statistics) ->
 			instance.ready.set true
 			if error
-				toastr.error error.reason
+				handleError(error)
 			else
 				instance.statistics.set statistics
 
@@ -59,20 +47,16 @@ Template.adminInfo.onRendered ->
 		SideNav.setFlex "adminFlex"
 		SideNav.openFlex()
 
-		if RocketChat.settings.get 'Statistics_opt_out'
-			$('#opt-out-warning').show()
-		else
-			$('#opt-out-warning').hide()
-
 Template.adminInfo.onCreated ->
 	instance = @
 	@statistics = new ReactiveVar {}
 	@ready = new ReactiveVar false
 
-	Meteor.call 'getStatistics', (error, statistics) ->
-		instance.ready.set true
-		if error
-			toastr.error error.reason
-		else
-			instance.statistics.set statistics
+	if RocketChat.authz.hasAllPermission('view-statistics')
+		Meteor.call 'getStatistics', (error, statistics) ->
+			instance.ready.set true
+			if error
+				handleError(error)
+			else
+				instance.statistics.set statistics
 

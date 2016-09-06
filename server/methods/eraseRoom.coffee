@@ -1,5 +1,11 @@
 Meteor.methods
 	eraseRoom: (rid) ->
+
+		check rid, String
+
+		if not Meteor.userId()
+			throw new Meteor.Error 'error-invalid-user', 'Invalid user', { method: 'eraseRoom' }
+
 		fromId = Meteor.userId()
 
 		roomType = RocketChat.models.Rooms.findOneById(rid)?.t
@@ -12,4 +18,4 @@ Meteor.methods
 			RocketChat.models.Rooms.removeById rid
 			# @TODO remove das mensagens lidas do usuário
 		else
-			throw new Meteor.Error 'unauthorized'
+			throw new Meteor.Error 'error-not-allowed', 'Not allowed', { method: 'eraseRoom' }

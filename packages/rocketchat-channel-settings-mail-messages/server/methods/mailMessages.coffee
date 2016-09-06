@@ -1,16 +1,16 @@
 Meteor.methods
 	'mailMessages': (data) ->
 		if not Meteor.userId()
-			throw new Meteor.Error('invalid-user', "[methods] mailMessages -> Invalid user")
+			throw new Meteor.Error('error-invalid-user', "Invalid user", { method: 'mailMessages' })
 
 		check(data, Match.ObjectIncluding({ rid: String, to_users: [ String ], to_emails: String, subject: String, messages: [ String ], language: String }))
 
 		room = Meteor.call 'canAccessRoom', data.rid, Meteor.userId()
 		unless room
-			throw new Meteor.Error('invalid-room', "[methods] mailMessages -> Invalid room")
+			throw new Meteor.Error('error-invalid-room', "Invalid room", { method: 'mailMessages' })
 
 		unless RocketChat.authz.hasPermission(Meteor.userId(), 'mail-messages')
-			throw new Meteor.Error 'not-authorized'
+			throw new Meteor.Error 'error-action-not-allowed', 'Mailing is not allowed', { method: 'mailMessages', action: 'Mailing' }
 
 		rfcMailPatternWithName = /^(?:.*<)?([a-zA-Z0-9.!#$%&'*+\/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*)(?:>?)$/
 
@@ -26,7 +26,7 @@ Meteor.methods
 		console.log emails
 		for email in emails
 			unless rfcMailPatternWithName.test email.trim()
-				throw new Meteor.Error('invalid-email', "[methods] mailMessages -> Invalid e-mail #{email}")
+				throw new Meteor.Error('error-invalid-email', "Invalid email #{email}", { method: 'mailMessages', email: email })
 
 		user = Meteor.user()
 		name = user.name
@@ -40,6 +40,10 @@ Meteor.methods
 				Function(localeFn)()
 
 		html = ""
+
+		header = RocketChat.placeholders.replace(RocketChat.settings.get('Email_Header') || "")
+		footer = RocketChat.placeholders.replace(RocketChat.settings.get('Email_Footer') || "")
+
 		RocketChat.models.Messages.findByRoomIdAndMessageIds(data.rid, data.messages, { sort: { ts: 1 } }).forEach (message) ->
 			dateTime = moment(message.ts).locale(data.language).format('L LT')
 			html += "<p style='margin-bottom: 5px'><b>#{message.u.username}</b> <span style='color: #aaa; font-size: 12px'>#{dateTime}</span><br />" + RocketChat.Message.parse(message, data.language) + "</p>"
@@ -50,7 +54,7 @@ Meteor.methods
 				from: RocketChat.settings.get('From_Email')
 				replyTo: email
 				subject: data.subject
-				html: html
+				html: header + html + footer
 
 			console.log 'Sending email to ' + emails.join(', ')
 

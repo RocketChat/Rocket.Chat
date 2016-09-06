@@ -13,13 +13,17 @@ Template.integrationsOutgoing.helpers
 		return arr.join sep
 
 	hasPermission: ->
-		return RocketChat.authz.hasAllPermission 'manage-integrations'
+		return RocketChat.authz.hasAtLeastOnePermission(['manage-integrations', 'manage-own-integrations'])
 
 	data: ->
 		params = Template.instance().data.params?()
 
 		if params?.id?
-			data = ChatIntegrations.findOne({_id: params.id})
+			data = null
+			if RocketChat.authz.hasAllPermission 'manage-integrations'
+				data = ChatIntegrations.findOne({_id: params.id})
+			else if RocketChat.authz.hasAllPermission 'manage-own-integrations'
+				data = ChatIntegrations.findOne({_id: params.id, "_createdBy._id": Meteor.userId()})
 			if data?
 				if not data.token?
 					data.token = Random.id(24)
@@ -70,6 +74,24 @@ Template.integrationsOutgoing.helpers
 
 		return hljs.highlight('json', JSON.stringify(data, null, 2)).value
 
+	editorOptions: ->
+		return {} =
+			lineNumbers: true
+			mode: "javascript"
+			gutters: [
+				# "CodeMirror-lint-markers"
+				"CodeMirror-linenumbers"
+				"CodeMirror-foldgutter"
+			]
+			# lint: true
+			foldGutter: true
+			# lineWrapping: true
+			matchBrackets: true
+			autoCloseBrackets: true
+			matchTags: true,
+			showTrailingSpace: true
+			highlightSelectionMatches: true
+
 
 Template.integrationsOutgoing.events
 	"blur input": (e, t) ->
@@ -100,16 +122,28 @@ Template.integrationsOutgoing.events
 			html: false
 		, ->
 			Meteor.call "deleteOutgoingIntegration", params.id, (err, data) ->
-				swal
-					title: t('Deleted')
-					text: t('Your_entry_has_been_deleted')
-					type: 'success'
-					timer: 1000
-					showConfirmButton: false
+				if err
+					handleError(err)
+				else
+					swal
+						title: t('Deleted')
+						text: t('Your_entry_has_been_deleted')
+						type: 'success'
+						timer: 1000
+						showConfirmButton: false
 
-				FlowRouter.go "admin-integrations"
+					FlowRouter.go "admin-integrations"
+
+	"click .button-fullscreen": ->
+		$('.code-mirror-box').addClass('code-mirror-box-fullscreen');
+		$('.CodeMirror')[0].CodeMirror.refresh()
+
+	"click .button-restore": ->
+		$('.code-mirror-box').removeClass('code-mirror-box-fullscreen');
+		$('.CodeMirror')[0].CodeMirror.refresh()
 
 	"click .submit > .save": ->
+		enabled = $('[name=enabled]:checked').val().trim()
 		name = $('[name=name]').val().trim()
 		alias = $('[name=alias]').val().trim()
 		emoji = $('[name=emoji]').val().trim()
@@ -119,6 +153,8 @@ Template.integrationsOutgoing.events
 		triggerWords = $('[name=triggerWords]').val().trim()
 		urls = $('[name=urls]').val().trim()
 		token = $('[name=token]').val().trim()
+		scriptEnabled = $('[name=scriptEnabled]:checked').val().trim()
+		script = $('[name=script]').val().trim()
 
 		if username is ''
 			return toastr.error TAPi18n.__("The_username_is_required")
@@ -141,6 +177,7 @@ Template.integrationsOutgoing.events
 			return toastr.error TAPi18n.__("You_should_inform_one_url_at_least")
 
 		integration =
+			enabled: enabled is '1'
 			username: username
 			channel: channel if channel isnt ''
 			alias: alias if alias isnt ''
@@ -150,18 +187,20 @@ Template.integrationsOutgoing.events
 			triggerWords: triggerWords if triggerWords isnt ''
 			urls: urls if urls isnt ''
 			token: token if token isnt ''
+			script: script if script isnt ''
+			scriptEnabled: scriptEnabled is '1'
 
 		params = Template.instance().data.params?()
 		if params?.id?
 			Meteor.call "updateOutgoingIntegration", params.id, integration, (err, data) ->
 				if err?
-					return toastr.error TAPi18n.__(err.error)
+					return handleError err
 
 				toastr.success TAPi18n.__("Integration_updated")
 		else
 			Meteor.call "addOutgoingIntegration", integration, (err, data) ->
 				if err?
-					return toastr.error TAPi18n.__(err.error)
+					return handleError(err)
 
 				toastr.success TAPi18n.__("Integration_added")
 				FlowRouter.go "admin-integrations-outgoing", {id: data._id}

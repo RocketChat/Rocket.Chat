@@ -1,9 +1,9 @@
 RocketChat.Notifications = new class
 	constructor: ->
 		@debug = false
-		@streamAll = new Meteor.Stream 'notify-all'
-		@streamRoom = new Meteor.Stream 'notify-room'
-		@streamUser = new Meteor.Stream 'notify-user'
+		@streamAll = new Meteor.Streamer 'notify-all'
+		@streamRoom = new Meteor.Streamer 'notify-room'
+		@streamUser = new Meteor.Streamer 'notify-user'
 
 		if @debug is true
 			@onAll -> console.log "RocketChat.Notifications: onAll", arguments

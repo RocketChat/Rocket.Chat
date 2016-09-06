@@ -1,18 +1,13 @@
+socialSharing = (options = {}) ->
+	window.plugins.socialsharing.share(options.message, options.subject, options.file, options.link)
+
 isSubscribed = (_id) ->
 	return ChatSubscription.find({ rid: _id }).count() > 0
 
 favoritesEnabled = ->
-	return !RocketChat.settings.get 'Disable_Favorite_Rooms'
+	return RocketChat.settings.get 'Favorite_Rooms'
 
-
-# @TODO bug com o botão para "rolar até o fim" (novas mensagens) quando há uma mensagem com texto que gere rolagem horizontal
 Template.room.helpers
-	# showFormattingTips: ->
-	# 	return RocketChat.settings.get('Message_ShowFormattingTips') and (RocketChat.Markdown or RocketChat.Highlight)
-	# showMarkdown: ->
-	# 	return RocketChat.Markdown
-	# showHighlight: ->
-	# 	return RocketChat.Highlight
 	favorite: ->
 		sub = ChatSubscription.findOne { rid: this._id }, { fields: { f: 1 } }
 		return 'icon-star favorite-room' if sub?.f? and sub.f and favoritesEnabled
@@ -44,39 +39,11 @@ Template.room.helpers
 	uploading: ->
 		return Session.get 'uploading'
 
-	# usersTyping: ->
-	# 	users = MsgTyping.get @_id
-	# 	if users.length is 0
-	# 		return
-	# 	if users.length is 1
-	# 		return {
-	# 			multi: false
-	# 			selfTyping: MsgTyping.selfTyping.get()
-	# 			users: users[0]
-	# 		}
-
-	# 	# usernames = _.map messages, (message) -> return message.u.username
-
-	# 	last = users.pop()
-	# 	if users.length > 4
-	# 		last = t('others')
-	# 	# else
-	# 	usernames = users.join(', ')
-	# 	usernames = [usernames, last]
-	# 	return {
-	# 		multi: true
-	# 		selfTyping: MsgTyping.selfTyping.get()
-	# 		users: usernames.join " #{t 'and'} "
-	# 	}
-
 	roomName: ->
 		roomData = Session.get('roomData' + this._id)
 		return '' unless roomData
 
-		if roomData.t is 'd'
-			return ChatSubscription.findOne({ rid: this._id }, { fields: { name: 1 } })?.name
-		else
-			return roomData.name
+		return RocketChat.roomTypes.getRoomName roomData?.t, roomData
 
 	roomTopic: ->
 		roomData = Session.get('roomData' + this._id)
@@ -87,110 +54,49 @@ Template.room.helpers
 		roomData = Session.get('roomData' + this._id)
 		return '' unless roomData?.t
 
-		switch roomData.t
-			when 'd' then return 'icon-at'
-			when 'c' then return 'icon-hash'
-			when 'p' then return 'icon-lock'
+		return RocketChat.roomTypes.getIcon roomData?.t
 
 	userStatus: ->
 		roomData = Session.get('roomData' + this._id)
 
 		return {} unless roomData
 
-		if roomData.t is 'd'
+		if roomData.t in ['d', 'l']
 			username = _.without roomData.usernames, Meteor.user().username
 			return Session.get('user_' + username + '_status') || 'offline'
-
 		else
 			return 'offline'
-
-	isChannel: ->
-		roomData = Session.get('roomData' + this._id)
-		return '' unless roomData
-		return roomData.t is 'c'
-
-	canDirectMessage: ->
-		return Meteor.user()?.username isnt this.username
 
 	flexOpened: ->
 		return 'opened' if RocketChat.TabBar.isFlexOpen()
 
-	arrowPosition: ->
-		return 'left' unless RocketChat.TabBar.isFlexOpen()
-
-	phoneNumber: ->
-		return '' unless this.phoneNumber
-		if this.phoneNumber.length > 10
-			return "(#{this.phoneNumber.substr(0,2)}) #{this.phoneNumber.substr(2,5)}-#{this.phoneNumber.substr(7)}"
-		else
-			return "(#{this.phoneNumber.substr(0,2)}) #{this.phoneNumber.substr(2,4)}-#{this.phoneNumber.substr(6)}"
-
-	userActiveByUsername: (username) ->
-		status = Session.get 'user_' + username + '_status'
-		if status in ['online', 'away', 'busy']
-			return {username: username, status: status}
-		return
-
-	seeAll: ->
-		if Template.instance().showUsersOffline.get()
-			return t('See_only_online')
-		else
-			return t('See_all')
-
-	getPopupConfig: ->
-		template = Template.instance()
-		return {
-			getInput: ->
-				return template.find('.input-message')
-		}
-
 	maxMessageLength: ->
 		return RocketChat.settings.get('Message_MaxAllowedSize')
 
-	utc: ->
-		if @utcOffset?
-			return "UTC #{@utcOffset}"
+	unreadData: ->
+		data =
+			count: RoomHistoryManager.getRoom(this._id).unreadNotLoaded.get() + Template.instance().unreadCount.get()
 
-	phoneNumber: ->
-		return '' unless @phoneNumber
-		if @phoneNumber.length > 10
-			return "(#{@phoneNumber.substr(0,2)}) #{@phoneNumber.substr(2,5)}-#{@phoneNumber.substr(7)}"
-		else
-			return "(#{@phoneNumber.substr(0,2)}) #{@phoneNumber.substr(2,4)}-#{@phoneNumber.substr(6)}"
-
-	lastLogin: ->
-		if @lastLogin
-			return moment(@lastLogin).format('LLL')
-
-	canJoin: ->
-		return !! ChatRoom.findOne { _id: @_id, t: 'c' }
-
-	canRecordAudio: ->
-		wavRegex = /audio\/wav|audio\/\*/i
-		wavEnabled = !RocketChat.settings.get("FileUpload_MediaTypeWhiteList") || RocketChat.settings.get("FileUpload_MediaTypeWhiteList").match(wavRegex)
-		return RocketChat.settings.get('Message_AudioRecorderEnabled') and (navigator.getUserMedia? or navigator.webkitGetUserMedia?) and wavEnabled and RocketChat.settings.get('FileUpload_Enabled')
-
-	unreadSince: ->
-		room = ChatRoom.findOne(this._id, { reactive: false })
+		room = RoomManager.getOpenedRoomByRid this._id
 		if room?
-			return RoomManager.openedRooms[room.t + room.name]?.unreadSince?.get()
+			data.since = room.unreadSince?.get()
 
-	unreadCount: ->
-		return RoomHistoryManager.getRoom(@_id).unreadNotLoaded.get() + Template.instance().unreadCount.get()
+		return data
 
 	formatUnreadSince: ->
-		room = ChatRoom.findOne(this._id, { reactive: false })
-		room = RoomManager.openedRooms[room?.t + room?.name]
-		date = room?.unreadSince.get()
-		if not date? then return
+		if not this.since? then return
 
-		return moment(date).calendar(null, {sameDay: 'LT'})
+		return moment(this.since).calendar(null, {sameDay: 'LT'})
 
 	flexTemplate: ->
 		return RocketChat.TabBar.getTemplate()
 
 	flexData: ->
-		return _.extend { rid: this._id }, RocketChat.TabBar.getData()
+		return _.extend {
+			rid: this._id
+			userDetail: Template.instance().userDetail.get(),
+			clearUserDetail: Template.instance().clearUserDetail
+		}, RocketChat.TabBar.getData()
 
 	adminClass: ->
 		return 'admin' if RocketChat.authz.hasRole(Meteor.userId(), 'admin')
@@ -198,11 +104,35 @@ Template.room.helpers
 	showToggleFavorite: ->
 		return true if isSubscribed(this._id) and favoritesEnabled()
 
-	compactView: ->
-		return 'compact' if Meteor.user()?.settings?.preferences?.compactView
+	viewMode: ->
+		viewMode = Meteor.user()?.settings?.preferences?.viewMode
+		switch viewMode
+			when 1 then cssClass = 'cozy'
+			when 2 then cssClass = 'compact'
+			else cssClass = ''
+		return cssClass
 
 	selectable: ->
 		return Template.instance().selectable.get()
+
+	hideUsername: ->
+		return if Meteor.user()?.settings?.preferences?.hideUsernames then 'hide-usernames'
+
+	hideAvatar: ->
+		return if Meteor.user()?.settings?.preferences?.hideAvatars then 'hide-avatars'
+
+	canPreview: ->
+		room = Session.get('roomData' + this._id)
+		if room.t isnt 'c'
+			return true
+
+		if RocketChat.authz.hasAllPermission('preview-c-room')
+			return true
+
+		return RocketChat.models.Subscriptions.findOne({rid: this._id})?
+
+isSocialSharingOpen = false
+touchMoved = false
 
 Template.room.events
 	"click, touchend": (e, t) ->
@@ -210,35 +140,104 @@ Template.room.events
 			t.sendToBottomIfNecessaryDebounced()
 		, 100
 
-	"touchstart .message": (e, t) ->
-		message = this._arguments[1]
-		doLongTouch = ->
-			mobileMessageMenu.show(message, t)
+	"click .messages-container": (e) ->
+		if RocketChat.TabBar.isFlexOpen() and Meteor.user()?.settings?.preferences?.hideFlexTab then RocketChat.TabBar.closeFlex()
 
+	"touchstart .message": (e, t) ->
+		touchMoved = false
+		isSocialSharingOpen = false
+		if e.originalEvent.touches.length isnt 1
+			return
+
+		if $(e.currentTarget).hasClass('system')
+			return
+
+		if e.target and e.target.nodeName is 'AUDIO'
+			return
+
+		if e.target and e.target.nodeName is 'A' and /^https?:\/\/.+/.test(e.target.getAttribute('href'))
+			e.preventDefault()
+			e.stopPropagation()
+
+		message = this._arguments[1]
+		doLongTouch = =>
+
+			if window.plugins?.socialsharing?
+				isSocialSharingOpen = true
+
+				if e.target and e.target.nodeName is 'A' and /^https?:\/\/.+/.test(e.target.getAttribute('href'))
+					if message.attachments?
+						attachment = _.find message.attachments, (item) -> return item.title is e.target.innerText
+						if attachment?
+							socialSharing
+								file: e.target.href
+								subject: e.target.innerText
+								message: message.msg
+							return
+
+					socialSharing
+						link: e.target.href
+						subject: e.target.innerText
+						message: message.msg
+					return
+
+				if e.target and e.target.nodeName is 'IMG'
+					socialSharing
+						file: e.target.src
+						message: message.msg
+					return
+
+			mobileMessageMenu.show(message, t, e, this)
+
+		Meteor.clearTimeout t.touchtime
 		t.touchtime = Meteor.setTimeout doLongTouch, 500
+
+	"click .message img": (e, t) ->
+		Meteor.clearTimeout t.touchtime
+		if isSocialSharingOpen is true or touchMoved is true
+			e.preventDefault()
+			e.stopPropagation()
 
 	"touchend .message": (e, t) ->
 		Meteor.clearTimeout t.touchtime
+		if isSocialSharingOpen is true
+			e.preventDefault()
+			e.stopPropagation()
+			return
+
+		if e.target and e.target.nodeName is 'A' and /^https?:\/\/.+/.test(e.target.getAttribute('href'))
+			if touchMoved is true
+				e.preventDefault()
+				e.stopPropagation()
+				return
+
+			if cordova?.InAppBrowser?
+				cordova.InAppBrowser.open(e.target.href, '_system')
+			else
+				window.open(e.target.href)
 
 	"touchmove .message": (e, t) ->
+		touchMoved = true
 		Meteor.clearTimeout t.touchtime
 
 	"touchcancel .message": (e, t) ->
 		Meteor.clearTimeout t.touchtime
 
-	"click .upload-progress > a": ->
+	"click .upload-progress-text > button": (e) ->
+		e.preventDefault();
 		Session.set "uploading-cancel-#{this.id}", true
 
-	"click .unread-bar > a.mark-read": ->
+	"click .unread-bar > button.mark-read": ->
 		readMessage.readNow(true)
 
-	"click .unread-bar > a.jump-to": ->
-		message = RoomHistoryManager.getRoom(@_id)?.firstUnread.get()
+	"click .unread-bar > button.jump-to": (e, t) ->
+		_id = t.data._id
+		message = RoomHistoryManager.getRoom(_id)?.firstUnread.get()
 		if message?
 			RoomHistoryManager.getSurroundingMessages(message, 50)
 		else
-			subscription = ChatSubscription.findOne({ rid: @_id })
-			message = ChatMessage.find({ rid: @_id, ts: { $gt: subscription?.ls } }, { sort: { ts: 1 }, limit: 1 }).fetch()[0]
+			subscription = ChatSubscription.findOne({ rid: _id })
+			message = ChatMessage.find({ rid: _id, ts: { $gt: subscription?.ls } }, { sort: { ts: 1 }, limit: 1 }).fetch()[0]
 			RoomHistoryManager.getSurroundingMessages(message, 50)
 
 	"click .flex-tab .more": (event, t) ->
@@ -248,7 +247,6 @@ Template.room.events
 			t.searchResult.set undefined
 		else
 			RocketChat.TabBar.openFlex()
-
 
 	"click .flex-tab  .video-remote" : (e) ->
 		if RocketChat.TabBar.isFlexOpen()
@@ -279,7 +277,9 @@ Template.room.events
 	'click .toggle-favorite': (event) ->
 		event.stopPropagation()
 		event.preventDefault()
-		Meteor.call 'toogleFavorite', @_id, !$('i', event.currentTarget).hasClass('favorite-room')
+		Meteor.call 'toggleFavorite', @_id, !$('i', event.currentTarget).hasClass('favorite-room'), (err) ->
+			if err
+				return handleError(err)
 
 	'click .edit-room-title': (event) ->
 		event.preventDefault()
@@ -289,17 +289,14 @@ Template.room.events
 			$('#room-title-field').focus().select()
 		, 10
 
-	"click .flex-tab .user-image > a" : (e) ->
+	"click .flex-tab .user-image > button" : (e, instance) ->
 		RocketChat.TabBar.openFlex()
-		Session.set('showUserInfo', @username)
+		instance.setUserDetail @username
 
-	'click .user-card-message': (e) ->
+	'click .user-card-message': (e, instance) ->
 		roomData = Session.get('roomData' + this._arguments[1].rid)
-		if roomData.t in ['c', 'p']
-			# Session.set('flexOpened', true)
-			Session.set('showUserInfo', $(e.currentTarget).data('username'))
-		# else
-			# Session.set('flexOpened', true)
+		if roomData.t in ['c', 'p', 'd']
+			instance.setUserDetail this._arguments[1].u.username
 		RocketChat.TabBar.setTemplate 'membersList'
 
 	'scroll .wrapper': _.throttle (e, instance) ->
@@ -310,24 +307,21 @@ Template.room.events
 				RoomHistoryManager.getMoreNext(@_id)
 	, 200
 
-	'click .load-more > a': ->
+	'click .load-more > button': ->
 		RoomHistoryManager.getMore(@_id)
 
 	'click .new-message': (e) ->
 		Template.instance().atBottom = true
 		Template.instance().find('.input-message').focus()
 
-	'click .see-all': (e, instance) ->
-		instance.showUsersOffline.set(!instance.showUsersOffline.get())
-
 	'click .message-cog': (e) ->
 		message = @_arguments[1]
-		$('.message-dropdown:visible').hide()
+		RocketChat.MessageAction.hideDropDown()
 
 		dropDown = $(".messages-box \##{message._id} .message-dropdown")
 
 		if dropDown.length is 0
-			actions = RocketChat.MessageAction.getButtons message
+			actions = RocketChat.MessageAction.getButtons message, 'message'
 
 			el = Blaze.toHTMLWithData Template.messageDropdown,
 				actions: actions
@@ -339,8 +333,6 @@ Template.room.events
 		dropDown.show()
 
 	'click .message-dropdown .message-action': (e, t) ->
-		e.preventDefault()
-		e.stopPropagation()
 		el = $(e.currentTarget)
 
 		button = RocketChat.MessageAction.getButtonById el.data('id')
@@ -348,21 +340,33 @@ Template.room.events
 			button.action.call @, e, t
 
 	'click .message-dropdown-close': ->
-		$('.message-dropdown:visible').hide()
+		RocketChat.MessageAction.hideDropDown()
 
-	"click .mention-link": (e) ->
+	"click .mention-link": (e, instance) ->
 		channel = $(e.currentTarget).data('channel')
 		if channel?
 			FlowRouter.go 'channel', {name: channel}
 			return
 
 		RocketChat.TabBar.setTemplate 'membersList'
-		Session.set('showUserInfo', $(e.currentTarget).data('username'))
+		instance.setUserDetail $(e.currentTarget).data('username')
+
 		RocketChat.TabBar.openFlex()
 
 	'click .image-to-download': (event) ->
 		ChatMessage.update {_id: this._arguments[1]._id, 'urls.url': $(event.currentTarget).data('url')}, {$set: {'urls.$.downloadImages': true}}
 		ChatMessage.update {_id: this._arguments[1]._id, 'attachments.image_url': $(event.currentTarget).data('url')}, {$set: {'attachments.$.downloadImages': true}}
+
+	'click .collapse-switch': (e) ->
+		index = $(e.currentTarget).data('index')
+		collapsed = $(e.currentTarget).data('collapsed')
+		id = @_arguments[1]._id
+
+		if @_arguments[1]?.attachments?
+			ChatMessage.update {_id: id}, {$set: {"attachments.#{index}.collapsed": !collapsed}}
+
+		if @_arguments[1]?.urls?
+			ChatMessage.update {_id: id}, {$set: {"urls.#{index}.collapsed": !collapsed}}
 
 	'dragenter .dropzone': (e) ->
 		e.currentTarget.classList.add 'over'
@@ -393,28 +397,10 @@ Template.room.events
 
 		fileUpload filesToUpload
 
-	'click .deactivate': ->
-		username = Session.get('showUserInfo')
-		user = Meteor.users.findOne { username: String(username) }
-		Meteor.call 'setUserActiveStatus', user?._id, false, (error, result) ->
-			if result
-				toastr.success t('User_has_been_deactivated')
-			if error
-				toastr.error error.reason
-
-	'click .activate': ->
-		username = Session.get('showUserInfo')
-		user = Meteor.users.findOne { username: String(username) }
-		Meteor.call 'setUserActiveStatus', user?._id, true, (error, result) ->
-			if result
-				toastr.success t('User_has_been_activated')
-			if error
-				toastr.error error.reason
-
 	'load img': (e, template) ->
 		template.sendToBottomIfNecessary?()
 
-	'click .jump-recent .jump-link': (e, template) ->
+	'click .jump-recent button': (e, template) ->
 		e.preventDefault()
 		template.atBottom = true
 		RoomHistoryManager.clear(template?.data?._id)
@@ -448,13 +434,15 @@ Template.room.onCreated ->
 	# this.scrollOnBottom = true
 	# this.typing = new msgTyping this.data._id
 	this.showUsersOffline = new ReactiveVar false
-	this.atBottom = true
+	this.atBottom = if FlowRouter.getQueryParam('msg') then false else true
 	this.unreadCount = new ReactiveVar 0
 
 	this.selectable = new ReactiveVar false
 	this.selectedMessages = []
 	this.selectedRange = []
 	this.selectablePointer = null
+
+	this.userDetail = new ReactiveVar FlowRouter.getParam('username')
 
 	this.resetSelection = (enabled) =>
 		this.selectable.set(enabled)
@@ -490,16 +478,27 @@ Template.room.onCreated ->
 
 		return previewMessages
 
-	@autorun =>
-		@subscribe 'fullUserData', Session.get('showUserInfo'), 1
+	this.setUserDetail = (username) =>
+		this.userDetail.set username
 
-	Meteor.call 'getRoomModeratorsAndOwners', @data._id, (error, results) ->
+	this.clearUserDetail = =>
+		this.userDetail.set null
+
+	Meteor.call 'getRoomRoles', @data._id, (error, results) ->
 		if error
-			return toastr.error error.reason
+			return handleError(error)
 
 		for record in results
 			delete record._id
-			RoomModeratorsAndOwners.upsert { rid: record.rid, "u._id": record.u._id }, record
+			RoomRoles.upsert { rid: record.rid, "u._id": record.u._id }, record
+
+	RoomRoles.find({ rid: @data._id }).observe
+		added: (role) =>
+			ChatMessage.update { rid: @data._id, "u._id": role?.u?._id }, { $addToSet: { roles: role._id } }, { multi: true } # Update message to re-render DOM
+		changed: (role, oldRole) =>
+			ChatMessage.update { rid: @data._id, "u._id": role?.u?._id }, { $inc: { rerender: 1 } }, { multi: true } # Update message to re-render DOM
+		removed: (role) =>
+			ChatMessage.update { rid: @data._id, "u._id": role?.u?._id }, { $pull: { roles: role._id } }, { multi: true } # Update message to re-render DOM
 
 Template.room.onDestroyed ->
 	window.removeEventListener 'resize', this.onWindowResize
@@ -588,7 +587,7 @@ Template.room.onRendered ->
 	$('.flex-tab-bar').on 'click', (e, t) ->
 		Meteor.setTimeout ->
 			template.sendToBottomIfNecessaryDebounced()
-		, 100
+		, 50
 
 	updateUnreadCount = _.throttle ->
 		firstMessageOnScreen = document.elementFromPoint(containerBarsOffset.left+1, containerBarsOffset.top+containerBars.height()+1)
@@ -596,7 +595,8 @@ Template.room.onRendered ->
 			firstMessage = ChatMessage.findOne firstMessageOnScreen.id
 			if firstMessage?
 				subscription = ChatSubscription.findOne rid: template.data._id
-				template.unreadCount.set ChatMessage.find({rid: template.data._id, ts: {$lt: firstMessage.ts, $gt: subscription?.ls}}).count()
+				count = ChatMessage.find({rid: template.data._id, ts: {$lt: firstMessage.ts, $gt: subscription?.ls}}).count()
+				template.unreadCount.set count
 			else
 				template.unreadCount.set 0
 	, 300

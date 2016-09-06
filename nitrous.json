@@ -1,0 +1,6 @@
+{
+  "template": "meteor",
+  "ports": [3000],
+  "name": "Rocket.Chat",
+  "description": "Have your own Slack like online chat, built with Meteor."
+}

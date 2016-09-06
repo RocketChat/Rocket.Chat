@@ -1,46 +1,121 @@
+/* globals ChatSubscription */
+
 Template.pushNotificationsFlexTab.helpers({
-	"desktopNotifications"() {
-		const sub = ChatSubscription.findOne({ rid: Session.get('openedRoom') });
+	desktopNotifications() {
+		var sub = ChatSubscription.findOne({
+			rid: Session.get('openedRoom')
+		}, {
+			fields: {
+				desktopNotifications: 1
+			}
+		});
 		return sub ? sub.desktopNotifications : '';
 	},
-	"desktopNotificationsValue"() {
-		sub = ChatSubscription.findOne({ rid: Session.get('openedRoom') });
-		if (sub) {
-			switch (sub.desktopNotifications) {
-				case 'all':
-					return TAPi18n.__('All_messages');
-					break;
-				case 'nothing':
-					return TAPi18n.__('Nothing');
-					break;
-				default:
-					return TAPi18n.__('Mentions');
-					break;
+	mobilePushNotifications() {
+		var sub = ChatSubscription.findOne({
+			rid: Session.get('openedRoom')
+		}, {
+			fields: {
+				mobilePushNotifications: 1
 			}
-		}
-	},
-	"mobilePushNotifications"() {
-		const sub = ChatSubscription.findOne({ rid: Session.get('openedRoom') });
+		});
 		return sub ? sub.mobilePushNotifications : '';
 	},
-	"mobilePushNotificationsValue"() {
-		sub = ChatSubscription.findOne({ rid: Session.get('openedRoom') });
+	emailNotifications() {
+		var sub = ChatSubscription.findOne({
+			rid: Session.get('openedRoom')
+		}, {
+			fields: {
+				emailNotifications: 1
+			}
+		});
+		return sub ? sub.emailNotifications : '';
+	},
+	showEmailMentions() {
+		var sub = ChatSubscription.findOne({
+			rid: Session.get('openedRoom')
+		}, {
+			fields: {
+				t: 1
+			}
+		});
+		return sub && sub.t !== 'd';
+	},
+	unreadAlert() {
+		var sub = ChatSubscription.findOne({
+			rid: Session.get('openedRoom')
+		}, {
+			fields: {
+				unreadAlert: 1
+			}
+		});
+		return sub ? sub.unreadAlert : 'default';
+	},
+	unreadAlertText() {
+		var sub = ChatSubscription.findOne({
+			rid: Session.get('openedRoom')
+		}, {
+			fields: {
+				unreadAlert: 1
+			}
+		});
 		if (sub) {
-			switch (sub.mobilePushNotifications) {
+			switch (sub.unreadAlert) {
 				case 'all':
-					return TAPi18n.__('All_messages');
-					break;
+					return t('On');
 				case 'nothing':
-					return TAPi18n.__('Nothing');
-					break;
+					return t('Off');
+			}
+		}
+		return t('Use_account_preference');
+	},
+	subValue(field) {
+		var sub = ChatSubscription.findOne({
+			rid: Session.get('openedRoom')
+		}, {
+			fields: {
+				t: 1,
+				[field]: 1
+			}
+		});
+		if (sub) {
+			switch (sub[field]) {
+				case 'all':
+					return t('All_messages');
+				case 'nothing':
+					return t('Nothing');
+				case 'default':
+					return t('Use_account_preference');
+				case 'mentions':
+					return t('Mentions');
 				default:
-					return TAPi18n.__('Mentions');
-					break;
+					if (field === 'emailNotifications') {
+						return t('Use_account_preference');
+					} else {
+						return t('Mentions');
+					}
 			}
 		}
 	},
-	"editing"(field) {
+	desktopNotificationDuration() {
+		const sub = ChatSubscription.findOne({
+			rid: Session.get('openedRoom')
+		}, {
+			fields: {
+				desktopNotificationDuration: 1
+			}
+		});
+		if (!sub) {
+			return false;
+		}
+		// Convert to Number
+		return sub.desktopNotificationDuration - 0;
+	},
+	editing(field) {
 		return Template.instance().editing.get() === field;
+	},
+	emailVerified() {
+		return Meteor.user().emails && Meteor.user().emails[0] && Meteor.user().emails[0].verified;
 	}
 });
 
@@ -49,8 +124,8 @@ Template.pushNotificationsFlexTab.onCreated(function() {
 
 	this.validateSetting = (field) => {
 		const value = this.$('input[name='+ field +']:checked').val();
-		if (['all', 'mentions', 'nothing'].indexOf(value) === -1) {
-			toastr.error(TAPi18n.__('Invalid_notification_setting_s', value || ''));
+		if (['all', 'mentions', 'nothing', 'default'].indexOf(value) === -1) {
+			toastr.error(t('Invalid_notification_setting_s', value || ''));
 			return false;
 		}
 		return true;
@@ -59,14 +134,24 @@ Template.pushNotificationsFlexTab.onCreated(function() {
 	this.saveSetting = () => {
 		const field = this.editing.get();
 		const value = this.$('input[name='+ field +']:checked').val();
+		const duration = $('input[name=duration]').val();
 		if (this.validateSetting(field)) {
-			Meteor.call('saveNotificationSettings', Session.get('openedRoom'), field, value, (err, result) => {
+			Meteor.call('saveNotificationSettings', Session.get('openedRoom'), field, value, (err/*, result*/) => {
 				if (err) {
-					return toastr.error(TAPi18n.__(err.reason || err.message));
+					return handleError(err);
+				}
+				if (duration !== undefined) {
+					Meteor.call('saveDesktopNotificationDuration', Session.get('openedRoom'), duration, (err) => {
+						if (err) {
+							return handleError(err);
+						}
+						this.editing.set();
+					});
+				} else {
+					this.editing.set();
 				}
 			});
 		}
-		this.editing.set();
 	};
 });
 

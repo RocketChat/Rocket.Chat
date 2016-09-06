@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 ROOTPATH=/var/www/rocket.chat
 PM2FILE=pm2.json

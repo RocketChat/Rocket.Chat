@@ -12,6 +12,14 @@ AccountBox.addRoute({
 }, livechatManagerRoutes);
 
 AccountBox.addRoute({
+	name: 'livechat-current-chats',
+	path: '/current',
+	sideNav: 'livechatFlex',
+	i18nPageTitle: 'Current_Chats',
+	pageTemplate: 'livechatCurrentChats'
+}, livechatManagerRoutes);
+
+AccountBox.addRoute({
 	name: 'livechat-users',
 	path: '/users',
 	sideNav: 'livechatFlex',
@@ -66,3 +74,52 @@ AccountBox.addRoute({
 	i18nPageTitle: 'Appearance',
 	pageTemplate: 'livechatAppearance'
 }, livechatManagerRoutes);
+
+AccountBox.addRoute({
+	name: 'livechat-officeHours',
+	path: '/officeHours',
+	sideNav: 'livechatFlex',
+	i18nPageTitle: 'Office_Hours',
+	pageTemplate: 'livechatOfficeHours'
+}, livechatManagerRoutes);
+
+AccountBox.addRoute({
+	name: 'livechat-customfields',
+	path: '/customfields',
+	sideNav: 'livechatFlex',
+	i18nPageTitle: 'Custom_Fields',
+	pageTemplate: 'livechatCustomFields'
+}, livechatManagerRoutes);
+
+AccountBox.addRoute({
+	name: 'livechat-customfield-edit',
+	path: '/customfields/:_id/edit',
+	sideNav: 'livechatFlex',
+	i18nPageTitle: 'Edit_Custom_Field',
+	pageTemplate: 'livechatCustomFieldForm'
+}, livechatManagerRoutes);
+
+AccountBox.addRoute({
+	name: 'livechat-customfield-new',
+	path: '/customfields/new',
+	sideNav: 'livechatFlex',
+	i18nPageTitle: 'New_Custom_Field',
+	pageTemplate: 'livechatCustomFieldForm'
+}, livechatManagerRoutes);
+
+AccountBox.addRoute({
+	name: 'livechat-integrations',
+	path: '/integrations',
+	sideNav: 'livechatFlex',
+	i18nPageTitle: 'Integrations',
+	pageTemplate: 'livechatIntegrations'
+}, livechatManagerRoutes);
+
+AccountBox.addRoute({
+	name: 'livechat-queue',
+	path: '/livechat-queue',
+	i18nPageTitle: 'Livechat_Queue',
+	pageTemplate: 'livechatQueue'
+});
+
+

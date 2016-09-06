@@ -10,6 +10,13 @@
 				<li>
 					<a href="{{pathFor 'admin-info'}}" class="admin-link">{{_ "Info"}}</a>
 				</li>
+
+				{{#if hasPermission 'run-import'}}
+					<li>
+						<a href="{{pathFor 'admin-import'}}" class="admin-link">Import</a>
+					</li>
+				{{/if}}
+
 				{{#if hasPermission 'view-room-administration'}}
 					<li>
 						<a href="{{pathFor 'admin-rooms'}}" class="admin-link">{{_ "Rooms"}}</a>
@@ -30,11 +37,11 @@
 					{{/if}}
 				{{/each}}
 
-				<h3 class="add-room">
-					{{_ "Settings"}}
-				</h3>
-
 				{{#if hasPermission 'view-privileged-setting'}}
+					<h3 class="add-room">
+						{{_ "Settings"}}
+					</h3>
+
 					{{#each groups}}
 					<li>
 						<a href="{{pathFor 'admin' group=_id}}" class="admin-link">{{label}}</a>

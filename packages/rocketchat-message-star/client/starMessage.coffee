@@ -1,10 +1,15 @@
 Meteor.methods
 	starMessage: (message) ->
 		if not Meteor.userId()
-			throw new Meteor.Error('invalid-user', "[methods] starMessage -> Invalid user")
+			return false
+
+		room = RocketChat.models.Rooms.findOne({ _id: message.rid })
+
+		if Array.isArray(room.usernames) && room.usernames.indexOf(Meteor.user().username) is -1
+			return false
 
 		if not RocketChat.settings.get 'Message_AllowStarring'
-			throw new Meteor.Error 'message-starring-not-allowed', "[methods] starMessage -> Message starring not allowed"
+			return false
 
 		ChatMessage.update
 			_id: message._id

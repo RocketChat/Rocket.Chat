@@ -5,7 +5,7 @@ Meteor.startup ->
 		unreadCount = 0
 		unreadAlert = false
 
-		subscriptions = ChatSubscription.find({open: true}, { fields: { unread: 1, alert: 1, rid: 1, t: 1, name: 1, ls: 1 } })
+		subscriptions = ChatSubscription.find({open: true}, { fields: { unread: 1, alert: 1, rid: 1, t: 1, name: 1, ls: 1, unreadAlert: 1 } })
 
 		openedRoomId = undefined
 		Tracker.nonreactive ->
@@ -13,6 +13,7 @@ Meteor.startup ->
 				openedRoomId = Session.get 'openedRoom'
 
 		for subscription in subscriptions.fetch()
+			fireGlobalEvent 'unread-changed-by-subscription', subscription
 
 			if subscription.alert or subscription.unread > 0
 				# This logic is duplicated in /client/notifications/notification.coffee.
@@ -21,14 +22,18 @@ Meteor.startup ->
 				if hasFocus and subscriptionIsTheOpenedRoom
 					# The user has probably read all messages in this room.
 					# TODO: readNow() should return whether it has actually marked the room as read.
-					readMessage.readNow()
-				else
-					# Increment the total unread count.
-					unreadCount += subscription.unread
-					if subscription.alert is true
+					Meteor.setTimeout ->
+						readMessage.readNow()
+					, 500
+
+				# Increment the total unread count.
+				unreadCount += subscription.unread
+				if subscription.alert is true and subscription.unreadAlert isnt 'nothing'
+					if subscription.unreadAlert == 'all' or Meteor.user()?.settings?.preferences?.unreadAlert isnt false
 						unreadAlert = '•'
 
-			readMessage.refreshUnreadMark(subscription.rid)
+			if RoomManager.openedRooms[subscription.t + subscription.name]
+				readMessage.refreshUnreadMark(subscription.rid)
 
 		menu.updateUnreadBars()
 
@@ -49,7 +54,7 @@ Meteor.startup ->
 		animation: 'none'
 
 	Tracker.autorun ->
-		siteName = RocketChat.settings.get 'Site_Name'
+		siteName = RocketChat.settings.get('Site_Name') or ''
 
 		unread = Session.get 'unread'
 		fireGlobalEvent 'unread-changed', unread

@@ -1,26 +1,20 @@
 Meteor.methods
 	updateOAuthApp: (applicationId, application) ->
 		if not RocketChat.authz.hasPermission @userId, 'manage-oauth-apps'
-			throw new Meteor.Error 'not_authorized'
+			throw new Meteor.Error 'error-not-allowed', 'Not allowed', { method: 'updateOAuthApp' }
 
-		if not _.isString(application.name)
-			throw new Meteor.Error 'invalid_name', '[methods] updateOAuthApp -> name must be string'
+		if not _.isString(application.name) or application.name.trim() is ''
+			throw new Meteor.Error 'error-invalid-name', 'Invalid name', { method: 'updateOAuthApp' }
 
-		if application.name.trim() is ''
-			throw new Meteor.Error 'invalid_name', '[methods] updateOAuthApp -> name can\'t be empty'
-
-		if not _.isString(application.redirectUri)
-			throw new Meteor.Error 'invalid_redirectUri', '[methods] updateOAuthApp -> redirectUri must be string'
-
-		if application.redirectUri.trim() is ''
-			throw new Meteor.Error 'invalid_redirectUri', '[methods] updateOAuthApp -> redirectUri can\'t be empty'
+		if not _.isString(application.redirectUri) or application.redirectUri.trim() is ''
+			throw new Meteor.Error 'error-invalid-redirectUri', 'Invalid redirectUri', { method: 'updateOAuthApp' }
 
 		if not _.isBoolean(application.active)
-			throw new Meteor.Error 'invalid_active', '[methods] updateOAuthApp -> active must be boolean'
+			throw new Meteor.Error 'error-invalid-arguments', 'Invalid arguments', { method: 'updateOAuthApp' }
 
 		currentApplication = RocketChat.models.OAuthApps.findOne(applicationId)
 		if not currentApplication?
-			throw new Meteor.Error 'invalid_application', '[methods] updateOAuthApp -> application not found'
+			throw new Meteor.Error 'error-application-not-found', 'Application not found', { method: 'updateOAuthApp' }
 
 		RocketChat.models.OAuthApps.update applicationId,
 			$set:

@@ -1,20 +1,24 @@
 Template.livechatTriggers.helpers({
 	conditions() {
 		var trigger = Template.instance().trigger.get();
-		if (!trigger) return [];
+		if (!trigger) {
+			return [];
+		}
 
 		return trigger.conditions;
 	},
 	actions() {
 		var trigger = Template.instance().trigger.get();
-		if (!trigger) return [];
+		if (!trigger) {
+			return [];
+		}
 
 		return trigger.actions;
 	}
 });
 
 Template.livechatTriggers.events({
-	'submit #trigger-form' (e, instance) {
+	'submit #trigger-form'(e, instance) {
 		e.preventDefault();
 		var $btn = instance.$('button.save');
 
@@ -50,17 +54,18 @@ Template.livechatTriggers.events({
 			}
 		});
 
-		Meteor.call('livechat:saveTrigger', data, function(error, result) {
+		Meteor.call('livechat:saveTrigger', data, function(error/*, result*/) {
 			$btn.html(oldBtnValue);
 			if (error) {
-				return toastr.error(t(error.reason || error.error));
+				return handleError(error);
 			}
 
 			toastr.success(t('Saved'));
 		});
 	},
-	'click .delete-trigger' (e, instance) {
-		e.preventDefault()
+
+	'click .delete-trigger'(e/*, instance*/) {
+		e.preventDefault();
 
 		swal({
 			title: t('Are_you_sure'),
@@ -70,11 +75,11 @@ Template.livechatTriggers.events({
 			confirmButtonText: t('Yes'),
 			cancelButtonText: t('Cancel'),
 			closeOnConfirm: false,
-			html: false,
+			html: false
 		}, () => {
-			Meteor.call('livechat:removeTrigger', function(error, result) {
+			Meteor.call('livechat:removeTrigger', function(error/*, result*/) {
 				if (error) {
-					return toastr.error(t(error.reason || error.error));
+					return handleError(error);
 				}
 
 				swal({
@@ -82,7 +87,7 @@ Template.livechatTriggers.events({
 					text: t('Trigger_removed'),
 					type: 'success',
 					timer: 1000,
-					showConfirmButton: false,
+					showConfirmButton: false
 				});
 			});
 		});

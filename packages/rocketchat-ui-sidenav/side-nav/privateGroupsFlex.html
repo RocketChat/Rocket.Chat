@@ -6,17 +6,17 @@
 	</header>
 	<div class="content">
 		<div class="wrapper">
-			<h4>{{_ "Create_new_private_group"}}</h4>
+			<h4>{{_ "Create_new"}}</h4>
 			<div class="input-line">
 				<label for="pvt-group-name">{{_ "Name"}}</label>
-				<input type="text" id="pvt-group-name" class="required" dir="auto">
+				<input type="text" id="pvt-group-name" class="required" dir="auto" placeholder="{{_ 'Enter_name_here'}}">
 			</div>
 			<div class="input-line">
-				<label for="pvt-group-members">{{_ "Members" }}</label>
-				{{> inputAutocomplete settings=autocompleteSettings id="pvt-group-members" class="search" placeholder=tRoomMembers autocomplete="off"}}
+				<label for="pvt-group-members">{{_ "Select_users" }}</label>
+				{{> inputAutocomplete settings=autocompleteSettings id="pvt-group-members" class="search" placeholder=(_ "Search_by_username") autocomplete="off"}}
 				<ul class="selected-users">
 					{{#each selectedUsers}}
-						<li>{{name}} <i class="icon-cancel remove-room-member"></i></li>
+						<li>{{.}} <i class="icon-cancel remove-room-member"></i></li>
 					{{/each}}
 				</ul>
 			</div>
@@ -39,15 +39,15 @@
 					<strong>{{_ "Oops!"}}</strong>
 					{{{_ "Duplicate_private_group_name" groupName}}}
 				</div>
-			{{/if}}	
+			{{/if}}
 			{{#if error.archivedduplicate}}
 				<div class="input-error">
 					<strong>{{_ "Oops!"}}</strong>
 					{{{_ "Duplicate_archived_private_group_name" groupName}}}
 				</div>
-			{{/if}}	
+			{{/if}}
 			<div class="input-submit">
-				<button class="button clean primary save-pvt-group">{{_ "Save" }}</button>
+				<button class="button clean primary save-pvt-group">{{_ "Create" }}</button>
 				<button class="button clean cancel-pvt-group">{{_ "Cancel" }}</button>
 			</div>
 		</div>

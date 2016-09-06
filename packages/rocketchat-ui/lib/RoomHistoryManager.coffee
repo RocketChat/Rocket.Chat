@@ -6,12 +6,12 @@
 	getRoom = (rid) ->
 		if not histories[rid]?
 			histories[rid] =
-				hasMore: ReactiveVar true
-				hasMoreNext: ReactiveVar false
-				isLoading: ReactiveVar false
-				unreadNotLoaded: ReactiveVar 0
-				firstUnread: ReactiveVar {}
-				loaded: 0
+				hasMore: new ReactiveVar true
+				hasMoreNext: new ReactiveVar false
+				isLoading: new ReactiveVar false
+				unreadNotLoaded: new ReactiveVar 0
+				firstUnread: new ReactiveVar
+				loaded: undefined
 
 		return histories[rid]
 
@@ -50,7 +50,9 @@
 			if wrapper?
 				previousHeight = wrapper.scrollHeight
 
-			ChatMessage.upsert {_id: item._id}, item for item in result?.messages or [] when item.t isnt 'command'
+			for item in result?.messages or [] when item.t isnt 'command'
+				item.roles = _.union(UserRoles.findOne(item.u?._id)?.roles, RoomRoles.findOne({rid: item.rid, 'u._id': item.u?._id})?.roles)
+				ChatMessage.upsert {_id: item._id}, item
 
 			if wrapper?
 				heightDiff = wrapper.scrollHeight - previousHeight
@@ -61,7 +63,9 @@
 				RoomManager.updateMentionsMarksOfRoom typeName
 
 			room.isLoading.set false
-			room.loaded += result?.messages?.length
+			room.loaded ?= 0
+			if result?.messages?.length?
+				room.loaded += result.messages.length
 			if result?.messages?.length < limit
 				room.hasMore.set false
 
@@ -93,13 +97,16 @@
 			Meteor.call 'loadNextMessages', rid, ts, limit, (err, result) ->
 				for item in result?.messages or []
 					if item.t isnt 'command'
+						item.roles = _.union(UserRoles.findOne(item.u?._id)?.roles, RoomRoles.findOne({rid: item.rid, 'u._id': item.u?._id})?.roles)
 						ChatMessage.upsert {_id: item._id}, item
 
 				Meteor.defer ->
 					RoomManager.updateMentionsMarksOfRoom typeName
 
 				room.isLoading.set false
-				room.loaded += result.messages.length
+				room.loaded ?= 0
+				if result.messages.length?
+					room.loaded += result.messages.length
 				if result.messages.length < limit
 					room.hasMoreNext.set false
 
@@ -124,7 +131,7 @@
 
 			setTimeout ->
 				msgElement.removeClass('highlight')
-			, 3000
+			, 500
 		else
 			room = getRoom message.rid
 			room.isLoading.set true
@@ -143,6 +150,7 @@
 			Meteor.call 'loadSurroundingMessages', message, limit, (err, result) ->
 				for item in result?.messages or []
 					if item.t isnt 'command'
+						item.roles = _.union(UserRoles.findOne(item.u?._id)?.roles, RoomRoles.findOne({rid: item.rid, 'u._id': item.u?._id})?.roles)
 						ChatMessage.upsert {_id: item._id}, item
 
 				Meteor.defer ->
@@ -165,8 +173,10 @@
 
 					setTimeout ->
 						msgElement.removeClass('highlight')
-					, 3000
-				room.loaded += result.messages.length
+					, 500
+				room.loaded ?= 0
+				if result.messages.length?
+					room.loaded += result.messages.length
 				room.hasMore.set result.moreBefore
 				room.hasMoreNext.set result.moreAfter
 
@@ -183,7 +193,7 @@
 	getMoreIfIsEmpty = (rid) ->
 		room = getRoom rid
 
-		if room.loaded is 0
+		if room.loaded is undefined
 			getMore rid
 
 

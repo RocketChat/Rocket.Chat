@@ -12,13 +12,13 @@ Template.mailer.events
 		query = $(t.find('[name=query]')).val()
 
 		unless from
-			toastr.error TAPi18n.__('From_email_is_required')
+			toastr.error TAPi18n.__('error-invalid-from-address')
 			return
 
 		if body.indexOf('[unsubscribe]') is -1
-			toastr.error TAPi18n.__('You_must_provide_the_unsubscribe_link')
+			toastr.error TAPi18n.__('error-missing-unsubscribe-link')
 			return
 
 		Meteor.call 'Mailer.sendMail', from, subject, body, dryrun, query, (err) ->
-			return toastr.error err.reason if err
+			return handleError(err) if err
 			toastr.success TAPi18n.__('The_emails_are_being_sent')

@@ -3,11 +3,18 @@ RocketChat.models.Subscriptions = new class extends RocketChat.models._Base
 		@_initModel 'subscription'
 
 		@tryEnsureIndex { 'rid': 1, 'u._id': 1 }, { unique: 1 }
-		@tryEnsureIndex { 'u._id': 1, 'name': 1, 't': 1 }, { unique: 1 }
+		@tryEnsureIndex { 'rid': 1, 'alert': 1, 'u._id': 1 }
+		@tryEnsureIndex { 'rid': 1, 'roles': 1 }
+		@tryEnsureIndex { 'u._id': 1, 'name': 1, 't': 1 }
+		@tryEnsureIndex { 'u._id': 1, 'name': 1, 't': 1, 'code': 1 }, { unique: 1 }
 		@tryEnsureIndex { 'open': 1 }
 		@tryEnsureIndex { 'alert': 1 }
 		@tryEnsureIndex { 'unread': 1 }
 		@tryEnsureIndex { 'ts': 1 }
+		@tryEnsureIndex { 'ls': 1 }
+		@tryEnsureIndex { 'desktopNotifications': 1 }, { sparse: 1 }
+		@tryEnsureIndex { 'mobilePushNotifications': 1 }, { sparse: 1 }
+		@tryEnsureIndex { 'emailNotifications': 1 }, { sparse: 1 }
 
 
 	# FIND ONE
@@ -25,12 +32,42 @@ RocketChat.models.Subscriptions = new class extends RocketChat.models._Base
 
 		return @find query, options
 
+	findByUserIdUpdatedAfter: (userId, updatedAt, options) ->
+		query =
+			"u._id": userId
+			_updatedAt:
+				$gt: updatedAt
+
+		return @find query, options
+
 	# FIND
 	findByRoomIdAndRoles: (roomId, roles, options) ->
 		roles = [].concat roles
 		query =
 			"rid": roomId
 			"roles": { $in: roles }
+
+		return @find query, options
+
+	findByType: (types, options) ->
+		query =
+			t:
+				$in: types
+
+		return @find query, options
+
+	findByTypeAndUserId: (type, userId, options) ->
+		query =
+			t: type
+			'u._id': userId
+
+		return @find query, options
+
+	findByTypeNameAndUserId: (type, name, userId, options) ->
+		query =
+			t: type
+			name: name
+			'u._id': userId
 
 		return @find query, options
 
@@ -41,11 +78,18 @@ RocketChat.models.Subscriptions = new class extends RocketChat.models._Base
 
 		return @find(query, options)?.fetch?()?[0]?.ls
 
-	# UPDATE
-	archiveByRoomIdAndUserId: (roomId, userId) ->
+	findByRoomIdAndUserIds: (roomId, userIds) ->
 		query =
 			rid: roomId
-			'u._id': userId
+			'u._id':
+				$in: userIds
+
+		return @find query
+
+	# UPDATE
+	archiveByRoomId: (roomId) ->
+		query =
+			rid: roomId
 
 		update =
 			$set:
@@ -55,10 +99,9 @@ RocketChat.models.Subscriptions = new class extends RocketChat.models._Base
 
 		return @update query, update
 
-	unarchiveByRoomIdAndUserId: (roomId, userId) ->
+	unarchiveByRoomId: (roomId) ->
 		query =
 			rid: roomId
-			'u._id': userId
 
 		update =
 			$set:
@@ -105,6 +148,19 @@ RocketChat.models.Subscriptions = new class extends RocketChat.models._Base
 
 		return @update query, update
 
+	setAsUnreadByRoomIdAndUserId: (roomId, userId, firstMessageUnreadTimestamp) ->
+		query =
+			rid: roomId
+			'u._id': userId
+
+		update =
+			$set:
+				open: true
+				alert: true
+				ls: firstMessageUnreadTimestamp
+
+		return @update query, update
+
 	setFavoriteByRoomIdAndUserId: (roomId, userId, favorite=true) ->
 		query =
 			rid: roomId
@@ -116,7 +172,7 @@ RocketChat.models.Subscriptions = new class extends RocketChat.models._Base
 
 		return @update query, update
 
-	updateNameByRoomId: (roomId, name) ->
+	updateNameAndAlertByRoomId: (roomId, name) ->
 		query =
 			rid: roomId
 
@@ -124,6 +180,16 @@ RocketChat.models.Subscriptions = new class extends RocketChat.models._Base
 			$set:
 				name: name
 				alert: true
+
+		return @update query, update, { multi: true }
+
+	updateNameByRoomId: (roomId, name) ->
+		query =
+			rid: roomId
+
+		update =
+			$set:
+				name: name
 
 		return @update query, update, { multi: true }
 
@@ -194,17 +260,19 @@ RocketChat.models.Subscriptions = new class extends RocketChat.models._Base
 
 		return @update query, update, { multi: true }
 
-	setAlertForRoomIdExcludingUserId: (roomId, userId, alert=true) ->
+	setAlertForRoomIdExcludingUserId: (roomId, userId) ->
 		query =
 			rid: roomId
-			alert:
-				$ne: alert
 			'u._id':
 				$ne: userId
+			$or: [
+				{ alert: { $ne: true } }
+				{ open: { $ne: true } }
+			]
 
 		update =
 			$set:
-				alert: alert
+				alert: true
 				open: true
 
 		return @update query, update, { multi: true }

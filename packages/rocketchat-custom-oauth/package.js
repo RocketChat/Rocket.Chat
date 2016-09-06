@@ -1,12 +1,10 @@
 Package.describe({
 	name: 'rocketchat:custom-oauth',
-	summary: "Custom OAuth flow",
-	version: "1.0.0"
+	summary: 'Custom OAuth flow',
+	version: '1.0.0'
 });
 
 Package.onUse(function(api) {
-	api.versionsFrom('1.0');
-
 	api.use('check');
 	api.use('oauth');
 	api.use('oauth2');

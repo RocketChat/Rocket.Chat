@@ -36,6 +36,7 @@ class CustomOAuth
 		@serverURL = options.serverURL
 		@tokenPath = options.tokenPath
 		@identityPath = options.identityPath
+		@tokenSentVia = options.tokenSentVia
 
 		if not /^https?:\/\/.+/.test @tokenPath
 			@tokenPath = @serverURL + @tokenPath
@@ -54,6 +55,7 @@ class CustomOAuth
 		response = undefined
 		try
 			response = HTTP.post @tokenPath,
+				auth: config.clientId + ':' + OAuth.openSecret(config.secret)
 				headers:
 					Accept: 'application/json'
 					'User-Agent': @userAgent
@@ -75,12 +77,19 @@ class CustomOAuth
 			return response.data.access_token
 
 	getIdentity: (accessToken) ->
+		params = {}
+		headers =
+			'User-Agent': @userAgent # http://doc.gitlab.com/ce/api/users.html#Current-user
+
+		if @tokenSentVia is 'header'
+			headers['Authorization'] = 'Bearer ' + accessToken
+		else
+			params['access_token'] = accessToken
+
 		try
 			response = HTTP.get @identityPath,
-				headers:
-					'User-Agent': @userAgent # http://doc.gitlab.com/ce/api/users.html#Current-user
-				params:
-					access_token: accessToken
+				headers: headers
+				params: params
 
 			if response.data
 				return response.data
@@ -95,18 +104,42 @@ class CustomOAuth
 		self = @
 		OAuth.registerService @name, 2, null, (query) ->
 			accessToken = self.getAccessToken query
-			console.log 'at:', accessToken
+			# console.log 'at:', accessToken
 
 			identity = self.getIdentity accessToken
+
+			# Fix for Reddit
+			if identity?.result
+				identity = identity.result
 
 			# Fix WordPress-like identities having 'ID' instead of 'id'
 			if identity?.ID and not identity.id
 				identity.id = identity.ID
 
-			console.log 'id:', JSON.stringify identity, null, '  '
+			# Fix Auth0-like identities having 'user_id' instead of 'id'
+			if identity?.user_id and not identity.id
+				identity.id = identity.user_id
+
+			if identity?.CharacterID and not identity.id
+				identity.id = identity.CharacterID
+
+			# Fix Dataporten having 'user.userid' instead of 'id'
+			if identity?.user?.userid and not identity.id
+				identity.id = identity.user.userid
+				identity.email = identity.user.email
+
+			# Fix general 'phid' instead of 'id' from phabricator
+			if identity?.phid and not identity.id
+				identity.id = identity.phid
+
+			# Fix general 'userid' instead of 'id' from provider
+			if identity?.userid and not identity.id
+				identity.id = identity.userid
+
+			# console.log 'id:', JSON.stringify identity, null, '  '
 
 			serviceData =
-				_oAuthCustom: true
+				_OAuthCustom: true
 				accessToken: accessToken
 
 			_.extend serviceData, identity
@@ -115,9 +148,9 @@ class CustomOAuth
 				serviceData: serviceData
 				options:
 					profile:
-						name: identity.name or identity.username or identity.nickname
+						name: identity.name or identity.username or identity.nickname or identity.CharacterName or identity.userName or identity.user?.name
 
-			console.log data
+			# console.log data
 
 			return data
 

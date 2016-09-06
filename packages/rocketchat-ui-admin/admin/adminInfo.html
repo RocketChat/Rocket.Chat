@@ -7,33 +7,35 @@
 			</h2>
 		</head>
 		<div class="content">
-			<h3>{{_ "Rocket.Chat"}}</h3>
-			<table class="statistics-table">
-				<tr>
-					<th>{{_ "Deployment_ID"}}</th>
-					<td>{{statistics.uniqueId}}</td>
-				</tr>
-				<tr>
-					<th>{{_ "Installed_at"}}</th>
-					<td>{{statistics.createdAt}}</td>
-				</tr>
-				<tr>
-					<th>{{_ "Version"}}</th>
-					<td>{{statistics.version}}</td>
-				</tr>
-				<tr>
-					<th>{{_ "Updated_at"}}</th>
-					<td>{{statistics.createdAt}}</td>
-				</tr>
-				<tr>
-					<th>{{_ "DB_Migration"}}</th>
-					<td>{{statistics.migration.version}}</td>
-				</tr>
-				<tr>
-					<th>{{_ "DB_Migration_Date"}}</th>
-					<td>{{statistics.migration.lockedAt}}</td>
-				</tr>
-			</table>
+			{{#if hasPermission 'view-statistics'}}
+				<h3>{{_ "Rocket.Chat"}}</h3>
+				<table class="statistics-table">
+					<tr>
+						<th>{{_ "Deployment_ID"}}</th>
+						<td>{{statistics.uniqueId}}</td>
+					</tr>
+					<tr>
+						<th>{{_ "Installed_at"}}</th>
+						<td>{{statistics.createdAt}}</td>
+					</tr>
+					<tr>
+						<th>{{_ "Version"}}</th>
+						<td>{{statistics.version}}</td>
+					</tr>
+					<tr>
+						<th>{{_ "Updated_at"}}</th>
+						<td>{{statistics.createdAt}}</td>
+					</tr>
+					<tr>
+						<th>{{_ "DB_Migration"}}</th>
+						<td>{{statistics.migration.version}}</td>
+					</tr>
+					<tr>
+						<th>{{_ "DB_Migration_Date"}}</th>
+						<td>{{statistics.migration.lockedAt}}</td>
+					</tr>
+				</table>
+			{{/if}}
 			<h3>{{_ "Commit"}}</h3>
 			<table class="statistics-table">
 				<tr>

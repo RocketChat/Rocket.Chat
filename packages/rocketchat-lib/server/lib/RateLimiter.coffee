@@ -13,7 +13,7 @@ RocketChat.RateLimiter = new class
 			if rateLimitResult.allowed
 				return fn.apply null, arguments
 			else
-				throw new Meteor.Error 'too-many-requests', "Error, too many requests. Please slow down. You must wait #{Math.ceil(rateLimitResult.timeToReset / 1000)} seconds before trying again.", { timeToReset: rateLimitResult.timeToReset }
+				throw new Meteor.Error 'error-too-many-requests', "Error, too many requests. Please slow down. You must wait #{Math.ceil(rateLimitResult.timeToReset / 1000)} seconds before trying again.", { timeToReset: rateLimitResult.timeToReset, seconds: Math.ceil(rateLimitResult.timeToReset / 1000) }
 
 	limitMethod: (methodName, numRequests, timeInterval, matchers) ->
 		match =

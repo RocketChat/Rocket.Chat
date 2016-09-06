@@ -11,15 +11,15 @@ Package.describe({
 });
 
 Package.onUse(function(api) {
-	api.versionsFrom('1.2.1');
-
 	api.use([
 		'mongo',
 		'ecmascript',
 		'templating',
 		'coffeescript',
 		'underscore',
-		'rocketchat:lib'
+		'rocketchat:lib',
+		'meteorhacks:inject-initial',
+		'meteorhacks:fast-render'
 	]);
 
 	api.addFiles('master/main.html', 'client');
@@ -28,4 +28,7 @@ Package.onUse(function(api) {
 	api.addFiles('master/logoLayout.html', 'client');
 
 	api.addFiles('master/main.coffee', 'client');
+
+	api.addFiles('server/inject.js', 'server');
+	api.addFiles('server/fastRender.js', 'server');
 });

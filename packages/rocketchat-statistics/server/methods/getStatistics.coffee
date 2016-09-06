@@ -1,10 +1,10 @@
 Meteor.methods
 	getStatistics: (refresh) ->
 		if not Meteor.userId()
-			throw new Meteor.Error('invalid-user', "[methods] getStatistics -> Invalid user")
+			throw new Meteor.Error('error-invalid-user', "Invalid user", { method: 'getStatistics' })
 
 		unless RocketChat.authz.hasPermission(Meteor.userId(), 'view-statistics') is true
-			throw new Meteor.Error 'not-authorized', '[methods] getStatistics -> Not authorized'
+			throw new Meteor.Error('error-not-allowed', "Not allowed", { method: 'getStatistics' })
 
 		if refresh
 			return RocketChat.statistics.save()

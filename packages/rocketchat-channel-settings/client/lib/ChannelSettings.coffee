@@ -10,7 +10,7 @@ RocketChat.ChannelSettings = new class
 	###
 	addOption = (config) ->
 		unless config?.id
-			throw new Meteor.Error "ChannelSettings-addOption-error", "Option id was not informed."
+			return false
 
 		Tracker.nonreactive ->
 			opts = options.get()

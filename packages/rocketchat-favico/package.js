@@ -5,11 +5,10 @@ Package.describe({
 });
 
 Package.onUse(function(api) {
-	api.versionsFrom('1.0');
 	api.use([
 		'coffeescript'
 	], 'client');
 	api.addFiles([
-		'favico.js',
+		'favico.js'
 	], 'client');
 });

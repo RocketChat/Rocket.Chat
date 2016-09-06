@@ -4,6 +4,7 @@ Meteor.startup ->
 			new CustomOAuth record.service,
 				serverURL: record.serverURL
 				authorizePath: record.authorizePath
+				scope: record.scope
 
 Template.loginServices.helpers
 	loginService: ->
@@ -20,7 +21,7 @@ Template.loginServices.helpers
 					serviceName = 'GitHub'
 					icon = 'github-circled'
 				when 'gitlab'
-					serviceName = 'Gitlab'
+					serviceName = 'GitLab'
 					icon = service.service
 				when 'wordpress'
 					serviceName = 'WordPress'

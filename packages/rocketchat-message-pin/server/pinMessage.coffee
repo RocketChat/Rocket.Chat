@@ -1,10 +1,15 @@
 Meteor.methods
-	pinMessage: (message) ->
+	pinMessage: (message, pinnedAt) ->
 		if not Meteor.userId()
-			throw new Meteor.Error('invalid-user', "[methods] pinMessage -> Invalid user")
+			throw new Meteor.Error('error-invalid-user', "Invalid user", { method: 'pinMessage' })
 
 		if not RocketChat.settings.get 'Message_AllowPinning'
-			throw new Meteor.Error 'message-pinning-not-allowed', '[methods] pinMessage -> Message pinning not allowed'
+			throw new Meteor.Error 'error-action-not-allowed', 'Message pinning not allowed', { method: 'pinMessage', action: 'Message_pinning' }
+
+		room = RocketChat.models.Rooms.findOne({ _id: message.rid })
+
+		if Array.isArray(room.usernames) && room.usernames.indexOf(Meteor.user().username) is -1
+			return false
 
 		# If we keep history of edits, insert a new message to store history information
 		if RocketChat.settings.get 'Message_KeepHistory'
@@ -13,7 +18,7 @@ Meteor.methods
 		me = RocketChat.models.Users.findOneById Meteor.userId()
 
 		message.pinned = true
-		message.pinnedAt = Date.now
+		message.pinnedAt = pinnedAt || Date.now
 		message.pinnedBy =
 			_id: Meteor.userId()
 			username: me.username
@@ -22,12 +27,25 @@ Meteor.methods
 
 		RocketChat.models.Messages.setPinnedByIdAndUserId message._id, message.pinnedBy, message.pinned
 
+		RocketChat.models.Messages.createWithTypeRoomIdMessageAndUser 'message_pinned', message.rid, '', me,
+			attachments: [
+				"text" : message.msg
+				"author_name" : message.u.username,
+				"author_icon" : getAvatarUrlFromUsername(message.u.username),
+				"ts" : message.ts
+			]
+
 	unpinMessage: (message) ->
 		if not Meteor.userId()
-			throw new Meteor.Error('invalid-user', "[methods] unpinMessage -> Invalid user")
+			throw new Meteor.Error('error-invalid-user', "Invalid user", { method: 'unpinMessage' })
 
 		if not RocketChat.settings.get 'Message_AllowPinning'
-			throw new Meteor.Error 'message-pinning-not-allowed', '[methods] pinMessage -> Message pinning not allowed'
+			throw new Meteor.Error 'error-action-not-allowed', 'Message pinning not allowed', { method: 'unpinMessage', action: 'Message_pinning' }
+
+		room = RocketChat.models.Rooms.findOne({ _id: message.rid })
+
+		if Array.isArray(room.usernames) && room.usernames.indexOf(Meteor.user().username) is -1
+			return false
 
 		# If we keep history of edits, insert a new message to store history information
 		if RocketChat.settings.get 'Message_KeepHistory'

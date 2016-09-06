@@ -24,6 +24,11 @@
 		self.box.removeClass("active")
 		SideNav.toggleArrow -1
 
+	openFlex = ->
+		status = 0
+		self.options.addClass("animated-hidden")
+		self.box.removeClass("active")
+
 	init = ->
 		self.box = $(".account-box")
 		self.options = self.box.find(".options")
@@ -78,6 +83,7 @@
 	toggle: toggle
 	open: open
 	close: close
+	openFlex: openFlex
 	init: init
 
 	addRoute: addRoute

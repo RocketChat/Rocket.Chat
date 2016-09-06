@@ -1,4 +1,7 @@
 @getAvatarSuggestionForUser = (user) ->
+
+	check user, Object
+
 	avatars = []
 
 	if user.services.facebook?.id? and RocketChat.settings.get 'Accounts_OAuth_Facebook'
@@ -31,6 +34,11 @@
 			service: 'gitlab'
 			url: user.services.gitlab.avatar_url
 
+	if user.services.sandstorm?.picture? and Meteor.settings.public.sandstorm
+		avatars.push
+			service: 'sandstorm'
+			url: user.services.sandstorm.picture
+
 	if user.emails?.length > 0
 		for email in user.emails when email.verified is true
 			avatars.push
@@ -61,7 +69,9 @@
 Meteor.methods
 	getAvatarSuggestion: ->
 		if not Meteor.userId()
-			throw new Meteor.Error 203, '[methods] getAvatarSuggestion -> Usuário não logado'
+			throw new Meteor.Error 'error-invalid-user', 'Invalid user', { method: 'getAvatarSuggestion' }
+
+		@unblock()
 
 		user = Meteor.user()
 

@@ -1,0 +1,20 @@
+<template name="vrecDialog">
+	<div class="vrec-dialog">
+		<div class="video-container">
+			<video width="320" height="240" src=""></video>
+		</div>
+		<div class="buttons">
+			<ul>
+				<li class="left-aligned">
+					<button class="record button primary {{recordDisabled}}" {{recordDisabled}}>
+						<i class="{{recordIcon}}"></i>
+					</button>
+				</li>
+				<li class="right-aligned">
+					<button class="cancel button secondary">{{_ "Cancel"}}</button>
+					<button class="ok button primary {{okDisabled}}" {{okDisabled}}>{{_ "Ok"}}</button>
+				</li>
+			</ul>
+		</div>
+	</div>
+</template>

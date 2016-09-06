@@ -1,7 +1,4 @@
 Template.channels.helpers
-	tRoomMembers: ->
-		return t('Members_placeholder')
-
 	isActive: ->
 		return 'active' if ChatSubscription.findOne({ t: { $in: ['c']}, f: { $ne: true }, open: true, rid: Session.get('openedRoom') }, { fields: { _id: 1 } })?
 
@@ -10,7 +7,7 @@ Template.channels.helpers
 			t: { $in: ['c']},
 			open: true
 
-		if !RocketChat.settings.get 'Disable_Favorite_Rooms'
+		if RocketChat.settings.get 'Favorite_Rooms'
 			query.f = { $ne: true }
 
 		if Meteor.user()?.settings?.preferences?.unreadRoomsMode
@@ -18,6 +15,9 @@ Template.channels.helpers
 				$ne: true
 
 		return ChatSubscription.find query, { sort: 't': 1, 'name': 1 }
+
+	canCreate: ->
+		return RocketChat.authz.hasAtLeastOnePermission ['create-c']
 
 Template.channels.events
 	'click .add-room': (e, instance) ->

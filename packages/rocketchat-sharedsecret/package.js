@@ -6,16 +6,12 @@ Package.describe({
 });
 
 Package.onUse(function(api) {
-	api.versionsFrom('1.0');
-
 	api.use([
 		'coffeescript',
 		'rocketchat:lib'
 	]);
 
-	api.use(['jparker:crypto-aes'], ['server','client']);
+	api.use(['jparker:crypto-aes'], ['server', 'client']);
 
-	api.addFiles('sharedsecret.coffee', ['server','client']);
+	api.addFiles('sharedsecret.coffee', ['server', 'client']);
 });
-
-Package.onTest(function(api) {});

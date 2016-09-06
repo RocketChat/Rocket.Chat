@@ -1,5 +1,12 @@
 Meteor.methods
 	loadMissedMessages: (rid, start) ->
+
+		check rid, String
+		check start, Number
+
+		if not Meteor.userId()
+			throw new Meteor.Error 'error-invalid-user', 'Invalid user', { method: 'loadMissedMessages' }
+
 		fromId = Meteor.userId()
 		unless Meteor.call 'canAccessRoom', rid, fromId
 			return false

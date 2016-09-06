@@ -1,65 +1,44 @@
 @mobileMessageMenu =
-	hide: ->
-		mobileMessageMenu.menuTemplate.locked = true
-		$('.mobile-message-menu').addClass('hidden')
+	show: (message, template, e, scope) ->
+		if not window.plugins?.actionsheet?
+			return
 
-	show: (message, template) ->
-		mobileMessageMenu.message = message
-		mobileMessageMenu.template = template
-		mobileMessageMenu.menuTemplate.locked = true
-		$('.mobile-message-menu').removeClass('hidden')
+		options =
+			'androidTheme': window.plugins.actionsheet.ANDROID_THEMES.THEME_HOLO_LIGHT
+			'buttonLabels': [
+				TAPi18n.__('Report Abuse')
+			]
+			androidEnableCancelButton: true
+			addCancelButtonWithLabel: TAPi18n.__('Cancel')
+			# 'position': [20, 40] // for iPad pass in the [x, y] position of the popover
 
+		buttonActions = [
+			mobileMessageMenu.reportAbuse
+		]
 
-Template.mobileMessageMenu.onCreated ->
-	mobileMessageMenu.menuTemplate = @
+		buttons = RocketChat.MessageAction.getButtons message, (message.customClass or 'message-mobile')
+		for button in buttons
+			if button.id is 'delete-message'
+				options.addDestructiveButtonWithLabel = TAPi18n.__(button.i18nLabel)
+				buttonActions.unshift button.action
+			else
+				buttonActions.push button.action
+				options.buttonLabels.push TAPi18n.__(button.i18nLabel)
 
-Template.mobileMessageMenu.events
-	'mousedown, touchstart': (event, template) ->
-		template.locked = false
+		window.plugins.actionsheet.show options, (buttonIndex) ->
+			if buttonActions[buttonIndex-1]?
+				buttonActions[buttonIndex-1].call scope, e, template, message
 
-	'touchend #cancel, click #cancel': (event, template, doc) ->
-		if template.locked is true then return
-		mobileMessageMenu.hide()
-
-	'touchend #delete-message, click #delete-message': (event, template, doc) ->
-		if template.locked is true then return
-
-		mobileMessageMenu.hide()
-
-		message = mobileMessageMenu.message
-		instance = mobileMessageMenu.template
+	reportAbuse: (e, t, message) ->
 		swal {
-			title: t('Are_you_sure')
-			text: t('You_will_not_be_able_to_recover')
-			type: 'warning'
-			showCancelButton: true
-			confirmButtonColor: '#DD6B55'
-			confirmButtonText: t('Yes_delete_it')
-			cancelButtonText: t('Cancel')
-			closeOnConfirm: false
-			html: false
-		}, ->
-			swal
-				title: t('Deleted')
-				text: t('Your_entry_has_been_deleted')
-				type: 'success'
-				timer: 1000
-				showConfirmButton: false
-
-			instance.chatMessages.deleteMsg(message)
-
-	'touchend #report-abuse, click #report-abuse': (event, template, doc) ->
-		if template.locked is true then return
-
-		swal {
-			title: 'Report this message?'
-			text: mobileMessageMenu.message.html
-			inputPlaceholder: 'Why do you want to report?'
+			title: TAPi18n.__('Report_this_message_question_mark')
+			text: message.msg
+			inputPlaceholder: TAPi18n.__('Why_do_you_want_to_report_question_mark')
 			type: 'input'
 			showCancelButton: true
 			confirmButtonColor: '#DD6B55'
-			confirmButtonText: "Report!"
-			cancelButtonText: t('Cancel')
+			confirmButtonText: TAPi18n.__("Report_exclamation_mark")
+			cancelButtonText: TAPi18n.__('Cancel')
 			closeOnConfirm: false
 			html: false
 		}, (inputValue) ->
@@ -67,16 +46,14 @@ Template.mobileMessageMenu.events
 				return false
 
 			if inputValue is ""
-				swal.showInputError("You need to write something!")
+				swal.showInputError(TAPi18n.__("You_need_to_write_something"))
 				return false
 
-			Meteor.call 'reportMessage', mobileMessageMenu.message, inputValue
+			Meteor.call 'reportMessage', message, inputValue
 
 			swal
-				title: "Report sent"
-				text: "Thank you!"
+				title: TAPi18n.__("Report_sent")
+				text: TAPi18n.__("Thank_you_exclamation_mark")
 				type: 'success'
 				timer: 1000
 				showConfirmButton: false
-
-		mobileMessageMenu.hide()

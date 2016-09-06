@@ -1,7 +1,7 @@
 Meteor.methods
   openRoom: (rid) ->
     if not Meteor.userId()
-      throw new Meteor.Error 'invalid-user', '[methods] openRoom -> Invalid user'
+      return false
 
     ChatSubscription.update
       rid: rid

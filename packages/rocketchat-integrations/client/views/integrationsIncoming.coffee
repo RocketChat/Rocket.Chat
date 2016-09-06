@@ -6,16 +6,20 @@ Template.integrationsIncoming.onCreated ->
 Template.integrationsIncoming.helpers
 
 	hasPermission: ->
-		return RocketChat.authz.hasAllPermission 'manage-integrations'
+		return RocketChat.authz.hasAtLeastOnePermission(['manage-integrations', 'manage-own-integrations'])
 
 	data: ->
 		params = Template.instance().data.params?()
 
 		if params?.id?
-			data = ChatIntegrations.findOne({_id: params.id})
+			data = null
+			if RocketChat.authz.hasAllPermission 'manage-integrations'
+				data = ChatIntegrations.findOne({_id: params.id})
+			else if RocketChat.authz.hasAllPermission 'manage-own-integrations'
+				data = ChatIntegrations.findOne({_id: params.id, "_createdBy._id": Meteor.userId()})
 			if data?
-				data.url = Meteor.absoluteUrl("hooks/#{encodeURIComponent(data._id)}/#{encodeURIComponent(data.userId)}/#{encodeURIComponent(data.token)}")
-				data.completeToken = "#{encodeURIComponent(data._id)}/#{encodeURIComponent(data.userId)}/#{encodeURIComponent(data.token)}"
+				data.url = Meteor.absoluteUrl("hooks/#{data._id}/#{data.token}")
+				data.completeToken = "#{data._id}/#{data.token}"
 				Template.instance().record.set data
 				return data
 
@@ -66,6 +70,10 @@ Template.integrationsIncoming.helpers
 
 	curl: ->
 		record = Template.instance().record.get()
+
+		if not record.url?
+			return
+
 		data =
 			username: record.alias
 			icon_emoji: record.emoji
@@ -84,15 +92,37 @@ Template.integrationsIncoming.helpers
 
 		return "curl -X POST --data-urlencode 'payload=#{JSON.stringify(data)}' #{record.url}"
 
+	editorOptions: ->
+		return {} =
+			lineNumbers: true
+			mode: "javascript"
+			gutters: [
+				# "CodeMirror-lint-markers"
+				"CodeMirror-linenumbers"
+				"CodeMirror-foldgutter"
+			]
+			# lint: true
+			foldGutter: true
+			# lineWrapping: true
+			matchBrackets: true
+			autoCloseBrackets: true
+			matchTags: true,
+			showTrailingSpace: true
+			highlightSelectionMatches: true
+
+
 Template.integrationsIncoming.events
 	"blur input": (e, t) ->
-		t.record.set
-			name: $('[name=name]').val().trim()
-			alias: $('[name=alias]').val().trim()
-			emoji: $('[name=emoji]').val().trim()
-			avatar: $('[name=avatar]').val().trim()
-			channel: $('[name=channel]').val().trim()
-			username: $('[name=username]').val().trim()
+		value = t.record.curValue or {}
+
+		value.name = $('[name=name]').val().trim()
+		value.alias = $('[name=alias]').val().trim()
+		value.emoji = $('[name=emoji]').val().trim()
+		value.avatar = $('[name=avatar]').val().trim()
+		value.channel = $('[name=channel]').val().trim()
+		value.username = $('[name=username]').val().trim()
+
+		t.record.set value
 
 	"click .submit > .delete": ->
 		params = Template.instance().data.params()
@@ -109,22 +139,38 @@ Template.integrationsIncoming.events
 			html: false
 		, ->
 			Meteor.call "deleteIncomingIntegration", params.id, (err, data) ->
-				swal
-					title: t('Deleted')
-					text: t('Your_entry_has_been_deleted')
-					type: 'success'
-					timer: 1000
-					showConfirmButton: false
+				if err
+					handleError err
+				else
+					swal
+						title: t('Deleted')
+						text: t('Your_entry_has_been_deleted')
+						type: 'success'
+						timer: 1000
+						showConfirmButton: false
 
-				FlowRouter.go "admin-integrations"
+					FlowRouter.go "admin-integrations"
+
+	"click .button-fullscreen": ->
+		codeMirrorBox = $('.code-mirror-box')
+		codeMirrorBox.addClass('code-mirror-box-fullscreen')
+		codeMirrorBox.find('.CodeMirror')[0].CodeMirror.refresh()
+
+	"click .button-restore": ->
+		codeMirrorBox = $('.code-mirror-box')
+		codeMirrorBox.removeClass('code-mirror-box-fullscreen')
+		codeMirrorBox.find('.CodeMirror')[0].CodeMirror.refresh()
 
 	"click .submit > .save": ->
+		enabled = $('[name=enabled]:checked').val().trim()
 		name = $('[name=name]').val().trim()
 		alias = $('[name=alias]').val().trim()
 		emoji = $('[name=emoji]').val().trim()
 		avatar = $('[name=avatar]').val().trim()
 		channel = $('[name=channel]').val().trim()
 		username = $('[name=username]').val().trim()
+		scriptEnabled = $('[name=scriptEnabled]:checked').val().trim()
+		script = $('[name=script]').val().trim()
 
 		if channel is ''
 			return toastr.error TAPi18n.__("The_channel_name_is_required")
@@ -133,17 +179,20 @@ Template.integrationsIncoming.events
 			return toastr.error TAPi18n.__("The_username_is_required")
 
 		integration =
+			enabled: enabled is '1'
 			channel: channel
 			alias: alias if alias isnt ''
 			emoji: emoji if emoji isnt ''
 			avatar: avatar if avatar isnt ''
 			name: name if name isnt ''
+			script: script if script isnt ''
+			scriptEnabled: scriptEnabled is '1'
 
 		params = Template.instance().data.params?()
 		if params?.id?
 			Meteor.call "updateIncomingIntegration", params.id, integration, (err, data) ->
 				if err?
-					return toastr.error TAPi18n.__(err.error)
+					return handleError(err)
 
 				toastr.success TAPi18n.__("Integration_updated")
 		else
@@ -151,7 +200,7 @@ Template.integrationsIncoming.events
 
 			Meteor.call "addIncomingIntegration", integration, (err, data) ->
 				if err?
-					return toastr.error TAPi18n.__(err.error)
+					return handleError(err)
 
 				toastr.success TAPi18n.__("Integration_added")
 				FlowRouter.go "admin-integrations-incoming", {id: data._id}

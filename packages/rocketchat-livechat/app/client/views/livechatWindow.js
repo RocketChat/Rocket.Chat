@@ -1,33 +1,42 @@
+/* globals Department, Livechat */
 Template.livechatWindow.helpers({
 	title() {
-		var ref;
-		if (!Template.instance().subscriptionsReady()) {
-			return '';
-		}
-		return ((ref = Settings.findOne('Livechat_title')) != null ? ref.value : void 0) || 'Rocket.Chat';
+		return Livechat.title;
 	},
 	color() {
-		var ref;
-		if (!Template.instance().subscriptionsReady()) {
-			return 'transparent';
-		}
-		return ((ref = Settings.findOne('Livechat_title_color')) != null ? ref.value : void 0) || '#C1272D';
+		return Livechat.color;
+	},
+	fontColor() {
+		return Livechat.fontColor;
 	},
 	popoutActive() {
 		return FlowRouter.getQueryParam('mode') === 'popout';
 	},
+	soundActive() {
+		return Session.get('sound');
+	},
 	showRegisterForm() {
-		if (Session.get('triggered')  || Meteor.userId()) {
+		if (Session.get('triggered') || Meteor.userId()) {
 			return false;
 		}
-		var form = Settings.findOne('Livechat_registration_form');
-		return form.value;
+		return Livechat.registrationForm;
 	},
-	livechatStartedEnabled() {
-		return Template.instance().startedEnabled.get() !== null;
+	livechatStarted() {
+		return Livechat.online !== null;
 	},
-	livechatEnabled() {
-		return Template.instance().startedEnabled.get();
+	livechatOnline() {
+		return Livechat.online;
+	},
+	offlineMessage() {
+		return Livechat.offlineMessage;
+	},
+	offlineData() {
+		return {
+			offlineMessage: Livechat.offlineMessage.replace(/([^>\r\n]?)(\r\n|\n\r|\r|\n)/g, '$1<br>$2'),
+			offlineSuccessMessage: Livechat.offlineSuccessMessage,
+			offlineUnavailableMessage: Livechat.offlineUnavailableMessage.replace(/([^>\r\n]?)(\r\n|\n\r|\r|\n)/g, '$1<br>$2'),
+			displayOfflineForm: Livechat.displayOfflineForm
+		};
 	}
 });
 
@@ -38,26 +47,67 @@ Template.livechatWindow.events({
 	'click .popout'(event) {
 		event.stopPropagation();
 		parentCall('openPopout');
+	},
+	'click .sound'(event) {
+		event.stopPropagation();
+		Session.set({sound: !Session.get('sound')});
 	}
 });
 
 Template.livechatWindow.onCreated(function() {
-	this.startedEnabled = new ReactiveVar(null);
+	Session.set({sound: true});
 
-	this.subscribe('settings', ['Livechat_title', 'Livechat_title_color', 'Livechat_enabled', 'Livechat_registration_form']);
+	const defaultAppLanguage = () => {
+		let lng = window.navigator.userLanguage || window.navigator.language || 'en';
+		let regexp = /([a-z]{2}-)([a-z]{2})/;
+		if (regexp.test(lng)) {
+			lng = lng.replace(regexp, function(match, ...parts) {
+				return parts[0] + parts[1].toUpperCase();
+			});
+		}
+		return lng;
+	};
 
-	var initialCheck = true;
-
-	this.autorun(() => {
-		if (this.subscriptionsReady()) {
-			var enabled = Settings.findOne('Livechat_enabled');
-			if (enabled !== undefined) {
-				if (!enabled.value && initialCheck) {
-					parentCall('removeWidget');
-				}
-				initialCheck = false;
-				this.startedEnabled.set(enabled.value);
+	// get all needed live chat info for the user
+	Meteor.call('livechat:getInitialData', visitor.getToken(), (err, result) => {
+		if (err) {
+			console.error(err);
+		} else {
+			if (!result.enabled) {
+				Triggers.setDisabled();
+				return parentCall('removeWidget');
 			}
+
+			if (!result.online) {
+				Triggers.setDisabled();
+				Livechat.title = result.offlineTitle;
+				Livechat.offlineColor = result.offlineColor;
+				Livechat.offlineMessage = result.offlineMessage;
+				Livechat.displayOfflineForm = result.displayOfflineForm;
+				Livechat.offlineUnavailableMessage = result.offlineUnavailableMessage;
+				Livechat.offlineSuccessMessage = result.offlineSuccessMessage;
+				Livechat.online = false;
+			} else {
+				Livechat.title = result.title;
+				Livechat.onlineColor = result.color;
+				Livechat.online = true;
+			}
+			Livechat.registrationForm = result.registrationForm;
+
+			if (result.room) {
+				RoomHistoryManager.getMoreIfIsEmpty(result.room._id);
+				visitor.subscribeToRoom(result.room._id);
+				visitor.setRoom(result.room._id);
+			}
+
+			TAPi18n.setLanguage((result.language || defaultAppLanguage()).split('-').shift());
+
+			Triggers.setTriggers(result.triggers);
+			Triggers.init();
+
+			result.departments.forEach((department) => {
+				Department.insert(department);
+			});
 		}
 	});
 });

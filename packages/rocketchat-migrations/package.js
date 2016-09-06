@@ -6,8 +6,6 @@ Package.describe({
 });
 
 Package.onUse(function(api) {
-	api.versionsFrom('1.0');
-
 	api.use('rocketchat:lib');
 	api.use('ecmascript');
 	api.use('underscore');
@@ -16,8 +14,4 @@ Package.onUse(function(api) {
 	api.use('momentjs:moment');
 
 	api.addFiles('migrations.js', 'server');
-});
-
-Package.onTest(function(api) {
-
 });

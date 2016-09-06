@@ -12,10 +12,8 @@
 					{{#if allowUserProfileChange}}
 						<a href="{{pathFor 'account' group='profile'}}" class="account-link">{{_ "Profile"}}</a>
 					{{/if}}
-					{{!-- <a href="{{pathFor 'account' group='account'}}" class="account-link">{{_ "Account_Settings"}}</a> --}}
-					{{!-- <a href="{{pathFor 'account' group='notification'}}" class="account-link">{{_ "Notification"}}</a> --}}
-					{{#if allowUserProfileChange}}
-						<a href="{{pathFor 'changeAvatar'}}" class="account-link">{{_ "Change_avatar"}}</a>
+					{{#if allowUserAvatarChange}}
+						<a href="{{pathFor 'changeAvatar'}}" class="account-link">{{_ "Avatar"}}</a>
 					{{/if}}
 					{{!-- move this to profile --}}
 				</li>

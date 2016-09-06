@@ -103,19 +103,7 @@ class WebRTCTransportClass
 
 class WebRTCClass
 	config:
-		iceServers: [
-			{
-				urls: RocketChat.settings.get("WebRTC_STUN_Server")
-			},
-			{
-				urls: RocketChat.settings.get("WebRTC_STUN_Server")
-			},
-			{
-				urls: RocketChat.settings.get("WebRTC_TURN_Server"),
-				username: RocketChat.settings.get("WebRTC_TURN_Username"),
-				credential: RocketChat.settings.get("WebRTC_TURN_Password")
-			}
-		]
+		iceServers: []
 
 	debug: false
 
@@ -127,6 +115,24 @@ class WebRTCClass
 		@param room {String}
 	###
 	constructor: (@selfId, @room) ->
+		@config.iceServers = []
+
+		servers = RocketChat.settings.get("WebRTC_Servers")
+		if servers?.trim() isnt ''
+			servers = servers.replace /\s/g, ''
+			servers = servers.split ','
+			for server in servers
+				server = server.split '@'
+				serverConfig =
+					urls: server.pop()
+
+				if server.length is 1
+					server = server[0].split ':'
+					serverConfig.username = decodeURIComponent(server[0])
+					serverConfig.credential = decodeURIComponent(server[1])
+
+				@config.iceServers.push serverConfig
+
 		@peerConnections = {}
 
 		@remoteItems = new ReactiveVar []
@@ -318,9 +324,30 @@ class WebRTCClass
 
 		return peerConnection
 
+	_getUserMedia: (media, onSuccess, onError) ->
+		onSuccessLocal = (stream) ->
+			if AudioContext? and stream.getAudioTracks().length > 0
+				audioContext = new AudioContext
+				source = audioContext.createMediaStreamSource(stream)
+
+				volume = audioContext.createGain()
+				source.connect(volume)
+				peer = audioContext.createMediaStreamDestination()
+				volume.connect(peer)
+				volume.gain.value = 0.6
+
+				stream.removeTrack(stream.getAudioTracks()[0])
+				stream.addTrack(peer.stream.getAudioTracks()[0])
+				stream.volume = volume
+
+			onSuccess(stream)
+
+		navigator.getUserMedia media, onSuccessLocal, onError
+
+
 	getUserMedia: (media, onSuccess, onError=@onError) ->
 		if media.desktop isnt true
-			navigator.getUserMedia media, onSuccess, onError
+			@_getUserMedia media, onSuccess, onError
 			return
 
 		if @screenShareAvailable isnt true
@@ -365,7 +392,7 @@ class WebRTCClass
 					video:
 						mozMediaSource: 'window'
 						mediaSource: 'window'
-				navigator.getUserMedia media, getScreenSuccess, onError
+				@_getUserMedia media, getScreenSuccess, onError
 			else
 				ChromeScreenShare.getSourceId (id) =>
 					console.log id
@@ -378,7 +405,7 @@ class WebRTCClass
 								maxWidth: 1280
 								maxHeight: 720
 
-					navigator.getUserMedia media, getScreenSuccess, onError
+					@_getUserMedia media, getScreenSuccess, onError
 
 		if @navigator is 'firefox' or not media.audio? or media.audio is false
 			getScreen()
@@ -389,7 +416,7 @@ class WebRTCClass
 			getAudioError = =>
 				getScreen()
 
-			navigator.getUserMedia {audio: media.audio}, getAudioSuccess, getAudioError
+			@_getUserMedia {audio: media.audio}, getAudioSuccess, getAudioError
 
 
 	###
@@ -776,9 +803,11 @@ WebRTC = new class
 
 
 Meteor.startup ->
-	RocketChat.Notifications.onUser 'webrtc', (type, data) =>
-		if not data.room? then return
+	Tracker.autorun ->
+		if Meteor.userId()
+			RocketChat.Notifications.onUser 'webrtc', (type, data) =>
+				if not data.room? then return
 
-		webrtc = WebRTC.getInstanceByRoomId(data.room)
+				webrtc = WebRTC.getInstanceByRoomId(data.room)
 
-		webrtc.transport.onUserStream type, data
+				webrtc.transport.onUserStream type, data

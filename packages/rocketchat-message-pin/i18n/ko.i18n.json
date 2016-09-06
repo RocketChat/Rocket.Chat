@@ -1,8 +1,0 @@
-{
-  "Message_AllowPinning" : "허용 메시지 고정",
-  "Message_AllowPinningByAnyone" : "누구나 메시지를 보관할 수 있도록 허용",
-  "Pin_Message" : "메시지 보관하기",
-  "Unpin_Message" : "메시지 보관하지 않기",
-  "Pinned_Messages" : "보관된 메시지",
-  "No_pinned_messages" : "보관된 메시지가 없습니다"
-}

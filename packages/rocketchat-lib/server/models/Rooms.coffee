@@ -16,6 +16,12 @@ RocketChat.models.Rooms = new class extends RocketChat.models._Base
 
 		return @findOne query, options
 
+	findOneByImportId: (_id, options) ->
+		query =
+			importIds: _id
+
+		return @findOne query, options
+
 	findOneByName: (name, options) ->
 		query =
 			name: name
@@ -47,6 +53,12 @@ RocketChat.models.Rooms = new class extends RocketChat.models._Base
 
 
 	# FIND
+	findById: (roomId, options) ->
+		return @find { _id: roomId }, options
+
+	findByIds: (roomIds, options) ->
+		return @find { _id: $in: [].concat roomIds }, options
+
 	findByType: (type, options) ->
 		query =
 			t: type
@@ -67,7 +79,7 @@ RocketChat.models.Rooms = new class extends RocketChat.models._Base
 		return @find query, options
 
 	findByNameContaining: (name, options) ->
-		nameRegex = new RegExp name, "i"
+		nameRegex = new RegExp s.trim(s.escapeRegExp(name)), "i"
 
 		query =
 			$or: [
@@ -79,8 +91,56 @@ RocketChat.models.Rooms = new class extends RocketChat.models._Base
 
 		return @find query, options
 
+	findByNameContainingTypesWithUsername: (name, types, options) ->
+		nameRegex = new RegExp s.trim(s.escapeRegExp(name)), "i"
+
+		$or = []
+		for type in types
+			obj = {name: nameRegex, t: type.type}
+			if type.username?
+				obj.usernames = type.username
+			if type.ids?
+				obj._id = $in: type.ids
+			$or.push obj
+
+		query =
+			$or: $or
+
+		return @find query, options
+
+	findContainingTypesWithUsername: (types, options) ->
+
+		$or = []
+		for type in types
+			obj = {t: type.type}
+			if type.username?
+				obj.usernames = type.username
+			if type.ids?
+				obj._id = $in: type.ids
+			$or.push obj
+
+		query =
+			$or: $or
+
+		return @find query, options
+
 	findByNameContainingAndTypes: (name, types, options) ->
-		nameRegex = new RegExp name, "i"
+		nameRegex = new RegExp s.trim(s.escapeRegExp(name)), "i"
+
+		query =
+			t:
+				$in: types
+			$or: [
+				name: nameRegex
+			,
+				t: 'd'
+				usernames: nameRegex
+			]
+
+		return @find query, options
+
+	findByNameStartingAndTypes: (name, types, options) ->
+		nameRegex = new RegExp "^" + s.trim(s.escapeRegExp(name)), "i"
 
 		query =
 			t:
@@ -139,7 +199,7 @@ RocketChat.models.Rooms = new class extends RocketChat.models._Base
 
 		return @find query, options
 
-	findByTypeAndNameContainigUsername: (type, name, username, options) ->
+	findByTypeAndNameContainingUsername: (type, name, username, options) ->
 		query =
 			name: name
 			t: type
@@ -155,12 +215,6 @@ RocketChat.models.Rooms = new class extends RocketChat.models._Base
 			query.archived = true
 		else
 			query.archived = { $ne: true }
-
-		return @find query, options
-
-	findByVisitorToken: (visitorToken, options) ->
-		query =
-			"v.token": visitorToken
 
 		return @find query, options
 
@@ -267,7 +321,7 @@ RocketChat.models.Rooms = new class extends RocketChat.models._Base
 
 		return @update query, update
 
-	incUnreadAndSetLastMessageTimestampById: (_id, inc=1, lastMessageTimestamp) ->
+	incMsgCountAndSetLastMessageTimestampById: (_id, inc=1, lastMessageTimestamp) ->
 		query =
 			_id: _id
 
@@ -308,6 +362,24 @@ RocketChat.models.Rooms = new class extends RocketChat.models._Base
 				"u.username": username
 
 		return @update query, update, { multi: true }
+
+	setJoinCodeById: (_id, joinCode) ->
+		query =
+			_id: _id
+
+		if joinCode?.trim() isnt ''
+			update =
+				$set:
+					joinCodeRequired: true
+					joinCode: joinCode
+		else
+			update =
+				$set:
+					joinCodeRequired: false
+				$unset:
+					joinCode: 1
+
+		return @update query, update
 
 	setUserById: (_id, user) ->
 		query =
@@ -361,6 +433,41 @@ RocketChat.models.Rooms = new class extends RocketChat.models._Base
 
 		return @update query, update
 
+	saveDefaultById: (_id, defaultValue) ->
+		query =
+			_id: _id
+
+		update =
+			$set:
+				default: defaultValue is 'true'
+
+		return @update query, update
+
+	saveRoomById: (_id, data) ->
+		setData = {}
+		unsetData = {}
+
+		if data.topic?
+			if not _.isEmpty(s.trim(data.topic))
+				setData.topic = s.trim(data.topic)
+			else
+				unsetData.topic = 1
+
+		if data.tags?
+			if not _.isEmpty(s.trim(data.tags))
+				setData.tags = s.trim(data.tags).split(',').map((tag) => return s.trim(tag))
+			else
+				unsetData.tags = 1
+
+		update = {}
+
+		if not _.isEmpty setData
+			update.$set = setData
+
+		if not _.isEmpty unsetData
+			update.$unset = unsetData
+
+		return @update { _id: _id }, update
 
 	# INSERT
 	createWithTypeNameUserAndUsernames: (type, name, user, usernames, extraData) ->

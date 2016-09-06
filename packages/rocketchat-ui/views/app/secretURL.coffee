@@ -7,7 +7,6 @@ Template.secretURL.helpers
 
 
 Template.secretURL.onCreated ->
-	@subscribe 'admin-settings'
 	@hashIsValid = new ReactiveVar false
 	@hashReady = new ReactiveVar false
 
@@ -19,3 +18,6 @@ Template.secretURL.onCreated ->
 			@hashIsValid.set true
 		else
 			@hashIsValid.set false
+
+Template.secretURL.onRendered ->
+	$('#initial-page-loading').remove()

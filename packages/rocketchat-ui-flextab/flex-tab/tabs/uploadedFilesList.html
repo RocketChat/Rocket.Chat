@@ -1,16 +1,19 @@
 <template name="uploadedFilesList">
 	<div class="content">
 		<div class="list-view uploaded-files-list">
-			<div class="status">
+			<div class="title">
 				<h2>{{_ "Room_uploaded_file_list"}}</h2>
 			</div>
 			<ul class="list clearfix lines">
 				{{#each files}}
 					<li>
 						{{#if canDelete}}
-                        <i class="icon-trash file-delete"></i>
+						<i class="icon-trash file-delete"></i>
 						{{/if}}
-						<a title="{{escapedName}}" href="{{url}}" target="_blank" class="room-file-item {{customClassForFileType}}">
+						<a title="{{escapedName}}" href="{{url}}" target="_blank" class="file-download" download="">
+							<i class="icon-download file-download"></i>
+						</a>
+						<a title="{{escapedName}}" href="{{url}}" target="_blank" class="room-file-item file-name {{customClassForFileType}}">
 							<i class="{{getFileIcon type}}"></i>
 							<p>{{name}}</p>
 						</a>
@@ -19,7 +22,7 @@
 				{{#if hasMore}}
 					<li class="load-more">
 						{{#if Template.subscriptionsReady}}
-							<a href="">{{_ "Has_more"}}...</a>
+							<button>{{_ "Has_more"}}...</button>
 						{{else}}
 							<div class="load-more-loading">{{_ "Loading..."}}</div>
 						{{/if}}

@@ -1,6 +1,6 @@
 Template.integrations.helpers
 	hasPermission: ->
-		return RocketChat.authz.hasAllPermission 'manage-integrations'
+		return RocketChat.authz.hasAtLeastOnePermission(['manage-integrations', 'manage-own-integrations'])
 
 	integrations: ->
 		return ChatIntegrations.find()

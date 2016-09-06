@@ -20,6 +20,7 @@ class InfoCompiler
 				osPlatform: os.platform()
 				osRelease: os.release()
 				osTotalmem: os.totalmem()
+				osFreemem: os.freemem()
 				osType: os.type()
 
 			if process.env.TRAVIS_BUILD_NUMBER

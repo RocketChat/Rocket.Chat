@@ -6,8 +6,6 @@ Package.describe({
 });
 
 Package.onUse(function(api) {
-	api.versionsFrom('1.0');
-
 	api.use([
 		'templating',
 		'coffeescript',
@@ -21,8 +19,4 @@ Package.onUse(function(api) {
 	// stylesheets
 	api.addAssets('client/stylesheets/messageAttachments.less', 'server');
 	api.addFiles('client/stylesheets/loader.coffee', 'server');
-});
-
-Package.onTest(function(api) {
-
 });

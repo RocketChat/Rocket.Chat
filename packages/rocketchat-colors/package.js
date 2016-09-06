@@ -6,8 +6,6 @@ Package.describe({
 });
 
 Package.onUse(function(api) {
-	api.versionsFrom('1.0');
-
 	api.use([
 		'coffeescript',
 		'rocketchat:lib'
@@ -15,8 +13,4 @@ Package.onUse(function(api) {
 
 	api.addFiles('client.coffee', 'client');
 	api.addFiles('style.css', 'client');
-});
-
-Package.onTest(function(api) {
-
 });

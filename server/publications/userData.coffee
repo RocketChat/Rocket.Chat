@@ -13,7 +13,11 @@ Meteor.publish 'userData', ->
 			utcOffset: 1
 			language: 1
 			settings: 1
+			roles: 1
 			defaultRoom: 1
-			'services.github.id': 1
-			'services.gitlab.id': 1
+			'services.github': 1
+			'services.gitlab': 1
 			requirePasswordChange: 1
+			requirePasswordChangeReason: 1
+			'services.password.bcrypt': 1
+			statusLivechat: 1 # @TODO create an API so a package could add fields here

@@ -1,85 +1,83 @@
 URL = Npm.require('url')
-http = Npm.require('http')
-https = Npm.require('https')
-zlib = Npm.require('zlib')
 querystring = Npm.require('querystring')
-
-gunzipSync = Meteor.wrapAsync zlib.gunzip.bind(zlib)
-inflateSync = Meteor.wrapAsync zlib.inflate.bind(zlib)
+request = HTTPInternals.NpmModules.request.module
+iconv = Npm.require('iconv-lite')
+ipRangeCheck = Npm.require('ip-range-check')
+he = Npm.require('he')
 
 OEmbed = {}
+
+# Detect encoding
+getCharset = (body) ->
+	binary = body.toString 'binary'
+	matches = binary.match /<meta\b[^>]*charset=["']?([\w\-]+)/i
+	if matches
+		return matches[1]
+	return 'utf-8'
+
+toUtf8 = (body) ->
+	return iconv.decode body, getCharset(body)
 
 getUrlContent = (urlObj, redirectCount = 5, callback) ->
 	if _.isString(urlObj)
 		urlObj = URL.parse urlObj
 
+	parsedUrl = _.pick urlObj, ['host', 'hash', 'pathname', 'protocol', 'port', 'query', 'search', 'hostname']
+
+	ignoredHosts = RocketChat.settings.get('API_EmbedIgnoredHosts').replace(/\s/g, '').split(',') or []
+	if parsedUrl.hostname in ignoredHosts or ipRangeCheck(parsedUrl.hostname, ignoredHosts)
+		return callback()
+
+	safePorts = RocketChat.settings.get('API_EmbedSafePorts').replace(/\s/g, '').split(',') or []
+	if parsedUrl.port and safePorts.length > 0 and parsedUrl.port not in safePorts
+		return callback()
+
+	data = RocketChat.callbacks.run 'oembed:beforeGetUrlContent',
+		urlObj: urlObj
+		parsedUrl: parsedUrl
+
+	if data.attachments?
+		return callback null, data
+
+	url = URL.format data.urlObj
 	opts =
-		method: 'GET'
-		port: urlObj.port
-		hostname: urlObj.hostname
-		path: urlObj.path
-		rejectUnauthorized: !RocketChat.settings.get 'Allow_Invalid_SelfSigned_Certs'
+		url: url
+		strictSSL: !RocketChat.settings.get 'Allow_Invalid_SelfSigned_Certs'
+		gzip: true
+		maxRedirects: redirectCount
 		headers:
 			'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/41.0.2227.0 Safari/537.36'
 
-	httpOrHttps = if urlObj.protocol is 'https:' then https else http
+	headers = null
+	chunks = []
+	chunksTotalLength = 0
 
-	parsedUrl = _.pick urlObj, ['host', 'hash', 'pathname', 'protocol', 'port', 'query', 'search']
-
-	RocketChat.callbacks.run 'oembed:beforeGetUrlContent',
-		requestOptions: opts
-		parsedUrl: parsedUrl
-
-	request = httpOrHttps.request opts, Meteor.bindEnvironment (response) ->
-		if response.statusCode in [301,302,307] and response.headers.location?
-			request.abort()
-			console.log response.headers.location
-
-			if redirectCount <= 0
-				return callback null, {parsedUrl: parsedUrl}
-
-			getUrlContent response.headers.location, --redirectCount, callback
-			return
-
+	stream = request opts
+	stream.on 'response', (response) ->
 		if response.statusCode isnt 200
-			return callback null, {parsedUrl: parsedUrl}
+			return stream.abort()
+		headers = response.headers
 
-		chunks = []
-		chunksTotalLength = 0
-		response.on 'data', (chunk) ->
-			chunks.push chunk
-			chunksTotalLength += chunk.length
-			if chunksTotalLength > 250000
-				request.abort()
+	stream.on 'data', (chunk) ->
+		chunks.push chunk
+		chunksTotalLength += chunk.length
+		if chunksTotalLength > 250000
+			stream.abort()
 
-		response.on 'end', Meteor.bindEnvironment ->
-			buffer = Buffer.concat(chunks)
+	stream.on 'end', Meteor.bindEnvironment ->
+		buffer = Buffer.concat(chunks)
 
-			try
-				if response.headers['content-encoding'] is 'gzip'
-					buffer = gunzipSync buffer
-				else if response.headers['content-encoding'] is 'deflate'
-					buffer = inflateSync buffer
+		callback null, {
+			headers: headers
+			body: toUtf8 buffer
+			parsedUrl: parsedUrl
+		}
 
-			callback null, {
-				headers: response.headers
-				body: buffer.toString()
-				parsedUrl: parsedUrl
-			}
-
-		response.on 'error', (error) ->
-			callback null, {
-				error: error
-				parsedUrl: parsedUrl
-			}
-
-	request.on 'error', (error) ->
+	stream.on 'error', (error) ->
 		callback null, {
 			error: error
 			parsedUrl: parsedUrl
 		}
-
-	request.end()
 
 OEmbed.getUrlMeta = (url, withFragment) ->
 	getUrlContentSync = Meteor.wrapAsync getUrlContent
@@ -98,25 +96,30 @@ OEmbed.getUrlMeta = (url, withFragment) ->
 		urlObj.path = path
 
 	content = getUrlContentSync urlObj, 5
+	if !content
+		return
+
+	if content.attachments?
+		return content
 
 	metas = undefined
 
 	if content?.body?
 		metas = {}
-		content.body.replace /<title>((.|\n)+?)<\/title>/gmi, (meta, title) ->
-			metas.pageTitle = title
+		content.body.replace /<title[^>]*>([^<]*)<\/title>/gmi, (meta, title) ->
+			metas.pageTitle ?= he.unescape title
 
-		content.body.replace /<meta[^>]*(?:name|property)=[']([^']*)['][^>]*content=[']([^']*)['][^>]*>/gmi, (meta, name, value) ->
-			metas[changeCase.camelCase(name)] = value
+		content.body.replace /<meta[^>]*(?:name|property)=[']([^']*)['][^>]*\scontent=[']([^']*)['][^>]*>/gmi, (meta, name, value) ->
+			metas[changeCase.camelCase(name)] ?= he.unescape value
 
-		content.body.replace /<meta[^>]*(?:name|property)=["]([^"]*)["][^>]*content=["]([^"]*)["][^>]*>/gmi, (meta, name, value) ->
-			metas[changeCase.camelCase(name)] = value
+		content.body.replace /<meta[^>]*(?:name|property)=["]([^"]*)["][^>]*\scontent=["]([^"]*)["][^>]*>/gmi, (meta, name, value) ->
+			metas[changeCase.camelCase(name)] ?= he.unescape value
 
-		content.body.replace /<meta[^>]*content=[']([^']*)['][^>]*(?:name|property)=[']([^']*)['][^>]*>/gmi, (meta, value, name) ->
-			metas[changeCase.camelCase(name)] = value
+		content.body.replace /<meta[^>]*\scontent=[']([^']*)['][^>]*(?:name|property)=[']([^']*)['][^>]*>/gmi, (meta, value, name) ->
+			metas[changeCase.camelCase(name)] ?= he.unescape value
 
-		content.body.replace /<meta[^>]*content=["]([^"]*)["][^>]*(?:name|property)=["]([^"]*)["][^>]*>/gmi, (meta, value, name) ->
-			metas[changeCase.camelCase(name)] = value
+		content.body.replace /<meta[^>]*\scontent=["]([^"]*)["][^>]*(?:name|property)=["]([^"]*)["][^>]*>/gmi, (meta, value, name) ->
+			metas[changeCase.camelCase(name)] ?= he.unescape value
 
 
 		if metas.fragment is '!' and not withFragment?
@@ -129,17 +132,13 @@ OEmbed.getUrlMeta = (url, withFragment) ->
 		for header, value of content.headers
 			headers[changeCase.camelCase(header)] = value
 
-	RocketChat.callbacks.run 'oembed:afterParseContent',
+	data = RocketChat.callbacks.run 'oembed:afterParseContent',
 		meta: metas
 		headers: headers
 		parsedUrl: content.parsedUrl
 		content: content
 
-	return {
-		meta: metas
-		headers: headers
-		parsedUrl: content.parsedUrl
-	}
+	return data
 
 OEmbed.getUrlMetaWithCache = (url, withFragment) ->
 	cache = RocketChat.models.OEmbedCache.findOneById url
@@ -149,7 +148,10 @@ OEmbed.getUrlMetaWithCache = (url, withFragment) ->
 	data = OEmbed.getUrlMeta url, withFragment
 
 	if data?
-		RocketChat.models.OEmbedCache.createWithIdAndData url, data
+		try
+			RocketChat.models.OEmbedCache.createWithIdAndData url, data
+		catch e
+			console.error 'OEmbed duplicated record', url
 
 		return data
 
@@ -177,24 +179,44 @@ getRelevantMetaTags = (metaObj) ->
 
 OEmbed.RocketUrlParser = (message) ->
 	if Array.isArray message.urls
+		attachments = []
 		changed = false
-		for item in message.urls
+		message.urls.forEach (item) ->
+			if item.ignoreParse is true then return
+			if item.url.startsWith "grain://"
+				changed = true
+				item.meta =
+					sandstorm:
+						grain: item.sandstormViewInfo
+				return
+
+			if not /^https?:\/\//i.test item.url then return
+
 			data = OEmbed.getUrlMetaWithCache item.url
 
 			if data?
-				if data.meta?
-					item.meta = getRelevantMetaTags data.meta
+				if data.attachments
+					attachments = _.union attachments, data.attachments
+				else
+					if data.meta?
+						item.meta = getRelevantMetaTags data.meta
 
-				if data.headers?
-					item.headers = getRelevantHeaders data.headers
+					if data.headers?
+						item.headers = getRelevantHeaders data.headers
 
-				item.parsedUrl = data.parsedUrl
-				changed = true
+					item.parsedUrl = data.parsedUrl
+					changed = true
+
+		if attachments.length
+			RocketChat.models.Messages.setMessageAttachments message._id, attachments
 
 		if changed is true
 			RocketChat.models.Messages.setUrlsById message._id, message.urls
 
 	return message
 
-if RocketChat.settings.get 'API_Embed'
-	RocketChat.callbacks.add 'afterSaveMessage', OEmbed.RocketUrlParser, RocketChat.callbacks.priority.LOW
+RocketChat.settings.get 'API_Embed', (key, value) ->
+	if value
+		RocketChat.callbacks.add 'afterSaveMessage', OEmbed.RocketUrlParser, RocketChat.callbacks.priority.LOW, 'API_Embed'
+	else
+		RocketChat.callbacks.remove 'afterSaveMessage', 'API_Embed'

@@ -5,6 +5,9 @@ Template.starredMessages.helpers
 	messages: ->
 		return StarredMessage.find { rid: @rid }, { sort: { ts: -1 } }
 
+	message: ->
+		return _.extend(this, { customClass: 'starred' })
+
 	hasMore: ->
 		return Template.instance().hasMore.get()
 
@@ -18,17 +21,17 @@ Template.starredMessages.onCreated ->
 				@hasMore.set false
 
 Template.starredMessages.events
-	'click .message-cog': (e) ->
+	'click .message-cog': (e, t) ->
 		e.stopPropagation()
 		e.preventDefault()
 		message_id = $(e.currentTarget).closest('.message').attr('id')
-		$('.message-dropdown:visible').hide()
-		$(".starred-messages-list \##{message_id} .message-dropdown").remove()
+		RocketChat.MessageAction.hideDropDown()
+		t.$("\##{message_id} .message-dropdown").remove()
 		message = StarredMessage.findOne message_id
-		actions = RocketChat.MessageAction.getButtons message
+		actions = RocketChat.MessageAction.getButtons message, 'starred'
 		el = Blaze.toHTMLWithData Template.messageDropdown, { actions: actions }
-		$(".starred-messages-list \##{message_id} .message-cog-container").append el
-		dropDown = $(".starred-messages-list \##{message_id} .message-dropdown")
+		t.$("\##{message_id} .message-cog-container").append el
+		dropDown = t.$("\##{message_id} .message-dropdown")
 		dropDown.show()
 
 	'scroll .content': _.throttle (e, instance) ->

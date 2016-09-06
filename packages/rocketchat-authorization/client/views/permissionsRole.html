@@ -6,20 +6,24 @@
 			{{#with role}}
 				<form id="form-role" class="inline form-role">
 					<label>{{_ "Role"}} :</label>
-						{{#if editing}}
-							<span>{{_id}}</span>
-						{{else}}
-							<input type="text" name="name" value="">
-						{{/if}}
+					{{#if editing}}
+						<span>{{_id}}</span>
+					{{else}}
+						<input type="text" name="name" value="">
+					{{/if}}
 					<br>
 					<label>{{_ "Description"}} :</label>
-						<input type="text" name="description" value="{{description}}">
+					<input type="text" name="description" value="{{description}}">
 					<br>
-
+					<label>{{_ "Scope"}} :</label>
+					<select name="scope" disabled="{{protected}}">
+						<option value="Users" selected="{{$eq scope 'Users'}}">{{_ "Global"}}</option>
+						<option value="Subscriptions" selected="{{$eq scope 'Subscriptions'}}">{{_ "Rooms"}}</option>
+					</select>
 					<div class="form-buttons">
 						<button name="save" class="button primary">{{_ "Save"}}</button>
 
-						{{#if canDelete}}
+						{{#if editable}}
 							<button name="delete" class="button red delete-role">{{_ "Delete"}}</button>
 						{{/if}}
 					</div>
@@ -28,23 +32,30 @@
 
 			{{#if editing}}
 				<h2>{{_ "Users_in_role"}}</h2>
-				<form id="form-users" class="inline">
-					<label>{{_ "Add_user"}}</label>
-					<input type="text" name="username" placeholder="{{_ "Enter_a_username"}}">
-					<button name="add" class="button primary">{{_ "Add"}}</button>
-				</form>
-				<div class="list">
-					<table>
-						<thead>
+				{{#if $eq role.scope 'Subscriptions'}}
+					<form id="form-search-room" class="inline">
+						<label>{{_ "Choose_a_room"}}</label>
+						{{> inputAutocomplete settings=autocompleteChannelSettings name="room" class="search" placeholder=(_ "Enter_a_room_name") autocomplete="off"}}
+					</form>
+				{{/if}}
+				{{#if $or ($eq role.scope 'Users') searchRoom}}
+					<form id="form-users" class="inline">
+						<label>{{_ "Add_user"}}</label>
+						{{> inputAutocomplete settings=autocompleteUsernameSettings name="username" class="search" placeholder=(_ "Enter_a_username") autocomplete="off"}}
+						<button name="add" class="button primary">{{_ "Add"}}</button>
+					</form>
+					<div class="list">
+						<table>
+							<thead>
 							<tr>
 								<th>&nbsp;</th>
 								<th width="34%">{{_ "Name"}}</th>
 								<th width="33%">{{_ "Username"}}</th>
-								<th width="33%">{{_ "E-mail"}}</th>
+								<th width="33%">{{_ "Email"}}</th>
 								<th>&nbsp;</th>
 							</tr>
-						</thead>
-						<tbody>
+							</thead>
+							<tbody>
 							{{#unless hasUsers}}
 								<tr>
 									<td colspan="5" class="empty-role">{{_ "There_are_no_users_in_this_role"}}</td>
@@ -63,9 +74,13 @@
 									<td><a href="#remove" class="remove-user"><i class="icon-block"></i></a></td>
 								</tr>
 							{{/each}}
-						</tbody>
-					</table>
-				</div>
+							</tbody>
+						</table>
+						{{#if hasMore}}
+							<button class="button secondary load-more {{isLoading}}">{{_ "Load_more"}}</button>
+						{{/if}}
+					</div>
+				{{/if}}
 			{{/if}}
 		{{else}}
 			{{_ "Not_authorized"}}

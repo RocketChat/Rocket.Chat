@@ -11,14 +11,13 @@ Package.describe({
 });
 
 Package.onUse(function(api) {
-	api.versionsFrom('1.2.1');
-
 	api.use([
 		'ecmascript',
 		'templating',
 		'coffeescript',
 		'underscore',
-		'rocketchat:lib'
+		'rocketchat:lib',
+		'sha'
 	]);
 
 	api.addFiles('account/account.html', 'client');
