@@ -1,31 +1,38 @@
 language: node_js
 branches:
   only:
-  - develop
-  - "/^(\\d+\\.)?(\\d+\\.)?(\\*|\\d+)$/"
+    - develop
+    - "/^(\\d+\\.)?(\\d+\\.)?(\\*|\\d+)$/"
 git:
   depth: 1
 node_js:
-- '4'
+  - '4'
+addons:
+  apt:
+    sources:
+      - ubuntu-toolchain-r-test
+    packages:
+      - g++-4.8
 cache:
   directories:
-  - "~/.meteor"
+    - "~/.meteor"
 before_install:
-- if [ ! -e "$HOME/.meteor/meteor" ]; then curl https://install.meteor.com | /bin/sh; fi
+  - if [ ! -e "$HOME/.meteor/meteor" ]; then curl https://install.meteor.com | /bin/sh; fi
 install:
-- export PATH="$HOME/.meteor:$PATH"
+  - export PATH="$HOME/.meteor:$PATH"
 before_script:
-- mkdir /tmp/build
-- npm install
-- npm run lint
+  - mkdir /tmp/build
+  - echo $CXX
+  - npm install
+  - npm run lint
 script:
-- meteor build /tmp/build
+  - meteor build /tmp/build
 before_deploy:
-- source ".travis/setartname.sh"
-- source ".travis/setdeploydir.sh"
-- ".travis/setupsig.sh"
-- ".travis/namefiles.sh"
-- echo ".travis/sandstorm.sh"
+  - source ".travis/setartname.sh"
+  - source ".travis/setdeploydir.sh"
+  - ".travis/setupsig.sh"
+  - ".travis/namefiles.sh"
+  - echo ".travis/sandstorm.sh"
 deploy:
   provider: s3
   access_key_id: "AKIAIKIA7H7D47KUHYCA"
@@ -38,8 +45,9 @@ deploy:
     condition: "$TRAVIS_PULL_REQUEST=false"
     all_branches: true
 after_deploy:
-- ".travis/docker.sh"
-- ".travis/update-releases.sh"
+  - ".travis/docker.sh"
+  - ".travis/update-releases.sh"
 env:
   global:
-    secure: HrPOM5sBibYkMcf9aeQThYPCDiXeLkg0Xgv0HvH88/ku/gphDpNEjHNReHZM3cyfm9y3RhHpVdD+Zzy38S2goKyewRzpXJsuyerOYkjND0v3tivhs9CAX8PAUxj1U5zllTyH4bgW2ZwRtNnwnmtIM/JJlnySMpKVDqIZBpbhn3ph9bJ2J+BW3D3Jw8meQ1vCX8szIibyJK/5QX6HG2RBFXJGYoQ8DmR8jQv0aJQvT1Az5DO4yImk8tX4NP95qOc19Jywr1DsbaSBZeJ8lFJAmBpIGx7KAmUVCcxSxfbXGRhs2K4iEYb3rJ/dU6KiyPsKGUG4aYNGgbvcX0ZxX/BZ6ZU9ff0E4IIf43IxoN3ElrOqOFk5msJAXbrJEreINSzDqKOy8NFYtCQ49E2gwzfage4ZXkhFyx3wMPa5bzpr3ncsTceMjMVz03uL781X6NLuCkUmXv+n8K2MNhJU9Xinpdx1GRJm+0lXJspNNJ1ruHeJtls4epj4bmCwKmmZbFKPXqa5e8xVcMIkwt1LMiHduhE+WgKNHdOMhXrCcTxF62ybLlsHXmyLLJeNjTeKS8QG2XSoonClDAz/1R41I1DsMPblcgz9uvYCf7UtyftbhJ83bnJeEmOYQiwijLG0+QMq+B2+mmZan3Z7Hl7O53dnwuLxz7EO7EhQhY+CqHVgc6s=
+    - secure: HrPOM5sBibYkMcf9aeQThYPCDiXeLkg0Xgv0HvH88/ku/gphDpNEjHNReHZM3cyfm9y3RhHpVdD+Zzy38S2goKyewRzpXJsuyerOYkjND0v3tivhs9CAX8PAUxj1U5zllTyH4bgW2ZwRtNnwnmtIM/JJlnySMpKVDqIZBpbhn3ph9bJ2J+BW3D3Jw8meQ1vCX8szIibyJK/5QX6HG2RBFXJGYoQ8DmR8jQv0aJQvT1Az5DO4yImk8tX4NP95qOc19Jywr1DsbaSBZeJ8lFJAmBpIGx7KAmUVCcxSxfbXGRhs2K4iEYb3rJ/dU6KiyPsKGUG4aYNGgbvcX0ZxX/BZ6ZU9ff0E4IIf43IxoN3ElrOqOFk5msJAXbrJEreINSzDqKOy8NFYtCQ49E2gwzfage4ZXkhFyx3wMPa5bzpr3ncsTceMjMVz03uL781X6NLuCkUmXv+n8K2MNhJU9Xinpdx1GRJm+0lXJspNNJ1ruHeJtls4epj4bmCwKmmZbFKPXqa5e8xVcMIkwt1LMiHduhE+WgKNHdOMhXrCcTxF62ybLlsHXmyLLJeNjTeKS8QG2XSoonClDAz/1R41I1DsMPblcgz9uvYCf7UtyftbhJ83bnJeEmOYQiwijLG0+QMq+B2+mmZan3Z7Hl7O53dnwuLxz7EO7EhQhY+CqHVgc6s=
+    - CXX=g++-4.8
