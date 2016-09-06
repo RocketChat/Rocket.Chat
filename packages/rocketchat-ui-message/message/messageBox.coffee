@@ -98,8 +98,9 @@ Template.messageBox.events
 				RoomHistoryManager.getRoom(@_id).loaded = undefined
 				RoomManager.computation.invalidate()
 
-	'focus .input-message': (event) ->
+	'focus .input-message': (event, instance) ->
 		KonchatNotification.removeRoomNotification @_id
+		chatMessages[@_id].input = instance.find('.input-message')
 
 	'click .send-button': (event, instance) ->
 		input = instance.find('.input-message')
