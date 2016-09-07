@@ -1,5 +1,8 @@
 Meteor.methods
 	createDirectMessage: (username) ->
+
+		check username, String
+
 		if not Meteor.userId()
 			throw new Meteor.Error 'error-invalid-user', "Invalid user", { method: 'createDirectMessage' }
 

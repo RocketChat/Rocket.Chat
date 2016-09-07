@@ -1,0 +1,16 @@
+{
+	// Default options
+	'functions': true
+}
+
+.emojione {
+	background-image: url("../../packages/emojione_emojione/assets/sprites/emojione.sprites.png");
+	background-size: unquote('#{ {{spritesheet.width}} / {{items.0.width}} * 100}% #{ {{spritesheet.height}} / {{items.0.height}} * 100}%');
+	background-repeat: no-repeat;
+}
+
+{{#items}}
+.{{name}} {
+	background-position: unquote('#{({{px.x}} * 100 / ({{px.total_width}} - {{px.width}}))}% #{({{px.y}} * 100 / ({{px.total_height}} - {{px.height}}))}%');
+}
+{{/items}}

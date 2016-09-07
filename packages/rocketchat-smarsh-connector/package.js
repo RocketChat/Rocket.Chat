@@ -6,13 +6,12 @@ Package.describe({
 });
 
 Package.onUse(function(api) {
-	api.versionsFrom('1.0');
-
 	api.use([
 		'ecmascript',
 		'rocketchat:lib',
 		'underscore',
-		'momentjs:moment'
+		'mrt:moment',
+		'mrt:moment-timezone'
 	]);
 
 	api.addFiles('lib/rocketchat.js', [ 'client', 'server' ]);
