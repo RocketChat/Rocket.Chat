@@ -238,8 +238,6 @@ RocketChat.API.v1.addRoute 'directRoom.list', authRequired: true,
 RocketChat.API.v1.addRoute 'addUser', authRequired: true,
 	post: ->
 		
-		if RocketChat.authz.hasPermission(@userId, 'add-user-to-room') is false
-			return RocketChat.API.v1.unauthorized()
 		try
 			this.response.setTimeout (1000 * @userId.length)
 			Meteor.runAsUser this.userId, () =>
@@ -311,7 +309,6 @@ RocketChat.API.v1.addRoute 'roomIntegrations.list', authRequired: true,
 			return RocketChat.API.v1.failure e.name + ': ' + e.message
 		
 		
-
 ### Create outgoing webhooks,
 user must also have manage-integrations role
 creating a push point for messages to be push to from Rocket Chat.
