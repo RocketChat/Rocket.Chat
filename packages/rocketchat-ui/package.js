@@ -11,8 +11,6 @@ Package.describe({
 });
 
 Package.onUse(function(api) {
-	api.versionsFrom('1.2.1');
-
 	api.use([
 		'accounts-base',
 		'mongo',
@@ -38,7 +36,6 @@ Package.onUse(function(api) {
 	api.addFiles('lib/avatar.coffee', 'client');
 	api.addFiles('lib/chatMessages.coffee', 'client');
 	api.addFiles('lib/collections.coffee', 'client');
-	api.addFiles('lib/constallation.js', 'client');
 	api.addFiles('lib/customEventPolyfill.js', 'client');
 	api.addFiles('lib/fileUpload.coffee', 'client');
 	api.addFiles('lib/fireEvent.js', 'client');
@@ -69,9 +66,6 @@ Package.onUse(function(api) {
 	api.addFiles('lib/recorderjs/audioRecorder.coffee', 'client');
 	api.addFiles('lib/recorderjs/videoRecorder.coffee', 'client');
 	api.addFiles('lib/recorderjs/recorder.js', 'client');
-
-	// LIB CLIPBOARDJS
-	api.addFiles('lib/clipboardjs/clipboard.js', 'client');
 
 	// TEXTAREA CURSOR MANAGEMENT
 	api.addFiles('lib/textarea-cursor/set-cursor-position.js', 'client');

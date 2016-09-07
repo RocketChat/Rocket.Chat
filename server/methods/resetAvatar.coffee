@@ -1,5 +1,5 @@
 Meteor.methods
-	resetAvatar: (image, service) ->
+	resetAvatar:->
 		unless Meteor.userId()
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'resetAvatar' });
 
