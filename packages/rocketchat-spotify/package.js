@@ -10,7 +10,7 @@ Package.onUse(function(api) {
 		'coffeescript',
 		'templating',
 		'underscore',
-		'rocketchat:oembed@0.0.1',
+		'rocketchat:oembed',
 		'rocketchat:lib'
 	]);
 

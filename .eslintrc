@@ -1,4 +1,7 @@
 {
+	"parserOptions": {
+		"sourceType": "module"
+	},
 	"env": {
 		"browser": true,
 		"commonjs": true,

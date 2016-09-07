@@ -1,3 +1,5 @@
+`import Clipboard from 'clipboard';`
+
 Template.body.onRendered ->
 	clipboard = new Clipboard('.clipboard')
 
