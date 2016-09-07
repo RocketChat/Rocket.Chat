@@ -13,15 +13,16 @@ Api.addRoute 'version', authRequired: false,
 		version = {api: '0.1', rocketchat: '0.5'}
 		status: 'success', versions: version
 
+#list public rooms 
 Api.addRoute 'publicRooms', authRequired: true,
 	get: ->
 		rooms = RocketChat.models.Rooms.findByType('c', { sort: { msgs:-1 } }).fetch()
 		status: 'success', rooms: rooms
-
+		
 ###
 @api {get} /joinedRooms Get joined rooms.
 ###
-Api.addRoute 'joinedRooms', authRequired: true,
+Api.addRoute 'joinedRooms.list', authRequired: true,
 	get: ->
 		rooms = RocketChat.models.Rooms.findByContainigUsername(@user.username).fetch()
 		status: 'success', rooms: rooms
@@ -35,11 +36,10 @@ Api.addRoute 'rooms/:id/join', authRequired: true,
 
 # leave a room
 Api.addRoute 'rooms/:id/leave', authRequired: true,
-	post: ->
+	delete: ->
 		Meteor.runAsUser this.userId, () =>
 			Meteor.call('leaveRoom', @urlParams.id)
 		status: 'success'   # need to handle error
-
 
 ###
 @api {get} /rooms/:id/messages?skip=:skip&limit=:limit Get messages in a room.
@@ -69,8 +69,6 @@ Api.addRoute 'rooms/:id/messages', authRequired: true,
 		catch e
 			statusCode: 400    # bad request or other errors
 			body: status: 'fail', message: e.name + ' :: ' + e.message
-
-
 
 # send a message in a room -  POST body should be { "msg" : "this is my message"}
 Api.addRoute 'rooms/:id/send', authRequired: true,
@@ -167,8 +165,6 @@ Api.addRoute 'bulk/register', authRequired: true,
 				console.log '[restapi] bulk/register -> '.red, "User does not have 'bulk-register-user' permission"
 				statusCode: 403
 				body: status: 'error', message: 'You do not have permission to do this'
-
-
 
 
 # validate an array of rooms
