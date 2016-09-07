@@ -10,6 +10,10 @@ Package.describe({
 	documentation: 'README.md'
 });
 
+Npm.depends({
+	'clipboard': '1.5.12'
+});
+
 Package.onUse(function(api) {
 	api.use([
 		'mongo',
