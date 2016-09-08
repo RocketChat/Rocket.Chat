@@ -1,6 +1,64 @@
 /* globals FileUpload, UploadFS */
 var stream = Npm.require('stream');
 var zlib = Npm.require('zlib');
+var util = Npm.require('util');
+
+
+function ExtractRange(options) {
+	if (!(this instanceof ExtractRange)) {
+		return new ExtractRange(options);
+	}
+
+	this.start = options.start;
+	this.stop = options.stop;
+	this.bytes_read = 0;
+
+	stream.Transform.call(this, options);
+}
+util.inherits(ExtractRange, stream.Transform);
+
+
+ExtractRange.prototype._transform = function (chunk, enc, cb) {
+	if (this.bytes_read > this.stop) {
+		// done reading
+		this.end();
+	}
+	else if (this.bytes_read + chunk.length < this.start) {
+		// this chunk is still before the start byte
+	}
+	else {
+		var start, stop;
+		if (this.start <= this.bytes_read) {
+			start = 0;
+		}
+		else {
+			start = this.start - this.bytes_read;
+		}
+		if ((this.stop - this.bytes_read + 1) < chunk.length) {
+			stop = this.stop - this.bytes_read + 1;
+		}
+		else {
+			stop = chunk.length;
+		}
+		var newchunk = chunk.slice(start, stop);
+		this.push(newchunk);
+	}
+	this.bytes_read += chunk.length;
+	cb();
+};
+
+
+var getByteRange = function(header) {
+	if (header) {
+		var matches = header.match(/(\d+)-(\d+)/);
+		if (matches) {
+			return {start: parseInt(matches[1], 10),
+					stop: parseInt(matches[2], 10)};
+		}
+	}
+	return null;
+};
+
 
 // code from: https://github.com/jalik/jalik-ufs/blob/master/ufs-server.js#L91
 var readFromGridFS = function(storeName, fileId, file, headers, req, res) {
@@ -26,13 +84,16 @@ var readFromGridFS = function(storeName, fileId, file, headers, req, res) {
 	// Transform stream
 	store.transformRead(rs, ws, fileId, file, req, headers);
 
+	var h = req.headers;
+	var range = getByteRange(h.range);
+
 	// Compress data using gzip
-	if (accept.match(/\bgzip\b/)) {
+	if (accept.match(/\bgzip\b/) && range === null) {
 		headers['Content-Encoding'] = 'gzip';
 		delete headers['Content-Length'];
 		res.writeHead(200, headers);
 		ws.pipe(zlib.createGzip()).pipe(res);
-	} else if (accept.match(/\bdeflate\b/)) {
+	} else if (accept.match(/\bdeflate\b/) && range === null) {
 		// Compress data using deflate
 		headers['Content-Encoding'] = 'deflate';
 		delete headers['Content-Length'];
@@ -40,8 +101,30 @@ var readFromGridFS = function(storeName, fileId, file, headers, req, res) {
 		ws.pipe(zlib.createDeflate()).pipe(res);
 	} else {
 		// Send raw data
-		res.writeHead(200, headers);
-		ws.pipe(res);
+		if (range) {
+			if ((range.start > file.size) || (range.stop <= range.start)
+				 || (range.stop > file.size)) {
+				// out of range request, return 416
+				delete headers['Content-Length'];
+				delete headers['Content-Type'];
+				delete headers['Content-Disposition'];
+				delete headers['Last-Modified'];
+				headers['Content-Range'] = 'bytes */' + file.size;
+				res.writeHead(416, headers);
+				res.end();
+				return;
+			}
+			headers['Content-Range'] = 'bytes ' + range.start + '-' + range.stop + '/' + file.size;
+			delete headers['Content-Length'];
+			headers['Content-Length'] = range.stop - range.start + 1;
+			res.writeHead(206, headers);
+			ws.pipe(new ExtractRange({start: range.start,
+									  stop: range.stop})).pipe(res);
+		}
+		else {
+			res.writeHead(200, headers);
+			ws.pipe(res);
+		}
 	}
 };
 
