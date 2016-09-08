@@ -22,6 +22,7 @@ Meteor.methods
 			u:
 				_id: fromUser._id
 				username: fromUser.username
+				name: fromUser.name
 			role: 'owner'
 
 		if RocketChat.settings.get('UI_DisplayRoles')
