@@ -163,8 +163,6 @@ RocketChat.settings.updateById = (_id, value) ->
 	if not _id or not value?
 		return false
 
-	value._updatedAt = new Date
-
 	return RocketChat.models.Settings.updateValueById _id, value
 
 
