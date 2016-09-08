@@ -32,17 +32,17 @@ Meteor.methods
 			nameValidation = new RegExp '^[0-9a-zA-Z-_.]+$'
 
 		if userData.username? and not nameValidation.test userData.username
-			throw new Meteor.Error 'error-input-is-not-a-valid-field', "#{userData.username} is not a valid username", { method: 'insertOrUpdateUser', input: userData.username, field: 'Username' }
+			throw new Meteor.Error 'error-input-is-not-a-valid-field', "#{_.escape(userData.username)} is not a valid username", { method: 'insertOrUpdateUser', input: userData.username, field: 'Username' }
 
 		if not userData._id and not userData.password
 			throw new Meteor.Error 'error-the-field-is-required', 'The field Password is required', { method: 'insertOrUpdateUser', field: 'Password' }
 
 		if not userData._id
 			if not RocketChat.checkUsernameAvailability userData.username
-				throw new Meteor.Error 'error-field-unavailable', "#{userData.username} is already in use :(", { method: 'insertOrUpdateUser', field: userData.username }
+				throw new Meteor.Error 'error-field-unavailable', "#{_.escape(userData.username)} is already in use :(", { method: 'insertOrUpdateUser', field: userData.username }
 
 			if userData.email and not RocketChat.checkEmailAvailability userData.email
-				throw new Meteor.Error 'error-field-unavailable', "#{userData.email} is already in use :(", { method: 'insertOrUpdateUser', field: userData.email }
+				throw new Meteor.Error 'error-field-unavailable', "#{_.escape(userData.email)} is already in use :(", { method: 'insertOrUpdateUser', field: userData.email }
 
 			RocketChat.validateEmailDomain(userData.email);
 
