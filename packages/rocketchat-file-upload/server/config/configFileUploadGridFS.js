@@ -18,7 +18,7 @@ function ExtractRange(options) {
 util.inherits(ExtractRange, stream.Transform);
 
 
-ExtractRange.prototype._transform = function (chunk, enc, cb) {
+ExtractRange.prototype._transform = function(chunk, enc, cb) {
 	if (this.bytes_read > this.stop) {
 		// done reading
 		this.end();
@@ -86,6 +86,10 @@ var readFromGridFS = function(storeName, fileId, file, headers, req, res) {
 
 	var h = req.headers;
 	var range = getByteRange(h.range);
+	var out_of_range = false;
+	if (range) {
+		out_of_range = (range.start > file.size) || (range.stop <= range.start) || (range.stop > file.size);
+	}
 
 	// Compress data using gzip
 	if (accept.match(/\bgzip\b/) && range === null) {
@@ -99,32 +103,24 @@ var readFromGridFS = function(storeName, fileId, file, headers, req, res) {
 		delete headers['Content-Length'];
 		res.writeHead(200, headers);
 		ws.pipe(zlib.createDeflate()).pipe(res);
-	} else {
-		// Send raw data
-		if (range) {
-			if ((range.start > file.size) || (range.stop <= range.start)
-				 || (range.stop > file.size)) {
-				// out of range request, return 416
-				delete headers['Content-Length'];
-				delete headers['Content-Type'];
-				delete headers['Content-Disposition'];
-				delete headers['Last-Modified'];
-				headers['Content-Range'] = 'bytes */' + file.size;
-				res.writeHead(416, headers);
-				res.end();
-				return;
-			}
+	} else if (range && out_of_range) {
+			// out of range request, return 416
+			delete headers['Content-Length'];
+			delete headers['Content-Type'];
+			delete headers['Content-Disposition'];
+			delete headers['Last-Modified'];
+			headers['Content-Range'] = 'bytes */' + file.size;
+			res.writeHead(416, headers);
+			res.end();
+	} else if (range) {
 			headers['Content-Range'] = 'bytes ' + range.start + '-' + range.stop + '/' + file.size;
 			delete headers['Content-Length'];
 			headers['Content-Length'] = range.stop - range.start + 1;
 			res.writeHead(206, headers);
-			ws.pipe(new ExtractRange({start: range.start,
-									  stop: range.stop})).pipe(res);
-		}
-		else {
-			res.writeHead(200, headers);
-			ws.pipe(res);
-		}
+			ws.pipe(new ExtractRange({start: range.start, stop: range.stop})).pipe(res);
+	} else {
+		res.writeHead(200, headers);
+		ws.pipe(res);
 	}
 };
 
