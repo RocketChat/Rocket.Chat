@@ -878,7 +878,7 @@ class SlackBridge {
 
 	importMessages(rid, callback) {
 		logger.class.info('importMessages: ', rid);
-		let rocketchat_room = RocketChat.models.Rooms.findOneById(rid);
+		let rocketchat_room = RocketChat.cache.Rooms.findOneById(rid);
 		if (rocketchat_room) {
 			if (this.channelMap[rid]) {
 				this.copyChannelInfo(rid, this.channelMap[rid]);
