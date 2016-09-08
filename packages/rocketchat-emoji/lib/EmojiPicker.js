@@ -118,8 +118,8 @@ RocketChat.EmojiPicker = {
 			let emoji = RocketChat.emoji.packages.base.emojisByCategory.recent[i];
 
 			if (isSetNotNull(() => RocketChat.emoji.list[`:${emoji}:`])) {
-				let emPackage = RocketChat.emoji.list[`:${emoji}:`].emojiPackage;
-				let renderedEmoji = RocketChat.emoji.packages[emPackage].render(`:${emoji}:`);
+				let emojiPackage = RocketChat.emoji.list[`:${emoji}:`].emojiPackage;
+				let renderedEmoji = RocketChat.emoji.packages[emojiPackage].render(`:${emoji}:`);
 				html += `<li class="emoji-${emoji}" data-emoji="${emoji}">${renderedEmoji}</li>`;
 			} else {
 				this.recent = _.without(this.recent, emoji);

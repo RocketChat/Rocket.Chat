@@ -1,5 +1,10 @@
 Meteor.methods
 	messageSearch: (text, rid, limit) ->
+
+		check text, String
+		check rid, String
+		check limit, Match.Optional(Number)
+
 		if not Meteor.userId()
 			throw new Meteor.Error 'error-invalid-user', 'Invalid user', { method: 'messageSearch' }
 

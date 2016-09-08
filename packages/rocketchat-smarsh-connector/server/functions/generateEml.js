@@ -18,6 +18,9 @@ function _getLink(attachment) {
 
 RocketChat.smarsh.generateEml = () => {
 	Meteor.defer(() => {
+		const smarshMissingEmail = RocketChat.settings.get('Smarsh_MissingEmail_Email');
+		const timeZone = RocketChat.settings.get('Smarsh_Timezone');
+
 		RocketChat.models.Rooms.find().forEach((room) => {
 			const smarshHistory = RocketChat.smarsh.History.findOne({ _id: room._id });
 			const query = { rid: room._id };
@@ -41,7 +44,7 @@ RocketChat.smarsh.generateEml = () => {
 
 				//The timestamp
 				rows.push(open20td);
-				rows.push(moment(message.ts).tz('America/Los_Angeles').format('YYYY-MM-DD HH-mm-ss z'));
+				rows.push(moment(message.ts).tz(timeZone).format('YYYY-MM-DD HH-mm-ss z'));
 				rows.push(closetd);
 
 				//The sender
@@ -55,7 +58,7 @@ RocketChat.smarsh.generateEml = () => {
 				if (sender.emails && sender.emails[0] && sender.emails[0].address) {
 					rows.push(`${sender.name} &lt;${sender.emails[0].address}&gt;`);
 				} else {
-					rows.push(`${sender.name} &lt;${RocketChat.settings.get('Smarsh_MissingEmail_Email')}&gt;`);
+					rows.push(`${sender.name} &lt;${smarshMissingEmail}&gt;`);
 				}
 				rows.push(closetd);
 
