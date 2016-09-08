@@ -104,20 +104,20 @@ var readFromGridFS = function(storeName, fileId, file, headers, req, res) {
 		res.writeHead(200, headers);
 		ws.pipe(zlib.createDeflate()).pipe(res);
 	} else if (range && out_of_range) {
-			// out of range request, return 416
-			delete headers['Content-Length'];
-			delete headers['Content-Type'];
-			delete headers['Content-Disposition'];
-			delete headers['Last-Modified'];
-			headers['Content-Range'] = 'bytes */' + file.size;
-			res.writeHead(416, headers);
-			res.end();
+		// out of range request, return 416
+		delete headers['Content-Length'];
+		delete headers['Content-Type'];
+		delete headers['Content-Disposition'];
+		delete headers['Last-Modified'];
+		headers['Content-Range'] = 'bytes */' + file.size;
+		res.writeHead(416, headers);
+		res.end();
 	} else if (range) {
-			headers['Content-Range'] = 'bytes ' + range.start + '-' + range.stop + '/' + file.size;
-			delete headers['Content-Length'];
-			headers['Content-Length'] = range.stop - range.start + 1;
-			res.writeHead(206, headers);
-			ws.pipe(new ExtractRange({start: range.start, stop: range.stop})).pipe(res);
+		headers['Content-Range'] = 'bytes ' + range.start + '-' + range.stop + '/' + file.size;
+		delete headers['Content-Length'];
+		headers['Content-Length'] = range.stop - range.start + 1;
+		res.writeHead(206, headers);
+		ws.pipe(new ExtractRange({start: range.start, stop: range.stop})).pipe(res);
 	} else {
 		res.writeHead(200, headers);
 		ws.pipe(res);
