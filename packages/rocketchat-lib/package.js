@@ -6,12 +6,11 @@ Package.describe({
 });
 
 Npm.depends({
-	'bad-words': '1.3.1'
+	'bad-words': '1.3.1',
+	'localforage': '1.4.2'
 });
 
 Package.onUse(function(api) {
-	api.versionsFrom('1.0');
-
 	api.use('rate-limit');
 	api.use('reactive-var');
 	api.use('reactive-dict');
@@ -29,9 +28,11 @@ Package.onUse(function(api) {
 	api.use('matb33:collection-hooks');
 	api.use('service-configuration');
 	api.use('check');
+	api.use('rocketchat:i18n');
 	api.use('rocketchat:streamer');
 	api.use('rocketchat:version');
 	api.use('rocketchat:logger');
+	api.use('rocketchat:custom-oauth');
 
 	api.use('templating', 'client');
 	api.use('kadira:flow-router');
@@ -70,6 +71,7 @@ Package.onUse(function(api) {
 	api.addFiles('server/functions/setUserAvatar.js', 'server');
 	api.addFiles('server/functions/setUsername.coffee', 'server');
 	api.addFiles('server/functions/setEmail.js', 'server');
+	api.addFiles('server/functions/unarchiveRoom.js', 'server');
 	api.addFiles('server/functions/updateMessage.js', 'server');
 	api.addFiles('server/functions/Notifications.coffee', 'server');
 
@@ -136,7 +138,6 @@ Package.onUse(function(api) {
 
 	// CLIENT LIB
 	api.addFiles('client/Notifications.coffee', 'client');
-	api.addFiles('client/lib/localforage.min.js', 'client');
 	api.addFiles('client/lib/cachedCollection.js', 'client');
 	api.addFiles('client/lib/openRoom.coffee', 'client');
 	api.addFiles('client/lib/roomExit.coffee', 'client');
@@ -165,17 +166,6 @@ Package.onUse(function(api) {
 	// EXPORT
 	api.export('RocketChat');
 
-	// TAPi18n
-	var _ = Npm.require('underscore');
-	var fs = Npm.require('fs');
-	var tapi18nFiles = _.compact(_.map(fs.readdirSync('packages/rocketchat-lib/i18n'), function(filename) {
-		if (filename.indexOf('.json') > -1 && fs.statSync('packages/rocketchat-lib/i18n/' + filename).size > 16) {
-			return 'i18n/' + filename;
-		}
-	}));
-	api.addFiles(tapi18nFiles);
-
-	api.use('tap:i18n');
 	api.imply('tap:i18n');
 });
 

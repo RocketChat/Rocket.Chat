@@ -30,6 +30,8 @@ Template.messageBox.helpers
 		return Session.get('roomData' + this._id)?.joinCodeRequired
 	subscribed: ->
 		return RocketChat.roomTypes.verifyCanSendMessage @_id
+	allowedToSend: ->
+		return !RocketChat.roomTypes.readOnly @_id, Meteor.user()
 	getPopupConfig: ->
 		template = Template.instance()
 		return {
@@ -96,8 +98,9 @@ Template.messageBox.events
 				RoomHistoryManager.getRoom(@_id).loaded = undefined
 				RoomManager.computation.invalidate()
 
-	'focus .input-message': (event) ->
+	'focus .input-message': (event, instance) ->
 		KonchatNotification.removeRoomNotification @_id
+		chatMessages[@_id].input = instance.find('.input-message')
 
 	'click .send-button': (event, instance) ->
 		input = instance.find('.input-message')

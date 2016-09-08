@@ -778,7 +778,7 @@
   "No_pinned_messages" : "Es wurden bisher keine Nachrichten fixiert.",
   "No_results_found" : "Keine Ergebnisse gefunden.",
   "No_starred_messages" : "Es wurden bisher keine Nachrichten markiert.",
-  "No_such_command" : "Es gibt keinen Befehel: '/__command__'",
+  "No_such_command" : "Es gibt keinen Befehl: '/__command__'",
   "No_user_with_username_%s_was_found" : "Es wurde kein Benutzer mit dem Namen <strong>\"%s\"</strong> gefunden!",
   "Nobody_available" : "Es ist niemand verfügbar",
   "Node_version" : "Node-Version",
