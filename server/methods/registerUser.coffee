@@ -1,5 +1,8 @@
 Meteor.methods
 	registerUser: (formData) ->
+
+		check formData, Object
+
 		if RocketChat.settings.get('Accounts_RegistrationForm') is 'Disabled'
 			throw new Meteor.Error 'error-user-registration-disabled', 'User registration is disabled', { method: 'registerUser' }
 

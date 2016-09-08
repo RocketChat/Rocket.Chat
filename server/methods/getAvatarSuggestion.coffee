@@ -1,4 +1,7 @@
 @getAvatarSuggestionForUser = (user) ->
+
+	check user, Object
+
 	avatars = []
 
 	if user.services.facebook?.id? and RocketChat.settings.get 'Accounts_OAuth_Facebook'

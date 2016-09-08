@@ -8,6 +8,8 @@ Meteor.startup ->
 		{ _id: 'access-permissions',            roles : ['admin'] }
 		{ _id: 'add-oauth-service',             roles : ['admin'] }
 		{ _id: 'add-user-to-room',              roles : ['admin', 'owner', 'moderator'] }
+		{ _id: 'api-direct-list',               roles : ['admin'] }
+		{ _id: 'api-groups-list',               roles : ['admin'] }
 		{ _id: 'archive-room',                  roles : ['admin', 'owner'] }
 		{ _id: 'assign-admin-role',             roles : ['admin'] }
 		{ _id: 'ban-user',                      roles : ['admin', 'owner', 'moderator'] }
@@ -29,6 +31,7 @@ Meteor.startup ->
 		{ _id: 'edit-privileged-setting',       roles : ['admin'] }
 		{ _id: 'edit-room',                     roles : ['admin', 'owner', 'moderator'] }
 		{ _id: 'manage-assets',                 roles : ['admin'] }
+		{ _id: 'manage-emoji',                  roles : ['admin'] }
 		{ _id: 'manage-integrations',           roles : ['admin'] }
 		{ _id: 'manage-own-integrations',       roles : ['admin', 'bot'] }
 		{ _id: 'manage-oauth-apps',             roles : ['admin'] }

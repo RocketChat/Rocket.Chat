@@ -108,8 +108,8 @@
 
 					{{#if state 'login'}}
 						{{#if registrationAllowed}}
-							<div class="register">
-								<button type="button">{{_ 'Register'}}</button>
+							<div>
+								<button type="button" class="register">{{_ 'Register'}}</button>
 							</div>
 						{{else}}
 							{{#if linkReplacementText}}
@@ -118,8 +118,8 @@
 						{{/if}}
 
 						{{#if passwordResetAllowed}}
-							<div class="forgot-password">
-								<button type="button">{{_ 'Forgot_password'}}</button>
+							<div>
+								<button type="button" class="forgot-password">{{_ 'Forgot_password'}}</button>
 							</div>
 						{{/if}}
 					{{/if}}
@@ -127,8 +127,8 @@
 			{{/if}}
 
 			{{#unless state 'login'}}
-				<div class="back-to-login">
-					<button type="button">{{_ 'Back_to_login'}}</button>
+				<div>
+					<button type="button" class="back-to-login">{{_ 'Back_to_login'}}</button>
 				</div>
 			{{/unless}}
 		</form>
