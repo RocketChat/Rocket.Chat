@@ -46,7 +46,6 @@ Package.onUse(function(api) {
 	api.addFiles('lib/msgTyping.coffee', 'client');
 	api.addFiles('lib/notification.coffee', 'client');
 	api.addFiles('lib/parentTemplate.js', 'client');
-	api.addFiles('lib/particles.js', 'client');
 	api.addFiles('lib/readMessages.coffee', 'client');
 	api.addFiles('lib/rocket.coffee', 'client');
 	api.addFiles('lib/RoomHistoryManager.coffee', 'client');
