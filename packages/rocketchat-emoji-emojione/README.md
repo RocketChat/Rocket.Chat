@@ -1,7 +1,7 @@
 # Updating emojione
 
 ## Generate new category map variable for emojipicker
-Update the variable `emojiList` in the file `generateEmojiIndex.js` with the content of the file https://github.com/Ranks/emojione/blob/master/emoji.json
+Create a file called `emoji.json` on this directory with the content of the file https://github.com/Ranks/emojione/blob/master/emoji.json
 
 After that, run:
 ```
@@ -19,4 +19,4 @@ grunt sprite
 sass --sourcemap=none assets/sprites/emojione.sprites.scss sprites.css
 ```
 
-And replace the file `sprites.css` at Rocket.Chat's `/packages/rocketchat-emojione/sprites.css`.
+And replace the file `sprites.css` at Rocket.Chat's `/packages/rocketchat-emoji-emojione/sprites.css`.
