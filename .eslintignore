@@ -6,7 +6,6 @@ packages/rocketchat-autolinker/lib/Autolinker.min.js
 packages/rocketchat-emoji-emojione/generateEmojiIndex.js
 packages/rocketchat-favico/favico.js
 packages/rocketchat-katex/client/katex/katex.min.js
-packages/rocketchat-lib/lib/loki.js
 packages/rocketchat-livechat/app/client/lib/Autolinker.min.js
 packages/rocketchat-livechat/client/lib/ua-parser.js
 packages/rocketchat-livechat/lib/ua-parser.js
