@@ -60,7 +60,7 @@ Accounts.registerLoginHandler('ldap', function(loginRequest) {
 
 	ldap.disconnect();
 
-	if (ldapUser === undefined) {
+	if (ldapUser === undefined && RocketChat.settings.get('LDAP_Login_Fallback') === true) {
 		return fallbackDefaultAccountSystem(self, loginRequest.username, loginRequest.ldapPass);
 	}
 

@@ -6,8 +6,6 @@ Package.describe({
 });
 
 Package.onUse(function(api) {
-	api.versionsFrom('1.2');
-	// api.versionsFrom('1.3'); // when release
 	api.use('ecmascript');
 	api.use('underscore');
 	api.use('rocketchat:lib');
