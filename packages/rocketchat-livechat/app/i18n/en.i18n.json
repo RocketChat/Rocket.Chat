@@ -1,7 +1,7 @@
 {
   "Additional_Feedback" : "Additional Feedback",
   "Appearance" : "Appearance",
-  "Are_you_sure_do_you_want_end_this_chat" : "Are you sure do you want end this chat?",
+  "Are_you_sure_do_you_want_end_this_chat" : "Are you sure do you want to end this chat?",
   "Cancel" : "Cancel",
   "Chat_ended" : "Chat ended!",
   "Close_menu" : "Close menu",
@@ -33,5 +33,6 @@
   "User_left" : "User left",
   "We_are_offline_Sorry_for_the_inconvenience" : "We are offline. Sorry for the inconvenience.",
   "Yes" : "Yes",
+  "You" : "You",
   "You_must_complete_all_fields" : "You must complete all fields"
 }

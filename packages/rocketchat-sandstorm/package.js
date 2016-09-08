@@ -6,9 +6,8 @@ Package.describe({
 });
 
 Package.onUse(function(api) {
-	api.versionsFrom('1.0');
-
 	api.use([ 'ecmascript', 'rocketchat:lib' ]);
 
-	api.addFiles([ 'server/events.js' ], 'server');
+	api.addFiles([ 'server/lib.js', 'server/events.js', 'server/powerbox.js' ], 'server');
+	api.addFiles([ 'client/powerboxListener.js' ], 'client');
 });

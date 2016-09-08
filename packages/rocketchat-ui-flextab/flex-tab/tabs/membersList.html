@@ -7,7 +7,7 @@
 					<div class="title">
 						<h2>{{_ "Members_List"}}</h2>
 						<p>
-							{{{_ "Showing_online_users" total_showing=totalShowing total=total}}}
+							{{{_ "Showing_online_users" total_showing=totalShowing online=totalOnline total=total}}}
 							<button class="see-all">{{seeAll}}</button>
 						</p>
 						{{> videoButtons}}
@@ -28,6 +28,9 @@
 								<button data-username="{{username}}" tabindex="0" title="{{username}}">
 									{{> avatar username=username}}
 									<p>{{username}} {{utcOffset}}</p>
+									{{#if muted}}
+										<i class="icon-mute" title="{{_ "User Muted"}}"></i>
+									{{/if}}
 								</button>
 							</li>
 						{{/each}}

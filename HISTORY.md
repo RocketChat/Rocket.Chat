@@ -1,80 +1,209 @@
 ## NEXT
 
-## 0.36.0, 2016-Ago-02
+## 0.39.0, 2016-Sep-05
+
+- Accept username from SAML response
+- Add image attachment support when a bot (ex using giffy) posts just an image
+- Add Livechat office hours
+- Add more Parameter checks to methods (#4147)
+- Add roles user to slackbridge imported users
+- Add setting to disable LDAP fallback to default account system
+- Add try/catch for avoiding log of error on duplicate messages on SlackBridge
+- Adds Support for phabricator oauth server
+- Change 'go to message' button style
+- Changed time check from every second to every minute
+- Disable unessary fields on push settings
+- Enable debug of push lib when debug setting is true
+- Fix an exception occuring in the smarsh connector when a user didn't have an email, adds a setting to configure the default email for missing emails
+- Fix E-Mail address in reset password form is case-sensitive (#4158)
+- Fix error with CustomOAuth on startup
+- Fix input label position and background color for autofill fields
+- Fix login font issues
+- Fix resize of message box on mobile when paste and send using `return` on keyboard
+- Fix ModelsBase.update throws error when using array update operators (#4121)
+- Hide messages from stream while importing with SlackBridge
+- Initial work on getting the smarsh connector wired up.
+- Moved createPrivateGroup to rocketchat-lib
+- Support jitsi message types in the smarsh connector
+- Tweak SandstormOembed styling/format
+- UI improvements to login screen
+- Update the opened livechat room by token
+
+## 0.38.0, 2016-Aug-30
+
+- Action links improvements
+- Add global event unread-changed-by-subscription
+- Add role to disable/enable channel preview (#4127)
+- Add room setting to require code to join Room (#4126)
+- Add the timer for disconnecting, one minute after going in the background it'll disconnect
+- Add Ubuntu 16.04-under 30 seconds snap deployment using SNAPS
+- Added File Uploaded text on attachments to i18n
+- Added option to populate Rocket Chat with LDAP users (import them) (#4054)
+- Changes rtl check in ChatMessages class (#4049)
+- Check message timestamp before notifying users
+- Do not check for last admin while updating a user
+- Don't send offline emails to users who aren't active
+- Fix mispelling for seriliazedDescriptor
+- Fix multiple notifications (closes #3517) (#4074)
+- Fix offering Sandstorm grains without a title
+- Fix the verbs in Sandstorm activity events
+- Fix user update check for last admin
+- Fixed buttons margins and upload file list
+- Formatting and adding some missing permissions to standard roles
+- Handle locations when disabled
+- Improve lazy loading of custom fields and translations
+- Improve stream broadcast connection (#4119)
+- Improvements/login and registration (#4073)
+- Less borders (#4101)
+- Make sure Sandstorm.notify is always called for DMs
+- Open room correctly after creation and new messages
+- Set gitlabs scope to 'api', the only support scope.
+- Set message.ts if empty on sendMessage method
+- Update moment locales
+- Update to Autolinker.js 0.28.0
+- Update to depend only on the gMaps API key, add i18n strings for geolocaiotn sharing
+- Updated loginform a11y and UX - labels instead of placeholders (#4075)
+
+## 0.37.1, 2016-Aug-17
+
+- Allow deletion of records with same id on settings
+- Created inital Iframe integration
+- Fixed admin option of type select
+- Fixed livechat branding over options button
+- Fixed Not showing upload button on safari
+- Fixed SlackBridge import and slack importer ids conflict
+- Changed SlackBridge to import from begin to end
+- Suppress message-pinned notification from import
+
+## 0.37.0, 2016-Aug-15
+
+- Added an option to SlackBridge to exclude some bots messages from propagating. (#3813)
+- Added bot-helpers package (#3799)
+- Added crowd integration (#3852)
+- Added error handling for stat server request
+- Added extention to filename if not included in download file (#3914)
+- Added font family configuration
+- Added i18n file route for subfolder (#3772)
+- Added label tag for checkbox in adminRooms (#3926)
+- Added name/link of channel/room in email notifications (#3814)
+- Added of location share feature (#3924)
+- Added online count in rooms member list
+- Added optoin for LDAP to merge existing users (#3992)
+- Added Sandstorm activity/notification events (#3743)
+- Added Sandstorm UiView offer button and oembed
+- Added Sandstorm UiView offer powerbox
+- Added unread alert settings to user preferences and room notifications tab (#3795)
+- Allow guest users to view joined direct rooms (#3783)
+- Better centering for dropzone div and text issues at certain medium screen widths (#3913)
+- Changed default fonts to use native UI font stack
+- Changed the message input buttons layout
+- Copied implementations from admin room info (#3773)
+- Custom expiry time setting for Amazon S3 download links (#3846)
+- Custom oauth scope (#3837)
+- Decode html entities in link metadata
+- Fixed attachments under Sandstorm
+- Fixed for issue #3953
+- Fixed link "go to message" on emails
+- Fixed livechat webhook infinite retries
+- Fixed login when the CROWD disabled and LDAP enabled (#3974)
+- Fixed message input flex model (#3986)
+- Fixed regression of iFrame login
+- Fixed SlackBridge file import
+- Fixed some oembed issues (#3771)
+- Fixed typo in HISTORY.md (#3921)
+- Fixed using cache in develop
+- Fixed video record regex
+- Give SlackBridge the option to use a (formatted) alias for imported messages (#3804)
+- Hide user admin controls except for in admin panel closes #3847
+- Improve livechat custom field queue storing it by key
+- Let bot messages propagate through SlackBridge again. (#3810)
+- Livechat CRM integration improvements (#3912)
+- Message box changes direction explicitly upon input change (#3730)
+- Move common Sandstorm functions out to a lib.js
+- Prevent last admin removal (#3971)
+- Prevent self-made notifications (#3937)
+- Remove dot from message _id on imported messages
+- Removed text shadows
+- Show guest name as message alias on LiveChat
+- Show notification for non focused rooms
+- Update default setting for file upload types to include video
+- Update side-nav with room counts (#3967)
+
+## 0.36.0, 2016-Aug-02
 
 ### Core updates
 
-* Add ids for all afterSaveMessage callbacks
-* Clear cache on logout and after 30 days out of date
-* Remove observe for messages
-* Use events insted of observers for streams
+- Add ids for all afterSaveMessage callbacks
+- Clear cache on logout and after 30 days out of date
+- Remove observe for messages
+- Use events insted of observers for streams
 
 ### Livechat
 
-* Add autocomplete feature to livechat user management
-* Add livechat Guest Pool queue method (#3507)
-* Add option to accept livechats even if no agents online
-* Add option to choose what to monitor for livechat history tracking
-* Add room label to livechat history list
-* Allow livechat managers to manage a livechat session
-* Fix livechat trigger being triggered multiple times
-* Forward livechat rooms
-* Forward open livechat rooms from agent when he goes offline
-* New livechat API setTheme
-* New page to see the current livechat queue
-* Show user status for livechat rooms
+- Add autocomplete feature to livechat user management
+- Add livechat Guest Pool queue method (#3507)
+- Add option to accept livechats even if no agents online
+- Add option to choose what to monitor for livechat history tracking
+- Add room label to livechat history list
+- Allow livechat managers to manage a livechat session
+- Fix livechat trigger being triggered multiple times
+- Forward livechat rooms
+- Forward open livechat rooms from agent when he goes offline
+- New livechat API setTheme
+- New page to see the current livechat queue
+- Show user status for livechat rooms
 
 ### Translation updates
 
-* Fix "Show_only_online" link bug in french (#3725)
-* Fix some japanese translations (#3873)
-* Fix translation placeholders (#3650)
+- Fix "Show_only_online" link bug in french (#3725)
+- Fix some japanese translations (#3873)
+- Fix translation placeholders (#3650)
 
 ### General updates
 
-* Add "mark as unread" feature
-* Add auto-closing right sidebar #3713 (#3720)
-* Add ctrl key and alt key to ignoring keys which send/update message
-* Add editable channel descriptions (#3705)
-* Add EVE online sso support (#3389)
-* Add filter to allow/deny @all (#3703)
-* Add hide avatars setting to user preferences
-* Add missing roles verification to direct messages (#3672)
-* Add on the fly video recording and uploading
-* Add safe ports settings for embed
-* Add settings for desktop notification durations for each rooms
-* Add slash command for open rooms
-* Add SSL option for Jitsi
-* Add the ability to add an icon with the actionLink
-* Add user preference for desktop notification duration
-* Added messageType and actionLink to join call. Fixed timeout issues
-* Adding Rocket.Chat templates to deploy on OpenShift
-* Adds option of colors into tabbar
-* Allow actionLinks server side as well as client side
-* Allow Jitsi for Channels
-* Allow multiple attachment fields which wrap round
-* Allow slashcommands to be created client-side.
-* Calls callback also on success (#3690)
-* Clicking own avatar in a private meeesage shows the other person's profile
-* Collapse attachment fields
-* Deeper analytics for Piwik
-* Don't consider invalid commands as messages (#3698)
-* Fix attachment absolute URL
-* Fix invalid role error msg when removing user from room (#3878)
-* Fix multiple issues when searching for users and rooms (#3850)
-* Fix params to call channelsList (#3687)
-* Fix sandstorm WebRTC (#3675)
-* Fix tableflip emoji
-* Fix to subdir images (#3695)
-* Include alias and bot values in outgoing webhook. (#3805)
-* KaTeX: Allow enabling \[KaTeX\] and $$KaTeX$$ syntaxes separately
-* Only re-enter a password if change a email or password (#3710)
-* Require admin role to send emails to users.
-* Show name and username in results (name if available)
-* Test notification use User preferences duration
-* Update accounts-sandstorm to 0.4.1 (#3716)
-* Update emojione to 2.2.5 (#3736)
-* Update hubot version to v.0.1.4
+- Add "mark as unread" feature
+- Add auto-closing right sidebar #3713 (#3720)
+- Add ctrl key and alt key to ignoring keys which send/update message
+- Add editable channel descriptions (#3705)
+- Add EVE online sso support (#3389)
+- Add filter to allow/deny @all (#3703)
+- Add hide avatars setting to user preferences
+- Add missing roles verification to direct messages (#3672)
+- Add on the fly video recording and uploading
+- Add safe ports settings for embed
+- Add settings for desktop notification durations for each rooms
+- Add slash command for open rooms
+- Add SSL option for Jitsi
+- Add the ability to add an icon with the actionLink
+- Add user preference for desktop notification duration
+- Added messageType and actionLink to join call. Fixed timeout issues
+- Adding Rocket.Chat templates to deploy on OpenShift
+- Adds option of colors into tabbar
+- Allow actionLinks server side as well as client side
+- Allow Jitsi for Channels
+- Allow multiple attachment fields which wrap round
+- Allow slashcommands to be created client-side.
+- Calls callback also on success (#3690)
+- Clicking own avatar in a private meeesage shows the other person's profile
+- Collapse attachment fields
+- Deeper analytics for Piwik
+- Don't consider invalid commands as messages (#3698)
+- Fix attachment absolute URL
+- Fix invalid role error msg when removing user from room (#3878)
+- Fix multiple issues when searching for users and rooms (#3850)
+- Fix params to call channelsList (#3687)
+- Fix sandstorm WebRTC (#3675)
+- Fix tableflip emoji
+- Fix to subdir images (#3695)
+- Include alias and bot values in outgoing webhook. (#3805)
+- KaTeX: Allow enabling \[KaTeX\] and $$KaTeX$$ syntaxes separately
+- Only re-enter a password if change a email or password (#3710)
+- Require admin role to send emails to users.
+- Show name and username in results (name if available)
+- Test notification use User preferences duration
+- Update accounts-sandstorm to 0.4.1 (#3716)
+- Update emojione to 2.2.5 (#3736)
+- Update hubot version to v.0.1.4
 
 ## 0.35.0, 2016-Jun-28
 
