@@ -74,10 +74,10 @@ class ModelsBase extends EventEmitter {
 			}
 		}
 
-		query = { _id: { $in: _.pluck(ids, '_id') } };
 		const result = this.model.update(query, update, options);
-		this.emit('update', query, update);
-		this.emit('change', 'update', query, update);
+		const idQuery = { _id: { $in: _.pluck(ids, '_id') } };
+		this.emit('update', idQuery, update);
+		this.emit('change', 'update', idQuery, update);
 		return result;
 	}
 
@@ -107,7 +107,7 @@ class ModelsBase extends EventEmitter {
 			record._deletedAt = new Date;
 			record.__collection__ = this.name;
 
-			trash.insert(record);
+			trash.upsert({_id: record._id}, _.omit(record, '_id'));
 		}
 
 		query = { _id: { $in: ids } };
