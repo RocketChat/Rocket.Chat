@@ -16,8 +16,6 @@ Package.registerBuildPlugin({
 });
 
 Package.onUse(function(api) {
-	api.versionsFrom('1.0');
-
 	api.use(['webapp', 'autoupdate'], 'server');
 	api.use('ecmascript');
 	api.use('underscorestring:underscore.string');
@@ -33,11 +31,12 @@ Package.onUse(function(api) {
 	api.use('mongo');
 	api.use('ddp-rate-limiter');
 	api.use('rocketchat:sms');
-	api.use('less@2.5.1');
+	api.use('less');
 
 	api.addFiles('livechat.js', 'server');
 	api.addFiles('server/startup.js', 'server');
 	api.addFiles('permissions.js', 'server');
+	api.addFiles('roomType.js');
 
 	api.addFiles('config.js', 'server');
 
@@ -61,6 +60,7 @@ Package.onUse(function(api) {
 	api.addFiles('client/collections/LivechatQueueUser.js', 'client');
 	api.addFiles('client/collections/LivechatTrigger.js', 'client');
 	api.addFiles('client/collections/LivechatInquiry.js', 'client');
+	api.addFiles('client/collections/livechatOfficeHour.js', 'client');
 
 	api.addFiles('client/methods/changeLivechatStatus.js', 'client');
 
@@ -89,6 +89,8 @@ Package.onUse(function(api) {
 	api.addFiles('client/views/app/livechatTriggers.js', 'client');
 	api.addFiles('client/views/app/livechatUsers.html', 'client');
 	api.addFiles('client/views/app/livechatUsers.js', 'client');
+	api.addFiles('client/views/app/livechatOfficeHours.html', 'client');
+	api.addFiles('client/views/app/livechatOfficeHours.js', 'client');
 
 	api.addFiles('client/views/app/tabbar/externalSearch.html', 'client');
 	api.addFiles('client/views/app/tabbar/externalSearch.js', 'client');
@@ -148,6 +150,7 @@ Package.onUse(function(api) {
 	api.addFiles('server/methods/webhookTest.js', 'server');
 	api.addFiles('server/methods/takeInquiry.js', 'server');
 	api.addFiles('server/methods/returnAsInquiry.js', 'server');
+	api.addFiles('server/methods/saveOfficeHours.js', 'server');
 
 	// models
 	api.addFiles('server/models/Users.js', 'server');
@@ -160,10 +163,12 @@ Package.onUse(function(api) {
 	api.addFiles('server/models/LivechatTrigger.js', 'server');
 	api.addFiles('server/models/indexes.js', 'server');
 	api.addFiles('server/models/LivechatInquiry.js', 'server');
+	api.addFiles('server/models/LivechatOfficeHour.js', 'server');
 
 	// server lib
 	api.addFiles('server/lib/Livechat.js', 'server');
 	api.addFiles('server/lib/QueueMethods.js', 'server');
+	api.addFiles('server/lib/OfficeClock.js', 'server');
 
 	api.addFiles('server/sendMessageBySMS.js', 'server');
 	api.addFiles('server/forwardUnclosedLivechats.js', 'server');
@@ -182,6 +187,7 @@ Package.onUse(function(api) {
 	api.addFiles('server/publications/visitorInfo.js', 'server');
 	api.addFiles('server/publications/visitorPageVisited.js', 'server');
 	api.addFiles('server/publications/livechatInquiries.js', 'server');
+	api.addFiles('server/publications/livechatOfficeHours.js', 'server');
 
 	// api
 	api.addFiles('server/api.js', 'server');
@@ -190,6 +196,6 @@ Package.onUse(function(api) {
 	api.addAssets('assets/demo.html', 'client');
 	api.addAssets('assets/rocket-livechat.js', 'client');
 	api.addAssets('public/livechat.css', 'client');
-	api.addAssets('public/livechat.js', 'client');
+	api.addAssets('public/livechat.jsi', 'client');
 	api.addAssets('public/head.html', 'server');
 });

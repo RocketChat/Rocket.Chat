@@ -5,12 +5,11 @@
 
 if Meteor.isClient
 	RocketChat.slashCommands.add 'leave', undefined,
-		description: 'Leave the current channel'
-		params: ''
+		description: 'Leave_the_current_channel'
 
 	RocketChat.slashCommands.add 'part', undefined,
-		description: 'Leave the current channel'
-		params: ''
+		description: 'Leave_the_current_channel'
+
 else
 	class Leave
 		constructor: (command, params, item) ->

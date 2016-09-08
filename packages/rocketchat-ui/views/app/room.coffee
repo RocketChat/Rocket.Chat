@@ -7,15 +7,18 @@ isSubscribed = (_id) ->
 favoritesEnabled = ->
 	return RocketChat.settings.get 'Favorite_Rooms'
 
+userCanDrop = (_id) ->
+	return !RocketChat.roomTypes.readOnly _id, Meteor.user()
+
 Template.room.helpers
 	favorite: ->
 		sub = ChatSubscription.findOne { rid: this._id }, { fields: { f: 1 } }
-		return 'icon-star favorite-room' if sub?.f? and sub.f and favoritesEnabled
+		return 'icon-star favorite-room' if sub?.f? and sub.f and favoritesEnabled()
 		return 'icon-star-empty'
 
 	favoriteLabel: ->
 		sub = ChatSubscription.findOne { rid: this._id }, { fields: { f: 1 } }
-		return "Unfavorite" if sub?.f? and sub.f and favoritesEnabled
+		return "Unfavorite" if sub?.f? and sub.f and favoritesEnabled()
 		return "Favorite"
 
 	subscribed: ->
@@ -128,6 +131,19 @@ Template.room.helpers
 
 	hideAvatar: ->
 		return if Meteor.user()?.settings?.preferences?.hideAvatars then 'hide-avatars'
+
+	userCanDrop: ->
+		return userCanDrop @_id
+
+	canPreview: ->
+		room = Session.get('roomData' + this._id)
+		if room.t isnt 'c'
+			return true
+
+		if RocketChat.authz.hasAllPermission('preview-c-room')
+			return true
+
+		return RocketChat.models.Subscriptions.findOne({rid: this._id})?
 
 isSocialSharingOpen = false
 touchMoved = false
@@ -367,7 +383,8 @@ Template.room.events
 			ChatMessage.update {_id: id}, {$set: {"urls.#{index}.collapsed": !collapsed}}
 
 	'dragenter .dropzone': (e) ->
-		e.currentTarget.classList.add 'over'
+		if userCanDrop this._id		
+			e.currentTarget.classList.add 'over'
 
 	'dragleave .dropzone-overlay': (e) ->
 		e.currentTarget.parentNode.classList.remove 'over'

@@ -10,13 +10,14 @@ RocketChat.settings.addGroup 'Accounts', ->
 	@add 'Accounts_AllowUsernameChange', true, { type: 'boolean', public: true }
 	@add 'Accounts_AllowEmailChange', true, { type: 'boolean', public: true }
 	@add 'Accounts_AllowPasswordChange', true, { type: 'boolean', public: true }
-	@add 'Accounts_RequireNameForSignUp', true, { type: 'boolean', public: true }
 	@add 'Accounts_LoginExpiration', 90, { type: 'int', public: true }
 	@add 'Accounts_ShowFormLogin', true, { type: 'boolean', public: true }
 	@add 'Accounts_EmailOrUsernamePlaceholder', '', { type: 'string', public: true, i18nLabel: 'Placeholder_for_email_or_username_login_field' }
 	@add 'Accounts_PasswordPlaceholder', '', { type: 'string', public: true, i18nLabel: 'Placeholder_for_password_login_field' }
 
 	@section 'Registration', ->
+		@add 'Accounts_RequireNameForSignUp', true, { type: 'boolean', public: true }
+		@add 'Accounts_RequirePasswordConfirmation', true, { type: 'boolean', public: true }
 		@add 'Accounts_EmailVerification', false, { type: 'boolean', public: true, enableQuery: {_id: 'SMTP_Host', value: { $exists: 1, $ne: "" } } }
 		@add 'Accounts_ManuallyApproveNewUsers', false, { type: 'boolean' }
 		@add 'Accounts_AllowedDomainsList', '', { type: 'string', public: true }
@@ -31,6 +32,8 @@ RocketChat.settings.addGroup 'Accounts', ->
 		@add 'Accounts_RegistrationForm_LinkReplacementText', 'New user registration is currently disabled', { type: 'string', public: true }
 		@add 'Accounts_Registration_AuthenticationServices_Enabled', true, { type: 'boolean', public: true }
 		@add 'Accounts_PasswordReset', true, { type: 'boolean', public: true }
+
+		@add 'Accounts_CustomFields', '', { type: 'code', public: true }
 
 	@section 'Avatar', ->
 		@add 'Accounts_AvatarResize', true, { type: 'boolean' }
@@ -109,6 +112,15 @@ RocketChat.settings.addGroup 'General', ->
 	@section 'REST API', ->
 		@add 'API_User_Limit', 500, { type: 'int', public: true, i18nDescription: 'API_User_Limit' }
 
+	@section 'Iframe Integration', ->
+		@add 'Iframe_Integration_send_enable', false, { type: 'boolean', public: true }
+		@add 'Iframe_Integration_send_target_origin', '*', { type: 'string', public: true, enableQuery: { _id: 'Iframe_Integration_send_enable', value: true } }
+
+		@add 'Iframe_Integration_receive_enable', false, { type: 'boolean', public: true }
+		@add 'Iframe_Integration_receive_origin', '*', { type: 'string', public: true, enableQuery: { _id: 'Iframe_Integration_receive_enable', value: true } }
+
+	@section 'Translations', ->
+		@add 'Custom_Translations', '', { type: 'code', public: true }
 
 RocketChat.settings.addGroup 'Email', ->
 	@section 'Header and Footer', ->
@@ -184,12 +196,12 @@ RocketChat.settings.addGroup 'Meta', ->
 
 
 RocketChat.settings.addGroup 'Push', ->
-	@add 'Push_debug', false, { type: 'boolean', public: true }
 	@add 'Push_enable', true, { type: 'boolean', public: true }
-	@add 'Push_enable_gateway', true, { type: 'boolean' }
-	@add 'Push_gateway', 'https://rocket.chat', { type: 'string' }
-	@add 'Push_production', true, { type: 'boolean', public: true }
-	@add 'Push_test_push', 'push_test', { type: 'action', actionText: 'Send_a_test_push_to_my_user' }
+	@add 'Push_debug', false, { type: 'boolean', public: true, enableQuery: { _id: 'Push_enable', value: true } }
+	@add 'Push_enable_gateway', true, { type: 'boolean', enableQuery: { _id: 'Push_enable', value: true } }
+	@add 'Push_gateway', 'https://gateway.rocket.chat', { type: 'string', enableQuery: [{ _id: 'Push_enable', value: true }, { _id: 'Push_enable_gateway', value: true }] }
+	@add 'Push_production', true, { type: 'boolean', public: true, enableQuery: [{ _id: 'Push_enable', value: true }, { _id: 'Push_enable_gateway', value: false }] }
+	@add 'Push_test_push', 'push_test', { type: 'action', actionText: 'Send_a_test_push_to_my_user', enableQuery: { _id: 'Push_enable', value: true } }
 
 	@section 'Certificates_and_Keys', ->
 		@add 'Push_apn_passphrase', '', { type: 'string' }

@@ -58,6 +58,9 @@ RocketChat.Livechat = {
 		if (!room) {
 			throw new Meteor.Error('cannot-acess-room');
 		}
+		if (guest.name) {
+			message.alias = guest.name;
+		}
 		return _.extend(RocketChat.sendMessage(guest, message, room), { newRoom: newRoom });
 	},
 	registerGuest({ token, name, email, department, phone, loginToken, username } = {}) {
@@ -307,7 +310,7 @@ RocketChat.Livechat = {
 				RocketChat.Livechat.logger.webhook.warn('Will try again in 10 seconds ...');
 				trying++;
 				setTimeout(Meteor.bindEnvironment(() => {
-					RocketChat.Livechat.sendRequest(postData, trying);
+					RocketChat.Livechat.sendRequest(postData, callback, trying);
 				}), 10000);
 			}
 		}
