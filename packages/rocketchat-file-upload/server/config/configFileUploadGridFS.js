@@ -22,22 +22,18 @@ ExtractRange.prototype._transform = function(chunk, enc, cb) {
 	if (this.bytes_read > this.stop) {
 		// done reading
 		this.end();
-	}
-	else if (this.bytes_read + chunk.length < this.start) {
+	} else if (this.bytes_read + chunk.length < this.start) {
 		// this chunk is still before the start byte
-	}
-	else {
+	} else {
 		var start, stop;
 		if (this.start <= this.bytes_read) {
 			start = 0;
-		}
-		else {
+		} else {
 			start = this.start - this.bytes_read;
 		}
 		if ((this.stop - this.bytes_read + 1) < chunk.length) {
 			stop = this.stop - this.bytes_read + 1;
-		}
-		else {
+		} else {
 			stop = chunk.length;
 		}
 		var newchunk = chunk.slice(start, stop);
