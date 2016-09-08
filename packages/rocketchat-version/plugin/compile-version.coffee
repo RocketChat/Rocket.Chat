@@ -13,6 +13,8 @@ class VersionCompiler
 		future = new Future
 
 		processFile = (file, cb) ->
+			return cb() if not file.getDisplayPath().match /rocketchat\.info$/
+
 			output = JSON.parse file.getContentsAsString()
 			output.build =
 				date: new Date().toISOString()
@@ -49,7 +51,7 @@ class VersionCompiler
 							output.commit?.branch = result.replace('\n', '')
 
 						output = """
-							RocketChat.Info = #{JSON.stringify(output, null, 4)}
+							RocketChat.Info = #{JSON.stringify(output, null, 4)};
 						"""
 
 						file.addJavaScript({ data: output, path: file.getPathInPackage() + '.js' })

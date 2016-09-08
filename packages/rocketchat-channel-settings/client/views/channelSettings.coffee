@@ -41,8 +41,8 @@ Template.channelSettings.helpers
 			return t('True')
 		else
 			return t('False')
-		
-		
+
+
 
 Template.channelSettings.events
 	'click .delete': ->
@@ -110,11 +110,10 @@ Template.channelSettings.onCreated ->
 				if not nameValidation.test value
 					return toastr.error t('error-invalid-room-name', { room_name: name: value })
 
-				if @validateRoomName()
-					RocketChat.callbacks.run 'roomNameChanged', { _id: room._id, name: value }
-					Meteor.call 'saveRoomSettings', room._id, 'roomName', value, (err, result) ->
-						return handleError err if err
-						toastr.success TAPi18n.__ 'Room_name_changed_successfully'
+				RocketChat.callbacks.run 'roomNameChanged', { _id: room._id, name: value }
+				Meteor.call 'saveRoomSettings', room._id, 'roomName', value, (err, result) ->
+					return handleError err if err
+					toastr.success TAPi18n.__ 'Room_name_changed_successfully'
 
 		topic:
 			type: 'markdown'
@@ -163,7 +162,7 @@ Template.channelSettings.onCreated ->
 			save: (value, room) ->
 				Meteor.call 'saveRoomSettings', room._id, 'readOnly', value, (err, result) ->
 					return handleError err if err
-					toastr.success TAPi18n.__ 'Read_only_changed_successfully'					
+					toastr.success TAPi18n.__ 'Read_only_changed_successfully'
 
 		archived:
 			type: 'boolean'
