@@ -42,13 +42,10 @@
 	startIos: (stopcb) ->
 		ok = (mediaFiles) =>
 			file = mediaFiles[0]
-			console.log('path', file.fullPath)
-			console.log('f is', file.name, file.localURL, file.type, file.size)
 			reader = new FileReader()
 			f = new window.File file.name, file.localURL, file.type, file.lastModified, file.size
 			if not f.type?
 				f.type = 'audio/wav'
-				console.log('fixed f is', file.name, file.local, file.size)
 			fileUpload [{
 						file: f
 						type: 'audio'
