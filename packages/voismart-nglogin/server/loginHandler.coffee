@@ -30,8 +30,12 @@ Accounts.registerLoginHandler 'orchestraNG', (loginRequest) ->
 	logger.info('trying to authenticate', loginRequest.username)
 	ng = new NGApi(RocketChat.settings.get('OrchestraIntegration_Server'))
 	domain = RocketChat.settings.get('OrchestraIntegration_Domain')
+
+	if !loginRequest.username.endsWith("@#{domain}")
+		loginRequest.username = "#{loginRequest.username}@#{domain}"
+
 	try
-		res = ng.login "#{loginRequest.username}@#{domain}", loginRequest.ngPassword
+		res = ng.login loginRequest.username, loginRequest.ngPassword
 	catch e
 		# unauthorized or error contacting server
 		logger.error "error logging in for user \"#{loginRequest.username}\": #{e}"
@@ -75,7 +79,8 @@ Accounts.registerLoginHandler 'orchestraNG', (loginRequest) ->
 		# ignore errors getting user's phones
 		logger.error "error in getPhones in for user \"#{loginRequest.username}\": #{e}"
 
-	user = Meteor.users.findOne username: loginRequest.username
+	username = loginRequest.username.substring(0, loginRequest.username.indexOf("@#{domain}"))
+	user = Meteor.users.findOne username: username
 	if user
 		ngUser.emails = [address: ngUser.email, "verified": true]
 		delete ngUser.email
