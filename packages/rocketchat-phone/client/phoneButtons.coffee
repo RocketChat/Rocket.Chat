@@ -2,6 +2,9 @@ Template.phoneButtons.helpers
 	phoneAvailable: ->
 		return RocketChat.settings.get('Phone_Enabled')
 
+	desktopPhone: ->
+		return !Meteor.isCordova
+
 Template.phoneButtons.events
 	'click .stop-phone-call': (e, t) ->
 		RocketChat.Phone.hangup()
@@ -25,5 +28,7 @@ Template.phoneButtons.events
 		if user._id == Meteor.userId()
 			return
 
-		RocketChat.Phone.newCall(user.phoneextension, false)
-
+		if !Meteor.isCordova
+			RocketChat.Phone.newCall(user.phoneextension, false)
+		else
+			window.open 'voismart://call/' + user.phoneextension, '_system'
