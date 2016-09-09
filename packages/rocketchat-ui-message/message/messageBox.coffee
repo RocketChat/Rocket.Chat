@@ -195,9 +195,12 @@ Template.messageBox.events
 
 
 	'click .message-form .mic': (e, t) ->
-		AudioRecorder.start ->
-			t.$('.stop-mic').removeClass('hidden')
-			t.$('.mic').addClass('hidden')
+		if RocketChat.Device.isIos()
+			AudioRecorder.startIos(->)
+		else
+			AudioRecorder.start ->
+				t.$('.stop-mic').removeClass('hidden')
+				t.$('.mic').addClass('hidden')
 
 	'click .message-form .video-button': (e, t) ->
 		if VRecDialog.opened
@@ -249,7 +252,7 @@ Template.messageBox.onCreated ->
 
 		wavRegex = /audio\/wav|audio\/\*/i
 		wavEnabled = !RocketChat.settings.get("FileUpload_MediaTypeWhiteList") || RocketChat.settings.get("FileUpload_MediaTypeWhiteList").match(wavRegex)
-		if RocketChat.settings.get('Message_AudioRecorderEnabled') and (navigator.getUserMedia? or navigator.webkitGetUserMedia?) and wavEnabled and RocketChat.settings.get('FileUpload_Enabled')
+		if RocketChat.settings.get('Message_AudioRecorderEnabled') and (navigator.getUserMedia? or navigator.webkitGetUserMedia? or (RocketChat.Device.isIos() and navigator.device.capture?)) and wavEnabled and RocketChat.settings.get('FileUpload_Enabled')
 			@showMicButton.set true
 		else
 			@showMicButton.set false

@@ -38,3 +38,34 @@
 
 	getBlob: (cb) ->
 		@recorder.exportWAV cb
+
+	startIos: (stopcb) ->
+		ok = (mediaFiles) =>
+			file = mediaFiles[0]
+			console.log('path', file.fullPath)
+			console.log('f is', file.name, file.localURL, file.type, file.size)
+			reader = new FileReader()
+			f = new window.File file.name, file.localURL, file.type, file.lastModified, file.size
+			if not f.type?
+				f.type = 'audio/wav'
+				console.log('fixed f is', file.name, file.local, file.size)
+			fileUpload [{
+						file: f
+						type: 'audio'
+						name: TAPi18n.__('Audio record') + '.wav'
+						}]
+			@stopIos stopcb
+
+		navigator.device.capture.captureAudio ok, (e) ->
+			console.log('Error while capturing audio: ', e)
+
+	stopIos: (cb) ->
+		cb?.call(@)
+
+
+RocketChat.Device = new class
+	isIos: () ->
+		Meteor.isCordova and Boolean(navigator.userAgent.match(/(iPad|iPhone|iPod)/g))
+
+	isAndroid: () ->
+		Meteor.isCordova and (navigator.userAgent.toLowerCase().indexOf("android") > -1)
