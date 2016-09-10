@@ -12,7 +12,10 @@ Template.chatRoomItem.helpers
 		return 'status-' + (Session.get('user_' + this.name + '_status') or 'offline')
 
 	name: ->
-		return this.fname or this.name
+		if RocketChat.settings.get('UI_Use_Real_Name') and this.fname
+			return this.fname
+		else
+			return this.name
 
 	roomIcon: ->
 		return RocketChat.roomTypes.getIcon this.t
