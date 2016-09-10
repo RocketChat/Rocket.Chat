@@ -47,9 +47,14 @@ Template.room.helpers
 		return '' unless roomData
 
 		room = RocketChat.roomTypes.getRoomName roomData?.t, roomData
-		return if typeof room is 'object' then room.fname or room.name else room
+		if typeof room is 'object'
+			return if RocketChat.settings.get('UI_Use_Real_Name') then room.fname or room.name else room.name
+		else
+			return room
 
 	secondaryName: ->
+		if not RocketChat.settings.get('UI_Use_Real_Name')
+			return false
 		roomData = Session.get('roomData' + this._id)
 		return '' unless roomData
 
@@ -383,7 +388,7 @@ Template.room.events
 			ChatMessage.update {_id: id}, {$set: {"urls.#{index}.collapsed": !collapsed}}
 
 	'dragenter .dropzone': (e) ->
-		if userCanDrop this._id		
+		if userCanDrop this._id
 			e.currentTarget.classList.add 'over'
 
 	'dragleave .dropzone-overlay': (e) ->
