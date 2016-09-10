@@ -10,7 +10,8 @@ Npm.depends({
 	'object-path': '0.9.2',
 	'node-dogstatsd': '0.0.6',
 	'localforage': '1.4.2',
-	'lokijs': '1.4.1'
+	'lokijs': '1.4.1',
+	'bugsnag': '1.8.0'
 });
 
 Package.onUse(function(api) {
@@ -56,6 +57,8 @@ Package.onUse(function(api) {
 	api.addFiles('lib/slashCommand.coffee');
 	api.addFiles('lib/Message.coffee');
 	api.addFiles('lib/MessageTypes.coffee');
+
+	api.addFiles('server/lib/bugsnag.js', 'server');
 
 	api.addFiles('server/lib/RateLimiter.coffee', 'server');
 

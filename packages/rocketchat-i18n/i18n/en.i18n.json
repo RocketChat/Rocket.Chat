@@ -216,6 +216,7 @@
   "BotHelpers_userFields" : "User Fields",
   "BotHelpers_userFields_Description" : "CSV of user fields that can be accessed by bots helper methods.",
   "Branch" : "Branch",
+  "Bugsnag_api_key" : "Bugsnag API Key",
   "busy" : "busy",
   "Busy" : "Busy",
   "busy_female" : "busy",
