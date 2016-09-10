@@ -32,8 +32,6 @@ Meteor.publish 'spotlight', (selector, options, collName) ->
 					self.added("autocompleteRecords", id, data)
 				removed: (id) ->
 					self.removed("autocompleteRecords", id)
-		else
-			null;
 
 	this.ready()
 
