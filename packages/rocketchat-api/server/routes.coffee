@@ -411,4 +411,27 @@ RocketChat.API.v1.addRoute 'directMessage.list', authRequired: true,
 		catch e
 			return RocketChat.API.v1.failure e.name + ': ' + e.message
 	
+
+RocketChat.API.v1.addRoute 'AdminAddUser.bulk', authRequired: true,
+	post: ->
+	
+		if RocketChat.authz.hasPermission(@userId, 'admin') is false
+			return RocketChat.API.v1.unauthorized()
+		try
+
+			Api.testapiValidateUsers  @bodyParams.users
+			this.response.setTimeout (2000)
+			ids = []
+			endCount = @bodyParams.users.length - 1
+			for incoming, i in @bodyParams.users
+				ids[i] = {uid: Meteor.call 'insertOrUpdateUser', incoming}
+				#Meteor.runAsUser ids[i].uid, () =>
+					#Meteor.call 'joinDefaultChannels'
+
+			status: 'success', ids: ids
+		catch e
+			statusCode: 400    # bad request or other errors
+			body: status: 'fail', message: e.name + ' :: ' + e.message
+			
+			
 			
