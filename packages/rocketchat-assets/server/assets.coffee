@@ -129,42 +129,42 @@ for key, value of assets
 	do (key, value) ->
 		RocketChat.settings.add "Assets_#{key}", {defaultUrl: value.defaultUrl}, { type: 'asset', group: 'Assets', fileConstraints: value.constraints, i18nLabel: value.label, asset: key, public: true }
 
-Meteor.startup ->
-	forEachAsset = (key, value) ->
-		RocketChat.settings.get "Assets_#{key}", (settingKey, settingValue) ->
-			if not settingValue?.url?
-				value.cache = undefined
-				return
 
-			file = RocketChatAssetsInstance.getFileWithReadStream key
-			if not file
-				value.cache = undefined
-				return
+forEachAsset = (key, value) ->
+	RocketChat.settings.get "Assets_#{key}", (settingKey, settingValue) ->
+		if not settingValue?.url?
+			value.cache = undefined
+			return
 
-			data = []
-			file.readStream.on 'data', Meteor.bindEnvironment (chunk) ->
-				data.push chunk
+		file = RocketChatAssetsInstance.getFileWithReadStream key
+		if not file
+			value.cache = undefined
+			return
 
-			file.readStream.on 'end', Meteor.bindEnvironment ->
-				data = Buffer.concat(data)
-				hash = crypto.createHash('sha1').update(data).digest('hex')
-				extension = settingValue.url.split('.').pop()
-				value.cache =
-					path: "assets/#{key}.#{extension}"
-					cacheable: false
-					sourceMapUrl: undefined
-					where: 'client'
-					type: 'asset'
-					content: data
-					extension: extension
-					url: "/assets/#{key}.#{extension}?#{hash}"
-					size: file.length
-					uploadDate: file.uploadDate
-					contentType: file.contentType
-					hash: hash
+		data = []
+		file.readStream.on 'data', Meteor.bindEnvironment (chunk) ->
+			data.push chunk
+
+		file.readStream.on 'end', Meteor.bindEnvironment ->
+			data = Buffer.concat(data)
+			hash = crypto.createHash('sha1').update(data).digest('hex')
+			extension = settingValue.url.split('.').pop()
+			value.cache =
+				path: "assets/#{key}.#{extension}"
+				cacheable: false
+				sourceMapUrl: undefined
+				where: 'client'
+				type: 'asset'
+				content: data
+				extension: extension
+				url: "/assets/#{key}.#{extension}?#{hash}"
+				size: file.length
+				uploadDate: file.uploadDate
+				contentType: file.contentType
+				hash: hash
 
 
-	forEachAsset(key, value) for key, value of assets
+forEachAsset(key, value) for key, value of assets
 
 calculateClientHash = WebAppHashing.calculateClientHash
 WebAppHashing.calculateClientHash = (manifest, includeFilter, runtimeConfigOverride) ->
