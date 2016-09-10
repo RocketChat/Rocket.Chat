@@ -64,9 +64,9 @@ kenton:accounts-sandstorm@0.5.1
 konecty:change-case@2.3.0
 konecty:delayed-task@1.0.0
 konecty:mongo-counter@0.0.5_2
-konecty:multiple-instances-status@1.0.6
+konecty:multiple-instances-status@1.0.6_1
 konecty:nrr@2.0.2
-konecty:user-presence@1.2.8
+konecty:user-presence@1.2.9
 launch-screen@1.0.12
 less@2.7.5
 livedata@1.0.18
@@ -102,7 +102,7 @@ mrt:moment-timezone@0.2.1
 mrt:reactive-store@0.0.1
 mystor:device-detection@0.2.0
 nimble:restivus@0.8.11
-nooitaf:colors@0.0.3
+nooitaf:colors@1.1.2_1
 npm-bcrypt@0.9.1
 npm-mongo@1.5.49
 oauth@1.1.11
