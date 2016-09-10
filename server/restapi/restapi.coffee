@@ -148,7 +148,7 @@ Api.addRoute 'bulk/register', authRequired: true,
 				try
 
 					Api.testapiValidateUsers  @bodyParams.users
-					this.response.setTimeout (500 * @bodyParams.users.length)
+					this.response.setTimeout (2000)
 					ids = []
 					endCount = @bodyParams.users.length - 1
 					for incoming, i in @bodyParams.users
