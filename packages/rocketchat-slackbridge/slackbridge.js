@@ -52,8 +52,8 @@ class SlackBridge {
 
 	disconnect() {
 		if (this.connected === true) {
-			this.rtm.disconnect && this.rtm.disconnect();
 			this.connected = false;
+			this.rtm.disconnect && this.rtm.disconnect();
 			logger.connection.info('Disconnected');
 		}
 	}
