@@ -6,7 +6,7 @@ hiddenSettings = {}
 process.env.SETTINGS_HIDDEN?.split(',').forEach (settingId) ->
 	hiddenSettings[settingId] = 1
 
-RocketChat.settings._sorter = 0
+RocketChat.settings._sorter = {}
 
 ###
 # Add a setting
@@ -20,12 +20,13 @@ RocketChat.settings.add = (_id, value, options = {}) ->
 	if not _id or not value?
 		return false
 
+	RocketChat.settings._sorter[options.group] ?= 0
+
 	options.packageValue = value
 	options.valueSource = 'packageValue'
-	options.ts = new Date
 	options.hidden = false
 	options.blocked = options.blocked || false
-	options.sorter ?= RocketChat.settings._sorter++
+	options.sorter ?= RocketChat.settings._sorter[options.group]++
 
 	if options.enableQuery?
 		options.enableQuery = JSON.stringify options.enableQuery
@@ -81,10 +82,15 @@ RocketChat.settings.add = (_id, value, options = {}) ->
 		else
 			updateOperations.$setOnInsert.value = value
 
+	query = _.extend { _id: _id }, updateOperations.$set
+
 	if not options.section?
 		updateOperations.$unset = { section: 1 }
+		query.section = { $exists: false }
 
-	return RocketChat.models.Settings.upsert { _id: _id }, updateOperations
+	if not RocketChat.models.Settings.findOne(query)?
+		updateOperations.$set.ts = new Date
+		return RocketChat.models.Settings.upsert { _id: _id }, updateOperations
 
 
 
