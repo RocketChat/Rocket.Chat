@@ -20,7 +20,7 @@ parts:
     node:
         plugin: nodejs
         after: [node-dependencies]
-        node-engine: 0.10.44
+        node-engine: 4.5.0
         stage-packages:
             - g++
         node-packages:
