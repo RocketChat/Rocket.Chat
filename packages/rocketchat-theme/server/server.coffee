@@ -68,25 +68,25 @@ RocketChat.theme = new class
 
 		RocketChat.settings.onload 'css', Meteor.bindEnvironment (key, value, initialLoad) =>
 			if not initialLoad
-				process.emit('message', {refresh: 'client'})
+				Meteor.startup ->
+					process.emit('message', {refresh: 'client'})
 
-		@compileDelayed = _.debounce Meteor.bindEnvironment(@compile.bind(@)), 5000
+		@compileDelayed = _.debounce Meteor.bindEnvironment(@compile.bind(@)), 100
 
-		Meteor.startup =>
-			RocketChat.settings.onAfterInitialLoad =>
+		RocketChat.settings.onAfterInitialLoad =>
 
-				RocketChat.settings.get '*', Meteor.bindEnvironment (key, value, initialLoad) =>
-					if key is 'theme-custom-css'
-						if value?.trim() isnt ''
-							@customCSS = value
-					else if /^theme-.+/.test(key) is true
-						name = key.replace /^theme-[a-z]+-/, ''
-						if @variables[name]?
-							@variables[name].value = value
-					else
-						return
+			RocketChat.settings.get '*', Meteor.bindEnvironment (key, value, initialLoad) =>
+				if key is 'theme-custom-css'
+					if value?.trim() isnt ''
+						@customCSS = value
+				else if /^theme-.+/.test(key) is true
+					name = key.replace /^theme-[a-z]+-/, ''
+					if @variables[name]?
+						@variables[name].value = value
+				else
+					return
 
-					@compileDelayed()
+				@compileDelayed()
 
 	compile: ->
 		content = [
@@ -117,6 +117,11 @@ RocketChat.theme = new class
 				return console.log err
 
 			RocketChat.settings.updateById 'css', data.css
+
+			Meteor.startup ->
+				Meteor.setTimeout ->
+					process.emit('message', {refresh: 'client'})
+				, 200
 
 	addVariable: (type, name, value, persist=true) ->
 		@variables[name] =
