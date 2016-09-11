@@ -6,7 +6,7 @@ hiddenSettings = {}
 process.env.SETTINGS_HIDDEN?.split(',').forEach (settingId) ->
 	hiddenSettings[settingId] = 1
 
-RocketChat.settings._sorter = 0
+RocketChat.settings._sorter = {}
 
 ###
 # Add a setting
@@ -20,12 +20,13 @@ RocketChat.settings.add = (_id, value, options = {}) ->
 	if not _id or not value?
 		return false
 
+	RocketChat.settings._sorter[options.group] ?= 0
+
 	options.packageValue = value
 	options.valueSource = 'packageValue'
-	options.ts = new Date
 	options.hidden = false
 	options.blocked = options.blocked || false
-	options.sorter ?= RocketChat.settings._sorter++
+	options.sorter ?= RocketChat.settings._sorter[options.group]++
 
 	if options.enableQuery?
 		options.enableQuery = JSON.stringify options.enableQuery
@@ -81,10 +82,15 @@ RocketChat.settings.add = (_id, value, options = {}) ->
 		else
 			updateOperations.$setOnInsert.value = value
 
+	query = _.extend { _id: _id }, updateOperations.$set
+
 	if not options.section?
 		updateOperations.$unset = { section: 1 }
+		query.section = { $exists: false }
 
-	return RocketChat.models.Settings.upsert { _id: _id }, updateOperations
+	if not RocketChat.models.Settings.findOne(query)?
+		updateOperations.$set.ts = new Date
+		return RocketChat.models.Settings.upsert { _id: _id }, updateOperations
 
 
 
@@ -163,8 +169,6 @@ RocketChat.settings.updateById = (_id, value) ->
 	if not _id or not value?
 		return false
 
-	value._updatedAt = new Date
-
 	return RocketChat.models.Settings.updateValueById _id, value
 
 
@@ -198,21 +202,32 @@ RocketChat.settings.clearById = (_id) ->
 # Update a setting by id
 ###
 RocketChat.settings.init = ->
-	initialLoad = true
+	RocketChat.settings.initialLoad = true
 	RocketChat.models.Settings.find().observe
 		added: (record) ->
 			Meteor.settings[record._id] = record.value
 			if record.env is true
 				process.env[record._id] = record.value
-			RocketChat.settings.load record._id, record.value, initialLoad
+			RocketChat.settings.load record._id, record.value, RocketChat.settings.initialLoad
 		changed: (record) ->
 			Meteor.settings[record._id] = record.value
 			if record.env is true
 				process.env[record._id] = record.value
-			RocketChat.settings.load record._id, record.value, initialLoad
+			RocketChat.settings.load record._id, record.value, RocketChat.settings.initialLoad
 		removed: (record) ->
 			delete Meteor.settings[record._id]
 			if record.env is true
 				delete process.env[record._id]
-			RocketChat.settings.load record._id, undefined, initialLoad
-	initialLoad = false
+			RocketChat.settings.load record._id, undefined, RocketChat.settings.initialLoad
+	RocketChat.settings.initialLoad = false
+
+	for fn in RocketChat.settings.afterInitialLoad
+		fn(Meteor.settings)
+
+
+RocketChat.settings.afterInitialLoad = []
+
+RocketChat.settings.onAfterInitialLoad = (fn) ->
+	RocketChat.settings.afterInitialLoad.push(fn)
+	if RocketChat.settings.initialLoad is false
+		fn(Meteor.settings)

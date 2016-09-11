@@ -84,9 +84,10 @@ Template.createChannelFlex.events
 	'click .save-channel': (e, instance) ->
 		err = SideNav.validate()
 		name = instance.find('#channel-name').value.toLowerCase().trim()
+		readOnly = instance.find('#channel-ro').checked
 		instance.roomName.set name
 		if not err
-			Meteor.call 'createChannel', name, instance.selectedUsers.get(), (err, result) ->
+			Meteor.call 'createChannel', name, instance.selectedUsers.get(), readOnly, (err, result) ->
 				if err
 					console.log err
 					if err.error is 'error-invalid-name'
