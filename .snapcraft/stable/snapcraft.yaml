@@ -5,7 +5,7 @@ description: Have your own Slack like online chat, built with Meteor. https://ro
 confinement: strict
 apps:
     rocketchat-server:
-        command: env ROOT_URL=http://localhost PORT=3000 MONGO_URL=mongodb://localhost:27017/parties node $SNAP/main.js >$SNAP_DATA/server.log 2>&1
+        command: env ROOT_URL=http://localhost PORT=3000 MONGO_URL=mongodb://localhost:27017/parties Accounts_AvatarStorePath=$SNAP_COMMON/uploads node $SNAP/main.js >$SNAP_DATA/server.log 2>&1
         daemon: simple
         plugs: [network, network-bind]
     rocketchat-mongo:
