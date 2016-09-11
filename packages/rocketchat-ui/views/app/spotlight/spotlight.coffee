@@ -1,6 +1,7 @@
 @spotlight =
 	hide: ->
 		$('.spotlight').addClass('hidden')
+		$('.spotlight input').val('')
 
 	show: ->
 		$('.spotlight input').val('')
