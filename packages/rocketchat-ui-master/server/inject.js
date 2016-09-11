@@ -3,7 +3,9 @@
 Inject.rawBody('page-loading', `
 	<div id="initial-page-loading" class="page-loading">
 		<div class="loading">
-			<i class="icon-spinner animate-pulse"></i>
+			<div class="bounce1"></div>
+			<div class="bounce2"></div>
+			<div class="bounce3"></div>
 		</div>
 	</div>`
 );

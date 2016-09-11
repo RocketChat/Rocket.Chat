@@ -388,7 +388,8 @@ Template.room.events
 			ChatMessage.update {_id: id}, {$set: {"urls.#{index}.collapsed": !collapsed}}
 
 	'dragenter .dropzone': (e) ->
-		if userCanDrop this._id
+		items = e.originalEvent?.dataTransfer?.items
+		if items?.length > 0 and items?[0]?.kind isnt 'string' and userCanDrop this._id
 			e.currentTarget.classList.add 'over'
 
 	'dragleave .dropzone-overlay': (e) ->

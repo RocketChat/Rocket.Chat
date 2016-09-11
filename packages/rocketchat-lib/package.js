@@ -7,7 +7,8 @@ Package.describe({
 
 Npm.depends({
 	'bad-words': '1.3.1',
-	'localforage': '1.4.2'
+	'localforage': '1.4.2',
+	'bugsnag': '1.8.0'
 });
 
 Package.onUse(function(api) {
@@ -53,6 +54,8 @@ Package.onUse(function(api) {
 	api.addFiles('lib/slashCommand.coffee');
 	api.addFiles('lib/Message.coffee');
 	api.addFiles('lib/MessageTypes.coffee');
+
+	api.addFiles('server/lib/bugsnag.js', 'server');
 
 	api.addFiles('server/lib/RateLimiter.coffee', 'server');
 
