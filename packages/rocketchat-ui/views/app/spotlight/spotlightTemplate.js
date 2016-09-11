@@ -8,5 +8,13 @@ Template.spotlightTemplate.helpers({
 			return 'status-' + (Session.get(`user_${this.name}_status`) || 'offline');
 		}
 		return 'status-offline';
+	},
+
+	name() {
+		if (RocketChat.settings.get('UI_Use_Real_Name') && this.fname) {
+			return this.fname;
+		} else {
+			return this.name;
+		}
 	}
 });
