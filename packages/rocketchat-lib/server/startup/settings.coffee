@@ -246,6 +246,6 @@ RocketChat.settings.addGroup 'Logs', ->
 
 RocketChat.settings.init()
 
-# Remove runtime settings (non-persistent)
-Meteor.startup ->
-	RocketChat.models.Settings.update({ ts: { $lt: RocketChat.settings.ts }, persistent: { $ne: true } }, { $set: { hidden: true } }, { multi: true })
+# # Remove runtime settings (non-persistent)
+# Meteor.startup ->
+# 	RocketChat.models.Settings.update({ ts: { $lt: RocketChat.settings.ts }, persistent: { $ne: true } }, { $set: { hidden: true } }, { multi: true })
