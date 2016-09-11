@@ -100,6 +100,7 @@ toneList = {
 	'handball': 1,
 	'juggling': 1
 };
+
 emojisByCategory = {
 	'people': [
 		'grinning',
