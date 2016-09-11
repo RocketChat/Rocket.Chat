@@ -1,0 +1,70 @@
+name: rocketchat-server
+version: develop
+summary: Rocket.Chat server
+description: Have your own Slack like online chat, built with Meteor. https://rocket.chat/
+confinement: strict
+apps:
+    rocketchat-server:
+        command: env ROOT_URL=http://localhost PORT=3000 MONGO_URL=mongodb://localhost:27017/parties node $SNAP/main.js >$SNAP_DATA/server.log 2>&1
+        daemon: simple
+        plugs: [network, network-bind]
+    rocketchat-mongo:
+        command: env LC_ALL=C mongod --smallfiles --dbpath=$SNAP_COMMON
+        daemon: simple
+        plugs: [network, network-bind]
+parts:
+    node-dependencies:
+        plugin: nil
+        stage-packages:
+            - g++
+    node:
+        plugin: nodejs
+        after: [node-dependencies]
+        node-engine: 0.10.44
+        stage-packages:
+            - g++
+        node-packages:
+            - amdefine
+            - ansi-regex
+            - ansi-styles
+            - asap
+            - chalk
+            - eachline
+            - escape-string-regexp
+            - has-ansi
+            - promise
+            - fibers
+            - underscore
+            - strip-ansi
+            - source-map
+            - source-map-support
+            - semver
+            - supports-color
+            - type-of
+            - babel-compiler
+            - meteor-promise
+        organize:
+            lib/node_modules: node_modules
+    rocketchat-server:
+        plugin: dump
+        after: [mongodb]
+        source: https://cdn-download.rocket.chat/build/rocket.chat-develop.tgz
+        stage:
+            - programs
+            - main.js
+        snap:
+            - programs
+            - main.js
+    mongodb:
+        source: https://fastdl.mongodb.org/linux/mongodb-linux-x86_64-ubuntu1604-3.2.7.tgz
+        plugin: dump
+        stage-packages:
+            - libssl1.0.0
+        stage:
+            - usr
+            - bin
+            - lib
+        snap:
+            - usr
+            - bin
+            - lib
