@@ -1,11 +1,11 @@
 <template name="oembedSandstormGrain">
 	<blockquote class="sandstorm-grain">
 		<label>
-			<h3>{{grainTitle}}</h3>
-			<img src="{{appIconUrl}}" />
-			<button onclick="sandstormOembed(event)" data-token="{{token}}">
-				Click to open the grain
+			<button onclick="sandstormOembed(event)" data-token="{{token}}"
+							data-descriptor="{{descriptor}}">
+				{{grainTitle}}
 			</button>
+			<img src="{{appIconUrl}}" />
 		</label>
 	</blockquote>
 </template>

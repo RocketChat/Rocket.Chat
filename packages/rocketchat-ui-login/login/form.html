@@ -24,40 +24,45 @@
 					<div class="fields">
 						{{#if state 'login'}}
 							<div class='input-text active'>
-								<input type="text" name='emailOrUsername' placeholder='{{emailOrUsernamePlaceholder}}' autocapitalize="off" autocorrect="off" />
+								<label for="emailOrUsername">{{emailOrUsernamePlaceholder}}</label>
+								<input type="text" name='emailOrUsername' id="emailOrUsername" autocapitalize="off" autocorrect="off" />
 								{{#if hasOnePassword}}
 									<div class="one-passsword"></div>
 								{{/if}}
 								<div class="input-error"></div>
 							</div>
 							<div class='input-text active'>
-								<input type="password" name='pass' placeholder='{{passwordPlaceholder}}' />
+								<label for="pass">{{passwordPlaceholder}}</label>
+								<input type="password" name='pass' id="pass" />
 								<div class="input-error"></div>
 							</div>
 						{{/if}}
 
 						{{#if state 'register'}}
 							<div class='input-text active'>
-								<input type="text" name='name' placeholder='{{namePlaceholder}}' dir="auto" />
+								<label for="name">{{namePlaceholder}}</label>
+								<input type="text" name='name' id="name" dir="auto" />
 								<div class="input-error"></div>
 							</div>
 							<div class='input-text active'>
-								<input type="email" name='email' placeholder='{{_ "Email"}}' />
+								<label for="email">{{_ "Email"}}</label>
+								<input type="email" name='email' id="email" />
 								<div class="input-error"></div>
 							</div>
 
 							{{#each customFields}}
 								{{#if $eq field.type 'select'}}
-									<div class='input-text active'>
+									<div class='input-text active focus'>
+										<label for="{{fieldName}}">{{_ fieldName}}</label>
 										<div class="select-arrow">
 											<i class="icon-down-open"></i>
 										</div>
 										<select name="{{fieldName}}" data-customfield="true">
 											{{#each field.options}}
 												{{#if $eq . ../field.defaultValue}}
-													<option value="{{.}}" selected>{{_ ../fieldName}}: {{_ .}}</option>
+													<option value="{{.}}" selected>{{_ .}}</option>
 												{{else}}
-													<option value="{{.}}">{{_ ../fieldName}}: {{_ .}}</option>
+													<option value="{{.}}">{{_ .}}</option>
 												{{/if}}
 											{{/each}}
 										</select>
@@ -67,20 +72,23 @@
 
 								{{#if $eq field.type 'text'}}
 									<div class='input-text active'>
-										<input type="text" name="{{fieldName}}" data-customfield="true" placeholder="{{_ fieldName}}" value="{{field.defaultValue}}" maxlength="{{field.maxLength}}" />
+										<label for="{{fieldName}}">{{_ fieldName}}</label>
+										<input type="text" name="{{fieldName}}" id="{{fieldName}}" data-customfield="true" value="{{field.defaultValue}}" maxlength="{{field.maxLength}}" />
 										<div class="input-error"></div>
 									</div>
 								{{/if}}
 							{{/each}}
 
 							<div class='input-text active'>
-								<input type="password" name='pass' placeholder='{{passwordPlaceholder}}' />
+								<label for="pass">{{passwordPlaceholder}}</label>
+								<input type="password" name='pass' id="pass" />
 								<div class="input-error"></div>
 							</div>
 
 							{{#if requirePasswordConfirmation}}
 								<div class='input-text active'>
-									<input type="password" name='confirm-pass' placeholder='{{_ "Confirm_password"}}' />
+									<label for="confirm-pass">{{_ "Confirm_password"}}</label>
+									<input type="password" name='confirm-pass' id="confirm-pass" />
 									<div class="input-error"></div>
 								</div>
 							{{/if}}
@@ -88,7 +96,8 @@
 
 						{{#if state 'forgot-password' 'email-verification'}}
 							<div class='input-text active'>
-								<input type="email" name='email' placeholder='{{_ "Email"}}' />
+								<label for="email">{{_ "Email"}}</label>
+								<input type="email" name='email' id="email" />
 							</div>
 						{{/if}}
 					</div>
@@ -99,8 +108,8 @@
 
 					{{#if state 'login'}}
 						{{#if registrationAllowed}}
-							<div class="register">
-								<button type="button">{{_ 'Register'}}</button>
+							<div>
+								<button type="button" class="register">{{_ 'Register'}}</button>
 							</div>
 						{{else}}
 							{{#if linkReplacementText}}
@@ -109,8 +118,8 @@
 						{{/if}}
 
 						{{#if passwordResetAllowed}}
-							<div class="forgot-password">
-								<button type="button">{{_ 'Forgot_password'}}</button>
+							<div>
+								<button type="button" class="forgot-password">{{_ 'Forgot_password'}}</button>
 							</div>
 						{{/if}}
 					{{/if}}
@@ -118,8 +127,8 @@
 			{{/if}}
 
 			{{#unless state 'login'}}
-				<div class="back-to-login">
-					<button type="button">{{_ 'Back_to_login'}}</button>
+				<div>
+					<button type="button" class="back-to-login">{{_ 'Back_to_login'}}</button>
 				</div>
 			{{/unless}}
 		</form>
