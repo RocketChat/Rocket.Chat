@@ -3,6 +3,10 @@ if (_.isUndefined(RocketChat.models.Subscriptions)) {
 }
 
 RocketChat.models.Subscriptions.isUserInRole = function(userId, roleName, roomId) {
+	if (roomId == null) {
+		return false;
+	}
+
 	var query = {
 		rid: roomId,
 		roles: roleName
