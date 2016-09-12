@@ -13,16 +13,9 @@ apps:
         daemon: simple
         plugs: [network, network-bind]
 parts:
-    node-dependencies:
-        plugin: nil
-        stage-packages:
-            - g++
     node:
         plugin: nodejs
-        after: [node-dependencies]
         node-engine: 4.5.0
-        stage-packages:
-            - g++
         node-packages:
             - amdefine
             - ansi-regex
@@ -43,6 +36,11 @@ parts:
             - type-of
             - babel-compiler
             - meteor-promise
+        build-packages:
+            # For fibers
+            - python
+            - build-essential
+            - nodejs
         organize:
             lib/node_modules: node_modules
     rocketchat-server:
