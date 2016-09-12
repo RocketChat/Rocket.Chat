@@ -1,5 +1,69 @@
 ## NEXT
 
+## 0.39.0, 2016-Sep-05
+
+- Accept username from SAML response
+- Add image attachment support when a bot (ex using giffy) posts just an image
+- Add Livechat office hours
+- Add more Parameter checks to methods (#4147)
+- Add roles user to slackbridge imported users
+- Add setting to disable LDAP fallback to default account system
+- Add try/catch for avoiding log of error on duplicate messages on SlackBridge
+- Adds Support for phabricator oauth server
+- Change 'go to message' button style
+- Changed time check from every second to every minute
+- Disable unessary fields on push settings
+- Enable debug of push lib when debug setting is true
+- Fix an exception occuring in the smarsh connector when a user didn't have an email, adds a setting to configure the default email for missing emails
+- Fix E-Mail address in reset password form is case-sensitive (#4158)
+- Fix error with CustomOAuth on startup
+- Fix input label position and background color for autofill fields
+- Fix login font issues
+- Fix resize of message box on mobile when paste and send using `return` on keyboard
+- Fix ModelsBase.update throws error when using array update operators (#4121)
+- Hide messages from stream while importing with SlackBridge
+- Initial work on getting the smarsh connector wired up.
+- Moved createPrivateGroup to rocketchat-lib
+- Support jitsi message types in the smarsh connector
+- Tweak SandstormOembed styling/format
+- UI improvements to login screen
+- Update the opened livechat room by token
+
+## 0.38.0, 2016-Aug-30
+
+- Action links improvements
+- Add global event unread-changed-by-subscription
+- Add role to disable/enable channel preview (#4127)
+- Add room setting to require code to join Room (#4126)
+- Add the timer for disconnecting, one minute after going in the background it'll disconnect
+- Add Ubuntu 16.04-under 30 seconds snap deployment using SNAPS
+- Added File Uploaded text on attachments to i18n
+- Added option to populate Rocket Chat with LDAP users (import them) (#4054)
+- Changes rtl check in ChatMessages class (#4049)
+- Check message timestamp before notifying users
+- Do not check for last admin while updating a user
+- Don't send offline emails to users who aren't active
+- Fix mispelling for seriliazedDescriptor
+- Fix multiple notifications (closes #3517) (#4074)
+- Fix offering Sandstorm grains without a title
+- Fix the verbs in Sandstorm activity events
+- Fix user update check for last admin
+- Fixed buttons margins and upload file list
+- Formatting and adding some missing permissions to standard roles
+- Handle locations when disabled
+- Improve lazy loading of custom fields and translations
+- Improve stream broadcast connection (#4119)
+- Improvements/login and registration (#4073)
+- Less borders (#4101)
+- Make sure Sandstorm.notify is always called for DMs
+- Open room correctly after creation and new messages
+- Set gitlabs scope to 'api', the only support scope.
+- Set message.ts if empty on sendMessage method
+- Update moment locales
+- Update to Autolinker.js 0.28.0
+- Update to depend only on the gMaps API key, add i18n strings for geolocaiotn sharing
+- Updated loginform a11y and UX - labels instead of placeholders (#4075)
+
 ## 0.37.1, 2016-Aug-17
 
 - Allow deletion of records with same id on settings
