@@ -1,5 +1,9 @@
 Meteor.methods
 	canAccessRoom: (rid, userId) ->
+
+		check rid, String
+		check userId, String
+
 		user = RocketChat.models.Users.findOneById userId, fields: username: 1
 
 		unless user?.username

@@ -10,8 +10,14 @@ Meteor.startup ->
 				topic: 1
 				muted: 1
 				archived: 1
+				ro: 1
 				jitsiTimeout: 1
 				description: 1
+				sysMes: 1
+				joinCodeRequired: 1
+
+		if RocketChat.authz.hasPermission(this.userId, 'view-join-code')
+			options.fields.joinCode = 1
 
 		if RocketChat.authz.hasPermission(this.userId, 'view-c-room')
 			return RocketChat.models.Rooms.findByTypeAndName 'c', identifier, options
@@ -19,6 +25,7 @@ Meteor.startup ->
 			roomId = RocketChat.models.Subscriptions.findByTypeNameAndUserId('c', identifier, this.userId).fetch()
 			if roomId.length > 0
 				return RocketChat.models.Rooms.findById(roomId[0]?.rid, options)
+
 		return this.ready()
 
 	RocketChat.roomTypes.setPublish 'p', (identifier) ->
@@ -32,8 +39,10 @@ Meteor.startup ->
 				topic: 1
 				muted: 1
 				archived: 1
+				ro: 1
 				jitsiTimeout: 1
 				description: 1
+				sysMes: 1
 
 		user = RocketChat.models.Users.findOneById this.userId, fields: username: 1
 		return RocketChat.models.Rooms.findByTypeAndNameContainingUsername 'p', identifier, user.username, options

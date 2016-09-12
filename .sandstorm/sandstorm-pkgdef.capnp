@@ -19,9 +19,9 @@ const pkgdef :Spk.PackageDefinition = (
 
 		appTitle = (defaultText = "Rocket.Chat"),
 
-		appVersion = 38,  # Increment this for every release.
+		appVersion = 39,  # Increment this for every release.
 
-		appMarketingVersion = (defaultText = "0.37.1"),
+		appMarketingVersion = (defaultText = "0.39.0"),
 		# Human-readable representation of appVersion. Should match the way you
 		# identify versions of your app in documentation and marketing.
 
@@ -91,8 +91,8 @@ const pkgdef :Spk.PackageDefinition = (
   bridgeConfig = (
     viewInfo = (
       eventTypes = [
-				(name = "message", verbPhrase = (defaultText = "message received")),
-				(name = "privateMessage", verbPhrase = (defaultText = "private message received"), requiredPermission = (explicitList = void)),
+				(name = "message", verbPhrase = (defaultText = "sent message")),
+				(name = "privateMessage", verbPhrase = (defaultText = "sent private message"), requiredPermission = (explicitList = void)),
 			]
     ),
 
