@@ -22,6 +22,7 @@ before_script:
 script:
 - nvm use 0.12
 - meteor build /tmp/build
+- ".travis/snap.sh"
 before_deploy:
 - source ".travis/setartname.sh"
 - source ".travis/setdeploydir.sh"
