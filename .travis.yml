@@ -22,7 +22,6 @@ before_script:
 script:
 - nvm use 0.12
 - meteor build /tmp/build
-- ".travis/snap.sh"
 before_deploy:
 - source ".travis/setartname.sh"
 - source ".travis/setdeploydir.sh"
@@ -43,7 +42,7 @@ deploy:
 after_deploy:
 - ".travis/docker.sh"
 - ".travis/update-releases.sh"
-- "#.travis/snap.sh"
+- ".travis/snap.sh"
 env:
   global:
     secure: HrPOM5sBibYkMcf9aeQThYPCDiXeLkg0Xgv0HvH88/ku/gphDpNEjHNReHZM3cyfm9y3RhHpVdD+Zzy38S2goKyewRzpXJsuyerOYkjND0v3tivhs9CAX8PAUxj1U5zllTyH4bgW2ZwRtNnwnmtIM/JJlnySMpKVDqIZBpbhn3ph9bJ2J+BW3D3Jw8meQ1vCX8szIibyJK/5QX6HG2RBFXJGYoQ8DmR8jQv0aJQvT1Az5DO4yImk8tX4NP95qOc19Jywr1DsbaSBZeJ8lFJAmBpIGx7KAmUVCcxSxfbXGRhs2K4iEYb3rJ/dU6KiyPsKGUG4aYNGgbvcX0ZxX/BZ6ZU9ff0E4IIf43IxoN3ElrOqOFk5msJAXbrJEreINSzDqKOy8NFYtCQ49E2gwzfage4ZXkhFyx3wMPa5bzpr3ncsTceMjMVz03uL781X6NLuCkUmXv+n8K2MNhJU9Xinpdx1GRJm+0lXJspNNJ1ruHeJtls4epj4bmCwKmmZbFKPXqa5e8xVcMIkwt1LMiHduhE+WgKNHdOMhXrCcTxF62ybLlsHXmyLLJeNjTeKS8QG2XSoonClDAz/1R41I1DsMPblcgz9uvYCf7UtyftbhJ83bnJeEmOYQiwijLG0+QMq+B2+mmZan3Z7Hl7O53dnwuLxz7EO7EhQhY+CqHVgc6s=
