@@ -98,8 +98,7 @@ Meteor.startup ->
 			$(input).keyup()
 			RocketChat.MessageAction.hideDropDown()
 		validation: (message) ->
-			room = RocketChat.models.Rooms.findOne({ _id: message.rid })
-			if Array.isArray(room.usernames) && room.usernames.indexOf(Meteor.user().username) is -1
+			if not RocketChat.models.Subscriptions.findOne({ rid: message.rid })?
 				return false
 			return true
 		order: 1
