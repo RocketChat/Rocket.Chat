@@ -13,13 +13,11 @@
 				</header>
 			{{else}}
 				{{ > loginServices }}
-
 				{{#if needsValidateEmail}}
 					<div class="alert alert-danger">
 						{{_ "You_need_confirm_email"}}
 					</div>
 				{{/if}}
-
 				{{#if showFormLogin}}
 					<div class="fields">
 						{{#if state 'login'}}
@@ -37,7 +35,6 @@
 								<div class="input-error"></div>
 							</div>
 						{{/if}}
-
 						{{#if state 'register'}}
 							<div class='input-text active'>
 								<label for="name">{{namePlaceholder}}</label>
@@ -49,7 +46,6 @@
 								<input type="email" name='email' id="email" />
 								<div class="input-error"></div>
 							</div>
-
 							{{#each customFields}}
 								{{#if $eq field.type 'select'}}
 									<div class='input-text active focus'>
@@ -69,7 +65,6 @@
 										<div class="input-error"></div>
 									</div>
 								{{/if}}
-
 								{{#if $eq field.type 'text'}}
 									<div class='input-text active'>
 										<label for="{{fieldName}}">{{_ fieldName}}</label>
@@ -78,13 +73,11 @@
 									</div>
 								{{/if}}
 							{{/each}}
-
 							<div class='input-text active'>
 								<label for="pass">{{passwordPlaceholder}}</label>
 								<input type="password" name='pass' id="pass" />
 								<div class="input-error"></div>
 							</div>
-
 							{{#if requirePasswordConfirmation}}
 								<div class='input-text active'>
 									<label for="confirm-pass">{{_ "Confirm_password"}}</label>
@@ -93,7 +86,6 @@
 								</div>
 							{{/if}}
 						{{/if}}
-
 						{{#if state 'forgot-password' 'email-verification'}}
 							<div class='input-text active'>
 								<label for="email">{{_ "Email"}}</label>
@@ -101,11 +93,9 @@
 							</div>
 						{{/if}}
 					</div>
-
 					<div class="submit">
 						<button data-loading-text="{{_ "Please_wait"}}..." class='button primary login'><span>{{btnLoginSave}}</span></button>
 					</div>
-
 					{{#if state 'login'}}
 						{{#if registrationAllowed}}
 							<div>
@@ -113,10 +103,11 @@
 							</div>
 						{{else}}
 							{{#if linkReplacementText}}
-								{{{linkReplacementText}}}
+								<div class="register-link-replacement">
+									{{{linkReplacementText}}}
+								</div>
 							{{/if}}
 						{{/if}}
-
 						{{#if passwordResetAllowed}}
 							<div>
 								<button type="button" class="forgot-password">{{_ 'Forgot_password'}}</button>
@@ -125,7 +116,6 @@
 					{{/if}}
 				{{/if}}
 			{{/if}}
-
 			{{#unless state 'login'}}
 				<div>
 					<button type="button" class="back-to-login">{{_ 'Back_to_login'}}</button>
@@ -134,7 +124,6 @@
 		</form>
 		<div class='login-terms'>
 			{{{loginTerms}}}
-
 			<div class="powered-by">
 				Powered by <a href="https://rocket.chat">Open Source Chat Platform Rocket.Chat</a>.
 			</div>
