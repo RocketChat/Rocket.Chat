@@ -1,5 +1,4 @@
 #!/bin/bash
-set -x
 
 if [ -z "$SNAPCRAFT_SECRET" ]; then
     exit 0
@@ -23,7 +22,7 @@ else
     SNAP_FOLDER=$PWD/.snapcraft/edge
 fi
 
-docker run -v $HOME:/root -v $SNAP_FOLDER:/cwd snapcore/snapcraft sh -c 'cd /cwd; snapcraft'
+docker run -v $HOME:/root -v $SNAP_FOLDER:/cwd snapcore/snapcraft sh -c 'cd /cwd; apt update && snapcraft'
 docker run -v $HOME:/root -v $SNAP_FOLDER:/cwd -e CHANNEL=$CHANNEL snapcore/snapcraft sh -c "cd /cwd; snapcraft push *.snap --release $CHANNEL"
 
 openssl enc -aes-256-cbc -base64 -pass env:SNAPCRAFT_SECRET -out ".encrypted/snapcraft.cfg.enc" < "$HOME/.config/snapcraft/snapcraft.cfg"
