@@ -3,7 +3,7 @@ Meteor.methods
 
 		check rid, String
 		# check end, Match.Optional(Number)
-		check limt, Number
+		check limit, Number
 
 		if not Meteor.userId()
 			throw new Meteor.Error 'error-invalid-user', 'Invalid user', { method: 'loadNextMessages' }

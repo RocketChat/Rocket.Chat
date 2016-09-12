@@ -8,6 +8,7 @@ Package.describe({
 Package.onUse(function(api) {
 	api.use([
 		'coffeescript',
+		'ecmascript',
 		'reactive-var',
 		'tracker',
 		'templating',
@@ -29,9 +30,12 @@ Package.onUse(function(api) {
 		'server/functions/saveRoomType.coffee',
 		'server/functions/saveRoomTopic.coffee',
 		'server/functions/saveRoomName.coffee',
+		'server/functions/saveRoomReadOnly.coffee',
 		'server/functions/saveRoomDescription.coffee',
+		'server/functions/saveRoomSystemMessages.coffee',
 		'server/methods/saveRoomSettings.coffee',
 		'server/models/Messages.coffee',
-		'server/models/Rooms.coffee'
+		'server/models/Rooms.coffee',
+		'server/startup.js'
 	], 'server');
 });

@@ -46,7 +46,6 @@ Package.onUse(function(api) {
 	api.addFiles('lib/msgTyping.coffee', 'client');
 	api.addFiles('lib/notification.coffee', 'client');
 	api.addFiles('lib/parentTemplate.js', 'client');
-	api.addFiles('lib/particles.js', 'client');
 	api.addFiles('lib/readMessages.coffee', 'client');
 	api.addFiles('lib/rocket.coffee', 'client');
 	api.addFiles('lib/RoomHistoryManager.coffee', 'client');
@@ -66,9 +65,6 @@ Package.onUse(function(api) {
 	api.addFiles('lib/recorderjs/audioRecorder.coffee', 'client');
 	api.addFiles('lib/recorderjs/videoRecorder.coffee', 'client');
 	api.addFiles('lib/recorderjs/recorder.js', 'client');
-
-	// LIB CLIPBOARDJS
-	api.addFiles('lib/clipboardjs/clipboard.js', 'client');
 
 	// TEXTAREA CURSOR MANAGEMENT
 	api.addFiles('lib/textarea-cursor/set-cursor-position.js', 'client');
@@ -91,6 +87,7 @@ Package.onUse(function(api) {
 	api.addFiles('views/app/secretURL.html', 'client');
 	api.addFiles('views/app/userSearch.html', 'client');
 	api.addFiles('views/app/spotlight/spotlight.html', 'client');
+	api.addFiles('views/app/spotlight/spotlightTemplate.html', 'client');
 	api.addFiles('views/app/videoCall/videoButtons.html', 'client');
 	api.addFiles('views/app/videoCall/videoCall.html', 'client');
 
@@ -106,6 +103,7 @@ Package.onUse(function(api) {
 	api.addFiles('views/app/secretURL.coffee', 'client');
 	api.addFiles('views/app/spotlight/mobileMessageMenu.coffee', 'client');
 	api.addFiles('views/app/spotlight/spotlight.coffee', 'client');
+	api.addFiles('views/app/spotlight/spotlightTemplate.js', 'client');
 	api.addFiles('views/app/videoCall/videoButtons.coffee', 'client');
 	api.addFiles('views/app/videoCall/videoCall.coffee', 'client');
 });

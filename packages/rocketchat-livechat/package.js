@@ -196,6 +196,6 @@ Package.onUse(function(api) {
 	api.addAssets('assets/demo.html', 'client');
 	api.addAssets('assets/rocket-livechat.js', 'client');
 	api.addAssets('public/livechat.css', 'client');
-	api.addAssets('public/livechat.js', 'client');
+	api.addAssets('public/livechat.jsi', 'client');
 	api.addAssets('public/head.html', 'server');
 });
