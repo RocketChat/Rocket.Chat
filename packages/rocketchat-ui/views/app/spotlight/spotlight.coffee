@@ -46,6 +46,7 @@ Template.spotlight.helpers
 				if server?.users?.length > 0
 					for user in server.users when not _.findWhere(memory, {t: 'd', name: user.username})?
 						memory.push({
+							_id: user._id
 							t: 'd',
 							name: user.username
 						})
@@ -53,6 +54,7 @@ Template.spotlight.helpers
 				if server?.rooms?.length > 0
 					for room in server.rooms
 						memory.push({
+							_id: room._id
 							t: 'c',
 							name: room.name
 						})
@@ -62,15 +64,19 @@ Template.spotlight.helpers
 
 			getValue: (_id, collection, firstPartValue) ->
 				doc = collection.findOne(_id)
-				# if doc.type is 'u'
-				# 	Meteor.call 'createDirectMessage', doc.username, (error, result) ->
-				# 		if error
-				# 			return handleError(error)
 
-				# 		if result?.rid?
-				# 			FlowRouter.go('direct', { username: doc.username })
-				# 			event.currentTarget.value = ''
-				# else if doc.type is 'r'
+				if not doc?
+					server = serverResults.get()
+
+					if server?.users?.length > 0
+						doc = _.findWhere(server.users, {_id: _id})
+						if doc?
+							doc.name = doc.username
+							doc.t = 'd'
+
+					if not doc? and server?.rooms?.length > 0
+						doc = _.findWhere(server.rooms, {_id: _id})
+
 				FlowRouter.go FlowRouter.path RocketChat.roomTypes.getRouteLink doc.t, doc
 
 				spotlight.hide()
