@@ -152,7 +152,7 @@ Template.room.events
 		if $(e.currentTarget).hasClass('system')
 			return
 
-		if e.target and e.target.nodeName is 'AUDIO'
+		if e.target and ((e.target.nodeName is 'AUDIO') or (e.target.nodeName is 'VIDEO'))
 			return
 
 		if e.target and e.target.nodeName is 'A' and /^https?:\/\/.+/.test(e.target.getAttribute('href'))
