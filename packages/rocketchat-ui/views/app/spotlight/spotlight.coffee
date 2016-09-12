@@ -44,7 +44,7 @@ Template.spotlight.helpers
 				server = serverResults.get()
 
 				if server?.users?.length > 0
-					for user in server.users
+					for user in server.users when not _.findWhere(memory, {t: 'd', name: user.username})?
 						memory.push({
 							t: 'd',
 							name: user.username
