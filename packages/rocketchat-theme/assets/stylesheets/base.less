@@ -126,7 +126,6 @@ blockquote {
 	a {
 		font-weight: bold !important;
 		text-decoration: underline;
-		&:hover {}
 	}
 }
 
@@ -166,12 +165,6 @@ blockquote {
 }
 
 .first-unread {
-	&.first-unread-opaque {
-		.body {
-			&::before {}
-			&::after {}
-		}
-	}
 	.body {
 		&::before {
 			content: "";
@@ -216,10 +209,6 @@ blockquote {
 	border: 1px solid;
 	border-radius: 4px;
 }
-
-.alert-warning {}
-
-.alert-danger {}
 
 .full-page .hidden {
 	visibility: hidden !important;
@@ -588,30 +577,11 @@ textarea[disabled] {
 	padding: 8px 5px;
 	font-size: 12px;
 	cursor: pointer;
-	i {}
-	&.selected {}
 }
 
 label.required:after {
 	content: ' *';
 }
-
-.status-offline,
-.icon-at.status-offline {}
-
-.status-online,
-.icon-at.status-online {}
-
-.status-busy,
-.icon-at.status-busy {}
-
-.status-away,
-.icon-at.status-away {}
-
-// TODO -- Refactor favorite styles and logic;
-.favorite-room {}
-
-.toggle-favorite {}
 
 .loading {
 	top: 0;
@@ -672,7 +642,6 @@ label.required:after {
 	cursor: not-allowed;
 	box-shadow: none !important;
 	border: none;
-	&:hover {}
 	i {
 		display: block;
 	}
@@ -713,9 +682,6 @@ label.required:after {
 		&:before {
 			opacity: 1;
 		}
-	}
-	&.secondary {
-		&:before {}
 	}
 	&.delete,
 	&.remove,
@@ -983,18 +949,6 @@ label.required:after {
 			text-align: left;
 			.transition(color .15s ease-out);
 		}
-		&.status-offline {
-			.thumb:after {}
-		}
-		&.status-online {
-			.thumb:after {}
-		}
-		&.status-away {
-			.thumb:after {}
-		}
-		&.status-busy {
-			.thumb:after {}
-		}
 	}
 	.options {
 		position: fixed;
@@ -1030,18 +984,6 @@ label.required:after {
 				left: 18px;
 				.calc(top, ~"50% - 8px");
 			}
-			&.offline {
-				&:after {}
-			}
-			&.online {
-				&:after {}
-			}
-			&.away {
-				&:after {}
-			}
-			&.busy {
-				&:after {}
-			}
 		}
 		span.soon {
 			// content: "em breve";
@@ -1065,7 +1007,6 @@ label.required:after {
 			padding: 15px 12px;
 			line-height: 1;
 			text-decoration: none;
-			&:nth-child(even) {}
 			&:hover {
 				text-decoration: none;
 			}
@@ -1080,13 +1021,6 @@ label.required:after {
 				margin-left: 1px;
 			}
 		}
-	}
-	&.active .info,
-	.info:hover {
-		h4 {}
-	}
-	.hover & {
-		.info h4 {}
 	}
 }
 
@@ -1290,7 +1224,6 @@ label.required:after {
 		font-size: 11px;
 		padding: 4px 0 4px 10px;
 		margin-top: 2px;
-		&:hover {}
 	}
 	.input-error {
 		text-align: center;
@@ -1324,11 +1257,6 @@ label.required:after {
 		right: 8px;
 		z-index: 1000;
 		cursor: pointer;
-		&.hover,
-		&:hover {
-			&:before,
-			&:after {}
-		}
 	}
 	.footer {
 		position: absolute;
@@ -1428,10 +1356,6 @@ label.required:after {
 					.transform(translateX(0));
 				}
 			}
-			&.active {
-				a {}
-				.opt {}
-			}
 			&.has-unread {
 				.opt {
 					opacity: 0;
@@ -1441,9 +1365,6 @@ label.required:after {
 				.name {
 					font-weight: bold;
 				}
-			}
-			&.away {
-				a {}
 			}
 		}
 		a {
@@ -1475,7 +1396,6 @@ label.required:after {
 			.transition(opacity .12s ease);
 			i {
 				margin: 0 1px;
-				&:hover {}
 			}
 			.icon-cancel-circled:before {
 				margin-left: 2px;
@@ -1642,8 +1562,7 @@ label.required:after {
 		border-radius: 5px;
 		background-color: #fff;
 		overflow: hidden;
-		box-shadow: 0px 15px 50px rgba(0,0,0,0.5);
-
+		box-shadow: 0px 15px 50px rgba(0, 0, 0, 0.5);
 		> input {
 			box-shadow: none;
 			border-width: 0px;
@@ -1663,13 +1582,11 @@ label.required:after {
 			position: relative;
 			box-shadow: none;
 			border-radius: 0;
-
 			.popup-item {
 				border-top: 1px solid #eaeaea;
 				line-height: 40px;
 				font-size: 20px;
 				padding: 0 10px;
-
 				i {
 					margin-right: 4px;
 					background: #fff;
@@ -1678,13 +1595,11 @@ label.required:after {
 					border-radius: 20px;
 					width: 28px;
 				}
-
 				&.selected {
 					i {
-						box-shadow: 1px 1px 1px rgba(0,0,0,0.2);
+						box-shadow: 1px 1px 1px rgba(0, 0, 0, 0.2);
 					}
 				}
-
 				span {
 					float: right;
 					border-radius: 2px;
@@ -1964,7 +1879,6 @@ label.required:after {
 	.info {
 		max-width: 680px;
 		line-height: 20px;
-		p {}
 	}
 	.social {
 		h4 {
@@ -2169,7 +2083,6 @@ label.required:after {
 	.edit-room-title {
 		margin-left: 4px;
 		font-size: 16px;
-		&:hover {}
 	}
 	.wrapper {
 		position: absolute;
@@ -2249,7 +2162,6 @@ label.required:after {
 			border-top-width: 0;
 			border-bottom-width: 0;
 			border-left-width: 0;
-			&.editing {}
 		}
 		.stream-info {
 			float: left;
@@ -2365,9 +2277,11 @@ label.required:after {
 		}
 	}
 }
+
 .message-popup-position {
 	position: relative;
 }
+
 .message-popup {
 	position: absolute;
 	z-index: 101;
@@ -2375,13 +2289,15 @@ label.required:after {
 	left: 0px;
 	right: 0px;
 	overflow: hidden;
-	box-shadow: 0 -1px 10px 0 rgba(0,0,0,0.2),0 1px 1px rgba(0,0,0,0.16);
+	box-shadow: 0 -1px 10px 0 rgba(0, 0, 0, 0.2), 0 1px 1px rgba(0, 0, 0, 0.16);
 	border-radius: 5px;
 }
+
 .message-popup.popup-down {
 	bottom: auto;
 	top: 0px;
 }
+
 .message-popup-title {
 	border-bottom: 1px solid;
 	padding: 0 20px;
@@ -2389,13 +2305,14 @@ label.required:after {
 	font-size: 14px;
 	font-weight: 300;
 }
+
 .popup-item {
 	padding: 0 20px;
 	line-height: 32px;
 	cursor: pointer;
 	user-select: none;
-	&.selected {}
 }
+
 .popup-user-avatar {
 	width: 24px;
 	display: inline-block;
@@ -2404,6 +2321,7 @@ label.required:after {
 	border-radius: 3px;
 	margin: -7px 4px;
 }
+
 .popup-user-status {
 	border: 1px solid;
 	width: 10px;
@@ -2411,11 +2329,7 @@ label.required:after {
 	display: inline-block;
 	border-radius: 10px;
 }
-.popup-user-status-system {}
-.popup-user-status-offline {}
-.popup-user-status-online {}
-.popup-user-status-away {}
-.popup-user-status-busy {}
+
 .popup-slash-command-description {
 	float: right;
 }
@@ -2628,7 +2542,6 @@ label.required:after {
 		display: inline-block;
 		font-weight: 600;
 		margin-right: 5px;
-		&:hover {}
 	}
 	.thumb {
 		position: absolute;
@@ -3037,18 +2950,6 @@ body:not(.is-cordova) {
 			cursor: pointer;
 			.transform(translateX(-27px));
 			.transition(transform .25s ease-out .475s, background .075s ease-out .5s);
-			&:hover {
-				.arrow {
-					.arrow {
-						&:before,
-						&:after {}
-					}
-				}
-			}
-			.arrow {
-				&:before,
-				&:after {}
-			}
 			i {
 				.transform-origin(50%, 50%, 0);
 				.transition(transform .3s ease-out);
@@ -3059,12 +2960,6 @@ body:not(.is-cordova) {
 			.flex-opened & {
 				.transition-delay(0s);
 				.transform(translateX(0));
-				&:hover {
-					.arrow {
-						&:before,
-						&:after {}
-					}
-				}
 			}
 		}
 		.search-form {
@@ -3090,7 +2985,6 @@ body:not(.is-cordova) {
 				line-height: 60px;
 				vertical-align: middle;
 				border-left: 1px solid;
-				&.active {}
 				&:last-child {
 					border-right: 1px solid;
 				}
@@ -3285,18 +3179,6 @@ body:not(.is-cordova) {
 				border-radius: 4px;
 				vertical-align: middle;
 			}
-			i.status-offline {
-				&:after {}
-			}
-			i.status-online {
-				&:after {}
-			}
-			i.status-away {
-				&:after {}
-			}
-			i.status-busy {
-				&:after {}
-			}
 		}
 		p {
 			-webkit-user-select: text;
@@ -3461,12 +3343,6 @@ body:not(.is-cordova) {
 	}
 }
 
-.user-image-status(@color) {
-	.avatar {
-		&:after {}
-	}
-}
-
 @user-image-square: 20px;
 .user-image {
 	margin: 4px;
@@ -3487,19 +3363,6 @@ body:not(.is-cordova) {
 			&:after {
 				.transform(scaleX(1))
 			}
-			.status-offline {
-				&:after {}
-			}
-			.status-online {
-				&:after {}
-			}
-			.status-away {
-				&:after {}
-			}
-			.status-busy {
-				&:after {}
-			}
-			p {}
 		}
 	}
 	.avatar {
@@ -3717,9 +3580,6 @@ body:not(.is-cordova) {
 				i {
 					font-size: 24px;
 				}
-				&:hover {
-					i {}
-				}
 			}
 		}
 		main {
@@ -3778,11 +3638,9 @@ body:not(.is-cordova) {
 		&:extend(.rocket-h2);
 		line-height: 24px;
 		margin: 0;
-		&.error {}
 	}
 	h3 {
 		&:extend(.rocket-h3);
-		&.error {}
 	}
 	img {
 		width: 200px;
@@ -3829,12 +3687,6 @@ body:not(.is-cordova) {
 			border-radius: 0px;
 			&.error {
 				border-bottom: 1px solid;
-				&::-webkit-input-placeholder {}
-				&:-moz-placeholder {}
-				/* Firefox 18- */
-				&::-moz-placeholder {}
-				/* Firefox 19+ */
-				&:-ms-input-placeholder {}
 			}
 			&:focus {
 				border-color: #13679a !important;
@@ -3967,7 +3819,6 @@ body:not(.is-cordova) {
 		}
 		div.switch-language {
 			margin-top: 20px;
-			a {}
 		}
 	}
 	a.meteor {
@@ -4483,8 +4334,6 @@ body:not(.is-cordova) {
 		text-align: center;
 	}
 }
-
-.uploaded-files-list {}
 
 .messages-box {
 	.message-cog-container {
