@@ -1,58 +1,55 @@
 language: node_js
 services:
-- docker
+    - docker
 branches:
   only:
-  - develop
-  - "/^(\\d+\\.)?(\\d+\\.)?(\\*|\\d+)$/"
+    - develop
+    - "/^(\\d+\\.)?(\\d+\\.)?(\\*|\\d+)$/"
 git:
   depth: 1
 node_js:
-- '4'
+  - '4'
 addons:
   apt:
     sources:
-    - ubuntu-toolchain-r-test
+      - ubuntu-toolchain-r-test
     packages:
-    - g++-4.8
+      - g++-4.8
 cache:
   directories:
-  - "~/.meteor"
-  - ".encrypted"
+    - "~/.meteor"
 before_install:
-- if [ ! -e "$HOME/.meteor/meteor" ]; then curl https://install.meteor.com | /bin/sh;
-  fi
+  - if [ ! -e "$HOME/.meteor/meteor" ]; then curl https://install.meteor.com | /bin/sh; fi
 install:
-- export PATH="$HOME/.meteor:$PATH"
+  - export PATH="$HOME/.meteor:$PATH"
 before_script:
-- mkdir /tmp/build
-- npm install
-- npm run lint
+  - mkdir /tmp/build
+  - npm install
+  - npm run lint
 script:
-- meteor build /tmp/build
+  - meteor build /tmp/build
 before_deploy:
-- source ".travis/setartname.sh"
-- source ".travis/setdeploydir.sh"
-- ".travis/setupsig.sh"
-- ".travis/namefiles.sh"
-- echo ".travis/sandstorm.sh"
+  - source ".travis/setartname.sh"
+  - source ".travis/setdeploydir.sh"
+  - ".travis/setupsig.sh"
+  - ".travis/namefiles.sh"
+  - echo ".travis/sandstorm.sh"
 deploy:
   provider: s3
-  access_key_id: AKIAIKIA7H7D47KUHYCA
-  secret_access_key: "$ACCESSKEY"
-  bucket: download.rocket.chat
+  access_key_id: "AKIAIKIA7H7D47KUHYCA"
+  secret_access_key: $ACCESSKEY
+  bucket: "download.rocket.chat"
   skip_cleanup: true
   upload_dir: build
-  local_dir: "$ROCKET_DEPLOY_DIR"
+  local_dir: $ROCKET_DEPLOY_DIR
   on:
     condition: "$TRAVIS_PULL_REQUEST=false"
     all_branches: true
 after_deploy:
-- ".travis/docker.sh"
-- ".travis/update-releases.sh"
+  - ".travis/docker.sh"
+  - ".travis/update-releases.sh"
 env:
   global:
-  - secure: HrPOM5sBibYkMcf9aeQThYPCDiXeLkg0Xgv0HvH88/ku/gphDpNEjHNReHZM3cyfm9y3RhHpVdD+Zzy38S2goKyewRzpXJsuyerOYkjND0v3tivhs9CAX8PAUxj1U5zllTyH4bgW2ZwRtNnwnmtIM/JJlnySMpKVDqIZBpbhn3ph9bJ2J+BW3D3Jw8meQ1vCX8szIibyJK/5QX6HG2RBFXJGYoQ8DmR8jQv0aJQvT1Az5DO4yImk8tX4NP95qOc19Jywr1DsbaSBZeJ8lFJAmBpIGx7KAmUVCcxSxfbXGRhs2K4iEYb3rJ/dU6KiyPsKGUG4aYNGgbvcX0ZxX/BZ6ZU9ff0E4IIf43IxoN3ElrOqOFk5msJAXbrJEreINSzDqKOy8NFYtCQ49E2gwzfage4ZXkhFyx3wMPa5bzpr3ncsTceMjMVz03uL781X6NLuCkUmXv+n8K2MNhJU9Xinpdx1GRJm+0lXJspNNJ1ruHeJtls4epj4bmCwKmmZbFKPXqa5e8xVcMIkwt1LMiHduhE+WgKNHdOMhXrCcTxF62ybLlsHXmyLLJeNjTeKS8QG2XSoonClDAz/1R41I1DsMPblcgz9uvYCf7UtyftbhJ83bnJeEmOYQiwijLG0+QMq+B2+mmZan3Z7Hl7O53dnwuLxz7EO7EhQhY+CqHVgc6s=
-  - CXX=g++-4.8
-  - secure: KLX9ZSLkJmmtGHcHs2nzlzJp4lKPvJy9I1ATA7iRbIy2Q0tQM8JXCGt+9YYPPuB1s0pqz/4gTC2AeBszdCTzzy5mf0qAh8FAKwpXPvT3EyrohR2DEktSZKC9y0kI3U7J9n/650DSPpwuZYHszozd9whZ63towcX8o1phLqY8J25Fyst/SOWGelsD+rymzrHna8k9DWdflOjbx65xDI/bs3WWtAtfDx0KAIE6eprV1yKd6iobJGVB7nAVNVW6BZDvZisO+Zcr5cx9KnRfNuup4Rm31balHhH8nmUA3aYTd/w592jlightPDsslc9dbAnmTHhX/DgypOeX3FkNVx2dAbDV0j9pZd1n5gbyk388D/6h0HtAzc+tW/p0puxY8/YP3x2j0vAzLVdC/qEOmKUvWCEWvT35+sCBMi3ENEZ9bPYGMFRy7b3aKQ/OY4f1a7da1CmEs0IprDAIljgjaEM0DFZBpPDPc2gRB7uxfv//KhhELSTIvWa2/9t14/G458HagR47EyM08Q/h5kTYV1uUcWu1Ul73qTRckm1bLf1IIWv1lWJgT8vJk1WmwoBz6q0xNEGE1Zip+9fJc7sKvnVu28tYbWCCfxLlL1z+QFPv12985eeYzFlmdipWia0fOtif9cerwb/bU1w8UauFoLetiEOCOr4Q4Yo9jCQ7Q5Z10XY=
-  - secure: w55v/9dmQ9wKbc+fhkZdWfaXIGi+5Qo365J0/IEZRCle2jFWUMBSzEghUuubw9Pys56uAcivOzKozT7+qozVaQW9kSgTLK4bSUSWKeSuynF7Too0CNdzt8CWgjcxGvYVWP0vlp+2eTI0x9+HJlFZn1hP+3v9C+ASH6+sqXvi24kNOPANsUvlbwIC7+T3kOdOOFzrA/tNLkXp2NGs9OaHVnvOVrZlHIn0TL8kGV1HyW4k4KLPgAcwgDq8DRWQBWk+E59HyTGXMyt/GxAJkjEebcJ/TnrbCiExbrTY+OmHjwk8Yfp9CbWsEtEYWSdLoNaFMhUrJRGGKjtansqQWktfkrN/Ro6Scl+lorQQ3eBu+ZVdmx3BXj8TRyqkhh6sqbola5XGhffp61fKxLcbYFE6Ph7g9twvFArCt2/zifmKYxH/NniCKGir5eZZnfFwTE6y2b+m37gjd7jd4t8SEcbFKH7tvOVRNm79VDqBQo0rNieCM5fPKsZkYD7sjB9G7cuZaZLAKUJf1K/FYqCeGeNV0Wcxi95nBh5usenm88xdajShxxKJedi1n77qqj03KxW7ictDnt/sEzz6vHjyf1O2pFUuPZ2eVwenpa0utDOvBTYd10OSlqlWaG/ldNJ8ofl/fawm0of4xp0rY3UNaTYdCZsPm6qfq7NIocefb/qeAJ4=
+    - secure: HrPOM5sBibYkMcf9aeQThYPCDiXeLkg0Xgv0HvH88/ku/gphDpNEjHNReHZM3cyfm9y3RhHpVdD+Zzy38S2goKyewRzpXJsuyerOYkjND0v3tivhs9CAX8PAUxj1U5zllTyH4bgW2ZwRtNnwnmtIM/JJlnySMpKVDqIZBpbhn3ph9bJ2J+BW3D3Jw8meQ1vCX8szIibyJK/5QX6HG2RBFXJGYoQ8DmR8jQv0aJQvT1Az5DO4yImk8tX4NP95qOc19Jywr1DsbaSBZeJ8lFJAmBpIGx7KAmUVCcxSxfbXGRhs2K4iEYb3rJ/dU6KiyPsKGUG4aYNGgbvcX0ZxX/BZ6ZU9ff0E4IIf43IxoN3ElrOqOFk5msJAXbrJEreINSzDqKOy8NFYtCQ49E2gwzfage4ZXkhFyx3wMPa5bzpr3ncsTceMjMVz03uL781X6NLuCkUmXv+n8K2MNhJU9Xinpdx1GRJm+0lXJspNNJ1ruHeJtls4epj4bmCwKmmZbFKPXqa5e8xVcMIkwt1LMiHduhE+WgKNHdOMhXrCcTxF62ybLlsHXmyLLJeNjTeKS8QG2XSoonClDAz/1R41I1DsMPblcgz9uvYCf7UtyftbhJ83bnJeEmOYQiwijLG0+QMq+B2+mmZan3Z7Hl7O53dnwuLxz7EO7EhQhY+CqHVgc6s=
+    - CXX=g++-4.8
+    - secure: w55v/9dmQ9wKbc+fhkZdWfaXIGi+5Qo365J0/IEZRCle2jFWUMBSzEghUuubw9Pys56uAcivOzKozT7+qozVaQW9kSgTLK4bSUSWKeSuynF7Too0CNdzt8CWgjcxGvYVWP0vlp+2eTI0x9+HJlFZn1hP+3v9C+ASH6+sqXvi24kNOPANsUvlbwIC7+T3kOdOOFzrA/tNLkXp2NGs9OaHVnvOVrZlHIn0TL8kGV1HyW4k4KLPgAcwgDq8DRWQBWk+E59HyTGXMyt/GxAJkjEebcJ/TnrbCiExbrTY+OmHjwk8Yfp9CbWsEtEYWSdLoNaFMhUrJRGGKjtansqQWktfkrN/Ro6Scl+lorQQ3eBu+ZVdmx3BXj8TRyqkhh6sqbola5XGhffp61fKxLcbYFE6Ph7g9twvFArCt2/zifmKYxH/NniCKGir5eZZnfFwTE6y2b+m37gjd7jd4t8SEcbFKH7tvOVRNm79VDqBQo0rNieCM5fPKsZkYD7sjB9G7cuZaZLAKUJf1K/FYqCeGeNV0Wcxi95nBh5usenm88xdajShxxKJedi1n77qqj03KxW7ictDnt/sEzz6vHjyf1O2pFUuPZ2eVwenpa0utDOvBTYd10OSlqlWaG/ldNJ8ofl/fawm0of4xp0rY3UNaTYdCZsPm6qfq7NIocefb/qeAJ4=
