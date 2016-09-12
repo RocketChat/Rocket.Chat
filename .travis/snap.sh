@@ -14,6 +14,6 @@ else
     SNAP_FOLDER=./snapcraft/edge
 fi
 
-docker run -v $HOME:/root -v $SNAP_FOLDER:/cwd didrocks/snapcraft sh -c 'cd /cwd; snapcraft'
-docker run -v $HOME:/root -v $SNAP_FOLDER:/cwd -e CHANNEL=$CHANNEL didrocks/snapcraft sh -c "cd /cwd; snapcraft push *.snap --release $CHANNEL"
+docker run -v $HOME:/root -v $SNAP_FOLDER:/cwd snapcore/snapcraft sh -c 'cd /cwd; snapcraft'
+docker run -v $HOME:/root -v $SNAP_FOLDER:/cwd -e CHANNEL=$CHANNEL snapcore/snapcraft sh -c "cd /cwd; snapcraft push *.snap --release $CHANNEL"
 
