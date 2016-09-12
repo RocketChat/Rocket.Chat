@@ -1,4 +1,4 @@
-/* globals localforage */
+import localforage from 'localforage';
 
 class CachedCollectionManager {
 	constructor() {
