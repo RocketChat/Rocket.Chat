@@ -48,6 +48,15 @@ RocketChat.models.Rooms = new class extends RocketChat.models._Base
 
 		return @find query, options
 
+	findByNameAndTypeNotContainingUsername: (name, type, username, options) ->
+		query =
+			t: type
+			name: name
+			usernames:
+				$ne: username
+
+		return @find query, options
+
 	findByNameStartingAndTypes: (name, types, options) ->
 		nameRegex = new RegExp "^" + s.trim(s.escapeRegExp(name)), "i"
 

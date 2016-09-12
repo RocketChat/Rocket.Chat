@@ -256,7 +256,7 @@ RocketChat.models.Messages = new class extends RocketChat.models._Base
 		update =
 			$set:
 				attachments: attachments
-		console.log(query, update);
+
 		return @update query, update
 
 
