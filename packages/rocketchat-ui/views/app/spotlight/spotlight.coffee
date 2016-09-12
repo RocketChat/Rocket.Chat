@@ -7,6 +7,21 @@
 		$('.spotlight').removeClass('hidden')
 		$('.spotlight input').focus()
 
+serverResults = new ReactiveVar
+serverSearch = new ReactiveVar
+
+Tracker.autorun ->
+	text = serverSearch.get()
+	serverResults.set()
+
+	if text?.trim().length >= 2
+		Meteor.call 'spotlight', text, Meteor.user().username, (err, results) ->
+			if err?
+				return console.log err
+
+			serverResults.set(results)
+
+
 Template.spotlight.helpers
 	popupConfig: ->
 		self = this
@@ -23,7 +38,27 @@ Template.spotlight.helpers
 			getFilter: (collection, filter) ->
 				exp = new RegExp("#{RegExp.escape filter}", 'i')
 
-				return collection.find({name: exp, rid: {$ne: Session.get('openedRoom')}}, {limit: 10, sort: {unread: -1, ls: -1}}).fetch()
+				serverSearch.set(filter)
+
+				memory = collection.find({name: exp, rid: {$ne: Session.get('openedRoom')}}, {limit: 10, sort: {unread: -1, ls: -1}}).fetch()
+				server = serverResults.get()
+
+				if server?.users?.length > 0
+					for user in server.users
+						memory.push({
+							t: 'd',
+							name: user.username
+						})
+
+				if server?.rooms?.length > 0
+					for room in server.rooms
+						memory.push({
+							t: 'c',
+							name: room.name
+						})
+
+				return memory
+
 
 			getValue: (_id, collection, firstPartValue) ->
 				doc = collection.findOne(_id)
