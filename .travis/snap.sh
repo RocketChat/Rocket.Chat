@@ -8,10 +8,10 @@ echo "$SNAPCRAFT_CONFIG" > "$HOME/.config/snapcraft/snapcraft.cfg"
 if [[ $TRAVIS_TAG ]]
  then
     CHANNEL=stable
-    SNAP_FOLDER=./snapcraft/stable
+    SNAP_FOLDER=$PWD/snapcraft/stable
 else
     CHANNEL=edge
-    SNAP_FOLDER=./snapcraft/edge
+    SNAP_FOLDER=$PWD/snapcraft/edge
 fi
 
 docker run -v $HOME:/root -v $SNAP_FOLDER:/cwd snapcore/snapcraft sh -c 'cd /cwd; snapcraft'
