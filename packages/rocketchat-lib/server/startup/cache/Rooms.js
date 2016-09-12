@@ -193,6 +193,18 @@ RocketChat.cache.Rooms = new (class CacheRoom extends RocketChat.cache._Base {
 		return this.find(query, options);
 	}
 
+	findByNameAndTypeNotContainingUsername(name, type, username, options) {
+		const query = {
+			t: type,
+			name: name,
+			usernames: {
+				$containsNone: username
+			}
+		};
+
+		return this.find(query, options);
+	}
+
 	findByNameStartingAndTypes(name, types, options) {
 		const nameRegex = new RegExp('^' + s.trim(s.escapeRegExp(name)), 'i');
 

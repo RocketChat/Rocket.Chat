@@ -52,6 +52,9 @@ Template.loginForm.helpers
 
 		customFieldsArray = []
 		for key, value of Template.instance().customFields.get()
+			if value.hideFromForm is true
+				continue
+
 			customFieldsArray.push
 				fieldName: key,
 				field: value
