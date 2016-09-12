@@ -90,7 +90,6 @@ Meteor.startup ->
 			message = @_arguments[1]
 			input = instance.find('.input-message')
 			url = RocketChat.MessageAction.getPermaLink(message._id)
-			console.log message
 			text = '[ ](' + url + ') @' + message.u.username + ': '
 			if input.value
 				input.value += if input.value.endsWith(' ') then '' else ' '
