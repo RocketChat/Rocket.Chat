@@ -95,7 +95,6 @@ Meteor.startup ->
 				input.value += if input.value.endsWith(' ') then '' else ' '
 			input.value += text
 			input.focus()
-			$(input).keyup()
 			RocketChat.MessageAction.hideDropDown()
 		validation: (message) ->
 			if not RocketChat.models.Subscriptions.findOne({ rid: message.rid })?
@@ -237,7 +236,6 @@ Meteor.startup ->
 				input.value += if input.value.endsWith(' ') then '' else ' '
 			input.value += text
 			input.focus()
-			$(input).keyup()
 			RocketChat.MessageAction.hideDropDown()
 		validation: (message) ->
 			room = RocketChat.models.Rooms.findOne({ _id: message.rid })
