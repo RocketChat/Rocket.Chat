@@ -17,6 +17,7 @@ Meteor.publish('adminRooms', function(filter, types, limit) {
 			u: 1,
 			usernames: 1,
 			muted: 1,
+			ro: 1,
 			default: 1,
 			topic: 1,
 			msgs: 1,

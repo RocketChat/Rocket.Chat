@@ -17,6 +17,7 @@
    * [Sandstorm.io](#sandstormio) 
    * [DPlatform](#dplatform) 
    * [IndieHosters](#indiehosters)
+   * [Ubuntu 16.04](#ubuntu-1604)
    * [Cloudron.io](#cloudronio) 
    * [Nitrous.io](#nitrousio)
    * [Heroku](#heroku)
@@ -28,7 +29,6 @@
   * [Raspberry Pi 2](#raspberry-pi-2)
   * [Koozali SME](#koozali-sme)
   * [Ubuntu VPS](#ubuntu-vps)
-  * [Ubuntu Software Center](#ubuntu-software-center)
 * [About Rocket.Chat](#about-rocketchat)
   * [On the News](#on-the-news)
   * [Features](#features)
@@ -89,6 +89,15 @@ Easiest way to install a ready-to-run Rocket.Chat server on a Linux machine, VM,
 Get your Rocket.Chat instance hosted in a "as a Service" style. You register and we manage it for you! (updates, backup...)
 
 [![Rocket.Chat on IndieHosters](https://indie.host/signup.png)](https://indiehosters.net/shop/product/rocket-chat-21)
+
+## Ubuntu 16.04
+[![Ubuntu Apps Explorer](https://raw.githubusercontent.com/Sing-Li/bbug/master/images/uappexplorer.png)](https://uappexplorer.com/app/rocketchat-server.rocketchat)
+
+Deploy from shell:
+
+`snap install rocketchat-server`
+
+In under 30 seconds, your Rocket.Chat server will be up and running at `http://host-ip:3000`
 
 ## Cloudron.io
 
@@ -172,11 +181,6 @@ Add Rocket.Chat to this world famous time tested small enterprise server today:
 ## Ubuntu VPS
 Follow these [deployment instructions](https://rocket.chat/docs/installation/manual-installation/ubuntu/)
 
-## Ubuntu Software Center
-Easy one click install right from your Ubuntu Desktop (coming soon)
-
-[![Ubuntu Software Center](https://raw.githubusercontent.com/Sing-Li/bbug/master/images/ubuntusoft.png)]()
-
 # About Rocket.Chat
 
 Rocket.Chat is a Web Chat Server, developed in JavaScript, using the [Meteor](https://www.meteor.com/install) fullstack framework.
@@ -225,7 +229,9 @@ It is a great solution for communities and companies wanting to privately host t
 - Avatars
 - Markdown
 - Emojis
+- Custom Emojis
 - Reactions
+- One touch Geolocation
 - TeX Math Rendering - inline math typesetting
 - Media Embeds
 - Link Previews
@@ -246,7 +252,7 @@ It is a great solution for communities and companies wanting to privately host t
 - Audio calls
 - Multi-users Audio Conference
 - Screensharing
-- XMPP bridge ([try it](https://demo.rocket.chat/channel/xmppbridge))
+- XMPP bridge ([try it](https://demo.rocket.chat/channel/general))
 - REST APIs
 - Remote Locations Video Monitoring
 - Native real-time APIs for Microsoft C#, Visual Basic, F# and other .NET supported languages ([Get it!](https://www.nuget.org/packages/Rocket.Chat.Net/0.0.12-pre))

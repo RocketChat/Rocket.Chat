@@ -80,9 +80,10 @@ Template.privateGroupsFlex.events
 	'click .save-pvt-group': (e, instance) ->
 		err = SideNav.validate()
 		name = instance.find('#pvt-group-name').value.toLowerCase().trim()
+		readOnly = instance.find('#channel-ro').checked
 		instance.groupName.set name
 		if not err
-			Meteor.call 'createPrivateGroup', name, instance.selectedUsers.get(), (err, result) ->
+			Meteor.call 'createPrivateGroup', name, instance.selectedUsers.get(), readOnly, (err, result) ->
 				if err
 					if err.error is 'error-invalid-name'
 						instance.error.set({ invalid: true })
