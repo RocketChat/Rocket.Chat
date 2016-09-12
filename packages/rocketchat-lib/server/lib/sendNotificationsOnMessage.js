@@ -78,7 +78,8 @@ RocketChat.callbacks.add('afterSaveMessage', function(message, room) {
 			settings.alwaysNotifyDesktopUsers.push(subscription.u._id);
 		} else if (subscription.desktopNotifications === 'nothing') {
 			settings.dontNotifyDesktopUsers.push(subscription.u._id);
-		} else if (subscription.mobilePushNotifications === 'all') {
+		}
+		if (subscription.mobilePushNotifications === 'all') {
 			settings.alwaysNotifyMobileUsers.push(subscription.u._id);
 		} else if (subscription.mobilePushNotifications === 'nothing') {
 			settings.dontNotifyMobileUsers.push(subscription.u._id);
