@@ -73,20 +73,21 @@ RocketChat.theme = new class
 
 		@compileDelayed = _.debounce Meteor.bindEnvironment(@compile.bind(@)), 100
 
-		RocketChat.settings.onAfterInitialLoad =>
+		Meteor.startup =>
+			RocketChat.settings.onAfterInitialLoad =>
 
-			RocketChat.settings.get '*', Meteor.bindEnvironment (key, value, initialLoad) =>
-				if key is 'theme-custom-css'
-					if value?.trim() isnt ''
-						@customCSS = value
-				else if /^theme-.+/.test(key) is true
-					name = key.replace /^theme-[a-z]+-/, ''
-					if @variables[name]?
-						@variables[name].value = value
-				else
-					return
+				RocketChat.settings.get '*', Meteor.bindEnvironment (key, value, initialLoad) =>
+					if key is 'theme-custom-css'
+						if value?.trim() isnt ''
+							@customCSS = value
+					else if /^theme-.+/.test(key) is true
+						name = key.replace /^theme-[a-z]+-/, ''
+						if @variables[name]?
+							@variables[name].value = value
+					else
+						return
 
-				@compileDelayed()
+					@compileDelayed()
 
 	compile: ->
 		content = [
@@ -159,7 +160,7 @@ RocketChat.theme = new class
 
 	addPackageAsset: (cb) ->
 		@packageCallbacks.push cb
-		# @compileDelayed()
+		@compileDelayed()
 
 	getCss: ->
 		return RocketChat.settings.get('css') or ''
