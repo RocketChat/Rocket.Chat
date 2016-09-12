@@ -32,7 +32,6 @@
   "Accounts_BlockedDomainsList_Description" : "Comma-separated list of blocked domains",
   "Accounts_BlockedUsernameList" : "Blocked Username List",
   "Accounts_BlockedUsernameList_Description" : "Comma-separated list of blocked usernames (case-insensitive)",
-  "Accounts_CustomFields" : "Custom Translations",
   "Accounts_CustomFields_Description" : "Should be a valid JSON where keys are the field names containing a dictinary of field settings. Example:</br><code>{\n\t\"role\": {\n\t\t\"type\": \"select\",\n\t\t\"defaultValue\": \"student\",\n\t\t\"options\": [\"teacher\", \"student\"],\n\t\t\"required\": true,\n\t\t\"modifyRecordField\": {\n\t\t\t\"array\": true,\n\t\t\t\"field\": \"roles\"\n\t\t}\n\t},\n\t\"twitter\": {\n\t\t\"type\": \"text\",\n\t\t\"required\": true,\n\t\t\"minLength\": 2,\n\t\t\"maxLength\": 10\n\t}\n}</code> ",
   "Accounts_denyUnverifiedEmail" : "Deny unverified email",
   "Accounts_EmailVerification" : "Email Verification",
