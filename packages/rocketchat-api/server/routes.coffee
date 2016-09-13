@@ -412,26 +412,46 @@ RocketChat.API.v1.addRoute 'directMessage.list', authRequired: true,
 			return RocketChat.API.v1.failure e.name + ': ' + e.message
 	
 
-RocketChat.API.v1.addRoute 'AdminAddUser.bulk', authRequired: true,
+RocketChat.API.v1.addRoute 'admin.addUpdateUser', authRequired: true,
 	post: ->
 	
-		if RocketChat.authz.hasPermission(@userId, 'admin') is false
+		if RocketChat.authz.hasRole(@userId, 'admin') is false
 			return RocketChat.API.v1.unauthorized()
+		
 		try
-
-			Api.testapiValidateUsers  @bodyParams.users
-			this.response.setTimeout (2000)
-			ids = []
-			endCount = @bodyParams.users.length - 1
-			for incoming, i in @bodyParams.users
-				ids[i] = {uid: Meteor.call 'insertOrUpdateUser', incoming}
-				#Meteor.runAsUser ids[i].uid, () =>
-					#Meteor.call 'joinDefaultChannels'
-
-			status: 'success', ids: ids
+			console.log '[routes.coffee] api/v1/admin.addUpdateUser -> request ', _.omit @bodyParams, ['password']
+			if !_.isObject @bodyParams
+				return RocketChat.API.v1.failure()
+					error : 'Request body not encoded as valid JSON'
+			
+			udata = _.pick @bodyParams, [
+					'name'
+					'username'
+					'email'
+					'password'
+					'requiredPasswordChange'
+					'joinDefaultChannels'
+					'verified'
+					'sendWelcomeEmail'
+				]
+			_.defaults udata, {
+				'name': '', 
+				'username': '',
+				'email': '',
+				'password': '',
+				'requiredPasswordChange': true,
+				'joinDefaultChannels': true,
+				'verified': false,
+				'sendWelcomeEmail': true,
+			}
+				
+			Meteor.runAsUser this.userId, () =>
+				Meteor.call 'insertOrUpdateUser', udata
+			return RocketChat.API.v1.success
+				user: RocketChat.models.Users.findOneByUsername udata.username
+				 
 		catch e
-			statusCode: 400    # bad request or other errors
-			body: status: 'fail', message: e.name + ' :: ' + e.message
+			console.log '[routes.coffee] api/v1/admin.addUpdateUser Error: ', e.message, e.stack
+			return RocketChat.API.v1.failure e.name + ': ' + e.message
 			
-			
-			
+		
