@@ -173,6 +173,36 @@ RocketChat.API.v1.addRoute 'users.create', authRequired: true,
 		catch e
 			return RocketChat.API.v1.failure e.name + ': ' + e.message
 
+# Update user
+RocketChat.API.v1.addRoute 'user.update', authRequired: true,
+	post: ->
+		try
+			check @bodyParams,
+				userId: String
+				data:
+					email: Match.Maybe(String)
+					name: Match.Maybe(String)
+					password: Match.Maybe(String)
+					username: Match.Maybe(String)
+					role: Match.Maybe(String)
+					joinDefaultChannels: Match.Maybe(Boolean)
+					requirePasswordChange: Match.Maybe(Boolean)
+					sendWelcomeEmail: Match.Maybe(Boolean)
+					verified: Match.Maybe(Boolean)
+					customFields: Match.Maybe(Object)
+
+			userData = _.extend({ _id: @bodyParams.userId }, @bodyParams.data)
+
+			RocketChat.saveUser(@userId, userData)
+
+			if @bodyParams.data.customFields?
+				RocketChat.saveCustomFields(@bodyParams.userId, @bodyParams.data.customFields)
+
+			return RocketChat.API.v1.success
+				user: RocketChat.models.Users.findOneById(@bodyParams.userId)
+		catch e
+			return RocketChat.API.v1.failure e.name + ': ' + e.message
+
 # Get User Information
 RocketChat.API.v1.addRoute 'user.info', authRequired: true,
 	post: ->
