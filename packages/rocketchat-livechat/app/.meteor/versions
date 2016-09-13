@@ -50,14 +50,14 @@ minimongo@1.0.17
 mizzao:timesync@0.4.0
 modules@0.7.6
 modules-runtime@0.7.6
-momentjs:moment@2.14.4
+momentjs:moment@2.15.0
 mongo@1.1.12
 mongo-id@1.0.5
 npm-bcrypt@0.9.1
 npm-mongo@1.5.49
 observe-sequence@1.0.12
 ordered-dict@1.0.8
-promise@0.8.4
+promise@0.8.7
 raix:eventemitter@0.1.3
 random@1.0.10
 rate-limit@1.0.5
