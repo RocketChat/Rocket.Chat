@@ -453,19 +453,40 @@ RocketChat.API.v1.addRoute 'directMessage.list', authRequired: true,
 			return RocketChat.API.v1.failure e.name + ': ' + e.message
 	
 
-RocketChat.API.v1.addRoute 'admin.addUpdateUser', authRequired: true,
+# udpate existing user accounts
+RocketChat.API.v1.addRoute 'admin.updateUser', authRequired: true,
 	post: ->
 	
 		if RocketChat.authz.hasRole(@userId, 'admin') is false
 			return RocketChat.API.v1.unauthorized()
 		
 		try
-			console.log '[routes.coffee] api/v1/admin.addUpdateUser -> request ', _.omit @bodyParams, ['password']
+			console.log '[routes.coffee] api/v1/admin.updateUser -> request ', JSON.stringify _.omit @bodyParams, ['password']
 			if !_.isObject @bodyParams
-				return RocketChat.API.v1.failure()
-					error : 'Request body not encoded as valid JSON'
-			
-			udata = _.pick @bodyParams, [
+				return RocketChat.API.v1.failure 'Request body not encoded as valid JSON'
+
+			uid = @bodyParams._id or @bodyParams.id or @bodyParams.uid
+			if uid
+				udata = RocketChat.models.Users.findOneById @bodyParams._id or @bodyParams.id or @bodyParams.uid
+			else udata = RocketChat.models.Users.findOneByUsername @bodyParams.username
+
+			if !udata
+				return RocketChat.API.v1.failure 'Unable to retrieve the requested user. ID: '+uid+". Username: "+@bodyParams.username
+
+			udata = _.extend udata, _.pick @bodyParams, [
+				'name'
+				'username'
+				'email'
+				'password'
+				'requiredPasswordChange'
+				'joinDefaultChannels'
+				'verified'
+				'sendWelcomeEmail'
+			]
+				
+			Meteor.runAsUser this.userId, () =>
+				Meteor.call 'insertOrUpdateUser', _.pick udata, [
+					'_id'
 					'name'
 					'username'
 					'email'
@@ -475,19 +496,6 @@ RocketChat.API.v1.addRoute 'admin.addUpdateUser', authRequired: true,
 					'verified'
 					'sendWelcomeEmail'
 				]
-			_.defaults udata, {
-				'name': '', 
-				'username': '',
-				'email': '',
-				'password': '',
-				'requiredPasswordChange': true,
-				'joinDefaultChannels': true,
-				'verified': false,
-				'sendWelcomeEmail': true,
-			}
-				
-			Meteor.runAsUser this.userId, () =>
-				Meteor.call 'insertOrUpdateUser', udata
 			return RocketChat.API.v1.success
 				user: RocketChat.models.Users.findOneByUsername udata.username
 				 
