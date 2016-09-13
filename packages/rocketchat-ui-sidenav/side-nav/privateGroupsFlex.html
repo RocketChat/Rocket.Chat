@@ -12,6 +12,10 @@
 				<input type="text" id="pvt-group-name" class="required" dir="auto" placeholder="{{_ 'Enter_name_here'}}">
 			</div>
 			<div class="input-line">
+				<label for="channel-ro">{{_ "Read_only_group"}}</label>
+				<input type="checkbox" id="channel-ro">
+			</div>
+			<div class="input-line">
 				<label for="pvt-group-members">{{_ "Select_users" }}</label>
 				{{> inputAutocomplete settings=autocompleteSettings id="pvt-group-members" class="search" placeholder=(_ "Search_by_username") autocomplete="off"}}
 				<ul class="selected-users">
