@@ -1,5 +1,5 @@
 Package.describe({
-	name: 'rocketchat:phone',
+	name: 'voismart:phone',
 	version: '0.0.1',
 	summary: 'Rocket.Chat Verto Integration'
 });

@@ -154,7 +154,6 @@ todda00:friendly-slugs
 underscorestring:underscore.string
 yasaricli:slugify
 yasinuslu:blaze-meta
-rocketchat:phone
 voismart:webc
 voismart:ngapi
 voismart:ngpresence
@@ -162,3 +161,4 @@ voismart:nglogin
 voismart:user-call
 rocketchat:slashcommands-open
 rocketchat:mapview
+voismart:phone
