@@ -702,38 +702,6 @@ a.github-fork {
 		background: #FCFCFC;
 		border-top-color: @tertiary-background-color;
 	}
-	.message-popup {
-		background: #FFF;
-	}
-	.message-popup-title {
-		background-color: @secondary-background-color;
-		border-bottom-color: #E7E7E7;
-	}
-	.popup-item {
-		color: @secondary-font-color;
-		&.selected {
-			background-color: #4CAEEB;
-			color: #FFF;
-		}
-	}
-	.popup-user-status {
-		border-color: rgba(0, 0, 0, .2);
-	}
-	.popup-user-status-system {
-		border-color: transparent;
-	}
-	.popup-user-status-offline {
-		background-color: @status-offline;
-	}
-	.popup-user-status-online {
-		background-color: @status-online;
-	}
-	.popup-user-status-away {
-		background-color: @status-away;
-	}
-	.popup-user-status-busy {
-		background-color: @status-busy;
-	}
 	.message-form {
 		> .message-input {
 			border-color: #E7E7E7;
@@ -771,6 +739,39 @@ a.github-fork {
 			}
 		}
 	}
+}
+
+.message-popup {
+	background: #FFF;
+}
+.message-popup-title {
+	background-color: @secondary-background-color;
+	border-bottom-color: #E7E7E7;
+}
+.popup-item {
+	color: @secondary-font-color;
+	&.selected {
+		background-color: #4CAEEB;
+		color: #FFF;
+	}
+}
+.popup-user-status {
+	border-color: rgba(0, 0, 0, .2);
+}
+.popup-user-status-system {
+	border-color: transparent;
+}
+.popup-user-status-offline {
+	background-color: @status-offline;
+}
+.popup-user-status-online {
+	background-color: @status-online;
+}
+.popup-user-status-away {
+	background-color: @status-away;
+}
+.popup-user-status-busy {
+	background-color: @status-busy;
 }
 
 .messages-box {
