@@ -60,8 +60,12 @@ Accounts.registerLoginHandler('ldap', function(loginRequest) {
 
 	ldap.disconnect();
 
-	if (ldapUser === undefined && RocketChat.settings.get('LDAP_Login_Fallback') === true) {
-		return fallbackDefaultAccountSystem(self, loginRequest.username, loginRequest.ldapPass);
+	if (ldapUser === undefined) {
+		if (RocketChat.settings.get('LDAP_Login_Fallback') === true) {
+			return fallbackDefaultAccountSystem(self, loginRequest.username, loginRequest.ldapPass);
+		}
+
+		throw new Meteor.Error('LDAP-login-error', 'LDAP Authentication failed with provided username ['+loginRequest.username+']');
 	}
 
 	let username;
