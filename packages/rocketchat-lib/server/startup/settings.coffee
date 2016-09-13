@@ -33,7 +33,7 @@ RocketChat.settings.addGroup 'Accounts', ->
 		@add 'Accounts_Registration_AuthenticationServices_Enabled', true, { type: 'boolean', public: true }
 		@add 'Accounts_PasswordReset', true, { type: 'boolean', public: true }
 
-		@add 'Accounts_CustomFields', '', { type: 'code', public: true }
+		@add 'Accounts_CustomFields', '', { type: 'code', public: true, i18nLabel: 'Custom_Fields' }
 
 	@section 'Avatar', ->
 		@add 'Accounts_AvatarResize', true, { type: 'boolean' }
@@ -97,6 +97,7 @@ RocketChat.settings.addGroup 'General', ->
 	@add 'Force_SSL', false, { type: 'boolean', public: true }
 	@add 'GoogleTagManager_id', '', { type: 'string', public: true }
 	@add 'GoogleSiteVerification_id', '', { type: 'string', public: false }
+	@add 'Bugsnag_api_key', '', { type: 'string', public: false }
 	@add 'Restart', 'restart_server', { type: 'action', actionText: 'Restart_the_server' }
 
 	@section 'UTF8', ->
@@ -166,7 +167,6 @@ RocketChat.settings.addGroup 'Message', ->
 	@add 'Message_AllowEditing_BlockEditInMinutes', 0, { type: 'int', public: true, i18nDescription: 'Message_AllowEditing_BlockEditInMinutesDescription' }
 	@add 'Message_AllowDeleting', true, { type: 'boolean', public: true }
 	@add 'Message_AllowDeleting_BlockDeleteInMinutes', 0, { type: 'int', public: true, i18nDescription: 'Message_AllowDeleting_BlockDeleteInMinutes' }
-	@add 'Message_AllowPinning', true, { type: 'boolean', public: true }
 	@add 'Message_AlwaysSearchRegExp', false, { type: 'boolean' }
 	@add 'Message_ShowEditedStatus', true, { type: 'boolean', public: true }
 	@add 'Message_ShowDeletedStatus', false, { type: 'boolean', public: true }
@@ -246,6 +246,6 @@ RocketChat.settings.addGroup 'Logs', ->
 
 RocketChat.settings.init()
 
-# Remove runtime settings (non-persistent)
-Meteor.startup ->
-	RocketChat.models.Settings.update({ ts: { $lt: RocketChat.settings.ts }, persistent: { $ne: true } }, { $set: { hidden: true } }, { multi: true })
+# # Remove runtime settings (non-persistent)
+# Meteor.startup ->
+# 	RocketChat.models.Settings.update({ ts: { $lt: RocketChat.settings.ts }, persistent: { $ne: true } }, { $set: { hidden: true } }, { multi: true })
