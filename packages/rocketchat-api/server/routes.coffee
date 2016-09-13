@@ -496,3 +496,76 @@ RocketChat.API.v1.addRoute 'admin.addUpdateUser', authRequired: true,
 			return RocketChat.API.v1.failure e.name + ': ' + e.message
 			
 		
+RocketChat.API.v1.addRoute 'admin.updateRoom', authRequired: true,
+	post: ->
+	
+		if RocketChat.authz.hasRole(@userId, 'admin') is false
+			return RocketChat.API.v1.unauthorized()
+		
+		try
+			this.response.setTimeout (2000)
+			###
+			rdata = _.pick @bodyParams, [
+					'name'
+					'topic'
+					'description'
+					't'
+					'ro'
+					'archived'
+					'joinCode'
+				]
+			###
+			room = RocketChat.models.room.findOneByname rdata.name
+			if @bodyParams.name
+				Meteor.call 'saveRoomSettings', room._id, 'name', @bodyParams.name
+		
+			if @bodyParams.topic
+				Meteor.call 'saveRoomSettings', room._id, 'topic', @bodyParams.topic
+			
+			if @bodyParams.description
+				Meteor.call 'saveRoomSettings', room._id, 'description', @bodyParams.description
+			
+			if @bodyParams.t
+				Meteor.call 'saveRoomSettings', room._id, 't', @bodyParams.t
+			
+			if @bodyParams.ro
+				Meteor.call 'saveRoomSettings', room._id, 'ro', @bodyParams.ro
+			
+			if @bodyParams.archived
+				Meteor.call 'saveRoomSettings', room._id, 'archived', @bodyParams.archived
+			
+			if @bodyParams.joinCode
+				Meteor.call 'saveRoomSettings', room._id, 'joinCode', @bodyParams.joinCode
+			
+			return (updatedRoom = RocketChat.models.room.findOneByname rdata.name)
+			
+		catch e
+			console.log '[routes.coffee] api/v1/admin.updateRoom Error: ', e.message, e.stack
+			return RocketChat.API.v1.failure e.name + ': ' + e.message
+			
+			
+RocketChat.API.v1.addRoute 'admin.listRoomInfo/:rid ', authRequired: true,
+	get: ->
+	
+		if RocketChat.authz.hasRole(@userId, 'admin') is false
+			return RocketChat.API.v1.unauthorized()
+		
+		try
+			this.response.setTimeout (1000)	
+			try 
+				rooms = RocketChat.models.Rooms.findByids('@urlParams.rid').fetch()
+				return RocketChat.API.v1.success
+					body: [rooms: rooms]
+			catch e
+			  	err = status: 'room._id dose not exists.'
+			try 
+				rooms = RocketChat.models.Rooms.findByName('@urlParams.rid').fetch()
+				return RocketChat.API.v1.success
+					body: [rooms: rooms]
+			catch e
+			  	err = status: 'room.name dose not exists.'
+		
+		catch e
+			console.log '[routes.coffee] api/v1/admin.listRoomInfo Error: ', e.message, e.stack
+			return RocketChat.API.v1.failure e.name + ': ' + e.message
+			 
