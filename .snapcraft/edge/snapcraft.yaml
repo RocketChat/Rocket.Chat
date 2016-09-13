@@ -1,0 +1,76 @@
+#
+# Easiest way to work with this file, from an updated Ubuntu 16.04 LTS image
+# 1.   create a non-root user with sudo priv and perform following steps as non-root
+# 2.  `sudo apt-get update`
+# 3.  `sudo apt-get install snapcraft python build-essential`
+# 4.  `snapcraft stage`
+# 5.  `snapcraft snap`
+
+name: rocketchat-server
+version: develop
+summary: Rocket.Chat server
+description: Have your own Slack like online chat, built with Meteor. https://rocket.chat/
+confinement: strict
+apps:
+    rocketchat-server:
+        command: env ROOT_URL=http://localhost PORT=3000 MONGO_URL=mongodb://localhost:27017/parties Accounts_AvatarStorePath=$SNAP_COMMON/uploads node $SNAP/main.js >$SNAP_DATA/server.log 2>&1
+        daemon: simple
+        plugs: [network, network-bind]
+    rocketchat-mongo:
+        command: env LC_ALL=C mongod --smallfiles --dbpath=$SNAP_COMMON
+        daemon: simple
+        plugs: [network, network-bind]
+parts:
+    node:
+        plugin: nodejs
+        node-engine: 4.5.0
+        node-packages:
+            - amdefine
+            - ansi-regex
+            - ansi-styles
+            - asap
+            - chalk
+            - eachline
+            - escape-string-regexp
+            - has-ansi
+            - promise
+            - fibers
+            - underscore
+            - strip-ansi
+            - source-map
+            - source-map-support
+            - semver
+            - supports-color
+            - type-of
+            - babel-compiler
+            - meteor-promise
+        build-packages:
+            # For fibers
+            - python
+            - build-essential
+            - nodejs
+        organize:
+            lib/node_modules: node_modules
+    rocketchat-server:
+        plugin: dump
+        after: [mongodb]
+        source: https://cdn-download.rocket.chat/build/rocket.chat-develop.tgz
+        stage:
+            - programs
+            - main.js
+        snap:
+            - programs
+            - main.js
+    mongodb:
+        source: https://fastdl.mongodb.org/linux/mongodb-linux-x86_64-ubuntu1604-3.2.7.tgz
+        plugin: dump
+        stage-packages:
+            - libssl1.0.0
+        stage:
+            - usr
+            - bin
+            - lib
+        snap:
+            - usr
+            - bin
+            - lib

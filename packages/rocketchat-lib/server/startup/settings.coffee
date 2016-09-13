@@ -33,7 +33,7 @@ RocketChat.settings.addGroup 'Accounts', ->
 		@add 'Accounts_Registration_AuthenticationServices_Enabled', true, { type: 'boolean', public: true }
 		@add 'Accounts_PasswordReset', true, { type: 'boolean', public: true }
 
-		@add 'Accounts_CustomFields', '', { type: 'code', public: true }
+		@add 'Accounts_CustomFields', '', { type: 'code', public: true, i18nLabel: 'Custom_Fields' }
 
 	@section 'Avatar', ->
 		@add 'Accounts_AvatarResize', true, { type: 'boolean' }
