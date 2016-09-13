@@ -1,5 +1,10 @@
 Meteor.methods
 	loadNextMessages: (rid, end, limit=20) ->
+
+		check rid, String
+		# check end, Match.Optional(Number)
+		check limit, Number
+
 		if not Meteor.userId()
 			throw new Meteor.Error 'error-invalid-user', 'Invalid user', { method: 'loadNextMessages' }
 
