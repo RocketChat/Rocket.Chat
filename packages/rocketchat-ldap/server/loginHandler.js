@@ -129,6 +129,7 @@ Accounts.registerLoginHandler('ldap', function(loginRequest) {
 	}
 
 	logger.info('User does not exist, creating', username);
+
 	// Create new user
-	return addLdapUser(ldapUser);
+	return addLdapUser(ldapUser, username, loginRequest.ldapPass);
 });
