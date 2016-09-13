@@ -133,6 +133,46 @@ RocketChat.API.v1.addRoute 'users.list', authRequired: true,
 
 		return { users: RocketChat.models.Users.find().fetch() }
 
+# Create user
+RocketChat.API.v1.addRoute 'users.create', authRequired: true,
+	post: ->
+		try
+			check @bodyParams,
+				email: String
+				name: String
+				password: String
+				username: String
+				role: Match.Maybe(String)
+				joinDefaultChannels: Match.Maybe(Boolean)
+				requirePasswordChange: Match.Maybe(Boolean)
+				sendWelcomeEmail: Match.Maybe(Boolean)
+				verified: Match.Maybe(Boolean)
+				customFields: Match.Maybe(Object)
+
+			# check username availability first (to not create an user without a username)
+			try
+				nameValidation = new RegExp '^' + RocketChat.settings.get('UTF8_Names_Validation') + '$'
+			catch
+				nameValidation = new RegExp '^[0-9a-zA-Z-_.]+$'
+
+			if not nameValidation.test @bodyParams.username
+				return RocketChat.API.v1.failure 'Invalid username'
+
+			unless RocketChat.checkUsernameAvailability @bodyParams.username
+				return RocketChat.API.v1.failure 'Username not available'
+
+			userData = {}
+
+			newUserId = RocketChat.saveUser(@userId, @bodyParams)
+
+			if @bodyParams.customFields?
+				RocketChat.saveCustomFields(newUserId, @bodyParams.customFields)
+
+			return RocketChat.API.v1.success
+				user: RocketChat.models.Users.findOneById(newUserId)
+		catch e
+			return RocketChat.API.v1.failure e.name + ': ' + e.message
+
 # Get User Information
 RocketChat.API.v1.addRoute 'user.info', authRequired: true,
 	post: ->
