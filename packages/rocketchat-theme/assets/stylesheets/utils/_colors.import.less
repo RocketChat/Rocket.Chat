@@ -391,7 +391,8 @@ a.github-fork {
 		span.soon {
 			color: #aaa;
 		}
-		button, a {
+		button,
+		a {
 			color: fade( @quaternary-font-color, 50%);
 			&:hover {
 				background-color: darken(@primary-background-color, 2%);
@@ -627,7 +628,6 @@ a.github-fork {
 					&:nth-child(odd) {
 						background-color: @secondary-background-color;
 					}
-
 					&.row-link {
 						cursor: pointer;
 						&:hover {
@@ -635,7 +635,6 @@ a.github-fork {
 						}
 					}
 				}
-
 				td {
 					a {
 						color: @link-font-color;
@@ -744,10 +743,12 @@ a.github-fork {
 .message-popup {
 	background: #FFF;
 }
+
 .message-popup-title {
 	background-color: @secondary-background-color;
 	border-bottom-color: #E7E7E7;
 }
+
 .popup-item {
 	color: @secondary-font-color;
 	&.selected {
@@ -755,21 +756,27 @@ a.github-fork {
 		color: #FFF;
 	}
 }
+
 .popup-user-status {
 	border-color: rgba(0, 0, 0, .2);
 }
+
 .popup-user-status-system {
 	border-color: transparent;
 }
+
 .popup-user-status-offline {
 	background-color: @status-offline;
 }
+
 .popup-user-status-online {
 	background-color: @status-online;
 }
+
 .popup-user-status-away {
 	background-color: @status-away;
 }
+
 .popup-user-status-busy {
 	background-color: @status-busy;
 }
@@ -962,7 +969,6 @@ a.github-fork {
 		}
 	}
 	.box {
-		h4 {}
 		&:after {
 			background-color: #CDCDCD;
 		}
@@ -995,7 +1001,6 @@ a.github-fork {
 		}
 		.form-divisor {
 			border-bottom: 1px solid #ddd;
-
 			> span {
 				background-color: @secondary-background-color;
 			}
@@ -1016,7 +1021,6 @@ a.github-fork {
 	&:hover,
 	&.selected {
 		.avatar {
-			&:after {}
 			.status-offline {
 				&:after {
 					background-color: @status-offline;
@@ -1129,7 +1133,8 @@ a.github-fork {
 		}
 	}
 	.input-text {
-		input, select {
+		input,
+		select {
 			background-color: transparent;
 			border-bottom-color: #DFDFDF;
 			&.error {
