@@ -241,7 +241,7 @@ RocketChat.API.v1.addRoute 'users.delete', authRequired: true,
 			return RocketChat.API.v1.failure e.name + ': ' + e.message
 
 		return RocketChat.API.v1.success
-			body:[name: @bodyParams.userId ]
+			body:[user: @bodyParams.userId ]
 			
 			
 ### Create Private Group
@@ -345,21 +345,22 @@ RocketChat.API.v1.addRoute 'bulk/removeGroup', authRequired: true,
 			body: [ name:@bodyParams.name]
 				
 				
-### Retrieve integrations
-requires manage-integrations role 
-**Note make sure you encode all channel/private rooms  because they start with '#' === '%23' 
-Example string ('http://your url here : 3000/api/v1/roomIntegrations.id/%23testRoom/list',headers={'X-User-Id':'user_token','X-Auth-Token':'user_token'})
+### Retrieve integrations for a specific room
+Requires manage-integrations role. The room channel needs to be URL encoded, as the names begin with characters
+that are not URL safe (e.g., '#' and '@'). Example:
+'http://domain.com:3000/api/v1/room/%23testRoom/integrations'
 ###
-RocketChat.API.v1.addRoute 'roomIntgrations.id/:channel/list', authRequired: true,
+RocketChat.API.v1.addRoute 'room/:channel/integrations', authRequired: true,
 	get: ->
 		
 		if RocketChat.authz.hasPermission(@userId, 'manage-integrations') is false
 			return RocketChat.API.v1.unauthorized()
+		
 		try	
 			this.reaponse.setTimeout(1000)			
-			id = RocketChat.models.Integrations.find({"channel":decodeURIComponent(@urlParams.channel)}).fetch()
 			return RocketChat.API.v1.success
-				body: [ status: 'success', Integrations: id]
+				integrations: RocketChat.models.Integrations.find({"channel":decodeURIComponent(@urlParams.channel)}).fetch()
+		
 		catch e 
 			return RocketChat.API.v1.failure e.name + ': ' + e.message
 		
@@ -381,16 +382,14 @@ RocketChat.API.v1.addRoute 'roomIntegrations.list', authRequired: true,
 			return RocketChat.API.v1.failure e.name + ': ' + e.message
 		
 		
-### Create outgoing webhooks,
-user must also have manage-integrations role
-creating a push point for messages to be push to from Rocket Chat.
+### Create outgoing webhook
+User must have manage-integrations role
 ###		
 RocketChat.API.v1.addRoute 'integrations.outgoingWebhook.create', authRequired: true,
 	post: ->
 	
 		if RocketChat.authz.hasPermission(@userId, 'manage-integrations') is false
 			return RocketChat.API.v1.unauthorized()
-		console.log 'Web integration data: ', @bodyParams
 					
 		try
 			check @bodyParams,				
@@ -416,30 +415,27 @@ RocketChat.API.v1.addRoute 'integrations.outgoingWebhook.create', authRequired: 
 			return RocketChat.API.v1.failure e.name + ': ' + e.message
 		
 
-### Remove Outgoing Webhook
-user must also have admin role 
-@apiParam {json} An array of intergration webhooks in the body of the POST. 'integration' is integrations name
-use RocketChat.API.v1.addRoute 'roomIntegrations' method to aquire a list of all webhooks to capture webhook _ids or use ':channel/roomIntgrations' to aquire 
-a list from a specfic channel or group (private room).
-
-@apiParamExample {json} POST Request Body example:
-  {
-    'integrationId':[ 'integrations_id1','integrations_id2']
-  }	
+### Remove outgoing webhook
+Delete an integration, user must also have manage-integrations permissions
 ###			
-RocketChat.API.v1.addRoute 'removeOutgoingWebhook', authRequired: true,
-	delete: ->
+RocketChat.API.v1.addRoute 'integrations.outgoingWebhook.delete', authRequired: true,
+	post: ->
 	
 		if RocketChat.authz.hasPermission(@userId, 'manage-integrations') is false
 			return RocketChat.API.v1.unauthorized()
 				
 		try
-			this.response.setTimeout (1000)
-			ids=[]
+
+			check @bodyParams,
+				integrationId: String
+
+			this.response.setTimeout(1000)
+			
 			Meteor.runAsUser this.userId, () =>
-				(ids[i]=Meteor.call 'deleteOutgoingIntegration', incoming) for incoming, i in @bodyParams.integrationId
+				Meteor.call 'deleteOutgoingIntegration', @bodyParams.integrationId
 			return RocketChat.API.v1.success
-				body: [deleted : @bodyParams.integrationId ]
+				body: [integration: @bodyParams.integrationId]
+		
 		catch e
 			return RocketChat.API.v1.failure  @bodyParams.integrationId, message: e.name + ' :: ' + e.message
 			
