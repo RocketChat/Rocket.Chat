@@ -809,10 +809,10 @@
         peer.onaddstream = function(event) {
             var remoteMediaStream = event.stream;
 
-            // onRemoteStreamEnded(MediaStream)
-            remoteMediaStream.onended = function() {
-                if (options.onRemoteStreamEnded) options.onRemoteStreamEnded(remoteMediaStream);
-            };
+            // onRemoteStreamEnded(MediaStream) // deprecated in Chrome 54 and by W3C
+            // remoteMediaStream.onended = function() {
+            //    if (options.onRemoteStreamEnded) options.onRemoteStreamEnded(remoteMediaStream);
+            // };
 
             // onRemoteStream(MediaStream)
             if (options.onRemoteStream) options.onRemoteStream(remoteMediaStream);
