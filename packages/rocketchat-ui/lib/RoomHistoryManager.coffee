@@ -11,7 +11,7 @@
 				isLoading: new ReactiveVar false
 				unreadNotLoaded: new ReactiveVar 0
 				firstUnread: new ReactiveVar
-				loaded: 0
+				loaded: undefined
 
 		return histories[rid]
 
@@ -63,7 +63,9 @@
 				RoomManager.updateMentionsMarksOfRoom typeName
 
 			room.isLoading.set false
-			room.loaded += result?.messages?.length
+			room.loaded ?= 0
+			if result?.messages?.length?
+				room.loaded += result.messages.length
 			if result?.messages?.length < limit
 				room.hasMore.set false
 
@@ -102,7 +104,9 @@
 					RoomManager.updateMentionsMarksOfRoom typeName
 
 				room.isLoading.set false
-				room.loaded += result.messages.length
+				room.loaded ?= 0
+				if result.messages.length?
+					room.loaded += result.messages.length
 				if result.messages.length < limit
 					room.hasMoreNext.set false
 
@@ -170,7 +174,9 @@
 					setTimeout ->
 						msgElement.removeClass('highlight')
 					, 500
-				room.loaded += result.messages.length
+				room.loaded ?= 0
+				if result.messages.length?
+					room.loaded += result.messages.length
 				room.hasMore.set result.moreBefore
 				room.hasMoreNext.set result.moreAfter
 
@@ -187,7 +193,7 @@
 	getMoreIfIsEmpty = (rid) ->
 		room = getRoom rid
 
-		if room.loaded is 0
+		if room.loaded is undefined
 			getMore rid
 
 
@@ -200,7 +206,7 @@
 		if histories[rid]?
 			histories[rid].hasMore.set true
 			histories[rid].isLoading.set false
-			histories[rid].loaded = 0
+			histories[rid].loaded = undefined
 
 	getRoom: getRoom
 	getMore: getMore
