@@ -12,7 +12,7 @@ Package.onUse(function(api) {
 	]);
 
 	api.addFiles([
-		'autolinker.coffee',
+		'client.coffee',
 		'lib/Autolinker.min.js'
 	], ['client']);
 
