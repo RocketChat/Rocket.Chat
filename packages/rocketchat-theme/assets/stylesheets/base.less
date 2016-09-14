@@ -2476,6 +2476,8 @@ label.required:after {
 			padding: 0 8px;
 			z-index: 1;
 			border-radius: 4px;
+			font-size: 12px;
+			font-weight: 600;
 		}
 		&:before {
 			position: absolute;
@@ -2768,6 +2770,15 @@ body:not(.is-cordova) {
 .cozy {
 	.message {
 		padding: 4px 20px 4px 70px;
+		&.new-day {
+			padding-top: 45px;
+			.day-divider {
+				height: 40px;
+				&:before {
+					top: 20px;
+				}
+			}
+		}
 		.body {
 			margin-top: 0;
 		}
@@ -2778,6 +2789,15 @@ body:not(.is-cordova) {
 	.message {
 		min-height: 26px;
 		padding: 5px 15px 0 37px;
+		&.new-day {
+			padding-top: 31px;
+			.day-divider {
+				height: 26px;
+				&:before {
+					top: 13px;
+				}
+			}
+		}
 		.body {
 			display: inline;
 			.inline-image img {
