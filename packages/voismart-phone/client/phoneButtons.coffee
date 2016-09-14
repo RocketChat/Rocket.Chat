@@ -29,6 +29,7 @@ Template.phoneButtons.events
 			return
 
 		if !Meteor.isCordova
-			RocketChat.Phone.newCall(user.phoneextension, false)
+			RocketChat.TabBar.setTemplate "phone", ->
+				RocketChat.Phone.newCall(user.phoneextension, false)
 		else
 			window.open 'voismart://call/' + user.phoneextension, '_blank'
