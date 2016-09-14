@@ -234,6 +234,7 @@ ui@1.0.8
 underscore@1.0.4
 underscorestring:underscore.string@3.3.4
 url@1.0.5
+voismart:disable-cordova-otr@0.0.1
 voismart:ngapi@0.0.1
 voismart:nglogin@0.0.1
 voismart:ngpresence@0.0.1

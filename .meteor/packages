@@ -154,6 +154,7 @@ todda00:friendly-slugs
 underscorestring:underscore.string
 yasaricli:slugify
 yasinuslu:blaze-meta
+voismart:disable-cordova-otr
 voismart:webc
 voismart:ngapi
 voismart:ngpresence
