@@ -42,6 +42,13 @@ RocketChat.roomTypes = new class roomTypesClient extends roomTypesCommon
 
 		return room?.ro is true and Array.isArray(room?.muted) and room?.muted.indexOf(user.username) != -1
 
+	archived: (roomId, user) ->
+		fields = { archived: 1 }
+
+		room = ChatRoom.findOne({ _id: roomId }, fields : fields)
+
+		return room?.archived is true
+
 	verifyCanSendMessage: (roomId) ->
 		room = ChatRoom.findOne({ _id: roomId }, { fields: { t: 1 } })
 		return if not room?.t?
