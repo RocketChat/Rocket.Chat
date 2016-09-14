@@ -166,8 +166,6 @@ RocketChat.API.v1.addRoute 'users.create', authRequired: true,
 			unless RocketChat.checkUsernameAvailability @bodyParams.username
 				return RocketChat.API.v1.failure 'Username not available'
 
-			userData = {}
-
 			newUserId = RocketChat.saveUser(@userId, @bodyParams)
 
 			if @bodyParams.customFields?
@@ -245,7 +243,7 @@ RocketChat.API.v1.addRoute 'users.delete', authRequired: true,
 			
 			
 ### Create Private Group
- example data:
+Request example:
   {"name":"room5","members":["Jeff","Larry","Stephen"]}
 ###
 RocketChat.API.v1.addRoute 'groups.create', authRequired: true,
@@ -343,6 +341,29 @@ RocketChat.API.v1.addRoute 'bulk/removeGroup', authRequired: true,
 		
 		return RocketChat.API.v1.success
 			body: [ name:@bodyParams.name]
+
+
+# Get Room Information
+RocketChat.API.v1.addRoute 'room.info', authRequired: true,
+	post: ->
+		
+		if RocketChat.authz.hasRole(@userId, 'admin') is false
+			return RocketChat.API.v1.unauthorized()
+
+		try
+			check @bodyParams,
+				roomId: Match.Maybe(String)
+				name: Match.Maybe(String)
+			
+			this.response.setTimeout(1000)
+			room = RocketChat.models.Rooms.findOneById @bodyParams.roomId
+			if !room
+				room = RocketChat.models.Rooms.findOneByName @bodyParams.name
+
+			return { room: room }
+		
+		catch e
+			return RocketChat.API.v1.failure e.name + ': ' + e.message
 				
 				
 ### Retrieve integrations for a specific room
@@ -357,7 +378,7 @@ RocketChat.API.v1.addRoute 'room/:channel/integrations', authRequired: true,
 			return RocketChat.API.v1.unauthorized()
 		
 		try	
-			this.reaponse.setTimeout(1000)			
+			this.response.setTimeout(1000)			
 			return RocketChat.API.v1.success
 				integrations: RocketChat.models.Integrations.find({"channel":decodeURIComponent(@urlParams.channel)}).fetch()
 		
@@ -365,19 +386,21 @@ RocketChat.API.v1.addRoute 'room/:channel/integrations', authRequired: true,
 			return RocketChat.API.v1.failure e.name + ': ' + e.message
 		
 
-###retrieve a complete list of all integrations
-requires manage-integrations role 
+### Retrieve a paginated list of all integrations. 
+Pagination controlled by the page and items query parameters. Defaults: page=1, items=100. Requires manage-integrations role.
 ###
-RocketChat.API.v1.addRoute 'roomIntegrations.list', authRequired: true,
+RocketChat.API.v1.addRoute 'integrations.list', authRequired: true,
 	get: ->
 	
 		if RocketChat.authz.hasPermission(@userId, 'manage-integrations') is false
 			return RocketChat.API.v1.unauthorized()
 		try 
 			this.response.setTimeout (1000)
-			id = RocketChat.models.Integrations.find().fetch()
+			rpage = @queryParams.page or 1
+			ritems = @queryParams.items or 100
 			return RocketChat.API.v1.success
-				body:[Integrations: id]
+				integrations: RocketChat.models.Integrations.find({}, { limit: ritems, skip: (rpage-1)*ritems }).fetch()
+		
 		catch e
 			return RocketChat.API.v1.failure e.name + ': ' + e.message
 		
@@ -416,7 +439,7 @@ RocketChat.API.v1.addRoute 'integrations.outgoingWebhook.create', authRequired: 
 		
 
 ### Remove outgoing webhook
-Delete an integration, user must also have manage-integrations permissions
+User must have manage-integrations permissions
 ###			
 RocketChat.API.v1.addRoute 'integrations.outgoingWebhook.delete', authRequired: true,
 	post: ->
@@ -468,50 +491,7 @@ RocketChat.API.v1.addRoute 'directMessage.list', authRequired: true,
 				body: [rooms: rooms]
 		catch e
 			return RocketChat.API.v1.failure e.name + ': ' + e.message
-<<<<<<< HEAD
-	
 
-RocketChat.API.v1.addRoute 'admin.addUpdateUser', authRequired: true,
-	post: ->
-	
-		if RocketChat.authz.hasRole(@userId, 'admin') is false
-			return RocketChat.API.v1.unauthorized()
-		
-		try
-			console.log '[routes.coffee] api/v1/admin.addUpdateUser -> request ', _.omit @bodyParams, ['password']
-			if !_.isObject @bodyParams
-				return RocketChat.API.v1.failure()
-					error : 'Request body not encoded as valid JSON'
-			
-			udata = _.pick @bodyParams, [
-					'name'
-					'username'
-					'email'
-					'password'
-					'requiredPasswordChange'
-					'joinDefaultChannels'
-					'verified'
-					'sendWelcomeEmail'
-				]
-			_.defaults udata, {
-				'name': '', 
-				'username': '',
-				'email': '',
-				'password': '',
-				'requiredPasswordChange': true,
-				'joinDefaultChannels': true,
-				'verified': false,
-				'sendWelcomeEmail': true,
-			}
-				
-			Meteor.runAsUser this.userId, () =>
-				Meteor.call 'insertOrUpdateUser', udata
-			return RocketChat.API.v1.success
-				user: RocketChat.models.Users.findOneByUsername udata.username
-				 
-		catch e
-			console.log '[routes.coffee] api/v1/admin.addUpdateUser Error: ', e.message, e.stack
-			return RocketChat.API.v1.failure e.name + ': ' + e.message
 			
 ###
 can take these as args to update.
@@ -564,6 +544,3 @@ RocketChat.API.v1.addRoute 'admin.listRoomInfo/:rid ', authRequired: true,
 			console.log '[routes.coffee] api/v1/admin.listRoomInfo Error: ', e.message, e.stack
 			return RocketChat.API.v1.failure e.name + ': ' + e.message
 			
-=======
-	
->>>>>>> c8cce2e553f8e5299869595757fffa026bd32d05
