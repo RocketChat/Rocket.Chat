@@ -86,6 +86,9 @@ Template.room.helpers
 
 		return data
 
+	containerBarsShow: (unreadData, uploading) ->
+		return 'show' if (unreadData?.count > 0 and unreadData.since?) or uploading?.length > 0
+
 	formatUnreadSince: ->
 		if not this.since? then return
 
@@ -525,7 +528,7 @@ Template.room.onRendered ->
 
 	template = this
 
-	containerBars = $('.messages-container > .container-bars')
+	messageBox = $('.messages-box')
 
 	template.isAtBottom = ->
 		if wrapper.scrollTop >= wrapper.scrollHeight - wrapper.clientHeight
@@ -597,9 +600,9 @@ Template.room.onRendered ->
 		, 50
 
 	updateUnreadCount = _.throttle ->
-		containerBarsOffset = containerBars.offset()
+		messageBoxOffset = messageBox.offset()
 
-		lastInvisibleMessageOnScreen = document.elementFromPoint(containerBarsOffset.left-1, containerBarsOffset.top+1)
+		lastInvisibleMessageOnScreen = document.elementFromPoint(messageBoxOffset.left+1, messageBoxOffset.top+1)
 		if lastInvisibleMessageOnScreen?.id?
 			lastMessage = ChatMessage.findOne lastInvisibleMessageOnScreen.id
 			if lastMessage?
