@@ -20,13 +20,14 @@
 		</div>
 		<div class="phone-display-container">
 			<input type="text" class="phone-display" id="phone-display" autocomplete="off" value={{phoneDisplay}}>
-		</div>
-        <nav>
-            <div class="phone-call-buttons phone-actions">
+			{{#if onCall}}
+                <button class='button red-hook' id="phone-hangup"><i class="icon-phone"></i></button>
+			{{else}}
 				<button class='button green-hook' id="phone-dial"><i class="icon-phone"></i></button>
 				<button class='button green-hook' id="phone-video-dial"><i class="icon-videocam"></i></button>
-                <button class='button red-hook' id="phone-hangup"><i class="icon-phone"></i></button>
-            </div>
+			{{/if}}
+		</div>
+        <nav>
             <div class="phone-call-buttons">
                 <button class='button dialkey' value="1">1</button>
                 <button class='button dialkey' value="2">2</button>

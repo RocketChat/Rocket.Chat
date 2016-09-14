@@ -124,6 +124,9 @@ Template.phone.helpers
 	showSettings: ->
 		return Template.instance().showSettings.get()
 
+	onCall: ->
+		return Session.get("Voismart::onCall")
+
 
 Template.phone.onCreated ->
 	@showSettings = new ReactiveVar false
@@ -204,6 +207,7 @@ RocketChat.Phone = new class
 			console.log('onWSLogin', success)
 
 	onWSClose = (verto, success) ->
+		Session.set("Voismart::onCall", false)
 		if window.rocketDebug
 			console.log('onWSClose', success)
 
@@ -216,6 +220,7 @@ RocketChat.Phone = new class
 
 		if !_curCall?
 			_curCall = d
+			Session.set("Voismart::onCall", true)
 
 		if d.callID != _curCall.callID
 			switch d.state.name
@@ -275,6 +280,7 @@ RocketChat.Phone = new class
 					toastr.error(msg + ": " + d.cause)
 
 			when 'destroy'
+				Session.set("Voismart::onCall", false)
 				if _callState != 'transfer' and _callState != 'hangup'
 					if window.rocketDebug
 						console.log("destroy call rq")
@@ -472,6 +478,7 @@ RocketChat.Phone = new class
 			onDialogState: onDialogState
 		})
 		_lastCalled = destination
+		Session.set("Voismart::onCall", true)
 
 	setVideoResolution: (idx) ->
 		if idx is "0"
@@ -543,6 +550,8 @@ RocketChat.Phone = new class
 		if _started and _vertoHandle
 			console.log("Client already started, ignoring") if window.rocketDebug
 			return
+
+		Session.set("Voismart::onCall", false)
 
 		_videoTag = $("#phonestream")
 
