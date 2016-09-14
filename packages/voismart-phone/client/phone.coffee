@@ -86,8 +86,9 @@ Template.phone.events
 			console.log "redialing...."
 
 		lastCalled = RocketChat.Phone.getLastCalled()
-		instance.phoneDisplay.set(lastCalled)
-		RocketChat.Phone.redial()
+		if lastCalled
+			instance.phoneDisplay.set(lastCalled)
+			RocketChat.Phone.redial()
 
 	'click #phone-clear': (e, instance)->
 		if window.rocketDebug
@@ -186,9 +187,6 @@ RocketChat.Phone = new class
 	_vertoHandle = undefined
 	_server = undefined
 	_videoTag = undefined
-
-	_lastCalled = ''
-	_lastUseVideo = false
 
 	_onHold = false
 	_isMute = false
@@ -429,11 +427,12 @@ RocketChat.Phone = new class
 			_curCall.transfer(number)
 
 	getLastCalled: ->
-		return _lastCalled
+		return Session.get("VoiSmart::Phone::lastCalled")
 
 	redial: () ->
 		if !_curCall? and _callState is null
-			@newCall(_lastCalled, _lastUseVideo)
+			@newCall(Session.get("VoiSmart::Phone::lastCalled"),
+				Session.get("VoiSmart::Phone::lastUseVideo"))
 
 	toggleMute: () ->
 		if !_curCall?
@@ -482,7 +481,8 @@ RocketChat.Phone = new class
 			useVideo = true
 		else
 			useVideo = false
-		_lastUseVideo = useVideo
+		Session.set("VoiSmart::Phone::lastUseVideo", useVideo)
+
 
 		if !destination or destination is ''
 			console.log("No number provided") if window.rocketDebug
@@ -517,7 +517,7 @@ RocketChat.Phone = new class
 		}, {
 			onDialogState: onDialogState
 		})
-		_lastCalled = destination
+		Session.set("VoiSmart::Phone::lastCalled", destination)
 		msg = TAPi18n.__("Outgoing_call_to")
 		putNotification(msg, destination)
 
