@@ -1,5 +1,8 @@
 Meteor.methods
 	saveUserPreferences: (settings) ->
+
+		check settings, Object
+
 		if Meteor.userId()
 			preferences = {}
 
