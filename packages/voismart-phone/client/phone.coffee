@@ -124,13 +124,40 @@ Template.phone.helpers
 	showSettings: ->
 		return Template.instance().showSettings.get()
 
-	onCall: ->
-		return Session.get("Voismart::onCall")
+	callIsActive: ->
+		if Template.instance().callState.get() == 'active'
+			return true
+
+	callIsRinging: ->
+		if Template.instance().callState.get() == 'ringing'
+			return true
+
+	callIsIdle: ->
+		if Template.instance().callState.get()
+			return false
+		return true
+
+	callState: ->
+		return Template.instance().callState.get()
+
+	callContact: ->
+		return Template.instance().callContact.get()
+
+	callOperation: ->
+		return Template.instance().callOperation.get()
+
+	displayCallStatus: ->
+		if Template.instance().callState.get() and Template.instance().callContact.get()
+			return true
+		return false
 
 
 Template.phone.onCreated ->
+	@callState = new ReactiveVar null
 	@showSettings = new ReactiveVar false
 	@phoneDisplay = new ReactiveVar ""
+	@callContact = new ReactiveVar ""
+	@callOperation = new ReactiveVar ""
 
 
 Template.phone.onDestroyed ->
@@ -146,10 +173,13 @@ Template.phone.onRendered ->
 			console.log("Moving video tag to its containter")
 		Session.get('openedRoom')
 		FlowRouter.watchPathChange()
+		RocketChat.Phone.setTemplate(Template.instance())
 		RocketChat.Phone.placeVideo()
 
 
 RocketChat.Phone = new class
+	_template = undefined
+
 	_started = false
 	_login = undefined
 	_password = undefined
@@ -207,9 +237,12 @@ RocketChat.Phone = new class
 			console.log('onWSLogin', success)
 
 	onWSClose = (verto, success) ->
-		Session.set("Voismart::onCall", false)
 		if window.rocketDebug
 			console.log('onWSClose', success)
+
+	setCallState = (state) ->
+		_template.callState.set(state)
+		_callState = state
 
 	onDialogState = (d) ->
 		if window.rocketDebug
@@ -220,7 +253,6 @@ RocketChat.Phone = new class
 
 		if !_curCall?
 			_curCall = d
-			Session.set("Voismart::onCall", true)
 
 		if d.callID != _curCall.callID
 			switch d.state.name
@@ -237,19 +269,19 @@ RocketChat.Phone = new class
 
 		switch d.state.name
 			when 'trying', 'early'
-				_callState = 'active'
+				setCallState('active')
 				RocketChat.TabBar.updateButton('phone', { class: 'phone-blinking' })
 
 			when 'ringing'
-				_callState = 'ringing'
+				setCallState('ringing')
 				RocketChat.TabBar.updateButton('phone', { class: 'phone-blinking' })
 				RocketChat.TabBar.setTemplate "phone", ->
 					if d.params.caller_id_name
 						cid = d.params.caller_id_name
 					else
 						cid = d.params.caller_id_number
-					msg = TAPi18n.__("Incoming_call_from") + cid
-					putNotification(msg)
+					msg = TAPi18n.__("Incoming_call_from")
+					putNotification(msg, cid)
 					notification =
 						title: TAPi18n.__ "Phone_Call"
 						text: TAPi18n.__("Incoming_call_from") + cid
@@ -260,7 +292,13 @@ RocketChat.Phone = new class
 					KonchatNotification.showDesktop notification
 
 			when 'active'
-				_callState = 'active'
+				setCallState('active')
+				msg = TAPi18n.__("In_call_with")
+				if d.direction.name == 'outbound'
+					putNotification(msg, d.params.destination_number)
+				else
+					cid = d.params.caller_id_number + ' ' + d.params.caller_id_name
+					putNotification(msg, cid)
 				RocketChat.TabBar.updateButton('phone', { class: 'red' })
 
 			when 'hangup'
@@ -269,7 +307,7 @@ RocketChat.Phone = new class
 						console.log("hangup call rq")
 					_curCall.hangup()
 
-				_callState = 'hangup'
+				setCallState('hangup')
 				_curCall = null
 				clearNotification()
 				RocketChat.TabBar.updateButton('phone', { class: '' })
@@ -280,24 +318,23 @@ RocketChat.Phone = new class
 					toastr.error(msg + ": " + d.cause)
 
 			when 'destroy'
-				Session.set("Voismart::onCall", false)
 				if _callState != 'transfer' and _callState != 'hangup'
 					if window.rocketDebug
 						console.log("destroy call rq")
 					_curCall.hangup()
 
-				_callState = null
+				setCallState(null)
 				_curCall = null
 				clearNotification()
 				delete _dialogs[d.callID]
 
 	clearNotification = ->
-		$(".phone-notifications").text('')
-		$(".phone-notifications").css('display', 'none')
+		_template.callContact.set('')
+		_template.callOperation.set('')
 
-	putNotification = (msg) ->
-		$(".phone-notifications").text(msg)
-		$(".phone-notifications").css('display', 'block')
+	putNotification = (msg, cid) ->
+		_template.callContact.set(cid)
+		_template.callOperation.set(msg)
 
 	refreshVideoResolution = (resolutions) ->
 		_curResolutions = resolutions.validRes
@@ -374,6 +411,9 @@ RocketChat.Phone = new class
 		if _curCall and _callState is 'active'
 			_videoTag[0].play()
 
+	setTemplate: (t) ->
+		_template = t
+
 	placeVideo: ->
 		_videoTag.appendTo($("#phone-video"))
 		_videoTag.css('visibility', 'visible')
@@ -385,7 +425,7 @@ RocketChat.Phone = new class
 
 	transfer: (number) ->
 		if _curCall and _callState is 'active'
-			_callState = 'transfer'
+			setCallState('transfer')
 			_curCall.transfer(number)
 
 	getLastCalled: ->
@@ -478,7 +518,8 @@ RocketChat.Phone = new class
 			onDialogState: onDialogState
 		})
 		_lastCalled = destination
-		Session.set("Voismart::onCall", true)
+		msg = TAPi18n.__("Outgoing_call_to")
+		putNotification(msg, destination)
 
 	setVideoResolution: (idx) ->
 		if idx is "0"
@@ -550,8 +591,6 @@ RocketChat.Phone = new class
 		if _started and _vertoHandle
 			console.log("Client already started, ignoring") if window.rocketDebug
 			return
-
-		Session.set("Voismart::onCall", false)
 
 		_videoTag = $("#phonestream")
 
