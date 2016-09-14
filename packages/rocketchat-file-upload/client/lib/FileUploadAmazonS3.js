@@ -10,6 +10,8 @@ FileUpload.AmazonS3 = class FileUploadAmazonS3 extends FileUploadBase {
 		this.uploader.send(this.file, (error, downloadUrl) => {
 			var file, item, uploading;
 
+			this.computation.stop();
+
 			if (error) {
 				uploading = Session.get('uploading');
 				if (uploading !== null) {
@@ -41,7 +43,7 @@ FileUpload.AmazonS3 = class FileUploadAmazonS3 extends FileUploadBase {
 			}
 		});
 
-		Tracker.autorun(() => {
+		this.computation = Tracker.autorun(() => {
 			this.onProgress(this.uploader.progress());
 		});
 	}
