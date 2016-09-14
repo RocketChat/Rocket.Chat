@@ -99,6 +99,9 @@ Template.room.helpers
 
 		return data
 
+	containerBarsShow: (unreadData, uploading) ->
+		return 'show' if (unreadData?.count > 0 and unreadData.since?) or uploading?.length > 0
+
 	formatUnreadSince: ->
 		if not this.since? then return
 
@@ -538,8 +541,7 @@ Template.room.onRendered ->
 
 	template = this
 
-	containerBars = $('.messages-container > .container-bars')
-	containerBarsOffset = containerBars.offset()
+	messageBox = $('.messages-box')
 
 	template.isAtBottom = ->
 		if wrapper.scrollTop >= wrapper.scrollHeight - wrapper.clientHeight
@@ -611,12 +613,14 @@ Template.room.onRendered ->
 		, 50
 
 	updateUnreadCount = _.throttle ->
-		firstMessageOnScreen = document.elementFromPoint(containerBarsOffset.left+1, containerBarsOffset.top+containerBars.height()+1)
-		if firstMessageOnScreen?.id?
-			firstMessage = ChatMessage.findOne firstMessageOnScreen.id
-			if firstMessage?
+		messageBoxOffset = messageBox.offset()
+
+		lastInvisibleMessageOnScreen = document.elementFromPoint(messageBoxOffset.left+1, messageBoxOffset.top+1)
+		if lastInvisibleMessageOnScreen?.id?
+			lastMessage = ChatMessage.findOne lastInvisibleMessageOnScreen.id
+			if lastMessage?
 				subscription = ChatSubscription.findOne rid: template.data._id
-				count = ChatMessage.find({rid: template.data._id, ts: {$lt: firstMessage.ts, $gt: subscription?.ls}}).count()
+				count = ChatMessage.find({rid: template.data._id, ts: {$lte: lastMessage.ts, $gt: subscription?.ls}}).count()
 				template.unreadCount.set count
 			else
 				template.unreadCount.set 0

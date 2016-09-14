@@ -20,7 +20,7 @@
 					<span class="room-topic">{{{RocketChatMarkdown roomTopic}}}</span>
 				</h2>
 			</header>
-			<div class="container-bars">
+			<div class="container-bars {{containerBarsShow unreadData uploading}}">
 				{{#with unreadData}}
 					{{#if since}}
 						{{#if count}}
