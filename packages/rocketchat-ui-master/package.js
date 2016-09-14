@@ -10,9 +10,11 @@ Package.describe({
 	documentation: 'README.md'
 });
 
-Package.onUse(function(api) {
-	api.versionsFrom('1.2.1');
+Npm.depends({
+	'clipboard': '1.5.12'
+});
 
+Package.onUse(function(api) {
 	api.use([
 		'mongo',
 		'ecmascript',
@@ -26,7 +28,6 @@ Package.onUse(function(api) {
 
 	api.addFiles('master/main.html', 'client');
 	api.addFiles('master/loading.html', 'client');
-	api.addFiles('master/pageLoading.html', 'client');
 	api.addFiles('master/error.html', 'client');
 	api.addFiles('master/logoLayout.html', 'client');
 

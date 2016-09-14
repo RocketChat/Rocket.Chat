@@ -7,15 +7,18 @@ isSubscribed = (_id) ->
 favoritesEnabled = ->
 	return RocketChat.settings.get 'Favorite_Rooms'
 
+userCanDrop = (_id) ->
+	return !RocketChat.roomTypes.readOnly _id, Meteor.user()
+
 Template.room.helpers
 	favorite: ->
 		sub = ChatSubscription.findOne { rid: this._id }, { fields: { f: 1 } }
-		return 'icon-star favorite-room' if sub?.f? and sub.f and favoritesEnabled
+		return 'icon-star favorite-room' if sub?.f? and sub.f and favoritesEnabled()
 		return 'icon-star-empty'
 
 	favoriteLabel: ->
 		sub = ChatSubscription.findOne { rid: this._id }, { fields: { f: 1 } }
-		return "Unfavorite" if sub?.f? and sub.f and favoritesEnabled
+		return "Unfavorite" if sub?.f? and sub.f and favoritesEnabled()
 		return "Favorite"
 
 	subscribed: ->
@@ -120,6 +123,19 @@ Template.room.helpers
 
 	hideAvatar: ->
 		return if Meteor.user()?.settings?.preferences?.hideAvatars then 'hide-avatars'
+
+	userCanDrop: ->
+		return userCanDrop @_id
+
+	canPreview: ->
+		room = Session.get('roomData' + this._id)
+		if room.t isnt 'c'
+			return true
+
+		if RocketChat.authz.hasAllPermission('preview-c-room')
+			return true
+
+		return RocketChat.models.Subscriptions.findOne({rid: this._id})?
 
 isSocialSharingOpen = false
 touchMoved = false
@@ -359,7 +375,9 @@ Template.room.events
 			ChatMessage.update {_id: id}, {$set: {"urls.#{index}.collapsed": !collapsed}}
 
 	'dragenter .dropzone': (e) ->
-		e.currentTarget.classList.add 'over'
+		items = e.originalEvent?.dataTransfer?.items
+		if items?.length > 0 and items?[0]?.kind isnt 'string' and userCanDrop this._id
+			e.currentTarget.classList.add 'over'
 
 	'dragleave .dropzone-overlay': (e) ->
 		e.currentTarget.parentNode.classList.remove 'over'
@@ -508,7 +526,6 @@ Template.room.onRendered ->
 	template = this
 
 	containerBars = $('.messages-container > .container-bars')
-	containerBarsOffset = containerBars.offset()
 
 	template.isAtBottom = ->
 		if wrapper.scrollTop >= wrapper.scrollHeight - wrapper.clientHeight
@@ -580,12 +597,14 @@ Template.room.onRendered ->
 		, 50
 
 	updateUnreadCount = _.throttle ->
-		firstMessageOnScreen = document.elementFromPoint(containerBarsOffset.left+1, containerBarsOffset.top+containerBars.height()+1)
-		if firstMessageOnScreen?.id?
-			firstMessage = ChatMessage.findOne firstMessageOnScreen.id
-			if firstMessage?
+		containerBarsOffset = containerBars.offset()
+
+		lastInvisibleMessageOnScreen = document.elementFromPoint(containerBarsOffset.left-1, containerBarsOffset.top+1)
+		if lastInvisibleMessageOnScreen?.id?
+			lastMessage = ChatMessage.findOne lastInvisibleMessageOnScreen.id
+			if lastMessage?
 				subscription = ChatSubscription.findOne rid: template.data._id
-				count = ChatMessage.find({rid: template.data._id, ts: {$lt: firstMessage.ts, $gt: subscription?.ls}}).count()
+				count = ChatMessage.find({rid: template.data._id, ts: {$lte: lastMessage.ts, $gt: subscription?.ls}}).count()
 				template.unreadCount.set count
 			else
 				template.unreadCount.set 0
