@@ -4,8 +4,9 @@
 //
 
 function HexColorPreview(message) {
+	var msg;
 	if (_.trim(message.html) && RocketChat.settings.get('HexColorPreview_Enabled')) {
-		let msg = message.html;
+		msg = message.html;
 		msg = msg.replace(/(?:^|\s|\n)(#[A-Fa-f0-9]{3}([A-Fa-f0-9]{3})?)\b/g, function(match, completeColor) {
 			return match.replace(completeColor, '<div class="message-color"><div class="message-color-sample" style="background-color:' + completeColor + '"></div>' + (completeColor.toUpperCase()) + '</div>');
 		});
