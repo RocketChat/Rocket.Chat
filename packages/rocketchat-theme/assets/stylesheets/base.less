@@ -2001,23 +2001,23 @@ label.required:after {
 
 .container-bars {
 	position: absolute;
-	top: 60px;
-	width: 100%;
+	top: 61px;
 	z-index: 11;
 	font-weight: bold;
 	display: flex;
 	flex-direction: column;
+	border-radius: 0 0 10px 10px;
+	overflow: hidden;
+	font-size: 1em;
+	left: 5px;
+	right: 5px;
+	box-shadow: 0px 1px 1px 0 rgba(0,0,0,0.2), 0 2px 10px 0 rgba(0,0,0,.16);
 	> div {
-		line-height: 24px;
+		line-height: 28px;
 		padding: 0 10px;
-		border-top: 1px solid;
-		&:last-child {
-			box-shadow: 0px 1px 2px rgba(0, 0, 0, .2);
-		}
 	}
-	font-size: 12px;
 	.upload-progress {
-		height: 24px;
+		height: 28px;
 		position: relative;
 		.upload-progress-progress {
 			position: absolute;
@@ -2039,6 +2039,11 @@ label.required:after {
 				text-transform: uppercase;
 				cursor: pointer;
 			}
+		}
+		button {
+			float: right;
+			font-weight: bold;
+			text-transform: uppercase;
 		}
 	}
 	.unread-bar {
@@ -4491,6 +4496,9 @@ body:not(.is-cordova) {
 			left: 0;
 		}
 	}
+}
+
+@media all and(max-width: 960px) {
 	.container-bars {
 		.unread-bar {
 			.unread-count {
