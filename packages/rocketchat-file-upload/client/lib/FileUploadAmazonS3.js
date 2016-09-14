@@ -5,6 +5,7 @@ FileUpload.AmazonS3 = class FileUploadAmazonS3 extends FileUploadBase {
 		super(meta, file);
 		this.uploader = new Slingshot.Upload('rocketchat-uploads', { rid: meta.rid });
 	}
+
 	start() {
 		this.uploader.send(this.file, (error, downloadUrl) => {
 			var file, item, uploading;
@@ -39,11 +40,13 @@ FileUpload.AmazonS3 = class FileUploadAmazonS3 extends FileUploadBase {
 				});
 			}
 		});
+
+		Tracker.autorun(() => {
+			this.onProgress(this.uploader.progress());
+		});
 	}
 
-	getProgress() {
-		return this.uploader.progress();
-	}
+	onProgress() {}
 
 	stop() {
 		if (this.uploader && this.uploader.xhr) {
