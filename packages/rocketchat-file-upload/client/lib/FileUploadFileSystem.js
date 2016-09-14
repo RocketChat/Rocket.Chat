@@ -9,11 +9,11 @@ FileSystemStore = new UploadFS.store.Local({
 });
 
 FileUpload.FileSystem = class FileUploadFileSystem extends FileUploadBase {
-	constructor(meta, file, data) {
-		super(meta, file, data);
+	constructor(meta, file) {
+		super(meta, file);
 		this.handler = new UploadFS.Uploader({
 			store: FileSystemStore,
-			data: data,
+			data: file,
 			file: meta,
 			onError: (err) => {
 				var uploading = Session.get('uploading');
