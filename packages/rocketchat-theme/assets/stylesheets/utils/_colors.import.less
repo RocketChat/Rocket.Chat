@@ -804,12 +804,14 @@ a.github-fork {
 
 .message {
 	&.new-day {
-		&:before {
-			color: @secondary-font-color;
+		.day-divider {
 			background-color: @content-background-color;
-		}
-		&:after {
-			border-top-color: #ddd;
+			span {
+				background-color: @content-background-color;
+			}
+			&:before {
+				border-bottom-color: @tertiary-background-color;
+			}
 		}
 	}
 	.user {
@@ -903,11 +905,14 @@ a.github-fork {
 	}
 	.message {
 		&.new-day {
-			&:before {
+			.day-divider {
 				background-color: @secondary-background-color;
-			}
-			&:after {
-				border-top-color: @tertiary-background-color;
+				span {
+					background-color: @secondary-background-color;
+				}
+				&:before {
+					border-bottom-color: @tertiary-background-color;
+				}
 			}
 		}
 	}
