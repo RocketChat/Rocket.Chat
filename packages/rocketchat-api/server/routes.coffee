@@ -527,20 +527,3 @@ RocketChat.API.v1.addRoute 'admin.updateRoom', authRequired: true,
 			console.log '[routes.coffee] api/v1/admin.updateRoom Error: ', e.message, e.stack
 			return RocketChat.API.v1.failure e.name + ': ' + e.message
 			
-			
-RocketChat.API.v1.addRoute 'admin.listRoomInfo/:rid ', authRequired: true,
-	get: ->
-	
-		if RocketChat.authz.hasRole(@userId, 'admin') is false
-			return RocketChat.API.v1.unauthorized()
-		try
-			this.response.setTimeout (1000)	
-			rooms = RocketChat.models.Rooms.findOneById @urlParams.rid
-			if !rooms
-				rooms = RocketChat.models.Rooms.findOneByName @urlParams.rid
-			return RocketChat.API.v1.success
-				body: [rooms: rooms]
-		catch e
-			console.log '[routes.coffee] api/v1/admin.listRoomInfo Error: ', e.message, e.stack
-			return RocketChat.API.v1.failure e.name + ': ' + e.message
-			
