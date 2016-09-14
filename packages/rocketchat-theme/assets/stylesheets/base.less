@@ -2449,30 +2449,36 @@ label.required:after {
 	&:hover {
 		background-color: @message-hover-background-color;
 	}
-	&.new-day {
-		margin-top: 60px;
-		&:before {
-			content: attr(data-date);
-			display: block;
-			position: absolute;
-			top: -30px;
-			left: 0;
-			font-size: 12px;
-			font-weight: 600;
-			text-align: center;
-			.calc(left, ~"50% - 70px");
-			z-index: 10;
-			padding: 0 10px;
-			min-width: 140px;
+	.day-divider {
+		height: 50px;
+		display: none;
+		text-align: center;
+		left: 0;
+		position: absolute;
+		top: 0px;
+		right: 0;
+		align-items: center;
+		justify-content: center;
+		span {
+			padding: 0 8px;
+			z-index: 1;
+			border-radius: 4px;
 		}
-		&:after {
+		&:before {
+			position: absolute;
 			content: " ";
 			display: block;
-			position: absolute;
-			top: -20px;
+			border-bottom-width: 1px;
+			border-bottom-style: solid;
+			top: 25px;
 			left: 0;
-			border-top: 1px solid;
-			width: 100%;
+			right: 0;
+		}
+	}
+	&.new-day {
+		padding-top: 60px;
+		.day-divider {
+			display: flex;
 		}
 	}
 	.message-action {
