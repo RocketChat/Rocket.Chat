@@ -1,8 +1,8 @@
 /* globals FileUpload, FileUploadBase, Slingshot */
 
 FileUpload.AmazonS3 = class FileUploadAmazonS3 extends FileUploadBase {
-	constructor(meta, file, data) {
-		super(meta, file, data);
+	constructor(meta, file) {
+		super(meta, file);
 		this.uploader = new Slingshot.Upload('rocketchat-uploads', { rid: meta.rid });
 	}
 	start() {
