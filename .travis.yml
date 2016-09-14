@@ -48,6 +48,7 @@ deploy:
 after_deploy:
   - ".travis/docker.sh"
   - ".travis/update-releases.sh"
+  - ".travis/snap.sh"
 env:
   global:
     - CXX=g++-4.8

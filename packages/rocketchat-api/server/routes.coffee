@@ -179,6 +179,37 @@ RocketChat.API.v1.addRoute 'users.create', authRequired: true,
 			return RocketChat.API.v1.failure e.name + ': ' + e.message
 
 
+# Update user
+RocketChat.API.v1.addRoute 'user.update', authRequired: true,
+	post: ->
+		try
+			check @bodyParams,
+				userId: String
+				data:
+					email: Match.Maybe(String)
+					name: Match.Maybe(String)
+					password: Match.Maybe(String)
+					username: Match.Maybe(String)
+					role: Match.Maybe(String)
+					joinDefaultChannels: Match.Maybe(Boolean)
+					requirePasswordChange: Match.Maybe(Boolean)
+					sendWelcomeEmail: Match.Maybe(Boolean)
+					verified: Match.Maybe(Boolean)
+					customFields: Match.Maybe(Object)
+
+			userData = _.extend({ _id: @bodyParams.userId }, @bodyParams.data)
+
+			RocketChat.saveUser(@userId, userData)
+
+			if @bodyParams.data.customFields?
+				RocketChat.saveCustomFields(@bodyParams.userId, @bodyParams.data.customFields)
+
+			return RocketChat.API.v1.success
+				user: RocketChat.models.Users.findOneById(@bodyParams.userId)
+		catch e
+			return RocketChat.API.v1.failure e.name + ': ' + e.message
+
+
 # Get User Information
 RocketChat.API.v1.addRoute 'user.info', authRequired: true,
 	post: ->
@@ -452,55 +483,3 @@ RocketChat.API.v1.addRoute 'directMessage.list', authRequired: true,
 		catch e
 			return RocketChat.API.v1.failure e.name + ': ' + e.message
 	
-
-# udpate existing user accounts
-RocketChat.API.v1.addRoute 'admin.updateUser', authRequired: true,
-	post: ->
-	
-		if RocketChat.authz.hasRole(@userId, 'admin') is false
-			return RocketChat.API.v1.unauthorized()
-		
-		try
-			console.log '[routes.coffee] api/v1/admin.updateUser -> request ', JSON.stringify _.omit @bodyParams, ['password']
-			if !_.isObject @bodyParams
-				return RocketChat.API.v1.failure 'Request body not encoded as valid JSON'
-
-			uid = @bodyParams._id or @bodyParams.id or @bodyParams.uid
-			if uid
-				udata = RocketChat.models.Users.findOneById @bodyParams._id or @bodyParams.id or @bodyParams.uid
-			else udata = RocketChat.models.Users.findOneByUsername @bodyParams.username
-
-			if !udata
-				return RocketChat.API.v1.failure 'Unable to retrieve the requested user. ID: '+uid+". Username: "+@bodyParams.username
-
-			udata = _.extend udata, _.pick @bodyParams, [
-				'name'
-				'username'
-				'email'
-				'password'
-				'requiredPasswordChange'
-				'joinDefaultChannels'
-				'verified'
-				'sendWelcomeEmail'
-			]
-				
-			Meteor.runAsUser this.userId, () =>
-				Meteor.call 'insertOrUpdateUser', _.pick udata, [
-					'_id'
-					'name'
-					'username'
-					'email'
-					'password'
-					'requiredPasswordChange'
-					'joinDefaultChannels'
-					'verified'
-					'sendWelcomeEmail'
-				]
-			return RocketChat.API.v1.success
-				user: RocketChat.models.Users.findOneByUsername udata.username
-				 
-		catch e
-			console.log '[routes.coffee] api/v1/admin.addUpdateUser Error: ', e.message, e.stack
-			return RocketChat.API.v1.failure e.name + ': ' + e.message
-			
-		
