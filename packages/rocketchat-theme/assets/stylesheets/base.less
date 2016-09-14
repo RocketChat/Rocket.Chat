@@ -2001,23 +2001,36 @@ label.required:after {
 
 .container-bars {
 	position: absolute;
-	top: 60px;
-	width: 100%;
-	z-index: 11;
+	top: 55px;
+	z-index: 100;
 	font-weight: bold;
 	display: flex;
 	flex-direction: column;
-	> div {
-		line-height: 24px;
-		padding: 0 10px;
-		border-top: 1px solid;
-		&:last-child {
-			box-shadow: 0px 1px 2px rgba(0, 0, 0, .2);
-		}
+	border-radius: 4px;
+	overflow: hidden;
+	font-size: 1em;
+	left: 10px;
+	right: 10px;
+	box-shadow: 0px 1px 1px 0 rgba(0,0,0,0.2), 0 2px 10px 0 rgba(0,0,0,.16);
+
+	.transition(transform 0.4s ease, visibility 0.3s ease, opacity 0.3s ease);
+	.transform(translateY(-10px));
+
+	opacity: 0;
+	visibility: hidden;
+
+	&.show {
+		opacity: 1;
+		visibility: visible;
+		.transform(translateY(0px));
 	}
-	font-size: 12px;
+
+	> div {
+		line-height: 28px;
+		padding: 0 10px;
+	}
 	.upload-progress {
-		height: 24px;
+		height: 28px;
 		position: relative;
 		.upload-progress-progress {
 			position: absolute;
@@ -2039,6 +2052,11 @@ label.required:after {
 				text-transform: uppercase;
 				cursor: pointer;
 			}
+		}
+		button {
+			float: right;
+			font-weight: bold;
+			text-transform: uppercase;
 		}
 	}
 	.unread-bar {
@@ -2448,30 +2466,38 @@ label.required:after {
 	&:hover {
 		background-color: @message-hover-background-color;
 	}
-	&.new-day {
-		margin-top: 60px;
-		&:before {
-			content: attr(data-date);
-			display: block;
-			position: absolute;
-			top: -30px;
-			left: 0;
+	.day-divider {
+		height: 50px;
+		display: none;
+		text-align: center;
+		left: 0;
+		position: absolute;
+		top: 0px;
+		right: 0;
+		align-items: center;
+		justify-content: center;
+		span {
+			padding: 0 8px;
+			z-index: 1;
+			border-radius: 4px;
 			font-size: 12px;
 			font-weight: 600;
-			text-align: center;
-			.calc(left, ~"50% - 70px");
-			z-index: 10;
-			padding: 0 10px;
-			min-width: 140px;
 		}
-		&:after {
+		&:before {
+			position: absolute;
 			content: " ";
 			display: block;
-			position: absolute;
-			top: -20px;
+			border-bottom-width: 1px;
+			border-bottom-style: solid;
+			top: 25px;
 			left: 0;
-			border-top: 1px solid;
-			width: 100%;
+			right: 0;
+		}
+	}
+	&.new-day {
+		padding-top: 60px;
+		.day-divider {
+			display: flex;
 		}
 	}
 	.message-action {
@@ -2748,6 +2774,15 @@ body:not(.is-cordova) {
 .cozy {
 	.message {
 		padding: 4px 20px 4px 70px;
+		&.new-day {
+			padding-top: 45px;
+			.day-divider {
+				height: 40px;
+				&:before {
+					top: 20px;
+				}
+			}
+		}
 		.body {
 			margin-top: 0;
 		}
@@ -2758,6 +2793,15 @@ body:not(.is-cordova) {
 	.message {
 		min-height: 26px;
 		padding: 5px 15px 0 37px;
+		&.new-day {
+			padding-top: 31px;
+			.day-divider {
+				height: 26px;
+				&:before {
+					top: 13px;
+				}
+			}
+		}
 		.body {
 			display: inline;
 			.inline-image img {
@@ -4099,7 +4143,7 @@ body:not(.is-cordova) {
 		display: flex;
 		align-items: center;
 		justify-content: center;
-		margin: 0 51px 0 12px;
+		margin: 0 40px 0 0;
 		> div {
 			padding: 40px;
 			border-radius: 10px;
@@ -4112,7 +4156,7 @@ body:not(.is-cordova) {
 
 @media (min-width: 780px) {
 	.dropzone.over .dropzone-overlay {
-		margin: 0 51px 0 270px;
+		margin: 0 40px 0 260px;
 	}
 }
 
@@ -4495,6 +4539,9 @@ body:not(.is-cordova) {
 			left: 0;
 		}
 	}
+}
+
+@media all and(max-width: 960px) {
 	.container-bars {
 		.unread-bar {
 			.unread-count {
