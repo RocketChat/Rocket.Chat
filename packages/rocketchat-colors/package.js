@@ -7,7 +7,6 @@ Package.describe({
 
 Package.onUse(function(api) {
 	api.use([
-		'coffeescript',
 		'rocketchat:lib'
 	]);
 	api.addFiles('client.js', ['client']);
