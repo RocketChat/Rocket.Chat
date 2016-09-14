@@ -210,7 +210,7 @@ RocketChat.models.Subscriptions = new class extends RocketChat.models._Base
 
 		update =
 			$set:
-				'fname': name
+				fname: name
 
 		return @update query, update, { multi: true }
 
