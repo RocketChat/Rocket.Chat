@@ -385,43 +385,33 @@ RocketChat.API.v1.addRoute 'roomIntegrations.list', authRequired: true,
 user must also have manage-integrations role
 creating a push point for messages to be push to from Rocket Chat.
 ###		
-RocketChat.API.v1.addRoute 'outgoingWebhook', authRequired: true,
+RocketChat.API.v1.addRoute 'integrations.outgoingWebhook.create', authRequired: true,
 	post: ->
 	
 		if RocketChat.authz.hasPermission(@userId, 'manage-integrations') is false
 			return RocketChat.API.v1.unauthorized()
-	
-		if not @bodyParams.name?
-			return RocketChat.API.v1.failure 'Body param "name" is required'
-			
-		if not @bodyParams.userid?
-			return RocketChat.API.v1.failure 'Body param "userid" is required'
-			
-		if not @bodyParams.authToken?
-			return RocketChat.API.v1.failure 'Body param "authToken" is required'
-			
-		if not @bodyParams.channel?
-			return RocketChat.API.v1.failure 'Body param "channel" is required'
-				
-		if not @bodyParams.roomName?
-			return RocketChat.API.v1.failure 'Body param "roomName" is required'
-					
-		if not @bodyParams.enabled?
-			return RocketChat.API.v1.failure 'Body param "enabled" is required'
-				
-		if not @bodyParams.urls?
-			return RocketChat.API.v1.failure 'Body param "urls" is required'
+		console.log 'Web integration data: ', @bodyParams
 					
 		try
+			check @bodyParams,				
+				name: String
+				enabled: Boolean
+				username: String
+				urls: Array
+				channel: Match.Maybe(String)
+				alias: Match.Maybe(String)
+				avatar: Match.Maybe(String)
+				emoji: Match.Maybe(String)
+				token: Match.Maybe(String)
+				scriptEnabled: Boolean
+				script: Match.Maybe(String)
+
 			this.response.setTimeout (1000 * @bodyParams.name.length)
-			integration ={ userid:@bodyParams.userid, auth:@bodyParams.authToken, name:@bodyParams.name, enabled:@bodyParams.enabled, name:@bodyParams.roomName, channel:@bodyParams.channel,
-			triggerWords:@bodyParams.triggerWords, urls:@bodyParams.urls, username:@bodyParams.username, alias:@bodyParams.alias, avatar:@bodyParams.avatar, emoji:@bodyParams.emoji, token:@bodyParams.token, 
-			scriptEnable:@bodyParams.scriptEnabled, script:@bodyParams.script }
 				
 			Meteor.runAsUser this.userId, () =>
-				Meteor.call 'addOutgoingIntegration', integration
+				Meteor.call 'addOutgoingIntegration', @bodyParams
 			return RocketChat.API.v1.success
-				body:[list:integration]
+				integration: RocketChat.models.Integrations.findOne({ 'name': @bodyParams.name })
 		catch e
 			return RocketChat.API.v1.failure e.name + ': ' + e.message
 		
