@@ -2001,17 +2001,30 @@ label.required:after {
 
 .container-bars {
 	position: absolute;
-	top: 61px;
-	z-index: 11;
+	top: 55px;
+	z-index: 100;
 	font-weight: bold;
 	display: flex;
 	flex-direction: column;
-	border-radius: 0 0 10px 10px;
+	border-radius: 4px;
 	overflow: hidden;
 	font-size: 1em;
-	left: 5px;
-	right: 5px;
+	left: 10px;
+	right: 10px;
 	box-shadow: 0px 1px 1px 0 rgba(0,0,0,0.2), 0 2px 10px 0 rgba(0,0,0,.16);
+
+	.transition(transform 0.4s ease, visibility 0.3s ease, opacity 0.3s ease);
+	.transform(translateY(-10px));
+
+	opacity: 0;
+	visibility: hidden;
+
+	&.show {
+		opacity: 1;
+		visibility: visible;
+		.transform(translateY(0px));
+	}
+
 	> div {
 		line-height: 28px;
 		padding: 0 10px;
@@ -4106,7 +4119,7 @@ body:not(.is-cordova) {
 		display: flex;
 		align-items: center;
 		justify-content: center;
-		margin: 0 51px 0 12px;
+		margin: 0 40px 0 0;
 		> div {
 			padding: 40px;
 			border-radius: 10px;
@@ -4119,7 +4132,7 @@ body:not(.is-cordova) {
 
 @media (min-width: 780px) {
 	.dropzone.over .dropzone-overlay {
-		margin: 0 51px 0 270px;
+		margin: 0 40px 0 260px;
 	}
 }
 
