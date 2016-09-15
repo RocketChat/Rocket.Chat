@@ -103,7 +103,7 @@ Template.phone.events
 		number = instance.phoneDisplay.get()
 		RocketChat.Phone.transfer(number)
 
-	'click .button.fullscreen': (e, instance) ->
+	'click #phone-fullscreen': (e, instance) ->
 		i = document.getElementById("phonestream")
 		if i.requestFullscreen
 			i.requestFullscreen()
