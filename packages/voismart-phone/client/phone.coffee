@@ -295,7 +295,7 @@ RocketChat.Phone = new class
 				if d.direction.name == 'outbound'
 					putNotification(msg, d.params.destination_number)
 				else
-					cid = d.params.caller_id_number + ' ' + d.params.caller_id_name
+					cid = d.params.caller_id_name + ' ' + d.params.caller_id_number
 					putNotification(msg, cid)
 				RocketChat.TabBar.updateButton('phone', { class: 'red' })
 
