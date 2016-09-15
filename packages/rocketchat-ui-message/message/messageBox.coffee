@@ -31,7 +31,19 @@ Template.messageBox.helpers
 	subscribed: ->
 		return RocketChat.roomTypes.verifyCanSendMessage @_id
 	allowedToSend: ->
-		return !RocketChat.roomTypes.readOnly @_id, Meteor.user()
+		if RocketChat.roomTypes.readOnly @_id, Meteor.user()
+			return false
+
+		if RocketChat.roomTypes.archived @_id
+			return false
+
+		roomData = Session.get('roomData' + this._id)
+		if roomData?.t is 'd'
+			if ChatSubscription.findOne({ rid: this._id }, { fields: { archived: 1 } })?.archived
+				return false
+
+		return true
+
 	getPopupConfig: ->
 		template = Template.instance()
 		return {
