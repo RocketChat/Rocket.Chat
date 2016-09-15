@@ -1,14 +1,16 @@
 Meteor.methods({
 	messageSearch: function (text, rid, limit) {
-		var from, mention, options, query, r, result;
+		var from, mention, options, query, r, result, currentUserName, currentUserId;
 		check(text, String);
 		check(rid, String);
 		check(limit, Match.Optional(Number));
-		if (!Meteor.userId()) {
+		currentUserId = Meteor.userId();
+		if (!currentUserId) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', {
 				method: 'messageSearch'
 			});
 		}
+		currentUserName = Meteor.user().username;
 
 		/*
 		 text = 'from:rodrigo mention:gabriel chat'
@@ -29,6 +31,9 @@ Meteor.methods({
 		// Query for senders
 		from = [];
 		text = text.replace(/from:([a-z0-9.-_]+)/ig, function (match, username) {
+			if (username === 'me' && !from.includes(currentUserName)) {
+				username = currentUserName;
+			}
 			from.push(username);
 			return '';
 		});
@@ -50,11 +55,23 @@ Meteor.methods({
 				$options: 'i'
 			};
 		}
-
-		//Query for filtering on a specific day
-		// matches dd-MM-yyyy, dd/MM/yyyy, dd-MM-yyyy, prefixed by on:
-		// Example: on:15/09/2016
-
+		// Filter on messages that are starred by the current user.
+		text = text.replace(/has:star/g, filterStarred);
+		// Filter on messages that have an url.
+		text = text.replace(/has:url|has:link/g, filterUrl);
+		// Filter on pinned messages.
+		text = text.replace(/is:pinned|has:pin/g, filterPinned);
+		// Filter on messages which have a location attached.
+		text = text.replace(/has:location|has:map/g, filterLocation);
+		// Filtering before/after/on a date
+		// matches dd-MM-yyyy, dd/MM/yyyy, dd-MM-yyyy, prefixed by before:, after: and on: respectively.
+		// Example: before:15/09/2016 after: 10-08-2016
+		// if "on:" is set, "before:" and "after:" are ignored.
+		text = text.replace(/before:(\d{1,2})[\/\.-](\d{1,2})[\/\.-](\d{4})/g, filterBeforeDate);
+		text = text.replace(/after:(\d{1,2})[\/\.-](\d{1,2})[\/\.-](\d{4})/g, filterAfterDate);
+		text = text.replace(/on:(\d{1,2})[\/\.-](\d{1,2})[\/\.-](\d{4})/g, filterOnDate);
+		// Sort order
+		text = text.replace(/(?:order|sort):(asc|ascend|ascending|desc|descend|descening)/g, sortByTimestamp);
 
 		// Query in message text
 		text = text.trim().replace(/\s\s/g, ' ');
@@ -91,7 +108,7 @@ Meteor.methods({
 			if (rid != null) {
 				query.rid = rid;
 				try {
-					if (Meteor.call('canAccessRoom', rid, this.userId) !== false) {
+					if (Meteor.call('canAccessRoom', rid, currentUserId) !== false) {
 						if (!RocketChat.settings.get('Message_ShowEditedStatus')) {
 							options.fields = {
 								'editedAt': 0
@@ -104,5 +121,74 @@ Meteor.methods({
 			}
 		}
 		return result;
+
+		function filterStarred() {
+			query['starred._id'] = currentUserId;
+			return '';
+		}
+
+		function filterUrl() {
+			query['urls.0'] = {
+				$exists: true
+			};
+			return '';
+		}
+
+		function filterPinned() {
+			query.pinned = true;
+			return '';
+		}
+
+		function filterLocation() {
+			query.location = {
+				$exist: true
+			};
+			return '';
+		}
+
+		function filterBeforeDate(_, day, month, year) {
+			month--;
+			var beforeDate = new Date(year, month, day);
+			query.ts = {
+				$lte: beforeDate
+			};
+			return '';
+		}
+
+		function filterAfterDate(_, day, month, year) {
+			month--;
+			day++;
+			var afterDate = new Date(year, month, day);
+			if (query.ts) {
+				query.ts.$gte = afterDate
+			} else {
+				query.ts = {
+					$gte: afterDate
+				};
+			}
+			return '';
+		}
+
+		function filterOnDate(_, day, month, year) {
+			month--;
+			var date, dayAfter;
+			date = moment(new Date(year, month, day));
+			dayAfter = moment(date).add(1, 'day');
+			delete query.ts;
+			query.ts = {
+				$gte: date.toDate(),
+				$lt: dayAfter.toDate()
+			};
+			return '';
+		}
+
+		function sortByTimestamp(_, direction) {
+			if (direction.startsWith('asc')) {
+				options.sort.ts = 1;
+			} else if (direction.startsWith('desc')) {
+				options.sort.ts = -1;
+			}
+			return '';
+		}
 	}
 });
