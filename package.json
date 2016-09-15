@@ -44,7 +44,9 @@
   "scripts": {
     "start": "meteor run",
     "lint": "eslint .",
-    "deploy": "npm run build && pm2 startOrRestart pm2.json"
+    "deploy": "npm run build && pm2 startOrRestart pm2.json",
+    "chimp-watch": "chimp --ddp=http://localhost:3000 --watch --mocha --path=tests",
+    "chimp-test": "chimp --mocha --path=tests --mochaSlow=0"
   },
   "license": "MIT",
   "repository": {
