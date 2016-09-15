@@ -126,39 +126,36 @@ Template.phone.helpers
 		return Template.instance().showSettings.get()
 
 	callIsActive: ->
-		if Template.instance().callState.get() == 'active'
+		if RocketChat.Phone.getCallState() == 'active'
 			return true
 
 	callIsRinging: ->
-		if Template.instance().callState.get() == 'ringing'
+		if RocketChat.Phone.getCallState() == 'ringing'
 			return true
 
 	callIsIdle: ->
-		if Template.instance().callState.get()
+		if RocketChat.Phone.getCallState()
 			return false
 		return true
 
 	callState: ->
-		return Template.instance().callState.get()
+		return RocketChat.Phone.getCallState()
 
 	callContact: ->
-		return Template.instance().callContact.get()
+		return RocketChat.Phone.getCallContact()
 
 	callOperation: ->
-		return Template.instance().callOperation.get()
+		return RocketChat.Phone.getCallOperation()
 
 	displayCallStatus: ->
-		if Template.instance().callState.get() and Template.instance().callContact.get()
+		if RocketChat.Phone.getCallState() and RocketChat.Phone.getCallContact()
 			return true
 		return false
 
 
 Template.phone.onCreated ->
-	@callState = new ReactiveVar null
 	@showSettings = new ReactiveVar false
 	@phoneDisplay = new ReactiveVar ""
-	@callContact = new ReactiveVar ""
-	@callOperation = new ReactiveVar ""
 
 
 Template.phone.onDestroyed ->
@@ -166,7 +163,6 @@ Template.phone.onDestroyed ->
 		console.log("Moving video tag out from containter")
 
 	RocketChat.Phone.removeVideo()
-	RocketChat.Phone.setTemplate(null)
 
 
 Template.phone.onRendered ->
@@ -175,12 +171,13 @@ Template.phone.onRendered ->
 			console.log("Moving video tag to its containter")
 		Session.get('openedRoom')
 		FlowRouter.watchPathChange()
-		RocketChat.Phone.setTemplate(Template.instance())
 		RocketChat.Phone.placeVideo()
 
 
 RocketChat.Phone = new class
-	_template = undefined
+	callState = new ReactiveVar null
+	callContact = new ReactiveVar ""
+	callOperation = new ReactiveVar ""
 
 	_started = false
 	_login = undefined
@@ -241,11 +238,7 @@ RocketChat.Phone = new class
 
 	setCallState = (state) ->
 		_callState = state
-		if _template
-			_template.callState.set(state)
-		else
-			RocketChat.TabBar.setTemplate "phone", ->
-				_template.callState.set(state)
+		callState.set(state)
 
 	onDialogState = (d) ->
 		if window.rocketDebug
@@ -332,12 +325,12 @@ RocketChat.Phone = new class
 				delete _dialogs[d.callID]
 
 	clearNotification = ->
-		_template.callContact.set('')
-		_template.callOperation.set('')
+		callContact.set('')
+		callOperation.set('')
 
 	putNotification = (msg, cid) ->
-		_template.callContact.set(cid)
-		_template.callOperation.set(msg)
+		callContact.set(cid)
+		callOperation.set(msg)
 
 	refreshVideoResolution = (resolutions) ->
 		_curResolutions = resolutions.validRes
@@ -407,22 +400,21 @@ RocketChat.Phone = new class
 		if _videoDevice
 			$.FSRTC.getValidRes(_videoDevice, refreshVideoResolution)
 
+	getCallState: ->
+		return callState.get()
+
+	getCallOperation: ->
+		return callOperation.get()
+
+	getCallContact: ->
+		return callContact.get()
+
 	removeVideo: ->
 		_videoTag.appendTo($("body"))
 		_videoTag.css('display', 'none')
 		_videoTag.css('visibility', 'hidden')
 		if _curCall and _callState is 'active'
 			_videoTag[0].play()
-
-	setTemplate: (t) ->
-		if _template and t
-			return
-
-		if window.rocketDebug
-			console.log("Setting template ", t)
-			console.log("Was template ", _template)
-
-		_template = t
 
 	placeVideo: ->
 		_videoTag.appendTo($("#phone-video"))
