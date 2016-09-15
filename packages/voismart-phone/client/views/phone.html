@@ -31,19 +31,27 @@
 			</div>
 		</div>
 		{{/if}}
-		<div class="phone-display-container">
-			<input type="text" class="phone-display" id="phone-display" autocomplete="off" value={{phoneDisplay}}>
+		<div class="phone-operations-container">
+			<div class="phone-display-container">
+				<input type="text" class="phone-display" id="phone-display" autocomplete="off" value={{phoneDisplay}}>
+			</div>
 			{{#if callIsActive}}
+			<div class="call-buttons-container">
                 <button class='button red-hook red-hook-big' id="phone-hangup"><i class="icon-phone"></i></button>
+			</div>
 			{{/if}}
 			{{#if callIsRinging}}
+			<div class="call-buttons-container">
 				<button class='button green-hook' id="phone-dial"><i class="icon-phone"></i></button>
 				<button class='button green-hook' id="phone-video-dial"><i class="icon-videocam"></i></button>
                 <button class='button red-hook' id="phone-hangup"><i class="icon-phone"></i></button>
+			</div>
 			{{/if}}
 			{{#if callIsIdle}}
+			<div class="call-buttons-container">
 				<button class='button green-hook' id="phone-dial"><i class="icon-phone"></i></button>
 				<button class='button green-hook' id="phone-video-dial"><i class="icon-videocam"></i></button>
+			</div>
 			{{/if}}
 		</div>
         <nav>
