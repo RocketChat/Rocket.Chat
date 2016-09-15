@@ -166,6 +166,7 @@ Template.phone.onDestroyed ->
 		console.log("Moving video tag out from containter")
 
 	RocketChat.Phone.removeVideo()
+	RocketChat.Phone.setTemplate(null)
 
 
 Template.phone.onRendered ->
@@ -414,6 +415,13 @@ RocketChat.Phone = new class
 			_videoTag[0].play()
 
 	setTemplate: (t) ->
+		if _template and t
+			return
+
+		if window.rocketDebug
+			console.log("Setting template ", t)
+			console.log("Was template ", _template)
+
 		_template = t
 
 	placeVideo: ->
