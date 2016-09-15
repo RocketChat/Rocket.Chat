@@ -17,25 +17,11 @@ parts:
         plugin: nodejs
         node-engine: 4.5.0
         node-packages:
-            - amdefine
-            - ansi-regex
-            - ansi-styles
-            - asap
-            - chalk
-            - eachline
-            - escape-string-regexp
-            - has-ansi
             - promise
             - fibers
             - underscore
-            - strip-ansi
-            - source-map
             - source-map-support
             - semver
-            - supports-color
-            - type-of
-            - babel-compiler
-            - meteor-promise
         build-packages:
             # For fibers
             - python
@@ -47,12 +33,20 @@ parts:
         plugin: dump
         after: [mongodb]
         source: https://rocket.chat/releases/latest/download
+        stage-packages:
+            - imagemagick
+        organize:
+            usr/bin/convert-im6: usr/bin/convert
         stage:
             - programs
             - main.js
+            - usr
+            - lib
         snap:
             - programs
             - main.js
+            - usr
+            - lib
     mongodb:
         source: https://fastdl.mongodb.org/linux/mongodb-linux-x86_64-ubuntu1604-3.2.7.tgz
         plugin: dump
