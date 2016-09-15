@@ -1,5 +1,5 @@
 Meteor.methods({
-	messageSearch: function (text, rid, limit) {
+	messageSearch: function(text, rid, limit) {
 		var from, mention, options, query, r, result, currentUserName, currentUserId;
 		check(text, String);
 		check(rid, String);
@@ -30,7 +30,7 @@ Meteor.methods({
 
 		// Query for senders
 		from = [];
-		text = text.replace(/from:([a-z0-9.-_]+)/ig, function (match, username) {
+		text = text.replace(/from:([a-z0-9.-_]+)/ig, function(match, username) {
 			if (username === 'me' && !from.includes(currentUserName)) {
 				username = currentUserName;
 			}
@@ -45,7 +45,7 @@ Meteor.methods({
 		}
 		// Query for senders
 		mention = [];
-		text = text.replace(/mention:([a-z0-9.-_]+)/ig, function (match, username) {
+		text = text.replace(/mention:([a-z0-9.-_]+)/ig, function(match, username) {
 			mention.push(username);
 			return '';
 		});
@@ -93,7 +93,7 @@ Meteor.methods({
 				};
 				options.fields = {
 					score: {
-						$meta: "textScore"
+						$meta: 'textScore'
 					}
 				};
 			}
@@ -107,20 +107,16 @@ Meteor.methods({
 			};
 			if (rid != null) {
 				query.rid = rid;
-				try {
-					if (Meteor.call('canAccessRoom', rid, currentUserId) !== false) {
-						if (!RocketChat.settings.get('Message_ShowEditedStatus')) {
-							options.fields = {
-								'editedAt': 0
-							};
-						}
-						result.messages = RocketChat.models.Messages.find(query, options).fetch();
+				if (Meteor.call('canAccessRoom', rid, currentUserId) !== false) {
+					if (!RocketChat.settings.get('Message_ShowEditedStatus')) {
+						options.fields = {
+							'editedAt': 0
+						};
 					}
-				} catch (_error) {
+					result.messages = RocketChat.models.Messages.find(query, options).fetch();
 				}
 			}
 		}
-		return result;
 
 		function filterStarred() {
 			query['starred._id'] = currentUserId;
@@ -160,7 +156,7 @@ Meteor.methods({
 			day++;
 			var afterDate = new Date(year, month, day);
 			if (query.ts) {
-				query.ts.$gte = afterDate
+				query.ts.$gte = afterDate;
 			} else {
 				query.ts = {
 					$gte: afterDate
@@ -190,5 +186,7 @@ Meteor.methods({
 			}
 			return '';
 		}
+
+		return result;
 	}
 });
