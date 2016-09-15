@@ -1,7 +1,7 @@
 rocketchat:
   image: rocketchat/rocket.chat:latest
-# volumes:
-#    - ./uploads:/app/uploads
+  volumes:
+    - ./uploads:/app/uploads
   environment:
     - PORT=3000
     - ROOT_URL=http://localhost:3000
@@ -14,9 +14,9 @@ rocketchat:
     - mongo:mongo
   ports:
     - 3000:3000
-#  labels:
-#    - "traefik.backend=rocketchat"
-#    - "traefik.frontend.rule=Host: your.domain.tld"
+  labels:
+    - "traefik.backend=rocketchat"
+    - "traefik.frontend.rule=Host: your.domain.tld"
 
 mongo:
   image: mongo:3.0
@@ -24,8 +24,8 @@ mongo:
    - ./data/db:/data/db
 #    - ./data/dump:/dump
   command: mongod --smallfiles --oplogSize 128 --replSet rs0
-#  labels:
-#    - "traefik.enable=false"
+  labels:
+    - "traefik.enable=false"
 
 mongo-init-replica:
   image: mongo:3.0
@@ -46,10 +46,10 @@ hubot:
     - EXTERNAL_SCRIPTS=hubot-help,hubot-seen,hubot-links,hubot-diagnostics
   links:
     - rocketchat:rocketchat
-#  labels:
-#    - "traefik.enable=false"
-#  volumes:
-#    - ./scripts:/home/hubot/scripts
+  labels:
+    - "traefik.enable=false"
+  volumes:
+    - ./scripts:/home/hubot/scripts
 # this is used to expose the hubot port for notifications on the host on port 3001, e.g. for hubot-jenkins-notifier
   ports:
     - 3001:8080
