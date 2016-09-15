@@ -239,8 +239,12 @@ RocketChat.Phone = new class
 			console.log('onWSClose', success)
 
 	setCallState = (state) ->
-		_template.callState.set(state)
 		_callState = state
+		if _template
+			_template.callState.set(state)
+		else
+			RocketChat.TabBar.setTemplate "phone", ->
+				_template.callState.set(state)
 
 	onDialogState = (d) ->
 		if window.rocketDebug
@@ -282,7 +286,7 @@ RocketChat.Phone = new class
 					putNotification(msg, cid)
 					notification =
 						title: TAPi18n.__ "Phone_Call"
-						text: TAPi18n.__("Incoming_call_from") + cid
+						text: TAPi18n.__("Incoming_call_from") + ' ' + cid
 						payload:
 							rid: Session.get('openedRoom')
 							sender: Meteor.user()
