@@ -10,7 +10,7 @@ Meteor.methods
 		regex = new RegExp s.trim(s.escapeRegExp(text)), "i"
 
 		if RocketChat.authz.hasPermission this.userId, 'view-d-room'
-			result.users = RocketChat.models.Users.findByUsername(regex, { limit: 5, fields: { username: 1, status: 1 }, sort: { username: 1 } }).fetch()
+			result.users = RocketChat.models.Users.findByActiveUsersUsernameExcept(text, [ username ], { limit: 5, fields: { username: 1, status: 1 }, sort: { username: 1 } }).fetch()
 
 		if RocketChat.authz.hasPermission this.userId, 'view-c-room'
 			result.rooms = RocketChat.models.Rooms.findByNameAndTypeNotContainingUsername(regex, 'c', username, { limit: 5, fields: { t: 1, name: 1 }, sort: { name: 1 } }).fetch()
