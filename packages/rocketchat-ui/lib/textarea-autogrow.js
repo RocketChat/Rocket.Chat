@@ -54,7 +54,7 @@
 				shadow.css('width', $self.width());
 				shadow.html(val + (noFlickerPad === 0 ? '...' : '')); // Append '...' to resize pre-emptively.
 
-				var newHeight = Math.max(shadow.height() + noFlickerPad, minHeight);
+				var newHeight = Math.max(shadow.height() + noFlickerPad + 1, minHeight);
 				if (settings.preGrowCallback !== null) {
 					newHeight = settings.preGrowCallback($self, shadow, newHeight, minHeight);
 				}
@@ -64,7 +64,7 @@
 				if (settings.postGrowCallback !== null) {
 					settings.postGrowCallback($self);
 				}
-			}
+			};
 
 			$self.change(update).keyup(update).keydown({
 				event: 'keydown'
