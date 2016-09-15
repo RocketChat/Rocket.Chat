@@ -1,5 +1,5 @@
 RocketChat.Migrations.add({
-	version: 61,
+	version: 62,
 	up: function() {
 		RocketChat.models.Users.find({}).forEach((user) => {
 			RocketChat.models.Messages.updateAllNamesByUserId(user._id, user.name);
