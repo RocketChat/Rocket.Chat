@@ -256,4 +256,38 @@ RocketChat.API.v1.addRoute 'groups.create', authRequired: true,
 
 		return RocketChat.API.v1.success
 			group: RocketChat.models.Rooms.findOne({_id: id.rid})
+			
+###
+can take these as args to update.
+['roomName', 'roomTopic', 'roomDescription', 'roomType', 'readOnly', 'systemMessages', 'default', 'joinCode']
+###		
+RocketChat.API.v1.addRoute 'room.update', authRequired: true, 
+	post: ->
+	
+		if RocketChat.authz.hasRole(@userId, 'admin') is false
+			return RocketChat.API.v1.unauthorized()
+		try
+			this.response.setTimeout (2000)
+			room = RocketChat.models.Rooms.findOneByName @bodyParams.roomName
+			Meteor.runAsUser this.userId, () =>
+			
+				if @bodyParams.newName
+					Meteor.call 'saveRoomSettings', room._id, 'roomName', @bodyParams.newName
+				if @bodyParams.roomTopic
+					Meteor.call 'saveRoomSettings', room._id, 'roomTopic', @bodyParams.roomTopic
+				if @bodyParams.roomDescription
+					Meteor.call 'saveRoomSettings', room._id, 'roomDescription', @bodyParams.roomDescription
+				if @bodyParams.roomType
+					Meteor.call 'saveRoomSettings', room._id, 'roomType', @bodyParams.roomType
+				if @bodyParams.readOnly
+					Meteor.call 'saveRoomSettings', room._id, 'readOnly', @bodyParams.readOnly
+				if @bodyParams.archived
+					Meteor.call 'saveRoomSettings', room._id, 'archived', @bodyParams.archived
+				if @bodyParams.joinCode
+					Meteor.call 'saveRoomSettings', room._id, 'joinCode', @bodyParams.joinCode
+				return RocketChat.API.v1.success
+					body: room:(updatedRoom = RocketChat.models.Rooms.findOneById room._id)
+		catch e
+			console.log '[routes.coffee] api/v1/admin.updateRoom Error: ', e.message, e.stack
+			return RocketChat.API.v1.failure e.name + ': ' + e.message
 
