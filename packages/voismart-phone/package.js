@@ -11,6 +11,8 @@ Package.onUse(function(api) {
 		'coffeescript',
 		'underscore',
 		'less@2.5.0',
+		'tracker',
+		'reactive-var',
 		'rocketchat:lib'
 	]);
 
