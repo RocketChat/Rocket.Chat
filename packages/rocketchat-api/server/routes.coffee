@@ -256,4 +256,26 @@ RocketChat.API.v1.addRoute 'groups.create', authRequired: true,
 
 		return RocketChat.API.v1.success
 			group: RocketChat.models.Rooms.findOne({_id: id.rid})
+			
+RocketChat.API.v1.addRoute 'room.info', authRequired: true,
+	post: ->
+	
+		if RocketChat.authz.hasRole(@userId, 'admin') is false
+			return RocketChat.API.v1.unauthorized()
+		try
+			this.response.setTimeout (1000)	
+			room = RocketChat.models.Rooms.findOneById @bodyParams.rid
+			if !room
+				room = RocketChat.models.Rooms.findOneByName @bodyParams.name
+				if !room
+					return RocketChat.API.v1.failure 'room identifier is invalid'
+					
+			return RocketChat.API.v1.success
+				room: room
+		
+		catch e
+			console.log '[routes.coffee] api/v1/admin.listRoomInfo Error: ', e.message, e.stack
+			return RocketChat.API.v1.failure e.name + ': ' + e.message
+			
+			
 
