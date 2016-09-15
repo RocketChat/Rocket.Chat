@@ -1383,6 +1383,10 @@ label.required:after {
 			&:hover {
 				text-decoration: none;
 			}
+
+			.archived {
+				font-style: italic;
+			}
 		}
 		.opt {
 			position: absolute;
@@ -2174,12 +2178,14 @@ label.required:after {
 			padding-bottom: 9px;
 			padding-left: 49px;
 			border-radius: 0;
-			overflow-y: hidden;
+			overflow-y: auto;
+			-webkit-overflow-scrolling: touch;
 			resize: none;
 			line-height: 16px;
 			border-top-width: 0;
 			border-bottom-width: 0;
 			border-left-width: 0;
+			max-height: 200px;
 		}
 		.stream-info {
 			float: left;
@@ -4201,6 +4207,16 @@ body:not(.is-cordova) {
 	}
 	.social-login {
 		margin-bottom: 10px;
+	}
+
+	.message-form textarea {
+		max-height: 100px !important;
+	}
+}
+
+@media all and(max-height: 260px) {
+	.message-form textarea {
+		max-height: 50px !important;
 	}
 }
 
