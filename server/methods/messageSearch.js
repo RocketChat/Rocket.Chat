@@ -12,6 +12,78 @@ Meteor.methods({
 		}
 		currentUserName = Meteor.user().username;
 
+		// I would place these methods at the bottom of the file for clarity but travis doesn't appreciate that.
+		// (no-use-before-define)
+
+		function filterStarred() {
+			query['starred._id'] = currentUserId;
+			return '';
+		}
+
+		function filterUrl() {
+			query['urls.0'] = {
+				$exists: true
+			};
+			return '';
+		}
+
+		function filterPinned() {
+			query.pinned = true;
+			return '';
+		}
+
+		function filterLocation() {
+			query.location = {
+				$exist: true
+			};
+			return '';
+		}
+
+		function filterBeforeDate(_, day, month, year) {
+			month--;
+			var beforeDate = new Date(year, month, day);
+			query.ts = {
+				$lte: beforeDate
+			};
+			return '';
+		}
+
+		function filterAfterDate(_, day, month, year) {
+			month--;
+			day++;
+			var afterDate = new Date(year, month, day);
+			if (query.ts) {
+				query.ts.$gte = afterDate;
+			} else {
+				query.ts = {
+					$gte: afterDate
+				};
+			}
+			return '';
+		}
+
+		function filterOnDate(_, day, month, year) {
+			month--;
+			var date, dayAfter;
+			date = moment(new Date(year, month, day));
+			dayAfter = moment(date).add(1, 'day');
+			delete query.ts;
+			query.ts = {
+				$gte: date.toDate(),
+				$lt: dayAfter.toDate()
+			};
+			return '';
+		}
+
+		function sortByTimestamp(_, direction) {
+			if (direction.startsWith('asc')) {
+				options.sort.ts = 1;
+			} else if (direction.startsWith('desc')) {
+				options.sort.ts = -1;
+			}
+			return '';
+		}
+
 		/*
 		 text = 'from:rodrigo mention:gabriel chat'
 		 */
@@ -116,75 +188,6 @@ Meteor.methods({
 					result.messages = RocketChat.models.Messages.find(query, options).fetch();
 				}
 			}
-		}
-
-		function filterStarred() {
-			query['starred._id'] = currentUserId;
-			return '';
-		}
-
-		function filterUrl() {
-			query['urls.0'] = {
-				$exists: true
-			};
-			return '';
-		}
-
-		function filterPinned() {
-			query.pinned = true;
-			return '';
-		}
-
-		function filterLocation() {
-			query.location = {
-				$exist: true
-			};
-			return '';
-		}
-
-		function filterBeforeDate(_, day, month, year) {
-			month--;
-			var beforeDate = new Date(year, month, day);
-			query.ts = {
-				$lte: beforeDate
-			};
-			return '';
-		}
-
-		function filterAfterDate(_, day, month, year) {
-			month--;
-			day++;
-			var afterDate = new Date(year, month, day);
-			if (query.ts) {
-				query.ts.$gte = afterDate;
-			} else {
-				query.ts = {
-					$gte: afterDate
-				};
-			}
-			return '';
-		}
-
-		function filterOnDate(_, day, month, year) {
-			month--;
-			var date, dayAfter;
-			date = moment(new Date(year, month, day));
-			dayAfter = moment(date).add(1, 'day');
-			delete query.ts;
-			query.ts = {
-				$gte: date.toDate(),
-				$lt: dayAfter.toDate()
-			};
-			return '';
-		}
-
-		function sortByTimestamp(_, direction) {
-			if (direction.startsWith('asc')) {
-				options.sort.ts = 1;
-			} else if (direction.startsWith('desc')) {
-				options.sort.ts = -1;
-			}
-			return '';
 		}
 
 		return result;
