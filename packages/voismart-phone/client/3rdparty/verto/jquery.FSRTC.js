@@ -556,18 +556,18 @@
 	var useVideo = obj.options.useVideo;
 
 	if (useVideo && obj.options.useCamera && obj.options.useCamera !== "none") {
-	    if (!video.optional) {
-		video.optional = [];
-	    }
+	    // if (!video.optional) {
+		// video.optional = [];
+	    // }
 
 	    if (obj.options.useCamera !== "any") {
-		video.optional.push({sourceId: obj.options.useCamera});
+		// video.optional.push({sourceId: obj.options.useCamera});
 		video.deviceId = obj.options.useCamera;
 	    }
 
 	    if (bestFrameRate) {
-		video.optional.push({minFrameRate: bestFrameRate});
-		video.optional.push({maxFrameRate: bestFrameRate});
+		// video.optional.push({minFrameRate: bestFrameRate});
+		// video.optional.push({maxFrameRate: bestFrameRate});
 		video.frameRate = {ideal: bestFrameRate, min: minFrameRate, max: 30};
 	    }
 
