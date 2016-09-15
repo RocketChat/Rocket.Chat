@@ -167,8 +167,8 @@ class HubotScripts
 				scriptFile = s.trim(scriptFile)
 
 				Npm.require('hubot-scripts/src/scripts/'+scriptFile)(robot)
-				# robot.loadFile __meteor_bootstrap__.serverDir+'/npm/rocketchat_internal-hubot/node_modules/hubot-scripts/src/scripts', scriptFile
-				robot.parseHelp __meteor_bootstrap__.serverDir+'/npm/rocketchat_internal-hubot/node_modules/hubot-scripts/src/scripts/'+scriptFile
+				# robot.loadFile __meteor_bootstrap__.serverDir+'/npm/node_modules/meteor/rocketchat_internal-hubot/node_modules/hubot-scripts/src/scripts', scriptFile
+				robot.parseHelp __meteor_bootstrap__.serverDir+'/npm/node_modules/meteor/rocketchat_internal-hubot/node_modules/hubot-scripts/src/scripts/'+scriptFile
 				console.log "Loaded #{scriptFile}".green
 			catch e
 				console.log "can't load #{scriptFile}".red
