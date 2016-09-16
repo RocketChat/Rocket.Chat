@@ -89,7 +89,7 @@ readAsArrayBuffer = (file, callback) ->
 
 				upload = fileUploadHandler record, file.file
 
-				upload.handler.onProgress = (file, progress) ->
+				upload.onProgress = (progress) ->
 					uploading = Session.get('uploading') or []
 
 					item = _.findWhere(uploading, {id: upload.id})
