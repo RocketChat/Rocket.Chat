@@ -33,15 +33,3 @@ window.addEventListener('message', (e) => {
 			break;
 	}
 });
-
-window.addEventListener('keydown', (e) => {
-	const target = e.target;
-	if (/input|textarea/i.test(target.tagName)) {
-		return;
-	}
-	const $inputMessage = $('textarea.input-message');
-	if (0 === $inputMessage.length) {
-		return;
-	}
-	$inputMessage.focus();
-});
