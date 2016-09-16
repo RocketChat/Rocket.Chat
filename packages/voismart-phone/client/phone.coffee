@@ -141,6 +141,13 @@ Template.phone.helpers
 	callState: ->
 		return RocketChat.Phone.getCallState()
 
+	callCidNameOrNum: ->
+		cidname = RocketChat.Phone.getCallCidName()
+		if cidname.trim() == ""
+			return RocketChat.Phone.getCallCidNum()
+		else
+			return cidname
+
 	callCidName: ->
 		return RocketChat.Phone.getCallCidName()
 
