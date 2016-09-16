@@ -35,7 +35,7 @@ Template.body.onRendered ->
 			e.preventDefault()
 			e.stopPropagation()
 
-			if FlowRouter.getQueryParam('mini')
+			if RocketChat.Layout.isEmbedded()
 				fireGlobalEvent('click-message-link', { link: link.pathname + link.search })
 				return window.open(link.pathname + link.search)
 
@@ -173,8 +173,8 @@ Template.main.helpers
 	CustomScriptLoggedIn: ->
 		RocketChat.settings.get 'Custom_Script_Logged_In'
 
-	miniVersion: ->
-		return 'mini-view' if FlowRouter.getQueryParam('mini')
+	embeddedVersion: ->
+		return 'embedded-view' if RocketChat.Layout.isEmbedded()
 
 
 Template.main.events
