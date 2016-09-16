@@ -3,6 +3,10 @@ Meteor.startup ->
 	if Meteor.isCordova
 		return
 
+	AudioContext = window.AudioContext || window.webkitAudioContext || window.mozAudioContext
+	if AudioContext
+		RocketChat.ToneGenerator = new PhoneTones(new AudioContext(), 0, 0)
+
 	Tracker.autorun ->
 		user  = Meteor.user()
 		if not user
@@ -216,8 +220,6 @@ RocketChat.Phone = new class
 	_curVideoW = null
 	_curVideoH = null
 
-	_toneGenerator = null
-
 	constructor: ->
 		if window.rocketDebug
 			console.log("Starting a new Phone Handler")
@@ -270,12 +272,12 @@ RocketChat.Phone = new class
 		if d.callID != _curCall.callID
 			switch d.state.name
 				when 'ringing'
-					_toneGenerator?.stopRingback()
+					RocketChat.ToneGenerator.stopRingback()
 					console.log("refusing call")
 					d.stopRinging()
 					d.hangup({cause: "USER_BUSY", causeCode: 17})
 				when 'hangup', 'destroy'
-					_toneGenerator?.stopRingback()
+					RocketChat.ToneGenerator.stopRingback()
 					delete _dialogs[d.callID]
 			return
 
@@ -286,12 +288,12 @@ RocketChat.Phone = new class
 			when 'trying'
 				setCallState('active')
 				RocketChat.TabBar.updateButton('phone', { class: 'phone-blinking' })
-				_toneGenerator?.startRingback()
+				RocketChat.ToneGenerator.startRingback()
 
 			when 'early'
 				setCallState('active')
 				RocketChat.TabBar.updateButton('phone', { class: 'phone-blinking' })
-				_toneGenerator?.stopRingback()
+				RocketChat.ToneGenerator.stopRingback()
 
 			when 'ringing'
 				setCallState('ringing')
@@ -313,7 +315,7 @@ RocketChat.Phone = new class
 
 			when 'active'
 				setCallState('active')
-				_toneGenerator?.stopRingback()
+				RocketChat.ToneGenerator.stopRingback()
 				msg = TAPi18n.__("In_call_with")
 				if d.direction.name == 'outbound'
 					putNotification(msg, d.params.destination_number)
@@ -338,7 +340,7 @@ RocketChat.Phone = new class
 					toastr.error(msg + ": " + RocketChat.Phone.remap_hcause(d.cause))
 
 			when 'destroy'
-				_toneGenerator?.stopRingback()
+				RocketChat.ToneGenerator.stopRingback()
 				if _callState != 'transfer' and _callState != 'hangup'
 					if window.rocketDebug
 						console.log("destroy call rq")
@@ -503,10 +505,10 @@ RocketChat.Phone = new class
 		return _onHold
 
 	startDtmf: (key) ->
-		_toneGenerator?.startDtmf(key)
+		RocketChat.ToneGenerator.startDtmf(key)
 
 	endDtmf: (key) ->
-		_toneGenerator?.stop()
+		RocketChat.ToneGenerator.stop()
 		if !_curCall?
 			return
 
@@ -633,9 +635,6 @@ RocketChat.Phone = new class
 
 	start: (login, password, server) ->
 		console.log("Starting verto....") if window.rocketDebug
-		AudioContext = window.AudioContext || window.webkitAudioContext || window.mozAudioContext
-		if AudioContext
-			_toneGenerator = new PhoneTones(new AudioContext(), 0, 0)
 
 		if _started and (login != _login or _password != password or _server != server)
 			_vertoHandle.logout()
