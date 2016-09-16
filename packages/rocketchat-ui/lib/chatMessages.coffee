@@ -11,7 +11,7 @@ class @ChatMessages
 		return
 
 	resize: ->
-		dif = (if !!FlowRouter.getQueryParam('mini') then 0 else 60) + $(".messages-container").find("footer").outerHeight()
+		dif = (if RocketChat.Layout.isEmbedded() then 0 else 60) + $(".messages-container").find("footer").outerHeight()
 		$(".messages-box").css
 			height: "calc(100% - #{dif}px)"
 

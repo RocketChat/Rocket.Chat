@@ -14,7 +14,7 @@ FlowRouter.route '/',
 	name: 'index'
 
 	action: ->
-		BlazeLayout.render 'main', { modal: !!FlowRouter.getQueryParam('mini'), center: 'loading' }
+		BlazeLayout.render 'main', { modal: RocketChat.Layout.isEmbedded(), center: 'loading' }
 		if not Meteor.userId()
 			return FlowRouter.go 'home'
 
