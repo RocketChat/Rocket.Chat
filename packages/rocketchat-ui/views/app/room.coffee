@@ -306,12 +306,14 @@ Template.room.events
 		instance.setUserDetail @username
 
 	'click .user-card-message': (e, instance) ->
+		roomData = Session.get('roomData' + this._arguments[1].rid)
+
 		if FlowRouter.getQueryParam('mini')
+			fireGlobalEvent('click-user-card-message', { username: this._arguments[1].u.username })
 			e.preventDefault()
 			e.stopPropagation()
 			return
 
-		roomData = Session.get('roomData' + this._arguments[1].rid)
 		if roomData.t in ['c', 'p', 'd']
 			instance.setUserDetail this._arguments[1].u.username
 		RocketChat.TabBar.setTemplate 'membersList'
@@ -363,12 +365,14 @@ Template.room.events
 		channel = $(e.currentTarget).data('channel')
 		if channel?
 			if FlowRouter.getQueryParam('mini')
+				fireGlobalEvent('click-mention-link', { channel: channel })
 				return window.open(FlowRouter.path('channel', {name: channel}))
 
 			FlowRouter.go 'channel', {name: channel}
 			return
 
 		if FlowRouter.getQueryParam('mini')
+			fireGlobalEvent('click-mention-link', { username: $(e.currentTarget).data('username') })
 			e.stopPropagation();
 			e.preventDefault();
 			return
