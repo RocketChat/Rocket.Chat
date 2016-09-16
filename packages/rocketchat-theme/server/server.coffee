@@ -35,12 +35,6 @@ WebAppHashing.calculateClientHash = (manifest, includeFilter, runtimeConfigOverr
 
 	calculateClientHash.call this, manifest, includeFilter, runtimeConfigOverride
 
-
-sectionPerType =
-	'color': 'Colors'
-	'font': 'Fonts'
-
-
 RocketChat.theme = new class
 	variables: {}
 	packageCallbacks: []
@@ -65,6 +59,9 @@ RocketChat.theme = new class
 
 		RocketChat.settings.add 'css', ''
 		RocketChat.settings.addGroup 'Layout'
+
+		# Add option to use extended (minor) color palette
+		RocketChat.settings.add 'theme-option-extended-colors', false, { group: 'Layout', type: 'boolean', public: false, i18nDescription: 'Use_minor_colors'}
 
 		@compileDelayed = _.debounce Meteor.bindEnvironment(@compile.bind(@)), 300
 
@@ -94,7 +91,6 @@ RocketChat.theme = new class
 				content.push result
 
 		content.push @customCSS
-
 		content = content.join '\n'
 
 		options =
@@ -110,10 +106,9 @@ RocketChat.theme = new class
 				return console.log err
 
 			RocketChat.settings.updateById 'css', data.css
-
 			process.emit('message', {refresh: 'client'})
 
-	addVariable: (type, name, value, persist=true) ->
+	addVariable: (type, name, value, section, persist=true) ->
 		@variables[name] =
 			type: type
 			value: value
@@ -122,29 +117,29 @@ RocketChat.theme = new class
 			config =
 				group: 'Layout'
 				type: type
-				section: sectionPerType[type]
+				section: section
 				public: false
 
 			RocketChat.settings.add "theme-#{type}-#{name}", value, config
 
-	addPublicColor: (name, value) ->
-		@addVariable 'color', name, value, true
+	addPublicColor: (name, value, section) ->
+		persist = true
+		persist = false if section is 'Colors (minor)' and not RocketChat.settings.get 'theme-option-extended-colors'
+		@addVariable 'color', name, value, section, persist
 
 	addPublicFont: (name, value) ->
-		@addVariable 'font', name, value, true
+		@addVariable 'font', name, value, 'Fonts', true
 
 	getVariablesAsObject: ->
 		obj = {}
 		for name, variable of @variables
 			obj[name] = variable.value
-
 		return obj
 
 	getVariablesAsLess: ->
 		items = []
 		for name, variable of @variables
 			items.push "@#{name}: #{variable.value};"
-
 		return items.join '\n'
 
 	addPackageAsset: (cb) ->

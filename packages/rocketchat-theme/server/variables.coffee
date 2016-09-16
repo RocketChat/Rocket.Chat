@@ -14,7 +14,7 @@ alphaColors=
 	'transparent-light': 'rgba(255,255,255,0.5)'
 	'transparent-lighter': 'rgba(255,255,255,0.26)'
 
-# Major colors form the core of the scheme (unchanged from prev versions)
+# Major colors form the core of the scheme
 # Names changed to reflect usage, comments show pre-refactor names
 majorColors=
 	'content-background-color': '#FFFFFF'
@@ -42,26 +42,13 @@ minorColors=
 	'status-busy': majorColors['error-color']
 	'status-offline': alphaColors['transparent-darker']
 
-# Depreciated colors (not loaded, can be restored if required)
-depreciated=
-	'active-channel-background-color': 'rgba(255, 255, 255, 0.075)'
-	'active-channel-font-color': 'rgba(255, 255, 255, 0.75)'
-	'blockquote-background': '#cccccc'
-	'clean-buttons-color': 'rgba(0, 0, 0, 0.25)'
-	'code-background': '#f8f8f8'
-	'code-border': '#cccccc'
-	'code-color': '#333333'
-	'quaternary-font-color': '#ffffff'
-	'info-active-font-color': '#ff0000'
-	'input-font-color': 'rgba(255, 255, 255, 0.85)'
-	'message-hover-background-color': 'rgba(0, 0, 0, 0.025)'
-	'smallprint-font-color': '#c2e7ff'
-	'smallprint-hover-color': '#ffffff'
-	'unread-notification-color': '#1dce73'
-
 # Bulk-add settings for color scheme
-for key, value of _.extend {}, alphaColors, majorColors, minorColors
-	RocketChat.theme.addPublicColor key, value
+for key, value of majorColors
+	RocketChat.theme.addPublicColor key, value, 'Colors'
+for key, value of alphaColors
+	RocketChat.theme.addPublicColor key, value, 'Colors (alphas)'
+for key, value of minorColors
+	RocketChat.theme.addPublicColor key, value, 'Colors (minor)'
 
 RocketChat.theme.addPublicFont 'body-font-family', "-apple-system, BlinkMacSystemFont, Roboto, 'Helvetica Neue', Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Meiryo UI'"
 
