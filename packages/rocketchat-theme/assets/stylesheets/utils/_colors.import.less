@@ -1,12 +1,12 @@
 /** ----------------------------------------------------------------------------
  * Default colours (for reference, inherited settings may differ)
  */
-// @transparent-darkest: rgba(0,0,0,.20);
+// @transparent-darker: rgba(0,0,0,.20);
 // @transparent-darker: rgba(0,0,0,.1);
 // @transparent-dark: rgba(0,0,0,.02);
 // @transparent-light: rgba(255,255,255,0.6);
 // @transparent-lighter: rgba(255,255,255,0.26);
-// @transparent-lightest: rgba(255,255,255,0.08);
+// @transparent-lighter: rgba(255,255,255,0.08);
 // @content-background-color: #FFFFFF;
 // @primary-background-color: #04436A;
 // @primary-font-color: #444444;
@@ -26,7 +26,7 @@
 // @status-online: @success-color;
 // @status-away: @pending-color;
 // @status-busy: @error-color;
-// @status-offline: @transparent-darkest;
+// @status-offline: @transparent-darker;
 /** ----------------------------------------------------------------------------
  * Derivative colours (fixed variants of inherited variables)
  */
@@ -71,7 +71,7 @@ code {
 	color: @secondary-font-color;
 }
 blockquote:before {
-	background-color: @transparent-dark;
+	background-color: @transparent-darker;
 }
 .main-content,
 .cms-page,
@@ -148,7 +148,7 @@ blockquote:before {
 	pre {
 		color: @error-color;
 		border-color: @error-border;
-		background-color: @transparent-lightest;
+		background-color: @transparent-lighter;
 	}
 }
 .code-mirror-box {
@@ -201,10 +201,10 @@ blockquote:before {
 	.input-shade(@primary-font-color, @content-background-color);
 }
 .dropzone.over .dropzone-overlay {
-	background-color: @transparent-darkest;
+	background-color: @transparent-darker;
 	color: @content-background-color;
 	> div {
-		background-color: @transparent-darkest;
+		background-color: @transparent-darker;
 	}
 }
 /** ----------------------------------------------------------------------------
@@ -317,13 +317,13 @@ blockquote:before {
 	.options-menu {
 		color: @info-font-color;
 		background-color: @content-background-color;
-		ul li {
-			&:first-child {
-				background-color: @component-color;
-			}
-			&:hover {
-				background-color: @content-background-color;
-			}
+		ul li:hover {
+			color: @secondary-action-contrast;
+			background-color: @secondary-action-color;
+		}
+		.message-dropdown-close {
+			color: @content-background-color;
+			background-color: @info-font-color;
 		}
 	}
 	&.new-day::before {
@@ -438,7 +438,10 @@ a:hover {
 	}
 	.active a {
 		color: @primary-background-contrast;
-		background-color: @transparent-lightest;
+		background-color: @transparent-lighter;
+	}
+	.open-room:hover {
+		background-color: @transparent-light;
 	}
 	.has-alert a {
 		color: @primary-background-contrast;
@@ -456,6 +459,9 @@ a:hover {
  */
 .flex-tab {
 	background-color: @secondary-background-color;
+	.content {
+		background-color: @secondary-background-color;
+	}
 	.message {
 		background-color: @transparent-lighter;
 		&.new-day::before {
@@ -488,7 +494,7 @@ a:hover {
 	.main-video,
 	.state-overlay::before,
 	.videos .video-item {
-		background-color: @transparent-darkest;
+		background-color: @transparent-darker;
 		color: white;
 	}
 	.main-video > div,
