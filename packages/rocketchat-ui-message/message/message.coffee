@@ -1,242 +1,292 @@
-Template.message.helpers
-	isBot: ->
-		return 'bot' if this.bot?
-	roleTags: ->
-		unless RocketChat.settings.get('UI_DisplayRoles')
-			return []
-		roles = _.union(UserRoles.findOne(this.u?._id)?.roles, RoomRoles.findOne({'u._id': this.u?._id, rid: this.rid })?.roles)
-		return RocketChat.models.Roles.find({ _id: { $in: roles }, description: { $exists: 1, $ne: '' } }, { fields: { description: 1 } })
-	isGroupable: ->
-		return 'false' if this.groupable is false
-	isSequential: ->
-		return 'sequential' if this.groupable isnt false
-	avatarFromUsername: ->
-		if this.avatar? and this.avatar[0] is '@'
-			return this.avatar.replace(/^@/, '')
-	getEmoji: (emoji) ->
-		return emojione.toImage emoji
-	own: ->
-		return 'own' if this.u?._id is Meteor.userId()
-	timestamp: ->
-		return +this.ts
-	chatops: ->
-		return 'chatops-message' if this.u?.username is RocketChat.settings.get('Chatops_Username')
-	time: ->
-		return moment(this.ts).format(RocketChat.settings.get('Message_TimeFormat'))
-	date: ->
-		return moment(this.ts).format(RocketChat.settings.get('Message_DateFormat'))
-	isTemp: ->
-		if @temp is true
-			return 'temp'
-	body: ->
-		return Template.instance().body
+katexSyntax = ->
+	if RocketChat.katex.katex_enabled()
+		return "$$KaTeX$$"   if RocketChat.katex.dollar_syntax_enabled()
+		return "\\[KaTeX\\]" if RocketChat.katex.parenthesis_syntax_enabled()
 
-	system: ->
-		if RocketChat.MessageTypes.isSystemMessage(this)
-			return 'system'
+	return false
 
-	edited: ->
-		return Template.instance().wasEdited
+Template.messageBox.helpers
+	roomName: ->
+		roomData = Session.get('roomData' + this._id)
+		return '' unless roomData
 
-	editTime: ->
-		if Template.instance().wasEdited
-			return moment(@editedAt).format('LL LT') #TODO profile pref for 12hr/24hr clock?
-	editedBy: ->
-		return "" unless Template.instance().wasEdited
-		# try to return the username of the editor,
-		# otherwise a special "?" character that will be
-		# rendered as a special avatar
-		return @editedBy?.username or "?"
-	canEdit: ->
-		hasPermission = RocketChat.authz.hasAtLeastOnePermission('edit-message', this.rid)
-		isEditAllowed = RocketChat.settings.get 'Message_AllowEditing'
-		editOwn = this.u?._id is Meteor.userId()
-
-		return unless hasPermission or (isEditAllowed and editOwn)
-
-		blockEditInMinutes = RocketChat.settings.get 'Message_AllowEditing_BlockEditInMinutes'
-		if blockEditInMinutes? and blockEditInMinutes isnt 0
-			msgTs = moment(this.ts) if this.ts?
-			currentTsDiff = moment().diff(msgTs, 'minutes') if msgTs?
-			return currentTsDiff < blockEditInMinutes
+		if roomData.t is 'd'
+			return ChatSubscription.findOne({ rid: this._id }, { fields: { name: 1 } })?.name
 		else
-			return true
-
-	canDelete: ->
-		hasPermission = RocketChat.authz.hasAtLeastOnePermission('delete-message', this.rid )
-		isDeleteAllowed = RocketChat.settings.get('Message_AllowDeleting')
-		deleteOwn = this.u?._id is Meteor.userId()
-
-		return unless hasPermission or (isDeleteAllowed and deleteOwn)
-
-		blockDeleteInMinutes = RocketChat.settings.get 'Message_AllowDeleting_BlockDeleteInMinutes'
-		if blockDeleteInMinutes? and blockDeleteInMinutes isnt 0
-			msgTs = moment(this.ts) if this.ts?
-			currentTsDiff = moment().diff(msgTs, 'minutes') if msgTs?
-			return currentTsDiff < blockDeleteInMinutes
+			return roomData.name
+	showMarkdown: ->
+		return RocketChat.Markdown
+	showMarkdownCode: ->
+		return RocketChat.MarkdownCode
+	showKatex: ->
+		return RocketChat.katex
+	katexSyntax: ->
+		return katexSyntax()
+	showFormattingTips: ->
+		return RocketChat.settings.get('Message_ShowFormattingTips') and (RocketChat.Markdown or RocketChat.MarkdownCode or katexSyntax())
+	canJoin: ->
+		return RocketChat.roomTypes.verifyShowJoinLink @_id
+	joinCodeRequired: ->
+		return Session.get('roomData' + this._id)?.joinCodeRequired
+	subscribed: ->
+		return RocketChat.roomTypes.verifyCanSendMessage @_id
+	getPopupConfig: ->
+		template = Template.instance()
+		return {
+			getInput: ->
+				return template.find('.input-message')
+		}
+	usersTyping: ->
+		room_typing = MsgTyping.get @_id
+		if room_typing.input_text == ""
+			return
+		users = _.keys(room_typing.users) or []
+		if (Meteor.user() && Meteor.user()?.roles.indexOf("livechat-manager") > -1)
+			input_text = " : " + room_typing.input_text
+			input_text = input_text + " ..."
 		else
-			return true
+			input_text = " is Typing"
 
-	showEditedStatus: ->
-		return RocketChat.settings.get 'Message_ShowEditedStatus'
-	label: ->
-		if @i18nLabel
-			return t(@i18nLabel)
-		else if @label
-			return @label
-
-	hasOembed: ->
-		return false unless this.urls?.length > 0 and Template.oembedBaseWidget? and RocketChat.settings.get 'API_Embed'
-
-		return false unless this.u?.username not in RocketChat.settings.get('API_EmbedDisabledFor')?.split(',')
-
-		return true
-
-	reactions: ->
-		msgReactions = []
-		userUsername = Meteor.user().username
-
-		for emoji, reaction of @reactions
-			total = reaction.usernames.length
-			usernames = '@' + reaction.usernames.slice(0, 15).join(', @')
-
-			usernames = usernames.replace('@'+userUsername, t('You').toLowerCase())
-
-			if total > 15
-				usernames = usernames + ' ' + t('And_more', { length: total - 15 }).toLowerCase()
-			else
-				usernames = usernames.replace(/,([^,]+)$/, ' '+t('and')+'$1')
-
-			if usernames[0] isnt '@'
-				usernames = usernames[0].toUpperCase() + usernames.substr(1)
-
-			msgReactions.push
-				emoji: emoji
-				count: reaction.usernames.length
-				usernames: usernames
-				reaction: ' ' + t('Reacted_with').toLowerCase() + ' ' + emoji
-				userReacted: reaction.usernames.indexOf(userUsername) > -1
-
-		return msgReactions
-
-	markUserReaction: (reaction) ->
-		if reaction.userReacted
+		if users.length is 0
+			return
+		if users.length is 1
 			return {
-				class: 'selected'
+				multi: false
+				selfTyping: MsgTyping.selfTyping.get()
+				users: users[0]
+				typing_text: input_text
 			}
+		# usernames = _.map messages, (message) -> return message.u.username
+		last = users.pop()
+		if users.length > 4
+			last = t('others')
+		# else
+		usernames = users.join(', ')
+		usernames = [usernames, last]
+		return {
+			multi: true
+			selfTyping: MsgTyping.selfTyping.get()
+			users: usernames.join " #{t 'and'} "
+			typing_text: input_text
+		}
 
-	hideReactions: ->
-		return 'hidden' if _.isEmpty(@reactions)
+	fileUploadAllowedMediaTypes: ->
+		return RocketChat.settings.get('FileUpload_MediaTypeWhiteList')
+
+	showMic: ->
+		return Template.instance().showMicButton.get()
+
+	showVRec: ->
+		return Template.instance().showVideoRec.get()
+
+	showSend: ->
+		if not Template.instance().isMessageFieldEmpty.get()
+			return 'show-send'
+
+	showLocation: ->
+		return RocketChat.Geolocation.get() isnt false
+
+	notSubscribedTpl: ->
+		return RocketChat.roomTypes.getNotSubscribedTpl @_id
+
+	showSandstorm: ->
+		return Meteor.settings.public.sandstorm
 
 
-	actionLinks: ->
-		msgActionLinks = []
+Template.messageBox.events
+	'click .join': (event) ->
+		event.stopPropagation()
+		event.preventDefault()
+		Meteor.call 'joinRoom', @_id, Template.instance().$('[name=joinCode]').val(), (err) ->
+			if err?
+				toastr.error t(err.reason)
 
-		for key, actionLink of @actionLinks
+			if RocketChat.authz.hasAllPermission('preview-c-room') is false and RoomHistoryManager.getRoom(@_id).loaded is 0
+				RoomManager.getOpenedRoomByRid(@_id).streamActive = false
+				RoomManager.getOpenedRoomByRid(@_id).ready = false
+				RoomHistoryManager.getRoom(@_id).loaded = undefined
+				RoomManager.computation.invalidate()
 
-			#make this more generic? i.e. label is the first arg...etc?
-			msgActionLinks.push
-				label: actionLink.label
-				id: key
-				icon: actionLink.icon
+	'focus .input-message': (event) ->
+		KonchatNotification.removeRoomNotification @_id
 
-		return msgActionLinks
+	'click .send-button': (event, instance) ->
+		input = instance.find('.input-message')
+		chatMessages[@_id].send(@_id, input, =>
+			# fixes https://github.com/RocketChat/Rocket.Chat/issues/3037
+			# at this point, the input is cleared and ready for autogrow
+			input.updateAutogrow()
+			instance.isMessageFieldEmpty.set(chatMessages[@_id].isEmpty())
+		)
+		input.focus()
 
-	hideActionLinks: ->
-		return 'hidden' if _.isEmpty(@actionLinks)
+	'keyup .input-message': (event, instance) ->
+		chatMessages[@_id].keyup(@_id, event, instance)
+		instance.isMessageFieldEmpty.set(chatMessages[@_id].isEmpty())
 
-	injectIndex: (data, index) ->
-		data.index = index
-		return
+	'paste .input-message': (e, instance) ->
+		Meteor.setTimeout ->
+			input = instance.find('.input-message')
+			input.updateAutogrow?()
+		, 50
 
-	hideCog: ->
-		room = RocketChat.models.Rooms.findOne({ _id: this.rid });
-		return 'hidden' if room.usernames.indexOf(Meteor.user().username) == -1
+		if not e.originalEvent.clipboardData?
+			return
 
-	hideUsernames: ->
-		prefs = Meteor.user()?.settings?.preferences
-		return if prefs?.hideUsernames
+		items = e.originalEvent.clipboardData.items
+		files = []
+		for item in items
+			if item.kind is 'file' and item.type.indexOf('image/') isnt -1
+				e.preventDefault()
+				files.push
+					file: item.getAsFile()
+					name: 'Clipboard'
 
-Template.message.onCreated ->
-	msg = Template.currentData()
+		if files.length > 0
+			fileUpload files
 
-	@wasEdited = msg.editedAt? and not RocketChat.MessageTypes.isSystemMessage(msg)
+	'keydown .input-message': (event) ->
+		chatMessages[@_id].keydown(@_id, event, Template.instance())
 
-	@body = do ->
-		isSystemMessage = RocketChat.MessageTypes.isSystemMessage(msg)
-		messageType = RocketChat.MessageTypes.getType(msg)
-		if messageType?.render?
-			msg = messageType.render(msg)
-		else if messageType?.template?
-			# render template
-		else if messageType?.message?
-			if messageType.data?(msg)?
-				msg = TAPi18n.__(messageType.message, messageType.data(msg))
-			else
-				msg = TAPi18n.__(messageType.message)
+	'input .input-message': (event) ->
+		chatMessages[@_id].valueChanged(@_id, event, Template.instance())
+
+	'propertychange .input-message': (event) ->
+		if event.originalEvent.propertyName is 'value'
+			chatMessages[@_id].valueChanged(@_id, event, Template.instance())
+
+	"click .editing-commands-cancel > button": (e) ->
+		chatMessages[@_id].clearEditing()
+
+	"click .editing-commands-save > button": (e) ->
+		chatMessages[@_id].send(@_id, chatMessages[@_id].input)
+
+	'change .message-form input[type=file]': (event, template) ->
+		e = event.originalEvent or event
+		files = e.target.files
+		if not files or files.length is 0
+			files = e.dataTransfer?.files or []
+
+		filesToUpload = []
+		for file in files
+			filesToUpload.push
+				file: file
+				name: file.name
+
+		fileUpload filesToUpload
+
+	'click .message-form .icon-location.location': (event, instance) ->
+		roomId = @_id
+
+		position = RocketChat.Geolocation.get()
+
+		latitude = position.coords.latitude
+		longitude = position.coords.longitude
+
+		text = """
+			<div class="location-preview">
+				<img style="height: 250px; width: 250px;" src="https://maps.googleapis.com/maps/api/staticmap?zoom=14&size=250x250&markers=color:gray%7Clabel:%7C#{latitude},#{longitude}&key=#{RocketChat.settings.get('MapView_GMapsAPIKey')}" />
+			</div>
+		"""
+
+		swal
+			title: t('Share_Location_Title')
+			text: text
+			showCancelButton: true
+			closeOnConfirm: true
+			closeOnCancel: true
+			html: true
+		, (isConfirm) ->
+			if isConfirm isnt true
+				return
+
+			Meteor.call "sendMessage",
+				_id: Random.id()
+				rid: roomId
+				msg: ""
+				location:
+					type: 'Point'
+					coordinates: [ longitude, latitude ]
+
+
+	'click .message-form .mic': (e, t) ->
+		AudioRecorder.start ->
+			t.$('.stop-mic').removeClass('hidden')
+			t.$('.mic').addClass('hidden')
+
+	'click .message-form .video-button': (e, t) ->
+		if VRecDialog.opened
+			VRecDialog.close()
 		else
-			if msg.u?.username is RocketChat.settings.get('Chatops_Username')
-				msg.html = msg.msg
-				msg = RocketChat.callbacks.run 'renderMentions', msg
-				# console.log JSON.stringify message
-				msg = msg.html
-			else
-				msg = renderMessageBody msg
+			VRecDialog.open(e.currentTarget)
 
-		if isSystemMessage
-			return RocketChat.Markdown msg
+	'click .message-form .stop-mic': (e, t) ->
+		AudioRecorder.stop (blob) ->
+			fileUpload [{
+				file: blob
+				type: 'audio'
+				name: TAPi18n.__('Audio record') + '.wav'
+			}]
+
+		t.$('.stop-mic').addClass('hidden')
+		t.$('.mic').removeClass('hidden')
+
+	'click .sandstorm-offer': (e, t) ->
+		roomId = @_id
+		RocketChat.Sandstorm.request "uiView", (err, data) =>
+			if err or !data.token
+				console.error err
+				return
+			Meteor.call "sandstormClaimRequest", data.token, data.descriptor, (err, viewInfo) =>
+				if err
+					console.error err
+					return
+
+				Meteor.call "sendMessage", {
+					_id: Random.id()
+					rid: roomId
+					msg: ""
+					urls: [{ url: "grain://sandstorm", sandstormViewInfo: viewInfo }]
+				}
+
+Template.messageBox.onCreated ->
+	@isMessageFieldEmpty = new ReactiveVar true
+	@showMicButton = new ReactiveVar false
+	@showVideoRec = new ReactiveVar false
+
+	@autorun =>
+		videoRegex = /video\/webm|video\/\*/i
+		videoEnabled = !RocketChat.settings.get("FileUpload_MediaTypeWhiteList") || RocketChat.settings.get("FileUpload_MediaTypeWhiteList").match(videoRegex)
+		if RocketChat.settings.get('Message_VideoRecorderEnabled') and (navigator.getUserMedia? or navigator.webkitGetUserMedia?) and videoEnabled and RocketChat.settings.get('FileUpload_Enabled')
+			@showVideoRec.set true
 		else
-			return msg
+			@showVideoRec.set false
 
-Template.message.onViewRendered = (context) ->
-	view = this
-	this._domrange.onAttached (domRange) ->
-		currentNode = domRange.lastNode()
-		currentDataset = currentNode.dataset
-		previousNode = currentNode.previousElementSibling
-		nextNode = currentNode.nextElementSibling
-		$currentNode = $(currentNode)
-		$nextNode = $(nextNode)
+		wavRegex = /audio\/wav|audio\/\*/i
+		wavEnabled = !RocketChat.settings.get("FileUpload_MediaTypeWhiteList") || RocketChat.settings.get("FileUpload_MediaTypeWhiteList").match(wavRegex)
+		if RocketChat.settings.get('Message_AudioRecorderEnabled') and (navigator.getUserMedia? or navigator.webkitGetUserMedia?) and wavEnabled and RocketChat.settings.get('FileUpload_Enabled')
+			@showMicButton.set true
+		else
+			@showMicButton.set false
 
-		unless previousNode?
-			$currentNode.addClass('new-day').removeClass('sequential')
 
-		else if previousNode?.dataset?
-			previousDataset = previousNode.dataset
+Meteor.startup ->
+	RocketChat.Geolocation = new ReactiveVar false
 
-			if previousDataset.date isnt currentDataset.date
-				$currentNode.addClass('new-day').removeClass('sequential')
-			else
-				$currentNode.removeClass('new-day')
+	Tracker.autorun ->
+		if RocketChat.settings.get('MapView_Enabled') is true and RocketChat.settings.get('MapView_GMapsAPIKey')?.length and navigator.geolocation?.getCurrentPosition?
+			success = (position) =>
+				RocketChat.Geolocation.set position
 
-			if previousDataset.groupable is 'false' or currentDataset.groupable is 'false'
-				$currentNode.removeClass('sequential')
-			else
-				if previousDataset.username isnt currentDataset.username or parseInt(currentDataset.timestamp) - parseInt(previousDataset.timestamp) > RocketChat.settings.get('Message_GroupingPeriod') * 1000
-					$currentNode.removeClass('sequential')
-				else if not $currentNode.hasClass 'new-day'
-					$currentNode.addClass('sequential')
+			error = (error) =>
+				console.log 'Error getting your geolocation', error
+				RocketChat.Geolocation.set false
 
-		if nextNode?.dataset?
-			nextDataset = nextNode.dataset
+			options =
+				enableHighAccuracy: true
+				maximumAge: 0
+				timeout: 10000
 
-			if nextDataset.date isnt currentDataset.date
-				$nextNode.addClass('new-day').removeClass('sequential')
-			else
-				$nextNode.removeClass('new-day')
-
-			if nextDataset.groupable isnt 'false'
-				if nextDataset.username isnt currentDataset.username or parseInt(nextDataset.timestamp) - parseInt(currentDataset.timestamp) > RocketChat.settings.get('Message_GroupingPeriod') * 1000
-					$nextNode.removeClass('sequential')
-				else if not $nextNode.hasClass 'new-day'
-					$nextNode.addClass('sequential')
-
-		if not nextNode?
-			templateInstance = if $('#chat-window-' + context.rid)[0] then Blaze.getView($('#chat-window-' + context.rid)[0])?.templateInstance() else null
-
-			if currentNode.classList.contains('own') is true
-				templateInstance?.atBottom = true
-			else
-				if templateInstance?.firstNode && templateInstance?.atBottom is false
-					newMessage = templateInstance?.find(".new-message")
-					newMessage?.className = "new-message"
+			navigator.geolocation.watchPosition success, error
+		else
+			RocketChat.Geolocation.set false
