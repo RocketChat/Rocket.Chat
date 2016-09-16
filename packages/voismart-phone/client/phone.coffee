@@ -628,3 +628,15 @@ RocketChat.Phone = new class
 
 		$.verto.init({}, bootstrap)
 
+	logout: ->
+		if !_vertoHandle
+			return
+
+		_vertoHandle.logout()
+		_vertoHandle = undefined
+		_started = false
+
+
+RocketChat.callbacks.add 'afterLogoutCleanUp', ->
+	RocketChat.Phone.logout()
+
