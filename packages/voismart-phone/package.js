@@ -33,7 +33,8 @@ Package.onUse(function(api) {
             'client/views/phoneButtons.html',
             'client/phone.coffee',
             'client/phoneSettings.coffee',
-            'client/phoneButtons.coffee'
+            'client/phoneButtons.coffee',
+            'client/tone.coffee'
     ], 'client');
 
     api.addFiles([

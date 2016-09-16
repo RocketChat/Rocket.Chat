@@ -30,11 +30,15 @@ Template.phone.events
 		showSettings =  instance.showSettings.get()
 		instance.showSettings.set(!showSettings)
 
-	'click .button.dialkey': (e, instance) ->
+	'mousedown .button.dialkey': (e, instance) ->
+		value = _.trim $(e.target).val()
+		RocketChat.Phone.startDtmf(value)
+
+	'mouseup .button.dialkey': (e, instance) ->
 		value = _.trim $(e.target).val()
 		display = instance.phoneDisplay.get()
 		instance.phoneDisplay.set(display + value)
-		RocketChat.Phone.dtmf(value)
+		RocketChat.Phone.endDtmf(value)
 
 	'change #phone-display': (e, instance) ->
 		value = _.trim $(e.target).val()
@@ -212,6 +216,8 @@ RocketChat.Phone = new class
 	_curVideoW = null
 	_curVideoH = null
 
+	_toneGenerator = null
+
 	constructor: ->
 		if window.rocketDebug
 			console.log("Starting a new Phone Handler")
@@ -275,9 +281,15 @@ RocketChat.Phone = new class
 			console.log "Processing state RQ:" + d.state.name
 
 		switch d.state.name
-			when 'trying', 'early'
+			when 'trying'
 				setCallState('active')
 				RocketChat.TabBar.updateButton('phone', { class: 'phone-blinking' })
+				_toneGenerator?.startRingback()
+
+			when 'early'
+				setCallState('active')
+				RocketChat.TabBar.updateButton('phone', { class: 'phone-blinking' })
+				_toneGenerator?.stopRingback()
 
 			when 'ringing'
 				setCallState('ringing')
@@ -299,6 +311,7 @@ RocketChat.Phone = new class
 
 			when 'active'
 				setCallState('active')
+				_toneGenerator?.stopRingback()
 				msg = TAPi18n.__("In_call_with")
 				if d.direction.name == 'outbound'
 					putNotification(msg, d.params.destination_number)
@@ -486,7 +499,11 @@ RocketChat.Phone = new class
 		_curCall.toggleHold()
 		return _onHold
 
-	dtmf: (key) ->
+	startDtmf: (key) ->
+		_toneGenerator?.startDtmf(key)
+
+	endDtmf: (key) ->
+		_toneGenerator?.stop()
 		if !_curCall?
 			return
 
@@ -613,6 +630,9 @@ RocketChat.Phone = new class
 
 	start: (login, password, server) ->
 		console.log("Starting verto....") if window.rocketDebug
+		AudioContext = window.AudioContext || window.webkitAudioContext || window.mozAudioContext
+		if AudioContext
+			_toneGenerator = new PhoneTones(new AudioContext(), 0, 0)
 
 		if _started and (login != _login or _password != password or _server != server)
 			_vertoHandle.logout()
@@ -649,4 +669,3 @@ RocketChat.Phone = new class
 
 RocketChat.callbacks.add 'afterLogoutCleanUp', ->
 	RocketChat.Phone.logout()
-
