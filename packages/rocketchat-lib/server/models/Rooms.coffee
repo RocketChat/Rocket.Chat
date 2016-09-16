@@ -172,7 +172,8 @@ RocketChat.models.Rooms = new class extends RocketChat.models._Base
 		return @update query, update
 
 	removeUsernameFromAll: (username) ->
-		query = {}
+		query =
+			usernames: username
 
 		update =
 			$pull:
