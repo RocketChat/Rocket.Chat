@@ -11,8 +11,8 @@ userCanDrop = (_id) ->
 	return !RocketChat.roomTypes.readOnly _id, Meteor.user()
 
 Template.room.helpers
-	miniVersion: ->
-		return FlowRouter.getQueryParam('mini')
+	embeddedVersion: ->
+		return RocketChat.Layout.isEmbedded()
 
 	favorite: ->
 		sub = ChatSubscription.findOne { rid: this._id }, { fields: { f: 1 } }
@@ -308,7 +308,7 @@ Template.room.events
 	'click .user-card-message': (e, instance) ->
 		roomData = Session.get('roomData' + this._arguments[1].rid)
 
-		if FlowRouter.getQueryParam('mini')
+		if RocketChat.Layout.isEmbedded()
 			fireGlobalEvent('click-user-card-message', { username: this._arguments[1].u.username })
 			e.preventDefault()
 			e.stopPropagation()
@@ -364,14 +364,14 @@ Template.room.events
 	"click .mention-link": (e, instance) ->
 		channel = $(e.currentTarget).data('channel')
 		if channel?
-			if FlowRouter.getQueryParam('mini')
+			if RocketChat.Layout.isEmbedded()
 				fireGlobalEvent('click-mention-link', { channel: channel })
 				return window.open(FlowRouter.path('channel', {name: channel}))
 
 			FlowRouter.go 'channel', {name: channel}
 			return
 
-		if FlowRouter.getQueryParam('mini')
+		if RocketChat.Layout.isEmbedded()
 			fireGlobalEvent('click-mention-link', { username: $(e.currentTarget).data('username') })
 			e.stopPropagation();
 			e.preventDefault();
