@@ -104,6 +104,14 @@ pre {
 }
 
 blockquote {
+	.clearfix;
+	margin: .5em 0;
+	&:first-child {
+		margin-top: 0;
+	}
+	&:last-child {
+		margin-bottom: 0;
+	}
 	padding-left: 10px;
 	position: relative;
 	&:before {
@@ -2018,7 +2026,7 @@ label.required:after {
 	height: 100%;
 	top: 0;
 	left: 0;
-	border-right: 1px solid;
+	border-width: 0 1px 0 0;
 	.room-topic {
 		font-size: 14px;
 		opacity: 0.4;

@@ -9,12 +9,10 @@
 # New colors, used for shades on solid backgrounds
 # Defined range of transparencies reduces random colour variances
 alphaColors=
-	'transparent-darkest': 'rgba(0,0,0,.20)'
 	'transparent-darker': 'rgba(0,0,0,.1)'
 	'transparent-dark': 'rgba(0,0,0,.02)'
-	'transparent-light': 'rgba(255,255,255,0.6)'
+	'transparent-light': 'rgba(255,255,255,0.5)'
 	'transparent-lighter': 'rgba(255,255,255,0.26)'
-	'transparent-lightest': 'rgba(255,255,255,0.08)'
 
 # Major colors form the core of the scheme (unchanged from prev versions)
 # Names changed to reflect usage, comments show pre-refactor names
@@ -42,7 +40,7 @@ minorColors=
 	'status-online': majorColors['success-color']
 	'status-away': majorColors['pending-color']
 	'status-busy': majorColors['error-color']
-	'status-offline': alphaColors['transparent-darkest']
+	'status-offline': alphaColors['transparent-darker']
 
 # Depreciated colors (not loaded, can be restored if required)
 depreciated=
