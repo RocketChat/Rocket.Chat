@@ -57,7 +57,7 @@ FileUpload.FileSystem = class FileUploadFileSystem extends FileUploadBase {
 		const item = {
 			id: this.id,
 			name: this.getFileName(),
-			percentage: 0,
+			percentage: 0
 		};
 		uploading.push(item);
 		Session.set('uploading', uploading);
