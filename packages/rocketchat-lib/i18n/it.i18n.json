@@ -1352,5 +1352,12 @@
   "Destination_out_of_order": "Destinazione fuori servizio",
   "Normal_temporary_failure": "Fallimento temporaneo",
   "Picked_off": "Risposta da altro utente",
-  "Lose_race": "Risposta altrove"
+  "Lose_race": "Risposta altrove",
+  "Hold_Toggle": "Attesa",
+  "Mute": "Muto",
+  "Transfer": "Trasferisci",
+  "Fullscreen": "Schermo intero",
+  "Redial": "Ricomponi",
+  "Clear": "Pulisci",
+  "Settings": "Impostazioni"
 }

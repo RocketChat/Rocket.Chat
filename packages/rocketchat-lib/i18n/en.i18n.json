@@ -1366,5 +1366,12 @@
   "Destination_out_of_order": "Destination out of order",
   "Normal_temporary_failure": "Normal temporary failure",
   "Picked_off": "Picked off call",
-  "Lose_race": "Answered elsewhere"
+  "Lose_race": "Answered elsewhere",
+  "Hold_Toggle": "Hold call",
+  "Mute": "Mute",
+  "Transfer": "Transfer",
+  "Fullscreen": "Fullscreen",
+  "Redial": "Redial",
+  "Clear": "Clear",
+  "Settings": "Settings"
 }
