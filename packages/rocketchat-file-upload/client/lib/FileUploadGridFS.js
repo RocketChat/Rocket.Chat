@@ -44,6 +44,14 @@ FileUpload.GridFS = class FileUploadGridFS extends FileUploadBase {
 	}
 
 	start() {
+		const uploading = Session.get('uploading') || [];
+		const item = {
+			id: this.id,
+			name: this.getFileName(),
+			percentage: 0,
+		};
+		uploading.push(item);
+		Session.set('uploading', uploading);
 		return this.handler.start();
 	}
 
