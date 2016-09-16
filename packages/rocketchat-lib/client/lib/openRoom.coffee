@@ -6,7 +6,7 @@ currentTracker = undefined
 	Meteor.defer ->
 		currentTracker = Tracker.autorun (c) ->
 			if RoomManager.open(type + name).ready() isnt true
-				BlazeLayout.render 'main', {center: 'loading'}
+				BlazeLayout.render 'main', { modal: RocketChat.Layout.isEmbedded(), center: 'loading' }
 				return
 
 			user = Meteor.user()
@@ -21,6 +21,7 @@ currentTracker = undefined
 				if type is 'd'
 					Meteor.call 'createDirectMessage', name, (err) ->
 						if !err
+							RoomManager.close(type + name)
 							openRoom('d', name)
 						else
 							Session.set 'roomNotFound', {type: type, name: name}
