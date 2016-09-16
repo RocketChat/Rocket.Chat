@@ -10,19 +10,19 @@ Template.phoneButtons.events
 		RocketChat.Phone.hangup()
 
 	'click .start-phone-videocall': (e, t) ->
-		u = t.data.username
-		user = Meteor.users.findOne({username: u})
-		if !user or !user.phoneextension
-			return
-		if user._id == Meteor.userId()
-			return
+		Meteor.call 'phoneFindUserByQ', {username: t.data.username}, (error, user) =>
+			if error or !user?.phoneextension
+				return
+			else
+				if user._id == Meteor.userId()
+					return
 
-		RocketChat.TabBar.setTemplate "phone", ->
-			RocketChat.Phone.newCall(user.phoneextension, true)
+				RocketChat.TabBar.setTemplate "phone", ->
+					RocketChat.Phone.newCall(user.phoneextension, true)
 
 	'click .start-phone-audiocall': (e, t) ->
 		Meteor.call 'phoneFindUserByQ', {username: t.data.username}, (error, user) =>
-			if error or !user
+			if error or !user?.phoneextension
 				return
 			else
 				if user._id == Meteor.userId()
