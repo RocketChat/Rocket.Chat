@@ -72,11 +72,12 @@ class @ChatMessages
 			# KonchatNotification.removeRoomNotification(rid)
 			msg = input.value
 			input.value = ''
+			this.startTyping(rid, input)
 			rid ?= visitor.getRoom(true)
 
 			sendMessage = (callback) ->
 				msgObject = { _id: Random.id(), rid: rid, msg: msg, token: visitor.getToken() }
-				MsgTyping.stop(rid)
+				#MsgTyping.stop(rid)
 
 				Meteor.call 'sendMessageLivechat', msgObject, (error, result) ->
 					if error
@@ -113,10 +114,11 @@ class @ChatMessages
 			MsgTyping.stop(rid)
 
 	startTyping: (rid, input) ->
-		if s.trim(input.value) isnt ''
-			MsgTyping.start(rid)
-		else
-			MsgTyping.stop(rid)
+		MsgTyping.start(rid, input.value)
+		#if s.trim(input.value) isnt ''
+		#	MsgTyping.start(rid, input.value)
+		#else
+		#	MsgTyping.stop(rid)
 
 	bindEvents: ->
 		if this.wrapper?.length
@@ -137,6 +139,7 @@ class @ChatMessages
 
 	keyup: (rid, event) ->
 		input = event.currentTarget
+		this.startTyping(rid, input)
 		k = event.which
 		keyCodes = [
 			13, # Enter
@@ -158,11 +161,12 @@ class @ChatMessages
 		keyCodes.push i for i in [35..40] # Home, End, Arrow Keys
 		keyCodes.push i for i in [112..123] # F1 - F12
 
-		unless k in keyCodes
-			this.startTyping(rid, input)
+		#unless k in keyCodes
+		#this.startTyping(rid, input)
 
 	keydown: (rid, event) ->
 		input = event.currentTarget
+		this.startTyping(rid, input)
 		k = event.which
 		this.resize(input)
 		if k is 13 and not event.shiftKey and not event.ctrlKey and not event.altKey # Enter without shift/ctrl/alt
