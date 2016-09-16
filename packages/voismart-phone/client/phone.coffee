@@ -270,10 +270,12 @@ RocketChat.Phone = new class
 		if d.callID != _curCall.callID
 			switch d.state.name
 				when 'ringing'
+					_toneGenerator?.stopRingback()
 					console.log("refusing call")
 					d.stopRinging()
 					d.hangup({cause: "USER_BUSY", causeCode: 17})
 				when 'hangup', 'destroy'
+					_toneGenerator?.stopRingback()
 					delete _dialogs[d.callID]
 			return
 
@@ -336,6 +338,7 @@ RocketChat.Phone = new class
 					toastr.error(msg + ": " + RocketChat.Phone.remap_hcause(d.cause))
 
 			when 'destroy'
+				_toneGenerator?.stopRingback()
 				if _callState != 'transfer' and _callState != 'hangup'
 					if window.rocketDebug
 						console.log("destroy call rq")
