@@ -21,15 +21,14 @@ Template.phoneButtons.events
 			RocketChat.Phone.newCall(user.phoneextension, true)
 
 	'click .start-phone-audiocall': (e, t) ->
-		u = t.data.username
-		user = Meteor.users.findOne({username: u})
-		if !user or !user.phoneextension
-			return
-		if user._id == Meteor.userId()
-			return
-
-		if !Meteor.isCordova
-			RocketChat.TabBar.setTemplate "phone", ->
-				RocketChat.Phone.newCall(user.phoneextension, false)
-		else
-			window.open 'voismart://call/' + user.phoneextension, '_blank'
+		Meteor.call 'phoneFindUserByQ', {username: t.data.username}, (error, user) =>
+			if error or !user
+				return
+			else
+				if user._id == Meteor.userId()
+					return
+				if !Meteor.isCordova
+					RocketChat.TabBar.setTemplate "phone", ->
+						RocketChat.Phone.newCall(user.phoneextension, false)
+				else
+					window.open 'voismart://call/' + user.phoneextension, '_blank'
