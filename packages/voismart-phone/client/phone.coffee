@@ -284,7 +284,9 @@ RocketChat.Phone = new class
 						text: TAPi18n.__("Incoming_call_from") + '\n' + cid
 						payload:
 							rid: Session.get('openedRoom')
-							sender: Meteor.user()
+							sender:
+								name: d.params.caller_id_name
+								username: d.params.caller_id_name
 
 					KonchatNotification.showDesktop notification
 
