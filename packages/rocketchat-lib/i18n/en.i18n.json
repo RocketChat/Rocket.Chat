@@ -1360,5 +1360,11 @@
   "Message_VideoRecorderEnabledDescription" : "Requires 'video/webm' files to be an accepted media type within 'File Upload' settings.",
   "Phone_invalid_devices": "Invalid media devices settings",
   "Phone_end_call": "Call terminated",
-  "Phone_failed_call": "Call failed"
+  "Phone_failed_call": "Call failed",
+  "User_busy": "User busy",
+  "No_route_destination": "No route to destination",
+  "Destination_out_of_order": "Destination out of order",
+  "Normal_temporary_failure": "Normal temporary failure",
+  "Picked_off": "Picked off call",
+  "Lose_race": "Answered elsewhere"
 }

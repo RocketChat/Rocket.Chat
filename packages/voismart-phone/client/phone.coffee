@@ -311,7 +311,7 @@ RocketChat.Phone = new class
 					toastr.success TAPi18n.__('Phone_end_call')
 				else
 					msg = TAPi18n.__('Phone_failed_call')
-					toastr.error(msg + ": " + d.cause)
+					toastr.error(msg + ": " + RocketChat.Phone.remap_hcause(d.cause))
 
 			when 'destroy'
 				if _callState != 'transfer' and _callState != 'hangup'
@@ -323,6 +323,20 @@ RocketChat.Phone = new class
 				_curCall = null
 				clearNotification()
 				delete _dialogs[d.callID]
+
+	remap_hcause: (cause) ->
+		dflt = cause
+		mapper =
+			'NORMAL CLEARING': 'Phone_end_call'
+			'ORIGINATOR_CANCEL': 'Phone_end_call'
+			'USER_BUSY': 'User_busy'
+			'NO_ROUTE_DESTINATION': 'No_route_destination'
+			'DESTINATION_OUT_OF_ORDER': 'Destination_out_of_order'
+			'NORMAL_TEMPORARY_FAILURE': 'Normal_temporary_failure'
+			'PICKED_OFF': 'Picked_off'
+			'LOSE_RACE': 'Lose_race'
+		msg = mapper[cause]
+		return TAPi18n.__(msg or dflt)
 
 	clearNotification = ->
 		callContact.set('')
