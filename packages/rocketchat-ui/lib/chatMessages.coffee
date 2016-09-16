@@ -136,7 +136,7 @@ class @ChatMessages
 			cursor_pos = this.editing.savedCursor ? -1
 			this.$input.setCursorPosition(cursor_pos)
 
-			this.hasValue.set this.input.value isnt ''
+			#this.hasValue.set this.input.value isnt ''
 		else
 			this.editing.saved = this.input.value
 			this.editing.savedCursor = this.input.selectionEnd
@@ -169,8 +169,11 @@ class @ChatMessages
 
 				KonchatNotification.removeRoomNotification(rid)
 				input.value = ''
-				this.hasValue.set false
-				this.stopTyping(rid)
+				input.updateAutogrow?()
+				#this.hasValue.set false
+				#this.stopTyping(rid)
+				this.hasValue.set true
+				this.startTyping(rid, input)
 
 				#Check if message starts with /command
 				if msg[0] is '/'
@@ -270,10 +273,11 @@ class @ChatMessages
 			this.stopTyping(rid)
 
 	startTyping: (rid, input) ->
-		if _.trim(input.value) isnt ''
-			MsgTyping.start(rid)
-		else
-			MsgTyping.stop(rid)
+		MsgTyping.start(rid, input.value)
+		#if _.trim(input.value) isnt ''
+		#	MsgTyping.start(rid, input.value)
+		#else
+		#	MsgTyping.stop(rid)
 
 	stopTyping: (rid) ->
 		MsgTyping.stop(rid)
@@ -297,6 +301,7 @@ class @ChatMessages
 
 	keyup: (rid, event) ->
 		input = event.currentTarget
+		this.startTyping(rid, input)
 		k = event.which
 		keyCodes = [
 			13, # Enter
@@ -318,13 +323,14 @@ class @ChatMessages
 		keyCodes.push i for i in [35..40] # Home, End, Arrow Keys
 		keyCodes.push i for i in [112..123] # F1 - F12
 
-		unless k in keyCodes
-			this.startTyping(rid, input)
+		#unless k in keyCodes
+		#this.startTyping(rid, input)
 
-		this.hasValue.set input.value isnt ''
+		#this.hasValue.set input.value isnt ''
 
 	keydown: (rid, event) ->
 		input = event.currentTarget
+		this.startTyping(rid, input)
 		$input = $(input)
 		k = event.which
 		this.resize(input)
@@ -379,7 +385,8 @@ class @ChatMessages
 			RoomHistoryManager.clear rid
 
 	valueChanged: (rid, event) ->
-		this.determineInputDirection()
+		if this.input.value.length is 1
+			this.determineInputDirection()
 
 	determineInputDirection: () ->
 		this.input.dir = if this.isMessageRtl(this.input.value) then 'rtl' else 'ltr'
