@@ -37,15 +37,17 @@ FileUpload.GridFS = class FileUploadGridFS extends FileUploadBase {
 				});
 			}
 		});
+
+		this.handler.onProgress = (file, progress) => {
+			this.onProgress(progress);
+		};
 	}
 
 	start() {
 		return this.handler.start();
 	}
 
-	getProgress() {
-		return this.handler.getProgress();
-	}
+	onProgress() {}
 
 	stop() {
 		return this.handler.stop();
