@@ -37,7 +37,8 @@ Package.onUse(function(api) {
     ], 'client');
 
     api.addFiles([
-            'server/settings.coffee'
+            'server/settings.coffee',
+			'server/methods/phoneFindUserByQ.coffee'
     ], 'server');
 
 	api.addFiles([], 'server');

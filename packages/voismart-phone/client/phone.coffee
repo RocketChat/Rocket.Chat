@@ -141,14 +141,17 @@ Template.phone.helpers
 	callState: ->
 		return RocketChat.Phone.getCallState()
 
-	callContact: ->
-		return RocketChat.Phone.getCallContact()
+	callCidName: ->
+		return RocketChat.Phone.getCallCidName()
+
+	callCidNum: ->
+		return RocketChat.Phone.getCallCidNum()
 
 	callOperation: ->
 		return RocketChat.Phone.getCallOperation()
 
 	displayCallStatus: ->
-		if RocketChat.Phone.getCallState() and RocketChat.Phone.getCallContact()
+		if RocketChat.Phone.getCallState() and (RocketChat.Phone.getCallCidName() or RocketChat.Phone.getCallCidNum())
 			return true
 		return false
 
@@ -176,7 +179,8 @@ Template.phone.onRendered ->
 
 RocketChat.Phone = new class
 	callState = new ReactiveVar null
-	callContact = new ReactiveVar ""
+	callCidName = new ReactiveVar ""
+	callCidNum = new ReactiveVar ""
 	callOperation = new ReactiveVar ""
 
 	_started = false
@@ -272,12 +276,8 @@ RocketChat.Phone = new class
 				setCallState('ringing')
 				RocketChat.TabBar.updateButton('phone', { class: 'phone-blinking' })
 				RocketChat.TabBar.setTemplate "phone", ->
-					if d.params.caller_id_name
-						cid = d.params.caller_id_name
-					else
-						cid = d.params.caller_id_number
 					msg = TAPi18n.__("Incoming_call_from")
-					putNotification(msg, cid)
+					putNotification(msg, d.params.caller_id_number, d.params.caller_id_name)
 					notification =
 						title: TAPi18n.__ "Phone_Call"
 						text: TAPi18n.__("Incoming_call_from") + ' ' + cid
@@ -293,8 +293,7 @@ RocketChat.Phone = new class
 				if d.direction.name == 'outbound'
 					putNotification(msg, d.params.destination_number)
 				else
-					cid = d.params.caller_id_name + ' ' + d.params.caller_id_number
-					putNotification(msg, cid)
+					putNotification(msg, d.params.caller_id_number, d.params.caller_id_name)
 				RocketChat.TabBar.updateButton('phone', { class: 'red' })
 
 			when 'hangup'
@@ -339,12 +338,18 @@ RocketChat.Phone = new class
 		return TAPi18n.__(msg or dflt)
 
 	clearNotification = ->
-		callContact.set('')
+		callCidName.set('')
+		callCidNum.set('')
 		callOperation.set('')
 
-	putNotification = (msg, cid) ->
-		callContact.set(cid)
+	putNotification = (msg, cidnum, cidname="") ->
+		callCidNum.set(cidnum)
 		callOperation.set(msg)
+		Meteor.call 'phoneFindUserByQ', {phoneextension: cidnum}, (error, user) =>
+			if error or !user
+				callCidName.set(cidname)
+			else
+				callCidName.set(user.username)
 
 	refreshVideoResolution = (resolutions) ->
 		_curResolutions = resolutions.validRes
@@ -420,8 +425,11 @@ RocketChat.Phone = new class
 	getCallOperation: ->
 		return callOperation.get()
 
-	getCallContact: ->
-		return callContact.get()
+	getCallCidName: ->
+		return callCidName.get()
+
+	getCallCidNum: ->
+		return callCidNum.get()
 
 	removeVideo: ->
 		_videoTag.appendTo($("body"))

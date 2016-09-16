@@ -9,6 +9,7 @@ RocketChat.models.Users = new class extends RocketChat.models._Base
 		@tryEnsureIndex { 'active': 1 }, { sparse: 1 }
 		@tryEnsureIndex { 'statusConnection': 1 }, { sparse: 1 }
 		@tryEnsureIndex { 'type': 1 }
+		@tryEnsureIndex { 'phoneextension': 1 }
 
 
 	# FIND ONE

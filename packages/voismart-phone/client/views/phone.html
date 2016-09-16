@@ -19,14 +19,14 @@
 		{{#if displayCallStatus}}
 		<div class="phone-notifications">
 			<div class="thumb">
-				{{> avatar username=callContact}}
+				{{> avatar username=callCidName}}
 			</div>
 			<div class="phone-notification-content">
 				<div class="callOperation">
 					{{callOperation}}
 				</div>
 				<div class="callContact">
-					{{callContact}}
+					{{callCidNum}}&nbsp;{{callCidName}}
 				</div>
 			</div>
 		</div>
