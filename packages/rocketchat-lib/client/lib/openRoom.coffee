@@ -21,6 +21,7 @@ currentTracker = undefined
 				if type is 'd'
 					Meteor.call 'createDirectMessage', name, (err) ->
 						if !err
+							RoomManager.close(type + name)
 							openRoom('d', name)
 						else
 							Session.set 'roomNotFound', {type: type, name: name}
