@@ -583,60 +583,6 @@ label.required:after {
 	content: ' *';
 }
 
-.loading {
-	top: 0;
-	right: 0;
-	bottom: 0;
-	left: 0;
-	display: flex;
-	align-items: center;
-	position: absolute;
-	justify-content: center;
-	text-align: center;
-	> div {
-		width: 10px;
-		height: 10px;
-		background-color: #ccc;
-		margin: 2px;
-		border-radius: 100%;
-		display: inline-block;
-		-webkit-animation: loading-bouncedelay 1.4s infinite ease-in-out both;
-		animation: loading-bouncedelay 1.4s infinite ease-in-out both;
-	}
-	.bounce1 {
-		-webkit-animation-delay: -0.32s;
-		animation-delay: -0.32s;
-	}
-	.bounce2 {
-		-webkit-animation-delay: -0.16s;
-		animation-delay: -0.16s;
-	}
-}
-
-@-webkit-keyframes loading-bouncedelay {
-	0%,
-	80%,
-	100% {
-		-webkit-transform: scale(0)
-	}
-	40% {
-		-webkit-transform: scale(1.0)
-	}
-}
-
-@keyframes loading-bouncedelay {
-	0%,
-	80%,
-	100% {
-		-webkit-transform: scale(0);
-		transform: scale(0);
-	}
-	40% {
-		-webkit-transform: scale(1.0);
-		transform: scale(1.0);
-	}
-}
-
 .btn-loading {
 	pointer-events: none;
 	cursor: not-allowed;
@@ -1383,6 +1329,10 @@ label.required:after {
 			&:hover {
 				text-decoration: none;
 			}
+
+			.archived {
+				font-style: italic;
+			}
 		}
 		.opt {
 			position: absolute;
@@ -2011,20 +1961,16 @@ label.required:after {
 	font-size: 1em;
 	left: 10px;
 	right: 10px;
-	box-shadow: 0px 1px 1px 0 rgba(0,0,0,0.2), 0 2px 10px 0 rgba(0,0,0,.16);
-
+	box-shadow: 0px 1px 1px 0 rgba(0, 0, 0, 0.2), 0 2px 10px 0 rgba(0, 0, 0, .16);
 	.transition(transform 0.4s ease, visibility 0.3s ease, opacity 0.3s ease);
 	.transform(translateY(-10px));
-
 	opacity: 0;
 	visibility: hidden;
-
 	&.show {
 		opacity: 1;
 		visibility: visible;
 		.transform(translateY(0px));
 	}
-
 	> div {
 		line-height: 28px;
 		padding: 0 10px;
@@ -2174,12 +2120,14 @@ label.required:after {
 			padding-bottom: 9px;
 			padding-left: 49px;
 			border-radius: 0;
-			overflow-y: hidden;
+			overflow-y: auto;
+			-webkit-overflow-scrolling: touch;
 			resize: none;
 			line-height: 16px;
 			border-top-width: 0;
 			border-bottom-width: 0;
 			border-left-width: 0;
+			max-height: 200px;
 		}
 		.stream-info {
 			float: left;
@@ -4197,6 +4145,16 @@ body:not(.is-cordova) {
 	}
 	.social-login {
 		margin-bottom: 10px;
+	}
+
+	.message-form textarea {
+		max-height: 100px !important;
+	}
+}
+
+@media all and(max-height: 260px) {
+	.message-form textarea {
+		max-height: 50px !important;
 	}
 }
 

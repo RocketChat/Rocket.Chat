@@ -144,10 +144,11 @@ Meteor.startup(() =>
 	Meteor.call('listEmojiCustom', (error, result) => {
 		RocketChat.emoji.packages.emojiCustom.emojisByCategory = { rocket: [] };
 		for (let emoji of result) {
-			RocketChat.emoji.packages.emojiCustom.emojisByCategory.rocket.push(`${emoji.name}`);
+			RocketChat.emoji.packages.emojiCustom.emojisByCategory.rocket.push(emoji.name);
 			RocketChat.emoji.list[`:${emoji.name}:`] = emoji;
 			RocketChat.emoji.list[`:${emoji.name}:`].emojiPackage = 'emojiCustom';
 			for (let alias of emoji['aliases']) {
+				RocketChat.emoji.packages.emojiCustom.emojisByCategory.rocket.push(alias);
 				RocketChat.emoji.list[`:${alias}:`] = {};
 				RocketChat.emoji.list[`:${alias}:`].emojiPackage = 'emojiCustom';
 				RocketChat.emoji.list[`:${alias}:`].aliasOf = emoji.name;

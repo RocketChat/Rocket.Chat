@@ -33,12 +33,20 @@ parts:
         plugin: dump
         after: [mongodb]
         source: https://rocket.chat/releases/latest/download
+        stage-packages:
+            - imagemagick
+        organize:
+            usr/bin/convert-im6: usr/bin/convert
         stage:
             - programs
             - main.js
+            - usr
+            - lib
         snap:
             - programs
             - main.js
+            - usr
+            - lib
     mongodb:
         source: https://fastdl.mongodb.org/linux/mongodb-linux-x86_64-ubuntu1604-3.2.7.tgz
         plugin: dump
