@@ -50,17 +50,17 @@ Inject.rawBody('page-loading', `
 
 RocketChat.settings.get('theme-color-primary-background-color', function(key, value) {
 	if (value) {
-		Inject.rawBody('theme-color-primary-background-color', `<style>body { background-color: ${value};}</style>`);
+		Inject.rawHead('theme-color-primary-background-color', `<style>body { background-color: ${value};}</style>`);
 	} else {
-		Inject.rawBody('theme-color-primary-background-color', '<style>body { background-color: #04436a;}</style>');
+		Inject.rawHead('theme-color-primary-background-color', '<style>body { background-color: #04436a;}</style>');
 	}
 });
 
 RocketChat.settings.get('theme-color-tertiary-font-color', function(key, value) {
 	if (value) {
-		Inject.rawBody('theme-color-tertiary-font-color', `<style>.loading > div { background-color: ${value};}</style>`);
+		Inject.rawHead('theme-color-tertiary-font-color', `<style>.loading > div { background-color: ${value};}</style>`);
 	} else {
-		Inject.rawBody('theme-color-tertiary-font-color', '<style>.loading > div { background-color: #cccccc;}</style>');
+		Inject.rawHead('theme-color-tertiary-font-color', '<style>.loading > div { background-color: #cccccc;}</style>');
 	}
 });
 
