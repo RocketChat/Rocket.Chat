@@ -42,7 +42,8 @@ const CROWD = class CROWD {
 			application: {
 				name: RocketChat.settings.get('CROWD_APP_USERNAME'),
 				password: RocketChat.settings.get('CROWD_APP_PASSWORD')
-			}
+			},
+			rejectUnauthorized: RocketChat.settings.get('CROWD_Reject_Unauthorized')
 		};
 
 		this.crowdClient = new AtlassianCrowd(this.options);
