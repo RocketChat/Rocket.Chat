@@ -574,10 +574,24 @@ RocketChat.cache._Base = (class CacheBase extends EventEmitter {
 					};
 				}
 
+				if (field === '$nin') {
+					query.$containsNone = value;
+					delete query[field];
+				}
+
+				if (field === '$in') {
+					query.$contains = value;
+					delete query[field];
+				}
+
 				if (field === '$and' || field === '$or') {
 					query[field] = value.map((subValue) => {
 						return this.processQuery(subValue);
 					});
+				}
+
+				if (Match.test(value, Object) && Object.keys(value).length > 0) {
+					query[field] = this.processQuery(value);
 				}
 			}
 		}

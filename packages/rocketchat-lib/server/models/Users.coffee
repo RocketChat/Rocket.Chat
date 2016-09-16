@@ -105,10 +105,14 @@ RocketChat.models.Users = new class extends RocketChat.models._Base
 
 		termRegex = new RegExp s.escapeRegExp(searchTerm), 'i'
 		query =
-			active: true
 			$and: [
-				{ username: { $nin: exceptions } }
-				{ username: termRegex }
+				{
+					active: true
+					username: termRegex
+				}
+				{
+					username: { $nin: exceptions }
+				}
 			]
 
 		return @find query, options
