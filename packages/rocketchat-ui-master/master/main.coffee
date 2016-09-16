@@ -29,6 +29,15 @@ Template.body.onRendered ->
 					if subscription.alert or subscription.unread > 0
 						Meteor.call 'readMessages', subscription.rid
 
+	$(document.body).on 'keydown', (e) ->
+		target = e.target
+		if /input|textarea|select/i.test(target.tagName)
+			return
+		$inputMessage = $('textarea.input-message')
+		if 0 == $inputMessage.length
+			return
+		$inputMessage.focus()
+
 	$(document.body).on 'click', 'a', (e) ->
 		link = e.currentTarget
 		if link.origin is s.rtrim(Meteor.absoluteUrl(), '/') and /msg=([a-zA-Z0-9]+)/.test(link.search)
