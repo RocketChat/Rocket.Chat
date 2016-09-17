@@ -6,9 +6,9 @@ RocketChat.models.Subscriptions.updateDesktopNotificationsById = function(_id, d
 	const update = {};
 
 	if (desktopNotifications === 'default') {
-		update.$unset = { desktopNotifications: 1 }
+		update.$unset = { desktopNotifications: 1 };
 	} else {
-		update.$set = { desktopNotifications: desktopNotifications }
+		update.$set = { desktopNotifications: desktopNotifications };
 	}
 
 	return this.update(query, update);
@@ -36,9 +36,9 @@ RocketChat.models.Subscriptions.updateMobilePushNotificationsById = function(_id
 	const update = {};
 
 	if (mobilePushNotifications === 'default') {
-		update.$unset = { mobilePushNotifications: 1 }
+		update.$unset = { mobilePushNotifications: 1 };
 	} else {
-		update.$set = { mobilePushNotifications: mobilePushNotifications }
+		update.$set = { mobilePushNotifications: mobilePushNotifications };
 	}
 
 	return this.update(query, update);
