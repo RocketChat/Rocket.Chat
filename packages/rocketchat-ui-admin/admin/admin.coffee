@@ -176,6 +176,8 @@ Template.admin.helpers
 
 	setEditorOnBlur: (_id) ->
 		Meteor.defer ->
+			return if not $('.code-mirror-box[data-editor-id="'+_id+'"] .CodeMirror')[0]
+
 			codeMirror = $('.code-mirror-box[data-editor-id="'+_id+'"] .CodeMirror')[0].CodeMirror
 			if codeMirror.changeAdded is true
 				return
