@@ -63,6 +63,17 @@
 									</select>
 								</div>
 							</div>
+							<div class="input-line double-col" id="mobileNotifications">
+								<label>{{_ "Notification_Mobile_Default_For"}}</label>
+								<div>
+									<select class="input-monitor" name="mobileNotifications">
+										<option value="default" selected="{{selected 'mobileNotifications' 'default' true}}">{{_ "Default"}}</option>
+										<option value="all" selected="{{selected 'mobileNotifications' 'all' false}}">{{_ "All"}}</option>
+										<option value="mentions" selected="{{selected 'mobileNotifications' 'mentions' false}}">{{_ "Mentions"}}</option>
+										<option value="nothing" selected="{{selected 'mobileNotifications' 'nothing' false}}">{{_ "Nothing"}}</option>
+									</select>
+								</div>
+							</div>
 							<div class="input-line double-col" id="unreadAlert">
 								<label>{{_ "Unread_Alert"}}</label>
 								<div>

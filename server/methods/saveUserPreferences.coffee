@@ -47,6 +47,9 @@ Meteor.methods
 			if settings.desktopNotifications?
 				preferences.desktopNotifications = settings.desktopNotifications;
 
+			if settings.mobileNotifications?
+				preferences.mobileNotifications = settings.mobileNotifications;
+
 			preferences.desktopNotificationDuration = settings.desktopNotificationDuration - 0
 			preferences.viewMode = settings.viewMode || 0
 			preferences.hideUsernames = settings.hideUsernames is "1"

@@ -77,10 +77,11 @@ RocketChat.callbacks.add('afterSaveMessage', function(message, room) {
 		let currentUser = RocketChat.models.Users.findOneById(subscription.u._id);
 		let preferences = currentUser.settings ? currentUser.settings.preferences || {} : {};
 		let userDesktopNotificationPreference = preferences.desktopNotifications !== 'default' ? preferences.desktopNotifications : undefined;
+		let userMobileNotificationPreference = preferences.mobileNotifications !== 'default' ? preferences.mobileNotifications : undefined;
 		// Set defaults if they don't exist
 		let {
 			desktopNotifications = userDesktopNotificationPreference || RocketChat.settings.get('Desktop_Notifications_Default_Alert'),
-			mobilePushNotifications = RocketChat.settings.get('Mobile_Notifications_Default_Alert')
+			mobilePushNotifications = userMobileNotificationPreference || RocketChat.settings.get('Mobile_Notifications_Default_Alert')
 		} = subscription;
 
 		if (desktopNotifications === 'all') {
