@@ -47,5 +47,6 @@ Package.onUse(function(api) {
 });
 
 Npm.depends({
-	'mime-types': '2.1.11'
+	'mime-types': '2.1.11',
+	'filesize': '3.3.0'
 });
