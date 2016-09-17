@@ -2,7 +2,7 @@
 
 let agentsHandler;
 let monitorAgents = false;
-let forwardChatTimeout = 60000;
+let actionTimeout = 60000;
 
 let onlineAgents = {
 	users: {},
@@ -25,7 +25,7 @@ let onlineAgents = {
 
 			delete this.users[userId];
 			delete this.queue[userId];
-		}), forwardChatTimeout);
+		}), actionTimeout);
 	},
 
 	exists(userId) {
@@ -33,13 +33,22 @@ let onlineAgents = {
 	}
 };
 
-RocketChat.settings.get('Livechat_forward_open_chats_timeout', function(key, value) {
-	forwardChatTimeout = value * 1000;
+function runAgentLeaveAction(userId) {
+	const action = RocketChat.settings.get('Livechat_agent_leave_action');
+	if (action === 'close') {
+		return RocketChat.Livechat.closeOpenChats(userId, RocketChat.settings.get('Livechat_agent_leave_comment'));
+	} else if (action === 'forward') {
+		return RocketChat.Livechat.forwardOpenChats(userId);
+	}
+}
+
+RocketChat.settings.get('Livechat_agent_leave_action_timeout', function(key, value) {
+	actionTimeout = value * 1000;
 });
 
-RocketChat.settings.get('Livechat_forward_open_chats', function(key, value) {
+RocketChat.settings.get('Livechat_agent_leave_action', function(key, value) {
 	monitorAgents = value;
-	if (value) {
+	if (value !== 'none') {
 		if (!agentsHandler) {
 			agentsHandler = RocketChat.models.Users.findOnlineAgents().observeChanges({
 				added(id) {
@@ -48,7 +57,7 @@ RocketChat.settings.get('Livechat_forward_open_chats', function(key, value) {
 				changed(id, fields) {
 					if (fields.statusLivechat && fields.statusLivechat === 'not-available') {
 						onlineAgents.remove(id, () => {
-							RocketChat.Livechat.forwardOpenChats(id);
+							runAgentLeaveAction(id);
 						});
 					} else {
 						onlineAgents.add(id);
@@ -56,7 +65,7 @@ RocketChat.settings.get('Livechat_forward_open_chats', function(key, value) {
 				},
 				removed(id) {
 					onlineAgents.remove(id, () => {
-						RocketChat.Livechat.forwardOpenChats(id);
+						runAgentLeaveAction(id);
 					});
 				}
 			});
@@ -74,7 +83,7 @@ UserPresenceMonitor.onSetUserStatus((user, status, statusConnection) => {
 	if (onlineAgents.exists(user._id)) {
 		if (statusConnection === 'offline' || user.statusLivechat === 'not-available') {
 			onlineAgents.remove(user._id, () => {
-				RocketChat.Livechat.forwardOpenChats(user._id);
+				runAgentLeaveAction(user._id);
 			});
 		}
 	}

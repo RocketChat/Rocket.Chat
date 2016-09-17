@@ -1,4 +1,127 @@
-## NEXT
+# History
+
+## 0.41.0, 2016-Sep-27
+
+- Add ability to close open livechats if an agent goes offline
+- Add basic channels tests
+- Add Error Handler to send uncaught exceptions to a room
+- Add filter to current livechats screen
+- Add login tests
+- Add migration to remove old Crowd setting
+- Add new global events
+- Allow webhook to decide if message is groupable
+- Catch errors sending mail
+- Fix auto complete issues with users and emoji
+- Fix error CodeMirror undefined when leaving admin
+- Fix ignore JSON.parse errors
+- Fix jitsiTimeout errors
+- Fix list of user auto complete from server
+- Fix open a new window if on embedded view mode
+- Fix stop registration if mail fails
+- Fix variable name in webhook (#4439)
+- Flip user video
+- Made Accounts_UseDNSDomainCheck false by default
+- Prevent edited messaged breaking line
+- Prevent empty username suggestion
+- Prevent error when parsing oembed meta
+- Remove colon from users autocomplete
+- Removed fast-render
+- Removed the word BY from the edited description title
+- Rename atlassian crowd url to remove space
+- Replace autocomplte popups subscriptions with methods
+- Trigger global event to embedded images
+
+## 0.40.1, 2016-Sep-21
+
+- Allow Iframe login with default tokens
+- Fix embedded layout message box auto-resize
+- Fix for the new return of findAndModify
+- Fix mesaage search to use users' timezone when searching on dates
+- Fix popout mode for livechat
+- Fix to update custom emojis in real time
+- Replace fontello by svg icons on LiveChat
+- Show file type on file upload error (#3217)
+- Use the npm package of UAParser on LiveChat
+
+## 0.40.0, 2016-Sep-20
+
+### IMPORTANT: Upgraded to meteor 1.4.1.1 - Now uses NodeJS 4.5
+
+- Add a minimalistic view for embedded layout
+- Add a setting to disable system notifications
+- Add a setting to make the timezone configurable in the Smarsh Connector
+- Add ability of multiple users invitation to slash command `invite`
+- Add API endpoint to create users
+- Add API endpoint to edit users
+- Add chimp to package.json dev dependencies to start our e2e tests
+- Add database migration script to remove invalid subscriptions records
+- Add Hex Color Preview Setting
+- Add imagemagick to the snaps
+- Add load more button to permissions manager
+- Add localforage and clipboard via NPM
+- Add method to get files in sync way
+- Add more logs for outgoing webhook
+- Add option to hide a custom field from the register form
+- Add package rocketchat-custom-emoji
+- Add package rocketchat-emoji-base: a base package for adding new sets of emoji
+- Add replica set and automatic SSL to docker-compose
+- Add reply button to message actions
+- Add setting to allow the sending of unrecognized slash commands for handling by bots
+- Add snap package yaml for Rocket.Chat
+- Add TAPi18n.__ to slashcommand params
+- Added readOnly option to channel settings panel
+- Added roomTypesClient method to check if room is readOnly
+- Allow consecutive large emojis in a message where only emoji is present
+- Allow use empty/wrong LDAP_Username_Field (#4259)
+- Any users present when a read-only channel is created are muted
+- Auto hide scrollbars on windows
+- Autolinker: Use npm module and convert from CoffeeScript (#4293)
+- Avoid darh-n-drops to the side-nav result in opening the files in the browser
+- Change post-read-only to post-readonly and create set-readonly
+- Check if the user being removed is the last owner of the room
+- Check mention-all permisson with message creator rather than current user
+- Clarify the descriotion of the keep history setting
+- Fix /open with an invalid name
+- Fix Can't Change a Room's Name (#4173) (#4226)
+- Fix count of unread messages on rtl
+- Fix error when typing on a recently opened room
+- Fix Exception while invoking method sendForgotPasswordEmail (#4203)
+- Fix insert of Default Custom SAML
+- Fix IP regular expression for clickable link
+- Fix rtl spotlight and prevent line break
+- Fix Translations for slashcommands
+- HTML-escape user data when storing in Meteor Error
+- Improve incoming webhook logs
+- Improve look and feel of upload and unread bars
+- Improve message day divider
+- Improve outgoing webhook logs
+- Improve scroll look of textarea
+- Improve search options
+- Improve spotlight to search in subscriptions (#4269)
+- Improve upload bars layout
+- Improve upload error messages
+- Include all public rooms and users on spotlight search
+- Incorrect avatar image on Chrome 53 (#4325)
+- Limit message box height
+- Make the CSS for the loading animation inline to avoid blank screen
+- Markdown url links that point to server url should not open in blank
+- MessageBox hidden and dropzone disabled for read-only room if user doesn't have permission to post
+- Migration for statistics installedAt and settings createdAt
+- Move livechat bundled assets to root app
+- Only show textarea scroll if necessary
+- Only try to auto orient jpeg, png and bmp files
+- Open new direct rooms correctly (#4322)
+- Open new rooms for direct messages correctly via spotlight
+- Reactive the rate limiter of method `sendMessage`
+- Refactored to remove unnecessary addUsernameByIdAndMute method
+- Remove particlesjs
+- Renamed users-typing class to stream-info, added 'this room is read only' message
+- Set subscriptions archived when user is deactivated
+- SetReadOnlyById now removes empty muted array from room record
+- Speed improvement on theme compilation
+- Standardised channel info icon
+- Using faster npm bcrypt module
+- Verify permissions on spotlight list
 
 ## 0.39.0, 2016-Sep-05
 

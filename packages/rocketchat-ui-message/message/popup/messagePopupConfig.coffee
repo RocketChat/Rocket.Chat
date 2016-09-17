@@ -1,6 +1,4 @@
-@filteredUsers = new Mongo.Collection 'filtered-users'
 @filteredUsersMemory = new Mongo.Collection null
-@channelAutocomplete = new Mongo.Collection 'channel-autocomplete'
 
 Meteor.startup ->
 	Tracker.autorun ->
@@ -20,17 +18,55 @@ Meteor.startup ->
 					ts: messageUser.ts
 
 
+getUsersFromServer = (filter, records, cb) =>
+	messageUsers = _.pluck(records, 'username')
+	Meteor.call 'spotlight', filter, messageUsers, { users: true }, (err, results) ->
+		if err?
+			return console.error err
+
+		if results.users.length > 0
+			for result in results.users
+				if records.length < 5
+					records.push
+						_id: result.username
+						username: result.username
+						status: 'offline'
+						sort: 3
+
+			records = _.sortBy(records, 'sort')
+
+			cb(records)
+
+getRoomsFromServer = (filter, records, cb) =>
+	Meteor.call 'spotlight', filter, null, { rooms: true }, (err, results) ->
+		if err?
+			return console.error err
+
+		if results.rooms.length > 0
+			for room in results.rooms
+				if records.length < 5
+					records.push room
+
+			cb(records)
+
+getUsersFromServerDelayed = _.throttle getUsersFromServer, 500
+getRoomsFromServerDelayed = _.throttle getRoomsFromServer, 500
+
+
 Template.messagePopupConfig.helpers
 	popupUserConfig: ->
 		self = this
 		template = Template.instance()
+
 		config =
 			title: t('People')
 			collection: filteredUsersMemory
 			template: 'messagePopupUser'
 			getInput: self.getInput
 			textFilterDelay: 200
-			getFilter: (collection, filter) ->
+			trigger: '@'
+			suffix: ' '
+			getFilter: (collection, filter, cb) ->
 				exp = new RegExp("#{RegExp.escape filter}", 'i')
 
 				# Get users from messages
@@ -44,6 +80,7 @@ Template.messagePopupConfig.helpers
 							_id: item.username
 							username: item.username
 							status: item.status
+							sort: 1
 
 				# Get users of room
 				if items.length < 5 and filter?.trim() isnt ''
@@ -56,75 +93,57 @@ Template.messagePopupConfig.helpers
 									_id: roomUsername
 									username: roomUsername
 									status: Session.get('user_' + roomUsername + '_status') or 'offline'
+									sort: 2
 
 								if items.length >= 5
 									break
 
 				# Get users from db
 				if items.length < 5 and filter?.trim() isnt ''
-					messageUsers = _.pluck(items, 'username')
-					template.userFilter.set
-						name: filter
-						except: messageUsers
-
-					if template.subscriptionsReady()
-						filteredUsers.find({username: exp}, {limit: 5 - messageUsers.length}).fetch().forEach (item) ->
-							items.push
-								_id: item.username
-								username: item.username
-								status: 'offline'
+					getUsersFromServerDelayed filter, items, cb
 
 				all =
-					_id: '@all'
+					_id: 'all'
 					username: 'all'
 					system: true
 					name: t 'Notify_all_in_this_room'
 					compatibility: 'channel group'
+					sort: 4
 
 				exp = new RegExp("(^|\\s)#{RegExp.escape filter}", 'i')
 				if exp.test(all.username) or exp.test(all.compatibility)
-					items.unshift all
+					items.push all
 
-				template.resultsLength.set items.length
 				return items
 
-			getValue: (_id, collection, firstPartValue) ->
-				if _id is '@all'
-					if firstPartValue.indexOf(' ') > -1
-						return 'all'
-
-					return 'all:'
-
-				if firstPartValue.indexOf(' ') > -1
-					return _id
-
-				return _id + ':'
+			getValue: (_id) ->
+				return _id
 
 		return config
 
 	popupChannelConfig: ->
 		self = this
 		template = Template.instance()
+
 		config =
 			title: t('Channels')
-			collection: channelAutocomplete
+			collection: RocketChat.models.Subscriptions
 			trigger: '#'
+			suffix: ' '
 			template: 'messagePopupChannel'
 			getInput: self.getInput
-			textFilterDelay: 200
-			getFilter: (collection, filter) ->
+			getFilter: (collection, filter, cb) ->
 				exp = new RegExp(filter, 'i')
-				template.channelFilter.set filter
-				if template.channelSubscription.ready()
-					results = collection.find( { name: exp }, { limit: 5 }).fetch()
-				else
-					results = []
 
-				template.resultsLength.set results.length
-				return results
+				records = collection.find({name: exp, t: {$in: ['c', 'p']}}, {limit: 5, sort: {ls: -1}}).fetch()
 
-			getValue: (_id, collection) ->
-				return collection.findOne(_id)?.name
+				if records.length < 5 and filter?.trim() isnt ''
+					getRoomsFromServerDelayed filter, records, cb
+
+				return records
+
+			getValue: (_id, collection, records) ->
+				return _.findWhere(records, {_id: _id})?.name
 
 		return config
 
@@ -136,6 +155,7 @@ Template.messagePopupConfig.helpers
 			title: t('Commands')
 			collection: RocketChat.slashCommands.commands
 			trigger: '/'
+			suffix: ' '
 			triggerAnywhere: false
 			template: 'messagePopupSlashCommand'
 			getInput: self.getInput
@@ -153,7 +173,6 @@ Template.messagePopupConfig.helpers
 
 				commands = commands[0..10]
 
-				template.resultsLength.set commands.length
 				return commands
 
 		return config
@@ -171,8 +190,9 @@ Template.messagePopupConfig.helpers
 				template: 'messagePopupEmoji'
 				trigger: ':'
 				prefix: ''
+				suffix: ' '
 				getInput: self.getInput
-				getFilter: (collection, filter) ->
+				getFilter: (collection, filter, cb) ->
 					results = []
 					key = ':' + filter
 
@@ -197,23 +217,6 @@ Template.messagePopupConfig.helpers
 							return 1
 						return 0
 
-					template.resultsLength.set results.length
 					return results
 
 		return config
-
-	subscriptionNotReady: ->
-		template = Template.instance()
-		return 'notready' if template.resultsLength.get() is 0 and not template.subscriptionsReady()
-
-Template.messagePopupConfig.onCreated ->
-	@userFilter = new ReactiveVar {}
-	@channelFilter = new ReactiveVar ''
-	@resultsLength = new ReactiveVar 0
-
-	template = @
-	@autorun ->
-		template.userSubscription = template.subscribe 'filteredUsers', template.userFilter.get()
-
-	@autorun ->
-		template.channelSubscription = template.subscribe 'channelAutocomplete', template.channelFilter.get()

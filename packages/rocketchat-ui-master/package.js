@@ -22,17 +22,12 @@ Package.onUse(function(api) {
 		'coffeescript',
 		'underscore',
 		'rocketchat:lib',
-		'meteorhacks:inject-initial',
-		'meteorhacks:fast-render'
+		'meteorhacks:inject-initial'
 	]);
-
 	api.addFiles('master/main.html', 'client');
 	api.addFiles('master/loading.html', 'client');
 	api.addFiles('master/error.html', 'client');
 	api.addFiles('master/logoLayout.html', 'client');
-
 	api.addFiles('master/main.coffee', 'client');
-
 	api.addFiles('server/inject.js', 'server');
-	api.addFiles('server/fastRender.js', 'server');
 });

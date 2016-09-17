@@ -582,7 +582,7 @@
   "LDAP_Custom_Domain_Search" : "自定义域搜索条件",
   "LDAP_Custom_Domain_Search_Description" : "这样管理信息绑定和连接的 JSON 数据：<br/> <code>{\"filter\": \"(&(objectCategory=person)(objectclass=user)(memberOf=CN=ROCKET_ACCESS,CN=Users,DC=domain,DC=com)(sAMAccountName=#{username}))\", \"scope\": \"sub\", \"userDN\": \"rocket.service@domain.com\", \"password\": \"urpass\"}</code>",
   "LDAP_Default_Domain" : "默认域名",
-  "LDAP_Description" : "LDAP(轻量目录访问协议)是一种层次数据库，常被企业用于提供单点登录机制——该机制允许用户使用同一套帐号密码登录多个网站或服务。想要了解LDAP认证的设置及示例，可参考我们的wiki页： https://github.com/RocketChat/Rocket.Chat/wiki/LDAP-Authentication",
+  "LDAP_Description" : "LDAP(轻量目录访问协议)是一种层次数据库，常被企业用于提供单点登录机制——该机制允许用户使用同一套帐号密码登录多个网站或服务。想要了解LDAP认证的设置及示例，可参考我们的wiki页： https://rocket.chat/docs/administrator-guides/authentication/ldap/",
   "LDAP_Domain_Base" : "基础域",
   "LDAP_Domain_Base_Description" : "请填写有效的 DN 作为基础域（Domain Base），以便在该DN指向的 LDAP 子树中检索用户和组。您可添加多个DN，但组与组内用户必须定义在同一个基础域中。若您限定了某些 DN 作为基础域，则只能检索到这些DN下的用户。建议使用 LDAP 中的顶级目录作为基础域，配合下面的“自定义域搜索”筛选条件来进行用户的限制。",
   "LDAP_Domain_Search_Filter" : "筛选条件",

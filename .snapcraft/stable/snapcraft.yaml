@@ -1,5 +1,13 @@
+#
+# Easiest way to work with this file, from an updated Ubuntu 16.04 LTS image
+# 1.   create a non-root user with sudo priv and perform following steps as non-root
+# 2.  `sudo apt-get update`
+# 3.  `sudo apt-get install snapcraft python build-essential`
+# 4.  `snapcraft stage`
+# 5.  `snapcraft snap`
+
 name: rocketchat-server
-version: 0.39.0
+version: 0.41.0
 summary: Rocket.Chat server
 description: Have your own Slack like online chat, built with Meteor. https://rocket.chat/
 confinement: strict
@@ -33,12 +41,21 @@ parts:
         plugin: dump
         after: [mongodb]
         source: https://rocket.chat/releases/latest/download
+        source-type: tar
+        stage-packages:
+            - imagemagick
+        organize:
+            usr/bin/convert-im6: usr/bin/convert
         stage:
             - programs
             - main.js
+            - usr
+            - lib
         snap:
             - programs
             - main.js
+            - usr
+            - lib
     mongodb:
         source: https://fastdl.mongodb.org/linux/mongodb-linux-x86_64-ubuntu1604-3.2.7.tgz
         plugin: dump

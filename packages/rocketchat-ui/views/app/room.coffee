@@ -11,6 +11,9 @@ userCanDrop = (_id) ->
 	return !RocketChat.roomTypes.readOnly _id, Meteor.user()
 
 Template.room.helpers
+	embeddedVersion: ->
+		return RocketChat.Layout.isEmbedded()
+
 	favorite: ->
 		sub = ChatSubscription.findOne { rid: this._id }, { fields: { f: 1 } }
 		return 'icon-star favorite-room' if sub?.f? and sub.f and favoritesEnabled()
@@ -304,6 +307,13 @@ Template.room.events
 
 	'click .user-card-message': (e, instance) ->
 		roomData = Session.get('roomData' + this._arguments[1].rid)
+
+		if RocketChat.Layout.isEmbedded()
+			fireGlobalEvent('click-user-card-message', { username: this._arguments[1].u.username })
+			e.preventDefault()
+			e.stopPropagation()
+			return
+
 		if roomData.t in ['c', 'p', 'd']
 			instance.setUserDetail this._arguments[1].u.username
 		RocketChat.TabBar.setTemplate 'membersList'
@@ -354,7 +364,16 @@ Template.room.events
 	"click .mention-link": (e, instance) ->
 		channel = $(e.currentTarget).data('channel')
 		if channel?
+			if RocketChat.Layout.isEmbedded()
+				return fireGlobalEvent('click-mention-link', { path: FlowRouter.path('channel', {name: channel}), channel: channel })
+
 			FlowRouter.go 'channel', {name: channel}
+			return
+
+		if RocketChat.Layout.isEmbedded()
+			fireGlobalEvent('click-mention-link', { username: $(e.currentTarget).data('username') })
+			e.stopPropagation();
+			e.preventDefault();
 			return
 
 		RocketChat.TabBar.setTemplate 'membersList'
@@ -599,10 +618,16 @@ Template.room.onRendered ->
 			template.sendToBottomIfNecessaryDebounced()
 		, 50
 
+	rtl = $('html').hasClass('rtl')
+
 	updateUnreadCount = _.throttle ->
 		messageBoxOffset = messageBox.offset()
 
-		lastInvisibleMessageOnScreen = document.elementFromPoint(messageBoxOffset.left+1, messageBoxOffset.top+1)
+		if rtl
+			lastInvisibleMessageOnScreen = document.elementFromPoint(messageBoxOffset.left+messageBox.width()-1, messageBoxOffset.top+1)
+		else
+			lastInvisibleMessageOnScreen = document.elementFromPoint(messageBoxOffset.left+1, messageBoxOffset.top+1)
+
 		if lastInvisibleMessageOnScreen?.id?
 			lastMessage = ChatMessage.findOne lastInvisibleMessageOnScreen.id
 			if lastMessage?

@@ -295,7 +295,7 @@ var JitsiMeetExternalAPI = (function()
         var message;
         try {
             message = JSON.parse(event.data);
-        } catch (e) {}
+        } catch (e) { return; }
 
         if(!message.type) {
             console.error("Message without type is received.");

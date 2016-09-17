@@ -30,7 +30,7 @@ Meteor.startup(function() {
 
 				let room = RocketChat.models.Rooms.findOne({_id: rid});
 				let currentTime = new Date().getTime();
-				let jitsiTimeout = new Date(room.jitsiTimeout).getTime() || currentTime;
+				let jitsiTimeout = new Date((room && room.jitsiTimeout) || currentTime).getTime();
 
 				if (jitsiTimeout > currentTime) {
 					RocketChat.TabBar.updateButton('video', { class: 'attention' });
