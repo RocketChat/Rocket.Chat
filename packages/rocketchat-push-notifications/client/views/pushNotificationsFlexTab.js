@@ -9,7 +9,7 @@ Template.pushNotificationsFlexTab.helpers({
 				desktopNotifications: 1
 			}
 		});
-		return sub ? sub.desktopNotifications : '';
+		return sub ? sub.desktopNotifications || 'default' : 'default';
 	},
 	mobilePushNotifications() {
 		var sub = ChatSubscription.findOne({
@@ -19,7 +19,7 @@ Template.pushNotificationsFlexTab.helpers({
 				mobilePushNotifications: 1
 			}
 		});
-		return sub ? sub.mobilePushNotifications : '';
+		return sub ? sub.mobilePushNotifications || 'default' : 'default';
 	},
 	emailNotifications() {
 		var sub = ChatSubscription.findOne({
@@ -89,11 +89,7 @@ Template.pushNotificationsFlexTab.helpers({
 				case 'mentions':
 					return t('Mentions');
 				default:
-					if (field === 'emailNotifications') {
-						return t('Use_account_preference');
-					} else {
-						return t('Mentions');
-					}
+					return t('Use_account_preference');
 			}
 		}
 	},

@@ -74,14 +74,20 @@ RocketChat.callbacks.add('afterSaveMessage', function(message, room) {
 	settings.dontNotifyMobileUsers = [];
 	settings.desktopNotificationDurations = {};
 	RocketChat.models.Subscriptions.findNotificationPreferencesByRoom(room._id).forEach(function(subscription) {
-		if (subscription.desktopNotifications === 'all') {
+		// Set defaults if they don't exist
+		let {
+			desktopNotifications = RocketChat.settings.get('Desktop_Notifications_Default_Alert'),
+			mobilePushNotifications = RocketChat.settings.get('Mobile_Notifications_Default_Alert')
+		} = subscription;
+
+		if (desktopNotifications === 'all') {
 			settings.alwaysNotifyDesktopUsers.push(subscription.u._id);
-		} else if (subscription.desktopNotifications === 'nothing') {
+		} else if (desktopNotifications === 'nothing') {
 			settings.dontNotifyDesktopUsers.push(subscription.u._id);
 		}
-		if (subscription.mobilePushNotifications === 'all') {
+		if (mobilePushNotifications === 'all') {
 			settings.alwaysNotifyMobileUsers.push(subscription.u._id);
-		} else if (subscription.mobilePushNotifications === 'nothing') {
+		} else if (mobilePushNotifications === 'nothing') {
 			settings.dontNotifyMobileUsers.push(subscription.u._id);
 		}
 		settings.desktopNotificationDurations[subscription.u._id] = subscription.desktopNotificationDuration;
