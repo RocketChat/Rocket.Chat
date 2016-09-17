@@ -43,6 +43,11 @@ Template.body.onRendered ->
 		if link.origin is s.rtrim(Meteor.absoluteUrl(), '/') and /msg=([a-zA-Z0-9]+)/.test(link.search)
 			e.preventDefault()
 			e.stopPropagation()
+
+			if RocketChat.Layout.isEmbedded()
+				fireGlobalEvent('click-message-link', { link: link.pathname + link.search })
+				return window.open(link.pathname + link.search)
+
 			FlowRouter.go(link.pathname + link.search)
 
 	Tracker.autorun (c) ->
@@ -176,6 +181,9 @@ Template.main.helpers
 
 	CustomScriptLoggedIn: ->
 		RocketChat.settings.get 'Custom_Script_Logged_In'
+
+	embeddedVersion: ->
+		return 'embedded-view' if RocketChat.Layout.isEmbedded()
 
 
 Template.main.events
