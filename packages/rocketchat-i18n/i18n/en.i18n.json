@@ -850,6 +850,8 @@
   "Notification_Mobile_Default_For" : "Push Mobile Notifications For",
   "Notification_Duration" : "Notification Duration",
   "Notifications" : "Notifications",
+  "Notifications_Max_Room_Members" : "Max room members before disabling all message notifications",
+  "Notifications_Max_Room_Members_Description" : "Max number of members in room when notifications for all messages gets disabled. (0 to disable)",
   "Notify_all_in_this_room" : "Notify all in this room",
   "Num_Agents" : "# Agents",
   "Number_of_messages" : "Number of messages",

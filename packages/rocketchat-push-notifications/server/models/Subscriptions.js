@@ -108,11 +108,19 @@ RocketChat.models.Subscriptions.findDontNotifyMobileUsersByRoomId = function(roo
 	return this.find(query);
 };
 
-RocketChat.models.Subscriptions.findNotificationPreferencesByRoom = function(roomId) {
+RocketChat.models.Subscriptions.findNotificationPreferencesByRoom = function(roomId, explicit) {
 	const query = {
 		rid: roomId,
 		'u._id': {$exists: true}
 	};
+
+	if (explicit) {
+		query.$or = [
+			{desktopNotifications: {$exists: true}},
+			{desktopNotificationDuration: {$exists: true}},
+			{mobilePushNotifications: {$exists: true}}
+		];
+	}
 
 	return this.find(query);
 };

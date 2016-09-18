@@ -139,6 +139,8 @@ RocketChat.settings.addGroup 'General', ->
 			public: true
 		}
 
+		@add 'Notifications_Max_Room_Members', 100, { type: 'int', public: true, i18nDescription: 'Notifications_Max_Room_Members_Description' }
+
 	@section 'REST API', ->
 		@add 'API_User_Limit', 500, { type: 'int', public: true, i18nDescription: 'API_User_Limit' }
 

@@ -73,7 +73,10 @@ RocketChat.callbacks.add('afterSaveMessage', function(message, room) {
 	settings.alwaysNotifyMobileUsers = [];
 	settings.dontNotifyMobileUsers = [];
 	settings.desktopNotificationDurations = {};
-	RocketChat.models.Subscriptions.findNotificationPreferencesByRoom(room._id).forEach(function(subscription) {
+	// Don't fetch all users if room exceeds max members
+	let maxMembersForNotification = RocketChat.settings.get('Notifications_Max_Room_Members');
+	let disableAllMessageNotifications = room.usernames.length > maxMembersForNotification && maxMembersForNotification !== 0;
+	RocketChat.models.Subscriptions.findNotificationPreferencesByRoom(room._id, disableAllMessageNotifications).forEach(function(subscription) {
 		let currentUser = RocketChat.models.Users.findOneById(subscription.u._id);
 		let preferences = currentUser.settings ? currentUser.settings.preferences || {} : {};
 		let userDesktopNotificationPreference = preferences.desktopNotifications !== 'default' ? preferences.desktopNotifications : undefined;
@@ -84,12 +87,12 @@ RocketChat.callbacks.add('afterSaveMessage', function(message, room) {
 			mobilePushNotifications = userMobileNotificationPreference || RocketChat.settings.get('Mobile_Notifications_Default_Alert')
 		} = subscription;
 
-		if (desktopNotifications === 'all') {
+		if (desktopNotifications === 'all' && !disableAllMessageNotifications) {
 			settings.alwaysNotifyDesktopUsers.push(subscription.u._id);
 		} else if (desktopNotifications === 'nothing') {
 			settings.dontNotifyDesktopUsers.push(subscription.u._id);
 		}
-		if (mobilePushNotifications === 'all') {
+		if (mobilePushNotifications === 'all' && !disableAllMessageNotifications) {
 			settings.alwaysNotifyMobileUsers.push(subscription.u._id);
 		} else if (mobilePushNotifications === 'nothing') {
 			settings.dontNotifyMobileUsers.push(subscription.u._id);
