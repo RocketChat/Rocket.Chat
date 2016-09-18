@@ -166,6 +166,13 @@ RocketChat.models.Users = new class extends RocketChat.models._Base
 
 		return @find query, options
 
+	findUsersByIds: (ids, options) ->
+		query =
+			_id:
+				$in: ids
+
+		return @find query, options
+
 	# UPDATE
 	updateLastLoginById: (_id) ->
 		update =
