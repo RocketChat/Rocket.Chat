@@ -48,8 +48,8 @@
 	stop: () ->
 		if status == 0
 			return
-		@osc1.stop(0)
-		@osc2.stop(0)
+		@osc1?.stop(0)
+		@osc2?.stop(0)
 		@ringerLFOSource?.stop(0)
 		@status = 0
 
