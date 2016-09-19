@@ -9,14 +9,14 @@ RocketChat.settings.get('Bugsnag_api_key', (key, value) => {
 });
 
 const bindEnvironment = Meteor.bindEnvironment;
-Meteor.bindEnvironment = function (func, onException, _this) {
+Meteor.bindEnvironment = function(func, onException, _this) {
 	if (typeof(onException) !== 'function') {
 		if (!onException || typeof(onException) === 'string') {
-			var description = onException || "callback of async function";
-			onException = function (error) {
+			var description = onException || 'callback of async function';
+			onException = function(error) {
 				RocketChat.bugsnag.notify(error);
 				Meteor._debug(
-					"Exception in " + description + ":",
+					'Exception in ' + description + ':',
 					error && error.stack || error
 				);
 			};
