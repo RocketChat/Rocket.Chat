@@ -186,6 +186,8 @@ class @ChatMessages
 							else
 								Meteor.call 'slashCommand', {cmd: command, params: param, msg: msgObject }
 							return
+
+					if !RocketChat.settings.get('Message_AllowUnrecognizedSlashCommand')
 						invalidCommandMsg =
 							_id: Random.id()
 							rid: rid
