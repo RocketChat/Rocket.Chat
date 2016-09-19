@@ -5,8 +5,6 @@ Package.describe({
 });
 
 Package.onUse(function(api) {
-	api.versionsFrom('1.0');
-
 	api.use('coffeescript');
 	api.use('rocketchat:lib');
 	api.use('rocketchat:custom-oauth');

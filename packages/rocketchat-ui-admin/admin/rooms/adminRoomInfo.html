@@ -59,6 +59,21 @@
 								</div>
 							</li>
 						{{/if}}
+						{{#if notDirect}}
+							<li>
+								<label>{{_ "Read_only_channel"}}</label>
+								<div>
+									{{#if editing 'readOnly'}}
+										<label><input type="radio" name="readOnly" class="editing" value="true" checked="{{$eq readOnly true}}" /> {{_ "True"}}</label>
+										<label><input type="radio" name="readOnly" value="false" checked="{{$neq readOnly true}}" /> {{_ "False"}}</label>
+										<button type="button" class="button secondary cancel">{{_ "Cancel"}}</button>
+										<button type="button" class="button primary save">{{_ "Save"}}</button>
+									{{else}}
+										<span>{{readOnlyDescription}}{{#if canEdit}} <i class="icon-pencil" data-edit="readOnly"></i>{{/if}}</span>
+									{{/if}}
+								</div>
+							</li>
+						{{/if}}
 						{{#each channelSettings}}
 							{{> Template.dynamic template=template data=data}}
 						{{/each}}

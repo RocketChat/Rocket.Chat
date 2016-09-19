@@ -145,7 +145,7 @@ Template.messagePopupConfig.helpers
 					if command.indexOf(filter) > -1
 						commands.push
 							_id: command
-							params: item.params
+							params: if item.params then TAPi18n.__ item.params else ''
 							description: TAPi18n.__ item.description
 
 				commands = commands.sort (a, b) ->
@@ -176,32 +176,26 @@ Template.messagePopupConfig.helpers
 					results = []
 					key = ':' + filter
 
-					if RocketChat.emoji.asciiList[key] or filter.length < 2
+					if RocketChat.emoji.packages.emojione?.asciiList[key] or filter.length < 2
 						return []
 
-					# use ascii
-					for shortname, value of RocketChat.emoji.asciiList
+					regExp = new RegExp('^' + RegExp.escape(key), 'i')
+
+					for key, value of collection
 						if results.length > 10
 							break
 
-						if shortname.startsWith(key)
+						if regExp.test(key)
 							results.push
-								_id: shortname
-								data: [value]
+								_id: key
+								data: value
 
-					# use shortnames
-					for shortname, data of collection
-						if results.length > 10
-							break
-
-						if shortname.startsWith(key)
-							results.push
-								_id: shortname
-								data: data
-
-					#if filter.length >= 3
 					results.sort (a, b) ->
-						a._id.length - b._id.length
+						if a._id < b._id
+							return -1
+						if a._id > b._id
+							return 1
+						return 0
 
 					template.resultsLength.set results.length
 					return results
