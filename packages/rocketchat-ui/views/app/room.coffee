@@ -622,10 +622,16 @@ Template.room.onRendered ->
 			template.sendToBottomIfNecessaryDebounced()
 		, 50
 
+	rtl = $('html').hasClass('rtl')
+
 	updateUnreadCount = _.throttle ->
 		messageBoxOffset = messageBox.offset()
 
-		lastInvisibleMessageOnScreen = document.elementFromPoint(messageBoxOffset.left+1, messageBoxOffset.top+1)
+		if rtl
+			lastInvisibleMessageOnScreen = document.elementFromPoint(messageBoxOffset.left+messageBox.width()-1, messageBoxOffset.top+1)
+		else
+			lastInvisibleMessageOnScreen = document.elementFromPoint(messageBoxOffset.left+1, messageBoxOffset.top+1)
+
 		if lastInvisibleMessageOnScreen?.id?
 			lastMessage = ChatMessage.findOne lastInvisibleMessageOnScreen.id
 			if lastMessage?
