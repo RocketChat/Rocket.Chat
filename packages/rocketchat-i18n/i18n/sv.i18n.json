@@ -571,7 +571,7 @@
   "LDAP_Custom_Domain_Search" : "Anpassad Domain Search",
   "LDAP_Custom_Domain_Search_Description" : "En bit av JSON som styr binder och anslutningsinfo och har formen: <br/> <code>{\"filter\": \"(&(objectCategory=person)(objectclass=user)(memberOf=CN=ROCKET_ACCESS,CN=Users,DC=domain,DC=com)(sAMAccountName=#{username}))\", \"scope\": \"sub\", \"userDN\": \"rocket.service@domain.com\", \"password\": \"urpass\"}</code>",
   "LDAP_Default_Domain" : "Standarddomän",
-  "LDAP_Description" : "LDAP är en hierarkisk databas som många företag använder för att tillhandahålla enkel inloggning - en anläggning för att dela ett lösenord mellan flera webbplatser och tjänster. För avancerad konfiguration. information och exempel, kontakta vår wiki: https://github.com/RocketChat/Rocket.Chat/wiki/LDAP-Authentication.",
+  "LDAP_Description" : "LDAP är en hierarkisk databas som många företag använder för att tillhandahålla enkel inloggning - en anläggning för att dela ett lösenord mellan flera webbplatser och tjänster. För avancerad konfiguration. information och exempel, kontakta vår wiki: https://rocket.chat/docs/administrator-guides/authentication/ldap/.",
   "LDAP_Domain_Base" : "domän Base",
   "LDAP_Domain_Base_Description" : "Den fullständiga unika namn (DN) på en LDAP träd som du vill söka efter användare och grupper. Du kan lägga till så många som du vill, emellertid måste definieras varje grupp i samma domän basen som de användare som hör till den. Om du anger begränsade användargrupper, kommer endast användare som tillhör dessa grupper vara i omfattning. Vi rekommenderar att du anger den översta nivån i LDAP-katalogträd som domänen bas och använda sökfunktionen filter för att kontrollera åtkomsten.",
   "LDAP_Domain_Search_Filter" : "Domän Filter",
