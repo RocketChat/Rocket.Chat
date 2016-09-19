@@ -38,7 +38,7 @@
 		@filter.connect(@context.destination)
 
 	start: (f1, f2) ->
-		if status == 1
+		if @status == 1
 			return
 		@setup(f1, f2)
 		@osc1.start(0)
@@ -46,7 +46,7 @@
 		@status = 1
 
 	stop: () ->
-		if status == 0
+		if @status == 0
 			return
 		@osc1?.stop(0)
 		@osc2?.stop(0)
