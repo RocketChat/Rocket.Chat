@@ -1503,6 +1503,7 @@ label.required:after {
 	justify-content: center;
 	padding: 0 40px;
 	> .spotlight-input {
+		position: relative;
 		width: 100%;
 		max-width: 600px;
 		font-size: 24px;
@@ -1536,6 +1537,9 @@ label.required:after {
 				line-height: 40px;
 				font-size: 20px;
 				padding: 0 10px;
+				white-space: nowrap;
+				text-overflow: ellipsis;
+				overflow: hidden;
 				i {
 					margin-right: 4px;
 					background: #fff;
@@ -1552,7 +1556,7 @@ label.required:after {
 				span {
 					float: right;
 					border-radius: 2px;
-					margin-top: 6px;
+					margin-top: 10px;
 					color: #fff;
 					background-color: @unread-notification-color;
 					min-width: 20px;
