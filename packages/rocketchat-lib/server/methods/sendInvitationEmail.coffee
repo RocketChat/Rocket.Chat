@@ -29,10 +29,14 @@ Meteor.methods
 
 			html = RocketChat.placeholders.replace(html, { email: email });
 
-			Email.send
-				to: email
-				from: RocketChat.settings.get 'From_Email'
-				subject: subject
-				html: header + html + footer
+			try
+				Email.send
+					to: email
+					from: RocketChat.settings.get 'From_Email'
+					subject: subject
+					html: header + html + footer
+			catch error
+				throw new Meteor.Error 'error-email-send-failed', 'Error trying to send email: ' + error.message, { method: 'sendInvitationEmail', message: error.message }
+
 
 		return validEmails
