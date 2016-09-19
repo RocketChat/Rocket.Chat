@@ -346,11 +346,17 @@ Template.admin.onRendered ->
 		SideNav.openFlex()
 
 	Meteor.setTimeout ->
-		$('input.minicolors').minicolors({theme: 'rocketchat'})
+		$('input.minicolors').minicolors
+			theme: 'rocketchat'
+			format: 'rgb'
+			opacity: true
 	, 1000
 
 	Tracker.autorun ->
 		FlowRouter.watchPathChange()
 		Meteor.setTimeout ->
-			$('input.minicolors').minicolors({theme: 'rocketchat'})
+			$('input.minicolors').minicolors
+				theme: 'rocketchat'
+				format: 'rgb'
+				opacity: true
 		, 400
