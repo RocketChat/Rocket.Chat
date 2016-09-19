@@ -8,7 +8,7 @@ base64@1.0.9
 binary-heap@1.0.9
 blaze@2.1.9
 blaze-tools@1.0.10
-boilerplate-generator@1.0.9
+boilerplate-generator@1.0.10
 caching-compiler@1.1.7
 caching-html-compiler@1.0.7
 callback-hook@1.0.9
