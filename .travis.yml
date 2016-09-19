@@ -18,6 +18,7 @@ addons:
 cache:
   directories:
     - "~/.meteor"
+    - "~/build/RocketChat/Rocket.Chat/node_modules"
 before_install:
   - if [ ! -e "$HOME/.meteor/meteor" ]; then curl https://install.meteor.com | /bin/sh; fi
 install:
