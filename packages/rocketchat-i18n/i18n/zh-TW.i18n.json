@@ -570,7 +570,7 @@
   "LDAP_Custom_Domain_Search" : "自定義域搜索",
   "LDAP_Custom_Domain_Search_Description" : "一塊JSON的管轄綁定和連接信息，並為下面的形式： <br/> <code>{\"filter\": \"(&(objectCategory=person)(objectclass=user)(memberOf=CN=ROCKET_ACCESS,CN=Users,DC=domain,DC=com)(sAMAccountName=#{username}))\", \"scope\": \"sub\", \"userDN\": \"rocket.service@domain.com\", \"password\": \"urpass\"}</code>",
   "LDAP_Default_Domain" : "默認域",
-  "LDAP_Description" : "LDAP is a hierarchical database that many companies use to provide single sign on - a facility for sharing one password between multiple sites and services. For advanced configuration information and examples, please consult our wiki: https://github.com/RocketChat/Rocket.Chat/wiki/LDAP-Authentication.",
+  "LDAP_Description" : "LDAP is a hierarchical database that many companies use to provide single sign on - a facility for sharing one password between multiple sites and services. For advanced configuration information and examples, please consult our wiki: https://rocket.chat/docs/administrator-guides/authentication/ldap/.",
   "LDAP_Domain_Base" : "域基",
   "LDAP_Domain_Base_Description" : "要搜索用戶和組的LDAP子樹的完全合格的名稱（DN）。您可以添加你喜歡的盡可能多的;然而，每一組必須在相同的域中鹼作為屬於它的用戶來定義。如果指定了受限制的用戶群體，只有屬於這些組的用戶將在範圍內。我們建議您指定的LDAP目錄樹的頂層為您的域名基地，並使用搜索過濾器來控制訪問。",
   "LDAP_Domain_Search_Filter" : "域搜索過濾器",
