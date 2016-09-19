@@ -1,5 +1,10 @@
 Meteor.methods({
 	groupsList: function(nameFilter, limit, sort) {
+
+		check(nameFilter, String);
+		check(limit, Match.Optional(Number));
+		check(sort, Match.Optional(String));
+
 		if (!Meteor.userId()) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'groupsList' });
 		}

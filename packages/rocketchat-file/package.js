@@ -6,8 +6,6 @@ Package.describe({
 });
 
 Package.onUse(function(api) {
-	api.versionsFrom('1.0');
-
 	api.use('rocketchat:lib');
 	api.use('rocketchat:version');
 	api.use('coffeescript');
@@ -18,7 +16,7 @@ Package.onUse(function(api) {
 });
 
 Npm.depends({
-	'mkdirp': '0.3.5',
-	'gridfs-stream': '0.5.3',
-	'gm': '1.18.1'
+	'mkdirp': '0.5.1',
+	'gridfs-stream': '1.1.1',
+	'gm': '1.23.0'
 });
