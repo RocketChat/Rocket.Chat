@@ -155,6 +155,9 @@ ExecuteTriggerUrl = (url, trigger, message, room, tries=0) ->
 	if word?
 		data.trigger_word = word
 
+	logger.outgoing.info 'Will execute trigger', trigger.name, 'to', url
+	logger.outgoing.debug data
+
 	sendMessage = (message) ->
 		user = RocketChat.models.Users.findOneByUsername(trigger.username)
 
@@ -202,6 +205,11 @@ ExecuteTriggerUrl = (url, trigger, message, room, tries=0) ->
 		return
 
 	HTTP.call opts.method, opts.url, opts, (error, result) ->
+		if not result?
+			logger.outgoing.info 'Result for trigger', trigger.name, 'to', url, 'is empty'
+		else
+			logger.outgoing.info 'Status code for trigger', trigger.name, 'to', url, 'is', result.statusCode
+
 		scriptResult = undefined
 		if hasScriptAndMethod(trigger, 'process_outgoing_response')
 			sandbox =
@@ -239,9 +247,11 @@ ExecuteTriggerUrl = (url, trigger, message, room, tries=0) ->
 
 			if tries <= 6
 				# Try again in 0.1s, 1s, 10s, 1m40s, 16m40s, 2h46m40s and 27h46m40s
+				waitTime = Math.pow(10, tries+2)
+				logger.outgoing.info 'Trying trigger', trigger.name, 'to', url, 'again in', waitTime, 'seconds'
 				Meteor.setTimeout ->
 					ExecuteTriggerUrl url, trigger, message, room, tries+1
-				, Math.pow(10, tries+2)
+				, waitTime
 
 			return
 
