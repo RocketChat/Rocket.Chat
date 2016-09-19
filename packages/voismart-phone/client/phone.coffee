@@ -272,12 +272,12 @@ RocketChat.Phone = new class
 		if d.callID != _curCall.callID
 			switch d.state.name
 				when 'ringing'
-					RocketChat.ToneGenerator.stopRingback()
+					RocketChat.ToneGenerator.stop()
 					console.log("refusing call")
 					d.stopRinging()
 					d.hangup({cause: "USER_BUSY", causeCode: 17})
 				when 'hangup', 'destroy'
-					RocketChat.ToneGenerator.stopRingback()
+					RocketChat.ToneGenerator.stop()
 					delete _dialogs[d.callID]
 			return
 
@@ -293,7 +293,7 @@ RocketChat.Phone = new class
 			when 'early'
 				setCallState('active')
 				RocketChat.TabBar.updateButton('phone', { class: 'phone-blinking' })
-				RocketChat.ToneGenerator.stopRingback()
+				RocketChat.ToneGenerator.stop()
 
 			when 'ringing'
 				setCallState('ringing')
@@ -315,7 +315,7 @@ RocketChat.Phone = new class
 
 			when 'active'
 				setCallState('active')
-				RocketChat.ToneGenerator.stopRingback()
+				RocketChat.ToneGenerator.stop()
 				msg = TAPi18n.__("In_call_with")
 				if d.direction.name == 'outbound'
 					putNotification(msg, d.params.destination_number)
@@ -324,6 +324,7 @@ RocketChat.Phone = new class
 				RocketChat.TabBar.updateButton('phone', { class: 'red' })
 
 			when 'hangup'
+				RocketChat.ToneGenerator.stop()
 				if _callState != 'transfer'
 					if window.rocketDebug
 						console.log("hangup call rq")
@@ -340,7 +341,7 @@ RocketChat.Phone = new class
 					toastr.error(msg + ": " + RocketChat.Phone.remap_hcause(d.cause))
 
 			when 'destroy'
-				RocketChat.ToneGenerator.stopRingback()
+				RocketChat.ToneGenerator.stop()
 				if _callState != 'transfer' and _callState != 'hangup'
 					if window.rocketDebug
 						console.log("destroy call rq")

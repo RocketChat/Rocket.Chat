@@ -15,6 +15,8 @@
 			"0": {f1: 941, f2: 1336},
 			"#": {f1: 941, f2: 1477}
 
+		@ringerLFOSource = null
+
 	setup: (f1, f2) ->
 		f1 = f1 or @freq1
 		f2 = f2 or @freq2
@@ -48,6 +50,7 @@
 			return
 		@osc1.stop(0)
 		@osc2.stop(0)
+		@ringerLFOSource?.stop(0)
 		@status = 0
 
 	startDtmf: (key) ->
@@ -84,7 +87,3 @@
 		# connect the ringerLFOSource to the gain Node audio param
 		@ringerLFOSource.connect(@gainNode.gain)
 		@ringerLFOSource.start(0)
-
-	stopRingback: () ->
-		@stop()
-		@ringerLFOSource.stop(0)
