@@ -20,7 +20,7 @@ getIntegrationScript = (integration) ->
 				return store[key]
 
 	try
-		logger.incoming.info 'will evaluate script'
+		logger.incoming.info 'Will evaluate script of Trigger', integration.name
 		logger.incoming.debug script
 
 		vmScript = vm.createScript script, 'script.js'
@@ -34,13 +34,14 @@ getIntegrationScript = (integration) ->
 
 			return compiledScripts[integration._id].script
 	catch e
-		logger.incoming.error "[Error evaluating Script:]"
+		logger.incoming.error '[Error evaluating Script in Trigger', integration.name, ':]'
 		logger.incoming.error script.replace(/^/gm, '  ')
 		logger.incoming.error "[Stack:]"
 		logger.incoming.error e.stack.replace(/^/gm, '  ')
 		throw RocketChat.API.v1.failure 'error-evaluating-script'
 
 	if not sandbox.Script?
+		logger.incoming.error '[Class "Script" not in Trigger', integration.name, ']'
 		throw RocketChat.API.v1.failure 'class-script-not-found'
 
 
@@ -159,9 +160,10 @@ executeIntegrationRest = ->
 
 			@bodyParams = result?.content
 
+			logger.incoming.debug '[Process Incoming Request result of Trigger', @integration.name, ':]'
 			logger.incoming.debug 'result', @bodyParams
 		catch e
-			logger.incoming.error "[Error running Script:]"
+			logger.incoming.error '[Error running Script in Trigger', @integration.name, ':]'
 			logger.incoming.error @integration.scriptCompiled.replace(/^/gm, '  ')
 			logger.incoming.error "[Stack:]"
 			logger.incoming.error e.stack.replace(/^/gm, '  ')
