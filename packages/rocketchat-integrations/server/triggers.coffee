@@ -92,35 +92,30 @@ executeScript = (integration, method, params) ->
 		return
 
 
+addIntegration = (record) ->
+	if _.isEmpty(record.channel)
+		channels = [ '__any' ]
+	else
+		channels = [].concat(record.channel)
+
+	for channel in channels
+		triggers[channel] ?= {}
+		triggers[channel][record._id] = record
+
+removeIntegration = (record) ->
+	for channel, trigger of triggers
+		delete trigger[record._id]
+
 RocketChat.models.Integrations.find({type: 'webhook-outgoing'}).observe
 	added: (record) ->
-		if _.isEmpty(record.channel)
-			channels = [ '__any' ]
-		else
-			channels = [].concat(record.channel)
-
-		for channel in channels
-			triggers[channel] ?= {}
-			triggers[channel][record._id] = record
+		addIntegration(record)
 
 	changed: (record) ->
-		if _.isEmpty(record.channel)
-			channels = [ '__any' ]
-		else
-			channels = [].concat(record.channel)
-
-		for channel in channels
-			triggers[channel] ?= {}
-			triggers[channel][record._id] = record
+		removeIntegration(record)
+		addIntegration(record)
 
 	removed: (record) ->
-		if _.isEmpty(record.channel)
-			channels = [ '__any' ]
-		else
-			channels = [].concat(record.channel)
-
-		for channel in channels
-			delete triggers[channel][record._id]
+		removeIntegration(record)
 
 
 ExecuteTriggerUrl = (url, trigger, message, room, tries=0) ->
