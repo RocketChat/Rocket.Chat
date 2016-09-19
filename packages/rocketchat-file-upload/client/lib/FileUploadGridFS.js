@@ -1,10 +1,10 @@
 /* globals FileUploadBase, UploadFS, FileUpload:true */
 FileUpload.GridFS = class FileUploadGridFS extends FileUploadBase {
-	constructor(meta, file, data) {
-		super(meta, file, data);
+	constructor(meta, file) {
+		super(meta, file);
 		this.handler = new UploadFS.Uploader({
 			store: Meteor.fileStore,
-			data: data,
+			data: file,
 			file: meta,
 			onError: (err) => {
 				var uploading = Session.get('uploading');
@@ -37,14 +37,25 @@ FileUpload.GridFS = class FileUploadGridFS extends FileUploadBase {
 				});
 			}
 		});
+
+		this.handler.onProgress = (file, progress) => {
+			this.onProgress(progress);
+		};
 	}
+
 	start() {
+		const uploading = Session.get('uploading') || [];
+		const item = {
+			id: this.id,
+			name: this.getFileName(),
+			percentage: 0
+		};
+		uploading.push(item);
+		Session.set('uploading', uploading);
 		return this.handler.start();
 	}
 
-	getProgress() {
-		return this.handler.getProgress();
-	}
+	onProgress() {}
 
 	stop() {
 		return this.handler.stop();

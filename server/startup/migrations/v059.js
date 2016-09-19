@@ -1,56 +1,11 @@
 RocketChat.Migrations.add({
 	version: 59,
 	up: function() {
-		if (RocketChat && RocketChat.models && RocketChat.models.Settings) {
-
-			// New color settings - start with old settings as defaults
-			var replace1 = RocketChat.models.Settings.findOne({ _id: 'theme-color-quaternary-font-color' });
-			var replace2 = RocketChat.models.Settings.findOne({ _id: 'theme-color-input-font-color' });
-			var replace3 = RocketChat.models.Settings.findOne({ _id: 'theme-color-status-online' });
-			var replace4 = RocketChat.models.Settings.findOne({ _id: 'theme-color-status-away' });
-			var replace5 = RocketChat.models.Settings.findOne({ _id: 'theme-color-status-busy' });
-			var replace6 = RocketChat.models.Settings.findOne({ _id: 'theme-color-info-active-font-color' });
-			if (replace1) {
-				RocketChat.models.Settings.upsert({ _id: 'theme-color-secondary-action-color' }, { $set: { value: replace1.value } });
-			}
-			if (replace2) {
-				RocketChat.models.Settings.upsert({ _id: 'theme-color-component-color' }, { $set: { value: replace2.value } });
-			}
-			if (replace3) {
-				RocketChat.models.Settings.upsert({ _id: 'theme-color-success-color' }, { $set: { value: replace3.value } });
-			}
-			if (replace4) {
-				RocketChat.models.Settings.upsert({ _id: 'theme-color-pending-color' }, { $set: { value: replace4.value } });
-			}
-			if (replace5) {
-				RocketChat.models.Settings.upsert({ _id: 'theme-color-error-color' }, { $set: { value: replace5.value } });
-			}
-			if (replace6) {
-				RocketChat.models.Settings.upsert({ _id: 'theme-color-selection-color' }, { $set: { value: replace6.value } });
-			}
-
-			// Renamed color settings
-			var oldColor = RocketChat.models.Settings.findOne({ _id: 'theme-color-action-buttons-color' });
-			if (oldColor) {
-				RocketChat.models.Settings.remove({ _id: 'theme-color-action-buttons-color' });
-				RocketChat.models.Settings.upsert({ _id: 'theme-color-primary-action-color' }, { $set: { value: oldColor.value } });
-			}
-
-			// Removed color settings
-			RocketChat.models.Settings.remove({ _id: 'theme-color-quaternary-font-color' });
-			RocketChat.models.Settings.remove({ _id: 'theme-color-active-channel-background-color' });
-			RocketChat.models.Settings.remove({ _id: 'theme-color-active-channel-font-color' });
-			RocketChat.models.Settings.remove({ _id: 'theme-color-blockquote-background' });
-			RocketChat.models.Settings.remove({ _id: 'theme-color-clean-buttons-color' });
-			RocketChat.models.Settings.remove({ _id: 'theme-color-code-background' });
-			RocketChat.models.Settings.remove({ _id: 'theme-color-code-border' });
-			RocketChat.models.Settings.remove({ _id: 'theme-color-code-color' });
-			RocketChat.models.Settings.remove({ _id: 'theme-color-info-active-font-color' });
-			RocketChat.models.Settings.remove({ _id: 'theme-color-input-font-color' });
-			RocketChat.models.Settings.remove({ _id: 'theme-color-message-hover-background-color' });
-			RocketChat.models.Settings.remove({ _id: 'theme-color-smallprint-font-color' });
-			RocketChat.models.Settings.remove({ _id: 'theme-color-smallprint-hover-color' });
-			RocketChat.models.Settings.remove({ _id: 'theme-color-unread-notification-color' });
+		let users = RocketChat.models.Users.find({}, { sort: { createdAt: 1 }, limit: 1 }).fetch();
+		if (users && users.length > 0) {
+			let createdAt = users[0].createdAt;
+			RocketChat.models.Settings.update({ createdAt: { $exists: 0 } }, { $set: { createdAt: createdAt } }, { multi: true });
+			RocketChat.models.Statistics.update({ installedAt: { $exists: 0 } }, { $set: { installedAt: createdAt } }, { multi: true });
 		}
 	}
 });
