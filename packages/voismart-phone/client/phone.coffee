@@ -566,6 +566,7 @@ RocketChat.Phone = new class
 		if _videoDevice and (_videoDevice != "none") and useVideo
 			has_video = true
 
+		setCallState('trying')
 		_curCall = _vertoHandle.newCall({
 			destination_number: destination,
 			useVideo: has_video,
