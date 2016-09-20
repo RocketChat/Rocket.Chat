@@ -52,7 +52,7 @@
                       "version": "2.0.1"
                     },
                     "isarray": {
-                      "version": "0.0.1"
+                      "version": "http://registry.npmjs.org/isarray/-/isarray-0.0.1.tgz"
                     },
                     "process-nextick-args": {
                       "version": "1.0.3"
