@@ -570,7 +570,7 @@
   "LDAP_Custom_Domain_Search" : "Custom Domain Search",
   "LDAP_Custom_Domain_Search_Description" : "Een stuk van JSON die regeert binden en de aansluiting info en is van de vorm: <br/> <code>{\"filter\": \"(&(objectCategory=person)(objectclass=user)(memberOf=CN=ROCKET_ACCESS,CN=Users,DC=domain,DC=com)(sAMAccountName=#{username}))\", \"scope\": \"sub\", \"userDN\": \"rocket.service@domain.com\", \"password\": \"urpass\"}</code>",
   "LDAP_Default_Domain" : "Default Domain",
-  "LDAP_Description" : "LDAP is a hierarchical database that many companies use to provide single sign on - a facility for sharing one password between multiple sites and services. For advanced configuration information and examples, please consult our wiki: https://github.com/RocketChat/Rocket.Chat/wiki/LDAP-Authentication.",
+  "LDAP_Description" : "LDAP is a hierarchical database that many companies use to provide single sign on - a facility for sharing one password between multiple sites and services. For advanced configuration information and examples, please consult our wiki: https://rocket.chat/docs/administrator-guides/authentication/ldap/.",
   "LDAP_Domain_Base" : "Domain Base",
   "LDAP_Domain_Base_Description" : "De volledig gekwalificeerde Distinguished Name (DN) van een LDAP subtree u wilt zoeken voor gebruikers en groepen. U kunt zoveel als je wilt toevoegen; echter, moet elke groep worden gedefinieerd in hetzelfde domein basis als de gebruikers die behoren. Als u beperkte gebruikersgroepen geven, zullen alleen gebruikers die behoren tot die groepen in scope. Wij raden u aan het hoogste niveau van de LDAP-directory tree opgeven als uw domein basis en gebruiken zoekfilter om toegang te controleren.",
   "LDAP_Domain_Search_Filter" : "Domain Zoek Filter",
