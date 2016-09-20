@@ -122,11 +122,12 @@ RocketChat.callbacks.add('afterSaveMessage', function(message, room) {
 			}
 		});
 
+		var SandstormEnabled = (typeof RocketChat.Sandstorm !== "undefined")
+
 		// Always notify Sandstorm
-		if (userOfMention != null) {
+		if (userOfMention != null && SandstormEnabled) {
 			RocketChat.Sandstorm.notify(message, [userOfMention._id],
 				'@' + user.username + ': ' + message.msg, 'privateMessage');
-
 		}
 		if ((userOfMention != null) && canBeNotified(userOfMentionId, 'mobile')) {
 			RocketChat.Notifications.notifyUser(userOfMention._id, 'notification', {
@@ -326,12 +327,14 @@ RocketChat.callbacks.add('afterSaveMessage', function(message, room) {
 		}
 
 		const allUserIdsToNotify = _.unique(userIdsToNotify.concat(userIdsToPushNotify));
-		if (room.t === 'p') {
-			RocketChat.Sandstorm.notify(message, allUserIdsToNotify,
-				'@' + user.username + ': ' + message.msg, 'privateMessage');
-		} else {
-			RocketChat.Sandstorm.notify(message, allUserIdsToNotify,
-				'@' + user.username + ': ' + message.msg, 'message');
+		if (SandstormEnabled) {
+			if (room.t === 'p') {
+				RocketChat.Sandstorm.notify(message, allUserIdsToNotify,
+					'@' + user.username + ': ' + message.msg, 'privateMessage');
+			} else {
+				RocketChat.Sandstorm.notify(message, allUserIdsToNotify,
+					'@' + user.username + ': ' + message.msg, 'message');
+			}
 		}
 	}
 
