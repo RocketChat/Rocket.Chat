@@ -579,7 +579,7 @@
   "LDAP_Custom_Domain_Search" : "Szukaj Domena niestandardowa",
   "LDAP_Custom_Domain_Search_Description" : "Kawałek JSON, który reguluje powiązania i połączenia informacji i ma postać: <br/> <code>{\"filter\": \"(&(objectCategory=person)(objectclass=user)(memberOf=CN=ROCKET_ACCESS,CN=Users,DC=domain,DC=com)(sAMAccountName=#{username}))\", \"scope\": \"sub\", \"userDN\": \"rocket.service@domain.com\", \"password\": \"urpass\"}</code>",
   "LDAP_Default_Domain" : "Domyślna domena",
-  "LDAP_Description" : "LDAP to hierarchiczna baza danych wykorzystywana przez wiele firm w celu udostępniania pojedynczej usługi autoryzacji użytkowników pomiędzy wieloma serwisami. Aby uzyskać dodatkowe informacje i przykłady konfiguracji, odwiedź nasze wiki: https://github.com/RocketChat/Rocket.Chat/wiki/LDAP-Authentication.",
+  "LDAP_Description" : "LDAP to hierarchiczna baza danych wykorzystywana przez wiele firm w celu udostępniania pojedynczej usługi autoryzacji użytkowników pomiędzy wieloma serwisami. Aby uzyskać dodatkowe informacje i przykłady konfiguracji, odwiedź nasze wiki: https://rocket.chat/docs/administrator-guides/authentication/ldap/.",
   "LDAP_Domain_Base" : "Baza domeny",
   "LDAP_Domain_Base_Description" : "W pełni kwalifikowana nazwa wyróżniająca (DN) w poddrzewie LDAP chcesz wyszukać użytkowników i grup. Możesz dodać tyle, ile zechcesz; Jednakże, każda grupa musi być określona w ten sam bazie domeny jako użytkowników należących do niego. Jeśli podasz niewielkich grup użytkowników, tylko użytkownicy należący do tych grup będzie w zasięgu. Zaleca się, aby określić górny poziom drzewa katalogów LDAP jako baza domeny i użyć filtru wyszukiwania w celu kontroli dostępu.",
   "LDAP_Domain_Search_Filter" : "Domeny Filtr wyszukiwania",
