@@ -275,6 +275,8 @@
   "Created_at_s_by_s" : "Créé à <strong>%s</strong> par <strong>%s</strong>",
   "Current_Chats" : "Discussions actuelles",
   "Custom" : "Personnalisé",
+  "Custom_Emoji" : "Emoticône personnalisée",
+  "Custom_Emoji_Add" : "Ajouter une nouvelle émoticône",
   "Custom_Fields" : "Champs Personnalisés",
   "Custom_oauth_helper" : "Lorsque vous configurez votre service OAuth, vous devez indiquer une URL pour le Callback. Utilisez <pre>%s</pre>",
   "Custom_oauth_unique_name" : "Nom unique de l'OAuth personnalisé",

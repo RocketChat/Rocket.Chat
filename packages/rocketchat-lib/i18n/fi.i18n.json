@@ -6,6 +6,7 @@
   "500" : "Sisäinen palvelinvirhe",
   "__username__is_no_longer__role__defined_by__user_by_" : "__username__ ei ole enää __role__ (__user_by__)",
   "__username__was_set__role__by__user_by_" : "__user_by__ muutti käyttäjän __username__ rooliksi __role__ ",
+  "Accept_incoming_livechat_requests_even_if_there_are_no_online_agents" : "Hyväksy sisääntulevat livechatit vaikka agentteja ei ole paikalla",
   "Access_not_authorized" : "Pääsy estetty",
   "Access_Token_URL" : "Access Token URL",
   "Accessing_permissions" : "Pääsyn käyttöoikeudet",
