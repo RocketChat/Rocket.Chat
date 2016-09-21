@@ -580,7 +580,7 @@ RocketChat.cache._Base = (class CacheBase extends EventEmitter {
 				}
 
 				if (field === '$in') {
-					query.$contains = value;
+					query.$containsAny = value;
 					delete query[field];
 				}
 
