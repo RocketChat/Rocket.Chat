@@ -358,6 +358,7 @@ RocketChat.Phone = new class
 			'NORMAL CLEARING': 'Phone_end_call'
 			'ORIGINATOR_CANCEL': 'Phone_end_call'
 			'USER_BUSY': 'User_busy'
+			'NO_ANSWER': 'No_answer'
 			'NO_ROUTE_DESTINATION': 'No_route_destination'
 			'DESTINATION_OUT_OF_ORDER': 'Destination_out_of_order'
 			'NORMAL_TEMPORARY_FAILURE': 'Normal_temporary_failure'

@@ -1348,6 +1348,7 @@
   "Phone_end_call": "Chiamata terminata",
   "Phone_failed_call": "Chiamata fallita",
   "User_busy": "Utente occupato",
+  "No_answer": "Nessuna risposta",
   "No_route_destination": "Nessuna rotta verso la destinazione",
   "Destination_out_of_order": "Destinazione fuori servizio",
   "Normal_temporary_failure": "Fallimento temporaneo",
