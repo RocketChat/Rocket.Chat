@@ -145,7 +145,6 @@ Template.channelSettings.onCreated ->
 			canView: (room) => room.t in ['c', 'p']
 			canEdit: (room) => RocketChat.authz.hasAllPermission('edit-room', room._id)
 			save: (value, room) ->
-				console.log value
 				if value not in ['c', 'p']
 					return toastr.error t('error-invalid-room-type', value)
 
