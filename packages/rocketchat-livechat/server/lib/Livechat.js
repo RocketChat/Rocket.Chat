@@ -1,4 +1,6 @@
 /* globals HTTP */
+import UAParser from 'ua-parser-js';
+
 RocketChat.Livechat = {
 	historyMonitorType: 'url',
 
