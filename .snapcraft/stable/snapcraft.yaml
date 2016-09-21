@@ -33,6 +33,7 @@ parts:
         plugin: dump
         after: [mongodb]
         source: https://rocket.chat/releases/latest/download
+        source-type: tar
         stage-packages:
             - imagemagick
         organize:
