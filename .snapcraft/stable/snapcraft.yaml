@@ -1,5 +1,5 @@
 name: rocketchat-server
-version: 0.40.0
+version: 0.41.0
 summary: Rocket.Chat server
 description: Have your own Slack like online chat, built with Meteor. https://rocket.chat/
 confinement: strict
@@ -33,6 +33,7 @@ parts:
         plugin: dump
         after: [mongodb]
         source: https://rocket.chat/releases/latest/download
+        source-type: tar
         stage-packages:
             - imagemagick
         organize:

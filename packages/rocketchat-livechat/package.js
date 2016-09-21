@@ -15,6 +15,10 @@ Package.registerBuildPlugin({
 	}
 });
 
+Npm.depends({
+	'ua-parser-js': '0.7.10'
+});
+
 Package.onUse(function(api) {
 	api.use(['webapp', 'autoupdate'], 'server');
 	api.use('ecmascript');
@@ -42,9 +46,6 @@ Package.onUse(function(api) {
 
 	api.addFiles('client/ui.js', 'client');
 	api.addFiles('client/route.js', 'client');
-
-	// generic libs
-	api.addFiles('lib/ua-parser.js');
 
 	// add stylesheets to theme compiler
 	api.addAssets('client/stylesheets/livechat.less', 'server');
