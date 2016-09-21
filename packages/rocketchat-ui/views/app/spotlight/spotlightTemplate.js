@@ -13,8 +13,7 @@ Template.spotlightTemplate.helpers({
 	name() {
 		if (RocketChat.settings.get('UI_Use_Real_Name') && this.fname) {
 			return this.fname;
-		} else {
-			return this.name;
 		}
+		return this.name;
 	}
 });
