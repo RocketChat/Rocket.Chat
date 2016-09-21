@@ -74,7 +74,7 @@ RocketChat.models.Rooms.getNextLivechatRoomCode = function() {
 
 	const livechatCount = findAndModify(query, null, update);
 
-	return livechatCount.value;
+	return livechatCount.value.value;
 };
 
 RocketChat.models.Rooms.findOpenByVisitorToken = function(visitorToken, options) {
