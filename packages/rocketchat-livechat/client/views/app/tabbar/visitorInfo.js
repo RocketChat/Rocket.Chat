@@ -1,3 +1,5 @@
+import UAParser from 'ua-parser-js';
+
 Template.visitorInfo.helpers({
 	user() {
 		const user = Template.instance().user.get();
