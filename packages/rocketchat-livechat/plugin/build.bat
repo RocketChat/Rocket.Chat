@@ -15,7 +15,6 @@ mkdir %LIVECHAT_DIR%
 
 xcopy /y %BUILD_DIR%\*.css %LIVECHAT_DIR%\livechat.css*
 xcopy /y %BUILD_DIR%\*.js %LIVECHAT_DIR%\livechat.js*
-xcopy /y /s /e /i %BUILD_DIR%\app\* %LIVECHAT_DIR%\*
 xcopy /y %BUILD_DIR%\head.html ..\public\head.html*
 
 rmdir /s /q .meteor\build\
