@@ -1,10 +1,12 @@
 /* globals WebApp:true */
+import url from 'url';
 
 WebApp = Package.webapp.WebApp;
 const Autoupdate = Package.autoupdate.Autoupdate;
 
-WebApp.connectHandlers.use('/livechat/', Meteor.bindEnvironment((req, res, next) => {
-	if (req.url !== '/') {
+WebApp.connectHandlers.use('/livechat', Meteor.bindEnvironment((req, res, next) => {
+	const reqUrl = url.parse(req.url);
+	if (reqUrl.pathname !== '/') {
 		return next();
 	}
 	res.setHeader('content-type', 'text/html; charset=utf-8');
