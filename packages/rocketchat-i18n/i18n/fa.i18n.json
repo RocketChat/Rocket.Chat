@@ -570,7 +570,7 @@
   "LDAP_Custom_Domain_Search" : "جستجو سفارشی دامنه",
   "LDAP_Custom_Domain_Search_Description" : "قطعه ای از JSON که بر اتصال و اتصال اطلاعات و فرم: <br/> <code>{\"filter\": \"(&(objectCategory=person)(objectclass=user)(memberOf=CN=ROCKET_ACCESS,CN=Users,DC=domain,DC=com)(sAMAccountName=#{username}))\", \"scope\": \"sub\", \"userDN\": \"rocket.service@domain.com\", \"password\": \"urpass\"}</code>",
   "LDAP_Default_Domain" : "به طور پیش فرض دامنه",
-  "LDAP_Description" : "یک مرکز برای به اشتراک گذاری یک رمز عبور بین سایت و خدمات مختلف - LDAP یک پایگاه داده سلسله مراتبی است که بسیاری از شرکت ها برای ارائه یکبار ورود به سیستم است. https://github.com/RocketChat/Rocket.Chat/wiki/LDAP-Authentication: برای کسب اطلاعات پیکربندی پیشرفته و نمونه، لطفا ویکی ما مشورت کنید.",
+  "LDAP_Description" : "یک مرکز برای به اشتراک گذاری یک رمز عبور بین سایت و خدمات مختلف - LDAP یک پایگاه داده سلسله مراتبی است که بسیاری از شرکت ها برای ارائه یکبار ورود به سیستم است. https://rocket.chat/docs/administrator-guides/authentication/ldap/: برای کسب اطلاعات پیکربندی پیشرفته و نمونه، لطفا ویکی ما مشورت کنید.",
   "LDAP_Domain_Base" : "پایه دامنه",
   "LDAP_Domain_Base_Description" : "نام کامل برجسته (DN) از یک زیر درخت LDAP شما می خواهید به جستجو برای کاربران و گروه. شما می توانید به عنوان بسیاری از شما می خواهم اضافه کنید. با این حال، هر گروه باید در پایه دامنه به عنوان کاربران که متعلق به آن تعریف شود. اگر شما گروه های کاربری محدود مشخص، تنها کاربران که متعلق به آن گروه در دامنه باشد. ما توصیه می کنیم که شما در سطح بالا از LDAP درخت دایرکتوری خود را مشخص کنید به عنوان پایه دامنه خود و استفاده از فیلتر جستجو برای کنترل دسترسی.",
   "LDAP_Domain_Search_Filter" : "دامنه جستجو فیلتر",
