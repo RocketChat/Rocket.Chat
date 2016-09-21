@@ -85,8 +85,8 @@ RocketChat.models.Users.getNextAgent = function() {
 	var user = findAndModify(query, sort, update);
 	if (user) {
 		return {
-			agentId: user._id,
-			username: user.username
+			agentId: user.value._id,
+			username: user.value.username
 		};
 	} else {
 		return null;
@@ -203,5 +203,5 @@ RocketChat.models.Users.getNextVisitorUsername = function() {
 
 	const livechatCount = findAndModify(query, null, update);
 
-	return 'guest-' + (livechatCount.value + 1);
+	return 'guest-' + (livechatCount.value.value + 1);
 };

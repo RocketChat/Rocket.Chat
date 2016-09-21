@@ -1,14 +1,18 @@
 cd packages/rocketchat-livechat/app
-meteor build .meteor/build/ --directory
+meteor npm install
+meteor build --directory .meteor/build/
 
-mkdir -p ../public
+LIVECHAT_DIR="../../../public/livechat"
+BUILD_DIR=".meteor/build/bundle/programs/web.browser"
 
 rm -rf ../public/*
+mkdir -p ../public/
 
-cp .meteor/build/bundle/programs/web.browser/*.css ../public/livechat.css
-cp .meteor/build/bundle/programs/web.browser/*.js ../public/livechat.jsi
-cp .meteor/build/bundle/programs/web.browser/head.html ../public/head.html
+rm -rf $LIVECHAT_DIR
+mkdir -p $LIVECHAT_DIR
 
-# echo "body {background-color: red;}" > livechat.css
+cp $BUILD_DIR/*.css $LIVECHAT_DIR/livechat.css
+cp $BUILD_DIR/*.js $LIVECHAT_DIR/livechat.js
+cp $BUILD_DIR/head.html ../public/head.html
 
 rm -rf .meteor/build/

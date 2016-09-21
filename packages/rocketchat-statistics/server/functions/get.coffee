@@ -27,15 +27,15 @@ RocketChat.statistics.get = ->
 
 	m = ->
 		emit 1,
-			sum: this.usernames.length or 0
-			min: this.usernames.length or 0
-			max: this.usernames.length or 0
+			sum: this.usernames?.length or 0
+			min: this.usernames?.length or 0
+			max: this.usernames?.length or 0
 			count: 1
 
 		emit this.t,
-			sum: this.usernames.length or 0
-			min: this.usernames.length or 0
-			max: this.usernames.length or 0
+			sum: this.usernames?.length or 0
+			min: this.usernames?.length or 0
+			max: this.usernames?.length or 0
 			count: 1
 
 	r = (k, v) ->
