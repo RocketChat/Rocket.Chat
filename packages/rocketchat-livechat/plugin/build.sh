@@ -9,11 +9,10 @@ rm -rf ../public/*
 mkdir -p ../public/
 
 rm -rf $LIVECHAT_DIR
-mkdir -p $LIVECHAT_DIR/fonts
+mkdir -p $LIVECHAT_DIR
 
 cp $BUILD_DIR/*.css $LIVECHAT_DIR/livechat.css
 cp $BUILD_DIR/*.js $LIVECHAT_DIR/livechat.js
-cp -r $BUILD_DIR/app/* $LIVECHAT_DIR/
 cp $BUILD_DIR/head.html ../public/head.html
 
 rm -rf .meteor/build/
