@@ -1,6 +1,18 @@
 ## NEXT
 * Spotlight (CMD/CTRL + P) now helps to quick search among your channels
 
+## 0.40.1, 2016-Sep-21
+
+- Allow Iframe login with default tokens
+- Fix embedded layout message box auto-resize
+- Fix for the new return of findAndModify
+- Fix mesaage search to use users' timezone when searching on dates
+- Fix popout mode for livechat
+- Fix to update custom emojis in real time
+- Replace fontello by svg icons on LiveChat
+- Show file type on file upload error (#3217)
+- Use the npm package of UAParser on LiveChat
+
 ## 0.40.0, 2016-Sep-20
 
 ### IMPORTANT: Upgraded to meteor 1.4.1.1 - Now uses NodeJS 4.5
