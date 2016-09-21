@@ -27,8 +27,9 @@ readAsArrayBuffer = (file, callback) ->
 			if not RocketChat.fileUploadIsValidContentType file.file.type
 				swal
 					title: t('FileUpload_MediaType_NotAccepted')
+					text: file.file.type || "*.#{s.strRightBack(file.file.name, '.')}"
 					type: 'error'
-					timer: 1000
+					timer: 3000
 				return
 
 			if file.file.size is 0
