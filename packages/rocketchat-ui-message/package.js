@@ -34,6 +34,7 @@ Package.onUse(function(api) {
 	api.addFiles('message/message.coffee', 'client');
 	api.addFiles('message/messageBox.coffee', 'client');
 	api.addFiles('message/popup/messagePopup.coffee', 'client');
+	api.addFiles('message/popup/messagePopupChannel.js', 'client');
 	api.addFiles('message/popup/messagePopupConfig.coffee', 'client');
 	api.addFiles('message/popup/messagePopupEmoji.coffee', 'client');
 
