@@ -15,10 +15,20 @@ addons:
       - ubuntu-toolchain-r-test
     packages:
       - g++-4.8
+before_cache:
+  - rm -rf $HOME/build/RocketChat/Rocket.Chat/.meteor/local/log
+  - rm -rf $HOME/build/RocketChat/Rocket.Chat/.meteor/local/run
 cache:
   directories:
-    - "~/.meteor"
-    - "~/build/RocketChat/Rocket.Chat/node_modules"
+    - node_modules
+    - "$HOME/.meteor"
+    - "$HOME/.npm"
+    - "$HOME/node_modules"
+    - "src/.meteor/local/build"
+    - "src/.meteor/local/bundler-cache"
+    - "src/.meteor/local/db"
+    - "src/.meteor/local/isopacks"
+    - "src/.meteor/local/plugin-cache"
 before_install:
   - if [ ! -e "$HOME/.meteor/meteor" ]; then curl https://install.meteor.com | /bin/sh; fi
 install:
