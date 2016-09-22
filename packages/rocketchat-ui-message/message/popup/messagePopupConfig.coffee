@@ -190,6 +190,7 @@ Template.messagePopupConfig.helpers
 				template: 'messagePopupEmoji'
 				trigger: ':'
 				prefix: ''
+				suffix: ' '
 				getInput: self.getInput
 				getFilter: (collection, filter, cb) ->
 					results = []
