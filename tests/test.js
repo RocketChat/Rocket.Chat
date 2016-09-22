@@ -167,7 +167,7 @@ describe('Basic usage', function() {
 		done();
 	});
 
-	it('remove people from room', function(done){
+	it('remove people from room', function(done) {
 		browser.waitForVisible('.clearfix:last-child');
 		browser.click('.clearfix:last-child');
 
