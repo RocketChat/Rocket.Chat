@@ -84,4 +84,43 @@ describe('Basic usage', function() {
 
 		done();
 	});
+
+	it('start a direct message with rocket.cat', function(done) {
+		//User to send a private message
+		const targetUser = 'rocket.cat';
+
+		browser.click('.add-room:nth-of-type(2)');
+		browser.waitForVisible('#who', 50000);
+
+		browser.setValue(' #who', targetUser);
+		browser.waitForExist('.-autocomplete-item', 50000);
+		browser.click('.-autocomplete-item');
+
+		browser.waitForVisible('.save-direct-message', 50000);
+		browser.click('.save-direct-message');
+		done();
+	});
+
+	it('open the direct message', function(done) {
+		browser.waitForExist('ul:nth-of-type(2)');
+		browser.click('ul:nth-of-type(2):last-child');
+
+		browser.waitForExist('.input-message', 5000);
+
+		done();
+	});
+
+	it('send a direct message', function(done) {
+		const message = 'message from '+username;
+		browser.setValue('.input-message', message);
+
+		browser.waitForExist('.message-buttons.send-button');
+		browser.click('.message-buttons.send-button');
+
+		browser.waitUntil(function() {
+			return browser.getText('.message:last-child .body') === message;
+		}, 2000);
+
+		done();
+	});
 });
