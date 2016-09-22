@@ -5,6 +5,7 @@
 /* globals browser */
 
 const username = 'user-test-'+Date.now();
+const channelname = 'channel-test-'+Date.now();
 
 describe('Basic usage', function() {
 	before(function() {
@@ -85,6 +86,8 @@ describe('Basic usage', function() {
 		done();
 	});
 
+	//DIRECT MESAGE
+
 	it('start a direct message with rocket.cat', function(done) {
 		//User to send a private message
 		const targetUser = 'rocket.cat';
@@ -121,6 +124,58 @@ describe('Basic usage', function() {
 			return browser.getText('.message:last-child .body') === message;
 		}, 2000);
 
+		done();
+	});
+
+	//CHANNEL
+
+	it('create a public channel', function(done) {
+		browser.click('.add-room:nth-of-type(1)');
+		browser.waitForVisible('#channel-name', 50000);
+
+		browser.setValue(' #channel-name', channelname);
+
+		browser.waitForVisible('.save-channel', 50000);
+		browser.click('.save-channel');
+		browser.waitForExist('.input-message', 5000);
+		done();
+	});
+
+	it('send a message in the public channel', function(done) {
+		const message = 'message from '+username;
+		browser.setValue('.input-message', message);
+
+		browser.waitForExist('.message-buttons.send-button');
+		browser.click('.message-buttons.send-button');
+
+		browser.waitUntil(function() {
+			return browser.getText('.message:last-child .body') === message;
+		}, 2000);
+
+		done();
+	});
+
+	it('add people to the room', function(done) {
+		const targetUser = 'rocket.cat';
+		browser.waitForExist('.icon-users');
+		browser.click('.icon-users');
+
+		browser.waitForVisible('#user-add-search', 50000);
+		browser.setValue('#user-add-search', targetUser);
+		browser.waitForExist('.-autocomplete-item', 50000);
+		browser.click('.-autocomplete-item');
+		done();
+	});
+
+	it('remove people from room', function(done){
+		browser.waitForVisible('.clearfix:last-child');
+		browser.click('.clearfix:last-child');
+
+		browser.waitForVisible('.remove-user');
+		browser.click('.remove-user');
+
+		browser.waitForExist('.confirm');
+		browser.click('.confirm');
 		done();
 	});
 });
