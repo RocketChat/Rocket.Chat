@@ -116,7 +116,7 @@ Template.messagePopupConfig.helpers
 
 				return items
 
-			getValue: (_id, collection, firstPartValue) ->
+			getValue: (_id, collection, records, firstPartValue) ->
 				if _id is '@all'
 					if firstPartValue.indexOf(' ') > -1
 						return 'all'
@@ -199,6 +199,7 @@ Template.messagePopupConfig.helpers
 				template: 'messagePopupEmoji'
 				trigger: ':'
 				prefix: ''
+				suffix: ' '
 				getInput: self.getInput
 				getFilter: (collection, filter, cb) ->
 					results = []
