@@ -30,7 +30,7 @@ cache:
     - "src/.meteor/local/isopacks"
     - "src/.meteor/local/plugin-cache"
 before_install:
-  - if [ ! -e "$HOME/.meteor/meteor" ]; then curl https://install.meteor.com | /bin/sh; fi
+  - if [ ! -e "$HOME/.meteor/meteor" ]; then curl https://install.meteor.com | sed s/--progress-bar/-sL/g | /bin/sh; fi
 install:
   - export PATH="$HOME/.meteor:$PATH"
 before_script:
