@@ -3,7 +3,7 @@
 		{{#if videoActive}}
 			<div class="webrtc-video {{#if overlay}}webrtc-video-overlay{{/if}}">
 				<div class="main-video">
-					<video src="{{mainVideoUrl}}" autoplay muted="true" class="{{#if mainVideoFlip}}video-flip{{/if}}"></video>
+					<video src="{{mainVideoUrl}}" autoplay muted="true" class="{{#if $eq mainVideoUrl selfVideoUrl}}video-flip{{/if}}"></video>
 					<div>{{mainVideoUsername}}</div>
 				</div>
 				<div class="videos">
