@@ -123,6 +123,8 @@ Tracker.autorun ->
 
 										RocketChat.callbacks.run 'streamMessage', msg
 
+										window.fireGlobalEvent('new-message', msg);
+
 							RocketChat.Notifications.onRoom openedRooms[typeName].rid, 'deleteMessage', onDeleteMessageStream
 
 				Dep.changed()
