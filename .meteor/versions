@@ -145,6 +145,7 @@ rocketchat:custom-oauth@1.0.0
 rocketchat:emoji@1.0.0
 rocketchat:emoji-custom@1.0.0
 rocketchat:emoji-emojione@0.0.1
+rocketchat:error-handler@1.0.0
 rocketchat:favico@0.0.1
 rocketchat:file@0.0.1
 rocketchat:file-upload@0.0.1

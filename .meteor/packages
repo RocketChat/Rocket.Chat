@@ -49,6 +49,7 @@ rocketchat:channel-settings-mail-messages
 rocketchat:colors
 rocketchat:crowd
 rocketchat:custom-oauth
+rocketchat:error-handler
 rocketchat:emoji
 rocketchat:emoji-custom
 rocketchat:emoji-emojione
