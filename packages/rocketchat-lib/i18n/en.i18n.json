@@ -1358,7 +1358,7 @@
   "webRTC_Phone": "webRTC Phone",
   "Message_VideoRecorderEnabled" : "Video Recorder Enabled",
   "Message_VideoRecorderEnabledDescription" : "Requires 'video/webm' files to be an accepted media type within 'File Upload' settings.",
-  "Phone_invalid_devices": "Invalid media devices settings",
+  "Phone_invalid_devices": "Please configure your media devices using the settings button",
   "Phone_end_call": "Call terminated",
   "Phone_failed_call": "Call failed",
   "User_busy": "User busy",

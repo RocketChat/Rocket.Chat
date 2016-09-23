@@ -1344,7 +1344,7 @@
   "In_call_with": "Chiamata attiva",
   "webRTC_Phone": "webRTC Communicator",
   "Your_push_was_sent_to_s_devices" : "La vostra notifica push è stata inviata ai dispositivi %s",
-  "Phone_invalid_devices": "Impostazioni dispositivi audio errate",
+  "Phone_invalid_devices": "Impostare i dispositivi audio cliccando il pulsante Impostazioni",
   "Phone_end_call": "Chiamata terminata",
   "Phone_failed_call": "Chiamata fallita",
   "User_busy": "Utente occupato",

@@ -31,7 +31,7 @@ Meteor.startup ->
 
 Template.phone.events
 	'click #phone_settings': (e, instance) ->
-		showSettings =  instance.showSettings.get()
+		showSettings = instance.showSettings.get()
 		instance.showSettings.set(!showSettings)
 
 	'mousedown .button.dialkey': (e, instance) ->
@@ -555,12 +555,19 @@ RocketChat.Phone = new class
 		has_mic = RocketChat.Phone.getAudioInDevice()
 		has_speak = RocketChat.Phone.getAudioOutDevice()
 		if !has_mic? or !has_speak? or has_mic is "none" or has_speak is "none"
-			console.log("not mic and speaker defined, should refuse call?") if window.rocketDebug
+			console.log("no mic and speaker defined, should refuse call?") if window.rocketDebug
 			#return # firefox still has issues in device selection
 
 		if !has_mic? or has_mic is "none"
 			# all browsers have a mic, so bail out if none
 			toastr.error TAPi18n.__('Phone_invalid_devices')
+			settings_button = $('#phone_settings')
+			if settings_button
+				settings_button.addClass('phone-settings-blinking')
+				Meteor.setTimeout ->
+					if settings_button.hasClass('phone-settings-blinking')
+						settings_button.removeClass('phone-settings-blinking')
+				, 10000
 			return
 
 		has_video = false
