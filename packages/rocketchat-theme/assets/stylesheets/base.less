@@ -1418,11 +1418,15 @@ label.required:after {
 	overflow-y: hidden;
 	.content {
 		&:extend(.fill-all);
-		padding: 25px 40px 0px;
+		padding: 25px 40px;
 		overflow-y: scroll;
 		margin-top: 60px;
 		-webkit-overflow-scrolling: touch;
 		.calc(height, ~'100% - 60px');
+
+		fieldset {
+			margin-bottom: 1em;
+		}
 	}
 }
 
@@ -4198,6 +4202,10 @@ body:not(.is-cordova) {
 			font-weight: bold;
 		}
 	}
+	.video-flip {
+		transform: scaleX(-1);
+		filter: FlipH;
+	}
 	.videos {
 		display: -webkit-flex;
 		display: -moz-flex;
@@ -4313,16 +4321,6 @@ body:not(.is-cordova) {
 	}
 	span {
 		display: block;
-	}
-}
-
-.load-more {
-	text-transform: lowercase;
-	text-align: center;
-	line-height: 40px;
-	font-style: italic;
-	.load-more-loading {
-		color: #aaa;
 	}
 }
 
@@ -4590,6 +4588,22 @@ a + br.only-after-a {
 				}
 			}
 		}
+	}
+}
+
+.form-inline {
+	input, select {
+		display: inline-block;
+		width: auto;
+		vertical-align: middle;
+	}
+	label {
+		display: inline-block;
+		max-width: 100%;
+	}
+
+	.form-group {
+		display: inline-block;
 	}
 }
 
