@@ -1,42 +1,61 @@
 class ErrorHandler {
 	constructor() {
 		this.reporting = false;
-		this.room = null;
-		this.errors = [];
+		this.rid = null;
+		this.lastError = null;
 
-		process.on('uncaughtException', function(error) {
-			if (!this.reporting) {
-				return;
-			}
-			this.trackError(error);
-		});
+		this.registerHandlers();
 
-		RocketChat.settings.onload('Log_Exceptions_to_Channel', (key, value) => {
+		RocketChat.settings.get('Log_Exceptions_to_Channel', (key, value) => {
 			if (value.trim()) {
 				this.reporting = true;
-				this.room = this.getRoomId(value);
+				this.rid = this.getRoomId(value);
 			} else {
 				this.reporting = false;
-				this.room = '';
+				this.rid = '';
 			}
 		});
 	}
 
-	getRoom(roomName) {
+	registerHandlers() {
+		process.on('uncaughtException', (error) => {
+			if (!this.reporting) {
+				return;
+			}
+			this.trackError(error.message, error.stack);
+		});
+
+		const self = this;
+		let originalMeteorDebug = Meteor._debug;
+		Meteor._debug = function(message, stack) {
+			if (!self.reporting) {
+				return originalMeteorDebug.call(this, message, stack);
+			}
+			self.trackError(message, stack);
+			return originalMeteorDebug.apply(this, arguments);
+		};
+	}
+
+	getRoomId(roomName) {
 		roomName = roomName.replace('#');
-		let room = RocketChat.models.Rooms.findOneByName(roomName);
+		let room = RocketChat.models.Rooms.findOneByName(roomName, { fields: { _id: 1, t: 1 } });
 		if (room && (room.t === 'c' || room.t === 'p')) {
-			return room;
+			return room._id;
 		} else {
 			this.reporting = false;
 		}
 	}
 
-	trackError(error) {
-		if (this.reporting && this.room) {
+	trackError(message, stack) {
+		if (this.reporting && this.rid && this.lastError !== message) {
+			this.lastError = message;
 			let user = RocketChat.models.Users.findOneById('rocket.cat');
-			let message = JSON.stringify(error);
-			RocketChat.sendMessage(user, message, this.room);
+
+			if (stack) {
+				message = message + '\n```\n' + stack + '\n```';
+			}
+
+			RocketChat.sendMessage(user, { msg: message }, { _id: this.rid });
 		}
 	}
 }
@@ -45,6 +64,6 @@ RocketChat.ErrorHandler = new ErrorHandler;
 
 Meteor.methods({
 	'testException': function() {
-		console.log(RocketChat.ErrorHandler.This.Is.An.Exception);
+		console.log(HTTP.get('http://alsdkjfasldfkjasldfkjalsdkfdfjasldkfjacx.vqe8.com'));
 	}
 });
