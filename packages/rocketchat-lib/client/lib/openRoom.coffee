@@ -44,6 +44,8 @@ currentTracker = undefined
 
 			Session.set 'openedRoom', room._id
 
+			fireGlobalEvent 'room-opened', _.omit room, 'usernames'
+
 			Session.set 'editRoomTitle', false
 			RoomManager.updateMentionsMarksOfRoom type + name
 			Meteor.setTimeout ->
