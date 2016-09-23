@@ -81,10 +81,14 @@ Template.loginForm.events
 
 			if instance.state.get() is 'forgot-password'
 				Meteor.call 'sendForgotPasswordEmail', s.trim(formData.email), (err, result) ->
-					RocketChat.Button.reset(button)
-					RocketChat.callbacks.run('userForgotPasswordEmailRequested');
-					toastr.success t('We_have_sent_password_email')
-					instance.state.set 'login'
+					if err
+						handleError(err)
+						instance.state.set 'login'
+					else
+						RocketChat.Button.reset(button)
+						RocketChat.callbacks.run('userForgotPasswordEmailRequested');
+						toastr.success t('We_have_sent_password_email')
+						instance.state.set 'login'
 				return
 
 			if instance.state.get() is 'register'

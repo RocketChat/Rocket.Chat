@@ -103,7 +103,7 @@ Template.messagePopupConfig.helpers
 					getUsersFromServerDelayed filter, items, cb
 
 				all =
-					_id: '@all'
+					_id: 'all'
 					username: 'all'
 					system: true
 					name: t 'Notify_all_in_this_room'
@@ -116,17 +116,8 @@ Template.messagePopupConfig.helpers
 
 				return items
 
-			getValue: (_id, collection, firstPartValue) ->
-				if _id is '@all'
-					if firstPartValue.indexOf(' ') > -1
-						return 'all'
-
-					return 'all:'
-
-				if firstPartValue.indexOf(' ') > -1
-					return _id
-
-				return _id + ':'
+			getValue: (_id) ->
+				return _id
 
 		return config
 
@@ -199,6 +190,7 @@ Template.messagePopupConfig.helpers
 				template: 'messagePopupEmoji'
 				trigger: ':'
 				prefix: ''
+				suffix: ' '
 				getInput: self.getInput
 				getFilter: (collection, filter, cb) ->
 					results = []
