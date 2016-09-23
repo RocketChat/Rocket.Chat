@@ -41,6 +41,6 @@ Meteor.startup ->
 		records = RocketChat.models.Messages.getChangedRecords type, args[0], fields
 
 		for record in records
-			if record._hidden isnt true
+			if record._hidden isnt true and not record.imported?
 				msgStream.emit '__my_messages__', record, {}
 				msgStream.emit record.rid, record

@@ -164,4 +164,11 @@ Meteor.startup(function() {
 		public: true,
 		i18nLabel: 'Show_queue_list_to_all_agents'
 	});
+
+	RocketChat.settings.add('Livechat_enable_office_hours', false, {
+		type: 'boolean',
+		group: 'Livechat',
+		public: true,
+		i18nLabel: 'Office_Hours_Enabled'
+	});
 });

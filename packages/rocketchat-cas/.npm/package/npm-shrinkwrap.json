@@ -1,7 +1,9 @@
 {
   "dependencies": {
     "cas": {
-      "version": "0.0.3"
+      "version": "0.0.3",
+      "resolved": "https://registry.npmjs.org/cas/-/cas-0.0.3.tgz",
+      "from": "cas@0.0.3"
     }
   }
 }

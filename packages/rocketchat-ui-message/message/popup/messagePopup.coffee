@@ -68,7 +68,7 @@ Template.messagePopup.onCreated ->
 
 	template.up = =>
 		current = template.find('.popup-item.selected')
-		previous = current.previousElementSibling or template.find('.popup-item:last-child')
+		previous = $(current).prev('.popup-item')[0] or template.find('.popup-item:last-child')
 		if previous?
 			current.className = current.className.replace /\sselected/, ''
 			previous.className += ' selected'
@@ -76,8 +76,8 @@ Template.messagePopup.onCreated ->
 
 	template.down = =>
 		current = template.find('.popup-item.selected')
-		next = current.nextElementSibling or template.find('.popup-item')
-		if next?
+		next = $(current).next('.popup-item')[0] or template.find('.popup-item')
+		if next?.classList.contains('popup-item')
 			current.className = current.className.replace /\sselected/, ''
 			next.className += ' selected'
 			template.value.set next.getAttribute('data-id')

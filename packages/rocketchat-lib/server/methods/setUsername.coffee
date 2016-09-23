@@ -1,5 +1,8 @@
 Meteor.methods
 	setUsername: (username) ->
+
+		check username, String
+
 		if not Meteor.userId()
 			throw new Meteor.Error('error-invalid-user', "Invalid user", { method: 'setUsername' })
 
@@ -17,15 +20,15 @@ Meteor.methods
 			nameValidation = new RegExp '^[0-9a-zA-Z-_.]+$'
 
 		if not nameValidation.test username
-			throw new Meteor.Error 'username-invalid', "#{username} is not a valid username, use only letters, numbers, dots, hyphens and underscores"
+			throw new Meteor.Error 'username-invalid', "#{_.escape(username)} is not a valid username, use only letters, numbers, dots, hyphens and underscores"
 
 		if user.username != undefined
 			if not username.toLowerCase() == user.username.toLowerCase()
 				if not  RocketChat.checkUsernameAvailability username
-					throw new Meteor.Error 'error-field-unavailable', "<strong>" + username + "</strong> is already in use :(", { method: 'setUsername', field: username }
+					throw new Meteor.Error 'error-field-unavailable', "<strong>" + _.escape(username) + "</strong> is already in use :(", { method: 'setUsername', field: username }
 		else
 			if not  RocketChat.checkUsernameAvailability username
-				throw new Meteor.Error 'error-field-unavailable', "<strong>" + username + "</strong> is already in use :(", { method: 'setUsername', field: username }
+				throw new Meteor.Error 'error-field-unavailable', "<strong>" + _.escape(username) + "</strong> is already in use :(", { method: 'setUsername', field: username }
 
 		unless RocketChat.setUsername user._id, username
 			throw new Meteor.Error 'error-could-not-change-username', "Could not change username", { method: 'setUsername' }

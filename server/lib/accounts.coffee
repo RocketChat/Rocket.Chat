@@ -156,6 +156,7 @@ Accounts.validateNewUser (user) ->
 				ret = true
 				break
 
-		return ret
+		if not ret
+			throw new Meteor.Error 'error-invalid-domain'
 
 	return true

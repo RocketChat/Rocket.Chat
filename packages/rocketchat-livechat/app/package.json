@@ -1,0 +1,14 @@
+{
+  "name": "rocketchat-livechat",
+  "version": "1.0.0",
+  "description": "Livechat app from Rocket.Chat",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Rocket.Chat",
+  "license": "MIT",
+  "dependencies": {
+    "autolinker": "^1.1.0"
+  }
+}

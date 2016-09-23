@@ -4,7 +4,7 @@ RocketChat.authz.addUserRoles = (userId, roleNames, scope) ->
 
 	user = RocketChat.models.Users.findOneById(userId)
 	if not user
-		throw new Meteor.Error 'invalid-user'
+		throw new Meteor.Error 'error-invalid-user', 'Invalid user', { function: 'RocketChat.authz.addUserRoles' }
 
 	roleNames = [].concat roleNames
 

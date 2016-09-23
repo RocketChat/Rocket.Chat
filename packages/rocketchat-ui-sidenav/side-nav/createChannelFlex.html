@@ -12,6 +12,10 @@
 				<input type="text" id="channel-name" class="required" dir="auto" placeholder="{{_ 'Enter_name_here'}}">
 			</div>
 			<div class="input-line">
+				<label for="channel-ro">{{_ "Read_only_channel"}}</label>
+				<input type="checkbox" id="channel-ro">
+			</div>
+			<div class="input-line">
 				<label for="channel-members">{{_ "Select_users"}}</label>
 				{{> inputAutocomplete settings=autocompleteSettings id="channel-members" class="search" placeholder=(_ "Search_by_username") autocomplete="off"}}
 				<ul class="selected-users">

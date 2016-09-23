@@ -10,9 +10,11 @@ Package.describe({
 	documentation: 'README.md'
 });
 
-Package.onUse(function(api) {
-	api.versionsFrom('1.2.1');
+Npm.depends({
+	'clipboard': '1.5.12'
+});
 
+Package.onUse(function(api) {
 	api.use([
 		'mongo',
 		'ecmascript',

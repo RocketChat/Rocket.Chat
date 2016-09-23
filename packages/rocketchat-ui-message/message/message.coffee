@@ -14,7 +14,7 @@ Template.message.helpers
 		if this.avatar? and this.avatar[0] is '@'
 			return this.avatar.replace(/^@/, '')
 	getEmoji: (emoji) ->
-		return emojione.toImage emoji
+		return renderEmoji emoji
 	own: ->
 		return 'own' if this.u?._id is Meteor.userId()
 	timestamp: ->

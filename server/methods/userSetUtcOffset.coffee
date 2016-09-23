@@ -1,5 +1,8 @@
 Meteor.methods
 	userSetUtcOffset: (utcOffset) ->
+
+		check utcOffset, Number
+
 		if not @userId?
 			return
 

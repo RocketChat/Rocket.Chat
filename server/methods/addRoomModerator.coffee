@@ -1,10 +1,11 @@
 Meteor.methods
 	addRoomModerator: (rid, userId) ->
-		unless Meteor.userId()
-			throw new Meteor.Error 'error-invalid-user', 'Invalid user', { method: 'addRoomModerator' }
 
 		check rid, String
 		check userId, String
+
+		unless Meteor.userId()
+			throw new Meteor.Error 'error-invalid-user', 'Invalid user', { method: 'addRoomModerator' }
 
 		unless RocketChat.authz.hasPermission Meteor.userId(), 'set-moderator', rid
 			throw new Meteor.Error 'error-not-allowed', 'Not allowed', { method: 'addRoomModerator' }
