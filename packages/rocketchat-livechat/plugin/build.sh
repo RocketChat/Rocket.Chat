@@ -1,3 +1,4 @@
+export METEOR_PRETTY_OUTPUT=0
 cd packages/rocketchat-livechat/app
 meteor npm install
 meteor build --directory .meteor/build/
