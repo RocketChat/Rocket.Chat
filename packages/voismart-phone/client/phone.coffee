@@ -73,21 +73,12 @@ Template.phone.events
 	'click #phone-hold': (e, instance)->
 		if window.rocketDebug
 			console.log "toggle hold"
-
-		status = RocketChat.Phone.toggleHold()
-		if status
-			$('#phone-hold').addClass('phone-active-key')
-		else
-			$('#phone-hold').removeClass('phone-active-key')
+		RocketChat.Phone.toggleHold()
 
 	'click #phone-mute': (e, instance)->
 		if window.rocketDebug
 			console.log "toggle mute"
-		status = RocketChat.Phone.toggleMute()
-		if status
-			$('#phone-mute').addClass('phone-active-key')
-		else
-			$('#phone-mute').removeClass('phone-active-key')
+		RocketChat.Phone.toggleMute()
 
 	'click #phone-redial': (e, instance)->
 		if window.rocketDebug
@@ -170,6 +161,16 @@ Template.phone.helpers
 			return true
 		return false
 
+	onHold: ->
+		if RocketChat.Phone.isOnHold()
+			return 'phone-active-key'
+		return ''
+
+	isMuted: ->
+		if RocketChat.Phone.isMuted()
+			return 'phone-active-key'
+		return ''
+
 
 Template.phone.onCreated ->
 	@showSettings = new ReactiveVar false
@@ -197,6 +198,8 @@ RocketChat.Phone = new class
 	callCidName = new ReactiveVar ""
 	callCidNum = new ReactiveVar ""
 	callOperation = new ReactiveVar ""
+	onHold = new ReactiveVar false
+	muted = new ReactiveVar false
 
 	_started = false
 	_login = undefined
@@ -204,9 +207,6 @@ RocketChat.Phone = new class
 	_vertoHandle = undefined
 	_server = undefined
 	_videoTag = undefined
-
-	_onHold = false
-	_isMute = false
 
 	_audioInDevice = undefined
 	_audioOutDevice = undefined
@@ -371,6 +371,8 @@ RocketChat.Phone = new class
 		callCidName.set('')
 		callCidNum.set('')
 		callOperation.set('')
+		onHold.set(false)
+		muted.set(false)
 
 	putNotification = (msg, cidnum, cidname="") ->
 		callCidNum.set(cidnum)
@@ -494,17 +496,23 @@ RocketChat.Phone = new class
 		if !_curCall?
 			return
 
-		_isMute = !_isMute
+		muted.set(!muted.get())
 		_curCall.setMute('toggle')
-		return _isMute
+		return muted.get()
+
+	isMuted: () ->
+		return muted.get()
 
 	toggleHold: () ->
 		if !_curCall?
 			return
 
-		_onHold = !_onHold
+		onHold.set(!onHold.get())
 		_curCall.toggleHold()
-		return _onHold
+		return onHold.get()
+
+	isOnHold: () ->
+		return onHold.get()
 
 	startDtmf: (key) ->
 		RocketChat.ToneGenerator.startDtmf(key)
