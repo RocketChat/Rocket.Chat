@@ -61,9 +61,3 @@ class ErrorHandler {
 }
 
 RocketChat.ErrorHandler = new ErrorHandler;
-
-Meteor.methods({
-	'testException': function() {
-		console.log(HTTP.get('http://alsdkjfasldfkjasldfkjalsdkfdfjasldkfjacx.vqe8.com'));
-	}
-});
