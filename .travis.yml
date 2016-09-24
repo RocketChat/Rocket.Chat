@@ -24,11 +24,8 @@ cache:
     - "$HOME/.meteor"
     - "$HOME/.npm"
     - "$HOME/node_modules"
-    - "src/.meteor/local/build"
-    - "src/.meteor/local/bundler-cache"
-    - "src/.meteor/local/db"
-    - "src/.meteor/local/isopacks"
-    - "src/.meteor/local/plugin-cache"
+    - "src/.meteor/local"
+    - "src/.meteor/dev_bundle"
 before_install:
   - if [ ! -e "$HOME/.meteor/meteor" ]; then curl https://install.meteor.com | sed s/--progress-bar/-sL/g | /bin/sh; fi
 install:
@@ -38,7 +35,7 @@ before_script:
   - npm install
   - npm run lint
 script:
-  - travis_wait 15 travis_retry meteor build /tmp/build
+  - travis_retry travis_wait 15 meteor build /tmp/build
 before_deploy:
   - source ".travis/setartname.sh"
   - source ".travis/setdeploydir.sh"
