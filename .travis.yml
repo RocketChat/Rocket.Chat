@@ -38,7 +38,7 @@ before_script:
   - npm install
   - npm run lint
 script:
-  - meteor build /tmp/build
+  - travis_wait 15 travis_retry meteor build /tmp/build
 before_deploy:
   - source ".travis/setartname.sh"
   - source ".travis/setdeploydir.sh"
