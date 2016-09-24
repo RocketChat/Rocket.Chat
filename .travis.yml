@@ -18,17 +18,18 @@ addons:
 before_cache:
   - rm -rf $HOME/build/RocketChat/Rocket.Chat/.meteor/local/log
   - rm -rf $HOME/build/RocketChat/Rocket.Chat/.meteor/local/run
+  - rm -rf $HOME/build/RocketChat/Rocket.Chat/.meteor/local/db
 cache:
   directories:
-    - node_modules
+    - "$HOME/node_modules"
     - "$HOME/.meteor"
     - "$HOME/.npm"
-    - "$HOME/node_modules"
-    - "src/.meteor/local/build"
-    - "src/.meteor/local/bundler-cache"
-    - "src/.meteor/local/db"
-    - "src/.meteor/local/isopacks"
-    - "src/.meteor/local/plugin-cache"
+    - "$HOME/.node-gyp"
+    - "$HOME/build/RocketChat/Rocket.Chat/node_modules"
+    - "$HOME/build/RocketChat/Rocket.Chat/.meteor/local"
+    - "$HOME/build/RocketChat/Rocket.Chat/packages/rocketchat-livechat/.npm"
+    - "$HOME/build/RocketChat/Rocket.Chat/packages/rocketchat-livechat/app/node_modules"
+    - "$HOME/build/RocketChat/Rocket.Chat/packages/rocketchat-livechat/app/.meteor/local"
 before_install:
   - if [ ! -e "$HOME/.meteor/meteor" ]; then curl https://install.meteor.com | sed s/--progress-bar/-sL/g | /bin/sh; fi
 install:
@@ -38,7 +39,7 @@ before_script:
   - npm install
   - npm run lint
 script:
-  - travis_wait 15 travis_retry meteor build /tmp/build
+  - travis_retry travis_wait 15 meteor build /tmp/build
 before_deploy:
   - source ".travis/setartname.sh"
   - source ".travis/setdeploydir.sh"
