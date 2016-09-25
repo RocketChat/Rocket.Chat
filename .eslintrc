@@ -67,7 +67,7 @@
 		"curly": [2, "all"],
 		"eqeqeq": [2, "allow-null"],
 		"new-cap":  [2, {
-			"capIsNewExceptions": ["Match.Optional"]
+			"capIsNewExceptions": ["Match.Optional", "Match.Maybe"]
 		}],
 		"use-isnan": 2,
 		"valid-typeof": 2,
@@ -84,6 +84,7 @@
 		"Assets"                      : false,
 		"Blaze"                       : false,
 		"BlazeLayout"                 : false,
+		"browser"                     : false,
 		"ChatMessage"                 : false,
 		"ChatMessages"                : false,
 		"ChatRoom"                    : false,
