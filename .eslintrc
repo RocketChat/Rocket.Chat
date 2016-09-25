@@ -84,6 +84,7 @@
 		"Assets"                      : false,
 		"Blaze"                       : false,
 		"BlazeLayout"                 : false,
+		"browser"                     : false,
 		"ChatMessage"                 : false,
 		"ChatMessages"                : false,
 		"ChatRoom"                    : false,
