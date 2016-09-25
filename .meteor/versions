@@ -16,7 +16,7 @@ binary-heap@1.0.9
 blaze@2.1.9
 blaze-html-templates@1.0.5
 blaze-tools@1.0.10
-boilerplate-generator@1.0.9
+boilerplate-generator@1.0.10
 caching-compiler@1.1.7
 caching-html-compiler@1.0.7
 callback-hook@1.0.9
@@ -51,7 +51,7 @@ html-tools@1.0.11
 htmljs@1.0.11
 http@1.2.9
 id-map@1.0.8
-jalik:ufs@0.6.8
+jalik:ufs@0.6.9_1
 jalik:ufs-gridfs@0.1.2
 jalik:ufs-local@0.2.6
 jparker:crypto-core@0.1.0
@@ -92,7 +92,7 @@ mobile-experience@1.0.4
 mobile-status-bar@1.0.12
 modules@0.7.6
 modules-runtime@0.7.6
-momentjs:moment@2.15.0
+momentjs:moment@2.15.1
 monbro:mongodb-mapreduce-aggregation@1.0.1
 mongo@1.1.12
 mongo-id@1.0.5
@@ -145,6 +145,7 @@ rocketchat:custom-oauth@1.0.0
 rocketchat:emoji@1.0.0
 rocketchat:emoji-custom@1.0.0
 rocketchat:emoji-emojione@0.0.1
+rocketchat:error-handler@1.0.0
 rocketchat:favico@0.0.1
 rocketchat:file@0.0.1
 rocketchat:file-upload@0.0.1
