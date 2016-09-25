@@ -215,6 +215,10 @@ Template.loginForm.onCreated ->
 			unless formObj['email'] and /\b[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]+\b/i.test(formObj['email'])
 				validationObj['email'] = t('Invalid_email')
 
+		if instance.state.get() is 'login'
+			unless formObj['emailOrUsername']
+				validationObj['emailOrUsername'] = t('Invalid_email')
+
 		if instance.state.get() isnt 'forgot-password'
 			unless formObj['pass']
 				validationObj['pass'] = t('Invalid_pass')
