@@ -1,36 +1,25 @@
 /* eslint-env mocha */
 /* eslint-disable func-names, prefer-arrow-callback */
 
-// These are Chimp globals
-/* globals browser */
+import loginPage from '../pageobjects/login.page';
 
 const username = 'user-test-'+Date.now();
+const email = username+'@rocket.chat';
+const password = 'rocket.chat';
+
 const channelname = 'channel-test-'+Date.now();
 const privatechannelname = 'private-channel-test-'+Date.now();
 
 describe('Basic usage', function() {
-	before(function() {
-		browser.url('http://localhost:3000');
-		browser.windowHandleSize({width:1280, height:800});
-	});
-
-	it('load page', function(done) {
-		browser.waitForExist('body');
-		done();
+	it('load page', () => {
+		loginPage.open();
+		// browser.windowHandleSize({width:1280, height:800});
 	});
 
 	it('crate user', function(done) {
-		browser.waitForExist('.register');
-		browser.click('.register');
+		loginPage.gotToRegister();
 
-		browser.waitForExist('[name=name]');
-
-		browser.setValue('[name=name]', username);
-		browser.setValue('[name=email]', username+'@rocket.chat');
-		browser.setValue('[name=pass]', 'rocket.chat');
-		browser.setValue('[name=confirm-pass]', 'rocket.chat');
-
-		browser.click('.submit > button');
+		loginPage.registerNewUser({username, email, password});
 
 		browser.waitForExist('form#login-card input#username', 5000);
 
@@ -53,13 +42,7 @@ describe('Basic usage', function() {
 	});
 
 	it('login', function(done) {
-		browser.waitForExist('[name=emailOrUsername]');
-
-		browser.setValue('[name=emailOrUsername]', username+'@rocket.chat');
-		browser.setValue('[name=pass]', 'rocket.chat');
-
-		browser.click('.submit > button');
-
+		loginPage.login({email, password});
 		browser.waitForExist('.main-content', 5000);
 
 		done();

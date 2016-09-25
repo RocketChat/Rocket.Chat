@@ -40,7 +40,8 @@ parts:
     rocketchat-server:
         plugin: dump
         after: [mongodb]
-        source: https://cdn-download.rocket.chat/build/rocket.chat-develop.tgz
+        source: https://rocket.chat/releases/develop/download
+        source-type: tar
         stage-packages:
             - imagemagick
         organize:
