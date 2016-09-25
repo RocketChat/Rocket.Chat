@@ -50,7 +50,7 @@ minimongo@1.0.17
 mizzao:timesync@0.4.0
 modules@0.7.6
 modules-runtime@0.7.6
-momentjs:moment@2.15.0
+momentjs:moment@2.15.1
 mongo@1.1.12
 mongo-id@1.0.5
 npm-bcrypt@0.9.1

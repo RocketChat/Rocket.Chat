@@ -25,7 +25,7 @@ RocketChat.settings.addGroup 'Accounts', ->
 		@add 'Accounts_BlockedDomainsList', '', { type: 'string' }
 		@add 'Accounts_BlockedUsernameList', '', { type: 'string' }
 		@add 'Accounts_UseDefaultBlockedDomainsList', true, { type: 'boolean' }
-		@add 'Accounts_UseDNSDomainCheck', true, { type: 'boolean' }
+		@add 'Accounts_UseDNSDomainCheck', false, { type: 'boolean' }
 
 		@add 'Accounts_RegistrationForm', 'Public', { type: 'select', public: true, values: [ { key: 'Public', i18nLabel: 'Accounts_RegistrationForm_Public' }, { key: 'Disabled', i18nLabel: 'Accounts_RegistrationForm_Disabled' }, { key: 'Secret URL', i18nLabel: 'Accounts_RegistrationForm_Secret_URL' } ] }
 		@add 'Accounts_RegistrationForm_SecretURL', Random.id(), { type: 'string' }
