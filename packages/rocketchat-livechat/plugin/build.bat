@@ -1,5 +1,6 @@
 @echo off
 
+SET METEOR_PRETTY_OUTPUT=0
 cd packages/rocketchat-livechat/app
 call meteor npm install
 call meteor build --directory .meteor/build/
