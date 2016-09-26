@@ -4,12 +4,13 @@ Template.room.events
 		e.stopPropagation()
 
 		if RocketChat.settings.get('Phone_Enabled') and !Meteor.isCordova
-			user = Meteor.users.findOne(this._arguments[1].u)
-			if !user or !user.phoneextension
-				return
+			console.log(this._arguments)
+			Meteor.call 'phoneFindUserByQ', {username: this._arguments[1].u.username}, (error, user) =>
+				if error or !user?.phoneextension
+					return
+				else
+					if user._id == Meteor.userId()
+						return
 
-			if user._id == Meteor.userId()
-				return
-
-			RocketChat.TabBar.setTemplate "phone", ->
-				RocketChat.Phone.newCall(user.phoneextension, true)
+				RocketChat.TabBar.setTemplate "phone", ->
+					RocketChat.Phone.newCall(user.phoneextension, true)
