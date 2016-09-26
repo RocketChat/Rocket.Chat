@@ -36,10 +36,15 @@ Template.body.onRendered ->
 			e.stopPropagation()
 
 			if RocketChat.Layout.isEmbedded()
-				fireGlobalEvent('click-message-link', { link: link.pathname + link.search })
-				return window.open(link.pathname + link.search)
+				return fireGlobalEvent('click-message-link', { link: link.pathname + link.search })
 
 			FlowRouter.go(link.pathname + link.search)
+
+		if $(link).hasClass('swipebox')
+			if RocketChat.Layout.isEmbedded()
+				e.preventDefault()
+				e.stopPropagation()
+				fireGlobalEvent('click-image-link', { href: link.href })
 
 	Tracker.autorun (c) ->
 		w = window
