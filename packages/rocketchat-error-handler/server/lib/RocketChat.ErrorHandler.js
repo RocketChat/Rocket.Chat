@@ -18,12 +18,12 @@ class ErrorHandler {
 	}
 
 	registerHandlers() {
-		process.on('uncaughtException', (error) => {
+		process.on('uncaughtException', Meteor.bindEnvironment((error) => {
 			if (!this.reporting) {
 				return;
 			}
 			this.trackError(error.message, error.stack);
-		});
+		}));
 
 		const self = this;
 		let originalMeteorDebug = Meteor._debug;
