@@ -41,6 +41,12 @@ Template.body.onRendered ->
 
 			FlowRouter.go(link.pathname + link.search)
 
+		if $(link).hasClass('swipebox')
+			if RocketChat.Layout.isEmbedded()
+				e.preventDefault()
+				e.stopPropagation()
+				fireGlobalEvent('click-image-link', { href: link.href })
+
 	Tracker.autorun (c) ->
 		w = window
 		d = document
