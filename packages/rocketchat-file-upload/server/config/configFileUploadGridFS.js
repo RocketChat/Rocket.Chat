@@ -48,12 +48,17 @@ ExtractRange.prototype._transform = function(chunk, enc, cb) {
 };
 
 
-var getByteRange = function(header) {
+var getByteRange = function(header, filesize) {
 	if (header) {
 		var matches = header.match(/(\d+)-(\d+)/);
 		if (matches) {
 			return {start: parseInt(matches[1], 10),
 					stop: parseInt(matches[2], 10)};
+		}
+		matches = header.match(/(\d+)-/);
+		if (matches && filesize) {
+			return {start: parseInt(matches[1], 10),
+					stop: filesize-1};
 		}
 	}
 	return null;
@@ -85,7 +90,7 @@ var readFromGridFS = function(storeName, fileId, file, headers, req, res) {
 	store.transformRead(rs, ws, fileId, file, req, headers);
 
 	var h = req.headers;
-	var range = getByteRange(h.range);
+	var range = getByteRange(h.range, file.size);
 	var out_of_range = false;
 	if (range) {
 		out_of_range = (range.start > file.size) || (range.stop <= range.start) || (range.stop > file.size);
