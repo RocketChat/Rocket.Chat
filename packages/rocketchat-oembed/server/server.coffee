@@ -49,14 +49,16 @@ getUrlContent = (urlObj, redirectCount = 5, callback) ->
 			'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/41.0.2227.0 Safari/537.36'
 
 	headers = null
+	statusCode = null
 	chunks = []
 	chunksTotalLength = 0
 
 	stream = request opts
 	stream.on 'response', (response) ->
+		statusCode = response.statusCode
+		headers = response.headers
 		if response.statusCode isnt 200
 			return stream.abort()
-		headers = response.headers
 
 	stream.on 'data', (chunk) ->
 		chunks.push chunk
@@ -71,6 +73,7 @@ getUrlContent = (urlObj, redirectCount = 5, callback) ->
 			headers: headers
 			body: toUtf8 buffer
 			parsedUrl: parsedUrl
+			statusCode: statusCode
 		}
 
 	stream.on 'error', (error) ->
@@ -131,6 +134,9 @@ OEmbed.getUrlMeta = (url, withFragment) ->
 		headers = {}
 		for header, value of content.headers
 			headers[changeCase.camelCase(header)] = value
+
+	if content?.statusCode isnt 200
+		return data
 
 	data = RocketChat.callbacks.run 'oembed:afterParseContent',
 		meta: metas
