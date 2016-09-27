@@ -172,7 +172,7 @@ Package.onUse(function(api) {
 	api.addFiles('server/lib/OfficeClock.js', 'server');
 
 	api.addFiles('server/sendMessageBySMS.js', 'server');
-	api.addFiles('server/forwardUnclosedLivechats.js', 'server');
+	api.addFiles('server/unclosedLivechats.js', 'server');
 
 	// publications
 	api.addFiles('server/publications/customFields.js', 'server');
