@@ -1,5 +1,35 @@
-## NEXT
-* Spotlight (CMD/CTRL + P) now helps to quick search among your channels
+# History
+
+## 0.41.0, 2016-Sep-27
+
+- Add ability to close open livechats if an agent goes offline
+- Add basic channels tests
+- Add Error Handler to send uncaught exceptions to a room
+- Add filter to current livechats screen
+- Add login tests
+- Add migration to remove old Crowd setting
+- Add new global events
+- Allow webhook to decide if message is groupable
+- Catch errors sending mail
+- Fix auto complete issues with users and emoji
+- Fix error CodeMirror undefined when leaving admin
+- Fix ignore JSON.parse errors
+- Fix jitsiTimeout errors
+- Fix list of user auto complete from server
+- Fix open a new window if on embedded view mode
+- Fix stop registration if mail fails
+- Fix variable name in webhook (#4439)
+- Flip user video
+- Made Accounts_UseDNSDomainCheck false by default
+- Prevent edited messaged breaking line
+- Prevent empty username suggestion
+- Prevent error when parsing oembed meta
+- Remove colon from users autocomplete
+- Removed fast-render
+- Removed the word BY from the edited description title
+- Rename atlassian crowd url to remove space
+- Replace autocomplte popups subscriptions with methods
+- Trigger global event to embedded images
 
 ## 0.40.1, 2016-Sep-21
 
