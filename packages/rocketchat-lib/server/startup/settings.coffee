@@ -25,7 +25,7 @@ RocketChat.settings.addGroup 'Accounts', ->
 		@add 'Accounts_BlockedDomainsList', '', { type: 'string' }
 		@add 'Accounts_BlockedUsernameList', '', { type: 'string' }
 		@add 'Accounts_UseDefaultBlockedDomainsList', true, { type: 'boolean' }
-		@add 'Accounts_UseDNSDomainCheck', true, { type: 'boolean' }
+		@add 'Accounts_UseDNSDomainCheck', false, { type: 'boolean' }
 
 		@add 'Accounts_RegistrationForm', 'Public', { type: 'select', public: true, values: [ { key: 'Public', i18nLabel: 'Accounts_RegistrationForm_Public' }, { key: 'Disabled', i18nLabel: 'Accounts_RegistrationForm_Disabled' }, { key: 'Secret URL', i18nLabel: 'Accounts_RegistrationForm_Secret_URL' } ] }
 		@add 'Accounts_RegistrationForm_SecretURL', Random.id(), { type: 'string' }
@@ -167,6 +167,7 @@ RocketChat.settings.addGroup 'Message', ->
 	@add 'Message_AllowEditing_BlockEditInMinutes', 0, { type: 'int', public: true, i18nDescription: 'Message_AllowEditing_BlockEditInMinutesDescription' }
 	@add 'Message_AllowDeleting', true, { type: 'boolean', public: true }
 	@add 'Message_AllowDeleting_BlockDeleteInMinutes', 0, { type: 'int', public: true, i18nDescription: 'Message_AllowDeleting_BlockDeleteInMinutes' }
+	@add 'Message_AllowUnrecognizedSlashCommand', false, { type: 'boolean', public: true}
 	@add 'Message_AlwaysSearchRegExp', false, { type: 'boolean' }
 	@add 'Message_ShowEditedStatus', true, { type: 'boolean', public: true }
 	@add 'Message_ShowDeletedStatus', false, { type: 'boolean', public: true }

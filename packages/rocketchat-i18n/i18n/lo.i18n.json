@@ -570,7 +570,7 @@
   "LDAP_Custom_Domain_Search" : "ຄົ້ນຫາ Domain Custom",
   "LDAP_Custom_Domain_Search_Description" : "A ສິ້ນຂອງ JSON ທີ່ຄວບຄຸມຂໍ້ມູນຕິດແລະການເຊື່ອມຕໍ່ແລະເປັນຮູບແບບ: <br/> <code>{\"filter\": \"(&(objectCategory=person)(objectclass=user)(memberOf=CN=ROCKET_ACCESS,CN=Users,DC=domain,DC=com)(sAMAccountName=#{username}))\", \"scope\": \"sub\", \"userDN\": \"rocket.service@domain.com\", \"password\": \"urpass\"}</code>",
   "LDAP_Default_Domain" : "Domain ມາດຕະຖານ",
-  "LDAP_Description" : "LDAP ເປັນຖານຂໍ້ມູນລໍາດັບຊັ້ນທີ່ຫຼາຍບໍລິສັດນໍາໃຊ້ເພື່ອສະຫນອງການເຂົ້າສູ່ລະບົບໃນ - ສະຖານທີ່ສໍາລັບການແລກປ່ຽນລະຫັດຜ່ານຫນຶ່ງລະຫວ່າງສະຖານທີ່ແລະບໍລິການທີ່ຫຼາກຫຼາຍ. ສໍາລັບຂໍ້ມູນການຕັ້ງຄ່າຂັ້ນສູງແລະຕົວຢ່າງ, ກະລຸນາປືກສາຫາລື wiki ຂອງພວກເຮົາ: https://github.com/RocketChat/Rocket.Chat/wiki/LDAP-Authentication.",
+  "LDAP_Description" : "LDAP ເປັນຖານຂໍ້ມູນລໍາດັບຊັ້ນທີ່ຫຼາຍບໍລິສັດນໍາໃຊ້ເພື່ອສະຫນອງການເຂົ້າສູ່ລະບົບໃນ - ສະຖານທີ່ສໍາລັບການແລກປ່ຽນລະຫັດຜ່ານຫນຶ່ງລະຫວ່າງສະຖານທີ່ແລະບໍລິການທີ່ຫຼາກຫຼາຍ. ສໍາລັບຂໍ້ມູນການຕັ້ງຄ່າຂັ້ນສູງແລະຕົວຢ່າງ, ກະລຸນາປືກສາຫາລື wiki ຂອງພວກເຮົາ: https://rocket.chat/docs/administrator-guides/authentication/ldap/.",
   "LDAP_Domain_Base" : "Base ໂດເມນ",
   "LDAP_Domain_Base_Description" : "ຄຸນສົມບັດຢ່າງເຕັມສ່ວນຊື່ເພາະ (DN) ຂອງຍ່ອຍ LDAP ທ່ານຕ້ອງການຄົ້ນຫາສໍາລັບຜູ້ໃຊ້ແລະກຸ່ມ. ທ່ານສາມາດເພີ່ມເປັນຈໍານວນຫຼາຍຕາມທີ່ທ່ານຕ້ອງການ; ຢ່າງໃດກໍຕາມ, ໃນແຕ່ລະກຸ່ມຈະຕ້ອງໄດ້ຮັບການກໍານົດໄວ້ໃນຖານໂດເມນດຽວກັນຜູ້ຊົມໃຊ້ທີ່ເປັນຂອງມັນ. ຖ້າຫາກວ່າທ່ານລະບຸກຸ່ມຜູ້ໃຊ້ຈໍາກັດ, ມີພຽງແຕ່ຜູ້ໃຊ້ທີ່ຂຶ້ນກັບກຸ່ມຄົນເຫຼົ່ານັ້ນຈະຢູ່ໃນຂອບເຂດ. ພວກເຮົາແນະນໍາໃຫ້ທ່ານກໍານົດລະດັບເທິງຂອງຕົ້ນໄມ້ directory LDAP ຂອງທ່ານເປັນພື້ນຖານໂດເມນຂອງທ່ານແລະການນໍາໃຊ້ການກັ່ນຕອງການຊອກຫາທີ່ຈະຄວບຄຸມການເຂົ້າເຖິງ.",
   "LDAP_Domain_Search_Filter" : "ໂດເມນຜົນການຄົ້ນຫາ",

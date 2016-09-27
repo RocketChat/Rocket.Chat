@@ -47,13 +47,13 @@ Template.messagePopup.onCreated ->
 
 	template.value = new ReactiveVar
 
-	template.trigger = val(template.data.trigger, '@')
+	template.trigger = val(template.data.trigger, '')
 
 	template.triggerAnywhere = val(template.data.triggerAnywhere, true)
 
 	template.prefix = val(template.data.prefix, template.trigger)
 
-	template.suffix = val(template.data.suffix, ' ')
+	template.suffix = val(template.data.suffix, '')
 
 	if template.triggerAnywhere is true
 		template.matchSelectorRegex = val(template.data.matchSelectorRegex, new RegExp "(?:^| )#{template.trigger}[^\\s]*$")
@@ -147,8 +147,12 @@ Template.messagePopup.onCreated ->
 		caret = getCursorPosition(template.input)
 		firstPartValue = value.substr 0, caret
 		lastPartValue = value.substr caret
+		getValue = this.getValue(template.value.curValue, template.data.collection, template.records.get(), firstPartValue)
 
-		firstPartValue = firstPartValue.replace(template.selectorRegex, template.prefix + this.getValue(template.value.curValue, template.data.collection, firstPartValue) + template.suffix)
+		if not getValue
+			return
+
+		firstPartValue = firstPartValue.replace(template.selectorRegex, template.prefix + getValue + template.suffix)
 
 		template.input.value = firstPartValue + lastPartValue
 
@@ -161,20 +165,27 @@ Template.messagePopup.onCreated ->
 
 		filter = template.textFilter.get()
 		if filter?
-			result = template.data.getFilter template.data.collection, filter
-			if (template.data.collection instanceof Meteor.Collection and result.count? and result.count() is 0) or result?.length is 0
-				template.hasData.set false
-			else
-				template.hasData.set true
+			filterCallback = (result) =>
+				template.hasData.set result?.length > 0
+				template.records.set result
 
-			template.records.set result
+				Meteor.defer =>
+					template.verifySelection()
 
-			Meteor.defer =>
-				template.verifySelection()
+			result = template.data.getFilter(template.data.collection, filter, filterCallback)
+			if result?
+				filterCallback result
 
 
 Template.messagePopup.onRendered ->
-	this.input = this.data.getInput?()
+	if this.data.getInput?
+		this.input = this.data.getInput?()
+	else if this.data.input
+		this.input = this.parentTemplate().find(this.data.input)
+
+	if not this.input?
+		console.error 'Input not found for popup'
+
 	$(this.input).on 'keyup', this.onInputKeyup.bind this
 	$(this.input).on 'keydown', this.onInputKeydown.bind this
 

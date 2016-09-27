@@ -604,7 +604,7 @@
   "LDAP_Custom_Domain_Search" : "Özel Alan Arama",
   "LDAP_Custom_Domain_Search_Description" : "bağlama ve bağlantı bilgileri yönetir ve form olan JSON bir parça: <br/> <code>{\"filter\": \"(&(objectCategory=person)(objectclass=user)(memberOf=CN=ROCKET_ACCESS,CN=Users,DC=domain,DC=com)(sAMAccountName=#{username}))\", \"scope\": \"sub\", \"userDN\": \"rocket.service@domain.com\", \"password\": \"urpass\"}</code>",
   "LDAP_Default_Domain" : "varsayılan Etki Alanı",
-  "LDAP_Description" : "Birden çok site ve hizmetler arasında bir parola paylaşımı için bir tesis - LDAP birçok şirket üzerinde tek oturum sağlamak için kullanmak hiyerarşik veritabanı. https://github.com/RocketChat/Rocket.Chat/wiki/LDAP-Authentication: gelişmiş yapılandırma bilgi ve örnekler için, bizim wiki danışın.",
+  "LDAP_Description" : "Birden çok site ve hizmetler arasında bir parola paylaşımı için bir tesis - LDAP birçok şirket üzerinde tek oturum sağlamak için kullanmak hiyerarşik veritabanı. https://rocket.chat/docs/administrator-guides/authentication/ldap/: gelişmiş yapılandırma bilgi ve örnekler için, bizim wiki danışın.",
   "LDAP_Domain_Base" : "Alan Bankası",
   "LDAP_Domain_Base_Description" : "Eğer kullanıcılar ve gruplar için aramak istediğiniz bir LDAP alt ağacının tam ayırt edici ad (DN). İstediğiniz kadar ekleyebilirsiniz; Ancak, her grup kendisine ait kullanıcılarıyla aynı etki tabanı tanımlanmış olmalıdır. Eğer kısıtlı kullanıcı grupları belirtirseniz, bu gruplara ait sadece kullanıcıların kapsamında olacak. Size etki temel olarak LDAP dizin ağacının üst düzeyini belirlemek ve erişim kontrolü için arama filtresi kullanmanızı öneririz.",
   "LDAP_Domain_Search_Filter" : "Domain Arama Filtresi",
