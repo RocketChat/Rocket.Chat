@@ -15,6 +15,10 @@ Package.registerBuildPlugin({
 	}
 });
 
+Npm.depends({
+	'ua-parser-js': '0.7.10'
+});
+
 Package.onUse(function(api) {
 	api.use(['webapp', 'autoupdate'], 'server');
 	api.use('ecmascript');
@@ -44,9 +48,6 @@ Package.onUse(function(api) {
 
 	api.addFiles('client/ui.js', 'client');
 	api.addFiles('client/route.js', 'client');
-
-	// generic libs
-	api.addFiles('lib/ua-parser.js');
 
 	// add stylesheets to theme compiler
 	api.addAssets('client/stylesheets/livechat.less', 'server');
@@ -174,7 +175,7 @@ Package.onUse(function(api) {
 	api.addFiles('server/lib/OfficeClock.js', 'server');
 
 	api.addFiles('server/sendMessageBySMS.js', 'server');
-	api.addFiles('server/forwardUnclosedLivechats.js', 'server');
+	api.addFiles('server/unclosedLivechats.js', 'server');
 
 	// publications
 	api.addFiles('server/publications/customFields.js', 'server');
@@ -198,7 +199,5 @@ Package.onUse(function(api) {
 	// livechat app
 	api.addAssets('assets/demo.html', 'client');
 	api.addAssets('assets/rocket-livechat.js', 'client');
-	api.addAssets('public/livechat.css', 'client');
-	api.addAssets('public/livechat.jsi', 'client');
 	api.addAssets('public/head.html', 'server');
 });

@@ -21,7 +21,10 @@ Meteor.methods
 
 		RocketChat.saveCustomFields(userId, formData)
 
-		if userData.email
-			Accounts.sendVerificationEmail(userId, userData.email);
+		try
+			if userData.email
+				Accounts.sendVerificationEmail(userId, userData.email);
+		catch error
+			# throw new Meteor.Error 'error-email-send-failed', 'Error trying to send email: ' + error.message, { method: 'registerUser', message: error.message }
 
 		return userId

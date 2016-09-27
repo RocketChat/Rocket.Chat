@@ -1,33 +1,41 @@
 {
   "name": "Rocket.Chat",
   "description": "The Ultimate Open Source WebChat Platform",
-  "version": "0.39.0",
+  "version": "0.42.0-develop",
   "author": {
     "name": "Rocket.Chat",
-    "url": "http://rocket.chat/"
+    "url": "https://rocket.chat/"
   },
-  "contributors": [{
-    "name": "Aaron Ogle",
-    "email": "aaron.olge@rocket.chat"
-  }, {
-    "name": "Bradley Hilton",
-    "email": "bradley.hilton@rocket.chat"
-  }, {
-    "name": "Diego Sampaio",
-    "email": "diego.sampaio@rocket.chat"
-  }, {
-    "name": "Gabriel Engel",
-    "email": "gabriel.engel@rocket.chat"
-  }, {
-    "name": "Marcelo Schmidt",
-    "email": "marcelo.schmidt@rocket.chat"
-  }, {
-    "name": "Rodrigo Nascimento",
-    "email": "rodrigo.nascimento@rocket.chat"
-  }, {
-    "name": "Sing Li",
-    "email": "sing.li@rocket.chat"
-  }],
+  "contributors": [
+    {
+      "name": "Aaron Ogle",
+      "email": "aaron.olge@rocket.chat"
+    },
+    {
+      "name": "Bradley Hilton",
+      "email": "bradley.hilton@rocket.chat"
+    },
+    {
+      "name": "Diego Sampaio",
+      "email": "diego.sampaio@rocket.chat"
+    },
+    {
+      "name": "Gabriel Engel",
+      "email": "gabriel.engel@rocket.chat"
+    },
+    {
+      "name": "Marcelo Schmidt",
+      "email": "marcelo.schmidt@rocket.chat"
+    },
+    {
+      "name": "Rodrigo Nascimento",
+      "email": "rodrigo.nascimento@rocket.chat"
+    },
+    {
+      "name": "Sing Li",
+      "email": "sing.li@rocket.chat"
+    }
+  ],
   "keywords": [
     "rocketchat",
     "rocket",
@@ -36,7 +44,9 @@
   "scripts": {
     "start": "meteor run",
     "lint": "eslint .",
-    "deploy": "npm run build && pm2 startOrRestart pm2.json"
+    "deploy": "npm run build && pm2 startOrRestart pm2.json",
+    "chimp-watch": "chimp --ddp=http://localhost:3000 --watch --mocha --path=tests",
+    "chimp-test": "chimp --mocha --path=tests --mochaSlow=0"
   },
   "license": "MIT",
   "repository": {
@@ -48,6 +58,7 @@
     "email": "support@rocket.chat"
   },
   "devDependencies": {
+    "chimp": "^0.40.7",
     "eslint": "^3.1.1"
   },
   "dependencies": {

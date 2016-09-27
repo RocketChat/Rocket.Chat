@@ -570,7 +570,7 @@
   "LDAP_Custom_Domain_Search" : "ស្វែងរកដែនផ្ទាល់ខ្លួន",
   "LDAP_Custom_Domain_Search_Description" : "បំណែកមួយនៃ JSON ប៉ុណ្ណោះដែលគ្រប់គ្រង info ចងនិងការតភ្ជាប់និងជានៃសំណុំបែបបទនេះ: <br/> <code>{\"filter\": \"(&(objectCategory=person)(objectclass=user)(memberOf=CN=ROCKET_ACCESS,CN=Users,DC=domain,DC=com)(sAMAccountName=#{username}))\", \"scope\": \"sub\", \"userDN\": \"rocket.service@domain.com\", \"password\": \"urpass\"}</code>",
   "LDAP_Default_Domain" : "ដែនលំនាំដើម",
-  "LDAP_Description" : "LDAP គឺជាលំដាប់ក្នុងទូផ្ទុកទិន្នន័យដែលផ្ទុកព័ត៌មានក្រុមហ៊ុនជាច្រើនដែលប្រើប្រាស់ដើម្បីធ្វើការ Authentication ដោយប្រើប្រាស់ Username និង Password រវាង Site ជាច្រើន និងសេវាកម្មផ្សេងៗ។ ព័ត៌មានអំពីការកំណត់កម្រិតខ្ពស់ និងឧទាហរណ៍សូមចូលទៅកាន់វីគី https://github.com/RocketChat/Rocket.Chat/wiki/LDAP-Authentication",
+  "LDAP_Description" : "LDAP គឺជាលំដាប់ក្នុងទូផ្ទុកទិន្នន័យដែលផ្ទុកព័ត៌មានក្រុមហ៊ុនជាច្រើនដែលប្រើប្រាស់ដើម្បីធ្វើការ Authentication ដោយប្រើប្រាស់ Username និង Password រវាង Site ជាច្រើន និងសេវាកម្មផ្សេងៗ។ ព័ត៌មានអំពីការកំណត់កម្រិតខ្ពស់ និងឧទាហរណ៍សូមចូលទៅកាន់វីគី https://rocket.chat/docs/administrator-guides/authentication/ldap/",
   "LDAP_Domain_Base" : "មូលដ្ឋានដែន",
   "LDAP_Domain_Base_Description" : "ឈ្មោះដែលមានសមត្ថភាពយ៉ាងពេញលេញកិត្តិយស (DN) នៃមែកធាងរបស់ LDAP មួយដែលអ្នកចង់បានដើម្បីស្វែងរកអ្នកប្រើនិងក្រុម។ អ្នកអាចបន្ថែមជាច្រើនដូចជាអ្នកចង់; ទោះជាយ៉ាងណា, ក្រុមនីមួយត្រូវតែត្រូវបានកំណត់នៅក្នុងមូលដ្ឋានដែនដូចគ្នាជាអ្នកប្រើប្រាស់ដែលជាកម្មសិទ្ធិរបស់វា។ ប្រសិនបើអ្នកបញ្ជាក់ក្រុមអ្នកប្រើបានដាក់មានតែអ្នកប្រើដែលជារបស់ក្រុមទាំងនោះនឹងមាននៅក្នុងវិសាលភាព។ យើងផ្ដល់អនុសាសន៍ថាអ្នកបញ្ជាក់ក្នុងកម្រិតកំពូលរបស់ថត LDAP របស់អ្នកដើមឈើជាមូលដ្ឋានដែនរបស់អ្នកហើយប្រើតម្រងស្វែងរកដើម្បីគ្រប់គ្រងការចូលប្រើ។",
   "LDAP_Domain_Search_Filter" : "តម្រងស្វែងរកដែន",

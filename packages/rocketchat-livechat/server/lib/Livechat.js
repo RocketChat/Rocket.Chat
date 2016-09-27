@@ -1,4 +1,6 @@
 /* globals HTTP */
+import UAParser from 'ua-parser-js';
+
 RocketChat.Livechat = {
 	historyMonitorType: 'url',
 
@@ -235,6 +237,13 @@ RocketChat.Livechat = {
 		if (!_.isEmpty(guestData.name)) {
 			return RocketChat.models.Rooms.setLabelByRoomId(roomData._id, guestData.name) && RocketChat.models.Subscriptions.updateNameByRoomId(roomData._id, guestData.name);
 		}
+	},
+
+	closeOpenChats(userId, comment) {
+		const user = RocketChat.models.Users.findOneById(userId);
+		RocketChat.models.Rooms.findOpenByAgent(userId).forEach((room) => {
+			this.closeRoom({ user, room, comment});
+		});
 	},
 
 	forwardOpenChats(userId) {

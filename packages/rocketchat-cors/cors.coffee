@@ -11,6 +11,9 @@ WebApp.rawConnectHandlers.use (req, res, next) ->
 	if req.headers['content-type'] not in ['', undefined]
 		return next()
 
+	if req.url.indexOf('/ufs/') is 0
+		return next()
+
 	buf = ''
 	req.setEncoding('utf8')
 	req.on 'data', (chunk) -> buf += chunk
