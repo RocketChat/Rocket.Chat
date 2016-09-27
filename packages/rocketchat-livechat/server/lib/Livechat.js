@@ -234,6 +234,13 @@ RocketChat.Livechat = {
 		}
 	},
 
+	closeOpenChats(userId, comment) {
+		const user = RocketChat.models.Users.findOneById(userId);
+		RocketChat.models.Rooms.findOpenByAgent(userId).forEach((room) => {
+			this.closeRoom({ user, room, comment});
+		});
+	},
+
 	forwardOpenChats(userId) {
 		RocketChat.models.Rooms.findOpenByAgent(userId).forEach((room) => {
 			const guest = RocketChat.models.Users.findOneById(room.v._id);
