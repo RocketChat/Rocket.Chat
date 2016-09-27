@@ -1,6 +1,7 @@
 @WebNotifications = new class
 	callbacks: {}
 	fallback: KonchatNotification
+	enabled: false
 
 	registerCallbacks: (prefix, cbs) ->
 		for c in cbs
@@ -9,7 +10,6 @@
 	start: ->
 		if navigator.serviceWorker and !Meteor.isCordova
 			console.debug 'Service Worker is supported'
-			@enabled = true
 			navigator.serviceWorker.addEventListener 'message', (event) =>
 				cb = @callbacks[event.data]
 				if cb
@@ -17,10 +17,11 @@
 				else
 					console.warn('no callback defined')
 
-			navigator.serviceWorker.register('/notifications_serviceworker.js').then((reg) ->
-				console.info 'loaderd notifications serviceworker', reg
+			navigator.serviceWorker.register('/notifications_serviceworker.js').then((reg) =>
+				console.info 'loaded notifications serviceworker', reg
+				@enabled = true
 			).catch((err) ->
-				console.log 'errro loading notifications serviceworker', err
+				console.log 'errror loading notifications serviceworker', err
 			)
 
 		else
@@ -50,7 +51,7 @@
 					)
 			)
 		else
-			@fallback?(notification)
+			@fallback?.showDesktop(notification)
 
 
 Meteor.startup ->
