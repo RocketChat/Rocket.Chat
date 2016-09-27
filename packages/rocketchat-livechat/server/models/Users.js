@@ -83,7 +83,7 @@ RocketChat.models.Users.getNextAgent = function() {
 	};
 
 	var user = findAndModify(query, sort, update);
-	if (user) {
+	if (user && user.value) {
 		return {
 			agentId: user.value._id,
 			username: user.value.username
