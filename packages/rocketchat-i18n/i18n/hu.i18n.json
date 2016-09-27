@@ -570,7 +570,7 @@
   "LDAP_Custom_Domain_Search" : "Egyéni Domain Search",
   "LDAP_Custom_Domain_Search_Description" : "Egy darab JSON, amely szabályozza kötődnek és a kapcsolat adatainak és a forma: <br/> <code>{\"filter\": \"(&(objectCategory=person)(objectclass=user)(memberOf=CN=ROCKET_ACCESS,CN=Users,DC=domain,DC=com)(sAMAccountName=#{username}))\", \"scope\": \"sub\", \"userDN\": \"rocket.service@domain.com\", \"password\": \"urpass\"}</code>",
   "LDAP_Default_Domain" : "Default Domain",
-  "LDAP_Description" : "Az LDAP hierarchikus adatbázis sok cég használja, hogy single sign on - a létesítmény megosztása egy jelszót a több oldalak és szolgáltatások. Speciális konfigurációs információkat és példákat, kérjük forduljon a wiki: https://github.com/RocketChat/Rocket.Chat/wiki/LDAP-Authentication.",
+  "LDAP_Description" : "Az LDAP hierarchikus adatbázis sok cég használja, hogy single sign on - a létesítmény megosztása egy jelszót a több oldalak és szolgáltatások. Speciális konfigurációs információkat és példákat, kérjük forduljon a wiki: https://rocket.chat/docs/administrator-guides/authentication/ldap/.",
   "LDAP_Domain_Base" : "Domain Base",
   "LDAP_Domain_Base_Description" : "A teljesen minősített elkülönítő neve (DN) LDAP részfa szeretne keresni felhasználókat és csoportokat. Akkor adjunk hozzá annyi, amennyit akar; azonban minden csoport kell meghatározni ugyanabban a tartományban bázis a felhasználók számára, hogy tartozik hozzá. Ha megadod korlátozott felhasználói csoportok, csak azok a felhasználók, hogy tartoznak azok a csoportok lesznek hatálya alá. Javasoljuk, hogy adja meg a felső szint a LDAP fa, mint a domain bázis és használja keresési szűrő a hozzáférés szabályozására.",
   "LDAP_Domain_Search_Filter" : "Domain Search Filter",

@@ -80,22 +80,26 @@ RocketChat.models.Users = new class extends RocketChat.models._Base
 			exceptions = [ exceptions ]
 
 		termRegex = new RegExp s.escapeRegExp(searchTerm), 'i'
-		query =
-			$and: [
-				{ active: true }
-				{'$or': [
-					{'$and': [
-						{ username: { $nin: exceptions } }
-						{ username: termRegex }
-					]}
-					{'$and': [
-						{ name: { $nin: exceptions } }
-						{ name: termRegex }
-					]}
-				]}
-			]
-			type:
+		query = {
+			$or: [{
+				username: termRegex
+			}, {
+				name: termRegex
+			}],
+			active: true,
+			type: {
 				$in: ['user', 'bot']
+			},
+			$and: [{
+				username: {
+					$exists: true
+				}
+			}, {
+				username: {
+					$nin: exceptions
+				}
+			}]
+		}
 
 		return @find query, options
 

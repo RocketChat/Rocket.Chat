@@ -9,7 +9,7 @@ this.handleError = function(error, useToastr = true) {
 
 	if (useToastr) {
 		return toastr.error(TAPi18n.__(error.error, error.details), error.details && error.details.errorTitle ? TAPi18n.__(error.details.errorTitle) : null);
-	} else {
-		return TAPi18n.__(error.error, error.details);
 	}
+
+	return TAPi18n.__(error.error, error.details);
 };

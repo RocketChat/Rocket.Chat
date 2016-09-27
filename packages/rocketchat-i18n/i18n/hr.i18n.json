@@ -611,7 +611,7 @@
   "LDAP_Custom_Domain_Search" : "Custom Domain Search",
   "LDAP_Custom_Domain_Search_Description" : "Komad JSONa koji upravlja vezama je u obliku: <br/> <code>{\"filter\": \"(&(objectCategory=person)(objectclass=user)(memberOf=CN=ROCKET_ACCESS,CN=Users,DC=domain,DC=com)(sAMAccountName=#{username}))\", \"scope\": \"sub\", \"userDN\": \"rocket.service@domain.com\", \"password\": \"urpass\"}</code>",
   "LDAP_Default_Domain" : "Zadana domena",
-  "LDAP_Description" : "LDAP je hijerarhijska baza podataka koja mnoge tvrtke koriste za pružanje jedinstvene prijave - usluge za dijeljenje jedne lozinke između više web-mjesta i usluga. Za napredne podatke o konfiguraciji i primjere, obratite se našem wiki: https://github.com/RocketChat/Rocket.Chat/wiki/LDAP-Authentication.",
+  "LDAP_Description" : "LDAP je hijerarhijska baza podataka koja mnoge tvrtke koriste za pružanje jedinstvene prijave - usluge za dijeljenje jedne lozinke između više web-mjesta i usluga. Za napredne podatke o konfiguraciji i primjere, obratite se našem wiki: https://rocket.chat/docs/administrator-guides/authentication/ldap/.",
   "LDAP_Domain_Base" : "Osnova domene",
   "LDAP_Domain_Base_Description" : "Potpuno kvalificirana Distinguished Name (DN) u LDAP podstablo koje želite pretražiti za korisnike i grupe. Možete dodati koliko god želite; Međutim, svaka grupa mora biti definirana u istoj bazi domeni kao korisnici koji pripadaju njemu. Ako navedete ograničene grupe korisnika, samo korisnici koji pripadaju tim skupinama će biti u opsegu. Preporučujemo da odredite gornju razinu svoje LDAP direktorija stablo kao svoju bazu domene i korištenje filtra za pretraživanje za kontrolu pristupa.",
   "LDAP_Domain_Search_Filter" : "Domain Search Filter",

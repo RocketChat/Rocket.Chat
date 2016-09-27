@@ -97,7 +97,7 @@ RocketChat.models.Subscriptions = new class extends RocketChat.models._Base
 				open: false
 				archived: true
 
-		return @update query, update
+		return @update query, update, { multi: true }
 
 	unarchiveByRoomId: (roomId) ->
 		query =
@@ -109,7 +109,7 @@ RocketChat.models.Subscriptions = new class extends RocketChat.models._Base
 				open: true
 				archived: false
 
-		return @update query, update
+		return @update query, update, { multi: true }
 
 	hideByRoomIdAndUserId: (roomId, userId) ->
 		query =
@@ -306,6 +306,17 @@ RocketChat.models.Subscriptions = new class extends RocketChat.models._Base
 				roles: role
 
 		return @update query, update
+
+	setArchivedByUsername: (username, archived) ->
+		query =
+			t: 'd'
+			name: username
+
+		update =
+			$set:
+				archived: archived
+
+		return @update query, update, { multi: true }
 
 	# INSERT
 	createWithRoomAndUser: (room, user, extraData) ->

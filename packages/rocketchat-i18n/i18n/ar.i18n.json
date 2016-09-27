@@ -570,7 +570,7 @@
   "LDAP_Custom_Domain_Search" : "البحث المجال مخصص",
   "LDAP_Custom_Domain_Search_Description" : "قطعة من JSON الذي يحكم ربط واتصال من المعلومات وهو النموذج: <br/> <code>{\"filter\": \"(&(objectCategory=person)(objectclass=user)(memberOf=CN=ROCKET_ACCESS,CN=Users,DC=domain,DC=com)(sAMAccountName=#{username}))\", \"scope\": \"sub\", \"userDN\": \"rocket.service@domain.com\", \"password\": \"urpass\"}</code>",
   "LDAP_Default_Domain" : "المجال الافتراضي",
-  "LDAP_Description" : "LDAP هي قاعدة بيانات هرمية التي تستخدم العديد من الشركات لتقديم إشارة واحدة على - مرفق لتقاسم كلمة مرور واحدة بين المواقع وخدمات متعددة. للحصول على معلومات التكوين المتقدمة والأمثلة، يرجى الرجوع لدينا ويكي: https://github.com/RocketChat/Rocket.Chat/wiki/LDAP-Authentication.",
+  "LDAP_Description" : "LDAP هي قاعدة بيانات هرمية التي تستخدم العديد من الشركات لتقديم إشارة واحدة على - مرفق لتقاسم كلمة مرور واحدة بين المواقع وخدمات متعددة. للحصول على معلومات التكوين المتقدمة والأمثلة، يرجى الرجوع لدينا ويكي: https://rocket.chat/docs/administrator-guides/authentication/ldap/.",
   "LDAP_Domain_Base" : "قاعدة المجال",
   "LDAP_Domain_Base_Description" : "اسم المؤهل بالكامل المميز (DN) من الشجرة الفرعية LDAP تريد البحث للمستخدمين والمجموعات. يمكنك إضافة ما تريد. ومع ذلك، يجب أن تحدد كل مجموعة في قاعدة نطاق نفس المستخدمين التي تنتمي إليها. إذا قمت بتحديد مجموعات المستخدمين المحظورة، وفقط للمستخدمين الذين ينتمون لتلك الجماعات أن يكون في نطاق. نوصي تحديد المستوى الخاص بك شجرة دليل LDAP كقاعدة المجال الخاص بك واستخدام فلتر البحث للتحكم في الوصول.",
   "LDAP_Domain_Search_Filter" : "نطاق البحث تصفية",

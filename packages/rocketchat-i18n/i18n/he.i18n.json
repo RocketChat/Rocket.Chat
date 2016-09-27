@@ -570,7 +570,7 @@
   "LDAP_Custom_Domain_Search" : "חיפוש הדומיין המותאם אישית",
   "LDAP_Custom_Domain_Search_Description" : "חתיכת JSON, השולטת מידע לאגד וחיבור והוא מהצורה: <br/> <code>{\"filter\": \"(&(objectCategory=person)(objectclass=user)(memberOf=CN=ROCKET_ACCESS,CN=Users,DC=domain,DC=com)(sAMAccountName=#{username}))\", \"scope\": \"sub\", \"userDN\": \"rocket.service@domain.com\", \"password\": \"urpass\"}</code>",
   "LDAP_Default_Domain" : "ברירת המחדל של תחום",
-  "LDAP_Description" : "LDAP הוא מסד נתונים היררכיים כי חברות רבות להשתמש בו כדי לספק כניסה יחידה - מתקן לשיתוף סיסמא אחת בין אתרים ושירותים רבים. לקבלת מידע תצורה מתקדמת ודוגמאות, היועץ wiki שלנו: https://github.com/RocketChat/Rocket.Chat/wiki/LDAP-Authentication.",
+  "LDAP_Description" : "LDAP הוא מסד נתונים היררכיים כי חברות רבות להשתמש בו כדי לספק כניסה יחידה - מתקן לשיתוף סיסמא אחת בין אתרים ושירותים רבים. לקבלת מידע תצורה מתקדמת ודוגמאות, היועץ wiki שלנו: https://rocket.chat/docs/administrator-guides/authentication/ldap/.",
   "LDAP_Domain_Base" : "מאגר דומיין",
   "LDAP_Domain_Base_Description" : "השם הייחודי מלא (DN) של עץ משנה LDAP אתה רוצה לחפש משתמשים וקבוצות. אתה יכול להוסיף כמה שאתה רוצה; עם זאת, כל קבוצה חייבת להיות מוגדרת באותו הבסיס מושלם בתור המשתמשים ששייכים אליו. אם תציין קבוצות משתמש מוגבלות, רק משתמשים השייכים לקבוצות אלו יהיו בהיקפה. אנו ממליצים לציין את הרמה העליונה של ספריית עץ LDAP שלך כבסיס התחום שלך ולהשתמש במסנן חיפוש כדי לשלוט בגישה.",
   "LDAP_Domain_Search_Filter" : "סנן חיפוש דומיין",
