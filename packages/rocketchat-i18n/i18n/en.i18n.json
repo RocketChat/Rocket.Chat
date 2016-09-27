@@ -1406,6 +1406,8 @@
   "your_message_optional" : "your message (optional)",
   "Your_password_is_wrong" : "Your password is wrong!",
   "Your_push_was_sent_to_s_devices" : "Your push was sent to %s devices",
+  "Phone_Answer" : "Answer",
+  "Phone_Hangup" : "Hangup",
   "Phone_Call" : "Phone call",
   "Incoming_call_from": "Incoming call",
   "Outgoing_call_to": "Calling...",

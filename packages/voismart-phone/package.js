@@ -13,7 +13,8 @@ Package.onUse(function(api) {
 		'less@2.5.0',
 		'tracker',
 		'reactive-var',
-		'rocketchat:lib'
+		'rocketchat:lib',
+		'voismart:webnotifications'
 	]);
 
 	api.use('templating', 'client');

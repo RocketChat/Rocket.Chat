@@ -1338,6 +1338,8 @@
   "Your_mail_was_sent_to_s" : "La tua mail è stata inviata a %s",
   "Your_password_is_wrong" : "La password è sbagliata!",
   "Your_push_was_sent_to_s_devices" : "La vostra notifica push è stata inviata ai dispositivi %s",
+  "Phone_Answer" : "Rispondi",
+  "Phone_Hangup" : "Rifiuta",
   "Phone_Call" : "Chiamata",
   "Incoming_call_from": "Chiamata in arrivo",
   "Outgoing_call_to": "Chiamata in corso...",

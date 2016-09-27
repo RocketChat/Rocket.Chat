@@ -250,6 +250,7 @@ voismart:ngpresence@0.0.1
 voismart:phone@0.0.1
 voismart:user-call@0.0.1
 voismart:webc@0.0.1
+voismart:webnotifications@0.0.1
 url@1.0.10
 webapp@1.3.11
 webapp-hashing@1.0.9

@@ -223,6 +223,10 @@ RocketChat.Phone = new class
 	constructor: ->
 		if window.rocketDebug
 			console.log("Starting a new Phone Handler")
+		WebNotifications.registerCallbacks('phone', [
+			{name: 'answer', callback: => answer(false)},
+			{name: 'hangup', callback: => @hangup()}
+		])
 
 	answer = (useVideo) ->
 		if window.rocketDebug
@@ -302,16 +306,25 @@ RocketChat.Phone = new class
 					msg = TAPi18n.__("Incoming_call_from")
 					putNotification(msg, d.params.caller_id_number, d.params.caller_id_name)
 					cid = d.params.caller_id_number + ' ' + d.params.caller_id_name
+					title = TAPi18n.__ "Phone_Call"
+					text = TAPi18n.__("Incoming_call_from") + '\n' + cid
+					actions = [
+						{action: 'answer', title: TAPi18n.__('Phone_Answer'), icon: 'images/answer.png'},
+						{action: 'hangup', title: TAPi18n.__('Phone_Hangup'), icon: 'images/hangup.png'}
+					]
 					notification =
-						title: TAPi18n.__ "Phone_Call"
-						text: TAPi18n.__("Incoming_call_from") + '\n' + cid
+						title: title
+						text: text
+						actions: actions
+						prefix: 'phone'
+						icon: 'images/call.png'
 						payload:
 							rid: Session.get('openedRoom')
 							sender:
 								name: d.params.caller_id_name
 								username: d.params.caller_id_name
 
-					KonchatNotification.showDesktop notification
+					WebNotifications.showNotification notification
 
 			when 'active'
 				setCallState('active')
