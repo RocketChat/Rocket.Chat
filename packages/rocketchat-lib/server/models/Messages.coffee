@@ -13,6 +13,7 @@ RocketChat.models.Messages = new class extends RocketChat.models._Base
 		@tryEnsureIndex { 'file._id': 1 }, { sparse: 1 }
 		@tryEnsureIndex { 'mentions.username': 1 }, { sparse: 1 }
 		@tryEnsureIndex { 'pinned': 1 }, { sparse: 1 }
+		@tryEnsureIndex { 'snippeted': 1 }, { sparse: 1 }
 		@tryEnsureIndex { 'location': '2dsphere' }
 
 
@@ -114,6 +115,14 @@ RocketChat.models.Messages = new class extends RocketChat.models._Base
 
 		return @find query, options
 
+	findSnippetedByRoom: (roomId, options) ->
+		query =
+			_hidden: { $ne: true }
+			snippeted: true
+			rid: roomId
+
+		return @find query, options
+
 	getLastTimestamp: (options = {}) ->
 		query = { ts: { $exists: 1 } }
 		options.sort = { ts: -1 }
@@ -179,6 +188,18 @@ RocketChat.models.Messages = new class extends RocketChat.models._Base
 				pinned: pinned
 				pinnedAt: pinnedAt || new Date
 				pinnedBy: pinnedBy
+
+		return @update query, update
+
+	setSnippetedByIdAndUserId: (_id, snippetedBy, snippeted=true, snippetedAt=0) ->
+		query =
+			_id: _id
+
+		update =
+			$set:
+				snippeted: snippeted
+				snippetedAt: snippetedAt || new Date
+				snippetedBy: snippetedBy
 
 		return @update query, update
 
