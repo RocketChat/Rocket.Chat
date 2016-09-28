@@ -1,3 +1,10 @@
+readAsArray = (file, callback) ->
+        reader = new FileReader()
+        reader.onload = (ev) ->
+                callback ev.target.result, file
+
+        reader.readAsArrayBuffer file
+
 @AudioRecorder = new class
 	start: (cb) ->
 		window.AudioContext = window.AudioContext or window.webkitAudioContext
@@ -42,16 +49,21 @@
 	startIos: (stopcb) ->
 		ok = (mediaFiles) =>
 			file = mediaFiles[0]
-			reader = new FileReader()
+			if not file
+				@stopIos stopcb
+				return
+
 			f = new window.File file.name, file.localURL, file.type, file.lastModified, file.size
 			if not f.type?
 				f.type = 'audio/wav'
-			fileUpload [{
-						file: f
-						type: 'audio'
-						name: TAPi18n.__('Audio record') + '.wav'
-						}]
-			@stopIos stopcb
+			readAsArray f, (fcontent) =>
+				blob = new Blob [fcontent], type: f.type
+				fileUpload [{
+							file: blob
+							type: 'audio'
+							name: TAPi18n.__('Audio record') + '.wav'
+							}]
+				@stopIos stopcb
 
 		navigator.device.capture.captureAudio ok, (e) ->
 			console.log('Error while capturing audio: ', e)
