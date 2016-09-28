@@ -27,5 +27,5 @@ Package.onUse(function(api) {
 });
 
 Npm.depends({
-	cas: '0.0.3'
+    cas: 'git+https://github.com/joshchan/node-cas#344a8bfba9d054e2e378adaf95b720c898ae48a2'
 });
