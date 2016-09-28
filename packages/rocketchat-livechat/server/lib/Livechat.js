@@ -217,6 +217,8 @@ RocketChat.Livechat = {
 			'Livechat_offline_success_message',
 			'Livechat_offline_form_unavailable',
 			'Livechat_display_offline_form',
+			'Livechat_videocall_enabled',
+			'Jitsi_Enabled',
 			'Language'
 		]).forEach((setting) => {
 			settings[setting._id] = setting.value;
