@@ -1,6 +1,6 @@
 RocketChat.models.Messages = new class extends RocketChat.models._Base
 	constructor: ->
-		@_initModel 'message'
+		super('message')
 
 		@tryEnsureIndex { 'rid': 1, 'ts': 1 }
 		@tryEnsureIndex { 'ts': 1 }
