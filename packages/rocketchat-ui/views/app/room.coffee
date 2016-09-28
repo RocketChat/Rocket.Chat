@@ -368,8 +368,7 @@ Template.room.events
 		channel = $(e.currentTarget).data('channel')
 		if channel?
 			if RocketChat.Layout.isEmbedded()
-				fireGlobalEvent('click-mention-link', { channel: channel })
-				return window.open(FlowRouter.path('channel', {name: channel}))
+				return fireGlobalEvent('click-mention-link', { path: FlowRouter.path('channel', {name: channel}), channel: channel })
 
 			FlowRouter.go 'channel', {name: channel}
 			return
