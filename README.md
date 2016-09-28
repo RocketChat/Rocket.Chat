@@ -378,17 +378,15 @@ A lot of work has already gone into Rocket.Chat, but we have much bigger plans f
 
 # Credits
 
-Thanks to
+Thanks to our core team
 [Aaron Ogle](https://github.com/geekgonecrazy),
 [Bradley Hilton](https://github.com/Graywolf336),
 [Diego Sampaio](https://github.com/sampaiodiego),
 [Gabriel Engel](https://github.com/engelgabriel),
-[George Secrieru](https://github.com/gmsecrieru),
 [Marcelo Schmidt](https://github.com/marceloschmidt),
-[Rafael Caferati](https://github.com/rcaferati),
 [Rodrigo Nascimento](https://github.com/rodrigok),
 [Sing Li](https://github.com/Sing-Li),
-and many others.
+and to hundreds of awesome [contributors](https://github.com/RocketChat/Rocket.Chat/graphs/contributors).
 
 Emoji provided free by [Emoji One](http://emojione.com)
 
