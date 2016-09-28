@@ -302,29 +302,34 @@ RocketChat.Phone = new class
 			when 'ringing'
 				setCallState('ringing')
 				RocketChat.TabBar.updateButton('phone', { class: 'phone-blinking' })
-				RocketChat.TabBar.setTemplate "phone", ->
-					msg = TAPi18n.__("Incoming_call_from")
-					putNotification(msg, d.params.caller_id_number, d.params.caller_id_name)
-					cid = d.params.caller_id_number + ' ' + d.params.caller_id_name
-					title = TAPi18n.__ "Phone_Call"
-					text = TAPi18n.__("Incoming_call_from") + '\n' + cid
-					actions = [
-						{action: 'answer', title: TAPi18n.__('Phone_Answer'), icon: 'images/answer.png'},
-						{action: 'hangup', title: TAPi18n.__('Phone_Hangup'), icon: 'images/hangup.png'}
-					]
-					notification =
-						title: title
-						text: text
-						actions: actions
-						prefix: 'phone'
-						icon: 'images/call.png'
-						payload:
-							rid: Session.get('openedRoom')
-							sender:
-								name: d.params.caller_id_name
-								username: d.params.caller_id_name
+				Meteor.call 'phoneFindUserByQ', {phoneextension: d.params.caller_id_number}, (error, user) =>
+					if error or !user
+						username = d.params.caller_id_name
+					else
+						username = user.username
+					RocketChat.TabBar.setTemplate "phone", ->
+						msg = TAPi18n.__("Incoming_call_from")
+						putNotification(msg, d.params.caller_id_number, d.params.caller_id_name)
+						cid = d.params.caller_id_number + ' ' + d.params.caller_id_name
+						title = TAPi18n.__ "Phone_Call"
+						text = TAPi18n.__("Incoming_call_from") + '\n' + cid
+						actions = [
+							{action: 'answer', title: TAPi18n.__('Phone_Answer'), icon: 'images/answer.png'},
+							{action: 'hangup', title: TAPi18n.__('Phone_Hangup'), icon: 'images/hangup.png'}
+						]
+						notification =
+							title: title
+							text: text
+							actions: actions
+							prefix: 'phone'
+							icon: 'images/call.png'
+							payload:
+								rid: Session.get('openedRoom')
+								sender:
+									name: d.params.caller_id_name
+									username: username
 
-					WebNotifications.showNotification notification
+						WebNotifications.showNotification notification
 
 			when 'active'
 				setCallState('active')

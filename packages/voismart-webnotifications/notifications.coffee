@@ -21,37 +21,44 @@
 				console.info 'loaded notifications serviceworker', reg
 				@enabled = true
 			).catch((err) ->
-				console.log 'errror loading notifications serviceworker', err
+				console.error 'errror loading notifications serviceworker', err
 			)
 
 		else
 			@enabled = false
 			console.info 'Service Worker is not supported'
 
-	testRegisterCallbacks: ->
-		@registerCallbacks('phone', [
-			{name: 'answer', callback: -> swal('answer')},
-			{name: 'hangup', callback: -> swal('hangup')}
-		])
+	_showNotification: (notification) ->
+		Notification.requestPermission((result) ->
+			if result == 'granted'
+				navigator.serviceWorker.ready.then((registration) ->
+					registration.showNotification(notification.title, {
+						body: notification.text or '',
+						actions: notification.actions,
+						icon: notification.icon,
+						tag: notification.prefix
+					})
+				).catch((err) ->
+					console.error 'error showing notification', err
+				)
+		)
 
 	showNotification: (notification) ->
-		if @enabled
-			for action in notification.actions
-				action.action = notification.prefix + '::' + action.action
+		try
+			if @enabled
+				for action in notification.actions
+					action.action = notification.prefix + '::' + action.action
 
-			Notification.requestPermission((result) ->
-				if result == 'granted'
-					navigator.serviceWorker.ready.then((registration) ->
-						registration.showNotification(notification.title, {
-							body: notification.text or '',
-							actions: notification.actions,
-							icon: notification.icon,
-							tag: notification.prefix
-						})
-					)
-			)
-		else
-			@fallback?.showDesktop(notification)
+				if notification.payload?.sender?.username
+					getAvatarAsPng notification.payload.sender.username, (data) =>
+						notification.icon = data
+						@_showNotification(notification)
+				else
+					@_showNotification(notification)
+			else
+				@fallback?.showDesktop(notification)
+		catch error
+			console.error "error showing notification", error
 
 
 Meteor.startup ->
