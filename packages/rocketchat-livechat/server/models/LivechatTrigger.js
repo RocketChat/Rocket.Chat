@@ -3,8 +3,7 @@
  */
 class LivechatTrigger extends RocketChat.models._Base {
 	constructor() {
-		super();
-		this._initModel('livechat_trigger');
+		super('livechat_trigger');
 	}
 
 	// FIND

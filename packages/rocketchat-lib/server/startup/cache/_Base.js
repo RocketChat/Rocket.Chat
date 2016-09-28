@@ -2,9 +2,8 @@
 /* eslint new-cap: 0 */
 
 import loki from 'lokijs';
-
-const {EventEmitter} = Npm.require('events');
-const objectPath = Npm.require('object-path');
+import {EventEmitter} from 'events';
+import objectPath from 'object-path';
 
 const ignore = [
 	'emit',
@@ -409,7 +408,7 @@ RocketChat.cache._Base = (class CacheBase extends EventEmitter {
 
 	startOplog() {
 		const query = {
-			collection: this.model.model._name
+			collection: this.model.db.collectionName
 		};
 
 		MongoInternals.defaultRemoteCollectionDriver().mongo._oplogHandle.onOplogEntry(query, (record) => {

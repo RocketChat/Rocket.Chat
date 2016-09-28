@@ -43,7 +43,7 @@ Meteor.startup ->
 			msgStream.emitWithoutBroadcast record.rid, record
 
 	query =
-		collection: RocketChat.models.Messages.model._name
+		collection: RocketChat.models.Messages.collectionName
 
 	MongoInternals.defaultRemoteCollectionDriver().mongo._oplogHandle.onOplogEntry query, (action) ->
 		if action.op.op is 'i'

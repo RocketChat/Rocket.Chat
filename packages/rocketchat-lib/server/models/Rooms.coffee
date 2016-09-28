@@ -1,6 +1,6 @@
 RocketChat.models.Rooms = new class extends RocketChat.models._Base
 	constructor: ->
-		@_initModel 'room'
+		super('room')
 
 		@tryEnsureIndex { 'name': 1 }, { unique: 1, sparse: 1 }
 		@tryEnsureIndex { 'default': 1 }

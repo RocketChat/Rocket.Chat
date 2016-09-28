@@ -1,155 +1,75 @@
-const baseName = 'rocketchat_';
-
-const trash = new Mongo.Collection(baseName + '_trash');
-try {
-	trash._ensureIndex({ collection: 1 });
-	trash._ensureIndex({ _deletedAt: 1 }, { expireAfterSeconds: 60 * 60 * 24 * 30 });
-} catch (e) {
-	console.log(e);
-}
+import ModelsBaseDb from './_BaseDb';
 
 class ModelsBase {
-	_baseName() {
-		return baseName;
+	constructor() {
+		this.db = new ModelsBaseDb(...arguments);
+		this.model = this.db.model;
+		this.collectionName = this.db.collectionName;
+		this.name = this.db.name;
 	}
 
-	_initModel(name) {
-		check(name, String);
-
-		this.name = name;
-
-		this.model = new Mongo.Collection(this._baseName() + name);
-
-		this.tryEnsureIndex({ '_updatedAt': 1 });
-	}
-
-	setUpdatedAt(record = {}, checkQuery = false, query) {
-		if (checkQuery === true) {
-			if (!query || Object.keys(query).length === 0) {
-				throw new Meteor.Error('Models._Base: Empty query');
-			}
-		}
-
-		if (/(^|,)\$/.test(Object.keys(record).join(','))) {
-			record.$set = record.$set || {};
-			record.$set._updatedAt = new Date;
-		} else {
-			record._updatedAt = new Date;
-		}
-
-		return record;
+	setUpdatedAt(/*record, checkQuery, query*/) {
+		return this.db.setUpdatedAt(...arguments);
 	}
 
 	find() {
-		return this.model.find(...arguments);
+		return this.db.find(...arguments);
 	}
 
 	findOne() {
-		return this.model.findOne(...arguments);
+		return this.db.findOne(...arguments);
 	}
 
-	insert(record) {
-		this.setUpdatedAt(record);
-
-		const result = this.model.insert(...arguments);
-		record._id = result;
-		return result;
+	insert(/*record*/) {
+		return this.db.insert(...arguments);
 	}
 
-	update(query, update, options = {}) {
-		this.setUpdatedAt(update, true, query);
-
-		if (options.upsert) {
-			return this.upsert(query, update);
-		}
-
-		return this.model.update(query, update, options);
+	update(/*query, update, options*/) {
+		return this.db.update(...arguments);
 	}
 
-	upsert(query, update) {
-		this.setUpdatedAt(update, true, query);
-
-		return this.model.upsert(...arguments);
+	upsert(/*query, update*/) {
+		return this.db.upsert(...arguments);
 	}
 
-	remove(query) {
-		const records = this.model.find(query).fetch();
-
-		const ids = [];
-		for (const record of records) {
-			ids.push(record._id);
-
-			record._deletedAt = new Date;
-			record.__collection__ = this.name;
-
-			trash.upsert({_id: record._id}, _.omit(record, '_id'));
-		}
-
-		query = { _id: { $in: ids } };
-
-		return this.model.remove(query);
+	remove(/*query*/) {
+		return this.db.remove(...arguments);
 	}
 
-	insertOrUpsert(...args) {
-		if (args[0] && args[0]._id) {
-			const _id = args[0]._id;
-			delete args[0]._id;
-			args.unshift({
-				_id: _id
-			});
-
-			this.upsert(...args);
-			return _id;
-		} else {
-			return this.insert(...args);
-		}
+	insertOrUpsert() {
+		return this.db.insertOrUpsert(...arguments);
 	}
 
 	allow() {
-		return this.model.allow(...arguments);
+		return this.db.allow(...arguments);
 	}
 
 	deny() {
-		return this.model.deny(...arguments);
+		return this.db.deny(...arguments);
 	}
 
 	ensureIndex() {
-		return this.model._ensureIndex(...arguments);
+		return this.db.ensureIndex(...arguments);
 	}
 
 	dropIndex() {
-		return this.model._dropIndex(...arguments);
+		return this.db.dropIndex(...arguments);
 	}
 
 	tryEnsureIndex() {
-		try {
-			return this.ensureIndex(...arguments);
-		} catch (e) {
-			console.log(e);
-		}
+		return this.db.tryEnsureIndex(...arguments);
 	}
 
 	tryDropIndex() {
-		try {
-			return this.dropIndex(...arguments);
-		} catch (e) {
-			console.log(e);
-		}
+		return this.db.tryDropIndex(...arguments);
 	}
 
-	trashFind(query, options) {
-		query.__collection__ = this.name;
-
-		return trash.find(query, options);
+	trashFind(/*query, options*/) {
+		return this.db.trashFind(...arguments);
 	}
 
-	trashFindDeletedAfter(deletedAt, query = {}, options) {
-		query.__collection__ = this.name;
-		query._deletedAt = {
-			$gt: deletedAt
-		};
-
-		return trash.find(query, options);
+	trashFindDeletedAfter(/*deletedAt, query, options*/) {
+		return this.db.trashFindDeletedAfter(...arguments);
 	}
 
 	// dinamicTrashFindAfter(method, deletedAt, ...args) {
