@@ -4,6 +4,7 @@ class Page {
 	open(path) {
 		browser.url('http://localhost:3000/' + path);
 		this.body.waitForExist();
+		browser.windowHandleSize({width:1280, height:800});
 	}
 }
 
