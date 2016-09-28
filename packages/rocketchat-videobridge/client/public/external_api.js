@@ -8,8 +8,8 @@
  * The minimum width for the Jitsi Meet frame
  * @type {number}
  */
-// var MIN_WIDTH = 200;
-var MIN_WIDTH = 790;
+var MIN_WIDTH = 200;
+// var MIN_WIDTH = 790;
 
 /**
  * The minimum height for the Jitsi Meet frame
