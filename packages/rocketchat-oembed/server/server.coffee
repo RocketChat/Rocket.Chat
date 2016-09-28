@@ -50,6 +50,7 @@ getUrlContent = (urlObj, redirectCount = 5, callback) ->
 
 	headers = null
 	statusCode = null
+	error = null
 	chunks = []
 	chunksTotalLength = 0
 
@@ -67,6 +68,12 @@ getUrlContent = (urlObj, redirectCount = 5, callback) ->
 			stream.abort()
 
 	stream.on 'end', Meteor.bindEnvironment ->
+		if error?
+			return callback null, {
+				error: error
+				parsedUrl: parsedUrl
+			}
+
 		buffer = Buffer.concat(chunks)
 
 		callback null, {
@@ -76,11 +83,8 @@ getUrlContent = (urlObj, redirectCount = 5, callback) ->
 			statusCode: statusCode
 		}
 
-	stream.on 'error', (error) ->
-		callback null, {
-			error: error
-			parsedUrl: parsedUrl
-		}
+	stream.on 'error', (err) ->
+		error = err
 
 OEmbed.getUrlMeta = (url, withFragment) ->
 	getUrlContentSync = Meteor.wrapAsync getUrlContent
