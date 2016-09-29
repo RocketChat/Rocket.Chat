@@ -1,11 +1,21 @@
 import ModelsBaseDb from './_BaseDb';
+import ModelsBaseCache from './_BaseCache';
 
 class ModelsBase {
-	constructor() {
-		this.db = new ModelsBaseDb(...arguments);
+	constructor(nameOrModel, useCache) {
+		this.db = new ModelsBaseDb(nameOrModel);
 		this.model = this.db.model;
 		this.collectionName = this.db.collectionName;
 		this.name = this.db.name;
+
+		this.useCache = useCache === true;
+
+		this.origin = 'db';
+
+		this.cache = new ModelsBaseCache(this);
+		if (this.useCache) {
+			this.origin = 'cache';
+		}
 	}
 
 	setUpdatedAt(/*record, checkQuery, query*/) {
@@ -13,11 +23,19 @@ class ModelsBase {
 	}
 
 	find() {
-		return this.db.find(...arguments);
+		try {
+			return this[this.origin].find(...arguments);
+		} catch (e) {
+			console.error('Exception on find', e, ...arguments);
+		}
 	}
 
 	findOne() {
-		return this.db.findOne(...arguments);
+		try {
+			return this[this.origin].findOne(...arguments);
+		} catch (e) {
+			console.error('Exception on find', e, ...arguments);
+		}
 	}
 
 	insert(/*record*/) {
