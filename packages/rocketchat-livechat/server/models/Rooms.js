@@ -40,16 +40,22 @@ RocketChat.models.Rooms.findLivechat = function(filter = {}, offset = 0, limit =
 };
 
 RocketChat.models.Rooms.findLivechatByCode = function(code, fields) {
-	const query = {
-		t: 'l',
-		code: parseInt(code)
-	};
+	code = parseInt(code);
 
 	let options = {};
 
 	if (fields) {
 		options.fields = fields;
 	}
+
+	if (this.useCache) {
+		return this.cache.findByIndex('t,code', ['l', code], options);
+	}
+
+	const query = {
+		t: 'l',
+		code: code
+	};
 
 	return this.find(query, options);
 };
