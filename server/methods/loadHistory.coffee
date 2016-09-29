@@ -1,10 +1,20 @@
 Meteor.methods
 	loadHistory: (rid, end, limit=20, ls) ->
+
+		check rid, String
+		# check end, Match.Optional(Number)
+		# check limit, Number
+		# check ls, Match.Optional(Date)
+
 		if not Meteor.userId()
 			throw new Meteor.Error 'error-invalid-user', 'Invalid user', { method: 'loadHistory' }
 
 		fromId = Meteor.userId()
-		unless Meteor.call 'canAccessRoom', rid, fromId
+		room = Meteor.call 'canAccessRoom', rid, fromId
+		unless room
+			return false
+
+		if room.t is 'c' and not RocketChat.authz.hasPermission(fromId, 'preview-c-room') and room.usernames.indexOf(room.username) is -1
 			return false
 
 		options =

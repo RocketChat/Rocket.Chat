@@ -21,7 +21,9 @@ Importer.Base = class Importer.Base
 		# but for some reason the mongo instanace which comes with meteor
 		# errors out for anything close to that size. So, we are rounding it
 		# down to 8000000 bytes.
-		MongoInternals.NpmModules.mongodb.module.BSON.calculateObjectSize object
+		BSON = require('bson').native().BSON
+		bson = new BSON()
+		bson.calculateObjectSize object
 
 	@getBSONSafeArraysFromAnArray: (theArray) ->
 		BSONSize = Importer.Base.getBSONSize theArray

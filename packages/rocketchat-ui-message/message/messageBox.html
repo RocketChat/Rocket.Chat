@@ -2,6 +2,7 @@
 	{{#if subscribed}}
 		<form class="message-form" method="post" action="/">
 			{{> messagePopupConfig getPopupConfig}}
+			{{#if allowedToSend}}
 			<div class="message-input">
 				<div class="input-message-container">
 					<textarea dir="auto" name="msg" maxlength="{{maxMessageLength}}" class="input-message autogrow-short" placeholder="{{_ 'Message'}}"></textarea>
@@ -53,7 +54,12 @@
 					</div>
 				{{/if}}
 			</div>
-			<div class="users-typing">
+			{{else}}
+			<div class="stream-info">
+				{{_ "room_is_read_only"}}
+			</div>
+			{{/if}}
+			<div class="stream-info">
 				{{#with usersTyping}}
 					<strong>{{users}}</strong>
 					{{#if multi}}
@@ -71,25 +77,26 @@
 					{{/if}}
 				{{/with}}
 			</div>
-
-			{{#if showFormattingTips}}
-			<div class="formatting-tips" aria-hidden="true" dir="auto">
-				{{#if showMarkdown}}
-				<b>*{{_ "bold"}}*</b>
-				<i>_{{_ "italics"}}_</i>
-				<span>~<strike>{{_ "strike"}}</strike>~</span>
+			{{#if allowedToSend}}
+				{{#if showFormattingTips}}
+				<div class="formatting-tips" aria-hidden="true" dir="auto">
+					{{#if showMarkdown}}
+					<b>*{{_ "bold"}}*</b>
+					<i>_{{_ "italics"}}_</i>
+					<span>~<strike>{{_ "strike"}}</strike>~</span>
+					{{/if}}
+					{{#if showMarkdownCode}}
+					<code class="inline">`{{_ "inline_code"}}`</code>
+					<code class="inline"><span class="hidden-br"><br></span>```<span class="hidden-br"><br></span><i class="icon-level-down"></i>{{_ "multi"}}<span class="hidden-br"><br></span><i class="icon-level-down"></i>{{_ "line"}}<span class="hidden-br"><br></span><i class="icon-level-down"></i>```</code>
+					{{/if}}
+					{{#if katexSyntax}}
+					<span><a href="https://github.com/Khan/KaTeX/wiki/Function-Support-in-KaTeX" target="_blank">{{katexSyntax}}</a></span>
+					{{/if}}
+					{{#if showMarkdown}}
+					<q><span class="hidden-br"><br></span>&gt;{{_ "quote"}}</q>
+					{{/if}}
+				</div>
 				{{/if}}
-				{{#if showMarkdownCode}}
-				<code class="inline">`{{_ "inline_code"}}`</code>
-				<code class="inline"><span class="hidden-br"><br></span>```<span class="hidden-br"><br></span><i class="icon-level-down"></i>{{_ "multi"}}<span class="hidden-br"><br></span><i class="icon-level-down"></i>{{_ "line"}}<span class="hidden-br"><br></span><i class="icon-level-down"></i>```</code>
-				{{/if}}
-				{{#if katexSyntax}}
-				<span><a href="https://github.com/Khan/KaTeX/wiki/Function-Support-in-KaTeX" target="_blank">{{katexSyntax}}</a></span>
-				{{/if}}
-				{{#if showMarkdown}}
-				<q><span class="hidden-br"><br></span>&gt;{{_ "quote"}}</q>
-				{{/if}}
-			</div>
 			{{/if}}
 			<div class="editing-commands" aria-hidden="true" dir="auto">
 				<div class="editing-commands-cancel">{{_ 'Esc_to'}} <button type="button">{{_ 'Cancel_message_input'}}</button></div>
@@ -103,6 +110,9 @@
 			{{#if canJoin}}
 			<div>
 				{{{_ "you_are_in_preview_mode_of" room_name=roomName}}}
+				{{#if joinCodeRequired}}
+					<input type="text" name="joinCode" placeholder="{{_ 'Code'}}" style="width: 100px">
+				{{/if}}
 				<button class="button join"><span><i class="icon-login"></i> {{_ "join"}}</span></button>
 			</div>
 			{{/if}}

@@ -16,5 +16,5 @@ function Tableflip(command, params, item) {
 
 RocketChat.slashCommands.add('tableflip', Tableflip, {
 	description: 'Slash_Tableflip_Description',
-	params: 'your message (optional)'
+	params: 'your_message_optional'
 });

@@ -87,6 +87,7 @@ RocketChat.models.Settings = new class extends RocketChat.models._Base
 	updateValueById: (_id, value) ->
 		query =
 			blocked: { $ne: true }
+			value: { $ne: value }
 			_id: _id
 
 		update =

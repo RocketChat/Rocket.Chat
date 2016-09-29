@@ -127,10 +127,12 @@ syncUserData = function syncUserData(user, ldapUser) {
 		logger.debug('setting', JSON.stringify(userData, null, 2));
 	}
 
-	const username = slug(getLdapUsername(ldapUser));
-	if (user && user._id && username !== user.username) {
-		logger.info('Syncing user username', user.username, '->', username);
-		RocketChat._setUsername(user._id, username);
+	if (RocketChat.settings.get('LDAP_Username_Field') !== '') {
+		const username = slug(getLdapUsername(ldapUser));
+		if (user && user._id && username !== user.username) {
+			logger.info('Syncing user username', user.username, '->', username);
+			RocketChat._setUsername(user._id, username);
+		}
 	}
 
 	if (user && user._id && RocketChat.settings.get('LDAP_Sync_User_Avatar') === true) {
@@ -151,8 +153,7 @@ syncUserData = function syncUserData(user, ldapUser) {
 	}
 };
 
-addLdapUser = function addLdapUser(ldapUser) {
-	const username = slug(getLdapUsername(ldapUser));
+addLdapUser = function addLdapUser(ldapUser, username, password) {
 	var userObject = {
 		username: username
 	};
@@ -172,6 +173,10 @@ addLdapUser = function addLdapUser(ldapUser) {
 	}
 
 	logger.debug('New user data', userObject);
+
+	if (password) {
+		userObject.password = password;
+	}
 
 	try {
 		userObject._id = Accounts.createUser(userObject);
@@ -204,7 +209,7 @@ sync = function sync() {
 
 		const users = RocketChat.models.Users.findLDAPUsers();
 
-		if (RocketChat.settings.get('LDAP_Import_Users') === true) {
+		if (RocketChat.settings.get('LDAP_Import_Users') === true && RocketChat.settings.get('LDAP_Username_Field') !== '') {
 			const ldapUsers = ldap.searchUsersSync('*');
 			ldapUsers.forEach(function(ldapUser) {
 				const username = slug(getLdapUsername(ldapUser));
@@ -220,7 +225,7 @@ sync = function sync() {
 				user = Meteor.users.findOne(userQuery);
 
 				if (!user) {
-					addLdapUser(ldapUser);
+					addLdapUser(ldapUser, username);
 				}
 			});
 		}

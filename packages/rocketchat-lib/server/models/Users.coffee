@@ -79,32 +79,40 @@ RocketChat.models.Users = new class extends RocketChat.models._Base
 		if not _.isArray exceptions
 			exceptions = [ exceptions ]
 
-		termRegex = new RegExp s.escapeRegExp(searchTerm), "i"
-		query =
-			$and: [
-				{ active: true }
-				{'$or': [
-					{'$and': [
-						{ username: { $nin: exceptions } }
-						{ username: termRegex }
-					]}
-					{'$and': [
-						{ name: { $nin: exceptions } }
-						{ name: termRegex }
-					]}
-				]}
-			]
-			type:
+		termRegex = new RegExp s.escapeRegExp(searchTerm), 'i'
+		query = {
+			$or: [{
+				username: termRegex
+			}, {
+				name: termRegex
+			}],
+			active: true,
+			type: {
 				$in: ['user', 'bot']
+			},
+			$and: [{
+				username: {
+					$exists: true
+				}
+			}, {
+				username: {
+					$nin: exceptions
+				}
+			}]
+		}
 
 		return @find query, options
 
-	findByActiveUsersUsernameExcept: (username, except, options) ->
+	findByActiveUsersUsernameExcept: (searchTerm, exceptions = [], options = {}) ->
+		if not _.isArray exceptions
+			exceptions = [ exceptions ]
+
+		termRegex = new RegExp s.escapeRegExp(searchTerm), 'i'
 		query =
 			active: true
 			$and: [
-				{username: {$nin: except}}
-				{username: username}
+				{ username: { $nin: exceptions } }
+				{ username: termRegex }
 			]
 
 		return @find query, options
@@ -371,15 +379,16 @@ RocketChat.models.Users = new class extends RocketChat.models._Base
 	- he is not online
 	- has a verified email
 	- has not disabled email notifications
+	- `active` is equal to true (false means they were deactivated and can't login)
 	###
 	getUsersToSendOfflineEmail: (usersIds) ->
 		query =
 			_id:
 				$in: usersIds
+			active: true
 			status: 'offline'
 			statusConnection:
 				$ne: 'online'
 			'emails.verified': true
 
 		return @find query, { fields: { name: 1, username: 1, emails: 1, 'settings.preferences.emailNotificationMode': 1 } }
-

@@ -12,8 +12,12 @@
 				<input type="text" id="channel-name" class="required" dir="auto" placeholder="{{_ 'Enter_name_here'}}">
 			</div>
 			<div class="input-line">
-				<label for="channel-type">Private Group</label>
+				<label for="channel-type">{{_ "Private_Group"}}</label>
 				<input type="checkbox" id="channel-type" {{privateSwitchDisabled}} {{privateSwitchChecked}}>
+			</div>
+			<div class="input-line">
+				<label for="channel-ro">{{_ "Read_only_channel"}}</label>
+				<input type="checkbox" id="channel-ro">
 			</div>
 			<div class="input-line">
 				<label for="channel-members">{{_ "Select_users"}}</label>

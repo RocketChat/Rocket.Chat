@@ -2,7 +2,7 @@
 /* exported FileUploadBase */
 
 FileUploadBase = class FileUploadBase {
-	constructor(meta, file/*, data*/) {
+	constructor(meta, file) {
 		this.id = Random.id();
 		this.meta = meta;
 		this.file = file;

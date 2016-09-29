@@ -26,8 +26,24 @@ Template.messageBox.helpers
 		return RocketChat.settings.get('Message_ShowFormattingTips') and (RocketChat.Markdown or RocketChat.MarkdownCode or katexSyntax())
 	canJoin: ->
 		return RocketChat.roomTypes.verifyShowJoinLink @_id
+	joinCodeRequired: ->
+		return Session.get('roomData' + this._id)?.joinCodeRequired
 	subscribed: ->
 		return RocketChat.roomTypes.verifyCanSendMessage @_id
+	allowedToSend: ->
+		if RocketChat.roomTypes.readOnly @_id, Meteor.user()
+			return false
+
+		if RocketChat.roomTypes.archived @_id
+			return false
+
+		roomData = Session.get('roomData' + this._id)
+		if roomData?.t is 'd'
+			if ChatSubscription.findOne({ rid: this._id }, { fields: { archived: 1 } })?.archived
+				return false
+
+		return true
+
 	getPopupConfig: ->
 		template = Template.instance()
 		return {
@@ -84,10 +100,19 @@ Template.messageBox.events
 	'click .join': (event) ->
 		event.stopPropagation()
 		event.preventDefault()
-		Meteor.call 'joinRoom', @_id
+		Meteor.call 'joinRoom', @_id, Template.instance().$('[name=joinCode]').val(), (err) ->
+			if err?
+				toastr.error t(err.reason)
 
-	'focus .input-message': (event) ->
+			if RocketChat.authz.hasAllPermission('preview-c-room') is false and RoomHistoryManager.getRoom(@_id).loaded is 0
+				RoomManager.getOpenedRoomByRid(@_id).streamActive = false
+				RoomManager.getOpenedRoomByRid(@_id).ready = false
+				RoomHistoryManager.getRoom(@_id).loaded = undefined
+				RoomManager.computation.invalidate()
+
+	'focus .input-message': (event, instance) ->
 		KonchatNotification.removeRoomNotification @_id
+		chatMessages[@_id].input = instance.find('.input-message')
 
 	'click .send-button': (event, instance) ->
 		input = instance.find('.input-message')
@@ -103,7 +128,12 @@ Template.messageBox.events
 		chatMessages[@_id].keyup(@_id, event, instance)
 		instance.isMessageFieldEmpty.set(chatMessages[@_id].isEmpty())
 
-	'paste .input-message': (e) ->
+	'paste .input-message': (e, instance) ->
+		Meteor.setTimeout ->
+			input = instance.find('.input-message')
+			input.updateAutogrow?()
+		, 50
+
 		if not e.originalEvent.clipboardData?
 			return
 

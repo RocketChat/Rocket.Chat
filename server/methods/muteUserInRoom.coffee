@@ -1,10 +1,12 @@
 Meteor.methods
 	muteUserInRoom: (data) ->
+
+		check(data, Match.ObjectIncluding({ rid: String, username: String }))
+
 		if not Meteor.userId()
 			throw new Meteor.Error 'error-invalid-user', 'Invalid user', { method: 'muteUserInRoom' }
 
 		fromId = Meteor.userId()
-		check(data, Match.ObjectIncluding({ rid: String, username: String }))
 
 		unless RocketChat.authz.hasPermission(fromId, 'mute-user', data.rid)
 			throw new Meteor.Error 'error-not-allowed', 'Not allowed', { method: 'muteUserInRoom' }

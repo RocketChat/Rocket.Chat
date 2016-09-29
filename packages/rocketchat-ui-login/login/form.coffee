@@ -52,6 +52,9 @@ Template.loginForm.helpers
 
 		customFieldsArray = []
 		for key, value of Template.instance().customFields.get()
+			if value.hideFromForm is true
+				continue
+
 			customFieldsArray.push
 				fieldName: key,
 				field: value
@@ -78,10 +81,14 @@ Template.loginForm.events
 
 			if instance.state.get() is 'forgot-password'
 				Meteor.call 'sendForgotPasswordEmail', s.trim(formData.email), (err, result) ->
-					RocketChat.Button.reset(button)
-					RocketChat.callbacks.run('userForgotPasswordEmailRequested');
-					toastr.success t('We_have_sent_password_email')
-					instance.state.set 'login'
+					if err
+						handleError(err)
+						instance.state.set 'login'
+					else
+						RocketChat.Button.reset(button)
+						RocketChat.callbacks.run('userForgotPasswordEmailRequested');
+						toastr.success t('We_have_sent_password_email')
+						instance.state.set 'login'
 				return
 
 			if instance.state.get() is 'register'
@@ -207,6 +214,10 @@ Template.loginForm.onCreated ->
 		if instance.state.get() isnt 'login'
 			unless formObj['email'] and /\b[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]+\b/i.test(formObj['email'])
 				validationObj['email'] = t('Invalid_email')
+
+		if instance.state.get() is 'login'
+			unless formObj['emailOrUsername']
+				validationObj['emailOrUsername'] = t('Invalid_email')
 
 		if instance.state.get() isnt 'forgot-password'
 			unless formObj['pass']

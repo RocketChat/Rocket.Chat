@@ -14,7 +14,7 @@ Template.message.helpers
 		if this.avatar? and this.avatar[0] is '@'
 			return this.avatar.replace(/^@/, '')
 	getEmoji: (emoji) ->
-		return emojione.toImage emoji
+		return renderEmoji emoji
 	own: ->
 		return 'own' if this.u?._id is Meteor.userId()
 	timestamp: ->
@@ -30,17 +30,15 @@ Template.message.helpers
 			return 'temp'
 	body: ->
 		return Template.instance().body
-
 	system: ->
 		if RocketChat.MessageTypes.isSystemMessage(this)
 			return 'system'
-
 	edited: ->
 		return Template.instance().wasEdited
 
 	editTime: ->
 		if Template.instance().wasEdited
-			return moment(@editedAt).format('LL LT') #TODO profile pref for 12hr/24hr clock?
+			return moment(@editedAt).format(RocketChat.settings.get('Message_DateFormat') + ' ' + RocketChat.settings.get('Message_TimeFormat'))
 	editedBy: ->
 		return "" unless Template.instance().wasEdited
 		# try to return the username of the editor,
