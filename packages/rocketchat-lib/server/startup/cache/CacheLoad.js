@@ -36,7 +36,7 @@ RocketChat.cache.Subscriptions.hasOne('Users', {
 RocketChat.cache.Users.load();
 RocketChat.cache.Rooms.load();
 RocketChat.cache.Subscriptions.load();
-RocketChat.cache.Settings.load();
+RocketChat.models.Settings.cache.load();
 
 
 RocketChat.cache.Users.addDynamicView('highlights').applyFind({

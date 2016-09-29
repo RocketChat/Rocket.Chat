@@ -2,7 +2,7 @@ Meteor.methods
 	'public-settings/get': (updatedAt) ->
 		this.unblock()
 
-		records = RocketChat.cache.Settings.find().fetch().filter (record) ->
+		records = RocketChat.models.Settings.find().fetch().filter (record) ->
 			return record.hidden isnt true and record.public is true
 
 		if updatedAt instanceof Date
@@ -24,7 +24,7 @@ Meteor.methods
 		if not RocketChat.authz.hasPermission Meteor.userId(), 'view-privileged-setting'
 			return []
 
-		records = RocketChat.cache.Settings.find().fetch().filter (record) ->
+		records = RocketChat.models.Settings.find().fetch().filter (record) ->
 			return record.hidden isnt true
 
 		if updatedAt instanceof Date
@@ -37,7 +37,7 @@ Meteor.methods
 		return records
 
 
-RocketChat.cache.Settings.on 'changed', (type, setting) ->
+RocketChat.models.Settings.cache.on 'changed', (type, setting) ->
 	setting = RocketChat.cache.Subscriptions.processQueryOptionsOnResult(setting)
 
 	if setting.public is true
