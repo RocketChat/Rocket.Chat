@@ -13,6 +13,12 @@ class ModelsBase {
 		this.origin = 'db';
 
 		this.cache = new ModelsBaseCache(this);
+		// TODO_CACHE: remove
+		this.on = this.cache.on;
+		this.emit = this.cache.emit;
+		this._findByIndex = this.cache._findByIndex;
+		// END_TODO_CACHE
+
 		if (this.useCache) {
 			this.origin = 'cache';
 		}
