@@ -88,7 +88,7 @@ RocketChat.settings.add = (_id, value, options = {}) ->
 		updateOperations.$unset = { section: 1 }
 		query.section = { $exists: false }
 
-	if not RocketChat.models.Settings.findOne(query)?
+	if not RocketChat.models.Settings.db.findOne(query)?
 		updateOperations.$set.ts = new Date
 		return RocketChat.models.Settings.upsert { _id: _id }, updateOperations
 

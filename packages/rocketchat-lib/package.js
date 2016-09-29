@@ -107,7 +107,6 @@ Package.onUse(function(api) {
 	api.addFiles('server/startup/cache/Users.js', 'server');
 	api.addFiles('server/startup/cache/Rooms.js', 'server');
 	api.addFiles('server/startup/cache/Subscriptions.js', 'server');
-	api.addFiles('server/startup/cache/Settings.js', 'server');
 	api.addFiles('server/startup/cache/CacheLoad.js', 'server');
 
 	// SERVER PUBLICATIONS
