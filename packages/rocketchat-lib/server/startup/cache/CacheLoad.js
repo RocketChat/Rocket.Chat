@@ -1,4 +1,4 @@
-RocketChat.cache.Rooms.hasMany('Subscriptions', {
+RocketChat.models.Rooms.cache.hasMany('Subscriptions', {
 	field: 'usernames',
 	link: {
 		local: '_id',
@@ -34,7 +34,7 @@ RocketChat.cache.Subscriptions.hasOne('Users', {
 
 
 RocketChat.cache.Users.load();
-RocketChat.cache.Rooms.load();
+RocketChat.models.Rooms.cache.load();
 RocketChat.cache.Subscriptions.load();
 RocketChat.models.Settings.cache.load();
 
