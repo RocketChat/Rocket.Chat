@@ -41,7 +41,9 @@
 			</div>
 			{{/with}}
 			<nav>
-				{{> videoButtons}}
+				{{#if user.active}}
+					{{> videoButtons}}
+				{{/if}}
 
 				{{#if showAll}}
 					{{#if canDirectMessage user.username}}

@@ -16,5 +16,5 @@ function Unflip(command, params, item) {
 
 RocketChat.slashCommands.add('unflip', Unflip, {
 	description: 'Slash_TableUnflip_Description',
-	params: 'your message (optional)'
+	params: 'your_message_optional'
 });

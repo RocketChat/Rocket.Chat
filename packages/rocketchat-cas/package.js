@@ -6,9 +6,6 @@ Package.describe({
 });
 
 Package.onUse(function(api) {
-
-	api.versionsFrom('1.0');
-
 	// Server libs
 	api.use('rocketchat:lib', 'server');
 	api.use('rocketchat:logger', 'server');

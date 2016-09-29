@@ -6,13 +6,11 @@ Package.describe({
 });
 
 Package.onUse(function(api) {
-	api.versionsFrom('1.0');
-
 	api.use([
 		'coffeescript',
 		'templating',
 		'reactive-var',
-		'less@2.5.0',
+		'less',
 		'rocketchat:lib',
 		'rocketchat:channel-settings',
 		'momentjs:moment'

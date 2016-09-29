@@ -6,13 +6,11 @@ Package.describe({
 });
 
 Package.onUse(function(api) {
-	api.versionsFrom('1.0');
-
 	api.use([
 		'coffeescript',
 		'templating',
 		'underscore',
-		'rocketchat:oembed@0.0.1',
+		'rocketchat:oembed',
 		'rocketchat:lib'
 	]);
 

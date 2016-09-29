@@ -267,7 +267,7 @@
 				border-left-width: 1px;
 				border-right-width: 0;
 			}
-			> .users-typing {
+			> .stream-info {
 				float: right;
 			 }
 			> .formatting-tips {
@@ -514,18 +514,8 @@
 	}
 
 	.message {
-		padding: 18px 70px 4px 20px;
-		&.new-day {
-			margin-top: 60px;
-			&:before {
-				.right(0);
-				.calc(right,~"50% - 70px");
-			}
-			&:after {
-				.right(0);
-				.margin-right(2%);
-			}
-		}
+		padding-left: 20px;
+		padding-right: 70px;
 		.message-dropdown {
 			.right(-2px);
 			ul {
@@ -717,5 +707,20 @@
 	/* Override toastr messages to show on hte left side */
 	.toast-top-right {
 		.left(12px);
+	}
+
+	.spotlight {
+		> .spotlight-input {
+			.icon-search {
+				left: 0;
+			}
+			.message-popup {
+				.popup-item {
+					span {
+						float: left;
+					}
+				}
+			}
+		}
 	}
 }

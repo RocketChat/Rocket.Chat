@@ -32,8 +32,10 @@ reactive-var
 reload
 service-configuration
 session
+shell-server
 spacebars
-standard-minifiers
+standard-minifier-css
+standard-minifier-js
 tracker
 
 rocketchat:action-links
@@ -41,14 +43,16 @@ rocketchat:api
 rocketchat:assets
 rocketchat:authorization
 rocketchat:autolinker
-#rocketchat:bot-helpers
 rocketchat:cas
 rocketchat:channel-settings
 rocketchat:channel-settings-mail-messages
 rocketchat:colors
 rocketchat:crowd
 rocketchat:custom-oauth
-rocketchat:emojione
+rocketchat:error-handler
+rocketchat:emoji
+rocketchat:emoji-custom
+rocketchat:emoji-emojione
 rocketchat:favico
 rocketchat:file
 rocketchat:file-upload
@@ -66,6 +70,7 @@ rocketchat:lib
 rocketchat:livechat
 rocketchat:logger
 rocketchat:mailer
+rocketchat:mapview
 rocketchat:markdown
 rocketchat:mentions
 rocketchat:mentions-flextab
@@ -91,8 +96,10 @@ rocketchat:slashcommands-kick
 rocketchat:slashcommands-leave
 rocketchat:slashcommands-me
 rocketchat:slashcommands-mute
+rocketchat:slashcommands-open
 rocketchat:slashcommands-topic
 rocketchat:slashcommands-unarchive
+rocketchat:smarsh-connector
 rocketchat:spotify
 rocketchat:statistics
 rocketchat:streamer
@@ -109,9 +116,10 @@ rocketchat:ui-message
 rocketchat:ui-sidenav
 rocketchat:ui-vrecord
 rocketchat:version
+rocketchat:videobridge
 rocketchat:webrtc
 rocketchat:wordpress
-rocketchat:videobridge
+#rocketchat:bot-helpers
 #rocketchat:chatops
 #rocketchat:internal-hubot
 #rocketchat:irc
@@ -154,5 +162,3 @@ todda00:friendly-slugs
 underscorestring:underscore.string
 yasaricli:slugify
 yasinuslu:blaze-meta
-rocketchat:slashcommands-open
-rocketchat:mapview

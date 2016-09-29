@@ -151,6 +151,13 @@ input:focus {
 			display: inline-block;
 			float: right;
 			padding-right: 5px;
+
+			svg {
+				fill: currentColor;
+				width: 14px;
+				margin: 0 2px;
+				vertical-align: middle;
+			}
 		}
 	}
 	.messages {
@@ -404,14 +411,16 @@ input:focus {
 		.send-button {
 			float: right;
 			position: relative;
-			right: 7px;
-			top: -20px;
-			color: @secondary-font-color;
+			width: 15px;
+			height: 15px;
+			right: 10px;
+			top: -22px;
+			fill: @secondary-font-color;
 			cursor: pointer;
 			.transition(color .15s ease-out);
 
 			&:hover {
-				color: @primary-font-color;
+				fill: @primary-font-color;
 			}
 		}
 		.toggle-options {

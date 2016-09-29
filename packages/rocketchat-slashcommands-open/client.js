@@ -21,13 +21,13 @@ function Open(command, params/*, item*/) {
 	}
 	subscription = ChatSubscription.findOne(query);
 
-	if (subscription !== null) {
+	if (subscription) {
 		FlowRouter.go(RocketChat.roomTypes.getRouteLink(subscription.t, subscription));
 	}
 }
 
 RocketChat.slashCommands.add('open', Open, {
-	description: TAPi18n.__('Opens_a_channel_group_or_direct_message'),
-	params: 'room name',
+	description: 'Opens_a_channel_group_or_direct_message',
+	params: 'room_name',
 	clientOnly: true
 });

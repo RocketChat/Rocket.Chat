@@ -1,3 +1,5 @@
+`import Clipboard from 'clipboard';`
+
 Template.body.onRendered ->
 	clipboard = new Clipboard('.clipboard')
 
@@ -32,7 +34,17 @@ Template.body.onRendered ->
 		if link.origin is s.rtrim(Meteor.absoluteUrl(), '/') and /msg=([a-zA-Z0-9]+)/.test(link.search)
 			e.preventDefault()
 			e.stopPropagation()
+
+			if RocketChat.Layout.isEmbedded()
+				return fireGlobalEvent('click-message-link', { link: link.pathname + link.search })
+
 			FlowRouter.go(link.pathname + link.search)
+
+		if $(link).hasClass('swipebox')
+			if RocketChat.Layout.isEmbedded()
+				e.preventDefault()
+				e.stopPropagation()
+				fireGlobalEvent('click-image-link', { href: link.href })
 
 	Tracker.autorun (c) ->
 		w = window
@@ -165,6 +177,9 @@ Template.main.helpers
 
 	CustomScriptLoggedIn: ->
 		RocketChat.settings.get 'Custom_Script_Logged_In'
+
+	embeddedVersion: ->
+		return 'embedded-view' if RocketChat.Layout.isEmbedded()
 
 
 Template.main.events

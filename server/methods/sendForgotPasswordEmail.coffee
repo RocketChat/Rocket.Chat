@@ -1,8 +1,22 @@
 Meteor.methods
 	sendForgotPasswordEmail: (email) ->
-		user = RocketChat.models.Users.findOneByEmailAddress s.trim(email.toLowerCase())
+
+		check email, String
+
+		email = s.trim(email)
+		user = RocketChat.models.Users.findOneByEmailAddress(email)
 
 		if user?
-			Accounts.sendResetPasswordEmail(user._id, s.trim(email))
+
+			regex = new RegExp("^" + s.escapeRegExp(email) + "$", 'i')
+			email = _.find _.pluck(user.emails || [], 'address'), (userEmail) ->
+				return regex.test(userEmail)
+
+			try
+				Accounts.sendResetPasswordEmail(user._id, email)
+			catch error
+				throw new Meteor.Error 'error-email-send-failed', 'Error trying to send email: ' + error.message, { method: 'registerUser', message: error.message }
+
 			return true
+
 		return false
