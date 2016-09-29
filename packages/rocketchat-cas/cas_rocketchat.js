@@ -53,14 +53,6 @@ function updateServices(/*record*/) {
 	}, 2000);
 }
 
-function check_record(record) {
-	if (/^CAS_.+/.test(record._id)) {
-		updateServices(record);
-	}
-}
-
-RocketChat.models.Settings.find().observe({
-	added: check_record,
-	changed: check_record,
-	removed: check_record
+RocketChat.settings.get(/^CAS_.+/, (key, value) => {
+	updateServices(value);
 });
