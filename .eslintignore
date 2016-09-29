@@ -10,7 +10,6 @@ packages/rocketchat-livechat/public/external.js
 packages/rocketchat-livechat/public/livechat.js
 packages/rocketchat-migrations/
 packages/rocketchat-theme/client/minicolors/jquery.minicolors.js
-packages/rocketchat-ui/lib/clipboardjs/clipboard.js
 packages/rocketchat-ui/lib/customEventPolyfill.js
 packages/rocketchat-ui/lib/jquery.swipebox.min.js
 packages/rocketchat-ui/lib/Modernizr.js
