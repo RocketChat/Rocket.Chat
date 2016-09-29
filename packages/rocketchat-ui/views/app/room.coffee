@@ -7,15 +7,21 @@ isSubscribed = (_id) ->
 favoritesEnabled = ->
 	return RocketChat.settings.get 'Favorite_Rooms'
 
+userCanDrop = (_id) ->
+	return !RocketChat.roomTypes.readOnly _id, Meteor.user()
+
 Template.room.helpers
+	embeddedVersion: ->
+		return RocketChat.Layout.isEmbedded()
+
 	favorite: ->
 		sub = ChatSubscription.findOne { rid: this._id }, { fields: { f: 1 } }
-		return 'icon-star favorite-room' if sub?.f? and sub.f and favoritesEnabled
+		return 'icon-star favorite-room' if sub?.f? and sub.f and favoritesEnabled()
 		return 'icon-star-empty'
 
 	favoriteLabel: ->
 		sub = ChatSubscription.findOne { rid: this._id }, { fields: { f: 1 } }
-		return "Unfavorite" if sub?.f? and sub.f and favoritesEnabled
+		return "Unfavorite" if sub?.f? and sub.f and favoritesEnabled()
 		return "Favorite"
 
 	subscribed: ->
@@ -83,6 +89,9 @@ Template.room.helpers
 
 		return data
 
+	containerBarsShow: (unreadData, uploading) ->
+		return 'show' if (unreadData?.count > 0 and unreadData.since?) or uploading?.length > 0
+
 	formatUnreadSince: ->
 		if not this.since? then return
 
@@ -120,6 +129,19 @@ Template.room.helpers
 
 	hideAvatar: ->
 		return if Meteor.user()?.settings?.preferences?.hideAvatars then 'hide-avatars'
+
+	userCanDrop: ->
+		return userCanDrop @_id
+
+	canPreview: ->
+		room = Session.get('roomData' + this._id)
+		if room.t isnt 'c'
+			return true
+
+		if RocketChat.authz.hasAllPermission('preview-c-room')
+			return true
+
+		return RocketChat.models.Subscriptions.findOne({rid: this._id})?
 
 isSocialSharingOpen = false
 touchMoved = false
@@ -285,6 +307,13 @@ Template.room.events
 
 	'click .user-card-message': (e, instance) ->
 		roomData = Session.get('roomData' + this._arguments[1].rid)
+
+		if RocketChat.Layout.isEmbedded()
+			fireGlobalEvent('click-user-card-message', { username: this._arguments[1].u.username })
+			e.preventDefault()
+			e.stopPropagation()
+			return
+
 		if roomData.t in ['c', 'p', 'd']
 			instance.setUserDetail this._arguments[1].u.username
 		RocketChat.TabBar.setTemplate 'membersList'
@@ -335,7 +364,16 @@ Template.room.events
 	"click .mention-link": (e, instance) ->
 		channel = $(e.currentTarget).data('channel')
 		if channel?
+			if RocketChat.Layout.isEmbedded()
+				return fireGlobalEvent('click-mention-link', { path: FlowRouter.path('channel', {name: channel}), channel: channel })
+
 			FlowRouter.go 'channel', {name: channel}
+			return
+
+		if RocketChat.Layout.isEmbedded()
+			fireGlobalEvent('click-mention-link', { username: $(e.currentTarget).data('username') })
+			e.stopPropagation();
+			e.preventDefault();
 			return
 
 		RocketChat.TabBar.setTemplate 'membersList'
@@ -359,7 +397,9 @@ Template.room.events
 			ChatMessage.update {_id: id}, {$set: {"urls.#{index}.collapsed": !collapsed}}
 
 	'dragenter .dropzone': (e) ->
-		e.currentTarget.classList.add 'over'
+		items = e.originalEvent?.dataTransfer?.items
+		if items?.length > 0 and items?[0]?.kind isnt 'string' and userCanDrop this._id
+			e.currentTarget.classList.add 'over'
 
 	'dragleave .dropzone-overlay': (e) ->
 		e.currentTarget.parentNode.classList.remove 'over'
@@ -507,8 +547,7 @@ Template.room.onRendered ->
 
 	template = this
 
-	containerBars = $('.messages-container > .container-bars')
-	containerBarsOffset = containerBars.offset()
+	messageBox = $('.messages-box')
 
 	template.isAtBottom = ->
 		if wrapper.scrollTop >= wrapper.scrollHeight - wrapper.clientHeight
@@ -579,13 +618,21 @@ Template.room.onRendered ->
 			template.sendToBottomIfNecessaryDebounced()
 		, 50
 
+	rtl = $('html').hasClass('rtl')
+
 	updateUnreadCount = _.throttle ->
-		firstMessageOnScreen = document.elementFromPoint(containerBarsOffset.left+1, containerBarsOffset.top+containerBars.height()+1)
-		if firstMessageOnScreen?.id?
-			firstMessage = ChatMessage.findOne firstMessageOnScreen.id
-			if firstMessage?
+		messageBoxOffset = messageBox.offset()
+
+		if rtl
+			lastInvisibleMessageOnScreen = document.elementFromPoint(messageBoxOffset.left+messageBox.width()-1, messageBoxOffset.top+1)
+		else
+			lastInvisibleMessageOnScreen = document.elementFromPoint(messageBoxOffset.left+1, messageBoxOffset.top+1)
+
+		if lastInvisibleMessageOnScreen?.id?
+			lastMessage = ChatMessage.findOne lastInvisibleMessageOnScreen.id
+			if lastMessage?
 				subscription = ChatSubscription.findOne rid: template.data._id
-				count = ChatMessage.find({rid: template.data._id, ts: {$lt: firstMessage.ts, $gt: subscription?.ls}}).count()
+				count = ChatMessage.find({rid: template.data._id, ts: {$lte: lastMessage.ts, $gt: subscription?.ls}}).count()
 				template.unreadCount.set count
 			else
 				template.unreadCount.set 0

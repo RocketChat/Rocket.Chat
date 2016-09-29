@@ -32,6 +32,16 @@ Template.adminRoomInfo.helpers
 	canDeleteRoom: ->
 		roomType = ChatRoom.findOne(@rid, { fields: { t: 1 }})?.t
 		return roomType? and RocketChat.authz.hasAtLeastOnePermission("delete-#{roomType}")
+	readOnly: ->
+		room = ChatRoom.findOne(@rid, { fields: { ro: 1 }})
+		return room?.ro
+	readOnlyDescription: ->
+		room = ChatRoom.findOne(@rid, { fields: { ro: 1 }}) 
+		readOnly = room?.ro
+		if readOnly is true
+			return t('True')
+		else
+			return t('False')
 
 Template.adminRoomInfo.events
 	'click .delete': ->
@@ -146,4 +156,8 @@ Template.adminRoomInfo.onCreated ->
 							return handleError(err) if err
 							toastr.success TAPi18n.__ 'Room_unarchived'
 							RocketChat.callbacks.run 'unarchiveRoom', ChatRoom.findOne(rid)
+			when 'readOnly'
+				Meteor.call 'saveRoomSettings', rid, 'readOnly', @$('input[name=readOnly]:checked').val() is 'true', (err, result) ->
+					return handleError err if err
+					toastr.success TAPi18n.__ 'Read_only_changed_successfully'
 		@editing.set()

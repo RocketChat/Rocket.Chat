@@ -6,6 +6,7 @@
 			</div>
 		</div>
 		<section class="messages-container {{adminClass}}" id="{{windowId}}" aria-label="{{_ "Channel"}}">
+			{{#unless embeddedVersion}}
 			<header class="fixed-title">
 				{{> burger}}
 				<h2>
@@ -17,7 +18,8 @@
 					<span class="room-topic">{{{RocketChatMarkdown roomTopic}}}</span>
 				</h2>
 			</header>
-			<div class="container-bars">
+			{{/unless}}
+			<div class="container-bars {{containerBarsShow unreadData uploading}}">
 				{{#with unreadData}}
 					{{#if since}}
 						{{#if count}}
@@ -69,20 +71,29 @@
 				<div class="jump-recent {{#unless hasMoreNext}}not{{/unless}}">
 					<button>{{_ "Jump_to_recent_messages"}} <i class="icon-level-down"></i></button>
 				</div>
+				{{#unless canPreview}}
+					<div class="content room-not-found">
+						<div>
+							{{_ "You_must_join_to_view_messages_in_this_channel"}}
+						</div>
+					</div>
+				{{/unless}}
 				<div class="wrapper {{#if hasMoreNext}}has-more-next{{/if}} {{hideUsername}} {{hideAvatar}}">
 					<ul aria-live="polite">
-						{{#if hasMore}}
-							<li class="load-more">
-								{{#if isLoading}}
-									<div class="load-more-loading">{{_ "Loading_more_from_history"}}...</div>
-								{{else}}
-									<button>{{_ "Has_more"}}...</button>
-								{{/if}}
-							</li>
-						{{else}}
-							<li class="start">
-								{{_ "Start_of_conversation"}}
-							</li>
+						{{#if canPreview}}
+							{{#if hasMore}}
+								<li class="load-more">
+									{{#if isLoading}}
+										<div class="load-more-loading">{{_ "Loading_more_from_history"}}...</div>
+									{{else}}
+										<button>{{_ "Has_more"}}...</button>
+									{{/if}}
+								</li>
+							{{else}}
+								<li class="start">
+									{{_ "Start_of_conversation"}}
+								</li>
+							{{/if}}
 						{{/if}}
 						{{#each messagesHistory}}
 							{{#nrr nrrargs 'message' .}}{{/nrr}}

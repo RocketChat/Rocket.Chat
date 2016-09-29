@@ -83,10 +83,10 @@ RocketChat.models.Users.getNextAgent = function() {
 	};
 
 	var user = findAndModify(query, sort, update);
-	if (user) {
+	if (user && user.value) {
 		return {
-			agentId: user._id,
-			username: user.username
+			agentId: user.value._id,
+			username: user.value.username
 		};
 	} else {
 		return null;
@@ -137,6 +137,26 @@ RocketChat.models.Users.setLivechatStatus = function(userId, status) {
 	return this.update(query, update);
 };
 
+/**
+ * change all livechat agents livechat status to "not-available"
+ */
+RocketChat.models.Users.closeOffice = function() {
+	self = this;
+	self.findAgents().forEach(function(agent) {
+		self.setLivechatStatus(agent._id, 'not-available');
+	});
+};
+
+/**
+ * change all livechat agents livechat status to "available"
+ */
+RocketChat.models.Users.openOffice = function() {
+	self = this;
+	self.findAgents().forEach(function(agent) {
+		self.setLivechatStatus(agent._id, 'available');
+	});
+};
+
 RocketChat.models.Users.updateLivechatDataByToken = function(token, key, value) {
 	const query = {
 		'profile.token': token
@@ -183,5 +203,5 @@ RocketChat.models.Users.getNextVisitorUsername = function() {
 
 	const livechatCount = findAndModify(query, null, update);
 
-	return 'guest-' + (livechatCount.value + 1);
+	return 'guest-' + (livechatCount.value.value + 1);
 };

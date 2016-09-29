@@ -64,7 +64,7 @@
 					{{> spotlight}}
 					{{> videoCall overlay=true}}
 					<div id="user-card-popover"></div>
-					<div id="rocket-chat" class="menu-nav menu-closed">
+					<div id="rocket-chat" class="{{embeddedVersion}} menu-nav menu-closed">
 						<div class="connection-status">
 							{{> status}}
 						</div>
@@ -86,6 +86,6 @@
 			<script>{{{CustomScriptLoggedIn}}}</script>
 		{{/unless}}
 	{{else}}
-		{{> pageLoading}}
+		{{> loading}}
 	{{/if}}
 </template>
