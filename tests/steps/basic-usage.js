@@ -24,13 +24,13 @@ const message = 'message from '+username;
 
 
 //Basic usage test start
-describe('Basic usage', function() {
+describe.only('Basic usage', function() {
 	it('load page', () => {
 		loginPage.open();
 		// browser.windowHandleSize({width:1280, height:800});
 	});
 
-	it('crate user', function(done) {
+	it('crate user', function() {
 		loginPage.gotToRegister();
 
 		loginPage.registerNewUser({username, email, password});
@@ -41,10 +41,10 @@ describe('Basic usage', function() {
 
 		browser.waitForExist('.main-content', 5000);
 
-		done();
+
 	});
 
-	it('logout', function(done) {
+	it('logout', function() {
 		browser.waitForVisible('.account-box');
 		browser.click('.account-box');
 		browser.pause(200);
@@ -52,110 +52,180 @@ describe('Basic usage', function() {
 		browser.waitForVisible('#logout');
 		browser.click('#logout');
 
-		done();
+
 	});
 
-	it('login', function(done) {
+	it('login', function() {
 		loginPage.login({email, password});
 		browser.waitForExist('.main-content', 5000);
 
-		done();
+
 	});
 
-	it('open GENERAL', function(done) {
+	describe('side nav bar', function() {
+		describe('render', function() {
+			it('should show the logged username', () => {
+				sideNav.accountBoxUserName.isVisible().should.be.true;
+			});
+			it('should show the logged user avatar', function() {
+				sideNav.accountBoxUserAvatar.isVisible().should.be.true;
+			});
+			it('should show the new channel button', function() {
+				sideNav.newChannelBtn.isVisible().should.be.true;
+			});
+			it('should show the plus icon', function() {
+				sideNav.newChannelIcon.isVisible().should.be.true;
+			});
+			it('should show the "More Channels" button', function() {
+				sideNav.moreChannels.isVisible().should.be.true;
+			});
+			it('should show the new direct message button', function() {
+				sideNav.newDirectMessageBtn.isVisible().should.be.true;
+			});
+			it('should show the plus icon', function() {
+				sideNav.newDirectMessageIcon.isVisible().should.be.true;
+			});
+			it('should show the "More Direct Messages" buton', function() {
+				sideNav.moreDirectMessages.isVisible().should.be.true;
+			});
+			it('should show "general" channel', function() {
+				sideNav.general.isVisible().should.be.true;
+			});
+			it('should not show eye icon on general', function() {
+				sideNav.channelHoverIcon.isVisible().should.be.false;
+			});
+			it('should show eye icon on hover', function() {
+				sideNav.general.moveToObject();
+				sideNav.channelHoverIcon.isVisible().should.be.true;
+			});
+		});
+
+		describe('user options', function() {
+			describe('render', function() {
+
+
+				it('should show user options', function() {
+					sideNav.accountBoxUserName.click();
+					sideNav.userOptions.isVisible().should.be.true;
+				});
+				it('should show online button', function() {
+					sideNav.statusOnline.isVisible().should.be.true;
+				});
+				it('should show away button', function() {
+					sideNav.statusAway.isVisible().should.be.true;
+				});
+				it('should show busy button', function() {
+					sideNav.statusBusy.isVisible().should.be.true;
+				});
+				it('should show offline button', function() {
+					sideNav.statusOffline.isVisible().should.be.true;
+				});
+				it('should show settings button', function() {
+					sideNav.account.isVisible().should.be.true;
+				});
+				it('should show logout button', function() {
+					sideNav.logout.isVisible().should.be.true;
+				});
+
+
+			});
+		});
+	});
+
+	it('open GENERAL', function() {
 		browser.waitForExist('.wrapper > ul .link-room-GENERAL', 50000);
 		browser.click('.wrapper > ul .link-room-GENERAL');
 
 		browser.waitForExist('.input-message', 5000);
 
-		done();
+
 	});
 
-	it('send a message', function(done) {
+	it('send a message', function() {
 		mainContent.sendMessage(message);
-		done();
+
 	});
 
 	//DIRECT MESAGE
 
-	it('start a direct message with rocket.cat', function(done) {
+	it('start a direct message with rocket.cat', function() {
 		sideNav.startDirectMessage(targetUser);
-		done();
+
 	});
 
-	it('open the direct message', function(done) {
+	it('open the direct message', function() {
 		sideNav.openChannel(targetUser);
-		done();
+
 	});
 
-	it('send a direct message', function(done) {
+	it('send a direct message', function() {
 		mainContent.sendMessage(message);
-		done();
+
 	});
 
 	//CHANNEL
 
-	it('create a public channel', function(done) {
+	it('create a public channel', function() {
 		sideNav.createChannel(PublicChannelName, false, false);
 		sideNav.openChannel(PublicChannelName);
-		done();
+
 	});
 
-	it('send a message in the public channel', function(done) {
+	it('send a message in the public channel', function() {
 		mainContent.sendMessage(message);
-		done();
+
 	});
 
-	it('add people to the room', function(done) {
+	it('add people to the room', function() {
 		flexTab.addPeopleToChannel(targetUser);
-		done();
+
 	});
 
-	it('remove people from room', function(done) {
+	it('remove people from room', function() {
 		flexTab.closeTabs();
 		flexTab.removePeopleFromChannel(targetUser);
 		flexTab.confirmPopup();
-		done();
+
 	});
 
-	it('archive the room', function(done) {
+	it('archive the room', function() {
 		flexTab.archiveChannel();
 		flexTab.closeTabs();
-		done();
+
 	});
 
-	it('open GENERAL', function(done) {
+	it('open GENERAL', function() {
 		sideNav.openChannel('general');
-		done();
+
 	});
 
 	//Private Channel
 
-	it('create a private channel', function(done) {
+	it('create a private channel', function() {
 		sideNav.createChannel(privateChannelName, true, false);
-		done();
+
 	});
 
-	it('send a message in the private channel', function(done) {
+	it('send a message in the private channel', function() {
 		mainContent.sendMessage(message);
-		done();
+
 	});
 
-	it('add people to the room', function(done) {
+	it('add people to the room', function() {
 		flexTab.addPeopleToChannel(targetUser);
-		done();
+
 	});
 
-	it('remove people from room', function(done) {
+	it('remove people from room', function() {
 		flexTab.closeTabs();
 		flexTab.removePeopleFromChannel(targetUser);
 		flexTab.confirmPopup();
-		done();
+
 	});
 
-	it('archive the room', function(done) {
+	it('archive the room', function() {
 		flexTab.archiveChannel();
 		flexTab.closeTabs();
-		done();
+
 	});
 });

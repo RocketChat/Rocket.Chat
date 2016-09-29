@@ -2,7 +2,7 @@ import Page from './Page';
 
 class FlexTab extends Page {
 
-	get activeUser() { return browser.element('.data h4'); }
+
 
 
 

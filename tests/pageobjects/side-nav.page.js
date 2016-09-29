@@ -2,18 +2,41 @@ import Page from './Page';
 
 class SideNav extends Page {
 
-	get newDirectMessageBtn() { return browser.element('.add-room:nth-of-type(2)'); }
+
 	get directMessageTarget() { return browser.element('#who'); }
-	get directMessageBtn() { return browser.element('[title=rocket.cat]'); }
 	get saveDirectMessageBtn() { return browser.element('.save-direct-message'); }
 
-	get newChannelBtn() { return browser.element('.add-room:nth-of-type(1)'); }
+
+
 	get channelType() { return browser.element('#channel-type'); }
 	get channelReadOnly() { return browser.element('#channel-ro'); }
 	get channelName() { return browser.element('#channel-name'); }
 	get saveChannelBtn() { return browser.element('.save-channel'); }
 
 	get messageInput() { return browser.element('.input-message'); }
+
+	get accountBoxUserName() { return browser.element('.account-box .data h4'); }
+	get accountBoxUserAvatar() { return browser.element('.account-box .avatar-image'); }
+
+	get newChannelBtn() { return browser.element('.rooms-list .add-room:nth-of-type(1)'); }
+	get newChannelIcon() { return browser.element('.rooms-list .add-room:nth-of-type(1) .icon-plus'); }
+	get moreChannels() { return browser.element('.rooms-list .more-channels'); }
+
+	get newDirectMessageBtn() { return browser.element('.rooms-list .add-room:nth-of-type(2)'); }
+	get newDirectMessageIcon() { return browser.element('.rooms-list .add-room:nth-of-type(2) .icon-plus'); }
+	get moreDirectMessages() { return browser.element('.rooms-list .more-direct-messages'); }
+
+	get general() { return browser.element('[title="general"]'); }
+	get channelHoverIcon() { return browser.element('[title="general"] .icon-eye-off'); }
+
+	get userOptions() { return browser.element('.options'); }
+	get statusOnline() { return browser.element('.online'); }
+	get statusAway() { return browser.element('.away'); }
+	get statusBusy() { return browser.element('.busy'); }
+	get statusOffline() { return browser.element('.offline'); }
+	get account() { return browser.element('#account'); }
+	get logout() { return browser.element('#logout'); }
+
 
 	openChannel(channelName) {
 		browser.click('[title="'+channelName+'"]');
@@ -53,9 +76,9 @@ class SideNav extends Page {
 
 	startDirectMessage(user) {
 		this.newDirectMessageBtn.click();
-		this.directMessageTarget.waitForVisible();
+		this.directMessageTarget.waitForVisible(1000);
 		this.directMessageTarget.setValue(user);
-		browser.waitForVisible('.-autocomplete-item');
+		browser.waitForVisible('.-autocomplete-item', 1000);
 		browser.click('.-autocomplete-item');
 		this.saveDirectMessageBtn.click();
 		browser.waitForExist('[title="'+user+'"]');
