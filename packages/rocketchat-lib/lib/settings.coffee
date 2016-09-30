@@ -24,7 +24,12 @@ RocketChat.settings =
 				callback _id, Meteor.settings?[_id]
 		else
 			if _.isRegExp(_id)
-				return for key, value of Meteor.settings when _id.test(key)
+				items = []
+				for key, value of Meteor.settings when _id.test(key)
+					items.push
+						key: key
+						value: value
+				return items
 
 			return Meteor.settings?[_id]
 
