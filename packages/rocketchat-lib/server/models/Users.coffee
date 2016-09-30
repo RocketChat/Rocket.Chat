@@ -398,4 +398,3 @@ class ModelUsers extends RocketChat.models._Base
 		return @find query, { fields: { name: 1, username: 1, emails: 1, 'settings.preferences.emailNotificationMode': 1 } }
 
 RocketChat.models.Users = new ModelUsers(Meteor.users, true)
-RocketChat.cache.Users = RocketChat.models.Users
