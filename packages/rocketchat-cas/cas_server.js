@@ -27,7 +27,7 @@ var casTicket = function(req, token, callback) {
 	var parsedUrl = url.parse(req.url, true);
 	var ticketId = parsedUrl.query.ticket;
 	var baseUrl = RocketChat.settings.get('CAS_base_url');
-	var cas_version = parseFloat( RocketChat.settings.get('CAS_version') );
+	var cas_version = parseFloat(RocketChat.settings.get('CAS_version'));
 	logger.debug('Using CAS_base_url: ' + baseUrl);
 
 	var cas = new CAS({
@@ -44,7 +44,7 @@ var casTicket = function(req, token, callback) {
 			var user_info = { username: username };
 
 			// CAS 2.0 attributes handling
-			if( details && details.attributes ) {
+			if (details && details.attributes) {
 				_.extend(user_info, { attributes: details.attributes });
 			}
 			_casCredentialTokens[token] = user_info;
@@ -144,58 +144,55 @@ Accounts.registerLoginHandler(function(options) {
 		email: undefined,
 		name: undefined,
 		username: undefined,
-		rooms: undefined,
+		rooms: undefined
 	};
 
 	// Import response attributes
-	if( cas_version >= 2.0 ) {
+	if (cas_version >= 2.0) {
 		// Clean & import external attributes
-		for( var ext_name in result.attributes ) {
-			var value = result.attributes[ ext_name];
-			if( value ) {
-				ext_attrs[ ext_name ] = value[0];
+		_.each(result.attributes, function(value, ext_name) {
+			if (value) {
+				ext_attrs[ext_name] = value[0];
 			}
-		}
+		});
 	}
 
 	// Source internal attributes
-	if( syncUserDataFieldMap ) {
+	if (syncUserDataFieldMap) {
 
 		// Our mapping table: key(int_attr) -> value(ext_attr)
 		// Spoken: Source this internal attribute from these external attributes
 		const attr_map = JSON.parse(syncUserDataFieldMap);
 
-		for(var int_name in attr_map ) {
-
+		_.each(attr_map, function(source, int_name) {
 			// Source is our String to interpolate
-			var source = attr_map[ int_name ];
-			if( _.isString( source ) ) {
-				for( var ext_name in ext_attrs ) {
-					source = source.replace("%" + ext_name + "%", ext_attrs[ ext_name] );
-				}
+			if (_.isString(source)) {
+				_.each(ext_attrs, function(value, ext_name) {
+					source = source.replace('%' + ext_name + '%', ext_attrs[ext_name]);
+				});
 
-				int_attrs[ int_name ] = source;
-				logger.debug("Sourced internal attribute: " + int_name + " = " + source );
+				int_attrs[int_name] = source;
+				logger.debug('Sourced internal attribute: ' + int_name + ' = ' + source);
 			}
-		}
+		});
 	}
 
 	// Search existing user by its external service id
-	logger.debug('Looking up user by id: ' + result.username );
+	logger.debug('Looking up user by id: ' + result.username);
 	var user = Meteor.users.findOne({ 'services.cas.external_id': result.username });
 
 	if (user) {
 		logger.debug('Using existing user for \'' + result.username + '\' with id: ' + user._id);
-		if( sync_enabled ) {
-			logger.debug("Syncing user attributes");
+		if (sync_enabled) {
+			logger.debug('Syncing user attributes');
 			// Update name
-			if( int_attrs.name ) {
+			if (int_attrs.name) {
 				Meteor.users.update(user, { $set: { name: int_attrs.name }});
 			}
 
 			// Update email
-			if( int_attrs.email ) {
-				Meteor.users.update(user, { $set: { emails: [ { address: int_attrs.email, verified: true } ] }});
+			if (int_attrs.email) {
+				Meteor.users.update(user, { $set: { emails: [{ address: int_attrs.email, verified: true }] }});
 			}
 		}
 	} else {
@@ -210,27 +207,27 @@ Accounts.registerLoginHandler(function(options) {
 				cas: {
 					external_id: result.username,
 					version: cas_version,
-					attrs: int_attrs,
+					attrs: int_attrs
 				}
 			}
 		};
 
 		// Add User.name
-		if( int_attrs.name ) {
+		if (int_attrs.name) {
 			_.extend(newUser, {
-				name: int_attrs.name,
+				name: int_attrs.name
 			});
 		}
 
 		// Add email
-		if( int_attrs.email ) {
+		if (int_attrs.email) {
 			_.extend(newUser, {
-				emails: [ { address: int_attrs.email, verified: true } ],
+				emails: [{ address: int_attrs.email, verified: true }]
 			});
 		}
 
 		// Create the user
-		logger.debug("User '" + result.username + "' does not exist yet, creating it");
+		logger.debug('User "' + result.username + '" does not exist yet, creating it');
 		var userId = Accounts.insertUserDoc({}, newUser);
 
 		// Fetch and use it
@@ -243,21 +240,21 @@ Accounts.registerLoginHandler(function(options) {
 			Meteor.call('joinDefaultChannels');
 		});
 
-		logger.debug('Joining user to attribute channels: ' + int_attrs.rooms );
-		if( int_attrs.rooms ) {
-			_.each( int_attrs.rooms.split(','), function(room_name) {
-				if( room_name ) {
+		logger.debug('Joining user to attribute channels: ' + int_attrs.rooms);
+		if (int_attrs.rooms) {
+			_.each(int_attrs.rooms.split(','), function(room_name) {
+				if (room_name) {
 					var room = RocketChat.models.Rooms.findOneByNameAndType(room_name, 'c');
-					if( ! room ) {
-						room = RocketChat.models.Rooms.createWithIdTypeAndName( Random.id(), 'c', room_name );
+					if (!room) {
+						room = RocketChat.models.Rooms.createWithIdTypeAndName(Random.id(), 'c', room_name);
 					}
-					RocketChat.models.Rooms.addUsernameByName(room_name, result.username );
+					RocketChat.models.Rooms.addUsernameByName(room_name, result.username);
 					RocketChat.models.Subscriptions.createWithRoomAndUser(room, user, {
-							ts: new Date(),
-							open: true,
-							alert: true,
-							unread: 1
-						});
+						ts: new Date(),
+						open: true,
+						alert: true,
+						unread: 1
+					});
 				}
 			});
 		}
