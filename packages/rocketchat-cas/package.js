@@ -27,5 +27,5 @@ Package.onUse(function(api) {
 });
 
 Npm.depends({
-    cas: 'git+https://github.com/joshchan/node-cas#344a8bfba9d054e2e378adaf95b720c898ae48a2'
+    cas: 'git+https://github.com/kcbanner/node-cas#fcd27dad333223b3b75a048bce27973fb3ca0f62'
 });
