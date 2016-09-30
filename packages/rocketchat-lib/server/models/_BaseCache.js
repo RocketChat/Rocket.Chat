@@ -204,7 +204,7 @@ class ModelsBaseCache extends EventEmitter {
 	}
 
 	processLocalJoinInserted({join, field, link, multi, localRecord}) {
-		let records = RocketChat.cache[join]._findByIndex(link.remote, objectPath.get(localRecord, link.local));
+		let records = RocketChat.models[join].cache._findByIndex(link.remote, objectPath.get(localRecord, link.local));
 
 		if (!Array.isArray(records)) {
 			records = [records];
