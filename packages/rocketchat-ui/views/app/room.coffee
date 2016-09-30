@@ -397,9 +397,15 @@ Template.room.events
 			ChatMessage.update {_id: id}, {$set: {"urls.#{index}.collapsed": !collapsed}}
 
 	'dragenter .dropzone': (e) ->
-		items = e.originalEvent?.dataTransfer?.items
-		if items?.length > 0 and items?[0]?.kind isnt 'string' and userCanDrop this._id
-			e.currentTarget.classList.add 'over'
+		isChrome = navigator.userAgent.toLocaleLowerCase().indexOf('chrome') > -1
+
+		if isChrome
+			items = e.originalEvent?.dataTransfer?.items
+			if items?.length > 0 and items?[0]?.kind isnt 'string' and userCanDrop this._id
+				e.currentTarget.classList.add 'over'
+		else
+			if userCanDrop this._id
+				e.currentTarget.classList.add 'over'
 
 	'dragleave .dropzone-overlay': (e) ->
 		e.currentTarget.parentNode.classList.remove 'over'
@@ -415,9 +421,7 @@ Template.room.events
 		event.currentTarget.parentNode.classList.remove 'over'
 
 		e = event.originalEvent or event
-		files = e.target.files
-		if not files or files.length is 0
-			files = e.dataTransfer?.files or []
+		files = e.dataTransfer?.files or []
 
 		filesToUpload = []
 		for file in files
