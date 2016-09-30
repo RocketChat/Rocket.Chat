@@ -1,6 +1,8 @@
 import ModelsBaseDb from './_BaseDb';
 import ModelsBaseCache from './_BaseCache';
 
+RocketChat.cache = RocketChat.cache || {};
+
 class ModelsBase {
 	constructor(nameOrModel, useCache) {
 		this.db = new ModelsBaseDb(nameOrModel);
@@ -14,9 +16,10 @@ class ModelsBase {
 
 		this.cache = new ModelsBaseCache(this);
 		// TODO_CACHE: remove
-		this.on = this.cache.on;
-		this.emit = this.cache.emit;
-		this._findByIndex = this.cache._findByIndex;
+		this.on = this.cache.on.bind(this.cache);
+		this.emit = this.cache.emit.bind(this.cache);
+		this._findByIndex = this.cache._findByIndex.bind(this.cache);
+		this.processQueryOptionsOnResult = this.cache.processQueryOptionsOnResult.bind(this.cache);
 		// END_TODO_CACHE
 
 		if (this.useCache) {

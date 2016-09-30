@@ -105,7 +105,6 @@ Package.onUse(function(api) {
 	api.addFiles('server/startup/statsTracker.js', 'server');
 	api.addFiles('server/startup/cache/_Base.js', 'server');
 	api.addFiles('server/startup/cache/Users.js', 'server');
-	api.addFiles('server/startup/cache/Subscriptions.js', 'server');
 	api.addFiles('server/startup/cache/CacheLoad.js', 'server');
 
 	// SERVER PUBLICATIONS
