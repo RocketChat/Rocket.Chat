@@ -49,8 +49,6 @@ Package.onUse(function(api) {
 	api.addFiles('server/models/Users.js', ['server']);
 	api.addFiles('server/models/Subscriptions.js', ['server']);
 
-	api.addFiles('server/cache/Permissions.js', ['server']);
-
 	api.addFiles('server/functions/addUserRoles.coffee', ['server']);
 	api.addFiles('server/functions/canAccessRoom.js', ['server']);
 	api.addFiles('server/functions/getRoles.coffee', ['server']);

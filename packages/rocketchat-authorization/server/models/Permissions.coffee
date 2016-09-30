@@ -1,6 +1,6 @@
-RocketChat.models.Permissions = new class extends RocketChat.models._Base
+class ModelPermissions extends RocketChat.models._Base
 	constructor: ->
-		super('permissions')
+		super(arguments...)
 
 	# FIND
 	findByRole: (role, options) ->
@@ -22,3 +22,6 @@ RocketChat.models.Permissions = new class extends RocketChat.models._Base
 		@update({ _id: permission }, { $pull: { roles: role } })
 
 
+RocketChat.models.Permissions = new ModelPermissions('permissions', true)
+RocketChat.cache.Permissions = RocketChat.models.Permissions
+RocketChat.cache.Permissions.cache.load();
