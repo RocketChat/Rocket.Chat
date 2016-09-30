@@ -377,4 +377,3 @@ class ModelSubscriptions extends RocketChat.models._Base
 		return @remove query
 
 RocketChat.models.Subscriptions = new ModelSubscriptions('subscription', true)
-RocketChat.cache.Subscriptions = RocketChat.models.Subscriptions

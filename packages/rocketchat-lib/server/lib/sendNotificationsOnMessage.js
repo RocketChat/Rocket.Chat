@@ -74,10 +74,6 @@ RocketChat.callbacks.add('afterSaveMessage', function(message, room) {
 	settings.dontNotifyMobileUsers = [];
 	settings.desktopNotificationDurations = {};
 
-	// const notificationPreferencesByRoom = RocketChat.cache.Subscriptions.getDynamicView('notifications').data().filter(function(record) {
-	// 	return record.rid === room._id;
-	// });
-
 	const notificationPreferencesByRoom = RocketChat.models.Subscriptions.findNotificationPreferencesByRoom(room._id);
 	notificationPreferencesByRoom.forEach(function(subscription) {
 		if (subscription.desktopNotifications === 'all') {
