@@ -243,24 +243,24 @@ Accounts.registerLoginHandler(function(options) {
 			Meteor.call('joinDefaultChannels');
 		});
 
-        logger.debug('Joining user to attribute channels: ' + int_attrs.rooms );
-        if( int_attrs.rooms ) {
-		    _.each( int_attrs.rooms.split(','), function(room_name) { 
-                if( room_name ) {
-                    var room = RocketChat.models.Rooms.findOneByNameAndType('c', room_name);
-                    if( ! room ) {
-                        room = RocketChat.models.Rooms.createWithIdTypeAndName( Random.id(), 'c', room_name );
-                    }
-                    RocketChat.models.Rooms.addUsernameByName(room_name, result.username );
-                    RocketChat.models.Subscriptions.createWithRoomAndUser(room, user, {
-                            ts: new Date(),
-                            open: true,
-                            alert: true,
-                            unread: 1
-                        });
-                }
-		    });
-        }
+		logger.debug('Joining user to attribute channels: ' + int_attrs.rooms );
+		if( int_attrs.rooms ) {
+			_.each( int_attrs.rooms.split(','), function(room_name) {
+				if( room_name ) {
+					var room = RocketChat.models.Rooms.findOneByNameAndType('c', room_name);
+					if( ! room ) {
+						room = RocketChat.models.Rooms.createWithIdTypeAndName( Random.id(), 'c', room_name );
+					}
+					RocketChat.models.Rooms.addUsernameByName(room_name, result.username );
+					RocketChat.models.Subscriptions.createWithRoomAndUser(room, user, {
+							ts: new Date(),
+							open: true,
+							alert: true,
+							unread: 1
+						});
+				}
+			});
+		}
 
 	}
 
