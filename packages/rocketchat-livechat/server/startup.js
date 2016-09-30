@@ -1,6 +1,6 @@
 Meteor.startup(() => {
 	RocketChat.roomTypes.setRoomFind('l', (code) => {
-		return RocketChat.cache.Rooms.findLivechatByCode(code).fetch();
+		return RocketChat.models.Rooms.findLivechatByCode(code).fetch();
 	});
 
 	RocketChat.authz.addRoomAccessValidator(function(room, user) {

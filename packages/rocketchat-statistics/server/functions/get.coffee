@@ -17,10 +17,10 @@ RocketChat.statistics.get = ->
 	statistics.offlineUsers = statistics.totalUsers - statistics.onlineUsers - statistics.awayUsers
 
 	# Room statistics
-	statistics.totalRooms = RocketChat.cache.Rooms.find().count()
-	statistics.totalChannels = RocketChat.cache.Rooms.findByType('c').count()
-	statistics.totalPrivateGroups = RocketChat.cache.Rooms.findByType('p').count()
-	statistics.totalDirect = RocketChat.cache.Rooms.findByType('d').count()
+	statistics.totalRooms = RocketChat.models.Rooms.find().count()
+	statistics.totalChannels = RocketChat.models.Rooms.findByType('c').count()
+	statistics.totalPrivateGroups = RocketChat.models.Rooms.findByType('p').count()
+	statistics.totalDirect = RocketChat.models.Rooms.findByType('d').count()
 
 	# Message statistics
 	statistics.totalMessages = RocketChat.models.Messages.find().count()

@@ -30,7 +30,7 @@ RocketChat.createRoom = function(type, name, owner, members, readOnly) {
 	}
 
 	// avoid duplicate names
-	let room = RocketChat.cache.Rooms.findOneByName(name);
+	let room = RocketChat.models.Rooms.findOneByName(name);
 	if (room) {
 		if (room.archived) {
 			throw new Meteor.Error('error-archived-duplicate-name', 'There\'s an archived channel with name ' + name, { function: 'RocketChat.createRoom', room_name: name });

@@ -22,7 +22,7 @@ Meteor.methods({
 		const ret = RocketChat.Livechat.saveGuest(guestData) && RocketChat.Livechat.saveRoomInfo(roomData, guestData);
 
 		Meteor.defer(() => {
-			RocketChat.callbacks.run('livechat.saveInfo', RocketChat.cache.Rooms.findOneById(roomData._id));
+			RocketChat.callbacks.run('livechat.saveInfo', RocketChat.models.Rooms.findOneById(roomData._id));
 		});
 
 		return ret;

@@ -4,7 +4,7 @@ RocketChat.deleteUser = function(userId) {
 
 	RocketChat.models.Messages.removeByUserId(userId); // Remove user messages
 	RocketChat.models.Subscriptions.findByUserId(userId).forEach((subscription) => {
-		let room = RocketChat.cache.Rooms.findOneById(subscription.rid);
+		let room = RocketChat.models.Rooms.findOneById(subscription.rid);
 		if (room) {
 			if (room.t !== 'c' && room.usernames.length === 1) {
 				RocketChat.models.Rooms.removeById(subscription.rid); // Remove non-channel rooms with only 1 user (the one being deleted)

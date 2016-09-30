@@ -32,7 +32,7 @@ RocketChat.Livechat = {
 		}
 	},
 	getRoom(guest, message, roomInfo) {
-		var room = RocketChat.cache.Rooms.findOneById(message.rid);
+		var room = RocketChat.models.Rooms.findOneById(message.rid);
 		var newRoom = false;
 
 		if (room && !room.open) {
@@ -249,7 +249,7 @@ RocketChat.Livechat = {
 	},
 
 	forwardOpenChats(userId) {
-		RocketChat.cache.Rooms.findOpenByAgent(userId).forEach((room) => {
+		RocketChat.models.Rooms.findOpenByAgent(userId).forEach((room) => {
 			const guest = RocketChat.models.Users.findOneById(room.v._id);
 			this.transfer(room, guest, { departmentId: guest.department });
 		});

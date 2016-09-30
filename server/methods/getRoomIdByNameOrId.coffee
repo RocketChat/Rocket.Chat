@@ -6,7 +6,7 @@ Meteor.methods
 		if not Meteor.userId()
 			throw new Meteor.Error 'error-invalid-user', 'Invalid user', { method: 'getRoomIdByNameOrId' }
 
-		room = RocketChat.cache.Rooms.findOneById(rid) or RocketChat.cache.Rooms.findOneByName(rid)
+		room = RocketChat.models.Rooms.findOneById(rid) or RocketChat.models.Rooms.findOneByName(rid)
 
 		if not room?
 			throw new Meteor.Error 'error-not-allowed', 'Not allowed', { method: 'getRoomIdByNameOrId' }
