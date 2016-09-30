@@ -397,10 +397,10 @@ Template.room.events
 			ChatMessage.update {_id: id}, {$set: {"urls.#{index}.collapsed": !collapsed}}
 
 	'dragenter .dropzone': (e) ->
-		isChrome = navigator.userAgent.toLocaleLowerCase().indexOf('chrome') > -1
+		# Check for dataTransfer.items browser support
+		items = e.originalEvent?.dataTransfer?.items
 
-		if isChrome
-			items = e.originalEvent?.dataTransfer?.items
+		if items
 			if items?.length > 0 and items?[0]?.kind isnt 'string' and userCanDrop this._id
 				e.currentTarget.classList.add 'over'
 		else
