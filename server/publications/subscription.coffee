@@ -30,7 +30,7 @@ Meteor.methods
 		options =
 			fields: fields
 
-		records = RocketChat.cache.Subscriptions.findByUserId(Meteor.userId(), options).fetch()
+		records = RocketChat.models.Subscriptions.findByUserId(Meteor.userId(), options).fetch()
 
 		if updatedAt instanceof Date
 			return {
@@ -42,5 +42,5 @@ Meteor.methods
 		return records
 
 
-RocketChat.cache.Subscriptions.on 'changed', (type, subscription) ->
-	RocketChat.Notifications.notifyUserInThisInstance subscription.u._id, 'subscriptions-changed', type, RocketChat.cache.Subscriptions.processQueryOptionsOnResult(subscription, {fields: fields})
+RocketChat.models.Subscriptions.on 'changed', (type, subscription) ->
+	RocketChat.Notifications.notifyUserInThisInstance subscription.u._id, 'subscriptions-changed', type, RocketChat.models.Subscriptions.processQueryOptionsOnResult(subscription, {fields: fields})

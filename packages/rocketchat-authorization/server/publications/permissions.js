@@ -19,7 +19,5 @@ Meteor.methods({
 
 
 RocketChat.cache.Permissions.on('changed', (type, permission) => {
-	permission = RocketChat.cache.Subscriptions.processQueryOptionsOnResult(permission);
-
 	RocketChat.Notifications.notifyAllInThisInstance('permissions-changed', type, permission);
 });

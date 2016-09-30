@@ -42,7 +42,7 @@ Meteor.methods({
 
 		this.unblock();
 
-		const data = RocketChat.cache.Subscriptions.findByUserId(Meteor.userId()).fetch();
+		const data = RocketChat.models.Subscriptions.findByUserId(Meteor.userId()).fetch();
 
 		if (updatedAt instanceof Date) {
 			return {
@@ -84,13 +84,13 @@ Meteor.methods({
 });
 
 RocketChat.models.Rooms.cache.on('sync', (type, room/*, diff*/) => {
-	const records = RocketChat.cache.Subscriptions.findByRoomId(room._id).fetch();
+	const records = RocketChat.models.Subscriptions.findByRoomId(room._id).fetch();
 	for (const record of records) {
 		RocketChat.Notifications.notifyUserInThisInstance(record.u._id, 'rooms-changed', type, roomMap({_room: room}));
 	}
 });
 
-RocketChat.cache.Subscriptions.on('changed', (type, subscription/*, diff*/) => {
+RocketChat.models.Subscriptions.on('changed', (type, subscription/*, diff*/) => {
 	if (type === 'inserted') {
 		const room = RocketChat.models.Rooms.findOneById(subscription.rid);
 		if (room) {

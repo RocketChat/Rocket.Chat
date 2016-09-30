@@ -38,8 +38,6 @@ Meteor.methods
 
 
 RocketChat.models.Settings.cache.on 'changed', (type, setting) ->
-	setting = RocketChat.cache.Subscriptions.processQueryOptionsOnResult(setting)
-
 	if setting.public is true
 		RocketChat.Notifications.notifyAllInThisInstance 'public-settings-changed', type, _.pick(setting, '_id', 'value')
 
