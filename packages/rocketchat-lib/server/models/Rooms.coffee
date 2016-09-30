@@ -548,5 +548,4 @@ RocketChat.models.Rooms = new class extends RocketChat.models._Base
 		return @remove query
 
 # TODO_CACHE: remove
-RocketChat.cache ?= {}
 RocketChat.cache.Rooms = RocketChat.models.Rooms

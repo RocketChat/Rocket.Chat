@@ -1,6 +1,6 @@
 RocketChat.models.Subscriptions = new class extends RocketChat.models._Base
 	constructor: ->
-		super('subscription')
+		super('subscription', true)
 
 		@tryEnsureIndex { 'rid': 1, 'u._id': 1 }, { unique: 1 }
 		@tryEnsureIndex { 'rid': 1, 'alert': 1, 'u._id': 1 }
@@ -16,9 +16,16 @@ RocketChat.models.Subscriptions = new class extends RocketChat.models._Base
 		@tryEnsureIndex { 'mobilePushNotifications': 1 }, { sparse: 1 }
 		@tryEnsureIndex { 'emailNotifications': 1 }, { sparse: 1 }
 
+		this.cache.ensureIndex('rid', 'array')
+		this.cache.ensureIndex('u._id', 'array')
+		this.cache.ensureIndex(['rid', 'u._id'], 'unique')
+
 
 	# FIND ONE
 	findOneByRoomIdAndUserId: (roomId, userId) ->
+		if this.useCache
+			return this.cache.findByIndex('rid,u._id', [roomId, userId]).fetch()
+
 		query =
 			rid: roomId
 			"u._id": userId
@@ -27,6 +34,9 @@ RocketChat.models.Subscriptions = new class extends RocketChat.models._Base
 
 	# FIND
 	findByUserId: (userId, options) ->
+		if this.useCache
+			return this.cache.findByIndex('u._id', userId, options)
+
 		query =
 			"u._id": userId
 
@@ -68,6 +78,15 @@ RocketChat.models.Subscriptions = new class extends RocketChat.models._Base
 			t: type
 			name: name
 			'u._id': userId
+
+		return @find query, options
+
+	findByRoomId: (roomId, options) ->
+		if this.useCache
+			return this.cache.findByIndex('rid', roomId, options)
+
+		query =
+			"rid": roomId
 
 		return @find query, options
 
@@ -356,3 +375,5 @@ RocketChat.models.Subscriptions = new class extends RocketChat.models._Base
 			"u._id": userId
 
 		return @remove query
+
+RocketChat.cache.Subscriptions = RocketChat.models.Subscriptions
