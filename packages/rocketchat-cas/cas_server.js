@@ -247,7 +247,7 @@ Accounts.registerLoginHandler(function(options) {
 		if( int_attrs.rooms ) {
 			_.each( int_attrs.rooms.split(','), function(room_name) {
 				if( room_name ) {
-					var room = RocketChat.models.Rooms.findOneByNameAndType('c', room_name);
+					var room = RocketChat.models.Rooms.findOneByNameAndType(room_name, 'c');
 					if( ! room ) {
 						room = RocketChat.models.Rooms.createWithIdTypeAndName( Random.id(), 'c', room_name );
 					}
