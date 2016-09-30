@@ -24,7 +24,7 @@ const message = 'message from '+username;
 
 
 //Basic usage test start
-describe.only('Basic usage', function() {
+describe('Basic usage', function() {
 	it('load page', () => {
 		loginPage.open();
 		// browser.windowHandleSize({width:1280, height:800});
@@ -106,6 +106,7 @@ describe.only('Basic usage', function() {
 
 				it('should show user options', function() {
 					sideNav.accountBoxUserName.click();
+					sideNav.userOptions.waitForVisible();
 					sideNav.userOptions.isVisible().should.be.true;
 				});
 				it('should show online button', function() {
@@ -139,6 +140,90 @@ describe.only('Basic usage', function() {
 		browser.waitForExist('.input-message', 5000);
 
 
+	});
+
+	describe('flextab usage', function() {
+		describe('render', function() {
+			it('should show the room info button', function() {
+				flexTab.channelTab.isVisible().should.be.true;
+			});
+			it('should show the room info tab content', function() {
+				flexTab.channelTab.click();
+				flexTab.channelSettings.isVisible().should.be.true;
+			});
+
+			it('should show the message search  button', function() {
+				flexTab.searchTab.isVisible().should.be.true;
+			});
+			it('should show the message tab content', function() {
+				flexTab.searchTab.click();
+				flexTab.searchTabContent.isVisible().should.be.true;
+			});
+
+
+			it('should show the members tab button', function() {
+				flexTab.membersTab.isVisible().should.be.true;
+			});
+			it('should show the members content', function() {
+				flexTab.membersTab.click();
+				flexTab.membersTabContent.isVisible().should.be.true;
+			});
+			it('should show the members search bar', function() {
+				flexTab.userSearchBar.isVisible().should.be.true;
+			});
+			it('should show the show all link', function() {
+				flexTab.showAll.isVisible().should.be.true;
+			});
+			it('should show the start video call button', function() {
+				flexTab.startVideoCall.isVisible().should.be.true;
+			});
+			it('should show the start audio call', function() {
+				flexTab.startAudioCall.isVisible().should.be.true;
+			});
+
+
+			it('should show the notifications button', function() {
+				flexTab.notificationsTab.isVisible().should.be.true;
+			});
+			it('should show the notifications Tab content', function() {
+				flexTab.notificationsTab.click();
+				flexTab.notificationsSettings.isVisible().should.be.true;
+			});
+
+			it('should show the files button', function() {
+				flexTab.filesTab.isVisible().should.be.true;
+			});
+			it('should show the files Tab content', function() {
+
+				flexTab.filesTab.click();
+				flexTab.filesTabContent.isVisible().should.be.true;
+			});
+
+			it('should show the mentions button', function() {
+				flexTab.mentionsTab.isVisible().should.be.true;
+			});
+			it('should show the mentions Tab content', function() {
+				flexTab.mentionsTab.click();
+				flexTab.mentionsTabContent.isVisible().should.be.true;
+			});
+
+			it('should show the starred button', function() {
+				flexTab.starredTab.isVisible().should.be.true;
+			});
+			it('should show the starred Tab content', function() {
+				flexTab.starredTab.click();
+				flexTab.starredTabContent.isVisible().should.be.true;
+			});
+
+			it('should show the pinned button', function() {
+				flexTab.pinnedTab.isVisible().should.be.true;
+			});
+			it('should show the pinned messages Tab content', function() {
+				flexTab.pinnedTab.click();
+				flexTab.pinnedTabContent.isVisible().should.be.true;
+			});
+
+		});
 	});
 
 	it('send a message', function() {
@@ -229,3 +314,53 @@ describe.only('Basic usage', function() {
 
 	});
 });
+
+
+
+/*	get membersTab() { return browser.element('[title=Members]'); }
+	get userSearchBar() { return browser.element('.animated'); }
+	get userSearchBar() { return browser.element('#user-add-search'); }
+	get removeUserBtn() { return browser.element('.remove-user'); }
+	get startVideoCall() { return browser.element('start-video-call'); }
+	get startAudioCall() { return browser.element('start-audio-call'); }
+	get showAll() { return browser.element('.see-all'); }
+
+
+	get channelTab() { return browser.element('[title="Room Info"]'); }
+	get channelSettings() { return browser.element('.channel-settings'); }
+
+	get searchTab() { return browser.element('[title="Search"]'); }
+	get searchTabContent() { return browser.element('.search-messages-list'); }
+	get messageSearchBar() { return browser.element('#message-search'); }
+	get searchResult() { return browser.element('.new-day'); }
+
+	get notificationsTab() { return browser.element('[title="Notifications"]'); }
+	get notificationsSettings() { return browser.element('.push-notifications'); }
+
+	get filesTab() { return browser.element('[title="Files List"]'); }
+	get fileItem() { return browser.element('.uploaded-files ul:first-child'); }
+	get filesTabContent() { return browser.element('.uploaded-files'); }
+	get fileDelete() { return browser.element('.uploaded-files ul:first-child .file-delete'); }
+	get fileDownload() { return browser.element('.uploaded-files ul:first-child .file-download'); }
+	get fileName() { return browser.element('.uploaded-files ul:first-child .room-file-item'); }
+
+	get mentionsTab() { return browser.element('[title="Mentions"]'); }
+	get mentionsTabContent() { return browser.element('.mentioned-messages-list'); }
+
+
+
+	get starredTab() { return browser.element('[title="Starred Messages"]'); }
+	get starredTabContent() { return browser.element('.starred-messages-list'); }
+
+
+	get pinnedTab() { return browser.element('[title="Pinned Messages"]'); }
+	get pinnedTabContent() { return browser.element('pinned-messages-list'); }
+
+
+
+	get archiveBtn() { return browser.element('.clearfix:last-child .icon-pencil'); }
+	get archiveRadio() { return browser.element('.editing'); }
+	get archiveSave() { return browser.element('.save'); }
+
+	get confirmBtn() { return browser.element('.confirm'); }
+	*/
