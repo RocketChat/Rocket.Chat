@@ -31,7 +31,7 @@ RocketChat.Livechat = {
 			return RocketChat.models.Users.findOnlineAgents();
 		}
 	},
-	sendMessage({ guest, message, roomInfo }) {
+	getRoom(guest, message, roomInfo) {
 		var room = RocketChat.cache.Rooms.findOneById(message.rid);
 		var newRoom = false;
 
@@ -60,6 +60,11 @@ RocketChat.Livechat = {
 		if (!room) {
 			throw new Meteor.Error('cannot-acess-room');
 		}
+
+		return { room, newRoom };
+	},
+	sendMessage({ guest, message, roomInfo }) {
+		let { room, newRoom } = this.getRoom(guest, message, roomInfo);
 		if (guest.name) {
 			message.alias = guest.name;
 		}
@@ -212,6 +217,8 @@ RocketChat.Livechat = {
 			'Livechat_offline_success_message',
 			'Livechat_offline_form_unavailable',
 			'Livechat_display_offline_form',
+			'Livechat_videocall_enabled',
+			'Jitsi_Enabled',
 			'Language'
 		]).forEach((setting) => {
 			settings[setting._id] = setting.value;
