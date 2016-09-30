@@ -33,13 +33,13 @@ RocketChat.models.Subscriptions.cache.hasOne('Users', {
 });
 
 
-RocketChat.cache.Users.load();
+RocketChat.models.Users.cache.load();
 RocketChat.models.Rooms.cache.load();
 RocketChat.models.Subscriptions.cache.load();
 RocketChat.models.Settings.cache.load();
 
 
-RocketChat.cache.Users.addDynamicView('highlights').applyFind({
+RocketChat.models.Users.cache.addDynamicView('highlights').applyFind({
 	'settings.preferences.highlights': {$size: {$gt: 0}}
 });
 
