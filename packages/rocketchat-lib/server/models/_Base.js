@@ -5,30 +5,34 @@ RocketChat.cache = RocketChat.cache || {};
 
 class ModelsBase {
 	constructor(nameOrModel, useCache) {
-		this.db = new ModelsBaseDb(nameOrModel);
-		this.model = this.db.model;
-		this.collectionName = this.db.collectionName;
-		this.name = this.db.name;
+		this._db = new ModelsBaseDb(nameOrModel);
+		this.model = this._db.model;
+		this.collectionName = this._db.collectionName;
+		this.name = this._db.name;
 
 		this.useCache = useCache === true;
 
-		this.origin = 'db';
+		this.origin = '_db';
 
 		this.cache = new ModelsBaseCache(this);
 		// TODO_CACHE: remove
 		this.on = this.cache.on.bind(this.cache);
 		this.emit = this.cache.emit.bind(this.cache);
 		this._findByIndex = this.cache._findByIndex.bind(this.cache);
+		this.getDynamicView = this.cache.getDynamicView.bind(this.cache);
 		this.processQueryOptionsOnResult = this.cache.processQueryOptionsOnResult.bind(this.cache);
 		// END_TODO_CACHE
 
+		this.db = this;
+
 		if (this.useCache) {
 			this.origin = 'cache';
+			this.db = new this.constructor(this.model, false);
 		}
 	}
 
 	setUpdatedAt(/*record, checkQuery, query*/) {
-		return this.db.setUpdatedAt(...arguments);
+		return this._db.setUpdatedAt(...arguments);
 	}
 
 	find() {
@@ -48,55 +52,55 @@ class ModelsBase {
 	}
 
 	insert(/*record*/) {
-		return this.db.insert(...arguments);
+		return this._db.insert(...arguments);
 	}
 
 	update(/*query, update, options*/) {
-		return this.db.update(...arguments);
+		return this._db.update(...arguments);
 	}
 
 	upsert(/*query, update*/) {
-		return this.db.upsert(...arguments);
+		return this._db.upsert(...arguments);
 	}
 
 	remove(/*query*/) {
-		return this.db.remove(...arguments);
+		return this._db.remove(...arguments);
 	}
 
 	insertOrUpsert() {
-		return this.db.insertOrUpsert(...arguments);
+		return this._db.insertOrUpsert(...arguments);
 	}
 
 	allow() {
-		return this.db.allow(...arguments);
+		return this._db.allow(...arguments);
 	}
 
 	deny() {
-		return this.db.deny(...arguments);
+		return this._db.deny(...arguments);
 	}
 
 	ensureIndex() {
-		return this.db.ensureIndex(...arguments);
+		return this._db.ensureIndex(...arguments);
 	}
 
 	dropIndex() {
-		return this.db.dropIndex(...arguments);
+		return this._db.dropIndex(...arguments);
 	}
 
 	tryEnsureIndex() {
-		return this.db.tryEnsureIndex(...arguments);
+		return this._db.tryEnsureIndex(...arguments);
 	}
 
 	tryDropIndex() {
-		return this.db.tryDropIndex(...arguments);
+		return this._db.tryDropIndex(...arguments);
 	}
 
 	trashFind(/*query, options*/) {
-		return this.db.trashFind(...arguments);
+		return this._db.trashFind(...arguments);
 	}
 
 	trashFindDeletedAfter(/*deletedAt, query, options*/) {
-		return this.db.trashFindDeletedAfter(...arguments);
+		return this._db.trashFindDeletedAfter(...arguments);
 	}
 
 	// dinamicTrashFindAfter(method, deletedAt, ...args) {
