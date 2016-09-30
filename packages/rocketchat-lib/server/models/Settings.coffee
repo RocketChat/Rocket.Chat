@@ -117,4 +117,3 @@ class ModelSettings extends RocketChat.models._Base
 		return @remove query
 
 RocketChat.models.Settings = new ModelSettings('settings', true)
-RocketChat.cache.Settings = RocketChat.models.Settings

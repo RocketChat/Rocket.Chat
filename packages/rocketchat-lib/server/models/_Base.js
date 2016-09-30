@@ -18,7 +18,6 @@ class ModelsBase {
 		// TODO_CACHE: remove
 		this.on = this.cache.on.bind(this.cache);
 		this.emit = this.cache.emit.bind(this.cache);
-		this._findByIndex = this.cache._findByIndex.bind(this.cache);
 		this.getDynamicView = this.cache.getDynamicView.bind(this.cache);
 		this.processQueryOptionsOnResult = this.cache.processQueryOptionsOnResult.bind(this.cache);
 		// END_TODO_CACHE
