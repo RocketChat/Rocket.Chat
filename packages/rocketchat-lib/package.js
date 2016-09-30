@@ -7,7 +7,10 @@ Package.describe({
 
 Npm.depends({
 	'bad-words': '1.3.1',
+	'object-path': '0.9.2',
+	'node-dogstatsd': '0.0.6',
 	'localforage': '1.4.2',
+	'lokijs': '1.4.1',
 	'bugsnag': '1.8.0'
 });
 
@@ -98,6 +101,15 @@ Package.onUse(function(api) {
 	api.addFiles('server/models/Uploads.coffee', 'server');
 	api.addFiles('server/models/Users.coffee', 'server');
 
+	// CACHE
+	api.addFiles('server/startup/statsTracker.js', 'server');
+	api.addFiles('server/startup/cache/_Base.js', 'server');
+	api.addFiles('server/startup/cache/Users.js', 'server');
+	api.addFiles('server/startup/cache/Rooms.js', 'server');
+	api.addFiles('server/startup/cache/Subscriptions.js', 'server');
+	api.addFiles('server/startup/cache/Settings.js', 'server');
+	api.addFiles('server/startup/cache/CacheLoad.js', 'server');
+
 	// SERVER PUBLICATIONS
 	api.addFiles('server/publications/settings.coffee', 'server');
 
@@ -174,8 +186,6 @@ Package.onUse(function(api) {
 
 	api.imply('tap:i18n');
 });
-
-
 
 Package.onTest(function(api) {
 	api.use('coffeescript');

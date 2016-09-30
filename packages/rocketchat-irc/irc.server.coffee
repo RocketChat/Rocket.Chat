@@ -160,7 +160,7 @@ class IrcClient
 		console.log '[irc] onReceiveMessage -> '.yellow, 'source:', source, 'target:', target, 'content:', content
 		source = @createUserWhenNotExist source
 		if target[0] == '#'
-			room = RocketChat.models.Rooms.findOneByName target.substring(1)
+			room = RocketChat.cache.Rooms.findOneByName target.substring(1)
 		else
 			room = @createDirectRoomWhenNotExist(source, @user)
 
@@ -178,7 +178,7 @@ class IrcClient
 	onEndMemberList: (roomName) ->
 		newMembers = @receiveMemberListBuf[roomName]
 		console.log '[irc] onEndMemberList -> '.yellow, 'room:', roomName, 'members:', newMembers.join ','
-		room = RocketChat.models.Rooms.findOneByNameAndType roomName, 'c'
+		room = RocketChat.cache.Rooms.findOneByNameAndType roomName, 'c'
 		unless room
 			return
 
@@ -224,7 +224,7 @@ class IrcClient
 		@sendRawMessage msg
 
 	initRoomList: ->
-		roomsCursor = RocketChat.models.Rooms.findByTypeContainigUsername 'c', @user.username,
+		roomsCursor = RocketChat.cache.Rooms.findByTypeContainigUsername 'c', @user.username,
 			fields:
 				name: 1
 				t: 1
@@ -355,7 +355,7 @@ class IrcSender
 		if ircReceiveMessageCache.get cacheKey
 			return message
 
-		room = RocketChat.models.Rooms.findOneById message.rid, { fields: { name: 1, usernames: 1, t: 1 } }
+		room = RocketChat.cache.Rooms.findOneById message.rid, { fields: { name: 1, usernames: 1, t: 1 } }
 		ircClient = IrcClient.getByUid message.u._id
 		ircClient.sendMessage room, message
 		return message
@@ -381,9 +381,9 @@ class IrcLogoutCleanUper
 		ircClient.disconnect()
 		return user
 
-RocketChat.callbacks.add 'beforeValidateLogin', IrcLoginer, RocketChat.callbacks.priority.LOW
-RocketChat.callbacks.add 'beforeSaveMessage', IrcSender, RocketChat.callbacks.priority.LOW
-RocketChat.callbacks.add 'beforeJoinRoom', IrcRoomJoiner, RocketChat.callbacks.priority.LOW
-RocketChat.callbacks.add 'beforeCreateChannel', IrcRoomJoiner, RocketChat.callbacks.priority.LOW
-RocketChat.callbacks.add 'beforeLeaveRoom', IrcRoomLeaver, RocketChat.callbacks.priority.LOW
-RocketChat.callbacks.add 'afterLogoutCleanUp', IrcLogoutCleanUper, RocketChat.callbacks.priority.LOW
+RocketChat.callbacks.add 'beforeValidateLogin', IrcLoginer, RocketChat.callbacks.priority.LOW, 'irc-loginer'
+RocketChat.callbacks.add 'beforeSaveMessage', IrcSender, RocketChat.callbacks.priority.LOW, 'irc-sender'
+RocketChat.callbacks.add 'beforeJoinRoom', IrcRoomJoiner, RocketChat.callbacks.priority.LOW, 'irc-room-joiner'
+RocketChat.callbacks.add 'beforeCreateChannel', IrcRoomJoiner, RocketChat.callbacks.priority.LOW, 'irc-room-joiner-create-channel'
+RocketChat.callbacks.add 'beforeLeaveRoom', IrcRoomLeaver, RocketChat.callbacks.priority.LOW, 'irc-room-leaver'
+RocketChat.callbacks.add 'afterLogoutCleanUp', IrcLogoutCleanUper, RocketChat.callbacks.priority.LOW, 'irc-clean-up'

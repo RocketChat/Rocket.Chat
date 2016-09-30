@@ -51,18 +51,8 @@ updateServices = ->
 				ServiceConfiguration.configurations.remove {service: serviceName.toLowerCase()}
 	, 2000
 
-RocketChat.models.Settings.find().observe
-	added: (record) ->
-		if /^SAML_.+/.test record._id
-			updateServices()
-
-	changed: (record) ->
-		if /^SAML_.+/.test record._id
-			updateServices()
-
-	removed: (record) ->
-		if /^SAML_.+/.test record._id
-			updateServices()
+RocketChat.settings.get /^SAML_.+/, (key, value) ->
+	updateServices()
 
 Meteor.startup ->
 	if not RocketChat.models.Settings.findOne({_id: /^(SAML_Custom)_[a-z]+$/i})?

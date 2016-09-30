@@ -15,7 +15,7 @@ Api.addRoute 'version', authRequired: false,
 
 Api.addRoute 'publicRooms', authRequired: true,
 	get: ->
-		rooms = RocketChat.models.Rooms.findByType('c', { sort: { msgs:-1 } }).fetch()
+		rooms = RocketChat.cache.Rooms.findByType('c', { sort: { msgs:-1 } }).fetch()
 		status: 'success', rooms: rooms
 
 ###
@@ -23,7 +23,7 @@ Api.addRoute 'publicRooms', authRequired: true,
 ###
 Api.addRoute 'joinedRooms', authRequired: true,
 	get: ->
-		rooms = RocketChat.models.Rooms.findByContainigUsername(@user.username).fetch()
+		rooms = RocketChat.cache.Rooms.findByContainigUsername(@user.username).fetch()
 		status: 'success', rooms: rooms
 
 # join a room
@@ -83,7 +83,7 @@ Api.addRoute 'rooms/:id/send', authRequired: true,
 # get list of online users in a room
 Api.addRoute 'rooms/:id/online', authRequired: true,
 	get: ->
-		room = RocketChat.models.Rooms.findOneById @urlParams.id
+		room = RocketChat.cache.Rooms.findOneById @urlParams.id
 		online = RocketChat.models.Users.findUsersNotOffline(fields:
 			username: 1
 			status: 1).fetch()

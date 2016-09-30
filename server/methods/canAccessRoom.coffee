@@ -4,7 +4,7 @@ Meteor.methods
 		check rid, String
 		check userId, String
 
-		user = RocketChat.models.Users.findOneById userId, fields: username: 1
+		user = RocketChat.cache.Users.findOneById userId, fields: username: 1
 
 		unless user?.username
 			throw new Meteor.Error 'error-invalid-user', 'Invalid user', { method: 'canAccessRoom' }
@@ -12,7 +12,7 @@ Meteor.methods
 		unless rid
 			throw new Meteor.Error 'error-invalid-room', 'Invalid room', { method: 'canAccessRoom' }
 
-		room = RocketChat.models.Rooms.findOneById rid
+		room = RocketChat.cache.Rooms.findOneById rid
 
 		if room
 			if RocketChat.authz.canAccessRoom.call(this, room, user)

@@ -64,15 +64,9 @@ OAuthServicesRemove = (_id) ->
 	ServiceConfiguration.configurations.remove {service: serviceName.toLowerCase()}
 
 
-RocketChat.models.Settings.find().observe
-	added: (record) ->
-		if /^Accounts_OAuth_.+/.test record._id
-			OAuthServicesUpdate()
+RocketChat.settings.get /^Accounts_OAuth_.+/, (key, value) ->
+		OAuthServicesUpdate()
 
-	changed: (record) ->
-		if /^Accounts_OAuth_.+/.test record._id
-			OAuthServicesUpdate()
-
-	removed: (record) ->
-		if /^Accounts_OAuth_Custom.+/.test record._id
-			OAuthServicesRemove record._id
+RocketChat.settings.get /^Accounts_OAuth_Custom.+/, (key, value) ->
+	if not value
+		OAuthServicesRemove key

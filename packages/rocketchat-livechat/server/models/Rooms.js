@@ -77,7 +77,7 @@ RocketChat.models.Rooms.getNextLivechatRoomCode = function() {
 	return livechatCount.value.value;
 };
 
-RocketChat.models.Rooms.findOpenByVisitorToken = function(visitorToken, options) {
+RocketChat.cache.Rooms.findOpenByVisitorToken = function(visitorToken, options) {
 	const query = {
 		open: true,
 		'v.token': visitorToken
@@ -86,7 +86,7 @@ RocketChat.models.Rooms.findOpenByVisitorToken = function(visitorToken, options)
 	return this.find(query, options);
 };
 
-RocketChat.models.Rooms.findByVisitorToken = function(visitorToken) {
+RocketChat.cache.Rooms.findByVisitorToken = function(visitorToken) {
 	const query = {
 		'v.token': visitorToken
 	};
@@ -151,7 +151,7 @@ RocketChat.models.Rooms.setLabelByRoomId = function(roomId, label) {
 	return this.update({ _id: roomId }, { $set: { label: label } });
 };
 
-RocketChat.models.Rooms.findOpenByAgent = function(userId) {
+RocketChat.cache.Rooms.findOpenByAgent = function(userId) {
 	const query = {
 		open: true,
 		'servedBy._id': userId

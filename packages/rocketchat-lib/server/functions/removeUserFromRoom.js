@@ -1,5 +1,5 @@
 RocketChat.removeUserFromRoom = function(rid, user) {
-	let room = RocketChat.models.Rooms.findOneById(rid);
+	let room = RocketChat.cache.Rooms.findOneById(rid);
 
 	if (room) {
 		RocketChat.callbacks.run('beforeLeaveRoom', user, room);

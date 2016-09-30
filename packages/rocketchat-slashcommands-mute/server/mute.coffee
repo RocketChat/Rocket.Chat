@@ -15,7 +15,7 @@ class Mute
 
 		user = Meteor.users.findOne Meteor.userId()
 		mutedUser = RocketChat.models.Users.findOneByUsername username
-		room = RocketChat.models.Rooms.findOneById item.rid
+		room = RocketChat.cache.Rooms.findOneById item.rid
 
 		if not mutedUser?
 			RocketChat.Notifications.notifyUser Meteor.userId(), 'message', {

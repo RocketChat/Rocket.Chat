@@ -21,7 +21,7 @@ fields =
 
 
 Meteor.methods
-	'subscriptions/get': ->
+	'subscriptions/get': (updatedAt) ->
 		unless Meteor.userId()
 			return []
 
@@ -30,22 +30,17 @@ Meteor.methods
 		options =
 			fields: fields
 
-		return RocketChat.models.Subscriptions.findByUserId(Meteor.userId(), options).fetch()
+		records = RocketChat.cache.Subscriptions.findByUserId(Meteor.userId(), options).fetch()
 
-	'subscriptions/sync': (updatedAt) ->
-		unless Meteor.userId()
-			return {}
+		if updatedAt instanceof Date
+			return {
+				update: records.filter (record) ->
+					return record._updatedAt > updatedAt
+				remove: RocketChat.models.Subscriptions.trashFindDeletedAfter(updatedAt, {'u._id': Meteor.userId()}, {fields: {_id: 1, _deletedAt: 1}}).fetch()
+			}
 
-		this.unblock()
-
-		options =
-			fields: fields
-
-		return RocketChat.models.Subscriptions.dinamicFindChangesAfter('findByUserId', updatedAt, Meteor.userId(), options);
+		return records
 
 
-RocketChat.models.Subscriptions.on 'change', (type, args...) ->
-	records = RocketChat.models.Subscriptions.getChangedRecords type, args[0], fields
-
-	for record in records
-		RocketChat.Notifications.notifyUser record.u._id, 'subscriptions-changed', type, record
+RocketChat.cache.Subscriptions.on 'changed', (type, subscription) ->
+	RocketChat.Notifications.notifyUserInThisInstance subscription.u._id, 'subscriptions-changed', type, RocketChat.cache.Subscriptions.processQueryOptionsOnResult(subscription, {fields: fields})

@@ -1,5 +1,6 @@
 Meteor.methods
 	channelsList: (filter, channelType, limit, sort) ->
+		this.unblock()
 
 		check filter, String
 		check channelType, String
@@ -36,8 +37,8 @@ Meteor.methods
 
 		if roomTypes.length
 			if filter
-				return { channels: RocketChat.models.Rooms.findByNameContainingTypesWithUsername(filter, roomTypes, options).fetch() }
+				return { channels: RocketChat.cache.Rooms.findByNameContainingTypesWithUsername(filter, roomTypes, options).fetch() }
 			else
-				return { channels: RocketChat.models.Rooms.findContainingTypesWithUsername(roomTypes, options).fetch() }
+				return { channels: RocketChat.cache.Rooms.findContainingTypesWithUsername(roomTypes, options).fetch() }
 		else
 			return { channels: [] }

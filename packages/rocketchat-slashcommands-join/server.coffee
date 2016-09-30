@@ -15,7 +15,7 @@ class Join
 		channel = channel.replace('#', '')
 
 		user = Meteor.users.findOne Meteor.userId()
-		room = RocketChat.models.Rooms.findOneByNameAndTypeNotContainigUsername(channel, 'c', user.username)
+		room = RocketChat.cache.Rooms.findOneByNameAndTypeNotContainigUsername(channel, 'c', user.username)
 
 		if not room?
 			RocketChat.Notifications.notifyUser Meteor.userId(), 'message', {

@@ -73,7 +73,13 @@ RocketChat.callbacks.add('afterSaveMessage', function(message, room) {
 	settings.alwaysNotifyMobileUsers = [];
 	settings.dontNotifyMobileUsers = [];
 	settings.desktopNotificationDurations = {};
-	RocketChat.models.Subscriptions.findNotificationPreferencesByRoom(room._id).forEach(function(subscription) {
+
+	// const notificationPreferencesByRoom = RocketChat.cache.Subscriptions.getDynamicView('notifications').data().filter(function(record) {
+	// 	return record.rid === room._id;
+	// });
+
+	const notificationPreferencesByRoom = RocketChat.models.Subscriptions.findNotificationPreferencesByRoom(room._id);
+	notificationPreferencesByRoom.forEach(function(subscription) {
 		if (subscription.desktopNotifications === 'all') {
 			settings.alwaysNotifyDesktopUsers.push(subscription.u._id);
 		} else if (subscription.desktopNotifications === 'nothing') {
@@ -90,10 +96,14 @@ RocketChat.callbacks.add('afterSaveMessage', function(message, room) {
 	userIdsToNotify = [];
 	userIdsToPushNotify = [];
 	usersWithHighlights = [];
-	highlights = RocketChat.models.Users.findUsersByUsernamesWithHighlights(room.usernames, { fields: { '_id': 1, 'settings.preferences.highlights': 1 }}).fetch();
+
+	highlights = RocketChat.cache.Users.getDynamicView('highlights').data().filter(function(record) {
+		return room.usernames.indexOf(record.username) > -1;
+	});
+	// highlights = RocketChat.models.Users.findUsersByUsernamesWithHighlights(room.usernames, { fields: { '_id': 1, 'settings.preferences.highlights': 1 }}).fetch();
 
 	highlights.forEach(function(user) {
-		if (user && user.settings && user.settings.preferences && messageContainsHighlight(message, user.settings.preferences.highlights)) {
+		if (messageContainsHighlight(message, user.settings.preferences.highlights)) {
 			usersWithHighlights.push(user);
 		}
 	});
@@ -147,6 +157,7 @@ RocketChat.callbacks.add('afterSaveMessage', function(message, room) {
 				}
 			});
 		}
+
 		if ((userOfMention != null) && canBeNotified(userOfMentionId, 'desktop')) {
 			if (Push.enabled === true && userOfMention.statusConnection !== 'online') {
 				Push.send({
@@ -173,6 +184,7 @@ RocketChat.callbacks.add('afterSaveMessage', function(message, room) {
 				return message;
 			}
 		}
+
 	} else {
 		mentionIds = [];
 		if ((ref = message.mentions) != null) {

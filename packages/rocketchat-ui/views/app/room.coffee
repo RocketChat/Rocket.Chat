@@ -68,8 +68,8 @@ Template.room.helpers
 		return {} unless roomData
 
 		if roomData.t in ['d', 'l']
-			username = _.without roomData.usernames, Meteor.user().username
-			return Session.get('user_' + username + '_status') || 'offline'
+			subscription = RocketChat.models.Subscriptions.findOne({rid: this._id});
+			return Session.get('user_' + subscription.name + '_status') || 'offline'
 		else
 			return 'offline'
 
@@ -98,7 +98,10 @@ Template.room.helpers
 		return moment(this.since).calendar(null, {sameDay: 'LT'})
 
 	flexTemplate: ->
-		return RocketChat.TabBar.getTemplate()
+		if Session.get('openedRoom') is this._id
+			return RocketChat.TabBar.getTemplate()
+
+		return ''
 
 	flexData: ->
 		return _.extend {

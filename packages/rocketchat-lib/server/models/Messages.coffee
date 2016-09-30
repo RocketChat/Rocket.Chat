@@ -1,6 +1,6 @@
 RocketChat.models.Messages = new class extends RocketChat.models._Base
 	constructor: ->
-		@_initModel 'message'
+		super('message')
 
 		@tryEnsureIndex { 'rid': 1, 'ts': 1 }
 		@tryEnsureIndex { 'ts': 1 }
@@ -256,13 +256,13 @@ RocketChat.models.Messages = new class extends RocketChat.models._Base
 		update =
 			$set:
 				attachments: attachments
-		console.log(query, update);
+
 		return @update query, update
 
 
 	# INSERT
 	createWithTypeRoomIdMessageAndUser: (type, roomId, message, user, extraData) ->
-		room = RocketChat.models.Rooms.findOneById roomId, { fields: { sysMes: 1 }}
+		room = RocketChat.cache.Rooms.findOneById roomId, { fields: { sysMes: 1 }}
 		if room?.sysMes is false
 			return
 		record =
