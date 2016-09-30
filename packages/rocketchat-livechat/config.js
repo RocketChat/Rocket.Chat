@@ -186,4 +186,13 @@ Meteor.startup(function() {
 		public: true,
 		i18nLabel: 'Office_Hours_Enabled'
 	});
+
+	RocketChat.settings.add('Livechat_videocall_enabled', false, {
+		type: 'boolean',
+		group: 'Livechat',
+		public: true,
+		i18nLabel: 'Videocall_enabled',
+		i18nDescription: 'Beta_feature_Depends_on_Video_Conference_to_be_enabled',
+		enableQuery: { _id: 'Jitsi_Enabled', value: true }
+	});
 });

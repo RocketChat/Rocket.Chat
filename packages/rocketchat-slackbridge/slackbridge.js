@@ -154,7 +154,7 @@ class SlackBridge {
 				RocketChat.models.Rooms.update({ _id: channelData.rocketId }, { $set: roomUpdate, $addToSet: { importIds: channelData.id } });
 				this.channelMap[channelData.rocketId] = { id: channelId, family: channelId.charAt(0) === 'C' ? 'channels' : 'groups' };
 			}
-			return RocketChat.models.Rooms.findOne(channelData.rocketId);
+			return RocketChat.models.Rooms.findOneById(channelData.rocketId);
 		}
 
 		return;

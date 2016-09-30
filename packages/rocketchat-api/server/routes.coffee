@@ -104,7 +104,7 @@ RocketChat.API.v1.addRoute 'channels.create', authRequired: true,
 			return RocketChat.API.v1.failure e.name + ': ' + e.message
 
 		return RocketChat.API.v1.success
-			channel: RocketChat.models.Rooms.findOne({_id: id.rid})
+			channel: RocketChat.models.Rooms.findOneById(id.rid)
 
 
 # List Private Groups a user has access to
@@ -126,7 +126,7 @@ RocketChat.API.v1.addRoute 'channel.addall', authRequired: true,
 			return RocketChat.API.v1.failure e.name + ': ' + e.message
 
 		return RocketChat.API.v1.success
-			channel: RocketChat.models.Rooms.findOne({_id: @bodyParams.roomId})
+			channel: RocketChat.models.Rooms.findOneById(@bodyParams.roomId)
 
 
 # List all users
@@ -267,7 +267,7 @@ RocketChat.API.v1.addRoute 'groups.create', authRequired: true,
 			return RocketChat.API.v1.failure e.name + ': ' + e.message
 
 		return RocketChat.API.v1.success
-			body:[group: RocketChat.models.Rooms.findOne({_id: id.rid})]		
+			group: RocketChat.models.Rooms.findOneById(id.rid)
 
 
 #list All Private Groups, requires api-groups-list permissions (admin).		
@@ -526,4 +526,3 @@ RocketChat.API.v1.addRoute 'admin.updateRoom', authRequired: true,
 		catch e
 			console.log '[routes.coffee] api/v1/admin.updateRoom Error: ', e.message, e.stack
 			return RocketChat.API.v1.failure e.name + ': ' + e.message
-			
