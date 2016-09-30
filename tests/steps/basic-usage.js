@@ -2,21 +2,35 @@
 /* eslint-disable func-names, prefer-arrow-callback */
 
 import loginPage from '../pageobjects/login.page';
+import flexTab from '../pageobjects/flex-tab.page';
+import mainContent from '../pageobjects/main-content.page';
+import sideNav from '../pageobjects/side-nav.page';
 
+//Login info from the test user
 const username = 'user-test-'+Date.now();
 const email = username+'@rocket.chat';
 const password = 'rocket.chat';
 
-const channelname = 'channel-test-'+Date.now();
-const privatechannelname = 'private-channel-test-'+Date.now();
+//Names of the test channels
+const PublicChannelName = 'channel-test-'+Date.now();
+const privateChannelName = 'private-channel-test-'+Date.now();
 
+//User interactions(direct messages, add, remove...)
+const targetUser = 'rocket.cat';
+
+//Test data
+const message = 'message from '+username;
+
+
+//Basic usage test start
 describe('Basic usage', function() {
+	this.retries(2);
+
 	it('load page', () => {
 		loginPage.open();
-		// browser.windowHandleSize({width:1280, height:800});
 	});
 
-	it('crate user', function(done) {
+	it('create user', () => {
 		loginPage.gotToRegister();
 
 		loginPage.registerNewUser({username, email, password});
@@ -26,246 +40,285 @@ describe('Basic usage', function() {
 		browser.click('.submit > button');
 
 		browser.waitForExist('.main-content', 5000);
-
-		done();
 	});
 
-	it('logout', function(done) {
+	it('logout', () => {
 		browser.waitForVisible('.account-box');
 		browser.click('.account-box');
 		browser.pause(200);
 
 		browser.waitForVisible('#logout');
 		browser.click('#logout');
-
-		done();
 	});
 
-	it('login', function(done) {
+	it('login', () => {
 		loginPage.login({email, password});
 		browser.waitForExist('.main-content', 5000);
-
-		done();
 	});
 
-	it('open GENERAL', function(done) {
-		browser.waitForExist('.wrapper > ul .link-room-GENERAL', 50000);
-		browser.click('.wrapper > ul .link-room-GENERAL');
+	describe('side nav bar', () => {
+		describe('render', () => {
+			it('should show the logged username', () => {
+				sideNav.accountBoxUserName.isVisible().should.be.true;
+			});
 
-		browser.waitForExist('.input-message', 5000);
+			it('should show the logged user avatar', () => {
+				sideNav.accountBoxUserAvatar.isVisible().should.be.true;
+			});
 
-		done();
+			it('should show the new channel button', () => {
+				sideNav.newChannelBtn.isVisible().should.be.true;
+			});
+
+			it('should show the plus icon', () => {
+				sideNav.newChannelIcon.isVisible().should.be.true;
+			});
+
+			it('should show the "More Channels" button', () => {
+				sideNav.moreChannels.isVisible().should.be.true;
+			});
+
+			it('should show the new direct message button', () => {
+				sideNav.newDirectMessageBtn.isVisible().should.be.true;
+			});
+
+			it('should show the plus icon', () => {
+				sideNav.newDirectMessageIcon.isVisible().should.be.true;
+			});
+
+			it('should show the "More Direct Messages" buton', () => {
+				sideNav.moreDirectMessages.isVisible().should.be.true;
+			});
+
+			it('should show "general" channel', () => {
+				sideNav.general.isVisible().should.be.true;
+			});
+
+			it('should not show eye icon on general', () => {
+				sideNav.channelHoverIcon.isVisible().should.be.false;
+			});
+
+			it.skip('should show eye icon on hover', () => {
+				sideNav.general.moveToObject();
+				sideNav.channelHoverIcon.isVisible().should.be.true;
+			});
+		});
+
+		describe('user options', () => {
+			describe('render', () => {
+				before(() => {
+					sideNav.accountBoxUserName.click();
+				});
+
+				after(() => {
+					sideNav.accountBoxUserName.click();
+				});
+
+				it('should show user options', () => {
+					sideNav.userOptions.waitForVisible();
+					sideNav.userOptions.isVisible().should.be.true;
+				});
+
+				it('should show online button', () => {
+					sideNav.statusOnline.isVisible().should.be.true;
+				});
+
+				it('should show away button', () => {
+					sideNav.statusAway.isVisible().should.be.true;
+				});
+
+				it('should show busy button', () => {
+					sideNav.statusBusy.isVisible().should.be.true;
+				});
+
+				it('should show offline button', () => {
+					sideNav.statusOffline.isVisible().should.be.true;
+				});
+
+				it('should show settings button', () => {
+					sideNav.account.isVisible().should.be.true;
+				});
+
+				it('should show logout button', () => {
+					sideNav.logout.isVisible().should.be.true;
+				});
+			});
+		});
 	});
 
-	it('send a message', function(done) {
-		const message = 'message from '+username;
-		browser.setValue('.input-message', message);
+	describe('general channel', () => {
+		it('open GENERAL', () => {
+			browser.waitForExist('.wrapper > ul .link-room-GENERAL', 50000);
+			browser.click('.wrapper > ul .link-room-GENERAL');
 
-		browser.waitForExist('.message-buttons.send-button');
-		browser.click('.message-buttons.send-button');
+			browser.waitForExist('.input-message', 5000);
+		});
 
-		browser.waitUntil(function() {
-			return browser.getText('.message:last-child .body') === message;
-		}, 2000);
-
-		done();
+		it('send a message', () => {
+			mainContent.sendMessage(message);
+		});
 	});
 
-	//DIRECT MESAGE
+	describe('flextab usage', () => {
+		describe('render', () => {
+			it('should show the room info button', () => {
+				flexTab.channelTab.isVisible().should.be.true;
+			});
 
-	it('start a direct message with rocket.cat', function(done) {
-		//User to send a private message
-		const targetUser = 'rocket.cat';
+			it('should show the room info tab content', () => {
+				flexTab.channelTab.click();
+				flexTab.channelSettings.isVisible().should.be.true;
+			});
 
-		browser.click('.add-room:nth-of-type(2)');
-		browser.waitForVisible('#who', 50000);
+			it('should show the message search  button', () => {
+				flexTab.searchTab.isVisible().should.be.true;
+			});
 
-		browser.setValue(' #who', targetUser);
-		browser.waitForExist('.-autocomplete-item', 50000);
-		browser.click('.-autocomplete-item');
+			it('should show the message tab content', () => {
+				flexTab.searchTab.click();
+				flexTab.searchTabContent.isVisible().should.be.true;
+			});
 
-		browser.waitForVisible('.save-direct-message', 50000);
-		browser.click('.save-direct-message');
-		done();
+			it('should show the members tab button', () => {
+				flexTab.membersTab.isVisible().should.be.true;
+			});
+
+			it('should show the members content', () => {
+				flexTab.membersTab.click();
+				flexTab.membersTabContent.isVisible().should.be.true;
+			});
+
+			it.skip('should show the members search bar', () => {
+				flexTab.userSearchBar.isVisible().should.be.true;
+			});
+
+			it('should show the show all link', () => {
+				flexTab.showAll.isVisible().should.be.true;
+			});
+
+			it.skip('should show the start video call button', () => {
+				flexTab.startVideoCall.isVisible().should.be.true;
+			});
+
+			it.skip('should show the start audio call', () => {
+				flexTab.startAudioCall.isVisible().should.be.true;
+			});
+
+			it('should show the notifications button', () => {
+				flexTab.notificationsTab.isVisible().should.be.true;
+			});
+
+			it('should show the notifications Tab content', () => {
+				flexTab.notificationsTab.click();
+				flexTab.notificationsSettings.isVisible().should.be.true;
+			});
+
+			it('should show the files button', () => {
+				flexTab.filesTab.isVisible().should.be.true;
+			});
+
+			it('should show the files Tab content', () => {
+				flexTab.filesTab.click();
+				flexTab.filesTabContent.isVisible().should.be.true;
+			});
+
+			it('should show the mentions button', () => {
+				flexTab.mentionsTab.isVisible().should.be.true;
+			});
+
+			it('should show the mentions Tab content', () => {
+				flexTab.mentionsTab.click();
+				flexTab.mentionsTabContent.isVisible().should.be.true;
+			});
+
+			it('should show the starred button', () => {
+				flexTab.starredTab.isVisible().should.be.true;
+			});
+
+			it('should show the starred Tab content', () => {
+				flexTab.starredTab.click();
+				flexTab.starredTabContent.isVisible().should.be.true;
+			});
+
+			it('should show the pinned button', () => {
+				flexTab.pinnedTab.isVisible().should.be.true;
+			});
+
+			it('should show the pinned messages Tab content', () => {
+				flexTab.pinnedTab.click();
+				flexTab.pinnedTabContent.isVisible().should.be.true;
+			});
+		});
 	});
 
-	it('open the direct message', function(done) {
-		browser.waitForExist('ul:nth-of-type(2)');
-		browser.click('ul:nth-of-type(2):last-child');
+	describe('direct channel', () => {
+		it('start a direct message with rocket.cat', () => {
+			sideNav.startDirectMessage(targetUser);
+		});
 
-		browser.waitForExist('.input-message', 5000);
+		it('open the direct message', () => {
+			sideNav.openChannel(targetUser);
+		});
 
-		done();
+		it('send a direct message', () => {
+			mainContent.sendMessage(message);
+		});
 	});
 
-	it('send a direct message', function(done) {
-		const message = 'message from '+username;
-		browser.setValue('.input-message', message);
+	describe('public channel', () => {
+		it('create a public channel', () => {
+			sideNav.createChannel(PublicChannelName, false, false);
+			sideNav.openChannel(PublicChannelName);
+		});
 
-		browser.waitForExist('.message-buttons.send-button');
-		browser.click('.message-buttons.send-button');
+		it('send a message in the public channel', () => {
+			mainContent.sendMessage(message);
+		});
 
-		browser.waitUntil(function() {
-			return browser.getText('.message:last-child .body') === message;
-		}, 2000);
+		it('add people to the room', () => {
+			flexTab.membersTab.click();
+			flexTab.addPeopleToChannel(targetUser);
+		});
 
-		done();
+		it('remove people from room', () => {
+			flexTab.removePeopleFromChannel(targetUser);
+			flexTab.confirmPopup();
+		});
+
+		it('archive the room', () => {
+			flexTab.channelTab.click();
+			flexTab.archiveChannel();
+			flexTab.channelTab.click();
+		});
+
+		it('open GENERAL', () => {
+			sideNav.openChannel('general');
+		});
 	});
 
-	//CHANNEL
+	describe('privte channel', () => {
+		it('create a private channel', () => {
+			sideNav.createChannel(privateChannelName, true, false);
+		});
 
-	it('create a public channel', function(done) {
-		browser.click('.add-room:nth-of-type(1)');
-		browser.waitForVisible('#channel-name', 50000);
+		it('send a message in the private channel', () => {
+			mainContent.sendMessage(message);
+		});
 
-		browser.setValue(' #channel-name', channelname);
+		it('add people to the room', () => {
+			flexTab.membersTab.click();
+			flexTab.addPeopleToChannel(targetUser);
+		});
 
-		browser.waitForVisible('.save-channel', 50000);
-		browser.click('.save-channel');
-		browser.waitForExist('.input-message', 5000);
-		done();
-	});
+		it('remove people from room', () => {
+			flexTab.removePeopleFromChannel(targetUser);
+			flexTab.confirmPopup();
+		});
 
-	it('send a message in the public channel', function(done) {
-		const message = 'message from '+username;
-
-		browser.waitForExist('.input-message');
-		browser.waitForVisible('.input-message');
-		browser.setValue('.input-message', message);
-
-		browser.waitForExist('.message-buttons.send-button');
-		browser.click('.message-buttons.send-button');
-
-		browser.waitUntil(function() {
-			return browser.getText('.message:last-child .body') === message;
-		}, 2000);
-
-		done();
-	});
-
-	it('add people to the room', function(done) {
-		const targetUser = 'rocket.cat';
-		browser.waitForExist('.icon-users');
-		browser.click('.icon-users');
-
-		browser.waitForVisible('#user-add-search', 50000);
-		browser.setValue('#user-add-search', targetUser);
-		browser.waitForExist('.-autocomplete-item', 50000);
-		browser.click('.-autocomplete-item');
-		done();
-	});
-
-	it('remove people from room', function(done) {
-		browser.waitForVisible('.user-card-room');
-		browser.click('.user-card-room');
-
-		browser.waitForVisible('.remove-user');
-		browser.click('.remove-user');
-
-		browser.waitForExist('.confirm');
-		browser.click('.confirm');
-		browser.pause(3000);
-		done();
-	});
-
-	it('archive the room', function(done) {
-		browser.waitForExist('.tab-button', 50000);
-		browser.waitForVisible('.tab-button', 50000);
-		browser.click('.tab-button:nth-of-type(2)');
-
-		browser.waitForVisible('.clearfix:last-child .icon-pencil', 50000);
-		browser.click('.clearfix:last-child .icon-pencil');
-
-		browser.waitForVisible('.editing', 50000);
-		browser.click('.editing');
-
-		browser.waitForVisible('.save', 50000);
-		browser.click('.save');
-
-		done();
-	});
-
-	it('open GENERAL', function(done) {
-		browser.waitForExist('.wrapper > ul .link-room-GENERAL', 50000);
-		browser.click('.wrapper > ul .link-room-GENERAL');
-
-		browser.waitForExist('.input-message', 5000);
-
-		done();
-	});
-
-	//Private Channel
-
-	it('create a private channel', function(done) {
-		browser.click('.add-room:nth-of-type(1)');
-		browser.waitForVisible('#channel-name', 50000);
-
-		browser.setValue(' #channel-name', privatechannelname);
-
-		browser.click('#channel-type');
-
-		browser.waitForVisible('.save-channel', 50000);
-		browser.click('.save-channel');
-		browser.waitForExist('.input-message', 5000);
-		done();
-	});
-
-	it('send a message in the private channel', function(done) {
-		const message = 'message from '+username;
-		browser.setValue('.input-message', message);
-
-
-		browser.waitForVisible('.message-buttons.send-button');
-		browser.click('.message-buttons.send-button');
-
-		browser.waitUntil(function() {
-			return browser.getText('.message:last-child .body') === message;
-		}, 2000);
-
-		done();
-	});
-
-	it('add people to the room', function(done) {
-		const targetUser = 'rocket.cat';
-		browser.waitForExist('.icon-users');
-		browser.click('.icon-users');
-
-		browser.waitForVisible('#user-add-search', 50000);
-		browser.setValue('#user-add-search', targetUser);
-		browser.waitForExist('.-autocomplete-item', 50000);
-		browser.click('.-autocomplete-item');
-		done();
-	});
-
-	it('remove people from room', function(done) {
-		browser.waitForVisible('.user-card-room');
-		browser.click('.user-card-room');
-
-		browser.waitForVisible('.remove-user');
-		browser.click('.remove-user');
-
-		browser.waitForExist('.confirm');
-		browser.click('.confirm');
-
-		browser.pause(3000);
-
-		done();
-	});
-
-	it('archive the room', function(done) {
-		browser.waitForExist('.tab-button', 50000);
-		browser.waitForVisible('.tab-button', 50000);
-		browser.click('.tab-button:nth-of-type(2)');
-
-		browser.waitForVisible('.clearfix:last-child .icon-pencil', 50000);
-		browser.click('.clearfix:last-child .icon-pencil');
-
-		browser.waitForVisible('.editing', 50000);
-		browser.click('.editing');
-
-		browser.waitForVisible('.save', 50000);
-		browser.click('.save');
-
-		done();
+		it('archive the room', () => {
+			flexTab.channelTab.click();
+			flexTab.archiveChannel();
+			flexTab.channelTab.click();
+		});
 	});
 });
