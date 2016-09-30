@@ -28,7 +28,7 @@ class API extends Restivus
 
 	unauthorized: (msg) ->
 		return {} =
-			statusCode: 401
+			statusCode: 403
 			body:
 				success: false
 				error: msg or 'unauthorized'
@@ -40,7 +40,7 @@ RocketChat.API = {}
 RocketChat.API.v1 = new API
 	version: 'v1'
 	useDefaultAuth: true
-	prettyJson: false
+	prettyJson: true
 	enableCors: false
 	auth:
 		token: 'services.resume.loginTokens.hashedToken'
