@@ -1,6 +1,6 @@
 RocketChat.models.Rooms = new class extends RocketChat.models._Base
 	constructor: ->
-		@_initModel 'room'
+		super('room')
 
 		@tryEnsureIndex { 'name': 1 }, { unique: 1, sparse: 1 }
 		@tryEnsureIndex { 'default': 1 }
@@ -15,6 +15,17 @@ RocketChat.models.Rooms = new class extends RocketChat.models._Base
 			_id: _id
 
 		return @findOne query, options
+
+	findOneByIdOrName: (_idOrName, options) ->
+		query = {
+			$or: [{
+				_id: _idOrName
+			}, {
+				name: _idOrName
+			}]
+		}
+
+		return this.findOne(query, options)
 
 	findOneByImportId: (_id, options) ->
 		query =

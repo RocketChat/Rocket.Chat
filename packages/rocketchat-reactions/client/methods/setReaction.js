@@ -11,7 +11,7 @@ Meteor.methods({
 
 		if (Array.isArray(room.muted) && room.muted.indexOf(user.username) !== -1) {
 			return false;
-		} else if (Array.isArray(room.usernames) && room.usernames.indexOf(user.username) === -1) {
+		} else if (!RocketChat.models.Subscriptions.findOne({ rid: message.rid })) {
 			return false;
 		}
 
