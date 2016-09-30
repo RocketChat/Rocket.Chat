@@ -420,10 +420,10 @@ class ModelsBaseCache extends EventEmitter {
 
 	processOplogRecord(action) {
 		// TODO remove - ignore updates in room.usernames
-		if (this.collectionName === 'rocketchat_rooms' && action.op.o.usernames) {
+		if (this.collectionName === 'rocketchat_room' && action.op.o.usernames) {
 			delete action.op.o.usernames;
 		}
-		if (this.collectionName === 'rocketchat_rooms' && action.op.o.$set && action.op.o.$set.usernames) {
+		if (this.collectionName === 'rocketchat_room' && action.op.o.$set && action.op.o.$set.usernames) {
 			delete action.op.o.$set.usernames;
 		}
 
@@ -575,6 +575,15 @@ class ModelsBaseCache extends EventEmitter {
 					};
 				}
 
+				if (field === '$exists') {
+					if (value === 1) {
+						query.$ne = undefined;
+					} else {
+						query.$eq = undefined;
+					}
+					delete query[field];
+				}
+
 				if (field === '$nin') {
 					query.$containsNone = value;
 					delete query[field];
@@ -603,13 +612,23 @@ class ModelsBaseCache extends EventEmitter {
 	find(query, options={}) {
 		return {
 			fetch: () => {
-				query = this.processQuery(query);
-				return this.processQueryOptionsOnResult(this.collection.find(query), options);
+				try {
+					query = this.processQuery(query);
+					return this.processQueryOptionsOnResult(this.collection.find(query), options);
+				} catch (e) {
+					console.error('Exception on cache find for', this.collectionName, ...arguments);
+					console.error(e.stack);
+				}
 			},
 
 			count: () => {
-				query = this.processQuery(query);
-				return this.collection.find(query).length;
+				try {
+					query = this.processQuery(query);
+					return this.collection.find(query).length;
+				} catch (e) {
+					console.error('Exception on cache find for', this.collectionName, ...arguments);
+					console.error(e.stack);
+				}
 			},
 
 			forEach: (fn) => {

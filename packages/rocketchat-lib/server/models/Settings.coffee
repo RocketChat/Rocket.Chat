@@ -115,3 +115,5 @@ RocketChat.models.Settings = new class extends RocketChat.models._Base
 			_id: _id
 
 		return @remove query
+
+RocketChat.cache.Settings = RocketChat.models.Settings

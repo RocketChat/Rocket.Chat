@@ -15,7 +15,7 @@ RocketChat.models.Rooms.cache.hasMany('Subscriptions', {
 });
 
 
-RocketChat.cache.Subscriptions.hasOne('Rooms', {
+RocketChat.models.Subscriptions.cache.hasOne('Rooms', {
 	field: '_room',
 	link: {
 		local: 'rid',
@@ -24,7 +24,7 @@ RocketChat.cache.Subscriptions.hasOne('Rooms', {
 });
 
 
-RocketChat.cache.Subscriptions.hasOne('Users', {
+RocketChat.models.Subscriptions.cache.hasOne('Users', {
 	field: '_user',
 	link: {
 		local: 'u._id',
@@ -35,7 +35,7 @@ RocketChat.cache.Subscriptions.hasOne('Users', {
 
 RocketChat.cache.Users.load();
 RocketChat.models.Rooms.cache.load();
-RocketChat.cache.Subscriptions.load();
+RocketChat.models.Subscriptions.cache.load();
 RocketChat.models.Settings.cache.load();
 
 
@@ -43,7 +43,7 @@ RocketChat.cache.Users.addDynamicView('highlights').applyFind({
 	'settings.preferences.highlights': {$size: {$gt: 0}}
 });
 
-RocketChat.cache.Subscriptions.addDynamicView('notifications').applyFind({
+RocketChat.models.Subscriptions.cache.addDynamicView('notifications').applyFind({
 	$or: [
 		{desktopNotifications: {$in: ['all', 'nothing']}},
 		{mobilePushNotifications: {$in: ['all', 'nothing']}}
