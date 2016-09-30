@@ -51,7 +51,7 @@ var casTicket = function(req, token, callback) {
 		} else {
 			logger.error('Unable to validate ticket: ' + ticketId);
 		}
-		logger.debug("Receveied response: " + JSON.stringify(details, null , 4));
+		//logger.debug("Receveied response: " + JSON.stringify(details, null , 4));
 
 		callback();
 	});
@@ -236,7 +236,7 @@ Accounts.registerLoginHandler(function(options) {
 		// Fetch and use it
 		user = Meteor.users.findOne(userId);
 		logger.debug('Created new user for \'' + result.username + '\' with id: ' + user._id);
-		logger.debug(JSON.stringify(user, undefined, 4));
+		//logger.debug(JSON.stringify(user, undefined, 4));
 
 		logger.debug('Joining user to default channels');
 		Meteor.runAsUser(user._id, function() {
