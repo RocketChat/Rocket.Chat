@@ -112,8 +112,8 @@ class ModelsBaseCache extends EventEmitter {
 			this.model = modelNameOrModel;
 		}
 
+		this.collectionName = this.model._db.collectionName;
 		this.collection = this.db.addCollection(this.collectionName);
-		this.collectionName = this.model.db.collectionName;
 	}
 
 	hasOne(join, {field, link}) {
@@ -554,6 +554,12 @@ class ModelsBaseCache extends EventEmitter {
 			return query;
 		}
 
+		if (Match.test(query, String)) {
+			return {
+				_id: query
+			};
+		}
+
 		if (Object.keys(query).length > 1) {
 			const and = [];
 			for (const field in query) {
@@ -569,7 +575,7 @@ class ModelsBaseCache extends EventEmitter {
 		for (const field in query) {
 			if (query.hasOwnProperty(field)) {
 				const value = query[field];
-				if (value instanceof RegExp) {
+				if (value instanceof RegExp && field !== '$regex') {
 					query[field] = {
 						$regex: value
 					};
@@ -643,6 +649,11 @@ class ModelsBaseCache extends EventEmitter {
 			observeChanges: (obj) => {
 				console.log(this.collectionName, 'Falling back observeChanges to model with query:', query);
 				return this.model.db.find(...arguments).observeChanges(obj);
+			},
+
+			_publishCursor: (cursor, sub, collection) => {
+				console.log(this.collectionName, 'Falling back _publishCursor to model with query:', query);
+				return this.model.db.find(...arguments)._publishCursor(cursor, sub, collection);
 			}
 		};
 	}

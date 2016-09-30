@@ -1,6 +1,6 @@
-RocketChat.models.Subscriptions = new class extends RocketChat.models._Base
+class ModelSubscriptions extends RocketChat.models._Base
 	constructor: ->
-		super('subscription', true)
+		super(arguments...)
 
 		@tryEnsureIndex { 'rid': 1, 'u._id': 1 }, { unique: 1 }
 		@tryEnsureIndex { 'rid': 1, 'alert': 1, 'u._id': 1 }
@@ -376,4 +376,5 @@ RocketChat.models.Subscriptions = new class extends RocketChat.models._Base
 
 		return @remove query
 
+RocketChat.models.Subscriptions = new ModelSubscriptions('subscription', true)
 RocketChat.cache.Subscriptions = RocketChat.models.Subscriptions

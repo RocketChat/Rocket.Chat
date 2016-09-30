@@ -1,6 +1,6 @@
-RocketChat.models.Settings = new class extends RocketChat.models._Base
+class ModelSettings extends RocketChat.models._Base
 	constructor: ->
-		super('settings', true)
+		super(arguments...)
 
 		@tryEnsureIndex { 'blocked': 1 }, { sparse: 1 }
 		@tryEnsureIndex { 'hidden': 1 }, { sparse: 1 }
@@ -116,4 +116,5 @@ RocketChat.models.Settings = new class extends RocketChat.models._Base
 
 		return @remove query
 
+RocketChat.models.Settings = new ModelSettings('settings', true)
 RocketChat.cache.Settings = RocketChat.models.Settings

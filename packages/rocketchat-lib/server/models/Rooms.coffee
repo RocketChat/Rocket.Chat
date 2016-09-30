@@ -1,6 +1,6 @@
-RocketChat.models.Rooms = new class extends RocketChat.models._Base
-	constructor: ->
-		super('room', true)
+class ModelRooms extends RocketChat.models._Base
+	constructor: (model, cache) ->
+		super(arguments...)
 
 		@tryEnsureIndex { 'name': 1 }, { unique: 1, sparse: 1 }
 		@tryEnsureIndex { 'default': 1 }
@@ -548,4 +548,5 @@ RocketChat.models.Rooms = new class extends RocketChat.models._Base
 		return @remove query
 
 # TODO_CACHE: remove
+RocketChat.models.Rooms = new ModelRooms('room', true)
 RocketChat.cache.Rooms = RocketChat.models.Rooms
