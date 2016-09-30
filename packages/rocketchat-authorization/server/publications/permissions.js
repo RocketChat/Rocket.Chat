@@ -2,7 +2,7 @@ Meteor.methods({
 	'permissions/get'(updatedAt) {
 		this.unblock();
 
-		const records = RocketChat.cache.Permissions.find().fetch();
+		const records = RocketChat.models.Permissions.find().fetch();
 
 		if (updatedAt instanceof Date) {
 			return {
@@ -18,6 +18,6 @@ Meteor.methods({
 });
 
 
-RocketChat.cache.Permissions.on('changed', (type, permission) => {
+RocketChat.models.Permissions.on('changed', (type, permission) => {
 	RocketChat.Notifications.notifyAllInThisInstance('permissions-changed', type, permission);
 });

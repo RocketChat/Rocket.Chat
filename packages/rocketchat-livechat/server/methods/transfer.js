@@ -13,7 +13,7 @@ Meteor.methods({
 
 		const room = RocketChat.models.Rooms.findOneById(transferData.roomId);
 
-		const guest = RocketChat.cache.Users.findOneById(room.v._id);
+		const guest = RocketChat.models.Users.findOneById(room.v._id);
 
 		const user = Meteor.user();
 

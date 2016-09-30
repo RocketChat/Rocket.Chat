@@ -23,5 +23,4 @@ class ModelPermissions extends RocketChat.models._Base
 
 
 RocketChat.models.Permissions = new ModelPermissions('permissions', true)
-RocketChat.cache.Permissions = RocketChat.models.Permissions
-RocketChat.cache.Permissions.cache.load();
+RocketChat.models.Permissions.cache.load()
