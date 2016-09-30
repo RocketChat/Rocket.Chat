@@ -14,7 +14,7 @@ Meteor.methods
 
 		if type.rooms is true and RocketChat.authz.hasPermission this.userId, 'view-c-room'
 			username = RocketChat.cache.Users.findOneById(this.userId, { username: 1 }).username
-			result.rooms = RocketChat.cache.Rooms.findByNameAndTypeNotContainingUsername(regex, 'c', username, { limit: 5, fields: { t: 1, name: 1 }, sort: { name: 1 } }).fetch()
+			result.rooms = RocketChat.models.Rooms.findByNameAndTypeNotContainingUsername(regex, 'c', username, { limit: 5, fields: { t: 1, name: 1 }, sort: { name: 1 } }).fetch()
 
 		return result
 

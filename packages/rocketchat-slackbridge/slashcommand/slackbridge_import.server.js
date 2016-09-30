@@ -4,7 +4,7 @@ function SlackBridgeImport(command, params, item) {
 	if (command !== 'slackbridge-import' || !Match.test(params, String)) {
 		return;
 	}
-	room = RocketChat.cache.Rooms.findOneById(item.rid);
+	room = RocketChat.models.Rooms.findOneById(item.rid);
 	channel = room.name;
 	user = Meteor.users.findOne(Meteor.userId());
 

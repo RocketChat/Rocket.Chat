@@ -11,7 +11,7 @@ Meteor.methods
 		unless RocketChat.authz.hasPermission(fromId, 'remove-user', data.rid)
 			throw new Meteor.Error 'error-not-allowed', 'Not allowed', { method: 'removeUserFromRoom' }
 
-		room = RocketChat.cache.Rooms.findOneById data.rid
+		room = RocketChat.models.Rooms.findOneById data.rid
 
 		if data.username not in (room?.usernames or [])
 			throw new Meteor.Error 'error-user-not-in-room', 'User is not in this room', { method: 'removeUserFromRoom' }

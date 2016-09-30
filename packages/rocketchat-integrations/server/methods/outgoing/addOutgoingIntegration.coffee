@@ -57,7 +57,7 @@ Meteor.methods
 
 			switch channelType
 				when '#'
-					record = RocketChat.cache.Rooms.findOne
+					record = RocketChat.models.Rooms.findOne
 						$or: [
 							{_id: channel}
 							{name: channel}

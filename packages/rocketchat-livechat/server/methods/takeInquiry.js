@@ -36,7 +36,7 @@ Meteor.methods({
 		};
 		RocketChat.models.Subscriptions.insert(subscriptionData);
 
-		const room = RocketChat.cache.Rooms.findOneById(inquiry.rid);
+		const room = RocketChat.models.Rooms.findOneById(inquiry.rid);
 		const usernames = room.usernames.concat(agent.username);
 
 		RocketChat.models.Rooms.changeAgentByRoomId(inquiry.rid, usernames, agent);

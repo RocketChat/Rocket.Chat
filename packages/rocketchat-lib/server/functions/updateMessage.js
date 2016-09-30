@@ -22,7 +22,7 @@ RocketChat.updateMessage = function(message, user) {
 
 	RocketChat.models.Messages.update({ _id: tempid }, { $set: message });
 
-	let room = RocketChat.cache.Rooms.findOneById(message.rid);
+	let room = RocketChat.models.Rooms.findOneById(message.rid);
 
 	Meteor.defer(function() {
 		RocketChat.callbacks.run('afterSaveMessage', RocketChat.models.Messages.findOneById(tempid), room);

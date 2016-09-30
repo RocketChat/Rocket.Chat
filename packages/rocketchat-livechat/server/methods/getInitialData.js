@@ -17,7 +17,7 @@ Meteor.methods({
 			videoCall: null
 		};
 
-		const room = RocketChat.cache.Rooms.findOpenByVisitorToken(visitorToken, {
+		const room = RocketChat.models.Rooms.findOpenByVisitorToken(visitorToken, {
 			fields: {
 				name: 1,
 				t: 1,
