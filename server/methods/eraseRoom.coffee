@@ -8,7 +8,7 @@ Meteor.methods
 
 		fromId = Meteor.userId()
 
-		roomType = RocketChat.cache.Rooms.findOneById(rid)?.t
+		roomType = RocketChat.models.Rooms.findOneById(rid)?.t
 
 		if RocketChat.authz.hasPermission( fromId, "delete-#{roomType}", rid )
 			# ChatRoom.update({ _id: rid}, {'$pull': { userWatching: Meteor.userId(), userIn: Meteor.userId() }})

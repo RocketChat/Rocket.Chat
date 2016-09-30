@@ -25,7 +25,7 @@ class Invite
 			return
 
 		usernames = usernames.filter((username) ->
-			if not RocketChat.cache.Rooms.findOneByIdContainigUsername(item.rid, username)?
+			if not RocketChat.models.Rooms.findOneByIdContainigUsername(item.rid, username)?
 				return true
 
 			# Cancel if user is already in this room

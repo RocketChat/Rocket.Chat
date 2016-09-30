@@ -11,7 +11,7 @@ Meteor.methods({
 					method: 'addAllToRoom'
 				});
 			}
-			room = RocketChat.cache.Rooms.findOneById(rid);
+			room = RocketChat.models.Rooms.findOneById(rid);
 			if (room == null) {
 				throw new Meteor.Error('error-invalid-room', 'Invalid room', {
 					method: 'addAllToRoom'

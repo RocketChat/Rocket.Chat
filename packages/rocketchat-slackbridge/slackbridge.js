@@ -88,7 +88,7 @@ class SlackBridge {
 
 	findChannel(channelId) {
 		logger.class.debug('Searching for Rocket.Chat channel', channelId);
-		return RocketChat.cache.Rooms.findOneByImportId(channelId);
+		return RocketChat.models.Rooms.findOneByImportId(channelId);
 	}
 
 	addChannel(channelId, hasRetried = false) {
@@ -103,7 +103,7 @@ class SlackBridge {
 		}
 		if (data && data.data && data.data.ok === true) {
 			let channelData = isGroup ? data.data.group : data.data.channel;
-			let existingRoom = RocketChat.cache.Rooms.findOneByName(channelData.name);
+			let existingRoom = RocketChat.models.Rooms.findOneByName(channelData.name);
 
 			// If the room exists, make sure we have its id in importIds
 			if (existingRoom || channelData.is_general) {
@@ -154,7 +154,7 @@ class SlackBridge {
 				RocketChat.models.Rooms.update({ _id: channelData.rocketId }, { $set: roomUpdate, $addToSet: { importIds: channelData.id } });
 				this.channelMap[channelData.rocketId] = { id: channelId, family: channelId.charAt(0) === 'C' ? 'channels' : 'groups' };
 			}
-			return RocketChat.cache.Rooms.findOneById(channelData.rocketId);
+			return RocketChat.models.Rooms.findOneById(channelData.rocketId);
 		}
 
 		return;
@@ -878,7 +878,7 @@ class SlackBridge {
 
 	importMessages(rid, callback) {
 		logger.class.info('importMessages: ', rid);
-		let rocketchat_room = RocketChat.cache.Rooms.findOneById(rid);
+		let rocketchat_room = RocketChat.models.Rooms.findOneById(rid);
 		if (rocketchat_room) {
 			if (this.channelMap[rid]) {
 				this.copyChannelInfo(rid, this.channelMap[rid]);

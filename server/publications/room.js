@@ -68,7 +68,7 @@ Meteor.methods({
 		if (roomFind) {
 			room = roomFind.call(this, name);
 		} else {
-			room = RocketChat.cache.Rooms.findByTypeAndName(type, name).fetch();
+			room = RocketChat.models.Rooms.findByTypeAndName(type, name).fetch();
 		}
 
 		if (!room) {
@@ -83,7 +83,7 @@ Meteor.methods({
 	}
 });
 
-RocketChat.cache.Rooms.on('sync', (type, room/*, diff*/) => {
+RocketChat.models.Rooms.cache.on('sync', (type, room/*, diff*/) => {
 	const records = RocketChat.cache.Subscriptions.findByRoomId(room._id).fetch();
 	for (const record of records) {
 		RocketChat.Notifications.notifyUserInThisInstance(record.u._id, 'rooms-changed', type, roomMap({_room: room}));
@@ -92,7 +92,7 @@ RocketChat.cache.Rooms.on('sync', (type, room/*, diff*/) => {
 
 RocketChat.cache.Subscriptions.on('changed', (type, subscription/*, diff*/) => {
 	if (type === 'inserted') {
-		const room = RocketChat.cache.Rooms.findOneById(subscription.rid);
+		const room = RocketChat.models.Rooms.findOneById(subscription.rid);
 		if (room) {
 			RocketChat.Notifications.notifyUserInThisInstance(subscription.u._id, 'rooms-changed', type, roomMap({_room: room}));
 		}

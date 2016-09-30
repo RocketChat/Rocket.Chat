@@ -4,7 +4,7 @@ Meteor.methods({
 			throw new Meteor.Error('error-not-authorized', 'Not authorized', { method: 'livechat:closeRoom' });
 		}
 
-		const room = RocketChat.cache.Rooms.findOneById(roomId);
+		const room = RocketChat.models.Rooms.findOneById(roomId);
 
 		const user = Meteor.user();
 

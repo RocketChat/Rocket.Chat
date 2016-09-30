@@ -17,7 +17,7 @@ class MentionsServer
 				if mention is 'all'
 					messageMaxAll = RocketChat.settings.get('Message_MaxAll')
 					if messageMaxAll > 0
-						allChannel = RocketChat.cache.Rooms.findOneById message.rid
+						allChannel = RocketChat.models.Rooms.findOneById message.rid
 						if allChannel.usernames.length <= messageMaxAll
 							verifiedMention =
 								_id: mention
@@ -42,7 +42,7 @@ class MentionsServer
 			channels = _.unique channels
 			verifiedChannels = []
 			channels.forEach (mention) ->
-				verifiedChannel = RocketChat.cache.Rooms.findOneByNameAndType(mention, 'c', { fields: {_id: 1, name: 1 } })
+				verifiedChannel = RocketChat.models.Rooms.findOneByNameAndType(mention, 'c', { fields: {_id: 1, name: 1 } })
 				verifiedChannels.push verifiedChannel if verifiedChannel?
 
 			if verifiedChannels.length isnt 0

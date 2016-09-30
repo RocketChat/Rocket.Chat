@@ -38,7 +38,7 @@ class ErrorHandler {
 
 	getRoomId(roomName) {
 		roomName = roomName.replace('#');
-		let room = RocketChat.cache.Rooms.findOneByName(roomName, { fields: { _id: 1, t: 1 } });
+		let room = RocketChat.models.Rooms.findOneByName(roomName, { fields: { _id: 1, t: 1 } });
 		if (room && (room.t === 'c' || room.t === 'p')) {
 			return room._id;
 		} else {
