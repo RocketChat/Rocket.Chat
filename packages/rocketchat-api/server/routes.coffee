@@ -135,7 +135,16 @@ RocketChat.API.v1.addRoute 'users.list', authRequired: true,
 		if RocketChat.authz.hasRole(@userId, 'admin') is false
 			return RocketChat.API.v1.unauthorized()
 
-		return { users: RocketChat.models.Users.find().fetch() }
+		rpage = if @queryParams.page then Number(@queryParams.page) else 1
+		ritems = if @queryParams.items then Number(@queryParams.items) else 100
+		users = RocketChat.models.Users.find({}, { limit: ritems, skip: (rpage-1)*ritems }).fetch()
+		
+		return {
+			users: users,
+			page: rpage,
+			items: users.length,
+			total: RocketChat.models.Users.find().count(),
+		}
 
 
 # Create user
@@ -244,7 +253,7 @@ RocketChat.API.v1.addRoute 'users.delete', authRequired: true,
 			
 ### Create Private Group
 Request example:
-  {"name":"room5","members":["Jeff","Larry","Stephen"]}
+  { "name": "room5", "members": ["Jeff","Larry","Stephen"]}
 ###
 RocketChat.API.v1.addRoute 'groups.create', authRequired: true,
 	post: ->
@@ -371,7 +380,7 @@ Requires manage-integrations role. The room channel needs to be URL encoded, as 
 that are not URL safe (e.g., '#' and '@'). Example:
 'http://domain.com:3000/api/v1/room/%23testRoom/integrations'
 ###
-RocketChat.API.v1.addRoute 'room/:channel/integrations', authRequired: true,
+RocketChat.API.v1.addRoute 'room/:rid/integrations', authRequired: true,
 	get: ->
 		
 		if RocketChat.authz.hasPermission(@userId, 'manage-integrations') is false
@@ -380,9 +389,39 @@ RocketChat.API.v1.addRoute 'room/:channel/integrations', authRequired: true,
 		try	
 			this.response.setTimeout(1000)			
 			return RocketChat.API.v1.success
-				integrations: RocketChat.models.Integrations.find({"channel":decodeURIComponent(@urlParams.channel)}).fetch()
+				integrations: RocketChat.models.Integrations.find({"channel":decodeURIComponent(@urlParams.rid)}).fetch()
 		
 		catch e 
+			return RocketChat.API.v1.failure e.name + ': ' + e.message
+
+
+### Retrieve messages for a specific room
+Requires manage-messages role. The room channel needs to be URL encoded, as the names begin with characters that
+are not URL safe (e.g., '#' and '@'). Example:
+'http://domain.com:3000/api/room/%23testRoom/history'
+###
+RocketChat.API.v1.addRoute 'room/:rid/history', authRequired: true,
+	get: ->
+		if not Meteor.call('canAccessRoom', @urlParams.rid, this.userId)
+			return RocketChat.API.v1.unauthorized()
+
+		try
+
+			rpage = if @queryParams.page then Number(@queryParams.page) else 1
+			ritems = if @queryParams.items then Number(@queryParams.items) else 100
+			msgs = RocketChat.models.Messages.findVisibleByRoomId(@urlParams.rid,
+					sort:
+						ts: -1
+					skip: (rpage-1)*ritems
+					limit: ritems
+				).fetch()
+			return RocketChat.API.v1.success
+				msgs: msgs
+				page: rpage
+				items: msgs.length
+				total: RocketChat.models.Messages.findVisibleByRoomId(@urlParams.rid).count()
+
+		catch e
 			return RocketChat.API.v1.failure e.name + ': ' + e.message
 		
 
@@ -396,10 +435,14 @@ RocketChat.API.v1.addRoute 'integrations.list', authRequired: true,
 			return RocketChat.API.v1.unauthorized()
 		try 
 			this.response.setTimeout (1000)
-			rpage = @queryParams.page or 1
-			ritems = @queryParams.items or 100
+			rpage = if @queryParams.page then Number(@queryParams.page) else 1
+			ritems = if @queryParams.items then Number(@queryParams.items) else 100
+			integrations = RocketChat.models.Integrations.find({}, { limit: ritems, skip: (rpage-1)*ritems }).fetch()
 			return RocketChat.API.v1.success
-				integrations: RocketChat.models.Integrations.find({}, { limit: ritems, skip: (rpage-1)*ritems }).fetch()
+				integrations: integrations
+				page: rpage
+				items: integrations.length
+				toal: RocketChat.models.Integrations.find().count()
 		
 		catch e
 			return RocketChat.API.v1.failure e.name + ': ' + e.message
@@ -494,10 +537,10 @@ RocketChat.API.v1.addRoute 'directMessage.list', authRequired: true,
 
 			
 ###
-can take these as args to update.
+Update a Rocket.Chat room (channel or group) parameters
 ['roomName', 'roomTopic', 'roomDescription', 'roomType', 'readOnly', 'systemMessages', 'default', 'joinCode']
 ###		
-RocketChat.API.v1.addRoute 'admin.updateRoom', authRequired: true, 
+RocketChat.API.v1.addRoute 'room.updateRoom', authRequired: true, 
 	post: ->
 	
 		if RocketChat.authz.hasRole(@userId, 'admin') is false
