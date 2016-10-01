@@ -22,4 +22,4 @@ class HighlightWordsClient
     message.html = msg
     return message
 
-RocketChat.callbacks.add 'renderMessage', HighlightWordsClient, RocketChat.callbacks.priority.MEDIUM, 'highlight-words'
+RocketChat.callbacks.add 'renderMessage', HighlightWordsClient, RocketChat.callbacks.priority.MEDIUM + 1, 'highlight-words'
