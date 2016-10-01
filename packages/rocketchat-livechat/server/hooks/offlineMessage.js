@@ -14,4 +14,4 @@ RocketChat.callbacks.add('livechat.offlineMessage', (data) => {
 	};
 
 	RocketChat.Livechat.sendRequest(postData);
-});
+}, RocketChat.callbacks.priority.MEDIUM, 'livechat-send-email-offline-message');
