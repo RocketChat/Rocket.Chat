@@ -103,7 +103,7 @@ RocketChat.API.v1.addRoute 'channels.create', authRequired: true,
 			return RocketChat.API.v1.failure e.name + ': ' + e.message
 
 		return RocketChat.API.v1.success
-			channel: RocketChat.models.Rooms.findOne({_id: id.rid})
+			channel: RocketChat.models.Rooms.findOneById(id.rid)
 
 # List Private Groups a user has access to
 RocketChat.API.v1.addRoute 'groups.list', authRequired: true,
@@ -123,7 +123,7 @@ RocketChat.API.v1.addRoute 'channel.addall', authRequired: true,
 			return RocketChat.API.v1.failure e.name + ': ' + e.message
 
 		return RocketChat.API.v1.success
-			channel: RocketChat.models.Rooms.findOne({_id: @bodyParams.roomId})
+			channel: RocketChat.models.Rooms.findOneById(@bodyParams.roomId)
 
 # List all users
 RocketChat.API.v1.addRoute 'users.list', authRequired: true,
@@ -255,5 +255,4 @@ RocketChat.API.v1.addRoute 'groups.create', authRequired: true,
 			return RocketChat.API.v1.failure e.name + ': ' + e.message
 
 		return RocketChat.API.v1.success
-			group: RocketChat.models.Rooms.findOne({_id: id.rid})
-
+			group: RocketChat.models.Rooms.findOneById(id.rid)
