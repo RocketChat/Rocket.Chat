@@ -1,12 +1,8 @@
 import Page from './Page';
 
 class SideNav extends Page {
-
-
-	get directMessageTarget() { return browser.element('#who'); }
+	get directMessageTarget() { return browser.element('.flex-nav input#who'); }
 	get saveDirectMessageBtn() { return browser.element('.save-direct-message'); }
-
-
 
 	get channelType() { return browser.element('#channel-type'); }
 	get channelReadOnly() { return browser.element('#channel-ro'); }
@@ -26,8 +22,8 @@ class SideNav extends Page {
 	get newDirectMessageIcon() { return browser.element('.rooms-list .add-room:nth-of-type(2) .icon-plus'); }
 	get moreDirectMessages() { return browser.element('.rooms-list .more-direct-messages'); }
 
-	get general() { return browser.element('[title="general"]'); }
-	get channelHoverIcon() { return browser.element('[title="general"] .icon-eye-off'); }
+	get general() { return browser.element('.rooms-list > .wrapper > ul [title="general"]'); }
+	get channelHoverIcon() { return browser.element('.rooms-list > .wrapper > ul [title="general"] .icon-eye-off'); }
 
 	get userOptions() { return browser.element('.options'); }
 	get statusOnline() { return browser.element('.online'); }
@@ -37,9 +33,8 @@ class SideNav extends Page {
 	get account() { return browser.element('#account'); }
 	get logout() { return browser.element('#logout'); }
 
-
 	openChannel(channelName) {
-		browser.click('[title="'+channelName+'"]');
+		browser.click('.rooms-list > .wrapper > ul [title="'+channelName+'"]');
 		this.messageInput.waitForExist();
 	}
 
@@ -54,7 +49,7 @@ class SideNav extends Page {
 			this.channelReadOnly.click();
 		}
 		this.saveChannelBtn.click();
-		browser.waitForExist('[title="'+channelName+'"]');
+		browser.waitForExist('[title="'+channelName+'"]', 1000);
 	}
 
 	addPeopleToChannel(user) {
@@ -72,13 +67,13 @@ class SideNav extends Page {
 		this.removeUserBtn.click();
 	}
 
-
-
 	startDirectMessage(user) {
 		this.newDirectMessageBtn.click();
-		this.directMessageTarget.waitForVisible(1000);
+		browser.pause(1000);
+		this.directMessageTarget.waitForVisible(3000);
 		this.directMessageTarget.setValue(user);
-		browser.waitForVisible('.-autocomplete-item', 1000);
+		browser.waitForVisible('.-autocomplete-item', 3000);
+		browser.pause(500);
 		browser.click('.-autocomplete-item');
 		this.saveDirectMessageBtn.click();
 		browser.waitForExist('[title="'+user+'"]');
