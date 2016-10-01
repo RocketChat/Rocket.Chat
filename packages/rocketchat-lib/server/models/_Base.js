@@ -12,6 +12,8 @@ try {
 
 class ModelsBase extends EventEmitter {
 	constructor(model) {
+		super();
+
 		if (Match.test(model, String)) {
 			this.name = model;
 			this.collectionName = this.baseName + this.name;
