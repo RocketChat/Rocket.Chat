@@ -1,6 +1,6 @@
 RocketChat.models.Settings = new class extends RocketChat.models._Base
 	constructor: ->
-		@_initModel 'settings'
+		super('settings')
 
 		@tryEnsureIndex { 'blocked': 1 }, { sparse: 1 }
 		@tryEnsureIndex { 'hidden': 1 }, { sparse: 1 }
