@@ -160,7 +160,7 @@ Template.messagePopup.onCreated ->
 
 	template.records = new ReactiveVar []
 	Tracker.autorun ->
-		if template.data.collection.find?
+		if template.data.collection.findOne?
 			template.data.collection.find().count()
 
 		filter = template.textFilter.get()

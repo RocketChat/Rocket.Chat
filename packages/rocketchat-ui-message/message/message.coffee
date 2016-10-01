@@ -139,8 +139,8 @@ Template.message.helpers
 		return
 
 	hideCog: ->
-		room = RocketChat.models.Rooms.findOne({ _id: this.rid });
-		return 'hidden' if room.usernames.indexOf(Meteor.user().username) == -1
+		subscription = RocketChat.models.Subscriptions.findOne({ rid: this.rid });
+		return 'hidden' if not subscription?
 
 	hideUsernames: ->
 		prefs = Meteor.user()?.settings?.preferences

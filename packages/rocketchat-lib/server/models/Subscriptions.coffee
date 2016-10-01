@@ -71,6 +71,12 @@ RocketChat.models.Subscriptions = new class extends RocketChat.models._Base
 
 		return @find query, options
 
+	findByRoomId: (roomId, options) ->
+		query =
+			"rid": roomId
+
+		return @find query, options
+
 	getLastSeen: (options = {}) ->
 		query = { ls: { $exists: 1 } }
 		options.sort = { ls: -1 }
