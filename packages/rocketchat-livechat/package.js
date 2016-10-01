@@ -26,6 +26,7 @@ Package.onUse(function(api) {
 	api.use('rocketchat:lib');
 	api.use('rocketchat:authorization');
 	api.use('rocketchat:logger');
+	api.use('rocketchat:api');
 	api.use('konecty:user-presence');
 	api.use('rocketchat:ui');
 	api.use('kadira:flow-router', 'client');
@@ -193,7 +194,7 @@ Package.onUse(function(api) {
 	api.addFiles('server/publications/livechatInquiries.js', 'server');
 	api.addFiles('server/publications/livechatOfficeHours.js', 'server');
 
-	// api
+	// REST endpoints
 	api.addFiles('server/api.js', 'server');
 
 	// livechat app
