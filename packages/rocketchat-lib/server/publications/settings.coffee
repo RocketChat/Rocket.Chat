@@ -4,14 +4,14 @@ Meteor.methods
 
 		records = RocketChat.models.Settings.findNotHiddenPublic().fetch()
 
-	if updatedAt instanceof Date
-		result =
-			update: RocketChat.models.Settings.findNotHiddenPublicUpdatedAfter(updatedAt).fetch()
-			remove: RocketChat.models.Settings.trashFindDeletedAfter(updatedAt, {hidden: { $ne: true }, public: true}, {fields: {_id: 1, _deletedAt: 1}}).fetch()
+		if updatedAt instanceof Date
+			result =
+				update: RocketChat.models.Settings.findNotHiddenPublicUpdatedAfter(updatedAt).fetch()
+				remove: RocketChat.models.Settings.trashFindDeletedAfter(updatedAt, {hidden: { $ne: true }, public: true}, {fields: {_id: 1, _deletedAt: 1}}).fetch()
 
-		return result
+			return result
 
-	return records
+		return records
 
 	'private-settings/get': (updatedAt) ->
 		unless Meteor.userId()
