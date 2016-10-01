@@ -256,4 +256,3 @@ RocketChat.API.v1.addRoute 'groups.create', authRequired: true,
 
 		return RocketChat.API.v1.success
 			group: RocketChat.models.Rooms.findOneById(id.rid)
-
