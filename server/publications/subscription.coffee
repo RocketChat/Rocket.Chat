@@ -30,12 +30,10 @@ Meteor.methods
 		options =
 			fields: fields
 
-		records = RocketChat.models.Subscriptions.findByUserId(Meteor.userId(), options).fetch()
-
 		if updatedAt instanceof Date
 			return RocketChat.models.Subscriptions.dinamicFindChangesAfter('findByUserId', updatedAt, Meteor.userId(), options);
 
-		return records
+		return RocketChat.models.Subscriptions.findByUserId(Meteor.userId(), options).fetch()
 
 
 RocketChat.models.Subscriptions.on 'change', (type, args...) ->

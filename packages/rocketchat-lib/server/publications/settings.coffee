@@ -2,8 +2,6 @@ Meteor.methods
 	'public-settings/get': (updatedAt) ->
 		this.unblock()
 
-		records = RocketChat.models.Settings.findNotHiddenPublic().fetch()
-
 		if updatedAt instanceof Date
 			result =
 				update: RocketChat.models.Settings.findNotHiddenPublicUpdatedAfter(updatedAt).fetch()
@@ -11,7 +9,7 @@ Meteor.methods
 
 			return result
 
-		return records
+		return RocketChat.models.Settings.findNotHiddenPublic().fetch()
 
 	'private-settings/get': (updatedAt) ->
 		unless Meteor.userId()
@@ -22,12 +20,10 @@ Meteor.methods
 		if not RocketChat.authz.hasPermission Meteor.userId(), 'view-privileged-setting'
 			return []
 
-		records = RocketChat.models.Settings.findNotHidden().fetch()
-
 		if updatedAt instanceof Date
 			return RocketChat.models.Settings.dinamicFindChangesAfter('findNotHidden', updatedAt);
 
-		return records
+		return RocketChat.models.Settings.findNotHidden().fetch()
 
 
 RocketChat.models.Settings.on 'change', (type, args...) ->

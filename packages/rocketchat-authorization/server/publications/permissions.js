@@ -2,13 +2,11 @@ Meteor.methods({
 	'permissions/get'(updatedAt) {
 		this.unblock();
 
-		const records = RocketChat.models.Permissions.find().fetch();
-
 		if (updatedAt instanceof Date) {
 			return RocketChat.models.Permissions.dinamicFindChangesAfter('find', updatedAt);
 		}
 
-		return records;
+		return RocketChat.models.Permissions.find().fetch();
 	}
 });
 
