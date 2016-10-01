@@ -27,7 +27,7 @@ class ModelsBase extends EventEmitter {
 		this.tryEnsureIndex({ '_updatedAt': 1 });
 	}
 
-	_baseName() {
+	get baseName() {
 		return baseName;
 	}
 
