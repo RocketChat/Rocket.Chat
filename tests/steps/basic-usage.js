@@ -157,6 +157,108 @@ describe('Basic usage', function() {
 		it('send a message', () => {
 			mainContent.sendMessage(message);
 		});
+
+		describe('main content usage', () => {
+			describe('render', () => {
+				it('should show the title of the channel', () => {
+					mainContent.channelTitle.isVisible().should.be.true;
+				});
+
+				it('should show the empty favorite star', () => {
+					mainContent.emptyFavoriteStar.isVisible().should.be.true;
+				});
+
+				it('clicks the star', () => {
+					mainContent.emptyFavoriteStar.click();
+				});
+
+				it('should not show the empty favorite star', () => {
+					mainContent.favoriteStar.isVisible().should.be.true;
+				});
+
+				it('clicks the star', () => {
+					mainContent.favoriteStar.click();
+				});
+
+				it('should show the message input bar', () => {
+					mainContent.messageInput.isVisible().should.be.true;
+				});
+
+				it('should show the file attachment button', () => {
+					mainContent.fileAttachmentBtn.isVisible().should.be.true;
+				});
+
+				it('should show the audio recording button', () => {
+					mainContent.recordBtn.isVisible().should.be.true;
+				});
+
+				it('should show the video call button', () => {
+					mainContent.videoCamBtn.isVisible().should.be.true;
+				});
+
+				it('should not show the send button', () => {
+					mainContent.sendBtn.isVisible().should.be.false;
+				});
+
+				it('should show the emoji button', () => {
+					mainContent.emojiBtn.isVisible().should.be.true;
+				});
+
+				it('adds some text to the input', () => {
+					mainContent.addTextToInput('Some Text');
+				});
+
+				it('should show the send button', () => {
+					mainContent.sendBtn.isVisible().should.be.true;
+				});
+
+				it('should not show the file attachment button', () => {
+					mainContent.fileAttachmentBtn.isVisible().should.be.false;
+				});
+
+				it('should not show the audio recording button', () => {
+					mainContent.recordBtn.isVisible().should.be.false;
+				});
+
+				it('should not show the video call button', () => {
+					mainContent.videoCamBtn.isVisible().should.be.false;
+				});
+			});
+
+			describe('fileUpload', ()=> {
+				it('send a attachment', () => {
+					mainContent.fileUpload('/home/martin/Downloads/cat.jpg');
+				});
+
+				it('should show the confirm button', () => {
+					mainContent.popupFileConfirmBtn.isVisible().should.be.true;
+				});
+
+				it('should show the cancel buttno', () => {
+					mainContent.popupFileCancelBtn.isVisible().should.be.true;
+				});
+
+				it('should show the file preview', () => {
+					mainContent.popupFilePreview.isVisible().should.be.true;
+				});
+
+				it('should show the confirm buttno', () => {
+					mainContent.popupFileConfirmBtn.isVisible().should.be.true;
+				});
+
+				it('should show the file title', () => {
+					mainContent.popupFileTitle.isVisible().should.be.true;
+				});
+
+				it('click the confirm', () => {
+					mainContent.popupFileConfirmBtn.click();
+				});
+
+				it('should show the image message', () => {
+					mainContent.lastMessageImg.isVisible();
+				});
+			});
+		});
 	});
 
 	describe('flextab usage', () => {
