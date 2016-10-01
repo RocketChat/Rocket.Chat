@@ -68,8 +68,8 @@ Template.room.helpers
 		return {} unless roomData
 
 		if roomData.t in ['d', 'l']
-			username = _.without roomData.usernames, Meteor.user().username
-			return Session.get('user_' + username + '_status') || 'offline'
+			subscription = RocketChat.models.Subscriptions.findOne({rid: this._id});
+			return Session.get('user_' + subscription.name + '_status') || 'offline'
 		else
 			return 'offline'
 
