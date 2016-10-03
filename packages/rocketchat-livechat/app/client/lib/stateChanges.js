@@ -61,14 +61,12 @@ this.state = {
 							console.error(err);
 						}
 						swal({
-							title: t('transcript sent successfully'),
+							title: t('transcript_sent'),
 							type: 'success',
 							timer: 1000,
-							showConfirmButton: true,
-							confirmButtonText: t('ok')
-						}, () => {
-							self.cleanup();
+							showConfirmButton: false
 						});
+						self.cleanup();
 					});
 				}
 			}
