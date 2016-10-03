@@ -1,7 +1,6 @@
 class EmojiCustom extends RocketChat.models._Base {
 	constructor() {
-		super();
-		this._initModel('custom_emoji');
+		super('custom_emoji');
 
 		this.tryEnsureIndex({ 'name': 1 });
 		this.tryEnsureIndex({ 'aliases': 1 });

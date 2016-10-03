@@ -12,7 +12,7 @@ class SlackBridge {
 		this.userTags = {};
 		this.channelMap = {};
 
-		RocketChat.settings.onload('SlackBridge_APIToken', (key, value) => {
+		RocketChat.settings.get('SlackBridge_APIToken', (key, value) => {
 			this.apiToken = value;
 			if (this.connected) {
 				this.disconnect();
@@ -22,7 +22,7 @@ class SlackBridge {
 			}
 		});
 
-		RocketChat.settings.onload('SlackBridge_Enabled', (key, value) => {
+		RocketChat.settings.get('SlackBridge_Enabled', (key, value) => {
 			if (value && this.apiToken) {
 				this.connect();
 			} else {
@@ -30,11 +30,11 @@ class SlackBridge {
 			}
 		});
 
-		RocketChat.settings.onload('SlackBridge_AliasFormat', (key, value) => {
+		RocketChat.settings.get('SlackBridge_AliasFormat', (key, value) => {
 			this.aliasFormat = value;
 		});
 
-		RocketChat.settings.onload('SlackBridge_ExcludeBotnames', (key, value) => {
+		RocketChat.settings.get('SlackBridge_ExcludeBotnames', (key, value) => {
 			this.excludeBotnames = value;
 		});
 	}
@@ -154,7 +154,7 @@ class SlackBridge {
 				RocketChat.models.Rooms.update({ _id: channelData.rocketId }, { $set: roomUpdate, $addToSet: { importIds: channelData.id } });
 				this.channelMap[channelData.rocketId] = { id: channelId, family: channelId.charAt(0) === 'C' ? 'channels' : 'groups' };
 			}
-			return RocketChat.models.Rooms.findOne(channelData.rocketId);
+			return RocketChat.models.Rooms.findOneById(channelData.rocketId);
 		}
 
 		return;

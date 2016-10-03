@@ -6,7 +6,7 @@ Meteor.methods
 		if not RocketChat.settings.get 'Message_AllowPinning'
 			throw new Meteor.Error 'error-action-not-allowed', 'Message pinning not allowed', { method: 'pinMessage', action: 'Message_pinning' }
 
-		room = RocketChat.models.Rooms.findOne({ _id: message.rid })
+		room = RocketChat.models.Rooms.findOneById(message.rid)
 
 		if Array.isArray(room.usernames) && room.usernames.indexOf(Meteor.user().username) is -1
 			return false
@@ -42,7 +42,7 @@ Meteor.methods
 		if not RocketChat.settings.get 'Message_AllowPinning'
 			throw new Meteor.Error 'error-action-not-allowed', 'Message pinning not allowed', { method: 'unpinMessage', action: 'Message_pinning' }
 
-		room = RocketChat.models.Rooms.findOne({ _id: message.rid })
+		room = RocketChat.models.Rooms.findOneById(message.rid)
 
 		if Array.isArray(room.usernames) && room.usernames.indexOf(Meteor.user().username) is -1
 			return false
