@@ -6,8 +6,8 @@ Meteor.methods({
 		check(email, String);
 
 		var messages = RocketChat.models.Messages.find({'rid': rid}, { sort: { 'ts' : 1 }}).fetch();
-		var header = '';
-		var footer = '';
+		const header = RocketChat.placeholders.replace(RocketChat.settings.get('Email_Header') || '');
+		const footer = RocketChat.placeholders.replace(RocketChat.settings.get('Email_Footer') || '');
 
 		if (messages[0].ts.getTime() > messages[1].ts.getTime()) {
 			messages.reverse();
@@ -16,16 +16,15 @@ Meteor.methods({
 		var html = '<div> <hr>';
 		for (var i = 0; i < messages.length; i++) {
 			var message = messages[i];
+			console.log(message);
 
-			// Agents should use their username, but livechat guests should user their name.
-			var key;
-			if (message.u.type === 'user') {
-				key = 'username';
+			var author;
+			if (message.u._id === Meteor.userId()) {
+				author = TAPi18n.__('You');
 			} else {
-				key = 'name';
+				author = message.u.username;
 			}
 
-			var author = (message.u)[key];
 			var datetime = moment(message.ts).format('dddd, MMMM Do YYYY, h:mm:ss a');
 			var singleMessage = `
 				<p><strong>${author}</strong>  <em>${datetime}</em></p>
