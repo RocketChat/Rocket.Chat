@@ -55,6 +55,7 @@ Template.livechatWindow.events({
 	'click .sound'(event) {
 		event.stopPropagation();
 		Session.set({sound: !Session.get('sound')});
+		console.log(Room.find().fetch());
 	}
 });
 
@@ -95,6 +96,8 @@ Template.livechatWindow.onCreated(function() {
 				Livechat.title = result.title;
 				Livechat.onlineColor = result.color;
 				Livechat.online = true;
+				Livechat.transcript = result.transcript;
+				Livechat.transcriptMessage = result.transcriptMessage;
 			}
 			Livechat.videoCall = result.videoCall;
 			Livechat.registrationForm = result.registrationForm;
