@@ -20,6 +20,6 @@
     "email": "support@rocket.chat"
   },
   "dependencies": {
-    "autolinker": "^1.1.0"
+    "autolinker": "^1.2.0"
   }
 }
