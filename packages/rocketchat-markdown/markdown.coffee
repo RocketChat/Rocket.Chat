@@ -79,7 +79,7 @@ class Markdown
 
 
 RocketChat.Markdown = Markdown
-RocketChat.callbacks.add 'renderMessage', Markdown    , RocketChat.callbacks.priority.HIGH
+RocketChat.callbacks.add 'renderMessage', Markdown, RocketChat.callbacks.priority.HIGH, 'markdown'
 
 if Meteor.isClient
 	Blaze.registerHelper 'RocketChatMarkdown', (text) ->

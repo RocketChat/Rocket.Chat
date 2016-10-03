@@ -18,7 +18,8 @@ Package.onUse(function(api) {
 		'coffeescript',
 		'underscore',
 		'tracker',
-		'rocketchat:lib'
+		'rocketchat:lib',
+		'rocketchat:ui-account'
 	]);
 
 	api.addFiles('message/message.html', 'client');

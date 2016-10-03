@@ -15,7 +15,13 @@ Meteor.methods
 			email: s.trim(formData.email.toLowerCase())
 			password: formData.pass
 
-		userId = Accounts.createUser userData
+		# Check if user has already been imported and never logged in. If so, set password and let it through
+		importedUser = RocketChat.models.Users.findOneByEmailAddress s.trim(formData.email.toLowerCase())
+		if importedUser?.importIds?.length and !importedUser.lastLogin
+			Accounts.setPassword(importedUser._id, userData.password)
+			userId = importedUser._id
+		else
+			userId = Accounts.createUser userData
 
 		RocketChat.models.Users.setName userId, s.trim(formData.name)
 

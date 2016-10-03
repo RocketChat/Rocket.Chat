@@ -35,11 +35,13 @@ Package.onUse(function(api) {
 	api.use('mongo');
 	api.use('ddp-rate-limiter');
 	api.use('rocketchat:sms');
+	api.use('tracker');
 	api.use('less');
 
 	api.addFiles('livechat.js', 'server');
 	api.addFiles('server/startup.js', 'server');
 	api.addFiles('permissions.js', 'server');
+	api.addFiles('messageTypes.js');
 	api.addFiles('roomType.js');
 
 	api.addFiles('config.js', 'server');
@@ -147,6 +149,7 @@ Package.onUse(function(api) {
 	api.addFiles('server/methods/sendMessageLivechat.js', 'server');
 	api.addFiles('server/methods/sendOfflineMessage.js', 'server');
 	api.addFiles('server/methods/setCustomField.js', 'server');
+	api.addFiles('server/methods/startVideoCall.js', 'server');
 	api.addFiles('server/methods/transfer.js', 'server');
 	api.addFiles('server/methods/webhookTest.js', 'server');
 	api.addFiles('server/methods/takeInquiry.js', 'server');
