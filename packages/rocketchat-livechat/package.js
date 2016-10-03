@@ -192,9 +192,7 @@ Package.onUse(function(api) {
 	api.addFiles('server/publications/livechatOfficeHours.js', 'server');
 
 	// REST endpoints
-	api.addFiles('server/rest/departments.js', 'server');
-	api.addFiles('server/rest/sms.js', 'server');
-	api.addFiles('server/rest/users.js', 'server');
+	api.addFiles('server/api.js', 'server');
 
 	// livechat app
 	api.addAssets('assets/demo.html', 'client');
