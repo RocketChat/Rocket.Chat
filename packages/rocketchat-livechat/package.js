@@ -155,6 +155,8 @@ Package.onUse(function(api) {
 	api.addFiles('server/methods/takeInquiry.js', 'server');
 	api.addFiles('server/methods/returnAsInquiry.js', 'server');
 	api.addFiles('server/methods/saveOfficeHours.js', 'server');
+	api.addFiles('server/methods/sendTranscript.js', 'server');
+
 
 	// models
 	api.addFiles('server/models/Users.js', 'server');
@@ -192,7 +194,7 @@ Package.onUse(function(api) {
 	api.addFiles('server/publications/visitorPageVisited.js', 'server');
 	api.addFiles('server/publications/livechatInquiries.js', 'server');
 	api.addFiles('server/publications/livechatOfficeHours.js', 'server');
-
+	api.addFiles('server/publications/visitorRoom.js', 'server');
 	// api
 	api.addFiles('server/api.js', 'server');
 
