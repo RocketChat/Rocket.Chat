@@ -1245,6 +1245,8 @@
   "To_users" : "To Users",
   "Topic" : "Topic",
   "Travel_and_Places" : "Travel & Places",
+  "Transcript_Enabled" : "Ask visitor if they would like a transcript after chat closed",
+  "Transcript_message" : "Message to show when asking about transcript",
   "Trigger_removed" : "Trigger removed",
   "Trigger_Words" : "Trigger Words",
   "Triggers" : "Triggers",
