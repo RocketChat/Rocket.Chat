@@ -1,4 +1,4 @@
-/* globals Department, Livechat, LivechatVideoCall */
+/* globals Department, Livechat, LivechatVideoCall, Room */
 
 Template.livechatWindow.helpers({
 	title() {
