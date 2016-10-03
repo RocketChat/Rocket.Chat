@@ -1,4 +1,4 @@
-/* globals Livechat, LivechatVideoCall, state */
+/* globals Livechat, LivechatVideoCall, state, Room */
 
 Template.messages.helpers({
 	messages() {
@@ -157,11 +157,11 @@ Template.messages.onRendered(function() {
 			Room.find().observe({
 				added: function(room) {
 					state.update(room);
-				},				
-			    changed: function(room) {
-			    	state.update(room);
-			    }
-		  	});
+				},
+				changed: function(room) {
+					state.update(room);
+				}
+			});
 		}
 	});
 });

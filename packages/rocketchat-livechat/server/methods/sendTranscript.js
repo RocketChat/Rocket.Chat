@@ -1,3 +1,4 @@
+/* globals emailSettings, DDPRateLimiter */
 /* Send a transcript of the room converstation to the given email */
 Meteor.methods({
 	'livechat:sendTranscript'(rid, email) {
@@ -8,24 +9,24 @@ Meteor.methods({
 		var header = '';
 		var footer = '';
 
-		if(messages[0].ts.getTime() > messages[1].ts.getTime()) {
+		if (messages[0].ts.getTime() > messages[1].ts.getTime()) {
 			messages.reverse();
 		}
 
-		var html = `<div> <hr>`;
-		for(var i in messages) {
+		var html = '<div> <hr>';
+		for (var i = 0; i < messages.length; i++) {
 			var message = messages[i];
 
-			// Agents should use their username, but livechat guests should user their name. 
+			// Agents should use their username, but livechat guests should user their name.
 			var key;
-			if(message.u.type === 'user') {
+			if (message.u.type === 'user') {
 				key = 'username';
 			} else {
 				key = 'name';
 			}
 
 			var author = (message.u)[key];
-			var datetime = (new moment(message.ts)).format("dddd, MMMM Do YYYY, h:mm:ss a");
+			var datetime = moment(message.ts).format('dddd, MMMM Do YYYY, h:mm:ss a');
 			var singleMessage = `
 				<p><strong>${author}</strong>  <em>${datetime}</em></p>
 				<p>${message.msg}</p>
@@ -33,10 +34,10 @@ Meteor.methods({
 			html = html + singleMessage;
 		}
 
-		html = html + "</div>";
+		html = html + '</div>';
 
 		let fromEmail = RocketChat.settings.get('From_Email').match(/\b[A-Z0-9._%+-]+@(?:[A-Z0-9-]+\.)+[A-Z]{2,4}\b/i);
-		
+
 		if (fromEmail) {
 			fromEmail = fromEmail[0];
 		} else {
@@ -47,9 +48,9 @@ Meteor.methods({
 			to: email,
 			from: fromEmail,
 			replyTo: fromEmail,
-			subject: `Transcript of your livechat conversation.`,
+			subject: 'Transcript of your livechat conversation.',
 			html: header + html + footer
-		}
+		};
 
 		console.log('Sending transcript email to ' + emailSettings.to);
 

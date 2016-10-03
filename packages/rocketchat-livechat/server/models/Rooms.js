@@ -191,7 +191,7 @@ RocketChat.models.Rooms.saveCRMDataByRoomId = function(roomId, crmData) {
 	return this.update(query, update);
 };
 
-/* Set the current state of the livechat room 
+/* Set the current state of the livechat room
  * can be: ['connecting', 'connected', 'closed']
  */
 RocketChat.models.Rooms.setState = function(roomId, newVal) {
