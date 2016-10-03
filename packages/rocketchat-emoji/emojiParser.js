@@ -9,6 +9,9 @@ RocketChat.callbacks.add('renderMessage', (message) => {
 	}
 
 	if (_.trim(message.html)) {
+		//&#39; to apostrophe (') for emojis such as :')
+		message.html = message.html.replace(/&#39;/g, "'");
+
 		Object.keys(RocketChat.emoji.packages).forEach((emojiPackage) => {
 			message.html = RocketChat.emoji.packages[emojiPackage].render(message.html);
 		});
@@ -36,6 +39,9 @@ RocketChat.callbacks.add('renderMessage', (message) => {
 		if (emojiOnly) {
 			message.html = checkEmojiOnly.unwrap().html();
 		}
+
+		//apostrophe (') back to &#39;
+		message.html = message.html.replace(/\'/g, "&#39;");
 	}
 
 	return message;
