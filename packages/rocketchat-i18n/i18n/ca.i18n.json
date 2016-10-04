@@ -33,7 +33,6 @@
   "Accounts_BlockedDomainsList_Description": "Llista de dominis bloquejats separada per comes",
   "Accounts_BlockedUsernameList": "Llista de noms d'usuari bloquejats",
   "Accounts_BlockedUsernameList_Description": "Llista  separada per comes de noms d'usuari bloquejats (no distingeix majúscules/minúscules)",
-  "Accounts_CustomFields": "Traduccions personalitzades",
   "Accounts_CustomFields_Description": "Ha de ser un objecte JSON vàlid on les claus són els noms dels camps i contenen un diccionari amb les opcions del camp. Exemple:</br><code>{\n \"role\": {\n  \"type\": \"select\",\n  \"defaultValue\": \"student\",\n  \"options\": [\"teacher\", \"student\"],\n  \"required\": true,\n  \"modifyRecordField\": {\n   \"array\": true,\n   \"field\": \"roles\"\n  }\n },\n \"twitter\": {\n  \"type\": \"text\",\n  \"required\": true,\n  \"minLength\": 2,\n  \"maxLength\": 10\n }\n}</code> ",
   "Accounts_denyUnverifiedEmail": "Denegar correu electrònic sense verificar",
   "Accounts_EmailVerification": "Verificació de correu electrònic",
