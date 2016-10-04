@@ -157,6 +157,7 @@ describe('Basic usage', function() {
 		it('send a message', () => {
 			mainContent.sendMessage(message);
 		});
+
 		describe('main content usage', () => {
 			describe('render', () => {
 				it('should show the title of the channel', () => {
@@ -176,7 +177,7 @@ describe('Basic usage', function() {
 				});
 
 				it('clicks the star', () => {
-					mainContent.emptyFavoriteStar.click();
+					mainContent.favoriteStar.click();
 				});
 
 				it('should show the message input bar', () => {
@@ -222,6 +223,36 @@ describe('Basic usage', function() {
 				it('should not show the video call button', () => {
 					mainContent.videoCamBtn.isVisible().should.be.false;
 				});
+			});
+			describe('fileUpload', ()=> {
+				it('send a attachment', () => {
+					mainContent.fileUpload('/home/martin/Downloads/cat.jpg');
+				});
+
+				it('should show the confirm button', () => {
+					mainContent.popupFileConfirmBtn.isVisible().should.be.true;
+				});
+
+				it('should show the cancel buttno', () => {
+					mainContent.popupFileCancelBtn.isVisible().should.be.true;
+				});
+
+				it('should show the file preview', () => {
+					mainContent.popupFilePreview.isVisible().should.be.true;
+				});
+
+				it('should show the confirm buttno', () => {
+					mainContent.popupFileConfirmBtn.isVisible().should.be.true;
+				});
+
+				it('should show the file title', () => {
+					mainContent.popupFileTitle.isVisible().should.be.true;
+				});
+
+				it('click the confirm', () => {
+					mainContent.popupFileConfirmBtn.click();
+				});
+
 			});
 		});
 	});
