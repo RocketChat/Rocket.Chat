@@ -31,7 +31,6 @@
   "Accounts_BlockedDomainsList_Description": "Kommata getrennte Liste von geblockten Domains",
   "Accounts_BlockedUsernameList": "Liste gesperrter Benutzernamen",
   "Accounts_BlockedUsernameList_Description": "Komma-getrennte Liste gesperrter Benutzernamen (case-insensitive)",
-  "Accounts_CustomFields": "Benutzerdefinierte Übersetzungen",
   "Accounts_denyUnverifiedEmail": "Nicht verifizierte E-Mail-Adressen ablehnen",
   "Accounts_EmailVerification": "E-Mail-Verifizierung",
   "Accounts_EmailVerification_Description": "Um diese Funktion nutzen zu können, stellen Sie bitte sicher, dass ihre SMTP-Einstellungen korrekt sind.",
