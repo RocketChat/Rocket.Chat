@@ -1,4 +1,4 @@
-RocketChat.saveRoomName = (rid, name, user) ->
+RocketChat.saveRoomName = (rid, name) ->
 	room = RocketChat.models.Rooms.findOneById rid
 
 	if room.t not in ['c', 'p']

@@ -1,6 +1,5 @@
 Meteor.methods
 	joinDefaultChannels: (silenced) ->
-
 		check silenced, Match.Optional(Boolean)
 
 		if not Meteor.userId()
