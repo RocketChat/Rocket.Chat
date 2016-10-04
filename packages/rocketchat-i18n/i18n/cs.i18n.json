@@ -32,6 +32,7 @@
   "Accounts_BlockedDomainsList_Description": "Čárkami oddělený seznam blokovaných domén",
   "Accounts_BlockedUsernameList": "Zakázaná uživatelská jména",
   "Accounts_BlockedUsernameList_Description": "čárkou oddělený seznam uživatelských jmen (na velikosti písmen nezáleží)",
+  "Accounts_CustomFields": "Vlastní překlad",
   "Accounts_CustomFields_Description": "Validní JSON obsahující klíče polí s nastavením. Například:<br/> <code>{\n \"role\": {\n  \"type\": \"select\",\n  \"defaultValue\": \"student\",\n  \"options\": [\"teacher\", \"student\"],\n  \"required\": true,\n  \"modifyRecordField\": {\n   \"array\": true,\n   \"field\": \"roles\"\n  }\n },\n \"twitter\": {\n  \"type\": \"text\",\n  \"required\": true,\n  \"minLength\": 2,\n  \"maxLength\": 10\n }\n}</code>",
   "Accounts_denyUnverifiedEmail": "Zakázat neověřené e-mailové adresy",
   "Accounts_EmailVerification": "Ověření e-mailu",
