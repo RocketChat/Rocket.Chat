@@ -1,7 +1,10 @@
 ![Rocket.Chat logo](https://rocket.chat/images/logo/logo-dark.svg?v3)
 
 # Deployment
-1. sudo meteor --port 80 & disown
+1. cd /app/Rocket.Chat
+2. tmux
+3. sudo meteor --port 80
+2. Press Ctrl + B and then press D
 
 # The Ultimate Open Source WebChat Platform
 
