@@ -67,15 +67,30 @@ Meteor.startup(function() {
 		i18nLabel: 'Livechat_room_count'
 	});
 
-	RocketChat.settings.add('Livechat_forward_open_chats', false, {
-		type: 'boolean',
-		group: 'Livechat'
+	RocketChat.settings.add('Livechat_agent_leave_action', 'none', {
+		type: 'select',
+		group: 'Livechat',
+		values: [
+			{ key: 'none', i18nLabel: 'None' },
+			{ key: 'forward', i18nLabel: 'Forward' },
+			{ key: 'close', i18nLabel: 'Close' }
+		],
+		i18nLabel: 'How_to_handle_open_sessions_when_agent_goes_offline'
 	});
 
-	RocketChat.settings.add('Livechat_forward_open_chats_timeout', 60, {
+	RocketChat.settings.add('Livechat_agent_leave_action_timeout', 60, {
 		type: 'int',
 		group: 'Livechat',
-		enableQuery: { _id: 'Livechat_forward_open_chats', value: true }
+		enableQuery: { _id: 'Livechat_agent_leave_action', value: { $ne: 'none' } },
+		i18nLabel: 'How_long_to_wait_after_agent_goes_offline',
+		i18nDescription: 'Time_in_seconds'
+	});
+
+	RocketChat.settings.add('Livechat_agent_leave_comment', '', {
+		type: 'string',
+		group: 'Livechat',
+		enableQuery: { _id: 'Livechat_agent_leave_action', value: 'close' },
+		i18nLabel: 'Comment_to_leave_on_closing_session'
 	});
 
 	RocketChat.settings.add('Livechat_webhookUrl', false, {
@@ -170,5 +185,14 @@ Meteor.startup(function() {
 		group: 'Livechat',
 		public: true,
 		i18nLabel: 'Office_Hours_Enabled'
+	});
+
+	RocketChat.settings.add('Livechat_videocall_enabled', false, {
+		type: 'boolean',
+		group: 'Livechat',
+		public: true,
+		i18nLabel: 'Videocall_enabled',
+		i18nDescription: 'Beta_feature_Depends_on_Video_Conference_to_be_enabled',
+		enableQuery: { _id: 'Jitsi_Enabled', value: true }
 	});
 });
