@@ -32,7 +32,6 @@
   "Accounts_BlockedDomainsList_Description": "Liste de domaines bloqués, séparés par des virgules",
   "Accounts_BlockedUsernameList": "Liste des noms d'utilisateurs bloqués",
   "Accounts_BlockedUsernameList_Description": "Liste de noms d'utilisateurs bloqués (insensible à la casse), séparée par des virgules",
-  "Accounts_CustomFields": "Traductions personnalisées",
   "Accounts_CustomFields_Description": "Devrait être un JSON valide où les clés sont les noms des champs contenant un dictionnaire de champs de paramètrage. Exemple :</br>\n<code>{\n \"role\": {\n  \"type\": \"select\",\n  \"defaultValue\": \"eleve\",\n  \"options\": [\"enseignant\", \"eleve\"],\n  \"required\": true,\n  \"modifyRecordField\": {\n   \"array\": true,\n   \"field\": \"roles\"\n  }\n },\n \"twitter\": {\n  \"type\": \"text\",\n  \"required\": true,\n  \"minLength\": 2,\n  \"maxLength\": 10\n }\n}</code> \n",
   "Accounts_denyUnverifiedEmail": "Refuser les e-mails non vérifiés",
   "Accounts_EmailVerification": "Vérification de l'adresse e-mail",
