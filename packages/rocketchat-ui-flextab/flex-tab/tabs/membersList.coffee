@@ -17,6 +17,8 @@ Template.membersList.helpers
 	roomUsers: ->
 		onlineUsers = RoomManager.onlineUsers.get()
 		roomUsernames = Template.instance().users.get()
+		room = ChatRoom.findOne(this.rid)
+		roomMuted = room?.muted or []
 
 		totalOnline = 0
 		users = roomUsernames.map (username) ->
@@ -32,6 +34,7 @@ Template.membersList.helpers
 			return {
 				username: username
 				status: onlineUsers[username]?.status
+				muted: username in roomMuted
 				utcOffset: utcOffset
 			}
 
