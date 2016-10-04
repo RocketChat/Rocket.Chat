@@ -652,6 +652,7 @@
   "LDAP_Encryption_Description": "Način šifriranja koristi za sigurnu komunikaciju s LDAP poslužiteljem. Primjeri uključuju `plain` (bez enkripcije),` SSL / LDAPS` (šifriranu od početka), i `StartTLS` (nadogradite na šifrirani komunikacije nekad povezano).",
   "LDAP_Host": "Domaćin",
   "LDAP_Host_Description": "LDAP domaćin, npr `ldap.example.com` ili` 10.0.0.30`.",
+  "LDAP_Import_Users": "Uvezi LDAP korisnike",
   "LDAP_Merge_Existing_Users": "Spoji postojeće korisnike",
   "LDAP_Merge_Existing_Users_Description": "*Oprez!* Pri uvozu korisnika s LDAPa i ako već postoji korisnik s istim korisničkim imenom, LDAP podaci i lozinka će biti postavljeni na postojećeg korisnika.",
   "LDAP_Port": "Port",
