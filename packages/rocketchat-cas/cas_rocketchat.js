@@ -7,7 +7,14 @@ Meteor.startup(function() {
 		this.add('CAS_enabled', false, { type: 'boolean', group: 'CAS', public: true });
 		this.add('CAS_base_url', '', { type: 'string', group: 'CAS', public: true });
 		this.add('CAS_login_url', '', { type: 'string', group: 'CAS', public: true });
-		this.add('CAS_version', '1.0', { type: 'select', values: [{ key: '1.0', i18nLabel: '1.0'}], group: 'CAS' });
+		this.add('CAS_version', '1.0', { type: 'select', values: [{ key: '1.0', i18nLabel: '1.0'}, { key: '2.0', i18nLabel: '2.0'}], group: 'CAS' });
+
+		this.section('Attribute handling', function() {
+			// Enable/disable sync
+			this.add('CAS_Sync_User_Data_Enabled', true, { type: 'boolean' });
+			// Attribute mapping table
+			this.add('CAS_Sync_User_Data_FieldMap', '{}', { type: 'string' });
+		});
 
 		this.section('CAS Login Layout', function() {
 			this.add('CAS_popup_width', '810', { type: 'string', group: 'CAS', public: true });
