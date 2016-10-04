@@ -16,13 +16,19 @@ class Markdown
 		schemes = RocketChat.settings.get('Markdown_SupportSchemesForLink').split(',').join('|')
 
 		# Support ![alt text](http://image url)
-		msg = msg.replace(new RegExp("!\\[([^\\]]+)\\]\\(((?:#{schemes}):\\/\\/[^\\)]+)\\)", 'gm'), '<a href="$2" title="$1" class="swipebox" target="_blank"><div class="inline-image" style="background-image: url($2);"></div></a>')
+		msg = msg.replace new RegExp("!\\[([^\\]]+)\\]\\(((?:#{schemes}):\\/\\/[^\\)]+)\\)", 'gm'), (match, title, url) ->
+			target = if url.indexOf(Meteor.absoluteUrl()) is 0 then '' else '_blank'
+			return '<a href="' + url + '" title="' + title + '" class="swipebox" target="' + target + '"><div class="inline-image" style="background-image: url(' + url + ');"></div></a>'
 
 		# Support [Text](http://link)
-		msg = msg.replace(new RegExp("\\[([^\\]]+)\\]\\(((?:#{schemes}):\\/\\/[^\\)]+)\\)", 'gm'), '<a href="$2" target="_blank">$1</a>')
+		msg = msg.replace new RegExp("\\[([^\\]]+)\\]\\(((?:#{schemes}):\\/\\/[^\\)]+)\\)", 'gm'), (match, title, url) ->
+			target = if url.indexOf(Meteor.absoluteUrl()) is 0 then '' else '_blank'
+			return '<a href="' + url + '" target="' + target + '">' + title + '</a>'
 
 		# Support <http://link|Text>
-		msg = msg.replace(new RegExp("(?:<|&lt;)((?:#{schemes}):\\/\\/[^\\|]+)\\|(.+?)(?=>|&gt;)(?:>|&gt;)", 'gm'), '<a href="$1" target="_blank">$2</a>')
+		msg = msg.replace new RegExp("(?:<|&lt;)((?:#{schemes}):\\/\\/[^\\|]+)\\|(.+?)(?=>|&gt;)(?:>|&gt;)", 'gm'), (match, url, title) ->
+			target = if url.indexOf(Meteor.absoluteUrl()) is 0 then '' else '_blank'
+			return '<a href="' + url + '" target="' + target + '">' + title + '</a>'
 
 		if RocketChat.settings.get('Markdown_Headers')
 			# Support # Text for h1
@@ -73,7 +79,7 @@ class Markdown
 
 
 RocketChat.Markdown = Markdown
-RocketChat.callbacks.add 'renderMessage', Markdown    , RocketChat.callbacks.priority.HIGH
+RocketChat.callbacks.add 'renderMessage', Markdown, RocketChat.callbacks.priority.HIGH, 'markdown'
 
 if Meteor.isClient
 	Blaze.registerHelper 'RocketChatMarkdown', (text) ->

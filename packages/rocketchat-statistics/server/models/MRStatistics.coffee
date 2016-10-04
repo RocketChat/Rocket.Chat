@@ -1,6 +1,6 @@
 RocketChat.models.MRStatistics = new class extends RocketChat.models._Base
 	constructor: ->
-		@_initModel 'mr_statistics'
+		super('mr_statistics')
 
 
 	# FIND ONE

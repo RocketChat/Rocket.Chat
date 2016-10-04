@@ -12,7 +12,11 @@ Meteor.methods
 			email = _.find _.pluck(user.emails || [], 'address'), (userEmail) ->
 				return regex.test(userEmail)
 
-			Accounts.sendResetPasswordEmail(user._id, email)
+			try
+				Accounts.sendResetPasswordEmail(user._id, email)
+			catch error
+				throw new Meteor.Error 'error-email-send-failed', 'Error trying to send email: ' + error.message, { method: 'registerUser', message: error.message }
+
 			return true
 
 		return false

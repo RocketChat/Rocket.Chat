@@ -229,7 +229,9 @@ It is a great solution for communities and companies wanting to privately host t
 - Avatars
 - Markdown
 - Emojis
+- Custom Emojis
 - Reactions
+- One touch Geolocation
 - TeX Math Rendering - inline math typesetting
 - Media Embeds
 - Link Previews
@@ -376,17 +378,15 @@ A lot of work has already gone into Rocket.Chat, but we have much bigger plans f
 
 # Credits
 
-Thanks to
+Thanks to our core team
 [Aaron Ogle](https://github.com/geekgonecrazy),
 [Bradley Hilton](https://github.com/Graywolf336),
 [Diego Sampaio](https://github.com/sampaiodiego),
 [Gabriel Engel](https://github.com/engelgabriel),
-[George Secrieru](https://github.com/gmsecrieru),
 [Marcelo Schmidt](https://github.com/marceloschmidt),
-[Rafael Caferati](https://github.com/rcaferati),
 [Rodrigo Nascimento](https://github.com/rodrigok),
 [Sing Li](https://github.com/Sing-Li),
-and many others.
+and to hundreds of awesome [contributors](https://github.com/RocketChat/Rocket.Chat/graphs/contributors).
 
 Emoji provided free by [Emoji One](http://emojione.com)
 
@@ -399,5 +399,8 @@ Hosting powered by [Rackspace](https://rackspace.com)
 Rocket.Chat will be free forever, but you can help us speed-up the development!
 
 [![Donate](https://www.paypalobjects.com/en_US/i/btn/btn_donateCC_LG.gif)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=ZL94ZE6LGVUSN)
+
+[![Bitcoins](https://github.com/RocketChat/Rocket.Chat.Docs/blob/master/1.%20Contributing/Donating/coinbase.png?raw=true)](https://www.coinbase.com/checkouts/ac2fa967efca7f6fc1201d46bdccb875)
+
 
 [BountySource](https://www.bountysource.com/teams/rocketchat)

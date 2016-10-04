@@ -1,6 +1,6 @@
 RocketChat.models.OAuthApps = new class extends RocketChat.models._Base
 	constructor: ->
-		@_initModel 'oauth_apps'
+		super('oauth_apps')
 
 
 	# FIND

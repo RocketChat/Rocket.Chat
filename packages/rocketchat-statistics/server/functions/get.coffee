@@ -3,7 +3,7 @@ RocketChat.statistics.get = ->
 
 	# Version
 	statistics.uniqueId = RocketChat.settings.get("uniqueID")
-	statistics.createdAt = RocketChat.models.Settings.findOne("uniqueID")?._createdAt
+	statistics.installedAt = RocketChat.models.Settings.findOne("uniqueID")?.createdAt
 	statistics.version = RocketChat.Info?.version
 	statistics.tag = RocketChat.Info?.tag
 	statistics.branch = RocketChat.Info?.branch
@@ -27,15 +27,15 @@ RocketChat.statistics.get = ->
 
 	m = ->
 		emit 1,
-			sum: this.usernames.length or 0
-			min: this.usernames.length or 0
-			max: this.usernames.length or 0
+			sum: this.usernames?.length or 0
+			min: this.usernames?.length or 0
+			max: this.usernames?.length or 0
 			count: 1
 
 		emit this.t,
-			sum: this.usernames.length or 0
-			min: this.usernames.length or 0
-			max: this.usernames.length or 0
+			sum: this.usernames?.length or 0
+			min: this.usernames?.length or 0
+			max: this.usernames?.length or 0
 			count: 1
 
 	r = (k, v) ->
