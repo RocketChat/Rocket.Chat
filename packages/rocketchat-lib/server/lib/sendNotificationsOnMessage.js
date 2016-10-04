@@ -78,7 +78,8 @@ RocketChat.callbacks.add('afterSaveMessage', function(message, room) {
 			settings.alwaysNotifyDesktopUsers.push(subscription.u._id);
 		} else if (subscription.desktopNotifications === 'nothing') {
 			settings.dontNotifyDesktopUsers.push(subscription.u._id);
-		} else if (subscription.mobilePushNotifications === 'all') {
+		}
+		if (subscription.mobilePushNotifications === 'all') {
 			settings.alwaysNotifyMobileUsers.push(subscription.u._id);
 		} else if (subscription.mobilePushNotifications === 'nothing') {
 			settings.dontNotifyMobileUsers.push(subscription.u._id);
@@ -191,14 +192,17 @@ RocketChat.callbacks.add('afterSaveMessage', function(message, room) {
 			}, {
 				fields: {
 					_id: 1,
-					username: 1
+					username: 1,
+					active: 1
 				}
 			}).fetch();
 			if (room.t === 'c' && !toAll) {
 				const callJoin = function(usersOfMentionItem) {
-					Meteor.runAsUser(usersOfMentionItem._id, function() {
-						return Meteor.call('joinRoom', room._id);
-					});
+					if (usersOfMentionItem.active) {
+						Meteor.runAsUser(usersOfMentionItem._id, function() {
+							return Meteor.call('joinRoom', room._id);
+						});
+					}
 				};
 				for (i = 0, len = usersOfDesktopMentions.length; i < len; i++) {
 					usersOfMentionItem = usersOfDesktopMentions[i];

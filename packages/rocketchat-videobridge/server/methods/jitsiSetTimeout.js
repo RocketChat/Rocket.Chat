@@ -1,10 +1,10 @@
 
 Meteor.methods({
 	'jitsi:updateTimeout': (rid) => {
-		let room = RocketChat.models.Rooms.findOne({_id: rid});
+		let room = RocketChat.models.Rooms.findOneById(rid);
 		let currentTime = new Date().getTime();
 
-		let jitsiTimeout = new Date(room.jitsiTimeout || currentTime).getTime();
+		let jitsiTimeout = new Date((room && room.jitsiTimeout) || currentTime).getTime();
 
 		if (jitsiTimeout <= currentTime) {
 			RocketChat.models.Rooms.setJitsiTimeout(rid, new Date(currentTime + 35*1000));

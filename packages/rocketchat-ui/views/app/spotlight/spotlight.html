@@ -2,7 +2,8 @@
 	<div class="spotlight hidden">
 		<div class="spotlight-input">
 			<i class="icon-search"></i>
-			{{> inputAutocomplete settings=autocompleteSettings id="room-search" class="search" placeholder=tQuickSearch autocomplete="off"}}
+			<input type="text" name="spotlight">
+			{{> messagePopup popupConfig}}
 		</div>
 	</div>
 </template>

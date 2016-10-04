@@ -8,6 +8,7 @@ Package.describe({
 Package.onUse(function(api) {
 	api.use('rocketchat:lib');
 	api.use('rocketchat:logger');
+	api.use('rocketchat:assets');
 	api.use('coffeescript');
 	api.use('underscore');
 	api.use('webapp');

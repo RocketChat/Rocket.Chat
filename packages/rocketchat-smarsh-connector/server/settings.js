@@ -20,6 +20,18 @@ RocketChat.settings.addGroup('Smarsh', function addSettings() {
 		i18nLabel: 'Smarsh_MissingEmail_Email',
 		placeholder: 'no-email@example.com'
 	});
+
+	const zoneValues = moment.tz.names().map(function _timeZonesToSettings(name) {
+		return {
+			key: name,
+			i18nLabel: name
+		};
+	});
+	this.add('Smarsh_Timezone', 'America/Los_Angeles', {
+		type: 'select',
+		values: zoneValues
+	});
+
 	this.add('Smarsh_Interval', 'every_30_minutes', {
 		type: 'select',
 		values: [{
