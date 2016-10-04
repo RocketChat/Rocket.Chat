@@ -81,8 +81,8 @@ Template.room.helpers
 		return {} unless roomData
 
 		if roomData.t in ['d', 'l']
-			username = _.without roomData.usernames, Meteor.user().username
-			return Session.get('user_' + username + '_status') || 'offline'
+			subscription = RocketChat.models.Subscriptions.findOne({rid: this._id});
+			return Session.get('user_' + subscription.name + '_status') || 'offline'
 		else
 			return 'offline'
 
@@ -378,8 +378,7 @@ Template.room.events
 		channel = $(e.currentTarget).data('channel')
 		if channel?
 			if RocketChat.Layout.isEmbedded()
-				fireGlobalEvent('click-mention-link', { channel: channel })
-				return window.open(FlowRouter.path('channel', {name: channel}))
+				return fireGlobalEvent('click-mention-link', { path: FlowRouter.path('channel', {name: channel}), channel: channel })
 
 			FlowRouter.go 'channel', {name: channel}
 			return
@@ -411,9 +410,15 @@ Template.room.events
 			ChatMessage.update {_id: id}, {$set: {"urls.#{index}.collapsed": !collapsed}}
 
 	'dragenter .dropzone': (e) ->
+		# Check for dataTransfer.items browser support
 		items = e.originalEvent?.dataTransfer?.items
-		if items?.length > 0 and items?[0]?.kind isnt 'string' and userCanDrop this._id
-			e.currentTarget.classList.add 'over'
+
+		if items
+			if items?.length > 0 and items?[0]?.kind isnt 'string' and userCanDrop this._id
+				e.currentTarget.classList.add 'over'
+		else
+			if userCanDrop this._id
+				e.currentTarget.classList.add 'over'
 
 	'dragleave .dropzone-overlay': (e) ->
 		e.currentTarget.parentNode.classList.remove 'over'
@@ -429,9 +434,7 @@ Template.room.events
 		event.currentTarget.parentNode.classList.remove 'over'
 
 		e = event.originalEvent or event
-		files = e.target.files
-		if not files or files.length is 0
-			files = e.dataTransfer?.files or []
+		files = e.dataTransfer?.files or []
 
 		filesToUpload = []
 		for file in files

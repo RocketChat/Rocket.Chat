@@ -80,3 +80,9 @@ Meteor.methods
 		return {
 			rid: rid
 		}
+
+DDPRateLimiter.addRule
+	type: 'method'
+	name: 'createDirectMessage'
+	connectionId: -> return true
+, 10, 60000

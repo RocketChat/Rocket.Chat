@@ -26,7 +26,7 @@ getUsersFromServer = (filter, records, cb) =>
 			return console.error err
 
 		if results.users.length > 0
-			for result in results
+			for result in results.users
 				if records.length < 5
 					records.push
 						_id: result.username

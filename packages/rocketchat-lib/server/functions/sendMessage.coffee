@@ -7,6 +7,9 @@ RocketChat.sendMessage = (user, message, room, upsert = false) ->
 
 	message.u = _.pick user, ['_id','username', 'name']
 
+	if not Match.test(message.msg, String)
+		message.msg = ''
+
 	message.rid = room._id
 
 	if not room.usernames?

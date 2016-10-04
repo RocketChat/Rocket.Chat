@@ -4,10 +4,8 @@
 ###
 RocketChat.settings =
 	callbacks: {}
+	regexCallbacks: {}
 	ts: new Date
-
-	get: (_id) ->
-		return Meteor.settings?[_id]
 
 	get: (_id, callback) ->
 		if callback?
@@ -17,9 +15,22 @@ RocketChat.settings =
 					callback key, value
 				return
 
+			if _.isRegExp(_id)
+				for key, value of Meteor.settings when _id.test(key)
+					callback key, value
+				return
+
 			if Meteor.settings?[_id]?
 				callback _id, Meteor.settings?[_id]
 		else
+			if _.isRegExp(_id)
+				items = []
+				for key, value of Meteor.settings when _id.test(key)
+					items.push
+						key: key
+						value: value
+				return items
+
 			return Meteor.settings?[_id]
 
 	set: (_id, value, callback) ->
@@ -46,6 +57,10 @@ RocketChat.settings =
 			for callback in RocketChat.settings.callbacks['*']
 				callback key, value, initialLoad
 
+		for key, value of RocketChat.settings.regexCallbacks
+			if value.regex.test(key)
+				callback(key, value) for callback in value.callbacks
+
 
 	onload: (key, callback) ->
 		# if key is '*'
@@ -57,5 +72,12 @@ RocketChat.settings =
 		keys = [].concat key
 
 		for k in keys
-			RocketChat.settings.callbacks[k] ?= []
-			RocketChat.settings.callbacks[k].push callback
+			if _.isRegExp k
+				RocketChat.settings.regexCallbacks[k.source] ?= {
+					regex: k
+					callbacks: []
+				}
+				RocketChat.settings.regexCallbacks[k.source].callbacks.push callback
+			else
+				RocketChat.settings.callbacks[k] ?= []
+				RocketChat.settings.callbacks[k].push callback
