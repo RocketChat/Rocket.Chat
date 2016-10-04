@@ -9,19 +9,12 @@ RocketChat.callbacks.add('renderMessage', (message) => {
 	}
 
 	if (_.trim(message.html)) {
-		for (let emoji in RocketChat.emoji.list) {
-			if (!RocketChat.emoji.list.hasOwnProperty(emoji)) {
-				continue;
-			}
+		//&#39; to apostrophe (') for emojis such as :')
+		message.html = message.html.replace(/&#39;/g, '\'');
 
-			let regExp = new RegExp(RegExp.escape(emoji), 'g');
-
-			let emojiPackage = RocketChat.emoji.list[emoji]['emojiPackage'];
-
-			if (regExp.test(message.html)) {
-				message.html = message.html.replace(regExp, RocketChat.emoji.packages[emojiPackage].render(emoji));
-			}
-		}
+		Object.keys(RocketChat.emoji.packages).forEach((emojiPackage) => {
+			message.html = RocketChat.emoji.packages[emojiPackage].render(message.html);
+		});
 
 		let checkEmojiOnly = $(`<div>${message.html}</div>`);
 		let emojiOnly = true;
@@ -46,6 +39,9 @@ RocketChat.callbacks.add('renderMessage', (message) => {
 		if (emojiOnly) {
 			message.html = checkEmojiOnly.unwrap().html();
 		}
+
+		//apostrophe (') back to &#39;
+		message.html = message.html.replace(/\'/g, '&#39;');
 	}
 
 	return message;

@@ -51,5 +51,5 @@ class MentionsClient
 			message.html = msg
 		return message
 
-RocketChat.callbacks.add 'renderMessage', MentionsClient
-RocketChat.callbacks.add 'renderMentions', MentionsClient
+RocketChat.callbacks.add 'renderMessage', MentionsClient, RocketChat.callbacks.priority.MEDIUM, 'mentions-message'
+RocketChat.callbacks.add 'renderMentions', MentionsClient, RocketChat.callbacks.priority.MEDIUM, 'mentions-mentions'

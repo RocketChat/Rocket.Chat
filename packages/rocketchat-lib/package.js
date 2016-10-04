@@ -7,7 +7,8 @@ Package.describe({
 
 Npm.depends({
 	'bad-words': '1.3.1',
-	'localforage': '1.4.2'
+	'localforage': '1.4.2',
+	'bugsnag': '1.8.0'
 });
 
 Package.onUse(function(api) {
@@ -54,6 +55,8 @@ Package.onUse(function(api) {
 	api.addFiles('lib/Message.coffee');
 	api.addFiles('lib/MessageTypes.coffee');
 
+	api.addFiles('server/lib/bugsnag.js', 'server');
+
 	api.addFiles('server/lib/RateLimiter.coffee', 'server');
 
 	// SERVER FUNCTIONS
@@ -66,6 +69,8 @@ Package.onUse(function(api) {
 	api.addFiles('server/functions/deleteMessage.js', 'server');
 	api.addFiles('server/functions/deleteUser.js', 'server');
 	api.addFiles('server/functions/removeUserFromRoom.js', 'server');
+	api.addFiles('server/functions/saveUser.js', 'server');
+	api.addFiles('server/functions/saveCustomFields.js', 'server');
 	api.addFiles('server/functions/sendMessage.coffee', 'server');
 	api.addFiles('server/functions/settings.coffee', 'server');
 	api.addFiles('server/functions/setUserAvatar.js', 'server');
@@ -144,6 +149,7 @@ Package.onUse(function(api) {
 	api.addFiles('client/lib/settings.coffee', 'client');
 	api.addFiles('client/lib/roomTypes.coffee', 'client');
 	api.addFiles('client/lib/userRoles.js', 'client');
+	api.addFiles('client/lib/Layout.js', 'client');
 
 	// CLIENT METHODS
 	api.addFiles('client/methods/sendMessage.coffee', 'client');

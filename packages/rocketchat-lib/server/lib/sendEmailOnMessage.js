@@ -116,7 +116,9 @@ RocketChat.callbacks.add('afterSaveMessage', function(message, room) {
 							html: header + messageHTML + divisorMessage + (linkByUser[user._id] || defaultLink) + footer
 						};
 
-						Email.send(email);
+						Meteor.defer(() => {
+							Email.send(email);
+						});
 
 						return true;
 					}

@@ -91,6 +91,8 @@ RocketChatFile.GridFS = class
 		this.findOneSync = Meteor.wrapAsync this.store.collection(this.name).findOne.bind this.store.collection(this.name)
 		this.removeSync = Meteor.wrapAsync this.store.remove.bind this.store
 
+		this.getFileSync = Meteor.wrapAsync this.getFile.bind this
+
 	findOne: (fileName) ->
 		return this.findOneSync {_id: fileName}
 
@@ -143,6 +145,23 @@ RocketChatFile.GridFS = class
 			uploadDate: file.uploadDate
 		}
 
+	getFile: (fileName, cb) ->
+		file = this.getFileWithReadStream(fileName)
+
+		if not file
+			return cb()
+
+		data = []
+		file.readStream.on 'data', Meteor.bindEnvironment (chunk) ->
+			data.push chunk
+
+		file.readStream.on 'end', Meteor.bindEnvironment ->
+			cb null,
+				buffer: Buffer.concat(data)
+				contentType: file.contentType
+				length: file.length
+				uploadDate: file.uploadDate
+
 	deleteFile: (fileName) ->
 		file = this.findOne fileName
 		if not file?
@@ -170,6 +189,8 @@ RocketChatFile.FileSystem = class
 		mkdirp.sync this.absolutePath
 		this.statSync = Meteor.wrapAsync fs.stat.bind fs
 		this.unlinkSync = Meteor.wrapAsync fs.unlink.bind fs
+
+		this.getFileSync = Meteor.wrapAsync this.getFile.bind this
 
 	createWriteStream: (fileName, contentType) ->
 		self = this
@@ -210,6 +231,22 @@ RocketChatFile.FileSystem = class
 			}
 		catch e
 			return undefined
+
+	getFile: (fileName, cb) ->
+		file = this.getFileWithReadStream(fileName)
+
+		if not file
+			return cb()
+
+		data = []
+		file.readStream.on 'data', Meteor.bindEnvironment (chunk) ->
+			data.push chunk
+
+		file.readStream.on 'end', Meteor.bindEnvironment ->
+			buffer: Buffer.concat(data)
+				contentType: file.contentType
+				length: file.length
+				uploadDate: file.uploadDate
 
 	deleteFile: (fileName) ->
 		try

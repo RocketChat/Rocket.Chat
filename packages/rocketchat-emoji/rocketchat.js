@@ -5,7 +5,10 @@ RocketChat.emoji = {
 			emojisByCategory: {
 				recent: []
 			},
-			toneList: {}
+			toneList: {},
+			render(html) {
+				return html;
+			}
 		}
 	},
 	list: {}
