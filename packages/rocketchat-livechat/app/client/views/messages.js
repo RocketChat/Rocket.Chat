@@ -1,3 +1,5 @@
+/* globals Livechat, LivechatVideoCall */
+
 Template.messages.helpers({
 	messages() {
 		return ChatMessage.find({
@@ -24,6 +26,9 @@ Template.messages.helpers({
 		} else {
 			return t('Options');
 		}
+	},
+	videoCallEnabled() {
+		return Livechat.videoCall;
 	}
 });
 
@@ -52,6 +57,27 @@ Template.messages.events({
 	},
 	'click .toggle-options': function(event, instance) {
 		instance.showOptions.set(!instance.showOptions.get());
+	},
+	'click .video-button': function(event) {
+		event.preventDefault();
+
+		if (!Meteor.userId()) {
+			Meteor.call('livechat:registerGuest', { token: visitor.getToken() }, (error, result) => {
+				if (error) {
+					return console.log(error.reason);
+				}
+
+				Meteor.loginWithToken(result.token, (error) => {
+					if (error) {
+						return console.log(error.reason);
+					}
+
+					LivechatVideoCall.request();
+				});
+			});
+		} else {
+			LivechatVideoCall.request();
+		}
 	}
 });
 
