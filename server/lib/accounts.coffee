@@ -83,7 +83,7 @@ Accounts.insertUserDoc = _.wrap Accounts.insertUserDoc, (insertUserDoc, options,
 
 	if roles.length is 0
 		# when inserting first user give them admin privileges otherwise make a regular user
-		hasAdmin = RocketChat.models.Users.findOne({ roles: 'admin' }, {fields: {_id: 1}})
+		hasAdmin = RocketChat.models.Users.findOne({ roles: { $in: 'admin' } }, {fields: {_id: 1}})
 		if hasAdmin?
 			roles.push 'user'
 		else
