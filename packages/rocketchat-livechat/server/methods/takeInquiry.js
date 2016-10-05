@@ -41,7 +41,6 @@ Meteor.methods({
 		const usernames = room.usernames.concat(agent.username);
 
 		RocketChat.models.Rooms.changeAgentByRoomId(inquiry.rid, usernames, agent);
-		RocketChat.models.Rooms.setState(inquiry.rid, 'connected');
 
 		// mark inquiry as taken
 		RocketChat.models.LivechatInquiry.takeInquiry(inquiry._id);

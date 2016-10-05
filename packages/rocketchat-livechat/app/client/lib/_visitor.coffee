@@ -4,7 +4,6 @@ msgStream = new Meteor.Streamer 'room-messages'
 	token = new ReactiveVar null
 	room = new ReactiveVar null
 	roomToSubscribe = new ReactiveVar null
-	roomState = new ReactiveVar null
 
 	register = ->
 		if not localStorage.getItem 'visitorToken'
@@ -16,7 +15,7 @@ msgStream = new Meteor.Streamer 'room-messages'
 		return token.get()
 
 	setRoom = (rid) ->
-		room.set rid 
+		room.set rid
 
 	getRoom = (createOnEmpty = false) ->
 		roomId = room.get()
@@ -38,15 +37,6 @@ msgStream = new Meteor.Streamer 'room-messages'
 			if msg.t is 'command'
 				console.log msg
 				Commands[msg.msg]()
-
-				# switch msg.msg
-				# 	when 'survey'
-				# 		unless $('body #survey').length
-				# 			Blaze.render(Template.survey, $('body').get(0))
-				# 	when 'endCall'
-				# 		LivechatVideoCall.finish()
-				# 	when 'promptTranscript'
-
 			else if msg.t isnt 'livechat_video_call'
 				ChatMessage.upsert { _id: msg._id }, msg
 
@@ -57,10 +47,8 @@ msgStream = new Meteor.Streamer 'room-messages'
 
 	register: register
 	getToken: getToken
-	
 	setRoom: setRoom
 	getRoom: getRoom
-	
 	setRoomToSubscribe: setRoomToSubscribe
 	getRoomToSubscribe: getRoomToSubscribe
 
