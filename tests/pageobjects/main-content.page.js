@@ -16,6 +16,8 @@ class MainContent extends Page {
 	get popupFilePreview() { return browser.element('.upload-preview-file'); }
 	get popupFileTitle() { return browser.element('.upload-preview-title'); }
 	get popupFileCancelBtn() { return browser.element('.sa-button-container .cancel'); }
+	get lastMessage() { return browser.element('.message:last-child .body'); }
+	get lastMessageImg() { return browser.element('.message:last-child .attachment-image img'); }
 
 	sendMessage(text) {
 		this.messageInput.setValue(text);
