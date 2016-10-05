@@ -132,6 +132,7 @@ Package.onUse(function(api) {
 	api.addFiles('server/methods/filterBadWords.js', ['server']);
 	api.addFiles('server/methods/filterATAllTag.js', 'server');
 	api.addFiles('server/methods/getChannelHistory.js', 'server');
+	api.addFiles('server/methods/cleanChannelHistory.js', 'server');
 
 	// SERVER STARTUP
 	api.addFiles('server/startup/settingsOnLoadCdnPrefix.coffee', 'server');
