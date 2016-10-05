@@ -15,7 +15,6 @@ class MainContent extends Page {
 	get popupFileConfirmBtn() { return browser.element('.sa-confirm-button-container .confirm'); }
 	get popupFilePreview() { return browser.element('.upload-preview-file'); }
 	get popupFileTitle() { return browser.element('.upload-preview-title'); }
-	get popupFileTitle() { return browser.element('.upload-preview-title'); }
 	get popupFileCancelBtn() { return browser.element('.sa-button-container .cancel'); }
 
 	sendMessage(text) {
