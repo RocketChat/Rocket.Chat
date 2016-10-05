@@ -10,11 +10,11 @@ Meteor.methods
             return false
 
         to_notify = RocketChat.models.Users.findUsersByUsernames(room.usernames).fetch()
-        console.log to_notify
         emails = []
         for recipient in to_notify
             if recipient.emails
                 emails.push(recipient.emails[0].address)
+        console.log "will notify #{emails}"
 
         console.log("will call server " + server + " on behalf of " + user.username)
 
