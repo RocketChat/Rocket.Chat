@@ -16,8 +16,8 @@
       "from": "array-differ@>=1.0.0 <2.0.0"
     },
     "array-find-index": {
-      "version": "1.0.1",
-      "resolved": "https://registry.npmjs.org/array-find-index/-/array-find-index-1.0.1.tgz",
+      "version": "1.0.2",
+      "resolved": "https://registry.npmjs.org/array-find-index/-/array-find-index-1.0.2.tgz",
       "from": "array-find-index@>=1.0.1 <2.0.0"
     },
     "array-uniq": {
@@ -26,9 +26,9 @@
       "from": "array-uniq@>=1.0.2 <2.0.0"
     },
     "autolinker": {
-      "version": "1.1.0",
-      "resolved": "https://registry.npmjs.org/autolinker/-/autolinker-1.1.0.tgz",
-      "from": "autolinker@1.1.0"
+      "version": "1.2.0",
+      "resolved": "https://registry.npmjs.org/autolinker/-/autolinker-1.2.0.tgz",
+      "from": "autolinker@1.2.0"
     },
     "beeper": {
       "version": "1.1.0",
@@ -126,8 +126,8 @@
       "from": "glogg@>=1.0.0 <2.0.0"
     },
     "graceful-fs": {
-      "version": "4.1.6",
-      "resolved": "https://registry.npmjs.org/graceful-fs/-/graceful-fs-4.1.6.tgz",
+      "version": "4.1.9",
+      "resolved": "https://registry.npmjs.org/graceful-fs/-/graceful-fs-4.1.9.tgz",
       "from": "graceful-fs@>=4.1.2 <5.0.0"
     },
     "gulp-header": {
@@ -188,8 +188,8 @@
       "from": "is-builtin-module@>=1.0.0 <2.0.0"
     },
     "is-finite": {
-      "version": "1.0.1",
-      "resolved": "https://registry.npmjs.org/is-finite/-/is-finite-1.0.1.tgz",
+      "version": "1.0.2",
+      "resolved": "https://registry.npmjs.org/is-finite/-/is-finite-1.0.2.tgz",
       "from": "is-finite@>=1.0.0 <2.0.0"
     },
     "is-utf8": {
@@ -318,8 +318,8 @@
       "from": "normalize-package-data@>=2.3.4 <3.0.0"
     },
     "number-is-nan": {
-      "version": "1.0.0",
-      "resolved": "https://registry.npmjs.org/number-is-nan/-/number-is-nan-1.0.0.tgz",
+      "version": "1.0.1",
+      "resolved": "https://registry.npmjs.org/number-is-nan/-/number-is-nan-1.0.1.tgz",
       "from": "number-is-nan@>=1.0.0 <2.0.0"
     },
     "object-assign": {
