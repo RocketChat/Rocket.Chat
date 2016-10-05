@@ -1,7 +1,7 @@
 import ModelsBaseDb from './_BaseDb';
 import ModelsBaseCache from './_BaseCache';
 
-RocketChat.cache = RocketChat.cache || {};
+RocketChat.models._CacheControl = new Meteor.EnvironmentVariable();
 
 class ModelsBase {
 	constructor(nameOrModel, useCache) {
@@ -10,9 +10,7 @@ class ModelsBase {
 		this.collectionName = this._db.collectionName;
 		this.name = this._db.name;
 
-		this.useCache = useCache === true;
-
-		this.origin = '_db';
+		this._useCache = useCache === true;
 
 		this.cache = new ModelsBaseCache(this);
 		// TODO_CACHE: remove
@@ -24,10 +22,21 @@ class ModelsBase {
 
 		this.db = this;
 
-		if (this.useCache) {
-			this.origin = 'cache';
+		if (this._useCache) {
 			this.db = new this.constructor(this.model, false);
 		}
+	}
+
+	get useCache() {
+		if (RocketChat.models._CacheControl.get() === false) {
+			return false;
+		}
+
+		return this._useCache;
+	}
+
+	get origin() {
+		return this.useCache === true ? 'cache' : '_db';
 	}
 
 	setUpdatedAt(/*record, checkQuery, query*/) {
