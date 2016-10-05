@@ -283,6 +283,7 @@ RocketChat.Phone = new class
 				when 'hangup', 'destroy'
 					RocketChat.ToneGenerator.stop()
 					delete _dialogs[d.callID]
+					WebNotifications.closeNotification 'phone'
 			return
 
 		if window.rocketDebug
@@ -323,6 +324,7 @@ RocketChat.Phone = new class
 							actions: actions
 							prefix: 'phone'
 							icon: 'images/call.png'
+							requireInteraction: true
 							payload:
 								rid: Session.get('openedRoom')
 								sender:
@@ -339,6 +341,7 @@ RocketChat.Phone = new class
 					putNotification(msg, d.params.destination_number)
 				else
 					putNotification(msg, d.params.caller_id_number, d.params.caller_id_name)
+				WebNotifications.closeNotification 'phone'
 				RocketChat.TabBar.updateButton('phone', { class: 'red' })
 
 			when 'hangup'
@@ -357,6 +360,7 @@ RocketChat.Phone = new class
 				else
 					msg = TAPi18n.__('Phone_failed_call')
 					toastr.error(msg + ": " + RocketChat.Phone.remap_hcause(d.cause))
+				WebNotifications.closeNotification 'phone'
 
 			when 'destroy'
 				RocketChat.ToneGenerator.stop()
@@ -369,6 +373,7 @@ RocketChat.Phone = new class
 				_curCall = null
 				clearNotification()
 				delete _dialogs[d.callID]
+				WebNotifications.closeNotification 'phone'
 
 	remap_hcause: (cause) ->
 		dflt = cause
