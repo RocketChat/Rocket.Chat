@@ -1,4 +1,4 @@
-/* globals Livechat, LivechatVideoCall, state, Room */
+/* globals Livechat, LivechatVideoCall */
 
 Template.messages.helpers({
 	messages() {
@@ -149,19 +149,4 @@ Template.messages.onRendered(function() {
 			onscroll();
 		});
 	}
-
-	// observe the state of the room
-	this.autorun(() => {
-		Meteor.subscribe('livechat:visitorRoom', visitor.getToken(), visitor.getRoom());
-		if (this.subscriptionsReady()) {
-			Room.find().observe({
-				added: function(room) {
-					state.update(room);
-				},
-				changed: function(room) {
-					state.update(room);
-				}
-			});
-		}
-	});
 });
