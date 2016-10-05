@@ -125,28 +125,28 @@ class ModelsBaseCache extends EventEmitter {
 	}
 
 	join({join, field, link, multi}) {
-		if (!RocketChat.cache[join]) {
+		if (!RocketChat.models[join]) {
 			console.log(`Invalid cache model ${join}`);
 			return;
 		}
 
-		RocketChat.cache[join].on('inserted', (record) => {
+		RocketChat.models[join].on('inserted', (record) => {
 			this.processRemoteJoinInserted({join, field, link, multi, record: record});
 		});
 
-		RocketChat.cache[join].on('beforeupdate', (record, diff) => {
+		RocketChat.models[join].on('beforeupdate', (record, diff) => {
 			if (diff[link.remote]) {
 				this.processRemoteJoinRemoved({join, field, link, multi, record: record});
 			}
 		});
 
-		RocketChat.cache[join].on('updated', (record, diff) => {
+		RocketChat.models[join].on('updated', (record, diff) => {
 			if (diff[link.remote]) {
 				this.processRemoteJoinInserted({join, field, link, multi, record: record});
 			}
 		});
 
-		RocketChat.cache[join].on('removed', (record) => {
+		RocketChat.models[join].on('removed', (record) => {
 			this.processRemoteJoinRemoved({join, field, link, multi, record: record});
 		});
 
