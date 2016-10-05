@@ -224,6 +224,7 @@ describe('Basic usage', function() {
 					mainContent.videoCamBtn.isVisible().should.be.false;
 				});
 			});
+
 			describe('fileUpload', ()=> {
 				it('send a attachment', () => {
 					mainContent.fileUpload('/home/martin/Downloads/cat.jpg');
@@ -252,7 +253,6 @@ describe('Basic usage', function() {
 				it('click the confirm', () => {
 					mainContent.popupFileConfirmBtn.click();
 				});
-
 			});
 		});
 	});
