@@ -157,7 +157,6 @@ Package.onUse(function(api) {
 	api.addFiles('server/methods/saveOfficeHours.js', 'server');
 	api.addFiles('server/methods/sendTranscript.js', 'server');
 
-
 	// models
 	api.addFiles('server/models/Users.js', 'server');
 	api.addFiles('server/models/Rooms.js', 'server');

@@ -31,8 +31,7 @@ RocketChat.QueueMethods = {
 			},
 			cl: false,
 			open: true,
-			waitingResponse: true,
-			state: 'connected'
+			waitingResponse: true
 		}, roomInfo);
 		let subscriptionData = {
 			rid: message.rid,
@@ -114,8 +113,7 @@ RocketChat.QueueMethods = {
 			},
 			cl: false,
 			open: true,
-			waitingResponse: true,
-			state: 'connecting'
+			waitingResponse: true
 		}, roomInfo);
 		RocketChat.models.LivechatInquiry.insert(inquiry);
 		RocketChat.models.Rooms.insert(room);

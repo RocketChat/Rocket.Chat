@@ -17,7 +17,6 @@ this.Livechat = new (class Livechat {
 		this._displayOfflineForm = new ReactiveVar(true);
 		this._offlineSuccessMessage = new ReactiveVar(TAPi18n.__('Thanks_We_ll_get_back_to_you_soon'));
 		this._videoCall = new ReactiveVar(false);
-
 		this._transcriptMessage = new ReactiveVar('');
 	}
 

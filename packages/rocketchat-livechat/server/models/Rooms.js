@@ -139,8 +139,7 @@ RocketChat.models.Rooms.closeByRoomId = function(roomId, closeInfo) {
 				username: closeInfo.user.username
 			},
 			closedAt: closeInfo.closedAt,
-			chatDuration: closeInfo.chatDuration,
-			state: 'closed'
+			chatDuration: closeInfo.chatDuration
 		},
 		$unset: {
 			open: 1
@@ -189,20 +188,4 @@ RocketChat.models.Rooms.saveCRMDataByRoomId = function(roomId, crmData) {
 	};
 
 	return this.update(query, update);
-};
-
-/* Set the current state of the livechat room
- * can be: ['connecting', 'connected', 'closed']
- */
-RocketChat.models.Rooms.setState = function(roomId, newVal) {
-	const query = {
-		_id: roomId
-	};
-	const update = {
-		$set: {
-			state: newVal
-		}
-	};
-
-	this.update(query, update);
 };
