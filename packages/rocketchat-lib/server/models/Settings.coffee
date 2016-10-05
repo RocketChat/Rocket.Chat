@@ -19,6 +19,13 @@ class ModelSettings extends RocketChat.models._Base
 
 		return @find query
 
+	findOneNotHiddenById: (_id) ->
+		query =
+			_id: _id
+			hidden: { $ne: true }
+
+		return @findOne query
+
 	findByIds: (_id = []) ->
 		_id = [].concat _id
 
@@ -82,6 +89,18 @@ class ModelSettings extends RocketChat.models._Base
 			blocked: { $ne: true }
 			value: { $ne: value }
 			_id: _id
+
+		update =
+			$set:
+				value: value
+
+		return @update query, update
+
+	updateValueNotHiddenById: (_id, value) ->
+		query =
+			_id: _id
+			hidden: { $ne: true }
+			blocked: { $ne: true }
 
 		update =
 			$set:
