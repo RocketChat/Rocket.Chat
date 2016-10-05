@@ -19,7 +19,7 @@ Meteor.methods({
 		}
 
 		//Ensure latest is always defined.
-		if (!_.isUndefined(latest)) {
+		if (_.isUndefined(latest)) {
 			latest = new Date();
 		}
 
@@ -48,8 +48,12 @@ Meteor.methods({
 		}
 
 		let records = [];
-		if (_.isUndefined(oldest)) {
+		if (_.isUndefined(oldest) && inclusive) {
+			records = RocketChat.models.Messages.findVisibleByRoomIdBeforeTimestampInclusive(rid, latest, options).fetch();
+		} else if (_.isUndefined(oldest) && !inclusive) {
 			records = RocketChat.models.Messages.findVisibleByRoomIdBeforeTimestamp(rid, latest, options).fetch();
+		} else if (!_.isUndefined(oldest) && inclusive) {
+			records = RocketChat.models.Messages.findVisibleByRoomIdBetweenTimestampsInclusive(rid, oldest, latest, options).fetch();
 		} else {
 			records = RocketChat.models.Messages.findVisibleByRoomIdBetweenTimestamps(rid, oldest, latest, options).fetch();
 		}
@@ -58,6 +62,26 @@ Meteor.methods({
 			message.starred = _.findWhere(message.starred, { _id: fromUserId });
 			return message;
 		});
+
+		if (unreads) {
+			let unreadNotLoaded = 0;
+			let firstUnread = undefined;
+
+			if (!_.isUndefined(oldest)) {
+				const firstMsg = messages[messages.length - 1];
+				if (!_.isUndefined(firstMsg) && firstMsg.ts > oldest) {
+					const unreadMessages = RocketChat.models.Messages.findVisibleByRoomIdBetweenTimestamps(rid, oldest, firstMsg.ts, { limit: 1, sort: { ts: 1 } });
+					firstUnread = unreadMessages.fetch()[0];
+					unreadNotLoaded = unreadMessages.count();
+				}
+			}
+
+			return {
+				messages,
+				firstUnread,
+				unreadNotLoaded
+			};
+		}
 
 		return {
 			messages
