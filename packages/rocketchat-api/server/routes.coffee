@@ -106,35 +106,35 @@ RocketChat.API.v1.addRoute 'channels.create', authRequired: true,
 			channel: RocketChat.models.Rooms.findOneById(id.rid)
 
 RocketChat.API.v1.addRoute 'channels.history', authRequired: true,
-	post: ->
-		if not @bodyParams.roomId?
-			return RocketChat.API.v1.failure 'Body parameter "roomId" is required.'
+	get: ->
+		if not @queryParams.roomId?
+			return RocketChat.API.v1.failure 'Query parameter "roomId" is required.'
 
 		latestDate = new Date
-		if @bodyParams.latest?
-			latestDate = new Date(@bodyParams.latest)
+		if @queryParams.latest?
+			latestDate = new Date(@queryParams.latest)
 
 		oldestDate = undefined
-		if @bodyParams.oldest?
-			oldestDate = new Date(@bodyParams.oldest)
+		if @queryParams.oldest?
+			oldestDate = new Date(@queryParams.oldest)
 
 		inclusive = false
-		if @bodyParams.inclusive?
-			inclusive = @bodyParams.inclusive
+		if @queryParams.inclusive?
+			inclusive = @queryParams.inclusive
 
 		count = 20
-		if @bodyParams.count?
-			count = parseInt @bodyParams.count
+		if @queryParams.count?
+			count = parseInt @queryParams.count
 
 		unreads = false
-		if @bodyParams.unreads?
-			unreads = @bodyParams.unreads
+		if @queryParams.unreads?
+			unreads = @queryParams.unreads
 
 		result = {}
 
 		try
 			Meteor.runAsUser this.userId, =>
-				result = Meteor.call 'getChannelHistory', @bodyParams.roomId, latestDate, oldestDate, inclusive, count, unreads
+				result = Meteor.call 'getChannelHistory', @queryParams.roomId, latestDate, oldestDate, inclusive, count, unreads
 		catch e
 			return RocketChat.API.v1.failure e.name + ': ' + e.message
 
