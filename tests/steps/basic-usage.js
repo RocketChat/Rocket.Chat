@@ -253,6 +253,10 @@ describe('Basic usage', function() {
 				it('click the confirm', () => {
 					mainContent.popupFileConfirmBtn.click();
 				});
+
+				it('should show the image message', () => {
+					mainContent.lastMessageImg.isVisible();
+				});
 			});
 		});
 	});
