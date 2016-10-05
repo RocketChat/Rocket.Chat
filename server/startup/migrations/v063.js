@@ -4,7 +4,7 @@ RocketChat.Migrations.add({
 		var forward = RocketChat.models.Settings.findOne({ _id:'Livechat_forward_open_chats' });
 		var timeout = RocketChat.models.Settings.findOne({ _id:'Livechat_forward_open_chats_timeout' });
 
-		if (forward.value) {
+		if (forward && forward.value) {
 			RocketChat.models.Settings.upsert({ _id: 'Livechat_agent_leave_action' }, {
 				$set: {
 					value: 'forward',
@@ -14,7 +14,7 @@ RocketChat.Migrations.add({
 			});
 		}
 
-		if (timeout.value !== 60) {
+		if (timeout && timeout.value !== 60) {
 			RocketChat.models.Settings.upsert({ _id: 'Livechat_agent_leave_action_timeout' }, {
 				$set: {
 					value: timeout.value,
