@@ -105,6 +105,39 @@ RocketChat.API.v1.addRoute 'channels.create', authRequired: true,
 		return RocketChat.API.v1.success
 			channel: RocketChat.models.Rooms.findOneById(id.rid)
 
+RocketChat.API.v1.addRoute 'channels.history', authRequired: true,
+	post: ->
+		if not @bodyParams.roomId?
+			return RocketChat.API.v1.failure 'Body parameter "roomId" is required.'
+
+		latestDate = new Date
+		if @bodyParams.latest?
+			latestDate = new Date(@bodyParams.latest)
+
+		oldestDate = undefined
+		if @bodyParams.oldest?
+			oldestDate = new Date(@bodyParams.oldest)
+
+		inclusive = false
+		if @bodyParams.inclusive?
+			inclusive = @bodyParams.inclusive
+
+		count = 20
+		if @bodyParams.count?
+			count = parseInt @bodyParams.count
+
+		unreads = false
+		if @bodyParams.unreads?
+			unreads = @bodyParams.unreads
+
+		result = {}
+
+		Meteor.runAsUser this.userId, =>
+			result = Meteor.call 'getChannelHistory', @bodyParams.roomId, latestDate, oldestDate, inclusive, count, unreads
+
+		return RocketChat.API.v1.success
+			result: result
+
 # List Private Groups a user has access to
 RocketChat.API.v1.addRoute 'groups.list', authRequired: true,
 	get: ->

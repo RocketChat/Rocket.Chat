@@ -43,7 +43,7 @@ rocketchat:api
 rocketchat:assets
 rocketchat:authorization
 rocketchat:autolinker
-rocketchat:cas
+#rocketchat:cas
 rocketchat:channel-settings
 rocketchat:channel-settings-mail-messages
 rocketchat:colors
@@ -67,7 +67,7 @@ rocketchat:integrations
 rocketchat:katex
 rocketchat:ldap
 rocketchat:lib
-rocketchat:livechat
+#rocketchat:livechat
 rocketchat:logger
 rocketchat:mailer
 rocketchat:mapview
