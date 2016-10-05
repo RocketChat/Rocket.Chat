@@ -418,6 +418,7 @@
   "error-invalid-channel-start-with-chars" : "Invalid channel. Start with @ or #",
   "error-invalid-custom-field" : "Invalid custom field",
   "error-invalid-custom-field-name" : "Invalid custom field name. Use only letters, numbers, hyphens and underscores.",
+  "error-invalid-date": "Invalid date provided.",
   "error-invalid-description" : "Invalid description",
   "error-invalid-domain" : "Invalid domain",
   "error-invalid-email" : "Invalid email __email__",
