@@ -146,13 +146,14 @@ RocketChat.API.v1.addRoute 'channels.cleanHistory', authRequired: true,
 		if not @bodyParams.roomId?
 			return RocketChat.API.v1.failure 'Body parameter "roomId" is required.'
 
-		latestDate = new Date
-		if @bodyParams.latest?
-			latestDate = new Date(@bodyParams.latest)
+		if not @bodyParams.latest?
+			return RocketChat.API.v1.failure 'Body parameter "latest" is required.'
 
-		oldestDate = undefined
-		if @bodyParams.oldest?
-			oldestDate = new Date(@bodyParams.oldest)
+		if not @bodyParams.oldest?
+			return RocketChat.API.v1.failure 'Body parameter "oldest" is required.'
+
+		latestDate = new Date(@bodyParams.latest)
+		oldestDate = new Date(@bodyParams.oldest)
 
 		inclusive = false
 		if @bodyParams.inclusive?
