@@ -200,7 +200,6 @@ Meteor.startup(function() {
 		type: 'boolean',
 		group: 'Livechat',
 		public: true,
-		section: 'Widget',
 		i18nLabel: 'Transcript_Enabled'
 	});
 
@@ -208,7 +207,6 @@ Meteor.startup(function() {
 		type: 'string',
 		group: 'Livechat',
 		public: true,
-		section: 'Widget',
 		i18nLabel: 'Transcript_message',
 		enableQuery: { _id: 'Livechat_enable_transcript', value: true }
 	});

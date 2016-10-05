@@ -194,7 +194,7 @@ Package.onUse(function(api) {
 	api.addFiles('server/publications/visitorPageVisited.js', 'server');
 	api.addFiles('server/publications/livechatInquiries.js', 'server');
 	api.addFiles('server/publications/livechatOfficeHours.js', 'server');
-	api.addFiles('server/publications/visitorRoom.js', 'server');
+
 	// api
 	api.addFiles('server/api.js', 'server');
 

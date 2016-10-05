@@ -196,6 +196,8 @@ RocketChat.Livechat = {
 
 		RocketChat.models.Subscriptions.hideByRoomIdAndUserId(room._id, user._id);
 
+		RocketChat.models.Messages.createCommandWithRoomIdAndUser('promptTranscript', room._id, user);
+
 		Meteor.defer(() => {
 			RocketChat.callbacks.run('livechat.closeRoom', room);
 		});

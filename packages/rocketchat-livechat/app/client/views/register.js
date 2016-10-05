@@ -50,9 +50,6 @@ Template.register.events({
 				department: departmentId
 			};
 
-			visitor.setName(guest.name);
-			visitor.setEmail(guest.email);
-
 			Meteor.call('livechat:registerGuest', guest, function(error, result) {
 				if (error != null) {
 					return instance.showError(error.reason);
