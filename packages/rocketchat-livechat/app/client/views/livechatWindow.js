@@ -1,4 +1,4 @@
-/* globals Department, Livechat, LivechatVideoCall, Room */
+/* globals Department, Livechat, LivechatVideoCall */
 
 Template.livechatWindow.helpers({
 	title() {
@@ -55,7 +55,6 @@ Template.livechatWindow.events({
 	'click .sound'(event) {
 		event.stopPropagation();
 		Session.set({sound: !Session.get('sound')});
-		console.log(Room.find().fetch());
 	}
 });
 
