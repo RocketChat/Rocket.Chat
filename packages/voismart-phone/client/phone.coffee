@@ -243,7 +243,7 @@ RocketChat.Phone = new class
 		if _videoDevice and (_videoDevice != "none") and useVideo
 			has_video = true
 
-		_curCall.answer({
+		_curCall?.answer({
 			useVideo: has_video,
 			useStereo: true,
 			useCamera: _videoDevice,
