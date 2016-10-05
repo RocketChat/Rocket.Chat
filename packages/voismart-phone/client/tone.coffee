@@ -58,28 +58,39 @@
 		if f and f.f1 and f.f2
 			@start(f.f1, f.f2)
 
-	createRingerLFO: () ->
+	createRingerLFO: (country) ->
+		mapper =
+			'it': @_createRingerLFOIt
+			'uk': @_createRingerLFOUk
+		method = mapper[country] or @_createRingerLFOIt
+		method()
+
+	_createItRingerLFO: () ->
+		@_createRingerLFO 5, (t) -> (t > 0 and t < 1)
+
+	_createUkRingerLFO: () ->
+		@_createRingerLFO 3, (t) -> ((t > 0 and t < 0.4) or (t > 0.6 and t < 1))
+
+	_createRingerLFO: (duration, condition) ->
 		# create audio buffer
 		channels = 1
 		sampleRate = @context.sampleRate
-		frameCount = sampleRate * 5   # 5 seconds long
+		frameCount = sampleRate * duration   # duration seconds long
 		arrayBuffer = @context.createBuffer(channels, frameCount, sampleRate)
 
 		bufferData = arrayBuffer.getChannelData(0)
 		for i in [0..frameCount-1]
-			# activate only in the first second
-			if i/sampleRate > 0 and i/sampleRate < 1
+			# activate only in the [0, 0.4] and [0.6, 1] intervals
+			if condition(i/sampleRate)
 				bufferData[i] = 0.25
 
 		@ringerLFOBuffer = arrayBuffer
 
-	startRingback: () ->
-		@start(425, 0)
+	_startRingback: (f1, f2, ringerBuffer) ->
+		@start(f1, f2)
 
 		# set our gain node to 0, because the LFO is calibrated to this level
 		@gainNode.gain.value = 0
-
-		ringerBuffer = @createRingerLFO()
 
 		@ringerLFOSource = @context.createBufferSource()
 		@ringerLFOSource.buffer = ringerBuffer
@@ -87,3 +98,13 @@
 		# connect the ringerLFOSource to the gain Node audio param
 		@ringerLFOSource.connect(@gainNode.gain)
 		@ringerLFOSource.start(0)
+
+	startRingback: (country) ->
+		country = country?.toLowerCase() or 'it'
+		capitalizedCountry = country[0].toUpperCase() + country.slice(1)
+		mapper =
+			it: {f1: 425, f2: 0, ringerbuf_method: @_createItRingerLFO}
+			uk: {f1: 400, f2: 450, ringerbuf_method: @_createUkRingerLFO}
+		ringerBuffer = @["_create#{capitalizedCountry}RingerLFO"]()
+		params = mapper[country]
+		@_startRingback params.f1, params.f2, ringerBuffer
