@@ -4,15 +4,22 @@ request = HTTPInternals.NpmModules.request.module
 iconv = Npm.require('iconv-lite')
 ipRangeCheck = Npm.require('ip-range-check')
 he = Npm.require('he')
+jschardet = Npm.require('jschardet')
 
 OEmbed = {}
 
 # Detect encoding
 getCharset = (body) ->
 	binary = body.toString 'binary'
+
+	result = jschardet.detect(binary)
+	if result.confidence > 0.8
+		return result.encoding
+
 	matches = binary.match /<meta\b[^>]*charset=["']?([\w\-]+)/i
 	if matches
 		return matches[1]
+
 	return 'utf-8'
 
 toUtf8 = (body) ->
