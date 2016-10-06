@@ -5,6 +5,27 @@ import loki from 'lokijs';
 import {EventEmitter} from 'events';
 import objectPath from 'object-path';
 
+const lokiEq = loki.LokiOps.$eq;
+
+loki.LokiOps.$eq = function(a, b) {
+	if (Array.isArray(a)) {
+		return loki.LokiOps.$containsAny(a, b);
+	}
+	return lokiEq(a, b);
+};
+
+loki.LokiOps.$in = loki.LokiOps.$containsAny;
+loki.LokiOps.$nin = loki.LokiOps.$containsNone;
+
+loki.LokiOps.$exists = function(a, b) {
+	if (b === 1) {
+		return loki.LokiOps.$ne(a, undefined);
+	}
+
+	return loki.LokiOps.$eq(a, undefined);
+};
+
+
 const ignore = [
 	'emit',
 	'load',
@@ -586,25 +607,6 @@ class ModelsBaseCache extends EventEmitter {
 					query[field] = {
 						$regex: value
 					};
-				}
-
-				if (field === '$exists') {
-					if (value === 1) {
-						query.$ne = undefined;
-					} else {
-						query.$eq = undefined;
-					}
-					delete query[field];
-				}
-
-				if (field === '$nin') {
-					query.$containsNone = value;
-					delete query[field];
-				}
-
-				if (field === '$in') {
-					query.$containsAny = value;
-					delete query[field];
 				}
 
 				if (field === '$and' || field === '$or') {
