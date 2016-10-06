@@ -8,6 +8,8 @@ Meteor.methods({
 		var messages = RocketChat.models.Messages.find({'rid': rid}, { sort: { 'ts' : 1 }}).fetch();
 		const header = RocketChat.placeholders.replace(RocketChat.settings.get('Email_Header') || '');
 		const footer = RocketChat.placeholders.replace(RocketChat.settings.get('Email_Footer') || '');
+		const user = Meteor.user();
+		const userLanguage = user.language || RocketChat.settings.get('language') || 'en';
 
 		if (messages[0].ts.getTime() > messages[1].ts.getTime()) {
 			messages.reverse();
@@ -20,12 +22,12 @@ Meteor.methods({
 
 			var author;
 			if (message.u._id === Meteor.userId()) {
-				author = TAPi18n.__('You');
+				author = TAPi18n.__('You', { lng: userLanguage });
 			} else {
 				author = message.u.username;
 			}
 
-			var datetime = moment(message.ts).format('dddd, MMMM Do YYYY, h:mm:ss a');
+			var datetime = moment(message.ts).locale(userLanguage).format('LLL');
 			var singleMessage = `
 				<p><strong>${author}</strong>  <em>${datetime}</em></p>
 				<p>${message.msg}</p>
@@ -47,7 +49,7 @@ Meteor.methods({
 			to: email,
 			from: fromEmail,
 			replyTo: fromEmail,
-			subject: 'Transcript of your livechat conversation.',
+			subject: TAPi18n.__('Transcript_of_your_livechat_conversation', { lng: userLanguage }),
 			html: header + html + footer
 		};
 
