@@ -203,7 +203,7 @@ Meteor.startup(function() {
 		i18nLabel: 'Transcript_Enabled'
 	});
 
-	RocketChat.settings.add('Livechat_transcript_message', 'would you like a copy of this chat emailed?', {
+	RocketChat.settings.add('Livechat_transcript_message', 'Would you like a copy of this chat emailed?', {
 		type: 'string',
 		group: 'Livechat',
 		public: true,
