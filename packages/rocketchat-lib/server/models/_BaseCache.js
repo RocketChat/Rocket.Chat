@@ -477,8 +477,15 @@ class ModelsBaseCache extends EventEmitter {
 					for (const field in options.sort) {
 						if (options.sort.hasOwnProperty(field)) {
 							const direction = options.sort[field];
-							const valueA = objectPath.get(a, field);
-							const valueB = objectPath.get(b, field);
+							let valueA;
+							let valueB;
+							if (field.indexOf('.') > -1) {
+								valueA = objectPath.get(a, field);
+								valueB = objectPath.get(b, field);
+							} else {
+								valueA = a[field];
+								valueB = b[field];
+							}
 							if (valueA > valueB) {
 								r = direction;
 								break;
