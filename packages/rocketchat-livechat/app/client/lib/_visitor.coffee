@@ -35,8 +35,7 @@ msgStream = new Meteor.Streamer 'room-messages'
 	subscribeToRoom = (roomId) ->
 		msgStream.on roomId, (msg) ->
 			if msg.t is 'command'
-				console.log msg
-				Commands[msg.msg]()
+				Commands[msg.msg]?()
 			else if msg.t isnt 'livechat_video_call'
 				ChatMessage.upsert { _id: msg._id }, msg
 
