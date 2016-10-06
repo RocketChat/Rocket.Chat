@@ -60,5 +60,15 @@ this.Commands = {
 				showConfirmButton: false
 			});
 		}
+	},
+
+	connecting: function() {
+		console.log("connecting");
+		Livechat.connecting = true;
+	},
+
+	connected: function() {
+		console.log("connected");
+		Livechat.connecting = false;
 	}
 };
