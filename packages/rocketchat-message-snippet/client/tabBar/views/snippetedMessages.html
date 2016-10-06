@@ -1,0 +1,48 @@
+<template name="snippetedMessages">
+    <div class="content">
+        <div class="list-view snippet-messages-list">
+            <div class="title">
+                <h2>{{_ "Snippet_Messages"}}</h2>
+            </div>
+			{{#if Template.subscriptionsReady}}
+				{{#unless hasMessages}}
+                    <h2>{{_ "No_snippet_messages"}}</h2>
+				{{/unless}}
+			{{/if}}
+        </div>
+        <ul class="list clearfix">
+			{{#each messages}}
+				<!--{{#nrr nrrargs 'message' message}}{{/nrr}}-->
+                <li id="{{message._id}}" class="message sequential {{message.system}} {{message.t}} {{message.own}} {{message.isTemp}} {{message.error}}" data-username="{{message.u.username}}" data-date="{{message.date}}">
+                    <span class="thumb thumb-small" data-username="{{message.u.username}}" tabindex="1">{{> avatar username=message.u.username}}</span>
+                    <span class="user" data-username="{{message.u.username}}" tabindex="1">
+						{{#if own}}
+							{{_ "You"}}
+						{{else}}
+							{{message.u.username}}
+						{{/if}}
+                    </span>
+                    <span class="info">
+					<span class="time">{{message.time}}</span>
+						{{#if edit}}
+                            <span class="edited">({{_ "edited"}})</span>
+						{{/if}}
+					</span>
+                    <div class="body" dir="auto">
+						<a href="">{{message.filename}}</a>
+                    </div>
+                </li>
+
+			{{/each}}
+			{{#if hasMore}}
+                <li class="load-more">
+					{{#if Template.subscriptionsReady}}
+                        <button>{{_ "Has_more"}}...</button>
+					{{else}}
+                        <div class="load-more-loading">{{_ "Loading..."}}</div>
+					{{/if}}
+                </li>
+			{{/if}}
+        </ul>
+    </div>
+</template>
