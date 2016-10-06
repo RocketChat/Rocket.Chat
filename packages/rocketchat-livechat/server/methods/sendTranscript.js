@@ -5,20 +5,24 @@ Meteor.methods({
 		check(rid, String);
 		check(email, String);
 
-		var messages = RocketChat.models.Messages.find({'rid': rid}, { sort: { 'ts' : 1 }}).fetch();
-		const header = RocketChat.placeholders.replace(RocketChat.settings.get('Email_Header') || '');
-		const footer = RocketChat.placeholders.replace(RocketChat.settings.get('Email_Footer') || '');
+		const room = RocketChat.models.Rooms.findOneById(rid);
 		const user = Meteor.user();
 		const userLanguage = user.language || RocketChat.settings.get('language') || 'en';
 
-		if (messages[0].ts.getTime() > messages[1].ts.getTime()) {
-			messages.reverse();
+		// allow to only user to send transcripts from their own chats
+		if (!room || room.t !== 'l' || !room.v || !user.profile || room.v.token !== user.profile.token) {
+			throw new Meteor.Error('error-invalid-room', 'Invalid room');
 		}
 
+		const messages = RocketChat.models.Messages.findVisibleByRoomId(rid, { sort: { 'ts' : 1 }});
+		const header = RocketChat.placeholders.replace(RocketChat.settings.get('Email_Header') || '');
+		const footer = RocketChat.placeholders.replace(RocketChat.settings.get('Email_Footer') || '');
+
 		var html = '<div> <hr>';
-		for (var i = 0; i < messages.length; i++) {
-			var message = messages[i];
-			console.log(message);
+		messages.forEach(message => {
+			if (message.t && ['command', 'livechat-close', 'livechat_video_call'].indexOf(message.t) !== -1) {
+				return;
+			}
 
 			var author;
 			if (message.u._id === Meteor.userId()) {
@@ -33,7 +37,7 @@ Meteor.methods({
 				<p>${message.msg}</p>
 			`;
 			html = html + singleMessage;
-		}
+		});
 
 		html = html + '</div>';
 
@@ -53,14 +57,12 @@ Meteor.methods({
 			html: header + html + footer
 		};
 
-		console.log('Sending transcript email to ' + emailSettings.to);
-
 		Meteor.defer(() => {
 			Email.send(emailSettings);
 		});
 
 		Meteor.defer(() => {
-			RocketChat.callbacks.run('sendTranscript', messages, email);
+			RocketChat.callbacks.run('livechat.sendTranscript', messages, email);
 		});
 
 		return true;
