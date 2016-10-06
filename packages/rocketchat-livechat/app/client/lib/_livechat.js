@@ -18,6 +18,8 @@ this.Livechat = new (class Livechat {
 		this._offlineSuccessMessage = new ReactiveVar(TAPi18n.__('Thanks_We_ll_get_back_to_you_soon'));
 		this._videoCall = new ReactiveVar(false);
 		this._transcriptMessage = new ReactiveVar('');
+
+		this._connecting = new ReactiveVar(false);
 	}
 
 	get online() {
@@ -58,6 +60,10 @@ this.Livechat = new (class Livechat {
 	}
 	get transcriptMessage() {
 		return this._transcriptMessage.get();
+	}
+
+	get connecting() {
+		return this._connecting.get();
 	}
 
 	set online(value) {
@@ -106,5 +112,8 @@ this.Livechat = new (class Livechat {
 	}
 	set transcriptMessage(value) {
 		this._transcriptMessage.set(value);
+	}
+	set connecting(value) {
+		this._connecting.set(value);
 	}
 })();

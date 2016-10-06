@@ -52,7 +52,7 @@ RocketChat.QueueMethods = {
 
 		RocketChat.models.Rooms.insert(room);
 		RocketChat.models.Subscriptions.insert(subscriptionData);
-
+		
 		return room;
 	},
 	/* Guest Pool Queuing Method:
@@ -117,6 +117,13 @@ RocketChat.QueueMethods = {
 		}, roomInfo);
 		RocketChat.models.LivechatInquiry.insert(inquiry);
 		RocketChat.models.Rooms.insert(room);
+
+		// show sending message in widget if on 
+
+		console.log(guest);
+		if (RocketChat.settings.get('Livechat_open_inquiery_show_connecting')) {
+			RocketChat.models.Messages.createCommandWithRoomIdAndUser('connecting', room._id, guest);
+		}
 
 		return room;
 	}
