@@ -15,7 +15,7 @@ const password = 'rocket.chat';
 const PublicChannelName = 'channel-test-'+Date.now();
 const privateChannelName = 'private-channel-test-'+Date.now();
 
-//User interactions(direct messages, add, remove...)
+//User interactions (direct messages, add, remove...)
 const targetUser = 'rocket.cat';
 
 //Test data
@@ -86,7 +86,7 @@ describe('Basic usage', function() {
 				sideNav.newDirectMessageIcon.isVisible().should.be.true;
 			});
 
-			it('should show the "More Direct Messages" buton', () => {
+			it('should show the "More Direct Messages" button', () => {
 				sideNav.moreDirectMessages.isVisible().should.be.true;
 			});
 
@@ -227,14 +227,14 @@ describe('Basic usage', function() {
 
 			describe('fileUpload', ()=> {
 				it('send a attachment', () => {
-					mainContent.fileUpload('/home/martin/Downloads/cat.jpg');
+					mainContent.fileUpload('/home/martin/Downloads/cat.jpg'); //really ?
 				});
 
 				it('should show the confirm button', () => {
 					mainContent.popupFileConfirmBtn.isVisible().should.be.true;
 				});
 
-				it('should show the cancel buttno', () => {
+				it('should show the cancel button', () => {
 					mainContent.popupFileCancelBtn.isVisible().should.be.true;
 				});
 
@@ -242,7 +242,7 @@ describe('Basic usage', function() {
 					mainContent.popupFilePreview.isVisible().should.be.true;
 				});
 
-				it('should show the confirm buttno', () => {
+				it('should show the confirm button', () => {
 					mainContent.popupFileConfirmBtn.isVisible().should.be.true;
 				});
 
@@ -398,7 +398,7 @@ describe('Basic usage', function() {
 		});
 	});
 
-	describe('privte channel', () => {
+	describe('private channel', () => {
 		it('create a private channel', () => {
 			sideNav.createChannel(privateChannelName, true, false);
 		});
