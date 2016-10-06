@@ -15,14 +15,6 @@ Template.options.events({
 				if (error) {
 					return console.log('Error ->', error);
 				}
-
-				swal({
-					title: '',
-					text: t('Chat_ended'),
-					type: 'success',
-					timer: 1500,
-					showConfirmButton: false
-				});
 			});
 		});
 	}
