@@ -35,12 +35,7 @@ msgStream = new Meteor.Streamer 'room-messages'
 	subscribeToRoom = (roomId) ->
 		msgStream.on roomId, (msg) ->
 			if msg.t is 'command'
-				switch msg.msg
-					when 'survey'
-						unless $('body #survey').length
-							Blaze.render(Template.survey, $('body').get(0))
-					when 'endCall'
-						LivechatVideoCall.finish()
+				Commands[msg.msg]?()
 			else if msg.t isnt 'livechat_video_call'
 				ChatMessage.upsert { _id: msg._id }, msg
 
