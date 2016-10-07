@@ -16,5 +16,6 @@ Package.onUse(function(api) {
 
 	api.addFiles('server/api.coffee', 'server');
 	api.addFiles('server/routes.coffee', 'server');
+	api.addFiles('server/routes.extended.coffee', 'server')
 	api.addFiles('server/settings.js', 'server');
 });
