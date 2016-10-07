@@ -52,8 +52,9 @@ Accounts.registerLoginHandler 'orchestraNG', (loginRequest) ->
 		logger.info(ngUser)
 		if ngUser.success is false
 			throw new Error("getUser failed: #{ngUser.msg} (#{ngUser.errcode})")
-		fieldsToKeep = [ 'username', 'language', 'firstname',
+		fieldsToKeep = [ 'ng_id', 'username', 'language', 'firstname',
 						  'middlename', 'lastname', 'email', 'timezone' ]
+		ngUser.ng_id = ngUser.id
 		for k of ngUser
 			if k not in fieldsToKeep
 				delete ngUser[k]
@@ -81,6 +82,10 @@ Accounts.registerLoginHandler 'orchestraNG', (loginRequest) ->
 
 	username = loginRequest.username.substring(0, loginRequest.username.indexOf("@#{domain}"))
 	user = Meteor.users.findOne username: username
+	if (not user) and (ngUser.ng_id)
+		# try looking for one with the same id and replace it
+		# this is needed if the username was renamed
+		user = Meteor.users.findOne ng_id: ngUser.ng_id
 	if user
 		ngUser.emails = [address: ngUser.email, "verified": true]
 		delete ngUser.email
