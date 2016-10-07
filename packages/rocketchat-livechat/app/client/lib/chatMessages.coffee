@@ -83,6 +83,7 @@ class @ChatMessages
 						ChatMessage.update msgObject._id, { $set: { error: true } }
 						showError error.reason
 					else if result.newRoom and result.rid?
+						Livechat.connecting = result.showConnecting
 						ChatMessage.update result._id, _.omit(result, '_id')
 						visitor.subscribeToRoom(result.rid)
 						visitor.setRoom(result.rid)
