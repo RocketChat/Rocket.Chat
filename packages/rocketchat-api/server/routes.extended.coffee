@@ -32,9 +32,9 @@ RocketChat.API.v1.addRoute 'room.info', authRequired: true,
 Room name needs to be URL encoded, as the identifiers begin with characters
 that are not URL safe (e.g., '#' for channels and groups and '@' for direct messages). Example:
 
-'http://domain.com:3000/api/v1/room/%23testRoom/integrations'
+'http://domain.com:3000/api/v1/room/name/%23testRoom/integrations'
 ###
-RocketChat.API.v1.addRoute 'room/:rname/integrations', authRequired: true,
+RocketChat.API.v1.addRoute 'room/name/:rname/integrations', authRequired: true,
 	get: ->
 		
 		if RocketChat.authz.hasPermission(@userId, 'manage-integrations') is false
@@ -96,7 +96,6 @@ RocketChat.API.v1.addRoute 'room.addUser', authRequired: true,
 			this.response.setTimeout (1000 * @userId.length)
 			Meteor.runAsUser this.userId, () =>
 				(Meteor.call 'addUserToRoom', rid:@bodyParams.room, username:@bodyParams.username)
-			console.log status: 'success', rid:@bodyParams.room, username:@bodyParams.username
 		catch e
 			return RocketChat.API.v1.failure e.name + ': ' + e.message
 
