@@ -227,7 +227,7 @@ describe('Basic usage', function() {
 
 			describe('fileUpload', ()=> {
 				it('send a attachment', () => {
-					mainContent.fileUpload('/home/martin/Downloads/cat.jpg'); //really ?
+					mainContent.fileUpload('./public/images/logo/1024x1024.png');
 				});
 
 				it('should show the confirm button', () => {
