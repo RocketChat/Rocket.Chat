@@ -26,5 +26,9 @@ Meteor.startup(function() {
 			i18nLabel: 'Exclude_Botnames',
 			i18nDescription: 'Exclude_Botnames_Description'
 		});
+
+		this.add('SlackBridge_Export_Channels', '', {
+			type: 'roomPick'
+		});
 	});
 });

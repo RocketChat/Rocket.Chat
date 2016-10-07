@@ -1,5 +1,7 @@
 TempSettings = new Meteor.Collection null
 Template.admin.onCreated ->
+	this.selectedRooms = new ReactiveVar {}
+
 	if not RocketChat.settings.cachedCollectionPrivate?
 		RocketChat.settings.cachedCollectionPrivate = new RocketChat.CachedCollection({ name: 'private-settings', eventType: 'onAll' })
 		RocketChat.settings.collectionPrivate = RocketChat.settings.cachedCollectionPrivate.collection
@@ -200,6 +202,30 @@ Template.admin.helpers
 		if fileConstraints.extensions?.length > 0
 			return '.' + fileConstraints.extensions.join(', .')
 
+	autocompleteRoom: ->
+		return {
+			limit: 10
+			# inputDelay: 300
+			rules: [
+				{
+					# @TODO maybe change this 'collection' and/or template
+					collection: 'CachedChannelList'
+					subscription: 'channelAndPrivateAutocomplete'
+					field: 'name'
+					template: Template.roomSearch
+					noMatchTemplate: Template.roomSearchEmpty
+					matchAll: true
+					filter:
+						exceptions: Template.instance().selectedRooms.get()[this._id] or []
+					selector: (match) ->
+						return { name: match }
+					sort: 'name'
+				}
+			]
+		}
+
+	selectedRooms: ->
+		return Template.instance().selectedRooms.get()[this._id]
 
 Template.admin.events
 	"change .input-monitor": (e, t) ->
@@ -341,6 +367,14 @@ Template.admin.events
 		codeMirrorBox.removeClass('code-mirror-box-fullscreen')
 		codeMirrorBox.find('.CodeMirror')[0].CodeMirror.refresh()
 
+	'autocompleteselect .autocomplete': (event, instance, doc) ->
+		selectedRooms = instance.selectedRooms.get()
+		if !selectedRooms[this.id]
+			selectedRooms[this.id] = []
+		selectedRooms[this.id] = selectedRooms[this.id].concat doc
+		instance.selectedRooms.set selectedRooms
+		event.currentTarget.value = ''
+		event.currentTarget.focus()
 
 Template.admin.onRendered ->
 	Tracker.afterFlush ->
