@@ -253,9 +253,165 @@ describe('Basic usage', function() {
 				it('click the confirm', () => {
 					mainContent.popupFileConfirmBtn.click();
 				});
+			});
 
-				it('should show the image message', () => {
-					mainContent.lastMessageImg.isVisible();
+			describe('messages actions', ()=> {
+				describe('render', () => {
+					it('open GENERAL', () => {
+						sideNav.openChannel('general');
+					});
+
+					it('send a message to be tested', () => {
+						mainContent.sendMessage('Message for Message Actions Tests');
+					});
+
+					it('open the message action menu', () => {
+						mainContent.openMessageActionMenu();
+					});
+
+					it('should show the message action menu', () => {
+						mainContent.messageActionMenu.isVisible().should.be.true;
+					});
+
+					it('should show the reply action', () => {
+						mainContent.messageReply.isVisible().should.be.true;
+					});
+
+					it('should show the edit action', () => {
+						mainContent.messageEdit.isVisible().should.be.true;
+					});
+
+					it('should show the delete action', () => {
+						mainContent.messageDelete.isVisible().should.be.true;
+					});
+
+					it('should show the permalink action', () => {
+						mainContent.messagePermalink.isVisible().should.be.true;
+					});
+
+					it('should show the copy action', () => {
+						mainContent.messageCopy.isVisible().should.be.true;
+					});
+
+					it('should show the quote the action', () => {
+						mainContent.messageQuote.isVisible().should.be.true;
+					});
+
+					it('should show the star action', () => {
+						mainContent.messageStar.isVisible().should.be.true;
+					});
+
+					it('should show the star action', () => {
+						mainContent.messageStar.isVisible().should.be.true;
+					});
+
+					it('should show the reaction action', () => {
+						mainContent.messageReaction.isVisible().should.be.true;
+					});
+
+					it('should show the close action', () => {
+						mainContent.messageClose.isVisible().should.be.true;
+					});
+
+					it('close the action menu', () => {
+						mainContent.selectAction('close');
+					});
+				});
+
+				describe('usage', () => {
+					it('send a message to test the reply', () => {
+						mainContent.sendMessage('Message for reply Tests');
+					});
+
+					it('open the message action menu', () => {
+						mainContent.openMessageActionMenu();
+					});
+
+					it('reply the message', () => {
+						mainContent.selectAction('reply');
+						mainContent.sendBtn.click();
+					});
+
+					it('send a message to test the edit', () => {
+						mainContent.addTextToInput('Message for Message edit Tests ');
+						mainContent.sendBtn.click();
+					});
+
+					it('open the message action menu', () => {
+						mainContent.openMessageActionMenu();
+					});
+
+					it('edit the message', () => {
+						mainContent.selectAction('edit');
+						mainContent.sendBtn.click();
+					});
+
+					it('send a message to test the delete', () => {
+						mainContent.sendMessage('Message for Message Delete Tests');
+					});
+
+					it('open the message action menu', () => {
+						mainContent.openMessageActionMenu();
+					});
+
+					it('delete the message', () => {
+						mainContent.selectAction('delete');
+						mainContent.popupFileConfirmBtn.click();
+					});
+
+					it('should not show the deleted message', () => {
+						mainContent.lastMessage.should.not.equal('Message for Message Delete Tests');
+					});
+
+					it('send a message to test the quote', () => {
+						mainContent.sendMessage('Message for quote Tests');
+					});
+
+					it('open the message action menu', () => {
+						mainContent.openMessageActionMenu();
+					});
+
+					it('quote the message', () => {
+						mainContent.selectAction('quote');
+						mainContent.sendBtn.click();
+					});
+
+					it('send a message to test the star', () => {
+						mainContent.sendMessage('Message for star Tests');
+					});
+
+					it('open the message action menu', () => {
+						mainContent.openMessageActionMenu();
+					});
+
+					it('star the message', () => {
+						mainContent.selectAction('reply');
+						mainContent.sendBtn.click();
+					});
+
+					it('send a message to test the copy', () => {
+						mainContent.sendMessage('Message for copy Tests');
+					});
+
+					it('open the message action menu', () => {
+						mainContent.openMessageActionMenu();
+					});
+
+					it('copy the message', () => {
+						mainContent.selectAction('copy');
+					});
+
+					it('send a message to test the permalink', () => {
+						mainContent.sendMessage('Message for permalink Tests');
+					});
+
+					it('open the message action menu', () => {
+						mainContent.openMessageActionMenu();
+					});
+
+					it('permalink the message', () => {
+						mainContent.selectAction('permalink');
+					});
 				});
 			});
 		});
@@ -268,6 +424,7 @@ describe('Basic usage', function() {
 			});
 
 			it('should show the room info tab content', () => {
+				browser.pause(3000);
 				flexTab.channelTab.click();
 				flexTab.channelSettings.isVisible().should.be.true;
 			});
