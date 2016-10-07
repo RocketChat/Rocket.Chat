@@ -16,7 +16,9 @@ class MainContent extends Page {
 	get popupFilePreview() { return browser.element('.upload-preview-file'); }
 	get popupFileTitle() { return browser.element('.upload-preview-title'); }
 	get popupFileCancelBtn() { return browser.element('.sa-button-container .cancel'); }
+	get lastMessageUser() { return browser.element('.message:last-child .user-card-message:nth-of-type(2)'); }
 	get lastMessage() { return browser.element('.message:last-child .body'); }
+	get lastMessageUserTag() { return browser.element('.message:last-child .role-tag'); }
 	get lastMessageImg() { return browser.element('.message:last-child .attachment-image img'); }
 	get messageOptionsBtn() { return browser.element('.message:last-child .info .message-cog-container .icon-cog'); }
 	get messageReply() { return browser.element('.message:last-child .message-dropdown .reply-message'); }
@@ -29,6 +31,7 @@ class MainContent extends Page {
 	get messageStar() { return browser.element('.message:last-child .message-dropdown .star-message'); }
 	get messageUnread() { return browser.element('.message:last-child .message-dropdown .mark-message-as-unread'); }
 	get messageReaction() { return browser.element('.message:last-child .message-dropdown .reaction-message'); }
+	get messagePin() { return browser.element('.message:last-child .message-dropdown .pin-message'); }
 	get messageClose() { return browser.element('.message:last-child .message-dropdown .message-dropdown-close'); }
 	get emojiPickerMainScreen() { return browser.element('.emojiPicker'); }
 	get emojiPickerPeopleIcon() { return browser.element('.emojiPicker .icon-people'); }
@@ -103,8 +106,8 @@ class MainContent extends Page {
 				this.messageStar.click();
 				break;
 			case 'unread':
-				this.messagePin.waitForVisible(5000);
-				this.messagePin.click();
+				this.messageUnread.waitForVisible(5000);
+				this.messageUnread.click();
 				break;
 			case 'reaction':
 				this.messageReply.waitForVisible(5000);
