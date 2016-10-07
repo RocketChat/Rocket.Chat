@@ -6,24 +6,17 @@ import flexTab from '../pageobjects/flex-tab.page';
 import mainContent from '../pageobjects/main-content.page';
 import sideNav from '../pageobjects/side-nav.page';
 
-//Login info from the test user
-const username = 'user-test-'+Date.now();
-const email = username+'@rocket.chat';
-const password = 'rocket.chat';
-
-//Names of the test channels
-const PublicChannelName = 'channel-test-'+Date.now();
-const privateChannelName = 'private-channel-test-'+Date.now();
-
-//User interactions (direct messages, add, remove...)
-const targetUser = 'rocket.cat';
+//test data imports
+import {username, email, password} from '../test-data/user.js';
+import {PublicChannelName, privateChannelName} from '../test-data/channel.js';
+import {targetUser} from '../test-data/interactions.js';
 
 //Test data
 const message = 'message from '+username;
 
 
 //Basic usage test start
-describe('Basic usage', function() {
+describe.only('Basic usage', function() {
 	this.retries(2);
 
 	it('load page', () => {
@@ -223,6 +216,18 @@ describe('Basic usage', function() {
 				it('should not show the video call button', () => {
 					mainContent.videoCamBtn.isVisible().should.be.false;
 				});
+
+				it('should show the last message', () => {
+					mainContent.lastMessage.isVisible().should.be.true;
+				});
+
+				it('the last message should be from the loged user', () => {
+					mainContent.lastMessageUser.getText().should.equal(username);
+				});
+
+				it('should not show the admin tag', () => {
+					mainContent.lastMessageUserTag.should.not.equal('admin');
+				});
 			});
 
 			describe('fileUpload', ()=> {
@@ -311,6 +316,14 @@ describe('Basic usage', function() {
 
 					it('should show the close action', () => {
 						mainContent.messageClose.isVisible().should.be.true;
+					});
+
+					it('should not show the pin action', () => {
+						mainContent.messagePin.isVisible().should.be.false;
+					});
+
+					it('should not show the mark as unread action', () => {
+						mainContent.messageUnread.isVisible().should.be.false;
 					});
 
 					it('close the action menu', () => {
@@ -527,6 +540,9 @@ describe('Basic usage', function() {
 	describe('public channel', () => {
 		it('create a public channel', () => {
 			sideNav.createChannel(PublicChannelName, false, false);
+		});
+
+		it('open the public channel', () => {
 			sideNav.openChannel(PublicChannelName);
 		});
 
