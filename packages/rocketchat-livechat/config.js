@@ -216,8 +216,7 @@ Meteor.startup(function() {
 		group: 'Livechat',
 		public: true,
 		i18nLabel: 'Livechat_open_inquiery_show_connecting',
-		enableQuery: { _id: 'Livechat_Routing_Method', value: "Guest_Pool" }
+		enableQuery: { _id: 'Livechat_Routing_Method', value: 'Guest_Pool' }
 	});
-	
 
 });
