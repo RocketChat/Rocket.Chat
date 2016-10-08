@@ -16,7 +16,7 @@ RocketChat.Notifications = new class
 			[roomId, e] = eventName.split('/')
 
 			user = Meteor.users.findOne @userId, {fields: {username: 1}}
-			if RocketChat.models.Subscriptions.findOneByRoomIdAndUserId(roomId, @userId).fetch()?
+			if RocketChat.models.Subscriptions.findOneByRoomIdAndUserId(roomId, @userId)?
 				subscriptions = RocketChat.models.Subscriptions.findByRoomId(roomId).fetch()
 				for subscription in subscriptions
 					RocketChat.Notifications.notifyUser(subscription.u._id, eventName, args...)
