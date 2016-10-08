@@ -17,6 +17,7 @@ Package.onUse(function(api) {
 		'rocketchat:lib'
 	]);
 
+	api.addFiles('settings.js', 'server');
 	api.addFiles('irc.server.coffee', 'server');
 	api.export(['Irc'], ['server']);
 });
