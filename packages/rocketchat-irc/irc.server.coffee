@@ -51,7 +51,7 @@ class IrcClient
 		@endMemberListRegex = /^.+#(\S+) :End of \/NAMES list.$/
 		@addMemberToRoomRegex = /^:(\S+)!~\S+ JOIN #(\S+)$/
 		@removeMemberFromRoomRegex = /^:(\S+)!~\S+ PART #(\S+)$/
-		@quiteMemberRegex = /^:(\S+)!~\S+ QUIT .*$/
+		@quitMemberRegex = /^:(\S+)!~\S+ QUIT .*$/
 
 	connect: (@loginCb) =>
 		@socket.connect @ircPort, @ircHost, @onConnect
@@ -118,9 +118,9 @@ class IrcClient
 				@onRemoveMemberFromRoom matchResult[1], matchResult[2]
 				continue
 
-			matchResult = @quiteMemberRegex.exec line
+			matchResult = @quitMemberRegex.exec line
 			if matchResult
-				@onQuiteMember matchResult[1]
+				@onQuitMember matchResult[1]
 				continue
 
 			matchResult = @successLoginMessageRegex.exec line
@@ -271,8 +271,8 @@ class IrcClient
 		console.log '[irc] onRemoveMemberFromRoom -> '.yellow, 'roomName:', roomName, 'member:', member
 		RocketChat.models.Rooms.removeUsernameByName roomName, member
 
-	onQuiteMember: (member) ->
-		console.log '[irc] onQuiteMember ->'.yellow, 'username:', member
+	onQuitMember: (member) ->
+		console.log '[irc] onQuitMember ->'.yellow, 'username:', member
 		RocketChat.models.Rooms.removeUsernameFromAll member
 
 		Meteor.users.update {name: member},
