@@ -19,7 +19,6 @@ async = (f, args...) ->
 class IrcClient
 	constructor: (@loginReq) ->
 		@user = @loginReq.user
-		@user.username = @user.name
 		ircClientMap[@user._id] = this
 		@ircPort = IRC_PORT
 		@ircHost = IRC_HOST
@@ -65,7 +64,7 @@ class IrcClient
 	onConnect: () =>
 		console.log '[irc] onConnect -> '.yellow, @user.username, 'connect success.'
 		@socket.write "NICK #{@user.username}\r\n"
-		@socket.write "USER #{@user.username} 0 * :Real Name\r\n"
+		@socket.write "USER #{@user.username} 0 * :#{@user.name}\r\n"
 		# message order could not make sure here
 		@isConnected = true
 		@socket.write msg for msg in @msgBuf
