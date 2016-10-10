@@ -5,7 +5,8 @@ Meteor.startup(function() {
 		this.add('IRC_Enabled', true, {
 			type: 'boolean',
 			i18nLabel: 'Enabled',
-			i18nDescription: 'IRC_Enabled'
+			i18nDescription: 'IRC_Enabled',
+			alert: 'IRC Support is a work in progress. Use on a production system is not recommended at this time.'
 		});
 
 // The IRC host server to talk to
