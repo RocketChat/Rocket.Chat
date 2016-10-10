@@ -1,9 +1,9 @@
 net = Npm.require('net')
 Lru = Npm.require('lru-cache')
 
-MESSAGE_CACHE_SIZE = 200
-IRC_PORT = 6667
-IRC_HOST = 'irc.freenode.net'
+MESSAGE_CACHE_SIZE = RocketChat.settings.get('IRC_Message_Cache_Size');
+IRC_PORT = RocketChat.settings.get('IRC_Port');
+IRC_HOST = RocketChat.settings.get('IRC_Host');
 
 ircClientMap = {}
 ircReceiveMessageCache = Lru MESSAGE_CACHE_SIZE
@@ -44,14 +44,14 @@ class IrcClient
 		@receiveMemberListBuf = {}
 		@pendingJoinRoomBuf = []
 
-		@successLoginMessageRegex = /Welcome to the freenode Internet Relay Chat Network/
-		@failedLoginMessageRegex = /You have not registered/
-		@receiveMessageRegex = /^:(\S+)!~\S+ PRIVMSG (\S+) :(.+)$/
-		@receiveMemberListRegex = /^:\S+ \d+ \S+ = #(\S+) :(.*)$/
-		@endMemberListRegex = /^.+#(\S+) :End of \/NAMES list.$/
-		@addMemberToRoomRegex = /^:(\S+)!~\S+ JOIN #(\S+)$/
-		@removeMemberFromRoomRegex = /^:(\S+)!~\S+ PART #(\S+)$/
-		@quitMemberRegex = /^:(\S+)!~\S+ QUIT .*$/
+		@successLoginMessageRegex = /RocketChat.settings.get('IRC_RegEx_successLogin');/
+		@failedLoginMessageRegex = /RocketChat.settings.get('IRC_RegEx_failedLogin');/
+		@receiveMessageRegex = /RocketChat.settings.get('IRC_RegEx_receiveMessage');/
+		@receiveMemberListRegex = /RocketChat.settings.get('IRC_RegEx_receiveMemberList');/
+		@endMemberListRegex = /RocketChat.settings.get('IRC_RegEx_endMemberList');/
+		@addMemberToRoomRegex = /RocketChat.settings.get('IRC_RegEx_addMemberToRoom');/
+		@removeMemberFromRoomRegex = /RocketChat.settings.get('IRC_RegEx_removeMemberFromRoom');/
+		@quitMemberRegex = /RocketChat.settings.get('IRC_RegEx_quitMember');/
 
 	connect: (@loginCb) =>
 		@socket.connect @ircPort, @ircHost, @onConnect

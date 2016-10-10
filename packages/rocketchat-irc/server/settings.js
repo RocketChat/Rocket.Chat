@@ -31,42 +31,42 @@ Meteor.startup(function() {
 
 // Expandable box for modifying regular expressions for IRC interaction
 		this.section('Regular Expressions', function() {
-			this.add('IRC_RegEx_successLogin', '/Welcome to the freenode Internet Relay Chat Network/', {
+			this.add('IRC_RegEx_successLogin', 'Welcome to the freenode Internet Relay Chat Network', {
 				type: 'string',
 				i18nLabel: 'Login Successful',
 				i18nDescription: 'IRC_Login_Success'
 			});
-			this.add('IRC_RegEx_failedLogin', '/You have not registered/', {
+			this.add('IRC_RegEx_failedLogin', 'You have not registered', {
 				type: 'string',
 				i18nLabel: 'Login Failed',
 				i18nDescription: 'IRC_Login_Fail'
 			});
-			this.add('IRC_RegEx_receiveMessage', '', {
+			this.add('IRC_RegEx_receiveMessage', '^:(\S+)!~\S+ PRIVMSG (\S+) :(.+)$', {
 				type: 'string',
 				i18nLabel: 'Private Message',
 				i18nDescription: 'IRC_Private_Message'
 			});
-			this.add('IRC_RegEx_receiveMemberList', '', {
+			this.add('IRC_RegEx_receiveMemberList', '^:\S+ \d+ \S+ = #(\S+) :(.*)$', {
 				type: 'string',
 				i18nLabel: 'Channel User List Start',
 				i18nDescription: 'IRC_Channel_Users'
 			});
-			this.add('IRC_RegEx_endMemberList', '', {
+			this.add('IRC_RegEx_endMemberList', '^.+#(\S+) :End of \/NAMES list.$', {
 				type: 'string',
 				i18nLabel: 'Channel User List End',
 				i18nDescription: 'IRC_Channel_Users_End'
 			});
-			this.add('IRC_RegEx_addMemberToRoom', '', {
+			this.add('IRC_RegEx_addMemberToRoom', '^:(\S+)!~\S+ JOIN #(\S+)$', {
 				type: 'string',
 				i18nLabel: 'Join Channel',
 				i18nDescription: 'IRC_Channel_Join'
 			});
-			this.add('IRC_RegEx_removeMemberFromRoom', '', {
+			this.add('IRC_RegEx_removeMemberFromRoom', '^:(\S+)!~\S+ PART #(\S+)$', {
 				type: 'string',
 				i18nLabel: 'Leave Channel',
 				i18nDescription: 'IRC_Channel_Leave'
 			});
-			this.add('IRC_RegEx_quitMember', '', {
+			this.add('IRC_RegEx_quitMember', '^:(\S+)!~\S+ QUIT .*$', {
 				type: 'string',
 				i18nLabel: 'Quit IRC Session',
 				i18nDescription: 'IRC_Quit'
