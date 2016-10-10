@@ -620,7 +620,7 @@
   "is_typing_male": "is typing",
   "IRC_Channel_Join": "Output of the JOIN command.",
   "IRC_Channel_Leave": "Output of the PART command.",
-  "IRC_Description": "Internet Relay Chat (IRC) is a text-based group communication tool. Users join uniquely named channels, or rooms, for open discussion. IRC also supports private messages between indivdiual users and file sharing capabilities. This plugin integrates these layers of functionality with Rocket.Chat and should be considered a work-in-progress.",
+  "IRC_Description": "Internet Relay Chat (IRC) is a text-based group communication tool. Users join uniquely named channels, or rooms, for open discussion. IRC also supports private messages between indivdiual users and file sharing capabilities. This plugin integrates these layers of functionality with Rocket.Chat.",
   "IRC_Enabled": "Attempt to integrate IRC support.",
   "IRC_Private_Message": "Output of the PRIVMSG command.",
   "IRC_Channel_Users": "Output of the NAMES command.",
