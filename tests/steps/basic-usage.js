@@ -16,7 +16,7 @@ const message = 'message from '+username;
 
 
 //Basic usage test start
-describe.only('Basic usage', function() {
+describe('Basic usage', function() {
 	this.retries(2);
 
 	it('load page', () => {
@@ -225,8 +225,8 @@ describe.only('Basic usage', function() {
 					mainContent.lastMessageUser.getText().should.equal(username);
 				});
 
-				it('should not show the admin tag', () => {
-					mainContent.lastMessageUserTag.should.not.equal('admin');
+				it('should not show the Admin tag', () => {
+					mainContent.lastMessageUserTag.isVisible().should.be.false;
 				});
 			});
 
@@ -260,7 +260,7 @@ describe.only('Basic usage', function() {
 				});
 			});
 
-			describe('messages actions', ()=> {
+			describe('messages actions in general room', ()=> {
 				describe('render', () => {
 					it('open GENERAL', () => {
 						sideNav.openChannel('general');
@@ -306,10 +306,6 @@ describe.only('Basic usage', function() {
 						mainContent.messageStar.isVisible().should.be.true;
 					});
 
-					it('should show the star action', () => {
-						mainContent.messageStar.isVisible().should.be.true;
-					});
-
 					it('should show the reaction action', () => {
 						mainContent.messageReaction.isVisible().should.be.true;
 					});
@@ -343,6 +339,10 @@ describe.only('Basic usage', function() {
 					it('reply the message', () => {
 						mainContent.selectAction('reply');
 						mainContent.sendBtn.click();
+					});
+
+					it('checks if the message was replied', () => {
+						mainContent.lastMessageTextAttachment.getText().should.equal(mainContent.beforeLastMessage.getText());
 					});
 
 					it('send a message to test the edit', () => {
@@ -389,6 +389,10 @@ describe.only('Basic usage', function() {
 						mainContent.sendBtn.click();
 					});
 
+					it('checks if the message was quoted', () => {
+						mainContent.lastMessageTextAttachment.getText().should.equal(mainContent.beforeLastMessage.getText());
+					});
+
 					it('send a message to test the star', () => {
 						mainContent.sendMessage('Message for star Tests');
 					});
@@ -398,8 +402,7 @@ describe.only('Basic usage', function() {
 					});
 
 					it('star the message', () => {
-						mainContent.selectAction('reply');
-						mainContent.sendBtn.click();
+						mainContent.selectAction('star');
 					});
 
 					it('send a message to test the copy', () => {
@@ -535,6 +538,189 @@ describe.only('Basic usage', function() {
 		it('send a direct message', () => {
 			mainContent.sendMessage(message);
 		});
+
+		it('should show the last message', () => {
+			mainContent.lastMessage.isVisible().should.be.true;
+		});
+
+		it('the last message should be from the loged user', () => {
+			mainContent.lastMessageUser.getText().should.equal(username);
+		});
+
+		it('should not show the Admin tag', () => {
+			mainContent.lastMessageUserTag.isVisible().should.be.false;
+		});
+
+		describe('messages actions in direct messages', ()=> {
+			describe('render', () => {
+				it('open GENERAL', () => {
+					sideNav.openChannel('general');
+				});
+
+				it('send a message to be tested', () => {
+					mainContent.sendMessage('Message for Message Actions Tests');
+				});
+
+				it('open the message action menu', () => {
+					mainContent.openMessageActionMenu();
+				});
+
+				it('should show the message action menu', () => {
+					mainContent.messageActionMenu.isVisible().should.be.true;
+				});
+
+				it('should show the reply action', () => {
+					mainContent.messageReply.isVisible().should.be.true;
+				});
+
+				it('should show the edit action', () => {
+					mainContent.messageEdit.isVisible().should.be.true;
+				});
+
+				it('should show the delete action', () => {
+					mainContent.messageDelete.isVisible().should.be.true;
+				});
+
+				it('should show the permalink action', () => {
+					mainContent.messagePermalink.isVisible().should.be.true;
+				});
+
+				it('should show the copy action', () => {
+					mainContent.messageCopy.isVisible().should.be.true;
+				});
+
+				it('should show the quote the action', () => {
+					mainContent.messageQuote.isVisible().should.be.true;
+				});
+
+				it('should show the star action', () => {
+					mainContent.messageStar.isVisible().should.be.true;
+				});
+
+				it('should show the reaction action', () => {
+					mainContent.messageReaction.isVisible().should.be.true;
+				});
+
+				it('should show the close action', () => {
+					mainContent.messageClose.isVisible().should.be.true;
+				});
+
+				it('should not show the pin action', () => {
+					mainContent.messagePin.isVisible().should.be.false;
+				});
+
+				it('should not show the mark as unread action', () => {
+					mainContent.messageUnread.isVisible().should.be.false;
+				});
+
+				it('close the action menu', () => {
+					mainContent.selectAction('close');
+				});
+			});
+
+			describe('usage', () => {
+				it('send a message to test the reply', () => {
+					mainContent.sendMessage('Message for reply Tests');
+				});
+
+				it('open the message action menu', () => {
+					mainContent.openMessageActionMenu();
+				});
+
+				it('reply the message', () => {
+					mainContent.selectAction('reply');
+					mainContent.sendBtn.click();
+				});
+
+				it('checks if the message was replied', () => {
+					mainContent.lastMessageTextAttachment.getText().should.equal(mainContent.beforeLastMessage.getText());
+				});
+
+				it('send a message to test the edit', () => {
+					mainContent.addTextToInput('Message for Message edit Tests ');
+					mainContent.sendBtn.click();
+				});
+
+				it('open the message action menu', () => {
+					mainContent.openMessageActionMenu();
+				});
+
+				it('edit the message', () => {
+					mainContent.selectAction('edit');
+					mainContent.sendBtn.click();
+				});
+
+				it('send a message to test the delete', () => {
+					mainContent.sendMessage('Message for Message Delete Tests');
+				});
+
+				it('open the message action menu', () => {
+					mainContent.openMessageActionMenu();
+				});
+
+				it('delete the message', () => {
+					mainContent.selectAction('delete');
+					mainContent.popupFileConfirmBtn.click();
+				});
+
+				it('should not show the deleted message', () => {
+					mainContent.lastMessage.should.not.equal('Message for Message Delete Tests');
+				});
+
+				it('send a message to test the quote', () => {
+					mainContent.sendMessage('Message for quote Tests');
+				});
+
+				it('open the message action menu', () => {
+					mainContent.openMessageActionMenu();
+				});
+
+				it('quote the message', () => {
+					mainContent.selectAction('quote');
+					mainContent.sendBtn.click();
+				});
+
+				it('checks if the message was quoted', () => {
+					mainContent.lastMessageTextAttachment.getText().should.equal(mainContent.beforeLastMessage.getText());
+				});
+
+				it('send a message to test the star', () => {
+					mainContent.sendMessage('Message for star Tests');
+				});
+
+				it('open the message action menu', () => {
+					mainContent.openMessageActionMenu();
+				});
+
+				it('star the message', () => {
+					mainContent.selectAction('star');
+				});
+
+				it('send a message to test the copy', () => {
+					mainContent.sendMessage('Message for copy Tests');
+				});
+
+				it('open the message action menu', () => {
+					mainContent.openMessageActionMenu();
+				});
+
+				it('copy the message', () => {
+					mainContent.selectAction('copy');
+				});
+
+				it('send a message to test the permalink', () => {
+					mainContent.sendMessage('Message for permalink Tests');
+				});
+
+				it('open the message action menu', () => {
+					mainContent.openMessageActionMenu();
+				});
+
+				it('permalink the message', () => {
+					mainContent.selectAction('permalink');
+				});
+			});
+		});
 	});
 
 	describe('public channel', () => {
@@ -544,10 +730,29 @@ describe.only('Basic usage', function() {
 
 		it('open the public channel', () => {
 			sideNav.openChannel(PublicChannelName);
+			browser.pause(5000);
 		});
 
 		it('send a message in the public channel', () => {
 			mainContent.sendMessage(message);
+		});
+
+		it('should show the last message', () => {
+			mainContent.lastMessage.isVisible().should.be.true;
+		});
+
+		it('the last message should be from the loged user', () => {
+			mainContent.lastMessageUser.getText().should.equal(username);
+		});
+
+		it('should not show the Admin tag', () => {
+			var messageTag = mainContent.lastMessageUserTag.getText();
+			messageTag.should.not.equal('Admin');
+		});
+
+		it('should show the Owner tag', () => {
+			var messageTag = mainContent.lastMessageUserTag.getText();
+			messageTag.should.equal('Owner');
 		});
 
 		it('add people to the room', () => {
@@ -578,6 +783,173 @@ describe.only('Basic usage', function() {
 
 		it('send a message in the private channel', () => {
 			mainContent.sendMessage(message);
+		});
+
+		describe('messages actions in private room', ()=> {
+			describe('render', () => {
+				it('send a message to be tested', () => {
+					mainContent.sendMessage('Message for Message Actions Tests');
+				});
+
+				it('open the message action menu', () => {
+					mainContent.openMessageActionMenu();
+				});
+
+				it('should show the message action menu', () => {
+					mainContent.messageActionMenu.isVisible().should.be.true;
+				});
+
+				it('should show the reply action', () => {
+					mainContent.messageReply.isVisible().should.be.true;
+				});
+
+				it('should show the edit action', () => {
+					mainContent.messageEdit.isVisible().should.be.true;
+				});
+
+				it('should show the delete action', () => {
+					mainContent.messageDelete.isVisible().should.be.true;
+				});
+
+				it('should show the permalink action', () => {
+					mainContent.messagePermalink.isVisible().should.be.true;
+				});
+
+				it('should show the copy action', () => {
+					mainContent.messageCopy.isVisible().should.be.true;
+				});
+
+				it('should show the quote the action', () => {
+					mainContent.messageQuote.isVisible().should.be.true;
+				});
+
+				it('should show the star action', () => {
+					mainContent.messageStar.isVisible().should.be.true;
+				});
+
+				it('should show the reaction action', () => {
+					mainContent.messageReaction.isVisible().should.be.true;
+				});
+
+				it('should show the close action', () => {
+					mainContent.messageClose.isVisible().should.be.true;
+				});
+
+				it('should show show the pin action', () => {
+					mainContent.messagePin.isVisible().should.be.true;
+				});
+
+				it('should not show the mark as unread action', () => {
+					mainContent.messageUnread.isVisible().should.be.false;
+				});
+
+				it('close the action menu', () => {
+					mainContent.selectAction('close');
+				});
+			});
+
+			describe('usage', () => {
+				it('send a message to test the reply', () => {
+					mainContent.sendMessage('Message for reply Tests');
+				});
+
+				it('open the message action menu', () => {
+					mainContent.openMessageActionMenu();
+				});
+
+				it('reply the message', () => {
+					mainContent.selectAction('reply');
+					mainContent.sendBtn.click();
+				});
+
+				it('checks if the message was replied', () => {
+					mainContent.lastMessageTextAttachment.getText().should.equal(mainContent.beforeLastMessage.getText());
+				});
+
+				it('send a message to test the edit', () => {
+					mainContent.addTextToInput('Message for Message edit Tests ');
+					mainContent.sendBtn.click();
+				});
+
+				it('open the message action menu', () => {
+					mainContent.openMessageActionMenu();
+				});
+
+				it('edit the message', () => {
+					mainContent.selectAction('edit');
+					mainContent.sendBtn.click();
+				});
+
+				it('send a message to test the delete', () => {
+					mainContent.sendMessage('Message for Message Delete Tests');
+				});
+
+				it('open the message action menu', () => {
+					mainContent.openMessageActionMenu();
+				});
+
+				it('delete the message', () => {
+					mainContent.selectAction('delete');
+					mainContent.popupFileConfirmBtn.click();
+				});
+
+				it('should not show the deleted message', () => {
+					mainContent.lastMessage.should.not.equal('Message for Message Delete Tests');
+				});
+
+				it('send a message to test the quote', () => {
+					mainContent.sendMessage('Message for quote Tests');
+				});
+
+				it('open the message action menu', () => {
+					mainContent.openMessageActionMenu();
+				});
+
+				it('quote the message', () => {
+					mainContent.selectAction('quote');
+					mainContent.sendBtn.click();
+				});
+
+				it('checks if the message was quoted', () => {
+					mainContent.lastMessageTextAttachment.getText().should.equal(mainContent.beforeLastMessage.getText());
+				});
+
+				it('send a message to test the star', () => {
+					mainContent.sendMessage('Message for star Tests');
+				});
+
+				it('open the message action menu', () => {
+					mainContent.openMessageActionMenu();
+				});
+
+				it('star the message', () => {
+					mainContent.selectAction('star');
+				});
+
+				it('send a message to test the copy', () => {
+					mainContent.sendMessage('Message for copy Tests');
+				});
+
+				it('open the message action menu', () => {
+					mainContent.openMessageActionMenu();
+				});
+
+				it('copy the message', () => {
+					mainContent.selectAction('copy');
+				});
+
+				it('send a message to test the permalink', () => {
+					mainContent.sendMessage('Message for permalink Tests');
+				});
+
+				it('open the message action menu', () => {
+					mainContent.openMessageActionMenu();
+				});
+
+				it('permalink the message', () => {
+					mainContent.selectAction('permalink');
+				});
+			});
 		});
 
 		it('add people to the room', () => {
