@@ -149,7 +149,7 @@
 													{{> inputAutocomplete settings=autocompleteRoom id=_id name=_id class="search autocomplete" autocomplete="off"}}
 													<ul class="selected-rooms">
 														{{#each selectedRooms}}
-															<li>{{name}} <i class="icon-cancel remove-room"></i></li>
+															<li class="remove-room" data-setting={{../_id}}>{{name}} <i class="icon-cancel"></i></li>
 														{{/each}}
 													</ul>
 												</div>

@@ -15,6 +15,13 @@ Template.admin.onCreated ->
 		removed: (data) ->
 			TempSettings.remove data._id
 
+	# this.autorun =>
+	# 	console.log 'autorun'
+	# 	selectedRooms = this.selectedRooms.get()
+	# 	TempSettings.find({ type: 'roomPick' }).forEach (setting) =>
+	# 		selectedRooms[setting._id] = _.map(setting.value.split(','), (settingId) -> return { _id: settingId, name: settingId })
+
+
 Template.admin.onDestroyed ->
 	TempSettings.remove {}
 
@@ -215,8 +222,6 @@ Template.admin.helpers
 					template: Template.roomSearch
 					noMatchTemplate: Template.roomSearchEmpty
 					matchAll: true
-					filter:
-						exceptions: Template.instance().selectedRooms.get()[this._id] or []
 					selector: (match) ->
 						return { name: match }
 					sort: 'name'
@@ -373,8 +378,26 @@ Template.admin.events
 			selectedRooms[this.id] = []
 		selectedRooms[this.id] = selectedRooms[this.id].concat doc
 		instance.selectedRooms.set selectedRooms
+		value = _.pluck(selectedRooms[this.id], '_id').join(',')
+		TempSettings.update {_id: this.id},
+			$set:
+				value: value
+				changed: RocketChat.settings.collectionPrivate.findOne(this.id).value isnt value
 		event.currentTarget.value = ''
 		event.currentTarget.focus()
+
+	'click .remove-room': (event, instance) ->
+		docId = this._id
+		settingId = event.currentTarget.getAttribute('data-setting')
+		selectedRooms = instance.selectedRooms.get()
+		if selectedRooms?[settingId]?
+			selectedRooms[settingId] = _.reject(selectedRooms[settingId], (setting) -> setting._id is docId)
+		instance.selectedRooms.set selectedRooms
+		value = _.pluck(selectedRooms[settingId], '_id').join(',')
+		TempSettings.update {_id: settingId},
+			$set:
+				value: value
+				changed: RocketChat.settings.collectionPrivate.findOne(settingId).value isnt value
 
 Template.admin.onRendered ->
 	Tracker.afterFlush ->
