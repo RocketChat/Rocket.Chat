@@ -7,7 +7,7 @@ class AmqpConnection
 	currentTry: 0
 	stopTrying: false
 
-	constructor: ({@host, @vhost, @user, @password, @exclusiveQueue, @routingKey, @exchange, @queuePrefix}) ->
+	constructor: ({@host, @vhost, @user, @password, @exclusiveQueue, @routingKey, @exchange, @queuePrefix, @callback}) ->
 		@exclusiveQueue = @exclusiveQueue or false
 		@exchange = @exchange or 'eventbus'
 		@queuePrefix = @queuePrefix or ''
@@ -26,6 +26,7 @@ class AmqpConnection
 		conn.createChannel().then(@onChannelCreated, @onError)
 
 	reconnect: =>
+		@conn?.close()
 		attempt = if @currentTry > 0 then @currentTry else 0
 		random_delay = Math.floor(Math.random() * (30 - 1)) + 1
 		max_delay = 120
@@ -72,8 +73,40 @@ class AmqpConnection
 		ok = ok.then(=> @chan.consume(@qid, @onMessage))
 
 	onMessage: (msg) =>
-		payload = JSON.parse(msg.content.toString('utf8'))['payload']
-		logger.debug "received", payload
+		try
+			payload = JSON.parse(msg.content.toString('utf8'))['payload']
+			logger.debug "received", payload
+			mtype = payload['type']
+			switch mtype
+				when 'update' then @onUpdateMessage payload.user_statuses
+				else logger.warn "unknown type #{mtype}"
+		catch e
+			logger.error "ignoring message. Got error: ", e
+			logger.warn e.stack
+
+	onUpdateMessage: (statuses) =>
+		for status in statuses
+			@callback status.user, status['status_xmpp_policy']
+
+
+class PresenceManager
+	presmapper:
+		DND: 'busy'
+		AWAY: 'away'
+		EXTAWAY: 'away'
+		CHAT: 'online'
+		AVAILABLE: 'online'
+		INVISIBLE: 'offline'
+		OFFLINE: 'offline'
+		UNKNOWN: 'offline'
+
+	default_status: 'offline'
+
+	setPresence: (username, status) =>
+		user = RocketChat.models.Users.findOneByUsername username
+		mapped_status = @presmapper[status] or @default_status
+		logger.debug "setting status for #{username} to #{mapped_status}"
+		UserPresence.setDefaultStatus user._id, mapped_status
 
 
 presenceClient = (host, user, password, vhost) ->
@@ -131,6 +164,7 @@ Meteor.startup ->
 
 	pclient = presenceClient broker_host, broker_user, broker_password, '/ydin'
 
+	pm = new PresenceManager
 	c = new AmqpConnection
 		host: broker_host
 		vhost: '/ydin_evb'
@@ -138,4 +172,5 @@ Meteor.startup ->
 		password: broker_password
 		exclusiveQueue: false
 		routingKey: "ydin.presence.event.#{domain_id}"
+		callback: Meteor.bindEnvironment(pm.setPresence)
 	c.connect()
