@@ -18,8 +18,10 @@ class MainContent extends Page {
 	get popupFileCancelBtn() { return browser.element('.sa-button-container .cancel'); }
 	get lastMessageUser() { return browser.element('.message:last-child .user-card-message:nth-of-type(2)'); }
 	get lastMessage() { return browser.element('.message:last-child .body'); }
+	get beforeLastMessage() { return browser.element('.message:nth-last-child(2) .body'); }
 	get lastMessageUserTag() { return browser.element('.message:last-child .role-tag'); }
 	get lastMessageImg() { return browser.element('.message:last-child .attachment-image img'); }
+	get lastMessageTextAttachment() { return browser.element('.message:last-child .attachment-text'); }
 	get messageOptionsBtn() { return browser.element('.message:last-child .info .message-cog-container .icon-cog'); }
 	get messageReply() { return browser.element('.message:last-child .message-dropdown .reply-message'); }
 	get messageActionMenu() { return browser.element('.message:last-child .message-dropdown'); }
