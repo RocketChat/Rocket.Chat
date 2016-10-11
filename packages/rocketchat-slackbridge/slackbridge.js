@@ -967,7 +967,7 @@ class SlackBridge {
 				link_names: 1
 			};
 			logger.class.debug('Post Message', data);
-			response = HTTP.post('https://slack.com/api/chat.postMessage', { params: data });
+			HTTP.post('https://slack.com/api/chat.postMessage', { params: data });
 		}
 	}
 }
