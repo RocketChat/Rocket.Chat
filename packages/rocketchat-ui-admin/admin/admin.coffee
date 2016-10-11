@@ -1,26 +1,31 @@
 TempSettings = new Meteor.Collection null
 Template.admin.onCreated ->
-	this.selectedRooms = new ReactiveVar {}
-
 	if not RocketChat.settings.cachedCollectionPrivate?
 		RocketChat.settings.cachedCollectionPrivate = new RocketChat.CachedCollection({ name: 'private-settings', eventType: 'onAll' })
 		RocketChat.settings.collectionPrivate = RocketChat.settings.cachedCollectionPrivate.collection
 		RocketChat.settings.cachedCollectionPrivate.init()
 
+	this.selectedRooms = new ReactiveVar {}
+
 	RocketChat.settings.collectionPrivate.find().observe
-		added: (data) ->
+		added: (data) =>
+			selectedRooms = this.selectedRooms.get()
+			if data.type is 'roomPick'
+				selectedRooms[data._id] = data.value
+				this.selectedRooms.set(selectedRooms)
 			TempSettings.insert data
-		changed: (data) ->
+		changed: (data) =>
+			selectedRooms = this.selectedRooms.get()
+			if data.type is 'roomPick'
+				selectedRooms[data._id] = data.value
+				this.selectedRooms.set(selectedRooms)
 			TempSettings.update data._id, data
-		removed: (data) ->
+		removed: (data) =>
+			selectedRooms = this.selectedRooms.get()
+			if data.type is 'roomPick'
+				delete selectedRooms[data._id]
+				this.selectedRooms.set(selectedRooms)
 			TempSettings.remove data._id
-
-	# this.autorun =>
-	# 	console.log 'autorun'
-	# 	selectedRooms = this.selectedRooms.get()
-	# 	TempSettings.find({ type: 'roomPick' }).forEach (setting) =>
-	# 		selectedRooms[setting._id] = _.map(setting.value.split(','), (settingId) -> return { _id: settingId, name: settingId })
-
 
 Template.admin.onDestroyed ->
 	TempSettings.remove {}
@@ -230,7 +235,8 @@ Template.admin.helpers
 		}
 
 	selectedRooms: ->
-		return Template.instance().selectedRooms.get()[this._id]
+		console.log(this._id)
+		return Template.instance().selectedRooms.get()[this._id] or []
 
 Template.admin.events
 	"change .input-monitor": (e, t) ->
@@ -374,11 +380,9 @@ Template.admin.events
 
 	'autocompleteselect .autocomplete': (event, instance, doc) ->
 		selectedRooms = instance.selectedRooms.get()
-		if !selectedRooms[this.id]
-			selectedRooms[this.id] = []
-		selectedRooms[this.id] = selectedRooms[this.id].concat doc
+		selectedRooms[this.id] = (selectedRooms[this.id] || []).concat doc
 		instance.selectedRooms.set selectedRooms
-		value = _.pluck(selectedRooms[this.id], '_id').join(',')
+		value = selectedRooms[this.id]
 		TempSettings.update {_id: this.id},
 			$set:
 				value: value
@@ -390,10 +394,9 @@ Template.admin.events
 		docId = this._id
 		settingId = event.currentTarget.getAttribute('data-setting')
 		selectedRooms = instance.selectedRooms.get()
-		if selectedRooms?[settingId]?
-			selectedRooms[settingId] = _.reject(selectedRooms[settingId], (setting) -> setting._id is docId)
+		selectedRooms[settingId] = _.reject(selectedRooms[settingId] || [], (setting) -> setting._id is docId)
 		instance.selectedRooms.set selectedRooms
-		value = _.pluck(selectedRooms[settingId], '_id').join(',')
+		value = selectedRooms[settingId]
 		TempSettings.update {_id: settingId},
 			$set:
 				value: value
