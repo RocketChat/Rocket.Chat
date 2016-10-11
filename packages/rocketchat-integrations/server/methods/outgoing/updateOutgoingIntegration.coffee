@@ -26,6 +26,7 @@ Meteor.methods
 				emoji: integration.emoji
 				alias: integration.alias
 				channel: integration.channel
+				impersonateUser: integration.impersonateUser
 				username: integration.username
 				userId: integration.userId
 				urls: integration.urls
