@@ -584,6 +584,8 @@
   "Installation": "Installation",
   "Installed_at": "Installed at",
   "Instructions_to_your_visitor_fill_the_form_to_send_a_message": "Instructions to your visitor fill the form to send a message",
+  "Impersonate_user": "Impersonate User",
+  "Impersonate_user_description": "When enabled, integration posts as the user that triggered integration",
   "Integration_added": "Integration has been added",
   "Integration_Incoming_WebHook": "Incoming WebHook Integration",
   "Integration_New": "New Integration",
