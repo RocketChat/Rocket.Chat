@@ -146,7 +146,7 @@
 
 											{{#if $eq type 'roomPick'}}
 												<div>
-													{{> inputAutocomplete settings=autocompleteRoom id=_id name=_id class="search autocomplete" autocomplete="off"}}
+													{{> inputAutocomplete settings=autocompleteRoom id=_id name=_id class="search autocomplete" autocomplete="off" disabled=isDisabled.disabled}}
 													<ul class="selected-rooms">
 														{{#each selectedRooms}}
 															<li class="remove-room" data-setting={{../_id}}>{{name}} <i class="icon-cancel"></i></li>
