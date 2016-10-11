@@ -1,13 +1,27 @@
+# # #
+# Assign values
+# 
+
+# Package availability
+IRC_AVAILABILITY = RocketChat.settings.get('IRC_Enabled');
+
+# Cache prep
 net = Npm.require('net')
 Lru = Npm.require('lru-cache')
-
 MESSAGE_CACHE_SIZE = RocketChat.settings.get('IRC_Message_Cache_Size');
+ircReceiveMessageCache = Lru MESSAGE_CACHE_SIZE
+ircSendMessageCache = Lru MESSAGE_CACHE_SIZE
+
+# IRC server
 IRC_PORT = RocketChat.settings.get('IRC_Port');
 IRC_HOST = RocketChat.settings.get('IRC_Host');
 
 ircClientMap = {}
-ircReceiveMessageCache = Lru MESSAGE_CACHE_SIZE
-ircSendMessageCache = Lru MESSAGE_CACHE_SIZE
+
+
+# # # 
+# Core functionality
+#
 
 bind = (f) ->
 	g = Meteor.bindEnvironment (self, args...) -> f.apply(self, args)
@@ -380,9 +394,18 @@ class IrcLogoutCleanUper
 		ircClient.disconnect()
 		return user
 
-RocketChat.callbacks.add 'beforeValidateLogin', IrcLoginer, RocketChat.callbacks.priority.LOW, 'irc-loginer'
-RocketChat.callbacks.add 'beforeSaveMessage', IrcSender, RocketChat.callbacks.priority.LOW, 'irc-sender'
-RocketChat.callbacks.add 'beforeJoinRoom', IrcRoomJoiner, RocketChat.callbacks.priority.LOW, 'irc-room-joiner'
-RocketChat.callbacks.add 'beforeCreateChannel', IrcRoomJoiner, RocketChat.callbacks.priority.LOW, 'irc-room-joiner-create-channel'
-RocketChat.callbacks.add 'beforeLeaveRoom', IrcRoomLeaver, RocketChat.callbacks.priority.LOW, 'irc-room-leaver'
-RocketChat.callbacks.add 'afterLogoutCleanUp', IrcLogoutCleanUper, RocketChat.callbacks.priority.LOW, 'irc-clean-up'
+
+# # #
+# Make magic happen 
+#
+
+# Only proceed if the package has been enabled
+if IRC_AVAILABILITY == true
+	RocketChat.callbacks.add 'beforeValidateLogin', IrcLoginer, RocketChat.callbacks.priority.LOW, 'irc-loginer'
+	RocketChat.callbacks.add 'beforeSaveMessage', IrcSender, RocketChat.callbacks.priority.LOW, 'irc-sender'
+	RocketChat.callbacks.add 'beforeJoinRoom', IrcRoomJoiner, RocketChat.callbacks.priority.LOW, 'irc-room-joiner'
+	RocketChat.callbacks.add 'beforeCreateChannel', IrcRoomJoiner, RocketChat.callbacks.priority.LOW, 'irc-room-joiner-create-channel'
+	RocketChat.callbacks.add 'beforeLeaveRoom', IrcRoomLeaver, RocketChat.callbacks.priority.LOW, 'irc-room-leaver'
+	RocketChat.callbacks.add 'afterLogoutCleanUp', IrcLogoutCleanUper, RocketChat.callbacks.priority.LOW, 'irc-clean-up'
+else
+	return

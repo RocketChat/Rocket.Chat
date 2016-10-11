@@ -2,7 +2,7 @@ Meteor.startup(function() {
 	RocketChat.settings.addGroup('IRC', function() {
 
 // Is this thing on?
-		this.add('IRC_Enabled', true, {
+		this.add('IRC_Enabled', false, {
 			type: 'boolean',
 			i18nLabel: 'Enabled',
 			i18nDescription: 'IRC_Enabled',
