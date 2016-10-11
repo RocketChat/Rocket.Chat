@@ -2,6 +2,7 @@ import Page from './Page';
 
 class MainContent extends Page {
 
+	get mainContent() { return browser.element('.main-content'); }
 	get messageInput() { return browser.element('.input-message'); }
 	get sendBtn() { return browser.element('.message-buttons.send-button'); }
 	get emptyFavoriteStar() { return browser.element('.toggle-favorite .icon-star-empty'); }
