@@ -43,9 +43,7 @@ parts:
         source: https://rocket.chat/releases/develop/download
         source-type: tar
         stage-packages:
-            - imagemagick
-        organize:
-            usr/bin/convert-im6: usr/bin/convert
+            - graphicsmagick
         stage:
             - programs
             - main.js
