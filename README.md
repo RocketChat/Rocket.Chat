@@ -297,8 +297,10 @@ It is a great solution for communities and companies wanting to privately host t
 Read about [how it all started](http://osdelivers.blackducksoftware.com/2016/06/10/rocket-chat-hosted-chat-services/).
 
 ## Awards
+[![InfoWorld Bossie Awards 2016 - Best Open Source Applications](https://raw.githubusercontent.com/Sing-Li/bbug/master/images/bossie.png)](http://www.infoworld.com/article/3122000/open-source-tools/bossie-awards-2016-the-best-open-source-applications.html#slide4)
 
-[![Black Duck Open Source Rookie of the Year](https://raw.githubusercontent.com/Sing-Li/bbug/master/images/blackducksm.png)](https://www2.blackducksoftware.com/news/releases/black-duck-announces-open-source-rookies-of-the-year)
+[![Black Duck Open Source Rookie of the Year for 2015](https://raw.githubusercontent.com/Sing-Li/bbug/master/images/blackducksm.png)](https://info.blackducksoftware.com/OpenSourceRookies2015.html)
+
 
 ## Issues
 
