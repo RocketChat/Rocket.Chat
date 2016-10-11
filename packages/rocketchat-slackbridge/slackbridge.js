@@ -947,7 +947,7 @@ class SlackBridge {
 		if (message._id.indexOf('slack-') === 0) {
 			return message;
 		}
-		let outChannels = RocketChat.settings.get('SlackBridge_Out_All') ? _.keys(this.channelMap) : (RocketChat.settings.get('SlackBridge_Out_Channels') ? RocketChat.settings.get('SlackBridge_Out_Channels').split(',') : []);
+		let outChannels = RocketChat.settings.get('SlackBridge_Out_All') ? _.keys(this.channelMap) : _.pluck(RocketChat.settings.get('SlackBridge_Out_Channels'), '_id') || [];
 		logger.class.debug('Out Channels: ', outChannels);
 		if (outChannels.indexOf(message.rid) !== -1) {
 			logger.class.debug('Message out', message);
@@ -966,16 +966,6 @@ class SlackBridge {
 				icon_url: getAvatarUrlFromUsername(message.u && message.u.username),
 				link_names: 1
 			};
-			if (message.attachments) {
-				data.attachments = [{
-					'fallback': 'New ticket from Andrea Lee - Ticket #1943: Can\'t rest my password - https://groove.hq/path/to/ticket/1943',
-					'pretext': 'New ticket from Andrea Lee',
-					'title': 'Ticket #1943: Can\'t reset my password',
-					'title_link': 'https://groove.hq/path/to/ticket/1943',
-					'text': 'Help! I tried to reset my password but nothing happened!',
-					'color': '#7CD197'
-				}];
-			}
 			logger.class.debug('Post Message', data);
 			response = HTTP.post('https://slack.com/api/chat.postMessage', { params: data });
 		}
