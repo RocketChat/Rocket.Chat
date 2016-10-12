@@ -19,7 +19,7 @@ Package.onUse(function(api) {
 
 	api.addFiles([
 		'server/settings.js',
-		'server/server.coffee',
+		'server/server.coffee'
 	], 'server');
 
 	api.export(['Irc'], ['server']);
