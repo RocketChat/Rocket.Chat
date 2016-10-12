@@ -1,5 +1,5 @@
 Meteor.methods({
-	snippetMessage: function(message, snippetedAt) {
+	snippetMessage: function(message, filename) {
 		if ((typeof Meteor.userId() == "undefined") || (Meteor.userId() == null)) {
 			throw new Meteor.error("error-invalid-user", "Invalid user",
 				{method: 'snippetMessage'});
@@ -20,10 +20,14 @@ Meteor.methods({
 			RocketChat.models.Messages.cloneAndSaveAsHistoryById(message._id);
 		}
 
+		// Detect extension
+		let fileNameSplits = filename.split(".");
+		let extension = fileNameSplits[fileNameSplits.length - 1];
+
 		let me = RocketChat.models.Users.findOneById(Meteor.userId());
 
 		message.snippeted = true;
-		message.snippetedAt = snippetedAt || Date.now;
+		message.snippetedAt = Date.now;
 		message.snippetedBy = {
 			_id: Meteor.userId(),
 			username: me.username
@@ -31,24 +35,32 @@ Meteor.methods({
 
 		message = RocketChat.callbacks.run('beforeSaveMessage', message);
 
-		RocketChat.models.Messages.setSnippetedByIdAndUserId(message._id, message.snippetedBy, message.snippeted);
+		let file = new Buffer(message.msg);
+		let rs = RocketChatFile.bufferToStream(file);
+		let ws = RocketChatFileSnippetInstance.createWriteStream(filename, message.msg);
+		rs.pipe(ws);
 
-		RocketChat.models.Messages.createWithTypeRoomIdMessageAndUser('message_snippeted', message.rid, '', me, {
-			attachments: [{
-				"text": message.msg,
-				"author_name": message.u.username,
-				"author_icon": getAvatarUrlFromUsername(message.u.username),
-				"ts": message.ts
-			}]
+		// Create the SnippetMessage
+		RocketChat.models.SnippetMessage.insert({
+			rid: message.rid,
+			filename: filename,
+			extension: extension,
+			u: message.u,
+			ts: message.ts
+		}, function(error, _id) {
+			if (error !== undefined && error !== null) {
+				console.log(error);
+			} else {
+				message.snippedId = _id;
+				RocketChat.models.Messages.setSnippetedByIdAndUserId(message, message.snippedId, message.snippetedBy,
+					message.snippeted);
+				RocketChat.models.Messages.createWithTypeRoomIdMessageAndUser(
+					'message_snippeted', message.rid, '', me, {
+						"snippetId": _id,
+						"filename": filename
+					});
+			}
 		});
-		// RocketChat.models.Uploads.updateFileComplete();
 
-		// const msg = {
-		// 	_id: Random.id(),
-		// 	rid: roomId,
-		// 	msg: ''
-		// };
-        //
-		// return Meteor.call('sendMessage', msg)
 	}
 });
