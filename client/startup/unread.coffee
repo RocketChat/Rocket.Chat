@@ -53,6 +53,8 @@ Meteor.startup ->
 
 	Tracker.autorun ->
 		siteName = RocketChat.settings.get('Site_Name') or ''
+		# KM EDIT: Hard coded siteName
+		siteName = "Komed Health Demo"
 
 		unread = Session.get 'unread'
 		fireGlobalEvent 'unread-changed', unread
