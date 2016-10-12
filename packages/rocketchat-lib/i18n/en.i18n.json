@@ -219,7 +219,7 @@
   "Channel_Archived" : "Channel with name `#%s` has been archived successfully",
   "Channel_doesnt_exist" : "The channel `#%s` does not exist.",
   "Channel_Unarchived" : "Channel with name `#%s` has been Unarchived successfully",
-  "Channels" : "Channels",
+  "Channels" : "Patients",
   "Channels_list" : "List of public channels",
   "Chat_button" : "Chat button",
   "Chat_closed" : "Chat closed",
