@@ -1,5 +1,4 @@
 ##IRC Package for Rocket.Chat
-***
 
 ### Overview
 
