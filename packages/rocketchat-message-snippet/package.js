@@ -7,31 +7,51 @@ Package.describe({
 });
 
 Package.onUse(function(api) {
-	api.use('ecmascript');
-	api.use('rocketchat:lib');
-	api.use('random');
-	api.use('underscore');
-	api.use('tracker');
-	api.use('webapp');
-	api.use('templating', 'client');
+	api.use([
+		'ecmascript',
+		'rocketchat:lib',
+		'rocketchat:file',
+		"rocketchat:markdown",
+		"rocketchat:theme",
+		"less",
+		'random',
+		'underscore',
+		'tracker',
+		'webapp'
+	]);
+
+	api.use([
+		'templating',
+		'kadira:flow-router'
+	], 'client');
 
 
 	// Server
 	api.addFiles([
 		'server/startup/settings.js',
+		'server/startup/message-snippet.js',
+		'server/models/SnippetMessage.js',
 		'server/methods/snippetMessage.js',
-		'server/publications/snippetedMessages.js'
+		'server/publications/snippetedMessagesByRoom.js',
+		'server/publications/snippetMessage.js',
+		'server/publications/retrieveSnippetedMessage.js',
 	], 'server');
 
 	// Client
 	api.addFiles([
-		'client/lib/SnippetedMessage.js',
+		'client/lib/collections.js',
 		'client/actionButton.js',
 		'client/messageType.js',
 		'client/snippetMessage.js',
-		'client/tabBar.js',
-		'client/views/snippetedMessages.html',
-		'client/views/snippetedMessages.js'
+		'client/router.js',
+		'client/page/snippetPage.html',
+		'client/page/snippetPage.js',
+		'client/tabBar/tabBar.js',
+		'client/tabBar/views/snippetedMessages.html',
+		'client/tabBar/views/snippetMessage.html',
+		'client/tabBar/views/snippetedMessages.js',
+		'client/tabBar/views/snippetMessage.js',
+		'client/page/stylesheets/snippetPage.less'
     ], 'client');
 
 	// api.export('multilinePasteHandler');

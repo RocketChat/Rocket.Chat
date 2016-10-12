@@ -191,23 +191,16 @@ RocketChat.models.Messages = new class extends RocketChat.models._Base
 
 		return @update query, update
 
-	setSnippetedByIdAndUserId: (message, snippetedBy, snippeted=true, snippetedAt=0) ->
+	setSnippetedByIdAndUserId: (message, snippetId, snippetedBy, snippeted=true, snippetedAt=0) ->
 		query =
 			_id: message._id
 
-
-		msg = message.msg
-
-		if RocketChat.settings.get "Message_SnippetReplaceTabs"
-			nbSpaces = RocketChat.settings.get "Message_SnippetNbSpaces"
-
-			msg = msg.replace /\t/g, Array(nbSpaces).join " "
-
-		msg = "```" + msg + "```"
+		msg = "```" + message.msg + "```"
 
 		update =
 			$set:
 				msg: msg
+				snippetId: snippetId
 				snippeted: snippeted
 				snippetedAt: snippetedAt || new Date
 				snippetedBy: snippetedBy
