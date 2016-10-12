@@ -54,14 +54,16 @@ As you use Rocket.Chat, be sure to monitor the console terminal (or Rocket.Chat'
 
 ### Changelog
 
+Please see the [commit history](https://github.com/RocketChat/Rocket.Chat/commits/develop/packages/rocketchat-irc) on GitHub for a full list of changes.
+
+Major functional changes:
+
 #### 0.0.2
-2016-10-11 Jeff Sheldon <jeffsheldon@gmail.com>
 
 * Remapped IRC username and real name to match Rocket.Chat's user accounts
 * Added base support for config via web
 * Performed package housecleaning for future growth
 
 #### 0.0.1
-2015-06-22 Haosdent Huang <haosdent@gmail.com>
  
- * Core concept, design, and functionality
+  * Core concept, design, and functionality
