@@ -128,7 +128,7 @@ RocketChat.API.v1.addRoute 'room.delete', authRequired: true,
 
 
 
-### Retrieve messages for a specific room. Requires manage-messages role. URL parameter accepts the room ID.
+### Retrieve messages for a specific room. Requires access to the room. URL parameter accepts the room ID.
 
 Message history is paginated. Older messages can be retrieved by incrementing the page and items parameters.
 
@@ -156,6 +156,26 @@ RocketChat.API.v1.addRoute 'room/:rid/history', authRequired: true,
 				page: rpage
 				items: msgs.length
 				total: RocketChat.models.Messages.findVisibleByRoomId(@urlParams.rid).count()
+
+		catch e
+			return RocketChat.API.v1.failure e.name + ': ' + e.message
+
+
+# Retrieve message details. Requires access to the room. URL parameters accepts the room ID and the message ID.
+RocketChat.API.v1.addRoute 'room/:rid/message/:mid', authRequired: true,
+	get: ->
+		if not Meteor.call('canAccessRoom', @urlParams.rid, this.userId)
+			return RocketChat.API.v1.unauthorized()
+
+		try
+			msg = RocketChat.models.Messages.findOneById(@urlParams.mid)
+			if !msg
+				return RocketChat.API.v1.failure('Invalid message ID '+@urlParams.mid)
+			if msg.rid != @urlParams.rid
+				return RocketChat.API.v1.unauthorized('Message ' + @urlParams.mid
+					+'  does not belong to room ' + @urlParams.rid)
+			return RocketChat.API.v1.success
+				message: msg
 
 		catch e
 			return RocketChat.API.v1.failure e.name + ': ' + e.message
