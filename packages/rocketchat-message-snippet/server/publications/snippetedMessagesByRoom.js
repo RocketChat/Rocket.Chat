@@ -11,7 +11,7 @@ Meteor.publish("snippetedMessages", function(rid, limit=50) {
 		return this.ready();
 	}
 
-	let cursorHandle = RocketChat.models.Messages.findSnippetedByRoom(
+	let cursorHandle = RocketChat.models.SnippetMessage.findByRoomId(
 		rid,
 		{
 			sort: {ts: -1},
