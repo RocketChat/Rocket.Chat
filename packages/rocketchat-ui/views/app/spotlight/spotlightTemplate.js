@@ -11,6 +11,6 @@ Template.spotlightTemplate.helpers({
 	},
 
 	fullName() {
-		return RocketChat.settings.get('Account_AllowSearchByName') && this.fullName;
+		return RocketChat.settings.get('Accounts_AllowSearchByName') && this.fullName;
 	}
 });
