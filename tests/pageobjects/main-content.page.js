@@ -36,10 +36,27 @@ class MainContent extends Page {
 	get messageReaction() { return browser.element('.message:last-child .message-dropdown .reaction-message'); }
 	get messagePin() { return browser.element('.message:last-child .message-dropdown .pin-message'); }
 	get messageClose() { return browser.element('.message:last-child .message-dropdown .message-dropdown-close'); }
-	get emojiPickerMainScreen() { return browser.element('.emojiPicker'); }
-	get emojiPickerPeopleIcon() { return browser.element('.emojiPicker .icon-people'); }
-	get emojiGrinning() { return browser.element('.emojiPicker .emoji-grinning'); }
-
+	get emojiPickerMainScreen() { return browser.element('.emoji-picker'); }
+	get emojiPickerPeopleIcon() { return browser.element('.emoji-picker .icon-people'); }
+	get emojiPickerNatureIcon() { return browser.element('.emoji-picker .icon-nature'); }
+	get emojiPickerFoodIcon() { return browser.element('.emoji-picker .icon-food'); }
+	get emojiPickerActivityIcon() { return browser.element('.emoji-picker .icon-activity'); }
+	get emojiPickerTravelIcon() { return browser.element('.emoji-picker .icon-travel'); }
+	get emojiPickerObjectsIcon() { return browser.element('.emoji-picker .icon-objects'); }
+	get emojiPickerSymbolsIcon() { return browser.element('.emoji-picker .icon-symbols'); }
+	get emojiPickerFlagsIcon() { return browser.element('.emoji-picker .icon-flags'); }
+	get emojiPickerModifierIcon() { return browser.element('.emoji-picker .icon-symbols'); }
+	get emojiPickerChangeTone() { return browser.element('.emoji-picker .change-tone'); }
+	get emojiPickerCustomIcon() { return browser.element('.emoji-picker .icon-rocket'); }
+	get emojiPickerRecentIcon() { return browser.element('.emoji-picker .icon-recent'); }
+	get emojiPickerFilter() { return browser.element('.emoji-picker .emoji-filter'); }
+	get emojiPickerEmojiContainer() { return browser.element('.emoji-picker .emojis'); }
+	get emojiGrinning() { return browser.element('.emoji-picker .emoji-grinning'); }
+	get emojiSmile() { return browser.element('.emoji-picker .emoji-smile'); }
+	get messagePopUp() { return browser.element('.message-popup'); }
+	get messagePopUpTitle() { return browser.element('.message-popup-title'); }
+	get messagePopUpItems() { return browser.element('.message-popup-items'); }
+	get messagePopUpFirstItem() { return browser.element('.popup-item.selected'); }
 
 	sendMessage(text) {
 		this.setTextToInput(text);
