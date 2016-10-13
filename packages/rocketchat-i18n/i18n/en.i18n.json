@@ -1156,6 +1156,7 @@
   "SMTP_Test_Button": "Test SMTP Settings",
   "SMTP_Username": "SMTP Username",
   "Snippet_Added": "Created on %s",
+  "Snippet_Messages": "Snippet Messages",
   "Snippeted_a_message": "Created a snippet __snippetLink__",
   "Sound": "Sound",
   "SSL": "SSL",
