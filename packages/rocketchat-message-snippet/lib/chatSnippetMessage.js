@@ -3,24 +3,24 @@ class ChatSnippetMessage extends ChatMessages {
 	init(node) {
 		super.init(node);
 		this.numberLineMax = RocketChat.settings.get('MultilinePaste_NumberLineMax');
-		this.numberLineAutoDetected = RocketChat.settings.get("MultilinePaste_NumberLineAutoDetected");
-		this.rocketCatUser = RocketChat.models.Users.findOne({_id: "rocket.cat"});
+		this.numberLineAutoDetected = RocketChat.settings.get('MultilinePaste_NumberLineAutoDetected');
+		this.rocketCatUser = RocketChat.models.Users.findOne({_id: 'rocket.cat'});
 	}
 
 	isSnippet(inputValue) {
-		let regexpString = ".*";
+		let regexpString = '.*';
 		for (var i = 0; i < this.numberLineAutoDetected; i++) {
-			regexpString += "\n.*";
+			regexpString += '\n.*';
 		}
 
 		let regexp = new RegExp(regexpString);
-		for (var i = this.numberLineAutoDetected; i < this.numberLineMax; i++) {
-			regexpString += "\n.*";
+		for (let j = this.numberLineAutoDetected; j < this.numberLineMax; j++) {
+			regexpString += '\n.*';
 		}
 		let maxLineRegexp = new RegExp(regexpString);
 
 		// multiline checking
-		return ((regexp.exec(inputValue) !== null) && !(maxLineRegexp.exec(inputValue)) )
+		return ((regexp.exec(inputValue) !== null) && !(maxLineRegexp.exec(inputValue)));
 	}
 
 	/**
@@ -28,14 +28,14 @@ class ChatSnippetMessage extends ChatMessages {
 	 */
 	createSnippetNotification(roomId) {
 		var createSnippetMsg = {
-            _id: Random.id(),
-            t: "snippet-message",
-            rid: roomId,
-            ts: new Date,
-            u: this.rocketCatUser,
-            private: true
-        };
-        ChatMessage.upsert({ _id: createSnippetMsg._id }, createSnippetMsg);
+			_id: Random.id(),
+			t: 'snippet-message',
+			rid: roomId,
+			ts: new Date,
+			u: this.rocketCatUser,
+			private: true
+		};
+		ChatMessage.upsert({ _id: createSnippetMsg._id }, createSnippetMsg);
 	}
 
 	send(rid, input, done) {
