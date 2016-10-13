@@ -7,7 +7,6 @@ Meteor.publish 'userAutocomplete', (selector) ->
 
 	options =
 		fields:
-			name: 1
 			username: 1
 			status: 1
 		sort:
@@ -18,7 +17,13 @@ Meteor.publish 'userAutocomplete', (selector) ->
 
 	exceptions = selector.exceptions or []
 
-	cursorHandle = RocketChat.models.Users.findActiveByUsernameOrNameRegexWithExceptions(selector.term, exceptions, options).observeChanges
+	if RocketChat.settings.get('Accounts_AllowSearchByName')
+		options.fields.name = 1
+		find = RocketChat.models.Users.findActiveByUsernameOrNameRegexWithExceptions(selector.term, exceptions, options)
+	else
+		find = RocketChat.models.Users.findByActiveUsersUsernameExcept(selector.term, exceptions, options)
+
+	cursorHandle = find.observeChanges
 		added: (_id, record) ->
 			pub.added("autocompleteRecords", _id, record)
 
