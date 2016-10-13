@@ -39,7 +39,7 @@ Template.sideNav.events
 	'click .close-flex': ->
 		SideNav.closeFlex()
 
-	'click .arrow': ->
+	'click .side-nav > .arrow': ->
 		SideNav.toggleCurrent()
 
 	'mouseenter .header': ->
@@ -53,6 +53,10 @@ Template.sideNav.events
 
 	'dropped .side-nav': (e) ->
 		e.preventDefault()
+
+	"click .side-nav-toggle": ->
+		menu.toggle()
+		SideNav.setSideNavArrow()
 
 Template.sideNav.onRendered ->
 	SideNav.init()

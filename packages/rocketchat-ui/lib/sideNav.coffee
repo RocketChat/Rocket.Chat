@@ -3,6 +3,7 @@
 	sideNav = {}
 	flexNav = {}
 	arrow = {}
+	sideNavArrow = {}
 	animating = false
 	openQueue = []
 
@@ -19,6 +20,15 @@
 			arrow.removeClass "close"
 			arrow.addClass "top"
 			arrow.removeClass "bottom"
+
+	setSideNavArrow = ->
+		# added a delay to make sure the sidenav is already rendered
+		setTimeout ->
+			if menu.isOpen()
+				sideNavArrow.addClass("left")
+			else
+				sideNavArrow.removeClass("left")
+		, 50
 
 	toggleCurrent = ->
 		if flexNav.opened then closeFlex() else AccountBox.toggle()
@@ -99,8 +109,10 @@
 		sideNav = $(".side-nav")
 		flexNav = sideNav.find ".flex-nav"
 		arrow = sideNav.children ".arrow"
+		sideNavArrow = sideNav.find(".side-nav-toggle").children ".arrow"
 		setFlex ""
 		arrowBindHover()
+		setSideNavArrow()
 		initiated = true
 
 		if openQueue.length > 0
@@ -121,6 +133,7 @@
 	validate: validate
 	flexStatus: flexStatus
 	toggleArrow: toggleArrow
+	setSideNavArrow: setSideNavArrow
 	toggleCurrent: toggleCurrent
 	overArrow: overArrow
 	leaveArrow: leaveArrow
