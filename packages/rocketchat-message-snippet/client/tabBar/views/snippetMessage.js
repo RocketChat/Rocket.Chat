@@ -1,13 +1,13 @@
 Template.snippetMessage.helpers({
 	time: function() {
-		return moment(this.ts).format(RocketChat.settings.get('Message_TimeFormat'))
+		return moment(this.ts).format(RocketChat.settings.get('Message_TimeFormat'));
 	},
 	date: function() {
-		return moment(this.ts).format(RocketChat.settings.get('Message_DateFormat'))
+		return moment(this.ts).format(RocketChat.settings.get('Message_DateFormat'));
 	},
 	own: function() {
-		if (this.u !== undefined && this.u && this.u._id == Meteor.userId()) {
-			return 'own'
+		if (this.u !== undefined && this.u && this.u._id === Meteor.userId()) {
+			return 'own';
 		}
 	},
 	body: function() {

@@ -14,7 +14,7 @@ class SnippetMessage extends RocketChat.models._Base {
 		return this.find({rid: rid}, options);
 	}
 
-	setFileName(_id, name){
+	setFileName(_id, name) {
 		let update = {
 			$set: {
 				filename: name

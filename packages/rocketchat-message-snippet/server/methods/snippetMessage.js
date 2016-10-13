@@ -1,17 +1,19 @@
+/* global RocketChatFileSnippetInstance */
 Meteor.methods({
 	snippetMessage: function(message, filename) {
-		if ((typeof Meteor.userId() == "undefined") || (Meteor.userId() == null)) {
-			throw new Meteor.error("error-invalid-user", "Invalid user",
+		if ((typeof Meteor.userId() === 'undefined') || (Meteor.userId() === null)) {
+			//noinspection JSUnresolvedFunction
+			throw new Meteor.Error('error-invalid-user', 'Invalid user',
 				{method: 'snippetMessage'});
 		}
 
 		let room = RocketChat.models.Rooms.findOne({ _id: message.rid });
 
-		if ((typeof room == "undefined") || (room == null)) {
+		if ((typeof room === 'undefined') || (room === null)) {
 			return false;
 		}
 
-		if (Array.isArray(room.usernames) && (room.usernames.indexOf(Meteor.user().username) == -1)) {
+		if (Array.isArray(room.usernames) && (room.usernames.indexOf(Meteor.user().username) === -1)) {
 			return false;
 		}
 
@@ -21,7 +23,7 @@ Meteor.methods({
 		}
 
 		// Detect extension
-		let fileNameSplits = filename.split(".");
+		let fileNameSplits = filename.split('.');
 		let extension = fileNameSplits[fileNameSplits.length - 1];
 
 		let me = RocketChat.models.Users.findOneById(Meteor.userId());
@@ -56,8 +58,8 @@ Meteor.methods({
 					message.snippeted);
 				RocketChat.models.Messages.createWithTypeRoomIdMessageAndUser(
 					'message_snippeted', message.rid, '', me, {
-						"snippetId": _id,
-						"filename": filename
+						'snippetId': _id,
+						'filename': filename
 					});
 			}
 		});

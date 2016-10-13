@@ -5,7 +5,7 @@ Meteor.startup(function() {
 		message: 'Snippeted_a_message',
 		data: function(message) {
 			let snippetLink = `<a href="/snippet/${message.snippetId}/${message.filename}">${message.filename}</a>`;
-			return {snippetLink: snippetLink}
+			return { snippetLink: snippetLink };
 		}
 	});
 });

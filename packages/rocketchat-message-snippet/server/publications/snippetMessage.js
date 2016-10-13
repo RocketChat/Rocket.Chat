@@ -1,7 +1,7 @@
-Meteor.publish("retrieveSnippetMessage", function(snippetId) {
+Meteor.publish('retrieveSnippetMessage', function(snippetId) {
 	let messageSnippetedCollection = 'rocketchat_snippeted_message';
 
-	if (typeof this.userId == "undefined" || this.userId == null) {
+	if (typeof this.userId === 'undefined' || this.userId === null) {
 		return this.ready();
 	}
 
@@ -9,8 +9,8 @@ Meteor.publish("retrieveSnippetMessage", function(snippetId) {
 
 	let user = RocketChat.models.Users.findOneById(this.userId);
 
-	if (typeof user == "undefined" || user == null) {
-	 	return this.ready();
+	if (typeof user === 'undefined' || user === null) {
+		return this.ready();
 	}
 
 	let cursor = RocketChat.models.SnippetMessage.find(
@@ -33,5 +33,5 @@ Meteor.publish("retrieveSnippetMessage", function(snippetId) {
 
 	this.onStop = function() {
 		cursor.stop();
-	}
+	};
 });
