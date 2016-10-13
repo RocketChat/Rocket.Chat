@@ -38,6 +38,7 @@ class SideNav extends Page {
 	get preferences() { return browser.element('.account-link:nth-of-type(1)'); }
 	get profile() { return browser.element('.account-link:nth-of-type(2)'); }
 	get avatar() { return browser.element('.account-link:nth-of-type(3)'); }
+	get preferencesClose() { return browser.element('.side-nav .arrow.close'); }
 
 	openChannel(channelName) {
 		browser.click('.rooms-list > .wrapper > ul [title="'+channelName+'"]');
