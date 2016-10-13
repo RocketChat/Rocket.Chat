@@ -1427,6 +1427,11 @@ label.required:after {
 		fieldset {
 			margin-bottom: 1em;
 		}
+
+		h3 {
+			font-size: 1rem;
+			margin-bottom: 10px;
+		}
 	}
 }
 
@@ -1657,8 +1662,6 @@ label.required:after {
 		}
 	}
 	.section {
-		border: 1px solid #ddd;
-		border-radius: 4px;
 		background-color: #fff;
 		padding: 20px;
 		margin: 20px;
@@ -1681,9 +1684,9 @@ label.required:after {
 			}
 		}
 		.section-content {
-			border: none !important;
-			border-radius: 0px !important;
-			padding: 20px 0 0 0 !important;
+			border: 0;
+			border-radius: 0px;
+			padding: 20px 0 0 0;
 			.input-line {
 				border-bottom: 1px solid #eee;
 				padding: 20px 0;
@@ -1773,6 +1776,27 @@ label.required:after {
 			}
 		}
 	}
+	&.page-settings-import {
+		.section {
+			h1 {
+				margin: 0 !important;
+				text-transform: capitalize;
+			}
+		}
+		.section-content {
+			text-align: justify;
+			margin-bottom: -15px;
+			&::after {
+				content:"";
+				display: inline-block;
+				margin:0 100% 0 0;
+			}
+			.content-description,
+			.start-import {
+				display: inline-block;
+			}
+		}
+	}
 }
 
 .page-static {
@@ -1793,16 +1817,13 @@ label.required:after {
 			h1 {
 				font-size: 20px;
 				margin-top: 40px;
-				padding: 0 0 0 10px;
+				padding: 0;
 				font-weight: 500;
 			}
 			&:first-of-type > h1 {
 				margin-top: 0px;
 			}
 			.section-content {
-				border: 1px solid;
-				padding: 20px;
-				border-radius: 4px;
 				.section-helper {
 					padding: 20px 20px 40px;
 					pre {
