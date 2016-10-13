@@ -1,13 +1,13 @@
-Meteor.publish("snippetedMessages", function(rid, limit=50) {
-	if (typeof this.userId == "undefined" || this.userId == null) {
+Meteor.publish('snippetedMessages', function(rid, limit=50) {
+	if (typeof this.userId === 'undefined' || this.userId === null) {
 		return this.ready();
 	}
 
 	let publication = this;
 
-	user = RocketChat.models.Users.findOneById(this.userId);
+	let user = RocketChat.models.Users.findOneById(this.userId);
 
-	if (typeof user == "undefined" || user == null) {
+	if (typeof user === 'undefined' || user === null) {
 		return this.ready();
 	}
 

@@ -3,7 +3,7 @@ Package.describe({
 	name: 'rocketchat:message-snippet',
 	version: '0.0.1',
 	summary: 'Transform your multilines messages into snippet files.',
-	git: '',
+	git: ''
 });
 
 Package.onUse(function(api) {
@@ -11,9 +11,9 @@ Package.onUse(function(api) {
 		'ecmascript',
 		'rocketchat:lib',
 		'rocketchat:file',
-		"rocketchat:markdown",
-		"rocketchat:theme",
-		"less",
+		'rocketchat:markdown',
+		'rocketchat:theme',
+		'less',
 		'random',
 		'underscore',
 		'tracker',
@@ -34,7 +34,7 @@ Package.onUse(function(api) {
 		'server/methods/snippetMessage.js',
 		'server/publications/snippetedMessagesByRoom.js',
 		'server/publications/snippetMessage.js',
-		'server/publications/retrieveSnippetedMessage.js',
+		'server/publications/retrieveSnippetedMessage.js'
 	], 'server');
 
 	// Client
@@ -52,7 +52,7 @@ Package.onUse(function(api) {
 		'client/tabBar/views/snippetedMessages.js',
 		'client/tabBar/views/snippetMessage.js',
 		'client/page/stylesheets/snippetPage.less'
-    ], 'client');
+	], 'client');
 
 	// api.export('multilinePasteHandler');
 	// api.export('multilinePaste');
