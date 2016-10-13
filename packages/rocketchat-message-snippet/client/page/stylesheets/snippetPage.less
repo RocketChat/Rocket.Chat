@@ -1,12 +1,18 @@
-@snippet-page-left-border-size: 40px;
-@snippet-page-top-border-size: 40px;
+@snippet-page-left-border-size: 30px;
+@snippet-page-top-border-size: 20px;
 @snippet-informations-height: 40px;
+@snippet-page-right-border-size: 30px;
 @snippet-informations-span-line-height: @snippet-informations-height / 2;
 
 
 .snippet-page {
-  margin-top: @snippet-page-top-border-size;
-  margin-left: @snippet-page-left-border-size;
+  padding-top: @snippet-page-top-border-size;
+  padding-left: @snippet-page-left-border-size;
+  padding-right: @snippet-page-right-border-size;
+  overflow-y: auto;
+  overflow-x: hidden;
+  height: 100%;
+  width: auto;
 
   pre code, h1, span {
     -webkit-user-select: text;
