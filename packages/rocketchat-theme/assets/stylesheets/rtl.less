@@ -172,6 +172,10 @@
 		.unread {
 			.left(6px);
 		}
+		.side-nav-toggle {
+			left: 0;
+			right: auto;
+		}
 	}
 
 	.side-nav:before {
@@ -424,6 +428,17 @@
 			}
 		}
 	}
+	#rocket-chat {
+		&.menu-closed {
+			.main-content {
+				left: 0;
+				right: @side-nav-toggle-width;
+			}
+			.side-nav {
+				transform: translateX(~"calc(@{rooms-box-width} - @{side-nav-toggle-width})");
+			}
+		}
+	}
 
 	@media all and(max-width: 1100px) {
 		#rocket-chat {
@@ -437,7 +452,7 @@
 	@media all and(max-width: 780px) {
 		#rocket-chat {
 			.main-content {
-				right: 0;
+				right: 0 !important;
 			}
 			.fixed-title h2 {
 				margin-right: 45px;

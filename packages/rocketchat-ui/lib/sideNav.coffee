@@ -28,6 +28,8 @@
 				sideNavArrow.addClass("left")
 			else
 				sideNavArrow.removeClass("left")
+			if isRtl localStorage.getItem "userLanguage"
+				sideNavArrow.toggleClass("left")
 		, 50
 
 	toggleCurrent = ->
