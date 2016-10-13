@@ -8,7 +8,11 @@
 			<span class='name {{archived}}'>{{name}}</span>
 			{{#if onlineUsers}}
 				<span class='room-online-users'>
-					({{{_ "Users_online" total=onlineUsers}}})
+					{{#if $eq onlineUsers 1}}
+						({{{_ "__total__user_online" total=onlineUsers}}})
+					{{else}}
+						({{{_ "__total__users_online" total=onlineUsers}}})
+					{{/if}}
 				</span>
 			{{/if}}
 			{{#if $not unread}}
