@@ -31,6 +31,7 @@ getUsersFromServer = (filter, records, cb) =>
 						_id: result.username
 						username: result.username
 						status: 'offline'
+						name: result.name
 						sort: 3
 
 			records = _.sortBy(records, 'sort')
@@ -80,6 +81,7 @@ Template.messagePopupConfig.helpers
 							_id: item.username
 							username: item.username
 							status: item.status
+							name: item.name
 							sort: 1
 
 				# Get users of room

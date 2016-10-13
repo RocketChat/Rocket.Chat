@@ -8,5 +8,9 @@ Template.spotlightTemplate.helpers({
 			return 'status-' + (Session.get(`user_${this.name}_status`) || 'offline');
 		}
 		return 'status-offline';
+	},
+
+	fullName() {
+		return RocketChat.settings.get('Account_AllowSearchByName') && this.fullName;
 	}
 });

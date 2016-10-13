@@ -19,7 +19,8 @@ getFromServer = (filter, records, cb) =>
 				server.push({
 					_id: user._id
 					t: 'd',
-					name: user.username
+					name: user.username,
+					fullName: user.name
 				})
 
 		if results?.rooms?.length > 0
