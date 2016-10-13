@@ -94,5 +94,9 @@ describe('resolutions tests', ()=> {
 				height: 800
 			});
 		});
+
+		it('close the preferences menu', () => {
+			sideNav.preferencesClose.click();
+		});
 	});
 });
