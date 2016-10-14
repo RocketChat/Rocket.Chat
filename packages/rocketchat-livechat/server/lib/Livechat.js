@@ -463,12 +463,12 @@ RocketChat.Livechat = {
 			description: Match.Optional(String)
 		});
 
-		check(departmentAgents, [{
-			agentId: String,
-			username: String,
-			count: Match.Maybe(Number),
-			order: Match.Maybe(Number)
-		}]);
+		check(departmentAgents, [
+			Match.ObjectIncluding({
+				agentId: String,
+				username: String
+			})
+		]);
 
 		if (_id) {
 			const department = RocketChat.models.LivechatDepartment.findOneById(_id);
