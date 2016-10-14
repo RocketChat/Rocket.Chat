@@ -1,4 +1,4 @@
-Meteor.publish('retrieveSnippetedMessage', function(snippetId) {
+Meteor.publish('snippetedMessage', function(_id) {
 	if (typeof this.userId === 'undefined' || this.userId === null) {
 		return this.ready();
 	}
@@ -12,9 +12,7 @@ Meteor.publish('retrieveSnippetedMessage', function(snippetId) {
 	}
 
 	let cursor = RocketChat.models.Messages.find(
-		{
-			snippetId: snippetId
-		}
+		{ '_id': _id }
 	).observeChanges({
 		added: function(_id, record) {
 			publication.added('rocketchat_message', _id, record);

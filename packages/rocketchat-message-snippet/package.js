@@ -30,11 +30,9 @@ Package.onUse(function(api) {
 	api.addFiles([
 		'server/startup/settings.js',
 		'server/startup/message-snippet.js',
-		'server/models/SnippetMessage.js',
 		'server/methods/snippetMessage.js',
 		'server/publications/snippetedMessagesByRoom.js',
-		'server/publications/snippetMessage.js',
-		'server/publications/retrieveSnippetedMessage.js'
+		'server/publications/snippetedMessage.js'
 	], 'server');
 
 	// Client

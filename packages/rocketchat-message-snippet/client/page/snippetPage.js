@@ -1,10 +1,10 @@
-/* global SnippetedMessage, Messages */
+/* global Messages */
 Template.snippetPage.helpers({
 	snippet: function() {
-		return SnippetedMessage.findOne({ _id: FlowRouter.getParam('snippetId') });
+		return Messages.findOne({ _id: FlowRouter.getParam('snippetId') });
 	},
 	snippetContent: function() {
-		let message = Messages.findOne({snippetId: FlowRouter.getParam('snippetId')});
+		let message = Messages.findOne({ _id: FlowRouter.getParam('snippetId') });
 		if (message === undefined) {
 			return null;
 		} else {
@@ -13,24 +13,14 @@ Template.snippetPage.helpers({
 			return markdownCode.tokens[0].text;
 		}
 	},
-	own() {
-		let snippet = SnippetedMessage.findOne({ _id: FlowRouter.getParam('snippetId') });
-		if (snippet !== undefined &&
-			snippet.u !== undefined &&
-			snippet.u._id === Meteor.userId()) {
-			return 'own';
-		}
-		return null;
-	},
 	date() {
-		let snippet = SnippetedMessage.findOne({ _id: FlowRouter.getParam('snippetId') });
+		let snippet = Messages.findOne({ _id: FlowRouter.getParam('snippetId') });
 		if (snippet !== undefined) {
-			console.log(snippet.ts);
 			return moment(snippet.ts).format(RocketChat.settings.get('Message_DateFormat'));
 		}
 	},
 	time() {
-		let snippet = SnippetedMessage.findOne({ _id: FlowRouter.getParam('snippetId') });
+		let snippet = Messages.findOne({ _id: FlowRouter.getParam('snippetId') });
 		if (snippet !== undefined) {
 			return moment(snippet.ts).format(RocketChat.settings.get('Message_TimeFormat'));
 		}
@@ -38,10 +28,10 @@ Template.snippetPage.helpers({
 });
 
 Template.snippetPage.onCreated(function() {
+	let snippetId = FlowRouter.getParam('snippetId');
+	console.log(`${snippetId}: ${this.snippet}`);
 	this.autorun(function() {
-		let snippetId = FlowRouter.getParam('snippetId');
-		Meteor.subscribe('retrieveSnippetedMessage', snippetId);
-		Meteor.subscribe('retrieveSnippetMessage', snippetId);
+		Meteor.subscribe('snippetedMessage', snippetId);
 	});
 });
 
