@@ -22,10 +22,6 @@ Meteor.methods({
 			RocketChat.models.Messages.cloneAndSaveAsHistoryById(message._id);
 		}
 
-		// Detect extension
-		let fileNameSplits = filename.split('.');
-		let extension = fileNameSplits[fileNameSplits.length - 1];
-
 		let me = RocketChat.models.Users.findOneById(Meteor.userId());
 
 		message.snippeted = true;
@@ -43,26 +39,10 @@ Meteor.methods({
 		rs.pipe(ws);
 
 		// Create the SnippetMessage
-		RocketChat.models.SnippetMessage.insert({
-			rid: message.rid,
-			filename: filename,
-			extension: extension,
-			u: message.u,
-			ts: message.ts
-		}, function(error, _id) {
-			if (error !== undefined && error !== null) {
-				console.log(error);
-			} else {
-				message.snippedId = _id;
-				RocketChat.models.Messages.setSnippetedByIdAndUserId(message, message.snippedId, message.snippetedBy,
-					message.snippeted);
-				RocketChat.models.Messages.createWithTypeRoomIdMessageAndUser(
-					'message_snippeted', message.rid, '', me, {
-						'snippetId': _id,
-						'filename': filename
-					});
-			}
-		});
+		RocketChat.models.Messages.setSnippetedByIdAndUserId(message, filename, message.snippetedBy,
+			message.snippeted, Date.now, filename);
 
+		RocketChat.models.Messages.createWithTypeRoomIdMessageAndUser(
+			'message_snippeted', message.rid, '', me, {	'snippetId': message._id, 'snippetName': filename });
 	}
 });

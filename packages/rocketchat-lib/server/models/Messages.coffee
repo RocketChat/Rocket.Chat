@@ -191,7 +191,7 @@ RocketChat.models.Messages = new class extends RocketChat.models._Base
 
 		return @update query, update
 
-	setSnippetedByIdAndUserId: (message, snippetId, snippetedBy, snippeted=true, snippetedAt=0) ->
+	setSnippetedByIdAndUserId: (message, snippetName, snippetedBy, snippeted=true, snippetedAt=0) ->
 		query =
 			_id: message._id
 
@@ -200,10 +200,10 @@ RocketChat.models.Messages = new class extends RocketChat.models._Base
 		update =
 			$set:
 				msg: msg
-				snippetId: snippetId
 				snippeted: snippeted
 				snippetedAt: snippetedAt || new Date
 				snippetedBy: snippetedBy
+				snippetName: snippetName
 
 		return @update query, update
 
