@@ -2,7 +2,7 @@ Meteor.startup(function() {
 	RocketChat.MessageAction.addButton({
 		id: 'snippeted-message',
 		icon: 'icon-code',
-		i18nnLabel: 'Snippet',
+		i18nLabel: 'Snippet',
 		context: [
 			'snippeted',
 			'message',

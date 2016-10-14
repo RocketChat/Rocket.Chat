@@ -11,6 +11,6 @@ Template.snippetMessage.helpers({
 		}
 	},
 	body: function() {
-		return `<a href="/snippet/${this._id}/${this.filename}">${this.filename}</a>`;
+		return `<a href="/snippet/${this._id}/${this.snippetName}">${this.snippetName}</a>`;
 	}
 });

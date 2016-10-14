@@ -11,7 +11,7 @@ Meteor.publish('snippetedMessages', function(rid, limit=50) {
 		return this.ready();
 	}
 
-	let cursorHandle = RocketChat.models.SnippetMessage.findByRoomId(
+	let cursorHandle = RocketChat.models.Messages.findSnippetedByRoom(
 		rid,
 		{
 			sort: {ts: -1},
@@ -19,13 +19,13 @@ Meteor.publish('snippetedMessages', function(rid, limit=50) {
 		}
 	).observeChanges({
 		added: function(_id, record) {
-			publication.added('rocketchat_snippeted_message', _id, record);
+			publication.added('rocketchat_message', _id, record);
 		},
 		changed: function(_id, record) {
-			publication.changed('rocketchat_snippeted_message', _id, record);
+			publication.changed('rocketchat_message', _id, record);
 		},
 		removed: function(_id) {
-			publication.removed('rocketchat_snippeted_message', _id);
+			publication.removed('rocketchat_message', _id);
 		}
 	});
 	this.ready();
