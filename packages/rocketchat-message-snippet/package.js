@@ -31,6 +31,7 @@ Package.onUse(function(api) {
 		'server/startup/settings.js',
 		'server/startup/message-snippet.js',
 		'server/methods/snippetMessage.js',
+		'server/requests.js',
 		'server/publications/snippetedMessagesByRoom.js',
 		'server/publications/snippetedMessage.js'
 	], 'server');
