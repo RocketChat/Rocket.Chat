@@ -58,6 +58,7 @@ RocketChat.theme = new class
 		'assets/stylesheets/rtl.less'
 		'assets/stylesheets/swipebox.min.css'
 		'assets/stylesheets/utils/_colors.import.less'
+		'assets/stylesheets/utils/_forms.import.less'
 	]
 
 	constructor: ->

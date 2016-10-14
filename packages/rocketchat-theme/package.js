@@ -26,6 +26,7 @@ Package.onUse(function(api) {
 
 	api.addAssets('assets/stylesheets/global/_variables.less', 'server');
 	api.addAssets('assets/stylesheets/utils/_colors.import.less', 'server');
+	api.addAssets('assets/stylesheets/utils/_forms.import.less', 'server');
 	api.addAssets('assets/stylesheets/utils/_keyframes.import.less', 'server');
 	api.addAssets('assets/stylesheets/utils/_lesshat.import.less', 'server');
 	api.addAssets('assets/stylesheets/utils/_preloader.import.less', 'server');

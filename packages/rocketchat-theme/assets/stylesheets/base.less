@@ -290,96 +290,6 @@ blockquote {
 	}
 }
 
-.input-line {
-	.clearfix;
-	display: block;
-	margin-bottom: 12px;
-	&:nth-last-child(1) {
-		margin-bottom: 0;
-	}
-	&.search {
-		.icon-spin {
-			position: absolute;
-			right: 5px;
-			top: 10px;
-			font-weight: 400;
-			-webkit-animation-name: spin;
-			-webkit-animation-duration: 2000ms;
-			-webkit-animation-iteration-count: infinite;
-			-webkit-animation-timing-function: linear;
-			-moz-animation-name: spin;
-			-moz-animation-duration: 2000ms;
-			-moz-animation-iteration-count: infinite;
-			-moz-animation-timing-function: linear;
-			-ms-animation-name: spin;
-			-ms-animation-duration: 2000ms;
-			-ms-animation-iteration-count: infinite;
-			-ms-animation-timing-function: linear;
-			animation-name: spin;
-			animation-duration: 2000ms;
-			animation-iteration-count: infinite;
-			animation-timing-function: linear;
-		}
-		.icon-search,
-		.icon-right-open-small,
-		.icon-sort-alt-up,
-		.icon-lock,
-		.icon-comment {
-			position: absolute;
-			left: 2px;
-			top: 10px;
-		}
-		input {
-			padding-left: 30px;
-		}
-	}
-	> label {
-		display: block;
-		margin-bottom: 4px;
-	}
-	> div {
-		position: relative;
-		.right {
-			position: absolute;
-			right: 10px;
-			top: 10px;
-			z-index: 10;
-		}
-	}
-	> div.-autocomplete-container {
-		position: absolute;
-	}
-	input[type='text'] {
-		display: block;
-	}
-	&.double-col {
-		> label {
-			width: 30%;
-			float: left;
-			margin-bottom: 0;
-			padding-right: 20px;
-			text-align: right;
-			line-height: 15px;
-			padding: 10px 20px 10px 0;
-		}
-		> div {
-			float: left;
-			width: 70%;
-			label {
-				display: inline-block;
-				margin-right: 4px;
-				line-height: 35px;
-				&:nth-last-child(1) {
-					margin-right: 0;
-				}
-				input {
-					margin-right: 4px;
-				}
-			}
-		}
-	}
-}
-
 @-ms-keyframes spin {
 	from {
 		-ms-transform: rotate(0deg);
@@ -1875,7 +1785,7 @@ label.required:after {
 	}
 	.results {
 		padding: 10px 0;
-		border-bottom: 1px solid;
+		// border-bottom: 1px solid;
 		margin-bottom: 10px;
 		font-weight: 300;
 		p {
@@ -1920,16 +1830,27 @@ label.required:after {
 				}
 			}
 			tbody {
+				tr {
+					&.row-link {
+						cursor: pointer;
+						transition: background-color .25s ease;
+					}
+				}
 				td {
 					vertical-align: middle;
-					padding: 4px 2px;
 					a {
 						padding: inherit;
-						margin-bottom: inherit;
 						display: inline;
 						border: none;
 					}
 				}
+			}
+			tr {
+				line-height: 1.5;
+			}
+			th,
+			td {
+				padding: 15px 5px;
 			}
 		}
 	}
@@ -3962,7 +3883,7 @@ body:not(.is-cordova) {
 	tr {
 		line-height: 1.5;
 		&:nth-of-type(odd) {
-			background-color: #F2f2f2;
+			background-color: @table-stripe-color;
 		}
 	}
 	th,
