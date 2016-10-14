@@ -1,4 +1,3 @@
-/* global RocketChatFileSnippetInstance */
 Meteor.methods({
 	snippetMessage: function(message, filename) {
 		if ((typeof Meteor.userId() === 'undefined') || (Meteor.userId() === null)) {
@@ -32,11 +31,6 @@ Meteor.methods({
 		};
 
 		message = RocketChat.callbacks.run('beforeSaveMessage', message);
-
-		let file = new Buffer(message.msg);
-		let rs = RocketChatFile.bufferToStream(file);
-		let ws = RocketChatFileSnippetInstance.createWriteStream(filename, message.msg);
-		rs.pipe(ws);
 
 		// Create the SnippetMessage
 		RocketChat.models.Messages.setSnippetedByIdAndUserId(message, filename, message.snippetedBy,
