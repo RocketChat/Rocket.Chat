@@ -138,7 +138,7 @@ Message history is paginated. Older messages can be retrieved by incrementing th
 ###
 RocketChat.API.v1.addRoute 'room/:rid/history', authRequired: true,
 	get: ->
-		if not Meteor.call('canAccessRoom', @urlParams.rid, this.userId)
+		if not Meteor.call('canAccessRoom', @urlParams.rid, @userId)
 			return RocketChat.API.v1.unauthorized()
 
 		try
@@ -164,7 +164,7 @@ RocketChat.API.v1.addRoute 'room/:rid/history', authRequired: true,
 # Retrieve message details. Requires access to the room. URL parameters accepts the room ID and the message ID.
 RocketChat.API.v1.addRoute 'room/:rid/message/:mid', authRequired: true,
 	get: ->
-		if not Meteor.call('canAccessRoom', @urlParams.rid, this.userId)
+		if not Meteor.call('canAccessRoom', @urlParams.rid, @userId)
 			return RocketChat.API.v1.unauthorized()
 
 		try
