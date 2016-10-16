@@ -276,13 +276,14 @@ RocketChat.API.v1.addRoute 'user.delete', authRequired: true,
 		if not @bodyParams.userId?
 			return RocketChat.API.v1.failure 'Body param "userId" is required'
 
-		if not RocketChat.authz.hasPermission(@userId, 'delete-user')
-			return RocketChat.API.v1.unauthorized()
-
 		id = undefined
 		try
+			if not RocketChat.authz.hasPermission(@userId, 'delete-user')
+				return RocketChat.API.v1.unauthorized()
+
 			Meteor.runAsUser this.userId, =>
 				id = Meteor.call 'deleteUser', @bodyParams.userId, []
+		
 		catch e
 			return RocketChat.API.v1.failure e.name + ': ' + e.message
 
