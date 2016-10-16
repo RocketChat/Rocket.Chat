@@ -67,17 +67,17 @@
 						<div class="connection-status">
 							{{> status}}
 						</div>
-						{{#unless modal}}
 							<div class="flex-tab-bar" role="toolbar">
 								{{> flexTabBar}}
 							</div>
-						{{/unless}}
-						<div class="main-content {{flexOpened}} {{flexOpenedRTC1}} {{flexOpenedRTC2}} {{#if modal}}main-modal{{/if}}">
+						<div class="main-content {{flexOpened}} {{flexOpenedRTC1}} {{flexOpenedRTC2}} {{#if useIframe}}main-modal{{/if}} {{#if modal}}main-modal{{/if}}">
 							{{> Template.dynamic template=center}}
 						</div>
-						{{#unless modal}}
-							{{> sideNav }}
-						{{/unless}}
+            {{#unless useIframe}}
+  						{{#unless modal}}
+  							{{> sideNav }}
+  						{{/unless}}
+            {{/unless}}
 					</div>
 					{{> audioNotification }}
 				{{/if}}
