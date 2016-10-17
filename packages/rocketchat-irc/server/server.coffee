@@ -1,13 +1,27 @@
+# # #
+# Assign values
+# 
+
+# Package availability
+IRC_AVAILABILITY = RocketChat.settings.get('IRC_Enabled');
+
+# Cache prep
 net = Npm.require('net')
 Lru = Npm.require('lru-cache')
-
-MESSAGE_CACHE_SIZE = 200
-IRC_PORT = 6667
-IRC_HOST = 'irc.freenode.net'
-
-ircClientMap = {}
+MESSAGE_CACHE_SIZE = RocketChat.settings.get('IRC_Message_Cache_Size');
 ircReceiveMessageCache = Lru MESSAGE_CACHE_SIZE
 ircSendMessageCache = Lru MESSAGE_CACHE_SIZE
+
+# IRC server
+IRC_PORT = RocketChat.settings.get('IRC_Port');
+IRC_HOST = RocketChat.settings.get('IRC_Host');
+
+ircClientMap = {}
+
+
+# # # 
+# Core functionality
+#
 
 bind = (f) ->
 	g = Meteor.bindEnvironment (self, args...) -> f.apply(self, args)
@@ -19,7 +33,6 @@ async = (f, args...) ->
 class IrcClient
 	constructor: (@loginReq) ->
 		@user = @loginReq.user
-		@user.username = @user.name
 		ircClientMap[@user._id] = this
 		@ircPort = IRC_PORT
 		@ircHost = IRC_HOST
@@ -45,14 +58,14 @@ class IrcClient
 		@receiveMemberListBuf = {}
 		@pendingJoinRoomBuf = []
 
-		@successLoginMessageRegex = /Welcome to the freenode Internet Relay Chat Network/
-		@failedLoginMessageRegex = /You have not registered/
-		@receiveMessageRegex = /^:(\S+)!~\S+ PRIVMSG (\S+) :(.+)$/
-		@receiveMemberListRegex = /^:\S+ \d+ \S+ = #(\S+) :(.*)$/
-		@endMemberListRegex = /^.+#(\S+) :End of \/NAMES list.$/
-		@addMemberToRoomRegex = /^:(\S+)!~\S+ JOIN #(\S+)$/
-		@removeMemberFromRoomRegex = /^:(\S+)!~\S+ PART #(\S+)$/
-		@quiteMemberRegex = /^:(\S+)!~\S+ QUIT .*$/
+		@successLoginMessageRegex = /RocketChat.settings.get('IRC_RegEx_successLogin');/
+		@failedLoginMessageRegex = /RocketChat.settings.get('IRC_RegEx_failedLogin');/
+		@receiveMessageRegex = /RocketChat.settings.get('IRC_RegEx_receiveMessage');/
+		@receiveMemberListRegex = /RocketChat.settings.get('IRC_RegEx_receiveMemberList');/
+		@endMemberListRegex = /RocketChat.settings.get('IRC_RegEx_endMemberList');/
+		@addMemberToRoomRegex = /RocketChat.settings.get('IRC_RegEx_addMemberToRoom');/
+		@removeMemberFromRoomRegex = /RocketChat.settings.get('IRC_RegEx_removeMemberFromRoom');/
+		@quitMemberRegex = /RocketChat.settings.get('IRC_RegEx_quitMember');/
 
 	connect: (@loginCb) =>
 		@socket.connect @ircPort, @ircHost, @onConnect
@@ -65,7 +78,7 @@ class IrcClient
 	onConnect: () =>
 		console.log '[irc] onConnect -> '.yellow, @user.username, 'connect success.'
 		@socket.write "NICK #{@user.username}\r\n"
-		@socket.write "USER #{@user.username} 0 * :Real Name\r\n"
+		@socket.write "USER #{@user.username} 0 * :#{@user.name}\r\n"
 		# message order could not make sure here
 		@isConnected = true
 		@socket.write msg for msg in @msgBuf
@@ -119,9 +132,9 @@ class IrcClient
 				@onRemoveMemberFromRoom matchResult[1], matchResult[2]
 				continue
 
-			matchResult = @quiteMemberRegex.exec line
+			matchResult = @quitMemberRegex.exec line
 			if matchResult
-				@onQuiteMember matchResult[1]
+				@onQuitMember matchResult[1]
 				continue
 
 			matchResult = @successLoginMessageRegex.exec line
@@ -272,8 +285,8 @@ class IrcClient
 		console.log '[irc] onRemoveMemberFromRoom -> '.yellow, 'roomName:', roomName, 'member:', member
 		RocketChat.models.Rooms.removeUsernameByName roomName, member
 
-	onQuiteMember: (member) ->
-		console.log '[irc] onQuiteMember ->'.yellow, 'username:', member
+	onQuitMember: (member) ->
+		console.log '[irc] onQuitMember ->'.yellow, 'username:', member
 		RocketChat.models.Rooms.removeUsernameFromAll member
 
 		Meteor.users.update {name: member},
@@ -381,9 +394,18 @@ class IrcLogoutCleanUper
 		ircClient.disconnect()
 		return user
 
-RocketChat.callbacks.add 'beforeValidateLogin', IrcLoginer, RocketChat.callbacks.priority.LOW, 'irc-loginer'
-RocketChat.callbacks.add 'beforeSaveMessage', IrcSender, RocketChat.callbacks.priority.LOW, 'irc-sender'
-RocketChat.callbacks.add 'beforeJoinRoom', IrcRoomJoiner, RocketChat.callbacks.priority.LOW, 'irc-room-joiner'
-RocketChat.callbacks.add 'beforeCreateChannel', IrcRoomJoiner, RocketChat.callbacks.priority.LOW, 'irc-room-joiner-create-channel'
-RocketChat.callbacks.add 'beforeLeaveRoom', IrcRoomLeaver, RocketChat.callbacks.priority.LOW, 'irc-room-leaver'
-RocketChat.callbacks.add 'afterLogoutCleanUp', IrcLogoutCleanUper, RocketChat.callbacks.priority.LOW, 'irc-clean-up'
+
+# # #
+# Make magic happen 
+#
+
+# Only proceed if the package has been enabled
+if IRC_AVAILABILITY == true
+	RocketChat.callbacks.add 'beforeValidateLogin', IrcLoginer, RocketChat.callbacks.priority.LOW, 'irc-loginer'
+	RocketChat.callbacks.add 'beforeSaveMessage', IrcSender, RocketChat.callbacks.priority.LOW, 'irc-sender'
+	RocketChat.callbacks.add 'beforeJoinRoom', IrcRoomJoiner, RocketChat.callbacks.priority.LOW, 'irc-room-joiner'
+	RocketChat.callbacks.add 'beforeCreateChannel', IrcRoomJoiner, RocketChat.callbacks.priority.LOW, 'irc-room-joiner-create-channel'
+	RocketChat.callbacks.add 'beforeLeaveRoom', IrcRoomLeaver, RocketChat.callbacks.priority.LOW, 'irc-room-leaver'
+	RocketChat.callbacks.add 'afterLogoutCleanUp', IrcLogoutCleanUper, RocketChat.callbacks.priority.LOW, 'irc-clean-up'
+else
+	return
