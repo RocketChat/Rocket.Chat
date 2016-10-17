@@ -23,6 +23,8 @@ LDAP = class LDAP {
 		self.options = {
 			host: RocketChat.settings.get('LDAP_Host'),
 			port: RocketChat.settings.get('LDAP_Port'),
+			connect_timeout: RocketChat.settings.get('LDAP_Connect_Timeout'),
+			idle_timeout: RocketChat.settings.get('LDAP_Idle_Timeout'),
 			encryption: RocketChat.settings.get('LDAP_Encryption'),
 			ca_cert: RocketChat.settings.get('LDAP_CA_Cert'),
 			reject_unauthorized: RocketChat.settings.get('LDAP_Reject_Unauthorized') || false,
@@ -51,8 +53,8 @@ LDAP = class LDAP {
 		const connectionOptions = {
 			url: `${self.options.host}:${self.options.port}`,
 			timeout: 1000 * 60 * 10,
-			connectTimeout: 1000 * 10,
-			idleTimeout: 1000 * 10,
+			connectTimeout: self.options.connect_timeout,
+			idleTimeout: self.options.idle_timeout,
 			reconnect: false
 		};
 

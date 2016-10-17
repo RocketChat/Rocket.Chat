@@ -25,7 +25,7 @@ Template.permissionsRole.helpers
 		return Template.instance().usersInRole.get() && Template.instance().usersInRole.get().count() > 0
 
 	hasMore: ->
-		return Template.instance().limit?.get() is Template.instance().usersInRole.get().count()
+		return Template.instance().limit?.get() <= Template.instance().usersInRole.get().count()
 
 	isLoading: ->
 		return 'btn-loading' unless Template.instance().ready?.get()

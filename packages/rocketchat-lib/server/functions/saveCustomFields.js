@@ -17,7 +17,7 @@ RocketChat.saveCustomFields = function(userId, formData) {
 				throw new Meteor.Error('error-user-registration-custom-field', `Field ${fieldName} is required`, { method: 'registerUser' });
 			}
 
-			if (field.type === 'select' && field.options.indexOf(formData[fieldName]) !== -1) {
+			if (field.type === 'select' && field.options.indexOf(formData[fieldName]) === -1) {
 				throw new Meteor.Error('error-user-registration-custom-field', `Value for field ${fieldName} is invalid`, { method: 'registerUser' });
 			}
 
