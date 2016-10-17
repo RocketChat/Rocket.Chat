@@ -28,10 +28,10 @@ Template.permissions.events
 
 	'click .tab': (e) ->
 		tab = if $(e.target).is 'li' then $(e.target) else $(e.target).parent()
-		role = $(tab).data('id')
+		role = $(tab).data 'id'
 		Template.instance().tableRoles.set RocketChat.models.Roles.find({'_id': role}).fetch()
-		$('.role-tabs .tab').removeClass('active')
-		$(tab).addClass('active')
+		$('.role-tabs .tab').removeClass 'active'
+		$(tab).addClass 'active'
 
 
 Template.permissions.onCreated ->
