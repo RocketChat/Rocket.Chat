@@ -79,9 +79,9 @@ Now compatible with all Android devices as old as version 4.0.x - [download here
 When you choose Ubuntu as your server distro, installing Rocket.Chat is as easy as:
 `sudo snap install rocketchat-server`
 
-Installing snaps is very quick.  But running that command you have your full Rocket.Chat server up and running.  Snaps are secure.  They are isolated with all of their dependencies.  Snaps also auto update when we release new versions. 
+Installing snaps is very quick.  By running that command you have your full Rocket.Chat server up and running.  Snaps are secure.  They are isolated with all of their dependencies.  Snaps also auto update when we release new versions. 
 
-Find out more information about our snaps [here](https://rocket.chat/docs/installation/snaps)
+Find out more information about our snaps [here](https://rocket.chat/docs/installation/Ubuntu/snaps)
 
 ## Sandstorm.io
 Host your own Rocket.Chat server in four seconds flat:
