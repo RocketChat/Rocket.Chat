@@ -114,6 +114,17 @@ Template.messagePopupConfig.helpers
 				if exp.test(all.username) or exp.test(all.compatibility)
 					items.push all
 
+				here =
+					_id: 'here'
+					username: 'here'
+					system: true
+					name: t 'Notify_active_in_this_room'
+					compatibility: 'channel group'
+					sort: 4
+
+				if exp.test(here.username) or exp.test(here.compatibility)
+					items.push here
+
 				return items
 
 			getValue: (_id) ->
