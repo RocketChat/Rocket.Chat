@@ -20,7 +20,7 @@ class MentionsClient
 				mentions = _.unique mentions
 				mentions = mentions.join('|')
 				msg = msg.replace new RegExp("(?:^|\\s|\\n)(@(#{mentions}):?)[:.,\s]?", 'g'), (match, mention, username) ->
-					if username is 'all'
+					if username is 'all' or username is 'here'
 						return match.replace mention, "<a class=\"mention-link mention-link-me mention-link-all\">#{mention}</a>"
 
 					if not message.temp?
@@ -51,5 +51,5 @@ class MentionsClient
 			message.html = msg
 		return message
 
-RocketChat.callbacks.add 'renderMessage', MentionsClient
-RocketChat.callbacks.add 'renderMentions', MentionsClient
+RocketChat.callbacks.add 'renderMessage', MentionsClient, RocketChat.callbacks.priority.MEDIUM, 'mentions-message'
+RocketChat.callbacks.add 'renderMentions', MentionsClient, RocketChat.callbacks.priority.MEDIUM, 'mentions-mentions'

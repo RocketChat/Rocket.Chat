@@ -12,7 +12,7 @@ Meteor.startup ->
 
 		return msg
 
-	RocketChat.callbacks.add 'streamMessage', roomSettingsChangedCallback, RocketChat.callbacks.priority.HIGH
+	RocketChat.callbacks.add 'streamMessage', roomSettingsChangedCallback, RocketChat.callbacks.priority.HIGH, 'room-settings-changed'
 
 	roomNameChangedCallback = (msg) ->
 		Tracker.nonreactive ->
@@ -24,4 +24,4 @@ Meteor.startup ->
 
 		return msg
 
-	RocketChat.callbacks.add 'streamMessage', roomNameChangedCallback, RocketChat.callbacks.priority.HIGH
+	RocketChat.callbacks.add 'streamMessage', roomNameChangedCallback, RocketChat.callbacks.priority.HIGH, 'room-name-changed'
