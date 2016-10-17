@@ -117,7 +117,7 @@ getDataToSyncUserData = function getDataToSyncUserData(ldapUser, user) {
 
 syncUserData = function syncUserData(user, ldapUser) {
 	logger.info('Syncing user data');
-	logger.debug('user', user);
+	logger.debug('user', {'email': user.email, '_id': user._id});
 	logger.debug('ldapUser', ldapUser);
 
 	const userData = getDataToSyncUserData(ldapUser, user);

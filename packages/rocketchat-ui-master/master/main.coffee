@@ -45,10 +45,15 @@ Template.body.onRendered ->
 			e.stopPropagation()
 
 			if RocketChat.Layout.isEmbedded()
-				fireGlobalEvent('click-message-link', { link: link.pathname + link.search })
-				return window.open(link.pathname + link.search)
+				return fireGlobalEvent('click-message-link', { link: link.pathname + link.search })
 
 			FlowRouter.go(link.pathname + link.search)
+
+		if $(link).hasClass('swipebox')
+			if RocketChat.Layout.isEmbedded()
+				e.preventDefault()
+				e.stopPropagation()
+				fireGlobalEvent('click-image-link', { href: link.href })
 
 	Tracker.autorun (c) ->
 		w = window
@@ -154,7 +159,10 @@ Template.main.helpers
 		return RocketChat.iframeLogin.reactiveIframeUrl.get()
 
 	subsReady: ->
-		ready = not Meteor.userId()? or (FlowRouter.subsReady('userData', 'activeUsers') and CachedChatSubscription.ready.get())
+		routerReady = FlowRouter.subsReady('userData', 'activeUsers')
+		subscriptionsReady = CachedChatSubscription.ready.get()
+
+		ready = not Meteor.userId()? or (routerReady and subscriptionsReady)
 		RocketChat.CachedCollectionManager.syncEnabled = ready
 		return ready
 

@@ -1,6 +1,6 @@
 RocketChat.models.Subscriptions = new class extends RocketChat.models._Base
 	constructor: ->
-		@_initModel 'subscription'
+		super('subscription')
 
 		@tryEnsureIndex { 'rid': 1, 'u._id': 1 }, { unique: 1 }
 		@tryEnsureIndex { 'rid': 1, 'alert': 1, 'u._id': 1 }
@@ -68,6 +68,12 @@ RocketChat.models.Subscriptions = new class extends RocketChat.models._Base
 			t: type
 			name: name
 			'u._id': userId
+
+		return @find query, options
+
+	findByRoomId: (roomId, options) ->
+		query =
+			"rid": roomId
 
 		return @find query, options
 
