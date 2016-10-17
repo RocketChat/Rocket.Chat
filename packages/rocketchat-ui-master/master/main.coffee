@@ -29,7 +29,7 @@ Template.body.onRendered ->
 					if subscription.alert or subscription.unread > 0
 						Meteor.call 'readMessages', subscription.rid
 
-	$(document.body).on 'keydown', (e) ->
+	$(document.body).on 'keypress', (e) ->
 		target = e.target
 		if /input|textarea|select/i.test(target.tagName)
 			return
