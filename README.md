@@ -81,7 +81,7 @@ When you choose Ubuntu as your server distro, installing Rocket.Chat is as easy 
 
 Installing snaps is very quick.  By running that command you have your full Rocket.Chat server up and running.  Snaps are secure.  They are isolated with all of their dependencies.  Snaps also auto update when we release new versions. 
 
-Find out more information about our snaps [here](https://rocket.chat/docs/installation/Ubuntu/snaps)
+Find out more information about our snaps [here](https://rocket.chat/docs/installation/Ubuntu/Snaps)
 
 ## Sandstorm.io
 Host your own Rocket.Chat server in four seconds flat:
