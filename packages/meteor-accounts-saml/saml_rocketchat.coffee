@@ -17,8 +17,8 @@ Meteor.methods
 		RocketChat.settings.add "SAML_Custom_#{name}_entry_point"       , 'https://openidp.feide.no/simplesaml/saml2/idp/SSOService.php', { type: 'string' , group: 'SAML', section: name, i18nLabel: 'SAML_Custom_Entry_point'}
 		RocketChat.settings.add "SAML_Custom_#{name}_issuer"            , 'https://rocket.chat/'                                        , { type: 'string' , group: 'SAML', section: name, i18nLabel: 'SAML_Custom_Issuer'}
 		RocketChat.settings.add "SAML_Custom_#{name}_cert"              , ''                                                            , { type: 'string' , group: 'SAML', section: name, i18nLabel: 'SAML_Custom_Cert'}
-		RocketChat.settings.add "SAML_Custom_#{name}_public_cert_file_path"  , 'filename.crt'                                           , { type: 'string' , group: 'SAML', section: name, i18nLabel: 'SAML_Custom_Public_Cert_File_Path'}
-		RocketChat.settings.add "SAML_Custom_#{name}_private_key_file_path"  , 'filename.key'                                           , { type: 'string' , group: 'SAML', section: name, i18nLabel: 'SAML_Custom_Private_Key_File_Path'}
+		RocketChat.settings.add "SAML_Custom_#{name}_public_cert_file_path"  , '/path/to/filename.crt'                                           , { type: 'string' , group: 'SAML', section: name, i18nLabel: 'SAML_Custom_Public_Cert_File_Path'}
+		RocketChat.settings.add "SAML_Custom_#{name}_private_key_file_path"  , '/path/to/filename.key'                                           , { type: 'string' , group: 'SAML', section: name, i18nLabel: 'SAML_Custom_Private_Key_File_Path'}
 		RocketChat.settings.add "SAML_Custom_#{name}_button_label_text" , ''                                                            , { type: 'string' , group: 'SAML', section: name, i18nLabel: 'Accounts_OAuth_Custom_Button_Label_Text'}
 		RocketChat.settings.add "SAML_Custom_#{name}_button_label_color", '#FFFFFF'                                                     , { type: 'string' , group: 'SAML', section: name, i18nLabel: 'Accounts_OAuth_Custom_Button_Label_Color'}
 		RocketChat.settings.add "SAML_Custom_#{name}_button_color"      , '#13679A'                                                     , { type: 'string' , group: 'SAML', section: name, i18nLabel: 'Accounts_OAuth_Custom_Button_Color'}
@@ -26,8 +26,8 @@ Meteor.methods
 
 timer = undefined
 
-# Find existing SAML providers (idp's) in in RocketChat settings
-# (instances of RocketChat.models.Settings) and update the system.
+# Find existing SAML services (idp's) in RocketChat settings and
+# update the system.
 #
 # Updating the system includes:
 # 1) Appending enabled providers to Accounts.saml.settings.providers.
@@ -36,50 +36,57 @@ timer = undefined
 
 updateServices = ->
 	Meteor.clearTimeout timer if timer?
-
 	timer = Meteor.setTimeout ->
 		services = RocketChat.settings.get(/^(SAML_Custom_)[a-z]+$/i)
-
 		Accounts.saml.settings.providers = []
-
 		for service in services
-			logger.updated service.key
-
 			serviceName = 'saml'
-
 			if service.value is true
-				data =
-					buttonLabelText: RocketChat.settings.get("#{service.key}_button_label_text")
-					buttonLabelColor: RocketChat.settings.get("#{service.key}_button_label_color")
-					buttonColor: RocketChat.settings.get("#{service.key}_button_color")
-					clientConfig:
-						provider: RocketChat.settings.get("#{service.key}_provider")
-
-				Accounts.saml.settings.generateUsername = RocketChat.settings.get("#{service._id}_generate_username")
-				privateKeyFilePath = RocketChat.settings.get("#{service._id}_private_key_file_path")
-				publicCertFilePath = RocketChat.settings.get("#{service._id}_public_cert_file_path")
-
-				try
-					privateKey = fs.readFileSync(privateKeyFilePath).toString()
-					privateCert = fs.readFileSync(publicCertFilePath).toString()
-				catch err
-					console.warn "Can't configure key or cert for SAML, signing and encryption will not work"
-					console.warn "Error was: #{err.message}"
-					privateKey = false
-					privateCert = false
-
-				Accounts.saml.settings.providers.push
-					provider: data.clientConfig.provider
-					entryPoint: RocketChat.settings.get("#{service.key}_entry_point")
-					issuer: RocketChat.settings.get("#{service.key}_issuer")
-					cert: RocketChat.settings.get("#{service.key}_cert")
-					privateCert: privateCert
-					privateKey: privateKey
-
-				ServiceConfiguration.configurations.upsert {service: serviceName.toLowerCase()}, $set: data
+				samlConfigs = getSamlConfigs(service)
+				configureSamlService(samlConfigs)
+				ServiceConfiguration.configurations.upsert {service: serviceName.toLowerCase()}, $set: samlConfigs
 			else
 				ServiceConfiguration.configurations.remove {service: serviceName.toLowerCase()}
+			logger.updated service.key
 	, 2000
+
+# Fetch config settings from RocketChat for a given SAML service "SAML_Custom_<name>".
+
+getSamlConfigs = (service) ->
+	buttonLabelText: RocketChat.settings.get("#{service.key}_button_label_text")
+	buttonLabelColor: RocketChat.settings.get("#{service.key}_button_label_color")
+	buttonColor: RocketChat.settings.get("#{service.key}_button_color")
+	clientConfig:
+		provider: RocketChat.settings.get("#{service.key}_provider")
+	privateKeyFilePath: RocketChat.settings.get("#{service.key}_private_key_file_path")
+	publicCertFilePath: RocketChat.settings.get("#{service.key}_public_cert_file_path")
+	entryPoint: RocketChat.settings.get("#{service.key}_entry_point")
+	issuer: RocketChat.settings.get("#{service.key}_issuer")
+	cert: RocketChat.settings.get("#{service.key}_cert")
+	generateUsername: RocketChat.settings.get("#{service.key}_generate_username")
+
+# Configure Meteor SAML.
+#
+# Get private key for signing and update Accounts.saml.settings.
+# Meteor saml package uses Accounts.saml.settings.
+
+configureSamlService = (samlConfigs) ->
+	try
+		privateKey = fs.readFileSync(samlConfigs.privateKeyFilePath).toString()
+		privateCert = fs.readFileSync(samlConfigs.publicCertFilePath).toString()
+	catch err
+		console.warn "Can't configure key or cert for SAML, signing will not be performed by RocketChat"
+		console.warn "Error was: #{err.message}"
+		privateKey = false
+		privateCert = false
+	Accounts.saml.settings.generateUsername = samlConfigs.generateUsername
+	Accounts.saml.settings.providers.push
+		provider: samlConfigs.clientConfig.provider
+		entryPoint: samlConfigs.entryPoint
+		issuer: samlConfigs.issuer
+		cert: samlConfigs.cert
+		privateCert: privateCert
+		privateKey: privateKey
 
 RocketChat.settings.get /^SAML_.+/, (key, value) ->
 	updateServices()
