@@ -61,9 +61,6 @@ class IrcServer
 		@writeCommand {command: 'PASS', parameters: [@sendPassword, 'TS', 6, @serverId]}
 		@writeCommand {command: 'CAPAB', trailer: 'TBURST EOB ENCAP'}
 		@writeCommand {command: 'SERVER', parameters: [@serverName, 1], trailer: @serverDescription}
-		#@socket.write "PASS #{@sendPassword} TS 6 #{@serverId}\r\n"
-		#@socket.write "CAPAB :TBURST EOB ENCAP\r\n"
-		#@socket.write "SERVER #{@serverName} 1 :#{@serverDescription}\r\n"
 		@state = 'awaitingpass'
 
 	onClose: () =>
@@ -72,8 +69,10 @@ class IrcServer
 
 	cleanup: () =>
 		@partialMessage = ''
-		@ircServers = {}
-		@ircUsers = {}
+
+		if @ircServers.length > 0
+			@cleanupIrcServer @otherServerId
+
 		@localUsersById = {}
 		@localUsersByIrcId = {}
 
@@ -121,7 +120,7 @@ class IrcServer
 		if @state != 'connected'
 			return
 
-		if room.t == 'd' or not user._id in @localUsers
+		if room.t == 'd' or not user._id in @localUsersById
 			return
 
 		userId = @localUsersById[user._id].ircUserId
@@ -199,13 +198,25 @@ class IrcServer
 				index = index + 1
 
 	logoutIrcUser: (userId) =>
-		#TODO cleanup @ircUsers
 		user = @ircUsers[userId]
 		Meteor.users.update {_id: user._id},
 			$set:
 				status: 'offline'
 		RocketChat.models.Rooms.removeUsernameFromAll(user.username)
 		delete @ircUsers[userId]
+
+	cleanupIrcServer: (serverId) =>
+		disconnectedIds = []
+		queue = [serverId]
+
+		while queue.length > 0
+			id = queue.pop()
+			disconnectedIds.push id
+
+			queue = queue.concat @ircServers[id].proxiesServers
+			delete @ircServers[id]
+
+		_.filter(@ircUsers, (user) => user.connectedTo in disconnectedIds).forEach @logoutIrcUser	
 
 	getDirectRoom: (source, target) ->
 		console.log '[irc] createDirectRoomWhenNotExist -> '.yellow, 'source:', source, 'target:', target
@@ -490,6 +501,10 @@ class IrcServer
 		[targetServer] = command.parameters
 		comment = command.trailer
 
+		if targetServer == @serverId
+			targetServer = @otherServerId
+		@cleanupIrcServer targetServer
+
 	onReceivePRIVMSG: (command) =>
 		userId = command.prefix
 		[channel] = command.parameters
@@ -519,128 +534,6 @@ class IrcClient
 
 	onError: () =>
 		console.log '[irc] onError -> '.yellow, @user.username, 'connection error.', arguments
-
-	sendMessage: (room, message) ->
-		console.log '[irc] sendMessage -> '.yellow, 'userName:', message.u.username
-		target = ''
-		if room.t == 'c'
-			target = "##{room.name}"
-		else if room.t == 'd'
-			for name in room.usernames
-				if message.u.username != name
-					target = name
-					break
-
-		cacheKey = [@user.username, target, message.msg].join ','
-		console.log '[irc] ircSendMessageCache.set -> '.yellow, 'key:', cacheKey, 'ts:', message.ts.getTime()
-		ircSendMessageCache.set cacheKey, message.ts.getTime()
-		msg = "PRIVMSG #{target} :#{message.msg}\r\n"
-		@sendRawMessage msg
-
-	initRoomList: ->
-		roomsCursor = RocketChat.models.Rooms.findByTypeContainigUsername 'c', @user.username,
-			fields:
-				name: 1
-				t: 1
-
-		rooms = roomsCursor.fetch()
-		for room in rooms
-			@joinRoom(room)
-
-	joinRoom: (room) ->
-		if room.t isnt 'c' or room.name == 'general'
-			return
-
-		if @isJoiningRoom
-			@pendingJoinRoomBuf.push room.name
-		else
-			console.log '[irc] joinRoom -> '.yellow, 'roomName:', room.name, 'pendingJoinRoomBuf:', @pendingJoinRoomBuf.join ','
-			msg = "JOIN ##{room.name}\r\n"
-			@receiveMemberListBuf[room.name] = []
-			@sendRawMessage msg
-			@isJoiningRoom = true
-
-	leaveRoom: (room) ->
-		if room.t isnt 'c'
-			return
-		msg = "PART ##{room.name}\r\n"
-		@sendRawMessage msg
-
-	getMemberList: (room) ->
-		if room.t isnt 'c'
-			return
-		msg = "NAMES ##{room.name}\r\n"
-		@receiveMemberListBuf[room.name] = []
-		@sendRawMessage msg
-
-	onAddMemberToRoom: (member, roomName) ->
-		if @user.username == member
-			return
-
-		console.log '[irc] onAddMemberToRoom -> '.yellow, 'roomName:', roomName, 'member:', member
-		@createUserWhenNotExist member
-
-		RocketChat.models.Rooms.addUsernameByName roomName, member
-
-	onRemoveMemberFromRoom: (member, roomName)->
-		console.log '[irc] onRemoveMemberFromRoom -> '.yellow, 'roomName:', roomName, 'member:', member
-		RocketChat.models.Rooms.removeUsernameByName roomName, member
-
-	onQuiteMember: (member) ->
-		console.log '[irc] onQuiteMember ->'.yellow, 'username:', member
-		RocketChat.models.Rooms.removeUsernameFromAll member
-
-		Meteor.users.update {name: member},
-			$set:
-				status: 'offline'
-
-	createUserWhenNotExist: (name) ->
-		user = Meteor.users.findOne {name: name}
-		unless user
-			console.log '[irc] createNotExistUser ->'.yellow, 'userName:', name
-			Meteor.call 'registerUser',
-				email: "#{name}@rocketchat.org"
-				pass: 'rocketchat'
-				name: name
-			Meteor.users.update {name: name},
-				$set:
-					status: 'online'
-					username: name
-			user = Meteor.users.findOne {name: name}
-		return user
-
-
-	createDirectRoomWhenNotExist: (source, target) ->
-		console.log '[irc] createDirectRoomWhenNotExist -> '.yellow, 'source:', source, 'target:', target
-		rid = [source._id, target._id].sort().join('')
-		now = new Date()
-		RocketChat.models.Rooms.upsert
-			_id: rid
-		,
-			$set:
-				usernames: [source.username, target.username]
-			$setOnInsert:
-				t: 'd'
-				msgs: 0
-				ts: now
-
-		RocketChat.models.Subscriptions.upsert
-			rid: rid
-			$and: [{'u._id': target._id}]
-		,
-			$setOnInsert:
-				name: source.username
-				t: 'd'
-				open: false
-				alert: false
-				unread: 0
-				u:
-					_id: target._id
-					username: target.username
-		return {
-			t: 'd'
-			_id: rid
-		}
 
 
 class IrcLoginer
