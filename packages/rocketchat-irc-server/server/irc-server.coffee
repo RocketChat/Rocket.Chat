@@ -25,7 +25,8 @@ class IrcServer
 		
 		@ircServers = {}
 		@ircUsers = {}
-		@localUsers = {}
+		@localUsersById = {}
+		@localUsersByIrcId = {}
 		@nextUid = parseInt('a00001', 36)
 
 		@socket = new net.Socket
@@ -73,7 +74,8 @@ class IrcServer
 		@partialMessage = ''
 		@ircServers = {}
 		@ircUsers = {}
-		@localUsers = {}
+		@localUsersById = {}
+		@localUsersByIrcId = {}
 
 	burst: () =>
 		RocketChat.models.Users.find( {statusConnection: 'online'}, { fields: { _id: 1, username: 1, status: 1, name: 1}}).forEach @sendUser
@@ -84,8 +86,9 @@ class IrcServer
 	sendUser: (user) =>
 		counterString = @nextUid.toString(36).toUpperCase()
 		@nextUid = @nextUid + 1
-		data = {nickTimestamp: @getTime(), ircUserId: "#{@serverId}#{counterString}"} 
-		@localUsers[user._id] = data 
+		data = _.extend user, {nickTimestamp: @getTime(), ircUserId: "#{@serverId}#{counterString}"} 
+		@localUsersById[data._id] = data
+		@localUsersByIrcId[data.ircUserId] = data 
 		@writeCommand (
 			prefix: @serverId 
 			command: 'UID'
@@ -98,7 +101,8 @@ class IrcServer
 			return
 
 		userIds = []
-		RocketChat.models.Users.findUsersByUsernames(room.usernames, { fields: { _id: 1, statusConnection: 1 } } ).forEach (user) => if user.statusConnection == 'online' then userIds.push(@localUsers[user._id].ircUserId)
+		RocketChat.models.Users.findUsersByUsernames(room.usernames, { fields: { _id: 1, statusConnection: 1 } } ).forEach (user) => 
+			if user.statusConnection == 'online' then userIds.push(@localUsersById[user._id].ircUserId)
 
 		timestamp = Math.floor(room.ts.getTime()/1000)
 		nickSpace = 510 - 29 - room.name.length
@@ -120,7 +124,7 @@ class IrcServer
 		if room.t == 'd' or not user._id in @localUsers
 			return
 
-		userId = @localUsers[user._id].ircUserId
+		userId = @localUsersById[user._id].ircUserId
 		timestamp = Math.floor(room.ts.getTime()/1000)
 	
 		@writeCommand
@@ -139,10 +143,10 @@ class IrcServer
 		if @state != 'connected'
 			return
 
-		if room.t == 'd' or not user._id in @localUsers
+		if room.t == 'd' or not user._id in @localUsersById
 			return
 
-		userId = @localUsers[user._id].ircUserId
+		userId = @localUsersById[user._id].ircUserId
 		@writeCommand
 			prefix: userId
 			command: 'PART'
@@ -152,10 +156,12 @@ class IrcServer
 		if @state != 'connected'
 			return
 
-		if not user._id in @localUsers
+		if not user._id in @localUsersById
 			return
 
-		userId = @localUsers[user._id].ircUserId
+		userId = @localUsersById[user._id].ircUserId
+		delete @localUsersById[user._id]
+		delete @localUsersByIrcId[userId]
 		@writeCommand
 			prefix: userId
 			command: 'PART'
@@ -165,49 +171,32 @@ class IrcServer
 		if @state != 'connected'
 			return
 
-		if @localUsers[message.u._id] == undefined
+		if @localUsersById[message.u._id] == undefined
 			return
 
-		userId = @localUsers[message.u._id].ircUserId
+		userId = @localUsersById[message.u._id].ircUserId
 
 		lines = message.msg.split('\n')
 		for line in lines
 			line = line.trimRight()
 			if room.t == 'd'
+				messageSpace = 510 - 30
+				targetUsername = _.find(room.usernames, (username) => username != message.u.username)
+				targetUser = _.find(@ircUsers, (user) => user.username == targetUsername)
+				target = targetUser.ircUserId
 			else
 				#TODO Should only send message if there are IRC users in the room
 				messageSpace = 510 - 22 - room.name.length
-				index = 0
-				while index * messageSpace < line.length
-					@writeCommand
-						prefix: userId
-						command: 'PRIVMSG'
-						parameters: ['#' + room.name]
-						trailer: line.substring(index*messageSpace, (index+1)*messageSpace)
-					index = index + 1
+				target = '#' + room.name
 
-	loginIrcUser: (connectedTo, userId, nick, nickTimestamp, modes) =>
-		#TODO Handle nick collisions
-		#TODO Handle verification that irc and rocketchat users are the same
-		#TODO Handle modes
-		user = Meteor.users.findOne {name: nick}
-		unless user
-			Meteor.call 'registerUser',
-				email: "#{nick}@redhat.com"
-				pass: ''
-				name: nick
-			user = Meteor.users.findOne {name: nick}
-			Meteor.users.update {_id: user._id},
-				$set:
-					username: nick
-					ircOnly: true
-		Meteor.users.update {_id: user._id},
-			$set:
-				status: 'online'
-		user.nickTimestamp = nickTimestamp
-		user.connectedTo = connectedTo
-		@ircUsers[userId] = user
-		console.log "Registered user #{nick} with userId #{userId}"
+			index = 0
+			while index * messageSpace < line.length
+				@writeCommand
+					prefix: userId
+					command: 'PRIVMSG'
+					parameters: [target] 
+					trailer: line.substring(index*messageSpace, (index+1)*messageSpace)
+				index = index + 1
 
 	logoutIrcUser: (userId) =>
 		#TODO cleanup @ircUsers
@@ -215,65 +204,84 @@ class IrcServer
 		Meteor.users.update {_id: user._id},
 			$set:
 				status: 'offline'
-		#TODO remove user from all rooms?
 		RocketChat.models.Rooms.removeUsernameFromAll(user.username)
+		delete @ircUsers[userId]
 
-	receiveIrcMessage: (userId, channel, message) =>
-		user = @ircUsers[userId]
-		if channel[0] == '#'
-			room = RocketChat.models.Rooms.findOneByName channel.substring(1)
-		else
-			#TODO Handle direct messages
+	getDirectRoom: (source, target) ->
+		console.log '[irc] createDirectRoomWhenNotExist -> '.yellow, 'source:', source, 'target:', target
+		rid = [source._id, target._id].sort().join('')
+		now = new Date()
+		RocketChat.models.Rooms.upsert
+			_id: rid
+		,
+			$set:
+				usernames: [source.username, target.username]
+			$setOnInsert:
+				t: 'd'
+				msgs: 0
+				ts: now
 
-		message =
-			msg: message
-			ts: new Date()
-		RocketChat.sendMessage user, message, room
-
+		RocketChat.models.Subscriptions.upsert
+			rid: rid
+			$and: [{'u._id': target._id}]
+		,
+			$setOnInsert:
+				name: source.username
+				t: 'd'
+				open: false
+				alert: false
+				unread: 0
+				u:
+					_id: target._id
+					username: target.username
+		return {
+			t: 'd'
+			_id: rid
+		}
 
 	getTime: () =>
 		Math.floor(Date.now()/1000)
 
-	parseMessage: (message) =>
+	parseMessage: (command) =>
 		result = {}
 		currentIndex = 0
-		if message.length == 0
+		if command.length == 0
 			return result
-		if message[0] == ':'
-			split = message.indexOf(' ', currentIndex)
+		if command[0] == ':'
+			split = command.indexOf(' ', currentIndex)
 			result.prefix = if split == -1
-				currentIndex = message.length
-				message.substring(1)
+				currentIndex = command.length
+				command.substring(1)
 			else
-				temp = message.substring(currentIndex+1, split)
+				temp = command.substring(currentIndex+1, split)
 				currentIndex = split + 1
 				temp
 
-		if currentIndex != message.length
-			split = message.indexOf(' ', currentIndex)
+		if currentIndex != command.length
+			split = command.indexOf(' ', currentIndex)
 			result.command = if split == -1
-				temp = message.substring(currentIndex)
-				currentIndex = message.length
+				temp = command.substring(currentIndex)
+				currentIndex = command.length
 				temp
 			else
-				temp = message.substring(currentIndex, split)
+				temp = command.substring(currentIndex, split)
 				currentIndex = split + 1
 				temp	
 
-		result.parameters = while currentIndex != message.length and message[currentIndex] != ':'
-			split = message.indexOf(' ', currentIndex)
+		result.parameters = while currentIndex != command.length and command[currentIndex] != ':'
+			split = command.indexOf(' ', currentIndex)
 			if split == -1
-				temp = message.substring(currentIndex)
-				currentIndex = message.length
+				temp = command.substring(currentIndex)
+				currentIndex = command.length
 				temp
 			else
-				temp = message.substring(currentIndex, split)
+				temp = command.substring(currentIndex, split)
 				currentIndex = split + 1
 				temp
 						
 
-		if (currentIndex != message.length)
-			result.trailer = message.substring(currentIndex + 1)	
+		if (currentIndex != command.length)
+			result.trailer = command.substring(currentIndex + 1)	
 
 		result	
 
@@ -288,8 +296,8 @@ class IrcServer
 		console.log "Sending Command: #{buffer}"
 		@socket.write(buffer + "\r\n")
 			
-	handleMalformed: (message) =>
-		console.log "Received invalid message: #{message}"
+	handleMalformed: (command) =>
+		console.log "Received invalid command: #{command}"
 
 	onReceiveRawMessage: (data) =>
 		dataString = data.toString()
@@ -307,324 +315,210 @@ class IrcServer
 				line = @partialMessage + line
 				firstLine = false
 
-			console.log "Received message in state #{@state}: #{line}"
-			message = @parseMessage line
-			if not message.command?
+			console.log "Received command in state #{@state}: #{line}"
+			command = @parseMessage line
+			if not command.command?
 				continue
 
 			switch @state
 				when 'awaitingpass'
-					if message.command == 'PASS'
-						if message.parameters.length != 4
-							@handleMalformed(message)
-							@disconnect()
-							return
-
-						[password, protocol, protocolVersion, @otherServerId] = message.parameters
-						if password != @receivePassword
-							@disconnect()
-							return
-						if protocol != 'TS' or protocolVersion != '6'
-							@disconnect()
-							return
-
-						@ircServers[@otherServerId] = {proxiesServers: []}
-						@state = 'bursting'
+					if command.command == 'PASS'
+						@onReceivePASS command
 				when 'bursting'
-					switch message.command
+					switch command.command
 						when 'CAPAB'
-							@otherServerCapabilities = message.trailer.split(' ')
+							@onReceiveCAPAB command
 						when 'SERVER'
-							if message.parameters.length != 2 or not message.trailer?
-								@handleMalformed(message)
-								@disconnect()
-								return
-							[serverName, hopCount] = message.parameters
-							if hopCount == '1' then @otherServerName = serverName
+							@onReceiveSERVER command
 						when 'SVINFO'
-							if message.parameters.length != 3 or not message.trailer?
-								@handleMalformed(message)
-								@disconnect()
-								return
-							[minTS, maxTS, discard] = message.parameters
-							timestamp = message.trailer
-							if minTS > 6 or maxTS < 6
-								@disconnect()
-								return
-
-							@writeCommand {prefix: @serverId, command: 'SVINFO', parameters: [6, 6, 0], trailer: @getTime()}
-							@burst()
+							@onReceiveSVINFO command
 						when 'SID'
-							@onReceiveSID message
+							@onReceiveSID command
 						when 'SJOIN'
-							if message.parameters.length != 3 or not message.trailer?
-								@handleMalformed(message)
-								continue
-							[channelTimestamp, channel, mode] = message.parameters
-							userIds = message.trailer.split(' ')
-							room = RocketChat.models.Rooms.findOneByName channel.substring(1)
-							if not room?
-								continue #TODO Create missing channels?
-							usernames = _.map(userIds, (id) => @ircUsers[id].username)
-							RocketChat.models.Rooms.addUsernamesById(room._id, usernames)
+							@onReceiveSJOIN command
 						when 'UID'
-							if message.parameters.length != 9
-								@handleMalformed(message)
-								continue
-							[nick, hopCount, nickTimestamp, umodes, username, hostname, ipAddess, userId, gecos] = message.parameters
-							connectedTo = message.prefix
-							@loginIrcUser connectedTo, userId, nick, nickTimestamp, umodes 
+							@onReceiveUID command
 						when 'PING'
-							source = message.trailer
-							@writeCommand {prefix: @serverId, command: 'PONG', parameters: [@serverName], trailer: source}
-							#@socket.write ":#{@serverId} PONG #{@serverName} :@{source}"
+							@onReceivePING command
 						when 'EOB'
-							@state = 'connected'
+							@onReceiveEOB command
 				when 'connected'
-					switch message.command
+					switch command.command
 						when 'PING'
-							source = message.trailer
-							@writeCommand {prefix: @serverId, command: 'PONG', parameters: [@serverName], trailer: source}
-							#@socket.write ":#{@serverId} PONG #{@serverName} :#{source}"
+							@onReceivePING command
 						when 'UID'
-							if message.parameters.length != 9
-								@handleMalformed(message)
-								continue
-							[nick, hopCount, nickTimestamp, umodes, username, hostname, ipAddess, userId, gecos] = message.parameters
-							connectedTo = message.prefix
-							@loginIrcUser connectedTo, userId, nick, nickTimestamp, umodes 
+							@onReceiveUID command
 						when 'SID'
-							@onReceiveSID message
+							@onReceiveSID command
 						when 'SJOIN'
-							if message.parameters.length != 3 or not message.trailer?
-								@handleMalformed(message)
-								return
-							[channelTimestamp, channel, mode] = message.parameters
-							userIds = message.trailer.split(' ')
+							@onReceiveSJOIN command
 						when 'SQUIT'
-							[targetServer] = message.parameters
-							comment = message.trailer
+							@onReceiveSQUIT command
 						when 'JOIN'
-							userId = message.prefix
-							[channelTimestamp, channel, ...] = message.parameters
-							RocketChat.models.Rooms.addUsernameByName channel.substring(1), @ircUsers[userId].username
+							@onReceiveJOIN command
 						when 'PART'
-							userId = message.prefix
-							[channel] = message.parameters 
-							RocketChat.models.Rooms.removeUsernameByName channel.substring(1), @ircUsers[userId].username
+							@onReceivePART command
 						when 'QUIT'
-							userId = message.prefix
-							reason = message.trailer
-							@logoutIrcUser userId
+							@onReceiveQUIT command
 						when 'PRIVMSG'
-							userId = message.prefix
-							[channel] = message.parameters
-							content = message.trailer
-							@receiveIrcMessage userId, channel, content								
+							@onReceivePRIVMSG command
 
 		@partialMessage = newPartialMessage
 
-	onReceiveSID: (command) =>
-		if message.parameters.length != 3 or not message.trailer? or not message.prefix?
-			@handleMalformed(message)
+	onReceivePASS: (command) =>	
+		if command.parameters.length != 4
+			@handleMalformed(command)
+			@disconnect()
 			return
 
-		[serverName, hopCount, serverId] = message.parameters
-		connectedTo = message.prefix
-		serverDescription = message.trailer
+		[password, protocol, protocolVersion, @otherServerId] = command.parameters
+		if password != @receivePassword
+			@disconnect()
+			return
+		if protocol != 'TS' or protocolVersion != '6'
+			@disconnect()
+			return
+
+		@ircServers[@otherServerId] = {proxiesServers: []}
+		@state = 'bursting'
+
+	onReceiveCAPAB: (command) =>
+		@otherServerCapabilities = command.trailer.split(' ')
+
+	onReceiveSERVER: (command) =>
+		if command.parameters.length != 2 or not command.trailer?
+			@handleMalformed(command)
+			@disconnect()
+			return
+		[serverName, hopCount] = command.parameters
+		@otherServerName = serverName
+
+	onReceiveSVINFO: (command) =>
+		if command.parameters.length != 3 or not command.trailer?
+			@handleMalformed(command)
+			@disconnect()
+			return
+		[minTS, maxTS, discard] = command.parameters
+		timestamp = command.trailer
+		if minTS > 6 or maxTS < 6
+			@disconnect()
+			return
+
+		@writeCommand {prefix: @serverId, command: 'SVINFO', parameters: [6, 6, 0], trailer: @getTime()}
+		@burst()
+		
+	onReceiveSID: (command) =>
+		if command.parameters.length != 3 or not command.trailer? or not command.prefix?
+			@handleMalformed(command)
+			return
+
+		[serverName, hopCount, serverId] = command.parameters
+		connectedTo = command.prefix
+		serverDescription = command.trailer
 
 		@ircServers[serverId] = {proxiesServers: []}
 		@ircServers[connectedTo].proxiesServers.push(serverId)
 
+	onReceiveSJOIN: (command) =>
+		if command.parameters.length != 3 or not command.trailer?
+			@handleMalformed(command)
+			return
+
+		[channelTimestamp, channel, mode] = command.parameters
+		userIds = command.trailer.split(' ')
+		room = RocketChat.models.Rooms.findOneByName channel.substring(1)
+		if not room?
+			return #TODO Create missing channels?
+		usernames = _.map(userIds, (id) => @ircUsers[id].username)
+		RocketChat.models.Rooms.addUsernamesById(room._id, usernames)
+	
+	onReceiveUID: (command) =>
+		if command.parameters.length != 9
+			@handleMalformed(command)
+			return
+		[nick, hopCount, nickTimestamp, umodes, username, hostname, ipAddess, userId, gecos] = command.parameters
+		connectedTo = command.prefix
+
+		#TODO Handle nick collisions
+		#TODO Handle verification that irc and rocketchat users are the same
+		#TODO Handle modes
+		user = Meteor.users.findOne {name: nick}
+		unless user
+			Meteor.call 'registerUser',
+				email: "#{nick}@irc.redhat.com"
+				pass: ''
+				name: nick
+			user = Meteor.users.findOne {name: nick}
+			Meteor.users.update {_id: user._id},
+				$set:
+					username: nick
+					ircOnly: true
+		Meteor.users.update {_id: user._id},
+			$set:
+				status: 'online'
+		user.nickTimestamp = nickTimestamp
+		user.connectedTo = connectedTo
+		user.ircUserId = userId
+		@ircUsers[userId] = user
+		console.log "Registered user #{nick} with userId #{userId}"
+
+	
+	
+	onReceivePING: (command) =>
+		source = command.trailer
+		@writeCommand {prefix: @serverId, command: 'PONG', parameters: [@serverName], trailer: source}
+
+	onReceiveEOB: (command) =>
+		@state = 'connected'
+	
+	onReceiveJOIN: (command) =>
+		userId = command.prefix
+		[channelTimestamp, channel, ...] = command.parameters
+		RocketChat.models.Rooms.addUsernameByName channel.substring(1), @ircUsers[userId].username
+
+	onReceivePART: (command) =>
+		userId = command.prefix
+		[channel] = command.parameters 
+		RocketChat.models.Rooms.removeUsernameByName channel.substring(1), @ircUsers[userId].username
+
+	onReceiveQUIT: (command) =>
+		userId = command.prefix
+		reason = command.trailer
+		@logoutIrcUser userId
+
+	onReceiveSQUIT: (command) =>
+		[targetServer] = command.parameters
+		comment = command.trailer
+
+	onReceivePRIVMSG: (command) =>
+		userId = command.prefix
+		[channel] = command.parameters
+		content = command.trailer
+
+		user = @ircUsers[userId]
+		if channel[0] == '#'
+			room = RocketChat.models.Rooms.findOneByName channel.substring(1)
+		else
+			#TODO Handle direct messages
+			targetUser = @localUsersByIrcId[channel]
+			room = @getDirectRoom user, targetUser
+
+		message =
+			msg: content
+			ts: new Date()
+		RocketChat.sendMessage user, message, room
+
+
 class IrcClient
 	constructor: (@loginReq) ->
-		@user = @loginReq.user
-		@user.username = @user.name
-		ircClientMap[@user._id] = this
-		@ircPort = IRC_PORT
-		@ircHost = IRC_HOST
-		@msgBuf = []
-
-		@isConnected = false
-		@isDistroyed = false
-		@socket = new net.Socket
-		@socket.setNoDelay
-		@socket.setEncoding 'utf-8'
-		@socket.setKeepAlive true
-		@onConnect = bind @onConnect
-		@onClose = bind @onClose
-		@onTimeout = bind @onTimeout
-		@onError = bind @onError
-		@onReceiveRawMessage = bind @onReceiveRawMessage
-		@socket.on 'data', @onReceiveRawMessage
-		@socket.on 'close', @onClose
 		@socket.on 'timeout', @onTimeout
 		@socket.on 'error', @onError
-
-		@isJoiningRoom = false
-		@receiveMemberListBuf = {}
-		@pendingJoinRoomBuf = []
-
-		@successLoginMessageRegex = /Welcome to the freenode Internet Relay Chat Network/
-		@failedLoginMessageRegex = /You have not registered/
-		@receiveMessageRegex = /^:(\S+)!~\S+ PRIVMSG (\S+) :(.+)$/
-		@receiveMemberListRegex = /^:\S+ \d+ \S+ = #(\S+) :(.*)$/
-		@endMemberListRegex = /^.+#(\S+) :End of \/NAMES list.$/
-		@addMemberToRoomRegex = /^:(\S+)!~\S+ JOIN #(\S+)$/
-		@removeMemberFromRoomRegex = /^:(\S+)!~\S+ PART #(\S+)$/
-		@quiteMemberRegex = /^:(\S+)!~\S+ QUIT .*$/
-
-	connect: (@loginCb) =>
-		@socket.connect @ircPort, @ircHost, @onConnect
-		@initRoomList()
-
-	disconnect: () ->
-		@isDistroyed = true
-		@socket.destroy()
-
-	onConnect: () =>
-		console.log '[irc] onConnect -> '.yellow, @user.username, 'connect success.'
-		@socket.write "NICK #{@user.username}\r\n"
-		@socket.write "USER #{@user.username} 0 * :Real Name\r\n"
-		# message order could not make sure here
-		@isConnected = true
-		@socket.write msg for msg in @msgBuf
-
-	onClose: (data) =>
-		console.log '[irc] onClose -> '.yellow, @user.username, 'connection close.'
-		@isConnected = false
-		if @isDistroyed
-			delete ircClientMap[@user._id]
-		else
-			@connect()
 
 	onTimeout: () =>
 		console.log '[irc] onTimeout -> '.yellow, @user.username, 'connection timeout.', arguments
 
 	onError: () =>
 		console.log '[irc] onError -> '.yellow, @user.username, 'connection error.', arguments
-
-	onReceiveRawMessage: (data) =>
-		data = data.toString().split('\n')
-		for line in data
-			line = line.trim()
-			console.log "[#{@ircHost}:#{@ircPort}]:", line
-			# Send heartbeat package to irc server
-			if line.indexOf('PING') == 0
-				@socket.write line.replace('PING :', 'PONG ')
-				continue
-
-			matchResult = @receiveMessageRegex.exec line
-			if matchResult
-				@onReceiveMessage matchResult[1], matchResult[2], matchResult[3]
-				continue
-
-			matchResult = @receiveMemberListRegex.exec line
-			if matchResult
-				@onReceiveMemberList matchResult[1], matchResult[2].split ' '
-				continue
-
-			matchResult = @endMemberListRegex.exec line
-			if matchResult
-				@onEndMemberList matchResult[1]
-				continue
-
-			matchResult = @addMemberToRoomRegex.exec line
-			if matchResult
-				@onAddMemberToRoom matchResult[1], matchResult[2]
-				continue
-
-			matchResult = @removeMemberFromRoomRegex.exec line
-			if matchResult
-				@onRemoveMemberFromRoom matchResult[1], matchResult[2]
-				continue
-
-			matchResult = @quiteMemberRegex.exec line
-			if matchResult
-				@onQuiteMember matchResult[1]
-				continue
-
-			matchResult = @successLoginMessageRegex.exec line
-			if matchResult
-				@onSuccessLoginMessage()
-				continue
-
-			matchResult = @failedLoginMessageRegex.exec line
-			if matchResult
-				@onFailedLoginMessage()
-				continue
-
-	onSuccessLoginMessage: () ->
-		console.log '[irc] onSuccessLoginMessage -> '.yellow
-		if @loginCb
-			@loginCb null, @loginReq
-
-	onFailedLoginMessage: () ->
-		console.log '[irc] onFailedLoginMessage -> '.yellow
-		@loginReq.allowed = false
-		@disconnect()
-		if @loginCb
-			@loginCb null, @loginReq
-
-	onReceiveMessage: (source, target, content) ->
-		now = new Date
-		timestamp = now.getTime()
-
-		cacheKey = [source, target, content].join ','
-		console.log '[irc] ircSendMessageCache.get -> '.yellow, 'key:', cacheKey, 'value:', ircSendMessageCache.get(cacheKey), 'ts:', (timestamp - 1000)
-		if ircSendMessageCache.get(cacheKey) > (timestamp - 1000)
-			return
-		else
-			ircSendMessageCache.set cacheKey, timestamp
-
-		console.log '[irc] onReceiveMessage -> '.yellow, 'source:', source, 'target:', target, 'content:', content
-		source = @createUserWhenNotExist source
-		if target[0] == '#'
-			room = RocketChat.models.Rooms.findOneByName target.substring(1)
-		else
-			room = @createDirectRoomWhenNotExist(source, @user)
-
-		message =
-			msg: content
-			ts: now
-		cacheKey = "#{source.username}#{timestamp}"
-		ircReceiveMessageCache.set cacheKey, true
-		console.log '[irc] ircReceiveMessageCache.set -> '.yellow, 'key:', cacheKey
-		RocketChat.sendMessage source, message, room
-
-	onReceiveMemberList: (roomName, members) ->
-		@receiveMemberListBuf[roomName] = @receiveMemberListBuf[roomName].concat members
-
-	onEndMemberList: (roomName) ->
-		newMembers = @receiveMemberListBuf[roomName]
-		console.log '[irc] onEndMemberList -> '.yellow, 'room:', roomName, 'members:', newMembers.join ','
-		room = RocketChat.models.Rooms.findOneByNameAndType roomName, 'c'
-		unless room
-			return
-
-		oldMembers = room.usernames
-		appendMembers = _.difference newMembers, oldMembers
-		removeMembers = _.difference oldMembers, newMembers
-
-		for member in appendMembers
-			@createUserWhenNotExist member
-
-		RocketChat.models.Rooms.removeUsernamesById room._id, removeMembers
-		RocketChat.models.Rooms.addUsernamesById room._id, appendMembers
-
-		@isJoiningRoom = false
-		roomName = @pendingJoinRoomBuf.shift()
-		if roomName
-			@joinRoom
-				t: 'c'
-				name: roomName
-
-	sendRawMessage: (msg) ->
-		console.log '[irc] sendRawMessage -> '.yellow, msg.slice(0, -2)
-		if @isConnected
-			@socket.write msg
-		else
-			@msgBuf.push msg
 
 	sendMessage: (room, message) ->
 		console.log '[irc] sendMessage -> '.yellow, 'userName:', message.u.username
