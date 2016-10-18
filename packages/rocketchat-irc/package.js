@@ -1,6 +1,6 @@
 Package.describe({
 	name: 'rocketchat:irc',
-	version: '0.0.1',
+	version: '0.0.2',
 	summary: 'RocketChat libraries',
 	git: ''
 });
@@ -17,6 +17,10 @@ Package.onUse(function(api) {
 		'rocketchat:lib'
 	]);
 
-	api.addFiles('irc.server.coffee', 'server');
+	api.addFiles([
+		'server/settings.js',
+		'server/server.coffee'
+	], 'server');
+
 	api.export(['Irc'], ['server']);
 });
