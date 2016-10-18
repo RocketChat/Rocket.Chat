@@ -18,6 +18,7 @@ Package.onUse(function(api) {
 	api.use('reactive-var');
 	api.use('http');
 	api.use('tracker');
+	api.use('check');
 
 	api.imply('facebook');
 	api.imply('twitter');
