@@ -4,6 +4,7 @@ services:
 branches:
   only:
     - develop
+    - experimental
     - "/^(\\d+\\.)?(\\d+\\.)?(\\*|\\d+)$/"
 git:
   depth: 1
