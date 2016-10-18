@@ -1,17 +1,8 @@
 net = Npm.require('net')
 
-MESSAGE_CACHE_SIZE = 200
-IRC_PORT = 6667
-IRC_HOST = 'irc.freenode.net'
-
-ircClientMap = {}
-
 bind = (f) ->
 	g = Meteor.bindEnvironment (self, args...) -> f.apply(self, args)
 	(args...) -> g @, args...
-
-async = (f, args...) ->
-	Meteor.wrapAsync(f)(args...)
 
 class IrcServer
 	constructor: () ->
@@ -35,6 +26,7 @@ class IrcServer
 		@socket.setNoDelay
 		@socket.setEncoding 'utf-8'
 		@socket.setKeepAlive true
+		@socket.setTimeout 90000
 		@onConnect = bind @onConnect
 		@onClose = bind @onClose
 		@onTimeout = bind @onTimeout
@@ -50,7 +42,7 @@ class IrcServer
 		@state = 'waitingforconnection'
 
 	connect: () =>
-		console.log "Attempting connection to IRC on #{@ircHost}:#{@ircPort}"
+		console.log "[irc-server] Attempting connection to IRC on #{@ircHost}:#{@ircPort}"
 		@socket.connect @ircPort, @ircHost, @onConnect
 		@state = 'connecting'
 		
@@ -66,8 +58,19 @@ class IrcServer
 		@state = 'awaitingpass'
 
 	onClose: () =>
+		console.log "[irc-server] Socket closed, cleaning up state"
 		@state = 'waitingforconnection'
 		@cleanup()
+
+	onTimeout: () =>
+		if @state == 'connected' or @state == 'bursting'
+			@writeCommand {command: 'PING', trailer: @otherServerId}
+		else
+			console.log "[irc-server] Timed out waiting for password"
+			@disconnect()
+
+	onError: (error) =>
+		console.log "[irc-server] Socket error: #{error.message}"
 
 	cleanup: () =>
 		@partialMessage = ''
@@ -135,6 +138,9 @@ class IrcServer
 
 	loginUser: (user) =>
 		if @state != 'connected'
+			return
+
+		if @localUsersById[user._id] != undefined
 			return
 
 		@sendUser user
@@ -221,7 +227,6 @@ class IrcServer
 		_.filter(@ircUsers, (user) => user.connectedTo in disconnectedIds).forEach @logoutIrcUser	
 
 	getDirectRoom: (source, target) ->
-		console.log '[irc] createDirectRoomWhenNotExist -> '.yellow, 'source:', source, 'target:', target
 		rid = [source._id, target._id].sort().join('')
 		now = new Date()
 		RocketChat.models.Rooms.upsert
@@ -307,11 +312,11 @@ class IrcServer
 			buffer += ' :' + command.trailer
 
 		if @logCommands
-			console.log "Sending Command: #{buffer}"
+			console.log "[irc-server] Sending Command: #{buffer}"
 		@socket.write(buffer + "\r\n")
 			
 	handleMalformed: (command) =>
-		console.log "Received invalid command: #{command}"
+		console.log "[irc-server] Received invalid command: #{command}"
 
 	onReceiveRawMessage: (data) =>
 		dataString = data.toString()
@@ -330,7 +335,7 @@ class IrcServer
 				firstLine = false
 
 			if @logCommands
-				console.log "Received command: #{line}"
+				console.log "[irc-server] Received command: #{line}"
 			command = @parseMessage line
 			if not command.command?
 				continue
@@ -353,10 +358,16 @@ class IrcServer
 							@onReceiveSID command
 						when 'SJOIN'
 							@onReceiveSJOIN command
+						when 'PING'
+							@onReceivePING command
+						when 'PONG'
+							@onReceivePONG command
 				when 'connected'
 					switch command.command
 						when 'PING'
 							@onReceivePING command
+						when 'PONG'
+							@onReceivePONG command
 						when 'EOB'
 							@onReceiveEOB command
 						when 'UID'
@@ -418,10 +429,10 @@ class IrcServer
 			@disconnect()
 			return
 
-		console.log "Successfully connected to IRC server, starting to burst"
+		console.log "[irc-server] Successfully connected to IRC server, starting to burst"
 		@writeCommand {prefix: @serverId, command: 'SVINFO', parameters: [6, 6, 0], trailer: @getTime()}
 		@burst()
-		console.log "Finished bursting"
+		console.log "[irc-server] Finished bursting"
 		@state = 'connected'
 		
 	onReceiveSID: (command) =>
@@ -436,7 +447,7 @@ class IrcServer
 		@ircServers[serverId] = {serverName: serverName, proxiesServers: []}
 		@ircServers[connectedTo].proxiesServers.push(serverId)
 
-		console.log "New server connected: #{serverName} via #{@ircServers[connectedTo].serverName}"
+		console.log "[irc-server] New server connected: #{serverName} via #{@ircServers[connectedTo].serverName}"
 
 	onReceiveSJOIN: (command) =>
 		if command.parameters.length != 3 or not command.trailer?
@@ -479,7 +490,7 @@ class IrcServer
 		user.connectedTo = connectedTo
 		user.ircUserId = userId
 		@ircUsers[userId] = user
-		console.log "Registered user #{nick} with userId #{userId}"
+		console.log "[irc-server] Registered user #{nick} with userId #{userId}"
 
 	
 	
@@ -487,9 +498,14 @@ class IrcServer
 		source = command.trailer
 		@writeCommand {prefix: @serverId, command: 'PONG', parameters: [@serverName], trailer: source}
 
+	onReceivePONG: (command) =>
+		source = command.trailer
+		[sourceServerName] = command.parameters
+		targetServerId = command.trailer
+
 	onReceiveEOB: (command) =>
 		serverId = command.prefix
-		console.log "Finished receiving burst from #{@ircServers[serverId].serverName}"
+		console.log "[irc-server] Finished receiving burst from #{@ircServers[serverId].serverName}"
 	
 	onReceiveJOIN: (command) =>
 		userId = command.prefix
@@ -513,7 +529,7 @@ class IrcServer
 		if targetServer == @serverId
 			targetServer = @otherServerId
 
-		console.log "IRC server disconnecting: #{@ircServers[targetServer].serverName}"
+		console.log "[irc-server] IRC server disconnecting: #{@ircServers[targetServer].serverName}"
 		@cleanupIrcServer targetServer
 
 	onReceivePRIVMSG: (command) =>
@@ -535,52 +551,35 @@ class IrcServer
 		RocketChat.sendMessage user, message, room
 
 
-class IrcClient
-	constructor: (@loginReq) ->
-		@socket.on 'timeout', @onTimeout
-		@socket.on 'error', @onError
-
-	onTimeout: () =>
-		console.log '[irc] onTimeout -> '.yellow, @user.username, 'connection timeout.', arguments
-
-	onError: () =>
-		console.log '[irc] onError -> '.yellow, @user.username, 'connection error.', arguments
+IrcServerLoginer = (login) ->
+	if login.user? then ircServer.loginUser(login.user)
+	return login
 
 
-class IrcLoginer
-	constructor: (login) ->
-		if login.user? then ircServer.loginUser(login.user)
-		return login
+IrcServerSender = (message, room) ->
+	ircServer.sendMessage message, room
 
 
-class IrcSender
-	constructor: (message, room) ->
-		ircServer.sendMessage message, room
+IrcServerRoomJoiner = (user, room) ->
+	ircServer.joinRoom user, room
+	return room
 
 
-class IrcRoomJoiner
-	constructor: (user, room) ->
-		ircServer.joinRoom user, room
-		return room
+IrcServerRoomLeaver = (user, room) ->
+	ircServer.leaveRoom user, room
+	return room
 
 
-class IrcRoomLeaver
-	constructor: (user, room) ->
-		ircServer.leaveRoom user, room
-		return room
+IrcServerLogoutCleanUper = (user) ->
+	ircServer.logoutUser user
+	return user
 
-
-class IrcLogoutCleanUper
-	constructor: (user) ->
-		ircServer.logoutUser user
-		return user
-
-RocketChat.callbacks.add 'afterValidateLogin', IrcLoginer, RocketChat.callbacks.priority.LOW, 'irc-loginer'
-RocketChat.callbacks.add 'afterSaveMessage', IrcSender, RocketChat.callbacks.priority.LOW, 'irc-sender'
-RocketChat.callbacks.add 'beforeJoinRoom', IrcRoomJoiner, RocketChat.callbacks.priority.LOW, 'irc-room-joiner'
-RocketChat.callbacks.add 'beforeCreateChannel', IrcRoomJoiner, RocketChat.callbacks.priority.LOW, 'irc-room-joiner-create-channel'
-RocketChat.callbacks.add 'beforeLeaveRoom', IrcRoomLeaver, RocketChat.callbacks.priority.LOW, 'irc-room-leaver'
-RocketChat.callbacks.add 'afterLogoutCleanUp', IrcLogoutCleanUper, RocketChat.callbacks.priority.LOW, 'irc-clean-up'
+RocketChat.callbacks.add 'afterValidateLogin', IrcServerLoginer, RocketChat.callbacks.priority.LOW, 'irc-server-loginer'
+RocketChat.callbacks.add 'afterSaveMessage', IrcServerSender, RocketChat.callbacks.priority.LOW, 'irc-server-sender'
+RocketChat.callbacks.add 'beforeJoinRoom', IrcServerRoomJoiner, RocketChat.callbacks.priority.LOW, 'irc-server-room-joiner'
+RocketChat.callbacks.add 'beforeCreateChannel', IrcServerRoomJoiner, RocketChat.callbacks.priority.LOW, 'irc-server-room-joiner-create-channel'
+RocketChat.callbacks.add 'beforeLeaveRoom', IrcServerRoomLeaver, RocketChat.callbacks.priority.LOW, 'irc-server-room-leaver'
+RocketChat.callbacks.add 'afterLogoutCleanUp', IrcServerLogoutCleanUper, RocketChat.callbacks.priority.LOW, 'irc-server-clean-up'
 
 ircServer = new IrcServer
 Meteor.startup ->
