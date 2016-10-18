@@ -22,7 +22,9 @@ class IrcServer
 		@receivePassword = 'password'
 		@serverName = 'rocket.chat'
 		@serverDescription = 'federated rocketchat server'
-		
+	
+		@logCommands = true
+	
 		@ircServers = {}
 		@ircUsers = {}
 		@localUsersById = {}
@@ -48,7 +50,7 @@ class IrcServer
 		@state = 'waitingforconnection'
 
 	connect: () =>
-		console.log "Connecting to IRC"
+		console.log "Attempting connection to IRC on #{@ircHost}:#{@ircPort}"
 		@socket.connect @ircPort, @ircHost, @onConnect
 		@state = 'connecting'
 		
@@ -304,7 +306,8 @@ class IrcServer
 		if command.trailer?
 			buffer += ' :' + command.trailer
 
-		console.log "Sending Command: #{buffer}"
+		if @logCommands
+			console.log "Sending Command: #{buffer}"
 		@socket.write(buffer + "\r\n")
 			
 	handleMalformed: (command) =>
@@ -326,7 +329,8 @@ class IrcServer
 				line = @partialMessage + line
 				firstLine = false
 
-			console.log "Received command in state #{@state}: #{line}"
+			if @logCommands
+				console.log "Received command: #{line}"
 			command = @parseMessage line
 			if not command.command?
 				continue
@@ -343,20 +347,18 @@ class IrcServer
 							@onReceiveSERVER command
 						when 'SVINFO'
 							@onReceiveSVINFO command
+						when 'UID'
+							@onReceiveUID command
 						when 'SID'
 							@onReceiveSID command
 						when 'SJOIN'
 							@onReceiveSJOIN command
-						when 'UID'
-							@onReceiveUID command
-						when 'PING'
-							@onReceivePING command
-						when 'EOB'
-							@onReceiveEOB command
 				when 'connected'
 					switch command.command
 						when 'PING'
 							@onReceivePING command
+						when 'EOB'
+							@onReceiveEOB command
 						when 'UID'
 							@onReceiveUID command
 						when 'SID'
@@ -403,6 +405,7 @@ class IrcServer
 			return
 		[serverName, hopCount] = command.parameters
 		@otherServerName = serverName
+		@ircServers[@otherServerId].serverName = serverName
 
 	onReceiveSVINFO: (command) =>
 		if command.parameters.length != 3 or not command.trailer?
@@ -415,8 +418,11 @@ class IrcServer
 			@disconnect()
 			return
 
+		console.log "Successfully connected to IRC server, starting to burst"
 		@writeCommand {prefix: @serverId, command: 'SVINFO', parameters: [6, 6, 0], trailer: @getTime()}
 		@burst()
+		console.log "Finished bursting"
+		@state = 'connected'
 		
 	onReceiveSID: (command) =>
 		if command.parameters.length != 3 or not command.trailer? or not command.prefix?
@@ -427,8 +433,10 @@ class IrcServer
 		connectedTo = command.prefix
 		serverDescription = command.trailer
 
-		@ircServers[serverId] = {proxiesServers: []}
+		@ircServers[serverId] = {serverName: serverName, proxiesServers: []}
 		@ircServers[connectedTo].proxiesServers.push(serverId)
+
+		console.log "New server connected: #{serverName} via #{@ircServers[connectedTo].serverName}"
 
 	onReceiveSJOIN: (command) =>
 		if command.parameters.length != 3 or not command.trailer?
@@ -480,7 +488,8 @@ class IrcServer
 		@writeCommand {prefix: @serverId, command: 'PONG', parameters: [@serverName], trailer: source}
 
 	onReceiveEOB: (command) =>
-		@state = 'connected'
+		serverId = command.prefix
+		console.log "Finished receiving burst from #{@ircServers[serverId].serverName}"
 	
 	onReceiveJOIN: (command) =>
 		userId = command.prefix
@@ -503,6 +512,8 @@ class IrcServer
 
 		if targetServer == @serverId
 			targetServer = @otherServerId
+
+		console.log "IRC server disconnecting: #{@ircServers[targetServer].serverName}"
 		@cleanupIrcServer targetServer
 
 	onReceivePRIVMSG: (command) =>
