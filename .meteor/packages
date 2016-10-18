@@ -119,6 +119,7 @@ rocketchat:version
 rocketchat:videobridge
 rocketchat:webrtc
 rocketchat:wordpress
+rocketchat:irc-server
 #rocketchat:bot-helpers
 #rocketchat:chatops
 #rocketchat:internal-hubot
