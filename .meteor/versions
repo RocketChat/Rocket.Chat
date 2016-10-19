@@ -30,6 +30,7 @@ ddp-client@1.3.1_1
 ddp-common@1.2.6
 ddp-rate-limiter@1.0.5
 ddp-server@1.3.10_1
+deepwell:bootstrap-datepicker2@1.3.0
 deps@1.0.12
 diff-sequence@1.0.6
 dispatch:run-as-user@1.1.1
