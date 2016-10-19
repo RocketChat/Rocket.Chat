@@ -22,6 +22,8 @@ else
     SNAP_FOLDER=$PWD/.snapcraft/edge
 fi
 
+echo "snapping release for $CHANNEL channel"
+
 docker run -v $HOME:/root -v $SNAP_FOLDER:/cwd snapcore/snapcraft sh -c 'cd /cwd; apt update && snapcraft'
 docker run -v $HOME:/root -v $SNAP_FOLDER:/cwd -e CHANNEL=$CHANNEL snapcore/snapcraft sh -c "cd /cwd; snapcraft push *.snap --release $CHANNEL"
 

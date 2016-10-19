@@ -1,4 +1,5 @@
-/* globals Department, Livechat */
+/* globals Department, Livechat, LivechatVideoCall */
+
 Template.livechatWindow.helpers({
 	title() {
 		return Livechat.title;
@@ -37,6 +38,9 @@ Template.livechatWindow.helpers({
 			offlineUnavailableMessage: Livechat.offlineUnavailableMessage.replace(/([^>\r\n]?)(\r\n|\n\r|\r|\n)/g, '$1<br>$2'),
 			displayOfflineForm: Livechat.displayOfflineForm
 		};
+	},
+	videoCalling() {
+		return LivechatVideoCall.isActive();
 	}
 });
 
@@ -91,7 +95,10 @@ Template.livechatWindow.onCreated(function() {
 				Livechat.title = result.title;
 				Livechat.onlineColor = result.color;
 				Livechat.online = true;
+				Livechat.transcript = result.transcript;
+				Livechat.transcriptMessage = result.transcriptMessage;
 			}
+			Livechat.videoCall = result.videoCall;
 			Livechat.registrationForm = result.registrationForm;
 
 			if (result.room) {
