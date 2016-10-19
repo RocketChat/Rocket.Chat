@@ -25,7 +25,6 @@ Package.onUse(function(api) {
 	api.use('underscore');
 	api.use('mongo');
 	api.use('underscorestring:underscore.string');
-	api.use('monbro:mongodb-mapreduce-aggregation@1.0.1');
 	api.use('matb33:collection-hooks');
 	api.use('service-configuration');
 	api.use('check');
