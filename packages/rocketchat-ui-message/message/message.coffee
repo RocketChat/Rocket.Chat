@@ -15,6 +15,10 @@ Template.message.helpers
 			return this.avatar.replace(/^@/, '')
 	getEmoji: (emoji) ->
 		return renderEmoji emoji
+	getName: ->
+		if RocketChat.settings.get('UI_Use_Real_Name') and this.u?.name
+			return this.u.name
+		return this.u?.username
 	own: ->
 		return 'own' if this.u?._id is Meteor.userId()
 	timestamp: ->
