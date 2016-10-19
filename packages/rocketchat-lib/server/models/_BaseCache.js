@@ -18,7 +18,7 @@ loki.LokiOps.$in = loki.LokiOps.$containsAny;
 loki.LokiOps.$nin = loki.LokiOps.$containsNone;
 
 loki.LokiOps.$exists = function(a, b) {
-	if (b === 1) {
+	if (b) {
 		return loki.LokiOps.$ne(a, undefined);
 	}
 
