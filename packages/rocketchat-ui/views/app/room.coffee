@@ -611,6 +611,11 @@ Template.room.onRendered ->
 			template.checkIfScrollIsAtBottom()
 		, 2000
 
+	wrapper.addEventListener 'scroll', ->
+		template.atBottom = false
+		Meteor.defer ->
+			template.checkIfScrollIsAtBottom()
+
 	$('.flex-tab-bar').on 'click', (e, t) ->
 		Meteor.setTimeout ->
 			template.sendToBottomIfNecessaryDebounced()
