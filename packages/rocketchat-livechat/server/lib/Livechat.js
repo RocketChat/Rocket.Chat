@@ -196,6 +196,8 @@ RocketChat.Livechat = {
 
 		RocketChat.models.Subscriptions.hideByRoomIdAndUserId(room._id, user._id);
 
+		RocketChat.models.Messages.createCommandWithRoomIdAndUser('promptTranscript', room._id, user);
+
 		Meteor.defer(() => {
 			RocketChat.callbacks.run('livechat.closeRoom', room);
 		});
@@ -219,7 +221,9 @@ RocketChat.Livechat = {
 			'Livechat_display_offline_form',
 			'Livechat_videocall_enabled',
 			'Jitsi_Enabled',
-			'Language'
+			'Language',
+			'Livechat_enable_transcript',
+			'Livechat_transcript_message'
 		]).forEach((setting) => {
 			settings[setting._id] = setting.value;
 		});
@@ -459,12 +463,12 @@ RocketChat.Livechat = {
 			description: Match.Optional(String)
 		});
 
-		check(departmentAgents, [{
-			agentId: String,
-			username: String,
-			count: Match.Maybe(Number),
-			order: Match.Maybe(Number)
-		}]);
+		check(departmentAgents, [
+			Match.ObjectIncluding({
+				agentId: String,
+				username: String
+			})
+		]);
 
 		if (_id) {
 			const department = RocketChat.models.LivechatDepartment.findOneById(_id);

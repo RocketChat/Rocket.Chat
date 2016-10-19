@@ -25,7 +25,7 @@ Meteor.startup ->
 		SyncedCron.add
 			name: 'Generate and save statistics',
 			schedule: (parser) -># parser is a later.parse object
-				return parser.text 'every 1 hour'
+				return parser.cron new Date().getMinutes() + ' * * * *'
 			job: generateStatistics
 
 		SyncedCron.start()

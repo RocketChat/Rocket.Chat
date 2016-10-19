@@ -1,5 +1,63 @@
 # History
 
+## 0.43.0, 2016-Oct-17
+
+- Add @here support for only notifying users that are active
+- Add base support for config via webservices
+- Add basic killswitch to enable/disable IRC functionality
+- Add oplog state to startup message
+- Add site name to html meta title via server side inject
+- Add transition to main-content
+- Add validations to transcript sending method
+- Adds options for ldap connect and idle timeout
+- Allow outgoing integrations to post as the triggering user
+- Fix email formatting and swal alert going out of widget
+- Fix Firefox DnD by checking types of drag event
+- Fix match on livechat department save
+- Fix select custom field validation
+- Fix stuck in login page after logout
+- Fix the slack and hipchat importers on users importing
+- Fix transcript to users without email
+- METEOR@1.4.1.2
+- Migrated IRC config defaults to web admin panel and mapped to variables.
+- Package development status provided as an alert to users. Caveat emptor.
+- Remove mapReduces from statistics
+- Schedule syncedcron to run every one hour at the startup minute
+- Set babel cache directory for integrations
+- Switch snap from imagemagick to graphicsmagick
+
+## 0.42.0, 2016-Oct-04
+
+- Add dependency to package with avatar template
+- Add ids for irc.server callbacks
+- Add livechat REST endpoints
+- Add REST endpoint to save settings
+- Add REST endpoints to livechat agents, managers and departments
+- Add support for apostrophe emojis
+- Add videocall support to livechat
+- Added CAS 2.0 settings
+- Allow imported users to register themselves
+- CAS: BugFix for service URL when RC running in subdir. Source: #3981
+- Decrease the callback priority of highlight words
+- Enable slackbridge slashcommand after enabling
+- Fix bug when setting readonly room as default room
+- Fix Error when Importing Slack History (#4388)
+- Fix for DnD files in Firefox
+- Fix livechat routing to agents that have never logged in
+- Fix OEmbed exception on request error
+- Fix Relative path on og:image meta tag results in broken preview image
+- Fix setting username from REST API
+- Fix translations if tap language was changed (#4470)
+- Merged improvements from `more-streams` (#4510) (#4513)
+- Move livechat SMS endpoint to default Rocket.Chat REST APIs
+- Properly stop AV tracks when closing video recording dialog
+- Remove colon from mention on reply message
+- Remove sync methods (#4512)
+- Return status code 403 forbidden instead of 401 unauthorized
+- Show muted icon in list of users
+- Standardize settings endpoint return
+- Update Autolinker to 1.2.0
+
 ## 0.41.0, 2016-Sep-27
 
 - Add ability to close open livechats if an agent goes offline
