@@ -14,6 +14,23 @@ Meteor.startup ->
 
 		enabled = RocketChat.settings.get('Phone_Enabled')
 		wss = RocketChat.settings.get('Phone_WSS')
+		servers = RocketChat.settings.get("Phone_ICEServers")
+
+		iceServers = []
+		if servers?.trim() isnt ''
+			servers = servers.replace /\s/g, ''
+			servers = servers.split ','
+			for server in servers
+				server = server.split '@'
+				serverConfig =
+					urls: [server.pop()]
+
+				if server.length is 1
+					server = server[0].split ':'
+					serverConfig.username = decodeURIComponent(server[0])
+					serverConfig.credential = decodeURIComponent(server[1])
+
+				iceServers.push serverConfig
 
 		if not enabled or not wss
 			console.log("Phone not enabled or missing server url") if window.rocketDebug
@@ -26,7 +43,7 @@ Meteor.startup ->
 			console.log("Phone account data not set (yet)") if window.rocketDebug
 			return
 
-		RocketChat.Phone.start(plogin, ppass, wss)
+		RocketChat.Phone.start(plogin, ppass, wss, iceServers)
 
 
 Template.phone.events
@@ -206,6 +223,7 @@ RocketChat.Phone = new class
 	_password = undefined
 	_vertoHandle = undefined
 	_server = undefined
+	_iceServers = []
 	_videoTag = undefined
 
 	_audioInDevice = undefined
@@ -420,13 +438,14 @@ RocketChat.Phone = new class
 			console.log _login
 			console.log _password
 			console.log _server
+			console.log _iceServers
 
 		_vertoHandle = new jQuery.verto({
 			login: _login,
 			passwd: _password
 			socketUrl: _server,
 			ringFile: 'sounds/bell_ring2.wav',
-			iceServers: true,
+			iceServers: _iceServers,
 			tag: "phonestream"
 			audioParams: {
 				googEchoCancellation: true,
@@ -674,7 +693,7 @@ RocketChat.Phone = new class
 	getVideoDevice: ->
 		return _videoDevice
 
-	start: (login, password, server) ->
+	start: (login, password, server, iceServers) ->
 		console.log("Starting verto....") if window.rocketDebug
 
 		if _started and (login != _login or _password != password or _server != server)
@@ -696,6 +715,7 @@ RocketChat.Phone = new class
 		_login = login
 		_password = password
 		_server = server
+		_iceServers = iceServers
 
 		getConfig()
 
