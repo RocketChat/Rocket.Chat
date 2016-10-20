@@ -172,21 +172,35 @@ class SlackBridge {
 	addUser(userId) {
 		logger.class.debug('Adding user from Slack', userId);
 		let data = HTTP.get('https://slack.com/api/users.info', { params: { token: this.apiToken, user: userId } });
-		if (data && data.data && data.data.ok === true && data.data.user && data.data.user.profile && data.data.user.profile.email) {
+		if (data && data.data && data.data.ok === true && data.data.user) {
 			let userData = data.data.user;
-			let existingUser = RocketChat.models.Users.findOneByEmailAddress(userData.profile.email) || RocketChat.models.Users.findOneByUsername(userData.name);
+			let isBot = userData.is_bot === true;
+			let email = userData.profile && userData.profile.email || '';
+			let existingUser;
+			if (!isBot) {
+				existingUser = RocketChat.models.Users.findOneByEmailAddress(email) || RocketChat.models.Users.findOneByUsername(userData.name);
+			} else {
+				existingUser = RocketChat.models.Users.findOneByUsername(userData.name);
+			}
+
 			if (existingUser) {
 				userData.rocketId = existingUser._id;
 				userData.name = existingUser.username;
 			} else {
-				userData.rocketId = Accounts.createUser({ email: userData.profile.email, password: Date.now() + userData.name + userData.profile.email.toUpperCase() });
+				let newUser = { password: Random.id() };
+				if (isBot || !email) {
+					newUser.username = userData.name;
+				} else {
+					newUser.email = email;
+				}
+				userData.rocketId = Accounts.createUser(newUser);
 				let userUpdate = {
 					username: userData.name,
 					utcOffset: userData.tz_offset / 3600, // Slack's is -18000 which translates to Rocket.Chat's after dividing by 3600,
-					roles: [ 'user' ]
+					roles: isBot ? [ 'bot' ] : [ 'user' ],
 				};
 
-				if (userData.profile.real_name) {
+				if (userData.profile && userData.profile.real_name) {
 					userUpdate['name'] = userData.profile.real_name;
 				}
 
@@ -200,20 +214,28 @@ class SlackBridge {
 				let user = RocketChat.models.Users.findOneById(userData.rocketId);
 
 				let url = null;
-				if (userData.profile.image_original) {
-					url = userData.profile.image_original;
-				} else if (userData.profile.image_512) {
-					url = userData.profile.image_512;
+				if (userData.profile) {
+					if (userData.profile.image_original) {
+						url = userData.profile.image_original;
+					} else if (userData.profile.image_512) {
+						url = userData.profile.image_512;
+					}
 				}
-				try {
-					RocketChat.setUserAvatar(user, url, null, 'url');
-				} catch (error) {
-					logger.class.debug('Error setting user avatar', error.message);
+				if (url) {
+					try {
+						RocketChat.setUserAvatar(user, url, null, 'url');
+					} catch (error) {
+						logger.class.debug('Error setting user avatar', error.message);
+					}
 				}
 				RocketChat.addUserToDefaultChannels(user, true);
 			}
 
-			RocketChat.models.Users.update({ _id: userData.rocketId }, { $addToSet: { importIds: userData.id } });
+			let importIds = [ userData.id ];
+			if (isBot && userData.profile && userData.profile.bot_id) {
+				importIds.push(userData.profile.bot_id);
+			}
+			RocketChat.models.Users.update({ _id: userData.rocketId }, { $addToSet: { importIds: { $each: importIds } } });
 			if (!this.userTags[userId]) {
 				this.userTags[userId] = { slack: `<@${userId}>`, rocket: `@${userData.name}` };
 			}
@@ -278,6 +300,8 @@ class SlackBridge {
 		let user = null;
 		if (message.subtype === 'message_deleted' || message.subtype === 'message_changed') {
 			user = message.previous_message.user ? this.findUser(message.previous_message.user) || this.addUser(message.previous_message.user) : null;
+		} else if (message.subtype === 'bot_message') {
+			user = RocketChat.models.Users.findOneById('rocket.cat', { fields: { username: 1 } });
 		} else {
 			user = message.user ? this.findUser(message.user) || this.addUser(message.user) : null;
 		}
@@ -316,9 +340,9 @@ class SlackBridge {
 					rid: room._id,
 					bot: true,
 					attachments: message.attachments,
-					username: message.username
+					username: message.username || 'Unknown BOT'
 				};
-				this.addAlias(message.username, msgObj);
+				this.addAlias(message.username || 'Unknown BOT', msgObj);
 				if (message.icons) {
 					msgObj.emoji = message.icons.emoji;
 				}
