@@ -160,6 +160,14 @@ class IrcServer
 			command: 'PART'
 			parameters: ['#' + room.name]		
 
+	createRoom: (owner, room) =>
+		if room.t == 'd' or @localUsersById[owner._id] == undefined
+			return
+
+		@sendRoom room
+
+		
+
 	logoutUser: (user) =>
 		if @state != 'connected'
 			return
@@ -613,12 +621,16 @@ IrcServerLogoutCleanUper = (user) ->
 	ircServer.logoutUser user
 	return user
 
+IrcServerRoomCreator = (owner, room) ->
+	ircServer.createRoom owner, room
+
 RocketChat.callbacks.add 'afterValidateLogin', IrcServerLoginer, RocketChat.callbacks.priority.LOW, 'irc-server-loginer'
 RocketChat.callbacks.add 'afterSaveMessage', IrcServerSender, RocketChat.callbacks.priority.LOW, 'irc-server-sender'
 RocketChat.callbacks.add 'beforeJoinRoom', IrcServerRoomJoiner, RocketChat.callbacks.priority.LOW, 'irc-server-room-joiner'
 RocketChat.callbacks.add 'beforeCreateChannel', IrcServerRoomJoiner, RocketChat.callbacks.priority.LOW, 'irc-server-room-joiner-create-channel'
 RocketChat.callbacks.add 'beforeLeaveRoom', IrcServerRoomLeaver, RocketChat.callbacks.priority.LOW, 'irc-server-room-leaver'
 RocketChat.callbacks.add 'afterLogoutCleanUp', IrcServerLogoutCleanUper, RocketChat.callbacks.priority.LOW, 'irc-server-clean-up'
+RocketChat.callbacks.add 'afterCreateRoom', IrcServerRoomCreator, RocketChat.callbacks.priority.LOW, 'irc-server-room-creator'
 
 ircServer = new IrcServer
 Meteor.startup ->

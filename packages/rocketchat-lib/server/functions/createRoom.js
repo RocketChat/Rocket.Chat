@@ -87,6 +87,9 @@ RocketChat.createRoom = function(type, name, owner, members, readOnly) {
 			RocketChat.callbacks.run('afterCreateChannel', owner, room);
 		});
 	}
+	Meteor.defer(() => {
+		RocketChat.callbacks.run('afterCreateRoom', owner, room);
+	});
 
 	return {
 		rid: room._id
