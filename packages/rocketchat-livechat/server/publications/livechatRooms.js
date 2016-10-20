@@ -11,8 +11,8 @@ Meteor.publish('livechat:rooms', function(filter = {}, offset = 0, limit = 20) {
 		name: Match.Maybe(String), // room name to filter
 		agent: Match.Maybe(String), // agent _id who is serving
 		status: Match.Maybe(String), // either 'opened' or 'closed'
-		from: Match.Maybe(String), 
-		to: Match.Maybe(String) 
+		from: Match.Maybe(String),
+		to: Match.Maybe(String)
 	});
 
 	let query = {};
@@ -29,7 +29,7 @@ Meteor.publish('livechat:rooms', function(filter = {}, offset = 0, limit = 20) {
 			query.open = { $exists: false };
 		}
 	}
-	if (filter.from && filter.to){
+	if (filter.from && filter.to) {
 		var StartDate = new Date(filter.from);
 		var ToDate = new Date(filter.to);
 		ToDate.setDate(ToDate.getDate() + 1);
