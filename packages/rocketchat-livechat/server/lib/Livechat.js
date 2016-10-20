@@ -73,16 +73,7 @@ RocketChat.Livechat = {
 	registerGuest({ token, name, email, department, phone, loginToken, username } = {}) {
 		check(token, String);
 
-		const user = RocketChat.models.Users.getVisitorByToken(token, { fields: { _id: 1 } });
-
-		if (user) {
-			throw new Meteor.Error('token-already-exists', 'Token already exists');
-		}
-
-		if (!username) {
-			username = RocketChat.models.Users.getNextVisitorUsername();
-		}
-
+		let userId;
 		let updateUser = {
 			$set: {
 				profile: {
@@ -92,48 +83,62 @@ RocketChat.Livechat = {
 			}
 		};
 
-		var existingUser = null;
+		const user = RocketChat.models.Users.getVisitorByToken(token, { fields: { _id: 1 } });
 
-		var userId;
-
-		if (s.trim(email) !== '' && (existingUser = RocketChat.models.Users.findOneByEmailAddress(email))) {
-			if (existingUser.type !== 'visitor') {
-				throw new Meteor.Error('error-invalid-user', 'This email belongs to a registered user.');
-			}
-
-			updateUser.$addToSet = {
-				globalRoles: 'livechat-guest'
-			};
-
+		if (user) {
+			userId = user._id;
 			if (loginToken) {
+				if (!updateUser.$addToSet) {
+					updateUser.$addToSet = {};
+				}
 				updateUser.$addToSet['services.resume.loginTokens'] = loginToken;
 			}
-
-			userId = existingUser._id;
 		} else {
-			updateUser.$set.name = name;
-
-			var userData = {
-				username: username,
-				globalRoles: ['livechat-guest'],
-				department: department,
-				type: 'visitor'
-			};
-
-			if (this.connection) {
-				userData.userAgent = this.connection.httpHeaders['user-agent'];
-				userData.ip = this.connection.httpHeaders['x-real-ip'] || this.connection.clientAddress;
-				userData.host = this.connection.httpHeaders.host;
+			if (!username) {
+				username = RocketChat.models.Users.getNextVisitorUsername();
 			}
 
-			userId = Accounts.insertUserDoc({}, userData);
+			var existingUser = null;
 
-			if (loginToken) {
-				updateUser.$set.services = {
-					resume: {
-						loginTokens: [ loginToken ]
-					}
+			if (s.trim(email) !== '' && (existingUser = RocketChat.models.Users.findOneByEmailAddress(email))) {
+				if (existingUser.type !== 'visitor') {
+					throw new Meteor.Error('error-invalid-user', 'This email belongs to a registered user.');
+				}
+
+				updateUser.$addToSet = {
+					globalRoles: 'livechat-guest'
 				};
+
+				if (loginToken) {
+					updateUser.$addToSet['services.resume.loginTokens'] = loginToken;
+				}
+
+				userId = existingUser._id;
+			} else {
+				updateUser.$set.name = name;
+
+				var userData = {
+					username: username,
+					globalRoles: ['livechat-guest'],
+					department: department,
+					type: 'visitor'
+				};
+
+				if (this.connection) {
+					userData.userAgent = this.connection.httpHeaders['user-agent'];
+					userData.ip = this.connection.httpHeaders['x-real-ip'] || this.connection.clientAddress;
+					userData.host = this.connection.httpHeaders.host;
+				}
+
+				userId = Accounts.insertUserDoc({}, userData);
+
+				if (loginToken) {
+					updateUser.$set.services = {
+						resume: {
+							loginTokens: [ loginToken ]
+						}
+					};
+				}
 			}
 		}
 

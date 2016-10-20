@@ -102,9 +102,7 @@ Template.livechatWindow.onCreated(function() {
 			Livechat.registrationForm = result.registrationForm;
 
 			if (result.room) {
-				RoomHistoryManager.getMoreIfIsEmpty(result.room._id);
-				visitor.subscribeToRoom(result.room._id);
-				visitor.setRoom(result.room._id);
+				Livechat.room = result.room._id;
 			}
 
 			TAPi18n.setLanguage((result.language || defaultAppLanguage()).split('-').shift());
