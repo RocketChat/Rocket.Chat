@@ -488,7 +488,7 @@ class ModelsBaseCache extends EventEmitter {
 
 	processQueryOptionsOnResult(result, options={}) {
 		if (result === undefined || result === null) {
-			return result;
+			return undefined;
 		}
 
 		if (Array.isArray(result)) {
