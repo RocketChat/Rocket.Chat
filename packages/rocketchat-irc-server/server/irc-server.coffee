@@ -372,6 +372,8 @@ class IrcServer
 							@onReceivePONG command
 						when 'INVITE'
 							@onReceiveINVITE command
+						when 'KICK'
+							@onReceiveKICK command
 				when 'connected'
 					switch command.command
 						when 'PING'
@@ -396,6 +398,8 @@ class IrcServer
 							@onReceiveQUIT command
 						when 'INVITE'
 							@onReceiveINVITE command
+						when 'KICK'
+							@onReceiveKICK command
 						when 'PRIVMSG'
 							@onReceivePRIVMSG command
 
@@ -568,6 +572,30 @@ class IrcServer
 			Meteor.call 'addUserToRoom',
 				rid: room._id
 				username: invitedUser.username
+
+	onReceiveKICK: (command) =>
+		kickingUserId = command.prefix
+		[channel, kickedUserId] = command.parameters
+
+
+		kickingUser = @ircUsers[kickingUserId]
+		if not kickingUser?
+			return
+
+		kickedUser = @localUsersByIrcId[kickedUserId]
+		if not kickedUser?
+			return
+
+		room = RocketChat.models.Rooms.findOneByName channel.substring(1)
+		if not room?
+			return
+
+		console.log "[irc-server] Kicking #{kickedUser.username} from #{room.name}"
+
+		Meteor.runAsUser kickingUser._id, =>
+			Meteor.call 'removeUserFromRoom',
+				rid: room._id
+				username: kickedUser.username
 
 	onReceiveSQUIT: (command) =>
 		[targetServer] = command.parameters
