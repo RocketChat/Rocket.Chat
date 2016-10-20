@@ -27,6 +27,7 @@ class IrcServer
 		@socket.setEncoding 'utf-8'
 		@socket.setKeepAlive true
 		@socket.setTimeout 90000
+
 		@onConnect = bind @onConnect
 		@onClose = bind @onClose
 		@onTimeout = bind @onTimeout
@@ -64,7 +65,7 @@ class IrcServer
 
 	onTimeout: () =>
 		if @state == 'connected' or @state == 'bursting'
-			@writeCommand {command: 'PING', trailer: @otherServerId}
+			@writeCommand {command: 'PING', trailer: @serverId}
 		else
 			console.log "[irc-server] Timed out waiting for password"
 			@disconnect()
@@ -125,7 +126,7 @@ class IrcServer
 		if @state != 'connected'
 			return
 
-		if room.t == 'd' or not user._id in @localUsersById
+		if room.t == 'd' or @localUsersById[user._id] == undefined
 			return
 
 		userId = @localUsersById[user._id].ircUserId
@@ -333,7 +334,6 @@ class IrcServer
 			if firstLine
 				line = @partialMessage + line
 				firstLine = false
-
 			if @logCommands
 				console.log "[irc-server] Received command: #{line}"
 			command = @parseMessage line
@@ -362,6 +362,8 @@ class IrcServer
 							@onReceivePING command
 						when 'PONG'
 							@onReceivePONG command
+						when 'INVITE'
+							@onReceiveINVITE command
 				when 'connected'
 					switch command.command
 						when 'PING'
@@ -384,6 +386,8 @@ class IrcServer
 							@onReceivePART command
 						when 'QUIT'
 							@onReceiveQUIT command
+						when 'INVITE'
+							@onReceiveINVITE command
 						when 'PRIVMSG'
 							@onReceivePRIVMSG command
 
@@ -456,11 +460,22 @@ class IrcServer
 
 		[channelTimestamp, channel, mode] = command.parameters
 		userIds = command.trailer.split(' ')
+		users = _.map(userIds, (id) =>
+			{ 
+				username: @ircUsers[id.substring(id.length-9)].username,
+				isOperator: id[0] == '@' 
+			}
+
+		)
 		room = RocketChat.models.Rooms.findOneByName channel.substring(1)
 		if not room?
-			return #TODO Create missing channels?
-		usernames = _.map(userIds, (id) => @ircUsers[id].username)
-		RocketChat.models.Rooms.addUsernamesById(room._id, usernames)
+			firstOperator = _.find(users, (user) => user.isOperator)
+			if not firstOperator?
+				return
+			RocketChat.createRoom('c', channel.substring(1), firstOperator.username, [], false)
+			room = RocketChat.models.Rooms.findOneByName channel.substring(1)
+			
+		RocketChat.models.Rooms.addUsernamesById(room._id, _.map(users, (user) => user.username))
 	
 	onReceiveUID: (command) =>
 		if command.parameters.length != 9
@@ -521,6 +536,30 @@ class IrcServer
 		userId = command.prefix
 		reason = command.trailer
 		@logoutIrcUser userId
+
+	onReceiveINVITE: (command) =>
+		invitingUserId = command.prefix
+		[invitedUserId, channel, channelTimestamp] = command.parameters
+
+
+		invitingUser = @ircUsers[invitingUserId]
+		if not invitingUser?
+			return
+
+		invitedUser = @localUsersByIrcId[invitedUserId]
+		if not invitedUser?
+			return
+
+		room = RocketChat.models.Rooms.findOneByName channel.substring(1)
+		if not room?
+			return
+
+		console.log "[irc-server] Inviting #{invitedUser.username} to #{room.name}"
+
+		Meteor.runAsUser invitingUser._id, =>
+			Meteor.call 'addUserToRoom',
+				rid: room._id
+				username: invitedUser.username
 
 	onReceiveSQUIT: (command) =>
 		[targetServer] = command.parameters
