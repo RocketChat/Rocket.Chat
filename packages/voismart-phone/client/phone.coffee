@@ -17,7 +17,7 @@ Meteor.startup ->
 		servers = RocketChat.settings.get("Phone_ICEServers")
 
 		iceServers = []
-		if servers?.trim() isnt ''
+		if servers? and (servers?.trim() isnt '')
 			servers = servers.replace /\s/g, ''
 			servers = servers.split ','
 			for server in servers
