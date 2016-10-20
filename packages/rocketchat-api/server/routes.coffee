@@ -245,7 +245,8 @@ RocketChat.API.v1.addRoute 'user.update', authRequired: true,
 
 			userData = _.extend({ _id: @bodyParams.userId }, @bodyParams.data)
 
-			RocketChat.saveUser(@userId, userData)
+			Meteor.runAsUser @userId, =>
+				RocketChat.saveUser(@bodyParams.userId, userData)
 
 			if @bodyParams.data.customFields?
 				RocketChat.saveCustomFields(@bodyParams.userId, @bodyParams.data.customFields)
@@ -281,7 +282,7 @@ RocketChat.API.v1.addRoute 'user.delete', authRequired: true,
 			if not RocketChat.authz.hasPermission(@userId, 'delete-user')
 				return RocketChat.API.v1.unauthorized()
 
-			Meteor.runAsUser this.userId, =>
+			Meteor.runAsUser @userId, =>
 				id = Meteor.call 'deleteUser', @bodyParams.userId, []
 		
 		catch e
