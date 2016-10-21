@@ -197,7 +197,7 @@ class SlackBridge {
 				let userUpdate = {
 					username: userData.name,
 					utcOffset: userData.tz_offset / 3600, // Slack's is -18000 which translates to Rocket.Chat's after dividing by 3600,
-					roles: isBot ? [ 'bot' ] : [ 'user' ],
+					roles: isBot ? [ 'bot' ] : [ 'user' ]
 				};
 
 				if (userData.profile && userData.profile.real_name) {
