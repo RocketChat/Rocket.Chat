@@ -82,10 +82,10 @@ class @ChatMessages
 					if error
 						ChatMessage.update msgObject._id, { $set: { error: true } }
 						showError error.reason
-					else if result.newRoom and result.rid?
+
+					if result.rid? and not visitor.isSubscribed(result.rid)
 						ChatMessage.update result._id, _.omit(result, '_id')
-						visitor.subscribeToRoom(result.rid)
-						visitor.setRoom(result.rid)
+						Livechat.room = result.rid
 
 			if not Meteor.userId()
 				Meteor.call 'livechat:registerGuest', { token: visitor.getToken() }, (error, result) ->
