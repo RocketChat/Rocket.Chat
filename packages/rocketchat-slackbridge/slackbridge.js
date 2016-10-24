@@ -340,9 +340,9 @@ class SlackBridge {
 					rid: room._id,
 					bot: true,
 					attachments: message.attachments,
-					username: message.username || 'Unknown BOT'
+					username: message.username || message.bot_id
 				};
-				this.addAlias(message.username || 'Unknown BOT', msgObj);
+				this.addAlias(message.username || message.bot_id, msgObj);
 				if (message.icons) {
 					msgObj.emoji = message.icons.emoji;
 				}
