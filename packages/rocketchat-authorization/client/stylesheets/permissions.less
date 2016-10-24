@@ -1,81 +1,21 @@
 .permissions-manager {
-	h2 {
-		font-weight: bold !important;
-		font-size: 16px;
-		margin-top: 1em !important;
-		margin-bottom: 1em !important;
-		border-bottom: 1px solid #EEE;
-	}
-
 	.permission-grid {
+		width: 100%;
 		border-collapse: collapse;
 		overflow: hidden;
-		margin-bottom: 1em;
+		margin: 1rem 0;
 
 		td {
-			position: relative;
-			* {
-				color: #000;
+			padding: 15px 5px;
+			color: #000;
+
+			&:nth-child(2) {
+				width: 20px;
 			}
 		}
 
-		td:nth-child(n+2) {
-			text-align: center;
-			width: 10%;
-		}
-
-
-		td:nth-child(1) {
-			white-space: nowrap;
-		}
-
-		td {
-			padding: 5px;
-			border: 1px solid #F0F0F0;
-		}
-
-		td:hover::after {
-			content: "";
-			position: absolute;
-			background-color: rgba(4,73,116,0.04);
-			left: 0;
-			top: -5000px;
-			height: 10000px;
-			width: 100%;
-			z-index: -1;
-		}
-
-		tbody {
-			tr:nth-child(even) td:first-child::before {
-				content: "";
-				position: absolute;
-				background-color: #FAFAFA;
-				top: 0;
-				left: -5000px;
-				width: 10000px;
-				height: 100%;
-				z-index: -10;
-			}
-
-			tr:hover {
-				background-color: rgba(4,73,116,0.04);
-			}
-
-		}
-
-		thead {
-			tr {
-				background-color: #F0F0F0;
-			}
-			td {
-				font-weight: bold;
-				a {
-					white-space: nowrap;
-				}
-				.icon-edit {
-					font-size: 80%;
-				}
-			}
+		tr:hover {
+			background-color: rgba(0, 0, 0,0.05);
 		}
 	}
 
@@ -92,6 +32,61 @@
 
 		.form-buttons {
 			padding-left: 150px;
+		}
+	}
+
+	.tabs {
+		width: 100%;
+    height: 48px;
+		margin-bottom: 20px;
+    box-shadow: 0 2px 5px 0 rgba(0,0,0,0.16),0 2px 10px 0 rgba(0,0,0,0.12);
+    position: relative;
+    overflow-x: auto;
+    overflow-y: hidden;
+    white-space: nowrap;
+
+		.tab {
+			width: 20%;
+			text-align: center;
+			line-height: 48px;
+			height: 48px;
+			padding: 0;
+			margin: 0;
+			text-transform: uppercase;
+			text-overflow: ellipsis;
+			overflow: hidden;
+			letter-spacing: .8px;
+			min-width: 80px;
+			display: inline-block;
+			opacity: 1;
+			cursor: pointer;
+			transition: all .2s;
+
+			.icon-edit {
+				color: #444;
+			}
+
+			&:hover {
+				opacity: .4;
+			}
+
+			&.active {
+				border-bottom: 2px solid #04436a;
+
+				.icon-edit {
+					color: #04436a;
+				}
+				&:hover {
+					opacity: 1;
+				}
+			}
+
+			h2,
+			a {
+				display: inline-block;
+				vertical-align: middle;
+				margin: 0;
+			}
 		}
 	}
 }

@@ -1,29 +1,36 @@
 <template name="permissions">
 	<div class="permissions-manager">
 		{{#if hasPermission}}
+			<div class="role-tabs">
+				<ul class="tabs">
+					{{#each role}}
+					<li class="tab {{#if $eq @index 0}}active{{/if}}" data-id="{{_id}}">
+						<h2>{{_id}}</h2>
+						<a href="{{pathFor "admin-permissions-edit" name=_id}}">
+							<i class="icon-edit"></i>
+						</a>
+					</li>
+					{{/each}}
+				</ul>
+			</div>
+
 			<a href="{{pathFor "admin-permissions-new"}}" class="button primary new-role">{{_ "New_role"}}</a>
 
 			<table border="1" class="permission-grid">
-				<thead>
-					<tr>
-						<td>&nbsp;</td>
-						{{#each role}}
-							<td title="{{description}}">
-								<a href="{{pathFor "admin-permissions-edit" name=_id}}">
-									{{_id}}
-									<i class="icon-edit"></i>
-								</a>
-							</td>
-						{{/each}}
-					</tr>
-				</thead>
 				<tbody>
 					{{#each permission}}
 						<tr>
 							<td>{{_id}}</td>
-							{{#each role}}
-								<td>
-									<input type="checkbox" name="perm[{{_id}}][{{../_id}}]" class="role-permission" value="1" checked="{{granted ../roles}}" data-role="{{_id}}" data-permission="{{../_id}}">
+							{{#each tableRole }}
+								<td data-id="{{_id}}">
+									<div class="checkbox">
+										<label>
+											<input type="checkbox" name="perm[{{_id}}][{{../_id}}]" class="role-permission" value="1" checked="{{granted ../roles}}" data-role="{{_id}}" data-permission="{{../_id}}">
+											<span class="checkbox-inside">
+													<span class="check"></span>
+											</span>
+										</label>
+									</div>
 								</td>
 							{{/each}}
 						</tr>

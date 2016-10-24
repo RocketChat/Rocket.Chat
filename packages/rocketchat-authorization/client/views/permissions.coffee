@@ -3,6 +3,9 @@ Template.permissions.helpers
 	role: ->
 		return Template.instance().roles.get()
 
+	tableRole: ->
+		return Template.instance().tableRoles.get()
+
 	permission: ->
 		return ChatPermissions.find({}, { sort: { _id: 1 } })
 
@@ -23,8 +26,17 @@ Template.permissions.events
 		else
 			Meteor.call 'authorization:removeRoleFromPermission', permission, role
 
+	'click .tab': (e) ->
+		tab = if $(e.target).is 'li' then $(e.target) else $(e.target).parent()
+		role = $(tab).data 'id'
+		Template.instance().tableRoles.set RocketChat.models.Roles.find({'_id': role}).fetch()
+		$('.role-tabs .tab').removeClass 'active'
+		$(tab).addClass 'active'
+
+
 Template.permissions.onCreated ->
 	@roles = new ReactiveVar []
+	@tableRoles = new ReactiveVar []
 	@permissionByRole = {}
 
 	@actions =
@@ -33,6 +45,7 @@ Template.permissions.onCreated ->
 
 	Tracker.autorun =>
 		@roles.set RocketChat.models.Roles.find().fetch()
+		@tableRoles.set RocketChat.models.Roles.find({'_id': 'admin'}).fetch()
 
 	Tracker.autorun =>
 		ChatPermissions.find().observeChanges

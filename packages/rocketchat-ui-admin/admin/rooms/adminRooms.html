@@ -1,5 +1,5 @@
 <template name="adminRooms">
-	<section class="page-container page-list">
+	<section class="page-container page-list page-admin">
 		<head class="fixed-title">
 			{{> burger}}
 			<h2>
@@ -11,14 +11,44 @@
 				<p>{{_ "You_are_not_authorized_to_view_this_page"}}</p>
 			{{else}}
 				<form class="search-form" role="form">
-					<div class="input-line search">
+					<div class="input-line search icon">
 						<input type="text" id="rooms-filter" placeholder="{{_ "Search"}}" dir="auto">
 						<i class="icon-search"></i>
 						{{#unless isReady}}<i class="icon-spin"></i>{{/unless}}
 					</div>
-					<label><input type="checkbox" name="room-type" value="c"> {{_ "Channels"}}</label>
-					<label><input type="checkbox" name="room-type" value="d"> {{_ "Direct_Messages"}}</label>
-					<label><input type="checkbox" name="room-type" value="p"> {{_ "Private_Groups"}}</label>
+					<div class="checkbox">
+						<label>
+							<input type="checkbox" name="room-type" value="c">
+							<span class="checkbox-inside">
+									<span class="check"></span>
+							</span>
+							{{_ "Channels"}}
+						</label>
+					</div>
+					<div class="checkbox">
+						<label>
+							<input type="checkbox" name="room-type" value="d">
+							<span class="checkbox-inside">
+									<span class="check"></span>
+							</span>
+							{{_ "Direct_Messages"}}
+						</label>
+					</div>
+					<div class="checkbox">
+						<label>
+							<input type="checkbox" name="room-type" value="p">
+							<span class="checkbox-inside">
+									<span class="check"></span>
+							</span>
+							{{_ "Private_Groups"}}
+						</label>
+					</div>
+					<!--<input type="checkbox" name="room-type" id="by-channel" value="c">
+					<label for="by-channel">{{_ "Channels"}}</label>
+					<input type="checkbox" name="room-type" id="by-direct-messages" value="d">
+					<label for="by-direct-messages">{{_ "Direct_Messages"}}</label>
+					<input type="checkbox" name="room-type" id="by-private-groups" value="p">
+					<label for="by-private-groups">{{_ "Private_Groups"}}</label>-->
 				</form>
 				<div class="results">
 					{{{_ "Showing_results" roomCount}}}

@@ -597,7 +597,6 @@ a.github-fork {
 
 .page-list {
 	.results {
-		border-bottom-color: #DFDFDF;
 		color: @secondary-font-color;
 	}
 	.list {
@@ -623,15 +622,14 @@ a.github-fork {
 			color: @secondary-font-color;
 		}
 		table {
+			thead {
+				border-bottom: 1px solid @table-header-border;
+			}
 			tbody {
 				tr {
-					&:nth-child(odd) {
-						background-color: @secondary-background-color;
-					}
 					&.row-link {
-						cursor: pointer;
 						&:hover {
-							background-color: darken(@secondary-background-color, 3%);
+							background-color: @table-highlight-color;
 						}
 					}
 				}
@@ -641,6 +639,15 @@ a.github-fork {
 						&:hover {
 							color: darken(@link-font-color, 10%);
 							background-color: transparent;
+						}
+					}
+				}
+			}
+			&.striped {
+				tbody {
+					tr {
+						&:nth-child(odd) {
+							background-color: @table-stripe-color;
 						}
 					}
 				}
