@@ -17,6 +17,7 @@ Template.flexTabBar.events
 			RocketChat.TabBar.closeFlex()
 			$('.flex-tab').css('max-width', '')
 			$('.main-content').css('right', '')
+			RocketChat.TabBar._setTemplate ''
 		else
 			if not @openClick? or @openClick(e,t)
 				if @width?

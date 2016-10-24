@@ -28,5 +28,6 @@ Meteor.publish('livechat:rooms', function(filter = {}, offset = 0, limit = 20) {
 		}
 	}
 
+	// CACHE: can we stop using publications here?
 	return RocketChat.models.Rooms.findLivechat(query, offset, limit);
 });

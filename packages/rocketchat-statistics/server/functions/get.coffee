@@ -25,6 +25,7 @@ RocketChat.statistics.get = ->
 	# Message statistics
 	statistics.totalMessages = RocketChat.models.Messages.find().count()
 
+
 	statistics.lastLogin = RocketChat.models.Users.getLastLogin()
 	statistics.lastMessageSentAt = RocketChat.models.Messages.getLastTimestamp()
 	statistics.lastSeenSubscription = RocketChat.models.Subscriptions.getLastSeen()

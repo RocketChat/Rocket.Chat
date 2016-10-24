@@ -1,6 +1,6 @@
-RocketChat.models.Rooms = new class extends RocketChat.models._Base
-	constructor: ->
-		super('room')
+class ModelRooms extends RocketChat.models._Base
+	constructor: (model, cache) ->
+		super(arguments...)
 
 		@tryEnsureIndex { 'name': 1 }, { unique: 1, sparse: 1 }
 		@tryEnsureIndex { 'default': 1 }
@@ -8,9 +8,15 @@ RocketChat.models.Rooms = new class extends RocketChat.models._Base
 		@tryEnsureIndex { 't': 1 }
 		@tryEnsureIndex { 'u._id': 1 }
 
+		this.cache.ignoeUpdatedFields.push('msgs', 'lm')
+		this.cache.ensureIndex(['t', 'name'], 'unique')
+		this.cache.options = {fields: {usernames: 0}}
 
 	# FIND ONE
 	findOneById: (_id, options) ->
+		if this.useCache
+			return this.cache.findByIndex('_id', _id, options).fetch()
+
 		query =
 			_id: _id
 
@@ -64,6 +70,7 @@ RocketChat.models.Rooms = new class extends RocketChat.models._Base
 
 
 	# FIND
+
 	findById: (roomId, options) ->
 		return @find { _id: roomId }, options
 
@@ -213,6 +220,9 @@ RocketChat.models.Rooms = new class extends RocketChat.models._Base
 		return @find query, options
 
 	findByTypeAndName: (type, name, options) ->
+		if this.useCache
+			return this.cache.findByIndex('t,name', [type, name], options)
+
 		query =
 			name: name
 			t: type
@@ -234,10 +244,9 @@ RocketChat.models.Rooms = new class extends RocketChat.models._Base
 		if archivationstate
 			query.archived = true
 		else
-			query.archived = { $ne: true }
+			query.archived = { $ne: true }
 
 		return @find query, options
-
 
 	# UPDATE
 	archiveById: (_id) ->
@@ -537,3 +546,5 @@ RocketChat.models.Rooms = new class extends RocketChat.models._Base
 			usernames: username
 
 		return @remove query
+
+RocketChat.models.Rooms = new ModelRooms('room', true)
