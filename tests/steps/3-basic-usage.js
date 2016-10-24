@@ -8,7 +8,7 @@ import sideNav from '../pageobjects/side-nav.page';
 
 //test data imports
 import {username, email, password} from '../test-data/user.js';
-import {PublicChannelName, privateChannelName} from '../test-data/channel.js';
+import {publicChannelName, privateChannelName} from '../test-data/channel.js';
 import {targetUser} from '../test-data/interactions.js';
 
 //Test data
@@ -725,11 +725,11 @@ describe('Basic usage', function() {
 
 	describe('public channel', () => {
 		it('create a public channel', () => {
-			sideNav.createChannel(PublicChannelName, false, false);
+			sideNav.createChannel(publicChannelName, false, false);
 		});
 
 		it('open the public channel', () => {
-			sideNav.openChannel(PublicChannelName);
+			sideNav.openChannel(publicChannelName);
 			browser.pause(5000);
 		});
 
@@ -765,7 +765,7 @@ describe('Basic usage', function() {
 			flexTab.confirmPopup();
 		});
 
-		it('archive the room', () => {
+		it.skip('archive the room', () => {
 			flexTab.channelTab.click();
 			flexTab.archiveChannel();
 			flexTab.channelTab.click();
