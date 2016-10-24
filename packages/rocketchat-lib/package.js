@@ -13,6 +13,7 @@ Npm.depends({
 
 Package.onUse(function(api) {
 	api.use('rate-limit');
+	api.use('session');
 	api.use('reactive-var');
 	api.use('reactive-dict');
 	api.use('accounts-base');
@@ -25,10 +26,10 @@ Package.onUse(function(api) {
 	api.use('underscore');
 	api.use('mongo');
 	api.use('underscorestring:underscore.string');
-	api.use('monbro:mongodb-mapreduce-aggregation@1.0.1');
 	api.use('matb33:collection-hooks');
 	api.use('service-configuration');
 	api.use('check');
+	api.use('momentjs:moment');
 	api.use('rocketchat:i18n');
 	api.use('rocketchat:streamer');
 	api.use('rocketchat:version');

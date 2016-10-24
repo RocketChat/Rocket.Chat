@@ -14,6 +14,7 @@ Package.onUse(function(api) {
 		'rocketchat:lib'
 	]);
 
+	api.use('aldeed:moment-timezone', 'server');
 	api.use('rocketchat:logger', 'server');
 	api.use('templating', 'client');
 
