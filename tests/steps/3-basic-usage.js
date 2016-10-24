@@ -49,7 +49,7 @@ describe('Basic usage', function() {
 		browser.waitForExist('.main-content', 5000);
 	});
 
-	describe.skip('side nav bar', () => {
+	describe('side nav bar', () => {
 		describe('render', () => {
 			it('should show the logged username', () => {
 				sideNav.accountBoxUserName.isVisible().should.be.true;
@@ -97,7 +97,7 @@ describe('Basic usage', function() {
 			});
 		});
 
-		describe.skip('user options', () => {
+		describe('user options', () => {
 			describe('render', () => {
 				before(() => {
 					sideNav.accountBoxUserName.click();
@@ -139,7 +139,7 @@ describe('Basic usage', function() {
 		});
 	});
 
-	describe.skip('general channel', () => {
+	describe('general channel', () => {
 		it('open GENERAL', () => {
 			browser.waitForExist('.wrapper > ul .link-room-GENERAL', 50000);
 			browser.click('.wrapper > ul .link-room-GENERAL');
@@ -433,7 +433,7 @@ describe('Basic usage', function() {
 		});
 	});
 
-	describe.skip('flextab usage', () => {
+	describe('flextab usage', () => {
 		describe('render', () => {
 			it('should show the room info button', () => {
 				flexTab.channelTab.isVisible().should.be.true;
@@ -526,7 +526,7 @@ describe('Basic usage', function() {
 		});
 	});
 
-	describe.skip('direct channel', () => {
+	describe('direct channel', () => {
 		it('start a direct message with rocket.cat', () => {
 			sideNav.startDirectMessage(targetUser);
 		});
@@ -723,7 +723,7 @@ describe('Basic usage', function() {
 		});
 	});
 
-	describe.skip('public channel', () => {
+	describe('public channel', () => {
 		it('create a public channel', () => {
 			sideNav.createChannel(PublicChannelName, false, false);
 		});
@@ -765,7 +765,7 @@ describe('Basic usage', function() {
 			flexTab.confirmPopup();
 		});
 
-		it('archive the room', () => {
+		it.skip('archive the room', () => {
 			flexTab.channelTab.click();
 			flexTab.archiveChannel();
 			flexTab.channelTab.click();
@@ -776,7 +776,7 @@ describe('Basic usage', function() {
 		});
 	});
 
-	describe.skip('private channel', () => {
+	describe('private channel', () => {
 		it('create a private channel', () => {
 			sideNav.createChannel(privateChannelName, true, false);
 		});
