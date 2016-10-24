@@ -1,14 +1,12 @@
 /* eslint-env mocha */
 /* eslint-disable func-names, prefer-arrow-callback */
 
-
-import loginPage from '../pageobjects/login.page';
 import flexTab from '../pageobjects/flex-tab.page';
 import mainContent from '../pageobjects/main-content.page';
 import sideNav from '../pageobjects/side-nav.page';
 
-import {username, email, password} from '../test-data/user.js';
-import {PublicChannelName, privateChannelName} from '../test-data/channel.js';
+import {username} from '../test-data/user.js';
+import {PublicChannelName} from '../test-data/channel.js';
 import {targetUser} from '../test-data/interactions.js';
 
 describe('channel settings', ()=> {
