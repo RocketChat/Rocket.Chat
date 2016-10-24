@@ -90,8 +90,8 @@ describe('resolutions tests', ()=> {
 
 		it('change the resolution', ()=> {
 			browser.windowHandleSize({
-				width: 1280,
-				height: 800
+				width: 1450,
+				height: 900
 			});
 		});
 
