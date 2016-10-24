@@ -34,7 +34,6 @@ window.addEventListener('message', (e) => {
 
 		case 'call-custom-oauth-login':
 			const customOAuthCallback = (response) => {
-				console.log('custom-oauth-callback', response);
 				e.source.postMessage({
 					event: 'custom-oauth-callback',
 					response: response
