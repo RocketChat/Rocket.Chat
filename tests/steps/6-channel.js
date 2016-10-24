@@ -6,14 +6,14 @@ import mainContent from '../pageobjects/main-content.page';
 import sideNav from '../pageobjects/side-nav.page';
 
 import {username} from '../test-data/user.js';
-import {PublicChannelName} from '../test-data/channel.js';
+import {publicChannelName} from '../test-data/channel.js';
 import {targetUser} from '../test-data/interactions.js';
 
 describe('channel settings', ()=> {
 
 	describe('channel info tab', ()=> {
 		it('open the channel', ()=> {
-			sideNav.openChannel(PublicChannelName);
+			sideNav.openChannel(publicChannelName);
 		});
 
 		it('open the channel info tab', ()=> {
@@ -23,7 +23,7 @@ describe('channel settings', ()=> {
 
 		it('should show the old name', ()=> {
 			flexTab.firstSetting.waitForVisible();
-			flexTab.firstSetting.getText().should.equal(PublicChannelName);
+			flexTab.firstSetting.getText().should.equal(publicChannelName);
 		});
 
 		it('click the edit name', ()=> {
@@ -33,7 +33,7 @@ describe('channel settings', ()=> {
 
 		it('edit the name input', ()=> {
 			flexTab.editNameTextInput.waitForVisible();
-			flexTab.editNameTextInput.setValue('NAME-EDITED-'+PublicChannelName);
+			flexTab.editNameTextInput.setValue('NAME-EDITED-'+publicChannelName);
 		});
 
 		it('save the name', ()=> {
@@ -43,7 +43,7 @@ describe('channel settings', ()=> {
 
 		it.skip('should show the new name', ()=> {
 			//gives timeout errors
-			flexTab.firstSetting.getText().should.equal('NAME-EDITED-'+PublicChannelName);
+			flexTab.firstSetting.getText().should.equal('NAME-EDITED-'+publicChannelName);
 		});
 
 		it('click the edit topic', ()=> {
