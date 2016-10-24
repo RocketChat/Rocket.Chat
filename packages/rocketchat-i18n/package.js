@@ -15,5 +15,5 @@ Package.onUse(function(api) {
 		}
 	});
 
-	api.use('tap:i18n');
+	api.use('tap:i18n@1.8.2');
 });
