@@ -11,6 +11,9 @@ Meteor.methods
 		fromId = Meteor.userId()
 		room = RocketChat.models.Rooms.findOneById rid
 		user = Meteor.user()
+		
+		if room.t is 'd'
+			throw new Meteor.Error 'error-not-allowed', 'Not allowed', { method: 'leaveRoom' } 
 
 		# If user is room owner, check if there are other owners. If there isn't anyone else, warn user to set a new owner.
 		if RocketChat.authz.hasRole(user._id, 'owner', room._id)
