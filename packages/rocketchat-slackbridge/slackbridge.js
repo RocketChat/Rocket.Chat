@@ -47,6 +47,16 @@ class SlackBridge {
 			this.rtm = new RtmClient(this.apiToken);
 			this.rtm.start();
 			this.setEvents();
+			RocketChat.settings.get('SlackBridge_Out_Enabled', (key, value) => {
+				if (value) {
+					RocketChat.callbacks.add('afterSaveMessage', this.slackBridgeOut.bind(this), RocketChat.callbacks.priority.LOW, 'SlackBridge_Out');
+				} else {
+					RocketChat.callbacks.remove('afterSaveMessage', 'SlackBridge_Out');
+				}
+			});
+			Meteor.startup(() => {
+				this.populateChannelMap(); // If run outside of Meteor.startup, HTTP is not defined
+			});
 		}
 	}
 
@@ -55,6 +65,7 @@ class SlackBridge {
 			this.connected = false;
 			this.rtm.disconnect && this.rtm.disconnect();
 			logger.connection.info('Disconnected');
+			RocketChat.callbacks.remove('afterSaveMessage', 'SlackBridge_Out');
 		}
 	}
 
@@ -930,6 +941,57 @@ class SlackBridge {
 		} else {
 			logger.class.error('Could not find Rocket.Chat room with specified id', rid);
 			return callback(new Meteor.Error('error-invalid-room', 'Invalid room'));
+		}
+	}
+
+	populateChannelMap() {
+		logger.class.debug('Populating channel map');
+		let response = HTTP.get('https://slack.com/api/channels.list', { params: { token: this.apiToken } });
+		if (response && response.data && _.isArray(response.data.channels) && response.data.channels.length > 0) {
+			for (let channel of response.data.channels) {
+				let rocketchat_room = RocketChat.models.Rooms.findOneByName(channel.name, { fields: { _id: 1 } });
+				if (rocketchat_room) {
+					this.channelMap[rocketchat_room._id] = { id: channel.id, family: channel.id.charAt(0) === 'C' ? 'channels' : 'groups' };
+				}
+			}
+		}
+		response = HTTP.get('https://slack.com/api/groups.list', { params: { token: this.apiToken } });
+		if (response && response.data && _.isArray(response.data.groups) && response.data.groups.length > 0) {
+			for (let group of response.data.groups) {
+				let rocketchat_room = RocketChat.models.Rooms.findOneByName(group.name, { fields: { _id: 1 } });
+				if (rocketchat_room) {
+					this.channelMap[rocketchat_room._id] = { id: group.id, family: group.id.charAt(0) === 'C' ? 'channels' : 'groups' };
+				}
+			}
+		}
+	}
+
+	slackBridgeOut(message) {
+		// Ignore messages originating from Slack
+		if (message._id.indexOf('slack-') === 0) {
+			return message;
+		}
+		let outChannels = RocketChat.settings.get('SlackBridge_Out_All') ? _.keys(this.channelMap) : _.pluck(RocketChat.settings.get('SlackBridge_Out_Channels'), '_id') || [];
+		logger.class.debug('Out Channels: ', outChannels);
+		if (outChannels.indexOf(message.rid) !== -1) {
+			logger.class.debug('Message out', message);
+			this.postMessage(this.channelMap[message.rid], message);
+		}
+		return message;
+	}
+
+	postMessage(room, message) {
+		if (room && room.id) {
+			let data = {
+				token: this.apiToken,
+				text: message.msg,
+				channel: room.id,
+				username: message.u && message.u.username,
+				icon_url: getAvatarUrlFromUsername(message.u && message.u.username),
+				link_names: 1
+			};
+			logger.class.debug('Post Message', data);
+			HTTP.post('https://slack.com/api/chat.postMessage', { params: data });
 		}
 	}
 }
