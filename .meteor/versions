@@ -6,6 +6,7 @@ accounts-meteor-developer@1.0.10
 accounts-oauth@1.1.13
 accounts-password@1.3.0
 accounts-twitter@1.1.11
+aldeed:moment-timezone@0.4.0
 aldeed:simple-schema@1.5.3
 allow-deny@1.0.5
 autoupdate@1.2.11
@@ -92,8 +93,6 @@ monbro:mongodb-mapreduce-aggregation@1.0.1
 mongo@1.1.12_5
 mongo-id@1.0.5
 mongo-livedata@1.0.12
-mrt:moment@2.8.1
-mrt:moment-timezone@0.2.1
 mrt:reactive-store@0.0.1
 mystor:device-detection@0.2.0
 nimble:restivus@0.8.11
