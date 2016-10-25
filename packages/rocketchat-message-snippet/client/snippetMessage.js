@@ -3,8 +3,9 @@ Meteor.methods({
 		if (typeof Meteor.userId() === 'undefined' || Meteor.userId() == null) {
 			return false;
 		}
-		if ((typeof RocketChat.settings.get('Message_AllowSnippeting') === 'undefined') || (
-			RocketChat.settings.get('Message_AllowSnippeting') == null)) {
+		if ((typeof RocketChat.settings.get('Message_AllowSnippeting') === 'undefined') ||
+			(RocketChat.settings.get('Message_AllowSnippeting') === null) ||
+			(RocketChat.settings.get('Message_AllowSnippeting') === false)) {
 			return false;
 		}
 
