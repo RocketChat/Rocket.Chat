@@ -1,5 +1,26 @@
 # History
 
+## 0.44.0, 2016-Oct-25
+
+- Add archive and unarchive api endpoints
+- Add check package dependency to the iframe-login package. (#4664)
+- Add classes to spans in flextab
+- Add docker image creation for experimental branch
+- Add moment to rocketchat:lib dependencies
+- Add RoomPick setting type
+- Add session as a dependency of rocketchat:lib (#4661)
+- Add Slackbridge Out
+- Add tests for emoji, screen resolution, messages, rooms managment
+- Allow to call custom oauth services using iframe events (#4685, #4687)
+- Fix public channel name typo
+- Fix the wrong file path
+- Fix undefinied slash command parameters (#4668)
+- Fix user can use /leave in a direct message (#4663)
+- Fix visitor not being able to use livechat if session expired
+- Propagate bot messages through slackbridge
+- Replace mrt:moment-timezone by aldeed:moment-timezone as it depend on the official moment package
+- Set tap:i18n version in i18n package to install the expected version when the package is used in other projects
+
 ## 0.43.0, 2016-Oct-17
 
 - Add @here support for only notifying users that are active
