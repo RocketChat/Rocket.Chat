@@ -38,13 +38,14 @@ Meteor.startup(function() {
 
 		},
 		validation: function(message) {
-			let room = RocketChat.models.Rooms.findOne({_id: message.rid});
+			let room = RocketChat.models.Subscriptions.findOne({_id: message.rid});
 
 			if (Array.isArray(room.usernames) && (room.usernames.indexOf(Meteor.user().username) === -1)) {
 				return false;
 			} else {
 				if (message.snippeted || ((RocketChat.settings.get('Message_AllowSnippeting') === undefined) ||
-										(RocketChat.settings.get('Message_AllowSnippeting') === null))) {
+										(RocketChat.settings.get('Message_AllowSnippeting') === null) ||
+										(RocketChat.settings.get('Message_AllowSnippeting')) === false)) {
 					return false;
 				}
 				return RocketChat.authz.hasAtLeastOnePermission('snippet-message', message.rid);
