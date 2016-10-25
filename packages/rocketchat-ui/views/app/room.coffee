@@ -398,7 +398,7 @@ Template.room.events
 
 	'dragenter .dropzone': (e) ->
 		types = e.originalEvent?.dataTransfer?.types
-		if types?.length > 0 and _.every(types, (type) => type.indexOf('text/') is -1) and userCanDrop this._id
+		if types?.length > 0 and _.every(types, (type) => type.indexOf('text/') is -1 or type.indexOf('text/uri-list') isnt -1) and userCanDrop this._id
 			e.currentTarget.classList.add 'over'
 
 	'dragleave .dropzone-overlay': (e) ->
