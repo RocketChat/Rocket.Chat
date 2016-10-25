@@ -91,7 +91,7 @@ describe('Basic usage', function() {
 				sideNav.channelHoverIcon.isVisible().should.be.false;
 			});
 
-			it.skip('should show eye icon on hover', () => {
+			it('should show eye icon on hover', () => {
 				sideNav.general.moveToObject();
 				sideNav.channelHoverIcon.isVisible().should.be.true;
 			});
@@ -463,7 +463,7 @@ describe('Basic usage', function() {
 				flexTab.membersTabContent.isVisible().should.be.true;
 			});
 
-			it.skip('should show the members search bar', () => {
+			it('should show the members search bar', () => {
 				flexTab.userSearchBar.isVisible().should.be.true;
 			});
 
@@ -471,11 +471,11 @@ describe('Basic usage', function() {
 				flexTab.showAll.isVisible().should.be.true;
 			});
 
-			it.skip('should show the start video call button', () => {
+			it('should show the start video call button', () => {
 				flexTab.startVideoCall.isVisible().should.be.true;
 			});
 
-			it.skip('should show the start audio call', () => {
+			it('should show the start audio call', () => {
 				flexTab.startAudioCall.isVisible().should.be.true;
 			});
 
