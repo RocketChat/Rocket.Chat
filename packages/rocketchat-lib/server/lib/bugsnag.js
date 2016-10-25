@@ -8,20 +8,22 @@ RocketChat.settings.get('Bugsnag_api_key', (key, value) => {
 	}
 });
 
-const bindEnvironment = Meteor.bindEnvironment;
-Meteor.bindEnvironment = function(func, onException, _this) {
-	if (typeof(onException) !== 'function') {
-		if (!onException || typeof(onException) === 'string') {
-			var description = onException || 'callback of async function';
-			onException = function(error) {
-				RocketChat.bugsnag.notify(error);
-				Meteor._debug(
-					'Exception in ' + description + ':',
-					error && error.stack || error
-				);
-			};
-		}
+const notify = function(message, stack) {
+	if (typeof stack === 'string') {
+		message += ' ' + stack;
 	}
+	const options = { app: { version: RocketChat.Info.version, info: RocketChat.Info } };
+	const error = new Error(message);
+	error.stack = stack;
+	RocketChat.bugsnag.notify(error, options);
+};
 
-	return bindEnvironment(func, onException, _this);
+process.on('uncaughtException', Meteor.bindEnvironment((error) => {
+	notify(error.message, error.stack);
+}));
+
+let originalMeteorDebug = Meteor._debug;
+Meteor._debug = function() {
+	notify(...arguments);
+	return originalMeteorDebug(...arguments);
 };
