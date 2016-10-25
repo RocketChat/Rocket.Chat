@@ -1,10 +1,10 @@
-/* global Messages */
+/* global SnippetedMessages */
 Template.snippetedMessages.helpers({
 	hasMessages() {
-		return Messages.find({ snippeted:true, rid: this.rid }, { sort: { ts: -1 } }).count() > 0;
+		return SnippetedMessages.find({ snippeted:true, rid: this.rid }, { sort: { ts: -1 } }).count() > 0;
 	},
 	messages() {
-		return Messages.find({ snippeted: true, rid: this.rid }, { sort: { ts: -1 } });
+		return SnippetedMessages.find({ snippeted: true, rid: this.rid }, { sort: { ts: -1 } });
 	},
 	message() {
 		return _.extend(this, { customClass: 'snippeted' });

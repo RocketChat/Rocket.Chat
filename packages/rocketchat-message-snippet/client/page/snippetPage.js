@@ -1,10 +1,10 @@
-/* global Messages */
+/* global SnippetedMessages */
 Template.snippetPage.helpers({
 	snippet: function() {
-		return Messages.findOne({ _id: FlowRouter.getParam('snippetId') });
+		return SnippetedMessages.findOne({ _id: FlowRouter.getParam('snippetId') });
 	},
 	snippetContent: function() {
-		let message = Messages.findOne({ _id: FlowRouter.getParam('snippetId') });
+		let message = SnippetedMessages.findOne({ _id: FlowRouter.getParam('snippetId') });
 		if (message === undefined) {
 			return null;
 		}
@@ -13,13 +13,13 @@ Template.snippetPage.helpers({
 		return markdownCode.tokens[0].text;
 	},
 	date() {
-		let snippet = Messages.findOne({ _id: FlowRouter.getParam('snippetId') });
+		let snippet = SnippetedMessages.findOne({ _id: FlowRouter.getParam('snippetId') });
 		if (snippet !== undefined) {
 			return moment(snippet.ts).format(RocketChat.settings.get('Message_DateFormat'));
 		}
 	},
 	time() {
-		let snippet = Messages.findOne({ _id: FlowRouter.getParam('snippetId') });
+		let snippet = SnippetedMessages.findOne({ _id: FlowRouter.getParam('snippetId') });
 		if (snippet !== undefined) {
 			return moment(snippet.ts).format(RocketChat.settings.get('Message_TimeFormat'));
 		}
