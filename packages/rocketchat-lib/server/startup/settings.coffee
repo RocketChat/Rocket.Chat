@@ -123,8 +123,8 @@ RocketChat.settings.addGroup 'General', ->
 	@section 'Translations', ->
 		@add 'Custom_Translations', '', { type: 'code', public: true }
 
-	@section 'Broadcast Central', ->
-		@add 'Broadcast_Central', '', { type: 'string' }
+	@section 'Stream Cast', ->
+		@add 'Stream_Cast_Address', '', { type: 'string' }
 
 RocketChat.settings.addGroup 'Email', ->
 	@section 'Header and Footer', ->

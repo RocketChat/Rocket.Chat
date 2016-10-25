@@ -88,8 +88,8 @@ startMatrixBroadcast = ->
 
 			return undefined
 
-startCentralBroadcast = (value) ->
-	instance = 'BROADCAST_CENTRAL'
+startStreamCastBroadcast = (value) ->
+	instance = 'StreamCast'
 
 	logger.connection.info 'connecting in', instance, value
 	connection = DDP.connect(value, {_dontPrintErrors: true})
@@ -108,8 +108,6 @@ startCentralBroadcast = (value) ->
 		if not streamName? or not eventName? or not args?
 			return
 
-		console.log 'on message', msg.fields
-
 		if connection.broadcastAuth isnt true
 			return 'not-authorized'
 
@@ -126,14 +124,14 @@ startCentralBroadcast = (value) ->
 
 	logger.info 'startStreamBroadcast'
 
-	RocketChat.settings.get 'Broadcast_Central', (key, value) ->
+	RocketChat.settings.get 'Stream_Cast_Address', (key, value) ->
 		for instance, connection of connections
 			do (instance, connection) ->
 				connection.disconnect()
 				delete connections[instance]
 
 		if value?.trim() isnt ''
-			startCentralBroadcast(value)
+			startStreamCastBroadcast(value)
 		else
 			startMatrixBroadcast()
 
