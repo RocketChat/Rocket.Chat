@@ -1,1 +1,1 @@
-this.Messages = new Meteor.Collection('rocketchat_message');
+this.SnippetedMessages = new Meteor.Collection('rocketchat_snippeted_message');
