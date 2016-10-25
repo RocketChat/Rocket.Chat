@@ -7,11 +7,10 @@ Template.snippetPage.helpers({
 		let message = Messages.findOne({ _id: FlowRouter.getParam('snippetId') });
 		if (message === undefined) {
 			return null;
-		} else {
-			message.html = message.msg;
-			let markdownCode = new RocketChat.MarkdownCode(message);
-			return markdownCode.tokens[0].text;
 		}
+		message.html = message.msg;
+		let markdownCode = new RocketChat.MarkdownCode(message);
+		return markdownCode.tokens[0].text;
 	},
 	date() {
 		let snippet = Messages.findOne({ _id: FlowRouter.getParam('snippetId') });
@@ -29,7 +28,6 @@ Template.snippetPage.helpers({
 
 Template.snippetPage.onCreated(function() {
 	let snippetId = FlowRouter.getParam('snippetId');
-	console.log(`${snippetId}: ${this.snippet}`);
 	this.autorun(function() {
 		Meteor.subscribe('snippetedMessage', snippetId);
 	});
