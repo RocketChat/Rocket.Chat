@@ -67,6 +67,39 @@ RocketChat.API.v1.addRoute 'chat.postMessage', authRequired: true,
 		catch e
 			return RocketChat.API.v1.failure e.error
 
+
+# Update Channel Message
+RocketChat.API.v1.addRoute 'chat.update', authRequired: true,
+	post: ->
+		try
+
+			# Verify request structure
+			check @bodyParams,
+				messageId: String
+				msg: String
+
+			msg = RocketChat.models.Messages.findOneById(@bodyParams.messageId)
+
+			# Ensure that message exists
+			if not msg
+				return RocketChat.API.v1.failure 'invalid_message'
+			if not msg?.u?._id == @userId
+				return RocketChat.API.v1.unauthorized 'message userId does not match logged in user'
+
+			# Ensure that editing messages is enabled
+			if not RocketChat.settings.get 'Message_AllowEditing'
+				return RocketChat.API.v1.failure 'editing_disabled'
+
+			# Update message
+			Meteor.runAsUser @userId, () =>
+				Meteor.call 'updateMessage', { _id: msg._id, msg: @bodyParams.msg, rid: msg.rid }
+			return RocketChat.API.v1.success
+				message: RocketChat.models.Messages.findOneById(@bodyParams.messageId)
+
+		catch e
+			return RocketChat.API.v1.failure e.name + ': ' + e.message
+
+
 # Set Channel Topic
 RocketChat.API.v1.addRoute 'channels.setTopic', authRequired: true,
 	post: ->
@@ -105,11 +138,13 @@ RocketChat.API.v1.addRoute 'channels.create', authRequired: true,
 		return RocketChat.API.v1.success
 			channel: RocketChat.models.Rooms.findOneById(id.rid)
 
+
 # List Private Groups a user has access to
 RocketChat.API.v1.addRoute 'groups.list', authRequired: true,
 	get: ->
 		roomIds = _.pluck RocketChat.models.Subscriptions.findByTypeAndUserId('p', @userId).fetch(), 'rid'
 		return { groups: RocketChat.models.Rooms.findByIds(roomIds).fetch() }
+
 
 # Add All Users to Channel
 RocketChat.API.v1.addRoute 'channel.addall', authRequired: true,
@@ -125,13 +160,31 @@ RocketChat.API.v1.addRoute 'channel.addall', authRequired: true,
 		return RocketChat.API.v1.success
 			channel: RocketChat.models.Rooms.findOneById(@bodyParams.roomId)
 
-# List all users
+
+### List all users for the server. Requires the admin role.
+
+Message history is paginated. Older messages can be retrieved by incrementing the page and items parameters.
+
+@queryparam page (int, default=1): Page to retrieve
+@queryparam items (int, default=100): Number of items to include in each page
+
+###
 RocketChat.API.v1.addRoute 'users.list', authRequired: true,
 	get: ->
 		if RocketChat.authz.hasRole(@userId, 'admin') is false
 			return RocketChat.API.v1.unauthorized()
 
-		return { users: RocketChat.models.Users.find().fetch() }
+		rpage = if @queryParams.page then Number(@queryParams.page) else 1
+		ritems = if @queryParams.items then Number(@queryParams.items) else 100
+		users = RocketChat.models.Users.find({}, { limit: ritems, skip: (rpage-1)*ritems }).fetch()
+		
+		return {
+			users: users,
+			page: rpage,
+			items: users.length,
+			total: RocketChat.models.Users.find().count(),
+		}
+
 
 # Create user
 RocketChat.API.v1.addRoute 'users.create', authRequired: true,
@@ -161,8 +214,6 @@ RocketChat.API.v1.addRoute 'users.create', authRequired: true,
 			unless RocketChat.checkUsernameAvailability @bodyParams.username
 				return RocketChat.API.v1.failure 'Username not available'
 
-			userData = {}
-
 			newUserId = RocketChat.saveUser(@userId, @bodyParams)
 
 			if @bodyParams.customFields?
@@ -172,6 +223,7 @@ RocketChat.API.v1.addRoute 'users.create', authRequired: true,
 				user: RocketChat.models.Users.findOneById(newUserId)
 		catch e
 			return RocketChat.API.v1.failure e.name + ': ' + e.message
+
 
 # Update user
 RocketChat.API.v1.addRoute 'user.update', authRequired: true,
@@ -203,37 +255,42 @@ RocketChat.API.v1.addRoute 'user.update', authRequired: true,
 		catch e
 			return RocketChat.API.v1.failure e.name + ': ' + e.message
 
+
 # Get User Information
 RocketChat.API.v1.addRoute 'user.info', authRequired: true,
 	post: ->
 		if RocketChat.authz.hasRole(@userId, 'admin') is false
 			return RocketChat.API.v1.unauthorized()
-
 		return { user: RocketChat.models.Users.findOneByUsername @bodyParams.name }
+
 
 # Get User Presence
 RocketChat.API.v1.addRoute 'user.getpresence', authRequired: true,
 	post: ->
 		return { user: RocketChat.models.Users.findOne( { username: @bodyParams.name} , {fields: {status: 1}} ) }
 
-# Delete User
-RocketChat.API.v1.addRoute 'users.delete', authRequired: true,
+
+# Delete Users
+RocketChat.API.v1.addRoute 'user.delete', authRequired: true,
 	post: ->
 		if not @bodyParams.userId?
 			return RocketChat.API.v1.failure 'Body param "userId" is required'
 
-		if not RocketChat.authz.hasPermission(@userId, 'delete-user')
-			return RocketChat.API.v1.unauthorized()
-
 		id = undefined
 		try
+			if not RocketChat.authz.hasPermission(@userId, 'delete-user')
+				return RocketChat.API.v1.unauthorized()
+
 			Meteor.runAsUser this.userId, =>
 				id = Meteor.call 'deleteUser', @bodyParams.userId, []
+		
 		catch e
 			return RocketChat.API.v1.failure e.name + ': ' + e.message
 
 		return RocketChat.API.v1.success
-
+			user: @bodyParams.userId
+			
+			
 # Create Private Group
 RocketChat.API.v1.addRoute 'groups.create', authRequired: true,
 	post: ->
@@ -246,6 +303,7 @@ RocketChat.API.v1.addRoute 'groups.create', authRequired: true,
 		id = undefined
 		try
 			if not @bodyParams.members?
+			
 				Meteor.runAsUser this.userId, =>
 					id = Meteor.call 'createPrivateGroup', @bodyParams.name, []
 			else

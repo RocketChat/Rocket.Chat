@@ -21,7 +21,7 @@ Meteor.methods
 
 		if not to
 			throw new Meteor.Error 'error-invalid-user', "Invalid user", { method: 'createDirectMessage' }
-
+			
 		rid = [me._id, to._id].sort().join('')
 
 		now = new Date()
