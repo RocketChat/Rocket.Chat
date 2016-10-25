@@ -31,5 +31,24 @@ window.addEventListener('message', (e) => {
 			}
 			FlowRouter.go(e.data.path);
 			break;
+
+		case 'call-custom-oauth-login':
+			const customOAuthCallback = (response) => {
+				e.source.postMessage({
+					event: 'custom-oauth-callback',
+					response: response
+				}, e.origin);
+			};
+
+			if (typeof e.data.service === 'string') {
+				const customOauth = ServiceConfiguration.configurations.findOne({service: e.data.service});
+
+				if (customOauth) {
+					const customLoginWith = Meteor['loginWith' + _.capitalize(customOauth.service, true)];
+					const customRedirectUri = window.OAuth._redirectUri(customOauth.service, customOauth);
+					customLoginWith.call(Meteor, {'redirectUrl': customRedirectUri}, customOAuthCallback);
+				}
+			}
+			break;
 	}
 });
