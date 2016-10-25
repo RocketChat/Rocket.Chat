@@ -185,7 +185,8 @@ var samlUrlToObject = function(url) {
 		return null;
 	}
 
-	var splitPath = url.split('/');
+	var splitUrl = url.split('?');
+	var splitPath = splitUrl[0].split('/');
 
 	// Any non-saml request will continue down the default
 	// middlewares.
