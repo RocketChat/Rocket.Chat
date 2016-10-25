@@ -4,6 +4,6 @@ Meteor.methods({
 			throw new Meteor.Error('error-not-allowed', 'Not allowed', { method: 'livechat:removeDepartment' });
 		}
 
-		return RocketChat.livechat.removeDepartment(_id);
+		return RocketChat.Livechat.removeDepartment(_id);
 	}
 });

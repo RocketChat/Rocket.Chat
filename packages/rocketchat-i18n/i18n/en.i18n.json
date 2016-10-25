@@ -1206,6 +1206,8 @@
   "Stats_Total_Users": "Total Users",
   "Status": "Status",
   "Stop_Recording": "Stop Recording",
+  "Stream_Cast_Address": "Stream Cast Address",
+  "Stream_Cast_Address_Description": "IP or Host of your Rocket.Chat central Stream Cast. E.g. `192.168.1.1:3000` or `localhost:4000`",
   "strike": "strike",
   "Subject": "Subject",
   "Submit": "Submit",
